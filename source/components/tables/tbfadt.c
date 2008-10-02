@@ -123,7 +123,7 @@
 
 /* Local prototypes */
 
-static void inline
+static inline void
 AcpiTbInitGenericAddress (
     ACPI_GENERIC_ADDRESS    *GenericAddress,
     UINT8                   BitWidth,
@@ -207,7 +207,7 @@ static ACPI_FADT_INFO     FadtInfoTable[] =
  *
  ******************************************************************************/
 
-static void inline
+static inline void
 AcpiTbInitGenericAddress (
     ACPI_GENERIC_ADDRESS    *GenericAddress,
     UINT8                   BitWidth,

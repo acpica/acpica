@@ -131,6 +131,10 @@ static void
 AcpiDmUnicode (
     ACPI_PARSE_OBJECT       *Op);
 
+static void
+AcpiDmIsEisaIdElement (
+    ACPI_PARSE_OBJECT       *Op);
+
 
 /*******************************************************************************
  *
@@ -451,7 +455,7 @@ AcpiDmUnicode (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiDmIsEisaIdElement (
     ACPI_PARSE_OBJECT       *Op)
 {
