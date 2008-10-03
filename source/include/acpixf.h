@@ -536,11 +536,11 @@ AcpiSetRegister (
 
 ACPI_STATUS
 AcpiSetFirmwareWakingVector (
-    ACPI_PHYSICAL_ADDRESS   PhysicalAddress);
+    UINT32                  PhysicalAddress);
 
 ACPI_STATUS
-AcpiGetFirmwareWakingVector (
-    ACPI_PHYSICAL_ADDRESS   *PhysicalAddress);
+AcpiSetFirmwareWakingVector64 (
+    UINT64                  PhysicalAddress);
 
 ACPI_STATUS
 AcpiGetSleepTypeData (

@@ -124,24 +124,25 @@
  *
  * FUNCTION:    AcpiSetFirmwareWakingVector
  *
- * PARAMETERS:  PhysicalAddress     - Physical address of ACPI real mode
+ * PARAMETERS:  PhysicalAddress     - 32-bit physical address of ACPI real mode
  *                                    entry point.
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Access function for the FirmwareWakingVector field in FACS
+ * DESCRIPTION: Sets the 32-bit FirmwareWakingVector field of the FACS
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiSetFirmwareWakingVector (
-    ACPI_PHYSICAL_ADDRESS   PhysicalAddress)
+    UINT32                  PhysicalAddress)
 {
     ACPI_TABLE_FACS         *Facs;
     ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE (AcpiSetFirmwareWakingVector);
+
 
     /* Get the FACS */
 
@@ -152,22 +153,15 @@ AcpiSetFirmwareWakingVector (
         return_ACPI_STATUS (Status);
     }
 
-    /* Set the vector */
+    /* Set the 32-bit vector */
 
-    if ((Facs->Length < 32) ||
-        (!(Facs->XFirmwareWakingVector)))
+    Facs->FirmwareWakingVector = PhysicalAddress;
+
+    /* Clear the 64-bit vector if it exists */
+
+    if ((Facs->Length > 32) && (Facs->Version >= 1))
     {
-        /*
-         * ACPI 1.0 FACS or short table or optional X_ field is zero
-         */
-        Facs->FirmwareWakingVector = (UINT32) PhysicalAddress;
-    }
-    else
-    {
-        /*
-         * ACPI 2.0 FACS with valid X_ field
-         */
-        Facs->XFirmwareWakingVector = PhysicalAddress;
+        Facs->XFirmwareWakingVector = 0;
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -178,33 +172,28 @@ ACPI_EXPORT_SYMBOL (AcpiSetFirmwareWakingVector)
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiGetFirmwareWakingVector
+ * FUNCTION:    AcpiSetFirmwareWakingVector64
  *
- * PARAMETERS:  *PhysicalAddress    - Where the contents of
- *                                    the FirmwareWakingVector field of
- *                                    the FACS will be returned.
+ * PARAMETERS:  PhysicalAddress     - 64-bit physical address of ACPI protected
+ *                                    mode entry point.
  *
- * RETURN:      Status, vector
+ * RETURN:      Status
  *
- * DESCRIPTION: Access function for the FirmwareWakingVector field in FACS
+ * DESCRIPTION: Sets the 64-bit X_FirmwareWakingVector field of the FACS, if
+ *              it exists in the table.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetFirmwareWakingVector (
-    ACPI_PHYSICAL_ADDRESS   *PhysicalAddress)
+AcpiSetFirmwareWakingVector64 (
+    UINT64                  PhysicalAddress)
 {
     ACPI_TABLE_FACS         *Facs;
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE (AcpiGetFirmwareWakingVector);
+    ACPI_FUNCTION_TRACE (AcpiSetFirmwareWakingVector64);
 
-
-    if (!PhysicalAddress)
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
 
     /* Get the FACS */
 
@@ -215,29 +204,21 @@ AcpiGetFirmwareWakingVector (
         return_ACPI_STATUS (Status);
     }
 
-    /* Get the vector */
+    /* Determine if the 64-bit vector actually exists */
 
-    if ((Facs->Length < 32) ||
-        (!(Facs->XFirmwareWakingVector)))
+    if ((Facs->Length <= 32) || (Facs->Version < 1))
     {
-        /*
-         * ACPI 1.0 FACS or short table or optional X_ field is zero
-         */
-        *PhysicalAddress =
-            (ACPI_PHYSICAL_ADDRESS) Facs->FirmwareWakingVector;
-    }
-    else
-    {
-        /*
-         * ACPI 2.0 FACS with valid X_ field
-         */
-        *PhysicalAddress = (ACPI_PHYSICAL_ADDRESS) Facs->XFirmwareWakingVector;
+        return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
+    /* Clear 32-bit vector, set the 64-bit X_ vector */
+
+    Facs->FirmwareWakingVector = 0;
+    Facs->XFirmwareWakingVector = PhysicalAddress;
     return_ACPI_STATUS (AE_OK);
 }
 
-ACPI_EXPORT_SYMBOL (AcpiGetFirmwareWakingVector)
+ACPI_EXPORT_SYMBOL (AcpiSetFirmwareWakingVector64)
 
 
 /*******************************************************************************
