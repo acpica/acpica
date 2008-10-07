@@ -545,6 +545,13 @@ AcpiPsParseAml (
     Thread = AcpiUtCreateThreadState ();
     if (!Thread)
     {
+        if (WalkState->MethodDesc)
+        {
+            /* Executing a control method - additional cleanup */
+
+            AcpiDsTerminateControlMethod (WalkState->MethodDesc, WalkState);
+        }
+
         AcpiDsDeleteWalkState (WalkState);
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
