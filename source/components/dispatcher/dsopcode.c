@@ -1302,8 +1302,27 @@ AcpiDsExecBeginControlOp (
 
     switch (Op->Common.AmlOpcode)
     {
-    case AML_IF_OP:
     case AML_WHILE_OP:
+
+        /*
+         * If this is an additional iteration of a while loop, continue.
+         * There is no need to allocate a new control state.
+         */
+        if (WalkState->ControlState)
+        {
+            if (WalkState->ControlState->Control.AmlPredicateStart ==
+                (WalkState->ParserState.Aml - 1))
+            {
+                /* Reset the state to start-of-loop */
+
+                WalkState->ControlState->Common.State = ACPI_CONTROL_CONDITIONAL_EXECUTING;
+                break;
+            }
+        }
+
+        /*lint -fallthrough */
+
+    case AML_IF_OP:
 
         /*
          * IF/WHILE: Create a new control state to manage these
@@ -1416,7 +1435,11 @@ AcpiDsExecEndControlOp (
             /* Predicate was true, go back and evaluate it again! */
 
             Status = AE_CTRL_PENDING;
+            WalkState->AmlLastWhile = WalkState->ControlState->Control.AmlPredicateStart;
+            break;
         }
+
+        /* Predicate was false, terminate this while loop */
 
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
             "[WHILE_OP] termination! Op=%p\n",Op));
@@ -1424,8 +1447,6 @@ AcpiDsExecEndControlOp (
         /* Pop this control state and free it */
 
         ControlState = AcpiUtPopGenericState (&WalkState->ControlState);
-
-        WalkState->AmlLastWhile = ControlState->Control.AmlPredicateStart;
         AcpiUtDeleteGenericState (ControlState);
         break;
 
