@@ -1430,12 +1430,30 @@ AcpiDsExecEndControlOp (
 
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "[WHILE_OP] Op=%p\n", Op));
 
-        if (WalkState->ControlState->Common.Value)
+        ControlState = WalkState->ControlState;
+        if (ControlState->Common.Value)
         {
-            /* Predicate was true, go back and evaluate it again! */
+            /* Predicate was true, the body of the loop was just executed */
 
+            /*
+             * This loop counter mechanism allows the interpreter to escape
+             * possibly infinite loops. This can occur in poorly written AML
+             * when the hardware does not respond within a while loop and the
+             * loop does not implement a timeout.
+             */
+            ControlState->Control.LoopCount++;
+            if (ControlState->Control.LoopCount > ACPI_MAX_LOOP_ITERATIONS)
+            {
+                Status = AE_AML_INFINITE_LOOP;
+                break;
+            }
+
+            /*
+             * Go back and evaluate the predicate and maybe execute the loop
+             * another time
+             */
             Status = AE_CTRL_PENDING;
-            WalkState->AmlLastWhile = WalkState->ControlState->Control.AmlPredicateStart;
+            WalkState->AmlLastWhile = ControlState->Control.AmlPredicateStart;
             break;
         }
 

@@ -231,8 +231,9 @@
 #define AE_AML_CIRCULAR_REFERENCE       (ACPI_STATUS) (0x001E | AE_CODE_AML)
 #define AE_AML_BAD_RESOURCE_LENGTH      (ACPI_STATUS) (0x001F | AE_CODE_AML)
 #define AE_AML_ILLEGAL_ADDRESS          (ACPI_STATUS) (0x0020 | AE_CODE_AML)
+#define AE_AML_INFINITE_LOOP            (ACPI_STATUS) (0x0021 | AE_CODE_AML)
 
-#define AE_CODE_AML_MAX                 0x0020
+#define AE_CODE_AML_MAX                 0x0021
 
 
 /*
@@ -352,6 +353,7 @@ char const   *AcpiGbl_ExceptionNames_Aml[] =
     "AE_AML_CIRCULAR_REFERENCE",
     "AE_AML_BAD_RESOURCE_LENGTH",
     "AE_AML_ILLEGAL_ADDRESS",
+    "AE_AML_INFINITE_LOOP"
 };
 
 char const   *AcpiGbl_ExceptionNames_Ctrl[] =
