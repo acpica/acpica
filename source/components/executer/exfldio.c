@@ -613,12 +613,12 @@ AcpiExFieldDatumIo (
             return_ACPI_STATUS (Status);
         }
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-            "I/O to Data Register: ValuePtr %p\n", Value));
-
         if (ReadWrite == ACPI_READ)
         {
             /* Read the datum from the DataRegister */
+
+            ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
+                "Read from Data Register\n"));
 
             Status = AcpiExExtractFromField (ObjDesc->IndexField.DataObj,
                         Value, sizeof (ACPI_INTEGER));
@@ -626,6 +626,10 @@ AcpiExFieldDatumIo (
         else
         {
             /* Write the datum to the DataRegister */
+
+            ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
+                "Write to Data Register: Value %8.8X%8.8X\n",
+                ACPI_FORMAT_UINT64 (*Value)));
 
             Status = AcpiExInsertIntoField (ObjDesc->IndexField.DataObj,
                         Value, sizeof (ACPI_INTEGER));
