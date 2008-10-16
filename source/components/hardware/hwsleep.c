@@ -137,31 +137,18 @@ ACPI_STATUS
 AcpiSetFirmwareWakingVector (
     UINT32                  PhysicalAddress)
 {
-    ACPI_TABLE_FACS         *Facs;
-    ACPI_STATUS             Status;
-
-
     ACPI_FUNCTION_TRACE (AcpiSetFirmwareWakingVector);
 
 
-    /* Get the FACS */
-
-    Status = AcpiGetTableByIndex (ACPI_TABLE_INDEX_FACS,
-                ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &Facs));
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
     /* Set the 32-bit vector */
 
-    Facs->FirmwareWakingVector = PhysicalAddress;
+    AcpiGbl_FACS->FirmwareWakingVector = PhysicalAddress;
 
     /* Clear the 64-bit vector if it exists */
 
-    if ((Facs->Length > 32) && (Facs->Version >= 1))
+    if ((AcpiGbl_FACS->Length > 32) && (AcpiGbl_FACS->Version >= 1))
     {
-        Facs->XFirmwareWakingVector = 0;
+        AcpiGbl_FACS->XFirmwareWakingVector = 0;
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -188,33 +175,20 @@ ACPI_STATUS
 AcpiSetFirmwareWakingVector64 (
     UINT64                  PhysicalAddress)
 {
-    ACPI_TABLE_FACS         *Facs;
-    ACPI_STATUS             Status;
-
-
     ACPI_FUNCTION_TRACE (AcpiSetFirmwareWakingVector64);
 
 
-    /* Get the FACS */
-
-    Status = AcpiGetTableByIndex (ACPI_TABLE_INDEX_FACS,
-                ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &Facs));
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
     /* Determine if the 64-bit vector actually exists */
 
-    if ((Facs->Length <= 32) || (Facs->Version < 1))
+    if ((AcpiGbl_FACS->Length <= 32) || (AcpiGbl_FACS->Version < 1))
     {
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
     /* Clear 32-bit vector, set the 64-bit X_ vector */
 
-    Facs->FirmwareWakingVector = 0;
-    Facs->XFirmwareWakingVector = PhysicalAddress;
+    AcpiGbl_FACS->FirmwareWakingVector = 0;
+    AcpiGbl_FACS->XFirmwareWakingVector = PhysicalAddress;
     return_ACPI_STATUS (AE_OK);
 }
 

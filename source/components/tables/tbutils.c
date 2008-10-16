@@ -131,6 +131,32 @@ AcpiTbGetRootTableEntry (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiTbInitializeFacs
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create a permanent mapping for the FADT and save it in a global
+ *              for accessing the Global Lock and Firmware Waking Vector
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiTbInitializeFacs (
+    void)
+{
+    ACPI_STATUS             Status;
+
+
+    Status = AcpiGetTableByIndex (ACPI_TABLE_INDEX_FACS,
+                ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &AcpiGbl_FACS));
+    return (Status);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiTbTablesLoaded
  *
  * PARAMETERS:  None

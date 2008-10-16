@@ -900,6 +900,7 @@ AcpiUtInitGlobals (
     AcpiGbl_GlobalLockMutex             = NULL;
     AcpiGbl_GlobalLockAcquired          = FALSE;
     AcpiGbl_GlobalLockHandle            = 0;
+    AcpiGbl_GlobalLockPresent           = FALSE;
 
     /* Miscellaneous variables */
 

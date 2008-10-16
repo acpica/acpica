@@ -120,6 +120,7 @@
 #include "acevents.h"
 #include "acnamesp.h"
 #include "acdebug.h"
+#include "actables.h"
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utxface")
@@ -237,6 +238,17 @@ AcpiEnableSubsystem (
             ACPI_WARNING ((AE_INFO, "AcpiEnable failed"));
             return_ACPI_STATUS (Status);
         }
+    }
+
+    /*
+     * Obtain a permanent mapping for the FACS. This is required for the
+     * Global Lock and the Firmware Waking Vector
+     */
+    Status = AcpiTbInitializeFacs ();
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_WARNING ((AE_INFO, "Could not map the FACS table"));
+        return_ACPI_STATUS (Status);
     }
 
     /*

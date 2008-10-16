@@ -122,10 +122,6 @@
         ACPI_MODULE_NAME    ("evmisc")
 
 
-/* Pointer to FACS needed for the Global Lock */
-
-static ACPI_TABLE_FACS      *Facs = NULL;
-
 /* Local prototypes */
 
 static void ACPI_SYSTEM_XFACE
@@ -404,7 +400,7 @@ AcpiEvGlobalLockHandler (
      * If we don't get it now, it will be marked pending and we will
      * take another interrupt when it becomes free.
      */
-    ACPI_ACQUIRE_GLOBAL_LOCK (Facs, Acquired);
+    ACPI_ACQUIRE_GLOBAL_LOCK (AcpiGbl_FACS, Acquired);
     if (Acquired)
     {
         /* Got the lock, now wake the thread waiting for it */
@@ -446,14 +442,8 @@ AcpiEvInitGlobalLockHandler (
     ACPI_FUNCTION_TRACE (EvInitGlobalLockHandler);
 
 
-    Status = AcpiGetTableByIndex (ACPI_TABLE_INDEX_FACS,
-                ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &Facs));
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
+    /* Attempt installation of the global lock handler */
 
-    AcpiGbl_GlobalLockPresent = TRUE;
     Status = AcpiInstallFixedEventHandler (ACPI_EVENT_GLOBAL,
                 AcpiEvGlobalLockHandler, NULL);
 
@@ -470,9 +460,10 @@ AcpiEvInitGlobalLockHandler (
             "No response from Global Lock hardware, disabling lock"));
 
         AcpiGbl_GlobalLockPresent = FALSE;
-        Status = AE_OK;
+        return_ACPI_STATUS (AE_OK);
     }
 
+    AcpiGbl_GlobalLockPresent = TRUE;
     return_ACPI_STATUS (Status);
 }
 
@@ -576,7 +567,7 @@ AcpiEvAcquireGlobalLock (
 
     /* Attempt to acquire the actual hardware lock */
 
-    ACPI_ACQUIRE_GLOBAL_LOCK (Facs, Acquired);
+    ACPI_ACQUIRE_GLOBAL_LOCK (AcpiGbl_FACS, Acquired);
     if (Acquired)
     {
        /* We got the lock */
@@ -640,7 +631,7 @@ AcpiEvReleaseGlobalLock (
     {
         /* Allow any thread to release the lock */
 
-        ACPI_RELEASE_GLOBAL_LOCK (Facs, Pending);
+        ACPI_RELEASE_GLOBAL_LOCK (AcpiGbl_FACS, Pending);
 
         /*
          * If the pending bit was set, we must write GBL_RLS to the control

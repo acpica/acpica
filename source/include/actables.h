@@ -208,6 +208,10 @@ AcpiTbSetTableLoadedFlag (
 /*
  * tbutils - table manager utilities
  */
+ACPI_STATUS
+AcpiTbInitializeFacs (
+    void);
+
 BOOLEAN
 AcpiTbTablesLoaded (
     void);

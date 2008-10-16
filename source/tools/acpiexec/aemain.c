@@ -264,7 +264,6 @@ main (
     /* Init ACPI and start debugger thread */
 
     AcpiInitializeSubsystem ();
-    AcpiGbl_GlobalLockPresent = TRUE;
 
     /* Get the command line options */
 
