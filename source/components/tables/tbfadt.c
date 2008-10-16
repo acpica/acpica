@@ -386,16 +386,33 @@ AcpiTbConvertFadt (
 
     AcpiGbl_FADT.Header.Length = sizeof (ACPI_TABLE_FADT);
 
-    /* Expand the 32-bit FACS and DSDT addresses to 64-bit as necessary */
-
+    /*
+     * Expand the 32-bit FACS and DSDT addresses to 64-bit as necessary.
+     * Later code will always use the X 64-bit field. Also, check for an
+     * address mismatch between the 32-bit and 64-bit address fields
+     * (FIRMWARE_CTRL/X_FIRMWARE_CTRL, DSDT/X_DSDT) which would indicate
+     * the presence of two FACS or two DSDT tables.
+     */
     if (!AcpiGbl_FADT.XFacs)
     {
         AcpiGbl_FADT.XFacs = (UINT64) AcpiGbl_FADT.Facs;
+    }
+    else if (AcpiGbl_FADT.Facs &&
+            (AcpiGbl_FADT.XFacs != (UINT64) AcpiGbl_FADT.Facs))
+    {
+        ACPI_WARNING ((AE_INFO,
+            "32/64 FACS address mismatch in FADT - two FACS tables!"));
     }
 
     if (!AcpiGbl_FADT.XDsdt)
     {
         AcpiGbl_FADT.XDsdt = (UINT64) AcpiGbl_FADT.Dsdt;
+    }
+    else if (AcpiGbl_FADT.Dsdt &&
+            (AcpiGbl_FADT.XDsdt != (UINT64) AcpiGbl_FADT.Dsdt))
+    {
+        ACPI_WARNING ((AE_INFO,
+            "32/64 DSDT address mismatch in FADT - two DSDT tables!"));
     }
 
     /*
