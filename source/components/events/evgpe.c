@@ -214,7 +214,7 @@ AcpiEvUpdateGpeEnableMasks (
     RegisterBit = (UINT8)
         (1 << (GpeEventInfo->GpeNumber - GpeRegisterInfo->BaseGpeNumber));
 
-    /* 1) Disable case.  Simply clear all enable bits */
+    /* 1) Disable case. Simply clear all enable bits */
 
     if (Type == ACPI_GPE_DISABLE)
     {
@@ -223,7 +223,7 @@ AcpiEvUpdateGpeEnableMasks (
         return_ACPI_STATUS (AE_OK);
     }
 
-    /* 2) Enable case.  Set/Clear the appropriate enable bits */
+    /* 2) Enable case. Set/Clear the appropriate enable bits */
 
     switch (GpeEventInfo->Flags & ACPI_GPE_TYPE_MASK)
     {
@@ -405,10 +405,10 @@ AcpiEvDisableGpe (
  *
  * FUNCTION:    AcpiEvGetGpeEventInfo
  *
- * PARAMETERS:  GpeDevice           - Device node.  NULL for GPE0/GPE1
+ * PARAMETERS:  GpeDevice           - Device node. NULL for GPE0/GPE1
  *              GpeNumber           - Raw GPE number
  *
- * RETURN:      A GPE EventInfo struct.  NULL if not a valid GPE
+ * RETURN:      A GPE EventInfo struct. NULL if not a valid GPE
  *
  * DESCRIPTION: Returns the EventInfo struct associated with this GPE.
  *              Validates the GpeBlock and the GpeNumber
@@ -487,7 +487,7 @@ AcpiEvGetGpeEventInfo (
  *
  * RETURN:      INTERRUPT_HANDLED or INTERRUPT_NOT_HANDLED
  *
- * DESCRIPTION: Detect if any GP events have occurred.  This function is
+ * DESCRIPTION: Detect if any GP events have occurred. This function is
  *              executed at interrupt level.
  *
  ******************************************************************************/
@@ -519,8 +519,8 @@ AcpiEvGpeDetect (
 
     /*
      * We need to obtain the GPE lock for both the data structs and registers
-     * Note: Not necessary to obtain the hardware lock, since the GPE registers
-     * are owned by the GpeLock.
+     * Note: Not necessary to obtain the hardware lock, since the GPE
+     * registers are owned by the GpeLock.
      */
     Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
 
@@ -530,9 +530,8 @@ AcpiEvGpeDetect (
     while (GpeBlock)
     {
         /*
-         * Read all of the 8-bit GPE status and enable registers
-         * in this GPE block, saving all of them.
-         * Find all currently active GP events.
+         * Read all of the 8-bit GPE status and enable registers in this GPE
+         * block, saving all of them. Find all currently active GP events.
          */
         for (i = 0; i < GpeBlock->RegisterCount; i++)
         {
@@ -659,8 +658,8 @@ AcpiEvAsynchExecuteGpeMethod (
     (void) AcpiEvEnableGpe (GpeEventInfo, FALSE);
 
     /*
-     * Take a snapshot of the GPE info for this level - we copy the
-     * info to prevent a race condition with RemoveHandler/RemoveBlock.
+     * Take a snapshot of the GPE info for this level - we copy the info to
+     * prevent a race condition with RemoveHandler/RemoveBlock.
      */
     ACPI_MEMCPY (LocalGpeEventInfo, GpeEventInfo,
         sizeof (ACPI_GPE_EVENT_INFO));
@@ -672,8 +671,8 @@ AcpiEvAsynchExecuteGpeMethod (
     }
 
     /*
-     * Must check for control method type dispatch one more
-     * time to avoid race with EvGpeInstallHandler
+     * Must check for control method type dispatch one more time to avoid a
+     * race with EvGpeInstallHandler
      */
     if ((LocalGpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
             ACPI_GPE_DISPATCH_METHOD)
@@ -743,8 +742,8 @@ AcpiEvAsynchEnableGpe (
             ACPI_GPE_LEVEL_TRIGGERED)
     {
         /*
-         * GPE is level-triggered, we clear the GPE status bit after
-         * handling the event.
+         * GPE is level-triggered, we clear the GPE status bit after handling
+         * the event.
          */
         Status = AcpiHwClearGpe (GpeEventInfo);
         if (ACPI_FAILURE (Status))
@@ -793,7 +792,7 @@ AcpiEvGpeDispatch (
     AcpiGpeCount++;
 
     /*
-     * If edge-triggered, clear the GPE status bit now.  Note that
+     * If edge-triggered, clear the GPE status bit now. Note that
      * level-triggered events are cleared after the GPE is serviced.
      */
     if ((GpeEventInfo->Flags & ACPI_GPE_XRUPT_TYPE_MASK) ==
@@ -821,7 +820,8 @@ AcpiEvGpeDispatch (
 
         /*
          * Invoke the installed handler (at interrupt level)
-         * Ignore return status for now.  TBD: leave GPE disabled on error?
+         * Ignore return status for now.
+         * TBD: leave GPE disabled on error?
          */
         (void) GpeEventInfo->Dispatch.Handler->Address (
                         GpeEventInfo->Dispatch.Handler->Context);
@@ -878,7 +878,7 @@ AcpiEvGpeDispatch (
             GpeNumber));
 
         /*
-         * Disable the GPE. The GPE will remain disabled until the ACPI
+         * Disable the GPE. The GPE will remain disabled until the ACPICA
          * Core Subsystem is restarted, or a handler is installed.
          */
         Status = AcpiEvDisableGpe (GpeEventInfo);

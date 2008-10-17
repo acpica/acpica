@@ -203,10 +203,8 @@ AcpiEvGpeXruptHandler (
      * if this interrupt handler is installed, ACPI is enabled.
      */
 
-    /*
-     * GPEs:
-     * Check for and dispatch any GPEs that have occurred
-     */
+    /* GPEs: Check for and dispatch any GPEs that have occurred */
+
     InterruptHandled |= AcpiEvGpeDetect (GpeXruptList);
 
     return_UINT32 (InterruptHandled);
@@ -250,11 +248,11 @@ AcpiEvInstallSciHandler (
  * RETURN:      E_OK if handler uninstalled OK, E_ERROR if handler was not
  *              installed to begin with
  *
- * DESCRIPTION: Remove the SCI interrupt handler.  No further SCIs will be
+ * DESCRIPTION: Remove the SCI interrupt handler. No further SCIs will be
  *              taken.
  *
  * Note:  It doesn't seem important to disable all events or set the event
- *        enable registers to their original values.  The OS should disable
+ *        enable registers to their original values. The OS should disable
  *        the SCI interrupt level when the handler is removed, so no more
  *        events will come in.
  *

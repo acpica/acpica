@@ -334,9 +334,9 @@ AcpiEvPciConfigRegionSetup (
                     if (Status == AE_SAME_HANDLER)
                     {
                         /*
-                         * It is OK if the handler is already installed on the root
-                         * bridge.  Still need to return a context object for the
-                         * new PCI_Config operation region, however.
+                         * It is OK if the handler is already installed on the
+                         * root bridge. Still need to return a context object
+                         * for the new PCI_Config operation region, however.
                          */
                         Status = AE_OK;
                     }
@@ -378,8 +378,8 @@ AcpiEvPciConfigRegionSetup (
     }
 
     /*
-     * For PCI_Config space access, we need the segment, bus,
-     * device and function numbers.  Acquire them here.
+     * For PCI_Config space access, we need the segment, bus, device and
+     * function numbers. Acquire them here.
      *
      * Find the parent device object. (This allows the operation region to be
      * within a subscope under the device, such as a control method.)
@@ -397,14 +397,14 @@ AcpiEvPciConfigRegionSetup (
     }
 
     /*
-     * Get the PCI device and function numbers from the _ADR object
-     * contained in the parent's scope.
+     * Get the PCI device and function numbers from the _ADR object contained
+     * in the parent's scope.
      */
     Status = AcpiUtEvaluateNumericObject (METHOD_NAME__ADR, PciDeviceNode, &PciValue);
 
     /*
-     * The default is zero, and since the allocation above zeroed
-     * the data, just do nothing on failure.
+     * The default is zero, and since the allocation above zeroed the data,
+     * just do nothing on failure.
      */
     if (ACPI_SUCCESS (Status))
     {
@@ -496,9 +496,8 @@ AcpiEvIsPciRootBridge (
     UINT32                  i;
 
 
-    /*
-     * Get the _HID and check for a PCI Root Bridge
-     */
+    /* Get the _HID and check for a PCI Root Bridge */
+
     Status = AcpiUtExecute_HID (Node, &Hid);
     if (ACPI_FAILURE (Status))
     {
@@ -510,10 +509,8 @@ AcpiEvIsPciRootBridge (
         return (TRUE);
     }
 
-    /*
-     * The _HID did not match.
-     * Get the _CID and check for a PCI Root Bridge
-     */
+    /* The _HID did not match. Get the _CID and check for a PCI Root Bridge */
+
     Status = AcpiUtExecute_CID (Node, &Cid);
     if (ACPI_FAILURE (Status))
     {
@@ -651,9 +648,9 @@ AcpiEvDefaultRegionSetup (
  *              Get the appropriate address space handler for a newly
  *              created region.
  *
- *              This also performs address space specific initialization.  For
+ *              This also performs address space specific initialization. For
  *              example, PCI regions must have an _ADR object that contains
- *              a PCI address in the scope of the definition.  This address is
+ *              a PCI address in the scope of the definition. This address is
  *              required to perform an access to PCI config space.
  *
  * MUTEX:       Interpreter should be unlocked, because we may run the _REG
@@ -713,7 +710,7 @@ AcpiEvInitializeRegion (
     {
         /*
          * The _REG method is optional and there can be only one per region
-         * definition.  This will be executed when the handler is attached
+         * definition. This will be executed when the handler is attached
          * or removed
          */
         RegionObj2->Extra.Method_REG = MethodNode;
@@ -803,10 +800,8 @@ AcpiEvInitializeRegion (
             }
         }
 
-        /*
-         * This node does not have the handler we need;
-         * Pop up one level
-         */
+        /* This node does not have the handler we need; Pop up one level */
+
         Node = AcpiNsGetParentNode (Node);
     }
 

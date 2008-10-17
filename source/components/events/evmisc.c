@@ -237,7 +237,9 @@ AcpiEvQueueNotifyRequest (
             break;
 
         default:
+
             /* All other types are not supported */
+
             return (AE_TYPE);
         }
     }
@@ -280,9 +282,8 @@ AcpiEvQueueNotifyRequest (
     }
     else
     {
-        /*
-         * There is no notify handler (per-device or system) for this device.
-         */
+        /* There is no notify handler (per-device or system) for this device */
+
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
             "No notify handler for Notify (%4.4s, %X) node %p\n",
             AcpiUtGetNodeName (Node), NotifyValue, Node));
@@ -319,9 +320,8 @@ AcpiEvNotifyDispatch (
 
 
     /*
-     * We will invoke a global notify handler if installed.
-     * This is done _before_ we invoke the per-device handler attached
-     * to the device.
+     * We will invoke a global notify handler if installed. This is done
+     * _before_ we invoke the per-device handler attached to the device.
      */
     if (NotifyInfo->Notify.Value <= ACPI_MAX_SYS_NOTIFY)
     {
@@ -448,11 +448,10 @@ AcpiEvInitGlobalLockHandler (
                 AcpiEvGlobalLockHandler, NULL);
 
     /*
-     * If the global lock does not exist on this platform, the attempt
-     * to enable GBL_STATUS will fail (the GBL_ENABLE bit will not stick)
-     * Map to AE_OK, but mark global lock as not present.
-     * Any attempt to actually use the global lock will be flagged
-     * with an error.
+     * If the global lock does not exist on this platform, the attempt to
+     * enable GBL_STATUS will fail (the GBL_ENABLE bit will not stick).
+     * Map to AE_OK, but mark global lock as not present. Any attempt to
+     * actually use the global lock will be flagged with an error.
      */
     if (Status == AE_NO_HARDWARE_RESPONSE)
     {
@@ -556,8 +555,8 @@ AcpiEvAcquireGlobalLock (
     }
 
     /*
-     * Make sure that a global lock actually exists. If not, just treat
-     * the lock as a standard mutex.
+     * Make sure that a global lock actually exists. If not, just treat the
+     * lock as a standard mutex.
      */
     if (!AcpiGbl_GlobalLockPresent)
     {
@@ -681,8 +680,8 @@ AcpiEvTerminate (
     if (AcpiGbl_EventsInitialized)
     {
         /*
-         * Disable all event-related functionality.
-         * In all cases, on error, print a message but obviously we don't abort.
+         * Disable all event-related functionality. In all cases, on error,
+         * print a message but obviously we don't abort.
          */
 
         /* Disable all fixed events */

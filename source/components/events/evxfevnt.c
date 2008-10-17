@@ -263,8 +263,8 @@ AcpiEnableEvent (
     }
 
     /*
-     * Enable the requested fixed event (by writing a one to the
-     * enable register bit)
+     * Enable the requested fixed event (by writing a one to the enable
+     * register bit)
      */
     Status = AcpiSetRegister (AcpiGbl_FixedEventInfo[Event].EnableRegisterId, 1);
     if (ACPI_FAILURE (Status))
@@ -503,8 +503,8 @@ AcpiDisableEvent (
     }
 
     /*
-     * Disable the requested fixed event (by writing a zero to the
-     * enable register bit)
+     * Disable the requested fixed event (by writing a zero to the enable
+     * register bit)
      */
     Status = AcpiSetRegister (AcpiGbl_FixedEventInfo[Event].EnableRegisterId, 0);
     if (ACPI_FAILURE (Status))
@@ -562,8 +562,8 @@ AcpiClearEvent (
     }
 
     /*
-     * Clear the requested fixed event (By writing a one to the
-     * status register bit)
+     * Clear the requested fixed event (By writing a one to the status
+     * register bit)
      */
     Status = AcpiSetRegister (AcpiGbl_FixedEventInfo[Event].StatusRegisterId, 1);
 

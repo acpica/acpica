@@ -410,17 +410,17 @@ AcpiEvSaveMethodInfo (
         (GpeNumber >= (GpeBlock->BlockBaseNumber + (GpeBlock->RegisterCount * 8))))
     {
         /*
-         * Not valid for this GPE block, just ignore it
-         * However, it may be valid for a different GPE block, since GPE0 and GPE1
-         * methods both appear under \_GPE.
+         * Not valid for this GPE block, just ignore it. However, it may be
+         * valid for a different GPE block, since GPE0 and GPE1 methods both
+         * appear under \_GPE.
          */
         return_ACPI_STATUS (AE_OK);
     }
 
     /*
-     * Now we can add this information to the GpeEventInfo block
-     * for use during dispatch of this GPE. Default type is RUNTIME, although
-     * this may change when the _PRW methods are executed later.
+     * Now we can add this information to the GpeEventInfo block for use
+     * during dispatch of this GPE. Default type is RUNTIME, although this may
+     * change when the _PRW methods are executed later.
      */
     GpeEventInfo = &GpeBlock->EventInfo[GpeNumber - GpeBlock->BlockBaseNumber];
 
@@ -500,8 +500,8 @@ AcpiEvMatchPrwAndGpe (
     GpeBlock = GpeInfo->GpeBlock;
 
     /*
-     * The _PRW object must return a package, we are only interested
-     * in the first element
+     * The _PRW object must return a package, we are only interested in the
+     * first element
      */
     ObjDesc = PkgDesc->Package.Elements[0];
 
@@ -541,7 +541,7 @@ AcpiEvMatchPrwAndGpe (
     /*
      * Is this GPE within this block?
      *
-     * TRUE iff these conditions are true:
+     * TRUE if and only if these conditions are true:
      *     1) The GPE devices match.
      *     2) The GPE index(number) is within the range of the Gpe Block
      *          associated with the GPE device.
@@ -561,6 +561,7 @@ AcpiEvMatchPrwAndGpe (
         {
             goto Cleanup;
         }
+
         Status = AcpiEvUpdateGpeEnableMasks (GpeEventInfo, ACPI_GPE_DISABLE);
     }
 
@@ -579,9 +580,9 @@ Cleanup:
  * RETURN:      A GPE interrupt block
  *
  * DESCRIPTION: Get or Create a GPE interrupt block. There is one interrupt
- *              block per unique interrupt level used for GPEs.
- *              Should be called only when the GPE lists are semaphore locked
- *              and not subject to change.
+ *              block per unique interrupt level used for GPEs. Should be
+ *              called only when the GPE lists are semaphore locked and not
+ *              subject to change.
  *
  ******************************************************************************/
 
@@ -732,8 +733,9 @@ AcpiEvDeleteGpeXrupt (
  *
  * FUNCTION:    AcpiEvInstallGpeBlock
  *
- * PARAMETERS:  GpeBlock        - New GPE block
- *              InterruptNumber - Xrupt to be associated with this GPE block
+ * PARAMETERS:  GpeBlock                - New GPE block
+ *              InterruptNumber         - Xrupt to be associated with this
+ *                                        GPE block
  *
  * RETURN:      Status
  *
@@ -801,7 +803,7 @@ UnlockAndExit:
  *
  * FUNCTION:    AcpiEvDeleteGpeBlock
  *
- * PARAMETERS:  GpeBlock        - Existing GPE block
+ * PARAMETERS:  GpeBlock            - Existing GPE block
  *
  * RETURN:      Status
  *
@@ -936,9 +938,9 @@ AcpiEvCreateGpeInfoBlocks (
 
     /*
      * Initialize the GPE Register and Event structures. A goal of these
-     * tables is to hide the fact that there are two separate GPE register sets
-     * in a given GPE hardware block, the status registers occupy the first half,
-     * and the enable registers occupy the second half.
+     * tables is to hide the fact that there are two separate GPE register
+     * sets in a given GPE hardware block, the status registers occupy the
+     * first half, and the enable registers occupy the second half.
      */
     ThisRegister = GpeRegisterInfo;
     ThisEvent    = GpeEventInfo;
