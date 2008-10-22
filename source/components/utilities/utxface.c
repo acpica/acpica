@@ -117,6 +117,7 @@
 #define __UTXFACE_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acevents.h"
 #include "acnamesp.h"
 #include "acdebug.h"
@@ -706,4 +707,5 @@ AcpiPurgeCachedObjects (
 
 ACPI_EXPORT_SYMBOL (AcpiPurgeCachedObjects)
 
-#endif
+#endif /* ACPI_ASL_COMPILER */
+

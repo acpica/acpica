@@ -115,6 +115,7 @@
 
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acparser.h"
 
 #define _COMPONENT          ACPI_PARSER

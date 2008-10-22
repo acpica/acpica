@@ -118,6 +118,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "acpi.h"
+#include "accommon.h"
 #include "amlcode.h"
 #include "acparser.h"
 #include "actables.h"

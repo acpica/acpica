@@ -118,6 +118,7 @@
 #define __NSOBJECT_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acnamesp.h"
 
 

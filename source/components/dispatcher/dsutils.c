@@ -116,6 +116,7 @@
 #define __DSUTILS_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acparser.h"
 #include "amlcode.h"
 #include "acdispat.h"

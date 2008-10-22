@@ -117,6 +117,7 @@
 #define __UTMISC_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acnamesp.h"
 
 
@@ -1256,7 +1257,7 @@ AcpiUtWalkPackageTree (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtError, AcpiUtWarning, AcpiUtInfo
+ * FUNCTION:    AcpiError, AcpiException, AcpiWarning, AcpiInfo
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -1269,7 +1270,7 @@ AcpiUtWalkPackageTree (
  ******************************************************************************/
 
 void  ACPI_INTERNAL_VAR_XFACE
-AcpiUtError (
+AcpiError (
     const char              *ModuleName,
     UINT32                  LineNumber,
     const char              *Format,
@@ -1287,7 +1288,7 @@ AcpiUtError (
 }
 
 void  ACPI_INTERNAL_VAR_XFACE
-AcpiUtException (
+AcpiException (
     const char              *ModuleName,
     UINT32                  LineNumber,
     ACPI_STATUS             Status,
@@ -1307,7 +1308,7 @@ AcpiUtException (
 }
 
 void  ACPI_INTERNAL_VAR_XFACE
-AcpiUtWarning (
+AcpiWarning (
     const char              *ModuleName,
     UINT32                  LineNumber,
     const char              *Format,
@@ -1325,7 +1326,7 @@ AcpiUtWarning (
 }
 
 void  ACPI_INTERNAL_VAR_XFACE
-AcpiUtInfo (
+AcpiInfo (
     const char              *ModuleName,
     UINT32                  LineNumber,
     const char              *Format,
@@ -1345,4 +1346,10 @@ AcpiUtInfo (
     AcpiOsPrintf ("\n");
     va_end (args);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiError)
+ACPI_EXPORT_SYMBOL (AcpiException)
+ACPI_EXPORT_SYMBOL (AcpiWarning)
+ACPI_EXPORT_SYMBOL (AcpiInfo)
+
 

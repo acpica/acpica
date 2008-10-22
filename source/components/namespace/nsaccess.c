@@ -116,6 +116,7 @@
 #define __NSACCESS_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "amlcode.h"
 #include "acnamesp.h"
 #include "acdispat.h"

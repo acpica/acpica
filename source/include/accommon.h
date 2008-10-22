@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: acconfig.h - Global configuration constants
+ * Name: accommon.h - Common include files for generation of ACPICA source
  *
  *****************************************************************************/
 
@@ -113,170 +113,24 @@
  *
  *****************************************************************************/
 
-#ifndef _ACCONFIG_H
-#define _ACCONFIG_H
-
-
-/******************************************************************************
- *
- * Configuration options
- *
- *****************************************************************************/
+#ifndef __ACCOMMON_H__
+#define __ACCOMMON_H__
 
 /*
- * ACPI_DEBUG_OUTPUT    - This switch enables all the debug facilities of the
- *                        ACPI subsystem.  This includes the DEBUG_PRINT output
- *                        statements.  When disabled, all DEBUG_PRINT
- *                        statements are compiled out.
+ * Common set of includes for all ACPICA source files.
+ * We put them here because we don't want to duplicate them
+ * in the the source code again and again.
  *
- * ACPI_APPLICATION     - Use this switch if the subsystem is going to be run
- *                        at the application level.
- *
+ * Note: The order of these include files is important.
  */
-
-/* Current ACPICA subsystem version in YYYYMMDD format */
-
-#define ACPI_CA_VERSION                 0x20080926
-
-/*
- * OS name, used for the _OS object.  The _OS object is essentially obsolete,
- * but there is a large base of ASL/AML code in existing machines that check
- * for the string below.  The use of this string usually guarantees that
- * the ASL will execute down the most tested code path.  Also, there is some
- * code that will not execute the _OSI method unless _OS matches the string
- * below.  Therefore, change this string at your own risk.
- */
-#define ACPI_OS_NAME                    "Microsoft Windows NT"
-
-/* Maximum objects in the various object caches */
-
-#define ACPI_MAX_STATE_CACHE_DEPTH      96          /* State objects */
-#define ACPI_MAX_PARSE_CACHE_DEPTH      96          /* Parse tree objects */
-#define ACPI_MAX_EXTPARSE_CACHE_DEPTH   96          /* Parse tree objects */
-#define ACPI_MAX_OBJECT_CACHE_DEPTH     96          /* Interpreter operand objects */
-#define ACPI_MAX_NAMESPACE_CACHE_DEPTH  96          /* Namespace objects */
-
-/*
- * Should the subsystem abort the loading of an ACPI table if the
- * table checksum is incorrect?
- */
-#define ACPI_CHECKSUM_ABORT             FALSE
+#include "acconfig.h"           /* Global configuration constants */
+#include "acmacros.h"           /* C macros */
+#include "aclocal.h"            /* Internal data types */
+#include "acobject.h"           /* ACPI internal object */
+#include "acstruct.h"           /* Common structures */
+#include "acglobal.h"           /* All global variables */
+#include "achware.h"            /* Hardware defines and interfaces */
+#include "acutils.h"            /* Utility interfaces */
 
 
-/******************************************************************************
- *
- * Subsystem Constants
- *
- *****************************************************************************/
-
-/* Version of ACPI supported */
-
-#define ACPI_CA_SUPPORT_LEVEL           3
-
-/* Maximum count for a semaphore object */
-
-#define ACPI_MAX_SEMAPHORE_COUNT        256
-
-/* Maximum object reference count (detects object deletion issues) */
-
-#define ACPI_MAX_REFERENCE_COUNT        0x800
-
-/* Size of cached memory mapping for system memory operation region */
-
-#define ACPI_SYSMEM_REGION_WINDOW_SIZE  4096
-
-/* OwnerId tracking. 8 entries allows for 255 OwnerIds */
-
-#define ACPI_NUM_OWNERID_MASKS          8
-
-/* Size of the root table array is increased by this increment */
-
-#define ACPI_ROOT_TABLE_SIZE_INCREMENT  4
-
-/* Maximum number of While() loop iterations before forced abort */
-
-#define ACPI_MAX_LOOP_ITERATIONS        0xFFFF
-
-
-/******************************************************************************
- *
- * ACPI Specification constants (Do not change unless the specification changes)
- *
- *****************************************************************************/
-
-/* Number of distinct GPE register blocks and register width */
-
-#define ACPI_MAX_GPE_BLOCKS             2
-#define ACPI_GPE_REGISTER_WIDTH         8
-
-/* Method info (in WALK_STATE), containing local variables and argumetns */
-
-#define ACPI_METHOD_NUM_LOCALS          8
-#define ACPI_METHOD_MAX_LOCAL           7
-
-#define ACPI_METHOD_NUM_ARGS            7
-#define ACPI_METHOD_MAX_ARG             6
-
-/*
- * Operand Stack (in WALK_STATE), Must be large enough to contain METHOD_MAX_ARG
- */
-#define ACPI_OBJ_NUM_OPERANDS           8
-#define ACPI_OBJ_MAX_OPERAND            7
-
-/* Number of elements in the Result Stack frame, can be an arbitrary value */
-
-#define ACPI_RESULTS_FRAME_OBJ_NUM      8
-
-/*
- * Maximal number of elements the Result Stack can contain,
- * it may be an arbitray value not exceeding the types of
- * ResultSize and ResultCount (now UINT8).
- */
-#define ACPI_RESULTS_OBJ_NUM_MAX        255
-
-/* Constants used in searching for the RSDP in low memory */
-
-#define ACPI_EBDA_PTR_LOCATION          0x0000040E     /* Physical Address */
-#define ACPI_EBDA_PTR_LENGTH            2
-#define ACPI_EBDA_WINDOW_SIZE           1024
-#define ACPI_HI_RSDP_WINDOW_BASE        0x000E0000     /* Physical Address */
-#define ACPI_HI_RSDP_WINDOW_SIZE        0x00020000
-#define ACPI_RSDP_SCAN_STEP             16
-
-/* Operation regions */
-
-#define ACPI_NUM_PREDEFINED_REGIONS     8
-#define ACPI_USER_REGION_BEGIN          0x80
-
-/* Maximum SpaceIds for Operation Regions */
-
-#define ACPI_MAX_ADDRESS_SPACE          255
-
-/* Array sizes.  Used for range checking also */
-
-#define ACPI_MAX_MATCH_OPCODE           5
-
-/* RSDP checksums */
-
-#define ACPI_RSDP_CHECKSUM_LENGTH       20
-#define ACPI_RSDP_XCHECKSUM_LENGTH      36
-
-/* SMBus bidirectional buffer size */
-
-#define ACPI_SMBUS_BUFFER_SIZE          34
-
-
-/******************************************************************************
- *
- * ACPI AML Debugger
- *
- *****************************************************************************/
-
-#define ACPI_DEBUGGER_MAX_ARGS          8  /* Must be max method args + 1 */
-
-#define ACPI_DEBUGGER_COMMAND_PROMPT    '-'
-#define ACPI_DEBUGGER_EXECUTE_PROMPT    '%'
-
-
-#endif /* _ACCONFIG_H */
-
+#endif /* __ACCOMMON_H__ */

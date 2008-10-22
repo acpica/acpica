@@ -117,6 +117,7 @@
 #define DEFINE_ACPI_GLOBALS
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acnamesp.h"
 
 ACPI_EXPORT_SYMBOL (AcpiGbl_FADT)

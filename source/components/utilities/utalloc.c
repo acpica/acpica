@@ -116,6 +116,7 @@
 #define __UTALLOC_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acdebug.h"
 
 #define _COMPONENT          ACPI_UTILITIES

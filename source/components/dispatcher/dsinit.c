@@ -116,6 +116,7 @@
 #define __DSINIT_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acdispat.h"
 #include "acnamesp.h"
 #include "actables.h"

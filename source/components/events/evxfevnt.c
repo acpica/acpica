@@ -117,6 +117,7 @@
 #define __EVXFEVNT_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acevents.h"
 #include "acnamesp.h"
 #include "actables.h"

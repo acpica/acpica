@@ -117,6 +117,7 @@
 #define __NSXFNAME_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acnamesp.h"
 
 

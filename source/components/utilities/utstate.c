@@ -117,6 +117,7 @@
 #define __UTSTATE_C__
 
 #include "acpi.h"
+#include "accommon.h"
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utstate")

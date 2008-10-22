@@ -127,6 +127,7 @@
 #define __UTTRACK_C__
 
 #include "acpi.h"
+#include "accommon.h"
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
 

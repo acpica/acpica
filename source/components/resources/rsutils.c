@@ -117,6 +117,7 @@
 #define __RSUTILS_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acnamesp.h"
 #include "acresrc.h"
 

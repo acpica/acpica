@@ -506,58 +506,6 @@ AcpiUtReportWarning (
     char                    *ModuleName,
     UINT32                  LineNumber);
 
-/* Error and message reporting interfaces */
-
-void ACPI_INTERNAL_VAR_XFACE
-AcpiUtDebugPrint (
-    UINT32                  RequestedDebugLevel,
-    UINT32                  LineNumber,
-    const char              *FunctionName,
-    const char              *ModuleName,
-    UINT32                  ComponentId,
-    const char              *Format,
-    ...) ACPI_PRINTF_LIKE(6);
-
-void ACPI_INTERNAL_VAR_XFACE
-AcpiUtDebugPrintRaw (
-    UINT32                  RequestedDebugLevel,
-    UINT32                  LineNumber,
-    const char              *FunctionName,
-    const char              *ModuleName,
-    UINT32                  ComponentId,
-    const char              *Format,
-    ...) ACPI_PRINTF_LIKE(6);
-
-void ACPI_INTERNAL_VAR_XFACE
-AcpiUtError (
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    const char              *Format,
-    ...) ACPI_PRINTF_LIKE(3);
-
-void  ACPI_INTERNAL_VAR_XFACE
-AcpiUtException (
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    ACPI_STATUS             Status,
-    const char              *Format,
-    ...) ACPI_PRINTF_LIKE(4);
-
-void ACPI_INTERNAL_VAR_XFACE
-AcpiUtWarning (
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    const char              *Format,
-    ...) ACPI_PRINTF_LIKE(3);
-
-void ACPI_INTERNAL_VAR_XFACE
-AcpiUtInfo (
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    const char              *Format,
-    ...) ACPI_PRINTF_LIKE(3);
-
-
 /*
  * utdelete - Object deletion and reference counts
  */

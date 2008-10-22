@@ -565,4 +565,60 @@ AcpiLeaveSleepState (
     UINT8                   SleepState);
 
 
+/*
+ * Debug output
+ */
+void ACPI_INTERNAL_VAR_XFACE
+AcpiError (
+    const char              *ModuleName,
+    UINT32                  LineNumber,
+    const char              *Format,
+    ...) ACPI_PRINTF_LIKE(3);
+
+void  ACPI_INTERNAL_VAR_XFACE
+AcpiException (
+    const char              *ModuleName,
+    UINT32                  LineNumber,
+    ACPI_STATUS             Status,
+    const char              *Format,
+    ...) ACPI_PRINTF_LIKE(4);
+
+void ACPI_INTERNAL_VAR_XFACE
+AcpiWarning (
+    const char              *ModuleName,
+    UINT32                  LineNumber,
+    const char              *Format,
+    ...) ACPI_PRINTF_LIKE(3);
+
+void ACPI_INTERNAL_VAR_XFACE
+AcpiInfo (
+    const char              *ModuleName,
+    UINT32                  LineNumber,
+    const char              *Format,
+    ...) ACPI_PRINTF_LIKE(3);
+
+
+#ifdef ACPI_DEBUG_OUTPUT
+
+void ACPI_INTERNAL_VAR_XFACE
+AcpiDebugPrint (
+    UINT32                  RequestedDebugLevel,
+    UINT32                  LineNumber,
+    const char              *FunctionName,
+    const char              *ModuleName,
+    UINT32                  ComponentId,
+    const char              *Format,
+    ...) ACPI_PRINTF_LIKE(6);
+
+void ACPI_INTERNAL_VAR_XFACE
+AcpiDebugPrintRaw (
+    UINT32                  RequestedDebugLevel,
+    UINT32                  LineNumber,
+    const char              *FunctionName,
+    const char              *ModuleName,
+    UINT32                  ComponentId,
+    const char              *Format,
+    ...) ACPI_PRINTF_LIKE(6);
+#endif
+
 #endif /* __ACXFACE_H__ */

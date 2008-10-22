@@ -115,6 +115,7 @@
 
 
 #include "acpi.h"
+#include "accommon.h"
 #include "amlcode.h"
 #include "acdebug.h"
 #include "acdisasm.h"

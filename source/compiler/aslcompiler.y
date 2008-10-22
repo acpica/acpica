@@ -128,6 +128,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "acpi.h"
+#include "accommon.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslparse")

@@ -116,6 +116,7 @@
 #define __NSLOAD_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acnamesp.h"
 #include "acdispat.h"
 #include "actables.h"

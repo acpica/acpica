@@ -117,6 +117,7 @@
 #define __CMCLIB_C__
 
 #include "acpi.h"
+#include "accommon.h"
 
 /*
  * These implementations of standard C Library routines can optionally be

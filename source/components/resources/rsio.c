@@ -116,6 +116,7 @@
 #define __RSIO_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acresrc.h"
 
 #define _COMPONENT          ACPI_RESOURCES

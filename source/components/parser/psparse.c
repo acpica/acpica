@@ -124,6 +124,7 @@
  */
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acparser.h"
 #include "acdispat.h"
 #include "amlcode.h"

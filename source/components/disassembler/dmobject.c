@@ -115,6 +115,7 @@
 
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acnamesp.h"
 #include "acdisasm.h"
 

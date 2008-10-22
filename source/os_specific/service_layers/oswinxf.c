@@ -138,6 +138,7 @@
 #include <time.h>
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acdebug.h"
 
 #define _COMPONENT          ACPI_OS_SERVICES

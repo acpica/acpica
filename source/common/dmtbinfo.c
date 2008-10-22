@@ -114,6 +114,7 @@
  *****************************************************************************/
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acdisasm.h"
 
 /* This module used for application-level code only */

@@ -116,6 +116,7 @@
 #define __TBXFROOT_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "actables.h"
 
 

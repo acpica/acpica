@@ -116,6 +116,7 @@
 #define __UTDELETE_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acinterp.h"
 #include "acnamesp.h"
 #include "acevents.h"

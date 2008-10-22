@@ -117,6 +117,7 @@
 #define __NSALLOC_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acnamesp.h"
 
 

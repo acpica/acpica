@@ -117,6 +117,7 @@
 #define __NSEVAL_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acparser.h"
 #include "acinterp.h"
 #include "acnamesp.h"

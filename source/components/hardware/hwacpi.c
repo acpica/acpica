@@ -117,6 +117,7 @@
 #define __HWACPI_C__
 
 #include "acpi.h"
+#include "accommon.h"
 
 
 #define _COMPONENT          ACPI_HARDWARE

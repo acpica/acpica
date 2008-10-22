@@ -116,6 +116,7 @@
 #ifndef __ACLOCAL_H__
 #define __ACLOCAL_H__
 
+
 /* acpisrc:StructDefs -- for acpisrc conversion */
 
 #define ACPI_WAIT_FOREVER               0xFFFF  /* UINT16, as per ACPI spec */
@@ -198,11 +199,6 @@ static char                 *AcpiGbl_MutexNames[ACPI_NUM_MUTEX] =
 #define ACPI_NUM_LOCK                   ACPI_MAX_LOCK+1
 
 
-/* Owner IDs are used to track namespace nodes for selective deletion */
-
-typedef UINT8                           ACPI_OWNER_ID;
-#define ACPI_OWNER_ID_MAX               0xFF
-
 /* This Thread ID means that the mutex is not in use (unlocked) */
 
 #define ACPI_MUTEX_NOT_ACQUIRED         (UINT32) -1
@@ -250,13 +246,6 @@ typedef enum
     ACPI_IMODE_EXECUTE              = 0x03
 
 } ACPI_INTERPRETER_MODE;
-
-typedef union acpi_name_union
-{
-    UINT32                          Integer;
-    char                            Ascii[4];
-
-} ACPI_NAME_UNION;
 
 
 /*
@@ -308,27 +297,6 @@ typedef struct acpi_namespace_node
 #define ANOBJ_IS_BIT_OFFSET             0x40    /* iASL only: Reference is a bit offset */
 #define ANOBJ_IS_REFERENCED             0x80    /* iASL only: Object was referenced */
 
-/*
- * ACPI Table Descriptor.  One per ACPI table
- */
-typedef struct acpi_table_desc
-{
-    ACPI_PHYSICAL_ADDRESS           Address;
-    ACPI_TABLE_HEADER               *Pointer;
-    UINT32                          Length;     /* Length fixed at 32 bits */
-    ACPI_NAME_UNION                 Signature;
-    ACPI_OWNER_ID                   OwnerId;
-    UINT8                           Flags;
-
-} ACPI_TABLE_DESC;
-
-/* Flags for above */
-
-#define ACPI_TABLE_ORIGIN_UNKNOWN       (0)
-#define ACPI_TABLE_ORIGIN_MAPPED        (1)
-#define ACPI_TABLE_ORIGIN_ALLOCATED     (2)
-#define ACPI_TABLE_ORIGIN_MASK          (3)
-#define ACPI_TABLE_IS_LOADED            (4)
 
 /* One internal RSDT for table management */
 
@@ -368,18 +336,6 @@ typedef struct acpi_ns_search_data
     ACPI_NAMESPACE_NODE             *Node;
 
 } ACPI_NS_SEARCH_DATA;
-
-
-/*
- * Predefined Namespace items
- */
-typedef struct acpi_predefined_names
-{
-    char                            *Name;
-    UINT8                           Type;
-    char                            *Val;
-
-} ACPI_PREDEFINED_NAMES;
 
 
 /* Object types used during package copies */
@@ -872,6 +828,13 @@ typedef union acpi_parse_value
 
 } ACPI_PARSE_VALUE;
 
+
+#ifdef ACPI_DISASSEMBLER
+#define ACPI_DISASM_ONLY_MEMBERS(a)     a;
+#else
+#define ACPI_DISASM_ONLY_MEMBERS(a)
+#endif
+
 #define ACPI_PARSE_COMMON \
     union acpi_parse_object         *Parent;        /* Parent op */\
     UINT8                           DescriptorType; /* To differentiate various internal objs */\
@@ -1260,31 +1223,6 @@ typedef struct acpi_debug_mem_block
 #define ACPI_MEM_LIST_NSNODE            1
 #define ACPI_MEM_LIST_MAX               1
 #define ACPI_NUM_MEM_LISTS              2
-
-
-typedef struct acpi_memory_list
-{
-    char                            *ListName;
-    void                            *ListHead;
-    UINT16                          ObjectSize;
-    UINT16                          MaxDepth;
-    UINT16                          CurrentDepth;
-    UINT16                          LinkOffset;
-
-#ifdef ACPI_DBG_TRACK_ALLOCATIONS
-
-    /* Statistics for debug memory tracking only */
-
-    UINT32                          TotalAllocated;
-    UINT32                          TotalFreed;
-    UINT32                          MaxOccupied;
-    UINT32                          TotalSize;
-    UINT32                          CurrentTotalSize;
-    UINT32                          Requests;
-    UINT32                          Hits;
-#endif
-
-} ACPI_MEMORY_LIST;
 
 
 #endif /* __ACLOCAL_H__ */

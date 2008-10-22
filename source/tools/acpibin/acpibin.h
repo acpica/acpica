@@ -125,6 +125,7 @@
 #include <errno.h>
 
 #include "acpi.h"
+#include "accommon.h"
 
 
 /* Constants */

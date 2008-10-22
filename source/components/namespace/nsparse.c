@@ -116,6 +116,7 @@
 #define __NSPARSE_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acnamesp.h"
 #include "acparser.h"
 #include "acdispat.h"

@@ -133,6 +133,7 @@
 #define DEFINE_AML_GLOBALS
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acinterp.h"
 #include "amlcode.h"
 

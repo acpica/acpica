@@ -133,6 +133,7 @@
 #include <errno.h>
 
 #include "acpi.h"
+#include "accommon.h"
 
 
 /* Fixups for non-Win32 compilation */

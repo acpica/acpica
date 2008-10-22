@@ -118,6 +118,7 @@
 #define __EXOPARG6_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acinterp.h"
 #include "acparser.h"
 #include "amlcode.h"

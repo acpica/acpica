@@ -117,6 +117,7 @@
 #define __EXSTORE_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acdispat.h"
 #include "acinterp.h"
 #include "amlcode.h"

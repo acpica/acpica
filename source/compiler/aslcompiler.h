@@ -139,6 +139,7 @@
 
 
 #include "acpi.h"
+#include "accommon.h"
 #include "amlresrc.h"
 #include "acdebug.h"
 

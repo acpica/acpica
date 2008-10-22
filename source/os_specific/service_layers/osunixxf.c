@@ -126,6 +126,7 @@
 #include <sys/time.h>
 
 #include "acpi.h"
+#include "accommon.h"
 #include "amlcode.h"
 #include "acparser.h"
 #include "acdebug.h"

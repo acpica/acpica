@@ -741,6 +741,7 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
+    {"#include \"acpi.h\"",   "#include \"acpi.h\"\n#include \"accommon.h\"",  REPLACE_SUBSTRINGS},
 
 #if 0
     {"(c) 1999 - 2008",      "(c) 1999 - 2008",         REPLACE_WHOLE_WORD},

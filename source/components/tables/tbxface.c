@@ -117,6 +117,7 @@
 #define __TBXFACE_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acnamesp.h"
 #include "actables.h"
 

@@ -382,6 +382,37 @@ enum AcpiPreferedPmProfiles
 
 #pragma pack()
 
+
+typedef union acpi_name_union
+{
+    UINT32                          Integer;
+    char                            Ascii[4];
+
+} ACPI_NAME_UNION;
+
+/*
+ * Internal ACPI Table Descriptor. One per ACPI table
+ */
+typedef struct acpi_table_desc
+{
+    ACPI_PHYSICAL_ADDRESS           Address;
+    ACPI_TABLE_HEADER               *Pointer;
+    UINT32                          Length;     /* Length fixed at 32 bits */
+    ACPI_NAME_UNION                 Signature;
+    ACPI_OWNER_ID                   OwnerId;
+    UINT8                           Flags;
+
+} ACPI_TABLE_DESC;
+
+/* Flags for above */
+
+#define ACPI_TABLE_ORIGIN_UNKNOWN       (0)
+#define ACPI_TABLE_ORIGIN_MAPPED        (1)
+#define ACPI_TABLE_ORIGIN_ALLOCATED     (2)
+#define ACPI_TABLE_ORIGIN_MASK          (3)
+#define ACPI_TABLE_IS_LOADED            (4)
+
+
 /*
  * Get the remaining ACPI tables
  */

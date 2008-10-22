@@ -115,6 +115,7 @@
 
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acdebug.h"
 
 #ifdef ACPI_DEBUGGER

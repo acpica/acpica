@@ -117,6 +117,7 @@
 #define __EXMUTEX_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acinterp.h"
 #include "acevents.h"
 

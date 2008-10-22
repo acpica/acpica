@@ -117,6 +117,7 @@
 #define __EXRESOP_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "amlcode.h"
 #include "acparser.h"
 #include "acinterp.h"

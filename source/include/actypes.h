@@ -312,7 +312,7 @@ typedef UINT32                          ACPI_PHYSICAL_ADDRESS;
 /* Object returned from AcpiOsCreateCache */
 
 #ifndef ACPI_CACHE_T
-#define ACPI_CACHE_T                    ACPI_MEMORY_LIST
+#define ACPI_CACHE_T                    void *
 #endif
 
 /* Use C99 uintptr_t for pointer casting if available, "void *" otherwise */
@@ -378,6 +378,24 @@ typedef UINT32                          ACPI_STATUS;    /* All ACPI Exceptions *
 typedef UINT32                          ACPI_NAME;      /* 4-byte ACPI name */
 typedef char *                          ACPI_STRING;    /* Null terminated ASCII string */
 typedef void *                          ACPI_HANDLE;    /* Actually a ptr to a NS Node */
+
+/* Names within the namespace are 4 bytes long */
+
+#define ACPI_NAME_SIZE                  4
+#define ACPI_PATH_SEGMENT_LENGTH        5           /* 4 chars for name + 1 char for separator */
+#define ACPI_PATH_SEPARATOR             '.'
+
+/* Sizes for ACPI table headers */
+
+#define ACPI_OEM_ID_SIZE                6
+#define ACPI_OEM_TABLE_ID_SIZE          8
+
+
+/* Owner IDs are used to track namespace nodes for selective deletion */
+
+typedef UINT8                           ACPI_OWNER_ID;
+#define ACPI_OWNER_ID_MAX               0xFF
+
 
 typedef struct uint64_struct
 {
@@ -845,6 +863,18 @@ typedef struct acpi_buffer
 
 
 /*
+ * Predefined Namespace items
+ */
+typedef struct acpi_predefined_names
+{
+    char                            *Name;
+    UINT8                           Type;
+    char                            *Val;
+
+} ACPI_PREDEFINED_NAMES;
+
+
+/*
  * Structure and flags for AcpiGetSystemInfo
  */
 #define ACPI_SYS_MODE_UNKNOWN           0x0000
@@ -984,6 +1014,12 @@ ACPI_STATUS (*ACPI_WALK_CALLBACK) (
 #define ACPI_INTERRUPT_NOT_HANDLED      0x00
 #define ACPI_INTERRUPT_HANDLED          0x01
 
+
+/* Length of _HID, _UID, _CID, and UUID values */
+
+#define ACPI_DEVICE_ID_LENGTH           0x09
+#define ACPI_MAX_CID_LENGTH             48
+#define ACPI_UUID_LENGTH                16
 
 /* Common string version of device HIDs and UIDs */
 
@@ -1501,6 +1537,34 @@ typedef struct acpi_pci_routing_table
     char                            Source[4];      /* pad to 64 bits so sizeof() works in all cases */
 
 } ACPI_PCI_ROUTING_TABLE;
+
+
+/*
+ * MEMORY_LIST is used only if the ACPICA local cache is enabled
+ */
+typedef struct acpi_memory_list
+{
+    char                            *ListName;
+    void                            *ListHead;
+    UINT16                          ObjectSize;
+    UINT16                          MaxDepth;
+    UINT16                          CurrentDepth;
+    UINT16                          LinkOffset;
+
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+
+    /* Statistics for debug memory tracking only */
+
+    UINT32                          TotalAllocated;
+    UINT32                          TotalFreed;
+    UINT32                          MaxOccupied;
+    UINT32                          TotalSize;
+    UINT32                          CurrentTotalSize;
+    UINT32                          Requests;
+    UINT32                          Hits;
+#endif
+
+} ACPI_MEMORY_LIST;
 
 
 #endif /* __ACTYPES_H__ */

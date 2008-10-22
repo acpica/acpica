@@ -117,6 +117,7 @@
 #define __UTINIT_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acnamesp.h"
 #include "acevents.h"
 #include "actables.h"

@@ -117,6 +117,7 @@
 #define __EVXFREGN_C__
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acnamesp.h"
 #include "acevents.h"
 

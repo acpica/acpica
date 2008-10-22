@@ -116,6 +116,7 @@
 #define __UTDEBUG_C__
 
 #include "acpi.h"
+#include "accommon.h"
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utdebug")
@@ -229,7 +230,7 @@ AcpiUtTrimFunctionName (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtDebugPrint
+ * FUNCTION:    AcpiDebugPrint
  *
  * PARAMETERS:  RequestedDebugLevel - Requested debug print level
  *              LineNumber          - Caller's line number (for error output)
@@ -247,7 +248,7 @@ AcpiUtTrimFunctionName (
  ******************************************************************************/
 
 void  ACPI_INTERNAL_VAR_XFACE
-AcpiUtDebugPrint (
+AcpiDebugPrint (
     UINT32                  RequestedDebugLevel,
     UINT32                  LineNumber,
     const char              *FunctionName,
@@ -304,12 +305,12 @@ AcpiUtDebugPrint (
     va_end (args);
 }
 
-ACPI_EXPORT_SYMBOL (AcpiUtDebugPrint)
+ACPI_EXPORT_SYMBOL (AcpiDebugPrint)
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtDebugPrintRaw
+ * FUNCTION:    AcpiDebugPrintRaw
  *
  * PARAMETERS:  RequestedDebugLevel - Requested debug print level
  *              LineNumber          - Caller's line number
@@ -327,7 +328,7 @@ ACPI_EXPORT_SYMBOL (AcpiUtDebugPrint)
  ******************************************************************************/
 
 void  ACPI_INTERNAL_VAR_XFACE
-AcpiUtDebugPrintRaw (
+AcpiDebugPrintRaw (
     UINT32                  RequestedDebugLevel,
     UINT32                  LineNumber,
     const char              *FunctionName,
@@ -350,7 +351,7 @@ AcpiUtDebugPrintRaw (
     va_end (args);
 }
 
-ACPI_EXPORT_SYMBOL (AcpiUtDebugPrintRaw)
+ACPI_EXPORT_SYMBOL (AcpiDebugPrintRaw)
 
 
 /*******************************************************************************
@@ -380,7 +381,7 @@ AcpiUtTrace (
     AcpiGbl_NestingLevel++;
     AcpiUtTrackStackPtr ();
 
-    AcpiUtDebugPrint (ACPI_LV_FUNCTIONS,
+    AcpiDebugPrint (ACPI_LV_FUNCTIONS,
         LineNumber, FunctionName, ModuleName, ComponentId,
         "%s\n", AcpiGbl_FnEntryStr);
 }
@@ -416,7 +417,7 @@ AcpiUtTracePtr (
     AcpiGbl_NestingLevel++;
     AcpiUtTrackStackPtr ();
 
-    AcpiUtDebugPrint (ACPI_LV_FUNCTIONS,
+    AcpiDebugPrint (ACPI_LV_FUNCTIONS,
         LineNumber, FunctionName, ModuleName, ComponentId,
         "%s %p\n", AcpiGbl_FnEntryStr, Pointer);
 }
@@ -451,7 +452,7 @@ AcpiUtTraceStr (
     AcpiGbl_NestingLevel++;
     AcpiUtTrackStackPtr ();
 
-    AcpiUtDebugPrint (ACPI_LV_FUNCTIONS,
+    AcpiDebugPrint (ACPI_LV_FUNCTIONS,
         LineNumber, FunctionName, ModuleName, ComponentId,
         "%s %s\n", AcpiGbl_FnEntryStr, String);
 }
@@ -486,7 +487,7 @@ AcpiUtTraceU32 (
     AcpiGbl_NestingLevel++;
     AcpiUtTrackStackPtr ();
 
-    AcpiUtDebugPrint (ACPI_LV_FUNCTIONS,
+    AcpiDebugPrint (ACPI_LV_FUNCTIONS,
         LineNumber, FunctionName, ModuleName, ComponentId,
         "%s %08X\n", AcpiGbl_FnEntryStr, Integer);
 }
@@ -516,7 +517,7 @@ AcpiUtExit (
     UINT32                  ComponentId)
 {
 
-    AcpiUtDebugPrint (ACPI_LV_FUNCTIONS,
+    AcpiDebugPrint (ACPI_LV_FUNCTIONS,
         LineNumber, FunctionName, ModuleName, ComponentId,
         "%s\n", AcpiGbl_FnExitStr);
 
@@ -554,14 +555,14 @@ AcpiUtStatusExit (
 
     if (ACPI_SUCCESS (Status))
     {
-        AcpiUtDebugPrint (ACPI_LV_FUNCTIONS,
+        AcpiDebugPrint (ACPI_LV_FUNCTIONS,
             LineNumber, FunctionName, ModuleName, ComponentId,
             "%s %s\n", AcpiGbl_FnExitStr,
             AcpiFormatException (Status));
     }
     else
     {
-        AcpiUtDebugPrint (ACPI_LV_FUNCTIONS,
+        AcpiDebugPrint (ACPI_LV_FUNCTIONS,
             LineNumber, FunctionName, ModuleName, ComponentId,
             "%s ****Exception****: %s\n", AcpiGbl_FnExitStr,
             AcpiFormatException (Status));
@@ -599,7 +600,7 @@ AcpiUtValueExit (
     ACPI_INTEGER            Value)
 {
 
-    AcpiUtDebugPrint (ACPI_LV_FUNCTIONS,
+    AcpiDebugPrint (ACPI_LV_FUNCTIONS,
         LineNumber, FunctionName, ModuleName, ComponentId,
         "%s %8.8X%8.8X\n", AcpiGbl_FnExitStr,
         ACPI_FORMAT_UINT64 (Value));
@@ -636,7 +637,7 @@ AcpiUtPtrExit (
     UINT8                   *Ptr)
 {
 
-    AcpiUtDebugPrint (ACPI_LV_FUNCTIONS,
+    AcpiDebugPrint (ACPI_LV_FUNCTIONS,
         LineNumber, FunctionName, ModuleName, ComponentId,
         "%s %p\n", AcpiGbl_FnExitStr, Ptr);
 
