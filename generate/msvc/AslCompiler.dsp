@@ -51,14 +51,14 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /o"/acpica/generate/msvc/AslCompiler/AslCompiler.bsc"
-# SUBTRACT BSC32 /nologo
+# ADD BSC32 /nologo /o"AslCompiler/iasl.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /machine:I386 /out:"/acpica/generate/msvc/AslCompiler\iasl.exe"
-# SUBTRACT LINK32 /pdb:none /incremental:yes
+# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /machine:I386 /out:"AslCompiler/iasl.exe"
+# SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
+PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
 PostBuild_Desc=Copy iasl.exe to libraries directory
 PostBuild_Cmds=copy AslCompiler\iasl.exe ..\..\Libraries	dir ..\..\libraries\iasl.exe
 # End Special Build Tool
@@ -77,20 +77,21 @@ PostBuild_Cmds=copy AslCompiler\iasl.exe ..\..\Libraries	dir ..\..\libraries\ias
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
-# ADD CPP /nologo /Za /W4 /Zi /Od /Gf /I "$(OutDir)..\\" /I "..\..\source\Include" /I "$(OutDir)" /I "..\..\source\compiler" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /FR /FD /GZ /c
+# ADD CPP /nologo /Za /W4 /Gi /Zi /Ot /Oa /Oy /Gf /I "$(OutDir)..\\" /I "..\..\source\Include" /I "$(OutDir)" /I "..\..\source\compiler" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /FR /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"AslCompilerDebug/AslCompilerDebug.bsc" /o"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.bsc"
+# ADD BSC32 /nologo /o"AslCompilerDebug\iaslDebug.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:no /map /debug /machine:I386 /pdbtype:sept /out:"/acpica/generate/msvc/AslCompilerDebug/iasldebug.exe"
-# SUBTRACT LINK32 /verbose
+# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:no /map /debug /machine:I386 /nodefaultlib:"libcmt.lib" /out:"AslCompilerDebug/iasldebug.exe" /pdbtype:sept
+# SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
+PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
 PostBuild_Desc=Copy iasldebug.exe to libraries directory
 PostBuild_Cmds=copy AslCompilerDebug\iasldebug.exe ..\..\Libraries	dir ..\..\libraries\iasldebug.exe
 # End Special Build Tool

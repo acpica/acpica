@@ -17,6 +17,8 @@ generate/msvc/AcpiSrcLinuxDebug
 generate/msvc/AcpiSubsystemLinux
 generate/msvc/AcpiSubsystemLinuxDebug
 generate/msvc/AcpiSubsystem64
+generate/msvc/Examples
+generate/msvc/ExamplesDebug
 
 generate/release/current
 generate/release/archive
@@ -30,6 +32,8 @@ libraries/AcpiSrcDebug.exe
 libraries/iasldebug.exe
 libraries/acpica.lib
 libraries/acpica_dbg.lib
+libraries/Examples.exe
+libraries/ExamplesDebug.exe
 libraries/size.bat
 libraries/size_dbg.txt
 libraries/size_rel.txt
