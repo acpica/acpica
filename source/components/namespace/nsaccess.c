@@ -252,10 +252,7 @@ AcpiNsRootInitialize (
                 /* Mark this as a very SPECIAL method */
 
                 ObjDesc->Method.MethodFlags = AML_METHOD_INTERNAL_ONLY;
-
-#ifndef ACPI_DUMP_APP
                 ObjDesc->Method.Implementation = AcpiUtOsiImplementation;
-#endif
 #endif
                 break;
 
@@ -618,11 +615,11 @@ AcpiNsLookup (
 
 
     /*
-     * Search namespace for each segment of the name.  Loop through and
+     * Search namespace for each segment of the name. Loop through and
      * verify (or add to the namespace) each name segment.
      *
      * The object type is significant only at the last name
-     * segment.  (We don't care about the types along the path, only
+     * segment. (We don't care about the types along the path, only
      * the type of the final target object.)
      */
     ThisSearchType = ACPI_TYPE_ANY;
