@@ -380,14 +380,16 @@ AdAmlDisassemble (
 {
     ACPI_STATUS             Status;
     char                    *DisasmFilename = NULL;
+    char                    *ExternalFilename;
     FILE                    *File = NULL;
     ACPI_TABLE_HEADER       *Table = NULL;
     ACPI_TABLE_HEADER       *ExternalTable;
+    ACPI_OWNER_ID           OwnerId;
 
 
     /*
-     * Input:  AML Code from either a file,
-     *         or via GetTables (memory or registry)
+     * Input: AML Code from either a file,
+     *        or via GetTables (memory or registry)
      */
     if (Filename)
     {
@@ -397,12 +399,39 @@ AdAmlDisassemble (
             return Status;
         }
 
+        /*
+         * External filenames separated by commas
+         * Example: iasl -e file1,file2,file3 -d xxx.aml
+         */
         if (Gbl_ExternalFilename)
         {
-            Status = AcpiDbGetTableFromFile (Gbl_ExternalFilename, &ExternalTable);
-            if (ACPI_FAILURE (Status))
+            ExternalFilename = strtok (Gbl_ExternalFilename, ",");
+
+            while (ExternalFilename)
             {
-                return Status;
+                Status = AcpiDbGetTableFromFile (ExternalFilename, &ExternalTable);
+                if (ACPI_FAILURE (Status))
+                {
+                    return Status;
+                }
+
+                /* Load external table for symbol resolution */
+
+                if (ExternalTable)
+                {
+                    Status = AdParseTable (ExternalTable, NULL, TRUE, TRUE);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        AcpiOsPrintf ("Could not parse external ACPI tables, %s\n",
+                            AcpiFormatException (Status));
+                        return Status;
+                    }
+                    AcpiPsDeleteParseTree (AcpiGbl_ParseOpRoot);
+                }
+
+                /* Next external file name */
+
+                ExternalFilename = strtok (NULL, ",");
             }
         }
     }
@@ -479,7 +508,7 @@ AdAmlDisassemble (
     {
         /* Always parse the tables, only option is what to display */
 
-        Status = AdParseTable (Table, TRUE);
+        Status = AdParseTable (Table, &OwnerId, TRUE, FALSE);
         if (ACPI_FAILURE (Status))
         {
             AcpiOsPrintf ("Could not parse ACPI tables, %s\n",
@@ -499,12 +528,12 @@ AdAmlDisassemble (
         /*
          * Load namespace from names created within control methods
          */
-        AcpiDmFinishNamespaceLoad (AcpiGbl_ParseOpRoot, AcpiGbl_RootNode);
+        AcpiDmFinishNamespaceLoad (AcpiGbl_ParseOpRoot, AcpiGbl_RootNode, OwnerId);
 
         /*
          * Cross reference the namespace here, in order to generate External() statements
          */
-        AcpiDmCrossReferenceNamespace (AcpiGbl_ParseOpRoot, AcpiGbl_RootNode);
+        AcpiDmCrossReferenceNamespace (AcpiGbl_ParseOpRoot, AcpiGbl_RootNode, OwnerId);
 
         if (AslCompilerdebug)
         {
@@ -518,14 +547,6 @@ AdAmlDisassemble (
         /* Convert fixed-offset references to resource descriptors to symbolic references */
 
         AcpiDmConvertResourceIndexes (AcpiGbl_ParseOpRoot, AcpiGbl_RootNode);
-
-        if (AslCompilerdebug)
-        {
-            AcpiOsPrintf ("/**** After second load and resource conversion\n");
-            LsSetupNsList (File);
-            LsDisplayNamespace ();
-            AcpiOsPrintf ("*****/\n");
-        }
 
         /*
          * If we found any external control methods, we must reparse the entire
@@ -558,7 +579,7 @@ AdAmlDisassemble (
 
             /* Parse table. No need to reload it, however (FALSE) */
 
-            Status = AdParseTable (Table, FALSE);
+            Status = AdParseTable (Table, NULL, FALSE, FALSE);
             if (ACPI_FAILURE (Status))
             {
                 AcpiOsPrintf ("Could not parse ACPI tables, %s\n",
@@ -568,6 +589,11 @@ AdAmlDisassemble (
 
             if (AslCompilerdebug)
             {
+                AcpiOsPrintf ("/**** After second load and resource conversion\n");
+                LsSetupNsList (File);
+                LsDisplayNamespace ();
+                AcpiOsPrintf ("*****/\n");
+
                 AcpiDmDumpTree (AcpiGbl_ParseOpRoot);
             }
         }
@@ -1103,6 +1129,9 @@ AdGetLocalTables (
  * FUNCTION:    AdParseTable
  *
  * PARAMETERS:  Table           - Pointer to the raw table
+ *              OwnerId         - Returned OwnerId of the table
+ *              LoadTable       - If add table to the global table list
+ *              External        - If this is an external table
  *
  * RETURN:      Status
  *
@@ -1113,7 +1142,9 @@ AdGetLocalTables (
 ACPI_STATUS
 AdParseTable (
     ACPI_TABLE_HEADER       *Table,
-    BOOLEAN                 LoadTable)
+    ACPI_OWNER_ID           *OwnerId,
+    BOOLEAN                 LoadTable,
+    BOOLEAN                 External)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_WALK_STATE         *WalkState;
@@ -1167,6 +1198,10 @@ AdParseTable (
         return Status;
     }
 
+    /* If LoadTable is FALSE, we are parsing the last loaded table */
+
+    TableIndex = AcpiGbl_RootTableList.Count - 1;
+
     /* Pass 2 */
 
     if (LoadTable)
@@ -1177,14 +1212,34 @@ AdParseTable (
         {
             return Status;
         }
+        Status = AcpiTbAllocateOwnerId (TableIndex);
+        if (ACPI_FAILURE (Status))     
+        {
+            return Status; 
+        }
+        if (OwnerId)
+        {
+            Status = AcpiTbGetOwnerId (TableIndex, OwnerId);
+            if (ACPI_FAILURE (Status))
+            {  
+                return Status;   
+            } 
+        }
     }
 
     fprintf (stderr, "Pass 2 parse of [%4.4s]\n", (char *) Table->Signature);
 
-    Status = AcpiNsOneCompleteParse (ACPI_IMODE_LOAD_PASS2, 0, NULL);
+    Status = AcpiNsOneCompleteParse (ACPI_IMODE_LOAD_PASS2, TableIndex, NULL);
     if (ACPI_FAILURE (Status))
     {
         return (Status);
+    }
+
+    /* No need to parse control methods of external table */
+
+    if (External)
+    {
+        return AE_OK;
     }
 
     /* Pass 3: Parse control methods and link their parse trees into the main parse tree */

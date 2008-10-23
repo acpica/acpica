@@ -169,7 +169,9 @@ AdGetLocalTables (
 ACPI_STATUS
 AdParseTable (
     ACPI_TABLE_HEADER       *Table,
-    BOOLEAN                 LoadTable);
+    ACPI_OWNER_ID           *OwnerId,
+    BOOLEAN                 LoadTable,
+    BOOLEAN                 External);
 
 ACPI_STATUS
 AdDisplayTables (
@@ -185,7 +187,8 @@ AdDisplayStatistics (void);
 void
 AcpiDmCrossReferenceNamespace (
     ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot);
+    ACPI_NAMESPACE_NODE     *NamespaceRoot,
+    ACPI_OWNER_ID           OwnerId);
 
 void
 AcpiDmDumpTree (
@@ -198,7 +201,8 @@ AcpiDmFindOrphanMethods (
 void
 AcpiDmFinishNamespaceLoad (
     ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot);
+    ACPI_NAMESPACE_NODE     *NamespaceRoot,
+    ACPI_OWNER_ID           OwnerId);
 
 void
 AcpiDmConvertResourceIndexes (

@@ -197,7 +197,7 @@ Options (
     printf ("  -d  [file]     Disassemble or decode binary ACPI table to file (*.dsl)\n");
     printf ("  -dc [file]     Disassemble AML and immediately compile it\n");
     printf ("                 (Obtain DSDT from current system if no input file)\n");
-    printf ("  -e  [file]     Include ACPI table for external symbol resolution\n");
+    printf ("  -e  [f1,f2]    Include ACPI table(s) for external symbol resolution\n");
     printf ("  -2             Emit ACPI 2.0 compatible ASL code\n");
     printf ("  -g             Get ACPI tables and write to files (*.dat)\n");
 

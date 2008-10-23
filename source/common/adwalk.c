@@ -252,6 +252,7 @@ AcpiDmFindOrphanMethods (
  *
  * PARAMETERS:  ParseTreeRoot       - Root of the parse tree
  *              NamespaceRoot       - Root of the internal namespace
+ *              OwnerId             - OwnerId of the table to be disassembled
  *
  * RETURN:      None
  *
@@ -263,7 +264,8 @@ AcpiDmFindOrphanMethods (
 void
 AcpiDmFinishNamespaceLoad (
     ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot)
+    ACPI_NAMESPACE_NODE     *NamespaceRoot,
+    ACPI_OWNER_ID           OwnerId)
 {
     ACPI_STATUS             Status;
     ACPI_OP_WALK_INFO       Info;
@@ -277,7 +279,7 @@ AcpiDmFinishNamespaceLoad (
 
     /* Create and initialize a new walk state */
 
-    WalkState = AcpiDsCreateWalkState (0, ParseTreeRoot, NULL, NULL);
+    WalkState = AcpiDsCreateWalkState (OwnerId, ParseTreeRoot, NULL, NULL);
     if (!WalkState)
     {
         return;
@@ -304,6 +306,7 @@ AcpiDmFinishNamespaceLoad (
  *
  * PARAMETERS:  ParseTreeRoot       - Root of the parse tree
  *              NamespaceRoot       - Root of the internal namespace
+ *              OwnerId             - OwnerId of the table to be disassembled
  *
  * RETURN:      None
  *
@@ -314,7 +317,8 @@ AcpiDmFinishNamespaceLoad (
 void
 AcpiDmCrossReferenceNamespace (
     ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot)
+    ACPI_NAMESPACE_NODE     *NamespaceRoot,
+    ACPI_OWNER_ID           OwnerId)
 {
     ACPI_STATUS             Status;
     ACPI_OP_WALK_INFO       Info;
@@ -328,7 +332,7 @@ AcpiDmCrossReferenceNamespace (
 
     /* Create and initialize a new walk state */
 
-    WalkState = AcpiDsCreateWalkState (0, ParseTreeRoot, NULL, NULL);
+    WalkState = AcpiDsCreateWalkState (OwnerId, ParseTreeRoot, NULL, NULL);
     if (!WalkState)
     {
         return;
@@ -698,6 +702,7 @@ AcpiDmLoadDescendingOp (
                 WalkState, &Node);
 
     Op->Common.Node = Node;
+    Node->OwnerId = WalkState->OwnerId;
 
 
 Exit:
@@ -744,6 +749,7 @@ AcpiDmXrefDescendingOp (
     char                    *Path = NULL;
     ACPI_PARSE_OBJECT       *NextOp;
     ACPI_NAMESPACE_NODE     *Node;
+    ACPI_OPERAND_OBJECT     *Object;
 
 
     WalkState = Info->WalkState;
@@ -818,6 +824,41 @@ AcpiDmXrefDescendingOp (
                        WalkState, &Node);
 #endif
         }
+    }
+
+    /* Found the node in external table, add it to external list */
+
+    else if (WalkState->OwnerId != Node->OwnerId)
+    {
+        Object = AcpiNsGetAttachedObject (Node);
+        if (Object)
+        {
+            ObjectType = Object->Common.Type;
+        }
+
+        /* Generate External(xxx, DeviceObj) for a Scope */
+
+        if (ObjectType == ACPI_TYPE_LOCAL_SCOPE)
+        {
+            ObjectType = ACPI_TYPE_DEVICE;
+        }
+
+        if (ObjectType == ACPI_TYPE_METHOD)
+        {
+            AcpiDmAddToExternalList (Path, ACPI_TYPE_METHOD,
+                Object->Method.ParamCount);
+        }
+        else
+        {
+            AcpiDmAddToExternalList (Path, (UINT8) ObjectType, 0);
+        }
+
+        /* 
+         * Set it NULL since the node is found in external table
+         * And prevent it from opening new scope at below code
+         */
+
+        Op->Common.Node = NULL;
     }
     else
     {
