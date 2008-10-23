@@ -540,6 +540,10 @@ AcpiPsParseAml (
         WalkState, WalkState->ParserState.Aml,
         WalkState->ParserState.AmlSize));
 
+    if (!WalkState->ParserState.Aml)
+    {
+        return_ACPI_STATUS (AE_NULL_OBJECT);
+    }
 
     /* Create and initialize a new thread state */
 

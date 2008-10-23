@@ -220,7 +220,7 @@ AcpiUtOsiImplementation (
         {
             /* The interface is supported */
 
-            return_ACPI_STATUS (AE_CTRL_TERMINATE);
+            return_ACPI_STATUS (AE_OK);
         }
     }
 
@@ -234,13 +234,13 @@ AcpiUtOsiImplementation (
     {
         /* The interface is supported */
 
-        return_ACPI_STATUS (AE_CTRL_TERMINATE);
+        return_ACPI_STATUS (AE_OK);
     }
 
     /* The interface is not supported */
 
     ReturnDesc->Integer.Value = 0;
-    return_ACPI_STATUS (AE_CTRL_TERMINATE);
+    return_ACPI_STATUS (AE_OK);
 }
 
 

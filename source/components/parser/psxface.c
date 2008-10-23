@@ -120,6 +120,7 @@
 #include "acparser.h"
 #include "acdispat.h"
 #include "acinterp.h"
+#include "amlcode.h"
 
 
 #define _COMPONENT          ACPI_PARSER
@@ -389,6 +390,22 @@ AcpiPsExecuteMethod (
                 Info->ObjDesc->Method.AmlLength, Info, Info->PassNumber);
     if (ACPI_FAILURE (Status))
     {
+        AcpiDsDeleteWalkState (WalkState);
+        goto Cleanup;
+    }
+
+    /* Invoke an internal method if necessary */
+
+    if (Info->ObjDesc->Method.MethodFlags & AML_METHOD_INTERNAL_ONLY)
+    {
+        Status = Info->ObjDesc->Method.Implementation (WalkState);
+        Info->ReturnObject = WalkState->ReturnDesc;
+
+        /* Cleanup states */
+
+        AcpiDsScopeStackClear (WalkState);
+        AcpiPsCleanupScope (&WalkState->ParserState);
+        AcpiDsTerminateControlMethod (WalkState->MethodDesc, WalkState);
         AcpiDsDeleteWalkState (WalkState);
         goto Cleanup;
     }
