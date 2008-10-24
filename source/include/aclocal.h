@@ -119,8 +119,6 @@
 
 /* acpisrc:StructDefs -- for acpisrc conversion */
 
-#define ACPI_WAIT_FOREVER               0xFFFF  /* UINT16, as per ACPI spec */
-#define ACPI_DO_NOT_WAIT                0
 #define ACPI_SERIALIZED                 0xFF
 
 typedef UINT32                          ACPI_MUTEX_HANDLE;
@@ -971,9 +969,6 @@ typedef struct acpi_parse_state
  * Hardware (ACPI registers) and PNP
  *
  ****************************************************************************/
-
-#define PCI_ROOT_HID_STRING             "PNP0A03"
-#define PCI_EXPRESS_ROOT_HID_STRING     "PNP0A08"
 
 typedef struct acpi_bit_register_info
 {

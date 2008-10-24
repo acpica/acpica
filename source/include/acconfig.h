@@ -204,11 +204,6 @@
  *
  *****************************************************************************/
 
-/* Number of distinct GPE register blocks and register width */
-
-#define ACPI_MAX_GPE_BLOCKS             2
-#define ACPI_GPE_REGISTER_WIDTH         8
-
 /* Method info (in WALK_STATE), containing local variables and argumetns */
 
 #define ACPI_METHOD_NUM_LOCALS          8

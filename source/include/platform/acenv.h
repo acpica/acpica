@@ -125,7 +125,6 @@
  * Note: The non-debug version of the AcpiLibrary does not contain any
  * debug support, for minimimal size. The debug version uses ACPI_FULL_DEBUG
  */
-#define ACPI_CACHE_T                    ACPI_MEMORY_LIST
 #define ACPI_USE_LOCAL_CACHE
 #endif
 
@@ -149,7 +148,6 @@
 #endif
 
 #ifdef ACPI_APPLICATION
-#define ACPI_CACHE_T                    ACPI_MEMORY_LIST
 #define ACPI_USE_SYSTEM_CLIBRARY
 #define ACPI_USE_LOCAL_CACHE
 #endif

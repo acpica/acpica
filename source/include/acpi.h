@@ -131,6 +131,7 @@
 #include "acexcep.h"            /* ACPICA exceptions */
 #include "actbl.h"              /* ACPI table definitions */
 #include "acoutput.h"           /* Error output and Debug macros */
+#include "acrestyp.h"           /* Resource Descriptor structs */
 #include "acpiosxf.h"           /* OSL interfaces (ACPICA-to-OS) */
 #include "acpixf.h"             /* ACPI core subsystem external interfaces */
 

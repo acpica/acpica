@@ -118,24 +118,6 @@
 
 
 /*
- * Data manipulation macros
- */
-#define ACPI_LOWORD(l)                  ((UINT16)(UINT32)(l))
-#define ACPI_HIWORD(l)                  ((UINT16)((((UINT32)(l)) >> 16) & 0xFFFF))
-#define ACPI_LOBYTE(l)                  ((UINT8)(UINT16)(l))
-#define ACPI_HIBYTE(l)                  ((UINT8)((((UINT16)(l)) >> 8) & 0xFF))
-
-#define ACPI_SET_BIT(target,bit)        ((target) |= (bit))
-#define ACPI_CLEAR_BIT(target,bit)      ((target) &= ~(bit))
-#define ACPI_MIN(a,b)                   (((a)<(b))?(a):(b))
-#define ACPI_MAX(a,b)                   (((a)>(b))?(a):(b))
-
-/* Size calculation */
-
-#define ACPI_ARRAY_LENGTH(x)            (sizeof(x) / sizeof((x)[0]))
-
-
-/*
  * Extract data using a pointer. Any more than a byte and we
  * get into potential aligment issues -- see the STORE macros below.
  * Use with care.
@@ -148,41 +130,6 @@
 #define ACPI_SET16(ptr)                 *ACPI_CAST_PTR (UINT16, ptr)
 #define ACPI_SET32(ptr)                 *ACPI_CAST_PTR (UINT32, ptr)
 #define ACPI_SET64(ptr)                 *ACPI_CAST_PTR (UINT64, ptr)
-
-/*
- * Pointer manipulation
- */
-#define ACPI_CAST_PTR(t, p)             ((t *) (ACPI_UINTPTR_T) (p))
-#define ACPI_CAST_INDIRECT_PTR(t, p)    ((t **) (ACPI_UINTPTR_T) (p))
-#define ACPI_ADD_PTR(t, a, b)           ACPI_CAST_PTR (t, (ACPI_CAST_PTR (UINT8, (a)) + (ACPI_SIZE)(b)))
-#define ACPI_PTR_DIFF(a, b)             (ACPI_SIZE) (ACPI_CAST_PTR (UINT8, (a)) - ACPI_CAST_PTR (UINT8, (b)))
-
-/* Pointer/Integer type conversions */
-
-#define ACPI_TO_POINTER(i)              ACPI_ADD_PTR (void, (void *) NULL,(ACPI_SIZE) i)
-#define ACPI_TO_INTEGER(p)              ACPI_PTR_DIFF (p, (void *) NULL)
-#define ACPI_OFFSET(d, f)               (ACPI_SIZE) ACPI_PTR_DIFF (&(((d *)0)->f), (void *) NULL)
-#define ACPI_PHYSADDR_TO_PTR(i)         ACPI_TO_POINTER(i)
-#define ACPI_PTR_TO_PHYSADDR(i)         ACPI_TO_INTEGER(i)
-
-#ifndef ACPI_MISALIGNMENT_NOT_SUPPORTED
-#define ACPI_COMPARE_NAME(a,b)          (*ACPI_CAST_PTR (UINT32, (a)) == *ACPI_CAST_PTR (UINT32, (b)))
-#else
-#define ACPI_COMPARE_NAME(a,b)          (!ACPI_STRNCMP (ACPI_CAST_PTR (char, (a)), ACPI_CAST_PTR (char, (b)), ACPI_NAME_SIZE))
-#endif
-
-/*
- * Full 64-bit integer must be available on both 32-bit and 64-bit platforms
- */
-typedef struct acpi_integer_overlay
-{
-    UINT32              LoDword;
-    UINT32              HiDword;
-
-} ACPI_INTEGER_OVERLAY;
-
-#define ACPI_LODWORD(Integer)           (ACPI_CAST_PTR (ACPI_INTEGER_OVERLAY, &Integer)->LoDword)
-#define ACPI_HIDWORD(Integer)           (ACPI_CAST_PTR (ACPI_INTEGER_OVERLAY, &Integer)->HiDword)
 
 /*
  * printf() format helpers

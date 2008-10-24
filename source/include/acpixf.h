@@ -121,6 +121,12 @@
 #include "actypes.h"
 #include "actbl.h"
 
+/* Globals that are publically available */
+
+extern UINT32               AcpiDbgLevel;
+extern UINT32               AcpiDbgLayer;
+extern ACPI_TABLE_FADT      AcpiGbl_FADT;
+
 
 /*
  * Global interfaces
