@@ -688,6 +688,11 @@ AcpiNsLookup (
              */
             if (ThisNode->Type == ACPI_TYPE_LOCAL_ALIAS)
             {
+                if (!ThisNode->Object)
+                {
+                    return_ACPI_STATUS (AE_NOT_EXIST);
+                }
+
                 if (AcpiNsOpensScope (((ACPI_NAMESPACE_NODE *) ThisNode->Object)->Type))
                 {
                     ThisNode = (ACPI_NAMESPACE_NODE *) ThisNode->Object;
