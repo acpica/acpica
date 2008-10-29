@@ -434,10 +434,17 @@ AcpiNsGetInternalNameLength (
      *
      * strlen() + 1 covers the first NameSeg, which has no path separator
      */
-    if (AcpiNsValidRootPrefix (NextExternalChar[0]))
+    if (AcpiNsValidRootPrefix (*NextExternalChar))
     {
         Info->FullyQualified = TRUE;
         NextExternalChar++;
+
+        /* Skip redundant RootPrefix, like \\_SB.PCI0.SBRG.EC0 */
+
+        while (AcpiNsValidRootPrefix (*NextExternalChar))
+        {
+            NextExternalChar++;
+        }
     }
     else
     {
