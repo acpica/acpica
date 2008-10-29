@@ -313,7 +313,7 @@ AcpiNsEvaluate (
 ACPI_STATUS
 AcpiNsCheckPredefinedNames (
     ACPI_NAMESPACE_NODE     *Node,
-    ACPI_OPERAND_OBJECT     *ReturnObject);
+    ACPI_OPERAND_OBJECT     **ReturnObject);
 
 const ACPI_PREDEFINED_INFO *
 AcpiNsCheckForPredefinedName (

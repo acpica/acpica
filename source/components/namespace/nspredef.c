@@ -151,7 +151,7 @@
 static ACPI_STATUS
 AcpiNsCheckPackage (
     char                        *Pathname,
-    ACPI_OPERAND_OBJECT         *ReturnObject,
+    ACPI_OPERAND_OBJECT         **ReturnObjectPtr,
     const ACPI_PREDEFINED_INFO  *Predefined);
 
 static ACPI_STATUS
@@ -166,7 +166,7 @@ AcpiNsCheckPackageElements (
 static ACPI_STATUS
 AcpiNsCheckObjectType (
     char                        *Pathname,
-    ACPI_OPERAND_OBJECT         *ReturnObject,
+    ACPI_OPERAND_OBJECT         **ReturnObjectPtr,
     UINT32                      ExpectedBtypes,
     UINT32                      PackageIndex);
 
@@ -175,6 +175,10 @@ AcpiNsCheckReference (
     char                        *Pathname,
     ACPI_OPERAND_OBJECT         *ReturnObject);
 
+static ACPI_STATUS
+AcpiNsRepairObject (
+    UINT32                      ExpectedBtypes,
+    ACPI_OPERAND_OBJECT         **ReturnObjectPtr);
 
 /*
  * Names for the types that can be returned by the predefined objects.
@@ -197,8 +201,8 @@ static const char   *AcpiRtypeNames[] =
  * FUNCTION:    AcpiNsCheckPredefinedNames
  *
  * PARAMETERS:  Node            - Namespace node for the method/object
- *              ReturnObject    - Object returned from the evaluation of this
- *                                method/object
+ *              ReturnObjectPtr - Pointer to the object returned from the
+ *                                evaluation of a method or object
  *
  * RETURN:      Status
  *
@@ -209,8 +213,9 @@ static const char   *AcpiRtypeNames[] =
 ACPI_STATUS
 AcpiNsCheckPredefinedNames (
     ACPI_NAMESPACE_NODE         *Node,
-    ACPI_OPERAND_OBJECT         *ReturnObject)
+    ACPI_OPERAND_OBJECT         **ReturnObjectPtr)
 {
+    ACPI_OPERAND_OBJECT         *ReturnObject = *ReturnObjectPtr;
     ACPI_STATUS                 Status = AE_OK;
     const ACPI_PREDEFINED_INFO  *Predefined;
     char                        *Pathname;
@@ -276,7 +281,7 @@ AcpiNsCheckPredefinedNames (
      * Check that the type of the return object is what is expected for
      * this predefined name
      */
-    Status = AcpiNsCheckObjectType (Pathname, ReturnObject,
+    Status = AcpiNsCheckObjectType (Pathname, ReturnObjectPtr,
                 Predefined->Info.ExpectedBtypes, ACPI_NOT_PACKAGE);
     if (ACPI_FAILURE (Status))
     {
@@ -287,7 +292,7 @@ AcpiNsCheckPredefinedNames (
 
     if (ACPI_GET_OBJECT_TYPE (ReturnObject) == ACPI_TYPE_PACKAGE)
     {
-        Status = AcpiNsCheckPackage (Pathname, ReturnObject, Predefined);
+        Status = AcpiNsCheckPackage (Pathname, ReturnObjectPtr, Predefined);
     }
 
 Exit:
@@ -413,8 +418,8 @@ AcpiNsCheckForPredefinedName (
  * FUNCTION:    AcpiNsCheckPackage
  *
  * PARAMETERS:  Pathname        - Full pathname to the node (for error msgs)
- *              ReturnObject    - Object returned from the evaluation of a
- *                                method or object
+ *              ReturnObjectPtr - Pointer to the object returned from the
+ *                                evaluation of a method or object
  *              Predefined      - Pointer to entry in predefined name table
  *
  * RETURN:      Status
@@ -427,9 +432,10 @@ AcpiNsCheckForPredefinedName (
 static ACPI_STATUS
 AcpiNsCheckPackage (
     char                        *Pathname,
-    ACPI_OPERAND_OBJECT         *ReturnObject,
+    ACPI_OPERAND_OBJECT         **ReturnObjectPtr,
     const ACPI_PREDEFINED_INFO  *Predefined)
 {
+    ACPI_OPERAND_OBJECT         *ReturnObject = *ReturnObjectPtr;
     const ACPI_PREDEFINED_INFO  *Package;
     ACPI_OPERAND_OBJECT         *SubPackage;
     ACPI_OPERAND_OBJECT         **Elements;
@@ -515,7 +521,7 @@ AcpiNsCheckPackage (
          */
         for (i = 0; i < Count; i++)
         {
-            Status = AcpiNsCheckObjectType (Pathname, *Elements,
+            Status = AcpiNsCheckObjectType (Pathname, Elements,
                         Package->RetInfo.ObjectType1, i);
             if (ACPI_FAILURE (Status))
             {
@@ -549,7 +555,7 @@ AcpiNsCheckPackage (
             {
                 /* These are the required package elements (0, 1, or 2) */
 
-                Status = AcpiNsCheckObjectType (Pathname, *Elements,
+                Status = AcpiNsCheckObjectType (Pathname, Elements,
                             Package->RetInfo3.ObjectType[i], i);
                 if (ACPI_FAILURE (Status))
                 {
@@ -560,7 +566,7 @@ AcpiNsCheckPackage (
             {
                 /* These are the optional package elements */
 
-                Status = AcpiNsCheckObjectType (Pathname, *Elements,
+                Status = AcpiNsCheckObjectType (Pathname, Elements,
                             Package->RetInfo3.TailObjectType, i);
                 if (ACPI_FAILURE (Status))
                 {
@@ -576,7 +582,7 @@ AcpiNsCheckPackage (
 
         /* First element is the (Integer) count of sub-packages to follow */
 
-        Status = AcpiNsCheckObjectType (Pathname, *Elements,
+        Status = AcpiNsCheckObjectType (Pathname, Elements,
                     ACPI_RTYPE_INTEGER, 0);
         if (ACPI_FAILURE (Status))
         {
@@ -617,7 +623,7 @@ AcpiNsCheckPackage (
 
             /* Each sub-object must be of type Package */
 
-            Status = AcpiNsCheckObjectType (Pathname, SubPackage,
+            Status = AcpiNsCheckObjectType (Pathname, &SubPackage,
                         ACPI_RTYPE_PACKAGE, i);
             if (ACPI_FAILURE (Status))
             {
@@ -664,7 +670,7 @@ AcpiNsCheckPackage (
 
                 for (j = 0; j < ExpectedCount; j++)
                 {
-                    Status = AcpiNsCheckObjectType (Pathname, SubElements[j],
+                    Status = AcpiNsCheckObjectType (Pathname, &SubElements[j],
                                 Package->RetInfo2.ObjectType[j], j);
                     if (ACPI_FAILURE (Status))
                     {
@@ -699,7 +705,7 @@ AcpiNsCheckPackage (
 
                 /* First element is the (Integer) count of elements to follow */
 
-                Status = AcpiNsCheckObjectType (Pathname, *SubElements,
+                Status = AcpiNsCheckObjectType (Pathname, SubElements,
                             ACPI_RTYPE_INTEGER, 0);
                 if (ACPI_FAILURE (Status))
                 {
@@ -799,7 +805,7 @@ AcpiNsCheckPackageElements (
      */
     for (i = 0; i < Count1; i++)
     {
-        Status = AcpiNsCheckObjectType (Pathname, *ThisElement,
+        Status = AcpiNsCheckObjectType (Pathname, ThisElement,
                     Type1, i);
         if (ACPI_FAILURE (Status))
         {
@@ -810,7 +816,7 @@ AcpiNsCheckPackageElements (
 
     for (i = 0; i < Count2; i++)
     {
-        Status = AcpiNsCheckObjectType (Pathname, *ThisElement,
+        Status = AcpiNsCheckObjectType (Pathname, ThisElement,
                     Type2, (i + Count1));
         if (ACPI_FAILURE (Status))
         {
@@ -828,8 +834,8 @@ AcpiNsCheckPackageElements (
  * FUNCTION:    AcpiNsCheckObjectType
  *
  * PARAMETERS:  Pathname        - Full pathname to the node (for error msgs)
- *              ReturnObject    - Object return from the execution of this
- *                                method/object
+ *              ReturnObjectPtr - Pointer to the object returned from the
+ *                                evaluation of a method or object
  *              ExpectedBtypes  - Bitmap of expected return type(s)
  *              PackageIndex    - Index of object within parent package (if
  *                                applicable - ACPI_NOT_PACKAGE otherwise)
@@ -844,10 +850,11 @@ AcpiNsCheckPackageElements (
 static ACPI_STATUS
 AcpiNsCheckObjectType (
     char                        *Pathname,
-    ACPI_OPERAND_OBJECT         *ReturnObject,
+    ACPI_OPERAND_OBJECT         **ReturnObjectPtr,
     UINT32                      ExpectedBtypes,
     UINT32                      PackageIndex)
 {
+    ACPI_OPERAND_OBJECT         *ReturnObject = *ReturnObjectPtr;
     ACPI_STATUS                 Status = AE_OK;
     UINT32                      ReturnBtype;
     char                        TypeBuffer[48]; /* Room for 5 types */
@@ -916,6 +923,13 @@ AcpiNsCheckObjectType (
 
     if (!(ReturnBtype & ExpectedBtypes))
     {
+        /* Type mismatch -- attempt repair of the returned object */
+
+        Status = AcpiNsRepairObject (ExpectedBtypes, ReturnObjectPtr);
+        if (ACPI_SUCCESS (Status))
+        {
+            return (Status);
+        }
         goto TypeErrorExit;
     }
 
@@ -1006,3 +1020,80 @@ AcpiNsCheckReference (
 
     return (AE_AML_OPERAND_TYPE);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsRepairObject
+ *
+ * PARAMETERS:  Pathname        - Full pathname to the node (for error msgs)
+ *              ReturnObjectPtr - Pointer to the object returned from the
+ *                                evaluation of a method or object
+ *
+ * RETURN:      Status. AE_OK if repair was successful.
+ *
+ * DESCRIPTION: Attempt to repair/convert a return object of a type that was
+ *              not expected.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiNsRepairObject (
+    UINT32                      ExpectedBtypes,
+    ACPI_OPERAND_OBJECT         **ReturnObjectPtr)
+{
+    ACPI_OPERAND_OBJECT         *ReturnObject = *ReturnObjectPtr;
+    ACPI_OPERAND_OBJECT         *NewObject;
+    ACPI_SIZE                   Length;
+
+
+    switch (ACPI_GET_OBJECT_TYPE (ReturnObject))
+    {
+    case ACPI_TYPE_BUFFER:
+
+        if (!(ExpectedBtypes & ACPI_RTYPE_STRING))
+        {
+            return (AE_AML_OPERAND_TYPE);
+        }
+
+        /*
+         * Have a Buffer, expected a String, convert. Use a ToString
+         * conversion, no transform performed on the buffer data. The best
+         * example of this is the _BIF method, where the string data from
+         * the battery is often (incorrectly) returned as buffer object(s).
+         */
+        Length = 0;
+        while ((Length < ReturnObject->Buffer.Length) &&
+                (ReturnObject->Buffer.Pointer[Length]))
+        {
+            Length++;
+        }
+
+        /* Allocate a new string object */
+
+        NewObject = AcpiUtCreateStringObject (Length);
+        if (!NewObject)
+        {
+            return (AE_NO_MEMORY);
+        }
+
+        /*
+         * Copy the raw buffer data with no transform. String is already NULL
+         * terminated at Length+1.
+         */
+        ACPI_MEMCPY (NewObject->String.Pointer,
+            ReturnObject->Buffer.Pointer, Length);
+
+        /* Install the new return object */
+
+        AcpiUtRemoveReference (ReturnObject);
+        *ReturnObjectPtr = NewObject;
+        return (AE_OK);
+
+    default:
+        break;
+    }
+
+    return (AE_AML_OPERAND_TYPE);
+}
+

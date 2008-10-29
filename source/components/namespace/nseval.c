@@ -362,7 +362,7 @@ AcpiNsEvaluate (
              * problems with the returned object. May change later to abort
              * the method on invalid return object.
              */
-            (void) AcpiNsCheckPredefinedNames (Node, Info->ReturnObject);
+            (void) AcpiNsCheckPredefinedNames (Node, &Info->ReturnObject);
         }
 
         /* Mark the node as having been evaluated */
