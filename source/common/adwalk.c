@@ -826,9 +826,11 @@ AcpiDmXrefDescendingOp (
         }
     }
 
-    /* Found the node in external table, add it to external list */
-
-    else if (WalkState->OwnerId != Node->OwnerId)
+    /*
+     * Found the node in external table, add it to external list
+     * Node->OwnerId == 0 indicates built-in ACPI Names, _OS_ etc
+     */
+    else if (Node->OwnerId && WalkState->OwnerId != Node->OwnerId)
     {
         Object = AcpiNsGetAttachedObject (Node);
         if (Object)
@@ -853,7 +855,7 @@ AcpiDmXrefDescendingOp (
             AcpiDmAddToExternalList (Path, (UINT8) ObjectType, 0);
         }
 
-        /* 
+        /*
          * Set it NULL since the node is found in external table
          * And prevent it from opening new scope at below code
          */

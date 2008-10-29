@@ -426,6 +426,13 @@ AdAmlDisassemble (
                             AcpiFormatException (Status));
                         return Status;
                     }
+
+                    /*
+                     * Load namespace from names created within control methods
+                     * Set owner id of nodes in external table
+                     */
+                    AcpiDmFinishNamespaceLoad (AcpiGbl_ParseOpRoot,
+                        AcpiGbl_RootNode, OwnerId);
                     AcpiPsDeleteParseTree (AcpiGbl_ParseOpRoot);
                 }
 
@@ -1213,17 +1220,17 @@ AdParseTable (
             return Status;
         }
         Status = AcpiTbAllocateOwnerId (TableIndex);
-        if (ACPI_FAILURE (Status))     
+        if (ACPI_FAILURE (Status))
         {
-            return Status; 
+            return Status;
         }
         if (OwnerId)
         {
             Status = AcpiTbGetOwnerId (TableIndex, OwnerId);
             if (ACPI_FAILURE (Status))
-            {  
-                return Status;   
-            } 
+            {
+                return Status;
+            }
         }
     }
 
