@@ -415,7 +415,7 @@ static const ACPI_PREDEFINED_INFO     PredefinedNames[] =
 
     /* Acpi 1.0 defined _WAK with no return value. Later, it was changed to return a package */
 
-    {"_WAK", 1, ACPI_RTYPE_NONE | ACPI_RTYPE_PACKAGE},
+    {"_WAK", 1, ACPI_RTYPE_NONE | ACPI_RTYPE_INTEGER | ACPI_RTYPE_PACKAGE},
                                      {ACPI_PTYPE1_FIXED,    ACPI_RTYPE_INTEGER, 2,0,0,0},   /* fixed (2 Int), but is optional */
     {0,0,0,0,0,0}   /* Table terminator */
 };
