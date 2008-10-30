@@ -419,7 +419,7 @@ AdAmlDisassemble (
 
                 if (ExternalTable)
                 {
-                    Status = AdParseTable (ExternalTable, NULL, TRUE, TRUE);
+                    Status = AdParseTable (ExternalTable, &OwnerId, TRUE, TRUE);
                     if (ACPI_FAILURE (Status))
                     {
                         AcpiOsPrintf ("Could not parse external ACPI tables, %s\n",
