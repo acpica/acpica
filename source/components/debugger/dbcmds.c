@@ -444,7 +444,7 @@ AcpiDbWalkForPredefinedNames (
 
     AcpiOsPrintf("\n");
 
-    AcpiNsCheckParameterCount (Pathname, Node, Predefined);
+    AcpiNsCheckParameterCount (Pathname, Node, ACPI_UINT32_MAX, Predefined);
     ACPI_FREE (Pathname);
     (*Count)++;
 

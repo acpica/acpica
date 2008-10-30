@@ -313,6 +313,8 @@ AcpiNsEvaluate (
 ACPI_STATUS
 AcpiNsCheckPredefinedNames (
     ACPI_NAMESPACE_NODE     *Node,
+    UINT32                  UserParamCount,
+    ACPI_STATUS             ReturnStatus,
     ACPI_OPERAND_OBJECT     **ReturnObject);
 
 const ACPI_PREDEFINED_INFO *
@@ -323,6 +325,7 @@ void
 AcpiNsCheckParameterCount (
     char                        *Pathname,
     ACPI_NAMESPACE_NODE         *Node,
+    UINT32                      UserParamCount,
     const ACPI_PREDEFINED_INFO  *Info);
 
 

@@ -213,6 +213,8 @@ static const char   *AcpiRtypeNames[] =
 ACPI_STATUS
 AcpiNsCheckPredefinedNames (
     ACPI_NAMESPACE_NODE         *Node,
+    UINT32                      UserParamCount,
+    ACPI_STATUS                 ReturnStatus,
     ACPI_OPERAND_OBJECT         **ReturnObjectPtr)
 {
     ACPI_OPERAND_OBJECT         *ReturnObject = *ReturnObjectPtr;
@@ -224,12 +226,6 @@ AcpiNsCheckPredefinedNames (
     /* Match the name for this method/object against the predefined list */
 
     Predefined = AcpiNsCheckForPredefinedName (Node);
-    if (!Predefined)
-    {
-        /* Name was not one of the predefined names */
-
-        return (AE_OK);
-    }
 
     /* Get the full pathname to the object, for use in error messages */
 
@@ -240,10 +236,39 @@ AcpiNsCheckPredefinedNames (
     }
 
     /*
-     * Check that the parameter count for this method is in accordance
-     * with the ACPI specification.
+     * Check that the parameter count for this method matches the ASL
+     * definition. For predefined names, ensure that both the caller and
+     * the method itself are in accordance with the ACPI specification.
      */
-    AcpiNsCheckParameterCount (Pathname, Node, Predefined);
+    AcpiNsCheckParameterCount (Pathname, Node, UserParamCount, Predefined);
+
+    /* If not a predefined name, we cannot validate the return object */
+
+    if (!Predefined)
+    {
+        goto Exit;
+    }
+
+    /* If the method failed, we cannot validate the return object */
+
+    if ((ReturnStatus != AE_OK) && (ReturnStatus != AE_CTRL_RETURN_VALUE))
+    {
+        goto Exit;
+    }
+
+    /*
+     * Only validate the return value on the first successful evaluation of
+     * the method. This ensures that any warnings will only be emitted during
+     * the very first evaluation of the method/object.
+     */
+    if (Node->Flags & ANOBJ_EVALUATED)
+    {
+        goto Exit;
+    }
+
+    /* Mark the node as having been successfully evaluated */
+
+    Node->Flags |= ANOBJ_EVALUATED;
 
     /*
      * If there is no return value, check if we require a return value for
@@ -269,7 +294,7 @@ AcpiNsCheckPredefinedNames (
      * We have a return value, but if one wasn't expected, just exit, this is
      * not a problem
      *
-     * For example, if "Implicit return value" is enabled, methods will
+     * For example, if the "Implicit Return" feature is enabled, methods will
      * always return a value
      */
     if (!Predefined->Info.ExpectedBtypes)
@@ -296,7 +321,7 @@ AcpiNsCheckPredefinedNames (
     }
 
 Exit:
-    if (Pathname)
+    if (Pathname != Predefined->Info.Name)
     {
         ACPI_FREE (Pathname);
     }
@@ -311,6 +336,7 @@ Exit:
  *
  * PARAMETERS:  Pathname        - Full pathname to the node (for error msgs)
  *              Node            - Namespace node for the method/object
+ *              UserParamCount  - Number of args passed in by the caller
  *              Predefined      - Pointer to entry in predefined name table
  *
  * RETURN:      None
@@ -325,6 +351,7 @@ void
 AcpiNsCheckParameterCount (
     char                        *Pathname,
     ACPI_NAMESPACE_NODE         *Node,
+    UINT32                      UserParamCount,
     const ACPI_PREDEFINED_INFO  *Predefined)
 {
     UINT32                      ParamCount;
@@ -332,28 +359,76 @@ AcpiNsCheckParameterCount (
     UINT32                      RequiredParamsOld;
 
 
-    /*
-     * Check that the ASL-defined parameter count is what is expected for
-     * this predefined name.
-     *
-     * Methods have 0-7 parameters. All other types have zero.
-     */
+    /* Methods have 0-7 parameters. All other types have zero. */
+
     ParamCount = 0;
     if (Node->Type == ACPI_TYPE_METHOD)
     {
         ParamCount = Node->Object->Method.ParamCount;
     }
 
-    /* Validate parameter count - allow two different legal counts (_SCP) */
+    /* Argument count check for non-predefined methods/objects */
+
+    if (!Predefined)
+    {
+        /*
+         * Warning if too few or too many arguments have been passed by the
+         * caller. An incorrect number of arguments may not cause the method
+         * to fail. However, the method will fail if there are too few
+         * arguments and the method attempts to use one of the missing ones.
+         */
+        if (UserParamCount < ParamCount)
+        {
+            ACPI_WARNING ((AE_INFO,
+                "%s: Insufficient arguments - needs %d, found %d",
+                Pathname, ParamCount, UserParamCount));
+        }
+        else if (UserParamCount > ParamCount)
+        {
+            ACPI_WARNING ((AE_INFO,
+                "%s: Excess arguments - needs %d, found %d",
+                Pathname, ParamCount, UserParamCount));
+        }
+        return;
+    }
+
+    /* Allow two different legal argument counts (_SCP, etc.) */
 
     RequiredParamsCurrent = Predefined->Info.ParamCount & 0x0F;
     RequiredParamsOld = Predefined->Info.ParamCount >> 4;
 
+    if (UserParamCount != ACPI_UINT32_MAX)
+    {
+        /* Validate the user-supplied parameter count */
+
+        if ((UserParamCount != RequiredParamsCurrent) &&
+            (UserParamCount != RequiredParamsOld))
+        {
+            ACPI_WARNING ((AE_INFO,
+                "%s: Parameter count mismatch - caller passed %d, ACPI requires %d",
+                Pathname, UserParamCount, RequiredParamsCurrent));
+        }
+    }
+
+    /*
+     * Only validate the argument count on the first successful evaluation of
+     * the method. This ensures that any warnings will only be emitted during
+     * the very first evaluation of the method/object.
+     */
+    if (Node->Flags & ANOBJ_EVALUATED)
+    {
+        return;
+    }
+
+    /*
+     * Check that the ASL-defined parameter count is what is expected for
+     * this predefined name.
+     */
     if ((ParamCount != RequiredParamsCurrent) &&
         (ParamCount != RequiredParamsOld))
     {
         ACPI_WARNING ((AE_INFO,
-            "%s: Parameter count mismatch - ASL declared %d, expected %d",
+            "%s: Parameter count mismatch - ASL declared %d, ACPI requires %d",
             Pathname, ParamCount, RequiredParamsCurrent));
     }
 }
