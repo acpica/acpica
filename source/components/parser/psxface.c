@@ -410,6 +410,24 @@ AcpiPsExecuteMethod (
         goto Cleanup;
     }
 
+    /*
+     * Start method evaluation with an implicit return of zero. This is done
+     * for Windows compatibility.
+     */
+    if (AcpiGbl_EnableInterpreterSlack)
+    {
+        WalkState->ImplicitReturnObj =
+            AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+        if (!WalkState->ImplicitReturnObj)
+        {
+            Status = AE_NO_MEMORY;
+            AcpiDsDeleteWalkState (WalkState);
+            goto Cleanup;
+        }
+
+        WalkState->ImplicitReturnObj->Integer.Value = 0;
+    }
+
     /* Parse the AML */
 
     Status = AcpiPsParseAml (WalkState);
