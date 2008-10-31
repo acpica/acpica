@@ -1,4 +1,102 @@
 ----------------------------------------
+31 October 2008. Summary of changes for version 20081031:
+
+This release is available at www.acpica.org/downloads.
+
+1) ACPI CA Core Subsystem:
+
+Restructured the ACPICA header files into public/private. acpi.h now includes 
+only the "public" acpica headers. All other acpica headers are "private" and 
+should not be included by acpica users. One new file, accommon.h is used to 
+include the commonly used private headers for acpica code generation. Future 
+plans include moving all private headers to a new subdirectory.
+
+Implemented an automatic Buffer->String return value conversion for 
+predefined ACPI methods. For these methods (such as _BIF), added automatic 
+conversion for return objects that are required to be a String, but a Buffer 
+was found instead. This can happen when reading string battery data from an 
+operation region, because it used to be difficult to convert the data from 
+buffer to string from within the ASL. Ensures that the host OS is provided 
+with a valid null-terminated string. Linux BZ 11822.
+
+Updated the FACS waking vector interfaces. Split AcpiSetFirmwareWakingVector 
+into two: one for the 32-bit vector, another for the 64-bit vector. This is 
+required because the host OS must setup the wake much differently for each 
+vector (real vs. protected mode, etc.) and the interface itself should not be 
+deciding which vector to use. Also, eliminated the GetFirmwareWakingVector 
+interface, as it served no purpose (only the firmware reads the vector, OS 
+only writes the vector.) ACPICA BZ 731.
+
+Implemented a mechanism to escape infinite AML While() loops. Added a loop 
+counter to force exit from AML While loops if the count becomes too large. 
+This can occur in poorly written AML when the hardware does not respond 
+within a while loop and the loop does not implement a timeout. The maximum 
+loop count is configurable. A new exception code is returned when a loop is 
+broken, AE_AML_INFINITE_LOOP. Alexey Starikovskiy, Bob Moore.
+
+Optimized the execution of AML While loops. Previously, a control state 
+object was allocated and freed for each execution of the loop. The 
+optimization is to simply reuse the control state for each iteration. This 
+speeds up the raw loop execution time by about 5%.
+
+Enhanced the implicit return mechanism. For Windows compatibility, return an 
+implicit integer of value zero for methods that contain no executable code. 
+Such methods are seen in the field as stubs (presumably), and can cause 
+drivers to fail if they expect a return value. Lin Ming.
+
+Allow multiple backslashes as root prefixes in namepaths. In a fully 
+qualified namepath, allow multiple backslash prefixes. This can happen (and 
+is seen in the field) because of the use of a double-backslash in strings 
+(since backslash is the escape character) causing confusion. ACPICA BZ 739 
+Lin Ming.
+
+Emit a warning if two different FACS or DSDT tables are discovered in the 
+FADT. Checks if there are two valid but different addresses for the FACS and 
+DSDT within the FADT (mismatch between the 32-bit and 64-bit fields.)
+
+Consolidated the method argument count validation code. Merged the code that 
+validates control method argument counts into the predefined validation 
+module. Eliminates possible multiple warnings for incorrect argument counts.
+
+Implemented ACPICA example code. Includes code for ACPICA initialization, 
+handler installation, and calling a control method. Available at 
+source/tools/examples.
+
+Added a global pointer for FACS table to simplify internal FACS access. Use 
+the global pointer instead of using AcpiGetTableByIndex for each FACS access. 
+This simplifies the code for the Global Lock and the Firmware Waking 
+Vector(s).
+
+Example Code and Data Size: These are the sizes for the OS-independent 
+acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
+debug version of the code includes the debug output trace mechanism and has a 
+much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  81.2K Code, 17.0K Data,  98.2K Total
+    Debug Version:     155.8K Code, 49.1K Data, 204.9K Total
+  Current Release:
+    Non-Debug Version:  81.7K Code, 17.3K Data,  99.0K Total
+    Debug Version:     156.4K Code, 49.4K Data, 205.8K Total
+
+2) iASL Compiler/Disassembler and Tools:
+
+iASL: Improved disassembly of external method calls. Added the -e option to 
+allow the inclusion of additional ACPI tables to help with the disassembly of 
+method invocations and the generation of external declarations during the 
+disassembly. Certain external method invocations cannot be disassembled 
+properly without the actual declaration of the method. Use the -e option to 
+include the table where the external method(s) are actually declared. Most 
+useful for disassembling SSDTs that make method calls back to the master 
+DSDT. Lin Ming. Example: To disassemble an SSDT with calls to DSDT:  iasl -d 
+-e dsdt.aml ssdt1.aml
+
+iASL: Fix to allow references to aliases within ASL namepaths. Fixes a 
+problem where the use of an alias within a namepath would result in a not 
+found error or cause the compiler to fault. Also now allows forward 
+references from the Alias operator itself. ACPICA BZ 738.
+
+----------------------------------------
 26 September 2008. Summary of changes for version 20080926:
 
 1) ACPI CA Core Subsystem:
@@ -222,28 +320,22 @@ Direct git access via http://www.acpica.org/repos/acpica.git
 0) Git source tree / acpica.org
 
 Fixed a problem where a git-clone from http would not transfer the entire 
-source 
-tree.
+source tree.
 
 1) ACPI CA Core Subsystem:
 
 Implemented a "careful" GPE disable in AcpiEvDisableGpe, only modify one 
-enable 
-bit. Now performs a read-change-write of the enable register instead of 
-simply 
-writing out the cached enable mask. This will prevent inadvertent enabling of 
-GPEs if a rogue GPE is received during initialization (before GPE handlers 
-are 
-installed.)
+enable bit. Now performs a read-change-write of the enable register instead 
+of simply writing out the cached enable mask. This will prevent inadvertent 
+enabling of GPEs if a rogue GPE is received during initialization (before GPE 
+handlers are installed.)
 
 Implemented a copy for dynamically loaded tables. Previously, dynamically 
-loaded 
-tables were simply mapped - but on some machines this memory is corrupted 
-after 
-suspend. Now copy the table to a local buffer. For the OpRegion case, added 
-checksum verify. Use the table length from the table header, not the region 
-length. For the Buffer case, use the table length also. Dennis Noordsij, Bob 
-Moore. BZ 10734
+loaded tables were simply mapped - but on some machines this memory is 
+corrupted after suspend. Now copy the table to a local buffer. For the 
+OpRegion case, added checksum verify. Use the table length from the table 
+header, not the region length. For the Buffer case, use the table length 
+also. Dennis Noordsij, Bob Moore. BZ 10734
 
 Fixed a problem where the same ACPI table could not be dynamically loaded and 
 unloaded more than once. Without this change, a table cannot be loaded again 
@@ -252,24 +344,18 @@ unregister a table upon an unload. During a load, if the same table is found,
 this no longer returns an exception. BZ 722
 
 Fixed a problem where the wrong descriptor length was calculated for the 
-EndTag 
-descriptor in 64-bit mode. The "minimal" descriptors such as EndTag are 
-calculated as 12 bytes long, but the actual length in the internal descriptor 
-is 
-16 because of the round-up to 8 on the 64-bit build. Reported by Linn 
-Crosetto. 
-BZ 728
+EndTag descriptor in 64-bit mode. The "minimal" descriptors such as EndTag 
+are calculated as 12 bytes long, but the actual length in the internal 
+descriptor is 16 because of the round-up to 8 on the 64-bit build. Reported 
+by Linn Crosetto. BZ 728
 
 Fixed a possible memory leak in the Unload operator. The DdbHandle returned 
-by 
-Load() did not have its reference count decremented during unload, leading to 
-a 
-memory leak. Lin Ming. BZ 727
+by Load() did not have its reference count decremented during unload, leading 
+to a memory leak. Lin Ming. BZ 727
 
 Fixed a possible memory leak when deleting thermal/processor objects. Any 
 associated notify handlers (and objects) were not being deleted. Fiodor 
-Suietov. 
-BZ 506
+Suietov. BZ 506
 
 Fixed the ordering of the ASCII names in the global mutex table to match the 
 actual mutex IDs. Used by AcpiUtGetMutexName, a function used for debug only. 
@@ -277,10 +363,8 @@ Vegard Nossum. BZ 726
 
 Enhanced the AcpiGetObjectInfo interface to return the number of required 
 arguments if the object is a control method. Added this call to the debugger 
-so 
-the proper number of default arguments are passed to a method. This prevents 
-a 
-warning when executing methods from AcpiExec.
+so the proper number of default arguments are passed to a method. This 
+prevents a warning when executing methods from AcpiExec.
 
 Added a check for an invalid handle in AcpiGetObjectInfo. Return 
 AE_BAD_PARAMETER if input handle is invalid. BZ 474
@@ -289,9 +373,8 @@ Fixed an extraneous warning from exconfig.c on the 64-bit build.
 
 Example Code and Data Size: These are the sizes for the OS-independent 
 acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
-debug 
-version of the code includes the debug output trace mechanism and has a much 
-larger code and data size.
+debug version of the code includes the debug output trace mechanism and has a 
+much larger code and data size.
 
   Previous Release:
     Non-Debug Version:  79.3K Code, 16.2K Data,  95.5K Total
@@ -303,12 +386,10 @@ larger code and data size.
 2) iASL Compiler/Disassembler and Tools:
 
 iASL: Added two missing ACPI reserved names. Added _MTP and _ASZ, both 
-resource 
-descriptor names.
+resource descriptor names.
 
 iASL: Detect invalid ASCII characters in input (windows version). Removed the 
-"-
-CF" flag from the flex compile, enables correct detection of non-ASCII 
+"-CF" flag from the flex compile, enables correct detection of non-ASCII 
 characters in the input. BZ 441
 
 iASL: Eliminate warning when result of LoadTable is not used. Eliminate the 
@@ -317,14 +398,11 @@ LoadTable is not used. The warning is not needed. BZ 590
 
 AcpiExec: Add support for dynamic table load/unload. Now calls _CFG method to 
 pass address of table to the AML. Added option to disable OpRegion simulation 
-to 
-allow creation of an OpRegion with a real address that was passed to _CFG. 
-All 
-of this allows testing of the Load and Unload operators from AcpiExec.
+to allow creation of an OpRegion with a real address that was passed to _CFG. 
+All of this allows testing of the Load and Unload operators from AcpiExec.
 
 Debugger: update tables command for unloaded tables. Handle unloaded tables 
-and 
-use the standard table header output routine.
+and use the standard table header output routine.
 
 ----------------------------------------
 09 June 2008. Summary of changes for version 20080609:
