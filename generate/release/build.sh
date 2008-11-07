@@ -75,6 +75,7 @@ cp -r source/compiler unixtemp/compiler
 cp -r source/tools/acpisrc unixtemp/tools
 cp -r source/tools/acpiexec unixtemp/tools
 cp -r source/tools/acpixtract unixtemp/tools
+cp -r source/tools/examples unixtemp/tools
 
 #
 # OS-specific interfaces
