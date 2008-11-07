@@ -123,6 +123,7 @@
 #include <sys/types.h>
 #include <machine/acpica_machdep.h>
 
+#define ACPI_THREAD_ID                  lwpid_t
 #define ACPI_UINTPTR_T                  uintptr_t
 #define ACPI_USE_LOCAL_CACHE
 #define __cdecl
