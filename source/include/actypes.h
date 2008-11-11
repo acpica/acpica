@@ -282,25 +282,17 @@ typedef UINT32                          ACPI_PHYSICAL_ADDRESS;
 
 /*******************************************************************************
  *
- * OS-dependent and compiler-dependent types
+ * OS-dependent types
  *
  * If the defaults below are not appropriate for the host system, they can
- * be defined in the compiler-specific or OS-specific header, and this will
- * take precedence.
+ * be defined in the OS-specific header, and this will take precedence.
  *
  ******************************************************************************/
-
 
 /* Value returned by AcpiOsGetThreadId */
 
 #ifndef ACPI_THREAD_ID
 #define ACPI_THREAD_ID                  ACPI_SIZE
-#endif
-
-/* Object returned from AcpiOsCreateLock */
-
-#ifndef ACPI_SPINLOCK
-#define ACPI_SPINLOCK                   void *
 #endif
 
 /* Flags for AcpiOsAcquireLock/AcpiOsReleaseLock */
@@ -318,6 +310,45 @@ typedef UINT32                          ACPI_PHYSICAL_ADDRESS;
 #define ACPI_CACHE_T                    void *
 #endif
 #endif
+
+/*
+ * Synchronization objects - Mutexes, Semaphores, and SpinLocks
+ */
+#if (ACPI_MUTEX_TYPE == ACPI_BINARY_SEMAPHORE)
+/*
+ * These macros are used if the host OS does not support a mutex object.
+ * Map the OSL Mutex interfaces to binary semaphores.
+ */
+#define ACPI_MUTEX                      ACPI_SEMAPHORE
+#define AcpiOsCreateMutex(OutHandle)    AcpiOsCreateSemaphore (1, 1, OutHandle)
+#define AcpiOsDeleteMutex(Handle)       (void) AcpiOsDeleteSemaphore (Handle)
+#define AcpiOsAcquireMutex(Handle,Time) AcpiOsWaitSemaphore (Handle, 1, Time)
+#define AcpiOsReleaseMutex(Handle)      (void) AcpiOsSignalSemaphore (Handle, 1)
+#endif
+
+/* Configurable types for synchronization objects */
+
+#ifndef ACPI_SPINLOCK
+#define ACPI_SPINLOCK                   void *
+#endif
+
+#ifndef ACPI_SEMAPHORE
+#define ACPI_SEMAPHORE                  void *
+#endif
+
+#ifndef ACPI_MUTEX
+#define ACPI_MUTEX                      void *
+#endif
+
+
+/*******************************************************************************
+ *
+ * Compiler-dependent types
+ *
+ * If the defaults below are not appropriate for the host compiler, they can
+ * be defined in the compiler-specific header, and this will take precedence.
+ *
+ ******************************************************************************/
 
 /* Use C99 uintptr_t for pointer casting if available, "void *" otherwise */
 
@@ -442,12 +473,6 @@ typedef struct uint32_struct
     UINT32                          Hi;
 
 } UINT32_STRUCT;
-
-
-/* Synchronization objects */
-
-#define ACPI_MUTEX                      void *
-#define ACPI_SEMAPHORE                  void *
 
 
 /*

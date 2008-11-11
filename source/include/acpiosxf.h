@@ -233,8 +233,11 @@ AcpiOsSignalSemaphore (
 
 
 /*
- * Mutex primitives
+ * Mutex primitives. May be configured to use semaphores instead via
+ * ACPI_MUTEX_TYPE (see platform/acenv.h)
  */
+#if (ACPI_MUTEX_TYPE != ACPI_BINARY_SEMAPHORE)
+
 ACPI_STATUS
 AcpiOsCreateMutex (
     ACPI_MUTEX              *OutHandle);
@@ -251,13 +254,7 @@ AcpiOsAcquireMutex (
 void
 AcpiOsReleaseMutex (
     ACPI_MUTEX              Handle);
-
-/* Temporary macros for Mutex* interfaces, map to existing semaphore xfaces */
-
-#define AcpiOsCreateMutex(OutHandle)        AcpiOsCreateSemaphore (1, 1, OutHandle)
-#define AcpiOsDeleteMutex(Handle)           (void) AcpiOsDeleteSemaphore (Handle)
-#define AcpiOsAcquireMutex(Handle,Time)     AcpiOsWaitSemaphore (Handle, 1, Time)
-#define AcpiOsReleaseMutex(Handle)          (void) AcpiOsSignalSemaphore (Handle, 1)
+#endif
 
 
 /*
