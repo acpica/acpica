@@ -802,7 +802,7 @@ typedef struct acpi_hest_aer_common
     UINT32                  UncorrectableErrorMask;
     UINT32                  UncorrectableErrorSeverity;
     UINT32                  CorrectableErrorMask;
-    UINT32                  AdvancedErrorCababilities;
+    UINT32                  AdvancedErrorCapabilities;
 
 } ACPI_HEST_AER_COMMON;
 

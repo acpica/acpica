@@ -636,7 +636,7 @@ AcpiDmDumpEinj (
     {
         AcpiOsPrintf ("\n");
         Status = AcpiDmDumpTable (Length, Offset, SubTable,
-                    0, AcpiDmTableInfoEinj0);
+                    sizeof (ACPI_WHEA_HEADER), AcpiDmTableInfoEinj0);
         if (ACPI_FAILURE (Status))
         {
             return;
@@ -689,7 +689,7 @@ AcpiDmDumpErst (
     {
         AcpiOsPrintf ("\n");
         Status = AcpiDmDumpTable (Length, Offset, SubTable,
-                    0, AcpiDmTableInfoEinj0);
+                    sizeof (ACPI_WHEA_HEADER), AcpiDmTableInfoEinj0);
         if (ACPI_FAILURE (Status))
         {
             return;
@@ -742,10 +742,48 @@ AcpiDmDumpHest (
     SubTable = ACPI_ADD_PTR (ACPI_HEST_HEADER, Table, Offset);
     while (Offset < Table->Length)
     {
-        /* TBD: add new subtable types as examples become available */
-
         switch (SubTable->Type)
         {
+        case ACPI_HEST_TYPE_XPF_MACHINE_CHECK:
+            InfoTable = AcpiDmTableInfoHest0;
+            SubTableLength = sizeof (ACPI_HEST_XPF_MACHINE_CHECK);
+            break;
+
+        case ACPI_HEST_TYPE_XPF_CORRECTED_MACHINE_CHECK:
+            InfoTable = AcpiDmTableInfoHest1;
+            SubTableLength = sizeof (ACPI_HEST_XPF_CORRECTED);
+            break;
+
+        case ACPI_HEST_TYPE_XPF_NON_MASKABLE_INTERRUPT:
+            InfoTable = AcpiDmTableInfoHest3;
+            SubTableLength = sizeof (ACPI_HEST_XPF_NMI);
+            break;
+
+        case ACPI_HEST_TYPE_IPF_CORRECTED_MACHINE_CHECK:
+            InfoTable = AcpiDmTableInfoHest4;
+            SubTableLength = sizeof (ACPI_HEST_IPF_CORRECTED);
+            break;
+
+        case ACPI_HEST_TYPE_IPF_CORRECTED_PLATFORM_ERROR:
+            InfoTable = AcpiDmTableInfoHest5;
+            SubTableLength = sizeof (ACPI_HEST_IPF_CORRECTED_PLATFORM);
+            break;
+
+        case ACPI_HEST_TYPE_AER_ROOT_PORT:
+            InfoTable = AcpiDmTableInfoHest6;
+            SubTableLength = sizeof (ACPI_HEST_AER_ROOT);
+            break;
+
+        case ACPI_HEST_TYPE_AER_ENDPOINT:
+            InfoTable = AcpiDmTableInfoHest7;
+            SubTableLength = sizeof (ACPI_HEST_AER);
+            break;
+
+        case ACPI_HEST_TYPE_AER_BRIDGE:
+            InfoTable = AcpiDmTableInfoHest8;
+            SubTableLength = sizeof (ACPI_HEST_AER_BRIDGE);
+            break;
+
         case ACPI_HEST_TYPE_GENERIC_HARDWARE_ERROR_SOURCE:
             InfoTable = AcpiDmTableInfoHest9;
             SubTableLength = sizeof (ACPI_HEST_GENERIC);
@@ -758,7 +796,7 @@ AcpiDmDumpHest (
 
         AcpiOsPrintf ("\n");
         Status = AcpiDmDumpTable (Length, Offset, SubTable,
-                    0, InfoTable);
+                    SubTableLength, InfoTable);
         if (ACPI_FAILURE (Status))
         {
             return;
@@ -916,7 +954,8 @@ AcpiDmDumpMcfg (
         }
 
         AcpiOsPrintf ("\n");
-        Status = AcpiDmDumpTable (Table->Length, Offset, SubTable, 0, AcpiDmTableInfoMcfg0);
+        Status = AcpiDmDumpTable (Table->Length, Offset, SubTable,
+                    sizeof (ACPI_MCFG_ALLOCATION), AcpiDmTableInfoMcfg0);
         if (ACPI_FAILURE (Status))
         {
             return;

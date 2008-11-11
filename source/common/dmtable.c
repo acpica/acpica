@@ -165,7 +165,7 @@ static const char           *AcpiDmHestSubnames[] =
     "IPF Corrected Platform Error",
     "PCI Express Root Port AER",
     "PCI Express AER (AER Endpoint)",
-    "PCI Express/PCI-X Bridge AERn",
+    "PCI Express/PCI-X Bridge AER",
     "Generic Hardware Error Source",
     "Unknown SubTable Type"         /* Reserved */
 };
@@ -722,7 +722,7 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf ("<Generic Address Structure>\n");
             AcpiDmDumpTable (ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Length,
-                CurrentOffset, Target, 0, AcpiDmTableInfoGas);
+                CurrentOffset, Target, sizeof (ACPI_GENERIC_ADDRESS), AcpiDmTableInfoGas);
             AcpiOsPrintf ("\n");
             LastOutputBlankLine = TRUE;
             break;

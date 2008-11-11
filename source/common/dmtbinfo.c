@@ -164,6 +164,14 @@
 #define ACPI_DMAR1_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_DMAR_RESERVED_MEMORY,f)
 #define ACPI_DMAR2_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_DMAR_ATSR,f)
 #define ACPI_EINJ0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_WHEA_HEADER,f)
+#define ACPI_HEST0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_HEST_XPF_MACHINE_CHECK,f)
+#define ACPI_HEST1_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_HEST_XPF_CORRECTED,f)
+#define ACPI_HEST3_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_HEST_XPF_NMI,f)
+#define ACPI_HEST4_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_HEST_IPF_CORRECTED,f)
+#define ACPI_HEST5_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_HEST_IPF_CORRECTED_PLATFORM,f)
+#define ACPI_HEST6_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_HEST_AER_ROOT,f)
+#define ACPI_HEST7_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_HEST_AER,f)
+#define ACPI_HEST8_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_HEST_AER_BRIDGE,f)
 #define ACPI_HEST9_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_HEST_GENERIC,f)
 #define ACPI_HESTN_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_HEST_NOTIFY,f)
 #define ACPI_MADT0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_MADT_LOCAL_APIC,f)
@@ -714,6 +722,151 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoHest[] =
     {ACPI_DMT_UINT32,   ACPI_HEST_OFFSET (ErrorSourceCount),        "Error Source Count"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
+
+/* HEST Subtables */
+
+/* 0: XPF Machine Check Exception */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoHest0[] =
+{
+    {ACPI_DMT_HEST,     ACPI_HEST0_OFFSET (Header.Type),            "Subtable Type"},
+    {ACPI_DMT_UINT16,   ACPI_HEST0_OFFSET (SourceId),               "Source Id"},
+    {ACPI_DMT_UINT16,   ACPI_HEST0_OFFSET (ConfigWriteEnable),      "Configuration Write Enable"},
+    {ACPI_DMT_UINT8,    ACPI_HEST0_OFFSET (Flags),                  "Flags"},
+    {ACPI_DMT_UINT8,    ACPI_HEST0_OFFSET (Reserved1),              "Reserved"},
+    {ACPI_DMT_UINT32,   ACPI_HEST0_OFFSET (RecordsToPreAllocate),   "Records To Preallocate"},
+    {ACPI_DMT_UINT32,   ACPI_HEST0_OFFSET (MaxSectionsPerRecord),   "Max Sections Per Record"},
+    {ACPI_DMT_UINT64,   ACPI_HEST0_OFFSET (GlobalCapabilityData),   "Global Capability Data"},
+    {ACPI_DMT_UINT64,   ACPI_HEST0_OFFSET (GlobalControlData),      "Global Control Data"},
+    {ACPI_DMT_UINT8,    ACPI_HEST0_OFFSET (NumHardwareBanks),       "Num Hardware Banks"},
+    {ACPI_DMT_UINT56,   ACPI_HEST0_OFFSET (Reserved2),              "Reserved"},
+    {ACPI_DMT_EXIT,     0,                                          NULL}
+};
+
+/* 1: XPF Corrected Machine Check */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoHest1[] =
+{
+    {ACPI_DMT_HEST,     ACPI_HEST1_OFFSET (Header.Type),            "Subtable Type"},
+    {ACPI_DMT_UINT16,   ACPI_HEST1_OFFSET (SourceId),               "Source Id"},
+    {ACPI_DMT_UINT16,   ACPI_HEST1_OFFSET (ConfigWriteEnable),      "Configuration Write Enable"},
+    {ACPI_DMT_UINT8,    ACPI_HEST1_OFFSET (Flags),                  "Flags"},
+    {ACPI_DMT_UINT8,    ACPI_HEST1_OFFSET (Enabled),                "Enabled"},
+    {ACPI_DMT_UINT32,   ACPI_HEST1_OFFSET (RecordsToPreAllocate),   "Records To Preallocate"},
+    {ACPI_DMT_UINT32,   ACPI_HEST1_OFFSET (MaxSectionsPerRecord),   "Max Sections Per Record"},
+    {ACPI_DMT_HESTNTFY, ACPI_HEST1_OFFSET (Notify),                 "Notify"},
+    {ACPI_DMT_UINT8,    ACPI_HEST1_OFFSET (NumHardwareBanks),       "Num Hardware Banks"},
+    {ACPI_DMT_UINT24,   ACPI_HEST1_OFFSET (Reserved),               "Reserved"},
+    {ACPI_DMT_EXIT,     0,                                          NULL}
+};
+
+/* 3: XPF Non-Maskable Interrupt */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoHest3[] =
+{
+    {ACPI_DMT_HEST,     ACPI_HEST3_OFFSET (Header.Type),            "Subtable Type"},
+    {ACPI_DMT_UINT16,   ACPI_HEST3_OFFSET (SourceId),               "Source Id"},
+    {ACPI_DMT_UINT32,   ACPI_HEST3_OFFSET (Reserved),               "Reserved"},
+    {ACPI_DMT_UINT32,   ACPI_HEST3_OFFSET (RecordsToPreAllocate),   "Records To Preallocate"},
+    {ACPI_DMT_UINT32,   ACPI_HEST3_OFFSET (MaxSectionsPerRecord),   "Max Sections Per Record"},
+    {ACPI_DMT_UINT32,   ACPI_HEST3_OFFSET (MaxRawDataLength),       "Max Raw Data Length"},
+    {ACPI_DMT_EXIT,     0,                                          NULL}
+};
+
+/* 4: IPF Corrected Machine Check */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoHest4[] =
+{
+    {ACPI_DMT_HEST,     ACPI_HEST4_OFFSET (Header.Type),            "Subtable Type"},
+    {ACPI_DMT_UINT8,    ACPI_HEST4_OFFSET (Enabled),                "Enabled"},
+    {ACPI_DMT_UINT8,    ACPI_HEST4_OFFSET (Reserved),               "Reserved"},
+    {ACPI_DMT_EXIT,     0,                                          NULL}
+};
+
+/* 5: IPF Corrected Platform Error */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoHest5[] =
+{
+    {ACPI_DMT_HEST,     ACPI_HEST5_OFFSET (Header.Type),            "Subtable Type"},
+    {ACPI_DMT_UINT8,    ACPI_HEST5_OFFSET (Enabled),                "Enabled"},
+    {ACPI_DMT_UINT8,    ACPI_HEST5_OFFSET (Reserved),               "Reserved"},
+    {ACPI_DMT_EXIT,     0,                                          NULL}
+};
+
+/* 6: PCI Express Root Port AER */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoHest6[] =
+{
+    {ACPI_DMT_HEST,     ACPI_HEST6_OFFSET (Header.Type),                "Subtable Type"},
+    {ACPI_DMT_UINT16,   ACPI_HEST6_OFFSET (Aer.SourceId),               "Source Id"},
+    {ACPI_DMT_UINT16,   ACPI_HEST6_OFFSET (Aer.ConfigWriteEnable),      "Configuration Write Enable"},
+    {ACPI_DMT_UINT8,    ACPI_HEST6_OFFSET (Aer.Flags),                  "Flags"},
+    {ACPI_DMT_UINT8,    ACPI_HEST6_OFFSET (Aer.Enabled),                "Enabled"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.RecordsToPreAllocate),   "Records To Preallocate"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.MaxSectionsPerRecord),   "Max Sections Per Record"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.Bus),                    "Bus"},
+    {ACPI_DMT_UINT16,   ACPI_HEST6_OFFSET (Aer.Device),                 "Device"},
+    {ACPI_DMT_UINT16,   ACPI_HEST6_OFFSET (Aer.Function),               "Function"},
+    {ACPI_DMT_UINT16,   ACPI_HEST6_OFFSET (Aer.DeviceControl),          "DeviceControl"},
+    {ACPI_DMT_UINT16,   ACPI_HEST6_OFFSET (Aer.Reserved),               "Reserved"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.UncorrectableErrorMask),     "Uncorrectable Error Mask"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.UncorrectableErrorSeverity), "Uncorrectable Error Severity"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.CorrectableErrorMask),       "Correctable Error Mask"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.AdvancedErrorCapabilities),  "Advanced Error Capabilities"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (RootErrorCommand),               "Root Error Command"},
+    {ACPI_DMT_EXIT,     0,                                          NULL}
+};
+
+/* 7: PCI Express AER (AER Endpoint) */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoHest7[] =
+{
+    {ACPI_DMT_HEST,     ACPI_HEST6_OFFSET (Header.Type),                "Subtable Type"},
+    {ACPI_DMT_UINT16,   ACPI_HEST6_OFFSET (Aer.SourceId),               "Source Id"},
+    {ACPI_DMT_UINT16,   ACPI_HEST6_OFFSET (Aer.ConfigWriteEnable),      "Configuration Write Enable"},
+    {ACPI_DMT_UINT8,    ACPI_HEST6_OFFSET (Aer.Flags),                  "Flags"},
+    {ACPI_DMT_UINT8,    ACPI_HEST6_OFFSET (Aer.Enabled),                "Enabled"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.RecordsToPreAllocate),   "Records To Preallocate"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.MaxSectionsPerRecord),   "Max Sections Per Record"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.Bus),                    "Bus"},
+    {ACPI_DMT_UINT16,   ACPI_HEST6_OFFSET (Aer.Device),                 "Device"},
+    {ACPI_DMT_UINT16,   ACPI_HEST6_OFFSET (Aer.Function),               "Function"},
+    {ACPI_DMT_UINT16,   ACPI_HEST6_OFFSET (Aer.DeviceControl),          "DeviceControl"},
+    {ACPI_DMT_UINT16,   ACPI_HEST6_OFFSET (Aer.Reserved),               "Reserved"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.UncorrectableErrorMask),     "Uncorrectable Error Mask"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.UncorrectableErrorSeverity), "Uncorrectable Error Severity"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.CorrectableErrorMask),       "Correctable Error Mask"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.AdvancedErrorCapabilities),  "Advanced Error Capabilities"},
+    {ACPI_DMT_EXIT,     0,                                          NULL}
+};
+
+/* 8: PCI Express/PCI-X Bridge AER */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoHest8[] =
+{
+    {ACPI_DMT_HEST,     ACPI_HEST6_OFFSET (Header.Type),                "Subtable Type"},
+    {ACPI_DMT_UINT16,   ACPI_HEST6_OFFSET (Aer.SourceId),               "Source Id"},
+    {ACPI_DMT_UINT16,   ACPI_HEST6_OFFSET (Aer.ConfigWriteEnable),      "Configuration Write Enable"},
+    {ACPI_DMT_UINT8,    ACPI_HEST6_OFFSET (Aer.Flags),                  "Flags"},
+    {ACPI_DMT_UINT8,    ACPI_HEST6_OFFSET (Aer.Enabled),                "Enabled"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.RecordsToPreAllocate),   "Records To Preallocate"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.MaxSectionsPerRecord),   "Max Sections Per Record"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.Bus),                    "Bus"},
+    {ACPI_DMT_UINT16,   ACPI_HEST6_OFFSET (Aer.Device),                 "Device"},
+    {ACPI_DMT_UINT16,   ACPI_HEST6_OFFSET (Aer.Function),               "Function"},
+    {ACPI_DMT_UINT16,   ACPI_HEST6_OFFSET (Aer.DeviceControl),          "DeviceControl"},
+    {ACPI_DMT_UINT16,   ACPI_HEST6_OFFSET (Aer.Reserved),               "Reserved"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.UncorrectableErrorMask),     "Uncorrectable Error Mask"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.UncorrectableErrorSeverity), "Uncorrectable Error Severity"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.CorrectableErrorMask),       "Correctable Error Mask"},
+    {ACPI_DMT_UINT32,   ACPI_HEST6_OFFSET (Aer.AdvancedErrorCapabilities),  "Advanced Error Capabilities"},
+    {ACPI_DMT_UINT32,   ACPI_HEST8_OFFSET (SecondaryUncorrectableErrorMask),     "2nd Uncorrectable Err Mask"},
+    {ACPI_DMT_UINT32,   ACPI_HEST8_OFFSET (SecondaryUncorrectableErrorSeverity), "2nd Uncorrectable Err Severity"},
+    {ACPI_DMT_UINT32,   ACPI_HEST8_OFFSET (SecondaryAdvancedCapabilities),       "2nd Advanced Capabilities"},
+    {ACPI_DMT_EXIT,     0,                                          NULL}
+};
+
+/* 9: Generic Hardware Error Source */
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoHest9[] =
 {
