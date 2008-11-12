@@ -260,11 +260,18 @@ AcpiDmDumpFadt (
 
     AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoFadt1);
 
-    /* Check for ACPI 2.0+ extended data (cannot depend on Revision field) */
+    /* Check for ACPI 1.0B MS extensions (FADT revision 2) */
 
-    if (Table->Length >= sizeof (ACPI_TABLE_FADT))
+    if (Table->Revision == 2)
     {
         AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoFadt2);
+    }
+
+    /* Check for ACPI 2.0+ extended data (FADT revision 3+) */
+
+    else if (Table->Length >= sizeof (ACPI_TABLE_FADT))
+    {
+        AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoFadt3);
     }
 
     /* Validate various fields in the FADT, including length */

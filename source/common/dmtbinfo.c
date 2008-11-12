@@ -315,6 +315,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFacs[] =
  *
  ******************************************************************************/
 
+/* ACPI 1.0 FADT (Version 1) */
+
 ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt1[] =
 {
     {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Facs),                    "FACS Address"},
@@ -374,9 +376,20 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt1[] =
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
-/* ACPI 2.0+ Extensions */
+/* ACPI 1.0 MS Extensions (FADT version 2) */
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt2[] =
+{
+    {ACPI_DMT_FLAG2,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "Reset Register Supported"},
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (ResetRegister),           "Reset Register"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (ResetValue),              "Value to cause reset"},
+    {ACPI_DMT_UINT24,   ACPI_FADT_OFFSET (Reserved4[0]),            "Reserved"},
+    {ACPI_DMT_EXIT,     0,                                          NULL}
+};
+
+/* ACPI 2.0+ Extensions (FADT version 3+) */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt3[] =
 {
     {ACPI_DMT_FLAG2,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "Reset Register Supported"},
     {ACPI_DMT_FLAG3,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "Sealed Case"},
