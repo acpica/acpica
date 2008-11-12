@@ -124,6 +124,8 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <semaphore.h>
+#include <pthread.h>
 
 #include "acpi.h"
 #include "accommon.h"
@@ -142,6 +144,7 @@ ACPI_PHYSICAL_ADDRESS
 AeLocalGetRootPointer (
     void);
 
+typedef void* (*PTHREAD_CALLBACK) (void *);
 
 /******************************************************************************
  *
@@ -567,8 +570,25 @@ AcpiOsCreateSemaphore (
     ACPI_HANDLE         *OutHandle)
 {
 
+    sem_t *Sem;
 
-    *OutHandle = (ACPI_HANDLE) 1;
+    if (!OutHandle) {
+        return AE_BAD_PARAMETER;
+    }
+
+    Sem = AcpiOsAllocate (sizeof(sem_t));
+
+    if (!Sem) {
+	return AE_NO_MEMORY;
+    }
+
+    if (sem_init (Sem, 0, InitialUnits) == -1) {
+        AcpiOsFree (Sem);
+        return AE_BAD_PARAMETER;
+    }
+
+    *OutHandle = (ACPI_HANDLE)Sem;
+
     return AE_OK;
 }
 
@@ -588,9 +608,13 @@ ACPI_STATUS
 AcpiOsDeleteSemaphore (
     ACPI_HANDLE         Handle)
 {
-
-    if (!Handle)
+    sem_t *Sem = (sem_t *)Handle;
+    if (!Sem)
     {
+        return AE_BAD_PARAMETER;
+    }
+
+    if (sem_destroy (Sem) == -1) {
         return AE_BAD_PARAMETER;
     }
 
@@ -618,9 +642,52 @@ AcpiOsWaitSemaphore (
     UINT32              Units,
     UINT16              Timeout)
 {
+    ACPI_STATUS Status = AE_OK;
+    sem_t *Sem = (sem_t *)Handle;
+    if (!Sem)
+    {
+        return AE_BAD_PARAMETER;
+    }
 
+    switch (Timeout) {
+            /*
+            * No Wait:
+            * --------
+            * A zero timeout value indicates that we shouldn't wait - just
+            * acquire the semaphore if available otherwise return AE_TIME
+            * (a.k.a. 'would block').
+            */
+    case 0:
+            if (sem_trywait(Sem) == -1)
+                    Status = AE_TIME;
+            break;
 
-    return AE_OK;
+            /*
+            * Wait Indefinitely:
+            * ------------------
+            */
+    case ACPI_WAIT_FOREVER:
+            if (sem_wait(Sem)) {
+                Status = AE_TIME;
+            }
+            break;
+
+            /*
+            * Wait w/ Timeout:
+            * ----------------
+            */
+    default:
+            {
+                struct timespec T;
+                T.tv_sec = Timeout /1000;
+                T.tv_nsec = (Timeout - T.tv_sec * 1000) * 1000000;
+                if (sem_timedwait(Sem, &T)) {
+                    Status = AE_TIME;
+                }
+            }
+            break;
+    }
+    return Status;
 }
 
 
@@ -642,8 +709,14 @@ AcpiOsSignalSemaphore (
     ACPI_HANDLE         Handle,
     UINT32              Units)
 {
-
-
+    sem_t *Sem = (sem_t *)Handle;
+    if (!Sem)
+    {
+        return AE_BAD_PARAMETER;
+    }
+    if (sem_post(Sem) == -1) {
+        return AE_LIMIT;
+    }
     return AE_OK;
 }
 
@@ -751,8 +824,13 @@ AcpiOsExecute (
     ACPI_OSD_EXEC_CALLBACK  Function,
     void                    *Context)
 {
+    pthread_t thread;
+    int ret;
 
-//    _beginthread (Function, (unsigned) 0, Context);
+    ret = pthread_create (&thread, NULL, (PTHREAD_CALLBACK)Function, Context);
+    if (ret) {
+        AcpiOsPrintf("Create thread failed");
+    }
     return 0;
 }
 
@@ -1107,7 +1185,7 @@ AcpiOsWriteMemory (
 ACPI_THREAD_ID
 AcpiOsGetThreadId(void)
 {
-    return getpid();
+    return (ACPI_THREAD_ID)(pthread_self());
 }
 
 

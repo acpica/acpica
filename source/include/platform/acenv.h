@@ -434,8 +434,8 @@ typedef char *va_list;
 #define BREAKPOINT3
 #define ACPI_DISABLE_IRQS()
 #define ACPI_ENABLE_IRQS()
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq)
+#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq) Acq = 1
+#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq) Acq = 0
 
 #endif /* ACPI_ASM_MACROS */
 

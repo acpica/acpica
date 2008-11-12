@@ -134,7 +134,7 @@ CFLAGS+= -Wall -g -D_LINUX -DNDEBUG -D_CONSOLE -DACPI_EXEC_APP -D_MULTI_THREADED
 
 
 acpiexec : $(patsubst %.c,%.o, $(SRCS))
-	$(CC) $(LDFLAGS) $(patsubst %.c,%.o, $(SRCS)) -o $(PROG)
+	$(CC) $(LDFLAGS) $(patsubst %.c,%.o, $(SRCS)) -lrt -lpthread -o $(PROG)
 
 CLEANFILES= $(PROG)
 
