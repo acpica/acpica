@@ -201,7 +201,6 @@ AcpiNsBuildExternalPath (
 }
 
 
-#ifdef ACPI_DEBUG_OUTPUT
 /*******************************************************************************
  *
  * FUNCTION:    AcpiNsGetExternalPathname
@@ -212,7 +211,8 @@ AcpiNsBuildExternalPath (
  *              the node, In external format (name segments separated by path
  *              separators.)
  *
- * DESCRIPTION: Used for debug printing in AcpiNsSearchTable().
+ * DESCRIPTION: Used to obtain the full pathname to a namespace node, usually
+ *              for error and debug statements.
  *
  ******************************************************************************/
 
@@ -241,7 +241,7 @@ AcpiNsGetExternalPathname (
     NameBuffer = ACPI_ALLOCATE_ZEROED (Size);
     if (!NameBuffer)
     {
-        ACPI_ERROR ((AE_INFO, "Allocation failure"));
+        ACPI_ERROR ((AE_INFO, "Could not allocate %d bytes", Size));
         return_PTR (NULL);
     }
 
@@ -256,7 +256,6 @@ AcpiNsGetExternalPathname (
 
     return_PTR (NameBuffer);
 }
-#endif
 
 
 /*******************************************************************************
