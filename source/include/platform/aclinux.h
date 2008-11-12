@@ -118,9 +118,12 @@
 
 #define ACPI_USE_SYSTEM_CLIBRARY
 #define ACPI_USE_DO_WHILE_0
-#define ACPI_MUTEX_TYPE             ACPI_OSL_MUTEX
 
 #ifdef __KERNEL__
+
+/* Linux kernel uses real mutex objects */
+
+#define ACPI_MUTEX_TYPE             ACPI_OSL_MUTEX
 
 #include <linux/config.h>
 #include <linux/string.h>
