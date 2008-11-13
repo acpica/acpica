@@ -355,7 +355,9 @@ extern const UINT8 _acpi_ctype[];
 #define ACPI_IS_PRINT(c)  (_acpi_ctype[(unsigned char)(c)] & (_ACPI_LO | _ACPI_UP | _ACPI_DI | _ACPI_SP | _ACPI_PU))
 #define ACPI_IS_ALPHA(c)  (_acpi_ctype[(unsigned char)(c)] & (_ACPI_LO | _ACPI_UP))
 
-#endif /* ACPI_USE_SYSTEM_CLIBRARY */
+#endif /* !ACPI_USE_SYSTEM_CLIBRARY */
+
+#define ACPI_IS_ASCII(c)  ((c) < 0x80)
 
 
 /*

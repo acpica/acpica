@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: acenv.h - Generation environment specific items
+ * Name: acenv.h - Host and compiler configuration
  *
  *****************************************************************************/
 
@@ -116,6 +116,11 @@
 #ifndef __ACENV_H__
 #define __ACENV_H__
 
+/*
+ * Environment configuration. The purpose of this file is to interface ACPICA
+ * to the local environment. This includes compiler-specific, OS-specific,
+ * and machine-specific configuration.
+ */
 
 /* Types for ACPI_MUTEX_TYPE */
 
@@ -134,37 +139,40 @@
  *
  *****************************************************************************/
 
-#ifdef ACPI_LIBRARY
-/*
- * Note: The non-debug version of the AcpiLibrary does not contain any
- * debug support, for minimal size. The debug version uses ACPI_FULL_DEBUG
- */
-#define ACPI_USE_LOCAL_CACHE
-#endif
+/* iASL configuration */
 
 #ifdef ACPI_ASL_COMPILER
-#define ACPI_DEBUG_OUTPUT
 #define ACPI_APPLICATION
 #define ACPI_DISASSEMBLER
+#define ACPI_DEBUG_OUTPUT
 #define ACPI_CONSTANT_EVAL_ONLY
 #define ACPI_LARGE_NAMESPACE_NODE
 #define ACPI_DATA_TABLE_DISASSEMBLY
 #endif
 
+/* AcpiExec configuration */
+
 #ifdef ACPI_EXEC_APP
-#undef DEBUGGER_THREADING
-#define DEBUGGER_THREADING      DEBUGGER_SINGLE_THREADED
-#define ACPI_FULL_DEBUG
 #define ACPI_APPLICATION
-#define ACPI_DEBUGGER
+#define ACPI_FULL_DEBUG
 #define ACPI_MUTEX_DEBUG
 #define ACPI_DBG_TRACK_ALLOCATIONS
 #endif
+
+/* Linkable ACPICA library */
+
+#ifdef ACPI_LIBRARY
+#define ACPI_USE_LOCAL_CACHE
+#endif
+
+/* Common for all ACPICA applications */
 
 #ifdef ACPI_APPLICATION
 #define ACPI_USE_SYSTEM_CLIBRARY
 #define ACPI_USE_LOCAL_CACHE
 #endif
+
+/* Common debug support */
 
 #ifdef ACPI_FULL_DEBUG
 #define ACPI_DEBUGGER
@@ -173,59 +181,23 @@
 #endif
 
 
-/*
- * Environment configuration.  The purpose of this file is to interface to the
- * local generation environment.
- *
- * 1) ACPI_USE_SYSTEM_CLIBRARY - Define this if linking to an actual C library.
- *      Otherwise, local versions of string/memory functions will be used.
- * 2) ACPI_USE_STANDARD_HEADERS - Define this if linking to a C library and
- *      the standard header files may be used.
- *
- * The ACPI subsystem only uses low level C library functions that do not call
- * operating system services and may therefore be inlined in the code.
- *
- * It may be necessary to tailor these include files to the target
- * generation environment.
- *
- *
- * Functions and constants used from each header:
- *
- * string.h:    memcpy
- *              memset
- *              strcat
- *              strcmp
- *              strcpy
- *              strlen
- *              strncmp
- *              strncat
- *              strncpy
- *
- * stdlib.h:    strtoul
- *
- * stdarg.h:    va_list
- *              va_arg
- *              va_start
- *              va_end
- *
- */
-
 /*! [Begin] no source code translation */
+
+/******************************************************************************
+ *
+ * Host configuration files. The compiler configuration files are included
+ * by the host files.
+ *
+ *****************************************************************************/
 
 #if defined(_LINUX) || defined(__linux__)
 #include "aclinux.h"
-
-#elif defined(_AED_EFI)
-#include "acefi.h"
 
 #elif defined(WIN32)
 #include "acwin.h"
 
 #elif defined(WIN64)
 #include "acwin64.h"
-
-#elif defined(MSDOS)        /* Must appear after WIN32 and WIN64 check */
-#include "acdos16.h"
 
 #elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
 #include "acfreebsd.h"
@@ -245,15 +217,17 @@
 #elif defined(__OS2__)
 #include "acos2.h"
 
+#elif defined(_WRS_LIB_BUILD)
+#include "acvxworks.h"
+
+#elif defined(_AED_EFI)
+#include "acefi.h"
+
 #else
 
-/* All other environments */
+/* Unknown environment */
 
-#define ACPI_USE_STANDARD_HEADERS
-
-#define COMPILER_DEPENDENT_INT64   long long
-#define COMPILER_DEPENDENT_UINT64  unsigned long long
-
+#error Unknown target environment
 #endif
 
 /*! [End] no source code translation !*/
@@ -261,15 +235,65 @@
 
 /******************************************************************************
  *
- * Miscellaneous configuration
+ * Setup defaults for the required symbols that were not defined in one of
+ * the host/compiler files above.
  *
  *****************************************************************************/
 
-/*
- * Are mutexes supported by the host? default is no, use binary semaphores.
- */
+/* 64-bit data types */
+
+#ifndef COMPILER_DEPENDENT_INT64
+#define COMPILER_DEPENDENT_INT64   long long
+#endif
+
+#ifndef COMPILER_DEPENDENT_UINT64
+#define COMPILER_DEPENDENT_UINT64  unsigned long long
+#endif
+
+/* Type of mutex supported by host. Default is binary semaphores. */
+
 #ifndef ACPI_MUTEX_TYPE
 #define ACPI_MUTEX_TYPE             ACPI_BINARY_SEMAPHORE
+#endif
+
+/* Global Lock acquire/release */
+
+#ifndef ACPI_ACQUIRE_GLOBAL_LOCK
+#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq) Acq = 1
+#endif
+
+#ifndef ACPI_RELEASE_GLOBAL_LOCK
+#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq) Acq = 0
+#endif
+
+/* Flush CPU cache - used when going to sleep. Wbinvd or similar. */
+
+#ifndef ACPI_FLUSH_CPU_CACHE
+#define ACPI_FLUSH_CPU_CACHE()
+#endif
+
+/*
+ * Configurable calling conventions:
+ *
+ * ACPI_SYSTEM_XFACE        - Interfaces to host OS (handlers, threads)
+ * ACPI_EXTERNAL_XFACE      - External ACPI interfaces
+ * ACPI_INTERNAL_XFACE      - Internal ACPI interfaces
+ * ACPI_INTERNAL_VAR_XFACE  - Internal variable-parameter list interfaces
+ */
+#ifndef ACPI_SYSTEM_XFACE
+#define ACPI_SYSTEM_XFACE
+#endif
+
+#ifndef ACPI_EXTERNAL_XFACE
+#define ACPI_EXTERNAL_XFACE
+#endif
+
+#ifndef ACPI_INTERNAL_XFACE
+#define ACPI_INTERNAL_XFACE
+#endif
+
+#ifndef ACPI_INTERNAL_VAR_XFACE
+#define ACPI_INTERNAL_VAR_XFACE
 #endif
 
 /*
@@ -296,17 +320,26 @@
  *
  *****************************************************************************/
 
-#define ACPI_IS_ASCII(c)  ((c) < 0x80)
-
+/*
+ * ACPI_USE_SYSTEM_CLIBRARY - Define this if linking to an actual C library.
+ *      Otherwise, local versions of string/memory functions will be used.
+ * ACPI_USE_STANDARD_HEADERS - Define this if linking to a C library and
+ *      the standard header files may be used.
+ *
+ * The ACPICA subsystem only uses low level C library functions that do not call
+ * operating system services and may therefore be inlined in the code.
+ *
+ * It may be necessary to tailor these include files to the target
+ * generation environment.
+ */
 #ifdef ACPI_USE_SYSTEM_CLIBRARY
-/*
- * Use the standard C library headers.
- * We want to keep these to a minimum.
- */
+
+/* Use the standard C library headers. We want to keep these to a minimum */
+
 #ifdef ACPI_USE_STANDARD_HEADERS
-/*
- * Use the standard headers from the standard locations
- */
+
+/* Use the standard headers from the standard locations */
+
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -314,9 +347,8 @@
 
 #endif /* ACPI_USE_STANDARD_HEADERS */
 
-/*
- * We will be linking to the standard Clib functions
- */
+/* We will be linking to the standard Clib functions */
+
 #define ACPI_STRSTR(s1,s2)      strstr((s1), (s2))
 #define ACPI_STRCHR(s1,c)       strchr((s1), (c))
 #define ACPI_STRLEN(s)          (ACPI_SIZE) strlen((s))
@@ -330,7 +362,6 @@
 #define ACPI_MEMCMP(s1,s2,n)    memcmp((const char *)(s1), (const char *)(s2), (ACPI_SIZE)(n))
 #define ACPI_MEMCPY(d,s,n)      (void) memcpy((d), (s), (ACPI_SIZE)(n))
 #define ACPI_MEMSET(d,s,n)      (void) memset((d), (s), (ACPI_SIZE)(n))
-
 #define ACPI_TOUPPER(i)         toupper((int) (i))
 #define ACPI_TOLOWER(i)         tolower((int) (i))
 #define ACPI_IS_XDIGIT(i)       isxdigit((int) (i))
@@ -348,13 +379,12 @@
  *
  *****************************************************************************/
 
- /*
- * Use local definitions of C library macros and functions
- * NOTE: The function implementations may not be as efficient
- * as an inline or assembly code implementation provided by a
- * native C library.
+/*
+ * Use local definitions of C library macros and functions. These function
+ * implementations may not be as efficient as an inline or assembly code
+ * implementation provided by a native C library, but they are functionally
+ * equivalent.
  */
-
 #ifndef va_arg
 
 #ifndef _VALIST
@@ -362,15 +392,13 @@
 typedef char *va_list;
 #endif /* _VALIST */
 
-/*
- * Storage alignment properties
- */
+/* Storage alignment properties */
+
 #define  _AUPBND                (sizeof (ACPI_NATIVE_INT) - 1)
 #define  _ADNBND                (sizeof (ACPI_NATIVE_INT) - 1)
 
-/*
- * Variable argument list macro definitions
- */
+/* Variable argument list macro definitions */
+
 #define _Bnd(X, bnd)            (((sizeof (X)) + (bnd)) & (~(bnd)))
 #define va_arg(ap, T)           (*(T *)(((ap) += (_Bnd (T, _AUPBND))) - (_Bnd (T,_ADNBND))))
 #define va_end(ap)              (void) 0
@@ -378,6 +406,7 @@ typedef char *va_list;
 
 #endif /* va_arg */
 
+/* Use the local (ACPICA) definitions of the clib functions */
 
 #define ACPI_STRSTR(s1,s2)      AcpiUtStrstr ((s1), (s2))
 #define ACPI_STRCHR(s1,c)       AcpiUtStrchr ((s1), (c))
@@ -397,62 +426,4 @@ typedef char *va_list;
 
 #endif /* ACPI_USE_SYSTEM_CLIBRARY */
 
-
-/******************************************************************************
- *
- * Assembly code macros
- *
- *****************************************************************************/
-
-/*
- * Handle platform- and compiler-specific assembly language differences.
- * These should already have been defined by the platform includes above.
- *
- * Notes:
- * 1) Interrupt 3 is used to break into a debugger
- * 2) Interrupts are turned off during ACPI register setup
- */
-
-/* Unrecognized compiler, use defaults */
-
-#ifndef ACPI_ASM_MACROS
-
-/*
- * Calling conventions:
- *
- * ACPI_SYSTEM_XFACE        - Interfaces to host OS (handlers, threads)
- * ACPI_EXTERNAL_XFACE      - External ACPI interfaces
- * ACPI_INTERNAL_XFACE      - Internal ACPI interfaces
- * ACPI_INTERNAL_VAR_XFACE  - Internal variable-parameter list interfaces
- */
-#define ACPI_SYSTEM_XFACE
-#define ACPI_EXTERNAL_XFACE
-#define ACPI_INTERNAL_XFACE
-#define ACPI_INTERNAL_VAR_XFACE
-
-#define ACPI_ASM_MACROS
-#define BREAKPOINT3
-#define ACPI_DISABLE_IRQS()
-#define ACPI_ENABLE_IRQS()
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq) Acq = 1
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq) Acq = 0
-
-#endif /* ACPI_ASM_MACROS */
-
-
-#ifdef ACPI_APPLICATION
-
-/* Don't want software interrupts within a ring3 application */
-
-#undef BREAKPOINT3
-#define BREAKPOINT3
-#endif
-
-
-/******************************************************************************
- *
- * Compiler-specific information is contained in the compiler-specific
- * headers.
- *
- *****************************************************************************/
 #endif /* __ACENV_H__ */

@@ -155,16 +155,9 @@ typedef COMPILER_DEPENDENT_UINT64       u64;
 
 /*! [Begin] no source code translation  */
 
-#define ACPI_ASM_MACROS
 #ifdef ACPI_APPLICATION
-#define BREAKPOINT3
-#define ACPI_DISABLE_IRQS()
-#define ACPI_ENABLE_IRQS()
 #define ACPI_FLUSH_CPU_CACHE()
 #else
-#define BREAKPOINT3             __asm {int 3}
-#define ACPI_DISABLE_IRQS()     __asm {cli}
-#define ACPI_ENABLE_IRQS()      __asm {sti}
 #define ACPI_FLUSH_CPU_CACHE()  __asm {WBINVD}
 #endif
 

@@ -135,13 +135,7 @@
 
 /*! [Begin] no source code translation  */
 
-#define ACPI_ASM_MACROS
-#define causeinterrupt(level)
-#define BREAKPOINT3
-#define ACPI_DISABLE_IRQS()
-#define ACPI_ENABLE_IRQS()
 #define ACPI_FLUSH_CPU_CACHE()
-
 
 /*
  * For Acpi applications, we don't want to try to access the global lock

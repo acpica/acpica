@@ -141,11 +141,6 @@
 #define ACPI_USE_STANDARD_HEADERS
 #include <io.h>
 
-#define ACPI_ASM_MACROS
-
-#define BREAKPOINT3            __interrupt(3)
-#define ACPI_DISABLE_IRQS()    __disable()
-#define ACPI_ENABLE_IRQS()     __enable()
 #define ACPI_FLUSH_CPU_CACHE() Wbinvd()
 void Wbinvd(void);
 

@@ -141,8 +141,6 @@
 
 #define ACPI_USE_NATIVE_DIVIDE
 
-#define ACPI_ASM_MACROS         /* tell acenv.h */
-
 #define ACPI_SYSTEM_XFACE
 #define ACPI_EXTERNAL_XFACE
 #define ACPI_INTERNAL_XFACE
