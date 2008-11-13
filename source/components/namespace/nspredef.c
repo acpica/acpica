@@ -178,6 +178,7 @@ AcpiNsCheckReference (
 static ACPI_STATUS
 AcpiNsRepairObject (
     UINT32                      ExpectedBtypes,
+    UINT32                      PackageIndex,
     ACPI_OPERAND_OBJECT         **ReturnObjectPtr);
 
 /*
@@ -1000,7 +1001,8 @@ AcpiNsCheckObjectType (
     {
         /* Type mismatch -- attempt repair of the returned object */
 
-        Status = AcpiNsRepairObject (ExpectedBtypes, ReturnObjectPtr);
+        Status = AcpiNsRepairObject (ExpectedBtypes, PackageIndex,
+                    ReturnObjectPtr);
         if (ACPI_SUCCESS (Status))
         {
             return (Status);
@@ -1102,6 +1104,7 @@ AcpiNsCheckReference (
  * FUNCTION:    AcpiNsRepairObject
  *
  * PARAMETERS:  Pathname        - Full pathname to the node (for error msgs)
+ *              PackageIndex    - Used to determine if target is in a package
  *              ReturnObjectPtr - Pointer to the object returned from the
  *                                evaluation of a method or object
  *
@@ -1115,6 +1118,7 @@ AcpiNsCheckReference (
 static ACPI_STATUS
 AcpiNsRepairObject (
     UINT32                      ExpectedBtypes,
+    UINT32                      PackageIndex,
     ACPI_OPERAND_OBJECT         **ReturnObjectPtr)
 {
     ACPI_OPERAND_OBJECT         *ReturnObject = *ReturnObjectPtr;
@@ -1163,6 +1167,19 @@ AcpiNsRepairObject (
 
         AcpiUtRemoveReference (ReturnObject);
         *ReturnObjectPtr = NewObject;
+
+        /*
+         * If the object is a package element, we need to:
+         * 1. Decrement the reference count of the orignal object, it was
+         *    incremented when building the package
+         * 2. Increment the reference count of the new object, it will be
+         *    decremented when releasing the package
+         */
+        if (PackageIndex != ACPI_NOT_PACKAGE)
+        {
+            AcpiUtRemoveReference (ReturnObject);
+            AcpiUtAddReference (NewObject);
+        }
         return (AE_OK);
 
     default:
