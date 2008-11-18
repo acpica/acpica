@@ -126,9 +126,13 @@
 #include "actbl.h"
 
 /*
- * Globals that are publically available, allowing for
- * run time configuration
+ * Globals that are publically available
  */
+extern UINT32               AcpiCurrentGpeCount;
+extern ACPI_TABLE_FADT      AcpiGbl_FADT;
+
+/* Run-time configuration */
+
 extern UINT32               AcpiDbgLevel;
 extern UINT32               AcpiDbgLayer;
 extern UINT8                AcpiGbl_EnableInterpreterSlack;
@@ -137,7 +141,6 @@ extern UINT8                AcpiGbl_CreateOsiMethod;
 extern UINT8                AcpiGbl_LeaveWakeGpesDisabled;
 extern ACPI_NAME            AcpiGbl_TraceMethodName;
 extern UINT32               AcpiGbl_TraceFlags;
-extern ACPI_TABLE_FADT      AcpiGbl_FADT;
 
 
 /*
@@ -197,6 +200,7 @@ ACPI_STATUS
 AcpiInstallInitializationHandler (
     ACPI_INIT_HANDLER       Handler,
     UINT32                  Function);
+
 
 /*
  * ACPI Memory managment
@@ -403,6 +407,12 @@ AcpiInstallGpeHandler (
     void                    *Context);
 
 ACPI_STATUS
+AcpiRemoveGpeHandler (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber,
+    ACPI_EVENT_HANDLER      Address);
+
+ACPI_STATUS
 AcpiInstallExceptionHandler (
     ACPI_EXCEPTION_HANDLER  Handler);
 
@@ -418,12 +428,6 @@ AcpiAcquireGlobalLock (
 ACPI_STATUS
 AcpiReleaseGlobalLock (
     UINT32                  Handle);
-
-ACPI_STATUS
-AcpiRemoveGpeHandler (
-    ACPI_HANDLE             GpeDevice,
-    UINT32                  GpeNumber,
-    ACPI_EVENT_HANDLER      Address);
 
 ACPI_STATUS
 AcpiEnableEvent (
@@ -444,6 +448,10 @@ AcpiGetEventStatus (
     UINT32                  Event,
     ACPI_EVENT_STATUS       *EventStatus);
 
+
+/*
+ * GPE Interfaces
+ */
 ACPI_STATUS
 AcpiSetGpeType (
     ACPI_HANDLE             GpeDevice,
@@ -474,6 +482,14 @@ AcpiGetGpeStatus (
     UINT32                  GpeNumber,
     UINT32                  Flags,
     ACPI_EVENT_STATUS       *EventStatus);
+
+ACPI_STATUS
+AcpiDisableAllGpes (
+    void);
+
+ACPI_STATUS
+AcpiEnableAllRuntimeGpes (
+    void);
 
 ACPI_STATUS
 AcpiGetGpeDevice (
@@ -538,6 +554,7 @@ ACPI_STATUS
 AcpiResourceToAddress64 (
     ACPI_RESOURCE           *Resource,
     ACPI_RESOURCE_ADDRESS64 *Out);
+
 
 /*
  * Hardware (ACPI device) interfaces

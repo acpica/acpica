@@ -1033,3 +1033,74 @@ AcpiEvGetGpeDevice (
     return (AE_OK);
 }
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiDisableAllGpes
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Disable and clear all GPEs in all GPE blocks
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDisableAllGpes (
+    void)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (AcpiDisableAllGpes);
+
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    Status = AcpiHwDisableAllGpes ();
+    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiEnableAllRuntimeGpes
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Enable all "runtime" GPEs, in all GPE blocks
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEnableAllRuntimeGpes (
+    void)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (AcpiEnableAllRuntimeGpes);
+
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    Status = AcpiHwEnableAllRuntimeGpes ();
+    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+
+    return_ACPI_STATUS (Status);
+}
+
+
