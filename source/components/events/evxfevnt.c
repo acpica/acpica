@@ -125,6 +125,14 @@
 #define _COMPONENT          ACPI_EVENTS
         ACPI_MODULE_NAME    ("evxfevnt")
 
+/* Local prototypes */
+
+ACPI_STATUS
+AcpiEvGetGpeDevice (
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+    ACPI_GPE_BLOCK_INFO     *GpeBlock,
+    void                    *Context);
+
 
 /*******************************************************************************
  *
@@ -921,4 +929,107 @@ UnlockAndExit:
 }
 
 ACPI_EXPORT_SYMBOL (AcpiRemoveGpeBlock)
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiGetGpeDevice
+ *
+ * PARAMETERS:  Index               - System GPE index (0-CurrentGpeCount)
+ *              GpeDevice           - Where the parent GPE Device is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Obtain the GPE device associated with the input index. A NULL
+ *              gpe device indicates that the gpe number is contained in one of
+ *              the FADT-defined gpe blocks. Otherwise, the GPE block device.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiGetGpeDevice (
+    UINT32                  Index,
+    ACPI_NAMESPACE_NODE     **GpeDevice)
+{
+    ACPI_GPE_DEVICE_INFO    Info;
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (AcpiGetGpeDevice);
+
+
+    if (!GpeDevice)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    if (Index >= AcpiCurrentGpeCount)
+    {
+        return_ACPI_STATUS (AE_NOT_EXIST);
+    }
+
+    /* Setup and walk the GPE list */
+
+    Info.Index = Index;
+    Info.Status = AE_NOT_EXIST;
+    Info.GpeDevice = NULL;
+    Info.NextBlockBaseIndex = 0;
+
+    Status = AcpiEvWalkGpeList (AcpiEvGetGpeDevice, &Info);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    *GpeDevice = Info.GpeDevice;
+    return_ACPI_STATUS (Info.Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiGetGpeDevice)
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvGetGpeDevice
+ *
+ * PARAMETERS:  GPE_WALK_CALLBACK
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Matches the input GPE index (0-CurrentGpeCount) with a GPE
+ *              block device. NULL if the GPE is one of the FADT-defined GPEs.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEvGetGpeDevice (
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+    ACPI_GPE_BLOCK_INFO     *GpeBlock,
+    void                    *Context)
+{
+    ACPI_GPE_DEVICE_INFO    *Info = Context;
+
+
+    /* Increment Index by the number of GPEs in this block */
+
+    Info->NextBlockBaseIndex +=
+        (GpeBlock->RegisterCount * ACPI_GPE_REGISTER_WIDTH);
+
+    if (Info->Index < Info->NextBlockBaseIndex)
+    {
+        /*
+         * The GPE index is within this block, get the node. Leave the node
+         * NULL for the FADT-defined GPEs
+         */
+        if ((GpeBlock->Node)->Type == ACPI_TYPE_DEVICE)
+        {
+            Info->GpeDevice = GpeBlock->Node;
+        }
+
+        Info->Status = AE_OK;
+        return (AE_CTRL_END);
+    }
+
+    return (AE_OK);
+}
 

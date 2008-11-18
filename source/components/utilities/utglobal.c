@@ -120,8 +120,6 @@
 #include "accommon.h"
 #include "acnamesp.h"
 
-ACPI_EXPORT_SYMBOL (AcpiGbl_FADT)
-
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utglobal")
 
@@ -886,6 +884,7 @@ AcpiUtInitGlobals (
     AcpiGbl_GpeXruptListHead            = NULL;
     AcpiGbl_GpeFadtBlocks[0]            = NULL;
     AcpiGbl_GpeFadtBlocks[1]            = NULL;
+    AcpiCurrentGpeCount                 = 0;
 
     /* Global handlers */
 
@@ -949,8 +948,11 @@ AcpiUtInitGlobals (
 
 /* Public globals */
 
+ACPI_EXPORT_SYMBOL (AcpiGbl_FADT)
 ACPI_EXPORT_SYMBOL (AcpiDbgLevel)
 ACPI_EXPORT_SYMBOL (AcpiDbgLayer)
 ACPI_EXPORT_SYMBOL (AcpiGpeCount)
+ACPI_EXPORT_SYMBOL (AcpiCurrentGpeCount)
+
 
 

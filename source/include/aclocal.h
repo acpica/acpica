@@ -576,7 +576,6 @@ typedef struct acpi_gpe_xrupt_info
 
 } ACPI_GPE_XRUPT_INFO;
 
-
 typedef struct acpi_gpe_walk_info
 {
     ACPI_NAMESPACE_NODE             *GpeDevice;
@@ -584,10 +583,19 @@ typedef struct acpi_gpe_walk_info
 
 } ACPI_GPE_WALK_INFO;
 
+typedef struct acpi_gpe_device_info
+{
+    UINT32                          Index;
+    UINT32                          NextBlockBaseIndex;
+    ACPI_STATUS                     Status;
+    ACPI_NAMESPACE_NODE             *GpeDevice;
+
+} ACPI_GPE_DEVICE_INFO;
 
 typedef ACPI_STATUS (*ACPI_GPE_CALLBACK) (
     ACPI_GPE_XRUPT_INFO             *GpeXruptInfo,
-    ACPI_GPE_BLOCK_INFO             *GpeBlock);
+    ACPI_GPE_BLOCK_INFO             *GpeBlock,
+    void                            *Context);
 
 
 /* Information about each particular fixed event */

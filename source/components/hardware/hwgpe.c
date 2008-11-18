@@ -126,7 +126,8 @@
 static ACPI_STATUS
 AcpiHwEnableWakeupGpeBlock (
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock);
+    ACPI_GPE_BLOCK_INFO     *GpeBlock,
+    void                    *Context);
 
 
 /******************************************************************************
@@ -356,7 +357,8 @@ UnlockAndExit:
 ACPI_STATUS
 AcpiHwDisableGpeBlock (
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock)
+    ACPI_GPE_BLOCK_INFO     *GpeBlock,
+    void                    *Context)
 {
     UINT32                  i;
     ACPI_STATUS             Status;
@@ -396,7 +398,8 @@ AcpiHwDisableGpeBlock (
 ACPI_STATUS
 AcpiHwClearGpeBlock (
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock)
+    ACPI_GPE_BLOCK_INFO     *GpeBlock,
+    void                    *Context)
 {
     UINT32                  i;
     ACPI_STATUS             Status;
@@ -437,7 +440,8 @@ AcpiHwClearGpeBlock (
 ACPI_STATUS
 AcpiHwEnableRuntimeGpeBlock (
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock)
+    ACPI_GPE_BLOCK_INFO     *GpeBlock,
+    void                    *Context)
 {
     UINT32                  i;
     ACPI_STATUS             Status;
@@ -485,7 +489,8 @@ AcpiHwEnableRuntimeGpeBlock (
 static ACPI_STATUS
 AcpiHwEnableWakeupGpeBlock (
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock)
+    ACPI_GPE_BLOCK_INFO     *GpeBlock,
+    void                    *Context)
 {
     UINT32                  i;
     ACPI_STATUS             Status;
@@ -537,8 +542,8 @@ AcpiHwDisableAllGpes (
     ACPI_FUNCTION_TRACE (HwDisableAllGpes);
 
 
-    Status = AcpiEvWalkGpeList (AcpiHwDisableGpeBlock);
-    Status = AcpiEvWalkGpeList (AcpiHwClearGpeBlock);
+    Status = AcpiEvWalkGpeList (AcpiHwDisableGpeBlock, NULL);
+    Status = AcpiEvWalkGpeList (AcpiHwClearGpeBlock, NULL);
     return_ACPI_STATUS (Status);
 }
 
@@ -565,7 +570,7 @@ AcpiHwEnableAllRuntimeGpes (
     ACPI_FUNCTION_TRACE (HwEnableAllRuntimeGpes);
 
 
-    Status = AcpiEvWalkGpeList (AcpiHwEnableRuntimeGpeBlock);
+    Status = AcpiEvWalkGpeList (AcpiHwEnableRuntimeGpeBlock, NULL);
     return_ACPI_STATUS (Status);
 }
 
@@ -592,7 +597,7 @@ AcpiHwEnableAllWakeupGpes (
     ACPI_FUNCTION_TRACE (HwEnableAllWakeupGpes);
 
 
-    Status = AcpiEvWalkGpeList (AcpiHwEnableWakeupGpeBlock);
+    Status = AcpiEvWalkGpeList (AcpiHwEnableWakeupGpeBlock, NULL);
     return_ACPI_STATUS (Status);
 }
 

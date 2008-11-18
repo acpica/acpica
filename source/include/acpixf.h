@@ -476,6 +476,11 @@ AcpiGetGpeStatus (
     ACPI_EVENT_STATUS       *EventStatus);
 
 ACPI_STATUS
+AcpiGetGpeDevice (
+    UINT32                  GpeIndex,
+    ACPI_HANDLE             *GpeDevice);
+
+ACPI_STATUS
 AcpiInstallGpeBlock (
     ACPI_HANDLE             GpeDevice,
     ACPI_GENERIC_ADDRESS    *GpeBlockAddress,

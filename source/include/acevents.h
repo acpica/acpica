@@ -198,12 +198,14 @@ AcpiEvValidGpeEvent (
 
 ACPI_STATUS
 AcpiEvWalkGpeList (
-    ACPI_GPE_CALLBACK       GpeWalkCallback);
+    ACPI_GPE_CALLBACK       GpeWalkCallback,
+    void                    *Context);
 
 ACPI_STATUS
 AcpiEvDeleteGpeHandlers (
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock);
+    ACPI_GPE_BLOCK_INFO     *GpeBlock,
+    void                    *Context);
 
 ACPI_STATUS
 AcpiEvCreateGpeBlock (

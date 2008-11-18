@@ -177,7 +177,7 @@ AcpiHwClearAcpiStatus (
 
     /* Clear the GPE Bits in all GPE registers in all GPE blocks */
 
-    Status = AcpiEvWalkGpeList (AcpiHwClearGpeBlock);
+    Status = AcpiEvWalkGpeList (AcpiHwClearGpeBlock, NULL);
 
 UnlockAndExit:
     AcpiOsReleaseLock (AcpiGbl_HardwareLock, LockFlags);

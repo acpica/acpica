@@ -214,6 +214,7 @@ AcpiEvValidGpeEvent (
  * FUNCTION:    AcpiEvWalkGpeList
  *
  * PARAMETERS:  GpeWalkCallback     - Routine called for each GPE block
+ *              Context             - Value passed to callback
  *
  * RETURN:      Status
  *
@@ -223,7 +224,8 @@ AcpiEvValidGpeEvent (
 
 ACPI_STATUS
 AcpiEvWalkGpeList (
-    ACPI_GPE_CALLBACK       GpeWalkCallback)
+    ACPI_GPE_CALLBACK       GpeWalkCallback,
+    void                    *Context)
 {
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo;
@@ -248,9 +250,13 @@ AcpiEvWalkGpeList (
         {
             /* One callback per GPE block */
 
-            Status = GpeWalkCallback (GpeXruptInfo, GpeBlock);
+            Status = GpeWalkCallback (GpeXruptInfo, GpeBlock, Context);
             if (ACPI_FAILURE (Status))
             {
+                if (Status == AE_CTRL_END) /* Callback abort */
+                {
+                    Status = AE_OK;
+                }
                 goto UnlockAndExit;
             }
 
@@ -283,7 +289,8 @@ UnlockAndExit:
 ACPI_STATUS
 AcpiEvDeleteGpeHandlers (
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock)
+    ACPI_GPE_BLOCK_INFO     *GpeBlock,
+    void                    *Context)
 {
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
     UINT32                  i;
@@ -831,7 +838,7 @@ AcpiEvDeleteGpeBlock (
 
     /* Disable all GPEs in this block */
 
-    Status = AcpiHwDisableGpeBlock (GpeBlock->XruptBlock, GpeBlock);
+    Status = AcpiHwDisableGpeBlock (GpeBlock->XruptBlock, GpeBlock, NULL);
 
     if (!GpeBlock->Previous && !GpeBlock->Next)
     {
@@ -863,6 +870,8 @@ AcpiEvDeleteGpeBlock (
         }
         AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
     }
+
+    AcpiCurrentGpeCount -= GpeBlock->RegisterCount * ACPI_GPE_REGISTER_WIDTH;
 
     /* Free the GpeBlock */
 
@@ -1112,6 +1121,9 @@ AcpiEvCreateGpeBlock (
         GpeBlock->RegisterCount,
         InterruptNumber));
 
+    /* Update global count of currently available GPEs */
+
+    AcpiCurrentGpeCount += RegisterCount * ACPI_GPE_REGISTER_WIDTH;
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -1214,7 +1226,7 @@ AcpiEvInitializeGpeBlock (
 
     /* Enable all valid runtime GPEs found above */
 
-    Status = AcpiHwEnableRuntimeGpeBlock (NULL, GpeBlock);
+    Status = AcpiHwEnableRuntimeGpeBlock (NULL, GpeBlock, NULL);
     if (ACPI_FAILURE (Status))
     {
         ACPI_ERROR ((AE_INFO, "Could not enable GPEs in GpeBlock %p",

@@ -1186,6 +1186,7 @@ AfInstallGpeBlock (
     ACPI_HANDLE                 Handle2 = NULL;
     ACPI_HANDLE                 Handle3 = NULL;
     ACPI_GENERIC_ADDRESS        BlockAddress;
+    ACPI_HANDLE                 GpeDevice;
 
 
     Status = AcpiGetHandle (NULL, "\\_GPE", &Handle);
@@ -1209,6 +1210,13 @@ AfInstallGpeBlock (
         AcpiInstallGpeHandler (Handle2, 8, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
         AcpiSetGpeType (Handle2, 8, ACPI_GPE_TYPE_WAKE);
         AcpiEnableGpe (Handle2, 8, 0);
+
+        Status = AcpiGetGpeDevice (0x30, &GpeDevice);
+        Status = AcpiGetGpeDevice (0x42, &GpeDevice);
+        Status = AcpiGetGpeDevice (AcpiCurrentGpeCount-1, &GpeDevice);
+        Status = AcpiGetGpeDevice (AcpiCurrentGpeCount, &GpeDevice);
+
+        Status = AcpiRemoveGpeBlock (Handle2);
     }
 
     Status = AcpiGetHandle (NULL, "\\GPE3", &Handle3);
@@ -1329,7 +1337,7 @@ AeGetDevices (
  * RETURN:      Status
  *
  * DESCRIPTION: Execute the internally implemented (in ACPICA) _OSI method.
- * 
+ *
  *****************************************************************************/
 
 ACPI_STATUS
@@ -1365,7 +1373,7 @@ ExecuteOSI (
             AcpiFormatException (Status));
         return (Status);
     }
-    
+
     if (ReturnValue.Length < sizeof (ACPI_OBJECT))
     {
         AcpiOsPrintf ("Return value from _OSI method too small, %.8X\n",
@@ -1396,7 +1404,7 @@ ExecuteOSI (
  * FUNCTION:    AeMiscellaneousTests
  *
  * DESCRIPTION: Various ACPICA validation tests.
- * 
+ *
  *****************************************************************************/
 
 void
