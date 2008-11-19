@@ -560,6 +560,10 @@ AcpiResourceToAddress64 (
  * Hardware (ACPI device) interfaces
  */
 ACPI_STATUS
+AcpiReset (
+    void);
+
+ACPI_STATUS
 AcpiGetRegister (
     UINT32                  RegisterId,
     UINT32                  *ReturnValue);
@@ -577,12 +581,12 @@ AcpiSetRegister (
 ACPI_STATUS
 AcpiRead (
     UINT32                  *Value,
-    ACPI_GENERIC_ADDRESS    *Register);
+    ACPI_GENERIC_ADDRESS    *Reg);
 
 ACPI_STATUS
 AcpiWrite (
     UINT32                  Value,
-    ACPI_GENERIC_ADDRESS    *Register);
+    ACPI_GENERIC_ADDRESS    *Reg);
 
 ACPI_STATUS
 AcpiSetFirmwareWakingVector (
