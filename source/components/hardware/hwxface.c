@@ -124,6 +124,50 @@
 
 /******************************************************************************
  *
+ * FUNCTION:    AcpiReset
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Set reset register in memory or IO space. Note: Does not
+ *              support reset register in PCI config space, this must be
+ *              handled separately.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiReset (
+    void)
+{
+    ACPI_GENERIC_ADDRESS    *ResetReg;
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (AcpiReset);
+
+
+    ResetReg = &AcpiGbl_FADT.ResetRegister;
+
+    /* Check if the reset register is supported */
+
+    if (!(AcpiGbl_FADT.Flags & ACPI_FADT_RESET_REGISTER) ||
+        !ResetReg->Address)
+    {
+        return_ACPI_STATUS (AE_NOT_EXIST);
+    }
+
+    /* Write the reset value to the reset register */
+
+    Status = AcpiWrite (AcpiGbl_FADT.ResetValue, ResetReg);
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiReset)
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AcpiRead
  *
  * PARAMETERS:  Value               - Where the value is returned
