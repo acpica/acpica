@@ -244,6 +244,10 @@ SOURCE=..\..\source\components\hardware\hwsleep.c
 SOURCE=..\..\source\components\hardware\hwtimer.c
 # ADD CPP /Ze
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\hardware\hwxface.c
+# End Source File
 # End Group
 # Begin Group "Namespace"
 

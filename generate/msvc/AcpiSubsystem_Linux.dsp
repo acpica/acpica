@@ -534,6 +534,10 @@ SOURCE=..\..\source_linux\COMPONENTS\HARDWARE\hwtimer.c
 !ENDIF 
 
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\components\hardware\hwxface.c
+# End Source File
 # End Group
 # Begin Group "Namespace"
 

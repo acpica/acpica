@@ -1070,6 +1070,10 @@ InputName=hwtimer
 !ENDIF 
 
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\components\hardware\hwxface.c
+# End Source File
 # End Group
 # Begin Group "Namespace"
 

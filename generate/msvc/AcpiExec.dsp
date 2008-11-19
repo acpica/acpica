@@ -271,6 +271,10 @@ SOURCE=..\..\source\components\hardware\hwregs.c
 
 SOURCE=..\..\Source\components\hardware\hwsleep.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\hardware\hwxface.c
+# End Source File
 # End Group
 # Begin Group "Events"
 
