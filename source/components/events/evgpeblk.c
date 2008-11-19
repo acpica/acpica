@@ -972,8 +972,8 @@ AcpiEvCreateGpeInfoBlocks (
         ThisRegister->EnableAddress.SpaceId   = GpeBlock->BlockAddress.SpaceId;
         ThisRegister->StatusAddress.BitWidth  = ACPI_GPE_REGISTER_WIDTH;
         ThisRegister->EnableAddress.BitWidth  = ACPI_GPE_REGISTER_WIDTH;
-        ThisRegister->StatusAddress.BitOffset = ACPI_GPE_REGISTER_WIDTH;
-        ThisRegister->EnableAddress.BitOffset = ACPI_GPE_REGISTER_WIDTH;
+        ThisRegister->StatusAddress.BitOffset = 0;
+        ThisRegister->EnableAddress.BitOffset = 0;
 
         /* Init the EventInfo for each GPE within this register */
 
@@ -986,8 +986,7 @@ AcpiEvCreateGpeInfoBlocks (
 
         /* Disable all GPEs within this register */
 
-        Status = AcpiHwLowLevelWrite (ACPI_GPE_REGISTER_WIDTH, 0x00,
-                    &ThisRegister->EnableAddress);
+        Status = AcpiWrite (0x00, &ThisRegister->EnableAddress);
         if (ACPI_FAILURE (Status))
         {
             goto ErrorExit;
@@ -995,8 +994,7 @@ AcpiEvCreateGpeInfoBlocks (
 
         /* Clear any pending GPE events within this register */
 
-        Status = AcpiHwLowLevelWrite (ACPI_GPE_REGISTER_WIDTH, 0xFF,
-                    &ThisRegister->StatusAddress);
+        Status = AcpiWrite (0xFF, &ThisRegister->StatusAddress);
         if (ACPI_FAILURE (Status))
         {
             goto ErrorExit;

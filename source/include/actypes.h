@@ -390,6 +390,8 @@ typedef UINT32                          ACPI_PHYSICAL_ADDRESS;
 
 #define ACPI_MAX_GPE_BLOCKS             2
 #define ACPI_GPE_REGISTER_WIDTH         8
+#define ACPI_PM1_REGISTER_WIDTH         16
+#define ACPI_PM2_REGISTER_WIDTH         8
 
 /* Names within the namespace are 4 bytes long */
 

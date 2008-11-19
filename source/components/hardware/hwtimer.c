@@ -187,7 +187,7 @@ AcpiGetTimer (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    Status = AcpiHwLowLevelRead (32, Ticks, &AcpiGbl_FADT.XPmTimerBlock);
+    Status = AcpiRead (Ticks, &AcpiGbl_FADT.XPmTimerBlock);
 
     return_ACPI_STATUS (Status);
 }

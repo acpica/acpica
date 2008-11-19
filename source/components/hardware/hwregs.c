@@ -167,7 +167,7 @@ AcpiHwClearAcpiStatus (
 
     if (AcpiGbl_FADT.XPm1bEventBlock.Address)
     {
-        Status = AcpiHwLowLevelWrite (16, ACPI_BITMASK_ALL_FIXED_STATUS,
+        Status = AcpiWrite (ACPI_BITMASK_ALL_FIXED_STATUS,
                     &AcpiGbl_FADT.XPm1bEventBlock);
         if (ACPI_FAILURE (Status))
         {
@@ -400,6 +400,8 @@ AcpiGetRegisterUnlocked (
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiGetRegisterUnlocked)
+
 
 /*******************************************************************************
  *
@@ -616,7 +618,7 @@ AcpiHwRegisterRead (
     {
     case ACPI_REGISTER_PM1_STATUS:           /* 16-bit access */
 
-        Status = AcpiHwLowLevelRead (16, &Value1, &AcpiGbl_FADT.XPm1aEventBlock);
+        Status = AcpiRead (&Value1, &AcpiGbl_FADT.XPm1aEventBlock);
         if (ACPI_FAILURE (Status))
         {
             goto Exit;
@@ -624,14 +626,14 @@ AcpiHwRegisterRead (
 
         /* PM1B is optional */
 
-        Status = AcpiHwLowLevelRead (16, &Value2, &AcpiGbl_FADT.XPm1bEventBlock);
+        Status = AcpiRead (&Value2, &AcpiGbl_FADT.XPm1bEventBlock);
         Value1 |= Value2;
         break;
 
 
     case ACPI_REGISTER_PM1_ENABLE:           /* 16-bit access */
 
-        Status = AcpiHwLowLevelRead (16, &Value1, &AcpiGbl_XPm1aEnable);
+        Status = AcpiRead (&Value1, &AcpiGbl_XPm1aEnable);
         if (ACPI_FAILURE (Status))
         {
             goto Exit;
@@ -639,33 +641,33 @@ AcpiHwRegisterRead (
 
         /* PM1B is optional */
 
-        Status = AcpiHwLowLevelRead (16, &Value2, &AcpiGbl_XPm1bEnable);
+        Status = AcpiRead (&Value2, &AcpiGbl_XPm1bEnable);
         Value1 |= Value2;
         break;
 
 
     case ACPI_REGISTER_PM1_CONTROL:          /* 16-bit access */
 
-        Status = AcpiHwLowLevelRead (16, &Value1, &AcpiGbl_FADT.XPm1aControlBlock);
+        Status = AcpiRead (&Value1, &AcpiGbl_FADT.XPm1aControlBlock);
         if (ACPI_FAILURE (Status))
         {
             goto Exit;
         }
 
-        Status = AcpiHwLowLevelRead (16, &Value2, &AcpiGbl_FADT.XPm1bControlBlock);
+        Status = AcpiRead (&Value2, &AcpiGbl_FADT.XPm1bControlBlock);
         Value1 |= Value2;
         break;
 
 
     case ACPI_REGISTER_PM2_CONTROL:          /* 8-bit access */
 
-        Status = AcpiHwLowLevelRead (8, &Value1, &AcpiGbl_FADT.XPm2ControlBlock);
+        Status = AcpiRead (&Value1, &AcpiGbl_FADT.XPm2ControlBlock);
         break;
 
 
     case ACPI_REGISTER_PM_TIMER:             /* 32-bit access */
 
-        Status = AcpiHwLowLevelRead (32, &Value1, &AcpiGbl_FADT.XPmTimerBlock);
+        Status = AcpiRead (&Value1, &AcpiGbl_FADT.XPmTimerBlock);
         break;
 
     case ACPI_REGISTER_SMI_COMMAND_BLOCK:    /* 8-bit access */
@@ -747,7 +749,7 @@ AcpiHwRegisterWrite (
 
         /* Now we can write the data */
 
-        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT.XPm1aEventBlock);
+        Status = AcpiWrite (Value, &AcpiGbl_FADT.XPm1aEventBlock);
         if (ACPI_FAILURE (Status))
         {
             goto Exit;
@@ -755,13 +757,13 @@ AcpiHwRegisterWrite (
 
         /* PM1B is optional */
 
-        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT.XPm1bEventBlock);
+        Status = AcpiWrite (Value, &AcpiGbl_FADT.XPm1bEventBlock);
         break;
 
 
     case ACPI_REGISTER_PM1_ENABLE:           /* 16-bit access */
 
-        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_XPm1aEnable);
+        Status = AcpiWrite (Value, &AcpiGbl_XPm1aEnable);
         if (ACPI_FAILURE (Status))
         {
             goto Exit;
@@ -769,7 +771,7 @@ AcpiHwRegisterWrite (
 
         /* PM1B is optional */
 
-        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_XPm1bEnable);
+        Status = AcpiWrite (Value, &AcpiGbl_XPm1bEnable);
         break;
 
 
@@ -793,37 +795,37 @@ AcpiHwRegisterWrite (
 
         /* Now we can write the data */
 
-        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT.XPm1aControlBlock);
+        Status = AcpiWrite (Value, &AcpiGbl_FADT.XPm1aControlBlock);
         if (ACPI_FAILURE (Status))
         {
             goto Exit;
         }
 
-        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT.XPm1bControlBlock);
+        Status = AcpiWrite (Value, &AcpiGbl_FADT.XPm1bControlBlock);
         break;
 
 
     case ACPI_REGISTER_PM1A_CONTROL:         /* 16-bit access */
 
-        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT.XPm1aControlBlock);
+        Status = AcpiWrite (Value, &AcpiGbl_FADT.XPm1aControlBlock);
         break;
 
 
     case ACPI_REGISTER_PM1B_CONTROL:         /* 16-bit access */
 
-        Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT.XPm1bControlBlock);
+        Status = AcpiWrite (Value, &AcpiGbl_FADT.XPm1bControlBlock);
         break;
 
 
     case ACPI_REGISTER_PM2_CONTROL:          /* 8-bit access */
 
-        Status = AcpiHwLowLevelWrite (8, Value, &AcpiGbl_FADT.XPm2ControlBlock);
+        Status = AcpiWrite (Value, &AcpiGbl_FADT.XPm2ControlBlock);
         break;
 
 
     case ACPI_REGISTER_PM_TIMER:             /* 32-bit access */
 
-        Status = AcpiHwLowLevelWrite (32, Value, &AcpiGbl_FADT.XPmTimerBlock);
+        Status = AcpiWrite (Value, &AcpiGbl_FADT.XPmTimerBlock);
         break;
 
 
@@ -847,10 +849,9 @@ Exit:
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiHwLowLevelRead
+ * FUNCTION:    AcpiRead
  *
- * PARAMETERS:  Width               - 8, 16, or 32
- *              Value               - Where the value is returned
+ * PARAMETERS:  Value               - Where the value is returned
  *              Reg                 - GAS register structure
  *
  * RETURN:      Status
@@ -860,16 +861,16 @@ Exit:
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiHwLowLevelRead (
-    UINT32                  Width,
+AcpiRead (
     UINT32                  *Value,
     ACPI_GENERIC_ADDRESS    *Reg)
 {
+    UINT32                  Width;
     UINT64                  Address;
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_NAME (HwLowLevelRead);
+    ACPI_FUNCTION_NAME (AcpiRead);
 
 
     /*
@@ -889,6 +890,17 @@ AcpiHwLowLevelRead (
     {
         return (AE_OK);
     }
+
+    /* Supported widths are 8/16/32 */
+
+    Width = Reg->BitWidth;
+    if ((Width != 8) && (Width != 16) && (Width != 32))
+    {
+        return (AE_SUPPORT);
+    }
+
+    /* Initialize entire 32-bit return value to zero */
+
     *Value = 0;
 
     /*
@@ -924,13 +936,14 @@ AcpiHwLowLevelRead (
     return (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiRead)
+
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiHwLowLevelWrite
+ * FUNCTION:    AcpiWrite
  *
- * PARAMETERS:  Width               - 8, 16, or 32
- *              Value               - To be written
+ * PARAMETERS:  Value               - To be written
  *              Reg                 - GAS register structure
  *
  * RETURN:      Status
@@ -940,16 +953,16 @@ AcpiHwLowLevelRead (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiHwLowLevelWrite (
-    UINT32                  Width,
+AcpiWrite (
     UINT32                  Value,
     ACPI_GENERIC_ADDRESS    *Reg)
 {
+    UINT32                  Width;
     UINT64                  Address;
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_NAME (HwLowLevelWrite);
+    ACPI_FUNCTION_NAME (AcpiWrite);
 
 
     /*
@@ -968,6 +981,14 @@ AcpiHwLowLevelWrite (
     if (!Address)
     {
         return (AE_OK);
+    }
+
+    /* Supported widths are 8/16/32 */
+
+    Width = Reg->BitWidth;
+    if ((Width != 8) && (Width != 16) && (Width != 32))
+    {
+        return (AE_SUPPORT);
     }
 
     /*
@@ -1003,3 +1024,5 @@ AcpiHwLowLevelWrite (
 
     return (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiWrite)

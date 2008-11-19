@@ -196,11 +196,6 @@ ACPI_STATUS
 AcpiPurgeCachedObjects (
     void);
 
-ACPI_STATUS
-AcpiInstallInitializationHandler (
-    ACPI_INIT_HANDLER       Handler,
-    UINT32                  Function);
-
 
 /*
  * ACPI Memory managment
@@ -358,8 +353,13 @@ AcpiGetParent (
 
 
 /*
- * Event handler interfaces
+ * Handler interfaces
  */
+ACPI_STATUS
+AcpiInstallInitializationHandler (
+    ACPI_INIT_HANDLER       Handler,
+    UINT32                  Function);
+
 ACPI_STATUS
 AcpiInstallFixedEventHandler (
     UINT32                  AcpiEvent,
@@ -573,6 +573,16 @@ ACPI_STATUS
 AcpiSetRegister (
     UINT32                  RegisterId,
     UINT32                  Value);
+
+ACPI_STATUS
+AcpiRead (
+    UINT32                  *Value,
+    ACPI_GENERIC_ADDRESS    *Register);
+
+ACPI_STATUS
+AcpiWrite (
+    UINT32                  Value,
+    ACPI_GENERIC_ADDRESS    *Register);
 
 ACPI_STATUS
 AcpiSetFirmwareWakingVector (

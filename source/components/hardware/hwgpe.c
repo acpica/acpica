@@ -161,8 +161,7 @@ AcpiHwLowDisableGpe (
 
     /* Get current value of the enable register that contains this GPE */
 
-    Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &EnableMask,
-                &GpeRegisterInfo->EnableAddress);
+    Status = AcpiRead (&EnableMask, &GpeRegisterInfo->EnableAddress);
     if (ACPI_FAILURE (Status))
     {
         return (Status);
@@ -176,9 +175,7 @@ AcpiHwLowDisableGpe (
 
     /* Write the updated enable mask */
 
-    Status = AcpiHwLowLevelWrite (ACPI_GPE_REGISTER_WIDTH, EnableMask,
-                &GpeRegisterInfo->EnableAddress);
-
+    Status = AcpiWrite (EnableMask, &GpeRegisterInfo->EnableAddress);
     return (Status);
 }
 
@@ -218,7 +215,7 @@ AcpiHwWriteGpeEnableReg (
 
     /* Write the entire GPE (runtime) enable register */
 
-    Status = AcpiHwLowLevelWrite (8, GpeRegisterInfo->EnableForRun,
+    Status = AcpiWrite (GpeRegisterInfo->EnableForRun,
                     &GpeRegisterInfo->EnableAddress);
 
     return (Status);
@@ -255,7 +252,7 @@ AcpiHwClearGpe (
      * Write a one to the appropriate bit in the status register to
      * clear this GPE.
      */
-    Status = AcpiHwLowLevelWrite (8, RegisterBit,
+    Status = AcpiWrite (RegisterBit,
                     &GpeEventInfo->RegisterInfo->StatusAddress);
 
     return (Status);
@@ -320,7 +317,7 @@ AcpiHwGetGpeStatus (
 
     /* GPE currently active (status bit == 1)? */
 
-    Status = AcpiHwLowLevelRead (8, &InByte, &GpeRegisterInfo->StatusAddress);
+    Status = AcpiRead (&InByte, &GpeRegisterInfo->StatusAddress);
     if (ACPI_FAILURE (Status))
     {
         goto UnlockAndExit;
@@ -370,8 +367,7 @@ AcpiHwDisableGpeBlock (
     {
         /* Disable all GPEs in this register */
 
-        Status = AcpiHwLowLevelWrite (8, 0x00,
-                    &GpeBlock->RegisterInfo[i].EnableAddress);
+        Status = AcpiWrite (0x00, &GpeBlock->RegisterInfo[i].EnableAddress);
         if (ACPI_FAILURE (Status))
         {
             return (Status);
@@ -411,8 +407,7 @@ AcpiHwClearGpeBlock (
     {
         /* Clear status on all GPEs in this register */
 
-        Status = AcpiHwLowLevelWrite (8, 0xFF,
-                    &GpeBlock->RegisterInfo[i].StatusAddress);
+        Status = AcpiWrite (0xFF, &GpeBlock->RegisterInfo[i].StatusAddress);
         if (ACPI_FAILURE (Status))
         {
             return (Status);
@@ -460,7 +455,7 @@ AcpiHwEnableRuntimeGpeBlock (
 
         /* Enable all "runtime" GPEs in this register */
 
-        Status = AcpiHwLowLevelWrite (8, GpeBlock->RegisterInfo[i].EnableForRun,
+        Status = AcpiWrite (GpeBlock->RegisterInfo[i].EnableForRun,
                     &GpeBlock->RegisterInfo[i].EnableAddress);
         if (ACPI_FAILURE (Status))
         {
@@ -507,8 +502,7 @@ AcpiHwEnableWakeupGpeBlock (
 
         /* Enable all "wake" GPEs in this register */
 
-        Status = AcpiHwLowLevelWrite (8,
-                    GpeBlock->RegisterInfo[i].EnableForWake,
+        Status = AcpiWrite (GpeBlock->RegisterInfo[i].EnableForWake,
                     &GpeBlock->RegisterInfo[i].EnableAddress);
         if (ACPI_FAILURE (Status))
         {

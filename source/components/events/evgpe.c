@@ -542,8 +542,7 @@ AcpiEvGpeDetect (
 
             /* Read the Status Register */
 
-            Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &StatusReg,
-                        &GpeRegisterInfo->StatusAddress);
+            Status = AcpiRead (&StatusReg, &GpeRegisterInfo->StatusAddress);
             if (ACPI_FAILURE (Status))
             {
                 goto UnlockAndExit;
@@ -551,8 +550,7 @@ AcpiEvGpeDetect (
 
             /* Read the Enable Register */
 
-            Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &EnableReg,
-                        &GpeRegisterInfo->EnableAddress);
+            Status = AcpiRead (&EnableReg, &GpeRegisterInfo->EnableAddress);
             if (ACPI_FAILURE (Status))
             {
                 goto UnlockAndExit;

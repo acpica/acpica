@@ -127,7 +127,7 @@
 static inline void
 AcpiTbInitGenericAddress (
     ACPI_GENERIC_ADDRESS    *GenericAddress,
-    UINT8                   BitWidth,
+    UINT8                   ByteWidth,
     UINT64                  Address);
 
 static void
@@ -197,7 +197,7 @@ static ACPI_FADT_INFO     FadtInfoTable[] =
  * FUNCTION:    AcpiTbInitGenericAddress
  *
  * PARAMETERS:  GenericAddress      - GAS struct to be initialized
- *              BitWidth            - Width of this register
+ *              ByteWidth           - Width of this register, in bytes
  *              Address             - Address of the register
  *
  * RETURN:      None
@@ -211,7 +211,7 @@ static ACPI_FADT_INFO     FadtInfoTable[] =
 static inline void
 AcpiTbInitGenericAddress (
     ACPI_GENERIC_ADDRESS    *GenericAddress,
-    UINT8                   BitWidth,
+    UINT8                   ByteWidth,
     UINT64                  Address)
 {
 
@@ -224,7 +224,7 @@ AcpiTbInitGenericAddress (
     /* All other fields are byte-wide */
 
     GenericAddress->SpaceId = ACPI_ADR_SPACE_SYSTEM_IO;
-    GenericAddress->BitWidth = BitWidth;
+    GenericAddress->BitWidth = (UINT8) (ByteWidth * 8);
     GenericAddress->BitOffset = 0;
     GenericAddress->AccessWidth = 0;
 }
@@ -474,6 +474,20 @@ AcpiTbConvertFadt (
         AcpiTbInitGenericAddress (&AcpiGbl_XPm1bEnable, Pm1RegisterLength,
             (AcpiGbl_FADT.XPm1bEventBlock.Address + Pm1RegisterLength));
     }
+
+    /*
+     * Adjust register lengths so they are useful. Sizes of the PM event
+     * and control registers are hardcoded here since many FADTs are incorrect
+     * (especially the ControlBlock length.)
+     *
+     * Note: XPm1aEventBlock and XPm1bEventBlock are used to access the PM1
+     * status registers. The PM1 enable registers are created above.
+     */
+    AcpiGbl_FADT.XPm1aEventBlock.BitWidth   = ACPI_PM1_REGISTER_WIDTH;
+    AcpiGbl_FADT.XPm1bEventBlock.BitWidth   = ACPI_PM1_REGISTER_WIDTH;
+    AcpiGbl_FADT.XPm1aControlBlock.BitWidth = ACPI_PM1_REGISTER_WIDTH;
+    AcpiGbl_FADT.XPm1bControlBlock.BitWidth = ACPI_PM1_REGISTER_WIDTH;
+    AcpiGbl_FADT.XPm2ControlBlock.BitWidth  = ACPI_PM2_REGISTER_WIDTH;
 }
 
 
