@@ -118,6 +118,7 @@
 #include "acpi.h"
 #include "accommon.h"
 #include "acnamesp.h"
+#include "amlcode.h"
 
 
 #define _COMPONENT          ACPI_NAMESPACE
@@ -426,6 +427,13 @@ AcpiNsSearchAndEnter (
             Status = AE_ALREADY_EXISTS;
         }
 
+#ifdef ACPI_ASL_COMPILER
+        if (*ReturnNode && (*ReturnNode)->Type == ACPI_TYPE_ANY)
+        {
+            (*ReturnNode)->Flags |= ANOBJ_IS_EXTERNAL;
+        }
+#endif
+
         /* Either found it or there was an error: finished either way */
 
         return_ACPI_STATUS (Status);
@@ -476,7 +484,8 @@ AcpiNsSearchAndEnter (
     /*
      * Node is an object defined by an External() statement
      */
-    if (Flags & ACPI_NS_EXTERNAL)
+    if (Flags & ACPI_NS_EXTERNAL ||
+        (WalkState && WalkState->Opcode == AML_SCOPE_OP))
     {
         NewNode->Flags |= ANOBJ_IS_EXTERNAL;
     }
