@@ -949,7 +949,7 @@ ACPI_EXPORT_SYMBOL (AcpiRemoveGpeBlock)
 ACPI_STATUS
 AcpiGetGpeDevice (
     UINT32                  Index,
-    ACPI_NAMESPACE_NODE     **GpeDevice)
+    ACPI_HANDLE             **GpeDevice)
 {
     ACPI_GPE_DEVICE_INFO    Info;
     ACPI_STATUS             Status;
@@ -981,7 +981,7 @@ AcpiGetGpeDevice (
         return_ACPI_STATUS (Status);
     }
 
-    *GpeDevice = Info.GpeDevice;
+    *GpeDevice = ACPI_CAST_PTR (ACPI_HANDLE, Info.GpeDevice);
     return_ACPI_STATUS (Info.Status);
 }
 

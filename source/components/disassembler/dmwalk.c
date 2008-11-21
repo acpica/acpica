@@ -150,7 +150,7 @@ AcpiDmBlockType (
 
 static const char *
 AcpiDmGetObjectTypeName (
-    UINT8                   Type);
+    ACPI_OBJECT_TYPE        Type);
 
 /*
  * This table maps ACPI_OBJECT_TYPEs to the corresponding ASL
