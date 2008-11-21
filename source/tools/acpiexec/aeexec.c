@@ -324,26 +324,14 @@ AeBuildLocalTables (
 
     /* Setup FADT header and DSDT/FACS addresses */
 
-    if (ACPI_MACHINE_WIDTH == 32)
-    {
-        /* Short (V1) FADT used for 32-bit case */
+    LocalFADT.Dsdt = DsdtAddress;
+    LocalFADT.Facs = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
 
-        LocalFADT.Dsdt = DsdtAddress;
-        LocalFADT.Facs = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
+    LocalFADT.XDsdt = DsdtAddress;
+    LocalFADT.XFacs = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
 
-        LocalFADT.Header.Revision = 1;
-        LocalFADT.Header.Length = ACPI_FADT_OFFSET (Flags);
-    }
-    else
-    {
-        /* Long (V2) FADT used for 64-bit case */
-
-        LocalFADT.XDsdt = DsdtAddress;
-        LocalFADT.XFacs = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
-
-        LocalFADT.Header.Revision = 2;
-        LocalFADT.Header.Length = sizeof (ACPI_TABLE_FADT);
-    }
+    LocalFADT.Header.Revision = 3;
+    LocalFADT.Header.Length = sizeof (ACPI_TABLE_FADT);
 
     /* Miscellaneous FADT fields */
 
@@ -362,6 +350,12 @@ AeBuildLocalTables (
     LocalFADT.Pm1bEventBlock = 0;
     LocalFADT.PmTimerBlock = 0xA0;
     LocalFADT.Pm1aControlBlock = 0xB0;
+
+    /* Setup one example X-64 field */
+
+    LocalFADT.XPm1aEventBlock.SpaceId = ACPI_ADR_SPACE_SYSTEM_IO;
+    LocalFADT.XPm1aEventBlock.Address = LocalFADT.Pm1aEventBlock;
+    LocalFADT.XPm1aEventBlock.BitWidth = (UINT8) ACPI_MUL_8 (LocalFADT.Pm1EventLength);
 
     /* Complete the FADT with the checksum */
 

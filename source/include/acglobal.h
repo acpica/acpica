@@ -176,6 +176,12 @@ ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_CreateOsiMethod, TRUE);
  */
 ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_LeaveWakeGpesDisabled, TRUE);
 
+/*
+ * Optionally use default values for the ACPI register widths. Set this to
+ * TRUE to use the defaults, if an FADT contains incorrect widths/lengths.
+ */
+ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_UseDefaultRegisterWidths, FALSE);
+
 
 /*****************************************************************************
  *

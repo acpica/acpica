@@ -188,7 +188,7 @@ AcpiTbValidateRsdp (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbFindRsdp
+ * FUNCTION:    AcpiFindRootPointer
  *
  * PARAMETERS:  TableAddress            - Where the table pointer is returned
  *
