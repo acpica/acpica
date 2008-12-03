@@ -585,7 +585,7 @@ AcpiTbValidateFadt (
         (AcpiGbl_FADT.XFacs != (UINT64) AcpiGbl_FADT.Facs))
     {
         ACPI_WARNING ((AE_INFO,
-            "32/64 FACS address mismatch in FADT - "
+            "32/64X FACS address mismatch in FADT - "
             "two FACS tables! %8.8X/%8.8X%8.8X",
             AcpiGbl_FADT.Facs, ACPI_FORMAT_UINT64 (AcpiGbl_FADT.XFacs)));
     }
@@ -594,7 +594,7 @@ AcpiTbValidateFadt (
         (AcpiGbl_FADT.XDsdt != (UINT64) AcpiGbl_FADT.Dsdt))
     {
         ACPI_WARNING ((AE_INFO,
-            "32/64 DSDT address mismatch in FADT - "
+            "32/64X DSDT address mismatch in FADT - "
             "two DSDT tables! %8.8X/%8.8X%8.8X",
             AcpiGbl_FADT.Dsdt, ACPI_FORMAT_UINT64 (AcpiGbl_FADT.XDsdt)));
     }
@@ -622,7 +622,7 @@ AcpiTbValidateFadt (
         if (Address64 && (Address64->BitWidth != ACPI_MUL_8 (Length)))
         {
             ACPI_WARNING ((AE_INFO,
-                "32/64X bit length mismatch in %s: %d/%d",
+                "32/64X length mismatch in %s: %d/%d",
                 Name, ACPI_MUL_8 (Length), Address64->BitWidth));
         }
 
@@ -659,7 +659,7 @@ AcpiTbValidateFadt (
            (Address64->Address != (UINT64) *Address32))
         {
             ACPI_ERROR ((AE_INFO,
-                "32/64X address mismatch in %s: [%8.8X] [%8.8X%8.8X], using 64X",
+                "32/64X address mismatch in %s: %8.8X/%8.8X%8.8X, using 64X",
                 Name, *Address32, ACPI_FORMAT_UINT64 (Address64->Address)));
         }
     }
