@@ -340,22 +340,22 @@ AeBuildLocalTables (
     LocalFADT.Gpe1Base = 96;
 
     LocalFADT.Pm1EventLength = 4;
-    LocalFADT.Pm1ControlLength = 4;
-    LocalFADT.PmTimerLength  = 8;
+    LocalFADT.Pm1ControlLength = 2;
+    LocalFADT.PmTimerLength  = 4;
 
     LocalFADT.Gpe0Block = 0x12340000;
     LocalFADT.Gpe1Block = 0x56780000;
 
     LocalFADT.Pm1aEventBlock = 0x1aaa0000;
-    LocalFADT.Pm1bEventBlock = 0;
+    LocalFADT.Pm1bEventBlock = 0x1bbb0000;
     LocalFADT.PmTimerBlock = 0xA0;
     LocalFADT.Pm1aControlBlock = 0xB0;
 
     /* Setup one example X-64 field */
 
-    LocalFADT.XPm1aEventBlock.SpaceId = ACPI_ADR_SPACE_SYSTEM_IO;
-    LocalFADT.XPm1aEventBlock.Address = LocalFADT.Pm1aEventBlock;
-    LocalFADT.XPm1aEventBlock.BitWidth = (UINT8) ACPI_MUL_8 (LocalFADT.Pm1EventLength);
+    LocalFADT.XPm1bEventBlock.SpaceId = ACPI_ADR_SPACE_SYSTEM_IO;
+    LocalFADT.XPm1bEventBlock.Address = LocalFADT.Pm1bEventBlock;
+    LocalFADT.XPm1bEventBlock.BitWidth = (UINT8) ACPI_MUL_8 (LocalFADT.Pm1EventLength);
 
     /* Complete the FADT with the checksum */
 
@@ -1209,6 +1209,8 @@ AfInstallGpeBlock (
         Status = AcpiGetGpeDevice (0x42, &GpeDevice);
         Status = AcpiGetGpeDevice (AcpiCurrentGpeCount-1, &GpeDevice);
         Status = AcpiGetGpeDevice (AcpiCurrentGpeCount, &GpeDevice);
+
+        AcpiRemoveGpeHandler (Handle2, 8, AeGpeHandler);
 
         Status = AcpiRemoveGpeBlock (Handle2);
     }
