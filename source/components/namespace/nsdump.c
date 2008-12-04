@@ -287,6 +287,13 @@ AcpiNsDumpOneObject (
     }
 
     ThisNode = AcpiNsMapHandleToNode (ObjHandle);
+    if (!ThisNode)
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Invalid object handle %p\n",
+            ObjHandle));
+        return (AE_OK);
+    }
+
     Type = ThisNode->Type;
 
     /* Check if the owner matches */
