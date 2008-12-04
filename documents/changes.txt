@@ -1,7 +1,72 @@
 ----------------------------------------
-31 October 2008. Summary of changes for version 20081031:
+04 December 2008. Summary of changes for version 20081204:
 
-This release is available at www.acpica.org/downloads.
+1) ACPI CA Core Subsystem:
+
+The ACPICA Programmer Reference has been completely updated and revamped for 
+this release. This includes updates to the external interfaces, OSL 
+interfaces, the overview sections, and the debugger reference.
+
+Several new ACPICA interfaces have been implemented and documented in the 
+programmer reference:
+AcpiReset - Writes the reset value to the FADT-defined reset register.
+AcpiDisableAllGpes - Disable all available GPEs.
+AcpiEnableAllRuntimeGpes - Enable all available runtime GPEs.
+AcpiGetGpeDevice - Get the GPE block device associated with a GPE.
+AcpiGbl_CurrentGpeCount - Tracks the current number of available GPEs.
+AcpiRead - Low-level read ACPI register (was HwLowLevelRead.)
+AcpiWrite - Low-level write ACPI register (was HwLowLevelWrite.)
+
+Most of the public ACPI hardware-related interfaces have been moved to a new 
+file, components/hardware/hwxface.c
+
+Enhanced the FADT parsing and low-level ACPI register access: The ACPI 
+register lengths within the FADT are now used, and the low level ACPI 
+register access no longer hardcodes the ACPI register lengths. Given that 
+there may be some risk in actually trusting the FADT register lengths, a run-
+time option was added to fall back to the default hardcoded lengths if the 
+FADT proves to contain incorrect values - UseDefaultRegisterWidths. This 
+option is set to true for now, and a warning is issued if a suspicious FADT 
+register length is overridden with the default value.
+
+Fixed a reference count issue in NsRepairObject. This problem was introduced 
+in version 20081031 as part of a fix to repair Buffer objects within 
+Packages. Lin Ming.
+
+Added semaphore support to the Linux/Unix application OS-services layer 
+(OSL). ACPICA BZ 448. Lin Ming.
+
+Added the ACPI_MUTEX_TYPE configuration option to select whether mutexes will 
+be implemented in the OSL, or will binary semaphores be used instead.
+
+Example Code and Data Size: These are the sizes for the OS-independent 
+acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
+debug version of the code includes the debug output trace mechanism and has a 
+much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  81.7K Code, 17.3K Data,  99.0K Total
+    Debug Version:     156.4K Code, 49.4K Data, 205.8K Total
+  Current Release:
+    Non-Debug Version:  82.3K Code, 17.4K Data,  99.7K Total
+    Debug Version:     157.1K Code, 49.7K Data, 206.8K Total
+
+2) iASL Compiler/Disassembler and Tools:
+
+iASL: Completed the '-e' option to include additional ACPI tables in order to 
+aid with disassembly and External statement generation. ACPICA BZ 742. Lin 
+Ming.
+
+iASL: Removed the "named object in while loop" error. The compiler cannot 
+determine how many times a loop will execute. ACPICA BZ 730.
+
+Disassembler: Implemented support for FADT revision 2 (MS extension). ACPICA 
+BZ 743.
+
+Disassembler: Updates for several ACPI data tables (HEST, EINJ, and MCFG).
+
+----------------------------------------
+31 October 2008. Summary of changes for version 20081031:
 
 1) ACPI CA Core Subsystem:
 
