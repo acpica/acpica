@@ -263,7 +263,6 @@ AcpiTbInitGenericAddress (
  * FUNCTION:    AcpiTbParseFadt
  *
  * PARAMETERS:  TableIndex          - Index for the FADT
- *              Flags               - Flags
  *
  * RETURN:      None
  *
@@ -274,8 +273,7 @@ AcpiTbInitGenericAddress (
 
 void
 AcpiTbParseFadt (
-    UINT32                  TableIndex,
-    UINT8                   Flags)
+    UINT32                  TableIndex)
 {
     UINT32                  Length;
     ACPI_TABLE_HEADER       *Table;
@@ -314,10 +312,10 @@ AcpiTbParseFadt (
     /* Obtain the DSDT and FACS tables via their addresses within the FADT */
 
     AcpiTbInstallTable ((ACPI_PHYSICAL_ADDRESS) AcpiGbl_FADT.XDsdt,
-        Flags, ACPI_SIG_DSDT, ACPI_TABLE_INDEX_DSDT);
+        ACPI_SIG_DSDT, ACPI_TABLE_INDEX_DSDT);
 
     AcpiTbInstallTable ((ACPI_PHYSICAL_ADDRESS) AcpiGbl_FADT.XFacs,
-        Flags, ACPI_SIG_FACS, ACPI_TABLE_INDEX_FACS);
+        ACPI_SIG_FACS, ACPI_TABLE_INDEX_FACS);
 }
 
 

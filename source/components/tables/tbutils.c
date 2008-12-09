@@ -313,7 +313,6 @@ AcpiTbChecksum (
  * FUNCTION:    AcpiTbInstallTable
  *
  * PARAMETERS:  Address                 - Physical address of DSDT or FACS
- *              Flags                   - Flags
  *              Signature               - Table signature, NULL if no need to
  *                                        match
  *              TableIndex              - Index into root table array
@@ -330,10 +329,10 @@ AcpiTbChecksum (
 void
 AcpiTbInstallTable (
     ACPI_PHYSICAL_ADDRESS   Address,
-    UINT8                   Flags,
     char                    *Signature,
     UINT32                  TableIndex)
 {
+    UINT8                   Flags;
     ACPI_STATUS             Status;
     ACPI_TABLE_HEADER       *TableToInstall;
     ACPI_TABLE_HEADER       *MappedTable;
@@ -380,14 +379,15 @@ AcpiTbInstallTable (
             MappedTable->Signature, ACPI_CAST_PTR (void, Address)));
 
         AcpiGbl_RootTableList.Tables[TableIndex].Pointer = OverrideTable;
-        Flags = ACPI_TABLE_ORIGIN_OVERRIDE;
         Address = ACPI_PTR_TO_PHYSADDR (OverrideTable);
 
         TableToInstall = OverrideTable;
+        Flags = ACPI_TABLE_ORIGIN_OVERRIDE;
     }
     else
     {
         TableToInstall = MappedTable;
+        Flags = ACPI_TABLE_ORIGIN_MAPPED;
     }
 
     /* Initialize the table entry */
@@ -479,7 +479,6 @@ AcpiTbGetRootTableEntry (
  * FUNCTION:    AcpiTbParseRootTable
  *
  * PARAMETERS:  Rsdp                    - Pointer to the RSDP
- *              Flags                   - Flags
  *
  * RETURN:      Status
  *
@@ -494,8 +493,7 @@ AcpiTbGetRootTableEntry (
 
 ACPI_STATUS
 AcpiTbParseRootTable (
-    ACPI_PHYSICAL_ADDRESS   RsdpAddress,
-    UINT8                   Flags)
+    ACPI_PHYSICAL_ADDRESS   RsdpAddress)
 {
     ACPI_TABLE_RSDP         *Rsdp;
     UINT32                  TableEntrySize;
@@ -636,14 +634,14 @@ AcpiTbParseRootTable (
     for (i = 2; i < AcpiGbl_RootTableList.Count; i++)
     {
         AcpiTbInstallTable (AcpiGbl_RootTableList.Tables[i].Address,
-            Flags, NULL, i);
+            NULL, i);
 
         /* Special case for FADT - get the DSDT and FACS */
 
         if (ACPI_COMPARE_NAME (
                 &AcpiGbl_RootTableList.Tables[i].Signature, ACPI_SIG_FADT))
         {
-            AcpiTbParseFadt (i, Flags);
+            AcpiTbParseFadt (i);
         }
     }
 

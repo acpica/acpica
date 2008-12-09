@@ -237,7 +237,7 @@ AcpiInitializeTables (
      * Root Table Array. This array contains the information of the RSDT/XSDT
      * in a common, more useable format.
      */
-    Status = AcpiTbParseRootTable (RsdpAddress, ACPI_TABLE_ORIGIN_MAPPED);
+    Status = AcpiTbParseRootTable (RsdpAddress);
     return_ACPI_STATUS (Status);
 }
 
