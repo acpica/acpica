@@ -320,7 +320,10 @@ AcpiTbChecksum (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Install an ACPI table into the global data structure.
+ * DESCRIPTION: Install an ACPI table into the global data structure. The
+ *              table override mechanism is implemented here to allow the host
+ *              OS to replace any table before it is installed in the root
+ *              table array.
  *
  ******************************************************************************/
 
@@ -331,7 +334,10 @@ AcpiTbInstallTable (
     char                    *Signature,
     UINT32                  TableIndex)
 {
-    ACPI_TABLE_HEADER       *Table;
+    ACPI_STATUS             Status;
+    ACPI_TABLE_HEADER       *TableToInstall;
+    ACPI_TABLE_HEADER       *MappedTable;
+    ACPI_TABLE_HEADER       *OverrideTable = NULL;
 
 
     if (!Address)
@@ -343,43 +349,68 @@ AcpiTbInstallTable (
 
     /* Map just the table header */
 
-    Table = AcpiOsMapMemory (Address, sizeof (ACPI_TABLE_HEADER));
-    if (!Table)
+    MappedTable = AcpiOsMapMemory (Address, sizeof (ACPI_TABLE_HEADER));
+    if (!MappedTable)
     {
         return;
     }
 
-    /* If a particular signature is expected, signature must match */
+    /* If a particular signature is expected (DSDT/FACS), it must match */
 
     if (Signature &&
-        !ACPI_COMPARE_NAME (Table->Signature, Signature))
+        !ACPI_COMPARE_NAME (MappedTable->Signature, Signature))
     {
-        ACPI_ERROR ((AE_INFO, "Invalid signature 0x%X for ACPI table [%s]",
-            *ACPI_CAST_PTR (UINT32, Table->Signature), Signature));
+        ACPI_ERROR ((AE_INFO, "Invalid signature 0x%X for ACPI table, expected [%s]",
+            *ACPI_CAST_PTR (UINT32, MappedTable->Signature), Signature));
         goto UnmapAndExit;
+    }
+
+    /*
+     * ACPI Table Override:
+     *
+     * Before we install the table, let the host OS override it with a new
+     * one if desired. Any table within the RSDT/XSDT can be replaced, 
+     * including the DSDT which is pointed to by the FADT.
+     */
+    Status = AcpiOsTableOverride (MappedTable, &OverrideTable);
+    if (ACPI_SUCCESS (Status) && OverrideTable)
+    {
+        ACPI_INFO ((AE_INFO,
+            "%4.4s @ 0x%p Table override, replaced with:",
+            MappedTable->Signature, ACPI_CAST_PTR (void, Address)));
+
+        AcpiGbl_RootTableList.Tables[TableIndex].Pointer = OverrideTable;
+        Flags = ACPI_TABLE_ORIGIN_OVERRIDE;
+        Address = ACPI_PTR_TO_PHYSADDR (OverrideTable);
+
+        TableToInstall = OverrideTable;
+    }
+    else
+    {
+        TableToInstall = MappedTable;
     }
 
     /* Initialize the table entry */
 
     AcpiGbl_RootTableList.Tables[TableIndex].Address = Address;
-    AcpiGbl_RootTableList.Tables[TableIndex].Length = Table->Length;
+    AcpiGbl_RootTableList.Tables[TableIndex].Length = TableToInstall->Length;
     AcpiGbl_RootTableList.Tables[TableIndex].Flags = Flags;
 
     ACPI_MOVE_32_TO_32 (
         &(AcpiGbl_RootTableList.Tables[TableIndex].Signature),
-        Table->Signature);
+        TableToInstall->Signature);
 
-    AcpiTbPrintTableHeader (Address, Table);
+    AcpiTbPrintTableHeader (Address, TableToInstall);
 
     if (TableIndex == ACPI_TABLE_INDEX_DSDT)
     {
         /* Global integer width is based upon revision of the DSDT */
 
-        AcpiUtSetIntegerWidth (Table->Revision);
+        AcpiUtSetIntegerWidth (TableToInstall->Revision);
     }
 
 UnmapAndExit:
-    AcpiOsUnmapMemory (Table, sizeof (ACPI_TABLE_HEADER));
+    AcpiOsUnmapMemory (MappedTable, sizeof (ACPI_TABLE_HEADER));
 }
 
 

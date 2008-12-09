@@ -140,9 +140,17 @@
 extern FILE                    *AcpiGbl_DebugFile;
 FILE                           *AcpiGbl_OutputFile;
 
+
+/* Upcalls to AcpiExec */
+
 ACPI_PHYSICAL_ADDRESS
 AeLocalGetRootPointer (
     void);
+
+void
+AeTableOverride (
+    ACPI_TABLE_HEADER       *ExistingTable,
+    ACPI_TABLE_HEADER       **NewTable);
 
 typedef void* (*PTHREAD_CALLBACK) (void *);
 
@@ -254,14 +262,7 @@ AcpiOsTableOverride (
 
 #ifdef ACPI_EXEC_APP
 
-    /* This code exercises the table override mechanism in the core */
-
-    if (ACPI_COMPARE_NAME (ExistingTable->Signature, ACPI_SIG_DSDT))
-    {
-        /* override DSDT with itself */
-
-        *NewTable = AcpiGbl_DbTablePtr;
-    }
+    AeTableOverride (ExistingTable, NewTable);
     return (AE_OK);
 #else
     return AE_NO_ACPI_TABLES;

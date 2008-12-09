@@ -534,7 +534,6 @@ AcpiTbLoadNamespace (
     void)
 {
     ACPI_STATUS             Status;
-    ACPI_TABLE_HEADER       *Table;
     UINT32                  i;
 
 
@@ -556,30 +555,11 @@ AcpiTbLoadNamespace (
         goto UnlockAndExit;
     }
 
-    /*
-     * Find DSDT table
-     */
-    Status = AcpiOsTableOverride (
-                AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT].Pointer, &Table);
-    if (ACPI_SUCCESS (Status) && Table)
-    {
-        /*
-         * DSDT table has been found
-         */
-        AcpiTbDeleteTable (&AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT]);
-        AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT].Pointer = Table;
-        AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT].Length = Table->Length;
-        AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT].Flags = ACPI_TABLE_ORIGIN_UNKNOWN;
-
-        ACPI_INFO ((AE_INFO, "Table DSDT replaced by host OS"));
-        AcpiTbPrintTableHeader (0, Table);
-    }
+    /* A valid DSDT is required */
 
     Status = AcpiTbVerifyTable (&AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT]);
     if (ACPI_FAILURE (Status))
     {
-        /* A valid DSDT is required */
-
         Status = AE_NO_ACPI_TABLES;
         goto UnlockAndExit;
     }

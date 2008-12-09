@@ -563,10 +563,6 @@ AcpiDbTerminate (
     void)
 {
 
-    if (AcpiGbl_DbTablePtr)
-    {
-        AcpiOsFree (AcpiGbl_DbTablePtr);
-    }
     if (AcpiGbl_DbBuffer)
     {
         AcpiOsFree (AcpiGbl_DbBuffer);

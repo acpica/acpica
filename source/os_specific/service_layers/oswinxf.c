@@ -158,9 +158,17 @@ typedef struct semaphore_entry
 SEMAPHORE_ENTRY             AcpiGbl_Semaphores[NUM_SEMAPHORES];
 extern FILE                 *AcpiGbl_DebugFile;
 
+/* Upcalls to AcpiExec */
+
 ACPI_PHYSICAL_ADDRESS
 AeLocalGetRootPointer (
     void);
+
+void
+AeTableOverride (
+    ACPI_TABLE_HEADER       *ExistingTable,
+    ACPI_TABLE_HEADER       **NewTable);
+
 
 FILE                        *AcpiGbl_OutputFile;
 UINT64                      TimerFrequency;
@@ -450,15 +458,7 @@ AcpiOsTableOverride (
 #ifndef ACPI_BIN_APP
 #ifdef ACPI_EXEC_APP
 
-    /* This code exercises the table override mechanism in the core */
-
-    if (ACPI_COMPARE_NAME (ExistingTable->Signature, ACPI_SIG_DSDT))
-    {
-        /* override DSDT with itself */
-
-        *NewTable = AcpiGbl_DbTablePtr;
-    }
-
+    AeTableOverride (ExistingTable, NewTable);
 #else
 
     /* Construct a null-terminated string from table signature */

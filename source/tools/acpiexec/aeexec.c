@@ -131,6 +131,20 @@ ACPI_TABLE_RSDP             LocalRsdp;
 /*
  * Misc ACPI tables to be installed
  */
+
+/* Default DSDT. This will be replaced with the input DSDT */
+
+unsigned char DsdtCode[] =
+{
+    0x44,0x53,0x44,0x54,0x24,0x00,0x00,0x00,  /* 00000000    "DSDT$..." */
+    0x02,0x6F,0x49,0x6E,0x74,0x65,0x6C,0x00,  /* 00000008    ".oIntel." */
+    0x4E,0x75,0x6C,0x6C,0x44,0x53,0x44,0x54,  /* 00000010    "NullDSDT" */
+    0x01,0x00,0x00,0x00,0x49,0x4E,0x54,0x4C,  /* 00000018    "....INTL" */
+    0x04,0x12,0x08,0x20,
+};
+
+/* Several example SSDTs */
+
 unsigned char Ssdt1Code[] = /* Has method _T98 */
 {
     0x53,0x53,0x44,0x54,0x30,0x00,0x00,0x00,  /* 00000000    "SSDT0..." */
@@ -161,6 +175,8 @@ unsigned char Ssdt3Code[] = /* Has method _T97 */
     0x39,0x37,0x00,0x70,0x0A,0x04,0x60,0xA4,  /* 00000028    "97.p..`." */
 };
 
+/* Example OEM table */
+
 unsigned char Oem1Code[] =
 {
     0x4F,0x45,0x4D,0x31,0x38,0x00,0x00,0x00,  /* 00000000    "OEM18..." */
@@ -177,6 +193,7 @@ unsigned char Oem1Code[] =
  * even though the underlying OSD HW access functions don't do
  * anything.
  */
+ACPI_TABLE_HEADER           *DsdtToInstallOverride;
 ACPI_TABLE_RSDP             LocalRSDP;
 ACPI_TABLE_FADT             LocalFADT;
 ACPI_TABLE_FACS             LocalFACS;
@@ -193,6 +210,33 @@ ACPI_TABLE_RSDT             *LocalRSDT;
 static ACPI_TABLE_DESC      Tables[ACPI_MAX_INIT_TABLES];
 
 UINT32                      SigintCount = 0;
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AeTableOverride
+ *
+ * DESCRIPTION: Local implementation of AcpiOsTableOverride.
+ *
+ * Exercise the override mechanism
+ *
+ *****************************************************************************/
+
+void
+AeTableOverride (
+    ACPI_TABLE_HEADER       *ExistingTable,
+    ACPI_TABLE_HEADER       **NewTable)
+{
+
+
+    /* This code exercises the table override mechanism in the core */
+
+    if (ACPI_COMPARE_NAME (ExistingTable->Signature, ACPI_SIG_DSDT))
+    {
+        *NewTable = DsdtToInstallOverride;
+    }
+}
+
 
 /******************************************************************************
  *
@@ -293,7 +337,8 @@ AeBuildLocalTables (
     {
         /* The incoming user table is a DSDT */
 
-        DsdtAddress = ACPI_PTR_TO_PHYSADDR (UserTable);
+        DsdtAddress = ACPI_PTR_TO_PHYSADDR (&DsdtCode);
+        DsdtToInstallOverride = UserTable;
     }
     else
     {
@@ -309,6 +354,7 @@ AeBuildLocalTables (
 
         LocalRSDT->TableOffsetEntry[3] = ACPI_PTR_TO_PHYSADDR (UserTable);
         DsdtAddress = ACPI_PTR_TO_PHYSADDR (&LocalDSDT);
+        DsdtToInstallOverride = &LocalDSDT;
     }
 
     /* Set checksums for both RSDT and RSDP */
