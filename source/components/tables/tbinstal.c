@@ -186,7 +186,9 @@ AcpiTbVerifyTable (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: This function is called to add the ACPI table
+ * DESCRIPTION: This function is called to add an ACPI table. It is used to
+ *              dynamically load tables via the Load and LoadTable AML
+ *              operators.
  *
  ******************************************************************************/
 
@@ -197,6 +199,7 @@ AcpiTbAddTable (
 {
     UINT32                  i;
     ACPI_STATUS             Status = AE_OK;
+    ACPI_TABLE_HEADER       *OverrideTable = NULL;
 
 
     ACPI_FUNCTION_TRACE (TbAddTable);
@@ -288,6 +291,30 @@ AcpiTbAddTable (
             Status = AE_OK;
             goto PrintHeader;
         }
+    }
+
+    /*
+     * ACPI Table Override:
+     * Allow the host to override dynamically loaded tables.
+     */
+    Status = AcpiOsTableOverride (TableDesc->Pointer, &OverrideTable);
+    if (ACPI_SUCCESS (Status) && OverrideTable)
+    {
+        ACPI_INFO ((AE_INFO,
+            "%4.4s @ 0x%p Table override, replaced with:",
+            TableDesc->Pointer->Signature,
+            ACPI_CAST_PTR (void, TableDesc->Address)));
+
+        /* We can delete the table that was passed as a parameter */
+
+        AcpiTbDeleteTable (TableDesc);
+
+        /* Setup descriptor for the new table */
+
+        TableDesc->Address = ACPI_PTR_TO_PHYSADDR (OverrideTable);
+        TableDesc->Pointer = OverrideTable;
+        TableDesc->Length = OverrideTable->Length;
+        TableDesc->Flags = ACPI_TABLE_ORIGIN_OVERRIDE;
     }
 
     /* Add the table to the global root table list */

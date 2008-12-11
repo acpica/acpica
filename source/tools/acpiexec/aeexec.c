@@ -228,12 +228,18 @@ AeTableOverride (
     ACPI_TABLE_HEADER       **NewTable)
 {
 
-
     /* This code exercises the table override mechanism in the core */
 
     if (ACPI_COMPARE_NAME (ExistingTable->Signature, ACPI_SIG_DSDT))
     {
         *NewTable = DsdtToInstallOverride;
+    }
+
+    /* This code tests override of dynamically loaded tables */
+
+    else if (ACPI_COMPARE_NAME (ExistingTable->Signature, "TSDT"))
+    {
+        *NewTable = ACPI_CAST_PTR (ACPI_TABLE_HEADER, Ssdt3Code);
     }
 }
 
