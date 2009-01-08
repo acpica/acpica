@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2008, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2009, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -1725,7 +1725,7 @@ AnOperandTypecheckWalkEnd (
     OpcodeClass     = OpInfo->Class;
 
 #ifdef ASL_ERROR_NAMED_OBJECT_IN_WHILE
-    /* 
+    /*
      * Update 11/2008: In practice, we can't perform this check. A simple
      * analysis is not sufficient. Also, it can cause errors when compiling
      * disassembled code because of the way Switch operators are implemented

@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2008, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2009, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -368,7 +368,7 @@ AcpiTbInstallTable (
      * ACPI Table Override:
      *
      * Before we install the table, let the host OS override it with a new
-     * one if desired. Any table within the RSDT/XSDT can be replaced, 
+     * one if desired. Any table within the RSDT/XSDT can be replaced,
      * including the DSDT which is pointed to by the FADT.
      */
     Status = AcpiOsTableOverride (MappedTable, &OverrideTable);
