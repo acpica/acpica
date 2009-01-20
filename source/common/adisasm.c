@@ -1068,6 +1068,11 @@ AdGetLocalTables (
             fprintf (stderr, "Could not obtain RSDT\n");
             return AE_NO_ACPI_TABLES;
         }
+        else
+        {
+            AdWriteTable (NewTable, NewTable->Length,
+                ACPI_SIG_RSDT, NewTable->OemTableId);
+        }
 
         if (ACPI_COMPARE_NAME (NewTable->Signature, ACPI_SIG_RSDT))
         {
