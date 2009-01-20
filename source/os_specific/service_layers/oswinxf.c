@@ -114,20 +114,13 @@
  *****************************************************************************/
 
 
-/*
- * These interfaces are required in order to link to the ACPI subsystem
- * parser.  They are called during the execution of the parser, and all
- * map directly to Clibrary calls.
- */
-
 #ifdef WIN32
 #pragma warning(disable:4115)   /* warning C4115: named type definition in parentheses (caused by rpcasync.h> */
 
 #include <windows.h>
 #include <winbase.h>
-#endif
 
-#ifdef WIN64
+#elif WIN64
 #include <windowsx.h>
 #endif
 
@@ -139,7 +132,6 @@
 
 #include "acpi.h"
 #include "accommon.h"
-#include "acdebug.h"
 
 #define _COMPONENT          ACPI_OS_SERVICES
         ACPI_MODULE_NAME    ("oswinxf")
@@ -154,9 +146,7 @@ typedef struct semaphore_entry
     void                    *OsHandle;
 } SEMAPHORE_ENTRY;
 
-
 SEMAPHORE_ENTRY             AcpiGbl_Semaphores[NUM_SEMAPHORES];
-extern FILE                 *AcpiGbl_DebugFile;
 
 /* Upcalls to AcpiExec */
 
@@ -169,15 +159,20 @@ AeTableOverride (
     ACPI_TABLE_HEADER       *ExistingTable,
     ACPI_TABLE_HEADER       **NewTable);
 
+ACPI_TABLE_HEADER *
+OsGetTable (
+    char                    *Signature);
 
+
+extern FILE                 *AcpiGbl_DebugFile;
 FILE                        *AcpiGbl_OutputFile;
 UINT64                      TimerFrequency;
-
 char                        TableName[ACPI_NAME_SIZE + 1];
+
 
 /******************************************************************************
  *
- * FUNCTION:    OsTerminate
+ * FUNCTION:    AcpiOsTerminate
  *
  * PARAMETERS:  None
  *
@@ -194,153 +189,9 @@ AcpiOsTerminate (void)
 }
 
 
-#if (!defined ACPI_EXEC_APP && !defined ACPI_BIN_APP)
-/* Used by both iASL and AcpiDump applications */
-
-CHAR                s[500];
-
 /******************************************************************************
  *
- * FUNCTION:    OsGetTable
- *
- * PARAMETERS:  None
- *
- * RETURN:      Pointer to the table.  NULL if failure
- *
- * DESCRIPTION: Get an ACPI table from the Windows registry.
- *
- *****************************************************************************/
-
-ACPI_TABLE_HEADER *
-OsGetTable (
-    char                *TableName)
-{
-    HKEY                Handle = NULL;
-    ULONG               i;
-    LONG                Status;
-    ULONG               Type;
-    ULONG               NameSize;
-    ULONG               DataSize;
-    HKEY                SubKey;
-    ACPI_TABLE_HEADER   *Buffer;
-    char                *Signature = TableName;
-
-
-    /* Get a handle to the DSDT key */
-
-    while (1)
-    {
-        ACPI_STRCPY (s, "HARDWARE\\ACPI\\");
-        ACPI_STRCAT (s, Signature);
-
-        Status = RegOpenKeyEx (HKEY_LOCAL_MACHINE, s,
-                    0L, KEY_ALL_ACCESS, &Handle);
-
-        if (Status != ERROR_SUCCESS)
-        {
-            /*
-             * Somewhere along the way, MS changed the registry entry for
-             * the FADT from
-             * HARDWARE/ACPI/FACP  to
-             * HARDWARE/ACPI/FADT.
-             *
-             * This code allows for both.
-             */
-            if (ACPI_COMPARE_NAME (Signature, "FACP"))
-            {
-                Signature = "FADT";
-            }
-            else
-            {
-                AcpiOsPrintf ("Could not find %s in registry at %s\n", TableName, s);
-                return (NULL);
-            }
-        }
-        else
-        {
-            break;
-        }
-    }
-
-    /* Actual table is down a couple of levels */
-
-    for (i = 0; ;)
-    {
-        Status = RegEnumKey (Handle, i, s, sizeof(s));
-        i += 1;
-        if (Status == ERROR_NO_MORE_ITEMS)
-        {
-            break;
-        }
-
-        Status = RegOpenKey (Handle, s, &SubKey);
-        if (Status != ERROR_SUCCESS)
-        {
-            AcpiOsPrintf ("Could not open %s entry\n", TableName);
-            return (NULL);
-        }
-
-        RegCloseKey (Handle);
-        Handle = SubKey;
-        i = 0;
-    }
-
-    /* Find the table entry */
-
-    for (i = 0; ;)
-    {
-        NameSize = sizeof (s);
-        Status = RegEnumValue (Handle, i, s, &NameSize,
-                    NULL, &Type, NULL, 0 );
-        if (Status != ERROR_SUCCESS)
-        {
-            AcpiOsPrintf ("Could not get %s registry entry\n", TableName);
-            return (NULL);
-        }
-
-        if (Type == REG_BINARY)
-        {
-            break;
-        }
-        i += 1;
-    }
-
-    /* Get the size of the table */
-
-    Status = RegQueryValueEx (Handle, s, NULL, NULL, NULL, &DataSize);
-    if (Status != ERROR_SUCCESS)
-    {
-        AcpiOsPrintf ("Could not read the %s table size\n", TableName);
-        return (NULL);
-    }
-
-    /* Allocate a new buffer for the table */
-
-    Buffer = AcpiOsAllocate (DataSize);
-    if (!Buffer)
-    {
-        goto Cleanup;
-    }
-
-    /* Get the actual table from the registry */
-
-    Status = RegQueryValueEx (Handle, s, NULL, NULL, (UCHAR *) Buffer, &DataSize);
-    if (Status != ERROR_SUCCESS)
-    {
-        AcpiOsPrintf ("Could not read %s data\n", TableName);
-        return (NULL);
-    }
-
-Cleanup:
-    RegCloseKey (Handle);
-    return (Buffer);
-}
-
-#endif
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsInitialize, AcpiOsTerminate
+ * FUNCTION:    AcpiOsInitialize
  *
  * PARAMETERS:  None
  *
@@ -501,8 +352,6 @@ AcpiOsGetTimer (
 {
     LARGE_INTEGER           Timer;
 
-
-//        return ((UINT64) GetTickCount() * 10000);
 
     /* Attempt to use hi-granularity timer first */
 
@@ -712,6 +561,7 @@ AcpiOsGetLine (
     return (i);
 }
 
+
 /******************************************************************************
  *
  * FUNCTION:    AcpiOsMapMemory
@@ -885,6 +735,7 @@ AcpiOsCreateSemaphore (
 
     return AE_OK;
 }
+
 
 /******************************************************************************
  *
@@ -1574,5 +1425,4 @@ AcpiOsSignal (
 
     return (AE_OK);
 }
-
 
