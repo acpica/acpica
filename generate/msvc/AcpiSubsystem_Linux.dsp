@@ -37,8 +37,8 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "AcpiSubsystemLinux"
-# PROP Intermediate_Dir "AcpiSubsystemLinux"
+# PROP Output_Dir "/acpica/generate/msvc/AcpiSubsystemLinux"
+# PROP Intermediate_Dir "/acpica/generate/msvc/AcpiSubsystemLinux"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
 # ADD CPP /nologo /Gr /MT /Za /W4 /O1 /I "..\..\source_linux\Include" /D "ACPI_LIBRARY" /D "NDEBUG" /D "DRIVER" /D "_NDEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_WIN_VER" /D "ACPI_DEFINE_ALTERNATE_TYPES" /FR /FD /c
@@ -47,7 +47,7 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"AcpiSubsystemLinux/AcpiSubsystemLinux.bsc"
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiSubsystemLinux/AcpiSubsystemLinux.bsc"
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"AcpiSubsystemLinux\acpicalinux.lib"
@@ -61,8 +61,8 @@ LIB32=link.exe -lib
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "AcpiSubsystemLinuxDebug"
-# PROP Intermediate_Dir "AcpiSubsystemLinuxDebug"
+# PROP Output_Dir "/acpica/generate/msvc/AcpiSubsystemLinuxDebug"
+# PROP Intermediate_Dir "/acpica/generate/msvc/AcpiSubsystemLinuxDebug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
 # ADD CPP /nologo /Gr /MTd /Za /W4 /Od /Gf /I "..\..\source_linux\Include" /D "ACPI_LIBRARY" /D "ACPI_FULL_DEBUG" /D "_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_WIN_VER" /D "ACPI_DEFINE_ALTERNATE_TYPES" /FR /FD /GZ /c
@@ -71,7 +71,7 @@ LIB32=link.exe -lib
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"AcpiSubsystemLinuxDebug/AcpiSubsystemLinux.bsc"
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiSubsystemLinuxDebug/AcpiSubsystemLinux.bsc"
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"AcpiSubsystemLinuxDebug\acpicalinux_dbg.lib"

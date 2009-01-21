@@ -38,22 +38,22 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "AslCompilerLinux"
-# PROP Intermediate_Dir "AslCompilerLinux"
+# PROP Output_Dir "/acpica/generate/msvc/AslCompilerLinux"
+# PROP Intermediate_Dir "/acpica/generate/msvc/AslCompilerLinux"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /c
-# ADD CPP /nologo /Gd /Za /W4 /GX- /O2 /I "$(OutDir)\..\\" /I "..\..\source_Linux\Include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "ACPI_DEFINE_ALTERNATE_TYPES" /FR /FD /c
+# ADD CPP /nologo /Za /W4 /O2 /I "$(OutDir)\..\\" /I "..\..\source_Linux\Include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "ACPI_DEFINE_ALTERNATE_TYPES" /FR /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"AslCompilerLinux/AslCompilerLinux.bsc"
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/AslCompilerLinux/AslCompilerLinux.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /machine:I386 /out:"AslCompilerLinux/iasl_linux.exe"
+# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /machine:I386 /out:"/acpica/generate/msvc/AslCompilerLinux/iasl_linux.exe"
 # SUBTRACT LINK32 /incremental:yes
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
@@ -70,22 +70,22 @@ PostBuild_Cmds=copy AslCompilerLinux\iasllinux.exe ..\..\Libraries
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "AslCompilerLinuxDebug"
-# PROP Intermediate_Dir "AslCompilerLinuxDebug"
+# PROP Output_Dir "/acpica/generate/msvc/AslCompilerLinuxDebug"
+# PROP Intermediate_Dir "/acpica/generate/msvc/AslCompilerLinuxDebug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
-# ADD CPP /nologo /Gd /Za /W4 /Gm- /GX- /Zi /Od /Gf /I "$(OutDir)..\\" /I "..\..\source_Linux\Include" /I "$(OutDir)\..\\" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "ACPI_DEFINE_ALTERNATE_TYPES" /FR /FD /GZ /c
+# ADD CPP /nologo /Za /W4 /Zi /Od /Gf /I "$(OutDir)..\\" /I "..\..\source_Linux\Include" /I "$(OutDir)\..\\" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "ACPI_DEFINE_ALTERNATE_TYPES" /FR /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"AslCompilerLinuxDebug/AslCompilerLinux.bsc"
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/AslCompilerLinuxDebug/AslCompilerLinux.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:no /debug /machine:I386 /out:"AslCompilerLinuxDebug/iasllinuxdebug.exe" /pdbtype:sept
+# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:no /debug /machine:I386 /out:"/acpica/generate/msvc/AslCompilerLinuxDebug/iasllinuxdebug.exe" /pdbtype:sept
 # SUBTRACT LINK32 /verbose /map
 # Begin Special Build Tool
 SOURCE="$(InputPath)"

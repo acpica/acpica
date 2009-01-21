@@ -37,8 +37,8 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "AcpiSubsystem"
-# PROP Intermediate_Dir "AcpiSubsystem"
+# PROP Output_Dir "/acpica/generate/msvc/AcpiSubsystem"
+# PROP Intermediate_Dir "/acpica/generate/msvc/AcpiSubsystem"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
 # ADD CPP /nologo /Gr /MT /Za /W4 /O1 /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "NDEBUG" /D "_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
@@ -68,8 +68,8 @@ PostBuild_Cmds=copy AcpiSubsystem\acpica.lib ..\..\libraries	dir ..\..\libraries
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "AcpiSubsystemDebug"
-# PROP Intermediate_Dir "AcpiSubsystemDebug"
+# PROP Output_Dir "/acpica/generate/msvc/AcpiSubsystemDebug"
+# PROP Intermediate_Dir "/acpica/generate/msvc/AcpiSubsystemDebug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
 # ADD CPP /nologo /Gr /MTd /Za /W4 /Zi /Oa /Og /Os /Oy /Gf /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "ACPI_FULL_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
@@ -77,7 +77,7 @@ PostBuild_Cmds=copy AcpiSubsystem\acpica.lib ..\..\libraries	dir ..\..\libraries
 # ADD RSC /l 0x409
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"AcpiSubsystemDebug/AcpiSubsystemDebug.bsc"
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiSubsystemDebug/AcpiSubsystemDebug.bsc"
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"AcpiSubsystemDebug\acpica_dbg.lib"
