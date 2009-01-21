@@ -306,11 +306,17 @@ AcpiOsTableOverride (
     *NewTable = NULL;
 
 
-#ifndef ACPI_BIN_APP
 #ifdef ACPI_EXEC_APP
 
+    /* Call back up to AcpiExec */
+
     AeTableOverride (ExistingTable, NewTable);
-#else
+#endif
+
+
+#ifdef ACPI_ASL_COMPILER
+
+    /* Attempt to get the table from the registry */
 
     /* Construct a null-terminated string from table signature */
 
@@ -320,14 +326,13 @@ AcpiOsTableOverride (
     *NewTable = OsGetTable (TableName);
     if (*NewTable)
     {
-        AcpiOsPrintf ("%s obtained from registry, %d bytes\n",
+        AcpiOsPrintf ("Table %s obtained from registry, %d bytes\n",
             TableName, (*NewTable)->Length);
     }
     else
     {
-        AcpiOsPrintf ("Could not read %s from registry\n", TableName);
+        AcpiOsPrintf ("Could not read table %s from registry\n", TableName);
     }
-#endif
 #endif
 
     return (AE_OK);
