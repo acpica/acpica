@@ -1394,6 +1394,9 @@ ACPI_STATUS
 AcpiDbFindNameInNamespace (
     char                    *NameArg)
 {
+    char                    AcpiName[5] = "____";
+    char                    *AcpiNamePtr = AcpiName;
+
 
     if (ACPI_STRLEN (NameArg) > 4)
     {
@@ -1401,11 +1404,20 @@ AcpiDbFindNameInNamespace (
         return (AE_OK);
     }
 
-    /* Walk the namespace from the root */
+    /* Pad out name with underscores as necessary to create a 4-char name */
 
     AcpiUtStrupr (NameArg);
+    while (*NameArg)
+    {
+        *AcpiNamePtr = *NameArg;
+        AcpiNamePtr++;
+        NameArg++;
+    }
+
+    /* Walk the namespace from the root */
+
     (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-                        AcpiDbWalkAndMatchName, NameArg, NULL);
+                        AcpiDbWalkAndMatchName, AcpiName, NULL);
 
     AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
     return (AE_OK);
