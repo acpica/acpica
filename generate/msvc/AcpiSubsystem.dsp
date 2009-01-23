@@ -50,13 +50,13 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /out:"AcpiSubsystem\acpica.lib"
+# ADD LIB32 /out:"/acpica/generate/msvc/AcpiSubsystem\AcpiSubsystem.lib"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
 PostBuild_Desc=Copy library to libraries
-PostBuild_Cmds=copy AcpiSubsystem\acpica.lib ..\..\libraries	dir ..\..\libraries\acpica.lib
+PostBuild_Cmds=copy AcpiSubsystem\acpisubsystem.lib ..\..\libraries\acpica.lib	dir ..\..\libraries\acpica.lib
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "AcpiSubsystem - Win32 Debug"
@@ -77,16 +77,16 @@ PostBuild_Cmds=copy AcpiSubsystem\acpica.lib ..\..\libraries	dir ..\..\libraries
 # ADD RSC /l 0x409
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiSubsystemDebug/AcpiSubsystemDebug.bsc"
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiSubsystemDebug/AcpiSubsystem.bsc"
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"AcpiSubsystemDebug\acpica_dbg.lib"
+# ADD LIB32 /nologo /out:"/acpica/generate/msvc/AcpiSubsystemDebug\AcpiSubsystem.lib"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
 PostBuild_Desc=Copy library to libraries
-PostBuild_Cmds=copy AcpiSubsystemDebug\acpica_dbg.lib ..\..\libraries	dir ..\..\libraries\acpica_dbg.lib
+PostBuild_Cmds=copy AcpiSubsystemDebug\acpisubsystem.lib ..\..\libraries\acpica_dbg.lib	dir ..\..\libraries\acpica_dbg.lib
 # End Special Build Tool
 
 !ENDIF 
@@ -190,7 +190,7 @@ SOURCE=..\..\source\components\events\evmisc.c
 
 !ELSEIF  "$(CFG)" == "AcpiSubsystem - Win32 Debug"
 
-# ADD CPP /FAcs
+# SUBTRACT CPP /FA<none>
 
 !ENDIF 
 

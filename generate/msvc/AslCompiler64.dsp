@@ -84,10 +84,10 @@ PostBuild_Cmds=copy AslCompiler64\iasl64.exe ..\..\Libraries
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/AslCompiler64Debug/AslCompiler64Debug.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:IX86 /pdbtype:sept /machine:IA64
-# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:no /debug /machine:IX86 /out:"/acpica/generate/msvc/AslCompiler64Debug\iasl64debug.exe" /pdbtype:sept /machine:IA64
+# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:no /debug /machine:IX86 /out:"/acpica/generate/msvc/AslCompiler64Debug/AslCompiler64Debug.exe" /pdbtype:sept /out:"/acpica/generate/msvc/AslCompiler64Debug\iasl64debug.exe" /machine:IA64
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"

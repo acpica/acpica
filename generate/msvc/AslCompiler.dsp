@@ -60,7 +60,7 @@ LINK32=link.exe
 SOURCE="$(InputPath)"
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
 PostBuild_Desc=Copy iasl.exe to libraries directory
-PostBuild_Cmds=copy AslCompiler\iasl.exe ..\..\Libraries	dir ..\..\libraries\iasl.exe
+PostBuild_Cmds=copy AslCompiler\iasl.exe ..\..\Libraries\iasl.exe	dir ..\..\libraries\iasl.exe
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
@@ -84,16 +84,16 @@ PostBuild_Cmds=copy AslCompiler\iasl.exe ..\..\Libraries	dir ..\..\libraries\ias
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"/acpica/generate/msvc/AslCompilerDebug\iaslDebug.bsc"
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:no /map /debug /machine:I386 /nodefaultlib:"libcmt.lib" /out:"/acpica/generate/msvc/AslCompilerDebug/iasldebug.exe" /pdbtype:sept
+# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:no /map /debug /machine:I386 /nodefaultlib:"libcmt.lib" /pdbtype:sept /out:"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.exe"
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
 PostBuild_Desc=Copy iasldebug.exe to libraries directory
-PostBuild_Cmds=copy AslCompilerDebug\iasldebug.exe ..\..\Libraries	dir ..\..\libraries\iasldebug.exe
+PostBuild_Cmds=copy AslCompilerDebug\aslcompiler.exe ..\..\Libraries\iasldebug.exe	dir ..\..\libraries\iasldebug.exe
 # End Special Build Tool
 
 !ENDIF 

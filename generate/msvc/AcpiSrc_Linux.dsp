@@ -80,10 +80,10 @@ PostBuild_Cmds=copy AcpiSrcLinux\AcpiSrcLinux.exe ..\..\libraries	dir ..\..\libr
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiSrcLinuxDebug/AcpiSrcLinux.bsc"
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiSrcLinuxDebug/AcpiSrc_LinuxDebug.bsc" /o"/acpica/generate/msvc/AcpiSrcLinuxDebug/AcpiSrcLinux.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /out:"/acpica/generate/msvc/AcpiSrcLinuxDebug\AcpiSrcLinuxDebug.exe" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /out:"/acpica/generate/msvc/AcpiSrcLinuxDebug/AcpiSrc_LinuxDebug.exe" /pdbtype:sept /out:"/acpica/generate/msvc/AcpiSrcLinuxDebug\AcpiSrcLinuxDebug.exe"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/components/libraries directory

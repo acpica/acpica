@@ -77,7 +77,7 @@ PostBuild_Cmds=copy AcpiSubsystem64\acpica64.lib ..\..\libraries	dir ..\..\libra
 # ADD RSC /l 0x409
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiSubsystem64Debug/AcpiSubsystem64Debug.bsc"
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"AcpiSubsystem64Debug\acpica64_dbg.lib" /machine:IA64

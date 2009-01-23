@@ -55,7 +55,7 @@ LINK32=link.exe
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
-PostBuild_Desc=Copy acpibin.exe to libraries
+PostBuild_Desc=Copy AcpiBin.exe to libraries
 PostBuild_Cmds=copy acpibin\acpibin.exe ..\..\libraries	dir ..\..\libraries\acpibin.exe
 # End Special Build Tool
 
@@ -78,15 +78,15 @@ PostBuild_Cmds=copy acpibin\acpibin.exe ..\..\libraries	dir ..\..\libraries\acpi
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiBinDebug/AcpiBinDebug.bsc"
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiBinDebug/AcpiBin.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /map /debug /machine:I386 /out:"/acpica/generate/msvc/AcpiBinDebug/AcpiBinDebug.exe" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /map /debug /machine:I386 /pdbtype:sept /out:"/acpica/generate/msvc/AcpiBinDebug/AcpiBin.exe"
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copy AcpiBinDebug.exe to libraries
-PostBuild_Cmds=copy acpibindebug\acpibindebug.exe ..\..\libraries	dir ..\..\libraries\acpibindebug.exe
+PostBuild_Cmds=copy acpibindebug\acpibin.exe ..\..\libraries\AcpiBinDebug.exe	dir ..\..\libraries\acpibindebug.exe
 # End Special Build Tool
 
 !ENDIF 

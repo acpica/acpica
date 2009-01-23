@@ -71,7 +71,7 @@ LIB32=link.exe -lib
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiSubsystemLinuxDebug/AcpiSubsystemLinux.bsc"
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiSubsystemLinuxDebug/AcpiSubsystem_LinuxDebug.bsc" /o"/acpica/generate/msvc/AcpiSubsystemLinuxDebug/AcpiSubsystemLinux.bsc"
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"AcpiSubsystemLinuxDebug\acpicalinux_dbg.lib"

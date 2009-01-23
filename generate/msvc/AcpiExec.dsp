@@ -80,17 +80,17 @@ PostBuild_Cmds=copy acpiexec\acpiexec.exe ..\..\libraries	dir ..\..\libraries\ac
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiExecDebug/AcpiExecDebug.bsc"
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiExecDebug/AcpiExec.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 libcmtd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /map /debug /machine:I386 /nodefaultlib:"libcmt.lib" /out:"/acpica/generate/msvc/AcpiExecDebug/AcpiExecDebug.exe" /pdbtype:sept
+# ADD LINK32 libcmtd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /map /debug /machine:I386 /nodefaultlib:"libcmt.lib" /pdbtype:sept /out:"/acpica/generate/msvc/AcpiExecDebug/AcpiExec.exe"
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
 PostBuild_Desc=Copy acpiexecdebug.exe to libraries
-PostBuild_Cmds=copy acpiexecdebug\acpiexecdebug.exe ..\..\libraries	dir ..\..\libraries\acpiexecdebug.exe
+PostBuild_Cmds=copy acpiexecdebug\acpiexec.exe ..\..\libraries\acpiexecdebug.exe	dir ..\..\libraries\acpiexecdebug.exe
 # End Special Build Tool
 
 !ENDIF 
@@ -150,7 +150,8 @@ SOURCE=..\..\source\components\utilities\utmisc.c
 
 !ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
 
-# ADD CPP /Za /FAcs
+# ADD CPP /Za
+# SUBTRACT CPP /FA<none>
 
 !ENDIF 
 
@@ -338,7 +339,8 @@ SOURCE=..\..\source\Tools\AcpiExec\aemain.c
 
 !ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
 
-# ADD CPP /Ze /FAcs /FR
+# ADD CPP /Ze /FR
+# SUBTRACT CPP /FA<none>
 
 !ENDIF 
 
@@ -434,7 +436,7 @@ SOURCE=..\..\source\components\resources\rsaddr.c
 
 !IF  "$(CFG)" == "AcpiExec - Win32 Release"
 
-# ADD CPP /FAcs
+# SUBTRACT CPP /FA<none>
 
 !ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
 
@@ -455,7 +457,7 @@ SOURCE=..\..\source\components\resources\rsdump.c
 
 !IF  "$(CFG)" == "AcpiExec - Win32 Release"
 
-# ADD CPP /FAcs
+# SUBTRACT CPP /FA<none>
 
 !ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
 

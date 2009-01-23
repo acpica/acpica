@@ -82,10 +82,10 @@ PostBuild_Cmds=copy AslCompilerLinux\iasllinux.exe ..\..\Libraries
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"/acpica/generate/msvc/AslCompilerLinuxDebug/AslCompilerLinux.bsc"
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/AslCompilerLinuxDebug/AslCompiler_LinuxDebug.bsc" /o"/acpica/generate/msvc/AslCompilerLinuxDebug/AslCompilerLinux.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:no /debug /machine:I386 /out:"/acpica/generate/msvc/AslCompilerLinuxDebug/iasllinuxdebug.exe" /pdbtype:sept
+# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:no /debug /machine:I386 /out:"/acpica/generate/msvc/AslCompilerLinuxDebug/AslCompiler_LinuxDebug.exe" /pdbtype:sept /out:"/acpica/generate/msvc/AslCompilerLinuxDebug/iasllinuxdebug.exe"
 # SUBTRACT LINK32 /verbose /map
 # Begin Special Build Tool
 SOURCE="$(InputPath)"

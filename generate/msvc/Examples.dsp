@@ -78,14 +78,14 @@ PostBuild_Cmds=copy examples\examples.exe ..\..\libraries	dir ..\..\libraries\ex
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"/acpica/generate/msvc/ExamplesDebug/ExamplesDebug.bsc"
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/ExamplesDebug/Examples.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ../../libraries/acpica_dbg.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /map /debug /machine:I386 /out:"/acpica/generate/msvc/ExamplesDebug/ExamplesDebug.exe" /pdbtype:sept
+# ADD LINK32 ../../libraries/acpica_dbg.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /map /debug /machine:I386 /pdbtype:sept /out:"/acpica/generate/msvc/ExamplesDebug/ExamplesDebug.exe" /out:"/acpica/generate/msvc/ExamplesDebug/ExamplesDebug.exe" /out:"/acpica/generate/msvc/ExamplesDebug/Examples.exe"
 # SUBTRACT LINK32 /incremental:no
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
-PostBuild_Cmds=copy examplesDebug\examplesDebug.exe ..\..\libraries	dir ..\..\libraries\examplesDebug.exe
+PostBuild_Cmds=copy examplesDebug\examples.exe ..\..\libraries\ExamplesDebug.exe	dir ..\..\libraries\examplesDebug.exe
 # End Special Build Tool
 
 !ENDIF 
