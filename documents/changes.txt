@@ -1,4 +1,48 @@
 ----------------------------------------
+23 January 2009. Summary of changes for version 20090123:
+
+1) ACPI CA Core Subsystem:
+
+Added the 2009 copyright to all module headers and signons. This affects 
+virtually every file in the ACPICA core subsystem, the iASL compiler, and 
+the tools/utilities.
+
+Implemented a change to allow the host to override any ACPI table, including 
+dynamically loaded tables. Previously, only the DSDT could be replaced by the 
+host. With this change, the AcpiOsTableOverride interface is called for each 
+table found in the RSDT/XSDT during ACPICA initialization, and also whenever 
+a table is dynamically loaded via the AML Load operator.
+
+Updated FADT flag definitions, especially the Boot Architecture flags.
+
+Debugger: For the Find command, automatically pad the input ACPI name with 
+underscores if the name is shorter than 4 characters. This enables a match 
+with the actual namespace entry which is itself padded with underscores.
+
+Example Code and Data Size: These are the sizes for the OS-independent 
+acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
+debug version of the code includes the debug output trace mechanism and has a 
+much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  82.3K Code, 17.4K Data,  99.7K Total
+    Debug Version:     157.1K Code, 49.7K Data, 206.8K Total
+  Current Release:
+    Non-Debug Version:  82.3K Code, 17.5K Data,  99.8K Total
+    Debug Version:     157.3K Code, 49.8K Data, 207.1K Total
+
+2) iASL Compiler/Disassembler and Tools:
+
+Fix build error under Bison-2.4.
+
+Dissasembler: Enhanced FADT support. Added decoding of the Boot Architecture 
+flags. Now decode all flags, regardless of the FADT version. Flag output 
+includes the FADT version which first defined each flag.
+
+The iASL -g option now dumps the RSDT to a file (in addition to the FADT and 
+DSDT). Windows only.
+
+----------------------------------------
 04 December 2008. Summary of changes for version 20081204:
 
 1) ACPI CA Core Subsystem:
