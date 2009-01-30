@@ -199,9 +199,12 @@ ACPI_EXTERN ACPI_INTERNAL_RSDT          AcpiGbl_RootTableList;
 ACPI_EXTERN ACPI_TABLE_FADT             AcpiGbl_FADT;
 ACPI_EXTERN ACPI_TABLE_FACS            *AcpiGbl_FACS;
 
-/* These addresses are calculated from FADT address values */
+/* These addresses are calculated from the FADT Event Block addresses */
 
+ACPI_EXTERN ACPI_GENERIC_ADDRESS        AcpiGbl_XPm1aStatus;
 ACPI_EXTERN ACPI_GENERIC_ADDRESS        AcpiGbl_XPm1aEnable;
+
+ACPI_EXTERN ACPI_GENERIC_ADDRESS        AcpiGbl_XPm1bStatus;
 ACPI_EXTERN ACPI_GENERIC_ADDRESS        AcpiGbl_XPm1bEnable;
 
 /*

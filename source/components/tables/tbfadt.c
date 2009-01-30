@@ -139,6 +139,10 @@ static void
 AcpiTbValidateFadt (
     void);
 
+static void
+AcpiTbSetupFadtRegisters (
+    void);
+
 
 /* Table for conversion of FADT to common internal format and FADT validation */
 
@@ -216,6 +220,38 @@ static ACPI_FADT_INFO     FadtInfoTable[] =
 };
 
 #define ACPI_FADT_INFO_ENTRIES        (sizeof (FadtInfoTable) / sizeof (ACPI_FADT_INFO))
+
+
+/* Table used to split Event Blocks into separate status/enable registers */
+
+typedef struct acpi_fadt_pm_info
+{
+    ACPI_GENERIC_ADDRESS    *Target;
+    UINT8                   Source;
+    UINT8                   RegisterNum;
+
+} ACPI_FADT_PM_INFO;
+
+static ACPI_FADT_PM_INFO    FadtPmInfoTable[] =
+{
+    {&AcpiGbl_XPm1aStatus,
+        ACPI_FADT_OFFSET (XPm1aEventBlock),
+        0},
+
+    {&AcpiGbl_XPm1aEnable,
+        ACPI_FADT_OFFSET (XPm1aEventBlock),
+        1},
+
+    {&AcpiGbl_XPm1bStatus,
+        ACPI_FADT_OFFSET (XPm1bEventBlock),
+        0},
+
+    {&AcpiGbl_XPm1bEnable,
+        ACPI_FADT_OFFSET (XPm1bEventBlock),
+        1}
+};
+
+#define ACPI_FADT_PM_INFO_ENTRIES   (sizeof (FadtPmInfoTable) / sizeof (ACPI_FADT_PM_INFO))
 
 
 /*******************************************************************************
@@ -301,7 +337,7 @@ AcpiTbParseFadt (
      */
     (void) AcpiTbVerifyChecksum (Table, Length);
 
-    /* Obtain a local copy of the FADT in common ACPI 2.0+ format */
+    /* Create a local copy of the FADT in common ACPI 2.0+ format */
 
     AcpiTbCreateLocalFadt (Table, Length);
 
@@ -363,11 +399,17 @@ AcpiTbCreateLocalFadt (
     ACPI_MEMCPY (&AcpiGbl_FADT, Table,
         ACPI_MIN (Length, sizeof (ACPI_TABLE_FADT)));
 
-    /*
-     * 1) Convert the local copy of the FADT to the common internal format
-     * 2) Validate some of the important values within the FADT
-     */
+    /* Convert the local copy of the FADT to the common internal format */
+
     AcpiTbConvertFadt ();
+
+    /* Validate FADT values now, before we make any changes */
+
+    AcpiTbValidateFadt ();
+
+    /* Initialize the global ACPI register structures */
+
+    AcpiTbSetupFadtRegisters ();
 }
 
 
@@ -404,8 +446,6 @@ static void
 AcpiTbConvertFadt (
     void)
 {
-    UINT8                   Pm1RegisterBitWidth;
-    UINT8                   Pm1RegisterByteWidth;
     ACPI_GENERIC_ADDRESS    *Target64;
     UINT32                  i;
 
@@ -465,80 +505,6 @@ AcpiTbConvertFadt (
                 (UINT64) *ACPI_ADD_PTR (UINT32, &AcpiGbl_FADT,
                     FadtInfoTable[i].Address32));
         }
-    }
-
-    /* Validate FADT values now, before we make any changes */
-
-    AcpiTbValidateFadt ();
-
-    /*
-     * Optionally check all register lengths against the default values and
-     * update them if they are incorrect.
-     */
-    if (AcpiGbl_UseDefaultRegisterWidths)
-    {
-        for (i = 0; i < ACPI_FADT_INFO_ENTRIES; i++)
-        {
-            Target64 = ACPI_ADD_PTR (ACPI_GENERIC_ADDRESS, &AcpiGbl_FADT,
-                FadtInfoTable[i].Address64);
-
-            /*
-             * If a valid register (Address != 0) and the (DefaultLength > 0)
-             * (Not a GPE register), then check the width against the default.
-             */
-            if ((Target64->Address) &&
-                (FadtInfoTable[i].DefaultLength > 0) &&
-                (FadtInfoTable[i].DefaultLength != Target64->BitWidth))
-            {
-                ACPI_WARNING ((AE_INFO,
-                    "Invalid length for %s: %d, using default %d",
-                    FadtInfoTable[i].Name, Target64->BitWidth,
-                    FadtInfoTable[i].DefaultLength));
-
-                /* Incorrect size, set width to the default */
-
-                Target64->BitWidth = FadtInfoTable[i].DefaultLength;
-            }
-        }
-    }
-
-    /*
-     * Get the length of the individual PM1 registers (enable and status).
-     * Each register is defined to be (event block length / 2).
-     */
-    Pm1RegisterBitWidth = (UINT8) ACPI_DIV_2 (AcpiGbl_FADT.XPm1aEventBlock.BitWidth);
-    Pm1RegisterByteWidth = (UINT8) ACPI_DIV_8 (Pm1RegisterBitWidth);
-
-    /*
-     * Adjust the lengths of the PM1 Event Blocks so that they can be used to
-     * access the PM1 status register(s). Use (width / 2)
-     */
-    AcpiGbl_FADT.XPm1aEventBlock.BitWidth = Pm1RegisterBitWidth;
-    AcpiGbl_FADT.XPm1bEventBlock.BitWidth = Pm1RegisterBitWidth;
-
-    /*
-     * Calculate separate GAS structs for the PM1 Enable registers.
-     * These addresses do not appear (directly) in the FADT, so it is
-     * useful to calculate them once, here.
-     *
-     * The PM event blocks are split into two register blocks, first is the
-     * PM Status Register block, followed immediately by the PM Enable
-     * Register block. Each is of length (Pm1EventLength/2)
-     */
-
-    /* The PM1A register block is required */
-
-    AcpiTbInitGenericAddress (&AcpiGbl_XPm1aEnable,
-        AcpiGbl_FADT.XPm1aEventBlock.SpaceId, Pm1RegisterByteWidth,
-        (AcpiGbl_FADT.XPm1aEventBlock.Address + Pm1RegisterByteWidth));
-
-    /* The PM1B register block is optional, ignore if not present */
-
-    if (AcpiGbl_FADT.XPm1bEventBlock.Address)
-    {
-        AcpiTbInitGenericAddress (&AcpiGbl_XPm1bEnable,
-            AcpiGbl_FADT.XPm1bEventBlock.SpaceId, Pm1RegisterByteWidth,
-            (AcpiGbl_FADT.XPm1bEventBlock.Address + Pm1RegisterByteWidth));
     }
 }
 
@@ -660,6 +626,94 @@ AcpiTbValidateFadt (
                 "32/64X address mismatch in %s: %8.8X/%8.8X%8.8X, using 64X",
                 Name, *Address32, ACPI_FORMAT_UINT64 (Address64->Address)));
         }
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiTbSetupFadtRegisters
+ *
+ * PARAMETERS:  None, uses AcpiGbl_FADT.
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Initialize global ACPI PM1 register definitions. Optionally,
+ *              force FADT register definitions to their default lengths.
+ *
+ ******************************************************************************/
+
+static void
+AcpiTbSetupFadtRegisters (
+    void)
+{
+    ACPI_GENERIC_ADDRESS    *Target64;
+    ACPI_GENERIC_ADDRESS    *Source64;
+    UINT8                   Pm1RegisterByteWidth;
+    UINT32                  i;
+
+
+    /*
+     * Optionally check all register lengths against the default values and
+     * update them if they are incorrect.
+     */
+    if (AcpiGbl_UseDefaultRegisterWidths)
+    {
+        for (i = 0; i < ACPI_FADT_INFO_ENTRIES; i++)
+        {
+            Target64 = ACPI_ADD_PTR (ACPI_GENERIC_ADDRESS, &AcpiGbl_FADT,
+                FadtInfoTable[i].Address64);
+
+            /*
+             * If a valid register (Address != 0) and the (DefaultLength > 0)
+             * (Not a GPE register), then check the width against the default.
+             */
+            if ((Target64->Address) &&
+                (FadtInfoTable[i].DefaultLength > 0) &&
+                (FadtInfoTable[i].DefaultLength != Target64->BitWidth))
+            {
+                ACPI_WARNING ((AE_INFO,
+                    "Invalid length for %s: %d, using default %d",
+                    FadtInfoTable[i].Name, Target64->BitWidth,
+                    FadtInfoTable[i].DefaultLength));
+
+                /* Incorrect size, set width to the default */
+
+                Target64->BitWidth = FadtInfoTable[i].DefaultLength;
+            }
+        }
+    }
+
+    /*
+     * Get the length of the individual PM1 registers (enable and status).
+     * Each register is defined to be (event block length / 2). Extra divide
+     * by 8 converts bits to bytes.
+     */
+    Pm1RegisterByteWidth = (UINT8) ACPI_DIV_16 (AcpiGbl_FADT.XPm1aEventBlock.BitWidth);
+
+    /*
+     * Calculate separate GAS structs for the PM1x (A/B) Status and Enable
+     * registers. These addresses do not appear (directly) in the FADT, so it
+     * is useful to pre-calculate them from the PM1 Event Block definitions.
+     *
+     * The PM event blocks are split into two register blocks, first is the
+     * PM Status Register block, followed immediately by the PM Enable
+     * Register block. Each is of length (Pm1EventLength/2)
+     *
+     * Note: The PM1A event block is required by the ACPI specification.
+     * However, the PM1B event block is optional and is rarely, if ever,
+     * used.
+     */
+
+    for (i = 0; i < ACPI_FADT_PM_INFO_ENTRIES; i++)
+    {
+        Source64 = ACPI_ADD_PTR (ACPI_GENERIC_ADDRESS, &AcpiGbl_FADT,
+            FadtPmInfoTable[i].Source);
+
+        AcpiTbInitGenericAddress (FadtPmInfoTable[i].Target,
+            Source64->SpaceId, Pm1RegisterByteWidth,
+            Source64->Address +
+                (FadtPmInfoTable[i].RegisterNum * Pm1RegisterByteWidth));
     }
 }
 

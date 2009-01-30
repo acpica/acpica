@@ -151,9 +151,11 @@ AcpiHwClearAcpiStatus (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %04X to %04X\n",
         ACPI_BITMASK_ALL_FIXED_STATUS,
-        (UINT16) AcpiGbl_FADT.XPm1aEventBlock.Address));
+        (UINT16) AcpiGbl_XPm1aStatus.Address));
 
     LockFlags = AcpiOsAcquireLock (AcpiGbl_HardwareLock);
+
+    /* Clear the fixed events */
 
     Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1_STATUS,
                 ACPI_BITMASK_ALL_FIXED_STATUS);
@@ -162,12 +164,12 @@ AcpiHwClearAcpiStatus (
         goto UnlockAndExit;
     }
 
-    /* Clear the fixed events */
+    /* Write PM1B register if present */
 
-    if (AcpiGbl_FADT.XPm1bEventBlock.Address)
+    if (AcpiGbl_XPm1bStatus.Address)
     {
         Status = AcpiWrite (ACPI_BITMASK_ALL_FIXED_STATUS,
-                    &AcpiGbl_FADT.XPm1bEventBlock);
+                    &AcpiGbl_XPm1bStatus);
         if (ACPI_FAILURE (Status))
         {
             goto UnlockAndExit;
@@ -243,7 +245,7 @@ AcpiHwRegisterRead (
     {
     case ACPI_REGISTER_PM1_STATUS:           /* 16-bit access */
 
-        Status = AcpiRead (&Value1, &AcpiGbl_FADT.XPm1aEventBlock);
+        Status = AcpiRead (&Value1, &AcpiGbl_XPm1aStatus);
         if (ACPI_FAILURE (Status))
         {
             goto Exit;
@@ -251,7 +253,7 @@ AcpiHwRegisterRead (
 
         /* PM1B is optional */
 
-        Status = AcpiRead (&Value2, &AcpiGbl_FADT.XPm1bEventBlock);
+        Status = AcpiRead (&Value2, &AcpiGbl_XPm1bStatus);
         Value1 |= Value2;
         break;
 
@@ -374,7 +376,7 @@ AcpiHwRegisterWrite (
 
         /* Now we can write the data */
 
-        Status = AcpiWrite (Value, &AcpiGbl_FADT.XPm1aEventBlock);
+        Status = AcpiWrite (Value, &AcpiGbl_XPm1aStatus);
         if (ACPI_FAILURE (Status))
         {
             goto Exit;
@@ -382,7 +384,7 @@ AcpiHwRegisterWrite (
 
         /* PM1B is optional */
 
-        Status = AcpiWrite (Value, &AcpiGbl_FADT.XPm1bEventBlock);
+        Status = AcpiWrite (Value, &AcpiGbl_XPm1bStatus);
         break;
 
 
