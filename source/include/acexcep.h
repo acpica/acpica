@@ -179,8 +179,9 @@
 #define AE_BAD_OCTAL_CONSTANT           (ACPI_STATUS) (0x0006 | AE_CODE_PROGRAMMER)
 #define AE_BAD_DECIMAL_CONSTANT         (ACPI_STATUS) (0x0007 | AE_CODE_PROGRAMMER)
 #define AE_MISSING_ARGUMENTS            (ACPI_STATUS) (0x0008 | AE_CODE_PROGRAMMER)
+#define AE_BAD_ADDRESS                  (ACPI_STATUS) (0x0009 | AE_CODE_PROGRAMMER)
 
-#define AE_CODE_PGM_MAX                 0x0008
+#define AE_CODE_PGM_MAX                 0x0009
 
 
 /*
@@ -306,7 +307,8 @@ char const   *AcpiGbl_ExceptionNames_Pgm[] =
     "AE_BAD_HEX_CONSTANT",
     "AE_BAD_OCTAL_CONSTANT",
     "AE_BAD_DECIMAL_CONSTANT",
-    "AE_MISSING_ARGUMENTS"
+    "AE_MISSING_ARGUMENTS",
+    "AE_BAD_ADDRESS"
 };
 
 char const   *AcpiGbl_ExceptionNames_Tbl[] =

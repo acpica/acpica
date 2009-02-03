@@ -193,13 +193,12 @@ AcpiRead (
 
 
     /*
-     * Must have a valid pointer to a GAS structure, and
-     * a non-zero address within. However, don't return an error
-     * because the PM1A/B code must not fail if B isn't present.
+     * Must have a valid pointer to a GAS structure, and a non-zero address
+     * within.
      */
     if (!Reg)
     {
-        return (AE_OK);
+        return (AE_BAD_PARAMETER);
     }
 
     /* Get a local copy of the address. Handles possible alignment issues */
@@ -207,7 +206,7 @@ AcpiRead (
     ACPI_MOVE_64_TO_64 (&Address, &Reg->Address);
     if (!Address)
     {
-        return (AE_OK);
+        return (AE_BAD_ADDRESS);
     }
 
     /* Supported widths are 8/16/32 */
@@ -285,13 +284,12 @@ AcpiWrite (
 
 
     /*
-     * Must have a valid pointer to a GAS structure, and
-     * a non-zero address within. However, don't return an error
-     * because the PM1A/B code must not fail if B isn't present.
+     * Must have a valid pointer to a GAS structure, and a non-zero address
+     * within.
      */
     if (!Reg)
     {
-        return (AE_OK);
+        return (AE_BAD_PARAMETER);
     }
 
     /* Get a local copy of the address. Handles possible alignment issues */
@@ -299,7 +297,7 @@ AcpiWrite (
     ACPI_MOVE_64_TO_64 (&Address, &Reg->Address);
     if (!Address)
     {
-        return (AE_OK);
+        return (AE_BAD_ADDRESS);
     }
 
     /* Supported widths are 8/16/32 */
