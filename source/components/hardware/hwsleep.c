@@ -223,9 +223,8 @@ AcpiEnterSleepStatePrep (
     ACPI_FUNCTION_TRACE (AcpiEnterSleepStatePrep);
 
 
-    /*
-     * _PSW methods could be run here to enable wake-on keyboard, LAN, etc.
-     */
+    /* _PSW methods could be run here to enable wake-on keyboard, LAN, etc. */
+
     Status = AcpiGetSleepTypeData (SleepState,
                     &AcpiGbl_SleepTypeA, &AcpiGbl_SleepTypeB);
     if (ACPI_FAILURE (Status))
@@ -302,8 +301,8 @@ ACPI_STATUS
 AcpiEnterSleepState (
     UINT8                   SleepState)
 {
-    UINT32                  PM1AControl;
-    UINT32                  PM1BControl;
+    UINT32                  Pm1aControl;
+    UINT32                  Pm1bControl;
     ACPI_BIT_REGISTER_INFO  *SleepTypeRegInfo;
     ACPI_BIT_REGISTER_INFO  *SleepEnableRegInfo;
     UINT32                  InValue;
@@ -386,7 +385,7 @@ AcpiEnterSleepState (
     /* Get current value of PM1A control */
 
     Status = AcpiHwRegisterRead (ACPI_REGISTER_PM1_CONTROL,
-                &PM1AControl);
+                &Pm1aControl);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -394,56 +393,42 @@ AcpiEnterSleepState (
     ACPI_DEBUG_PRINT ((ACPI_DB_INIT,
         "Entering sleep state [S%d]\n", SleepState));
 
-    /* Clear SLP_EN and SLP_TYP fields */
+    /* Clear the SLP_EN and SLP_TYP fields */
 
-    PM1AControl &= ~(SleepTypeRegInfo->AccessBitMask |
+    Pm1aControl &= ~(SleepTypeRegInfo->AccessBitMask |
                      SleepEnableRegInfo->AccessBitMask);
-    PM1BControl = PM1AControl;
+    Pm1bControl = Pm1aControl;
 
-    /* Insert SLP_TYP bits */
+    /* Insert the SLP_TYP bits */
 
-    PM1AControl |= (AcpiGbl_SleepTypeA << SleepTypeRegInfo->BitPosition);
-    PM1BControl |= (AcpiGbl_SleepTypeB << SleepTypeRegInfo->BitPosition);
+    Pm1aControl |= (AcpiGbl_SleepTypeA << SleepTypeRegInfo->BitPosition);
+    Pm1bControl |= (AcpiGbl_SleepTypeB << SleepTypeRegInfo->BitPosition);
 
     /*
      * We split the writes of SLP_TYP and SLP_EN to workaround
      * poorly implemented hardware.
      */
 
-    /* Write #1: fill in SLP_TYP data */
+    /* Write #1: write the SLP_TYP data to the PM1 Control registers */
 
-    Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1A_CONTROL,
-                PM1AControl);
+    Status = AcpiHwWritePm1Control (Pm1aControl, Pm1bControl);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1B_CONTROL,
-                PM1BControl);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
+    /* Insert the sleep enable (SLP_EN) bit */
 
-    /* Insert SLP_ENABLE bit */
+    Pm1aControl |= SleepEnableRegInfo->AccessBitMask;
+    Pm1bControl |= SleepEnableRegInfo->AccessBitMask;
 
-    PM1AControl |= SleepEnableRegInfo->AccessBitMask;
-    PM1BControl |= SleepEnableRegInfo->AccessBitMask;
-
-    /* Write #2: SLP_TYP + SLP_EN */
+    /* Flush caches, as per ACPI specification */
 
     ACPI_FLUSH_CPU_CACHE ();
 
-    Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1A_CONTROL,
-                PM1AControl);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
+    /* Write #2: Write both SLP_TYP + SLP_EN */
 
-    Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1B_CONTROL,
-                PM1BControl);
+    Status = AcpiHwWritePm1Control (Pm1aControl, Pm1bControl);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -587,8 +572,8 @@ AcpiLeaveSleepState (
     ACPI_STATUS             Status;
     ACPI_BIT_REGISTER_INFO  *SleepTypeRegInfo;
     ACPI_BIT_REGISTER_INFO  *SleepEnableRegInfo;
-    UINT32                  PM1AControl;
-    UINT32                  PM1BControl;
+    UINT32                  Pm1aControl;
+    UINT32                  Pm1bControl;
 
 
     ACPI_FUNCTION_TRACE (AcpiLeaveSleepState);
@@ -609,26 +594,23 @@ AcpiLeaveSleepState (
         /* Get current value of PM1A control */
 
         Status = AcpiHwRegisterRead (ACPI_REGISTER_PM1_CONTROL,
-                    &PM1AControl);
+                    &Pm1aControl);
         if (ACPI_SUCCESS (Status))
         {
-            /* Clear SLP_EN and SLP_TYP fields */
+            /* Clear the SLP_EN and SLP_TYP fields */
 
-            PM1AControl &= ~(SleepTypeRegInfo->AccessBitMask |
+            Pm1aControl &= ~(SleepTypeRegInfo->AccessBitMask |
                              SleepEnableRegInfo->AccessBitMask);
-            PM1BControl = PM1AControl;
+            Pm1bControl = Pm1aControl;
 
-            /* Insert SLP_TYP bits */
+            /* Insert the SLP_TYP bits */
 
-            PM1AControl |= (AcpiGbl_SleepTypeA << SleepTypeRegInfo->BitPosition);
-            PM1BControl |= (AcpiGbl_SleepTypeB << SleepTypeRegInfo->BitPosition);
+            Pm1aControl |= (AcpiGbl_SleepTypeA << SleepTypeRegInfo->BitPosition);
+            Pm1bControl |= (AcpiGbl_SleepTypeB << SleepTypeRegInfo->BitPosition);
 
-            /* Just ignore any errors */
+            /* Write the control registers and ignore any errors */
 
-            (void) AcpiHwRegisterWrite (ACPI_REGISTER_PM1A_CONTROL,
-                            PM1AControl);
-            (void) AcpiHwRegisterWrite (ACPI_REGISTER_PM1B_CONTROL,
-                            PM1BControl);
+            (void) AcpiHwWritePm1Control (Pm1aControl, Pm1bControl);
         }
     }
 

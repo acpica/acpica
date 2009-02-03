@@ -146,6 +146,11 @@ AcpiHwGetBitRegisterInfo (
     UINT32                  RegisterId);
 
 ACPI_STATUS
+AcpiHwWritePm1Control (
+    UINT32                  Pm1aControl,
+    UINT32                  Pm1bControl);
+
+ACPI_STATUS
 AcpiHwRegisterRead (
     UINT32                  RegisterId,
     UINT32                  *ReturnValue);

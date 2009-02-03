@@ -219,6 +219,48 @@ AcpiHwGetBitRegisterInfo (
 
 /******************************************************************************
  *
+ * FUNCTION:    AcpiHwWritePm1Control
+ *
+ * PARAMETERS:  Pm1aControl         - Value to be written to PM1A control
+ *              Pm1bControl         - Value to be written to PM1B control
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Write the PM1 A/B control registers. These registers are 
+ *              different than than the PM1 A/B status and enable registers
+ *              in that different values can be written to the A/B registers.
+ *              Most notably, the SLP_TYP bits can be different, as per the
+ *              values returned from the _Sx predefined methods.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiHwWritePm1Control (
+    UINT32                  Pm1aControl,
+    UINT32                  Pm1bControl)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (HwWritePm1Control);
+
+
+    Status = AcpiWrite (Pm1aControl, &AcpiGbl_FADT.XPm1aControlBlock);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    if (AcpiGbl_FADT.XPm1bControlBlock.Address)
+    {
+        Status = AcpiWrite (Pm1bControl, &AcpiGbl_FADT.XPm1bControlBlock);
+    }
+    return_ACPI_STATUS (Status);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AcpiHwRegisterRead
  *
  * PARAMETERS:  RegisterId          - ACPI Register ID
@@ -397,18 +439,6 @@ AcpiHwRegisterWrite (
         Status = AcpiHwWriteMultiple (Value,
                     &AcpiGbl_FADT.XPm1aControlBlock,
                     &AcpiGbl_FADT.XPm1bControlBlock);
-        break;
-
-
-    case ACPI_REGISTER_PM1A_CONTROL:         /* 16-bit access */
-
-        Status = AcpiWrite (Value, &AcpiGbl_FADT.XPm1aControlBlock);
-        break;
-
-
-    case ACPI_REGISTER_PM1B_CONTROL:         /* 16-bit access */
-
-        Status = AcpiWrite (Value, &AcpiGbl_FADT.XPm1bControlBlock);
         break;
 
 
