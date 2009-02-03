@@ -323,7 +323,7 @@ AcpiEnterSleepState (
         return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
     }
 
-    SleepTypeRegInfo   = AcpiHwGetBitRegisterInfo (ACPI_BITREG_SLEEP_TYPE_A);
+    SleepTypeRegInfo   = AcpiHwGetBitRegisterInfo (ACPI_BITREG_SLEEP_TYPE);
     SleepEnableRegInfo = AcpiHwGetBitRegisterInfo (ACPI_BITREG_SLEEP_ENABLE);
 
     /* Clear wake status */
@@ -603,7 +603,7 @@ AcpiLeaveSleepState (
                     &AcpiGbl_SleepTypeA, &AcpiGbl_SleepTypeB);
     if (ACPI_SUCCESS (Status))
     {
-        SleepTypeRegInfo   = AcpiHwGetBitRegisterInfo (ACPI_BITREG_SLEEP_TYPE_A);
+        SleepTypeRegInfo   = AcpiHwGetBitRegisterInfo (ACPI_BITREG_SLEEP_TYPE);
         SleepEnableRegInfo = AcpiHwGetBitRegisterInfo (ACPI_BITREG_SLEEP_ENABLE);
 
         /* Get current value of PM1A control */
