@@ -488,9 +488,17 @@ AcpiHwReadMultiple (
         }
     }
 
-    /* Shift the B bits above the A bits */
-
-    *Value = ValueA | (ValueB << RegisterA->BitWidth);
+    /*
+     * OR the two return values together. No shifting or masking is necessary,
+     * because of how the PM1 registers are defined in the ACPI specification:
+     *
+     * "Although the bits can be split between the two register blocks (each
+     * register block has a unique pointer within the FADT), the bit positions
+     * are maintained. The register block with unimplemented bits (that is,
+     * those implemented in the other register block) always returns zeros,
+     * and writes have no side effects"
+     */
+    *Value = (ValueA | ValueB);
     return (AE_OK);
 }
 
@@ -526,13 +534,21 @@ AcpiHwWriteMultiple (
         return (Status);
     }
 
-    /* Second register is optional */
-
+    /*
+     * Second register is optional
+     *
+     * No bit shifting or clearing is necessary, because of how the PM1
+     * registers are defined in the ACPI specification:
+     *
+     * "Although the bits can be split between the two register blocks (each
+     * register block has a unique pointer within the FADT), the bit positions
+     * are maintained. The register block with unimplemented bits (that is,
+     * those implemented in the other register block) always returns zeros,
+     * and writes have no side effects"
+     */
     if (RegisterB->Address)
     {
-        /* Normalize the B bits before write */
-
-        Status = AcpiWrite (Value >> RegisterA->BitWidth, RegisterB);
+        Status = AcpiWrite (Value, RegisterB);
     }
 
     return (Status);
