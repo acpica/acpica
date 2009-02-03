@@ -149,7 +149,6 @@ AcpiHwWriteMultiple (
  * RETURN:      Status
  *
  * DESCRIPTION: Clears all fixed and general purpose status bits
- *              THIS FUNCTION MUST BE CALLED WITH INTERRUPTS DISABLED
  *
  ******************************************************************************/
 
@@ -164,31 +163,19 @@ AcpiHwClearAcpiStatus (
     ACPI_FUNCTION_TRACE (HwClearAcpiStatus);
 
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %04X to %04X\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %04X to %08X\n",
         ACPI_BITMASK_ALL_FIXED_STATUS,
-        (UINT16) AcpiGbl_XPm1aStatus.Address));
+        AcpiGbl_XPm1aStatus.Address));
 
     LockFlags = AcpiOsAcquireLock (AcpiGbl_HardwareLock);
 
-    /* Clear the fixed events */
+    /* Clear the fixed events in PM1 A/B */
 
     Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1_STATUS,
                 ACPI_BITMASK_ALL_FIXED_STATUS);
     if (ACPI_FAILURE (Status))
     {
         goto UnlockAndExit;
-    }
-
-    /* Write PM1B register if present */
-
-    if (AcpiGbl_XPm1bStatus.Address)
-    {
-        Status = AcpiWrite (ACPI_BITMASK_ALL_FIXED_STATUS,
-                    &AcpiGbl_XPm1bStatus);
-        if (ACPI_FAILURE (Status))
-        {
-            goto UnlockAndExit;
-        }
     }
 
     /* Clear the GPE Bits in all GPE registers in all GPE blocks */
