@@ -167,7 +167,7 @@ AcpiExConvertToInteger (
     ACPI_FUNCTION_TRACE_PTR (ExConvertToInteger, ObjDesc);
 
 
-    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+    switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_INTEGER:
 
@@ -202,7 +202,7 @@ AcpiExConvertToInteger (
 
     /* String conversion is different than Buffer conversion */
 
-    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+    switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_STRING:
 
@@ -304,7 +304,7 @@ AcpiExConvertToBuffer (
     ACPI_FUNCTION_TRACE_PTR (ExConvertToBuffer, ObjDesc);
 
 
-    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+    switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_BUFFER:
 
@@ -525,7 +525,7 @@ AcpiExConvertToString (
     ACPI_FUNCTION_TRACE_PTR (ExConvertToString, ObjDesc);
 
 
-    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+    switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_STRING:
 
@@ -738,7 +738,7 @@ AcpiExConvertToTargetType (
         default:
             /* No conversion allowed for these types */
 
-            if (DestinationType != ACPI_GET_OBJECT_TYPE (SourceDesc))
+            if (DestinationType != SourceDesc->Common.Type)
             {
                 ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
                     "Explicit operator, will store (%s) over existing type (%s)\n",

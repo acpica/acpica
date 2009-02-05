@@ -480,7 +480,7 @@ OpcAmlConstantWalk (
          * Because we know we executed type 3/4/5 opcodes above, we know that
          * the result must be either an Integer, String, or Buffer.
          */
-        switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+        switch (ObjDesc->Common.Type)
         {
         case ACPI_TYPE_INTEGER:
 

@@ -671,10 +671,10 @@ AcpiRsGetPciRoutingTableLength (
             if (*SubObjectList && /* Null object allowed */
 
                 ((ACPI_TYPE_STRING ==
-                    ACPI_GET_OBJECT_TYPE (*SubObjectList)) ||
+                    (*SubObjectList)->Common.Type) ||
 
                 ((ACPI_TYPE_LOCAL_REFERENCE ==
-                    ACPI_GET_OBJECT_TYPE (*SubObjectList)) &&
+                    (*SubObjectList)->Common.Type) &&
 
                     ((*SubObjectList)->Reference.Class ==
                         ACPI_REFCLASS_NAME))))
@@ -695,7 +695,7 @@ AcpiRsGetPciRoutingTableLength (
 
         if (NameFound)
         {
-            if (ACPI_GET_OBJECT_TYPE (*SubObjectList) == ACPI_TYPE_STRING)
+            if ((*SubObjectList)->Common.Type == ACPI_TYPE_STRING)
             {
                 /*
                  * The length String.Length field does not include the

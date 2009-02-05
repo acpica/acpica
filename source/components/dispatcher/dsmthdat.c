@@ -839,7 +839,7 @@ AcpiDsMethodDataGetType (
 
     /* Get the object type */
 
-    return_VALUE (ACPI_GET_OBJECT_TYPE (Object));
+    return_VALUE (Object->Type);
 }
 #endif
 

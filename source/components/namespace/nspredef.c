@@ -316,7 +316,7 @@ AcpiNsCheckPredefinedNames (
 
     /* For returned Package objects, check the type of all sub-objects */
 
-    if (ACPI_GET_OBJECT_TYPE (ReturnObject) == ACPI_TYPE_PACKAGE)
+    if (ReturnObject->Common.Type == ACPI_TYPE_PACKAGE)
     {
         Status = AcpiNsCheckPackage (Pathname, ReturnObjectPtr, Predefined);
     }
@@ -967,7 +967,7 @@ AcpiNsCheckObjectType (
      * from all of the predefined names (including elements of returned
      * packages)
      */
-    switch (ACPI_GET_OBJECT_TYPE (ReturnObject))
+    switch (ReturnObject->Common.Type)
     {
     case ACPI_TYPE_INTEGER:
         ReturnBtype = ACPI_RTYPE_INTEGER;
@@ -1012,7 +1012,7 @@ AcpiNsCheckObjectType (
 
     /* For reference objects, check that the reference type is correct */
 
-    if (ACPI_GET_OBJECT_TYPE (ReturnObject) == ACPI_TYPE_LOCAL_REFERENCE)
+    if (ReturnObject->Common.Type == ACPI_TYPE_LOCAL_REFERENCE)
     {
         Status = AcpiNsCheckReference (Pathname, ReturnObject);
     }
@@ -1126,7 +1126,7 @@ AcpiNsRepairObject (
     ACPI_SIZE                   Length;
 
 
-    switch (ACPI_GET_OBJECT_TYPE (ReturnObject))
+    switch (ReturnObject->Common.Type)
     {
     case ACPI_TYPE_BUFFER:
 

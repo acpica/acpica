@@ -542,7 +542,7 @@ AcpiUtGetObjectTypeName (
         return ("[NULL Object Descriptor]");
     }
 
-    return (AcpiUtGetTypeName (ACPI_GET_OBJECT_TYPE (ObjDesc)));
+    return (AcpiUtGetTypeName (ObjDesc->Common.Type));
 }
 
 

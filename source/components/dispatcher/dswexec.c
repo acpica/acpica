@@ -224,11 +224,11 @@ AcpiDsGetPredicateValue (
         goto Cleanup;
     }
 
-    if (ACPI_GET_OBJECT_TYPE (LocalObjDesc) != ACPI_TYPE_INTEGER)
+    if (LocalObjDesc->Common.Type != ACPI_TYPE_INTEGER)
     {
         ACPI_ERROR ((AE_INFO,
             "Bad predicate (not an integer) ObjDesc=%p State=%p Type=%X",
-            ObjDesc, WalkState, ACPI_GET_OBJECT_TYPE (ObjDesc)));
+            ObjDesc, WalkState, ObjDesc->Common.Type));
 
         Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;

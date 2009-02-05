@@ -276,18 +276,18 @@ AcpiDbEnumerateObject (
 
     AcpiGbl_NumObjects++;
 
-    if (ACPI_GET_OBJECT_TYPE (ObjDesc) > ACPI_TYPE_NS_NODE_MAX)
+    if (ObjDesc->Common.Type > ACPI_TYPE_NS_NODE_MAX)
     {
         AcpiGbl_ObjTypeCountMisc++;
     }
     else
     {
-        AcpiGbl_ObjTypeCount [ACPI_GET_OBJECT_TYPE (ObjDesc)]++;
+        AcpiGbl_ObjTypeCount [ObjDesc->Common.Type]++;
     }
 
     /* Count the sub-objects */
 
-    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+    switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_PACKAGE:
 

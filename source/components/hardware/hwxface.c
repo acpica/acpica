@@ -658,7 +658,7 @@ AcpiGetSleepTypeData (
 
     /* It must be of type Package */
 
-    else if (ACPI_GET_OBJECT_TYPE (Info->ReturnObject) != ACPI_TYPE_PACKAGE)
+    else if (Info->ReturnObject->Common.Type != ACPI_TYPE_PACKAGE)
     {
         ACPI_ERROR ((AE_INFO, "Sleep State return object is not a Package"));
         Status = AE_AML_OPERAND_TYPE;
@@ -680,9 +680,9 @@ AcpiGetSleepTypeData (
 
     /* The first two elements must both be of type Integer */
 
-    else if ((ACPI_GET_OBJECT_TYPE (Info->ReturnObject->Package.Elements[0])
+    else if (((Info->ReturnObject->Package.Elements[0])->Common.Type
                 != ACPI_TYPE_INTEGER) ||
-             (ACPI_GET_OBJECT_TYPE (Info->ReturnObject->Package.Elements[1])
+             ((Info->ReturnObject->Package.Elements[1])->Common.Type
                 != ACPI_TYPE_INTEGER))
     {
         ACPI_ERROR ((AE_INFO,

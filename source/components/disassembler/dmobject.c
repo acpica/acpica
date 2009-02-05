@@ -278,7 +278,7 @@ AcpiDmDecodeInternalObject (
 
     AcpiOsPrintf (" %s", AcpiUtGetObjectTypeName (ObjDesc));
 
-    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+    switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_INTEGER:
 
@@ -416,7 +416,7 @@ AcpiDmDisplayInternalObject (
 
     case ACPI_DESC_TYPE_OPERAND:
 
-        Type = ACPI_GET_OBJECT_TYPE (ObjDesc);
+        Type = ObjDesc->Common.Type;
         if (Type > ACPI_TYPE_LOCAL_MAX)
         {
             AcpiOsPrintf (" Type %X [Invalid Type]", (UINT32) Type);
@@ -425,7 +425,7 @@ AcpiDmDisplayInternalObject (
 
         /* Decode the ACPI object type */
 
-        switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+        switch (ObjDesc->Common.Type)
         {
         case ACPI_TYPE_LOCAL_REFERENCE:
 

@@ -492,7 +492,7 @@ AcpiNsResolveReferences (
 
     /* We are interested in reference objects only */
 
-    if (ACPI_GET_OBJECT_TYPE (Info->ReturnObject) != ACPI_TYPE_LOCAL_REFERENCE)
+    if ((Info->ReturnObject)->Common.Type != ACPI_TYPE_LOCAL_REFERENCE)
     {
         return;
     }

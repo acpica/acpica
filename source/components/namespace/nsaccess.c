@@ -318,7 +318,7 @@ AcpiNsRootInitialize (
             /* Store pointer to value descriptor in the Node */
 
             Status = AcpiNsAttachObject (NewNode, ObjDesc,
-                        ACPI_GET_OBJECT_TYPE (ObjDesc));
+                        ObjDesc->Common.Type);
 
             /* Remove local reference to the object */
 

@@ -816,7 +816,7 @@ AcpiEvInstallHandler (
 
     /* Devices are handled different than regions */
 
-    if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_DEVICE)
+    if (ObjDesc->Common.Type == ACPI_TYPE_DEVICE)
     {
         /* Check if this Device already has a handler for this address space */
 

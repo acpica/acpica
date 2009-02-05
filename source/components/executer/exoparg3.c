@@ -256,7 +256,7 @@ AcpiExOpcode_3A_1T_1R (
          * either a String or a Buffer, so just use its type.
          */
         ReturnDesc = AcpiUtCreateInternalObject (
-                        ACPI_GET_OBJECT_TYPE (Operand[0]));
+                        (Operand[0])->Common.Type);
         if (!ReturnDesc)
         {
             Status = AE_NO_MEMORY;
@@ -287,7 +287,7 @@ AcpiExOpcode_3A_1T_1R (
 
         /* Strings always have a sub-pointer, not so for buffers */
 
-        switch (ACPI_GET_OBJECT_TYPE (Operand[0]))
+        switch ((Operand[0])->Common.Type)
         {
         case ACPI_TYPE_STRING:
 

@@ -304,7 +304,7 @@ AcpiNsDetachObject (
     ObjDesc = Node->Object;
 
     if (!ObjDesc ||
-        (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_LOCAL_DATA))
+        (ObjDesc->Common.Type == ACPI_TYPE_LOCAL_DATA))
     {
         return_VOID;
     }
@@ -316,7 +316,7 @@ AcpiNsDetachObject (
     {
         Node->Object = ObjDesc->Common.NextObject;
         if (Node->Object &&
-           (ACPI_GET_OBJECT_TYPE (Node->Object) != ACPI_TYPE_LOCAL_DATA))
+           ((Node->Object)->Common.Type != ACPI_TYPE_LOCAL_DATA))
         {
             Node->Object = Node->Object->Common.NextObject;
         }
@@ -365,7 +365,7 @@ AcpiNsGetAttachedObject (
     if (!Node->Object ||
             ((ACPI_GET_DESCRIPTOR_TYPE (Node->Object) != ACPI_DESC_TYPE_OPERAND) &&
              (ACPI_GET_DESCRIPTOR_TYPE (Node->Object) != ACPI_DESC_TYPE_NAMED))  ||
-        (ACPI_GET_OBJECT_TYPE (Node->Object) == ACPI_TYPE_LOCAL_DATA))
+        ((Node->Object)->Common.Type == ACPI_TYPE_LOCAL_DATA))
     {
         return_PTR (NULL);
     }
@@ -394,10 +394,10 @@ AcpiNsGetSecondaryObject (
     ACPI_FUNCTION_TRACE_PTR (NsGetSecondaryObject, ObjDesc);
 
 
-    if ((!ObjDesc)                                                ||
-        (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_LOCAL_DATA)  ||
-        (!ObjDesc->Common.NextObject)                             ||
-        (ACPI_GET_OBJECT_TYPE (ObjDesc->Common.NextObject) == ACPI_TYPE_LOCAL_DATA))
+    if ((!ObjDesc)                                     ||
+        (ObjDesc->Common.Type== ACPI_TYPE_LOCAL_DATA)  ||
+        (!ObjDesc->Common.NextObject)                  ||
+        ((ObjDesc->Common.NextObject)->Common.Type == ACPI_TYPE_LOCAL_DATA))
     {
         return_PTR (NULL);
     }
@@ -437,7 +437,7 @@ AcpiNsAttachData (
     ObjDesc = Node->Object;
     while (ObjDesc)
     {
-        if ((ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_LOCAL_DATA) &&
+        if ((ObjDesc->Common.Type == ACPI_TYPE_LOCAL_DATA) &&
             (ObjDesc->Data.Handler == Handler))
         {
             return (AE_ALREADY_EXISTS);
@@ -500,7 +500,7 @@ AcpiNsDetachData (
     ObjDesc = Node->Object;
     while (ObjDesc)
     {
-        if ((ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_LOCAL_DATA) &&
+        if ((ObjDesc->Common.Type == ACPI_TYPE_LOCAL_DATA) &&
             (ObjDesc->Data.Handler == Handler))
         {
             if (PrevObjDesc)
@@ -551,7 +551,7 @@ AcpiNsGetAttachedData (
     ObjDesc = Node->Object;
     while (ObjDesc)
     {
-        if ((ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_LOCAL_DATA) &&
+        if ((ObjDesc->Common.Type == ACPI_TYPE_LOCAL_DATA) &&
             (ObjDesc->Data.Handler == Handler))
         {
             *Data = ObjDesc->Data.Pointer;

@@ -661,7 +661,7 @@ AcpiDsCreateNode (
 
     /* Re-type the object according to its argument */
 
-    Node->Type = ACPI_GET_OBJECT_TYPE (ObjDesc);
+    Node->Type = ObjDesc->Common.Type;
 
     /* Attach obj to node */
 
@@ -719,7 +719,7 @@ AcpiDsInitObjectFromOp (
 
     /* Perform per-object initialization */
 
-    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+    switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_BUFFER:
 
@@ -900,7 +900,7 @@ AcpiDsInitObjectFromOp (
     default:
 
         ACPI_ERROR ((AE_INFO, "Unimplemented data type: %X",
-            ACPI_GET_OBJECT_TYPE (ObjDesc)));
+            ObjDesc->Common.Type));
 
         Status = AE_AML_OPERAND_TYPE;
         break;

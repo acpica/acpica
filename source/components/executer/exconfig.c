@@ -392,7 +392,7 @@ AcpiExLoadOp (
 
     /* Source Object can be either an OpRegion or a Buffer/Field */
 
-    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+    switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_REGION:
 
@@ -620,7 +620,7 @@ AcpiExUnloadTable (
      */
     if ((!DdbHandle) ||
         (ACPI_GET_DESCRIPTOR_TYPE (DdbHandle) != ACPI_DESC_TYPE_OPERAND) ||
-        (ACPI_GET_OBJECT_TYPE (DdbHandle) != ACPI_TYPE_LOCAL_REFERENCE))
+        (DdbHandle->Common.Type != ACPI_TYPE_LOCAL_REFERENCE))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }

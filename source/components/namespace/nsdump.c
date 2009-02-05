@@ -610,7 +610,7 @@ AcpiNsDumpOneObject (
 
         case ACPI_DESC_TYPE_OPERAND:
 
-            ObjType = ACPI_GET_OBJECT_TYPE (ObjDesc);
+            ObjType = ObjDesc->Common.Type;
 
             if (ObjType > ACPI_TYPE_LOCAL_MAX)
             {

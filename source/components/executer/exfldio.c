@@ -179,10 +179,10 @@ AcpiExSetupRegion (
 
     /* We must have a valid region */
 
-    if (ACPI_GET_OBJECT_TYPE (RgnDesc) != ACPI_TYPE_REGION)
+    if (RgnDesc->Common.Type != ACPI_TYPE_REGION)
     {
         ACPI_ERROR ((AE_INFO, "Needed Region, found type %X (%s)",
-            ACPI_GET_OBJECT_TYPE (RgnDesc),
+            RgnDesc->Common.Type,
             AcpiUtGetObjectTypeName (RgnDesc)));
 
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
@@ -499,7 +499,7 @@ AcpiExFieldDatumIo (
      * IndexField  - Write to an Index Register, then read/write from/to a
      *               Data Register
      */
-    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+    switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_BUFFER_FIELD:
         /*
@@ -641,7 +641,7 @@ AcpiExFieldDatumIo (
     default:
 
         ACPI_ERROR ((AE_INFO, "Wrong object type in field I/O %X",
-            ACPI_GET_OBJECT_TYPE (ObjDesc)));
+            ObjDesc->Common.Type));
         Status = AE_AML_INTERNAL;
         break;
     }

@@ -511,7 +511,7 @@ AcpiExOpcode_2A_1T_1R (
          * At this point, the Source operand is a String, Buffer, or Package.
          * Verify that the index is within range.
          */
-        switch (ACPI_GET_OBJECT_TYPE (Operand[0]))
+        switch ((Operand[0])->Common.Type)
         {
         case ACPI_TYPE_STRING:
 

@@ -367,7 +367,7 @@ AcpiExDecodeFieldAccess (
         return_UINT32 (0);
     }
 
-    if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_BUFFER_FIELD)
+    if (ObjDesc->Common.Type == ACPI_TYPE_BUFFER_FIELD)
     {
         /*
          * BufferField access can be on any byte boundary, so the

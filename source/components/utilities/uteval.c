@@ -325,7 +325,7 @@ AcpiUtEvaluateObject (
 
     /* Map the return object type to the bitmapped type */
 
-    switch (ACPI_GET_OBJECT_TYPE (Info->ReturnObject))
+    switch ((Info->ReturnObject)->Common.Type)
     {
     case ACPI_TYPE_INTEGER:
         ReturnBtype = ACPI_BTYPE_INTEGER;
@@ -512,7 +512,7 @@ AcpiUtExecute_HID (
         return_ACPI_STATUS (Status);
     }
 
-    if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_INTEGER)
+    if (ObjDesc->Common.Type == ACPI_TYPE_INTEGER)
     {
         /* Convert the Numeric HID to string */
 
@@ -557,7 +557,7 @@ AcpiUtTranslateOneCid (
 {
 
 
-    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+    switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_INTEGER:
 
@@ -631,7 +631,7 @@ AcpiUtExecute_CID (
     /* Get the number of _CIDs returned */
 
     Count = 1;
-    if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_PACKAGE)
+    if (ObjDesc->Common.Type == ACPI_TYPE_PACKAGE)
     {
         Count = ObjDesc->Package.Count;
     }
@@ -661,7 +661,7 @@ AcpiUtExecute_CID (
 
     /* The _CID object can be either a single CID or a package (list) of CIDs */
 
-    if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_PACKAGE)
+    if (ObjDesc->Common.Type == ACPI_TYPE_PACKAGE)
     {
         /* Translate each package element */
 
@@ -735,7 +735,7 @@ AcpiUtExecute_UID (
         return_ACPI_STATUS (Status);
     }
 
-    if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_INTEGER)
+    if (ObjDesc->Common.Type == ACPI_TYPE_INTEGER)
     {
         /* Convert the Numeric UID to string */
 

@@ -953,7 +953,7 @@ AcpiDsEvaluateNamePath (
         goto PushResult;
     }
 
-    Type = ACPI_GET_OBJECT_TYPE (*Operand);
+    Type = (*Operand)->Common.Type;
 
     Status = AcpiExResolveToValue (Operand, WalkState);
     if (ACPI_FAILURE (Status))

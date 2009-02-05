@@ -220,7 +220,7 @@ AcpiExResolveNodeToValue (
     {
     case ACPI_TYPE_PACKAGE:
 
-        if (ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_PACKAGE)
+        if (SourceDesc->Common.Type != ACPI_TYPE_PACKAGE)
         {
             ACPI_ERROR ((AE_INFO, "Object not a Package, type %s",
                 AcpiUtGetObjectTypeName (SourceDesc)));
@@ -240,7 +240,7 @@ AcpiExResolveNodeToValue (
 
     case ACPI_TYPE_BUFFER:
 
-        if (ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_BUFFER)
+        if (SourceDesc->Common.Type != ACPI_TYPE_BUFFER)
         {
             ACPI_ERROR ((AE_INFO, "Object not a Buffer, type %s",
                 AcpiUtGetObjectTypeName (SourceDesc)));
@@ -260,7 +260,7 @@ AcpiExResolveNodeToValue (
 
     case ACPI_TYPE_STRING:
 
-        if (ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_STRING)
+        if (SourceDesc->Common.Type != ACPI_TYPE_STRING)
         {
             ACPI_ERROR ((AE_INFO, "Object not a String, type %s",
                 AcpiUtGetObjectTypeName (SourceDesc)));
@@ -276,7 +276,7 @@ AcpiExResolveNodeToValue (
 
     case ACPI_TYPE_INTEGER:
 
-        if (ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_INTEGER)
+        if (SourceDesc->Common.Type != ACPI_TYPE_INTEGER)
         {
             ACPI_ERROR ((AE_INFO, "Object not a Integer, type %s",
                 AcpiUtGetObjectTypeName (SourceDesc)));

@@ -589,7 +589,7 @@ AcpiExDumpOperand (
 
     /* Decode object type */
 
-    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+    switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_LOCAL_REFERENCE:
 
@@ -627,7 +627,7 @@ AcpiExDumpOperand (
 
             AcpiOsPrintf ("%X", ObjDesc->Reference.Value);
 
-            if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_INTEGER)
+            if (ObjDesc->Common.Type == ACPI_TYPE_INTEGER)
             {
                 /* Value is an Integer */
 
@@ -643,7 +643,7 @@ AcpiExDumpOperand (
 
             AcpiOsPrintf ("%X", ObjDesc->Reference.Value);
 
-            if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_INTEGER)
+            if (ObjDesc->Common.Type == ACPI_TYPE_INTEGER)
             {
                 /* Value is an Integer */
 
@@ -792,7 +792,7 @@ AcpiExDumpOperand (
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "*NULL*\n"));
         }
-        else if (ACPI_GET_OBJECT_TYPE (ObjDesc->BufferField.BufferObj) !=
+        else if ((ObjDesc->BufferField.BufferObj)->Common.Type !=
                     ACPI_TYPE_BUFFER)
         {
             AcpiOsPrintf ("*not a Buffer*\n");
@@ -852,7 +852,7 @@ AcpiExDumpOperand (
     default:
         /* Unknown Type */
 
-        AcpiOsPrintf ("Unknown Type %X\n", ACPI_GET_OBJECT_TYPE (ObjDesc));
+        AcpiOsPrintf ("Unknown Type %X\n", ObjDesc->Common.Type);
         break;
     }
 
@@ -1085,7 +1085,7 @@ AcpiExDumpPackageObj (
 
     /* Packages may only contain a few object types */
 
-    switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
+    switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_INTEGER:
 
@@ -1143,7 +1143,7 @@ AcpiExDumpPackageObj (
 
     default:
 
-        AcpiOsPrintf ("[Unknown Type] %X\n", ACPI_GET_OBJECT_TYPE (ObjDesc));
+        AcpiOsPrintf ("[Unknown Type] %X\n", ObjDesc->Common.Type);
         break;
     }
 }

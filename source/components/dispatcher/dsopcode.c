@@ -600,7 +600,7 @@ AcpiDsInitBufferField (
 
     /* Host object must be a Buffer */
 
-    if (ACPI_GET_OBJECT_TYPE (BufferDesc) != ACPI_TYPE_BUFFER)
+    if (BufferDesc->Common.Type != ACPI_TYPE_BUFFER)
     {
         ACPI_ERROR ((AE_INFO,
             "Target of Create Field is not a Buffer object - %s",
@@ -1528,7 +1528,7 @@ AcpiDsExecEndControlOp (
              * Allow references created by the Index operator to return unchanged.
              */
             if ((ACPI_GET_DESCRIPTOR_TYPE (WalkState->Results->Results.ObjDesc[0]) == ACPI_DESC_TYPE_OPERAND) &&
-                (ACPI_GET_OBJECT_TYPE (WalkState->Results->Results.ObjDesc [0]) == ACPI_TYPE_LOCAL_REFERENCE) &&
+                ((WalkState->Results->Results.ObjDesc [0])->Common.Type == ACPI_TYPE_LOCAL_REFERENCE) &&
                 ((WalkState->Results->Results.ObjDesc [0])->Reference.Class != ACPI_REFCLASS_INDEX))
             {
                 Status = AcpiExResolveToValue (&WalkState->Results->Results.ObjDesc [0], WalkState);

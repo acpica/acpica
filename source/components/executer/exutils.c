@@ -323,7 +323,7 @@ AcpiExTruncateFor32bitTable (
      */
     if ((!ObjDesc) ||
         (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) != ACPI_DESC_TYPE_OPERAND) ||
-        (ACPI_GET_OBJECT_TYPE (ObjDesc) != ACPI_TYPE_INTEGER))
+        (ObjDesc->Common.Type != ACPI_TYPE_INTEGER))
     {
         return;
     }

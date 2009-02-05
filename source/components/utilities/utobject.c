@@ -586,7 +586,7 @@ AcpiUtGetSimpleObjectSize (
      * must be accessed bytewise or there may be alignment problems on
      * certain processors
      */
-    switch (ACPI_GET_OBJECT_TYPE (InternalObject))
+    switch (InternalObject->Common.Type)
     {
     case ACPI_TYPE_STRING:
 
@@ -650,7 +650,7 @@ AcpiUtGetSimpleObjectSize (
         ACPI_ERROR ((AE_INFO, "Cannot convert to external object - "
             "unsupported type [%s] %X in object %p",
             AcpiUtGetObjectTypeName (InternalObject),
-            ACPI_GET_OBJECT_TYPE (InternalObject), InternalObject));
+            InternalObject->Common.Type, InternalObject));
         Status = AE_TYPE;
         break;
     }
@@ -809,7 +809,7 @@ AcpiUtGetObjectSize (
 
 
     if ((ACPI_GET_DESCRIPTOR_TYPE (InternalObject) == ACPI_DESC_TYPE_OPERAND) &&
-        (ACPI_GET_OBJECT_TYPE (InternalObject) == ACPI_TYPE_PACKAGE))
+        (InternalObject->Common.Type == ACPI_TYPE_PACKAGE))
     {
         Status = AcpiUtGetPackageObjectSize (InternalObject, ObjLength);
     }

@@ -513,7 +513,7 @@ AcpiEvMatchPrwAndGpe (
      */
     ObjDesc = PkgDesc->Package.Elements[0];
 
-    if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_INTEGER)
+    if (ObjDesc->Common.Type == ACPI_TYPE_INTEGER)
     {
         /* Use FADT-defined GPE device (from definition of _PRW) */
 
@@ -523,13 +523,13 @@ AcpiEvMatchPrwAndGpe (
 
         GpeNumber = (UINT32) ObjDesc->Integer.Value;
     }
-    else if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_PACKAGE)
+    else if (ObjDesc->Common.Type == ACPI_TYPE_PACKAGE)
     {
         /* Package contains a GPE reference and GPE number within a GPE block */
 
         if ((ObjDesc->Package.Count < 2) ||
-            (ACPI_GET_OBJECT_TYPE (ObjDesc->Package.Elements[0]) != ACPI_TYPE_LOCAL_REFERENCE) ||
-            (ACPI_GET_OBJECT_TYPE (ObjDesc->Package.Elements[1]) != ACPI_TYPE_INTEGER))
+            ((ObjDesc->Package.Elements[0])->Common.Type != ACPI_TYPE_LOCAL_REFERENCE) ||
+            ((ObjDesc->Package.Elements[1])->Common.Type != ACPI_TYPE_INTEGER))
         {
             goto Cleanup;
         }
