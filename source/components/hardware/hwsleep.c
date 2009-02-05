@@ -158,6 +158,7 @@ AcpiSetFirmwareWakingVector (
 ACPI_EXPORT_SYMBOL (AcpiSetFirmwareWakingVector)
 
 
+#if ACPI_MACHINE_WIDTH == 64
 /*******************************************************************************
  *
  * FUNCTION:    AcpiSetFirmwareWakingVector64
@@ -168,7 +169,8 @@ ACPI_EXPORT_SYMBOL (AcpiSetFirmwareWakingVector)
  * RETURN:      Status
  *
  * DESCRIPTION: Sets the 64-bit X_FirmwareWakingVector field of the FACS, if
- *              it exists in the table.
+ *              it exists in the table. This function is intended for use with
+ *              64-bit host operating systems.
  *
  ******************************************************************************/
 
@@ -194,7 +196,7 @@ AcpiSetFirmwareWakingVector64 (
 }
 
 ACPI_EXPORT_SYMBOL (AcpiSetFirmwareWakingVector64)
-
+#endif
 
 /*******************************************************************************
  *

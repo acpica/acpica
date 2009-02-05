@@ -589,14 +589,6 @@ AcpiWrite (
     ACPI_GENERIC_ADDRESS    *Reg);
 
 ACPI_STATUS
-AcpiSetFirmwareWakingVector (
-    UINT32                  PhysicalAddress);
-
-ACPI_STATUS
-AcpiSetFirmwareWakingVector64 (
-    UINT64                  PhysicalAddress);
-
-ACPI_STATUS
 AcpiGetSleepTypeData (
     UINT8                   SleepState,
     UINT8                   *Slp_TypA,
@@ -616,7 +608,17 @@ AcpiEnterSleepStateS4bios (
 
 ACPI_STATUS
 AcpiLeaveSleepState (
-    UINT8                   SleepState);
+    UINT8                   SleepState)
+    ;
+ACPI_STATUS
+AcpiSetFirmwareWakingVector (
+    UINT32                  PhysicalAddress);
+
+#if ACPI_MACHINE_WIDTH == 64
+ACPI_STATUS
+AcpiSetFirmwareWakingVector64 (
+    UINT64                  PhysicalAddress);
+#endif
 
 
 /*
