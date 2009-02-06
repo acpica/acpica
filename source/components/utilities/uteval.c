@@ -185,6 +185,7 @@ AcpiUtOsiImplementation (
     ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *StringDesc;
     ACPI_OPERAND_OBJECT     *ReturnDesc;
+    UINT32                  ReturnValue;
     UINT32                  i;
 
 
@@ -207,10 +208,9 @@ AcpiUtOsiImplementation (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    /* Default return value is SUPPORTED */
+    /* Default return value is 0, NOT SUPPORTED */
 
-    ReturnDesc->Integer.Value = ACPI_UINT32_MAX;
-    WalkState->ReturnDesc = ReturnDesc;
+    ReturnValue = 0;
 
     /* Compare input string to static table of supported interfaces */
 
@@ -220,7 +220,8 @@ AcpiUtOsiImplementation (
         {
             /* The interface is supported */
 
-            return_ACPI_STATUS (AE_OK);
+            ReturnValue = ACPI_UINT32_MAX;
+            goto Exit;
         }
     }
 
@@ -234,12 +235,19 @@ AcpiUtOsiImplementation (
     {
         /* The interface is supported */
 
-        return_ACPI_STATUS (AE_OK);
+        ReturnValue = ACPI_UINT32_MAX;
     }
 
-    /* The interface is not supported */
 
-    ReturnDesc->Integer.Value = 0;
+Exit:
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INFO,
+        "ACPI: BIOS _OSI(%s) is %ssupported\n",
+        StringDesc->String.Pointer, ReturnValue == 0 ? "not " : ""));
+
+    /* Complete the return value */
+
+    ReturnDesc->Integer.Value = ReturnValue;
+    WalkState->ReturnDesc = ReturnDesc;
     return_ACPI_STATUS (AE_OK);
 }
 
