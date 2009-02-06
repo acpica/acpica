@@ -239,7 +239,7 @@ AcpiNsEvaluate (
             }
         }
 
-        ACPI_DUMP_PATHNAME (Info->ResolvedNode, "Execute Method:",
+        ACPI_DUMP_PATHNAME (Info->ResolvedNode, "ACPI: Execute Method",
             ACPI_LV_INFO, _COMPONENT);
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,

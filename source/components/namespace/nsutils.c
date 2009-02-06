@@ -1089,7 +1089,7 @@ AcpiNsGetNode (
                 NULL, ReturnNode);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "%s, %s\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%s, %s\n",
                 Pathname, AcpiFormatException (Status)));
     }
 

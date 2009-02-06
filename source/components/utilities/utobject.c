@@ -419,7 +419,7 @@ AcpiUtValidInternalObject (
 
     if (!Object)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** Null Object Ptr\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "**** Null Object Ptr\n"));
         return (FALSE);
     }
 
@@ -434,7 +434,7 @@ AcpiUtValidInternalObject (
         return (TRUE);
 
     default:
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
                 "%p is not not an ACPI operand obj [%s]\n",
                 Object, AcpiUtGetDescriptorName (Object)));
         break;
