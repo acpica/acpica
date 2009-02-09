@@ -615,8 +615,8 @@ AcpiTbParseRootTable (
             if (ACPI_FAILURE (Status))
             {
                 ACPI_WARNING ((AE_INFO, "Truncating %u table entries!",
-                    (unsigned) (AcpiGbl_RootTableList.Size -
-                        AcpiGbl_RootTableList.Count)));
+                    (unsigned) (TableCount -
+                    (AcpiGbl_RootTableList.Count - 2))));
                 break;
             }
         }
