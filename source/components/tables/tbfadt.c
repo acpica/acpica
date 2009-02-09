@@ -219,7 +219,8 @@ static ACPI_FADT_INFO     FadtInfoTable[] =
         ACPI_FADT_SEPARATE_LENGTH}
 };
 
-#define ACPI_FADT_INFO_ENTRIES        (sizeof (FadtInfoTable) / sizeof (ACPI_FADT_INFO))
+#define ACPI_FADT_INFO_ENTRIES \
+            (sizeof (FadtInfoTable) / sizeof (ACPI_FADT_INFO))
 
 
 /* Table used to split Event Blocks into separate status/enable registers */
@@ -251,7 +252,8 @@ static ACPI_FADT_PM_INFO    FadtPmInfoTable[] =
         1}
 };
 
-#define ACPI_FADT_PM_INFO_ENTRIES   (sizeof (FadtPmInfoTable) / sizeof (ACPI_FADT_PM_INFO))
+#define ACPI_FADT_PM_INFO_ENTRIES \
+            (sizeof (FadtPmInfoTable) / sizeof (ACPI_FADT_PM_INFO))
 
 
 /*******************************************************************************
@@ -509,7 +511,7 @@ AcpiTbConvertFadt (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiTbValidateFadt
  *
@@ -599,7 +601,8 @@ AcpiTbValidateFadt (
             if (!Address64->Address || !Length)
             {
                 ACPI_ERROR ((AE_INFO,
-                    "Required field %s has zero address and/or length: %8.8X%8.8X/%X",
+                    "Required field %s has zero address and/or length:"
+                    " %8.8X%8.8X/%X",
                     Name, ACPI_FORMAT_UINT64 (Address64->Address), Length));
             }
         }
@@ -607,18 +610,23 @@ AcpiTbValidateFadt (
         {
             /*
              * Field is optional (PM2Control, GPE0, GPE1) AND has its own
-             * length field. If present, both the address and length must be valid.
+             * length field. If present, both the address and length must
+             * be valid.
              */
-            if ((Address64->Address && !Length) || (!Address64->Address && Length))
+            if ((Address64->Address && !Length) ||
+                (!Address64->Address && Length))
             {
                 ACPI_WARNING ((AE_INFO,
-                    "Optional field %s has zero address or length: %8.8X%8.8X/%X",
+                    "Optional field %s has zero address or length: "
+                    "%8.8X%8.8X/%X",
                     Name, ACPI_FORMAT_UINT64 (Address64->Address), Length));
             }
         }
 
-        /* If both 32- and 64-bit addresses are valid (non-zero), they must match */
-
+        /*
+         * If both 32- and 64-bit addresses are valid (non-zero),
+         * they must match
+         */
         if (Address64->Address && *Address32 &&
            (Address64->Address != (UINT64) *Address32))
         {
@@ -630,7 +638,7 @@ AcpiTbValidateFadt (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiTbSetupFadtRegisters
  *
@@ -689,7 +697,8 @@ AcpiTbSetupFadtRegisters (
      * Each register is defined to be (event block length / 2). Extra divide
      * by 8 converts bits to bytes.
      */
-    Pm1RegisterByteWidth = (UINT8) ACPI_DIV_16 (AcpiGbl_FADT.XPm1aEventBlock.BitWidth);
+    Pm1RegisterByteWidth = (UINT8)
+        ACPI_DIV_16 (AcpiGbl_FADT.XPm1aEventBlock.BitWidth);
 
     /*
      * Calculate separate GAS structs for the PM1x (A/B) Status and Enable

@@ -155,7 +155,8 @@ AcpiTbVerifyTable (
         if ((TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK) ==
             ACPI_TABLE_ORIGIN_MAPPED)
         {
-            TableDesc->Pointer = AcpiOsMapMemory (TableDesc->Address, TableDesc->Length);
+            TableDesc->Pointer = AcpiOsMapMemory (
+                TableDesc->Address, TableDesc->Length);
         }
 
         if (!TableDesc->Pointer)
@@ -231,7 +232,8 @@ AcpiTbAddTable (
         if (!AcpiGbl_RootTableList.Tables[i].Pointer)
         {
             Status = AcpiTbVerifyTable (&AcpiGbl_RootTableList.Tables[i]);
-            if (ACPI_FAILURE (Status) || !AcpiGbl_RootTableList.Tables[i].Pointer)
+            if (ACPI_FAILURE (Status) ||
+                !AcpiGbl_RootTableList.Tables[i].Pointer)
             {
                 continue;
             }
@@ -368,8 +370,9 @@ AcpiTbResizeRootTableList (
     /* Increase the Table Array size */
 
     Tables = ACPI_ALLOCATE_ZEROED (
-        ((ACPI_SIZE) AcpiGbl_RootTableList.Size + ACPI_ROOT_TABLE_SIZE_INCREMENT)
-        * sizeof (ACPI_TABLE_DESC));
+        ((ACPI_SIZE) AcpiGbl_RootTableList.Size +
+            ACPI_ROOT_TABLE_SIZE_INCREMENT) *
+        sizeof (ACPI_TABLE_DESC));
     if (!Tables)
     {
         ACPI_ERROR ((AE_INFO, "Could not allocate new root table array"));
@@ -637,7 +640,8 @@ AcpiTbReleaseOwnerId (
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
     if (TableIndex < AcpiGbl_RootTableList.Count)
     {
-        AcpiUtReleaseOwnerId (&(AcpiGbl_RootTableList.Tables[TableIndex].OwnerId));
+        AcpiUtReleaseOwnerId (
+            &(AcpiGbl_RootTableList.Tables[TableIndex].OwnerId));
         Status = AE_OK;
     }
 
@@ -703,7 +707,8 @@ AcpiTbIsTableLoaded (
     if (TableIndex < AcpiGbl_RootTableList.Count)
     {
         IsLoaded = (BOOLEAN)
-            (AcpiGbl_RootTableList.Tables[TableIndex].Flags & ACPI_TABLE_IS_LOADED);
+            (AcpiGbl_RootTableList.Tables[TableIndex].Flags &
+            ACPI_TABLE_IS_LOADED);
     }
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
@@ -735,11 +740,13 @@ AcpiTbSetTableLoadedFlag (
     {
         if (IsLoaded)
         {
-            AcpiGbl_RootTableList.Tables[TableIndex].Flags |= ACPI_TABLE_IS_LOADED;
+            AcpiGbl_RootTableList.Tables[TableIndex].Flags |=
+                ACPI_TABLE_IS_LOADED;
         }
         else
         {
-            AcpiGbl_RootTableList.Tables[TableIndex].Flags &= ~ACPI_TABLE_IS_LOADED;
+            AcpiGbl_RootTableList.Tables[TableIndex].Flags &=
+                ~ACPI_TABLE_IS_LOADED;
         }
     }
 

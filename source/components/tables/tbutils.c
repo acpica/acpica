@@ -207,7 +207,8 @@ AcpiTbPrintTableHeader (
         /* FACS only has signature and length fields of common table header */
 
         ACPI_INFO ((AE_INFO, "%4.4s @ 0x%p/0x%04X",
-            Header->Signature, ACPI_CAST_PTR (UINT64, Address), Header->Length));
+            Header->Signature, ACPI_CAST_PTR (UINT64, Address),
+            Header->Length));
     }
     else if (ACPI_COMPARE_NAME (Header->Signature, ACPI_SIG_RSDP))
     {
@@ -266,7 +267,8 @@ AcpiTbVerifyChecksum (
     {
         ACPI_WARNING ((AE_INFO,
             "Incorrect checksum in table [%4.4s] - %2.2X, should be %2.2X",
-            Table->Signature, Table->Checksum, (UINT8) (Table->Checksum - Checksum)));
+            Table->Signature, Table->Checksum,
+            (UINT8) (Table->Checksum - Checksum)));
 
 #if (ACPI_CHECKSUM_ABORT)
         return (AE_BAD_CHECKSUM);
@@ -359,7 +361,8 @@ AcpiTbInstallTable (
     if (Signature &&
         !ACPI_COMPARE_NAME (MappedTable->Signature, Signature))
     {
-        ACPI_ERROR ((AE_INFO, "Invalid signature 0x%X for ACPI table, expected [%s]",
+        ACPI_ERROR ((AE_INFO,
+            "Invalid signature 0x%X for ACPI table, expected [%s]",
             *ACPI_CAST_PTR (UINT32, MappedTable->Signature), Signature));
         goto UnmapAndExit;
     }
@@ -455,7 +458,8 @@ AcpiTbGetRootTableEntry (
     {
         /*
          * 32-bit platform, XSDT: Truncate 64-bit to 32-bit and return
-         * 64-bit platform, XSDT: Move (unaligned) 64-bit to local, return 64-bit
+         * 64-bit platform, XSDT: Move (unaligned) 64-bit to local,
+         *  return 64-bit
          */
         ACPI_MOVE_64_TO_64 (&Address64, TableEntry);
 
@@ -465,7 +469,8 @@ AcpiTbGetRootTableEntry (
             /* Will truncate 64-bit address to 32 bits, issue warning */
 
             ACPI_WARNING ((AE_INFO,
-                "64-bit Physical Address in XSDT is too large (%8.8X%8.8X), truncating",
+                "64-bit Physical Address in XSDT is too large (%8.8X%8.8X),"
+                " truncating",
                 ACPI_FORMAT_UINT64 (Address64)));
         }
 #endif
@@ -518,7 +523,8 @@ AcpiTbParseRootTable (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    AcpiTbPrintTableHeader (RsdpAddress, ACPI_CAST_PTR (ACPI_TABLE_HEADER, Rsdp));
+    AcpiTbPrintTableHeader (RsdpAddress,
+        ACPI_CAST_PTR (ACPI_TABLE_HEADER, Rsdp));
 
     /* Differentiate between RSDT and XSDT root tables */
 
@@ -585,11 +591,13 @@ AcpiTbParseRootTable (
 
     /* Calculate the number of tables described in the root table */
 
-    TableCount = (UINT32) ((Table->Length - sizeof (ACPI_TABLE_HEADER)) / TableEntrySize);
+    TableCount = (UINT32) ((Table->Length - sizeof (ACPI_TABLE_HEADER)) /
+        TableEntrySize);
 
     /*
-     * First two entries in the table array are reserved for the DSDT and FACS,
-     * which are not actually present in the RSDT/XSDT - they come from the FADT
+     * First two entries in the table array are reserved for the DSDT
+     * and FACS, which are not actually present in the RSDT/XSDT - they
+     * come from the FADT
      */
     TableEntry = ACPI_CAST_PTR (UINT8, Table) + sizeof (ACPI_TABLE_HEADER);
     AcpiGbl_RootTableList.Count = 2;
@@ -607,7 +615,8 @@ AcpiTbParseRootTable (
             if (ACPI_FAILURE (Status))
             {
                 ACPI_WARNING ((AE_INFO, "Truncating %u table entries!",
-                    (unsigned) (AcpiGbl_RootTableList.Size - AcpiGbl_RootTableList.Count)));
+                    (unsigned) (AcpiGbl_RootTableList.Size -
+                        AcpiGbl_RootTableList.Count)));
                 break;
             }
         }
