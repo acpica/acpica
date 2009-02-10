@@ -1449,6 +1449,36 @@ ExecuteOSI (
 
 /******************************************************************************
  *
+ * FUNCTION:    AeHardwareInterfaces
+ *
+ * DESCRIPTION: Call various hardware support interfaces
+ *
+ *****************************************************************************/
+
+void
+AeHardwareInterfaces (
+    void)
+{
+    ACPI_STATUS             Status;
+    UINT32                  Value;
+
+
+
+    Status = AcpiWriteBitRegister (ACPI_BITREG_WAKE_STATUS, 1);
+    Status = AcpiWriteBitRegister (ACPI_BITREG_GLOBAL_LOCK_ENABLE, 1);
+    Status = AcpiWriteBitRegister (ACPI_BITREG_SLEEP_ENABLE, 1);
+    Status = AcpiWriteBitRegister (ACPI_BITREG_ARB_DISABLE, 1);
+
+    Status = AcpiReadBitRegister (ACPI_BITREG_WAKE_STATUS, &Value);
+    Status = AcpiReadBitRegister (ACPI_BITREG_GLOBAL_LOCK_ENABLE, &Value);
+    Status = AcpiReadBitRegister (ACPI_BITREG_SLEEP_ENABLE, &Value);
+    Status = AcpiReadBitRegister (ACPI_BITREG_ARB_DISABLE, &Value);
+
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AeMiscellaneousTests
  *
  * DESCRIPTION: Various ACPICA validation tests.
@@ -1469,6 +1499,7 @@ AeMiscellaneousTests (
     ACPI_STATISTICS         Stats;
 
 
+    AeHardwareInterfaces ();
     AeSetupConfiguration (Ssdt3Code);
 
     AeTestBufferArgument();
