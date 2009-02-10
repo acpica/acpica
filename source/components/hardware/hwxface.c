@@ -347,20 +347,31 @@ ACPI_EXPORT_SYMBOL (AcpiWrite)
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiGetRegisterUnlocked
+ * FUNCTION:    AcpiGetRegister
  *
- * PARAMETERS:  RegisterId      - ID of ACPI BitRegister to access
- *              ReturnValue     - Value that was read from the register
+ * PARAMETERS:  RegisterId      - ID of ACPI Bit Register to access
+ *              ReturnValue     - Value that was read from the register,
+ *                                normalized to bit position zero.
  *
- * RETURN:      Status and the value read from specified Register. Value
+ * RETURN:      Status and the value read from the specified Register. Value
  *              returned is normalized to bit0 (is shifted all the way right)
  *
  * DESCRIPTION: ACPI BitRegister read function. Does not acquire the HW lock.
  *
+ * SUPPORTS:    Bit fields in PM1 Status, PM1 Enable, PM1 Control, and
+ *              PM2 Control.
+ *
+ * Note: The hardware lock is not required when reading the ACPI bit registers
+ *       since almost all of them are single bit and it does not matter that
+ *       the parent hardware register can be split across two physical
+ *       registers. The only multi-bit field is SLP_TYP in the PM1 control
+ *       register, but this field does not cross an 8-bit boundary (nor does
+ *       it make much sense to actually read this field.)
+ *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetRegisterUnlocked (
+AcpiGetRegister (
     UINT32                  RegisterId,
     UINT32                  *ReturnValue)
 {
@@ -369,7 +380,7 @@ AcpiGetRegisterUnlocked (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE (AcpiGetRegisterUnlocked);
+    ACPI_FUNCTION_TRACE (AcpiGetRegister);
 
 
     /* Get the info structure corresponding to the requested ACPI Register */
@@ -380,7 +391,7 @@ AcpiGetRegisterUnlocked (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Read from the register */
+    /* Read the entire parent register */
 
     Status = AcpiHwRegisterRead (BitRegInfo->ParentRegister,
                 &RegisterValue);
@@ -401,39 +412,6 @@ AcpiGetRegisterUnlocked (
     return_ACPI_STATUS (Status);
 }
 
-ACPI_EXPORT_SYMBOL (AcpiGetRegisterUnlocked)
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiGetRegister
- *
- * PARAMETERS:  RegisterId      - ID of ACPI BitRegister to access
- *              ReturnValue     - Value that was read from the register
- *
- * RETURN:      Status and the value read from specified Register. Value
- *              returned is normalized to bit0 (is shifted all the way right)
- *
- * DESCRIPTION: ACPI BitRegister read function.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiGetRegister (
-    UINT32                  RegisterId,
-    UINT32                  *ReturnValue)
-{
-    ACPI_STATUS             Status;
-    ACPI_CPU_FLAGS          Flags;
-
-
-    Flags = AcpiOsAcquireLock (AcpiGbl_HardwareLock);
-    Status = AcpiGetRegisterUnlocked (RegisterId, ReturnValue);
-    AcpiOsReleaseLock (AcpiGbl_HardwareLock, Flags);
-
-    return (Status);
-}
-
 ACPI_EXPORT_SYMBOL (AcpiGetRegister)
 
 
@@ -441,13 +419,18 @@ ACPI_EXPORT_SYMBOL (AcpiGetRegister)
  *
  * FUNCTION:    AcpiSetRegister
  *
- * PARAMETERS:  RegisterId      - ID of ACPI BitRegister to access
- *              Value           - (only used on write) value to write to the
- *                                Register, NOT pre-normalized to the bit pos
+ * PARAMETERS:  RegisterId      - ID of ACPI Bit Register to access
+ *              Value           - Value to write to the register, in bit
+ *                                position zero. The bit is automaticallly
+ *                                shifted to the correct position.
  *
  * RETURN:      Status
  *
- * DESCRIPTION: ACPI Bit Register write function.
+ * DESCRIPTION: ACPI Bit Register write function. Acquires the hardware lock
+ *              since most operations require a read/modify/write sequence.
+ *
+ * SUPPORTS:    Bit fields in PM1 Status, PM1 Enable, PM1 Control, and
+ *              PM2 Control.
  *
  ******************************************************************************/
 

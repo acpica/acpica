@@ -569,11 +569,6 @@ AcpiGetRegister (
     UINT32                  *ReturnValue);
 
 ACPI_STATUS
-AcpiGetRegisterUnlocked (
-    UINT32                  RegisterId,
-    UINT32                  *ReturnValue);
-
-ACPI_STATUS
 AcpiSetRegister (
     UINT32                  RegisterId,
     UINT32                  Value);
