@@ -865,7 +865,10 @@ AcpiUtInitGlobals (
     {
         AcpiGbl_OwnerIdMask[i]              = 0;
     }
-    AcpiGbl_OwnerIdMask[ACPI_NUM_OWNERID_MASKS - 1] = 0x80000000; /* Last ID is never valid */
+    
+    /* Last OwnerID is never valid */
+
+    AcpiGbl_OwnerIdMask[ACPI_NUM_OWNERID_MASKS - 1] = 0x80000000;
 
     /* Event counters */
 

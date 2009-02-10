@@ -216,7 +216,8 @@ AcpiUtOsiImplementation (
 
     for (i = 0; i < ACPI_ARRAY_LENGTH (AcpiInterfacesSupported); i++)
     {
-        if (!ACPI_STRCMP (StringDesc->String.Pointer, AcpiInterfacesSupported[i]))
+        if (!ACPI_STRCMP (StringDesc->String.Pointer,
+                AcpiInterfacesSupported[i]))
         {
             /* The interface is supported */
 

@@ -588,7 +588,8 @@ AcpiUtCopyEsimpleToIsimple (
     default:
         /* All other types are not supported */
 
-        ACPI_ERROR ((AE_INFO, "Unsupported object type, cannot convert to internal object: %s",
+        ACPI_ERROR ((AE_INFO,
+            "Unsupported object type, cannot convert to internal object: %s",
             AcpiUtGetTypeName (ExternalObject->Type)));
 
         return_ACPI_STATUS (AE_SUPPORT);
@@ -602,7 +603,9 @@ AcpiUtCopyEsimpleToIsimple (
     case ACPI_TYPE_STRING:
 
         InternalObject->String.Pointer =
-            ACPI_ALLOCATE_ZEROED ((ACPI_SIZE) ExternalObject->String.Length + 1);
+            ACPI_ALLOCATE_ZEROED ((ACPI_SIZE)
+                ExternalObject->String.Length + 1);
+        
         if (!InternalObject->String.Pointer)
         {
             goto ErrorExit;
