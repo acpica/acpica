@@ -222,8 +222,8 @@ AcpiRead (
     *Value = 0;
 
     /*
-     * Two address spaces supported: Memory or IO.
-     * PCI_Config is not supported here because the GAS struct is insufficient
+     * Two address spaces supported: Memory or IO. PCI_Config is
+     * not supported here because the GAS structure is insufficient
      */
     switch (Reg->SpaceId)
     {
@@ -375,12 +375,13 @@ AcpiReadBitRegister (
     UINT32                  RegisterId,
     UINT32                  *ReturnValue)
 {
-    UINT32                  RegisterValue = 0;
     ACPI_BIT_REGISTER_INFO  *BitRegInfo;
+    UINT32                  RegisterValue;
+    UINT32                  Value;
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE (AcpiReadBitRegister);
+    ACPI_FUNCTION_TRACE_U32 (AcpiReadBitRegister, RegisterId);
 
 
     /* Get the info structure corresponding to the requested ACPI Register */
@@ -395,21 +396,22 @@ AcpiReadBitRegister (
 
     Status = AcpiHwRegisterRead (BitRegInfo->ParentRegister,
                 &RegisterValue);
-
-    if (ACPI_SUCCESS (Status))
+    if (ACPI_FAILURE (Status))
     {
-        /* Normalize the value that was read */
-
-        RegisterValue = ((RegisterValue & BitRegInfo->AccessBitMask)
-                            >> BitRegInfo->BitPosition);
-
-        *ReturnValue = RegisterValue;
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Read value %8.8X register %X\n",
-            RegisterValue, BitRegInfo->ParentRegister));
+        return_ACPI_STATUS (Status);
     }
 
-    return_ACPI_STATUS (Status);
+    /* Normalize the value that was read, mask off other bits */
+
+    Value = ((RegisterValue & BitRegInfo->AccessBitMask)
+                >> BitRegInfo->BitPosition);
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_IO,
+        "BitReg %X, ParentReg %X, Actual %8.8X, ReturnValue %8.8X\n",
+        RegisterId, BitRegInfo->ParentRegister, RegisterValue, Value));
+
+    *ReturnValue = Value;
+    return_ACPI_STATUS (AE_OK);
 }
 
 ACPI_EXPORT_SYMBOL (AcpiReadBitRegister)
@@ -432,6 +434,9 @@ ACPI_EXPORT_SYMBOL (AcpiReadBitRegister)
  * SUPPORTS:    Bit fields in PM1 Status, PM1 Enable, PM1 Control, and
  *              PM2 Control.
  *
+ * Note that at this level, the fact that there may be actually two
+ * hardware registers (A and B - and B may not exist) is abstracted.
+ *
  ******************************************************************************/
 
 ACPI_STATUS
@@ -439,10 +444,10 @@ AcpiWriteBitRegister (
     UINT32                  RegisterId,
     UINT32                  Value)
 {
-    UINT32                  RegisterValue = 0;
     ACPI_BIT_REGISTER_INFO  *BitRegInfo;
-    ACPI_STATUS             Status;
     ACPI_CPU_FLAGS          LockFlags;
+    UINT32                  RegisterValue;
+    ACPI_STATUS             Status = AE_OK;
 
 
     ACPI_FUNCTION_TRACE_U32 (AcpiWriteBitRegister, RegisterId);
@@ -453,119 +458,70 @@ AcpiWriteBitRegister (
     BitRegInfo = AcpiHwGetBitRegisterInfo (RegisterId);
     if (!BitRegInfo)
     {
-        ACPI_ERROR ((AE_INFO, "Bad ACPI HW RegisterId: %X", RegisterId));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     LockFlags = AcpiOsAcquireLock (AcpiGbl_HardwareLock);
 
-    /* Always do a register read first so we can insert the new bits  */
-
-    Status = AcpiHwRegisterRead (BitRegInfo->ParentRegister,
-                &RegisterValue);
-    if (ACPI_FAILURE (Status))
-    {
-        goto UnlockAndExit;
-    }
-
     /*
-     * Decode the Register ID
-     * Register ID = [Register block ID] | [bit ID]
-     *
-     * Check bit ID to fine locate Register offset.
-     * Check Mask to determine Register offset, and then read-write.
+     * At this point, we know that the parent register is one of the
+     * following: PM1 Status, PM1 Enable, PM1 Control, or PM2 Control
      */
-    switch (BitRegInfo->ParentRegister)
+    if (BitRegInfo->ParentRegister != ACPI_REGISTER_PM1_STATUS)
     {
-    case ACPI_REGISTER_PM1_STATUS:
-
         /*
-         * Status Registers are different from the rest. Clear by
-         * writing 1, and writing 0 has no effect. So, the only relevant
-         * information is the single bit we're interested in, all others should
-         * be written as 0 so they will be left unchanged.
+         * 1) Case for PM1 Enable, PM1 Control, and PM2 Control
+         *
+         * Perform a register read to preserve the bits that we are not
+         * interested in
          */
-        Value = ACPI_REGISTER_PREPARE_BITS (Value,
-                    BitRegInfo->BitPosition, BitRegInfo->AccessBitMask);
-        if (Value)
-        {
-            Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1_STATUS,
-                        (UINT16) Value);
-            RegisterValue = 0;
-        }
-        break;
-
-
-    case ACPI_REGISTER_PM1_ENABLE:
-
-        ACPI_REGISTER_INSERT_VALUE (RegisterValue, BitRegInfo->BitPosition,
-            BitRegInfo->AccessBitMask, Value);
-
-        Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1_ENABLE,
-                    (UINT16) RegisterValue);
-        break;
-
-
-    case ACPI_REGISTER_PM1_CONTROL:
-
-        /*
-         * Write the PM1 Control register.
-         * Note that at this level, the fact that there are actually TWO
-         * registers (A and B - and B may not exist) is abstracted.
-         */
-        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "PM1 control: Read %X\n",
-            RegisterValue));
-
-        ACPI_REGISTER_INSERT_VALUE (RegisterValue, BitRegInfo->BitPosition,
-            BitRegInfo->AccessBitMask, Value);
-
-        Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1_CONTROL,
-                    (UINT16) RegisterValue);
-        break;
-
-
-    case ACPI_REGISTER_PM2_CONTROL:
-
-        Status = AcpiHwRegisterRead (ACPI_REGISTER_PM2_CONTROL,
+        Status = AcpiHwRegisterRead (BitRegInfo->ParentRegister,
                     &RegisterValue);
         if (ACPI_FAILURE (Status))
         {
             goto UnlockAndExit;
         }
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "PM2 control: Read %X from %8.8X%8.8X\n",
-            RegisterValue,
-            ACPI_FORMAT_UINT64 (AcpiGbl_FADT.XPm2ControlBlock.Address)));
-
+        /*
+         * Insert the input bit into the value that was just read
+         * and write the register
+         */
         ACPI_REGISTER_INSERT_VALUE (RegisterValue, BitRegInfo->BitPosition,
-                BitRegInfo->AccessBitMask, Value);
+            BitRegInfo->AccessBitMask, Value);
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %4.4X to %8.8X%8.8X\n",
-            RegisterValue,
-            ACPI_FORMAT_UINT64 (AcpiGbl_FADT.XPm2ControlBlock.Address)));
-
-        Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM2_CONTROL,
-                    (UINT8) (RegisterValue));
-        break;
-
-
-    default:
-        break;
+        Status = AcpiHwRegisterWrite (BitRegInfo->ParentRegister,
+                    RegisterValue);
     }
+    else
+    {
+        /*
+         * 2) Case for PM1 Status
+         *
+         * The Status register is different from the rest. Clear an event
+         * by writing 1, writing 0 has no effect. So, the only relevant
+         * information is the single bit we're interested in, all others
+         * should be written as 0 so they will be left unchanged.
+         */
+        RegisterValue = ACPI_REGISTER_PREPARE_BITS (Value,
+            BitRegInfo->BitPosition, BitRegInfo->AccessBitMask);
+
+        /* No need to write the register if value is all zeros */
+
+        if (RegisterValue)
+        {
+            Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1_STATUS,
+                        RegisterValue);
+        }
+    }
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_IO,
+        "BitReg %X, ParentReg %X, Value %8.8X, Actual %8.8X\n",
+        RegisterId, BitRegInfo->ParentRegister, Value, RegisterValue));
 
 
 UnlockAndExit:
 
     AcpiOsReleaseLock (AcpiGbl_HardwareLock, LockFlags);
-
-    /* Normalize the value that was read */
-
-    ACPI_DEBUG_EXEC (RegisterValue =
-        ((RegisterValue & BitRegInfo->AccessBitMask) >>
-            BitRegInfo->BitPosition));
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Set bits: %8.8X actual %8.8X register %X\n",
-        Value, RegisterValue, BitRegInfo->ParentRegister));
     return_ACPI_STATUS (Status);
 }
 
@@ -603,7 +559,8 @@ AcpiGetSleepTypeData (
     /* Validate parameters */
 
     if ((SleepState > ACPI_S_STATES_MAX) ||
-        !SleepTypeA || !SleepTypeB)
+        !SleepTypeA ||
+        !SleepTypeB)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
