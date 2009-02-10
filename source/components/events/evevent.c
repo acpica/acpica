@@ -306,7 +306,7 @@ AcpiEvFixedEventInitialize (
 
         if (AcpiGbl_FixedEventInfo[i].EnableRegisterId != 0xFF)
         {
-            Status = AcpiSetRegister (
+            Status = AcpiWriteBitRegister (
                         AcpiGbl_FixedEventInfo[i].EnableRegisterId, 0);
             if (ACPI_FAILURE (Status))
             {
@@ -399,7 +399,8 @@ AcpiEvFixedEventDispatch (
 
     /* Clear the status bit */
 
-    (void) AcpiSetRegister (AcpiGbl_FixedEventInfo[Event].StatusRegisterId, 1);
+    (void) AcpiWriteBitRegister (
+            AcpiGbl_FixedEventInfo[Event].StatusRegisterId, 1);
 
     /*
      * Make sure we've got a handler. If not, report an error. The event is
@@ -407,7 +408,8 @@ AcpiEvFixedEventDispatch (
      */
     if (NULL == AcpiGbl_FixedEventHandlers[Event].Handler)
     {
-        (void) AcpiSetRegister (AcpiGbl_FixedEventInfo[Event].EnableRegisterId, 0);
+        (void) AcpiWriteBitRegister (
+                AcpiGbl_FixedEventInfo[Event].EnableRegisterId, 0);
 
         ACPI_ERROR ((AE_INFO,
             "No installed handler for fixed event [%08X]",
@@ -419,7 +421,7 @@ AcpiEvFixedEventDispatch (
     /* Invoke the Fixed Event handler */
 
     return ((AcpiGbl_FixedEventHandlers[Event].Handler)(
-                                AcpiGbl_FixedEventHandlers[Event].Context));
+                AcpiGbl_FixedEventHandlers[Event].Context));
 }
 
 

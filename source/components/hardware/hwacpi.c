@@ -260,7 +260,7 @@ AcpiHwGetMode (
         return_UINT32 (ACPI_SYS_MODE_ACPI);
     }
 
-    Status = AcpiGetRegister (ACPI_BITREG_SCI_ENABLE, &Value);
+    Status = AcpiReadBitRegister (ACPI_BITREG_SCI_ENABLE, &Value);
     if (ACPI_FAILURE (Status))
     {
         return_UINT32 (ACPI_SYS_MODE_LEGACY);

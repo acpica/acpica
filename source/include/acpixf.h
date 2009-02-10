@@ -564,16 +564,6 @@ AcpiReset (
     void);
 
 ACPI_STATUS
-AcpiGetRegister (
-    UINT32                  RegisterId,
-    UINT32                  *ReturnValue);
-
-ACPI_STATUS
-AcpiSetRegister (
-    UINT32                  RegisterId,
-    UINT32                  Value);
-
-ACPI_STATUS
 AcpiRead (
     UINT32                  *Value,
     ACPI_GENERIC_ADDRESS    *Reg);
@@ -582,6 +572,16 @@ ACPI_STATUS
 AcpiWrite (
     UINT32                  Value,
     ACPI_GENERIC_ADDRESS    *Reg);
+
+ACPI_STATUS
+AcpiReadBitRegister (
+    UINT32                  RegisterId,
+    UINT32                  *ReturnValue);
+
+ACPI_STATUS
+AcpiWriteBitRegister (
+    UINT32                  RegisterId,
+    UINT32                  Value);
 
 ACPI_STATUS
 AcpiGetSleepTypeData (

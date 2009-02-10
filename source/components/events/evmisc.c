@@ -639,7 +639,7 @@ AcpiEvReleaseGlobalLock (
          */
         if (Pending)
         {
-            Status = AcpiSetRegister (
+            Status = AcpiWriteBitRegister (
                         ACPI_BITREG_GLOBAL_LOCK_RELEASE, 1);
         }
 

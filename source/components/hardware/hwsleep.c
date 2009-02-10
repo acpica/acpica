@@ -329,7 +329,7 @@ AcpiEnterSleepState (
 
     /* Clear wake status */
 
-    Status = AcpiSetRegister (ACPI_BITREG_WAKE_STATUS, 1);
+    Status = AcpiWriteBitRegister (ACPI_BITREG_WAKE_STATUS, 1);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -347,7 +347,7 @@ AcpiEnterSleepState (
     {
         /* Disable BM arbitration */
 
-        Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 1);
+        Status = AcpiWriteBitRegister (ACPI_BITREG_ARB_DISABLE, 1);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -463,7 +463,7 @@ AcpiEnterSleepState (
 
     do
     {
-        Status = AcpiGetRegister (ACPI_BITREG_WAKE_STATUS, &InValue);
+        Status = AcpiReadBitRegister (ACPI_BITREG_WAKE_STATUS, &InValue);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -503,7 +503,7 @@ AcpiEnterSleepStateS4bios (
     ACPI_FUNCTION_TRACE (AcpiEnterSleepStateS4bios);
 
 
-    Status = AcpiSetRegister (ACPI_BITREG_WAKE_STATUS, 1);
+    Status = AcpiWriteBitRegister (ACPI_BITREG_WAKE_STATUS, 1);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -539,7 +539,7 @@ AcpiEnterSleepStateS4bios (
 
     do {
         AcpiOsStall(1000);
-        Status = AcpiGetRegister (ACPI_BITREG_WAKE_STATUS, &InValue);
+        Status = AcpiReadBitRegister (ACPI_BITREG_WAKE_STATUS, &InValue);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -669,15 +669,15 @@ AcpiLeaveSleepState (
 
     /* Enable power button */
 
-    (void) AcpiSetRegister(
+    (void) AcpiWriteBitRegister(
             AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].EnableRegisterId, 1);
 
-    (void) AcpiSetRegister(
+    (void) AcpiWriteBitRegister(
             AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].StatusRegisterId, 1);
 
     /* Enable BM arbitration */
 
-    Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 0);
+    Status = AcpiWriteBitRegister (ACPI_BITREG_ARB_DISABLE, 0);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);

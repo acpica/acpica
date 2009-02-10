@@ -347,7 +347,7 @@ ACPI_EXPORT_SYMBOL (AcpiWrite)
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiGetRegister
+ * FUNCTION:    AcpiReadBitRegister
  *
  * PARAMETERS:  RegisterId      - ID of ACPI Bit Register to access
  *              ReturnValue     - Value that was read from the register,
@@ -371,7 +371,7 @@ ACPI_EXPORT_SYMBOL (AcpiWrite)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetRegister (
+AcpiReadBitRegister (
     UINT32                  RegisterId,
     UINT32                  *ReturnValue)
 {
@@ -380,7 +380,7 @@ AcpiGetRegister (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE (AcpiGetRegister);
+    ACPI_FUNCTION_TRACE (AcpiReadBitRegister);
 
 
     /* Get the info structure corresponding to the requested ACPI Register */
@@ -412,12 +412,12 @@ AcpiGetRegister (
     return_ACPI_STATUS (Status);
 }
 
-ACPI_EXPORT_SYMBOL (AcpiGetRegister)
+ACPI_EXPORT_SYMBOL (AcpiReadBitRegister)
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiSetRegister
+ * FUNCTION:    AcpiWriteBitRegister
  *
  * PARAMETERS:  RegisterId      - ID of ACPI Bit Register to access
  *              Value           - Value to write to the register, in bit
@@ -435,7 +435,7 @@ ACPI_EXPORT_SYMBOL (AcpiGetRegister)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiSetRegister (
+AcpiWriteBitRegister (
     UINT32                  RegisterId,
     UINT32                  Value)
 {
@@ -445,7 +445,7 @@ AcpiSetRegister (
     ACPI_CPU_FLAGS          LockFlags;
 
 
-    ACPI_FUNCTION_TRACE_U32 (AcpiSetRegister, RegisterId);
+    ACPI_FUNCTION_TRACE_U32 (AcpiWriteBitRegister, RegisterId);
 
 
     /* Get the info structure corresponding to the requested ACPI Register */
@@ -569,7 +569,7 @@ UnlockAndExit:
     return_ACPI_STATUS (Status);
 }
 
-ACPI_EXPORT_SYMBOL (AcpiSetRegister)
+ACPI_EXPORT_SYMBOL (AcpiWriteBitRegister)
 
 
 /*******************************************************************************

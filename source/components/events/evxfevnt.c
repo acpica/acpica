@@ -275,7 +275,8 @@ AcpiEnableEvent (
      * Enable the requested fixed event (by writing a one to the enable
      * register bit)
      */
-    Status = AcpiSetRegister (AcpiGbl_FixedEventInfo[Event].EnableRegisterId, 1);
+    Status = AcpiWriteBitRegister (
+                AcpiGbl_FixedEventInfo[Event].EnableRegisterId, 1);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -283,8 +284,8 @@ AcpiEnableEvent (
 
     /* Make sure that the hardware responded */
 
-    Status = AcpiGetRegister (AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
-                    &Value);
+    Status = AcpiReadBitRegister (
+                AcpiGbl_FixedEventInfo[Event].EnableRegisterId, &Value);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -515,14 +516,15 @@ AcpiDisableEvent (
      * Disable the requested fixed event (by writing a zero to the enable
      * register bit)
      */
-    Status = AcpiSetRegister (AcpiGbl_FixedEventInfo[Event].EnableRegisterId, 0);
+    Status = AcpiWriteBitRegister (
+                AcpiGbl_FixedEventInfo[Event].EnableRegisterId, 0);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    Status = AcpiGetRegister (AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
-                &Value);
+    Status = AcpiReadBitRegister (
+                AcpiGbl_FixedEventInfo[Event].EnableRegisterId, &Value);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -574,7 +576,8 @@ AcpiClearEvent (
      * Clear the requested fixed event (By writing a one to the status
      * register bit)
      */
-    Status = AcpiSetRegister (AcpiGbl_FixedEventInfo[Event].StatusRegisterId, 1);
+    Status = AcpiWriteBitRegister (
+                AcpiGbl_FixedEventInfo[Event].StatusRegisterId, 1);
 
     return_ACPI_STATUS (Status);
 }
@@ -681,8 +684,8 @@ AcpiGetEventStatus (
 
     /* Get the status of the requested fixed event */
 
-    Status = AcpiGetRegister (AcpiGbl_FixedEventInfo[Event].StatusRegisterId,
-                    EventStatus);
+    Status = AcpiReadBitRegister (
+                AcpiGbl_FixedEventInfo[Event].StatusRegisterId, EventStatus);
 
     return_ACPI_STATUS (Status);
 }
