@@ -182,6 +182,7 @@ typedef const struct acpi_dmtable_info
 #define ACPI_DMT_SRAT                   29
 #define ACPI_DMT_EXIT                   30
 #define ACPI_DMT_SIG                    31
+#define ACPI_DMT_FADTPM                 32
 
 typedef
 void (*ACPI_DMTABLE_HANDLER) (

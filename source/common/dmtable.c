@@ -205,6 +205,22 @@ static const char           *AcpiDmSratSubnames[] =
 };
 
 
+#define ACPI_FADT_PM_RESERVED       8
+
+static const char           *AcpiDmFadtProfiles[] =
+{
+    "Unspecified",
+    "Desktop",
+    "Mobile",
+    "Workstation",
+    "Enterprise Server",
+    "SOHO Server",
+    "Appliance PC",
+    "Performance Server",
+    "Unknown Profile Type"
+};
+
+
 /*******************************************************************************
  *
  * ACPI Table Data, indexed by signature.
@@ -531,6 +547,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_SRAT:
         case ACPI_DMT_ASF:
         case ACPI_DMT_HESTNTYP:
+        case ACPI_DMT_FADTPM:
             ByteLength = 1;
             break;
         case ACPI_DMT_UINT16:
@@ -813,6 +830,19 @@ AcpiDmDumpTable (
             }
 
             AcpiOsPrintf ("%2.2X <%s>\n", *Target, AcpiDmSratSubnames[Temp8]);
+            break;
+
+        case ACPI_DMT_FADTPM:
+
+            /* FADT Preferred PM Profile names */
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_FADT_PM_RESERVED)
+            {
+                Temp8 = ACPI_FADT_PM_RESERVED;
+            }
+
+            AcpiOsPrintf ("%2.2X (%s)\n", *Target, AcpiDmFadtProfiles[Temp8]);
             break;
 
         case ACPI_DMT_EXIT:
