@@ -120,6 +120,7 @@
 #include "accommon.h"
 #include "acnamesp.h"
 #include "actables.h"
+#include "acinterp.h"
 
 
 #define _COMPONENT          ACPI_TABLES
@@ -552,32 +553,61 @@ AcpiTbTerminate (
  *
  * PARAMETERS:  TableIndex          - Table index
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Delete all namespace objects created when this table was loaded.
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 AcpiTbDeleteNamespaceByOwner (
     UINT32                  TableIndex)
 {
     ACPI_OWNER_ID           OwnerId;
+    ACPI_STATUS             Status;
 
 
-    (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
-    if (TableIndex < AcpiGbl_RootTableList.Count)
+    ACPI_FUNCTION_TRACE (TbDeleteNamespaceByOwner);
+
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_TABLES);
+    if (ACPI_FAILURE (Status))
     {
-        OwnerId = AcpiGbl_RootTableList.Tables[TableIndex].OwnerId;
+        return_ACPI_STATUS (Status);
     }
-    else
+
+    if (TableIndex >= AcpiGbl_RootTableList.Count)
     {
+        /* The table index does not exist */
+
         (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
-        return;
+        return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
+    /* Get the owner ID for this table, used to delete namespace nodes */
+
+    OwnerId = AcpiGbl_RootTableList.Tables[TableIndex].OwnerId;
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
+
+    /*
+     * Need to acquire the namespace deletion lock to prevent interference
+     * with any concurrent namespace walks. The interpreter must be
+     * released since the acquisition of the deletion lock may block, and
+     * also since the execution of a namespace walk must be allowed to use
+     * the interpreter.
+     */
+    AcpiUtReleaseMutex (ACPI_MTX_INTERPRETER);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE_DELETE);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     AcpiNsDeleteNamespaceByOwner (OwnerId);
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE_DELETE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_INTERPRETER);
+    return_ACPI_STATUS (Status);
 }
 
 

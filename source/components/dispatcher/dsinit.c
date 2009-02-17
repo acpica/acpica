@@ -272,12 +272,19 @@ AcpiDsInitializeObjects (
 
     /* Walk entire namespace from the supplied root */
 
-    Status = AcpiWalkNamespace (ACPI_TYPE_ANY, StartNode, ACPI_UINT32_MAX,
-                    AcpiDsInitOneObject, &Info, NULL);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, StartNode, ACPI_UINT32_MAX,
+                ACPI_NS_WALK_UNLOCK, AcpiDsInitOneObject, &Info, NULL);
     if (ACPI_FAILURE (Status))
     {
         ACPI_EXCEPTION ((AE_INFO, Status, "During WalkNamespace"));
     }
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
     Status = AcpiGetTableByIndex (TableIndex, &Table);
     if (ACPI_FAILURE (Status))
