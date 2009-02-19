@@ -153,17 +153,16 @@ union acpi_parse_object;
  * NOTE: any changes here must be reflected in the AcpiGbl_MutexNames
  * table below also!
  */
-#define ACPI_MTX_NAMESPACE_DELETE       0   /* Namespace object deletion */
-#define ACPI_MTX_INTERPRETER            1   /* AML Interpreter, main lock */
-#define ACPI_MTX_NAMESPACE              2   /* Namespace */
-#define ACPI_MTX_TABLES                 3   /* Data for ACPI tables */
-#define ACPI_MTX_EVENTS                 4   /* Data for ACPI events */
-#define ACPI_MTX_CACHES                 5   /* Internal caches, general purposes */
-#define ACPI_MTX_MEMORY                 6   /* Debug memory tracking lists */
-#define ACPI_MTX_DEBUG_CMD_COMPLETE     7   /* AML debugger */
-#define ACPI_MTX_DEBUG_CMD_READY        8   /* AML debugger */
+#define ACPI_MTX_INTERPRETER            0   /* AML Interpreter, main lock */
+#define ACPI_MTX_NAMESPACE              1   /* ACPI Namespace */
+#define ACPI_MTX_TABLES                 2   /* Data for ACPI tables */
+#define ACPI_MTX_EVENTS                 3   /* Data for ACPI events */
+#define ACPI_MTX_CACHES                 4   /* Internal caches, general purposes */
+#define ACPI_MTX_MEMORY                 5   /* Debug memory tracking lists */
+#define ACPI_MTX_DEBUG_CMD_COMPLETE     6   /* AML debugger */
+#define ACPI_MTX_DEBUG_CMD_READY        7   /* AML debugger */
 
-#define ACPI_MAX_MUTEX                  8
+#define ACPI_MAX_MUTEX                  7
 #define ACPI_NUM_MUTEX                  ACPI_MAX_MUTEX+1
 
 #if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
@@ -173,7 +172,6 @@ union acpi_parse_object;
 
 static char                 *AcpiGbl_MutexNames[ACPI_NUM_MUTEX] =
 {
-    "ACPI_MTX_NamespaceDelete",
     "ACPI_MTX_Interpreter",
     "ACPI_MTX_Namespace",
     "ACPI_MTX_Tables",

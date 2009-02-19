@@ -641,15 +641,13 @@ AcpiExUnloadTable (
         }
     }
 
-    /* Delete the portion of the namespace owned by this table */
-
-    Status = AcpiTbDeleteNamespaceByOwner (TableIndex);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
+    /*
+     * Delete the entire namespace under this table Node
+     * (Offset contains the TableId)
+     */
+    AcpiTbDeleteNamespaceByOwner (TableIndex);
     (void) AcpiTbReleaseOwnerId (TableIndex);
+
     AcpiTbSetTableLoadedFlag (TableIndex, FALSE);
 
     /* Table unloaded, remove a reference to the DdbHandle object */

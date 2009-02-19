@@ -177,7 +177,7 @@ void
 AcpiTbTerminate (
     void);
 
-ACPI_STATUS
+void
 AcpiTbDeleteNamespaceByOwner (
     UINT32                  TableIndex);
 

@@ -592,45 +592,22 @@ AcpiWalkNamespace (
     }
 
     /*
-     * Need to acquire the namespace deletion lock to prevent interference
-     * with any concurrent table unloads (which causes the deletion of
-     * namespace objects). We cannot allow the deletion of a namespace node
-     * while the user function is using it. The exception to this are the
-     * nodes created and deleted during control method execution -- these
-     * nodes are marked as temporary nodes and are ignored by the namespace
-     * walk. Thus, control methods can be executed while holding the
-     * namespace deletion lock (and the user function can execute control
-     * methods.)
-     *
-     * The use of this lock means that AcpiWalkNamespace is serialized. This
-     * is not seen as a problem since it is used mostly during system
-     * initialization (usually single-threaded), and only infrequently
-     * during system runtime.
-     */
-    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE_DELETE);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
-    /*
-     * Lock the namespace around the walk. The namespace will be
-     * unlocked/locked around each call to the user function - since this
-     * function must be allowed to use the interpreter itself.
+     * Lock the namespace around the walk.
+     * The namespace will be unlocked/locked around each call
+     * to the user function - since this function
+     * must be allowed to make Acpi calls itself.
      */
     Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
     if (ACPI_FAILURE (Status))
     {
-        goto UnlockAndExit;
+        return_ACPI_STATUS (Status);
     }
 
     Status = AcpiNsWalkNamespace (Type, StartObject, MaxDepth,
-                ACPI_NS_WALK_UNLOCK, UserFunction, Context, ReturnValue);
+                    ACPI_NS_WALK_UNLOCK,
+                    UserFunction, Context, ReturnValue);
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-
-UnlockAndExit:
-    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE_DELETE);
     return_ACPI_STATUS (Status);
 }
 
