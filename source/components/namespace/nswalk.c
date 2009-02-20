@@ -220,8 +220,8 @@ AcpiNsGetNextNode (
  *              starting (and ending) at the node specified by StartHandle.
  *              The UserFunction is called whenever a node that matches
  *              the type parameter is found.  If the user function returns
- *              a non-zero value, the search is terminated immediately and this
- *              value is returned to the caller.
+ *              a non-zero value, the search is terminated immediately and
+ *              this value is returned to the caller.
  *
  *              The point of this procedure is to provide a generic namespace
  *              walk routine that can be called from multiple places to
@@ -289,10 +289,10 @@ AcpiNsWalkNamespace (
             /*
              * Ignore all temporary namespace nodes (created during control
              * method execution) unless told otherwise. These temporary nodes
-             * can cause a race condition because they can be deleted during the
-             * execution of the user function (if the namespace is unlocked before
-             * invocation of the user function.) Only the debugger namespace dump
-             * will examine the temporary nodes.
+             * can cause a race condition because they can be deleted during
+             * the execution of the user function (if the namespace is
+             * unlocked before invocation of the user function.) Only the
+             * debugger namespace dump will examine the temporary nodes.
              */
             if ((ChildNode->Flags & ANOBJ_TEMPORARY) &&
                 !(Flags & ACPI_NS_WALK_TEMP_NODES))

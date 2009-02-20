@@ -448,9 +448,8 @@ AcpiNsGetInternalNameLength (
     }
     else
     {
-        /*
-         * Handle Carat prefixes
-         */
+        /* Handle Carat prefixes */
+
         while (*NextExternalChar == '^')
         {
             Info->NumCarats++;
@@ -723,9 +722,8 @@ AcpiNsExternalizeName (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /*
-     * Check for a prefix (one '\' | one or more '^').
-     */
+    /* Check for a prefix (one '\' | one or more '^') */
+
     switch (InternalName[0])
     {
     case '\\':
@@ -757,7 +755,7 @@ AcpiNsExternalizeName (
     }
 
     /*
-     * Check for object names.  Note that there could be 0-255 of these
+     * Check for object names. Note that there could be 0-255 of these
      * 4-byte elements.
      */
     if (PrefixLength < InternalNameLength)
@@ -817,9 +815,8 @@ AcpiNsExternalizeName (
         return_ACPI_STATUS (AE_BAD_PATHNAME);
     }
 
-    /*
-     * Build ConvertedName
-     */
+    /* Build the ConvertedName */
+
     *ConvertedName = ACPI_ALLOCATE_ZEROED (RequiredLength);
     if (!(*ConvertedName))
     {
@@ -872,6 +869,9 @@ AcpiNsExternalizeName (
  *       and keep all pointers within this subsystem - however this introduces
  *       more (and perhaps unnecessary) overhead.
  *
+ * The current implemenation is basically a placeholder until such time comes
+ * that it is needed.
+ *
  ******************************************************************************/
 
 ACPI_NAMESPACE_NODE *
@@ -882,9 +882,8 @@ AcpiNsMapHandleToNode (
     ACPI_FUNCTION_ENTRY ();
 
 
-    /*
-     * Simple implementation
-     */
+    /* Parameter validation */
+
     if ((!Handle) || (Handle == ACPI_ROOT_OBJECT))
     {
         return (AcpiGbl_RootNode);

@@ -246,7 +246,8 @@ AcpiNsSearchOneScope (
     /* Searched entire namespace level, not found */
 
     ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
-        "Name [%4.4s] (%s) not found in search in scope [%4.4s] %p first child %p\n",
+        "Name [%4.4s] (%s) not found in search in scope [%4.4s] "
+        "%p first child %p\n",
         ACPI_CAST_PTR (char, &TargetName), AcpiUtGetTypeName (Type),
         AcpiUtGetNodeName (ParentNode), ParentNode, ParentNode->Child));
 
@@ -320,9 +321,8 @@ AcpiNsSearchParentTree (
         "Searching parent [%4.4s] for [%4.4s]\n",
         AcpiUtGetNodeName (ParentNode), ACPI_CAST_PTR (char, &TargetName)));
 
-    /*
-     * Search parents until target is found or we have backed up to the root
-     */
+    /* Search parents until target is found or we have backed up to the root */
+
     while (ParentNode)
     {
         /*
@@ -481,9 +481,9 @@ AcpiNsSearchAndEnter (
     }
 
 #ifdef ACPI_ASL_COMPILER
-    /*
-     * Node is an object defined by an External() statement
-     */
+
+    /* Node is an object defined by an External() statement */
+
     if (Flags & ACPI_NS_EXTERNAL ||
         (WalkState && WalkState->Opcode == AML_SCOPE_OP))
     {

@@ -202,9 +202,8 @@ AcpiNsRootInitialize (
         }
 
         /*
-         * Name entered successfully.
-         * If entry in PreDefinedNames[] specifies an
-         * initial value, create the initial value.
+         * Name entered successfully. If entry in PreDefinedNames[] specifies
+         * an initial value, create the initial value.
          */
         if (InitVal->Val)
         {
@@ -264,9 +263,8 @@ AcpiNsRootInitialize (
 
             case ACPI_TYPE_STRING:
 
-                /*
-                 * Build an object around the static string
-                 */
+                /* Build an object around the static string */
+
                 ObjDesc->String.Length = (UINT32) ACPI_STRLEN (Val);
                 ObjDesc->String.Pointer = Val;
                 ObjDesc->Common.Flags |= AOPOBJ_STATIC_POINTER;
@@ -406,10 +404,8 @@ AcpiNsLookup (
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
 
-    /*
-     * Get the prefix scope.
-     * A null scope means use the root scope
-     */
+    /* Get the prefix scope. A null scope means use the root scope */
+
     if ((!ScopeInfo) ||
         (!ScopeInfo->Scope.Node))
     {
@@ -433,8 +429,8 @@ AcpiNsLookup (
         {
             /*
              * This node might not be a actual "scope" node (such as a
-             * Device/Method, etc.)  It could be a Package or other object node.
-             * Backup up the tree to find the containing scope node.
+             * Device/Method, etc.)  It could be a Package or other object
+             * node. Backup up the tree to find the containing scope node.
              */
             while (!AcpiNsOpensScope (PrefixNode->Type) &&
                     PrefixNode->Type != ACPI_TYPE_ANY)
@@ -444,7 +440,7 @@ AcpiNsLookup (
         }
     }
 
-    /* Save type   TBD: may be no longer necessary */
+    /* Save type. TBD: may be no longer necessary */
 
     TypeToCheckFor = Type;
 
@@ -510,6 +506,7 @@ AcpiNsLookup (
                 /* Name is fully qualified, no search rules apply */
 
                 SearchParentFlag = ACPI_NS_NO_UPSEARCH;
+
                 /*
                  * Point past this prefix to the name segment
                  * part or the next Parent Prefix
@@ -525,7 +522,8 @@ AcpiNsLookup (
                     /* Current scope has no parent scope */
 
                     ACPI_ERROR ((AE_INFO,
-                        "ACPI path has too many parent prefixes (^) - reached beyond root node"));
+                        "ACPI path has too many parent prefixes (^) "
+                        "- reached beyond root node"));
                     return_ACPI_STATUS (AE_NOT_FOUND);
                 }
             }
@@ -629,9 +627,8 @@ AcpiNsLookup (
         NumSegments--;
         if (!NumSegments)
         {
-            /*
-             * This is the last segment, enable typechecking
-             */
+            /* This is the last segment, enable typechecking */
+
             ThisSearchType = Type;
 
             /*
@@ -682,9 +679,9 @@ AcpiNsLookup (
         {
             /*
              * If we have an alias to an object that opens a scope (such as a
-             * device or processor), we need to dereference the alias here so that
-             * we can access any children of the original node (via the remaining
-             * segments).
+             * device or processor), we need to dereference the alias here so
+             * that we can access any children of the original node (via the
+             * remaining segments).
              */
             if (ThisNode->Type == ACPI_TYPE_LOCAL_ALIAS)
             {
@@ -693,7 +690,8 @@ AcpiNsLookup (
                     return_ACPI_STATUS (AE_NOT_EXIST);
                 }
 
-                if (AcpiNsOpensScope (((ACPI_NAMESPACE_NODE *) ThisNode->Object)->Type))
+                if (AcpiNsOpensScope (((ACPI_NAMESPACE_NODE *)
+                        ThisNode->Object)->Type))
                 {
                     ThisNode = (ACPI_NAMESPACE_NODE *) ThisNode->Object;
                 }
@@ -735,8 +733,8 @@ AcpiNsLookup (
 
             /*
              * If this is the last name segment and we are not looking for a
-             * specific type, but the type of found object is known, use that type
-             * to (later) see if it opens a scope.
+             * specific type, but the type of found object is known, use that
+             * type to (later) see if it opens a scope.
              */
             if (Type == ACPI_TYPE_ANY)
             {
@@ -750,9 +748,8 @@ AcpiNsLookup (
         CurrentNode = ThisNode;
     }
 
-    /*
-     * Always check if we need to open a new scope
-     */
+    /* Always check if we need to open a new scope */
+
     if (!(Flags & ACPI_NS_DONT_OPEN_SCOPE) && (WalkState))
     {
         /*

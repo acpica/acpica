@@ -303,7 +303,7 @@ AcpiNsGetPathnameLength (
 
     if (!Size)
     {
-        Size = 1;       /* Root node case */
+        Size = 1; /* Root node case */
     }
 
     return (Size + 1);  /* +1 for null string terminator */

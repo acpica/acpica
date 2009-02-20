@@ -406,7 +406,8 @@ AcpiNsCheckParameterCount (
             (UserParamCount != RequiredParamsOld))
         {
             ACPI_WARNING ((AE_INFO,
-                "%s: Parameter count mismatch - caller passed %d, ACPI requires %d",
+                "%s: Parameter count mismatch - "
+                "caller passed %d, ACPI requires %d",
                 Pathname, UserParamCount, RequiredParamsCurrent));
         }
     }
@@ -715,7 +716,8 @@ AcpiNsCheckPackage (
 
                 /* Each subpackage has a fixed number of elements */
 
-                ExpectedCount = Package->RetInfo.Count1 + Package->RetInfo.Count2;
+                ExpectedCount =
+                    Package->RetInfo.Count1 + Package->RetInfo.Count2;
                 if (SubPackage->Package.Count != ExpectedCount)
                 {
                     Count = SubPackage->Package.Count;
@@ -723,8 +725,10 @@ AcpiNsCheckPackage (
                 }
 
                 Status = AcpiNsCheckPackageElements (Pathname, SubElements,
-                            Package->RetInfo.ObjectType1, Package->RetInfo.Count1,
-                            Package->RetInfo.ObjectType2, Package->RetInfo.Count2);
+                            Package->RetInfo.ObjectType1,
+                            Package->RetInfo.Count1,
+                            Package->RetInfo.ObjectType2,
+                            Package->RetInfo.Count2);
                 if (ACPI_FAILURE (Status))
                 {
                     return (Status);
@@ -769,8 +773,8 @@ AcpiNsCheckPackage (
                 /* Check the type of each sub-package element */
 
                 Status = AcpiNsCheckPackageElements (Pathname, SubElements,
-                            Package->RetInfo.ObjectType1, SubPackage->Package.Count,
-                            0, 0);
+                            Package->RetInfo.ObjectType1,
+                            SubPackage->Package.Count, 0, 0);
                 if (ACPI_FAILURE (Status))
                 {
                     return (Status);
@@ -799,9 +803,10 @@ AcpiNsCheckPackage (
 
                 /* Check the type of each sub-package element */
 
-                Status = AcpiNsCheckPackageElements (Pathname, (SubElements + 1),
-                            Package->RetInfo.ObjectType1, (ExpectedCount - 1),
-                            0, 0);
+                Status = AcpiNsCheckPackageElements (Pathname,
+                            (SubElements + 1),
+                            Package->RetInfo.ObjectType1,
+                            (ExpectedCount - 1), 0, 0);
                 if (ACPI_FAILURE (Status))
                 {
                     return (Status);
@@ -1091,7 +1096,8 @@ AcpiNsCheckReference (
     }
 
     ACPI_WARNING ((AE_INFO,
-        "%s: Return type mismatch - unexpected reference object type [%s] %2.2X",
+        "%s: Return type mismatch - "
+        "unexpected reference object type [%s] %2.2X",
         Pathname, AcpiUtGetReferenceName (ReturnObject),
         ReturnObject->Reference.Class));
 
