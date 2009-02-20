@@ -640,7 +640,7 @@ AcpiEvReleaseGlobalLock (
         if (Pending)
         {
             Status = AcpiWriteBitRegister (
-                        ACPI_BITREG_GLOBAL_LOCK_RELEASE, 1);
+                        ACPI_BITREG_GLOBAL_LOCK_RELEASE, ACPI_ENABLE_EVENT);
         }
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Released hardware Global Lock\n"));

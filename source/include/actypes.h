@@ -875,6 +875,16 @@ typedef UINT8                           ACPI_ADR_SPACE_TYPE;
 #define ACPI_NUM_BITREG                         ACPI_BITREG_MAX + 1
 
 
+/* Status register values. A 1 clears a status bit. 0 = no effect */
+
+#define ACPI_CLEAR_STATUS                       1
+
+/* Enable and Control register values */
+
+#define ACPI_ENABLE_EVENT                       1
+#define ACPI_DISABLE_EVENT                      0
+
+
 /*
  * External ACPI object definition
  */

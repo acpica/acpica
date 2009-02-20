@@ -281,7 +281,7 @@ AcpiEvInstallXruptHandlers (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Install the fixed event handlers and enable the fixed events.
+ * DESCRIPTION: Install the fixed event handlers and disable all fixed events.
  *
  ******************************************************************************/
 
@@ -302,12 +302,13 @@ AcpiEvFixedEventInitialize (
         AcpiGbl_FixedEventHandlers[i].Handler = NULL;
         AcpiGbl_FixedEventHandlers[i].Context = NULL;
 
-        /* Enable the fixed event */
+        /* Disable the fixed event */
 
         if (AcpiGbl_FixedEventInfo[i].EnableRegisterId != 0xFF)
         {
             Status = AcpiWriteBitRegister (
-                        AcpiGbl_FixedEventInfo[i].EnableRegisterId, 0);
+                        AcpiGbl_FixedEventInfo[i].EnableRegisterId,
+                        ACPI_DISABLE_EVENT);
             if (ACPI_FAILURE (Status))
             {
                 return (Status);
@@ -400,7 +401,8 @@ AcpiEvFixedEventDispatch (
     /* Clear the status bit */
 
     (void) AcpiWriteBitRegister (
-            AcpiGbl_FixedEventInfo[Event].StatusRegisterId, 1);
+            AcpiGbl_FixedEventInfo[Event].StatusRegisterId,
+            ACPI_CLEAR_STATUS);
 
     /*
      * Make sure we've got a handler. If not, report an error. The event is
@@ -409,7 +411,8 @@ AcpiEvFixedEventDispatch (
     if (NULL == AcpiGbl_FixedEventHandlers[Event].Handler)
     {
         (void) AcpiWriteBitRegister (
-                AcpiGbl_FixedEventInfo[Event].EnableRegisterId, 0);
+                AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
+                ACPI_DISABLE_EVENT);
 
         ACPI_ERROR ((AE_INFO,
             "No installed handler for fixed event [%08X]",

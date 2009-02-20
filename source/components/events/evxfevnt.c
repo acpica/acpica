@@ -276,7 +276,8 @@ AcpiEnableEvent (
      * register bit)
      */
     Status = AcpiWriteBitRegister (
-                AcpiGbl_FixedEventInfo[Event].EnableRegisterId, 1);
+                AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
+                ACPI_ENABLE_EVENT);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -517,7 +518,8 @@ AcpiDisableEvent (
      * register bit)
      */
     Status = AcpiWriteBitRegister (
-                AcpiGbl_FixedEventInfo[Event].EnableRegisterId, 0);
+                AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
+                ACPI_DISABLE_EVENT);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -577,7 +579,8 @@ AcpiClearEvent (
      * register bit)
      */
     Status = AcpiWriteBitRegister (
-                AcpiGbl_FixedEventInfo[Event].StatusRegisterId, 1);
+                AcpiGbl_FixedEventInfo[Event].StatusRegisterId,
+                ACPI_CLEAR_STATUS);
 
     return_ACPI_STATUS (Status);
 }

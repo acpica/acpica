@@ -329,7 +329,7 @@ AcpiEnterSleepState (
 
     /* Clear wake status */
 
-    Status = AcpiWriteBitRegister (ACPI_BITREG_WAKE_STATUS, 1);
+    Status = AcpiWriteBitRegister (ACPI_BITREG_WAKE_STATUS, ACPI_CLEAR_STATUS);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -503,7 +503,9 @@ AcpiEnterSleepStateS4bios (
     ACPI_FUNCTION_TRACE (AcpiEnterSleepStateS4bios);
 
 
-    Status = AcpiWriteBitRegister (ACPI_BITREG_WAKE_STATUS, 1);
+    /* Clear the wake status bit (PM1) */
+
+    Status = AcpiWriteBitRegister (ACPI_BITREG_WAKE_STATUS, ACPI_CLEAR_STATUS);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -670,10 +672,12 @@ AcpiLeaveSleepState (
     /* Enable power button */
 
     (void) AcpiWriteBitRegister(
-            AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].EnableRegisterId, 1);
+            AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].EnableRegisterId,
+            ACPI_ENABLE_EVENT);
 
     (void) AcpiWriteBitRegister(
-            AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].StatusRegisterId, 1);
+            AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].StatusRegisterId,
+            ACPI_CLEAR_STATUS);
 
     /* Enable BM arbitration */
 
