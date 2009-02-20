@@ -1,4 +1,87 @@
 ----------------------------------------
+20 February 2009. Summary of changes for version 20090220:
+
+This release is available at www.acpica.org/downloads.
+
+1) ACPI CA Core Subsystem:
+
+Optimized the ACPI register locking. Removed locking for reads from the ACPI 
+bit registers in PM1 Status, Enable, Control, and PM2 Control. The lock is 
+not required when reading the single-bit registers. The 
+AcpiGetRegisterUnlocked function is no longer needed and has been removed. 
+This will improve performance for reads on these registers. ACPICA BZ 760.
+
+Fixed the parameter validation for AcpiRead/Write. Now return 
+AE_BAD_PARAMETER if the input register pointer is null, and AE_BAD_ADDRESS if 
+the register has an address of zero. Previously, these cases simply returned 
+AE_OK. For optional registers such as PM1B status/enable/control, the caller 
+should check for a valid register address before calling. ACPICA BZ 748.
+
+Renamed the external ACPI bit register access functions. Renamed 
+AcpiGetRegister and AcpiSetRegister to clarify the purpose of these 
+functions. The new names are AcpiReadBitRegister and AcpiWriteBitRegister. 
+Also, restructured the code for these functions by simplifying the code path 
+and condensing duplicate code to reduce code size.
+
+Added new functions to transparently handle the possibly split PM1 A/B 
+registers. AcpiHwReadMultiple and AcpiHwWriteMultiple. These two functions 
+now handle the split registers for PM1 Status, Enable, and Control. ACPICA BZ 
+746.
+
+Added a function to handle the PM1 control registers, AcpiHwWritePm1Control. 
+This function writes both of the PM1 control registers (A/B). These registers 
+are different than the PM1 A/B status and enable registers in that different 
+values can be written to the A/B registers. Most notably, the SLP_TYP bits 
+can be different, as per the values returned from the _Sx predefined methods.
+
+Removed an extra register write within AcpiHwClearAcpiStatus. This function 
+was writing an optional PM1B status register twice. The existing call to the 
+low-level AcpiHwRegisterWrite automatically handles a possibly split PM1 A/B 
+register. ACPICA BZ 751.
+
+Split out the PM1 Status registers from the FADT. Added new globals for these 
+registers (A/B), similar to the way the PM1 Enable registers are handled. 
+Instead of overloading the FADT Event Register blocks. This makes the code 
+clearer and less prone to error.
+
+Fixed the warning message for when the platform contains too many ACPI tables 
+for the default size of the global root table data structure. The calculation 
+for the truncation value was incorrect.
+
+Removed the ACPI_GET_OBJECT_TYPE macro. Removed all instances of this 
+obsolete macro, since it is now a simple reference to ->common.type. There 
+were about 150 invocations of the macro across 41 files. ACPICA BZ 755.
+
+Removed the redundant ACPI_BITREG_SLEEP_TYPE_B. This type is the same as 
+TYPE_A. Removed this and all related instances. Renamed SLEEP_TYPE_A to 
+simply SLEEP_TYPE. ACPICA BZ 754.
+
+Conditionally compile the AcpiSetFirmwareWakingVector64 function. This 
+function is only needed on 64-bit host operating systems and is thus not 
+included for 32-bit hosts.
+
+Debug output: print the input and result for invocations of the _OSI reserved 
+control method via the ACPI_LV_INFO debug level. Also, reduced some of the 
+verbosity of this debug level. Len Brown.
+
+Example Code and Data Size: These are the sizes for the OS-independent 
+acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
+debug version of the code includes the debug output trace mechanism and has a 
+much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  82.3K Code, 17.5K Data,  99.8K Total
+    Debug Version:     157.3K Code, 49.8K Data, 207.1K Total
+  Current Release:
+    Non-Debug Version:  82.0K Code, 17.5K Data,  99.5K Total
+    Debug Version:     156.9K Code, 49.8K Data, 206.7K Total
+
+2) iASL Compiler/Disassembler and Tools:
+
+Disassembler: Decode the FADT PM_Profile field. Emit ascii names for the 
+various legal performance profiles.
+
+----------------------------------------
 23 January 2009. Summary of changes for version 20090123:
 
 1) ACPI CA Core Subsystem:
