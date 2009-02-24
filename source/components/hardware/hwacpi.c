@@ -167,7 +167,8 @@ AcpiHwSetMode (
     if (!AcpiGbl_FADT.AcpiEnable && !AcpiGbl_FADT.AcpiDisable)
     {
         ACPI_ERROR ((AE_INFO,
-            "No ACPI mode transition supported in this system (enable/disable both zero)"));
+            "No ACPI mode transition supported in this system "
+            "(enable/disable both zero)"));
         return_ACPI_STATUS (AE_OK);
     }
 

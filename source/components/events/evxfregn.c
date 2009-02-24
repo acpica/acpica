@@ -285,7 +285,8 @@ AcpiRemoveAddressSpaceHandler (
             /* Matched SpaceId, first dereference this in the Regions */
 
             ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
-                "Removing address handler %p(%p) for region %s on Device %p(%p)\n",
+                "Removing address handler %p(%p) for region %s "
+                "on Device %p(%p)\n",
                 HandlerObj, Handler, AcpiUtGetRegionName (SpaceId),
                 Node, ObjDesc));
 

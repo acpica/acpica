@@ -445,8 +445,8 @@ AcpiEnterSleepState (
          * Wait ten seconds, then try again. This is to get S4/S5 to work on
          * all machines.
          *
-         * We wait so long to allow chipsets that poll this reg very slowly to
-         * still read the right value. Ideally, this block would go
+         * We wait so long to allow chipsets that poll this reg very slowly
+         * to still read the right value. Ideally, this block would go
          * away entirely.
          */
         AcpiOsStall (10000000);
@@ -592,8 +592,10 @@ AcpiLeaveSleepState (
                     &AcpiGbl_SleepTypeA, &AcpiGbl_SleepTypeB);
     if (ACPI_SUCCESS (Status))
     {
-        SleepTypeRegInfo   = AcpiHwGetBitRegisterInfo (ACPI_BITREG_SLEEP_TYPE);
-        SleepEnableRegInfo = AcpiHwGetBitRegisterInfo (ACPI_BITREG_SLEEP_ENABLE);
+        SleepTypeRegInfo =
+            AcpiHwGetBitRegisterInfo (ACPI_BITREG_SLEEP_TYPE);
+        SleepEnableRegInfo =
+            AcpiHwGetBitRegisterInfo (ACPI_BITREG_SLEEP_ENABLE);
 
         /* Get current value of PM1A control */
 
@@ -604,13 +606,15 @@ AcpiLeaveSleepState (
             /* Clear the SLP_EN and SLP_TYP fields */
 
             Pm1aControl &= ~(SleepTypeRegInfo->AccessBitMask |
-                             SleepEnableRegInfo->AccessBitMask);
+                SleepEnableRegInfo->AccessBitMask);
             Pm1bControl = Pm1aControl;
 
             /* Insert the SLP_TYP bits */
 
-            Pm1aControl |= (AcpiGbl_SleepTypeA << SleepTypeRegInfo->BitPosition);
-            Pm1bControl |= (AcpiGbl_SleepTypeB << SleepTypeRegInfo->BitPosition);
+            Pm1aControl |= (AcpiGbl_SleepTypeA <<
+                SleepTypeRegInfo->BitPosition);
+            Pm1bControl |= (AcpiGbl_SleepTypeB <<
+                SleepTypeRegInfo->BitPosition);
 
             /* Write the control registers and ignore any errors */
 

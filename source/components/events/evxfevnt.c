@@ -817,7 +817,7 @@ AcpiInstallGpeBlock (
      * is always zero
      */
     Status = AcpiEvCreateGpeBlock (Node, GpeBlockAddress, RegisterCount,
-                    0, InterruptNumber, &GpeBlock);
+                0, InterruptNumber, &GpeBlock);
     if (ACPI_FAILURE (Status))
     {
         goto UnlockAndExit;

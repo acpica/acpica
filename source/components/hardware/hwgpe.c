@@ -169,8 +169,8 @@ AcpiHwLowDisableGpe (
 
     /* Clear just the bit that corresponds to this GPE */
 
-    ACPI_CLEAR_BIT (EnableMask,
-        ((UINT32) 1 << (GpeEventInfo->GpeNumber - GpeRegisterInfo->BaseGpeNumber)));
+    ACPI_CLEAR_BIT (EnableMask, ((UINT32) 1 <<
+        (GpeEventInfo->GpeNumber - GpeRegisterInfo->BaseGpeNumber)));
 
 
     /* Write the updated enable mask */
@@ -245,8 +245,8 @@ AcpiHwClearGpe (
     ACPI_FUNCTION_ENTRY ();
 
 
-    RegisterBit = (UINT8)
-        (1 << (GpeEventInfo->GpeNumber - GpeEventInfo->RegisterInfo->BaseGpeNumber));
+    RegisterBit = (UINT8) (1 <<
+        (GpeEventInfo->GpeNumber - GpeEventInfo->RegisterInfo->BaseGpeNumber));
 
     /*
      * Write a one to the appropriate bit in the status register to
@@ -298,8 +298,8 @@ AcpiHwGetGpeStatus (
 
     /* Get the register bitmask for this GPE */
 
-    RegisterBit = (UINT8)
-        (1 << (GpeEventInfo->GpeNumber - GpeEventInfo->RegisterInfo->BaseGpeNumber));
+    RegisterBit = (UINT8) (1 <<
+        (GpeEventInfo->GpeNumber - GpeEventInfo->RegisterInfo->BaseGpeNumber));
 
     /* GPE currently enabled? (enabled for runtime?) */
 

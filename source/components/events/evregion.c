@@ -610,7 +610,7 @@ AcpiEvDetachRegion(
             /* This is it, remove it from the handler's list */
 
             *LastObjPtr = ObjDesc->Region.Next;
-            ObjDesc->Region.Next = NULL;            /* Must clear field */
+            ObjDesc->Region.Next = NULL;        /* Must clear field */
 
             if (AcpiNsIsLocked)
             {
@@ -825,10 +825,12 @@ AcpiEvInstallHandler (
         {
             /* Found a handler, is it for the same address space? */
 
-            if (NextHandlerObj->AddressSpace.SpaceId == HandlerObj->AddressSpace.SpaceId)
+            if (NextHandlerObj->AddressSpace.SpaceId ==
+                    HandlerObj->AddressSpace.SpaceId)
             {
                 ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
-                    "Found handler for region [%s] in device %p(%p) handler %p\n",
+                    "Found handler for region [%s] in device %p(%p) "
+                    "handler %p\n",
                     AcpiUtGetRegionName (HandlerObj->AddressSpace.SpaceId),
                     ObjDesc, NextHandlerObj, HandlerObj));
 

@@ -194,7 +194,8 @@ AcpiEvValidGpeEvent (
         while (GpeBlock)
         {
             if ((&GpeBlock->EventInfo[0] <= GpeEventInfo) &&
-                (&GpeBlock->EventInfo[((ACPI_SIZE) GpeBlock->RegisterCount) * 8] > GpeEventInfo))
+                (&GpeBlock->EventInfo[((ACPI_SIZE)
+                    GpeBlock->RegisterCount) * 8] > GpeEventInfo))
             {
                 return (TRUE);
             }
@@ -308,7 +309,8 @@ AcpiEvDeleteGpeHandlers (
 
         for (j = 0; j < ACPI_GPE_REGISTER_WIDTH; j++)
         {
-            GpeEventInfo = &GpeBlock->EventInfo[((ACPI_SIZE) i * ACPI_GPE_REGISTER_WIDTH) + j];
+            GpeEventInfo = &GpeBlock->EventInfo[((ACPI_SIZE) i *
+                ACPI_GPE_REGISTER_WIDTH) + j];
 
             if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
                     ACPI_GPE_DISPATCH_HANDLER)
@@ -394,7 +396,8 @@ AcpiEvSaveMethodInfo (
         /* Unknown method type, just ignore it! */
 
         ACPI_DEBUG_PRINT ((ACPI_DB_LOAD,
-            "Ignoring unknown GPE method type: %s (name not of form _Lxx or _Exx)",
+            "Ignoring unknown GPE method type: %s "
+            "(name not of form _Lxx or _Exx)",
             Name));
         return_ACPI_STATUS (AE_OK);
     }
@@ -407,7 +410,8 @@ AcpiEvSaveMethodInfo (
         /* Conversion failed; invalid method, just ignore it */
 
         ACPI_DEBUG_PRINT ((ACPI_DB_LOAD,
-            "Could not extract GPE number from name: %s (name is not of form _Lxx or _Exx)",
+            "Could not extract GPE number from name: %s "
+            "(name is not of form _Lxx or _Exx)",
             Name));
         return_ACPI_STATUS (AE_OK);
     }
@@ -415,7 +419,8 @@ AcpiEvSaveMethodInfo (
     /* Ensure that we have a valid GPE number for this GPE block */
 
     if ((GpeNumber < GpeBlock->BlockBaseNumber) ||
-        (GpeNumber >= (GpeBlock->BlockBaseNumber + (GpeBlock->RegisterCount * 8))))
+        (GpeNumber >= (GpeBlock->BlockBaseNumber +
+            (GpeBlock->RegisterCount * 8))))
     {
         /*
          * Not valid for this GPE block, just ignore it. However, it may be
@@ -528,8 +533,10 @@ AcpiEvMatchPrwAndGpe (
         /* Package contains a GPE reference and GPE number within a GPE block */
 
         if ((ObjDesc->Package.Count < 2) ||
-            ((ObjDesc->Package.Elements[0])->Common.Type != ACPI_TYPE_LOCAL_REFERENCE) ||
-            ((ObjDesc->Package.Elements[1])->Common.Type != ACPI_TYPE_INTEGER))
+            ((ObjDesc->Package.Elements[0])->Common.Type !=
+                ACPI_TYPE_LOCAL_REFERENCE) ||
+            ((ObjDesc->Package.Elements[1])->Common.Type !=
+                ACPI_TYPE_INTEGER))
         {
             goto Cleanup;
         }
@@ -556,9 +563,11 @@ AcpiEvMatchPrwAndGpe (
      */
     if ((GpeDevice == TargetGpeDevice) &&
         (GpeNumber >= GpeBlock->BlockBaseNumber) &&
-        (GpeNumber < GpeBlock->BlockBaseNumber + (GpeBlock->RegisterCount * 8)))
+        (GpeNumber < GpeBlock->BlockBaseNumber +
+            (GpeBlock->RegisterCount * 8)))
     {
-        GpeEventInfo = &GpeBlock->EventInfo[GpeNumber - GpeBlock->BlockBaseNumber];
+        GpeEventInfo = &GpeBlock->EventInfo[GpeNumber -
+            GpeBlock->BlockBaseNumber];
 
         /* Mark GPE for WAKE-ONLY but WAKE_DISABLED */
 
@@ -1191,8 +1200,8 @@ AcpiEvInitializeGpeBlock (
      * 1) are "runtime" or "run/wake" GPEs, and
      * 2) have a corresponding _Lxx or _Exx method
      *
-     * Any other GPEs within this block must be enabled via the AcpiEnableGpe()
-     * external interface.
+     * Any other GPEs within this block must be enabled via the
+     * AcpiEnableGpe() external interface.
      */
     WakeGpeCount = 0;
     GpeEnabledCount = 0;
@@ -1203,9 +1212,11 @@ AcpiEvInitializeGpeBlock (
         {
             /* Get the info block for this particular GPE */
 
-            GpeEventInfo = &GpeBlock->EventInfo[((ACPI_SIZE) i * ACPI_GPE_REGISTER_WIDTH) + j];
+            GpeEventInfo = &GpeBlock->EventInfo[((ACPI_SIZE) i *
+                ACPI_GPE_REGISTER_WIDTH) + j];
 
-            if (((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) == ACPI_GPE_DISPATCH_METHOD) &&
+            if (((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
+                    ACPI_GPE_DISPATCH_METHOD) &&
                  (GpeEventInfo->Flags & ACPI_GPE_TYPE_RUNTIME))
             {
                 GpeEnabledCount++;
@@ -1269,8 +1280,8 @@ AcpiEvGpeInitialize (
     /*
      * Initialize the GPE Block(s) defined in the FADT
      *
-     * Why the GPE register block lengths are divided by 2:  From the ACPI Spec,
-     * section "General-Purpose Event Registers", we have:
+     * Why the GPE register block lengths are divided by 2:  From the ACPI
+     * Spec, section "General-Purpose Event Registers", we have:
      *
      * "Each register block contains two registers of equal length
      *  GPEx_STS and GPEx_EN (where x is 0 or 1). The length of the
@@ -1326,7 +1337,8 @@ AcpiEvGpeInitialize (
             (GpeNumberMax >= AcpiGbl_FADT.Gpe1Base))
         {
             ACPI_ERROR ((AE_INFO,
-                "GPE0 block (GPE 0 to %d) overlaps the GPE1 block (GPE %d to %d) - Ignoring GPE1",
+                "GPE0 block (GPE 0 to %d) overlaps the GPE1 block "
+                "(GPE %d to %d) - Ignoring GPE1",
                 GpeNumberMax, AcpiGbl_FADT.Gpe1Base,
                 AcpiGbl_FADT.Gpe1Base +
                 ((RegisterCount1 * ACPI_GPE_REGISTER_WIDTH) - 1)));

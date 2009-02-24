@@ -226,7 +226,7 @@ AcpiHwGetBitRegisterInfo (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Write the PM1 A/B control registers. These registers are 
+ * DESCRIPTION: Write the PM1 A/B control registers. These registers are
  *              different than than the PM1 A/B status and enable registers
  *              in that different values can be written to the A/B registers.
  *              Most notably, the SLP_TYP bits can be different, as per the

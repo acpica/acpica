@@ -344,7 +344,8 @@ AcpiEvPciConfigRegionSetup (
                     else
                     {
                         ACPI_EXCEPTION ((AE_INFO, Status,
-                            "Could not install PciConfig handler for Root Bridge %4.4s",
+                            "Could not install PciConfig handler "
+                            "for Root Bridge %4.4s",
                             AcpiUtGetNodeName (PciRootNode)));
                     }
                 }
@@ -401,7 +402,8 @@ AcpiEvPciConfigRegionSetup (
      * Get the PCI device and function numbers from the _ADR object contained
      * in the parent's scope.
      */
-    Status = AcpiUtEvaluateNumericObject (METHOD_NAME__ADR, PciDeviceNode, &PciValue);
+    Status = AcpiUtEvaluateNumericObject (METHOD_NAME__ADR,
+                PciDeviceNode, &PciValue);
 
     /*
      * The default is zero, and since the allocation above zeroed the data,
@@ -415,7 +417,8 @@ AcpiEvPciConfigRegionSetup (
 
     /* The PCI segment number comes from the _SEG method */
 
-    Status = AcpiUtEvaluateNumericObject (METHOD_NAME__SEG, PciRootNode, &PciValue);
+    Status = AcpiUtEvaluateNumericObject (METHOD_NAME__SEG,
+                PciRootNode, &PciValue);
     if (ACPI_SUCCESS (Status))
     {
         PciId->Segment = ACPI_LOWORD (PciValue);
@@ -423,7 +426,8 @@ AcpiEvPciConfigRegionSetup (
 
     /* The PCI bus number comes from the _BBN method */
 
-    Status = AcpiUtEvaluateNumericObject (METHOD_NAME__BBN, PciRootNode, &PciValue);
+    Status = AcpiUtEvaluateNumericObject (METHOD_NAME__BBN,
+                PciRootNode, &PciValue);
     if (ACPI_SUCCESS (Status))
     {
         PciId->Bus = ACPI_LOWORD (PciValue);
@@ -769,8 +773,8 @@ AcpiEvInitializeRegion (
                                 AcpiNsLocked);
 
                     /*
-                     * Tell all users that this region is usable by running the _REG
-                     * method
+                     * Tell all users that this region is usable by
+                     * running the _REG method
                      */
                     if (AcpiNsLocked)
                     {

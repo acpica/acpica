@@ -252,8 +252,10 @@ AcpiEvQueueNotifyRequest (
      * 2) Global device notify handler
      * 3) Per-device notify handler
      */
-    if ((AcpiGbl_SystemNotify.Handler && (NotifyValue <= ACPI_MAX_SYS_NOTIFY)) ||
-        (AcpiGbl_DeviceNotify.Handler && (NotifyValue > ACPI_MAX_SYS_NOTIFY))  ||
+    if ((AcpiGbl_SystemNotify.Handler &&
+            (NotifyValue <= ACPI_MAX_SYS_NOTIFY)) ||
+        (AcpiGbl_DeviceNotify.Handler &&
+            (NotifyValue > ACPI_MAX_SYS_NOTIFY))  ||
         HandlerObj)
     {
         NotifyInfo = AcpiUtCreateGenericState ();
@@ -265,7 +267,8 @@ AcpiEvQueueNotifyRequest (
         if (!HandlerObj)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-                "Executing system notify handler for Notify (%4.4s, %X) node %p\n",
+                "Executing system notify handler for Notify (%4.4s, %X) "
+                "node %p\n",
                 AcpiUtGetNodeName (Node), NotifyValue, Node));
         }
 

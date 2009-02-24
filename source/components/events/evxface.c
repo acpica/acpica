@@ -727,7 +727,8 @@ AcpiInstallGpeHandler (
 
     /* Make sure that there isn't a handler there already */
 
-    if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) == ACPI_GPE_DISPATCH_HANDLER)
+    if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
+            ACPI_GPE_DISPATCH_HANDLER)
     {
         Status = AE_ALREADY_EXISTS;
         goto UnlockAndExit;
@@ -761,7 +762,7 @@ AcpiInstallGpeHandler (
 
     /* Setup up dispatch flags to indicate handler (vs. method) */
 
-    GpeEventInfo->Flags &= ~(ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_DISPATCH_MASK);  /* Clear bits */
+    GpeEventInfo->Flags &= ~(ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_DISPATCH_MASK);
     GpeEventInfo->Flags |= (UINT8) (Type | ACPI_GPE_DISPATCH_HANDLER);
 
     AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
@@ -829,7 +830,8 @@ AcpiRemoveGpeHandler (
 
     /* Make sure that a handler is indeed installed */
 
-    if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) != ACPI_GPE_DISPATCH_HANDLER)
+    if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) !=
+            ACPI_GPE_DISPATCH_HANDLER)
     {
         Status = AE_NOT_EXIST;
         goto UnlockAndExit;

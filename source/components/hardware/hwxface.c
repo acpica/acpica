@@ -626,7 +626,8 @@ AcpiGetSleepTypeData (
                 != ACPI_TYPE_INTEGER))
     {
         ACPI_ERROR ((AE_INFO,
-            "Sleep State return package elements are not both Integers (%s, %s)",
+            "Sleep State return package elements are not both Integers "
+            "(%s, %s)",
             AcpiUtGetObjectTypeName (Info->ReturnObject->Package.Elements[0]),
             AcpiUtGetObjectTypeName (Info->ReturnObject->Package.Elements[1])));
         Status = AE_AML_OPERAND_TYPE;

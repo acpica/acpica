@@ -173,10 +173,10 @@ AcpiEvSetGpeType (
 
     Status = AcpiEvDisableGpe (GpeEventInfo);
 
-    /* Type was validated above */
+    /* Clear the type bits and insert the new Type */
 
-    GpeEventInfo->Flags &= ~ACPI_GPE_TYPE_MASK; /* Clear type bits */
-    GpeEventInfo->Flags |= Type;                /* Insert type */
+    GpeEventInfo->Flags &= ~ACPI_GPE_TYPE_MASK;
+    GpeEventInfo->Flags |= Type;
     return_ACPI_STATUS (Status);
 }
 
@@ -212,6 +212,7 @@ AcpiEvUpdateGpeEnableMasks (
     {
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
+
     RegisterBit = (UINT8)
         (1 << (GpeEventInfo->GpeNumber - GpeRegisterInfo->BaseGpeNumber));
 
@@ -583,7 +584,8 @@ AcpiEvGpeDetect (
                      * or method.
                      */
                     IntStatus |= AcpiEvGpeDispatch (
-                        &GpeBlock->EventInfo[((ACPI_SIZE) i * ACPI_GPE_REGISTER_WIDTH) + j],
+                        &GpeBlock->EventInfo[((ACPI_SIZE) i *
+                            ACPI_GPE_REGISTER_WIDTH) + j],
                         j + GpeRegisterInfo->BaseGpeNumber);
                 }
             }
