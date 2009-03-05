@@ -719,10 +719,13 @@ AcpiTbSetupFadtRegisters (
         Source64 = ACPI_ADD_PTR (ACPI_GENERIC_ADDRESS, &AcpiGbl_FADT,
             FadtPmInfoTable[i].Source);
 
-        AcpiTbInitGenericAddress (FadtPmInfoTable[i].Target,
-            Source64->SpaceId, Pm1RegisterByteWidth,
-            Source64->Address +
-                (FadtPmInfoTable[i].RegisterNum * Pm1RegisterByteWidth));
+        if (Source64->Address)
+        {
+            AcpiTbInitGenericAddress (FadtPmInfoTable[i].Target,
+                Source64->SpaceId, Pm1RegisterByteWidth,
+                Source64->Address +
+                    (FadtPmInfoTable[i].RegisterNum * Pm1RegisterByteWidth));
+        }
     }
 }
 
