@@ -385,22 +385,17 @@ AcpiHwRegisterWrite (
     switch (RegisterId)
     {
     case ACPI_REGISTER_PM1_STATUS:           /* PM1 A/B: 16-bit access each */
-
-        /* Perform a read first to preserve certain bits (per ACPI spec) */
-
-        Status = AcpiHwReadMultiple (&ReadValue,
-                    &AcpiGbl_XPm1aStatus,
-                    &AcpiGbl_XPm1bStatus);
-        if (ACPI_FAILURE (Status))
-        {
-            goto Exit;
-        }
-
-        /* Insert the bits to be preserved */
-
-        ACPI_INSERT_BITS (Value, ACPI_PM1_STATUS_PRESERVED_BITS, ReadValue);
-
-        /* Now we can write the data */
+        /*
+         * Handle the "ignored" bit in PM1 Status. According to the ACPI
+         * specification, ignored bits are to be preserved when writing.
+         * Normally, this would mean a read/modify/write sequence. However,
+         * preserving a bit in the status register is different. Writing a
+         * one clears the status, and writing a zero preserves the status.
+         * Therefore, we must always write zero to the ignored bit.
+         *
+         * This behavior is clarified in the ACPI 4.0 specification.
+         */
+        Value &= ~ACPI_PM1_STATUS_PRESERVED_BITS;
 
         Status = AcpiHwWriteMultiple (Value,
                     &AcpiGbl_XPm1aStatus,
