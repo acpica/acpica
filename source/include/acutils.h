@@ -577,6 +577,33 @@ AcpiUtExecute_Sxds (
     ACPI_NAMESPACE_NODE     *DeviceNode,
     UINT8                   *Highest);
 
+/*
+ * utlock - reader/writer locks
+ */
+ACPI_STATUS
+AcpiUtCreateRwLock (
+    ACPI_RW_LOCK            *Lock);
+
+void
+AcpiUtDeleteRwLock (
+    ACPI_RW_LOCK            *Lock);
+
+ACPI_STATUS
+AcpiUtAcquireReadLock (
+    ACPI_RW_LOCK            *Lock);
+
+ACPI_STATUS
+AcpiUtReleaseReadLock (
+    ACPI_RW_LOCK            *Lock);
+
+ACPI_STATUS
+AcpiUtAcquireWriteLock (
+    ACPI_RW_LOCK            *Lock);
+
+void
+AcpiUtReleaseWriteLock (
+    ACPI_RW_LOCK            *Lock);
+
 
 /*
  * utobject - internal object create/delete/cache routines

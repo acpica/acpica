@@ -592,22 +592,41 @@ AcpiWalkNamespace (
     }
 
     /*
-     * Lock the namespace around the walk.
-     * The namespace will be unlocked/locked around each call
-     * to the user function - since this function
-     * must be allowed to make Acpi calls itself.
+     * Need to acquire the namespace reader lock to prevent interference
+     * with any concurrent table unloads (which causes the deletion of
+     * namespace objects). We cannot allow the deletion of a namespace node
+     * while the user function is using it. The exception to this are the
+     * nodes created and deleted during control method execution -- these
+     * nodes are marked as temporary nodes and are ignored by the namespace
+     * walk. Thus, control methods can be executed while holding the
+     * namespace deletion lock (and the user function can execute control
+     * methods.)
+     */
+    Status = AcpiUtAcquireReadLock (&AcpiGbl_NamespaceRwLock);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    /*
+     * Lock the namespace around the walk. The namespace will be
+     * unlocked/locked around each call to the user function - since the user
+     * function must be allowed to make ACPICA calls itself (for example, it
+     * will typically execute control methods during device enumeration.)
      */
     Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        goto UnlockAndExit;
     }
 
     Status = AcpiNsWalkNamespace (Type, StartObject, MaxDepth,
-                    ACPI_NS_WALK_UNLOCK,
-                    UserFunction, Context, ReturnValue);
+                ACPI_NS_WALK_UNLOCK, UserFunction, Context, ReturnValue);
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+
+UnlockAndExit:
+    (void) AcpiUtReleaseReadLock (&AcpiGbl_NamespaceRwLock);
     return_ACPI_STATUS (Status);
 }
 

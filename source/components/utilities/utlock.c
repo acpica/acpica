@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: dsinit - Object initialization namespace walk
+ * Module Name: utlock - Reader/Writer lock interfaces
  *
  *****************************************************************************/
 
@@ -113,198 +113,165 @@
  *
  *****************************************************************************/
 
-#define __DSINIT_C__
+#define __UTLOCK_C__
 
 #include "acpi.h"
 #include "accommon.h"
-#include "acdispat.h"
-#include "acnamesp.h"
-#include "actables.h"
 
-#define _COMPONENT          ACPI_DISPATCHER
-        ACPI_MODULE_NAME    ("dsinit")
 
-/* Local prototypes */
-
-static ACPI_STATUS
-AcpiDsInitOneObject (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue);
+#define _COMPONENT          ACPI_UTILITIES
+        ACPI_MODULE_NAME    ("utlock")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDsInitOneObject
+ * FUNCTION:    AcpiUtCreateRwLock
+ *              AcpiUtDeleteRwLock
  *
- * PARAMETERS:  ObjHandle       - Node for the object
- *              Level           - Current nesting level
- *              Context         - Points to a init info struct
- *              ReturnValue     - Not used
+ * PARAMETERS:  Lock                - Pointer to a valid RW lock
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Callback from AcpiWalkNamespace.  Invoked for every object
- *              within the namespace.
- *
- *              Currently, the only objects that require initialization are:
- *              1) Methods
- *              2) Operation Regions
- *
- ******************************************************************************/
-
-static ACPI_STATUS
-AcpiDsInitOneObject (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue)
-{
-    ACPI_INIT_WALK_INFO     *Info = (ACPI_INIT_WALK_INFO *) Context;
-    ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
-    ACPI_OBJECT_TYPE        Type;
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /*
-     * We are only interested in NS nodes owned by the table that
-     * was just loaded
-     */
-    if (Node->OwnerId != Info->OwnerId)
-    {
-        return (AE_OK);
-    }
-
-    Info->ObjectCount++;
-
-    /* And even then, we are only interested in a few object types */
-
-    Type = AcpiNsGetType (ObjHandle);
-
-    switch (Type)
-    {
-    case ACPI_TYPE_REGION:
-
-        Status = AcpiDsInitializeRegion (ObjHandle);
-        if (ACPI_FAILURE (Status))
-        {
-            ACPI_EXCEPTION ((AE_INFO, Status,
-                "During Region initialization %p [%4.4s]",
-                ObjHandle, AcpiUtGetNodeName (ObjHandle)));
-        }
-
-        Info->OpRegionCount++;
-        break;
-
-
-    case ACPI_TYPE_METHOD:
-
-        Info->MethodCount++;
-        break;
-
-
-    case ACPI_TYPE_DEVICE:
-
-        Info->DeviceCount++;
-        break;
-
-
-    default:
-        break;
-    }
-
-    /*
-     * We ignore errors from above, and always return OK, since
-     * we don't want to abort the walk on a single error.
-     */
-    return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDsInitializeObjects
- *
- * PARAMETERS:  TableDesc       - Descriptor for parent ACPI table
- *              StartNode       - Root of subtree to be initialized.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Walk the namespace starting at "StartNode" and perform any
- *              necessary initialization on the objects found therein
+ * DESCRIPTION: Reader/writer lock creation and deletion interfaces.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiDsInitializeObjects (
-    UINT32                  TableIndex,
-    ACPI_NAMESPACE_NODE     *StartNode)
+AcpiUtCreateRwLock (
+    ACPI_RW_LOCK            *Lock)
 {
     ACPI_STATUS             Status;
-    ACPI_INIT_WALK_INFO     Info;
-    ACPI_TABLE_HEADER       *Table;
-    ACPI_OWNER_ID           OwnerId;
 
 
-    ACPI_FUNCTION_TRACE (DsInitializeObjects);
-
-
-    Status = AcpiTbGetOwnerId (TableIndex, &OwnerId);
+    Lock->NumReaders = 0;
+    Status = AcpiOsCreateMutex (&Lock->ReaderMutex);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        return (Status);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-        "**** Starting initialization of namespace objects ****\n"));
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "Parsing all Control Methods:"));
-
-    Info.MethodCount    = 0;
-    Info.OpRegionCount  = 0;
-    Info.ObjectCount    = 0;
-    Info.DeviceCount    = 0;
-    Info.TableIndex     = TableIndex;
-    Info.OwnerId        = OwnerId;
-
-    /* Walk entire namespace from the supplied root */
-
-    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /*
-     * We don't use AcpiWalkNamespace since we do not want to acquire
-     * the namespace reader lock.
-     */
-    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, StartNode, ACPI_UINT32_MAX,
-                ACPI_NS_WALK_UNLOCK, AcpiDsInitOneObject, &Info, NULL);
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_EXCEPTION ((AE_INFO, Status, "During WalkNamespace"));
-    }
-    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-
-    Status = AcpiGetTableByIndex (TableIndex, &Table);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
-        "\nTable [%4.4s](id %4.4X) - %hd Objects with %hd Devices %hd Methods %hd Regions\n",
-        Table->Signature, OwnerId, Info.ObjectCount,
-        Info.DeviceCount, Info.MethodCount, Info.OpRegionCount));
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-        "%hd Methods, %hd Regions\n", Info.MethodCount, Info.OpRegionCount));
-
-    return_ACPI_STATUS (AE_OK);
+    Status = AcpiOsCreateMutex (&Lock->WriterMutex);
+    return (Status);
 }
 
+
+void
+AcpiUtDeleteRwLock (
+    ACPI_RW_LOCK            *Lock)
+{
+
+    AcpiOsDeleteMutex (Lock->ReaderMutex);
+    AcpiOsDeleteMutex (Lock->WriterMutex);
+
+    Lock->NumReaders = 0;
+    Lock->ReaderMutex = NULL;
+    Lock->WriterMutex = NULL;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtAcquireReadLock
+ *              AcpiUtReleaseReadLock
+ *
+ * PARAMETERS:  Lock                - Pointer to a valid RW lock
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Reader interfaces for reader/writer locks. On acquisition,
+ *              only the first reader acquires the write mutex. On release,
+ *              only the last reader releases the write mutex. Although this
+ *              algorithm can in theory starve writers, this should not be a
+ *              problem with ACPICA since the subsystem is infrequently used
+ *              in comparison to (for example) an I/O system.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiUtAcquireReadLock (
+    ACPI_RW_LOCK            *Lock)
+{
+    ACPI_STATUS             Status;
+
+
+    Status = AcpiOsAcquireMutex (Lock->ReaderMutex, ACPI_WAIT_FOREVER);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    /* Acquire the write lock only for the first reader */
+
+    Lock->NumReaders++;
+    if (Lock->NumReaders == 1)
+    {
+        Status = AcpiOsAcquireMutex (Lock->WriterMutex, ACPI_WAIT_FOREVER);
+    }
+
+    AcpiOsReleaseMutex (Lock->ReaderMutex);
+    return (Status);
+}
+
+
+ACPI_STATUS
+AcpiUtReleaseReadLock (
+    ACPI_RW_LOCK            *Lock)
+{
+    ACPI_STATUS             Status;
+
+
+    Status = AcpiOsAcquireMutex (Lock->ReaderMutex, ACPI_WAIT_FOREVER);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    /* Release the write lock only for the very last reader */
+
+    Lock->NumReaders--;
+    if (Lock->NumReaders == 0)
+    {
+        AcpiOsReleaseMutex (Lock->WriterMutex);
+    }
+
+    AcpiOsReleaseMutex (Lock->ReaderMutex);
+    return (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtAcquireWriteLock
+ *              AcpiUtReleaseWriteLock
+ *
+ * PARAMETERS:  Lock                - Pointer to a valid RW lock
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Writer interfaces for reader/writer locks. Simply acquire or
+ *              release the writer mutex associated with the lock. Acquisition
+ *              of the lock is fully exclusive and will block all readers and
+ *              writers until it is released.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiUtAcquireWriteLock (
+    ACPI_RW_LOCK            *Lock)
+{
+    ACPI_STATUS             Status;
+
+
+    Status = AcpiOsAcquireMutex (Lock->WriterMutex, ACPI_WAIT_FOREVER);
+    return (Status);
+}
+
+
+void
+AcpiUtReleaseWriteLock (
+    ACPI_RW_LOCK            *Lock)
+{
+
+    AcpiOsReleaseMutex (Lock->WriterMutex);
+}
 

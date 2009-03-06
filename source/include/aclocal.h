@@ -185,6 +185,16 @@ static char                 *AcpiGbl_MutexNames[ACPI_NUM_MUTEX] =
 #endif
 #endif
 
+/* Lock structure for reader/writer interfaces */
+
+typedef struct acpi_rw_lock
+{
+    ACPI_MUTEX              WriterMutex;
+    ACPI_MUTEX              ReaderMutex;
+    UINT32                  NumReaders;
+
+} ACPI_RW_LOCK;
+
 
 /*
  * Predefined handles for spinlocks used within the subsystem.

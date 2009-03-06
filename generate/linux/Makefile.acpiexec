@@ -120,6 +120,7 @@ SRCS=	aeexec.c aemain.c \
 	../../utilities/uteval.c \
 	../../utilities/utglobal.c \
 	../../utilities/utinit.c \
+	../../utilities/utlock.c \
 	../../utilities/utmath.c \
 	../../utilities/utmisc.c \
 	../../utilities/utmutex.c \

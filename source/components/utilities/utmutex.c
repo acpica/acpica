@@ -141,7 +141,8 @@ AcpiUtDeleteMutex (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Create the system mutex objects.
+ * DESCRIPTION: Create the system mutex objects. This includes mutexes,
+ *              spin locks, and reader/writer locks.
  *
  ******************************************************************************/
 
@@ -156,9 +157,8 @@ AcpiUtMutexInitialize (
     ACPI_FUNCTION_TRACE (UtMutexInitialize);
 
 
-    /*
-     * Create each of the predefined mutex objects
-     */
+    /* Create each of the predefined mutex objects */
+
     for (i = 0; i < ACPI_NUM_MUTEX; i++)
     {
         Status = AcpiUtCreateMutex (i);
@@ -177,6 +177,14 @@ AcpiUtMutexInitialize (
     }
 
     Status = AcpiOsCreateLock (&AcpiGbl_HardwareLock);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Create the reader/writer lock for namespace access */
+
+    Status = AcpiUtCreateRwLock (&AcpiGbl_NamespaceRwLock);
     return_ACPI_STATUS (Status);
 }
 
@@ -189,7 +197,8 @@ AcpiUtMutexInitialize (
  *
  * RETURN:      None.
  *
- * DESCRIPTION: Delete all of the system mutex objects.
+ * DESCRIPTION: Delete all of the system mutex objects. This includes mutexes,
+ *              spin locks, and reader/writer locks.
  *
  ******************************************************************************/
 
@@ -203,9 +212,8 @@ AcpiUtMutexTerminate (
     ACPI_FUNCTION_TRACE (UtMutexTerminate);
 
 
-    /*
-     * Delete each predefined mutex object
-     */
+    /* Delete each predefined mutex object */
+
     for (i = 0; i < ACPI_NUM_MUTEX; i++)
     {
         (void) AcpiUtDeleteMutex (i);
@@ -215,6 +223,10 @@ AcpiUtMutexTerminate (
 
     AcpiOsDeleteLock (AcpiGbl_GpeLock);
     AcpiOsDeleteLock (AcpiGbl_HardwareLock);
+
+    /* Delete the reader/writer lock */
+
+    AcpiUtDeleteRwLock (&AcpiGbl_NamespaceRwLock);
     return_VOID;
 }
 

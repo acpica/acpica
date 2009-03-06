@@ -247,6 +247,10 @@ ACPI_EXTERN BOOLEAN                     AcpiGbl_GlobalLockPresent;
 ACPI_EXTERN ACPI_SPINLOCK               AcpiGbl_GpeLock;      /* For GPE data structs and registers */
 ACPI_EXTERN ACPI_SPINLOCK               AcpiGbl_HardwareLock; /* For ACPI H/W except GPE registers */
 
+/* Reader/Writer lock is used for namespace walk and dynamic table unload */
+
+ACPI_EXTERN ACPI_RW_LOCK                AcpiGbl_NamespaceRwLock;
+
 
 /*****************************************************************************
  *

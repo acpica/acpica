@@ -416,6 +416,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_ROUND_UP_TO_32_BIT",             SRC_TYPE_SIMPLE},
     {"ACPI_RSCONVERT_INFO",                 SRC_TYPE_STRUCT},
     {"ACPI_RSDUMP_INFO",                    SRC_TYPE_STRUCT},
+    {"ACPI_RW_LOCK",                        SRC_TYPE_STRUCT},
     {"ACPI_SCOPE_STATE",                    SRC_TYPE_STRUCT},
     {"ACPI_SEMAPHORE",                      SRC_TYPE_SIMPLE},
     {"ACPI_SIGNAL_FATAL_INFO",              SRC_TYPE_STRUCT},
