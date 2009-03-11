@@ -439,6 +439,20 @@ AcpiHwRegisterWrite (
 
     case ACPI_REGISTER_PM2_CONTROL:          /* 8-bit access */
 
+        /*
+         * For control registers, all reserved bits must be preserved,
+         * as per the ACPI spec.
+         */
+        Status = AcpiRead (&ReadValue, &AcpiGbl_FADT.XPm2ControlBlock);
+        if (ACPI_FAILURE (Status))
+        {
+            goto Exit;
+        }
+
+        /* Insert the bits to be preserved */
+
+        ACPI_INSERT_BITS (Value, ACPI_PM2_CONTROL_PRESERVED_BITS, ReadValue);
+
         Status = AcpiWrite (Value, &AcpiGbl_FADT.XPm2ControlBlock);
         break;
 
