@@ -140,12 +140,14 @@ AcpiUtTranslateOneCid (
 
 /*
  * Strings supported by the _OSI predefined (internal) method.
+ *
+ * March 2009: Removed "Linux" as this host no longer wants to respond true
+ * for this string. Basically, the only safe OS strings are windows-related.
  */
 static const char               *AcpiInterfacesSupported[] =
 {
     /* Operating System Vendor Strings */
 
-    "Linux",
     "Windows 2000",         /* Windows 2000 */
     "Windows 2001",         /* Windows XP */
     "Windows 2001 SP1",     /* Windows XP SP1 */
