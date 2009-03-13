@@ -217,6 +217,18 @@ void
 AeMiscellaneousTests (
     void);
 
+ACPI_STATUS
+AeRegionHandler (
+    UINT32                  Function,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  BitWidth,
+    ACPI_INTEGER            *Value,
+    void                    *HandlerContext,
+    void                    *RegionContext);
+
+UINT32
+AeGpeHandler (
+    void                    *Context);
 
 #endif /* _AECOMMON */
 

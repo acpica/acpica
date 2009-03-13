@@ -1,5 +1,5 @@
 PROG=	acpiexec
-SRCS=	aeexec.c aemain.c \
+SRCS=	aetables.c aehandlers.c aeexec.c aemain.c \
 	../../common/getopt.c \
 	../../debugger/dbcmds.c \
 	../../debugger/dbdisply.c \
