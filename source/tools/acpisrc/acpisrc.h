@@ -208,6 +208,7 @@ extern UINT32                   Gbl_HeaderSize;
 extern UINT32                   Gbl_HeaderLines;
 extern struct stat              Gbl_StatBuf;
 extern char                     *Gbl_FileBuffer;
+extern UINT32                   Gbl_TotalSize;
 extern UINT32                   Gbl_FileSize;
 extern UINT32                   Gbl_FileType;
 extern BOOLEAN                  Gbl_VerboseMode;

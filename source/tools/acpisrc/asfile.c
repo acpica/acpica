@@ -765,6 +765,8 @@ AsGetFile (
      * Add plenty extra buffer to accomodate string replacements
      */
     Size = Gbl_StatBuf.st_size;
+    Gbl_TotalSize += Size;
+
     Buffer = calloc (Size * 2, 1);
     if (!Buffer)
     {

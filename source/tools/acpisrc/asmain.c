@@ -130,6 +130,7 @@ UINT32                  Gbl_CommentLines = 0;
 UINT32                  Gbl_SourceLines = 0;
 UINT32                  Gbl_LongLines = 0;
 UINT32                  Gbl_TotalLines = 0;
+UINT32                  Gbl_TotalSize = 0;
 UINT32                  Gbl_HeaderLines = 0;
 UINT32                  Gbl_HeaderSize = 0;
 void                    *Gbl_StructDefs = NULL;
@@ -246,6 +247,8 @@ AsDisplayStats (void)
 
     printf ("\nAcpiSrc statistics:\n\n");
     printf ("%8u Files processed\n", Gbl_Files);
+    printf ("%8u Total bytes (%.1fK/file)\n",
+        Gbl_TotalSize, ((double) Gbl_TotalSize/Gbl_Files)/1024);
     printf ("%8u Tabs found\n", Gbl_Tabs);
     printf ("%8u Missing if/else braces\n", Gbl_MissingBraces);
     printf ("%8u Non-ANSI comments found\n", Gbl_NonAnsiComments);
