@@ -324,7 +324,7 @@ AcpiHwRegisterRead (
 
     case ACPI_REGISTER_SMI_COMMAND_BLOCK:    /* 8-bit access */
 
-        Status = AcpiOsReadPort (AcpiGbl_FADT.SmiCommand, &Value, 8);
+        Status = AcpiHwReadPort (AcpiGbl_FADT.SmiCommand, &Value, 8);
         break;
 
 
@@ -467,7 +467,7 @@ AcpiHwRegisterWrite (
 
         /* SMI_CMD is currently always in IO space */
 
-        Status = AcpiOsWritePort (AcpiGbl_FADT.SmiCommand, Value, 8);
+        Status = AcpiHwWritePort (AcpiGbl_FADT.SmiCommand, Value, 8);
         break;
 
 

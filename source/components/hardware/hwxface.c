@@ -236,7 +236,7 @@ AcpiRead (
 
     case ACPI_ADR_SPACE_SYSTEM_IO:
 
-        Status = AcpiOsReadPort ((ACPI_IO_ADDRESS) Address, Value, Width);
+        Status = AcpiHwReadPort ((ACPI_IO_ADDRESS) Address, Value, Width);
         break;
 
 
@@ -323,7 +323,7 @@ AcpiWrite (
 
     case ACPI_ADR_SPACE_SYSTEM_IO:
 
-        Status = AcpiOsWritePort (
+        Status = AcpiHwWritePort (
                     (ACPI_IO_ADDRESS) Address, Value, Width);
         break;
 

@@ -865,7 +865,7 @@ AcpiUtInitGlobals (
     {
         AcpiGbl_OwnerIdMask[i]              = 0;
     }
-    
+
     /* Last OwnerID is never valid */
 
     AcpiGbl_OwnerIdMask[ACPI_NUM_OWNERID_MASKS - 1] = 0x80000000;
@@ -919,6 +919,7 @@ AcpiUtInitGlobals (
     AcpiGbl_TraceDbgLayer               = 0;
     AcpiGbl_DebuggerConfiguration       = DEBUGGER_THREADING;
     AcpiGbl_DbOutputFlags               = ACPI_DB_CONSOLE_OUTPUT;
+    AcpiGbl_OsiData                     = 0;
 
     /* Hardware oriented */
 

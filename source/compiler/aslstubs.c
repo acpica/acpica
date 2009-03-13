@@ -137,6 +137,24 @@ AeLocalGetRootPointer (
 }
 
 ACPI_STATUS
+AcpiHwReadPort (
+    ACPI_IO_ADDRESS         Address,
+    UINT32                  *Value,
+    UINT32                  Width)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiHwWritePort (
+    ACPI_IO_ADDRESS         Address,
+    UINT32                  Value,
+    UINT32                  Width)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
 AcpiDsMethodError (
     ACPI_STATUS             Status,
     ACPI_WALK_STATE         *WalkState)

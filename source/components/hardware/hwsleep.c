@@ -536,7 +536,7 @@ AcpiEnterSleepStateS4bios (
 
     ACPI_FLUSH_CPU_CACHE ();
 
-    Status = AcpiOsWritePort (AcpiGbl_FADT.SmiCommand,
+    Status = AcpiHwWritePort (AcpiGbl_FADT.SmiCommand,
                 (UINT32) AcpiGbl_FADT.S4BiosRequest, 8);
 
     do {

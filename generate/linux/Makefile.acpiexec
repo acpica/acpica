@@ -33,6 +33,7 @@ SRCS=	aeexec.c aemain.c \
 	../../hardware/hwgpe.c \
 	../../hardware/hwregs.c \
 	../../hardware/hwsleep.c \
+	../../hardware/hwvalid.c \
 	../../hardware/hwxface.c \
 	../../dispatcher/dsfield.c \
 	../../dispatcher/dsinit.c \

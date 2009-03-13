@@ -384,14 +384,14 @@ AcpiExSystemIoSpaceHandler (
     {
     case ACPI_READ:
 
-        Status = AcpiOsReadPort ((ACPI_IO_ADDRESS) Address,
+        Status = AcpiHwReadPort ((ACPI_IO_ADDRESS) Address,
                     &Value32, BitWidth);
         *Value = Value32;
         break;
 
     case ACPI_WRITE:
 
-        Status = AcpiOsWritePort ((ACPI_IO_ADDRESS) Address,
+        Status = AcpiHwWritePort ((ACPI_IO_ADDRESS) Address,
                     (UINT32) *Value, BitWidth);
         break;
 

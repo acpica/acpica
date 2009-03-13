@@ -166,6 +166,22 @@ AcpiHwClearAcpiStatus (
 
 
 /*
+ * hwvalid - Port I/O with validation
+ */
+ACPI_STATUS
+AcpiHwReadPort (
+    ACPI_IO_ADDRESS         Address,
+    UINT32                  *Value,
+    UINT32                  Width);
+
+ACPI_STATUS
+AcpiHwWritePort (
+    ACPI_IO_ADDRESS         Address,
+    UINT32                  Value,
+    UINT32                  Width);
+
+
+/*
  * hwgpe - GPE support
  */
 ACPI_STATUS

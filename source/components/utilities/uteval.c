@@ -142,23 +142,28 @@ AcpiUtTranslateOneCid (
  * Strings supported by the _OSI predefined (internal) method.
  *
  * March 2009: Removed "Linux" as this host no longer wants to respond true
- * for this string. Basically, the only safe OS strings are windows-related.
+ * for this string. Basically, the only safe OS strings are windows-related
+ * and in many or most cases represent the only test path within the 
+ * BIOS-provided ASL code.
+ *
+ * The second element of each entry is used to track the newest version of
+ * Windows that the BIOS has requested.
  */
-static const char               *AcpiInterfacesSupported[] =
+static const ACPI_INTERFACE_INFO    AcpiInterfacesSupported[] =
 {
     /* Operating System Vendor Strings */
 
-    "Windows 2000",         /* Windows 2000 */
-    "Windows 2001",         /* Windows XP */
-    "Windows 2001 SP1",     /* Windows XP SP1 */
-    "Windows 2001 SP2",     /* Windows XP SP2 */
-    "Windows 2001.1",       /* Windows Server 2003 */
-    "Windows 2001.1 SP1",   /* Windows Server 2003 SP1 - Added 03/2006 */
-    "Windows 2006",         /* Windows Vista - Added 03/2006 */
+    {"Windows 2000",        ACPI_OSI_WIN_2000},         /* Windows 2000 */
+    {"Windows 2001",        ACPI_OSI_WIN_XP},           /* Windows XP */
+    {"Windows 2001 SP1",    ACPI_OSI_WIN_XP_SP1},       /* Windows XP SP1 */
+    {"Windows 2001.1",      ACPI_OSI_WINSRV_2003},      /* Windows Server 2003 */
+    {"Windows 2001 SP2",    ACPI_OSI_WIN_XP_SP2},       /* Windows XP SP2 */
+    {"Windows 2001.1 SP1",  ACPI_OSI_WINSRV_2003_SP1},  /* Windows Server 2003 SP1 - Added 03/2006 */
+    {"Windows 2006",        ACPI_OSI_WIN_VISTA},        /* Windows Vista - Added 03/2006 */
 
     /* Feature Group Strings */
 
-    "Extended Address Space Descriptor"
+    {"Extended Address Space Descriptor", 0}
 
     /*
      * All "optional" feature group strings (features that are implemented
@@ -219,9 +224,17 @@ AcpiUtOsiImplementation (
     for (i = 0; i < ACPI_ARRAY_LENGTH (AcpiInterfacesSupported); i++)
     {
         if (!ACPI_STRCMP (StringDesc->String.Pointer,
-                AcpiInterfacesSupported[i]))
+                AcpiInterfacesSupported[i].Name))
         {
-            /* The interface is supported */
+            /*
+             * The interface is supported.
+             * Update the OsiData if necessary. We keep track of the latest
+             * version of Windows that has been requested by the BIOS.
+             */
+            if (AcpiInterfacesSupported[i].Value > AcpiGbl_OsiData)
+            {
+                AcpiGbl_OsiData = AcpiInterfacesSupported[i].Value;
+            }
 
             ReturnValue = ACPI_UINT32_MAX;
             goto Exit;

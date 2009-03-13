@@ -141,7 +141,7 @@ extern BOOLEAN                  AcpiGbl_IgnoreErrors;
 /*
  * Debug Regions
  */
-typedef struct Region
+typedef struct ae_region
 {
     ACPI_PHYSICAL_ADDRESS   Address;
     UINT32                  Length;
@@ -149,36 +149,14 @@ typedef struct Region
     void                    *NextRegion;
     UINT8                   SpaceId;
 
-} REGION;
+} AE_REGION;
 
-typedef struct DebugRegions
+typedef struct ae_debug_regions
 {
     UINT32                  NumberOfRegions;
-    REGION                  *RegionList;
+    AE_REGION               *RegionList;
 
-} DEBUG_REGIONS;
-
-
-/*
- * Pointer overlay for 16-bit code
- */
-typedef union ptr_ovl
-{
-    void                *ptr;
-    UINT32              dword;
-    struct
-    {
-        UINT16              offset;
-        UINT16              base;
-    } ovl;
-
-} PTR_OVL;
-
-
-#define GET_SEGMENT(ptr)                ((UINT16)(_segment)(ptr))
-#define GET_OFFSET(ptr)                 ((UINT16)(UINT32) (ptr))
-#define GET_PHYSICAL_ADDRESS(ptr)       (((((UINT32)GET_SEGMENT(ptr)) << 4)) + GET_OFFSET(ptr))
-#define PTR_OVL_BUILD_PTR(p,b,o)        {p.ovl.base=b;p.ovl.offset=o;}
+} AE_DEBUG_REGIONS;
 
 
 #define TEST_OUTPUT_LEVEL(lvl)          if ((lvl) & OutputLevel)

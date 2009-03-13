@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: hwacpi - ACPI Hardware Initialization/Mode Interface
+ * Module Name: hwvalid - I/O request validation
  *
  *****************************************************************************/
 
@@ -114,165 +114,231 @@
  *
  *****************************************************************************/
 
-#define __HWACPI_C__
+#define __HWVALID_C__
 
 #include "acpi.h"
 #include "accommon.h"
 
-
 #define _COMPONENT          ACPI_HARDWARE
-        ACPI_MODULE_NAME    ("hwacpi")
+        ACPI_MODULE_NAME    ("hwvalid")
+
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiHwValidateIoRequest (
+    ACPI_IO_ADDRESS         Address,
+    UINT32                  BitWidth);
+
+
+/*
+ * Protected I/O ports. Some ports are always illegal, and some are
+ * conditionally illegal. This table must remain ordered by port address.
+ *
+ * The table is used to implement the Microsoft port access rules that
+ * first appeared in Windows XP. Some ports are always illegal, and some
+ * ports are only illegal if the BIOS calls _OSI with a WinXP string or
+ * later (meaning that the BIOS itelf is post-XP.)
+ *
+ * This provides ACPICA with the desired port protections and
+ * Microsoft compatibility.
+ */
+static const ACPI_PORT_INFO     AcpiProtectedPorts[] =
+{
+    {"DMA1",    0x0000, 0x000F, ACPI_OSI_WIN_XP},
+    {"PIC0",    0x0020, 0x0021, ACPI_ALWAYS_ILLEGAL},
+    {"PIT1",    0x0040, 0x0043, ACPI_OSI_WIN_XP},
+    {"PIT2",    0x0048, 0x004B, ACPI_OSI_WIN_XP},
+    {"RTC",     0x0070, 0x0071, ACPI_OSI_WIN_XP},
+    {"CMOS",    0x0074, 0x0076, ACPI_OSI_WIN_XP},
+    {"DMA1",    0x0081, 0x0083, ACPI_OSI_WIN_XP},
+    {"DMA1",    0x0087, 0x0087, ACPI_OSI_WIN_XP},
+    {"DMA2",    0x0089, 0x0089, ACPI_OSI_WIN_XP},
+    {"DMA2",    0x008A, 0x008B, ACPI_OSI_WIN_XP},
+    {"DMA2",    0x008F, 0x008F, ACPI_OSI_WIN_XP},
+    {"Arb",     0x0090, 0x0091, ACPI_OSI_WIN_XP},
+    {"Setup",   0x0093, 0x0094, ACPI_OSI_WIN_XP},
+    {"POS",     0x0096, 0x0097, ACPI_OSI_WIN_XP},
+    {"PIC1",    0x00A0, 0x00A1, ACPI_ALWAYS_ILLEGAL},
+    {"DMA",     0x00C0, 0x00DF, ACPI_OSI_WIN_XP},
+    {"ELCR",    0x04D0, 0x04D1, ACPI_ALWAYS_ILLEGAL},
+    {"PCI",     0x0CF8, 0x0D00, ACPI_OSI_WIN_XP}
+};
+
+#define ACPI_PORT_INFO_ENTRIES  ACPI_ARRAY_LENGTH (AcpiProtectedPorts)
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiHwSetMode
+ * FUNCTION:    AcpiHwValidateIoRequest
  *
- * PARAMETERS:  Mode            - SYS_MODE_ACPI or SYS_MODE_LEGACY
+ * PARAMETERS:  Address             Address of I/O port/register
+ *              BitWidth            Number of bits (8,16,32)
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Transitions the system into the requested mode.
+ * DESCRIPTION: Validates an I/O request (address/length). Certain ports are
+ *              always illegal and some ports are only illegal depending on
+ *              the requests the BIOS AML code makes to the predefined
+ *              _OSI method.
  *
  ******************************************************************************/
 
-ACPI_STATUS
-AcpiHwSetMode (
-    UINT32                  Mode)
+static ACPI_STATUS
+AcpiHwValidateIoRequest (
+    ACPI_IO_ADDRESS         Address,
+    UINT32                  BitWidth)
 {
+    UINT32                  i;
+    UINT32                  ByteWidth;
+    ACPI_IO_ADDRESS         LastAddress;
+    const ACPI_PORT_INFO    *PortInfo;
 
-    ACPI_STATUS             Status;
-    UINT32                  Retry;
+
+    ACPI_FUNCTION_TRACE (HwValidateIoRequest);
 
 
-    ACPI_FUNCTION_TRACE (HwSetMode);
+    /* Supported widths are 8/16/32 */
 
-    /*
-     * ACPI 2.0 clarified that if SMI_CMD in FADT is zero,
-     * system does not support mode transition.
-     */
-    if (!AcpiGbl_FADT.SmiCommand)
+    if ((BitWidth != 8) &&
+        (BitWidth != 16) &&
+        (BitWidth != 32))
     {
-        ACPI_ERROR ((AE_INFO, "No SMI_CMD in FADT, mode transition failed"));
-        return_ACPI_STATUS (AE_NO_HARDWARE_RESPONSE);
+        return (AE_BAD_PARAMETER);
     }
 
-    /*
-     * ACPI 2.0 clarified the meaning of ACPI_ENABLE and ACPI_DISABLE
-     * in FADT: If it is zero, enabling or disabling is not supported.
-     * As old systems may have used zero for mode transition,
-     * we make sure both the numbers are zero to determine these
-     * transitions are not supported.
-     */
-    if (!AcpiGbl_FADT.AcpiEnable && !AcpiGbl_FADT.AcpiDisable)
+    PortInfo = AcpiProtectedPorts;
+    ByteWidth = ACPI_DIV_8 (BitWidth);
+    LastAddress = Address + ByteWidth - 1;
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Address %X LastAddress %X Length %X",
+        Address, LastAddress, ByteWidth));
+
+    /* Maximum 16-bit address in I/O space */
+
+    if (LastAddress > ACPI_UINT16_MAX)
     {
         ACPI_ERROR ((AE_INFO,
-            "No ACPI mode transition supported in this system "
-            "(enable/disable both zero)"));
+            "Illegal I/O port address/length above 64K: %X/%X",
+            Address, ByteWidth));
+        return_ACPI_STATUS (AE_AML_ILLEGAL_ADDRESS);
+    }
+
+    /* Exit if requested address is not within the protected port table */
+
+    if (Address > AcpiProtectedPorts[ACPI_PORT_INFO_ENTRIES - 1].End)
+    {
         return_ACPI_STATUS (AE_OK);
     }
 
-    switch (Mode)
+    /* Check request against the list of protected I/O ports */
+
+    for (i = 0; i < ACPI_PORT_INFO_ENTRIES; i++, PortInfo++)
     {
-    case ACPI_SYS_MODE_ACPI:
-
-        /* BIOS should have disabled ALL fixed and GP events */
-
-        Status = AcpiHwWritePort (AcpiGbl_FADT.SmiCommand,
-                        (UINT32) AcpiGbl_FADT.AcpiEnable, 8);
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Attempting to enable ACPI mode\n"));
-        break;
-
-    case ACPI_SYS_MODE_LEGACY:
-
         /*
-         * BIOS should clear all fixed status bits and restore fixed event
-         * enable bits to default
+         * Check if the requested address range will write to a reserved
+         * port. Four cases to consider:
+         *
+         * 1) Address range is contained completely in the port address range
+         * 2) Address range overlaps port range at the port range start
+         * 3) Address range overlaps port range at the port range end
+         * 4) Address range completely encompasses the port range
          */
-        Status = AcpiHwWritePort (AcpiGbl_FADT.SmiCommand,
-                    (UINT32) AcpiGbl_FADT.AcpiDisable, 8);
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-                    "Attempting to enable Legacy (non-ACPI) mode\n"));
-        break;
-
-    default:
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_EXCEPTION ((AE_INFO, Status,
-            "Could not write ACPI mode change"));
-        return_ACPI_STATUS (Status);
-    }
-
-    /*
-     * Some hardware takes a LONG time to switch modes. Give them 3 sec to
-     * do so, but allow faster systems to proceed more quickly.
-     */
-    Retry = 3000;
-    while (Retry)
-    {
-        if (AcpiHwGetMode() == Mode)
+        if ((Address <= PortInfo->End) && (LastAddress >= PortInfo->Start))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Mode %X successfully enabled\n",
-                Mode));
-            return_ACPI_STATUS (AE_OK);
+            /* Port illegality may depend on the _OSI calls made by the BIOS */
+
+            if (AcpiGbl_OsiData >= PortInfo->OsiDependency)
+            {
+                ACPI_ERROR ((AE_INFO,
+                    "Denied AML access to port 0x%.4X/%X (%s 0x%.4X-0x%.4X)",
+                    Address, ByteWidth, PortInfo->Name,
+                    PortInfo->Start, PortInfo->End));
+
+                return_ACPI_STATUS (AE_AML_ILLEGAL_ADDRESS);
+            }
         }
-        AcpiOsStall(1000);
-        Retry--;
+
+        /* Finished if address range ends before the end of this port */
+
+        if (LastAddress <= PortInfo->End)
+        {
+            break;
+        }
     }
 
-    ACPI_ERROR ((AE_INFO, "Hardware did not change modes"));
-    return_ACPI_STATUS (AE_NO_HARDWARE_RESPONSE);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
- * FUNCTION:    AcpiHwGetMode
+ * FUNCTION:    AcpiHwReadPort
  *
- * PARAMETERS:  none
+ * PARAMETERS:  Address             Address of I/O port/register to read
+ *              Value               Where value is placed
+ *              Width               Number of bits
  *
- * RETURN:      SYS_MODE_ACPI or SYS_MODE_LEGACY
+ * RETURN:      Value read from port
  *
- * DESCRIPTION: Return current operating state of system.  Determined by
- *              querying the SCI_EN bit.
+ * DESCRIPTION: Read data from an I/O port or register. This is a front-end
+ *              to AcpiOsReadPort that performs validation on both the port
+ *              address and the length.
  *
- ******************************************************************************/
+ *****************************************************************************/
 
-UINT32
-AcpiHwGetMode (
-    void)
+ACPI_STATUS
+AcpiHwReadPort (
+    ACPI_IO_ADDRESS         Address,
+    UINT32                  *Value,
+    UINT32                  Width)
 {
     ACPI_STATUS             Status;
-    UINT32                  Value;
 
 
-    ACPI_FUNCTION_TRACE (HwGetMode);
-
-
-    /*
-     * ACPI 2.0 clarified that if SMI_CMD in FADT is zero,
-     * system does not support mode transition.
-     */
-    if (!AcpiGbl_FADT.SmiCommand)
-    {
-        return_UINT32 (ACPI_SYS_MODE_ACPI);
-    }
-
-    Status = AcpiReadBitRegister (ACPI_BITREG_SCI_ENABLE, &Value);
+    Status = AcpiHwValidateIoRequest (Address, Width);
     if (ACPI_FAILURE (Status))
     {
-        return_UINT32 (ACPI_SYS_MODE_LEGACY);
+        return (Status);
     }
 
-    if (Value)
-    {
-        return_UINT32 (ACPI_SYS_MODE_ACPI);
-    }
-    else
-    {
-        return_UINT32 (ACPI_SYS_MODE_LEGACY);
-    }
+    Status = AcpiOsReadPort (Address, Value, Width);
+    return (Status);
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiHwWritePort
+ *
+ * PARAMETERS:  Address             Address of I/O port/register to write
+ *              Value               Value to write
+ *              Width               Number of bits
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Write data to an I/O port or register. This is a front-end
+ *              to AcpiOsWritePort that performs validation on both the port
+ *              address and the length.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiHwWritePort (
+    ACPI_IO_ADDRESS         Address,
+    UINT32                  Value,
+    UINT32                  Width)
+{
+    ACPI_STATUS             Status;
+
+
+    Status = AcpiHwValidateIoRequest (Address, Width);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    Status = AcpiOsWritePort (Address, Value, Width);
+    return (Status);
+}
+
+

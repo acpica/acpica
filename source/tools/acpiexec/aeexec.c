@@ -125,7 +125,7 @@ UINT32                      AmlLength;
 UINT8                       *DsdtPtr;
 UINT32                      AcpiDsdtLength;
 
-DEBUG_REGIONS               AeRegions;
+AE_DEBUG_REGIONS            AeRegions;
 ACPI_TABLE_RSDP             LocalRsdp;
 
 /*
@@ -395,11 +395,11 @@ AeBuildLocalTables (
     LocalFADT.Pm1ControlLength = 2;
     LocalFADT.PmTimerLength  = 4;
 
-    LocalFADT.Gpe0Block = 0x12340000;
-    LocalFADT.Gpe1Block = 0x56780000;
+    LocalFADT.Gpe0Block = 0x00001234;
+    LocalFADT.Gpe1Block = 0x00005678;
 
-    LocalFADT.Pm1aEventBlock = 0x1aaa0000;
-    LocalFADT.Pm1bEventBlock = 0x1bbb0000;
+    LocalFADT.Pm1aEventBlock = 0x00001aaa;
+    LocalFADT.Pm1bEventBlock = 0x00001bbb;
     LocalFADT.PmTimerBlock = 0xA0;
     LocalFADT.Pm1aControlBlock = 0xB0;
 
@@ -518,8 +518,9 @@ AeRegionHandler (
     ACPI_PHYSICAL_ADDRESS   BaseAddress;
     ACPI_SIZE               Length;
     BOOLEAN                 BufferExists;
-    REGION                  *RegionElement;
+    AE_REGION               *RegionElement;
     void                    *BufferValue;
+    ACPI_STATUS             Status;
     UINT32                  ByteWidth;
     UINT32                  i;
     UINT8                   SpaceId;
@@ -564,7 +565,35 @@ AeRegionHandler (
             AcpiUtGetRegionName (RegionObject->Region.SpaceId),
             (UINT32) Address));
 
-    if (SpaceId == ACPI_ADR_SPACE_SMBUS)
+    if (SpaceId == ACPI_ADR_SPACE_SYSTEM_IO)
+    {
+        /*
+         * For I/O space, exercise the port validation
+         */
+        switch (Function & ACPI_IO_MASK)
+        {
+        case ACPI_READ:
+            Status = AcpiHwReadPort (Address, (UINT32 *) Value, BitWidth);
+            break;
+
+        case ACPI_WRITE:
+            Status = AcpiHwWritePort (Address, (UINT32) *Value, BitWidth);
+            break;
+
+        default:
+            Status = AE_BAD_PARAMETER;
+            break;
+        }
+
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        /* Now go ahead and simulate the hardware */
+    }
+
+    else if (SpaceId == ACPI_ADR_SPACE_SMBUS)
     {
         Length = 0;
 
@@ -664,7 +693,7 @@ AeRegionHandler (
         /*
          * Do the memory allocations first
          */
-        RegionElement = AcpiOsAllocate (sizeof (REGION));
+        RegionElement = AcpiOsAllocate (sizeof (AE_REGION));
         if (!RegionElement)
         {
             return AE_NO_MEMORY;
@@ -1443,6 +1472,9 @@ ExecuteOSI (
         return (AE_ERROR);
     }
 
+    /* Reset the OSI data */
+
+    AcpiGbl_OsiData = 0;
     return (AE_OK);
 }
 
