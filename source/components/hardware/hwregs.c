@@ -307,6 +307,13 @@ AcpiHwRegisterRead (
         Status = AcpiHwReadMultiple (&Value,
                     &AcpiGbl_FADT.XPm1aControlBlock,
                     &AcpiGbl_FADT.XPm1bControlBlock);
+
+        /*
+         * Zero the write-only bits. From the ACPI specification, "Hardware
+         * Write-Only Bits": "Upon reads to registers with write-only bits,
+         * software masks out all write-only bits."
+         */
+        Value &= ~ACPI_PM1_CONTROL_WRITEONLY_BITS;
         break;
 
 
