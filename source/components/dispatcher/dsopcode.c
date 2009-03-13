@@ -512,23 +512,6 @@ AcpiDsGetRegionArguments (
         return_ACPI_STATUS (Status);
     }
 
-    /* Validate the region address/length via the host OS */
-
-    Status = AcpiOsValidateAddress (ObjDesc->Region.SpaceId,
-                ObjDesc->Region.Address, (ACPI_SIZE) ObjDesc->Region.Length);
-    if (ACPI_FAILURE (Status))
-    {
-        /*
-         * Invalid address/length. We will emit an error message and mark
-         * the region as invalid, so that it will cause an additional error if
-         * it is ever used. Then return AE_OK.
-         */
-        ACPI_EXCEPTION ((AE_INFO, Status,
-            "During address validation of OpRegion [%4.4s]", Node->Name.Ascii));
-        ObjDesc->Common.Flags |= AOPOBJ_INVALID;
-        Status = AE_OK;
-    }
-
     return_ACPI_STATUS (Status);
 }
 

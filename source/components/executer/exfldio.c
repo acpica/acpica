@@ -201,13 +201,6 @@ AcpiExSetupRegion (
         }
     }
 
-    /* Exit if Address/Length have been disallowed by the host OS */
-
-    if (RgnDesc->Common.Flags & AOPOBJ_INVALID)
-    {
-        return_ACPI_STATUS (AE_AML_ILLEGAL_ADDRESS);
-    }
-
     /*
      * Exit now for SMBus address space, it has a non-linear address space
      * and the request cannot be directly validated
