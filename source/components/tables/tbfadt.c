@@ -583,8 +583,10 @@ AcpiTbValidateFadt (
     {
         ACPI_WARNING ((AE_INFO,
             "32/64X FACS address mismatch in FADT - "
-            "two FACS tables! %8.8X/%8.8X%8.8X",
+            "%8.8X/%8.8X%8.8X, using 32",
             AcpiGbl_FADT.Facs, ACPI_FORMAT_UINT64 (AcpiGbl_FADT.XFacs)));
+
+        AcpiGbl_FADT.XFacs = (UINT64) AcpiGbl_FADT.Facs;
     }
 
     if (AcpiGbl_FADT.Dsdt &&
@@ -592,8 +594,10 @@ AcpiTbValidateFadt (
     {
         ACPI_WARNING ((AE_INFO,
             "32/64X DSDT address mismatch in FADT - "
-            "two DSDT tables! %8.8X/%8.8X%8.8X",
+            "%8.8X/%8.8X%8.8X, using 32",
             AcpiGbl_FADT.Dsdt, ACPI_FORMAT_UINT64 (AcpiGbl_FADT.XDsdt)));
+
+        AcpiGbl_FADT.XDsdt = (UINT64) AcpiGbl_FADT.Dsdt;
     }
 
     /* Examine all of the 64-bit extended address fields (X fields) */
