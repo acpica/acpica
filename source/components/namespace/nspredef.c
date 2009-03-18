@@ -161,7 +161,8 @@ AcpiNsCheckPackageElements (
     UINT8                       Type1,
     UINT32                      Count1,
     UINT8                       Type2,
-    UINT32                      Count2);
+    UINT32                      Count2,
+    UINT32                      StartIndex);
 
 static ACPI_STATUS
 AcpiNsCheckObjectType (
@@ -582,7 +583,7 @@ AcpiNsCheckPackage (
 
         Status = AcpiNsCheckPackageElements (Pathname, Elements,
                     Package->RetInfo.ObjectType1, Package->RetInfo.Count1,
-                    Package->RetInfo.ObjectType2, Package->RetInfo.Count2);
+                    Package->RetInfo.ObjectType2, Package->RetInfo.Count2, 0);
         if (ACPI_FAILURE (Status))
         {
             return (Status);
@@ -728,7 +729,7 @@ AcpiNsCheckPackage (
                             Package->RetInfo.ObjectType1,
                             Package->RetInfo.Count1,
                             Package->RetInfo.ObjectType2,
-                            Package->RetInfo.Count2);
+                            Package->RetInfo.Count2, 0);
                 if (ACPI_FAILURE (Status))
                 {
                     return (Status);
@@ -774,7 +775,7 @@ AcpiNsCheckPackage (
 
                 Status = AcpiNsCheckPackageElements (Pathname, SubElements,
                             Package->RetInfo.ObjectType1,
-                            SubPackage->Package.Count, 0, 0);
+                            SubPackage->Package.Count, 0, 0, 0);
                 if (ACPI_FAILURE (Status))
                 {
                     return (Status);
@@ -806,7 +807,7 @@ AcpiNsCheckPackage (
                 Status = AcpiNsCheckPackageElements (Pathname,
                             (SubElements + 1),
                             Package->RetInfo.ObjectType1,
-                            (ExpectedCount - 1), 0, 0);
+                            (ExpectedCount - 1), 0, 0, 1);
                 if (ACPI_FAILURE (Status))
                 {
                     return (Status);
@@ -857,6 +858,7 @@ PackageTooSmall:
  *              Count1          - Count for first group
  *              Type2           - Object type for second group
  *              Count2          - Count for second group
+ *              StartIndex      - Start of the first group of elements
  *
  * RETURN:      Status
  *
@@ -872,7 +874,8 @@ AcpiNsCheckPackageElements (
     UINT8                       Type1,
     UINT32                      Count1,
     UINT8                       Type2,
-    UINT32                      Count2)
+    UINT32                      Count2,
+    UINT32                      StartIndex)
 {
     ACPI_OPERAND_OBJECT         **ThisElement = Elements;
     ACPI_STATUS                 Status;
@@ -887,7 +890,7 @@ AcpiNsCheckPackageElements (
     for (i = 0; i < Count1; i++)
     {
         Status = AcpiNsCheckObjectType (Pathname, ThisElement,
-                    Type1, i);
+                    Type1, i + StartIndex);
         if (ACPI_FAILURE (Status))
         {
             return (Status);
@@ -898,7 +901,7 @@ AcpiNsCheckPackageElements (
     for (i = 0; i < Count2; i++)
     {
         Status = AcpiNsCheckObjectType (Pathname, ThisElement,
-                    Type2, (i + Count1));
+                    Type2, (i + Count1 + StartIndex));
         if (ACPI_FAILURE (Status))
         {
             return (Status);
