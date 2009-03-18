@@ -139,6 +139,10 @@ SOURCE=..\..\source\components\utilities\utinit.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utlock.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utmath.c
 # ADD CPP /Ze
 # End Source File
@@ -185,15 +189,6 @@ SOURCE=..\..\source\COMPONENTS\EVENTS\evgpeblk.c
 # Begin Source File
 
 SOURCE=..\..\source\components\events\evmisc.c
-
-!IF  "$(CFG)" == "AcpiSubsystem - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem - Win32 Debug"
-
-# SUBTRACT CPP /FA<none>
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -243,6 +238,10 @@ SOURCE=..\..\source\components\hardware\hwsleep.c
 
 SOURCE=..\..\source\components\hardware\hwtimer.c
 # ADD CPP /Ze
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\hardware\hwvalid.c
 # End Source File
 # Begin Source File
 

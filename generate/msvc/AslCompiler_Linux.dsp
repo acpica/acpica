@@ -85,7 +85,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo /o"/acpica/generate/msvc/AslCompilerLinuxDebug/AslCompiler_LinuxDebug.bsc" /o"/acpica/generate/msvc/AslCompilerLinuxDebug/AslCompilerLinux.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:no /debug /machine:I386 /out:"/acpica/generate/msvc/AslCompilerLinuxDebug/AslCompiler_LinuxDebug.exe" /pdbtype:sept /out:"/acpica/generate/msvc/AslCompilerLinuxDebug/iasllinuxdebug.exe"
+# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:no /debug /machine:I386 /pdbtype:sept /out:"/acpica/generate/msvc/AslCompilerLinuxDebug/AslCompiler_LinuxDebug.exe" /out:"/acpica/generate/msvc/AslCompilerLinuxDebug/iasllinuxdebug.exe"
 # SUBTRACT LINK32 /verbose /map
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
@@ -128,6 +128,10 @@ SOURCE=..\..\source_linux\components\utilities\utdelete.c
 # Begin Source File
 
 SOURCE=..\..\source_linux\components\utilities\utglobal.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\components\utilities\utlock.c
 # End Source File
 # Begin Source File
 

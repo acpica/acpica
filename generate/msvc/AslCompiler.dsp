@@ -138,6 +138,10 @@ SOURCE=..\..\source\components\utilities\utinit.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utlock.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utmath.c
 # End Source File
 # Begin Source File

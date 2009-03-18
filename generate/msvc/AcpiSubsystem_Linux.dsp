@@ -216,6 +216,10 @@ SOURCE=..\..\source_linux\COMPONENTS\utilities\utinit.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source_linux\components\utilities\utlock.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source_linux\COMPONENTS\utilities\utmath.c
 
 !IF  "$(CFG)" == "AcpiSubsystem_Linux - Win32 Release"
@@ -533,6 +537,10 @@ SOURCE=..\..\source_linux\COMPONENTS\HARDWARE\hwtimer.c
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\components\hardware\hwvalid.c
 # End Source File
 # Begin Source File
 

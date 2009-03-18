@@ -139,6 +139,10 @@ SOURCE=..\..\source\components\utilities\utinit.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utlock.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utmath.c
 # ADD CPP /Ze
 # End Source File
@@ -151,7 +155,6 @@ SOURCE=..\..\source\components\utilities\utmisc.c
 !ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
 
 # ADD CPP /Za
-# SUBTRACT CPP /FA<none>
 
 !ENDIF 
 
@@ -274,6 +277,10 @@ SOURCE=..\..\Source\components\hardware\hwsleep.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\hardware\hwvalid.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\hardware\hwxface.c
 # End Source File
 # End Group
@@ -331,6 +338,10 @@ SOURCE=..\..\source\Tools\AcpiExec\aeexec.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\tools\acpiexec\aehandlers.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\Tools\AcpiExec\aemain.c
 
 !IF  "$(CFG)" == "AcpiExec - Win32 Release"
@@ -340,10 +351,13 @@ SOURCE=..\..\source\Tools\AcpiExec\aemain.c
 !ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
 
 # ADD CPP /Ze /FR
-# SUBTRACT CPP /FA<none>
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\tools\acpiexec\aetables.c
 # End Source File
 # End Group
 # Begin Group "Debugger"
@@ -433,15 +447,6 @@ SOURCE=..\..\source\os_specific\service_layers\oswinxf.c
 # Begin Source File
 
 SOURCE=..\..\source\components\resources\rsaddr.c
-
-!IF  "$(CFG)" == "AcpiExec - Win32 Release"
-
-# SUBTRACT CPP /FA<none>
-
-!ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -454,15 +459,6 @@ SOURCE=..\..\source\components\resources\rscreate.c
 # Begin Source File
 
 SOURCE=..\..\source\components\resources\rsdump.c
-
-!IF  "$(CFG)" == "AcpiExec - Win32 Release"
-
-# SUBTRACT CPP /FA<none>
-
-!ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
