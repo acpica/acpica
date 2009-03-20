@@ -16,6 +16,8 @@ generate/msvc/AcpiXtractDebug
 generate/msvc/AcpiSrcLinuxDebug
 generate/msvc/AcpiSubsystemLinux
 generate/msvc/AcpiSubsystemLinuxDebug
+generate/msvc/AslCompiler_Linux/
+generate/msvc/AslCompiler_LinuxDebug/
 generate/msvc/AcpiSubsystem64
 generate/msvc/Examples
 generate/msvc/ExamplesDebug
@@ -25,7 +27,7 @@ generate/release/archive
 
 generate/lint/LintOut.txt
 
-libraries/AcpiExecDebug.exe
+libraries/acpiexecdebug.exe
 libraries/AcpiXtractDebug.exe
 libraries/AcpiBinDebug.exe
 libraries/AcpiSrcDebug.exe
