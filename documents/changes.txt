@@ -1,7 +1,74 @@
 ----------------------------------------
-20 February 2009. Summary of changes for version 20090220:
+20 March 2009. Summary of changes for version 20090320:
 
-This release is available at www.acpica.org/downloads.
+1) ACPI CA Core Subsystem:
+
+Fixed a possible race condition between AcpiWalkNamespace and dynamic table 
+unloads. Added a reader/writer locking mechanism to allow multiple concurrent 
+namespace walks (readers), but block a dynamic table unload until it can gain 
+exclusive write access to the namespace. This fixes a problem where a table 
+unload could (possibly catastrophically) delete the portion of the namespace 
+that is currently being examined by a walk. Adds a new file, utlock.c, that 
+implements the reader/writer lock mechanism. ACPICA BZ 749.
+
+Fixed a regression introduced in version 20090220 where a change to the FADT 
+handling could cause the ACPICA subsystem to access non-existent I/O ports.
+
+Modified the handling of FADT register and table (FACS/DSDT) addresses. The 
+FADT can contain both 32-bit and 64-bit versions of these addresses. 
+Previously, the 64-bit versions were favored, meaning that if both 32 and 64 
+versions were valid, but not equal, the 64-bit version was used. This was 
+found to cause some machines to fail. Now, in this case, the 32-bit version 
+is used instead. This now matches the Windows behavior.
+
+Implemented a new mechanism to protect certain I/O ports. Provides Microsoft 
+compatibility and protects the standard PC I/O ports from access via AML 
+code. Adds a new file, hwvalid.c
+
+Fixed a possible extraneous warning message from the FADT support. The 
+message warns of a 32/64 length mismatch between the legacy and GAS 
+definitions for a register.
+
+Removed the obsolete AcpiOsValidateAddress OSL interface. This interface is 
+made obsolete by the port protection mechanism above. It was previously used 
+to validate the entire address range of an operation region, which could be 
+incorrect if the range included illegal ports, but fields within the 
+operation region did not actually access those ports. Validation is now 
+performed on a per-field basis instead of the entire region.
+
+Modified the handling of the PM1 Status Register ignored bit (bit 11.) 
+Ignored bits must be "preserved" according to the ACPI spec. Usually, this 
+means a read/modify/write when writing to the register. However, for status 
+registers, writing a one means clear the event. Writing a zero means preserve 
+the event (do not clear.) This behavior is clarified in the ACPI 4.0 spec, 
+and the ACPICA code now simply always writes a zero to the ignored bit.
+
+Modified the handling of ignored bits for the PM1 A/B Control Registers. As 
+per the ACPI specification, for the control registers, preserve 
+(read/modify/write) all bits that are defined as either reserved or ignored.
+
+Updated the handling of write-only bits in the PM1 A/B Control Registers. 
+When reading the register, zero the write-only bits as per the ACPI spec. 
+ACPICA BZ 443. Lin Ming.
+
+Removed "Linux" from the list of supported _OSI strings. Linux no longer 
+wants to reply true to this request. The Windows strings are the only paths 
+through the AML that are tested and known to work properly.
+
+  Previous Release:
+    Non-Debug Version:  82.0K Code, 17.5K Data,  99.5K Total
+    Debug Version:     156.9K Code, 49.8K Data, 206.7K Total
+  Current Release:
+    Non-Debug Version:  82.6K Code, 17.6K Data, 100.2K Total
+    Debug Version:     157.7K Code, 49.9K Data, 207.6K Total
+
+2) iASL Compiler/Disassembler and Tools:
+
+Acpiexec: Split the large aeexec.c file into two new files, aehandlers.c and 
+aetables.c
+
+----------------------------------------
+20 February 2009. Summary of changes for version 20090220:
 
 1) ACPI CA Core Subsystem:
 
