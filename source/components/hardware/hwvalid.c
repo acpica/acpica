@@ -228,16 +228,17 @@ AcpiHwValidateIoRequest (
     ByteWidth = ACPI_DIV_8 (BitWidth);
     LastAddress = Address + ByteWidth - 1;
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Address %X LastAddress %X Length %X",
-        Address, LastAddress, ByteWidth));
+    ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Address %p LastAddress %p Length %X",
+        ACPI_CAST_PTR (void, Address), ACPI_CAST_PTR (void, LastAddress),
+        ByteWidth));
 
     /* Maximum 16-bit address in I/O space */
 
     if (LastAddress > ACPI_UINT16_MAX)
     {
         ACPI_ERROR ((AE_INFO,
-            "Illegal I/O port address/length above 64K: %X/%X",
-            Address, ByteWidth));
+            "Illegal I/O port address/length above 64K: 0x%p/%X",
+            ACPI_CAST_PTR (void, Address), ByteWidth));
         return_ACPI_STATUS (AE_AML_ILLEGAL_ADDRESS);
     }
 
@@ -268,8 +269,8 @@ AcpiHwValidateIoRequest (
             if (AcpiGbl_OsiData >= PortInfo->OsiDependency)
             {
                 ACPI_ERROR ((AE_INFO,
-                    "Denied AML access to port 0x%.4X/%X (%s 0x%.4X-0x%.4X)",
-                    Address, ByteWidth, PortInfo->Name,
+                    "Denied AML access to port 0x%p/%X (%s 0x%.4X-0x%.4X)",
+                    ACPI_CAST_PTR (void, Address), ByteWidth, PortInfo->Name,
                     PortInfo->Start, PortInfo->End));
 
                 return_ACPI_STATUS (AE_AML_ILLEGAL_ADDRESS);
