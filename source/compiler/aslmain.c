@@ -170,6 +170,7 @@ Options (
 
     printf ("General Output:\n");
     printf ("  -p <prefix>    Specify path/filename prefix for all output files\n");
+    printf ("  -va            Disable all errors and warnings (summary only)\n");
     printf ("  -vi            Less verbose errors and warnings for use with IDEs\n");
     printf ("  -vo            Enable optimization comments\n");
     printf ("  -vr            Disable remarks\n");
@@ -620,6 +621,12 @@ AslCommandLine (
 
         switch (AcpiGbl_Optarg[0])
         {
+        case 'a':
+            /* Disable All error/warning messages */
+
+            Gbl_NoErrors = TRUE;
+            break;
+
         case 'i':
             /* Less verbose error messages */
 

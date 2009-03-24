@@ -247,6 +247,11 @@ AePrintException (
     FILE                    *SourceFile;
 
 
+    if (Gbl_NoErrors)
+    {
+        return;
+    }
+
     /*
      * Only listing files have a header, and remarks/optimizations
      * are always output
