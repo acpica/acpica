@@ -137,16 +137,20 @@
         ACPI_MODULE_NAME    ("oswinxf")
 
 
-#define NUM_SEMAPHORES      128
+/* Semaphore information structure */
 
-typedef struct semaphore_entry
+typedef struct acpi_os_semaphore_info
 {
     UINT16                  MaxUnits;
     UINT16                  CurrentUnits;
     void                    *OsHandle;
-} SEMAPHORE_ENTRY;
 
-SEMAPHORE_ENTRY             AcpiGbl_Semaphores[NUM_SEMAPHORES];
+} ACPI_OS_SEMAPHORE_INFO;
+
+#define ACPI_OS_MAX_SEMAPHORES  256 // Enough to run large aslts suite
+
+ACPI_OS_SEMAPHORE_INFO          AcpiGbl_Semaphores[ACPI_OS_MAX_SEMAPHORES];
+
 
 /* Upcalls to AcpiExec */
 
@@ -204,16 +208,16 @@ AcpiOsTerminate (void)
 ACPI_STATUS
 AcpiOsInitialize (void)
 {
-    UINT32                  i;
     LARGE_INTEGER           LocalTimerFrequency;
 
 
     AcpiGbl_OutputFile = stdout;
 
-    for (i = 0; i < NUM_SEMAPHORES; i++)
-    {
-        AcpiGbl_Semaphores[i].OsHandle = NULL;
-    }
+    /* Clear the semaphore info array */
+
+    memset (AcpiGbl_Semaphores, 0x00, sizeof (AcpiGbl_Semaphores));
+
+    /* Get the timer frequency for use in AcpiOsGetTimer */
 
     TimerFrequency = 0;
     if (QueryPerformanceFrequency (&LocalTimerFrequency))
@@ -707,15 +711,17 @@ AcpiOsCreateSemaphore (
 
     /* Find an empty slot */
 
-    for (i = 0; i < NUM_SEMAPHORES; i++)
+    for (i = 0; i < ACPI_OS_MAX_SEMAPHORES; i++)
     {
         if (!AcpiGbl_Semaphores[i].OsHandle)
         {
             break;
         }
     }
-    if (i >= NUM_SEMAPHORES)
+    if (i >= ACPI_OS_MAX_SEMAPHORES)
     {
+        ACPI_EXCEPTION ((AE_INFO, AE_LIMIT,
+            "Reached max semaphores (%d), could not create", ACPI_OS_MAX_SEMAPHORES));
         return AE_LIMIT;
     }
 
@@ -761,7 +767,7 @@ AcpiOsDeleteSemaphore (
     UINT32              Index = (UINT32) Handle;
 
 
-    if ((Index >= NUM_SEMAPHORES) ||
+    if ((Index >= ACPI_OS_MAX_SEMAPHORES) ||
         !AcpiGbl_Semaphores[Index].OsHandle)
     {
         return AE_BAD_PARAMETER;
@@ -807,7 +813,7 @@ AcpiOsWaitSemaphore (
     ACPI_FUNCTION_ENTRY ();
 
 
-    if ((Index >= NUM_SEMAPHORES) ||
+    if ((Index >= ACPI_OS_MAX_SEMAPHORES) ||
         !AcpiGbl_Semaphores[Index].OsHandle)
     {
         return AE_BAD_PARAMETER;
@@ -889,7 +895,7 @@ AcpiOsSignalSemaphore (
     ACPI_FUNCTION_ENTRY ();
 
 
-    if (Index >= NUM_SEMAPHORES)
+    if (Index >= ACPI_OS_MAX_SEMAPHORES)
     {
         printf ("SignalSemaphore: Index/Handle out of range: %2.2X\n", Index);
         return AE_BAD_PARAMETER;
