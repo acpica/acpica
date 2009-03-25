@@ -617,7 +617,7 @@ AcpiSetFirmwareWakingVector64 (
 
 
 /*
- * Debug output
+ * Error/Warning output
  */
 void ACPI_INTERNAL_VAR_XFACE
 AcpiError (
@@ -649,6 +649,9 @@ AcpiInfo (
     ...) ACPI_PRINTF_LIKE(3);
 
 
+/*
+ * Debug output
+ */
 #ifdef ACPI_DEBUG_OUTPUT
 
 void ACPI_INTERNAL_VAR_XFACE

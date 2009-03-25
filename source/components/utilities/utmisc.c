@@ -1279,11 +1279,11 @@ AcpiError (
     va_list                 args;
 
 
-    AcpiOsPrintf ("ACPI Error (%s-%04d): ", ModuleName, LineNumber);
+    AcpiOsPrintf ("ACPI Error: ");
 
     va_start (args, Format);
     AcpiOsVprintf (Format, args);
-    AcpiOsPrintf (" [%X]\n", ACPI_CA_VERSION);
+    AcpiOsPrintf (" %8.8X %s-%u\n", ACPI_CA_VERSION, ModuleName, LineNumber);
     va_end (args);
 }
 
@@ -1298,12 +1298,11 @@ AcpiException (
     va_list                 args;
 
 
-    AcpiOsPrintf ("ACPI Exception (%s-%04d): %s, ", ModuleName, LineNumber,
-        AcpiFormatException (Status));
+    AcpiOsPrintf ("ACPI Exception: %s, ", AcpiFormatException (Status));
 
     va_start (args, Format);
     AcpiOsVprintf (Format, args);
-    AcpiOsPrintf (" [%X]\n", ACPI_CA_VERSION);
+    AcpiOsPrintf (" %8.8X %s-%u\n", ACPI_CA_VERSION, ModuleName, LineNumber);
     va_end (args);
 }
 
@@ -1317,11 +1316,11 @@ AcpiWarning (
     va_list                 args;
 
 
-    AcpiOsPrintf ("ACPI Warning (%s-%04d): ", ModuleName, LineNumber);
+    AcpiOsPrintf ("ACPI Warning: ");
 
     va_start (args, Format);
     AcpiOsVprintf (Format, args);
-    AcpiOsPrintf (" [%X]\n", ACPI_CA_VERSION);
+    AcpiOsPrintf (" %8.8X %s-%u\n", ACPI_CA_VERSION, ModuleName, LineNumber);
     va_end (args);
 }
 
@@ -1335,10 +1334,6 @@ AcpiInfo (
     va_list                 args;
 
 
-    /*
-     * Removed ModuleName, LineNumber, and acpica version, not needed
-     * for info output
-     */
     AcpiOsPrintf ("ACPI: ");
 
     va_start (args, Format);
