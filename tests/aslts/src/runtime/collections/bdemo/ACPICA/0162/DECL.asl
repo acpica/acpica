@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -59,7 +57,7 @@ Name(BUF0, Buffer(Divide(i002, 0)){1,2,3,4,5,6,7,8,0xff})
  * md7d - check, register errors and reset the global level execution exception,
  *        set up id01 to non-zero in error case.
  */
-Name(BUF1, Buffer(md7d()){}) 
+Name(BUF1, Buffer(md7d()){})
 
 Method(md78)
 {

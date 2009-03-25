@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -49,11 +47,11 @@ Method(me0a)
 			{0xfcfdfeff}
 
 		QWordIO ( , , , , ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff                    ,, "PATHPATHPATH")
 
 		QWordMemory ( , , , , , ReadOnly,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff                    ,, "PATHPATHPATH")
 
 		WordBusNumber ( , , , ,

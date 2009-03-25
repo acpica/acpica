@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -34,12 +32,12 @@
  *
  * Buffer field to Buffer implicit conversion Cases.
  * First, Buffer field is evaluated either as Integer or as Buffer.
- * Conversion only takes place for Integer in which case 
+ * Conversion only takes place for Integer in which case
  * Integer to Buffer test constructions should be used.
  *
  * Buffer field to Integer implicit conversion Cases.
  * First, Buffer field is evaluated either as Integer or as Buffer.
- * Conversion only takes place for Buffer in which case 
+ * Conversion only takes place for Buffer in which case
  * Buffer to Integer test constructions should be used.
  *
  * Buffer field to String implicit conversion Cases.
@@ -11246,7 +11244,7 @@ Method(m612)
 	// Common 32-bit/64-bit test
 	Method(m069, 1)
 	{
-		// Buffer Field to Integer conversion of the Buffer Field Index operand 
+		// Buffer Field to Integer conversion of the Buffer Field Index operand
 
 		Store(Mid("This is auxiliary String", bf74, 10), Local0)
 		m600(arg0, 0, Local0, bs1d)
@@ -11338,7 +11336,7 @@ Method(m612)
 			m600(arg0, 23, Local0, bb32)
 		}
 
-		// Buffer Field to Integer conversion of the Buffer Field Length operand 
+		// Buffer Field to Integer conversion of the Buffer Field Length operand
 
 		Store(Mid("This is auxiliary String", 0, bf74), Local0)
 		m600(arg0, 24, Local0, bs1b)
@@ -11432,7 +11430,7 @@ Method(m612)
 
 	Method(m64s, 1)
 	{
-		// Buffer Field to Integer conversion of the Buffer Field Length operand 
+		// Buffer Field to Integer conversion of the Buffer Field Length operand
 
 		Store(Mid("This is auxiliary String", 0, bf65), Local0)
 		m600(arg0, 0, Local0, bs1e)
@@ -11617,7 +11615,7 @@ Method(m612)
 
 	Method(m32s, 1)
 	{
-		// Buffer Field to Integer conversion of the Buffer Field Length operand 
+		// Buffer Field to Integer conversion of the Buffer Field Length operand
 
 		Store(Mid("This is auxiliary String", 0, bf65), Local0)
 		m600(arg0, 0, Local0, bs1e)

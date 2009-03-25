@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -123,7 +121,7 @@ Name (p404, Package() {
 
 /*
 ACPI Specification, Revision 3.0, September 2, 2004
-6.4.2.2   DMA Descriptor 
+6.4.2.2   DMA Descriptor
 
 DMA Descriptor layout:
 
@@ -139,9 +137,9 @@ Bits[6:5]	DMA channel speed supported, _TYP
 			11	Indicates Type F
 Bit[2] 		Logical device bus master status, _BM
 			0	Logical device is not a bus master
-			1	Logical device is a bus master 
+			1	Logical device is a bus master
 Bits[1:0]	DMA transfer type preference, _SIZ
-			00	8-bit only 
+			00	8-bit only
 			01	8- and 16-bit
 			10	16-bit only
 			11	Reserved

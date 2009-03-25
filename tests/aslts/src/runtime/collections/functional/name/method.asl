@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -61,16 +59,16 @@ Name(z133, 133)
  * - ASL compiler should allow only an Type3Opcode (integer) constant
  *   expression of the value in the range 0-7 in the NumArgs position.
  *   NumArgs is optional argument.
- * 
+ *
  * - ASL compiler should allow only the keywords 'NotSerialized'
  *   and 'Serialized' in the SerializeRule position. SerializeRule
  *   is optional argument.
- * 
+ *
  * - ASL compiler should allow only an Type3Opcode (integer) constant
  *   expression of the value in the range 0-15 in the SyncLevel position.
  *   SyncLevel is optional argument. If no SyncLevel is specified, SyncLevel
  *   0 is assumed.
- * 
+ *
  * - ASL compiler should allow only an ObjectTypeKeyword or
  *   a comma-separated ObjectTypeKeywords enclosed with curly
  *   brackets (OTK package) in the ReturnType position. ReturnType
@@ -78,21 +76,21 @@ Name(z133, 133)
  *   UnknownObj is assumed.
  *   ObjectTypeKeyword := UnknownObj | IntObj | StrObj | BuffObj |
  *                        PkgObj | FieldUnitObj | DeviceObj | EventObj |
- *                        MethodObj | MutexObj | OpRegionObj | PowerResObj | 
- *                        ThermalZoneObj | BuffFieldObj | DDBHandleObj 
- * 
+ *                        MethodObj | MutexObj | OpRegionObj | PowerResObj |
+ *                        ThermalZoneObj | BuffFieldObj | DDBHandleObj
+ *
  * - Every ASL data type should have a respective unique ObjectType Keyword.
- * 
+ *
  * - ASL compiler should report an error when an actual Object specified
  *   to be returned is of inappropriate type.
- * 
+ *
  * - ASL compiler should report an error when there is at least one
  *   control path in the method that returns no any actual Object.
- * 
+ *
  * - ASL compiler should report an error when some different from
  *   UnknownObj ObjectType Keyword specified in the ReturnType position
  *   but no any actual Object specified to be returned.
- * 
+ *
  * - ASL compiler should allow only an OTK package or a package
  *   containing OTK packages along with ObjectTypeKeywords in the
  *   ParameterTypes position.
@@ -100,43 +98,43 @@ Name(z133, 133)
  * - ASL compiler should report an error when ParameterTypes is specified
  *   and the number of members in the ParameterTypes package don't match
  *   NumArgs.
- * 
+ *
  * - ASL compiler should report an error when an actual Object
  *   specified to be a respective argument of the Method is of
  *   inappropriate type.
- * 
+ *
  * - System software should execute a control method by referencing
  *   the objects in the Method body in order.
- * 
+ *
  * - Method opens a name scope. All namespace references that occur
  *   during the method execution are relative to the Method package
  *   location.
- * 
+ *
  * - If the  method is declared as Serialized, it can be called
  *   recursively, maybe, through another auxiliary method.
- * 
+ *
  * - One method declared as Serialized can call another
  *   one declared as Serialized too when the SyncLevel of
  *   the second method is not less than that of the first.
- * 
+ *
  * - The method declared as Serialized can acquire an Mutex
  *   when the SyncLevel of the Mutex is not less than that of
  *   the method.
- * 
+ *
  * - If some method acquired an Mutex it can call another one
  *   declared as Serialized when the SyncLevel of the called
  *   method is not less than that of the Mutex.
- * 
+ *
  * - All Acquire terms must refer to a synchronization object
  *   with an equal or greater SyncLevel to the current Method level.
- * 
+ *
  * - The method declared as Serialized can release an Mutex
  *   when the SyncLevel of the Mutex is not less than that of
  *   the method.
- * 
+ *
  * - All namespace objects created by a method should be destroyed
  *   when method execution exits.
- * 
+ *
  */
 
 // Flags of types of Computational Data Objects

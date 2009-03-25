@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -31,7 +29,7 @@
 /*
  * Resource Descriptor macros
  *
- * Resource To Buffer Conversion Macro 
+ * Resource To Buffer Conversion Macro
  */
 
 Name (p438, Package() {
@@ -47,12 +45,12 @@ Name (p438, Package() {
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff)
 		Memory32Fixed (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7)
-		VendorLong () {0x9f, 
+		VendorLong () {0x9f,
 			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
 			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
 			0x00, 0x01, 0x02, 0x03}
 		QWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QIOX, TypeTranslation, SparseTranslation)
 		DWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
@@ -62,7 +60,7 @@ Name (p438, Package() {
 			0xf6f7, 0xf8f9, 0xfafb, 0xfcfd, 0xfeff,
 			0xff, "PATHPATHPATH", WIOX, TypeTranslation, SparseTranslation)
 		QWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QMEX, AddressRangeACPI, TypeTranslation)
 		DWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
@@ -93,22 +91,22 @@ Name (p438, Package() {
 			241,242,243,244,245,246,247,248,249,250,251,252,253,254,255}
 		Register (FFixedHW, 0xf0, 0xf1, 0xf2f3f4f5f6f7f8f9)
 		ExtendedIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EIOX, TypeTranslation, SparseTranslation)
 		ExtendedMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EMEX, AddressRangeACPI, TypeTranslation)
 		ExtendedSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			ESPX)
 		DWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
 			0xecedeeef, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff,
 			0xff, "PATHPATHPATH", DSPX)
 		QWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QSPX)
 		WordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
@@ -175,12 +173,12 @@ Name (p438, Package() {
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff)
 		Memory32Fixed (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7)
-		VendorLong () {0x9f, 
+		VendorLong () {0x9f,
 			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
 			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
 			0x00, 0x01, 0x02, 0x03}
 		QWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QIOY, TypeTranslation, SparseTranslation)
 		DWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
@@ -190,7 +188,7 @@ Name (p438, Package() {
 			0xf6f7, 0xf8f9, 0xfafb, 0xfcfd, 0xfeff,
 			0xff, "PATHPATHPATH", WIOY, TypeTranslation, SparseTranslation)
 		QWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QMEY, AddressRangeACPI, TypeTranslation)
 		DWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
@@ -221,22 +219,22 @@ Name (p438, Package() {
 			241,242,243,244,245,246,247,248,249,250,251,252,253,254,255}
 		Register (FFixedHW, 0xf0, 0xf1, 0xf2f3f4f5f6f7f8f9)
 		ExtendedIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EIOY, TypeTranslation, SparseTranslation)
 		ExtendedMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EMEY, AddressRangeACPI, TypeTranslation)
 		ExtendedSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			ESPY)
 		DWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
 			0xecedeeef, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff,
 			0xff, "PATHPATHPATH", DSPY)
 		QWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QSPY)
 		WordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
@@ -265,7 +263,7 @@ Name (p438, Package() {
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff)
 		Memory32Fixed (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7)
-		VendorLong () {0x9f, 
+		VendorLong () {0x9f,
 			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
 			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
 			0x00, 0x01, 0x02, 0x03}
@@ -288,12 +286,12 @@ Name (p445, Package() {
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24Z)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32Z)
 		Memory32Fixed (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7, M3FZ)
-		VendorLong () {0x9f, 
+		VendorLong () {0x9f,
 			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
 			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
 			0x00, 0x01, 0x02, 0x03}
 		QWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QIOZ, TypeTranslation, SparseTranslation)
 		DWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
@@ -303,7 +301,7 @@ Name (p445, Package() {
 			0xf6f7, 0xf8f9, 0xfafb, 0xfcfd, 0xfeff,
 			0xff, "PATHPATHPATH", WIOZ, TypeTranslation, SparseTranslation)
 		QWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QMEZ, AddressRangeACPI, TypeTranslation)
 		DWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
@@ -334,22 +332,22 @@ Name (p445, Package() {
 			241,242,243,244,245,246,247,248,249,250,251,252,253,254,255}
 		Register (FFixedHW, 0xf0, 0xf1, 0xf2f3f4f5f6f7f8f9)
 		ExtendedIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EIOZ, TypeTranslation, SparseTranslation)
 		ExtendedMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EMEZ, AddressRangeACPI, TypeTranslation)
 		ExtendedSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			ESPZ)
 		DWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
 			0xecedeeef, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff,
 			0xff, "PATHPATHPATH", DSPZ)
 		QWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QSPZ)
 		WordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
@@ -367,12 +365,12 @@ Name (p445, Package() {
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M241)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32Y)
 		Memory32Fixed (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7, M3F1)
-		VendorLong () {0x9f, 
+		VendorLong () {0x9f,
 			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
 			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
 			0x00, 0x01, 0x02, 0x03}
 		QWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QIO1, TypeTranslation, SparseTranslation)
 		DWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
@@ -382,7 +380,7 @@ Name (p445, Package() {
 			0xf6f7, 0xf8f9, 0xfafb, 0xfcfd, 0xfeff,
 			0xff, "PATHPATHPATH", WIO1, TypeTranslation, SparseTranslation)
 		QWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QME1, AddressRangeACPI, TypeTranslation)
 		DWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
@@ -413,22 +411,22 @@ Name (p445, Package() {
 			241,242,243,244,245,246,247,248,249,250,251,252,253,254,255}
 		Register (FFixedHW, 0xf0, 0xf1, 0xf2f3f4f5f6f7f8f9)
 		ExtendedIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EIO1, TypeTranslation, SparseTranslation)
 		ExtendedMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EME1, AddressRangeACPI, TypeTranslation)
 		ExtendedSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			ESP1)
 		DWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
 			0xecedeeef, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff,
 			0xff, "PATHPATHPATH", DSP1)
 		QWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QSP1)
 		WordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
@@ -496,12 +494,12 @@ Name (p445, Package() {
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24G)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32G)
 		Memory32Fixed (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7, M3FG)
-		VendorLong () {0x9f, 
+		VendorLong () {0x9f,
 			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
 			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
 			0x00, 0x01, 0x02, 0x03}
 		QWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QIOG, TypeTranslation, SparseTranslation)
 		DWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
@@ -511,7 +509,7 @@ Name (p445, Package() {
 			0xf6f7, 0xf8f9, 0xfafb, 0xfcfd, 0xfeff,
 			0xff, "PATHPATHPATH", WIOG, TypeTranslation, SparseTranslation)
 		QWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QMEG, AddressRangeACPI, TypeTranslation)
 		DWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
@@ -542,22 +540,22 @@ Name (p445, Package() {
 			241,242,243,244,245,246,247,248,249,250,251,252,253,254,255}
 		Register (FFixedHW, 0xf0, 0xf1, 0xf2f3f4f5f6f7f8f9)
 		ExtendedIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EIOG, TypeTranslation, SparseTranslation)
 		ExtendedMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EMEG, AddressRangeACPI, TypeTranslation)
 		ExtendedSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			ESPG)
 		DWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
 			0xecedeeef, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff,
 			0xff, "PATHPATHPATH", DSPG)
 		QWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QSPG)
 		WordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
@@ -586,7 +584,7 @@ Name (p445, Package() {
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24K)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32K)
 		Memory32Fixed (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7, M3FK)
-		VendorLong () {0x9f, 
+		VendorLong () {0x9f,
 			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
 			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
 			0x00, 0x01, 0x02, 0x03}
@@ -655,12 +653,12 @@ Name (p445, Package() {
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24H)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32H)
 		Memory32Fixed (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7, M3FH)
-		VendorLong () {0x9f, 
+		VendorLong () {0x9f,
 			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
 			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
 			0x00, 0x01, 0x02, 0x03}
 		QWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QIOH, TypeTranslation, SparseTranslation)
 		DWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
@@ -670,7 +668,7 @@ Name (p445, Package() {
 			0xf6f7, 0xf8f9, 0xfafb, 0xfcfd, 0xfeff,
 			0xff, "PATHPATHPATH", WIOH, TypeTranslation, SparseTranslation)
 		QWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QMEH, AddressRangeACPI, TypeTranslation)
 		DWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
@@ -701,22 +699,22 @@ Name (p445, Package() {
 			241,242,243,244,245,246,247,248,249,250,251,252,253,254,255}
 		Register (FFixedHW, 0xf0, 0xf1, 0xf2f3f4f5f6f7f8f9)
 		ExtendedIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EIOH, TypeTranslation, SparseTranslation)
 		ExtendedMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EMEH, AddressRangeACPI, TypeTranslation)
 		ExtendedSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			ESPH)
 		DWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
 			0xecedeeef, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff,
 			0xff, "PATHPATHPATH", DSPH)
 		QWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QSPH)
 		WordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
@@ -745,7 +743,7 @@ Name (p445, Package() {
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24L)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32L)
 		Memory32Fixed (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7, M3FL)
-		VendorLong () {0x9f, 
+		VendorLong () {0x9f,
 			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
 			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
 			0x00, 0x01, 0x02, 0x03}
@@ -757,7 +755,7 @@ Name (p445, Package() {
 
 /*
 ACPI Specification, Revision 3.0, September 2, 2004
-6.4.2.8   End Tag 
+6.4.2.8   End Tag
 
 Type 0, Small Item Name 0xF, Length = 1
 The End tag identifies an end of resource data.
@@ -2152,12 +2150,12 @@ Method(RT1c)
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M240)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M320)
 		Memory32Fixed (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7, M3F0)
-		VendorLong () {0x9f, 
+		VendorLong () {0x9f,
 			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
 			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
 			0x00, 0x01, 0x02, 0x03}
 		QWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QIO0, TypeTranslation, SparseTranslation)
 		DWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
@@ -2167,7 +2165,7 @@ Method(RT1c)
 			0xf6f7, 0xf8f9, 0xfafb, 0xfcfd, 0xfeff,
 			0xff, "PATHPATHPATH", WIO0, TypeTranslation, SparseTranslation)
 		QWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QME0, AddressRangeACPI, TypeTranslation)
 		DWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
@@ -2198,22 +2196,22 @@ Method(RT1c)
 			241,242,243,244,245,246,247,248,249,250,251,252,253,254,255}
 		Register (FFixedHW, 0xf0, 0xf1, 0xf2f3f4f5f6f7f8f9)
 		ExtendedIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EIO0, TypeTranslation, SparseTranslation)
 		ExtendedMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EME0, AddressRangeACPI, TypeTranslation)
 		ExtendedSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			ESP0)
 		DWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
 			0xecedeeef, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff,
 			0xff, "PATHPATHPATH", DSP0)
 		QWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QSP0)
 		WordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
@@ -2231,12 +2229,12 @@ Method(RT1c)
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M241)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M321)
 		Memory32Fixed (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7, M3F1)
-		VendorLong () {0x9f, 
+		VendorLong () {0x9f,
 			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
 			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
 			0x00, 0x01, 0x02, 0x03}
 		QWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QIO1, TypeTranslation, SparseTranslation)
 		DWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
@@ -2246,7 +2244,7 @@ Method(RT1c)
 			0xf6f7, 0xf8f9, 0xfafb, 0xfcfd, 0xfeff,
 			0xff, "PATHPATHPATH", WIO1, TypeTranslation, SparseTranslation)
 		QWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QME1, AddressRangeACPI, TypeTranslation)
 		DWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
@@ -2277,22 +2275,22 @@ Method(RT1c)
 			241,242,243,244,245,246,247,248,249,250,251,252,253,254,255}
 		Register (FFixedHW, 0xf0, 0xf1, 0xf2f3f4f5f6f7f8f9)
 		ExtendedIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EIO1, TypeTranslation, SparseTranslation)
 		ExtendedMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EME1, AddressRangeACPI, TypeTranslation)
 		ExtendedSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			ESP1)
 		DWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
 			0xecedeeef, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff,
 			0xff, "PATHPATHPATH", DSP1)
 		QWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QSP1)
 		WordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
@@ -2360,12 +2358,12 @@ Method(RT1c)
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24G)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32G)
 		Memory32Fixed (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7, M3FG)
-		VendorLong () {0x9f, 
+		VendorLong () {0x9f,
 			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
 			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
 			0x00, 0x01, 0x02, 0x03}
 		QWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QIOG, TypeTranslation, SparseTranslation)
 		DWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
@@ -2375,7 +2373,7 @@ Method(RT1c)
 			0xf6f7, 0xf8f9, 0xfafb, 0xfcfd, 0xfeff,
 			0xff, "PATHPATHPATH", WIOG, TypeTranslation, SparseTranslation)
 		QWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QMEG, AddressRangeACPI, TypeTranslation)
 		DWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
@@ -2406,22 +2404,22 @@ Method(RT1c)
 			241,242,243,244,245,246,247,248,249,250,251,252,253,254,255}
 		Register (FFixedHW, 0xf0, 0xf1, 0xf2f3f4f5f6f7f8f9)
 		ExtendedIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EIOG, TypeTranslation, SparseTranslation)
 		ExtendedMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EMEG, AddressRangeACPI, TypeTranslation)
 		ExtendedSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			ESPG)
 		DWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
 			0xecedeeef, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff,
 			0xff, "PATHPATHPATH", DSPG)
 		QWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QSPG)
 		WordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
@@ -2450,7 +2448,7 @@ Method(RT1c)
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24K)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32K)
 		Memory32Fixed (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7, M3FK)
-		VendorLong () {0x9f, 
+		VendorLong () {0x9f,
 			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
 			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
 			0x00, 0x01, 0x02, 0x03}
@@ -2519,12 +2517,12 @@ Method(RT1c)
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24H)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32H)
 		Memory32Fixed (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7, M3FH)
-		VendorLong () {0x9f, 
+		VendorLong () {0x9f,
 			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
 			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
 			0x00, 0x01, 0x02, 0x03}
 		QWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QIOH, TypeTranslation, SparseTranslation)
 		DWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
@@ -2534,7 +2532,7 @@ Method(RT1c)
 			0xf6f7, 0xf8f9, 0xfafb, 0xfcfd, 0xfeff,
 			0xff, "PATHPATHPATH", WIOH, TypeTranslation, SparseTranslation)
 		QWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QMEH, AddressRangeACPI, TypeTranslation)
 		DWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
@@ -2565,22 +2563,22 @@ Method(RT1c)
 			241,242,243,244,245,246,247,248,249,250,251,252,253,254,255}
 		Register (FFixedHW, 0xf0, 0xf1, 0xf2f3f4f5f6f7f8f9)
 		ExtendedIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EIOH, TypeTranslation, SparseTranslation)
 		ExtendedMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EMEH, AddressRangeACPI, TypeTranslation)
 		ExtendedSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			ESPH)
 		DWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
 			0xecedeeef, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff,
 			0xff, "PATHPATHPATH", DSPH)
 		QWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QSPH)
 		WordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
@@ -2609,7 +2607,7 @@ Method(RT1c)
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24L)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32L)
 		Memory32Fixed (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7, M3FL)
-		VendorLong () {0x9f, 
+		VendorLong () {0x9f,
 			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
 			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
 			0x00, 0x01, 0x02, 0x03}

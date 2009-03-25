@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -11994,7 +11992,7 @@ Method(m61a)
 	// Common 32-bit/64-bit test
 	Method(m02f, 1)
 	{
-		// String to Integer conversion of the String Index operand 
+		// String to Integer conversion of the String Index operand
 
 		Store(Mid("This is auxiliary String", Derefof(m604(2, 2, 20, 1)), 10), Local0)
 		m600(arg0, 0, Local0, bs1d)
@@ -12086,7 +12084,7 @@ Method(m61a)
 			m600(arg0, 23, Local0, bb32)
 		}
 
-		// String to Integer conversion of the String Length operand 
+		// String to Integer conversion of the String Length operand
 
 		Store(Mid("This is auxiliary String", 0, Derefof(m604(2, 2, 20, 1))), Local0)
 		m600(arg0, 24, Local0, bs1b)
@@ -12180,7 +12178,7 @@ Method(m61a)
 
 	Method(m64i, 1)
 	{
-		// String to Integer conversion of the String Length operand 
+		// String to Integer conversion of the String Length operand
 
 		Store(Mid("This is auxiliary String", 0, Derefof(m604(2, 2, 5, 1))), Local0)
 		m600(arg0, 0, Local0, bs1e)
@@ -12365,7 +12363,7 @@ Method(m61a)
 
 	Method(m32i, 1)
 	{
-		// String to Integer conversion of the String Length operand 
+		// String to Integer conversion of the String Length operand
 
 		Store(Mid("This is auxiliary String", 0, Derefof(m604(2, 2, 4, 1))), Local0)
 		m600(arg0, 0, Local0, bs1e)
@@ -23416,7 +23414,7 @@ Method(m61a)
 	// Common 32-bit/64-bit test
 	Method(m069, 1)
 	{
-		// String to Integer conversion of the String Index operand 
+		// String to Integer conversion of the String Index operand
 
 		Store(Mid("This is auxiliary String", Derefof(m604(2, 3, 14, 1)), 10), Local0)
 		m600(arg0, 0, Local0, bs1d)
@@ -23508,7 +23506,7 @@ Method(m61a)
 			m600(arg0, 23, Local0, bb32)
 		}
 
-		// String to Integer conversion of the String Length operand 
+		// String to Integer conversion of the String Length operand
 
 		Store(Mid("This is auxiliary String", 0, Derefof(m604(2, 3, 14, 1))), Local0)
 		m600(arg0, 24, Local0, bs1b)
@@ -23602,7 +23600,7 @@ Method(m61a)
 
 	Method(m64s, 1)
 	{
-		// String to Integer conversion of the String Length operand 
+		// String to Integer conversion of the String Length operand
 
 		Store(Mid("This is auxiliary String", 0, Derefof(m604(2, 3, 10, 1))), Local0)
 		m600(arg0, 0, Local0, bs1e)
@@ -23787,7 +23785,7 @@ Method(m61a)
 
 	Method(m32s, 1)
 	{
-		// String to Integer conversion of the String Length operand 
+		// String to Integer conversion of the String Length operand
 
 		Store(Mid("This is auxiliary String", 0, Derefof(m604(2, 3, 10, 1))), Local0)
 		m600(arg0, 0, Local0, bs1e)

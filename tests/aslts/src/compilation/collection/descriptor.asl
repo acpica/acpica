@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -190,7 +188,7 @@ Method(m408)
 	Name(RT01,
 		ResourceTemplate () {
 			QWordIO ( , , , , ,
-				0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+				0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 				0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,, "PATHPATHPATH")
 		})
 }
@@ -200,13 +198,13 @@ Method(m409)
 	Name(RT00,
 		ResourceTemplate () {
 			QWordMemory ( , , , , , ,
-				0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+				0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 				0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff, 0x0f)
 		})
 	Name(RT01,
 		ResourceTemplate () {
 			QWordMemory ( , , , , , ,
-				0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+				0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 				0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,, "PATHPATHPATH")
 		})
 }
@@ -216,7 +214,7 @@ Method(m40a)
 	Name(RT00,
 		ResourceTemplate () {
 			QWordSpace (0xc0, , , , , 0x5a,
-				0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+				0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 				0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff, 0x0f)
 		})
 	Name(RT01,
@@ -292,7 +290,7 @@ Method(m40f)
 // An example to provoke message:
 // "nsaccess-0713: *** Warning: NsLookup: Type mismatch on
 // M40f (Method), searching for (ResourceDesc)".
-// Expect a compiler error because the Descriptorname M40f and 
+// Expect a compiler error because the Descriptorname M40f and
 // the Method m40f are defined on the same scope.
 Name(M410,
 	ResourceTemplate () {

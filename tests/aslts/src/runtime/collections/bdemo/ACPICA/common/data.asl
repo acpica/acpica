@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -125,7 +123,6 @@ CreateField(bd03, id22, id22, bf4d)
 /* 161 */
 
 
-
 Mutex(mxd0, 0)
 Event(ed00)
 OperationRegion(rd01, SystemMemory, 0x100, 0x100)
@@ -239,7 +236,7 @@ Name(pd10, Package(1){"Package"})
 
 Name (rtd1, ResourceTemplate () {
 	QWordSpace (0xc0, ResourceProducer, PosDecode, MinNotFixed, MaxNotFixed, 0x0a,
-		0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+		0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 		0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)})
 
 Name (bd0c, Buffer () {

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -128,7 +126,7 @@ Method(mfdd, 4)
 }
 
 /*
- * Put reference arg3 into arg2-th elements of all Pkg-nodes of pHR0 Package 
+ * Put reference arg3 into arg2-th elements of all Pkg-nodes of pHR0 Package
  *
  * arg0 - reference to Package,pHR0
  * arg1 - number of children of pkg-node to be actually processed

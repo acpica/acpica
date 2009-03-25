@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -40,82 +38,82 @@ Name (p416, Package() {
 
 	ResourceTemplate () {
 		QWordIO (ResourceProducer, MinNotFixed, MaxNotFixed, PosDecode, ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		QWordIO (ResourceProducer, MinNotFixed, MaxNotFixed, SubDecode, ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		QWordIO (ResourceProducer, MinNotFixed, MaxFixed, PosDecode, ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		QWordIO (ResourceProducer, MinNotFixed, MaxFixed, SubDecode, ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		QWordIO (ResourceProducer, MinFixed, MaxNotFixed, PosDecode, ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		QWordIO (ResourceProducer, MinFixed, MaxNotFixed, SubDecode, ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		QWordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		QWordIO (ResourceProducer, MinFixed, MaxFixed, SubDecode, ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		QWordIO (ResourceConsumer, MinNotFixed, MaxNotFixed, PosDecode, ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		QWordIO (ResourceConsumer, MinNotFixed, MaxNotFixed, SubDecode, ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		QWordIO (ResourceConsumer, MinNotFixed, MaxFixed, PosDecode, ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		QWordIO (ResourceConsumer, MinNotFixed, MaxFixed, SubDecode, ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		QWordIO (ResourceConsumer, MinFixed, MaxNotFixed, PosDecode, ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		QWordIO (ResourceConsumer, MinFixed, MaxNotFixed, SubDecode, ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		QWordIO (ResourceConsumer, MinFixed, MaxFixed, PosDecode, ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		QWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 
@@ -123,73 +121,73 @@ Name (p416, Package() {
 
 	ResourceTemplate () {
 		QWordIO ( , , , , NonISAOnlyRanges,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , , , TypeStatic, DenseTranslation)
 	},
 	ResourceTemplate () {
 		QWordIO ( , , , , NonISAOnlyRanges,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , , , TypeStatic, SparseTranslation)
 	},
 	ResourceTemplate () {
 		QWordIO ( , , , , NonISAOnlyRanges,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , , , TypeTranslation, DenseTranslation)
 	},
 	ResourceTemplate () {
 		QWordIO ( , , , , NonISAOnlyRanges,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , , , TypeTranslation, SparseTranslation)
 	},
 	ResourceTemplate () {
 		QWordIO ( , , , , ISAOnlyRanges,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , , , TypeStatic, DenseTranslation)
 	},
 	ResourceTemplate () {
 		QWordIO ( , , , , ISAOnlyRanges,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , , , TypeStatic, SparseTranslation)
 	},
 	ResourceTemplate () {
 		QWordIO ( , , , , ISAOnlyRanges,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , , , TypeTranslation, DenseTranslation)
 	},
 	ResourceTemplate () {
 		QWordIO ( , , , , ISAOnlyRanges,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , , , TypeTranslation, SparseTranslation)
 	},
 	ResourceTemplate () {
 		QWordIO ( , , , , EntireRange,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , , , TypeStatic, DenseTranslation)
 	},
 	ResourceTemplate () {
 		QWordIO ( , , , , EntireRange,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , , , TypeStatic, SparseTranslation)
 	},
 	ResourceTemplate () {
 		QWordIO ( , , , , EntireRange,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , , , TypeTranslation, DenseTranslation)
 	},
 	ResourceTemplate () {
 		QWordIO ( , , , , EntireRange,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , , , TypeTranslation, SparseTranslation)
 	},
@@ -198,12 +196,12 @@ Name (p416, Package() {
 
 	ResourceTemplate () {
 		QWordIO ( , , , , ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		QWordIO ( , , , , ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			, , , , )
 	},
@@ -212,25 +210,25 @@ Name (p416, Package() {
 
 	ResourceTemplate () {
 		QWordIO ( , , , , ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0x01, "", , , )
 	},
 	ResourceTemplate () {
 		QWordIO ( , , , , ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0x0f, "P", , , )
 	},
 	ResourceTemplate () {
 		QWordIO ( , , , , ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xf0, "PATH", , , )
 	},
 	ResourceTemplate () {
 		QWordIO ( , , , , ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff,
 			"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&'()*",
@@ -241,7 +239,7 @@ Name (p416, Package() {
 
 	ResourceTemplate () {
 		QWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QIO0, TypeTranslation, SparseTranslation)
 	},
@@ -254,7 +252,7 @@ Name (p416, Package() {
 	// 20051021, relaxation for omitted ResourceSource (bug-fix 70 rejection)
 	ResourceTemplate () {
 		QWordIO ( , , , , ,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0x0f)
 	},
@@ -262,7 +260,7 @@ Name (p416, Package() {
 
 /*
 ACPI Specification, Revision 3.0, September 2, 2004
-6.4.3.5.1   QWord Address Space Descriptor 
+6.4.3.5.1   QWord Address Space Descriptor
 
 I/O QWord Address Space Descriptor layout:
 
@@ -676,10 +674,10 @@ Method(RT0c)
 	Store (
 		ResourceTemplate () {
 			QWordIO (ResourceProducer, MinNotFixed, MaxNotFixed, PosDecode, EntireRange,
-				0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+				0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 				0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff, , , QIO0)
 			QWordIO (ResourceConsumer, MinNotFixed, MaxNotFixed, PosDecode, EntireRange,
-				0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+				0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 				0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff, , , QIO1)
 		}, Local0)
 

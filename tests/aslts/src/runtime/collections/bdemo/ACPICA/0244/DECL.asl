@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -129,7 +128,7 @@
  *        set up id01 to non-zero in error case.
  */
 Name(i108, 0)
-Name(BUF2, Buffer(m03c()){}) 
+Name(BUF2, Buffer(m03c()){})
 Method(m03c)
 {
 	if (CH03("", 0, 0x000, 0, 0))

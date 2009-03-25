@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -365,14 +363,14 @@ Method(m700, 1)
 		err(arg0, z141, 8, 0, 0, IFLG, 1)
 	}
 
-	// Check total calls to \_REG 
+	// Check total calls to \_REG
 
 	if (LNotEqual(Derefof(Index(VFLG, 1)), 9)) {
 		err(arg0, z141, 9, 0, 0, Derefof(Index(VFLG, 1)), 9)
 	}
 	m70e(arg0, 1, VRSK, ERSK, 10)
 
-	// Check total calls to \DOR0._REG 
+	// Check total calls to \DOR0._REG
 
 	if (LNotEqual(Derefof(Index(\DOR0.VFLG, 1)), 6)) {
 		err(arg0, z141, 11, 0, 0, Derefof(Index(\DOR0.VFLG, 1)), 6)
@@ -413,7 +411,7 @@ Method(m701, 1)
 		err(arg0, z141, 20, 0, 0, \DOR1.IFLG, 1)
 	}
 
-	// Check total calls to \DOR1._REG 
+	// Check total calls to \DOR1._REG
 
 	if (LNotEqual(Derefof(Index(\DOR1.VFLG, 1)), 6)) {
 		err(arg0, z141, 21, 0, 0, Derefof(Index(\DOR1.VFLG, 1)), 6)
@@ -486,7 +484,7 @@ Method(m703, 1)
 }
 
 // Create Region Field about Region Length in length
-// and check possible exception 
+// and check possible exception
 // m70c(CallChain, Task, Index)
 Method(m70c, 3)
 {
@@ -503,7 +501,7 @@ Method(m70c, 3)
 	Store(Derefof(Index(arg1, Local0)), Local2)
 	Multiply(Local2, 8, Local1)
 
-	Name(b000, Buffer(0x100){}) 
+	Name(b000, Buffer(0x100){})
 
 	CopyObject(Derefof(Index(arg1, Local4)), OPRm)
 
@@ -566,7 +564,7 @@ Method(m70d, 2)
 // ToDo:      0 - nullify, 1 - Check Values, 2 - check if null
 // Results:   actual VRSK Values
 // Benchmark: expected VRSK Values
-// ErrId:     index of the error 
+// ErrId:     index of the error
 Method(m70e, 5)
 {
 	Concatenate(arg0, "-m70e", arg0)
@@ -598,7 +596,7 @@ Method(m70e, 5)
 }
 
 // Create Region Fields in two overlapping Regions
-// and check overlapping parts to be shared 
+// and check overlapping parts to be shared
 // m70f(CallChain, OpRegion0, OpRegion1, RangeNum, ErrNum)
 Method(m70f, 5)
 {
@@ -617,7 +615,7 @@ Method(m70f, 5)
 
 	Concatenate(arg0, "-m70f", arg0)
 
-	Name(b000, Buffer(0xa){}) 
+	Name(b000, Buffer(0xa){})
 
 
 	m70d(1, b000)

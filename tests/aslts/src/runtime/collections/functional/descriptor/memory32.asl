@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -48,7 +46,7 @@ Name (p412, Package() {
 
 /*
 ACPI Specification, Revision 3.0, September 2, 2004
-6.4.3.3   32-Bit Memory Range Descriptor 
+6.4.3.3   32-Bit Memory Range Descriptor
 
 32-Bit Memory Range Descriptor layout:
 

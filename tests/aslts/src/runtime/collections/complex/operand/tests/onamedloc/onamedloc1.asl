@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -12194,7 +12192,7 @@ Method(m613)
 	{
 		Name(s614, "B")
 
-		// String to Integer conversion of the String Index operand 
+		// String to Integer conversion of the String Index operand
 
 		Store(Mid("This is auxiliary String", s614, 10), Local0)
 		m600(arg0, 0, Local0, bs1d)
@@ -12286,7 +12284,7 @@ Method(m613)
 			m600(arg0, 23, Local0, bb32)
 		}
 
-		// String to Integer conversion of the String Length operand 
+		// String to Integer conversion of the String Length operand
 
 		Store(Mid("This is auxiliary String", 0, s614), Local0)
 		m600(arg0, 24, Local0, bs1b)
@@ -12383,7 +12381,7 @@ Method(m613)
 		Name(s605, "FE7CB391D650A284")
 		Name(s614, "B")
 
-		// String to Integer conversion of the String Length operand 
+		// String to Integer conversion of the String Length operand
 
 		Store(Mid("This is auxiliary String", 0, s605), Local0)
 		m600(arg0, 0, Local0, bs1e)
@@ -12571,7 +12569,7 @@ Method(m613)
 		Name(s604, "C179B3FE")
 		Name(s614, "B")
 
-		// String to Integer conversion of the String Length operand 
+		// String to Integer conversion of the String Length operand
 
 		Store(Mid("This is auxiliary String", 0, s604), Local0)
 		m600(arg0, 0, Local0, bs1e)
@@ -23809,7 +23807,7 @@ Method(m613)
 	{
 		Name(b60e, Buffer(1){0xb})
 
-		// String to Integer conversion of the String Index operand 
+		// String to Integer conversion of the String Index operand
 
 		Store(Mid("This is auxiliary String", b60e, 10), Local0)
 		m600(arg0, 0, Local0, bs1d)
@@ -23901,7 +23899,7 @@ Method(m613)
 			m600(arg0, 23, Local0, bb32)
 		}
 
-		// String to Integer conversion of the String Length operand 
+		// String to Integer conversion of the String Length operand
 
 		Store(Mid("This is auxiliary String", 0, b60e), Local0)
 		m600(arg0, 24, Local0, bs1b)
@@ -23998,7 +23996,7 @@ Method(m613)
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
 		Name(b60e, Buffer(1){0xb})
 
-		// String to Integer conversion of the String Length operand 
+		// String to Integer conversion of the String Length operand
 
 		Store(Mid("This is auxiliary String", 0, b60a), Local0)
 		m600(arg0, 0, Local0, bs1e)
@@ -24186,7 +24184,7 @@ Method(m613)
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
 		Name(b60e, Buffer(1){0xb})
 
-		// String to Integer conversion of the String Length operand 
+		// String to Integer conversion of the String Length operand
 
 		Store(Mid("This is auxiliary String", 0, b60a), Local0)
 		m600(arg0, 0, Local0, bs1e)

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -156,7 +154,7 @@
  *   Expression in Switch is either static String data or explicitly
  *   converted to String by ToDecimalString, ToHexString or ToString
  *
- * Note 1: Only an expression that is evaluated to a constant 
+ * Note 1: Only an expression that is evaluated to a constant
  *         can be used as the Expression of Case
  *
  * Note 2: So as initial elements of a package are either constant
@@ -166,12 +164,12 @@
  *
  * Buffer field to Integer implicit conversion Cases.
  * First, Buffer field is evaluated either as Integer or as Buffer.
- * Conversion only takes place for Buffer in which case 
+ * Conversion only takes place for Buffer in which case
  * Buffer to Integer test constructions should be used.
  *
  * Buffer field to Buffer implicit conversion Cases.
  * First, Buffer field is evaluated either as Integer or as Buffer.
- * Conversion only takes place for Integer in which case 
+ * Conversion only takes place for Integer in which case
  * Integer to Buffer test constructions should be used.
  *
  * Buffer field to String implicit conversion Cases.
@@ -262,7 +260,7 @@ Name(s60a, "0xfe7cb3")
 Name(s60b, "1234q")
 Name(s60c, "")
 Name(s60d, " ")
-// of size 200 chars 
+// of size 200 chars
 Name(s60e, "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&'()*")
 // all symbols 0x01-0x7f
 Name(s60f, "\x01\x02\x03\x04\x05\x06\a\b\t\n\v\f\r\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7f")
@@ -294,7 +292,7 @@ Name(ps60, Package() {
 	"1234q",
 	"",
 	" ",
-	// of size 200 chars 
+	// of size 200 chars
 	"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&'()*",
 	// all symbols 0x01-0x7f
 	"\x01\x02\x03\x04\x05\x06\a\b\t\n\v\f\r\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7f",
@@ -419,7 +417,6 @@ CreateField(b631, 519, 32, bf77)
 
 Name(p601, Package(){0xc179b3fe})
 Name(p602, Package(){0xfe7cb391d650a284})
-
 
 
 // Auxiliary agents triggering implicit conversion
@@ -560,7 +557,7 @@ Name(paub, Package() {
 	Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFF},
 	Buffer() {"This is auxiliary Buffer"},
 	Buffer() {0x30, 0x33, 0x32, 0x31, 0x00},
-	Buffer() {0x30, 0x33, 0x32, 0x31, 0x01}, 
+	Buffer() {0x30, 0x33, 0x32, 0x31, 0x01},
 	Buffer(){0x00},
 	Buffer(){0x01},
 	Buffer(){
@@ -597,16 +594,16 @@ Name(paub, Package() {
 
 Name(aup0, Package(){
 	0xa50, 0xa51, 0xa52, 0xa53, 0xa54, 0xa55, 0xa56, 0xa57,
-	0xa58, 0xa59, 0xa5a, 0xa5b, 0xa5c, 0xa5d, 0xa5e,}) 
-Name(aup1, Package(){0xfe7cb391d650a284}) 
-Name(aup2, Package(){0xc179b3fe}) 
+	0xa58, 0xa59, 0xa5a, 0xa5b, 0xa5c, 0xa5d, 0xa5e,})
+Name(aup1, Package(){0xfe7cb391d650a284})
+Name(aup2, Package(){0xc179b3fe})
 
 Name(paup, Package() {
 	Package(){
 		0xa50, 0xa51, 0xa52, 0xa53, 0xa54, 0xa55, 0xa56, 0xa57,
 		0xa58, 0xa59, 0xa5a, 0xa5b, 0xa5c, 0xa5d, 0xa5e,},
 	Package(){0xfe7cb391d650a284},
-	Package(){0xc179b3fe}, 
+	Package(){0xc179b3fe},
 })
 
 
@@ -774,7 +771,7 @@ Name(bb31, Buffer() {0x22, 0x00, 0x36})
 
 Name(bb32, Buffer() {0x69, 0x6C, 0x69, 0x61, 0x72, 0x79, 0x20, 0x42, 0x75, 0x66})
 Name(bb33, Buffer() {0x54, 0x68, 0x69, 0x73, 0x20, 0x69, 0x73, 0x20, 0x61, 0x75, 0x78})
-Name(bb34, Buffer() {"This is auxiliary Buffer"}) 
+Name(bb34, Buffer() {"This is auxiliary Buffer"})
 Name(bb35, Buffer() {"iliary Buffer"})
 
 // Check Result of operation on equal to Benchmark value
@@ -1558,7 +1555,7 @@ Method(m603, 3)
 	Return(Local0)
 }
 
-// Obtain specified Test Object or reference to it by Return 
+// Obtain specified Test Object or reference to it by Return
 // m604(<carrier>
 //  <type>,
 //	<opcode>,

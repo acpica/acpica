@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -11637,7 +11635,7 @@ Method(m614)
 
 		Store(0xb, bf74)
 
-		// Buffer Field to Integer conversion of the Buffer Field Index operand 
+		// Buffer Field to Integer conversion of the Buffer Field Index operand
 
 		Store(Mid("This is auxiliary String", bf74, 10), Local0)
 		m600(arg0, 0, Local0, bs1d)
@@ -11729,7 +11727,7 @@ Method(m614)
 			m600(arg0, 23, Local0, bb32)
 		}
 
-		// Buffer Field to Integer conversion of the Buffer Field Length operand 
+		// Buffer Field to Integer conversion of the Buffer Field Length operand
 
 		Store(Mid("This is auxiliary String", 0, bf74), Local0)
 		m600(arg0, 24, Local0, bs1b)
@@ -11829,7 +11827,7 @@ Method(m614)
 		Store(Buffer(8){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE}, bf65)
 		Store(0xb, bf74)
 
-		// Buffer Field to Integer conversion of the Buffer Field Length operand 
+		// Buffer Field to Integer conversion of the Buffer Field Length operand
 
 		Store(Mid("This is auxiliary String", 0, bf65), Local0)
 		m600(arg0, 0, Local0, bs1e)
@@ -12020,7 +12018,7 @@ Method(m614)
 		Store(Buffer(8){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE}, bf65)
 		Store(0xb, bf74)
 
-		// Buffer Field to Integer conversion of the Buffer Field Length operand 
+		// Buffer Field to Integer conversion of the Buffer Field Length operand
 
 		Store(Mid("This is auxiliary String", 0, bf65), Local0)
 		m600(arg0, 0, Local0, bs1e)

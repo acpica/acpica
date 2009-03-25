@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -41,12 +40,12 @@ Method (C0A2, 5, Serialized)
 
 	OperationRegion (C0A3, SystemIO, C0A1 (), 0x07)
 	Field (C0A3, ByteAcc, NoLock, Preserve) {
-		C0A4,   8, 
-		C0A5,   8, 
-		C0A6,   8, 
-		C0A7,   8, 
-		C0A8,   8, 
-		C0A9,   8, 
+		C0A4,   8,
+		C0A5,   8,
+		C0A6,   8,
+		C0A7,   8,
+		C0A8,   8,
+		C0A9,   8,
 		C0AA,   8
 	}
 

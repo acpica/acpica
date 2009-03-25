@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -41,7 +39,7 @@ OperationRegion(opr9, SystemMemory, 0x100, 0x100)
 // Expected exceptions:
 //
 // 47 - AE_AML_OPERAND_TYPE
-// 
+//
 Method(m4ba)
 {
 	Name(ts, "m4ba")

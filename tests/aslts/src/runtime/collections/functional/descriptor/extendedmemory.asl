@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -40,82 +38,82 @@ Name (p42a, Package() {
 
 	ResourceTemplate () {
 		ExtendedMemory (ResourceProducer, PosDecode, MinNotFixed, MaxNotFixed, , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedMemory (ResourceProducer, PosDecode, MinNotFixed, MaxFixed, , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedMemory (ResourceProducer, PosDecode, MinFixed, MaxNotFixed, , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed, , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedMemory (ResourceProducer, SubDecode, MinNotFixed, MaxNotFixed, , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedMemory (ResourceProducer, SubDecode, MinNotFixed, MaxFixed, , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedMemory (ResourceProducer, SubDecode, MinFixed, MaxNotFixed, , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedMemory (ResourceProducer, SubDecode, MinFixed, MaxFixed, , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedMemory (ResourceConsumer, PosDecode, MinNotFixed, MaxNotFixed, , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedMemory (ResourceConsumer, PosDecode, MinNotFixed, MaxFixed, , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedMemory (ResourceConsumer, PosDecode, MinFixed, MaxNotFixed, , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedMemory (ResourceConsumer, PosDecode, MinFixed, MaxFixed, , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedMemory (ResourceConsumer, SubDecode, MinNotFixed, MaxNotFixed, , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedMemory (ResourceConsumer, SubDecode, MinNotFixed, MaxFixed, , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedMemory (ResourceConsumer, SubDecode, MinFixed, MaxNotFixed, , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 
@@ -124,97 +122,97 @@ Name (p42a, Package() {
 	// NonCacheable
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeMemory, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeMemory, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeReserved, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeReserved, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeACPI, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeACPI, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeNVS, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeNVS, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , NonCacheable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeMemory, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , NonCacheable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeMemory, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , NonCacheable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeReserved, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , NonCacheable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeReserved, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , NonCacheable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeACPI, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , NonCacheable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeACPI, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , NonCacheable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeNVS, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , NonCacheable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeNVS, TypeTranslation)
 	},
@@ -222,97 +220,97 @@ Name (p42a, Package() {
 	// Cacheable
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Cacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeMemory, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Cacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeMemory, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Cacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeReserved, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Cacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeReserved, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Cacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeACPI, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Cacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeACPI, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Cacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeNVS, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Cacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeNVS, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Cacheable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeMemory, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Cacheable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeMemory, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Cacheable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeReserved, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Cacheable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeReserved, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Cacheable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeACPI, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Cacheable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeACPI, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Cacheable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeNVS, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Cacheable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeNVS, TypeTranslation)
 	},
@@ -320,97 +318,97 @@ Name (p42a, Package() {
 	// WriteCombining
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , WriteCombining, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeMemory, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , WriteCombining, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeMemory, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , WriteCombining, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeReserved, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , WriteCombining, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeReserved, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , WriteCombining, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeACPI, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , WriteCombining, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeACPI, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , WriteCombining, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeNVS, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , WriteCombining, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeNVS, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , WriteCombining, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeMemory, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , WriteCombining, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeMemory, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , WriteCombining, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeReserved, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , WriteCombining, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeReserved, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , WriteCombining, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeACPI, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , WriteCombining, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeACPI, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , WriteCombining, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeNVS, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , WriteCombining, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeNVS, TypeTranslation)
 	},
@@ -418,97 +416,97 @@ Name (p42a, Package() {
 	// Prefetchable
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Prefetchable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeMemory, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Prefetchable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeMemory, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Prefetchable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeReserved, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Prefetchable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeReserved, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Prefetchable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeACPI, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Prefetchable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeACPI, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Prefetchable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeNVS, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Prefetchable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeNVS, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Prefetchable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeMemory, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Prefetchable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeMemory, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Prefetchable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeReserved, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Prefetchable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeReserved, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Prefetchable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeACPI, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Prefetchable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeACPI, TypeTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Prefetchable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeNVS, TypeStatic)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , Prefetchable, ReadWrite,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , AddressRangeNVS, TypeTranslation)
 	},
@@ -517,29 +515,29 @@ Name (p42a, Package() {
 
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7)
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , , )
 	},
 	ResourceTemplate () {
 		ExtendedMemory ( , , , , , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, ,
 			 , , )
 	},
 	ResourceTemplate () {
 		ExtendedMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EME0, AddressRangeACPI, TypeTranslation)
 	},
@@ -552,7 +550,7 @@ Name (p42a, Package() {
 
 /*
 ACPI Specification, Revision 3.0, September 2, 2004
-6.4.3.5.4   Extended Address Space Descriptor 
+6.4.3.5.4   Extended Address Space Descriptor
 
 Memory Extended Address Space Descriptor layout:
 
@@ -1305,10 +1303,10 @@ Method(RT13)
 	Store (
 		ResourceTemplate () {
 			ExtendedMemory (ResourceProducer, PosDecode, MinNotFixed, MaxNotFixed, NonCacheable, ReadOnly,
-				0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+				0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 				0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff, EME0)
 			ExtendedMemory (ResourceConsumer, PosDecode, MinNotFixed, MaxNotFixed, NonCacheable, ReadOnly,
-				0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+				0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 				0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff, EME1)
 		}, Local0)
 

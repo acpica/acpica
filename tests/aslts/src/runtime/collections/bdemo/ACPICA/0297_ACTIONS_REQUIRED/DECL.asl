@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -119,7 +118,6 @@ Method(m1e4, 1)
         Mutex(M037, 10)
         Mutex(M038, 10)
         Mutex(M039, 10)
-
 
 
         Mutex(MTb2, 11)

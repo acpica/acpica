@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -350,7 +348,6 @@ Name(y524, 0)	// Store(RefOf(NamedX), DerefOf(Expr_resulting_in_ORef))
 Name(y525, 0)	// Store(RefOf(NamedX), RefOf(Named_X))
 Name(y526, 0)	// CopyObject(RefOf(NamedX), ArgX-ORef-to-Named_X)
 Name(y527, 0)	// The code path taken after AE_OWNER_ID_LIMIT is incorrect
-
 
 
 Name(y600, 0)	// Some oprators (not all) doesn't provide passing invocation

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -45,77 +43,77 @@ Name (p422, Package() {
 	},
 	ResourceTemplate () {
 		ExtendedIO (ResourceProducer, MinNotFixed, MaxNotFixed, SubDecode, ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedIO (ResourceProducer, MinNotFixed, MaxFixed, PosDecode, ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedIO (ResourceProducer, MinNotFixed, MaxFixed, SubDecode, ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedIO (ResourceProducer, MinFixed, MaxNotFixed, PosDecode, ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedIO (ResourceProducer, MinFixed, MaxNotFixed, SubDecode, ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedIO (ResourceProducer, MinFixed, MaxFixed, SubDecode, ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedIO (ResourceConsumer, MinNotFixed, MaxNotFixed, PosDecode, ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedIO (ResourceConsumer, MinNotFixed, MaxNotFixed, SubDecode, ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedIO (ResourceConsumer, MinNotFixed, MaxFixed, PosDecode, ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedIO (ResourceConsumer, MinNotFixed, MaxFixed, SubDecode, ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedIO (ResourceConsumer, MinFixed, MaxNotFixed, PosDecode, ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedIO (ResourceConsumer, MinFixed, MaxNotFixed, SubDecode, ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedIO (ResourceConsumer, MinFixed, MaxFixed, PosDecode, ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 
@@ -123,73 +121,73 @@ Name (p422, Package() {
 
 	ResourceTemplate () {
 		ExtendedIO ( , , , , NonISAOnlyRanges,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , TypeStatic, DenseTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedIO ( , , , , NonISAOnlyRanges,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , TypeStatic, SparseTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedIO ( , , , , NonISAOnlyRanges,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , TypeTranslation, DenseTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedIO ( , , , , NonISAOnlyRanges,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , TypeTranslation, SparseTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedIO ( , , , , ISAOnlyRanges,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , TypeStatic, DenseTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedIO ( , , , , ISAOnlyRanges,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , TypeStatic, SparseTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedIO ( , , , , ISAOnlyRanges,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , TypeTranslation, DenseTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedIO ( , , , , ISAOnlyRanges,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , TypeTranslation, SparseTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedIO ( , , , , EntireRange,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , TypeStatic, DenseTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedIO ( , , , , EntireRange,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , TypeStatic, SparseTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedIO ( , , , , EntireRange,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , TypeTranslation, DenseTranslation)
 	},
 	ResourceTemplate () {
 		ExtendedIO ( , , , , EntireRange,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , TypeTranslation, SparseTranslation)
 	},
@@ -198,29 +196,29 @@ Name (p422, Package() {
 
 	ResourceTemplate () {
 		ExtendedIO ( , , , , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedIO ( , , , , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7)
 	},
 	ResourceTemplate () {
 		ExtendedIO ( , , , , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 , , )
 	},
 	ResourceTemplate () {
 		ExtendedIO ( , , , , ,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, ,
 			 , , )
 	},
 	ResourceTemplate () {
 		ExtendedIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EIO0, TypeTranslation, SparseTranslation)
 	},
@@ -234,7 +232,7 @@ Name (p422, Package() {
 
 /*
 ACPI Specification, Revision 3.0, September 2, 2004
-6.4.3.5.4   Extended Address Space Descriptor 
+6.4.3.5.4   Extended Address Space Descriptor
 
 I/O Extended Address Space Descriptor layout:
 
@@ -628,10 +626,10 @@ Method(RT0f)
 	Store (
 		ResourceTemplate () {
 			ExtendedIO (ResourceProducer, MinNotFixed, MaxNotFixed, PosDecode, EntireRange,
-				0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+				0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 				0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff, EIO0)
 			ExtendedIO (ResourceConsumer, MinNotFixed, MaxNotFixed, PosDecode, EntireRange,
-				0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+				0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 				0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff, EIO1)
 		}, Local0)
 

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -45,8 +43,6 @@ DefinitionBlock(
 	"Many",     // TABLE ID
 	0x00000001  // OEM Revision
 	) {
-
-
 
 
 // ///////////////////////////////////////////////////////////////////////////
@@ -532,7 +528,7 @@ Method(ma0c)
 	OperationRegion(rrrr, SystemMemory, 0x100, 0x100)
 	Field(rrrr, ByteAcc, NoLock, Preserve) {bnk0,8,f00a,8,f00b,8}
 
-	// These should be checked for RefOf and CondRefOf 
+	// These should be checked for RefOf and CondRefOf
 
 	Name(u000, Package(1) {})
 	Name(i000, Package() {0xabcdef})

@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -40,7 +39,7 @@ SEE:
 ??????????????????????????????????????????
 1) See sleeping mode ... and m209
 
-3) remove all mf0X - slaves only once go into 
+3) remove all mf0X - slaves only once go into
 	} else { // Slave Threads
 		m101(arg0, arg1, arg2, 0)
 	}
@@ -54,7 +53,6 @@ and Ctl Thread do mf00()
 7) m33f - does it have "Check up the values of counters of all Mutexes"?
 8) allow tests to run for 3 and 2 threads (excluding some) without SKIPPED
 */
-
 
 
 /*
@@ -907,7 +905,6 @@ Method(mf18, 3)
 }
 
 
-
 /*
  * arg0 - number of threads
  * arg1 - ID of current thread
@@ -1065,6 +1062,5 @@ if (1) {
 		}
 	}
 }
-
 
 

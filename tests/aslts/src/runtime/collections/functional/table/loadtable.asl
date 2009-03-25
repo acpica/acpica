@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -147,7 +146,7 @@ Device(DTM2) {
 	Name(PPST, "\\DTM2.PLDT")
 	Name(DDBH, 0)
 
-	// Check DataTable Region 
+	// Check DataTable Region
 	Method(chdr, 1)
 	{
 		DataTableRegion (DR00, "OEM1", "", "")
@@ -794,7 +793,7 @@ Device(DTM2) {
 		{
 // Bug 288: iASL unexpectedly forbids ParameterData of Loadtable to be LocalX or UserTerm
 //			return (LoadTable("OEM1", "", "", Arg0, Derefof(Arg1), Derefof(Arg2)))
-//	                                        parse error, expecting `')'' ^ 
+//	                                        parse error, expecting `')'' ^
 			return (LoadTable("OEM1", "", "", Arg0, Derefof(Arg1), 1))
 		}
 
@@ -802,7 +801,7 @@ Device(DTM2) {
 		{
 // Bug 288: iASL unexpectedly forbids ParameterData of Loadtable to be LocalX or UserTerm
 //			return (LoadTable("OEM1", "", "", Derefof(Arg0), Arg1, Derefof(Arg2)))
-//	                                        parse error, expecting `')'' ^ 
+//	                                        parse error, expecting `')'' ^
 			return (LoadTable("OEM1", "", "", Derefof(Arg0), Arg1, 1))
 		}
 
@@ -810,7 +809,7 @@ Device(DTM2) {
 		{
 // Bug 288: iASL unexpectedly forbids ParameterData of Loadtable to be LocalX or UserTerm
 //			return (LoadTable("OEM1", "", "", Derefof(Arg0), Derefof(Arg1), Arg2))
-//	                                              parse error, expecting `')'' ^ 
+//	                                              parse error, expecting `')'' ^
 			return (LoadTable("OEM1", "", "", Derefof(Arg0), Derefof(Arg1), 1))
 		}
 
@@ -829,7 +828,7 @@ Device(DTM2) {
 
 // Bug 288: iASL unexpectedly forbids ParameterData of Loadtable to be LocalX or UserTerm
 //		Store(LoadTable("OEM1", "", "", RPST, Local2, m000(1)), DDB0)
-//	                         parse error, expecting `')'' ^ 
+//	                         parse error, expecting `')'' ^
 		Store(LoadTable("OEM1", "", "", RPST, Local2, 1), DDB0)
 
 		if (m001(arg0, DDB0, ".NLM")) {
@@ -844,7 +843,7 @@ Device(DTM2) {
 
 // Bug 288: iASL unexpectedly forbids ParameterData of Loadtable to be LocalX or UserTerm
 //		Store(LoadTable("OEM1", "", "", m000(RPST), PPST, Local2), DDB1)
-//	                              parse error, expecting `')'' ^ 
+//	                              parse error, expecting `')'' ^
 		Store(LoadTable("OEM1", "", "", m000(RPST), PPST, 1), DDB1)
 
 		if (m001(arg0, DDB1, ".MNL")) {
@@ -1916,7 +1915,7 @@ Device(DTM2) {
 	}
 
 	// Exceptions when the ParameterData parameter of the Loadtable operator
-	// can not be saved into the Object referred by ParameterPathString 
+	// can not be saved into the Object referred by ParameterPathString
 	Method(tsti, 1)
 	{
 		Name(DDB0, 0)
@@ -2316,7 +2315,7 @@ Method(TLT1)
 	\DTM2.tsth(ts)
 
 	// Exceptions when the ParameterData parameter of the Loadtable operator
-	// can not be saved into the Object referred by ParameterPathString 
+	// can not be saved into the Object referred by ParameterPathString
 	SRMT("TLT1.tsti")
 	\DTM2.tsti(ts)
 }

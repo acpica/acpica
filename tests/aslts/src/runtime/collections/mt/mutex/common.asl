@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -135,7 +134,6 @@ Name(i107, 250)
 Name(i108, 300)
 
 
-
 /* Commands for slaves */
 Name(c100, 0xf0) // Idle thread
 Name(c101, 0xf1) // Exit the infinite loop
@@ -199,7 +197,6 @@ Name(bs03, Buffer(){0})
  * set up by the slave threads when they complete.
  */
 Name(bs04, Buffer(){0})
-
 
 
 /*

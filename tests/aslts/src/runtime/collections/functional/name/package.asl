@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -832,10 +830,10 @@ Method(m1f6)
 			0xc1dc51b3,
 			"qwertyuiop1234567890",
 			Buffer() {1,2,63,11,22,34,35,56,67},
-			Package() {19,27,74,32,18,2,3}, 
+			Package() {19,27,74,32,18,2,3},
 
 		// 0-15
-		}, }, }, }, }, }, }, }, }, }, }, }, }, }, }, 
+		}, }, }, }, }, }, }, }, }, }, }, }, }, }, },
 
 			// 1
 			1,2,3,4,5,6,7,8,9,

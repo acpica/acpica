@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -374,7 +372,7 @@ Method(m71f, 1)
 
 	Store("TEST: m71f, Check Region Fields specified for BufferAcc access", Debug)
 
-	/* 
+	/*
 	 * Examples from Acpi Spec (chapter 13.7 Using the SMBus Protocols)
 	 */
 
@@ -23345,7 +23343,7 @@ Method(m72d, 7)
 
 	switch(pr01) {
 		case(2) {
-			// Write some predefined value to Bank selection register 
+			// Write some predefined value to Bank selection register
 
 			Store(0xa5, Derefof(Index(fcp0, 1)))
 
@@ -23361,7 +23359,7 @@ Method(m72d, 7)
 
 	switch(pr01) {
 		case(2) {
-			// Check Bank selection register value 
+			// Check Bank selection register value
 
 			Store(Derefof(Derefof(Index(fcp0, 1))), Local0)
 			if (LNotEqual(Local0, Derefof(Index(fcp0, 2)))) {
@@ -23379,7 +23377,7 @@ Method(m72d, 7)
 
 	switch(pr01) {
 		case(2) {
-			// Write some predefined value to Bank selection register 
+			// Write some predefined value to Bank selection register
 
 			Store(0xa5, Derefof(Index(fcp0, 1)))
 
@@ -23404,7 +23402,7 @@ Method(m72d, 7)
 
 	switch(pr01) {
 		case(2) {
-			// Check Bank selection register value 
+			// Check Bank selection register value
 
 			Store(Derefof(Derefof(Index(fcp0, 1))), Local0)
 			if (LNotEqual(Local0, Derefof(Index(fcp0, 2)))) {
@@ -23424,7 +23422,7 @@ Method(m72d, 7)
 
 	switch(pr01) {
 		case(2) {
-			// Write some predefined value to Bank selection register 
+			// Write some predefined value to Bank selection register
 
 			Store(0xa5, Derefof(Index(fcp0, 1)))
 
@@ -23461,7 +23459,7 @@ Method(m72d, 7)
 
 	switch(pr01) {
 		case(2) {
-			// Check Bank selection register value 
+			// Check Bank selection register value
 
 			Store(Derefof(Derefof(Index(fcp0, 1))), Local0)
 			if (LNotEqual(Local0, Derefof(Index(fcp0, 2)))) {
@@ -23474,7 +23472,7 @@ Method(m72d, 7)
 
 	switch(pr01) {
 		case(2) {
-			// Write some predefined value to Bank selection register 
+			// Write some predefined value to Bank selection register
 
 			Store(0xa5, Derefof(Index(fcp0, 1)))
 
@@ -23489,7 +23487,7 @@ Method(m72d, 7)
 
 	switch(pr01) {
 		case(2) {
-			// Check Bank selection register value 
+			// Check Bank selection register value
 
 			Store(Derefof(Derefof(Index(fcp0, 1))), Local0)
 			if (LNotEqual(Local0, Derefof(Index(fcp0, 2)))) {
@@ -23730,7 +23728,7 @@ Method(m743, 1)
 		Offset(0x07e0), , 1, f03f, 20,
 	}
 
-	// Region field Zeroing 
+	// Region field Zeroing
 	Store(0, g001)
 
 	Store(4, Local0)

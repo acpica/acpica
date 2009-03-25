@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -607,7 +605,7 @@ Method(m121, 1) {
 			return (bf04)
 		} elseif (LEqual(arg0, 5)) {
 			return (bf05)
-		} 
+		}
 		return ("qw")
 	}
 
@@ -680,7 +678,7 @@ Method(m122, 1) {
 			return (f004)
 		} elseif (LEqual(arg0, 5)) {
 			return (f005)
-		} 
+		}
 		return ("qw")
 	}
 
@@ -815,7 +813,7 @@ Method(m124, 1)
 }
 
 /*
- * Bug 117. Modification of the duplicated String 
+ * Bug 117. Modification of the duplicated String
  * modifies the initial String Object also.
  *
  * This test should be a part of another complex test.

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -204,7 +202,7 @@ Name (p434, Package() {
 
 /*
 ACPI Specification, Revision 3.0, September 2, 2004
-6.4.3.6   Extended Interrupt Descriptor 
+6.4.3.6   Extended Interrupt Descriptor
 
 Extended Interrupt Descriptor layout:
 
@@ -215,14 +213,14 @@ Byte 3	Interrupt Vector Flags	Interrupt Vector Information.
 	Bit[7:4]	Reserved (must be 0)
 	Bit[3]		Interrupt is shareable, _SHR
 	Bit[2] 		Interrupt Polarity, _LL
-			0	Active-High: This interrupt is sampled 
+			0	Active-High: This interrupt is sampled
 				when the signal is high, or true.
 			1	Active-Low: This interrupt is sampled
 				when the signal is low, or false.
 	Bit[1] 		Interrupt Mode, _HE
 			0	Level-Triggered: Interrupt is triggered in response
 				to the signal being in either a high or low state.
-			1	Edge-Triggered: This interrupt is 
+			1	Edge-Triggered: This interrupt is
 				triggered in response to a change in signal
 				state, either high to low or low to high.
 	Bit[0] 		Consumer/Producer:

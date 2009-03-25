@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +28,7 @@
 
 /*
  * Note: many tests of Identity2MS test case verifies
- *       behaviour of the name space component of ACPICA too. 
+ *       behaviour of the name space component of ACPICA too.
  */
 
 DefinitionBlock(

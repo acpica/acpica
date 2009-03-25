@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -46,7 +44,7 @@
  * If we remove the mentioned comment or insert the '\n' symbol
  * after it, or replace it by ** comment - all became Ok.
  * See details below:
- * 
+ *
  * iasl.exe "gr4.asl"
  *
  * Intel ACPI Component Architecture

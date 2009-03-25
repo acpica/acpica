@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -185,7 +184,6 @@ Method(m8ff, 6)
 	Name(thr, 0)
 
 
-
 	/* ACQUIRING */
 
 
@@ -236,7 +234,6 @@ Method(m8ff, 6)
 		Decrement(lpN0)
 		Increment(lpC0)
 	}
-
 
 
 	/* RELEASING */
@@ -325,8 +322,6 @@ Method(m805, 1)
 	Name(ee02, Buffer(arg0) {0,  0,  63}) // AE_AML_NOT_OWNER
 
 
-
-
 	/* 1. Thread_1 owns its set of all-level mutexes and falls into sleeping */
 
 	Store(1, thr)
@@ -352,8 +347,6 @@ Method(m805, 1)
 	}
 
 
-
-
 	/* 2,3. Thread_2 tries to Release all those mutexes owned by Thread_1 */
 
 	Store(2, thr)
@@ -374,8 +367,6 @@ Method(m805, 1)
 
 	/* Reset exception expectation */
 	m336(arg0, 1)
-
-
 
 
 	/* 4. Thread_2 owns its set of all-level mutexes (not intersecting with Thread_1) */
@@ -403,8 +394,6 @@ Method(m805, 1)
 	}
 
 
-
-
 	/* 5,6. Thread_2 tries again to Release mutexes owned by Thread_1 */
 
 	Store(2, thr)
@@ -425,8 +414,6 @@ Method(m805, 1)
 
 	/* Reset exception expectation */
 	m336(arg0, 1)
-
-
 
 
 	/* 7,8. Thread_1 tries to Release mutexes owned by Thread_2 */
@@ -451,8 +438,6 @@ Method(m805, 1)
 	m336(arg0, 1)
 
 
-
-
 	/* 9. Thread_1 Releases its mutexes */
 
 	Store(1, thr)
@@ -467,8 +452,6 @@ Method(m805, 1)
 
 	/* Wait for all Slave threads */
 	m103(arg0)
-
-
 
 
 	/* 10. Thread_2 Releases its mutexes */
@@ -1770,8 +1753,6 @@ Method(m814, 1)
 	}
 
 
-
-
 	/* 1. Thread thr-N Acquires all the mutexes on all levels */
 
 	/* Set up per-thread set of mutexes */
@@ -1801,7 +1782,6 @@ Method(m814, 1)
 	}
 
 
-
 	/*
 	 * 2. Thread thr-1 tries to Acquire all the same mutexes
 	 *    and gets FAIL (TimeOutValue is not 0xFFFF).
@@ -1818,7 +1798,6 @@ Method(m814, 1)
 	m103(arg0)
 
 
-
 	/* 3. Thread thr-N terminates */
 
 	m200(bs00, arg0, c102) // cmd: Sleep
@@ -1828,7 +1807,6 @@ Method(m814, 1)
 
 	/* Wait for all Slave threads */
 	m103(arg0)
-
 
 
 	/*
@@ -1852,7 +1830,6 @@ Method(m814, 1)
 
 	/* Wait for all Slave threads */
 	m103(arg0)
-
 
 
 	/* 5. Thread thr-1 Releases all mutexes */
@@ -1897,7 +1874,6 @@ Method(m815, 1)
 	}
 
 
-
 	/* 1. Thread thr-N Acquires all the mutexes on all levels */
 
 	/* Set up per-thread set of mutexes */
@@ -1927,7 +1903,6 @@ Method(m815, 1)
 	}
 
 
-
 	/*
 	 * 2. Thread thr-1 tries to Acquire all the same mutexes
 	 *    and gets FAIL (TimeOutValue is not 0xFFFF).
@@ -1942,7 +1917,6 @@ Method(m815, 1)
 
 	/* Wait for all Slave threads */
 	m103(arg0)
-
 
 
 	/*
@@ -1973,7 +1947,6 @@ Method(m815, 1)
 	m110(arg0, cp00, hg00, id00)
 
 
-
 	/*
 	 * 4. Thread thr-N terminates
 	 * 5. Thread thr-1 owns all those mutexes
@@ -1993,7 +1966,6 @@ Method(m815, 1)
 	Store(c106, Index(bs00, thr1)) // thr-1 hangs on c106
 	CopyObject(bs00, cp01)
 	m110(arg0, cp01, hg01, id01)
-
 
 
 	/* 6. Thread thr-1 Releases all mutexes */
@@ -2196,8 +2168,6 @@ Method(m8fb, 2)
 	}
 
 
-
-
 	/*
 	 * 1. Thread thr-1 invokes method MXXX (by c109/c10a) which allows
 	 *    exclusive access to the critical section.
@@ -2212,8 +2182,6 @@ Method(m8fb, 2)
 
 	/* Wait for all Slave threads */
 	m103(arg0)
-
-
 
 
 	/*
@@ -2238,8 +2206,6 @@ Method(m8fb, 2)
 	m110(arg0, cp00, hg00, id00)
 
 
-
-
 	/*
 	 * 3. Sleep for all
 	 */
@@ -2257,8 +2223,6 @@ Method(m8fb, 2)
 	Store(0, Index(cp01, thr2))
 	Store(arg1, Index(hg01, thr2))
 	m110(arg0, cp01, hg01, id01)
-
-
 
 
 	/*
@@ -2280,8 +2244,6 @@ Method(m8fb, 2)
 	Store(0, Index(cp02, thr2))
 	Store(arg1, Index(hg02, thr2))
 	m110(arg0, cp02, hg02, id02)
-
-
 
 
 	/*
@@ -2353,8 +2315,6 @@ Method(m818, 1)
 	}
 
 
-
-
 	/*
 	 * 1. Thread thr-1 invokes non-Serialized method MXXX.
 	 *    Then it calls recursively m101 (infinite loop of slave threads)
@@ -2370,8 +2330,6 @@ Method(m818, 1)
 	m103(arg0)
 
 
-
-
 	/*
 	 * 2. Sleep for all
 	 */
@@ -2382,8 +2340,6 @@ Method(m818, 1)
 
 	/* Wait for all Slave threads */
 	m103(arg0)
-
-
 
 
 	/*
@@ -2401,8 +2357,6 @@ Method(m818, 1)
 	m103(arg0)
 
 
-
-
 	/*
 	 * 4. Sleep for all
 	 */
@@ -2413,8 +2367,6 @@ Method(m818, 1)
 
 	/* Wait for all Slave threads */
 	m103(arg0)
-
-
 
 
 	/*

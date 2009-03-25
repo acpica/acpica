@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -471,7 +469,7 @@ Method(mf96) {
 	CH04("", 0, 0xff, 0, 0x15a, 0, 0)
 
 	// 11. (decimal image exceeding maximal)
-	//     32-bit mode – the value exceeding "4294967295" 
+	//     32-bit mode – the value exceeding "4294967295"
 	if (LNot(F64)) {
 		CH03("", 0, 0x15b, 0, 0)
 		ToInteger("4294967296", Local0)
@@ -502,7 +500,7 @@ Method(mf96) {
 		CH04("", 0, 0xff, 0, 0x168, 0, 0)
 	}
 
-	//     64-bit mode – the value exceeding "18446744073709551615" 
+	//     64-bit mode – the value exceeding "18446744073709551615"
 	CH03("", 0, 0x169, 0, 0)
 	ToInteger("18446744073709551616", Local0)
 	CH04("", 0, 0xff, 0, 0x16a, 0, 0)
@@ -570,12 +568,5 @@ Method(mf96) {
 	ToInteger("", Local0)
 	CH04("", 0, 0xff, 0, 0x187, 0, 0)
 }
-
-
-
-
-
-
-
 
 

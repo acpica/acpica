@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -78,7 +77,7 @@ Name(z179, 179)
  * 19) Storing of an improper specified Device object ..., ms33:
  *     a blue screen appears on the MS OS booting if that Device is global.
  *
- * 99) 
+ * 99)
  */
 
 // Useful for indirect storing
@@ -322,7 +321,7 @@ Method(ms13, 1)
 	{
 		Method(m000, 2)
 		{
-			Store(Derefof(arg0), Local0) 
+			Store(Derefof(arg0), Local0)
 			if (CH03(ts, z179, 0x00c, 0, 0)) {
 			} elseif (LNotEqual(Local0, arg1)) {
 				err(ts, z179, 0x00d, 0, 0, Local0, arg1)
@@ -338,7 +337,7 @@ Method(ms13, 1)
 	{
 		Method(m000, 2)
 		{
-			Store(Derefof(arg0), Local0) 
+			Store(Derefof(arg0), Local0)
 			if (CH03(ts, z179, 0x00e, 0, 0)) {
 			} elseif (LNotEqual(Local0, arg1)) {
 				err(ts, z179, 0x00f, 0, 0, Local0, arg1)
@@ -380,7 +379,7 @@ Method(ms13, 1)
 
 		m000(Index(p001, 0), Local0, Index(p003, 2, Local4), Local1, Local2, Local3)
 
-		OUTP(Derefof(Local4)) 
+		OUTP(Derefof(Local4))
 	}
 
 	CH03(ts, z179, 0x018, 0, 0)
@@ -517,7 +516,7 @@ Method(ms15, 1)
 
 		Method(m000, 2)
 		{
-			Store(Derefof(arg0), Local0) 
+			Store(Derefof(arg0), Local0)
 			if (CH03(ts, z179, 0x020, 0, 0)) {
 			} elseif (LNotEqual(Local0, arg1)) {
 				err(ts, z179, 0x021, 0, 0, Local0, arg1)
@@ -534,7 +533,7 @@ Method(ms15, 1)
 
 		Method(m000, 2)
 		{
-			Store(Derefof(arg0), Local0) 
+			Store(Derefof(arg0), Local0)
 			if (CH03(ts, z179, 0x022, 0, 0)) {
 			} elseif (LNotEqual(Local0, arg1)) {
 				err(ts, z179, 0x023, 0, 0, Local0, arg1)
@@ -551,7 +550,7 @@ Method(ms15, 1)
 
 		Method(m000, 2)
 		{
-			Store(Derefof(arg0), Local0) 
+			Store(Derefof(arg0), Local0)
 			if (CH03(ts, z179, 0x024, 0, 0)) {
 			} elseif (LNotEqual(Local0, arg1)) {
 				err(ts, z179, 0x025, 0, 0, Local0, arg1)
@@ -568,7 +567,7 @@ Method(ms15, 1)
 
 		Method(m000, 2)
 		{
-			Store(Derefof(arg0), Local0) 
+			Store(Derefof(arg0), Local0)
 			if (CH03(ts, z179, 0x026, 0, 0)) {
 			} elseif (LNotEqual(Local0, arg1)) {
 				err(ts, z179, 0x027, 0, 0, Local0, arg1)
@@ -585,7 +584,7 @@ Method(ms15, 1)
 
 		Method(m000, 2)
 		{
-			Store(Derefof(arg0), Local0) 
+			Store(Derefof(arg0), Local0)
 			if (CH03(ts, z179, 0x028, 0, 0)) {
 			} elseif (LNotEqual(Local0, arg1)) {
 				err(ts, z179, 0x029, 0, 0, Local0, arg1)
@@ -602,7 +601,7 @@ Method(ms15, 1)
 
 		Method(m000, 2)
 		{
-			Store(Derefof(arg0), Local0) 
+			Store(Derefof(arg0), Local0)
 			if (CH03(ts, z179, 0x02a, 0, 0)) {
 			} elseif (LNotEqual(Local0, arg1)) {
 				err(ts, z179, 0x02b, 0, 0, Local0, arg1)
@@ -845,7 +844,7 @@ Method(ms16, 1)
 		// Access to the Buffer Field object by Reference
 		Method(m001)
 		{
-			Method(m000, 1) {return(arg0)} 
+			Method(m000, 1) {return(arg0)}
 
 			OUTP("Test m001 started: Store DerefOf(Refof(bf90)) to Named Package")
 
@@ -2226,7 +2225,7 @@ Method(ms23, 1)
 	Method(mir0)
 	{
 		Name(fl00, 0)
- 
+
 		Method(m001)
 		{
 			if (fl00) {
@@ -2247,7 +2246,7 @@ Method(ms23, 1)
 	Method(mir1)
 	{
 		Name(fl00, 1)
- 
+
 		Method(m001)
 		{
 			if (fl00) {
@@ -2275,7 +2274,7 @@ Method(ms23, 1)
 	Method(mir2)
 	{
 		Name(fl00, 0)
- 
+
 		Method(m001)
 		{
 			if (fl00) {
@@ -2295,7 +2294,7 @@ Method(ms23, 1)
 	Method(mir3)
 	{
 		Name(fl00, 1)
- 
+
 		Method(m001)
 		{
 			if (fl00) {

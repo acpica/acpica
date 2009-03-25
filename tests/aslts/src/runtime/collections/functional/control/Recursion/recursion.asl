@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -38,7 +37,7 @@ Name(z177, 177)
 /*
  * Simplest example of recursive calls of methods
  * not overburden with the additional checkings.
- * 
+ *
  * When the method m100 is invoked last time (44-th invocation),
  * we have there the following hierarchy of method calls - 45 method
  * invocations in progress:
@@ -2110,7 +2109,6 @@ Method(m1dd)
 }
 
 
-
 /*
  * Non-Serialized method declares Scope(\) on first call,
  * and allows proper access for the second recursive call too.
@@ -2264,10 +2262,6 @@ Method(m27d)
 	m000(0)
 	CH03(ts, z177, 0x07f, 0, 0)
 }
-
-
-
-
 
 
 Method(m0ed)

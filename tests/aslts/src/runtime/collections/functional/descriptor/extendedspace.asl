@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -40,82 +38,82 @@ Name (p432, Package() {
 
 	ResourceTemplate () {
 		ExtendedSpace (0xc0, ResourceProducer, PosDecode, MinNotFixed, MaxNotFixed, 0x0a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xc1, ResourceProducer, PosDecode, MinNotFixed, MaxFixed, 0x1a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xc2, ResourceProducer, PosDecode, MinFixed, MaxNotFixed, 0x2a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xc3, ResourceProducer, PosDecode, MinFixed, MaxFixed, 0x3a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xc4, ResourceProducer, SubDecode, MinNotFixed, MaxNotFixed, 0x4a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xc5, ResourceProducer, SubDecode, MinNotFixed, MaxFixed, 0x5a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xc6, ResourceProducer, SubDecode, MinFixed, MaxNotFixed, 0x6a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xc7, ResourceProducer, SubDecode, MinFixed, MaxFixed, 0x7a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xc8, ResourceConsumer, PosDecode, MinNotFixed, MaxNotFixed, 0x8a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xc9, ResourceConsumer, PosDecode, MinNotFixed, MaxFixed, 0x9a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xca, ResourceConsumer, PosDecode, MinFixed, MaxNotFixed, 0xaa,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xcb, ResourceConsumer, PosDecode, MinFixed, MaxFixed, 0xba,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xcc, ResourceConsumer, SubDecode, MinNotFixed, MaxNotFixed, 0xca,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xcd, ResourceConsumer, SubDecode, MinNotFixed, MaxFixed, 0xda,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xce, ResourceConsumer, SubDecode, MinFixed, MaxNotFixed, 0xea,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xff, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0xfa,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 
@@ -123,12 +121,12 @@ Name (p432, Package() {
 
 	ResourceTemplate () {
 		ExtendedSpace (0xc0, , , , , 0x00,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xc0, , , , , 0xff,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 
@@ -136,29 +134,29 @@ Name (p432, Package() {
 
 	ResourceTemplate () {
 		ExtendedSpace (0xc0, , , , , 0x5a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff)
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xc0, , , , , 0x5a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7)
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xc0, , , , , 0x5a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			 )
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xc0, , , , , 0x5a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, ,
 			 )
 	},
 	ResourceTemplate () {
 		ExtendedSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			ESP0)
 	},
@@ -171,7 +169,7 @@ Name (p432, Package() {
 
 /*
 ACPI Specification, Revision 3.0, September 2, 2004
-6.4.3.5.4   Extended Address Space Descriptor 
+6.4.3.5.4   Extended Address Space Descriptor
 
 Space Extended Address Space Descriptor layout:
 
@@ -460,10 +458,10 @@ Method(RT17)
 	Store (
 		ResourceTemplate () {
 			ExtendedSpace (0xc0, ResourceProducer, PosDecode, MinNotFixed, MaxNotFixed, 0x5a,
-				0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+				0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 				0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff, ESP0)
 			ExtendedSpace (0xc0, ResourceConsumer, PosDecode, MinNotFixed, MaxNotFixed, 0x5a,
-				0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+				0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 				0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff, ESP1)
 		}, Local0)
 

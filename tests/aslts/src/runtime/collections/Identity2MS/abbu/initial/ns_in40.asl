@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -538,8 +537,6 @@ Method(in40, 7)
 	}
 
 
-
-
 	/*
 	 * Integer
 	 */
@@ -550,8 +547,6 @@ Method(in40, 7)
 
 	Store(1, cmd0)
 	Store(i000, ii00)
-
-
 
 
 	/*
@@ -611,8 +606,6 @@ Method(in40, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	/*
@@ -680,8 +673,6 @@ Method(in40, 7)
 	}
 
 
-
-
 	/*
 	 * Modification 2:
 	 *
@@ -745,8 +736,6 @@ Method(in40, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	/*
@@ -814,8 +803,6 @@ Method(in40, 7)
 	}
 
 
-
-
 	/*
 	 * String
 	 */
@@ -828,8 +815,6 @@ Method(in40, 7)
 	Store(s000, ss00)
 
 
-
-
 	/*
 	 * Modification 0:
 	 */
@@ -887,8 +872,6 @@ Method(in40, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	/*
@@ -956,8 +939,6 @@ Method(in40, 7)
 	}
 
 
-
-
 	/*
 	 * Modification 2:
 	 *
@@ -1023,8 +1004,6 @@ Method(in40, 7)
 	}
 
 
-
-
 	/*
 	 * Modification 3:
 	 *
@@ -1088,8 +1067,6 @@ Method(in40, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	/*
@@ -1099,8 +1076,6 @@ Method(in40, 7)
 	Store(s001, ss00)
 
 
-
-
 	/*
 	 * Modification 0:
 	 */
@@ -1158,8 +1133,6 @@ Method(in40, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	/*
@@ -1227,8 +1200,6 @@ Method(in40, 7)
 	}
 
 
-
-
 	/*
 	 * Modification 2:
 	 *
@@ -1294,8 +1265,6 @@ Method(in40, 7)
 	}
 
 
-
-
 	/*
 	 * Modification 3:
 	 *
@@ -1359,8 +1328,6 @@ Method(in40, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	/*
@@ -1373,8 +1340,6 @@ Method(in40, 7)
 
 	Store(4, cmd0)
 	Store(b000, bb00)
-
-
 
 
 	/*
@@ -1434,8 +1399,6 @@ Method(in40, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	/*
@@ -1503,8 +1466,6 @@ Method(in40, 7)
 	}
 
 
-
-
 	/*
 	 * Modification 2:
 	 *
@@ -1568,8 +1529,6 @@ Method(in40, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	/*
@@ -1637,8 +1596,6 @@ Method(in40, 7)
 	}
 
 
-
-
 	/*
 	 * Package
 	 */
@@ -1651,8 +1608,6 @@ Method(in40, 7)
 	if (chk0) {
 		Store(p000, pp00)
 	}
-
-
 
 
 	/*
@@ -1712,8 +1667,6 @@ Method(in40, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	/*
@@ -1781,8 +1734,6 @@ Method(in40, 7)
 	}
 
 
-
-
 	/*
 	 * Modification 2:
 	 *
@@ -1846,8 +1797,6 @@ Method(in40, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	if (chk0) {
@@ -1952,8 +1901,6 @@ Method(in41, 7)
 	IndexField(f002, f003, ByteAcc, NoLock, Preserve) {if00,32, if01,32}
 
 
-
-
 	/*
 	 * Field
 	 */
@@ -1963,8 +1910,6 @@ Method(in41, 7)
 	Store(6, cmd0)
 	Store(0xabcd0a00, f000)
 	Store(f000, ff00)
-
-
 
 
 	/*
@@ -2030,8 +1975,6 @@ Method(in41, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	/*
@@ -2103,8 +2046,6 @@ Method(in41, 7)
 	}
 
 
-
-
 	/*
 	 * Modification 2:
 	 *
@@ -2172,8 +2113,6 @@ Method(in41, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	/*
@@ -2244,8 +2183,6 @@ Method(in41, 7)
 	}
 
 
-
-
 	/*
 	 * Index Field
 	 */
@@ -2256,8 +2193,6 @@ Method(in41, 7)
 	Store(14, cmd0)
 	Store(0xabcd0b04, if00)
 	Store(if00, if02)
-
-
 
 
 	/*
@@ -2319,8 +2254,6 @@ Method(in41, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	/*
@@ -2388,8 +2321,6 @@ Method(in41, 7)
 	}
 
 
-
-
 	/*
 	 * Modification 2:
 	 *
@@ -2453,8 +2384,6 @@ Method(in41, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	/*
@@ -2524,8 +2453,6 @@ Method(in41, 7)
 	// } // if (chk0)
 
 
-
-
 	/*
 	 * Bank Field
 	 */
@@ -2536,8 +2463,6 @@ Method(in41, 7)
 	Store(15, cmd0)
 	Store(0xabcd0c07, bnk0)
 	Store(bnk0, bnk1)
-
-
 
 
 	/*
@@ -2602,8 +2527,6 @@ Method(in41, 7)
 	}
 
 	// } // if (chk0)
-
-
 
 
 	/*
@@ -2676,8 +2599,6 @@ Method(in41, 7)
 	// } // if (chk0) {
 
 
-
-
 	/*
 	 * Modification 2:
 	 *
@@ -2746,8 +2667,6 @@ Method(in41, 7)
 	}
 
 	// } // if (chk0) {
-
-
 
 
 	/*
@@ -2820,8 +2739,6 @@ Method(in41, 7)
 	// } // if (chk0) {
 
 
-
-
 	/*
 	 * Buffer Field
 	 */
@@ -2831,8 +2748,6 @@ Method(in41, 7)
 	Store(16, cmd0)
 	Store(0xabcd0d08, bf00)
 	Store(bf00, bf01)
-
-
 
 
 	/*
@@ -2892,8 +2807,6 @@ Method(in41, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	/*
@@ -2966,8 +2879,6 @@ Method(in41, 7)
 	// } // if (chk0) {
 
 
-
-
 	/*
 	 * Modification 2:
 	 *
@@ -3036,8 +2947,6 @@ Method(in41, 7)
 	}
 
 	// } // if (chk0) {
-
-
 
 
 	/*
@@ -3110,14 +3019,10 @@ Method(in41, 7)
 	}
 
 
-
-
 	/*
 	 * Device
 	 */
 	Store(7, cmd0)
-
-
 
 
 	/*
@@ -3182,8 +3087,6 @@ Method(in41, 7)
 	}
 
 	// } // if (chk0)
-
-
 
 
 	if (SLC0) {
@@ -3251,8 +3154,6 @@ Method(in41, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	/*
@@ -3327,14 +3228,10 @@ Method(in41, 7)
 	} // if (SLC0)
 
 
-
-
 	/*
 	 * Event
 	 */
 	Store(8, cmd0)
-
-
 
 
 	/*
@@ -3399,8 +3296,6 @@ Method(in41, 7)
 	}
 
 	// } // if (chk0) {
-
-
 
 
 	if (SLC0) {
@@ -3476,8 +3371,6 @@ Method(in41, 7)
 	}
 
 
-
-
 	/*
 	 * Modification 2:
 	 *
@@ -3551,21 +3444,15 @@ Method(in41, 7)
 	} // if (SLC0)
 
 
-
-
 	/*
 	 * Method
 	 */
-
-
 
 
 	/*
 	 * Mutex
 	 */
 	Store(9, cmd0)
-
-
 
 
 	/*
@@ -3630,8 +3517,6 @@ Method(in41, 7)
 	}
 
 	// } // if (chk0) {
-
-
 
 
 	if (SLCK) {
@@ -3707,8 +3592,6 @@ Method(in41, 7)
 	}
 
 
-
-
 	/*
 	 * Modification 2:
 	 *
@@ -3782,14 +3665,10 @@ Method(in41, 7)
 	} // if (SLCK)
 
 
-
-
 	/*
 	 * Operation Region
 	 */
 	Store(10, cmd0)
-
-
 
 
 	/*
@@ -3854,8 +3733,6 @@ Method(in41, 7)
 	}
 
 	// } // if (chk0) {
-
-
 
 
 	if (SLCK) {
@@ -3931,8 +3808,6 @@ Method(in41, 7)
 	}
 
 
-
-
 	/*
 	 * Modification 2:
 	 *
@@ -4006,14 +3881,10 @@ Method(in41, 7)
 	} // if (SLCK)
 
 
-
-
 	/*
 	 * Power Resource
 	 */
 	Store(11, cmd0)
-
-
 
 
 	/*
@@ -4075,8 +3946,6 @@ Method(in41, 7)
 	}
 
 	// } // if (chk0)
-
-
 
 
 	if (SLCK) {
@@ -4148,8 +4017,6 @@ Method(in41, 7)
 	}
 
 
-
-
 	/*
 	 * Modification 2:
 	 *
@@ -4219,14 +4086,10 @@ Method(in41, 7)
 	} // if (SLCK)
 
 
-
-
 	/*
 	 * Processor
 	 */
 	Store(12, cmd0)
-
-
 
 
 	/*
@@ -4286,8 +4149,6 @@ Method(in41, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	if (SLCK) {
@@ -4359,8 +4220,6 @@ Method(in41, 7)
 	}
 
 
-
-
 	/*
 	 * Modification 2:
 	 *
@@ -4430,14 +4289,10 @@ Method(in41, 7)
 	} // if (SLCK)
 
 
-
-
 	/*
 	 * Thermal Zone
 	 */
 	Store(13, cmd0)
-
-
 
 
 	/*
@@ -4497,8 +4352,6 @@ Method(in41, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	if (SLCK) {
@@ -4568,8 +4421,6 @@ Method(in41, 7)
 	} else {
 		OUTP("WARNING: some tests of ns_in40.asl are blocked!")
 	}
-
-
 
 
 	/*

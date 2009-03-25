@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -1053,7 +1052,6 @@ Method(mf13)
 	 * If remove one level the test succeeds
 	 */
 	m010()
-
 
 
 	if (LNotEqual(i000, 0xabcd0000)) {

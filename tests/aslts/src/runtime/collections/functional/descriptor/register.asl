@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -87,7 +85,7 @@ Name (p436, Package() {
 
 /*
 ACPI Specification, Revision 3.0, September 2, 2004
-6.4.3.7   Generic Register Descriptor 
+6.4.3.7   Generic Register Descriptor
 
 Generic Register Descriptor layout:
 
@@ -101,7 +99,7 @@ Byte 3	Address Space ID, _ASI	The address space where the data structure or regi
 	0x02	PCI Configuration Space
 	0x03	Embedded Controller
 	0x04	SMBus
-	0x7F	Functional Fixed Hardware 
+	0x7F	Functional Fixed Hardware
 Byte 4	Register Bit Width, _RBW	Indicates the register width in bits.
 Byte 5	Register Bit Offset, _RBO	Indicates the offset to the start of the register in bits
 				from the Register Address.

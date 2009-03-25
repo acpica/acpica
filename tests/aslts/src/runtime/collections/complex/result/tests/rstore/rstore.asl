@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -1970,7 +1968,7 @@ Method(m690)
 					m680(arg0, 493, 0, b682, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x82})
 					Store(arg4, b682)
 					m680(arg0, 494, 0, b682, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0x00})
-					Store(0xb, Index(b682, 3)) 
+					Store(0xb, Index(b682, 3))
 					m680(arg0, 495, 0, b682, Buffer(9){0x84, 0xA2, 0x50, 0x0B, 0x91, 0xB3, 0x7C, 0xFE, 0x00})
 					m680(arg0, 496, 0, arg4, Buffer(8){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
 				}

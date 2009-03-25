@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -288,7 +286,7 @@ Method(mf9a) {
 	}
 
 	// 11. (decimal image exceeding maximal)
-	//     32-bit mode – the value exceeding "4294967295" 
+	//     32-bit mode – the value exceeding "4294967295"
 	if (1) {
 		CH03("", 0, 0x237, 0, 0)
 		Add("4294967296", 0, Local0)
@@ -375,7 +373,7 @@ Method(mf9a) {
 		}
 	}
 
-	//     64-bit mode – the value exceeding "18446744073709551615" 
+	//     64-bit mode – the value exceeding "18446744073709551615"
 	CH03("", 0, 0x24c, 0, 0)
 	Add("18446744073709551616", 0, Local0)
 	if (F64) {
@@ -737,7 +735,7 @@ Method(mf9b) {
 	}
 
 	// 11. (decimal image exceeding maximal)
-	//     32-bit mode – the value exceeding "4294967295" 
+	//     32-bit mode – the value exceeding "4294967295"
 	if (1) {
 		CH03("", 0, 0x2a4, 0, 0)
 		Add("		4294967296", 0, Local0)
@@ -824,7 +822,7 @@ Method(mf9b) {
 		}
 	}
 
-	//     64-bit mode – the value exceeding "18446744073709551615" 
+	//     64-bit mode – the value exceeding "18446744073709551615"
 	CH03("", 0, 0x2b8, 0, 0)
 	Add("			18446744073709551616", 0, Local0)
 	if (F64) {
@@ -1198,7 +1196,7 @@ Method(mf9c) {
 	}
 
 	// 11. (decimal image exceeding maximal)
-	//     32-bit mode – the value exceeding "4294967295" 
+	//     32-bit mode – the value exceeding "4294967295"
 	if (1) {
 		CH03("", 0, 0x3a4, 0, 0)
 		Add("		0000000004294967296", 0, Local0)
@@ -1285,7 +1283,7 @@ Method(mf9c) {
 		}
 	}
 
-	//     64-bit mode – the value exceeding "18446744073709551615" 
+	//     64-bit mode – the value exceeding "18446744073709551615"
 	CH03("", 0, 0x3b8, 0, 0)
 	Add("			00000000018446744073709551616", 0, Local0)
 	if (F64) {

@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -2278,7 +2277,7 @@ Method(m300)
 	 * Now, after AE_LIMIT, it looks can't actually restore -- many messages
 	 * during the all further execution of tests, and even the tests
 	 * "TEST: WAI0, Wait for Events" somewhere hangs forever:
-	 * 
+	 *
 	 * **** AcpiExec: Exception AE_LIMIT during execution of method [M369] Opcode [Mutex] @E2
 	 * ACPI Exception (utmutex-0376): AE_BAD_PARAMETER, Thread 1475 could not acquire Mutex [0] [20074403]
 	 * ACPI Error (exutils-0180): Could not acquire AML Interpreter mutex [20074403]

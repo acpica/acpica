@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -81,7 +80,7 @@
  *     in the Namespace.
  *
  * Can not be tested following issues:
- * - providing of the table referenced by Load to be "in memory marked by 
+ * - providing of the table referenced by Load to be "in memory marked by
  *   AddressRangeReserved or AddressRangeNVS",
  * - overriding the supplied SSDT with "a newer revision Definition Block
  *   of the same OEM Table ID" by the OS,
@@ -151,7 +150,7 @@ Device(DTM0) {
 
 	Field(IST0, ByteAcc, NoLock, Preserve) {
 		SIG, 32,
-		LENG, 32, 
+		LENG, 32,
 		REV, 8,
 		SUM, 8,
 		OID, 48,
@@ -237,7 +236,7 @@ Device(DTM0) {
 
 		Field(IST0, ByteAcc, NoLock, Preserve) {
 			SIG, 32,
-			LENG, 32, 
+			LENG, 32,
 			REV, 8,
 			SUM, 8,
 			OID, 48,
@@ -620,7 +619,7 @@ Device(DTM0) {
 
 			Field(OPRm, ByteAcc, NoLock, Preserve) {
 				SIG, 32,
-				LENG, 32, 
+				LENG, 32,
 				REV, 8,
 				SUM, 8,
 				OID, 48,
@@ -740,7 +739,7 @@ Device(DTM0) {
 
 			Field(OPRm, ByteAcc, NoLock, Preserve) {
 				SIG, 32,
-				LENG, 32, 
+				LENG, 32,
 				REV, 8,
 				SUM, 8,
 				OID, 48,
@@ -1388,7 +1387,7 @@ Device(DTM0) {
 			}
 		}
 
-		// DDB Handle 
+		// DDB Handle
 		Load(DDB0, DDBH)
 		CH04(arg0, 0, 47, z174, 0x069, 0, 0)	// AE_AML_OPERAND_TYPE
 		if (y260) {
@@ -1802,7 +1801,7 @@ Device(DTM0) {
 		// Buffer Field
 		m000(arg0, "bfl", Refof(\AUXD.BFL0), c016)
 
-		// DDB Handle 
+		// DDB Handle
 		if (y260) {
 			CopyObject(DDB0, DDB1)
 			m000(arg0, "ddb", Refof(DDB1), c017)
@@ -1998,7 +1997,7 @@ Device(DTM0) {
 			return (1)
 		}
 
-		// Load another table, containing declaration of \SSS0 
+		// Load another table, containing declaration of \SSS0
 
 		OperationRegion (IST0, SystemMemory, 0x80000000, 0x34)
 
@@ -2008,7 +2007,7 @@ Device(DTM0) {
 
 		Field(IST0, ByteAcc, NoLock, Preserve) {
 			SIG, 32,
-			LENG, 32, 
+			LENG, 32,
 			REV, 8,
 			SUM, 8,
 			OID, 48,

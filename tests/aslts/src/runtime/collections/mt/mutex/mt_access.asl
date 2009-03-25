@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -62,7 +61,7 @@ Name(b902, Buffer(){0,0,0,0,0,0,0,0})
 
 Name(i900, 0)    // signal start fulfilling command
 Name(i901, 0x30) // to do command 0x30 once only
-Name(c900, 0x31) // 
+Name(c900, 0x31) //
 
 /*
  * Test #.

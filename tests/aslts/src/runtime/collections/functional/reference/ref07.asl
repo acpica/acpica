@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -38,7 +36,7 @@ Name(z116, 116)
 
 /*
  * Flags and values used by m1c3
- */ 
+ */
 Name(FL00, 0) // flag of testing of exceptions
 Name(V000, 0) // type of the Standard Data object
 Name(V001, 0) // index of element of Package
@@ -1455,8 +1453,5 @@ Method(m1da)
 	m000(Index(p000, 1))
 	m383("m1da", p000, z116, 141)
 }
-
-
-
 
 

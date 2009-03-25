@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -153,8 +152,6 @@ Method(m0fc, 1)
 	Method(m099) { CH03(ts, z178, 0x099, 0, 0) Add(i000,  99, i000) m100() }
 
 
-
-
 	// 100 - 199
 
 	Method(m100) { CH03(ts, z178, 0x100, 0, 0) Add(i000, 100, i000) m101() }
@@ -266,8 +263,6 @@ Method(m0fc, 1)
 	Method(m197) { CH03(ts, z178, 0x197, 0, 0) Add(i000, 197, i000) m198() }
 	Method(m198) { CH03(ts, z178, 0x198, 0, 0) Add(i000, 198, i000) m199() }
 	Method(m199) { CH03(ts, z178, 0x199, 0, 0) Add(i000, 199, i000) m200() }
-
-
 
 
 	// 200 - 299
@@ -448,10 +443,7 @@ return
 	}
 
 
-
 	CH03("m0fd", z178, 0x405, 0, 0)
 }
-
-
 
 

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -47,7 +45,7 @@
  * that every result will be unique,  i.e. two subsequent
  * instructions may return the same value.  The only guarantee
  * is that each subsequent evaluation will be greater-than or
- * equal to the previous ones. 
+ * equal to the previous ones.
  *
  * Timer operator doesn’t provide
  * gradually increased values. The test takes long time,

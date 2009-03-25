@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -46,32 +44,32 @@
 
 		Store("Test 0", Debug)
 		CH03("", 0, 0x000, 0, 0)
-		Add(arg0, 1) 
+		Add(arg0, 1)
 		CH04("", 0, 47, 0, 0x001, 0, 0) // AE_AML_OPERAND_TYPE
 
 		Store("Test 1", Debug)
 		CH03("", 0, 0x002, 0, 0)
-		Add(arg1, 1) 
+		Add(arg1, 1)
 		CH04("", 0, 47, 0, 0x003, 0, 0) // AE_AML_OPERAND_TYPE
 
 		Store("Test 2", Debug)
 		CH03("", 0, 0x004, 0, 0)
-		Add(arg2, 1) 
+		Add(arg2, 1)
 		CH04("", 0, 47, 0, 0x005, 0, 0) // AE_AML_OPERAND_TYPE
 
 		Store("Test 3", Debug)
 		CH03("", 0, 0x006, 0, 0)
-		Add(arg3, 1) 
+		Add(arg3, 1)
 		CH04("", 0, 47, 0, 0x007, 0, 0) // AE_AML_OPERAND_TYPE
 
 		Store("Test 4", Debug)
 		CH03("", 0, 0x008, 0, 0)
-		Add(arg4, 1) 
+		Add(arg4, 1)
 		CH04("", 0, 47, 0, 0x009, 0, 0) // AE_AML_OPERAND_TYPE
 
 		Store("Test 5", Debug)
 		CH03("", 0, 0x00a, 0, 0)
-		Add(arg5, 1) 
+		Add(arg5, 1)
 		CH04("", 0, 47, 0, 0x00b, 0, 0) // AE_AML_OPERAND_TYPE
 	}
 

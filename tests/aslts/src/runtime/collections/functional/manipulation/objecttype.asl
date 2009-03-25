@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2006, Intel Corp.
- * Copyright (C) 2006, Valery Podrezov <valery.a.podrezov@intel.com>
- * Copyright (C) 2006, Fiodor Suietov <fiodor.f.suietov@intel.com>
+ * Some or all of this work - Copyright (c) 2006 - 2009, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -84,7 +82,7 @@ Name(b003, Buffer(4) {12, 13, 14, 15})
 //      64-bit Integer passed by ArgX
 //      64-bit Integer passed by local Name
 //      64-bit Integer passed by global Name
-// 
+//
 // String
 //
 //  3 - String
@@ -93,7 +91,7 @@ Name(b003, Buffer(4) {12, 13, 14, 15})
 //
 //  4 - Field Unit created by Field
 //  5 - Field Unit created by BankField
-//  6 - Field Unit created by IndexField 
+//  6 - Field Unit created by IndexField
 //
 // Buffers
 //
@@ -401,7 +399,7 @@ Method(m0f1, 7)
 		}
 		case (5) {
 
-			// BankField 
+			// BankField
 
 			// OperationRegion(r001, SystemMemory, 0x100, 0x100)
 			Field(r001, ByteAcc, NoLock, Preserve) {
@@ -423,7 +421,7 @@ Method(m0f1, 7)
 		}
 		case (6) {
 
-			// IndexField 
+			// IndexField
 
 			OperationRegion(r002, SystemMemory, 0x100, 0x100)
 			Field(r002, ByteAcc, NoLock, Preserve) {
