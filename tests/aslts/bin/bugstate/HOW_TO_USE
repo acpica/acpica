@@ -34,7 +34,7 @@ COMP    - component the bug relates to:
             M    - simulation purposes (OS Layer insertions for simulation purposes only)
             U    - utility
             S    - specs
-              ML - memory leak (additional information but not component)
+            ML   - memory leak (additional information but not component)
 IID     - internal ID of bug
 LBZID   - local bugzilla ID
 KBZID   - kernel bugzilla ID

@@ -3,9 +3,10 @@
 # @echo off
 #
 # Settings and initializations
-
+#
 # Initialize all the AVAILABLE test cases
 # and collections (all which are).
+#
 INIT_ALL_AVAILABLE_TESTS()
 {
 	# Functional test collection
@@ -56,7 +57,9 @@ INIT_ALL_AVAILABLE_TESTS()
 	ALL_AVAILABLE_TEST_CASES="$FUNC_COLL $CPLX_COLL $EXCP_COLL $BDEMO_COLL $MT_COLL $SERV_COLL $IMPL_COLL $MS_IDENT_COLL"
 }
 
+#
 # Report all the available test cases
+#
 echo_available_test_cases()
 {
 	echo "All available test cases:"
@@ -71,7 +74,9 @@ echo_available_test_cases()
 	echo_list "Identity2MS"               "$MS_IDENT_COLL"
 }
 
+#
 # Return the number of all the available test cases
+#
 get_num_of_available_test_cases()
 {
 	local count=0
@@ -84,9 +89,11 @@ get_num_of_available_test_cases()
 	return $count
 }
 
+#
 # Set up a list of test cases you want
 # to be processed by run and compare utilities.
 # Do that here manually.
+#
 INIT_SET_OF_TEST_CASES()
 {
 	local func compl excep bdemo serv impl
@@ -165,9 +172,11 @@ INIT_SET_OF_TEST_CASES()
 #	ENABLED_TCASES="region"
 }
 
+#
 # Set up a set of test run modes you want
 # to be processed by run and compare utilities.
 # Do that here manually.
+#
 INIT_RUN_MODES()
 {
 	# The test run modes to be processed:
@@ -189,19 +198,25 @@ INIT_RUN_MODES()
 	ENABLESLACK64=1
 }
 
+#
 # Set it up to zero to exclude the aslts/RESULTS technique at all
+#
 INIT_LOG_RESULTS()
 {
 	ENABLELOG=1
 }
 
+#
 # Set it up to the maximal number of bdemo tests (of all bugs of ACPICA)
+#
 INIT_MAX_BDEMO()
 {
 	MAXBDEMO=307
 }
 
+#
 # Reset collections involved flags
+#
 reset_collections_flags()
 {
 	FUNC_COLL_FLAG=0
@@ -257,21 +272,25 @@ RESET_SETTINGS()
 INIT_MEM_STAT()
 {
 	# If 'yes', eliminates all settings of comparing below
+
 	DO_ALL_COMPARE=yes
 
 	DO_COMPARE_TOTAL_ONLY=no
 
 	# Enable memory statistics processing
+
 	DO_MEMSTAT=yes
 
-	# Enable comparing of memory statistics for the test cases
+	#
+    # Enable comparing of memory statistics for the test cases
 	# (not only the total figures related to all the test cases
 	# of mode).
 	# Allows to reduce the time of the comparing utility.
 	# This comparing utility takes too long time on Cygwin
 	# (more than 1 hour 10 minutes, though quickly on Linux -
 	# not more than 1 minute).
-	DO_COMPARE_OF_TEST_CASES=no
+	#
+    DO_COMPARE_OF_TEST_CASES=no
 	DO_COMPARE_OF_EXCEPTIONS=no
 
 	if [ "$DO_COMPARE_OF_TEST_CASES" != yes -a "$DO_COMPARE_OF_EXCEPTIONS" != yes ]; then

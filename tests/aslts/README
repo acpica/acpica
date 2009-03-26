@@ -5,7 +5,7 @@ CONTENTS
 
 
    ASLTS verifies, in "hardware-independent" mode, conformity of ACPICA
-ASL compiler and interpreter to the ACPICA ASL grammar specification. The
+ASL compiler and interpreter to the ACPI ASL grammar specification. The
 more common task of ASLTS is to check, in "hardware-independent" mode also,
 all the functionality of ACPICA which can be initiated and then verified
 from inside the test modules coded in ASL. The first local task is performed
@@ -91,7 +91,6 @@ Makefile.switch
 Makefile
 
    currect directory targets and rules
-
 
 
          THE UNIFORM STRUCTURE OF ASLTS SOURCE CODE

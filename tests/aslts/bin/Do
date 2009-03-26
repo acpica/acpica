@@ -6,13 +6,15 @@
 #
 # Available commands:
 #
-#     0 - make and install AML tests
-#     1 - run specified set of tests in all enabled modes
-#     2 - compare two multi-results of two runs of tests
-#     3 - print out the names of all the available test cases
-#     4 - calculate the current state of all bugs and report the summary tables
-#     5 - prepare bdemo summary files of one multi-results directory for all modes
-#     6 - concatenate bdemo summary files of two multi-results
+#     0 - Make and install AML tests
+#     1 - Run specified set of tests in all enabled modes
+#     2 - Compare two multi-results of two runs of tests
+#     3 - Print out the names of all the available test cases
+#     4 - Calculate the current state of all bugs and report the summary
+#         tables
+#     5 - Prepare bdemo summary files of one multi-results directory for all
+#         modes
+#     6 - Concatenate bdemo summary files of two multi-results
 #
 # Notations:
 #
@@ -30,6 +32,12 @@
 #     5 - ASLTSDIR
 #     6 - ASLTSDIR
 #
+# Other:
+#   Make sure that "." (current directory) is in your default search path.
+#   If necessary, convert all scripts in the aslts/bin directory to unix
+#   line endings:
+#       d2u aslts/bin/*
+#
 # Concepts:
 #
 #     run -   execution of the specified set of tests
@@ -43,16 +51,17 @@
 #
 #     root directory of results - aslts/tmp/RESULTS
 #     root directory of aslts - aslts
-
-# REMEMBER:
 #
-#  1. Dont forget ever to add testing of aml/nopt mode.
+# REMEMBER (To-Be-Done items)
+#
+#  1. Dont forget to add testing of aml/nopt mode.
 #  2. Do make-install till the first error automatically
 #  3. Not implemented yet though announced in Usage:
 #     - "Do 1 [n32 [n64 [s32 [s64]]]] [<test_case_name> [<test_case_name> [...]]]"
 #     - "Make-install all the test cases of the specified test collections"
 #     - ...
 #  4. Add checking of presence of "Large reference count" message in logs
+#
 
 STR_BDEMOSSUM="prepare bdemo summary files of one multi-results directory for all modes"
 STR_CONCBDEMOS="concatenate bdemo summary files of two multi-results"

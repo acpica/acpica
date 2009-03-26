@@ -4,8 +4,6 @@ Some information can be obsolete.
 =================================
 
 
-
-
 |------------------------------------------------------------------------------|
 runtime/collections/complex/misc/misc.asl:
 don't forget to uncomment switch operator in method m100 after when the bug 73
@@ -135,7 +133,7 @@ Method(m21c, 4)
                            ^ ????
 		Multiply(lpC0, 6, Local6)
 |------------------------------------------------------------------------------|
-bdemostabs - 
+bdemostabs -
 # Extend the PATH variable
 x=`echo "$PATH" | awk -F: '{ for (i=1; i<=NF; i++) { print $i}}' | grep "aslts/bin"`
 BUG_STATE_DIR="$x/bugstate"
