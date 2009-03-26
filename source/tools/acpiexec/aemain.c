@@ -125,6 +125,7 @@
 UINT8           AcpiGbl_BatchMode = 0;
 BOOLEAN         AcpiGbl_IgnoreErrors = FALSE;
 BOOLEAN         AcpiGbl_DbOpt_NoRegionSupport = FALSE;
+BOOLEAN         AcpiGbl_DebugTimeout = FALSE;
 char            BatchBuffer[128];
 
 
@@ -158,6 +159,7 @@ usage (void)
     printf ("   -t                  Enable Interpreter Serialized Mode\n");
     printf ("   -v                  Verbose init output\n");
     printf ("   -x <DebugLevel>     Specify debug output level\n");
+    printf ("   -z                  Enable debug semaphore timeout\n");
 }
 
 
@@ -267,7 +269,7 @@ main (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "?ab:de^gimo:rstvx:")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "?ab:de^gimo:rstvx:z")) != EOF) switch(j)
     {
     case 'a':
         AcpiGbl_IgnoreErrors = TRUE;
@@ -343,6 +345,10 @@ main (
         AcpiDbgLevel = strtoul (AcpiGbl_Optarg, NULL, 0);
         AcpiGbl_DbConsoleDebugLevel = AcpiDbgLevel;
         printf ("Debug Level: 0x%8.8X\n", AcpiDbgLevel);
+        break;
+
+    case 'z':
+        AcpiGbl_DebugTimeout = TRUE;
         break;
 
     case '?':

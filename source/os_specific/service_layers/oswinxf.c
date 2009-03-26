@@ -169,9 +169,13 @@ OsGetTable (
 
 
 extern FILE                 *AcpiGbl_DebugFile;
+extern BOOLEAN              AcpiGbl_DebugTimeout;
+
 FILE                        *AcpiGbl_OutputFile;
 UINT64                      TimerFrequency;
 char                        TableName[ACPI_NAME_SIZE + 1];
+
+#define ACPI_OS_DEBUG_TIMEOUT   30000 /* 30 seconds */
 
 
 /******************************************************************************
@@ -825,17 +829,15 @@ AcpiOsWaitSemaphore (
         return AE_NOT_IMPLEMENTED;
     }
 
-
-/* TBD: Make this a command line option so that we can catch
- * synchronization deadlocks
- *
-    if (Timeout == INFINITE)
-        Timeout = 400000;
-*/
-
     if (Timeout == ACPI_WAIT_FOREVER)
     {
         OsTimeout = INFINITE;
+        if (AcpiGbl_DebugTimeout)
+        {
+            /* The debug timeout will prevent hang conditions */
+
+            OsTimeout = ACPI_OS_DEBUG_TIMEOUT;
+        }
     }
     else
     {
@@ -847,10 +849,12 @@ AcpiOsWaitSemaphore (
     WaitStatus = WaitForSingleObject (AcpiGbl_Semaphores[Index].OsHandle, OsTimeout);
     if (WaitStatus == WAIT_TIMEOUT)
     {
-/* Make optional -- wait of 0 is used to detect if unit is available
-        ACPI_ERROR ((AE_INFO, "Timeout on semaphore %d",
-            Handle));
-*/
+        if (AcpiGbl_DebugTimeout)
+        {
+            ACPI_EXCEPTION ((AE_INFO, AE_TIME,
+                "Debug timeout on semaphore 0x%04X (%ums)\n",
+                Index, ACPI_OS_DEBUG_TIMEOUT));
+        }
         return AE_TIME;
     }
 
