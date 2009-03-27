@@ -150,7 +150,7 @@ AeSetupConfiguration (
     ArgList.Pointer = Arg;
 
     Arg[0].Type = ACPI_TYPE_INTEGER;
-    Arg[0].Integer.Value = (ACPI_INTEGER) RegionAddr;
+    Arg[0].Integer.Value = ACPI_TO_INTEGER (RegionAddr);
 
     Status = AcpiEvaluateObject (NULL, "\\_CFG", &ArgList, NULL);
 
@@ -191,7 +191,9 @@ AfInstallGpeBlock (
     BlockAddress.SpaceId = 0;
     BlockAddress.Address = 0x76540000;
 
-//    Status = AcpiInstallGpeBlock (Handle, &BlockAddress, 4, 8);
+#if _OBSOLETE
+    Status = AcpiInstallGpeBlock (Handle, &BlockAddress, 4, 8);
+#endif
 
     /* Above should fail, ignore */
 
@@ -220,10 +222,11 @@ AfInstallGpeBlock (
         Status = AcpiInstallGpeBlock (Handle3, &BlockAddress, 8, 11);
     }
 
-//    Status = AcpiRemoveGpeBlock (Handle);
-//    Status = AcpiRemoveGpeBlock (Handle2);
-//    Status = AcpiRemoveGpeBlock (Handle3);
-
+#if _OBSOLETE
+    Status = AcpiRemoveGpeBlock (Handle);
+    Status = AcpiRemoveGpeBlock (Handle2);
+    Status = AcpiRemoveGpeBlock (Handle3);
+#endif
 }
 
 
@@ -295,7 +298,7 @@ AeTestPackageArgument (
     /* Sub-package elements */
 
     Pkg2Elements[0].Type = ACPI_TYPE_INTEGER;
-    Pkg2Elements[0].Integer.Value = (ACPI_INTEGER) 0x5555AAAABBBBCCCC;
+    Pkg2Elements[0].Integer.Value = 0x5555AAAABBBBCCCC;
 
     Pkg2Elements[1].Type = ACPI_TYPE_STRING;
     Pkg2Elements[1].String.Length = sizeof ("Nested Package");

@@ -163,9 +163,9 @@ AcpiHwClearAcpiStatus (
     ACPI_FUNCTION_TRACE (HwClearAcpiStatus);
 
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %04X to %08X\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %04X to %8.8X%8.8X\n",
         ACPI_BITMASK_ALL_FIXED_STATUS,
-        AcpiGbl_XPm1aStatus.Address));
+        ACPI_FORMAT_UINT64 (AcpiGbl_XPm1aStatus.Address)));
 
     LockFlags = AcpiOsAcquireLock (AcpiGbl_HardwareLock);
 
