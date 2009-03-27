@@ -116,7 +116,7 @@
 
 /*
  * These interfaces are required in order to compile the ASL compiler under
- * Linux.
+ * Linux or other Unix-like system.
  */
 
 #include <stdio.h>
@@ -154,6 +154,7 @@ AeTableOverride (
 
 typedef void* (*PTHREAD_CALLBACK) (void *);
 
+
 /******************************************************************************
  *
  * FUNCTION:    AcpiOsInitialize, AcpiOsTerminate
@@ -169,16 +170,17 @@ typedef void* (*PTHREAD_CALLBACK) (void *);
 ACPI_STATUS
 AcpiOsInitialize (void)
 {
-    AcpiGbl_OutputFile = stdout;
 
-    return AE_OK;
+    AcpiGbl_OutputFile = stdout;
+    return (AE_OK);
 }
 
 
 ACPI_STATUS
 AcpiOsTerminate (void)
 {
-    return AE_OK;
+
+    return (AE_OK);
 }
 
 
@@ -265,54 +267,9 @@ AcpiOsTableOverride (
     AeTableOverride (ExistingTable, NewTable);
     return (AE_OK);
 #else
-    return AE_NO_ACPI_TABLES;
+
+    return (AE_NO_ACPI_TABLES);
 #endif
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsReadable
- *
- * PARAMETERS:  Pointer             - Area to be verified
- *              Length              - Size of area
- *
- * RETURN:      TRUE if readable for entire length
- *
- * DESCRIPTION: Verify that a pointer is valid for reading
- *
- *****************************************************************************/
-
-BOOLEAN
-AcpiOsReadable (
-    void                    *Pointer,
-    ACPI_SIZE               Length)
-{
-
-    return (TRUE);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsWritable
- *
- * PARAMETERS:  Pointer             - Area to be verified
- *              Length              - Size of area
- *
- * RETURN:      TRUE if writable for entire length
- *
- * DESCRIPTION: Verify that a pointer is valid for writing
- *
- *****************************************************************************/
-
-BOOLEAN
-AcpiOsWritable (
-    void                    *Pointer,
-    ACPI_SIZE               Length)
-{
-
-    return (TRUE);
 }
 
 
@@ -358,11 +315,8 @@ AcpiOsPrintf (
 
 
     va_start (Args, Fmt);
-
     AcpiOsVprintf (Fmt, Args);
-
     va_end (Args);
-    return;
 }
 
 
@@ -411,8 +365,6 @@ AcpiOsVprintf (
     {
         Count = vfprintf (AcpiGbl_OutputFile, Fmt, Args);
     }
-
-    return;
 }
 
 
@@ -524,8 +476,7 @@ AcpiOsAllocate (
 
 
     Mem = (void *) malloc ((size_t) size);
-
-    return Mem;
+    return (Mem);
 }
 
 
@@ -545,7 +496,6 @@ void
 AcpiOsFree (
     void                    *mem)
 {
-
 
     free (mem);
 }
@@ -570,28 +520,31 @@ AcpiOsCreateSemaphore (
     UINT32              InitialUnits,
     ACPI_HANDLE         *OutHandle)
 {
+    sem_t               *Sem;
 
-    sem_t *Sem;
 
-    if (!OutHandle) {
-        return AE_BAD_PARAMETER;
+    if (!OutHandle)
+    {
+        return (AE_BAD_PARAMETER);
     }
 
-    Sem = AcpiOsAllocate (sizeof(sem_t));
+    Sem = AcpiOsAllocate (sizeof (sem_t));
 
-    if (!Sem) {
-	return AE_NO_MEMORY;
+    if (!Sem)
+    {
+        return (AE_NO_MEMORY);
     }
 
-    if (sem_init (Sem, 0, InitialUnits) == -1) {
+    if (sem_init (Sem, 0, InitialUnits) == -1)
+    {
         AcpiOsFree (Sem);
-        return AE_BAD_PARAMETER;
+        return (AE_BAD_PARAMETER);
     }
 
-    *OutHandle = (ACPI_HANDLE)Sem;
-
-    return AE_OK;
+    *OutHandle = (ACPI_HANDLE) Sem;
+    return (AE_OK);
 }
+
 
 /******************************************************************************
  *
@@ -609,17 +562,20 @@ ACPI_STATUS
 AcpiOsDeleteSemaphore (
     ACPI_HANDLE         Handle)
 {
-    sem_t *Sem = (sem_t *)Handle;
+    sem_t               *Sem = (sem_t *) Handle;
+
+
     if (!Sem)
     {
-        return AE_BAD_PARAMETER;
+        return (AE_BAD_PARAMETER);
     }
 
-    if (sem_destroy (Sem) == -1) {
-        return AE_BAD_PARAMETER;
+    if (sem_destroy (Sem) == -1)
+    {
+        return (AE_BAD_PARAMETER);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -643,52 +599,57 @@ AcpiOsWaitSemaphore (
     UINT32              Units,
     UINT16              Timeout)
 {
-    ACPI_STATUS Status = AE_OK;
-    sem_t *Sem = (sem_t *)Handle;
+    ACPI_STATUS         Status = AE_OK;
+    sem_t               *Sem = (sem_t *) Handle;
+    struct timespec     T;
+
+
     if (!Sem)
     {
-        return AE_BAD_PARAMETER;
+        return (AE_BAD_PARAMETER);
     }
 
-    switch (Timeout) {
-            /*
-            * No Wait:
-            * --------
-            * A zero timeout value indicates that we shouldn't wait - just
-            * acquire the semaphore if available otherwise return AE_TIME
-            * (a.k.a. 'would block').
-            */
+    switch (Timeout)
+    {
+    /*
+     * No Wait:
+     * --------
+     * A zero timeout value indicates that we shouldn't wait - just
+     * acquire the semaphore if available otherwise return AE_TIME
+     * (a.k.a. 'would block').
+     */
     case 0:
-            if (sem_trywait(Sem) == -1)
-                    Status = AE_TIME;
-            break;
 
-            /*
-            * Wait Indefinitely:
-            * ------------------
-            */
+        if (sem_trywait(Sem) == -1)
+        {
+            Status = (AE_TIME);
+        }
+        break;
+
+    /* Wait Indefinitely */
+
     case ACPI_WAIT_FOREVER:
-            if (sem_wait(Sem)) {
-                Status = AE_TIME;
-            }
-            break;
 
-            /*
-            * Wait w/ Timeout:
-            * ----------------
-            */
+        if (sem_wait (Sem))
+        {
+            Status = (AE_TIME);
+        }
+        break;
+
+    /* Wait with Timeout */
+
     default:
-            {
-                struct timespec T;
-                T.tv_sec = Timeout /1000;
-                T.tv_nsec = (Timeout - T.tv_sec * 1000) * 1000000;
-                if (sem_timedwait(Sem, &T)) {
-                    Status = AE_TIME;
-                }
-            }
-            break;
+
+        T.tv_sec = Timeout /1000;
+        T.tv_nsec = (Timeout - T.tv_sec * 1000) * 1000000;
+        if (sem_timedwait (Sem, &T))
+        {
+            Status = (AE_TIME);
+        }
+        break;
     }
-    return Status;
+
+    return (Status);
 }
 
 
@@ -710,17 +671,30 @@ AcpiOsSignalSemaphore (
     ACPI_HANDLE         Handle,
     UINT32              Units)
 {
-    sem_t *Sem = (sem_t *)Handle;
+    sem_t               *Sem = (sem_t *)Handle;
+
+
     if (!Sem)
     {
-        return AE_BAD_PARAMETER;
+        return (AE_BAD_PARAMETER);
     }
-    if (sem_post(Sem) == -1) {
-        return AE_LIMIT;
+
+    if (sem_post (Sem) == -1)
+    {
+        return (AE_LIMIT);
     }
-    return AE_OK;
+
+    return (AE_OK);
 }
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    Spinlock interfaces
+ *
+ * DESCRIPTION: Map these interfaces to semaphore interfaces
+ *
+ *****************************************************************************/
 
 ACPI_STATUS
 AcpiOsCreateLock (
@@ -729,6 +703,7 @@ AcpiOsCreateLock (
 
     return (AcpiOsCreateSemaphore (1, 1, OutHandle));
 }
+
 
 void
 AcpiOsDeleteLock (
@@ -778,8 +753,7 @@ AcpiOsInstallInterruptHandler (
     void                    *Context)
 {
 
-
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -801,7 +775,7 @@ AcpiOsRemoveInterruptHandler (
     ACPI_OSD_HANDLER        ServiceRoutine)
 {
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -825,14 +799,16 @@ AcpiOsExecute (
     ACPI_OSD_EXEC_CALLBACK  Function,
     void                    *Context)
 {
-    pthread_t thread;
-    int ret;
+    pthread_t               thread;
+    int                     ret;
 
-    ret = pthread_create (&thread, NULL, (PTHREAD_CALLBACK)Function, Context);
-    if (ret) {
+
+    ret = pthread_create (&thread, NULL, (PTHREAD_CALLBACK) Function, Context);
+    if (ret)
+    {
         AcpiOsPrintf("Create thread failed");
     }
-    return 0;
+    return (0);
 }
 
 
@@ -862,7 +838,7 @@ AcpiOsBreakpoint (
         AcpiOsPrintf ("At AcpiOsBreakpoint ****\n");
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -887,7 +863,6 @@ AcpiOsStall (
     {
         usleep (microseconds);
     }
-    return;
 }
 
 
@@ -914,8 +889,6 @@ AcpiOsSleep (
      * Arg to usleep() must be less than 1,000,000 (1 second)
      */
     usleep ((milliseconds % 1000) * 1000);      /* Sleep for remaining usecs */
-
-    return;
 }
 
 /******************************************************************************
@@ -933,9 +906,10 @@ AcpiOsSleep (
 UINT64
 AcpiOsGetTimer (void)
 {
-    struct timeval  time;
+    struct timeval          time;
 
-    gettimeofday(&time, NULL);
+
+    gettimeofday (&time, NULL);
 
     /* Seconds * 10^7 = 100ns(10^-7), Microseconds(10^-6) * 10^1 = 100ns */
 
@@ -1063,6 +1037,9 @@ AcpiOsReadPort (
     case 32:
         *Value = 0xFFFFFFFF;
         break;
+
+    default:
+        return (AE_BAD_PARAMETER);
     }
 
     return (AE_OK);
@@ -1125,7 +1102,6 @@ AcpiOsReadMemory (
 
     default:
         return (AE_BAD_PARAMETER);
-        break;
     }
     return (AE_OK);
 }
@@ -1156,10 +1132,69 @@ AcpiOsWriteMemory (
 }
 
 
-ACPI_THREAD_ID
-AcpiOsGetThreadId(void)
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsReadable
+ *
+ * PARAMETERS:  Pointer             - Area to be verified
+ *              Length              - Size of area
+ *
+ * RETURN:      TRUE if readable for entire length
+ *
+ * DESCRIPTION: Verify that a pointer is valid for reading
+ *
+ *****************************************************************************/
+
+BOOLEAN
+AcpiOsReadable (
+    void                    *Pointer,
+    ACPI_SIZE               Length)
 {
-    return (ACPI_THREAD_ID)(pthread_self());
+
+    return (TRUE);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsWritable
+ *
+ * PARAMETERS:  Pointer             - Area to be verified
+ *              Length              - Size of area
+ *
+ * RETURN:      TRUE if writable for entire length
+ *
+ * DESCRIPTION: Verify that a pointer is valid for writing
+ *
+ *****************************************************************************/
+
+BOOLEAN
+AcpiOsWritable (
+    void                    *Pointer,
+    ACPI_SIZE               Length)
+{
+
+    return (TRUE);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsGetThreadId
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Id of the running thread
+ *
+ * DESCRIPTION: Get the Id of the current (running) thread
+ *
+ *****************************************************************************/
+
+ACPI_THREAD_ID
+AcpiOsGetThreadId (void)
+{
+
+    return (ACPI_THREAD_ID) (pthread_self ());
 }
 
 
@@ -1197,10 +1232,11 @@ AcpiOsSignal (
         {
             AcpiOsPrintf ("At AcpiOsBreakpoint ****\n");
         }
+        break;
 
+    default:
         break;
     }
-
 
     return (AE_OK);
 }
