@@ -449,9 +449,6 @@ extern      BOOLEAN                     AcpiGbl_MethodExecuting;
 extern      BOOLEAN                     AcpiGbl_AbortMethod;
 extern      BOOLEAN                     AcpiGbl_DbTerminateThreads;
 
-ACPI_EXTERN int                         optind;
-ACPI_EXTERN char                       *optarg;
-
 ACPI_EXTERN BOOLEAN                     AcpiGbl_DbOpt_tables;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_DbOpt_stats;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_DbOpt_ini_methods;
