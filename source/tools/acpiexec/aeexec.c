@@ -298,7 +298,7 @@ AeTestPackageArgument (
     /* Sub-package elements */
 
     Pkg2Elements[0].Type = ACPI_TYPE_INTEGER;
-    Pkg2Elements[0].Integer.Value = 0x5555AAAABBBBCCCC;
+    Pkg2Elements[0].Integer.Value = 0xAAAABBBB;
 
     Pkg2Elements[1].Type = ACPI_TYPE_STRING;
     Pkg2Elements[1].String.Length = sizeof ("Nested Package");
