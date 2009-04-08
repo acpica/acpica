@@ -605,7 +605,7 @@ AcpiUtCopyEsimpleToIsimple (
         InternalObject->String.Pointer =
             ACPI_ALLOCATE_ZEROED ((ACPI_SIZE)
                 ExternalObject->String.Length + 1);
-        
+
         if (!InternalObject->String.Pointer)
         {
             goto ErrorExit;
@@ -796,6 +796,7 @@ AcpiUtCopySimpleObject (
 {
     UINT16                  ReferenceCount;
     ACPI_OPERAND_OBJECT     *NextObject;
+    ACPI_STATUS             Status;
 
 
     /* Save fields from destination that we don't want to overwrite */
@@ -891,6 +892,29 @@ AcpiUtCopySimpleObject (
         if (DestDesc->Region.Handler)
         {
             AcpiUtAddReference (DestDesc->Region.Handler);
+        }
+        break;
+
+    /*
+     * For Mutex and Event objects, we cannot simply copy the underlying
+     * OS object. We must create a new one.
+     */
+    case ACPI_TYPE_MUTEX:
+
+        Status = AcpiOsCreateMutex (&DestDesc->Mutex.OsMutex);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+        break;
+
+    case ACPI_TYPE_EVENT:
+
+        Status = AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT, 0,
+                    &DestDesc->Event.OsSemaphore);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
         }
         break;
 
