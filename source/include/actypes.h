@@ -509,22 +509,12 @@ typedef UINT64                          ACPI_INTEGER;
 
 /* Data manipulation */
 
-#define ACPI_LOWORD(l)                  ((UINT16)(UINT32)(l))
-#define ACPI_HIWORD(l)                  ((UINT16)((((UINT32)(l)) >> 16) & 0xFFFF))
-#define ACPI_LOBYTE(l)                  ((UINT8)(UINT16)(l))
-#define ACPI_HIBYTE(l)                  ((UINT8)((((UINT16)(l)) >> 8) & 0xFF))
-
-/* Full 64-bit integer must be available on both 32-bit and 64-bit platforms */
-
-typedef struct acpi_integer_overlay
-{
-    UINT32              LoDword;
-    UINT32              HiDword;
-
-} ACPI_INTEGER_OVERLAY;
-
-#define ACPI_LODWORD(Integer)           (ACPI_CAST_PTR (ACPI_INTEGER_OVERLAY, &Integer)->LoDword)
-#define ACPI_HIDWORD(Integer)           (ACPI_CAST_PTR (ACPI_INTEGER_OVERLAY, &Integer)->HiDword)
+#define ACPI_LOBYTE(Integer)            ((UINT8)   (UINT16)(Integer))
+#define ACPI_HIBYTE(Integer)            ((UINT8) (((UINT16)(Integer)) >> 8))
+#define ACPI_LOWORD(Integer)            ((UINT16)  (UINT32)(Integer))
+#define ACPI_HIWORD(Integer)            ((UINT16)(((UINT32)(Integer)) >> 16))
+#define ACPI_LODWORD(Integer64)         ((UINT32)  (UINT64)(Integer64))
+#define ACPI_HIDWORD(Integer64)         ((UINT32)(((UINT64)(Integer64)) >> 32))
 
 #define ACPI_SET_BIT(target,bit)        ((target) |= (bit))
 #define ACPI_CLEAR_BIT(target,bit)      ((target) &= ~(bit))
