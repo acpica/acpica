@@ -241,7 +241,7 @@ AcpiNsGetExternalPathname (
     NameBuffer = ACPI_ALLOCATE_ZEROED (Size);
     if (!NameBuffer)
     {
-        ACPI_ERROR ((AE_INFO, "Could not allocate %d bytes", Size));
+        ACPI_ERROR ((AE_INFO, "Could not allocate %u bytes", (UINT32) Size));
         return_PTR (NULL);
     }
 

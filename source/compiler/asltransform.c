@@ -777,7 +777,7 @@ TrDoSwitch (
 
     case ACPI_BTYPE_STRING:
         NewOp2->Asl.Next = TrCreateValuedLeafNode (PARSEOP_STRING_LITERAL,
-                                (ACPI_INTEGER) "");
+                                (ACPI_INTEGER) ACPI_TO_INTEGER (""));
         break;
 
     case ACPI_BTYPE_BUFFER:

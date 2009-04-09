@@ -279,7 +279,7 @@ main (
         if (strlen (AcpiGbl_Optarg) > 127)
         {
             printf ("**** The length of command line (%u) exceeded maximum (127)\n",
-                strlen (AcpiGbl_Optarg));
+                (UINT32) strlen (AcpiGbl_Optarg));
             return -1;
         }
         AcpiGbl_BatchMode = 1;
