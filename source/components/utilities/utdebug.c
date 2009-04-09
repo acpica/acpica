@@ -279,8 +279,9 @@ AcpiDebugPrint (
         if (ACPI_LV_THREADS & AcpiDbgLevel)
         {
             AcpiOsPrintf (
-                "\n**** Context Switch from TID %X to TID %X ****\n\n",
-                AcpiGbl_PrevThreadId, ThreadId);
+                "\n**** Context Switch from TID %p to TID %p ****\n\n",
+                ACPI_CAST_PTR (void, AcpiGbl_PrevThreadId),
+                ACPI_CAST_PTR (void, ThreadId));
         }
 
         AcpiGbl_PrevThreadId = ThreadId;
@@ -294,7 +295,7 @@ AcpiDebugPrint (
 
     if (ACPI_LV_THREADS & AcpiDbgLevel)
     {
-        AcpiOsPrintf ("[%04lX] ", ThreadId);
+        AcpiOsPrintf ("[%p] ", ACPI_CAST_PTR (void, ThreadId));
     }
 
     AcpiOsPrintf ("[%02ld] %-22.22s: ",
