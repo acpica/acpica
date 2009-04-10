@@ -655,6 +655,7 @@ AcpiDbDisplayTableInfo (
 {
     UINT32                  i;
     ACPI_TABLE_DESC         *TableDesc;
+    ACPI_STATUS             Status;
 
 
     /* Walk the entire root table list */
@@ -666,7 +667,11 @@ AcpiDbDisplayTableInfo (
 
         /* Make sure that the table is mapped */
 
-        AcpiTbVerifyTable (TableDesc);
+        Status = AcpiTbVerifyTable (TableDesc);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
 
         /* Dump the table header */
 

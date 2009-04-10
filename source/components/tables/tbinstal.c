@@ -595,7 +595,7 @@ AcpiTbDeleteNamespaceByOwner (
      * lock may block, and also since the execution of a namespace walk
      * must be allowed to use the interpreter.
      */
-    AcpiUtReleaseMutex (ACPI_MTX_INTERPRETER);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_INTERPRETER);
     Status = AcpiUtAcquireWriteLock (&AcpiGbl_NamespaceRwLock);
 
     AcpiNsDeleteNamespaceByOwner (OwnerId);

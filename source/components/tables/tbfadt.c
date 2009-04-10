@@ -536,7 +536,7 @@ AcpiTbConvertFadt (
              */
             AcpiTbInitGenericAddress (Address64, ACPI_ADR_SPACE_SYSTEM_IO,
                 *ACPI_ADD_PTR (UINT8, &AcpiGbl_FADT, FadtInfoTable[i].Length),
-                Address32);
+                (UINT64) Address32);
         }
     }
 }
@@ -567,7 +567,6 @@ AcpiTbValidateFadt (
     void)
 {
     char                    *Name;
-    UINT32                  *Address32;
     ACPI_GENERIC_ADDRESS    *Address64;
     UINT8                   Length;
     UINT32                  i;
@@ -605,13 +604,11 @@ AcpiTbValidateFadt (
     for (i = 0; i < ACPI_FADT_INFO_ENTRIES; i++)
     {
         /*
-         * Generate pointers to the 32-bit and 64-bit addresses, get the
-         * register length (width), and the register name
+         * Generate pointer to the 64-bit address, get the register
+         * length (width) and the register name
          */
         Address64 = ACPI_ADD_PTR (ACPI_GENERIC_ADDRESS,
                         &AcpiGbl_FADT, FadtInfoTable[i].Address64);
-        Address32 = ACPI_ADD_PTR (UINT32,
-                        &AcpiGbl_FADT, FadtInfoTable[i].Address32);
         Length = *ACPI_ADD_PTR (UINT8,
                         &AcpiGbl_FADT, FadtInfoTable[i].Length);
         Name = FadtInfoTable[i].Name;

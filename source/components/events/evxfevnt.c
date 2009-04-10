@@ -127,7 +127,7 @@
 
 /* Local prototypes */
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiEvGetGpeDevice (
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
     ACPI_GPE_BLOCK_INFO     *GpeBlock,
@@ -1007,7 +1007,7 @@ ACPI_EXPORT_SYMBOL (AcpiGetGpeDevice)
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiEvGetGpeDevice (
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
     ACPI_GPE_BLOCK_INFO     *GpeBlock,
