@@ -239,7 +239,7 @@ AcpiHwValidateIoRequest (
         ACPI_ERROR ((AE_INFO,
             "Illegal I/O port address/length above 64K: 0x%p/%X",
             ACPI_CAST_PTR (void, Address), ByteWidth));
-        return_ACPI_STATUS (AE_AML_ILLEGAL_ADDRESS);
+        return_ACPI_STATUS (AE_LIMIT);
     }
 
     /* Exit if requested address is not within the protected port table */
@@ -268,7 +268,7 @@ AcpiHwValidateIoRequest (
 
             if (AcpiGbl_OsiData >= PortInfo->OsiDependency)
             {
-                ACPI_ERROR ((AE_INFO,
+                ACPI_DEBUG_PRINT ((ACPI_DB_IO,
                     "Denied AML access to port 0x%p/%X (%s 0x%.4X-0x%.4X)",
                     ACPI_CAST_PTR (void, Address), ByteWidth, PortInfo->Name,
                     PortInfo->Start, PortInfo->End));
@@ -297,7 +297,7 @@ AcpiHwValidateIoRequest (
  *              Value               Where value is placed
  *              Width               Number of bits
  *
- * RETURN:      Value read from port
+ * RETURN:      Status and value read from port
  *
  * DESCRIPTION: Read data from an I/O port or register. This is a front-end
  *              to AcpiOsReadPort that performs validation on both the port
@@ -312,16 +312,48 @@ AcpiHwReadPort (
     UINT32                  Width)
 {
     ACPI_STATUS             Status;
+    UINT32                  OneByte;
+    UINT32                  i;
 
+
+    /* Validate the entire request and perform the I/O */
 
     Status = AcpiHwValidateIoRequest (Address, Width);
-    if (ACPI_FAILURE (Status))
+    if (ACPI_SUCCESS (Status))
+    {
+        Status = AcpiOsReadPort (Address, Value, Width);
+        return (Status);
+    }
+
+    if (Status != AE_AML_ILLEGAL_ADDRESS)
     {
         return (Status);
     }
 
-    Status = AcpiOsReadPort (Address, Value, Width);
-    return (Status);
+    /*
+     * There has been a protection violation within the request. Fall
+     * back to byte granularity port I/O and ignore the failing bytes.
+     * This provides Windows compatibility.
+     */
+    for (i = 0, *Value = 0; i < Width; i += 8)
+    {
+        /* Validate and read one byte */
+
+        if (AcpiHwValidateIoRequest (Address, 8) == AE_OK)
+        {
+            Status = AcpiOsReadPort (Address, &OneByte, 8);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            *Value |= (OneByte << i);
+        }
+
+        Address++;
+    }
+
+    return (AE_OK);
 }
 
 
@@ -333,7 +365,7 @@ AcpiHwReadPort (
  *              Value               Value to write
  *              Width               Number of bits
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Write data to an I/O port or register. This is a front-end
  *              to AcpiOsWritePort that performs validation on both the port
@@ -348,16 +380,45 @@ AcpiHwWritePort (
     UINT32                  Width)
 {
     ACPI_STATUS             Status;
+    UINT32                  i;
 
+
+    /* Validate the entire request and perform the I/O */
 
     Status = AcpiHwValidateIoRequest (Address, Width);
-    if (ACPI_FAILURE (Status))
+    if (ACPI_SUCCESS (Status))
+    {
+        Status = AcpiOsWritePort (Address, Value, Width);
+        return (Status);
+    }
+
+    if (Status != AE_AML_ILLEGAL_ADDRESS)
     {
         return (Status);
     }
 
-    Status = AcpiOsWritePort (Address, Value, Width);
-    return (Status);
+    /*
+     * There has been a protection violation within the request. Fall
+     * back to byte granularity port I/O and ignore the failing bytes.
+     * This provides Windows compatibility.
+     */
+    for (i = 0; i < Width; i += 8)
+    {
+        /* Validate and write one byte */
+
+        if (AcpiHwValidateIoRequest (Address, 8) == AE_OK)
+        {
+            Status = AcpiOsWritePort (Address, (Value >> i) & 0xFF, 8);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+        }
+
+        Address++;
+    }
+
+    return (AE_OK);
 }
 
 
