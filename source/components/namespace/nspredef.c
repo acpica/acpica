@@ -234,7 +234,7 @@ AcpiNsCheckPredefinedNames (
     Pathname = AcpiNsGetExternalPathname (Node);
     if (!Pathname)
     {
-        Pathname = ACPI_CAST_PTR (char, Predefined->Info.Name);
+        return (AE_OK); /* Could not get pathname, ignore */
     }
 
     /*
@@ -323,11 +323,7 @@ AcpiNsCheckPredefinedNames (
     }
 
 Exit:
-    if (Pathname != Predefined->Info.Name)
-    {
-        ACPI_FREE (Pathname);
-    }
-
+    ACPI_FREE (Pathname);
     return (Status);
 }
 
