@@ -124,7 +124,7 @@
 
 #ifdef ACPI_DEBUG_OUTPUT
 
-static ACPI_THREAD_ID       AcpiGbl_PrevThreadId = 0xFFFFFFFF;
+static ACPI_THREAD_ID       AcpiGbl_PrevThreadId = (ACPI_THREAD_ID) 0xFFFFFFFF;
 static char                 *AcpiGbl_FnEntryStr = "----Entry";
 static char                 *AcpiGbl_FnExitStr  = "----Exit-";
 

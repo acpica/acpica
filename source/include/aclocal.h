@@ -209,7 +209,7 @@ typedef struct acpi_rw_lock
 
 /* This Thread ID means that the mutex is not in use (unlocked) */
 
-#define ACPI_MUTEX_NOT_ACQUIRED         (UINT32) -1
+#define ACPI_MUTEX_NOT_ACQUIRED         (ACPI_THREAD_ID) -1
 
 /* Table for the global mutexes */
 
