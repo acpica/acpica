@@ -193,17 +193,14 @@
 #if defined(_LINUX) || defined(__linux__)
 #include "aclinux.h"
 
-#elif defined(WIN32)
-#include "acwin.h"
-
-#elif defined(WIN64)
-#include "acwin64.h"
-
 #elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
 #include "acfreebsd.h"
 
 #elif defined(__NetBSD__)
 #include "acnetbsd.h"
+
+#elif defined(__sun)
+#include "acsolaris.h"
 
 #elif defined(MODESTO)
 #include "acmodesto.h"
@@ -211,14 +208,20 @@
 #elif defined(NETWARE)
 #include "acnetware.h"
 
-#elif defined(__sun)
-#include "acsolaris.h"
+#elif defined(_CYGWIN)
+#include "accygwin.h"
 
-#elif defined(__OS2__)
-#include "acos2.h"
+#elif defined(WIN32)
+#include "acwin.h"
+
+#elif defined(WIN64)
+#include "acwin64.h"
 
 #elif defined(_WRS_LIB_BUILD)
 #include "acvxworks.h"
+
+#elif defined(__OS2__)
+#include "acos2.h"
 
 #elif defined(_AED_EFI)
 #include "acefi.h"

@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: acgcc.h - GCC specific defines, etc.
+ * Name: accygwin.h - OS specific defines, etc.
  *
  *****************************************************************************/
 
@@ -113,25 +113,43 @@
  *
  *****************************************************************************/
 
-#ifndef __ACGCC_H__
-#define __ACGCC_H__
+#ifndef __ACCYGWIN_H__
+#define __ACCYGWIN_H__
 
-/* Function name is used for debug output. Non-ANSI, compiler-dependent */
+#define ACPI_USE_SYSTEM_CLIBRARY
+#define ACPI_USE_DO_WHILE_0
 
-#define ACPI_GET_FUNCTION_NAME          __FUNCTION__
+#include <stdarg.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <unistd.h>
 
-/*
- * This macro is used to tag functions as "printf-like" because
- * some compilers (like GCC) can catch printf format string problems.
- */
-#define ACPI_PRINTF_LIKE(c) __attribute__ ((__format__ (__printf__, c, c+1)))
+#if defined(__ia64__) || defined(__x86_64__)
+#define ACPI_MACHINE_WIDTH          64
+#define COMPILER_DEPENDENT_INT64    long
+#define COMPILER_DEPENDENT_UINT64   unsigned long
+#else
+#define ACPI_MACHINE_WIDTH          32
+#define COMPILER_DEPENDENT_INT64    long long
+#define COMPILER_DEPENDENT_UINT64   unsigned long long
+#define ACPI_USE_NATIVE_DIVIDE
+#endif
 
-/*
- * Some compilers complain about unused variables. Sometimes we don't want to
- * use all the variables (for example, _AcpiModuleName). This allows us
- * to to tell the compiler warning in a per-variable manner that a variable
- * is unused.
- */
-#define ACPI_UNUSED_VAR __attribute__ ((unused))
+#ifndef __cdecl
+#define __cdecl
+#endif
 
-#endif /* __ACGCC_H__ */
+#define ACPI_THREAD_ID pthread_t
+#define ACPI_FLUSH_CPU_CACHE()
+#define ACPI_USE_ALTERNATE_TIMEOUT
+
+#ifdef _ANSI
+#define inline
+#endif
+
+/* Cygwin uses GCC */
+
+#include "acgcc.h"
+
+#endif /* __ACCYGWIN_H__ */
