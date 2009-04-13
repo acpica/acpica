@@ -841,7 +841,7 @@ AcpiDsInitObjectFromOp (
 
             /* Local ID (0-7) is (AML opcode - base AML_LOCAL_OP) */
 
-            ObjDesc->Reference.Value = Opcode - AML_LOCAL_OP;
+            ObjDesc->Reference.Value = ((UINT32) Opcode) - AML_LOCAL_OP;
             ObjDesc->Reference.Class = ACPI_REFCLASS_LOCAL;
 
 #ifndef ACPI_NO_METHOD_EXECUTION
@@ -857,7 +857,7 @@ AcpiDsInitObjectFromOp (
 
             /* Arg ID (0-6) is (AML opcode - base AML_ARG_OP) */
 
-            ObjDesc->Reference.Value = Opcode - AML_ARG_OP;
+            ObjDesc->Reference.Value = ((UINT32) Opcode) - AML_ARG_OP;
             ObjDesc->Reference.Class = ACPI_REFCLASS_ARG;
 
 #ifndef ACPI_NO_METHOD_EXECUTION

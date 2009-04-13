@@ -602,7 +602,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"RSDP_DESCRIPTOR",                     SRC_TYPE_STRUCT},
     {"RSDT_DESCRIPTOR",                     SRC_TYPE_STRUCT},
     {"XSDT_DESCRIPTOR",                     SRC_TYPE_STRUCT},
-    {NULL}
+    {NULL, 0}
 };
 
 

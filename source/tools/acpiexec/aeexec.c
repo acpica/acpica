@@ -191,7 +191,7 @@ AfInstallGpeBlock (
     BlockAddress.SpaceId = 0;
     BlockAddress.Address = 0x76540000;
 
-#if _OBSOLETE
+#ifdef _OBSOLETE
     Status = AcpiInstallGpeBlock (Handle, &BlockAddress, 4, 8);
 #endif
 
@@ -222,7 +222,7 @@ AfInstallGpeBlock (
         Status = AcpiInstallGpeBlock (Handle3, &BlockAddress, 8, 11);
     }
 
-#if _OBSOLETE
+#ifdef _OBSOLETE
     Status = AcpiRemoveGpeBlock (Handle);
     Status = AcpiRemoveGpeBlock (Handle2);
     Status = AcpiRemoveGpeBlock (Handle3);

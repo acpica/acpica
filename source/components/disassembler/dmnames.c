@@ -159,7 +159,7 @@ AcpiDmDumpName (
 
     /* Copy name locally in case the original name is not writeable */
 
-    *(UINT32 *) NewName = Name;
+    *ACPI_CAST_PTR (UINT32, &NewName[0]) = Name;
 
     /* Ensure that the name is printable, even if we have to fix it */
 

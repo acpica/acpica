@@ -460,13 +460,13 @@ AcpiResourceToAddress64 (
     {
     case ACPI_RESOURCE_TYPE_ADDRESS16:
 
-        Address16 = (ACPI_RESOURCE_ADDRESS16 *) &Resource->Data;
+        Address16 = ACPI_CAST_PTR (ACPI_RESOURCE_ADDRESS16, &Resource->Data);
         ACPI_COPY_ADDRESS (Out, Address16);
         break;
 
     case ACPI_RESOURCE_TYPE_ADDRESS32:
 
-        Address32 = (ACPI_RESOURCE_ADDRESS32 *) &Resource->Data;
+        Address32 = ACPI_CAST_PTR (ACPI_RESOURCE_ADDRESS32, &Resource->Data);
         ACPI_COPY_ADDRESS (Out, Address32);
         break;
 

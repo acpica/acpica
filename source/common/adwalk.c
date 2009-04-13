@@ -682,7 +682,7 @@ AcpiDmLoadDescendingOp (
 
         if (!Path && Op->Common.AmlOpcode == AML_INT_NAMEDFIELD_OP)
         {
-            *(UINT32 *) FieldPath = Op->Named.Name;
+            *ACPI_CAST_PTR (UINT32, &FieldPath[0]) = Op->Named.Name;
             FieldPath[4] = 0;
             Path = FieldPath;
         }

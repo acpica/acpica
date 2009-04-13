@@ -1026,7 +1026,7 @@ AcpiDmInterruptDescriptor (
      */
     AcpiDmResourceSource (Resource,
         sizeof (AML_RESOURCE_EXTENDED_IRQ) +
-            (Resource->ExtendedIrq.InterruptCount - 1) * sizeof (UINT32),
+            ((UINT32) Resource->ExtendedIrq.InterruptCount - 1) * sizeof (UINT32),
         Resource->ExtendedIrq.ResourceLength);
 
     /* Insert a descriptor name */

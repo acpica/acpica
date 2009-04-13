@@ -729,7 +729,7 @@ AcpiDmUpdateResourceName (
 
     /* Change the resource descriptor name */
 
-    ResourceNode->Name.Integer = *(UINT32 *) Name;
+    ResourceNode->Name.Integer = *ACPI_CAST_PTR (UINT32, &Name[0]);
 }
 
 
