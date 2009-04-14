@@ -640,12 +640,33 @@ AcpiOsWaitSemaphore (
 
     default:
 
-        T.tv_sec = Timeout /1000;
-        T.tv_nsec = (Timeout - T.tv_sec * 1000) * 1000000;
+        T.tv_sec = Timeout / 1000;
+        T.tv_nsec = (Timeout - (T.tv_sec * 1000)) * 1000000;
+
+#ifdef ACPI_USE_ALTERNATE_TIMEOUT
+        /*
+         * Alternate timeout mechanism for environments where
+         * sem_timedwait is not available or does not work properly.
+         */
+        while (Timeout)
+        {
+            if (sem_trywait (Sem) == 0)
+            {
+                /* got the semaphore */
+                break;
+            }
+            usleep (1000);  /* one millisecond */
+            Timeout--;
+        }
+        Status = (AE_TIME);
+#else
+
         if (sem_timedwait (Sem, &T))
         {
             Status = (AE_TIME);
         }
+#endif
+
         break;
     }
 
