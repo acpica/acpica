@@ -814,36 +814,6 @@ AcpiOsExecute (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsBreakpoint
- *
- * PARAMETERS:  Msg                 Message to print
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Print a message and break to the debugger.
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsBreakpoint (
-    char                    *Msg)
-{
-
-    if (Msg)
-    {
-        AcpiOsPrintf ("AcpiOsBreakpoint: %s ****\n", Msg);
-    }
-    else
-    {
-        AcpiOsPrintf ("At AcpiOsBreakpoint ****\n");
-    }
-
-    return (AE_OK);
-}
-
-
-/******************************************************************************
- *
  * FUNCTION:    AcpiOsStall
  *
  * PARAMETERS:  microseconds        To sleep
@@ -1207,7 +1177,7 @@ AcpiOsGetThreadId (void)
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Miscellaneous functions
+ * DESCRIPTION: Miscellaneous functions. Example implementation only.
  *
  *****************************************************************************/
 
@@ -1223,15 +1193,6 @@ AcpiOsSignal (
         break;
 
     case ACPI_SIGNAL_BREAKPOINT:
-
-        if (Info)
-        {
-            AcpiOsPrintf ("AcpiOsBreakpoint: %s ****\n", Info);
-        }
-        else
-        {
-            AcpiOsPrintf ("At AcpiOsBreakpoint ****\n");
-        }
         break;
 
     default:

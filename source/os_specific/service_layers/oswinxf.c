@@ -1382,7 +1382,7 @@ AcpiOsWriteMemory (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Miscellaneous functions
+ * DESCRIPTION: Miscellaneous functions. Example implementation only.
  *
  *****************************************************************************/
 
@@ -1398,16 +1398,9 @@ AcpiOsSignal (
         break;
 
     case ACPI_SIGNAL_BREAKPOINT:
+        break;
 
-        if (Info)
-        {
-            AcpiOsPrintf ("AcpiOsBreakpoint: %s ****\n", Info);
-        }
-        else
-        {
-            AcpiOsPrintf ("At AcpiOsBreakpoint ****\n");
-        }
-
+    default:
         break;
     }
 
