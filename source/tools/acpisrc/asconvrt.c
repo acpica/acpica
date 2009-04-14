@@ -1360,8 +1360,10 @@ AsInsertPrefix (
                 {
                     /* Already present, add spaces after to align structure members */
 
-// ONLY FOR C FILES
-//                    AsInsertData (SubBuffer + KeywordLength, "        ", 8);
+#if 0
+/* ONLY FOR C FILES */
+                    AsInsertData (SubBuffer + KeywordLength, "        ", 8);
+#endif
                 }
                 goto Next;
             }

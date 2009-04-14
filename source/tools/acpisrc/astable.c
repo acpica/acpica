@@ -638,7 +638,7 @@ ACPI_IDENTIFIER_TABLE       LinuxEliminateLines_H[] = {
 
 ACPI_IDENTIFIER_TABLE       LinuxConditionalIdentifiers[] = {
 
-//    {"ACPI_USE_STANDARD_HEADERS"},
+/*    {"ACPI_USE_STANDARD_HEADERS"}, */
     {"WIN32"},
     {"_MSC_VER"},
     {NULL}

@@ -117,6 +117,13 @@
 #include "acpisrc.h"
 
 
+static inline int
+AsMaxInt (int a, int b)
+{
+    return (a > b ? a : b);
+}
+
+
 /******************************************************************************
  *
  * FUNCTION:    AsDoWildcard
@@ -220,7 +227,7 @@ AsProcessTree (
     int                     MaxPathLength;
 
 
-    MaxPathLength = max (strlen (SourcePath), strlen (TargetPath));
+    MaxPathLength = AsMaxInt (strlen (SourcePath), strlen (TargetPath));
 
     if (!(ConversionTable->Flags & FLG_NO_FILE_OUTPUT))
     {

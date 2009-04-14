@@ -324,7 +324,7 @@ AsMixedCaseToUnderscores (
             }
         }
 
-// OBSOLETE CODE, all quoted strings now completely ignored.
+/* OBSOLETE CODE, all quoted strings now completely ignored. */
 #if 0
         /* Ignore format specification fields */
 

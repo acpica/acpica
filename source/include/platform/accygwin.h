@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: accygwin.h - OS specific defines, etc.
+ * Name: accygwin.h - OS specific defines, etc. for cygwin environment
  *
  *****************************************************************************/
 
@@ -116,8 +116,19 @@
 #ifndef __ACCYGWIN_H__
 #define __ACCYGWIN_H__
 
+/*
+ * ACPICA configuration
+ */
 #define ACPI_USE_SYSTEM_CLIBRARY
 #define ACPI_USE_DO_WHILE_0
+#define ACPI_THREAD_ID              pthread_t
+#define ACPI_FLUSH_CPU_CACHE()
+/*
+ * This is needed since sem_timedwait does not appear to work properly
+ * on cygwin (always hangs forever).
+ */
+#define ACPI_USE_ALTERNATE_TIMEOUT
+
 
 #include <stdarg.h>
 #include <string.h>
@@ -140,13 +151,10 @@
 #define __cdecl
 #endif
 
-#define ACPI_THREAD_ID pthread_t
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_USE_ALTERNATE_TIMEOUT
-
 #ifdef _ANSI
 #define inline
 #endif
+
 
 /* Cygwin uses GCC */
 

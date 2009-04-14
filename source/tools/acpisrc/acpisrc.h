@@ -138,13 +138,6 @@
 
 /* Fixups for non-Win32 compilation */
 #ifndef WIN32
-
-static inline int
-max (int a, int b)
-{
-    return (a > b ? a : b);
-}
-
 #ifndef O_BINARY
 #define O_BINARY    0x0
 #endif
