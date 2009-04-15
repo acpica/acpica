@@ -198,6 +198,12 @@ static void
 LsDoHexOutputAsm (
     void);
 
+ACPI_STATUS
+LsTreeWriteWalk (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
 
 /*******************************************************************************
  *

@@ -180,6 +180,14 @@ LsDoOnePathname (
     void                    *Context,
     void                    **ReturnValue);
 
+void
+LsSetupNsList (
+    void                    *Handle);
+
+ACPI_PARSE_OBJECT *
+LkGetNameOp (
+    ACPI_PARSE_OBJECT       *Op);
+
 
 /*******************************************************************************
  *
@@ -435,7 +443,8 @@ LsDoOneNamespaceObject (
  ******************************************************************************/
 
 void
-LsSetupNsList (void * Handle)
+LsSetupNsList (
+    void                    *Handle)
 {
 
     Gbl_NsOutputFlag = TRUE;

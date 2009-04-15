@@ -214,6 +214,9 @@ AsDoWildcard (
                 AsProcessOneFile (ConversionTable, SourcePath, TargetPath,
                         MaxPathLength, Filename, FileType);
                 break;
+
+            default:
+                break;
             }
         }
 

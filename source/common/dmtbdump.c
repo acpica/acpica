@@ -412,6 +412,9 @@ AcpiDmDumpAsf (
 
             AcpiOsPrintf ("\n");
             break;
+
+        default:
+            break;
         }
 
         AcpiOsPrintf ("\n");

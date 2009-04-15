@@ -474,6 +474,9 @@ AcpiDmDumpDescending (
     case AML_INT_NAMEDFIELD_OP:
         AcpiOsPrintf ("%4.4s", &Op->Named.Name);
         break;
+
+    default:
+        break;
     }
 
     AcpiOsPrintf ("\n");
@@ -621,6 +624,9 @@ AcpiDmFindOrphanDescending (
             AcpiDmAddToExternalList (Op->Common.Value.String, ACPI_TYPE_METHOD, ArgCount);
 
         }
+        break;
+
+    default:
         break;
     }
 

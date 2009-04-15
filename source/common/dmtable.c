@@ -134,6 +134,10 @@ AcpiDmCheckAscii (
     UINT8                   *Target,
     UINT32                  Count);
 
+UINT8
+AcpiTbGenerateChecksum (
+    ACPI_TABLE_HEADER       *Table);
+
 
 /* These tables map a subtable type to a description string */
 
