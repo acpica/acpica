@@ -188,10 +188,10 @@ AslLocalAllocate (unsigned int Size);
 /*! [Begin] no source code translation */
 
 /*
- * These shift/reduce conflicts are expected. There should be zer0
+ * These shift/reduce conflicts are expected. There should be zero
  * reduce/reduce conflicts.
  */
-%expect 64
+%expect 60
 
 
 /*
@@ -3079,8 +3079,7 @@ OptionalResourceType_First
     ;
 
 OptionalResourceType
-    :                               {$$ = NULL;}
-    | ','                           {$$ = NULL;}
+    : ','                           {$$ = NULL;}
     | ',' ResourceTypeKeyword       {$$ = $2;}
     ;
 
