@@ -147,7 +147,9 @@ typedef struct acpi_os_semaphore_info
 
 } ACPI_OS_SEMAPHORE_INFO;
 
-#define ACPI_OS_MAX_SEMAPHORES  256 // Enough to run large aslts suite
+/* Need enough semaphores to run the large aslts suite */
+
+#define ACPI_OS_MAX_SEMAPHORES  256
 
 ACPI_OS_SEMAPHORE_INFO          AcpiGbl_Semaphores[ACPI_OS_MAX_SEMAPHORES];
 
