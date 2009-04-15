@@ -652,8 +652,8 @@ AcpiOsWaitSemaphore (
         {
             if (sem_trywait (Sem) == 0)
             {
-                /* got the semaphore */
-                break;
+                /* Got the semaphore */
+                return (AE_OK);
             }
             usleep (1000);  /* one millisecond */
             Timeout--;
