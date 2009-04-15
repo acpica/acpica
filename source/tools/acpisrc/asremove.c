@@ -116,6 +116,14 @@
 
 #include "acpisrc.h"
 
+/* Local prototypes */
+
+void
+AsRemoveStatement (
+    char                    *Buffer,
+    char                    *Keyword,
+    UINT32                  Type);
+
 
 /******************************************************************************
  *

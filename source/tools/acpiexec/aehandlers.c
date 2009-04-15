@@ -118,6 +118,41 @@
 #define _COMPONENT          ACPI_TOOLS
         ACPI_MODULE_NAME    ("aehandlers")
 
+/* Local prototypes */
+
+void
+AeNotifyHandler (
+    ACPI_HANDLE             Device,
+    UINT32                  Value,
+    void                    *Context);
+
+void
+AeDeviceNotifyHandler (
+    ACPI_HANDLE             Device,
+    UINT32                  Value,
+    void                    *Context);
+
+ACPI_STATUS
+AeExceptionHandler (
+    ACPI_STATUS             AmlStatus,
+    ACPI_NAME               Name,
+    UINT16                  Opcode,
+    UINT32                  AmlOffset,
+    void                    *Context);
+
+ACPI_STATUS
+AeTableHandler (
+    UINT32                  Event,
+    void                    *Table,
+    void                    *Context);
+
+ACPI_STATUS
+AeRegionInit (
+    ACPI_HANDLE             RegionHandle,
+    UINT32                  Function,
+    void                    *HandlerContext,
+    void                    **RegionContext);
+
 
 UINT32                      SigintCount = 0;
 AE_DEBUG_REGIONS            AeRegions;

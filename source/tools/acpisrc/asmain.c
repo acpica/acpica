@@ -118,6 +118,22 @@
 #include "acpisrc.h"
 #include "acapps.h"
 
+/* Local prototypes */
+
+int
+AsExaminePaths (
+    ACPI_CONVERSION_TABLE   *ConversionTable,
+    char                    *Source,
+    char                    *Target,
+    UINT32                  *SourceFileType);
+
+void
+AsDisplayStats (
+    void);
+
+void
+AsDisplayUsage (
+    void);
 
 /* Globals */
 
@@ -237,7 +253,8 @@ AsExaminePaths (
  ******************************************************************************/
 
 void
-AsDisplayStats (void)
+AsDisplayStats (
+    void)
 {
 
     if (Gbl_QuietMode)
@@ -279,7 +296,8 @@ AsDisplayStats (void)
  ******************************************************************************/
 
 void
-AsDisplayUsage (void)
+AsDisplayUsage (
+    void)
 {
 
     printf ("\n");

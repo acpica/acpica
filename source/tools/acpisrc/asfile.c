@@ -116,6 +116,21 @@
 
 #include "acpisrc.h"
 
+/* Local prototypes */
+
+void
+AsDoWildcard (
+    ACPI_CONVERSION_TABLE   *ConversionTable,
+    char                    *SourcePath,
+    char                    *TargetPath,
+    int                     MaxPathLength,
+    int                     FileType,
+    char                    *WildcardSpec);
+
+BOOLEAN
+AsDetectLoneLineFeeds (
+    char                    *Filename,
+    char                    *Buffer);
 
 static inline int
 AsMaxInt (int a, int b)

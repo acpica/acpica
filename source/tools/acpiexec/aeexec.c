@@ -118,8 +118,42 @@
 #define _COMPONENT          ACPI_TOOLS
         ACPI_MODULE_NAME    ("aeexec")
 
+/* Local prototypes */
+
+ACPI_STATUS
+AeSetupConfiguration (
+    void                    *RegionAddr);
+
+void
+AfInstallGpeBlock (
+    void);
+
+void
+AeTestBufferArgument (
+    void);
+
+void
+AeTestPackageArgument (
+    void);
+
+ACPI_STATUS
+AeGetDevices (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
+
+ACPI_STATUS
+ExecuteOSI (
+    char                    *OsiString,
+    UINT32                  ExpectedResult);
+
+void
+AeHardwareInterfaces (
+    void);
 
 extern unsigned char Ssdt3Code[];
+
 
 /******************************************************************************
  *
@@ -233,7 +267,8 @@ AfInstallGpeBlock (
 /* Test using a Buffer object as a method argument */
 
 void
-AeTestBufferArgument (void)
+AeTestBufferArgument (
+    void)
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_LIST        Params;

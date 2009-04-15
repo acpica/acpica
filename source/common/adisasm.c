@@ -153,7 +153,25 @@ void
 AdDisassemblerHeader (
     char                    *Filename);
 
-ACPI_PARSE_OBJECT       *AcpiGbl_ParseOpRoot;
+void
+AdAddExternalsToNamespace (
+    void);
+
+UINT32
+AdMethodExternalCount (
+    void);
+
+ACPI_STATUS
+AdDeferredParse (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT8                   *Aml,
+    UINT32                  AmlLength);
+
+ACPI_STATUS
+AdParseDeferredOps (
+    ACPI_PARSE_OBJECT       *Root);
+
+ACPI_PARSE_OBJECT           *AcpiGbl_ParseOpRoot;
 
 
 /* Stubs for ASL compiler */

@@ -116,6 +116,13 @@
 
 #include "acpisrc.h"
 
+/* Local prototypes */
+
+void
+AsUppercaseTokens (
+    char                    *Buffer,
+    char                    *PrefixString);
+
 
 /******************************************************************************
  *

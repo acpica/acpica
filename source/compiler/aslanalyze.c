@@ -176,6 +176,10 @@ static UINT32
 AnGetInternalMethodReturnType (
     ACPI_PARSE_OBJECT       *Op);
 
+BOOLEAN
+AnIsResultUsed (
+    ACPI_PARSE_OBJECT       *Op);
+
 
 /*******************************************************************************
  *

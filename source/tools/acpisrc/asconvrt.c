@@ -116,6 +116,17 @@
 
 #include "acpisrc.h"
 
+/* Local prototypes */
+
+char *
+AsCheckAndSkipLiterals (
+    char                    *Buffer,
+    UINT32                  *TotalLines);
+
+UINT32
+AsCountLines (
+    char                    *Buffer,
+    char                    *Filename);
 
 /* Opening signature of the Intel legal header */
 

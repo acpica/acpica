@@ -118,6 +118,16 @@
 #define _COMPONENT          ACPI_TOOLS
         ACPI_MODULE_NAME    ("aetables")
 
+/* Local prototypes */
+
+void
+AeTableOverride (
+    ACPI_TABLE_HEADER       *ExistingTable,
+    ACPI_TABLE_HEADER       **NewTable);
+
+ACPI_PHYSICAL_ADDRESS
+AeLocalGetRootPointer (
+    void);
 
 /*
  * Misc ACPI tables to be installed

@@ -131,6 +131,16 @@ static ACPI_STATUS
 FlCheckForAscii (
     ASL_FILE_INFO           *FileInfo);
 
+void
+FlConsumeAnsiComment (
+    ASL_FILE_INFO           *FileInfo,
+    ASL_FILE_STATUS         *Status);
+
+void
+FlConsumeNewComment (
+    ASL_FILE_INFO           *FileInfo,
+    ASL_FILE_STATUS         *Status);
+
 
 /*******************************************************************************
  *

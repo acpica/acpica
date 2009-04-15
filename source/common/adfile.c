@@ -125,6 +125,13 @@
 #define _COMPONENT          ACPI_TOOLS
         ACPI_MODULE_NAME    ("adfile")
 
+/* Local prototypes */
+
+INT32
+AdWriteBuffer (
+    char                    *Filename,
+    char                    *Buffer,
+    UINT32                  Length);
 
 char                        FilenameBuf[20];
 
@@ -185,12 +192,12 @@ AdGenerateFilename (
 
 INT32
 AdWriteBuffer (
-    char                *Filename,
-    char                *Buffer,
-    UINT32              Length)
+    char                    *Filename,
+    char                    *Buffer,
+    UINT32                  Length)
 {
-    FILE                *fp;
-    ACPI_SIZE           Actual;
+    FILE                    *fp;
+    ACPI_SIZE               Actual;
 
 
     fp = fopen (Filename, "wb");
