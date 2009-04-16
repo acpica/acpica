@@ -143,22 +143,17 @@
 #endif
 
 #define mkdir(x) mkdir(x, 0770)
-#define stricmp strcasecmp
-
 char * strlwr(char* str);
-
 #endif
 
 
 /* Constants */
-
 
 #define ASRC_MAX_FILE_SIZE                  (1024 * 100)
 
 #define FILE_TYPE_SOURCE                    1
 #define FILE_TYPE_HEADER                    2
 #define FILE_TYPE_DIRECTORY                 3
-
 
 #define CVT_COUNT_TABS                      0x00000001
 #define CVT_COUNT_NON_ANSI_COMMENTS         0x00000002
@@ -175,7 +170,6 @@ char * strlwr(char* str);
 #define CVT_COUNT_SHORTMULTILINE_COMMENTS   0x00001000
 #define CVT_SPACES_TO_TABS4                 0x40000000  /* Tab conversion should be last */
 #define CVT_SPACES_TO_TABS8                 0x80000000  /* Tab conversion should be last */
-
 
 #define FLG_DEFAULT_FLAGS                   0x00000000
 #define FLG_NO_CARRIAGE_RETURNS             0x00000001
@@ -217,7 +211,6 @@ extern void                     *Gbl_StructDefs;
 #define PARAM_LIST(pl)          pl
 #define TERSE_PRINT(a)          if (!Gbl_VerboseMode) printf PARAM_LIST(a)
 #define VERBOSE_PRINT(a)        if (Gbl_VerboseMode) printf PARAM_LIST(a)
-
 
 #define REPLACE_WHOLE_WORD      0x00
 #define REPLACE_SUBSTRINGS      0x01

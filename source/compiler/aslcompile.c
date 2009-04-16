@@ -475,7 +475,7 @@ FlCheckForAscii (
 
         /* Check for an ASCII character */
 
-        if (!isascii (Byte))
+        if (!ACPI_IS_ASCII (Byte))
         {
             if (BadBytes < 10)
             {

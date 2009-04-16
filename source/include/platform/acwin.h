@@ -126,7 +126,6 @@
 
 #define ACPI_MACHINE_WIDTH      32
 
-#define isascii                 __isascii
 #define inline                  __inline
 
 #define ACPI_USE_STANDARD_HEADERS
