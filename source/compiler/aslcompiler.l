@@ -168,7 +168,8 @@ NamePathTail                [.]{NameSeg}
 %%
 
 [ ]                         { count (0); }
-[\n]                        { count (0); }
+[\n]                        { count (0); } /* Handle files with both LF and CR/LF */
+[\r]                        { count (0); } /* termination on both Unix and Windows */
 [ \t]                       { count (0); }
 
 
