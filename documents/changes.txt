@@ -1,4 +1,73 @@
 ----------------------------------------
+22 April 2009. Summary of changes for version 20090422:
+
+This release is available at www.acpica.org/downloads
+
+1) ACPI CA Core Subsystem:
+
+Fixed a compatibility issue with the recently released I/O port protection 
+mechanism. For windows compatibility, 1) On a port protection violation, 
+simply ignore the request and do not return an exception (allow the control 
+method to continue execution.) 2) If only part of the request overlaps a 
+protected port, read/write the individual ports that are not protected. Linux 
+BZ 13036. Lin Ming
+
+Enhanced the execution of the ASL/AML BreakPoint operator so that it actually 
+breaks into the AML debugger if the debugger is present. This matches the 
+ACPI-defined behavior.
+
+Fixed several possible warnings related to the use of the configurable 
+ACPI_THREAD_ID. This type can now be configured as either an integer or a 
+pointer with no warnings. Also fixes several warnings in printf-like 
+statements for the 64-bit build when the type is configured as a pointer. 
+ACPICA BZ 766, 767.
+
+Fixed a number of possible warnings when compiling with gcc 4+ (depending on 
+warning options.) Examples include printf formats, aliasing, unused globals, 
+missing prototypes, missing switch default statements, use of non-ANSI 
+library functions, use of non-ANSI constructs. See generate/unix/Makefile for 
+a list of warning options used with gcc 3 and 4. ACPICA BZ 735.
+
+Example Code and Data Size: These are the sizes for the OS-independent 
+acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
+debug version of the code includes the debug output trace mechanism and has a 
+much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  82.6K Code, 17.6K Data, 100.2K Total
+    Debug Version:     157.7K Code, 49.9K Data, 207.6K Total
+  Current Release:
+    Non-Debug Version:  82.8K Code, 17.5K Data, 100.3K Total
+    Debug Version:     158.0K Code, 49.9K Data, 207.9K Total
+
+2) iASL Compiler/Disassembler and Tools:
+
+iASL: Fixed a generation warning from Bison 2.3 and fixed several warnings on 
+the 64-bit build.
+
+iASL: Fixed a problem where the Unix/Linux versions of the compiler could not 
+correctly digest Windows/DOS formatted files (with CR/LF).
+
+iASL: Added a new option for "quiet mode" (-va) that produces only the 
+compilation summary, not individual errors and warnings. Useful for large 
+batch compilations.
+
+AcpiExec: Implemented a new option (-z) to enable a forced semaphore/mutex 
+timeout that can be used to detect hang conditions during execution of AML 
+code (includes both internal semaphores and AML-defined mutexes and events.)
+
+Added new makefiles for the generation of acpica in a generic unix-like 
+environment. These makefiles are intended to generate the acpica tools and 
+utilities from the original acpica git source tree structure.
+
+Test Suites: Updated and cleaned up the documentation files. Updated the 
+copyrights to 2009, affecting all source files. Use the new version of iASL 
+with quiet mode. Increased the number of available semaphores in the Windows 
+OSL, allowing the aslts to execute fully on Windows. For the Unix OSL, added 
+an alternate implementation of the semaphore timeout to allow aslts to 
+execute fully on Cygwin.
+
+----------------------------------------
 20 March 2009. Summary of changes for version 20090320:
 
 1) ACPI CA Core Subsystem:
