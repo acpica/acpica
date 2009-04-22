@@ -1,0 +1,21 @@
+#
+# Common make for acpica tools and utilities
+#
+include Makefile.config
+
+
+all:	${DIRS}
+${DIRS}: FORCE
+	@cd $@; make; ls -al $@.exe
+
+clean:	FORCE
+	@for d in ${DIRS}; do \
+		(cd $$d; \
+		if [ $$? -ne 0 ]; then \
+			echo "Bad element of DIRS: <$$d>"; \
+		else \
+			pwd; make clean; \
+		fi); \
+	done
+
+FORCE:

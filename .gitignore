@@ -22,6 +22,19 @@ generate/msvc/AcpiSubsystem64
 generate/msvc/Examples
 generate/msvc/ExamplesDebug
 
+generate/unix/bin
+generate/unix/acpiexec/*.o
+generate/unix/acpiexec/*.exe
+generate/unix/acpisrc/*.o
+generate/unix/acpisrc/*.exe
+generate/unix/acpixtract/*.o
+generate/unix/acpixtract/*.exe
+generate/unix/iasl/*.o
+generate/unix/iasl/*.h
+generate/unix/iasl/*.c
+generate/unix/iasl/*.output
+generate/unix/iasl/*.exe
+
 generate/release/current
 generate/release/archive
 
@@ -39,6 +52,8 @@ libraries/ExamplesDebug.exe
 libraries/size.bat
 libraries/size_dbg.txt
 libraries/size_rel.txt
+
+tests/tmp
 
 *.sh
 new
