@@ -932,13 +932,11 @@ Method(mf00, 3)
 			} else {
 				Store("Mt-technique works", Debug)
 			}
-			Store("Bug 251 (LBZ 469) is not fixed yet, it prevents these tests execution", Debug)
-			Store("SUMMARY (bug 251): AE_ALREADY_EXISTS on multi-threading on Switch operator", Debug)
+
 			Store(0, vb04) // don't print statistics
 			Store(1, ctl0) // Slave threads - go!
 
 			SRMT("mt_mutex_tests")
-			BLCK()
 		}
 		return
 	}
