@@ -194,6 +194,7 @@ AcpiOsPurgeCache (
     ACPI_MEMORY_LIST        *Cache)
 {
     char                    *Next;
+    ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -202,6 +203,12 @@ AcpiOsPurgeCache (
     if (!Cache)
     {
         return (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_CACHES);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
     }
 
     /* Walk the list of objects in this cache */
@@ -218,6 +225,7 @@ AcpiOsPurgeCache (
         Cache->CurrentDepth--;
     }
 
+    (void) AcpiUtReleaseMutex (ACPI_MTX_CACHES);
     return (AE_OK);
 }
 
