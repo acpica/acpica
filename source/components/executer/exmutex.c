@@ -166,6 +166,15 @@ AcpiExUnlinkMutex (
     if (ObjDesc->Mutex.Prev)
     {
         (ObjDesc->Mutex.Prev)->Mutex.Next = ObjDesc->Mutex.Next;
+
+        /*
+         * Migrate the previous sync level associated with this mutex to the
+         * previous mutex on the list so that it may be preserved. This handles
+         * the case where several mutexes have been acquired at the same level,
+         * but are not released in opposite order.
+         */
+        (ObjDesc->Mutex.Prev)->Mutex.OriginalSyncLevel =
+            ObjDesc->Mutex.OriginalSyncLevel;
     }
     else
     {
@@ -461,6 +470,7 @@ AcpiExReleaseMutex (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
+    UINT8                   PreviousSyncLevel;
 
 
     ACPI_FUNCTION_TRACE (ExReleaseMutex);
@@ -517,13 +527,21 @@ AcpiExReleaseMutex (
         return_ACPI_STATUS (AE_AML_MUTEX_ORDER);
     }
 
+    /*
+     * Get the previous SyncLevel from the head of the acquired mutex list.
+     * This handles the case where several mutexes at the same level have been
+     * acquired, but are not released in reverse order.
+     */
+    PreviousSyncLevel =
+        WalkState->Thread->AcquiredMutexList->Mutex.OriginalSyncLevel;
+
     Status = AcpiExReleaseMutexObject (ObjDesc);
 
     if (ObjDesc->Mutex.AcquisitionDepth == 0)
     {
         /* Restore the original SyncLevel */
 
-        WalkState->Thread->CurrentSyncLevel = ObjDesc->Mutex.OriginalSyncLevel;
+        WalkState->Thread->CurrentSyncLevel = PreviousSyncLevel;
     }
     return_ACPI_STATUS (Status);
 }
