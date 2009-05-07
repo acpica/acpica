@@ -279,9 +279,11 @@ AcpiExDoDebugObject (
 
         case ACPI_REFCLASS_TABLE:
 
+            /* Case for DdbHandle */
+
             ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "Table Index 0x%X\n",
                 SourceDesc->Reference.Value));
-            break;
+            return;
 
         default:
             break;
