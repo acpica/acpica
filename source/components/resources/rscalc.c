@@ -656,6 +656,14 @@ AcpiRsGetPciRoutingTableLength (
 
         PackageElement = *TopObjectList;
 
+        /* We must have a valid Package object */
+
+        if (!PackageElement ||
+            (PackageElement->Common.Type != ACPI_TYPE_PACKAGE))
+        {
+            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+        }
+
         /*
          * The SubObjectList will now point to an array of the
          * four IRQ elements: Address, Pin, Source and SourceIndex
