@@ -106,7 +106,7 @@ YFLAGS+= -y -pAslCompiler
 #CFLAGS+= -D_USE_BERKELEY_YACC
 #.endif
 
-LDFLAGS=-lpthread -lrt
+LDLIBS = -lpthread -lrt
 
 aslmain : $(patsubst %.c,%.o, $(SRCS))
 	$(CC) $(LDFLAGS) $(patsubst %.c,%.o, $(SRCS)) \
