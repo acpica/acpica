@@ -187,10 +187,14 @@ AcpiNsWalkNamespace (
 
 ACPI_NAMESPACE_NODE *
 AcpiNsGetNextNode (
-    ACPI_OBJECT_TYPE        Type,
     ACPI_NAMESPACE_NODE     *Parent,
     ACPI_NAMESPACE_NODE     *Child);
 
+ACPI_NAMESPACE_NODE *
+AcpiNsGetNextNodeTyped (
+    ACPI_OBJECT_TYPE        Type,
+    ACPI_NAMESPACE_NODE     *Parent,
+    ACPI_NAMESPACE_NODE     *Child);
 
 /*
  * nsparse - table parsing

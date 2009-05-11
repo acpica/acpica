@@ -129,6 +129,55 @@
  *
  * FUNCTION:    AcpiNsGetNextNode
  *
+ * PARAMETERS:  ParentNode          - Parent node whose children we are
+ *                                    getting
+ *              ChildNode           - Previous child that was found.
+ *                                    The NEXT child will be returned
+ *
+ * RETURN:      ACPI_NAMESPACE_NODE - Pointer to the NEXT child or NULL if
+ *                                    none is found.
+ *
+ * DESCRIPTION: Return the next peer node within the namespace.  If Handle
+ *              is valid, Scope is ignored.  Otherwise, the first node
+ *              within Scope is returned.
+ *
+ ******************************************************************************/
+
+ACPI_NAMESPACE_NODE *
+AcpiNsGetNextNode (
+    ACPI_NAMESPACE_NODE     *ParentNode,
+    ACPI_NAMESPACE_NODE     *ChildNode)
+{
+    ACPI_FUNCTION_ENTRY ();
+
+
+    if (!ChildNode)
+    {
+        /* It's really the parent's _scope_ that we want */
+
+        return (ParentNode->Child);
+    }
+
+    /*
+     * Get the next node.
+     *
+     * If we are at the end of this peer list, return NULL
+     */
+    if (ChildNode->Flags & ANOBJ_END_OF_PEER_LIST)
+    {
+        return NULL;
+    }
+
+    /* Otherwise just return the next peer */
+
+    return (ChildNode->Peer);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsGetNextNodeTyped
+ *
  * PARAMETERS:  Type                - Type of node to be searched for
  *              ParentNode          - Parent node whose children we are
  *                                    getting
@@ -145,7 +194,7 @@
  ******************************************************************************/
 
 ACPI_NAMESPACE_NODE *
-AcpiNsGetNextNode (
+AcpiNsGetNextNodeTyped (
     ACPI_OBJECT_TYPE        Type,
     ACPI_NAMESPACE_NODE     *ParentNode,
     ACPI_NAMESPACE_NODE     *ChildNode)
@@ -156,19 +205,7 @@ AcpiNsGetNextNode (
     ACPI_FUNCTION_ENTRY ();
 
 
-    if (!ChildNode)
-    {
-        /* It's really the parent's _scope_ that we want */
-
-        NextNode = ParentNode->Child;
-    }
-
-    else
-    {
-        /* Start search at the NEXT node */
-
-        NextNode = AcpiNsGetNextValidNode (ChildNode);
-    }
+    NextNode = AcpiNsGetNextNode (ParentNode, ChildNode);
 
     /* If any type is OK, we are done */
 
@@ -276,7 +313,7 @@ AcpiNsWalkNamespace (
         /* Get the next node in this scope.  Null if not found */
 
         Status = AE_OK;
-        ChildNode = AcpiNsGetNextNode (ACPI_TYPE_ANY, ParentNode, ChildNode);
+        ChildNode = AcpiNsGetNextNode (ParentNode, ChildNode);
         if (ChildNode)
         {
             /* Found next child, get the type if we are not searching for ANY */
@@ -358,7 +395,7 @@ AcpiNsWalkNamespace (
              */
             if ((Level < MaxDepth) && (Status != AE_CTRL_DEPTH))
             {
-                if (AcpiNsGetNextNode (ACPI_TYPE_ANY, ChildNode, NULL))
+                if (ChildNode->Child)
                 {
                     /* There is at least one child of this node, visit it */
 

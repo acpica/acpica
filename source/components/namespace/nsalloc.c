@@ -450,7 +450,7 @@ AcpiNsDeleteNamespaceSubtree (
     {
         /* Get the next node in this scope (NULL if none) */
 
-        ChildNode = AcpiNsGetNextNode (ACPI_TYPE_ANY, ParentNode, ChildNode);
+        ChildNode = AcpiNsGetNextNode (ParentNode, ChildNode);
         if (ChildNode)
         {
             /* Found a child node - detach any attached object */
@@ -459,7 +459,7 @@ AcpiNsDeleteNamespaceSubtree (
 
             /* Check if this node has any children */
 
-            if (AcpiNsGetNextNode (ACPI_TYPE_ANY, ChildNode, NULL))
+            if (ChildNode->Child)
             {
                 /*
                  * There is at least one child of this node,
@@ -556,7 +556,7 @@ AcpiNsDeleteNamespaceByOwner (
          * Get the next child of this parent node. When ChildNode is NULL,
          * the first child of the parent is returned
          */
-        ChildNode = AcpiNsGetNextNode (ACPI_TYPE_ANY, ParentNode, ChildNode);
+        ChildNode = AcpiNsGetNextNode (ParentNode, ChildNode);
 
         if (DeletionNode)
         {
@@ -576,7 +576,7 @@ AcpiNsDeleteNamespaceByOwner (
 
             /* Check if this node has any children */
 
-            if (AcpiNsGetNextNode (ACPI_TYPE_ANY, ChildNode, NULL))
+            if (ChildNode->Child)
             {
                 /*
                  * There is at least one child of this node,

@@ -333,7 +333,7 @@ AcpiGetNextObject (
 
     /* Internal function does the real work */
 
-    Node = AcpiNsGetNextNode (Type, ParentNode, ChildNode);
+    Node = AcpiNsGetNextNodeTyped (Type, ParentNode, ChildNode);
     if (!Node)
     {
         Status = AE_NOT_FOUND;
