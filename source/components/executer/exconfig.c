@@ -325,6 +325,8 @@ AcpiExLoadTableOp (
         if (ACPI_FAILURE (Status))
         {
             (void) AcpiExUnloadTable (DdbHandle);
+
+            AcpiUtRemoveReference (DdbHandle);
             return_ACPI_STATUS (Status);
         }
     }
@@ -568,6 +570,10 @@ AcpiExLoadOp (
         return_ACPI_STATUS (Status);
     }
 
+    /* Remove the reference by added by AcpiExStore above */
+
+    AcpiUtRemoveReference (DdbHandle);
+
     /* Invoke table handler if present */
 
     if (AcpiGbl_TableHandler)
@@ -652,9 +658,6 @@ AcpiExUnloadTable (
     (void) AcpiTbReleaseOwnerId (TableIndex);
     AcpiTbSetTableLoadedFlag (TableIndex, FALSE);
 
-    /* Table unloaded, remove a reference to the DdbHandle object */
-
-    AcpiUtRemoveReference (DdbHandle);
     return_ACPI_STATUS (AE_OK);
 }
 
