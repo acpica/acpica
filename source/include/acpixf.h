@@ -335,6 +335,10 @@ AcpiGetObjectInfo (
     ACPI_BUFFER             *ReturnBuffer);
 
 ACPI_STATUS
+AcpiInstallMethod (
+    UINT8                   *Buffer);
+
+ACPI_STATUS
 AcpiGetNextObject (
     ACPI_OBJECT_TYPE        Type,
     ACPI_HANDLE             Parent,

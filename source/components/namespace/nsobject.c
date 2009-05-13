@@ -309,6 +309,16 @@ AcpiNsDetachObject (
         return_VOID;
     }
 
+    if (Node->Flags & ANOBJ_ALLOCATED_BUFFER)
+    {
+        /* Free the dynamic aml buffer */
+
+        if (ObjDesc->Common.Type == ACPI_TYPE_METHOD)
+        {
+            ACPI_FREE (ObjDesc->Method.AmlStart);
+        }
+    }
+
     /* Clear the entry in all cases */
 
     Node->Object = NULL;

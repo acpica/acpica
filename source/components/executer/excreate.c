@@ -614,7 +614,7 @@ AcpiExCreateMethod (
          * ACPI 2.0: SyncLevel = SyncLevel in method declaration
          */
         ObjDesc->Method.SyncLevel = (UINT8)
-            ((MethodFlags & AML_METHOD_SYNCH_LEVEL) >> 4);
+            ((MethodFlags & AML_METHOD_SYNC_LEVEL) >> 4);
     }
 
     /* Attach the new object to the method Node */

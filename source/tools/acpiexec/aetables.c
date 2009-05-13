@@ -189,6 +189,36 @@ unsigned char Oem1Code[] =
     0x31,0x00,0x70,0x01,0x5F,0x58,0x54,0x32,  /* 00000030    "1.p._XT2" */
 };
 
+/*
+ * Example installable control method
+ *
+ * DefinitionBlock ("", "DSDT", 2, "Intel", "MTHDTEST", 0x20090512)
+ * {
+ *     Method (\_SI_._T97, 1, Serialized)
+ *     {
+ *         Store ("Example installed method", Debug)
+ *         Store (Arg0, Debug)
+ *         Return ()
+ *     }
+ * }
+ *
+ * Compiled byte code below.
+ */
+unsigned char MethodCode[] =
+{
+    0x44,0x53,0x44,0x54,0x53,0x00,0x00,0x00,  /* 00000000    "DSDTS..." */
+    0x02,0xF9,0x49,0x6E,0x74,0x65,0x6C,0x00,  /* 00000008    "..Intel." */
+    0x4D,0x54,0x48,0x44,0x54,0x45,0x53,0x54,  /* 00000010    "MTHDTEST" */
+    0x12,0x05,0x09,0x20,0x49,0x4E,0x54,0x4C,  /* 00000018    "... INTL" */
+    0x22,0x04,0x09,0x20,0x14,0x2E,0x2E,0x5F,  /* 00000020    "".. ..._" */
+    0x54,0x49,0x5F,0x5F,0x54,0x39,0x37,0x09,  /* 00000028    "SI__T97." */
+    0x70,0x0D,0x45,0x78,0x61,0x6D,0x70,0x6C,  /* 00000030    "p.Exampl" */
+    0x65,0x20,0x69,0x6E,0x73,0x74,0x61,0x6C,  /* 00000038    "e instal" */
+    0x6C,0x65,0x64,0x20,0x6D,0x65,0x74,0x68,  /* 00000040    "led meth" */
+    0x6F,0x64,0x00,0x5B,0x31,0x70,0x68,0x5B,  /* 00000048    "od.[1ph[" */
+    0x31,0xA4,0x00,
+};
+
 
 /*
  * We need a local FADT so that the hardware subcomponent will function,
@@ -427,7 +457,26 @@ AeInstallTables (
     Status = AcpiInitializeTables (Tables, ACPI_MAX_INIT_TABLES, TRUE);
     Status = AcpiReallocateRootTable ();
     Status = AcpiLoadTables ();
-    return (Status);
+
+    /*
+     * Test run-time control method installation. Do it twice to test code
+     * for an existing name.
+     */
+    Status = AcpiInstallMethod (MethodCode);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("%s, Could not install method\n",
+            AcpiFormatException (Status));
+    }
+
+    Status = AcpiInstallMethod (MethodCode);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("%s, Could not install method\n",
+            AcpiFormatException (Status));
+    }
+
+    return (AE_OK);
 }
 
 
