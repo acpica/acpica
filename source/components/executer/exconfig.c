@@ -174,6 +174,7 @@ AcpiExAddTable (
 
     /* Init the table handle */
 
+    ObjDesc->Common.Flags |= AOPOBJ_DATA_VALID;
     ObjDesc->Reference.Class = ACPI_REFCLASS_TABLE;
     *DdbHandle = ObjDesc;
 
@@ -620,13 +621,18 @@ AcpiExUnloadTable (
 
     /*
      * Validate the handle
-     * Although the handle is partially validated in AcpiExReconfiguration(),
+     * Although the handle is partially validated in AcpiExReconfiguration()
      * when it calls AcpiExResolveOperands(), the handle is more completely
      * validated here.
+     *
+     * Handle must be a valid operand object of type reference. Also, the
+     * DdbHandle must still be marked valid (table has not been previously
+     * unloaded)
      */
     if ((!DdbHandle) ||
         (ACPI_GET_DESCRIPTOR_TYPE (DdbHandle) != ACPI_DESC_TYPE_OPERAND) ||
-        (DdbHandle->Common.Type != ACPI_TYPE_LOCAL_REFERENCE))
+        (DdbHandle->Common.Type != ACPI_TYPE_LOCAL_REFERENCE) ||
+        (!(DdbHandle->Common.Flags & AOPOBJ_DATA_VALID)))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -634,6 +640,13 @@ AcpiExUnloadTable (
     /* Get the table index from the DdbHandle */
 
     TableIndex = TableDesc->Reference.Value;
+
+    /* Ensure the table is still loaded */
+
+    if (!AcpiTbIsTableLoaded (TableIndex))
+    {
+        return_ACPI_STATUS (AE_NOT_EXIST);
+    }
 
     /* Invoke table handler if present */
 
@@ -658,6 +671,11 @@ AcpiExUnloadTable (
     (void) AcpiTbReleaseOwnerId (TableIndex);
     AcpiTbSetTableLoadedFlag (TableIndex, FALSE);
 
+    /*
+     * Invalidate the handle. We do this because the handle may be stored
+     * in a named object and may not be actually deleted until much later.
+     */
+    DdbHandle->Common.Flags &= ~AOPOBJ_DATA_VALID;
     return_ACPI_STATUS (AE_OK);
 }
 
