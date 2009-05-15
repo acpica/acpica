@@ -314,7 +314,7 @@ AcpiExAccessRegion (
 {
     ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *RgnDesc;
-    ACPI_PHYSICAL_ADDRESS   Address;
+    UINT32                  RegionOffset;
 
 
     ACPI_FUNCTION_TRACE (ExAccessRegion);
@@ -338,9 +338,9 @@ AcpiExAccessRegion (
      * 3) The current offset into the field
      */
     RgnDesc = ObjDesc->CommonField.RegionObj;
-    Address = RgnDesc->Region.Address +
-                ObjDesc->CommonField.BaseByteOffset +
-                FieldDatumByteOffset;
+    RegionOffset =
+        ObjDesc->CommonField.BaseByteOffset +
+        FieldDatumByteOffset;
 
     if ((Function & ACPI_IO_MASK) == ACPI_READ)
     {
@@ -358,12 +358,11 @@ AcpiExAccessRegion (
         ObjDesc->CommonField.AccessByteWidth,
         ObjDesc->CommonField.BaseByteOffset,
         FieldDatumByteOffset,
-        ACPI_CAST_PTR (void, Address)));
+        ACPI_CAST_PTR (void, (RgnDesc->Region.Address + RegionOffset))));
 
     /* Invoke the appropriate AddressSpace/OpRegion handler */
 
-    Status = AcpiEvAddressSpaceDispatch (RgnDesc, Function,
-                Address,
+    Status = AcpiEvAddressSpaceDispatch (RgnDesc, Function, RegionOffset,
                 ACPI_MUL_8 (ObjDesc->CommonField.AccessByteWidth), Value);
 
     if (ACPI_FAILURE (Status))

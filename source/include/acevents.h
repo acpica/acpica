@@ -263,7 +263,7 @@ ACPI_STATUS
 AcpiEvAddressSpaceDispatch (
     ACPI_OPERAND_OBJECT    *RegionObj,
     UINT32                  Function,
-    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  RegionOffset,
     UINT32                  BitWidth,
     ACPI_INTEGER            *Value);
 

@@ -382,7 +382,7 @@ Cleanup1:
  *
  * PARAMETERS:  RegionObj           - Internal region object
  *              Function            - Read or Write operation
- *              Address             - Where in the space to read or write
+ *              RegionOffset        - Where in the region to read or write
  *              BitWidth            - Field width in bits (8, 16, 32, or 64)
  *              Value               - Pointer to in or out value, must be
  *                                    full 64-bit ACPI_INTEGER
@@ -398,7 +398,7 @@ ACPI_STATUS
 AcpiEvAddressSpaceDispatch (
     ACPI_OPERAND_OBJECT     *RegionObj,
     UINT32                  Function,
-    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  RegionOffset,
     UINT32                  BitWidth,
     ACPI_INTEGER            *Value)
 {
@@ -505,7 +505,7 @@ AcpiEvAddressSpaceDispatch (
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
         "Handler %p (@%p) Address %8.8X%8.8X [%s]\n",
         &RegionObj->Region.Handler->AddressSpace, Handler,
-        ACPI_FORMAT_NATIVE_UINT (Address),
+        ACPI_FORMAT_NATIVE_UINT (RegionObj->Region.Address + RegionOffset),
         AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
 
     if (!(HandlerDesc->AddressSpace.HandlerFlags &
@@ -521,7 +521,8 @@ AcpiEvAddressSpaceDispatch (
 
     /* Call the handler */
 
-    Status = Handler (Function, Address, BitWidth, Value,
+    Status = Handler (Function,
+        (RegionObj->Region.Address + RegionOffset), BitWidth, Value,
         HandlerDesc->AddressSpace.Context, RegionObj2->Extra.RegionContext);
 
     if (ACPI_FAILURE (Status))

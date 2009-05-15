@@ -383,18 +383,16 @@ AcpiExRegionRead (
 {
     ACPI_STATUS             Status;
     ACPI_INTEGER            Value;
-    ACPI_PHYSICAL_ADDRESS   Address;
+    UINT32                  RegionOffset = 0;
     UINT32                  i;
 
-
-    Address = ObjDesc->Region.Address;
 
     /* Bytewise reads */
 
     for (i = 0; i < Length; i++)
     {
         Status = AcpiEvAddressSpaceDispatch (ObjDesc, ACPI_READ,
-                    Address, 8, &Value);
+                    RegionOffset, 8, &Value);
         if (ACPI_FAILURE (Status))
         {
             return (Status);
@@ -402,7 +400,7 @@ AcpiExRegionRead (
 
         *Buffer = (UINT8) Value;
         Buffer++;
-        Address++;
+        RegionOffset++;
     }
 
     return (AE_OK);
