@@ -122,6 +122,7 @@
 #include "acnamesp.h"
 #include "actables.h"
 #include "acdispat.h"
+#include "acevents.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -134,6 +135,12 @@ AcpiExAddTable (
     UINT32                  TableIndex,
     ACPI_NAMESPACE_NODE     *ParentNode,
     ACPI_OPERAND_OBJECT     **DdbHandle);
+
+static ACPI_STATUS
+AcpiExRegionRead (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    UINT32                  Length,
+    UINT8                   *Buffer);
 
 
 /*******************************************************************************
@@ -355,6 +362,55 @@ AcpiExLoadTableOp (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiExRegionRead
+ *
+ * PARAMETERS:  ObjDesc         - Region descriptor
+ *              Length          - Number of bytes to read
+ *              Buffer          - Pointer to where to put the data
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Read data from an operation region. The read starts from the
+ *              beginning of the region.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiExRegionRead (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    UINT32                  Length,
+    UINT8                   *Buffer)
+{
+    ACPI_STATUS             Status;
+    ACPI_INTEGER            Value;
+    ACPI_PHYSICAL_ADDRESS   Address;
+    UINT32                  i;
+
+
+    Address = ObjDesc->Region.Address;
+
+    /* Bytewise reads */
+
+    for (i = 0; i < Length; i++)
+    {
+        Status = AcpiEvAddressSpaceDispatch (ObjDesc, ACPI_READ,
+                    Address, 8, &Value);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        *Buffer = (UINT8) Value;
+        Buffer++;
+        Address++;
+    }
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiExLoadOp
  *
  * PARAMETERS:  ObjDesc         - Region or Buffer/Field where the table will be
@@ -422,19 +478,23 @@ AcpiExLoadOp (
             }
         }
 
-        /*
-         * Map the table header and get the actual table length. The region
-         * length is not guaranteed to be the same as the table length.
-         */
-        Table = AcpiOsMapMemory (ObjDesc->Region.Address,
-                    sizeof (ACPI_TABLE_HEADER));
+        /* Get the table header first so we can get the table length */
+
+        Table = ACPI_ALLOCATE (sizeof (ACPI_TABLE_HEADER));
         if (!Table)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
+        Status = AcpiExRegionRead (ObjDesc, sizeof (ACPI_TABLE_HEADER),
+                    ACPI_CAST_PTR (UINT8, Table));
         Length = Table->Length;
-        AcpiOsUnmapMemory (Table, sizeof (ACPI_TABLE_HEADER));
+        ACPI_FREE (Table);
+
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
 
         /* Must have at least an ACPI table header */
 
@@ -444,10 +504,19 @@ AcpiExLoadOp (
         }
 
         /*
-         * The memory region is not guaranteed to remain stable and we must
-         * copy the table to a local buffer. For example, the memory region
-         * is corrupted after suspend on some machines. Dynamically loaded
-         * tables are usually small, so this overhead is minimal.
+         * The original implementation simply mapped the table, with no copy.
+         * However, the memory region is not guaranteed to remain stable and
+         * we must copy the table to a local buffer. For example, the memory
+         * region is corrupted after suspend on some machines. Dynamically
+         * loaded tables are usually small, so this overhead is minimal.
+         *
+         * The latest implementation (5/2009) does not use a mapping at all.
+         * We use the low-level operation region interface to read the table
+         * instead of the obvious optimization of using a direct mapping.
+         * This maintains a consistent use of operation regions across the
+         * entire subsystem. This is important if additional processing must
+         * be performed in the (possibly user-installed) operation region
+         * handler. For example, AcpiExec and ASLTS depend on this.
          */
 
         /* Allocate a buffer for the table */
@@ -458,17 +527,15 @@ AcpiExLoadOp (
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        /* Map the entire table and copy it */
+        /* Read the entire table */
 
-        Table = AcpiOsMapMemory (ObjDesc->Region.Address, Length);
-        if (!Table)
+        Status = AcpiExRegionRead (ObjDesc, Length,
+                    ACPI_CAST_PTR (UINT8, TableDesc.Pointer));
+        if (ACPI_FAILURE (Status))
         {
             ACPI_FREE (TableDesc.Pointer);
-            return_ACPI_STATUS (AE_NO_MEMORY);
+            return_ACPI_STATUS (Status);
         }
-
-        ACPI_MEMCPY (TableDesc.Pointer, Table, Length);
-        AcpiOsUnmapMemory (Table, Length);
 
         TableDesc.Address = ObjDesc->Region.Address;
         break;
