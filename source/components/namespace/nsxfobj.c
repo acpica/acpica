@@ -209,6 +209,7 @@ AcpiGetParent (
     ACPI_HANDLE             *RetHandle)
 {
     ACPI_NAMESPACE_NODE     *Node;
+    ACPI_NAMESPACE_NODE     *ParentNode;
     ACPI_STATUS             Status;
 
 
@@ -241,12 +242,12 @@ AcpiGetParent (
 
     /* Get the parent entry */
 
-    *RetHandle =
-        AcpiNsConvertEntryToHandle (AcpiNsGetParentNode (Node));
+    ParentNode = AcpiNsGetParentNode (Node);
+    *RetHandle = AcpiNsConvertEntryToHandle (ParentNode);
 
     /* Return exception if parent is null */
 
-    if (!AcpiNsGetParentNode (Node))
+    if (!ParentNode)
     {
         Status = AE_NULL_ENTRY;
     }
