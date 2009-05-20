@@ -449,12 +449,12 @@ AcpiDmLineHeader (
 
     if (ByteLength)
     {
-        AcpiOsPrintf ("[%3.3Xh %3.3d% 3d] %28s : ",
+        AcpiOsPrintf ("[%3.3Xh %4.4d% 3d] %28s : ",
             Offset, Offset, ByteLength, Name);
     }
     else
     {
-        AcpiOsPrintf ("%42s : ",
+        AcpiOsPrintf ("%43s : ",
             Name);
     }
 }
@@ -469,12 +469,12 @@ AcpiDmLineHeader2 (
 
     if (ByteLength)
     {
-        AcpiOsPrintf ("[%3.3Xh %3.3d% 3d] %24s % 3d : ",
+        AcpiOsPrintf ("[%3.3Xh %4.4d% 3d] %24s % 3d : ",
             Offset, Offset, ByteLength, Name, Value);
     }
     else
     {
-        AcpiOsPrintf ("[%3.3Xh %3.3d   ] %24s % 3d : ",
+        AcpiOsPrintf ("[%3.3Xh %4.4d   ] %24s % 3d : ",
             Offset, Offset, Name, Value);
     }
 }
@@ -791,7 +791,7 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf ("<Hardware Error Notification Structure>\n");
             AcpiDmDumpTable (ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Length,
-                CurrentOffset, Target, 0, AcpiDmTableInfoHestNotify);
+                CurrentOffset, Target, sizeof (ACPI_HEST_NOTIFY), AcpiDmTableInfoHestNotify);
             AcpiOsPrintf ("\n");
             LastOutputBlankLine = TRUE;
             break;

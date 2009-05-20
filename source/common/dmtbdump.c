@@ -548,7 +548,7 @@ AcpiDmDumpDmar (
             break;
         case ACPI_DMAR_TYPE_ATSR:
             InfoTable = AcpiDmTableInfoDmar2;
-            ScopeOffset = sizeof (ACPI_DMAR_TYPE_ATSR);
+            ScopeOffset = sizeof (ACPI_DMAR_ATSR);
             break;
         default:
             AcpiOsPrintf ("\n**** Unknown DMAR sub-table type %X\n\n", SubTable->Type);
@@ -800,6 +800,8 @@ AcpiDmDumpHest (
             break;
 
         default:
+            /* Cannot continue on unknown type - no length */
+
             AcpiOsPrintf ("\n**** Unknown HEST sub-table type %X\n", SubTable->Type);
             return;
         }
@@ -904,7 +906,15 @@ AcpiDmDumpMadt (
             break;
         default:
             AcpiOsPrintf ("\n**** Unknown MADT sub-table type %X\n\n", SubTable->Type);
-            return;
+
+            /* Attempt to continue */
+
+            if (!SubTable->Length)
+            {
+                AcpiOsPrintf ("Invalid zero length subtable\n");
+                return;
+            }
+            goto NextSubTable;
         }
 
         Status = AcpiDmDumpTable (Length, Offset, SubTable,
@@ -914,6 +924,7 @@ AcpiDmDumpMadt (
             return;
         }
 
+NextSubTable:
         /* Point to next sub-table */
 
         Offset += SubTable->Length;
@@ -1111,7 +1122,15 @@ AcpiDmDumpSrat (
             break;
         default:
             AcpiOsPrintf ("\n**** Unknown SRAT sub-table type %X\n", SubTable->Type);
-            return;
+
+            /* Attempt to continue */
+
+            if (!SubTable->Length)
+            {
+                AcpiOsPrintf ("Invalid zero length subtable\n");
+                return;
+            }
+            goto NextSubTable;
         }
 
         AcpiOsPrintf ("\n");
@@ -1122,6 +1141,7 @@ AcpiDmDumpSrat (
             return;
         }
 
+NextSubTable:
         /* Point to next sub-table */
 
         Offset += SubTable->Length;
