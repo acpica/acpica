@@ -158,6 +158,7 @@ AcpiUtDeleteInternalObj (
     ACPI_OPERAND_OBJECT     *HandlerDesc;
     ACPI_OPERAND_OBJECT     *SecondDesc;
     ACPI_OPERAND_OBJECT     *NextDesc;
+    ACPI_OPERAND_OBJECT     **LastObjPtr;
 
 
     ACPI_FUNCTION_TRACE_PTR (UtDeleteInternalObj, Object);
@@ -317,6 +318,25 @@ AcpiUtDeleteInternalObj (
             HandlerDesc = Object->Region.Handler;
             if (HandlerDesc)
             {
+                NextDesc = HandlerDesc->AddressSpace.RegionList;
+                LastObjPtr = &HandlerDesc->AddressSpace.RegionList;
+
+                /* Remove the region object from the handler's list */
+
+                while (NextDesc)
+                {
+                    if (NextDesc == Object)
+                    {
+                        *LastObjPtr = NextDesc->Region.Next;
+                        break;
+                    }
+
+                    /* Walk the linked list of handler */
+
+                    LastObjPtr = &NextDesc->Region.Next;
+                    NextDesc = NextDesc->Region.Next;
+                }
+
                 if (HandlerDesc->AddressSpace.HandlerFlags &
                     ACPI_ADDR_HANDLER_DEFAULT_INSTALLED)
                 {
