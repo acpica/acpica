@@ -1010,7 +1010,14 @@ typedef struct acpi_bit_register_info
 
 /* For control registers, both ignored and reserved bits must be preserved */
 
-#define ACPI_PM1_CONTROL_IGNORED_BITS           0x0201  /* Bits 9, 0(SCI_EN) */
+/*
+ * For PM1 control, the SCI enable bit (bit 0, SCI_EN) is defined by the
+ * ACPI specification to be a "preserved" bit - "OSPM always preserves this
+ * bit position", section 4.7.3.2.1. However, some machines fail if this
+ * bit is in fact preserved. No machines fail if the bit is not preserved.
+ * Therefore, we no longer attempt to preserve this bit. (May 2009)
+ */
+#define ACPI_PM1_CONTROL_IGNORED_BITS           0x0200  /* Bit 9 */
 #define ACPI_PM1_CONTROL_RESERVED_BITS          0xC1F8  /* Bits 14-15, 3-8 */
 #define ACPI_PM1_CONTROL_PRESERVED_BITS \
          (ACPI_PM1_CONTROL_IGNORED_BITS | ACPI_PM1_CONTROL_RESERVED_BITS)
