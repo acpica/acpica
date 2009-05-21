@@ -1013,9 +1013,10 @@ typedef struct acpi_bit_register_info
 /*
  * For PM1 control, the SCI enable bit (bit 0, SCI_EN) is defined by the
  * ACPI specification to be a "preserved" bit - "OSPM always preserves this
- * bit position", section 4.7.3.2.1. However, some machines fail if this
- * bit is in fact preserved. No machines fail if the bit is not preserved.
- * Therefore, we no longer attempt to preserve this bit. (May 2009)
+ * bit position", section 4.7.3.2.1. However, on some machines the OS must
+ * write a one to this bit after resume for the machine to work properly.
+ * To enable this, we no longer attempt to preserve this bit. No machines
+ * are known to fail if the bit is not preserved. (May 2009)
  */
 #define ACPI_PM1_CONTROL_IGNORED_BITS           0x0200  /* Bit 9 */
 #define ACPI_PM1_CONTROL_RESERVED_BITS          0xC1F8  /* Bits 14-15, 3-8 */
