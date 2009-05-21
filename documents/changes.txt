@@ -1,4 +1,77 @@
 ----------------------------------------
+21 May 2009. Summary of changes for version 20090521:
+
+This release is available at www.acpica.org/downloads
+
+1) ACPI CA Core Subsystem:
+
+Disabled the preservation of the SCI enable bit in the PM1 control register. 
+The SCI enable bit (bit 0, SCI_EN) is defined by the ACPI specification to be 
+a "preserved" bit - "OSPM always preserves this bit position", section 
+4.7.3.2.1. However, some machines fail if this bit is in fact preserved 
+because the bit needs to be explicitly set by the OS as a workaround. No 
+machines fail if the bit is not preserved. Therefore, ACPICA no longer 
+attempts to preserve this bit.
+
+Fixed a problem in AcpiRsGetPciRoutingTableLength where an invalid or 
+incorrectly formed _PRT package could cause a fault. Added validation to 
+ensure that each package element is actually a sub-package.
+
+Implemented a new interface to install or override a single control method, 
+AcpiInstallMethod. This interface is useful when debugging in order to repair 
+an existing method or to install a missing method without having to override 
+the entire ACPI table. See the ACPICA Programmer Reference for use and 
+examples. Lin Ming, Bob Moore.
+
+Fixed several reference count issues with the DdbHandle object that is 
+created from a Load or LoadTable operator. Prevent premature deletion of the 
+object. Also, mark the object as invalid once the table has been unloaded. 
+This is needed because the handle itself may not be deleted after the table 
+unload, depending on whether it has been stored in a named object by the 
+caller. Lin Ming.
+
+Fixed a problem with Mutex Sync Levels. Fixed a problem where if multiple 
+mutexes of the same sync level are acquired but then not released in strict 
+opposite order, the internally maintained Current Sync Level becomes confused 
+and can cause subsequent execution errors. ACPICA BZ 471.
+
+Changed the allowable release order for ASL mutex objects. The ACPI 4.0 
+specification has been changed to make the SyncLevel for mutex objects more 
+useful. When releasing a mutex, the SyncLevel of the mutex must now be the 
+same as the current sync level. This makes more sense than the previous rule 
+(SyncLevel less than or equal). This change updates the code to match the 
+specification.
+
+Fixed a problem with the local version of the AcpiOsPurgeCache function. The 
+(local) cache must be locked during all cache object deletions. Andrew 
+Baumann.
+
+Updated the Load operator to use operation region interfaces. This replaces 
+direct memory mapping with region access calls. Now, all region accesses go 
+through the installed region handler as they should.
+
+Simplified and optimized the NsGetNextNode function. Reduced parameter count 
+and reduced code for this frequently used function.
+
+Example Code and Data Size: These are the sizes for the OS-independent 
+acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
+debug version of the code includes the debug output trace mechanism and has a 
+much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  82.8K Code, 17.5K Data, 100.3K Total
+    Debug Version:     158.0K Code, 49.9K Data, 207.9K Total
+  Current Release:
+    Non-Debug Version:  83.4K Code, 17.5K Data, 100.9K Total
+    Debug Version:     158.9K Code, 50.0K Data, 208.9K Total
+
+2) iASL Compiler/Disassembler and Tools:
+
+Disassembler: Fixed some issues with DMAR, HEST, MADT tables. Some problems 
+with sub-table disassembly and handling invalid sub-tables. Attempt recovery 
+after an invalid sub-table ID.
+
+----------------------------------------
 22 April 2009. Summary of changes for version 20090422:
 
 This release is available at www.acpica.org/downloads
