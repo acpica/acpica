@@ -131,14 +131,18 @@
 extern UINT32               AcpiCurrentGpeCount;
 extern ACPI_TABLE_FADT      AcpiGbl_FADT;
 
-/* Run-time configuration */
+/* Runtime configuration of debug print levels */
 
 extern UINT32               AcpiDbgLevel;
 extern UINT32               AcpiDbgLayer;
+
+/* ACPICA runtime options */
+
 extern UINT8                AcpiGbl_EnableInterpreterSlack;
 extern UINT8                AcpiGbl_AllMethodsSerialized;
 extern UINT8                AcpiGbl_CreateOsiMethod;
 extern UINT8                AcpiGbl_LeaveWakeGpesDisabled;
+extern UINT8                AcpiGbl_UseDefaultRegisterWidths;
 extern ACPI_NAME            AcpiGbl_TraceMethodName;
 extern UINT32               AcpiGbl_TraceFlags;
 
