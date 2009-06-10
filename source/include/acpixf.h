@@ -336,7 +336,7 @@ AcpiEvaluateObjectTyped (
 ACPI_STATUS
 AcpiGetObjectInfo (
     ACPI_HANDLE             Handle,
-    ACPI_BUFFER             *ReturnBuffer);
+    ACPI_DEVICE_INFO        **ReturnBuffer);
 
 ACPI_STATUS
 AcpiInstallMethod (

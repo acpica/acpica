@@ -137,6 +137,7 @@ OBJS = \
 	utdelete.o \
 	uteval.o \
 	utglobal.o \
+	utids.o \
 	utinit.o \
 	utlock.o \
 	utmath.o \
@@ -538,6 +539,9 @@ uteval.o :          $(ACPICA_CORE)/utilities/uteval.c
 	$(COMPILE)
 
 utglobal.o :        $(ACPICA_CORE)/utilities/utglobal.c
+	$(COMPILE)
+
+utids.o :           $(ACPICA_CORE)/utilities/utids.c
 	$(COMPILE)
 
 utinit.o :          $(ACPICA_CORE)/utilities/utinit.c

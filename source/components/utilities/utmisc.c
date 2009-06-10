@@ -207,6 +207,40 @@ AcpiUtValidateException (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiUtIsPciRootBridge
+ *
+ * PARAMETERS:  Id              - The HID/CID in string format
+ *
+ * RETURN:      TRUE if the Id is a match for a PCI/PCI-Express Root Bridge
+ *
+ * DESCRIPTION: Determine if the input ID is a PCI Root Bridge ID.
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AcpiUtIsPciRootBridge (
+    char                    *Id)
+{
+
+    /*
+     * Check if this is a PCI root bridge.
+     * ACPI 3.0+: check for a PCI Express root also.
+     */
+    if (!(ACPI_STRCMP (Id,
+            PCI_ROOT_HID_STRING)) ||
+
+        !(ACPI_STRCMP (Id,
+            PCI_EXPRESS_ROOT_HID_STRING)))
+    {
+        return (TRUE);
+    }
+
+    return (FALSE);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiUtIsAmlTable
  *
  * PARAMETERS:  Table               - An ACPI table

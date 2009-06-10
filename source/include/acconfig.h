@@ -256,6 +256,11 @@
 
 #define ACPI_SMBUS_BUFFER_SIZE          34
 
+/* _SxD and _SxW control methods */
+
+#define ACPI_NUM_SxD_METHODS            4
+#define ACPI_NUM_SxW_METHODS            5
+
 
 /******************************************************************************
  *
