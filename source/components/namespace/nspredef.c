@@ -1168,23 +1168,27 @@ AcpiNsRepairObject (
         ACPI_MEMCPY (NewObject->String.Pointer,
             ReturnObject->Buffer.Pointer, Length);
 
-        /* Install the new return object */
-
-        AcpiUtRemoveReference (ReturnObject);
-        *ReturnObjectPtr = NewObject;
-
         /*
-         * If the object is a package element, we need to:
-         * 1. Decrement the reference count of the orignal object, it was
-         *    incremented when building the package
-         * 2. Increment the reference count of the new object, it will be
-         *    decremented when releasing the package
+         * If the original object is a package element, we need to:
+         * 1. Set the reference count of the new object to match the
+         *    reference count of the old object.
+         * 2. Decrement the reference count of the original object.
          */
         if (PackageIndex != ACPI_NOT_PACKAGE)
         {
-            AcpiUtRemoveReference (ReturnObject);
-            AcpiUtAddReference (NewObject);
+            NewObject->Common.ReferenceCount =
+                ReturnObject->Common.ReferenceCount;
+
+            if (ReturnObject->Common.ReferenceCount > 1)
+            {
+                ReturnObject->Common.ReferenceCount--;
+            }
         }
+
+        /* Delete old object, install the new return object */
+
+        AcpiUtRemoveReference (ReturnObject);
+        *ReturnObjectPtr = NewObject;
         return (AE_OK);
 
     default:
