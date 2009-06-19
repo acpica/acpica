@@ -1057,7 +1057,6 @@ void (*ACPI_NOTIFY_HANDLER) (
 typedef
 void (*ACPI_OBJECT_HANDLER) (
     ACPI_HANDLE                     Object,
-    UINT32                          Function,
     void                            *Data);
 
 typedef

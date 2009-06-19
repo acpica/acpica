@@ -153,6 +153,10 @@ AeRegionInit (
     void                    *HandlerContext,
     void                    **RegionContext);
 
+void
+AeAttachedDataHandler (
+    ACPI_HANDLE             Object,
+    void                    *Data);
 
 UINT32                      SigintCount = 0;
 AE_DEBUG_REGIONS            AeRegions;
@@ -446,10 +450,30 @@ UINT32
 AeGpeHandler (
     void                    *Context)
 {
-
-
     AcpiOsPrintf ("Received a GPE at handler\n");
     return (0);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AeAttachedDataHandler
+ *
+ * DESCRIPTION: Handler for deletion of nodes with attached data (attached via
+ *              AcpiAttachData)
+ *
+ *****************************************************************************/
+
+void
+AeAttachedDataHandler (
+    ACPI_HANDLE             Object,
+    void                    *Data)
+{
+    ACPI_NAMESPACE_NODE     *Node = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, Data);
+
+
+    AcpiOsPrintf ("Received an attached data deletion on %4.4s\n",
+        Node->Name.Ascii);
 }
 
 
@@ -569,6 +593,10 @@ AeInstallHandlers (void)
             printf ("Could not install a notify handler, %s\n",
                 AcpiFormatException (Status));
         }
+
+        Status = AcpiAttachData (Handle, AeAttachedDataHandler, Handle);
+        Status = AcpiDetachData (Handle, AeAttachedDataHandler);
+        Status = AcpiAttachData (Handle, AeAttachedDataHandler, Handle);
     }
     else
     {
