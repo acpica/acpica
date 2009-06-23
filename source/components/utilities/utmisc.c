@@ -128,7 +128,7 @@
  * Common suffix for messages
  */
 #define ACPI_COMMON_MSG_SUFFIX \
-    AcpiOsPrintf (" %8.8X %s-%u\n", ACPI_CA_VERSION, ModuleName, LineNumber)
+    AcpiOsPrintf (" (%8.8X/%s-%u)\n", ACPI_CA_VERSION, ModuleName, LineNumber)
 
 
 /*******************************************************************************
