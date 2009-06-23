@@ -386,6 +386,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_POINTER",                        SRC_TYPE_STRUCT},
     {"ACPI_POINTERS",                       SRC_TYPE_UNION},
     {"ACPI_PORT_INFO",                      SRC_TYPE_STRUCT},
+    {"ACPI_PREDEFINED_DATA",                SRC_TYPE_STRUCT},
     {"ACPI_PREDEFINED_INFO",                SRC_TYPE_UNION},
     {"ACPI_PREDEFINED_NAMES",               SRC_TYPE_STRUCT},
     {"ACPI_PSCOPE_STATE",                   SRC_TYPE_STRUCT},

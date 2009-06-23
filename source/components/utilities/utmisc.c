@@ -124,6 +124,12 @@
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utmisc")
 
+/*
+ * Common suffix for messages
+ */
+#define ACPI_COMMON_MSG_SUFFIX \
+    AcpiOsPrintf (" %8.8X %s-%u\n", ACPI_CA_VERSION, ModuleName, LineNumber)
+
 
 /*******************************************************************************
  *
@@ -1317,7 +1323,7 @@ AcpiError (
 
     va_start (args, Format);
     AcpiOsVprintf (Format, args);
-    AcpiOsPrintf (" %8.8X %s-%u\n", ACPI_CA_VERSION, ModuleName, LineNumber);
+    ACPI_COMMON_MSG_SUFFIX;
     va_end (args);
 }
 
@@ -1336,7 +1342,7 @@ AcpiException (
 
     va_start (args, Format);
     AcpiOsVprintf (Format, args);
-    AcpiOsPrintf (" %8.8X %s-%u\n", ACPI_CA_VERSION, ModuleName, LineNumber);
+    ACPI_COMMON_MSG_SUFFIX;
     va_end (args);
 }
 
@@ -1354,7 +1360,7 @@ AcpiWarning (
 
     va_start (args, Format);
     AcpiOsVprintf (Format, args);
-    AcpiOsPrintf (" %8.8X %s-%u\n", ACPI_CA_VERSION, ModuleName, LineNumber);
+    ACPI_COMMON_MSG_SUFFIX;
     va_end (args);
 }
 
@@ -1382,3 +1388,50 @@ ACPI_EXPORT_SYMBOL (AcpiWarning)
 ACPI_EXPORT_SYMBOL (AcpiInfo)
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtPredefinedWarning
+ *
+ * PARAMETERS:  ModuleName      - Caller's module name (for error output)
+ *              LineNumber      - Caller's line number (for error output)
+ *              Pathname        - Full pathname to the node
+ *              NodeFlags       - From Namespace node for the method/object
+ *              Format          - Printf format string + additional args
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Warnings for the predefined validation module. Messages are
+ *              only emitted the first time a problem with a particular
+ *              method/object is detected. This prevents a flood of error
+ *              messages for methods that are repeatedly evaluated.
+ *
+ ******************************************************************************/
+
+void  ACPI_INTERNAL_VAR_XFACE
+AcpiUtPredefinedWarning (
+    const char              *ModuleName,
+    UINT32                  LineNumber,
+    char                    *Pathname,
+    UINT8                   NodeFlags,
+    const char              *Format,
+    ...)
+{
+    va_list                 args;
+
+
+    /*
+     * Warning messages for this method/object will be disabled after the
+     * first time a validation fails or an object is successfully repaired.
+     */
+    if (NodeFlags & ANOBJ_EVALUATED)
+    {
+        return;
+    }
+
+    AcpiOsPrintf ("ACPI Warning for %s: ", Pathname);
+
+    va_start (args, Format);
+    AcpiOsVprintf (Format, args);
+    ACPI_COMMON_MSG_SUFFIX;
+    va_end (args);
+}
