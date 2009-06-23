@@ -135,6 +135,10 @@ SOURCE=..\..\source\components\utilities\utglobal.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utids.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utinit.c
 # End Source File
 # Begin Source File

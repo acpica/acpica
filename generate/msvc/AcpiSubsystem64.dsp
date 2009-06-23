@@ -351,6 +351,10 @@ InputName=utglobal
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utids.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utinit.c
 
 !IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"

@@ -51,7 +51,7 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"/acpica/generate/msvc/AslCompiler/iasl.bsc"
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/AslCompiler/iasl.bsc" /o"/acpica/generate/msvc/AslCompiler/iasl.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
 # ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /machine:I386 /out:"/acpica/generate/msvc/AslCompiler/iasl.exe"

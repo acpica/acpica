@@ -202,6 +202,10 @@ SOURCE=..\..\source_linux\COMPONENTS\utilities\utglobal.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source_linux\components\utilities\utids.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source_linux\COMPONENTS\utilities\utinit.c
 
 !IF  "$(CFG)" == "AcpiSubsystem_Linux - Win32 Release"
