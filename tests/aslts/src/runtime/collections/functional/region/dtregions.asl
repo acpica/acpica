@@ -83,7 +83,12 @@ Device(DTR0) {
 			Store(arg1, Debug)
 		}
 
-		if (LEqual(arg0, 0x07)) {
+		/*
+		 * 8 is the SpaceID for DataTableRegions (subject to change
+		 * with new releases of ACPI specification -- because this
+		 * ID is an internal-ACPICA-only ID)
+		 */
+		if (LEqual(arg0, 0x08)) {
 			Increment(VRSK)
 		} else {
 			Increment(IRSK)
