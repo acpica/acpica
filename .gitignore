@@ -54,6 +54,7 @@ libraries/size_dbg.txt
 libraries/size_rel.txt
 
 tests/tmp
+tests/misc/*.aml
 
 *.sh
 new
