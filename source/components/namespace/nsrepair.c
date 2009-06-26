@@ -233,3 +233,59 @@ AcpiNsRepairObject (
 
     return (AE_AML_OPERAND_TYPE);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsRepairPackageList
+ *
+ * PARAMETERS:  Data                - Pointer to validation data structure
+ *              ObjDescPtr          - Pointer to the object to repair. The new
+ *                                    package object is returned here,
+ *                                    overwriting the old object.
+ *
+ * RETURN:      Status, new object in *ObjDescPtr
+ *
+ * DESCRIPTION: Repair a common problem with objects that are defined to return
+ *              a variable-length Package of Packages. If the variable-length
+ *              is one, some BIOS code mistakenly simply declares a single
+ *              Package instead of a Package with one sub-Package. This
+ *              function attempts to repair this error by wrapping a Package
+ *              object around the original Package, creating the correct
+ *              Package with one sub-Package.
+ *
+ *              Names that can be repaired in this manner include:
+ *              _ALR, _CSD, _HPX, _MLS, _PRT, _PSS, _TRT, TSS
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiNsRepairPackageList (
+    ACPI_PREDEFINED_DATA    *Data,
+    ACPI_OPERAND_OBJECT     **ObjDescPtr)
+{
+    ACPI_OPERAND_OBJECT     *PkgObjDesc;
+
+
+    /*
+     * Create the new outer package and populate it. The new package will
+     * have a single element, the lone subpackage.
+     */
+    PkgObjDesc = AcpiUtCreatePackageObject (1);
+    if (!PkgObjDesc)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    PkgObjDesc->Package.Elements[0] = *ObjDescPtr;
+
+    /* Return the new object in the object pointer */
+
+    *ObjDescPtr = PkgObjDesc;
+    Data->Flags |= ACPI_OBJECT_REPAIRED;
+
+    ACPI_WARN_PREDEFINED ((AE_INFO, Data->Pathname, Data->NodeFlags,
+        "Incorrectly formed Package, attempting repair"));
+
+    return (AE_OK);
+}

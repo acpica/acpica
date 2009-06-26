@@ -433,6 +433,11 @@ AcpiNsRepairObject (
     UINT32                  PackageIndex,
     ACPI_OPERAND_OBJECT     **ReturnObjectPtr);
 
+ACPI_STATUS
+AcpiNsRepairPackageList (
+    ACPI_PREDEFINED_DATA    *Data,
+    ACPI_OPERAND_OBJECT     **ObjDescPtr);
+
 
 /*
  * nssearch - Namespace searching and entry
