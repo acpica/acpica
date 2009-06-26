@@ -700,6 +700,10 @@ SOURCE=..\..\source_linux\components\namespace\nspredef.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source_linux\components\namespace\nsrepair.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source_linux\COMPONENTS\NAMESPACE\nssearch.c
 
 !IF  "$(CFG)" == "AcpiSubsystem_Linux - Win32 Release"

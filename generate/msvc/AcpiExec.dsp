@@ -237,6 +237,10 @@ SOURCE=..\..\source\components\namespace\nspredef.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\namespace\nsrepair.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\namespace\nssearch.c
 # End Source File
 # Begin Source File
