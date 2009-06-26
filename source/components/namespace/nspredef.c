@@ -176,13 +176,6 @@ AcpiNsCheckReference (
     ACPI_PREDEFINED_DATA        *Data,
     ACPI_OPERAND_OBJECT         *ReturnObject);
 
-static ACPI_STATUS
-AcpiNsRepairObject (
-    ACPI_PREDEFINED_DATA        *Data,
-    UINT32                      ExpectedBtypes,
-    UINT32                      PackageIndex,
-    ACPI_OPERAND_OBJECT         **ReturnObjectPtr);
-
 static void
 AcpiNsGetExpectedTypes (
     char                        *Buffer,
@@ -200,14 +193,6 @@ static const char   *AcpiRtypeNames[] =
     "/Package",
     "/Reference",
 };
-
-/* Object is not a package element */
-
-#define ACPI_NOT_PACKAGE_ELEMENT    ACPI_UINT32_MAX
-
-/* Always emit warning message, not dependent on node flags */
-
-#define ACPI_WARN_ALWAYS            0
 
 
 /*******************************************************************************
@@ -700,8 +685,8 @@ AcpiNsCheckPackage (
     case ACPI_PTYPE2_COUNT:
 
         /*
-         * These types all return a single package that consists of a variable
-         * number of sub-packages
+         * These types all return a single package that consists of a
+         * variable number of sub-packages.
          */
         for (i = 0; i < Count; i++)
         {
@@ -1095,117 +1080,6 @@ AcpiNsCheckReference (
         "Return type mismatch - unexpected reference object type [%s] %2.2X",
         AcpiUtGetReferenceName (ReturnObject),
         ReturnObject->Reference.Class));
-
-    return (AE_AML_OPERAND_TYPE);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiNsRepairObject
- *
- * PARAMETERS:  Data            - Pointer to validation data structure
- *              ExpectedBtypes  - Object types expected
- *              PackageIndex    - Index of object within parent package (if
- *                                applicable - ACPI_NOT_PACKAGE_ELEMENT
- *                                otherwise)
- *              ReturnObjectPtr - Pointer to the object returned from the
- *                                evaluation of a method or object
- *
- * RETURN:      Status. AE_OK if repair was successful.
- *
- * DESCRIPTION: Attempt to repair/convert a return object of a type that was
- *              not expected.
- *
- ******************************************************************************/
-
-static ACPI_STATUS
-AcpiNsRepairObject (
-    ACPI_PREDEFINED_DATA        *Data,
-    UINT32                      ExpectedBtypes,
-    UINT32                      PackageIndex,
-    ACPI_OPERAND_OBJECT         **ReturnObjectPtr)
-{
-    ACPI_OPERAND_OBJECT         *ReturnObject = *ReturnObjectPtr;
-    ACPI_OPERAND_OBJECT         *NewObject;
-    ACPI_SIZE                   Length;
-
-
-    switch (ReturnObject->Common.Type)
-    {
-    case ACPI_TYPE_BUFFER:
-
-        /* Does the method/object legally return a string? */
-
-        if (!(ExpectedBtypes & ACPI_RTYPE_STRING))
-        {
-            return (AE_AML_OPERAND_TYPE);
-        }
-
-        /*
-         * Have a Buffer, expected a String, convert. Use a ToString
-         * conversion, no transform performed on the buffer data. The best
-         * example of this is the _BIF method, where the string data from
-         * the battery is often (incorrectly) returned as buffer object(s).
-         */
-        Length = 0;
-        while ((Length < ReturnObject->Buffer.Length) &&
-                (ReturnObject->Buffer.Pointer[Length]))
-        {
-            Length++;
-        }
-
-        /* Allocate a new string object */
-
-        NewObject = AcpiUtCreateStringObject (Length);
-        if (!NewObject)
-        {
-            return (AE_NO_MEMORY);
-        }
-
-        /*
-         * Copy the raw buffer data with no transform. String is already NULL
-         * terminated at Length+1.
-         */
-        ACPI_MEMCPY (NewObject->String.Pointer,
-            ReturnObject->Buffer.Pointer, Length);
-
-        /*
-         * If the original object is a package element, we need to:
-         * 1. Set the reference count of the new object to match the
-         *    reference count of the old object.
-         * 2. Decrement the reference count of the original object.
-         */
-        if (PackageIndex != ACPI_NOT_PACKAGE_ELEMENT)
-        {
-            NewObject->Common.ReferenceCount =
-                ReturnObject->Common.ReferenceCount;
-
-            if (ReturnObject->Common.ReferenceCount > 1)
-            {
-                ReturnObject->Common.ReferenceCount--;
-            }
-
-            ACPI_WARN_PREDEFINED ((AE_INFO, Data->Pathname, Data->NodeFlags,
-                "Converted Buffer to expected String at index %u",
-                PackageIndex));
-        }
-        else
-        {
-            ACPI_WARN_PREDEFINED ((AE_INFO, Data->Pathname, Data->NodeFlags,
-                "Converted Buffer to expected String"));
-        }
-
-        /* Delete old object, install the new return object */
-
-        AcpiUtRemoveReference (ReturnObject);
-        *ReturnObjectPtr = NewObject;
-        Data->Flags |= ACPI_OBJECT_REPAIRED;
-        return (AE_OK);
-
-    default:
-        break;
-    }
 
     return (AE_AML_OPERAND_TYPE);
 }

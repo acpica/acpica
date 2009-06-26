@@ -96,6 +96,7 @@ OBJS = \
 	nsobject.o \
 	nsparse.o \
 	nspredef.o \
+	nsrepair.o \
 	nssearch.o \
 	nsutils.o \
 	nswalk.o \
@@ -419,6 +420,9 @@ nsparse.o :         $(ACPICA_CORE)/namespace/nsparse.c
 	$(COMPILE)
 
 nspredef.o :        $(ACPICA_CORE)/namespace/nspredef.c
+	$(COMPILE)
+
+nsrepair.o :        $(ACPICA_CORE)/namespace/nsrepair.c
 	$(COMPILE)
 
 nssearch.o :        $(ACPICA_CORE)/namespace/nssearch.c
