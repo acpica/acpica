@@ -157,11 +157,13 @@
  *      count
  *      (Used for _CST)
  *
- * ACPI_PTYPE2_Fixed-length: Each subpackage is of Fixed-length length
+ * ACPI_PTYPE2_FIXED: Each subpackage is of Fixed-length
  *      (Used for _PRT)
  *
  * ACPI_PTYPE2_MIN: Each subpackage has a Variable-length but minimum length
  *      (Used for _HPX)
+ *
+ * ACPI_PTYPE2_REV_FIXED: Revision at start, each subpackage is Fixed-length
  *
  *****************************************************************************/
 
@@ -174,7 +176,8 @@ enum AcpiReturnPackageTypes
     ACPI_PTYPE2_COUNT       = 5,
     ACPI_PTYPE2_PKG_COUNT   = 6,
     ACPI_PTYPE2_FIXED       = 7,
-    ACPI_PTYPE2_MIN         = 8
+    ACPI_PTYPE2_MIN         = 8,
+    ACPI_PTYPE2_REV_FIXED   = 9
 };
 
 

@@ -155,6 +155,13 @@ AcpiNsCheckPackage (
     ACPI_OPERAND_OBJECT         **ReturnObjectPtr);
 
 static ACPI_STATUS
+AcpiNsCheckPackageList (
+    ACPI_PREDEFINED_DATA        *Data,
+    const ACPI_PREDEFINED_INFO  *Package,
+    ACPI_OPERAND_OBJECT         **Elements,
+    UINT32                      Count);
+
+static ACPI_STATUS
 AcpiNsCheckPackageElements (
     ACPI_PREDEFINED_DATA        *Data,
     ACPI_OPERAND_OBJECT         **Elements,
@@ -509,14 +516,11 @@ AcpiNsCheckPackage (
 {
     ACPI_OPERAND_OBJECT         *ReturnObject = *ReturnObjectPtr;
     const ACPI_PREDEFINED_INFO  *Package;
-    ACPI_OPERAND_OBJECT         *SubPackage;
     ACPI_OPERAND_OBJECT         **Elements;
-    ACPI_OPERAND_OBJECT         **SubElements;
-    ACPI_STATUS                 Status;
+    ACPI_STATUS                 Status = AE_OK;
     UINT32                      ExpectedCount;
     UINT32                      Count;
     UINT32                      i;
-    UINT32                      j;
 
 
     ACPI_FUNCTION_NAME (NsCheckPackage);
@@ -578,10 +582,6 @@ AcpiNsCheckPackage (
         Status = AcpiNsCheckPackageElements (Data, Elements,
                     Package->RetInfo.ObjectType1, Package->RetInfo.Count1,
                     Package->RetInfo.ObjectType2, Package->RetInfo.Count2, 0);
-        if (ACPI_FAILURE (Status))
-        {
-            return (Status);
-        }
         break;
 
 
@@ -650,6 +650,26 @@ AcpiNsCheckPackage (
         break;
 
 
+    case ACPI_PTYPE2_REV_FIXED:
+
+        /* First element is the (Integer) revision */
+
+        Status = AcpiNsCheckObjectType (Data, Elements,
+                    ACPI_RTYPE_INTEGER, 0);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        Elements++;
+        Count--;
+
+        /* Examine the sub-packages */
+
+        Status = AcpiNsCheckPackageList (Data, Package, Elements, Count);
+        break;
+
+
     case ACPI_PTYPE2_PKG_COUNT:
 
         /* First element is the (Integer) count of sub-packages to follow */
@@ -674,9 +694,10 @@ AcpiNsCheckPackage (
         Count = ExpectedCount;
         Elements++;
 
-        /* Now we can walk the sub-packages */
+        /* Examine the sub-packages */
 
-        /*lint -fallthrough */
+        Status = AcpiNsCheckPackageList (Data, Package, Elements, Count);
+        break;
 
 
     case ACPI_PTYPE2:
@@ -711,133 +732,9 @@ AcpiNsCheckPackage (
             Count = 1;
         }
 
-        /* Validate each sub-Package in the parent Package */
+        /* Examine the sub-packages */
 
-        for (i = 0; i < Count; i++)
-        {
-            SubPackage = *Elements;
-            SubElements = SubPackage->Package.Elements;
-
-            /* Each sub-object must be of type Package */
-
-            Status = AcpiNsCheckObjectType (Data, &SubPackage,
-                        ACPI_RTYPE_PACKAGE, i);
-            if (ACPI_FAILURE (Status))
-            {
-                return (Status);
-            }
-
-            /* Examine the different types of sub-packages */
-
-            switch (Package->RetInfo.Type)
-            {
-            case ACPI_PTYPE2:
-            case ACPI_PTYPE2_PKG_COUNT:
-
-                /* Each subpackage has a fixed number of elements */
-
-                ExpectedCount =
-                    Package->RetInfo.Count1 + Package->RetInfo.Count2;
-                if (SubPackage->Package.Count != ExpectedCount)
-                {
-                    Count = SubPackage->Package.Count;
-                    goto PackageTooSmall;
-                }
-
-                Status = AcpiNsCheckPackageElements (Data, SubElements,
-                            Package->RetInfo.ObjectType1,
-                            Package->RetInfo.Count1,
-                            Package->RetInfo.ObjectType2,
-                            Package->RetInfo.Count2, 0);
-                if (ACPI_FAILURE (Status))
-                {
-                    return (Status);
-                }
-                break;
-
-            case ACPI_PTYPE2_FIXED:
-
-                /* Each sub-package has a fixed length */
-
-                ExpectedCount = Package->RetInfo2.Count;
-                if (SubPackage->Package.Count < ExpectedCount)
-                {
-                    Count = SubPackage->Package.Count;
-                    goto PackageTooSmall;
-                }
-
-                /* Check the type of each sub-package element */
-
-                for (j = 0; j < ExpectedCount; j++)
-                {
-                    Status = AcpiNsCheckObjectType (Data, &SubElements[j],
-                                Package->RetInfo2.ObjectType[j], j);
-                    if (ACPI_FAILURE (Status))
-                    {
-                        return (Status);
-                    }
-                }
-                break;
-
-            case ACPI_PTYPE2_MIN:
-
-                /* Each sub-package has a variable but minimum length */
-
-                ExpectedCount = Package->RetInfo.Count1;
-                if (SubPackage->Package.Count < ExpectedCount)
-                {
-                    Count = SubPackage->Package.Count;
-                    goto PackageTooSmall;
-                }
-
-                /* Check the type of each sub-package element */
-
-                Status = AcpiNsCheckPackageElements (Data, SubElements,
-                            Package->RetInfo.ObjectType1,
-                            SubPackage->Package.Count, 0, 0, 0);
-                if (ACPI_FAILURE (Status))
-                {
-                    return (Status);
-                }
-                break;
-
-            case ACPI_PTYPE2_COUNT:
-
-                /* First element is the (Integer) count of elements to follow */
-
-                Status = AcpiNsCheckObjectType (Data, SubElements,
-                            ACPI_RTYPE_INTEGER, 0);
-                if (ACPI_FAILURE (Status))
-                {
-                    return (Status);
-                }
-
-                /* Make sure package is large enough for the Count */
-
-                ExpectedCount = (UINT32) (*SubElements)->Integer.Value;
-                if (SubPackage->Package.Count < ExpectedCount)
-                {
-                    Count = SubPackage->Package.Count;
-                    goto PackageTooSmall;
-                }
-
-                /* Check the type of each sub-package element */
-
-                Status = AcpiNsCheckPackageElements (Data, (SubElements + 1),
-                            Package->RetInfo.ObjectType1,
-                            (ExpectedCount - 1), 0, 0, 1);
-                if (ACPI_FAILURE (Status))
-                {
-                    return (Status);
-                }
-                break;
-
-            default:
-                break;
-            }
-
-            Elements++;
-        }
+        Status = AcpiNsCheckPackageList (Data, Package, Elements, Count);
         break;
 
 
@@ -852,7 +749,7 @@ AcpiNsCheckPackage (
         return (AE_AML_INTERNAL);
     }
 
-    return (AE_OK);
+    return (Status);
 
 
 PackageTooSmall:
@@ -860,8 +757,192 @@ PackageTooSmall:
     /* Error exit for the case with an incorrect package count */
 
     ACPI_WARN_PREDEFINED ((AE_INFO, Data->Pathname, Data->NodeFlags,
-        "Return Package is too small - found %u, expected %u",
+        "Return Package is too small - found %u elements, expected %u",
         Count, ExpectedCount));
+
+    return (AE_AML_OPERAND_VALUE);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsCheckPackageList
+ *
+ * PARAMETERS:  Data            - Pointer to validation data structure
+ *              Package         - Pointer to package-specific info for method
+ *              Elements        - Element list of parent package. All elements
+ *                                of this list should be of type Package.
+ *              Count           - Count of subpackages
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Examine a list of subpackages
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiNsCheckPackageList (
+    ACPI_PREDEFINED_DATA        *Data,
+    const ACPI_PREDEFINED_INFO  *Package,
+    ACPI_OPERAND_OBJECT         **Elements,
+    UINT32                      Count)
+{
+    ACPI_OPERAND_OBJECT         *SubPackage;
+    ACPI_OPERAND_OBJECT         **SubElements;
+    ACPI_STATUS                 Status;
+    UINT32                      ExpectedCount;
+    UINT32                      i;
+    UINT32                      j;
+
+
+    /* Validate each sub-Package in the parent Package */
+
+    for (i = 0; i < Count; i++)
+    {
+        SubPackage = *Elements;
+        SubElements = SubPackage->Package.Elements;
+
+        /* Each sub-object must be of type Package */
+
+        Status = AcpiNsCheckObjectType (Data, &SubPackage,
+                    ACPI_RTYPE_PACKAGE, i);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        /* Examine the different types of expected sub-packages */
+
+        switch (Package->RetInfo.Type)
+        {
+        case ACPI_PTYPE2:
+        case ACPI_PTYPE2_PKG_COUNT:
+        case ACPI_PTYPE2_REV_FIXED:
+
+            /* Each subpackage has a fixed number of elements */
+
+            ExpectedCount = Package->RetInfo.Count1 + Package->RetInfo.Count2;
+            if (SubPackage->Package.Count < ExpectedCount)
+            {
+                goto PackageTooSmall;
+            }
+
+            Status = AcpiNsCheckPackageElements (Data, SubElements,
+                        Package->RetInfo.ObjectType1,
+                        Package->RetInfo.Count1,
+                        Package->RetInfo.ObjectType2,
+                        Package->RetInfo.Count2, 0);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+            break;
+
+
+        case ACPI_PTYPE2_FIXED:
+
+            /* Each sub-package has a fixed length */
+
+            ExpectedCount = Package->RetInfo2.Count;
+            if (SubPackage->Package.Count < ExpectedCount)
+            {
+                goto PackageTooSmall;
+            }
+
+            /* Check the type of each sub-package element */
+
+            for (j = 0; j < ExpectedCount; j++)
+            {
+                Status = AcpiNsCheckObjectType (Data, &SubElements[j],
+                            Package->RetInfo2.ObjectType[j], j);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+            }
+            break;
+
+
+        case ACPI_PTYPE2_MIN:
+
+            /* Each sub-package has a variable but minimum length */
+
+            ExpectedCount = Package->RetInfo.Count1;
+            if (SubPackage->Package.Count < ExpectedCount)
+            {
+                goto PackageTooSmall;
+            }
+
+            /* Check the type of each sub-package element */
+
+            Status = AcpiNsCheckPackageElements (Data, SubElements,
+                        Package->RetInfo.ObjectType1,
+                        SubPackage->Package.Count, 0, 0, 0);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+            break;
+
+
+        case ACPI_PTYPE2_COUNT:
+
+            /*
+             * First element is the (Integer) count of elements, including
+             * the count field.
+             */
+            Status = AcpiNsCheckObjectType (Data, SubElements,
+                        ACPI_RTYPE_INTEGER, 0);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            /*
+             * Make sure package is large enough for the Count and is
+             * is as large as the minimum size
+             */
+            ExpectedCount = (UINT32) (*SubElements)->Integer.Value;
+            if (SubPackage->Package.Count < ExpectedCount)
+            {
+                goto PackageTooSmall;
+            }
+            if (SubPackage->Package.Count < Package->RetInfo.Count1)
+            {
+                ExpectedCount = Package->RetInfo.Count1;
+                goto PackageTooSmall;
+            }
+
+            /* Check the type of each sub-package element */
+
+            Status = AcpiNsCheckPackageElements (Data, (SubElements + 1),
+                        Package->RetInfo.ObjectType1,
+                        (ExpectedCount - 1), 0, 0, 1);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+            break;
+
+
+        default: /* Should not get here, type was validated by caller */
+
+            return (AE_AML_INTERNAL);
+        }
+
+        Elements++;
+    }
+
+    return (AE_OK);
+
+
+PackageTooSmall:
+
+    /* The sub-package count was smaller than required */
+
+    ACPI_WARN_PREDEFINED ((AE_INFO, Data->Pathname, Data->NodeFlags,
+        "Return Sub-Package[%u] is too small - found %u elements, expected %u",
+        i, SubPackage->Package.Count, ExpectedCount));
 
     return (AE_AML_OPERAND_VALUE);
 }
