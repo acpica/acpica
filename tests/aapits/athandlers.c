@@ -1,7 +1,6 @@
 /******************************************************************************
  *
  * Module Name: atgpe - ACPICA Miscellaneous Handler Support API tests
- *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -1163,7 +1162,6 @@ AtAdrSpaceHandlerCommon (
     void                    *RegionContext,
     UINT32                  HandlerId)
 {
-    ACPI_STATUS             Status = AE_OK;
     AT_ADR_SPACE_ACC_DATA   *AccData = NULL;
     UINT32                  i;
 
@@ -1208,7 +1206,7 @@ AtAdrSpaceHandlerCommon (
     printf ("AtAdrSpaceHandler%d %d (%d) error: *RegionContext 0x%p,\n"
         " does not appropriate any Region\n",
         HandlerId, AccData->AccInd, AdrSpaceHandlerCounter,
-        (UINT32) RegionContext);
+        RegionContext);
     AccData->AccErr++;
 
     return AE_OK;

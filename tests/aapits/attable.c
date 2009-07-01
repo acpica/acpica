@@ -1,7 +1,6 @@
 /******************************************************************************
  *
  * Module Name: attable - ACPICA Table Management API tests
- *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -2074,7 +2073,7 @@ AtCheckGetTableHeader(void)
         }
 
         if (ACPI_COMPARE_NAME(TableSignSet[i], ACPI_SIG_FADT) &&
-            TablePointer->Revision < FADT2_REVISION_ID)
+            TablePointer->Revision < 3)
         {
             /* Check Length field */
             if (OutTableHeader.Length != ACPI_FADT_OFFSET (ResetRegister))
@@ -2347,7 +2346,7 @@ AtTableTest0045(void)
 
     for (i = 0; i < ACPI_NUM_TABLE_TYPES; i++)
     {
-        if (ACPI_COMPARE_NAME(TableSignSet[i], , ACPI_SIG_PSDT) ||
+        if (ACPI_COMPARE_NAME(TableSignSet[i], ACPI_SIG_PSDT) ||
             ACPI_COMPARE_NAME(TableSignSet[i], ACPI_SIG_SSDT))
         {
             continue;
@@ -2563,7 +2562,7 @@ AtCheckGetTable(void)
         }
 
         if (ACPI_COMPARE_NAME(TableSignSet[i], ACPI_SIG_FADT) &&
-            TablePointer->Revision < FADT2_REVISION_ID)
+            TablePointer->Revision < 3)
         {
             /* Check Length field */
             if (OutTableHeader->Length != ACPI_FADT_OFFSET (ResetRegister))
@@ -2829,7 +2828,7 @@ AtTableTest0054(void)
 
     for (i = 0; i < ACPI_NUM_TABLE_TYPES; i++)
     {
-        if (ACPI_COMPARE_NAME(TableSignSet[i], , ACPI_SIG_PSDT) ||
+        if (ACPI_COMPARE_NAME(TableSignSet[i], ACPI_SIG_PSDT) ||
             ACPI_COMPARE_NAME(TableSignSet[i], ACPI_SIG_SSDT))
         {
             continue;

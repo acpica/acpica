@@ -2,11 +2,11 @@
  *
  * Module Name: atexec - Support routines for ACPICA API test suite
  *                       based on AcpiExec aeexec.c
- *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acparser.h"
 #include "amlcode.h"
 #include "acnamesp.h"
@@ -1312,7 +1312,7 @@ AeRegionHandler (
     if (((ACPI_INTEGER) Address + ByteWidth) >
         ((ACPI_INTEGER)(BufferAddress) + Length))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_WARN,
+        ACPI_WARNING ((AE_INFO,
             "Request on [%4.4s] is beyond region limit Req-%X+%X, Base=%X, Len-%X\n",
             (RegionObject->Region.Node)->Name.Ascii, (UINT32) Address,
             ByteWidth, (UINT32) BufferAddress, Length));
@@ -1454,7 +1454,7 @@ AeInstallHandlers (void)
                         SpaceId[i], AeRegionHandler, AeRegionInit, NULL);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_ERROR ((AE_INFO,
                 "Could not install an OpRegion handler for %s space(%d), %s\n",
                 AcpiUtGetRegionName((UINT8) SpaceId[i]), SpaceId[i],
                 AcpiFormatException (Status)));

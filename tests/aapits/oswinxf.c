@@ -1,7 +1,6 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -139,6 +138,7 @@
 #include <time.h>
 
 #include "acpi.h"
+#include "accommon.h"
 #include "acdebug.h"
 #include "atosxfwrap.h"
 
@@ -471,13 +471,15 @@ AcpiOsActualTableOverride (
 
     /* This code exercises the table override mechanism in the core */
 
-//    if (ACPI_COMPARE_NAME (ExistingTable->Signature, DSDT_SIG))
+#ifdef OBSOLETE_CODE
     if (ACPI_COMPARE_NAME (ExistingTable->Signature, ACPI_SIG_DSDT))
     {
         /* override DSDT with itself */
 
         *NewTable = AcpiGbl_DbTablePtr;
     }
+#endif
+
 
 #else
 
@@ -759,8 +761,8 @@ AcpiOsActualMapMemory (
 */
 void *
 AcpiOsActualMapMemory (
-    ACPI_NATIVE_UINT        Where,
-    ACPI_NATIVE_UINT        Length)
+    ACPI_PHYSICAL_ADDRESS   Where,
+    ACPI_SIZE               Length)
 {
     return (void *)Where;
 }

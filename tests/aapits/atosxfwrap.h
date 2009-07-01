@@ -29,7 +29,7 @@ AcpiOsActualGetRootPointer (
     UINT32                  Flags,
     ACPI_POINTER            *Address);
 */
-ACPI_NATIVE_UINT
+ACPI_PHYSICAL_ADDRESS
 AcpiOsActualGetRootPointer (
     void);
 
@@ -76,14 +76,14 @@ void
 AcpiOsActualDeleteLock (
     ACPI_HANDLE             Handle);
 
-ACPI_NATIVE_UINT
+ACPI_CPU_FLAGS
 AcpiOsActualAcquireLock (
     ACPI_HANDLE             Handle);
 
 void
 AcpiOsActualReleaseLock (
     ACPI_HANDLE             Handle,
-    ACPI_NATIVE_UINT        Flags);
+    ACPI_CPU_FLAGS          Flags);
 
 
 /*
@@ -106,8 +106,8 @@ AcpiOsActualMapMemory (
 */
 void *
 AcpiOsActualMapMemory (
-    ACPI_NATIVE_UINT        Where,
-    ACPI_NATIVE_UINT        Length);
+    ACPI_PHYSICAL_ADDRESS   Where,
+    ACPI_SIZE               Length);
 
 void
 AcpiOsActualUnmapMemory (

@@ -2,7 +2,6 @@
  *
  * Module Name: atinit - ACPICA Subsystem Initialization, Shutdown, and Status
  *                       API tests
- *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -818,7 +817,7 @@ A warning is issued for tables that do not pass one or more of these tests
     return AE_OK;
 }
 
-#ifdef ACPI_DEBUGGER
+#ifdef xxxxACPI_DEBUGGER
 ACPI_EXTERN ACPI_TABLE_HEADER          *AcpiGbl_DbTablePtr;
 ACPI_EXTERN char                       *AcpiGbl_DbBuffer;
 #endif
@@ -833,7 +832,7 @@ AtTerminateCheck(
 {
     ACPI_STATUS         Status;
 
-#ifdef ACPI_DEBUGGER
+#ifdef xxxxACPI_DEBUGGER
     /* Shut down the debugger */
     if (AcpiGbl_DbTablePtr)
     {
@@ -1026,7 +1025,7 @@ AtInitTermCommonTest(
                     AcpiFormatException(Status));
                 return Status;
             }
-#ifdef ACPI_DEBUGGER
+#ifdef xxxxACPI_DEBUGGER
             /* Shut down the debugger */
             if (AcpiGbl_DbTablePtr)
             {
@@ -3808,19 +3807,15 @@ ACPI_STATUS  AllExceptionsCodes[] = {
     AE_STACK_OVERFLOW,
     AE_STACK_UNDERFLOW,
     AE_NOT_IMPLEMENTED,
-    AE_VERSION_MISMATCH,
     AE_SUPPORT,
-    AE_SHARE,
     AE_LIMIT,
     AE_TIME,
-    AE_UNKNOWN_STATUS,
     AE_ACQUIRE_DEADLOCK,
     AE_RELEASE_DEADLOCK,
     AE_NOT_ACQUIRED,
     AE_ALREADY_ACQUIRED,
     AE_NO_HARDWARE_RESPONSE,
     AE_NO_GLOBAL_LOCK,
-    AE_LOGICAL_ADDRESS,
     AE_ABORT_METHOD,
     AE_SAME_HANDLER,
     AE_WAKE_ONLY_GPE,
@@ -3830,7 +3825,6 @@ ACPI_STATUS  AllExceptionsCodes[] = {
     AE_BAD_PATHNAME,
     AE_BAD_DATA,
     AE_BAD_ADDRESS,
-    AE_ALIGNMENT,
     AE_BAD_HEX_CONSTANT,
     AE_BAD_OCTAL_CONSTANT,
     AE_BAD_DECIMAL_CONSTANT,
@@ -3838,10 +3832,7 @@ ACPI_STATUS  AllExceptionsCodes[] = {
     AE_BAD_HEADER,
     AE_BAD_CHECKSUM,
     AE_BAD_VALUE,
-    AE_TABLE_NOT_SUPPORTED,
     AE_INVALID_TABLE_LENGTH,
-    AE_AML_ERROR,
-    AE_AML_PARSE,
     AE_AML_BAD_OPCODE,
     AE_AML_NO_OPERAND,
     AE_AML_OPERAND_TYPE,
@@ -3902,19 +3893,15 @@ char  *AllExceptionsStrings[] = {
     TO_STRING(AE_STACK_OVERFLOW),
     TO_STRING(AE_STACK_UNDERFLOW),
     TO_STRING(AE_NOT_IMPLEMENTED),
-    TO_STRING(AE_VERSION_MISMATCH),
     TO_STRING(AE_SUPPORT),
-    TO_STRING(AE_SHARE),
     TO_STRING(AE_LIMIT),
     TO_STRING(AE_TIME),
-    TO_STRING(AE_UNKNOWN_STATUS),
     TO_STRING(AE_ACQUIRE_DEADLOCK),
     TO_STRING(AE_RELEASE_DEADLOCK),
     TO_STRING(AE_NOT_ACQUIRED),
     TO_STRING(AE_ALREADY_ACQUIRED),
     TO_STRING(AE_NO_HARDWARE_RESPONSE),
     TO_STRING(AE_NO_GLOBAL_LOCK),
-    TO_STRING(AE_LOGICAL_ADDRESS),
     TO_STRING(AE_ABORT_METHOD),
     TO_STRING(AE_SAME_HANDLER),
     TO_STRING(AE_WAKE_ONLY_GPE),
@@ -3924,7 +3911,6 @@ char  *AllExceptionsStrings[] = {
     TO_STRING(AE_BAD_PATHNAME),
     TO_STRING(AE_BAD_DATA),
     TO_STRING(AE_BAD_ADDRESS),
-    TO_STRING(AE_ALIGNMENT),
     TO_STRING(AE_BAD_HEX_CONSTANT),
     TO_STRING(AE_BAD_OCTAL_CONSTANT),
     TO_STRING(AE_BAD_DECIMAL_CONSTANT),
@@ -3932,10 +3918,7 @@ char  *AllExceptionsStrings[] = {
     TO_STRING(AE_BAD_HEADER),
     TO_STRING(AE_BAD_CHECKSUM),
     TO_STRING(AE_BAD_VALUE),
-    TO_STRING(AE_TABLE_NOT_SUPPORTED),
     TO_STRING(AE_INVALID_TABLE_LENGTH),
-    TO_STRING(AE_AML_ERROR),
-    TO_STRING(AE_AML_PARSE),
     TO_STRING(AE_AML_BAD_OPCODE),
     TO_STRING(AE_AML_NO_OPERAND),
     TO_STRING(AE_AML_OPERAND_TYPE),

@@ -1,7 +1,6 @@
 /******************************************************************************
  *
  * Module Name: athardware - ACPICA Hardware Management API tests
- *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -283,9 +282,6 @@ static UINT32           BitRegIds[] =
     ACPI_BITREG_POWER_BUTTON_ENABLE,
     ACPI_BITREG_SLEEP_BUTTON_ENABLE,
     ACPI_BITREG_RT_CLOCK_ENABLE,
-#if AT_BITREG_WAKE_ENABLE_CHECK
-    ACPI_BITREG_WAKE_ENABLE,
-#endif
     ACPI_BITREG_PCIEXP_WAKE_DISABLE,
     ACPI_BITREG_SCI_ENABLE,
     ACPI_BITREG_BUS_MASTER_RLD,
@@ -293,8 +289,8 @@ static UINT32           BitRegIds[] =
     ACPI_BITREG_SLEEP_ENABLE,
     ACPI_BITREG_ARB_DISABLE,
     /* 3-bit width registers */
-    ACPI_BITREG_SLEEP_TYPE_A,
-    ACPI_BITREG_SLEEP_TYPE_B,
+    ACPI_BITREG_SLEEP_TYPE,
+    ACPI_BITREG_SLEEP_TYPE,
 };
 
 /* Bit registers position */
@@ -313,17 +309,13 @@ static UINT32           BitRegPos[] =
     0x08 /* ACPI_BITREG_POWER_BUTTON_ENABLE */,
     0x09 /* ACPI_BITREG_SLEEP_BUTTON_ENABLE */,
     0x0A /* ACPI_BITREG_RT_CLOCK_ENABLE */,
-#if AT_BITREG_WAKE_ENABLE_CHECK
-    0x0F /* ACPI_BITREG_WAKE_ENABLE */,
-#endif
     0x0E /* ACPI_BITREG_PCIEXP_WAKE_DISABLE */,
     0x00 /* ACPI_BITREG_SCI_ENABLE */,
     0x01 /* ACPI_BITREG_BUS_MASTER_RLD */,
     0x02 /* ACPI_BITREG_GLOBAL_LOCK_RELEASE */,
     0x0D /* ACPI_BITREG_SLEEP_ENABLE */,
     0x00 /* ACPI_BITREG_ARB_DISABLE */,
-    0x0A /* ACPI_BITREG_SLEEP_TYPE_A */,
-    0x0A /* ACPI_BITREG_SLEEP_TYPE_B */,
+    0x0A /* ACPI_BITREG_SLEEP_TYPE */,
 };
 
 static UINT32           StatusRegIds[] =
@@ -345,9 +337,6 @@ static UINT32           EnableRegIds[] =
     ACPI_BITREG_POWER_BUTTON_ENABLE,
     ACPI_BITREG_SLEEP_BUTTON_ENABLE,
     ACPI_BITREG_RT_CLOCK_ENABLE,
-#if AT_BITREG_WAKE_ENABLE_CHECK
-    ACPI_BITREG_WAKE_ENABLE,
-#endif
     ACPI_BITREG_PCIEXP_WAKE_DISABLE,
 };
 
@@ -356,8 +345,7 @@ static UINT32           ControlRegIds[] =
     ACPI_BITREG_SCI_ENABLE,
     ACPI_BITREG_BUS_MASTER_RLD,
     ACPI_BITREG_GLOBAL_LOCK_RELEASE,
-    ACPI_BITREG_SLEEP_TYPE_A,
-    ACPI_BITREG_SLEEP_TYPE_B,
+    ACPI_BITREG_SLEEP_TYPE,
     ACPI_BITREG_SLEEP_ENABLE,
 };
 
@@ -366,8 +354,7 @@ static UINT32           Control2RegIds[] =
     ACPI_BITREG_ARB_DISABLE,
 };
 
-#define IS3BITREG(BitRegId) ((BitRegId == ACPI_BITREG_SLEEP_TYPE_A) || \
-            (BitRegId == ACPI_BITREG_SLEEP_TYPE_B))
+#define IS3BITREG(BitRegId) (BitRegId == ACPI_BITREG_SLEEP_TYPE)
 #define ISWRITE_ONLYBITREG(BitRegId) \
             ((BitRegId == ACPI_BITREG_GLOBAL_LOCK_RELEASE) || \
              (BitRegId == ACPI_BITREG_SLEEP_ENABLE))
@@ -485,7 +472,7 @@ AtHardwTest0006(void)
 
         /* Check cleared BitReg */
 
-        Status = AcpiGetRegister(RegisterId, &ReturnValue);
+        Status = AcpiReadBitRegister(RegisterId, &ReturnValue);
         if (ACPI_FAILURE(Status))
         {
             AapiErrors++;
@@ -520,7 +507,7 @@ AtHardwTest0006(void)
 
         /* Check BitReg to be set */
 
-        Status = AcpiGetRegister(RegisterId, &ReturnValue);
+        Status = AcpiReadBitRegister(RegisterId, &ReturnValue);
         if (ACPI_FAILURE(Status))
         {
             AapiErrors++;
@@ -571,11 +558,13 @@ AtHardwTest0007(void)
 
     for (i = 0; i < MaxId; i++)
     {
+#if OBSOLETE_CODE
 #if !AT_BITREG_WAKE_ENABLE_CHECK
         if (i == ACPI_BITREG_WAKE_ENABLE)
         {
             continue;
         }
+#endif
 #endif
 
         if (IsBitDefinedRegister(i))
@@ -583,7 +572,7 @@ AtHardwTest0007(void)
             continue;
         }
 
-        Status = AcpiGetRegister(i, &ReturnValue);
+        Status = AcpiReadBitRegister(i, &ReturnValue);
         if (Status != AE_BAD_PARAMETER)
         {
             AapiErrors++;
@@ -597,7 +586,7 @@ AtHardwTest0007(void)
     if (CheckCount < CheckLimit)
     {
         TestErrors++;
-        printf ("Test error: number of checks less then expected(%d)\n",
+        printf ("Test error: number of checks less then expected(%d) limit %u\n",
             CheckCount, CheckLimit);
         return AE_ERROR;
     }
@@ -668,7 +657,7 @@ AtHardwTest0008(void)
 
         /* Check setting BitReg to 0 */
 
-        Status = AcpiSetRegister(RegisterId, 0);
+        Status = AcpiWriteBitRegister(RegisterId, 0);
         if (ACPI_FAILURE(Status))
         {
             AapiErrors++;
@@ -770,7 +759,7 @@ AtHardwTest0008(void)
 
         NormValue = (IS3BITREG(RegisterId))? 0x07: 0x01;
 
-        Status = AcpiSetRegister(RegisterId, NormValue);
+        Status = AcpiWriteBitRegister(RegisterId, NormValue);
         if (ACPI_FAILURE(Status))
         {
             AapiErrors++;
@@ -871,7 +860,7 @@ AtHardwTest0008(void)
         }
         (void)OsxfCtrlGetFixedReg(RegNum, &IniValue);
 
-        Status = AcpiSetRegister(RegisterId, 1);
+        Status = AcpiWriteBitRegister(RegisterId, 1);
         if (ACPI_FAILURE(Status))
         {
             AapiErrors++;
@@ -941,18 +930,20 @@ AtHardwTest0009(void)
 
     for (i = 0; i < MaxId; i++)
     {
+#if OBSOLETE_CODE
 #if !AT_BITREG_WAKE_ENABLE_CHECK
         if (i == ACPI_BITREG_WAKE_ENABLE)
         {
             continue;
         }
 #endif
+#endif
         if (IsBitDefinedRegister(i))
         {
             continue;
         }
 
-        Status = AcpiSetRegister(i, Value);
+        Status = AcpiWriteBitRegister(i, Value);
         if (Status != AE_BAD_PARAMETER)
         {
             AapiErrors++;
@@ -966,7 +957,7 @@ AtHardwTest0009(void)
     if (CheckCount < CheckLimit)
     {
         TestErrors++;
-        printf ("Test error: number of checks less then expected(%d)\n",
+        printf ("Test error: number of checks less then expected(%d) limit %u\n",
             CheckCount, CheckLimit);
         return AE_ERROR;
     }
@@ -1062,7 +1053,6 @@ ACPI_STATUS
 AtHardwTest0012(void)
 {
     ACPI_STATUS             Status;
-    ACPI_PHYSICAL_ADDRESS   OutVector;
 
     Status = AtSubsystemInit(
         AAPITS_INI_DEF,
@@ -1072,6 +1062,9 @@ AtHardwTest0012(void)
         return Status;
     }
 
+#if OBSOLETE_CODE
+    ACPI_PHYSICAL_ADDRESS   OutVector;
+
     Status = AcpiGetFirmwareWakingVector(&OutVector);
     if (ACPI_FAILURE(Status))
     {
@@ -1080,6 +1073,7 @@ AtHardwTest0012(void)
             AcpiFormatException(Status));
         return Status;
     }
+#endif
 
     return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
 }
@@ -1091,7 +1085,6 @@ ACPI_STATUS
 AtHardwTest0013(void)
 {
     ACPI_STATUS             Status;
-    ACPI_PHYSICAL_ADDRESS   OutVector;
 
     Status = AtSubsystemInit(AAPITS_INITIALIZE_SS,
         0, 0, NULL);
@@ -1100,6 +1093,9 @@ AtHardwTest0013(void)
         return Status;
     }
 
+#if OBSOLETE_CODE
+
+    ACPI_PHYSICAL_ADDRESS   OutVector;
     Status = AcpiGetFirmwareWakingVector(&OutVector);
     if (Status != AE_NO_ACPI_TABLES)
     {
@@ -1108,6 +1104,7 @@ AtHardwTest0013(void)
             AcpiFormatException(Status), AcpiFormatException(AE_NO_ACPI_TABLES));
         return Status;
     }
+#endif
 
     return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
 }
@@ -1127,6 +1124,7 @@ AtHardwTest0014(void)
         return Status;
     }
 
+#if OBSOLETE_CODE
     Status = AcpiGetFirmwareWakingVector(NULL);
     if (Status != AE_BAD_PARAMETER)
     {
@@ -1135,6 +1133,7 @@ AtHardwTest0014(void)
             AcpiFormatException(Status), AcpiFormatException(AE_BAD_PARAMETER));
         return Status;
     }
+#endif
 
     return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
 }
@@ -1432,7 +1431,7 @@ AtHardwTest0020(void)
     return AE_OK;
 }
 
-ACPI_SYSTEM_XFACE
+void ACPI_SYSTEM_XFACE
 AtEmulateWakingStatus(void * Context)
 {
     ACPI_STATUS             Status;
@@ -1729,7 +1728,7 @@ AtHardwTest0024(void)
 /*
  * Acquire GlobalLock concurrently
  */
-ACPI_SYSTEM_XFACE
+void ACPI_SYSTEM_XFACE
 AtConcurrentHoldGlobalLock(void * Context)
 {
     ACPI_STATUS             Status;
@@ -1759,7 +1758,7 @@ AtConcurrentHoldGlobalLock(void * Context)
     *Flag = 1;
 
 ErrorExit:
-    return 0;
+    return;
 }
 
 static ACPI_STATUS
@@ -2345,7 +2344,7 @@ AtHardwTest0035(void)
 /*
  * Acquire GlobalLock concurrently
  */
-ACPI_SYSTEM_XFACE
+void ACPI_SYSTEM_XFACE
 AtConcurrentAcquireGlobalLock(void * Context)
 {
     ACPI_STATUS             Status;
@@ -2365,7 +2364,7 @@ AtConcurrentAcquireGlobalLock(void * Context)
     *Flag = 1;
 
 ErrorExit:
-    return 0;
+    return;
 }
 
 /*
@@ -2430,7 +2429,7 @@ AtHardwTest0036(void)
 /*
  * Emulate Global Lock Interrupt handling
  */
-ACPI_SYSTEM_XFACE
+void ACPI_SYSTEM_XFACE
 AtEmulateEventGlobalXrupt(void * Context)
 {
     UINT32                  RVal;
@@ -2477,7 +2476,7 @@ AtEmulateEventGlobalXrupt(void * Context)
     *Flag = 1;
 
 ErrorExit:
-    return 0;
+    return;
 }
 
 ACPI_STATUS
@@ -2602,7 +2601,7 @@ AtHardwTest0037(void)
 /*
  * Release GlobalLock concurrently
  */
-ACPI_SYSTEM_XFACE
+void ACPI_SYSTEM_XFACE
 AtConcurrentReleaseGlobalLock(void * Context)
 {
     ACPI_STATUS             Status;
@@ -2616,7 +2615,7 @@ AtConcurrentReleaseGlobalLock(void * Context)
             AcpiFormatException(Status));
     }
 
-    return 0;
+    return;
 }
 
 /*
@@ -2808,7 +2807,7 @@ AtHardwTest0039(void)
 /*
  * Acquire GlobalLock concurrently through AML
  */
-ACPI_SYSTEM_XFACE
+void ACPI_SYSTEM_XFACE
 AtConcurrentHold_GL(void * Context)
 {
     ACPI_STATUS             Status;
@@ -2822,7 +2821,7 @@ AtConcurrentHold_GL(void * Context)
     *Flag = 1;
 
 ErrorExit:
-    return 0;
+    return;
 }
 
 ACPI_STATUS

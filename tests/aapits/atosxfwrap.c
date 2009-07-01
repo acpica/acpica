@@ -4,13 +4,12 @@
  *
  * supporting the ACPICA API test suite actions
  *
- *              $Revision: 1.1 $
- *
  *****************************************************************************/
 
 #include <stdio.h>
 
 #include "acpi.h"
+#include "accommon.h"
 
 #include "atcommon.h"
 #include "atosxfctrl.h"
@@ -142,7 +141,7 @@ AcpiOsGetRootPointer (
     ACPI_PHYSICAL_ADDRESS   Pointer;
     AT_CTRL_DECL0(AcpiOsGetRootPointer);
 
-    AT_CHCK_RET_NULL(AcpiOsGetRootPointer);
+    AT_CHCK_RET_ZERO(AcpiOsGetRootPointer);
 
     Pointer = AcpiOsActualGetRootPointer();
 
@@ -437,8 +436,8 @@ AcpiOsMapMemory (
 */
 void *
 AcpiOsMapMemory (
-    ACPI_NATIVE_UINT        Where,
-    ACPI_NATIVE_UINT        Length)
+    ACPI_PHYSICAL_ADDRESS   Where,
+    ACPI_SIZE               Length)
 {
     void                    *Mem;
     AT_CTRL_DECL0(AcpiOsMapMemory);
@@ -711,7 +710,7 @@ AcpiOsDeleteLock (
 }
 
 
-ACPI_NATIVE_UINT
+ACPI_CPU_FLAGS
 AcpiOsAcquireLock (
     ACPI_HANDLE             Handle)
 {
@@ -726,7 +725,7 @@ AcpiOsAcquireLock (
 void
 AcpiOsReleaseLock (
     ACPI_HANDLE             Handle,
-    ACPI_NATIVE_UINT        Flags)
+    ACPI_CPU_FLAGS          Flags)
 {
     AT_CTRL_DECL0(AcpiOsReleaseLock);
 

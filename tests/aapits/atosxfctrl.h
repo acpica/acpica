@@ -8,6 +8,7 @@
 #define _ATOSXFCTRL
 
 #include "acpi.h"
+#include "accommon.h"
 
 /*
  * AcpiOs* interfaces enumeration
@@ -268,6 +269,22 @@ extern ACPI_OSXF_CONTROL        Init_OsxfCtrl;
             } \
             Ctrl->CtrlAct.ActOsxf = OSXF_NUM(inds); \
             return NULL; \
+        } \
+        AT_ACT_EXIT(inds); \
+    }
+
+#define AT_CHCK_RET_ZERO(inds) \
+    if (Ctrl->CtrlAct.CallsCount && \
+        Ctrl->CallsCount >= Ctrl->CtrlAct.CallsCount) \
+    { \
+        if (Ctrl->CtrlAct.ActCode == AtActRet_NULL) \
+        { \
+            if (Ctrl->CtrlAct.ActFlag == AtActD_OneTime) \
+            {\
+                Ctrl->CtrlAct.CallsCount = 0; \
+            } \
+            Ctrl->CtrlAct.ActOsxf = OSXF_NUM(inds); \
+            return 0; \
         } \
         AT_ACT_EXIT(inds); \
     }

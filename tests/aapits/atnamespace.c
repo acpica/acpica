@@ -1,7 +1,6 @@
 /******************************************************************************
  *
  * Module Name: atnamespace - ACPICA Namespace Access API tests
- *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -399,8 +398,8 @@ typedef struct at_device_info
     UINT32                      Valid;
     UINT32                      CurrentStatus;
     ACPI_INTEGER                Address;
-    ACPI_DEVICE_ID              HardwareId;
-    ACPI_DEVICE_ID              UniqueId;
+    char                        *HardwareId;
+    char                        *UniqueId;
 /*    UINT8                       HighestDstates[4];*/
     UINT32                      HighestDstates4;
     UINT32                      CidCount;
@@ -408,23 +407,23 @@ typedef struct at_device_info
 
 static AT_DEVICE_INFO   DeviceInfo0000[] = {
     {0x3f, 0xffffffff, ULL_CONST(0xf00000001),
-        {"PNP0A01"}, {"0"}, 0xffffff01, 1},
+        "PNP0A01", "0", 0xffffff01, 1},
     {0x3f, 0xffffffff, ULL_CONST(0xf00000002),
-        {"PNP0A02"}, {"1"}, 0xffff02ff, 1},
+        "PNP0A02", "1", 0xffff02ff, 1},
     {0x3f, 0xffffffef, ULL_CONST(0xf00000003),
-        {"ACPI0A03"}, {"d3l0_UID"}, 0xff03ffff, 2},
+        "ACPI0A03", "d3l0_UID", 0xff03ffff, 2},
     {0x3d, 0x0ffffff7, ULL_CONST(0xf00000004),
-        {"PNP0A04"}, {"999999999"}, 0x04ffffff, 1},
+        "PNP0A04", "999999999", 0x04ffffff, 1},
     {0x3f, 0x00fffffb, ULL_CONST(0xf00000005),
-        {"PNP0A05"}, {"100000000"}, 0xffffffff, 1},
+        "PNP0A05", "100000000", 0xffffffff, 1},
     {0x2f, 0x000ffffd, ULL_CONST(0xf00000006),
-        {"PNP0A06"}, {"d6l0_UID"}, 0x01020304, 1},
+        "PNP0A06", "d6l0_UID", 0x01020304, 1},
     {0x37, 0x0000ffff, ULL_CONST(0xf00000007),
-        {"ACPI0A07"}, {""}, 0xff02ff01, 3},
+        "ACPI0A07", "", 0xff02ff01, 3},
     {0x3b, 0x0000fffe, ULL_CONST(0xf00000008),
-        {"PNP0A08"}, {"d8l0_UID"}, 0xd1e2f3ff, 1},
+        "PNP0A08", "d8l0_UID", 0xd1e2f3ff, 1},
     {0x3f, 0x00000000, ULL_CONST(0xf00000009),
-        {"PNP0A09"}, {"d9l0_UID"}, 0xffffffff, 7},
+        "PNP0A09", "d9l0_UID", 0xffffffff, 7},
 };
 
 typedef struct at_walk_info
@@ -615,7 +614,6 @@ typedef struct at_walk_handler_context
 typedef struct at_attach_data_stat
 {
     ACPI_HANDLE             Object;
-    UINT32                  Function;
     void                    *Data;
 } AT_ATTACH_DATA_STAT;
 
@@ -2251,11 +2249,13 @@ ACPI_STATUS
 AtGetObjectInfoCommon(
     ACPI_STRING             ObjName,
     ACPI_STATUS             ExpectedStatus,
-    ACPI_BUFFER             *Buffer,
+    ACPI_DEVICE_INFO        **Info,
     UINT32                  CheckAction)
 {
     ACPI_STATUS             Status;
     ACPI_HANDLE             ObjHandle;
+    ACPI_DEVICE_INFO        *LocalInfo;
+
 
     if (CheckAction == 3 && ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
     {
@@ -2295,11 +2295,12 @@ AtGetObjectInfoCommon(
         }
         break;
     case 4:
-        Buffer = NULL;
+        *Info = NULL;
         break;
     }
 
-    Status = AcpiGetObjectInfo (ObjHandle, Buffer);
+    Status = AcpiGetObjectInfo (ObjHandle, &LocalInfo);
+    *Info = LocalInfo;
 
     if (Status != ExpectedStatus)
     {
@@ -2330,10 +2331,8 @@ AtGetObjectInfoTypeCommon(
     ACPI_STRING             Node;
     UINT32                  i;
     UINT32                  HighestDstates4;
-    ACPI_BUFFER             ReturnBuffer = {ACPI_ALLOCATE_BUFFER};
-    ACPI_BUFFER             ReturnObjBuffer = ReturnBuffer;
     ACPI_DEVICE_INFO        *Info;
-    UINT32                  Length = sizeof (ACPI_DEVICE_INFO);
+
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
@@ -2361,7 +2360,7 @@ AtGetObjectInfoTypeCommon(
         strcat(Node, PathNames[2 * i + 1]);
 
         Status = AtGetObjectInfoCommon(
-            Node, ExpectedStatus, &ReturnObjBuffer, 0);
+            Node, ExpectedStatus, &Info, 0);
         if (ACPI_FAILURE(Status))
         {
             return Status;
@@ -2372,16 +2371,13 @@ AtGetObjectInfoTypeCommon(
             continue;
         }
 
-        if (ReturnObjBuffer.Length < Length)
+        if (!Info)
         {
             AapiErrors++;
-            printf ("API Error: Length of %s (%d) < (%d)\n",
-                PathNames[2 * i + 1],
-                (UINT32)ReturnObjBuffer.Length, Length);
+            printf ("API Error: Null return buffer\n");
             return AE_ERROR;
         } 
 
-        Info = ReturnObjBuffer.Pointer;
         if (strncmp((ACPI_STRING)&Info->Name, PathNames[2 * i + 1],
             sizeof (ACPI_NAME)))
         {
@@ -2436,7 +2432,7 @@ AtGetObjectInfoTypeCommon(
 #else
                 printf ("API Error: Address of %s (0x%X) != (0x%X)\n",
                     PathNames[2 * i + 1],
-                    Info->Address, ExpectedInfo[i].Address);
+                    (UINT32) Info->Address, (UINT32) ExpectedInfo[i].Address);
 #endif
                 return AE_ERROR;
             }
@@ -2460,13 +2456,12 @@ AtGetObjectInfoTypeCommon(
                 return AE_ERROR;
             }
             if ((Info->Valid & ACPI_VALID_HID) &&
-                strncmp(Info->HardwareId.Value, ExpectedInfo[i].HardwareId.Value,
-                    ACPI_DEVICE_ID_LENGTH ))
+                strcmp(Info->HardwareId.String, ExpectedInfo[i].HardwareId))
             {
                 AapiErrors++;
                 printf ("API Error: HardwareId of %s (%s) != (%s)\n",
                     PathNames[2 * i + 1],
-                    Info->HardwareId.Value, ExpectedInfo[i].HardwareId.Value);
+                    Info->HardwareId.String, ExpectedInfo[i].HardwareId);
                 return AE_ERROR;
             }
             if ((Info->Valid & ACPI_VALID_UID) &&
@@ -2475,27 +2470,27 @@ AtGetObjectInfoTypeCommon(
                     ACPI_DEVICE_ID_LENGTH))
              *  Update highlighting bug 17
              */
-                strcmp(Info->UniqueId.Value, ExpectedInfo[i].UniqueId.Value))
+                strcmp(Info->UniqueId.String, ExpectedInfo[i].UniqueId))
             {
                 AapiErrors++;
                 printf ("API Error: UniqueId of %s (%s) != (%s)\n",
                     PathNames[2 * i + 1],
-                    Info->UniqueId.Value, ExpectedInfo[i].UniqueId.Value);
+                    Info->UniqueId.String, ExpectedInfo[i].UniqueId);
                 return AE_ERROR;
             }
             if ((Info->Valid & ACPI_VALID_CID) &&
-                Info->CompatibilityId.Count != ExpectedInfo[i].CidCount)
+                Info->CompatibleIdList.Count != ExpectedInfo[i].CidCount)
             {
                 AapiErrors++;
                 printf ("API Error: CidCount of %s (%d) != (%d)\n",
                     PathNames[2 * i + 1],
-                    Info->CompatibilityId.Count, ExpectedInfo[i].CidCount);
+                    Info->CompatibleIdList.Count, ExpectedInfo[i].CidCount);
                 return AE_ERROR;
             }
         }
 
         AcpiOsFree(Info);
-        ReturnObjBuffer = ReturnBuffer;
+//        ReturnObjBuffer = ReturnBuffer;
     }
 
     return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
@@ -2550,7 +2545,7 @@ AtGetObjectInfoException(
 {
     ACPI_STATUS             Status;
     ACPI_STRING             Node = "\\D1L1.D2L0.D3L0.D4L_.D5L0";
-    ACPI_BUFFER             ReturnBuffer = {ACPI_ALLOCATE_BUFFER};
+    ACPI_DEVICE_INFO        *ReturnBuffer;
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
@@ -2625,8 +2620,9 @@ AtGetObjectInfoExceptionTest(
     UINT32                  CtrlCheck = ALL_STAT;
     UINT32                  TMax = 10000;
     UINT32                  i;
-    ACPI_BUFFER             ReturnBuffer = {ACPI_ALLOCATE_BUFFER};
+    ACPI_DEVICE_INFO        *ReturnBuffer;
     ACPI_HANDLE             ObjHandle;
+
 
     for (i = TFst; (i < TMax) && Continue_Cond; i++)
     {
@@ -2671,7 +2667,7 @@ AtGetObjectInfoExceptionTest(
             Continue_Cond = 0;
             if (Status == AE_OK)
             {
-                AcpiOsFree(ReturnBuffer.Pointer);
+                AcpiOsFree(ReturnBuffer);
             }
         } 
         else 
@@ -5723,7 +5719,6 @@ static UINT8                DataBuffer[3] = {0, 1, 2};
 void \
 AttachDataHandler##Hid( \
     ACPI_HANDLE             Object, \
-    UINT32                  Function, \
     void                    *Data) \
 { \
     UINT32                  HandlerId = Hid; \
@@ -5733,11 +5728,10 @@ AttachDataHandler##Hid( \
     if ((i = AttachDataCounter[HandlerId]++) < MAX_ATTACH_DATA_STAT) \
     { \
         Stat[i].Object = Object; \
-        Stat[i].Function = Function; \
         Stat[i].Data = Data; \
     } \
-    printf ("AttachDataHandler%d %d: Object 0x%p, Func %d, Data  0x%p\n", \
-            Hid, i, Object, Function, Data); \
+    printf ("AttachDataHandler%d %d: Object 0x%p, Data  0x%p\n", \
+            Hid, i, Object, Data); \
     if (Hid == 1) \
     { \
         AcpiDetachData(Object, AttachDataHandler##Hid); \
@@ -5752,7 +5746,7 @@ DEF_ATTACH_DATA_HANDLER(2)
 /*
  * Release GlobalLock concurrently
  */
-ACPI_SYSTEM_XFACE
+void ACPI_SYSTEM_XFACE
 AtConcurrentMethodCall(void * Context)
 {
     ACPI_STATUS             Status;
@@ -5768,7 +5762,7 @@ AtConcurrentMethodCall(void * Context)
             Pathname, AcpiFormatException(Status));
     }
 
-    return 0;
+    return;
 }
 
 ACPI_STATUS
@@ -5787,7 +5781,6 @@ AtAttachDataCommon(
     ACPI_HANDLE             *Objects;
     AT_ATTACH_DATA_STAT     *Stat;
 //    UINT32                  Function = ACPI_NS_NODE_DEL;
-    UINT32                  Function = 0;
     UINT32                  i, j, ExpectedCounter;
 
     if (NumId > 3)
@@ -5998,14 +5991,6 @@ AtAttachDataCommon(
                 Stat[0].Object, Objects[HandleId[i]]);
             return AE_ERROR;
         }
-        if (Stat[0].Function != Function)
-        {
-            AapiErrors++;
-            printf ("API Error: Handler's Function (0x%x) is different from"
-                " expected (0x%x)\n",
-                Stat[0].Function, Function);
-            return AE_ERROR;
-        }        
         if (Stat[0].Data != Data[i])
         {
             AapiErrors++;
@@ -6323,7 +6308,6 @@ AtDetachDataCommon(
     ACPI_HANDLE             Object;
     AT_ATTACH_DATA_STAT     *Stat;
     ACPI_STRING             UpdateMethod = "\\M120";
-    UINT32                  Function = 0;
     UINT32                  i, j, ExpectedCounter;
 
     if (NumId > 3)
@@ -6487,14 +6471,6 @@ AtDetachDataCommon(
                 Stat[0].Object, Object);
             return AE_ERROR;
         }
-        if (Stat[0].Function != Function)
-        {
-            AapiErrors++;
-            printf ("API Error: Handler's Function (0x%x) is different from"
-                " expected (0x%x)\n",
-                Stat[0].Function, Function);
-            return AE_ERROR;
-        }        
         if (Stat[0].Data != Data[i])
         {
             AapiErrors++;
@@ -6746,7 +6722,6 @@ AtGetDataCommon(
     ACPI_STATUS             Status;
     ACPI_HANDLE             Object;
     AT_ATTACH_DATA_STAT     *Stat;
-    UINT32                  Function = 0;
     UINT32                  i = 0;
     void                    *RetData, **RetDataPointer = &RetData;
 
@@ -6909,14 +6884,6 @@ AtGetDataCommon(
                 Stat[0].Object, Object);
             return AE_ERROR;
         }
-        if (Stat[0].Function != Function)
-        {
-            AapiErrors++;
-            printf ("API Error: Handler's Function (0x%x) is different from"
-                " expected (0x%x)\n",
-                Stat[0].Function, Function);
-            return AE_ERROR;
-        }        
         if (Stat[0].Data != Data[i])
         {
             AapiErrors++;

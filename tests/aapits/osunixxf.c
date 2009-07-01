@@ -126,6 +126,7 @@
 #include <sys/time.h>
 
 #include "acpi.h"
+#include "accommon.h"
 #include "amlcode.h"
 #include "acparser.h"
 #include "acdebug.h"
@@ -253,12 +254,15 @@ AcpiOsActualTableOverride (
 
     /* This code exercises the table override mechanism in the core */
 
+#if OBSOLETE_CODE
     if (ACPI_COMPARE_NAME (ExistingTable->Signature, ACPI_SIG_DSDT))
     {
         /* override DSDT with itself */
 
         *NewTable = AcpiGbl_DbTablePtr;
     }
+#endif
+
     return (AE_OK);
 #else
     return AE_NO_ACPI_TABLES;
@@ -469,12 +473,21 @@ AcpiOsActualGetLine (
 
 void *
 AcpiOsActualMapMemory (
-    ACPI_NATIVE_UINT        Where,
-    ACPI_NATIVE_UINT        Length)
+    ACPI_PHYSICAL_ADDRESS   Where,
+    ACPI_SIZE               length)
 {
     return (void *)Where;
 }
 
+
+void
+AcpiOsActualUnmapMemory (
+    void                    *where,
+    ACPI_SIZE               length)
+{
+
+    return;
+}
 
 /******************************************************************************
  *
@@ -490,13 +503,13 @@ AcpiOsActualMapMemory (
  *
  *****************************************************************************/
 
-void
-AcpiOsActualUnmapMemory (
-    void                    *where,
+void *
+xxxxAcpiOsMapMemory (
+    ACPI_PHYSICAL_ADDRESS   Where,
     ACPI_SIZE               length)
 {
 
-    return;
+    return (void *)Where;
 }
 
 
@@ -1107,7 +1120,7 @@ AcpiOsActualWriteMemory (
 ACPI_THREAD_ID
 AcpiOsActualGetThreadId(void)
 {
-    return getpid();
+    return ((ACPI_THREAD_ID) getpid());
 }
 
 
