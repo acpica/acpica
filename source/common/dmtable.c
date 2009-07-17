@@ -208,6 +208,14 @@ static const char           *AcpiDmSratSubnames[] =
     "Unknown SubTable Type"         /* Reserved */
 };
 
+static const char           *AcpiDmIvrsSubnames[] =
+{
+    "Hardware Definition Block",
+    "Memory Definition Block",
+    "Unknown SubTable Type"         /* Reserved */
+};
+
+
 
 #define ACPI_FADT_PM_RESERVED       8
 
@@ -229,6 +237,8 @@ static const char           *AcpiDmFadtProfiles[] =
  *
  * ACPI Table Data, indexed by signature.
  *
+ * Each entry contains: Signature, Table Info, Handler, Description
+ *
  * Simple tables have only a TableInfo structure, complex tables have a handler.
  * This table must be NULL terminated. RSDP and FACS are special-cased
  * elsewhere.
@@ -249,8 +259,10 @@ static ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_FADT, NULL,                   AcpiDmDumpFadt, "Fixed ACPI Description Table"},
     {ACPI_SIG_HEST, NULL,                   AcpiDmDumpHest, "Hardware Error Source Table"},
     {ACPI_SIG_HPET, AcpiDmTableInfoHpet,    NULL,           "High Precision Event Timer table"},
+    {ACPI_SIG_IVRS, NULL,                   AcpiDmDumpIvrs, "I/O Virtualization Reporting Structure"},
     {ACPI_SIG_MADT, NULL,                   AcpiDmDumpMadt, "Multiple APIC Description Table"},
     {ACPI_SIG_MCFG, NULL,                   AcpiDmDumpMcfg, "Memory Mapped Configuration table"},
+    {ACPI_SIG_MSCT, NULL,                   AcpiDmDumpMsct, "Maximum System Characteristics Table"},
     {ACPI_SIG_RSDT, NULL,                   AcpiDmDumpRsdt, "Root System Description Table"},
     {ACPI_SIG_SBST, AcpiDmTableInfoSbst,    NULL,           "Smart Battery Specification Table"},
     {ACPI_SIG_SLIC, AcpiDmTableInfoSlic,    NULL,           "Software Licensing Description Table"},
@@ -259,6 +271,9 @@ static ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_SPMI, AcpiDmTableInfoSpmi,    NULL,           "Server Platform Management Interface table"},
     {ACPI_SIG_SRAT, NULL,                   AcpiDmDumpSrat, "System Resource Affinity Table"},
     {ACPI_SIG_TCPA, AcpiDmTableInfoTcpa,    NULL,           "Trusted Computing Platform Alliance table"},
+    {ACPI_SIG_UEFI, AcpiDmTableInfoUefi,    NULL,           "UEFI Boot Optimization Table"},
+    {ACPI_SIG_WAET, AcpiDmTableInfoWaet,    NULL,           "Windows ACPI Emulated Devices Table"},
+    {ACPI_SIG_WDAT, NULL,                   AcpiDmDumpWdat, "Watchdog Action Table"},
     {ACPI_SIG_WDRT, AcpiDmTableInfoWdrt,    NULL,           "Watchdog Resource Table"},
     {ACPI_SIG_XSDT, NULL,                   AcpiDmDumpXsdt, "Extended System Description Table"},
     {NULL,          NULL,                   NULL,           NULL}
@@ -511,6 +526,7 @@ AcpiDmDumpTable (
     UINT8                   Temp8;
     UINT16                  Temp16;
     ACPI_DMTABLE_DATA       *TableData;
+    const char              *Name;
     BOOLEAN                 LastOutputBlankLine = FALSE;
 
 
@@ -547,6 +563,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_UINT8:
         case ACPI_DMT_CHKSUM:
         case ACPI_DMT_SPACEID:
+        case ACPI_DMT_IVRS:
         case ACPI_DMT_MADT:
         case ACPI_DMT_SRAT:
         case ACPI_DMT_ASF:
@@ -576,6 +593,9 @@ AcpiDmDumpTable (
         case ACPI_DMT_UINT64:
         case ACPI_DMT_NAME8:
             ByteLength = 8;
+            break;
+        case ACPI_DMT_BUF16:
+            ByteLength = 16;
             break;
         case ACPI_DMT_STRING:
             ByteLength = ACPI_STRLEN (ACPI_CAST_PTR (char, Target)) + 1;
@@ -675,6 +695,17 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf ("%8.8X%8.8X\n",
                 ACPI_FORMAT_UINT64 (ACPI_GET64 (Target)));
+            break;
+
+        case ACPI_DMT_BUF16:
+
+            /* Buffer of length 16 */
+
+            for (Temp8 = 0; Temp8 < 16; Temp8++)
+            {
+                AcpiOsPrintf ("%2.2X,", Target[Temp8]);
+            }
+            AcpiOsPrintf ("\n");
             break;
 
         case ACPI_DMT_STRING:
@@ -847,6 +878,31 @@ AcpiDmDumpTable (
             }
 
             AcpiOsPrintf ("%2.2X (%s)\n", *Target, AcpiDmFadtProfiles[Temp8]);
+            break;
+
+        case ACPI_DMT_IVRS:
+
+            /* IVRS subtable types */
+
+            Temp8 = *Target;
+            switch (Temp8)
+            {
+            case ACPI_IVRS_TYPE_HARDWARE:
+                Name = AcpiDmIvrsSubnames[0];
+                break;
+
+            case ACPI_IVRS_TYPE_MEMORY1:
+            case ACPI_IVRS_TYPE_MEMORY2:
+            case ACPI_IVRS_TYPE_MEMORY3:
+                Name = AcpiDmIvrsSubnames[1];
+                break;
+
+            default:
+                Name = AcpiDmIvrsSubnames[2];
+                break;
+            }
+
+            AcpiOsPrintf ("%2.2X <%s>\n", *Target, Name);
             break;
 
         case ACPI_DMT_EXIT:
