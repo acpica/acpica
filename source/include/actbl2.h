@@ -131,8 +131,9 @@
 
 
 /*
- * Values for description table header signatures. Useful because they make
- * it more difficult to inadvertently type in the wrong signature.
+ * Values for description table header signatures for tables defined in this
+ * file. Useful because they make it more difficult to inadvertently type in
+ * the wrong signature.
  */
 #define ACPI_SIG_ASF            "ASF!"      /* Alert Standard Format table */
 #define ACPI_SIG_BOOT           "BOOT"      /* Simple Boot Flag Table */
@@ -140,12 +141,14 @@
 #define ACPI_SIG_DMAR           "DMAR"      /* DMA Remapping table */
 #define ACPI_SIG_HPET           "HPET"      /* High Precision Event Timer table */
 #define ACPI_SIG_IBFT           "IBFT"      /* iSCSI Boot Firmware Table */
+#define ACPI_SIG_IVRS           "IVRS"      /* I/O Virtualization Reporting Structure */
 #define ACPI_SIG_MCFG           "MCFG"      /* PCI Memory Mapped Configuration table */
 #define ACPI_SIG_SLIC           "SLIC"      /* Software Licensing Description Table */
 #define ACPI_SIG_SPCR           "SPCR"      /* Serial Port Console Redirection table */
 #define ACPI_SIG_SPMI           "SPMI"      /* Server Platform Management Interface table */
 #define ACPI_SIG_TCPA           "TCPA"      /* Trusted Computing Platform Alliance table */
 #define ACPI_SIG_UEFI           "UEFI"      /* Uefi Boot Optimization Table */
+#define ACPI_SIG_WAET           "WAET"      /* Windows ACPI Emulated devices Table */
 #define ACPI_SIG_WDAT           "WDAT"      /* Watchdog Action Table */
 #define ACPI_SIG_WDRT           "WDRT"      /* Watchdog Resource Table */
 
@@ -166,6 +169,7 @@
 /*******************************************************************************
  *
  * ASF - Alert Standard Format table (Signature "ASF!")
+ *       Revision 0x10
  *
  * Conforms to the Alert Standard Format Specification V2.0, 23 April 2003
  *
@@ -219,6 +223,11 @@ typedef struct acpi_asf_info
 
 } ACPI_ASF_INFO;
 
+/* Masks for Flags field above */
+
+#define ACPI_ASF_SMBUS_PROTOCOLS    (1)
+
+
 /* 1: ASF Alerts */
 
 typedef struct acpi_asf_alert
@@ -248,6 +257,7 @@ typedef struct acpi_asf_alert_data
 
 } ACPI_ASF_ALERT_DATA;
 
+
 /* 2: ASF Remote Control */
 
 typedef struct acpi_asf_remote
@@ -268,6 +278,7 @@ typedef struct acpi_asf_control_data
 
 } ACPI_ASF_CONTROL_DATA;
 
+
 /* 3: ASF RMCP Boot Options */
 
 typedef struct acpi_asf_rmcp
@@ -283,6 +294,7 @@ typedef struct acpi_asf_rmcp
 
 } ACPI_ASF_RMCP;
 
+
 /* 4: ASF Address */
 
 typedef struct acpi_asf_address
@@ -297,6 +309,9 @@ typedef struct acpi_asf_address
 /*******************************************************************************
  *
  * BOOT - Simple Boot Flag Table
+ *        Version 1
+ *
+ * Conforms to the "Simple Boot Flag Specification", Version 2.1
  *
  ******************************************************************************/
 
@@ -312,6 +327,9 @@ typedef struct acpi_table_boot
 /*******************************************************************************
  *
  * DBGP - Debug Port table
+ *        Version 1
+ *
+ * Conforms to the "Debug Port Specification", Version 1.00, 2/9/2000
  *
  ******************************************************************************/
 
@@ -328,7 +346,10 @@ typedef struct acpi_table_dbgp
 /*******************************************************************************
  *
  * DMAR - DMA Remapping table
- *        From "Intel Virtualization Technology for Directed I/O", Sept. 2007
+ *        Version 1
+ *
+ * Conforms to "Intel Virtualization Technology for Directed I/O",
+ * Version 1.2, Sept. 2008
  *
  ******************************************************************************/
 
@@ -341,9 +362,10 @@ typedef struct acpi_table_dmar
 
 } ACPI_TABLE_DMAR;
 
-/* Flags */
+/* Masks for Flags field above */
 
 #define ACPI_DMAR_INTR_REMAP        (1)
+
 
 /* DMAR subtable header */
 
@@ -361,8 +383,12 @@ enum AcpiDmarType
     ACPI_DMAR_TYPE_HARDWARE_UNIT        = 0,
     ACPI_DMAR_TYPE_RESERVED_MEMORY      = 1,
     ACPI_DMAR_TYPE_ATSR                 = 2,
-    ACPI_DMAR_TYPE_RESERVED             = 3     /* 3 and greater are reserved */
+    ACPI_DMAR_HARDWARE_AFFINITY         = 3,
+    ACPI_DMAR_TYPE_RESERVED             = 4     /* 4 and greater are reserved */
 };
+
+
+/* DMAR Device Scope structure */
 
 typedef struct acpi_dmar_device_scope
 {
@@ -393,6 +419,7 @@ typedef struct acpi_dmar_pci_path
 
 } ACPI_DMAR_PCI_PATH;
 
+
 /*
  * DMAR Sub-tables, correspond to Type in ACPI_DMAR_HEADER
  */
@@ -409,9 +436,10 @@ typedef struct acpi_dmar_hardware_unit
 
 } ACPI_DMAR_HARDWARE_UNIT;
 
-/* Flags */
+/* Masks for Flags field above */
 
 #define ACPI_DMAR_INCLUDE_ALL       (1)
+
 
 /* 1: Reserved Memory Defininition */
 
@@ -425,9 +453,10 @@ typedef struct acpi_dmar_reserved_memory
 
 } ACPI_DMAR_RESERVED_MEMORY;
 
-/* Flags */
+/* Masks for Flags field above */
 
 #define ACPI_DMAR_ALLOW_ALL         (1)
+
 
 /* 2: Root Port ATS Capability Reporting Structure */
 
@@ -440,14 +469,30 @@ typedef struct acpi_dmar_atsr
 
 } ACPI_DMAR_ATSR;
 
-/* Flags */
+/* Masks for Flags field above */
 
 #define ACPI_DMAR_ALL_PORTS         (1)
+
+
+/* 3: Remapping Hardware Static Affinity Structure */
+
+typedef struct acpi_dmar_rhsa
+{
+    ACPI_DMAR_HEADER        Header;
+    UINT32                  Reserved;
+    UINT64                  BaseAddress;
+    UINT32                  ProximityDomain;
+
+} ACPI_DMAR_RHSA;
 
 
 /*******************************************************************************
  *
  * HPET - High Precision Event Timer table
+ *        Version 1
+ *
+ * Conforms to "IA-PC HPET (High Precision Event Timers) Specification",
+ * Version 1.0a, October 2004
  *
  ******************************************************************************/
 
@@ -462,18 +507,30 @@ typedef struct acpi_table_hpet
 
 } ACPI_TABLE_HPET;
 
-/*! Flags */
+/* Masks for Flags field above */
 
-#define ACPI_HPET_PAGE_PROTECT      (1)         /* 00: No page protection */
-#define ACPI_HPET_PAGE_PROTECT_4    (1<<1)      /* 01: 4KB page protected */
-#define ACPI_HPET_PAGE_PROTECT_64   (1<<2)      /* 02: 64KB page protected */
+#define ACPI_HPET_PAGE_PROTECT_MASK (3)
 
-/*! [End] no source code translation !*/
+/* Values for Page Protect flags */
+
+enum AcpiHpetPageProtect
+{
+    ACPI_HPET_NO_PAGE_PROTECT       = 0,
+    ACPI_HPET_PAGE_PROTECT4         = 1,
+    ACPI_HPET_PAGE_PROTECT64        = 2
+};
 
 
 /*******************************************************************************
  *
  * IBFT - Boot Firmware Table
+ *        Version 1
+ *
+ * Conforms to "iSCSI Boot Firmware Table (iBFT) as Defined in ACPI 3.0b
+ * Specification", Version 1.01, March 1, 2007
+ *
+ * Note: It appears that this table is not intended to appear in the RSDT/XSDT.
+ * Therefore, it is not currently supported by the disassembler.
  *
  ******************************************************************************/
 
@@ -496,7 +553,6 @@ typedef struct acpi_ibft_header
     UINT8                   Flags;
 
 } ACPI_IBFT_HEADER;
-
 
 /* Values for Type field above */
 
@@ -580,7 +636,208 @@ typedef struct acpi_ibft_target
 
 /*******************************************************************************
  *
+ * IVRS - I/O Virtualization Reporting Structure
+ *        Version 1
+ *
+ * Conforms to "AMD I/O Virtualization Technology (IOMMU) Specification",
+ * Revision 1.26, February 2009.
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_ivrs
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT32                  Info;               /* Common virtualization info */
+    UINT64                  Reserved;
+
+} ACPI_TABLE_IVRS;
+
+/* Values for Info field above */
+
+#define ACPI_IVRS_PHYSICAL_SIZE     0x00007F00  /* 7 bits, physical address size */
+#define ACPI_IVRS_VIRTUAL_SIZE      0x003F8000  /* 7 bits, virtual address size */
+#define ACPI_IVRS_ATS_RESERVED      0x00400000  /* ATS address translation range reserved */
+
+
+/* IVRS subtable header */
+
+typedef struct acpi_ivrs_header
+{
+    UINT8                   Type;               /* Subtable type */
+    UINT8                   Flags;
+    UINT16                  Length;             /* Subtable length */
+    UINT16                  DeviceId;           /* ID of IOMMU */
+
+} ACPI_IVRS_HEADER;
+
+/* Values for subtable Type above */
+
+enum AcpiIvrsType
+{
+    ACPI_IVRS_TYPE_HARDWARE         = 0x10,
+    ACPI_IVRS_TYPE_MEMORY1          = 0x20,
+    ACPI_IVRS_TYPE_MEMORY2          = 0x21,
+    ACPI_IVRS_TYPE_MEMORY3          = 0x22
+};
+
+/* Masks for Flags field above for IVHD subtable */
+
+#define ACPI_IVHD_TT_ENABLE         (1)
+#define ACPI_IVHD_PASS_PW           (1<<1)
+#define ACPI_IVHD_RES_PASS_PW       (1<<2)
+#define ACPI_IVHD_ISOC              (1<<3)
+#define ACPI_IVHD_IOTLB             (1<<4)
+
+/* Masks for Flags field above for IVMD subtable */
+
+#define ACPI_IVMD_UNITY             (1)
+#define ACPI_IVMD_READ              (1<<1)
+#define ACPI_IVMD_WRITE             (1<<2)
+#define ACPI_IVMD_EXCLUSION_RANGE   (1<<3)
+
+
+/*
+ * IVRS subtables, correspond to Type in ACPI_IVRS_HEADER
+ */
+
+/* 0x10: I/O Virtualization Hardware Definition Block (IVHD) */
+
+typedef struct acpi_ivrs_hardware
+{
+    ACPI_IVRS_HEADER        Header;
+    UINT16                  CapabilityOffset;   /* Offset for IOMMU control fields */
+    UINT64                  BaseAddress;        /* IOMMU control registers */
+    UINT16                  PciSegmentGroup;
+    UINT16                  Info;               /* MSI number and unit ID */
+    UINT32                  Reserved;
+
+} ACPI_IVRS_HARDWARE;
+
+/* Masks for Info field above */
+
+#define ACPI_IVHD_MSI_NUMBER_MASK   0x001F      /* 5 bits, MSI message number */
+#define ACPI_IVHD_UNIT_ID_MASK      0x1F00      /* 5 bits, UnitID */
+
+
+/*
+ * Device Entries for IVHD subtable, appear after ACPI_IVRS_HARDWARE structure.
+ * Upper two bits of the Type field are the (encoded) length of the structure.
+ * Currently, only 4 and 8 byte entries are defined. 16 and 32 byte entries
+ * are reserved for future use but not defined.
+ */
+typedef struct acpi_ivrs_de_header
+{
+    UINT8                   Type;
+    UINT16                  Id;
+    UINT8                   DataSetting;
+
+} ACPI_IVRS_DE_HEADER;
+
+/* Length of device entry is in the top two bits of Type field above */
+
+#define ACPI_IVHD_ENTRY_LENGTH      0xC0
+
+/* Values for device entry Type field above */
+
+enum AcpiIvrsDeviceEntryType
+{
+    /* 4-byte device entries, all use ACPI_IVRS_DEVICE4 */
+
+    ACPI_IVRS_TYPE_PAD4             = 0,
+    ACPI_IVRS_TYPE_ALL              = 1,
+    ACPI_IVRS_TYPE_SELECT           = 2,
+    ACPI_IVRS_TYPE_START            = 3,
+    ACPI_IVRS_TYPE_END              = 4,
+
+    /* 8-byte device entries */
+
+    ACPI_IVRS_TYPE_PAD8             = 64,
+    ACPI_IVRS_TYPE_NOT_USED         = 65,
+    ACPI_IVRS_TYPE_ALIAS_SELECT     = 66, /* Uses ACPI_IVRS_DEVICE8A */
+    ACPI_IVRS_TYPE_ALIAS_START      = 67, /* Uses ACPI_IVRS_DEVICE8A */
+    ACPI_IVRS_TYPE_EXT_SELECT       = 70, /* Uses ACPI_IVRS_DEVICE8B */
+    ACPI_IVRS_TYPE_EXT_START        = 71, /* Uses ACPI_IVRS_DEVICE8B */
+    ACPI_IVRS_TYPE_SPECIAL          = 72  /* Uses ACPI_IVRS_DEVICE8C */
+};
+
+/* Values for Data field above */
+
+#define ACPI_IVHD_INIT_PASS         (1)
+#define ACPI_IVHD_EINT_PASS         (1<<1)
+#define ACPI_IVHD_NMI_PASS          (1<<2)
+#define ACPI_IVHD_SYSTEM_MGMT       (3<<4)
+#define ACPI_IVHD_LINT0_PASS        (1<<6)
+#define ACPI_IVHD_LINT1_PASS        (1<<7)
+
+
+/* Types 0-4: 4-byte device entry */
+
+typedef struct acpi_ivrs_device4
+{
+    ACPI_IVRS_DE_HEADER     Header;
+
+} ACPI_IVRS_DEVICE4;
+
+/* Types 66-67: 8-byte device entry */
+
+typedef struct acpi_ivrs_device8a
+{
+    ACPI_IVRS_DE_HEADER     Header;
+    UINT8                   Reserved1;
+    UINT16                  UsedId;
+    UINT8                   Reserved2;
+
+} ACPI_IVRS_DEVICE8A;
+
+/* Types 70-71: 8-byte device entry */
+
+typedef struct acpi_ivrs_device8b
+{
+    ACPI_IVRS_DE_HEADER     Header;
+    UINT32                  ExtendedData;
+
+} ACPI_IVRS_DEVICE8B;
+
+/* Values for ExtendedData above */
+
+#define ACPI_IVHD_ATS_DISABLED      (1<<31)
+
+/* Type 72: 8-byte device entry */
+
+typedef struct acpi_ivrs_device8c
+{
+    ACPI_IVRS_DE_HEADER     Header;
+    UINT8                   Handle;
+    UINT16                  UsedId;
+    UINT8                   Variety;
+
+} ACPI_IVRS_DEVICE8C;
+
+/* Values for Variety field above */
+
+#define ACPI_IVHD_IOAPIC            1
+#define ACPI_IVHD_HPET              2
+
+
+/* 0x20, 0x21, 0x22: I/O Virtualization Memory Definition Block (IVMD) */
+
+typedef struct acpi_ivrs_memory
+{
+    ACPI_IVRS_HEADER        Header;
+    UINT16                  AuxData;
+    UINT64                  Reserved;
+    UINT64                  StartAddress;
+    UINT64                  MemoryLength;
+
+} ACPI_IVRS_MEMORY;
+
+
+/*******************************************************************************
+ *
  * MCFG - PCI Memory Mapped Configuration table and sub-table
+ *        Version 1
+ *
+ * Conforms to "PCI Firmware Specification", Revision 3.0, June 20, 2005
  *
  ******************************************************************************/
 
@@ -608,6 +865,10 @@ typedef struct acpi_mcfg_allocation
 /*******************************************************************************
  *
  * SPCR - Serial Port Console Redirection table
+ *        Version 1
+ *
+ * Conforms to "Serial Port Console Redirection Table",
+ * Version 1.00, January 11, 2002
  *
  ******************************************************************************/
 
@@ -637,18 +898,27 @@ typedef struct acpi_table_spcr
 
 } ACPI_TABLE_SPCR;
 
+/* Masks for PciFlags field above */
+
+#define ACPI_SPCR_DO_NOT_DISABLE    (1)
+
 
 /*******************************************************************************
  *
  * SPMI - Server Platform Management Interface table
+ *        Version 5
+ *
+ * Conforms to "Intelligent Platform Management Interface Specification
+ * Second Generation v2.0", Document Revision 1.0, February 12, 2004 with
+ * June 12, 2009 markup.
  *
  ******************************************************************************/
 
 typedef struct acpi_table_spmi
 {
     ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
-    UINT8                   Reserved;
     UINT8                   InterfaceType;
+    UINT8                   Reserved;           /* Must be 1 */
     UINT16                  SpecRevision;       /* Version of IPMI */
     UINT8                   InterruptType;
     UINT8                   GpeNumber;          /* GPE assigned */
@@ -660,13 +930,30 @@ typedef struct acpi_table_spmi
     UINT8                   PciBus;
     UINT8                   PciDevice;
     UINT8                   PciFunction;
+    UINT8                   Reserved2;
 
 } ACPI_TABLE_SPMI;
+
+/* Values for InterfaceType above */
+
+enum AcpiSpmiInterfaceTypes
+{
+    ACPI_SPMI_NOT_USED              = 0,
+    ACPI_SPMI_KEYBOARD              = 1,
+    ACPI_SPMI_SMI                   = 2,
+    ACPI_SPMI_BLOCK_TRANSFER        = 3,
+    ACPI_SPMI_SMBUS                 = 4,
+    ACPI_SPMI_RESERVED              = 5         /* 5 and above are reserved */
+};
 
 
 /*******************************************************************************
  *
  * TCPA - Trusted Computing Platform Alliance table
+ *        Version 1
+ *
+ * Conforms to "TCG PC Specific Implementation Specification",
+ * Version 1.1, August 18, 2003
  *
  ******************************************************************************/
 
@@ -683,6 +970,10 @@ typedef struct acpi_table_tcpa
 /*******************************************************************************
  *
  * UEFI - UEFI Boot optimization Table
+ *        Version 1
+ *
+ * Conforms to "Unified Extensible Firmware Interface Specification",
+ * Version 2.3, May 8, 2009
  *
  ******************************************************************************/
 
@@ -691,14 +982,39 @@ typedef struct acpi_table_uefi
     ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
     UINT8                   Identifier[16];     /* UUID identifier */
     UINT16                  DataOffset;         /* Offset of remaining data in table */
-    UINT8                   Data;
 
 } ACPI_TABLE_UEFI;
 
 
 /*******************************************************************************
  *
+ * WAET - Windows ACPI Emulated devices Table
+ *        Version 1
+ *
+ * Conforms to "Windows ACPI Emulated Devices Table", version 1.0, April 6, 2009
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_waet
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT32                  Flags;
+
+} ACPI_TABLE_WAET;
+
+/* Masks for Flags field above */
+
+#define ACPI_WAET_RTC_NO_ACK        (1)         /* RTC requires no int acknowledge */
+#define ACPI_WAET_TIMER_ONE_READ    (1<<1)      /* PM timer requires only one read */
+
+
+/*******************************************************************************
+ *
  * WDAT - Watchdog Action Table
+ *        Version 1
+ *
+ * Conforms to "Hardware Watchdog Timers Design Specification",
+ * Copyright 2006 Microsoft Corporation.
  *
  ******************************************************************************/
 
@@ -720,11 +1036,22 @@ typedef struct acpi_table_wdat
 
 } ACPI_TABLE_WDAT;
 
+/* Masks for Flags field above */
+
+#define ACPI_WDAT_ENABLED           (1)
+#define ACPI_WDAT_STOPPED           0x80
+
+
 /* WDAT Instruction Entries (actions) */
 
 typedef struct acpi_wdat_entry
 {
-    ACPI_WHEA_HEADER        WheaHeader;         /* Common header for WHEA tables */
+    UINT8                   Action;
+    UINT8                   Instruction;
+    UINT16                  Reserved;
+    ACPI_GENERIC_ADDRESS    RegisterRegion;
+    UINT32                  Value;              /* Value used with Read/Write register */
+    UINT32                  Mask;               /* Bitmask required for this register instruction */
 
 } ACPI_WDAT_ENTRY;
 
@@ -765,36 +1092,33 @@ enum AcpiWdatInstructions
 /*******************************************************************************
  *
  * WDRT - Watchdog Resource Table
+ *        Version 1
+ *
+ * Conforms to "Watchdog Timer Hardware Requirements for Windows Server 2003",
+ * Version 1.01, August 28, 2006
  *
  ******************************************************************************/
 
 typedef struct acpi_table_wdrt
 {
     ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
-    UINT32                  HeaderLength;       /* Watchdog Header Length */
-    UINT8                   PciSegment;         /* PCI Segment number */
+    ACPI_GENERIC_ADDRESS    ControlRegister;
+    ACPI_GENERIC_ADDRESS    CountRegister;
+    UINT16                  PciDeviceId;
+    UINT16                  PciVendorId;
     UINT8                   PciBus;             /* PCI Bus number */
     UINT8                   PciDevice;          /* PCI Device number */
     UINT8                   PciFunction;        /* PCI Function number */
-    UINT32                  TimerPeriod;        /* Period of one timer count (msec) */
-    UINT32                  MaxCount;           /* Maximum counter value supported */
-    UINT32                  MinCount;           /* Minimum counter value */
-    UINT8                   Flags;
-    UINT8                   Reserved[3];
-    UINT32                  Entries;            /* Number of watchdog entries that follow */
+    UINT8                   PciSegment;         /* PCI Segment number */
+    UINT16                  MaxCount;           /* Maximum counter value supported */
+    UINT8                   Units;
 
 } ACPI_TABLE_WDRT;
-
-/* Flags */
-
-#define ACPI_WDRT_TIMER_ENABLED     (1)         /* 00: Timer enabled */
-
 
 
 /* Reset to default packing */
 
 #pragma pack()
-
 
 #endif /* __ACTBL2_H__ */
 

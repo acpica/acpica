@@ -130,9 +130,11 @@
  *
  ******************************************************************************/
 
+
 /*
- * Values for description table header signatures. Useful because they make
- * it more difficult to inadvertently type in the wrong signature.
+ * Values for description table header signatures for tables defined in this
+ * file. Useful because they make it more difficult to inadvertently type in
+ * the wrong signature.
  */
 #define ACPI_SIG_DSDT           "DSDT"      /* Differentiated System Description Table */
 #define ACPI_SIG_FADT           "FACP"      /* Fixed ACPI Description Table */
@@ -204,6 +206,7 @@ typedef struct acpi_generic_address
 /*******************************************************************************
  *
  * RSDP - Root System Description Pointer (Signature is "RSD PTR ")
+ *        Version 2
  *
  ******************************************************************************/
 
@@ -227,6 +230,7 @@ typedef struct acpi_table_rsdp
 /*******************************************************************************
  *
  * RSDT/XSDT - Root System Description Tables
+ *             Version 1 (both)
  *
  ******************************************************************************/
 
@@ -267,17 +271,17 @@ typedef struct acpi_table_facs
 
 } ACPI_TABLE_FACS;
 
-/* GlobalLock flags */
+/* Masks for GlobalLock flag field above */
 
 #define ACPI_GLOCK_PENDING          (1)             /* 00: Pending global lock ownership */
 #define ACPI_GLOCK_OWNED            (1<<1)          /* 01: Global lock is owned */
 
-/* Flags  */
+/* Masks for Flags field above  */
 
 #define ACPI_FACS_S4_BIOS_PRESENT   (1)             /* 00: S4BIOS support is present */
-#define ACPI_FACS_64BIT_WAKE        (1<<1)          /* 01: 64-bit wake vector supported (ACPI 4.0) */       
+#define ACPI_FACS_64BIT_WAKE        (1<<1)          /* 01: 64-bit wake vector supported (ACPI 4.0) */
 
-/* OspmFlags */
+/* Masks for OspmFlags field above */
 
 #define ACPI_FACS_64BIT_ENVIRONMENT (1)             /* 00: 64-bit wake environment is required (ACPI 4.0) */
 
@@ -285,6 +289,7 @@ typedef struct acpi_table_facs
 /*******************************************************************************
  *
  * FADT - Fixed ACPI Description Table (Signature "FACP")
+ *        Version 4
  *
  ******************************************************************************/
 
@@ -348,7 +353,7 @@ typedef struct acpi_table_fadt
 } ACPI_TABLE_FADT;
 
 
-/* FADT Boot Architecture Flags (BootFlags) */
+/* Masks for FADT Boot Architecture Flags (BootFlags) */
 
 #define ACPI_FADT_LEGACY_DEVICES    (1)         /* 00: [V2] System has LPC or ISA bus devices */
 #define ACPI_FADT_8042              (1<<1)      /* 01: [V3] System has an 8042 controller on port 60/64 */
@@ -356,7 +361,7 @@ typedef struct acpi_table_fadt
 #define ACPI_FADT_NO_MSI            (1<<3)      /* 03: [V4] Message Signaled Interrupts (MSI) must not be enabled */
 #define ACPI_FADT_NO_ASPM           (1<<4)      /* 04: [V4] PCIe ASPM control must not be enabled */
 
-/* FADT flags */
+/* Masks for FADT flags */
 
 #define ACPI_FADT_WBINVD            (1)         /* 00: [V1] The wbinvd instruction works properly */
 #define ACPI_FADT_WBINVD_FLUSH      (1<<1)      /* 01: [V1] wbinvd flushes but does not invalidate caches */
@@ -380,7 +385,7 @@ typedef struct acpi_table_fadt
 #define ACPI_FADT_APIC_PHYSICAL     (1<<19)     /* 19: [V4] All local xAPICs must use physical dest mode (ACPI 3.0) */
 
 
-/* FADT Prefered Power Management Profiles */
+/* Values for PreferredProfile (Prefered Power Management Profiles) */
 
 enum AcpiPreferedPmProfiles
 {
@@ -399,6 +404,9 @@ enum AcpiPreferedPmProfiles
 #pragma pack()
 
 
+/*
+ * Internal table-related structures
+ */
 typedef union acpi_name_union
 {
     UINT32                          Integer;
@@ -406,9 +414,9 @@ typedef union acpi_name_union
 
 } ACPI_NAME_UNION;
 
-/*
- * Internal ACPI Table Descriptor. One per ACPI table
- */
+
+/* Internal ACPI Table Descriptor. One per ACPI table. */
+
 typedef struct acpi_table_desc
 {
     ACPI_PHYSICAL_ADDRESS           Address;
@@ -420,7 +428,7 @@ typedef struct acpi_table_desc
 
 } ACPI_TABLE_DESC;
 
-/* Flags for above */
+/* Masks for Flags field above */
 
 #define ACPI_TABLE_ORIGIN_UNKNOWN       (0)
 #define ACPI_TABLE_ORIGIN_MAPPED        (1)
