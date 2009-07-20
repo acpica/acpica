@@ -114,6 +114,7 @@
  *****************************************************************************/
 
 #define __NSPREDEF_C__
+#define __ACPI_PREDEFINED_TABLE
 
 #include "acpi.h"
 #include "accommon.h"
