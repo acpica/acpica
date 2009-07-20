@@ -132,6 +132,7 @@ AcpiDmGetTableData (
 static void
 AcpiDmCheckAscii (
     UINT8                   *Target,
+    char                    *RepairedName,
     UINT32                  Count);
 
 UINT8
@@ -156,17 +157,18 @@ static const char           *AcpiDmDmarSubnames[] =
     "Hardware Unit Definition",
     "Reserved Memory Region",
     "Root Port ATS Capability",
+    "Remapping Hardware Static Affinity",
     "Unknown SubTable Type"         /* Reserved */
 };
 
 static const char           *AcpiDmHestSubnames[] =
 {
-    "XPF Machine Check Exception",
-    "XPF Corrected Machine Check",
-    "NOT USED???",
-    "XPF Non-Maskable Interrupt",
-    "IPF Corrected Machine Check",
-    "IPF Corrected Platform Error",
+    "IA-32 Machine Check Exception",
+    "IA-32 Corrected Machine Check",
+    "IA-32 Non-Maskable Interrupt",
+    "Unknown SubTable Type",        /* 3 - Reserved */
+    "Unknown SubTable Type",        /* 4 - Reserved */
+    "Unknown SubTable Type",        /* 5 - Reserved */
     "PCI Express Root Port AER",
     "PCI Express AER (AER Endpoint)",
     "PCI Express/PCI-X Bridge AER",
@@ -231,7 +233,6 @@ static const char           *AcpiDmFadtProfiles[] =
     "Performance Server",
     "Unknown Profile Type"
 };
-
 
 /*******************************************************************************
  *
@@ -528,6 +529,7 @@ AcpiDmDumpTable (
     ACPI_DMTABLE_DATA       *TableData;
     const char              *Name;
     BOOLEAN                 LastOutputBlankLine = FALSE;
+    char                    RepairedName[8];
 
 
     if (!Info)
@@ -710,15 +712,15 @@ AcpiDmDumpTable (
 
         case ACPI_DMT_STRING:
 
-            AcpiOsPrintf ("%s\n", ACPI_CAST_PTR (char, Target));
+            AcpiOsPrintf ("\"%s\"\n", ACPI_CAST_PTR (char, Target));
             break;
 
         /* Fixed length ASCII name fields */
 
         case ACPI_DMT_SIG:
 
-            AcpiDmCheckAscii (Target, 4);
-            AcpiOsPrintf ("\"%4.4s\"    ", Target);
+            AcpiDmCheckAscii (Target, RepairedName, 4);
+            AcpiOsPrintf ("\"%.4s\"    ", RepairedName);
             TableData = AcpiDmGetTableData (ACPI_CAST_PTR (char, Target));
             if (TableData)
             {
@@ -729,20 +731,20 @@ AcpiDmDumpTable (
 
         case ACPI_DMT_NAME4:
 
-            AcpiDmCheckAscii (Target, 4);
-            AcpiOsPrintf ("\"%4.4s\"\n", Target);
+            AcpiDmCheckAscii (Target, RepairedName, 4);
+            AcpiOsPrintf ("\"%.4s\"\n", RepairedName);
             break;
 
         case ACPI_DMT_NAME6:
 
-            AcpiDmCheckAscii (Target, 6);
-            AcpiOsPrintf ("\"%6.6s\"\n", Target);
+            AcpiDmCheckAscii (Target, RepairedName, 6);
+            AcpiOsPrintf ("\"%.6s\"\n", RepairedName);
             break;
 
         case ACPI_DMT_NAME8:
 
-            AcpiDmCheckAscii (Target, 8);
-            AcpiOsPrintf ("\"%8.8s\"\n", Target);
+            AcpiDmCheckAscii (Target, RepairedName, 8);
+            AcpiOsPrintf ("\"%.8s\"\n", RepairedName);
             break;
 
         /* Special Data Types */
@@ -773,8 +775,8 @@ AcpiDmDumpTable (
             /* Generic Address Structure */
 
             AcpiOsPrintf ("<Generic Address Structure>\n");
-            AcpiDmDumpTable (ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Length,
-                CurrentOffset, Target, sizeof (ACPI_GENERIC_ADDRESS), AcpiDmTableInfoGas);
+            AcpiDmDumpTable (TableLength, CurrentOffset, Target,
+                sizeof (ACPI_GENERIC_ADDRESS), AcpiDmTableInfoGas);
             AcpiOsPrintf ("\n");
             LastOutputBlankLine = TRUE;
             break;
@@ -821,8 +823,8 @@ AcpiDmDumpTable (
         case ACPI_DMT_HESTNTFY:
 
             AcpiOsPrintf ("<Hardware Error Notification Structure>\n");
-            AcpiDmDumpTable (ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Length,
-                CurrentOffset, Target, sizeof (ACPI_HEST_NOTIFY), AcpiDmTableInfoHestNotify);
+            AcpiDmDumpTable (TableLength, CurrentOffset, Target,
+                sizeof (ACPI_HEST_NOTIFY), AcpiDmTableInfoHestNotify);
             AcpiOsPrintf ("\n");
             LastOutputBlankLine = TRUE;
             break;
@@ -944,6 +946,7 @@ AcpiDmDumpTable (
 static void
 AcpiDmCheckAscii (
     UINT8                   *Name,
+    char                    *RepairedName,
     UINT32                  Count)
 {
     UINT32                  i;
@@ -951,9 +954,15 @@ AcpiDmCheckAscii (
 
     for (i = 0; i < Count; i++)
     {
-        if (!Name[i] || !isprint (Name[i]))
+        RepairedName[i] = Name[i];
+
+        if (!Name[i])
         {
-            Name[i] = ' ';
+            return;
+        }
+        if (!isprint (Name[i]))
+        {
+            RepairedName[i] = ' ';
         }
     }
 }

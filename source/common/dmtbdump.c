@@ -306,6 +306,7 @@ AcpiDmDumpAsf (
     UINT32                  DataLength = 0;
     UINT32                  DataOffset = 0;
     UINT32                  i;
+    UINT8                   Type;
 
 
     /* No main table, only sub-tables */
@@ -322,7 +323,11 @@ AcpiDmDumpAsf (
             return;
         }
 
-        switch (SubTable->Header.Type & 0x7F) /* Mask off top bit */
+        /* The actual type is the lower 7 bits of Type */
+
+        Type = (UINT8) (SubTable->Header.Type & 0x7F);
+
+        switch (Type)
         {
         case ACPI_ASF_TYPE_INFO:
             InfoTable = AcpiDmTableInfoAsf0;
@@ -332,8 +337,8 @@ AcpiDmDumpAsf (
             InfoTable = AcpiDmTableInfoAsf1;
             DataInfoTable = AcpiDmTableInfoAsf1a;
             DataTable = ACPI_ADD_PTR (UINT8, SubTable, sizeof (ACPI_ASF_ALERT));
-            DataCount = ((ACPI_ASF_ALERT *) SubTable)->Alerts;
-            DataLength = ((ACPI_ASF_ALERT *) SubTable)->DataLength;
+            DataCount = ACPI_CAST_PTR (ACPI_ASF_ALERT, SubTable)->Alerts;
+            DataLength = ACPI_CAST_PTR (ACPI_ASF_ALERT, SubTable)->DataLength;
             DataOffset = Offset + sizeof (ACPI_ASF_ALERT);
             break;
 
@@ -341,8 +346,8 @@ AcpiDmDumpAsf (
             InfoTable = AcpiDmTableInfoAsf2;
             DataInfoTable = AcpiDmTableInfoAsf2a;
             DataTable = ACPI_ADD_PTR (UINT8, SubTable, sizeof (ACPI_ASF_REMOTE));
-            DataCount = ((ACPI_ASF_REMOTE *) SubTable)->Controls;
-            DataLength = ((ACPI_ASF_REMOTE *) SubTable)->DataLength;
+            DataCount = ACPI_CAST_PTR (ACPI_ASF_REMOTE, SubTable)->Controls;
+            DataLength = ACPI_CAST_PTR (ACPI_ASF_REMOTE, SubTable)->DataLength;
             DataOffset = Offset + sizeof (ACPI_ASF_REMOTE);
             break;
 
@@ -353,7 +358,7 @@ AcpiDmDumpAsf (
         case ACPI_ASF_TYPE_ADDRESS:
             InfoTable = AcpiDmTableInfoAsf4;
             DataTable = ACPI_ADD_PTR (UINT8, SubTable, sizeof (ACPI_ASF_ADDRESS));
-            DataLength = ((ACPI_ASF_ADDRESS *) SubTable)->Devices;
+            DataLength = ACPI_CAST_PTR (ACPI_ASF_ADDRESS, SubTable)->Devices;
             DataOffset = Offset + sizeof (ACPI_ASF_ADDRESS);
             break;
 
@@ -371,7 +376,7 @@ AcpiDmDumpAsf (
 
         /* Dump variable-length extra data */
 
-        switch (SubTable->Header.Type & 0x7F) /* Mask off top bit */
+        switch (Type)
         {
         case ACPI_ASF_TYPE_ALERT:
         case ACPI_ASF_TYPE_CONTROL:

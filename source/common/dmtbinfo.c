@@ -319,7 +319,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFacs[] =
     {ACPI_DMT_FLAG1,    ACPI_FACS_FLAG_OFFSET (Flags,0),            "64-bit Wake Supported (V2)"},
     {ACPI_DMT_UINT64,   ACPI_FACS_OFFSET (XFirmwareWakingVector),   "64 Firmware Waking Vector"},
     {ACPI_DMT_UINT8,    ACPI_FACS_OFFSET (Version),                 "Version"},
-    {ACPI_DMT_UINT24,   ACPI_FACS_OFFSET (Reserved),                "Reserved"},
+    {ACPI_DMT_UINT24,   ACPI_FACS_OFFSET (Reserved[0]),             "Reserved"},
     {ACPI_DMT_UINT32,   ACPI_FACS_OFFSET (OspmFlags),               "OspmFlags (decoded below)"},
     {ACPI_DMT_FLAG0,    ACPI_FACS_FLAG_OFFSET (OspmFlags,0),        "64-bit Wake Env Required (V2)"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
@@ -726,7 +726,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoEinj[] =
 {
     {ACPI_DMT_UINT32,   ACPI_EINJ_OFFSET (HeaderLength),            "Injection Header Length"},
     {ACPI_DMT_UINT8,    ACPI_EINJ_OFFSET (Flags),                   "Flags"},
-    {ACPI_DMT_UINT24,   ACPI_EINJ_OFFSET (Reserved),                "Reserved"},
+    {ACPI_DMT_UINT24,   ACPI_EINJ_OFFSET (Reserved[0]),             "Reserved"},
     {ACPI_DMT_UINT32,   ACPI_EINJ_OFFSET (Entries),                 "Injection Entry Count"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
@@ -787,7 +787,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoHest0[] =
     {ACPI_DMT_UINT64,   ACPI_HEST0_OFFSET (GlobalCapabilityData),   "Global Capability Data"},
     {ACPI_DMT_UINT64,   ACPI_HEST0_OFFSET (GlobalControlData),      "Global Control Data"},
     {ACPI_DMT_UINT8,    ACPI_HEST0_OFFSET (NumHardwareBanks),       "Num Hardware Banks"},
-    {ACPI_DMT_UINT56,   ACPI_HEST0_OFFSET (Reserved3),              "Reserved"},
+    {ACPI_DMT_UINT56,   ACPI_HEST0_OFFSET (Reserved3[0]),           "Reserved"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -804,7 +804,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoHest1[] =
     {ACPI_DMT_UINT32,   ACPI_HEST1_OFFSET (MaxSectionsPerRecord),   "Max Sections Per Record"},
     {ACPI_DMT_HESTNTFY, ACPI_HEST1_OFFSET (Notify),                 "Notify"},
     {ACPI_DMT_UINT8,    ACPI_HEST1_OFFSET (NumHardwareBanks),       "Num Hardware Banks"},
-    {ACPI_DMT_UINT24,   ACPI_HEST1_OFFSET (Reserved2),              "Reserved"},
+    {ACPI_DMT_UINT24,   ACPI_HEST1_OFFSET (Reserved2[0]),           "Reserved"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -1038,7 +1038,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIvrs8c[] =
     ACPI_DMT_IVRS_DE_HEADER
     {ACPI_DMT_UINT8,    ACPI_IVRS8C_OFFSET (Handle),                "Handle"},
     {ACPI_DMT_UINT16,   ACPI_IVRS8C_OFFSET (UsedId),                "Source Used Device ID"},
-    {ACPI_DMT_UINT8,    ACPI_IVRS8C_OFFSET (Variety),               "Reserved"},
+    {ACPI_DMT_UINT8,    ACPI_IVRS8C_OFFSET (Variety),               "Variety"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -1447,7 +1447,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoTcpa[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoUefi[] =
 {
-    {ACPI_DMT_BUF16,    ACPI_UEFI_OFFSET (Identifier),              "UUID Identifier"},
+    {ACPI_DMT_BUF16,    ACPI_UEFI_OFFSET (Identifier[0]),           "UUID Identifier"},
     {ACPI_DMT_UINT16,   ACPI_UEFI_OFFSET (DataOffset),              "Data Offset"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
@@ -1481,13 +1481,14 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoWdat[] =
     {ACPI_DMT_UINT8,    ACPI_WDAT_OFFSET (PciBus),                  "PCI Bus"},
     {ACPI_DMT_UINT8,    ACPI_WDAT_OFFSET (PciDevice),               "PCI Device"},
     {ACPI_DMT_UINT8,    ACPI_WDAT_OFFSET (PciFunction),             "PCI Function"},
+    {ACPI_DMT_UINT24,   ACPI_WDAT_OFFSET (Reserved[0]),             "Reserved"},
     {ACPI_DMT_UINT32,   ACPI_WDAT_OFFSET (TimerPeriod),             "Timer Period"},
     {ACPI_DMT_UINT32,   ACPI_WDAT_OFFSET (MaxCount),                "Max Count"},
     {ACPI_DMT_UINT32,   ACPI_WDAT_OFFSET (MinCount),                "Min Count"},
     {ACPI_DMT_UINT8,    ACPI_WDAT_OFFSET (Flags),                   "Flags (decoded below)"},
     {ACPI_DMT_FLAG0,    ACPI_WDAT_OFFSET (Flags),                   "Enabled"},
     {ACPI_DMT_FLAG7,    ACPI_WDAT_OFFSET (Flags),                   "Stopped When Asleep"},
-    {ACPI_DMT_UINT24,   ACPI_WDAT_OFFSET (Reserved[0]),             "Reserved"},
+    {ACPI_DMT_UINT24,   ACPI_WDAT_OFFSET (Reserved2[0]),            "Reserved"},
     {ACPI_DMT_UINT32,   ACPI_WDAT_OFFSET (Entries),                 "Watchdog Entry Count"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
