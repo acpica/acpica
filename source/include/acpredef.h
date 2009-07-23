@@ -182,7 +182,7 @@ enum AcpiReturnPackageTypes
 };
 
 
-#ifdef __ACPI_PREDEFINED_TABLE
+#ifdef ACPI_CREATE_PREDEFINED_TABLE
 /*
  * Predefined method/object information table.
  *
