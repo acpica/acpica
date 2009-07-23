@@ -322,6 +322,10 @@ ACPI_STATUS
 AcpiNsEvaluate (
     ACPI_EVALUATE_INFO      *Info);
 
+void
+AcpiNsExecModuleCodeList (
+    void);
+
 
 /*
  * nspredef - Support for predefined/reserved names

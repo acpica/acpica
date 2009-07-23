@@ -360,6 +360,16 @@ AcpiInitializeObjects (
     }
 
     /*
+     * Execute any module-level code that was detected during the table load
+     * phase. Although illegal since ACPI 2.0, there are many machines that
+     * contain this type of code. Each block of detected executable AML code
+     * outside of any control method is wrapped with a temporary control
+     * method object and placed on a global list. The methods on this list
+     * are executed below.
+     */
+    AcpiNsExecModuleCodeList ();
+
+    /*
      * Initialize the objects that remain uninitialized. This runs the
      * executable AML that may be part of the declaration of these objects:
      * OperationRegions, BufferFields, Buffers, and Packages.
