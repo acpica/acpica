@@ -183,45 +183,13 @@ static char             TestName[33];
 
 extern FILE             *AcpiGbl_OutputFile;
 
-int ACPI_SYSTEM_XFACE
-main(
-    int                     argc,
-    char                    **argv)
+int
+ExecuteTest (
+    UINT32                  test_case,
+    UINT32                  test_num)
 {
-    long                    test_case = -1;
-    long                    test_num = -1;
+    int                     status;
 
-    signal (SIGINT, AtSigHandler);
-    signal (SIGILL, AtSigHandler);
-    signal (SIGFPE, AtSigHandler);
-//    signal (SIGSEGV, AtSigHandler);
-#ifdef Linux
-    signal (SIGALRM, AtSigHandler);
-    (void) alarm(AT_ALARM_PERIOD);
-#endif
-
-    if (argc < 3)
-    {
-        printf ("ACPICA API TS: <test case: 1 - 9 > <test number>"
-            " should be specified\n");
-        return AtRetBadParam;
-    }
-
-    test_case = strtoul (argv[1], NULL, 0);
-    if (test_case < 1 || test_case > AT_TEST_CASE_NUM)
-    {
-        printf ("ACPICA API TS err: test case %ld is out of range 1 - %d\n",
-            test_case, AT_TEST_CASE_NUM);
-        return AtRetBadParam;
-    }
-
-    test_num = strtoul (argv[2], NULL, 0);
-    if (test_num < 0 || test_num > (long)AtTestCase[test_case].TestsNum)
-    {
-        printf ("ACPICA API TS err: test num %ld is out of range 0 - %d\n",
-            test_num, AtTestCase[test_case].TestsNum);
-        return AtRetBadParam;
-    }
 
     AapiTestMode = AT_EMULATION_MODE;
     AapiErrors = 0;
@@ -231,11 +199,6 @@ main(
     AtAMLcodeFileName = NULL;
     AtAMLcodeFileDir = NULL;
     NullBldTask = ZeroBldTask;
-
-    if (argc > 3)
-    {
-        AtAMLcodeFileDir = argv[3];
-    }
 
     OsxfCtrlInit();
 
@@ -282,31 +245,98 @@ main(
         printf ("both FAIL and TEST FAULT,"
             " %d API errors, %d TEST errors\n",
             AapiErrors, TestErrors);
+        status = AtRetApiErr;
     }
     else if (AapiErrors)
     {
         printf ("FAIL, %d API errors\n", AapiErrors);
-        return AtRetApiErr;
+        status = AtRetApiErr;
     }
     else if (TestErrors)
     {
         printf ("TEST FAULT, %d TEST errors\n", TestErrors);
-        return AtRetTestErr;
+        status = AtRetTestErr;
     }
     else if (TestPass && TestSkipped)
     {
         printf ("PASS, Pass/Skip counters %d/%d\n",
             TestPass, TestSkipped);
+        status = AtRetPass;
     }
     else if (TestSkipped)
     {
         printf ("SKIP, counter %d\n", TestSkipped);
-        return AtRetSkip;
+        status = AtRetSkip;
     }
     else
     {
         printf ("PASS\n");
+        status = AtRetPass;
     }
 
-    return AtRetPass;
+    return status;
+}
+
+
+int ACPI_SYSTEM_XFACE
+main(
+    int                     argc,
+    char                    **argv)
+{
+    UINT32                  test_case;
+    UINT32                  test_num;
+    UINT32                  i;
+    UINT32                  j;
+
+
+    signal (SIGINT, AtSigHandler);
+    signal (SIGILL, AtSigHandler);
+    signal (SIGFPE, AtSigHandler);
+//    signal (SIGSEGV, AtSigHandler);
+#ifdef Linux
+    signal (SIGALRM, AtSigHandler);
+    (void) alarm(AT_ALARM_PERIOD);
+#endif
+
+    if (argc < 3)
+    {
+/*
+        printf ("ACPICA API TS: <test case: 1 - 9 > <test number>"
+            " should be specified\n");
+        return AtRetBadParam;
+*/
+        for (i = 7; i < 8 /*AT_TEST_CASE_NUM */; i++)
+        {
+            for (j = 0; j < 3 /* AtTestCase[i].TestsNum */; j++)
+            {
+                ExecuteTest (7, 0);
+            }
+        }
+        return 0;
+    }
+
+    test_case = strtoul (argv[1], NULL, 0);
+    if (test_case < 1 || test_case > AT_TEST_CASE_NUM)
+    {
+        printf ("ACPICA API TS err: test case %ld is out of range 1 - %d\n",
+            test_case, AT_TEST_CASE_NUM);
+        return AtRetBadParam;
+    }
+
+    test_num = strtoul (argv[2], NULL, 0);
+    if (test_num < 0 || test_num > AtTestCase[test_case].TestsNum)
+    {
+        printf ("ACPICA API TS err: test num %ld is out of range 0 - %d\n",
+            test_num, AtTestCase[test_case].TestsNum);
+        return AtRetBadParam;
+    }
+
+    if (argc > 3)
+    {
+        AtAMLcodeFileDir = argv[3];
+    }
+
+    ExecuteTest (test_case, test_num);
+    return 0;
+
 }

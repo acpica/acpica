@@ -817,12 +817,12 @@ OsxfCtrlRegService(UINT32 ServiceFlag)
             }
 #if ACPI_MACHINE_WIDTH == 64
 #ifdef    _MSC_VER
-            printf("%d (%s Address 0x%I64x: Width 0x%x) r/w %d/%d\n",
+            printf("%.2u (%s Address 0x%I64x: Width %.2u) r/w counts: %u/%u\n",
 #else
-            printf("%d (%s Address 0x%llx: Width 0x%x) r/w %d/%d\n",
+            printf("%.2u (%s Address 0x%llx: Width %.2u) r/w counts: %u/%u\n",
 #endif
 #else
-            printf("%d (%s Address 0x%x: Width 0x%x) r/w %d/%d\n",
+            printf("%.2u (%s Address 0x%.4x: Width %.2u) r/w counts: %u/%u\n",
 #endif
                 i, (Reg->Type == EMUL_REG_SYS)? "SYS": "IO",
                 Reg->Address, Reg->Width, Reg->ReadCount, Reg->WriteCount);

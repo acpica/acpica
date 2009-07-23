@@ -364,18 +364,18 @@ AtBuildLocalFADT1 (
     LocalFADT->Gpe1Base = 96;
 
     LocalFADT->Pm1EventLength = 4;
-    LocalFADT->Pm1ControlLength = 4;
+    LocalFADT->Pm1ControlLength = 2;
     LocalFADT->Pm2ControlLength = 1; /* optional */
-    LocalFADT->PmTimerLength = 8;
+    LocalFADT->PmTimerLength = 4;
 
-    LocalFADT->Gpe0Block = 0x12340000;
-    LocalFADT->Gpe1Block = 0x56780000;
+    LocalFADT->Gpe0Block = 0x00001234;
+    LocalFADT->Gpe1Block = 0x00005678;
 
-    LocalFADT->Pm1aEventBlock = 0x1aaa0000;
+    LocalFADT->Pm1aEventBlock = 0x00001aaa;
     LocalFADT->Pm1bEventBlock = 0;
-    LocalFADT->PmTimerBlock = 0xA0;
-    LocalFADT->Pm1aControlBlock = 0xB0;
-    LocalFADT->Pm2ControlBlock = 0xD0; /* optional */
+    LocalFADT->PmTimerBlock = 0xA00;
+    LocalFADT->Pm1aControlBlock = 0xB00;
+    LocalFADT->Pm2ControlBlock = 0xD00; /* optional */
 
     if (BldTask.ErrScale & BAD_LENGTH_HDR_FADT)
     {

@@ -32,7 +32,7 @@ AcpiOsInitialize (void)
     }
     if (Calls)
     {
-        printf("AcpiOsInitialize: there were %d OSL interfaces calls"
+        printf("AcpiOsInitialize: there were %u OSL interfaces calls"
             " done ahead of OsInitialize\n", (UINT32)Calls);
         return AE_ERROR;
     }
