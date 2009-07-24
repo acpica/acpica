@@ -562,17 +562,17 @@ typedef struct acpi_hest_aer_common
     UINT16                  Reserved1;
     UINT8                   Flags;
     UINT8                   Enabled;
-    UINT32                  RecordsToPreAllocate;
+    UINT32                  RecordsToPreallocate;
     UINT32                  MaxSectionsPerRecord;
     UINT32                  Bus;
     UINT16                  Device;
     UINT16                  Function;
     UINT16                  DeviceControl;
     UINT16                  Reserved2;
-    UINT32                  UncorrectableErrorMask;
-    UINT32                  UncorrectableErrorSeverity;
-    UINT32                  CorrectableErrorMask;
-    UINT32                  AdvancedErrorCapabilities;
+    UINT32                  UncorrectableMask;
+    UINT32                  UncorrectableSeverity;
+    UINT32                  CorrectableMask;
+    UINT32                  AdvancedCapabilities;
 
 } ACPI_HEST_AER_COMMON;
 
@@ -632,7 +632,7 @@ typedef struct acpi_hest_ia_machine_check
     UINT16                  Reserved1;
     UINT8                   Flags;
     UINT8                   Enabled;
-    UINT32                  RecordsToPreAllocate;
+    UINT32                  RecordsToPreallocate;
     UINT32                  MaxSectionsPerRecord;
     UINT64                  GlobalCapabilityData;
     UINT64                  GlobalControlData;
@@ -650,7 +650,7 @@ typedef struct acpi_table_hest_ia_corrected
     UINT16                  Reserved1;
     UINT8                   Flags;
     UINT8                   Enabled;
-    UINT32                  RecordsToPreAllocate;
+    UINT32                  RecordsToPreallocate;
     UINT32                  MaxSectionsPerRecord;
     ACPI_HEST_NOTIFY        Notify;
     UINT8                   NumHardwareBanks;
@@ -665,7 +665,7 @@ typedef struct acpi_hest_ia_nmi
 {
     ACPI_HEST_HEADER        Header;
     UINT32                  Reserved;
-    UINT32                  RecordsToPreAllocate;
+    UINT32                  RecordsToPreallocate;
     UINT32                  MaxSectionsPerRecord;
     UINT32                  MaxRawDataLength;
 
@@ -701,9 +701,9 @@ typedef struct acpi_hest_aer_bridge
 {
     ACPI_HEST_HEADER        Header;
     ACPI_HEST_AER_COMMON    Aer;
-    UINT32                  SecondUncorrectableErrorMask;
-    UINT32                  SecondUncorrectableErrorSeverity;
-    UINT32                  SecondAdvancedCapabilities;
+    UINT32                  UncorrectableMask2;
+    UINT32                  UncorrectableSeverity2;
+    UINT32                  AdvancedCapabilities2;
 
 } ACPI_HEST_AER_BRIDGE;
 
@@ -716,7 +716,7 @@ typedef struct acpi_hest_generic
     UINT16                  RelatedSourceId;
     UINT8                   Reserved;
     UINT8                   Enabled;
-    UINT32                  RecordsToPreAllocate;
+    UINT32                  RecordsToPreallocate;
     UINT32                  MaxSectionsPerRecord;
     UINT32                  MaxRawDataLength;
     ACPI_GENERIC_ADDRESS    ErrorStatusAddress;
