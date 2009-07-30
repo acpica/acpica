@@ -21,6 +21,8 @@ generate/msvc/AslCompiler_LinuxDebug/
 generate/msvc/AcpiSubsystem64
 generate/msvc/Examples
 generate/msvc/ExamplesDebug
+generate/msvc/ApiTest
+generate/msvc/bin
 
 generate/unix/bin
 generate/unix/acpiexec/*.o
@@ -49,9 +51,12 @@ libraries/acpica.lib
 libraries/acpica_dbg.lib
 libraries/Examples.exe
 libraries/ExamplesDebug.exe
+libraries/ApiTest.exe
+libraries/ApiTestdebug.exe
 libraries/size.bat
 libraries/size_dbg.txt
 libraries/size_rel.txt
+libraries/apitest.exe
 
 tests/tmp
 tests/misc/*.aml
