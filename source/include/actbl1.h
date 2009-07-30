@@ -644,7 +644,7 @@ typedef struct acpi_hest_ia_machine_check
 
 /* 1: IA32 Corrected Machine Check */
 
-typedef struct acpi_table_hest_ia_corrected
+typedef struct acpi_hest_ia_corrected
 {
     ACPI_HEST_HEADER        Header;
     UINT16                  Reserved1;
