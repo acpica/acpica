@@ -183,6 +183,7 @@ Options (
     printf ("  -t<a|c>        Create AML in assembler or C hex table (*.hex)\n");
 
     printf ("\nAML Code Generation:\n");
+    printf ("  -I<dir>        Specify additional include directory\n");
     printf ("  -oa            Disable all optimizations (compatibility mode)\n");
     printf ("  -of            Disable constant folding\n");
     printf ("  -oi            Disable integer optimization to Zero/One/Ones\n");
@@ -340,7 +341,7 @@ AslCommandLine (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "2b:cd^e:fgh^i^l^o:p:r:s:t:v:w:x:")) != EOF) switch (j)
+    while ((j = AcpiGetopt (argc, argv, "2b:cd^e:fgh^i^I:l^o:p:r:s:t:v:w:x:")) != EOF) switch (j)
     {
     case '2':
         Gbl_Acpi2 = TRUE;
@@ -447,6 +448,12 @@ AslCommandLine (
             BadCommandLine = TRUE;
             break;
         }
+        break;
+
+
+    case 'I': /* Add an include file search directory */
+
+        FlAddIncludeDirectory (AcpiGbl_Optarg);
         break;
 
 
