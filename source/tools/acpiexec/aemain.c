@@ -127,6 +127,7 @@ BOOLEAN         AcpiGbl_IgnoreErrors = FALSE;
 BOOLEAN         AcpiGbl_DbOpt_NoRegionSupport = FALSE;
 BOOLEAN         AcpiGbl_DebugTimeout = FALSE;
 char            BatchBuffer[128];
+AE_TABLE_DESC   *AeTableListHead = NULL;
 
 
 /******************************************************************************
@@ -218,6 +219,84 @@ AcpiDbRunBatchMode (
 }
 
 
+#define ASL_MAX_FILES   256
+char                    *FileList[ASL_MAX_FILES];
+int                     FileCount;
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsDoWildcard
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Process files via wildcards. This function is for the Windows
+ *              case only.
+ *
+ ******************************************************************************/
+
+static char **
+AsDoWildcard (
+    char                    *DirectoryPathname,
+    char                    *FileSpecifier)
+{
+#ifdef WIN32
+    void                    *DirInfo;
+    char                    *Filename;
+
+
+    FileCount = 0;
+
+    /* Open parent directory */
+
+    DirInfo = AcpiOsOpenDirectory (DirectoryPathname, FileSpecifier, REQUEST_FILE_ONLY);
+    if (!DirInfo)
+    {
+        /* Either the directory or file does not exist */
+
+        printf ("File or directory %s%s does not exist\n", DirectoryPathname, FileSpecifier);
+        return (NULL);
+    }
+
+    /* Process each file that matches the wildcard specification */
+
+    while ((Filename = AcpiOsGetNextFilename (DirInfo)))
+    {
+        /* Add the filename to the file list */
+
+        FileList[FileCount] = AcpiOsAllocate (strlen (Filename) + 1);
+        strcpy (FileList[FileCount], Filename);
+        FileCount++;
+
+        if (FileCount >= ASL_MAX_FILES)
+        {
+            printf ("Max files reached\n");
+            FileList[0] = NULL;
+            return (FileList);
+        }
+    }
+
+    /* Cleanup */
+
+    AcpiOsCloseDirectory (DirInfo);
+    FileList[FileCount] = NULL;
+    return (FileList);
+
+#else
+    /*
+     * Linux/Unix cases - Wildcards are expanded by the shell automatically.
+     * Just return the filename in a null terminated list
+     */
+    FileList[0] = AcpiOsAllocate (strlen (FileSpecifier) + 1);
+    strcpy (FileList[0], FileSpecifier);
+    FileList[1] = NULL;
+
+    return (FileList);
+#endif
+}
+
+
 /******************************************************************************
  *
  * FUNCTION:    main
@@ -238,7 +317,10 @@ main (
     int                     j;
     ACPI_STATUS             Status;
     UINT32                  InitFlags;
-    ACPI_TABLE_HEADER       *Table;
+    ACPI_TABLE_HEADER       *Table = NULL;
+    UINT32                  TableCount;
+    AE_TABLE_DESC           *TableDesc;
+    char                    **FileList;
 
 
 #ifdef _DEBUG
@@ -364,21 +446,73 @@ main (
         InitFlags |= (ACPI_NO_DEVICE_INIT | ACPI_NO_OBJECT_INIT);
     }
 
-    /* Standalone filename is the only argument */
+    /* The remaining arguments are filenames for ACPI tables */
 
     if (argv[AcpiGbl_Optind])
     {
         AcpiGbl_DbOpt_tables = TRUE;
-        AcpiGbl_DbFilename = argv[AcpiGbl_Optind];
+        TableCount = 0;
 
-        Status = AcpiDbReadTableFromFile (AcpiGbl_DbFilename, &Table);
-        if (ACPI_FAILURE (Status))
+        /* Get each of the ACPI table files on the command line */
+
+        while (argv[AcpiGbl_Optind])
         {
-            printf ("**** Could not get input table, %s\n", AcpiFormatException (Status));
-            goto enterloop;
+            /*
+             * Expand wildcards (Windows only)
+             */
+            FileList = AsDoWildcard ("./", argv[AcpiGbl_Optind]);
+            if (!FileList)
+            {
+                return -1;
+            }
+
+            while (*FileList)
+            {
+                /* Get one table */
+
+                Status = AcpiDbReadTableFromFile (*FileList, &Table);
+                if (ACPI_FAILURE (Status))
+                {
+                    printf ("**** Could not get input table %s, %s\n", *FileList,
+                        AcpiFormatException (Status));
+                    goto enterloop;
+                }
+
+                AcpiOsFree (*FileList);
+                *FileList = NULL;
+                FileList++;
+
+                /*
+                 * Ignore an FACS or RSDT, we can't use them.
+                 */
+                if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_FACS) ||
+                    ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_RSDT))
+                {
+                    AcpiOsFree (Table);
+                    continue;
+                }
+
+                /* Allocate and link a table descriptor */
+
+                TableDesc = AcpiOsAllocate (sizeof (AE_TABLE_DESC));
+                TableDesc->Table = Table;
+                TableDesc->Next = AeTableListHead;
+                AeTableListHead = TableDesc;
+
+                TableCount++;
+            }
+
+            AcpiGbl_Optind++;
         }
 
-        AeBuildLocalTables (Table);
+        /* Build a local RSDT with all tables and let ACPICA process the RSDT */
+
+        Status = AeBuildLocalTables (TableCount, AeTableListHead);
+        if (ACPI_FAILURE (Status))
+        {
+            return -1;
+        }
+
         Status = AeInstallTables ();
         if (ACPI_FAILURE (Status))
         {
