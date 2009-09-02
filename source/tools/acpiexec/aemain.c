@@ -130,6 +130,9 @@ char            BatchBuffer[128];
 AE_TABLE_DESC   *AeTableListHead = NULL;
 
 
+#define AE_SUPPORTED_OPTIONS    "?ab:de^ghimo:rstvx:z"
+
+
 /******************************************************************************
  *
  * FUNCTION:    usage
@@ -145,7 +148,7 @@ AE_TABLE_DESC   *AeTableListHead = NULL;
 static void
 usage (void)
 {
-    printf ("Usage: acpiexec [Options] [InputFile]\n\n");
+    printf ("Usage: acpiexec [options] AMLfile1 AMLfile2 ...\n\n");
 
     printf ("Where:\n");
     printf ("   -?                  Display this message\n");
@@ -351,7 +354,7 @@ main (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "?ab:de^gimo:rstvx:z")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, AE_SUPPORTED_OPTIONS)) != EOF) switch(j)
     {
     case 'a':
         AcpiGbl_IgnoreErrors = TRUE;
@@ -434,6 +437,7 @@ main (
         break;
 
     case '?':
+    case 'h':
     default:
         usage();
         return -1;
