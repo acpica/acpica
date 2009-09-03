@@ -129,6 +129,11 @@ BOOLEAN         AcpiGbl_DebugTimeout = FALSE;
 char            BatchBuffer[128];
 AE_TABLE_DESC   *AeTableListHead = NULL;
 
+#define ASL_MAX_FILES   256
+char                    *FileList[ASL_MAX_FILES];
+int                     FileCount;
+
+
 
 #define AE_SUPPORTED_OPTIONS    "?ab:de^ghimo:rstvx:z"
 
@@ -222,9 +227,109 @@ AcpiDbRunBatchMode (
 }
 
 
-#define ASL_MAX_FILES   256
-char                    *FileList[ASL_MAX_FILES];
-int                     FileCount;
+/*******************************************************************************
+ *
+ * FUNCTION:    FlStrdup
+ *
+ * DESCRIPTION: Local strdup function
+ *
+ ******************************************************************************/
+
+static char *
+FlStrdup (
+    char                *String)
+{
+    char                *NewString;
+
+
+    NewString = AcpiOsAllocate (strlen (String) + 1);
+    if (!NewString)
+    {
+        return (NULL);
+    }
+
+    strcpy (NewString, String);
+    return (NewString);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    FlSplitInputPathname
+ *
+ * PARAMETERS:  InputFilename       - The user-specified ASL source file to be
+ *                                    compiled
+ *              OutDirectoryPath    - Where the directory path prefix is
+ *                                    returned
+ *              OutFilename         - Where the filename part is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Split the input path into a directory and filename part
+ *              1) Directory part used to open include files
+ *              2) Filename part used to generate output filenames
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+FlSplitInputPathname (
+    char                    *InputPath,
+    char                    **OutDirectoryPath,
+    char                    **OutFilename)
+{
+    char                    *Substring;
+    char                    *DirectoryPath;
+    char                    *Filename;
+
+
+    *OutDirectoryPath = NULL;
+    *OutFilename = NULL;
+
+    if (!InputPath)
+    {
+        return (AE_OK);
+    }
+
+    /* Get the path to the input filename's directory */
+
+    DirectoryPath = FlStrdup (InputPath);
+    if (!DirectoryPath)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    Substring = strrchr (DirectoryPath, '\\');
+    if (!Substring)
+    {
+        Substring = strrchr (DirectoryPath, '/');
+        if (!Substring)
+        {
+            Substring = strrchr (DirectoryPath, ':');
+        }
+    }
+
+    if (!Substring)
+    {
+        DirectoryPath[0] = 0;
+        Filename = FlStrdup (InputPath);
+    }
+    else
+    {
+        Filename = FlStrdup (Substring + 1);
+        *(Substring+1) = 0;
+    }
+
+    if (!Filename)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    *OutDirectoryPath = DirectoryPath;
+    *OutFilename = Filename;
+
+    return (AE_OK);
+}
+
 
 /******************************************************************************
  *
@@ -324,6 +429,9 @@ main (
     UINT32                  TableCount;
     AE_TABLE_DESC           *TableDesc;
     char                    **FileList;
+    char                    *Filename;
+    char                    *Directory;
+    char                    *FullPathname;
 
 
 #ifdef _DEBUG
@@ -461,10 +569,17 @@ main (
 
         while (argv[AcpiGbl_Optind])
         {
-            /*
-             * Expand wildcards (Windows only)
-             */
-            FileList = AsDoWildcard ("./", argv[AcpiGbl_Optind]);
+            /* Split incoming path into a directory/filename combo */
+
+            Status = FlSplitInputPathname (argv[AcpiGbl_Optind], &Directory, &Filename);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            /* Expand wildcards (Windows only) */
+
+            FileList = AsDoWildcard (Directory, Filename);
             if (!FileList)
             {
                 return -1;
@@ -472,16 +587,25 @@ main (
 
             while (*FileList)
             {
+                FullPathname = AcpiOsAllocate (
+                    strlen (Directory) + strlen (*FileList) + 1);
+
+                /* Construct a full path to the file */
+
+                strcpy (FullPathname, Directory);
+                strcat (FullPathname, *FileList);
+
                 /* Get one table */
 
-                Status = AcpiDbReadTableFromFile (*FileList, &Table);
+                Status = AcpiDbReadTableFromFile (FullPathname, &Table);
                 if (ACPI_FAILURE (Status))
                 {
-                    printf ("**** Could not get input table %s, %s\n", *FileList,
+                    printf ("**** Could not get input table %s, %s\n", FullPathname,
                         AcpiFormatException (Status));
                     goto enterloop;
                 }
 
+                AcpiOsFree (FullPathname);
                 AcpiOsFree (*FileList);
                 *FileList = NULL;
                 FileList++;
