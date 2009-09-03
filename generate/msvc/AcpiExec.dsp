@@ -445,6 +445,10 @@ SOURCE=..\..\source\common\getopt.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\os_specific\service_layers\oswindir.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\os_specific\service_layers\oswinxf.c
 # ADD CPP /Ze
 # End Source File
