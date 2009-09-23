@@ -118,6 +118,7 @@
 #include "acpi.h"
 #include "accommon.h"
 #include "acnamesp.h"
+#include "acinterp.h"
 #include "acpredef.h"
 
 #define _COMPONENT          ACPI_NAMESPACE
@@ -153,6 +154,7 @@ AcpiNsRepairObject (
     ACPI_OPERAND_OBJECT     *ReturnObject = *ReturnObjectPtr;
     ACPI_OPERAND_OBJECT     *NewObject;
     ACPI_SIZE               Length;
+    ACPI_STATUS             Status;
 
 
     /*
@@ -203,9 +205,26 @@ AcpiNsRepairObject (
 
     case ACPI_TYPE_INTEGER:
 
-        /* Does the method/object legally return a string? */
+        /* 1) Does the method/object legally return a buffer? */
 
-        if (ExpectedBtypes & ACPI_RTYPE_STRING)
+        if (ExpectedBtypes & ACPI_RTYPE_BUFFER)
+        {
+            /*
+             * Convert the Integer to a packed-byte buffer. _MAT needs
+             * this sometimes, if a read has been performed on a Field
+             * object that is less than or equal to the global integer
+             * size (32 or 64 bits).
+             */
+            Status = AcpiExConvertToBuffer (ReturnObject, &NewObject);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+        }
+
+        /* 2) Does the method/object legally return a string? */
+
+        else if (ExpectedBtypes & ACPI_RTYPE_STRING)
         {
             /*
              * The only supported Integer-to-String conversion is to convert
