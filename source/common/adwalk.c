@@ -536,7 +536,7 @@ AcpiDmFindOrphanDescending (
             {
                 /* This NamePath has no args, assume it is an integer */
 
-                AcpiDmAddToExternalList (ChildOp->Common.Value.String, ACPI_TYPE_INTEGER, 0);
+                AcpiDmAddToExternalList (ChildOp, ChildOp->Common.Value.String, ACPI_TYPE_INTEGER, 0);
                 return (AE_OK);
             }
 
@@ -547,11 +547,11 @@ AcpiDmFindOrphanDescending (
             {
                 /* One Arg means this is just a Store(Name,Target) */
 
-                AcpiDmAddToExternalList (ChildOp->Common.Value.String, ACPI_TYPE_INTEGER, 0);
+                AcpiDmAddToExternalList (ChildOp, ChildOp->Common.Value.String, ACPI_TYPE_INTEGER, 0);
                 return (AE_OK);
             }
 
-            AcpiDmAddToExternalList (ChildOp->Common.Value.String, ACPI_TYPE_METHOD, ArgCount);
+            AcpiDmAddToExternalList (ChildOp, ChildOp->Common.Value.String, ACPI_TYPE_METHOD, ArgCount);
         }
         break;
 #endif
@@ -567,7 +567,7 @@ AcpiDmFindOrphanDescending (
             {
                 /* This NamePath has no args, assume it is an integer */
 
-                AcpiDmAddToExternalList (ChildOp->Common.Value.String, ACPI_TYPE_INTEGER, 0);
+                AcpiDmAddToExternalList (ChildOp, ChildOp->Common.Value.String, ACPI_TYPE_INTEGER, 0);
                 return (AE_OK);
             }
 
@@ -576,11 +576,11 @@ AcpiDmFindOrphanDescending (
             {
                 /* One Arg means this is just a Store(Name,Target) */
 
-                AcpiDmAddToExternalList (ChildOp->Common.Value.String, ACPI_TYPE_INTEGER, 0);
+                AcpiDmAddToExternalList (ChildOp, ChildOp->Common.Value.String, ACPI_TYPE_INTEGER, 0);
                 return (AE_OK);
             }
 
-            AcpiDmAddToExternalList (ChildOp->Common.Value.String, ACPI_TYPE_METHOD, ArgCount);
+            AcpiDmAddToExternalList (ChildOp, ChildOp->Common.Value.String, ACPI_TYPE_METHOD, ArgCount);
         }
         break;
 
@@ -611,7 +611,7 @@ AcpiDmFindOrphanDescending (
                      /* And namepath is the first argument */
                      (ParentOp->Common.Value.Arg == Op))
                 {
-                    AcpiDmAddToExternalList (Op->Common.Value.String, ACPI_TYPE_INTEGER, 0);
+                    AcpiDmAddToExternalList (Op, Op->Common.Value.String, ACPI_TYPE_INTEGER, 0);
                     break;
                 }
             }
@@ -621,7 +621,7 @@ AcpiDmFindOrphanDescending (
              * operator) - it *must* be a method invocation, nothing else is
              * grammatically possible.
              */
-            AcpiDmAddToExternalList (Op->Common.Value.String, ACPI_TYPE_METHOD, ArgCount);
+            AcpiDmAddToExternalList (Op, Op->Common.Value.String, ACPI_TYPE_METHOD, ArgCount);
 
         }
         break;
@@ -858,7 +858,7 @@ AcpiDmXrefDescendingOp (
     {
         if (Status == AE_NOT_FOUND)
         {
-            AcpiDmAddToExternalList (Path, (UINT8) ObjectType, 0);
+            AcpiDmAddToExternalList (Op, Path, (UINT8) ObjectType, 0);
 
             /*
              * We could install this into the namespace, but we catch duplicate
@@ -888,12 +888,12 @@ AcpiDmXrefDescendingOp (
 
         if (ObjectType2 == ACPI_TYPE_METHOD)
         {
-            AcpiDmAddToExternalList (Path, ACPI_TYPE_METHOD,
+            AcpiDmAddToExternalList (Op, Path, ACPI_TYPE_METHOD,
                 Object->Method.ParamCount);
         }
         else
         {
-            AcpiDmAddToExternalList (Path, (UINT8) ObjectType2, 0);
+            AcpiDmAddToExternalList (Op, Path, (UINT8) ObjectType2, 0);
         }
 
         Op->Common.Node = Node;

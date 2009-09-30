@@ -203,6 +203,104 @@ const char                      *AcpiGbl_IrqDecode[] =
 
 
 #ifdef ACPI_ASL_COMPILER
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmNormalizeParentPrefix
+ *
+ * PARAMETERS:  Op              - Parse op
+ *              Path            - Path with parent prefix
+ *
+ * RETURN:      The full pathname to the object (from the namespace root)
+ *
+ * DESCRIPTION: Return the full pathname of a path with parent prefix
+ *              The caller must free the fullpath returned.
+ *
+ ******************************************************************************/
+
+static char *
+AcpiDmNormalizeParentPrefix (
+    ACPI_PARSE_OBJECT       *Op,
+    char                    *Path)
+{
+    char                    *ParentPath;
+    char                    *Fullpath = NULL;
+    UINT32                  Length;
+    ACPI_NAMESPACE_NODE     *Node = NULL;
+
+
+    /* Go upwards in the parse tree until we reach a namespace node */
+
+    while (Op)
+    {
+        if (Op->Common.Node)
+        {
+            break;
+        }
+
+        Op = Op->Common.Parent;
+    }
+
+    /* Remove all carats from the input path */
+
+    if (Op)
+    {
+        Node = Op->Common.Node;
+
+        /*
+         * There may be multiple parent prefixes
+         * For example, ^^^M000
+         */
+        while (Node && *Path == (UINT8) AML_PARENT_PREFIX)
+        {
+            Node = AcpiNsGetParentNode (Node);
+            Path++;
+        }
+    }
+
+    if (Node)
+    {
+        /* Get the full pathname for the parent node */
+
+        ParentPath = AcpiNsGetExternalPathname (Node);
+        if (ParentPath)
+        {
+            Length = ACPI_STRLEN (ParentPath);
+            Length += ACPI_STRLEN (Path) + 1;
+
+            Fullpath = ACPI_ALLOCATE_ZEROED (Length);
+
+            /*
+             * Concatenate parent fullpath and path. For example,
+             * Parent fullpath "\_SB_", path "^INIT"
+             * Fullpath "\_SB_.INIT"
+             */
+            if (Fullpath)
+            {
+                /* Copy parent path */
+
+                ACPI_STRCAT (Fullpath, ParentPath);
+
+                /* Don't need "." if parent fullpath is a single "\" */
+
+                if (ParentPath[1])
+                {
+                    ACPI_STRCAT (Fullpath, ".");
+                }
+
+                /* Copy child path, ^ parent prefix was skipped already */
+
+                ACPI_STRCAT (Fullpath, Path);
+            }
+
+            ACPI_FREE (ParentPath);
+        }
+    }
+
+    return (Fullpath);
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDmAddToExternalList
@@ -219,11 +317,13 @@ const char                      *AcpiGbl_IrqDecode[] =
 
 void
 AcpiDmAddToExternalList (
+    ACPI_PARSE_OBJECT       *Op,
     char                    *Path,
     UINT8                   Type,
     UINT32                  Value)
 {
     char                    *ExternalPath;
+    char                    *Fullpath = NULL;
     ACPI_EXTERNAL_LIST      *NewExternal;
     ACPI_EXTERNAL_LIST      *NextExternal;
     ACPI_EXTERNAL_LIST      *PrevExternal = NULL;
@@ -242,6 +342,20 @@ AcpiDmAddToExternalList (
     if (ACPI_FAILURE (Status))
     {
         return;
+    }
+
+    /* Get the fullpath if "Path" has a parent prefix */
+
+    if (*Path == (UINT8) AML_PARENT_PREFIX)
+    {
+        Fullpath = AcpiDmNormalizeParentPrefix (Op, ExternalPath);
+        if (Fullpath)
+        {
+            /* Set new external path */
+
+            ACPI_FREE (ExternalPath);
+            ExternalPath = Fullpath;
+        }
     }
 
     /* Ensure that we don't have duplicate externals */
@@ -275,11 +389,31 @@ AcpiDmAddToExternalList (
     /* Allocate and init a new External() descriptor */
 
     NewExternal = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_EXTERNAL_LIST));
-    NewExternal->InternalPath = Path;
     NewExternal->Path = ExternalPath;
     NewExternal->Type = Type;
     NewExternal->Value = Value;
     NewExternal->Length = (UINT16) ACPI_STRLEN (ExternalPath);
+
+    /* Was the external path with parent prefix normalized to fullpath? */
+
+    if (Fullpath == ExternalPath)
+    {
+        /* Get new internal path */
+
+        Status = AcpiNsInternalizeName (ExternalPath, &Path);
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_FREE (ExternalPath);
+            ACPI_FREE (NewExternal);
+            return;
+        }
+
+        /* Set flag to indicate External->InternalPath need to be freed */
+
+        NewExternal->Flags |= ACPI_IPATH_ALLOCATED;
+    }
+
+    NewExternal->InternalPath = Path;
 
     /* Link the new descriptor into the global list, ordered by string length */
 

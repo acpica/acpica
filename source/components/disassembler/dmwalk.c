@@ -575,7 +575,13 @@ AcpiDmDescendingOp (
                         AcpiOsPrintf (")\n");
                     }
 
+                    /* Free this external info and move on to next external */
+
                     NextExternal = AcpiGbl_ExternalList->Next;
+                    if (AcpiGbl_ExternalList->Flags & ACPI_IPATH_ALLOCATED)
+                    {
+                        ACPI_FREE (AcpiGbl_ExternalList->InternalPath);
+                    }
                     ACPI_FREE (AcpiGbl_ExternalList->Path);
                     ACPI_FREE (AcpiGbl_ExternalList);
                     AcpiGbl_ExternalList = NextExternal;

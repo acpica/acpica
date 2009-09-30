@@ -300,11 +300,12 @@ AdInitialize (
  *
  * FUNCTION:    AdAddExternalsToNamespace
  *
- * PARAMETERS:
+ * PARAMETERS:  None
  *
  * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Add all externals to the namespace. Allows externals to be
+ *              "resolved".
  *
  ******************************************************************************/
 
@@ -318,14 +319,26 @@ AdAddExternalsToNamespace (
     ACPI_OPERAND_OBJECT     *MethodDesc;
 
 
+    ACPI_FUNCTION_NAME (AdAddExternalsToNamespace );
+
+
     while (External)
     {
+        /* Add the external name (object) into the namespace */
+
         Status = AcpiNsLookup (NULL, External->InternalPath, External->Type,
                    ACPI_IMODE_LOAD_PASS1, ACPI_NS_EXTERNAL | ACPI_NS_DONT_OPEN_SCOPE,
                    NULL, &Node);
 
-        if (External->Type == ACPI_TYPE_METHOD)
+        if (ACPI_FAILURE (Status))
         {
+            ACPI_EXCEPTION ((AE_INFO, Status, "while adding external to namespace [%s]",
+                External->Path));
+        }
+        else if (External->Type == ACPI_TYPE_METHOD)
+        {
+            /* For methods, we need to save the argument count */
+
             MethodDesc = AcpiUtCreateInternalObject (ACPI_TYPE_METHOD);
             MethodDesc->Method.ParamCount = (UINT8) External->Value;
             Node->Object = MethodDesc;
@@ -342,7 +355,7 @@ AdAddExternalsToNamespace (
  *
  * PARAMETERS:  None
  *
- * RETURN:      Status
+ * RETURN:      The number of control method externals in the external list
  *
  * DESCRIPTION: Return the number of externals that have been generated
  *
