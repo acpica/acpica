@@ -732,29 +732,45 @@ AcpiDsLoad2BeginOp (
         break;
 
     case AML_SCOPE_OP:
-        /*
-         * The Path is an object reference to an existing object.
-         * Don't enter the name into the namespace, but look it up
-         * for use later.
-         */
-        Status = AcpiNsLookup (WalkState->ScopeInfo, BufferPtr, ObjectType,
+
+        /* Special case for Scope(\) -> refers to the Root node */
+
+        if (Op && (Op->Named.Node == AcpiGbl_RootNode))
+        {
+            Node = Op->Named.Node;
+
+            Status = AcpiDsScopeStackPush (Node, ObjectType, WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+        }
+        else
+        {
+            /*
+             * The Path is an object reference to an existing object.
+             * Don't enter the name into the namespace, but look it up
+             * for use later.
+             */
+            Status = AcpiNsLookup (WalkState->ScopeInfo, BufferPtr, ObjectType,
                         ACPI_IMODE_EXECUTE, ACPI_NS_SEARCH_PARENT,
                         WalkState, &(Node));
-        if (ACPI_FAILURE (Status))
-        {
+            if (ACPI_FAILURE (Status))
+            {
 #ifdef ACPI_ASL_COMPILER
-            if (Status == AE_NOT_FOUND)
-            {
-                Status = AE_OK;
-            }
-            else
-            {
-                ACPI_ERROR_NAMESPACE (BufferPtr, Status);
-            }
+                if (Status == AE_NOT_FOUND)
+                {
+                    Status = AE_OK;
+                }
+                else
+                {
+                    ACPI_ERROR_NAMESPACE (BufferPtr, Status);
+                }
 #else
-            ACPI_ERROR_NAMESPACE (BufferPtr, Status);
+                ACPI_ERROR_NAMESPACE (BufferPtr, Status);
 #endif
-            return_ACPI_STATUS (Status);
+                return_ACPI_STATUS (Status);
+            }
         }
 
         /*
