@@ -543,7 +543,6 @@ AcpiDbWalkForExecute (
 
     if (ObjInfo->Type == ACPI_TYPE_METHOD)
     {
-
         /* Setup default parameters */
 
         for (i = 0; i < ObjInfo->ParamCount; i++)
@@ -557,10 +556,8 @@ AcpiDbWalkForExecute (
     }
 
     ACPI_FREE (ObjInfo);
-
     ReturnObj.Pointer = NULL;
     ReturnObj.Length = ACPI_ALLOCATE_BUFFER;
-
 
     /* Do the actual method execution */
 
@@ -571,6 +568,10 @@ AcpiDbWalkForExecute (
     AcpiOsPrintf ("%-32s returned %s\n", Pathname, AcpiFormatException (Status));
     AcpiGbl_MethodExecuting = FALSE;
     ACPI_FREE (Pathname);
+
+    /* Ignore status from method execution */
+
+    Status = AE_OK;
 
     /* Update count, check if we have executed enough methods */
 
