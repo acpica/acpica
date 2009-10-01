@@ -326,6 +326,10 @@ SOURCE=..\..\source\common\adwalk.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\common\dmextern.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\common\dmrestag.c
 # End Source File
 # Begin Source File

@@ -42,6 +42,7 @@ OBJS = \
 	aslutils.o \
 	dbfileio.o \
 	dmbuffer.o \
+	dmextern.o \
 	dmnames.o \
 	dmobject.o \
 	dmopcode.o \
@@ -245,6 +246,9 @@ adisasm.o :         $(ACPICA_COMMON)/adisasm.c
 	$(COMPILE)
 
 adwalk.o :          $(ACPICA_COMMON)/adwalk.c
+	$(COMPILE)
+
+dmextern.o :        $(ACPICA_COMMON)/dmextern.c
 	$(COMPILE)
 
 dmrestag.o :        $(ACPICA_COMMON)/dmrestag.c
