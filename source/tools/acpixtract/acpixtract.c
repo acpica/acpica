@@ -119,7 +119,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#define VERSION             0x20060324
+#define VERSION             0x20091001
 
 #define FIND_HEADER         0
 #define EXTRACT_DATA        1
@@ -483,6 +483,7 @@ ExtractTables (
     unsigned int            Instances = 0;
     unsigned int            ThisInstance;
     char                    ThisSignature[4];
+    int                     Status = 0;
 
 
     /* Open input in text mode, output is in binary mode */
@@ -504,12 +505,13 @@ ExtractTables (
         if (Instances < MinimumInstances)
         {
             printf ("Table %s was not found in %s\n", Signature, InputPathname);
-            return -1;
+            Status = -1;
+            goto CleanupAndExit;
         }
 
         if (Instances == 0)
         {
-            return 0;
+            goto CleanupAndExit;
         }
     }
 
@@ -561,7 +563,8 @@ ExtractTables (
             if (!OutputFile)
             {
                 printf ("Could not open %s\n", Filename);
-                return -1;
+                Status = -1;
+                goto CleanupAndExit;
             }
 
             State = EXTRACT_DATA;
@@ -596,14 +599,17 @@ ExtractTables (
             {
                 printf ("Write error on %s\n", Filename);
                 fclose (OutputFile);
-                return -1;
+                OutputFile = NULL;
+                Status = -1;
+                goto CleanupAndExit;
             }
 
             TotalBytesWritten += BytesConverted;
             continue;
 
         default:
-            return -1;
+            Status = -1;
+            goto CleanupAndExit;
         }
     }
 
@@ -611,6 +617,9 @@ ExtractTables (
     {
         printf ("Table %s was not found in %s\n", Signature, InputPathname);
     }
+
+
+CleanupAndExit:
 
     if (OutputFile)
     {
@@ -625,7 +634,7 @@ ExtractTables (
     }
 
     fclose (InputFile);
-    return 0;
+    return (Status);
 }
 
 
