@@ -132,14 +132,18 @@
 #define _COMPONENT          ACPI_TOOLS
         ACPI_MODULE_NAME    ("adisasm")
 
-extern int                          AslCompilerdebug;
+
+extern int                  AslCompilerdebug;
+extern char                 *Gbl_ExternalFilename;
+
 
 ACPI_STATUS
 LsDisplayNamespace (
     void);
 
 void
-LsSetupNsList (void * Handle);
+LsSetupNsList (
+    void                    *Handle);
 
 
 /* Local prototypes */
@@ -163,8 +167,6 @@ ACPI_STATUS
 AdParseDeferredOps (
     ACPI_PARSE_OBJECT       *Root);
 
-ACPI_PARSE_OBJECT           *AcpiGbl_ParseOpRoot;
-
 
 /* Stubs for ASL compiler */
 
@@ -184,7 +186,6 @@ AcpiDsMethodError (
 {
     return (Status);
 }
-
 #endif
 
 ACPI_STATUS
@@ -230,18 +231,19 @@ AcpiDsMethodDataInitArgs (
 }
 
 
-ACPI_TABLE_DESC             LocalTables[1];
+static ACPI_TABLE_DESC      LocalTables[1];
+static ACPI_PARSE_OBJECT    *AcpiGbl_ParseOpRoot;
 
 
 /*******************************************************************************
  *
  * FUNCTION:    AdInitialize
  *
- * PARAMETERS:  None.
+ * PARAMETERS:  None
  *
  * RETURN:      Status
  *
- * DESCRIPTION: CA initialization
+ * DESCRIPTION: ACPICA and local initialization
  *
  ******************************************************************************/
 
@@ -292,19 +294,17 @@ AdInitialize (
  *
  * FUNCTION:    AdAmlDisassemble
  *
- * PARAMETERS:  Filename        - AML input filename
- *              OutToFile       - TRUE if output should go to a file
- *              Prefix          - Path prefix for output
- *              OutFilename     - where the filename is returned
- *              GetAllTables    - TRUE if all tables are desired
+ * PARAMETERS:  Filename            - AML input filename
+ *              OutToFile           - TRUE if output should go to a file
+ *              Prefix              - Path prefix for output
+ *              OutFilename         - where the filename is returned
+ *              GetAllTables        - TRUE if all tables are desired
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Disassemble an entire ACPI table
  *
  *****************************************************************************/
-
-extern char *Gbl_ExternalFilename;
 
 ACPI_STATUS
 AdAmlDisassemble (
@@ -324,8 +324,8 @@ AdAmlDisassemble (
 
 
     /*
-     * Input: AML Code from either a file,
-     *        or via GetTables (memory or registry)
+     * Input: AML code from either a file or via GetTables (memory or
+     * registry)
      */
     if (Filename)
     {
@@ -412,8 +412,7 @@ AdAmlDisassemble (
     }
 
     /*
-     * Output:  ASL code.
-     *          Redirect to a file if requested
+     * Output:  ASL code. Redirect to a file if requested
      */
     if (OutToFile)
     {
@@ -766,9 +765,9 @@ AdDisplayTables (
  *
  * FUNCTION:    AdDeferredParse
  *
- * PARAMETERS:  Op              - Root Op of the deferred opcode
- *              Aml             - Pointer to the raw AML
- *              AmlLength       - Length of the AML
+ * PARAMETERS:  Op                  - Root Op of the deferred opcode
+ *              Aml                 - Pointer to the raw AML
+ *              AmlLength           - Length of the AML
  *
  * RETURN:      Status
  *
@@ -892,7 +891,7 @@ AdDeferredParse (
  *
  * FUNCTION:    AdParseDeferredOps
  *
- * PARAMETERS:  Root            - Root of the parse tree
+ * PARAMETERS:  Root                - Root of the parse tree
  *
  * RETURN:      Status
  *
@@ -966,8 +965,8 @@ AdParseDeferredOps (
  *
  * FUNCTION:    AdGetLocalTables
  *
- * PARAMETERS:  Filename        - Not used
- *              GetAllTables    - TRUE if all tables are desired
+ * PARAMETERS:  Filename            - Not used
+ *              GetAllTables        - TRUE if all tables are desired
  *
  * RETURN:      Status
  *
@@ -1049,6 +1048,11 @@ AdGetLocalTables (
 
         Status = AcpiTbStoreTable (0, NewTable, NewTable->Length,
                     0, &TableIndex);
+        if (ACPI_FAILURE (Status))
+        {
+            fprintf (stderr, "Could not store DSDT\n");
+            return AE_NO_ACPI_TABLES;
+        }
     }
     else
     {
@@ -1080,10 +1084,10 @@ AdGetLocalTables (
  *
  * FUNCTION:    AdParseTable
  *
- * PARAMETERS:  Table           - Pointer to the raw table
- *              OwnerId         - Returned OwnerId of the table
- *              LoadTable       - If add table to the global table list
- *              External        - If this is an external table
+ * PARAMETERS:  Table               - Pointer to the raw table
+ *              OwnerId             - Returned OwnerId of the table
+ *              LoadTable           - If add table to the global table list
+ *              External            - If this is an external table
  *
  * RETURN:      Status
  *

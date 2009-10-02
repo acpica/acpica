@@ -118,7 +118,6 @@
 #include "accommon.h"
 #include "acparser.h"
 #include "amlcode.h"
-#include "acdebug.h"
 #include "acdisasm.h"
 #include "acdispat.h"
 #include "acnamesp.h"
@@ -184,7 +183,7 @@ AcpiDmResourceDescendingOp (
  *
  * FUNCTION:    AcpiDmDumpTree
  *
- * PARAMETERS:  Origin          - Starting object
+ * PARAMETERS:  Origin              - Starting object
  *
  * RETURN:      None
  *
@@ -218,7 +217,7 @@ AcpiDmDumpTree (
  *
  * FUNCTION:    AcpiDmFindOrphanMethods
  *
- * PARAMETERS:  Origin          - Starting object
+ * PARAMETERS:  Origin              - Starting object
  *
  * RETURN:      None
  *
@@ -426,7 +425,6 @@ AcpiDmDumpDescending (
     void                    *Context)
 {
     ACPI_OP_WALK_INFO       *Info = Context;
-    const ACPI_OPCODE_INFO  *OpInfo;
     char                    *Path;
 
 
@@ -435,11 +433,9 @@ AcpiDmDumpDescending (
         return (AE_OK);
     }
 
-    OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
-    Info->Count++;
-
     /* Most of the information (count, level, name) here */
 
+    Info->Count++;
     AcpiOsPrintf ("% 5d [%2.2d] ", Info->Count, Level);
     AcpiDmIndent (Level);
     AcpiOsPrintf ("%-28s", AcpiPsGetOpcodeName (Op->Common.AmlOpcode));
@@ -472,7 +468,7 @@ AcpiDmDumpDescending (
     case AML_METHOD_OP:
     case AML_DEVICE_OP:
     case AML_INT_NAMEDFIELD_OP:
-        AcpiOsPrintf ("%4.4s", &Op->Named.Name);
+        AcpiOsPrintf ("%4.4s", ACPI_CAST_PTR (char, &Op->Named.Name));
         break;
 
     default:
