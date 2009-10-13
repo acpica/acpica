@@ -45,7 +45,7 @@ generate/lint/LintOut.txt
 libraries/acpiexecdebug.exe
 libraries/AcpiXtractDebug.exe
 libraries/AcpiBinDebug.exe
-libraries/AcpiSrcDebug.exe
+libraries/acpisrcdebug.exe
 libraries/iasldebug.exe
 libraries/acpica.lib
 libraries/acpica_dbg.lib
