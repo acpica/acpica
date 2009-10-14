@@ -795,6 +795,15 @@ AcpiUtPredefinedWarning (
     const char              *Format,
     ...);
 
+void ACPI_INTERNAL_VAR_XFACE
+AcpiUtPredefinedInfo (
+    const char              *ModuleName,
+    UINT32                  LineNumber,
+    char                    *Pathname,
+    UINT8                   NodeFlags,
+    const char              *Format,
+    ...);
+
 /* Values for Base above (16=Hex, 10=Decimal) */
 
 #define ACPI_ANY_BASE        0
