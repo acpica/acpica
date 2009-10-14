@@ -5723,11 +5723,11 @@ Method(ms2c, 1)
 			}
 			Decrement(Local0)
 		}
-		if (LNotEqual(Local0, 2)) {
-			err(ts, z179, 0x2b4, 0, 0, Local0, 2)
+		if (LNotEqual(Local0, 0)) {
+			err(ts, z179, 0x2b4, 0, 0, Local0, 0)
 		}
-		if (LNotEqual(Local1, 0)) {
-			err(ts, z179, 0x2b5, 0, 0, Local1, 0)
+		if (LNotEqual(Local1, 1)) {
+			err(ts, z179, 0x2b5, 0, 0, Local1, 1)
 		}
 		if (LNotEqual(Local2, 1)) {
 			err(ts, z179, 0x2b6, 0, 0, Local2, 1)
@@ -5755,8 +5755,8 @@ Method(ms2c, 1)
 			}
 			Decrement(Local0)
 		}
-		if (LNotEqual(Local0, 1)) {
-			err(ts, z179, 0x2b7, 0, 0, Local0, 1)
+		if (LNotEqual(Local0, 0)) {
+			err(ts, z179, 0x2b7, 0, 0, Local0, 0)
 		}
 		if (LNotEqual(Local1, 1)) {
 			err(ts, z179, 0x2b8, 0, 0, Local1, 1)
@@ -5787,11 +5787,11 @@ Method(ms2c, 1)
 			}
 			Decrement(Local0)
 		}
-		if (LNotEqual(Local0, 2)) {
-			err(ts, z179, 0x2ba, 0, 0, Local0, 2)
+		if (LNotEqual(Local0, 0)) {
+			err(ts, z179, 0x2ba, 0, 0, Local0, 0)
 		}
-		if (LNotEqual(Local1, 0)) {
-			err(ts, z179, 0x2bb, 0, 0, Local1, 0)
+		if (LNotEqual(Local1, 1)) {
+			err(ts, z179, 0x2bb, 0, 0, Local1, 1)
 		}
 		if (LNotEqual(Local2, 1)) {
 			err(ts, z179, 0x2bc, 0, 0, Local2, 1)
