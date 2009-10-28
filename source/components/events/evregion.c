@@ -1173,7 +1173,7 @@ AcpiEvInstallSpaceHandler (
      * of the branch
      */
     Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, Node, ACPI_UINT32_MAX,
-                ACPI_NS_WALK_UNLOCK, AcpiEvInstallHandler,
+                ACPI_NS_WALK_UNLOCK, AcpiEvInstallHandler, NULL,
                 HandlerObj, NULL);
 
 UnlockAndExit:
@@ -1213,7 +1213,7 @@ AcpiEvExecuteRegMethods (
      * regions of this Space ID before we can run any _REG methods)
      */
     Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, Node, ACPI_UINT32_MAX,
-                ACPI_NS_WALK_UNLOCK, AcpiEvRegRun,
+                ACPI_NS_WALK_UNLOCK, AcpiEvRegRun, NULL,
                 &SpaceId, NULL);
 
     return_ACPI_STATUS (Status);
