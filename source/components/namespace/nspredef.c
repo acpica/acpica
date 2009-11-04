@@ -330,6 +330,12 @@ AcpiNsCheckPredefinedNames (
         Status = AcpiNsCheckPackage (Data, ReturnObjectPtr);
     }
 
+    /*
+     * Perform additional, more complicated repairs on a per-name
+     * basis.
+     */
+    Status = AcpiNsComplexRepairs (Data, Node, Status, ReturnObjectPtr);
+
 
 CheckValidationStatus:
     /*

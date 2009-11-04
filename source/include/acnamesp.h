@@ -429,7 +429,8 @@ AcpiNsGetAttachedData (
 
 
 /*
- * nsrepair - return object repair for predefined methods/objects
+ * nsrepair - General return object repair for all
+ * predefined methods/objects
  */
 ACPI_STATUS
 AcpiNsRepairObject (
@@ -442,6 +443,18 @@ ACPI_STATUS
 AcpiNsRepairPackageList (
     ACPI_PREDEFINED_DATA    *Data,
     ACPI_OPERAND_OBJECT     **ObjDescPtr);
+
+
+/*
+ * nsrepair2 - Return object repair for specific
+ * predefined methods/objects
+ */
+ACPI_STATUS
+AcpiNsComplexRepairs (
+    ACPI_PREDEFINED_DATA    *Data,
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_STATUS             ValidateStatus,
+    ACPI_OPERAND_OBJECT     **ReturnObjectPtr);
 
 
 /*
