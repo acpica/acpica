@@ -644,6 +644,10 @@ AcpiUtCreatePackageObject (
     UINT32                  Count);
 
 ACPI_OPERAND_OBJECT *
+AcpiUtCreateIntegerObject (
+    UINT64                  Value);
+
+ACPI_OPERAND_OBJECT *
 AcpiUtCreateBufferObject (
     ACPI_SIZE               BufferSize);
 
