@@ -1161,14 +1161,12 @@ AcpiDbSetMethodData (
 
     /* Create and initialize the new object */
 
-    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+    ObjDesc = AcpiUtCreateIntegerObject ((UINT64) Value);
     if (!ObjDesc)
     {
         AcpiOsPrintf ("Could not create an internal object\n");
         return;
     }
-
-    ObjDesc->Integer.Value = Value;
 
     /* Store the new object into the target */
 

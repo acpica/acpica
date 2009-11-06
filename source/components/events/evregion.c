@@ -400,25 +400,21 @@ AcpiEvExecuteRegMethod (
      *  connection status 1 for connecting the handler, 0 for disconnecting
      *  the handler (Passed as a parameter)
      */
-    Args[0] = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+    Args[0] = AcpiUtCreateIntegerObject ((UINT64) RegionObj->Region.SpaceId);
     if (!Args[0])
     {
         Status = AE_NO_MEMORY;
         goto Cleanup1;
     }
 
-    Args[1] = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+    Args[1] = AcpiUtCreateIntegerObject ((UINT64) Function);
     if (!Args[1])
     {
         Status = AE_NO_MEMORY;
         goto Cleanup2;
     }
 
-    /* Setup the parameter objects */
-
-    Args[0]->Integer.Value = RegionObj->Region.SpaceId;
-    Args[1]->Integer.Value = Function;
-    Args[2] = NULL;
+    Args[2] = NULL; /* Terminate list */
 
     /* Execute the method, no return value */
 
