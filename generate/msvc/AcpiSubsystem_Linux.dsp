@@ -1954,5 +1954,9 @@ SOURCE=..\..\source\include\acnames.h
 
 SOURCE=..\..\source\include\acopcode.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\components\namespace\nsrepair2.c
+# End Source File
 # End Target
 # End Project
