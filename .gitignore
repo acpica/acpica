@@ -39,6 +39,8 @@ generate/unix/iasl/*.exe
 
 generate/release/current
 generate/release/archive
+generate/release/size_dbg.txt
+generate/release/size_rel.txt
 
 generate/lint/LintOut.txt
 
