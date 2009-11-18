@@ -296,18 +296,19 @@ AcpiDsLoad1BeginOp (
         case ACPI_TYPE_BUFFER:
 
             /*
-             * These types we will allow, but we will change the type. This
-             * enables some existing code of the form:
+             * These types we will allow, but we will change the type.
+             * This enables some existing code of the form:
              *
              *  Name (DEB, 0)
              *  Scope (DEB) { ... }
              *
-             * Note: silently change the type here. On the second pass, we will report
-             * a warning
+             * Note: silently change the type here. On the second pass,
+             * we will report a warning
              */
             ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-                "Type override - [%4.4s] had invalid type (%s) for Scope operator, changed to (Scope)\n",
-                Path, AcpiUtGetTypeName (Node->Type)));
+                "Type override - [%4.4s] had invalid type (%s) "
+                "for Scope operator, changed to type ANY\n",
+                AcpiUtGetNodeName (Node), AcpiUtGetTypeName (Node->Type)));
 
             Node->Type = ACPI_TYPE_ANY;
             WalkState->ScopeInfo->Common.Value = ACPI_TYPE_ANY;
@@ -318,8 +319,9 @@ AcpiDsLoad1BeginOp (
             /* All other types are an error */
 
             ACPI_ERROR ((AE_INFO,
-                "Invalid type (%s) for target of Scope operator [%4.4s] (Cannot override)",
-                AcpiUtGetTypeName (Node->Type), Path));
+                "Invalid type (%s) for target of "
+                "Scope operator [%4.4s] (Cannot override)",
+                AcpiUtGetTypeName (Node->Type), AcpiUtGetNodeName (Node)));
 
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
