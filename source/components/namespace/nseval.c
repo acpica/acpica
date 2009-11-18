@@ -513,6 +513,13 @@ AcpiNsExecModuleCode (
     ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "Executed module-level code at %p\n",
         MethodObj->Method.AmlStart));
 
+    /* Delete a possible implicit return value (in slack mode) */
+
+    if (Info->ReturnObject)
+    {
+        AcpiUtRemoveReference (Info->ReturnObject);
+    }
+
     /* Detach the temporary method object */
 
     AcpiNsDetachObject (ParentNode);
