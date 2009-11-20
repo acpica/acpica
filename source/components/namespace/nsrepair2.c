@@ -231,7 +231,7 @@ static const ACPI_REPAIR_INFO       AcpiNsRepairableNames[] =
  *              ReturnObjectPtr     - Pointer to the object returned from the
  *                                    evaluation of a method or object
  *
- * RETURN:      Status. AE_OK if repair was successful. If name is not 
+ * RETURN:      Status. AE_OK if repair was successful. If name is not
  *              matched, ValidateStatus is returned.
  *
  * DESCRIPTION: Attempt to repair/convert a return object of a type that was

@@ -134,7 +134,6 @@ char                    *FileList[ASL_MAX_FILES];
 int                     FileCount;
 
 
-
 #define AE_SUPPORTED_OPTIONS    "?ab:de^ghimo:rstvx:z"
 
 
