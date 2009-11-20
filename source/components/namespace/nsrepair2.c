@@ -153,6 +153,11 @@ AcpiNsRepair_ALR (
     ACPI_OPERAND_OBJECT     **ReturnObjectPtr);
 
 static ACPI_STATUS
+AcpiNsRepair_FDE (
+    ACPI_PREDEFINED_DATA    *Data,
+    ACPI_OPERAND_OBJECT     **ReturnObjectPtr);
+
+static ACPI_STATUS
 AcpiNsRepair_PSS (
     ACPI_PREDEFINED_DATA    *Data,
     ACPI_OPERAND_OBJECT     **ReturnObjectPtr);
@@ -192,17 +197,28 @@ AcpiNsSortList (
  * This table contains the names of the predefined methods for which we can
  * perform more complex repairs.
  *
- * _ALR: Sort the list ascending by AmbientIlluminance if necessary
- * _PSS: Sort the list descending by Power if necessary
- * _TSS: Sort the list descending by Power if necessary
+ * As necessary:
+ *
+ * _ALR: Sort the list ascending by AmbientIlluminance
+ * _FDE: Convert a Package or Buffer of BYTEs to a Buffer of DWORDs
+ * _GTM: Convert a Package or Buffer of BYTEs to a Buffer of DWORDs
+ * _PSS: Sort the list descending by Power
+ * _TSS: Sort the list descending by Power
  */
 static const ACPI_REPAIR_INFO       AcpiNsRepairableNames[] =
 {
     {"_ALR", AcpiNsRepair_ALR},
+    {"_FDE", AcpiNsRepair_FDE},
+    {"_GTM", AcpiNsRepair_FDE},     /* _GTM has same repair as _FDE */
     {"_PSS", AcpiNsRepair_PSS},
     {"_TSS", AcpiNsRepair_TSS},
-    {{0,0,0,0}, NULL}             /* Table terminator */
+    {{0,0,0,0}, NULL}               /* Table terminator */
 };
+
+
+#define ACPI_FDE_FIELD_COUNT        5
+#define ACPI_FDE_BYTE_BUFFER_SIZE   5
+#define ACPI_FDE_DWORD_BUFFER_SIZE  (ACPI_FDE_FIELD_COUNT * sizeof (UINT32))
 
 
 /******************************************************************************
@@ -310,6 +326,139 @@ AcpiNsRepair_ALR (
                 ACPI_SORT_ASCENDING, "AmbientIlluminance");
 
     return (Status);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiNsRepair_FDE
+ *
+ * PARAMETERS:  Data                - Pointer to validation data structure
+ *              ReturnObjectPtr     - Pointer to the object returned from the
+ *                                    evaluation of a method or object
+ *
+ * RETURN:      Status. AE_OK if object is OK or was repaired successfully
+ *
+ * DESCRIPTION: Repair for the _FDE and _GTM objects. The expected return
+ *              value is a Buffer of 5 DWORDs. This function repairs two
+ *              possible problems:
+ *              1) The return value is a Buffer of BYTEs, not DWORDs
+ *              2) The return value is a Package of Integer objects
+ *
+ *****************************************************************************/
+
+static ACPI_STATUS
+AcpiNsRepair_FDE (
+    ACPI_PREDEFINED_DATA    *Data,
+    ACPI_OPERAND_OBJECT     **ReturnObjectPtr)
+{
+    ACPI_OPERAND_OBJECT     *ReturnObject = *ReturnObjectPtr;
+    ACPI_OPERAND_OBJECT     **Elements;
+    ACPI_OPERAND_OBJECT     *BufferObject;
+    UINT8                   *ByteBuffer;
+    UINT32                  *DwordBuffer;
+    UINT32                  Count;
+    UINT32                  i;
+
+
+    switch (ReturnObject->Common.Type)
+    {
+    case ACPI_TYPE_BUFFER:
+
+        /* This is the expected type. Length should be (at least) 5 DWORDs */
+
+        if (ReturnObject->Buffer.Length >= ACPI_FDE_DWORD_BUFFER_SIZE)
+        {
+            return (AE_OK);
+        }
+
+        /* We can only repair if we have exactly 5 BYTEs */
+
+        if (ReturnObject->Buffer.Length != ACPI_FDE_BYTE_BUFFER_SIZE)
+        {
+            ACPI_WARN_PREDEFINED ((AE_INFO, Data->Pathname, Data->NodeFlags,
+                "Incorrect return buffer length %u, expected %u",
+                ReturnObject->Buffer.Length, ACPI_FDE_DWORD_BUFFER_SIZE));
+
+            return (AE_AML_OPERAND_TYPE);
+        }
+
+        /* Create the new (larger) buffer object */
+
+        BufferObject = AcpiUtCreateBufferObject (ACPI_FDE_DWORD_BUFFER_SIZE);
+        if (!BufferObject)
+        {
+            return (AE_NO_MEMORY);
+        }
+
+        /* Expand each byte to a DWORD */
+
+        ByteBuffer = ReturnObject->Buffer.Pointer;
+        DwordBuffer = ACPI_CAST_PTR (UINT32, BufferObject->Buffer.Pointer);
+
+        for (i = 0; i < ACPI_FDE_FIELD_COUNT; i++)
+        {
+            *DwordBuffer = (UINT32) *ByteBuffer;
+            DwordBuffer++;
+            ByteBuffer++;
+        }
+
+        ACPI_INFO_PREDEFINED ((AE_INFO, Data->Pathname, Data->NodeFlags,
+            "Expanded Byte Buffer to expected DWord Buffer"));
+        break;
+
+    case ACPI_TYPE_PACKAGE:
+
+        /* All elements of the Package must be integers */
+
+        Elements = ReturnObject->Package.Elements;
+        Count = ACPI_MIN (ACPI_FDE_FIELD_COUNT, ReturnObject->Package.Count);
+
+        for (i = 0; i < Count; i++)
+        {
+            if ((!*Elements) ||
+                ((*Elements)->Common.Type != ACPI_TYPE_INTEGER))
+            {
+                return (AE_AML_OPERAND_TYPE);
+            }
+            Elements++;
+        }
+
+        /* Create the new buffer object to replace the Package */
+
+        BufferObject = AcpiUtCreateBufferObject (ACPI_FDE_DWORD_BUFFER_SIZE);
+        if (!BufferObject)
+        {
+            return (AE_NO_MEMORY);
+        }
+
+        /* Copy the package elements (integers) to the buffer */
+
+        Elements = ReturnObject->Package.Elements;
+        DwordBuffer = ACPI_CAST_PTR (UINT32, BufferObject->Buffer.Pointer);
+
+        for (i = 0; i < Count; i++)
+        {
+            *DwordBuffer = (UINT32) (*Elements)->Integer.Value;
+            DwordBuffer++;
+            Elements++;
+        }
+
+        ACPI_INFO_PREDEFINED ((AE_INFO, Data->Pathname, Data->NodeFlags,
+            "Converted Package to expected Buffer"));
+        break;
+
+    default:
+        return (AE_AML_OPERAND_TYPE);
+    }
+
+    /* Delete the original return object, return the new buffer object */
+
+    AcpiUtRemoveReference (ReturnObject);
+    *ReturnObjectPtr = BufferObject;
+
+    Data->Flags |= ACPI_OBJECT_REPAIRED;
+    return (AE_OK);
 }
 
 

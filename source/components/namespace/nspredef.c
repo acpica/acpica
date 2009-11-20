@@ -318,26 +318,22 @@ AcpiNsCheckPredefinedNames (
      */
     Status = AcpiNsCheckObjectType (Data, ReturnObjectPtr,
                 Predefined->Info.ExpectedBtypes, ACPI_NOT_PACKAGE_ELEMENT);
-    if (ACPI_FAILURE (Status))
+    if (ACPI_SUCCESS (Status))
     {
-        goto CheckValidationStatus;
-    }
+        /* For returned Package objects, check the type of all sub-objects */
 
-    /* For returned Package objects, check the type of all sub-objects */
-
-    if (ReturnObject->Common.Type == ACPI_TYPE_PACKAGE)
-    {
-        Status = AcpiNsCheckPackage (Data, ReturnObjectPtr);
+        if (ReturnObject->Common.Type == ACPI_TYPE_PACKAGE)
+        {
+            Status = AcpiNsCheckPackage (Data, ReturnObjectPtr);
+        }
     }
 
     /*
      * Perform additional, more complicated repairs on a per-name
-     * basis.
+     * basis. Do this regardless of the status from above.
      */
     Status = AcpiNsComplexRepairs (Data, Node, Status, ReturnObjectPtr);
 
-
-CheckValidationStatus:
     /*
      * If the object validation failed or if we successfully repaired one
      * or more objects, mark the parent node to suppress further warning
