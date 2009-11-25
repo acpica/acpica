@@ -542,12 +542,8 @@ AcpiNsExternalizeName (
     char                    **ConvertedName);
 
 ACPI_NAMESPACE_NODE *
-AcpiNsMapHandleToNode (
+AcpiNsValidateHandle (
     ACPI_HANDLE             Handle);
-
-ACPI_HANDLE
-AcpiNsConvertEntryToHandle(
-    ACPI_NAMESPACE_NODE     *Node);
 
 void
 AcpiNsTerminate (
