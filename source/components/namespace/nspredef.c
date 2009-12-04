@@ -312,6 +312,8 @@ AcpiNsCheckPredefinedNames (
     Data->NodeFlags = Node->Flags;
     Data->Pathname = Pathname;
 
+    /* TBD: For variable-length Packages, remove NULL elements here */
+
     /*
      * Check that the type of the return object is what is expected for
      * this predefined name
@@ -320,9 +322,11 @@ AcpiNsCheckPredefinedNames (
                 Predefined->Info.ExpectedBtypes, ACPI_NOT_PACKAGE_ELEMENT);
     if (ACPI_SUCCESS (Status))
     {
-        /* For returned Package objects, check the type of all sub-objects */
-
-        if (ReturnObject->Common.Type == ACPI_TYPE_PACKAGE)
+        /*
+         * For returned Package objects, check the type of all sub-objects.
+         * Note: Package may have been created by call above.
+         */
+        if ((*ReturnObjectPtr)->Common.Type == ACPI_TYPE_PACKAGE)
         {
             Status = AcpiNsCheckPackage (Data, ReturnObjectPtr);
         }

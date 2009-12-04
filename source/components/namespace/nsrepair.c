@@ -459,7 +459,7 @@ AcpiNsConvertToString (
  *
  * RETURN:      Status. AE_OK if conversion was successful.
  *
- * DESCRIPTION: Attempt to convert a Integer/String object to a Buffer.
+ * DESCRIPTION: Attempt to convert a Integer/String/Package object to a Buffer.
  *
  ******************************************************************************/
 
@@ -470,6 +470,10 @@ AcpiNsConvertToBuffer (
 {
     ACPI_OPERAND_OBJECT     *NewObject;
     ACPI_STATUS             Status;
+    ACPI_OPERAND_OBJECT     **Elements;
+    UINT32                  *DwordBuffer;
+    UINT32                  Count;
+    UINT32                  i;
 
 
     switch (OriginalObject->Common.Type)
@@ -501,6 +505,44 @@ AcpiNsConvertToBuffer (
 
         ACPI_MEMCPY (NewObject->Buffer.Pointer,
             OriginalObject->String.Pointer, OriginalObject->String.Length);
+        break;
+
+    case ACPI_TYPE_PACKAGE:
+
+        /* All elements of the Package must be integers */
+
+        Elements = OriginalObject->Package.Elements;
+        Count = OriginalObject->Package.Count;
+
+        for (i = 0; i < Count; i++)
+        {
+            if ((!*Elements) ||
+                ((*Elements)->Common.Type != ACPI_TYPE_INTEGER))
+            {
+                return (AE_AML_OPERAND_TYPE);
+            }
+            Elements++;
+        }
+
+        /* Create the new buffer object to replace the Package */
+
+        NewObject = AcpiUtCreateBufferObject (ACPI_MUL_4 (Count));
+        if (!NewObject)
+        {
+            return (AE_NO_MEMORY);
+        }
+
+        /* Copy the package elements (integers) to the buffer as DWORDs */
+
+        Elements = OriginalObject->Package.Elements;
+        DwordBuffer = ACPI_CAST_PTR (UINT32, NewObject->Buffer.Pointer);
+
+        for (i = 0; i < Count; i++)
+        {
+            *DwordBuffer = (UINT32) (*Elements)->Integer.Value;
+            DwordBuffer++;
+            Elements++;
+        }
         break;
 
     default:
@@ -557,7 +599,7 @@ AcpiNsConvertToPackage (
 
         while (Length--)
         {
-            *Elements = AcpiUtCreateIntegerObject (*Buffer);
+            *Elements = AcpiUtCreateIntegerObject ((UINT64) *Buffer);
             if (!*Elements)
             {
                 AcpiUtRemoveReference (NewObject);

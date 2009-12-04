@@ -353,11 +353,9 @@ AcpiNsRepair_FDE (
     ACPI_OPERAND_OBJECT     **ReturnObjectPtr)
 {
     ACPI_OPERAND_OBJECT     *ReturnObject = *ReturnObjectPtr;
-    ACPI_OPERAND_OBJECT     **Elements;
     ACPI_OPERAND_OBJECT     *BufferObject;
     UINT8                   *ByteBuffer;
     UINT32                  *DwordBuffer;
-    UINT32                  Count;
     UINT32                  i;
 
 
@@ -405,47 +403,6 @@ AcpiNsRepair_FDE (
 
         ACPI_INFO_PREDEFINED ((AE_INFO, Data->Pathname, Data->NodeFlags,
             "Expanded Byte Buffer to expected DWord Buffer"));
-        break;
-
-    case ACPI_TYPE_PACKAGE:
-
-        /* All elements of the Package must be integers */
-
-        Elements = ReturnObject->Package.Elements;
-        Count = ACPI_MIN (ACPI_FDE_FIELD_COUNT, ReturnObject->Package.Count);
-
-        for (i = 0; i < Count; i++)
-        {
-            if ((!*Elements) ||
-                ((*Elements)->Common.Type != ACPI_TYPE_INTEGER))
-            {
-                return (AE_AML_OPERAND_TYPE);
-            }
-            Elements++;
-        }
-
-        /* Create the new buffer object to replace the Package */
-
-        BufferObject = AcpiUtCreateBufferObject (ACPI_FDE_DWORD_BUFFER_SIZE);
-        if (!BufferObject)
-        {
-            return (AE_NO_MEMORY);
-        }
-
-        /* Copy the package elements (integers) to the buffer */
-
-        Elements = ReturnObject->Package.Elements;
-        DwordBuffer = ACPI_CAST_PTR (UINT32, BufferObject->Buffer.Pointer);
-
-        for (i = 0; i < Count; i++)
-        {
-            *DwordBuffer = (UINT32) (*Elements)->Integer.Value;
-            DwordBuffer++;
-            Elements++;
-        }
-
-        ACPI_INFO_PREDEFINED ((AE_INFO, Data->Pathname, Data->NodeFlags,
-            "Converted Package to expected Buffer"));
         break;
 
     default:
