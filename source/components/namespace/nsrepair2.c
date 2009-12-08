@@ -359,6 +359,9 @@ AcpiNsRepair_FDE (
     UINT32                  i;
 
 
+    ACPI_FUNCTION_NAME (NsRepair_FDE);
+
+
     switch (ReturnObject->Common.Type)
     {
     case ACPI_TYPE_BUFFER:
@@ -401,8 +404,9 @@ AcpiNsRepair_FDE (
             ByteBuffer++;
         }
 
-        ACPI_INFO_PREDEFINED ((AE_INFO, Data->Pathname, Data->NodeFlags,
-            "Expanded Byte Buffer to expected DWord Buffer"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_REPAIR,
+            "%s Expanded Byte Buffer to expected DWord Buffer\n",
+            Data->Pathname));
         break;
 
     default:
@@ -560,6 +564,9 @@ AcpiNsCheckSortedList (
     ACPI_STATUS             Status;
 
 
+    ACPI_FUNCTION_NAME (NsCheckSortedList);
+
+
     /* The top-level object must be a package */
 
     if (ReturnObject->Common.Type != ACPI_TYPE_PACKAGE)
@@ -577,8 +584,8 @@ AcpiNsCheckSortedList (
     Status = AcpiNsRemoveNullElements (ReturnObject);
     if (Status == AE_NULL_ENTRY)
     {
-        ACPI_INFO_PREDEFINED ((AE_INFO, Data->Pathname, Data->NodeFlags,
-            "NULL elements removed from package"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_REPAIR,
+            "%s: NULL elements removed from package\n", Data->Pathname));
 
         /* Exit if package is now zero length */
 
@@ -645,8 +652,9 @@ AcpiNsCheckSortedList (
 
             Data->Flags |= ACPI_OBJECT_REPAIRED;
 
-            ACPI_INFO_PREDEFINED ((AE_INFO, Data->Pathname, Data->NodeFlags,
-                "Repaired unsorted list - now sorted by %s", SortKeyName));
+            ACPI_DEBUG_PRINT ((ACPI_DB_REPAIR,
+                "%s: Repaired unsorted list - now sorted by %s\n",
+                Data->Pathname, SortKeyName));
             return (AE_OK);
         }
 

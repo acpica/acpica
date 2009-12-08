@@ -203,6 +203,9 @@ AcpiNsRepairObject (
     ACPI_STATUS             Status;
 
 
+    ACPI_FUNCTION_NAME (NsRepairObject);
+
+
     /*
      * At this point, we know that the type of the returned object was not
      * one of the expected types for this predefined name. Attempt to
@@ -267,16 +270,16 @@ ObjectRepaired:
             ReturnObject->Common.ReferenceCount--;
         }
 
-        ACPI_INFO_PREDEFINED ((AE_INFO, Data->Pathname, Data->NodeFlags,
-            "Converted %s to expected %s at index %u",
-            AcpiUtGetObjectTypeName (ReturnObject),
+        ACPI_DEBUG_PRINT ((ACPI_DB_REPAIR,
+            "%s: Converted %s to expected %s at index %u\n",
+            Data->Pathname, AcpiUtGetObjectTypeName (ReturnObject),
             AcpiUtGetObjectTypeName (NewObject), PackageIndex));
     }
     else
     {
-        ACPI_INFO_PREDEFINED ((AE_INFO, Data->Pathname, Data->NodeFlags,
-            "Converted %s to expected %s",
-            AcpiUtGetObjectTypeName (ReturnObject),
+        ACPI_DEBUG_PRINT ((ACPI_DB_REPAIR,
+            "%s: Converted %s to expected %s\n",
+            Data->Pathname, AcpiUtGetObjectTypeName (ReturnObject),
             AcpiUtGetObjectTypeName (NewObject)));
     }
 
@@ -651,6 +654,9 @@ AcpiNsRepairPackageList (
     ACPI_OPERAND_OBJECT     *PkgObjDesc;
 
 
+    ACPI_FUNCTION_NAME (NsRepairPackageList);
+
+
     /*
      * Create the new outer package and populate it. The new package will
      * have a single element, the lone subpackage.
@@ -668,8 +674,8 @@ AcpiNsRepairPackageList (
     *ObjDescPtr = PkgObjDesc;
     Data->Flags |= ACPI_OBJECT_REPAIRED;
 
-    ACPI_INFO_PREDEFINED ((AE_INFO, Data->Pathname, Data->NodeFlags,
-        "Repaired Incorrectly formed Package"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_REPAIR,
+        "%s: Repaired incorrectly formed Package\n", Data->Pathname));
 
     return (AE_OK);
 }

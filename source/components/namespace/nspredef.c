@@ -582,9 +582,10 @@ AcpiNsCheckPackage (
         }
         else if (Count > ExpectedCount)
         {
-            ACPI_WARN_PREDEFINED ((AE_INFO, Data->Pathname, Data->NodeFlags,
-                "Return Package is larger than needed - "
-                "found %u, expected %u", Count, ExpectedCount));
+            ACPI_DEBUG_PRINT ((ACPI_DB_REPAIR,
+                "%s: Return Package is larger than needed - "
+                "found %u, expected %u\n",
+                Data->Pathname, Count, ExpectedCount));
         }
 
         /* Validate all elements of the returned package */
