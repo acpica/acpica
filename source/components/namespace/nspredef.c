@@ -312,32 +312,43 @@ AcpiNsCheckPredefinedNames (
     Data->NodeFlags = Node->Flags;
     Data->Pathname = Pathname;
 
-    /* TBD: For variable-length Packages, remove NULL elements here */
-
     /*
-     * Check that the type of the return object is what is expected for
-     * this predefined name
+     * Check that the type of the main return object is what is expected
+     * for this predefined name
      */
     Status = AcpiNsCheckObjectType (Data, ReturnObjectPtr,
                 Predefined->Info.ExpectedBtypes, ACPI_NOT_PACKAGE_ELEMENT);
-    if (ACPI_SUCCESS (Status))
+    if (ACPI_FAILURE (Status))
     {
-        /*
-         * For returned Package objects, check the type of all sub-objects.
-         * Note: Package may have been created by call above.
-         */
-        if ((*ReturnObjectPtr)->Common.Type == ACPI_TYPE_PACKAGE)
+        goto Exit;
+    }
+
+    /*
+     * For returned Package objects, check the type of all sub-objects.
+     * Note: Package may have been newly created by call above.
+     */
+    if ((*ReturnObjectPtr)->Common.Type == ACPI_TYPE_PACKAGE)
+    {
+        /* TBD: For variable-length Packages, remove NULL elements here */
+
+        Status = AcpiNsCheckPackage (Data, ReturnObjectPtr);
+        if (ACPI_FAILURE (Status))
         {
-            Status = AcpiNsCheckPackage (Data, ReturnObjectPtr);
+            goto Exit;
         }
     }
 
     /*
-     * Perform additional, more complicated repairs on a per-name
-     * basis. Do this regardless of the status from above.
+     * The return object was OK, or it was successfully repaired above.
+     * Now make some additional checks such as verifying that package
+     * objects are sorted correctly (if required) or buffer objects have
+     * the correct data width (bytes vs. dwords). These repairs are
+     * performed on a per-name basis, i.e., the code is specific to
+     * particular predefined names.
      */
     Status = AcpiNsComplexRepairs (Data, Node, Status, ReturnObjectPtr);
 
+Exit:
     /*
      * If the object validation failed or if we successfully repaired one
      * or more objects, mark the parent node to suppress further warning
@@ -348,7 +359,6 @@ AcpiNsCheckPredefinedNames (
         Node->Flags |= ANOBJ_EVALUATED;
     }
     ACPI_FREE (Data);
-
 
 Cleanup:
     ACPI_FREE (Pathname);
