@@ -477,6 +477,19 @@ AcpiNsExecModuleCode (
                     MethodObj->Method.NextObject);
     Type = AcpiNsGetType (ParentNode);
 
+    /*
+     * Get the region handler and save it in the method object. We may need
+     * this if an operation region declaration causes a _REG method to be run.
+     *
+     * We can't do this in AcpiPsLinkModuleCode because
+     * AcpiGbl_RootNode->Object is NULL at PASS1.
+     */
+    if ((Type == ACPI_TYPE_DEVICE) && ParentNode->Object)
+    {
+        MethodObj->Method.Extra.Handler =
+            ParentNode->Object->Device.Handler;
+    }
+
     /* Must clear NextObject (AcpiNsAttachObject needs the field) */
 
     MethodObj->Method.NextObject = NULL;
