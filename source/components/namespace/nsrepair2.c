@@ -119,6 +119,7 @@
 #include "acpi.h"
 #include "accommon.h"
 #include "acnamesp.h"
+#include "acpredef.h"
 
 #define _COMPONENT          ACPI_NAMESPACE
         ACPI_MODULE_NAME    ("nsrepair2")
@@ -175,10 +176,6 @@ AcpiNsCheckSortedList (
     UINT32                  SortIndex,
     UINT8                   SortDirection,
     char                    *SortKeyName);
-
-static ACPI_STATUS
-AcpiNsRemoveNullElements (
-    ACPI_OPERAND_OBJECT     *Package);
 
 static ACPI_STATUS
 AcpiNsSortList (
@@ -574,26 +571,10 @@ AcpiNsCheckSortedList (
     }
 
     /*
-     * Detect any NULL package elements and remove them from the
-     * package.
-     *
-     * TBD: We may want to do this for all predefined names that
-     * return a variable-length package of packages.
+     * NOTE: assumes list of sub-packages contains no NULL elements.
+     * Any NULL elements should have been removed by earlier call
+     * to AcpiNsRemoveNullElements.
      */
-    Status = AcpiNsRemoveNullElements (ReturnObject);
-    if (Status == AE_NULL_ENTRY)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_REPAIR,
-            "%s: NULL elements removed from package\n", Data->Pathname));
-
-        /* Exit if package is now zero length */
-
-        if (!ReturnObject->Package.Count)
-        {
-            return (AE_NULL_ENTRY);
-        }
-    }
-
     OuterElements = ReturnObject->Package.Elements;
     OuterElementCount = ReturnObject->Package.Count;
     if (!OuterElementCount)
@@ -669,26 +650,56 @@ AcpiNsCheckSortedList (
  *
  * FUNCTION:    AcpiNsRemoveNullElements
  *
- * PARAMETERS:  ObjDesc             - A Package object
+ * PARAMETERS:  Data                - Pointer to validation data structure
+ *              PackageType         - An AcpiReturnPackageTypes value
+ *              ObjDesc             - A Package object
  *
- * RETURN:      Status. AE_NULL_ENTRY means that one or more elements were
- *              removed.
+ * RETURN:      None.
  *
- * DESCRIPTION: Remove all NULL package elements and update the package count.
+ * DESCRIPTION: Remove all NULL package elements from packages that contain
+ *              a variable number of sub-packages.
  *
  *****************************************************************************/
 
-static ACPI_STATUS
+void
 AcpiNsRemoveNullElements (
+    ACPI_PREDEFINED_DATA    *Data,
+    UINT8                   PackageType,
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     ACPI_OPERAND_OBJECT     **Source;
     ACPI_OPERAND_OBJECT     **Dest;
-    ACPI_STATUS             Status = AE_OK;
     UINT32                  Count;
     UINT32                  NewCount;
     UINT32                  i;
 
+
+    ACPI_FUNCTION_NAME (NsRemoveNullElements);
+
+
+    /*
+     * PTYPE1 packages contain no subpackages.
+     * PTYPE2 packages contain a variable number of sub-packages. We can
+     * safely remove all NULL elements from the PTYPE2 packages.
+     */
+    switch (PackageType)
+    {
+    case ACPI_PTYPE1_FIXED:
+    case ACPI_PTYPE1_VAR:
+    case ACPI_PTYPE1_OPTION:
+        return;
+
+    case ACPI_PTYPE2:
+    case ACPI_PTYPE2_COUNT:
+    case ACPI_PTYPE2_PKG_COUNT:
+    case ACPI_PTYPE2_FIXED:
+    case ACPI_PTYPE2_MIN:
+    case ACPI_PTYPE2_REV_FIXED:
+        break;
+
+    default:
+        return;
+    }
 
     Count = ObjDesc->Package.Count;
     NewCount = Count;
@@ -696,13 +707,12 @@ AcpiNsRemoveNullElements (
     Source = ObjDesc->Package.Elements;
     Dest = Source;
 
-    /* Examine all elements of the package object */
+    /* Examine all elements of the package object, remove nulls */
 
     for (i = 0; i < Count; i++)
     {
         if (!*Source)
         {
-            Status = AE_NULL_ENTRY;
             NewCount--;
         }
         else
@@ -713,15 +723,19 @@ AcpiNsRemoveNullElements (
         Source++;
     }
 
-    if (Status == AE_NULL_ENTRY)
+    /* Update parent package if any null elements were removed */
+
+    if (NewCount < Count)
     {
+        ACPI_DEBUG_PRINT ((ACPI_DB_REPAIR,
+            "%s: Found and removed %u NULL elements\n",
+            Data->Pathname, (Count - NewCount)));
+
         /* NULL terminate list and update the package count */
 
         *Dest = NULL;
         ObjDesc->Package.Count = NewCount;
     }
-
-    return (Status);
 }
 
 

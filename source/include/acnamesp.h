@@ -456,6 +456,11 @@ AcpiNsComplexRepairs (
     ACPI_STATUS             ValidateStatus,
     ACPI_OPERAND_OBJECT     **ReturnObjectPtr);
 
+void
+AcpiNsRemoveNullElements (
+    ACPI_PREDEFINED_DATA    *Data,
+    UINT8                   PackageType,
+    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 /*
  * nssearch - Namespace searching and entry
