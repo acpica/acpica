@@ -571,11 +571,6 @@ char                    *AslErrorLevel [ASL_NUM_REPORT_LEVELS] = {
 
 #define ASL_ERROR_LEVEL_LENGTH          8       /* Length of strings above */
 
-/* Exception counters */
-
-UINT32                  Gbl_ExceptionCount[ASL_NUM_REPORT_LEVELS] = {0,0,0,0,0,0};
-
-#endif
-
+#endif  /* ASL_EXCEPTIONS */
 
 #endif  /* __ASLTYPES_H */

@@ -165,9 +165,6 @@ static int
 AslDoResponseFile (
     char                    *Filename);
 
-extern int   AcpiGbl_Opterr;
-extern int   AcpiGbl_Optind;
-
 
 #define ASL_TOKEN_SEPARATORS    " \t\n"
 #define ASL_SUPPORTED_OPTIONS   "@:2b:cd^e:fgh^i^I:l^o:p:r:s:t:v:w:x:"

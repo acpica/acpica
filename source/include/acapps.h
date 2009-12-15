@@ -135,6 +135,7 @@ AcpiGetopt(
     char                    *opts);
 
 extern int                  AcpiGbl_Optind;
+extern int                  AcpiGbl_Opterr;
 extern char                 *AcpiGbl_Optarg;
 
 
@@ -230,11 +231,6 @@ FlSplitInputPathname (
     char                    *InputPath,
     char                    **OutDirectoryPath,
     char                    **OutFilename);
-
-char *
-FlGenerateFilename (
-    char                    *InputFilename,
-    char                    *Suffix);
 
 char *
 AdGenerateFilename (
