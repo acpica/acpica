@@ -7266,8 +7266,8 @@ AtWalkNamespaceCommon(
     WalkNamespaceHandlerContext.ActionCounter = ActionCounter;
 
     Status = AcpiWalkNamespace (
-        Type, StartObject, MaxDepth, AtWalkNamespaceHandler,
-        &WalkNamespaceHandlerContext, (void **)&ReturnValue);
+        Type, StartObject, MaxDepth, AtWalkNamespaceHandler, NULL,
+        &WalkNamespaceHandlerContext, (void **) &ReturnValue);
     if (Status != ExpectedStatus)
     {
         AapiErrors++;
@@ -7500,7 +7500,7 @@ AtNSpaceTest0116(void)
     }
 
     Status = AcpiWalkNamespace (
-        ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT, 10, NULL,
+        ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT, 10, NULL, NULL,
         &WalkNamespaceHandlerContext, (void **)&ReturnValue);
     if (Status != AE_BAD_PARAMETER)
     {
@@ -7559,7 +7559,7 @@ AtNSpaceTest0117(void)
     }
 
     Status = AcpiWalkNamespace (
-        ACPI_TYPE_DEVICE, StartObject, 10, AtWalkNamespaceHandler,
+        ACPI_TYPE_DEVICE, StartObject, 10, AtWalkNamespaceHandler, NULL,
         &WalkNamespaceHandlerContext, (void **)&ReturnValue);
     if (Status != AE_BAD_PARAMETER)
     {
@@ -7667,7 +7667,7 @@ AtWalkNamespaceExceptionTest(
         WalkNamespaceHandlerContext.ActionCounter = ActionCounter;
 
         Status = AcpiWalkNamespace (
-            Type, StartObject, MaxDepth, AtWalkNamespaceHandler,
+            Type, StartObject, MaxDepth, AtWalkNamespaceHandler, NULL,
             &WalkNamespaceHandlerContext, (void **)&ReturnValue);
 
         if (!(OsxfNumAct = OsxfCtrlGetActOsxf(OsxfNum, 1)))

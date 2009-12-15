@@ -27,7 +27,7 @@ AcpiOsInitialize (void)
 
     if (OsInitialized)
     {
-        printf("AcpiOsInitialize: OSL have yet been initialized\n");
+        printf("AcpiOsInitialize: OSL has already been initialized\n");
         return AE_ERROR;
     }
     if (Calls)
@@ -64,7 +64,7 @@ AcpiOsTerminate (void)
 
     if (!OsInitialized)
     {
-        printf("AcpiOsTerminate: OSL have not been initialized\n");
+        printf("AcpiOsTerminate: OSL has not been initialized\n");
 //        return AE_ERROR;
     }
 

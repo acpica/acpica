@@ -10,19 +10,19 @@ CONTENTS
    Programmer Reference (ACPICA ProgRef).
 
    There are 9 test cases relevant to the following chapters
-   ACPICA ProgRef respectivly:
+   ACPICA ProgRef respectively:
 
    Test Case       Chapter
 
-   atinit          6.1 Subsystem Initialization, Shutdown, and Status
-   atmemory        6.2 Memory Management
-   athardware      6.3 ACPI Hardware Management
-   attable         6.4 ACPI Table Management
-   atnamespace     6.5 ACPI Namespace Access
-   atresource      6.6 ACPI Resource Management
-   atfixedevent    6.7 ACPI Fixed Event Management
-   atgpe           6.8 ACPI General Purpose Event Management
-   athandlers      6.9 ACPI Miscellaneous Handler Support
+   atinit          8.1  Subsystem Initialization, Shutdown, and Status
+   attable         8.2  ACPI Table Management
+   atnamespace     8.3  ACPI Namespace Access
+   athardware      8.4  ACPI Hardware Management
+   atfixedevent    8.6  ACPI Fixed Event Management
+   atgpe           8.7  ACPI General Purpose Event Management
+   athandlers      8.8  ACPI Miscellaneous Handler Support
+   atresource      8.9  ACPI Resource Management
+   atmemory        8.10 Memory Management
 
 spec
    Directory which tests specification are located in.

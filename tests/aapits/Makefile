@@ -1,7 +1,7 @@
 # PROG=	acpiexec
 # SRCS=	aeexec.c aemain.c \
 
-PROG=	aapits
+PROG=	bin/aapits
 SRCS=	atexec.c atmain.c \
 	atinit.c \
 	atmemory.c \
@@ -106,6 +106,7 @@ SRCS=	atexec.c atmain.c \
 	../../source/components/namespace/nsparse.c \
 	../../source/components/namespace/nspredef.c \
 	../../source/components/namespace/nsrepair.c \
+	../../source/components/namespace/nsrepair2.c \
 	../../source/components/namespace/nssearch.c \
 	../../source/components/namespace/nsutils.c \
 	../../source/components/namespace/nswalk.c \

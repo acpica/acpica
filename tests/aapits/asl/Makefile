@@ -1,6 +1,6 @@
 
 ifndef ASL
-ASL=../../../compiler/iasl
+ASL=../../../libraries/iasl
 endif
 
 SRCS=dsdt.asl     dsdt0.asl    dsdt1.asl    dsdt2.asl    gpev0000.asl \

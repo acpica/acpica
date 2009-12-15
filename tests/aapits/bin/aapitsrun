@@ -72,6 +72,7 @@ TS_FMT_INITIME=$(date +%T)
 
 echo "Start AAPI TS: " $TS_FMT_INIDATE:$TS_FMT_INITIME > $AAPITSOUT
 echo "Start AAPI TS: " $TS_FMT_INIDATE:$TS_FMT_INITIME > $AAPITSSUM
+echo "Start AAPI TS: " $TS_FMT_INIDATE:$TS_FMT_INITIME
 
 tests_total=0
 tests_pass=0
@@ -122,6 +123,10 @@ echo "tests_skip2=$tests_skip2"
 echo "tests_fail=$tests_fail"
 echo "tests_none=$tests_none"
 echo "tests_fault=$tests_fault"
+
+echo "End AAPI TS: " $TS_FMT_INIDATE:$TS_FMT_INITIME > $AAPITSOUT
+echo "End AAPI TS: " $TS_FMT_INIDATE:$TS_FMT_INITIME > $AAPITSSUM
+echo "End AAPI TS: " $TS_FMT_INIDATE:$TS_FMT_INITIME
 
 exit 0
 
