@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: athandlers - predefinitions of tests of the test case 
+ * Module Name: athandlers - predefinitions of tests of the test case
  *
  *****************************************************************************/
 

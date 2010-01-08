@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: atnamespace - predefinitions of tests of the test case 
+ * Module Name: atnamespace - predefinitions of tests of the test case
  *
  *****************************************************************************/
 

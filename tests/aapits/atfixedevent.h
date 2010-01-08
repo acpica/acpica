@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: atfixedevent - predefinitions of tests of the test case 
+ * Module Name: atfixedevent - predefinitions of tests of the test case
  *
  *****************************************************************************/
 

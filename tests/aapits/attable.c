@@ -88,7 +88,7 @@ AtTableTest0001(void)
     ACPI_STATUS             Benchmark = AE_OK;
     ACPI_TABLE_HEADER       UserTableStructure, *UserTable = &UserTableStructure;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -117,7 +117,7 @@ AtTableTest0002(void)
     UINT32                  i;
     ACPI_TABLE_HEADER       UserTableStructure, *UserTable = &UserTableStructure;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -149,7 +149,7 @@ AtTableTest0003(void)
     UINT32                  i;
     ACPI_TABLE_HEADER       UserTableStructure, *UserTable = &UserTableStructure;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -204,7 +204,7 @@ AtTableTest0004(void)
     ACPI_STATUS             Benchmark = AE_OK;
     ACPI_TABLE_HEADER       UserTableStructure, *UserTable = &UserTableStructure;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -246,7 +246,7 @@ AtInitializeTablesExceptionTest1(
     UINT32                  TMax = 10000;
     UINT32                  i;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -280,8 +280,8 @@ AtInitializeTablesExceptionTest1(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -317,7 +317,7 @@ AtTableTest0005(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtInitializeTablesExceptionTest1( 
+    Status = AtInitializeTablesExceptionTest1(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY);
@@ -345,7 +345,7 @@ AtTableTest0006(void)
     ACPI_STATUS             Benchmark = AE_OK;
     ACPI_TABLE_HEADER       UserTableStructure, *UserTable = &UserTableStructure;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -395,7 +395,7 @@ AtReallocateRootTableExceptionTest(
     UINT32                  TMax = 10000;
     UINT32                  i;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -430,8 +430,8 @@ AtReallocateRootTableExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -470,7 +470,7 @@ AtTableTest0007(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtReallocateRootTableExceptionTest( 
+    Status = AtReallocateRootTableExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY);
@@ -498,7 +498,7 @@ AtTableTest0008(void)
     ACPI_STATUS             Benchmark = AE_NO_MEMORY;
     ACPI_TABLE_HEADER       UserTableStructure, *UserTable = &UserTableStructure;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -559,7 +559,7 @@ AtTableTest0009(void)
     ACPI_STATUS             Benchmark = AE_SUPPORT;
     ACPI_TABLE_HEADER       UserTableStructure, *UserTable = &UserTableStructure;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -622,7 +622,7 @@ AtTableTest0010(void)
     int                     i;
     ACPI_TABLE_HEADER       UserTableStructure, *UserTable = &UserTableStructure;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -673,7 +673,7 @@ AtGetTableTest(
     ACPI_TABLE_HEADER       *TablePointer;
     ACPI_TABLE_HEADER       UserTableStructure, *UserTable = &UserTableStructure;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -690,7 +690,7 @@ AtGetTableTest(
     for (i = 0; i < NumTables; i++)
     {
         Status = AcpiGetTable(
-            TestSignInst[i].Signature, TestSignInst[i].Instance, 
+            TestSignInst[i].Signature, TestSignInst[i].Instance,
             &TablePointer);
         if (Status != Benchmark)
         {
@@ -756,7 +756,7 @@ AtInitializeTablesExceptionTest(
     UINT32                  TMax = 2;
     UINT32                  i;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -784,8 +784,8 @@ AtInitializeTablesExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -834,7 +834,7 @@ AtGetTableExceptionTest(
         CtrlCheck &= ~MMAP_STAT;
     }
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -860,7 +860,7 @@ AtGetTableExceptionTest(
         j = (i - TFst) % (sizeof (TestSignInstOk) / sizeof (AT_SIGN_INST));
 
         Status = AcpiGetTable(
-            TestSignInstOk[j].Signature, TestSignInstOk[j].Instance, 
+            TestSignInstOk[j].Signature, TestSignInstOk[j].Instance,
             &TablePointer);
 
         if (!(OsxfNumAct = OsxfCtrlGetActOsxf(OsxfNum, 1)))
@@ -872,8 +872,8 @@ AtGetTableExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -936,7 +936,7 @@ AtTableTest0016(void)
     ACPI_STATUS             Status;
     ACPI_TABLE_HEADER       UserTableStructure, *UserTable = &UserTableStructure;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -1006,7 +1006,7 @@ AtLoadTablesInvalidTest(int Var)
     int                     i;
     ACPI_TABLE_HEADER       UserTableStructure, *UserTable = &UserTableStructure;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
     AtBuildLocalTables(UserTable, NullBldTask);
 
     /*
@@ -1210,7 +1210,7 @@ AtLoadTablesExceptionTest(
         CtrlCheck &= ~MMAP_STAT;
     }
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -1244,8 +1244,8 @@ AtLoadTablesExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark && AtIsCheckedAttempt(i, NumTSkip, TSkip))
             {
@@ -1290,7 +1290,7 @@ AtTableTest0024(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtLoadTablesExceptionTest( 
+    Status = AtLoadTablesExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY, sizeof (TSkip) / sizeof (UINT32), TSkip);
@@ -1332,7 +1332,7 @@ AtInitializeTablesErrTest(
         }
 
         memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
-        
+
         BldTask.ErrScale = ErrFlags[i];
         AtBuildLocalTables(UserTable, BldTask);
 
@@ -1368,7 +1368,7 @@ AtTableTest0025(void)
     ACPI_STATUS             ErrBenchmarks[] = {
         AE_INVALID_TABLE_LENGTH};
 
-    return AtInitializeTablesErrTest(ErrFlags, 
+    return AtInitializeTablesErrTest(ErrFlags,
         (sizeof (ErrFlags) / sizeof (UINT32)),
         ErrBenchmarks);
 }
@@ -1390,7 +1390,7 @@ AtTableTest0026(void)
         AE_NO_ACPI_TABLES,
         AE_NO_ACPI_TABLES};
 
-    return AtInitializeTablesErrTest(ErrFlags, 
+    return AtInitializeTablesErrTest(ErrFlags,
         (sizeof (ErrFlags) / sizeof (UINT32)),
         ErrBenchmarks);
 }
@@ -1423,7 +1423,7 @@ AtLoadTablesErrTest(UINT32 *ErrFlags, int NumCases, ACPI_STATUS *ErrBenchmarks)
         }
 
         memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
-        
+
         BldTask.ErrScale = ErrFlags[i];
         AtBuildLocalTables(UserTable, BldTask);
 
@@ -1459,7 +1459,7 @@ AtLoadTablesErrTest(UINT32 *ErrFlags, int NumCases, ACPI_STATUS *ErrBenchmarks)
                     AcpiFormatException(Status));
                 return Status;
             }
-            
+
             Status = AcpiEnableSubsystem(AAPITS_EN_FLAGS);
             if (Status != ErrBenchmarks[i])
             {
@@ -1506,7 +1506,7 @@ AtTableTest0027(void)
 #endif
     };
 
-    return AtLoadTablesErrTest(ErrFlags, 
+    return AtLoadTablesErrTest(ErrFlags,
         (sizeof (ErrFlags) / sizeof (UINT32)),
         ErrBenchmarks);
 }
@@ -1528,7 +1528,7 @@ AtTableTest0028(void)
         AE_BAD_SIGNATURE,
         AE_BAD_SIGNATURE};
 
-    return AtInitializeTablesErrTest(ErrFlags, 
+    return AtInitializeTablesErrTest(ErrFlags,
         (sizeof (ErrFlags) / sizeof (UINT32)),
         ErrBenchmarks);
 }
@@ -1552,7 +1552,7 @@ AtTableTest0029(void)
     {
         ErrBenchmarks[0] = AE_NO_ACPI_TABLES;
     }
-    return AtLoadTablesErrTest(ErrFlags, 
+    return AtLoadTablesErrTest(ErrFlags,
         (sizeof (ErrFlags) / sizeof (UINT32)),
         ErrBenchmarks);
 }
@@ -1572,7 +1572,7 @@ AtTableTest0030(void)
         AE_INVALID_TABLE_LENGTH,
         AE_INVALID_TABLE_LENGTH};
 
-    return AtLoadTablesErrTest(ErrFlags, 
+    return AtLoadTablesErrTest(ErrFlags,
         (sizeof (ErrFlags) / sizeof (UINT32)),
         ErrBenchmarks);
 }
@@ -1592,7 +1592,7 @@ AtGetTableByIndexTest(
     ACPI_TABLE_HEADER       *TablePointer;
     ACPI_TABLE_HEADER       UserTableStructure, *UserTable = &UserTableStructure;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -1972,7 +1972,7 @@ AtTableTest0038(void)
     UINT32                  i;
     ACPI_TABLE_HEADER       UserTableStructure, *UserTable = &UserTableStructure;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("tblm0037.aml")))
     {
@@ -2109,7 +2109,7 @@ AtTableTest0039(void)
     ACPI_STATUS             Status;
     ACPI_TABLE_HEADER       UserTableStructure, *UserTable = &UserTableStructure;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -2160,7 +2160,7 @@ AtCheckGetTableHeaderInstance(void)
             AcpiFormatException(Status));
         return Status;
     }
-    
+
     /* Caller should unmap the header with AcpiOsUnmapMemory */
     Status = AcpiGetTableHeader(ACPI_SIG_SSDT, 1,
         &OutTableHeader);
@@ -2218,7 +2218,7 @@ AtTableTest0041(void)
     ACPI_STATUS             Status;
     ACPI_TABLE_HEADER       UserTableStructure, *UserTable = &UserTableStructure;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -2597,7 +2597,7 @@ AtTableTest0048(void)
     ACPI_STATUS             Status;
     ACPI_TABLE_HEADER       UserTableStructure, *UserTable = &UserTableStructure;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -2700,7 +2700,7 @@ AtTableTest0050(void)
     ACPI_STATUS             Status;
     ACPI_TABLE_HEADER       UserTableStructure, *UserTable = &UserTableStructure;
 
-    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+    memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
     AtBuildLocalTables(UserTable, NullBldTask);
 
@@ -3143,7 +3143,7 @@ AtTableTest0059(void)
 //        AE_NO_ACPI_TABLES,
         AE_NO_ACPI_TABLES};
 
-    return AtLoadTablesErrTest(ErrFlags, 
+    return AtLoadTablesErrTest(ErrFlags,
         sizeof (ErrFlags) / sizeof (UINT32),
         ErrBenchmarks);
 }
@@ -3196,7 +3196,7 @@ AtTableTest0060(void)
     }
 
     free(UserTable);
-    
+
     /* Caller should unmap the header with AcpiOsUnmapMemory */
     Status = AcpiGetTableHeader(ACPI_SIG_DSDT, 1,
         &OutTableHeader2);
@@ -3237,7 +3237,7 @@ AtTableTest0060(void)
             AtAMLcodeFileName);
         return AE_ERROR;
     }
-    
+
 //    AcpiOsUnmapMemory(OutTableHeader, (ACPI_SIZE) sizeof (ACPI_TABLE_HEADER));
 //    AcpiOsUnmapMemory(OutTableHeader2, (ACPI_SIZE) sizeof (ACPI_TABLE_HEADER));
 

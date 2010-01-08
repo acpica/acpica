@@ -325,7 +325,7 @@ AtInstallFixedEventHandlerCommon(
         }
         else if (CheckAction == 3)
         {
-            /* 
+            /*
              * initiate the situation when fixed event
              * enable register can not be written
              */
@@ -342,7 +342,7 @@ AtInstallFixedEventHandlerCommon(
 
         FixedEventHandlerContext[i] = 0;
 
-        Status = AcpiInstallFixedEventHandler(Event, 
+        Status = AcpiInstallFixedEventHandler(Event,
             EventHandler, &FixedEventHandlerContext[i]);
 
         if (CheckAction == 3 &&
@@ -396,7 +396,7 @@ AtInstallFixedEventHandlerCommon(
             }
             EventHandler = FixedEventHandlers[(i + 1) % ACPI_NUM_FIXED_EVENTS];
 
-            Status = AcpiInstallFixedEventHandler(Event, 
+            Status = AcpiInstallFixedEventHandler(Event,
                 EventHandler, &FixedEventHandlerContext[i]);
             if (Status != AE_ALREADY_EXISTS)
             {
@@ -524,7 +524,7 @@ AtRemoveFixedEventHandlerCommon(
 
         FixedEventHandlerContext[i] = 0;
 
-        Status = AcpiInstallFixedEventHandler(Event, 
+        Status = AcpiInstallFixedEventHandler(Event,
             EventHandler, &FixedEventHandlerContext[i]);
         if (ACPI_FAILURE(Status))
         {
@@ -567,7 +567,7 @@ AtRemoveFixedEventHandlerCommon(
         }
         else if (CheckAction == 3)
         {
-            /* 
+            /*
              * initiate the situation when fixed event
              * enable register can not be written
              */

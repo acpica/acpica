@@ -15,14 +15,14 @@
 Processor(AUX0, 0xA, 0x0, 0x0)
 {
 /*
- * 
+ *
  * Intel ACPI Component Architecture
  * ASL Optimizing Compiler version 20060912 [Sep 14 2006]
  * Copyright (C) 2000 - 2006 Intel Corporation
  * Supports ACPI Specification Revision 3.0a
- * 
+ *
  * Compilation of "ssdt_aux.asl" - Mon Sep 18 17:51:24 2006
- * 
+ *
  * C source code output
  *
  */
@@ -187,7 +187,7 @@ Name(BUF0, Buffer() {
 
 	Field(IST0, ByteAcc, NoLock, Preserve) {
 		SIG, 32,
-		LENG, 32, 
+		LENG, 32,
 		REV, 8,
 		SUM, 8,
 		OID, 48,

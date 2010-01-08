@@ -216,7 +216,7 @@ AtInitializeTables (
 #define AT_SKIP_FREE_STAT_CHECK 1
 
 /*
- * To allow passing the redundant check in the AcpiTbGetTablePtr 
+ * To allow passing the redundant check in the AcpiTbGetTablePtr
  * providing the AtTableTest0039 checks something else.
  */
 #define AT_LOAD_DSDT_WORKAROUND 1

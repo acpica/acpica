@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: atmemory - predefinitions of tests of the test case 
+ * Module Name: atmemory - predefinitions of tests of the test case
  *
  *****************************************************************************/
 

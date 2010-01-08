@@ -213,8 +213,8 @@ AtInstallGpeBlockExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -259,7 +259,7 @@ AtGpeTest0005(void)
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
 
-    Status = AtInstallGpeBlockExceptionTest( 
+    Status = AtInstallGpeBlockExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY);
@@ -1055,7 +1055,7 @@ AtInstallGpeHandlerCommon(
             EolType = GpeEolType[i];
             EventHandler = GpeHandlers[(i + 1) % AT_NUM_GPE_EVENTS];
 
-            Status = AcpiInstallGpeHandler(GpeDevice, Gpe, EolType, 
+            Status = AcpiInstallGpeHandler(GpeDevice, Gpe, EolType,
                 EventHandler, &GpeHandlerContext[i]);
             if (Status != AE_ALREADY_EXISTS)
             {
@@ -1203,7 +1203,7 @@ AtRemoveGpeHandlerCommon(
                 Pathname, AcpiFormatException(Status));
             return Status;
         }
-        
+
         if (CheckAction != 6)
         {
             for (i = 0; i < AT_NUM_GPE_EVENTS; i++)
@@ -1212,7 +1212,7 @@ AtRemoveGpeHandlerCommon(
                 EolType = GpeEolType[i];
                 EventHandler = GpeHandlers[i];
                 GpeHandlerContext[i] = 0;
-            
+
                 Status = AcpiInstallGpeHandler(GpeDevice, Gpe, EolType,
                     EventHandler, &GpeHandlerContext[i]);
                 if (ACPI_FAILURE(Status))

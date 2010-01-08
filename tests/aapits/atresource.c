@@ -448,8 +448,8 @@ AtGetCurrentResourcesExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -497,7 +497,7 @@ AtRsrcTest0006(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtGetCurrentResourcesExceptionTest( 
+    Status = AtGetCurrentResourcesExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 12,
         AE_NO_MEMORY);
@@ -939,8 +939,8 @@ AtGetPossibleResourcesExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -988,7 +988,7 @@ AtRsrcTest0013(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtGetPossibleResourcesExceptionTest( 
+    Status = AtGetPossibleResourcesExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY);
@@ -1398,8 +1398,8 @@ AtSetCurrentResourcesExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -1443,7 +1443,7 @@ AtRsrcTest0020(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtSetCurrentResourcesExceptionTest( 
+    Status = AtSetCurrentResourcesExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY);
@@ -1881,8 +1881,8 @@ AtGetIRQRoutingTableExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -1930,7 +1930,7 @@ AtRsrcTest0027(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtGetIRQRoutingTableExceptionTest( 
+    Status = AtGetIRQRoutingTableExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY);
@@ -2169,7 +2169,7 @@ AtRsrcTest0030(void)
         return Status;
     }
 
-    return AE_OK; 
+    return AE_OK;
 }
 
 /*
@@ -2402,8 +2402,8 @@ AtWalkResourcesExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -2456,7 +2456,7 @@ AtRsrcTest0034(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtWalkResourcesExceptionTest( 
+    Status = AtWalkResourcesExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY);
@@ -3106,7 +3106,7 @@ AtRsrcTest0036(void)
 
 
 /*
- * ASSERTION 0037: reproduces BZ2039 
+ * ASSERTION 0037: reproduces BZ2039
  */
 
 /* from drivers/acpi/pci_link.c */
@@ -3278,6 +3278,6 @@ AtRsrcTest0037(void)
             NumErr);
         return Status;
     }
-    
+
     return AE_OK;
 }

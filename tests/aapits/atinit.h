@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: atinit - predefinitions of tests of the test case 
+ * Module Name: atinit - predefinitions of tests of the test case
  *
  *****************************************************************************/
 

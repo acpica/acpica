@@ -96,7 +96,7 @@ OsxfCtrlGet(ACPI_OSXF OsxfNum, ACPI_OSXF_CONTROL *Ctrl)
         return AE_OK;
     }
 
-    return AE_ERROR;        
+    return AE_ERROR;
 }
 
 /*
@@ -105,7 +105,7 @@ OsxfCtrlGet(ACPI_OSXF OsxfNum, ACPI_OSXF_CONTROL *Ctrl)
  */
 UINT64
 OsxfCtrlGetCalls(
-    ACPI_OSXF               OsxfNum, 
+    ACPI_OSXF               OsxfNum,
     UINT32                  SuccessCountFlag)
 {
     UINT64                  Count;
@@ -113,7 +113,7 @@ OsxfCtrlGetCalls(
     if (SuccessCountFlag)
     {
         Count = OsxfCtrl[OsxfNum].SuccessCount;
-    } 
+    }
     else
     {
         Count = OsxfCtrl[OsxfNum].CallsCount;
@@ -139,7 +139,7 @@ OsxfCtrlTotalCalls(
         {
             Count += OsxfCtrl[i].SuccessCount;
         }
-    } 
+    }
     else
     {
         Count = OsxfCtrl[OSXF_NUM(AcpiOsTotal)].CallsCount;
@@ -168,12 +168,12 @@ OsxfCtrlSet(
                 Ctrl->CtrlAct.CallsCount != 0)
         {
             printf("OsxfCtrlSet(%s): test error, there is waiting"
-                " action for CallsCount %d, ActFlag %d, ActCode %d\n", 
+                " action for CallsCount %d, ActFlag %d, ActCode %d\n",
                 OSXF_NAME(OsxfNum), (UINT32)Ctrl->CtrlAct.CallsCount,
                 Ctrl->CtrlAct.ActFlag, Ctrl->CtrlAct.ActCode);
             return AE_ERROR;
         }
-    } 
+    }
     else
     {
         printf("OsxfCtrlSet(%s): test interface error, should be"
@@ -270,7 +270,7 @@ OsxfCtrlGetDiff(
         NewTotalCallsCount = OsxfCtrlTotalCalls(0);
         Diff64 = NewTotalCallsCount - TotalCallsCountMark;
         TotalCallsCountMark = NewTotalCallsCount;
-    } 
+    }
     else
     {
         switch (OsxfFlags)
@@ -320,7 +320,7 @@ const char              *stat_msg[] = {
  */
 ACPI_STATUS
 OsxfCtrlCheck(
-    UINT32                  CondFlags, 
+    UINT32                  CondFlags,
     UINT32                  FreeCond)
 {
     INT64                   Diff64;

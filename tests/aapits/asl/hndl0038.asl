@@ -314,14 +314,14 @@ DefinitionBlock(
 		OperationRegion (IDE1, PCI_Config, 0x00, 0xFF)
 
 		Field (IDE1, DWordAcc, NoLock, Preserve) {
-			Offset (0x6C), 
+			Offset (0x6C),
 			IPDC,   32}
 
 		Name (_HID, EisaId ("PNP0A03"))
 
 		Name (_CID, Package (0x03) {
-			0x00102E4F, 
-			EisaId ("PNP0A01"), 
+			0x00102E4F,
+			EisaId ("PNP0A01"),
 			0x130FD041})
 
 		Name (_ADR, 0x11)
@@ -367,14 +367,14 @@ DefinitionBlock(
 			OperationRegion (IDE1, PCI_Config, 0x100, 0xFF)
 
 			Field (IDE1, DWordAcc, NoLock, Preserve) {
-				Offset (0x6C), 
+				Offset (0x6C),
 				IPDC,   32}
 
 			Name (_HID, EisaId ("XXX0A03"))
 
 			Name (_CID, Package (0x03) {
-				0x00102E4F, 
-				EisaId ("PNP0A03"), 
+				0x00102E4F,
+				EisaId ("PNP0A03"),
 				0x130FD041})
 
 			Name (_ADR, 0x22)
@@ -416,14 +416,14 @@ DefinitionBlock(
 			OperationRegion (IDE1, PCI_Config, 0x200, 0xFF)
 
 			Field (IDE1, DWordAcc, NoLock, Preserve) {
-				Offset (0x6C), 
+				Offset (0x6C),
 				IPDC,   32}
 
 			Name (_HID, EisaId ("XXX0A03"))
 
 			Name (_CID, Package (0x03) {
-				0x00102E4F, 
-				EisaId ("XXX0A03"), 
+				0x00102E4F,
+				EisaId ("XXX0A03"),
 				0x130FD041})
 
 			Name (_ADR, 0x33)

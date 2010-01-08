@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: atosxfctrl - include for AcpiOs* interfaces control 
+ * Module Name: atosxfctrl - include for AcpiOs* interfaces control
  *
  *****************************************************************************/
 
@@ -333,7 +333,7 @@ OsxfCtrlPrint(
 
 ACPI_STATUS
 OsxfCtrlCheck(
-    UINT32                  CondFlags, 
+    UINT32                  CondFlags,
     UINT32                  FreeCond);
 
 ACPI_STATUS
@@ -346,7 +346,7 @@ OsxfCtrlTotalCalls(
 
 UINT64
 OsxfCtrlGetCalls(
-    ACPI_OSXF               OsxfNum, 
+    ACPI_OSXF               OsxfNum,
     UINT32                  SuccessCountFlag);
 
 INT64

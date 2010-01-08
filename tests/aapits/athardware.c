@@ -379,35 +379,35 @@ IsBitRegOfType(UINT32 RegisterId, UINT32 RegIds[], UINT32 NumIds)
 UINT32
 IsStatusRegister(UINT32 RegisterId)
 {
-    return IsBitRegOfType(RegisterId, StatusRegIds, 
+    return IsBitRegOfType(RegisterId, StatusRegIds,
         sizeof (StatusRegIds) / sizeof (UINT32));
 }
 
 UINT32
 IsEnableRegister(UINT32 RegisterId)
 {
-    return IsBitRegOfType(RegisterId, EnableRegIds, 
+    return IsBitRegOfType(RegisterId, EnableRegIds,
         sizeof (EnableRegIds) / sizeof (UINT32));
 }
 
 UINT32
 IsControlRegister(UINT32 RegisterId)
 {
-    return IsBitRegOfType(RegisterId, ControlRegIds, 
+    return IsBitRegOfType(RegisterId, ControlRegIds,
         sizeof (ControlRegIds) / sizeof (UINT32));
 }
 
 UINT32
 IsControl2Register(UINT32 RegisterId)
 {
-    return IsBitRegOfType(RegisterId, Control2RegIds, 
+    return IsBitRegOfType(RegisterId, Control2RegIds,
         sizeof (Control2RegIds) / sizeof (UINT32));
 }
 
 UINT32
 IsBitDefinedRegister(UINT32 RegisterId)
 {
-    return IsBitRegOfType(RegisterId, BitRegIds, 
+    return IsBitRegOfType(RegisterId, BitRegIds,
         sizeof (BitRegIds) / sizeof (UINT32));
 }
 
@@ -489,7 +489,7 @@ AtHardwTest0006(void)
                 i, RegisterId, ReturnValue);
             return AE_ERROR;
         }
-    
+
         /* Set BitReg to 1 */
 
         NormValue = (IS3BITREG(RegisterId))? 0x07: 0x01;
@@ -689,7 +689,7 @@ AtHardwTest0008(void)
         }
 
         /* Check cleared bits */
-        if ((BitDefinedRegMask & SetValue) != 
+        if ((BitDefinedRegMask & SetValue) !=
             (BitDefinedRegMask & (IniValue & ~(NormValue << BitRegPos[i]))))
         {
             AapiErrors++;
@@ -1015,7 +1015,7 @@ AtHardwTest0011(void)
     BLD_TABLES_TASK         BldTask = {BLD_NO_FACS, 0};
 
     memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
-  
+
     AtBuildLocalTables(UserTable, BldTask);
 
     Status = AtSubsystemInit(AAPITS_INITIALIZE_SS,
@@ -1439,7 +1439,7 @@ AtEmulateWakingStatus(void * Context)
     AT_FIXED_REG_NUM        RegNum;
     UINT32                  IniValue;
     UINT32                  SetValue;
-    
+
     AcpiOsSleep(1000); /* 1 second */
 
     RegNum = GetRegNum(RegisterId);
@@ -1734,7 +1734,7 @@ AtConcurrentHoldGlobalLock(void * Context)
     ACPI_STATUS             Status;
     UINT32                  Handle;
     UINT32                  *Flag = (UINT32 *)Context;
-    
+
     Status = AcpiAcquireGlobalLock(0, &Handle);
     if (ACPI_FAILURE(Status))
     {
@@ -1776,7 +1776,7 @@ AtActions0025(void)
     {
         printf ("API error: AcpiOsExecute() returned %s\n",
             AcpiFormatException(Status));
-        return Status;        
+        return Status;
     }
 
     AcpiOsSleep(1000); /* 1 second */
@@ -2350,7 +2350,7 @@ AtConcurrentAcquireGlobalLock(void * Context)
     ACPI_STATUS             Status;
     UINT32                  Handle;
     UINT32                  *Flag = (UINT32 *)Context;
-    
+
     Status = AcpiAcquireGlobalLock(0, &Handle);
     if (Status != AE_TIME)
     {
@@ -2407,7 +2407,7 @@ AtHardwTest0036(void)
     {
         printf ("API error: AcpiOsExecute() returned %s\n",
             AcpiFormatException(Status));
-        return Status;        
+        return Status;
     }
 
     AcpiOsSleep(1000); /* 1 second */
@@ -2434,7 +2434,7 @@ AtEmulateEventGlobalXrupt(void * Context)
 {
     UINT32                  RVal;
     UINT32                  *Flag = (UINT32 *)Context;
-   
+
     AcpiOsSleep(1000); /* 1 second */
 
     if (AtFacs == NULL)
@@ -2497,7 +2497,7 @@ AtActions0037(void)
     {
         printf ("API error: AcpiOsExecute() returned %s\n",
             AcpiFormatException(Status));
-        return Status;        
+        return Status;
     }
 
     if (EmulatedFlag)
@@ -2666,7 +2666,7 @@ AtHardwTest0038(void)
         {
             printf ("API error: AcpiOsExecute() returned %s\n",
                 AcpiFormatException(Status));
-            return Status;        
+            return Status;
         }
 
         AcpiOsSleep(1000); /* 1 second */
@@ -2695,7 +2695,7 @@ AtActions0039(void)
     {
         printf ("API error: AcpiOsExecute() returned %s\n",
             AcpiFormatException(Status));
-        return Status;        
+        return Status;
     }
 
     AcpiOsSleep(1000); /* delay for 1 second the Global Lock to be held */
@@ -2812,7 +2812,7 @@ AtConcurrentHold_GL(void * Context)
 {
     ACPI_STATUS             Status;
     UINT32                  *Flag = (UINT32 *)Context;
-    
+
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\T040", 0)))
     {
         goto ErrorExit;
@@ -2839,7 +2839,7 @@ AtActions0040(void)
     {
         printf ("API error: AcpiOsExecute() returned %s\n",
             AcpiFormatException(Status));
-        return Status;        
+        return Status;
     }
 
     AcpiOsSleep(1000); /* delay for 1 second the Global Lock to be held */
@@ -2967,7 +2967,7 @@ AtActions0041(UINT32 Step)
         AapiErrors++;
         printf ("API error: AcpiAcquireGlobalLock() returned %s\n",
             AcpiFormatException(Status));
-        return Status;        
+        return Status;
     }
 
     T0 = AcpiOsGetTimer();
@@ -3009,7 +3009,7 @@ AtActions0041(UINT32 Step)
         AapiErrors++;
         printf ("API error: AcpiReleaseGlobalLock() returned %s\n",
             AcpiFormatException(Status));
-        return Status;        
+        return Status;
     }
 
     /* Set up GlobalLock 2000 mls holding */
@@ -3019,7 +3019,7 @@ AtActions0041(UINT32 Step)
     {
         printf ("API error: AcpiOsExecute() returned %s\n",
             AcpiFormatException(Status));
-        return Status;        
+        return Status;
     }
 
     AcpiOsSleep(1000); /* delay for 1 second the Global Lock to be held */

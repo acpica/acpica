@@ -402,7 +402,7 @@ AtInstallNotifyHandlerCommon(
             }
 
             Status = AcpiInstallNotifyHandler(Object, Type, Handler, Context);
-            
+
             if (Status != ExpectedStatus)
             {
                 AapiErrors++;
@@ -432,7 +432,7 @@ AtInstallNotifyHandlerCommon(
             }
 
             Object = TestData[i].Object;
-            
+
             for (j = 0; j < TestData[i].NotifyHandlerNum; j++)
             {
                 Type = (j)? ACPI_DEVICE_NOTIFY: ACPI_SYSTEM_NOTIFY;
@@ -637,7 +637,7 @@ AtInstallNotifyHandlerExceptionTest(
                 {
                     return Status;
                 }
-                
+
                 if (TestData[ii].Pathname)
                 {
                     Status = AcpiGetHandle (NULL, TestData[ii].Pathname,
@@ -654,7 +654,7 @@ AtInstallNotifyHandlerExceptionTest(
                 {
                     TestData[ii].Object = ACPI_ROOT_OBJECT;
                 }
-                
+
                 Object = TestData[ii].Object;
                 Type = TestData[ii].HandlerType[jj];
                 Handler = TestData[ii].Handler[jj];
@@ -680,8 +680,8 @@ AtInstallNotifyHandlerExceptionTest(
                     }
                     TestPass++;
                     Continue_Cond = 0;
-                } 
-                else 
+                }
+                else
                 {
                     if (Status != Benchmark)
                     {
@@ -739,7 +739,7 @@ AtHndlrTest0007(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtInstallNotifyHandlerExceptionTest( 
+    Status = AtInstallNotifyHandlerExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -783,7 +783,7 @@ AtHndlrTest0008(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtInstallNotifyHandlerExceptionTest( 
+    Status = AtInstallNotifyHandlerExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -895,7 +895,7 @@ AtRemoveNotifyHandlerCommon(
                 Context = &TestData[i].Context[j];
 
                 Status = AcpiInstallNotifyHandler(Object, Type, Handler, Context);
-            
+
                 if (ACPI_FAILURE(Status))
                 {
                     AapiErrors++;
@@ -945,7 +945,7 @@ AtRemoveNotifyHandlerCommon(
             }
 
             Status = AcpiRemoveNotifyHandler(Object, Type, Handler);
-            
+
             if (Status != ExpectedStatus)
             {
                 AapiErrors++;
@@ -1202,7 +1202,7 @@ AtAdrSpaceHandlerCommon (
         }
         return AE_OK;
     }
-    
+
     printf ("AtAdrSpaceHandler%d %d (%d) error: *RegionContext 0x%p,\n"
         " does not appropriate any Region\n",
         HandlerId, AccData->AccInd, AdrSpaceHandlerCounter,
@@ -1345,7 +1345,7 @@ AtAdrSpaceSetupCommon (
         }
 
         *RegionContext = RegionHandle;
-        
+
         break;
     }
 
@@ -1708,7 +1708,7 @@ AtInstallAdrSpaceHandlerCommon(
 
             Status = AcpiInstallAddressSpaceHandler(Device, SpaceId,
                 Handler, Setup, Context);
-            
+
             if (Status != ExpectedStatus)
             {
                 AapiErrors++;
@@ -1733,7 +1733,7 @@ AtInstallAdrSpaceHandlerCommon(
         for (i = 0; i < NumData; i++)
         {
             Device = TestData[i].Device;
-            
+
             for (j = 0; j < TestData[i].AdrSpaceHandlerNum; j++)
             {
                 SpaceId = TestData[i].InstData[j].SpaceId;
@@ -1852,7 +1852,7 @@ AtHndlrTest0016(void)
 {
     return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0000,
         sizeof (AdrSpaceTestData0000) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        "\\TST0", AdrSpaceAccData0000, 
+        "\\TST0", AdrSpaceAccData0000,
         sizeof (AdrSpaceAccData0000) / sizeof (AT_ADR_SPACE_ACC_DATA),
         0, AE_OK);
 }
@@ -1866,7 +1866,7 @@ AtHndlrTest0017(void)
 {
     return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0001,
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        "\\TST1", AdrSpaceAccData0001, 
+        "\\TST1", AdrSpaceAccData0001,
         sizeof (AdrSpaceAccData0001) / sizeof (AT_ADR_SPACE_ACC_DATA),
         0, AE_OK);
 }
@@ -1880,7 +1880,7 @@ AtHndlrTest0018(void)
 {
     return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0002,
         sizeof (AdrSpaceTestData0002) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        "\\TST2", AdrSpaceAccData0002, 
+        "\\TST2", AdrSpaceAccData0002,
         sizeof (AdrSpaceAccData0002) / sizeof (AT_ADR_SPACE_ACC_DATA),
         5, AE_OK);
 }
@@ -1894,7 +1894,7 @@ AtHndlrTest0019(void)
 {
     return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0003,
         sizeof (AdrSpaceTestData0003) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        "\\TST3", AdrSpaceAccData0003, 
+        "\\TST3", AdrSpaceAccData0003,
         sizeof (AdrSpaceAccData0003) / sizeof (AT_ADR_SPACE_ACC_DATA),
         5, AE_OK);
 }
@@ -1908,7 +1908,7 @@ AtHndlrTest0020(void)
 {
     return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0004,
         sizeof (AdrSpaceTestData0004) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        NULL, NULL, 0, 
+        NULL, NULL, 0,
         6, AE_BAD_PARAMETER);
 }
 
@@ -1921,7 +1921,7 @@ AtHndlrTest0021(void)
 {
     return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestDataSsdt,
         sizeof (AdrSpaceTestDataSsdt) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        NULL, NULL, 0, 
+        NULL, NULL, 0,
         1, AE_BAD_PARAMETER);
 }
 
@@ -1934,7 +1934,7 @@ AtHndlrTest0022(void)
 {
     return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0001,
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        NULL, NULL, 0, 
+        NULL, NULL, 0,
         2, AE_BAD_PARAMETER);
 }
 
@@ -1947,7 +1947,7 @@ AtHndlrTest0023(void)
 {
     return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0001,
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        NULL, NULL, 0, 
+        NULL, NULL, 0,
         3, AE_BAD_PARAMETER);
 }
 
@@ -1960,7 +1960,7 @@ AtHndlrTest0024(void)
 {
     return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0001,
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        NULL, NULL, 0, 
+        NULL, NULL, 0,
         4, AE_ALREADY_EXISTS);
 }
 
@@ -1973,7 +1973,7 @@ AtHndlrTest0025(void)
 {
     return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0005,
         sizeof (AdrSpaceTestData0005) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        NULL, NULL, 0, 
+        NULL, NULL, 0,
         5, AE_NOT_EXIST);
 }
 
@@ -2025,7 +2025,7 @@ AtInstallAddressSpaceHandlerExceptionTest(
                 {
                     return Status;
                 }
-                
+
                 if (TestData[ii].Pathname)
                 {
                     Status = AcpiGetHandle (NULL, TestData[ii].Pathname,
@@ -2042,9 +2042,9 @@ AtInstallAddressSpaceHandlerExceptionTest(
                 {
                     TestData[ii].Device = ACPI_ROOT_OBJECT;
                 }
-                
+
                 Device = TestData[ii].Device;
-                
+
                 SpaceId = TestData[ii].InstData[jj].SpaceId;
                 Handler = TestData[ii].InstData[jj].Handler;
                 Setup = TestData[ii].InstData[jj].Setup;
@@ -2071,8 +2071,8 @@ AtInstallAddressSpaceHandlerExceptionTest(
                     }
                     TestPass++;
                     Continue_Cond = 0;
-                } 
-                else 
+                }
+                else
                 {
                     if (Status != Benchmark)
                     {
@@ -2130,7 +2130,7 @@ AtHndlrTest0026(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtInstallAddressSpaceHandlerExceptionTest( 
+    Status = AtInstallAddressSpaceHandlerExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 35,
         AE_NO_MEMORY,
@@ -2176,7 +2176,7 @@ AtHndlrTest0027(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtInstallAddressSpaceHandlerExceptionTest( 
+    Status = AtInstallAddressSpaceHandlerExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -2329,7 +2329,7 @@ AtRemoveAdrSpaceHandlerCommon(
             {
                 Status = AcpiInstallAddressSpaceHandler(Device, SpaceId,
                     Handler, Setup, Context);
-                
+
                 if (ACPI_FAILURE(Status))
                 {
                     AapiErrors++;
@@ -2386,7 +2386,7 @@ AtRemoveAdrSpaceHandlerCommon(
                 Handler = TestData[i].InstData[(j + 1) %
                     TestData[i].AdrSpaceHandlerNum].Handler;
             }
-            
+
             if (Status != ExpectedStatus)
             {
                 AapiErrors++;
@@ -2426,7 +2426,7 @@ AtRemoveAdrSpaceHandlerCommon(
                     printf ("Api Error: AcpiRemoveAddressSpaceHandler(0x%p, %d, 0x%p)"
                         " returned %s, expected %s\n",
                         Device, SpaceId, TestData[i].InstData[j].Handler,
-                        AcpiFormatException(Status), 
+                        AcpiFormatException(Status),
                         AcpiFormatException(AE_NOT_EXIST));
                     return Status;
                 }
@@ -2516,7 +2516,7 @@ AtHndlrTest0028(void)
 {
     return AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0000,
         sizeof (AdrSpaceTestData0000) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        "\\TST0", AdrSpaceAccData0000, 
+        "\\TST0", AdrSpaceAccData0000,
         sizeof (AdrSpaceAccData0000) / sizeof (AT_ADR_SPACE_ACC_DATA),
         0, AE_OK);
 }
@@ -2530,7 +2530,7 @@ AtHndlrTest0029(void)
 {
     return AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0001,
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        "\\TST1", AdrSpaceAccData0000, 
+        "\\TST1", AdrSpaceAccData0000,
         sizeof (AdrSpaceAccData0000) / sizeof (AT_ADR_SPACE_ACC_DATA),
         0, AE_OK);
 }
@@ -2544,7 +2544,7 @@ AtHndlrTest0030(void)
 {
     return AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0004,
         sizeof (AdrSpaceTestData0004) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        NULL, NULL, 0, 
+        NULL, NULL, 0,
         6, AE_BAD_PARAMETER);
 }
 
@@ -2557,7 +2557,7 @@ AtHndlrTest0031(void)
 {
     return AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestDataSsdt,
         sizeof (AdrSpaceTestDataSsdt) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        NULL, NULL, 0, 
+        NULL, NULL, 0,
         1, AE_BAD_PARAMETER);
 }
 
@@ -2570,7 +2570,7 @@ AtHndlrTest0032(void)
 {
     return AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0001,
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        NULL, NULL, 0, 
+        NULL, NULL, 0,
         2, AE_BAD_PARAMETER);
 }
 
@@ -2583,7 +2583,7 @@ AtHndlrTest0033(void)
 {
     return AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0001,
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        NULL, NULL, 0, 
+        NULL, NULL, 0,
         3, AE_BAD_PARAMETER);
 }
 
@@ -2596,7 +2596,7 @@ AtHndlrTest0034(void)
 {
     return AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0001,
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        NULL, NULL, 0, 
+        NULL, NULL, 0,
         4, AE_BAD_PARAMETER);
 }
 
@@ -2609,7 +2609,7 @@ AtHndlrTest0035(void)
 {
     return AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0001,
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        NULL, NULL, 0, 
+        NULL, NULL, 0,
         6, AE_NOT_EXIST);
 }
 
@@ -2650,7 +2650,7 @@ AtAuxHndlrTest0036(
     strcat(AdrSpaceMethod, ".ACC0");
 
     Status = AcpiEvaluateObject (NULL, AdrSpaceMethod, NULL, NULL);
-    
+
     if (Status != ExpectedStatus)
     {
         AapiErrors++;
@@ -2686,7 +2686,7 @@ AtAuxHndlrTest0036(
 
     Status = AcpiInstallAddressSpaceHandler(Device, SpaceId,
         Handler, Setup, Context);
-    
+
     if (ACPI_FAILURE(Status))
     {
         AapiErrors++;
@@ -2778,7 +2778,7 @@ AtHndlrTest0037(void)
 {
     return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0036,
         sizeof (AdrSpaceTestData0036) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        NULL, NULL, 0, 
+        NULL, NULL, 0,
         0, AE_OK);
 }
 
@@ -2886,7 +2886,7 @@ AtRemoveAdrSpaceHandlerDynReg(
 
             Status = AcpiInstallAddressSpaceHandler(Device, SpaceId,
                 Handler, Setup, Context);
-            
+
             if (Status != ExpectedStatus)
             {
                 AapiErrors++;
@@ -3014,7 +3014,7 @@ AtRemoveAdrSpaceHandlerDynReg(
             }
         }
     }
-    
+
     if (AdrSpaceHandlerCounter != ExpectedAdrSpaceHandlerCounter)
     {
         AapiErrors++;
@@ -3067,7 +3067,7 @@ AtHndlrTest0038(void)
 {
     return AtRemoveAdrSpaceHandlerDynReg(AdrSpaceTestData0000,
         sizeof (AdrSpaceTestData0000) / sizeof (AT_ADR_SPACE_TEST_DATA),
-        "\\TST7", AdrSpaceAccData0038, 
+        "\\TST7", AdrSpaceAccData0038,
         sizeof (AdrSpaceAccData0038) / sizeof (AT_ADR_SPACE_ACC_DATA),
         AE_OK);
 }

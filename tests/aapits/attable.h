@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: attable - predefinitions of tests of the test case 
+ * Module Name: attable - predefinitions of tests of the test case
  *
  *****************************************************************************/
 

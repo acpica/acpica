@@ -29,13 +29,13 @@ static UINT32           IhFunctionOthersCounter = 0;
 static UINT32           IhUnexpectedTypeCounter = 0;
 static UINT32           AlternativeHandlerCounter = 0;
 static UINT32           EstimatedINVC = 0;
-static UINT32           EstimatedINVM = 0; 
+static UINT32           EstimatedINVM = 0;
 static ACPI_STATUS      AtAcpiInitHandlerSpecRet = AE_OK;
 static UINT8            *AtAcpiInitHandlerSpecName = NULL;
 
 /*
  * Expected digits of AML code init0032 processing
- */  
+ */
 #define _SB_DEV_ACTIVE          1
 #define TOTAL_DEVS              (9 + _SB_DEV_ACTIVE)
 #define _INI_TOTAL              7
@@ -73,7 +73,7 @@ AtAcpiInitHandler(
     ACPI_STATUS             Status = AE_OK;
     UINT8                   ShortName[5];
     UINT8                   ParentName[5];
-    ACPI_BUFFER             OutName; 
+    ACPI_BUFFER             OutName;
     ACPI_OBJECT_TYPE        OutType;
     ACPI_HANDLE             Parent;
 
@@ -93,7 +93,7 @@ AtAcpiInitHandler(
     if (ACPI_FAILURE(AcpiGetParent (Object, &Parent)))
     {
         strcpy((char *)ParentName, "NONE");
-    } 
+    }
     else
     {
         OutName.Length = 5;
@@ -118,7 +118,7 @@ AtAcpiInitHandler(
     if (Function == ACPI_INIT_DEVICE_INI)
     {
         ++IhFunctionIniCounter;
-    } 
+    }
     else
     {
         ++IhFunctionOthersCounter;
@@ -217,8 +217,8 @@ AtAcpiInitHandler(
                 Status = AtAcpiInitHandlerSpecRet;
                 AtAcpiInitHandlerSpecRet = AE_OK;
             }
-        } 
-        else 
+        }
+        else
         {
             Status = AtAcpiInitHandlerSpecRet;
             AtAcpiInitHandlerSpecRet = AE_OK;
@@ -425,14 +425,14 @@ AtInitCommonTest(
         {
             if (ErrExpScale & AAPITS_INITIALIZE_SS)
             {
-            } 
+            }
             else if (!(ErrStagesScale & AAPITS_INITIALIZE_SS))
             {
                 AapiErrors++;
                 printf ("AtInitCommonTest: AcpiInitializeSubsystem() failure, %s\n",
                     AcpiFormatException(Status));
                 return Status;
-            } 
+            }
             else if (Status != AE_ERROR)
             {
                 TestErrors++;
@@ -441,7 +441,7 @@ AtInitCommonTest(
                     AcpiFormatException(Status));
                 return Status;
             }
-        } 
+        }
         else if (ErrExpScale & AAPITS_INITIALIZE_SS)
         {
             AapiErrors++;
@@ -480,7 +480,7 @@ AtInitCommonTest(
 
     if (StagesScale & AAPITS_INITABLES)
     {
-        memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER)); 
+        memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
 
         if (AMLcodeFileName)
         {
@@ -534,14 +534,14 @@ AtInitCommonTest(
             if (ErrExpScale & AAPITS_INITABLES)
             {
                 ;
-            } 
+            }
             else if (!(ErrStagesScale & AAPITS_INITABLES))
             {
                 AapiErrors++;
                 printf ("AtInitCommonTest: AcpiInitializeTables() failure, %s\n",
                     AcpiFormatException(Status));
                 return Status;
-            } 
+            }
             else if (Status != AE_NO_MEMORY)
             {
                 TestErrors++;
@@ -550,7 +550,7 @@ AtInitCommonTest(
                     AcpiFormatException(Status));
                 return Status;
             }
-        } 
+        }
         else if (ErrExpScale & AAPITS_INITABLES)
         {
             AapiErrors++;
@@ -576,14 +576,14 @@ AtInitCommonTest(
             if (ErrExpScale & AAPITS_REALLOCROOTTABLE)
             {
                 ;
-            } 
+            }
             else if (!(ErrStagesScale & AAPITS_REALLOCROOTTABLE))
             {
                 AapiErrors++;
                 printf ("AtInitCommonTest: AcpiReallocateRootTable() failure, %s\n",
                     AcpiFormatException(Status));
                 return Status;
-            } 
+            }
             else if (Status != AE_NO_MEMORY)
             {
                 TestErrors++;
@@ -592,7 +592,7 @@ AtInitCommonTest(
                     AcpiFormatException(Status));
                 return Status;
             }
-        } 
+        }
         else if (ErrExpScale & AAPITS_REALLOCROOTTABLE)
         {
             AapiErrors++;
@@ -640,14 +640,14 @@ A warning is issued for tables that do not pass one or more of these tests
             if (ErrExpScale & AAPITS_LOADTABLES)
             {
                 ;
-            } 
+            }
             else if (!(ErrStagesScale & AAPITS_LOADTABLES))
             {
                 AapiErrors++;
                 printf ("AtInitCommonTest: AcpiLoadTables() failure, %s\n",
                     AcpiFormatException(Status));
                 return Status;
-            } 
+            }
             else if (Status != AE_NO_MEMORY)
             {
                 TestErrors++;
@@ -656,7 +656,7 @@ A warning is issued for tables that do not pass one or more of these tests
                     AcpiFormatException(Status));
                 return Status;
             }
-        } 
+        }
         else if (ErrExpScale & AAPITS_LOADTABLES)
         {
             AapiErrors++;
@@ -716,14 +716,14 @@ A warning is issued for tables that do not pass one or more of these tests
         {
             if (ErrExpScale & AAPITS_ENABLE_SS)
             {
-            } 
+            }
             else if (!(ErrStagesScale & AAPITS_ENABLE_SS))
             {
                 AapiErrors++;
                 printf ("AtInitCommonTest: AcpiEnableSubsystem() failure, %s\n",
                     AcpiFormatException(Status));
                 return Status;
-            } 
+            }
             else if (Status != AE_NO_MEMORY)
             {
                 TestErrors++;
@@ -739,7 +739,7 @@ A warning is issued for tables that do not pass one or more of these tests
             printf ("AtInitCommonTest: AcpiEnableSubsystem()"
                 " succeeded, expected to fail\n");
             return AE_ERROR;
-        } 
+        }
         else if (ErrStagesScale & AAPITS_ENABLE_SS)
         {
             TestErrors++;
@@ -781,14 +781,14 @@ A warning is issued for tables that do not pass one or more of these tests
         {
             if (ErrExpScale & AAPITS_INITIALIZE_OBJS)
             {
-            } 
+            }
             else if (!(ErrStagesScale & AAPITS_INITIALIZE_OBJS))
             {
                 AapiErrors++;
                 printf ("AtInitCommonTest: AcpiInitializeObjects() failure, %s\n",
                     AcpiFormatException(Status));
                 return Status;
-            } 
+            }
             else if (Status != AE_ERROR)
             {
                 TestErrors++;
@@ -804,7 +804,7 @@ A warning is issued for tables that do not pass one or more of these tests
             printf ("AtInitCommonTest: AcpiInitializeObjects()"
                 " succeeded, expected to fail\n");
             return AE_ERROR;
-        } 
+        }
         else if (ErrStagesScale & AAPITS_INITIALIZE_OBJS)
         {
             AapiErrors++;
@@ -893,7 +893,7 @@ AtTerminateCtrlCheck(
  * AtInitTermCommonTest(
  *     AT_ACTD_FLAG ActFlag, - flag of one-time/permanent action mode
  *     UINT32 TFst,       - number of the first call to OS IF for the action
- *     ACPI_OSXF OsxfNum, - number of the specified OS IF 
+ *     ACPI_OSXF OsxfNum, - number of the specified OS IF
  *     UINT32 ActCode,   - code of the action
  *     UINT32 Check_Flags)- flags of the additional check of AcpiTerminate:
  *         0 - without any check
@@ -965,7 +965,7 @@ AtInitTermCommonTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
+        }
         else
         {
             if ((ACPI_SUCCESS(Benchmark) && Init_Sub_Status != Benchmark) ||
@@ -990,7 +990,7 @@ AtInitTermCommonTest(
                     ActCode == AtActRet_ERROR)
             {
                 Init_Os_Status = AE_ERROR;
-            } 
+            }
         }
 
         if (AT_SKIP_OS_PRINTF_CHECK && ACPI_FAILURE(Init_Os_Status))
@@ -1076,7 +1076,7 @@ AtInitTermCommonTest(
  * AtExceptionCommonTest(
  *     AT_ACTD_FLAG ActFlag, - flag of one-time/permanent action mode
  *     UINT32 TFst,       - number of the first call to OS IF for the action
- *     ACPI_OSXF OsxfNum, - number of the specified OS IF 
+ *     ACPI_OSXF OsxfNum, - number of the specified OS IF
  *     UINT32 ActCode)   - code of the action
  *
  * Performs actions which are common for AcpiInitializeSubsystem
@@ -1129,7 +1129,7 @@ AtExceptionCommonTest(
     {
         StagesScale |= AAPITS_LOADTABLES;
         NameIF = "AcpiEnableSubsystem";
-    } 
+    }
     else if (FlagIFVerified == AAPITS_INITIALIZE_OBJS)
     {
         StagesScale |= (AAPITS_LOADTABLES | AAPITS_ENABLE_SS);
@@ -1180,8 +1180,8 @@ AtExceptionCommonTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -1486,7 +1486,7 @@ AtInitTest0007(void)
             /*
              * Check the total number of AcpiOS* invocations
              */
-            Status = AtTerminateCtrlCheck(AE_OK, TOTAL_STAT); 
+            Status = AtTerminateCtrlCheck(AE_OK, TOTAL_STAT);
             if (ACPI_FAILURE(Status))
             {
                 return Status;
@@ -1517,7 +1517,7 @@ AtInitTest0009(void)
 
     if (Test_Flags & MALLOC_STAT)
     {
-        Status = Init_NO_MEMORY_Test1(1, 1, 
+        Status = Init_NO_MEMORY_Test1(1, 1,
             CHECK_INIT_COND | CHECK_TERM_ACT | CHECK_FREE_COND);
         if (ACPI_FAILURE(Status))
         {
@@ -2320,8 +2320,8 @@ AtInitializationHandlerCallsCheck(
                 IhFunctionIniCounter, Function_INI);
             return AE_ERROR;
         }
-    } 
-    else 
+    }
+    else
     {
         if (IhFunctionIniCounter)
         {
@@ -2909,7 +2909,7 @@ AtInitTest0041(void)
                 AcpiFormatException(Status));
             return Status;
         }
-        
+
         if (OutBuffer.Length != sizeof (Info))
         {
             AapiErrors++;
@@ -2951,7 +2951,7 @@ AtInitTest0041(void)
             printf ("API Error: AcpiGetSystemInfo() returned %s\n",
                 AcpiFormatException(Status));
             return Status;
-        } 
+        }
         else if (OutBuffer.Length != sizeof (Info))
         {
             AapiErrors++;
@@ -2959,7 +2959,7 @@ AtInitTest0041(void)
                 " Length %d, expected %d\n",
                 OutBuffer.Length, sizeof (Info));
             return AE_ERROR;
-        } 
+        }
         else if (OutBuffer.Pointer != &Info)
         {
             AapiErrors++;
@@ -3023,7 +3023,7 @@ AtInitTest0042(void)
                 AcpiFormatException(Status));
             return Status;
         }
-        
+
         OutBuffer.Pointer = &Info;
         OutBuffer.Length = sizeof (Info);
 
@@ -3034,7 +3034,7 @@ AtInitTest0042(void)
             printf ("API Error: AcpiGetSystemInfo() returned %s\n",
                 AcpiFormatException(Status));
             return Status;
-        } 
+        }
         else if (OutBuffer.Length != sizeof (Info))
         {
             AapiErrors++;
@@ -3042,7 +3042,7 @@ AtInitTest0042(void)
                 " Length %d, expected %d\n",
                 OutBuffer.Length, sizeof (Info));
             return AE_ERROR;
-        } 
+        }
         else if (OutBuffer.Pointer != &Info)
         {
             AapiErrors++;
@@ -3093,13 +3093,13 @@ AtInitTest0043(void)
             printf ("API Error: AcpiGetSystemInfo() returned %s\n",
                 AcpiFormatException(Status));
             return Status;
-        } 
+        }
         else if (OutBuffer.Pointer == NULL)
         {
             AapiErrors++;
             printf ("API Error: AcpiGetSystemInfo() succeeded but returned NULL\n");
             return AE_ERROR;
-        } 
+        }
         else if (OutBuffer.Length != sizeof (ACPI_SYSTEM_INFO))
         {
             AapiErrors++;
@@ -3107,7 +3107,7 @@ AtInitTest0043(void)
                 " Length %d, expected %d\n",
                 OutBuffer.Length, sizeof (ACPI_SYSTEM_INFO));
             return AE_ERROR;
-        } 
+        }
         else
         {
             /* Check ACPI_SYSTEM_INFO structure*/
@@ -3742,7 +3742,7 @@ AtInitTest0054(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtExceptionCommonTest(AAPITS_ENABLE_SS, 
+    Status = AtExceptionCommonTest(AAPITS_ENABLE_SS,
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY);
@@ -3771,7 +3771,7 @@ AtInitTest0055(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtExceptionCommonTest(AAPITS_INITIALIZE_OBJS, 
+    Status = AtExceptionCommonTest(AAPITS_INITIALIZE_OBJS,
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY);
@@ -3982,11 +3982,11 @@ AtInitTest0056(void)
             AapiErrors++;
             printf ("API Error: AcpiFormatException(0x%x) returned NULL\n",
                 AllExceptionsCodes[i]);
-        } 
+        }
         else if (strcmp(ExceptionString, AllExceptionsStrings[i]) != 0){
             AapiErrors++;
             printf ("API Error: AcpiFormatException(0x%x) returned %s,"
-                " expected %s\n", 
+                " expected %s\n",
                 AllExceptionsCodes[i], ExceptionString, AllExceptionsStrings[i]);
         }
     }
@@ -4020,7 +4020,7 @@ AtInitTest0057(void)
         {
             Status++;
             k++;
-        } 
+        }
         else
         {
             NumChecked++;
@@ -4033,12 +4033,12 @@ AtInitTest0057(void)
                     {
                         AapiErrors++;
                         printf ("API Error: AcpiFormatException(0x%x) returned"
-                            " unexpected '%s' related to 0x%x code\n", 
+                            " unexpected '%s' related to 0x%x code\n",
                             Status, ExceptionString, AllExceptionsCodes[i]);
                         break;
                     }
                 }
-            } 
+            }
             else
             {
                 AapiErrors++;
@@ -4049,14 +4049,14 @@ AtInitTest0057(void)
             if (k < NumCodes)
             {
                 Status = AllExceptionsCodes[k++];
-            } 
+            }
             else
             {
                 Status++;
             }
         }
     }
-            
+
     return AE_OK;
 }
 
@@ -4231,7 +4231,7 @@ AtInitTest0060(void)
     BLD_TABLES_TASK         BldTask = {BLD_NO_FADT, 0};
 
     memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
-  
+
     AtBuildLocalTables(UserTable, BldTask);
 
     Status = AtSubsystemInit(AAPITS_INITIALIZE_SS,

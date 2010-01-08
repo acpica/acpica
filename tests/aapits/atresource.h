@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: atresource - predefinitions of tests of the test case 
+ * Module Name: atresource - predefinitions of tests of the test case
  *
  *****************************************************************************/
 

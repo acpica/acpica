@@ -13,7 +13,7 @@ DefinitionBlock(
 	 */
 
     Name(\INT5, 0x15)
-    
+
 	Name(\_S0, Package(0x02){
         "0",
         0x00,

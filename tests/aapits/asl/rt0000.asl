@@ -27,12 +27,12 @@ DefinitionBlock(
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff)
 		Memory32Fixed (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7)
-		VendorLong () {0x9f, 
+		VendorLong () {0x9f,
 			0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
 			0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
 			0x00, 0x01, 0x02, 0x03}
 		QWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QIOX, TypeTranslation, SparseTranslation)
 		DWordIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
@@ -42,7 +42,7 @@ DefinitionBlock(
 			0xf6f7, 0xf8f9, 0xfafb, 0xfcfd, 0xfeff,
 			0xff, "PATHPATHPATH", WIOX, TypeTranslation, SparseTranslation)
 		QWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QMEX, AddressRangeACPI, TypeTranslation)
 		DWordMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
@@ -74,22 +74,22 @@ DefinitionBlock(
 			241,242,243,244,245,246,247,248,249,250,251,252,253,254,255}
 		Register (FFixedHW, 0xf0, 0xf1, 0xf2f3f4f5f6f7f8f9)
 		ExtendedIO (ResourceConsumer, MinFixed, MaxFixed, SubDecode, EntireRange,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EIOX, TypeTranslation, SparseTranslation)
 		ExtendedMemory (ResourceConsumer, SubDecode, MinFixed, MaxFixed, NonCacheable, ReadOnly,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			EMEX, AddressRangeACPI, TypeTranslation)
 		ExtendedSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 
+			0xd0d1d2d3d4d5d6d7, 0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7,
 			0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			ESPX)
 		DWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
 			0xecedeeef, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff,
 			0xff, "PATHPATHPATH", DSPX)
 		QWordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
-			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef, 
+			0xd8d9dadbdcdddedf, 0xe0e1e2e3e4e5e6e7, 0xe8e9eaebecedeeef,
 			0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff,
 			0xff, "PATHPATHPATH", QSPX)
 		WordSpace (0xc0, ResourceConsumer, SubDecode, MinFixed, MaxFixed, 0x5a,
@@ -147,10 +147,10 @@ DefinitionBlock(
             // packages must be FFFF, that is, any
             // function number. The format of each
             // package is:
-            // 
+            //
             // Entry Type     Description
             // ----------------------------------------
-            // 
+            //
             // 0     Integer  Address of the device
             // 1     Integer  PCI pin number of the
             //                device (0=INTA#,

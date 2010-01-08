@@ -204,7 +204,7 @@ AtBuildLocalDSDT (
     }
     else
     {
-        /* 
+        /*
          * Build a local DSDT because either there is no incoming table
          * or it is an SSDT or PSDT
          */
@@ -574,7 +574,7 @@ AtBuildLocalRSDT (
         LocalRSDT->TableOffsetEntry[i++] = ACPI_PTR_TO_PHYSADDR (&LocalFADT);
     }
 
-    if (Actual_DSDT && 
+    if (Actual_DSDT &&
         (!ACPI_STRNCMP ((char *) Actual_DSDT->Signature, ACPI_SIG_SSDT, 4) ||
          !ACPI_STRNCMP ((char *) Actual_DSDT->Signature, ACPI_SIG_PSDT, 4)))
     {
@@ -709,7 +709,7 @@ AtBuildLocalXSDT (
         LocalXSDT->TableOffsetEntry[i++] = ACPI_PTR_TO_PHYSADDR (&LocalFADT2);
     }
 
-    if (Actual_DSDT && 
+    if (Actual_DSDT &&
         (!ACPI_STRNCMP ((char *) Actual_DSDT->Signature, ACPI_SIG_SSDT, 4) ||
          !ACPI_STRNCMP ((char *) Actual_DSDT->Signature, ACPI_SIG_PSDT, 4)))
     {
@@ -887,7 +887,7 @@ AtGetTableHeader (
         *Table = (ACPI_TABLE_HEADER *)&LocalFACS;
     } else if (ACPI_COMPARE_NAME(Type, ACPI_SIG_FADT))
     {
-        BldTask.NoTableScale &= ~(BLD_NO_FACS | BLD_NO_DSDT); 
+        BldTask.NoTableScale &= ~(BLD_NO_FACS | BLD_NO_DSDT);
         AtBuildLocalFADT1(&LocalFADT, &LocalFACS, &Actual_DSDT, NULL, BldTask);
         *Table = (ACPI_TABLE_HEADER *)&LocalFADT;
     } else if (ACPI_COMPARE_NAME(Type, ACPI_SIG_PSDT))
@@ -917,7 +917,7 @@ AtGetTableHeader (
         }
     } else if (ACPI_COMPARE_NAME(Type, ACPI_SIG_XSDT))
     {
-//        BldTask.NoTableScale &= ~(BLD_NO_FACS | BLD_NO_DSDT | BLD_NO_FADT); 
+//        BldTask.NoTableScale &= ~(BLD_NO_FACS | BLD_NO_DSDT | BLD_NO_FADT);
         AtBuildLocalDSDT(NULL, BldTask, &Actual_DSDT);
         Status = AtBuildLocalXSDT((ACPI_TABLE_XSDT *)LocalRSDT,
             Actual_DSDT, BldTask);
@@ -1261,7 +1261,7 @@ AeRegionHandler (
 
     ACPI_FUNCTION_NAME ("AeRegionHandler");
 
-    
+
     /*
      * If the object is not a region, simply return
      */
@@ -1625,12 +1625,12 @@ AtCheckInteger(
 {
     ACPI_STATUS             Status;
     ACPI_STRING             Path;
-    ACPI_BUFFER             Results; 
-    ACPI_OBJECT             Obj, *Object = &Obj; 
+    ACPI_BUFFER             Results;
+    ACPI_OBJECT             Obj, *Object = &Obj;
     ACPI_BUFFER             OutName = {AT_PATHNAME_MAX, PathName};
 
     /* Initialize the return buffer structure */
-    Results.Length = sizeof (Obj); 
+    Results.Length = sizeof (Obj);
     Results.Pointer = Object;
     memset(Results.Pointer, 0, Results.Length);
 
@@ -1674,7 +1674,7 @@ AtCheckInteger(
         printf ("API Error: Type of %s (%d) is not Integer (1)\n",
             Path, Obj.Type);
         Status = AE_ERROR;
-    } 
+    }
     else if (Obj.Integer.Value != Value)
     {
         AapiErrors++;
@@ -1716,7 +1716,7 @@ AtCheckBytes(
 {
     ACPI_STATUS             Status = AE_OK;
     UINT32                  i;
-    
+
     for (i = 0; i < Length; i++)
     {
         if (Pointer[i] != Benchmark[i])
@@ -1785,14 +1785,14 @@ AtCheckString(
         printf ("API Error: Type of %s (%d) is not String (2)\n",
             Path, Object->Type);
         Status = AE_ERROR;
-    } 
+    }
     else if (Object->Buffer.Length != Length)
     {
         AapiErrors++;
         printf ("API Error: Length of %s is %d instead of expected %d\n",
             Path, Object->Buffer.Length, Length);
         Status = AE_ERROR;
-    } 
+    }
     else
     {
         Status = AtCheckBytes(Path, Object->Buffer.Pointer, Pointer, Length);
@@ -1875,7 +1875,7 @@ AtCheckBuffer(
         printf ("API Error: Type of %s (%d) is not Buffer (3)\n",
             Path, Object->Type);
         Status = AE_ERROR;
-    } 
+    }
     else if (Object->Buffer.Length != Length)
     {
         AapiErrors++;
@@ -1887,7 +1887,7 @@ AtCheckBuffer(
             Length = Object->Buffer.Length;
         }
         (void)AtCheckBytes(Path, Object->Buffer.Pointer, Pointer, Length);
-    } 
+    }
     else
     {
         Status = AtCheckBytes(Path, Object->Buffer.Pointer, Pointer, Length);

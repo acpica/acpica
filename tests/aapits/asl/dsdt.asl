@@ -29,234 +29,234 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
     OperationRegion (S_IO, SystemIO, 0x06B0, 0x11)
     Field (S_IO, ByteAcc, NoLock, Preserve)
     {
-        PMS0,   8, 
-        PME0,   8, 
-        PMS1,   8, 
-        PMS2,   8, 
-        PMS3,   8, 
-        PME1,   8, 
-        PME2,   8, 
-        PME3,   8, 
-        SMS1,   8, 
-        SMS2,   8, 
-        SME1,   8, 
-        SME2,   8, 
-        RT10,   1, 
-        RT11,   1, 
-            ,   1, 
-        RT13,   1, 
-        Offset (0x0E), 
-        RT30,   1, 
-        RT31,   1, 
-        RT32,   1, 
-        RT33,   1, 
-        RT34,   1, 
-        RT35,   1, 
-        RT36,   1, 
-        RT37,   1, 
-        Offset (0x10), 
-        DLPC,   1, 
-        CK33,   1, 
+        PMS0,   8,
+        PME0,   8,
+        PMS1,   8,
+        PMS2,   8,
+        PMS3,   8,
+        PME1,   8,
+        PME2,   8,
+        PME3,   8,
+        SMS1,   8,
+        SMS2,   8,
+        SME1,   8,
+        SME2,   8,
+        RT10,   1,
+        RT11,   1,
+            ,   1,
+        RT13,   1,
+        Offset (0x0E),
+        RT30,   1,
+        RT31,   1,
+        RT32,   1,
+        RT33,   1,
+        RT34,   1,
+        RT35,   1,
+        RT36,   1,
+        RT37,   1,
+        Offset (0x10),
+        DLPC,   1,
+        CK33,   1,
         CK14,   1
     }
 
     OperationRegion (IO_T, SystemIO, 0x0800, 0x10)
     Field (IO_T, ByteAcc, NoLock, Preserve)
     {
-        Offset (0x02), 
-        Offset (0x04), 
-        Offset (0x06), 
-        Offset (0x08), 
-        TRP0,   8, 
-        Offset (0x0A), 
-        Offset (0x0B), 
-        Offset (0x0C), 
-        Offset (0x0D), 
-        Offset (0x0E), 
-        Offset (0x0F), 
+        Offset (0x02),
+        Offset (0x04),
+        Offset (0x06),
+        Offset (0x08),
+        TRP0,   8,
+        Offset (0x0A),
+        Offset (0x0B),
+        Offset (0x0C),
+        Offset (0x0D),
+        Offset (0x0E),
+        Offset (0x0F),
         Offset (0x10)
     }
 
     OperationRegion (PMIO, SystemIO, 0x1000, 0x80)
     Field (PMIO, ByteAcc, NoLock, Preserve)
     {
-        Offset (0x42), 
-            ,   1, 
+        Offset (0x42),
+            ,   1,
         GPEC,   1
     }
 
     OperationRegion (GPIO, SystemIO, 0x1180, 0x3C)
     Field (GPIO, ByteAcc, NoLock, Preserve)
     {
-        GU00,   8, 
-        GU01,   8, 
-        GU02,   8, 
-        GU03,   8, 
-        GIO0,   8, 
-        GIO1,   8, 
-        GIO2,   8, 
-        GIO3,   8, 
-        Offset (0x0C), 
-        GL00,   8, 
-            ,   4, 
-        GP12,   1, 
-        Offset (0x0E), 
-        GL02,   8, 
-        GL03,   8, 
-        Offset (0x18), 
-        GB00,   8, 
-        GB01,   8, 
-        GB02,   8, 
-        GB03,   8, 
-        Offset (0x2C), 
-        GIV0,   8, 
-        GIV1,   8, 
-        GIV2,   8, 
-        GIV3,   8, 
-        GU04,   8, 
-        GU05,   8, 
-        GU06,   8, 
-        GU07,   8, 
-        GIO4,   8, 
-        GIO5,   8, 
-        GIO6,   8, 
-        GIO7,   8, 
-            ,   7, 
-        GP39,   1, 
-        GL05,   8, 
-        GL06,   8, 
+        GU00,   8,
+        GU01,   8,
+        GU02,   8,
+        GU03,   8,
+        GIO0,   8,
+        GIO1,   8,
+        GIO2,   8,
+        GIO3,   8,
+        Offset (0x0C),
+        GL00,   8,
+            ,   4,
+        GP12,   1,
+        Offset (0x0E),
+        GL02,   8,
+        GL03,   8,
+        Offset (0x18),
+        GB00,   8,
+        GB01,   8,
+        GB02,   8,
+        GB03,   8,
+        Offset (0x2C),
+        GIV0,   8,
+        GIV1,   8,
+        GIV2,   8,
+        GIV3,   8,
+        GU04,   8,
+        GU05,   8,
+        GU06,   8,
+        GU07,   8,
+        GIO4,   8,
+        GIO5,   8,
+        GIO6,   8,
+        GIO7,   8,
+            ,   7,
+        GP39,   1,
+        GL05,   8,
+        GL06,   8,
         GL07,   8
     }
 
     OperationRegion (GNVS, SystemMemory, 0x3F692E4C, 0x0100)
     Field (GNVS, AnyAcc, Lock, Preserve)
     {
-        OSYS,   16, 
-        SMIF,   8, 
-        PRM0,   8, 
-        PRM1,   8, 
-        SCIF,   8, 
-        PRM2,   8, 
-        PRM3,   8, 
-        LCKF,   8, 
-        PRM4,   8, 
-        PRM5,   8, 
-        P80D,   32, 
-        LIDS,   8, 
-        PWRS,   8, 
-        DBGS,   8, 
-        Offset (0x14), 
-        ACTT,   8, 
-        PSVT,   8, 
-        TC1V,   8, 
-        TC2V,   8, 
-        TSPV,   8, 
-        CRTT,   8, 
-        DTSE,   8, 
-        DTS1,   8, 
-        DTS2,   8, 
-        Offset (0x1E), 
-        BNUM,   8, 
-        B0SC,   8, 
-        B1SC,   8, 
-        B2SC,   8, 
-        B0SS,   8, 
-        B1SS,   8, 
-        B2SS,   8, 
-        Offset (0x28), 
-        APIC,   8, 
-        MPEN,   8, 
-        PPCS,   8, 
-        PPCM,   8, 
-        Offset (0x32), 
-        NATP,   8, 
-        CMAP,   8, 
-        CMBP,   8, 
-        LPTP,   8, 
-        FDCP,   8, 
-        CMCP,   8, 
-        CIRP,   8, 
-        Offset (0x3C), 
-        IGDS,   8, 
-        TLST,   8, 
-        CADL,   8, 
-        PADL,   8, 
-        CSTE,   16, 
-        NSTE,   16, 
-        SSTE,   16, 
-        NDID,   8, 
-        DID1,   32, 
-        DID2,   32, 
-        DID3,   32, 
-        DID4,   32, 
-        DID5,   32, 
-        Offset (0x67), 
-        BLCS,   8, 
-        BRTL,   8, 
-        ALSE,   8, 
-        ALAF,   8, 
-        LLOW,   8, 
-        LHIH,   8, 
-        Offset (0x6E), 
-        EMAE,   8, 
-        EMAP,   16, 
-        EMAL,   16, 
-        ECPC,   8, 
-        MEFE,   8, 
-        Offset (0x82), 
-        GTF0,   56, 
-        GTF2,   56, 
+        OSYS,   16,
+        SMIF,   8,
+        PRM0,   8,
+        PRM1,   8,
+        SCIF,   8,
+        PRM2,   8,
+        PRM3,   8,
+        LCKF,   8,
+        PRM4,   8,
+        PRM5,   8,
+        P80D,   32,
+        LIDS,   8,
+        PWRS,   8,
+        DBGS,   8,
+        Offset (0x14),
+        ACTT,   8,
+        PSVT,   8,
+        TC1V,   8,
+        TC2V,   8,
+        TSPV,   8,
+        CRTT,   8,
+        DTSE,   8,
+        DTS1,   8,
+        DTS2,   8,
+        Offset (0x1E),
+        BNUM,   8,
+        B0SC,   8,
+        B1SC,   8,
+        B2SC,   8,
+        B0SS,   8,
+        B1SS,   8,
+        B2SS,   8,
+        Offset (0x28),
+        APIC,   8,
+        MPEN,   8,
+        PPCS,   8,
+        PPCM,   8,
+        Offset (0x32),
+        NATP,   8,
+        CMAP,   8,
+        CMBP,   8,
+        LPTP,   8,
+        FDCP,   8,
+        CMCP,   8,
+        CIRP,   8,
+        Offset (0x3C),
+        IGDS,   8,
+        TLST,   8,
+        CADL,   8,
+        PADL,   8,
+        CSTE,   16,
+        NSTE,   16,
+        SSTE,   16,
+        NDID,   8,
+        DID1,   32,
+        DID2,   32,
+        DID3,   32,
+        DID4,   32,
+        DID5,   32,
+        Offset (0x67),
+        BLCS,   8,
+        BRTL,   8,
+        ALSE,   8,
+        ALAF,   8,
+        LLOW,   8,
+        LHIH,   8,
+        Offset (0x6E),
+        EMAE,   8,
+        EMAP,   16,
+        EMAL,   16,
+        ECPC,   8,
+        MEFE,   8,
+        Offset (0x82),
+        GTF0,   56,
+        GTF2,   56,
         IDEM,   8
     }
 
     OperationRegion (RCRB, SystemMemory, 0xFED1C000, 0x4000)
     Field (RCRB, DWordAcc, Lock, Preserve)
     {
-        Offset (0x1000), 
-        Offset (0x3000), 
-        Offset (0x3404), 
-        HPAS,   2, 
-            ,   5, 
-        HPAE,   1, 
-        Offset (0x3418), 
-            ,   1, 
-        PATD,   1, 
-        SATD,   1, 
-        SMBD,   1, 
-        HDAD,   1, 
-        A97D,   1, 
-        Offset (0x341A), 
-        RP1D,   1, 
-        RP2D,   1, 
-        RP3D,   1, 
-        RP4D,   1, 
-        RP5D,   1, 
+        Offset (0x1000),
+        Offset (0x3000),
+        Offset (0x3404),
+        HPAS,   2,
+            ,   5,
+        HPAE,   1,
+        Offset (0x3418),
+            ,   1,
+        PATD,   1,
+        SATD,   1,
+        SMBD,   1,
+        HDAD,   1,
+        A97D,   1,
+        Offset (0x341A),
+        RP1D,   1,
+        RP2D,   1,
+        RP3D,   1,
+        RP4D,   1,
+        RP5D,   1,
         RP6D,   1
     }
 
     Mutex (MUTX, 0x00)
     Name (_S0, Package (0x03)
     {
-        Zero, 
-        Zero, 
+        Zero,
+        Zero,
         Zero
     })
     Name (_S3, Package (0x03)
     {
-        0x05, 
-        0x05, 
+        0x05,
+        0x05,
         Zero
     })
     Name (_S4, Package (0x03)
     {
-        0x06, 
-        0x06, 
+        0x06,
+        0x06,
         Zero
     })
     Name (_S5, Package (0x03)
     {
-        0x07, 
-        0x07, 
+        0x07,
+        0x07,
         Zero
     })
     Scope (_PR)
@@ -359,7 +359,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
         Notify (\_SB.PCI0, Zero)
         Return (Package (0x02)
         {
-            Zero, 
+            Zero,
             Zero
         })
     }
@@ -1024,7 +1024,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                 {
                     Return (Package (0x02)
                     {
-                        \_PR.CPU0, 
+                        \_PR.CPU0,
                         \_PR.CPU1
                     })
                 }
@@ -1096,18 +1096,18 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
             {
                 Return (Package (0x0D)
                 {
-                    Zero, 
-                    0x2710, 
-                    0x2710, 
-                    One, 
-                    Ones, 
-                    0x03E8, 
-                    0x0190, 
-                    0x64, 
-                    0x64, 
-                    "CRB Battery 0", 
-                    "Battery 0", 
-                    "Fake", 
+                    Zero,
+                    0x2710,
+                    0x2710,
+                    One,
+                    Ones,
+                    0x03E8,
+                    0x0190,
+                    0x64,
+                    0x64,
+                    "CRB Battery 0",
+                    "Battery 0",
+                    "Fake",
                     "-Virtual Battery 0-"
                 })
             }
@@ -1116,9 +1116,9 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
             {
                 Name (PKG0, Package (0x04)
                 {
-                    Ones, 
-                    Ones, 
-                    Ones, 
+                    Ones,
+                    Ones,
+                    Ones,
                     Ones
                 })
                 If (PWRS)
@@ -1163,18 +1163,18 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
             {
                 Return (Package (0x0D)
                 {
-                    Zero, 
-                    0x2710, 
-                    0x2710, 
-                    One, 
-                    Ones, 
-                    0x03E8, 
-                    0x0190, 
-                    0x64, 
-                    0x64, 
-                    "CRB Battery 1", 
-                    "Battery 1", 
-                    "Real", 
+                    Zero,
+                    0x2710,
+                    0x2710,
+                    One,
+                    Ones,
+                    0x03E8,
+                    0x0190,
+                    0x64,
+                    0x64,
+                    "CRB Battery 1",
+                    "Battery 1",
+                    "Real",
                     "-Real Battery 1-"
                 })
             }
@@ -1183,9 +1183,9 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
             {
                 Name (PKG1, Package (0x04)
                 {
-                    Ones, 
-                    Ones, 
-                    Ones, 
+                    Ones,
+                    Ones,
+                    Ones,
                     Ones
                 })
                 Store (And (B1SS, 0x07), Index (PKG1, Zero))
@@ -1222,18 +1222,18 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
             {
                 Return (Package (0x0D)
                 {
-                    Zero, 
-                    0x2710, 
-                    0x2710, 
-                    One, 
-                    Ones, 
-                    0x03E8, 
-                    0x0190, 
-                    0x64, 
-                    0x64, 
-                    "CRB Battery 2", 
-                    "Battery 2", 
-                    "Real", 
+                    Zero,
+                    0x2710,
+                    0x2710,
+                    One,
+                    Ones,
+                    0x03E8,
+                    0x0190,
+                    0x64,
+                    0x64,
+                    "CRB Battery 2",
+                    "Battery 2",
+                    "Real",
                     "-Real Battery 2-"
                 })
             }
@@ -1242,9 +1242,9 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
             {
                 Name (PKG2, Package (0x04)
                 {
-                    Ones, 
-                    Ones, 
-                    Ones, 
+                    Ones,
+                    Ones,
+                    Ones,
                     Ones
                 })
                 Store (And (B2SS, 0x07), Index (PKG2, Zero))
@@ -1272,7 +1272,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
             Name (_HID, EisaId ("PNP0C0C"))
             Name (_PRW, Package (0x02)
             {
-                0x1D, 
+                0x1D,
                 0x04
             })
         }
@@ -1306,38 +1306,38 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
             OperationRegion (HBUS, PCI_Config, 0x40, 0xC0)
             Field (HBUS, DWordAcc, NoLock, Preserve)
             {
-                Offset (0x50), 
-                    ,   4, 
-                PM0H,   2, 
-                Offset (0x51), 
-                PM1L,   2, 
-                    ,   2, 
-                PM1H,   2, 
-                Offset (0x52), 
-                PM2L,   2, 
-                    ,   2, 
-                PM2H,   2, 
-                Offset (0x53), 
-                PM3L,   2, 
-                    ,   2, 
-                PM3H,   2, 
-                Offset (0x54), 
-                PM4L,   2, 
-                    ,   2, 
-                PM4H,   2, 
-                Offset (0x55), 
-                PM5L,   2, 
-                    ,   2, 
-                PM5H,   2, 
-                Offset (0x56), 
-                PM6L,   2, 
-                    ,   2, 
-                PM6H,   2, 
-                Offset (0x57), 
-                    ,   7, 
-                HENA,   1, 
-                Offset (0x5C), 
-                    ,   3, 
+                Offset (0x50),
+                    ,   4,
+                PM0H,   2,
+                Offset (0x51),
+                PM1L,   2,
+                    ,   2,
+                PM1H,   2,
+                Offset (0x52),
+                PM2L,   2,
+                    ,   2,
+                PM2H,   2,
+                Offset (0x53),
+                PM3L,   2,
+                    ,   2,
+                PM3H,   2,
+                Offset (0x54),
+                PM4L,   2,
+                    ,   2,
+                PM4H,   2,
+                Offset (0x55),
+                PM5L,   2,
+                    ,   2,
+                PM5H,   2,
+                Offset (0x56),
+                PM6L,   2,
+                    ,   2,
+                PM6H,   2,
+                Offset (0x57),
+                    ,   7,
+                HENA,   1,
+                Offset (0x5C),
+                    ,   3,
                 TOUD,   5
             }
 
@@ -1650,137 +1650,137 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                     {
                         Package (0x04)
                         {
-                            0x0001FFFF, 
-                            Zero, 
-                            Zero, 
+                            0x0001FFFF,
+                            Zero,
+                            Zero,
                             0x10
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x0002FFFF, 
-                            Zero, 
-                            Zero, 
+                            0x0002FFFF,
+                            Zero,
+                            Zero,
                             0x10
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x0007FFFF, 
-                            Zero, 
-                            Zero, 
+                            0x0007FFFF,
+                            Zero,
+                            Zero,
                             0x10
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001BFFFF, 
-                            Zero, 
-                            Zero, 
+                            0x001BFFFF,
+                            Zero,
+                            Zero,
                             0x16
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001CFFFF, 
-                            Zero, 
-                            Zero, 
+                            0x001CFFFF,
+                            Zero,
+                            Zero,
                             0x11
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001CFFFF, 
-                            One, 
-                            Zero, 
+                            0x001CFFFF,
+                            One,
+                            Zero,
                             0x10
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001CFFFF, 
-                            0x02, 
-                            Zero, 
+                            0x001CFFFF,
+                            0x02,
+                            Zero,
                             0x12
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001CFFFF, 
-                            0x03, 
-                            Zero, 
+                            0x001CFFFF,
+                            0x03,
+                            Zero,
                             0x13
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001DFFFF, 
-                            Zero, 
-                            Zero, 
+                            0x001DFFFF,
+                            Zero,
+                            Zero,
                             0x17
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001DFFFF, 
-                            One, 
-                            Zero, 
+                            0x001DFFFF,
+                            One,
+                            Zero,
                             0x13
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001DFFFF, 
-                            0x02, 
-                            Zero, 
+                            0x001DFFFF,
+                            0x02,
+                            Zero,
                             0x12
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001DFFFF, 
-                            0x03, 
-                            Zero, 
+                            0x001DFFFF,
+                            0x03,
+                            Zero,
                             0x10
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001EFFFF, 
-                            Zero, 
-                            Zero, 
+                            0x001EFFFF,
+                            Zero,
+                            Zero,
                             0x16
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001EFFFF, 
-                            One, 
-                            Zero, 
+                            0x001EFFFF,
+                            One,
+                            Zero,
                             0x14
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001FFFFF, 
-                            Zero, 
-                            Zero, 
+                            0x001FFFFF,
+                            Zero,
+                            Zero,
                             0x12
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001FFFFF, 
-                            One, 
-                            Zero, 
+                            0x001FFFFF,
+                            One,
+                            Zero,
                             0x13
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001FFFFF, 
-                            0x03, 
-                            Zero, 
+                            0x001FFFFF,
+                            0x03,
+                            Zero,
                             0x10
                         }
                     })
@@ -1791,137 +1791,137 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                     {
                         Package (0x04)
                         {
-                            0x0001FFFF, 
-                            Zero, 
-                            ^LPCB.LNKA, 
+                            0x0001FFFF,
+                            Zero,
+                            ^LPCB.LNKA,
                             Zero
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x0002FFFF, 
-                            Zero, 
-                            ^LPCB.LNKA, 
+                            0x0002FFFF,
+                            Zero,
+                            ^LPCB.LNKA,
                             Zero
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x0007FFFF, 
-                            Zero, 
-                            ^LPCB.LNKA, 
+                            0x0007FFFF,
+                            Zero,
+                            ^LPCB.LNKA,
                             Zero
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001BFFFF, 
-                            Zero, 
-                            ^LPCB.LNKG, 
+                            0x001BFFFF,
+                            Zero,
+                            ^LPCB.LNKG,
                             Zero
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001CFFFF, 
-                            Zero, 
-                            ^LPCB.LNKB, 
+                            0x001CFFFF,
+                            Zero,
+                            ^LPCB.LNKB,
                             Zero
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001CFFFF, 
-                            One, 
-                            ^LPCB.LNKA, 
+                            0x001CFFFF,
+                            One,
+                            ^LPCB.LNKA,
                             Zero
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001CFFFF, 
-                            0x02, 
-                            ^LPCB.LNKC, 
+                            0x001CFFFF,
+                            0x02,
+                            ^LPCB.LNKC,
                             Zero
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001CFFFF, 
-                            0x03, 
-                            ^LPCB.LNKD, 
+                            0x001CFFFF,
+                            0x03,
+                            ^LPCB.LNKD,
                             Zero
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001DFFFF, 
-                            Zero, 
-                            ^LPCB.LNKH, 
+                            0x001DFFFF,
+                            Zero,
+                            ^LPCB.LNKH,
                             Zero
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001DFFFF, 
-                            One, 
-                            ^LPCB.LNKD, 
+                            0x001DFFFF,
+                            One,
+                            ^LPCB.LNKD,
                             Zero
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001DFFFF, 
-                            0x02, 
-                            ^LPCB.LNKC, 
+                            0x001DFFFF,
+                            0x02,
+                            ^LPCB.LNKC,
                             Zero
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001DFFFF, 
-                            0x03, 
-                            ^LPCB.LNKA, 
+                            0x001DFFFF,
+                            0x03,
+                            ^LPCB.LNKA,
                             Zero
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001EFFFF, 
-                            Zero, 
-                            ^LPCB.LNKG, 
+                            0x001EFFFF,
+                            Zero,
+                            ^LPCB.LNKG,
                             Zero
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001EFFFF, 
-                            One, 
-                            ^LPCB.LNKE, 
+                            0x001EFFFF,
+                            One,
+                            ^LPCB.LNKE,
                             Zero
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001FFFFF, 
-                            Zero, 
-                            ^LPCB.LNKC, 
+                            0x001FFFFF,
+                            Zero,
+                            ^LPCB.LNKC,
                             Zero
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001FFFFF, 
-                            One, 
-                            ^LPCB.LNKD, 
+                            0x001FFFFF,
+                            One,
+                            ^LPCB.LNKD,
                             Zero
-                        }, 
+                        },
 
                         Package (0x04)
                         {
-                            0x001FFFFF, 
-                            0x03, 
-                            ^LPCB.LNKA, 
+                            0x001FFFFF,
+                            0x03,
+                            ^LPCB.LNKA,
                             Zero
                         }
                     })
@@ -1972,33 +1972,33 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                Zero, 
-                                Zero, 
+                                0xFFFF,
+                                Zero,
+                                Zero,
                                 0x10
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                One, 
-                                Zero, 
+                                0xFFFF,
+                                One,
+                                Zero,
                                 0x11
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x02, 
-                                Zero, 
+                                0xFFFF,
+                                0x02,
+                                Zero,
                                 0x12
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x03, 
-                                Zero, 
+                                0xFFFF,
+                                0x03,
+                                Zero,
                                 0x13
                             }
                         })
@@ -2009,33 +2009,33 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                Zero, 
-                                ^^LPCB.LNKA, 
+                                0xFFFF,
+                                Zero,
+                                ^^LPCB.LNKA,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                One, 
-                                ^^LPCB.LNKB, 
+                                0xFFFF,
+                                One,
+                                ^^LPCB.LNKB,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x02, 
-                                ^^LPCB.LNKC, 
+                                0xFFFF,
+                                0x02,
+                                ^^LPCB.LNKC,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x03, 
-                                ^^LPCB.LNKD, 
+                                0xFFFF,
+                                0x03,
+                                ^^LPCB.LNKD,
                                 Zero
                             }
                         })
@@ -2067,7 +2067,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                     {
                         Name (TMP2, Package (0x02)
                         {
-                            Ones, 
+                            Ones,
                             Ones
                         })
                         Store (Or (0x00010000, DID1), Index (TMP2, Zero))
@@ -2079,8 +2079,8 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                     {
                         Name (TMP3, Package (0x03)
                         {
-                            Ones, 
-                            Ones, 
+                            Ones,
+                            Ones,
                             Ones
                         })
                         Store (Or (0x00010000, DID1), Index (TMP3, Zero))
@@ -2093,9 +2093,9 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                     {
                         Name (TMP4, Package (0x04)
                         {
-                            Ones, 
-                            Ones, 
-                            Ones, 
+                            Ones,
+                            Ones,
+                            Ones,
                             Ones
                         })
                         Store (Or (0x00010000, DID1), Index (TMP4, Zero))
@@ -2107,10 +2107,10 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
 
                     Name (TMP5, Package (0x05)
                     {
-                        Ones, 
-                        Ones, 
-                        Ones, 
-                        Ones, 
+                        Ones,
+                        Ones,
+                        Ones,
+                        Ones,
                         Ones
                     })
                     Store (Or (0x00010000, DID1), Index (TMP5, Zero))
@@ -2312,7 +2312,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                 Name (_ADR, 0x001B0000)
                 Name (_PRW, Package (0x02)
                 {
-                    0x05, 
+                    0x05,
                     0x04
                 })
             }
@@ -2323,18 +2323,18 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                 OperationRegion (P1CS, PCI_Config, 0x40, 0x0100)
                 Field (P1CS, AnyAcc, NoLock, WriteAsZeros)
                 {
-                    Offset (0x1A), 
-                    ABP1,   1, 
-                        ,   2, 
-                    PDC1,   1, 
-                        ,   2, 
-                    PDS1,   1, 
-                    Offset (0x20), 
-                    Offset (0x22), 
-                    PSP1,   1, 
-                    Offset (0x9C), 
-                        ,   30, 
-                    HPCS,   1, 
+                    Offset (0x1A),
+                    ABP1,   1,
+                        ,   2,
+                    PDC1,   1,
+                        ,   2,
+                    PDS1,   1,
+                    Offset (0x20),
+                    Offset (0x22),
+                    PSP1,   1,
+                    Offset (0x9C),
+                        ,   30,
+                    HPCS,   1,
                     PMCS,   1
                 }
 
@@ -2343,7 +2343,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                     Name (_ADR, Zero)
                     Name (_PRW, Package (0x02)
                     {
-                        0x09, 
+                        0x09,
                         0x04
                     })
                 }
@@ -2356,33 +2356,33 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                Zero, 
-                                Zero, 
+                                0xFFFF,
+                                Zero,
+                                Zero,
                                 0x10
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                One, 
-                                Zero, 
+                                0xFFFF,
+                                One,
+                                Zero,
                                 0x11
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x02, 
-                                Zero, 
+                                0xFFFF,
+                                0x02,
+                                Zero,
                                 0x12
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x03, 
-                                Zero, 
+                                0xFFFF,
+                                0x03,
+                                Zero,
                                 0x13
                             }
                         })
@@ -2393,33 +2393,33 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                Zero, 
-                                ^^LPCB.LNKA, 
+                                0xFFFF,
+                                Zero,
+                                ^^LPCB.LNKA,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                One, 
-                                ^^LPCB.LNKB, 
+                                0xFFFF,
+                                One,
+                                ^^LPCB.LNKB,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x02, 
-                                ^^LPCB.LNKC, 
+                                0xFFFF,
+                                0x02,
+                                ^^LPCB.LNKC,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x03, 
-                                ^^LPCB.LNKD, 
+                                0xFFFF,
+                                0x03,
+                                ^^LPCB.LNKD,
                                 Zero
                             }
                         })
@@ -2433,18 +2433,18 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                 OperationRegion (P2CS, PCI_Config, 0x40, 0x0100)
                 Field (P2CS, AnyAcc, NoLock, WriteAsZeros)
                 {
-                    Offset (0x1A), 
-                    ABP2,   1, 
-                        ,   2, 
-                    PDC2,   1, 
-                        ,   2, 
-                    PDS2,   1, 
-                    Offset (0x20), 
-                    Offset (0x22), 
-                    PSP2,   1, 
-                    Offset (0x9C), 
-                        ,   30, 
-                    HPCS,   1, 
+                    Offset (0x1A),
+                    ABP2,   1,
+                        ,   2,
+                    PDC2,   1,
+                        ,   2,
+                    PDS2,   1,
+                    Offset (0x20),
+                    Offset (0x22),
+                    PSP2,   1,
+                    Offset (0x9C),
+                        ,   30,
+                    HPCS,   1,
                     PMCS,   1
                 }
 
@@ -2458,7 +2458,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
 
                     Name (_PRW, Package (0x02)
                     {
-                        0x09, 
+                        0x09,
                         0x04
                     })
                     Name (_EJD, "\\_SB.PCI0.USB7.HUB7.PRT7")
@@ -2472,33 +2472,33 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                Zero, 
-                                Zero, 
+                                0xFFFF,
+                                Zero,
+                                Zero,
                                 0x11
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                One, 
-                                Zero, 
+                                0xFFFF,
+                                One,
+                                Zero,
                                 0x12
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x02, 
-                                Zero, 
+                                0xFFFF,
+                                0x02,
+                                Zero,
                                 0x13
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x03, 
-                                Zero, 
+                                0xFFFF,
+                                0x03,
+                                Zero,
                                 0x10
                             }
                         })
@@ -2509,33 +2509,33 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                Zero, 
-                                ^^LPCB.LNKB, 
+                                0xFFFF,
+                                Zero,
+                                ^^LPCB.LNKB,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                One, 
-                                ^^LPCB.LNKC, 
+                                0xFFFF,
+                                One,
+                                ^^LPCB.LNKC,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x02, 
-                                ^^LPCB.LNKD, 
+                                0xFFFF,
+                                0x02,
+                                ^^LPCB.LNKD,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x03, 
-                                ^^LPCB.LNKA, 
+                                0xFFFF,
+                                0x03,
+                                ^^LPCB.LNKA,
                                 Zero
                             }
                         })
@@ -2549,18 +2549,18 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                 OperationRegion (P3CS, PCI_Config, 0x40, 0x0100)
                 Field (P3CS, AnyAcc, NoLock, WriteAsZeros)
                 {
-                    Offset (0x1A), 
-                    ABP3,   1, 
-                        ,   2, 
-                    PDC3,   1, 
-                        ,   2, 
-                    PDS3,   1, 
-                    Offset (0x20), 
-                    Offset (0x22), 
-                    PSP3,   1, 
-                    Offset (0x9C), 
-                        ,   30, 
-                    HPCS,   1, 
+                    Offset (0x1A),
+                    ABP3,   1,
+                        ,   2,
+                    PDC3,   1,
+                        ,   2,
+                    PDS3,   1,
+                    Offset (0x20),
+                    Offset (0x22),
+                    PSP3,   1,
+                    Offset (0x9C),
+                        ,   30,
+                    HPCS,   1,
                     PMCS,   1
                 }
 
@@ -2574,7 +2574,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
 
                     Name (_PRW, Package (0x02)
                     {
-                        0x09, 
+                        0x09,
                         0x04
                     })
                     Name (_EJD, "\\_SB.PCI0.USB7.HUB7.PRT5")
@@ -2588,33 +2588,33 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                Zero, 
-                                Zero, 
+                                0xFFFF,
+                                Zero,
+                                Zero,
                                 0x12
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                One, 
-                                Zero, 
+                                0xFFFF,
+                                One,
+                                Zero,
                                 0x13
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x02, 
-                                Zero, 
+                                0xFFFF,
+                                0x02,
+                                Zero,
                                 0x10
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x03, 
-                                Zero, 
+                                0xFFFF,
+                                0x03,
+                                Zero,
                                 0x11
                             }
                         })
@@ -2625,33 +2625,33 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                Zero, 
-                                ^^LPCB.LNKC, 
+                                0xFFFF,
+                                Zero,
+                                ^^LPCB.LNKC,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                One, 
-                                ^^LPCB.LNKD, 
+                                0xFFFF,
+                                One,
+                                ^^LPCB.LNKD,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x02, 
-                                ^^LPCB.LNKA, 
+                                0xFFFF,
+                                0x02,
+                                ^^LPCB.LNKA,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x03, 
-                                ^^LPCB.LNKB, 
+                                0xFFFF,
+                                0x03,
+                                ^^LPCB.LNKB,
                                 Zero
                             }
                         })
@@ -2665,18 +2665,18 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                 OperationRegion (P4CS, PCI_Config, 0x40, 0x0100)
                 Field (P4CS, AnyAcc, NoLock, WriteAsZeros)
                 {
-                    Offset (0x1A), 
-                    ABP4,   1, 
-                        ,   2, 
-                    PDC4,   1, 
-                        ,   2, 
-                    PDS4,   1, 
-                    Offset (0x20), 
-                    Offset (0x22), 
-                    PSP4,   1, 
-                    Offset (0x9C), 
-                        ,   30, 
-                    HPCS,   1, 
+                    Offset (0x1A),
+                    ABP4,   1,
+                        ,   2,
+                    PDC4,   1,
+                        ,   2,
+                    PDS4,   1,
+                    Offset (0x20),
+                    Offset (0x22),
+                    PSP4,   1,
+                    Offset (0x9C),
+                        ,   30,
+                    HPCS,   1,
                     PMCS,   1
                 }
 
@@ -2690,7 +2690,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
 
                     Name (_PRW, Package (0x02)
                     {
-                        0x09, 
+                        0x09,
                         0x04
                     })
                     Name (_EJD, "\\_SB.PCI0.USB7.HUB7.PRT3")
@@ -2704,33 +2704,33 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                Zero, 
-                                Zero, 
+                                0xFFFF,
+                                Zero,
+                                Zero,
                                 0x13
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                One, 
-                                Zero, 
+                                0xFFFF,
+                                One,
+                                Zero,
                                 0x10
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x02, 
-                                Zero, 
+                                0xFFFF,
+                                0x02,
+                                Zero,
                                 0x11
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x03, 
-                                Zero, 
+                                0xFFFF,
+                                0x03,
+                                Zero,
                                 0x12
                             }
                         })
@@ -2741,33 +2741,33 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                Zero, 
-                                ^^LPCB.LNKD, 
+                                0xFFFF,
+                                Zero,
+                                ^^LPCB.LNKD,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                One, 
-                                ^^LPCB.LNKA, 
+                                0xFFFF,
+                                One,
+                                ^^LPCB.LNKA,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x02, 
-                                ^^LPCB.LNKB, 
+                                0xFFFF,
+                                0x02,
+                                ^^LPCB.LNKB,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x03, 
-                                ^^LPCB.LNKC, 
+                                0xFFFF,
+                                0x03,
+                                ^^LPCB.LNKC,
                                 Zero
                             }
                         })
@@ -2781,18 +2781,18 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                 OperationRegion (P5CS, PCI_Config, 0x40, 0x0100)
                 Field (P5CS, AnyAcc, NoLock, WriteAsZeros)
                 {
-                    Offset (0x1A), 
-                    ABP5,   1, 
-                        ,   2, 
-                    PDC5,   1, 
-                        ,   2, 
-                    PDS5,   1, 
-                    Offset (0x20), 
-                    Offset (0x22), 
-                    PSP5,   1, 
-                    Offset (0x9C), 
-                        ,   30, 
-                    HPCS,   1, 
+                    Offset (0x1A),
+                    ABP5,   1,
+                        ,   2,
+                    PDC5,   1,
+                        ,   2,
+                    PDS5,   1,
+                    Offset (0x20),
+                    Offset (0x22),
+                    PSP5,   1,
+                    Offset (0x9C),
+                        ,   30,
+                    HPCS,   1,
                     PMCS,   1
                 }
 
@@ -2801,7 +2801,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                     Name (_ADR, Zero)
                     Name (_PRW, Package (0x02)
                     {
-                        0x09, 
+                        0x09,
                         0x04
                     })
                 }
@@ -2814,33 +2814,33 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                Zero, 
-                                Zero, 
+                                0xFFFF,
+                                Zero,
+                                Zero,
                                 0x10
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                One, 
-                                Zero, 
+                                0xFFFF,
+                                One,
+                                Zero,
                                 0x11
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x02, 
-                                Zero, 
+                                0xFFFF,
+                                0x02,
+                                Zero,
                                 0x12
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x03, 
-                                Zero, 
+                                0xFFFF,
+                                0x03,
+                                Zero,
                                 0x13
                             }
                         })
@@ -2851,33 +2851,33 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                Zero, 
-                                ^^LPCB.LNKA, 
+                                0xFFFF,
+                                Zero,
+                                ^^LPCB.LNKA,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                One, 
-                                ^^LPCB.LNKB, 
+                                0xFFFF,
+                                One,
+                                ^^LPCB.LNKB,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x02, 
-                                ^^LPCB.LNKC, 
+                                0xFFFF,
+                                0x02,
+                                ^^LPCB.LNKC,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x03, 
-                                ^^LPCB.LNKD, 
+                                0xFFFF,
+                                0x03,
+                                ^^LPCB.LNKD,
                                 Zero
                             }
                         })
@@ -2891,18 +2891,18 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                 OperationRegion (P6CS, PCI_Config, 0x40, 0x0100)
                 Field (P6CS, AnyAcc, NoLock, WriteAsZeros)
                 {
-                    Offset (0x1A), 
-                    ABP6,   1, 
-                        ,   2, 
-                    PDC6,   1, 
-                        ,   2, 
-                    PDS6,   1, 
-                    Offset (0x20), 
-                    Offset (0x22), 
-                    PSP6,   1, 
-                    Offset (0x9C), 
-                        ,   30, 
-                    HPCS,   1, 
+                    Offset (0x1A),
+                    ABP6,   1,
+                        ,   2,
+                    PDC6,   1,
+                        ,   2,
+                    PDS6,   1,
+                    Offset (0x20),
+                    Offset (0x22),
+                    PSP6,   1,
+                    Offset (0x9C),
+                        ,   30,
+                    HPCS,   1,
                     PMCS,   1
                 }
 
@@ -2911,7 +2911,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                     Name (_ADR, Zero)
                     Name (_PRW, Package (0x02)
                     {
-                        0x09, 
+                        0x09,
                         0x04
                     })
                 }
@@ -2924,33 +2924,33 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                Zero, 
-                                Zero, 
+                                0xFFFF,
+                                Zero,
+                                Zero,
                                 0x11
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                One, 
-                                Zero, 
+                                0xFFFF,
+                                One,
+                                Zero,
                                 0x12
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x02, 
-                                Zero, 
+                                0xFFFF,
+                                0x02,
+                                Zero,
                                 0x13
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x03, 
-                                Zero, 
+                                0xFFFF,
+                                0x03,
+                                Zero,
                                 0x10
                             }
                         })
@@ -2961,33 +2961,33 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                Zero, 
-                                ^^LPCB.LNKB, 
+                                0xFFFF,
+                                Zero,
+                                ^^LPCB.LNKB,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                One, 
-                                ^^LPCB.LNKC, 
+                                0xFFFF,
+                                One,
+                                ^^LPCB.LNKC,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x02, 
-                                ^^LPCB.LNKD, 
+                                0xFFFF,
+                                0x02,
+                                ^^LPCB.LNKD,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x03, 
-                                ^^LPCB.LNKA, 
+                                0xFFFF,
+                                0x03,
+                                ^^LPCB.LNKA,
                                 Zero
                             }
                         })
@@ -3020,7 +3020,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
 
                 Name (_PRW, Package (0x02)
                 {
-                    0x03, 
+                    0x03,
                     0x04
                 })
                 Method (_PSW, 1, NotSerialized)
@@ -3062,7 +3062,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
 
                 Name (_PRW, Package (0x02)
                 {
-                    0x04, 
+                    0x04,
                     0x04
                 })
                 Method (_PSW, 1, NotSerialized)
@@ -3104,7 +3104,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
 
                 Name (_PRW, Package (0x02)
                 {
-                    0x0C, 
+                    0x0C,
                     0x04
                 })
                 Method (_PSW, 1, NotSerialized)
@@ -3146,7 +3146,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
 
                 Name (_PRW, Package (0x02)
                 {
-                    0x0E, 
+                    0x0E,
                     0x04
                 })
                 Method (_PSW, 1, NotSerialized)
@@ -3214,7 +3214,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
 
                 Name (_PRW, Package (0x02)
                 {
-                    0x0D, 
+                    0x0D,
                     0x04
                 })
             }
@@ -3227,7 +3227,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                     Name (_ADR, Zero)
                     Name (_PRW, Package (0x02)
                     {
-                        0x0B, 
+                        0x0B,
                         0x04
                     })
                 }
@@ -3237,7 +3237,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                     Name (_ADR, 0x00010000)
                     Name (_PRW, Package (0x02)
                     {
-                        0x0B, 
+                        0x0B,
                         0x04
                     })
                 }
@@ -3247,7 +3247,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                     Name (_ADR, 0x00020000)
                     Name (_PRW, Package (0x02)
                     {
-                        0x0B, 
+                        0x0B,
                         0x04
                     })
                 }
@@ -3257,7 +3257,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                     Name (_ADR, 0x00030000)
                     Name (_PRW, Package (0x02)
                     {
-                        0x0B, 
+                        0x0B,
                         0x04
                     })
                 }
@@ -3267,7 +3267,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                     Name (_ADR, 0x00050000)
                     Name (_PRW, Package (0x02)
                     {
-                        0x0B, 
+                        0x0B,
                         0x04
                     })
                 }
@@ -3277,7 +3277,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                     Name (_ADR, 0x00080000)
                     Name (_PRW, Package (0x02)
                     {
-                        0x0B, 
+                        0x0B,
                         0x04
                     })
                 }
@@ -3290,169 +3290,169 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                Zero, 
-                                Zero, 
+                                0xFFFF,
+                                Zero,
+                                Zero,
                                 0x15
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                One, 
-                                Zero, 
+                                0xFFFF,
+                                One,
+                                Zero,
                                 0x16
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x02, 
-                                Zero, 
+                                0xFFFF,
+                                0x02,
+                                Zero,
                                 0x17
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x03, 
-                                Zero, 
+                                0xFFFF,
+                                0x03,
+                                Zero,
                                 0x14
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0001FFFF, 
-                                Zero, 
-                                Zero, 
+                                0x0001FFFF,
+                                Zero,
+                                Zero,
                                 0x16
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0001FFFF, 
-                                One, 
-                                Zero, 
+                                0x0001FFFF,
+                                One,
+                                Zero,
                                 0x15
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0001FFFF, 
-                                0x02, 
-                                Zero, 
+                                0x0001FFFF,
+                                0x02,
+                                Zero,
                                 0x14
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0001FFFF, 
-                                0x03, 
-                                Zero, 
+                                0x0001FFFF,
+                                0x03,
+                                Zero,
                                 0x17
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0002FFFF, 
-                                Zero, 
-                                Zero, 
+                                0x0002FFFF,
+                                Zero,
+                                Zero,
                                 0x12
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0002FFFF, 
-                                One, 
-                                Zero, 
+                                0x0002FFFF,
+                                One,
+                                Zero,
                                 0x13
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0002FFFF, 
-                                0x02, 
-                                Zero, 
+                                0x0002FFFF,
+                                0x02,
+                                Zero,
                                 0x11
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0002FFFF, 
-                                0x03, 
-                                Zero, 
+                                0x0002FFFF,
+                                0x03,
+                                Zero,
                                 0x10
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0003FFFF, 
-                                Zero, 
-                                Zero, 
+                                0x0003FFFF,
+                                Zero,
+                                Zero,
                                 0x13
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0003FFFF, 
-                                One, 
-                                Zero, 
+                                0x0003FFFF,
+                                One,
+                                Zero,
                                 0x12
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0003FFFF, 
-                                0x02, 
-                                Zero, 
+                                0x0003FFFF,
+                                0x02,
+                                Zero,
                                 0x15
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0003FFFF, 
-                                0x03, 
-                                Zero, 
+                                0x0003FFFF,
+                                0x03,
+                                Zero,
                                 0x16
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0005FFFF, 
-                                Zero, 
-                                Zero, 
+                                0x0005FFFF,
+                                Zero,
+                                Zero,
                                 0x11
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0005FFFF, 
-                                One, 
-                                Zero, 
+                                0x0005FFFF,
+                                One,
+                                Zero,
                                 0x14
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0005FFFF, 
-                                0x02, 
-                                Zero, 
+                                0x0005FFFF,
+                                0x02,
+                                Zero,
                                 0x16
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0005FFFF, 
-                                0x03, 
-                                Zero, 
+                                0x0005FFFF,
+                                0x03,
+                                Zero,
                                 0x15
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0008FFFF, 
-                                Zero, 
-                                Zero, 
+                                0x0008FFFF,
+                                Zero,
+                                Zero,
                                 0x14
                             }
                         })
@@ -3463,169 +3463,169 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                Zero, 
-                                ^^LPCB.LNKF, 
+                                0xFFFF,
+                                Zero,
+                                ^^LPCB.LNKF,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                One, 
-                                ^^LPCB.LNKG, 
+                                0xFFFF,
+                                One,
+                                ^^LPCB.LNKG,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x02, 
-                                ^^LPCB.LNKH, 
+                                0xFFFF,
+                                0x02,
+                                ^^LPCB.LNKH,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0xFFFF, 
-                                0x03, 
-                                ^^LPCB.LNKE, 
+                                0xFFFF,
+                                0x03,
+                                ^^LPCB.LNKE,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0001FFFF, 
-                                Zero, 
-                                ^^LPCB.LNKG, 
+                                0x0001FFFF,
+                                Zero,
+                                ^^LPCB.LNKG,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0001FFFF, 
-                                One, 
-                                ^^LPCB.LNKF, 
+                                0x0001FFFF,
+                                One,
+                                ^^LPCB.LNKF,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0001FFFF, 
-                                0x02, 
-                                ^^LPCB.LNKE, 
+                                0x0001FFFF,
+                                0x02,
+                                ^^LPCB.LNKE,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0001FFFF, 
-                                0x03, 
-                                ^^LPCB.LNKH, 
+                                0x0001FFFF,
+                                0x03,
+                                ^^LPCB.LNKH,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0002FFFF, 
-                                Zero, 
-                                ^^LPCB.LNKC, 
+                                0x0002FFFF,
+                                Zero,
+                                ^^LPCB.LNKC,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0002FFFF, 
-                                One, 
-                                ^^LPCB.LNKD, 
+                                0x0002FFFF,
+                                One,
+                                ^^LPCB.LNKD,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0002FFFF, 
-                                0x02, 
-                                ^^LPCB.LNKB, 
+                                0x0002FFFF,
+                                0x02,
+                                ^^LPCB.LNKB,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0002FFFF, 
-                                0x03, 
-                                ^^LPCB.LNKA, 
+                                0x0002FFFF,
+                                0x03,
+                                ^^LPCB.LNKA,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0003FFFF, 
-                                Zero, 
-                                ^^LPCB.LNKD, 
+                                0x0003FFFF,
+                                Zero,
+                                ^^LPCB.LNKD,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0003FFFF, 
-                                One, 
-                                ^^LPCB.LNKC, 
+                                0x0003FFFF,
+                                One,
+                                ^^LPCB.LNKC,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0003FFFF, 
-                                0x02, 
-                                ^^LPCB.LNKF, 
+                                0x0003FFFF,
+                                0x02,
+                                ^^LPCB.LNKF,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0003FFFF, 
-                                0x03, 
-                                ^^LPCB.LNKG, 
+                                0x0003FFFF,
+                                0x03,
+                                ^^LPCB.LNKG,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0005FFFF, 
-                                Zero, 
-                                ^^LPCB.LNKB, 
+                                0x0005FFFF,
+                                Zero,
+                                ^^LPCB.LNKB,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0005FFFF, 
-                                One, 
-                                ^^LPCB.LNKE, 
+                                0x0005FFFF,
+                                One,
+                                ^^LPCB.LNKE,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0005FFFF, 
-                                0x02, 
-                                ^^LPCB.LNKG, 
+                                0x0005FFFF,
+                                0x02,
+                                ^^LPCB.LNKG,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0005FFFF, 
-                                0x03, 
-                                ^^LPCB.LNKF, 
+                                0x0005FFFF,
+                                0x03,
+                                ^^LPCB.LNKF,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x04)
                             {
-                                0x0008FFFF, 
-                                Zero, 
-                                ^^LPCB.LNKE, 
+                                0x0008FFFF,
+                                Zero,
+                                ^^LPCB.LNKE,
                                 Zero
                             }
                         })
@@ -3643,7 +3643,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                 Name (_ADR, 0x001E0003)
                 Name (_PRW, Package (0x02)
                 {
-                    0x05, 
+                    0x05,
                     0x04
                 })
             }
@@ -3654,18 +3654,18 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                 OperationRegion (LPC0, PCI_Config, 0x40, 0xC0)
                 Field (LPC0, AnyAcc, NoLock, Preserve)
                 {
-                    Offset (0x20), 
-                    PARC,   8, 
-                    PBRC,   8, 
-                    PCRC,   8, 
-                    PDRC,   8, 
-                    Offset (0x28), 
-                    PERC,   8, 
-                    PFRC,   8, 
-                    PGRC,   8, 
-                    PHRC,   8, 
-                    Offset (0x40), 
-                    IOD0,   8, 
+                    Offset (0x20),
+                    PARC,   8,
+                    PBRC,   8,
+                    PCRC,   8,
+                    PDRC,   8,
+                    Offset (0x28),
+                    PERC,   8,
+                    PFRC,   8,
+                    PGRC,   8,
+                    PHRC,   8,
+                    Offset (0x40),
+                    IOD0,   8,
                     IOD1,   8
                 }
 
@@ -4080,40 +4080,40 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                     OperationRegion (ECF2, EmbeddedControl, Zero, 0xFF)
                     Field (ECF2, ByteAcc, Lock, Preserve)
                     {
-                        Offset (0x01), 
-                        DTMP,   8, 
-                        LTMP,   8, 
-                        RPWR,   1, 
-                            ,   2, 
-                        CFAN,   1, 
-                            ,   2, 
-                        LSTE,   1, 
-                        Offset (0x04), 
-                        SPTR,   8, 
-                        SSTS,   8, 
-                        SADR,   8, 
-                        SCMD,   8, 
-                        SBFR,   256, 
-                        SCNT,   8, 
-                        Offset (0x2F), 
-                        CTMP,   8, 
-                            ,   3, 
-                        PBNS,   1, 
-                        VPWR,   1, 
-                        Offset (0x31), 
-                        SCAN,   8, 
-                        B1ST,   8, 
-                        B1CR,   8, 
-                        B1CC,   8, 
-                        B1VT,   8, 
-                        B2ST,   8, 
-                        B2CR,   8, 
-                        B2CC,   8, 
-                        B2VT,   8, 
-                        CMDR,   8, 
-                        LUXH,   8, 
-                        LUXL,   8, 
-                        ACH0,   8, 
+                        Offset (0x01),
+                        DTMP,   8,
+                        LTMP,   8,
+                        RPWR,   1,
+                            ,   2,
+                        CFAN,   1,
+                            ,   2,
+                        LSTE,   1,
+                        Offset (0x04),
+                        SPTR,   8,
+                        SSTS,   8,
+                        SADR,   8,
+                        SCMD,   8,
+                        SBFR,   256,
+                        SCNT,   8,
+                        Offset (0x2F),
+                        CTMP,   8,
+                            ,   3,
+                        PBNS,   1,
+                        VPWR,   1,
+                        Offset (0x31),
+                        SCAN,   8,
+                        B1ST,   8,
+                        B1CR,   8,
+                        B1CC,   8,
+                        B1VT,   8,
+                        B2ST,   8,
+                        B2CR,   8,
+                        B2CC,   8,
+                        B2VT,   8,
+                        CMDR,   8,
+                        LUXH,   8,
+                        LUXL,   8,
+                        ACH0,   8,
                         ACH1,   8
                     }
 
@@ -4139,31 +4139,31 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Package (0x02)
                             {
-                                0x46, 
+                                0x46,
                                 Zero
-                            }, 
+                            },
 
                             Package (0x02)
                             {
-                                0x49, 
+                                0x49,
                                 0x0A
-                            }, 
+                            },
 
                             Package (0x02)
                             {
-                                0x55, 
+                                0x55,
                                 0x50
-                            }, 
+                            },
 
                             Package (0x02)
                             {
-                                0x64, 
+                                0x64,
                                 0x012C
-                            }, 
+                            },
 
                             Package (0x02)
                             {
-                                0x96, 
+                                0x96,
                                 0x03E8
                             }
                         })
@@ -4180,8 +4180,8 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         OperationRegion (PRVT, SystemIO, 0x06A0, 0x08)
                         Field (PRVT, ByteAcc, NoLock, Preserve)
                         {
-                            PVT0,   8, 
-                            Offset (0x04), 
+                            PVT0,   8,
+                            Offset (0x04),
                             PVT1,   8
                         }
 
@@ -5277,39 +5277,39 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                     OperationRegion (N393, SystemIO, 0x2E, 0x02)
                     Field (N393, ByteAcc, Lock, Preserve)
                     {
-                        INDX,   8, 
+                        INDX,   8,
                         DATA,   8
                     }
 
                     IndexField (INDX, DATA, ByteAcc, Lock, Preserve)
                     {
-                        Offset (0x07), 
-                        R07H,   8, 
-                        Offset (0x20), 
-                        R20H,   8, 
-                        R21H,   8, 
-                        R22H,   8, 
-                        R23H,   8, 
-                        R24H,   8, 
-                        R25H,   8, 
-                        R26H,   8, 
-                        R27H,   8, 
-                        R28H,   8, 
-                        R29H,   8, 
-                        R2AH,   8, 
-                        Offset (0x30), 
-                        R30H,   8, 
-                        Offset (0x60), 
-                        R60H,   8, 
-                        R61H,   8, 
-                        Offset (0x70), 
-                        R70H,   8, 
-                        R71H,   8, 
-                        Offset (0x74), 
-                        R74H,   8, 
-                        R75H,   8, 
-                        Offset (0xF0), 
-                        RF0H,   8, 
+                        Offset (0x07),
+                        R07H,   8,
+                        Offset (0x20),
+                        R20H,   8,
+                        R21H,   8,
+                        R22H,   8,
+                        R23H,   8,
+                        R24H,   8,
+                        R25H,   8,
+                        R26H,   8,
+                        R27H,   8,
+                        R28H,   8,
+                        R29H,   8,
+                        R2AH,   8,
+                        Offset (0x30),
+                        R30H,   8,
+                        Offset (0x60),
+                        R60H,   8,
+                        R61H,   8,
+                        Offset (0x70),
+                        R70H,   8,
+                        R71H,   8,
+                        Offset (0x74),
+                        R74H,   8,
+                        R75H,   8,
+                        Offset (0xF0),
+                        RF0H,   8,
                         RF1H,   8
                     }
 
@@ -6839,26 +6839,26 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                     OperationRegion (N207, SystemIO, 0x164E, 0x02)
                     Field (N207, ByteAcc, Lock, Preserve)
                     {
-                        INDX,   8, 
+                        INDX,   8,
                         DATA,   8
                     }
 
                     IndexField (INDX, DATA, ByteAcc, Lock, Preserve)
                     {
-                        Offset (0x02), 
-                        CR02,   8, 
-                        Offset (0x24), 
-                        CR24,   8, 
-                        CR25,   8, 
-                        Offset (0x28), 
-                        CR28,   8, 
-                        Offset (0x3A), 
-                        CR3A,   8, 
-                        CR3B,   8, 
-                        CR3C,   8, 
-                        Offset (0x55), 
-                        CR55,   8, 
-                        Offset (0xAA), 
+                        Offset (0x02),
+                        CR02,   8,
+                        Offset (0x24),
+                        CR24,   8,
+                        CR25,   8,
+                        Offset (0x28),
+                        CR28,   8,
+                        Offset (0x3A),
+                        CR3A,   8,
+                        CR3B,   8,
+                        CR3C,   8,
+                        Offset (0x55),
+                        CR55,   8,
+                        Offset (0xAA),
                         CRAA,   8
                     }
 
@@ -6868,7 +6868,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         Name (_UID, One)
                         Name (_PRW, Package (0x02)
                         {
-                            0x08, 
+                            0x08,
                             0x03
                         })
                         Method (_STA, 0, Serialized)
@@ -7406,21 +7406,21 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                 OperationRegion (PACS, PCI_Config, 0x40, 0xC0)
                 Field (PACS, DWordAcc, NoLock, Preserve)
                 {
-                    PRIT,   16, 
-                    Offset (0x04), 
-                    PSIT,   4, 
-                    Offset (0x08), 
-                    SYNC,   4, 
-                    Offset (0x0A), 
-                    SDT0,   2, 
-                        ,   2, 
-                    SDT1,   2, 
-                    Offset (0x14), 
-                    ICR0,   4, 
-                    ICR1,   4, 
-                    ICR2,   4, 
-                    ICR3,   4, 
-                    ICR4,   4, 
+                    PRIT,   16,
+                    Offset (0x04),
+                    PSIT,   4,
+                    Offset (0x08),
+                    SYNC,   4,
+                    Offset (0x0A),
+                    SDT0,   2,
+                        ,   2,
+                    SDT1,   2,
+                    Offset (0x14),
+                    ICR0,   4,
+                    ICR1,   4,
+                    ICR2,   4,
+                    ICR3,   4,
+                    ICR4,   4,
                     ICR5,   4
                 }
 
@@ -7431,8 +7431,8 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                     {
                         Name (PBUF, Buffer (0x14)
                         {
-                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                             0x00, 0x00, 0x00, 0x00
                         })
                         CreateDWordField (PBUF, Zero, PIO0)
@@ -7600,7 +7600,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Name (PIB0, Buffer (0x0E)
                             {
-                                0x03, 0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF, 0x03, 
+                                0x03, 0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF, 0x03,
                                 0x00, 0x00, 0x00, 0x00, 0xA0, 0xEF
                             })
                             CreateByteField (PIB0, One, PMD0)
@@ -7665,7 +7665,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                         {
                             Name (PIB1, Buffer (0x0E)
                             {
-                                0x03, 0x00, 0x00, 0x00, 0x00, 0xB0, 0xEF, 0x03, 
+                                0x03, 0x00, 0x00, 0x00, 0x00, 0xB0, 0xEF, 0x03,
                                 0x00, 0x00, 0x00, 0x00, 0xB0, 0xEF
                             })
                             CreateByteField (PIB1, One, PMD1)
@@ -7734,28 +7734,28 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                 OperationRegion (SACS, PCI_Config, 0x40, 0xC0)
                 Field (SACS, DWordAcc, NoLock, Preserve)
                 {
-                    PRIT,   16, 
-                    SECT,   16, 
-                    PSIT,   4, 
-                    SSIT,   4, 
-                    Offset (0x08), 
-                    SYNC,   4, 
-                    Offset (0x0A), 
-                    SDT0,   2, 
-                        ,   2, 
-                    SDT1,   2, 
-                    Offset (0x0B), 
-                    SDT2,   2, 
-                        ,   2, 
-                    SDT3,   2, 
-                    Offset (0x14), 
-                    ICR0,   4, 
-                    ICR1,   4, 
-                    ICR2,   4, 
-                    ICR3,   4, 
-                    ICR4,   4, 
-                    ICR5,   4, 
-                    Offset (0x50), 
+                    PRIT,   16,
+                    SECT,   16,
+                    PSIT,   4,
+                    SSIT,   4,
+                    Offset (0x08),
+                    SYNC,   4,
+                    Offset (0x0A),
+                    SDT0,   2,
+                        ,   2,
+                    SDT1,   2,
+                    Offset (0x0B),
+                    SDT2,   2,
+                        ,   2,
+                    SDT3,   2,
+                    Offset (0x14),
+                    ICR0,   4,
+                    ICR1,   4,
+                    ICR2,   4,
+                    ICR3,   4,
+                    ICR4,   4,
+                    ICR5,   4,
+                    Offset (0x50),
                     MAPV,   2
                 }
             }
@@ -7766,23 +7766,23 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
                 OperationRegion (SMBP, PCI_Config, 0x40, 0xC0)
                 Field (SMBP, DWordAcc, NoLock, Preserve)
                 {
-                        ,   2, 
+                        ,   2,
                     I2CE,   1
                 }
 
                 OperationRegion (SMBI, SystemIO, 0x18E0, 0x10)
                 Field (SMBI, ByteAcc, NoLock, Preserve)
                 {
-                    HSTS,   8, 
-                    Offset (0x02), 
-                    HCON,   8, 
-                    HCOM,   8, 
-                    TXSA,   8, 
-                    DAT0,   8, 
-                    DAT1,   8, 
-                    HBDR,   8, 
-                    PECR,   8, 
-                    RXSA,   8, 
+                    HSTS,   8,
+                    Offset (0x02),
+                    HCON,   8,
+                    HCOM,   8,
+                    TXSA,   8,
+                    DAT0,   8,
+                    DAT1,   8,
+                    HBDR,   8,
+                    PECR,   8,
+                    RXSA,   8,
                     SDAT,   16
                 }
 

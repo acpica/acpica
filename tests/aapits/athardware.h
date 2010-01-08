@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: athardware - predefinitions of tests of the test case 
+ * Module Name: athardware - predefinitions of tests of the test case
  *
  *****************************************************************************/
 

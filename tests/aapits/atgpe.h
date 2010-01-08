@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: atgpe - predefinitions of tests of the test case 
+ * Module Name: atgpe - predefinitions of tests of the test case
  *
  *****************************************************************************/
 

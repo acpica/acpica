@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: atosxfwrap - include for AcpiOs* interfaces wrapping 
+ * Module Name: atosxfwrap - include for AcpiOs* interfaces wrapping
  *                           derived from acpixf.h
  *
  *****************************************************************************/

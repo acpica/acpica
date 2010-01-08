@@ -744,7 +744,7 @@ AtEvaluateObjectCommon(
             AcpiFormatException(Status),
             AcpiFormatException(ExpectedStatus));
         return AE_ERROR;
-    } 
+    }
     else if (Status != AE_OK)
     {
         if (CheckAction == 5 &&
@@ -839,7 +839,7 @@ AtEvaluateObjectTypeCommon(
                 (UINT32)ReturnObjectAbs.Length,
                 (UINT32)ReturnObjectRel.Length);
             return AE_ERROR;
-        } 
+        }
 
         ObjectAbs = (ACPI_OBJECT *)ReturnObjectAbs.Pointer;
         ObjectRel = (ACPI_OBJECT *)ReturnObjectRel.Pointer;
@@ -866,7 +866,7 @@ AtEvaluateObjectTypeCommon(
 
 /*
  * ASSERTION 0000:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0000(void)
@@ -952,7 +952,7 @@ AtEvaluateObjectMethodCommon(void)
             printf ("API Error: unexpected Length of result: %d != %d\n",
                 (UINT32)ReturnObjectRel.Length, Length);
             return AE_ERROR;
-        } 
+        }
 
         ObjectRel = (ACPI_OBJECT *)ReturnObjectRel.Pointer;
 
@@ -981,7 +981,7 @@ AtEvaluateObjectMethodCommon(void)
 
 /*
  * ASSERTION 0001:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0001(void)
@@ -1075,7 +1075,7 @@ AtEvaluateObjectMethodArgCommon(UINT32 MoreArgs)
             printf ("API Error: Result Length %d != %d\n",
                 (UINT32)ReturnObjectAbs.Length, Length);
             return AE_ERROR;
-        } 
+        }
 
         if (ACPI_FAILURE(Status = AtCheckBytes(
                 MethodArgPathNames0000[2 * i + 1],
@@ -1106,7 +1106,7 @@ AtEvaluateObjectMethodArgCommon(UINT32 MoreArgs)
                 (UINT32)ReturnObjectAbs.Length,
                 (UINT32)ReturnObjectRel.Length);
             return AE_ERROR;
-        } 
+        }
 
         ObjectAbs = (ACPI_OBJECT *)ReturnObjectAbs.Pointer;
         ObjectRel = (ACPI_OBJECT *)ReturnObjectRel.Pointer;
@@ -1142,7 +1142,7 @@ AtEvaluateObjectMethodArgCommon(UINT32 MoreArgs)
 
 /*
  * ASSERTION 0002:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0002(void)
@@ -1152,7 +1152,7 @@ AtNSpaceTest0002(void)
 
 /*
  * ASSERTION 0003:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0003(void)
@@ -1162,7 +1162,7 @@ AtNSpaceTest0003(void)
 
 /*
  * ASSERTION 0004:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0004(void)
@@ -1233,7 +1233,7 @@ AtNSpaceTest0004(void)
             printf ("API Error: unexpected Length of result: %d != %d\n",
                 (UINT32)ReturnObject.Length, Length);
             return AE_ERROR;
-        } 
+        }
 
         Object = (ACPI_OBJECT *)ReturnObject.Pointer;
 
@@ -1262,7 +1262,7 @@ AtNSpaceTest0004(void)
 
 /*
  * ASSERTION 0005:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0005(void)
@@ -1327,7 +1327,7 @@ AtNSpaceTest0005(void)
         printf ("API Error: unexpected Length of result: %d != %d\n",
             (UINT32)ReturnObject.Length, ExpectedLength);
         return AE_ERROR;
-    } 
+    }
 
     if (ReturnObject.Length)
     {
@@ -1344,7 +1344,7 @@ AtNSpaceTest0005(void)
 
 /*
  * ASSERTION 0006:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0006(void)
@@ -1425,7 +1425,7 @@ AtNSpaceTest0006(void)
 
 /*
  * ASSERTION 0007:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0007(void)
@@ -1522,7 +1522,7 @@ AtEvaluateObjectMethodException1(
 
 /*
  * ASSERTION 0010:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0010(void)
@@ -1565,7 +1565,7 @@ AtNSpaceTest0010(void)
 
 /*
  * ASSERTION 0011:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0011(void)
@@ -1618,7 +1618,7 @@ AtNSpaceTest0011(void)
 
 /*
  * ASSERTION 0012:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0012(void)
@@ -1661,7 +1661,7 @@ AtNSpaceTest0012(void)
 
 /*
  * ASSERTION 0013:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0013(void)
@@ -1674,7 +1674,7 @@ AtNSpaceTest0013(void)
 
 /*
  * ASSERTION 0014:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0014(void)
@@ -1688,13 +1688,12 @@ AtNSpaceTest0014(void)
 
 /*
  * ASSERTION 0015:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0015(void)
 {
     ACPI_STATUS             Status;
-
 
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0015.aml")))
@@ -1749,7 +1748,7 @@ AtNSpaceTest0015(void)
 
 /*
  * ASSERTION 0016:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0016(void)
@@ -1762,7 +1761,7 @@ AtNSpaceTest0016(void)
 
 /*
  * ASSERTION 0017:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0017(void)
@@ -1775,7 +1774,7 @@ AtNSpaceTest0017(void)
 
 /*
  * ASSERTION 0018:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0018(void)
@@ -1788,7 +1787,7 @@ AtNSpaceTest0018(void)
 
 /*
  * ASSERTION 0019:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0019(void)
@@ -1801,7 +1800,7 @@ AtNSpaceTest0019(void)
 
 /*
  * ASSERTION 0020:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0020(void)
@@ -1814,7 +1813,7 @@ AtNSpaceTest0020(void)
 
 /*
  * ASSERTION 0021:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0021(void)
@@ -1827,7 +1826,7 @@ AtNSpaceTest0021(void)
 
 /*
  * ASSERTION 0022:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0022(void)
@@ -1842,7 +1841,7 @@ AtNSpaceTest0022(void)
 
 /*
  * ASSERTION 0023:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0023(void)
@@ -1857,7 +1856,7 @@ AtNSpaceTest0023(void)
 
 /*
  * ASSERTION 0025:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0025(void)
@@ -1870,7 +1869,7 @@ AtNSpaceTest0025(void)
 
 /*
  * ASSERTION 0026:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0026(void)
@@ -1880,7 +1879,7 @@ AtNSpaceTest0026(void)
 
 /*
  * ASSERTION 0027:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0027(void)
@@ -1898,7 +1897,7 @@ AtNSpaceTest0027(void)
 
 /*
  * ASSERTION 0029:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0029(void)
@@ -1908,7 +1907,7 @@ AtNSpaceTest0029(void)
 
 /*
  * ASSERTION 0030:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0030(void)
@@ -1918,7 +1917,7 @@ AtNSpaceTest0030(void)
 
 /*
  * ASSERTION 0031:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0031(void)
@@ -1928,7 +1927,7 @@ AtNSpaceTest0031(void)
 
 /*
  * ASSERTION 0032:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0032(void)
@@ -1938,7 +1937,7 @@ AtNSpaceTest0032(void)
 
 /*
  * ASSERTION 0033:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0033(void)
@@ -2015,8 +2014,8 @@ AtEvaluateObjectExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -2062,7 +2061,7 @@ AtNSpaceTest0035(void)
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
 
-    Status = AtEvaluateObjectExceptionTest( 
+    Status = AtEvaluateObjectExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -2072,7 +2071,7 @@ AtNSpaceTest0035(void)
         return Status;
     }
 
-    Status = AtEvaluateObjectExceptionTest( 
+    Status = AtEvaluateObjectExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -2082,7 +2081,7 @@ AtNSpaceTest0035(void)
         return Status;
     }
 
-    Status = AtEvaluateObjectExceptionTest( 
+    Status = AtEvaluateObjectExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -2092,7 +2091,7 @@ AtNSpaceTest0035(void)
         return Status;
     }
 
-    Status = AtEvaluateObjectExceptionTest( 
+    Status = AtEvaluateObjectExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -2102,7 +2101,7 @@ AtNSpaceTest0035(void)
         return Status;
     }
 
-    Status = AtEvaluateObjectExceptionTest( 
+    Status = AtEvaluateObjectExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -2112,7 +2111,7 @@ AtNSpaceTest0035(void)
         return Status;
     }
 
-    Status = AtEvaluateObjectExceptionTest( 
+    Status = AtEvaluateObjectExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -2185,7 +2184,7 @@ AtNSpaceTest0035(void)
 
 /*
  * ASSERTION 0036:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0036(void)
@@ -2234,7 +2233,7 @@ AtNSpaceTest0036(void)
 
 /*
  * ASSERTION 0037:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0037(void)
@@ -2310,7 +2309,7 @@ AtGetObjectInfoCommon(
             AcpiFormatException(Status),
             AcpiFormatException(ExpectedStatus));
         return AE_ERROR;
-    } 
+    }
     else if (Status != AE_OK)
     {
         return AE_OK;
@@ -2376,7 +2375,7 @@ AtGetObjectInfoTypeCommon(
             AapiErrors++;
             printf ("API Error: Null return buffer\n");
             return AE_ERROR;
-        } 
+        }
 
         if (strncmp((ACPI_STRING)&Info->Name, PathNames[2 * i + 1],
             sizeof (ACPI_NAME)))
@@ -2498,7 +2497,7 @@ AtGetObjectInfoTypeCommon(
 
 /*
  * ASSERTION 0040:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0040(void)
@@ -2577,7 +2576,7 @@ AtGetObjectInfoException(
 
 /*
  * ASSERTION 0041:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0041(void)
@@ -2587,7 +2586,7 @@ AtNSpaceTest0041(void)
 
 /*
  * ASSERTION 0042:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0042(void)
@@ -2597,7 +2596,7 @@ AtNSpaceTest0042(void)
 
 /*
  * ASSERTION 0043:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0043(void)
@@ -2669,8 +2668,8 @@ AtGetObjectInfoExceptionTest(
             {
                 AcpiOsFree(ReturnBuffer);
             }
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -2715,7 +2714,7 @@ AtNSpaceTest0044(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtGetObjectInfoExceptionTest( 
+    Status = AtGetObjectInfoExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY, Node);
@@ -2769,7 +2768,7 @@ AtGetNextObjectCommon(
             AcpiFormatException(Status),
             AcpiFormatException(ExpectedStatus));
         return AE_ERROR;
-    } 
+    }
     else if (Status != AE_OK)
     {
         return AE_OK;
@@ -2860,7 +2859,7 @@ AtGetNextObjectTypeCommon(
 
 /*
  * ASSERTION 0045:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0045(void)
@@ -2873,7 +2872,7 @@ AtNSpaceTest0045(void)
 
 /*
  * ASSERTION 0046:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0046(void)
@@ -2897,7 +2896,7 @@ AtNSpaceTest0046(void)
 
 /*
  * ASSERTION 0047:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0047(void)
@@ -2991,7 +2990,7 @@ AtGetNextObjectException(
 
 /*
  * ASSERTION 0048:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0048(void)
@@ -3035,7 +3034,7 @@ static ACPI_STRING      SsdtTypeNames0000[] = {
 
 /*
  * ASSERTION 0049:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0049(void)
@@ -3061,7 +3060,7 @@ AtNSpaceTest0049(void)
 
 /*
  * ASSERTION 0050:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0050(void)
@@ -3087,7 +3086,7 @@ AtNSpaceTest0050(void)
 
 /*
  * ASSERTION 0051:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0051(void)
@@ -3113,7 +3112,7 @@ AtNSpaceTest0051(void)
 
 /*
  * ASSERTION 0052:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0052(void)
@@ -3242,8 +3241,8 @@ AtGetNextObjectExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -3290,7 +3289,7 @@ AtNSpaceTest0053(void)
      */
     for (i = 0; i < sizeof (LevelTypes0000) / sizeof (ACPI_OBJECT_TYPE); i++)
     {
-        Status = AtGetNextObjectExceptionTest( 
+        Status = AtGetNextObjectExceptionTest(
             OSXF_NUM(AcpiOsAllocate),
             AtActD_Permanent, AtActRet_NULL, 1,
             AE_NO_MEMORY, LevelTypes0000[i],
@@ -3307,7 +3306,7 @@ AtNSpaceTest0053(void)
      */
     for (i = 0; i < sizeof (LevelTypes0000) / sizeof (ACPI_OBJECT_TYPE); i++)
     {
-        Status = AtGetNextObjectExceptionTest( 
+        Status = AtGetNextObjectExceptionTest(
             OSXF_NUM(AcpiOsAllocate),
             AtActD_OneTime, AtActRet_NULL, 1,
             AE_NO_MEMORY, LevelTypes0000[i],
@@ -3367,7 +3366,7 @@ AtGetParentCommon(
             AcpiFormatException(Status),
             AcpiFormatException(ExpectedStatus));
         return AE_ERROR;
-    } 
+    }
     else if (Status != AE_OK)
     {
         return AE_OK;
@@ -3465,7 +3464,7 @@ AtGetParentRawCommon(
 
 /*
  * ASSERTION 0054:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0054(void)
@@ -3475,7 +3474,7 @@ AtNSpaceTest0054(void)
 
 /*
  * ASSERTION 0055:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0055(void)
@@ -3523,7 +3522,7 @@ AtNSpaceTest0055(void)
 
 /*
  * ASSERTION 0056:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0056(void)
@@ -3533,7 +3532,7 @@ AtNSpaceTest0056(void)
 
 /*
  * ASSERTION 0057:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0057(void)
@@ -3631,8 +3630,8 @@ AtGetParentExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -3676,7 +3675,7 @@ AtNSpaceTest0058(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtGetParentExceptionTest( 
+    Status = AtGetParentExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -3741,7 +3740,7 @@ AtGetTypeCommon(
             AcpiFormatException(Status),
             AcpiFormatException(ExpectedStatus));
         return AE_ERROR;
-    } 
+    }
     else if (Status != AE_OK)
     {
         return AE_OK;
@@ -3754,7 +3753,7 @@ AtGetTypeCommon(
             " expected 0x%x\n",
             RetType, ExpectedType);
         return AE_ERROR;
-    } 
+    }
 
     return AE_OK;
 }
@@ -3817,7 +3816,7 @@ AtGetTypeRawCommon(
 
 /*
  * ASSERTION 0059:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0059(void)
@@ -3827,7 +3826,7 @@ AtNSpaceTest0059(void)
 
 /*
  * ASSERTION 0060:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0060(void)
@@ -3874,7 +3873,7 @@ AtNSpaceTest0060(void)
 
 /*
  * ASSERTION 0061:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0061(void)
@@ -3951,8 +3950,8 @@ AtGetTypeExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -3999,7 +3998,7 @@ AtNSpaceTest0062(void)
      */
     for (i = 1; i < sizeof (LevelTypes0000) / sizeof (ACPI_OBJECT_TYPE); i++)
     {
-        Status = AtGetTypeExceptionTest( 
+        Status = AtGetTypeExceptionTest(
             OSXF_NUM(AcpiOsAllocate),
             AtActD_Permanent, AtActRet_NULL, 1,
             AE_NO_MEMORY,
@@ -4051,11 +4050,11 @@ AtCheckHandlePathMapping(
     ACPI_INTEGER            Value)
 {
     ACPI_STATUS             Status;
-    ACPI_BUFFER             Results; 
-    ACPI_OBJECT             Obj, *Object = &Obj; 
+    ACPI_BUFFER             Results;
+    ACPI_OBJECT             Obj, *Object = &Obj;
 
     /* Initialize the return buffer structure */
-    Results.Length = sizeof (Obj); 
+    Results.Length = sizeof (Obj);
     Results.Pointer = Object;
     memset(Results.Pointer, 0, Results.Length);
 
@@ -4075,7 +4074,7 @@ AtCheckHandlePathMapping(
         printf ("API Error: Type of %s (%d) is not Integer (1)\n",
             Pathname, Obj.Type);
         Status = AE_ERROR;
-    } 
+    }
     else if (Obj.Integer.Value != Value)
     {
         AapiErrors++;
@@ -4185,12 +4184,12 @@ AtGetHandleCommon(
             AcpiFormatException(Status),
             AcpiFormatException(ExpectedStatus));
         return AE_ERROR;
-    } 
+    }
     else if (Status != AE_OK)
     {
         return AE_OK;
     }
-    
+
     Status = AtCheckInteger(OutHandle, Name, ExpectedValue);
     if (ACPI_FAILURE(Status)) {
         return Status;
@@ -4293,7 +4292,7 @@ AtGetHandleTypeCommon(UINT32 AbsolutePathFlag)
 
 /*
  * ASSERTION 0063:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0063(void)
@@ -4303,7 +4302,7 @@ AtNSpaceTest0063(void)
 
 /*
  * ASSERTION 0064:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0064(void)
@@ -4349,7 +4348,7 @@ AtGetHandleExceptionCommon(
 
 /*
  * ASSERTION 0065:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0065(void)
@@ -4359,7 +4358,7 @@ AtNSpaceTest0065(void)
 
 /*
  * ASSERTION 0066:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0066(void)
@@ -4369,7 +4368,7 @@ AtNSpaceTest0066(void)
 
 /*
  * ASSERTION 0067:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0067(void)
@@ -4379,7 +4378,7 @@ AtNSpaceTest0067(void)
 
 /*
  * ASSERTION 0068:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0068(void)
@@ -4389,7 +4388,7 @@ AtNSpaceTest0068(void)
 
 /*
  * ASSERTION 0069:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0069(void)
@@ -4399,7 +4398,7 @@ AtNSpaceTest0069(void)
 
 /*
  * ASSERTION 0070:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0070(void)
@@ -4423,7 +4422,7 @@ AtNSpaceTest0070(void)
             AcpiFormatException(Status),
             AcpiFormatException(AE_NO_NAMESPACE));
         return AE_ERROR;
-    } 
+    }
 
     return AE_OK;
 /*
@@ -4433,7 +4432,7 @@ AtNSpaceTest0070(void)
 
 /*
  * ASSERTION 0071:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0071(void)
@@ -4549,8 +4548,8 @@ AtGetHandleExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -4595,7 +4594,7 @@ AtNSpaceTest0072(void)
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
 
-    Status = AtGetHandleExceptionTest( 
+    Status = AtGetHandleExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -4605,7 +4604,7 @@ AtNSpaceTest0072(void)
         return Status;
     }
 
-    Status = AtGetHandleExceptionTest( 
+    Status = AtGetHandleExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -4773,7 +4772,7 @@ AtGetNameCommon(
             AcpiFormatException(Status),
             AcpiFormatException(ExpectedStatus));
         return AE_ERROR;
-    } 
+    }
     else if (Status != AE_OK)
     {
         if (!(AllocLength == ACPI_ALLOCATE_BUFFER))
@@ -4800,7 +4799,7 @@ AtGetNameCommon(
         printf ("AtGetNameCommon: AcpiGetName(0x%x) returned invalid"
             "  OutName, strlen %d, OutName.Length %d\n", NameType,
             (UINT32)strlen(OutName.Pointer), (UINT32)OutName.Length);
-    } 
+    }
     else
     {
         CheckName = OutName.Pointer;
@@ -4883,7 +4882,7 @@ AtGetNameTypeCommon(UINT32 NameType)
             BufferLength += (strlen(PathNames0000[2 * i]) +
                 (strlen(PathNames0000[2 * i]) > 1));
         }
-        
+
         Status = AtGetNameCommon(
             PathNames0000[2 * i],
             PathNames0000[2 * i + 1],
@@ -4914,7 +4913,7 @@ AtGetNameTypeCommon(UINT32 NameType)
 
 /*
  * ASSERTION 0074:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0074(void)
@@ -4924,7 +4923,7 @@ AtNSpaceTest0074(void)
 
 /*
  * ASSERTION 0075:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0075(void)
@@ -4979,7 +4978,7 @@ AtGetNameExceptionCommon(
 
 /*
  * ASSERTION 0076:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0076(void)
@@ -4989,7 +4988,7 @@ AtNSpaceTest0076(void)
 
 /*
  * ASSERTION 0077:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0077(void)
@@ -4999,7 +4998,7 @@ AtNSpaceTest0077(void)
 
 /*
  * ASSERTION 0078:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0078(void)
@@ -5009,7 +5008,7 @@ AtNSpaceTest0078(void)
 
 /*
  * ASSERTION 0079:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0079(void)
@@ -5019,7 +5018,7 @@ AtNSpaceTest0079(void)
 
 /*
  * ASSERTION 0080:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0080(void)
@@ -5123,8 +5122,8 @@ AtGetNameExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -5169,7 +5168,7 @@ AtNSpaceTest0081(void)
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
 
-    Status = AtGetNameExceptionTest( 
+    Status = AtGetNameExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -5181,7 +5180,7 @@ AtNSpaceTest0081(void)
         return Status;
     }
 
-    Status = AtGetNameExceptionTest( 
+    Status = AtGetNameExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -5612,8 +5611,8 @@ AtGetDevicesExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -5658,7 +5657,7 @@ AtNSpaceTest0088(void)
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
 
-    Status = AtGetDevicesExceptionTest( 
+    Status = AtGetDevicesExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -5671,7 +5670,7 @@ AtNSpaceTest0088(void)
         return Status;
     }
 
-    Status = AtGetDevicesExceptionTest( 
+    Status = AtGetDevicesExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -5829,7 +5828,7 @@ AtAttachDataCommon(
         {
             printf ("API error: AcpiOsExecute() returned %s\n",
                 AcpiFormatException(Status));
-            return Status;        
+            return Status;
         }
         AcpiOsSleep(1000);
     }
@@ -5980,7 +5979,7 @@ AtAttachDataCommon(
         if (ExpectedStatus[i] != AE_OK)
         {
             continue;
-        }        
+        }
 
         Stat = AttachDataStat[HandlerId[i]];
         if (Stat[0].Object != Objects[HandleId[i]])
@@ -6204,8 +6203,8 @@ AtAttachDataExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -6249,7 +6248,7 @@ AtNSpaceTest0096(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtAttachDataExceptionTest( 
+    Status = AtAttachDataExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -6460,7 +6459,7 @@ AtDetachDataCommon(
             DetachHandlerId, DetachNumId, ExpectedStatus))
         {
             continue;
-        }        
+        }
 
         Stat = AttachDataStat[HandlerId[i]];
         if (Stat[0].Object != Object)
@@ -6618,8 +6617,8 @@ AtDetachDataExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -6663,7 +6662,7 @@ AtNSpaceTest0101(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtDetachDataExceptionTest( 
+    Status = AtDetachDataExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -7059,8 +7058,8 @@ AtGetDataExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -7104,7 +7103,7 @@ AtNSpaceTest0108(void)
     /*
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
-    Status = AtGetDataExceptionTest( 
+    Status = AtGetDataExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -7679,8 +7678,8 @@ AtWalkNamespaceExceptionTest(
             }
             TestPass++;
             Continue_Cond = 0;
-        } 
-        else 
+        }
+        else
         {
             if (Status != Benchmark)
             {
@@ -7726,7 +7725,7 @@ AtNSpaceTest0119(void)
      * AcpiOsAllocate returns NULL permanently since the specified call
      */
 
-    Status = AtWalkNamespaceExceptionTest( 
+    Status = AtWalkNamespaceExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -7739,7 +7738,7 @@ AtNSpaceTest0119(void)
         return Status;
     }
 
-    Status = AtWalkNamespaceExceptionTest( 
+    Status = AtWalkNamespaceExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_Permanent, AtActRet_NULL, 1,
         AE_NO_MEMORY,
@@ -7754,7 +7753,7 @@ AtNSpaceTest0119(void)
 
     for (i = 1; i < sizeof (LevelTypes0000) / sizeof (ACPI_OBJECT_TYPE); i++)
     {
-        Status = AtWalkNamespaceExceptionTest( 
+        Status = AtWalkNamespaceExceptionTest(
             OSXF_NUM(AcpiOsAllocate),
             AtActD_Permanent, AtActRet_NULL, 1,
             AE_NO_MEMORY,
@@ -7799,7 +7798,7 @@ AtNSpaceTest0119(void)
 
     for (i = 1; i < sizeof (LevelTypes0000) / sizeof (ACPI_OBJECT_TYPE); i++)
     {
-        Status = AtWalkNamespaceExceptionTest( 
+        Status = AtWalkNamespaceExceptionTest(
             OSXF_NUM(AcpiOsAllocate),
             AtActD_OneTime, AtActRet_NULL, 1,
             AE_NO_MEMORY,
@@ -7837,7 +7836,7 @@ AtNSpaceTest0120(void)
 
 /*
  * ASSERTION 0121:
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0121(void)
@@ -7928,7 +7927,7 @@ AtNSpaceTest0125(void)
 /*
  * ASSERTION 0126:
  * BZ 7689 AE_AML_BUFFER_LIMIT reprodusing
- * 
+ *
  */
 ACPI_STATUS
 AtNSpaceTest0126(void)
