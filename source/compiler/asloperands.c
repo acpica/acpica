@@ -1007,7 +1007,7 @@ OpnDoDefinitionBlock (
 
         for (i = 0; i < 4; i++)
         {
-            if (!isalnum (Gbl_TableSignature[i]))
+            if (!isalnum ((int) Gbl_TableSignature[i]))
             {
                 AslError (ASL_ERROR, ASL_MSG_TABLE_SIGNATURE, Child,
                     "Contains non-alphanumeric characters");

@@ -610,7 +610,10 @@ AcpiExLoadOp (
     Status = AcpiTbAddTable (&TableDesc, &TableIndex);
     if (ACPI_FAILURE (Status))
     {
-        goto Cleanup;
+        /* Delete allocated table buffer */
+
+        AcpiTbDeleteTable (&TableDesc);
+        return_ACPI_STATUS (Status);
     }
 
     /*
@@ -653,13 +656,6 @@ AcpiExLoadOp (
                     AcpiGbl_TableHandlerContext);
     }
 
-Cleanup:
-    if (ACPI_FAILURE (Status))
-    {
-        /* Delete allocated table buffer */
-
-        AcpiTbDeleteTable (&TableDesc);
-    }
     return_ACPI_STATUS (Status);
 }
 

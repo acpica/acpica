@@ -1133,27 +1133,26 @@ AcpiNsCheckObjectType (
 
     /* Is the object one of the expected types? */
 
-    if (!(ReturnBtype & ExpectedBtypes))
+    if (ReturnBtype & ExpectedBtypes)
     {
-        /* Type mismatch -- attempt repair of the returned object */
+        /* For reference objects, check that the reference type is correct */
 
-        Status = AcpiNsRepairObject (Data, ExpectedBtypes,
-                    PackageIndex, ReturnObjectPtr);
-        if (ACPI_SUCCESS (Status))
+        if (ReturnObject->Common.Type == ACPI_TYPE_LOCAL_REFERENCE)
         {
-            return (AE_OK); /* Repair was successful */
+            Status = AcpiNsCheckReference (Data, ReturnObject);
         }
-        goto TypeErrorExit;
+
+        return (Status);
     }
 
-    /* For reference objects, check that the reference type is correct */
+    /* Type mismatch -- attempt repair of the returned object */
 
-    if (ReturnObject->Common.Type == ACPI_TYPE_LOCAL_REFERENCE)
+    Status = AcpiNsRepairObject (Data, ExpectedBtypes,
+                PackageIndex, ReturnObjectPtr);
+    if (ACPI_SUCCESS (Status))
     {
-        Status = AcpiNsCheckReference (Data, ReturnObject);
+        return (AE_OK); /* Repair was successful */
     }
-
-    return (Status);
 
 
 TypeErrorExit:

@@ -150,9 +150,6 @@ AcpiDbCheckTextModeCorruption (
     UINT32                  TableLength,
     UINT32                  FileLength);
 
-static ACPI_STATUS
-AeLocalLoadTable (
-    ACPI_TABLE_HEADER       *TablePtr);
 #endif
 
 /*******************************************************************************
@@ -424,7 +421,7 @@ AcpiDbReadTable (
         {
             /* Now validate the checksum */
 
-            Status = AcpiTbChecksum ((void *) *Table,
+            Status = AcpiTbVerifyChecksum ((void *) *Table,
                         ACPI_CAST_PTR (ACPI_TABLE_HEADER, *Table)->Length);
 
             if (Status == AE_BAD_CHECKSUM)

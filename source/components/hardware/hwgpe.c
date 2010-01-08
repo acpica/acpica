@@ -320,7 +320,7 @@ AcpiHwGetGpeStatus (
     Status = AcpiHwRead (&InByte, &GpeRegisterInfo->StatusAddress);
     if (ACPI_FAILURE (Status))
     {
-        goto UnlockAndExit;
+        return (Status);
     }
 
     if (RegisterBit & InByte)
@@ -331,10 +331,7 @@ AcpiHwGetGpeStatus (
     /* Set return value */
 
     (*EventStatus) = LocalEventStatus;
-
-
-UnlockAndExit:
-    return (Status);
+    return (AE_OK);
 }
 
 

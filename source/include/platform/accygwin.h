@@ -155,6 +155,9 @@
 #define inline
 #endif
 
+#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq) if (GLptr) Acq=1; else Acq=0;
+#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pending) Pending = 1
+
 
 /* Cygwin uses GCC */
 

@@ -177,7 +177,7 @@ AcpiNsCheckSortedList (
     UINT8                   SortDirection,
     char                    *SortKeyName);
 
-static ACPI_STATUS
+static void
 AcpiNsSortList (
     ACPI_OPERAND_OBJECT     **Elements,
     UINT32                  Count,
@@ -557,7 +557,6 @@ AcpiNsCheckSortedList (
     ACPI_OPERAND_OBJECT     *ObjDesc;
     UINT32                  i;
     UINT32                  PreviousValue;
-    ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_NAME (NsCheckSortedList);
@@ -616,19 +615,15 @@ AcpiNsCheckSortedList (
 
         /*
          * The list must be sorted in the specified order. If we detect a
-         * discrepancy, issue a warning and sort the entire list
+         * discrepancy, sort the entire list.
          */
         if (((SortDirection == ACPI_SORT_ASCENDING) &&
                 (ObjDesc->Integer.Value < PreviousValue)) ||
             ((SortDirection == ACPI_SORT_DESCENDING) &&
                 (ObjDesc->Integer.Value > PreviousValue)))
         {
-            Status = AcpiNsSortList (ReturnObject->Package.Elements,
-                        OuterElementCount, SortIndex, SortDirection);
-            if (ACPI_FAILURE (Status))
-            {
-                return (Status);
-            }
+            AcpiNsSortList (ReturnObject->Package.Elements,
+                OuterElementCount, SortIndex, SortDirection);
 
             Data->Flags |= ACPI_OBJECT_REPAIRED;
 
@@ -748,15 +743,16 @@ AcpiNsRemoveNullElements (
  *              Index               - Sort by which package element
  *              SortDirection       - Ascending or Descending sort
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Sort the objects that are in a package element list.
  *
- * NOTE: Assumes that all NULL elements have been removed from the package.
+ * NOTE: Assumes that all NULL elements have been removed from the package,
+ *       and that all elements have been verified to be of type Integer.
  *
  *****************************************************************************/
 
-static ACPI_STATUS
+static void
 AcpiNsSortList (
     ACPI_OPERAND_OBJECT     **Elements,
     UINT32                  Count,
@@ -791,6 +787,4 @@ AcpiNsSortList (
             }
         }
     }
-
-    return (AE_OK);
 }

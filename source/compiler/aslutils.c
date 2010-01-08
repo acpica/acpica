@@ -916,7 +916,7 @@ UtStrtoul64 (
 
     /* Skip over any white space in the buffer: */
 
-    while (isspace (*String) || *String == '\t')
+    while (isspace ((int) *String) || *String == '\t')
     {
         ++String;
     }
@@ -948,7 +948,7 @@ UtStrtoul64 (
     {
         if (*String == '0')
         {
-            if (tolower (*(++String)) == 'x')
+            if (tolower ((int) *(++String)) == 'x')
             {
                 Base = 16;
                 ++String;
@@ -975,7 +975,7 @@ UtStrtoul64 (
 
     if (Base == 16 &&
         *String == '0' &&
-        tolower (*(++String)) == 'x')
+        tolower ((int) *(++String)) == 'x')
     {
         String++;
     }
@@ -984,14 +984,14 @@ UtStrtoul64 (
 
     while (*String)
     {
-        if (isdigit (*String))
+        if (isdigit ((int) *String))
         {
             Index = ((UINT8) *String) - '0';
         }
         else
         {
-            Index = (UINT8) toupper (*String);
-            if (isupper ((char) Index))
+            Index = (UINT8) toupper ((int) *String);
+            if (isupper ((int) Index))
             {
                 Index = Index - 'A' + 10;
             }

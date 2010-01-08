@@ -191,8 +191,8 @@ AsStricmp (
 
     do
     {
-        c1 = tolower (*String1);
-        c2 = tolower (*String2);
+        c1 = tolower ((int) *String1);
+        c2 = tolower ((int) *String2);
 
         String1++;
         String2++;

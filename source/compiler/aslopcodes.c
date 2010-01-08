@@ -568,7 +568,7 @@ OpcDoEisaId (
 
             if (i < 3)
             {
-                if (!isupper (InString[i]))
+                if (!isupper ((int) InString[i]))
                 {
                     Status = AE_BAD_PARAMETER;
                 }
@@ -576,7 +576,7 @@ OpcDoEisaId (
 
             /* Last 4 characters must be hex digits */
 
-            else if (!isxdigit (InString[i]))
+            else if (!isxdigit ((int) InString[i]))
             {
                 Status = AE_BAD_PARAMETER;
             }
@@ -666,7 +666,7 @@ OpcDoUuId (
             }
             else
             {
-                if (!isxdigit (InString[i]))
+                if (!isxdigit ((int) InString[i]))
                 {
                     Status = AE_BAD_PARAMETER;
                 }

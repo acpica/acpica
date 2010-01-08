@@ -295,11 +295,11 @@ strlwr  (
     int         i;
 
 
-    length = strlen(str);
+    length = strlen (str);
 
     for (i = 0; i < length; i++)
     {
-        str[i] = tolower(str[i]);
+        str[i] = tolower ((int) str[i]);
     }
 
     return (str);

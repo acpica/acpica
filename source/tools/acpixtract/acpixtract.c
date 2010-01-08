@@ -122,7 +122,7 @@
 
 /* Note: This is a 32-bit program only */
 
-#define VERSION             0x20091002
+#define VERSION             0x20100107
 #define FIND_HEADER         0
 #define EXTRACT_DATA        1
 #define BUFFER_SIZE         256
@@ -250,7 +250,7 @@ CheckAscii (
 
     for (i = 0; i < Count; i++)
     {
-        if (!Name[i] || !isprint (Name[i]))
+        if (!Name[i] || !isprint ((int) Name[i]))
         {
             Name[i] = ' ';
         }
