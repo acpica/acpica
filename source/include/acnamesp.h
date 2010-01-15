@@ -444,6 +444,19 @@ AcpiNsRepairPackageList (
     ACPI_PREDEFINED_DATA    *Data,
     ACPI_OPERAND_OBJECT     **ObjDescPtr);
 
+ACPI_STATUS
+AcpiNsRepairNullElement (
+    ACPI_PREDEFINED_DATA    *Data,
+    UINT32                  ExpectedBtypes,
+    UINT32                  PackageIndex,
+    ACPI_OPERAND_OBJECT     **ReturnObjectPtr);
+
+void
+AcpiNsRemoveNullElements (
+    ACPI_PREDEFINED_DATA    *Data,
+    UINT8                   PackageType,
+    ACPI_OPERAND_OBJECT     *ObjDesc);
+
 
 /*
  * nsrepair2 - Return object repair for specific
@@ -456,11 +469,6 @@ AcpiNsComplexRepairs (
     ACPI_STATUS             ValidateStatus,
     ACPI_OPERAND_OBJECT     **ReturnObjectPtr);
 
-void
-AcpiNsRemoveNullElements (
-    ACPI_PREDEFINED_DATA    *Data,
-    UINT8                   PackageType,
-    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 /*
  * nssearch - Namespace searching and entry

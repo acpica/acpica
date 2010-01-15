@@ -329,6 +329,7 @@ AcpiNsCheckPredefinedNames (
      */
     if ((*ReturnObjectPtr)->Common.Type == ACPI_TYPE_PACKAGE)
     {
+        Data->ParentPackage = *ReturnObjectPtr;
         Status = AcpiNsCheckPackage (Data, ReturnObjectPtr);
         if (ACPI_FAILURE (Status))
         {
@@ -831,6 +832,7 @@ AcpiNsCheckPackageList (
     {
         SubPackage = *Elements;
         SubElements = SubPackage->Package.Elements;
+        Data->ParentPackage = SubPackage;
 
         /* Each sub-object must be of type Package */
 
@@ -843,6 +845,7 @@ AcpiNsCheckPackageList (
 
         /* Examine the different types of expected sub-packages */
 
+        Data->ParentPackage = SubPackage;
         switch (Package->RetInfo.Type)
         {
         case ACPI_PTYPE2:
@@ -919,7 +922,7 @@ AcpiNsCheckPackageList (
 
             /*
              * First element is the (Integer) count of elements, including
-             * the count field.
+             * the count field (the ACPI name is NumElements)
              */
             Status = AcpiNsCheckObjectType (Data, SubElements,
                         ACPI_RTYPE_INTEGER, 0);
@@ -941,6 +944,17 @@ AcpiNsCheckPackageList (
             {
                 ExpectedCount = Package->RetInfo.Count1;
                 goto PackageTooSmall;
+            }
+            if (ExpectedCount == 0)
+            {
+                /*
+                 * Either the NumEntries element was originally zero or it was
+                 * a NULL element and repaired to an Integer of value zero.
+                 * In either case, repair it by setting NumEntries to be the
+                 * actual size of the subpackage.
+                 */
+                ExpectedCount = SubPackage->Package.Count;
+                (*SubElements)->Integer.Value = ExpectedCount;
             }
 
             /* Check the type of each sub-package element */
@@ -1076,11 +1090,19 @@ AcpiNsCheckObjectType (
 
 
     /*
-     * If we get a NULL ReturnObject here, it is a NULL package element,
-     * and this is always an error.
+     * If we get a NULL ReturnObject here, it is a NULL package element.
+     * Since all extraneous NULL package elements were removed earlier by a
+     * call to AcpiNsRemoveNullElements, this is an unexpected NULL element.
+     * We will attempt to repair it.
      */
     if (!ReturnObject)
     {
+        Status = AcpiNsRepairNullElement (Data, ExpectedBtypes,
+                    PackageIndex, ReturnObjectPtr);
+        if (ACPI_SUCCESS (Status))
+        {
+            return (AE_OK); /* Repair was successful */
+        }
         goto TypeErrorExit;
     }
 

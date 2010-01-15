@@ -119,7 +119,6 @@
 #include "acpi.h"
 #include "accommon.h"
 #include "acnamesp.h"
-#include "acpredef.h"
 
 #define _COMPONENT          ACPI_NAMESPACE
         ACPI_MODULE_NAME    ("nsrepair2")
@@ -638,99 +637,6 @@ AcpiNsCheckSortedList (
     }
 
     return (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiNsRemoveNullElements
- *
- * PARAMETERS:  Data                - Pointer to validation data structure
- *              PackageType         - An AcpiReturnPackageTypes value
- *              ObjDesc             - A Package object
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Remove all NULL package elements from packages that contain
- *              a variable number of sub-packages.
- *
- *****************************************************************************/
-
-void
-AcpiNsRemoveNullElements (
-    ACPI_PREDEFINED_DATA    *Data,
-    UINT8                   PackageType,
-    ACPI_OPERAND_OBJECT     *ObjDesc)
-{
-    ACPI_OPERAND_OBJECT     **Source;
-    ACPI_OPERAND_OBJECT     **Dest;
-    UINT32                  Count;
-    UINT32                  NewCount;
-    UINT32                  i;
-
-
-    ACPI_FUNCTION_NAME (NsRemoveNullElements);
-
-
-    /*
-     * PTYPE1 packages contain no subpackages.
-     * PTYPE2 packages contain a variable number of sub-packages. We can
-     * safely remove all NULL elements from the PTYPE2 packages.
-     */
-    switch (PackageType)
-    {
-    case ACPI_PTYPE1_FIXED:
-    case ACPI_PTYPE1_VAR:
-    case ACPI_PTYPE1_OPTION:
-        return;
-
-    case ACPI_PTYPE2:
-    case ACPI_PTYPE2_COUNT:
-    case ACPI_PTYPE2_PKG_COUNT:
-    case ACPI_PTYPE2_FIXED:
-    case ACPI_PTYPE2_MIN:
-    case ACPI_PTYPE2_REV_FIXED:
-        break;
-
-    default:
-        return;
-    }
-
-    Count = ObjDesc->Package.Count;
-    NewCount = Count;
-
-    Source = ObjDesc->Package.Elements;
-    Dest = Source;
-
-    /* Examine all elements of the package object, remove nulls */
-
-    for (i = 0; i < Count; i++)
-    {
-        if (!*Source)
-        {
-            NewCount--;
-        }
-        else
-        {
-            *Dest = *Source;
-            Dest++;
-        }
-        Source++;
-    }
-
-    /* Update parent package if any null elements were removed */
-
-    if (NewCount < Count)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_REPAIR,
-            "%s: Found and removed %u NULL elements\n",
-            Data->Pathname, (Count - NewCount)));
-
-        /* NULL terminate list and update the package count */
-
-        *Dest = NULL;
-        ObjDesc->Package.Count = NewCount;
-    }
 }
 
 
