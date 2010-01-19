@@ -473,8 +473,8 @@ AcpiDmDisassembleOneOp (
 
     case AML_QWORD_OP:
 
-        AcpiOsPrintf ("0x%8.8X%8.8X", Op->Common.Value.Integer64.Hi,
-                                      Op->Common.Value.Integer64.Lo);
+        AcpiOsPrintf ("0x%8.8X%8.8X",
+            ACPI_FORMAT_UINT64 (Op->Common.Value.Integer));
         break;
 
 

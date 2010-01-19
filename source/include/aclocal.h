@@ -854,7 +854,6 @@ typedef struct acpi_opcode_info
 typedef union acpi_parse_value
 {
     UINT64                          Integer;        /* Integer constant (Up to 64 bits) */
-    UINT64_STRUCT                   Integer64;      /* Structure overlay for 2 32-bit Dwords */
     UINT32                          Size;           /* bytelist or field size */
     char                            *String;        /* NULL terminated string */
     UINT8                           *Buffer;        /* buffer or string */
