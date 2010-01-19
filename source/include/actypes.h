@@ -470,13 +470,6 @@ typedef union uint64_overlay
 
 } UINT64_OVERLAY;
 
-typedef struct uint32_struct
-{
-    UINT32                          Lo;
-    UINT32                          Hi;
-
-} UINT32_STRUCT;
-
 
 #define ACPI_INTEGER_BIT_SIZE           64
 #define ACPI_MAX_DECIMAL_DIGITS         20  /* 2^64 = 18,446,744,073,709,551,616 */
