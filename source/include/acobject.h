@@ -190,7 +190,7 @@ typedef struct acpi_object_integer
 {
     ACPI_OBJECT_COMMON_HEADER
     UINT8                           Fill[3];            /* Prevent warning on some compilers */
-    ACPI_INTEGER                    Value;
+    UINT64                          Value;
 
 } ACPI_OBJECT_INTEGER;
 

@@ -1146,7 +1146,7 @@ AcpiOsStall (
 
 void
 AcpiOsSleep (
-    ACPI_INTEGER            milliseconds)
+    UINT64                  milliseconds)
 {
 
     /* Add 10ms to account for clock tick granularity */
@@ -1224,7 +1224,7 @@ ACPI_STATUS
 AcpiOsWritePciConfiguration (
     ACPI_PCI_ID             *PciId,
     UINT32                  Register,
-    ACPI_INTEGER            Value,
+    UINT64                  Value,
     UINT32                  Width)
 {
 

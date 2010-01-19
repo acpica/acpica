@@ -598,7 +598,7 @@ AcpiUtValueExit (
     const char              *FunctionName,
     const char              *ModuleName,
     UINT32                  ComponentId,
-    ACPI_INTEGER            Value)
+    UINT64                  Value)
 {
 
     AcpiDebugPrint (ACPI_LV_FUNCTIONS,

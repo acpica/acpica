@@ -232,7 +232,7 @@ AcpiGetTimerDuration (
 {
     ACPI_STATUS             Status;
     UINT32                  DeltaTicks;
-    ACPI_INTEGER            Quotient;
+    UINT64                  Quotient;
 
 
     ACPI_FUNCTION_TRACE (AcpiGetTimerDuration);

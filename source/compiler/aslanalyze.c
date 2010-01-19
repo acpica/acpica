@@ -2157,7 +2157,7 @@ AnOtherSemanticAnalysisWalkBegin (
          */
         if (((ArgNode->Asl.ParseOpcode == PARSEOP_WORDCONST) ||
              (ArgNode->Asl.ParseOpcode == PARSEOP_INTEGER))  &&
-             (ArgNode->Asl.Value.Integer >= (ACPI_INTEGER) ACPI_WAIT_FOREVER))
+             (ArgNode->Asl.Value.Integer >= (UINT64) ACPI_WAIT_FOREVER))
         {
             break;
         }

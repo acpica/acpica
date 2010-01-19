@@ -265,7 +265,7 @@ AcpiEvAddressSpaceDispatch (
     UINT32                  Function,
     UINT32                  RegionOffset,
     UINT32                  BitWidth,
-    ACPI_INTEGER            *Value);
+    UINT64                  *Value);
 
 ACPI_STATUS
 AcpiEvAttachRegion (

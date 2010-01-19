@@ -604,7 +604,7 @@ OpnDoRegion (
     }
     else
     {
-        Op->Asl.Value.Integer = ACPI_INTEGER_MAX;
+        Op->Asl.Value.Integer = ACPI_UINT64_MAX;
     }
 }
 

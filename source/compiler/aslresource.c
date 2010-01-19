@@ -184,7 +184,7 @@ RsCreateBitField (
 {
 
     Op->Asl.ExternalName      = Name;
-    Op->Asl.Value.Integer     = ((ACPI_INTEGER) ByteOffset * 8) + BitOffset;
+    Op->Asl.Value.Integer     = ((UINT64) ByteOffset * 8) + BitOffset;
     Op->Asl.CompileFlags     |= (NODE_IS_RESOURCE_FIELD | NODE_IS_BIT_OFFSET);
 }
 

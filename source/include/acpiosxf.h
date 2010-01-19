@@ -346,7 +346,7 @@ AcpiOsWaitEventsComplete (
 
 void
 AcpiOsSleep (
-    ACPI_INTEGER            Milliseconds);
+    UINT64                  Milliseconds);
 
 void
 AcpiOsStall (
@@ -401,7 +401,7 @@ ACPI_STATUS
 AcpiOsWritePciConfiguration (
     ACPI_PCI_ID             *PciId,
     UINT32                  Reg,
-    ACPI_INTEGER            Value,
+    UINT64                  Value,
     UINT32                  Width);
 
 

@@ -387,7 +387,7 @@ AcpiExRegionRead (
     UINT8                   *Buffer)
 {
     ACPI_STATUS             Status;
-    ACPI_INTEGER            Value;
+    UINT64                  Value;
     UINT32                  RegionOffset = 0;
     UINT32                  i;
 

@@ -328,7 +328,7 @@ OpcSetOptimalIntegerSize (
             }
             break;
 
-        case ACPI_INTEGER_MAX:
+        case ACPI_UINT64_MAX:
 
             /* Check for table integer width (32 or 64) */
 

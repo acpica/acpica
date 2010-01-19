@@ -787,7 +787,7 @@ AcpiDsInitObjectFromOp (
 
             case AML_ONES_OP:
 
-                ObjDesc->Integer.Value = ACPI_INTEGER_MAX;
+                ObjDesc->Integer.Value = ACPI_UINT64_MAX;
 
                 /* Truncate value if we are executing from a 32-bit ACPI table */
 

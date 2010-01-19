@@ -260,7 +260,7 @@ AcpiEvPciConfigRegionSetup (
     void                    **RegionContext)
 {
     ACPI_STATUS             Status = AE_OK;
-    ACPI_INTEGER            PciValue;
+    UINT64                  PciValue;
     ACPI_PCI_ID             *PciId = *RegionContext;
     ACPI_OPERAND_OBJECT     *HandlerObj;
     ACPI_NAMESPACE_NODE     *ParentNode;

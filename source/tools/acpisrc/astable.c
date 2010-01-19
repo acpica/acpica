@@ -781,12 +781,15 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
 
-    {"(c) 1999 - 2009",      "(c) 1999 - 2010",         REPLACE_WHOLE_WORD}, /* Main ACPICA source */
-    {"(c) 2006 - 2009",      "(c) 2006 - 2010",         REPLACE_WHOLE_WORD}, /* Test suites */
+    {"ACPI_INTEGER_MAX", "ACPI_UINT64_MAX",   REPLACE_WHOLE_WORD},
 
 #if 0
+    {"(ACPI_INTEGER)", "(UINT64)",   REPLACE_WHOLE_WORD},
+    {"ACPI_INTEGER        ", "UINT64              ",   REPLACE_WHOLE_WORD},
+    {"ACPI_INTEGER", "UINT64",   REPLACE_WHOLE_WORD},
+    {"(c) 1999 - 2009",      "(c) 1999 - 2010",         REPLACE_WHOLE_WORD}, /* Main ACPICA source */
+    {"(c) 2006 - 2009",      "(c) 2006 - 2010",         REPLACE_WHOLE_WORD}, /* Test suites */
     {"#include \"acpi.h\"",   "#include \"acpi.h\"\n#include \"accommon.h\"",  REPLACE_SUBSTRINGS},
-    {"(c) 1999 - 2010",      "(c) 1999 - 2010",         REPLACE_WHOLE_WORD},
     {"AcpiTbSumTable", "AcpiTbSumTable",  REPLACE_WHOLE_WORD},
     {"ACPI_SIG_BOOT", "ACPI_SIG_BOOT",   REPLACE_WHOLE_WORD},
     {"ACPI_SIG_DBGP", "ACPI_SIG_DBGP",   REPLACE_WHOLE_WORD},

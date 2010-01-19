@@ -423,7 +423,7 @@ ACPI_STATUS
 AcpiUtEvaluateNumericObject (
     char                    *ObjectName,
     ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_INTEGER            *Value)
+    UINT64                  *Value)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;

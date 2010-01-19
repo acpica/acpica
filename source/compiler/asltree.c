@@ -490,7 +490,7 @@ TrCreateLeafNode (
 ACPI_PARSE_OBJECT *
 TrCreateValuedLeafNode (
     UINT32                  ParseOpcode,
-    ACPI_INTEGER            Value)
+    UINT64                  Value)
 {
     ACPI_PARSE_OBJECT       *Op;
 

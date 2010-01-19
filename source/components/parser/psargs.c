@@ -514,7 +514,7 @@ AcpiPsGetNextSimpleArg (
         /* Get 1 byte from the AML stream */
 
         Opcode = AML_BYTE_OP;
-        Arg->Common.Value.Integer = (ACPI_INTEGER) *Aml;
+        Arg->Common.Value.Integer = (UINT64) *Aml;
         Length = 1;
         break;
 

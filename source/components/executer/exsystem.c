@@ -293,7 +293,7 @@ AcpiExSystemDoStall (
 
 ACPI_STATUS
 AcpiExSystemDoSuspend (
-    ACPI_INTEGER            HowLong)
+    UINT64                  HowLong)
 {
     ACPI_FUNCTION_ENTRY ();
 

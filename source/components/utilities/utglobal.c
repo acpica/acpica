@@ -331,7 +331,7 @@ static const char           AcpiGbl_HexToAscii[] =
 
 char
 AcpiUtHexToAsciiChar (
-    ACPI_INTEGER            Integer,
+    UINT64                  Integer,
     UINT32                  Position)
 {
 
