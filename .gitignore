@@ -62,6 +62,8 @@ libraries/apitest.exe
 
 tests/tmp
 tests/misc/*.aml
+tests/aapits/tmp/
+tests/aslts/tmp/
 
 *.sh
 new
