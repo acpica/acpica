@@ -145,6 +145,7 @@ extern UINT8                AcpiGbl_LeaveWakeGpesDisabled;
 extern UINT8                AcpiGbl_UseDefaultRegisterWidths;
 extern ACPI_NAME            AcpiGbl_TraceMethodName;
 extern UINT32               AcpiGbl_TraceFlags;
+extern UINT8                AcpiGbl_EnableAmlDebugObject;
 
 
 /*

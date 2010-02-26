@@ -58,6 +58,7 @@ OBJS = \
 	exconfig.o \
 	exconvrt.o \
 	excreate.o \
+	exdebug.o \
 	exdump.o \
 	exfield.o \
 	exfldio.o \
@@ -310,6 +311,9 @@ exconvrt.o :        $(ACPICA_CORE)/executer/exconvrt.c
 	$(COMPILE)
 
 excreate.o :        $(ACPICA_CORE)/executer/excreate.c
+	$(COMPILE)
+
+exdebug.o :         $(ACPICA_CORE)/executer/exdebug.c
 	$(COMPILE)
 
 exdump.o :          $(ACPICA_CORE)/executer/exdump.c
