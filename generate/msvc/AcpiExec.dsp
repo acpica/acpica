@@ -566,6 +566,10 @@ SOURCE=..\..\source\components\executer\excreate.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\executer\exdebug.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\executer\exdump.c
 # End Source File
 # Begin Source File

@@ -278,6 +278,10 @@ SOURCE=..\..\source\compiler\aslopt.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\compiler\aslpredef.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\compiler\aslresource.c
 # End Source File
 # Begin Source File
