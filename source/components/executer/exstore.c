@@ -274,7 +274,7 @@ AcpiExStore (
 
     default:
 
-        ACPI_ERROR ((AE_INFO, "Unknown Reference Class %2.2X",
+        ACPI_ERROR ((AE_INFO, "Unknown Reference Class 0x%2.2X",
             RefDesc->Reference.Class));
         ACPI_DUMP_ENTRY (RefDesc, ACPI_LV_INFO);
 

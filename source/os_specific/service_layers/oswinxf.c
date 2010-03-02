@@ -727,7 +727,7 @@ AcpiOsCreateSemaphore (
     if (i >= ACPI_OS_MAX_SEMAPHORES)
     {
         ACPI_EXCEPTION ((AE_INFO, AE_LIMIT,
-            "Reached max semaphores (%d), could not create", ACPI_OS_MAX_SEMAPHORES));
+            "Reached max semaphores (%u), could not create", ACPI_OS_MAX_SEMAPHORES));
         return AE_LIMIT;
     }
 
@@ -862,7 +862,7 @@ AcpiOsWaitSemaphore (
 
     if (AcpiGbl_Semaphores[Index].CurrentUnits == 0)
     {
-        ACPI_ERROR ((AE_INFO, "%s - No unit received. Timeout %X, OSstatus 0x%X",
+        ACPI_ERROR ((AE_INFO, "%s - No unit received. Timeout 0x%X, OS_Status 0x%X",
             AcpiUtGetMutexName (Index), Timeout, WaitStatus));
 
         return AE_OK;
@@ -923,7 +923,7 @@ AcpiOsSignalSemaphore (
         AcpiGbl_Semaphores[Index].MaxUnits)
     {
         ACPI_ERROR ((AE_INFO,
-            "Oversignalled semaphore[%d]! Current %d Max %d",
+            "Oversignalled semaphore[%u]! Current %u Max %u",
             Index, AcpiGbl_Semaphores[Index].CurrentUnits,
             AcpiGbl_Semaphores[Index].MaxUnits));
 

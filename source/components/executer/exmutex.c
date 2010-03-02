@@ -353,7 +353,7 @@ AcpiExAcquireMutex (
     if (WalkState->Thread->CurrentSyncLevel > ObjDesc->Mutex.SyncLevel)
     {
         ACPI_ERROR ((AE_INFO,
-            "Cannot acquire Mutex [%4.4s], current SyncLevel is too large (%d)",
+            "Cannot acquire Mutex [%4.4s], current SyncLevel is too large (%u)",
             AcpiUtGetNodeName (ObjDesc->Mutex.Node),
             WalkState->Thread->CurrentSyncLevel));
         return_ACPI_STATUS (AE_AML_MUTEX_ORDER);
@@ -524,7 +524,7 @@ AcpiExReleaseMutex (
     if (ObjDesc->Mutex.SyncLevel != WalkState->Thread->CurrentSyncLevel)
     {
         ACPI_ERROR ((AE_INFO,
-            "Cannot release Mutex [%4.4s], SyncLevel mismatch: mutex %d current %d",
+            "Cannot release Mutex [%4.4s], SyncLevel mismatch: mutex %u current %u",
             AcpiUtGetNodeName (ObjDesc->Mutex.Node),
             ObjDesc->Mutex.SyncLevel, WalkState->Thread->CurrentSyncLevel));
         return_ACPI_STATUS (AE_AML_MUTEX_ORDER);

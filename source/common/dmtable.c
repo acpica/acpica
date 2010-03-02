@@ -912,7 +912,7 @@ AcpiDmDumpTable (
 
         default:
             ACPI_ERROR ((AE_INFO,
-                "**** Invalid table opcode [%X] ****\n", Info->Opcode));
+                "**** Invalid table opcode [0x%X] ****\n", Info->Opcode));
             return (AE_SUPPORT);
         }
     }
