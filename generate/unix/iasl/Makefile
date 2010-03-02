@@ -32,6 +32,7 @@ OBJS = \
 	aslopcodes.o \
 	asloperands.o \
 	aslopt.o \
+	aslpredef.o \
 	aslresource.o \
 	aslrestype1.o \
 	aslrestype2.o \
@@ -209,6 +210,9 @@ asloperands.o :     $(ASL_COMPILER)/asloperands.c
 	$(COMPILE)
 
 aslopt.o :          $(ASL_COMPILER)/aslopt.c
+	$(COMPILE)
+
+aslpredef.o :       $(ASL_COMPILER)/aslpredef.c
 	$(COMPILE)
 
 aslresource.o :     $(ASL_COMPILER)/aslresource.c
