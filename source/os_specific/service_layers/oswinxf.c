@@ -1409,3 +1409,78 @@ AcpiOsSignal (
     return (AE_OK);
 }
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    Local cache interfaces
+ *
+ * DESCRIPTION: Implements cache interfaces via malloc/free for testing
+ *              purposes only. 
+ *
+ *****************************************************************************/
+
+#ifndef ACPI_USE_LOCAL_CACHE
+
+ACPI_STATUS
+AcpiOsCreateCache (
+    char                    *CacheName,
+    UINT16                  ObjectSize,
+    UINT16                  MaxDepth,
+    ACPI_CACHE_T            **ReturnCache)
+{
+    ACPI_MEMORY_LIST        *NewCache;
+
+
+    NewCache = malloc (sizeof (ACPI_MEMORY_LIST));
+    if (!NewCache)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    memset (NewCache, 0, sizeof (ACPI_MEMORY_LIST));
+    NewCache->LinkOffset = 8;
+    NewCache->ListName = CacheName;
+    NewCache->ObjectSize = ObjectSize;
+    NewCache->MaxDepth = MaxDepth;
+
+    *ReturnCache = (ACPI_CACHE_T) NewCache;
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiOsDeleteCache (
+    ACPI_CACHE_T            *Cache)
+{
+    free (Cache);
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiOsPurgeCache (
+    ACPI_CACHE_T            *Cache)
+{
+    return (AE_OK);
+}
+
+void *
+AcpiOsAcquireObject (
+    ACPI_CACHE_T            *Cache)
+{
+    void                    *NewObject;
+
+    NewObject = malloc (((ACPI_MEMORY_LIST *) Cache)->ObjectSize);
+    memset (NewObject, 0, ((ACPI_MEMORY_LIST *) Cache)->ObjectSize);
+    
+    return (NewObject);
+}
+
+ACPI_STATUS
+AcpiOsReleaseObject (
+    ACPI_CACHE_T            *Cache,
+    void                    *Object)
+{
+    free (Object);
+    return (AE_OK);
+}
+
+#endif
