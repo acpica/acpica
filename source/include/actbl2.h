@@ -868,7 +868,7 @@ typedef struct acpi_mcfg_allocation
  * MCHI - Management Controller Host Interface Table
  *        Version 1
  *
- * Conforms to "Management Component Transport Protocol 5 (MCTP) Host
+ * Conforms to "Management Component Transport Protocol (MCTP) Host
  * Interface Specification", Revision 1.0.0a, October 13, 2009
  *
  ******************************************************************************/
@@ -883,7 +883,7 @@ typedef struct acpi_table_mchi
     UINT8                   Gpe;
     UINT8                   PciDeviceFlag;
     UINT32                  GlobalInterrupt;
-    ACPI_GENERIC_ADDRESS    Register;
+    ACPI_GENERIC_ADDRESS    ControlRegister;
     UINT8                   PciSegment;
     UINT8                   PciBus;
     UINT8                   PciDevice;

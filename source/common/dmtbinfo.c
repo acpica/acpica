@@ -1240,7 +1240,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMchi[] =
     {ACPI_DMT_UINT8,    ACPI_MCHI_OFFSET (Gpe),                     "Gpe"},
     {ACPI_DMT_UINT8,    ACPI_MCHI_OFFSET (PciDeviceFlag),           "Pci Device Flag"},
     {ACPI_DMT_UINT32,   ACPI_MCHI_OFFSET (GlobalInterrupt),         "Global Interrupt"},
-    {ACPI_DMT_GAS,      ACPI_MCHI_OFFSET (Register),                "Interface Register"},
+    {ACPI_DMT_GAS,      ACPI_MCHI_OFFSET (ControlRegister),         "Control Register"},
     {ACPI_DMT_UINT8,    ACPI_MCHI_OFFSET (PciSegment),              "Pci Segment"},
     {ACPI_DMT_UINT8,    ACPI_MCHI_OFFSET (PciBus),                  "Pci Bus"},
     {ACPI_DMT_UINT8,    ACPI_MCHI_OFFSET (PciDevice),               "Pci Device"},
