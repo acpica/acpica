@@ -441,7 +441,7 @@ ApCheckForPredefinedName (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Check for the "special" predefined names - 
+ * DESCRIPTION: Check for the "special" predefined names -
  *              _Lxx, _Exx, _Qxx, and _T_x
  *
  ******************************************************************************/
@@ -534,6 +534,9 @@ ApCheckObjectType (
 
     switch (Op->Asl.ParseOpcode)
     {
+    case PARSEOP_ZERO:
+    case PARSEOP_ONE:
+    case PARSEOP_ONES:
     case PARSEOP_INTEGER:
         ReturnBtype = ACPI_RTYPE_INTEGER;
         break;
@@ -552,7 +555,7 @@ ApCheckObjectType (
 
     default:
         /* Not one of the supported object types */
-        
+
         goto TypeErrorExit;
     }
 
