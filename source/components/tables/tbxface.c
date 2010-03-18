@@ -265,6 +265,7 @@ AcpiReallocateRootTable (
 {
     ACPI_TABLE_DESC         *Tables;
     ACPI_SIZE               NewSize;
+    ACPI_SIZE               CurrentSize;
 
 
     ACPI_FUNCTION_TRACE (AcpiReallocateRootTable);
@@ -279,9 +280,15 @@ AcpiReallocateRootTable (
         return_ACPI_STATUS (AE_SUPPORT);
     }
 
-    NewSize = ((ACPI_SIZE) AcpiGbl_RootTableList.Count +
-                    ACPI_ROOT_TABLE_SIZE_INCREMENT) *
-                sizeof (ACPI_TABLE_DESC);
+    /*
+     * Get the current size of the root table and add the default
+     * increment to create the new table size.
+     */
+    CurrentSize = (ACPI_SIZE)
+        AcpiGbl_RootTableList.Count * sizeof (ACPI_TABLE_DESC);
+
+    NewSize = CurrentSize +
+        (ACPI_ROOT_TABLE_SIZE_INCREMENT * sizeof (ACPI_TABLE_DESC));
 
     /* Create new array and copy the old array */
 
@@ -291,7 +298,7 @@ AcpiReallocateRootTable (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    ACPI_MEMCPY (Tables, AcpiGbl_RootTableList.Tables, NewSize);
+    ACPI_MEMCPY (Tables, AcpiGbl_RootTableList.Tables, CurrentSize);
 
     AcpiGbl_RootTableList.Size = AcpiGbl_RootTableList.Count;
     AcpiGbl_RootTableList.Tables = Tables;
