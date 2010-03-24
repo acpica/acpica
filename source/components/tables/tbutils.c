@@ -395,6 +395,43 @@ AcpiTbChecksum (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiTbCheckDsdtHeader
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Quick compare to check validity of the DSDT. This will detect
+ *              if the DSDT has been replaced from outside the OS and/or if
+ *              the DSDT header has been corrupted.
+ *
+ ******************************************************************************/
+
+void
+AcpiTbCheckDsdtHeader (
+    void)
+{
+
+    /* Compare original length and checksum to current values */
+
+    if (AcpiGbl_OriginalDsdtHeader.Length != AcpiGbl_DSDT->Pointer->Length ||
+        AcpiGbl_OriginalDsdtHeader.Checksum != AcpiGbl_DSDT->Pointer->Checksum)
+    {
+        ACPI_ERROR ((AE_INFO,
+            "The DSDT has been corrupted or replaced - old, new headers below"));
+        AcpiTbPrintTableHeader (0, &AcpiGbl_OriginalDsdtHeader);
+        AcpiTbPrintTableHeader (AcpiGbl_DSDT->Address, AcpiGbl_DSDT->Pointer);
+
+        /* Disable further error messages */
+
+        AcpiGbl_OriginalDsdtHeader.Length = AcpiGbl_DSDT->Pointer->Length;
+        AcpiGbl_OriginalDsdtHeader.Checksum = AcpiGbl_DSDT->Pointer->Checksum;
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiTbInstallTable
  *
  * PARAMETERS:  Address                 - Physical address of DSDT or FACS

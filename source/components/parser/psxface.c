@@ -334,6 +334,10 @@ AcpiPsExecuteMethod (
     ACPI_FUNCTION_TRACE (PsExecuteMethod);
 
 
+    /* Quick validation of DSDT header */
+
+    AcpiTbCheckDsdtHeader ();
+
     /* Validate the Info and method Node */
 
     if (!Info || !Info->ResolvedNode)

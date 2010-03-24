@@ -231,6 +231,10 @@ AcpiTbVerifyChecksum (
     UINT32                  Length);
 
 void
+AcpiTbCheckDsdtHeader (
+    void);
+
+void
 AcpiTbInstallTable (
     ACPI_PHYSICAL_ADDRESS   Address,
     char                    *Signature,
