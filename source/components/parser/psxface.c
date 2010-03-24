@@ -120,6 +120,7 @@
 #include "acparser.h"
 #include "acdispat.h"
 #include "acinterp.h"
+#include "actables.h"
 #include "amlcode.h"
 
 

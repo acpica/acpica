@@ -563,6 +563,17 @@ AcpiTbLoadNamespace (
     }
 
     /*
+     * Optionally copy the entire DSDT to local memory (instead of simply
+     * mapping it.) There are some BIOSs that corrupt or replace the original
+     * DSDT, creating the need for this option. Default is FALSE, do not copy
+     * the DSDT.
+     */
+    if (AcpiGbl_CopyDsdtLocally)
+    {
+        AcpiTbCopyDsdt (AcpiGbl_DSDT);
+    }
+
+    /*
      * Save the original DSDT header for detection of table corruption
      * and/or replacement of the DSDT from outside the OS.
      */

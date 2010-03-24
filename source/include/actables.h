@@ -235,6 +235,10 @@ AcpiTbCheckDsdtHeader (
     void);
 
 void
+AcpiTbCopyDsdt (
+    ACPI_TABLE_DESC         *TableDesc);
+
+void
 AcpiTbInstallTable (
     ACPI_PHYSICAL_ADDRESS   Address,
     char                    *Signature,

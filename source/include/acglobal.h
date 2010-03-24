@@ -191,6 +191,14 @@ UINT8       ACPI_INIT_GLOBAL (AcpiGbl_UseDefaultRegisterWidths, TRUE);
  */
 UINT8       ACPI_INIT_GLOBAL (AcpiGbl_EnableAmlDebugObject, FALSE);
 
+/*
+ * Optionally copy the entire DSDT to local memory (instead of simply
+ * mapping it.) There are some BIOSs that corrupt or replace the original
+ * DSDT, creating the need for this option. Default is FALSE, do not copy
+ * the DSDT.
+ */
+UINT8       ACPI_INIT_GLOBAL (AcpiGbl_CopyDsdtLocally, TRUE);
+
 
 /* AcpiGbl_FADT is a local copy of the FADT, converted to a common format. */
 
