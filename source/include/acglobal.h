@@ -197,7 +197,7 @@ UINT8       ACPI_INIT_GLOBAL (AcpiGbl_EnableAmlDebugObject, FALSE);
  * DSDT, creating the need for this option. Default is FALSE, do not copy
  * the DSDT.
  */
-UINT8       ACPI_INIT_GLOBAL (AcpiGbl_CopyDsdtLocally, TRUE);
+UINT8       ACPI_INIT_GLOBAL (AcpiGbl_CopyDsdtLocally, FALSE);
 
 
 /* AcpiGbl_FADT is a local copy of the FADT, converted to a common format. */
