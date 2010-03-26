@@ -419,7 +419,7 @@ AcpiTbCheckDsdtHeader (
     {
         ACPI_ERROR ((AE_INFO,
             "The DSDT has been corrupted or replaced - old, new headers below"));
-        AcpiTbPrintTableHeader (0, &AcpiGbl_OriginalDsdtHeader);
+        AcpiTbPrintTableHeader (AcpiGbl_DSDT->Address, &AcpiGbl_OriginalDsdtHeader);
         AcpiTbPrintTableHeader (AcpiGbl_DSDT->Address, AcpiGbl_DSDT->Pointer);
 
         /* Disable further error messages */

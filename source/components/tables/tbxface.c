@@ -548,8 +548,6 @@ AcpiTbLoadNamespace (
 
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
 
-    AcpiGbl_DSDT = &AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT];
-
     /*
      * Load the namespace. The DSDT is required, but any SSDT and
      * PSDT tables are optional. Verify the DSDT.
