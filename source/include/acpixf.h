@@ -464,34 +464,32 @@ AcpiGetEventStatus (
  * GPE Interfaces
  */
 ACPI_STATUS
-AcpiSetGpeType (
+AcpiSetGpe (
     ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,
-    UINT8                   Type);
+    UINT8                   Action);
 
 ACPI_STATUS
 AcpiEnableGpe (
     ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,
-    UINT32                  Flags);
+    UINT8                   GpeType);
 
 ACPI_STATUS
 AcpiDisableGpe (
     ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,
-    UINT32                  Flags);
+    UINT8                   GpeType);
 
 ACPI_STATUS
 AcpiClearGpe (
     ACPI_HANDLE             GpeDevice,
-    UINT32                  GpeNumber,
-    UINT32                  Flags);
+    UINT32                  GpeNumber);
 
 ACPI_STATUS
 AcpiGetGpeStatus (
     ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,
-    UINT32                  Flags,
     ACPI_EVENT_STATUS       *EventStatus);
 
 ACPI_STATUS
