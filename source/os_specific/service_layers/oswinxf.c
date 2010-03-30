@@ -336,7 +336,7 @@ AcpiOsTableOverride (
     *NewTable = OsGetTable (TableName);
     if (*NewTable)
     {
-        AcpiOsPrintf ("Table %s obtained from registry, %d bytes\n",
+        AcpiOsPrintf ("Table [%s] obtained from registry, %d bytes\n",
             TableName, (*NewTable)->Length);
     }
     else
