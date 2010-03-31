@@ -234,9 +234,9 @@ void
 AcpiTbCheckDsdtHeader (
     void);
 
-void
+ACPI_TABLE_HEADER *
 AcpiTbCopyDsdt (
-    ACPI_TABLE_DESC         *TableDesc);
+    UINT32                  TableIndex);
 
 void
 AcpiTbInstallTable (

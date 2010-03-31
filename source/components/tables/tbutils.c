@@ -414,18 +414,18 @@ AcpiTbCheckDsdtHeader (
 
     /* Compare original length and checksum to current values */
 
-    if (AcpiGbl_OriginalDsdtHeader.Length != AcpiGbl_DSDT->Pointer->Length ||
-        AcpiGbl_OriginalDsdtHeader.Checksum != AcpiGbl_DSDT->Pointer->Checksum)
+    if (AcpiGbl_OriginalDsdtHeader.Length != AcpiGbl_DSDT->Length ||
+        AcpiGbl_OriginalDsdtHeader.Checksum != AcpiGbl_DSDT->Checksum)
     {
         ACPI_ERROR ((AE_INFO,
             "The DSDT has been corrupted or replaced - old, new headers below"));
-        AcpiTbPrintTableHeader (AcpiGbl_DSDT->Address, &AcpiGbl_OriginalDsdtHeader);
-        AcpiTbPrintTableHeader (AcpiGbl_DSDT->Address, AcpiGbl_DSDT->Pointer);
+        AcpiTbPrintTableHeader (0, &AcpiGbl_OriginalDsdtHeader);
+        AcpiTbPrintTableHeader (0, AcpiGbl_DSDT);
 
         /* Disable further error messages */
 
-        AcpiGbl_OriginalDsdtHeader.Length = AcpiGbl_DSDT->Pointer->Length;
-        AcpiGbl_OriginalDsdtHeader.Checksum = AcpiGbl_DSDT->Pointer->Checksum;
+        AcpiGbl_OriginalDsdtHeader.Length = AcpiGbl_DSDT->Length;
+        AcpiGbl_OriginalDsdtHeader.Checksum = AcpiGbl_DSDT->Checksum;
     }
 }
 
@@ -444,19 +444,22 @@ AcpiTbCheckDsdtHeader (
  *
  ******************************************************************************/
 
-void
+ACPI_TABLE_HEADER *
 AcpiTbCopyDsdt (
-    ACPI_TABLE_DESC         *TableDesc)
+    UINT32                  TableIndex)
 {
     ACPI_TABLE_HEADER       *NewTable;
+    ACPI_TABLE_DESC         *TableDesc;
 
+
+    TableDesc = &AcpiGbl_RootTableList.Tables[TableIndex];
 
     NewTable = ACPI_ALLOCATE (TableDesc->Length);
     if (!NewTable)
     {
         ACPI_ERROR ((AE_INFO, "Could not copy DSDT of length 0x%X",
             TableDesc->Length));
-        return;
+        return (NULL);
     }
 
     ACPI_MEMCPY (NewTable, TableDesc->Pointer, TableDesc->Length);
@@ -467,6 +470,8 @@ AcpiTbCopyDsdt (
     ACPI_INFO ((AE_INFO,
         "Forced DSDT copy: length 0x%05X copied locally, original unmapped",
         NewTable->Length));
+
+    return (NewTable);
 }
 
 

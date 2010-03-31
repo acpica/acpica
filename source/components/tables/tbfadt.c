@@ -354,10 +354,6 @@ AcpiTbParseFadt (
 
     AcpiTbInstallTable ((ACPI_PHYSICAL_ADDRESS) AcpiGbl_FADT.XFacs,
         ACPI_SIG_FACS, ACPI_TABLE_INDEX_FACS);
-
-    /* Save DSDT pointer for simple access */
-
-    AcpiGbl_DSDT = &AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT];
 }
 
 

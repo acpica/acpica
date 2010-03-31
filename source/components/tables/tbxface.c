@@ -541,6 +541,7 @@ AcpiTbLoadNamespace (
 {
     ACPI_STATUS             Status;
     UINT32                  i;
+    ACPI_TABLE_HEADER       *NewDsdt;
 
 
     ACPI_FUNCTION_TRACE (TbLoadNamespace);
@@ -549,12 +550,20 @@ AcpiTbLoadNamespace (
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
 
     /*
+     * Save the DSDT pointer for simple access. This is the mapped memory
+     * address. We must take care here because the address of the .Tables
+     * array can change dynamically as tables are loaded at run-time
+     */
+    AcpiGbl_DSDT = AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT].Pointer;
+
+    /*
      * Load the namespace. The DSDT is required, but any SSDT and
      * PSDT tables are optional. Verify the DSDT.
      */
     if (!AcpiGbl_RootTableList.Count ||
-        !ACPI_COMPARE_NAME (&AcpiGbl_DSDT->Signature, ACPI_SIG_DSDT) ||
-         ACPI_FAILURE (AcpiTbVerifyTable (AcpiGbl_DSDT)))
+        !ACPI_COMPARE_NAME (AcpiGbl_DSDT->Signature, ACPI_SIG_DSDT) ||
+         ACPI_FAILURE (AcpiTbVerifyTable (
+            &AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT])))
     {
         Status = AE_NO_ACPI_TABLES;
         goto UnlockAndExit;
@@ -568,14 +577,18 @@ AcpiTbLoadNamespace (
      */
     if (AcpiGbl_CopyDsdtLocally)
     {
-        AcpiTbCopyDsdt (AcpiGbl_DSDT);
+        NewDsdt = AcpiTbCopyDsdt (ACPI_TABLE_INDEX_DSDT);
+        if (NewDsdt)
+        {
+            AcpiGbl_DSDT = NewDsdt;
+        }
     }
 
     /*
      * Save the original DSDT header for detection of table corruption
      * and/or replacement of the DSDT from outside the OS.
      */
-    ACPI_MEMCPY (&AcpiGbl_OriginalDsdtHeader, AcpiGbl_DSDT->Pointer,
+    ACPI_MEMCPY (&AcpiGbl_OriginalDsdtHeader, AcpiGbl_DSDT,
         sizeof (ACPI_TABLE_HEADER));
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
