@@ -557,7 +557,7 @@ AcpiTbLoadNamespace (
      */
     if (!AcpiGbl_RootTableList.Count ||
         !ACPI_COMPARE_NAME (
-            &AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT],
+            &(AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT].Signature),
             ACPI_SIG_DSDT) ||
          ACPI_FAILURE (AcpiTbVerifyTable (
             &AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT])))
