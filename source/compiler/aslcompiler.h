@@ -592,6 +592,10 @@ FlFileError (
     UINT32                  FileId,
     UINT8                   ErrorId);
 
+UINT32
+FlGetFileSize (
+    UINT32                  FileId);
+
 ACPI_STATUS
 FlReadFile (
     UINT32                  FileId,
