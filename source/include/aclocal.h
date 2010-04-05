@@ -307,16 +307,16 @@ typedef struct acpi_namespace_node
 #define ANOBJ_IS_REFERENCED             0x80    /* iASL only: Object was referenced */
 
 
-/* One internal RSDT for table management */
+/* Internal ACPI table management - master table list */
 
-typedef struct acpi_internal_rsdt
+typedef struct acpi_table_list
 {
-    ACPI_TABLE_DESC                 *Tables;
-    UINT32                          Count;
-    UINT32                          Size;
+    ACPI_TABLE_DESC                 *Tables;            /* Table descriptor array */
+    UINT32                          CurrentTableCount;  /* Tables currently in the array */
+    UINT32                          MaxTableCount;      /* Max tables array will hold */
     UINT8                           Flags;
 
-} ACPI_INTERNAL_RSDT;
+} ACPI_TABLE_LIST;
 
 /* Flags for above */
 
