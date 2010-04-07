@@ -243,11 +243,11 @@ ApCheckForPredefinedMethod (
         break;
 
 
-    case ACPI_EVENT_RESERVED_NAME:      /* _Lxx, _Exx, and _Qxx methods */
+    case ACPI_EVENT_RESERVED_NAME:      /* _Lxx/_Exx/_Wxx/_Qxx methods */
 
         Gbl_ReservedMethods++;
 
-        /* NumArguments must be zero for all _Lxx, _Exx, and _Qxx methods */
+        /* NumArguments must be zero for all _Lxx/_Exx/_Wxx/_Qxx methods */
 
         if (MethodInfo->NumArguments != 0)
         {
@@ -346,7 +346,7 @@ ApCheckPredefinedReturnValue (
     case ACPI_NOT_RESERVED_NAME:        /* No underscore or _Txx or _xxx name not matched */
     case ACPI_PREDEFINED_NAME:          /* Resource Name or reserved scope name */
     case ACPI_COMPILER_RESERVED_NAME:   /* A _Txx that was not emitted by compiler */
-    case ACPI_EVENT_RESERVED_NAME:      /* _Lxx, _Exx, and _Qxx methods */
+    case ACPI_EVENT_RESERVED_NAME:      /* _Lxx/_Exx/_Wxx/_Qxx methods */
 
         /* Just return, nothing to do */
         return;
@@ -435,7 +435,7 @@ ApCheckForPredefinedObject (
         /* Nothing to do */
         break;
 
-    case ACPI_EVENT_RESERVED_NAME:      /* _Lxx, _Exx, and _Qxx methods */
+    case ACPI_EVENT_RESERVED_NAME:      /* _Lxx/_Exx/_Wxx/_Qxx methods */
 
         /* These names must be control methods, by definition in ACPI spec */
 
@@ -531,7 +531,7 @@ ApCheckForPredefinedName (
         }
     }
 
-    /* Check for _Lxx, _Exx, _Qxx, _T_x. Warning if unknown predefined name */
+    /* Check for _Lxx/_Exx/_Wxx/_Qxx/_T_x. Warning if unknown predefined name */
 
     return (ApCheckForSpecialName (Op, Name));
 }
@@ -547,7 +547,7 @@ ApCheckForPredefinedName (
  * RETURN:      None
  *
  * DESCRIPTION: Check for the "special" predefined names -
- *              _Lxx, _Exx, _Qxx, and _T_x
+ *              _Lxx, _Exx, _Qxx, _Wxx, and _T_x
  *
  ******************************************************************************/
 
@@ -558,14 +558,16 @@ ApCheckForSpecialName (
 {
 
     /*
-     * Check for the "special" predefined names. We know the first char is an
-     * underscore already.
+     * Check for the "special" predefined names. We already know that the
+     * first character is an underscore.
      *   GPE:  _Lxx
      *   GPE:  _Exx
+     *   GPE:  _Wxx
      *   EC:   _Qxx
      */
     if ((Name[1] == 'L') ||
         (Name[1] == 'E') ||
+        (Name[1] == 'W') ||
         (Name[1] == 'Q'))
     {
         /* The next two characters must be hex digits */
