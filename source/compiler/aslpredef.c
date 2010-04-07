@@ -425,29 +425,46 @@ ApCheckForPredefinedObject (
      * or a predefined scope name
      */
     Index = ApCheckForPredefinedName (Op, Name);
-    if (Index > ACPI_VALID_RESERVED_NAME_MAX)
-    {
-        return;
-    }
 
-    /*
-     * We found a matching predefind name.
-     * Check if this predefined name requires input arguments
-     */
-    if (PredefinedNames[Index].Info.ParamCount > 0)
+    switch (Index)
     {
-        /*
-         * This predefined name must always be defined as a control
-         * method because it is required to have input arguments.
-         */
+    case ACPI_NOT_RESERVED_NAME:        /* No underscore or _Txx or _xxx name not matched */
+    case ACPI_PREDEFINED_NAME:          /* Resource Name or reserved scope name */
+    case ACPI_COMPILER_RESERVED_NAME:   /* A _Txx that was not emitted by compiler */
+
+        /* Nothing to do */
+        break;
+
+    case ACPI_EVENT_RESERVED_NAME:      /* _Lxx, _Exx, and _Qxx methods */
+
+        /* These names must be control methods, by definition in ACPI spec */
+
         AslError (ASL_ERROR, ASL_MSG_RESERVED_METHOD, Op,
-            "with arguments");
+            "with zero arguments");
+        break;
+
+    default: /* a real predefined ACPI name */
+
+        /*
+         * We found a matching predefind name.
+         * Check if this predefined name requires input arguments
+         */
+        if (PredefinedNames[Index].Info.ParamCount > 0)
+        {
+            /*
+             * This predefined name must always be defined as a control
+             * method because it is required to have input arguments.
+             */
+            AslError (ASL_ERROR, ASL_MSG_RESERVED_METHOD, Op,
+                "with arguments");
+        }
+
+        /* Typecheck the actual object, it is the next argument */
+
+        ApCheckObjectType (Op->Asl.Child->Asl.Next,
+            PredefinedNames[Index].Info.ExpectedBtypes);
+        break;
     }
-
-    /* Typecheck the actual object, it is the next argument */
-
-    ApCheckObjectType (Op->Asl.Child->Asl.Next,
-        PredefinedNames[Index].Info.ExpectedBtypes);
 }
 
 
