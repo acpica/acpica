@@ -200,6 +200,8 @@ ASL_EXTERN UINT8                    ASL_INIT_GLOBAL (Gbl_WarningLevel, ASL_WARNI
 #define HEX_OUTPUT_NONE         0
 #define HEX_OUTPUT_C            1
 #define HEX_OUTPUT_ASM          2
+#define HEX_OUTPUT_ASL          3
+
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_HexOutputFlag, HEX_OUTPUT_NONE);
 
 

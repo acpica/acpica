@@ -203,7 +203,7 @@ Options (
     printf ("\nAML Output Files:\n");
     printf ("  -s<a|c>        Create AML in assembler or C source file (*.asm or *.c)\n");
     printf ("  -i<a|c>        Create assembler or C include file (*.inc or *.h)\n");
-    printf ("  -t<a|c>        Create AML in assembler or C hex table (*.hex)\n");
+    printf ("  -t<a|c|s>      Create AML in assembler, C, or ASL hex table (*.hex)\n");
 
     printf ("\nAML Code Generation:\n");
     printf ("  -oa            Disable all optimizations (compatibility mode)\n");
@@ -739,6 +739,10 @@ AslDoOptions (
 
         case 'c':
             Gbl_HexOutputFlag = HEX_OUTPUT_C;
+            break;
+
+        case 's':
+            Gbl_HexOutputFlag = HEX_OUTPUT_ASL;
             break;
 
         default:
