@@ -612,6 +612,10 @@ typedef struct acpi_gpe_walk_info
 {
     ACPI_NAMESPACE_NODE             *GpeDevice;
     ACPI_GPE_BLOCK_INFO             *GpeBlock;
+    UINT16                          Count;
+    ACPI_OWNER_ID                   OwnerId;
+    BOOLEAN                         EnableThisGpe;
+    BOOLEAN                         ExecuteByOwnerId;
 
 } ACPI_GPE_WALK_INFO;
 

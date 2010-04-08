@@ -117,6 +117,7 @@
 #include "accommon.h"
 #include "acevents.h"
 #include "acnamesp.h"
+#include "acinterp.h"
 
 #define _COMPONENT          ACPI_EVENTS
         ACPI_MODULE_NAME    ("evgpeblk")
@@ -336,7 +337,9 @@ AcpiEvDeleteGpeHandlers (
  * DESCRIPTION: Called from AcpiWalkNamespace. Expects each object to be a
  *              control method under the _GPE portion of the namespace.
  *              Extract the name and GPE type from the object, saving this
- *              information for quick lookup during GPE dispatch
+ *              information for quick lookup during GPE dispatch. Allows a
+ *              per-OwnerId evaluation if ExecuteByOwnerId is TRUE in the
+ *              WalkInfo parameter block.
  *
  *              The name of each GPE control method is of the form:
  *              "_Lxx" or "_Exx", where:
@@ -344,18 +347,25 @@ AcpiEvDeleteGpeHandlers (
  *                  E      - means that the GPE is edge triggered
  *                  xx     - is the GPE number [in HEX]
  *
+ * If WalkInfo->ExecuteByOwnerId is TRUE, we only execute examine GPE methods
+ *    with that owner.
+ * If WalkInfo->EnableThisGpe is TRUE, the GPE that is referred to by a GPE
+ *    method is immediately enabled (Used for Load/LoadTable operators)
+ *
  ******************************************************************************/
 
 static ACPI_STATUS
 AcpiEvMatchGpeMethod (
     ACPI_HANDLE             ObjHandle,
     UINT32                  Level,
-    void                    *ObjDesc,
+    void                    *Context,
     void                    **ReturnValue)
 {
     ACPI_NAMESPACE_NODE     *MethodNode = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, ObjHandle);
-    ACPI_GPE_BLOCK_INFO     *GpeBlock = (void *) ObjDesc;
+    ACPI_GPE_WALK_INFO      *WalkInfo = ACPI_CAST_PTR (ACPI_GPE_WALK_INFO, Context);
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
+    ACPI_NAMESPACE_NODE     *GpeDevice;
+    ACPI_STATUS             Status;
     UINT32                  GpeNumber;
     char                    Name[ACPI_NAME_SIZE + 1];
     UINT8                   Type;
@@ -363,6 +373,14 @@ AcpiEvMatchGpeMethod (
 
     ACPI_FUNCTION_TRACE (EvMatchGpeMethod);
 
+
+    /* Check if requested OwnerId matches this OwnerId */
+
+    if ((WalkInfo->ExecuteByOwnerId) &&
+        (MethodNode->OwnerId != WalkInfo->OwnerId))
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
 
     /*
      * Match and decode the _Lxx and _Exx GPE method names
@@ -420,7 +438,7 @@ AcpiEvMatchGpeMethod (
 
     /* Ensure that we have a valid GPE number for this GPE block */
 
-    GpeEventInfo = AcpiEvLowGetGpeInfo (GpeNumber, GpeBlock);
+    GpeEventInfo = AcpiEvLowGetGpeInfo (GpeNumber, WalkInfo->GpeBlock);
     if (!GpeEventInfo)
     {
         /*
@@ -431,12 +449,67 @@ AcpiEvMatchGpeMethod (
         return_ACPI_STATUS (AE_OK);
     }
 
+    if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
+            ACPI_GPE_DISPATCH_HANDLER)
+    {
+        /* If there is already a handler, ignore this GPE method */
+
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
+            ACPI_GPE_DISPATCH_METHOD)
+    {
+        /*
+         * If there is already a method, ignore this method. But check
+         * for a type mismatch (if both the _Lxx AND _Exx exist)
+         */
+        if (Type != (GpeEventInfo->Flags & ACPI_GPE_XRUPT_TYPE_MASK))
+        {
+            ACPI_ERROR ((AE_INFO,
+                "For GPE 0x%.2X, found both _L%2.2X and _E%2.2X methods",
+                GpeNumber, GpeNumber, GpeNumber));
+        }
+        return_ACPI_STATUS (AE_OK);
+    }
+
     /*
      * Add the GPE information from above to the GpeEventInfo block for
      * use during dispatch of this GPE.
      */
-    GpeEventInfo->Flags = (UINT8) (Type | ACPI_GPE_DISPATCH_METHOD);
+    GpeEventInfo->Flags |= (UINT8) (Type | ACPI_GPE_DISPATCH_METHOD);
     GpeEventInfo->Dispatch.MethodNode = MethodNode;
+
+    /*
+     * Enable this GPE if requested. This only happens when during the
+     * execution of a Load or LoadTable operator. We have found a new
+     * GPE method and want to immediately enable the GPE if it is a
+     * runtime GPE.
+     */
+    if (WalkInfo->EnableThisGpe)
+    {
+        /* Ignore GPEs that can wake the system */
+
+        if (!(GpeEventInfo->Flags & ACPI_GPE_CAN_WAKE) ||
+            !AcpiGbl_LeaveWakeGpesDisabled)
+        {
+            WalkInfo->Count++;
+            GpeDevice = WalkInfo->GpeDevice;
+
+            if (GpeDevice == AcpiGbl_FadtGpeDevice)
+            {
+                GpeDevice = NULL;
+            }
+
+            Status = AcpiEnableGpe (GpeDevice, GpeNumber,
+                        ACPI_GPE_TYPE_RUNTIME);
+            if (ACPI_FAILURE (Status))
+            {
+                ACPI_EXCEPTION ((AE_INFO, Status,
+                    "Could not enable GPE 0x%02X", GpeNumber));
+            }
+        }
+    }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_LOAD,
         "Registered GPE method %s as GPE number 0x%.2X\n",
@@ -456,7 +529,14 @@ AcpiEvMatchGpeMethod (
  *
  * DESCRIPTION: Called from AcpiWalkNamespace. Expects each object to be a
  *              Device. Run the _PRW method. If present, extract the GPE
- *              number and mark the GPE as a CAN_WAKE GPE.
+ *              number and mark the GPE as a CAN_WAKE GPE. Allows a
+ *              per-OwnerId execution if ExecuteByOwnerId is TRUE in the
+ *              WalkInfo parameter block.
+ *
+ * If WalkInfo->ExecuteByOwnerId is TRUE, we only execute _PRWs with that
+ *    owner.
+ * If WalkInfo->GpeDevice is NULL, we execute every _PRW found. Otherwise,
+ *    we only execute _PRWs that refer to the input GpeDevice.
  *
  ******************************************************************************/
 
@@ -464,13 +544,14 @@ static ACPI_STATUS
 AcpiEvMatchPrwAndGpe (
     ACPI_HANDLE             ObjHandle,
     UINT32                  Level,
-    void                    *Info,
+    void                    *Context,
     void                    **ReturnValue)
 {
-    ACPI_GPE_WALK_INFO      *GpeInfo = (void *) Info;
+    ACPI_GPE_WALK_INFO      *WalkInfo = ACPI_CAST_PTR (ACPI_GPE_WALK_INFO, Context);
     ACPI_NAMESPACE_NODE     *GpeDevice;
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
     ACPI_NAMESPACE_NODE     *TargetGpeDevice;
+    ACPI_NAMESPACE_NODE     *PrwNode;
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
     ACPI_OPERAND_OBJECT     *PkgDesc;
     ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -483,12 +564,27 @@ AcpiEvMatchPrwAndGpe (
 
     /* Check for a _PRW method under this device */
 
-    Status = AcpiUtEvaluateObject (ObjHandle, METHOD_NAME__PRW,
+    Status = AcpiNsGetNode (ObjHandle, METHOD_NAME__PRW,
+                ACPI_NS_NO_UPSEARCH, &PrwNode);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* Check if requested OwnerId matches this OwnerId */
+
+    if ((WalkInfo->ExecuteByOwnerId) &&
+        (PrwNode->OwnerId != WalkInfo->OwnerId))
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* Execute the _PRW */
+
+    Status = AcpiUtEvaluateObject (PrwNode, NULL,
                 ACPI_BTYPE_PACKAGE, &PkgDesc);
     if (ACPI_FAILURE (Status))
     {
-        /* Ignore all errors from _PRW, we don't want to abort the walk */
-
         return_ACPI_STATUS (AE_OK);
     }
 
@@ -501,12 +597,12 @@ AcpiEvMatchPrwAndGpe (
 
     /* Extract pointers from the input context */
 
-    GpeDevice = GpeInfo->GpeDevice;
-    GpeBlock = GpeInfo->GpeBlock;
+    GpeDevice = WalkInfo->GpeDevice;
+    GpeBlock = WalkInfo->GpeBlock;
 
     /*
-     * The _PRW object must return a package, we are only interested in the
-     * first element
+     * The _PRW object must return a package, we are only interested
+     * in the first element
      */
     ObjDesc = PkgDesc->Package.Elements[0];
 
@@ -514,7 +610,11 @@ AcpiEvMatchPrwAndGpe (
     {
         /* Use FADT-defined GPE device (from definition of _PRW) */
 
-        TargetGpeDevice = AcpiGbl_FadtGpeDevice;
+        TargetGpeDevice = NULL;
+        if (GpeDevice)
+        {
+            TargetGpeDevice = AcpiGbl_FadtGpeDevice;
+        }
 
         /* Integer is the GPE number in the FADT described GPE blocks */
 
@@ -545,25 +645,41 @@ AcpiEvMatchPrwAndGpe (
         goto Cleanup;
     }
 
-    /*
-     * Is this GPE within this block?
-     *
-     * TRUE if and only if these conditions are true:
-     *     1) The GPE devices match.
-     *     2) The GPE index(number) is within the range of the Gpe Block
-     *          associated with the GPE device.
-     */
-    if (GpeDevice != TargetGpeDevice)
+    /* Get the GpeEventInfo for this GPE */
+
+    if (GpeDevice)
     {
-        goto Cleanup;
+        /*
+         * Is this GPE within this block?
+         *
+         * TRUE if and only if these conditions are true:
+         *     1) The GPE devices match.
+         *     2) The GPE index(number) is within the range of the Gpe Block
+         *          associated with the GPE device.
+         */
+        if (GpeDevice != TargetGpeDevice)
+        {
+            goto Cleanup;
+        }
+
+        GpeEventInfo = AcpiEvLowGetGpeInfo (GpeNumber, GpeBlock);
+    }
+    else
+    {
+        /* GpeDevice is NULL, just match the TargetDevice and GpeNumber */
+
+        GpeEventInfo = AcpiEvGetGpeEventInfo (TargetGpeDevice, GpeNumber);
     }
 
-    GpeEventInfo = AcpiEvLowGetGpeInfo (GpeNumber, GpeBlock);
     if (GpeEventInfo)
     {
-        /* This GPE can wake the system */
+        if (!(GpeEventInfo->Flags & ACPI_GPE_CAN_WAKE))
+        {
+            /* This GPE can wake the system */
 
-        GpeEventInfo->Flags |= ACPI_GPE_CAN_WAKE;
+            GpeEventInfo->Flags |= ACPI_GPE_CAN_WAKE;
+            WalkInfo->Count++;
+        }
     }
 
 Cleanup:
@@ -1041,6 +1157,7 @@ AcpiEvCreateGpeBlock (
 {
     ACPI_STATUS             Status;
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
+    ACPI_GPE_WALK_INFO      WalkInfo;
 
 
     ACPI_FUNCTION_TRACE (EvCreateGpeBlock);
@@ -1089,11 +1206,16 @@ AcpiEvCreateGpeBlock (
         return_ACPI_STATUS (Status);
     }
 
-    /* Find all GPE methods (_Lxx, _Exx) for this block */
+    /* Find all GPE methods (_Lxx or_Exx) for this block */
+
+    WalkInfo.GpeBlock = GpeBlock;
+    WalkInfo.GpeDevice = GpeDevice;
+    WalkInfo.EnableThisGpe = FALSE;
+    WalkInfo.ExecuteByOwnerId = FALSE;
 
     Status = AcpiNsWalkNamespace (ACPI_TYPE_METHOD, GpeDevice,
                 ACPI_UINT32_MAX, ACPI_NS_WALK_NO_UNLOCK,
-                AcpiEvMatchGpeMethod, NULL, GpeBlock, NULL);
+                AcpiEvMatchGpeMethod, NULL, &WalkInfo, NULL);
 
     /* Return the new block */
 
@@ -1113,6 +1235,128 @@ AcpiEvCreateGpeBlock (
 
     AcpiCurrentGpeCount += GpeBlock->GpeCount;
     return_ACPI_STATUS (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvUpdateGpes
+ *
+ * PARAMETERS:  TableOwnerId        - ID of the newly-loaded ACPI table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Check for new GPE methods (_Lxx/_Exx) made available as a
+ *              result of a Load() or LoadTable() operation. If new GPE
+ *              methods have been installed, register the new methods and
+ *              enable and runtime GPEs that are associated with them. Also,
+ *              run any newly loaded _PRW methods in order to discover any
+ *              new CAN_WAKE GPEs.
+ *
+ ******************************************************************************/
+
+void
+AcpiEvUpdateGpes (
+    ACPI_OWNER_ID           TableOwnerId)
+{
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo;
+    ACPI_GPE_BLOCK_INFO     *GpeBlock;
+    ACPI_GPE_WALK_INFO      WalkInfo;
+    ACPI_STATUS             Status = AE_OK;
+    UINT32                  NewWakeGpeCount = 0;
+
+
+    /* We will examine only _PRW/_Lxx/_Exx methods owned by this table */
+
+    WalkInfo.OwnerId = TableOwnerId;
+    WalkInfo.ExecuteByOwnerId = TRUE;
+    WalkInfo.Count = 0;
+
+    if (AcpiGbl_LeaveWakeGpesDisabled)
+    {
+        /*
+         * 1) Run any newly-loaded _PRW methods to find any GPEs that
+         * can now be marked as CAN_WAKE GPEs. Note: We must run the
+         * _PRW methods before we process the _Lxx/_Exx methods because
+         * we will enable all runtime GPEs associated with the new
+         * _Lxx/_Exx methods at the time we process those methods.
+         *
+         * Unlock interpreter so that we can run the _PRW methods.
+         */
+        WalkInfo.GpeBlock = NULL;
+        WalkInfo.GpeDevice = NULL;
+
+        AcpiExExitInterpreter ();
+
+        Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT,
+                    ACPI_UINT32_MAX, ACPI_NS_WALK_NO_UNLOCK,
+                    AcpiEvMatchPrwAndGpe, NULL, &WalkInfo, NULL);
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_EXCEPTION ((AE_INFO, Status,
+                "While executing _PRW methods"));
+        }
+
+        AcpiExEnterInterpreter ();
+        NewWakeGpeCount = WalkInfo.Count;
+    }
+
+    /*
+     * 2) Find any _Lxx/_Exx GPE methods that have just been loaded.
+     *
+     * Any GPEs that correspond to new _Lxx/_Exx methods and are not
+     * marked as CAN_WAKE are immediately enabled.
+     *
+     * Examine the namespace underneath each GpeDevice within the
+     * GpeBlock lists.
+     */
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    WalkInfo.Count = 0;
+    WalkInfo.EnableThisGpe = TRUE;
+
+    /* Walk the interrupt level descriptor list */
+
+    GpeXruptInfo = AcpiGbl_GpeXruptListHead;
+    while (GpeXruptInfo)
+    {
+        /* Walk all Gpe Blocks attached to this interrupt level */
+
+        GpeBlock = GpeXruptInfo->GpeBlockListHead;
+        while (GpeBlock)
+        {
+            WalkInfo.GpeBlock = GpeBlock;
+            WalkInfo.GpeDevice = GpeBlock->Node;
+
+            Status = AcpiNsWalkNamespace (ACPI_TYPE_METHOD,
+                        WalkInfo.GpeDevice, ACPI_UINT32_MAX,
+                        ACPI_NS_WALK_NO_UNLOCK, AcpiEvMatchGpeMethod,
+                        NULL, &WalkInfo, NULL);
+            if (ACPI_FAILURE (Status))
+            {
+                ACPI_EXCEPTION ((AE_INFO, Status,
+                    "While decoding _Lxx/_Exx methods"));
+            }
+
+            GpeBlock = GpeBlock->Next;
+        }
+
+        GpeXruptInfo = GpeXruptInfo->Next;
+    }
+
+    if (WalkInfo.Count || NewWakeGpeCount)
+    {
+        ACPI_INFO ((AE_INFO,
+            "Enabled %u new runtime GPEs, added %u new wakeup GPEs",
+            WalkInfo.Count, NewWakeGpeCount));
+    }
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    return;
 }
 
 
@@ -1139,7 +1383,7 @@ AcpiEvInitializeGpeBlock (
 {
     ACPI_STATUS             Status;
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
-    ACPI_GPE_WALK_INFO      GpeInfo;
+    ACPI_GPE_WALK_INFO      WalkInfo;
     UINT32                  WakeGpeCount;
     UINT32                  GpeEnabledCount;
     UINT32                  GpeIndex;
@@ -1170,12 +1414,13 @@ AcpiEvInitializeGpeBlock (
          * definition a wake GPE and will not be enabled while the machine
          * is running.
          */
-        GpeInfo.GpeBlock = GpeBlock;
-        GpeInfo.GpeDevice = GpeDevice;
+        WalkInfo.GpeBlock = GpeBlock;
+        WalkInfo.GpeDevice = GpeDevice;
+        WalkInfo.ExecuteByOwnerId = FALSE;
 
         Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT,
                     ACPI_UINT32_MAX, ACPI_NS_WALK_UNLOCK,
-                    AcpiEvMatchPrwAndGpe, NULL, &GpeInfo, NULL);
+                    AcpiEvMatchPrwAndGpe, NULL, &WalkInfo, NULL);
         if (ACPI_FAILURE (Status))
         {
             ACPI_EXCEPTION ((AE_INFO, Status, "While executing _PRW methods"));
@@ -1238,9 +1483,12 @@ AcpiEvInitializeGpeBlock (
         }
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INIT,
-        "Found %u Wake, Enabled %u Runtime GPEs in this block\n",
-        WakeGpeCount, GpeEnabledCount));
+    if (GpeEnabledCount || WakeGpeCount)
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_INIT,
+            "Enabled %u Runtime GPEs, added %u Wake GPEs in this block\n",
+            GpeEnabledCount, WakeGpeCount));
+    }
 
     return_ACPI_STATUS (AE_OK);
 }

@@ -219,6 +219,10 @@ AcpiEvCreateGpeBlock (
     UINT32                  InterruptNumber,
     ACPI_GPE_BLOCK_INFO     **ReturnGpeBlock);
 
+void
+AcpiEvUpdateGpes (
+    ACPI_OWNER_ID           TableOwnerId);
+
 ACPI_STATUS
 AcpiEvInitializeGpeBlock (
     ACPI_NAMESPACE_NODE     *GpeDevice,
