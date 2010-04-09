@@ -48,6 +48,8 @@ OBJS = \
 	evevent.o \
 	evgpe.o \
 	evgpeblk.o \
+	evgpeinit.o \
+	evgpeutil.o \
 	evmisc.o \
 	evregion.o \
 	evrgnini.o \
@@ -281,6 +283,12 @@ evgpe.o :           $(ACPICA_CORE)/events/evgpe.c
 	$(COMPILE)
 
 evgpeblk.o :        $(ACPICA_CORE)/events/evgpeblk.c
+	$(COMPILE)
+
+evgpeinit.o :       $(ACPICA_CORE)/events/evgpeinit.c
+	$(COMPILE)
+
+evgpeutil.o :       $(ACPICA_CORE)/events/evgpeutil.c
 	$(COMPILE)
 
 evmisc.o :          $(ACPICA_CORE)/events/evmisc.c
