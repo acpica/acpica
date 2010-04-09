@@ -192,6 +192,14 @@ SOURCE=..\..\source\COMPONENTS\EVENTS\evgpeblk.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\events\evgpeinit.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\events\evgpeutil.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\events\evmisc.c
 # End Source File
 # Begin Source File

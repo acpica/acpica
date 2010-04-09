@@ -700,6 +700,14 @@ InputName=evgpeblk
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source_linux\components\events\evgpeinit.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\components\events\evgpeutil.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\events\evmisc.c
 
 !IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
