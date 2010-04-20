@@ -351,7 +351,7 @@ ApCheckPredefinedReturnValue (
         /* Just return, nothing to do */
         return;
 
-    default: /* a real predefined ACPI name */
+    default: /* A standard predefined ACPI name */
 
         /* Exit if no return value expected */
 
@@ -433,37 +433,50 @@ ApCheckForPredefinedObject (
     case ACPI_COMPILER_RESERVED_NAME:   /* A _Txx that was not emitted by compiler */
 
         /* Nothing to do */
-        break;
+        return;
 
     case ACPI_EVENT_RESERVED_NAME:      /* _Lxx/_Exx/_Wxx/_Qxx methods */
 
-        /* These names must be control methods, by definition in ACPI spec */
-
+        /*
+         * These names must be control methods, by definition in ACPI spec.
+         * Also because they are defined to return no value. None of them
+         * require any arguments.
+         */
         AslError (ASL_ERROR, ASL_MSG_RESERVED_METHOD, Op,
             "with zero arguments");
-        break;
+        return;
 
-    default: /* a real predefined ACPI name */
+    default: /* A standard predefined ACPI name */
 
         /*
-         * We found a matching predefind name.
-         * Check if this predefined name requires input arguments
+         * If this predefined name requires input arguments, then
+         * it must be implemented as a control method
          */
         if (PredefinedNames[Index].Info.ParamCount > 0)
         {
-            /*
-             * This predefined name must always be defined as a control
-             * method because it is required to have input arguments.
-             */
             AslError (ASL_ERROR, ASL_MSG_RESERVED_METHOD, Op,
                 "with arguments");
+            return;
+        }
+
+        /*
+         * If no return value is expected from this predefined name, then
+         * it follows that it must be implemented as a control method
+         * (with zero args, because the args > 0 case was handled above)
+         * Examples are: _DIS, _INI, _IRC, _OFF, _ON, _PSx
+         */
+        if (!PredefinedNames[Index].Info.ExpectedBtypes)
+        {
+            AslError (ASL_ERROR, ASL_MSG_RESERVED_METHOD, Op,
+                "with zero arguments");
+            return;
         }
 
         /* Typecheck the actual object, it is the next argument */
 
         ApCheckObjectType (Op->Asl.Child->Asl.Next,
             PredefinedNames[Index].Info.ExpectedBtypes);
-        break;
+        return;
     }
 }
 
