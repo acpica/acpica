@@ -425,9 +425,12 @@ typedef enum
     ASL_MSG_ISA_ADDRESS,
     ASL_MSG_INVALID_MIN_MAX,
     ASL_MSG_INVALID_LENGTH,
+    ASL_MSG_INVALID_LENGTH_FIXED,
     ASL_MSG_INVALID_ALIGNMENT,
     ASL_MSG_INVALID_GRANULARITY,
-    ASL_MSG_INVALID_ACCESS_SIZE
+    ASL_MSG_INVALID_GRAN_FIXED,
+    ASL_MSG_INVALID_ACCESS_SIZE,
+    ASL_MSG_INVALID_ADDR_FLAGS
 
 } ASL_MESSAGE_IDS;
 
@@ -552,9 +555,12 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_ISA_ADDRESS */                "Maximum 10-bit ISA address (0x3FF)",
 /*    ASL_MSG_INVALID_MIN_MAX */            "Address Min is greater than Address Max",
 /*    ASL_MSG_INVALID_LENGTH */             "Length is larger than Min/Max window",
+/*    ASL_MSG_INVALID_LENGTH_FIXED */       "Length is not equal to fixed Min/Max window",
 /*    ASL_MSG_INVALID_ALIGNMENT */          "Invalid alignment value",
 /*    ASL_MSG_INVALID_GRANULARITY */        "Granularity must be zero or a power of two minus one",
-/*    ASL_MSG_INVALID_ACCESS_SIZE */        "Invalid AccessSize (Maximum is 4 - QWord access)"
+/*    ASL_MSG_INVALID_GRAN_FIXED */         "Granularity must be zero for fixed Min/Max",
+/*    ASL_MSG_INVALID_ACCESS_SIZE */        "Invalid AccessSize (Maximum is 4 - QWord access)",
+/*    ASL_MSG_INVALID_ADDR_FLAGS */         "Invalid combination of Length and Min/Max fixed flags"
 
 };
 

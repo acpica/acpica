@@ -756,6 +756,7 @@ UtDoConstant (
  */
 void
 RsSmallAddressCheck (
+    UINT8                   Type,
     UINT32                  Minimum,
     UINT32                  Maximum,
     UINT32                  Length,
@@ -771,6 +772,7 @@ RsLargeAddressCheck (
     UINT64                  Maximum,
     UINT64                  Length,
     UINT64                  Granularity,
+    UINT8                   Flags,
     ACPI_PARSE_OBJECT       *MinOp,
     ACPI_PARSE_OBJECT       *MaxOp,
     ACPI_PARSE_OBJECT       *LengthOp,

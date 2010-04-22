@@ -297,7 +297,7 @@ RsDoMemory24Descriptor (
 
     /* Validate the Min/Max/Len/Align values (Alignment==0 means 64K) */
 
-    RsSmallAddressCheck (
+    RsSmallAddressCheck (ACPI_RESOURCE_NAME_MEMORY24,
         Descriptor->Memory24.Minimum,
         Descriptor->Memory24.Maximum,
         Descriptor->Memory24.AddressLength,
@@ -405,7 +405,7 @@ RsDoMemory32Descriptor (
 
     /* Validate the Min/Max/Len/Align values */
 
-    RsSmallAddressCheck (
+    RsSmallAddressCheck (ACPI_RESOURCE_NAME_MEMORY32,
         Descriptor->Memory32.Minimum,
         Descriptor->Memory32.Maximum,
         Descriptor->Memory32.AddressLength,

@@ -342,6 +342,7 @@ RsDoQwordIoDescriptor (
         Descriptor->Address64.Maximum,
         Descriptor->Address64.AddressLength,
         Descriptor->Address64.Granularity,
+        Descriptor->Address64.Flags,
         MinOp, MaxOp, LengthOp, GranOp);
 
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS64) +
@@ -571,6 +572,7 @@ RsDoQwordMemoryDescriptor (
         Descriptor->Address64.Maximum,
         Descriptor->Address64.AddressLength,
         Descriptor->Address64.Granularity,
+        Descriptor->Address64.Flags,
         MinOp, MaxOp, LengthOp, GranOp);
 
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS64) +
@@ -782,6 +784,7 @@ RsDoQwordSpaceDescriptor (
         Descriptor->Address64.Maximum,
         Descriptor->Address64.AddressLength,
         Descriptor->Address64.Granularity,
+        Descriptor->Address64.Flags,
         MinOp, MaxOp, LengthOp, GranOp);
 
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS64) +

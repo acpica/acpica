@@ -294,6 +294,7 @@ RsDoExtendedIoDescriptor (
         Descriptor->ExtAddress64.Maximum,
         Descriptor->ExtAddress64.AddressLength,
         Descriptor->ExtAddress64.Granularity,
+        Descriptor->ExtAddress64.Flags,
         MinOp, MaxOp, LengthOp, GranOp);
 
     Rnode->BufferLength = sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) + StringLength;
@@ -474,6 +475,7 @@ RsDoExtendedMemoryDescriptor (
         Descriptor->ExtAddress64.Maximum,
         Descriptor->ExtAddress64.AddressLength,
         Descriptor->ExtAddress64.Granularity,
+        Descriptor->ExtAddress64.Flags,
         MinOp, MaxOp, LengthOp, GranOp);
 
     Rnode->BufferLength = sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) + StringLength;
@@ -636,6 +638,7 @@ RsDoExtendedSpaceDescriptor (
         Descriptor->ExtAddress64.Maximum,
         Descriptor->ExtAddress64.AddressLength,
         Descriptor->ExtAddress64.Granularity,
+        Descriptor->ExtAddress64.Flags,
         MinOp, MaxOp, LengthOp, GranOp);
 
     Rnode->BufferLength = sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) + StringLength;

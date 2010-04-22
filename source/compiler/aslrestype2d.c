@@ -351,6 +351,7 @@ RsDoDwordIoDescriptor (
         Descriptor->Address32.Maximum,
         Descriptor->Address32.AddressLength,
         Descriptor->Address32.Granularity,
+        Descriptor->Address32.Flags,
         MinOp, MaxOp, LengthOp, GranOp);
 
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS32) +
@@ -586,6 +587,7 @@ RsDoDwordMemoryDescriptor (
         Descriptor->Address32.Maximum,
         Descriptor->Address32.AddressLength,
         Descriptor->Address32.Granularity,
+        Descriptor->Address32.Flags,
         MinOp, MaxOp, LengthOp, GranOp);
 
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS32) +
@@ -803,6 +805,7 @@ RsDoDwordSpaceDescriptor (
         Descriptor->Address32.Maximum,
         Descriptor->Address32.AddressLength,
         Descriptor->Address32.Granularity,
+        Descriptor->Address32.Flags,
         MinOp, MaxOp, LengthOp, GranOp);
 
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS32) +

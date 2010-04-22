@@ -150,6 +150,7 @@
 
 void
 RsSmallAddressCheck (
+    UINT8                   Type,
     UINT32                  Minimum,
     UINT32                  Maximum,
     UINT32                  Length,
@@ -162,7 +163,7 @@ RsSmallAddressCheck (
 
     /* Special case for Memory24, values are compressed */
 
-    if (!AlignOp)
+    if (Type == ACPI_RESOURCE_NAME_MEMORY24)
     {
         if (!Alignment) /* Alignment==0 means 64K - no invalid alignment */
         {
@@ -174,15 +175,20 @@ RsSmallAddressCheck (
         Length *= 256;
     }
 
-    /* Basic checks on Min/Max/Length */
+    /* IO descriptor has different definition of min/max, don't check */
 
-    if (Minimum > Maximum)
+    if (Type != ACPI_RESOURCE_NAME_IO)
     {
-        AslError (ASL_ERROR, ASL_MSG_INVALID_MIN_MAX, MinOp, NULL);
-    }
-    else if (Length > (Maximum - Minimum + 1))
-    {
-        AslError (ASL_ERROR, ASL_MSG_INVALID_LENGTH, LengthOp, NULL);
+        /* Basic checks on Min/Max/Length */
+
+        if (Minimum > Maximum)
+        {
+            AslError (ASL_ERROR, ASL_MSG_INVALID_MIN_MAX, MinOp, NULL);
+        }
+        else if (Length > (Maximum - Minimum + 1))
+        {
+            AslError (ASL_ERROR, ASL_MSG_INVALID_LENGTH, LengthOp, NULL);
+        }
     }
 
     /* Check for invalid alignment value of zero */
@@ -190,19 +196,18 @@ RsSmallAddressCheck (
     if (!Alignment)
     {
         AslError (ASL_ERROR, ASL_MSG_INVALID_ALIGNMENT, AlignOp, NULL);
+        return;
     }
-    else
-    {
-        /* Addresses must be an exact multiple of the alignment value */
 
-        if (Minimum % Alignment)
-        {
-            AslError (ASL_ERROR, ASL_MSG_ALIGNMENT, MinOp, NULL);
-        }
-        if (Maximum % Alignment)
-        {
-            AslError (ASL_ERROR, ASL_MSG_ALIGNMENT, MaxOp, NULL);
-        }
+    /* Addresses must be an exact multiple of the alignment value */
+
+    if (Minimum % Alignment)
+    {
+        AslError (ASL_ERROR, ASL_MSG_ALIGNMENT, MinOp, NULL);
+    }
+    if (Maximum % Alignment)
+    {
+        AslError (ASL_ERROR, ASL_MSG_ALIGNMENT, MaxOp, NULL);
     }
 }
 
@@ -215,6 +220,8 @@ RsSmallAddressCheck (
  *              Maximum             - Address Max value
  *              Length              - Address range value
  *              Granularity         - Address granularity value
+ *              Flags               - General flags for address descriptors:
+ *                                    _MIF, _MAF, _DEC
  *              MinOp               - Original Op for Address Min
  *              MaxOp               - Original Op for Address Max
  *              LengthOp            - Original Op for address range
@@ -229,6 +236,13 @@ RsSmallAddressCheck (
  *                  QWordIo,    QWordMemory,    QWordSpace
  *                  ExtendedIo, ExtendedMemory, ExtendedSpace
  *
+ * _MIF flag set means that the minimum address is fixed and is not relocatable
+ * _MAF flag set means that the maximum address is fixed and is not relocatable
+ * Length of zero means that the record size is variable
+ *
+ * This function implements the LEN/MIF/MAF/MIN/MAX/GRA rules within Table 6-40
+ * of the ACPI 4.0a specification.
+ *
  ******************************************************************************/
 
 void
@@ -237,6 +251,7 @@ RsLargeAddressCheck (
     UINT64                  Maximum,
     UINT64                  Length,
     UINT64                  Granularity,
+    UINT8                   Flags,
     ACPI_PARSE_OBJECT       *MinOp,
     ACPI_PARSE_OBJECT       *MaxOp,
     ACPI_PARSE_OBJECT       *LengthOp,
@@ -248,39 +263,113 @@ RsLargeAddressCheck (
     if (Minimum > Maximum)
     {
         AslError (ASL_ERROR, ASL_MSG_INVALID_MIN_MAX, MinOp, NULL);
+        return;
     }
     else if (Length > (Maximum - Minimum + 1))
     {
         AslError (ASL_ERROR, ASL_MSG_INVALID_LENGTH, LengthOp, NULL);
+        return;
     }
 
-    /*
-     * A granularity of zero is not ACPI-defined, but in practice means
-     * "ignore the granularity".
-     */
+    /* If specified (non-zero), ensure granularity is a power-of-two minus one */
+
     if (Granularity)
     {
-        /* Ensure granularity is a power-of-two minus one */
-
         if ((Granularity + 1) &
              Granularity)
         {
             AslError (ASL_ERROR, ASL_MSG_INVALID_GRANULARITY, GranOp, NULL);
         }
+    }
 
-        /*
-         * Addresses must be a multiple of granularity. The granularity is
-         * defined by the ACPI specification to be a power-of-two minus one,
-         * therefore the granularity is a bitmask which can be used to easily
-         * validate the addresses.
-         */
-        if (Granularity & Minimum)
+    /*
+     * Check the various combinations of Length, MinFixed, and MaxFixed
+     */
+    if (Length)
+    {
+        /* Fixed non-zero length */
+
+        switch (Flags & (ACPI_RESOURCE_FLAG_MIF | ACPI_RESOURCE_FLAG_MAF))
         {
-            AslError (ASL_ERROR, ASL_MSG_ALIGNMENT, MinOp, NULL);
+        case 0:
+            /*
+             * Fixed length, variable locations (both _MIN and _MAX).
+             * Length must be a multiple of granularity
+             */
+            if (Granularity & Length)
+            {
+                AslError (ASL_ERROR, ASL_MSG_ALIGNMENT, LengthOp, NULL);
+            }
+            break;
+
+        case (ACPI_RESOURCE_FLAG_MIF | ACPI_RESOURCE_FLAG_MAF):
+
+            /* Fixed length, fixed location. Granularity must be zero */
+
+            if (Granularity != 0)
+            {
+                AslError (ASL_ERROR, ASL_MSG_INVALID_GRAN_FIXED, GranOp, NULL);
+            }
+
+            /* Length must be exactly the size of the min/max window */
+
+            if (Length != (Maximum - Minimum + 1))
+            {
+                AslError (ASL_ERROR, ASL_MSG_INVALID_LENGTH_FIXED, LengthOp, NULL);
+            }
+            break;
+
+        /* All other combinations are invalid */
+
+        case ACPI_RESOURCE_FLAG_MIF:
+        case ACPI_RESOURCE_FLAG_MAF:
+        default:
+            AslError (ASL_ERROR, ASL_MSG_INVALID_ADDR_FLAGS, LengthOp, NULL);
         }
-        if (Granularity & Maximum)
+    }
+    else
+    {
+        /* Variable length (length==0) */
+
+        switch (Flags & (ACPI_RESOURCE_FLAG_MIF | ACPI_RESOURCE_FLAG_MAF))
         {
-            AslError (ASL_ERROR, ASL_MSG_ALIGNMENT, MaxOp, NULL);
+        case 0:
+            /*
+             * Both _MIN and _MAX are variable.
+             * No additional requirements, just exit
+             */
+            break;
+
+        case ACPI_RESOURCE_FLAG_MIF:
+
+            /* _MIN is fixed. _MIN must be multiple of _GRA */
+
+            /*
+             * The granularity is defined by the ACPI specification to be a
+             * power-of-two minus one, therefore the granularity is a
+             * bitmask which can be used to easily validate the addresses.
+             */
+            if (Granularity & Minimum)
+            {
+                AslError (ASL_ERROR, ASL_MSG_ALIGNMENT, MinOp, NULL);
+            }
+            break;
+
+        case ACPI_RESOURCE_FLAG_MAF:
+
+            /* _MAX is fixed. _MAX must be multiple of _GRA */
+
+            if (Granularity & Maximum)
+            {
+                AslError (ASL_ERROR, ASL_MSG_ALIGNMENT, MaxOp, NULL);
+            }
+            break;
+
+        /* Both MIF/MAF set is invalid if length is zero */
+
+        case (ACPI_RESOURCE_FLAG_MIF | ACPI_RESOURCE_FLAG_MAF):
+        default:
+            AslError (ASL_ERROR, ASL_MSG_INVALID_ADDR_FLAGS, LengthOp, NULL);
         }
     }
 }

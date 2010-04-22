@@ -342,6 +342,7 @@ RsDoWordIoDescriptor (
         Descriptor->Address16.Maximum,
         Descriptor->Address16.AddressLength,
         Descriptor->Address16.Granularity,
+        Descriptor->Address16.Flags,
         MinOp, MaxOp, LengthOp, GranOp);
 
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS16) +
@@ -547,6 +548,7 @@ RsDoWordBusNumberDescriptor (
         Descriptor->Address16.Maximum,
         Descriptor->Address16.AddressLength,
         Descriptor->Address16.Granularity,
+        Descriptor->Address16.Flags,
         MinOp, MaxOp, LengthOp, GranOp);
 
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS16) +
@@ -763,6 +765,7 @@ RsDoWordSpaceDescriptor (
         Descriptor->Address16.Maximum,
         Descriptor->Address16.AddressLength,
         Descriptor->Address16.Granularity,
+        Descriptor->Address16.Flags,
         MinOp, MaxOp, LengthOp, GranOp);
 
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS16) +

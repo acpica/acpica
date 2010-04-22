@@ -434,7 +434,7 @@ RsDoIoDescriptor (
 
     /* Validate the Min/Max/Len/Align values */
 
-    RsSmallAddressCheck (
+    RsSmallAddressCheck (ACPI_RESOURCE_NAME_IO,
         Descriptor->Io.Minimum,
         Descriptor->Io.Maximum,
         Descriptor->Io.AddressLength,
