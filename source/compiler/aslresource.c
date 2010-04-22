@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: aslresource - Resource templates and descriptors
+ * Module Name: aslresource - Resource template/descriptor utilities
  *
  *****************************************************************************/
 
@@ -122,6 +122,168 @@
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslresource")
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    RsSmallAddressCheck
+ *
+ * PARAMETERS:  Minimum             - Address Min value
+ *              Maximum             - Address Max value
+ *              Length              - Address range value
+ *              Alignment           - Address alignment value
+ *              MinOp               - Original Op for Address Min
+ *              MaxOp               - Original Op for Address Max
+ *              LengthOp            - Original Op for address range
+ *              AlignOp             - Original Op for address alignment. If
+ *                                    NULL, means "zero value for alignment is
+ *                                    OK, and means 64K alignment" (for
+ *                                    Memory24 descriptor)
+ *
+ * RETURN:      None. Adds error messages to error log if necessary
+ *
+ * DESCRIPTION: Perform common value checks for "small" address descriptors.
+ *              Currently:
+ *                  Io, Memory24, Memory32
+ *
+ ******************************************************************************/
+
+void
+RsSmallAddressCheck (
+    UINT32                  Minimum,
+    UINT32                  Maximum,
+    UINT32                  Length,
+    UINT32                  Alignment,
+    ACPI_PARSE_OBJECT       *MinOp,
+    ACPI_PARSE_OBJECT       *MaxOp,
+    ACPI_PARSE_OBJECT       *LengthOp,
+    ACPI_PARSE_OBJECT       *AlignOp)
+{
+
+    /* Special case for Memory24, values are compressed */
+
+    if (!AlignOp)
+    {
+        if (!Alignment) /* Alignment==0 means 64K - no invalid alignment */
+        {
+            Alignment = ACPI_UINT16_MAX + 1;
+        }
+
+        Minimum <<= 8;
+        Maximum <<= 8;
+        Length *= 256;
+    }
+
+    /* Basic checks on Min/Max/Length */
+
+    if (Minimum > Maximum)
+    {
+        AslError (ASL_ERROR, ASL_MSG_INVALID_MIN_MAX, MinOp, NULL);
+    }
+    else if (Length > (Maximum - Minimum + 1))
+    {
+        AslError (ASL_ERROR, ASL_MSG_INVALID_LENGTH, LengthOp, NULL);
+    }
+
+    /* Check for invalid alignment value of zero */
+
+    if (!Alignment)
+    {
+        AslError (ASL_ERROR, ASL_MSG_INVALID_ALIGNMENT, AlignOp, NULL);
+    }
+    else
+    {
+        /* Addresses must be an exact multiple of the alignment value */
+
+        if (Minimum % Alignment)
+        {
+            AslError (ASL_ERROR, ASL_MSG_ALIGNMENT, MinOp, NULL);
+        }
+        if (Maximum % Alignment)
+        {
+            AslError (ASL_ERROR, ASL_MSG_ALIGNMENT, MaxOp, NULL);
+        }
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    RsLargeAddressCheck
+ *
+ * PARAMETERS:  Minimum             - Address Min value
+ *              Maximum             - Address Max value
+ *              Length              - Address range value
+ *              Granularity         - Address granularity value
+ *              MinOp               - Original Op for Address Min
+ *              MaxOp               - Original Op for Address Max
+ *              LengthOp            - Original Op for address range
+ *              GranOp              - Original Op for address granularity
+ *
+ * RETURN:      None. Adds error messages to error log if necessary
+ *
+ * DESCRIPTION: Perform common value checks for "large" address descriptors.
+ *              Currently:
+ *                  WordIo,     WordBusNumber,  WordSpace
+ *                  DWordIo,    DWordMemory,    DWordSpace
+ *                  QWordIo,    QWordMemory,    QWordSpace
+ *                  ExtendedIo, ExtendedMemory, ExtendedSpace
+ *
+ ******************************************************************************/
+
+void
+RsLargeAddressCheck (
+    UINT64                  Minimum,
+    UINT64                  Maximum,
+    UINT64                  Length,
+    UINT64                  Granularity,
+    ACPI_PARSE_OBJECT       *MinOp,
+    ACPI_PARSE_OBJECT       *MaxOp,
+    ACPI_PARSE_OBJECT       *LengthOp,
+    ACPI_PARSE_OBJECT       *GranOp)
+{
+
+    /* Basic checks on Min/Max/Length */
+
+    if (Minimum > Maximum)
+    {
+        AslError (ASL_ERROR, ASL_MSG_INVALID_MIN_MAX, MinOp, NULL);
+    }
+    else if (Length > (Maximum - Minimum + 1))
+    {
+        AslError (ASL_ERROR, ASL_MSG_INVALID_LENGTH, LengthOp, NULL);
+    }
+
+    /*
+     * A granularity of zero is not ACPI-defined, but in practice means
+     * "ignore the granularity".
+     */
+    if (Granularity)
+    {
+        /* Ensure granularity is a power-of-two minus one */
+
+        if ((Granularity + 1) &
+             Granularity)
+        {
+            AslError (ASL_ERROR, ASL_MSG_INVALID_GRANULARITY, GranOp, NULL);
+        }
+
+        /*
+         * Addresses must be a multiple of granularity. The granularity is
+         * defined by the ACPI specification to be a power-of-two minus one,
+         * therefore the granularity is a bitmask which can be used to easily
+         * validate the addresses.
+         */
+        if (Granularity & Minimum)
+        {
+            AslError (ASL_ERROR, ASL_MSG_ALIGNMENT, MinOp, NULL);
+        }
+        if (Granularity & Maximum)
+        {
+            AslError (ASL_ERROR, ASL_MSG_ALIGNMENT, MaxOp, NULL);
+        }
+    }
+}
 
 
 /*******************************************************************************

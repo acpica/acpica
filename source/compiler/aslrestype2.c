@@ -117,6 +117,7 @@
 
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
+#include "amlcode.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslrestype2")
@@ -180,6 +181,10 @@ RsDoDwordIoDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *MinOp = NULL;
+    ACPI_PARSE_OBJECT       *MaxOp = NULL;
+    ACPI_PARSE_OBJECT       *LengthOp = NULL;
+    ACPI_PARSE_OBJECT       *GranOp = NULL;
     ASL_RESOURCE_NODE       *Rnode;
     UINT16                  StringLength = 0;
     UINT32                  OptionIndex = 0;
@@ -252,6 +257,7 @@ RsDoDwordIoDescriptor (
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Granularity));
+            GranOp = InitializerOp;
             break;
 
         case 6: /* Address Min */
@@ -260,6 +266,7 @@ RsDoDwordIoDescriptor (
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Minimum));
+            MinOp = InitializerOp;
             break;
 
         case 7: /* Address Max */
@@ -268,6 +275,7 @@ RsDoDwordIoDescriptor (
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Maximum));
+            MaxOp = InitializerOp;
             break;
 
         case 8: /* Translation Offset */
@@ -284,6 +292,7 @@ RsDoDwordIoDescriptor (
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.AddressLength));
+            LengthOp = InitializerOp;
             break;
 
         case 10: /* ResSourceIndex [Optional Field - BYTE] */
@@ -366,6 +375,15 @@ RsDoDwordIoDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
+    /* Validate the Min/Max/Len/Gran values */
+
+    RsLargeAddressCheck (
+        Descriptor->Address32.Minimum,
+        Descriptor->Address32.Maximum,
+        Descriptor->Address32.AddressLength,
+        Descriptor->Address32.Granularity,
+        MinOp, MaxOp, LengthOp, GranOp);
+
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS32) +
                             OptionIndex + StringLength;
     return (Rnode);
@@ -393,6 +411,10 @@ RsDoDwordMemoryDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *MinOp = NULL;
+    ACPI_PARSE_OBJECT       *MaxOp = NULL;
+    ACPI_PARSE_OBJECT       *LengthOp = NULL;
+    ACPI_PARSE_OBJECT       *GranOp = NULL;
     ASL_RESOURCE_NODE       *Rnode;
     UINT8                   *OptionalFields;
     UINT16                  StringLength = 0;
@@ -473,6 +495,7 @@ RsDoDwordMemoryDescriptor (
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Granularity));
+            GranOp = InitializerOp;
             break;
 
         case 7: /* Min Address */
@@ -481,6 +504,7 @@ RsDoDwordMemoryDescriptor (
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Minimum));
+            MinOp = InitializerOp;
             break;
 
         case 8: /* Max Address */
@@ -489,6 +513,7 @@ RsDoDwordMemoryDescriptor (
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Maximum));
+            MaxOp = InitializerOp;
             break;
 
         case 9: /* Translation Offset */
@@ -505,6 +530,7 @@ RsDoDwordMemoryDescriptor (
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.AddressLength));
+            LengthOp = InitializerOp;
             break;
 
         case 11: /* ResSourceIndex [Optional Field - BYTE] */
@@ -584,6 +610,15 @@ RsDoDwordMemoryDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
+    /* Validate the Min/Max/Len/Gran values */
+
+    RsLargeAddressCheck (
+        Descriptor->Address32.Minimum,
+        Descriptor->Address32.Maximum,
+        Descriptor->Address32.AddressLength,
+        Descriptor->Address32.Granularity,
+        MinOp, MaxOp, LengthOp, GranOp);
+
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS32) +
                             OptionIndex + StringLength;
     return (Rnode);
@@ -611,6 +646,10 @@ RsDoDwordSpaceDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *MinOp = NULL;
+    ACPI_PARSE_OBJECT       *MaxOp = NULL;
+    ACPI_PARSE_OBJECT       *LengthOp = NULL;
+    ACPI_PARSE_OBJECT       *GranOp = NULL;
     ASL_RESOURCE_NODE       *Rnode;
     UINT8                   *OptionalFields;
     UINT16                  StringLength = 0;
@@ -687,6 +726,7 @@ RsDoDwordSpaceDescriptor (
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Granularity));
+            GranOp = InitializerOp;
             break;
 
         case 7: /* Min Address */
@@ -695,6 +735,7 @@ RsDoDwordSpaceDescriptor (
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Minimum));
+            MinOp = InitializerOp;
             break;
 
         case 8: /* Max Address */
@@ -703,6 +744,7 @@ RsDoDwordSpaceDescriptor (
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Maximum));
+            MaxOp = InitializerOp;
             break;
 
         case 9: /* Translation Offset */
@@ -719,6 +761,7 @@ RsDoDwordSpaceDescriptor (
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.AddressLength));
+            LengthOp = InitializerOp;
             break;
 
         case 11: /* ResSourceIndex [Optional Field - BYTE] */
@@ -784,6 +827,15 @@ RsDoDwordSpaceDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
+    /* Validate the Min/Max/Len/Gran values */
+
+    RsLargeAddressCheck (
+        Descriptor->Address32.Minimum,
+        Descriptor->Address32.Maximum,
+        Descriptor->Address32.AddressLength,
+        Descriptor->Address32.Granularity,
+        MinOp, MaxOp, LengthOp, GranOp);
+
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS32) +
                             OptionIndex + StringLength;
     return (Rnode);
@@ -811,6 +863,10 @@ RsDoExtendedIoDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *MinOp = NULL;
+    ACPI_PARSE_OBJECT       *MaxOp = NULL;
+    ACPI_PARSE_OBJECT       *LengthOp = NULL;
+    ACPI_PARSE_OBJECT       *GranOp = NULL;
     ASL_RESOURCE_NODE       *Rnode;
     UINT16                  StringLength = 0;
     UINT32                  i;
@@ -875,6 +931,7 @@ RsDoExtendedIoDescriptor (
             Descriptor->ExtAddress64.Granularity = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Granularity));
+            GranOp = InitializerOp;
            break;
 
         case 6: /* Address Min */
@@ -882,6 +939,7 @@ RsDoExtendedIoDescriptor (
             Descriptor->ExtAddress64.Minimum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Minimum));
+            MinOp = InitializerOp;
             break;
 
         case 7: /* Address Max */
@@ -889,6 +947,7 @@ RsDoExtendedIoDescriptor (
             Descriptor->ExtAddress64.Maximum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Maximum));
+            MaxOp = InitializerOp;
             break;
 
         case 8: /* Translation Offset */
@@ -903,6 +962,7 @@ RsDoExtendedIoDescriptor (
             Descriptor->ExtAddress64.AddressLength = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.AddressLength));
+            LengthOp = InitializerOp;
             break;
 
         case 10: /* Type-Specific Attributes */
@@ -940,6 +1000,15 @@ RsDoExtendedIoDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
+    /* Validate the Min/Max/Len/Gran values */
+
+    RsLargeAddressCheck (
+        Descriptor->ExtAddress64.Minimum,
+        Descriptor->ExtAddress64.Maximum,
+        Descriptor->ExtAddress64.AddressLength,
+        Descriptor->ExtAddress64.Granularity,
+        MinOp, MaxOp, LengthOp, GranOp);
+
     Rnode->BufferLength = sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) + StringLength;
     return (Rnode);
 }
@@ -966,6 +1035,10 @@ RsDoExtendedMemoryDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *MinOp = NULL;
+    ACPI_PARSE_OBJECT       *MaxOp = NULL;
+    ACPI_PARSE_OBJECT       *LengthOp = NULL;
+    ACPI_PARSE_OBJECT       *GranOp = NULL;
     ASL_RESOURCE_NODE       *Rnode;
     UINT16                  StringLength = 0;
     UINT32                  i;
@@ -1037,6 +1110,7 @@ RsDoExtendedMemoryDescriptor (
             Descriptor->ExtAddress64.Granularity = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Granularity));
+            GranOp = InitializerOp;
             break;
 
         case 7: /* Min Address */
@@ -1044,6 +1118,7 @@ RsDoExtendedMemoryDescriptor (
             Descriptor->ExtAddress64.Minimum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Minimum));
+            MinOp = InitializerOp;
             break;
 
         case 8: /* Max Address */
@@ -1051,6 +1126,7 @@ RsDoExtendedMemoryDescriptor (
             Descriptor->ExtAddress64.Maximum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Maximum));
+            MaxOp = InitializerOp;
             break;
 
         case 9: /* Translation Offset */
@@ -1065,6 +1141,7 @@ RsDoExtendedMemoryDescriptor (
             Descriptor->ExtAddress64.AddressLength = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.AddressLength));
+            LengthOp = InitializerOp;
             break;
 
         case 11: /* Type-Specific Attributes */
@@ -1103,6 +1180,15 @@ RsDoExtendedMemoryDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
+    /* Validate the Min/Max/Len/Gran values */
+
+    RsLargeAddressCheck (
+        Descriptor->ExtAddress64.Minimum,
+        Descriptor->ExtAddress64.Maximum,
+        Descriptor->ExtAddress64.AddressLength,
+        Descriptor->ExtAddress64.Granularity,
+        MinOp, MaxOp, LengthOp, GranOp);
+
     Rnode->BufferLength = sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) + StringLength;
     return (Rnode);
 }
@@ -1129,6 +1215,10 @@ RsDoExtendedSpaceDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *MinOp = NULL;
+    ACPI_PARSE_OBJECT       *MaxOp = NULL;
+    ACPI_PARSE_OBJECT       *LengthOp = NULL;
+    ACPI_PARSE_OBJECT       *GranOp = NULL;
     ASL_RESOURCE_NODE       *Rnode;
     UINT16                  StringLength = 0;
     UINT32                  i;
@@ -1197,6 +1287,7 @@ RsDoExtendedSpaceDescriptor (
             Descriptor->ExtAddress64.Granularity = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Granularity));
+            GranOp = InitializerOp;
             break;
 
         case 7: /* Min Address */
@@ -1204,6 +1295,7 @@ RsDoExtendedSpaceDescriptor (
             Descriptor->ExtAddress64.Minimum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Minimum));
+            MinOp = InitializerOp;
             break;
 
         case 8: /* Max Address */
@@ -1211,6 +1303,7 @@ RsDoExtendedSpaceDescriptor (
             Descriptor->ExtAddress64.Maximum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Maximum));
+            MaxOp = InitializerOp;
             break;
 
         case 9: /* Translation Offset */
@@ -1225,6 +1318,7 @@ RsDoExtendedSpaceDescriptor (
             Descriptor->ExtAddress64.AddressLength = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.AddressLength));
+            LengthOp = InitializerOp;
             break;
 
         case 11: /* Type-Specific Attributes */
@@ -1247,6 +1341,15 @@ RsDoExtendedSpaceDescriptor (
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
+
+    /* Validate the Min/Max/Len/Gran values */
+
+    RsLargeAddressCheck (
+        Descriptor->ExtAddress64.Minimum,
+        Descriptor->ExtAddress64.Maximum,
+        Descriptor->ExtAddress64.AddressLength,
+        Descriptor->ExtAddress64.Granularity,
+        MinOp, MaxOp, LengthOp, GranOp);
 
     Rnode->BufferLength = sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) + StringLength;
     return (Rnode);
@@ -1274,6 +1377,10 @@ RsDoQwordIoDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *MinOp = NULL;
+    ACPI_PARSE_OBJECT       *MaxOp = NULL;
+    ACPI_PARSE_OBJECT       *LengthOp = NULL;
+    ACPI_PARSE_OBJECT       *GranOp = NULL;
     ASL_RESOURCE_NODE       *Rnode;
     UINT8                   *OptionalFields;
     UINT16                  StringLength = 0;
@@ -1345,13 +1452,15 @@ RsDoQwordIoDescriptor (
             Descriptor->Address64.Granularity = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Granularity));
-           break;
+            GranOp = InitializerOp;
+            break;
 
         case 6: /* Address Min */
 
             Descriptor->Address64.Minimum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Minimum));
+            MinOp = InitializerOp;
             break;
 
         case 7: /* Address Max */
@@ -1359,6 +1468,7 @@ RsDoQwordIoDescriptor (
             Descriptor->Address64.Maximum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Maximum));
+            MaxOp = InitializerOp;
             break;
 
         case 8: /* Translation Offset */
@@ -1373,6 +1483,7 @@ RsDoQwordIoDescriptor (
             Descriptor->Address64.AddressLength = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.AddressLength));
+            LengthOp = InitializerOp;
             break;
 
         case 10: /* ResSourceIndex [Optional Field - BYTE] */
@@ -1451,6 +1562,15 @@ RsDoQwordIoDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
+    /* Validate the Min/Max/Len/Gran values */
+
+    RsLargeAddressCheck (
+        Descriptor->Address64.Minimum,
+        Descriptor->Address64.Maximum,
+        Descriptor->Address64.AddressLength,
+        Descriptor->Address64.Granularity,
+        MinOp, MaxOp, LengthOp, GranOp);
+
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS64) +
                             OptionIndex + StringLength;
     return (Rnode);
@@ -1478,6 +1598,10 @@ RsDoQwordMemoryDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *MinOp = NULL;
+    ACPI_PARSE_OBJECT       *MaxOp = NULL;
+    ACPI_PARSE_OBJECT       *LengthOp = NULL;
+    ACPI_PARSE_OBJECT       *GranOp = NULL;
     ASL_RESOURCE_NODE       *Rnode;
     UINT8                   *OptionalFields;
     UINT16                  StringLength = 0;
@@ -1556,6 +1680,7 @@ RsDoQwordMemoryDescriptor (
             Descriptor->Address64.Granularity = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Granularity));
+            GranOp = InitializerOp;
             break;
 
         case 7: /* Min Address */
@@ -1563,6 +1688,7 @@ RsDoQwordMemoryDescriptor (
             Descriptor->Address64.Minimum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Minimum));
+            MinOp = InitializerOp;
             break;
 
         case 8: /* Max Address */
@@ -1570,6 +1696,7 @@ RsDoQwordMemoryDescriptor (
             Descriptor->Address64.Maximum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Maximum));
+            MaxOp = InitializerOp;
             break;
 
         case 9: /* Translation Offset */
@@ -1584,6 +1711,7 @@ RsDoQwordMemoryDescriptor (
             Descriptor->Address64.AddressLength = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.AddressLength));
+            LengthOp = InitializerOp;
             break;
 
         case 11: /* ResSourceIndex [Optional Field - BYTE] */
@@ -1663,6 +1791,15 @@ RsDoQwordMemoryDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
+    /* Validate the Min/Max/Len/Gran values */
+
+    RsLargeAddressCheck (
+        Descriptor->Address64.Minimum,
+        Descriptor->Address64.Maximum,
+        Descriptor->Address64.AddressLength,
+        Descriptor->Address64.Granularity,
+        MinOp, MaxOp, LengthOp, GranOp);
+
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS64) +
                             OptionIndex + StringLength;
     return (Rnode);
@@ -1690,6 +1827,10 @@ RsDoQwordSpaceDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *MinOp = NULL;
+    ACPI_PARSE_OBJECT       *MaxOp = NULL;
+    ACPI_PARSE_OBJECT       *LengthOp = NULL;
+    ACPI_PARSE_OBJECT       *GranOp = NULL;
     ASL_RESOURCE_NODE       *Rnode;
     UINT8                   *OptionalFields;
     UINT16                  StringLength = 0;
@@ -1765,6 +1906,7 @@ RsDoQwordSpaceDescriptor (
             Descriptor->Address64.Granularity = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Granularity));
+            GranOp = InitializerOp;
             break;
 
         case 7: /* Min Address */
@@ -1772,6 +1914,7 @@ RsDoQwordSpaceDescriptor (
             Descriptor->Address64.Minimum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Minimum));
+            MinOp = InitializerOp;
             break;
 
         case 8: /* Max Address */
@@ -1779,6 +1922,7 @@ RsDoQwordSpaceDescriptor (
             Descriptor->Address64.Maximum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Maximum));
+            MaxOp = InitializerOp;
             break;
 
         case 9: /* Translation Offset */
@@ -1793,6 +1937,7 @@ RsDoQwordSpaceDescriptor (
             Descriptor->Address64.AddressLength = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.AddressLength));
+            LengthOp = InitializerOp;
             break;
 
         case 11: /* ResSourceIndex [Optional Field - BYTE] */
@@ -1857,6 +2002,15 @@ RsDoQwordSpaceDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
+    /* Validate the Min/Max/Len/Gran values */
+
+    RsLargeAddressCheck (
+        Descriptor->Address64.Minimum,
+        Descriptor->Address64.Maximum,
+        Descriptor->Address64.AddressLength,
+        Descriptor->Address64.Granularity,
+        MinOp, MaxOp, LengthOp, GranOp);
+
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS64) +
                             OptionIndex + StringLength;
     return (Rnode);
@@ -1884,6 +2038,10 @@ RsDoWordIoDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *MinOp = NULL;
+    ACPI_PARSE_OBJECT       *MaxOp = NULL;
+    ACPI_PARSE_OBJECT       *LengthOp = NULL;
+    ACPI_PARSE_OBJECT       *GranOp = NULL;
     ASL_RESOURCE_NODE       *Rnode;
     UINT8                   *OptionalFields;
     UINT16                  StringLength = 0;
@@ -1955,6 +2113,7 @@ RsDoWordIoDescriptor (
             Descriptor->Address16.Granularity = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Granularity));
+            GranOp = InitializerOp;
             break;
 
         case 6: /* Address Min */
@@ -1962,6 +2121,7 @@ RsDoWordIoDescriptor (
             Descriptor->Address16.Minimum = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Minimum));
+            MinOp = InitializerOp;
             break;
 
         case 7: /* Address Max */
@@ -1969,6 +2129,7 @@ RsDoWordIoDescriptor (
             Descriptor->Address16.Maximum = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Maximum));
+            MaxOp = InitializerOp;
             break;
 
         case 8: /* Translation Offset */
@@ -1983,6 +2144,7 @@ RsDoWordIoDescriptor (
             Descriptor->Address16.AddressLength = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
                  CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.AddressLength));
+            LengthOp = InitializerOp;
             break;
 
         case 10: /* ResSourceIndex [Optional Field - BYTE] */
@@ -2061,6 +2223,15 @@ RsDoWordIoDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
+    /* Validate the Min/Max/Len/Gran values */
+
+    RsLargeAddressCheck (
+        Descriptor->Address16.Minimum,
+        Descriptor->Address16.Maximum,
+        Descriptor->Address16.AddressLength,
+        Descriptor->Address16.Granularity,
+        MinOp, MaxOp, LengthOp, GranOp);
+
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS16) +
                             OptionIndex + StringLength;
     return (Rnode);
@@ -2088,6 +2259,10 @@ RsDoWordBusNumberDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *MinOp = NULL;
+    ACPI_PARSE_OBJECT       *MaxOp = NULL;
+    ACPI_PARSE_OBJECT       *LengthOp = NULL;
+    ACPI_PARSE_OBJECT       *GranOp = NULL;
     ASL_RESOURCE_NODE       *Rnode;
     UINT8                   *OptionalFields;
     UINT16                  StringLength = 0;
@@ -2153,6 +2328,7 @@ RsDoWordBusNumberDescriptor (
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Granularity));
+            GranOp = InitializerOp;
             break;
 
         case 5: /* Min Address */
@@ -2161,6 +2337,7 @@ RsDoWordBusNumberDescriptor (
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Minimum));
+            MinOp = InitializerOp;
             break;
 
         case 6: /* Max Address */
@@ -2169,6 +2346,7 @@ RsDoWordBusNumberDescriptor (
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Maximum));
+            MaxOp = InitializerOp;
             break;
 
         case 7: /* Translation Offset */
@@ -2185,6 +2363,7 @@ RsDoWordBusNumberDescriptor (
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
                  CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.AddressLength));
+            LengthOp = InitializerOp;
             break;
 
         case 9: /* ResSourceIndex [Optional Field - BYTE] */
@@ -2249,6 +2428,15 @@ RsDoWordBusNumberDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
+    /* Validate the Min/Max/Len/Gran values */
+
+    RsLargeAddressCheck (
+        Descriptor->Address16.Minimum,
+        Descriptor->Address16.Maximum,
+        Descriptor->Address16.AddressLength,
+        Descriptor->Address16.Granularity,
+        MinOp, MaxOp, LengthOp, GranOp);
+
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS16) +
                             OptionIndex + StringLength;
     return (Rnode);
@@ -2276,6 +2464,10 @@ RsDoWordSpaceDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *MinOp = NULL;
+    ACPI_PARSE_OBJECT       *MaxOp = NULL;
+    ACPI_PARSE_OBJECT       *LengthOp = NULL;
+    ACPI_PARSE_OBJECT       *GranOp = NULL;
     ASL_RESOURCE_NODE       *Rnode;
     UINT8                   *OptionalFields;
     UINT16                  StringLength = 0;
@@ -2352,6 +2544,7 @@ RsDoWordSpaceDescriptor (
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Granularity));
+            GranOp = InitializerOp;
             break;
 
         case 7: /* Min Address */
@@ -2360,6 +2553,7 @@ RsDoWordSpaceDescriptor (
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Minimum));
+            MinOp = InitializerOp;
             break;
 
         case 8: /* Max Address */
@@ -2368,6 +2562,7 @@ RsDoWordSpaceDescriptor (
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Maximum));
+            MaxOp = InitializerOp;
             break;
 
         case 9: /* Translation Offset */
@@ -2384,6 +2579,7 @@ RsDoWordSpaceDescriptor (
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.AddressLength));
+            LengthOp = InitializerOp;
             break;
 
         case 11: /* ResSourceIndex [Optional Field - BYTE] */
@@ -2447,6 +2643,15 @@ RsDoWordSpaceDescriptor (
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
+
+    /* Validate the Min/Max/Len/Gran values */
+
+    RsLargeAddressCheck (
+        Descriptor->Address16.Minimum,
+        Descriptor->Address16.Maximum,
+        Descriptor->Address16.AddressLength,
+        Descriptor->Address16.Granularity,
+        MinOp, MaxOp, LengthOp, GranOp);
 
     Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS16) +
                             OptionIndex + StringLength;
@@ -2833,6 +3038,12 @@ RsDoGeneralRegisterDescriptor (
             Descriptor->GenericReg.AccessSize = (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_ACCESSSIZE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GenericReg.AccessSize));
+
+            if (Descriptor->GenericReg.AccessSize > AML_FIELD_ACCESS_QWORD)
+            {
+                AslError (ASL_ERROR, ASL_MSG_INVALID_ACCESS_SIZE,
+                    InitializerOp, NULL);
+            }
             break;
 
         case 5: /* ResourceTag (ACPI 3.0b) */
@@ -2850,5 +3061,4 @@ RsDoGeneralRegisterDescriptor (
     }
     return (Rnode);
 }
-
 

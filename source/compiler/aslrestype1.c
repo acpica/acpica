@@ -330,6 +330,7 @@ RsDoFixedIoDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *AddressOp = NULL;
     ASL_RESOURCE_NODE       *Rnode;
     UINT32                  i;
 
@@ -353,6 +354,7 @@ RsDoFixedIoDescriptor (
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_BASEADDRESS,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (FixedIo.Address));
+            AddressOp = InitializerOp;
             break;
 
         case 1: /* Length */
@@ -375,6 +377,13 @@ RsDoFixedIoDescriptor (
         }
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
+    }
+
+    /* Error checks */
+
+    if (Descriptor->FixedIo.Address > 0x03FF)
+    {
+        AslError (ASL_WARNING, ASL_MSG_ISA_ADDRESS, AddressOp, NULL);
     }
 
     return (Rnode);
@@ -402,6 +411,10 @@ RsDoIoDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *MinOp = NULL;
+    ACPI_PARSE_OBJECT       *MaxOp = NULL;
+    ACPI_PARSE_OBJECT       *LengthOp = NULL;
+    ACPI_PARSE_OBJECT       *AlignOp = NULL;
     ASL_RESOURCE_NODE       *Rnode;
     UINT32                  i;
 
@@ -432,6 +445,7 @@ RsDoIoDescriptor (
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Io.Minimum));
+            MinOp = InitializerOp;
             break;
 
         case 2: /* Max Address */
@@ -440,6 +454,7 @@ RsDoIoDescriptor (
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Io.Maximum));
+            MaxOp = InitializerOp;
             break;
 
         case 3: /* Alignment */
@@ -448,6 +463,7 @@ RsDoIoDescriptor (
                 (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_ALIGNMENT,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Io.Alignment));
+            AlignOp = InitializerOp;
             break;
 
         case 4: /* Length */
@@ -456,6 +472,7 @@ RsDoIoDescriptor (
                 (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Io.AddressLength));
+            LengthOp = InitializerOp;
             break;
 
         case 5: /* Name */
@@ -471,6 +488,15 @@ RsDoIoDescriptor (
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
+
+    /* Validate the Min/Max/Len/Align values */
+
+    RsSmallAddressCheck (
+        Descriptor->Io.Minimum,
+        Descriptor->Io.Maximum,
+        Descriptor->Io.AddressLength,
+        Descriptor->Io.Alignment,
+        MinOp, MaxOp, LengthOp, AlignOp);
 
     return (Rnode);
 }
@@ -720,6 +746,10 @@ RsDoMemory24Descriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *MinOp = NULL;
+    ACPI_PARSE_OBJECT       *MaxOp = NULL;
+    ACPI_PARSE_OBJECT       *LengthOp = NULL;
+    ACPI_PARSE_OBJECT       *AlignOp = NULL;
     ASL_RESOURCE_NODE       *Rnode;
     UINT32                  i;
 
@@ -749,6 +779,7 @@ RsDoMemory24Descriptor (
             Descriptor->Memory24.Minimum = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Memory24.Minimum));
+            MinOp = InitializerOp;
             break;
 
         case 2: /* Max Address */
@@ -756,6 +787,7 @@ RsDoMemory24Descriptor (
             Descriptor->Memory24.Maximum = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Memory24.Maximum));
+            MaxOp = InitializerOp;
             break;
 
         case 3: /* Alignment */
@@ -763,6 +795,7 @@ RsDoMemory24Descriptor (
             Descriptor->Memory24.Alignment = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_ALIGNMENT,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Memory24.Alignment));
+            AlignOp = InitializerOp;
             break;
 
         case 4: /* Length */
@@ -770,6 +803,7 @@ RsDoMemory24Descriptor (
             Descriptor->Memory24.AddressLength = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Memory24.AddressLength));
+            LengthOp = InitializerOp;
             break;
 
         case 5: /* Name */
@@ -785,6 +819,15 @@ RsDoMemory24Descriptor (
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
+
+    /* Validate the Min/Max/Len/Align values (Alignment==0 means 64K) */
+
+    RsSmallAddressCheck (
+        Descriptor->Memory24.Minimum,
+        Descriptor->Memory24.Maximum,
+        Descriptor->Memory24.AddressLength,
+        Descriptor->Memory24.Alignment,
+        MinOp, MaxOp, LengthOp, NULL);
 
     return (Rnode);
 }
@@ -811,6 +854,10 @@ RsDoMemory32Descriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *MinOp = NULL;
+    ACPI_PARSE_OBJECT       *MaxOp = NULL;
+    ACPI_PARSE_OBJECT       *LengthOp = NULL;
+    ACPI_PARSE_OBJECT       *AlignOp = NULL;
     ASL_RESOURCE_NODE       *Rnode;
     UINT32                  i;
 
@@ -840,6 +887,7 @@ RsDoMemory32Descriptor (
             Descriptor->Memory32.Minimum = (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Memory32.Minimum));
+            MinOp = InitializerOp;
             break;
 
         case 2: /* Max Address */
@@ -847,6 +895,7 @@ RsDoMemory32Descriptor (
             Descriptor->Memory32.Maximum = (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Memory32.Maximum));
+            MaxOp = InitializerOp;
             break;
 
         case 3: /* Alignment */
@@ -854,6 +903,7 @@ RsDoMemory32Descriptor (
             Descriptor->Memory32.Alignment = (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_ALIGNMENT,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Memory32.Alignment));
+            AlignOp = InitializerOp;
             break;
 
         case 4: /* Length */
@@ -861,6 +911,7 @@ RsDoMemory32Descriptor (
             Descriptor->Memory32.AddressLength = (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Memory32.AddressLength));
+            LengthOp = InitializerOp;
             break;
 
         case 5: /* Name */
@@ -876,6 +927,15 @@ RsDoMemory32Descriptor (
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
+
+    /* Validate the Min/Max/Len/Align values */
+
+    RsSmallAddressCheck (
+        Descriptor->Memory32.Minimum,
+        Descriptor->Memory32.Maximum,
+        Descriptor->Memory32.AddressLength,
+        Descriptor->Memory32.Alignment,
+        MinOp, MaxOp, LengthOp, AlignOp);
 
     return (Rnode);
 }
@@ -1027,6 +1087,7 @@ RsDoStartDependentDescriptor (
             break;
 
         default:
+
             NextRnode = RsDoOneResourceDescriptor  (InitializerOp,
                         CurrentByteOffset, &State);
 
@@ -1036,7 +1097,6 @@ RsDoStartDependentDescriptor (
              * must keep track of the offset of not only each descriptor, but each
              * element (field) within each descriptor as well.
              */
-
             CurrentByteOffset += RsLinkDescriptorChain (&PreviousRnode,
                                     NextRnode);
             break;

@@ -754,6 +754,28 @@ UtDoConstant (
 /*
  * aslresource - Resource template generation utilities
  */
+void
+RsSmallAddressCheck (
+    UINT32                  Minimum,
+    UINT32                  Maximum,
+    UINT32                  Length,
+    UINT32                  Alignment,
+    ACPI_PARSE_OBJECT       *MinOp,
+    ACPI_PARSE_OBJECT       *MaxOp,
+    ACPI_PARSE_OBJECT       *LengthOp,
+    ACPI_PARSE_OBJECT       *AlignOp);
+
+void
+RsLargeAddressCheck (
+    UINT64                  Minimum,
+    UINT64                  Maximum,
+    UINT64                  Length,
+    UINT64                  Granularity,
+    ACPI_PARSE_OBJECT       *MinOp,
+    ACPI_PARSE_OBJECT       *MaxOp,
+    ACPI_PARSE_OBJECT       *LengthOp,
+    ACPI_PARSE_OBJECT       *GranOp);
+
 ASL_RESOURCE_NODE *
 RsAllocateResourceNode (
     UINT32                  Size);
