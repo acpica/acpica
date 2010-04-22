@@ -35,7 +35,12 @@ OBJS = \
 	aslpredef.o \
 	aslresource.o \
 	aslrestype1.o \
+	aslrestype1i.o \
 	aslrestype2.o \
+	aslrestype2d.o \
+	aslrestype2e.o \
+	aslrestype2q.o \
+	aslrestype2w.o \
 	aslstartup.o \
 	aslstubs.o \
 	asltransform.o \
@@ -221,7 +226,22 @@ aslresource.o :     $(ASL_COMPILER)/aslresource.c
 aslrestype1.o :     $(ASL_COMPILER)/aslrestype1.c
 	$(COMPILE)
 
+aslrestype1i.o :    $(ASL_COMPILER)/aslrestype1i.c
+	$(COMPILE)
+
 aslrestype2.o :     $(ASL_COMPILER)/aslrestype2.c
+	$(COMPILE)
+
+aslrestype2d.o :    $(ASL_COMPILER)/aslrestype2d.c
+	$(COMPILE)
+
+aslrestype2e.o :    $(ASL_COMPILER)/aslrestype2e.c
+	$(COMPILE)
+
+aslrestype2q.o :    $(ASL_COMPILER)/aslrestype2q.c
+	$(COMPILE)
+
+aslrestype2w.o :    $(ASL_COMPILER)/aslrestype2w.c
 	$(COMPILE)
 
 aslstartup.o :      $(ASL_COMPILER)/aslstartup.c

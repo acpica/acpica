@@ -290,7 +290,27 @@ SOURCE=..\..\source\compiler\aslrestype1.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\compiler\aslrestype1i.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\compiler\aslrestype2.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslrestype2d.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslrestype2e.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslrestype2q.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslrestype2w.c
 # End Source File
 # Begin Source File
 

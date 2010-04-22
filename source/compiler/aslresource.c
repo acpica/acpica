@@ -288,6 +288,37 @@ RsLargeAddressCheck (
 
 /*******************************************************************************
  *
+ * FUNCTION:    RsGetStringDataLength
+ *
+ * PARAMETERS:  InitializerOp     - Start of a subtree of init nodes
+ *
+ * RETURN:      Valid string length if a string node is found (otherwise 0)
+ *
+ * DESCRIPTION: In a list of peer nodes, find the first one that contains a
+ *              string and return the length of the string.
+ *
+ ******************************************************************************/
+
+UINT16
+RsGetStringDataLength (
+    ACPI_PARSE_OBJECT       *InitializerOp)
+{
+
+    while (InitializerOp)
+    {
+        if (InitializerOp->Asl.ParseOpcode == PARSEOP_STRING_LITERAL)
+        {
+            return ((UINT16) (strlen (InitializerOp->Asl.Value.String) + 1));
+        }
+        InitializerOp = ASL_GET_PEER_NODE (InitializerOp);
+    }
+
+    return 0;
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    RsAllocateResourceNode
  *
  * PARAMETERS:  Size        - Size of node in bytes
