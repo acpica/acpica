@@ -191,12 +191,11 @@ RsSmallAddressCheck (
         }
     }
 
-    /* Check for invalid alignment value of zero */
+    /* Alignment of zero is not in ACPI spec, but is used to mean byte acc */
 
     if (!Alignment)
     {
-        AslError (ASL_ERROR, ASL_MSG_INVALID_ALIGNMENT, AlignOp, NULL);
-        return;
+        Alignment = 1;
     }
 
     /* Addresses must be an exact multiple of the alignment value */
@@ -241,7 +240,7 @@ RsSmallAddressCheck (
  * Length of zero means that the record size is variable
  *
  * This function implements the LEN/MIF/MAF/MIN/MAX/GRA rules within Table 6-40
- * of the ACPI 4.0a specification.
+ * of the ACPI 4.0a specification. Added 04/2010.
  *
  ******************************************************************************/
 
@@ -279,6 +278,7 @@ RsLargeAddressCheck (
              Granularity)
         {
             AslError (ASL_ERROR, ASL_MSG_INVALID_GRANULARITY, GranOp, NULL);
+            return;
         }
     }
 
@@ -357,11 +357,11 @@ RsLargeAddressCheck (
 
         case ACPI_RESOURCE_FLAG_MAF:
 
-            /* _MAX is fixed. _MAX must be multiple of _GRA */
+            /* _MAX is fixed. (_MAX + 1) must be multiple of _GRA */
 
-            if (Granularity & Maximum)
+            if (Granularity & (Maximum + 1))
             {
-                AslError (ASL_ERROR, ASL_MSG_ALIGNMENT, MaxOp, NULL);
+                AslError (ASL_ERROR, ASL_MSG_ALIGNMENT, MaxOp, "-1");
             }
             break;
 
