@@ -55,6 +55,8 @@ echo
 mkdir -p unixtemp/generate
 mkdir -p unixtemp/tools
 mkdir -p unixtemp/os_specific
+mkdir -p unixtemp/tests
+mkdir -p unixtemp/tests/misc
 
 #
 # Copy ACPICA subsystem source code
@@ -76,6 +78,11 @@ cp -r source/tools/acpisrc unixtemp/tools
 cp -r source/tools/acpiexec unixtemp/tools
 cp -r source/tools/acpixtract unixtemp/tools
 cp -r source/tools/examples unixtemp/tools
+
+#
+# iASL/ACPICA miscellaneous tests (not full test suites)
+#
+cp -r tests/misc/*.asl unixtemp/tests/misc
 
 #
 # OS-specific interfaces
@@ -151,6 +158,8 @@ mkdir wintemp
 mkdir wintemp/libraries
 mkdir -p wintemp/generate/msvc
 mkdir -p wintemp/source/os_specific/service_layers
+mkdir -p wintemp/tests
+mkdir -p wintemp/tests/misc
 
 #
 # Copy ACPICA subsystem source code
@@ -169,6 +178,11 @@ cp -r source/compiler wintemp/source/compiler
 # ACPICA tools source
 #
 cp -r source/tools wintemp/source/tools
+
+#
+# iASL/ACPICA miscellaneous tests (not full test suites)
+#
+cp -r tests/misc/*.asl wintemp/tests/misc
 
 #
 # Copy all OS-specific interfaces
@@ -234,6 +248,7 @@ cp libraries/iasl.exe wintemp
 cp libraries/acpixtract.exe wintemp
 cp libraries/acpiexec.exe wintemp
 cp libraries/acpisrc.exe wintemp
+cp tests/misc/badcode.asl wintemp
 
 #
 # Build release package
