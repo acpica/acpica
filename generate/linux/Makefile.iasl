@@ -1,11 +1,11 @@
  
 PROG=	iasl
 SRCS=	\
+	aslcompilerparse.c \
+	aslcompilerlex.c \
 	aslanalyze.c \
 	aslcodegen.c \
 	aslcompile.c \
-	aslcompilerlex.c \
-	aslcompilerparse.c \
 	aslerror.c \
 	aslfiles.c \
 	aslfold.c \
