@@ -196,7 +196,7 @@ DefinitionBlock (
         }
     }
 
-    Name (_NPK, Package (8)
+    Name (_NPK, Package ()
     {
         0x1111,
         0x2222,
@@ -247,11 +247,11 @@ DefinitionBlock (
             Name (PRT0, ResourceTemplate ()
             {
                 WordBusNumber (ResourceConsumer, MinFixed, MaxFixed, SubDecode,
-                    0xFFF0, // Address Space Granularity
-                    0xFFF1, // Address Range Minimum
-                    0xFFF2, // Address Range Maximum
-                    0xFFF3, // Address Translation Offset
-                    0xFFF4,,,)
+                    0x0000, // Address Space Granularity
+                    0xFFF2, // Address Range Minimum
+                    0xFFF3, // Address Range Maximum
+                    0x0032, // Address Translation Offset
+                    0x0002,,,)
                 WordBusNumber (ResourceProducer, MinFixed, MaxFixed, PosDecode,
                     0x0000, // Address Space Granularity
                     0x0000, // Address Range Minimum
@@ -264,7 +264,7 @@ DefinitionBlock (
                     0xBFFF, // Address Range Maximum
                     0x0000, // Address Translation Offset
                     0x2000,,,)
-                IO (Decode16, 0x0CF8, 0x0CF8, 0x01, 0x08)
+                IO (Decode16, 0x0CF8, 0x0CFF, 0x01, 0x08)
                 WordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
                     0x0000, // Address Space Granularity
                     0x0000, // Address Range Minimum
@@ -349,15 +349,15 @@ DefinitionBlock (
                     0x0000000000000000, // Address Translation Offset
                     0x00000000FFD00000, // Address Length
                     0x0000000000000000) // Type Specific Attributes
-                IO (Decode16, 0x0010, 0x0010, 0x01, 0x10)
-                IO (Decode16, 0x0090, 0x0090, 0x01, 0x10)
+                IO (Decode16, 0x0010, 0x0020, 0x01, 0x10)
+                IO (Decode16, 0x0090, 0x00A0, 0x01, 0x10)
                 FixedIO (0x0061, 0x01)
                 IRQNoFlags () {2}
                 DMA (Compatibility, BusMaster, Transfer8_16) {4}
                 DMA (Compatibility, BusMaster, Transfer8) {2,5,7}
                 Memory32Fixed (ReadWrite, 0x00100000, 0x00000000)
                 Memory32Fixed (ReadOnly, 0xFFFE0000, 0x00020000)
-                Memory32 (ReadOnly, 0xFFFE0000, 0x00020000, 0x00000004, 0x00000200)
+                Memory32 (ReadOnly, 0x00020000, 0xFFFE0000, 0x00000004, 0x00000200)
                 Memory24 (ReadOnly, 0x1111, 0x2222, 0x0004, 0x0200)
                 Interrupt (ResourceConsumer, Level, ActiveLow, Exclusive, 0xE, "\\_SB_.TEST")
                 {
@@ -407,22 +407,22 @@ DefinitionBlock (
             {
                 StartDependentFn (0x01, 0x02)
                 {
-                    IO (Decode16, 0x03F8, 0x03F8, 0x01, 0x08)
+                    IO (Decode16, 0x03D8, 0x03F8, 0x01, 0x08)
                     IRQNoFlags () {4}
                 }
                 StartDependentFn (0x02, 0x01)
                 {
-                    IO (Decode16, 0x03E8, 0x03E8, 0x01, 0x08)
+                    IO (Decode16, 0x03D8, 0x03E8, 0x01, 0x08)
                     IRQNoFlags () {4}
                 }
                 StartDependentFn (0x00, 0x02)
                 {
-                    IO (Decode16, 0x02F8, 0x02F8, 0x01, 0x08)
+                    IO (Decode16, 0x02E8, 0x02F8, 0x01, 0x08)
                     IRQNoFlags () {3}
                 }
                 StartDependentFn (0x00, 0x02)
                 {
-                    IO (Decode16, 0x02E8, 0x02E8, 0x01, 0x08)
+                    IO (Decode16, 0x02D8, 0x02E8, 0x01, 0x08)
                     IRQNoFlags () {3}
                 }
                 StartDependentFn (0x02, 0x00)
@@ -715,11 +715,11 @@ DefinitionBlock (
                             MinFixed,                       // Range is notfixed
                             MaxFixed,                       // Range is not fixed
                             SubDecode,                      // SubDecode
-                            0xfff0,                           // Granularity
+                            0x0000,                           // Granularity
                             0xfff1,                           // Min
                             0xfff2,                           // Max
-                            0xfff3,                           // Translation
-                            0xfff4,,,                         // Range Length
+                            0x0032,                           // Translation
+                            0x0002,,,                         // Range Length
                             BUS0
                     ) } )// PRT0
 
