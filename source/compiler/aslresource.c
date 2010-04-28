@@ -161,6 +161,11 @@ RsSmallAddressCheck (
     ACPI_PARSE_OBJECT       *AlignOp)
 {
 
+    if (Gbl_NoResourceChecking)
+    {
+        return;
+    }
+
     /* Special case for Memory24, values are compressed */
 
     if (Type == ACPI_RESOURCE_NAME_MEMORY24)
@@ -256,6 +261,11 @@ RsLargeAddressCheck (
     ACPI_PARSE_OBJECT       *LengthOp,
     ACPI_PARSE_OBJECT       *GranOp)
 {
+
+    if (Gbl_NoResourceChecking)
+    {
+        return;
+    }
 
     /* Basic checks on Min/Max/Length */
 

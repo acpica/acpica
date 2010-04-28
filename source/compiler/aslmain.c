@@ -167,7 +167,7 @@ AslDoResponseFile (
 
 
 #define ASL_TOKEN_SEPARATORS    " \t\n"
-#define ASL_SUPPORTED_OPTIONS   "@:2b:cd^e:fgh^i^I:l^o:p:r:s:t:v:w:x:"
+#define ASL_SUPPORTED_OPTIONS   "@:2b:c:d^e:fgh^i^I:l^no:p:r:s:t:v:w:x:"
 
 
 /*******************************************************************************
@@ -210,6 +210,7 @@ Options (
     printf ("  -of            Disable constant folding\n");
     printf ("  -oi            Disable integer optimization to Zero/One/Ones\n");
     printf ("  -on            Disable named reference string optimization\n");
+    printf ("  -cr            Disable Resource Descriptor error checking\n");
     printf ("  -r<Revision>   Override table header Revision (1-255)\n");
 
     printf ("\nListings:\n");
@@ -264,7 +265,7 @@ HelpMessage (
     printf ("  -b<p|t|b>      Create compiler debug/trace file (*.txt)\n");
     printf ("                   Types: Parse/Tree/Both\n");
     printf ("  -f             Ignore errors, force creation of AML output file(s)\n");
-    printf ("  -c             Parse only, no output generation\n");
+    printf ("  -n             Parse only, no output generation\n");
     printf ("  -ot            Display compile times\n");
     printf ("  -x<level>      Set debug level for trace output\n");
 }
@@ -507,10 +508,16 @@ AslDoOptions (
 
 
     case 'c':
+        switch (AcpiGbl_Optarg[0])
+        {
+        case 'r':
+            Gbl_NoResourceChecking = TRUE;
+            break;
 
-        /* Parse only */
-
-        Gbl_ParseOnlyFlag = TRUE;
+        default:
+            printf ("Unknown option: -c%s\n", AcpiGbl_Optarg);
+            return (-1);
+        }
         break;
 
 
@@ -685,6 +692,14 @@ AslDoOptions (
             printf ("Unknown option: -c%s\n", AcpiGbl_Optarg);
             return (-1);
         }
+        break;
+
+
+    case 'n':
+
+        /* Parse only */
+
+        Gbl_ParseOnlyFlag = TRUE;
         break;
 
 
