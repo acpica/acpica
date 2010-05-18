@@ -185,25 +185,25 @@ AcpiNsInitializeObjects (
     /* Walk entire namespace from the supplied root */
 
     Status = AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
-                                ACPI_UINT32_MAX, AcpiNsInitOneObject, NULL,
-                                &Info, NULL);
+                ACPI_UINT32_MAX, AcpiNsInitOneObject, NULL,
+                &Info, NULL);
     if (ACPI_FAILURE (Status))
     {
         ACPI_EXCEPTION ((AE_INFO, Status, "During WalkNamespace"));
     }
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
-        "\nInitialized %hd/%hd Regions %hd/%hd Fields %hd/%hd "
-        "Buffers %hd/%hd Packages (%hd nodes)\n",
+        "\nInitialized %u/%u Regions %u/%u Fields %u/%u "
+        "Buffers %u/%u Packages (%u nodes)\n",
         Info.OpRegionInit,  Info.OpRegionCount,
         Info.FieldInit,     Info.FieldCount,
         Info.BufferInit,    Info.BufferCount,
         Info.PackageInit,   Info.PackageCount, Info.ObjectCount));
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-        "%hd Control Methods found\n", Info.MethodCount));
+        "%u Control Methods found\n", Info.MethodCount));
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-        "%hd Op Regions found\n", Info.OpRegionCount));
+        "%u Op Regions found\n", Info.OpRegionCount));
 
     return_ACPI_STATUS (AE_OK);
 }

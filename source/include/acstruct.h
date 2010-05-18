@@ -204,23 +204,23 @@ typedef struct acpi_walk_state
 } ACPI_WALK_STATE;
 
 
-/* Info used by AcpiPsInitObjects */
+/* Info used by AcpiNsInitializeObjects and AcpiDsInitializeObjects */
 
 typedef struct acpi_init_walk_info
 {
-    UINT16                          MethodCount;
-    UINT16                          DeviceCount;
-    UINT16                          OpRegionCount;
-    UINT16                          FieldCount;
-    UINT16                          BufferCount;
-    UINT16                          PackageCount;
-    UINT16                          OpRegionInit;
-    UINT16                          FieldInit;
-    UINT16                          BufferInit;
-    UINT16                          PackageInit;
-    UINT16                          ObjectCount;
-    ACPI_OWNER_ID                   OwnerId;
     UINT32                          TableIndex;
+    UINT32                          ObjectCount;
+    UINT32                          MethodCount;
+    UINT32                          DeviceCount;
+    UINT32                          OpRegionCount;
+    UINT32                          FieldCount;
+    UINT32                          BufferCount;
+    UINT32                          PackageCount;
+    UINT32                          OpRegionInit;
+    UINT32                          FieldInit;
+    UINT32                          BufferInit;
+    UINT32                          PackageInit;
+    ACPI_OWNER_ID                   OwnerId;
 
 } ACPI_INIT_WALK_INFO;
 
