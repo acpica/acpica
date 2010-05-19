@@ -177,11 +177,11 @@ run_test_case()
 			options=""
 		else
 			method=MN01
-			options="-s"
+			options="-es"
 		fi
 
 		if [ "$DO_MEMSTAT" == "yes" ]; then
-			options="$options -m"
+			options="$options -ef"
 		fi
 
 		if [[ "$tcase" == mt_* ]]; then
