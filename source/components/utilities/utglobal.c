@@ -960,6 +960,7 @@ AcpiUtInitGlobals (
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
     AcpiGbl_DisplayFinalMemStats        = FALSE;
+    AcpiGbl_DisableMemTracking          = FALSE;
 #endif
 
     return_ACPI_STATUS (AE_OK);

@@ -355,6 +355,7 @@ extern const char                      *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_
 ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_GlobalList;
 ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_NsNodeList;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_DisplayFinalMemStats;
+ACPI_EXTERN BOOLEAN                     AcpiGbl_DisableMemTracking;
 #endif
 
 

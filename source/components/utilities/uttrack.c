@@ -436,6 +436,11 @@ AcpiUtTrackAllocation (
     ACPI_FUNCTION_TRACE_PTR (UtTrackAllocation, Allocation);
 
 
+    if (AcpiGbl_DisableMemTracking)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
     MemList = AcpiGbl_GlobalList;
     Status = AcpiUtAcquireMutex (ACPI_MTX_MEMORY);
     if (ACPI_FAILURE (Status))
@@ -517,6 +522,11 @@ AcpiUtRemoveAllocation (
 
     ACPI_FUNCTION_TRACE (UtRemoveAllocation);
 
+
+    if (AcpiGbl_DisableMemTracking)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
 
     MemList = AcpiGbl_GlobalList;
     if (NULL == MemList->ListHead)
@@ -649,6 +659,11 @@ AcpiUtDumpAllocations (
 
     ACPI_FUNCTION_TRACE (UtDumpAllocations);
 
+
+    if (AcpiGbl_DisableMemTracking)
+    {
+        return;
+    }
 
     /*
      * Walk the allocation list.
