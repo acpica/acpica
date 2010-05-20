@@ -864,7 +864,7 @@ AcpiExDumpOperands (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-        "**** Start operand dump for opcode [%s], %d operands\n",
+        "**** Start operand dump for opcode [%s], %u operands\n",
         OpcodeName, NumOperands));
 
     if (NumOperands == 0)
@@ -1096,7 +1096,7 @@ AcpiExDumpPackageObj (
 
     case ACPI_TYPE_PACKAGE:
 
-        AcpiOsPrintf ("[Package] Contains %d Elements:\n",
+        AcpiOsPrintf ("[Package] Contains %u Elements:\n",
             ObjDesc->Package.Count);
 
         for (i = 0; i < ObjDesc->Package.Count; i++)

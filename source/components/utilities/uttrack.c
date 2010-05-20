@@ -683,7 +683,7 @@ AcpiUtDumpAllocations (
 
             if (Element->Size < sizeof (ACPI_COMMON_DESCRIPTOR))
             {
-                AcpiOsPrintf ("%p Length 0x%04X %9.9s-%d "
+                AcpiOsPrintf ("%p Length 0x%04X %9.9s-%u "
                     "[Not a Descriptor - too small]\n",
                     Descriptor, Element->Size, Element->Module,
                     Element->Line);
@@ -694,7 +694,7 @@ AcpiUtDumpAllocations (
 
                 if (ACPI_GET_DESCRIPTOR_TYPE (Descriptor) != ACPI_DESC_TYPE_CACHED)
                 {
-                    AcpiOsPrintf ("%p Length 0x%04X %9.9s-%d [%s] ",
+                    AcpiOsPrintf ("%p Length 0x%04X %9.9s-%u [%s] ",
                         Descriptor, Element->Size, Element->Module,
                         Element->Line, AcpiUtGetDescriptorName (Descriptor));
 
@@ -772,7 +772,7 @@ AcpiUtDumpAllocations (
     }
     else
     {
-        ACPI_ERROR ((AE_INFO, "%d(0x%X) Outstanding allocations",
+        ACPI_ERROR ((AE_INFO, "%u(0x%X) Outstanding allocations",
             NumOutstanding, NumOutstanding));
     }
 

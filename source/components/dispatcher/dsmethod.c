@@ -736,7 +736,7 @@ AcpiDsTerminateControlMethod (
          * we immediately reuse it for the next thread executing this method
          */
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-            "*** Completed execution of one thread, %d threads remaining\n",
+            "*** Completed execution of one thread, %u threads remaining\n",
             MethodDesc->Method.ThreadCount));
     }
     else

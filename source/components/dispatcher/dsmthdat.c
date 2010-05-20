@@ -238,7 +238,7 @@ AcpiDsMethodDataDeleteAll (
     {
         if (WalkState->LocalVariables[Index].Object)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Deleting Local%d=%p\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Deleting Local%u=%p\n",
                     Index, WalkState->LocalVariables[Index].Object));
 
             /* Detach object (if present) and remove a reference */
@@ -253,7 +253,7 @@ AcpiDsMethodDataDeleteAll (
     {
         if (WalkState->Arguments[Index].Object)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Deleting Arg%d=%p\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Deleting Arg%u=%p\n",
                     Index, WalkState->Arguments[Index].Object));
 
             /* Detach object (if present) and remove a reference */
@@ -322,7 +322,7 @@ AcpiDsMethodDataInitArgs (
         Index++;
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%d args passed to method\n", Index));
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%u args passed to method\n", Index));
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -429,7 +429,7 @@ AcpiDsMethodDataSetValue (
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-        "NewObj %p Type %2.2X, Refs=%d [%s]\n", Object,
+        "NewObj %p Type %2.2X, Refs=%u [%s]\n", Object,
         Type, Object->Common.ReferenceCount,
         AcpiUtGetTypeName (Object->Common.Type)));
 
@@ -667,7 +667,7 @@ AcpiDsStoreObjectToLocal (
 
 
     ACPI_FUNCTION_TRACE (DsStoreObjectToLocal);
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Type=%2.2X Index=%d Obj=%p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Type=%2.2X Index=%u Obj=%p\n",
         Type, Index, ObjDesc));
 
     /* Parameter validation */
