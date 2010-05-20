@@ -526,7 +526,7 @@ UtDisplaySummary (
     /* Input/Output summary */
 
     FlPrintFile (FileId,
-        "ASL Input:  %s - %d lines, %d bytes, %d keywords\n",
+        "ASL Input:  %s - %u lines, %u bytes, %u keywords\n",
         Gbl_Files[ASL_FILE_INPUT].Filename, Gbl_CurrentLineNumber,
         Gbl_InputByteCount, TotalKeywords);
 
@@ -535,7 +535,7 @@ UtDisplaySummary (
     if ((Gbl_ExceptionCount[ASL_ERROR] == 0) || (Gbl_IgnoreErrors))
     {
         FlPrintFile (FileId,
-            "AML Output: %s - %d bytes, %d named objects, %d executable opcodes\n\n",
+            "AML Output: %s - %u bytes, %u named objects, %u executable opcodes\n\n",
             Gbl_Files[ASL_FILE_AML_OUTPUT].Filename, Gbl_TableLength,
             TotalNamedObjects, TotalExecutableOpcodes);
     }
@@ -543,7 +543,7 @@ UtDisplaySummary (
     /* Error summary */
 
     FlPrintFile (FileId,
-        "Compilation complete. %d Errors, %d Warnings, %d Remarks, %d Optimizations\n",
+        "Compilation complete. %u Errors, %u Warnings, %u Remarks, %u Optimizations\n",
         Gbl_ExceptionCount[ASL_ERROR],
         Gbl_ExceptionCount[ASL_WARNING] +
             Gbl_ExceptionCount[ASL_WARNING2] +

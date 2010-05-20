@@ -568,7 +568,7 @@ AbCompareAmlFiles (
         }
     }
 
-    printf ("%d Mismatches found\n", Mismatches);
+    printf ("%u Mismatches found\n", Mismatches);
     return 0;
 }
 
@@ -614,7 +614,7 @@ AbGetFile (
     Buffer = calloc (Size, 1);
     if (!Buffer)
     {
-        printf ("Could not allocate buffer of size %d\n", Size);
+        printf ("Could not allocate buffer of size %u\n", Size);
         goto ErrorExit;
     }
 
@@ -797,7 +797,7 @@ AbExtractAmlFile (
     return -1;
 
 Exit:
-    printf ("%d (0x%X) bytes written to %s\n", Count, Count, File2Path);
+    printf ("%u (0x%X) bytes written to %s\n", Count, Count, File2Path);
     fclose (FileHandle);
     fclose (FileOutHandle);
     return 0;

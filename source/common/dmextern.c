@@ -629,7 +629,7 @@ AcpiDmEmitExternals (
 
         if (AcpiGbl_ExternalList->Type == ACPI_TYPE_METHOD)
         {
-            AcpiOsPrintf (")    // %d Arguments\n",
+            AcpiOsPrintf (")    // %u Arguments\n",
                 AcpiGbl_ExternalList->Value);
         }
         else

@@ -889,9 +889,9 @@ CmCleanupAndExit (
     if (Gbl_NsLookupCount)
     {
         DbgPrint (ASL_DEBUG_OUTPUT, "\n\nMiscellaneous compile statistics\n\n");
-        DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d\n", "Total Namespace searches",
+        DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %u\n", "Total Namespace searches",
             Gbl_NsLookupCount);
-        DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d usec\n", "Time per search",
+        DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %u usec\n", "Time per search",
             ((UINT32) (AslGbl_Events[AslGbl_NamespaceEvent].EndTime -
                         AslGbl_Events[AslGbl_NamespaceEvent].StartTime) /
                         10) / Gbl_NsLookupCount);
@@ -900,7 +900,7 @@ CmCleanupAndExit (
 
     if (Gbl_ExceptionCount[ASL_ERROR] > ASL_MAX_ERROR_COUNT)
     {
-        printf ("\nMaximum error count (%d) exceeded\n", ASL_MAX_ERROR_COUNT);
+        printf ("\nMaximum error count (%u) exceeded\n", ASL_MAX_ERROR_COUNT);
     }
 
     UtDisplaySummary (ASL_FILE_STDOUT);

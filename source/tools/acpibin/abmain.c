@@ -141,7 +141,7 @@ AbDisplayUsage (
 
     if (OptionCount)
     {
-        printf ("Option requires %d arguments\n\n", OptionCount);
+        printf ("Option requires %u arguments\n\n", OptionCount);
     }
 
     printf ("Usage: acpibin [options]\n\n");
