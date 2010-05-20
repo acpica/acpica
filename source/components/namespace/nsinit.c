@@ -285,6 +285,16 @@ AcpiNsInitializeDevices (
     Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
                 ACPI_UINT32_MAX, FALSE, AcpiNsInitOneDevice, NULL, &Info, NULL);
 
+    /*
+     * Any _OSI requests should be completed by now. If the BIOS has
+     * requested any Windows OSI strings, we will always truncate
+     * I/O addresses to 16 bits -- for Windows compatibility.
+     */
+    if (AcpiGbl_OsiData >= ACPI_OSI_WIN_2000)
+    {
+        AcpiGbl_TruncateIoAddresses = TRUE;
+    }
+
     ACPI_FREE (Info.EvaluateInfo);
     if (ACPI_FAILURE (Status))
     {
