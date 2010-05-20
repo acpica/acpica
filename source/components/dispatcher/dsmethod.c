@@ -700,7 +700,18 @@ AcpiDsTerminateControlMethod (
          */
         if (!(MethodDesc->Method.Flags & AOPOBJ_MODULE_LEVEL))
         {
-            AcpiNsDeleteNamespaceByOwner (MethodDesc->Method.OwnerId);
+            /* Delete any direct children of (created by) this method */
+
+            AcpiNsDeleteNamespaceSubtree (WalkState->MethodNode);
+
+            /*
+             * Delete any objects that were created by this method
+             * elsewhere in the namespace (if any were created).
+             */
+            if (MethodDesc->Method.Flags & AOPOBJ_MODIFIED_NAMESPACE)
+            {
+                AcpiNsDeleteNamespaceByOwner (MethodDesc->Method.OwnerId);
+            }
         }
     }
 

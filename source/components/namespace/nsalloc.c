@@ -336,13 +336,25 @@ AcpiNsInstallNode (
     ACPI_FUNCTION_TRACE (NsInstallNode);
 
 
-    /*
-     * Get the owner ID from the Walk state. The owner ID is used to track
-     * table deletion and deletion of objects created by methods.
-     */
     if (WalkState)
     {
+        /*
+         * Get the owner ID from the Walk state. The owner ID is used to
+         * track table deletion and deletion of objects created by methods.
+         */
         OwnerId = WalkState->OwnerId;
+
+        if ((WalkState->MethodDesc) &&
+            (ParentNode != WalkState->MethodNode))
+        {
+            /*
+             * A method is creating a new node that is not a child of the
+             * method (it is non-local). Mark the executing method as having
+             * modified the namespace. This is used for cleanup when the
+             * method exits.
+             */
+            WalkState->MethodDesc->Method.Flags |= AOPOBJ_MODIFIED_NAMESPACE;
+        }
     }
 
     /* Link the new entry into the parent and existing children */

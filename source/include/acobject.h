@@ -171,6 +171,7 @@
 #define AOPOBJ_SETUP_COMPLETE       0x10
 #define AOPOBJ_SINGLE_DATUM         0x20
 #define AOPOBJ_MODULE_LEVEL         0x40
+#define AOPOBJ_MODIFIED_NAMESPACE   0x80
 
 
 /******************************************************************************
