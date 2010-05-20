@@ -294,11 +294,11 @@ typedef struct acpi_evaluate_info
 
 typedef struct acpi_device_walk_info
 {
-    UINT16                          DeviceCount;
-    UINT16                          Num_STA;
-    UINT16                          Num_INI;
     ACPI_TABLE_DESC                 *TableDesc;
     ACPI_EVALUATE_INFO              *EvaluateInfo;
+    UINT32                          DeviceCount;
+    UINT32                          Num_STA;
+    UINT32                          Num_INI;
 
 } ACPI_DEVICE_WALK_INFO;
 
