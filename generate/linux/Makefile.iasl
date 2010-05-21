@@ -32,6 +32,12 @@ SRCS=	\
 	asltransform.c \
 	asltree.c \
 	aslutils.c \
+	dtcompile.c \
+	dtfield.c \
+	dtio.c \
+	dtsubtable.c \
+	dttable.c \
+	dtutils.c \
 	../common/getopt.c \
 	../utilities/utalloc.c \
 	../utilities/utcache.c \

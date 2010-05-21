@@ -46,6 +46,12 @@ OBJS = \
 	asltransform.o \
 	asltree.o \
 	aslutils.o \
+	dtcompile.o \
+	dtfield.o \
+	dtio.o \
+	dtsubtable.o \
+	dttable.o \
+	dtutils.o \
 	dbfileio.o \
 	dmbuffer.o \
 	dmextern.o \
@@ -257,6 +263,28 @@ asltree.o :         $(ASL_COMPILER)/asltree.c
 	$(COMPILE)
 
 aslutils.o :        $(ASL_COMPILER)/aslutils.c
+	$(COMPILE)
+
+
+#
+# Data Table Compiler
+#
+dtcompile.o :       $(ASL_COMPILER)/dtcompile.c
+	$(COMPILE)
+
+dtfield.o :         $(ASL_COMPILER)/dtfield.c
+	$(COMPILE)
+
+dtio.o :            $(ASL_COMPILER)/dtio.c
+	$(COMPILE)
+
+dtsubtable.o :      $(ASL_COMPILER)/dtsubtable.c
+	$(COMPILE)
+
+dttable.o :         $(ASL_COMPILER)/dttable.c
+	$(COMPILE)
+
+dtutils.o :         $(ASL_COMPILER)/dtutils.c
 	$(COMPILE)
 
 

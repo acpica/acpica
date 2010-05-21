@@ -51,16 +51,15 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"/acpica/generate/msvc/AslCompiler/aslcompiler.bsc"
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/AslCompiler/AslCompiler.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /machine:I386 /out:"/acpica/generate/msvc/AslCompiler/iasl.exe"
-# SUBTRACT LINK32 /pdb:none
+# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /machine:I386 /pdb:"/acpica/generate/msvc/AslCompiler/AslCompiler.pdb" /out:"/acpica/generate/msvc/AslCompiler/AslCompiler.exe" /pdb:"/acpica/generate/msvc/AslCompiler/AslCompiler.pdb"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
 PostBuild_Desc=Copy iasl.exe to libraries directory
-PostBuild_Cmds=copy AslCompiler\iasl.exe ..\..\Libraries\iasl.exe	dir ..\..\libraries\iasl.exe
+PostBuild_Cmds=copy AslCompiler\aslcompiler.exe \acpica\Libraries\iasl.exe	dir \acpica\libraries\iasl.exe
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
@@ -87,13 +86,12 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo /o"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:no /map /debug /machine:I386 /nodefaultlib:"libcmt.lib" /pdbtype:sept /out:"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.exe"
-# SUBTRACT LINK32 /pdb:none
+# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:no /debug /machine:I386 /nodefaultlib:"libcmt.lib" /pdbtype:sept /pdb:"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.pdb" /out:"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.exe" /pdb:"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.pdb" /map:"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.map"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
 PostBuild_Desc=Copy iasldebug.exe to libraries directory
-PostBuild_Cmds=copy AslCompilerDebug\aslcompiler.exe ..\..\Libraries\iasldebug.exe	dir ..\..\libraries\iasldebug.exe
+PostBuild_Cmds=copy AslCompilerDebug\aslcompiler.exe \acpica\Libraries\iasldebug.exe	dir \acpica\libraries\iasldebug.exe
 # End Special Build Tool
 
 !ENDIF 
@@ -675,6 +673,34 @@ SOURCE=..\..\source\components\dispatcher\dswscope.c
 SOURCE=..\..\source\components\dispatcher\dswstate.c
 # End Source File
 # End Group
+# Begin Group "DataCompiler"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\compiler\dtcompile.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\dtfield.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\dtio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\dtsubtable.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\dttable.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\dtutils.c
+# End Source File
+# End Group
 # End Group
 # Begin Group "Header Files"
 
@@ -694,6 +720,10 @@ SOURCE=..\..\source\compiler\aslglobal.h
 # Begin Source File
 
 SOURCE=..\..\source\compiler\asltypes.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\dtcompiler.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
