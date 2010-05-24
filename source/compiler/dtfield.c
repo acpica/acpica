@@ -386,28 +386,31 @@ DtPciPathToBuffer (
  *              Field               - Current field object
  *              ByteLength          - Byte length of the integer list
  *
- * RETURN:      None
+ * RETURN:      Count of remaining data in the input list
  *
  * DESCRIPTION: Compile and pack an integer list, for example
  *              "AA 1F 20 3B" ==> Buffer[] = {0xAA,0x1F,0x20,0x3B}
  *
  *****************************************************************************/
 
-void
+UINT32
 DtCompileBuffer (
     UINT8                   *Buffer,
     char                    *StringValue,
     DT_FIELD                *Field,
     UINT32                  ByteLength)
 {
+    ACPI_STATUS             Status;
     char                    Hex[3];
     UINT64                  Value;
     UINT32                  i;
-    ACPI_STATUS             Status;
+    UINT32                  Count;
 
+
+    Count = ACPI_STRLEN (StringValue) / 3 + 1;
 
     Hex[2] = 0;
-    for (i = 0; i < ByteLength; i++)
+    for (i = 0; i < Count; i++)
     {
         Hex[0] = StringValue[0];
         Hex[1] = StringValue[1];
@@ -419,12 +422,14 @@ DtCompileBuffer (
         if (ACPI_FAILURE (Status))
         {
             DtError (ASL_ERROR, ASL_MSG_BUFFER_ELEMENT, Field, MsgBuffer);
-            return;
+            return (ByteLength - Count);
         }
 
         Buffer[i] = (UINT8) Value;
         StringValue += 3;
     }
+
+    return (ByteLength - Count);
 }
 
 

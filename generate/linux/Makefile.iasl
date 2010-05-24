@@ -125,7 +125,7 @@ SRCS=	\
 	../osunixxf.c
 
 NOMAN=	YES
-CFLAGS+= -Wall -O2 -Wstrict-prototypes -D_LINUX -DACPI_ASL_COMPILER -I../include 
+CFLAGS+= -Wall -O2 -Wstrict-prototypes -D_LINUX -DACPI_ASL_COMPILER -I../include -I../compiler
 
 #YACC=	yacc
 YACC=	bison

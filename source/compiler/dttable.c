@@ -1217,6 +1217,7 @@ DtCompileSlit (
     DT_FIELD                *FieldList;
     UINT32                  Localities;
     UINT8                   *LocalityBuffer;
+    UINT32                  RemainingData;
 
 
     Status = DtCompileTable (PFieldList, AcpiDmTableInfoSlit,
@@ -1235,12 +1236,19 @@ DtCompileSlit (
     FieldList = *PFieldList;
     while (FieldList)
     {
-        DtCompileBuffer (LocalityBuffer, FieldList->Value,
-                    FieldList, Localities);
+        /* Handle multiple-line buffer */
+
+        RemainingData = Localities;
+        while (RemainingData && FieldList)
+        {
+            RemainingData = DtCompileBuffer (
+                LocalityBuffer + (Localities - RemainingData),
+                FieldList->Value, FieldList, RemainingData);
+            FieldList = FieldList->Next;
+        }
 
         DtCreateSubtable (LocalityBuffer, Localities, &Subtable);
         DtInsertSubtable (ParentTable, Subtable);
-        FieldList = FieldList->Next;
     }
 
     ACPI_FREE (LocalityBuffer);

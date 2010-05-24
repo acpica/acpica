@@ -283,7 +283,7 @@ DtCompileInteger (
     UINT32                  ByteLength,
     UINT8                   Flags);
 
-void
+UINT32
 DtCompileBuffer (
     UINT8                   *Buffer,
     char                    *Value,

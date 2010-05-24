@@ -411,7 +411,6 @@ AslDoOneFile (
         }
         else
         {
-            ACPI_FREE (Gbl_Files[ASL_FILE_INPUT].Filename);
             Gbl_Files[ASL_FILE_INPUT].Filename = NULL;
             return (AE_OK);
         }
