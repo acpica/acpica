@@ -890,7 +890,8 @@ CmCleanupAndExit (
 
     /* Delete AML file if there are errors */
 
-    if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
+    if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors) &&
+        Gbl_Files[ASL_FILE_AML_OUTPUT].Handle)
     {
         if (remove (Gbl_Files[ASL_FILE_AML_OUTPUT].Filename))
         {
