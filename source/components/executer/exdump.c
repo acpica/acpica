@@ -948,7 +948,7 @@ AcpiExDumpNamespaceNode (
     AcpiOsPrintf ("%20s : %4.4s\n", "Name", AcpiUtGetNodeName (Node));
     AcpiExOutString  ("Type", AcpiUtGetTypeName (Node->Type));
     AcpiExOutPointer ("Attached Object", AcpiNsGetAttachedObject (Node));
-    AcpiExOutPointer ("Parent", AcpiNsGetParentNode (Node));
+    AcpiExOutPointer ("Parent", Node->Parent);
 
     AcpiExDumpObject (ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, Node),
         AcpiExDumpNode);

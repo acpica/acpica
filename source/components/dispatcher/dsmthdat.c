@@ -188,8 +188,7 @@ AcpiDsMethodDataInit (
         WalkState->Arguments[i].Name.Integer |= (i << 24);
         WalkState->Arguments[i].DescriptorType = ACPI_DESC_TYPE_NAMED;
         WalkState->Arguments[i].Type = ACPI_TYPE_ANY;
-        WalkState->Arguments[i].Flags =
-            ANOBJ_END_OF_PEER_LIST | ANOBJ_METHOD_ARG;
+        WalkState->Arguments[i].Flags = ANOBJ_METHOD_ARG;
     }
 
     /* Init the method locals */
@@ -201,8 +200,7 @@ AcpiDsMethodDataInit (
         WalkState->LocalVariables[i].Name.Integer |= (i << 24);
         WalkState->LocalVariables[i].DescriptorType = ACPI_DESC_TYPE_NAMED;
         WalkState->LocalVariables[i].Type = ACPI_TYPE_ANY;
-        WalkState->LocalVariables[i].Flags =
-            ANOBJ_END_OF_PEER_LIST | ANOBJ_METHOD_LOCAL;
+        WalkState->LocalVariables[i].Flags = ANOBJ_METHOD_LOCAL;
     }
 
     return_VOID;

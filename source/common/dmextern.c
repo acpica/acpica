@@ -252,7 +252,7 @@ AcpiDmNormalizeParentPrefix (
     Node = Op->Common.Node;
     while (Node && (*Path == (UINT8) AML_PARENT_PREFIX))
     {
-        Node = AcpiNsGetParentNode (Node);
+        Node = Node->Parent;
         Path++;
     }
 

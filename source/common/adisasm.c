@@ -515,10 +515,11 @@ AdAmlDisassemble (
             AcpiGbl_RootNodeStruct.Name.Integer = ACPI_ROOT_NAME;
             AcpiGbl_RootNodeStruct.DescriptorType = ACPI_DESC_TYPE_NAMED;
             AcpiGbl_RootNodeStruct.Type         = ACPI_TYPE_DEVICE;
+            AcpiGbl_RootNodeStruct.Parent       = NULL;
             AcpiGbl_RootNodeStruct.Child        = NULL;
             AcpiGbl_RootNodeStruct.Peer         = NULL;
             AcpiGbl_RootNodeStruct.Object       = NULL;
-            AcpiGbl_RootNodeStruct.Flags        = ANOBJ_END_OF_PEER_LIST;
+            AcpiGbl_RootNodeStruct.Flags        = 0;
 
             Status = AcpiNsRootInitialize ();
             AcpiDmAddExternalsToNamespace ();

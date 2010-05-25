@@ -435,7 +435,7 @@ AcpiNsLookup (
             while (!AcpiNsOpensScope (PrefixNode->Type) &&
                     PrefixNode->Type != ACPI_TYPE_ANY)
             {
-                PrefixNode = AcpiNsGetParentNode (PrefixNode);
+                PrefixNode = PrefixNode->Parent;
             }
         }
     }
@@ -516,7 +516,7 @@ AcpiNsLookup (
                 /* Backup to the parent node */
 
                 NumCarats++;
-                ThisNode = AcpiNsGetParentNode (ThisNode);
+                ThisNode = ThisNode->Parent;
                 if (!ThisNode)
                 {
                     /* Current scope has no parent scope */

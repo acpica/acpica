@@ -520,7 +520,7 @@ AcpiNsFindIniMethods (
      * The only _INI methods that we care about are those that are
      * present under Device, Processor, and Thermal objects.
      */
-    ParentNode = AcpiNsGetParentNode (Node);
+    ParentNode = Node->Parent;
     switch (ParentNode->Type)
     {
     case ACPI_TYPE_DEVICE:
@@ -532,7 +532,7 @@ AcpiNsFindIniMethods (
         while (ParentNode)
         {
             ParentNode->Flags |= ANOBJ_SUBTREE_HAS_INI;
-            ParentNode = AcpiNsGetParentNode (ParentNode);
+            ParentNode = ParentNode->Parent;
         }
         break;
 
