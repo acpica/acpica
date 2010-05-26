@@ -556,9 +556,9 @@ AcpiExPrepFieldValue (
 
         ObjDesc->Field.RegionObj = AcpiNsGetAttachedObject (Info->RegionNode);
 
-	    /* Allow full data read from EC address space */
+        /* Allow full data read from EC address space */
 
-	    if ((ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_EC) &&
+        if ((ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_EC) &&
             (ObjDesc->CommonField.BitLength > 8))
         {
             AccessByteWidth = ACPI_ROUND_BITS_UP_TO_BYTES (
@@ -566,11 +566,11 @@ AcpiExPrepFieldValue (
 
             /* Maximum byte width supported is 255 */
 
-	        if (AccessByteWidth < 256)
+            if (AccessByteWidth < 256)
             {
                 ObjDesc->CommonField.AccessByteWidth = (UINT8) AccessByteWidth;
-	        }
-	    }
+            }
+        }
 
         /* An additional reference for the container */
 
