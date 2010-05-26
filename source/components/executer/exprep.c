@@ -479,16 +479,6 @@ AcpiExPrepCommonFieldObject (
     ObjDesc->CommonField.StartFieldBitOffset = (UINT8)
         (FieldBitPosition - ACPI_MUL_8 (ObjDesc->CommonField.BaseByteOffset));
 
-    /*
-     * Does the entire field fit within a single field access element? (datum)
-     * (i.e., without crossing a datum boundary)
-     */
-    if ((ObjDesc->CommonField.StartFieldBitOffset + FieldBitLength) <=
-            (UINT16) AccessBitWidth)
-    {
-        ObjDesc->Common.Flags |= AOPOBJ_SINGLE_DATUM;
-    }
-
     return_ACPI_STATUS (AE_OK);
 }
 
