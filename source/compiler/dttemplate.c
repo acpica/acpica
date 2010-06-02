@@ -1,7 +1,6 @@
-
 /******************************************************************************
  *
- * Module Name: asldefine.h - Common defines for the iASL compiler
+ * Module Name: dttemplate - ACPI table template generation
  *
  *****************************************************************************/
 
@@ -114,105 +113,220 @@
  *
  *****************************************************************************/
 
+#include "aslcompiler.h"
+#include "acapps.h"
+#include "dtcompiler.h"
+#include "dttemplate.h"
 
-#ifndef __ASLDEFINE_H
-#define __ASLDEFINE_H
-
-
-/*
- * Compiler versions and names
- */
-#define CompilerCreatorRevision     ACPI_CA_VERSION
-
-#define IntelAcpiCA                 "Intel ACPI Component Architecture"
-#define CompilerId                  "ASL Optimizing Compiler"
-#define DisassemblerId              "AML Disassembler"
-#define CompilerCopyright           "Copyright (c) 2000 - 2010 Intel Corporation"
-#define CompilerCompliance          "Supports ACPI Specification Revision 4.0a"
-#define CompilerName                "iasl"
-#define CompilerCreatorId           "INTL"
+#define _COMPONENT          DT_COMPILER
+        ACPI_MODULE_NAME    ("dttemplate")
 
 
-/* Configuration constants */
+extern ACPI_DMTABLE_DATA    AcpiDmTableData[];
 
-#define ASL_MAX_ERROR_COUNT         200
-#define ASL_NODE_CACHE_SIZE         1024
-#define ASL_STRING_CACHE_SIZE       32768
+void
+AslInitializeGlobals (
+    void);
 
-#define ASL_FIRST_PARSE_OPCODE      PARSEOP_ACCESSAS
-#define ASL_YYTNAME_START           3
-
-#define ASL_PARSE_OPCODE_BASE       PARSEOP_ACCESSAS        /* First Lex type */
-
-
-/*
- * Macros
- */
-#define ASL_RESDESC_OFFSET(m)       ACPI_OFFSET (AML_RESOURCE, m)
-#define ASL_PTR_DIFF(a,b)           ((UINT8 *)(b) - (UINT8 *)(a))
-#define ASL_PTR_ADD(a,b)            ((UINT8 *)(a) = ((UINT8 *)(a) + (b)))
-#define ASL_GET_CHILD_NODE(a)       (a)->Asl.Child
-#define ASL_GET_PEER_NODE(a)        (a)->Asl.Next
-#define OP_TABLE_ENTRY(a,b,c,d)     {b,d,a,c}
+void
+AdDisassemblerHeader (
+    char                    *Filename);
 
 
-/* Internal AML opcodes */
+static ACPI_STATUS
+DtCreateOneTemplate (
+    ACPI_DMTABLE_DATA       *TableData);
 
-#define AML_RAW_DATA_BYTE           (UINT16) 0xAA01 /* write one raw byte */
-#define AML_RAW_DATA_WORD           (UINT16) 0xAA02 /* write 2 raw bytes */
-#define AML_RAW_DATA_DWORD          (UINT16) 0xAA04 /* write 4 raw bytes */
-#define AML_RAW_DATA_QWORD          (UINT16) 0xAA08 /* write 8 raw bytes */
-#define AML_RAW_DATA_BUFFER         (UINT16) 0xAA0B /* raw buffer with length */
-#define AML_RAW_DATA_CHAIN          (UINT16) 0xAA0C /* chain of raw buffers */
-#define AML_PACKAGE_LENGTH          (UINT16) 0xAA10
-#define AML_UNASSIGNED_OPCODE       (UINT16) 0xEEEE
-#define AML_DEFAULT_ARG_OP          (UINT16) 0xDDDD
+static ACPI_STATUS
+DtCreateAllTemplates (
+    void);
 
 
-/* filename suffixes for output files */
+/*******************************************************************************
+ *
+ * FUNCTION:    DtCreateTemplates
+ *
+ * PARAMETERS:  Signature           - ACPI table signature
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create one or more template files.
+ *
+ ******************************************************************************/
 
-#define FILE_SUFFIX_AML_CODE        "aml"
-#define FILE_SUFFIX_LISTING         "lst"
-#define FILE_SUFFIX_HEX_DUMP        "hex"
-#define FILE_SUFFIX_DEBUG           "txt"
-#define FILE_SUFFIX_SOURCE          "src"
-#define FILE_SUFFIX_NAMESPACE       "nsp"
-#define FILE_SUFFIX_ASM_SOURCE      "asm"
-#define FILE_SUFFIX_C_SOURCE        "c"
-#define FILE_SUFFIX_DISASSEMBLY     "dsl"
-#define FILE_SUFFIX_ASM_INCLUDE     "inc"
-#define FILE_SUFFIX_C_INCLUDE       "h"
-#define FILE_SUFFIX_ASL_CODE        "asl"
-
-
-/* Types for input files */
-
-#define ASL_INPUT_TYPE_BINARY       0
-#define ASL_INPUT_TYPE_ASCII_ASL    1
-#define ASL_INPUT_TYPE_ASCII_DATA   2
+ACPI_STATUS
+DtCreateTemplates (
+    char                    *Signature)
+{
+    ACPI_DMTABLE_DATA       *TableData;
+    ACPI_STATUS             Status;
 
 
-/* Misc */
+    AslInitializeGlobals ();
+    AcpiUtStrupr (Signature);
 
-#define ASL_EXTERNAL_METHOD         255
-#define ASL_ABORT                   TRUE
-#define ASL_NO_ABORT                FALSE
+    /* Create all known templates if requested */
+
+    if (!ACPI_STRNCMP (Signature, "ALL", 3))
+    {
+        Status = DtCreateAllTemplates ();
+        return (Status);
+    }
+
+    /*
+     * Validate signature and get the template data:
+     *  1) Signature must be 4 characters
+     *  2) Signature must not be an AML table
+     *  3) Signature must be a recognized ACPI table
+     *  4) There must be a template associated with the signature
+     */
+    if (strlen (Signature) < ACPI_NAME_SIZE)
+    {
+        fprintf (stderr, "%s, Invalid ACPI table signature\n", Signature);
+        return (AE_ERROR);
+    }
+
+    if (AcpiUtIsAmlTable ((ACPI_TABLE_HEADER *) Signature))
+    {
+        /* We could create a small template, might be useful */
+
+        fprintf (stderr,
+            "%4.4s is an AML ACPI table, cannot create template\n", Signature);
+        return (AE_ERROR);
+    }
+
+    TableData = AcpiDmGetTableData (Signature);
+    if (!TableData)
+    {
+        fprintf (stderr,
+            "%4.4s, Unrecognized ACPI table signature\n", Signature);
+        return (AE_ERROR);
+    }
+
+    if (!TableData->Template)
+    {
+        fprintf (stderr, "%4.4s, No template available\n", Signature);
+        return (AE_ERROR);
+    }
+
+    Status = AdInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    DtCreateOneTemplate (TableData);
+    return (AE_OK);
+}
 
 
-/* Support for reserved method names */
+/*******************************************************************************
+ *
+ * FUNCTION:    DtCreateAllTemplates
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create all currently defined template files
+ *
+ ******************************************************************************/
 
-#define ACPI_VALID_RESERVED_NAME_MAX    0x80000000
-#define ACPI_NOT_RESERVED_NAME          ACPI_UINT32_MAX
-#define ACPI_PREDEFINED_NAME            (ACPI_UINT32_MAX - 1)
-#define ACPI_EVENT_RESERVED_NAME        (ACPI_UINT32_MAX - 2)
-#define ACPI_COMPILER_RESERVED_NAME     (ACPI_UINT32_MAX - 3)
+static ACPI_STATUS
+DtCreateAllTemplates (
+    void)
+{
+    ACPI_DMTABLE_DATA       *TableData;
+    ACPI_STATUS             Status;
 
 
-/* String to Integer conversion */
+    Status = AdInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
-#define NEGATIVE                    1
-#define POSITIVE                    0
+    fprintf (stderr, "Creating all supported Template files\n");
+
+    /* Walk entire ACPI table data structure */
+
+    for (TableData = AcpiDmTableData; TableData->Signature; TableData++)
+    {
+        /* If table has a template, create the template file */
+
+        if (TableData->Template)
+        {
+            Status = DtCreateOneTemplate (TableData);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+        }
+    }
+
+    return (AE_OK);
+}
 
 
-#endif /* ASLDEFINE.H */
+/*******************************************************************************
+ *
+ * FUNCTION:    DtCreateOneTemplate
+ *
+ * PARAMETERS:  TableData           - Entry in ACPI table data structure
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create one template source file for the requested ACPI table.
+ *
+ ******************************************************************************/
 
+static ACPI_STATUS
+DtCreateOneTemplate (
+    ACPI_DMTABLE_DATA       *TableData)
+{
+    char                    *DisasmFilename;
+    FILE                    *File;
+    ACPI_STATUS             Status = AE_OK;
+
+
+    /* This is code common with AdAmlDisassemble */
+
+    /* New file will have a .asl suffix */
+
+    DisasmFilename = FlGenerateFilename (
+        TableData->Signature, FILE_SUFFIX_ASL_CODE);
+    if (!DisasmFilename)
+    {
+        fprintf (stderr, "Could not generate output filename\n");
+        Status = AE_ERROR;
+        goto Cleanup;
+    }
+
+    /* Probably should prompt to overwrite the file */
+
+    File = fopen (DisasmFilename, "w+");
+    if (!File)
+    {
+        fprintf (stderr, "Could not open output file %s\n", DisasmFilename);
+        Status = AE_ERROR;
+        goto Cleanup;
+    }
+
+    AcpiOsRedirectOutput (File);
+
+    AdDisassemblerHeader (DisasmFilename);
+    AcpiOsPrintf (" * ACPI Data Table [%4.4s]\n *\n",
+        TableData->Signature);
+    AcpiOsPrintf (" * Format: [HexOffset DecimalOffset ByteLength]  FieldName : FieldValue\n */\n\n");
+
+    AcpiDmDumpDataTable ((ACPI_TABLE_HEADER *) TableData->Template);
+    fprintf (stderr,
+        "Created ACPI table template for [%4.4s], written to \"%s\"\n",
+        TableData->Signature, DisasmFilename);
+
+    fclose (File);
+    AcpiOsRedirectOutput (stdout);
+
+Cleanup:
+    return (Status);
+}

@@ -167,7 +167,7 @@ AslDoResponseFile (
 
 
 #define ASL_TOKEN_SEPARATORS    " \t\n"
-#define ASL_SUPPORTED_OPTIONS   "@:2b:c:d^e:fgh^i^I:l^no:p:r:s:t:v:w:x:yz"
+#define ASL_SUPPORTED_OPTIONS   "@:2b:c:d^e:fgh^i^I:l^no:p:r:s:t:T:v:w:x:yz"
 
 
 /*******************************************************************************
@@ -217,6 +217,9 @@ Options (
     printf ("  -l             Create mixed listing file (ASL source and AML) (*.lst)\n");
     printf ("  -ln            Create namespace file (*.nsp)\n");
     printf ("  -ls            Create combined source file (expanded includes) (*.src)\n");
+
+    printf ("\nACPI Data Tables:\n");
+    printf ("  -T [Sig]       Create table template for Sig (or \"ALL\")\n");
 
     printf ("\nAML Disassembler:\n");
     printf ("  -d  [file]     Disassemble or decode binary ACPI table to file (*.dsl)\n");
@@ -767,6 +770,11 @@ AslDoOptions (
             return (-1);
         }
         break;
+
+
+    case 'T':
+        DtCreateTemplates (AcpiGbl_Optarg);
+        exit (1);
 
 
     case 'v':

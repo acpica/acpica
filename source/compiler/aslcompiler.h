@@ -1024,5 +1024,9 @@ ACPI_STATUS
 DtDoCompile(
     void);
 
+ACPI_STATUS
+DtCreateTemplates (
+    char                    *Signature);
+
 #endif /*  __ASLCOMPILER_H */
 

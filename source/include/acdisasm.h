@@ -201,6 +201,7 @@ typedef struct acpi_dmtable_data
     ACPI_DMTABLE_INFO       *TableInfo;
     ACPI_DMTABLE_HANDLER    TableHandler;
     ACPI_CMTABLE_HANDLER    CmTableHandler;
+    const unsigned char     *Template;
     char                    *Name;
 
 } ACPI_DMTABLE_DATA;

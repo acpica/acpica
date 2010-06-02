@@ -131,7 +131,7 @@ BOOLEAN                 AslToFile = TRUE;
 
 /* Local prototypes */
 
-static void
+void
 AslInitializeGlobals (
     void);
 
@@ -158,7 +158,7 @@ AslDetectSourceFileType (
  *
  ******************************************************************************/
 
-static void
+void
 AslInitializeGlobals (
     void)
 {

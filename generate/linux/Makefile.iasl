@@ -37,6 +37,7 @@ SRCS=	\
 	dtio.c \
 	dtsubtable.c \
 	dttable.c \
+	dttemplate.c \
 	dtutils.c \
 	../common/getopt.c \
 	../utilities/utalloc.c \

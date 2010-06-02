@@ -51,6 +51,7 @@ OBJS = \
 	dtio.o \
 	dtsubtable.o \
 	dttable.o \
+	dttemplate.o \
 	dtutils.o \
 	dbfileio.o \
 	dmbuffer.o \
@@ -282,6 +283,9 @@ dtsubtable.o :      $(ASL_COMPILER)/dtsubtable.c
 	$(COMPILE)
 
 dttable.o :         $(ASL_COMPILER)/dttable.c
+	$(COMPILE)
+
+dttemplate.o :      $(ASL_COMPILER)/dttemplate.c
 	$(COMPILE)
 
 dtutils.o :         $(ASL_COMPILER)/dtutils.c

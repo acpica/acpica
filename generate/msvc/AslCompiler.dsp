@@ -698,6 +698,10 @@ SOURCE=..\..\source\compiler\dttable.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\compiler\dttemplate.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\compiler\dtutils.c
 # End Source File
 # End Group
@@ -724,6 +728,10 @@ SOURCE=..\..\source\compiler\asltypes.h
 # Begin Source File
 
 SOURCE=..\..\source\compiler\dtcompiler.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\dttemplate.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

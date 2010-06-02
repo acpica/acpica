@@ -234,48 +234,49 @@ static const char           *AcpiDmFadtProfiles[] =
  *
  * ACPI Table Data, indexed by signature.
  *
- * Each entry contains: Signature, Table Info, Handler, Description
+ * Each entry contains: Signature, Table Info, Handler, DtHandler,
+ *  Template, Description
  *
- * Simple tables have only a TableInfo structure, complex tables have a handler.
- * This table must be NULL terminated. RSDP and FACS are special-cased
- * elsewhere.
+ * Simple tables have only a TableInfo structure, complex tables have a
+ * handler. This table must be NULL terminated. RSDP and FACS are
+ * special-cased elsewhere.
  *
  ******************************************************************************/
 
-static ACPI_DMTABLE_DATA    AcpiDmTableData[] =
+ACPI_DMTABLE_DATA    AcpiDmTableData[] =
 {
-    {ACPI_SIG_ASF,  NULL,                   AcpiDmDumpAsf,  DtCompileAsf,   "Alert Standard Format table"},
-    {ACPI_SIG_BOOT, AcpiDmTableInfoBoot,    NULL,           NULL,           "Simple Boot Flag Table"},
-    {ACPI_SIG_BERT, AcpiDmTableInfoBert,    NULL,           NULL,           "Boot Error Record Table"},
-    {ACPI_SIG_CPEP, NULL,                   AcpiDmDumpCpep, DtCompileCpep,  "Corrected Platform Error Polling table"},
-    {ACPI_SIG_DBGP, AcpiDmTableInfoDbgp,    NULL,           NULL,           "Debug Port table"},
-    {ACPI_SIG_DMAR, NULL,                   AcpiDmDumpDmar, DtCompileDmar,  "DMA Remapping table"},
-    {ACPI_SIG_ECDT, AcpiDmTableInfoEcdt,    NULL,           NULL,           "Embedded Controller Boot Resources Table"},
-    {ACPI_SIG_EINJ, NULL,                   AcpiDmDumpEinj, DtCompileEinj,  "Error Injection table"},
-    {ACPI_SIG_ERST, NULL,                   AcpiDmDumpErst, DtCompileErst,  "Error Record Serialization Table"},
-    {ACPI_SIG_FADT, NULL,                   AcpiDmDumpFadt, DtCompileFadt,  "Fixed ACPI Description Table"},
-    {ACPI_SIG_HEST, NULL,                   AcpiDmDumpHest, DtCompileHest,  "Hardware Error Source Table"},
-    {ACPI_SIG_HPET, AcpiDmTableInfoHpet,    NULL,           NULL,           "High Precision Event Timer table"},
-    {ACPI_SIG_IVRS, NULL,                   AcpiDmDumpIvrs, DtCompileIvrs,  "I/O Virtualization Reporting Structure"},
-    {ACPI_SIG_MADT, NULL,                   AcpiDmDumpMadt, DtCompileMadt,  "Multiple APIC Description Table"},
-    {ACPI_SIG_MCFG, NULL,                   AcpiDmDumpMcfg, DtCompileMcfg,  "Memory Mapped Configuration table"},
-    {ACPI_SIG_MCHI, AcpiDmTableInfoMchi,    NULL,           NULL,           "Management Controller Host Interface table"},
-    {ACPI_SIG_MSCT, NULL,                   AcpiDmDumpMsct, DtCompileMsct,  "Maximum System Characteristics Table"},
-    {ACPI_SIG_RSDT, NULL,                   AcpiDmDumpRsdt, DtCompileRsdt,  "Root System Description Table"},
-    {ACPI_SIG_SBST, AcpiDmTableInfoSbst,    NULL,           NULL,           "Smart Battery Specification Table"},
-    {ACPI_SIG_SLIC, AcpiDmTableInfoSlic,    NULL,           NULL,           "Software Licensing Description Table"},
-    {ACPI_SIG_SLIT, NULL,                   AcpiDmDumpSlit, DtCompileSlit,  "System Locality Information Table"},
-    {ACPI_SIG_SPCR, AcpiDmTableInfoSpcr,    NULL,           NULL,           "Serial Port Console Redirection table"},
-    {ACPI_SIG_SPMI, AcpiDmTableInfoSpmi,    NULL,           NULL,           "Server Platform Management Interface table"},
-    {ACPI_SIG_SRAT, NULL,                   AcpiDmDumpSrat, DtCompileSrat,  "System Resource Affinity Table"},
-    {ACPI_SIG_TCPA, AcpiDmTableInfoTcpa,    NULL,           NULL,           "Trusted Computing Platform Alliance table"},
-    {ACPI_SIG_UEFI, AcpiDmTableInfoUefi,    NULL,           NULL,           "UEFI Boot Optimization Table"},
-    {ACPI_SIG_WAET, AcpiDmTableInfoWaet,    NULL,           NULL,           "Windows ACPI Emulated Devices Table"},
-    {ACPI_SIG_WDAT, NULL,                   AcpiDmDumpWdat, DtCompileWdat,  "Watchdog Action Table"},
-    {ACPI_SIG_WDDT, AcpiDmTableInfoWddt,    NULL,           NULL,           "Watchdog Description Table"},
-    {ACPI_SIG_WDRT, AcpiDmTableInfoWdrt,    NULL,           NULL,           "Watchdog Resource Table"},
-    {ACPI_SIG_XSDT, NULL,                   AcpiDmDumpXsdt, DtCompileXsdt,  "Extended System Description Table"},
-    {NULL,          NULL,                   NULL,           NULL,           NULL}
+    {ACPI_SIG_ASF,  NULL,                   AcpiDmDumpAsf,  DtCompileAsf,   TemplateAsf,    "Alert Standard Format table"},
+    {ACPI_SIG_BOOT, AcpiDmTableInfoBoot,    NULL,           NULL,           TemplateBoot,   "Simple Boot Flag Table"},
+    {ACPI_SIG_BERT, AcpiDmTableInfoBert,    NULL,           NULL,           TemplateBert,   "Boot Error Record Table"},
+    {ACPI_SIG_CPEP, NULL,                   AcpiDmDumpCpep, DtCompileCpep,  TemplateCpep,   "Corrected Platform Error Polling table"},
+    {ACPI_SIG_DBGP, AcpiDmTableInfoDbgp,    NULL,           NULL,           TemplateDbgp,   "Debug Port table"},
+    {ACPI_SIG_DMAR, NULL,                   AcpiDmDumpDmar, DtCompileDmar,  TemplateDmar,   "DMA Remapping table"},
+    {ACPI_SIG_ECDT, AcpiDmTableInfoEcdt,    NULL,           NULL,           TemplateEcdt,   "Embedded Controller Boot Resources Table"},
+    {ACPI_SIG_EINJ, NULL,                   AcpiDmDumpEinj, DtCompileEinj,  TemplateEinj,   "Error Injection table"},
+    {ACPI_SIG_ERST, NULL,                   AcpiDmDumpErst, DtCompileErst,  TemplateErst,   "Error Record Serialization Table"},
+    {ACPI_SIG_FADT, NULL,                   AcpiDmDumpFadt, DtCompileFadt,  TemplateFadt,   "Fixed ACPI Description Table"},
+    {ACPI_SIG_HEST, NULL,                   AcpiDmDumpHest, DtCompileHest,  TemplateHest,   "Hardware Error Source Table"},
+    {ACPI_SIG_HPET, AcpiDmTableInfoHpet,    NULL,           NULL,           TemplateHpet,   "High Precision Event Timer table"},
+    {ACPI_SIG_IVRS, NULL,                   AcpiDmDumpIvrs, DtCompileIvrs,  NULL,           "I/O Virtualization Reporting Structure"},
+    {ACPI_SIG_MADT, NULL,                   AcpiDmDumpMadt, DtCompileMadt,  TemplateMadt,   "Multiple APIC Description Table"},
+    {ACPI_SIG_MCFG, NULL,                   AcpiDmDumpMcfg, DtCompileMcfg,  TemplateMcfg,   "Memory Mapped Configuration table"},
+    {ACPI_SIG_MCHI, AcpiDmTableInfoMchi,    NULL,           NULL,           NULL,           "Management Controller Host Interface table"},
+    {ACPI_SIG_MSCT, NULL,                   AcpiDmDumpMsct, DtCompileMsct,  TemplateMsct,   "Maximum System Characteristics Table"},
+    {ACPI_SIG_RSDT, NULL,                   AcpiDmDumpRsdt, DtCompileRsdt,  TemplateRsdt,   "Root System Description Table"},
+    {ACPI_SIG_SBST, AcpiDmTableInfoSbst,    NULL,           NULL,           NULL,           "Smart Battery Specification Table"},
+    {ACPI_SIG_SLIC, AcpiDmTableInfoSlic,    NULL,           NULL,           NULL,           "Software Licensing Description Table"},
+    {ACPI_SIG_SLIT, NULL,                   AcpiDmDumpSlit, DtCompileSlit,  TemplateSlit,   "System Locality Information Table"},
+    {ACPI_SIG_SPCR, AcpiDmTableInfoSpcr,    NULL,           NULL,           TemplateSpcr,   "Serial Port Console Redirection table"},
+    {ACPI_SIG_SPMI, AcpiDmTableInfoSpmi,    NULL,           NULL,           TemplateSpmi,   "Server Platform Management Interface table"},
+    {ACPI_SIG_SRAT, NULL,                   AcpiDmDumpSrat, DtCompileSrat,  TemplateSrat,   "System Resource Affinity Table"},
+    {ACPI_SIG_TCPA, AcpiDmTableInfoTcpa,    NULL,           NULL,           TemplateTcpa,   "Trusted Computing Platform Alliance table"},
+    {ACPI_SIG_UEFI, AcpiDmTableInfoUefi,    NULL,           NULL,           NULL,           "UEFI Boot Optimization Table"},
+    {ACPI_SIG_WAET, AcpiDmTableInfoWaet,    NULL,           NULL,           NULL,           "Windows ACPI Emulated Devices Table"},
+    {ACPI_SIG_WDAT, NULL,                   AcpiDmDumpWdat, DtCompileWdat,  TemplateWdat,   "Watchdog Action Table"},
+    {ACPI_SIG_WDDT, AcpiDmTableInfoWddt,    NULL,           NULL,           TemplateWddt,   "Watchdog Description Table"},
+    {ACPI_SIG_WDRT, AcpiDmTableInfoWdrt,    NULL,           NULL,           NULL,           "Watchdog Resource Table"},
+    {ACPI_SIG_XSDT, NULL,                   AcpiDmDumpXsdt, DtCompileXsdt,  TemplateXsdt,   "Extended System Description Table"},
+    {NULL,          NULL,                   NULL,           NULL,           NULL,           NULL}
 };
 
 
