@@ -272,6 +272,7 @@ static ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_UEFI, AcpiDmTableInfoUefi,    NULL,           NULL,           "UEFI Boot Optimization Table"},
     {ACPI_SIG_WAET, AcpiDmTableInfoWaet,    NULL,           NULL,           "Windows ACPI Emulated Devices Table"},
     {ACPI_SIG_WDAT, NULL,                   AcpiDmDumpWdat, DtCompileWdat,  "Watchdog Action Table"},
+    {ACPI_SIG_WDDT, AcpiDmTableInfoWddt,    NULL,           NULL,           "Watchdog Description Table"},
     {ACPI_SIG_WDRT, AcpiDmTableInfoWdrt,    NULL,           NULL,           "Watchdog Resource Table"},
     {ACPI_SIG_XSDT, NULL,                   AcpiDmDumpXsdt, DtCompileXsdt,  "Extended System Description Table"},
     {NULL,          NULL,                   NULL,           NULL,           NULL}
