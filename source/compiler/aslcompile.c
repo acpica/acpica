@@ -906,7 +906,7 @@ CmCleanupAndExit (
      *
      * TBD: SourceOutput should be .TMP, then rename if we want to keep it?
      */
-    if (!Gbl_SourceOutputFlag)
+    if (!Gbl_SourceOutputFlag && Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Handle)
     {
         if (remove (Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Filename))
         {
