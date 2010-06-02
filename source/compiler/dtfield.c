@@ -225,9 +225,6 @@ DtCompileString (
         Length = ByteLength;
     }
 
-    /* If input string is shorter than ByteLength, pad with blanks */
-
-    ACPI_MEMSET (Buffer, 0x20, ByteLength);
     ACPI_MEMCPY (Buffer, Field->Value, Length);
 }
 
@@ -473,23 +470,22 @@ DtCompilePciPath (
  * PARAMETERS:  Buffer              - Output buffer
  *              Field               - Field to be compiled
  *              Info                - Flag info
- *              BitPosition         - Flag bit position
  *
- * RETURN:      Next flag bit position
+ * RETURN:
  *
  * DESCRIPTION: Compile a flag
  *
  *****************************************************************************/
 
-UINT32
+void
 DtCompileFlag (
     UINT8                   *Buffer,
     DT_FIELD                *Field,
-    ACPI_DMTABLE_INFO       *Info,
-    UINT32                  BitPosition)
+    ACPI_DMTABLE_INFO       *Info)
 {
     UINT64                  Value = 0;
     UINT32                  BitLength = 1;
+    UINT8                   BitPosition = 0;
     ACPI_STATUS             Status;
 
 
@@ -510,12 +506,20 @@ DtCompileFlag (
     case ACPI_DMT_FLAG6:
     case ACPI_DMT_FLAG7:
 
+        BitPosition = Info->Opcode;
         BitLength = 1;
         break;
 
     case ACPI_DMT_FLAGS0:
+
+        BitPosition = 0;
+        BitLength = 2;
+        break;
+
+
     case ACPI_DMT_FLAGS2:
 
+        BitPosition = 2;
         BitLength = 2;
         break;
 
@@ -534,10 +538,5 @@ DtCompileFlag (
         Value = 0;
     }
 
-    /* Insert the flag, return next flag bit position */
-
-    Buffer += ACPI_DIV_8 (BitPosition);
-    *Buffer |= (UINT8) (Value << ACPI_MOD_8 (BitPosition));
-
-    return (BitPosition + BitLength);
+    *Buffer |= (UINT8) (Value << BitPosition);
 }

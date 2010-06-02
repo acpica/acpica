@@ -290,12 +290,11 @@ DtCompileBuffer (
     DT_FIELD                *Field,
     UINT32                  ByteLength);
 
-UINT32
+void
 DtCompileFlag (
     UINT8                   *Buffer,
     DT_FIELD                *Field,
-    ACPI_DMTABLE_INFO       *Info,
-    UINT32                  BitPosition);
+    ACPI_DMTABLE_INFO       *Info);
 
 
 /* dtutils - Miscellaneous utilities */

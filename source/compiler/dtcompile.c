@@ -459,7 +459,6 @@ DtCompileTable (
     UINT8                   FieldType;
     UINT8                   *Buffer;
     UINT8                   *FlagBuffer = NULL;
-    UINT32                  FlagBitPosition = 0;
     ACPI_STATUS             Status;
 
 
@@ -530,7 +529,6 @@ DtCompileTable (
             LocalField = LocalField->Next;
             *Field = LocalField;
 
-            FlagBitPosition = 0;
             FlagBuffer = Buffer;
             break;
 
@@ -540,8 +538,7 @@ DtCompileTable (
 
             if (FlagBuffer)
             {
-                FlagBitPosition = DtCompileFlag (FlagBuffer,
-                     LocalField, Info, FlagBitPosition);
+                DtCompileFlag (FlagBuffer, LocalField, Info);
             }
             else
             {
