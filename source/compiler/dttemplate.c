@@ -116,22 +116,13 @@
 #include "aslcompiler.h"
 #include "acapps.h"
 #include "dtcompiler.h"
-#include "dttemplate.h"
+#include "dttemplate.h" /* Contains the hex ACPI table templates */
 
 #define _COMPONENT          DT_COMPILER
         ACPI_MODULE_NAME    ("dttemplate")
 
 
-extern ACPI_DMTABLE_DATA    AcpiDmTableData[];
-
-void
-AslInitializeGlobals (
-    void);
-
-void
-AdDisassemblerHeader (
-    char                    *Filename);
-
+/* Local prototypes */
 
 static ACPI_STATUS
 DtCreateOneTemplate (
@@ -176,7 +167,7 @@ DtCreateTemplates (
     /*
      * Validate signature and get the template data:
      *  1) Signature must be 4 characters
-     *  2) Signature must not be an AML table
+     *  2) Signature must not be an AML table (DSDT/SSDT)
      *  3) Signature must be a recognized ACPI table
      *  4) There must be a template associated with the signature
      */
@@ -289,8 +280,6 @@ DtCreateOneTemplate (
     ACPI_STATUS             Status = AE_OK;
 
 
-    /* This is code common with AdAmlDisassemble */
-
     /* New file will have a .asl suffix */
 
     DisasmFilename = FlGenerateFilename (
@@ -298,8 +287,7 @@ DtCreateOneTemplate (
     if (!DisasmFilename)
     {
         fprintf (stderr, "Could not generate output filename\n");
-        Status = AE_ERROR;
-        goto Cleanup;
+        return (AE_ERROR);
     }
 
     /* Probably should prompt to overwrite the file */
@@ -308,9 +296,10 @@ DtCreateOneTemplate (
     if (!File)
     {
         fprintf (stderr, "Could not open output file %s\n", DisasmFilename);
-        Status = AE_ERROR;
-        goto Cleanup;
+        return (AE_ERROR);
     }
+
+    /* Emit the file header */
 
     AcpiOsRedirectOutput (File);
 
@@ -319,6 +308,8 @@ DtCreateOneTemplate (
         TableData->Signature);
     AcpiOsPrintf (" * Format: [HexOffset DecimalOffset ByteLength]  FieldName : FieldValue\n */\n\n");
 
+    /* Dump the entire data table */
+
     AcpiDmDumpDataTable ((ACPI_TABLE_HEADER *) TableData->Template);
     fprintf (stderr,
         "Created ACPI table template for [%4.4s], written to \"%s\"\n",
@@ -326,7 +317,5 @@ DtCreateOneTemplate (
 
     fclose (File);
     AcpiOsRedirectOutput (stdout);
-
-Cleanup:
     return (Status);
 }

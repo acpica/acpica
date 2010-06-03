@@ -131,10 +131,6 @@ BOOLEAN                 AslToFile = TRUE;
 
 /* Local prototypes */
 
-void
-AslInitializeGlobals (
-    void);
-
 static char **
 AsDoWildcard (
     char                    *DirectoryPathname,

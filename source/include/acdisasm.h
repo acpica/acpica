@@ -338,6 +338,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoWdrt[];
 /*
  * dmtable
  */
+extern ACPI_DMTABLE_DATA        AcpiDmTableData[];
 
 ACPI_DMTABLE_DATA *
 AcpiDmGetTableData (
@@ -785,5 +786,14 @@ void
 AcpiDmCheckResourceReference (
     ACPI_PARSE_OBJECT       *Op,
     ACPI_WALK_STATE         *WalkState);
+
+
+/*
+ * acdisasm
+ */
+void
+AdDisassemblerHeader (
+    char                    *Filename);
+
 
 #endif  /* __ACDISASM_H__ */

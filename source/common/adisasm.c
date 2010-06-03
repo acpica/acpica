@@ -153,10 +153,6 @@ AdCreateTableHeader (
     char                    *Filename,
     ACPI_TABLE_HEADER       *Table);
 
-void
-AdDisassemblerHeader (
-    char                    *Filename);
-
 ACPI_STATUS
 AdDeferredParse (
     ACPI_PARSE_OBJECT       *Op,
