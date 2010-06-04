@@ -183,6 +183,9 @@ AslInitializeGlobals (
 
     Gbl_Files[ASL_FILE_AML_OUTPUT].Filename = NULL;
     Gbl_Files[ASL_FILE_AML_OUTPUT].Handle = NULL;
+
+    Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Filename = NULL;
+    Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Handle = NULL;
 }
 
 
