@@ -124,13 +124,48 @@
 
 /* Local prototypes */
 
+static BOOLEAN
+AcpiUtIsSpecialTable (
+    char                    *Signature);
+
 static ACPI_STATUS
 DtCreateOneTemplate (
+    char                    *Signature,
     ACPI_DMTABLE_DATA       *TableData);
 
 static ACPI_STATUS
 DtCreateAllTemplates (
     void);
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtIsSpecialTable
+ *
+ * PARAMETERS:  Signature           - ACPI table signature
+ *
+ * RETURN:      TRUE if signature is a special ACPI table
+ *
+ * DESCRIPTION: Check for valid ACPI tables that are not in the main ACPI
+ *              table data structure (AcpiDmTableData).
+ *
+ ******************************************************************************/
+
+static BOOLEAN
+AcpiUtIsSpecialTable (
+    char                    *Signature)
+{
+
+    if (ACPI_COMPARE_NAME (Signature, ACPI_SIG_DSDT) ||
+        ACPI_COMPARE_NAME (Signature, ACPI_SIG_SSDT) ||
+        ACPI_COMPARE_NAME (Signature, ACPI_SIG_FACS) ||
+        ACPI_COMPARE_NAME (Signature, ACPI_RSDP_NAME))
+    {
+        return (TRUE);
+    }
+
+    return (FALSE);
+}
 
 
 /*******************************************************************************
@@ -167,36 +202,28 @@ DtCreateTemplates (
     /*
      * Validate signature and get the template data:
      *  1) Signature must be 4 characters
-     *  2) Signature must not be an AML table (DSDT/SSDT)
-     *  3) Signature must be a recognized ACPI table
-     *  4) There must be a template associated with the signature
+     *  2) Signature must be a recognized ACPI table
+     *  3) There must be a template associated with the signature
      */
-    if (strlen (Signature) < ACPI_NAME_SIZE)
+    if (strlen (Signature) != ACPI_NAME_SIZE)
     {
         fprintf (stderr, "%s, Invalid ACPI table signature\n", Signature);
         return (AE_ERROR);
     }
 
-    if (AcpiUtIsAmlTable ((ACPI_TABLE_HEADER *) Signature))
-    {
-        /* We could create a small template, might be useful */
-
-        fprintf (stderr,
-            "%4.4s is an AML ACPI table, cannot create template\n", Signature);
-        return (AE_ERROR);
-    }
-
     TableData = AcpiDmGetTableData (Signature);
-    if (!TableData)
+    if (TableData)
+    {
+        if (!TableData->Template)
+        {
+            fprintf (stderr, "%4.4s, No template available\n", Signature);
+            return (AE_ERROR);
+        }
+    }
+    else if (!AcpiUtIsSpecialTable (Signature))
     {
         fprintf (stderr,
             "%4.4s, Unrecognized ACPI table signature\n", Signature);
-        return (AE_ERROR);
-    }
-
-    if (!TableData->Template)
-    {
-        fprintf (stderr, "%4.4s, No template available\n", Signature);
         return (AE_ERROR);
     }
 
@@ -206,8 +233,8 @@ DtCreateTemplates (
         return (Status);
     }
 
-    DtCreateOneTemplate (TableData);
-    return (AE_OK);
+    Status = DtCreateOneTemplate (Signature, TableData);
+    return (Status);
 }
 
 
@@ -247,12 +274,42 @@ DtCreateAllTemplates (
 
         if (TableData->Template)
         {
-            Status = DtCreateOneTemplate (TableData);
+            Status = DtCreateOneTemplate (TableData->Signature,
+                        TableData);
             if (ACPI_FAILURE (Status))
             {
                 return (Status);
             }
         }
+    }
+
+    /*
+     * Create the "special ACPI tables:
+     * 1) DSDT/SSDT are AML tables, not data tables
+     * 2) FACS and RSDP have non-standard headers
+     */
+    Status = DtCreateOneTemplate (ACPI_SIG_DSDT, NULL);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    Status = DtCreateOneTemplate (ACPI_SIG_SSDT, NULL);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    Status = DtCreateOneTemplate (ACPI_SIG_FACS, NULL);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    Status = DtCreateOneTemplate (ACPI_RSDP_NAME, NULL);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
     }
 
     return (AE_OK);
@@ -263,7 +320,9 @@ DtCreateAllTemplates (
  *
  * FUNCTION:    DtCreateOneTemplate
  *
- * PARAMETERS:  TableData           - Entry in ACPI table data structure
+ * PARAMETERS:  Signature           - ACPI signature, NULL terminated.
+ *              TableData           - Entry in ACPI table data structure.
+ *                                    NULL if a special ACPI table.
  *
  * RETURN:      Status
  *
@@ -273,6 +332,7 @@ DtCreateAllTemplates (
 
 static ACPI_STATUS
 DtCreateOneTemplate (
+    char                    *Signature,
     ACPI_DMTABLE_DATA       *TableData)
 {
     char                    *DisasmFilename;
@@ -283,7 +343,7 @@ DtCreateOneTemplate (
     /* New file will have a .asl suffix */
 
     DisasmFilename = FlGenerateFilename (
-        TableData->Signature, FILE_SUFFIX_ASL_CODE);
+        Signature, FILE_SUFFIX_ASL_CODE);
     if (!DisasmFilename)
     {
         fprintf (stderr, "Could not generate output filename\n");
@@ -292,6 +352,7 @@ DtCreateOneTemplate (
 
     /* Probably should prompt to overwrite the file */
 
+    AcpiUtStrlwr (DisasmFilename);
     File = fopen (DisasmFilename, "w+");
     if (!File)
     {
@@ -299,23 +360,64 @@ DtCreateOneTemplate (
         return (AE_ERROR);
     }
 
-    /* Emit the file header */
+    /* Emit the common file header */
 
     AcpiOsRedirectOutput (File);
 
-    AdDisassemblerHeader (DisasmFilename);
-    AcpiOsPrintf (" * ACPI Data Table [%4.4s]\n *\n",
-        TableData->Signature);
-    AcpiOsPrintf (" * Format: [HexOffset DecimalOffset ByteLength]  FieldName : FieldValue\n */\n\n");
+    AcpiOsPrintf ("/*\n * %s\n", IntelAcpiCA);
+    AcpiOsPrintf (" * iASL Compiler/Disassembler version %8.8X\n *\n",
+        ACPI_CA_VERSION);
+    AcpiOsPrintf (" * Template for [%4.4s] ACPI Table\n",
+        Signature);
 
-    /* Dump the entire data table */
+    /* Dump the actual ACPI table */
 
-    AcpiDmDumpDataTable ((ACPI_TABLE_HEADER *) TableData->Template);
+    if (TableData)
+    {
+        /* Normal case, tables that appear in AcpiDmTableData */
+
+        AcpiOsPrintf (" * Format: [HexOffset DecimalOffset ByteLength]"
+            "  FieldName : FieldValue\n */\n\n");
+        AcpiDmDumpDataTable (ACPI_CAST_PTR (ACPI_TABLE_HEADER,
+            TableData->Template));
+    }
+    else
+    {
+        /* Special ACPI tables - DSDT, SSDT, FACS, RSDP */
+
+        AcpiOsPrintf (" */\n\n");
+        if (ACPI_COMPARE_NAME (Signature, ACPI_SIG_DSDT))
+        {
+            fwrite (TemplateDsdt, sizeof (TemplateDsdt) -1, 1, File);
+        }
+        else if (ACPI_COMPARE_NAME (Signature, ACPI_SIG_SSDT))
+        {
+            fwrite (TemplateSsdt, sizeof (TemplateSsdt) -1, 1, File);
+        }
+        else if (ACPI_COMPARE_NAME (Signature, ACPI_SIG_FACS))
+        {
+            AcpiDmDumpDataTable (ACPI_CAST_PTR (ACPI_TABLE_HEADER,
+                TemplateFacs));
+        }
+        else if (ACPI_COMPARE_NAME (Signature, ACPI_RSDP_NAME))
+        {
+            AcpiDmDumpDataTable (ACPI_CAST_PTR (ACPI_TABLE_HEADER,
+                TemplateRsdp));
+        }
+        else
+        {
+            fprintf (stderr,
+                "%4.4s, Unrecognized ACPI table signature\n", Signature);
+            return (AE_ERROR);
+        }
+    }
+
     fprintf (stderr,
         "Created ACPI table template for [%4.4s], written to \"%s\"\n",
-        TableData->Signature, DisasmFilename);
+        Signature, DisasmFilename);
 
     fclose (File);
     AcpiOsRedirectOutput (stdout);
+    ACPI_FREE (DisasmFilename);
     return (Status);
 }
