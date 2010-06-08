@@ -340,6 +340,12 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoWdrt[];
  */
 extern ACPI_DMTABLE_DATA        AcpiDmTableData[];
 
+UINT8
+AcpiDmGenerateChecksum (
+    void                    *Table,
+    UINT32                  Length,
+    UINT8                   OriginalChecksum);
+
 ACPI_DMTABLE_DATA *
 AcpiDmGetTableData (
     char                    *Signature);

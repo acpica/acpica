@@ -132,10 +132,6 @@ AcpiDmCheckAscii (
     char                    *RepairedName,
     UINT32                  Count);
 
-UINT8
-AcpiTbGenerateChecksum (
-    ACPI_TABLE_HEADER       *Table);
-
 
 /* These tables map a subtable type to a description string */
 
@@ -282,10 +278,11 @@ ACPI_DMTABLE_DATA    AcpiDmTableData[] =
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbGenerateChecksum
+ * FUNCTION:    AcpiDmGenerateChecksum
  *
- * PARAMETERS:  Table               - Pointer to a valid ACPI table (with a
- *                                    standard ACPI header)
+ * PARAMETERS:  Table               - Pointer to table to be checksummed
+ *              Length              - Length of the table
+ *              OriginalChecksum    - Value of the checksum field
  *
  * RETURN:      8 bit checksum of buffer
  *
@@ -294,19 +291,21 @@ ACPI_DMTABLE_DATA    AcpiDmTableData[] =
  ******************************************************************************/
 
 UINT8
-AcpiTbGenerateChecksum (
-    ACPI_TABLE_HEADER       *Table)
+AcpiDmGenerateChecksum (
+    void                    *Table,
+    UINT32                  Length,
+    UINT8                   OriginalChecksum)
 {
     UINT8                   Checksum;
 
 
     /* Sum the entire table as-is */
 
-    Checksum = AcpiTbChecksum ((UINT8 *) Table, Table->Length);
+    Checksum = AcpiTbChecksum ((UINT8 *) Table, Length);
 
     /* Subtract off the existing checksum value in the table */
 
-    Checksum = (UINT8) (Checksum - Table->Checksum);
+    Checksum = (UINT8) (Checksum - OriginalChecksum);
 
     /* Compute the final checksum */
 
@@ -753,7 +752,9 @@ AcpiDmDumpTable (
             /* Checksum, display and validate */
 
             AcpiOsPrintf ("%2.2X", *Target);
-            Temp8 = AcpiTbGenerateChecksum (Table);
+            Temp8 = AcpiDmGenerateChecksum (Table,
+                        ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Length,
+                        ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Checksum);
             if (Temp8 != ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Checksum)
             {
                 AcpiOsPrintf (
