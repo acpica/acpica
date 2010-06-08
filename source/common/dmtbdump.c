@@ -733,7 +733,7 @@ AcpiDmDumpErst (
     {
         AcpiOsPrintf ("\n");
         Status = AcpiDmDumpTable (Length, Offset, SubTable,
-                    sizeof (ACPI_WHEA_HEADER), AcpiDmTableInfoEinj0);
+                    sizeof (ACPI_WHEA_HEADER), AcpiDmTableInfoErst0);
         if (ACPI_FAILURE (Status))
         {
             return;

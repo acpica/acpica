@@ -543,6 +543,8 @@ DtGetBufferLength (
  *
  * DESCRIPTION: Get length of bytes needed to compile the field
  *
+ * Note: This function must remain in sync with AcpiDmDumpTable.
+ *
  *****************************************************************************/
 
 UINT32
@@ -574,12 +576,16 @@ DtGetFieldLength (
     case ACPI_DMT_UINT8:
     case ACPI_DMT_CHKSUM:
     case ACPI_DMT_SPACEID:
+    case ACPI_DMT_IVRS:
     case ACPI_DMT_MADT:
     case ACPI_DMT_SRAT:
     case ACPI_DMT_ASF:
     case ACPI_DMT_HESTNTYP:
     case ACPI_DMT_FADTPM:
-    case ACPI_DMT_IVRS:
+    case ACPI_DMT_EINJACT:
+    case ACPI_DMT_EINJINST:
+    case ACPI_DMT_ERSTACT:
+    case ACPI_DMT_ERSTINST:
         ByteLength = 1;
         break;
 

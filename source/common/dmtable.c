@@ -154,6 +154,74 @@ static const char           *AcpiDmDmarSubnames[] =
     "Unknown SubTable Type"         /* Reserved */
 };
 
+static const char           *AcpiDmEinjActions[] =
+{
+    "Begin Operation",
+    "Get Trigger Table",
+    "Set Error Type",
+    "Get Error Type",
+    "End Operation",
+    "Execute Operation",
+    "Check Busy Status",
+    "Get Command Status",
+    "Unknown Action"
+};
+
+static const char           *AcpiDmEinjInstructions[] =
+{
+    "Read Register",
+    "Read Register Value",
+    "Write Register",
+    "Write Register Value",
+    "Noop",
+    "Unknown Instruction"
+};
+
+static const char           *AcpiDmErstActions[] =
+{
+    "Begin Write Operation",
+    "Begin Read Operation",
+    "Begin Clear Operation",
+    "End Operation",
+    "Set Record Offset",
+    "Execute Operation",
+    "Check Busy Status",
+    "Get Command Status",
+    "Get Record Identifier",
+    "Set Record Identifier",
+    "Get Record Count",
+    "Begin Dummy Write",
+    "Unused/Unknown Action",
+    "Get Error Address Range",
+    "Get Error Address Length",
+    "Get Error Attributes",
+    "Unknown Action"
+};
+
+static const char           *AcpiDmErstInstructions[] =
+{
+    "Read Register",
+    "Read Register Value",
+    "Write Register",
+    "Write Register Value",
+    "Noop",
+    "Load Var1",
+    "Load Var2",
+    "Store Var1",
+    "Add",
+    "Subtract",
+    "Add Value",
+    "Subtract Value",
+    "Stall",
+    "Stall While True",
+    "Skip Next If True",
+    "GoTo",
+    "Set Source Address",
+    "Set Destination Address",
+    "Move Data",
+    "Unknown Instruction"
+};
+
 static const char           *AcpiDmHestSubnames[] =
 {
     "IA-32 Machine Check Exception",
@@ -509,6 +577,8 @@ AcpiDmLineHeader2 (
  *
  * DESCRIPTION: Display ACPI table contents by walking the Info table.
  *
+ * Note: This function must remain in sync with DtGetFieldLength.
+ *
  ******************************************************************************/
 
 ACPI_STATUS
@@ -569,6 +639,10 @@ AcpiDmDumpTable (
         case ACPI_DMT_ASF:
         case ACPI_DMT_HESTNTYP:
         case ACPI_DMT_FADTPM:
+        case ACPI_DMT_EINJACT:
+        case ACPI_DMT_EINJINST:
+        case ACPI_DMT_ERSTACT:
+        case ACPI_DMT_ERSTINST:
             ByteLength = 1;
             break;
         case ACPI_DMT_UINT16:
@@ -807,6 +881,58 @@ AcpiDmDumpTable (
             AcpiOsPrintf ("%4.4X <%s>\n", ACPI_GET16 (Target), AcpiDmDmarSubnames[Temp16]);
             break;
 
+        case ACPI_DMT_EINJACT:
+
+            /* EINJ Action types */
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_EINJ_ACTION_RESERVED)
+            {
+                Temp8 = ACPI_EINJ_ACTION_RESERVED;
+            }
+
+            AcpiOsPrintf ("%2.2X (%s)\n", *Target, AcpiDmEinjActions[Temp8]);
+            break;
+
+        case ACPI_DMT_EINJINST:
+
+            /* EINJ Instruction types */
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_EINJ_INSTRUCTION_RESERVED)
+            {
+                Temp8 = ACPI_EINJ_INSTRUCTION_RESERVED;
+            }
+
+            AcpiOsPrintf ("%2.2X (%s)\n", *Target, AcpiDmEinjInstructions[Temp8]);
+            break;
+
+        case ACPI_DMT_ERSTACT:
+
+            /* ERST Action types */
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_ERST_ACTION_RESERVED)
+            {
+                Temp8 = ACPI_ERST_ACTION_RESERVED;
+            }
+
+            AcpiOsPrintf ("%2.2X (%s)\n", *Target, AcpiDmErstActions[Temp8]);
+            break;
+
+        case ACPI_DMT_ERSTINST:
+
+            /* ERST Instruction types */
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_ERST_INSTRUCTION_RESERVED)
+            {
+                Temp8 = ACPI_ERST_INSTRUCTION_RESERVED;
+            }
+
+            AcpiOsPrintf ("%2.2X (%s)\n", *Target, AcpiDmErstInstructions[Temp8]);
+            break;
+
         case ACPI_DMT_HEST:
 
             /* HEST subtable types */
@@ -841,7 +967,6 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf ("%2.2X (%s)\n", *Target, AcpiDmHestNotifySubnames[Temp8]);
             break;
-
 
         case ACPI_DMT_MADT:
 
