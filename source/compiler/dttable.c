@@ -283,7 +283,7 @@ DtCompileRsdp (
 
     if (Rsdp->Revision > 0)
     {
-        /* Compile the "extended" RSDP (ACPI 2.0+) */
+        /* Compile the "extended" part of the RSDP as a subtable */
 
         Status = DtCompileTable (PFieldList, AcpiDmTableInfoRsdp2,
                     &Subtable, TRUE);
@@ -294,9 +294,10 @@ DtCompileRsdp (
 
         DtInsertSubtable (Gbl_RootTable, Subtable);
 
-        /* Set extended checksum for entire RSDP */
+        /* Set length and extended checksum for entire RSDP */
 
         RsdpExtension = ACPI_CAST_PTR (ACPI_RSDP_EXTENSION, Subtable->Buffer);
+        RsdpExtension->Length = Gbl_RootTable->Length + Subtable->Length;
         DtSetTableChecksum (&RsdpExtension->ExtendedChecksum);
     }
 
