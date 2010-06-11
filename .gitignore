@@ -60,11 +60,6 @@ libraries/size_dbg.txt
 libraries/size_rel.txt
 libraries/apitest.exe
 
-tests/tmp
-tests/misc/*.aml
-tests/aapits/tmp/
-tests/aslts/tmp/
-
 *.sh
 new
 patches
