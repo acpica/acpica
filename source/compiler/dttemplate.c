@@ -211,6 +211,19 @@ DtCreateTemplates (
         return (AE_ERROR);
     }
 
+    /*
+     * Some slack for the two strange tables whose name is different than
+     * their signatures: MADT->APIC and FADT->FACP.
+     */
+    if (!strcmp (Signature, "MADT"))
+    {
+        Signature = "APIC";
+    }
+    else if (!strcmp (Signature, "FADT"))
+    {
+        Signature = "FACP";
+    }
+
     TableData = AcpiDmGetTableData (Signature);
     if (TableData)
     {
@@ -376,8 +389,17 @@ DtCreateOneTemplate (
     {
         /* Normal case, tables that appear in AcpiDmTableData */
 
-        AcpiOsPrintf (" * Format: [HexOffset DecimalOffset ByteLength]"
-            "  FieldName : FieldValue\n */\n\n");
+        if (Gbl_VerboseTemplates)
+        {
+            AcpiOsPrintf (" * Format: [HexOffset DecimalOffset ByteLength]"
+                "  FieldName : HexFieldValue\n */\n\n");
+        }
+        else
+        {
+            AcpiOsPrintf (" * Format: [ByteLength]"
+                "  FieldName : HexFieldValue\n */\n\n");
+        }
+
         AcpiDmDumpDataTable (ACPI_CAST_PTR (ACPI_TABLE_HEADER,
             TableData->Template));
     }

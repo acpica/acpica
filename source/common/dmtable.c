@@ -117,6 +117,7 @@
 #include "accommon.h"
 #include "acdisasm.h"
 #include "actables.h"
+#include "aslcompiler.h"
 #include "dtcompiler.h"
 
 /* This module used for application-level code only */
@@ -498,10 +499,13 @@ AcpiDmDumpDataTable (
         }
     }
 
-    /* Always dump the raw table data */
+    if (!Gbl_DoTemplates || Gbl_VerboseTemplates)
+    {
+        /* Dump the raw table data */
 
-    AcpiOsPrintf ("\nRaw Table Data\n\n");
-    AcpiUtDumpBuffer2 (ACPI_CAST_PTR (UINT8, Table), Length, DB_BYTE_DISPLAY);
+        AcpiOsPrintf ("\nRaw Table Data\n\n");
+        AcpiUtDumpBuffer2 (ACPI_CAST_PTR (UINT8, Table), Length, DB_BYTE_DISPLAY);
+    }
 }
 
 
@@ -529,15 +533,31 @@ AcpiDmLineHeader (
     char                    *Name)
 {
 
-    if (ByteLength)
+    if (Gbl_DoTemplates && !Gbl_VerboseTemplates) /* Terse template */
     {
-        AcpiOsPrintf ("[%3.3Xh %4.4d% 3d] %28s : ",
-            Offset, Offset, ByteLength, Name);
+        if (ByteLength)
+        {
+            AcpiOsPrintf ("[%.3d] %34s : ",
+                ByteLength, Name);
+        }
+        else
+        {
+            AcpiOsPrintf ("%40s : ",
+                Name);
+        }
     }
-    else
+    else /* Normal disassembler or verbose template */
     {
-        AcpiOsPrintf ("%43s : ",
-            Name);
+        if (ByteLength)
+        {
+            AcpiOsPrintf ("[%3.3Xh %4.4d% 3d] %28s : ",
+                Offset, Offset, ByteLength, Name);
+        }
+        else
+        {
+            AcpiOsPrintf ("%43s : ",
+                Name);
+        }
     }
 }
 
@@ -549,15 +569,31 @@ AcpiDmLineHeader2 (
     UINT32                  Value)
 {
 
-    if (ByteLength)
+    if (Gbl_DoTemplates && !Gbl_VerboseTemplates) /* Terse template */
     {
-        AcpiOsPrintf ("[%3.3Xh %4.4d% 3d] %24s % 3d : ",
-            Offset, Offset, ByteLength, Name, Value);
+        if (ByteLength)
+        {
+            AcpiOsPrintf ("[%.3d] %30s % 3d : ",
+                ByteLength, Name, Value);
+        }
+        else
+        {
+            AcpiOsPrintf ("%36s % 3d : ",
+                Name, Value);
+        }
     }
-    else
+    else /* Normal disassembler or verbose template */
     {
-        AcpiOsPrintf ("[%3.3Xh %4.4d   ] %24s % 3d : ",
-            Offset, Offset, Name, Value);
+        if (ByteLength)
+        {
+            AcpiOsPrintf ("[%3.3Xh %4.4d% 3d] %24s % 3d : ",
+                Offset, Offset, ByteLength, Name, Value);
+        }
+        else
+        {
+            AcpiOsPrintf ("[%3.3Xh %4.4d   ] %24s % 3d : ",
+                Offset, Offset, Name, Value);
+        }
     }
 }
 

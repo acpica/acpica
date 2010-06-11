@@ -220,6 +220,7 @@ Options (
 
     printf ("\nACPI Data Tables:\n");
     printf ("  -T [Sig]       Create table template for Sig (or \"ALL\")\n");
+    printf ("  -vt            Create verbose templates (full disassembly)\n");
 
     printf ("\nAML Disassembler:\n");
     printf ("  -d  [file]     Disassemble or decode binary ACPI table to file (*.dsl)\n");
@@ -773,8 +774,9 @@ AslDoOptions (
 
 
     case 'T':
-        DtCreateTemplates (AcpiGbl_Optarg);
-        exit (1);
+        Gbl_DoTemplates = TRUE;
+        Gbl_TemplateSignature = AcpiGbl_Optarg;
+        break;
 
 
     case 'v':
@@ -803,6 +805,10 @@ AslDoOptions (
 
         case 's':
             Gbl_DoSignon = FALSE;
+            break;
+
+        case 't':
+            Gbl_VerboseTemplates = TRUE;
             break;
 
         default:
@@ -894,6 +900,12 @@ AslCommandLine (
     /* Process all command line options */
 
     BadCommandLine = AslDoOptions (argc, argv, FALSE);
+
+    if (Gbl_DoTemplates)
+    {
+        DtCreateTemplates (Gbl_TemplateSignature);
+        exit (1);
+    }
 
     /* Next parameter must be the input filename */
 
