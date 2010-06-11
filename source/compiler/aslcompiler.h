@@ -698,6 +698,10 @@ DbgPrint (
 #define ASL_TREE_OUTPUT     2
 
 void
+UtDisplaySupportedTables (
+    void);
+
+void
 UtDisplayConstantOpcodes (
     void);
 

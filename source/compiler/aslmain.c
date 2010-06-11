@@ -219,7 +219,7 @@ Options (
     printf ("  -ls            Create combined source file (expanded includes) (*.src)\n");
 
     printf ("\nACPI Data Tables:\n");
-    printf ("  -T [Sig]       Create table template for Sig (or \"ALL\")\n");
+    printf ("  -T <Sig>       Create table template file for <Sig> (or \"ALL\")\n");
     printf ("  -vt            Create verbose templates (full disassembly)\n");
 
     printf ("\nAML Disassembler:\n");
@@ -234,6 +234,7 @@ Options (
     printf ("  -h             Additional help and compiler debug options\n");
     printf ("  -hc            Display operators allowed in constant expressions\n");
     printf ("  -hr            Display ACPI reserved method names\n");
+    printf ("  -ht            Display currently supported ACPI table names\n");
 }
 
 
@@ -584,6 +585,10 @@ AslDoOptions (
             /* reserved names */
 
             ApDisplayReservedNames ();
+            exit (0);
+
+        case 't':
+            UtDisplaySupportedTables ();
             exit (0);
 
         default:
