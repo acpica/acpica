@@ -57,6 +57,7 @@ mkdir -p unixtemp/tools
 mkdir -p unixtemp/os_specific
 mkdir -p unixtemp/tests
 mkdir -p unixtemp/tests/misc
+mkdir -p unixtemp/tests/templates
 
 #
 # Copy ACPICA subsystem source code
@@ -83,6 +84,8 @@ cp -r source/tools/examples unixtemp/tools
 # iASL/ACPICA miscellaneous tests (not full test suites)
 #
 cp -r tests/misc/*.asl unixtemp/tests/misc
+cp -r tests/templates/Makefile unixtemp/tests/templates
+cp -r tests/templates/templates.sh unixtemp/tests/templates
 
 #
 # OS-specific interfaces
@@ -160,6 +163,7 @@ mkdir -p wintemp/generate/msvc
 mkdir -p wintemp/source/os_specific/service_layers
 mkdir -p wintemp/tests
 mkdir -p wintemp/tests/misc
+mkdir -p wintemp/tests/templates
 
 #
 # Copy ACPICA subsystem source code
@@ -183,6 +187,8 @@ cp -r source/tools wintemp/source/tools
 # iASL/ACPICA miscellaneous tests (not full test suites)
 #
 cp -r tests/misc/*.asl wintemp/tests/misc
+cp -r tests/templates/Makefile wintemp/tests/templates
+cp -r tests/templates/templates.sh wintemp/tests/templates
 
 #
 # Copy all OS-specific interfaces
