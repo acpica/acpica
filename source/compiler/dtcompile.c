@@ -583,6 +583,8 @@ DtCompileTable (
                 goto Error;
             }
 
+            DtSetSubtableLength (InlineSubtable);
+
             ACPI_MEMCPY (Buffer, InlineSubtable->Buffer, FieldLength);
             ACPI_FREE (InlineSubtable->Buffer);
             ACPI_FREE (InlineSubtable);

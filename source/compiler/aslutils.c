@@ -184,17 +184,17 @@ UtDisplaySupportedTables (
 
     /* Special tables */
 
-    printf ("%8u) %s\n", 1, ACPI_SIG_DSDT);
-    printf ("%8u) %s\n", 2, ACPI_SIG_SSDT);
-    printf ("%8u) %s (FADT)\n", 3, ACPI_SIG_FADT);
-    printf ("%8u) %s\n", 4, ACPI_SIG_FACS);
-    printf ("%8u) %s\n", 5, ACPI_RSDP_NAME);
+    printf ("%8u) %s    %s\n", 1, ACPI_SIG_DSDT, "Differentiated System Description Table");
+    printf ("%8u) %s    %s\n", 2, ACPI_SIG_SSDT, "Secondary System Description Table");
+    printf ("%8u) %s    %s\n", 3, ACPI_SIG_FADT, "Fixed ACPI Description Table (FADT)");
+    printf ("%8u) %s    %s\n", 4, ACPI_SIG_FACS, "Firmware ACPI Control Structure");
+    printf ("%8u) %s    %s\n", 5, ACPI_RSDP_NAME, "Root System Description Pointer");
 
     /* All data tables with common table header */
 
     for (TableData = AcpiDmTableData; TableData->Signature; TableData++)
     {
-        printf ("%8u) %s\n", i, TableData->Signature);
+        printf ("%8u) %s    %s\n", i, TableData->Signature, TableData->Name);
         i++;
     }
 }

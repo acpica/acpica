@@ -739,7 +739,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoEcdt[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoEinj[] =
 {
-    {ACPI_DMT_UINT32,   ACPI_EINJ_OFFSET (HeaderLength),            "Injection Header Length", DT_LENGTH},
+    {ACPI_DMT_UINT32,   ACPI_EINJ_OFFSET (HeaderLength),            "Injection Header Length", 0},
     {ACPI_DMT_UINT8,    ACPI_EINJ_OFFSET (Flags),                   "Flags", 0},
     {ACPI_DMT_UINT24,   ACPI_EINJ_OFFSET (Reserved[0]),             "Reserved", 0},
     {ACPI_DMT_UINT32,   ACPI_EINJ_OFFSET (Entries),                 "Injection Entry Count", 0},
@@ -769,7 +769,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoEinj0[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoErst[] =
 {
-    {ACPI_DMT_UINT32,   ACPI_ERST_OFFSET (HeaderLength),            "Serialization Header Length", DT_LENGTH},
+    {ACPI_DMT_UINT32,   ACPI_ERST_OFFSET (HeaderLength),            "Serialization Header Length", 0},
     {ACPI_DMT_UINT32,   ACPI_ERST_OFFSET (Reserved),                "Reserved", 0},
     {ACPI_DMT_UINT32,   ACPI_ERST_OFFSET (Entries),                 "Instruction Entry Count", 0},
     ACPI_DMT_TERMINATOR

@@ -759,6 +759,11 @@ DtSetTableLength (
         ChildTable = DtGetNextSubtable (ParentTable, ChildTable);
         if (ChildTable)
         {
+            if (ChildTable->LengthField)
+            {
+                DtSetSubtableLength (ChildTable);
+            }
+
             if (ChildTable->Child)
             {
                 ParentTable = ChildTable;
