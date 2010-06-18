@@ -167,7 +167,7 @@ AslDoResponseFile (
 
 
 #define ASL_TOKEN_SEPARATORS    " \t\n"
-#define ASL_SUPPORTED_OPTIONS   "@:2b:c:d^e:fgh^i^I:l^no:p:r:s:t:T:v:w:x:yz"
+#define ASL_SUPPORTED_OPTIONS   "@:2b:c:d^e:fgh^i^I:l^no:p:r:s:t:T:v:w:x:z"
 
 
 /*******************************************************************************
@@ -273,7 +273,6 @@ HelpMessage (
     printf ("  -n             Parse only, no output generation\n");
     printf ("  -ot            Display compile times\n");
     printf ("  -x<level>      Set debug level for trace output\n");
-    printf ("  -y             Temporary: Enable data table compiler\n");
     printf ("  -z             Do not insert new compiler ID for DataTables\n");
 }
 
@@ -849,12 +848,6 @@ AslDoOptions (
     case 'x':
 
         AcpiDbgLevel = strtoul (AcpiGbl_Optarg, NULL, 16);
-        break;
-
-
-    case 'y':
-
-        Gbl_DataTableCompilerAvailable = TRUE;
         break;
 
 

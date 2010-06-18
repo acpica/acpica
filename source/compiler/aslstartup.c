@@ -463,17 +463,6 @@ AslDoOneFile (
      */
     case ASL_INPUT_TYPE_ASCII_DATA:
 
-        /*
-         * Require use of command-line option to enable the data table
-         * compiler -- for now, until development of the compiler is
-         * complete.
-         */
-        if (!Gbl_DataTableCompilerAvailable)
-        {
-            printf ("Data Table Compiler is not available yet\n");
-            return (AE_SUPPORT);
-        }
-
         Status = DtDoCompile ();
 
         if (Gbl_Signature)
@@ -488,7 +477,6 @@ AslDoOneFile (
      * ASL Compilation (Optional)
      */
     case ASL_INPUT_TYPE_ASCII_ASL:
-
 
         /* ACPICA subsystem initialization */
 

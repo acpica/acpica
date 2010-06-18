@@ -17,7 +17,7 @@ echo "Using $ASL_COMPILER"
 # to ensure that they will emit and compile
 #
 $ASL_COMPILER -T ALL > /dev/null 2>&1
-$ASL_COMPILER -y *.asl > /dev/null 2>&1
+$ASL_COMPILER *.asl > /dev/null 2>&1
 
 rm -f *.aml *.asl *.dsl *.log
 
@@ -27,7 +27,7 @@ $ASL_COMPILER -vt -T ALL > /dev/null 2>&1
 
 # Compile the templates
 
-$ASL_COMPILER -y *.asl > /dev/null 2>&1
+$ASL_COMPILER *.asl > /dev/null 2>&1
 
 # Disassemble the compiled templates
 
