@@ -472,11 +472,8 @@ DtGetFieldType (
 
     case ACPI_DMT_BUFFER:
     case ACPI_DMT_BUF16:
-        Type = DT_FIELD_TYPE_BUFFER;
-        break;
-
     case ACPI_DMT_PCI_PATH:
-        Type = DT_FIELD_TYPE_PCI_PATH;
+        Type = DT_FIELD_TYPE_BUFFER;
         break;
 
     case ACPI_DMT_GAS:

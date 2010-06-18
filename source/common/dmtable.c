@@ -813,7 +813,11 @@ AcpiDmDumpTable (
 
             for (Temp8 = 0; Temp8 < 16; Temp8++)
             {
-                AcpiOsPrintf ("%2.2X,", Target[Temp8]);
+                AcpiOsPrintf ("%2.2X", Target[Temp8]);
+                if ((Temp8 + 1) < 16)
+                {
+                    AcpiOsPrintf (",");
+                }
             }
             AcpiOsPrintf ("\n");
             break;

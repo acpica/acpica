@@ -619,7 +619,7 @@ AcpiDmDumpDmar (
             while (PathOffset < ScopeTable->Length)
             {
                 AcpiDmLineHeader ((PathOffset + ScopeOffset + Offset), 2, "PCI Path");
-                AcpiOsPrintf ("[%2.2X, %2.2X]\n", PciPath[0], PciPath[1]);
+                AcpiOsPrintf ("%2.2X,%2.2X\n", PciPath[0], PciPath[1]);
 
                 /* Point to next PCI Path entry */
 
@@ -1325,15 +1325,20 @@ AcpiDmDumpSlit (
                 return;
             }
 
-            AcpiOsPrintf ("%2.2X ", Row[j]);
+            AcpiOsPrintf ("%2.2X", Row[j]);
             Offset++;
 
             /* Display up to 16 bytes per output row */
 
-            if (j && (((j+1) % 16) == 0) && ((j+1) < Localities))
+            if ((j+1) < Localities)
             {
-                AcpiOsPrintf ("\n");
-                AcpiDmLineHeader (Offset, 0, "");
+                AcpiOsPrintf (",");
+
+                if (j && (((j+1) % 16) == 0))
+                {
+                    AcpiOsPrintf ("\n");
+                    AcpiDmLineHeader (Offset, 0, "");
+                }
             }
         }
 
