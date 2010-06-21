@@ -200,6 +200,11 @@ AcpiHwWritePort (
 /*
  * hwgpe - GPE support
  */
+UINT32
+AcpiHwGetGpeRegisterBit (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo);
+
 ACPI_STATUS
 AcpiHwLowDisableGpe (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo);

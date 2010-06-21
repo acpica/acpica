@@ -150,7 +150,7 @@ AcpiEvUpdateGpeEnableMasks (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo)
 {
     ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
-    UINT8                   RegisterBit;
+    UINT32                  RegisterBit;
 
 
     ACPI_FUNCTION_TRACE (EvUpdateGpeEnableMasks);
@@ -162,8 +162,7 @@ AcpiEvUpdateGpeEnableMasks (
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
-    RegisterBit = (UINT8)
-        (1 << (GpeEventInfo->GpeNumber - GpeRegisterInfo->BaseGpeNumber));
+    RegisterBit = AcpiHwGetGpeRegisterBit (GpeEventInfo, GpeRegisterInfo);
 
     /* Clear the wake/run bits up front */
 
@@ -174,12 +173,12 @@ AcpiEvUpdateGpeEnableMasks (
 
     if (GpeEventInfo->RuntimeCount)
     {
-        ACPI_SET_BIT (GpeRegisterInfo->EnableForRun, RegisterBit);
+        ACPI_SET_BIT (GpeRegisterInfo->EnableForRun, (UINT8) RegisterBit);
     }
 
     if (GpeEventInfo->WakeupCount)
     {
-        ACPI_SET_BIT (GpeRegisterInfo->EnableForWake, RegisterBit);
+        ACPI_SET_BIT (GpeRegisterInfo->EnableForWake, (UINT8) RegisterBit);
     }
 
     return_ACPI_STATUS (AE_OK);
