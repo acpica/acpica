@@ -613,6 +613,19 @@ AcpiEvInitializeGpeBlock (
 
             GpeIndex = (i * ACPI_GPE_REGISTER_WIDTH) + j;
             GpeEventInfo = &GpeBlock->EventInfo[GpeIndex];
+            GpeNumber = GpeIndex + GpeBlock->BlockBaseNumber;
+
+            /*
+             * If the GPE has already been enabled for runtime
+             * signalling, make sure that it remains enabled, but
+             * do not increment its reference count.
+             */
+            if (GpeEventInfo->RuntimeCount)
+            {
+                (void) AcpiSetGpe (GpeDevice, GpeNumber, ACPI_GPE_ENABLE);
+                GpeEnabledCount++;
+                continue;
+            }
 
             /* Ignore GPEs that can wake the system */
 
@@ -634,7 +647,6 @@ AcpiEvInitializeGpeBlock (
 
             /* Enable this GPE */
 
-            GpeNumber = GpeIndex + GpeBlock->BlockBaseNumber;
             Status = AcpiEnableGpe (GpeDevice, GpeNumber,
                         ACPI_GPE_TYPE_RUNTIME);
             if (ACPI_FAILURE (Status))
