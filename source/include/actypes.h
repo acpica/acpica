@@ -746,6 +746,7 @@ typedef UINT32                          ACPI_EVENT_STATUS;
 
 #define ACPI_GPE_ENABLE                 0
 #define ACPI_GPE_DISABLE                1
+#define ACPI_GPE_CONDITIONAL_ENABLE     2
 
 /* GpeTypes for AcpiEnableGpe and AcpiDisableGpe */
 

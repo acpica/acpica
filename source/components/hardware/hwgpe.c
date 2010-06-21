@@ -203,6 +203,17 @@ AcpiHwLowSetGpe (
     RegisterBit = AcpiHwGetGpeRegisterBit (GpeEventInfo, GpeRegisterInfo);
     switch (Action)
     {
+    case ACPI_GPE_CONDITIONAL_ENABLE:
+
+        /* Only enable if the EnableForRun bit is set */
+
+        if (!(RegisterBit & GpeRegisterInfo->EnableForRun))
+        {
+            return (AE_BAD_PARAMETER);
+        }
+
+        /*lint -fallthrough */
+
     case ACPI_GPE_ENABLE:
         ACPI_SET_BIT (EnableMask, RegisterBit);
         break;
@@ -241,26 +252,13 @@ ACPI_STATUS
 AcpiHwWriteGpeEnableReg (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo)
 {
-    ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
     ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_ENTRY ();
 
 
-    /* Get the info block for the entire GPE register */
-
-    GpeRegisterInfo = GpeEventInfo->RegisterInfo;
-    if (!GpeRegisterInfo)
-    {
-        return (AE_NOT_EXIST);
-    }
-
-    /* Write the entire GPE (runtime) enable register */
-
-    Status = AcpiHwWrite (GpeRegisterInfo->EnableForRun,
-                    &GpeRegisterInfo->EnableAddress);
-
+    Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_CONDITIONAL_ENABLE);
     return (Status);
 }
 
