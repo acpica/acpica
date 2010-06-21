@@ -157,24 +157,29 @@ AcpiHwGetGpeRegisterBit (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiHwLowDisableGpe
+ * FUNCTION:    AcpiHwLowSetGpe
  *
  * PARAMETERS:  GpeEventInfo        - Info block for the GPE to be disabled
+ *              Action              - Enable or disable
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Disable a single GPE in the enable register.
+ * DESCRIPTION: Enable or disable a single GPE in the parent enable register.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiHwLowDisableGpe (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo)
+AcpiHwLowSetGpe (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    UINT32                  Action)
 {
     ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
     ACPI_STATUS             Status;
     UINT32                  EnableMask;
     UINT32                  RegisterBit;
+
+
+    ACPI_FUNCTION_ENTRY ();
 
 
     /* Get the info block for the entire GPE register */
@@ -193,10 +198,23 @@ AcpiHwLowDisableGpe (
         return (Status);
     }
 
-    /* Clear just the bit that corresponds to this GPE */
+    /* Set or clear just the bit that corresponds to this GPE */
 
     RegisterBit = AcpiHwGetGpeRegisterBit (GpeEventInfo, GpeRegisterInfo);
-    ACPI_CLEAR_BIT (EnableMask, RegisterBit);
+    switch (Action)
+    {
+    case ACPI_GPE_ENABLE:
+        ACPI_SET_BIT (EnableMask, RegisterBit);
+        break;
+
+    case ACPI_GPE_DISABLE:
+        ACPI_CLEAR_BIT (EnableMask, RegisterBit);
+        break;
+
+    default:
+        ACPI_ERROR ((AE_INFO, "Invalid GPE Action, %u\n", Action));
+        return (AE_BAD_PARAMETER);
+    }
 
     /* Write the updated enable mask */
 

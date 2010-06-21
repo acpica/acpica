@@ -365,7 +365,11 @@ AcpiEnableGpe (
         GpeEventInfo->RuntimeCount++;
         if (GpeEventInfo->RuntimeCount == 1)
         {
-            Status = AcpiEvEnableGpe (GpeEventInfo);
+            Status = AcpiEvUpdateGpeEnableMasks (GpeEventInfo);
+            if (ACPI_SUCCESS (Status))
+            {
+                Status = AcpiEvClearAndEnableGpe (GpeEventInfo);
+            }
             if (ACPI_FAILURE (Status))
             {
                 GpeEventInfo->RuntimeCount--;
@@ -397,7 +401,7 @@ AcpiEnableGpe (
         GpeEventInfo->WakeupCount++;
         if (GpeEventInfo->WakeupCount == 1)
         {
-            (void) AcpiEvUpdateGpeEnableMasks (GpeEventInfo);
+            Status = AcpiEvUpdateGpeEnableMasks (GpeEventInfo);
         }
     }
 
@@ -471,7 +475,11 @@ AcpiDisableGpe (
         GpeEventInfo->RuntimeCount--;
         if (!GpeEventInfo->RuntimeCount)
         {
-            Status = AcpiEvDisableGpe (GpeEventInfo);
+            Status = AcpiEvUpdateGpeEnableMasks (GpeEventInfo);
+            if (ACPI_SUCCESS (Status))
+            {
+                Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_DISABLE);
+            }
             if (ACPI_FAILURE (Status))
             {
                 GpeEventInfo->RuntimeCount++;
@@ -496,7 +504,7 @@ AcpiDisableGpe (
         GpeEventInfo->WakeupCount--;
         if (!GpeEventInfo->WakeupCount)
         {
-            (void) AcpiEvUpdateGpeEnableMasks (GpeEventInfo);
+            Status = AcpiEvUpdateGpeEnableMasks (GpeEventInfo);
         }
     }
 
@@ -559,11 +567,11 @@ AcpiSetGpe (
     switch (Action)
     {
     case ACPI_GPE_ENABLE:
-        Status = AcpiEvEnableGpe (GpeEventInfo);
+        Status = AcpiEvClearAndEnableGpe (GpeEventInfo);
         break;
 
     case ACPI_GPE_DISABLE:
-        Status = AcpiEvDisableGpe (GpeEventInfo);
+        Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_ENABLE);
         break;
 
     default:

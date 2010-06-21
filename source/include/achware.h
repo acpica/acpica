@@ -206,8 +206,9 @@ AcpiHwGetGpeRegisterBit (
     ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo);
 
 ACPI_STATUS
-AcpiHwLowDisableGpe (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
+AcpiHwLowSetGpe (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    UINT32                  Action);
 
 ACPI_STATUS
 AcpiHwWriteGpeEnableReg (

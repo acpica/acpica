@@ -749,7 +749,7 @@ AcpiInstallGpeHandler (
 
     /* Disable the GPE before installing the handler */
 
-    Status = AcpiEvDisableGpe (GpeEventInfo);
+    Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_DISABLE);
     if (ACPI_FAILURE (Status))
     {
         goto UnlockAndExit;
@@ -847,7 +847,7 @@ AcpiRemoveGpeHandler (
 
     /* Disable the GPE before removing the handler */
 
-    Status = AcpiEvDisableGpe (GpeEventInfo);
+    Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_DISABLE);
     if (ACPI_FAILURE (Status))
     {
         goto UnlockAndExit;

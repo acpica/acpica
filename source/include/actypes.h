@@ -742,7 +742,7 @@ typedef UINT32                          ACPI_EVENT_STATUS;
 #define ACPI_GPE_MAX                    0xFF
 #define ACPI_NUM_GPE                    256
 
-/* Actions for AcpiSetGpe */
+/* Actions for AcpiSetGpe and AcpiHwLowSetGpe */
 
 #define ACPI_GPE_ENABLE                 0
 #define ACPI_GPE_DISABLE                1
