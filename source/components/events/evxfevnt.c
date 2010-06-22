@@ -571,7 +571,7 @@ AcpiSetGpe (
         break;
 
     case ACPI_GPE_DISABLE:
-        Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_ENABLE);
+        Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_DISABLE);
         break;
 
     default:
