@@ -609,9 +609,11 @@ AcpiEvAsynchEnableGpe (
         }
     }
 
-    /* Enable this GPE */
-
-    (void) AcpiHwWriteGpeEnableReg (GpeEventInfo);
+    /*
+     * Enable this GPE, conditionally. This means that the GPE will only be
+     * physically enabled if the EnableForRun bit is set in the EventInfo
+     */
+    (void) AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_CONDITIONAL_ENABLE);
 
 Exit:
     ACPI_FREE (GpeEventInfo);

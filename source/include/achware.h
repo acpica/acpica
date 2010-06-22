@@ -211,10 +211,6 @@ AcpiHwLowSetGpe (
     UINT32                  Action);
 
 ACPI_STATUS
-AcpiHwWriteGpeEnableReg (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
-
-ACPI_STATUS
 AcpiHwDisableGpeBlock (
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
     ACPI_GPE_BLOCK_INFO     *GpeBlock,

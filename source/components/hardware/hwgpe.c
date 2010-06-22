@@ -236,35 +236,6 @@ AcpiHwLowSetGpe (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiHwWriteGpeEnableReg
- *
- * PARAMETERS:  GpeEventInfo        - Info block for the GPE to be enabled
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Write a GPE enable register.  Note: The bit for this GPE must
- *              already be cleared or set in the parent register
- *              EnableForRun mask.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiHwWriteGpeEnableReg (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo)
-{
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_CONDITIONAL_ENABLE);
-    return (Status);
-}
-
-
-/******************************************************************************
- *
  * FUNCTION:    AcpiHwClearGpe
  *
  * PARAMETERS:  GpeEventInfo        - Info block for the GPE to be cleared
