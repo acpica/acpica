@@ -174,7 +174,7 @@ AcpiEvGpeDetect (
     ACPI_GPE_XRUPT_INFO     *GpeXruptList);
 
 ACPI_STATUS
-AcpiEvUpdateGpeEnableMasks (
+AcpiEvUpdateGpeEnableMask (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 ACPI_STATUS

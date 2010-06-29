@@ -134,26 +134,26 @@ AcpiEvAsynchEnableGpe (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiEvUpdateGpeEnableMasks
+ * FUNCTION:    AcpiEvUpdateGpeEnableMask
  *
  * PARAMETERS:  GpeEventInfo            - GPE to update
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Updates GPE register enable masks based upon whether there are
- *              references (either wake or run) to this GPE
+ * DESCRIPTION: Updates GPE register enable mask based upon whether there are
+ *              runtime references to this GPE
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiEvUpdateGpeEnableMasks (
+AcpiEvUpdateGpeEnableMask (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo)
 {
     ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
     UINT32                  RegisterBit;
 
 
-    ACPI_FUNCTION_TRACE (EvUpdateGpeEnableMasks);
+    ACPI_FUNCTION_TRACE (EvUpdateGpeEnableMask);
 
 
     GpeRegisterInfo = GpeEventInfo->RegisterInfo;
@@ -164,21 +164,15 @@ AcpiEvUpdateGpeEnableMasks (
 
     RegisterBit = AcpiHwGetGpeRegisterBit (GpeEventInfo, GpeRegisterInfo);
 
-    /* Clear the wake/run bits up front */
+    /* Clear the run bit up front */
 
-    ACPI_CLEAR_BIT (GpeRegisterInfo->EnableForWake, RegisterBit);
     ACPI_CLEAR_BIT (GpeRegisterInfo->EnableForRun, RegisterBit);
 
-    /* Set the mask bits only if there are references to this GPE */
+    /* Set the mask bit only if there are references to this GPE */
 
     if (GpeEventInfo->RuntimeCount)
     {
         ACPI_SET_BIT (GpeRegisterInfo->EnableForRun, (UINT8) RegisterBit);
-    }
-
-    if (GpeEventInfo->WakeupCount)
-    {
-        ACPI_SET_BIT (GpeRegisterInfo->EnableForWake, (UINT8) RegisterBit);
     }
 
     return_ACPI_STATUS (AE_OK);

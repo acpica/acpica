@@ -748,12 +748,6 @@ typedef UINT32                          ACPI_EVENT_STATUS;
 #define ACPI_GPE_DISABLE                1
 #define ACPI_GPE_CONDITIONAL_ENABLE     2
 
-/* GpeTypes for AcpiEnableGpe and AcpiDisableGpe */
-
-#define ACPI_GPE_TYPE_WAKE              (UINT8) 0x01
-#define ACPI_GPE_TYPE_RUNTIME           (UINT8) 0x02
-#define ACPI_GPE_TYPE_WAKE_RUN          (UINT8) 0x03
-
 /*
  * GPE info flags - Per GPE
  * +-------+---+-+-+

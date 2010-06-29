@@ -647,8 +647,7 @@ AcpiEvInitializeGpeBlock (
 
             /* Enable this GPE */
 
-            Status = AcpiEnableGpe (GpeDevice, GpeNumber,
-                        ACPI_GPE_TYPE_RUNTIME);
+            Status = AcpiEnableGpe (GpeDevice, GpeNumber);
             if (ACPI_FAILURE (Status))
             {
                 ACPI_EXCEPTION ((AE_INFO, Status,

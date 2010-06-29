@@ -473,14 +473,12 @@ AcpiSetGpe (
 ACPI_STATUS
 AcpiEnableGpe (
     ACPI_HANDLE             GpeDevice,
-    UINT32                  GpeNumber,
-    UINT8                   GpeType);
+    UINT32                  GpeNumber);
 
 ACPI_STATUS
 AcpiDisableGpe (
     ACPI_HANDLE             GpeDevice,
-    UINT32                  GpeNumber,
-    UINT8                   GpeType);
+    UINT32                  GpeNumber);
 
 ACPI_STATUS
 AcpiClearGpe (
