@@ -178,7 +178,7 @@ AcpiEvUpdateGpeEnableMask (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 ACPI_STATUS
-AcpiEvClearAndEnableGpe (
+AcpiEvEnableGpe (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 ACPI_GPE_EVENT_INFO *

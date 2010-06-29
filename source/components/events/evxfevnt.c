@@ -432,7 +432,7 @@ AcpiEnableGpe (
         Status = AcpiEvUpdateGpeEnableMask (GpeEventInfo);
         if (ACPI_SUCCESS (Status))
         {
-            Status = AcpiEvClearAndEnableGpe (GpeEventInfo);
+            Status = AcpiEvEnableGpe (GpeEventInfo);
         }
         if (ACPI_FAILURE (Status))
         {
@@ -567,7 +567,7 @@ AcpiSetGpe (
     switch (Action)
     {
     case ACPI_GPE_ENABLE:
-        Status = AcpiEvClearAndEnableGpe (GpeEventInfo);
+        Status = AcpiEvEnableGpe (GpeEventInfo);
         break;
 
     case ACPI_GPE_DISABLE:

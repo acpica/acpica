@@ -181,7 +181,7 @@ AcpiEvUpdateGpeEnableMask (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiEvClearAndEnableGpe
+ * FUNCTION:    AcpiEvEnableGpe
  *
  * PARAMETERS:  GpeEventInfo            - GPE to enable
  *
@@ -192,13 +192,13 @@ AcpiEvUpdateGpeEnableMask (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiEvClearAndEnableGpe (
+AcpiEvEnableGpe (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo)
 {
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE (EvClearAndEnableGpe);
+    ACPI_FUNCTION_TRACE (EvEnableGpe);
 
 
     /*

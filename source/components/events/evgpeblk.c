@@ -622,9 +622,8 @@ AcpiEvInitializeGpeBlock (
              */
             if (GpeEventInfo->RuntimeCount)
             {
-                (void) AcpiSetGpe (GpeDevice, GpeNumber, ACPI_GPE_ENABLE);
-                GpeEnabledCount++;
-                continue;
+                Status = AcpiEvEnableGpe (GpeEventInfo);
+                goto Enabled;
             }
 
             /* Ignore GPEs that can wake the system */
@@ -648,6 +647,7 @@ AcpiEvInitializeGpeBlock (
             /* Enable this GPE */
 
             Status = AcpiEnableGpe (GpeDevice, GpeNumber);
+Enabled:
             if (ACPI_FAILURE (Status))
             {
                 ACPI_EXCEPTION ((AE_INFO, Status,
