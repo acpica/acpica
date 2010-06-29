@@ -305,6 +305,83 @@ AcpiEnableEvent (
 ACPI_EXPORT_SYMBOL (AcpiEnableEvent)
 
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiGpeWakeup
+ *
+ * PARAMETERS:  GpeDevice       - Parent GPE Device. NULL for GPE0/GPE1
+ *              GpeNumber       - GPE level within the GPE block
+ *              Action          - Enable or Disable
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Set or clear the GPE's wakeup enable mask bit.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiGpeWakeup (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber,
+    UINT8                   Action)
+{
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo;
+    ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
+    ACPI_CPU_FLAGS          Flags;
+    UINT32                  RegisterBit;
+
+
+    ACPI_FUNCTION_TRACE (AcpiGpeWakeup);
+
+
+    Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
+
+    /* Ensure that we have a valid GPE number */
+
+    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeDevice, GpeNumber);
+    if (!GpeEventInfo)
+    {
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
+    }
+
+    GpeRegisterInfo = GpeEventInfo->RegisterInfo;
+    if (!GpeRegisterInfo)
+    {
+        Status = AE_NOT_EXIST;
+        goto UnlockAndExit;
+    }
+
+    RegisterBit = AcpiHwGetGpeRegisterBit (GpeEventInfo, GpeRegisterInfo);
+
+    /* Perform the action */
+
+    switch (Action)
+    {
+    case ACPI_GPE_ENABLE:
+        ACPI_SET_BIT (GpeRegisterInfo->EnableForWake, RegisterBit);
+        break;
+
+    case ACPI_GPE_DISABLE:
+        ACPI_CLEAR_BIT (GpeRegisterInfo->EnableForWake, RegisterBit);
+        break;
+
+    default:
+        ACPI_ERROR ((AE_INFO, "%u, Invalid action", Action));
+        Status = AE_BAD_PARAMETER;
+        break;
+    }
+
+UnlockAndExit:
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiGpeWakeup)
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiEnableGpe

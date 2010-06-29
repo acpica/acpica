@@ -488,6 +488,12 @@ AcpiClearGpe (
     UINT32                  GpeNumber);
 
 ACPI_STATUS
+AcpiGpeWakeup (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber,
+    UINT8                   Action);
+
+ACPI_STATUS
 AcpiGetGpeStatus (
     ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,
