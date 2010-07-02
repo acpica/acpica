@@ -3077,14 +3077,14 @@ AtTableTest0057(void)
 ACPI_STATUS
 AtTableTest0058(void)
 {
-    ACPI_STATUS             Status;
-    UINT32                  i;
 
 #if (!ACPI_CHECKSUM_ABORT)
         TestSkipped++;
         printf ("Test note: ACPI_CHECKSUM_ABORT macros is not TRUE\n");
         return AE_ERROR;
-#endif
+#else
+    ACPI_STATUS             Status;
+    UINT32                  i;
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("tblm0058.aml")))
     {
@@ -3124,6 +3124,7 @@ AtTableTest0058(void)
     }
 
     return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+#endif
 }
 
 /*

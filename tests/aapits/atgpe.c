@@ -397,8 +397,7 @@ AtGpeCommon(
 {
     ACPI_STATUS             Status;
     ACPI_HANDLE             GpeDevice = NULL;
-    UINT32                  Gpe, Flags = 0;
-    UINT8                   Type;
+    UINT32                  Gpe;
     UINT32                  i;
     char                    *ApiCallName;
     ACPI_EVENT_STATUS       GpeStatus, *GpeStatusPointer = &GpeStatus;
@@ -450,6 +449,9 @@ AtGpeCommon(
         }
     }
 
+#if 0
+/* OBSOLETE interface, AcpiSetGpeType */
+
     if (CheckAction != 2 && ApiCall != 0)
     {
         for (i = 0; i < GpeCount; i++)
@@ -467,6 +469,8 @@ AtGpeCommon(
             }
         }
     }
+#endif
+
 
     if (CheckAction == 1)
     {
@@ -480,15 +484,10 @@ AtGpeCommon(
     for (i = 0; i < GpeCount; i++)
     {
         Gpe = GpeNumber[i];
-        Type = GpeType[i];
 
         if (CheckAction == 3)
         {
             Gpe += 256;
-        }
-        if (CheckAction == 4)
-        {
-            Type = (UINT8)~ACPI_GPE_TYPE_WAKE_RUN;
         }
         else if (CheckAction == 5)
         {
@@ -499,23 +498,27 @@ AtGpeCommon(
         {
         case 0:
             ApiCallName = "AcpiSetGpeType";
+#if 0
+/* OBSOLETE INTERFACE */
             Status = AcpiSetGpeType(GpeDevice, Gpe, Type);
+#endif
+            Status = AE_OK;
             break;
         case 1:
             ApiCallName = "AcpiEnableGpe";
-            Status = AcpiEnableGpe(GpeDevice, Gpe, Flags);
+            Status = AcpiEnableGpe(GpeDevice, Gpe);
             break;
         case 2:
             ApiCallName = "AcpiClearGpe";
-            Status = AcpiClearGpe(GpeDevice, Gpe, Flags);
+            Status = AcpiClearGpe(GpeDevice, Gpe);
             break;
         case 3:
             ApiCallName = "AcpiGetGpeStatus";
-            Status = AcpiGetGpeStatus(GpeDevice, Gpe, Flags, GpeStatusPointer);
+            Status = AcpiGetGpeStatus(GpeDevice, Gpe, GpeStatusPointer);
             break;
         case 4:
             ApiCallName = "AcpiDisableGpe";
-            Status = AcpiDisableGpe(GpeDevice, Gpe, Flags);
+            Status = AcpiDisableGpe(GpeDevice, Gpe);
             break;
         default:
             TestErrors++;
@@ -545,6 +548,9 @@ AtGpeCommon(
 }
 
 static UINT32           GpeNumber[] = {0, 7, 8, 15, 16, 31, 63};
+
+#if 0
+/* OBSOLETE */
 static UINT8            GpeType[] = {
         ACPI_GPE_TYPE_WAKE,
         ACPI_GPE_TYPE_RUNTIME,
@@ -553,6 +559,8 @@ static UINT8            GpeType[] = {
         ACPI_GPE_TYPE_RUNTIME,
         ACPI_GPE_TYPE_WAKE_RUN,
         ACPI_GPE_TYPE_WAKE};
+#endif
+
 static UINT8            GpeEolType[] = {
         ACPI_GPE_LEVEL_TRIGGERED,
         ACPI_GPE_EDGE_TRIGGERED,
@@ -568,7 +576,7 @@ static UINT8            GpeEolType[] = {
 ACPI_STATUS
 AtGpeTest0008(void)
 {
-    return AtGpeCommon(NULL, GpeNumber, GpeType,
+    return AtGpeCommon(NULL, GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         0 /* SetGpeType */, 0, AE_OK);
 }
@@ -579,7 +587,7 @@ AtGpeTest0008(void)
 ACPI_STATUS
 AtGpeTest0009(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         0 /* SetGpeType */, 0, AE_OK);
 }
@@ -590,7 +598,7 @@ AtGpeTest0009(void)
 ACPI_STATUS
 AtGpeTest0010(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         0 /* SetGpeType */, 1, AE_BAD_PARAMETER);
 }
@@ -601,7 +609,7 @@ AtGpeTest0010(void)
 ACPI_STATUS
 AtGpeTest0011(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         0 /* SetGpeType */, 2, AE_BAD_PARAMETER);
 }
@@ -612,7 +620,7 @@ AtGpeTest0011(void)
 ACPI_STATUS
 AtGpeTest0012(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         0 /* SetGpeType */, 3, AE_BAD_PARAMETER);
 }
@@ -623,7 +631,7 @@ AtGpeTest0012(void)
 ACPI_STATUS
 AtGpeTest0013(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         0 /* SetGpeType */, 4, AE_BAD_PARAMETER);
 }
@@ -634,7 +642,7 @@ AtGpeTest0013(void)
 ACPI_STATUS
 AtGpeTest0014(void)
 {
-    return AtGpeCommon(NULL, GpeNumber, GpeType,
+    return AtGpeCommon(NULL, GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         1 /* EnableGpe */, 0, AE_OK);
 }
@@ -645,7 +653,7 @@ AtGpeTest0014(void)
 ACPI_STATUS
 AtGpeTest0015(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         1 /* EnableGpe */, 0, AE_OK);
 }
@@ -656,7 +664,7 @@ AtGpeTest0015(void)
 ACPI_STATUS
 AtGpeTest0016(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         1 /* EnableGpe */, 1, AE_BAD_PARAMETER);
 }
@@ -667,7 +675,7 @@ AtGpeTest0016(void)
 ACPI_STATUS
 AtGpeTest0017(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         1 /* EnableGpe */, 2, AE_BAD_PARAMETER);
 }
@@ -678,7 +686,7 @@ AtGpeTest0017(void)
 ACPI_STATUS
 AtGpeTest0018(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         1 /* EnableGpe */, 3, AE_BAD_PARAMETER);
 }
@@ -689,7 +697,7 @@ AtGpeTest0018(void)
 ACPI_STATUS
 AtGpeTest0019(void)
 {
-    return AtGpeCommon(NULL, GpeNumber, GpeType,
+    return AtGpeCommon(NULL, GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         2 /* ClearGpe */, 0, AE_OK);
 }
@@ -700,7 +708,7 @@ AtGpeTest0019(void)
 ACPI_STATUS
 AtGpeTest0020(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         2 /* ClearGpe */, 0, AE_OK);
 }
@@ -711,7 +719,7 @@ AtGpeTest0020(void)
 ACPI_STATUS
 AtGpeTest0021(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         2 /* ClearGpe */, 1, AE_BAD_PARAMETER);
 }
@@ -722,7 +730,7 @@ AtGpeTest0021(void)
 ACPI_STATUS
 AtGpeTest0022(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         2 /* ClearGpe */, 2, AE_BAD_PARAMETER);
 }
@@ -733,7 +741,7 @@ AtGpeTest0022(void)
 ACPI_STATUS
 AtGpeTest0023(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         2 /* ClearGpe */, 3, AE_BAD_PARAMETER);
 }
@@ -744,7 +752,7 @@ AtGpeTest0023(void)
 ACPI_STATUS
 AtGpeTest0024(void)
 {
-    return AtGpeCommon(NULL, GpeNumber, GpeType,
+    return AtGpeCommon(NULL, GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         3 /* GetGpeStatus */, 0, AE_OK);
 }
@@ -755,7 +763,7 @@ AtGpeTest0024(void)
 ACPI_STATUS
 AtGpeTest0025(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         3 /* GetGpeStatus */, 0, AE_OK);
 }
@@ -766,7 +774,7 @@ AtGpeTest0025(void)
 ACPI_STATUS
 AtGpeTest0026(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         3 /* GetGpeStatus */, 1, AE_BAD_PARAMETER);
 }
@@ -777,7 +785,7 @@ AtGpeTest0026(void)
 ACPI_STATUS
 AtGpeTest0027(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         3 /* GetGpeStatus */, 2, AE_BAD_PARAMETER);
 }
@@ -788,7 +796,7 @@ AtGpeTest0027(void)
 ACPI_STATUS
 AtGpeTest0028(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         3 /* GetGpeStatus */, 3, AE_BAD_PARAMETER);
 }
@@ -799,7 +807,7 @@ AtGpeTest0028(void)
 ACPI_STATUS
 AtGpeTest0029(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         3 /* GetGpeStatus */, 5, AE_BAD_PARAMETER);
 }
@@ -810,7 +818,7 @@ AtGpeTest0029(void)
 ACPI_STATUS
 AtGpeTest0030(void)
 {
-    return AtGpeCommon(NULL, GpeNumber, GpeType,
+    return AtGpeCommon(NULL, GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         4 /* DisableGpe */, 0, AE_OK);
 }
@@ -821,7 +829,7 @@ AtGpeTest0030(void)
 ACPI_STATUS
 AtGpeTest0031(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         4 /* DisableGpe */, 0, AE_OK);
 }
@@ -832,7 +840,7 @@ AtGpeTest0031(void)
 ACPI_STATUS
 AtGpeTest0032(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         4 /* DisableGpe */, 1, AE_BAD_PARAMETER);
 }
@@ -843,7 +851,7 @@ AtGpeTest0032(void)
 ACPI_STATUS
 AtGpeTest0033(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         4 /* DisableGpe */, 2, AE_BAD_PARAMETER);
 }
@@ -854,7 +862,7 @@ AtGpeTest0033(void)
 ACPI_STATUS
 AtGpeTest0034(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, GpeType,
+    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
         4 /* DisableGpe */, 3, AE_BAD_PARAMETER);
 }
