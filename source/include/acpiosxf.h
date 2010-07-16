@@ -394,7 +394,7 @@ ACPI_STATUS
 AcpiOsReadPciConfiguration (
     ACPI_PCI_ID             *PciId,
     UINT32                  Reg,
-    void                    *Value,
+    UINT64                  *Value,
     UINT32                  Width);
 
 ACPI_STATUS
