@@ -225,6 +225,7 @@ Options (
 
     printf ("\nAML Disassembler:\n");
     printf ("  -d  [file]     Disassemble or decode binary ACPI table to file (*.dsl)\n");
+    printf ("  -da [f1,f2]    Disassemble multiple tables from single namespace\n");
     printf ("  -dc [file]     Disassemble AML and immediately compile it\n");
     printf ("                 (Obtain DSDT from current system if no input file)\n");
     printf ("  -e  [f1,f2]    Include ACPI table(s) for external symbol resolution\n");
