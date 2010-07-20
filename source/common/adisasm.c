@@ -338,6 +338,15 @@ AdAmlDisassemble (
         while (ExternalFileList)
         {
             ExternalFilename = ExternalFileList->Path;
+            if (!ACPI_STRCMP (ExternalFilename, Filename))
+            {
+                /* Next external file */
+
+                ExternalFileList = ExternalFileList->Next;
+
+                continue;
+            }
+
             Status = AcpiDbGetTableFromFile (ExternalFilename, &ExternalTable);
             if (ACPI_FAILURE (Status))
             {

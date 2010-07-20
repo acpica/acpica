@@ -322,7 +322,7 @@ Cleanup:
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 AcpiDmAddToExternalFileList (
     char                    *PathList)
 {
@@ -333,7 +333,7 @@ AcpiDmAddToExternalFileList (
 
     if (!PathList)
     {
-        return;
+        return (AE_OK);
     }
 
     Path = strtok (PathList, ",");
@@ -343,7 +343,7 @@ AcpiDmAddToExternalFileList (
         TmpPath = ACPI_ALLOCATE_ZEROED (ACPI_STRLEN (Path) + 1);
         if (!TmpPath)
         {
-            return;
+            return (AE_NO_MEMORY);
         }
 
         ACPI_STRCPY (TmpPath, Path);
@@ -352,7 +352,7 @@ AcpiDmAddToExternalFileList (
         if (!ExternalFile)
         {
             ACPI_FREE (TmpPath);
-            return;
+            return (AE_NO_MEMORY);
         }
 
         ExternalFile->Path = TmpPath;
@@ -363,9 +363,10 @@ AcpiDmAddToExternalFileList (
         }
 
         AcpiGbl_ExternalFileList = ExternalFile;
-
         Path = strtok (NULL, ",");
     }
+
+    return (AE_OK);
 }
 
 

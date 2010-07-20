@@ -583,7 +583,7 @@ AcpiDmIsStringBuffer (
  * dmextern
  */
 
-void
+ACPI_STATUS
 AcpiDmAddToExternalFileList (
     char                    *PathList);
 
