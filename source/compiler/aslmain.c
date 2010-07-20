@@ -119,6 +119,7 @@
 
 #include "aslcompiler.h"
 #include "acapps.h"
+#include "acdisasm.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -547,7 +548,7 @@ AslDoOptions (
 
 
     case 'e':
-        Gbl_ExternalFilename = AcpiGbl_Optarg;
+        AcpiDmAddToExternalFileList (AcpiGbl_Optarg);
         break;
 
 
@@ -955,6 +956,8 @@ main (
     int                     Index;
 
 
+    AcpiGbl_ExternalFileList = NULL;
+
 #ifdef _DEBUG
     _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF |
                     _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
@@ -988,6 +991,11 @@ main (
         }
 
         Index++;
+    }
+
+    if (AcpiGbl_ExternalFileList)
+    {
+        AcpiDmClearExternalFileList();
     }
 
     return (0);

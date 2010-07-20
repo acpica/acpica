@@ -1246,6 +1246,14 @@ typedef struct acpi_external_list
 #define ACPI_IPATH_ALLOCATED    0x01
 
 
+typedef struct acpi_external_file
+{
+    char                        *Path;
+    struct acpi_external_file   *Next;
+
+} ACPI_EXTERNAL_FILE;
+
+
 /*****************************************************************************
  *
  * Debugger
