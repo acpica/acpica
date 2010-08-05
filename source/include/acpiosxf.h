@@ -418,10 +418,6 @@ AcpiOsDerivePciId(
 /*
  * Miscellaneous
  */
-ACPI_STATUS
-AcpiOsValidateInterface (
-    char                    *Interface);
-
 BOOLEAN
 AcpiOsReadable (
     void                    *Pointer,

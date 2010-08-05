@@ -921,28 +921,6 @@ AcpiOsGetTimer (void)
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsValidateInterface
- *
- * PARAMETERS:  Interface           - Requested interface to be validated
- *
- * RETURN:      AE_OK if interface is supported, AE_SUPPORT otherwise
- *
- * DESCRIPTION: Match an interface string to the interfaces supported by the
- *              host. Strings originate from an AML call to the _OSI method.
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsValidateInterface (
-    char                    *Interface)
-{
-
-    return (AE_SUPPORT);
-}
-
-
-/******************************************************************************
- *
  * FUNCTION:    AcpiOsReadPciConfiguration
  *
  * PARAMETERS:  PciId               Seg/Bus/Dev

@@ -203,9 +203,16 @@ ACPI_STATUS
 AcpiPurgeCachedObjects (
     void);
 
+ACPI_STATUS
+AcpiInstallInterface (
+    ACPI_STRING             InterfaceName);
+
+ACPI_STATUS
+AcpiRemoveInterface (
+    ACPI_STRING             InterfaceName);
 
 /*
- * ACPI Memory managment
+ * ACPI Memory management
  */
 void *
 AcpiAllocate (
@@ -427,6 +434,10 @@ AcpiRemoveGpeHandler (
 ACPI_STATUS
 AcpiInstallExceptionHandler (
     ACPI_EXCEPTION_HANDLER  Handler);
+
+ACPI_STATUS
+AcpiInstallInterfaceHandler (
+    ACPI_INTERFACE_HANDLER  Handler);
 
 
 /*

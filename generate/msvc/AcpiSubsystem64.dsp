@@ -510,6 +510,10 @@ InputName=utobject
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utosi.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utresrc.c
 
 !IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"

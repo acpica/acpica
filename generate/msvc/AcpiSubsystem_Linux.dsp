@@ -282,6 +282,10 @@ SOURCE=..\..\source_linux\COMPONENTS\utilities\utobject.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source_linux\components\utilities\utosi.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source_linux\components\utilities\utresrc.c
 
 !IF  "$(CFG)" == "AcpiSubsystem_Linux - Win32 Release"
@@ -709,6 +713,10 @@ SOURCE=..\..\source_linux\components\namespace\nspredef.c
 # Begin Source File
 
 SOURCE=..\..\source_linux\components\namespace\nsrepair.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\components\namespace\nsrepair2.c
 # End Source File
 # Begin Source File
 
@@ -1961,10 +1969,6 @@ SOURCE=..\..\source\include\acnames.h
 # Begin Source File
 
 SOURCE=..\..\source\include\acopcode.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\components\namespace\nsrepair2.c
 # End Source File
 # End Target
 # End Project

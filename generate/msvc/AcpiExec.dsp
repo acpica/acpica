@@ -173,6 +173,10 @@ SOURCE=..\..\source\components\utilities\utobject.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utosi.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utresrc.c
 # End Source File
 # Begin Source File
