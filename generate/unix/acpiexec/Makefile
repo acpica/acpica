@@ -84,6 +84,7 @@ OBJS = \
 	getopt.o \
 	hwacpi.o \
 	hwgpe.o \
+	hwpci.o \
 	hwregs.o \
 	hwsleep.o \
 	hwvalid.o \
@@ -389,6 +390,9 @@ hwacpi.o :          $(ACPICA_CORE)/hardware/hwacpi.c
 	$(COMPILE)
 
 hwgpe.o :           $(ACPICA_CORE)/hardware/hwgpe.c
+	$(COMPILE)
+
+hwpci.o :           $(ACPICA_CORE)/hardware/hwpci.c
 	$(COMPILE)
 
 hwregs.o :          $(ACPICA_CORE)/hardware/hwregs.c

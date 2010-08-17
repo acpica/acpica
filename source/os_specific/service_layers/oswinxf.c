@@ -1209,17 +1209,6 @@ AcpiOsWritePciConfiguration (
     return (AE_OK);
 }
 
-/* TEMPORARY STUB FUNCTION */
-void
-AcpiOsDerivePciId(
-    ACPI_HANDLE             Device,
-    ACPI_HANDLE             Region,
-    ACPI_PCI_ID             **PciId)
-{
-
-    return;
-}
-
 
 /******************************************************************************
  *

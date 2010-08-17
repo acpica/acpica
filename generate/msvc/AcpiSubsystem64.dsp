@@ -995,6 +995,10 @@ InputName=hwgpe
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\hardware\hwpci.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\hardware\hwregs.c
 
 !IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"

@@ -285,6 +285,10 @@ SOURCE=..\..\source\components\hardware\hwgpe.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\hardware\hwpci.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\hardware\hwregs.c
 # End Source File
 # Begin Source File

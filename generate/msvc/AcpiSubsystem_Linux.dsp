@@ -512,6 +512,10 @@ SOURCE=..\..\source_linux\COMPONENTS\HARDWARE\hwgpe.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source_linux\components\hardware\hwpci.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source_linux\COMPONENTS\HARDWARE\hwregs.c
 
 !IF  "$(CFG)" == "AcpiSubsystem_Linux - Win32 Release"

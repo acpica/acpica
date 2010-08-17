@@ -544,10 +544,13 @@ AeRegionInit (
  *
  * DESCRIPTION: Install handlers for the AcpiExec utility.
  *
+ * Notes:       Don't install handler for PCI_Config, we want to use the
+ *              default handler to exercise that code.
+ *
  *****************************************************************************/
 
-ACPI_ADR_SPACE_TYPE         SpaceId[] = {0, 1, 2, 3, 4, 5, 6, 7, 0x80};
-#define AEXEC_NUM_REGIONS   9
+ACPI_ADR_SPACE_TYPE         SpaceId[] = {0, 1, 3, 4, 5, 6, 7, 0x80};
+#define AEXEC_NUM_REGIONS   8
 
 ACPI_STATUS
 AeInstallHandlers (void)
