@@ -361,7 +361,7 @@ AeExceptionHandler (
     Arg[1].String.Length = ACPI_STRLEN (Exception);
 
     Arg[2].Type = ACPI_TYPE_INTEGER;
-    Arg[2].Integer.Value = ACPI_TO_INTEGER (AcpiOsGetThreadId());
+    Arg[2].Integer.Value = AcpiOsGetThreadId();
 
     /* Setup return buffer */
 

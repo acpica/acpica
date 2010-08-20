@@ -1077,7 +1077,7 @@ AcpiOsGetThreadId (
     /* Ensure ID is never 0 */
 
     ThreadId = GetCurrentThreadId ();
-    return (ThreadId + 1);
+    return ((ACPI_THREAD_ID) (ThreadId + 1));
 }
 
 

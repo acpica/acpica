@@ -1158,16 +1158,14 @@ AcpiOsWritable (
  *
  * DESCRIPTION: Get the Id of the current (running) thread
  *
- * NOTE:        The environment header should contain this line:
- *                  #define ACPI_THREAD_ID pthread_t
- *
  *****************************************************************************/
 
 ACPI_THREAD_ID
-AcpiOsGetThreadId (void)
+AcpiOsGetThreadId (
+    void)
 {
 
-    return (pthread_self ());
+    return (ACPI_CAST_PTHREAD_T (pthread_self()));
 }
 
 
