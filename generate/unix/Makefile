@@ -6,7 +6,7 @@ include Makefile.config
 
 all:	${DIRS}
 ${DIRS}: FORCE
-	@cd $@; make; ls -al $@.exe
+	@cd $@; make; ls -al $@
 
 clean:	FORCE
 	@for d in ${DIRS}; do \
