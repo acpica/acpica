@@ -117,10 +117,9 @@
 #define __ACINTEL_H__
 
 
-#define COMPILER_DEPENDENT_INT64   __int64
-#define COMPILER_DEPENDENT_UINT64  unsigned __int64
-
-#define inline                  __inline
+#define COMPILER_DEPENDENT_INT64    __int64
+#define COMPILER_DEPENDENT_UINT64   unsigned __int64
+#define ACPI_INLINE                 __inline
 
 /*
  * Calling conventions:

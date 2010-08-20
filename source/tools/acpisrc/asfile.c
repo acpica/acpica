@@ -132,7 +132,7 @@ AsDetectLoneLineFeeds (
     char                    *Filename,
     char                    *Buffer);
 
-static inline int
+static ACPI_INLINE int
 AsMaxInt (int a, int b)
 {
     return (a > b ? a : b);
