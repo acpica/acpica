@@ -409,7 +409,8 @@ AsConvertFile (
 
     Gbl_StructDefs = strstr (FileBuffer, "/* acpisrc:StructDefs");
     Gbl_Files++;
-    VERBOSE_PRINT (("Processing %u bytes\n", strlen (FileBuffer)));
+    VERBOSE_PRINT (("Processing %u bytes\n",
+        (unsigned int) strlen (FileBuffer)));
 
     if (ConversionTable->LowerCaseTable)
     {

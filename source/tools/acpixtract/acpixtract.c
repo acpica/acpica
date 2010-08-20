@@ -639,8 +639,8 @@ ExtractTables (
                 OutputFile = NULL;
                 State = FIND_HEADER;
 
-                printf ("Acpi table [%4.4s] - % 7d bytes written to %s\n",
-                    ThisSignature, TotalBytesWritten, Filename);
+                printf ("Acpi table [%4.4s] - %u bytes written to %s\n",
+                    ThisSignature, (unsigned int) TotalBytesWritten, Filename);
                 continue;
             }
 
@@ -684,8 +684,8 @@ CleanupAndExit:
         {
             /* Received an EOF while extracting data */
 
-            printf ("Acpi table [%4.4s] - % 7d bytes written to %s\n",
-                ThisSignature, TotalBytesWritten, Filename);
+            printf ("Acpi table [%4.4s] - %u bytes written to %s\n",
+                ThisSignature, (unsigned int) TotalBytesWritten, Filename);
         }
     }
 
