@@ -10,7 +10,7 @@ PROG = iasl
 # Flags specific to iASL compiler
 #
 CFLAGS+= -DACPI_ASL_COMPILER -I$(ASL_COMPILER) -I.
-LDFLAGS+= -lpthread -lrt
+LDFLAGS+= -lpthread
 
 OBJS = \
 	adfile.o \
