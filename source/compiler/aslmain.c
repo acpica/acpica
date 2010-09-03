@@ -462,6 +462,7 @@ AslDoOptions (
     BOOLEAN                 IsResponseFile)
 {
     int                     j;
+    ACPI_STATUS             Status;
 
 
     /* Get the command line options */
@@ -554,7 +555,12 @@ AslDoOptions (
 
 
     case 'e':
-        AcpiDmAddToExternalFileList (AcpiGbl_Optarg);
+        Status = AcpiDmAddToExternalFileList (AcpiGbl_Optarg);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("Could not add %s to external list\n", AcpiGbl_Optarg);
+            return (-1);
+        }
         break;
 
 
@@ -601,7 +607,6 @@ AslDoOptions (
             printf ("Unknown option: -h%s\n", AcpiGbl_Optarg);
             return (-1);
         }
-        break;
 
 
     case 'I': /* Add an include file search directory */
@@ -891,6 +896,7 @@ AslCommandLine (
     char                    **argv)
 {
     int                     BadCommandLine = 0;
+    ACPI_STATUS             Status;
 
 
     /* Minimum command line contains at least the command and an input file */
@@ -908,7 +914,11 @@ AslCommandLine (
 
     if (Gbl_DoTemplates)
     {
-        DtCreateTemplates (Gbl_TemplateSignature);
+        Status = DtCreateTemplates (Gbl_TemplateSignature);
+        if (ACPI_FAILURE (Status))
+        {
+            exit (-1);
+        }
         exit (1);
     }
 
