@@ -366,6 +366,7 @@ AcpiEnterSleepState (
     {
         return_ACPI_STATUS (Status);
     }
+    AcpiGbl_SystemAwakeAndRunning = FALSE;
 
     Status = AcpiHwEnableAllWakeupGpes ();
     if (ACPI_FAILURE (Status))
@@ -528,6 +529,7 @@ AcpiEnterSleepStateS4bios (
     {
         return_ACPI_STATUS (Status);
     }
+    AcpiGbl_SystemAwakeAndRunning = FALSE;
 
     Status = AcpiHwEnableAllWakeupGpes ();
     if (ACPI_FAILURE (Status))
@@ -666,6 +668,7 @@ AcpiLeaveSleepState (
     {
         return_ACPI_STATUS (Status);
     }
+    AcpiGbl_SystemAwakeAndRunning = TRUE;
 
     Status = AcpiHwEnableAllRuntimeGpes ();
     if (ACPI_FAILURE (Status))

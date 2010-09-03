@@ -933,7 +933,11 @@ AcpiUtInitGlobals (
     AcpiGbl_DbOutputFlags               = ACPI_DB_CONSOLE_OUTPUT;
     AcpiGbl_OsiData                     = 0;
     AcpiGbl_OsiMutex                    = NULL;
+
+    /* Hardware oriented */
+
     AcpiGbl_EventsInitialized           = FALSE;
+    AcpiGbl_SystemAwakeAndRunning       = TRUE;
 
     /* Namespace */
 
