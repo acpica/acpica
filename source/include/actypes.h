@@ -459,21 +459,6 @@ typedef UINT8                           ACPI_OWNER_ID;
 #define ACPI_OWNER_ID_MAX               0xFF
 
 
-typedef struct uint64_struct
-{
-    UINT32                          Lo;
-    UINT32                          Hi;
-
-} UINT64_STRUCT;
-
-typedef union uint64_overlay
-{
-    UINT64                          Full;
-    UINT64_STRUCT                   Part;
-
-} UINT64_OVERLAY;
-
-
 #define ACPI_INTEGER_BIT_SIZE           64
 #define ACPI_MAX_DECIMAL_DIGITS         20  /* 2^64 = 18,446,744,073,709,551,616 */
 #define ACPI_MAX64_DECIMAL_DIGITS       20
