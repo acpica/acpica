@@ -130,6 +130,7 @@
  */
 extern UINT32               AcpiCurrentGpeCount;
 extern ACPI_TABLE_FADT      AcpiGbl_FADT;
+extern BOOLEAN              AcpiGbl_SystemAwakeAndRunning;
 
 /* Runtime configuration of debug print levels */
 
