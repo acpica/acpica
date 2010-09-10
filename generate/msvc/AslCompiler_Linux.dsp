@@ -153,6 +153,10 @@ SOURCE=..\..\source_linux\components\utilities\utobject.c
 
 SOURCE=..\..\source_linux\components\utilities\utstate.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\components\utilities\utxferror.c
+# End Source File
 # End Group
 # Begin Group "Namespace"
 

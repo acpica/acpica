@@ -178,6 +178,10 @@ SOURCE=..\..\source\components\utilities\utstate.c
 
 SOURCE=..\..\source\components\utilities\utxface.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utxferror.c
+# End Source File
 # End Group
 # Begin Group "Events"
 

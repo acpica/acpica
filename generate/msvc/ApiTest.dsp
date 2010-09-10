@@ -193,6 +193,10 @@ SOURCE=..\..\source\components\utilities\uttrack.c
 
 SOURCE=..\..\source\components\utilities\utxface.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utxferror.c
+# End Source File
 # End Group
 # Begin Group "Interpreter"
 
@@ -424,6 +428,10 @@ SOURCE=..\..\source\components\hardware\hwacpi.c
 # Begin Source File
 
 SOURCE=..\..\source\components\hardware\hwgpe.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\hardware\hwpci.c
 # End Source File
 # Begin Source File
 

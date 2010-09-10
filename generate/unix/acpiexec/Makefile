@@ -154,6 +154,7 @@ OBJS = \
 	utstate.o \
 	uttrack.o \
 	utosi.o \
+	utxferror.o \
 	utxface.o
 
 
@@ -597,6 +598,9 @@ uttrack.o :         $(ACPICA_CORE)/utilities/uttrack.c
 	$(COMPILE)
 
 utosi.o :           $(ACPICA_CORE)/utilities/utosi.c
+	$(COMPILE)
+
+utxferror.o :       $(ACPICA_CORE)/utilities/utxferror.c
 	$(COMPILE)
 
 utxface.o :         $(ACPICA_CORE)/utilities/utxface.c

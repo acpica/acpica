@@ -326,6 +326,10 @@ SOURCE=..\..\source_linux\COMPONENTS\utilities\utxface.c
 !ENDIF 
 
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source_linux\components\utilities\utxferror.c
+# End Source File
 # End Group
 # Begin Group "Events"
 
