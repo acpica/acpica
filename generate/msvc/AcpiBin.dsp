@@ -161,6 +161,10 @@ SOURCE=..\..\source\components\utilities\utmutex.c
 
 SOURCE=..\..\source\components\utilities\utstate.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utxferror.c
+# End Source File
 # End Group
 # End Group
 # Begin Group "Header Files"
