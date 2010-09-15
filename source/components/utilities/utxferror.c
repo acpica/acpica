@@ -328,7 +328,7 @@ ACPI_EXPORT_SYMBOL (AcpiInfo)
  * The remainder of this module contains internal error functions that may
  * be configured out.
  */
-#ifndef ACPI_NO_ERROR_MESSAGES
+#if !defined (ACPI_NO_ERROR_MESSAGES) && !defined (ACPI_BIN_APP)
 
 /*******************************************************************************
  *
