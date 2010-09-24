@@ -137,6 +137,37 @@
         ACPI_MODULE_NAME    ("oswinxf")
 
 
+extern FILE                 *AcpiGbl_DebugFile;
+extern BOOLEAN              AcpiGbl_DebugTimeout;
+
+FILE                        *AcpiGbl_OutputFile;
+UINT64                      TimerFrequency;
+char                        TableName[ACPI_NAME_SIZE + 1];
+
+#define ACPI_OS_DEBUG_TIMEOUT   30000 /* 30 seconds */
+
+
+/* Upcalls to application */
+
+ACPI_PHYSICAL_ADDRESS
+AeLocalGetRootPointer (
+    void);
+
+void
+AeTableOverride (
+    ACPI_TABLE_HEADER       *ExistingTable,
+    ACPI_TABLE_HEADER       **NewTable);
+
+ACPI_TABLE_HEADER *
+OsGetTable (
+    char                    *Signature);
+
+
+/*
+ * Real semaphores are only used for a multi-threaded application
+ */
+#ifndef ACPI_SINGLE_THREADED
+
 /* Semaphore information structure */
 
 typedef struct acpi_os_semaphore_info
@@ -153,31 +184,7 @@ typedef struct acpi_os_semaphore_info
 
 ACPI_OS_SEMAPHORE_INFO          AcpiGbl_Semaphores[ACPI_OS_MAX_SEMAPHORES];
 
-
-/* Upcalls to AcpiExec */
-
-ACPI_PHYSICAL_ADDRESS
-AeLocalGetRootPointer (
-    void);
-
-void
-AeTableOverride (
-    ACPI_TABLE_HEADER       *ExistingTable,
-    ACPI_TABLE_HEADER       **NewTable);
-
-ACPI_TABLE_HEADER *
-OsGetTable (
-    char                    *Signature);
-
-
-extern FILE                 *AcpiGbl_DebugFile;
-extern BOOLEAN              AcpiGbl_DebugTimeout;
-
-FILE                        *AcpiGbl_OutputFile;
-UINT64                      TimerFrequency;
-char                        TableName[ACPI_NAME_SIZE + 1];
-
-#define ACPI_OS_DEBUG_TIMEOUT   30000 /* 30 seconds */
+#endif /* ACPI_SINGLE_THREADED */
 
 
 /******************************************************************************
@@ -217,11 +224,13 @@ AcpiOsInitialize (void)
     LARGE_INTEGER           LocalTimerFrequency;
 
 
-    AcpiGbl_OutputFile = stdout;
-
+#ifndef ACPI_SINGLE_THREADED
     /* Clear the semaphore info array */
 
     memset (AcpiGbl_Semaphores, 0x00, sizeof (AcpiGbl_Semaphores));
+#endif
+
+    AcpiGbl_OutputFile = stdout;
 
     /* Get the timer frequency for use in AcpiOsGetTimer */
 
@@ -670,6 +679,52 @@ AcpiOsFree (
 }
 
 
+#ifdef ACPI_SINGLE_THREADED
+/******************************************************************************
+ *
+ * FUNCTION:    Semaphore stub functions
+ *
+ * DESCRIPTION: Stub functions used for single-thread applications that do
+ *              not require semaphore synchronization. Full implementations
+ *              of these functions appear after the stubs.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsCreateSemaphore (
+    UINT32              MaxUnits,
+    UINT32              InitialUnits,
+    ACPI_HANDLE         *OutHandle)
+{
+    *OutHandle = (ACPI_HANDLE) 1;
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiOsDeleteSemaphore (
+    ACPI_HANDLE         Handle)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiOsWaitSemaphore (
+    ACPI_HANDLE         Handle,
+    UINT32              Units,
+    UINT16              Timeout)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiOsSignalSemaphore (
+    ACPI_HANDLE         Handle,
+    UINT32              Units)
+{
+    return (AE_OK);
+}
+
+#else
 /******************************************************************************
  *
  * FUNCTION:    AcpiOsCreateSemaphore
@@ -690,12 +745,10 @@ AcpiOsCreateSemaphore (
     UINT32              InitialUnits,
     ACPI_SEMAPHORE      *OutHandle)
 {
-#ifdef _MULTI_THREADED
     void                *Mutex;
     UINT32              i;
 
     ACPI_FUNCTION_NAME (OsCreateSemaphore);
-#endif
 
 
     if (MaxUnits == ACPI_UINT32_MAX)
@@ -712,8 +765,6 @@ AcpiOsCreateSemaphore (
     {
         return AE_BAD_PARAMETER;
     }
-
-#ifdef _MULTI_THREADED
 
     /* Find an empty slot */
 
@@ -748,8 +799,6 @@ AcpiOsCreateSemaphore (
             i, MaxUnits, InitialUnits, Mutex));
 
     *OutHandle = (void *) i;
-#endif
-
     return AE_OK;
 }
 
@@ -779,13 +828,8 @@ AcpiOsDeleteSemaphore (
         return AE_BAD_PARAMETER;
     }
 
-
-#ifdef _MULTI_THREADED
-
     CloseHandle (AcpiGbl_Semaphores[Index].OsHandle);
     AcpiGbl_Semaphores[Index].OsHandle = NULL;
-#endif
-
     return AE_OK;
 }
 
@@ -810,7 +854,6 @@ AcpiOsWaitSemaphore (
     UINT32              Units,
     UINT16              Timeout)
 {
-#ifdef _MULTI_THREADED
     UINT32              Index = (UINT32) Handle;
     UINT32              WaitStatus;
     UINT32              OsTimeout = Timeout;
@@ -869,8 +912,6 @@ AcpiOsWaitSemaphore (
     }
 
     AcpiGbl_Semaphores[Index].CurrentUnits--;
-#endif
-
     return AE_OK;
 }
 
@@ -893,8 +934,6 @@ AcpiOsSignalSemaphore (
     ACPI_SEMAPHORE      Handle,
     UINT32              Units)
 {
-#ifdef _MULTI_THREADED
-
     UINT32              Index = (UINT32) Handle;
 
 
@@ -933,10 +972,10 @@ AcpiOsSignalSemaphore (
     AcpiGbl_Semaphores[Index].CurrentUnits++;
     ReleaseSemaphore (AcpiGbl_Semaphores[Index].OsHandle, Units, NULL);
 
-#endif
-
     return (AE_OK);
 }
+
+#endif /* ACPI_SINGLE_THREADED */
 
 
 /* Spinlock interfaces, just implement with a semaphore */
@@ -1102,7 +1141,7 @@ AcpiOsExecute (
     void                    *Context)
 {
 
-#ifdef _MULTI_THREADED
+#ifndef ACPI_SINGLE_THREADED
     _beginthread (Function, (unsigned) 0, Context);
 #endif
 

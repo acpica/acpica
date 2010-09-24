@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /Gr /MT /Za /W4 /O2 /Ob0 /I "..\..\source\include" /D "ACPI_EXEC_APP" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "_MULTI_THREADED" /FR /FD /c
+# ADD CPP /nologo /Gr /MT /Za /W4 /O2 /Ob0 /I "..\..\source\include" /D "NDEBUG" /D "ACPI_EXEC_APP" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -75,7 +75,7 @@ PostBuild_Cmds=copy acpiexec\acpiexec.exe ..\..\libraries	dir ..\..\libraries\ac
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /Gr /MTd /Za /W4 /Zi /Oa /Os /Oy /Gf /I "..\..\source\include" /D "ACPI_EXEC_APP" /D "_DEBUG" /D "WIN32_LEAN_AND_MEAN" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "_MULTI_THREADED" /FR /FD /GZ /c
+# ADD CPP /nologo /Gr /MTd /Za /W4 /Zi /Oa /Os /Oy /Gf /I "..\..\source\include" /D "_DEBUG" /D "WIN32_LEAN_AND_MEAN" /D "ACPI_EXEC_APP" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /FR /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe

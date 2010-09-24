@@ -73,7 +73,7 @@ PostBuild_Cmds=copy acpibin\acpibin.exe ..\..\libraries	dir ..\..\libraries\acpi
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /Gr /W4 /Zi /Od /Gf /I "..\..\source\include" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_APPLICATION" /D "ACPI_BIN_APP" /FR /FD /GZ /c
+# ADD CPP /nologo /Gr /W4 /Zi /Od /Gf /I "..\..\source\include" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_APPLICATION" /FR /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe

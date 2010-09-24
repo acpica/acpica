@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /Gz /MT /W4 /GX /O1 /Ob0 /I "..\..\source\include" /D "NDEBUG" /D "WIN32" /D "WIN32_LEAN_AND_MEAN" /D "_CONSOLE" /D "_MBCS" /D "ACPI_EXEC_APP" /D "ACPI_LIBRARY" /D "_MULTI_THREADED" /D "ACPI_APITS" /FR /FD /c
+# ADD CPP /nologo /Gz /MT /W4 /GX /O1 /Ob0 /I "..\..\source\include" /D "NDEBUG" /D "WIN32" /D "WIN32_LEAN_AND_MEAN" /D "_CONSOLE" /D "_MBCS" /D "ACPI_EXEC_APP" /D "ACPI_LIBRARY" /D "ACPI_APITS" /FR /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -73,7 +73,7 @@ PostBuild_Cmds=copy bin\apitest.exe ..\..\libraries\apitest.exe	dir ..\..\librar
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /Gz /MT /W4 /Gm /ZI /Oa /Os /Oy /I "..\..\source\include" /D "WIN32" /D "WIN32_LEAN_AND_MEAN" /D "_CONSOLE" /D "_MBCS" /D "ACPI_EXEC_APP" /D "ACPI_LIBRARY" /D "_MULTI_THREADED" /D "ACPI_APITS" /FR /FD /D /GZ /c
+# ADD CPP /nologo /Gz /MT /W4 /Gm /ZI /Oa /Os /Oy /I "..\..\source\include" /D "WIN32" /D "WIN32_LEAN_AND_MEAN" /D "_CONSOLE" /D "_MBCS" /D "ACPI_EXEC_APP" /D "ACPI_LIBRARY" /D "ACPI_APITS" /FR /FD /D /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe

@@ -148,6 +148,7 @@
 #define ACPI_CONSTANT_EVAL_ONLY
 #define ACPI_LARGE_NAMESPACE_NODE
 #define ACPI_DATA_TABLE_DISASSEMBLY
+#define ACPI_SINGLE_THREADED
 #endif
 
 /* AcpiExec configuration */

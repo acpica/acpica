@@ -9,7 +9,7 @@ PROG = acpiexec
 #
 # Flags specific to acpiexec utility
 #
-CFLAGS+= -DACPI_EXEC_APP -D_MULTI_THREADED -I$(ACPICA_TOOLS)/acpiexec
+CFLAGS+= -DACPI_EXEC_APP -I$(ACPICA_TOOLS)/acpiexec
 
 OBJS = \
 	aeexec.o \
