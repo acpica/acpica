@@ -504,6 +504,52 @@ AcpiOsFree (
 }
 
 
+#ifdef ACPI_SINGLE_THREADED
+/******************************************************************************
+ *
+ * FUNCTION:    Semaphore stub functions
+ *
+ * DESCRIPTION: Stub functions used for single-thread applications that do
+ *              not require semaphore synchronization. Full implementations
+ *              of these functions appear after the stubs.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsCreateSemaphore (
+    UINT32              MaxUnits,
+    UINT32              InitialUnits,
+    ACPI_HANDLE         *OutHandle)
+{
+    *OutHandle = (ACPI_HANDLE) 1;
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiOsDeleteSemaphore (
+    ACPI_HANDLE         Handle)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiOsWaitSemaphore (
+    ACPI_HANDLE         Handle,
+    UINT32              Units,
+    UINT16              Timeout)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiOsSignalSemaphore (
+    ACPI_HANDLE         Handle,
+    UINT32              Units)
+{
+    return (AE_OK);
+}
+
+#else
 /******************************************************************************
  *
  * FUNCTION:    AcpiOsCreateSemaphore
@@ -718,6 +764,8 @@ AcpiOsSignalSemaphore (
 
     return (AE_OK);
 }
+
+#endif /* ACPI_SINGLE_THREADED */
 
 
 /******************************************************************************
