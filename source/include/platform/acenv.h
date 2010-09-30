@@ -151,13 +151,18 @@
 #define ACPI_SINGLE_THREADED
 #endif
 
-/* AcpiExec configuration */
+/* AcpiExec and AcpiBin configuration */
 
 #ifdef ACPI_EXEC_APP
 #define ACPI_APPLICATION
 #define ACPI_FULL_DEBUG
 #define ACPI_MUTEX_DEBUG
 #define ACPI_DBG_TRACK_ALLOCATIONS
+#endif
+
+#ifdef ACPI_BIN_APP
+#define ACPI_APPLICATION
+#define ACPI_SINGLE_THREADED
 #endif
 
 /* Linkable ACPICA library */
