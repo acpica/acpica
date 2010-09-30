@@ -903,6 +903,10 @@ SOURCE=..\..\source\Tools\AcpiExec\aecommon.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\tools\acpiexec\aetables.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\Include\amlcode.h
 # End Source File
 # Begin Source File
