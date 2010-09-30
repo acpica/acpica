@@ -177,9 +177,7 @@ main (
 
 
     AcpiOsInitialize ();
-
-    printf ("\nACPI Binary Utility for AML files version %X [%s]\n\n",
-        ACPI_CA_VERSION, __DATE__);
+    printf (ACPI_COMMON_SIGNON ("ACPI Binary AML File Utility"));
 
     if (argc < 2)
     {
