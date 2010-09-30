@@ -361,8 +361,8 @@ AeBuildLocalTables (
 
         /* Setup FADT header and DSDT/FACS addresses */
 
-        LocalFADT.Dsdt = DsdtAddress;
-        LocalFADT.Facs = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
+        LocalFADT.Dsdt = 0;
+        LocalFADT.Facs = 0;
 
         LocalFADT.XDsdt = DsdtAddress;
         LocalFADT.XFacs = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
