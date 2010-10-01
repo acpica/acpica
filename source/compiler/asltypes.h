@@ -436,6 +436,7 @@ typedef enum
     ASL_MSG_INVALID_GRAN_FIXED,
     ASL_MSG_INVALID_ACCESS_SIZE,
     ASL_MSG_INVALID_ADDR_FLAGS,
+    ASL_MSG_NULL_DESCRIPTOR,
     ASL_MSG_INVALID_FIELD_NAME,
     ASL_MSG_INTEGER_SIZE,
     ASL_MSG_INVALID_HEX_INTEGER,
@@ -575,6 +576,7 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_INVALID_GRAN_FIXED */         "Granularity must be zero for fixed Min/Max",
 /*    ASL_MSG_INVALID_ACCESS_SIZE */        "Invalid AccessSize (Maximum is 4 - QWord access)",
 /*    ASL_MSG_INVALID_ADDR_FLAGS */         "Invalid combination of Length and Min/Max fixed flags",
+/*    ASL_MSG_NULL_DESCRIPTOR */            "Min/Max/Length/Gran are all zero, but no resource tag",
 
 /* These messages are used by the data table compiler only */
 
