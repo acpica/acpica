@@ -147,6 +147,7 @@
 
 #include "asldefine.h"
 #include "asltypes.h"
+#include "aslmessages.h"
 #include "aslglobal.h"
 
 
