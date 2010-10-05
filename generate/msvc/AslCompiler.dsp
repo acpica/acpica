@@ -727,6 +727,10 @@ SOURCE=..\..\source\compiler\aslglobal.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\compiler\aslmessages.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\compiler\asltypes.h
 # End Source File
 # Begin Source File
