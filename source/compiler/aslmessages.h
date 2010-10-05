@@ -256,6 +256,8 @@ typedef enum
     ASL_MSG_INVALID_ACCESS_SIZE,
     ASL_MSG_INVALID_ADDR_FLAGS,
     ASL_MSG_NULL_DESCRIPTOR,
+    ASL_MSG_UPPER_CASE,
+    ASL_MSG_HID_LENGTH,
     ASL_MSG_INVALID_FIELD_NAME,
     ASL_MSG_INTEGER_SIZE,
     ASL_MSG_INVALID_HEX_INTEGER,
@@ -399,6 +401,8 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_INVALID_ACCESS_SIZE */        "Invalid AccessSize (Maximum is 4 - QWord access)",
 /*    ASL_MSG_INVALID_ADDR_FLAGS */         "Invalid combination of Length and Min/Max fixed flags",
 /*    ASL_MSG_NULL_DESCRIPTOR */            "Min/Max/Length/Gran are all zero, but no resource tag",
+/*    ASL_MSG_UPPER_CASE */                 "Non-hex letters must be upper case",
+/*    ASL_MSG_HID_LENGTH */                 "_HID string must be exactly 7 or 8 characters",
 
 /* These messages are used by the data table compiler only */
 
