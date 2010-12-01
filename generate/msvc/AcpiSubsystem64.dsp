@@ -902,6 +902,10 @@ InputName=evxfevnt
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\events\evxfgpe.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\events\evxfregn.c
 
 !IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"

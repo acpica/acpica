@@ -470,6 +470,10 @@ SOURCE=..\..\source_linux\COMPONENTS\EVENTS\evxfevnt.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source_linux\components\events\evxfgpe.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source_linux\COMPONENTS\EVENTS\evxfregn.c
 
 !IF  "$(CFG)" == "AcpiSubsystem_Linux - Win32 Release"
