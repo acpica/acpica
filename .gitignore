@@ -9,6 +9,8 @@ generate/msvc/AcpiSubsystem
 generate/msvc/AcpiSubsystemDebug
 generate/msvc/AcpiExec
 generate/msvc/AcpiExecDebug
+generate/msvc/AcpiNames
+generate/msvc/AcpiNamesDebug
 generate/msvc/AslCompiler
 generate/msvc/AslCompilerDebug
 generate/msvc/AcpiXtract
@@ -27,6 +29,8 @@ generate/msvc/bin
 generate/unix/bin
 generate/unix/acpiexec/*.o
 generate/unix/acpiexec/*.exe
+generate/unix/acpinames/*.o
+generate/unix/acpinames/*.exe
 generate/unix/acpisrc/*.o
 generate/unix/acpisrc/*.exe
 generate/unix/acpixtract/*.o
@@ -59,6 +63,8 @@ libraries/size.bat
 libraries/size_dbg.txt
 libraries/size_rel.txt
 libraries/apitest.exe
+libraries/AcpiNames.exe
+libraries/AcpiNamesdebug.exe
 
 *.sh
 new
