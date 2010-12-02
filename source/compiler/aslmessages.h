@@ -385,7 +385,7 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_VENDOR_LIST */                "Too many vendor data bytes (7 max)",
 /*    ASL_MSG_WRITE */                      "Could not write file",
 /*    ASL_MSG_MULTIPLE_DEFAULT */           "More than one Default statement within Switch construct",
-/*    ASL_MSG_TIMEOUT */                    "Possible operator timeout is ignored",
+/*    ASL_MSG_TIMEOUT */                    "Result is not used, possible operator timeout will be missed",
 /*    ASL_MSG_RESULT_NOT_USED */            "Result is not used, operator has no effect",
 /*    ASL_MSG_NOT_REFERENCED */             "Namespace object is not referenced",
 /*    ASL_MSG_NON_ZERO */                   "Operand evaluates to zero",
