@@ -242,7 +242,7 @@ AePrintException (
     FILE                    *OutputFile;
     FILE                    *SourceFile;
     long                    FileSize;
-    BOOLEAN                 PrematureEOF;
+    BOOLEAN                 PrematureEOF = FALSE;
 
 
     if (Gbl_NoErrors)
@@ -291,15 +291,17 @@ AePrintException (
         SourceFile = Gbl_Files[ASL_FILE_INPUT].Handle;
     }
 
-    /* Determine if the error occurred at EOF */
-
-    PrematureEOF = FALSE;
-    fseek (SourceFile, 0, SEEK_END);
-    FileSize = ftell (SourceFile);
-
-    if ((long) Enode->LogicalByteOffset >= FileSize)
+    if (SourceFile)
     {
-        PrematureEOF = TRUE;
+        /* Determine if the error occurred at source file EOF */
+
+        fseek (SourceFile, 0, SEEK_END);
+        FileSize = ftell (SourceFile);
+
+        if ((long) Enode->LogicalByteOffset >= FileSize)
+        {
+            PrematureEOF = TRUE;
+        }
     }
 
     if (Header)
