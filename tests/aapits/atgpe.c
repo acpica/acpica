@@ -873,6 +873,8 @@ static UINT32           GpeHandlerContext[AT_NUM_GPE_EVENTS];
 
 UINT32
 AtGpeHandler0 (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber,
     void                    *Context)
 {
     UINT32                  HandlerId = 0;
@@ -892,6 +894,8 @@ AtGpeHandler0 (
 
 UINT32
 AtGpeHandler1 (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber,
     void                    *Context)
 {
     UINT32                  HandlerId = 1;
@@ -911,6 +915,8 @@ AtGpeHandler1 (
 
 UINT32
 AtGpeHandler2 (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber,
     void                    *Context)
 {
     UINT32                  HandlerId = 2;
@@ -928,7 +934,7 @@ AtGpeHandler2 (
     return 0;
 }
 
-static ACPI_EVENT_HANDLER   GpeHandlers[AT_NUM_GPE_EVENTS] = {
+static ACPI_GPE_HANDLER   GpeHandlers[AT_NUM_GPE_EVENTS] = {
     AtGpeHandler0, AtGpeHandler0,
     AtGpeHandler1, AtGpeHandler1,
     AtGpeHandler2};
@@ -943,7 +949,7 @@ AtInstallGpeHandlerCommon(
     ACPI_HANDLE             GpeDevice = NULL;
     UINT32                  Gpe;
     UINT8                   EolType;
-    ACPI_EVENT_HANDLER      EventHandler;
+    ACPI_GPE_HANDLER        EventHandler;
     UINT32                  i;
     UINT32                  InitStages = AAPITS_INI_DEF & ~AAPITS_INSTALL_HS;
 
@@ -1158,7 +1164,7 @@ AtRemoveGpeHandlerCommon(
     ACPI_HANDLE             GpeDevice = NULL;
     UINT32                  Gpe;
     UINT8                   EolType;
-    ACPI_EVENT_HANDLER      EventHandler;
+    ACPI_GPE_HANDLER        EventHandler;
     UINT32                  i;
     UINT32                  InitStages = AAPITS_INI_DEF & ~AAPITS_INSTALL_HS;
 

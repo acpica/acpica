@@ -503,6 +503,10 @@ SOURCE=..\..\source\components\events\evxfevnt.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\events\evxfgpe.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\events\evxfregn.c
 # End Source File
 # End Group
