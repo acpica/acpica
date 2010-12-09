@@ -281,7 +281,7 @@ AcpiDbExecuteMethod (
         {
             ACPI_ERROR ((AE_INFO,
             "Possible overflow of internal debugger buffer (size 0x%X needed 0x%X)",
-                ACPI_DEBUG_BUFFER_SIZE, ReturnObj->Length));
+                ACPI_DEBUG_BUFFER_SIZE, (UINT32) ReturnObj->Length));
         }
     }
 
