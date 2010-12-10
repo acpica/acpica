@@ -1,12 +1,12 @@
 #******************************************************************************
 #
-# ACPICA release generation script for Windows execution
-#
-#              $Revision: 1.64 $
+# ACPICA release generation script for Cygwin/Windows execution
 #
 # Requires cygwin be installed - http://www.cygwin.com
-# and its /bin be *first* in your path
-# Also requires pkzip25.
+# and its /bin be *first* in your path.
+#
+# Also requires pkzip25 (free, available at ftp://ftp.onego.ru/pkzip/pkzip25.exe
+# and other places - search for "pzkzip25")
 #
 # Execute this script from the top level ACPI source directory.
 #
@@ -14,7 +14,7 @@
 #
 #******************************************************************************
 
-PKZIP="c:/command/pkzip.exe"
+PKZIP="c:/command/pkzip25.exe"
 
 #
 # Move and preserve any previous versions of the various release packages

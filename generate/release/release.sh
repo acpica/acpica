@@ -1,3 +1,11 @@
+#******************************************************************************
+#
+# ACPICA release generation script for Cygwin/Windows execution
+#
+# front end for build.sh
+#
+#******************************************************************************
+
 bash build.sh $1
 #
 # d2u:
