@@ -459,12 +459,21 @@ AcpiNsDeleteNamespaceSubtree (
 {
     ACPI_NAMESPACE_NODE     *ChildNode = NULL;
     UINT32                  Level = 1;
+    ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE (NsDeleteNamespaceSubtree);
 
 
     if (!ParentNode)
+    {
+        return_VOID;
+    }
+
+    /* Lock namespace for possible update */
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
     {
         return_VOID;
     }
@@ -521,6 +530,7 @@ AcpiNsDeleteNamespaceSubtree (
         }
     }
 
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_VOID;
 }
 
