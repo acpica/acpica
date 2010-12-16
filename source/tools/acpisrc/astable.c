@@ -161,7 +161,7 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
  *
  ******************************************************************************/
 
-char                        LinuxHeader[] =
+char                        DualLicenseHeader[] =
 "/*\n"
 " * Copyright (C) 2000 - 2010, Intel Corp.\n"
 " * All rights reserved.\n"
@@ -663,7 +663,7 @@ ACPI_IDENTIFIER_TABLE       LinuxConditionalIdentifiers[] = {
 
 ACPI_CONVERSION_TABLE       LinuxConversionTable = {
 
-    LinuxHeader,
+    DualLicenseHeader,
     FLG_NO_CARRIAGE_RETURNS | FLG_LOWERCASE_DIRNAMES,
 
     AcpiIdentifiers,
@@ -701,7 +701,6 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
  *
  ******************************************************************************/
 
-
 ACPI_CONVERSION_TABLE       CleanupConversionTable = {
 
     NULL,
@@ -733,6 +732,40 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 
     NULL,
     FLG_NO_FILE_OUTPUT,
+    NULL,
+
+    /* C source files */
+
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES |
+     CVT_COUNT_SHORTMULTILINE_COMMENTS),
+
+    /* C header files */
+
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES |
+     CVT_COUNT_SHORTMULTILINE_COMMENTS),
+};
+
+
+/******************************************************************************
+ *
+ * Dual License injection translation table
+ *
+ ******************************************************************************/
+
+ACPI_CONVERSION_TABLE       LicenseConversionTable = {
+
+    DualLicenseHeader,
+    FLG_DEFAULT_FLAGS,
     NULL,
 
     /* C source files */

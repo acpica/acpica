@@ -278,6 +278,7 @@ extern ACPI_CONVERSION_TABLE       LinuxConversionTable;
 extern ACPI_CONVERSION_TABLE       CleanupConversionTable;
 extern ACPI_CONVERSION_TABLE       StatsConversionTable;
 extern ACPI_CONVERSION_TABLE       CustomConversionTable;
+extern ACPI_CONVERSION_TABLE       LicenseConversionTable;
 
 
 /* Prototypes */

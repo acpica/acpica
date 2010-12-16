@@ -340,6 +340,7 @@ AsDisplayUsage (
     printf ("\n");
     printf ("Usage: acpisrc [-c|l|u] [-dsvy] <SourceDir> <DestinationDir>\n\n");
     printf ("Where: -c          Generate cleaned version of the source\n");
+    printf ("       -h          Insert dual-license header into all modules\n");
     printf ("       -l          Generate Linux version of the source\n");
     printf ("       -u          Generate Custom source translation\n");
     printf ("\n");
@@ -382,7 +383,7 @@ main (
 
     /* Command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "cdlqsuvy")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "cdhlqsuvy")) != EOF) switch(j)
     {
     case 'l':
         /* Linux code generation */
@@ -398,6 +399,13 @@ main (
 
         printf ("Code cleanup\n");
         ConversionTable = &CleanupConversionTable;
+        break;
+
+    case 'h':
+        /* Inject Dual-license header */
+
+        printf ("Inserting Dual-license header to all modules\n");
+        ConversionTable = &LicenseConversionTable;
         break;
 
     case 's':
