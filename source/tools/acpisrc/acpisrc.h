@@ -121,6 +121,9 @@
 #define LINUX_HEADER_SIGNATURE              " * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS"
 #define LINES_IN_ASL_HEADER                 29 /* Header as output from disassembler */
 
+#include "acpi.h"
+#include "accommon.h"
+
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -132,8 +135,6 @@
 #endif
 #include <errno.h>
 
-#include "acpi.h"
-#include "accommon.h"
 
 
 /* Fixups for non-Win32 compilation */

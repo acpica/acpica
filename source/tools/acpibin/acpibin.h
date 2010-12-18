@@ -114,6 +114,8 @@
  *
  *****************************************************************************/
 
+#include "acpi.h"
+#include "accommon.h"
 
 #include <stdio.h>
 #include <sys/stat.h>
@@ -123,9 +125,6 @@
 #include <ctype.h>
 #include <direct.h>
 #include <errno.h>
-
-#include "acpi.h"
-#include "accommon.h"
 
 
 /* Constants */

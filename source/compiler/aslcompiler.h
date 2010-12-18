@@ -118,6 +118,10 @@
 #ifndef __ASLCOMPILER_H
 #define __ASLCOMPILER_H
 
+#include "acpi.h"
+#include "accommon.h"
+#include "amlresrc.h"
+#include "acdebug.h"
 
 /* Microsoft-specific */
 
@@ -136,12 +140,6 @@
 #include <string.h>
 #include <errno.h>
 #include <ctype.h>
-
-
-#include "acpi.h"
-#include "accommon.h"
-#include "amlresrc.h"
-#include "acdebug.h"
 
 /* Compiler headers */
 

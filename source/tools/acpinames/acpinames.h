@@ -116,14 +116,12 @@
 #ifndef _ACPINAMES_H
 #define _ACPINAMES_H
 
-#include <stdio.h>
-
-
 #include "acpi.h"
 #include "accommon.h"
 #include "acapps.h"
-
 #include "../acpiexec/aecommon.h"
+
+#include <stdio.h>
 
 #define ACPI_MAX_INIT_TABLES    (32)
 

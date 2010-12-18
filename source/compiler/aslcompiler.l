@@ -115,11 +115,11 @@
  *
  *****************************************************************************/
 
+#include "aslcompiler.h"
+#include "aslcompiler.y.h"
 
 #include <stdlib.h>
 #include <string.h>
-#include "aslcompiler.h"
-#include "aslcompiler.y.h"
 YYSTYPE AslCompilerlval;
 
 /*

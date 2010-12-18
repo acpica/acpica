@@ -114,9 +114,10 @@
  *
  *****************************************************************************/
 
+#include "aslcompiler.h"
+
 #include <stdio.h>
 #include <time.h>
-#include "aslcompiler.h"
 #include <acapps.h>
 
 #define _COMPONENT          ACPI_COMPILER

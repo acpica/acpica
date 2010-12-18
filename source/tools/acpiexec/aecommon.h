@@ -120,11 +120,6 @@
 #pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <signal.h>
-
 #include "acpi.h"
 #include "accommon.h"
 #include "acparser.h"
@@ -134,6 +129,11 @@
 #include "actables.h"
 #include "acinterp.h"
 #include "acapps.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <signal.h>
 
 extern FILE                 *AcpiGbl_DebugFile;
 extern BOOLEAN              AcpiGbl_IgnoreErrors;

@@ -113,6 +113,8 @@
  *
  *****************************************************************************/
 
+#include "acpi.h"
+#include "accommon.h"
 
 #ifdef WIN32
 #pragma warning(disable:4115)   /* warning C4115: named type definition in parentheses (caused by rpcasync.h> */
@@ -129,9 +131,6 @@
 #include <stdarg.h>
 #include <process.h>
 #include <time.h>
-
-#include "acpi.h"
-#include "accommon.h"
 
 #define _COMPONENT          ACPI_OS_SERVICES
         ACPI_MODULE_NAME    ("oswinxf")
