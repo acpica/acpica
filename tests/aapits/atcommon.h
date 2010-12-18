@@ -7,16 +7,6 @@
 #ifndef _ATCOMMON
 #define _ATCOMMON
 
-#ifdef _MSC_VER                 /* disable some level-4 warnings */
-#pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
-#endif
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <signal.h>
-
-
 #include "acpi.h"
 #include "accommon.h"
 #include "acparser.h"
@@ -27,6 +17,15 @@
 #include "acinterp.h"
 #include "acapps.h"
 #include "acpixf.h"
+
+#ifdef _MSC_VER                 /* disable some level-4 warnings */
+#pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
+#endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <signal.h>
 
 /*
  *  Temporary old definitions from actypes.h insertion.

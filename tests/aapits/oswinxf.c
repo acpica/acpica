@@ -119,6 +119,10 @@
  * parser.  They are called during the execution of the parser, and all
  * map directly to Clibrary calls.
  */
+#include "acpi.h"
+#include "accommon.h"
+#include "acdebug.h"
+#include "atosxfwrap.h"
 
 #ifdef WIN32
 #pragma warning(disable:4115)   /* warning C4115: named type definition in parentheses (caused by rpcasync.h> */
@@ -136,11 +140,6 @@
 #include <stdarg.h>
 #include <process.h>
 #include <time.h>
-
-#include "acpi.h"
-#include "accommon.h"
-#include "acdebug.h"
-#include "atosxfwrap.h"
 
 #define _COMPONENT          ACPI_OS_SERVICES
         ACPI_MODULE_NAME    ("oswinxf")
