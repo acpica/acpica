@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2010, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2011, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -134,7 +134,6 @@
 #include <direct.h>
 #endif
 #include <errno.h>
-
 
 
 /* Fixups for non-Win32 compilation */

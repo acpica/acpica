@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2010, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2011, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -163,7 +163,7 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 
 char                        DualLicenseHeader[] =
 "/*\n"
-" * Copyright (C) 2000 - 2010, Intel Corp.\n"
+" * Copyright (C) 2000 - 2011, Intel Corp.\n"
 " * All rights reserved.\n"
 " *\n"
 " * Redistribution and use in source and binary forms, with or without\n"
@@ -799,14 +799,14 @@ ACPI_CONVERSION_TABLE       LicenseConversionTable = {
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
 
-    {"ACPI_INTEGER_MAX", "ACPI_UINT64_MAX",   REPLACE_WHOLE_WORD},
+    {"(c) 1999 - 2010",      "(c) 1999 - 2011",         REPLACE_WHOLE_WORD}, /* Main ACPICA source */
+    {"(c) 2006 - 2010",      "(c) 2006 - 2011",         REPLACE_WHOLE_WORD}, /* Test suites */
 
 #if 0
     {"(ACPI_INTEGER)", "(UINT64)",   REPLACE_WHOLE_WORD},
     {"ACPI_INTEGER        ", "UINT64              ",   REPLACE_WHOLE_WORD},
     {"ACPI_INTEGER", "UINT64",   REPLACE_WHOLE_WORD},
-    {"(c) 1999 - 2009",      "(c) 1999 - 2010",         REPLACE_WHOLE_WORD}, /* Main ACPICA source */
-    {"(c) 2006 - 2009",      "(c) 2006 - 2010",         REPLACE_WHOLE_WORD}, /* Test suites */
+    {"ACPI_INTEGER_MAX", "ACPI_UINT64_MAX",   REPLACE_WHOLE_WORD},
     {"#include \"acpi.h\"",   "#include \"acpi.h\"\n#include \"accommon.h\"",  REPLACE_SUBSTRINGS},
     {"AcpiTbSumTable", "AcpiTbSumTable",  REPLACE_WHOLE_WORD},
     {"ACPI_SIG_BOOT", "ACPI_SIG_BOOT",   REPLACE_WHOLE_WORD},
