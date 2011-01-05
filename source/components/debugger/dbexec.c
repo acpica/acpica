@@ -213,7 +213,10 @@ AcpiDbExecuteMethod (
 
         if (Info->Args && Info->Args[0])
         {
-            for (i = 0; Info->Args[i] && i < ACPI_METHOD_NUM_ARGS; i++)
+            for (i = 0; Info->Args[i] &&
+                (i < ACPI_METHOD_NUM_ARGS) &&
+                (i < ObjInfo->ParamCount);
+                i++)
             {
                 Params[i].Type          = ACPI_TYPE_INTEGER;
                 Params[i].Integer.Value = ACPI_STRTOUL (Info->Args[i], NULL, 16);
