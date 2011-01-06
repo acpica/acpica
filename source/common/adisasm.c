@@ -667,7 +667,7 @@ AdCreateTableHeader (
 
         if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_DSDT))
         {
-            AcpiOsPrintf (" **** ACPI 1.0, no 64-bit math support");
+            AcpiOsPrintf (" **** 32-bit table (V1), no 64-bit math support");
         }
         break;
 

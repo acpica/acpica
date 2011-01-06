@@ -324,7 +324,7 @@ DtParseLine (
     }
 
     Colon = strchr (LineBuffer, ':');
-    if (!Colon || *(Colon - 1) != ' ')
+    if (!Colon)
     {
         return;
     }
@@ -351,7 +351,6 @@ DtParseLine (
 
             if (Start == Colon)
             {
-                MYDEBUG ("ERROR: right bracket reaches colon position\n");
                 break;
             }
 

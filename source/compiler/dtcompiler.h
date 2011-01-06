@@ -142,6 +142,9 @@
 #define DT_FIELD_TYPE_FLAG              4
 #define DT_FIELD_TYPE_FLAGS_INTEGER     5
 #define DT_FIELD_TYPE_INLINE_SUBTABLE   6
+#define DT_FIELD_TYPE_UUID              7
+#define DT_FIELD_TYPE_UNICODE           8
+#define DT_FIELD_TYPE_DEVICE_PATH       9
 
 
 /*
@@ -439,12 +442,18 @@ DtCompileSrat (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileUefi (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompileWdat (
     void                    **PFieldList);
 
 ACPI_STATUS
 DtCompileXsdt (
     void                    **PFieldList);
+
+extern UINT8    OpcMapToUUID[16];
 
 /* ACPI Table templates */
 
@@ -479,9 +488,5 @@ extern const unsigned char  TemplateWdat[];
 extern const unsigned char  TemplateWddt[];
 extern const unsigned char  TemplateWdrt[];
 extern const unsigned char  TemplateXsdt[];
-
-/* Debug */
-
-#define MYDEBUG         printf
 
 #endif

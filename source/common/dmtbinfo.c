@@ -1503,7 +1503,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoTcpa[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoUefi[] =
 {
-    {ACPI_DMT_BUF16,    ACPI_UEFI_OFFSET (Identifier[0]),           "UUID Identifier", 0},
+    {ACPI_DMT_UUID,     ACPI_UEFI_OFFSET (Identifier[0]),           "UUID Identifier", 0},
     {ACPI_DMT_UINT16,   ACPI_UEFI_OFFSET (DataOffset),              "Data Offset", 0},
     ACPI_DMT_TERMINATOR
 };
@@ -1622,4 +1622,43 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoWdrt[] =
     {ACPI_DMT_UINT16,   ACPI_WDRT_OFFSET (MaxCount),                "Max Count", 0},
     {ACPI_DMT_UINT8,    ACPI_WDRT_OFFSET (Units),                   "Counter Units", 0},
     ACPI_DMT_TERMINATOR
+};
+
+/*
+ * Generic types (used in UEFI)
+ *
+ * Examples:
+ *
+ *     Buffer : cc 04 ff bb
+ *      UINT8 : 11
+ *     UINT16 : 1122
+ *     UINT24 : 112233
+ *     UINT32 : 11223344
+ *     UINT56 : 11223344556677
+ *     UINT64 : 1122334455667788
+ *
+ *     String : "This is string"
+ *    Unicode : "This string encoded to Unicode"
+ *
+ *       GUID : 11223344-5566-7788-99aa-bbccddeeff00
+ * DevicePath : "\PciRoot(0)\Pci(0x1f,1)\Usb(0,0)"
+ */
+
+#define ACPI_DM_GENERIC_ENTRY(FieldType, FieldName)\
+    {{FieldType, 0, FieldName, 0}, ACPI_DMT_TERMINATOR}
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoGeneric[][2] =
+{
+    ACPI_DM_GENERIC_ENTRY (ACPI_DMT_UINT8,      "UINT8"),
+    ACPI_DM_GENERIC_ENTRY (ACPI_DMT_UINT16,     "UINT16"),
+    ACPI_DM_GENERIC_ENTRY (ACPI_DMT_UINT24,     "UINT24"),
+    ACPI_DM_GENERIC_ENTRY (ACPI_DMT_UINT32,     "UINT32"),
+    ACPI_DM_GENERIC_ENTRY (ACPI_DMT_UINT56,     "UINT56"),
+    ACPI_DM_GENERIC_ENTRY (ACPI_DMT_UINT64,     "UINT64"),
+    ACPI_DM_GENERIC_ENTRY (ACPI_DMT_STRING,     "String"),
+    ACPI_DM_GENERIC_ENTRY (ACPI_DMT_UNICODE,    "Unicode"),
+    ACPI_DM_GENERIC_ENTRY (ACPI_DMT_BUFFER,     "Buffer"),
+    ACPI_DM_GENERIC_ENTRY (ACPI_DMT_UUID,       "GUID"),
+    ACPI_DM_GENERIC_ENTRY (ACPI_DMT_STRING,     "DevicePath"),
+    {ACPI_DMT_TERMINATOR}
 };

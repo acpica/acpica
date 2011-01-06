@@ -481,6 +481,18 @@ DtGetFieldType (
         Type = DT_FIELD_TYPE_INLINE_SUBTABLE;
         break;
 
+    case ACPI_DMT_UNICODE:
+        Type = DT_FIELD_TYPE_UNICODE;
+        break;
+
+    case ACPI_DMT_UUID:
+        Type = DT_FIELD_TYPE_UUID;
+        break;
+
+    case ACPI_DMT_DEVICE_PATH:
+        Type = DT_FIELD_TYPE_DEVICE_PATH;
+        break;
+
     default:
         Type = DT_FIELD_TYPE_INTEGER;
         break;
@@ -619,10 +631,16 @@ DtGetFieldLength (
 
     case ACPI_DMT_STRING:
         Value = DtGetFieldValue (Field, Info->Name);
+        if (Value)
+        {
+            ByteLength = ACPI_STRLEN (Value) + 1;
+        }
+        else
+        {   /* At this point, this is a fatal error */
 
-        /* TBD: error if Value is NULL? (as below?) */
-
-        ByteLength = ACPI_STRLEN (Value) + 1;
+            sprintf (MsgBuffer, "Expected \"%s\"", Info->Name);
+            DtFatal (ASL_MSG_COMPILER_INTERNAL, NULL, MsgBuffer);
+        }
         break;
 
     case ACPI_DMT_GAS:
@@ -648,7 +666,16 @@ DtGetFieldLength (
         break;
 
     case ACPI_DMT_BUF16:
+    case ACPI_DMT_UUID:
         ByteLength = 16;
+        break;
+
+    case ACPI_DMT_UNICODE:
+        Value = DtGetFieldValue (Field, Info->Name);
+
+        /* TBD: error if Value is NULL? (as below?) */
+
+        ByteLength = (ACPI_STRLEN (Value) + 1) * sizeof(UINT16);
         break;
 
     default:

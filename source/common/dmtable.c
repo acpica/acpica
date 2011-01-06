@@ -348,7 +348,7 @@ ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_SPMI, AcpiDmTableInfoSpmi,    NULL,           NULL,           TemplateSpmi,   "Server Platform Management Interface table"},
     {ACPI_SIG_SRAT, NULL,                   AcpiDmDumpSrat, DtCompileSrat,  TemplateSrat,   "System Resource Affinity Table"},
     {ACPI_SIG_TCPA, AcpiDmTableInfoTcpa,    NULL,           NULL,           TemplateTcpa,   "Trusted Computing Platform Alliance table"},
-    {ACPI_SIG_UEFI, AcpiDmTableInfoUefi,    NULL,           NULL,           TemplateUefi,   "UEFI Boot Optimization Table"},
+    {ACPI_SIG_UEFI, AcpiDmTableInfoUefi,    NULL,           DtCompileUefi,  TemplateUefi,   "UEFI Boot Optimization Table"},
     {ACPI_SIG_WAET, AcpiDmTableInfoWaet,    NULL,           NULL,           TemplateWaet,   "Windows ACPI Emulated Devices Table"},
     {ACPI_SIG_WDAT, NULL,                   AcpiDmDumpWdat, DtCompileWdat,  TemplateWdat,   "Watchdog Action Table"},
     {ACPI_SIG_WDDT, AcpiDmTableInfoWddt,    NULL,           NULL,           TemplateWddt,   "Watchdog Description Table"},
@@ -647,6 +647,7 @@ AcpiDmDumpTable (
     const char              *Name;
     BOOLEAN                 LastOutputBlankLine = FALSE;
     char                    RepairedName[8];
+    UINT32                  i;
 
 
     if (!Info)
@@ -719,6 +720,7 @@ AcpiDmDumpTable (
             ByteLength = 8;
             break;
         case ACPI_DMT_BUF16:
+        case ACPI_DMT_UUID:
             ByteLength = 16;
             break;
         case ACPI_DMT_STRING:
@@ -834,6 +836,27 @@ AcpiDmDumpTable (
                 }
             }
             AcpiOsPrintf ("\n");
+            break;
+
+        case ACPI_DMT_UUID:
+
+            /* Convert 16-byte UUID buffer to 36-byte formatted UUID string */
+
+            for (i = 0; i < 16; i++)
+            {
+                MsgBuffer[OpcMapToUUID[i]] = (UINT8) HexLookup[(Target[i] >> 4) & 0xF];
+                MsgBuffer[OpcMapToUUID[i] + 1] = (UINT8) HexLookup[Target[i] & 0xF];
+            }
+
+            MsgBuffer[36] = 0; /* Null terminate */
+
+            /* Insert required hyphens (dashes) */
+
+            MsgBuffer[8] = '-';
+            MsgBuffer[13] = '-';
+            MsgBuffer[18] = '-';
+            MsgBuffer[23] = '-';
+            AcpiOsPrintf ("%s\n", MsgBuffer);
             break;
 
         case ACPI_DMT_STRING:

@@ -190,6 +190,9 @@ typedef const struct acpi_dmtable_info
 #define ACPI_DMT_ERSTACT                39
 #define ACPI_DMT_ERSTINST               40
 #define ACPI_DMT_ACCWIDTH               41
+#define ACPI_DMT_UNICODE                42
+#define ACPI_DMT_UUID                   43
+#define ACPI_DMT_DEVICE_PATH            44
 
 
 typedef
@@ -339,6 +342,8 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoWdat[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoWdat0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoWddt[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoWdrt[];
+
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGeneric[][2];
 
 
 /*

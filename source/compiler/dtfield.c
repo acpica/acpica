@@ -130,6 +130,18 @@ DtCompileString (
     DT_FIELD                *Field,
     UINT32                  ByteLength);
 
+static void
+DtCompileUnicode (
+    UINT8                   *Buffer,
+    DT_FIELD                *Field,
+    UINT32                  ByteLength);
+
+static ACPI_STATUS
+DtCompileUuid (
+    UINT8                   *Buffer,
+    DT_FIELD                *Field,
+    UINT32                  ByteLength);
+
 static char *
 DtNormalizeBuffer (
     char                    *Buffer,
@@ -159,6 +171,7 @@ DtCompileOneField (
     UINT8                   Type,
     UINT8                   Flags)
 {
+    ACPI_STATUS             Status;
 
     switch (Type)
     {
@@ -170,8 +183,24 @@ DtCompileOneField (
         DtCompileString (Buffer, Field, ByteLength);
         break;
 
+    case DT_FIELD_TYPE_UUID:
+        Status = DtCompileUuid (Buffer, Field, ByteLength);
+        if (ACPI_SUCCESS (Status))
+        {
+            break;
+        }
+
+        /* Fall through. */
+
     case DT_FIELD_TYPE_BUFFER:
         DtCompileBuffer (Buffer, Field->Value, Field, ByteLength);
+        break;
+
+    case DT_FIELD_TYPE_UNICODE:
+        DtCompileUnicode (Buffer, Field, ByteLength);
+        break;
+
+    case DT_FIELD_TYPE_DEVICE_PATH:
         break;
 
     default:
@@ -216,6 +245,117 @@ DtCompileString (
     }
 
     ACPI_MEMCPY (Buffer, Field->Value, Length);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    DtCompileUnicode
+ *
+ * PARAMETERS:  Buffer              - Output buffer
+ *              Field               - String to be copied to buffer
+ *              ByteLength          - Maximum length of string
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Convert ASCII string to Unicode string
+ *
+ * Note:  The Unicode string is 16 bits per character, no leading signature,
+ *        with a 16-bit terminating NULL.
+ *
+ *****************************************************************************/
+
+static void
+DtCompileUnicode (
+    UINT8                   *Buffer,
+    DT_FIELD                *Field,
+    UINT32                  ByteLength)
+{
+    UINT32                  Count;
+    UINT32                  i;
+    char                    *AsciiString;
+    UINT16                  *UnicodeString;
+
+
+    AsciiString = Field->Value;
+    UnicodeString = (UINT16 *) Buffer;
+    Count = ACPI_STRLEN (AsciiString) + 1;
+
+    /* Convert to Unicode string (including null terminator) */
+
+    for (i = 0; i < Count; i++)
+    {
+        UnicodeString[i] = (UINT16) AsciiString[i];
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    DtCompileUuid
+ *
+ * PARAMETERS:  Buffer              - Output buffer
+ *              Field               - String to be copied to buffer
+ *              ByteLength          - Maximum length of string
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Convert UUID string to 16-byte buffer
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+DtCompileUuid (
+    UINT8                   *Buffer,
+    DT_FIELD                *Field,
+    UINT32                  ByteLength)
+{
+    char                    *InString;
+    ACPI_STATUS             Status = AE_OK;
+    UINT32                  i;
+
+
+    InString = Field->Value;
+
+    if (ACPI_STRLEN (InString) != 36)
+    {
+        Status = AE_BAD_PARAMETER;
+    }
+    else
+    {
+        /* Check all 36 characters for correct format */
+
+        for (i = 0; i < 36; i++)
+        {
+            if ((i == 8) || (i == 13) || (i == 18) || (i == 23))
+            {
+                if (InString[i] != '-')
+                {
+                    Status = AE_BAD_PARAMETER;
+                }
+            }
+            else
+            {
+                if (!ACPI_IS_XDIGIT ((int) InString[i]))
+                {
+                    Status = AE_BAD_PARAMETER;
+                }
+            }
+        }
+    }
+
+    if (ACPI_FAILURE (Status))
+    {
+        sprintf (MsgBuffer, "%s", Field->Value);
+        DtNameError (ASL_ERROR, ASL_MSG_INVALID_UUID, Field, MsgBuffer);
+    }
+    else for (i = 0; i < 16; i++)
+    {
+        Buffer[i]  = (char) (UtHexCharToValue (InString[OpcMapToUUID[i]]) << 4);
+        Buffer[i] |= (char)  UtHexCharToValue (InString[OpcMapToUUID[i] + 1]);
+    }
+
+    return (Status);
 }
 
 

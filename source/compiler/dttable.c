@@ -1350,6 +1350,127 @@ DtCompileSrat (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtTableInfoGeneric
+ *
+ * PARAMETERS:  Name                - Generic type name
+ *
+ * RETURN:      Info entry
+ *
+ * DESCRIPTION: Obtain table info for a generic name entry
+ *
+ *****************************************************************************/
+
+static ACPI_DMTABLE_INFO *
+DtTableInfoGeneric (
+    char                    *Name)
+{
+    ACPI_DMTABLE_INFO       *Info;
+    UINT32                  i;
+
+
+    if (!Name)
+    {
+        return (NULL);
+    }
+
+    /* Search info table for name match */
+
+    for (i = 0; ; i++)
+    {
+        Info = AcpiDmTableInfoGeneric[i];
+        if (Info->Opcode == ACPI_DMT_EXIT)
+        {
+            Info = NULL;
+            break;
+        }
+
+        if (!ACPI_STRCMP (Name, Info->Name))
+        {
+            break;
+        }
+    }
+
+    return (Info);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    DtCompileUefi
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile UEFI.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileUefi (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    ACPI_DMTABLE_INFO       *Info;
+    UINT16                  *DataOffset;
+
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoUefi,
+                &Subtable, TRUE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    DataOffset = (UINT16 *) (Subtable->Buffer + 16);
+    *DataOffset = sizeof (ACPI_TABLE_UEFI);
+
+    ParentTable = DtPeekSubtable ();
+    DtInsertSubtable (ParentTable, Subtable);
+
+    while (*PFieldList)
+    {
+        Info = DtTableInfoGeneric ((*PFieldList)->Name);
+        if (!Info)
+        {
+            sprintf (MsgBuffer, "Generic data type \"%s\" not found",
+                (*PFieldList)->Name);
+            DtNameError (ASL_ERROR, ASL_MSG_INVALID_FIELD_NAME,
+                (*PFieldList), MsgBuffer);
+
+            *PFieldList = (*PFieldList)->Next;
+            continue;
+        }
+
+        Status = DtCompileTable (PFieldList, Info,
+                    &Subtable, TRUE);
+        if (ACPI_SUCCESS (Status))
+        {
+            DtInsertSubtable (ParentTable, Subtable);
+        }
+        else
+        {
+            *PFieldList = (*PFieldList)->Next;
+
+            if (Status == AE_NOT_FOUND)
+            {
+                sprintf (MsgBuffer, "Generic data type \"%s\" not found",
+                    (*PFieldList)->Name);
+                DtNameError (ASL_ERROR, ASL_MSG_INVALID_FIELD_NAME,
+                    (*PFieldList), MsgBuffer);
+            }
+        }
+    }
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileWdat
  *
  * PARAMETERS:  List                - Current field list pointer

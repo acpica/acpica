@@ -123,9 +123,20 @@
         ACPI_MODULE_NAME    ("aslopcodes")
 
 
-/* UUID support */
-
-static UINT8 OpcMapToUUID[16] =
+/*
+ * UUID support. The input ascii string will be converted to a 16 byte
+ * buffer. This table maps an output buffer index 0-15 to the index
+ * within the input string where the associated 2-byte hex value can be
+ * found.
+ *
+ * Input string is of the form:
+ *     aabbccdd-eeff-gghh-iijj-kkllmmnnoopp
+ * Where aa-pp are one byte hex numbers, made up of two hex digits
+ *
+ * Note: This table is basically the inverse of the string-to-offset table
+ * found in the ACPI spec in the description of the ToUUID macro.
+ */
+UINT8 OpcMapToUUID[16] =
 {
     6,4,2,0,11,9,16,14,19,21,24,26,28,30,32,34
 };
