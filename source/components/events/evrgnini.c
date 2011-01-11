@@ -729,9 +729,9 @@ AcpiEvInitializeRegion (
                  *
                  * See AcpiNsExecModuleCode
                  */
-                if (ObjDesc->Method.Flags & AOPOBJ_MODULE_LEVEL)
+                if (ObjDesc->Method.InfoFlags & ACPI_METHOD_MODULE_LEVEL)
                 {
-                    HandlerObj = ObjDesc->Method.Extra.Handler;
+                    HandlerObj = ObjDesc->Method.Dispatch.Handler;
                 }
                 break;
 

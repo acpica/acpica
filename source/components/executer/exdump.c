@@ -216,7 +216,7 @@ static ACPI_EXDUMP_INFO     AcpiExDumpEvent[2] =
 static ACPI_EXDUMP_INFO     AcpiExDumpMethod[9] =
 {
     {ACPI_EXD_INIT,     ACPI_EXD_TABLE_SIZE (AcpiExDumpMethod),         NULL},
-    {ACPI_EXD_UINT8,    ACPI_EXD_OFFSET (Method.MethodFlags),           "Method Flags"},
+    {ACPI_EXD_UINT8,    ACPI_EXD_OFFSET (Method.InfoFlags),             "Info Flags"},
     {ACPI_EXD_UINT8,    ACPI_EXD_OFFSET (Method.ParamCount),            "Parameter Count"},
     {ACPI_EXD_UINT8,    ACPI_EXD_OFFSET (Method.SyncLevel),             "Sync Level"},
     {ACPI_EXD_POINTER,  ACPI_EXD_OFFSET (Method.Mutex),                 "Mutex"},

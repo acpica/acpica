@@ -486,7 +486,7 @@ AcpiNsExecModuleCode (
      */
     if ((Type == ACPI_TYPE_DEVICE) && ParentNode->Object)
     {
-        MethodObj->Method.Extra.Handler =
+        MethodObj->Method.Dispatch.Handler =
             ParentNode->Object->Device.Handler;
     }
 

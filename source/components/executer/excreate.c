@@ -595,12 +595,10 @@ AcpiExCreateMethod (
     ObjDesc->Method.AmlLength = AmlLength;
 
     /*
-     * Disassemble the method flags. Split off the Arg Count
-     * for efficiency
+     * Disassemble the method flags. Split off the ArgCount, Serialized
+     * flag, and SyncLevel for efficiency.
      */
     MethodFlags = (UINT8) Operand[1]->Integer.Value;
-
-    ObjDesc->Method.MethodFlags = (UINT8) (MethodFlags & ~AML_METHOD_ARG_COUNT);
     ObjDesc->Method.ParamCount = (UINT8) (MethodFlags & AML_METHOD_ARG_COUNT);
 
     /*
@@ -609,6 +607,8 @@ AcpiExCreateMethod (
      */
     if (MethodFlags & AML_METHOD_SERIALIZED)
     {
+        ObjDesc->Method.InfoFlags = ACPI_METHOD_SERIALIZED;
+
         /*
          * ACPI 1.0: SyncLevel = 0
          * ACPI 2.0: SyncLevel = SyncLevel in method declaration

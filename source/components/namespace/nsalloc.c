@@ -341,7 +341,7 @@ AcpiNsInstallNode (
              * modified the namespace. This is used for cleanup when the
              * method exits.
              */
-            WalkState->MethodDesc->Method.Flags |= AOPOBJ_MODIFIED_NAMESPACE;
+            WalkState->MethodDesc->Method.InfoFlags |= ACPI_METHOD_MODIFIED_NAMESPACE;
         }
     }
 
