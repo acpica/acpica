@@ -132,7 +132,7 @@ static void
 DtLinkField (
     DT_FIELD                *Field);
 
-static void
+static ACPI_STATUS
 DtParseLine (
     char                    *LineBuffer,
     UINT32                  Line,
@@ -298,13 +298,13 @@ DtLinkField (
  *              Line                - Current line number in the source
  *              Offset              - Current byte offset of the line
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Parse one source line
  *
  *****************************************************************************/
 
-static void
+static ACPI_STATUS
 DtParseLine (
     char                    *LineBuffer,
     UINT32                  Line,
@@ -325,13 +325,20 @@ DtParseLine (
 
     if (!LineBuffer)
     {
-        return;
+        return (AE_OK);
+    }
+
+    /* All lines after "Raw Table Data" are ingored */
+
+    if (strstr (LineBuffer, ACPI_RAW_TABLE_DATA_HEADER))
+    {
+        return (AE_NOT_FOUND);
     }
 
     Colon = strchr (LineBuffer, ':');
     if (!Colon)
     {
-        return;
+        return (AE_OK);
     }
 
     Start = LineBuffer;
@@ -426,6 +433,8 @@ DtParseLine (
 
         DtLinkField (Field);
     }
+
+    return (AE_OK);
 }
 
 
@@ -617,6 +626,7 @@ DT_FIELD *
 DtScanFile (
     FILE                    *Handle)
 {
+    ACPI_STATUS             Status;
     UINT32                  Offset;
 
 
@@ -638,7 +648,11 @@ DtScanFile (
         ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Line %2.2u/%4.4X - %s",
             Gbl_CurrentLineNumber, Offset, Gbl_CurrentLineBuffer));
 
-        DtParseLine (Gbl_CurrentLineBuffer, Gbl_CurrentLineNumber, Offset);
+        Status = DtParseLine (Gbl_CurrentLineBuffer, Gbl_CurrentLineNumber, Offset);
+        if (Status == AE_NOT_FOUND)
+        {
+            break;
+        }
     }
 
     return (Gbl_FieldList);
@@ -880,8 +894,8 @@ DtWriteTableToListing (
 
     AcpiOsRedirectOutput (Gbl_Files[ASL_FILE_LISTING_OUTPUT].Handle);
 
-    AcpiOsPrintf ("\nRaw Table Data: Length %d (0x%X)\n\n",
-        Gbl_TableLength, Gbl_TableLength);
+    AcpiOsPrintf ("\n%s: Length %d (0x%X)\n\n",
+        ACPI_RAW_TABLE_DATA_HEADER, Gbl_TableLength, Gbl_TableLength);
     AcpiUtDumpBuffer2 (Buffer, Gbl_TableLength, DB_BYTE_DISPLAY);
 
     AcpiOsRedirectOutput (stdout);

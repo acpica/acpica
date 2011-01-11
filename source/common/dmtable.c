@@ -516,7 +516,8 @@ AcpiDmDumpDataTable (
     {
         /* Dump the raw table data */
 
-        AcpiOsPrintf ("\nRaw Table Data\n\n");
+        AcpiOsPrintf ("\n%s: Length %d (0x%X)\n\n",
+            ACPI_RAW_TABLE_DATA_HEADER, Length, Length);
         AcpiUtDumpBuffer2 (ACPI_CAST_PTR (UINT8, Table), Length, DB_BYTE_DISPLAY);
     }
 }

@@ -125,6 +125,12 @@
 #define BLOCK_COMMA_LIST        4
 #define ACPI_DEFAULT_RESNAME    *(UINT32 *) "__RD"
 
+/*
+ * Raw table data header. Used by disassembler and data table compiler.
+ * Do not change.
+ */
+#define ACPI_RAW_TABLE_DATA_HEADER      "Raw Table Data"
+
 
 typedef const struct acpi_dmtable_info
 {
