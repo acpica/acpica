@@ -143,7 +143,6 @@ extern FILE                         *AslCompilerin;
 extern int                          AslCompilerdebug;
 extern const ASL_MAPPING_ENTRY      AslKeywordMapping[];
 extern char                         *AslCompilertext;
-extern char                         HexLookup[];
 
 #define ASL_LINE_BUFFER_SIZE        1024
 #define ASL_MSG_BUFFER_SIZE         4096
@@ -270,6 +269,7 @@ ASL_EXTERN FILE                     *AcpiGbl_DebugFile; /* Placeholder for oswin
 
 ASL_EXTERN ASL_ANALYSIS_WALK_INFO   AnalysisWalkInfo;
 ASL_EXTERN ACPI_TABLE_HEADER        TableHeader;
+extern char                         AslHexLookup[];
 
 /* Event timing */
 

@@ -47,6 +47,7 @@ OBJS = \
 	asltransform.o \
 	asltree.o \
 	aslutils.o \
+	asluuid.o \
 	dtcompile.o \
 	dtfield.o \
 	dtio.o \
@@ -266,6 +267,9 @@ asltree.o :         $(ASL_COMPILER)/asltree.c
 	$(COMPILE)
 
 aslutils.o :        $(ASL_COMPILER)/aslutils.c
+	$(COMPILE)
+
+asluuid.o :         $(ASL_COMPILER)/asluuid.c
 	$(COMPILE)
 
 

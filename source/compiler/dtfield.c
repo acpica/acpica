@@ -311,48 +311,20 @@ DtCompileUuid (
     UINT32                  ByteLength)
 {
     char                    *InString;
-    ACPI_STATUS             Status = AE_OK;
-    UINT32                  i;
+    ACPI_STATUS             Status;
 
 
     InString = Field->Value;
 
-    if (ACPI_STRLEN (InString) != 36)
-    {
-        Status = AE_BAD_PARAMETER;
-    }
-    else
-    {
-        /* Check all 36 characters for correct format */
-
-        for (i = 0; i < 36; i++)
-        {
-            if ((i == 8) || (i == 13) || (i == 18) || (i == 23))
-            {
-                if (InString[i] != '-')
-                {
-                    Status = AE_BAD_PARAMETER;
-                }
-            }
-            else
-            {
-                if (!ACPI_IS_XDIGIT ((int) InString[i]))
-                {
-                    Status = AE_BAD_PARAMETER;
-                }
-            }
-        }
-    }
-
+    Status = AuValidateUuid (InString);
     if (ACPI_FAILURE (Status))
     {
         sprintf (MsgBuffer, "%s", Field->Value);
         DtNameError (ASL_ERROR, ASL_MSG_INVALID_UUID, Field, MsgBuffer);
     }
-    else for (i = 0; i < 16; i++)
+    else
     {
-        Buffer[i]  = (char) (UtHexCharToValue (InString[OpcMapToUUID[i]]) << 4);
-        Buffer[i] |= (char)  UtHexCharToValue (InString[OpcMapToUUID[i] + 1]);
+        Status = AuConvertStringToUuid (InString, (char *) Buffer);
     }
 
     return (Status);

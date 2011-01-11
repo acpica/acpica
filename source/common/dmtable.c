@@ -648,7 +648,6 @@ AcpiDmDumpTable (
     const char              *Name;
     BOOLEAN                 LastOutputBlankLine = FALSE;
     char                    RepairedName[8];
-    UINT32                  i;
 
 
     if (!Info)
@@ -843,20 +842,8 @@ AcpiDmDumpTable (
 
             /* Convert 16-byte UUID buffer to 36-byte formatted UUID string */
 
-            for (i = 0; i < 16; i++)
-            {
-                MsgBuffer[OpcMapToUUID[i]] = (UINT8) HexLookup[(Target[i] >> 4) & 0xF];
-                MsgBuffer[OpcMapToUUID[i] + 1] = (UINT8) HexLookup[Target[i] & 0xF];
-            }
+            (void) AuConvertUuidToString ((char *) Target, MsgBuffer);
 
-            MsgBuffer[36] = 0; /* Null terminate */
-
-            /* Insert required hyphens (dashes) */
-
-            MsgBuffer[8] = '-';
-            MsgBuffer[13] = '-';
-            MsgBuffer[18] = '-';
-            MsgBuffer[23] = '-';
             AcpiOsPrintf ("%s\n", MsgBuffer);
             break;
 

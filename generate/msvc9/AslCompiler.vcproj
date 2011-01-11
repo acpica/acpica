@@ -1450,6 +1450,10 @@
 						/>
 					</FileConfiguration>
 				</File>
+				<File
+					RelativePath="..\..\source\compiler\asluuid.c"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Common"

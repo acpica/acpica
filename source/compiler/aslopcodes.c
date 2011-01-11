@@ -123,24 +123,6 @@
         ACPI_MODULE_NAME    ("aslopcodes")
 
 
-/*
- * UUID support. The input ascii string will be converted to a 16 byte
- * buffer. This table maps an output buffer index 0-15 to the index
- * within the input string where the associated 2-byte hex value can be
- * found.
- *
- * Input string is of the form:
- *     aabbccdd-eeff-gghh-iijj-kkllmmnnoopp
- * Where aa-pp are one byte hex numbers, made up of two hex digits
- *
- * Note: This table is basically the inverse of the string-to-offset table
- * found in the ACPI spec in the description of the ToUUID macro.
- */
-UINT8 OpcMapToUUID[16] =
-{
-    6,4,2,0,11,9,16,14,19,21,24,26,28,30,32,34
-};
-
 /* Local prototypes */
 
 static void
@@ -652,49 +634,20 @@ OpcDoUuId (
     char                    *InString;
     char                    *Buffer;
     ACPI_STATUS             Status = AE_OK;
-    UINT32                  i;
     ACPI_PARSE_OBJECT       *NewOp;
 
 
     InString = (char *) Op->Asl.Value.String;
-
-    if (ACPI_STRLEN (InString) != 36)
-    {
-        Status = AE_BAD_PARAMETER;
-    }
-    else
-    {
-        /* Check all 36 characters for correct format */
-
-        for (i = 0; i < 36; i++)
-        {
-            if ((i == 8) || (i == 13) || (i == 18) || (i == 23))
-            {
-                if (InString[i] != '-')
-                {
-                    Status = AE_BAD_PARAMETER;
-                }
-            }
-            else
-            {
-                if (!isxdigit ((int) InString[i]))
-                {
-                    Status = AE_BAD_PARAMETER;
-                }
-            }
-        }
-    }
-
     Buffer = UtLocalCalloc (16);
 
+    Status = AuValidateUuid (InString);
     if (ACPI_FAILURE (Status))
     {
         AslError (ASL_ERROR, ASL_MSG_INVALID_UUID, Op, Op->Asl.Value.String);
     }
-    else for (i = 0; i < 16; i++)
+    else
     {
-        Buffer[i]  = (char) (UtHexCharToValue (InString[OpcMapToUUID[i]]) << 4);
-        Buffer[i] |= (char)  UtHexCharToValue (InString[OpcMapToUUID[i] + 1]);
+        (void) AuConvertStringToUuid (InString, Buffer);
     }
 
     /* Change Op to a Buffer */

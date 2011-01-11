@@ -780,6 +780,22 @@ UINT64
 UtDoConstant (
     char                    *String);
 
+/*
+ * asluuid - UUID support
+ */
+ACPI_STATUS
+AuValidateUuid (
+    char                    *InString);
+
+ACPI_STATUS
+AuConvertStringToUuid (
+    char                    *InString,
+    char                    *UuIdBuffer);
+
+ACPI_STATUS
+AuConvertUuidToString (
+    char                    *UuIdBuffer,
+    char                    *OutString);
 
 /*
  * aslresource - Resource template generation utilities

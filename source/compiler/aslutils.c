@@ -132,7 +132,7 @@ static const char * const       *yytname = &AslCompilername[254];
 extern const char * const       yytname[];
 #endif
 
-char                    HexLookup[] =
+char                        AslHexLookup[] =
 {
     '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
 };
@@ -386,8 +386,8 @@ UtConvertByteToHex (
     Buffer[0] = '0';
     Buffer[1] = 'x';
 
-    Buffer[2] = (UINT8) HexLookup[(RawByte >> 4) & 0xF];
-    Buffer[3] = (UINT8) HexLookup[RawByte & 0xF];
+    Buffer[2] = (UINT8) AslHexLookup[(RawByte >> 4) & 0xF];
+    Buffer[3] = (UINT8) AslHexLookup[RawByte & 0xF];
 }
 
 
@@ -412,8 +412,8 @@ UtConvertByteToAsmHex (
 {
 
     Buffer[0] = '0';
-    Buffer[1] = (UINT8) HexLookup[(RawByte >> 4) & 0xF];
-    Buffer[2] = (UINT8) HexLookup[RawByte & 0xF];
+    Buffer[1] = (UINT8) AslHexLookup[(RawByte >> 4) & 0xF];
+    Buffer[2] = (UINT8) AslHexLookup[RawByte & 0xF];
     Buffer[3] = 'h';
 }
 

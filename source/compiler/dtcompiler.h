@@ -463,8 +463,6 @@ ACPI_STATUS
 DtCompileXsdt (
     void                    **PFieldList);
 
-extern UINT8    OpcMapToUUID[16];
-
 /* ACPI Table templates */
 
 extern const unsigned char  TemplateAsf[];
