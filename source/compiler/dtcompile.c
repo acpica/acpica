@@ -227,6 +227,7 @@ DtDoCompile (
 
     DtOutputBinary (Gbl_RootTable);
     LsDoHexOutput ();
+    DtWriteTableToListing ();
 
 CleanupAndExit:
 
@@ -614,6 +615,8 @@ DtCompileTable (
 
             DtCompileOneField (Buffer, LocalField,
                 FieldLength, FieldType, Info->Flags);
+
+            DtWriteFieldToListing (Buffer, LocalField, FieldLength);
             LocalField = LocalField->Next;
 
             if (Info->Flags & DT_LENGTH)
@@ -623,6 +626,7 @@ DtCompileTable (
                 Subtable->LengthField = Buffer;
                 Subtable->SizeOfLengthField = FieldLength;
             }
+
             break;
         }
 

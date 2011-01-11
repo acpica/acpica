@@ -812,6 +812,26 @@ FlOpenMiscOutputFiles (
         AslCompilerFileHeader (ASL_FILE_DEBUG_OUTPUT);
     }
 
+    /* Create/Open a listing output file if asked */
+
+    if (Gbl_ListingFlag)
+    {
+        Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_LISTING);
+        if (!Filename)
+        {
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME,
+                0, 0, 0, 0, NULL, NULL);
+            return (AE_ERROR);
+        }
+
+        /* Open the listing file, text mode */
+
+        FlOpenFile (ASL_FILE_LISTING_OUTPUT, Filename, "w+");
+
+        AslCompilerSignon (ASL_FILE_LISTING_OUTPUT);
+        AslCompilerFileHeader (ASL_FILE_LISTING_OUTPUT);
+    }
+
     if (Gbl_FileType == ASL_INPUT_TYPE_ASCII_DATA)
     {
         return (AE_OK);
@@ -833,26 +853,6 @@ FlOpenMiscOutputFiles (
      * calculations.)
      */
     FlOpenFile (ASL_FILE_SOURCE_OUTPUT, Filename, "w+b");
-
-    /* Create/Open a listing output file if asked */
-
-    if (Gbl_ListingFlag)
-    {
-        Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_LISTING);
-        if (!Filename)
-        {
-            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME,
-                0, 0, 0, 0, NULL, NULL);
-            return (AE_ERROR);
-        }
-
-        /* Open the listing file, text mode */
-
-        FlOpenFile (ASL_FILE_LISTING_OUTPUT, Filename, "w+");
-
-        AslCompilerSignon (ASL_FILE_LISTING_OUTPUT);
-        AslCompilerFileHeader (ASL_FILE_LISTING_OUTPUT);
-    }
 
     /* Create/Open a assembly code source output file if asked */
 

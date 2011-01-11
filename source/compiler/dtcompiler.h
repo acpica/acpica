@@ -224,6 +224,16 @@ void
 DtOutputBinary (
     DT_SUBTABLE             *RootTable);
 
+void
+DtWriteFieldToListing (
+    UINT8                   *Buffer,
+    DT_FIELD                *Field,
+    UINT32                  Length);
+
+void
+DtWriteTableToListing (
+    void);
+
 
 /* dtsubtable - compile subtables */
 

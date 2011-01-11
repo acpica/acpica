@@ -148,6 +148,11 @@ DtWriteBinary (
     void                    *Context,
     void                    *ReturnValue);
 
+static void
+DtDumpBuffer (
+    UINT32                  FileId,
+    UINT8                   *Buffer,
+    UINT32                  Length);
 
 /* States for DtGetNextLine */
 
@@ -644,7 +649,6 @@ DtScanFile (
  * Output functions
  */
 
-
 /******************************************************************************
  *
  * FUNCTION:    DtWriteBinary
@@ -694,4 +698,191 @@ DtOutputBinary (
 
     DtWalkTableTree (RootTable, DtWriteBinary, NULL, NULL);
     Gbl_TableLength = DtGetFileSize (Gbl_Files[ASL_FILE_AML_OUTPUT].Handle);
+}
+
+
+/*
+ * Listing support
+ */
+
+/******************************************************************************
+ *
+ * FUNCTION:    DtDumpBuffer
+ *
+ * PARAMETERS:  FileID              - Where to write buffer data
+ *              Buffer              - Buffer to dump
+ *              Length              - Buffer Length
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Another copy of DumpBuffer routine (unfortunately).
+ *
+ * TBD: merge dump buffer routines
+ *
+ *****************************************************************************/
+
+static void
+DtDumpBuffer (
+    UINT32                  FileId,
+    UINT8                   *Buffer,
+    UINT32                  Length)
+{
+    UINT32                  i;
+    UINT32                  j;
+    UINT8                   BufChar;
+
+
+    i = 0;
+    while (i < Length)
+    {
+        /* Print 16 hex chars */
+
+        FlPrintFile (FileId, "Output: [%.3d] ", Length);
+
+        for (j = 0; j < 16;)
+        {
+            if (i + j >= Length)
+            {
+                /* Dump fill spaces */
+
+                FlPrintFile (FileId, "   ");
+                j++;
+                continue;
+            }
+
+            FlPrintFile (FileId, "%02X ", Buffer[i+j]);
+            j++;
+        }
+
+        FlPrintFile (FileId, " ");
+        for (j = 0; j < 16; j++)
+        {
+            if (i + j >= Length)
+            {
+                FlPrintFile (FileId, "\n\n");
+                return;
+            }
+
+            BufChar = Buffer[(ACPI_SIZE) i + j];
+            if (ACPI_IS_PRINT (BufChar))
+            {
+                FlPrintFile (FileId, "%c", BufChar);
+            }
+            else
+            {
+                FlPrintFile (FileId, ".");
+            }
+        }
+
+        /* Done with that line. */
+
+        FlPrintFile (FileId, "\n");
+        i += 16;
+    }
+
+    FlPrintFile (FileId, "\n\n");
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    DtWriteFieldToListing
+ *
+ * PARAMETERS:  Buffer              - Contains the compiled data
+ *              Field               - Field node for the input line
+ *              Length              - Length of the output data
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Write one field to the listing file (if listing is enabled).
+ *
+ *****************************************************************************/
+
+void
+DtWriteFieldToListing (
+    UINT8                   *Buffer,
+    DT_FIELD                *Field,
+    UINT32                  Length)
+{
+    UINT8                   FileByte;
+
+
+    if (!Gbl_ListingFlag || !Field)
+    {
+        return;
+    }
+
+    /* Dump the original source line */
+
+    FlPrintFile (ASL_FILE_LISTING_OUTPUT, "Input:  ");
+    FlSeekFile (ASL_FILE_INPUT, Field->ByteOffset);
+
+    while (FlReadFile (ASL_FILE_INPUT, &FileByte, 1) == AE_OK)
+    {
+        FlWriteFile (ASL_FILE_LISTING_OUTPUT, &FileByte, 1);
+        if (FileByte == '\n')
+        {
+            break;
+        }
+    }
+
+    /* Dump the line as parsed and represented internally */
+
+    FlPrintFile (ASL_FILE_LISTING_OUTPUT, "Parsed: %*s : %s\n",
+        Field->Column-4, Field->Name, Field->Value);
+
+#if 0
+    /* TBD Dump the length and AML offset */
+
+    FlPrintFile (ASL_FILE_LISTING_OUTPUT,
+        "Output: Length %d(0x%X) Offset %d(0x%X)\n",
+        Field->Column-4, Field->Name, Field->Value);
+#endif
+
+    /* Dump the hex data that will be output for this field */
+
+    DtDumpBuffer (ASL_FILE_LISTING_OUTPUT, Buffer, Length);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    DtWriteTableToListing
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Write the entire compiled table to the listing file
+ *              in hex format
+ *
+ *****************************************************************************/
+
+void
+DtWriteTableToListing (
+    void)
+{
+    UINT8                   *Buffer;
+
+
+    if (!Gbl_ListingFlag)
+    {
+        return;
+    }
+
+    /* Read the entire table from the output file */
+
+    Buffer = UtLocalCalloc (Gbl_TableLength);
+    FlSeekFile (ASL_FILE_AML_OUTPUT, 0);
+    FlReadFile (ASL_FILE_AML_OUTPUT, Buffer, Gbl_TableLength);
+
+    /* Dump the raw table data */
+
+    AcpiOsRedirectOutput (Gbl_Files[ASL_FILE_LISTING_OUTPUT].Handle);
+
+    AcpiOsPrintf ("\nRaw Table Data: Length %d (0x%X)\n\n",
+        Gbl_TableLength, Gbl_TableLength);
+    AcpiUtDumpBuffer2 (Buffer, Gbl_TableLength, DB_BYTE_DISPLAY);
+
+    AcpiOsRedirectOutput (stdout);
 }
