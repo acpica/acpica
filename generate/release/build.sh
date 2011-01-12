@@ -77,6 +77,7 @@ cp -r source/compiler unixtemp/compiler
 #
 cp -r source/tools/acpisrc unixtemp/tools
 cp -r source/tools/acpiexec unixtemp/tools
+cp -r source/tools/acpinames unixtemp/tools
 cp -r source/tools/acpixtract unixtemp/tools
 cp -r source/tools/examples unixtemp/tools
 
@@ -143,6 +144,119 @@ mv acpica-unix-`date +%Y%m%d`.tar.gz generate/release/current
 # Remove the temporary directory
 #
 rm -rf acpica-unix-`date +%Y%m%d`
+rm -rf unixtemp
+
+
+#******************************************************************************
+#
+# Unix source code package with dual-license
+#
+#******************************************************************************
+echo
+echo ACPICA - Dual-license Unix source code package
+echo
+
+#
+# Make temp directories
+#
+mkdir -p unixtemp/generate
+mkdir -p unixtemp/tools
+mkdir -p unixtemp/os_specific
+mkdir -p unixtemp/tests
+mkdir -p unixtemp/tests/misc
+mkdir -p unixtemp/tests/templates
+
+#
+# Copy ACPICA subsystem source code
+#
+cp -r documents/changes.txt unixtemp/changes.txt
+cp -r source/common unixtemp/common
+cp -r source/components/* unixtemp
+cp -r source/include unixtemp/include
+
+#
+# iASL compiler source
+#
+cp -r source/compiler unixtemp/compiler
+
+#
+# ACPICA tools source
+#
+cp -r source/tools/acpisrc unixtemp/tools
+cp -r source/tools/acpiexec unixtemp/tools
+cp -r source/tools/acpinames unixtemp/tools
+cp -r source/tools/acpixtract unixtemp/tools
+cp -r source/tools/examples unixtemp/tools
+
+#
+# iASL/ACPICA miscellaneous tests (not full test suites)
+#
+cp -r tests/misc/*.asl unixtemp/tests/misc
+cp -r tests/templates/Makefile unixtemp/tests/templates
+cp -r tests/templates/templates.sh unixtemp/tests/templates
+
+#
+# OS-specific interfaces
+#
+cp -r source/os_specific/service_layers unixtemp/os_specific/service_layers
+cp source/os_specific/service_layers/osunixxf.c unixtemp
+cp source/os_specific/service_layers/osunixdir.c unixtemp/tools/acpisrc
+cp source/os_specific/service_layers/osunixdir.c unixtemp/tools/acpiexec
+
+#
+# Insert the dual-license into *.c and *.h files
+#
+libraries/acpisrc -h -y unixtemp
+
+#
+# Copy UNIX makefiles
+#
+cp generate/linux/Makefile.iasl unixtemp/compiler/Makefile
+cp generate/linux/Makefile.acpisrc unixtemp/tools/acpisrc/Makefile
+cp generate/linux/Makefile.acpiexec unixtemp/tools/acpiexec/Makefile
+cp generate/linux/Makefile.acpixtract unixtemp/tools/acpixtract/Makefile
+cp generate/linux/README.acpica-unix unixtemp/README
+
+#
+# Copy Lint directory, delete extraneous files
+#
+cp -r generate/lint unixtemp/generate/lint
+rm -f unixtemp/generate/lint/co*
+rm -f unixtemp/generate/lint/env*
+rm -f unixtemp/generate/lint/lib*
+rm -f unixtemp/generate/lint/LintOut.txt
+
+#
+# Delete extraneous files
+#
+cd unixtemp
+find . -name "*.scc"|xargs rm -f
+find . -name "CVS"|xargs rm -r -f
+
+#
+# Convert all LF/CR pairs to Unix format (LF only)
+#
+echo Start LF/CR Conversion
+find . -name "*"|xargs d2u
+echo LF/CR Conversion complete
+cd ..
+
+#
+# Build release package
+#
+mv unixtemp acpica-unix2-`date +%Y%m%d`
+tar czf acpica-unix2-`date +%Y%m%d`.tar.gz acpica-unix2-`date +%Y%m%d`
+
+#
+# Move the completed package
+#
+mv acpica-unix2-`date +%Y%m%d`.tar.gz generate/release/current
+
+#
+# Remove the temporary directory
+#
+rm -rf acpica-unix2-`date +%Y%m%d`
+rm -rf unixtemp
 
 
 #******************************************************************************
@@ -196,10 +310,10 @@ cp -r tests/templates/templates.sh wintemp/tests/templates
 cp source/os_specific/service_layers/*.c wintemp/source/os_specific/service_layers
 
 #
-# Copy project files for MS VC++ (6.0)
+# Copy project files for MS Visual Studio 2008 (VC++ 9.0)
 #
-cp -r generate/msvc/*.dsp wintemp/generate/msvc/
-cp -r generate/msvc/*.dsw wintemp/generate/msvc/
+cp -r generate/msvc9/*.sln wintemp/generate/msvc/
+cp -r generate/msvc9/*.vcproj wintemp/generate/msvc/
 
 #
 # Copy Lint directory, delete extraneous files
