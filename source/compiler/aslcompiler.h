@@ -560,6 +560,10 @@ TrCreateValuedLeafNode (
     UINT64                  Value);
 
 ACPI_PARSE_OBJECT *
+TrCreateConstantLeafNode (
+    UINT32                  ParseOpcode);
+
+ACPI_PARSE_OBJECT *
 TrLinkChildren (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  NumChildren,
