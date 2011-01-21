@@ -4,6 +4,7 @@ SRCS=	abcompare.c abmain.c \
 	../../utilities/utalloc.c \
 	../../utilities/utcache.c \
 	../../utilities/utdebug.c \
+	../../utilities/utdecode.c \
 	../../utilities/utglobal.c \
 	../../utilities/utmath.c \
 	../../utilities/utmisc.c \

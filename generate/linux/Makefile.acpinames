@@ -65,6 +65,8 @@ OBJS = \
 	tbxfroot.o \
 	utalloc.o \
 	utcache.o \
+	utdebug.o \
+	utdecode.o \
 	utdelete.o \
 	utglobal.o \
 	utlock.o \
@@ -242,6 +244,9 @@ utcache.o :         $(ACPICA_CORE)/utilities/utcache.c
 	$(COMPILE)
 
 utdebug.o :         $(ACPICA_CORE)/utilities/utdebug.c
+	$(COMPILE)
+
+utdecode.o :        $(ACPICA_CORE)/utilities/utdecode.c
 	$(COMPILE)
 
 utdelete.o :        $(ACPICA_CORE)/utilities/utdelete.c

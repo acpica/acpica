@@ -127,6 +127,7 @@ OBJS = \
 	utcache.o \
 	utcopy.o \
 	utdebug.o \
+	utdecode.o \
 	utdelete.o \
 	utglobal.o \
 	utinit.o \
@@ -526,6 +527,9 @@ utcopy.o :          $(ACPICA_CORE)/utilities/utcopy.c
 	$(COMPILE)
 
 utdebug.o :         $(ACPICA_CORE)/utilities/utdebug.c
+	$(COMPILE)
+
+utdecode.o :        $(ACPICA_CORE)/utilities/utdecode.c
 	$(COMPILE)
 
 utdelete.o :        $(ACPICA_CORE)/utilities/utdelete.c
