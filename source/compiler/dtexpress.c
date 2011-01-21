@@ -172,7 +172,7 @@ DtResolveIntegerExpression (
     IntegerString = strtok (MsgBuffer, " ");
     if (!IntegerString)
     {
-        DtFatal (ASL_MSG_INVALID_EXPRESSION, Field, Field->Value);
+        DtError (ASL_ERROR, ASL_MSG_INVALID_EXPRESSION, Field, Field->Value);
         return (0);
     }
 
@@ -204,7 +204,7 @@ DtResolveIntegerExpression (
         {
             /* No corresponding operand for operator or invalid operator */
 
-            DtFatal (ASL_MSG_INVALID_EXPRESSION, Field, Field->Value);
+            DtError (ASL_ERROR, ASL_MSG_INVALID_EXPRESSION, Field, Field->Value);
             return (0);
         }
 
@@ -243,7 +243,7 @@ DtResolveIntegerExpression (
         case '/':
             if (!Value2)
             {
-                DtFatal (ASL_MSG_DIVIDE_BY_ZERO, Field, Field->Value);
+                DtError (ASL_ERROR, ASL_MSG_DIVIDE_BY_ZERO, Field, Field->Value);
                 return (0);
             }
             Value /= Value2;
@@ -252,7 +252,7 @@ DtResolveIntegerExpression (
         case '%':
             if (!Value2)
             {
-                DtFatal (ASL_MSG_DIVIDE_BY_ZERO, Field, Field->Value);
+                DtError (ASL_ERROR, ASL_MSG_DIVIDE_BY_ZERO, Field, Field->Value);
                 return (0);
             }
             Value %= Value2;
@@ -307,7 +307,7 @@ DtResolveInteger (
         LabelField = DtLookupLabel (IntegerString);
         if (!LabelField)
         {
-            DtFatal (ASL_MSG_UNKNOWN_LABEL, Field, IntegerString);
+            DtError (ASL_ERROR, ASL_MSG_UNKNOWN_LABEL, Field, IntegerString);
             return (0);
         }
 
