@@ -200,6 +200,7 @@ typedef const struct acpi_dmtable_info
 #define ACPI_DMT_UUID                   43
 #define ACPI_DMT_DEVICE_PATH            44
 #define ACPI_DMT_LABEL                  45
+#define ACPI_DMT_BUF7                   46
 
 
 typedef

@@ -356,8 +356,6 @@ DtCompileInteger (
 {
     UINT64                  Value;
     UINT64                  MaxValue;
-    UINT8                   *Hex;
-    int                     i;
 
 
     /* Output buffer byte length must be in range 1-8 */
@@ -404,24 +402,6 @@ DtCompileInteger (
     {
         sprintf (MsgBuffer, "%8.8X%8.8X", ACPI_FORMAT_UINT64 (Value));
         DtError (ASL_ERROR, ASL_MSG_INTEGER_SIZE, Field, MsgBuffer);
-    }
-
-    /*
-     * TBD: hard code for ASF! Capabilites field.
-     *
-     * This field is actually a buffer, not a 56-bit integer --
-     * so, the ordering is reversed. Something should be fixed
-     * so we don't need this code.
-     */
-    if (ACPI_STRCMP (Field->Name, "UINT56") && (ByteLength == 7))
-    {
-        Hex = ACPI_CAST_PTR (UINT8, &Value);
-        for (i = 6; i >= 0; i--)
-        {
-            Buffer[i] = *Hex;
-            Hex++;
-        }
-        return;
     }
 
     ACPI_MEMCPY (Buffer, &Value, ByteLength);
