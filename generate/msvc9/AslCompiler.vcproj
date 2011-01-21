@@ -2966,6 +2966,7 @@
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
+							DisableSpecificWarnings="4702"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3032,6 +3033,7 @@
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
+							DisableSpecificWarnings="4702"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3076,6 +3078,7 @@
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
+							DisableSpecificWarnings="4702"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3215,7 +3218,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Bison - parser generation ($(InputPath)) DEBUG"
-					CommandLine="..\..\Tools_3rd_Party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -oAslCompilerDebug/AslCompilerDebug.y.c ../../source/compiler/aslcompiler.y&#x0D;&#x0A;move AslCompilerDebug\AslCompilerDebug.y.h AslCompilerDebug\AslCompiler.y.h&#x0D;&#x0A;"
+					CommandLine="..\..\Tools_3rd_Party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -oAslCompilerDebug/AslCompilerDebug.y.c ../../source/compiler/aslcompiler.y&#x0D;&#x0A;copy /Y AslCompilerDebug\AslCompilerDebug.y.h AslCompilerDebug\AslCompiler.y.h&#x0D;&#x0A;"
 					Outputs="AslCompilerDebug\AslCompilerDebug.y.c;AslCompilerDebug\AslCompilerDebug.y.h"
 				/>
 			</FileConfiguration>
