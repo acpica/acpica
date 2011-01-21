@@ -152,7 +152,9 @@ static void
 DtDumpBuffer (
     UINT32                  FileId,
     UINT8                   *Buffer,
+    UINT32                  Offset,
     UINT32                  Length);
+
 
 /* States for DtGetNextLine */
 
@@ -396,7 +398,7 @@ DtParseLine (
         if (*End == '"')
         {
             End++;
-            while (*End && *End != '"')
+            while (*End && (*End != '"'))
             {
                 End++;
             }
@@ -405,9 +407,16 @@ DtParseLine (
             break;
         }
 
+        /*
+         * Special "comment" fields at line end, ignore them.
+         * Note: normal slash-slash and slash-asterisk comments are
+         * stripped already by the DtGetNextLine parser.
+         *
+         * TBD: Perhaps DtGetNextLine should parse the following type
+         * of comments also.
+         */
         if (*End == '(' ||
-            *End == '<' ||
-            *End == '/')
+            *End == '<')
         {
             break;
         }
@@ -725,6 +734,7 @@ DtOutputBinary (
  *
  * PARAMETERS:  FileID              - Where to write buffer data
  *              Buffer              - Buffer to dump
+ *              Offset              - Offset in current table
  *              Length              - Buffer Length
  *
  * RETURN:      None
@@ -739,6 +749,7 @@ static void
 DtDumpBuffer (
     UINT32                  FileId,
     UINT8                   *Buffer,
+    UINT32                  Offset,
     UINT32                  Length)
 {
     UINT32                  i;
@@ -746,12 +757,18 @@ DtDumpBuffer (
     UINT8                   BufChar;
 
 
+    FlPrintFile (FileId, "Output: [%3.3Xh %4.4d% 3d] ",
+        Offset, Offset, Length);
+
     i = 0;
     while (i < Length)
     {
-        /* Print 16 hex chars */
+        if (i >= 16)
+        {
+            FlPrintFile (FileId, "%23s", "");
+        }
 
-        FlPrintFile (FileId, "Output: [%.3d] ", Length);
+        /* Print 16 hex chars */
 
         for (j = 0; j < 16;)
         {
@@ -845,17 +862,9 @@ DtWriteFieldToListing (
     FlPrintFile (ASL_FILE_LISTING_OUTPUT, "Parsed: %*s : %s\n",
         Field->Column-4, Field->Name, Field->Value);
 
-#if 0
-    /* TBD Dump the length and AML offset */
-
-    FlPrintFile (ASL_FILE_LISTING_OUTPUT,
-        "Output: Length %d(0x%X) Offset %d(0x%X)\n",
-        Field->Column-4, Field->Name, Field->Value);
-#endif
-
     /* Dump the hex data that will be output for this field */
 
-    DtDumpBuffer (ASL_FILE_LISTING_OUTPUT, Buffer, Length);
+    DtDumpBuffer (ASL_FILE_LISTING_OUTPUT, Buffer, Field->TableOffset, Length);
 }
 
 

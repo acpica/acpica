@@ -270,7 +270,10 @@ typedef enum
     ASL_MSG_ZERO_VALUE,
     ASL_MSG_UNKNOWN_TABLE,
     ASL_MSG_UNKNOWN_SUBTABLE,
-    ASL_MSG_OEM_TABLE
+    ASL_MSG_OEM_TABLE,
+    ASL_MSG_UNKNOWN_LABEL,
+    ASL_MSG_INVALID_EXPRESSION,
+    ASL_MSG_DIVIDE_BY_ZERO
 
 } ASL_MESSAGE_IDS;
 
@@ -420,7 +423,10 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_ZERO_VALUE */                 "Value must be non-zero",
 /*    ASL_MSG_UNKNOWN_TABLE */              "Unknown ACPI table signature",
 /*    ASL_MSG_UNKNOWN_SUBTABLE */           "Unknown subtable type",
-/*    ASL_MSG_OEM_TABLE */                  "OEM table - unknown contents"
+/*    ASL_MSG_OEM_TABLE */                  "OEM table - unknown contents",
+/*    ASL_MSG_UNKNOWN_LABEL */              "Label is undefined",
+/*    ASL_MSG_INVALID_EXPRESSION */         "Invalid expression",
+/*    ASL_MSG_DIVIDE_BY_ZERO */             "Expression contains divide-by-zero"
 
 };
 

@@ -493,6 +493,10 @@ DtGetFieldType (
         Type = DT_FIELD_TYPE_DEVICE_PATH;
         break;
 
+    case ACPI_DMT_LABEL:
+        Type = DT_FIELD_TYPE_LABEL;
+        break;
+
     default:
         Type = DT_FIELD_TYPE_INTEGER;
         break;
@@ -579,6 +583,7 @@ DtGetFieldLength (
     case ACPI_DMT_FLAG7:
     case ACPI_DMT_FLAGS0:
     case ACPI_DMT_FLAGS2:
+    case ACPI_DMT_LABEL:
         ByteLength = 0;
         break;
 

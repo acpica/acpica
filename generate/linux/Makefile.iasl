@@ -65,6 +65,7 @@ OBJS = \
 	aslutils.o \
 	asluuid.o \
 	dtcompile.o \
+	dtexpress.o \
 	dtfield.o \
 	dtio.o \
 	dtsubtable.o \
@@ -293,6 +294,9 @@ asluuid.o :         $(ASL_COMPILER)/asluuid.c
 # Data Table Compiler
 #
 dtcompile.o :       $(ASL_COMPILER)/dtcompile.c
+	$(COMPILE)
+
+dtexpress.o :       $(ASL_COMPILER)/dtexpress.c
 	$(COMPILE)
 
 dtfield.o :         $(ASL_COMPILER)/dtfield.c
