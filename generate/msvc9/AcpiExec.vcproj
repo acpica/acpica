@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="AcpiExec"
 	ProjectGUID="{2BF237AC-652F-4EC6-9BE6-5E0BB11F4B14}"
+	RootNamespace="AcpiExec"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -303,6 +304,28 @@
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utdebug.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utdecode.c"
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
