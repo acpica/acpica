@@ -176,6 +176,7 @@ enum AcpiExDebuggerCommands
     CMD_GO,
     CMD_GPE,
     CMD_GPES,
+    CMD_HANDLERS,
     CMD_HELP,
     CMD_HELP2,
     CMD_HISTORY,
@@ -243,6 +244,7 @@ static const COMMAND_INFO       AcpiGbl_DbCommands[] =
     {"GO",           0},
     {"GPE",          2},
     {"GPES",         0},
+    {"HANDLERS",     0},
     {"HELP",         0},
     {"?",            0},
     {"HISTORY",      0},
@@ -331,6 +333,7 @@ AcpiDbDisplayHelp (
         AcpiOsPrintf ("Dump <Address>|<Namepath>\n");
         AcpiOsPrintf ("     [Byte|Word|Dword|Qword]        Display ACPI objects or memory\n");
         AcpiOsPrintf ("EnableAcpi                          Enable ACPI (hardware) mode\n");
+        AcpiOsPrintf ("Handlers                            Info about global handlers\n");
         AcpiOsPrintf ("Help                                This help screen\n");
         AcpiOsPrintf ("History                             Display command history buffer\n");
         AcpiOsPrintf ("Level [<DebugLevel>] [console]      Get/Set debug level for file or console\n");
@@ -728,6 +731,10 @@ AcpiDbCommandDispatch (
 
     case CMD_GPES:
         AcpiDbDisplayGpes ();
+        break;
+
+    case CMD_HANDLERS:
+        AcpiDbDisplayHandlers ();
         break;
 
     case CMD_HELP:

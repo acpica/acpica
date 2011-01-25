@@ -262,6 +262,10 @@ AcpiDbDisplayGpes (
     void);
 
 void
+AcpiDbDisplayHandlers (
+    void);
+
+void
 AcpiDbCheckIntegrity (
     void);
 
