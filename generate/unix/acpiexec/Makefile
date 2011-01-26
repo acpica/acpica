@@ -22,6 +22,8 @@ OBJS = \
 	dbfileio.o \
 	dbhistry.o \
 	dbinput.o \
+	dbmethod.o \
+	dbnames.o \
 	dbstats.o \
 	dbutils.o \
 	dbxface.o \
@@ -210,6 +212,12 @@ dbhistry.o :        $(ACPICA_CORE)/debugger/dbhistry.c
 	$(COMPILE)
 
 dbinput.o :         $(ACPICA_CORE)/debugger/dbinput.c
+	$(COMPILE)
+
+dbmethod.o :        $(ACPICA_CORE)/debugger/dbmethod.c
+	$(COMPILE)
+
+dbnames.o :         $(ACPICA_CORE)/debugger/dbnames.c
 	$(COMPILE)
 
 dbstats.o :         $(ACPICA_CORE)/debugger/dbstats.c
