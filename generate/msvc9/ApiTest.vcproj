@@ -2576,6 +2576,14 @@
 				Name="Dispatcher"
 				>
 				<File
+					RelativePath="..\..\source\components\dispatcher\dsargs.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\dispatcher\dscontrol.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\dispatcher\dsfield.c"
 					>
 					<FileConfiguration
@@ -2772,6 +2780,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\dispatcher\dswload2.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\components\dispatcher\dswscope.c"

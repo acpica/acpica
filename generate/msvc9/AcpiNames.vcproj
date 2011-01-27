@@ -1438,6 +1438,28 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\dispatcher\dswload2.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath="..\..\source\components\dispatcher\dswscope.c"
 					>
 					<FileConfiguration

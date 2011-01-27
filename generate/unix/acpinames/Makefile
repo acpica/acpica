@@ -21,6 +21,7 @@ OBJS = \
 	dsobject.o \
 	dsutils.o \
 	dswload.o \
+	dswload2.o \
 	dswscope.o \
 	dswstate.o \
 	excreate.o \
@@ -123,6 +124,9 @@ dsutils.o :         $(ACPICA_CORE)/dispatcher/dsutils.c
 	$(COMPILE)
 
 dswload.o :         $(ACPICA_CORE)/dispatcher/dswload.c
+	$(COMPILE)
+
+dswload2.o :        $(ACPICA_CORE)/dispatcher/dswload2.c
 	$(COMPILE)
 
 dswscope.o :        $(ACPICA_CORE)/dispatcher/dswscope.c

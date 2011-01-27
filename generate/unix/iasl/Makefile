@@ -71,12 +71,15 @@ OBJS = \
 	dmtbinfo.o \
 	dmutils.o \
 	dmwalk.o \
+	dsargs.o \
+	dscontrol.o \
 	dsfield.o \
 	dsobject.o \
 	dsopcode.o \
 	dsutils.o \
 	dswexec.o \
 	dswload.o \
+	dswload2.o \
 	dswscope.o \
 	dswstate.o \
 	exconvrt.o \
@@ -367,6 +370,12 @@ dmutils.o :         $(ACPICA_CORE)/disassembler/dmutils.c
 dmwalk.o :          $(ACPICA_CORE)/disassembler/dmwalk.c
 	$(COMPILE)
 
+dsargs.o :          $(ACPICA_CORE)/dispatcher/dsargs.c
+	$(COMPILE)
+
+dscontrol.o :       $(ACPICA_CORE)/dispatcher/dscontrol.c
+	$(COMPILE)
+
 dsfield.o :         $(ACPICA_CORE)/dispatcher/dsfield.c
 	$(COMPILE)
 
@@ -383,6 +392,9 @@ dswexec.o :         $(ACPICA_CORE)/dispatcher/dswexec.c
 	$(COMPILE)
 
 dswload.o :         $(ACPICA_CORE)/dispatcher/dswload.c
+	$(COMPILE)
+
+dswload2.o :        $(ACPICA_CORE)/dispatcher/dswload2.c
 	$(COMPILE)
 
 dswscope.o :        $(ACPICA_CORE)/dispatcher/dswscope.c
