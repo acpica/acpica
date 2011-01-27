@@ -22,14 +22,23 @@ PKZIP="c:/command/pkzip25.exe"
 echo Moving previous release to archive
 mkdir -p current
 mkdir -p archive
+
 #
 # Save any older versions of the release packages
 #
-mv current/* archive
-echo Completed save of previous release
+for file in current/*
+do
+    if [ -f $file ]; then
+        cp $file archive
+        rm $file
+        echo moved $file to archive
+    fi
+done
+echo Completed save of previous release to archive
 
 #
 # cd from acpica/generate/release to acpica
+#
 cd ../..
 
 
@@ -97,16 +106,36 @@ cp source/os_specific/service_layers/osunixdir.c unixtemp/tools/acpisrc
 cp source/os_specific/service_layers/osunixdir.c unixtemp/tools/acpiexec
 
 #
-# Copy UNIX makefiles
+# Copy Linux/UNIX makefiles
 #
 cp generate/linux/Makefile.iasl unixtemp/compiler/Makefile
 cp generate/linux/Makefile.acpisrc unixtemp/tools/acpisrc/Makefile
 cp generate/linux/Makefile.acpiexec unixtemp/tools/acpiexec/Makefile
+cp generate/linux/Makefile.acpinames unixtemp/tools/acpinames/Makefile
 cp generate/linux/Makefile.acpixtract unixtemp/tools/acpixtract/Makefile
 cp generate/linux/README.acpica-unix unixtemp/README
 
 #
-# Copy Lint directory, delete extraneous files
+# Copy generic UNIX makefiles
+#
+mkdir -p unixtemp/generate/unix
+mkdir -p unixtemp/generate/unix/acpiexec
+mkdir -p unixtemp/generate/unix/acpinames
+mkdir -p unixtemp/generate/unix/acpisrc
+mkdir -p unixtemp/generate/unix/acpixtract
+mkdir -p unixtemp/generate/unix/iasl
+mkdir -p unixtemp/generate/unix/bin
+
+cp generate/unix/readme.txt unixtemp/generate/unix/readme.txt
+cp generate/unix/Makefile* unixtemp/generate/unix
+cp generate/unix/acpiexec/Makefile unixtemp/generate/unix/acpiexec
+cp generate/unix/acpinames/Makefile unixtemp/generate/unix/acpinames
+cp generate/unix/acpisrc/Makefile unixtemp/generate/unix/acpisrc
+cp generate/unix/acpixtract/Makefile unixtemp/generate/unix/acpixtract
+cp generate/unix/iasl/Makefile unixtemp/generate/unix/iasl
+
+#
+# Copy Lint directory
 #
 cp -r generate/lint unixtemp/generate/lint
 rm -f unixtemp/generate/lint/co*
@@ -209,16 +238,36 @@ cp source/os_specific/service_layers/osunixdir.c unixtemp/tools/acpiexec
 libraries/acpisrc -h -y unixtemp
 
 #
-# Copy UNIX makefiles
+# Copy Linux/UNIX makefiles
 #
 cp generate/linux/Makefile.iasl unixtemp/compiler/Makefile
 cp generate/linux/Makefile.acpisrc unixtemp/tools/acpisrc/Makefile
 cp generate/linux/Makefile.acpiexec unixtemp/tools/acpiexec/Makefile
+cp generate/linux/Makefile.acpinames unixtemp/tools/acpinames/Makefile
 cp generate/linux/Makefile.acpixtract unixtemp/tools/acpixtract/Makefile
 cp generate/linux/README.acpica-unix unixtemp/README
 
 #
-# Copy Lint directory, delete extraneous files
+# Copy generic UNIX makefiles
+#
+mkdir -p unixtemp/generate/unix
+mkdir -p unixtemp/generate/unix/acpiexec
+mkdir -p unixtemp/generate/unix/acpinames
+mkdir -p unixtemp/generate/unix/acpisrc
+mkdir -p unixtemp/generate/unix/acpixtract
+mkdir -p unixtemp/generate/unix/iasl
+mkdir -p unixtemp/generate/unix/bin
+
+cp generate/unix/readme.txt unixtemp/generate/unix/readme.txt
+cp generate/unix/Makefile* unixtemp/generate/unix
+cp generate/unix/acpiexec/Makefile unixtemp/generate/unix/acpiexec
+cp generate/unix/acpinames/Makefile unixtemp/generate/unix/acpinames
+cp generate/unix/acpisrc/Makefile unixtemp/generate/unix/acpisrc
+cp generate/unix/acpixtract/Makefile unixtemp/generate/unix/acpixtract
+cp generate/unix/iasl/Makefile unixtemp/generate/unix/iasl
+
+#
+# Copy Lint directory
 #
 cp -r generate/lint unixtemp/generate/lint
 rm -f unixtemp/generate/lint/co*
@@ -273,7 +322,7 @@ echo
 #
 mkdir wintemp
 mkdir wintemp/libraries
-mkdir -p wintemp/generate/msvc
+mkdir -p wintemp/generate/msvc9
 mkdir -p wintemp/source/os_specific/service_layers
 mkdir -p wintemp/tests
 mkdir -p wintemp/tests/misc
@@ -312,8 +361,27 @@ cp source/os_specific/service_layers/*.c wintemp/source/os_specific/service_laye
 #
 # Copy project files for MS Visual Studio 2008 (VC++ 9.0)
 #
-cp -r generate/msvc9/*.sln wintemp/generate/msvc/
-cp -r generate/msvc9/*.vcproj wintemp/generate/msvc/
+cp -r generate/msvc9/*.sln wintemp/generate/msvc9/
+cp -r generate/msvc9/*.vcproj wintemp/generate/msvc9/
+
+#
+# Copy generic UNIX makefiles
+#
+mkdir -p wintemp/generate/unix
+mkdir -p wintemp/generate/unix/acpiexec
+mkdir -p wintemp/generate/unix/acpinames
+mkdir -p wintemp/generate/unix/acpisrc
+mkdir -p wintemp/generate/unix/acpixtract
+mkdir -p wintemp/generate/unix/iasl
+mkdir -p wintemp/generate/unix/bin
+
+cp generate/unix/readme.txt wintemp/generate/unix/readme.txt
+cp generate/unix/Makefile* wintemp/generate/unix
+cp generate/unix/acpiexec/Makefile wintemp/generate/unix/acpiexec
+cp generate/unix/acpinames/Makefile wintemp/generate/unix/acpinames
+cp generate/unix/acpisrc/Makefile wintemp/generate/unix/acpisrc
+cp generate/unix/acpixtract/Makefile wintemp/generate/unix/acpixtract
+cp generate/unix/iasl/Makefile wintemp/generate/unix/iasl
 
 #
 # Copy Lint directory, delete extraneous files
@@ -347,7 +415,7 @@ rm -rf wintemp
 
 #******************************************************************************
 #
-# Windows iASL executable package
+# Windows iASL and other binary tools executable package
 #
 #******************************************************************************
 echo
@@ -385,8 +453,8 @@ rm -rf wintemp
 
 #******************************************************************************
 #
-# Source code release (email) package
-# Contains: iASL executable, unix source package, and changes.txt file
+# iasl email package
+# Contains: iASL executable and changes.txt file
 #
 # This zipfile is created with a password so that it can be safely emailed
 # without interference from overzealous email scanners.
@@ -394,14 +462,26 @@ rm -rf wintemp
 #
 #******************************************************************************
 echo
-echo ACPICA - Source code release package
+echo ACPICA - iASL release package
 echo
 
-cp documents/changes.txt generate/release/current/changes.txt
-cd generate/release/current
-$PKZIP -add -max -password=acpica acpica-release-`date +%Y%m%d` changes.txt iasl-win-`date +%Y%m%d`.zip acpica-unix-`date +%Y%m%d`.tar.gz
-rm changes.txt
-cd ../../..
+#
+# Make temp directory
+#
+mkdir wintemp
+
+cp documents/changes.txt wintemp
+cp libraries/iasl.exe wintemp
+cp documents/aslcompiler.pdf wintemp
+cd wintemp
+
+$PKZIP -add -max -password=acpica ../generate/release/current/iasl-release-`date +%Y%m%d`
+cd ..
+
+#
+# Remove temporary directory
+#
+rm -rf wintemp
 
 
 #******************************************************************************
