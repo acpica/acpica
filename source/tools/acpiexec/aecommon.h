@@ -232,7 +232,11 @@ AeDisplayAllMethods (
     UINT32                  DisplayCount);
 
 ACPI_STATUS
-AeInstallHandlers (
+AeInstallEarlyHandlers (
+    void);
+
+ACPI_STATUS
+AeInstallLateHandlers (
     void);
 
 void
