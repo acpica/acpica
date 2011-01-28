@@ -273,6 +273,10 @@ AcpiUtGetRegionName (
     {
         return ("UserDefinedRegion");
     }
+    else if (SpaceId == ACPI_ADR_SPACE_FIXED_HARDWARE)
+    {
+        return ("FunctionalFixedHW");
+    }
     else if (SpaceId >= ACPI_NUM_PREDEFINED_REGIONS)
     {
         return ("InvalidSpaceId");
