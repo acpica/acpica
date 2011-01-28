@@ -295,7 +295,6 @@ AcpiDbGetBusInfo (
     void);
 
 
-
 /*
  * dbdisply - debug display commands
  */
