@@ -971,8 +971,45 @@ AcpiDbDisplayGpes (
  *
  ******************************************************************************/
 
-#define ACPI_PREDEFINED_HANDLER_STRING  "%27s (%.2u) : %-9s (%p)\n"
-#define ACPI_GLOBAL_HANDLER_STRING             "%32s : %-9s (%p)\n"
+#define ACPI_PREDEFINED_PREFIX          "%25s (%.2X) : "
+#define ACPI_HANDLER_NAME_STRING               "%30s : "
+#define ACPI_HANDLER_PRESENT_STRING                    "%-9s (%p)\n"
+#define ACPI_HANDLER_NOT_PRESENT_STRING                "%-9s\n"
+
+/* All predefined Space IDs */
+
+static ACPI_ADR_SPACE_TYPE  SpaceIdList[] =
+{
+    ACPI_ADR_SPACE_SYSTEM_MEMORY,
+    ACPI_ADR_SPACE_SYSTEM_IO,
+    ACPI_ADR_SPACE_PCI_CONFIG,
+    ACPI_ADR_SPACE_EC,
+    ACPI_ADR_SPACE_SMBUS,
+    ACPI_ADR_SPACE_CMOS,
+    ACPI_ADR_SPACE_PCI_BAR_TARGET,
+    ACPI_ADR_SPACE_IPMI,
+    ACPI_ADR_SPACE_DATA_TABLE,
+    ACPI_ADR_SPACE_FIXED_HARDWARE
+};
+
+/* Global handler information */
+
+typedef struct acpi_handler_info
+{
+    void                    *Handler;
+    char                    *Name;
+
+} ACPI_HANDLER_INFO;
+
+ACPI_HANDLER_INFO           HandlerList[] =
+{
+    {&AcpiGbl_SystemNotify.Handler,     "System Notifications"},
+    {&AcpiGbl_DeviceNotify.Handler,     "Device Notifications"},
+    {&AcpiGbl_TableHandler,             "ACPI Table Events"},
+    {&AcpiGbl_ExceptionHandler,         "Control Method Exceptions"},
+    {&AcpiGbl_InterfaceHandler,         "OSI Invocations"}
+};
+
 
 void
 AcpiDbDisplayHandlers (
@@ -980,66 +1017,82 @@ AcpiDbDisplayHandlers (
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     *HandlerObj;
+    ACPI_ADR_SPACE_TYPE     SpaceId;
     UINT32                  i;
 
 
     /* Operation region handlers */
 
-    AcpiOsPrintf ("\nOperation Region Handlers\n");
+    AcpiOsPrintf ("\nOperation Region Handlers:\n");
 
     ObjDesc = AcpiNsGetAttachedObject (AcpiGbl_RootNode);
     if (ObjDesc)
     {
-        for (i = 0; i < ACPI_NUM_PREDEFINED_REGIONS; i++)
+        for (i = 0; i < ACPI_ARRAY_LENGTH (SpaceIdList); i++)
         {
+            SpaceId = SpaceIdList[i];
             HandlerObj = ObjDesc->Device.Handler;
+
+            AcpiOsPrintf (ACPI_PREDEFINED_PREFIX,
+                AcpiUtGetRegionName ((UINT8) SpaceId), SpaceId);
+
             while (HandlerObj)
             {
                 if (i == HandlerObj->AddressSpace.SpaceId)
                 {
-                    AcpiOsPrintf (ACPI_PREDEFINED_HANDLER_STRING,
-                        AcpiUtGetRegionName ((UINT8) i), i,
+                    AcpiOsPrintf (ACPI_HANDLER_PRESENT_STRING,
                         (HandlerObj->AddressSpace.HandlerFlags &
-                            ACPI_ADDR_HANDLER_DEFAULT_INSTALLED) ? "Default" : "Custom",
+                            ACPI_ADDR_HANDLER_DEFAULT_INSTALLED) ? "Default" : "User",
                         HandlerObj->AddressSpace.Handler);
-                    break;
+                    goto FoundHandler;
                 }
 
                 HandlerObj = HandlerObj->AddressSpace.Next;
             }
+
+            /* There is no handler for this SpaceId */
+
+            AcpiOsPrintf ("None\n");
+
+        FoundHandler:;
         }
     }
 
     /* Fixed event handlers */
 
-    AcpiOsPrintf ("\nFixed Event Handlers\n");
+    AcpiOsPrintf ("\nFixed Event Handlers:\n");
 
     for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++)
     {
-        AcpiOsPrintf (ACPI_PREDEFINED_HANDLER_STRING, AcpiUtGetEventName (i), i,
-            AcpiGbl_FixedEventHandlers[i].Handler ? "Yes" : "No",
-            AcpiGbl_FixedEventHandlers[i].Handler);
+        AcpiOsPrintf (ACPI_PREDEFINED_PREFIX, AcpiUtGetEventName (i), i);
+        if (AcpiGbl_FixedEventHandlers[i].Handler)
+        {
+            AcpiOsPrintf (ACPI_HANDLER_PRESENT_STRING, "User",
+                AcpiGbl_FixedEventHandlers[i].Handler);
+        }
+        else
+        {
+            AcpiOsPrintf (ACPI_HANDLER_NOT_PRESENT_STRING, "None");
+        }
     }
 
     /* Miscellaneous global handlers */
 
-    AcpiOsPrintf ("\nMiscellaneous Handlers\n");
+    AcpiOsPrintf ("\nMiscellaneous Global Handlers:\n");
 
-    AcpiOsPrintf (ACPI_GLOBAL_HANDLER_STRING, "Global Interface Handler",
-        AcpiGbl_InterfaceHandler ? "Yes" : "No",
-        AcpiGbl_InterfaceHandler);
-    AcpiOsPrintf (ACPI_GLOBAL_HANDLER_STRING, "Global Table Handler",
-        AcpiGbl_TableHandler ? "Yes" : "No",
-        AcpiGbl_TableHandler);
-    AcpiOsPrintf (ACPI_GLOBAL_HANDLER_STRING, "Global Exception Handler",
-        AcpiGbl_ExceptionHandler ? "Yes" : "No",
-        AcpiGbl_ExceptionHandler);
-    AcpiOsPrintf (ACPI_GLOBAL_HANDLER_STRING, "Global System Notify Handler",
-        AcpiGbl_SystemNotify.Handler ? "Yes" : "No",
-        AcpiGbl_SystemNotify.Handler);
-    AcpiOsPrintf (ACPI_GLOBAL_HANDLER_STRING, "Global Device Notify Handler",
-        AcpiGbl_DeviceNotify.Handler ? "Yes" : "No",
-        AcpiGbl_DeviceNotify.Handler);
+    for (i = 0; i < ACPI_ARRAY_LENGTH (HandlerList); i++)
+    {
+        AcpiOsPrintf (ACPI_HANDLER_NAME_STRING, HandlerList[i].Name);
+        if (HandlerList[i].Handler)
+        {
+            AcpiOsPrintf (ACPI_HANDLER_PRESENT_STRING, "User",
+                HandlerList[i].Handler);
+        }
+        else
+        {
+            AcpiOsPrintf (ACPI_HANDLER_NOT_PRESENT_STRING, "None");
+        }
+    }
 }
 
 #endif /* ACPI_DEBUGGER */
