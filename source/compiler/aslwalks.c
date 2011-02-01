@@ -679,29 +679,6 @@ AnMethodAnalysisWalkEnd (
 
 /*******************************************************************************
  *
- * FUNCTION:    AnMethodTypingWalkBegin
- *
- * PARAMETERS:  ASL_WALK_CALLBACK
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Descending callback for the typing walk.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AnMethodTypingWalkBegin (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context)
-{
-
-    return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AnMethodTypingWalkEnd
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
@@ -753,7 +730,7 @@ AnMethodTypingWalkEnd (
                     /* We must type the method here */
 
                     TrWalkParseTree (Op->Asl.Child->Asl.Node->Op,
-                        ASL_WALK_VISIT_TWICE, AnMethodTypingWalkBegin,
+                        ASL_WALK_VISIT_UPWARD, NULL,
                         AnMethodTypingWalkEnd, NULL);
 
                     ThisNodeBtype = AnGetBtype (Op->Asl.Child);
@@ -772,32 +749,6 @@ AnMethodTypingWalkEnd (
     default:
         break;
     }
-
-    return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AnOperandTypecheckWalkBegin
- *
- * PARAMETERS:  ASL_WALK_CALLBACK
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Descending callback for the analysis walk. Check methods for:
- *              1) Initialized local variables
- *              2) Valid arguments
- *              3) Return types
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AnOperandTypecheckWalkBegin (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context)
-{
 
     return (AE_OK);
 }
@@ -1266,29 +1217,4 @@ AnOtherSemanticAnalysisWalkBegin (
     }
 
     return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AnOtherSemanticAnalysisWalkEnd
- *
- * PARAMETERS:  ASL_WALK_CALLBACK
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Ascending callback for analysis walk. Complete method
- *              return analysis.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AnOtherSemanticAnalysisWalkEnd (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context)
-{
-
-    return (AE_OK);
-
 }

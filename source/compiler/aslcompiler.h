@@ -251,12 +251,6 @@ AnOtherSemanticAnalysisWalkEnd (
     void                    *Context);
 
 ACPI_STATUS
-AnOperandTypecheckWalkBegin (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
-
-ACPI_STATUS
 AnOperandTypecheckWalkEnd (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
@@ -270,12 +264,6 @@ AnMethodAnalysisWalkBegin (
 
 ACPI_STATUS
 AnMethodAnalysisWalkEnd (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
-
-ACPI_STATUS
-AnMethodTypingWalkBegin (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context);
