@@ -585,7 +585,19 @@ AnMethodAnalysisWalkEnd (
          * and correct number of arguments
          */
         ApCheckForPredefinedMethod (Op, MethodInfo);
+
+        /* Special check for two names like _L01 and _E01 in same scope */
+
+        ApCheckForGpeNameConflict (Op);
         ACPI_FREE (MethodInfo);
+        break;
+
+
+    case PARSEOP_NAME:
+
+         /* Special check for two names like _L01 and _E01 in same scope */
+
+        ApCheckForGpeNameConflict (Op);
         break;
 
 

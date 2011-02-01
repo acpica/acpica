@@ -345,6 +345,10 @@ BOOLEAN
 AnIsResultUsed (
     ACPI_PARSE_OBJECT       *Op);
 
+void
+ApCheckForGpeNameConflict (
+    ACPI_PARSE_OBJECT       *Op);
+
 
 /*
  * aslerror - error handling/reporting
