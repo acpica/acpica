@@ -236,7 +236,7 @@ FlCheckForAscii (
 
 
 /*
- * aslanalyze - semantic analysis
+ * aslwalks - semantic analysis and parse tree walks
  */
 ACPI_STATUS
 AnOtherSemanticAnalysisWalkBegin (
@@ -285,6 +285,65 @@ AnMethodTypingWalkEnd (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context);
+
+
+/*
+ * aslbtypes - bitfield data types
+ */
+UINT32
+AnMapObjTypeToBtype (
+    ACPI_PARSE_OBJECT       *Op);
+
+UINT32
+AnMapArgTypeToBtype (
+    UINT32                  ArgType);
+
+UINT32
+AnGetBtype (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+AnFormatBtype (
+    char                    *Buffer,
+    UINT32                  Btype);
+
+
+/*
+ * aslanalyze - Support functions for parse tree walks
+ */
+void
+AnCheckId (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_NAME               Type);
+
+/* Values for Type argument above */
+
+#define ASL_TYPE_HID        0
+#define ASL_TYPE_CID        1
+
+BOOLEAN
+AnIsInternalMethod (
+    ACPI_PARSE_OBJECT       *Op);
+
+UINT32
+AnGetInternalMethodReturnType (
+    ACPI_PARSE_OBJECT       *Op);
+
+BOOLEAN
+AnLastStatementIsReturn (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+AnCheckMethodReturnValue (
+    ACPI_PARSE_OBJECT       *Op,
+    const ACPI_OPCODE_INFO  *OpInfo,
+    ACPI_PARSE_OBJECT       *ArgOp,
+    UINT32                  RequiredBtypes,
+    UINT32                  ThisNodeBtype);
+
+BOOLEAN
+AnIsResultUsed (
+    ACPI_PARSE_OBJECT       *Op);
 
 
 /*

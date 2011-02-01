@@ -5,7 +5,6 @@ include ../Makefile.config
 
 PROG = iasl
 
-
 #
 # Flags specific to iASL compiler
 #
@@ -17,6 +16,7 @@ OBJS = \
 	adisasm.o \
 	adwalk.o \
 	aslanalyze.o \
+	aslbtypes.o \
 	aslcodegen.o \
 	aslcompile.o \
 	aslcompilerlex.o \
@@ -48,6 +48,7 @@ OBJS = \
 	asltree.o \
 	aslutils.o \
 	asluuid.o \
+	aslwalks.o \
 	dtcompile.o \
 	dtexpress.o \
 	dtfield.o \
@@ -190,6 +191,9 @@ aslcompilerparse.o : aslcompilerparse.c
 aslanalyze.o :      $(ASL_COMPILER)/aslanalyze.c
 	$(COMPILE)
 
+aslbtypes.o :       $(ASL_COMPILER)/aslbtypes.c
+	$(COMPILE)
+
 aslcodegen.o :      $(ASL_COMPILER)/aslcodegen.c
 	$(COMPILE)
 
@@ -275,6 +279,9 @@ aslutils.o :        $(ASL_COMPILER)/aslutils.c
 	$(COMPILE)
 
 asluuid.o :         $(ASL_COMPILER)/asluuid.c
+	$(COMPILE)
+
+aslwalks.o :        $(ASL_COMPILER)/aslwalks.c
 	$(COMPILE)
 
 
