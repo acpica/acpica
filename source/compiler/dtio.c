@@ -138,7 +138,7 @@ DtParseLine (
     UINT32                  Line,
     UINT32                  Offset);
 
-static UINT32
+UINT32
 DtGetNextLine (
     FILE                    *Handle);
 
@@ -466,7 +466,7 @@ DtParseLine (
  *
  *****************************************************************************/
 
-static UINT32
+UINT32
 DtGetNextLine (
     FILE                    *Handle)
 {
@@ -481,6 +481,16 @@ DtGetNextLine (
         c = (char) getc (Handle);
         if (c == EOF)
         {
+            switch (State)
+            {
+            case DT_START_QUOTED_STRING:
+            case DT_SLASH_ASTERISK_COMMENT:
+            case DT_SLASH_SLASH_COMMENT:
+
+                AcpiOsPrintf ("**** EOF within comment/string %u\n", State);
+                break;
+            }
+
             return (0);
         }
 
@@ -599,6 +609,16 @@ DtGetNextLine (
             {
             case '/':
                 State = DT_NORMAL_TEXT;
+                break;
+
+            case '\n':
+                CurrentLineOffset = Gbl_NextLineOffset;
+                Gbl_NextLineOffset = (UINT32) ftell (Handle);
+                Gbl_CurrentLineNumber++;
+                break;
+
+            case '*':
+                /* Consume all adjacent asterisks */
                 break;
 
             default:
