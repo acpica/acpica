@@ -489,6 +489,9 @@ DtGetNextLine (
 
                 AcpiOsPrintf ("**** EOF within comment/string %u\n", State);
                 break;
+
+            default:
+                break;
             }
 
             return (0);
