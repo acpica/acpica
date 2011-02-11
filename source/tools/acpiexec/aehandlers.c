@@ -172,16 +172,17 @@ static AE_DEBUG_REGIONS     AeRegions;
 
 
 /*
- * We will override most of the default region handlers, especially the
- * SystemMemory handler, which must be implemented locally. Do not override
- * the PCI_Config handler since we would like to exercise the default handler
- * code.
+ * We will override default region handlers for memory and I/O. Especially
+ * the SystemMemory handler, which must be implemented locally to simulate
+ * memory operation regions. Do not override the PCI_Config handler since
+ * we would like to exercise the default handler code. Do not override
+ * DataTable handler, since the default handler works correctly under
+ * acpiexec (and is used by the test suites.)
  */
 static ACPI_ADR_SPACE_TYPE  DefaultSpaceIdList[] =
 {
     ACPI_ADR_SPACE_SYSTEM_MEMORY,
-    ACPI_ADR_SPACE_SYSTEM_IO,
-    ACPI_ADR_SPACE_DATA_TABLE
+    ACPI_ADR_SPACE_SYSTEM_IO
 };
 
 /*
