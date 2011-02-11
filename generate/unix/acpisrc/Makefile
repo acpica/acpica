@@ -73,3 +73,5 @@ osunixdir.o :       $(ACPICA_OSL)/osunixdir.c
 clean : 
 	rm -f $(PROG) $(PROG).exe $(OBJS)
 
+install : 
+	$(INSTALLPROG)

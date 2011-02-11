@@ -644,3 +644,6 @@ osunixxf.o :        $(ACPICA_OSL)/osunixxf.c
 
 clean : 
 	rm -f $(PROG) $(PROG).exe $(OBJS)
+
+install : 
+	$(INSTALLPROG)

@@ -13,3 +13,5 @@ $(PROG) : $(ACPICA_TOOLS)/acpixtract/acpixtract.c
 clean : 
 	rm -f $(PROG) $(PROG).exe
 
+install : 
+	$(INSTALLPROG)
