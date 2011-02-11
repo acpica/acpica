@@ -8,6 +8,7 @@ and in the original (git tree) ACPICA directory structure.
 The top level makefile will generate the following utilities:
 
 acpiexec
+acpinames
 acpisrc
 acpixtract
 iasl
@@ -44,4 +45,7 @@ the same source modules with different options.
 Output
 ------
 
-The executable utilities are copied to the bin directory.
+The executable utilities are copied to the local bin directory.
+
+"make install" will install the binaries to /usr/bin
+
