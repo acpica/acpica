@@ -473,6 +473,7 @@ DtGetFieldType (
     case ACPI_DMT_BUFFER:
     case ACPI_DMT_BUF7:
     case ACPI_DMT_BUF16:
+    case ACPI_DMT_BUF128:
     case ACPI_DMT_PCI_PATH:
         Type = DT_FIELD_TYPE_BUFFER;
         break;
@@ -675,6 +676,10 @@ DtGetFieldLength (
     case ACPI_DMT_BUF16:
     case ACPI_DMT_UUID:
         ByteLength = 16;
+        break;
+
+    case ACPI_DMT_BUF128:
+        ByteLength = 128;
         break;
 
     case ACPI_DMT_UNICODE:
