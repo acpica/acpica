@@ -349,7 +349,7 @@ ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_MSCT, NULL,                   AcpiDmDumpMsct, DtCompileMsct,  TemplateMsct,   "Maximum System Characteristics Table"},
     {ACPI_SIG_RSDT, NULL,                   AcpiDmDumpRsdt, DtCompileRsdt,  TemplateRsdt,   "Root System Description Table"},
     {ACPI_SIG_SBST, AcpiDmTableInfoSbst,    NULL,           NULL,           TemplateSbst,   "Smart Battery Specification Table"},
-    {ACPI_SIG_SLIC, NULL,                   AcpiDmDumpSlic, DtCompileSlic,  NULL,           "Software Licensing Description Table"},
+    {ACPI_SIG_SLIC, NULL,                   AcpiDmDumpSlic, DtCompileSlic,  TemplateSlic,   "Software Licensing Description Table"},
     {ACPI_SIG_SLIT, NULL,                   AcpiDmDumpSlit, DtCompileSlit,  TemplateSlit,   "System Locality Information Table"},
     {ACPI_SIG_SPCR, AcpiDmTableInfoSpcr,    NULL,           NULL,           TemplateSpcr,   "Serial Port Console Redirection table"},
     {ACPI_SIG_SPMI, AcpiDmTableInfoSpmi,    NULL,           NULL,           TemplateSpmi,   "Server Platform Management Interface table"},
@@ -554,6 +554,13 @@ AcpiDmLineHeader (
     char                    *Name)
 {
 
+    /* Allow a null name for fields that span multiple lines (large buffers) */
+
+    if (!Name)
+    {
+        Name = "";
+    }
+
     if (Gbl_DoTemplates && !Gbl_VerboseTemplates) /* Terse template */
     {
         if (ByteLength)
@@ -572,13 +579,9 @@ AcpiDmLineHeader (
             AcpiOsPrintf ("[%3.3Xh %4.4d% 4d] %28s : ",
                 Offset, Offset, ByteLength, Name);
         }
-        else if (Name)
-        {
-            AcpiOsPrintf ("%44s : ", Name);
-        }
         else
         {
-            AcpiOsPrintf ("%44s : ", "");
+            AcpiOsPrintf ("%44s : ", Name);
         }
     }
 }
