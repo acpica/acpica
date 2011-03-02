@@ -619,6 +619,7 @@ DtGetFieldLength (
 
     case ACPI_DMT_UINT32:
     case ACPI_DMT_NAME4:
+    case ACPI_DMT_SLIC:
     case ACPI_DMT_SIG:
         ByteLength = 4;
         break;
