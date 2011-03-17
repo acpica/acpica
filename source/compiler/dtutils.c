@@ -261,8 +261,16 @@ DtFatal (
 
     DtError (ASL_ERROR, MessageId, FieldObject, ExtraMessage);
 
+/*
+ * TBD: remove this entire function, DtFatal
+ *
+ * We cannot abort the compiler on error, because we may be compiling a
+ * list of files. We must move on to the next file.
+ */
+#ifdef __OBSOLETE
     CmCleanupAndExit ();
     exit (1);
+#endif
 }
 
 
@@ -649,6 +657,7 @@ DtGetFieldLength (
 
             sprintf (MsgBuffer, "Expected \"%s\"", Info->Name);
             DtFatal (ASL_MSG_COMPILER_INTERNAL, NULL, MsgBuffer);
+            return (0);
         }
         break;
 
@@ -671,6 +680,7 @@ DtGetFieldLength (
 
             sprintf (MsgBuffer, "Expected \"%s\"", Info->Name);
             DtFatal (ASL_MSG_COMPILER_INTERNAL, NULL, MsgBuffer);
+            return (0);
         }
         break;
 
@@ -693,7 +703,7 @@ DtGetFieldLength (
 
     default:
         DtFatal (ASL_MSG_COMPILER_INTERNAL, Field, "Invalid table opcode");
-        break;
+        return (0);
     }
 
     return (ByteLength);

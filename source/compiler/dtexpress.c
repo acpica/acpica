@@ -124,10 +124,11 @@
 
 /* Local prototypes */
 
-static UINT64
+static ACPI_STATUS
 DtResolveInteger (
     DT_FIELD                *Field,
-    char                    *IntegerString);
+    char                    *IntegerString,
+    UINT64                  *ReturnValue);
 
 static void
 DtInsertLabelField (
@@ -143,8 +144,9 @@ DtLookupLabel (
  * FUNCTION:    DtResolveIntegerExpression
  *
  * PARAMETERS:  Field               - Field object with Integer expression
+ *              ReturnValue         - Where the integer is returned
  *
- * RETURN:      A 64-bit integer value
+ * RETURN:      Status, and the resolved 64-bit integer value
  *
  * DESCRIPTION: Resolve an integer expression to a single value. Supports
  *              both integer constants and labels. Supported operators are:
@@ -152,14 +154,16 @@ DtLookupLabel (
  *
  *****************************************************************************/
 
-UINT64
+ACPI_STATUS
 DtResolveIntegerExpression (
-    DT_FIELD                *Field)
+    DT_FIELD                *Field,
+    UINT64                  *ReturnValue)
 {
     char                    *IntegerString;
     char                    *Operator;
     UINT64                  Value;
     UINT64                  Value2;
+    ACPI_STATUS             Status;
 
 
     DbgPrint (ASL_DEBUG_OUTPUT, "Full Integer expression: %s\n",
@@ -176,7 +180,12 @@ DtResolveIntegerExpression (
         return (0);
     }
 
-    Value = DtResolveInteger (Field, IntegerString);
+    Status = DtResolveInteger (Field, IntegerString, &Value);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
     DbgPrint (ASL_DEBUG_OUTPUT, "Integer resolved to V1: %8.8X%8.8X\n",
         ACPI_FORMAT_UINT64 (Value));
 
@@ -195,7 +204,8 @@ DtResolveIntegerExpression (
             DbgPrint (ASL_DEBUG_OUTPUT, "Expression Resolved to: %8.8X%8.8X\n",
                 ACPI_FORMAT_UINT64 (Value));
 
-            return (Value);
+            *ReturnValue = Value;
+            return (AE_OK);
         }
 
         IntegerString = strtok (NULL, " ");
@@ -205,10 +215,15 @@ DtResolveIntegerExpression (
             /* No corresponding operand for operator or invalid operator */
 
             DtError (ASL_ERROR, ASL_MSG_INVALID_EXPRESSION, Field, Field->Value);
-            return (0);
+            return (AE_BAD_VALUE);
         }
 
-        Value2 = DtResolveInteger (Field, IntegerString);
+        Status = DtResolveInteger (Field, IntegerString, &Value2);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
         DbgPrint (ASL_DEBUG_OUTPUT, "Integer resolved to V2: %8.8X%8.8X\n",
             ACPI_FORMAT_UINT64 (Value2));
 
@@ -244,7 +259,7 @@ DtResolveIntegerExpression (
             if (!Value2)
             {
                 DtError (ASL_ERROR, ASL_MSG_DIVIDE_BY_ZERO, Field, Field->Value);
-                return (0);
+                return (AE_BAD_VALUE);
             }
             Value /= Value2;
             break;
@@ -253,7 +268,7 @@ DtResolveIntegerExpression (
             if (!Value2)
             {
                 DtError (ASL_ERROR, ASL_MSG_DIVIDE_BY_ZERO, Field, Field->Value);
-                return (0);
+                return (AE_BAD_VALUE);
             }
             Value %= Value2;
             break;
@@ -263,11 +278,11 @@ DtResolveIntegerExpression (
             /* Unknown operator */
 
             DtFatal (ASL_MSG_INVALID_EXPRESSION, Field, Field->Value);
-            break;
+            return (AE_BAD_VALUE);
         }
     }
 
-    return (Value);
+    return (AE_ERROR); /* Should never get here */
 }
 
 
@@ -277,8 +292,9 @@ DtResolveIntegerExpression (
  *
  * PARAMETERS:  Field               - Field object with string to be resolved
  *              IntegerString       - Integer to be resolved
+ *              ReturnValue         - Where the resolved integer is returned
  *
- * RETURN:      A 64-bit integer value
+ * RETURN:      Status, and the resolved 64-bit integer value
  *
  * DESCRIPTION: Resolve a single integer string to a value. Supports both
  *              integer constants and labels.
@@ -287,10 +303,11 @@ DtResolveIntegerExpression (
  *
  *****************************************************************************/
 
-static UINT64
+static ACPI_STATUS
 DtResolveInteger (
     DT_FIELD                *Field,
-    char                    *IntegerString)
+    char                    *IntegerString,
+    UINT64                  *ReturnValue)
 {
     DT_FIELD                *LabelField;
     UINT64                  Value = 0;
@@ -308,13 +325,13 @@ DtResolveInteger (
         if (!LabelField)
         {
             DtError (ASL_ERROR, ASL_MSG_UNKNOWN_LABEL, Field, IntegerString);
-            return (0);
+            return (AE_NOT_FOUND);
         }
 
         /* All we need from the label is the offset in the table */
 
-        Value = LabelField->TableOffset;
-        return (Value);
+        *ReturnValue = LabelField->TableOffset;
+        return (AE_OK);
     }
 
     /* Convert string to an actual integer */
@@ -332,9 +349,11 @@ DtResolveInteger (
         }
 
         DtError (ASL_ERROR, ASL_MSG_INVALID_HEX_INTEGER, Field, Message);
+        return (Status);
     }
 
-    return (Value);
+    *ReturnValue = Value;
+    return (AE_OK);
 }
 
 

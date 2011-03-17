@@ -292,9 +292,10 @@ DtGetParentSubtable (
 
 /* dtexpress - Integer expressions and labels */
 
-UINT64
+ACPI_STATUS
 DtResolveIntegerExpression (
-    DT_FIELD                *Field);
+    DT_FIELD                *Field,
+    UINT64                  *ReturnValue);
 
 void
 DtDetectAllLabels (
