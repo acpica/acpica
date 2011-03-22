@@ -374,10 +374,17 @@ AnMethodAnalysisWalkBegin (
             return (AE_ERROR);
         }
 
-        /* Child indicates a return value */
-
+        /*
+         * A child indicates a possible return value. A simple Return or
+         * Return() is marked with NODE_IS_NULL_RETURN by the parser so
+         * that it is not counted as a "real" return-with-value, although
+         * the AML code that is actually emitted is Return(0). The AML
+         * definition of Return has a required parameter, so we are
+         * forced to convert a null return to Return(0).
+         */
         if ((Op->Asl.Child) &&
-            (Op->Asl.Child->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG))
+            (Op->Asl.Child->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG) &&
+            (!(Op->Asl.Child->Asl.CompileFlags & NODE_IS_NULL_RETURN)))
         {
             MethodInfo->NumReturnWithValue++;
         }
