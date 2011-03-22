@@ -592,7 +592,7 @@ utcopy.o :          $(ACPICA_CORE)/utilities/utcopy.c
 utdebug.o :         $(ACPICA_CORE)/utilities/utdebug.c
 	$(COMPILE)
 
-utdebug.o :         $(ACPICA_CORE)/utilities/utdebug.c
+utdecode.o :        $(ACPICA_CORE)/utilities/utdecode.c
 	$(COMPILE)
 
 utdelete.o :        $(ACPICA_CORE)/utilities/utdelete.c
