@@ -153,7 +153,7 @@ static ACPI_TABLE_FADT          LocalFADT;
  */
 static ACPI_TABLE_XSDT          *LocalXSDT;
 
-#define BASE_XSDT_TABLES        7
+#define BASE_XSDT_TABLES        8
 #define BASE_XSDT_SIZE          (sizeof (ACPI_TABLE_XSDT) + \
                                     ((BASE_XSDT_TABLES -1) * sizeof (UINT64)))
 
@@ -266,7 +266,11 @@ AeBuildLocalTables (
 
     LocalXSDT->TableOffsetEntry[6] = ACPI_PTR_TO_PHYSADDR (&OemxCode);
 
-    /*
+     /* Install the ECDT table to test _REG */
+
+    LocalXSDT->TableOffsetEntry[7] = ACPI_PTR_TO_PHYSADDR (&EcdtCode);
+
+   /*
      * Install the user tables. The DSDT must be installed in the FADT.
      * All other tables are installed directly into the XSDT.
      */
