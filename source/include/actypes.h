@@ -789,8 +789,10 @@ typedef UINT8                           ACPI_ADR_SPACE_TYPE;
 #define ACPI_ADR_SPACE_PCI_BAR_TARGET   (ACPI_ADR_SPACE_TYPE) 6
 #define ACPI_ADR_SPACE_IPMI             (ACPI_ADR_SPACE_TYPE) 7
 
+#define ACPI_NUM_PREDEFINED_REGIONS     8
+
 /*
- * Special region types
+ * Special Address Spaces
  *
  * Note: A Data Table region is a special type of operation region
  * that has its own AML opcode. However, internally, the AML
