@@ -84,11 +84,11 @@ Device(DTR0) {
 		}
 
 		/*
-		 * 8 is the SpaceID for DataTableRegions (subject to change
+		 * 0x7E is the SpaceID for DataTableRegions (subject to change
 		 * with new releases of ACPI specification -- because this
 		 * ID is an internal-ACPICA-only ID)
 		 */
-		if (LEqual(arg0, 0x08)) {
+		if (LEqual(arg0, 0x7E)) {
 			Increment(VRSK)
 		} else {
 			Increment(IRSK)
