@@ -589,13 +589,22 @@ AnMethodAnalysisWalkEnd (
 
         /*
          * Check predefined method names for correct return behavior
-         * and correct number of arguments
+         * and correct number of arguments. Also, some special checks
+         * For GPE and _REG methods.
          */
-        ApCheckForPredefinedMethod (Op, MethodInfo);
+        if (ApCheckForPredefinedMethod (Op, MethodInfo))
+        {
+            /* Special check for two names like _L01 and _E01 in same scope */
 
-        /* Special check for two names like _L01 and _E01 in same scope */
+            ApCheckForGpeNameConflict (Op);
 
-        ApCheckForGpeNameConflict (Op);
+            /*
+             * Special check for _REG: Must have an operation region definition
+             * within the same scope!
+             */
+            ApCheckRegMethod (Op);
+        }
+
         ACPI_FREE (MethodInfo);
         break;
 

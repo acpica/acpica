@@ -337,6 +337,10 @@ void
 ApCheckForGpeNameConflict (
     ACPI_PARSE_OBJECT       *Op);
 
+void
+ApCheckRegMethod (
+    ACPI_PARSE_OBJECT       *Op);
+
 
 /*
  * aslerror - error handling/reporting
@@ -529,7 +533,7 @@ AslMapNamedOpcodeToDataType (
 /*
  * aslpredef - ACPI predefined names support
  */
-void
+BOOLEAN
 ApCheckForPredefinedMethod (
     ACPI_PARSE_OBJECT       *Op,
     ASL_METHOD_INFO         *MethodInfo);
