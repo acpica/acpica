@@ -188,6 +188,16 @@ DefinitionBlock ("badcode.aml", "DSDT", 1, "Intel", "Example", 0x00000001)
         Return ("Unexpected Return Value")
     }
 
+    // _REG must have a corresponding Operation Region declaration
+    // within the same scope
+
+    Device (EC)
+    {
+        Method (_REG, 2)
+        {
+        }
+    }
+
     /*
      * Resource Descriptor error checking
      */
