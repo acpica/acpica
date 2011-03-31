@@ -569,7 +569,14 @@ AcpiDmLineHeader (
         }
         else
         {
-            AcpiOsPrintf ("%41s : ", Name);
+            if (*Name)
+            {
+                AcpiOsPrintf ("%41s : ", Name);
+            }
+            else
+            {
+                AcpiOsPrintf ("%41s   ", Name);
+            }
         }
     }
     else /* Normal disassembler or verbose template */
@@ -581,7 +588,14 @@ AcpiDmLineHeader (
         }
         else
         {
-            AcpiOsPrintf ("%44s : ", Name);
+            if (*Name)
+            {
+                AcpiOsPrintf ("%44s : ", Name);
+            }
+            else
+            {
+                AcpiOsPrintf ("%44s   ", Name);
+            }
         }
     }
 }
@@ -598,7 +612,7 @@ AcpiDmLineHeader2 (
     {
         if (ByteLength)
         {
-            AcpiOsPrintf ("[%.3d] %30s % 3d : ",
+            AcpiOsPrintf ("[%.4d] %30s %3d : ",
                 ByteLength, Name, Value);
         }
         else
@@ -611,12 +625,12 @@ AcpiDmLineHeader2 (
     {
         if (ByteLength)
         {
-            AcpiOsPrintf ("[%3.3Xh %4.4d% 3d] %24s % 3d : ",
+            AcpiOsPrintf ("[%3.3Xh %4.4d %3d] %24s %3d : ",
                 Offset, Offset, ByteLength, Name, Value);
         }
         else
         {
-            AcpiOsPrintf ("[%3.3Xh %4.4d   ] %24s % 3d : ",
+            AcpiOsPrintf ("[%3.3Xh %4.4d   ] %24s %3d : ",
                 Offset, Offset, Name, Value);
         }
     }
@@ -846,6 +860,7 @@ AcpiDmDumpTable (
             /*
              * Buffer: Size depends on the opcode and was set above.
              * Each hex byte is separated with a space.
+             * Multiple lines are separated by line continuation char.
              */
             for (Temp16 = 0; Temp16 < ByteLength; Temp16++)
             {
@@ -854,7 +869,7 @@ AcpiDmDumpTable (
                 {
                     if ((Temp16 > 0) && (!((Temp16+1) % 16)))
                     {
-                        AcpiOsPrintf ("\n");
+                        AcpiOsPrintf (" \\\n"); /* Line continuation */
                         AcpiDmLineHeader (0, 0, NULL);
                     }
                     else

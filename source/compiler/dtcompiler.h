@@ -379,8 +379,7 @@ DtGetFileSize (
 
 char*
 DtGetFieldValue (
-    DT_FIELD                *Field,
-    char                    *Name);
+    DT_FIELD                *Field);
 
 UINT8
 DtGetFieldType (
@@ -488,6 +487,10 @@ DtCompileWdat (
 
 ACPI_STATUS
 DtCompileXsdt (
+    void                    **PFieldList);
+
+ACPI_STATUS
+DtCompileGeneric (
     void                    **PFieldList);
 
 ACPI_DMTABLE_INFO *

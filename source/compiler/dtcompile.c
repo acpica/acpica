@@ -349,7 +349,7 @@ DtCompileDataTable (
 
     /* Verify that we at least have a table signature and save it */
 
-    Signature = DtGetFieldValue (*FieldList, "Signature");
+    Signature = DtGetFieldValue (*FieldList);
     if (!Signature)
     {
         sprintf (MsgBuffer, "Expected \"%s\"", "Signature");
@@ -382,20 +382,6 @@ DtCompileDataTable (
         Status = DtCompileRsdp (FieldList);
         return (Status);
     }
-    else if (!ACPI_STRNCMP (Signature, "OEM", 3))
-    {
-        DtFatal (ASL_MSG_OEM_TABLE, *FieldList, Signature);
-        return (AE_ERROR);
-    }
-
-    /* Validate the signature via the ACPI table list */
-
-    TableData = AcpiDmGetTableData (Signature);
-    if (!TableData)
-    {
-        DtFatal (ASL_MSG_UNKNOWN_TABLE, *FieldList, Signature);
-        return (AE_ERROR);
-    }
 
     /*
      * All other tables must use the common ACPI table header. Insert the
@@ -411,6 +397,15 @@ DtCompileDataTable (
     }
 
     DtPushSubtable (Gbl_RootTable);
+
+    /* Validate the signature via the ACPI table list */
+
+    TableData = AcpiDmGetTableData (Signature);
+    if (!TableData)
+    {
+        DtCompileGeneric ((void **) FieldList);
+        goto Out;
+    }
 
     /* Dispatch to per-table compile */
 
@@ -446,6 +441,7 @@ DtCompileDataTable (
         return (AE_ERROR);
     }
 
+Out:
     /* Set the final table length and then the checksum */
 
     DtSetTableLength ();
@@ -496,6 +492,11 @@ DtCompileTable (
     }
 
     Length = DtGetSubtableLength (*Field, Info);
+    if (Length == ASL_EOF)
+    {
+        return (AE_ERROR);
+    }
+
     Subtable = UtLocalCalloc (sizeof (DT_SUBTABLE));
 
     if (Length > 0)
@@ -520,29 +521,6 @@ DtCompileTable (
             DtFatal (ASL_MSG_COMPILER_INTERNAL, NULL, MsgBuffer);
             Status = AE_BAD_DATA;
             goto Error;
-        }
-
-        /* Does input field name match what is expected? */
-
-        if (ACPI_STRCMP (LocalField->Name, Info->Name))
-        {
-            /*
-             * If Required = TRUE, the subtable must exist.
-             * If Required = FALSE, the subtable is optional
-             * (For example, AcpiDmTableInfoDmarScope in DMAR table is
-             * optional)
-             */
-            if (Required)
-            {
-                sprintf (MsgBuffer, "Expected \"%s\"", Info->Name);
-                DtNameError (ASL_ERROR, ASL_MSG_INVALID_FIELD_NAME,
-                    LocalField, MsgBuffer);
-            }
-            else
-            {
-                Status = AE_NOT_FOUND;
-                goto Error;
-            }
         }
 
         /* Maintain table offsets */
@@ -590,7 +568,6 @@ DtCompileTable (
              * Recursion (one level max): compile GAS (Generic Address)
              * or Notify in-line subtable
              */
-            LocalField = LocalField->Next;
             *Field = LocalField;
 
             if (Info->Opcode == ACPI_DMT_GAS)
