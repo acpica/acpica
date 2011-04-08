@@ -497,10 +497,12 @@ AslDoOptions (
         {
         case 'b':
             AslCompilerdebug = 1; /* same as yydebug */
+            DtParserdebug = 1;
             break;
 
         case 'p':
             AslCompilerdebug = 1; /* same as yydebug */
+            DtParserdebug = 1;
             break;
 
         case 't':

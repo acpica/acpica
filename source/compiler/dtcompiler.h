@@ -297,6 +297,16 @@ DtResolveIntegerExpression (
     DT_FIELD                *Field,
     UINT64                  *ReturnValue);
 
+UINT64
+DtDoOperator (
+    UINT64                  LeftValue,
+    UINT32                  Operator,
+    UINT64                  RightValue);
+
+UINT64
+DtResolveLabel (
+    char                    *LabelString);
+
 void
 DtDetectAllLabels (
     DT_FIELD                *FieldList);
@@ -331,6 +341,25 @@ DtCompileFlag (
     UINT8                   *Buffer,
     DT_FIELD                *Field,
     ACPI_DMTABLE_INFO       *Info);
+
+
+/* dtparser - lex/yacc files */
+
+UINT64
+DtEvaluateExpression (
+    char                    *ExprString);
+
+int
+DtInitLexer (
+    char                    *String);
+
+void
+DtTerminateLexer (
+    void);
+
+char *
+DtGetOpName (
+    UINT32                  ParseOpcode);
 
 
 /* dtutils - Miscellaneous utilities */

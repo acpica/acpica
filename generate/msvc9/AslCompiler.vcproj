@@ -81,6 +81,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalOptions="/LTCG"
 				AdditionalDependencies="..\..\tools_3rd_party\BisonFlex\libflex.lib odbc32.lib odbccp32.lib"
 				OutputFile=".\AslCompiler\AslCompiler.exe"
 				LinkIncremental="1"
@@ -1916,6 +1917,91 @@
 						/>
 					</FileConfiguration>
 				</File>
+				<File
+					RelativePath=".\AslCompiler\dtparser.l.c"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+							WarningLevel="3"
+							Detect64BitPortabilityProblems="false"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\AslCompiler\dtparser.y.c"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\AslCompilerDebug\DtParserDebug.l.c"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\AslCompilerDebug\DtParserDebug.y.c"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
+				</File>
 			</Filter>
 			<Filter
 				Name="Disassembler"
@@ -3319,6 +3405,10 @@
 				RelativePath="..\..\source\compiler\dttemplate.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\source\compiler\preprocess.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -3370,6 +3460,54 @@
 					Description="Bison - parser generation ($(InputPath)) DEBUG"
 					CommandLine="..\..\Tools_3rd_Party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -oAslCompilerDebug/AslCompilerDebug.y.c ../../source/compiler/aslcompiler.y&#x0D;&#x0A;copy /Y AslCompilerDebug\AslCompilerDebug.y.h AslCompilerDebug\AslCompiler.y.h&#x0D;&#x0A;"
 					Outputs="AslCompilerDebug\AslCompilerDebug.y.c;AslCompilerDebug\AslCompilerDebug.y.h"
+				/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\source\compiler\dtparser.l"
+			>
+			<FileConfiguration
+				Name="Release|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Flex - lexer generation ($(InputPath))"
+					CommandLine="..\..\Tools_3rd_Party\BisonFlex\flex.exe -PDtParser -i -s -oAslCompiler\$(InputName).l.c $(InputPath)&#x0D;&#x0A;"
+					Outputs="AslCompiler\$(InputName).l.c "
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Flex - lexer generation ($(InputPath)) DEBUG"
+					CommandLine="..\..\Tools_3rd_Party\BisonFlex\flex.exe -PDtParser -i -s -oAslCompilerDebug\DtParserDebug.l.c $(InputPath)&#x0D;&#x0A;"
+					Outputs="AslCompilerDebug\DtParser.l.c "
+				/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\source\compiler\dtparser.y"
+			>
+			<FileConfiguration
+				Name="Release|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Bison - parser generation ($(InputPath))"
+					CommandLine="..\..\Tools_3rd_Party\BisonFlex\bison_custom.exe -pDtParser -t -d -v -oAslCompiler/$(InputName).y.c ../../source/compiler/dtparser.y&#x0D;&#x0A;"
+					Outputs="AslCompiler\$(InputName).y.c;AslCompiler\$(InputName).y.h"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Bison - parser generation ($(InputPath)) DEBUG"
+					CommandLine="..\..\Tools_3rd_Party\BisonFlex\bison_custom.exe -pDtParser -t -d -v -oAslCompilerDebug/DtParserDebug.y.c ../../source/compiler/dtparser.y&#x0D;&#x0A;copy /Y AslCompilerDebug\DtParserDebug.y.h AslCompilerDebug\DtParser.y.h&#x0D;&#x0A;"
+					Outputs="AslCompilerDebug\DtParser.y.c;AslCompilerDebug\DtParser.y.h"
 				/>
 			</FileConfiguration>
 		</File>

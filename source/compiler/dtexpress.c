@@ -117,18 +117,13 @@
 
 #include "aslcompiler.h"
 #include "dtcompiler.h"
+#include "dtparser.y.h"
 
 #define _COMPONENT          DT_COMPILER
         ACPI_MODULE_NAME    ("dtexpress")
 
 
 /* Local prototypes */
-
-static ACPI_STATUS
-DtResolveInteger (
-    DT_FIELD                *Field,
-    char                    *IntegerString,
-    UINT64                  *ReturnValue);
 
 static void
 DtInsertLabelField (
@@ -137,6 +132,10 @@ DtInsertLabelField (
 static DT_FIELD *
 DtLookupLabel (
     char                    *Name);
+
+/* Global used for errors during parse and related functions */
+
+DT_FIELD                *Gbl_CurrentField;
 
 
 /******************************************************************************
@@ -149,8 +148,7 @@ DtLookupLabel (
  * RETURN:      Status, and the resolved 64-bit integer value
  *
  * DESCRIPTION: Resolve an integer expression to a single value. Supports
- *              both integer constants and labels. Supported operators are:
- *              +,-,*,/,%,|,&,^
+ *              both integer constants and labels.
  *
  *****************************************************************************/
 
@@ -159,201 +157,202 @@ DtResolveIntegerExpression (
     DT_FIELD                *Field,
     UINT64                  *ReturnValue)
 {
-    char                    *IntegerString;
-    char                    *Operator;
-    UINT64                  Value;
-    UINT64                  Value2;
-    ACPI_STATUS             Status;
+    UINT64                  Result;
 
 
     DbgPrint (ASL_DEBUG_OUTPUT, "Full Integer expression: %s\n",
         Field->Value);
 
-    strcpy (MsgBuffer, Field->Value); /* Must take a copy for strtok() */
+    Gbl_CurrentField = Field;
 
-    /* Obtain and resolve the first operand */
-
-    IntegerString = strtok (MsgBuffer, " ");
-    if (!IntegerString)
-    {
-        DtError (ASL_ERROR, ASL_MSG_INVALID_EXPRESSION, Field, Field->Value);
-        return (0);
-    }
-
-    Status = DtResolveInteger (Field, IntegerString, &Value);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
-    DbgPrint (ASL_DEBUG_OUTPUT, "Integer resolved to V1: %8.8X%8.8X\n",
-        ACPI_FORMAT_UINT64 (Value));
-
-    /*
-     * Consume the entire expression string. For the rest of the
-     * expression string, values are of the form:
-     * <operator> <integer>
-     */
-    while (1)
-    {
-        Operator = strtok (NULL, " ");
-        if (!Operator)
-        {
-            /* Normal exit */
-
-            DbgPrint (ASL_DEBUG_OUTPUT, "Expression Resolved to: %8.8X%8.8X\n",
-                ACPI_FORMAT_UINT64 (Value));
-
-            *ReturnValue = Value;
-            return (AE_OK);
-        }
-
-        IntegerString = strtok (NULL, " ");
-        if (!IntegerString ||
-            (strlen (Operator) > 1))
-        {
-            /* No corresponding operand for operator or invalid operator */
-
-            DtError (ASL_ERROR, ASL_MSG_INVALID_EXPRESSION, Field, Field->Value);
-            return (AE_BAD_VALUE);
-        }
-
-        Status = DtResolveInteger (Field, IntegerString, &Value2);
-        if (ACPI_FAILURE (Status))
-        {
-            return (Status);
-        }
-
-        DbgPrint (ASL_DEBUG_OUTPUT, "Integer resolved to V2: %8.8X%8.8X\n",
-            ACPI_FORMAT_UINT64 (Value2));
-
-        /* Perform the requested operation */
-
-        switch (*Operator)
-        {
-        case '-':
-            Value -= Value2;
-            break;
-
-        case '+':
-            Value += Value2;
-            break;
-
-        case '*':
-            Value *= Value2;
-            break;
-
-        case '|':
-            Value |= Value2;
-            break;
-
-        case '&':
-            Value &= Value2;
-            break;
-
-        case '^':
-            Value ^= Value2;
-            break;
-
-        case '/':
-            if (!Value2)
-            {
-                DtError (ASL_ERROR, ASL_MSG_DIVIDE_BY_ZERO, Field, Field->Value);
-                return (AE_BAD_VALUE);
-            }
-            Value /= Value2;
-            break;
-
-        case '%':
-            if (!Value2)
-            {
-                DtError (ASL_ERROR, ASL_MSG_DIVIDE_BY_ZERO, Field, Field->Value);
-                return (AE_BAD_VALUE);
-            }
-            Value %= Value2;
-            break;
-
-        default:
-
-            /* Unknown operator */
-
-            DtFatal (ASL_MSG_INVALID_EXPRESSION, Field, Field->Value);
-            return (AE_BAD_VALUE);
-        }
-    }
-
-    return (AE_ERROR); /* Should never get here */
+    Result = DtEvaluateExpression (Field->Value);
+    *ReturnValue = Result;
+    return (AE_OK);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    DtResolveInteger
+ * FUNCTION:    DtDoOperator
  *
- * PARAMETERS:  Field               - Field object with string to be resolved
- *              IntegerString       - Integer to be resolved
- *              ReturnValue         - Where the resolved integer is returned
+ * PARAMETERS:  LeftValue           - First 64-bit operand
+ *              Operator            - Parse token for the operator (EXPOP_*)
+ *              RightValue          - Second 64-bit operand
  *
- * RETURN:      Status, and the resolved 64-bit integer value
+ * RETURN:      64-bit result of the requested operation
  *
- * DESCRIPTION: Resolve a single integer string to a value. Supports both
- *              integer constants and labels.
- *
- * NOTE:        References to labels must begin with a dollar sign ($)
+ * DESCRIPTION: Perform the various 64-bit integer math functions
  *
  *****************************************************************************/
 
-static ACPI_STATUS
-DtResolveInteger (
-    DT_FIELD                *Field,
-    char                    *IntegerString,
-    UINT64                  *ReturnValue)
+UINT64
+DtDoOperator (
+    UINT64                  LeftValue,
+    UINT32                  Operator,
+    UINT64                  RightValue)
+{
+    UINT64                  Result;
+
+
+    /* Perform the requested operation */
+
+    switch (Operator)
+    {
+    case EXPOP_ONES_COMPLIMENT:
+        Result = ~RightValue;
+        break;
+
+    case EXPOP_LOGICAL_NOT:
+        Result = !RightValue;
+        break;
+
+    case EXPOP_MULTIPLY:
+        Result = LeftValue * RightValue;
+        break;
+
+    case EXPOP_DIVIDE:
+        if (!RightValue)
+        {
+            DtError (ASL_ERROR, ASL_MSG_DIVIDE_BY_ZERO,
+                Gbl_CurrentField, Gbl_CurrentField->Value);
+            return (0);
+        }
+        Result = LeftValue / RightValue;
+        break;
+
+    case EXPOP_MODULO:
+        if (!RightValue)
+        {
+            DtError (ASL_ERROR, ASL_MSG_DIVIDE_BY_ZERO,
+                Gbl_CurrentField, Gbl_CurrentField->Value);
+            return (0);
+        }
+        Result = LeftValue % RightValue;
+        break;
+
+    case EXPOP_ADD:
+        Result = LeftValue + RightValue;
+        break;
+
+    case EXPOP_SUBTRACT:
+        Result = LeftValue - RightValue;
+        break;
+
+    case EXPOP_SHIFT_RIGHT:
+        Result = LeftValue >> RightValue;
+        break;
+
+    case EXPOP_SHIFT_LEFT:
+        Result = LeftValue << RightValue;
+        break;
+
+    case EXPOP_LESS:
+        Result = LeftValue < RightValue;
+        break;
+
+    case EXPOP_GREATER:
+        Result = LeftValue > RightValue;
+        break;
+
+    case EXPOP_LESS_EQUAL:
+        Result = LeftValue <= RightValue;
+        break;
+
+    case EXPOP_GREATER_EQUAL:
+        Result = LeftValue >= RightValue;
+        break;
+
+    case EXPOP_EQUAL:
+        Result = LeftValue = RightValue;
+        break;
+
+    case EXPOP_NOT_EQUAL:
+        Result = LeftValue != RightValue;
+        break;
+
+    case EXPOP_AND:
+        Result = LeftValue & RightValue;
+        break;
+
+    case EXPOP_XOR:
+        Result = LeftValue ^ RightValue;
+        break;
+
+    case EXPOP_OR:
+        Result = LeftValue | RightValue;
+        break;
+
+    case EXPOP_LOGICAL_AND:
+        Result = LeftValue && RightValue;
+        break;
+
+    case EXPOP_LOGICAL_OR:
+        Result = LeftValue || RightValue;
+        break;
+
+   default:
+
+        /* Unknown operator */
+
+        DtFatal (ASL_MSG_INVALID_EXPRESSION,
+            Gbl_CurrentField, Gbl_CurrentField->Value);
+        return (0);
+    }
+
+    DbgPrint (ASL_DEBUG_OUTPUT,
+        "IntegerEval: %s (%8.8X%8.8X %s %8.8X%8.8X) = %8.8X%8.8X\n",
+        Gbl_CurrentField->Value,
+        ACPI_FORMAT_UINT64 (LeftValue),
+        DtGetOpName (Operator),
+        ACPI_FORMAT_UINT64 (RightValue),
+        ACPI_FORMAT_UINT64 (Result));
+
+    return (Result);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    DtResolveLabel
+ *
+ * PARAMETERS:  LabelString         - Contains the label
+ *
+ * RETURN:      Table offset associated with the label
+ *
+ * DESCRIPTION: Lookup a lable and return its value.
+ *
+ *****************************************************************************/
+
+UINT64
+DtResolveLabel (
+    char                    *LabelString)
 {
     DT_FIELD                *LabelField;
-    UINT64                  Value = 0;
-    char                    *Message = NULL;
-    ACPI_STATUS             Status;
 
 
-    DbgPrint (ASL_DEBUG_OUTPUT, "Resolve Integer: %s\n", IntegerString);
+    DbgPrint (ASL_DEBUG_OUTPUT, "Resolve Label: %s\n", LabelString);
 
     /* Resolve a label reference to an integer (table offset) */
 
-    if (*IntegerString == '$')
+    if (*LabelString != '$')
     {
-        LabelField = DtLookupLabel (IntegerString);
-        if (!LabelField)
-        {
-            DtError (ASL_ERROR, ASL_MSG_UNKNOWN_LABEL, Field, IntegerString);
-            return (AE_NOT_FOUND);
-        }
-
-        /* All we need from the label is the offset in the table */
-
-        *ReturnValue = LabelField->TableOffset;
-        return (AE_OK);
+        return (0);
     }
 
-    /* Convert string to an actual integer */
-
-    Status = DtStrtoul64 (IntegerString, &Value);
-    if (ACPI_FAILURE (Status))
+    LabelField = DtLookupLabel (LabelString);
+    if (!LabelField)
     {
-        if (Status == AE_LIMIT)
-        {
-            Message = "Constant larger than 64 bits";
-        }
-        else if (Status == AE_BAD_CHARACTER)
-        {
-            Message = "Invalid character in constant";
-        }
-
-        DtError (ASL_ERROR, ASL_MSG_INVALID_HEX_INTEGER, Field, Message);
-        return (Status);
+        DtError (ASL_ERROR, ASL_MSG_UNKNOWN_LABEL,
+            Gbl_CurrentField, LabelString);
+        return (0);
     }
 
-    *ReturnValue = Value;
-    return (AE_OK);
+    /* All we need from the label is the offset in the table */
+
+    DbgPrint (ASL_DEBUG_OUTPUT, "Resolved Label: 0x%8.8X\n",
+        LabelField->TableOffset);
+
+    return (LabelField->TableOffset);
 }
 
 

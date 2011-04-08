@@ -140,12 +140,6 @@ char                        AslHexLookup[] =
 
 /* Local prototypes */
 
-static ACPI_STATUS
-UtStrtoul64 (
-    char                    *String,
-    UINT32                  Base,
-    UINT64                  *RetInteger);
-
 static void
 UtPadNameWithUnderscores (
     char                    *NameSeg,
@@ -956,7 +950,7 @@ UtDoConstant (
  *
  ******************************************************************************/
 
-static ACPI_STATUS
+ACPI_STATUS
 UtStrtoul64 (
     char                    *String,
     UINT32                  Base,
