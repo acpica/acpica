@@ -423,12 +423,11 @@ DtParseLine (
          * TBD: Perhaps DtGetNextLine should parse the following type
          * of comments also.
          */
-        if (*End == '(' ||
-            *End == '<')
+        if (*End == '[')
         {
+            End--;
             break;
         }
-
         End++;
     }
 
