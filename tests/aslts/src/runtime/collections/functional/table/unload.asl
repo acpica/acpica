@@ -605,7 +605,7 @@ Device(DTM1) {
 	{
 		Name(DDB0, 0)
 
-		Method(m000) {Return }
+		Method(m000) {Return (0) }
 		Method(m001) {Return (DDB0)}
 
 		Concatenate(arg0, "-tst5", arg0)

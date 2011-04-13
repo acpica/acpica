@@ -38,7 +38,7 @@ Method(mf70)
 
 	Method(m000)
 	{
-		Return
+		Return(0)
 	}
 
 	// m000
