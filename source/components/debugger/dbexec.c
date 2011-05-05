@@ -211,25 +211,31 @@ AcpiDbExecuteMethod (
     {
         /* Are there arguments to the method? */
 
+        i = 0;
         if (Info->Args && Info->Args[0])
         {
-            for (i = 0; Info->Args[i] &&
+            /* Get arguments passed on the command line */
+
+            for (; Info->Args[i] &&
                 (i < ACPI_METHOD_NUM_ARGS) &&
                 (i < ObjInfo->ParamCount);
                 i++)
             {
-                Params[i].Type          = ACPI_TYPE_INTEGER;
+                /* Only integer arguments supported at this time */
+
+                Params[i].Type = ACPI_TYPE_INTEGER;
                 Params[i].Integer.Value = ACPI_STRTOUL (Info->Args[i], NULL, 16);
             }
-
-            ParamObjects.Pointer = Params;
-            ParamObjects.Count   = i;
         }
-        else
-        {
-            /* Setup default parameters */
 
-            for (i = 0; i < ObjInfo->ParamCount; i++)
+        /* Create additional "default" parameters as needed */
+
+        if (i < ObjInfo->ParamCount)
+        {
+            AcpiOsPrintf ("Adding %u arguments containing default values\n",
+                ObjInfo->ParamCount - i);
+
+            for (; i < ObjInfo->ParamCount; i++)
             {
                 switch (i)
                 {
@@ -253,10 +259,10 @@ AcpiDbExecuteMethod (
                     break;
                 }
             }
-
-            ParamObjects.Pointer     = Params;
-            ParamObjects.Count       = ObjInfo->ParamCount;
         }
+
+        ParamObjects.Count = ObjInfo->ParamCount;
+        ParamObjects.Pointer = Params;
     }
 
     ACPI_FREE (ObjInfo);
