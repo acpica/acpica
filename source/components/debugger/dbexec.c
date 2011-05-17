@@ -125,7 +125,8 @@
         ACPI_MODULE_NAME    ("dbexec")
 
 
-static ACPI_DB_METHOD_INFO  AcpiGbl_DbMethodInfo;
+static ACPI_DB_METHOD_INFO          AcpiGbl_DbMethodInfo;
+#define DB_DEFAULT_PKG_ELEMENTS     33
 
 /* Local prototypes */
 
@@ -153,6 +154,348 @@ AcpiDbExecutionWalk (
     void                    *Context,
     void                    **ReturnValue);
 
+static ACPI_STATUS
+AcpiDbHexCharToValue (
+    int                     HexChar,
+    UINT8                   *ReturnValue);
+
+static ACPI_STATUS
+AcpiDbConvertToPackage (
+    char                    *String,
+    ACPI_OBJECT             *Object);
+
+static ACPI_STATUS
+AcpiDbConvertToObject (
+    ACPI_OBJECT_TYPE        Type,
+    char                    *String,
+    ACPI_OBJECT             *Object);
+
+static void
+AcpiDbDeleteObjects (
+    UINT32                  Count,
+    ACPI_OBJECT             *Objects);
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbHexCharToValue
+ *
+ * PARAMETERS:  HexChar             - Ascii Hex digit, 0-9|a-f|A-F
+ *              ReturnValue         - Where the converted value is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Convert a single hex character to a 4-bit number (0-16).
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiDbHexCharToValue (
+    int                     HexChar,
+    UINT8                   *ReturnValue)
+{
+    UINT8                   Value;
+
+
+    /* Digit must be ascii [0-9a-fA-F] */
+
+    if (!ACPI_IS_XDIGIT (HexChar))
+    {
+        return (AE_BAD_HEX_CONSTANT);
+    }
+
+    if (HexChar <= 0x39)
+    {
+        Value = (UINT8) (HexChar - 0x30);
+    }
+    else
+    {
+        Value = (UINT8) (ACPI_TOUPPER (HexChar) - 0x37);
+    }
+
+    *ReturnValue = Value;
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbHexByteToBinary
+ *
+ * PARAMETERS:  HexByte             - Double hex digit (0x00 - 0xFF) in format:
+ *                                    HiByte then LoByte.
+ *              ReturnValue         - Where the converted value is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Convert two hex characters to an 8 bit number (0 - 255).
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiDbHexByteToBinary (
+    char                    *HexByte,
+    UINT8                   *ReturnValue)
+{
+    UINT8                   Local0;
+    UINT8                   Local1;
+    ACPI_STATUS             Status;
+
+
+    /* High byte */
+
+    Status = AcpiDbHexCharToValue (HexByte[0], &Local0);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    /* Low byte */
+
+    Status = AcpiDbHexCharToValue (HexByte[1], &Local1);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    *ReturnValue = (UINT8) ((Local0 << 4) | Local1);
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbConvertToBuffer
+ *
+ * PARAMETERS:  String              - Input string to be converted
+ *              Object              - Where the buffer object is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Convert a string to a buffer object. String is treated a list
+ *              of buffer elements, each separated by a space or comma.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiDbConvertToBuffer (
+    char                    *String,
+    ACPI_OBJECT             *Object)
+{
+    UINT32                  i;
+    UINT32                  j;
+    UINT32                  Length;
+    UINT8                   *Buffer;
+    ACPI_STATUS             Status;
+
+
+    /* Generate the final buffer length */
+
+    for (i = 0, Length = 0; String[i];)
+    {
+        i+=2;
+        Length++;
+
+        while (String[i] &&
+              ((String[i] == ',') || (String[i] == ' ')))
+        {
+            i++;
+        }
+    }
+
+    Buffer = ACPI_ALLOCATE (Length);
+    if (!Buffer)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    /* Convert the command line bytes to the buffer */
+
+    for (i = 0, j = 0; String[i];)
+    {
+        Status = AcpiDbHexByteToBinary (&String[i], &Buffer[j]);
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_FREE (Buffer);
+            return (Status);
+        }
+
+        j++;
+        i+=2;
+        while (String[i] &&
+              ((String[i] == ',') || (String[i] == ' ')))
+        {
+            i++;
+        }
+    }
+
+    Object->Type = ACPI_TYPE_BUFFER;
+    Object->Buffer.Pointer = Buffer;
+    Object->Buffer.Length = Length;
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbConvertToPackage
+ *
+ * PARAMETERS:  String              - Input string to be converted
+ *              Object              - Where the package object is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Convert a string to a package object. Handles nested packages
+ *              via recursion with AcpiDbConvertToObject.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiDbConvertToPackage (
+    char                    *String,
+    ACPI_OBJECT             *Object)
+{
+    char                    *This;
+    char                    *Next;
+    UINT32                  i;
+    ACPI_OBJECT_TYPE        Type;
+    ACPI_OBJECT             *Elements;
+    ACPI_STATUS             Status;
+
+
+    Elements = ACPI_ALLOCATE_ZEROED (
+        DB_DEFAULT_PKG_ELEMENTS * sizeof (ACPI_OBJECT));
+
+    This = String;
+    for (i = 0; i < (DB_DEFAULT_PKG_ELEMENTS - 1); i++)
+    {
+        This = AcpiDbGetNextToken (This, &Next, &Type);
+        if (!This)
+        {
+            break;
+        }
+
+        /* Recursive call to convert each package element */
+
+        Status = AcpiDbConvertToObject (Type, This, &Elements[i]);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiDbDeleteObjects (i + 1, Elements);
+            ACPI_FREE (Elements);
+            return (Status);
+        }
+
+        This = Next;
+    }
+
+    Object->Type = ACPI_TYPE_PACKAGE;
+    Object->Package.Count = i;
+    Object->Package.Elements = Elements;
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbConvertToObject
+ *
+ * PARAMETERS:  Type                - Object type as determined by parser
+ *              String              - Input string to be converted
+ *              Object              - Where the new object is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Convert a typed and tokenized string to an ACPI_OBJECT. Typing:
+ *              1) String objects were surrounded by quotes.
+ *              2) Buffer objects were surrounded by parentheses.
+ *              3) Package objects were surrounded by brackets "[]".
+ *              4) All standalone tokens are treated as integers.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiDbConvertToObject (
+    ACPI_OBJECT_TYPE        Type,
+    char                    *String,
+    ACPI_OBJECT             *Object)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    switch (Type)
+    {
+    case ACPI_TYPE_STRING:
+        Object->Type = ACPI_TYPE_STRING;
+        Object->String.Pointer = String;
+        Object->String.Length = (UINT32) ACPI_STRLEN (String);
+        break;
+
+    case ACPI_TYPE_BUFFER:
+        Status = AcpiDbConvertToBuffer (String, Object);
+        break;
+
+    case ACPI_TYPE_PACKAGE:
+        Status = AcpiDbConvertToPackage (String, Object);
+        break;
+
+    default:
+        Object->Type = ACPI_TYPE_INTEGER;
+        Status = AcpiUtStrtoul64 (String, 16, &Object->Integer.Value);
+        break;
+    }
+
+    return (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbDeleteObjects
+ *
+ * PARAMETERS:  Count               - Count of objects in the list
+ *              Objects             - Array of ACPI_OBJECTs to be deleted
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Delete a list of ACPI_OBJECTS. Handles packages and nested
+ *              packages via recursion.
+ *
+ ******************************************************************************/
+
+static void
+AcpiDbDeleteObjects (
+    UINT32                  Count,
+    ACPI_OBJECT             *Objects)
+{
+    UINT32                  i;
+
+
+    for (i = 0; i < Count; i++)
+    {
+        switch (Objects[i].Type)
+        {
+        case ACPI_TYPE_BUFFER:
+            ACPI_FREE (Objects[i].Buffer.Pointer);
+            break;
+
+        case ACPI_TYPE_PACKAGE:
+
+            /* Recursive call to delete package elements */
+
+            AcpiDbDeleteObjects (Objects[i].Package.Count,
+                Objects[i].Package.Elements);
+
+            /* Free the elements array */
+
+            ACPI_FREE (Objects[i].Package.Elements);
+            break;
+
+        default:
+            break;
+        }
+    }
+}
+
 
 /*******************************************************************************
  *
@@ -176,8 +519,8 @@ AcpiDbExecuteMethod (
     ACPI_OBJECT_LIST        ParamObjects;
     ACPI_OBJECT             Params[ACPI_METHOD_NUM_ARGS];
     ACPI_HANDLE             Handle;
-    UINT32                  i;
     ACPI_DEVICE_INFO        *ObjInfo;
+    UINT32                  i;
 
 
     ACPI_FUNCTION_TRACE (DbExecuteMethod);
@@ -221,10 +564,16 @@ AcpiDbExecuteMethod (
                 (i < ObjInfo->ParamCount);
                 i++)
             {
-                /* Only integer arguments supported at this time */
+                /* Convert input string (token) to an actual ACPI_OBJECT */
 
-                Params[i].Type = ACPI_TYPE_INTEGER;
-                Params[i].Integer.Value = ACPI_STRTOUL (Info->Args[i], NULL, 16);
+                Status = AcpiDbConvertToObject (Info->Types[i],
+                    Info->Args[i], &Params[i]);
+                if (ACPI_FAILURE (Status))
+                {
+                    ACPI_EXCEPTION ((AE_INFO, Status,
+                        "While parsing method arguments"));
+                    goto Cleanup;
+                }
             }
         }
 
@@ -265,8 +614,6 @@ AcpiDbExecuteMethod (
         ParamObjects.Pointer = Params;
     }
 
-    ACPI_FREE (ObjInfo);
-
     /* Prepare for a return object of arbitrary size */
 
     ReturnObj->Pointer = AcpiGbl_DbBuffer;
@@ -276,7 +623,7 @@ AcpiDbExecuteMethod (
 
     AcpiGbl_MethodExecuting = TRUE;
     Status = AcpiEvaluateObject (NULL,
-                Info->Pathname, &ParamObjects, ReturnObj);
+        Info->Pathname, &ParamObjects, ReturnObj);
 
     AcpiGbl_CmSingleStep = FALSE;
     AcpiGbl_MethodExecuting = FALSE;
@@ -284,15 +631,19 @@ AcpiDbExecuteMethod (
     if (ACPI_FAILURE (Status))
     {
         ACPI_EXCEPTION ((AE_INFO, Status,
-        "while executing %s from debugger", Info->Pathname));
+            "while executing %s from debugger", Info->Pathname));
 
         if (Status == AE_BUFFER_OVERFLOW)
         {
             ACPI_ERROR ((AE_INFO,
-            "Possible overflow of internal debugger buffer (size 0x%X needed 0x%X)",
+                "Possible overflow of internal debugger buffer (size 0x%X needed 0x%X)",
                 ACPI_DEBUG_BUFFER_SIZE, (UINT32) ReturnObj->Length));
         }
     }
+
+Cleanup:
+    AcpiDbDeleteObjects (ObjInfo->ParamCount, Params);
+    ACPI_FREE (ObjInfo);
 
     return_ACPI_STATUS (Status);
 }
@@ -458,6 +809,7 @@ void
 AcpiDbExecute (
     char                    *Name,
     char                    **Args,
+    ACPI_OBJECT_TYPE        *Types,
     UINT32                  Flags)
 {
     ACPI_STATUS             Status;
@@ -495,6 +847,7 @@ AcpiDbExecute (
         AcpiUtStrupr (NameString);
         AcpiGbl_DbMethodInfo.Name = NameString;
         AcpiGbl_DbMethodInfo.Args = Args;
+        AcpiGbl_DbMethodInfo.Types = Types;
         AcpiGbl_DbMethodInfo.Flags = Flags;
 
         ReturnObj.Pointer = NULL;
