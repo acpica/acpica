@@ -392,15 +392,25 @@ AcpiOsVprintf (
  *
  *****************************************************************************/
 
-UINT32
+ACPI_STATUS
 AcpiOsGetLine (
-    char                    *Buffer)
+    char                    *Buffer,
+    UINT32                  BufferLength,
+    UINT32                  *BytesRead)
 {
+    UINT32                  Actual;
+
+
     AT_CTRL_DECL0(AcpiOsGetLine);
 
     AT_CTRL_SUCCESS0(AcpiOsGetLine);
 
-    return AcpiOsActualGetLine(Buffer);
+    Actual = AcpiOsActualGetLine(Buffer);
+    if (BytesRead)
+    {
+        *BytesRead = Actual;
+    }
+    return (AE_OK);
 }
 
 /******************************************************************************
