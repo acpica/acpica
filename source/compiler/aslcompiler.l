@@ -344,6 +344,11 @@ NamePathTail                [.]{NameSeg}
 "WordBusNumber"             { count (1); return (PARSEOP_WORDBUSNUMBER); }
 "WordIO"                    { count (1); return (PARSEOP_WORDIO); }
 "WordSpace"                 { count (1); return (PARSEOP_WORDSPACE); }
+"GPIO_INT"                  { count (1); return (PARSEOP_GPIO_INT); }
+"GPIO_IO"                   { count (1); return (PARSEOP_GPIO_IO); }
+"I2CSerialBus"              { count (1); return (PARSEOP_I2C_SERIALBUS); }
+"SPISerialBus"              { count (1); return (PARSEOP_SPI_SERIALBUS); }
+"UARTSerialBus"             { count (1); return (PARSEOP_UART_SERIALBUS); }
 
 "UnknownObj"                { count (0); return (PARSEOP_OBJECTTYPE_UNK); }
 "IntObj"                    { count (0); return (PARSEOP_OBJECTTYPE_INT); }
@@ -463,6 +468,48 @@ NamePathTail                [.]{NameSeg}
 "AddressRangeReserved"      { count (0); return (PARSEOP_ADDRESSTYPE_RESERVED); }
 "AddressRangeNVS"           { count (0); return (PARSEOP_ADDRESSTYPE_NVS); }
 "AddressRangeACPI"          { count (0); return (PARSEOP_ADDRESSTYPE_ACPI); }
+
+"AddressingMode7Bit"        { count (0); return (PARSEOP_ADDRESSINGMODE_7BIT); }
+"AddressingMode10Bit"       { count (0); return (PARSEOP_ADDRESSINGMODE_10BIT); }
+
+"ControllerInitiated"       { count (0); return (PARSEOP_SLAVEMODE_CONTROLLERINIT); }
+"DeviceInitiated"           { count (0); return (PARSEOP_SLAVEMODE_DEVICEINIT); }
+
+"FourWireMode"              { count (0); return (PARSEOP_WIREMODE_FOUR); }
+"ThreeWireMode"             { count (0); return (PARSEOP_WIREMODE_THREE); }
+
+"ClockPhaseFirst"           { count (0); return (PARSEOP_CLOCKPHASE_FIRST); }
+"ClockPhaseSecond"          { count (0); return (PARSEOP_CLOCKPHASE_SECOND); }
+
+"ClockPolarityLow"          { count (0); return (PARSEOP_CLOCKPOLARITY_LOW); }
+"ClockPolarityHigh"         { count (0); return (PARSEOP_CLOCKPOLARITY_HIGH); }
+
+"PolarityLow"               { count (0); return (PARSEOP_DEVICEPOLARITY_LOW); }
+"PolarityHigh"              { count (0); return (PARSEOP_DEVICEPOLARITY_HIGH); }
+
+"LittleEndian"              { count (0); return (PARSEOP_ENDIAN_LITTLE); }
+"BigEndian"                 { count (0); return (PARSEOP_ENDIAN_BIG); }
+
+"DataBitsFive"              { count (0); return (PARSEOP_BITSPERBYTE_FIVE); }
+"DataBitsSix"               { count (0); return (PARSEOP_BITSPERBYTE_SIX); }
+"DataBitsSeven"             { count (0); return (PARSEOP_BITSPERBYTE_SEVEN); }
+"DataBitsEight"             { count (0); return (PARSEOP_BITSPERBYTE_EIGHT); }
+"DataBitsNine"              { count (0); return (PARSEOP_BITSPERBYTE_NINE); }
+
+"StopBitsTwo"               { count (0); return (PARSEOP_STOPBITS_TWO); }
+"StopBitsOnePlugHalf"       { count (0); return (PARSEOP_STOPBITS_ONEPLUSHALF); }
+"StopBitsOne"               { count (0); return (PARSEOP_STOPBITS_ONE); }
+"StopBitsNone"              { count (0); return (PARSEOP_STOPBITS_NONE); }
+
+"FlowControlHardware"       { count (0); return (PARSEOP_FLOWCONTROL_HARDWARE); }
+"FlowControlXON"            { count (0); return (PARSEOP_FLOWCONTROL_XON); }
+"FlowControlNone"           { count (0); return (PARSEOP_FLOWCONTROL_NONE); }
+
+"ParityTypeSpace"           { count (0); return (PARSEOP_PARITYTYPE_SPACE); }
+"ParityTypeMark"            { count (0); return (PARSEOP_PARITYTYPE_MARK); }
+"ParityTypeOdd"             { count (0); return (PARSEOP_PARITYTYPE_ODD); }
+"ParityTypeEven"            { count (0); return (PARSEOP_PARITYTYPE_EVEN); }
+"ParityTypeNone"            { count (0); return (PARSEOP_PARITYTYPE_NONE); }
 
 "__DATE__"                  { count (0); return (PARSEOP___DATE__); }
 "__FILE__"                  { count (0); return (PARSEOP___FILE__); }

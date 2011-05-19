@@ -440,6 +440,83 @@ typedef struct aml_resource_generic_register
 
 } AML_RESOURCE_GENERIC_REGISTER;
 
+typedef struct aml_resource_gpio_int
+{
+    AML_RESOURCE_LARGE_HEADER_COMMON
+    UINT16                          Flags;
+    UINT16                          DebounceTimeout;
+    UINT8                           InterruptCount;
+    UINT16                          Interrupts[1];
+    UINT8                           GenericFlags;
+    /* ResSource */
+
+} AML_RESOURCE_GPIO_INT;
+
+typedef struct aml_resource_gpio_io
+{
+    AML_RESOURCE_LARGE_HEADER_COMMON
+    UINT16                          Flags;
+    UINT16                          DebounceTimeout;
+    UINT8                           InterruptCount;
+    UINT16                          Interrupts[1];
+    UINT8                           GenericFlags;
+    /* ResSource */
+
+} AML_RESOURCE_GPIO_IO;
+
+typedef struct aml_resource_i2c_serialbus
+{
+    AML_RESOURCE_LARGE_HEADER_COMMON
+    UINT8                           RevisionId;
+    UINT8                           Type;
+    UINT8                           GeneralFlags;
+    UINT16                          TypeSpecificFlags;
+    UINT8                           TypeSpecificRevisionId;
+    UINT16                          TypeDataLength;
+    UINT32                          ConnectionSpeed;
+    UINT16                          SlaveAddress;
+    /* ResSource */
+    UINT8                           ResSourceIndex;
+
+} AML_RESOURCE_I2C_SERIALBUS;
+
+typedef struct aml_resource_spi_serialbus
+{
+    AML_RESOURCE_LARGE_HEADER_COMMON
+    UINT8                           RevisionId;
+    UINT8                           Type;
+    UINT8                           GeneralFlags;
+    UINT16                          TypeSpecificFlags;
+    UINT8                           TypeSpecificRevisionId;
+    UINT16                          TypeDataLength;
+    UINT32                          ConnectionSpeed;
+    UINT8                           DataBitLength;
+    UINT8                           Phase;
+    UINT8                           Polarity;
+    UINT16                          DeviceSelection;
+    /* ResSource */
+    UINT8                           ResSourceIndex;
+
+} AML_RESOURCE_SPI_SERIALBUS;
+
+typedef struct aml_resource_uart_serialbus
+{
+    AML_RESOURCE_LARGE_HEADER_COMMON
+    UINT8                           RevisionId;
+    UINT8                           Type;
+    UINT8                           GeneralFlags;
+    UINT16                          TypeSpecificFlags;
+    UINT8                           TypeSpecificRevisionId;
+    UINT16                          TypeDataLength;
+    UINT32                          DefaultBaudRate;
+    UINT16                          RxFifo;
+    UINT16                          TxFifo;
+    UINT8                           Parity;
+    /* ResSource */
+    UINT8                           ResSourceIndex;
+
+} AML_RESOURCE_UART_SERIALBUS;
+
 /* restore default alignment */
 
 #pragma pack()
@@ -477,6 +554,11 @@ typedef union aml_resource
     AML_RESOURCE_ADDRESS64                  Address64;
     AML_RESOURCE_EXTENDED_ADDRESS64         ExtAddress64;
     AML_RESOURCE_EXTENDED_IRQ               ExtendedIrq;
+    AML_RESOURCE_GPIO_INT                   GpioInt;
+    AML_RESOURCE_GPIO_IO                    GpioIo;
+    AML_RESOURCE_I2C_SERIALBUS              I2cSerialBus;
+    AML_RESOURCE_SPI_SERIALBUS              SpiSerialBus;
+    AML_RESOURCE_UART_SERIALBUS             UartSerialBus;
 
     /* Utility overlays */
 

@@ -1218,7 +1218,10 @@ typedef struct acpi_port_info
 #define ACPI_RESOURCE_NAME_EXTENDED_IRQ         0x89
 #define ACPI_RESOURCE_NAME_ADDRESS64            0x8A
 #define ACPI_RESOURCE_NAME_EXTENDED_ADDRESS64   0x8B
-#define ACPI_RESOURCE_NAME_LARGE_MAX            0x8B
+#define ACPI_RESOURCE_NAME_GPIO_INT             0x8C
+#define ACPI_RESOURCE_NAME_GPIO_IO              0x8D
+#define ACPI_RESOURCE_NAME_SERIAL_BUS           0x8E
+#define ACPI_RESOURCE_NAME_LARGE_MAX            0x8E
 
 
 /*****************************************************************************

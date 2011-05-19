@@ -892,6 +892,31 @@ RsDoOneResourceDescriptor (
                     CurrentByteOffset);
         break;
 
+    case PARSEOP_GPIO_INT:
+        Rnode = RsDoGpioIntDescriptor (DescriptorTypeOp,
+                    CurrentByteOffset);
+        break;
+
+    case PARSEOP_GPIO_IO:
+        Rnode = RsDoGpioIoDescriptor (DescriptorTypeOp,
+                    CurrentByteOffset);
+        break;
+
+    case PARSEOP_I2C_SERIALBUS:
+        Rnode = RsDoI2cSerialBusDescriptor (DescriptorTypeOp,
+                    CurrentByteOffset);
+        break;
+
+    case PARSEOP_SPI_SERIALBUS:
+        Rnode = RsDoSpiSerialBusDescriptor (DescriptorTypeOp,
+                    CurrentByteOffset);
+        break;
+
+    case PARSEOP_UART_SERIALBUS:
+        Rnode = RsDoUartSerialBusDescriptor (DescriptorTypeOp,
+                    CurrentByteOffset);
+        break;
+
     case PARSEOP_DEFAULT_ARG:
         /* Just ignore any of these, they are used as fillers/placeholders */
         break;
@@ -1080,5 +1105,3 @@ RsDoResourceTemplate (
 
     return;
 }
-
-

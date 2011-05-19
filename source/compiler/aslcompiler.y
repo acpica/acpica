@@ -178,7 +178,7 @@ void *                      AslLocalAllocate (unsigned int Size);
  * These shift/reduce conflicts are expected. There should be zero
  * reduce/reduce conflicts.
  */
-%expect 60
+%expect 67
 
 /*
  * Token types: These are returned by the lexer
@@ -202,6 +202,8 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_ACCESSTYPE_WORD
 %token <i> PARSEOP_ACQUIRE
 %token <i> PARSEOP_ADD
+%token <i> PARSEOP_ADDRESSINGMODE_7BIT
+%token <i> PARSEOP_ADDRESSINGMODE_10BIT
 %token <i> PARSEOP_ADDRESSSPACE_FFIXEDHW
 %token <i> PARSEOP_ADDRESSTYPE_ACPI
 %token <i> PARSEOP_ADDRESSTYPE_MEMORY
@@ -217,6 +219,11 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_ARG5
 %token <i> PARSEOP_ARG6
 %token <i> PARSEOP_BANKFIELD
+%token <i> PARSEOP_BITSPERBYTE_EIGHT
+%token <i> PARSEOP_BITSPERBYTE_FIVE
+%token <i> PARSEOP_BITSPERBYTE_NINE
+%token <i> PARSEOP_BITSPERBYTE_SEVEN
+%token <i> PARSEOP_BITSPERBYTE_SIX
 %token <i> PARSEOP_BREAK
 %token <i> PARSEOP_BREAKPOINT
 %token <i> PARSEOP_BUFFER
@@ -224,6 +231,10 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_BUSMASTERTYPE_NOTMASTER
 %token <i> PARSEOP_BYTECONST
 %token <i> PARSEOP_CASE
+%token <i> PARSEOP_CLOCKPHASE_FIRST
+%token <i> PARSEOP_CLOCKPHASE_SECOND
+%token <i> PARSEOP_CLOCKPOLARITY_HIGH
+%token <i> PARSEOP_CLOCKPOLARITY_LOW
 %token <i> PARSEOP_CONCATENATE
 %token <i> PARSEOP_CONCATENATERESTEMPLATE
 %token <i> PARSEOP_CONDREFOF
@@ -245,6 +256,8 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_DEFINITIONBLOCK
 %token <i> PARSEOP_DEREFOF
 %token <i> PARSEOP_DEVICE
+%token <i> PARSEOP_DEVICEPOLARITY_HIGH
+%token <i> PARSEOP_DEVICEPOLARITY_LOW
 %token <i> PARSEOP_DIVIDE
 %token <i> PARSEOP_DMA
 %token <i> PARSEOP_DMATYPE_A
@@ -259,6 +272,8 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_ELSE
 %token <i> PARSEOP_ELSEIF
 %token <i> PARSEOP_ENDDEPENDENTFN
+%token <i> PARSEOP_ENDIAN_BIG
+%token <i> PARSEOP_ENDIAN_LITTLE
 %token <i> PARSEOP_ENDTAG
 %token <i> PARSEOP_ERRORNODE
 %token <i> PARSEOP_EVENT
@@ -271,8 +286,14 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_FINDSETLEFTBIT
 %token <i> PARSEOP_FINDSETRIGHTBIT
 %token <i> PARSEOP_FIXEDIO
+%token <i> PARSEOP_FLOWCONTROL_HARDWARE
+%token <i> PARSEOP_FLOWCONTROL_NONE
+%token <i> PARSEOP_FLOWCONTROL_XON
 %token <i> PARSEOP_FROMBCD
 %token <i> PARSEOP_FUNCTION
+%token <i> PARSEOP_GPIO_INT
+%token <i> PARSEOP_GPIO_IO
+%token <i> PARSEOP_I2C_SERIALBUS
 %token <i> PARSEOP_IF
 %token <i> PARSEOP_INCLUDE
 %token <i> PARSEOP_INCLUDE_CSTYLE
@@ -369,6 +390,11 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_OR
 %token <i> PARSEOP_PACKAGE
 %token <i> PARSEOP_PACKAGE_LENGTH
+%token <i> PARSEOP_PARITYTYPE_EVEN
+%token <i> PARSEOP_PARITYTYPE_MARK
+%token <i> PARSEOP_PARITYTYPE_NONE
+%token <i> PARSEOP_PARITYTYPE_ODD
+%token <i> PARSEOP_PARITYTYPE_SPACE
 %token <i> PARSEOP_POWERRESOURCE
 %token <i> PARSEOP_PROCESSOR
 %token <i> PARSEOP_QWORDCONST
@@ -408,10 +434,17 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_SHIFTRIGHT
 %token <i> PARSEOP_SIGNAL
 %token <i> PARSEOP_SIZEOF
+%token <i> PARSEOP_SLAVEMODE_CONTROLLERINIT
+%token <i> PARSEOP_SLAVEMODE_DEVICEINIT
 %token <i> PARSEOP_SLEEP
+%token <i> PARSEOP_SPI_SERIALBUS
 %token <i> PARSEOP_STALL
 %token <i> PARSEOP_STARTDEPENDENTFN
 %token <i> PARSEOP_STARTDEPENDENTFN_NOPRI
+%token <i> PARSEOP_STOPBITS_NONE
+%token <i> PARSEOP_STOPBITS_ONE
+%token <i> PARSEOP_STOPBITS_ONEPLUSHALF
+%token <i> PARSEOP_STOPBITS_TWO
 %token <i> PARSEOP_STORE
 %token <s> PARSEOP_STRING_LITERAL
 %token <i> PARSEOP_SUBTRACT
@@ -429,6 +462,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_TRANSLATIONTYPE_SPARSE
 %token <i> PARSEOP_TYPE_STATIC
 %token <i> PARSEOP_TYPE_TRANSLATION
+%token <i> PARSEOP_UART_SERIALBUS
 %token <i> PARSEOP_UNICODE
 %token <i> PARSEOP_UNLOAD
 %token <i> PARSEOP_UPDATERULE_ONES
@@ -439,6 +473,8 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_VENDORSHORT
 %token <i> PARSEOP_WAIT
 %token <i> PARSEOP_WHILE
+%token <i> PARSEOP_WIREMODE_FOUR
+%token <i> PARSEOP_WIREMODE_THREE
 %token <i> PARSEOP_WORDBUSNUMBER
 %token <i> PARSEOP_WORDCONST
 %token <i> PARSEOP_WORDIO
@@ -656,6 +692,17 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> TypeKeyword
 %type <n> TranslationKeyword
 %type <n> AddressKeyword
+%type <n> AddressingModeKeyword
+%type <n> SlaveModeKeyword
+%type <n> WireModeKeyword
+%type <n> ClockPhaseKeyword
+%type <n> ClockPolarityKeyword
+%type <n> DevicePolarityKeyword
+%type <n> EndianKeyword
+%type <n> BitsPerByteKeyword
+%type <n> StopBitsKeyword
+%type <n> FlowControlKeyword
+%type <n> ParityTypeKeyword
 
 /* Types */
 
@@ -724,6 +771,11 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> WordBusNumberTerm
 %type <n> WordIOTerm
 %type <n> WordSpaceTerm
+%type <n> GpioIntTerm
+%type <n> GpioIoTerm
+%type <n> I2cSerialBusTerm
+%type <n> SpiSerialBusTerm
+%type <n> UartSerialBusTerm
 
 %type <n> NameString
 %type <n> NameSeg
@@ -759,6 +811,15 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> OptionalParameterTypesPackage
 %type <n> OptionalReference
 %type <n> OptionalAccessSize
+%type <n> OptionalAddressingMode_First
+%type <n> OptionalSlaveMode
+%type <n> OptionalWireMode_First
+%type <n> OptionalDevicePolarity
+%type <n> OptionalEndian
+%type <n> OptionalBitsPerByte
+%type <n> OptionalStopBits
+%type <n> OptionalFlowControl
+%type <n> OptionalParityType
 
 %type <n> TermArgItem
 %type <n> NameStringItem
@@ -2296,6 +2357,69 @@ AddressKeyword
     | PARSEOP_ADDRESSTYPE_ACPI              {$$ = TrCreateLeafNode (PARSEOP_ADDRESSTYPE_ACPI);}
     ;
 
+AddressingModeKeyword
+    : PARSEOP_ADDRESSINGMODE_7BIT           {$$ = TrCreateLeafNode (PARSEOP_ADDRESSINGMODE_7BIT);}
+    | PARSEOP_ADDRESSINGMODE_10BIT          {$$ = TrCreateLeafNode (PARSEOP_ADDRESSINGMODE_10BIT);}
+    ;
+
+SlaveModeKeyword
+    : PARSEOP_SLAVEMODE_CONTROLLERINIT      {$$ = TrCreateLeafNode (PARSEOP_SLAVEMODE_CONTROLLERINIT);}
+    | PARSEOP_SLAVEMODE_DEVICEINIT          {$$ = TrCreateLeafNode (PARSEOP_SLAVEMODE_DEVICEINIT);}
+    ;
+
+WireModeKeyword
+    : PARSEOP_WIREMODE_FOUR                 {$$ = TrCreateLeafNode (PARSEOP_WIREMODE_FOUR);}
+    | PARSEOP_WIREMODE_THREE                {$$ = TrCreateLeafNode (PARSEOP_WIREMODE_THREE);}
+    ;
+
+ClockPhaseKeyword
+    : PARSEOP_CLOCKPHASE_FIRST              {$$ = TrCreateLeafNode (PARSEOP_CLOCKPHASE_FIRST);}
+    | PARSEOP_CLOCKPHASE_SECOND             {$$ = TrCreateLeafNode (PARSEOP_CLOCKPHASE_SECOND);}
+    ;
+
+ClockPolarityKeyword
+    : PARSEOP_CLOCKPOLARITY_LOW             {$$ = TrCreateLeafNode (PARSEOP_CLOCKPOLARITY_LOW);}
+    | PARSEOP_CLOCKPOLARITY_HIGH            {$$ = TrCreateLeafNode (PARSEOP_CLOCKPOLARITY_HIGH);}
+    ;
+
+DevicePolarityKeyword
+    : PARSEOP_DEVICEPOLARITY_LOW            {$$ = TrCreateLeafNode (PARSEOP_DEVICEPOLARITY_LOW);}
+    | PARSEOP_DEVICEPOLARITY_HIGH           {$$ = TrCreateLeafNode (PARSEOP_DEVICEPOLARITY_HIGH);}
+    ;
+
+EndianKeyword
+    : PARSEOP_ENDIAN_LITTLE                 {$$ = TrCreateLeafNode (PARSEOP_ENDIAN_LITTLE);}
+    | PARSEOP_ENDIAN_BIG                    {$$ = TrCreateLeafNode (PARSEOP_ENDIAN_BIG);}
+    ;
+
+BitsPerByteKeyword
+    : PARSEOP_BITSPERBYTE_FIVE              {$$ = TrCreateLeafNode (PARSEOP_BITSPERBYTE_FIVE);}
+    | PARSEOP_BITSPERBYTE_SIX               {$$ = TrCreateLeafNode (PARSEOP_BITSPERBYTE_SIX);}
+    | PARSEOP_BITSPERBYTE_SEVEN             {$$ = TrCreateLeafNode (PARSEOP_BITSPERBYTE_SEVEN);}
+    | PARSEOP_BITSPERBYTE_EIGHT             {$$ = TrCreateLeafNode (PARSEOP_BITSPERBYTE_EIGHT);}
+    | PARSEOP_BITSPERBYTE_NINE              {$$ = TrCreateLeafNode (PARSEOP_BITSPERBYTE_NINE);}
+    ;
+
+StopBitsKeyword
+    : PARSEOP_STOPBITS_TWO                  {$$ = TrCreateLeafNode (PARSEOP_STOPBITS_TWO);}
+    | PARSEOP_STOPBITS_ONEPLUSHALF          {$$ = TrCreateLeafNode (PARSEOP_STOPBITS_ONEPLUSHALF);}
+    | PARSEOP_STOPBITS_ONE                  {$$ = TrCreateLeafNode (PARSEOP_STOPBITS_ONE);}
+    | PARSEOP_STOPBITS_NONE                 {$$ = TrCreateLeafNode (PARSEOP_STOPBITS_NONE);}
+    ;
+
+FlowControlKeyword
+    : PARSEOP_FLOWCONTROL_HARDWARE          {$$ = TrCreateLeafNode (PARSEOP_FLOWCONTROL_HARDWARE);}
+    | PARSEOP_FLOWCONTROL_XON               {$$ = TrCreateLeafNode (PARSEOP_FLOWCONTROL_XON);}
+    | PARSEOP_FLOWCONTROL_NONE              {$$ = TrCreateLeafNode (PARSEOP_FLOWCONTROL_NONE);}
+    ;
+
+ParityTypeKeyword
+    : PARSEOP_PARITYTYPE_SPACE              {$$ = TrCreateLeafNode (PARSEOP_PARITYTYPE_SPACE);}
+    | PARSEOP_PARITYTYPE_MARK               {$$ = TrCreateLeafNode (PARSEOP_PARITYTYPE_MARK);}
+    | PARSEOP_PARITYTYPE_ODD                {$$ = TrCreateLeafNode (PARSEOP_PARITYTYPE_ODD);}
+    | PARSEOP_PARITYTYPE_EVEN               {$$ = TrCreateLeafNode (PARSEOP_PARITYTYPE_EVEN);}
+    | PARSEOP_PARITYTYPE_NONE               {$$ = TrCreateLeafNode (PARSEOP_PARITYTYPE_NONE);}
+    ;
 
 /******* Miscellaneous Types **************************************************/
 
@@ -2535,6 +2659,11 @@ ResourceMacroTerm
     | WordBusNumberTerm             {}
     | WordIOTerm                    {}
     | WordSpaceTerm                 {}
+    | GpioIntTerm                   {}
+    | GpioIoTerm                    {}
+    | I2cSerialBusTerm              {}
+    | SpiSerialBusTerm              {}
+    | UartSerialBusTerm             {}
     ;
 
 DMATerm
@@ -2959,6 +3088,85 @@ WordSpaceTerm
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
 
+GpioIntTerm
+    : PARSEOP_GPIO_INT '('          {$<n>$ = TrCreateLeafNode (PARSEOP_GPIO_INT);}
+        OptionalResourceType_First
+        ',' InterruptTypeKeyword
+        ',' InterruptLevel
+        OptionalShareType
+        ',' WordConstExpr
+        ',' ByteConstExpr
+        OptionalStringData
+        OptionalNameString_Last
+        ')' '{'
+            DWordList '}'           {$$ = TrLinkChildren ($<n>3,9,$4,$6,$8,$9,$11,$13,$14,$15,$18);}
+    | PARSEOP_GPIO_INT '('
+        error ')'                   {$$ = AslDoError(); yyclearin;}
+    ;
+
+GpioIoTerm
+    : PARSEOP_GPIO_IO '('           {$<n>$ = TrCreateLeafNode (PARSEOP_GPIO_IO);}
+        OptionalResourceType_First
+        ',' InterruptTypeKeyword
+        ',' InterruptLevel
+        OptionalShareType
+        ',' WordConstExpr
+        ',' ByteConstExpr
+        OptionalStringData
+        OptionalNameString_Last
+        ')' '{'
+            DWordList '}'           {$$ = TrLinkChildren ($<n>3,9,$4,$6,$8,$9,$11,$13,$14,$15,$18);}
+    | PARSEOP_GPIO_IO '('
+        error ')'                   {$$ = AslDoError(); yyclearin;}
+    ;
+
+I2cSerialBusTerm
+    : PARSEOP_I2C_SERIALBUS '('     {$<n>$ = TrCreateLeafNode (PARSEOP_I2C_SERIALBUS);}
+        OptionalAddressingMode_First
+        ',' DWordConstExpr
+        ',' WordConstExpr
+        OptionalSlaveMode
+        OptionalStringData
+        OptionalNameString_Last
+        ')'                         {$$ = TrLinkChildren ($<n>3,6,$4,$6,$8,$9,$10,$11);}
+    | PARSEOP_I2C_SERIALBUS '('
+        error ')'                   {$$ = AslDoError(); yyclearin;}
+    ;
+
+SpiSerialBusTerm
+    : PARSEOP_SPI_SERIALBUS '('     {$<n>$ = TrCreateLeafNode (PARSEOP_SPI_SERIALBUS);}
+        OptionalWireMode_First
+        ',' DWordConstExpr
+        ',' ByteConstExpr
+        ',' ClockPhaseKeyword
+        ',' ClockPolarityKeyword
+        ',' WordConstExpr
+        OptionalDevicePolarity
+        OptionalSlaveMode
+        OptionalStringData
+        OptionalNameString_Last
+        ')'                         {$$ = TrLinkChildren ($<n>3,10,$4,$6,$8,$10,$12,$14,$15,$16,$17,$18);}
+    | PARSEOP_SPI_SERIALBUS '('
+        error ')'                   {$$ = AslDoError(); yyclearin;}
+    ;
+
+UartSerialBusTerm
+    : PARSEOP_UART_SERIALBUS '('     {$<n>$ = TrCreateLeafNode (PARSEOP_UART_SERIALBUS);}
+        ByteConstExpr
+        OptionalEndian
+        OptionalBitsPerByte
+        OptionalStopBits
+        OptionalFlowControl
+        ',' DWordConstExpr
+        ',' WordConstExpr
+        ',' WordConstExpr
+        OptionalParityType
+        OptionalStringData
+        OptionalNameString_Last
+        ')'                         {$$ = TrLinkChildren ($<n>3,11,$4,$5,$6,$7,$8,$10,$12,$14,$15,$16,$17);}
+    | PARSEOP_UART_SERIALBUS '('
+        error ')'                   {$$ = AslDoError(); yyclearin;}
+    ;
 
 /******* Object References ***********************************************/
 
@@ -3003,10 +3211,20 @@ OptionalAccessSize
     | ',' ByteConstExpr             {$$ = $2;}
     ;
 
+OptionalAddressingMode_First
+    :                               {$$ = NULL;}
+    | AddressingModeKeyword         {$$ = $1;}
+    ;
+
 OptionalAddressRange
     :                               {$$ = NULL;}
     | ','                           {$$ = NULL;}
     | ',' AddressKeyword            {$$ = $2;}
+    ;
+
+OptionalBitsPerByte
+    : ','                           {$$ = NULL;}
+    | ',' BitsPerByteKeyword        {$$ = $2;}
     ;
 
 OptionalByteConstExpr
@@ -3020,10 +3238,25 @@ OptionalDecodeType
     | ',' DecodeKeyword             {$$ = $2;}
     ;
 
+OptionalDevicePolarity
+    : ','                           {$$ = NULL;}
+    | ',' DevicePolarityKeyword     {$$ = $2;}
+    ;
+
 OptionalDWordConstExpr
     :                               {$$ = NULL;}
     | ','                           {$$ = NULL;}
     | ',' DWordConstExpr            {$$ = $2;}
+    ;
+
+OptionalEndian
+    : ','                           {$$ = NULL;}
+    | ',' EndianKeyword             {$$ = $2;}
+    ;
+
+OptionalFlowControl
+    : ','                           {$$ = NULL;}
+    | ',' FlowControlKeyword        {$$ = $2;}
     ;
 
 OptionalListString
@@ -3069,6 +3302,11 @@ OptionalObjectTypeKeyword
     | ',' ObjectTypeKeyword         {$$ = $2;}
     ;
 
+OptionalParityType
+    : ','                           {$$ = NULL;}
+    | ',' ParityTypeKeyword         {$$ = $2;}
+    ;
+
 OptionalQWordConstExpr
     :                               {$$ = NULL;}
     | ','                           {$$ = NULL;}
@@ -3102,10 +3340,20 @@ OptionalSerializeRuleKeyword
     | ',' SerializeRuleKeyword      {$$ = $2;}
     ;
 
+OptionalSlaveMode
+    : ','                           {$$ = NULL;}
+    | ',' SlaveModeKeyword          {$$ = $2;}
+    ;
+
 OptionalShareType
     :                               {$$ = NULL;}
     | ','                           {$$ = NULL;}
     | ',' ShareTypeKeyword          {$$ = $2;}
+    ;
+
+OptionalStopBits
+    : ','                           {$$ = NULL;}
+    | ',' StopBitsKeyword           {$$ = $2;}
     ;
 
 OptionalStringData
@@ -3140,6 +3388,11 @@ OptionalTranslationType_Last
     :                               {$$ = NULL;}
     | ','                           {$$ = NULL;}
     | ',' TranslationKeyword        {$$ = $2;}
+    ;
+
+OptionalWireMode_First
+    :                               {$$ = NULL;}
+    | WireModeKeyword               {$$ = $1;}
     ;
 
 

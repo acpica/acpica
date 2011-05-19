@@ -532,3 +532,614 @@ RsDoVendorLargeDescriptor (
 
     return (Rnode);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    RsDoGpioIntDescriptor
+ *
+ * PARAMETERS:  Op                  - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
+ *
+ * RETURN:      Completed resource node
+ *
+ * DESCRIPTION: Construct a long "GPIO Interrupt" descriptor
+ *
+ ******************************************************************************/
+
+ASL_RESOURCE_NODE *
+RsDoGpioIntDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset)
+{
+    AML_RESOURCE            *Descriptor;
+    ACPI_PARSE_OBJECT       *InitializerOp;
+    ASL_RESOURCE_NODE       *Rnode;
+    UINT16                  StringLength = 0;
+    UINT32                  i;
+    UINT8                   *ResSourceString = NULL;
+
+
+    InitializerOp = Op->Asl.Child;
+    StringLength = RsGetStringDataLength (InitializerOp);
+
+    Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_GPIO_INT) +
+                StringLength);
+
+    Descriptor = Rnode->Buffer;
+    Descriptor->GpioInt.DescriptorType  = ACPI_RESOURCE_NAME_GPIO_INT;
+
+    /*
+     * Initial descriptor length -- may be enlarged if there are
+     * optional fields present
+     */
+    Descriptor->GpioInt.ResourceLength  = sizeof (AML_RESOURCE_GPIO_INT) - 3 + StringLength;
+    Descriptor->GpioInt.InterruptCount  = 1;
+
+    /* Process all child initialization nodes */
+
+    for (i = 0; InitializerOp; i++)
+    {
+        switch (i)
+        {
+        case 0: /* Resource Usage (Default: consumer (1) */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.Flags, InitializerOp, 0, 1);
+            break;
+
+        case 1: /* Interrupt Type (or Mode - edge/level) */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.Flags, InitializerOp, 1, 0);
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTTYPE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.Flags), 1);
+            break;
+
+        case 2: /* Interrupt Level (or Polarity - Active high/low) */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.Flags, InitializerOp, 2, 0);
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTLEVEL,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.Flags), 2);
+            break;
+
+        case 3: /* Share Type - Default: exclusive (0) */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.Flags, InitializerOp, 3, 0);
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.Flags), 3);
+            break;
+
+        case 4: /* DebounceTimeout [WORD] */
+
+            Descriptor->GpioInt.DebounceTimeout = (UINT16) InitializerOp->Asl.Value.Integer;
+            break;
+
+        case 5: /* GenericFlags? [BYTE] */
+
+            Descriptor->GpioInt.GenericFlags = (UINT8) InitializerOp->Asl.Value.Integer;
+            break;
+
+        case 6: /* ResSource [Optional Field - STRING] */
+
+            if ((InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG) &&
+                (InitializerOp->Asl.Value.String))
+            {
+                if (StringLength)
+                {
+                    ResSourceString = (UINT8 *) InitializerOp->Asl.Value.String;
+                }
+            }
+            break;
+
+        case 7: /* ResourceTag */
+
+            UtAttachNamepathToOwner (Op, InitializerOp);
+            break;
+
+        case 8:
+            /*
+             * Interrupt Numbers come through here, repeatedly
+             */
+
+            /* Each interrupt number must be a 16-bit value */
+
+            Descriptor->GpioInt.Interrupts[0] = (UINT16)InitializerOp->Asl.Value.Integer;
+            break;
+        }
+
+        InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
+    }
+
+    /* Add optional ResSource string if present */
+
+    if (StringLength && ResSourceString)
+    {
+        strcpy ((char *) Descriptor + sizeof (AML_RESOURCE_GPIO_INT), (char *) ResSourceString);
+    }
+
+    return (Rnode);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    RsDoGpioIoDescriptor
+ *
+ * PARAMETERS:  Op                  - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
+ *
+ * RETURN:      Completed resource node
+ *
+ * DESCRIPTION: Construct a long "GPIO I/O" descriptor
+ *
+ ******************************************************************************/
+
+ASL_RESOURCE_NODE *
+RsDoGpioIoDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset)
+{
+    AML_RESOURCE            *Descriptor;
+    ACPI_PARSE_OBJECT       *InitializerOp;
+    ASL_RESOURCE_NODE       *Rnode;
+    UINT16                  StringLength = 0;
+    UINT32                  i;
+    UINT8                   *ResSourceString = NULL;
+
+
+    InitializerOp = Op->Asl.Child;
+    StringLength = RsGetStringDataLength (InitializerOp);
+
+    Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_GPIO_IO) +
+                StringLength);
+
+    Descriptor = Rnode->Buffer;
+    Descriptor->GpioInt.DescriptorType  = ACPI_RESOURCE_NAME_GPIO_IO;
+
+    /*
+     * Initial descriptor length -- may be enlarged if there are
+     * optional fields present
+     */
+    Descriptor->GpioInt.ResourceLength  = sizeof (AML_RESOURCE_GPIO_IO) - 3 + StringLength;
+    Descriptor->GpioInt.InterruptCount  = 1;
+
+    /* Process all child initialization nodes */
+
+    for (i = 0; InitializerOp; i++)
+    {
+        switch (i)
+        {
+        case 0: /* Resource Usage (Default: consumer (1) */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.Flags, InitializerOp, 0, 1);
+            break;
+
+        case 1: /* Interrupt Type (or Mode - edge/level) */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.Flags, InitializerOp, 1, 0);
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTTYPE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.Flags), 1);
+            break;
+
+        case 2: /* Interrupt Level (or Polarity - Active high/low) */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.Flags, InitializerOp, 2, 0);
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTLEVEL,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.Flags), 2);
+            break;
+
+        case 3: /* Share Type - Default: exclusive (0) */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.Flags, InitializerOp, 3, 0);
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.Flags), 3);
+            break;
+
+        case 4: /* DebounceTimeout [WORD] */
+
+            Descriptor->GpioInt.DebounceTimeout = (UINT16) InitializerOp->Asl.Value.Integer;
+            break;
+
+        case 5: /* GenericFlags? [BYTE] */
+
+            Descriptor->GpioInt.GenericFlags = (UINT8) InitializerOp->Asl.Value.Integer;
+            break;
+
+        case 6: /* ResSource [Optional Field - STRING] */
+
+            if ((InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG) &&
+                (InitializerOp->Asl.Value.String))
+            {
+                if (StringLength)
+                {
+                    ResSourceString = (UINT8 *) InitializerOp->Asl.Value.String;
+                }
+            }
+            break;
+
+        case 7: /* ResourceTag */
+
+            UtAttachNamepathToOwner (Op, InitializerOp);
+            break;
+
+        case 8:
+            /*
+             * Interrupt Numbers come through here, repeatedly
+             */
+
+            /* Each interrupt number must be a 16-bit value */
+
+            Descriptor->GpioInt.Interrupts[0] = (UINT16)InitializerOp->Asl.Value.Integer;
+            break;
+        }
+
+        InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
+    }
+
+    /* Add optional ResSource string if present */
+
+    if (StringLength && ResSourceString)
+    {
+        strcpy ((char *) Descriptor + sizeof (AML_RESOURCE_GPIO_IO), (char *) ResSourceString);
+    }
+
+    return (Rnode);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    RsDoI2cSerialBusDescriptor
+ *
+ * PARAMETERS:  Op                  - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
+ *
+ * RETURN:      Completed resource node
+ *
+ * DESCRIPTION: Construct a long "I2C Serial Bus" descriptor
+ *
+ ******************************************************************************/
+
+ASL_RESOURCE_NODE *
+RsDoI2cSerialBusDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset)
+{
+    AML_RESOURCE            *Descriptor;
+    ACPI_PARSE_OBJECT       *InitializerOp;
+    ASL_RESOURCE_NODE       *Rnode;
+    UINT16                  StringLength = 0;
+    UINT32                  i;
+    UINT8                   *ResSourceString = NULL;
+
+
+    InitializerOp = Op->Asl.Child;
+    StringLength = RsGetStringDataLength (InitializerOp);
+
+    Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_I2C_SERIALBUS) +
+                StringLength);
+
+    Descriptor = Rnode->Buffer;
+    Descriptor->I2cSerialBus.DescriptorType  = ACPI_RESOURCE_NAME_SERIAL_BUS;
+
+    /*
+     * Initial descriptor length -- may be enlarged if there are
+     * optional fields present
+     */
+    Descriptor->I2cSerialBus.ResourceLength  = sizeof (AML_RESOURCE_I2C_SERIALBUS) - 3 + StringLength;
+    Descriptor->I2cSerialBus.RevisionId              = 1;
+    Descriptor->I2cSerialBus.Type                    = 1;
+    Descriptor->I2cSerialBus.TypeSpecificRevisionId  = 1;
+    Descriptor->I2cSerialBus.TypeDataLength          = 6;
+
+    /* Process all child initialization nodes */
+
+    for (i = 0; InitializerOp; i++)
+    {
+        switch (i)
+        {
+        case 0: /* AddressMode Usage (Default: AddressMode7Bit (0) */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->I2cSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
+            break;
+
+        case 1: /* ConnectionSpeed [DWORD] */
+
+            Descriptor->I2cSerialBus.ConnectionSpeed = (UINT32) InitializerOp->Asl.Value.Integer;
+            break;
+
+        case 2: /* SlaveAddress [WORD] */
+
+            Descriptor->I2cSerialBus.SlaveAddress = (UINT16) InitializerOp->Asl.Value.Integer;
+            break;
+
+        case 3: /* SlaveMode (Default: ControllerInit) */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->I2cSerialBus.GeneralFlags, InitializerOp, 0, 0);
+            break;
+
+        case 4: /* ResSource [Optional Field - STRING] */
+
+            if ((InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG) &&
+                (InitializerOp->Asl.Value.String))
+            {
+                if (StringLength)
+                {
+                    ResSourceString = (UINT8 *) InitializerOp->Asl.Value.String;
+                }
+            }
+            break;
+
+        case 5: /* ResourceTag */
+
+            UtAttachNamepathToOwner (Op, InitializerOp);
+            break;
+        }
+
+        InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
+    }
+
+    /* Add optional ResSource string if present */
+
+    if (StringLength && ResSourceString)
+    {
+        strcpy ((char *) Descriptor + sizeof (AML_RESOURCE_I2C_SERIALBUS), (char *) ResSourceString);
+    }
+
+    return (Rnode);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    RsDoSpiSerialBusDescriptor
+ *
+ * PARAMETERS:  Op                  - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
+ *
+ * RETURN:      Completed resource node
+ *
+ * DESCRIPTION: Construct a long "SPI Serial Bus" descriptor
+ *
+ ******************************************************************************/
+
+ASL_RESOURCE_NODE *
+RsDoSpiSerialBusDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset)
+{
+    AML_RESOURCE            *Descriptor;
+    ACPI_PARSE_OBJECT       *InitializerOp;
+    ASL_RESOURCE_NODE       *Rnode;
+    UINT16                  StringLength = 0;
+    UINT32                  i;
+    UINT8                   *ResSourceString = NULL;
+
+
+    InitializerOp = Op->Asl.Child;
+    StringLength = RsGetStringDataLength (InitializerOp);
+
+    Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_SPI_SERIALBUS) +
+                StringLength);
+
+    Descriptor = Rnode->Buffer;
+    Descriptor->SpiSerialBus.DescriptorType  = ACPI_RESOURCE_NAME_SERIAL_BUS;
+
+    /*
+     * Initial descriptor length -- may be enlarged if there are
+     * optional fields present
+     */
+    Descriptor->SpiSerialBus.ResourceLength  = sizeof (AML_RESOURCE_SPI_SERIALBUS) - 3 + StringLength;
+    Descriptor->SpiSerialBus.RevisionId              = 1;
+    Descriptor->SpiSerialBus.Type                    = 2;
+    Descriptor->SpiSerialBus.TypeSpecificRevisionId  = 1;
+    Descriptor->SpiSerialBus.TypeDataLength          = 9;
+
+    /* Process all child initialization nodes */
+
+    for (i = 0; InitializerOp; i++)
+    {
+        switch (i)
+        {
+        case 0: /* WireMode Usage (Default: FourWireMode (0) */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->SpiSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
+            break;
+
+        case 1: /* ConnectionSpeed [DWORD] */
+
+            Descriptor->SpiSerialBus.ConnectionSpeed = (UINT32) InitializerOp->Asl.Value.Integer;
+            break;
+
+        case 2: /* DataBitLength [BYTE] */
+
+            Descriptor->SpiSerialBus.DataBitLength = (UINT8) InitializerOp->Asl.Value.Integer;
+            break;
+
+        case 3: /* ClockPhase */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->SpiSerialBus.Phase, InitializerOp, 0, 0);
+            break;
+
+        case 4: /* ClockPolarity */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->SpiSerialBus.Polarity, InitializerOp, 0, 0);
+            break;
+
+        case 5: /* DeviceSelection [WORD] */
+
+            Descriptor->SpiSerialBus.DeviceSelection = (UINT16) InitializerOp->Asl.Value.Integer;
+            break;
+
+        case 6: /* DevicePolarity (Default: PolarityLow) */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->SpiSerialBus.TypeSpecificFlags, InitializerOp, 1, 0);
+            break;
+
+        case 7: /* SlaveMode (Default: ControllerInit) */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->SpiSerialBus.GeneralFlags, InitializerOp, 0, 0);
+            break;
+
+        case 8: /* ResSource [Optional Field - STRING] */
+
+            if ((InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG) &&
+                (InitializerOp->Asl.Value.String))
+            {
+                if (StringLength)
+                {
+                    ResSourceString = (UINT8 *) InitializerOp->Asl.Value.String;
+                }
+            }
+            break;
+
+        case 9: /* ResourceTag */
+
+            UtAttachNamepathToOwner (Op, InitializerOp);
+            break;
+        }
+
+        InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
+    }
+
+    /* Add optional ResSource string if present */
+
+    if (StringLength && ResSourceString)
+    {
+        strcpy ((char *) Descriptor + sizeof (AML_RESOURCE_SPI_SERIALBUS), (char *) ResSourceString);
+    }
+
+    return (Rnode);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    RsDoUartSerialBusDescriptor
+ *
+ * PARAMETERS:  Op                  - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
+ *
+ * RETURN:      Completed resource node
+ *
+ * DESCRIPTION: Construct a long "UART Serial Bus" descriptor
+ *
+ ******************************************************************************/
+
+ASL_RESOURCE_NODE *
+RsDoUartSerialBusDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset)
+{
+    AML_RESOURCE            *Descriptor;
+    ACPI_PARSE_OBJECT       *InitializerOp;
+    ASL_RESOURCE_NODE       *Rnode;
+    UINT16                  StringLength = 0;
+    UINT32                  i;
+    UINT8                   *ResSourceString = NULL;
+
+
+    InitializerOp = Op->Asl.Child;
+    StringLength = RsGetStringDataLength (InitializerOp);
+
+    Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_UART_SERIALBUS) +
+                StringLength);
+
+    Descriptor = Rnode->Buffer;
+    Descriptor->UartSerialBus.DescriptorType  = ACPI_RESOURCE_NAME_SERIAL_BUS;
+
+    /*
+     * Initial descriptor length -- may be enlarged if there are
+     * optional fields present
+     */
+    Descriptor->UartSerialBus.ResourceLength  = sizeof (AML_RESOURCE_UART_SERIALBUS) - 3 + StringLength;
+    Descriptor->UartSerialBus.RevisionId              = 1;
+    Descriptor->UartSerialBus.Type                    = 3;
+    Descriptor->UartSerialBus.TypeSpecificRevisionId  = 1;
+    Descriptor->UartSerialBus.TypeDataLength          = 9;
+
+    /* Process all child initialization nodes */
+
+    for (i = 0; InitializerOp; i++)
+    {
+        switch (i)
+        {
+        case 0: /* LineInUse [BYTE] */
+
+            Descriptor->UartSerialBus.TypeSpecificFlags = (UINT16)(UINT8)InitializerOp->Asl.Value.Integer;
+            break;
+
+        case 1: /* Endian (Default: Little (0)) */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags + 1, InitializerOp, 7, 0);
+            break;
+
+        case 2: /* PitsPerByte (Default: DataBitsEight (3)) */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags + 1, InitializerOp, 4, 3);
+            break;
+
+        case 3: /* StopBits (Default: StopBitsOne (1)) */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags + 1, InitializerOp, 2, 1);
+            break;
+
+        case 4: /* FlowControl (Default: FlowControlNone (0)) */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags + 1, InitializerOp, 0, 0);
+            break;
+
+        case 5: /* DefaultBaudRate [DWORD] */
+
+            Descriptor->UartSerialBus.DefaultBaudRate = (UINT32)InitializerOp->Asl.Value.Integer;
+            break;
+
+        case 6: /* RxFifo [WORD] */
+
+            Descriptor->UartSerialBus.RxFifo = (UINT16)InitializerOp->Asl.Value.Integer;
+            break;
+
+        case 7: /* TxFifo [WORD] */
+
+            Descriptor->UartSerialBus.TxFifo = (UINT16)InitializerOp->Asl.Value.Integer;
+            break;
+
+        case 8: /* Parity (Default: ParityTypeNone (0)) */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.Parity, InitializerOp, 0, 0);
+            break;
+
+        case 9: /* ResSource [Optional Field - STRING] */
+
+            if ((InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG) &&
+                (InitializerOp->Asl.Value.String))
+            {
+                if (StringLength)
+                {
+                    ResSourceString = (UINT8 *) InitializerOp->Asl.Value.String;
+                }
+            }
+            break;
+
+        case 10: /* ResourceTag */
+
+            UtAttachNamepathToOwner (Op, InitializerOp);
+            break;
+        }
+
+        InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
+    }
+
+    /* Add optional ResSource string if present */
+
+    if (StringLength && ResSourceString)
+    {
+        strcpy ((char *) Descriptor + sizeof (AML_RESOURCE_UART_SERIALBUS), (char *) ResSourceString);
+    }
+
+    return (Rnode);
+}
