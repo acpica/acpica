@@ -788,8 +788,10 @@ typedef UINT8                           ACPI_ADR_SPACE_TYPE;
 #define ACPI_ADR_SPACE_CMOS             (ACPI_ADR_SPACE_TYPE) 5
 #define ACPI_ADR_SPACE_PCI_BAR_TARGET   (ACPI_ADR_SPACE_TYPE) 6
 #define ACPI_ADR_SPACE_IPMI             (ACPI_ADR_SPACE_TYPE) 7
+#define ACPI_ADR_SPACE_GPIO             (ACPI_ADR_SPACE_TYPE) 8
+#define ACPI_ADR_SPACE_GSBUS            (ACPI_ADR_SPACE_TYPE) 9
 
-#define ACPI_NUM_PREDEFINED_REGIONS     8
+#define ACPI_NUM_PREDEFINED_REGIONS     10
 
 /*
  * Special Address Spaces
