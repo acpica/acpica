@@ -344,8 +344,8 @@ NamePathTail                [.]{NameSeg}
 "WordBusNumber"             { count (1); return (PARSEOP_WORDBUSNUMBER); }
 "WordIO"                    { count (1); return (PARSEOP_WORDIO); }
 "WordSpace"                 { count (1); return (PARSEOP_WORDSPACE); }
-"GPIO_INT"                  { count (1); return (PARSEOP_GPIO_INT); }
-"GPIO_IO"                   { count (1); return (PARSEOP_GPIO_IO); }
+"GpioInt"                   { count (1); return (PARSEOP_GPIO_INT); }
+"GpioIo"                    { count (1); return (PARSEOP_GPIO_IO); }
 "I2CSerialBus"              { count (1); return (PARSEOP_I2C_SERIALBUS); }
 "SPISerialBus"              { count (1); return (PARSEOP_SPI_SERIALBUS); }
 "UARTSerialBus"             { count (1); return (PARSEOP_UART_SERIALBUS); }
@@ -499,7 +499,7 @@ NamePathTail                [.]{NameSeg}
 "DataBitsNine"              { count (0); return (PARSEOP_BITSPERBYTE_NINE); }
 
 "StopBitsTwo"               { count (0); return (PARSEOP_STOPBITS_TWO); }
-"StopBitsOnePlugHalf"       { count (0); return (PARSEOP_STOPBITS_ONEPLUSHALF); }
+"StopBitsOnePlusHalf"       { count (0); return (PARSEOP_STOPBITS_ONEPLUSHALF); }
 "StopBitsOne"               { count (0); return (PARSEOP_STOPBITS_ONE); }
 "StopBitsNone"              { count (0); return (PARSEOP_STOPBITS_NONE); }
 
