@@ -141,6 +141,17 @@ extern const char                       *AcpiGbl_SizDecode[];
 extern const char                       *AcpiGbl_TrsDecode[];
 extern const char                       *AcpiGbl_TtpDecode[];
 extern const char                       *AcpiGbl_TypDecode[];
+extern const char                       *AcpiGbl_AmDecode[];
+extern const char                       *AcpiGbl_SmDecode[];
+extern const char                       *AcpiGbl_WmDecode[];
+extern const char                       *AcpiGbl_CphDecode[];
+extern const char                       *AcpiGbl_CpoDecode[];
+extern const char                       *AcpiGbl_DpDecode[];
+extern const char                       *AcpiGbl_EdDecode[];
+extern const char                       *AcpiGbl_BpbDecode[];
+extern const char                       *AcpiGbl_SbDecode[];
+extern const char                       *AcpiGbl_FcDecode[];
+extern const char                       *AcpiGbl_PtDecode[];
 #endif
 
 /* Types for Resource descriptor entries */

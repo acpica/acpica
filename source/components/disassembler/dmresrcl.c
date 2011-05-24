@@ -194,6 +194,32 @@ static void
 AcpiDmAddressFlags (
     AML_RESOURCE            *Resource);
 
+static void
+AcpiDmI2cSerialBusDescriptor (
+    AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level);
+
+static void
+AcpiDmSpiSerialBusDescriptor (
+    AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level);
+
+static void
+AcpiDmUartSerialBusDescriptor (
+    AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level);
+
+static ACPI_RESOURCE_HANDLER SerialBusResourceDispatch [] =
+{
+    NULL,
+    AcpiDmI2cSerialBusDescriptor,
+    AcpiDmSpiSerialBusDescriptor,
+    AcpiDmUartSerialBusDescriptor
+};
+
 
 /*******************************************************************************
  *
@@ -589,6 +615,7 @@ AcpiDmResourceSource (
     UINT32                  ResourceLength)
 {
     UINT8                   *AmlResourceSource;
+    UINT8                   ResourceSourceIndexExist = 1;
     UINT32                  TotalLength;
 
 
@@ -602,6 +629,17 @@ AcpiDmResourceSource (
 
         AcpiOsPrintf (",, ");
         return;
+    }
+
+    /*
+     * TBD:
+     * GPIO Interrupt/IO/Serial bus resource does not have ResourceSourceIndex field?
+     */
+    if (Resource->DescriptorType == ACPI_RESOURCE_NAME_GPIO_INT ||
+        Resource->DescriptorType == ACPI_RESOURCE_NAME_GPIO_IO ||
+        Resource->DescriptorType == ACPI_RESOURCE_NAME_SERIAL_BUS)
+    {
+        ResourceSourceIndexExist = 0;
     }
 
     /* Get a pointer to the ResourceSource */
@@ -618,14 +656,18 @@ AcpiDmResourceSource (
      * indexes into the resource template buffer that are compiled to absolute
      * offsets, and these will be broken if the AML length is changed.
      */
-    AcpiOsPrintf ("0x%2.2X,", (UINT32) AmlResourceSource[0]);
+
+    if (ResourceSourceIndexExist)
+    {
+        AcpiOsPrintf ("0x%2.2X,", (UINT32) AmlResourceSource[0]);
+    }
 
     /* Make sure that the ResourceSource string exists before dumping it */
 
     if (TotalLength > (MinimumTotalLength + 1))
     {
         AcpiOsPrintf (" ");
-        AcpiUtPrintString ((char *) &AmlResourceSource[1], ACPI_UINT8_MAX);
+        AcpiUtPrintString ((char *) &AmlResourceSource[ResourceSourceIndexExist], ACPI_UINT8_MAX);
     }
 
     AcpiOsPrintf (", ");
@@ -1119,6 +1161,308 @@ AcpiDmVendorLargeDescriptor (
     AcpiDmVendorCommon ("Long ",
         ACPI_ADD_PTR (UINT8, Resource, sizeof (AML_RESOURCE_LARGE_HEADER)),
         Length, Level);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmGpioDescriptor
+ *
+ * PARAMETERS:  Resource            - Pointer to the resource descriptor
+ *              Length              - Length of the descriptor in bytes
+ *              Level               - Current source code indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Decode a GPIO Interrupt/IO descriptor
+ *
+ ******************************************************************************/
+
+static void
+AcpiDmGpioDescriptor (
+    AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level)
+{
+    UINT32                  i;
+
+
+    AcpiDmIndent (Level);
+
+    if (Resource->DescriptorType == ACPI_RESOURCE_NAME_GPIO_INT)
+    {
+        AcpiOsPrintf ("GpioInt (");
+    }
+    else
+    {
+        AcpiOsPrintf ("GpioIo (");
+    }
+
+    AcpiOsPrintf ("%s, %s, %s, %s,\n",
+        AcpiGbl_ConsumeDecode [(Resource->GpioInt.Flags & 1)],
+        AcpiGbl_HeDecode [(Resource->GpioInt.Flags >> 1) & 1],
+        AcpiGbl_LlDecode [(Resource->GpioInt.Flags >> 2) & 1],
+        AcpiGbl_ShrDecode [(Resource->GpioInt.Flags >> 3) & 1]);
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%4.4X, 0x%2.2X,",
+        Resource->GpioInt.DebounceTimeout,
+        Resource->GpioInt.GenericFlags);
+
+    /*
+     * The ResourceSource fields are optional and appear after the interrupt
+     * list. Must compute length based on length of the list. First xrupt
+     * is included in the struct (reason for -1 below)
+     */
+    AcpiDmResourceSource (Resource,
+        sizeof (AML_RESOURCE_GPIO_INT) +
+            ((UINT32) Resource->GpioInt.InterruptCount - 1) * sizeof (UINT16),
+        Resource->GpioInt.ResourceLength);
+
+    /* Insert a descriptor name */
+
+    AcpiDmDescriptorName ();
+    AcpiOsPrintf (")\n");
+
+    /* Dump the interrupt list */
+
+    AcpiDmIndent (Level);
+    AcpiOsPrintf ("{\n");
+    for (i = 0; i < Resource->GpioInt.InterruptCount; i++)
+    {
+        AcpiDmIndent (Level + 1);
+        AcpiOsPrintf ("0x%8.8X,\n",
+            (UINT32) Resource->GpioInt.Interrupts[i]);
+    }
+
+    AcpiDmIndent (Level);
+    AcpiOsPrintf ("}\n");
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmGpioIntDescriptor
+ *
+ * PARAMETERS:  Resource            - Pointer to the resource descriptor
+ *              Length              - Length of the descriptor in bytes
+ *              Level               - Current source code indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Decode a GPIO Interrupt descriptor
+ *
+ ******************************************************************************/
+
+void
+AcpiDmGpioIntDescriptor (
+    AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level)
+{
+
+    AcpiDmGpioDescriptor(Resource, Length, Level);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmGpioIoDescriptor
+ *
+ * PARAMETERS:  Resource            - Pointer to the resource descriptor
+ *              Length              - Length of the descriptor in bytes
+ *              Level               - Current source code indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Decode a GPIO Interrupt descriptor
+ *
+ ******************************************************************************/
+
+void
+AcpiDmGpioIoDescriptor (
+    AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level)
+{
+
+    AcpiDmGpioDescriptor(Resource, Length, Level);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmI2cSerialBusDescriptor
+ *
+ * PARAMETERS:  Resource            - Pointer to the resource descriptor
+ *              Length              - Length of the descriptor in bytes
+ *              Level               - Current source code indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Decode a I2C serial bus descriptor
+ *
+ ******************************************************************************/
+
+static void
+AcpiDmI2cSerialBusDescriptor (
+    AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level)
+{
+
+    AcpiDmIndent (Level);
+
+    AcpiOsPrintf ("I2CSerialBus (%s, 0x%8.8X, 0x%4.4X,\n",
+        AcpiGbl_AmDecode [(Resource->I2cSerialBus.TypeSpecificFlags & 1)],
+        Resource->I2cSerialBus.ConnectionSpeed,
+        Resource->I2cSerialBus.SlaveAddress);
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("%s,",
+        AcpiGbl_SmDecode [(Resource->I2cSerialBus.GeneralFlags & 1)]);
+
+    /*
+     * The ResourceSource fields are optional
+     */
+    AcpiDmResourceSource (Resource,
+        sizeof (AML_RESOURCE_I2C_SERIALBUS),
+        Resource->I2cSerialBus.ResourceLength);
+
+    /* Insert a descriptor name */
+
+    AcpiOsPrintf (")\n");
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmSpiSerialBusDescriptor
+ *
+ * PARAMETERS:  Resource            - Pointer to the resource descriptor
+ *              Length              - Length of the descriptor in bytes
+ *              Level               - Current source code indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Decode a SPI serial bus descriptor
+ *
+ ******************************************************************************/
+
+static void
+AcpiDmSpiSerialBusDescriptor (
+    AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level)
+{
+
+    AcpiDmIndent (Level);
+
+    AcpiOsPrintf ("SPISerialBus (%s, 0x%8.8X, 0x%2.2X, %s,\n",
+        AcpiGbl_WmDecode [(Resource->SpiSerialBus.TypeSpecificFlags & 1)],
+        Resource->SpiSerialBus.ConnectionSpeed,
+        Resource->SpiSerialBus.DataBitLength,
+        AcpiGbl_CphDecode [(Resource->SpiSerialBus.Phase & 1)]);
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("%s, 0x%4.4X, %s,\n",
+        AcpiGbl_CpoDecode [(Resource->SpiSerialBus.Polarity & 1)],
+        Resource->SpiSerialBus.DeviceSelection,
+        AcpiGbl_DpDecode [(Resource->SpiSerialBus.TypeSpecificFlags >> 1) & 1]);
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("%s, ",
+        AcpiGbl_SmDecode [(Resource->SpiSerialBus.GeneralFlags & 1)]);
+
+    /*
+     * The ResourceSource fields are optional
+     */
+    AcpiDmResourceSource (Resource,
+        sizeof (AML_RESOURCE_SPI_SERIALBUS),
+        Resource->SpiSerialBus.ResourceLength);
+
+    /* Insert a descriptor name */
+
+    AcpiOsPrintf (")\n");
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmUartSerialBusDescriptor
+ *
+ * PARAMETERS:  Resource            - Pointer to the resource descriptor
+ *              Length              - Length of the descriptor in bytes
+ *              Level               - Current source code indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Decode a UART serial bus descriptor
+ *
+ ******************************************************************************/
+
+static void
+AcpiDmUartSerialBusDescriptor (
+    AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level)
+{
+
+    AcpiDmIndent (Level);
+
+    AcpiOsPrintf ("UARTSerialBus (0x%2.2X, %s, %s, %s,\n",
+        Resource->UartSerialBus.TypeSpecificFlags & 0xFF,
+        AcpiGbl_EdDecode [(Resource->UartSerialBus.TypeSpecificFlags >> 15 )& 1],
+        AcpiGbl_BpbDecode [(Resource->UartSerialBus.TypeSpecificFlags >> 12 ) & 3],
+        AcpiGbl_SbDecode [(Resource->UartSerialBus.TypeSpecificFlags >> 10 ) & 3]);
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("%s, 0x%8.8X, 0x%4.4X, 0x%4.4X,\n",
+        AcpiGbl_FcDecode [(Resource->UartSerialBus.TypeSpecificFlags >> 8 ) & 3],
+        Resource->UartSerialBus.DefaultBaudRate,
+        Resource->UartSerialBus.RxFifo,
+        Resource->UartSerialBus.TxFifo);
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("%s,",
+        AcpiGbl_PtDecode [(Resource->UartSerialBus.Parity & 7)]);
+
+    /*
+     * The ResourceSource fields are optional
+     */
+    AcpiDmResourceSource (Resource,
+        sizeof (AML_RESOURCE_UART_SERIALBUS),
+        Resource->UartSerialBus.ResourceLength);
+
+    /* Insert a descriptor name */
+
+    AcpiOsPrintf (")\n");
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmSerialBusDescriptor
+ *
+ * PARAMETERS:  Resource            - Pointer to the resource descriptor
+ *              Length              - Length of the descriptor in bytes
+ *              Level               - Current source code indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Decode a I2C/SPI/UART serial bus descriptor
+ *
+ ******************************************************************************/
+
+void
+AcpiDmSerialBusDescriptor (
+    AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level)
+{
+
+    SerialBusResourceDispatch [Resource->I2cSerialBus.Type] (
+        Resource, Length, Level);
 }
 
 #endif

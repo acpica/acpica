@@ -247,6 +247,11 @@ ACPI_STATUS (*ASL_WALK_CALLBACK) (
 #define ASL_WALK_CALLBACK_DEFINED
 #endif
 
+typedef
+void (*ACPI_RESOURCE_HANDLER) (
+    AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level);
 
 typedef struct acpi_resource_tag
 {
@@ -738,6 +743,24 @@ AcpiDmInterruptDescriptor (
 
 void
 AcpiDmVendorLargeDescriptor (
+    AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level);
+
+void
+AcpiDmGpioIntDescriptor (
+    AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level);
+
+void
+AcpiDmGpioIoDescriptor (
+    AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level);
+
+void
+AcpiDmSerialBusDescriptor (
     AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);

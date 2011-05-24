@@ -645,6 +645,10 @@ RsDoGpioIntDescriptor (
 
             Descriptor->GpioInt.Interrupts[0] = (UINT16)InitializerOp->Asl.Value.Integer;
             break;
+
+        default:
+
+            break;
         }
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
@@ -772,6 +776,10 @@ RsDoGpioIoDescriptor (
 
             Descriptor->GpioInt.Interrupts[0] = (UINT16)InitializerOp->Asl.Value.Integer;
             break;
+
+        default:
+
+            break;
         }
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
@@ -875,6 +883,10 @@ RsDoI2cSerialBusDescriptor (
         case 5: /* ResourceTag */
 
             UtAttachNamepathToOwner (Op, InitializerOp);
+            break;
+
+        default:
+
             break;
         }
 
@@ -1000,6 +1012,10 @@ RsDoSpiSerialBusDescriptor (
 
             UtAttachNamepathToOwner (Op, InitializerOp);
             break;
+
+        default:
+
+            break;
         }
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
@@ -1078,7 +1094,7 @@ RsDoUartSerialBusDescriptor (
             RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags + 1, InitializerOp, 7, 0);
             break;
 
-        case 2: /* PitsPerByte (Default: DataBitsEight (3)) */
+        case 2: /* BitsPerByte (Default: DataBitsEight (3)) */
 
             RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags + 1, InitializerOp, 4, 3);
             break;
@@ -1128,6 +1144,10 @@ RsDoUartSerialBusDescriptor (
         case 10: /* ResourceTag */
 
             UtAttachNamepathToOwner (Op, InitializerOp);
+            break;
+
+        default:
+
             break;
         }
 

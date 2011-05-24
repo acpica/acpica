@@ -127,12 +127,6 @@
 
 /* Dispatch tables for Resource disassembly functions */
 
-typedef
-void (*ACPI_RESOURCE_HANDLER) (
-    AML_RESOURCE            *Resource,
-    UINT32                  Length,
-    UINT32                  Level);
-
 static ACPI_RESOURCE_HANDLER    AcpiGbl_DmResourceDispatch [] =
 {
     /* Small descriptors */
@@ -167,7 +161,10 @@ static ACPI_RESOURCE_HANDLER    AcpiGbl_DmResourceDispatch [] =
     AcpiDmWordDescriptor,           /* 0x08, ACPI_RESOURCE_NAME_WORD_ADDRESS_SPACE */
     AcpiDmInterruptDescriptor,      /* 0x09, ACPI_RESOURCE_NAME_EXTENDED_XRUPT */
     AcpiDmQwordDescriptor,          /* 0x0A, ACPI_RESOURCE_NAME_QWORD_ADDRESS_SPACE */
-    AcpiDmExtendedDescriptor        /* 0x0B, ACPI_RESOURCE_NAME_EXTENDED_ADDRESS_SPACE */
+    AcpiDmExtendedDescriptor,       /* 0x0B, ACPI_RESOURCE_NAME_EXTENDED_ADDRESS_SPACE */
+    AcpiDmGpioIntDescriptor,        /* 0x0C, ACPI_RESOURCE_NAME_GPIO_INT */
+    AcpiDmGpioIoDescriptor,         /* 0x0D, ACPI_RESOURCE_NAME_GPIO_IO */
+    AcpiDmSerialBusDescriptor       /* 0x0E, ACPI_RESOURCE_NAME_SERIAL_BUS */
 };
 
 
