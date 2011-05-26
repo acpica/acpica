@@ -960,6 +960,8 @@ AcpiDbMethodThread (
     LocalInfo.Arguments[2] = LocalInfo.IndexOfThreadStr;
     LocalInfo.Arguments[3] = NULL;
 
+    LocalInfo.Types = LocalInfo.ArgTypes;
+
     (void) AcpiOsSignalSemaphore (Info->InfoGate, 1);
 
     for (i = 0; i < Info->NumLoops; i++)
@@ -1127,6 +1129,12 @@ AcpiDbCreateExecutionThreads (
     AcpiGbl_DbMethodInfo.Arguments[1] = AcpiGbl_DbMethodInfo.IdOfThreadStr;
     AcpiGbl_DbMethodInfo.Arguments[2] = AcpiGbl_DbMethodInfo.IndexOfThreadStr;
     AcpiGbl_DbMethodInfo.Arguments[3] = NULL;
+
+    AcpiGbl_DbMethodInfo.Types = AcpiGbl_DbMethodInfo.ArgTypes;
+    AcpiGbl_DbMethodInfo.ArgTypes[0] = ACPI_TYPE_INTEGER;
+    AcpiGbl_DbMethodInfo.ArgTypes[1] = ACPI_TYPE_INTEGER;
+    AcpiGbl_DbMethodInfo.ArgTypes[2] = ACPI_TYPE_INTEGER;
+
     AcpiDbUInt32ToHexString (NumThreads, AcpiGbl_DbMethodInfo.NumThreadsStr);
 
     AcpiDbExecuteSetup (&AcpiGbl_DbMethodInfo);

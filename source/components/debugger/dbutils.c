@@ -454,7 +454,7 @@ AcpiDbUInt32ToHexString (
     UINT32                  Value,
     char                    *Buffer)
 {
-    UINT8                   i;
+    int                     i;
 
 
     if (Value == 0)
@@ -463,10 +463,9 @@ AcpiDbUInt32ToHexString (
         return;
     }
 
-    ACPI_STRCPY (Buffer, "0x");
-    Buffer[10] = '\0';
+    Buffer[8] = '\0';
 
-    for (i = 9; i > 1; i--)
+    for (i = 7; i >= 0; i--)
     {
         Buffer[i] = Converter [Value & 0x0F];
         Value = Value >> 4;
