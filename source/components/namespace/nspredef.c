@@ -315,6 +315,7 @@ AcpiNsCheckPredefinedNames (
         goto Cleanup;
     }
     Data->Predefined = Predefined;
+    Data->Node = Node;
     Data->NodeFlags = Node->Flags;
     Data->Pathname = Pathname;
 
