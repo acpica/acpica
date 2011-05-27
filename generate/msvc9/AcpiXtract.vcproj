@@ -23,6 +23,7 @@
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -109,8 +110,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copy AcpiXtract.exe to libraries"
-				CommandLine="copy AcpiXtract\AcpiXtract.exe ..\..\libraries"
+				Description="Copy AcpiXtract.exe to Libraries"
+				CommandLine="copy AcpiXtract\AcpiXtract.exe ..\..\libraries\AcpiXtract.exe"
 			/>
 		</Configuration>
 		<Configuration
@@ -206,7 +207,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copy AcpiXtractDebug.exe to libraries (DEBUG)"
+				Description="Copy AcpiXtractDebug.exe to Libraries (DEBUG)"
 				CommandLine="copy AcpiXtractDebug\AcpiXtract.exe ..\..\libraries\AcpiXtractDebug.exe"
 			/>
 		</Configuration>

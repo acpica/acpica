@@ -43,6 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				InlineFunctionExpansion="0"
 				AdditionalIncludeDirectories="..\..\source\Include"
 				PreprocessorDefinitions="_DEBUG;WIN32;_CONSOLE;ACPI_DEBUG;ACPI_APPLICATION;_IA32"
 				StringPooling="true"
@@ -108,8 +109,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copy acpisrcdebug.exe to libraries (DEBUG)"
-				CommandLine="copy acpisrcdebug\acpisrc.exe ..\..\libraries\acpisrcdebug.exe&#x0D;&#x0A;dir ..\..\libraries\acpisrcdebug.exe&#x0D;&#x0A;"
+				Description="Copy AcpiSrcDebug.exe to Libraries (DEBUG)"
+				CommandLine="copy acpisrcdebug\acpisrc.exe ..\..\libraries\AcpiSrcDebug.exe&#x0D;&#x0A;dir ..\..\libraries\acpisrcdebug.exe&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -120,6 +121,7 @@
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -141,7 +143,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				InlineFunctionExpansion="1"
+				InlineFunctionExpansion="0"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="..\..\source\Include"
 				PreprocessorDefinitions="NDEBUG;WIN32;_CONSOLE;ACPI_DEBUG;ACPI_APPLICATION;_IA32"
@@ -203,8 +205,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copy acpisrc.exe to libraries"
-				CommandLine="copy acpisrc\acpisrc.exe ..\..\libraries&#x0D;&#x0A;dir ..\..\libraries\acpisrc.exe&#x0D;&#x0A;"
+				Description="Copy AcpiSrc.exe to Libraries"
+				CommandLine="copy acpisrc\acpisrc.exe ..\..\libraries\AcpiSrc.exe&#x0D;&#x0A;dir ..\..\libraries\acpisrc.exe&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

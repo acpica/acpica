@@ -23,6 +23,7 @@
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -113,8 +114,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copy iasl.exe to libraries directory"
-				CommandLine="copy AslCompiler\aslcompiler.exe \acpica\Libraries\iasl.exe&#x0D;&#x0A;dir \acpica\libraries\iasl.exe&#x0D;&#x0A;"
+				Description="Copy iasl.exe to Libraries"
+				CommandLine="copy AslCompiler\aslcompiler.exe ..\..\libraries\iasl.exe&#x0D;&#x0A;dir \acpica\libraries\iasl.exe&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -216,8 +217,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copy iasldebug.exe to libraries directory (DEBUG)"
-				CommandLine="copy AslCompilerDebug\aslcompiler.exe \acpica\Libraries\iasldebug.exe&#x0D;&#x0A;dir \acpica\libraries\iasldebug.exe&#x0D;&#x0A;"
+				Description="Copy iaslDebug.exe to Libraries (DEBUG)"
+				CommandLine="copy AslCompilerDebug\aslcompiler.exe ..\..\libraries\iaslDebug.exe&#x0D;&#x0A;dir \acpica\libraries\iasldebug.exe&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

@@ -117,8 +117,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copy apitestdebug.exe to acpica/libraries (DEBUG)"
-				CommandLine="copy apitestdebug\apitestdebug.exe ..\..\libraries\apitestdebug.exe&#x0D;&#x0A;dir ..\..\libraries\ApiTestdebug.exe&#x0D;&#x0A;"
+				Description="Copy ApiTestDebug.exe to Libraries (DEBUG)"
+				CommandLine="copy apitestdebug\apitestdebug.exe ..\..\libraries\ApiTestDebug.exe&#x0D;&#x0A;dir ..\..\libraries\ApiTestdebug.exe&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -130,6 +130,7 @@
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -214,8 +215,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copy apitest.exe to acpica\libraries"
-				CommandLine="copy apitest\apitest.exe ..\..\libraries\apitest.exe&#x0D;&#x0A;dir ..\..\libraries\ApiTest.exe&#x0D;&#x0A;"
+				Description="Copy ApiTest.exe to Libraries"
+				CommandLine="copy apitest\apitest.exe ..\..\libraries\ApiTest.exe&#x0D;&#x0A;dir ..\..\libraries\ApiTest.exe&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

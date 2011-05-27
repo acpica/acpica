@@ -109,7 +109,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy AcpiNamesDebug.exe to Libraries (DEBUG)"
-				CommandLine="copy AcpiNamesdebug\AcpiNames.exe ..\..\libraries\AcpiNamesdebug.exe"
+				CommandLine="copy AcpiNamesdebug\AcpiNames.exe ..\..\libraries\AcpiNamesDebug.exe"
 			/>
 		</Configuration>
 		<Configuration
@@ -121,6 +121,7 @@
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -207,7 +208,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy AcpiNames\AcpiNames.exe ..\..\libraries"
+				Description="Copy AcpiNames.exe to Libraries"
+				CommandLine="copy AcpiNames\AcpiNames.exe ..\..\libraries\AcpiNames.exe"
 			/>
 		</Configuration>
 	</Configurations>

@@ -108,7 +108,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copy ExamplesDebug.exe to acpica/libraries (DEBUG)"
+				Description="Copy ExamplesDebug.exe to Libraries (DEBUG)"
 				CommandLine="copy examplesDebug\examples.exe ..\..\libraries\ExamplesDebug.exe&#x0D;&#x0A;dir ..\..\libraries\examplesDebug.exe&#x0D;&#x0A;"
 			/>
 		</Configuration>
@@ -121,6 +121,7 @@
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -173,7 +174,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="../../libraries\acpica_dbg.lib odbc32.lib odbccp32.lib"
 				OutputFile=".\Examples\Examples.exe"
-				LinkIncremental="2"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="LIBCMTD"
 				ProgramDatabaseFile=".\Examples\Examples.pdb"
@@ -206,8 +207,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copy Examples.exe to acpica/libraries"
-				CommandLine="copy examples\examples.exe ..\..\libraries&#x0D;&#x0A;dir ..\..\libraries\examples.exe&#x0D;&#x0A;"
+				Description="Copy Examples.exe to Libraries"
+				CommandLine="copy examples\examples.exe ..\..\libraries\Examples.exe&#x0D;&#x0A;dir ..\..\libraries\examples.exe&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

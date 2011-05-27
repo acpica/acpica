@@ -112,7 +112,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copy AcpiBinDebug.exe to libraries (DEBUG)"
+				Description="Copy AcpiBinDebug.exe to Libraries (DEBUG)"
 				CommandLine="copy .\acpibindebug\acpibin.exe ..\..\libraries\AcpiBinDebug.exe&#x0D;&#x0A;dir ..\..\libraries\acpibindebug.exe&#x0D;&#x0A;"
 			/>
 		</Configuration>
@@ -125,6 +125,7 @@
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -212,8 +213,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copy AcpiBin.exe to libraries"
-				CommandLine="copy .\acpibin\acpibin.exe ..\..\libraries&#x0D;&#x0A;dir ..\..\libraries\acpibin.exe&#x0D;&#x0A;"
+				Description="Copy AcpiBin.exe to Libraries"
+				CommandLine="copy .\acpibin\acpibin.exe ..\..\libraries\AcpiBin.exe&#x0D;&#x0A;dir ..\..\libraries\acpibin.exe&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
