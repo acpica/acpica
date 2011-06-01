@@ -1,5 +1,15 @@
 #
-# acpihelp utility
+# acpihelp - ACPI Help utility. Displays ASL operator syntax and
+# information about ACPI predefined names.
+#
+
+#
+# Note: This makefile is intended to be used from within the native
+# ACPICA directory structure, from under generate/unix. It specifically
+# places all object files in a generate/unix subdirectory, not within
+# the various ACPICA source directories. This prevents collisions
+# between different compilations of the same source file with different
+# compile options, and prevents pollution of the source code.
 #
 include ../Makefile.config
 

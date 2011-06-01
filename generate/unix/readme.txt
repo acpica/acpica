@@ -8,6 +8,7 @@ and in the original (git tree) ACPICA directory structure.
 The top level makefile will generate the following utilities:
 
 acpiexec
+acpihelp
 acpinames
 acpisrc
 acpixtract
@@ -18,7 +19,7 @@ Requirements
 ------------
 
 make
-gcc compiler (3+ or 4+)
+gcc compiler (4+)
 bison
 flex
 
@@ -29,7 +30,7 @@ Configuration
 The Makefile.config file contains the configuration information:
 
 HOST =       _CYGWIN            /* Host system, must appear in acenv.h */
-CC =         gcc-4              /* C compiler */
+CC =         gcc                /* C compiler */
 ACPICA_SRC = ../../../source    /* Location of acpica source tree */
 
 
