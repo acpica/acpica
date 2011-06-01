@@ -12,7 +12,11 @@ ACPICA_TOOLS =  $(ACPICA_SRC)/tools
 ACPICA_OSL =    $(ACPICA_SRC)/os_specific/service_layers
 
 NOMAN=	YES
-CFLAGS+= -Wall -O2 -Wstrict-prototypes -D_LINUX -DACPI_ASL_COMPILER -I../include -I../compiler
+CFLAGS+= -Wall -O2 \
+    -Wstrict-prototypes \
+    -Wstrict-aliasing=0 \
+    -D_LINUX -DACPI_ASL_COMPILER \
+    -I../include -I../compiler
 
 #
 # Bison/Flex configuration
