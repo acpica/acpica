@@ -1,5 +1,12 @@
- 
+#
+# acpisrc - ACPICA source code conversion utility
+#
 
+#
+# NOTE: This makefile is intended to be used in the Linux environment,
+# with the Linux directory structure. It will not work directly
+# on the native ACPICA source tree.
+#
 PROG=	acpisrc
 SRCS=	ascase.c asconvrt.c asfile.c asmain.c asremove.c astable.c \
         asutils.c osunixdir.c ../../common/getopt.c

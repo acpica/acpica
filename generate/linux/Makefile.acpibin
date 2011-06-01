@@ -1,4 +1,12 @@
+#
+# acpibin - ACPI binary compare utility
+#
  
+#
+# NOTE: This makefile is intended to be used in the Linux environment,
+# with the Linux directory structure. It will not work directly
+# on the native ACPICA source tree.
+#
 PROG=	acpibin
 SRCS=	abcompare.c abmain.c \
 	../../utilities/utalloc.c \

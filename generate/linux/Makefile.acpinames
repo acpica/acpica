@@ -1,5 +1,13 @@
 #
-# AcpiNames utility
+# acpinames - Load ACPI table and dump namespace. This is a subset
+# of the AcpiExec functionality, it is intended to demonstrate
+# the configurability of ACPICA.
+#
+
+#
+# NOTE: This makefile is intended to be used in the Linux environment,
+# with the Linux directory structure. It will not work directly
+# on the native ACPICA source tree.
 #
 PROG = acpinames
 

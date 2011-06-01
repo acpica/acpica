@@ -2,6 +2,11 @@
 # iASL compiler/disassembler
 #
 
+#
+# NOTE: This makefile is intended to be used in the Linux environment,
+# with the Linux directory structure. It will not work directly
+# on the native ACPICA source tree.
+#
 PROG=	iasl
 
 ACPICA_SRC =    ..

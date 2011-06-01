@@ -1,7 +1,14 @@
 #
-# AcpiExec utility
+# acpiexec: ACPI execution simulator. Runs ACPICA code in user
+# space. Loads ACPI tables, displays the namespace, and allows
+# execution of control methods.
 #
 
+#
+# NOTE: This makefile is intended to be used in the Linux environment,
+# with the Linux directory structure. It will not work directly
+# on the native ACPICA source tree.
+#
 PROG = acpiexec
 
 ACPICA_SRC =    ../..

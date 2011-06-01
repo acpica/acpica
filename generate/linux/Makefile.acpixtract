@@ -1,5 +1,12 @@
- 
+#
+# acpixtract - extract binary ACPI tables from acpidump text output
+#
 
+#
+# NOTE: This makefile is intended to be used in the Linux environment,
+# with the Linux directory structure. It will not work directly
+# on the native ACPICA source tree.
+#
 PROG=	acpixtract
 SRCS=	acpixtract.c
 

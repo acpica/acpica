@@ -1,4 +1,13 @@
+#
+# acpihelp - ACPI Help utility. Displays ASL operator syntax and
+# information about ACPI predefined names.
+#
  
+#
+# NOTE: This makefile is intended to be used in the Linux environment,
+# with the Linux directory structure. It will not work directly
+# on the native ACPICA source tree.
+#
 PROG=	acpihelp
 SRCS=	ahmain.c \
     ../../common/getopt.c
