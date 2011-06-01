@@ -1,0 +1,16 @@
+ 
+PROG=	acpihelp
+SRCS=	ahmain.c \
+    ../../common/getopt.c
+
+CFLAGS+= -Wall -O2 -D_LINUX -DACPI_APPLICATION -Wstrict-prototypes -I../../include 
+
+
+acpihelp : $(patsubst %.c,%.o, $(SRCS))
+	$(CC) $(LDFLAGS) $(CFLAGS) $(patsubst %.c,%.o, $(SRCS)) -o $(PROG)
+
+CLEANFILES= $(PROG)
+
+clean : 
+	rm -f $(CLEANFILES) $(patsubst %.c,%.o, $(SRCS))
+

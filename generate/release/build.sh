@@ -111,6 +111,7 @@ cp source/os_specific/service_layers/osunixdir.c unixtemp/tools/acpiexec
 cp generate/linux/Makefile.iasl unixtemp/compiler/Makefile
 cp generate/linux/Makefile.acpisrc unixtemp/tools/acpisrc/Makefile
 cp generate/linux/Makefile.acpiexec unixtemp/tools/acpiexec/Makefile
+cp generate/linux/Makefile.acpihelp unixtemp/tools/acpihelp/Makefile
 cp generate/linux/Makefile.acpinames unixtemp/tools/acpinames/Makefile
 cp generate/linux/Makefile.acpixtract unixtemp/tools/acpixtract/Makefile
 cp generate/linux/README.acpica-unix unixtemp/README
@@ -120,6 +121,7 @@ cp generate/linux/README.acpica-unix unixtemp/README
 #
 mkdir -p unixtemp/generate/unix
 mkdir -p unixtemp/generate/unix/acpiexec
+mkdir -p unixtemp/generate/unix/acpihelp
 mkdir -p unixtemp/generate/unix/acpinames
 mkdir -p unixtemp/generate/unix/acpisrc
 mkdir -p unixtemp/generate/unix/acpixtract
@@ -129,6 +131,7 @@ mkdir -p unixtemp/generate/unix/bin
 cp generate/unix/readme.txt unixtemp/generate/unix/readme.txt
 cp generate/unix/Makefile* unixtemp/generate/unix
 cp generate/unix/acpiexec/Makefile unixtemp/generate/unix/acpiexec
+cp generate/unix/acpihelp/Makefile unixtemp/generate/unix/acpihelp
 cp generate/unix/acpinames/Makefile unixtemp/generate/unix/acpinames
 cp generate/unix/acpisrc/Makefile unixtemp/generate/unix/acpisrc
 cp generate/unix/acpixtract/Makefile unixtemp/generate/unix/acpixtract
@@ -213,6 +216,7 @@ cp -r source/compiler unixtemp/compiler
 #
 cp -r source/tools/acpisrc unixtemp/tools
 cp -r source/tools/acpiexec unixtemp/tools
+cp -r source/tools/acpihelp unixtemp/tools
 cp -r source/tools/acpinames unixtemp/tools
 cp -r source/tools/acpixtract unixtemp/tools
 cp -r source/tools/examples unixtemp/tools
@@ -243,6 +247,7 @@ libraries/acpisrc -h -y unixtemp
 cp generate/linux/Makefile.iasl unixtemp/compiler/Makefile
 cp generate/linux/Makefile.acpisrc unixtemp/tools/acpisrc/Makefile
 cp generate/linux/Makefile.acpiexec unixtemp/tools/acpiexec/Makefile
+cp generate/linux/Makefile.acpihelp unixtemp/tools/acpihelp/Makefile
 cp generate/linux/Makefile.acpinames unixtemp/tools/acpinames/Makefile
 cp generate/linux/Makefile.acpixtract unixtemp/tools/acpixtract/Makefile
 cp generate/linux/README.acpica-unix unixtemp/README
@@ -252,6 +257,7 @@ cp generate/linux/README.acpica-unix unixtemp/README
 #
 mkdir -p unixtemp/generate/unix
 mkdir -p unixtemp/generate/unix/acpiexec
+mkdir -p unixtemp/generate/unix/acpihelp
 mkdir -p unixtemp/generate/unix/acpinames
 mkdir -p unixtemp/generate/unix/acpisrc
 mkdir -p unixtemp/generate/unix/acpixtract
@@ -261,6 +267,7 @@ mkdir -p unixtemp/generate/unix/bin
 cp generate/unix/readme.txt unixtemp/generate/unix/readme.txt
 cp generate/unix/Makefile* unixtemp/generate/unix
 cp generate/unix/acpiexec/Makefile unixtemp/generate/unix/acpiexec
+cp generate/unix/acpihelp/Makefile unixtemp/generate/unix/acpihelp
 cp generate/unix/acpinames/Makefile unixtemp/generate/unix/acpinames
 cp generate/unix/acpisrc/Makefile unixtemp/generate/unix/acpisrc
 cp generate/unix/acpixtract/Makefile unixtemp/generate/unix/acpixtract
@@ -369,6 +376,7 @@ cp -r generate/msvc9/*.vcproj wintemp/generate/msvc9/
 #
 mkdir -p wintemp/generate/unix
 mkdir -p wintemp/generate/unix/acpiexec
+mkdir -p wintemp/generate/unix/acpihelp
 mkdir -p wintemp/generate/unix/acpinames
 mkdir -p wintemp/generate/unix/acpisrc
 mkdir -p wintemp/generate/unix/acpixtract
@@ -378,6 +386,7 @@ mkdir -p wintemp/generate/unix/bin
 cp generate/unix/readme.txt wintemp/generate/unix/readme.txt
 cp generate/unix/Makefile* wintemp/generate/unix
 cp generate/unix/acpiexec/Makefile wintemp/generate/unix/acpiexec
+cp generate/unix/acpihelp/Makefile wintemp/generate/unix/acpihelp
 cp generate/unix/acpinames/Makefile wintemp/generate/unix/acpinames
 cp generate/unix/acpisrc/Makefile wintemp/generate/unix/acpisrc
 cp generate/unix/acpixtract/Makefile wintemp/generate/unix/acpixtract
@@ -435,6 +444,7 @@ cp documents/aslcompiler.pdf wintemp
 cp libraries/iasl.exe wintemp
 cp libraries/acpixtract.exe wintemp
 cp libraries/acpiexec.exe wintemp
+cp libraries/acpihelp.exe wintemp
 cp libraries/acpisrc.exe wintemp
 cp tests/misc/badcode.asl wintemp
 

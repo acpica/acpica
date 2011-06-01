@@ -22,6 +22,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Examples", "Examples.vcproj
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AcpiNames", "AcpiNames.vcproj", "{3CA2F53C-7566-40B0-B945-711788EDCD8C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AcpiHelp", "AcpiHelp.vcproj", "{543CE235-637F-4302-BCD4-02C08A4277D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -64,6 +66,10 @@ Global
 		{3CA2F53C-7566-40B0-B945-711788EDCD8C}.Debug|Win32.Build.0 = Debug|Win32
 		{3CA2F53C-7566-40B0-B945-711788EDCD8C}.Release|Win32.ActiveCfg = Release|Win32
 		{3CA2F53C-7566-40B0-B945-711788EDCD8C}.Release|Win32.Build.0 = Release|Win32
+		{543CE235-637F-4302-BCD4-02C08A4277D9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{543CE235-637F-4302-BCD4-02C08A4277D9}.Debug|Win32.Build.0 = Debug|Win32
+		{543CE235-637F-4302-BCD4-02C08A4277D9}.Release|Win32.ActiveCfg = Release|Win32
+		{543CE235-637F-4302-BCD4-02C08A4277D9}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
