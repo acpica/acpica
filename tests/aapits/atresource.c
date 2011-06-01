@@ -3150,8 +3150,8 @@ static int acpi_pci_link_set(struct acpi_pci_link *link, int irq)
 	if (!link || !irq)
 		return -1;
 
-	memset(resource, 0, sizeof(*resource) + 1);
-	buffer.Length = sizeof(*resource) + 1;
+	memset(resource, 0, sizeof(resource_obj));
+	buffer.Length = sizeof(resource_obj);
 	buffer.Pointer = resource;
 
 	switch (link->irq.resource_type) {
