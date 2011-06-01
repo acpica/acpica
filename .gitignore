@@ -39,6 +39,8 @@ generate/msvc9/AcpiSubsystem
 generate/msvc9/AcpiSubsystemDebug
 generate/msvc9/AcpiExec
 generate/msvc9/AcpiExecDebug
+generate/msvc9/AcpiHelp
+generate/msvc9/AcpiHelpDebug
 generate/msvc9/AcpiNames
 generate/msvc9/AcpiNamesDebug
 generate/msvc9/AslCompiler
@@ -61,6 +63,8 @@ generate/msvc9/AcpiSubsystem64
 generate/unix/bin
 generate/unix/acpiexec/*.o
 generate/unix/acpiexec/*.exe
+generate/unix/acpihelp/*.o
+generate/unix/acpihelp/*.exe
 generate/unix/acpinames/*.o
 generate/unix/acpinames/*.exe
 generate/unix/acpisrc/*.o
@@ -80,25 +84,24 @@ generate/release/size_rel.txt
 
 generate/lint/LintOut.txt
 
-libraries/acpiexecdebug.exe
+libraries/AcpiHelp.exe
+libraries/AcpiHelpDebug.exe
+libraries/AcpiExecDebug.exe
 libraries/AcpiXtractDebug.exe
 libraries/AcpiBinDebug.exe
-libraries/acpisrcdebug.exe
-libraries/iasldebug.exe
-libraries/acpica.lib
-libraries/acpica_dbg.lib
+libraries/AcpiSrcDebug.exe
+libraries/iaslDebug.exe
+libraries/Acpica.lib
+libraries/Acpica_dbg.lib
 libraries/Examples.exe
 libraries/ExamplesDebug.exe
 libraries/ApiTest.exe
 libraries/apitestdebug.exe
-libraries/ApiTestdebug.exe
-libraries/size.bat
-libraries/size_dbg.txt
-libraries/size_rel.txt
+libraries/ApiTestDebug.exe
 libraries/apitest.exe
 libraries/AcpiNames.exe
-libraries/AcpiNamesdebug.exe
-
+libraries/AcpiNamesDebug.exe
+libraries/*.ex_
 *.sh
 new
 patches
