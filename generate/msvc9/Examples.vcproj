@@ -43,10 +43,13 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\source\Include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;ACPI_APPLICATION;ACPI_SINGLE_THREADED"
+				StringPooling="true"
 				MinimalRebuild="true"
+				ExceptionHandling="0"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				DisableLanguageExtensions="true"
@@ -59,6 +62,7 @@
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
 				CallingConvention="1"
+				CompileAs="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -70,12 +74,13 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
+				CommandLine="if NOT EXIST ..\..\libraries mkdir ..\..\libraries"
 			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="..\..\libraries\acpica_dbg.lib odbc32.lib odbccp32.lib"
 				OutputFile=".\ExamplesDebug\Examples.exe"
-				LinkIncremental="2"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\ExamplesDebug\Examples.pdb"
@@ -142,11 +147,14 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
 				Optimization="2"
-				InlineFunctionExpansion="1"
+				InlineFunctionExpansion="2"
+				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories="..\..\source\Include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;ACPI_APPLICATION;ACPI_SINGLE_THREADED"
 				StringPooling="true"
+				ExceptionHandling="0"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				DisableLanguageExtensions="true"
@@ -158,6 +166,7 @@
 				WarningLevel="4"
 				SuppressStartupBanner="true"
 				CallingConvention="1"
+				CompileAs="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -169,6 +178,7 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
+				CommandLine="if NOT EXIST ..\..\libraries mkdir ..\..\libraries"
 			/>
 			<Tool
 				Name="VCLinkerTool"

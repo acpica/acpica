@@ -42,13 +42,16 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
 				Optimization="0"
 				InlineFunctionExpansion="0"
 				AdditionalIncludeDirectories="..\..\source\Include"
 				PreprocessorDefinitions="_DEBUG;WIN32;_CONSOLE;ACPI_DEBUG;ACPI_APPLICATION;_IA32"
 				StringPooling="true"
+				ExceptionHandling="0"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
+				DisableLanguageExtensions="false"
 				PrecompiledHeaderFile=".\AcpiSrcDebug\AcpiSrc.pch"
 				AssemblerListingLocation=".\AcpiSrcDebug\"
 				ObjectFile=".\AcpiSrcDebug\"
@@ -58,6 +61,7 @@
 				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
 				CallingConvention="1"
+				CompileAs="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -142,14 +146,18 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
 				Optimization="2"
-				InlineFunctionExpansion="0"
+				InlineFunctionExpansion="2"
+				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="..\..\source\Include"
 				PreprocessorDefinitions="NDEBUG;WIN32;_CONSOLE;ACPI_DEBUG;ACPI_APPLICATION;_IA32"
 				StringPooling="true"
+				ExceptionHandling="0"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
+				DisableLanguageExtensions="false"
 				PrecompiledHeaderFile=".\AcpiSrc\AcpiSrc.pch"
 				AssemblerListingLocation=".\AcpiSrc\"
 				ObjectFile=".\AcpiSrc\"
@@ -158,6 +166,7 @@
 				WarningLevel="4"
 				SuppressStartupBanner="true"
 				CallingConvention="1"
+				CompileAs="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

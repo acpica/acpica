@@ -42,6 +42,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
 				Optimization="1"
 				InlineFunctionExpansion="1"
 				FavorSizeOrSpeed="2"
@@ -72,7 +73,6 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-				Description="Checking existence of acpi/libraries directory"
 				CommandLine="if NOT EXIST ..\..\libraries mkdir ..\..\libraries"
 			/>
 			<Tool
@@ -128,6 +128,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
 				Optimization="1"
 				InlineFunctionExpansion="1"
 				FavorSizeOrSpeed="2"
@@ -159,7 +160,6 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-				Description="Checking existence of acpi/libraries directory"
 				CommandLine="if NOT EXIST ..\..\libraries mkdir ..\..\libraries"
 			/>
 			<Tool

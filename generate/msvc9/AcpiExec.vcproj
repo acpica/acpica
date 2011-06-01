@@ -44,6 +44,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="false"
 				AdditionalIncludeDirectories="..\..\source\include"
@@ -75,7 +76,6 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-				Description="Checking existence of acpi/libraries directory"
 				CommandLine="if NOT EXIST ..\..\libraries mkdir ..\..\libraries"
 			/>
 			<Tool
@@ -151,8 +151,9 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
 				Optimization="0"
-				InlineFunctionExpansion="0"
+				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="..\..\source\include"
@@ -183,7 +184,6 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-				Description="Checking existence of acpi/libraries directory"
 				CommandLine="if NOT EXIST ..\..\libraries mkdir ..\..\libraries"
 			/>
 			<Tool

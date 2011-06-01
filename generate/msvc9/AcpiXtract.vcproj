@@ -44,8 +44,9 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
 				Optimization="2"
-				InlineFunctionExpansion="1"
+				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
 				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
@@ -74,6 +75,7 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
+				CommandLine="if NOT EXIST ..\..\libraries mkdir ..\..\libraries"
 			/>
 			<Tool
 				Name="VCLinkerTool"
@@ -143,6 +145,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
 				Optimization="0"
 				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
@@ -158,6 +161,7 @@
 				WarningLevel="4"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
+				CallingConvention="0"
 				CompileAs="1"
 			/>
 			<Tool
@@ -170,6 +174,7 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
+				CommandLine="if NOT EXIST ..\..\libraries mkdir ..\..\libraries"
 			/>
 			<Tool
 				Name="VCLinkerTool"

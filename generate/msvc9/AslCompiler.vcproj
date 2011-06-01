@@ -48,8 +48,9 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
 				Optimization="2"
-				InlineFunctionExpansion="1"
+				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="$(OutDir)..\,..\..\source\Include,$(OutDir),..\..\source\compiler"
@@ -66,6 +67,7 @@
 				BrowseInformation="1"
 				WarningLevel="4"
 				SuppressStartupBanner="true"
+				CallingConvention="1"
 				CompileAs="1"
 			/>
 			<Tool
@@ -151,6 +153,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories="$(OutDir)..\,..\..\source\Include,$(OutDir),..\..\source\compiler"
@@ -168,6 +171,7 @@
 				WarningLevel="4"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
+				CallingConvention="1"
 				CompileAs="1"
 			/>
 			<Tool

@@ -43,6 +43,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\source\Include"
 				PreprocessorDefinitions="_DEBUG;WIN32;_CONSOLE;ACPI_APPLICATION;ACPI_SINGLE_THREADED;ACPI_DEBUGGER"
@@ -73,11 +74,12 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
+				CommandLine="if NOT EXIST ..\..\libraries mkdir ..\..\libraries"
 			/>
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile=".\AcpiNamesDebug\AcpiNames.exe"
-				LinkIncremental="2"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\AcpiNamesDebug\AcpiNames.pdb"
@@ -142,8 +144,9 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
 				Optimization="0"
-				InlineFunctionExpansion="1"
+				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="..\..\source\Include"
@@ -174,6 +177,7 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
+				CommandLine="if NOT EXIST ..\..\libraries mkdir ..\..\libraries"
 			/>
 			<Tool
 				Name="VCLinkerTool"

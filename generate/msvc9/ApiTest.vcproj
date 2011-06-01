@@ -64,7 +64,7 @@
 				WarningLevel="4"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
-				CallingConvention="0"
+				CallingConvention="1"
 				CompileAs="1"
 			/>
 			<Tool
@@ -77,7 +77,6 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-				Description="Checking existence of acpi/libraries directory"
 				CommandLine="if NOT EXIST ..\..\libraries mkdir ..\..\libraries"
 			/>
 			<Tool
@@ -151,13 +150,17 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="1"
-				InlineFunctionExpansion="0"
+				UseUnicodeResponseFiles="false"
+				Optimization="2"
+				InlineFunctionExpansion="2"
+				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories="..\..\source\include"
 				PreprocessorDefinitions="NDEBUG;WIN32;WIN32_LEAN_AND_MEAN;_CONSOLE;ACPI_EXEC_APP;ACPI_LIBRARY;ACPI_APITS"
 				StringPooling="true"
+				ExceptionHandling="0"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
+				DisableLanguageExtensions="false"
 				PrecompiledHeaderFile=".\ApiTest\ApiTest.pch"
 				AssemblerListingLocation=".\ApiTest\"
 				ObjectFile=".\ApiTest\"
@@ -165,7 +168,8 @@
 				BrowseInformation="1"
 				WarningLevel="4"
 				SuppressStartupBanner="true"
-				CallingConvention="2"
+				CallingConvention="1"
+				CompileAs="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -177,7 +181,6 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-				Description="Checking existence of acpi/libraries directory"
 				CommandLine="if NOT EXIST ..\..\libraries mkdir ..\..\libraries"
 			/>
 			<Tool
