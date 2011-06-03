@@ -121,14 +121,16 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
-#include <io.h>
 #include <ctype.h>
-#include <direct.h>
 #include <errno.h>
 
+#ifdef WIN32
+#include <io.h>
+#include <direct.h>
+#endif
 
-/* Constants */
-
+#define DB_CONSOLE_OUTPUT            0x02
+#define ACPI_DB_REDIRECTABLE_OUTPUT  0x01
 
 /*
  * Global variables.  Defined in main.c only, externed in all other files
@@ -146,6 +148,7 @@
 /* Globals */
 
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_TerseMode, FALSE);
+EXTERN FILE                 INIT_GLOBAL (*AcpiGbl_DebugFile, NULL);
 
 
 /* Prototypes */

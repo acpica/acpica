@@ -169,12 +169,15 @@ AbDisplayUsage (
 
 int ACPI_SYSTEM_XFACE
 main (
-    ACPI_SIZE               argc,
+    int                     argc,
     char                    *argv[])
 {
     int                     j;
     int                     Status = AE_OK;
 
+
+    AcpiGbl_DebugFile = NULL;
+    AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT ;
 
     AcpiOsInitialize ();
     printf (ACPI_COMMON_SIGNON ("ACPI Binary AML File Utility"));

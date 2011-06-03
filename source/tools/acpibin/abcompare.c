@@ -128,12 +128,6 @@ struct stat         Gbl_StatBuf;
 char                Buffer[BUFFER_SIZE];
 
 
-#define DB_CONSOLE_OUTPUT            0x02
-#define ACPI_DB_REDIRECTABLE_OUTPUT  0x01
-
-extern FILE                        *AcpiGbl_DebugFile = NULL;
-extern UINT8                       AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT ;
-
 /* Local prototypes */
 
 static BOOLEAN
@@ -149,6 +143,14 @@ static char *
 AbGetFile (
     char                    *Filename,
     UINT32                  *FileSize);
+
+static void
+AbPrintHeaderInfo (
+    ACPI_TABLE_HEADER       *Header);
+
+ACPI_PHYSICAL_ADDRESS
+AeLocalGetRootPointer (
+    void);
 
 
 /*******************************************************************************
@@ -274,6 +276,38 @@ AcpiTbSumTable (
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AbPrintHeaderInfo
+ *
+ * PARAMETERS:  Header              - An ACPI table header
+ *
+ * RETURNS      None.
+ *
+ * DESCRIPTION: Format and display header contents.
+ *
+ ******************************************************************************/
+
+static void
+AbPrintHeaderInfo (
+    ACPI_TABLE_HEADER       *Header)
+{
+
+    /* Display header information */
+
+    printf ("Signature         : %4.4s\n",    Header->Signature);
+    printf ("Length            : %8.8X\n",    Header->Length);
+    printf ("Revision          : %2.2X\n",    Header->Revision);
+    printf ("Checksum          : %2.2X\n",    Header->Checksum);
+    printf ("OEM ID            : %6.6s\n",    Header->OemId);
+    printf ("OEM Table ID      : %8.8s\n",    Header->OemTableId);
+    printf ("OEM Revision      : %8.8X\n",    Header->OemRevision);
+    printf ("ASL Compiler ID   : %4.4s\n",    Header->AslCompilerId);
+    printf ("Compiler Revision : %8.8X\n",    Header->AslCompilerRevision);
+    printf ("\n");
+}
+
+
 /******************************************************************************
  *
  * FUNCTION:    AbDisplayHeader
@@ -308,18 +342,7 @@ AbDisplayHeader (
         return;
     }
 
-    /* Display header information */
-
-    printf ("Signature         : %8.4s\n",    Header1.Signature);
-    printf ("Length            : %8.8X\n",    Header1.Length);
-    printf ("Revision          : % 8.2X\n",   Header1.Revision);
-    printf ("Checksum          : % 8.2X\n",   Header1.Checksum);
-    printf ("OEM ID            : %8.6s\n",    Header1.OemId);
-    printf ("OEM Table ID      : %8.8s\n",    Header1.OemTableId);
-    printf ("OEM Revision      : %8.8X\n",    Header1.OemRevision);
-    printf ("ASL Compiler ID   : %8.4s\n",    Header1.AslCompilerId);
-    printf ("Compiler Revision : %8.8X\n",    Header1.AslCompilerRevision);
-    printf ("\n");
+    AbPrintHeaderInfo (&Header1);
 }
 
 
@@ -361,18 +384,7 @@ AbComputeChecksum (
 
     if (!Gbl_TerseMode)
     {
-        /* Display header information */
-
-        printf ("Signature         : %8.4s\n",    Header1.Signature);
-        printf ("Length            : %8.8X\n",    Header1.Length);
-        printf ("Revision          : % 8.2X\n",   Header1.Revision);
-        printf ("Checksum          : % 8.2X\n",   Header1.Checksum);
-        printf ("OEM ID            : %8.6s\n",    Header1.OemId);
-        printf ("OEM Table ID      : %8.8s\n",    Header1.OemTableId);
-        printf ("OEM Revision      : %8.8X\n",    Header1.OemRevision);
-        printf ("ASL Compiler ID   : %8.4s\n",    Header1.AslCompilerId);
-        printf ("Compiler Revision : %8.8X\n",    Header1.AslCompilerRevision);
-        printf ("\n");
+        AbPrintHeaderInfo (&Header1);
     }
 
     /* Allocate a buffer to hold the entire table */
@@ -503,16 +515,8 @@ AbCompareAmlFiles (
     {
         /* Display header information */
 
-        printf ("Signature         : %8.4s  %8.4s\n",    Header1.Signature, Header2.Signature);
-        printf ("Length            : %8.8X  %8.8X\n",    Header1.Length, Header2.Length);
-        printf ("Revision          : % 8.2X  % 8.2X\n",  Header1.Revision, Header2.Revision);
-        printf ("Checksum          : % 8.2X  % 8.2X\n",  Header1.Checksum, Header2.Checksum);
-        printf ("OEM ID            : %8.6s  %8.6s\n",    Header1.OemId, Header2.OemId);
-        printf ("OEM Table ID      : %8.8s  %8.8s\n",    Header1.OemTableId, Header2.OemTableId);
-        printf ("OEM Revision      : %8.8X  %8.8X\n",    Header1.OemRevision, Header2.OemRevision);
-        printf ("ASL Compiler ID   : %8.4s  %8.4s\n",    Header1.AslCompilerId, Header2.AslCompilerId);
-        printf ("Compiler Revision : %8.8X  %8.8X\n",    Header1.AslCompilerRevision, Header2.AslCompilerRevision);
-        printf ("\n");
+        AbPrintHeaderInfo (&Header1);
+        AbPrintHeaderInfo (&Header2);
     }
 
     if (memcmp (Header1.Signature, Header2.Signature, sizeof (ACPI_TABLE_HEADER)))
@@ -652,7 +656,7 @@ AbDumpAmlFile (
     char                    *File2Path)
 {
     char                    *FileBuffer;
-    UINT32                  FileSize;
+    UINT32                  FileSize = 0;
     FILE                    *FileOutHandle;
 
 
