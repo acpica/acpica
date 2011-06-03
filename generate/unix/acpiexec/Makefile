@@ -13,14 +13,14 @@
 # compile options, and prevents pollution of the source code.
 #
 include ../Makefile.config
-
 PROG = acpiexec
-
 
 #
 # Flags specific to acpiexec utility
 #
-CFLAGS+= -DACPI_EXEC_APP -I$(ACPICA_TOOLS)/acpiexec
+CFLAGS+= \
+    -DACPI_EXEC_APP \
+    -I$(ACPICA_TOOLS)/acpiexec
 
 OBJS = \
 	aeexec.o \
@@ -176,14 +176,12 @@ OBJS = \
 	utxferror.o \
 	utxface.o
 
-
 #
 # Root rule
 #
 $(PROG) : $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) -lpthread -o $(PROG)
 	$(COPYPROG)
-
 
 #
 # acpiexec source
@@ -200,13 +198,11 @@ aemain.o :          $(ACPICA_TOOLS)/acpiexec/aemain.c
 aetables.o :        $(ACPICA_TOOLS)/acpiexec/aetables.c
 	$(COMPILE)
 
-
 #
 # ACPICA core source - common
 #
 getopt.o :          $(ACPICA_COMMON)/getopt.c
 	$(COMPILE)
-
 
 #
 # ACPICA core source
@@ -649,7 +645,6 @@ utxferror.o :       $(ACPICA_CORE)/utilities/utxferror.c
 utxface.o :         $(ACPICA_CORE)/utilities/utxface.c
 	$(COMPILE)
 
-
 #
 # Unix OS services layer (OSL)
 #
@@ -657,8 +652,8 @@ osunixxf.o :        $(ACPICA_OSL)/osunixxf.c
 	$(COMPILE)
 
 
-clean : 
+clean :
 	rm -f $(PROG) $(PROG).exe $(OBJS)
 
-install : 
+install :
 	$(INSTALLPROG)

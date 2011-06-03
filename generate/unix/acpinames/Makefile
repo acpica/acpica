@@ -13,14 +13,16 @@
 # compile options, and prevents pollution of the source code.
 #
 include ../Makefile.config
-
 PROG = acpinames
-
 
 #
 # Flags specific to acpinames utility
 #
-CFLAGS+= -DACPI_APPLICATION -DACPI_SINGLE_THREADED -DACPI_DEBUGGER -I$(ACPICA_TOOLS)/acpinames
+CFLAGS+= \
+    -DACPI_APPLICATION \
+    -DACPI_SINGLE_THREADED \
+    -DACPI_DEBUGGER \
+    -I$(ACPICA_TOOLS)/acpinames
 
 OBJS = \
 	anmain.o \
@@ -87,14 +89,12 @@ OBJS = \
 	utxferror.o \
 	utxface.o
 
-
 #
 # Root rule
 #
 $(PROG) : $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) -lpthread -o $(PROG)
 	$(COPYPROG)
-
 
 #
 # acpinames source
@@ -108,13 +108,11 @@ anstubs.o :         $(ACPICA_TOOLS)/acpinames/anstubs.c
 antables.o :        $(ACPICA_TOOLS)/acpinames/antables.c
 	$(COMPILE)
 
-
 #
 # ACPICA core source - common
 #
 getopt.o :          $(ACPICA_COMMON)/getopt.c
 	$(COMPILE)
-
 
 #
 # ACPICA core source
@@ -293,7 +291,6 @@ utxferror.o :       $(ACPICA_CORE)/utilities/utxferror.c
 utxface.o :         $(ACPICA_CORE)/utilities/utxface.c
 	$(COMPILE)
 
-
 #
 # Unix OS services layer (OSL)
 #
@@ -301,8 +298,8 @@ osunixxf.o :        $(ACPICA_OSL)/osunixxf.c
 	$(COMPILE)
 
 
-clean : 
+clean :
 	rm -f $(PROG) $(PROG).exe $(OBJS)
 
-install : 
+install :
 	$(INSTALLPROG)

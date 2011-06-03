@@ -11,16 +11,26 @@
 # compile options, and prevents pollution of the source code.
 #
 include ../Makefile.config
-
 PROG = acpixtract
 
+OBJS = \
+    acpixtract.o
 
-$(PROG) : $(ACPICA_TOOLS)/acpixtract/acpixtract.c
-	$(CC) $(CFLAGS) $(CWARNINGFLAGS) $(LDFLAGS) -o$(PROG) $?
-	$(COPYPROG)
+#
+# Root rule
+#
+$(PROG) : $(OBJS)
+	$(CC) $(LDFLAGS) $(OBJS) -o $(PROG)
 
-clean : 
+#
+# acpixtract source
+#
+acpixtract.o :          $(ACPICA_TOOLS)/acpixtract/acpixtract.c
+	$(COMPILE)
+
+
+clean :
 	rm -f $(PROG) $(PROG).exe
 
-install : 
+install :
 	$(INSTALLPROG)

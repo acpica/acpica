@@ -12,13 +12,14 @@
 # compile options, and prevents pollution of the source code.
 #
 include ../Makefile.config
-
 PROG = acpihelp
 
 #
 # Flags specific to acpihelp
 #
-CFLAGS+= -DACPI_APPLICATION -I$(ACPICA_TOOLS)/acpihelp
+CFLAGS+= \
+    -DACPI_APPLICATION \
+    -I$(ACPICA_TOOLS)/acpihelp
 
 OBJS = \
 	ahmain.o \
@@ -37,11 +38,15 @@ $(PROG) : $(OBJS)
 ahmain.o :          $(ACPICA_TOOLS)/acpihelp/ahmain.c
 	$(COMPILE)
 
+#
+# ACPICA core source - common
+#
 getopt.o :          $(ACPICA_COMMON)/getopt.c
 	$(COMPILE)
 
-clean : 
+
+clean :
 	rm -f $(PROG) $(PROG).exe $(OBJS)
 
-install : 
+install :
 	$(INSTALLPROG)
