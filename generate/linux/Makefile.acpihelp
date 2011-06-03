@@ -2,24 +2,71 @@
 # acpihelp - ACPI Help utility. Displays ASL operator syntax and
 # information about ACPI predefined names.
 #
- 
+
 #
 # NOTE: This makefile is intended to be used in the Linux environment,
 # with the Linux directory structure. It will not work directly
 # on the native ACPICA source tree.
 #
-PROG=	acpihelp
-SRCS=	ahmain.c \
-    ../../common/getopt.c
+PROG = acpihelp
 
-CFLAGS+= -Wall -O2 -D_LINUX -DACPI_APPLICATION -Wstrict-prototypes -I../../include 
+ACPI_COMPONENTS =
+ACPICA_SRC =    ../..
+ACPICA_COMMON = $(ACPICA_SRC)/common
+ACPICA_CORE =   $(ACPICA_SRC)$(ACPI_COMPONENTS)
+ACPICA_TOOLS =  $(ACPICA_SRC)/tools
+ACPICA_OSL =    $(ACPICA_SRC)/os_specific/service_layers
+INSTALLDIR =    /usr/bin
+INSTALLPROG =   cp --remove-destination $(PROG) $(INSTALLDIR)
 
+NOMAN = YES
+CFLAGS+= \
+    -O2 \
+    -D_LINUX -DNDEBUG -D_CONSOLE \
+    -DACPI_APPLICATION \
+    -I$(ACPICA_SRC)/include
 
-acpihelp : $(patsubst %.c,%.o, $(SRCS))
-	$(CC) $(LDFLAGS) $(CFLAGS) $(patsubst %.c,%.o, $(SRCS)) -o $(PROG)
+CWARNINGFLAGS = \
+    -ansi \
+    -Wall \
+    -Wbad-function-cast \
+    -Wdeclaration-after-statement \
+    -Werror \
+    -Wformat=2 \
+    -Wmissing-declarations \
+    -Wmissing-prototypes \
+    -Wstrict-aliasing=0 \
+    -Wstrict-prototypes \
+    -Wswitch-default \
+    -Wpointer-arith \
+    -Wundef
 
-CLEANFILES= $(PROG)
+COMPILE = $(CC) -c $(CFLAGS) $(CWARNINGFLAGS) -o$@ $?
 
-clean : 
-	rm -f $(CLEANFILES) $(patsubst %.c,%.o, $(SRCS))
+OBJS = \
+    ahmain.o \
+    getopt.o
 
+#
+# Root rule
+#
+$(PROG) : $(OBJS)
+	$(CC) $(LDFLAGS) $(OBJS) -o $(PROG)
+
+#
+# acpihelp source
+#
+ahmain.o :          $(ACPICA_TOOLS)/acpihelp/ahmain.c
+	$(COMPILE)
+
+#
+# ACPICA core source - common
+#
+getopt.o :          $(ACPICA_COMMON)/getopt.c
+	$(COMPILE)
+
+clean :
+	rm -f $(PROG) $(PROG).exe $(OBJS)
+
+install :
+	$(INSTALLPROG)

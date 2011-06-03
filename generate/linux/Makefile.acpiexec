@@ -11,16 +11,38 @@
 #
 PROG = acpiexec
 
+ACPI_COMPONENTS =
 ACPICA_SRC =    ../..
 ACPICA_COMMON = $(ACPICA_SRC)/common
-ACPICA_CORE =   $(ACPICA_SRC)
+ACPICA_CORE =   $(ACPICA_SRC)$(ACPI_COMPONENTS)
 ACPICA_TOOLS =  $(ACPICA_SRC)/tools
 ACPICA_OSL =    $(ACPICA_SRC)/os_specific/service_layers
+INSTALLDIR =    /usr/bin
+INSTALLPROG =   cp --remove-destination $(PROG) $(INSTALLDIR)
 
-NOMAN=	YES
-CFLAGS+= -Wall -g -D_LINUX -DNDEBUG -D_CONSOLE -DACPI_EXEC_APP -Wstrict-prototypes -I$(ACPICA_SRC)/include 
+NOMAN = YES
+CFLAGS+= \
+    -O2 \
+    -D_LINUX -DNDEBUG -D_CONSOLE \
+    -DACPI_EXEC_APP \
+    -I$(ACPICA_SRC)/include
 
-COMPILE = $(CC) -c $(CFLAGS) -o$@ $?
+CWARNINGFLAGS = \
+    -ansi \
+    -Wall \
+    -Wbad-function-cast \
+    -Wdeclaration-after-statement \
+    -Werror \
+    -Wformat=2 \
+    -Wmissing-declarations \
+    -Wmissing-prototypes \
+    -Wstrict-aliasing=0 \
+    -Wstrict-prototypes \
+    -Wswitch-default \
+    -Wpointer-arith \
+    -Wundef
+
+COMPILE = $(CC) -c $(CFLAGS) $(CWARNINGFLAGS) -o$@ $?
 LDFLAGS += -lpthread -lrt
 
 OBJS = \
@@ -177,14 +199,11 @@ OBJS = \
 	utxferror.o \
 	utxface.o
 
-
 #
 # Root rule
 #
 $(PROG) : $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) -lpthread -o $(PROG)
-	$(COPYPROG)
-
 
 #
 # acpiexec source
@@ -201,13 +220,11 @@ aemain.o :          $(ACPICA_TOOLS)/acpiexec/aemain.c
 aetables.o :        $(ACPICA_TOOLS)/acpiexec/aetables.c
 	$(COMPILE)
 
-
 #
 # ACPICA core source - common
 #
 getopt.o :          $(ACPICA_COMMON)/getopt.c
 	$(COMPILE)
-
 
 #
 # ACPICA core source
@@ -650,7 +667,6 @@ utxferror.o :       $(ACPICA_CORE)/utilities/utxferror.c
 utxface.o :         $(ACPICA_CORE)/utilities/utxface.c
 	$(COMPILE)
 
-
 #
 # Unix OS services layer (OSL)
 #
@@ -658,5 +674,8 @@ osunixxf.o :        $(ACPICA_OSL)/osunixxf.c
 	$(COMPILE)
 
 
-clean : 
+clean :
 	rm -f $(PROG) $(PROG).exe $(OBJS)
+
+install :
+	$(INSTALLPROG)
