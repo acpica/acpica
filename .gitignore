@@ -59,8 +59,10 @@ generate/msvc9/AslCompiler_Linux/
 generate/msvc9/AslCompiler_LinuxDebug/
 generate/msvc9/AcpiSubsystem64
 
-
+generate/linux/bin
 generate/unix/bin
+generate/unix/acpibin/*.o
+generate/unix/acpibin/*.exe
 generate/unix/acpiexec/*.o
 generate/unix/acpiexec/*.exe
 generate/unix/acpihelp/*.o
