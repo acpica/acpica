@@ -131,15 +131,4 @@
 #endif
 #include <errno.h>
 
-
-/* Fixups for non-Win32 compilation */
-#ifndef WIN32
-#ifndef O_BINARY
-#define O_BINARY    0x0
-#endif
-
-#define mkdir(x) mkdir(x, 0770)
-char * strlwr(char* str);
-#endif
-
 #endif /* __ACPIHELP_H */

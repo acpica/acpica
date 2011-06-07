@@ -129,6 +129,11 @@
 #include <direct.h>
 #endif
 
+/* O_BINARY is not always defined */
+#ifndef O_BINARY
+#define O_BINARY    0x0
+#endif
+
 #define DB_CONSOLE_OUTPUT            0x02
 #define ACPI_DB_REDIRECTABLE_OUTPUT  0x01
 
