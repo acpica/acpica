@@ -5,12 +5,13 @@
 # Requires cygwin be installed - http://www.cygwin.com
 # and its /bin be *first* in your path.
 #
-# Also requires pkzip25 (free, available at ftp://ftp.onego.ru/pkzip/pkzip25.exe
-# and other places - search for "pzkzip25")
+# Also requires pkzip25 (free, and is available from numerous sources -
+# search for "pkzip25" or "pkzip25.exe")
 #
-# Execute this script from the top level ACPI source directory.
+# Execute this script from the top level ACPICA source directory.
 #
-# Parameters: notests - do not generate test source code package
+# Parameters:
+#   notests - do not generate test source code package
 #
 #******************************************************************************
 
@@ -20,8 +21,12 @@ PKZIP="c:/command/pkzip25.exe"
 # Move and preserve any previous versions of the various release packages
 #
 echo Moving previous release to archive
-mkdir -p current
-mkdir -p archive
+if [ ! -f current ]; then
+    mkdir -p current
+fi
+if [ ! -f archive ]; then
+    mkdir -p archive
+fi
 
 #
 # Save any older versions of the release packages
@@ -48,6 +53,7 @@ cd ../..
 rm -rf wintemp
 rm -rf unixtemp
 rm -rf acpica-unix-`date +%Y%m%d`
+rm -rf acpica-unix2-`date +%Y%m%d`
 
 #******************************************************************************
 #
@@ -84,9 +90,11 @@ cp -r source/compiler unixtemp/compiler
 #
 # ACPICA tools source
 #
-cp -r source/tools/acpisrc unixtemp/tools
+cp -r source/tools/acpibin unixtemp/tools
 cp -r source/tools/acpiexec unixtemp/tools
+cp -r source/tools/acpihelp unixtemp/tools
 cp -r source/tools/acpinames unixtemp/tools
+cp -r source/tools/acpisrc unixtemp/tools
 cp -r source/tools/acpixtract unixtemp/tools
 cp -r source/tools/examples unixtemp/tools
 
@@ -98,28 +106,27 @@ cp -r tests/templates/Makefile unixtemp/tests/templates
 cp -r tests/templates/templates.sh unixtemp/tests/templates
 
 #
-# OS-specific interfaces
+# Copy OS-specific interfaces
 #
 cp -r source/os_specific/service_layers unixtemp/os_specific/service_layers
-cp source/os_specific/service_layers/osunixxf.c unixtemp
-cp source/os_specific/service_layers/osunixdir.c unixtemp/tools/acpisrc
-cp source/os_specific/service_layers/osunixdir.c unixtemp/tools/acpiexec
 
 #
 # Copy Linux/UNIX makefiles
 #
-cp generate/linux/Makefile.iasl unixtemp/compiler/Makefile
-cp generate/linux/Makefile.acpisrc unixtemp/tools/acpisrc/Makefile
+cp generate/linux/Makefile.acpibin unixtemp/tools/acpibin/Makefile
 cp generate/linux/Makefile.acpiexec unixtemp/tools/acpiexec/Makefile
 cp generate/linux/Makefile.acpihelp unixtemp/tools/acpihelp/Makefile
 cp generate/linux/Makefile.acpinames unixtemp/tools/acpinames/Makefile
+cp generate/linux/Makefile.acpisrc unixtemp/tools/acpisrc/Makefile
 cp generate/linux/Makefile.acpixtract unixtemp/tools/acpixtract/Makefile
+cp generate/linux/Makefile.iasl unixtemp/compiler/Makefile
 cp generate/linux/README.acpica-unix unixtemp/README
 
 #
 # Copy generic UNIX makefiles
 #
 mkdir -p unixtemp/generate/unix
+mkdir -p unixtemp/generate/unix/acpibin
 mkdir -p unixtemp/generate/unix/acpiexec
 mkdir -p unixtemp/generate/unix/acpihelp
 mkdir -p unixtemp/generate/unix/acpinames
@@ -130,6 +137,7 @@ mkdir -p unixtemp/generate/unix/bin
 
 cp generate/unix/readme.txt unixtemp/generate/unix/readme.txt
 cp generate/unix/Makefile* unixtemp/generate/unix
+cp generate/unix/acpibin/Makefile unixtemp/generate/unix/acpibin
 cp generate/unix/acpiexec/Makefile unixtemp/generate/unix/acpiexec
 cp generate/unix/acpihelp/Makefile unixtemp/generate/unix/acpihelp
 cp generate/unix/acpinames/Makefile unixtemp/generate/unix/acpinames
@@ -214,10 +222,11 @@ cp -r source/compiler unixtemp/compiler
 #
 # ACPICA tools source
 #
-cp -r source/tools/acpisrc unixtemp/tools
+cp -r source/tools/acpibin unixtemp/tools
 cp -r source/tools/acpiexec unixtemp/tools
 cp -r source/tools/acpihelp unixtemp/tools
 cp -r source/tools/acpinames unixtemp/tools
+cp -r source/tools/acpisrc unixtemp/tools
 cp -r source/tools/acpixtract unixtemp/tools
 cp -r source/tools/examples unixtemp/tools
 
@@ -229,12 +238,9 @@ cp -r tests/templates/Makefile unixtemp/tests/templates
 cp -r tests/templates/templates.sh unixtemp/tests/templates
 
 #
-# OS-specific interfaces
+# Copy OS-specific interfaces
 #
 cp -r source/os_specific/service_layers unixtemp/os_specific/service_layers
-cp source/os_specific/service_layers/osunixxf.c unixtemp
-cp source/os_specific/service_layers/osunixdir.c unixtemp/tools/acpisrc
-cp source/os_specific/service_layers/osunixdir.c unixtemp/tools/acpiexec
 
 #
 # Insert the dual-license into *.c and *.h files
@@ -244,18 +250,20 @@ libraries/acpisrc -h -y unixtemp
 #
 # Copy Linux/UNIX makefiles
 #
-cp generate/linux/Makefile.iasl unixtemp/compiler/Makefile
-cp generate/linux/Makefile.acpisrc unixtemp/tools/acpisrc/Makefile
+cp generate/linux/Makefile.acpibin unixtemp/tools/acpibin/Makefile
 cp generate/linux/Makefile.acpiexec unixtemp/tools/acpiexec/Makefile
 cp generate/linux/Makefile.acpihelp unixtemp/tools/acpihelp/Makefile
 cp generate/linux/Makefile.acpinames unixtemp/tools/acpinames/Makefile
+cp generate/linux/Makefile.acpisrc unixtemp/tools/acpisrc/Makefile
 cp generate/linux/Makefile.acpixtract unixtemp/tools/acpixtract/Makefile
+cp generate/linux/Makefile.iasl unixtemp/compiler/Makefile
 cp generate/linux/README.acpica-unix unixtemp/README
 
 #
 # Copy generic UNIX makefiles
 #
 mkdir -p unixtemp/generate/unix
+mkdir -p unixtemp/generate/unix/acpibin
 mkdir -p unixtemp/generate/unix/acpiexec
 mkdir -p unixtemp/generate/unix/acpihelp
 mkdir -p unixtemp/generate/unix/acpinames
@@ -266,6 +274,7 @@ mkdir -p unixtemp/generate/unix/bin
 
 cp generate/unix/readme.txt unixtemp/generate/unix/readme.txt
 cp generate/unix/Makefile* unixtemp/generate/unix
+cp generate/unix/acpibin/Makefile unixtemp/generate/unix/acpibin
 cp generate/unix/acpiexec/Makefile unixtemp/generate/unix/acpiexec
 cp generate/unix/acpihelp/Makefile unixtemp/generate/unix/acpihelp
 cp generate/unix/acpinames/Makefile unixtemp/generate/unix/acpinames
@@ -375,6 +384,7 @@ cp -r generate/msvc9/*.vcproj wintemp/generate/msvc9/
 # Copy generic UNIX makefiles
 #
 mkdir -p wintemp/generate/unix
+mkdir -p wintemp/generate/unix/acpibin
 mkdir -p wintemp/generate/unix/acpiexec
 mkdir -p wintemp/generate/unix/acpihelp
 mkdir -p wintemp/generate/unix/acpinames
@@ -385,6 +395,7 @@ mkdir -p wintemp/generate/unix/bin
 
 cp generate/unix/readme.txt wintemp/generate/unix/readme.txt
 cp generate/unix/Makefile* wintemp/generate/unix
+cp generate/unix/acpibin/Makefile wintemp/generate/unix/acpibin
 cp generate/unix/acpiexec/Makefile wintemp/generate/unix/acpiexec
 cp generate/unix/acpihelp/Makefile wintemp/generate/unix/acpihelp
 cp generate/unix/acpinames/Makefile wintemp/generate/unix/acpinames
@@ -441,11 +452,13 @@ mkdir wintemp
 #
 cp -r documents/changes.txt wintemp/changes.txt
 cp documents/aslcompiler.pdf wintemp
-cp libraries/iasl.exe wintemp
-cp libraries/acpixtract.exe wintemp
+cp libraries/acpibin.exe wintemp
 cp libraries/acpiexec.exe wintemp
 cp libraries/acpihelp.exe wintemp
+cp libraries/acpinames.exe wintemp
 cp libraries/acpisrc.exe wintemp
+cp libraries/acpixtract.exe wintemp
+cp libraries/iasl.exe wintemp
 cp tests/misc/badcode.asl wintemp
 
 #
