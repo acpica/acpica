@@ -24,9 +24,7 @@ NOMAN=	YES
 CFLAGS+= \
     -O2 \
     -D_LINUX -DNDEBUG -D_CONSOLE \
-    -DACPI_APPLICATION \
-    -DACPI_SINGLE_THREADED \
-    -DACPI_DEBUGGER \
+    -DACPI_NAMES_APP \
     -I$(ACPICA_SRC)/include \
     -I$(ACPICA_TOOLS)/acpinames
 

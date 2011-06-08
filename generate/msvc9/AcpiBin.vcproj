@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="AcpiBin"
 	ProjectGUID="{9B5C94B6-D01D-4A59-8B3F-289387D9DDB2}"
+	RootNamespace="AcpiBin"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -47,7 +48,7 @@
 				Optimization="0"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\..\source\include"
-				PreprocessorDefinitions="_DEBUG;WIN32;_CONSOLE;ACPI_BIN_APP"
+				PreprocessorDefinitions="ACPI_BIN_APP;_DEBUG;WIN32;_CONSOLE"
 				StringPooling="true"
 				ExceptionHandling="0"
 				BasicRuntimeChecks="3"
@@ -154,7 +155,7 @@
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="..\..\source\include"
-				PreprocessorDefinitions="NDEBUG;ACPI_BIN_APP;WIN32;_CONSOLE"
+				PreprocessorDefinitions="ACPI_BIN_APP;NDEBUG;WIN32;_CONSOLE"
 				StringPooling="true"
 				ExceptionHandling="0"
 				RuntimeLibrary="0"

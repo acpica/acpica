@@ -18,7 +18,7 @@ PROG = acpihelp
 # Flags specific to acpihelp
 #
 CFLAGS+= \
-    -DACPI_APPLICATION \
+    -DACPI_HELP_APP \
     -I$(ACPICA_TOOLS)/acpihelp
 
 OBJS = \

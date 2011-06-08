@@ -155,7 +155,7 @@
 				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories="..\..\source\include"
-				PreprocessorDefinitions="NDEBUG;WIN32;WIN32_LEAN_AND_MEAN;_CONSOLE;ACPI_EXEC_APP;ACPI_LIBRARY;ACPI_APITS"
+				PreprocessorDefinitions="NDEBUG;WIN32;_CONSOLE;ACPI_EXEC_APP;ACPI_LIBRARY;ACPI_APITS"
 				StringPooling="true"
 				ExceptionHandling="0"
 				RuntimeLibrary="0"

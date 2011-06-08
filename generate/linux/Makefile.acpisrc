@@ -22,7 +22,7 @@ NOMAN = YES
 CFLAGS+= \
     -O2 \
     -D_LINUX -DNDEBUG -D_CONSOLE \
-    -DACPI_APPLICATION \
+    -DACPI_SRC_APP \
     -I$(ACPICA_SRC)/include \
     -I.
 

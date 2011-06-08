@@ -19,9 +19,7 @@ PROG = acpinames
 # Flags specific to acpinames utility
 #
 CFLAGS+= \
-    -DACPI_APPLICATION \
-    -DACPI_SINGLE_THREADED \
-    -DACPI_DEBUGGER \
+    -DACPI_NAMES_APP \
     -I$(ACPICA_TOOLS)/acpinames
 
 OBJS = \
