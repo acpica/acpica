@@ -93,7 +93,7 @@ OBJS = \
 # Root rule
 #
 $(PROG) : $(OBJS)
-	$(CC) $(LDFLAGS) $(OBJS) -lpthread -o $(PROG)
+	$(CC) $(LDFLAGS) $(OBJS) -o $(PROG)
 	$(COPYPROG)
 
 #

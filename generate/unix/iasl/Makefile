@@ -20,7 +20,6 @@ CFLAGS+= \
     -DACPI_ASL_COMPILER \
     -I$(ASL_COMPILER) \
     -I.
-LDFLAGS+= -lpthread
 
 OBJS = \
 	adfile.o \

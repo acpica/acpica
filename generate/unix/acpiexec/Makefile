@@ -21,6 +21,7 @@ PROG = acpiexec
 CFLAGS+= \
     -DACPI_EXEC_APP \
     -I$(ACPICA_TOOLS)/acpiexec
+LDFLAGS += -lpthread -lrt
 
 OBJS = \
 	aeexec.o \
@@ -180,7 +181,7 @@ OBJS = \
 # Root rule
 #
 $(PROG) : $(OBJS)
-	$(CC) $(LDFLAGS) $(OBJS) -lpthread -o $(PROG)
+	$(CC) $(LDFLAGS) $(OBJS) -o $(PROG)
 	$(COPYPROG)
 
 #

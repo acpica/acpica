@@ -46,7 +46,6 @@ CWARNINGFLAGS = \
     -Wundef
 
 COMPILE = $(CC) -c $(CFLAGS) $(CWARNINGFLAGS) -o$@ $?
-LDFLAGS += -lpthread -lrt
 
 OBJS = \
 	anmain.o \
@@ -117,7 +116,7 @@ OBJS = \
 # Root rule
 #
 $(PROG) : $(OBJS)
-	$(CC) $(LDFLAGS) $(OBJS) -lpthread -o $(PROG)
+	$(CC) $(LDFLAGS) $(OBJS) -o $(PROG)
 
 #
 # acpinames source
