@@ -60,7 +60,7 @@
 				BrowseInformation="1"
 				WarningLevel="4"
 				SuppressStartupBanner="true"
-				DebugInformationFormat="4"
+				DebugInformationFormat="3"
 				CallingConvention="1"
 				CompileAs="1"
 			/>

@@ -60,7 +60,7 @@
 				BrowseInformation="1"
 				WarningLevel="4"
 				SuppressStartupBanner="true"
-				DebugInformationFormat="4"
+				DebugInformationFormat="3"
 				CallingConvention="1"
 				CompileAs="1"
 			/>
@@ -234,6 +234,7 @@
 						Name="VCCLCompilerTool"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
+						DebugInformationFormat="3"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -256,6 +257,7 @@
 						Name="VCCLCompilerTool"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
+						DebugInformationFormat="3"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -278,6 +280,7 @@
 						Name="VCCLCompilerTool"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
+						DebugInformationFormat="3"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -303,6 +306,7 @@
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
+							DebugInformationFormat="3"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
