@@ -125,6 +125,7 @@
 #include <errno.h>
 
 #ifdef WIN32
+#include <stdlib.h>
 #include <io.h>
 #include <direct.h>
 #endif

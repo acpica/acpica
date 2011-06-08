@@ -115,17 +115,16 @@
  *****************************************************************************/
 
 #include "acpibin.h"
-#include <stdlib.h>
 
 
-FILE                *File1;
-FILE                *File2;
-ACPI_TABLE_HEADER   Header1;
-ACPI_TABLE_HEADER   Header2;
-struct stat         Gbl_StatBuf;
+FILE                        *File1;
+FILE                        *File2;
+ACPI_TABLE_HEADER           Header1;
+ACPI_TABLE_HEADER           Header2;
+struct stat                 Gbl_StatBuf;
 
-#define BUFFER_SIZE 256
-char                Buffer[BUFFER_SIZE];
+#define BUFFER_SIZE         256
+char                        Buffer[BUFFER_SIZE];
 
 
 /* Local prototypes */

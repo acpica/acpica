@@ -52,7 +52,7 @@
 				ExceptionHandling="0"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				DisableLanguageExtensions="false"
+				DisableLanguageExtensions="true"
 				PrecompiledHeaderFile=".\AcpiBinDebug\AcpiBin.pch"
 				AssemblerListingLocation=".\AcpiBinDebug\"
 				ObjectFile=".\AcpiBinDebug\"
@@ -159,7 +159,7 @@
 				ExceptionHandling="0"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
-				DisableLanguageExtensions="false"
+				DisableLanguageExtensions="true"
 				PrecompiledHeaderFile=".\AcpiBin\AcpiBin.pch"
 				AssemblerListingLocation=".\AcpiBin\"
 				ObjectFile=".\AcpiBin\"
@@ -242,6 +242,7 @@
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
+							DisableLanguageExtensions="true"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -251,6 +252,7 @@
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
+							DisableLanguageExtensions="true"
 						/>
 					</FileConfiguration>
 				</File>
@@ -264,6 +266,7 @@
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
+							DisableLanguageExtensions="true"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -273,6 +276,7 @@
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
+							DisableLanguageExtensions="true"
 						/>
 					</FileConfiguration>
 				</File>
@@ -312,6 +316,7 @@
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
+							DisableLanguageExtensions="false"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -321,6 +326,7 @@
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
+							DisableLanguageExtensions="false"
 						/>
 					</FileConfiguration>
 				</File>
