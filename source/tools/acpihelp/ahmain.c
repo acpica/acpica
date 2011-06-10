@@ -452,7 +452,7 @@ AhDisplayOperator (
             Position = TokenLength;
         }
 
-        printf ("%.*s ", TokenLength, This);
+        printf ("%.*s ", (int) TokenLength, This);
         This = Next + 1;
     }
 
