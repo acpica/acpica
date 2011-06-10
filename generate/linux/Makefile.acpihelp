@@ -2,27 +2,38 @@
 # acpihelp - ACPI Help utility. Displays ASL operator syntax and
 # information about ACPI predefined names.
 #
-
-#
 # NOTE: This makefile is intended to be used in the Linux environment,
 # with the Linux directory structure. It will not work directly
 # on the native ACPICA source tree.
 #
+
+#
+# Configuration
+# Notes:
+#   gcc should be version 4 or greater, otherwise some of the options
+#       used will not be recognized.
+#   Global optimization flags (such as -O2, -Os) are not used, since
+#       they cause issues on some compilers.
+#   The _GNU_SOURCE symbol is required for many hosts.
+#
 PROG = acpihelp
 
-ACPI_COMPONENTS =
+HOST =          _LINUX
+NOMAN =         YES
+COMPILE =       $(CC) -c $(CFLAGS) $(CWARNINGFLAGS) -o$@ $?
+
+ACPICA_COMPONENTS =
 ACPICA_SRC =    ../..
 ACPICA_COMMON = $(ACPICA_SRC)/common
-ACPICA_CORE =   $(ACPICA_SRC)$(ACPI_COMPONENTS)
+ACPICA_CORE =   $(ACPICA_SRC)$(ACPICA_COMPONENTS)
 ACPICA_TOOLS =  $(ACPICA_SRC)/tools
 ACPICA_OSL =    $(ACPICA_SRC)/os_specific/service_layers
 INSTALLDIR =    /usr/bin
 INSTALLPROG =   cp --remove-destination $(PROG) $(INSTALLDIR)
 
-NOMAN = YES
 CFLAGS+= \
-    -O2 \
-    -D_LINUX -DNDEBUG -D_CONSOLE \
+    -D$(HOST) \
+    -D_GNU_SOURCE \
     -DACPI_HELP_APP \
     -I$(ACPICA_SRC)/include
 
@@ -40,8 +51,6 @@ CWARNINGFLAGS = \
     -Wswitch-default \
     -Wpointer-arith \
     -Wundef
-
-COMPILE = $(CC) -c $(CFLAGS) $(CWARNINGFLAGS) -o$@ $?
 
 OBJS = \
     ahmain.o \

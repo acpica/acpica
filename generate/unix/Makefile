@@ -13,25 +13,25 @@
 include Makefile.config
 
 
-all:	${DIRS}
-${DIRS}: FORCE
+all:	${PROGS}
+${PROGS}: FORCE
 	@cd $@; make; ls -al $@
 
 clean:	FORCE
-	@for d in ${DIRS}; do \
+	@for d in ${PROGS}; do \
 		(cd $$d; \
 		if [ $$? -ne 0 ]; then \
-			echo "Bad element of DIRS: <$$d>"; \
+			echo "Bad element of PROGS: <$$d>"; \
 		else \
 			pwd; make clean; \
 		fi); \
 	done
 
 install:	FORCE
-	@for d in ${DIRS}; do \
+	@for d in ${PROGS}; do \
 		(cd $$d; \
 		if [ $$? -ne 0 ]; then \
-			echo "Bad element of DIRS: <$$d>"; \
+			echo "Bad element of PROGS: <$$d>"; \
 		else \
 			pwd; make install; \
 		fi); \
