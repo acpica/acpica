@@ -231,6 +231,7 @@ static const ACPI_PREDEFINED_INFO     PredefinedNames[] =
     {{"_AC8", 0, ACPI_RTYPE_INTEGER}},
     {{"_AC9", 0, ACPI_RTYPE_INTEGER}},
     {{"_ADR", 0, ACPI_RTYPE_INTEGER}},
+    {{"_AEI", 0, ACPI_RTYPE_BUFFER}},
     {{"_AL0", 0, ACPI_RTYPE_PACKAGE}}, /* Variable-length (Refs) */
                     {{{ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0}, 0,0}},
 
@@ -315,6 +316,7 @@ static const ACPI_PREDEFINED_INFO     PredefinedNames[] =
     {{"_DCS", 0, ACPI_RTYPE_INTEGER}},
     {{"_DDC", 1, ACPI_RTYPE_INTEGER | ACPI_RTYPE_BUFFER}},
     {{"_DDN", 0, ACPI_RTYPE_STRING}},
+    {{"_DEP", 0, ACPI_RTYPE_PACKAGE}},
     {{"_DGS", 0, ACPI_RTYPE_INTEGER}},
     {{"_DIS", 0, 0}},
     {{"_DMA", 0, ACPI_RTYPE_BUFFER}},
