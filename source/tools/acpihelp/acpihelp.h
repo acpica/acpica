@@ -119,6 +119,7 @@
 
 #include "acpi.h"
 #include "accommon.h"
+#include "acapps.h"
 
 #include <stdio.h>
 #include <sys/stat.h>
@@ -130,5 +131,70 @@
 #include <direct.h>
 #endif
 #include <errno.h>
+
+
+#define     AH_DECODE_DEFAULT           0
+#define     AH_DECODE_ASL               1
+#define     AH_DECODE_PREDEFINED_NAME   2
+#define     AH_DECODE_AML               3
+#define     AH_DECODE_AML_OPCODE        4
+
+#define     AH_MAX_LINE_LENGTH          64
+
+
+typedef struct ah_aml_opcode
+{
+    UINT16          OpcodeRangeStart;
+    UINT16          OpcodeRangeEnd;
+    char            *OpcodeString;
+    char            *OpcodeName;
+    char            *Type;
+    char            *FixedArguments;
+    char            *VariableArguments;
+    char            *ArgumentNames;
+
+} AH_AML_OPCODE;
+
+typedef struct ah_asl_operator
+{
+    char            *Name;
+    char            *Syntax;
+    char            *Description;
+
+} AH_ASL_OPERATOR;
+
+typedef struct ah_predefined_name
+{
+    char            *Name;
+    char            *Description;
+    char            *Action;
+
+} AH_PREDEFINED_NAME;
+
+
+extern const AH_AML_OPCODE          AmlOpcodeInfo[];
+extern const AH_ASL_OPERATOR        AslOperatorInfo[];
+extern const AH_PREDEFINED_NAME     AslPredefinedInfo[];
+
+void
+AhStrupr (
+    char                    *SrcString);
+
+void
+AhFindAmlOpcode (
+    char                    *Name);
+
+void
+AhDecodeAmlOpcode (
+    char                    *Name);
+
+void
+AhFindPredefinedNames (
+    char                    *Name);
+
+void
+AhFindAslOperators (
+    char                    *Name);
+
 
 #endif /* __ACPIHELP_H */

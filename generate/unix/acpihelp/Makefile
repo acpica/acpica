@@ -22,6 +22,10 @@ CFLAGS+= \
     -I$(ACPICA_TOOLS)/acpihelp
 
 OBJS = \
+	ahamlops.o \
+	ahaslops.o \
+	ahdecode.o \
+	ahpredef.o \
 	ahmain.o \
 	getopt.o
 
@@ -35,6 +39,18 @@ $(PROG) : $(OBJS)
 #
 # acpihelp source
 #
+ahamlops.o :        $(ACPICA_TOOLS)/acpihelp/ahamlops.c
+	$(COMPILE)
+
+ahaslops.o :        $(ACPICA_TOOLS)/acpihelp/ahaslops.c
+	$(COMPILE)
+
+ahdecode.o :        $(ACPICA_TOOLS)/acpihelp/ahdecode.c
+	$(COMPILE)
+
+ahpredef.o :        $(ACPICA_TOOLS)/acpihelp/ahpredef.c
+	$(COMPILE)
+
 ahmain.o :          $(ACPICA_TOOLS)/acpihelp/ahmain.c
 	$(COMPILE)
 

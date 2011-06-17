@@ -113,48 +113,10 @@
  *
  *****************************************************************************/
 
-#define ACPI_CREATE_PREDEFINED_TABLE
 #include "acpihelp.h"
-#include "acapps.h"
-#include "acpredef.h"
-#include "ahops.h"
-
-
-#define     AH_MAX_LINE_LENGTH      70
-char        TypeBuffer[64];
-
-static const char   *AcpiRtypeNames[] =
-{
-    "/Integer",
-    "/String",
-    "/Buffer",
-    "/Package",
-    "/Reference",
-};
 
 
 /* Local prototypes */
-
-static void
-AhStrupr (
-    char                    *SrcString);
-
-static void
-AhGetExpectedTypes (
-    char                    *Buffer,
-    UINT32                  ExpectedBtypes);
-
-static void
-AhFindMethods (
-    char                    *Name);
-
-static void
-AhFindOperators (
-    char                    *Name);
-
-static void
-AhDisplayOperator (
-    const char              *Op);
 
 static void
 AhDisplayUsage (
@@ -175,11 +137,15 @@ AhDisplayUsage (
 {
 
     printf ("\n");
-    printf ("Usage: acpihelp <NamePrefix>\n\n");
-    printf ("Where: NamePrefix   Initial substring for ASL operator(s)\n");
-    printf ("       _NamePrefix  Initial substring for predefined name(s)\n");
+    printf ("Usage: acpihelp <options> [NamePrefix | HexValue]\n\n");
+    printf ("Where: -m <NamePrefix>     Find/Display AML opcode name(s)\n");
+    printf ("       -o <HexValue>       Decode hex AML opcode\n");
+    printf ("       -p <NamePrefix>     Find/Display ASL predefined method name(s)\n");
+    printf ("       -s <NamePrefix>     Find/Display ASL operator name(s)\n");
+    printf ("\nDefault search with no options:\n");
+    printf ("    Find ASL operator names - if NamePrefix does not start with underscore\n");
+    printf ("    Find ASL predefined method names - if NamePrefix starts with underscore\n");
     printf ("\n");
-    return;
 }
 
 
@@ -196,11 +162,13 @@ main (
     int                     argc,
     char                    *argv[])
 {
-    int                     j;
     char                    *Name;
+    UINT32                  DecodeType;
+    int                     j;
 
 
     printf (ACPI_COMMON_SIGNON ("ACPI Help Utility"));
+    DecodeType = AH_DECODE_DEFAULT;
 
     if (argc < 2)
     {
@@ -210,8 +178,24 @@ main (
 
     /* Command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "h")) != EOF) switch (j)
+    while ((j = AcpiGetopt (argc, argv, "hmops")) != EOF) switch (j)
     {
+    case 'm':
+        DecodeType = AH_DECODE_AML;
+        break;
+
+    case 'o':
+        DecodeType = AH_DECODE_AML_OPCODE;
+        break;
+
+    case 'p':
+        DecodeType = AH_DECODE_PREDEFINED_NAME;
+        break;
+
+    case 's':
+        DecodeType = AH_DECODE_ASL;
+        break;
+
     case 'h':
     default:
         AhDisplayUsage ();
@@ -225,21 +209,41 @@ main (
         AhDisplayUsage ();
         return (-1);
     }
-
     if (Name[0] == 0)
     {
         return (0);
     }
 
-    AhStrupr (Name);
-    if (*Name == '_')
+    switch (DecodeType)
     {
-        AhFindMethods (Name);
+    case AH_DECODE_AML:
+        AhFindAmlOpcode (Name);
+        break;
+
+    case AH_DECODE_AML_OPCODE:
+        AhDecodeAmlOpcode (Name);
+        break;
+
+    case AH_DECODE_PREDEFINED_NAME:
+        AhFindPredefinedNames (Name);
+        break;
+
+    case AH_DECODE_ASL:
+        AhFindAslOperators (Name);
+        break;
+
+    default:
+        if (*Name == '_')
+        {
+            AhFindPredefinedNames (Name);
+        }
+        else
+        {
+            AhFindAslOperators (Name);
+        }
+        break;
     }
-    else
-    {
-        AhFindOperators (Name);
-    }
+
     return (0);
 }
 
@@ -258,7 +262,7 @@ main (
  *
  ******************************************************************************/
 
-static void
+void
 AhStrupr (
     char                    *SrcString)
 {
@@ -278,194 +282,4 @@ AhStrupr (
     }
 
     return;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AhFindMethods
- *
- * PARAMETERS:  Name                - Name or prefix to find. Must start with
- *                                    an underscore
- *
- * RETURN:      None
- *
- * DESCRIPTION: Find and display all ACPI predefined names that match the
- *              input name or prefix. Includes the required number of arguments
- *              and the expected return type, if any.
- *
- ******************************************************************************/
-
-static void
-AhFindMethods (
-    char                    *Name)
-{
-    const ACPI_PREDEFINED_INFO  *ThisName;
-    UINT32                      Length;
-    UINT32                      i;
-
-
-    Length = strlen (Name);
-    if (Length > 4)
-    {
-        printf ("Predefined name must be 4 characters maximum\n");
-        return;
-    }
-
-    /* Find all predefined names that match the name/prefix */
-
-    ThisName = PredefinedNames;
-    while (ThisName->Info.Name[0])
-    {
-        for (i = 0; i < Length; i++)
-        {
-            if (ThisName->Info.Name[i] != Name[i])
-            {
-                goto Continue;
-            }
-        }
-
-        AhGetExpectedTypes (TypeBuffer, ThisName->Info.ExpectedBtypes);
-
-        printf ("%4.4s: %u arguments, Returns: %s\n",
-            ThisName->Info.Name, ThisName->Info.ParamCount,
-            ThisName->Info.ExpectedBtypes ? TypeBuffer : "Nothing");
-
-Continue:
-        if (ThisName->Info.ExpectedBtypes & ACPI_RTYPE_PACKAGE)
-        {
-            ThisName++;
-        }
-
-        ThisName++;
-    }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AhGetExpectedTypes
- *
- * PARAMETERS:  Buffer              - Where the formatted string is returned
- *              ExpectedBTypes      - Bitfield of expected data types
- *
- * RETURN:      Formatted string in Buffer.
- *
- * DESCRIPTION: Format the expected object types into a printable string.
- *
- ******************************************************************************/
-
-static void
-AhGetExpectedTypes (
-    char                    *Buffer,
-    UINT32                  ExpectedBtypes)
-{
-    UINT32                  ThisRtype;
-    UINT32                  i;
-    UINT32                  j;
-
-
-    j = 1;
-    Buffer[0] = 0;
-    ThisRtype = ACPI_RTYPE_INTEGER;
-
-    for (i = 0; i < ACPI_NUM_RTYPES; i++)
-    {
-        /* If one of the expected types, concatenate the name of this type */
-
-        if (ExpectedBtypes & ThisRtype)
-        {
-            strcat (Buffer, &AcpiRtypeNames[i][j]);
-            j = 0;              /* Use name separator from now on */
-        }
-        ThisRtype <<= 1;    /* Next Rtype */
-    }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AhFindOperators
- *
- * PARAMETERS:  Name                - Name or prefix for an ASL operator
- *
- * RETURN:      None
- *
- * DESCRIPTION: Find all ASL operators that match the input Name or name
- *              prefix.
- *
- ******************************************************************************/
-
-static void
-AhFindOperators (
-    char                    *Name)
-{
-    UINT32                  i;
-
-
-    for (i = 0; AslOperatorNames[i]; i++)
-    {
-        if (strstr (AslOperatorNames[i], Name) ==
-            AslOperatorNames[i])
-        {
-            AhDisplayOperator (AslOperatorSyntax[i]);
-        }
-    }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AhDisplayOperator
- *
- * PARAMETERS:  Op                  - Pointer to ASL operator with syntax info
- *
- * RETURN:      None
- *
- * DESCRIPTION: Format and display syntax info for an ASL operator. Splits
- *              long lines appropriately for reading.
- *
- ******************************************************************************/
-
-static void
-AhDisplayOperator (
-    const char              *Op)
-{
-    size_t                  TokenLength = 0;
-    size_t                  Position = 0;
-    const char              *This = Op;
-    const char              *Next;
-    const char              *Last;
-
-
-    Last = This + strlen (This);
-    while ((Next = strpbrk (This, " ")))
-    {
-        TokenLength = Next - This;
-        Position += TokenLength;
-
-        /* Split long lines */
-
-        if (Position > AH_MAX_LINE_LENGTH)
-        {
-            printf ("\n    ");
-            Position = TokenLength;
-        }
-
-        printf ("%.*s ", (int) TokenLength, This);
-        This = Next + 1;
-    }
-
-    /* Handle last token on the input line */
-
-    TokenLength = Last - This;
-    if (TokenLength > 0)
-    {
-        Position += TokenLength;
-        if (Position > AH_MAX_LINE_LENGTH)
-        {
-            printf ("\n    ");
-        }
-        printf ("%s\n", This);
-    }
 }

@@ -229,7 +229,23 @@
 				Filter=".c"
 				>
 				<File
+					RelativePath="..\..\source\tools\acpihelp\ahamlops.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\tools\acpihelp\ahaslops.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\tools\acpihelp\ahdecode.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\tools\acpihelp\ahmain.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\tools\acpihelp\ahpredef.c"
 					>
 				</File>
 			</Filter>
@@ -267,10 +283,6 @@
 			>
 			<File
 				RelativePath="..\..\source\tools\acpihelp\acpihelp.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\source\tools\acpihelp\ahops.h"
 				>
 			</File>
 		</Filter>
