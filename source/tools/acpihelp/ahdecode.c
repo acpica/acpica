@@ -153,13 +153,20 @@ static void
 AhDisplayAslOperator (
     const AH_ASL_OPERATOR   *Op);
 
+static void
+AhPrintOneField (
+    UINT32                  Indent,
+    UINT32                  CurrentPosition,
+    UINT32                  MaxPosition,
+    const char              *Field);
+
 
 /*******************************************************************************
  *
  * FUNCTION:    AhFindPredefinedNames (entry point for predefined name search)
  *
- * PARAMETERS:  Name                - Name or prefix to find. Must start with
- *                                    an underscore
+ * PARAMETERS:  NamePrefix          - Name or prefix to find. Must start with
+ *                                    an underscore. NULL means "find all"
  *
  * RETURN:      None
  *
@@ -177,6 +184,12 @@ AhFindPredefinedNames (
     BOOLEAN                 Found;
     char                    Name[9];
 
+
+    if (!NamePrefix)
+    {
+        Found = AhDisplayPredefinedName (Name, 0);
+        return;
+    }
 
     /* Contruct a local name or name prefix */
 
@@ -232,6 +245,16 @@ AhDisplayPredefinedName (
 
     for (Info = AslPredefinedInfo; Info->Name; Info++)
     {
+        if (!Name)
+        {
+            Found = TRUE;
+            printf ("%s: <%s>\n", Info->Name, Info->Description);
+            printf ("%*s%s\n", 6, " ", Info->Action);
+
+            AhDisplayPredefinedInfo (Info->Name);
+            continue;
+        }
+
         Matched = TRUE;
         for (i = 0; i < Length; i++)
         {
@@ -358,7 +381,8 @@ AhGetExpectedTypes (
  *
  * FUNCTION:    AhFindAmlOpcode (entry point for AML opcode name search)
  *
- * PARAMETERS:  Name                - Name or prefix for an AML opcode
+ * PARAMETERS:  Name                - Name or prefix for an AML opcode.
+ *                                    NULL means "find all"
  *
  * RETURN:      None
  *
@@ -383,6 +407,13 @@ AhFindAmlOpcode (
     {
         if (!Op->OpcodeName) /* Unused opcodes */
         {
+            continue;
+        }
+
+        if (!Name)
+        {
+            AhDisplayAmlOpcode (Op);
+            Found = TRUE;
             continue;
         }
 
@@ -427,12 +458,20 @@ AhDecodeAmlOpcode (
     UINT8                   Prefix;
 
 
+    if (!OpcodeString)
+    {
+        AhFindAmlOpcode (NULL);
+        return;
+    }
+
     Opcode = ACPI_STRTOUL (OpcodeString, NULL, 16);
     if (Opcode > ACPI_UINT16_MAX)
     {
         printf ("Invalid opcode (more than 16 bits)\n");
         return;
     }
+
+    /* Only valid opcode extension is 0x5B */
 
     Prefix = (Opcode & 0x0000FF00) >> 8;
     if (Prefix && (Prefix != 0x5B))
@@ -479,22 +518,41 @@ AhDisplayAmlOpcode (
         return;
     }
 
+    /* Opcode name and value(s) */
+
     printf ("%18s: Opcode=%-9s Type (%s)",
         Op->OpcodeName, Op->OpcodeString, Op->Type);
 
+    /* Optional fixed/static arguments */
+
     if (Op->FixedArguments)
     {
-        printf (" FixedArgs (%s)", Op->FixedArguments);
+        printf (" FixedArgs (");
+        AhPrintOneField (37, 36 + 7 + strlen (Op->Type) + 12,
+            AH_MAX_AML_LINE_LENGTH, Op->FixedArguments);
+        printf (")");
     }
+
+    /* Optional variable-length argument list */
+
     if (Op->VariableArguments)
     {
-        printf (" VariableArgs (%s)", Op->VariableArguments);
+        if (Op->FixedArguments)
+        {
+            printf ("\n%*s", 36, " ");
+        }
+        printf (" VariableArgs (");
+        AhPrintOneField (37, 15, AH_MAX_AML_LINE_LENGTH, Op->VariableArguments);
+        printf (")");
     }
     printf ("\n");
 
-    if (Op->ArgumentNames)
+    /* Grammar specification */
+
+    if (Op->Grammar)
     {
-        printf ("%*s%s\n", 37, " ", Op->ArgumentNames);
+        AhPrintOneField (37, 0, AH_MAX_AML_LINE_LENGTH, Op->Grammar);
+        printf ("\n");
     }
 }
 
@@ -503,7 +561,8 @@ AhDisplayAmlOpcode (
  *
  * FUNCTION:    AhFindAslOperators (entry point for ASL operator search)
  *
- * PARAMETERS:  Name                - Name or prefix for an ASL operator
+ * PARAMETERS:  Name                - Name or prefix for an ASL operator.
+ *                                    NULL means "find all"
  *
  * RETURN:      None
  *
@@ -526,7 +585,7 @@ AhFindAslOperators (
 
     for (Operator = AslOperatorInfo; Operator->Name; Operator++)
     {
-        if (!strcmp (Name, "*"))
+        if (!Name)
         {
             AhDisplayAslOperator (Operator);
             Found = TRUE;
@@ -569,21 +628,59 @@ static void
 AhDisplayAslOperator (
     const AH_ASL_OPERATOR   *Op)
 {
-    size_t                  TokenLength = 0;
-    size_t                  Position = 0;
-    const char              *This = Op->Syntax;
-    const char              *Next;
-    const char              *Last;
 
+    /* ASL operator name and description */
 
-    printf ("%s: <%s>\n", Op->Name, Op->Description);
+    printf ("%16s: %s\n", Op->Name, Op->Description);
     if (!Op->Syntax)
     {
         return;
     }
 
-    printf ("   ");
-    Position = 3;
+    /* Syntax for the operator */
+
+    AhPrintOneField (18, 0, AH_MAX_ASL_LINE_LENGTH, Op->Syntax);
+    printf ("\n");
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AhPrintOneField
+ *
+ * PARAMETERS:  Indent              - Indent length for new line(s)
+ *              CurrentPosition     - Position on current line
+ *              MaxPosition         - Max allowed line length
+ *              Field               - Data to output
+ *
+ * RETURN:      Line position after field is written
+ *
+ * DESCRIPTION: Split long lines appropriately for ease of reading.
+ *
+ ******************************************************************************/
+
+static void
+AhPrintOneField (
+    UINT32                  Indent,
+    UINT32                  CurrentPosition,
+    UINT32                  MaxPosition,
+    const char              *Field)
+{
+    UINT32                  Position;
+    UINT32                  TokenLength;
+    const char              *This;
+    const char              *Next;
+    const char              *Last;
+
+
+    This = Field;
+    Position = CurrentPosition;
+
+    if (Position == 0)
+    {
+        printf ("%*s", (int) Indent, " ");
+        Position = Indent;
+    }
 
     Last = This + strlen (This);
     while ((Next = strpbrk (This, " ")))
@@ -593,9 +690,9 @@ AhDisplayAslOperator (
 
         /* Split long lines */
 
-        if (Position > AH_MAX_LINE_LENGTH)
+        if (Position > MaxPosition)
         {
-            printf ("\n    ");
+            printf ("\n%*s", (int) Indent, " ");
             Position = TokenLength;
         }
 
@@ -609,10 +706,10 @@ AhDisplayAslOperator (
     if (TokenLength > 0)
     {
         Position += TokenLength;
-        if (Position > AH_MAX_LINE_LENGTH)
+        if (Position > MaxPosition)
         {
-            printf ("\n    ");
+            printf ("\n%*s", (int) Indent, " ");
         }
-        printf ("%s\n", This);
+        printf ("%s", This);
     }
 }

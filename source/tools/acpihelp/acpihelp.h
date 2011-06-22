@@ -139,7 +139,8 @@
 #define     AH_DECODE_AML               3
 #define     AH_DECODE_AML_OPCODE        4
 
-#define     AH_MAX_LINE_LENGTH          64
+#define     AH_MAX_ASL_LINE_LENGTH      70
+#define     AH_MAX_AML_LINE_LENGTH      100
 
 
 typedef struct ah_aml_opcode
@@ -151,7 +152,7 @@ typedef struct ah_aml_opcode
     char            *Type;
     char            *FixedArguments;
     char            *VariableArguments;
-    char            *ArgumentNames;
+    char            *Grammar;
 
 } AH_AML_OPCODE;
 
@@ -175,6 +176,7 @@ typedef struct ah_predefined_name
 extern const AH_AML_OPCODE          AmlOpcodeInfo[];
 extern const AH_ASL_OPERATOR        AslOperatorInfo[];
 extern const AH_PREDEFINED_NAME     AslPredefinedInfo[];
+extern BOOLEAN                      AhDisplayAll;
 
 void
 AhStrupr (

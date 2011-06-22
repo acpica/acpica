@@ -122,6 +122,8 @@ static void
 AhDisplayUsage (
     void);
 
+BOOLEAN             AhDisplayAll = FALSE;
+
 
 /******************************************************************************
  *
@@ -137,12 +139,13 @@ AhDisplayUsage (
 {
 
     printf ("\n");
-    printf ("Usage: acpihelp <options> [NamePrefix | HexValue]\n\n");
-    printf ("Where: -m <NamePrefix>     Find/Display AML opcode name(s)\n");
+    printf ("Usage: acpihelp <options> [NamePrefix | HexValue | *]\n\n");
+    printf ("Where: -a                  Display all of type [-m|o|p|s]\n");
+    printf ("       -m <NamePrefix>     Find/Display AML opcode name(s)\n");
     printf ("       -o <HexValue>       Decode hex AML opcode\n");
     printf ("       -p <NamePrefix>     Find/Display ASL predefined method name(s)\n");
     printf ("       -s <NamePrefix>     Find/Display ASL operator name(s)\n");
-    printf ("\nDefault search with no options:\n");
+    printf ("\nDefault search with NamePrefix and no options:\n");
     printf ("    Find ASL operator names - if NamePrefix does not start with underscore\n");
     printf ("    Find ASL predefined method names - if NamePrefix starts with underscore\n");
     printf ("\n");
@@ -178,8 +181,12 @@ main (
 
     /* Command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "hmops")) != EOF) switch (j)
+    while ((j = AcpiGetopt (argc, argv, "ahmops")) != EOF) switch (j)
     {
+    case 'a':
+        AhDisplayAll = TRUE;
+        break;
+
     case 'm':
         DecodeType = AH_DECODE_AML;
         break;
@@ -202,16 +209,22 @@ main (
         return (-1);
     }
 
-    Name = argv[AcpiGbl_Optind];
-    if (!Name)
+    /* Name is required unless -a specified (display all) */
+
+    Name = NULL;
+    if (!AhDisplayAll)
     {
-        printf ("Missing Name\n");
-        AhDisplayUsage ();
-        return (-1);
-    }
-    if (Name[0] == 0)
-    {
-        return (0);
+        Name = argv[AcpiGbl_Optind];
+        if (!Name)
+        {
+            printf ("Missing Name\n");
+            AhDisplayUsage ();
+            return (-1);
+        }
+        if (Name[0] == 0)
+        {
+            return (0);
+        }
     }
 
     switch (DecodeType)
@@ -233,6 +246,12 @@ main (
         break;
 
     default:
+        if (!Name)
+        {
+            AhFindAslOperators (Name);
+            break;
+        }
+
         if (*Name == '_')
         {
             AhFindPredefinedNames (Name);
