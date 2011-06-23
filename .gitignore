@@ -104,7 +104,13 @@ libraries/apitest.exe
 libraries/AcpiNames.exe
 libraries/AcpiNamesDebug.exe
 libraries/*.ex_
-*.sh
+chmod.sh
+crlf.sh
+pull.sh
+push.sh
+src.sh
+touch.sh
+u2d.sh
 new
 patches
 pmtools
