@@ -154,6 +154,10 @@ AhDisplayAslOperator (
     const AH_ASL_OPERATOR   *Op);
 
 static void
+AhDisplayAslKeyword (
+    const AH_ASL_KEYWORD    *Op);
+
+static void
 AhPrintOneField (
     UINT32                  Indent,
     UINT32                  CurrentPosition,
@@ -554,6 +558,91 @@ AhDisplayAmlOpcode (
         AhPrintOneField (37, 0, AH_MAX_AML_LINE_LENGTH, Op->Grammar);
         printf ("\n");
     }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AhFindAslKeywords (entry point for ASL keyword search)
+ *
+ * PARAMETERS:  Name                - Name or prefix for an ASL keyword.
+ *                                    NULL means "find all"
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Find all ASL keywords that match the input Name or name
+ *              prefix.
+ *
+ ******************************************************************************/
+
+void
+AhFindAslKeywords (
+    char                    *Name)
+{
+    const AH_ASL_KEYWORD    *Keyword;
+    BOOLEAN                 Found = FALSE;
+
+
+    AhStrupr (Name);
+
+    for (Keyword = AslKeywordInfo; Keyword->Name; Keyword++)
+    {
+        if (!Name)
+        {
+            AhDisplayAslKeyword (Keyword);
+            Found = TRUE;
+            continue;
+        }
+
+        /* Upper case the operator name before substring compare */
+
+        strcpy (Gbl_Buffer, Keyword->Name);
+        AhStrupr (Gbl_Buffer);
+
+        if (strstr (Gbl_Buffer, Name) == Gbl_Buffer)
+        {
+            AhDisplayAslKeyword (Keyword);
+            Found = TRUE;
+        }
+    }
+
+    if (!Found)
+    {
+        printf ("%s, no matching ASL keywords\n", Name);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AhDisplayAslKeyword
+ *
+ * PARAMETERS:  Op                  - Pointer to ASL keyword with syntax info
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format and display syntax info for an ASL keyword. Splits
+ *              long lines appropriately for reading.
+ *
+ ******************************************************************************/
+
+static void
+AhDisplayAslKeyword (
+    const AH_ASL_KEYWORD    *Op)
+{
+
+    /* ASL keyword name and description */
+
+    printf ("%20s: %s\n", Op->Name, Op->Description);
+    if (!Op->KeywordList)
+    {
+        return;
+    }
+
+    /* List of actual keywords */
+
+    AhPrintOneField (22, 0, AH_MAX_ASL_LINE_LENGTH, Op->KeywordList);
+    printf ("\n");
 }
 
 

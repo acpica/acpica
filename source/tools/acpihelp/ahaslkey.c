@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: acpihelp.h - Include file for AcpiHelp utility
+ * Module Name: ahaslkey - Table of all known ASL non-operator keywords
  *
  *****************************************************************************/
 
@@ -113,103 +113,72 @@
  *
  *****************************************************************************/
 
-#ifndef __ACPIHELP_H
-#define __ACPIHELP_H
+#include "acpihelp.h"
 
-
-#include "acpi.h"
-#include "accommon.h"
-#include "acapps.h"
-
-#include <stdio.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <ctype.h>
-#ifdef WIN32
-#include <io.h>
-#include <direct.h>
-#endif
-#include <errno.h>
-
-
-#define     AH_DECODE_DEFAULT           0
-#define     AH_DECODE_ASL               1
-#define     AH_DECODE_ASL_KEYWORD       2
-#define     AH_DECODE_PREDEFINED_NAME   3
-#define     AH_DECODE_AML               4
-#define     AH_DECODE_AML_OPCODE        5
-
-#define     AH_MAX_ASL_LINE_LENGTH      70
-#define     AH_MAX_AML_LINE_LENGTH      100
-
-
-typedef struct ah_aml_opcode
+/*
+ * ASL Keyword types and associated actual keywords.
+ * This table was extracted from the ACPI specification.
+ */
+const AH_ASL_KEYWORD        AslKeywordInfo[] =
 {
-    UINT16          OpcodeRangeStart;
-    UINT16          OpcodeRangeEnd;
-    char            *OpcodeString;
-    char            *OpcodeName;
-    char            *Type;
-    char            *FixedArguments;
-    char            *VariableArguments;
-    char            *Grammar;
-
-} AH_AML_OPCODE;
-
-typedef struct ah_asl_operator
-{
-    char            *Name;
-    char            *Syntax;
-    char            *Description;
-
-} AH_ASL_OPERATOR;
-
-typedef struct ah_asl_keyword
-{
-    char            *Name;
-    char            *Description;
-    char            *KeywordList;
-
-} AH_ASL_KEYWORD;
-
-typedef struct ah_predefined_name
-{
-    char            *Name;
-    char            *Description;
-    char            *Action;
-
-} AH_PREDEFINED_NAME;
-
-
-extern const AH_AML_OPCODE          AmlOpcodeInfo[];
-extern const AH_ASL_OPERATOR        AslOperatorInfo[];
-extern const AH_ASL_KEYWORD         AslKeywordInfo[];
-extern const AH_PREDEFINED_NAME     AslPredefinedInfo[];
-extern BOOLEAN                      AhDisplayAll;
-
-void
-AhStrupr (
-    char                    *SrcString);
-
-void
-AhFindAmlOpcode (
-    char                    *Name);
-
-void
-AhDecodeAmlOpcode (
-    char                    *Name);
-
-void
-AhFindPredefinedNames (
-    char                    *Name);
-
-void
-AhFindAslOperators (
-    char                    *Name);
-
-void
-AhFindAslKeywords (
-    char                    *Name);
-
-#endif /* __ACPIHELP_H */
+    {"AccessAttribKeyword", "SMBus Attributes",
+        ":= SMBQuick | SMBSendReceive | SMBByte | SMBWord | "
+        "SMBBlock | SMBProcessCall | SMBBlockProcessCall"},
+    {"AccessTypeKeyword", "Field Access Types",
+        ":= AnyAcc | ByteAcc | WordAcc | DWordAcc | QWordAcc | BufferAcc"},
+    {"AddressKeyword", "ACPI memory range types",
+        ":= AddressRangeMemory | AddressRangeReserved | "
+        "AddressRangeNVS | AddressRangeACPI"},
+    {"AddressSpaceKeyword", "Operation Region Address Space Types",
+        ":= RegionSpaceKeyword | FFixedHW"},
+    {"BusMasterKeyword", "DMA Bus Mastering",
+        ":= BusMaster | NotBusMaster"},
+    {"DecodeKeyword", "Type of Memory Decoding - Resource Descriptors",
+        ":= SubDecode | PosDecode"},
+    {"DMATypeKeyword", "DMA Types - DMA Resource Descriptor",
+        ":= Compatibility | TypeA | TypeB | TypeF"},
+    {"InterruptTypeKeyword", "Interrupt Types",
+        ":= Edge | Level"},
+    {"InterruptLevel", "Interrupt Active Types",
+        ":= ActiveHigh | ActiveLow"},
+    {"IODecodeKeyword", "I/O Decoding - IO Resource Descriptor",
+        ":= Decode16 | Decode10"},
+    {"LockRuleKeyword", "Global Lock use for Field Operator",
+        ":= Lock | NoLock"},
+    {"MatchOpKeyword", "Types for Match Operator",
+        ":= MTR | MEQ | MLE | MLT | MGE | MGT"},
+    {"MaxKeyword", "Max Range Type - Resource Descriptors",
+        ":= MaxFixed | MaxNotFixed"},
+    {"MemTypeKeyword", "Memory Types - Resource Descriptors",
+        ":= Cacheable | WriteCombining | Prefetchable | NonCacheable"},
+    {"MinKeyword", "Min Range Type - Resource Descriptors",
+        ":= MinFixed | MinNotFixed"},
+    {"ObjectTypeKeyword", "ACPI Object Types",
+        ":= UnknownObj | IntObj | StrObj | BuffObj | PkgObj | FieldUnitObj | "
+        "DeviceObj | EventObj | MethodObj | MutexObj | OpRegionObj | PowerResObj | "
+        "ProcessorObj | ThermalZoneObj | BuffFieldObj | DDBHandleObj"},
+    {"RangeTypeKeyword", "I/O Range Types - Resource Descriptors",
+        ":= ISAOnlyRanges | NonISAOnlyRanges | EntireRange"},
+    {"ReadWriteKeyword", "Memory Access Types - Resource Descriptors",
+        ":= ReadWrite | ReadOnly"},
+    {"RegionSpaceKeyword", "Operation Region Address Space Types",
+        ":= UserDefRegionSpace | SystemIO | SystemMemory | PCI_Config | "
+        "EmbeddedControl | SMBus | SystemCMOS | PciBarTarget | IPMI"},
+    {"ResourceTypeKeyword", "Resource Usage - Resource Descriptors",
+        ":= ResourceConsumer | ResourceProducer"},
+    {"SerializeRuleKeyword", "Control Method Serialization",
+        ":= Serialized | NotSerialized"},
+    {"ShareTypeKeyword", "Interrupt Sharing - Resource Descriptors",
+        ":= Shared | Exclusive"},
+    {"TranslationKeyword", "Translation Density Types - Resource Descriptors",
+        ":= SparseTranslation | DenseTranslation"},
+    {"TypeKeyword", "Translation Types - Resource Descriptors",
+        ":= TypeTranslation | TypeStatic"},
+    {"UpdateRuleKeyword", "Field Update Rules",
+        ":= Preserve | WriteAsOnes | WriteAsZeros"},
+    {"UserDefRegionSpace", "User defined address spaces",
+        ":= IntegerData => 0x80 - 0xFF"},
+    {"XferTypeKeyword", "DMA Transfer Types",
+        ":= Transfer8 | Transfer16 | Transfer8_16"},
+    {NULL, NULL, NULL}
+};

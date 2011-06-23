@@ -122,8 +122,6 @@ static void
 AhDisplayUsage (
     void);
 
-BOOLEAN             AhDisplayAll = FALSE;
-
 
 /******************************************************************************
  *
@@ -139,12 +137,13 @@ AhDisplayUsage (
 {
 
     printf ("\n");
-    printf ("Usage: acpihelp <options> [NamePrefix | HexValue | *]\n\n");
-    printf ("Where: -a                  Display all of type [-m|o|p|s]\n");
-    printf ("       -m <NamePrefix>     Find/Display AML opcode name(s)\n");
-    printf ("       -o <HexValue>       Decode hex AML opcode\n");
-    printf ("       -p <NamePrefix>     Find/Display ASL predefined method name(s)\n");
-    printf ("       -s <NamePrefix>     Find/Display ASL operator name(s)\n");
+    printf ("Usage: acpihelp <options> [NamePrefix | HexValue]\n\n");
+    printf ("Where: -k [NamePrefix]     Find/Display ASL non-operator keyword(s)\n");
+    printf ("       -m [NamePrefix]     Find/Display AML opcode name(s)\n");
+    printf ("       -o [HexValue]       Decode hex AML opcode\n");
+    printf ("       -p [NamePrefix]     Find/Display ASL predefined method name(s)\n");
+    printf ("       -s [NamePrefix]     Find/Display ASL operator name(s)\n");
+    printf ("\nNamePrefix/HexValue not specified means \"Display All\"\n");
     printf ("\nDefault search with NamePrefix and no options:\n");
     printf ("    Find ASL operator names - if NamePrefix does not start with underscore\n");
     printf ("    Find ASL predefined method names - if NamePrefix starts with underscore\n");
@@ -181,10 +180,10 @@ main (
 
     /* Command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "ahmops")) != EOF) switch (j)
+    while ((j = AcpiGetopt (argc, argv, "hkmops")) != EOF) switch (j)
     {
-    case 'a':
-        AhDisplayAll = TRUE;
+    case 'k':
+        DecodeType = AH_DECODE_ASL_KEYWORD;
         break;
 
     case 'm':
@@ -209,23 +208,9 @@ main (
         return (-1);
     }
 
-    /* Name is required unless -a specified (display all) */
+    /* Missing (null) name means "display all" */
 
-    Name = NULL;
-    if (!AhDisplayAll)
-    {
-        Name = argv[AcpiGbl_Optind];
-        if (!Name)
-        {
-            printf ("Missing Name\n");
-            AhDisplayUsage ();
-            return (-1);
-        }
-        if (Name[0] == 0)
-        {
-            return (0);
-        }
-    }
+    Name = argv[AcpiGbl_Optind];
 
     switch (DecodeType)
     {
@@ -243,6 +228,10 @@ main (
 
     case AH_DECODE_ASL:
         AhFindAslOperators (Name);
+        break;
+
+    case AH_DECODE_ASL_KEYWORD:
+        AhFindAslKeywords (Name);
         break;
 
     default:

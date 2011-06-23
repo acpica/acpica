@@ -233,6 +233,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\tools\acpihelp\ahaslkey.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\tools\acpihelp\ahaslops.c"
 					>
 				</File>

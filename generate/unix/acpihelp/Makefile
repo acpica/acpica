@@ -23,6 +23,7 @@ CFLAGS+= \
 
 OBJS = \
 	ahamlops.o \
+	ahaslkey.o \
 	ahaslops.o \
 	ahdecode.o \
 	ahpredef.o \
@@ -40,6 +41,9 @@ $(PROG) : $(OBJS)
 # acpihelp source
 #
 ahamlops.o :        $(ACPICA_TOOLS)/acpihelp/ahamlops.c
+	$(COMPILE)
+
+ahaslkey.o :        $(ACPICA_TOOLS)/acpihelp/ahaslkey.c
 	$(COMPILE)
 
 ahaslops.o :        $(ACPICA_TOOLS)/acpihelp/ahaslops.c
