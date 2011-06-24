@@ -144,18 +144,14 @@ AbDisplayUsage (
         printf ("Option requires %u arguments\n\n", OptionCount);
     }
 
-    printf ("Usage: acpibin [options]\n\n");
-    printf ("Options:\n\n");
-    printf (" -c <File1> <File2>           Compare two AML files\n");
-    printf (" -d <InFile> <OutFile>        Dump AML binary to text file\n");
-    printf (" -e <Sig> <InFile> <OutFile>  Extract binary AML table from AcpiDmp file\n\n");
+    ACPI_USAGE_HEADER ("acpibin [options]");
 
-    printf (" -h <File>                    Display table header for binary AML file\n");
-    printf (" -s <File>                    Update checksum for binary AML file\n");
-    printf (" -t                           Terse mode\n");
-
-    printf ("\n");
-    return;
+    ACPI_OPTION ("-c <File1><File2>",           "Compare two AML files");
+    ACPI_OPTION ("-d <In><Out>",                "Dump AML binary to text file");
+    ACPI_OPTION ("-e <Sig><In><Out>",           "Extract binary AML table from AcpiDmp file");
+    ACPI_OPTION ("-h <File>",                   "Display table header for binary AML file");
+    ACPI_OPTION ("-s <File>",                   "Update checksum for binary AML file");
+    ACPI_OPTION ("-t",                          "Terse mode");
 }
 
 

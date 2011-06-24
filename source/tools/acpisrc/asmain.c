@@ -337,19 +337,18 @@ AsDisplayUsage (
     void)
 {
 
+    ACPI_USAGE_HEADER ("acpisrc [-c|l|u] [-dsvy] <SourceDir> <DestinationDir>");
+
+    ACPI_OPTION ("-c",          "Generate cleaned version of the source");
+    ACPI_OPTION ("-h",          "Insert dual-license header into all modules");
+    ACPI_OPTION ("-l",          "Generate Linux version of the source");
+    ACPI_OPTION ("-u",          "Generate Custom source translation");
+
     printf ("\n");
-    printf ("Usage: acpisrc [-c|l|u] [-dsvy] <SourceDir> <DestinationDir>\n\n");
-    printf ("Where: -c          Generate cleaned version of the source\n");
-    printf ("       -h          Insert dual-license header into all modules\n");
-    printf ("       -l          Generate Linux version of the source\n");
-    printf ("       -u          Generate Custom source translation\n");
-    printf ("\n");
-    printf ("       -d          Leave debug statements in code\n");
-    printf ("       -s          Generate source statistics only\n");
-    printf ("       -v          Verbose mode\n");
-    printf ("       -y          Suppress file overwrite prompts\n");
-    printf ("\n");
-    return;
+    ACPI_OPTION ("-d",          "Leave debug statements in code");
+    ACPI_OPTION ("-s",          "Generate source statistics only");
+    ACPI_OPTION ("-v",          "Verbose mode");
+    ACPI_OPTION ("-y",          "Suppress file overwrite prompts");
 }
 
 
