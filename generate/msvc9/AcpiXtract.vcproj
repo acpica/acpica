@@ -49,7 +49,8 @@
 				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
-				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="..\..\source\Include"
+				PreprocessorDefinitions="ACPI_XTRACT_APP;WIN32;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				ExceptionHandling="0"
 				RuntimeLibrary="0"
@@ -147,7 +148,8 @@
 				Name="VCCLCompilerTool"
 				UseUnicodeResponseFiles="false"
 				Optimization="0"
-				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="..\..\source\Include"
+				PreprocessorDefinitions="ACPI_XTRACT_APP;WIN32;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				ExceptionHandling="0"
 				BasicRuntimeChecks="3"
@@ -245,11 +247,23 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath="..\..\source\tools\acpixtract\axmain.c"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl"
 			>
+		</Filter>
+		<Filter
+			Name="Common"
+			>
+			<File
+				RelativePath="..\..\source\common\getopt.c"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
