@@ -559,10 +559,9 @@ RsGetBufferDataLength (
 
     while (InitializerOp)
     {
-        if (InitializerOp->Asl.ParseOpcode == PARSEOP_BUFFER)
+        if (InitializerOp->Asl.ParseOpcode == PARSEOP_DATABUFFER)
         {
             DataList = InitializerOp->Asl.Child;
-            DataList = DataList->Asl.Next;
 
             while (DataList)
             {
@@ -763,7 +762,6 @@ RsDoGpioIntDescriptor (
                 AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
                 return (Rnode);
             }
-            BufferOp = RsCompleteNodeAndGetNext (BufferOp); /* First child is the COUNT */
 
             /* At this point, we know the offset and length for the vendor data */
 
@@ -983,7 +981,6 @@ RsDoGpioIoDescriptor (
                 AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
                 return (Rnode);
             }
-            BufferOp = RsCompleteNodeAndGetNext (BufferOp); /* First child is the COUNT */
 
             /* At this point, we know the offset and length for the vendor data */
 
@@ -1193,7 +1190,6 @@ RsDoI2cSerialBusDescriptor (
                 AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
                 return (Rnode);
             }
-            BufferOp = RsCompleteNodeAndGetNext (BufferOp); /* First child is the COUNT */
 
             /* At this point, we know the offset and length for the vendor data */
 
@@ -1395,7 +1391,6 @@ RsDoSpiSerialBusDescriptor (
                 AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
                 return (Rnode);
             }
-            BufferOp = RsCompleteNodeAndGetNext (BufferOp); /* First child is the COUNT */
 
             /* At this point, we know the offset and length for the vendor data */
 
@@ -1597,7 +1592,6 @@ RsDoUartSerialBusDescriptor (
                 AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
                 return (Rnode);
             }
-            BufferOp = RsCompleteNodeAndGetNext (BufferOp); /* First child is the COUNT */
 
             /* At this point, we know the offset and length for the vendor data */
 

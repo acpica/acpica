@@ -257,6 +257,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* CREATEFIELD */               OP_TABLE_ENTRY (AML_CREATE_FIELD_OP,        0,                              0,                  0),
 /* CREATEQWORDFIELD */          OP_TABLE_ENTRY (AML_CREATE_QWORD_FIELD_OP,  0,                              0,                  0),
 /* CREATEWORDFIELD */           OP_TABLE_ENTRY (AML_CREATE_WORD_FIELD_OP,   0,                              0,                  0),
+/* DATABUFFER */                OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
 /* DATATABLEREGION */           OP_TABLE_ENTRY (AML_DATA_REGION_OP,         0,                              0,                  0),
 /* DEBUG */                     OP_TABLE_ENTRY (AML_DEBUG_OP,               0,                              0,                  ACPI_BTYPE_DEBUG_OBJECT),
 /* DECODETYPE_POS */            OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),

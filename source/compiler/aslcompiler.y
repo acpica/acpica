@@ -246,6 +246,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_CREATEFIELD
 %token <i> PARSEOP_CREATEQWORDFIELD
 %token <i> PARSEOP_CREATEWORDFIELD
+%token <i> PARSEOP_DATABUFFER
 %token <i> PARSEOP_DATATABLEREGION
 %token <i> PARSEOP_DEBUG
 %token <i> PARSEOP_DECODETYPE_POS
@@ -794,6 +795,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> SpiSerialBusTerm
 %type <n> UartSerialBusTerm
 %type <n> FixedDmaTerm
+%type <n> DataBufferTerm
 
 %type <n> NameString
 %type <n> NameSeg
@@ -2587,6 +2589,13 @@ BufferTermData
     | StringData                    {}
     ;
 
+DataBufferTerm
+    : PARSEOP_DATABUFFER '{'        {$<n>$ = TrCreateLeafNode (PARSEOP_DATABUFFER);}
+        ByteList '}'                {$$ = TrLinkChildren ($<n>3,1,$4);}
+    | PARSEOP_DATABUFFER '('
+        error ')'                   {$$ = AslDoError(); yyclearin;}
+    ;
+
 ByteList
     :                               {$$ = NULL;}
     | ByteConstExpr
@@ -3131,7 +3140,7 @@ WordSpaceTerm
 OptionalBuffer_Last
     :                               {$$ = NULL;}
     | ','                           {$$ = NULL;}
-    | ',' BufferTerm                {$$ = $2;}
+    | ',' DataBufferTerm            {$$ = $2;}
     ;
 
 PinConfigByte
@@ -3185,7 +3194,7 @@ I2cSerialBusTerm
         OptionalByteConstExpr       // ResourceSourceIndex
         OptionalResourceType        // ResourceType
         OptionalNameString          // DescriptorName
-        OptionalReference           // VendorData
+        OptionalBuffer_Last         // VendorData
         ')'                         {$$ = TrLinkChildren ($<n>3,9,$4,$5,$7,$8,$10,$11,$12,$13,$14);}
     | PARSEOP_I2C_SERIALBUS '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
@@ -3205,7 +3214,7 @@ SpiSerialBusTerm
         OptionalByteConstExpr       // ResourceSourceIndex
         OptionalResourceType        // ResourceType
         OptionalNameString          // DescriptorName
-        OptionalReference           // VendorData
+        OptionalBuffer_Last         // VendorData
         ')'                         {$$ = TrLinkChildren ($<n>3,13,$4,$6,$7,$9,$10,$12,$14,$16,$17,$18,$19,$20,$21);}
     | PARSEOP_SPI_SERIALBUS '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
@@ -3225,7 +3234,7 @@ UartSerialBusTerm
         OptionalByteConstExpr       // ResourceSourceIndex
         OptionalResourceType        // ResourceType
         OptionalNameString          // DescriptorName
-        OptionalReference           // VendorData
+        OptionalBuffer_Last         // VendorData
         ')'                         {$$ = TrLinkChildren ($<n>3,13,$4,$5,$6,$8,$9,$10,$12,$14,$15,$16,$17,$18,$19);}
     | PARSEOP_UART_SERIALBUS '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
