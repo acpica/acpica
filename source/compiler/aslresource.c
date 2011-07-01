@@ -585,6 +585,29 @@ RsSetFlagBits (
 }
 
 
+void
+RsSetFlagBits16 (
+    UINT16                  *Flags,
+    ACPI_PARSE_OBJECT       *Op,
+    UINT8                   Position,
+    UINT8                   DefaultBit)
+{
+
+    if (Op->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+    {
+        /* Use the default bit */
+
+        *Flags |= (DefaultBit << Position);
+    }
+    else
+    {
+        /* Use the bit specified in the initialization node */
+
+        *Flags |= (((UINT16) Op->Asl.Value.Integer) << Position);
+    }
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    RsCompleteNodeAndGetNext

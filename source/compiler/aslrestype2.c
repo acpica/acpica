@@ -683,23 +683,23 @@ RsDoGpioIntDescriptor (
     {
         switch (i)
         {
-        case 0: /* Interrupt Type (or Mode - edge/level) (_HE) */
+        case 0: /* Interrupt Type (or Mode - edge/level) [Flag] (_HE) */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.IntFlags, InitializerOp, 0, 0);
+            RsSetFlagBits16 (&Descriptor->GpioInt.IntFlags, InitializerOp, 0, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTTYPE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 0);
             break;
 
-        case 1: /* Interrupt Level (or Polarity - Active high/low) (_LL) */
+        case 1: /* Interrupt Level (or Polarity - Active high/low) [Flags] (_LL) */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.IntFlags, InitializerOp, 1, 0);
+            RsSetFlagBits16 (&Descriptor->GpioInt.IntFlags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTLEVEL,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 1);
             break;
 
-        case 2: /* Share Type - Default: exclusive (0) (_SHR) */
+        case 2: /* Share Type - Default: exclusive (0) [Flag] (_SHR) */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.IntFlags, InitializerOp, 3, 0);
+            RsSetFlagBits16 (&Descriptor->GpioInt.IntFlags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 3);
             break;
@@ -742,7 +742,7 @@ RsDoGpioIntDescriptor (
 
         case 7: /* Resource Usage (consumer/producer) */
 
-            RsSetFlagBits ((UINT8 *) &Descriptor->GpioInt.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits16 (&Descriptor->GpioInt.Flags, InitializerOp, 0, 1);
             break;
 
         case 8: /* ResourceTag (Descriptor Name) */
@@ -905,7 +905,7 @@ RsDoGpioIoDescriptor (
         {
         case 0: /* Share Type [Flag] (_SHR) */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->GpioIo.IntFlags, InitializerOp, 3, 0);
+            RsSetFlagBits16 (&Descriptor->GpioIo.IntFlags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 3);
             break;
@@ -933,7 +933,7 @@ RsDoGpioIoDescriptor (
 
         case 4: /* I/O Restriction [Flag] (_IOR) */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->GpioIo.IntFlags, InitializerOp, 0, 0);
+            RsSetFlagBits16 (&Descriptor->GpioIo.IntFlags, InitializerOp, 0, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_IORESTRICTION,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 0);
             break;
@@ -962,7 +962,7 @@ RsDoGpioIoDescriptor (
 
         case 7: /* Resource Usage (consumer/producer) */
 
-            RsSetFlagBits ((UINT8 *) &Descriptor->GpioIo.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits16 (&Descriptor->GpioIo.Flags, InitializerOp, 0, 1);
             break;
 
         case 8: /* ResourceTag (Descriptor Name) */
@@ -1129,7 +1129,7 @@ RsDoI2cSerialBusDescriptor (
 
         case 1: /* Slave Mode [Flag] (_SLV) */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->I2cSerialBus.Flags, InitializerOp, 0, 0);
+            RsSetFlagBits (&Descriptor->I2cSerialBus.Flags, InitializerOp, 0, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_SLAVEMODE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (I2cSerialBus.Flags), 0);
             break;
@@ -1143,7 +1143,7 @@ RsDoI2cSerialBusDescriptor (
 
         case 3: /* Addresssing Mode [Flag] (_MOD) */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->I2cSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
+            RsSetFlagBits16 (&Descriptor->I2cSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_MODE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (I2cSerialBus.TypeSpecificFlags), 0);
             break;
@@ -1172,7 +1172,7 @@ RsDoI2cSerialBusDescriptor (
 
         case 6: /* Resource Usage (consumer/producer) */
 
-            RsSetFlagBits ((UINT8 *) &Descriptor->I2cSerialBus.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->I2cSerialBus.Flags, InitializerOp, 0, 1);
             break;
 
         case 7: /* ResourceTag (Descriptor Name) */
@@ -1303,14 +1303,14 @@ RsDoSpiSerialBusDescriptor (
 
         case 1: /* Device Polarity [Flag] (_DPL) */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->SpiSerialBus.TypeSpecificFlags, InitializerOp, 1, 0);
+            RsSetFlagBits16 (&Descriptor->SpiSerialBus.TypeSpecificFlags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_DEVICEPOLARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.TypeSpecificFlags), 1);
             break;
 
         case 2: /* Wire Mode [Flag] (_MOD) */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->SpiSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
+            RsSetFlagBits16 (&Descriptor->SpiSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_MODE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.TypeSpecificFlags), 0);
             break;
@@ -1324,7 +1324,7 @@ RsDoSpiSerialBusDescriptor (
 
         case 4: /* Slave Mode [Flag] (_SLV) */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->SpiSerialBus.Flags, InitializerOp, 0, 0);
+            RsSetFlagBits (&Descriptor->SpiSerialBus.Flags, InitializerOp, 0, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_SLAVEMODE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.Flags), 0);
             break;
@@ -1374,7 +1374,7 @@ RsDoSpiSerialBusDescriptor (
 
         case 10: /* Resource Usage (consumer/producer) */
 
-            RsSetFlagBits ((UINT8 *) &Descriptor->SpiSerialBus.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->SpiSerialBus.Flags, InitializerOp, 0, 1);
             break;
 
         case 11: /* ResourceTag (Descriptor Name) */
@@ -1503,32 +1503,30 @@ RsDoUartSerialBusDescriptor (
                 CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.DefaultBaudRate));
             break;
 
-/* TBD: Handle 16-bit flags!  */
-
         case 1: /* Bits Per Byte [Flags] (_LEN) */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 4+8, 0);
+            RsSetFlagBits16 (&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 4+8, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_LENGTH,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 4);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 4+8);
             break;
 
         case 2: /* Stop Bits [Flags] (_STB) */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 2+8, 0);
+            RsSetFlagBits16 (&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 2+8, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_STOPBITS,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 2);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 2+8);
             break;
 
         case 3: /* Lines In Use [Flags] (_LIN) */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
+            RsSetFlagBits16 (&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_LINE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 0);
             break;
 
         case 4: /* Endianness [Flag] (_END) */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 7+8, 0);
+            RsSetFlagBits16 (&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 7+8, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_ENDIANNESS,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 7+8);
             break;
@@ -1578,7 +1576,7 @@ RsDoUartSerialBusDescriptor (
 
         case 10: /* Resource Usage (consumer/producer) */
 
-            RsSetFlagBits ((UINT8 *) &Descriptor->UartSerialBus.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->UartSerialBus.Flags, InitializerOp, 0, 1);
             break;
 
         case 11: /* ResourceTag (Descriptor Name) */

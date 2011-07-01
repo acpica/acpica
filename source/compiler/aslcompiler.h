@@ -915,6 +915,13 @@ RsSetFlagBits (
     UINT8                   Position,
     UINT8                   DefaultBit);
 
+void
+RsSetFlagBits16 (
+    UINT16                  *Flags,
+    ACPI_PARSE_OBJECT       *Op,
+    UINT8                   Position,
+    UINT8                   DefaultBit);
+
 ACPI_PARSE_OBJECT *
 RsCompleteNodeAndGetNext (
     ACPI_PARSE_OBJECT       *Op);
