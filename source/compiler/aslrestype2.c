@@ -619,7 +619,7 @@ RsGetInterruptDataLength (
  *
  * RETURN:      Completed resource node
  *
- * DESCRIPTION: Construct a long "GPIO Interrupt" descriptor
+ * DESCRIPTION: Construct a long "GpioInt" descriptor
  *
  ******************************************************************************/
 
@@ -683,35 +683,35 @@ RsDoGpioIntDescriptor (
     {
         switch (i)
         {
-        case 0: /* Interrupt Type (or Mode - edge/level) */
+        case 0: /* Interrupt Type (or Mode - edge/level) (_HE) */
 
             RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.IntFlags, InitializerOp, 0, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTTYPE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 0);
             break;
 
-        case 1: /* Interrupt Level (or Polarity - Active high/low) */
+        case 1: /* Interrupt Level (or Polarity - Active high/low) (_LL) */
 
             RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.IntFlags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTLEVEL,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 1);
             break;
 
-        case 2: /* Share Type - Default: exclusive (0) */
+        case 2: /* Share Type - Default: exclusive (0) (_SHR) */
 
             RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.IntFlags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 3);
             break;
 
-        case 3: /* Pin Config [BYTE] */
+        case 3: /* Pin Config [BYTE] (_PPC) */
 
             Descriptor->GpioInt.PinConfig = (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_PINCONFIG,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.PinConfig));
             break;
 
-        case 4: /* DebounceTimeout [WORD] */
+        case 4: /* DebounceTimeout [WORD] (_DBT) */
 
             Descriptor->GpioInt.DebounceTimeout = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
@@ -750,7 +750,7 @@ RsDoGpioIntDescriptor (
             UtAttachNamepathToOwner (Op, InitializerOp);
             break;
 
-        case 9: /* Vendor Data (Optional - Buffer of BYTEs) */
+        case 9: /* Vendor Data (Optional - Buffer of BYTEs) (_VEN) */
 
             if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
             {
@@ -790,6 +790,7 @@ RsDoGpioIntDescriptor (
              *  The number of pins in the table can be calculated from:
              *  PinCount = (Resource Source Name Offset - Pin Table Offset) / 2
              *  (implies resource source must immediately follow the pin list.)
+             *  Name: _PIN
              */
             Descriptor->GpioInt.PinTableOffset =
                 Descriptor->GpioInt.VendorOffset + VendorLength;
@@ -838,7 +839,7 @@ RsDoGpioIntDescriptor (
  *
  * RETURN:      Completed resource node
  *
- * DESCRIPTION: Construct a long "GPIO I/O" descriptor
+ * DESCRIPTION: Construct a long "GpioIo" descriptor
  *
  ******************************************************************************/
 
@@ -902,38 +903,38 @@ RsDoGpioIoDescriptor (
     {
         switch (i)
         {
-        case 0: /* Share Type - Default: exclusive (0) */
+        case 0: /* Share Type [Flag] (_SHR) */
 
             RsSetFlagBits ((UINT8 *)&Descriptor->GpioIo.IntFlags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 3);
             break;
 
-        case 1: /* Pin Config [BYTE] */
+        case 1: /* Pin Config [BYTE] (_PPC) */
 
             Descriptor->GpioIo.PinConfig = (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_PINCONFIG,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.PinConfig));
             break;
 
-        case 2: /* DebounceTimeout [WORD] */
+        case 2: /* DebounceTimeout [WORD] (_DBT) */
 
             Descriptor->GpioIo.DebounceTimeout = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.DebounceTimeout));
             break;
 
-        case 3: /* Drive Strength [WORD] */
+        case 3: /* Drive Strength [WORD] (_DRS) */
 
             Descriptor->GpioIo.DriveStrength = (UINT16) InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_DRIVESTRENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.DriveStrength));
             break;
 
-        case 4: /* I/O Restriction */
+        case 4: /* I/O Restriction [Flag] (_IOR) */
 
             RsSetFlagBits ((UINT8 *)&Descriptor->GpioIo.IntFlags, InitializerOp, 0, 0);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_IORESTRICTION,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 0);
             break;
 
@@ -969,7 +970,7 @@ RsDoGpioIoDescriptor (
             UtAttachNamepathToOwner (Op, InitializerOp);
             break;
 
-        case 9: /* Vendor Data (Optional - Buffer of BYTEs) */
+        case 9: /* Vendor Data (Optional - Buffer of BYTEs) (_VEN) */
 
             if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
             {
@@ -1009,6 +1010,7 @@ RsDoGpioIoDescriptor (
              *  The number of pins in the table can be calculated from:
              *  PinCount = (Resource Source Name Offset - Pin Table Offset) / 2
              *  (implies resource source must immediately follow the pin list.)
+             *  Name: _PIN
              */
             Descriptor->GpioIo.PinTableOffset =
                 Descriptor->GpioIo.VendorOffset + VendorLength;
@@ -1057,7 +1059,7 @@ RsDoGpioIoDescriptor (
  *
  * RETURN:      Completed resource node
  *
- * DESCRIPTION: Construct a long "I2C Serial Bus" descriptor
+ * DESCRIPTION: Construct a long "I2cSerialBus" descriptor
  *
  ******************************************************************************/
 
@@ -1118,31 +1120,31 @@ RsDoI2cSerialBusDescriptor (
     {
         switch (i)
         {
-        case 0: /* Slave Address [WORD] */
+        case 0: /* Slave Address [WORD] (_ADR) */
 
             Descriptor->I2cSerialBus.SlaveAddress = (UINT16) InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_ADDRESS,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (I2cSerialBus.SlaveAddress));
             break;
 
-        case 1: /* Slave Mode [Flag] */
+        case 1: /* Slave Mode [Flag] (_SLV) */
 
             RsSetFlagBits ((UINT8 *)&Descriptor->I2cSerialBus.Flags, InitializerOp, 0, 0);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_SLAVEMODE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (I2cSerialBus.Flags), 0);
             break;
 
-        case 2: /* ConnectionSpeed [DWORD] */
+        case 2: /* ConnectionSpeed [DWORD] (_SPE) */
 
             Descriptor->I2cSerialBus.ConnectionSpeed = (UINT32) InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_SPEED,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (I2cSerialBus.ConnectionSpeed));
             break;
 
-        case 3: /* Addresssing Mode [Flag] */
+        case 3: /* Addresssing Mode [Flag] (_MOD) */
 
             RsSetFlagBits ((UINT8 *)&Descriptor->I2cSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_MODE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (I2cSerialBus.TypeSpecificFlags), 0);
             break;
 
@@ -1178,7 +1180,7 @@ RsDoI2cSerialBusDescriptor (
             UtAttachNamepathToOwner (Op, InitializerOp);
             break;
 
-        case 8: /* Vendor Data (Optional - Buffer of BYTEs) */
+        case 8: /* Vendor Data (Optional - Buffer of BYTEs) (_VEN) */
 
             if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
             {
@@ -1292,59 +1294,59 @@ RsDoSpiSerialBusDescriptor (
     {
         switch (i)
         {
-        case 0: /* Device Selection [WORD] */
+        case 0: /* Device Selection [WORD] (_ADR) */
 
             Descriptor->SpiSerialBus.DeviceSelection = (UINT16) InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_ADDRESS,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.DeviceSelection));
             break;
 
-        case 1: /* Device Polarity [Flag] */
+        case 1: /* Device Polarity [Flag] (_DPL) */
 
             RsSetFlagBits ((UINT8 *)&Descriptor->SpiSerialBus.TypeSpecificFlags, InitializerOp, 1, 0);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_DEVICEPOLARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.TypeSpecificFlags), 1);
             break;
 
-        case 2: /* Wire Mode [Flag] */
+        case 2: /* Wire Mode [Flag] (_MOD) */
 
             RsSetFlagBits ((UINT8 *)&Descriptor->SpiSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_MODE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.TypeSpecificFlags), 0);
             break;
 
-        case 3: /* Device Bit Length [BYTE] */
+        case 3: /* Device Bit Length [BYTE] (_LEN) */
 
             Descriptor->SpiSerialBus.DataBitLength = (UINT8) InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.DataBitLength));
             break;
 
-        case 4: /* Slave Mode [Flag] */
+        case 4: /* Slave Mode [Flag] (_SLV) */
 
             RsSetFlagBits ((UINT8 *)&Descriptor->SpiSerialBus.Flags, InitializerOp, 0, 0);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_SLAVEMODE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.Flags), 0);
             break;
 
-        case 5: /* ConnectionSpeed [DWORD] */
+        case 5: /* ConnectionSpeed [DWORD] (_SPE) */
 
             Descriptor->SpiSerialBus.ConnectionSpeed = (UINT32) InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_SPEED,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.ConnectionSpeed));
             break;
 
-        case 6: /* Clock Polarity [BYTE] */
+        case 6: /* Clock Polarity [BYTE] (_POL) */
 
             Descriptor->SpiSerialBus.ClockPolarity = (UINT8) InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_POLARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.ClockPolarity));
             break;
 
-        case 7: /* Clock Phase [BYTE] */
+        case 7: /* Clock Phase [BYTE] (_PHA) */
 
             Descriptor->SpiSerialBus.ClockPhase = (UINT8) InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_PHASE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.ClockPhase));
             break;
 
@@ -1380,7 +1382,7 @@ RsDoSpiSerialBusDescriptor (
             UtAttachNamepathToOwner (Op, InitializerOp);
             break;
 
-        case 12: /* Vendor Data (Optional - Buffer of BYTEs) */
+        case 12: /* Vendor Data (Optional - Buffer of BYTEs) (_VEN) */
 
             if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
             {
@@ -1494,7 +1496,7 @@ RsDoUartSerialBusDescriptor (
     {
         switch (i)
         {
-        case 0: /* Baud Rate [DWORD] */
+        case 0: /* ConnectionSpeed (Baud Rate) [DWORD] (_SPD) */
 
             Descriptor->UartSerialBus.DefaultBaudRate = (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
@@ -1503,52 +1505,52 @@ RsDoUartSerialBusDescriptor (
 
 /* TBD: Handle 16-bit flags!  */
 
-        case 1: /* Bits Per Byte [Flags] */
+        case 1: /* Bits Per Byte [Flags] (_LEN) */
 
             RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 4+8, 0);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 4);
             break;
 
-        case 2: /* Stop Bits [Flags] */
+        case 2: /* Stop Bits [Flags] (_STB) */
 
             RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 2+8, 0);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_STOPBITS,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 2);
             break;
 
-        case 3: /* Lines In Use [Flags] */
+        case 3: /* Lines In Use [Flags] (_LIN) */
 
             RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_LINE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 0);
             break;
 
-        case 4: /* Endianness [Flag] */
+        case 4: /* Endianness [Flag] (_END) */
 
             RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 7+8, 0);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_ENDIANNESS,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 7+8);
             break;
 
-        case 5: /* Parity [BYTE] */
+        case 5: /* Parity [BYTE] (_PAR) */
 
             Descriptor->UartSerialBus.Parity = (UINT8) InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_PARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.Parity));
             break;
 
-        case 6: /* Rx Buffer Size [WORD] */
+        case 6: /* Rx Buffer Size [WORD] (_RXL) */
 
             Descriptor->UartSerialBus.RxFifoSize = (UINT16) InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH_RX,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.RxFifoSize));
             break;
 
-        case 7: /* Tx Buffer Size [WORD] */
+        case 7: /* Tx Buffer Size [WORD] (_TXL) */
 
             Descriptor->UartSerialBus.TxFifoSize = (UINT16) InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH_TX,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TxFifoSize));
             break;
 
@@ -1584,7 +1586,7 @@ RsDoUartSerialBusDescriptor (
             UtAttachNamepathToOwner (Op, InitializerOp);
             break;
 
-        case 12: /* Vendor Data (Optional - Buffer of BYTEs) */
+        case 12: /* Vendor Data (Optional - Buffer of BYTEs) (_VEN) */
 
             if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
             {

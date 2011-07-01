@@ -133,25 +133,39 @@
 #define ACPI_RESTAG_BUSMASTER                   "_BM_"  /* Master(1), Slave(0) */
 #define ACPI_RESTAG_DEBOUNCETIME                "_DBT"
 #define ACPI_RESTAG_DECODE                      "_DEC"
+#define ACPI_RESTAG_DEVICEPOLARITY              "_DPL"
 #define ACPI_RESTAG_DMA                         "_DMA"
 #define ACPI_RESTAG_DMATYPE                     "_TYP"  /* Compatible(0), A(1), B(2), F(3) */
+#define ACPI_RESTAG_DRIVESTRENGTH               "_DRS"
+#define ACPI_RESTAG_ENDIANNESS                  "_END"
 #define ACPI_RESTAG_GRANULARITY                 "_GRA"
 #define ACPI_RESTAG_INTERRUPT                   "_INT"
 #define ACPI_RESTAG_INTERRUPTLEVEL              "_LL_"  /* ActiveLo(1), ActiveHi(0) */
 #define ACPI_RESTAG_INTERRUPTSHARE              "_SHR"  /* Shareable(1), NoShare(0) */
 #define ACPI_RESTAG_INTERRUPTTYPE               "_HE_"  /* Edge(1), Level(0) */
+#define ACPI_RESTAG_IORESTRICTION               "_IOR"
 #define ACPI_RESTAG_LENGTH                      "_LEN"
+#define ACPI_RESTAG_LINE                        "_LIN"
 #define ACPI_RESTAG_MEMATTRIBUTES               "_MTP"  /* Memory(0), Reserved(1), ACPI(2), NVS(3) */
 #define ACPI_RESTAG_MEMTYPE                     "_MEM"  /* NonCache(0), Cacheable(1) Cache+combine(2), Cache+prefetch(3) */
 #define ACPI_RESTAG_MAXADDR                     "_MAX"
 #define ACPI_RESTAG_MINADDR                     "_MIN"
 #define ACPI_RESTAG_MAXTYPE                     "_MAF"
 #define ACPI_RESTAG_MINTYPE                     "_MIF"
+#define ACPI_RESTAG_MODE                        "_MOD"
+#define ACPI_RESTAG_PARITY                      "_PAR"
+#define ACPI_RESTAG_PHASE                       "_PHA"
 #define ACPI_RESTAG_PINCONFIG                   "_PPC"
+#define ACPI_RESTAG_POLARITY                    "_POL"
 #define ACPI_RESTAG_REGISTERBITOFFSET           "_RBO"
 #define ACPI_RESTAG_REGISTERBITWIDTH            "_RBW"
 #define ACPI_RESTAG_RANGETYPE                   "_RNG"
 #define ACPI_RESTAG_READWRITETYPE               "_RW_"  /* ReadOnly(0), Writeable (1) */
+#define ACPI_RESTAG_LENGTH_RX                   "_RXL"
+#define ACPI_RESTAG_LENGTH_TX                   "_TXL"
+#define ACPI_RESTAG_SLAVEMODE                   "_SLV"
+#define ACPI_RESTAG_SPEED                       "_SPE"
+#define ACPI_RESTAG_STOPBITS                    "_STB"
 #define ACPI_RESTAG_TRANSLATION                 "_TRA"
 #define ACPI_RESTAG_TRANSTYPE                   "_TRS"  /* Sparse(1), Dense(0) */
 #define ACPI_RESTAG_TYPE                        "_TTP"  /* Translation(1), Static (0) */
