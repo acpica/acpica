@@ -1196,7 +1196,7 @@ typedef struct acpi_port_info
 #define ACPI_RESOURCE_NAME_END_DEPENDENT        0x38
 #define ACPI_RESOURCE_NAME_IO                   0x40
 #define ACPI_RESOURCE_NAME_FIXED_IO             0x48
-#define ACPI_RESOURCE_NAME_RESERVED_S1          0x50
+#define ACPI_RESOURCE_NAME_FIXED_DMA            0x50
 #define ACPI_RESOURCE_NAME_RESERVED_S2          0x58
 #define ACPI_RESOURCE_NAME_RESERVED_S3          0x60
 #define ACPI_RESOURCE_NAME_RESERVED_S4          0x68

@@ -122,6 +122,15 @@
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslrestype2")
 
+
+UINT16
+RsGetBufferDataLength (
+    ACPI_PARSE_OBJECT       *InitializerOp);
+
+UINT16
+RsGetInterruptDataLength (
+    ACPI_PARSE_OBJECT       *InitializerOp);
+
 /*
  * This module contains miscellaneous large resource descriptors:
  *
@@ -536,6 +545,72 @@ RsDoVendorLargeDescriptor (
 
 /*******************************************************************************
  *
+ * FUNCTION:    RsGetBufferDataLength
+ *
+ ******************************************************************************/
+
+UINT16
+RsGetBufferDataLength (
+    ACPI_PARSE_OBJECT       *InitializerOp)
+{
+    UINT16                  ExtraDataSize = 0;
+    ACPI_PARSE_OBJECT       *DataList;
+
+
+    while (InitializerOp)
+    {
+        if (InitializerOp->Asl.ParseOpcode == PARSEOP_BUFFER)
+        {
+            DataList = InitializerOp->Asl.Child;
+            DataList = DataList->Asl.Next;
+
+            while (DataList)
+            {
+                ExtraDataSize++;
+                DataList = DataList->Asl.Next;
+            }
+            return (ExtraDataSize);
+        }
+        InitializerOp = ASL_GET_PEER_NODE (InitializerOp);
+    }
+
+    return (ExtraDataSize);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    RsGetInterruptDataLength
+ *
+ ******************************************************************************/
+
+UINT16
+RsGetInterruptDataLength (
+    ACPI_PARSE_OBJECT       *InitializerOp)
+{
+    UINT16                  InterruptLength;
+    UINT32                  i;
+
+
+    /* Count the interrupt numbers */
+
+    InterruptLength = 0;
+    for (i = 0; InitializerOp; i++)
+    {
+        InitializerOp = ASL_GET_PEER_NODE (InitializerOp);
+
+        if (i >= 10)
+        {
+            InterruptLength += 2;
+        }
+    }
+
+    return (InterruptLength);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    RsDoGpioIntDescriptor
  *
  * PARAMETERS:  Op                  - Parent resource descriptor parse node
@@ -555,27 +630,52 @@ RsDoGpioIntDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *BufferOp;
     ASL_RESOURCE_NODE       *Rnode;
-    UINT16                  StringLength = 0;
+    char                    *ResourceSource = NULL;
+    UINT8                   *VendorData = NULL;
+    UINT16                  *InterruptList = NULL;
+    UINT16                  ResSourceLength;
+    UINT16                  VendorLength;
+    UINT16                  InterruptLength;
+    UINT16                  DescriptorSize;
     UINT32                  i;
-    UINT8                   *ResSourceString = NULL;
 
 
     InitializerOp = Op->Asl.Child;
-    StringLength = RsGetStringDataLength (InitializerOp);
-
-    Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_GPIO_INT) +
-                StringLength);
-
-    Descriptor = Rnode->Buffer;
-    Descriptor->GpioInt.DescriptorType  = ACPI_RESOURCE_NAME_GPIO_INT;
 
     /*
-     * Initial descriptor length -- may be enlarged if there are
-     * optional fields present
+     * Calculate lengths for fields that have variable length:
+     * 1) Resource Source string
+     * 2) Vendor Data buffer
+     * 3) PIN (interrupt) list
      */
-    Descriptor->GpioInt.ResourceLength  = sizeof (AML_RESOURCE_GPIO_INT) - 3 + StringLength;
-    Descriptor->GpioInt.InterruptCount  = 1;
+    ResSourceLength = RsGetStringDataLength (InitializerOp);
+    VendorLength = RsGetBufferDataLength (InitializerOp);
+    InterruptLength = RsGetInterruptDataLength (InitializerOp);
+
+    DescriptorSize = sizeof (AML_RESOURCE_GPIO_INT) +
+        ResSourceLength + VendorLength + InterruptLength;
+
+    /* Allocate the local resource node and initialize */
+
+    Rnode = RsAllocateResourceNode (DescriptorSize);
+
+    Descriptor = Rnode->Buffer;
+    Descriptor->GpioInt.ResourceLength  = DescriptorSize;
+    Descriptor->GpioInt.DescriptorType  = ACPI_RESOURCE_NAME_GPIO_INT;
+    Descriptor->GpioInt.RevisionId      = AML_RESOURCE_GPIO_REVISION;
+    Descriptor->GpioInt.ConnectionType  = AML_RESOURCE_GPIO_TYPE_INT;
+
+    /* Build pointers to optional areas */
+
+    VendorData = ACPI_ADD_PTR (UINT8, Descriptor, sizeof (AML_RESOURCE_GPIO_INT));
+    InterruptList = ACPI_ADD_PTR (UINT16, VendorData, VendorLength);
+    ResourceSource = ACPI_ADD_PTR (char, InterruptList, InterruptLength);
+
+    printf ("GPIO_INT: Base: %u, ResLen: %u, VendLen: %u, IntLen: %u, ACTUAL: %X\n",
+        sizeof (AML_RESOURCE_GPIO_INT),   ResSourceLength, VendorLength, InterruptLength,
+        Descriptor->GpioInt.ResourceLength);
 
     /* Process all child initialization nodes */
 
@@ -583,82 +683,145 @@ RsDoGpioIntDescriptor (
     {
         switch (i)
         {
-        case 0: /* Resource Usage (Default: consumer (1) */
+        case 0: /* Interrupt Type (or Mode - edge/level) */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.Flags, InitializerOp, 0, 1);
-            break;
-
-        case 1: /* Interrupt Type (or Mode - edge/level) */
-
-            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.Flags, InitializerOp, 1, 0);
+            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.IntFlags, InitializerOp, 0, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.Flags), 1);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 0);
             break;
 
-        case 2: /* Interrupt Level (or Polarity - Active high/low) */
+        case 1: /* Interrupt Level (or Polarity - Active high/low) */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.Flags, InitializerOp, 2, 0);
+            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.IntFlags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTLEVEL,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.Flags), 2);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 1);
             break;
 
-        case 3: /* Share Type - Default: exclusive (0) */
+        case 2: /* Share Type - Default: exclusive (0) */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.Flags, InitializerOp, 3, 0);
+            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.IntFlags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.Flags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 3);
+            break;
+
+        case 3: /* Pin Config [BYTE] */
+
+            Descriptor->GpioInt.PinConfig = (UINT8) InitializerOp->Asl.Value.Integer;
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_PINCONFIG,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.PinConfig));
             break;
 
         case 4: /* DebounceTimeout [WORD] */
 
             Descriptor->GpioInt.DebounceTimeout = (UINT16) InitializerOp->Asl.Value.Integer;
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.DebounceTimeout));
             break;
 
-        case 5: /* GenericFlags? [BYTE] */
+        case 5: /* ResSource [Optional Field - STRING] */
 
-            Descriptor->GpioInt.GenericFlags = (UINT8) InitializerOp->Asl.Value.Integer;
-            break;
-
-        case 6: /* ResSource [Optional Field - STRING] */
-
-            if ((InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG) &&
-                (InitializerOp->Asl.Value.String))
+            if (ResSourceLength)
             {
-                if (StringLength)
-                {
-                    ResSourceString = (UINT8 *) InitializerOp->Asl.Value.String;
-                }
+                /* Put string at the end of the descriptor */
+
+                strcpy (ResourceSource,
+                    InitializerOp->Asl.Value.String);
+
+                Descriptor->GpioInt.ResSourceOffset = (UINT16)
+                    ACPI_PTR_DIFF (ResourceSource, Descriptor);
             }
             break;
 
-        case 7: /* ResourceTag */
+        case 6: /* Resource Index */
+
+            if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
+            {
+                Descriptor->GpioInt.ResSourceIndex = (UINT8) InitializerOp->Asl.Value.Integer;
+            }
+            break;
+
+        case 7: /* Resource Usage (consumer/producer) */
+
+            RsSetFlagBits ((UINT8 *) &Descriptor->GpioInt.Flags, InitializerOp, 0, 1);
+            break;
+
+        case 8: /* ResourceTag (Descriptor Name) */
 
             UtAttachNamepathToOwner (Op, InitializerOp);
             break;
 
-        case 8:
-            /*
-             * Interrupt Numbers come through here, repeatedly
-             */
+        case 9: /* Vendor Data (Optional - Buffer of BYTEs) */
 
-            /* Each interrupt number must be a 16-bit value */
+            if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+            {
+                break;
+            }
 
-            Descriptor->GpioInt.Interrupts[0] = (UINT16)InitializerOp->Asl.Value.Integer;
+            BufferOp = InitializerOp->Asl.Child;
+            if (!BufferOp)
+            {
+                AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
+                return (Rnode);
+            }
+            BufferOp = RsCompleteNodeAndGetNext (BufferOp); /* First child is the COUNT */
+
+            /* At this point, we know the offset and length for the vendor data */
+
+            Descriptor->GpioInt.VendorOffset = sizeof (AML_RESOURCE_GPIO_INT);
+            Descriptor->GpioInt.VendorLength = VendorLength;
+
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_VENDORDATA,
+                CurrentByteOffset + Descriptor->GpioInt.VendorOffset);
+
+            /* Walk the list of buffer initializers (each is one byte) */
+
+            while (BufferOp)
+            {
+                *VendorData = (UINT8) BufferOp->Asl.Value.Integer;
+                VendorData++;
+                BufferOp = RsCompleteNodeAndGetNext (BufferOp);
+            }
             break;
 
         default:
+            /*
+             * PINs come through here, repeatedly. Each PIN must be a DWORD.
+             * NOTE: there is no "length" field for this, so from ACPI spec:
+             *  The number of pins in the table can be calculated from:
+             *  PinCount = (Resource Source Name Offset - Pin Table Offset) / 2
+             *  (implies resource source must immediately follow the pin list.)
+             */
+            Descriptor->GpioInt.PinTableOffset =
+                Descriptor->GpioInt.VendorOffset + VendorLength;
 
+            *InterruptList = (UINT16) InitializerOp->Asl.Value.Integer;
+            InterruptList++;
+
+            /* Case 10: First interrupt number in list */
+
+            if (i == 10)
+            {
+                if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+                {
+                    /* Must be at least one interrupt */
+
+                    AslError (ASL_ERROR, ASL_MSG_EX_INTERRUPT_LIST_MIN,
+                        InitializerOp, NULL);
+                }
+
+                /* Check now for duplicates in list */
+
+                RsCheckListForDuplicates (InitializerOp);
+
+                /* Create a named field at the start of the list */
+
+                RsCreateByteField (InitializerOp, ACPI_RESTAG_INTERRUPT,
+                    CurrentByteOffset + Descriptor->GpioInt.PinTableOffset);
+            }
             break;
         }
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
-    }
-
-    /* Add optional ResSource string if present */
-
-    if (StringLength && ResSourceString)
-    {
-        strcpy ((char *) Descriptor + sizeof (AML_RESOURCE_GPIO_INT), (char *) ResSourceString);
     }
 
     return (Rnode);
@@ -686,27 +849,52 @@ RsDoGpioIoDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *BufferOp;
     ASL_RESOURCE_NODE       *Rnode;
-    UINT16                  StringLength = 0;
+    char                    *ResourceSource = NULL;
+    UINT8                   *VendorData = NULL;
+    UINT16                  *InterruptList = NULL;
+    UINT16                  ResSourceLength;
+    UINT16                  VendorLength;
+    UINT16                  InterruptLength;
+    UINT16                  DescriptorSize;
     UINT32                  i;
-    UINT8                   *ResSourceString = NULL;
 
 
     InitializerOp = Op->Asl.Child;
-    StringLength = RsGetStringDataLength (InitializerOp);
-
-    Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_GPIO_IO) +
-                StringLength);
-
-    Descriptor = Rnode->Buffer;
-    Descriptor->GpioInt.DescriptorType  = ACPI_RESOURCE_NAME_GPIO_IO;
 
     /*
-     * Initial descriptor length -- may be enlarged if there are
-     * optional fields present
+     * Calculate lengths for fields that have variable length:
+     * 1) Resource Source string
+     * 2) Vendor Data buffer
+     * 3) PIN (interrupt) list
      */
-    Descriptor->GpioInt.ResourceLength  = sizeof (AML_RESOURCE_GPIO_IO) - 3 + StringLength;
-    Descriptor->GpioInt.InterruptCount  = 1;
+    ResSourceLength = RsGetStringDataLength (InitializerOp);
+    VendorLength = RsGetBufferDataLength (InitializerOp);
+    InterruptLength = RsGetInterruptDataLength (InitializerOp);
+
+    DescriptorSize = sizeof (AML_RESOURCE_GPIO_IO) +
+        ResSourceLength + VendorLength + InterruptLength;
+
+    /* Allocate the local resource node and initialize */
+
+    Rnode = RsAllocateResourceNode (DescriptorSize);
+
+    Descriptor = Rnode->Buffer;
+    Descriptor->GpioIo.ResourceLength  = DescriptorSize;
+    Descriptor->GpioIo.DescriptorType  = ACPI_RESOURCE_NAME_GPIO_IO;
+    Descriptor->GpioIo.RevisionId      = AML_RESOURCE_GPIO_REVISION;
+    Descriptor->GpioIo.ConnectionType  = AML_RESOURCE_GPIO_TYPE_IO;
+
+    /* Build pointers to optional areas */
+
+    VendorData = ACPI_ADD_PTR (UINT8, Descriptor, sizeof (AML_RESOURCE_GPIO_IO));
+    InterruptList = ACPI_ADD_PTR (UINT16, VendorData, VendorLength);
+    ResourceSource = ACPI_ADD_PTR (char, InterruptList, InterruptLength);
+
+    printf ("GPIO_IO: Base: %u, ResLen: %u, VendLen: %u, IntLen: %u, ACTUAL: %X\n",
+        sizeof (AML_RESOURCE_GPIO_IO),   ResSourceLength, VendorLength, InterruptLength,
+        Descriptor->GpioIo.ResourceLength);
 
     /* Process all child initialization nodes */
 
@@ -714,82 +902,145 @@ RsDoGpioIoDescriptor (
     {
         switch (i)
         {
-        case 0: /* Resource Usage (Default: consumer (1) */
+        case 0: /* Share Type - Default: exclusive (0) */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.Flags, InitializerOp, 0, 1);
-            break;
-
-        case 1: /* Interrupt Type (or Mode - edge/level) */
-
-            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.Flags, InitializerOp, 1, 0);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.Flags), 1);
-            break;
-
-        case 2: /* Interrupt Level (or Polarity - Active high/low) */
-
-            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.Flags, InitializerOp, 2, 0);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTLEVEL,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.Flags), 2);
-            break;
-
-        case 3: /* Share Type - Default: exclusive (0) */
-
-            RsSetFlagBits ((UINT8 *)&Descriptor->GpioInt.Flags, InitializerOp, 3, 0);
+            RsSetFlagBits ((UINT8 *)&Descriptor->GpioIo.IntFlags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.Flags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 3);
             break;
 
-        case 4: /* DebounceTimeout [WORD] */
+        case 1: /* Pin Config [BYTE] */
 
-            Descriptor->GpioInt.DebounceTimeout = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->GpioIo.PinConfig = (UINT8) InitializerOp->Asl.Value.Integer;
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_PINCONFIG,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.PinConfig));
             break;
 
-        case 5: /* GenericFlags? [BYTE] */
+        case 2: /* DebounceTimeout [WORD] */
 
-            Descriptor->GpioInt.GenericFlags = (UINT8) InitializerOp->Asl.Value.Integer;
+            Descriptor->GpioIo.DebounceTimeout = (UINT16) InitializerOp->Asl.Value.Integer;
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.DebounceTimeout));
             break;
 
-        case 6: /* ResSource [Optional Field - STRING] */
+        case 3: /* Drive Strength [WORD] */
 
-            if ((InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG) &&
-                (InitializerOp->Asl.Value.String))
+            Descriptor->GpioIo.DriveStrength = (UINT16) InitializerOp->Asl.Value.Integer;
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.DriveStrength));
+            break;
+
+        case 4: /* I/O Restriction */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->GpioIo.IntFlags, InitializerOp, 0, 0);
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 0);
+            break;
+
+        case 5: /* ResSource [Optional Field - STRING] */
+
+            if (ResSourceLength)
             {
-                if (StringLength)
-                {
-                    ResSourceString = (UINT8 *) InitializerOp->Asl.Value.String;
-                }
+                /* Put string at the end of the descriptor */
+
+                strcpy (ResourceSource,
+                    InitializerOp->Asl.Value.String);
+
+                Descriptor->GpioIo.ResSourceOffset = (UINT16)
+                    ACPI_PTR_DIFF (ResourceSource, Descriptor);
             }
             break;
 
-        case 7: /* ResourceTag */
+        case 6: /* Resource Index */
+
+            if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
+            {
+                Descriptor->GpioIo.ResSourceIndex = (UINT8) InitializerOp->Asl.Value.Integer;
+            }
+            break;
+
+        case 7: /* Resource Usage (consumer/producer) */
+
+            RsSetFlagBits ((UINT8 *) &Descriptor->GpioIo.Flags, InitializerOp, 0, 1);
+            break;
+
+        case 8: /* ResourceTag (Descriptor Name) */
 
             UtAttachNamepathToOwner (Op, InitializerOp);
             break;
 
-        case 8:
-            /*
-             * Interrupt Numbers come through here, repeatedly
-             */
+        case 9: /* Vendor Data (Optional - Buffer of BYTEs) */
 
-            /* Each interrupt number must be a 16-bit value */
+            if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+            {
+                break;
+            }
 
-            Descriptor->GpioInt.Interrupts[0] = (UINT16)InitializerOp->Asl.Value.Integer;
+            BufferOp = InitializerOp->Asl.Child;
+            if (!BufferOp)
+            {
+                AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
+                return (Rnode);
+            }
+            BufferOp = RsCompleteNodeAndGetNext (BufferOp); /* First child is the COUNT */
+
+            /* At this point, we know the offset and length for the vendor data */
+
+            Descriptor->GpioIo.VendorOffset = sizeof (AML_RESOURCE_GPIO_IO);
+            Descriptor->GpioIo.VendorLength = VendorLength;
+
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_VENDORDATA,
+                CurrentByteOffset + Descriptor->GpioIo.VendorOffset);
+
+            /* Walk the list of buffer initializers (each is one byte) */
+
+            while (BufferOp)
+            {
+                *VendorData = (UINT8) BufferOp->Asl.Value.Integer;
+                VendorData++;
+                BufferOp = RsCompleteNodeAndGetNext (BufferOp);
+            }
             break;
 
         default:
+            /*
+             * PINs come through here, repeatedly. Each PIN must be a DWORD.
+             * NOTE: there is no "length" field for this, so from ACPI spec:
+             *  The number of pins in the table can be calculated from:
+             *  PinCount = (Resource Source Name Offset - Pin Table Offset) / 2
+             *  (implies resource source must immediately follow the pin list.)
+             */
+            Descriptor->GpioIo.PinTableOffset =
+                Descriptor->GpioIo.VendorOffset + VendorLength;
 
+            *InterruptList = (UINT16) InitializerOp->Asl.Value.Integer;
+            InterruptList++;
+
+            /* Case 10: First interrupt number in list */
+
+            if (i == 10)
+            {
+                if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+                {
+                    /* Must be at least one interrupt */
+
+                    AslError (ASL_ERROR, ASL_MSG_EX_INTERRUPT_LIST_MIN,
+                        InitializerOp, NULL);
+                }
+
+                /* Check now for duplicates in list */
+
+                RsCheckListForDuplicates (InitializerOp);
+
+                /* Create a named field at the start of the list */
+
+                RsCreateByteField (InitializerOp, ACPI_RESTAG_INTERRUPT,
+                    CurrentByteOffset + Descriptor->GpioIo.PinTableOffset);
+            }
             break;
         }
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
-    }
-
-    /* Add optional ResSource string if present */
-
-    if (StringLength && ResSourceString)
-    {
-        strcpy ((char *) Descriptor + sizeof (AML_RESOURCE_GPIO_IO), (char *) ResSourceString);
     }
 
     return (Rnode);
@@ -817,30 +1068,49 @@ RsDoI2cSerialBusDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *BufferOp;
     ASL_RESOURCE_NODE       *Rnode;
-    UINT16                  StringLength = 0;
+    char                    *ResourceSource = NULL;
+    UINT8                   *VendorData = NULL;
+    UINT16                  ResSourceLength;
+    UINT16                  VendorLength;
+    UINT16                  DescriptorSize;
     UINT32                  i;
-    UINT8                   *ResSourceString = NULL;
 
 
     InitializerOp = Op->Asl.Child;
-    StringLength = RsGetStringDataLength (InitializerOp);
-
-    Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_I2C_SERIALBUS) +
-                StringLength);
-
-    Descriptor = Rnode->Buffer;
-    Descriptor->I2cSerialBus.DescriptorType  = ACPI_RESOURCE_NAME_SERIAL_BUS;
 
     /*
-     * Initial descriptor length -- may be enlarged if there are
-     * optional fields present
+     * Calculate lengths for fields that have variable length:
+     * 1) Resource Source string
+     * 2) Vendor Data buffer
      */
-    Descriptor->I2cSerialBus.ResourceLength  = sizeof (AML_RESOURCE_I2C_SERIALBUS) - 3 + StringLength;
-    Descriptor->I2cSerialBus.RevisionId              = 1;
-    Descriptor->I2cSerialBus.Type                    = 1;
-    Descriptor->I2cSerialBus.TypeSpecificRevisionId  = 1;
-    Descriptor->I2cSerialBus.TypeDataLength          = 6;
+    ResSourceLength = RsGetStringDataLength (InitializerOp);
+    VendorLength = RsGetBufferDataLength (InitializerOp);
+
+    DescriptorSize = sizeof (AML_RESOURCE_I2C_SERIALBUS) +
+        ResSourceLength + VendorLength;
+
+    /* Allocate the local resource node and initialize */
+
+    Rnode = RsAllocateResourceNode (DescriptorSize);
+
+    Descriptor = Rnode->Buffer;
+    Descriptor->I2cSerialBus.ResourceLength = DescriptorSize;
+    Descriptor->I2cSerialBus.DescriptorType = ACPI_RESOURCE_NAME_SERIAL_BUS;
+    Descriptor->I2cSerialBus.RevisionId     = AML_RESOURCE_I2C_REVISION;
+    Descriptor->I2cSerialBus.TypeRevisionId = AML_RESOURCE_I2C_TYPE_REVISION;
+    Descriptor->I2cSerialBus.Type           = AML_RESOURCE_I2C_BUS_TYPE;
+    Descriptor->I2cSerialBus.TypeDataLength = AML_RESOURCE_I2C_MIN_DATA_LEN;
+
+    /* Build pointers to optional areas */
+
+    VendorData = ACPI_ADD_PTR (UINT8, Descriptor, sizeof (AML_RESOURCE_I2C_SERIALBUS));
+    ResourceSource = ACPI_ADD_PTR (char, VendorData, VendorLength);
+
+    printf ("I2C: Base: %u, ResLen: %u, VendLen: %u, ACTUAL: %X\n",
+        sizeof (AML_RESOURCE_I2C_SERIALBUS), ResSourceLength, VendorLength,
+        Descriptor->I2cSerialBus.ResourceLength);
 
     /* Process all child initialization nodes */
 
@@ -848,56 +1118,103 @@ RsDoI2cSerialBusDescriptor (
     {
         switch (i)
         {
-        case 0: /* AddressMode Usage (Default: AddressMode7Bit (0) */
-
-            RsSetFlagBits ((UINT8 *)&Descriptor->I2cSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
-            break;
-
-        case 1: /* ConnectionSpeed [DWORD] */
-
-            Descriptor->I2cSerialBus.ConnectionSpeed = (UINT32) InitializerOp->Asl.Value.Integer;
-            break;
-
-        case 2: /* SlaveAddress [WORD] */
+        case 0: /* Slave Address [WORD] */
 
             Descriptor->I2cSerialBus.SlaveAddress = (UINT16) InitializerOp->Asl.Value.Integer;
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (I2cSerialBus.SlaveAddress));
             break;
 
-        case 3: /* SlaveMode (Default: ControllerInit) */
+        case 1: /* Slave Mode [Flag] */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->I2cSerialBus.GeneralFlags, InitializerOp, 0, 0);
+            RsSetFlagBits ((UINT8 *)&Descriptor->I2cSerialBus.Flags, InitializerOp, 0, 0);
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (I2cSerialBus.Flags), 0);
+            break;
+
+        case 2: /* ConnectionSpeed [DWORD] */
+
+            Descriptor->I2cSerialBus.ConnectionSpeed = (UINT32) InitializerOp->Asl.Value.Integer;
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (I2cSerialBus.ConnectionSpeed));
+            break;
+
+        case 3: /* Addresssing Mode [Flag] */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->I2cSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (I2cSerialBus.TypeSpecificFlags), 0);
             break;
 
         case 4: /* ResSource [Optional Field - STRING] */
 
-            if ((InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG) &&
-                (InitializerOp->Asl.Value.String))
+            if (ResSourceLength)
             {
-                if (StringLength)
-                {
-                    ResSourceString = (UINT8 *) InitializerOp->Asl.Value.String;
-                }
+                /* Put string at the end of the descriptor */
+
+                strcpy (ResourceSource,
+                    InitializerOp->Asl.Value.String);
+
+                Descriptor->GpioIo.ResSourceOffset = (UINT16)
+                    ACPI_PTR_DIFF (ResourceSource, Descriptor);
             }
             break;
 
-        case 5: /* ResourceTag */
+        case 5: /* Resource Index */
+
+            if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
+            {
+                Descriptor->I2cSerialBus.ResSourceIndex = (UINT8) InitializerOp->Asl.Value.Integer;
+            }
+            break;
+
+        case 6: /* Resource Usage (consumer/producer) */
+
+            RsSetFlagBits ((UINT8 *) &Descriptor->I2cSerialBus.Flags, InitializerOp, 0, 1);
+            break;
+
+        case 7: /* ResourceTag (Descriptor Name) */
 
             UtAttachNamepathToOwner (Op, InitializerOp);
             break;
 
-        default:
+        case 8: /* Vendor Data (Optional - Buffer of BYTEs) */
 
+            if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+            {
+                break;
+            }
+
+            BufferOp = InitializerOp->Asl.Child;
+            if (!BufferOp)
+            {
+                AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
+                return (Rnode);
+            }
+            BufferOp = RsCompleteNodeAndGetNext (BufferOp); /* First child is the COUNT */
+
+            /* At this point, we know the offset and length for the vendor data */
+
+            Descriptor->I2cSerialBus.TypeDataLength += VendorLength;
+
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_VENDORDATA,
+                CurrentByteOffset + sizeof (AML_RESOURCE_I2C_SERIALBUS));
+
+            /* Walk the list of buffer initializers (each is one byte) */
+
+            while (BufferOp)
+            {
+                *VendorData = (UINT8) BufferOp->Asl.Value.Integer;
+                VendorData++;
+                BufferOp = RsCompleteNodeAndGetNext (BufferOp);
+            }
+            break;
+
+        default:    /* Ignore any extra nodes */
             break;
         }
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
-    }
-
-    /* Add optional ResSource string if present */
-
-    if (StringLength && ResSourceString)
-    {
-        strcpy ((char *) Descriptor + sizeof (AML_RESOURCE_I2C_SERIALBUS), (char *) ResSourceString);
     }
 
     return (Rnode);
@@ -925,30 +1242,49 @@ RsDoSpiSerialBusDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *BufferOp;
     ASL_RESOURCE_NODE       *Rnode;
-    UINT16                  StringLength = 0;
+    char                    *ResourceSource = NULL;
+    UINT8                   *VendorData = NULL;
+    UINT16                  ResSourceLength;
+    UINT16                  VendorLength;
+    UINT16                  DescriptorSize;
     UINT32                  i;
-    UINT8                   *ResSourceString = NULL;
 
 
     InitializerOp = Op->Asl.Child;
-    StringLength = RsGetStringDataLength (InitializerOp);
-
-    Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_SPI_SERIALBUS) +
-                StringLength);
-
-    Descriptor = Rnode->Buffer;
-    Descriptor->SpiSerialBus.DescriptorType  = ACPI_RESOURCE_NAME_SERIAL_BUS;
 
     /*
-     * Initial descriptor length -- may be enlarged if there are
-     * optional fields present
+     * Calculate lengths for fields that have variable length:
+     * 1) Resource Source string
+     * 2) Vendor Data buffer
      */
-    Descriptor->SpiSerialBus.ResourceLength  = sizeof (AML_RESOURCE_SPI_SERIALBUS) - 3 + StringLength;
-    Descriptor->SpiSerialBus.RevisionId              = 1;
-    Descriptor->SpiSerialBus.Type                    = 2;
-    Descriptor->SpiSerialBus.TypeSpecificRevisionId  = 1;
-    Descriptor->SpiSerialBus.TypeDataLength          = 9;
+    ResSourceLength = RsGetStringDataLength (InitializerOp);
+    VendorLength = RsGetBufferDataLength (InitializerOp);
+
+    DescriptorSize = sizeof (AML_RESOURCE_SPI_SERIALBUS) +
+        ResSourceLength + VendorLength;
+
+    /* Allocate the local resource node and initialize */
+
+    Rnode = RsAllocateResourceNode (DescriptorSize);
+
+    Descriptor = Rnode->Buffer;
+    Descriptor->SpiSerialBus.ResourceLength = DescriptorSize;
+    Descriptor->SpiSerialBus.DescriptorType = ACPI_RESOURCE_NAME_SERIAL_BUS;
+    Descriptor->SpiSerialBus.RevisionId     = AML_RESOURCE_SPI_REVISION;
+    Descriptor->SpiSerialBus.TypeRevisionId = AML_RESOURCE_SPI_TYPE_REVISION;
+    Descriptor->SpiSerialBus.Type           = AML_RESOURCE_SPI_BUS_TYPE;
+    Descriptor->SpiSerialBus.TypeDataLength = AML_RESOURCE_SPI_MIN_DATA_LEN;
+
+    /* Build pointers to optional areas */
+
+    VendorData = ACPI_ADD_PTR (UINT8, Descriptor, sizeof (AML_RESOURCE_SPI_SERIALBUS));
+    ResourceSource = ACPI_ADD_PTR (char, VendorData, VendorLength);
+
+    printf ("SPI: Base: %u, ResLen: %u, VendLen: %u, ACTUAL: %X\n",
+        sizeof (AML_RESOURCE_SPI_SERIALBUS), ResSourceLength, VendorLength,
+        Descriptor->SpiSerialBus.ResourceLength);
 
     /* Process all child initialization nodes */
 
@@ -956,76 +1292,131 @@ RsDoSpiSerialBusDescriptor (
     {
         switch (i)
         {
-        case 0: /* WireMode Usage (Default: FourWireMode (0) */
-
-            RsSetFlagBits ((UINT8 *)&Descriptor->SpiSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
-            break;
-
-        case 1: /* ConnectionSpeed [DWORD] */
-
-            Descriptor->SpiSerialBus.ConnectionSpeed = (UINT32) InitializerOp->Asl.Value.Integer;
-            break;
-
-        case 2: /* DataBitLength [BYTE] */
-
-            Descriptor->SpiSerialBus.DataBitLength = (UINT8) InitializerOp->Asl.Value.Integer;
-            break;
-
-        case 3: /* ClockPhase */
-
-            RsSetFlagBits ((UINT8 *)&Descriptor->SpiSerialBus.Phase, InitializerOp, 0, 0);
-            break;
-
-        case 4: /* ClockPolarity */
-
-            RsSetFlagBits ((UINT8 *)&Descriptor->SpiSerialBus.Polarity, InitializerOp, 0, 0);
-            break;
-
-        case 5: /* DeviceSelection [WORD] */
+        case 0: /* Device Selection [WORD] */
 
             Descriptor->SpiSerialBus.DeviceSelection = (UINT16) InitializerOp->Asl.Value.Integer;
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.DeviceSelection));
             break;
 
-        case 6: /* DevicePolarity (Default: PolarityLow) */
+        case 1: /* Device Polarity [Flag] */
 
             RsSetFlagBits ((UINT8 *)&Descriptor->SpiSerialBus.TypeSpecificFlags, InitializerOp, 1, 0);
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.TypeSpecificFlags), 1);
             break;
 
-        case 7: /* SlaveMode (Default: ControllerInit) */
+        case 2: /* Wire Mode [Flag] */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->SpiSerialBus.GeneralFlags, InitializerOp, 0, 0);
+            RsSetFlagBits ((UINT8 *)&Descriptor->SpiSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.TypeSpecificFlags), 0);
+            break;
+
+        case 3: /* Device Bit Length [BYTE] */
+
+            Descriptor->SpiSerialBus.DataBitLength = (UINT8) InitializerOp->Asl.Value.Integer;
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.DataBitLength));
+            break;
+
+        case 4: /* Slave Mode [Flag] */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->SpiSerialBus.Flags, InitializerOp, 0, 0);
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.Flags), 0);
+            break;
+
+        case 5: /* ConnectionSpeed [DWORD] */
+
+            Descriptor->SpiSerialBus.ConnectionSpeed = (UINT32) InitializerOp->Asl.Value.Integer;
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.ConnectionSpeed));
+            break;
+
+        case 6: /* Clock Polarity [BYTE] */
+
+            Descriptor->SpiSerialBus.ClockPolarity = (UINT8) InitializerOp->Asl.Value.Integer;
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.ClockPolarity));
+            break;
+
+        case 7: /* Clock Phase [BYTE] */
+
+            Descriptor->SpiSerialBus.ClockPhase = (UINT8) InitializerOp->Asl.Value.Integer;
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.ClockPhase));
             break;
 
         case 8: /* ResSource [Optional Field - STRING] */
 
-            if ((InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG) &&
-                (InitializerOp->Asl.Value.String))
+            if (ResSourceLength)
             {
-                if (StringLength)
-                {
-                    ResSourceString = (UINT8 *) InitializerOp->Asl.Value.String;
-                }
+                /* Put string at the end of the descriptor */
+
+                strcpy (ResourceSource,
+                    InitializerOp->Asl.Value.String);
+
+                Descriptor->GpioIo.ResSourceOffset = (UINT16)
+                    ACPI_PTR_DIFF (ResourceSource, Descriptor);
             }
             break;
 
-        case 9: /* ResourceTag */
+        case 9: /* Resource Index */
+
+            if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
+            {
+                Descriptor->SpiSerialBus.ResSourceIndex = (UINT8) InitializerOp->Asl.Value.Integer;
+            }
+            break;
+
+        case 10: /* Resource Usage (consumer/producer) */
+
+            RsSetFlagBits ((UINT8 *) &Descriptor->SpiSerialBus.Flags, InitializerOp, 0, 1);
+            break;
+
+        case 11: /* ResourceTag (Descriptor Name) */
 
             UtAttachNamepathToOwner (Op, InitializerOp);
             break;
 
-        default:
+        case 12: /* Vendor Data (Optional - Buffer of BYTEs) */
 
+            if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+            {
+                break;
+            }
+
+            BufferOp = InitializerOp->Asl.Child;
+            if (!BufferOp)
+            {
+                AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
+                return (Rnode);
+            }
+            BufferOp = RsCompleteNodeAndGetNext (BufferOp); /* First child is the COUNT */
+
+            /* At this point, we know the offset and length for the vendor data */
+
+            Descriptor->SpiSerialBus.TypeDataLength += VendorLength;
+
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_VENDORDATA,
+                CurrentByteOffset + sizeof (AML_RESOURCE_SPI_SERIALBUS));
+
+            /* Walk the list of buffer initializers (each is one byte) */
+
+            while (BufferOp)
+            {
+                *VendorData = (UINT8) BufferOp->Asl.Value.Integer;
+                VendorData++;
+                BufferOp = RsCompleteNodeAndGetNext (BufferOp);
+            }
+            break;
+
+        default:    /* Ignore any extra nodes */
             break;
         }
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
-    }
-
-    /* Add optional ResSource string if present */
-
-    if (StringLength && ResSourceString)
-    {
-        strcpy ((char *) Descriptor + sizeof (AML_RESOURCE_SPI_SERIALBUS), (char *) ResSourceString);
     }
 
     return (Rnode);
@@ -1053,30 +1444,49 @@ RsDoUartSerialBusDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
+    ACPI_PARSE_OBJECT       *BufferOp;
     ASL_RESOURCE_NODE       *Rnode;
-    UINT16                  StringLength = 0;
+    char                    *ResourceSource = NULL;
+    UINT8                   *VendorData = NULL;
+    UINT16                  ResSourceLength;
+    UINT16                  VendorLength;
+    UINT16                  DescriptorSize;
     UINT32                  i;
-    UINT8                   *ResSourceString = NULL;
 
 
     InitializerOp = Op->Asl.Child;
-    StringLength = RsGetStringDataLength (InitializerOp);
-
-    Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_UART_SERIALBUS) +
-                StringLength);
-
-    Descriptor = Rnode->Buffer;
-    Descriptor->UartSerialBus.DescriptorType  = ACPI_RESOURCE_NAME_SERIAL_BUS;
 
     /*
-     * Initial descriptor length -- may be enlarged if there are
-     * optional fields present
+     * Calculate lengths for fields that have variable length:
+     * 1) Resource Source string
+     * 2) Vendor Data buffer
      */
-    Descriptor->UartSerialBus.ResourceLength  = sizeof (AML_RESOURCE_UART_SERIALBUS) - 3 + StringLength;
-    Descriptor->UartSerialBus.RevisionId              = 1;
-    Descriptor->UartSerialBus.Type                    = 3;
-    Descriptor->UartSerialBus.TypeSpecificRevisionId  = 1;
-    Descriptor->UartSerialBus.TypeDataLength          = 9;
+    ResSourceLength = RsGetStringDataLength (InitializerOp);
+    VendorLength = RsGetBufferDataLength (InitializerOp);
+
+    DescriptorSize = sizeof (AML_RESOURCE_UART_SERIALBUS) +
+        ResSourceLength + VendorLength;
+
+    /* Allocate the local resource node and initialize */
+
+    Rnode = RsAllocateResourceNode (DescriptorSize);
+
+    Descriptor = Rnode->Buffer;
+    Descriptor->UartSerialBus.ResourceLength = DescriptorSize;
+    Descriptor->UartSerialBus.DescriptorType = ACPI_RESOURCE_NAME_SERIAL_BUS;
+    Descriptor->UartSerialBus.RevisionId     = AML_RESOURCE_UART_REVISION;
+    Descriptor->UartSerialBus.TypeRevisionId = AML_RESOURCE_UART_TYPE_REVISION;
+    Descriptor->UartSerialBus.Type           = AML_RESOURCE_UART_BUS_TYPE;
+    Descriptor->UartSerialBus.TypeDataLength = AML_RESOURCE_UART_MIN_DATA_LEN;
+
+    /* Build pointers to optional areas */
+
+    VendorData = ACPI_ADD_PTR (UINT8, Descriptor, sizeof (AML_RESOURCE_UART_SERIALBUS));
+    ResourceSource = ACPI_ADD_PTR (char, VendorData, VendorLength);
+
+    printf ("UART: Base: %u, ResLen: %u, VendLen: %u, ACTUAL: %X\n",
+        sizeof (AML_RESOURCE_UART_SERIALBUS), ResSourceLength, VendorLength,
+        Descriptor->UartSerialBus.ResourceLength);
 
     /* Process all child initialization nodes */
 
@@ -1084,81 +1494,133 @@ RsDoUartSerialBusDescriptor (
     {
         switch (i)
         {
-        case 0: /* LineInUse [BYTE] */
+        case 0: /* Baud Rate [DWORD] */
 
-            Descriptor->UartSerialBus.TypeSpecificFlags = (UINT16)(UINT8)InitializerOp->Asl.Value.Integer;
+            Descriptor->UartSerialBus.DefaultBaudRate = (UINT32) InitializerOp->Asl.Value.Integer;
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.DefaultBaudRate));
             break;
 
-        case 1: /* Endian (Default: Little (0)) */
+/* TBD: Handle 16-bit flags!  */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags + 1, InitializerOp, 7, 0);
+        case 1: /* Bits Per Byte [Flags] */
+
+            RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 4+8, 0);
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 4);
             break;
 
-        case 2: /* BitsPerByte (Default: DataBitsEight (3)) */
+        case 2: /* Stop Bits [Flags] */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags + 1, InitializerOp, 4, 3);
+            RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 2+8, 0);
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 2);
             break;
 
-        case 3: /* StopBits (Default: StopBitsOne (1)) */
+        case 3: /* Lines In Use [Flags] */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags + 1, InitializerOp, 2, 1);
+            RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 0);
             break;
 
-        case 4: /* FlowControl (Default: FlowControlNone (0)) */
+        case 4: /* Endianness [Flag] */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags + 1, InitializerOp, 0, 0);
+            RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 7+8, 0);
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 7+8);
             break;
 
-        case 5: /* DefaultBaudRate [DWORD] */
+        case 5: /* Parity [BYTE] */
 
-            Descriptor->UartSerialBus.DefaultBaudRate = (UINT32)InitializerOp->Asl.Value.Integer;
+            Descriptor->UartSerialBus.Parity = (UINT8) InitializerOp->Asl.Value.Integer;
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.Parity));
             break;
 
-        case 6: /* RxFifo [WORD] */
+        case 6: /* Rx Buffer Size [WORD] */
 
-            Descriptor->UartSerialBus.RxFifo = (UINT16)InitializerOp->Asl.Value.Integer;
+            Descriptor->UartSerialBus.RxFifoSize = (UINT16) InitializerOp->Asl.Value.Integer;
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.RxFifoSize));
             break;
 
-        case 7: /* TxFifo [WORD] */
+        case 7: /* Tx Buffer Size [WORD] */
 
-            Descriptor->UartSerialBus.TxFifo = (UINT16)InitializerOp->Asl.Value.Integer;
+            Descriptor->UartSerialBus.TxFifoSize = (UINT16) InitializerOp->Asl.Value.Integer;
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TxFifoSize));
             break;
 
-        case 8: /* Parity (Default: ParityTypeNone (0)) */
+        case 8: /* ResSource [Optional Field - STRING] */
 
-            RsSetFlagBits ((UINT8 *)&Descriptor->UartSerialBus.Parity, InitializerOp, 0, 0);
-            break;
-
-        case 9: /* ResSource [Optional Field - STRING] */
-
-            if ((InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG) &&
-                (InitializerOp->Asl.Value.String))
+            if (ResSourceLength)
             {
-                if (StringLength)
-                {
-                    ResSourceString = (UINT8 *) InitializerOp->Asl.Value.String;
-                }
+                /* Put string at the end of the descriptor */
+
+                strcpy (ResourceSource,
+                    InitializerOp->Asl.Value.String);
+
+                Descriptor->GpioIo.ResSourceOffset = (UINT16)
+                    ACPI_PTR_DIFF (ResourceSource, Descriptor);
             }
             break;
 
-        case 10: /* ResourceTag */
+        case 9: /* Resource Index */
+
+            if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
+            {
+                Descriptor->UartSerialBus.ResSourceIndex = (UINT8) InitializerOp->Asl.Value.Integer;
+            }
+            break;
+
+        case 10: /* Resource Usage (consumer/producer) */
+
+            RsSetFlagBits ((UINT8 *) &Descriptor->UartSerialBus.Flags, InitializerOp, 0, 1);
+            break;
+
+        case 11: /* ResourceTag (Descriptor Name) */
 
             UtAttachNamepathToOwner (Op, InitializerOp);
             break;
 
-        default:
+        case 12: /* Vendor Data (Optional - Buffer of BYTEs) */
 
+            if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+            {
+                break;
+            }
+
+            BufferOp = InitializerOp->Asl.Child;
+            if (!BufferOp)
+            {
+                AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
+                return (Rnode);
+            }
+            BufferOp = RsCompleteNodeAndGetNext (BufferOp); /* First child is the COUNT */
+
+            /* At this point, we know the offset and length for the vendor data */
+
+            Descriptor->UartSerialBus.TypeDataLength += VendorLength;
+
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_VENDORDATA,
+                CurrentByteOffset + sizeof (AML_RESOURCE_UART_SERIALBUS));
+
+            /* Walk the list of buffer initializers (each is one byte) */
+
+            while (BufferOp)
+            {
+                *VendorData = (UINT8) BufferOp->Asl.Value.Integer;
+                VendorData++;
+                BufferOp = RsCompleteNodeAndGetNext (BufferOp);
+            }
+            break;
+
+        default:    /* Ignore any extra nodes */
             break;
         }
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
-    }
-
-    /* Add optional ResSource string if present */
-
-    if (StringLength && ResSourceString)
-    {
-        strcpy ((char *) Descriptor + sizeof (AML_RESOURCE_UART_SERIALBUS), (char *) ResSourceString);
     }
 
     return (Rnode);

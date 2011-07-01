@@ -349,6 +349,7 @@ NamePathTail                [.]{NameSeg}
 "I2CSerialBus"              { count (1); return (PARSEOP_I2C_SERIALBUS); }
 "SPISerialBus"              { count (1); return (PARSEOP_SPI_SERIALBUS); }
 "UARTSerialBus"             { count (1); return (PARSEOP_UART_SERIALBUS); }
+"FixedDma"                  { count (1); return (PARSEOP_FIXED_DMA); }
 
 "UnknownObj"                { count (0); return (PARSEOP_OBJECTTYPE_UNK); }
 "IntObj"                    { count (0); return (PARSEOP_OBJECTTYPE_INT); }
@@ -451,11 +452,14 @@ NamePathTail                [.]{NameSeg}
 "Edge"                      { count (0); return (PARSEOP_INTTYPE_EDGE); }
 "Level"                     { count (0); return (PARSEOP_INTTYPE_LEVEL); }
 
+"ActiveBoth"                { count (0); return (PARSEOP_INTLEVEL_ACTIVEBOTH); }
 "ActiveHigh"                { count (0); return (PARSEOP_INTLEVEL_ACTIVEHIGH); }
 "ActiveLow"                 { count (0); return (PARSEOP_INTLEVEL_ACTIVELOW); }
 
 "Shared"                    { count (0); return (PARSEOP_SHARETYPE_SHARED); }
 "Exclusive"                 { count (0); return (PARSEOP_SHARETYPE_EXCLUSIVE); }
+"SharedAndWake"             { count (0); return (PARSEOP_SHARETYPE_SHAREDWAKE); }
+"ExclusiveAndWake"          { count (0); return (PARSEOP_SHARETYPE_EXCLUSIVEWAKE); }
 
 "Decode10"                  { count (0); return (PARSEOP_IODECODETYPE_10); }
 "Decode16"                  { count (0); return (PARSEOP_IODECODETYPE_16); }
@@ -503,15 +507,19 @@ NamePathTail                [.]{NameSeg}
 "StopBitsOne"               { count (0); return (PARSEOP_STOPBITS_ONE); }
 "StopBitsNone"              { count (0); return (PARSEOP_STOPBITS_NONE); }
 
-"FlowControlHardware"       { count (0); return (PARSEOP_FLOWCONTROL_HARDWARE); }
-"FlowControlXON"            { count (0); return (PARSEOP_FLOWCONTROL_XON); }
-"FlowControlNone"           { count (0); return (PARSEOP_FLOWCONTROL_NONE); }
-
 "ParityTypeSpace"           { count (0); return (PARSEOP_PARITYTYPE_SPACE); }
 "ParityTypeMark"            { count (0); return (PARSEOP_PARITYTYPE_MARK); }
 "ParityTypeOdd"             { count (0); return (PARSEOP_PARITYTYPE_ODD); }
 "ParityTypeEven"            { count (0); return (PARSEOP_PARITYTYPE_EVEN); }
 "ParityTypeNone"            { count (0); return (PARSEOP_PARITYTYPE_NONE); }
+
+"PullUp"                    { count (0); return (PARSEOP_PIN_PULLUP); }
+"PullDown"                  { count (0); return (PARSEOP_PIN_PULLDOWN); }
+"NoPull"                    { count (0); return (PARSEOP_PIN_NOPULL); }
+
+"InputOnly"                 { count (0); return (PARSEOP_IORESTRICT_IN); }
+"OutputOnly"                { count (0); return (PARSEOP_IORESTRICT_OUT); }
+
 
 "__DATE__"                  { count (0); return (PARSEOP___DATE__); }
 "__FILE__"                  { count (0); return (PARSEOP___FILE__); }

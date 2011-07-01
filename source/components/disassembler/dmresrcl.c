@@ -1184,7 +1184,6 @@ AcpiDmGpioDescriptor (
     UINT32                  Length,
     UINT32                  Level)
 {
-    UINT32                  i;
 
 
     AcpiDmIndent (Level);
@@ -1207,8 +1206,10 @@ AcpiDmGpioDescriptor (
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%4.4X, 0x%2.2X,",
         Resource->GpioInt.DebounceTimeout,
-        Resource->GpioInt.GenericFlags);
+        Resource->GpioInt.IntFlags);
 
+#if 0
+     UINT32                  i;
     /*
      * The ResourceSource fields are optional and appear after the interrupt
      * list. Must compute length based on length of the list. First xrupt
@@ -1234,6 +1235,7 @@ AcpiDmGpioDescriptor (
         AcpiOsPrintf ("0x%8.8X,\n",
             (UINT32) Resource->GpioInt.Interrupts[i]);
     }
+#endif
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("}\n");
@@ -1320,7 +1322,7 @@ AcpiDmI2cSerialBusDescriptor (
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("%s,",
-        AcpiGbl_SmDecode [(Resource->I2cSerialBus.GeneralFlags & 1)]);
+        AcpiGbl_SmDecode [(Resource->I2cSerialBus.Flags & 1)]);
 
     /*
      * The ResourceSource fields are optional
@@ -1362,17 +1364,17 @@ AcpiDmSpiSerialBusDescriptor (
         AcpiGbl_WmDecode [(Resource->SpiSerialBus.TypeSpecificFlags & 1)],
         Resource->SpiSerialBus.ConnectionSpeed,
         Resource->SpiSerialBus.DataBitLength,
-        AcpiGbl_CphDecode [(Resource->SpiSerialBus.Phase & 1)]);
+        AcpiGbl_CphDecode [(Resource->SpiSerialBus.ClockPhase & 1)]);
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("%s, 0x%4.4X, %s,\n",
-        AcpiGbl_CpoDecode [(Resource->SpiSerialBus.Polarity & 1)],
+        AcpiGbl_CpoDecode [(Resource->SpiSerialBus.ClockPolarity & 1)],
         Resource->SpiSerialBus.DeviceSelection,
         AcpiGbl_DpDecode [(Resource->SpiSerialBus.TypeSpecificFlags >> 1) & 1]);
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("%s, ",
-        AcpiGbl_SmDecode [(Resource->SpiSerialBus.GeneralFlags & 1)]);
+        AcpiGbl_SmDecode [(Resource->SpiSerialBus.Flags & 1)]);
 
     /*
      * The ResourceSource fields are optional
@@ -1420,8 +1422,8 @@ AcpiDmUartSerialBusDescriptor (
     AcpiOsPrintf ("%s, 0x%8.8X, 0x%4.4X, 0x%4.4X,\n",
         AcpiGbl_FcDecode [(Resource->UartSerialBus.TypeSpecificFlags >> 8 ) & 3],
         Resource->UartSerialBus.DefaultBaudRate,
-        Resource->UartSerialBus.RxFifo,
-        Resource->UartSerialBus.TxFifo);
+        Resource->UartSerialBus.RxFifoSize,
+        Resource->UartSerialBus.TxFifoSize);
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("%s,",

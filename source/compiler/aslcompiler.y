@@ -178,7 +178,7 @@ void *                      AslLocalAllocate (unsigned int Size);
  * These shift/reduce conflicts are expected. There should be zero
  * reduce/reduce conflicts.
  */
-%expect 67
+%expect 73
 
 /*
  * Token types: These are returned by the lexer
@@ -285,10 +285,8 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_FIELD
 %token <i> PARSEOP_FINDSETLEFTBIT
 %token <i> PARSEOP_FINDSETRIGHTBIT
+%token <i> PARSEOP_FIXED_DMA
 %token <i> PARSEOP_FIXEDIO
-%token <i> PARSEOP_FLOWCONTROL_HARDWARE
-%token <i> PARSEOP_FLOWCONTROL_NONE
-%token <i> PARSEOP_FLOWCONTROL_XON
 %token <i> PARSEOP_FROMBCD
 %token <i> PARSEOP_FUNCTION
 %token <i> PARSEOP_GPIO_INT
@@ -303,6 +301,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_INDEXFIELD
 %token <i> PARSEOP_INTEGER
 %token <i> PARSEOP_INTERRUPT
+%token <i> PARSEOP_INTLEVEL_ACTIVEBOTH
 %token <i> PARSEOP_INTLEVEL_ACTIVEHIGH
 %token <i> PARSEOP_INTLEVEL_ACTIVELOW
 %token <i> PARSEOP_INTTYPE_EDGE
@@ -310,6 +309,8 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_IO
 %token <i> PARSEOP_IODECODETYPE_10
 %token <i> PARSEOP_IODECODETYPE_16
+%token <i> PARSEOP_IORESTRICT_IN
+%token <i> PARSEOP_IORESTRICT_OUT
 %token <i> PARSEOP_IRQ
 %token <i> PARSEOP_IRQNOFLAGS
 %token <i> PARSEOP_LAND
@@ -395,6 +396,9 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_PARITYTYPE_NONE
 %token <i> PARSEOP_PARITYTYPE_ODD
 %token <i> PARSEOP_PARITYTYPE_SPACE
+%token <i> PARSEOP_PIN_NOPULL
+%token <i> PARSEOP_PIN_PULLDOWN
+%token <i> PARSEOP_PIN_PULLUP
 %token <i> PARSEOP_POWERRESOURCE
 %token <i> PARSEOP_PROCESSOR
 %token <i> PARSEOP_QWORDCONST
@@ -431,7 +435,9 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_SERIALIZERULE_NOTSERIAL
 %token <i> PARSEOP_SERIALIZERULE_SERIAL
 %token <i> PARSEOP_SHARETYPE_EXCLUSIVE
+%token <i> PARSEOP_SHARETYPE_EXCLUSIVEWAKE
 %token <i> PARSEOP_SHARETYPE_SHARED
+%token <i> PARSEOP_SHARETYPE_SHAREDWAKE
 %token <i> PARSEOP_SHIFTLEFT
 %token <i> PARSEOP_SHIFTRIGHT
 %token <i> PARSEOP_SIGNAL
@@ -703,8 +709,10 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> EndianKeyword
 %type <n> BitsPerByteKeyword
 %type <n> StopBitsKeyword
-%type <n> FlowControlKeyword
 %type <n> ParityTypeKeyword
+%type <n> PinConfigKeyword
+%type <n> PinConfigByte
+%type <n> IoRestrictionKeyword
 
 /* Types */
 
@@ -778,6 +786,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> I2cSerialBusTerm
 %type <n> SpiSerialBusTerm
 %type <n> UartSerialBusTerm
+%type <n> FixedDmaTerm
 
 %type <n> NameString
 %type <n> NameSeg
@@ -790,6 +799,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> OptionalByteConstExpr
 %type <n> OptionalDWordConstExpr
 %type <n> OptionalQWordConstExpr
+%type <n> OptionalWordConstExpr
 %type <n> OptionalSerializeRuleKeyword
 %type <n> OptionalResourceType_First
 %type <n> OptionalResourceType
@@ -800,6 +810,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> OptionalDecodeType
 %type <n> OptionalRangeType
 %type <n> OptionalShareType
+%type <n> OptionalShareType_First
 %type <n> OptionalType
 %type <n> OptionalType_Last
 %type <n> OptionalTranslationType_Last
@@ -813,16 +824,15 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> OptionalParameterTypesPackage
 %type <n> OptionalReference
 %type <n> OptionalAccessSize
-%type <n> OptionalAddressingMode_First
+%type <n> OptionalAddressingMode
 %type <n> OptionalSlaveMode
-%type <n> OptionalWireMode_First
-%type <n> OptionalDevicePolarity
+%type <n> OptionalWireMode
 %type <n> OptionalEndian
 %type <n> OptionalBitsPerByte
 %type <n> OptionalStopBits
-%type <n> OptionalFlowControl
 %type <n> OptionalParityType
-
+%type <n> OptionalIoRestriction
+%type <n> OptionalBuffer_Last
 %type <n> TermArgItem
 %type <n> NameStringItem
 
@@ -2330,14 +2340,17 @@ InterruptTypeKeyword
     ;
 
 InterruptLevel
-    : PARSEOP_INTLEVEL_ACTIVEHIGH           {$$ = TrCreateLeafNode (PARSEOP_INTLEVEL_ACTIVEHIGH);}
+    : PARSEOP_INTLEVEL_ACTIVEBOTH           {$$ = TrCreateLeafNode (PARSEOP_INTLEVEL_ACTIVEBOTH);}
+    | PARSEOP_INTLEVEL_ACTIVEHIGH           {$$ = TrCreateLeafNode (PARSEOP_INTLEVEL_ACTIVEHIGH);}
     | PARSEOP_INTLEVEL_ACTIVELOW            {$$ = TrCreateLeafNode (PARSEOP_INTLEVEL_ACTIVELOW);}
     ;
 
 ShareTypeKeyword
     : PARSEOP_SHARETYPE_SHARED              {$$ = TrCreateLeafNode (PARSEOP_SHARETYPE_SHARED);}
     | PARSEOP_SHARETYPE_EXCLUSIVE           {$$ = TrCreateLeafNode (PARSEOP_SHARETYPE_EXCLUSIVE);}
-    ;
+    | PARSEOP_SHARETYPE_SHAREDWAKE          {$$ = TrCreateLeafNode (PARSEOP_SHARETYPE_SHAREDWAKE);}
+    | PARSEOP_SHARETYPE_EXCLUSIVEWAKE       {$$ = TrCreateLeafNode (PARSEOP_SHARETYPE_EXCLUSIVEWAKE);}
+   ;
 
 IODecodeKeyword
     : PARSEOP_IODECODETYPE_16               {$$ = TrCreateLeafNode (PARSEOP_IODECODETYPE_16);}
@@ -2411,18 +2424,23 @@ StopBitsKeyword
     | PARSEOP_STOPBITS_NONE                 {$$ = TrCreateLeafNode (PARSEOP_STOPBITS_NONE);}
     ;
 
-FlowControlKeyword
-    : PARSEOP_FLOWCONTROL_HARDWARE          {$$ = TrCreateLeafNode (PARSEOP_FLOWCONTROL_HARDWARE);}
-    | PARSEOP_FLOWCONTROL_XON               {$$ = TrCreateLeafNode (PARSEOP_FLOWCONTROL_XON);}
-    | PARSEOP_FLOWCONTROL_NONE              {$$ = TrCreateLeafNode (PARSEOP_FLOWCONTROL_NONE);}
-    ;
-
 ParityTypeKeyword
     : PARSEOP_PARITYTYPE_SPACE              {$$ = TrCreateLeafNode (PARSEOP_PARITYTYPE_SPACE);}
     | PARSEOP_PARITYTYPE_MARK               {$$ = TrCreateLeafNode (PARSEOP_PARITYTYPE_MARK);}
     | PARSEOP_PARITYTYPE_ODD                {$$ = TrCreateLeafNode (PARSEOP_PARITYTYPE_ODD);}
     | PARSEOP_PARITYTYPE_EVEN               {$$ = TrCreateLeafNode (PARSEOP_PARITYTYPE_EVEN);}
     | PARSEOP_PARITYTYPE_NONE               {$$ = TrCreateLeafNode (PARSEOP_PARITYTYPE_NONE);}
+    ;
+
+PinConfigKeyword
+    : PARSEOP_PIN_NOPULL                    {$$ = TrCreateLeafNode (PARSEOP_PIN_NOPULL);}
+    | PARSEOP_PIN_PULLDOWN                  {$$ = TrCreateLeafNode (PARSEOP_PIN_PULLDOWN);}
+    | PARSEOP_PIN_PULLUP                    {$$ = TrCreateLeafNode (PARSEOP_PIN_PULLUP);}
+    ;
+
+IoRestrictionKeyword
+    : PARSEOP_IORESTRICT_IN                 {$$ = TrCreateLeafNode (PARSEOP_IORESTRICT_IN);}
+    | PARSEOP_IORESTRICT_OUT                {$$ = TrCreateLeafNode (PARSEOP_IORESTRICT_OUT);}
     ;
 
 /******* Miscellaneous Types **************************************************/
@@ -2668,6 +2686,7 @@ ResourceMacroTerm
     | I2cSerialBusTerm              {}
     | SpiSerialBusTerm              {}
     | UartSerialBusTerm             {}
+    | FixedDmaTerm                  {}
     ;
 
 DMATerm
@@ -3092,85 +3111,122 @@ WordSpaceTerm
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
 
+
+OptionalBuffer_Last
+    :                               {$$ = NULL;}
+    | ','                           {$$ = NULL;}
+    | ',' BufferTerm                {$$ = $2;}
+    ;
+
+PinConfigByte
+    : PinConfigKeyword              {$$ = $1;}
+    | ByteConstExpr                 {$$ = UtCheckIntegerRange ($1, 0x80, 0xFF);}
+    ;
+
 GpioIntTerm
     : PARSEOP_GPIO_INT '('          {$<n>$ = TrCreateLeafNode (PARSEOP_GPIO_INT);}
-        OptionalResourceType_First
-        ',' InterruptTypeKeyword
-        ',' InterruptLevel
-        OptionalShareType
-        ',' WordConstExpr
-        ',' ByteConstExpr
-        OptionalStringData
-        OptionalNameString_Last
+        InterruptTypeKeyword        // InterruptType
+        ',' InterruptLevel          // InterruptLevel
+        OptionalShareType           // SharedType
+        ',' PinConfigByte           // PinConfig
+        OptionalWordConstExpr       // DebounceTimeout
+        ',' StringData              // ResourceSource
+        OptionalByteConstExpr       // ResourceSourceIndex
+        OptionalResourceType        // ResourceType
+        OptionalNameString          // DescriptorName
+        OptionalBuffer_Last         // VendorData
         ')' '{'
-            DWordList '}'           {$$ = TrLinkChildren ($<n>3,9,$4,$6,$8,$9,$11,$13,$14,$15,$18);}
+            DWordList '}'           {$$ = TrLinkChildren ($<n>3,11,$4,$6,$7,$9,$10,$12,$13,$14,$15,$16,$19);}
     | PARSEOP_GPIO_INT '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
 
 GpioIoTerm
     : PARSEOP_GPIO_IO '('           {$<n>$ = TrCreateLeafNode (PARSEOP_GPIO_IO);}
-        OptionalResourceType_First
-        ',' InterruptTypeKeyword
-        ',' InterruptLevel
-        OptionalShareType
-        ',' WordConstExpr
-        ',' ByteConstExpr
-        OptionalStringData
-        OptionalNameString_Last
+        OptionalShareType_First     // SharedType
+        ',' PinConfigByte           // PinConfig
+        OptionalWordConstExpr       // DebounceTimeout
+        OptionalWordConstExpr       // DriveStrength
+        OptionalIoRestriction       // IoRestriction
+        ',' StringData              // ResourceSource
+        OptionalByteConstExpr       // ResourceSourceIndex
+        OptionalResourceType        // ResourceType
+        OptionalNameString          // DescriptorName
+        OptionalBuffer_Last         // VendorData
         ')' '{'
-            DWordList '}'           {$$ = TrLinkChildren ($<n>3,9,$4,$6,$8,$9,$11,$13,$14,$15,$18);}
+            DWordList '}'           {$$ = TrLinkChildren ($<n>3,11,$4,$6,$7,$8,$9,$11,$12,$13,$14,$15,$18);}
     | PARSEOP_GPIO_IO '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
 
 I2cSerialBusTerm
     : PARSEOP_I2C_SERIALBUS '('     {$<n>$ = TrCreateLeafNode (PARSEOP_I2C_SERIALBUS);}
-        OptionalAddressingMode_First
-        ',' DWordConstExpr
-        ',' WordConstExpr
-        OptionalSlaveMode
-        OptionalStringData
-        OptionalNameString_Last
-        ')'                         {$$ = TrLinkChildren ($<n>3,6,$4,$6,$8,$9,$10,$11);}
+        WordConstExpr               // SlaveAddress
+        OptionalSlaveMode           // SlaveMode
+        ',' DWordConstExpr          // ConnectionSpeed
+        OptionalAddressingMode      // AddressingMode
+        ',' StringData              // ResourceSource
+        OptionalByteConstExpr       // ResourceSourceIndex
+        OptionalResourceType        // ResourceType
+        OptionalNameString          // DescriptorName
+        OptionalReference           // VendorData
+        ')'                         {$$ = TrLinkChildren ($<n>3,9,$4,$5,$7,$8,$10,$11,$12,$13,$14);}
     | PARSEOP_I2C_SERIALBUS '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
 
 SpiSerialBusTerm
     : PARSEOP_SPI_SERIALBUS '('     {$<n>$ = TrCreateLeafNode (PARSEOP_SPI_SERIALBUS);}
-        OptionalWireMode_First
-        ',' DWordConstExpr
-        ',' ByteConstExpr
-        ',' ClockPhaseKeyword
-        ',' ClockPolarityKeyword
-        ',' WordConstExpr
-        OptionalDevicePolarity
-        OptionalSlaveMode
-        OptionalStringData
-        OptionalNameString_Last
-        ')'                         {$$ = TrLinkChildren ($<n>3,10,$4,$6,$8,$10,$12,$14,$15,$16,$17,$18);}
+        WordConstExpr               // DeviceSelection
+        ',' DevicePolarityKeyword   // DevicePolarity
+        OptionalWireMode            // WireMode
+        ',' ByteConstExpr           // DataBitLength
+        OptionalSlaveMode           // SlaveMode
+        ',' DWordConstExpr          // ConnectionSpeed
+        ',' ClockPolarityKeyword    // ClockPolarity
+        ',' ClockPhaseKeyword       // ClockPhase
+        OptionalStringData          // ResourceSource
+        OptionalByteConstExpr       // ResourceSourceIndex
+        OptionalResourceType        // ResourceType
+        OptionalNameString          // DescriptorName
+        OptionalReference           // VendorData
+        ')'                         {$$ = TrLinkChildren ($<n>3,13,$4,$6,$7,$9,$10,$12,$14,$16,$17,$18,$19,$20,$21);}
     | PARSEOP_SPI_SERIALBUS '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
 
 UartSerialBusTerm
     : PARSEOP_UART_SERIALBUS '('     {$<n>$ = TrCreateLeafNode (PARSEOP_UART_SERIALBUS);}
-        ByteConstExpr
-        OptionalEndian
-        OptionalBitsPerByte
-        OptionalStopBits
-        OptionalFlowControl
-        ',' DWordConstExpr
-        ',' WordConstExpr
-        ',' WordConstExpr
-        OptionalParityType
-        OptionalStringData
-        OptionalNameString_Last
-        ')'                         {$$ = TrLinkChildren ($<n>3,11,$4,$5,$6,$7,$8,$10,$12,$14,$15,$16,$17);}
+        DWordConstExpr              // ConnectionSpeed
+        OptionalBitsPerByte         // BitsPerByte
+        OptionalStopBits            // StopBits
+        ',' ByteConstExpr           // LinesInUse
+        OptionalEndian              // Endianess
+        OptionalParityType          // Parity
+        ',' WordConstExpr           // Rx BufferSize
+        ',' WordConstExpr           // Tx BufferSize
+        OptionalStringData          // ResourceSource
+        OptionalByteConstExpr       // ResourceSourceIndex
+        OptionalResourceType        // ResourceType
+        OptionalNameString          // DescriptorName
+        OptionalReference           // VendorData
+        ')'                         {$$ = TrLinkChildren ($<n>3,13,$4,$5,$6,$8,$9,$10,$12,$14,$15,$16,$17,$18,$19);}
     | PARSEOP_UART_SERIALBUS '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
+
+FixedDmaTerm
+    : PARSEOP_FIXED_DMA '('         {$<n>$ = TrCreateLeafNode (PARSEOP_FIXED_DMA);}
+        WordConstExpr               // DMA Request line
+        ',' WordConstExpr           // DMA channel
+        ',' ByteConstExpr           // DMA transfer width
+        OptionalNameString          // DescriptorName
+        ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$6,$8,$9);}
+    | PARSEOP_FIXED_DMA '('
+        error ')'                   {$$ = AslDoError(); yyclearin;}
+    ;
+
+
 
 /******* Object References ***********************************************/
 
@@ -3215,9 +3271,9 @@ OptionalAccessSize
     | ',' ByteConstExpr             {$$ = $2;}
     ;
 
-OptionalAddressingMode_First
-    :                               {$$ = NULL;}
-    | AddressingModeKeyword         {$$ = $1;}
+OptionalAddressingMode
+    : ','                           {$$ = NULL;}
+    | ',' AddressingModeKeyword     {$$ = $2;}
     ;
 
 OptionalAddressRange
@@ -3242,10 +3298,6 @@ OptionalDecodeType
     | ',' DecodeKeyword             {$$ = $2;}
     ;
 
-OptionalDevicePolarity
-    : ','                           {$$ = NULL;}
-    | ',' DevicePolarityKeyword     {$$ = $2;}
-    ;
 
 OptionalDWordConstExpr
     :                               {$$ = NULL;}
@@ -3258,9 +3310,9 @@ OptionalEndian
     | ',' EndianKeyword             {$$ = $2;}
     ;
 
-OptionalFlowControl
+OptionalIoRestriction
     : ','                           {$$ = NULL;}
-    | ',' FlowControlKeyword        {$$ = $2;}
+    | ',' IoRestrictionKeyword      {$$ = $2;}
     ;
 
 OptionalListString
@@ -3355,6 +3407,11 @@ OptionalShareType
     | ',' ShareTypeKeyword          {$$ = $2;}
     ;
 
+OptionalShareType_First
+    :                               {$$ = NULL;}
+    | ShareTypeKeyword              {$$ = $1;}
+    ;
+
 OptionalStopBits
     : ','                           {$$ = NULL;}
     | ',' StopBitsKeyword           {$$ = $2;}
@@ -3394,11 +3451,15 @@ OptionalTranslationType_Last
     | ',' TranslationKeyword        {$$ = $2;}
     ;
 
-OptionalWireMode_First
-    :                               {$$ = NULL;}
-    | WireModeKeyword               {$$ = $1;}
+OptionalWireMode
+    : ','                           {$$ = NULL;}
+    | ',' WireModeKeyword           {$$ = $2;}
     ;
 
+OptionalWordConstExpr
+    : ','                           {$$ = NULL;}
+    | ',' WordConstExpr             {$$ = $2;}
+    ;
 
 TermArgItem
     : ',' TermArg                   {$$ = $2;}
