@@ -1,0 +1,553 @@
+/******************************************************************************
+ *
+ * Name: actbl3.h - ACPI Table Definitions
+ *
+ *****************************************************************************/
+
+/******************************************************************************
+ *
+ * 1. Copyright Notice
+ *
+ * Some or all of this work - Copyright (c) 1999 - 2011, Intel Corp.
+ * All rights reserved.
+ *
+ * 2. License
+ *
+ * 2.1. This is your license from Intel Corp. under its intellectual property
+ * rights.  You may have additional license terms from the party that provided
+ * you this software, covering your right to use that party's intellectual
+ * property rights.
+ *
+ * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
+ * copy of the source code appearing in this file ("Covered Code") an
+ * irrevocable, perpetual, worldwide license under Intel's copyrights in the
+ * base code distributed originally by Intel ("Original Intel Code") to copy,
+ * make derivatives, distribute, use and display any portion of the Covered
+ * Code in any form, with the right to sublicense such rights; and
+ *
+ * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
+ * license (with the right to sublicense), under only those claims of Intel
+ * patents that are infringed by the Original Intel Code, to make, use, sell,
+ * offer to sell, and import the Covered Code and derivative works thereof
+ * solely to the minimum extent necessary to exercise the above copyright
+ * license, and in no event shall the patent license extend to any additions
+ * to or modifications of the Original Intel Code.  No other license or right
+ * is granted directly or by implication, estoppel or otherwise;
+ *
+ * The above copyright and patent license is granted only if the following
+ * conditions are met:
+ *
+ * 3. Conditions
+ *
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * Redistribution of source code of any substantial portion of the Covered
+ * Code or modification with rights to further distribute source must include
+ * the above Copyright Notice, the above License, this list of Conditions,
+ * and the following Disclaimer and Export Compliance provision.  In addition,
+ * Licensee must cause all Covered Code to which Licensee contributes to
+ * contain a file documenting the changes Licensee made to create that Covered
+ * Code and the date of any change.  Licensee must include in that file the
+ * documentation of any changes made by any predecessor Licensee.  Licensee
+ * must include a prominent statement that the modification is derived,
+ * directly or indirectly, from Original Intel Code.
+ *
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * Redistribution of source code of any substantial portion of the Covered
+ * Code or modification without rights to further distribute source must
+ * include the following Disclaimer and Export Compliance provision in the
+ * documentation and/or other materials provided with distribution.  In
+ * addition, Licensee may not authorize further sublicense of source of any
+ * portion of the Covered Code, and must include terms to the effect that the
+ * license from Licensee to its licensee is limited to the intellectual
+ * property embodied in the software Licensee provides to its licensee, and
+ * not to intellectual property embodied in modifications its licensee may
+ * make.
+ *
+ * 3.3. Redistribution of Executable. Redistribution in executable form of any
+ * substantial portion of the Covered Code or modification must reproduce the
+ * above Copyright Notice, and the following Disclaimer and Export Compliance
+ * provision in the documentation and/or other materials provided with the
+ * distribution.
+ *
+ * 3.4. Intel retains all right, title, and interest in and to the Original
+ * Intel Code.
+ *
+ * 3.5. Neither the name Intel nor any other trademark owned or controlled by
+ * Intel shall be used in advertising or otherwise to promote the sale, use or
+ * other dealings in products derived from or relating to the Covered Code
+ * without prior written authorization from Intel.
+ *
+ * 4. Disclaimer and Export Compliance
+ *
+ * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
+ * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
+ * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
+ * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
+ * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
+ * PARTICULAR PURPOSE.
+ *
+ * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
+ * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
+ * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
+ * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
+ * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
+ * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
+ * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
+ * LIMITED REMEDY.
+ *
+ * 4.3. Licensee shall not export, either directly or indirectly, any of this
+ * software or system incorporating such software without first obtaining any
+ * required license or other approval from the U. S. Department of Commerce or
+ * any other agency or department of the United States Government.  In the
+ * event Licensee exports any such software from the United States or
+ * re-exports any such software from a foreign destination, Licensee shall
+ * ensure that the distribution and export/re-export of the software is in
+ * compliance with all laws, regulations, orders, or other restrictions of the
+ * U.S. Export Administration Regulations. Licensee agrees that neither it nor
+ * any of its subsidiaries will export/re-export any technical data, process,
+ * software, or service, directly or indirectly, to any country for which the
+ * United States government or any agency thereof requires an export license,
+ * other governmental approval, or letter of assurance, without first obtaining
+ * such license, approval or letter.
+ *
+ *****************************************************************************/
+
+#ifndef __ACTBL3_H__
+#define __ACTBL3_H__
+
+
+/*******************************************************************************
+ *
+ * Additional ACPI Tables (1+)
+ *
+ * These tables are not consumed directly by the ACPICA subsystem, but are
+ * included here to support device drivers and the AML disassembler.
+ *
+ * The tables in this file are fully defined within the ACPI specification.
+ *
+ ******************************************************************************/
+
+
+/*
+ * Values for description table header signatures for tables defined in this
+ * file. Useful because they make it more difficult to inadvertently type in
+ * the wrong signature.
+ */
+#define ACPI_SIG_BGRT           "BGRT"      /* Boot Graphics Resource Table */
+#define ACPI_SIG_CSRT           "CSRT"      /* Core System Resources Table */
+#define ACPI_SIG_FPDT           "FPDT"      /* Firmware Performance Data Table */
+#define ACPI_SIG_MATR           "MATR"      /* Memory Address Translation Table */
+#define ACPI_SIG_MPST           "MPST"      /* Memory Power State Table */
+#define ACPI_SIG_MSDM           "MSDM"      /* Microsoft Data Management Table */
+#define ACPI_SIG_PCCT           "PCCT"      /* Platform Communications Channel Table */
+#define ACPI_SIG_PMTT           "PMTT"      /* Platform Memory Topology Table */
+#define ACPI_SIG_RASF           "RASF"      /* RAS Feature table */
+#define ACPI_SIG_WPBT           "WPBT"      /* Windows Platform Binary Table */
+
+#define ACPI_SIG_S3PT           "S3PT"      /* S3 Performance (sub)Table */
+
+/*
+ * All tables must be byte-packed to match the ACPI specification, since
+ * the tables are provided by the system BIOS.
+ */
+#pragma pack(1)
+
+/*
+ * Note about bitfields: The UINT8 type is used for bitfields in ACPI tables.
+ * This is the only type that is even remotely portable. Anything else is not
+ * portable, so do not use any other bitfield types.
+ */
+
+
+/*******************************************************************************
+ *
+ * BGRT - Boot Graphics Resource Table
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_bgrt
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT16                  Version;
+    UINT8                   Status;
+    UINT8                   ImageType;
+    UINT64                  ImageAddress;
+    UINT32                  ImageOffsetX;
+    UINT32                  ImageOffsetY;
+
+} ACPI_TABLE_BGRT;
+
+
+/*******************************************************************************
+ *
+ * FPDT - Firmware Performance Data Table
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_fbdt
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+
+} ACPI_TABLE_FBDT;
+
+
+/* FPDT subtable header */
+
+typedef struct acpi_fbdt_header
+{
+    UINT16                  Type;
+    UINT8                   Length;
+    UINT8                   Revision;
+
+} ACPI_FBDT_HEADER;
+
+/* Values for Type field above */
+
+enum AcpiFbdtType
+{
+    ACPI_FBDT_TYPE_BOOT                 = 0,
+    ACPI_FBDT_TYPE_S3PERF               = 1,
+};
+
+
+/*
+ * FPDT subtables
+ */
+
+/* 0: Firmware Basic Boot Performance Record */
+
+typedef struct acpi_fpdt_boot
+{
+    ACPI_FBDT_HEADER        Header;
+    UINT8                   Reserved[4];
+    UINT64                  ResetEnd;
+    UINT64                  LoadStart;
+    UINT64                  StartupStart;
+    UINT64                  EnterExitServices;
+    UINT64                  ExitExitServices;
+
+} ACPI_FPDT_BOOT;
+
+
+/* 1: S3 Performance Table Pointer Record */
+
+typedef struct acpi_fpdt_s3pt_ptr
+{
+    ACPI_FBDT_HEADER        Header;
+    UINT8                   Reserved[4];
+    UINT64                  Address;
+
+} ACPI_FPDT_S3PT_PTR;
+
+
+/*
+ * S3PT - S3 Performance Table. This table is pointed to by the
+ * FPDT S3 Pointer Record above.
+ */
+typedef struct acpi_table_s3pt
+{
+    UINT8                   Signature[4]; /* "S3PT" */
+    UINT32                  Length;
+
+} ACPI_TABLE_S3PT;
+
+
+/*
+ * S3PT Subtables
+ */
+typedef struct acpi_s3pt_header
+{
+    UINT16                  Type;
+    UINT8                   Length;
+    UINT8                   Revision;
+
+} ACPI_S3PT_HEADER;
+
+/* Values for Type field above */
+
+enum AcpiS3ptType
+{
+    ACPI_S3PT_TYPE_RESUME               = 0,
+    ACPI_S3PT_TYPE_SUSPEND              = 1,
+};
+
+typedef struct acpi_s3pt_resume
+{
+    ACPI_S3PT_HEADER        Header;
+    UINT32                  ResumeCount;
+    UINT64                  FullResume;
+    UINT64                  AverageResume;
+
+} ACPI_S3PT_RESUME;
+
+typedef struct acpi_s3pt_suspend
+{
+    ACPI_S3PT_HEADER        Header;
+    UINT64                  SuspendStart;
+    UINT64                  SuspendEnd;
+
+} ACPI_S3PT_SUSPEND;
+
+
+/*******************************************************************************
+ *
+ * MATR - Memory Address Translation Table
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_matr
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT32                  ActionHeaderSize;
+    UINT32                  Reserved;
+    UINT32                  EntryCount;
+
+} ACPI_TABLE_MATR;
+
+typedef struct acpi_matr_buffer_header
+{
+    UINT16                  Revision;
+    UINT16                  EntryCount;
+    UINT32                  DataLength;
+
+} ACPI_MATR_BUFFER_HEADER;
+
+
+/*******************************************************************************
+ *
+ * MPST - Memory Power State Table
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_mpst
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT16                  Reserved1;
+    UINT8                   ChannelId;
+    UINT8                   Reserved2;
+    UINT16                  PowerNodeCount;
+
+} ACPI_TABLE_MPST;
+
+
+/* Memory Power Node Structure */
+
+typedef struct acpi_mpst_power_node
+{
+    UINT8                   Flags;
+    UINT8                   Reserved1;
+    UINT16                  NodeId;
+    UINT32                  Length;
+    UINT64                  RangeAddress;
+    UINT64                  RangeLength;
+    UINT8                   NumPowerStates;
+    UINT8                   NumPhysicalComponents;
+    UINT16                  Reserved2;
+
+} ACPI_MPST_POWER_NODE;
+
+/* Values for Flags field above */
+
+#define ACPI_MPST_ENABLED               1
+#define ACPI_MPST_POWER_MANAGED         2
+
+
+/* Memory Power State Characteristics Structure */
+
+typedef struct acpi_mpst_power_state
+{
+    UINT8                   Revision;
+    UINT8                   Flags;
+    UINT16                  Reserved1;
+    UINT32                  AveragePower;
+    UINT32                  PowerSaving;
+    UINT64                  ExitLatency;
+    UINT64                  Reserved2;
+
+} ACPI_MPST_POWER_STATE;
+
+
+/*******************************************************************************
+ *
+ * PCCT - Platform Communications Channel Table
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_pcct
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT32                  Flags;
+    UINT32                  Latency;
+    UINT32                  Reserved;
+
+} ACPI_TABLE_PCCT;
+
+/* Values for Flags field above */
+
+#define ACPI_PCCT_DOORBELL              1
+
+
+typedef struct acpi_pcct_generic
+{
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT8                   Reserved[6];
+    UINT64                  BaseAddress;
+    UINT64                  Length;
+    ACPI_GENERIC_ADDRESS    DoorbellRegister;
+    UINT64                  Preserve;
+    UINT64                  Write;
+
+} ACPI_PCCT_GENERIC;
+
+
+/*******************************************************************************
+ *
+ * PMTT - Platform Memory Topology Table
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_pmtt
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT32                  Length;
+    UINT16                  AggregatorCount;
+
+} ACPI_TABLE_PMTT;
+
+
+/* Common header for PMTT subtables */
+
+typedef struct acpi_pmtt_header
+{
+    UINT8                   Type;
+    UINT8                   Flags;
+    UINT32                  Length;
+
+} ACPI_PMTT_HEADER;
+
+
+/*
+ * PMTT subtables, correspond to Type in acpi_pmtt_header
+ */
+
+/* 0: Socket Structure */
+
+typedef struct acpi_pmtt_socket
+{
+    ACPI_PMTT_HEADER        Header;
+    UINT16                  SocketId;
+    UINT16                  ControllerCount;    /* Count of controller subtables */
+
+} ACPI_PMTT_SOCKET;
+
+/* 0: Socket Structure: Memory Controller subtable */
+
+typedef struct acpi_pmtt_memory
+{
+    UINT16                  ProximityDomain;
+    UINT32                  Flags;
+    UINT32                  ReadLatency;
+    UINT32                  WriteLatency;
+    UINT32                  ReadBandwidth;
+    UINT32                  WriteBandwidth;
+    UINT16                  AccessWidth;
+    UINT16                  Alignment;
+    UINT32                  Endurance;
+    UINT16                  ComponentCount;     /* Count of physical component subtables */
+
+} ACPI_PMTT_MEMORY;
+
+/* 0: Socket Structure: Physical Component Identifier */
+
+typedef struct acpi_pmtt_physical_component
+{
+    UINT32                  Length;
+    UINT16                  ComponentId;
+    UINT16                  ComponentType;
+    UINT16                  Size;
+    UINT16                  SmBiosHandle;
+
+} ACPI_PMTT_PHYSICAL_COMPONENT;
+
+
+/* 1: Node Controller */
+
+
+/* 2: Memory Hub */
+
+
+/*******************************************************************************
+ *
+ * RASF - RAS Feature Table
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_rasf
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT8                   ChannelId[12];
+
+} ACPI_TABLE_RASF;
+
+/* RASF Platform Communication Channel Shared Memory Region */
+
+typedef struct acpi_rasf_shared_memory
+{
+    UINT32                  Signature;
+    UINT16                  Command;
+    UINT16                  Status;
+    UINT64                  RequestedAddress;
+    UINT64                  RequestedLength;
+    UINT64                  ActualAddress;
+    UINT64                  ActualLength;
+    UINT16                  Flags;
+    UINT8                   Speed;
+
+} ACPI_RASF_SHARED_MEMORY;
+
+/* Masks for Flags and Speed fields above */
+
+#define ACPI_RASF_SCRUBBER_RUNNING      1
+#define ACPI_RASF_SPEED                 (7<<1)
+
+/* Channel Commands */
+
+enum AcpiRasfCommands
+{
+    ACPI_RASF_GET_RAS_CAPABILITIES      = 1,
+    ACPI_RASF_GET_PATROL_PARAMETERS     = 2,
+    ACPI_RASF_START_PATROL_SCRUBBER     = 3,
+    ACPI_RASF_STOP_PATROL_SCRUBBER      = 4
+};
+
+/* Channel Command flags */
+
+#define ACPI_RASF_GENERATE_SCI          (1<<15)
+
+/* Status values */
+
+enum AcpiRasfStatus
+{
+    ACPI_RASF_SUCCESS                   = 0,
+    ACPI_RASF_NOT_VALID                 = 1,
+    ACPI_RASF_NOT_SUPPORTED             = 2,
+    ACPI_RASF_BUSY                      = 3,
+    ACPI_RASF_FAILED                    = 4,
+    ACPI_RASF_ABORTED                   = 5,
+    ACPI_RASF_INVALID_DATA              = 6
+};
+
+/* Status flags */
+
+#define ACPI_RASF_COMMAND_COMPLETE      (1)
+#define ACPI_RASF_SCI_DOORBELL          (1<<1)
+#define ACPI_RASF_ERROR                 (1<<2)
+#define ACPI_RASF_STATUS                (0x1F<<3)
+
+
+/* Reset to default packing */
+
+#pragma pack()
+
+#endif /* __ACTBL3_H__ */
