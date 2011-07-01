@@ -167,6 +167,7 @@
 #define ASL_RDESC_END_DEPEND_SIZE               0x00
 #define ASL_RDESC_IO_SIZE                       0x07
 #define ASL_RDESC_FIXED_IO_SIZE                 0x03
+#define ASL_RDESC_FIXED_DMA_SIZE                0x05
 #define ASL_RDESC_END_TAG_SIZE                  0x01
 
 

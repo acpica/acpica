@@ -285,7 +285,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_FIELD
 %token <i> PARSEOP_FINDSETLEFTBIT
 %token <i> PARSEOP_FINDSETRIGHTBIT
-%token <i> PARSEOP_FIXED_DMA
+%token <i> PARSEOP_FIXEDDMA
 %token <i> PARSEOP_FIXEDIO
 %token <i> PARSEOP_FROMBCD
 %token <i> PARSEOP_FUNCTION
@@ -487,6 +487,12 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_WORDCONST
 %token <i> PARSEOP_WORDIO
 %token <i> PARSEOP_WORDSPACE
+%token <i> PARSEOP_XFERSIZE_8
+%token <i> PARSEOP_XFERSIZE_16
+%token <i> PARSEOP_XFERSIZE_32
+%token <i> PARSEOP_XFERSIZE_64
+%token <i> PARSEOP_XFERSIZE_128
+%token <i> PARSEOP_XFERSIZE_256
 %token <i> PARSEOP_XFERTYPE_8
 %token <i> PARSEOP_XFERTYPE_8_16
 %token <i> PARSEOP_XFERTYPE_16
@@ -685,6 +691,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> SerializeRuleKeyword
 %type <n> DMATypeKeyword
 %type <n> OptionalBusMasterKeyword
+%type <n> XferSizeKeyword
 %type <n> XferTypeKeyword
 %type <n> ResourceTypeKeyword
 %type <n> MinKeyword
@@ -2295,6 +2302,15 @@ XferTypeKeyword
     | PARSEOP_XFERTYPE_16                   {$$ = TrCreateLeafNode (PARSEOP_XFERTYPE_16);}
     ;
 
+XferSizeKeyword
+    : PARSEOP_XFERSIZE_8                    {$$ = TrCreateValuedLeafNode (PARSEOP_XFERSIZE_8,   0);}
+    | PARSEOP_XFERSIZE_16                   {$$ = TrCreateValuedLeafNode (PARSEOP_XFERSIZE_16,  1);}
+    | PARSEOP_XFERSIZE_32                   {$$ = TrCreateValuedLeafNode (PARSEOP_XFERSIZE_32,  2);}
+    | PARSEOP_XFERSIZE_64                   {$$ = TrCreateValuedLeafNode (PARSEOP_XFERSIZE_64,  3);}
+    | PARSEOP_XFERSIZE_128                  {$$ = TrCreateValuedLeafNode (PARSEOP_XFERSIZE_128, 4);}
+    | PARSEOP_XFERSIZE_256                  {$$ = TrCreateValuedLeafNode (PARSEOP_XFERSIZE_256, 5);}
+    ;
+
 ResourceTypeKeyword
     : PARSEOP_RESOURCETYPE_CONSUMER         {$$ = TrCreateLeafNode (PARSEOP_RESOURCETYPE_CONSUMER);}
     | PARSEOP_RESOURCETYPE_PRODUCER         {$$ = TrCreateLeafNode (PARSEOP_RESOURCETYPE_PRODUCER);}
@@ -3196,7 +3212,7 @@ SpiSerialBusTerm
     ;
 
 UartSerialBusTerm
-    : PARSEOP_UART_SERIALBUS '('     {$<n>$ = TrCreateLeafNode (PARSEOP_UART_SERIALBUS);}
+    : PARSEOP_UART_SERIALBUS '('    {$<n>$ = TrCreateLeafNode (PARSEOP_UART_SERIALBUS);}
         DWordConstExpr              // ConnectionSpeed
         OptionalBitsPerByte         // BitsPerByte
         OptionalStopBits            // StopBits
@@ -3216,13 +3232,13 @@ UartSerialBusTerm
     ;
 
 FixedDmaTerm
-    : PARSEOP_FIXED_DMA '('         {$<n>$ = TrCreateLeafNode (PARSEOP_FIXED_DMA);}
-        WordConstExpr               // DMA Request line
-        ',' WordConstExpr           // DMA channel
-        ',' ByteConstExpr           // DMA transfer width
+    : PARSEOP_FIXEDDMA '('          {$<n>$ = TrCreateLeafNode (PARSEOP_FIXEDDMA);}
+        WordConstExpr               // DMA RequestLines
+        ',' WordConstExpr           // DMA Channels
+        ',' XferSizeKeyword         // DMA TransferSize
         OptionalNameString          // DescriptorName
         ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$6,$8,$9);}
-    | PARSEOP_FIXED_DMA '('
+    | PARSEOP_FIXEDDMA '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
 

@@ -349,7 +349,7 @@ NamePathTail                [.]{NameSeg}
 "I2CSerialBus"              { count (1); return (PARSEOP_I2C_SERIALBUS); }
 "SPISerialBus"              { count (1); return (PARSEOP_SPI_SERIALBUS); }
 "UARTSerialBus"             { count (1); return (PARSEOP_UART_SERIALBUS); }
-"FixedDma"                  { count (1); return (PARSEOP_FIXED_DMA); }
+"FixedDma"                  { count (1); return (PARSEOP_FIXEDDMA); }
 
 "UnknownObj"                { count (0); return (PARSEOP_OBJECTTYPE_UNK); }
 "IntObj"                    { count (0); return (PARSEOP_OBJECTTYPE_INT); }
@@ -520,6 +520,12 @@ NamePathTail                [.]{NameSeg}
 "InputOnly"                 { count (0); return (PARSEOP_IORESTRICT_IN); }
 "OutputOnly"                { count (0); return (PARSEOP_IORESTRICT_OUT); }
 
+"8-bit"                     { count (0); return (PARSEOP_XFERSIZE_8); }
+"16-bit"                    { count (0); return (PARSEOP_XFERSIZE_16); }
+"32-bit"                    { count (0); return (PARSEOP_XFERSIZE_32); }
+"64-bit"                    { count (0); return (PARSEOP_XFERSIZE_64); }
+"128-bit"                   { count (0); return (PARSEOP_XFERSIZE_128); }
+"256-bit"                   { count (0); return (PARSEOP_XFERSIZE_256); }
 
 "__DATE__"                  { count (0); return (PARSEOP___DATE__); }
 "__FILE__"                  { count (0); return (PARSEOP___FILE__); }

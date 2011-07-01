@@ -709,6 +709,11 @@ RsDoOneResourceDescriptor (
                     CurrentByteOffset);
         break;
 
+    case PARSEOP_FIXEDDMA:
+        Rnode = RsDoFixedDmaDescriptor (DescriptorTypeOp,
+                    CurrentByteOffset);
+        break;
+
     case PARSEOP_DWORDIO:
         Rnode = RsDoDwordIoDescriptor (DescriptorTypeOp,
                     CurrentByteOffset);
