@@ -528,6 +528,10 @@ NamePathTail                [.]{NameSeg}
 "128-bit"                   { count (0); return (PARSEOP_XFERSIZE_128); }
 "256-bit"                   { count (0); return (PARSEOP_XFERSIZE_256); }
 
+"FlowControlHardware"       { count (0); return (PARSEOP_FLOWCONTROL_HW); }
+"FlowControlNone"           { count (0); return (PARSEOP_FLOWCONTROL_NONE); }
+"FlowControlXon"            { count (0); return (PARSEOP_FLOWCONTROL_SW); }
+
 "__DATE__"                  { count (0); return (PARSEOP___DATE__); }
 "__FILE__"                  { count (0); return (PARSEOP___FILE__); }
 "__LINE__"                  { count (0); return (PARSEOP___LINE__); }

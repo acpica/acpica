@@ -260,7 +260,7 @@ const char        *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_REGIONS] =
     "SystemCMOS",
     "PCIBARTarget",
     "IPMI",
-    "GPIO",
+    "GeneralPurposeIo",
     "GenericSerialBus"
 };
 

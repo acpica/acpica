@@ -788,7 +788,7 @@ RsDoGpioIntDescriptor (
              *  The number of pins in the table can be calculated from:
              *  PinCount = (Resource Source Name Offset - Pin Table Offset) / 2
              *  (implies resource source must immediately follow the pin list.)
-             *  Name: _PIN
+             *  Name: _INT
              */
             Descriptor->GpioInt.PinTableOffset =
                 Descriptor->GpioInt.VendorOffset + VendorLength;
@@ -1007,7 +1007,7 @@ RsDoGpioIoDescriptor (
              *  The number of pins in the table can be calculated from:
              *  PinCount = (Resource Source Name Offset - Pin Table Offset) / 2
              *  (implies resource source must immediately follow the pin list.)
-             *  Name: _PIN
+             *  Name: _INT
              */
             Descriptor->GpioIo.PinTableOffset =
                 Descriptor->GpioIo.VendorOffset + VendorLength;
@@ -1533,21 +1533,28 @@ RsDoUartSerialBusDescriptor (
                 CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.Parity));
             break;
 
-        case 6: /* Rx Buffer Size [WORD] (_RXL) */
+        case 6: /* Flow Control [Flags] (_FLC) */
+
+            RsSetFlagBits16 (&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 8, 0);
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_FLOWCONTROL,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 8);
+            break;
+
+        case 7: /* Rx Buffer Size [WORD] (_RXL) */
 
             Descriptor->UartSerialBus.RxFifoSize = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH_RX,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.RxFifoSize));
             break;
 
-        case 7: /* Tx Buffer Size [WORD] (_TXL) */
+        case 8: /* Tx Buffer Size [WORD] (_TXL) */
 
             Descriptor->UartSerialBus.TxFifoSize = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH_TX,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TxFifoSize));
             break;
 
-        case 8: /* ResSource [Optional Field - STRING] */
+        case 9: /* ResSource [Optional Field - STRING] */
 
             if (ResSourceLength)
             {
@@ -1561,7 +1568,7 @@ RsDoUartSerialBusDescriptor (
             }
             break;
 
-        case 9: /* Resource Index */
+        case 10: /* Resource Index */
 
             if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
@@ -1569,17 +1576,17 @@ RsDoUartSerialBusDescriptor (
             }
             break;
 
-        case 10: /* Resource Usage (consumer/producer) */
+        case 11: /* Resource Usage (consumer/producer) */
 
             RsSetFlagBits (&Descriptor->UartSerialBus.Flags, InitializerOp, 0, 1);
             break;
 
-        case 11: /* ResourceTag (Descriptor Name) */
+        case 12: /* ResourceTag (Descriptor Name) */
 
             UtAttachNamepathToOwner (Op, InitializerOp);
             break;
 
-        case 12: /* Vendor Data (Optional - Buffer of BYTEs) (_VEN) */
+        case 13: /* Vendor Data (Optional - Buffer of BYTEs) (_VEN) */
 
             if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
             {

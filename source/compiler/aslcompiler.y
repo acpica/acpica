@@ -288,6 +288,9 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_FINDSETRIGHTBIT
 %token <i> PARSEOP_FIXEDDMA
 %token <i> PARSEOP_FIXEDIO
+%token <i> PARSEOP_FLOWCONTROL_HW
+%token <i> PARSEOP_FLOWCONTROL_NONE
+%token <i> PARSEOP_FLOWCONTROL_SW
 %token <i> PARSEOP_FROMBCD
 %token <i> PARSEOP_FUNCTION
 %token <i> PARSEOP_GPIO_INT
@@ -721,6 +724,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> PinConfigKeyword
 %type <n> PinConfigByte
 %type <n> IoRestrictionKeyword
+%type <n> FlowControlKeyword
 
 /* Types */
 
@@ -841,6 +845,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> OptionalStopBits
 %type <n> OptionalParityType
 %type <n> OptionalIoRestriction
+%type <n> OptionalFlowControl
 %type <n> OptionalBuffer_Last
 %type <n> TermArgItem
 %type <n> NameStringItem
@@ -2461,6 +2466,13 @@ IoRestrictionKeyword
     | PARSEOP_IORESTRICT_OUT                {$$ = TrCreateLeafNode (PARSEOP_IORESTRICT_OUT);}
     ;
 
+FlowControlKeyword
+    : PARSEOP_FLOWCONTROL_HW                {$$ = TrCreateLeafNode (PARSEOP_FLOWCONTROL_HW);}
+    | PARSEOP_FLOWCONTROL_NONE              {$$ = TrCreateLeafNode (PARSEOP_FLOWCONTROL_NONE);}
+    | PARSEOP_FLOWCONTROL_SW                {$$ = TrCreateLeafNode (PARSEOP_FLOWCONTROL_SW);}
+    ;
+
+
 /******* Miscellaneous Types **************************************************/
 
 
@@ -3222,20 +3234,21 @@ SpiSerialBusTerm
 
 UartSerialBusTerm
     : PARSEOP_UART_SERIALBUS '('    {$<n>$ = TrCreateLeafNode (PARSEOP_UART_SERIALBUS);}
-        DWordConstExpr              // ConnectionSpeed
-        OptionalBitsPerByte         // BitsPerByte
-        OptionalStopBits            // StopBits
-        ',' ByteConstExpr           // LinesInUse
-        OptionalEndian              // Endianess
-        OptionalParityType          // Parity
-        ',' WordConstExpr           // Rx BufferSize
-        ',' WordConstExpr           // Tx BufferSize
-        OptionalStringData          // ResourceSource
-        OptionalByteConstExpr       // ResourceSourceIndex
-        OptionalResourceType        // ResourceType
-        OptionalNameString          // DescriptorName
-        OptionalBuffer_Last         // VendorData
-        ')'                         {$$ = TrLinkChildren ($<n>3,13,$4,$5,$6,$8,$9,$10,$12,$14,$15,$16,$17,$18,$19);}
+        DWordConstExpr              // 04: ConnectionSpeed
+        OptionalBitsPerByte         // 05: BitsPerByte
+        OptionalStopBits            // 06: StopBits
+        ',' ByteConstExpr           // 08: LinesInUse
+        OptionalEndian              // 09: Endianess
+        OptionalParityType          // 10: Parity
+        OptionalFlowControl         // 11: FlowControl
+        ',' WordConstExpr           // 13: Rx BufferSize
+        ',' WordConstExpr           // 15: Tx BufferSize
+        OptionalStringData          // 16: ResourceSource
+        OptionalByteConstExpr       // 17: ResourceSourceIndex
+        OptionalResourceType        // 18: ResourceType
+        OptionalNameString          // 19: DescriptorName
+        OptionalBuffer_Last         // 20: VendorData
+        ')'                         {$$ = TrLinkChildren ($<n>3,14,$4,$5,$6,$8,$9,$10,$11,$13,$15,$16,$17,$18,$19,$20);}
     | PARSEOP_UART_SERIALBUS '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -3333,6 +3346,11 @@ OptionalDWordConstExpr
 OptionalEndian
     : ','                           {$$ = NULL;}
     | ',' EndianKeyword             {$$ = $2;}
+    ;
+
+OptionalFlowControl
+    : ','                           {$$ = NULL;}
+    | ',' FlowControlKeyword        {$$ = $2;}
     ;
 
 OptionalIoRestriction
