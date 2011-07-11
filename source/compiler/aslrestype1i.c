@@ -125,6 +125,7 @@
  * This module contains the I/O-related small resource descriptors:
  *
  * DMA
+ * FixedDMA
  * FixedIO
  * IO
  * IRQ

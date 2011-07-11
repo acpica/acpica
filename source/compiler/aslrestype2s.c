@@ -251,12 +251,12 @@ RsDoGpioIntDescriptor (
     VendorLength = RsGetBufferDataLength (InitializerOp);
     InterruptLength = RsGetInterruptDataLength (InitializerOp);
 
-    DescriptorSize = sizeof (AML_RESOURCE_GPIO_INT) +
+    DescriptorSize = ACPI_AML_SIZE_LARGE (AML_RESOURCE_GPIO_INT) +
         ResSourceLength + VendorLength + InterruptLength;
 
     /* Allocate the local resource node and initialize */
 
-    Rnode = RsAllocateResourceNode (DescriptorSize);
+    Rnode = RsAllocateResourceNode (DescriptorSize + sizeof (AML_RESOURCE_LARGE_HEADER));
 
     Descriptor = Rnode->Buffer;
     Descriptor->GpioInt.ResourceLength  = DescriptorSize;
@@ -266,11 +266,23 @@ RsDoGpioIntDescriptor (
 
     /* Build pointers to optional areas */
 
-    VendorData = ACPI_ADD_PTR (UINT8, Descriptor, sizeof (AML_RESOURCE_GPIO_INT));
-    InterruptList = ACPI_ADD_PTR (UINT16, VendorData, VendorLength);
+    InterruptList = ACPI_ADD_PTR (UINT16, Descriptor, sizeof (AML_RESOURCE_GPIO_INT));
     ResourceSource = ACPI_ADD_PTR (char, InterruptList, InterruptLength);
+    VendorData = ACPI_ADD_PTR (UINT8, ResourceSource, ResSourceLength);
 
-    printf ("GPIO_INT: Base: %u, ResLen: %u, VendLen: %u, IntLen: %u, ACTUAL: %X\n",
+    /* Setup offsets within the descriptor */
+
+    Descriptor->GpioInt.PinTableOffset = (UINT16)
+        ACPI_PTR_DIFF (InterruptList, Descriptor);
+
+    Descriptor->GpioInt.ResSourceOffset = (UINT16)
+        ACPI_PTR_DIFF (ResourceSource, Descriptor);
+
+    Descriptor->GpioInt.VendorOffset = (UINT16)
+        ACPI_PTR_DIFF (VendorData, Descriptor);
+    Descriptor->GpioInt.VendorLength = VendorLength;
+
+    printf ("GPIO_INT: Base: %.2X, ResLen: %.2X, VendLen: %.2X, IntLen: %.2X, ACTUAL: %X\n",
         sizeof (AML_RESOURCE_GPIO_INT),   ResSourceLength, VendorLength, InterruptLength,
         Descriptor->GpioInt.ResourceLength);
 
@@ -319,13 +331,10 @@ RsDoGpioIntDescriptor (
 
             if (ResSourceLength)
             {
-                /* Put string at the end of the descriptor */
+                /* Copy string to the descriptor */
 
                 strcpy (ResourceSource,
                     InitializerOp->Asl.Value.String);
-
-                Descriptor->GpioInt.ResSourceOffset = (UINT16)
-                    ACPI_PTR_DIFF (ResourceSource, Descriptor);
             }
             break;
 
@@ -361,11 +370,6 @@ RsDoGpioIntDescriptor (
                 return (Rnode);
             }
 
-            /* At this point, we know the offset and length for the vendor data */
-
-            Descriptor->GpioInt.VendorOffset = sizeof (AML_RESOURCE_GPIO_INT);
-            Descriptor->GpioInt.VendorLength = VendorLength;
-
             RsCreateByteField (InitializerOp, ACPI_RESTAG_VENDORDATA,
                 CurrentByteOffset + Descriptor->GpioInt.VendorOffset);
 
@@ -388,9 +392,6 @@ RsDoGpioIntDescriptor (
              *  (implies resource source must immediately follow the pin list.)
              *  Name: _INT
              */
-            Descriptor->GpioInt.PinTableOffset =
-                Descriptor->GpioInt.VendorOffset + VendorLength;
-
             *InterruptList = (UINT16) InitializerOp->Asl.Value.Integer;
             InterruptList++;
 
@@ -470,12 +471,12 @@ RsDoGpioIoDescriptor (
     VendorLength = RsGetBufferDataLength (InitializerOp);
     InterruptLength = RsGetInterruptDataLength (InitializerOp);
 
-    DescriptorSize = sizeof (AML_RESOURCE_GPIO_IO) +
+    DescriptorSize = ACPI_AML_SIZE_LARGE (AML_RESOURCE_GPIO_IO) +
         ResSourceLength + VendorLength + InterruptLength;
 
     /* Allocate the local resource node and initialize */
 
-    Rnode = RsAllocateResourceNode (DescriptorSize);
+    Rnode = RsAllocateResourceNode (DescriptorSize + sizeof (AML_RESOURCE_LARGE_HEADER));
 
     Descriptor = Rnode->Buffer;
     Descriptor->GpioIo.ResourceLength  = DescriptorSize;
@@ -485,12 +486,24 @@ RsDoGpioIoDescriptor (
 
     /* Build pointers to optional areas */
 
-    VendorData = ACPI_ADD_PTR (UINT8, Descriptor, sizeof (AML_RESOURCE_GPIO_IO));
-    InterruptList = ACPI_ADD_PTR (UINT16, VendorData, VendorLength);
+    InterruptList = ACPI_ADD_PTR (UINT16, Descriptor, sizeof (AML_RESOURCE_GPIO_INT));
     ResourceSource = ACPI_ADD_PTR (char, InterruptList, InterruptLength);
+    VendorData = ACPI_ADD_PTR (UINT8, ResourceSource, ResSourceLength);
 
-    printf ("GPIO_IO: Base: %u, ResLen: %u, VendLen: %u, IntLen: %u, ACTUAL: %X\n",
-        sizeof (AML_RESOURCE_GPIO_IO),   ResSourceLength, VendorLength, InterruptLength,
+    /* Setup offsets within the descriptor */
+
+    Descriptor->GpioIo.PinTableOffset = (UINT16)
+        ACPI_PTR_DIFF (InterruptList, Descriptor);
+
+    Descriptor->GpioIo.ResSourceOffset = (UINT16)
+        ACPI_PTR_DIFF (ResourceSource, Descriptor);
+
+    Descriptor->GpioIo.VendorOffset = (UINT16)
+        ACPI_PTR_DIFF (VendorData, Descriptor);
+    Descriptor->GpioIo.VendorLength = VendorLength;
+
+    printf ("GPIO_IO: Base: %.2X, ResLen: %.2X, VendLen: %.2X, IntLen: %.2X, ACTUAL: %X\n",
+        sizeof (AML_RESOURCE_GPIO_IO), ResSourceLength, VendorLength, InterruptLength,
         Descriptor->GpioIo.ResourceLength);
 
     /* Process all child initialization nodes */
@@ -538,13 +551,10 @@ RsDoGpioIoDescriptor (
 
             if (ResSourceLength)
             {
-                /* Put string at the end of the descriptor */
+                /* Copy string to the descriptor */
 
                 strcpy (ResourceSource,
                     InitializerOp->Asl.Value.String);
-
-                Descriptor->GpioIo.ResSourceOffset = (UINT16)
-                    ACPI_PTR_DIFF (ResourceSource, Descriptor);
             }
             break;
 
@@ -580,11 +590,6 @@ RsDoGpioIoDescriptor (
                 return (Rnode);
             }
 
-            /* At this point, we know the offset and length for the vendor data */
-
-            Descriptor->GpioIo.VendorOffset = sizeof (AML_RESOURCE_GPIO_IO);
-            Descriptor->GpioIo.VendorLength = VendorLength;
-
             RsCreateByteField (InitializerOp, ACPI_RESTAG_VENDORDATA,
                 CurrentByteOffset + Descriptor->GpioIo.VendorOffset);
 
@@ -607,9 +612,6 @@ RsDoGpioIoDescriptor (
              *  (implies resource source must immediately follow the pin list.)
              *  Name: _INT
              */
-            Descriptor->GpioIo.PinTableOffset =
-                Descriptor->GpioIo.VendorOffset + VendorLength;
-
             *InterruptList = (UINT16) InitializerOp->Asl.Value.Integer;
             InterruptList++;
 
@@ -685,12 +687,12 @@ RsDoI2cSerialBusDescriptor (
     ResSourceLength = RsGetStringDataLength (InitializerOp);
     VendorLength = RsGetBufferDataLength (InitializerOp);
 
-    DescriptorSize = sizeof (AML_RESOURCE_I2C_SERIALBUS) +
+    DescriptorSize = ACPI_AML_SIZE_LARGE (AML_RESOURCE_I2C_SERIALBUS) +
         ResSourceLength + VendorLength;
 
     /* Allocate the local resource node and initialize */
 
-    Rnode = RsAllocateResourceNode (DescriptorSize);
+    Rnode = RsAllocateResourceNode (DescriptorSize + sizeof (AML_RESOURCE_LARGE_HEADER));
 
     Descriptor = Rnode->Buffer;
     Descriptor->I2cSerialBus.ResourceLength = DescriptorSize;
@@ -705,7 +707,11 @@ RsDoI2cSerialBusDescriptor (
     VendorData = ACPI_ADD_PTR (UINT8, Descriptor, sizeof (AML_RESOURCE_I2C_SERIALBUS));
     ResourceSource = ACPI_ADD_PTR (char, VendorData, VendorLength);
 
-    printf ("I2C: Base: %u, ResLen: %u, VendLen: %u, ACTUAL: %X\n",
+    /* Setup optional offsets and lengths */
+
+    Descriptor->I2cSerialBus.TypeDataLength += VendorLength;
+
+    printf ("I2C: Base: %.2X, ResLen: %.2X, VendLen: %.2X, ACTUAL: %X\n",
         sizeof (AML_RESOURCE_I2C_SERIALBUS), ResSourceLength, VendorLength,
         Descriptor->I2cSerialBus.ResourceLength);
 
@@ -747,13 +753,10 @@ RsDoI2cSerialBusDescriptor (
 
             if (ResSourceLength)
             {
-                /* Put string at the end of the descriptor */
+                /* Copy string to the descriptor */
 
                 strcpy (ResourceSource,
                     InitializerOp->Asl.Value.String);
-
-                Descriptor->GpioIo.ResSourceOffset = (UINT16)
-                    ACPI_PTR_DIFF (ResourceSource, Descriptor);
             }
             break;
 
@@ -788,10 +791,6 @@ RsDoI2cSerialBusDescriptor (
                 AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
                 return (Rnode);
             }
-
-            /* At this point, we know the offset and length for the vendor data */
-
-            Descriptor->I2cSerialBus.TypeDataLength += VendorLength;
 
             RsCreateByteField (InitializerOp, ACPI_RESTAG_VENDORDATA,
                 CurrentByteOffset + sizeof (AML_RESOURCE_I2C_SERIALBUS));
@@ -858,12 +857,12 @@ RsDoSpiSerialBusDescriptor (
     ResSourceLength = RsGetStringDataLength (InitializerOp);
     VendorLength = RsGetBufferDataLength (InitializerOp);
 
-    DescriptorSize = sizeof (AML_RESOURCE_SPI_SERIALBUS) +
+    DescriptorSize = ACPI_AML_SIZE_LARGE (AML_RESOURCE_SPI_SERIALBUS) +
         ResSourceLength + VendorLength;
 
     /* Allocate the local resource node and initialize */
 
-    Rnode = RsAllocateResourceNode (DescriptorSize);
+    Rnode = RsAllocateResourceNode (DescriptorSize + sizeof (AML_RESOURCE_LARGE_HEADER));
 
     Descriptor = Rnode->Buffer;
     Descriptor->SpiSerialBus.ResourceLength = DescriptorSize;
@@ -878,7 +877,11 @@ RsDoSpiSerialBusDescriptor (
     VendorData = ACPI_ADD_PTR (UINT8, Descriptor, sizeof (AML_RESOURCE_SPI_SERIALBUS));
     ResourceSource = ACPI_ADD_PTR (char, VendorData, VendorLength);
 
-    printf ("SPI: Base: %u, ResLen: %u, VendLen: %u, ACTUAL: %X\n",
+    /* Setup optional offsets and lengths */
+
+    Descriptor->SpiSerialBus.TypeDataLength += VendorLength;
+
+    printf ("SPI: Base: %.2X, ResLen: %.2X, VendLen: %.2X, ACTUAL: %X\n",
         sizeof (AML_RESOURCE_SPI_SERIALBUS), ResSourceLength, VendorLength,
         Descriptor->SpiSerialBus.ResourceLength);
 
@@ -948,13 +951,10 @@ RsDoSpiSerialBusDescriptor (
 
             if (ResSourceLength)
             {
-                /* Put string at the end of the descriptor */
+                /* Copy string to the descriptor */
 
                 strcpy (ResourceSource,
                     InitializerOp->Asl.Value.String);
-
-                Descriptor->GpioIo.ResSourceOffset = (UINT16)
-                    ACPI_PTR_DIFF (ResourceSource, Descriptor);
             }
             break;
 
@@ -989,10 +989,6 @@ RsDoSpiSerialBusDescriptor (
                 AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
                 return (Rnode);
             }
-
-            /* At this point, we know the offset and length for the vendor data */
-
-            Descriptor->SpiSerialBus.TypeDataLength += VendorLength;
 
             RsCreateByteField (InitializerOp, ACPI_RESTAG_VENDORDATA,
                 CurrentByteOffset + sizeof (AML_RESOURCE_SPI_SERIALBUS));
@@ -1059,12 +1055,12 @@ RsDoUartSerialBusDescriptor (
     ResSourceLength = RsGetStringDataLength (InitializerOp);
     VendorLength = RsGetBufferDataLength (InitializerOp);
 
-    DescriptorSize = sizeof (AML_RESOURCE_UART_SERIALBUS) +
+    DescriptorSize = ACPI_AML_SIZE_LARGE (AML_RESOURCE_UART_SERIALBUS) +
         ResSourceLength + VendorLength;
 
     /* Allocate the local resource node and initialize */
 
-    Rnode = RsAllocateResourceNode (DescriptorSize);
+    Rnode = RsAllocateResourceNode (DescriptorSize + sizeof (AML_RESOURCE_LARGE_HEADER));
 
     Descriptor = Rnode->Buffer;
     Descriptor->UartSerialBus.ResourceLength = DescriptorSize;
@@ -1079,7 +1075,11 @@ RsDoUartSerialBusDescriptor (
     VendorData = ACPI_ADD_PTR (UINT8, Descriptor, sizeof (AML_RESOURCE_UART_SERIALBUS));
     ResourceSource = ACPI_ADD_PTR (char, VendorData, VendorLength);
 
-    printf ("UART: Base: %u, ResLen: %u, VendLen: %u, ACTUAL: %X\n",
+    /* Setup optional offsets and lengths */
+
+    Descriptor->UartSerialBus.TypeDataLength += VendorLength;
+
+    printf ("UART: Base: %.2X, ResLen: %.2X, VendLen: %.2X, ACTUAL: %X\n",
         sizeof (AML_RESOURCE_UART_SERIALBUS), ResSourceLength, VendorLength,
         Descriptor->UartSerialBus.ResourceLength);
 
@@ -1156,13 +1156,10 @@ RsDoUartSerialBusDescriptor (
 
             if (ResSourceLength)
             {
-                /* Put string at the end of the descriptor */
+                /* Copy string to the descriptor */
 
                 strcpy (ResourceSource,
                     InitializerOp->Asl.Value.String);
-
-                Descriptor->GpioIo.ResSourceOffset = (UINT16)
-                    ACPI_PTR_DIFF (ResourceSource, Descriptor);
             }
             break;
 
@@ -1197,10 +1194,6 @@ RsDoUartSerialBusDescriptor (
                 AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
                 return (Rnode);
             }
-
-            /* At this point, we know the offset and length for the vendor data */
-
-            Descriptor->UartSerialBus.TypeDataLength += VendorLength;
 
             RsCreateByteField (InitializerOp, ACPI_RESTAG_VENDORDATA,
                 CurrentByteOffset + sizeof (AML_RESOURCE_UART_SERIALBUS));

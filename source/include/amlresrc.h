@@ -487,9 +487,9 @@ typedef struct aml_resource_gpio_int
     UINT16                          VendorLength;
     /*
      * Optional fields follow immediately:
-     * 1) Vendor Data bytes
-     * 2) PIN dword list
-     * 3) Resource Source String
+     * 1) PIN list (Words)
+     * 2) Resource Source String
+     * 3) Vendor Data bytes
      */
 
 } AML_RESOURCE_GPIO_INT;
@@ -519,9 +519,9 @@ typedef struct aml_resource_gpio_io
     UINT16                          VendorLength;
     /*
      * Optional fields follow immediately:
-     * 1) Vendor Data bytes
-     * 2) PIN dword list
-     * 3) Resource Source String
+     * 1) PIN list (Words)
+     * 2) Resource Source String
+     * 3) Vendor Data bytes
      */
 
 } AML_RESOURCE_GPIO_IO;
