@@ -292,17 +292,17 @@ RsDoGpioIntDescriptor (
     {
         switch (i)
         {
-        case 0: /* Interrupt Type (or Mode - edge/level) [Flag] (_HE) */
+        case 0: /* Interrupt Mode - edge/level [Flag] (_MOD) */
 
             RsSetFlagBits16 (&Descriptor->GpioInt.IntFlags, InitializerOp, 0, 0);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTTYPE,
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_MODE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 0);
             break;
 
-        case 1: /* Interrupt Level (or Polarity - Active high/low) [Flags] (_LL) */
+        case 1: /* Interrupt Polarity - Active high/low [Flags] (_POL) */
 
             RsSetFlagBits16 (&Descriptor->GpioInt.IntFlags, InitializerOp, 1, 0);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTLEVEL,
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_POLARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 1);
             break;
 
@@ -390,7 +390,7 @@ RsDoGpioIntDescriptor (
              *  The number of pins in the table can be calculated from:
              *  PinCount = (Resource Source Name Offset - Pin Table Offset) / 2
              *  (implies resource source must immediately follow the pin list.)
-             *  Name: _INT
+             *  Name: _PIN
              */
             *InterruptList = (UINT16) InitializerOp->Asl.Value.Integer;
             InterruptList++;
@@ -413,7 +413,7 @@ RsDoGpioIntDescriptor (
 
                 /* Create a named field at the start of the list */
 
-                RsCreateByteField (InitializerOp, ACPI_RESTAG_INTERRUPT,
+                RsCreateByteField (InitializerOp, ACPI_RESTAG_PIN,
                     CurrentByteOffset + Descriptor->GpioInt.PinTableOffset);
             }
             break;
@@ -610,7 +610,7 @@ RsDoGpioIoDescriptor (
              *  The number of pins in the table can be calculated from:
              *  PinCount = (Resource Source Name Offset - Pin Table Offset) / 2
              *  (implies resource source must immediately follow the pin list.)
-             *  Name: _INT
+             *  Name: _PIN
              */
             *InterruptList = (UINT16) InitializerOp->Asl.Value.Integer;
             InterruptList++;
@@ -633,7 +633,7 @@ RsDoGpioIoDescriptor (
 
                 /* Create a named field at the start of the list */
 
-                RsCreateByteField (InitializerOp, ACPI_RESTAG_INTERRUPT,
+                RsCreateByteField (InitializerOp, ACPI_RESTAG_PIN,
                     CurrentByteOffset + Descriptor->GpioIo.PinTableOffset);
             }
             break;
