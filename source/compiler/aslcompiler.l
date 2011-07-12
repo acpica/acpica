@@ -407,6 +407,17 @@ NamePathTail                [.]{NameSeg}
 "SMBProcessCall"            { count (0); return (PARSEOP_ACCESSATTRIB_WORD_CALL); }
 "SMBBlockProcessCall"       { count (0); return (PARSEOP_ACCESSATTRIB_BLOCK_CALL); }
 
+"SerialQuick"               { count (0); return (PARSEOP_ACCESSATTRIB_QUICK); }
+"SerialSendReceive"         { count (0); return (PARSEOP_ACCESSATTRIB_SND_RCV); }
+"SerialByte"                { count (0); return (PARSEOP_ACCESSATTRIB_BYTE); }
+"SerialWord"                { count (0); return (PARSEOP_ACCESSATTRIB_WORD); }
+"SerialBlock"               { count (0); return (PARSEOP_ACCESSATTRIB_BLOCK); }
+"SerialBytes"               { count (0); return (PARSEOP_ACCESSATTRIB_MULTIBYTE); }
+"SerialProcessCall"         { count (0); return (PARSEOP_ACCESSATTRIB_WORD_CALL); }
+"SerialBlockProcessCall"    { count (0); return (PARSEOP_ACCESSATTRIB_BLOCK_CALL); }
+"RawSerialBytes"            { count (0); return (PARSEOP_ACCESSATTRIB_RAW_BYTES); }
+"RawProcessSerialBytes"     { count (0); return (PARSEOP_ACCESSATTRIB_RAW_PROCESS); }
+
 "MTR"                       { count (0); return (PARSEOP_MATCHTYPE_MTR); }
 "MEQ"                       { count (0); return (PARSEOP_MATCHTYPE_MEQ); }
 "MLE"                       { count (0); return (PARSEOP_MATCHTYPE_MLE); }
