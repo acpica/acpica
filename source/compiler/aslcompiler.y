@@ -241,6 +241,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_CONCATENATE
 %token <i> PARSEOP_CONCATENATERESTEMPLATE
 %token <i> PARSEOP_CONDREFOF
+%token <i> PARSEOP_CONNECTION
 %token <i> PARSEOP_CONTINUE
 %token <i> PARSEOP_COPYOBJECT
 %token <i> PARSEOP_CREATEBITFIELD
@@ -769,6 +770,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> ResourceMacroList
 %type <n> ResourceMacroTerm
 
+%type <n> ConnectionTerm
 %type <n> DMATerm
 %type <n> DWordIOTerm
 %type <n> DWordMemoryTerm
@@ -1271,6 +1273,7 @@ FieldUnit
     : FieldUnitEntry                {}
     | OffsetTerm                    {}
     | AccessAsTerm                  {}
+    | ConnectionTerm                {}
     ;
 
 FieldUnitEntry
@@ -1293,6 +1296,14 @@ AccessAsTerm
         OptionalAccessAttribTerm
         ')'                         {$$ = TrCreateNode (PARSEOP_ACCESSAS,2,$3,$4);}
     | PARSEOP_ACCESSAS '('
+        error ')'                   {$$ = AslDoError(); yyclearin;}
+    ;
+
+ConnectionTerm
+    : PARSEOP_CONNECTION '('
+        ResourceMacroTerm
+        ')'                         {$$ = TrCreateNode (PARSEOP_CONNECTION,1,$3);}
+    | PARSEOP_CONNECTION '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
 

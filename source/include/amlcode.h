@@ -276,6 +276,7 @@
 #define AML_INT_METHODCALL_OP       (UINT16) 0x0035
 #define AML_INT_RETURN_VALUE_OP     (UINT16) 0x0036
 #define AML_INT_EVAL_SUBTREE_OP     (UINT16) 0x0037
+#define AML_INT_CONNECTION_OP       (UINT16) 0x0038
 
 
 #define ARG_NONE                    0x0

@@ -197,6 +197,7 @@ NamePathTail                [.]{NameSeg}
 "Offset"                    { count (1); return (PARSEOP_OFFSET); }
 "AccessAs"                  { count (1); return (PARSEOP_ACCESSAS); }
 "BankField"                 { count (2); return (PARSEOP_BANKFIELD); }
+"Connection"                { count (2); return (PARSEOP_CONNECTION); }
 "CreateBitField"            { count (2); return (PARSEOP_CREATEBITFIELD); }
 "CreateByteField"           { count (2); return (PARSEOP_CREATEBYTEFIELD); }
 "CreateDWordField"          { count (2); return (PARSEOP_CREATEDWORDFIELD); }

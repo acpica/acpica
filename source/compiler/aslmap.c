@@ -252,6 +252,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* CONCATENATE */               OP_TABLE_ENTRY (AML_CONCAT_OP,              0,                              0,                  ACPI_BTYPE_COMPUTE_DATA),
 /* CONCATENATERESTEMPLATE */    OP_TABLE_ENTRY (AML_CONCAT_RES_OP,          0,                              0,                  ACPI_BTYPE_BUFFER),
 /* CONDREFOF */                 OP_TABLE_ENTRY (AML_COND_REF_OF_OP,         0,                              0,                  ACPI_BTYPE_INTEGER),
+/* CONNECTION */                OP_TABLE_ENTRY (AML_INT_CONNECTION_OP,      0,                              0,                  0),
 /* CONTINUE */                  OP_TABLE_ENTRY (AML_CONTINUE_OP,            0,                              0,                  0),
 /* COPY */                      OP_TABLE_ENTRY (AML_COPY_OP,                0,                              0,                  ACPI_BTYPE_DATA_REFERENCE),
 /* CREATEBITFIELD */            OP_TABLE_ENTRY (AML_CREATE_BIT_FIELD_OP,    0,                              0,                  0),
