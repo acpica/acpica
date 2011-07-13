@@ -283,7 +283,7 @@ RsDoGpioIntDescriptor (
     Descriptor->GpioInt.VendorLength = VendorLength;
 
     printf ("GPIO_INT: Base: %.2X, ResLen: %.2X, VendLen: %.2X, IntLen: %.2X, ACTUAL: %X\n",
-        sizeof (AML_RESOURCE_GPIO_INT),   ResSourceLength, VendorLength, InterruptLength,
+        (UINT16) sizeof (AML_RESOURCE_GPIO_INT),   ResSourceLength, VendorLength, InterruptLength,
         Descriptor->GpioInt.ResourceLength);
 
     /* Process all child initialization nodes */
@@ -503,7 +503,7 @@ RsDoGpioIoDescriptor (
     Descriptor->GpioIo.VendorLength = VendorLength;
 
     printf ("GPIO_IO: Base: %.2X, ResLen: %.2X, VendLen: %.2X, IntLen: %.2X, ACTUAL: %X\n",
-        sizeof (AML_RESOURCE_GPIO_IO), ResSourceLength, VendorLength, InterruptLength,
+        (UINT16) sizeof (AML_RESOURCE_GPIO_IO), ResSourceLength, VendorLength, InterruptLength,
         Descriptor->GpioIo.ResourceLength);
 
     /* Process all child initialization nodes */
@@ -712,7 +712,7 @@ RsDoI2cSerialBusDescriptor (
     Descriptor->I2cSerialBus.TypeDataLength += VendorLength;
 
     printf ("I2C: Base: %.2X, ResLen: %.2X, VendLen: %.2X, ACTUAL: %X\n",
-        sizeof (AML_RESOURCE_I2C_SERIALBUS), ResSourceLength, VendorLength,
+        (UINT16) sizeof (AML_RESOURCE_I2C_SERIALBUS), ResSourceLength, VendorLength,
         Descriptor->I2cSerialBus.ResourceLength);
 
     /* Process all child initialization nodes */
@@ -882,7 +882,7 @@ RsDoSpiSerialBusDescriptor (
     Descriptor->SpiSerialBus.TypeDataLength += VendorLength;
 
     printf ("SPI: Base: %.2X, ResLen: %.2X, VendLen: %.2X, ACTUAL: %X\n",
-        sizeof (AML_RESOURCE_SPI_SERIALBUS), ResSourceLength, VendorLength,
+        (UINT16) sizeof (AML_RESOURCE_SPI_SERIALBUS), ResSourceLength, VendorLength,
         Descriptor->SpiSerialBus.ResourceLength);
 
     /* Process all child initialization nodes */
@@ -1080,7 +1080,7 @@ RsDoUartSerialBusDescriptor (
     Descriptor->UartSerialBus.TypeDataLength += VendorLength;
 
     printf ("UART: Base: %.2X, ResLen: %.2X, VendLen: %.2X, ACTUAL: %X\n",
-        sizeof (AML_RESOURCE_UART_SERIALBUS), ResSourceLength, VendorLength,
+        (UINT16) sizeof (AML_RESOURCE_UART_SERIALBUS), ResSourceLength, VendorLength,
         Descriptor->UartSerialBus.ResourceLength);
 
     /* Process all child initialization nodes */

@@ -615,7 +615,6 @@ AcpiDmResourceSource (
     UINT32                  ResourceLength)
 {
     UINT8                   *AmlResourceSource;
-    UINT8                   ResourceSourceIndexExist = 1;
     UINT32                  TotalLength;
 
 
@@ -629,17 +628,6 @@ AcpiDmResourceSource (
 
         AcpiOsPrintf (",, ");
         return;
-    }
-
-    /*
-     * TBD:
-     * GPIO Interrupt/IO/Serial bus resource does not have ResourceSourceIndex field?
-     */
-    if (Resource->DescriptorType == ACPI_RESOURCE_NAME_GPIO_INT ||
-        Resource->DescriptorType == ACPI_RESOURCE_NAME_GPIO_IO ||
-        Resource->DescriptorType == ACPI_RESOURCE_NAME_SERIAL_BUS)
-    {
-        ResourceSourceIndexExist = 0;
     }
 
     /* Get a pointer to the ResourceSource */
@@ -656,18 +644,14 @@ AcpiDmResourceSource (
      * indexes into the resource template buffer that are compiled to absolute
      * offsets, and these will be broken if the AML length is changed.
      */
-
-    if (ResourceSourceIndexExist)
-    {
-        AcpiOsPrintf ("0x%2.2X,", (UINT32) AmlResourceSource[0]);
-    }
+    AcpiOsPrintf ("0x%2.2X,", (UINT32) AmlResourceSource[0]);
 
     /* Make sure that the ResourceSource string exists before dumping it */
 
     if (TotalLength > (MinimumTotalLength + 1))
     {
         AcpiOsPrintf (" ");
-        AcpiUtPrintString ((char *) &AmlResourceSource[ResourceSourceIndexExist], ACPI_UINT8_MAX);
+        AcpiUtPrintString ((char *) &AmlResourceSource[1], ACPI_UINT8_MAX);
     }
 
     AcpiOsPrintf (", ");
@@ -1184,6 +1168,9 @@ AcpiDmGpioDescriptor (
     UINT32                  Length,
     UINT32                  Level)
 {
+    UINT32                  PinCount;
+    UINT16                  *PinList;
+    UINT32                  i;
 
 
     AcpiDmIndent (Level);
@@ -1197,45 +1184,74 @@ AcpiDmGpioDescriptor (
         AcpiOsPrintf ("GpioIo (");
     }
 
-    AcpiOsPrintf ("%s, %s, %s, %s,\n",
-        AcpiGbl_ConsumeDecode [(Resource->GpioInt.Flags & 1)],
-        AcpiGbl_HeDecode [(Resource->GpioInt.Flags >> 1) & 1],
-        AcpiGbl_LlDecode [(Resource->GpioInt.Flags >> 2) & 1],
-        AcpiGbl_ShrDecode [(Resource->GpioInt.Flags >> 3) & 1]);
+    AcpiOsPrintf ("%s, %s, %s,\n",
+        AcpiGbl_HeDecode [(Resource->GpioInt.IntFlags & 1)],
+        AcpiGbl_LlDecode [(Resource->GpioInt.IntFlags >> 1) & 1],
+        AcpiGbl_ShrDecode [(Resource->GpioInt.IntFlags >> 3) & 1]);
 
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%4.4X, 0x%2.2X,",
-        Resource->GpioInt.DebounceTimeout,
-        Resource->GpioInt.IntFlags);
+    if (Resource->GpioInt.PinConfig <= 3)
+    {
+        AcpiOsPrintf ("%s, ", AcpiGbl_PpcDecode[Resource->GpioInt.PinConfig]);
+    }
+    else
+    {
+        AcpiOsPrintf ("0x%2.2X, ", Resource->GpioInt.PinConfig);
+    }
+    AcpiOsPrintf ("0x%4.4X, ", Resource->GpioInt.DebounceTimeout);
 
-#if 0
-     UINT32                  i;
-    /*
-     * The ResourceSource fields are optional and appear after the interrupt
-     * list. Must compute length based on length of the list. First xrupt
-     * is included in the struct (reason for -1 below)
-     */
-    AcpiDmResourceSource (Resource,
-        sizeof (AML_RESOURCE_GPIO_INT) +
-            ((UINT32) Resource->GpioInt.InterruptCount - 1) * sizeof (UINT16),
-        Resource->GpioInt.ResourceLength);
+    if (Resource->GpioInt.ResSourceOffset)
+    {
+        AcpiUtPrintString (
+            ACPI_ADD_PTR (char, Resource, Resource->GpioInt.ResSourceOffset),
+            ACPI_UINT8_MAX);
+    }
+    AcpiOsPrintf (", ");
+
+    AcpiOsPrintf ("0x%2.2X, ", Resource->GpioInt.ResSourceIndex);
+
+    AcpiOsPrintf ("%s, ", AcpiGbl_ConsumeDecode [(Resource->GpioInt.Flags & 1)]);
 
     /* Insert a descriptor name */
 
     AcpiDmDescriptorName ();
+    AcpiOsPrintf (",\n");
+
+    AcpiDmIndent (Level + 1);
+
+    /* Dump the vendor data */
+
+    if (Resource->GpioInt.VendorOffset)
+    {
+        UINT8 *VendorData =
+            ACPI_ADD_PTR (UINT8, Resource, Resource->GpioInt.VendorOffset);
+
+        AcpiOsPrintf ("DataBuffer {");
+        for (i = 0; i < Resource->GpioInt.VendorLength; i++)
+        {
+            AcpiOsPrintf ("0x%2.2X, ", VendorData[i]);
+        }
+        AcpiOsPrintf ("}");
+    }
+    else
+    {
+        AcpiOsPrintf (",");
+    }
+
     AcpiOsPrintf (")\n");
 
     /* Dump the interrupt list */
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("{\n");
-    for (i = 0; i < Resource->GpioInt.InterruptCount; i++)
+
+    PinCount = (Resource->GpioInt.ResSourceOffset - Resource->GpioInt.PinTableOffset) / 2;
+    PinList = (UINT16 *) ACPI_ADD_PTR (char, Resource, Resource->GpioInt.PinTableOffset);
+    for (i = 0; i < PinCount; i++)
     {
         AcpiDmIndent (Level + 1);
-        AcpiOsPrintf ("0x%8.8X,\n",
-            (UINT32) Resource->GpioInt.Interrupts[i]);
+        AcpiOsPrintf ("0x%4.4X,\n", PinList[i]);
     }
-#endif
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("}\n");

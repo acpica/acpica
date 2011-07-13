@@ -141,6 +141,7 @@ extern const char                       *AcpiGbl_SizDecode[];
 extern const char                       *AcpiGbl_TrsDecode[];
 extern const char                       *AcpiGbl_TtpDecode[];
 extern const char                       *AcpiGbl_TypDecode[];
+extern const char                       *AcpiGbl_PpcDecode[];
 extern const char                       *AcpiGbl_AmDecode[];
 extern const char                       *AcpiGbl_SmDecode[];
 extern const char                       *AcpiGbl_WmDecode[];

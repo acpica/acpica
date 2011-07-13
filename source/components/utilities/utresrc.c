@@ -251,6 +251,14 @@ const char                      *AcpiGbl_TypDecode[] =
     "TypeF"
 };
 
+const char                      *AcpiGbl_PpcDecode[] =
+{
+    "PullDefault",
+    "PullUp",
+    "PullDown",
+    "PullNone",
+};
+
 /* I2C serial bus access mode */
 
 const char                      *AcpiGbl_AmDecode[] =
