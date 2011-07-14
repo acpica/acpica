@@ -402,7 +402,7 @@ RsDoGpioIntDescriptor (
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 1);
             break;
 
-        case 2: /* Share Type - Default: exclusive (0) [Flag] (_SHR) */
+        case 2: /* Share Type - Default: exclusive (0) [Flags] (_SHR) */
 
             RsSetFlagBits16 (&Descriptor->GpioInt.IntFlags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
@@ -587,7 +587,7 @@ RsDoGpioIoDescriptor (
     {
         switch (i)
         {
-        case 0: /* Share Type [Flag] (_SHR) */
+        case 0: /* Share Type [Flags] (_SHR) */
 
             RsSetFlagBits16 (&Descriptor->GpioIo.IntFlags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,

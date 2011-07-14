@@ -483,6 +483,7 @@ DtCompileTable (
     UINT8                   FieldType;
     UINT8                   *Buffer;
     UINT8                   *FlagBuffer = NULL;
+    UINT32                  CurrentFlagByteOffset = 0;
     ACPI_STATUS             Status;
 
 
@@ -544,6 +545,7 @@ DtCompileTable (
             *Field = LocalField;
 
             FlagBuffer = Buffer;
+            CurrentFlagByteOffset = Info->Offset;
             break;
 
         case DT_FIELD_TYPE_FLAG:
@@ -552,6 +554,14 @@ DtCompileTable (
 
             if (FlagBuffer)
             {
+                /*
+                 * We must increment the FlagBuffer when we have crossed
+                 * into the next flags byte within the flags field
+                 * of type DT_FIELD_TYPE_FLAGS_INTEGER.
+                 */
+                FlagBuffer += (Info->Offset - CurrentFlagByteOffset);
+                CurrentFlagByteOffset = Info->Offset;
+
                 DtCompileFlag (FlagBuffer, LocalField, Info);
             }
             else
