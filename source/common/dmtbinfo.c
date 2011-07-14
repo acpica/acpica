@@ -455,6 +455,9 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt1[] =
     {ACPI_DMT_FLAG1,    ACPI_FADT_FLAG_OFFSET (Flags,2),            "Remote Power-on capable (V4)", 0},
     {ACPI_DMT_FLAG2,    ACPI_FADT_FLAG_OFFSET (Flags,2),            "Use APIC Cluster Model (V4)", 0},
     {ACPI_DMT_FLAG3,    ACPI_FADT_FLAG_OFFSET (Flags,2),            "Use APIC Physical Destination Mode (V4)", 0},
+    {ACPI_DMT_FLAG4,    ACPI_FADT_FLAG_OFFSET (Flags,2),            "Hardware Reduced (V5)", 0},
+    {ACPI_DMT_FLAG5,    ACPI_FADT_FLAG_OFFSET (Flags,2),            "Prefer S0 Idle (V5)", 0},
+    {ACPI_DMT_FLAG6,    ACPI_FADT_FLAG_OFFSET (Flags,2),            "Use Sleep Register (V5)", 0},
     ACPI_DMT_TERMINATOR
 };
 
@@ -468,7 +471,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt2[] =
     ACPI_DMT_TERMINATOR
 };
 
-/* ACPI 2.0+ Extensions (FADT version 3+) */
+/* ACPI 2.0+ Extensions (FADT version 3 and 4) */
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt3[] =
 {
@@ -485,6 +488,14 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt3[] =
     {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPmTimerBlock),           "PM Timer Block", 0},
     {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XGpe0Block),              "GPE0 Block", 0},
     {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XGpe1Block),              "GPE1 Block", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* ACPI 5.0 Extensions (FADT version 5) */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt5[] =
+{
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (SleepRegister),           "Sleep Register", 0},
     ACPI_DMT_TERMINATOR
 };
 

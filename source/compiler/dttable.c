@@ -732,6 +732,18 @@ DtCompileFadt (
         }
 
         DtInsertSubtable (ParentTable, Subtable);
+
+        if (Revision >= 5)
+        {
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoFadt5,
+                        &Subtable, TRUE);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            DtInsertSubtable (ParentTable, Subtable);
+        }
     }
 
     return (AE_OK);

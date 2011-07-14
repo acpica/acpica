@@ -302,11 +302,18 @@ AcpiDmDumpFadt (
         AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoFadt2);
     }
 
-    /* Check for FADT revision 3 fields and up (ACPI 2.0+ extended data) */
+    /* Check for FADT revision 3/4 fields and up (ACPI 2.0+ extended data) */
 
     else if (Table->Length > ACPI_FADT_V2_SIZE)
     {
         AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoFadt3);
+
+        /* Check for FADT revision 5 fields and up (ACPI 5.0+) */
+
+        if (Table->Length > ACPI_FADT_V3_SIZE)
+        {
+            AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoFadt5);
+        }
     }
 
     /* Validate various fields in the FADT, including length */
@@ -360,6 +367,10 @@ AcpiDmValidateFadtLength (
     case 3:
     case 4:
         ExpectedLength = ACPI_FADT_V3_SIZE;
+        break;
+
+    case 5:
+        ExpectedLength = ACPI_FADT_V5_SIZE;
         break;
 
     default:

@@ -381,13 +381,13 @@ AcpiTbCreateLocalFadt (
 
     /*
      * Check if the FADT is larger than the largest table that we expect
-     * (the ACPI 2.0/3.0 version). If so, truncate the table, and issue
+     * (the ACPI 5.0 version). If so, truncate the table, and issue
      * a warning.
      */
     if (Length > sizeof (ACPI_TABLE_FADT))
     {
         ACPI_WARNING ((AE_INFO,
-            "FADT (revision %u) is longer than ACPI 2.0 version, "
+            "FADT (revision %u) is longer than ACPI 5.0 version, "
             "truncating length %u to %u",
             Table->Revision, Length, (UINT32) sizeof (ACPI_TABLE_FADT)));
     }
@@ -600,6 +600,13 @@ AcpiTbValidateFadt (
             AcpiGbl_FADT.Dsdt, ACPI_FORMAT_UINT64 (AcpiGbl_FADT.XDsdt)));
 
         AcpiGbl_FADT.XDsdt = (UINT64) AcpiGbl_FADT.Dsdt;
+    }
+
+    /* If Hardware Reduced flag is set, we are all done */
+
+    if (AcpiGbl_FADT.Flags & ACPI_FADT_HW_REDUCED)
+    {
+        return;
     }
 
     /* Examine all of the 64-bit extended address fields (X fields) */
