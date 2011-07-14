@@ -256,7 +256,15 @@ const char                      *AcpiGbl_PpcDecode[] =
     "PullDefault",
     "PullUp",
     "PullDown",
-    "PullNone",
+    "PullNone"
+};
+
+const char                      *AcpiGbl_IorDecode[] =
+{
+    "None",
+    "InputOnly",
+    "OutputOnly",
+    "InvalidIoRestriction"
 };
 
 /* I2C serial bus access mode */

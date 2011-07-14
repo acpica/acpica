@@ -528,15 +528,26 @@ typedef struct aml_resource_gpio_io
 } AML_RESOURCE_GPIO_IO;
 
 
+#define AML_RESOURCE_SERIAL_COMMON \
+    UINT8                           RevisionId; \
+    UINT8                           Type; \
+    UINT8                           Flags; \
+    UINT16                          TypeSpecificFlags; \
+    UINT8                           TypeRevisionId; \
+    UINT16                          TypeDataLength; \
+
+
+typedef struct aml_resource_common_serialbus
+{
+    AML_RESOURCE_LARGE_HEADER_COMMON
+    AML_RESOURCE_SERIAL_COMMON
+
+} AML_RESOURCE_COMMON_SERIALBUS;
+
 typedef struct aml_resource_i2c_serialbus
 {
     AML_RESOURCE_LARGE_HEADER_COMMON
-    UINT8                           RevisionId;
-    UINT8                           Type;
-    UINT8                           Flags;
-    UINT16                          TypeSpecificFlags;
-    UINT8                           TypeRevisionId;
-    UINT16                          TypeDataLength;
+    AML_RESOURCE_SERIAL_COMMON
     UINT32                          ConnectionSpeed;
     UINT16                          SlaveAddress;
     UINT8                           ResSourceIndex;
@@ -556,12 +567,7 @@ typedef struct aml_resource_i2c_serialbus
 typedef struct aml_resource_spi_serialbus
 {
     AML_RESOURCE_LARGE_HEADER_COMMON
-    UINT8                           RevisionId;
-    UINT8                           Type;
-    UINT8                           Flags;
-    UINT16                          TypeSpecificFlags;
-    UINT8                           TypeRevisionId;
-    UINT16                          TypeDataLength;
+    AML_RESOURCE_SERIAL_COMMON
     UINT32                          ConnectionSpeed;
     UINT8                           DataBitLength;
     UINT8                           ClockPhase;
@@ -585,12 +591,7 @@ typedef struct aml_resource_spi_serialbus
 typedef struct aml_resource_uart_serialbus
 {
     AML_RESOURCE_LARGE_HEADER_COMMON
-    UINT8                           RevisionId;
-    UINT8                           Type;
-    UINT8                           Flags;
-    UINT16                          TypeSpecificFlags;
-    UINT8                           TypeRevisionId;
-    UINT16                          TypeDataLength;
+    AML_RESOURCE_SERIAL_COMMON
     UINT32                          DefaultBaudRate;
     UINT16                          RxFifoSize;
     UINT16                          TxFifoSize;
@@ -653,6 +654,7 @@ typedef union aml_resource
     AML_RESOURCE_I2C_SERIALBUS              I2cSerialBus;
     AML_RESOURCE_SPI_SERIALBUS              SpiSerialBus;
     AML_RESOURCE_UART_SERIALBUS             UartSerialBus;
+    AML_RESOURCE_COMMON_SERIALBUS           CommonSerialBus;
 
     /* Utility overlays */
 

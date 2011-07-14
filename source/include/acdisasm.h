@@ -749,13 +749,7 @@ AcpiDmVendorLargeDescriptor (
     UINT32                  Level);
 
 void
-AcpiDmGpioIntDescriptor (
-    AML_RESOURCE            *Resource,
-    UINT32                  Length,
-    UINT32                  Level);
-
-void
-AcpiDmGpioIoDescriptor (
+AcpiDmGpioDescriptor (
     AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
