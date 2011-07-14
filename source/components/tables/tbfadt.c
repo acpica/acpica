@@ -352,8 +352,13 @@ AcpiTbParseFadt (
     AcpiTbInstallTable ((ACPI_PHYSICAL_ADDRESS) AcpiGbl_FADT.XDsdt,
         ACPI_SIG_DSDT, ACPI_TABLE_INDEX_DSDT);
 
-    AcpiTbInstallTable ((ACPI_PHYSICAL_ADDRESS) AcpiGbl_FADT.XFacs,
-        ACPI_SIG_FACS, ACPI_TABLE_INDEX_FACS);
+    /* If Hardware Reduced flag is set, there is no FACS */
+
+    if (!AcpiGbl_ReducedHardware)
+    {
+        AcpiTbInstallTable ((ACPI_PHYSICAL_ADDRESS) AcpiGbl_FADT.XFacs,
+            ACPI_SIG_FACS, ACPI_TABLE_INDEX_FACS);
+    }
 }
 
 
@@ -400,6 +405,14 @@ AcpiTbCreateLocalFadt (
 
     ACPI_MEMCPY (&AcpiGbl_FADT, Table,
         ACPI_MIN (Length, sizeof (ACPI_TABLE_FADT)));
+
+    /* Take a copy of the Hardware Reduced flag */
+
+    AcpiGbl_ReducedHardware = FALSE;
+    if (AcpiGbl_FADT.Flags & ACPI_FADT_HW_REDUCED)
+    {
+        AcpiGbl_ReducedHardware = TRUE;
+    }
 
     /* Convert the local copy of the FADT to the common internal format */
 
@@ -604,7 +617,7 @@ AcpiTbValidateFadt (
 
     /* If Hardware Reduced flag is set, we are all done */
 
-    if (AcpiGbl_FADT.Flags & ACPI_FADT_HW_REDUCED)
+    if (AcpiGbl_ReducedHardware)
     {
         return;
     }
