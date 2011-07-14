@@ -360,7 +360,7 @@ RsDoGpioIntDescriptor (
 
     Descriptor = Rnode->Buffer;
     Descriptor->GpioInt.ResourceLength  = DescriptorSize;
-    Descriptor->GpioInt.DescriptorType  = ACPI_RESOURCE_NAME_GPIO_INT;
+    Descriptor->GpioInt.DescriptorType  = ACPI_RESOURCE_NAME_GPIO;
     Descriptor->GpioInt.RevisionId      = AML_RESOURCE_GPIO_REVISION;
     Descriptor->GpioInt.ConnectionType  = AML_RESOURCE_GPIO_TYPE_INT;
 
@@ -559,7 +559,7 @@ RsDoGpioIoDescriptor (
 
     Descriptor = Rnode->Buffer;
     Descriptor->GpioIo.ResourceLength  = DescriptorSize;
-    Descriptor->GpioIo.DescriptorType  = ACPI_RESOURCE_NAME_GPIO_IO;
+    Descriptor->GpioIo.DescriptorType  = ACPI_RESOURCE_NAME_GPIO;
     Descriptor->GpioIo.RevisionId      = AML_RESOURCE_GPIO_REVISION;
     Descriptor->GpioIo.ConnectionType  = AML_RESOURCE_GPIO_TYPE_IO;
 
