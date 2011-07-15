@@ -212,6 +212,17 @@ AcpiDmUartSerialBusDescriptor (
     UINT32                  Length,
     UINT32                  Level);
 
+static void
+AcpiDmGpioCommon (
+    AML_RESOURCE            *Resource,
+    UINT32                  Level);
+
+static void
+AcpiDmDumpRawDataBuffer (
+    UINT8                   *Buffer,
+    UINT32                  Length,
+    UINT32                  Level);
+
 static ACPI_RESOURCE_HANDLER SerialBusResourceDispatch [] =
 {
     NULL,
@@ -1150,6 +1161,157 @@ AcpiDmVendorLargeDescriptor (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpRawDataBuffer
+ *
+ * PARAMETERS:  Buffer              - Pointer to the data bytes
+ *              Length              - Length of the descriptor in bytes
+ *              Level               - Current source code indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Dump a data buffer as a RawDataBuffer() object. Used for
+ *              vendor data bytes.
+ *
+ ******************************************************************************/
+
+static void
+AcpiDmDumpRawDataBuffer (
+    UINT8                   *Buffer,
+    UINT32                  Length,
+    UINT32                  Level)
+{
+    UINT32                  Index;
+    UINT32                  i;
+    UINT32                  j;
+
+
+    if (!Length)
+    {
+        return;
+    }
+
+    AcpiOsPrintf ("RawDataBuffer (0x%.2X)  // Vendor Data", Length);
+
+    AcpiOsPrintf ("\n");
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("{\n");
+    AcpiDmIndent (Level + 2);
+
+    for (i = 0; i < Length;)
+    {
+        for (j = 0; j < 8; j++)
+        {
+            Index = i + j;
+            if (Index >= Length)
+            {
+                goto Finish;
+            }
+
+            AcpiOsPrintf ("0x%2.2X", Buffer[Index]);
+            if ((Index + 1) >= Length)
+            {
+                goto Finish;
+            }
+
+            AcpiOsPrintf (", ");
+        }
+        AcpiOsPrintf ("\n");
+        AcpiDmIndent (Level + 2);
+
+        i += 8;
+    }
+
+Finish:
+    AcpiOsPrintf ("\n");
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("}");
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmGpioCommon
+ *
+ * PARAMETERS:  Resource            - Pointer to the resource descriptor
+ *              Level               - Current source code indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Decode common parts of a GPIO Interrupt descriptor
+ *
+ ******************************************************************************/
+
+static void
+AcpiDmGpioCommon (
+    AML_RESOURCE            *Resource,
+    UINT32                  Level)
+{
+    UINT32                  PinCount;
+    UINT16                  *PinList;
+    UINT8                   *VendorData;
+    UINT32                  i;
+
+
+    /* ResourceSource, ResourceSourceIndex, ResourceType */
+
+    AcpiDmIndent (Level + 1);
+    if (Resource->GpioInt.ResSourceOffset)
+    {
+        AcpiUtPrintString (
+            ACPI_ADD_PTR (char, Resource, Resource->GpioInt.ResSourceOffset),
+            ACPI_UINT8_MAX);
+    }
+
+    AcpiOsPrintf (", ");
+    AcpiOsPrintf ("0x%2.2X, ", Resource->GpioInt.ResSourceIndex);
+    AcpiOsPrintf ("%s, ",
+        AcpiGbl_ConsumeDecode [(Resource->GpioInt.Flags & 1)]);
+
+    /* Insert a descriptor name */
+
+    AcpiDmDescriptorName ();
+    AcpiOsPrintf (",");
+
+    /* Dump the vendor data */
+
+    if (Resource->GpioInt.VendorOffset)
+    {
+        AcpiOsPrintf ("\n");
+        AcpiDmIndent (Level + 1);
+        VendorData = ACPI_ADD_PTR (UINT8, Resource,
+            Resource->GpioInt.VendorOffset);
+
+        AcpiDmDumpRawDataBuffer (VendorData,
+            Resource->GpioInt.VendorLength, Level);
+    }
+
+    AcpiOsPrintf (")\n");
+
+    /* Dump the interrupt list */
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("{   // Pin list\n");
+
+    PinCount = ((UINT32) (Resource->GpioInt.ResSourceOffset -
+        Resource->GpioInt.PinTableOffset)) /
+        sizeof (UINT16);
+
+    PinList = (UINT16 *) ACPI_ADD_PTR (char, Resource,
+        Resource->GpioInt.PinTableOffset);
+
+    for (i = 0; i < PinCount; i++)
+    {
+        AcpiDmIndent (Level + 2);
+        AcpiOsPrintf ("0x%4.4X%s\n", PinList[i], ((i + 1) < PinCount) ? "," : "");
+    }
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("}\n");
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmGpioIntDescriptor
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
@@ -1168,82 +1330,29 @@ AcpiDmGpioIntDescriptor (
     UINT32                  Length,
     UINT32                  Level)
 {
-    UINT32                  PinCount;
-    UINT16                  *PinList;
-    UINT32                  i;
-    UINT8                   *VendorData;
 
+    /* Dump the GpioInt-specific portion of the descriptor */
 
     AcpiDmIndent (Level);
-
-    AcpiOsPrintf ("GpioInt (");
-
-    AcpiOsPrintf ("%s, %s, %s,\n",
+    AcpiOsPrintf ("GpioInt (%s, %s, %s, ",
         AcpiGbl_HeDecode [(Resource->GpioInt.IntFlags & 1)],
         AcpiGbl_LlDecode [(Resource->GpioInt.IntFlags >> 1) & 1],
         AcpiGbl_ShrDecode [(Resource->GpioInt.IntFlags >> 3) & 1]);
 
-    AcpiDmIndent (Level + 1);
     if (Resource->GpioInt.PinConfig <= 3)
     {
-        AcpiOsPrintf ("%s, ", AcpiGbl_PpcDecode[Resource->GpioInt.PinConfig]);
+        AcpiOsPrintf ("%s, ",
+            AcpiGbl_PpcDecode[Resource->GpioInt.PinConfig]);
     }
     else
     {
         AcpiOsPrintf ("0x%2.2X, ", Resource->GpioInt.PinConfig);
     }
-    AcpiOsPrintf ("0x%4.4X, ", Resource->GpioInt.DebounceTimeout);
+    AcpiOsPrintf ("0x%4.4X,\n", Resource->GpioInt.DebounceTimeout);
 
-    if (Resource->GpioInt.ResSourceOffset)
-    {
-        AcpiUtPrintString (
-            ACPI_ADD_PTR (char, Resource, Resource->GpioInt.ResSourceOffset),
-            ACPI_UINT8_MAX);
-    }
+    /* Dump the GpioInt/GpioIo common portion of the descriptor */
 
-    AcpiOsPrintf (", ");
-    AcpiOsPrintf ("0x%2.2X, ", Resource->GpioInt.ResSourceIndex);
-    AcpiOsPrintf ("%s, ", AcpiGbl_ConsumeDecode [(Resource->GpioInt.Flags & 1)]);
-
-    /* Insert a descriptor name */
-
-    AcpiDmDescriptorName ();
-    AcpiOsPrintf (",\n");
-
-    AcpiDmIndent (Level + 1);
-
-    /* Dump the vendor data */
-
-    if (Resource->GpioInt.VendorOffset)
-    {
-        VendorData =
-            ACPI_ADD_PTR (UINT8, Resource, Resource->GpioInt.VendorOffset);
-
-        AcpiOsPrintf ("RawDataBuffer () {");
-        for (i = 0; i < Resource->GpioInt.VendorLength; i++)
-        {
-            AcpiOsPrintf ("0x%2.2X, ", VendorData[i]);
-        }
-        AcpiOsPrintf ("}");
-    }
-
-    AcpiOsPrintf (")\n");
-
-    /* Dump the interrupt list */
-
-    AcpiDmIndent (Level);
-    AcpiOsPrintf ("{\n");
-
-    PinCount = (Resource->GpioInt.ResSourceOffset - Resource->GpioInt.PinTableOffset) / 2;
-    PinList = (UINT16 *) ACPI_ADD_PTR (char, Resource, Resource->GpioInt.PinTableOffset);
-    for (i = 0; i < PinCount; i++)
-    {
-        AcpiDmIndent (Level + 1);
-        AcpiOsPrintf ("0x%4.4X,\n", PinList[i]);
-    }
-
-    AcpiDmIndent (Level);
-    AcpiOsPrintf ("}\n");
+    AcpiDmGpioCommon (Resource, Level);
 }
 
 
@@ -1267,22 +1376,17 @@ AcpiDmGpioIoDescriptor (
     UINT32                  Length,
     UINT32                  Level)
 {
-    UINT32                  PinCount;
-    UINT16                  *PinList;
-    UINT32                  i;
-    UINT8                   *VendorData;
 
+    /* Dump the GpioIo-specific portion of the descriptor */
 
     AcpiDmIndent (Level);
-
-    AcpiOsPrintf ("GpioIo (");
-
-    AcpiOsPrintf ("%s, ",
+    AcpiOsPrintf ("GpioIo (%s, ",
         AcpiGbl_ShrDecode [(Resource->GpioInt.IntFlags >> 3) & 1]);
 
     if (Resource->GpioInt.PinConfig <= 3)
     {
-        AcpiOsPrintf ("%s, ", AcpiGbl_PpcDecode[Resource->GpioInt.PinConfig]);
+        AcpiOsPrintf ("%s, ",
+            AcpiGbl_PpcDecode[Resource->GpioInt.PinConfig]);
     }
     else
     {
@@ -1293,57 +1397,9 @@ AcpiDmGpioIoDescriptor (
     AcpiOsPrintf ("%s,\n",
         AcpiGbl_IorDecode [Resource->GpioInt.IntFlags & 3]);
 
-    AcpiDmIndent (Level + 1);
-    if (Resource->GpioInt.ResSourceOffset)
-    {
-        AcpiUtPrintString (
-            ACPI_ADD_PTR (char, Resource, Resource->GpioInt.ResSourceOffset),
-            ACPI_UINT8_MAX);
-    }
+    /* Dump the GpioInt/GpioIo common portion of the descriptor */
 
-    AcpiOsPrintf (", ");
-    AcpiOsPrintf ("0x%2.2X, ", Resource->GpioInt.ResSourceIndex);
-    AcpiOsPrintf ("%s, ", AcpiGbl_ConsumeDecode [(Resource->GpioInt.Flags & 1)]);
-
-    /* Insert a descriptor name */
-
-    AcpiDmDescriptorName ();
-    AcpiOsPrintf (",\n");
-
-    AcpiDmIndent (Level + 1);
-
-    /* Dump the vendor data */
-
-    if (Resource->GpioInt.VendorOffset)
-    {
-        VendorData =
-            ACPI_ADD_PTR (UINT8, Resource, Resource->GpioInt.VendorOffset);
-
-        AcpiOsPrintf ("RawDataBuffer () {");
-        for (i = 0; i < Resource->GpioInt.VendorLength; i++)
-        {
-            AcpiOsPrintf ("0x%2.2X, ", VendorData[i]);
-        }
-        AcpiOsPrintf ("}");
-    }
-
-    AcpiOsPrintf (")\n");
-
-    /* Dump the interrupt list */
-
-    AcpiDmIndent (Level);
-    AcpiOsPrintf ("{\n");
-
-    PinCount = (Resource->GpioInt.ResSourceOffset - Resource->GpioInt.PinTableOffset) / 2;
-    PinList = (UINT16 *) ACPI_ADD_PTR (char, Resource, Resource->GpioInt.PinTableOffset);
-    for (i = 0; i < PinCount; i++)
-    {
-        AcpiDmIndent (Level + 1);
-        AcpiOsPrintf ("0x%4.4X,\n", PinList[i]);
-    }
-
-    AcpiDmIndent (Level);
-    AcpiOsPrintf ("}\n");
+    AcpiDmGpioCommon (Resource, Level);
 }
 
 
@@ -1357,7 +1413,7 @@ AcpiDmGpioIoDescriptor (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Decode a GPIO Interrupt/IO descriptor
+ * DESCRIPTION: Decode a GpioInt/GpioIo GPIO Interrupt/IO descriptor
  *
  ******************************************************************************/
 
@@ -1391,6 +1447,68 @@ AcpiDmGpioDescriptor (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpSerialBusVendorData
+ *
+ * PARAMETERS:  Resource            - Pointer to the resource descriptor
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Dump optional serial bus vendor data
+ *
+ ******************************************************************************/
+
+static void
+AcpiDmDumpSerialBusVendorData (
+    AML_RESOURCE            *Resource,
+    UINT32                  Level)
+{
+    UINT8                   *VendorData;
+    UINT32                  VendorLength;
+
+
+    /* Get the (optional) vendor data and length */
+
+    switch (Resource->CommonSerialBus.Type)
+    {
+    case AML_RESOURCE_I2C_BUS_TYPE:
+
+        VendorLength = Resource->CommonSerialBus.TypeDataLength -
+            AML_RESOURCE_I2C_MIN_DATA_LEN;
+
+        VendorData = ACPI_ADD_PTR (UINT8, Resource,
+            sizeof (AML_RESOURCE_I2C_SERIALBUS));
+        break;
+
+    case AML_RESOURCE_SPI_BUS_TYPE:
+
+        VendorLength = Resource->CommonSerialBus.TypeDataLength -
+            AML_RESOURCE_SPI_MIN_DATA_LEN;
+
+        VendorData = ACPI_ADD_PTR (UINT8, Resource,
+            sizeof (AML_RESOURCE_SPI_SERIALBUS));
+        break;
+
+    case AML_RESOURCE_UART_BUS_TYPE:
+
+        VendorLength = Resource->CommonSerialBus.TypeDataLength -
+            AML_RESOURCE_UART_MIN_DATA_LEN;
+
+        VendorData = ACPI_ADD_PTR (UINT8, Resource,
+            sizeof (AML_RESOURCE_UART_SERIALBUS));
+        break;
+
+    default:
+        return;
+    }
+
+    /* Dump the vendor bytes as a RawDataBuffer object */
+
+    AcpiDmDumpRawDataBuffer (VendorData, VendorLength, Level);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmI2cSerialBusDescriptor
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
@@ -1414,14 +1532,14 @@ AcpiDmI2cSerialBusDescriptor (
 
     AcpiDmIndent (Level);
 
-    AcpiOsPrintf ("I2cSerialBus (%s, 0x%8.8X, 0x%4.4X,\n",
-        AcpiGbl_AmDecode [(Resource->I2cSerialBus.TypeSpecificFlags & 1)],
-        Resource->I2cSerialBus.ConnectionSpeed,
-        Resource->I2cSerialBus.SlaveAddress);
+    AcpiOsPrintf ("I2cSerialBus (0x%4.4X, %s, 0x%8.8X,\n",
+        Resource->I2cSerialBus.SlaveAddress,
+        AcpiGbl_SmDecode [(Resource->I2cSerialBus.Flags & 1)],
+        Resource->I2cSerialBus.ConnectionSpeed);
 
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("%s,",
-        AcpiGbl_SmDecode [(Resource->I2cSerialBus.Flags & 1)]);
+    AcpiOsPrintf ("%s, ",
+        AcpiGbl_AmDecode [(Resource->I2cSerialBus.TypeSpecificFlags & 1)]);
 
     /* ResourceSource is a required field */
 
@@ -1432,8 +1550,22 @@ AcpiDmI2cSerialBusDescriptor (
         ACPI_ADD_PTR (char, Resource, ResourceSourceOffset),
         ACPI_UINT8_MAX);
 
+    AcpiOsPrintf (",\n");
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%2.2X, ", Resource->I2cSerialBus.ResSourceIndex);
+
+    AcpiOsPrintf ("%s, ",
+        AcpiGbl_ConsumeDecode [(Resource->I2cSerialBus.Flags & 1)]);
+
     /* Insert a descriptor name */
 
+    AcpiDmDescriptorName ();
+    AcpiOsPrintf (",\n");
+
+    /* Dump the vendor data */
+
+    AcpiDmIndent (Level + 1);
+    AcpiDmDumpSerialBusVendorData (Resource, Level);
     AcpiOsPrintf (")\n");
 }
 
@@ -1463,21 +1595,21 @@ AcpiDmSpiSerialBusDescriptor (
 
     AcpiDmIndent (Level);
 
-    AcpiOsPrintf ("SpiSerialBus (%s, 0x%8.8X, 0x%2.2X, %s,\n",
+    AcpiOsPrintf ("SpiSerialBus (0x%4.4X, %s, %s, 0x%2.2X,\n",
+        Resource->SpiSerialBus.DeviceSelection,
+        AcpiGbl_DpDecode [(Resource->SpiSerialBus.TypeSpecificFlags >> 1) & 1],
         AcpiGbl_WmDecode [(Resource->SpiSerialBus.TypeSpecificFlags & 1)],
-        Resource->SpiSerialBus.ConnectionSpeed,
-        Resource->SpiSerialBus.DataBitLength,
-        AcpiGbl_CphDecode [(Resource->SpiSerialBus.ClockPhase & 1)]);
+        Resource->SpiSerialBus.DataBitLength);
 
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("%s, 0x%4.4X, %s,\n",
-        AcpiGbl_CpoDecode [(Resource->SpiSerialBus.ClockPolarity & 1)],
-        Resource->SpiSerialBus.DeviceSelection,
-        AcpiGbl_DpDecode [(Resource->SpiSerialBus.TypeSpecificFlags >> 1) & 1]);
+    AcpiOsPrintf ("%s, 0x%8.8X, %s,\n",
+        AcpiGbl_SmDecode [(Resource->SpiSerialBus.Flags & 1)],
+        Resource->SpiSerialBus.ConnectionSpeed,
+        AcpiGbl_CpoDecode [(Resource->SpiSerialBus.ClockPolarity & 1)]);
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("%s, ",
-        AcpiGbl_SmDecode [(Resource->SpiSerialBus.Flags & 1)]);
+        AcpiGbl_CphDecode [(Resource->SpiSerialBus.ClockPhase & 1)]);
 
     /* ResourceSource is a required field */
 
@@ -1488,8 +1620,22 @@ AcpiDmSpiSerialBusDescriptor (
         ACPI_ADD_PTR (char, Resource, ResourceSourceOffset),
         ACPI_UINT8_MAX);
 
+    AcpiOsPrintf (",\n");
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%2.2X, ", Resource->SpiSerialBus.ResSourceIndex);
+
+    AcpiOsPrintf ("%s, ",
+        AcpiGbl_ConsumeDecode [(Resource->SpiSerialBus.Flags & 1)]);
+
     /* Insert a descriptor name */
 
+    AcpiDmDescriptorName ();
+    AcpiOsPrintf (",\n");
+
+    /* Dump the vendor data */
+
+    AcpiDmIndent (Level + 1);
+    AcpiDmDumpSerialBusVendorData (Resource, Level);
     AcpiOsPrintf (")\n");
 }
 
@@ -1519,22 +1665,22 @@ AcpiDmUartSerialBusDescriptor (
 
     AcpiDmIndent (Level);
 
-    AcpiOsPrintf ("UartSerialBus (0x%2.2X, %s, %s, %s,\n",
-        Resource->UartSerialBus.TypeSpecificFlags & 0xFF,
-        AcpiGbl_EdDecode [(Resource->UartSerialBus.TypeSpecificFlags >> 15 )& 1],
+    AcpiOsPrintf ("UartSerialBus (0x%8.8X, %s, %s,\n",
+        Resource->UartSerialBus.DefaultBaudRate,
         AcpiGbl_BpbDecode [(Resource->UartSerialBus.TypeSpecificFlags >> 12 ) & 3],
         AcpiGbl_SbDecode [(Resource->UartSerialBus.TypeSpecificFlags >> 10 ) & 3]);
 
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("%s, 0x%8.8X, 0x%4.4X, 0x%4.4X,\n",
-        AcpiGbl_FcDecode [(Resource->UartSerialBus.TypeSpecificFlags >> 8 ) & 3],
-        Resource->UartSerialBus.DefaultBaudRate,
-        Resource->UartSerialBus.RxFifoSize,
-        Resource->UartSerialBus.TxFifoSize);
+    AcpiOsPrintf ("0x%2.2X, %s, %s, %s,\n",
+        Resource->UartSerialBus.TypeSpecificFlags & 0xFF,
+        AcpiGbl_EdDecode [(Resource->UartSerialBus.TypeSpecificFlags >> 15 ) & 1],
+        AcpiGbl_PtDecode [(Resource->UartSerialBus.Parity & 7)],
+        AcpiGbl_FcDecode [(Resource->UartSerialBus.TypeSpecificFlags >> 8 ) & 3]);
 
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("%s,",
-        AcpiGbl_PtDecode [(Resource->UartSerialBus.Parity & 7)]);
+    AcpiOsPrintf ("0x%4.4X, 0x%4.4X, ",
+        Resource->UartSerialBus.RxFifoSize,
+        Resource->UartSerialBus.TxFifoSize);
 
     /* ResourceSource is a required field */
 
@@ -1545,8 +1691,22 @@ AcpiDmUartSerialBusDescriptor (
         ACPI_ADD_PTR (char, Resource, ResourceSourceOffset),
         ACPI_UINT8_MAX);
 
+    AcpiOsPrintf (",\n");
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%2.2X, ", Resource->UartSerialBus.ResSourceIndex);
+
+    AcpiOsPrintf ("%s, ",
+        AcpiGbl_ConsumeDecode [(Resource->UartSerialBus.Flags & 1)]);
+
     /* Insert a descriptor name */
 
+    AcpiDmDescriptorName ();
+    AcpiOsPrintf (",\n");
+
+    /* Dump the vendor data */
+
+    AcpiDmIndent (Level + 1);
+    AcpiDmDumpSerialBusVendorData (Resource, Level);
     AcpiOsPrintf (")\n");
 }
 

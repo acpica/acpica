@@ -267,6 +267,16 @@ const char                      *AcpiGbl_IorDecode[] =
     "InvalidIoRestriction"
 };
 
+const char                      *AcpiGbl_DtsDecode[] =
+{
+    "8-bit",
+    "16-bit",
+    "32-bit",
+    "64-bit",
+    "128-bit",
+    "256-bit",
+};
+
 /* I2C serial bus access mode */
 
 const char                      *AcpiGbl_AmDecode[] =
@@ -385,7 +395,7 @@ const UINT8                 AcpiGbl_ResourceAmlSizes[] =
     ACPI_AML_SIZE_SMALL (AML_RESOURCE_END_DEPENDENT),
     ACPI_AML_SIZE_SMALL (AML_RESOURCE_IO),
     ACPI_AML_SIZE_SMALL (AML_RESOURCE_FIXED_IO),
-    0,
+    ACPI_AML_SIZE_SMALL (AML_RESOURCE_FIXED_DMA),
     0,
     0,
     0,
@@ -405,7 +415,10 @@ const UINT8                 AcpiGbl_ResourceAmlSizes[] =
     ACPI_AML_SIZE_LARGE (AML_RESOURCE_ADDRESS16),
     ACPI_AML_SIZE_LARGE (AML_RESOURCE_EXTENDED_IRQ),
     ACPI_AML_SIZE_LARGE (AML_RESOURCE_ADDRESS64),
-    ACPI_AML_SIZE_LARGE (AML_RESOURCE_EXTENDED_ADDRESS64)
+    ACPI_AML_SIZE_LARGE (AML_RESOURCE_EXTENDED_ADDRESS64),
+    ACPI_AML_SIZE_LARGE (AML_RESOURCE_GPIO_INT),
+    0,
+    ACPI_AML_SIZE_LARGE (AML_RESOURCE_COMMON_SERIALBUS),
 };
 
 
@@ -429,7 +442,7 @@ static const UINT8          AcpiGbl_ResourceTypes[] =
     ACPI_FIXED_LENGTH,
     ACPI_FIXED_LENGTH,
     ACPI_FIXED_LENGTH,
-    0,
+    ACPI_FIXED_LENGTH,      /* FixedDMA */
     0,
     0,
     0,
@@ -452,7 +465,10 @@ static const UINT8          AcpiGbl_ResourceTypes[] =
     ACPI_FIXED_LENGTH,
     ACPI_VARIABLE_LENGTH,
     ACPI_VARIABLE_LENGTH,
-    ACPI_VARIABLE_LENGTH
+    ACPI_VARIABLE_LENGTH,
+    ACPI_VARIABLE_LENGTH,   /* GPIO */
+    0,
+    ACPI_VARIABLE_LENGTH    /* SerialBus */
 };
 
 

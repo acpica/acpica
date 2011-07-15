@@ -560,7 +560,7 @@ typedef struct aml_resource_i2c_serialbus
 } AML_RESOURCE_I2C_SERIALBUS;
 
 #define AML_RESOURCE_I2C_REVISION               1       /* ACPI 5.0 */
-#define AML_RESOURCE_I2C_BUS_TYPE               1       /* ACPI 5.0 */
+#define AML_RESOURCE_I2C_BUS_TYPE               1
 #define AML_RESOURCE_I2C_TYPE_REVISION          1       /* ACPI 5.0 */
 #define AML_RESOURCE_I2C_MIN_DATA_LEN           7
 
@@ -583,7 +583,7 @@ typedef struct aml_resource_spi_serialbus
 } AML_RESOURCE_SPI_SERIALBUS;
 
 #define AML_RESOURCE_SPI_REVISION               1       /* ACPI 5.0 */
-#define AML_RESOURCE_SPI_BUS_TYPE               2       /* ACPI 5.0 */
+#define AML_RESOURCE_SPI_BUS_TYPE               2
 #define AML_RESOURCE_SPI_TYPE_REVISION          1       /* ACPI 5.0 */
 #define AML_RESOURCE_SPI_MIN_DATA_LEN           10
 
@@ -606,7 +606,7 @@ typedef struct aml_resource_uart_serialbus
 } AML_RESOURCE_UART_SERIALBUS;
 
 #define AML_RESOURCE_UART_REVISION              1       /* ACPI 5.0 */
-#define AML_RESOURCE_UART_BUS_TYPE              3       /* ACPI 5.0 */
+#define AML_RESOURCE_UART_BUS_TYPE              3
 #define AML_RESOURCE_UART_TYPE_REVISION         1       /* ACPI 5.0 */
 #define AML_RESOURCE_UART_MIN_DATA_LEN          10
 

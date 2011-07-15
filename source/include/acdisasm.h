@@ -784,6 +784,12 @@ AcpiDmDmaDescriptor (
     UINT32                  Level);
 
 void
+AcpiDmFixedDmaDescriptor (
+    AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level);
+
+void
 AcpiDmIoDescriptor (
     AML_RESOURCE            *Resource,
     UINT32                  Length,
