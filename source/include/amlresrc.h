@@ -471,7 +471,9 @@ typedef struct aml_resource_generic_register
 } AML_RESOURCE_GENERIC_REGISTER;
 
 
-typedef struct aml_resource_gpio_int
+/* Common descriptor for GpioInt and GpioIo */
+
+typedef struct aml_resource_gpio
 {
     AML_RESOURCE_LARGE_HEADER_COMMON
     UINT8                           RevisionId;
@@ -493,7 +495,7 @@ typedef struct aml_resource_gpio_int
      * 3) Vendor Data bytes
      */
 
-} AML_RESOURCE_GPIO_INT;
+} AML_RESOURCE_GPIO;
 
 #define AML_RESOURCE_GPIO_REVISION              1       /* ACPI 5.0 */
 
@@ -501,31 +503,6 @@ typedef struct aml_resource_gpio_int
 
 #define AML_RESOURCE_GPIO_TYPE_INT              0
 #define AML_RESOURCE_GPIO_TYPE_IO               1
-
-
-typedef struct aml_resource_gpio_io
-{
-    AML_RESOURCE_LARGE_HEADER_COMMON
-    UINT8                           RevisionId;
-    UINT8                           ConnectionType;
-    UINT16                          Flags;
-    UINT16                          IntFlags;
-    UINT8                           PinConfig;
-    UINT16                          DriveStrength;
-    UINT16                          DebounceTimeout;
-    UINT16                          PinTableOffset;
-    UINT8                           ResSourceIndex;
-    UINT16                          ResSourceOffset;
-    UINT16                          VendorOffset;
-    UINT16                          VendorLength;
-    /*
-     * Optional fields follow immediately:
-     * 1) PIN list (Words)
-     * 2) Resource Source String
-     * 3) Vendor Data bytes
-     */
-
-} AML_RESOURCE_GPIO_IO;
 
 
 #define AML_RESOURCE_SERIAL_COMMON \
@@ -649,8 +626,7 @@ typedef union aml_resource
     AML_RESOURCE_ADDRESS64                  Address64;
     AML_RESOURCE_EXTENDED_ADDRESS64         ExtAddress64;
     AML_RESOURCE_EXTENDED_IRQ               ExtendedIrq;
-    AML_RESOURCE_GPIO_INT                   GpioInt;
-    AML_RESOURCE_GPIO_IO                    GpioIo;
+    AML_RESOURCE_GPIO                       Gpio;
     AML_RESOURCE_I2C_SERIALBUS              I2cSerialBus;
     AML_RESOURCE_SPI_SERIALBUS              SpiSerialBus;
     AML_RESOURCE_UART_SERIALBUS             UartSerialBus;

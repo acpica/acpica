@@ -351,7 +351,7 @@ RsDoGpioIntDescriptor (
     VendorLength = RsGetBufferDataLength (InitializerOp);
     InterruptLength = RsGetInterruptDataLength (InitializerOp);
 
-    DescriptorSize = ACPI_AML_SIZE_LARGE (AML_RESOURCE_GPIO_INT) +
+    DescriptorSize = ACPI_AML_SIZE_LARGE (AML_RESOURCE_GPIO) +
         ResSourceLength + VendorLength + InterruptLength;
 
     /* Allocate the local resource node and initialize */
@@ -359,28 +359,28 @@ RsDoGpioIntDescriptor (
     Rnode = RsAllocateResourceNode (DescriptorSize + sizeof (AML_RESOURCE_LARGE_HEADER));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->GpioInt.ResourceLength  = DescriptorSize;
-    Descriptor->GpioInt.DescriptorType  = ACPI_RESOURCE_NAME_GPIO;
-    Descriptor->GpioInt.RevisionId      = AML_RESOURCE_GPIO_REVISION;
-    Descriptor->GpioInt.ConnectionType  = AML_RESOURCE_GPIO_TYPE_INT;
+    Descriptor->Gpio.ResourceLength  = DescriptorSize;
+    Descriptor->Gpio.DescriptorType  = ACPI_RESOURCE_NAME_GPIO;
+    Descriptor->Gpio.RevisionId      = AML_RESOURCE_GPIO_REVISION;
+    Descriptor->Gpio.ConnectionType  = AML_RESOURCE_GPIO_TYPE_INT;
 
     /* Build pointers to optional areas */
 
-    InterruptList = ACPI_ADD_PTR (UINT16, Descriptor, sizeof (AML_RESOURCE_GPIO_INT));
+    InterruptList = ACPI_ADD_PTR (UINT16, Descriptor, sizeof (AML_RESOURCE_GPIO));
     ResourceSource = ACPI_ADD_PTR (char, InterruptList, InterruptLength);
     VendorData = ACPI_ADD_PTR (UINT8, ResourceSource, ResSourceLength);
 
     /* Setup offsets within the descriptor */
 
-    Descriptor->GpioInt.PinTableOffset = (UINT16)
+    Descriptor->Gpio.PinTableOffset = (UINT16)
         ACPI_PTR_DIFF (InterruptList, Descriptor);
 
-    Descriptor->GpioInt.ResSourceOffset = (UINT16)
+    Descriptor->Gpio.ResSourceOffset = (UINT16)
         ACPI_PTR_DIFF (ResourceSource, Descriptor);
 
     printf ("GPIO_INT: Base: %.2X, ResLen: %.2X, VendLen: %.2X, IntLen: %.2X, ACTUAL: %X\n",
-        (UINT16) sizeof (AML_RESOURCE_GPIO_INT),   ResSourceLength, VendorLength, InterruptLength,
-        Descriptor->GpioInt.ResourceLength);
+        (UINT16) sizeof (AML_RESOURCE_GPIO), ResSourceLength, VendorLength, InterruptLength,
+        Descriptor->Gpio.ResourceLength);
 
     /* Process all child initialization nodes */
 
@@ -390,37 +390,37 @@ RsDoGpioIntDescriptor (
         {
         case 0: /* Interrupt Mode - edge/level [Flag] (_MOD) */
 
-            RsSetFlagBits16 (&Descriptor->GpioInt.IntFlags, InitializerOp, 0, 0);
+            RsSetFlagBits16 (&Descriptor->Gpio.IntFlags, InitializerOp, 0, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_MODE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 0);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Gpio.IntFlags), 0);
             break;
 
         case 1: /* Interrupt Polarity - Active high/low [Flags] (_POL) */
 
-            RsSetFlagBits16 (&Descriptor->GpioInt.IntFlags, InitializerOp, 1, 0);
+            RsSetFlagBits16 (&Descriptor->Gpio.IntFlags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_POLARITY,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 1);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Gpio.IntFlags), 1);
             break;
 
         case 2: /* Share Type - Default: exclusive (0) [Flags] (_SHR) */
 
-            RsSetFlagBits16 (&Descriptor->GpioInt.IntFlags, InitializerOp, 3, 0);
+            RsSetFlagBits16 (&Descriptor->Gpio.IntFlags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Gpio.IntFlags), 3);
             break;
 
         case 3: /* Pin Config [BYTE] (_PPC) */
 
-            Descriptor->GpioInt.PinConfig = (UINT8) InitializerOp->Asl.Value.Integer;
+            Descriptor->Gpio.PinConfig = (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_PINCONFIG,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.PinConfig));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Gpio.PinConfig));
             break;
 
         case 4: /* DebounceTimeout [WORD] (_DBT) */
 
-            Descriptor->GpioInt.DebounceTimeout = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Gpio.DebounceTimeout = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.DebounceTimeout));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Gpio.DebounceTimeout));
             break;
 
         case 5: /* ResSource [Optional Field - STRING] */
@@ -438,13 +438,13 @@ RsDoGpioIntDescriptor (
 
             if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
-                Descriptor->GpioInt.ResSourceIndex = (UINT8) InitializerOp->Asl.Value.Integer;
+                Descriptor->Gpio.ResSourceIndex = (UINT8) InitializerOp->Asl.Value.Integer;
             }
             break;
 
         case 7: /* Resource Usage (consumer/producer) */
 
-            RsSetFlagBits16 (&Descriptor->GpioInt.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits16 (&Descriptor->Gpio.Flags, InitializerOp, 0, 1);
             break;
 
         case 8: /* ResourceTag (Descriptor Name) */
@@ -455,11 +455,11 @@ RsDoGpioIntDescriptor (
         case 9: /* Vendor Data (Optional - Buffer of BYTEs) (_VEN) */
 
             if (RsGetVendorData (InitializerOp, VendorData,
-                CurrentByteOffset + Descriptor->GpioInt.VendorOffset))
+                CurrentByteOffset + Descriptor->Gpio.VendorOffset))
             {
-                Descriptor->GpioInt.VendorOffset = (UINT16)
+                Descriptor->Gpio.VendorOffset = (UINT16)
                     ACPI_PTR_DIFF (VendorData, Descriptor);
-                Descriptor->GpioInt.VendorLength = VendorLength;
+                Descriptor->Gpio.VendorLength = VendorLength;
             }
             break;
 
@@ -494,7 +494,7 @@ RsDoGpioIntDescriptor (
                 /* Create a named field at the start of the list */
 
                 RsCreateByteField (InitializerOp, ACPI_RESTAG_PIN,
-                    CurrentByteOffset + Descriptor->GpioInt.PinTableOffset);
+                    CurrentByteOffset + Descriptor->Gpio.PinTableOffset);
             }
             break;
         }
@@ -550,7 +550,7 @@ RsDoGpioIoDescriptor (
     VendorLength = RsGetBufferDataLength (InitializerOp);
     InterruptLength = RsGetInterruptDataLength (InitializerOp);
 
-    DescriptorSize = ACPI_AML_SIZE_LARGE (AML_RESOURCE_GPIO_IO) +
+    DescriptorSize = ACPI_AML_SIZE_LARGE (AML_RESOURCE_GPIO) +
         ResSourceLength + VendorLength + InterruptLength;
 
     /* Allocate the local resource node and initialize */
@@ -558,28 +558,28 @@ RsDoGpioIoDescriptor (
     Rnode = RsAllocateResourceNode (DescriptorSize + sizeof (AML_RESOURCE_LARGE_HEADER));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->GpioIo.ResourceLength  = DescriptorSize;
-    Descriptor->GpioIo.DescriptorType  = ACPI_RESOURCE_NAME_GPIO;
-    Descriptor->GpioIo.RevisionId      = AML_RESOURCE_GPIO_REVISION;
-    Descriptor->GpioIo.ConnectionType  = AML_RESOURCE_GPIO_TYPE_IO;
+    Descriptor->Gpio.ResourceLength  = DescriptorSize;
+    Descriptor->Gpio.DescriptorType  = ACPI_RESOURCE_NAME_GPIO;
+    Descriptor->Gpio.RevisionId      = AML_RESOURCE_GPIO_REVISION;
+    Descriptor->Gpio.ConnectionType  = AML_RESOURCE_GPIO_TYPE_IO;
 
     /* Build pointers to optional areas */
 
-    InterruptList = ACPI_ADD_PTR (UINT16, Descriptor, sizeof (AML_RESOURCE_GPIO_INT));
+    InterruptList = ACPI_ADD_PTR (UINT16, Descriptor, sizeof (AML_RESOURCE_GPIO));
     ResourceSource = ACPI_ADD_PTR (char, InterruptList, InterruptLength);
     VendorData = ACPI_ADD_PTR (UINT8, ResourceSource, ResSourceLength);
 
     /* Setup offsets within the descriptor */
 
-    Descriptor->GpioIo.PinTableOffset = (UINT16)
+    Descriptor->Gpio.PinTableOffset = (UINT16)
         ACPI_PTR_DIFF (InterruptList, Descriptor);
 
-    Descriptor->GpioIo.ResSourceOffset = (UINT16)
+    Descriptor->Gpio.ResSourceOffset = (UINT16)
         ACPI_PTR_DIFF (ResourceSource, Descriptor);
 
     printf ("GPIO_IO: Base: %.2X, ResLen: %.2X, VendLen: %.2X, IntLen: %.2X, ACTUAL: %X\n",
-        (UINT16) sizeof (AML_RESOURCE_GPIO_IO), ResSourceLength, VendorLength, InterruptLength,
-        Descriptor->GpioIo.ResourceLength);
+        (UINT16) sizeof (AML_RESOURCE_GPIO), ResSourceLength, VendorLength, InterruptLength,
+        Descriptor->Gpio.ResourceLength);
 
     /* Process all child initialization nodes */
 
@@ -589,37 +589,37 @@ RsDoGpioIoDescriptor (
         {
         case 0: /* Share Type [Flags] (_SHR) */
 
-            RsSetFlagBits16 (&Descriptor->GpioIo.IntFlags, InitializerOp, 3, 0);
+            RsSetFlagBits16 (&Descriptor->Gpio.IntFlags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Gpio.IntFlags), 3);
             break;
 
         case 1: /* Pin Config [BYTE] (_PPC) */
 
-            Descriptor->GpioIo.PinConfig = (UINT8) InitializerOp->Asl.Value.Integer;
+            Descriptor->Gpio.PinConfig = (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_PINCONFIG,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.PinConfig));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Gpio.PinConfig));
             break;
 
         case 2: /* DebounceTimeout [WORD] (_DBT) */
 
-            Descriptor->GpioIo.DebounceTimeout = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Gpio.DebounceTimeout = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.DebounceTimeout));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Gpio.DebounceTimeout));
             break;
 
         case 3: /* Drive Strength [WORD] (_DRS) */
 
-            Descriptor->GpioIo.DriveStrength = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Gpio.DriveStrength = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_DRIVESTRENGTH,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.DriveStrength));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Gpio.DriveStrength));
             break;
 
         case 4: /* I/O Restriction [Flag] (_IOR) */
 
-            RsSetFlagBits16 (&Descriptor->GpioIo.IntFlags, InitializerOp, 0, 0);
+            RsSetFlagBits16 (&Descriptor->Gpio.IntFlags, InitializerOp, 0, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_IORESTRICTION,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (GpioInt.IntFlags), 0);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Gpio.IntFlags), 0);
             break;
 
         case 5: /* ResSource [Optional Field - STRING] */
@@ -637,13 +637,13 @@ RsDoGpioIoDescriptor (
 
             if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
-                Descriptor->GpioIo.ResSourceIndex = (UINT8) InitializerOp->Asl.Value.Integer;
+                Descriptor->Gpio.ResSourceIndex = (UINT8) InitializerOp->Asl.Value.Integer;
             }
             break;
 
         case 7: /* Resource Usage (consumer/producer) */
 
-            RsSetFlagBits16 (&Descriptor->GpioIo.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits16 (&Descriptor->Gpio.Flags, InitializerOp, 0, 1);
             break;
 
         case 8: /* ResourceTag (Descriptor Name) */
@@ -654,11 +654,11 @@ RsDoGpioIoDescriptor (
         case 9: /* Vendor Data (Optional - Buffer of BYTEs) (_VEN) */
 
             if (RsGetVendorData (InitializerOp, VendorData,
-                CurrentByteOffset + Descriptor->GpioIo.VendorOffset))
+                CurrentByteOffset + Descriptor->Gpio.VendorOffset))
             {
-                Descriptor->GpioIo.VendorOffset = (UINT16)
+                Descriptor->Gpio.VendorOffset = (UINT16)
                     ACPI_PTR_DIFF (VendorData, Descriptor);
-                Descriptor->GpioIo.VendorLength = VendorLength;
+                Descriptor->Gpio.VendorLength = VendorLength;
             }
             break;
 
@@ -693,7 +693,7 @@ RsDoGpioIoDescriptor (
                 /* Create a named field at the start of the list */
 
                 RsCreateByteField (InitializerOp, ACPI_RESTAG_PIN,
-                    CurrentByteOffset + Descriptor->GpioIo.PinTableOffset);
+                    CurrentByteOffset + Descriptor->Gpio.PinTableOffset);
             }
             break;
         }

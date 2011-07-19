@@ -1255,17 +1255,17 @@ AcpiDmGpioCommon (
     /* ResourceSource, ResourceSourceIndex, ResourceType */
 
     AcpiDmIndent (Level + 1);
-    if (Resource->GpioInt.ResSourceOffset)
+    if (Resource->Gpio.ResSourceOffset)
     {
         AcpiUtPrintString (
-            ACPI_ADD_PTR (char, Resource, Resource->GpioInt.ResSourceOffset),
+            ACPI_ADD_PTR (char, Resource, Resource->Gpio.ResSourceOffset),
             ACPI_UINT8_MAX);
     }
 
     AcpiOsPrintf (", ");
-    AcpiOsPrintf ("0x%2.2X, ", Resource->GpioInt.ResSourceIndex);
+    AcpiOsPrintf ("0x%2.2X, ", Resource->Gpio.ResSourceIndex);
     AcpiOsPrintf ("%s, ",
-        AcpiGbl_ConsumeDecode [(Resource->GpioInt.Flags & 1)]);
+        AcpiGbl_ConsumeDecode [(Resource->Gpio.Flags & 1)]);
 
     /* Insert a descriptor name */
 
@@ -1274,15 +1274,15 @@ AcpiDmGpioCommon (
 
     /* Dump the vendor data */
 
-    if (Resource->GpioInt.VendorOffset)
+    if (Resource->Gpio.VendorOffset)
     {
         AcpiOsPrintf ("\n");
         AcpiDmIndent (Level + 1);
         VendorData = ACPI_ADD_PTR (UINT8, Resource,
-            Resource->GpioInt.VendorOffset);
+            Resource->Gpio.VendorOffset);
 
         AcpiDmDumpRawDataBuffer (VendorData,
-            Resource->GpioInt.VendorLength, Level);
+            Resource->Gpio.VendorLength, Level);
     }
 
     AcpiOsPrintf (")\n");
@@ -1292,12 +1292,12 @@ AcpiDmGpioCommon (
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("{   // Pin list\n");
 
-    PinCount = ((UINT32) (Resource->GpioInt.ResSourceOffset -
-        Resource->GpioInt.PinTableOffset)) /
+    PinCount = ((UINT32) (Resource->Gpio.ResSourceOffset -
+        Resource->Gpio.PinTableOffset)) /
         sizeof (UINT16);
 
     PinList = (UINT16 *) ACPI_ADD_PTR (char, Resource,
-        Resource->GpioInt.PinTableOffset);
+        Resource->Gpio.PinTableOffset);
 
     for (i = 0; i < PinCount; i++)
     {
@@ -1335,20 +1335,20 @@ AcpiDmGpioIntDescriptor (
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("GpioInt (%s, %s, %s, ",
-        AcpiGbl_HeDecode [(Resource->GpioInt.IntFlags & 1)],
-        AcpiGbl_LlDecode [(Resource->GpioInt.IntFlags >> 1) & 1],
-        AcpiGbl_ShrDecode [(Resource->GpioInt.IntFlags >> 3) & 1]);
+        AcpiGbl_HeDecode [(Resource->Gpio.IntFlags & 1)],
+        AcpiGbl_LlDecode [(Resource->Gpio.IntFlags >> 1) & 1],
+        AcpiGbl_ShrDecode [(Resource->Gpio.IntFlags >> 3) & 1]);
 
-    if (Resource->GpioInt.PinConfig <= 3)
+    if (Resource->Gpio.PinConfig <= 3)
     {
         AcpiOsPrintf ("%s, ",
-            AcpiGbl_PpcDecode[Resource->GpioInt.PinConfig]);
+            AcpiGbl_PpcDecode[Resource->Gpio.PinConfig]);
     }
     else
     {
-        AcpiOsPrintf ("0x%2.2X, ", Resource->GpioInt.PinConfig);
+        AcpiOsPrintf ("0x%2.2X, ", Resource->Gpio.PinConfig);
     }
-    AcpiOsPrintf ("0x%4.4X,\n", Resource->GpioInt.DebounceTimeout);
+    AcpiOsPrintf ("0x%4.4X,\n", Resource->Gpio.DebounceTimeout);
 
     /* Dump the GpioInt/GpioIo common portion of the descriptor */
 
@@ -1381,21 +1381,21 @@ AcpiDmGpioIoDescriptor (
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("GpioIo (%s, ",
-        AcpiGbl_ShrDecode [(Resource->GpioInt.IntFlags >> 3) & 1]);
+        AcpiGbl_ShrDecode [(Resource->Gpio.IntFlags >> 3) & 1]);
 
-    if (Resource->GpioInt.PinConfig <= 3)
+    if (Resource->Gpio.PinConfig <= 3)
     {
         AcpiOsPrintf ("%s, ",
-            AcpiGbl_PpcDecode[Resource->GpioInt.PinConfig]);
+            AcpiGbl_PpcDecode[Resource->Gpio.PinConfig]);
     }
     else
     {
-        AcpiOsPrintf ("0x%2.2X, ", Resource->GpioInt.PinConfig);
+        AcpiOsPrintf ("0x%2.2X, ", Resource->Gpio.PinConfig);
     }
-    AcpiOsPrintf ("0x%4.4X, ", Resource->GpioInt.DebounceTimeout);
-    AcpiOsPrintf ("0x%4.4X, ", Resource->GpioInt.DriveStrength);
+    AcpiOsPrintf ("0x%4.4X, ", Resource->Gpio.DebounceTimeout);
+    AcpiOsPrintf ("0x%4.4X, ", Resource->Gpio.DriveStrength);
     AcpiOsPrintf ("%s,\n",
-        AcpiGbl_IorDecode [Resource->GpioInt.IntFlags & 3]);
+        AcpiGbl_IorDecode [Resource->Gpio.IntFlags & 3]);
 
     /* Dump the GpioInt/GpioIo common portion of the descriptor */
 
@@ -1426,7 +1426,7 @@ AcpiDmGpioDescriptor (
     UINT8                   ConnectionType;
 
 
-    ConnectionType = Resource->GpioInt.ConnectionType;
+    ConnectionType = Resource->Gpio.ConnectionType;
 
     switch (ConnectionType)
     {
