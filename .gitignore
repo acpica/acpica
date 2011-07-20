@@ -88,6 +88,7 @@ generate/lint/LintOut.txt
 libraries/AcpiHelp.exe
 libraries/AcpiHelpDebug.exe
 libraries/AcpiExecDebug.exe
+libraries/acpiexecdebug.exe
 libraries/AcpiXtractDebug.exe
 libraries/AcpiBinDebug.exe
 libraries/AcpiSrcDebug.exe
