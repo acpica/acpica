@@ -136,6 +136,7 @@
  */
 #define ACPI_SIG_BGRT           "BGRT"      /* Boot Graphics Resource Table */
 #define ACPI_SIG_CSRT           "CSRT"      /* Core System Resources Table */
+#define ACPI_SIG_DRTM           "DRTM"      /* Dynamic Root of Trust for Measurement table */
 #define ACPI_SIG_FPDT           "FPDT"      /* Firmware Performance Data Table */
 #define ACPI_SIG_MATR           "MATR"      /* Memory Address Translation Table */
 #define ACPI_SIG_MPST           "MPST"      /* Memory Power State Table */
@@ -177,6 +178,52 @@ typedef struct acpi_table_bgrt
     UINT32                  ImageOffsetY;
 
 } ACPI_TABLE_BGRT;
+
+
+/*******************************************************************************
+ *
+ * DRTM - Dynamic Root of Trust for Measurement table
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_drtm
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT64                  EntryBaseAddress;
+    UINT64                  EntryLength;
+    UINT32                  EntryAddress32;
+    UINT64                  EntryAddress64;
+    UINT64                  ExitAddress;
+    UINT64                  LogAreaAddress;
+    UINT32                  LogAreaLength;
+    UINT64                  ArchDependentAddress;
+    UINT32                  Flags;
+
+} ACPI_TABLE_DRTM;
+
+/* 1) Validated Tables List */
+
+typedef struct acpi_drtm_vtl_list
+{
+    UINT32                  ValidatedTableListCount;
+
+} ACPI_DRTM_VTL_LIST;
+
+/* 2) Resources List */
+
+typedef struct acpi_drtm_resource_list
+{
+    UINT32                  ResourceListCount;
+
+} ACPI_DRTM_RESOURCE_LIST;
+
+/* 3) Platform-specific Identifiers List */
+
+typedef struct acpi_drtm_id_list
+{
+    UINT32                  IdListCount;
+
+} ACPI_DRTM_ID_LIST;
 
 
 /*******************************************************************************
