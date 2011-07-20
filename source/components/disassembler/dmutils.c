@@ -207,7 +207,8 @@ const char                      *AcpiGbl_IrqDecode[] =
  *
  * RETURN:      None
  *
- * DESCRIPTION: Decode the AccessAs attribute byte.  (Mostly SMBus stuff)
+ * DESCRIPTION: Decode the AccessAs attribute byte. (Mostly SMBus and
+ *              GenericSerialBus stuff.)
  *
  ******************************************************************************/
 
@@ -220,42 +221,59 @@ AcpiDmDecodeAttribute (
     {
     case AML_FIELD_ATTRIB_QUICK:
 
-        AcpiOsPrintf ("AttrQuick");
+        AcpiOsPrintf ("AttribQuick");
         break;
 
     case AML_FIELD_ATTRIB_SEND_RCV:
 
-        AcpiOsPrintf ("AttrSendReceive");
+        AcpiOsPrintf ("AttribSendReceive");
         break;
 
     case AML_FIELD_ATTRIB_BYTE:
 
-        AcpiOsPrintf ("AttrByte");
+        AcpiOsPrintf ("AttribByte");
         break;
 
     case AML_FIELD_ATTRIB_WORD:
 
-        AcpiOsPrintf ("AttrWord");
-        break;
-
-    case AML_FIELD_ATTRIB_WORD_CALL:
-
-        AcpiOsPrintf ("AttrProcessCall");
+        AcpiOsPrintf ("AttribWord");
         break;
 
     case AML_FIELD_ATTRIB_BLOCK:
 
-        AcpiOsPrintf ("AttrBlock");
+        AcpiOsPrintf ("AttribBlock");
+        break;
+
+    case AML_FIELD_ATTRIB_MULTIBYTE:
+
+        AcpiOsPrintf ("AttribBytes");
+        break;
+
+    case AML_FIELD_ATTRIB_WORD_CALL:
+
+        AcpiOsPrintf ("AttribProcessCall");
         break;
 
     case AML_FIELD_ATTRIB_BLOCK_CALL:
 
-        AcpiOsPrintf ("AttrBlockProcessCall");
+        AcpiOsPrintf ("AttribBlockProcessCall");
+        break;
+
+    case AML_FIELD_ATTRIB_RAW_BYTES:
+
+        AcpiOsPrintf ("AttribRawBytes");
+        break;
+
+    case AML_FIELD_ATTRIB_RAW_PROCESS:
+
+        AcpiOsPrintf ("AttribRawProcessBytes");
         break;
 
     default:
 
-        AcpiOsPrintf ("0x%.2X", Attribute);
+        /* A ByteConst is allowed by the grammar */
+
+        AcpiOsPrintf ("0x%2.2X", Attribute);
         break;
     }
 }
