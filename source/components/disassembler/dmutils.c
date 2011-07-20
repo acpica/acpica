@@ -218,39 +218,39 @@ AcpiDmDecodeAttribute (
 
     switch (Attribute)
     {
-    case AML_FIELD_ATTRIB_SMB_QUICK:
+    case AML_FIELD_ATTRIB_QUICK:
 
-        AcpiOsPrintf ("SMBQuick");
+        AcpiOsPrintf ("AttrQuick");
         break;
 
-    case AML_FIELD_ATTRIB_SMB_SEND_RCV:
+    case AML_FIELD_ATTRIB_SEND_RCV:
 
-        AcpiOsPrintf ("SMBSendReceive");
+        AcpiOsPrintf ("AttrSendReceive");
         break;
 
-    case AML_FIELD_ATTRIB_SMB_BYTE:
+    case AML_FIELD_ATTRIB_BYTE:
 
-        AcpiOsPrintf ("SMBByte");
+        AcpiOsPrintf ("AttrByte");
         break;
 
-    case AML_FIELD_ATTRIB_SMB_WORD:
+    case AML_FIELD_ATTRIB_WORD:
 
-        AcpiOsPrintf ("SMBWord");
+        AcpiOsPrintf ("AttrWord");
         break;
 
-    case AML_FIELD_ATTRIB_SMB_WORD_CALL:
+    case AML_FIELD_ATTRIB_WORD_CALL:
 
-        AcpiOsPrintf ("SMBProcessCall");
+        AcpiOsPrintf ("AttrProcessCall");
         break;
 
-    case AML_FIELD_ATTRIB_SMB_BLOCK:
+    case AML_FIELD_ATTRIB_BLOCK:
 
-        AcpiOsPrintf ("SMBBlock");
+        AcpiOsPrintf ("AttrBlock");
         break;
 
-    case AML_FIELD_ATTRIB_SMB_BLOCK_CALL:
+    case AML_FIELD_ATTRIB_BLOCK_CALL:
 
-        AcpiOsPrintf ("SMBBlockProcessCall");
+        AcpiOsPrintf ("AttrBlockProcessCall");
         break;
 
     default:

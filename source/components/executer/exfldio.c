@@ -202,10 +202,11 @@ AcpiExSetupRegion (
     }
 
     /*
-     * Exit now for SMBus or IPMI address space, it has a non-linear
+     * Exit now for SMBus, GSBus or IPMI address space, it has a non-linear
      * address space and the request cannot be directly validated
      */
     if (RgnDesc->Region.SpaceId == ACPI_ADR_SPACE_SMBUS ||
+        RgnDesc->Region.SpaceId == ACPI_ADR_SPACE_GSBUS ||
         RgnDesc->Region.SpaceId == ACPI_ADR_SPACE_IPMI)
     {
         /* SMBus or IPMI has a non-linear address space */

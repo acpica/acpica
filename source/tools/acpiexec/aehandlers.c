@@ -186,7 +186,7 @@ static ACPI_ADR_SPACE_TYPE  DefaultSpaceIdList[] = {
 };
 
 /*
- * We will install handlers for some of the various address space IDs
+ * We will install handlers for some of the various address space IDs.
  * Test one user-defined address space (used by aslts.)
  */
 #define ACPI_ADR_SPACE_USER_DEFINED     0x80
@@ -194,6 +194,7 @@ static ACPI_ADR_SPACE_TYPE  DefaultSpaceIdList[] = {
 static ACPI_ADR_SPACE_TYPE  SpaceIdList[] = {
     ACPI_ADR_SPACE_EC,
     ACPI_ADR_SPACE_SMBUS,
+    ACPI_ADR_SPACE_GSBUS,
     ACPI_ADR_SPACE_PCI_BAR_TARGET,
     ACPI_ADR_SPACE_IPMI,
     ACPI_ADR_SPACE_FIXED_HARDWARE,
@@ -942,6 +943,7 @@ AeRegionHandler (
 
 
     case ACPI_ADR_SPACE_SMBUS:
+    case ACPI_ADR_SPACE_GSBUS:  /* ACPI 5.0 */
 
         Length = 0;
 
@@ -950,19 +952,19 @@ AeRegionHandler (
         case ACPI_READ:
             switch (Function >> 16)
             {
-            case AML_FIELD_ATTRIB_SMB_QUICK:
-            case AML_FIELD_ATTRIB_SMB_SEND_RCV:
-            case AML_FIELD_ATTRIB_SMB_BYTE:
+            case AML_FIELD_ATTRIB_QUICK:
+            case AML_FIELD_ATTRIB_SEND_RCV:
+            case AML_FIELD_ATTRIB_BYTE:
                 Length = 1;
                 break;
 
-            case AML_FIELD_ATTRIB_SMB_WORD:
-            case AML_FIELD_ATTRIB_SMB_WORD_CALL:
+            case AML_FIELD_ATTRIB_WORD:
+            case AML_FIELD_ATTRIB_WORD_CALL:
                 Length = 2;
                 break;
 
-            case AML_FIELD_ATTRIB_SMB_BLOCK:
-            case AML_FIELD_ATTRIB_SMB_BLOCK_CALL:
+            case AML_FIELD_ATTRIB_BLOCK:
+            case AML_FIELD_ATTRIB_BLOCK_CALL:
                 Length = 32;
                 break;
 
@@ -974,19 +976,19 @@ AeRegionHandler (
         case ACPI_WRITE:
             switch (Function >> 16)
             {
-            case AML_FIELD_ATTRIB_SMB_QUICK:
-            case AML_FIELD_ATTRIB_SMB_SEND_RCV:
-            case AML_FIELD_ATTRIB_SMB_BYTE:
-            case AML_FIELD_ATTRIB_SMB_WORD:
-            case AML_FIELD_ATTRIB_SMB_BLOCK:
+            case AML_FIELD_ATTRIB_QUICK:
+            case AML_FIELD_ATTRIB_SEND_RCV:
+            case AML_FIELD_ATTRIB_BYTE:
+            case AML_FIELD_ATTRIB_WORD:
+            case AML_FIELD_ATTRIB_BLOCK:
                 Length = 0;
                 break;
 
-            case AML_FIELD_ATTRIB_SMB_WORD_CALL:
+            case AML_FIELD_ATTRIB_WORD_CALL:
                 Length = 2;
                 break;
 
-            case AML_FIELD_ATTRIB_SMB_BLOCK_CALL:
+            case AML_FIELD_ATTRIB_BLOCK_CALL:
                 Length = 32;
                 break;
 
@@ -998,6 +1000,11 @@ AeRegionHandler (
         default:
             break;
         }
+
+        AcpiOsPrintf ("AcpiExec: Received SMBus/GenericSerialBus request: "
+            "Address %X BaseAddress %X Length %X Width %X BufferLength %u\n",
+            (UINT32) Address, (UINT32) BaseAddress,
+            Length, BitWidth, Buffer[1]);
 
         for (i = 0; i < Length; i++)
         {
