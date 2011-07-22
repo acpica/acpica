@@ -329,10 +329,11 @@ AcpiDsGetFieldNames (
     while (Arg)
     {
         /*
-         * Three types of field elements are handled:
-         * 1) Offset - specifies a bit offset
-         * 2) AccessAs - changes the access mode
-         * 3) Name - Enters a new named field into the namespace
+         * Four types of field elements are handled:
+         * 1) Name - Enters a new named field into the namespace
+         * 2) Offset - specifies a bit offset
+         * 3) AccessAs - changes the access mode/attributes
+         * 4) Connection - Associate a resource template with the field
          */
         switch (Arg->Common.AmlOpcode)
         {
@@ -518,7 +519,6 @@ AcpiDsCreateField (
     Info.RegionNode = RegionNode;
 
     Status = AcpiDsGetFieldNames (&Info, WalkState, Arg->Common.Next);
-
     return_ACPI_STATUS (Status);
 }
 
@@ -614,8 +614,8 @@ AcpiDsInitFieldObjects (
     while (Arg)
     {
         /*
-         * Ignore OFFSET and ACCESSAS terms here; we are only interested in the
-         * field names in order to enter them into the namespace.
+         * Ignore OFFSET/ACCESSAS/CONNECTION terms here; we are only interested
+         * in the field names in order to enter them into the namespace.
          */
         if (Arg->Common.AmlOpcode == AML_INT_NAMEDFIELD_OP)
         {
@@ -797,7 +797,6 @@ AcpiDsCreateIndexField (
     Info.RegionNode = RegionNode;
 
     Status = AcpiDsGetFieldNames (&Info, WalkState, Arg->Common.Next);
-
     return_ACPI_STATUS (Status);
 }
 

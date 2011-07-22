@@ -363,7 +363,8 @@ AcpiExAccessRegion (
 
     /* Invoke the appropriate AddressSpace/OpRegion handler */
 
-    Status = AcpiEvAddressSpaceDispatch (RgnDesc, Function, RegionOffset,
+    Status = AcpiEvAddressSpaceDispatch (RgnDesc, ObjDesc,
+                Function, RegionOffset,
                 ACPI_MUL_8 (ObjDesc->CommonField.AccessByteWidth), Value);
 
     if (ACPI_FAILURE (Status))

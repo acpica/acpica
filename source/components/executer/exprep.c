@@ -556,6 +556,11 @@ AcpiExPrepFieldValue (
 
         ObjDesc->Field.RegionObj = AcpiNsGetAttachedObject (Info->RegionNode);
 
+        /* Fields specific to GenericSerialBus fields */
+
+        ObjDesc->Field.AccessLength = Info->AccessLength;
+        ObjDesc->Field.ConnectionNode = Info->ConnectionNode;
+
         /* Allow full data read from EC address space */
 
         if ((ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_EC) &&

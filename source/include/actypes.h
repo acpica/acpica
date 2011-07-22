@@ -1104,6 +1104,16 @@ ACPI_STATUS (*ACPI_ADR_SPACE_HANDLER) (
 
 #define ACPI_DEFAULT_HANDLER            NULL
 
+/* Special Context field for Generic Serial Bus (ACPI 5.0) */
+
+typedef struct acpi_gsbus_context
+{
+    void                    *Connection;
+    UINT8                   AccessLength;
+
+} ACPI_GSBUS_CONTEXT;
+
+
 typedef
 ACPI_STATUS (*ACPI_ADR_SPACE_SETUP) (
     ACPI_HANDLE                     RegionHandle,
