@@ -180,7 +180,8 @@ static AE_DEBUG_REGIONS     AeRegions;
  * declares that they must "always be available". Cannot override the
  * DataTable region handler either -- needed for test execution.
  */
-static ACPI_ADR_SPACE_TYPE  DefaultSpaceIdList[] = {
+static ACPI_ADR_SPACE_TYPE  DefaultSpaceIdList[] =
+{
     ACPI_ADR_SPACE_SYSTEM_MEMORY,
     ACPI_ADR_SPACE_SYSTEM_IO
 };
@@ -191,16 +192,20 @@ static ACPI_ADR_SPACE_TYPE  DefaultSpaceIdList[] = {
  */
 #define ACPI_ADR_SPACE_USER_DEFINED     0x80
 
-static ACPI_ADR_SPACE_TYPE  SpaceIdList[] = {
+static ACPI_ADR_SPACE_TYPE  SpaceIdList[] =
+{
     ACPI_ADR_SPACE_EC,
     ACPI_ADR_SPACE_SMBUS,
     ACPI_ADR_SPACE_GSBUS,
+    ACPI_ADR_SPACE_GPIO,
     ACPI_ADR_SPACE_PCI_BAR_TARGET,
     ACPI_ADR_SPACE_IPMI,
     ACPI_ADR_SPACE_FIXED_HARDWARE,
     ACPI_ADR_SPACE_USER_DEFINED
 };
 
+
+static ACPI_GSBUS_CONTEXT   AeMyContext;
 
 /******************************************************************************
  *
@@ -665,6 +670,9 @@ AeInstallLateHandlers (
         AE_CHECK_OK (AcpiInstallFixedEventHandler, Status);
     }
 
+    AeMyContext.Connection = NULL;
+    AeMyContext.AccessLength = 0xA5;
+
     /*
      * Install handlers for some of the "device driver" address spaces
      * such as EC, SMBus, etc.
@@ -674,7 +682,8 @@ AeInstallLateHandlers (
         /* Install handler at the root object */
 
         Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
-                        SpaceIdList[i], AeRegionHandler, AeRegionInit, NULL);
+                    SpaceIdList[i], AeRegionHandler,
+                    AeRegionInit, &AeMyContext);
         if (ACPI_FAILURE (Status))
         {
             ACPI_EXCEPTION ((AE_INFO, Status,
@@ -869,6 +878,7 @@ AeRegionHandler (
     UINT32                  ByteWidth;
     UINT32                  i;
     UINT8                   SpaceId;
+    ACPI_GSBUS_CONTEXT      *MyContext;
 
 
     ACPI_FUNCTION_NAME (AeRegionHandler);
@@ -941,6 +951,12 @@ AeRegionHandler (
         /* Now go ahead and simulate the hardware */
         break;
 
+    case ACPI_ADR_SPACE_GPIO:
+
+        AcpiOsPrintf ("AcpiExec: Received GeneralPurposeIo request: "
+            "Address %X BaseAddress %X Length %X Width %X\n",
+            (UINT32) Address, (UINT32) BaseAddress, Length, BitWidth);
+        break;
 
     case ACPI_ADR_SPACE_SMBUS:
     case ACPI_ADR_SPACE_GSBUS:  /* ACPI 5.0 */
@@ -1001,10 +1017,13 @@ AeRegionHandler (
             break;
         }
 
+        MyContext = ACPI_CAST_PTR (ACPI_GSBUS_CONTEXT, HandlerContext);
+
         AcpiOsPrintf ("AcpiExec: Received SMBus/GenericSerialBus request: "
-            "Address %X BaseAddress %X Length %X Width %X BufferLength %u\n",
+            "Address %X BaseAddress %X Length %X Width %X BufferLength %u AccLen %X Conn %p\n",
             (UINT32) Address, (UINT32) BaseAddress,
-            Length, BitWidth, Buffer[1]);
+            Length, BitWidth, Buffer[1],
+            MyContext->AccessLength, MyContext->Connection);
 
         for (i = 0; i < Length; i++)
         {
