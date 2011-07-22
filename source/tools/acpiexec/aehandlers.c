@@ -823,7 +823,7 @@ AeInstallEarlyHandlers (
 
         Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
                     DefaultSpaceIdList[i], AeRegionHandler,
-                    AeRegionInit, NULL);
+                    AeRegionInit, &AeMyContext);
         if (ACPI_FAILURE (Status))
         {
             ACPI_EXCEPTION ((AE_INFO, Status,
@@ -889,6 +889,14 @@ AeRegionHandler (
     if (RegionObject->Region.Type != ACPI_TYPE_REGION)
     {
         return (AE_OK);
+    }
+
+    /* Check that we actually got back our context parameter */
+
+    if (HandlerContext != &AeMyContext)
+    {
+        printf ("Region handler received incorrect context %p, should be %p\n",
+            HandlerContext, &AeMyContext);
     }
 
     /*
