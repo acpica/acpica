@@ -623,17 +623,30 @@ AcpiPsGetNextField (
         Opcode = AML_INT_NAMEDFIELD_OP;
         break;
 
-    case 0x00:
+    case AML_FIELD_OFFSET_OP:
 
         Opcode = AML_INT_RESERVEDFIELD_OP;
         ParserState->Aml++;
         break;
 
-    case 0x01:
+    case AML_FIELD_ACCESS_OP:
 
         Opcode = AML_INT_ACCESSFIELD_OP;
         ParserState->Aml++;
         break;
+
+    case AML_FIELD_CONNECTION_OP:
+
+        Opcode = AML_INT_CONNECTION_OP;
+        ParserState->Aml++;
+        break;
+
+    case AML_FIELD_SERIALACCCESS_OP:
+
+        Opcode = AML_INT_SERIALACCESS_OP;
+        ParserState->Aml++;
+        break;
+
     }
 
     /* Allocate a new field op */
@@ -673,15 +686,39 @@ AcpiPsGetNextField (
 
 
     case AML_INT_ACCESSFIELD_OP:
+    case AML_INT_SERIALACCESS_OP:
 
         /*
          * Get AccessType and AccessAttrib and merge into the field Op
-         * AccessType is first operand, AccessAttribute is second
+         * AccessType is first operand, AccessAttribute is second. Optional
+         * AccessLength is the third. Stuff all three bytes into the node
+         * integer value for convenience.
          */
-        Field->Common.Value.Integer = (((UINT32) ACPI_GET8 (ParserState->Aml) << 8));
+
+        /* AccessType */
+
+        Field->Common.Value.Integer = ACPI_GET8 (ParserState->Aml);
         ParserState->Aml++;
-        Field->Common.Value.Integer |= ACPI_GET8 (ParserState->Aml);
+
+        /* Access Attribute */
+
+        Field->Common.Value.Integer |= (((UINT32) ACPI_GET8 (ParserState->Aml) << 8));
         ParserState->Aml++;
+
+        if (Opcode == AML_INT_SERIALACCESS_OP)
+        {
+            /* AccessLength is the third argument */
+
+            Field->Common.Value.Integer |= (((UINT32) ACPI_GET8 (ParserState->Aml) << 16));
+            ParserState->Aml++;
+        }
+        break;
+
+    case AML_INT_CONNECTION_OP:
+
+        /* Get the Namestring argument */
+
+        Field->Common.Value.Name = AcpiPsGetNextNamestring (ParserState);
         break;
 
     default:

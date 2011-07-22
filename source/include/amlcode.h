@@ -263,6 +263,15 @@
 
 
 /*
+ * Opcodes for "Field" operators
+ */
+#define AML_FIELD_OFFSET_OP         (UINT8) 0x00
+#define AML_FIELD_ACCESS_OP         (UINT8) 0x01
+#define AML_FIELD_CONNECTION_OP     (UINT8) 0x02        /* ACPI 5.0 */
+#define AML_FIELD_SERIALACCCESS_OP  (UINT8) 0x03        /* ACPI 5.0 */
+
+
+/*
  * Internal opcodes
  * Use only "Unknown" AML opcodes, don't attempt to use
  * any valid ACPI ASCII values (A-Z, 0-9, '-')
@@ -277,6 +286,7 @@
 #define AML_INT_RETURN_VALUE_OP     (UINT16) 0x0036
 #define AML_INT_EVAL_SUBTREE_OP     (UINT16) 0x0037
 #define AML_INT_CONNECTION_OP       (UINT16) 0x0038
+#define AML_INT_SERIALACCESS_OP     (UINT16) 0x0039
 
 
 #define ARG_NONE                    0x0

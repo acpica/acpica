@@ -178,7 +178,7 @@ void *                      AslLocalAllocate (unsigned int Size);
  * These shift/reduce conflicts are expected. There should be zero
  * reduce/reduce conflicts.
  */
-%expect 71
+%expect 72
 
 /*
  * Token types: These are returned by the lexer
@@ -805,7 +805,6 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> UartSerialBusTerm
 %type <n> FixedDmaTerm
 %type <n> DataBufferTerm
-
 %type <n> NameString
 %type <n> NameSeg
 
@@ -815,6 +814,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> IncludeEndTerm
 %type <n> AmlPackageLengthTerm
 %type <n> OptionalByteConstExpr
+%type <n> OptionalByteConst
 %type <n> OptionalDWordConstExpr
 %type <n> OptionalQWordConstExpr
 %type <n> OptionalWordConstExpr
@@ -1295,14 +1295,15 @@ AccessAsTerm
     : PARSEOP_ACCESSAS '('
         AccessTypeKeyword
         OptionalAccessAttribTerm
-        ')'                         {$$ = TrCreateNode (PARSEOP_ACCESSAS,2,$3,$4);}
+        OptionalByteConst
+        ')'                         {$$ = TrCreateNode (PARSEOP_ACCESSAS,3,$3,$4,$5);}
     | PARSEOP_ACCESSAS '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
 
 ConnectionTerm
     : PARSEOP_CONNECTION '('
-        ResourceMacroTerm
+        NameString
         ')'                         {$$ = TrCreateNode (PARSEOP_CONNECTION,1,$3);}
     | PARSEOP_CONNECTION '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
@@ -3362,6 +3363,12 @@ OptionalByteConstExpr
     :                               {$$ = NULL;}
     | ','                           {$$ = NULL;}
     | ',' ByteConstExpr             {$$ = $2;}
+    ;
+
+OptionalByteConst
+    :                               {$$ = NULL;}
+    | ','                           {$$ = NULL;}
+    | ',' ByteConst                 {$$ = $2;}
     ;
 
 OptionalDecodeType

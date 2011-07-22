@@ -353,20 +353,48 @@ AcpiDsGetFieldNames (
 
 
         case AML_INT_ACCESSFIELD_OP:
+        case AML_INT_SERIALACCESS_OP:
 
             /*
-             * Get a new AccessType and AccessAttribute -- to be used for all
-             * field units that follow, until field end or another AccessAs
-             * keyword.
+             * Get new AccessType, AccessAttribute, and AccessLength fields
+             * -- to be used for all field units that follow, until the
+             * end-of-field or another AccessAs keyword is encountered.
+             * NOTE. These three bytes are encoded in the integer value
+             * of the parseop for convenience.
              *
              * In FieldFlags, preserve the flag bits other than the
-             * ACCESS_TYPE bits
+             * ACCESS_TYPE bits.
              */
+
+            /* AccessType (ByteAcc, WordAcc, etc.) */
+
             Info->FieldFlags = (UINT8)
                 ((Info->FieldFlags & ~(AML_FIELD_ACCESS_TYPE_MASK)) |
-                ((UINT8) ((UINT32) Arg->Common.Value.Integer >> 8)));
+                ((UINT8) ((UINT32) (Arg->Common.Value.Integer & 0xFF))));
 
-            Info->Attribute = (UINT8) (Arg->Common.Value.Integer);
+            /* AccessAttribute (AttribQuick, AttribByte, etc.) */
+
+            Info->Attribute = (UINT8) ((Arg->Common.Value.Integer >> 8) & 0xFF);
+
+            /* AccessLength (for serial/buffer protocols) */
+
+            Info->AccessLength = (UINT8) ((Arg->Common.Value.Integer >> 16) & 0xFF);
+            break;
+
+
+        case AML_INT_CONNECTION_OP:
+
+            /* Lookup the Connection() namepath, it should already exist */
+
+            Status = AcpiNsLookup (WalkState->ScopeInfo,
+                        Arg->Common.Value.Name, ACPI_TYPE_ANY,
+                        ACPI_IMODE_EXECUTE, ACPI_NS_DONT_OPEN_SCOPE,
+                        WalkState, &Info->ConnectionNode);
+            if (ACPI_FAILURE (Status))
+            {
+                ACPI_ERROR_NAMESPACE (Arg->Common.Value.Name, Status);
+                return_ACPI_STATUS (Status);
+            }
             break;
 
 

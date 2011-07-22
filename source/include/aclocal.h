@@ -126,7 +126,7 @@ typedef UINT32                          ACPI_MUTEX_HANDLE;
 
 /* Total number of aml opcodes defined */
 
-#define AML_NUM_OPCODES                 0x7F
+#define AML_NUM_OPCODES                 0x81
 
 
 /* Forward declarations */
@@ -357,12 +357,14 @@ typedef struct acpi_create_field_info
     ACPI_NAMESPACE_NODE             *FieldNode;
     ACPI_NAMESPACE_NODE             *RegisterNode;
     ACPI_NAMESPACE_NODE             *DataRegisterNode;
+    ACPI_NAMESPACE_NODE             *ConnectionNode;
     UINT32                          BankValue;
     UINT32                          FieldBitPosition;
     UINT32                          FieldBitLength;
     UINT8                           FieldFlags;
     UINT8                           Attribute;
     UINT8                           FieldType;
+    UINT8                           AccessLength;
 
 } ACPI_CREATE_FIELD_INFO;
 

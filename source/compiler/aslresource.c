@@ -1119,10 +1119,12 @@ RsDoResourceTemplate (
     Op->Asl.ParseOpcode               = PARSEOP_BUFFER;
     Op->Asl.AmlOpcode                 = AML_BUFFER_OP;
     Op->Asl.CompileFlags              = NODE_AML_PACKAGE | NODE_IS_RESOURCE_DESC;
+    UtSetParseOpName (Op);
 
     BufferLengthOp->Asl.ParseOpcode   = PARSEOP_INTEGER;
     BufferLengthOp->Asl.Value.Integer = CurrentByteOffset;
     (void) OpcSetOptimalIntegerSize (BufferLengthOp);
+    UtSetParseOpName (BufferLengthOp);
 
     BufferOp->Asl.ParseOpcode         = PARSEOP_RAW_DATA;
     BufferOp->Asl.AmlOpcode           = AML_RAW_DATA_CHAIN;
@@ -1130,6 +1132,7 @@ RsDoResourceTemplate (
     BufferOp->Asl.AmlLength           = CurrentByteOffset;
     BufferOp->Asl.Value.Buffer        = (UINT8 *) HeadRnode.Next;
     BufferOp->Asl.CompileFlags       |= NODE_IS_RESOURCE_DATA;
+    UtSetParseOpName (BufferOp);
 
     return;
 }

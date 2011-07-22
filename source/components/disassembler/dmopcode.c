@@ -582,11 +582,28 @@ AcpiDmDisassembleOneOp (
 
 
     case AML_INT_ACCESSFIELD_OP:
+    case AML_INT_SERIALACCESS_OP:
 
         AcpiOsPrintf ("        AccessAs (%s, ",
             AcpiGbl_AccessTypes [(UINT32) (Op->Common.Value.Integer >> 8) & 0x7]);
 
         AcpiDmDecodeAttribute ((UINT8) Op->Common.Value.Integer);
+
+        if (Op->Common.AmlOpcode == AML_INT_SERIALACCESS_OP)
+        {
+            AcpiOsPrintf (", 0x%2.2X", (unsigned) ((Op->Common.Value.Integer >> 16) & 0xFF));
+        }
+
+        AcpiOsPrintf (")");
+        AcpiDmCommaIfFieldMember (Op);
+        break;
+
+
+    case AML_INT_CONNECTION_OP:
+
+        AcpiOsPrintf ("        Connection (");
+
+        AcpiDmNamestring (Op->Common.Value.Name);
         AcpiOsPrintf (")");
         AcpiDmCommaIfFieldMember (Op);
         break;

@@ -394,6 +394,7 @@ OpcDoAccessAs (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_PARSE_OBJECT       *Next;
+    UINT8                   Attribute;
 
 
     Op->Asl.AmlOpcodeLength = 1;
@@ -411,6 +412,35 @@ OpcDoAccessAs (
     {
         Next->Asl.Value.Integer = 0;
     }
+    Next->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
+    Next->Asl.ParseOpcode = PARSEOP_RAW_DATA;
+
+    /* Only a few AccessAttributes support AccessLength */
+
+    Attribute = (UINT8) Next->Asl.Value.Integer;
+    if ((Attribute != AML_FIELD_ATTRIB_MULTIBYTE) &&
+        (Attribute != AML_FIELD_ATTRIB_RAW_BYTES) &&
+        (Attribute != AML_FIELD_ATTRIB_RAW_PROCESS))
+    {
+        return;
+    }
+
+    /* Third child is the optional AccessLength */
+
+    Next = Next->Asl.Next;
+    if (!Next)
+    {
+        return;
+    }
+
+    if (Next->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+    {
+        Next->Asl.Value.Integer = 16;
+    }
+
+    /* Use a different Field opcode for AccessLength support */
+
+    Op->Asl.AmlOpcode = AML_FIELD_SERIALACCCESS_OP;
     Next->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
     Next->Asl.ParseOpcode = PARSEOP_RAW_DATA;
 }
@@ -617,7 +647,7 @@ OpcDoEisaId (
 
 /*******************************************************************************
  *
- * FUNCTION:    OpcDoUiId
+ * FUNCTION:    OpcDoUuId
  *
  * PARAMETERS:  Op        - Parse node
  *
@@ -735,6 +765,11 @@ OpcGenerateAmlOpcode (
     case PARSEOP_ACCESSAS:
 
         OpcDoAccessAs (Op);
+        break;
+
+    case PARSEOP_CONNECTION:
+
+        Op->Asl.AmlOpcodeLength = 1;
         break;
 
     case PARSEOP_EISAID:
