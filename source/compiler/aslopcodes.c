@@ -393,31 +393,34 @@ static void
 OpcDoAccessAs (
     ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_PARSE_OBJECT       *Next;
+    ACPI_PARSE_OBJECT       *TypeOp;
+    ACPI_PARSE_OBJECT       *AttribOp;
+    ACPI_PARSE_OBJECT       *LengthOp;
     UINT8                   Attribute;
+    UINT8                   Opcode;
 
 
     Op->Asl.AmlOpcodeLength = 1;
-    Next = Op->Asl.Child;
+    TypeOp = Op->Asl.Child;
 
     /* First child is the access type */
 
-    Next->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
-    Next->Asl.ParseOpcode = PARSEOP_RAW_DATA;
+    TypeOp->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
+    TypeOp->Asl.ParseOpcode = PARSEOP_RAW_DATA;
 
     /* Second child is the optional access attribute */
 
-    Next = Next->Asl.Next;
-    if (Next->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+    AttribOp = TypeOp->Asl.Next;
+    if (AttribOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
     {
-        Next->Asl.Value.Integer = 0;
+        AttribOp->Asl.Value.Integer = 0;
     }
-    Next->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
-    Next->Asl.ParseOpcode = PARSEOP_RAW_DATA;
+    AttribOp->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
+    AttribOp->Asl.ParseOpcode = PARSEOP_RAW_DATA;
 
     /* Only a few AccessAttributes support AccessLength */
 
-    Attribute = (UINT8) Next->Asl.Value.Integer;
+    Attribute = (UINT8) AttribOp->Asl.Value.Integer;
     if ((Attribute != AML_FIELD_ATTRIB_MULTIBYTE) &&
         (Attribute != AML_FIELD_ATTRIB_RAW_BYTES) &&
         (Attribute != AML_FIELD_ATTRIB_RAW_PROCESS))
@@ -425,24 +428,56 @@ OpcDoAccessAs (
         return;
     }
 
-    /* Third child is the optional AccessLength */
-
-    Next = Next->Asl.Next;
-    if (!Next)
+    /*
+     * Child of Attributes is the AccessLength (required for Multibyte,
+     * RawBytes, RawProcess.)
+     */
+    LengthOp = AttribOp->Asl.Child;
+    if (!LengthOp)
     {
         return;
     }
 
-    if (Next->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+    /* TBD: probably can remove */
+
+    if (LengthOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
     {
-        Next->Asl.Value.Integer = 16;
+        LengthOp->Asl.Value.Integer = 16;
     }
 
-    /* Use a different Field opcode for AccessLength support */
+    /*
+     * These attributes are stuffed into the AccessType byte, and the
+     * length associated with them is put into the actual Attributes byte.
+     * Ugly, but ACPI 5.0 committee did not want to allocate a new opcode
+     * for these attributes.
+     */
+    switch (Attribute)
+    {
+    case AML_FIELD_ATTRIB_MULTIBYTE:
+        Opcode = AML_FIELD_EXT_MULTIBYTE;
+        break;
 
-    Op->Asl.AmlOpcode = AML_FIELD_SERIALACCCESS_OP;
-    Next->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
-    Next->Asl.ParseOpcode = PARSEOP_RAW_DATA;
+    case AML_FIELD_ATTRIB_RAW_BYTES:
+        Opcode = AML_FIELD_EXT_RAW_BYTES;
+        break;
+
+    case AML_FIELD_ATTRIB_RAW_PROCESS:
+        Opcode = AML_FIELD_EXT_RAW_PROCESS;
+        break;
+
+    default:
+        Opcode = 0;
+        break; /* Should not get here */
+    }
+
+    /* Insert the opcode into the AccessType byte */
+
+    TypeOp->Asl.Value.Integer |= Opcode;
+
+    /* Insert the length as the AccessAttrib byte */
+
+    AttribOp->Asl.Value.Integer = LengthOp->Asl.Value.Integer;
+    LengthOp->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
 }
 
 

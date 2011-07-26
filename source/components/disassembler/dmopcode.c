@@ -582,16 +582,24 @@ AcpiDmDisassembleOneOp (
 
 
     case AML_INT_ACCESSFIELD_OP:
-    case AML_INT_SERIALACCESS_OP:
 
         AcpiOsPrintf ("        AccessAs (%s, ",
-            AcpiGbl_AccessTypes [(UINT32) (Op->Common.Value.Integer >> 8) & 0x7]);
+            AcpiGbl_AccessTypes [(UINT32) (Op->Common.Value.Integer & 0x7)]);
 
-        AcpiDmDecodeAttribute ((UINT8) Op->Common.Value.Integer);
+        AcpiDmDecodeAttribute ((UINT8) (Op->Common.Value.Integer >> 8));
 
-        if (Op->Common.AmlOpcode == AML_INT_SERIALACCESS_OP)
+        switch ((Op->Common.Value.Integer >> 8) & 0xFF)
         {
-            AcpiOsPrintf (", 0x%2.2X", (unsigned) ((Op->Common.Value.Integer >> 16) & 0xFF));
+        case AML_FIELD_ATTRIB_MULTIBYTE:
+        case AML_FIELD_ATTRIB_RAW_BYTES:
+        case AML_FIELD_ATTRIB_RAW_PROCESS:
+
+            AcpiOsPrintf (" (0x%2.2X)", (unsigned) ((Op->Common.Value.Integer >> 16) & 0xFF));
+            break;
+
+        default:
+            AcpiOsPrintf ("Unknown attribute: %X\n",
+                (int) (Op->Common.Value.Integer >> 8) & 0xFF);
         }
 
         AcpiOsPrintf (")");

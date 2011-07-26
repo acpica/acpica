@@ -609,6 +609,8 @@ AcpiPsGetNextField (
     ACPI_PARSE_OBJECT       *Field;
     UINT16                  Opcode;
     UINT32                  Name;
+    UINT8                   AccessType;
+    UINT8                   AccessAttribute;
 
 
     ACPI_FUNCTION_TRACE (PsGetNextField);
@@ -618,11 +620,6 @@ AcpiPsGetNextField (
 
     switch (ACPI_GET8 (ParserState->Aml))
     {
-    default:
-
-        Opcode = AML_INT_NAMEDFIELD_OP;
-        break;
-
     case AML_FIELD_OFFSET_OP:
 
         Opcode = AML_INT_RESERVEDFIELD_OP;
@@ -641,12 +638,10 @@ AcpiPsGetNextField (
         ParserState->Aml++;
         break;
 
-    case AML_FIELD_SERIALACCCESS_OP:
+    default:
 
-        Opcode = AML_INT_SERIALACCESS_OP;
-        ParserState->Aml++;
+        Opcode = AML_INT_NAMEDFIELD_OP;
         break;
-
     }
 
     /* Allocate a new field op */
@@ -686,31 +681,55 @@ AcpiPsGetNextField (
 
 
     case AML_INT_ACCESSFIELD_OP:
-    case AML_INT_SERIALACCESS_OP:
 
         /*
          * Get AccessType and AccessAttrib and merge into the field Op
-         * AccessType is first operand, AccessAttribute is second. Optional
-         * AccessLength is the third. Stuff all three bytes into the node
-         * integer value for convenience.
+         * AccessType is first operand, AccessAttribute is second. stuff
+         * these bytes into the node integer value for convenience.
          */
 
-        /* AccessType */
+        /* Get the two bytes (Type/Attribute) */
 
-        Field->Common.Value.Integer = ACPI_GET8 (ParserState->Aml);
+        AccessType = ACPI_GET8 (ParserState->Aml);
+        ParserState->Aml++;
+        AccessAttribute = ACPI_GET8 (ParserState->Aml);
         ParserState->Aml++;
 
-        /* Access Attribute */
+        Field->Common.Value.Integer = (UINT8) (AccessType & ~AML_FIELD_EXT_MASK);
 
-        Field->Common.Value.Integer |= (((UINT32) ACPI_GET8 (ParserState->Aml) << 8));
-        ParserState->Aml++;
+        /* Check for ACPI 5.0 opcodes in upper bits of AccessType */
 
-        if (Opcode == AML_INT_SERIALACCESS_OP)
+        if (!(AccessType & AML_FIELD_EXT_MASK))
         {
-            /* AccessLength is the third argument */
+            Field->Common.Value.Integer |= (UINT16) (AccessAttribute << 8);
+        }
+        else
+        {
+            /* Map bits 6:7 of the AccessType to the correct attribute type */
 
-            Field->Common.Value.Integer |= (((UINT32) ACPI_GET8 (ParserState->Aml) << 16));
-            ParserState->Aml++;
+            switch (AccessType & AML_FIELD_EXT_MASK)
+            {
+            case AML_FIELD_EXT_MULTIBYTE:
+                AccessType = AML_FIELD_ATTRIB_MULTIBYTE;
+                break;
+
+            case AML_FIELD_EXT_RAW_BYTES:
+                AccessType = AML_FIELD_ATTRIB_RAW_BYTES;
+                break;
+
+            case AML_FIELD_EXT_RAW_PROCESS:
+                AccessType = AML_FIELD_ATTRIB_RAW_PROCESS;
+                break;
+
+            default: /* Can't happen */
+                break;
+            }
+
+            Field->Common.Value.Integer |= (UINT16) (AccessType << 8);
+
+            /* AccessAttribute is actually the length for these opcodes */
+
+            Field->Common.Value.Integer |= (UINT32) (AccessAttribute << 16);
         }
         break;
 

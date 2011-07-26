@@ -410,7 +410,6 @@ const ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[AML_NUM_OPCODES] =
 /* ACPI 5.0 opcodes */
 
 /* 7F */ ACPI_OP ("-ConnectField-",     ARGP_CONNECTFIELD_OP,      ARGI_CONNECTFIELD_OP,       ACPI_TYPE_ANY,               AML_CLASS_INTERNAL,        AML_TYPE_BOGUS,           0),
-/* 80 */ ACPI_OP ("-SerAccessField-",   ARGP_SERIALFIELD_OP,       ARGI_SERIALFIELD_OP,        ACPI_TYPE_ANY,               AML_CLASS_INTERNAL,        AML_TYPE_BOGUS,           0)
 
 /*! [End] no source code translation !*/
 };
@@ -430,7 +429,7 @@ static const UINT8 AcpiGbl_ShortOpIndex[256] =
 /* 0x20 */    _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK,
 /* 0x28 */    _UNK, _UNK, _UNK, _UNK, _UNK, 0x63, _PFX, _PFX,
 /* 0x30 */    0x67, 0x66, 0x68, 0x65, 0x69, 0x64, 0x6A, 0x7D,
-/* 0x38 */    0x7F, 0x80, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK,
+/* 0x38 */    0x7F, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK, _UNK,
 /* 0x40 */    _UNK, _ASC, _ASC, _ASC, _ASC, _ASC, _ASC, _ASC,
 /* 0x48 */    _ASC, _ASC, _ASC, _ASC, _ASC, _ASC, _ASC, _ASC,
 /* 0x50 */    _ASC, _ASC, _ASC, _ASC, _ASC, _ASC, _ASC, _ASC,

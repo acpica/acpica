@@ -354,8 +354,6 @@ AcpiDsGetFieldNames (
 
 
         case AML_INT_ACCESSFIELD_OP:
-        case AML_INT_SERIALACCESS_OP:
-
             /*
              * Get new AccessType, AccessAttribute, and AccessLength fields
              * -- to be used for all field units that follow, until the
@@ -371,7 +369,7 @@ AcpiDsGetFieldNames (
 
             Info->FieldFlags = (UINT8)
                 ((Info->FieldFlags & ~(AML_FIELD_ACCESS_TYPE_MASK)) |
-                ((UINT8) ((UINT32) (Arg->Common.Value.Integer & 0xFF))));
+                ((UINT8) ((UINT32) (Arg->Common.Value.Integer & 0x07))));
 
             /* AccessAttribute (AttribQuick, AttribByte, etc.) */
 

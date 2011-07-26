@@ -262,7 +262,6 @@ LdLoadFieldElements (
         case AML_INT_RESERVEDFIELD_OP:
         case AML_INT_ACCESSFIELD_OP:
         case AML_INT_CONNECTION_OP:
-        case AML_INT_SERIALACCESS_OP:
             break;
 
         default:

@@ -178,7 +178,7 @@ void *                      AslLocalAllocate (unsigned int Size);
  * These shift/reduce conflicts are expected. There should be zero
  * reduce/reduce conflicts.
  */
-%expect 72
+%expect 71
 
 /*
  * Token types: These are returned by the lexer
@@ -814,7 +814,6 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> IncludeEndTerm
 %type <n> AmlPackageLengthTerm
 %type <n> OptionalByteConstExpr
-%type <n> OptionalByteConst
 %type <n> OptionalDWordConstExpr
 %type <n> OptionalQWordConstExpr
 %type <n> OptionalWordConstExpr
@@ -1295,8 +1294,7 @@ AccessAsTerm
     : PARSEOP_ACCESSAS '('
         AccessTypeKeyword
         OptionalAccessAttribTerm
-        OptionalByteConst
-        ')'                         {$$ = TrCreateNode (PARSEOP_ACCESSAS,3,$3,$4,$5);}
+        ')'                         {$$ = TrCreateNode (PARSEOP_ACCESSAS,2,$3,$4);}
     | PARSEOP_ACCESSAS '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -2261,13 +2259,19 @@ AccessAttribKeyword
     : PARSEOP_ACCESSATTRIB_BLOCK            {$$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_BLOCK);}
     | PARSEOP_ACCESSATTRIB_BLOCK_CALL       {$$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_BLOCK_CALL);}
     | PARSEOP_ACCESSATTRIB_BYTE             {$$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_BYTE);}
-    | PARSEOP_ACCESSATTRIB_MULTIBYTE        {$$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_MULTIBYTE);}
     | PARSEOP_ACCESSATTRIB_QUICK            {$$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_QUICK );}
-    | PARSEOP_ACCESSATTRIB_RAW_BYTES        {$$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_RAW_BYTES);}
-    | PARSEOP_ACCESSATTRIB_RAW_PROCESS      {$$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_RAW_PROCESS);}
     | PARSEOP_ACCESSATTRIB_SND_RCV          {$$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_SND_RCV);}
     | PARSEOP_ACCESSATTRIB_WORD             {$$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_WORD);}
     | PARSEOP_ACCESSATTRIB_WORD_CALL        {$$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_WORD_CALL);}
+    | PARSEOP_ACCESSATTRIB_MULTIBYTE '('    {$<n>$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_MULTIBYTE);}
+        ByteConst
+        ')'                                 {$$ = TrLinkChildren ($<n>3,1,$4);}
+    | PARSEOP_ACCESSATTRIB_RAW_BYTES '('    {$<n>$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_RAW_BYTES);}
+        ByteConst
+        ')'                                 {$$ = TrLinkChildren ($<n>3,1,$4);}
+    | PARSEOP_ACCESSATTRIB_RAW_PROCESS '('  {$<n>$ = TrCreateLeafNode (PARSEOP_ACCESSATTRIB_RAW_PROCESS);}
+        ByteConst
+        ')'                                 {$$ = TrLinkChildren ($<n>3,1,$4);}
     ;
 
 LockRuleKeyword
@@ -3363,12 +3367,6 @@ OptionalByteConstExpr
     :                               {$$ = NULL;}
     | ','                           {$$ = NULL;}
     | ',' ByteConstExpr             {$$ = $2;}
-    ;
-
-OptionalByteConst
-    :                               {$$ = NULL;}
-    | ','                           {$$ = NULL;}
-    | ',' ByteConst                 {$$ = $2;}
     ;
 
 OptionalDecodeType
