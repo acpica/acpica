@@ -121,6 +121,7 @@
 #include "acinterp.h"
 #include "amlcode.h"
 #include "acnamesp.h"
+#include "acdispat.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -559,7 +560,22 @@ AcpiExPrepFieldValue (
         /* Fields specific to GenericSerialBus fields */
 
         ObjDesc->Field.AccessLength = Info->AccessLength;
-        ObjDesc->Field.ConnectionNode = Info->ConnectionNode;
+
+        if (Info->ConnectionNode)
+        {
+            SecondDesc = Info->ConnectionNode->Object;
+            if (!(SecondDesc->Common.Flags & AOPOBJ_DATA_VALID))
+            {
+                AcpiDsGetBufferArguments (SecondDesc);
+            }
+
+            ObjDesc->Field.ResourceBuffer = SecondDesc->Buffer.Pointer;
+        }
+        else if (Info->ResourceBuffer)
+        {
+            ObjDesc->Field.ResourceBuffer =
+                Info->ResourceBuffer;
+        }
 
         /* Allow full data read from EC address space */
 

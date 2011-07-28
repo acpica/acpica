@@ -474,7 +474,6 @@ AcpiEvAddressSpaceDispatch (
     ACPI_OPERAND_OBJECT     *RegionObj2;
     void                    *RegionContext = NULL;
     ACPI_GSBUS_CONTEXT      *Context;
-    ACPI_OPERAND_OBJECT     *BufferObj;
 
 
     ACPI_FUNCTION_TRACE (EvAddressSpaceDispatch);
@@ -586,19 +585,11 @@ AcpiEvAddressSpaceDispatch (
      */
     if ((RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GSBUS) &&
         Context &&
-        FieldObj &&
-        FieldObj->Field.ConnectionNode)
+        FieldObj)
     {
         /* Get the Connection (ResourceTemplate) buffer */
 
-        Context->Connection = NULL;
-
-        BufferObj = AcpiNsGetAttachedObject (FieldObj->Field.ConnectionNode);
-        if (BufferObj && BufferObj->Buffer.Pointer)
-        {
-            Context->Connection = BufferObj->Buffer.Pointer;
-        }
-
+        Context->Connection = FieldObj->Field.ResourceBuffer;
         Context->AccessLength = FieldObj->Field.AccessLength;
     }
 

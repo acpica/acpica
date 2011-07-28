@@ -375,6 +375,7 @@ AcpiDmDisassembleOneOp (
     UINT32                  Length;
     ACPI_PARSE_OBJECT       *Child;
     ACPI_STATUS             Status;
+    UINT8                   *Aml;
 
 
     if (!Op)
@@ -570,7 +571,7 @@ AcpiDmDisassembleOneOp (
 
         if (Info->BitOffset % 8 == 0)
         {
-            AcpiOsPrintf ("        Offset (0x%.2X)", ACPI_DIV_8 (Info->BitOffset));
+            AcpiOsPrintf ("Offset (0x%.2X)", ACPI_DIV_8 (Info->BitOffset));
         }
         else
         {
@@ -582,24 +583,16 @@ AcpiDmDisassembleOneOp (
 
 
     case AML_INT_ACCESSFIELD_OP:
+    case AML_INT_EXTACCESSFIELD_OP:
 
-        AcpiOsPrintf ("        AccessAs (%s, ",
+        AcpiOsPrintf ("AccessAs (%s, ",
             AcpiGbl_AccessTypes [(UINT32) (Op->Common.Value.Integer & 0x7)]);
 
         AcpiDmDecodeAttribute ((UINT8) (Op->Common.Value.Integer >> 8));
 
-        switch ((Op->Common.Value.Integer >> 8) & 0xFF)
+        if (Op->Common.AmlOpcode == AML_INT_EXTACCESSFIELD_OP)
         {
-        case AML_FIELD_ATTRIB_MULTIBYTE:
-        case AML_FIELD_ATTRIB_RAW_BYTES:
-        case AML_FIELD_ATTRIB_RAW_PROCESS:
-
             AcpiOsPrintf (" (0x%2.2X)", (unsigned) ((Op->Common.Value.Integer >> 16) & 0xFF));
-            break;
-
-        default:
-            AcpiOsPrintf ("Unknown attribute: %X\n",
-                (int) (Op->Common.Value.Integer >> 8) & 0xFF);
         }
 
         AcpiOsPrintf (")");
@@ -609,13 +602,39 @@ AcpiDmDisassembleOneOp (
 
     case AML_INT_CONNECTION_OP:
 
-        AcpiOsPrintf ("        Connection (");
+        /*
+         * Two types of Connection() - one with a buffer object, the
+         * other with a namestring that points to a buffer object.
+         */
+        AcpiOsPrintf ("Connection (");
+        Child = Op->Common.Value.Arg;
 
-        AcpiDmNamestring (Op->Common.Value.Name);
+        if (Child->Common.AmlOpcode == AML_INT_BYTELIST_OP)
+        {
+            AcpiOsPrintf ("\n");
+
+            Aml = Child->Named.Data;
+            Length = (UINT32) Child->Common.Value.Integer;
+
+            Info->Level += 1;
+            Op->Common.DisasmOpcode = ACPI_DASM_RESOURCE;
+            AcpiDmResourceTemplate (Info, Op->Common.Parent, Aml, Length);
+
+            Info->Level -= 1;
+            AcpiDmIndent (Info->Level);
+        }
+        else
+        {
+            AcpiDmNamestring (Child->Common.Value.Name);
+        }
+
         AcpiOsPrintf (")");
         AcpiDmCommaIfFieldMember (Op);
-        break;
+        AcpiOsPrintf ("\n");
 
+        Op->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE; /* for now, ignore in AcpiDmAscendingOp */
+        Child->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
+        break;
 
     case AML_INT_BYTELIST_OP:
 

@@ -130,6 +130,10 @@ OpcDoAccessAs (
     ACPI_PARSE_OBJECT       *Op);
 
 static void
+OpcDoConnection (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
 OpcDoUnicode (
     ACPI_PARSE_OBJECT       *Op);
 
@@ -397,7 +401,6 @@ OpcDoAccessAs (
     ACPI_PARSE_OBJECT       *AttribOp;
     ACPI_PARSE_OBJECT       *LengthOp;
     UINT8                   Attribute;
-    UINT8                   Opcode;
 
 
     Op->Asl.AmlOpcodeLength = 1;
@@ -428,6 +431,8 @@ OpcDoAccessAs (
         return;
     }
 
+    Op->Asl.AmlOpcode = AML_FIELD_EXT_ACCESS_OP;
+
     /*
      * Child of Attributes is the AccessLength (required for Multibyte,
      * RawBytes, RawProcess.)
@@ -445,39 +450,75 @@ OpcDoAccessAs (
         LengthOp->Asl.Value.Integer = 16;
     }
 
-    /*
-     * These attributes are stuffed into the AccessType byte, and the
-     * length associated with them is put into the actual Attributes byte.
-     * Ugly, but ACPI 5.0 committee did not want to allocate a new opcode
-     * for these attributes.
-     */
-    switch (Attribute)
+    LengthOp->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
+    LengthOp->Asl.ParseOpcode = PARSEOP_RAW_DATA;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    OpcDoConnection
+ *
+ * PARAMETERS:  Op        - Parse node
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Implement the Connection ASL keyword.
+ *
+ ******************************************************************************/
+
+static void
+OpcDoConnection (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ASL_RESOURCE_NODE       *Rnode;
+    ACPI_PARSE_OBJECT       *BufferOp;
+    ACPI_PARSE_OBJECT       *BufferLengthOp;
+    ACPI_PARSE_OBJECT       *BufferDataOp;
+    UINT8                   State;
+
+
+    Op->Asl.AmlOpcodeLength = 1;
+
+    if (Op->Asl.Child->Asl.AmlOpcode == AML_INT_NAMEPATH_OP)
     {
-    case AML_FIELD_ATTRIB_MULTIBYTE:
-        Opcode = AML_FIELD_EXT_MULTIBYTE;
-        break;
-
-    case AML_FIELD_ATTRIB_RAW_BYTES:
-        Opcode = AML_FIELD_EXT_RAW_BYTES;
-        break;
-
-    case AML_FIELD_ATTRIB_RAW_PROCESS:
-        Opcode = AML_FIELD_EXT_RAW_PROCESS;
-        break;
-
-    default:
-        Opcode = 0;
-        break; /* Should not get here */
+        return;
     }
 
-    /* Insert the opcode into the AccessType byte */
+    BufferOp = Op->Asl.Child;
+    BufferLengthOp = BufferOp->Asl.Child;
+    BufferDataOp = BufferLengthOp->Asl.Next;
 
-    TypeOp->Asl.Value.Integer |= Opcode;
+    State = ACPI_RSTATE_NORMAL;
+    Rnode = RsDoOneResourceDescriptor (BufferDataOp->Asl.Next, 0, &State);
+    if (!Rnode)
+    {
+        return; /* error */
+    }
 
-    /* Insert the length as the AccessAttrib byte */
+    /*
+     * Transform the nodes into the following
+     *
+     * Op           -> AML_BUFFER_OP
+     * First Child  -> BufferLength
+     * Second Child -> Descriptor Buffer (raw byte data)
+     */
+    BufferOp->Asl.ParseOpcode         = PARSEOP_BUFFER;
+    BufferOp->Asl.AmlOpcode           = AML_BUFFER_OP;
+    BufferOp->Asl.CompileFlags        = NODE_AML_PACKAGE | NODE_IS_RESOURCE_DESC;
+    UtSetParseOpName (BufferOp);
 
-    AttribOp->Asl.Value.Integer = LengthOp->Asl.Value.Integer;
-    LengthOp->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
+    BufferLengthOp->Asl.ParseOpcode   = PARSEOP_INTEGER;
+    BufferLengthOp->Asl.Value.Integer = Rnode->BufferLength;
+    (void) OpcSetOptimalIntegerSize (BufferLengthOp);
+    UtSetParseOpName (BufferLengthOp);
+
+    BufferDataOp->Asl.ParseOpcode         = PARSEOP_RAW_DATA;
+    BufferDataOp->Asl.AmlOpcode           = AML_RAW_DATA_CHAIN;
+    BufferDataOp->Asl.AmlOpcodeLength     = 0;
+    BufferDataOp->Asl.AmlLength           = Rnode->BufferLength;
+    BufferDataOp->Asl.Value.Buffer        = (UINT8 *) Rnode;
+    UtSetParseOpName (BufferDataOp);
 }
 
 
@@ -804,7 +845,7 @@ OpcGenerateAmlOpcode (
 
     case PARSEOP_CONNECTION:
 
-        Op->Asl.AmlOpcodeLength = 1;
+        OpcDoConnection (Op);
         break;
 
     case PARSEOP_EISAID:

@@ -315,6 +315,7 @@ AcpiDsGetFieldNames (
 {
     ACPI_STATUS             Status;
     UINT64                  Position;
+    ACPI_PARSE_OBJECT       *Child;
 
 
     ACPI_FUNCTION_TRACE_PTR (DsGetFieldNames, Info);
@@ -354,6 +355,7 @@ AcpiDsGetFieldNames (
 
 
         case AML_INT_ACCESSFIELD_OP:
+        case AML_INT_EXTACCESSFIELD_OP:
             /*
              * Get new AccessType, AccessAttribute, and AccessLength fields
              * -- to be used for all field units that follow, until the
@@ -380,19 +382,26 @@ AcpiDsGetFieldNames (
             Info->AccessLength = (UINT8) ((Arg->Common.Value.Integer >> 16) & 0xFF);
             break;
 
-
         case AML_INT_CONNECTION_OP:
 
-            /* Lookup the Connection() namepath, it should already exist */
-
-            Status = AcpiNsLookup (WalkState->ScopeInfo,
-                        Arg->Common.Value.Name, ACPI_TYPE_ANY,
-                        ACPI_IMODE_EXECUTE, ACPI_NS_DONT_OPEN_SCOPE,
-                        WalkState, &Info->ConnectionNode);
-            if (ACPI_FAILURE (Status))
+            Child = Arg->Common.Value.Arg;
+            if (Child->Common.AmlOpcode == AML_INT_BYTELIST_OP)
             {
-                ACPI_ERROR_NAMESPACE (Arg->Common.Value.Name, Status);
-                return_ACPI_STATUS (Status);
+                Info->ResourceBuffer = Child->Named.Data;
+            }
+            else
+            {
+                /* Lookup the Connection() namepath, it should already exist */
+
+                Status = AcpiNsLookup (WalkState->ScopeInfo,
+                            Child->Common.Value.Name, ACPI_TYPE_ANY,
+                            ACPI_IMODE_EXECUTE, ACPI_NS_DONT_OPEN_SCOPE,
+                            WalkState, &Info->ConnectionNode);
+                if (ACPI_FAILURE (Status))
+                {
+                    ACPI_ERROR_NAMESPACE (Child->Common.Value.Name, Status);
+                    return_ACPI_STATUS (Status);
+                }
             }
             break;
 
@@ -504,6 +513,8 @@ AcpiDsCreateField (
             return_ACPI_STATUS (Status);
         }
     }
+
+    ACPI_MEMSET (&Info, 0, sizeof (ACPI_CREATE_FIELD_INFO));
 
     /* Second arg is the field flags */
 

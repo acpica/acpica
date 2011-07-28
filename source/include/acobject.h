@@ -409,7 +409,7 @@ typedef struct acpi_object_region_field
     ACPI_OBJECT_COMMON_HEADER
     ACPI_COMMON_FIELD_INFO
     union acpi_operand_object       *RegionObj;         /* Containing OpRegion object */
-    ACPI_NAMESPACE_NODE             *ConnectionNode;    /* ResourceTemplate for serial regions/fields */
+    UINT8                           *ResourceBuffer;    /* ResourceTemplate for serial regions/fields */
 
 } ACPI_OBJECT_REGION_FIELD;
 

@@ -287,7 +287,7 @@ static ACPI_EXDUMP_INFO     AcpiExDumpRegionField[5] =
     {ACPI_EXD_FIELD,    0,                                              NULL},
     {ACPI_EXD_UINT8,    ACPI_EXD_OFFSET (Field.AccessLength),           "AccessLength"},
     {ACPI_EXD_POINTER,  ACPI_EXD_OFFSET (Field.RegionObj),              "Region Object"},
-    {ACPI_EXD_POINTER,  ACPI_EXD_OFFSET (Field.ConnectionNode),         "ConnectionNode"}
+    {ACPI_EXD_POINTER,  ACPI_EXD_OFFSET (Field.ResourceBuffer),         "ResourceBuffer"}
 };
 
 static ACPI_EXDUMP_INFO     AcpiExDumpBankField[5] =

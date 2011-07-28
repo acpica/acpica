@@ -268,6 +268,7 @@
 #define AML_FIELD_OFFSET_OP         (UINT8) 0x00
 #define AML_FIELD_ACCESS_OP         (UINT8) 0x01
 #define AML_FIELD_CONNECTION_OP     (UINT8) 0x02        /* ACPI 5.0 */
+#define AML_FIELD_EXT_ACCESS_OP     (UINT8) 0x03        /* ACPI 5.0 */
 
 
 /*
@@ -285,6 +286,7 @@
 #define AML_INT_RETURN_VALUE_OP     (UINT16) 0x0036
 #define AML_INT_EVAL_SUBTREE_OP     (UINT16) 0x0037
 #define AML_INT_CONNECTION_OP       (UINT16) 0x0038
+#define AML_INT_EXTACCESSFIELD_OP   (UINT16) 0x0039
 
 #define ARG_NONE                    0x0
 
@@ -570,16 +572,6 @@ typedef enum
     AML_FIELD_ATTRIB_RAW_PROCESS    = 0x0F
 
 } AML_ACCESS_ATTRIBUTE;
-
-
-/*
- * These attributes are stuffed into bits 6:7 of the AccessType byte
- * (for ACPI 5.0), and then the attribute byte is the length.
- */
-#define AML_FIELD_EXT_MULTIBYTE     0x40
-#define AML_FIELD_EXT_RAW_BYTES     0x80
-#define AML_FIELD_EXT_RAW_PROCESS   0xC0
-#define AML_FIELD_EXT_MASK          0xC0
 
 
 /* Bit fields in the AML MethodFlags byte */

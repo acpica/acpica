@@ -178,7 +178,7 @@ void *                      AslLocalAllocate (unsigned int Size);
  * These shift/reduce conflicts are expected. There should be zero
  * reduce/reduce conflicts.
  */
-%expect 71
+%expect 74
 
 /*
  * Token types: These are returned by the lexer
@@ -1303,6 +1303,13 @@ ConnectionTerm
     : PARSEOP_CONNECTION '('
         NameString
         ')'                         {$$ = TrCreateNode (PARSEOP_CONNECTION,1,$3);}
+    | PARSEOP_CONNECTION '('        {$<n>$ = TrCreateLeafNode (PARSEOP_CONNECTION);}
+        ResourceMacroTerm
+        ')'                         {$$ = TrLinkChildren ($<n>3, 2,
+                                            TrLinkChildren (TrCreateLeafNode (PARSEOP_RESOURCETEMPLATE), 4,
+                                                TrCreateLeafNode (PARSEOP_DEFAULT_ARG),
+                                                TrCreateLeafNode (PARSEOP_DEFAULT_ARG),
+                                                $4));}
     | PARSEOP_CONNECTION '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
