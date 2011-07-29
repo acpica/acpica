@@ -1305,8 +1305,8 @@ ConnectionTerm
         ')'                         {$$ = TrCreateNode (PARSEOP_CONNECTION,1,$3);}
     | PARSEOP_CONNECTION '('        {$<n>$ = TrCreateLeafNode (PARSEOP_CONNECTION);}
         ResourceMacroTerm
-        ')'                         {$$ = TrLinkChildren ($<n>3, 2,
-                                            TrLinkChildren (TrCreateLeafNode (PARSEOP_RESOURCETEMPLATE), 4,
+        ')'                         {$$ = TrLinkChildren ($<n>3, 1,
+                                            TrLinkChildren (TrCreateLeafNode (PARSEOP_RESOURCETEMPLATE), 3,
                                                 TrCreateLeafNode (PARSEOP_DEFAULT_ARG),
                                                 TrCreateLeafNode (PARSEOP_DEFAULT_ARG),
                                                 $4));}
