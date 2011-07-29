@@ -613,7 +613,6 @@ AcpiPsGetNextField (
     UINT8                   AccessLength;
     UINT32                  PkgLength;
     UINT8                   *PkgEnd;
-    UINT32                  Size;
     UINT32                  BufferLength;
 
 
@@ -651,7 +650,7 @@ AcpiPsGetNextField (
         ParserState->Aml++;
         break;
 
-   default:
+    default:
 
         Opcode = AML_INT_NAMEDFIELD_OP;
         break;
@@ -772,7 +771,6 @@ AcpiPsGetNextField (
 
                 default:
                     BufferLength = 0;
-                    Size = 0;
                     break;
                 }
 

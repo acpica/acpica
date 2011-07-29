@@ -566,7 +566,12 @@ AcpiExPrepFieldValue (
             SecondDesc = Info->ConnectionNode->Object;
             if (!(SecondDesc->Common.Flags & AOPOBJ_DATA_VALID))
             {
-                AcpiDsGetBufferArguments (SecondDesc);
+                Status = AcpiDsGetBufferArguments (SecondDesc);
+                if (ACPI_FAILURE (Status))
+                {
+                    AcpiUtDeleteObjectDesc (ObjDesc);
+                    return_ACPI_STATUS (Status);
+                }
             }
 
             ObjDesc->Field.ResourceBuffer = SecondDesc->Buffer.Pointer;
