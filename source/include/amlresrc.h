@@ -157,7 +157,7 @@
 #define ACPI_RESTAG_PARITY                      "_PAR"
 #define ACPI_RESTAG_PHASE                       "_PHA"
 #define ACPI_RESTAG_PIN                         "_PIN"
-#define ACPI_RESTAG_PINCONFIG                   "_PPC"
+#define ACPI_RESTAG_PINCONFIG                   "_PPI"
 #define ACPI_RESTAG_POLARITY                    "_POL"
 #define ACPI_RESTAG_REGISTERBITOFFSET           "_RBO"
 #define ACPI_RESTAG_REGISTERBITWIDTH            "_RBW"

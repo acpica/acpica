@@ -409,7 +409,7 @@ RsDoGpioIntDescriptor (
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Gpio.IntFlags), 3);
             break;
 
-        case 3: /* Pin Config [BYTE] (_PPC) */
+        case 3: /* Pin Config [BYTE] (_PPI) */
 
             Descriptor->Gpio.PinConfig = (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_PINCONFIG,
@@ -594,7 +594,7 @@ RsDoGpioIoDescriptor (
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Gpio.IntFlags), 3);
             break;
 
-        case 1: /* Pin Config [BYTE] (_PPC) */
+        case 1: /* Pin Config [BYTE] (_PPI) */
 
             Descriptor->Gpio.PinConfig = (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_PINCONFIG,
@@ -1103,10 +1103,10 @@ RsDoUartSerialBusDescriptor (
     {
         switch (i)
         {
-        case 0: /* ConnectionSpeed (Baud Rate) [DWORD] (_SPD) */
+        case 0: /* ConnectionSpeed (Baud Rate) [DWORD] (_SPE) */
 
             Descriptor->UartSerialBus.DefaultBaudRate = (UINT32) InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_SPEED,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.DefaultBaudRate));
             break;
 
