@@ -1112,30 +1112,30 @@ RsDoUartSerialBusDescriptor (
 
         case 1: /* Bits Per Byte [Flags] (_LEN) */
 
-            RsSetFlagBits16 (&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 4+8, 0);
+            RsSetFlagBits16 (&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 4, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_LENGTH,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 4+8);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 4);
             break;
 
         case 2: /* Stop Bits [Flags] (_STB) */
 
-            RsSetFlagBits16 (&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 2+8, 0);
+            RsSetFlagBits16 (&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 2, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_STOPBITS,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 2+8);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 2);
             break;
 
-        case 3: /* Lines In Use [Flags] (_LIN) */
+        case 3: /* Lines In Use [BYTE] (_LIN) */
 
-            RsSetFlagBits16 (&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
+            Descriptor->UartSerialBus.LinesEnabled = (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateBitField (InitializerOp, ACPI_RESTAG_LINE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 0);
             break;
 
         case 4: /* Endianness [Flag] (_END) */
 
-            RsSetFlagBits16 (&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 7+8, 0);
+            RsSetFlagBits16 (&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 7, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_ENDIANNESS,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 7+8);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 7);
             break;
 
         case 5: /* Parity [BYTE] (_PAR) */
@@ -1147,9 +1147,9 @@ RsDoUartSerialBusDescriptor (
 
         case 6: /* Flow Control [Flags] (_FLC) */
 
-            RsSetFlagBits16 (&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 8, 0);
+            RsSetFlagBits16 (&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_FLOWCONTROL,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 8);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 0);
             break;
 
         case 7: /* Rx Buffer Size [WORD] (_RXL) */

@@ -261,10 +261,10 @@ const char                      *AcpiGbl_PpcDecode[] =
 
 const char                      *AcpiGbl_IorDecode[] =
 {
-    "None",
-    "InputOnly",
-    "OutputOnly",
-    "InvalidIoRestriction"
+    "IoRestrictionNone",
+    "IoRestrictionInputOnly",
+    "IoRestrictionOutputOnly",
+    "/* UNKNOWN IoRestriction */"
 };
 
 const char                      *AcpiGbl_DtsDecode[] =
@@ -342,6 +342,9 @@ const char                      *AcpiGbl_BpbDecode[] =
     "DataBitsSeven",
     "DataBitsEight",
     "DataBitsNine",
+    "/* UNKNOWN Bits per byte */",
+    "/* UNKNOWN Bits per byte */",
+    "/* UNKNOWN Bits per byte */"
 };
 
 /* UART serial bus stop bits */
@@ -360,7 +363,8 @@ const char                      *AcpiGbl_FcDecode[] =
 {
     "FlowControlNone",
     "FlowControlHardware",
-    "FlowControlXON"
+    "FlowControlXON",
+    "/* UNKNOWN flow control keyword */"
 };
 
 /* UART serial bus parity type */
@@ -372,6 +376,9 @@ const char                      *AcpiGbl_PtDecode[] =
     "ParityTypeOdd",
     "ParityTypeMark",
     "ParityTypeSpace",
+    "/* UNKNOWN parity keyword */",
+    "/* UNKNOWN parity keyword */",
+    "/* UNKNOWN parity keyword */"
 };
 
 #endif

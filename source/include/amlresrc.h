@@ -471,7 +471,7 @@ typedef struct aml_resource_generic_register
 } AML_RESOURCE_GENERIC_REGISTER;
 
 
-/* Common descriptor for GpioInt and GpioIo */
+/* Common descriptor for GpioInt and GpioIo (ACPI 5.0) */
 
 typedef struct aml_resource_gpio
 {
@@ -505,8 +505,11 @@ typedef struct aml_resource_gpio
 #define AML_RESOURCE_GPIO_TYPE_IO               1
 
 
+/* Common preamble for all serial descriptors (ACPI 5.0) */
+
 #define AML_RESOURCE_SERIAL_COMMON \
     UINT8                           RevisionId; \
+    UINT8                           ResSourceIndex; \
     UINT8                           Type; \
     UINT8                           Flags; \
     UINT16                          TypeSpecificFlags; \
@@ -527,7 +530,6 @@ typedef struct aml_resource_i2c_serialbus
     AML_RESOURCE_SERIAL_COMMON
     UINT32                          ConnectionSpeed;
     UINT16                          SlaveAddress;
-    UINT8                           ResSourceIndex;
     /*
      * Optional fields follow immediately:
      * 1) Vendor Data bytes
@@ -539,7 +541,7 @@ typedef struct aml_resource_i2c_serialbus
 #define AML_RESOURCE_I2C_REVISION               1       /* ACPI 5.0 */
 #define AML_RESOURCE_I2C_BUS_TYPE               1
 #define AML_RESOURCE_I2C_TYPE_REVISION          1       /* ACPI 5.0 */
-#define AML_RESOURCE_I2C_MIN_DATA_LEN           7
+#define AML_RESOURCE_I2C_MIN_DATA_LEN           6
 
 typedef struct aml_resource_spi_serialbus
 {
@@ -550,7 +552,6 @@ typedef struct aml_resource_spi_serialbus
     UINT8                           ClockPhase;
     UINT8                           ClockPolarity;
     UINT16                          DeviceSelection;
-    UINT8                           ResSourceIndex;
     /*
      * Optional fields follow immediately:
      * 1) Vendor Data bytes
@@ -562,7 +563,7 @@ typedef struct aml_resource_spi_serialbus
 #define AML_RESOURCE_SPI_REVISION               1       /* ACPI 5.0 */
 #define AML_RESOURCE_SPI_BUS_TYPE               2
 #define AML_RESOURCE_SPI_TYPE_REVISION          1       /* ACPI 5.0 */
-#define AML_RESOURCE_SPI_MIN_DATA_LEN           10
+#define AML_RESOURCE_SPI_MIN_DATA_LEN           9
 
 
 typedef struct aml_resource_uart_serialbus
@@ -573,7 +574,7 @@ typedef struct aml_resource_uart_serialbus
     UINT16                          RxFifoSize;
     UINT16                          TxFifoSize;
     UINT8                           Parity;
-    UINT8                           ResSourceIndex;
+    UINT8                           LinesEnabled;
     /*
      * Optional fields follow immediately:
      * 1) Vendor Data bytes

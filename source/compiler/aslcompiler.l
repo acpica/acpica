@@ -530,8 +530,9 @@ NamePathTail                [.]{NameSeg}
 "PullDown"                  { count (0); return (PARSEOP_PIN_PULLDOWN); }
 "NoPull"                    { count (0); return (PARSEOP_PIN_NOPULL); }
 
-"InputOnly"                 { count (0); return (PARSEOP_IORESTRICT_IN); }
-"OutputOnly"                { count (0); return (PARSEOP_IORESTRICT_OUT); }
+"IoRestrictionNone"         { count (0); return (PARSEOP_IORESTRICT_NONE); }
+"IoRestrictionInputOnly"    { count (0); return (PARSEOP_IORESTRICT_IN); }
+"IoRestrictionOutputOnly"   { count (0); return (PARSEOP_IORESTRICT_OUT); }
 
 "8-bit"                     { count (0); return (PARSEOP_XFERSIZE_8); }
 "16-bit"                    { count (0); return (PARSEOP_XFERSIZE_16); }

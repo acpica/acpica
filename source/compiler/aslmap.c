@@ -329,6 +329,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* IODECODETYPE_10 */           OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* IODECODETYPE_16 */           OP_TABLE_ENTRY (AML_BYTE_OP,                1,                              0,                  0),
 /* IORESTRICT_IN */             OP_TABLE_ENTRY (AML_BYTE_OP,                1,                              0,                  0),
+/* IORESTRICT_NONE */           OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* IORESTRICT_OUT */            OP_TABLE_ENTRY (AML_BYTE_OP,                2,                              0,                  0),
 /* IRQ */                       OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
 /* IRQNOFLAGS */                OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),

@@ -1333,11 +1333,15 @@ AcpiDmGpioIntDescriptor (
 
     /* Dump the GpioInt-specific portion of the descriptor */
 
+    /* EdgeLevel, ActiveLevel, Shared */
+
     AcpiDmIndent (Level);
     AcpiOsPrintf ("GpioInt (%s, %s, %s, ",
         AcpiGbl_HeDecode [(Resource->Gpio.IntFlags & 1)],
         AcpiGbl_LlDecode [(Resource->Gpio.IntFlags >> 1) & 1],
         AcpiGbl_ShrDecode [(Resource->Gpio.IntFlags >> 3) & 1]);
+
+    /* PinConfig, DebounceTimeout */
 
     if (Resource->Gpio.PinConfig <= 3)
     {
@@ -1379,6 +1383,8 @@ AcpiDmGpioIoDescriptor (
 
     /* Dump the GpioIo-specific portion of the descriptor */
 
+    /* Shared, PinConfig */
+
     AcpiDmIndent (Level);
     AcpiOsPrintf ("GpioIo (%s, ",
         AcpiGbl_ShrDecode [(Resource->Gpio.IntFlags >> 3) & 1]);
@@ -1392,6 +1398,9 @@ AcpiDmGpioIoDescriptor (
     {
         AcpiOsPrintf ("0x%2.2X, ", Resource->Gpio.PinConfig);
     }
+
+    /* DebounceTimeout, DriveStrength, IoRestriction */
+
     AcpiOsPrintf ("0x%4.4X, ", Resource->Gpio.DebounceTimeout);
     AcpiOsPrintf ("0x%4.4X, ", Resource->Gpio.DriveStrength);
     AcpiOsPrintf ("%s,\n",
@@ -1530,8 +1539,9 @@ AcpiDmI2cSerialBusDescriptor (
     UINT32                  ResourceSourceOffset;
 
 
-    AcpiDmIndent (Level);
+    /* SlaveAddress, SlaveMode, ConnectionSpeed, AddressingMode */
 
+    AcpiDmIndent (Level);
     AcpiOsPrintf ("I2cSerialBus (0x%4.4X, %s, 0x%8.8X,\n",
         Resource->I2cSerialBus.SlaveAddress,
         AcpiGbl_SmDecode [(Resource->I2cSerialBus.Flags & 1)],
@@ -1549,6 +1559,8 @@ AcpiDmI2cSerialBusDescriptor (
     AcpiUtPrintString (
         ACPI_ADD_PTR (char, Resource, ResourceSourceOffset),
         ACPI_UINT8_MAX);
+
+    /* ResourceSourceIndex, ResourceUsage */
 
     AcpiOsPrintf (",\n");
     AcpiDmIndent (Level + 1);
@@ -1593,13 +1605,16 @@ AcpiDmSpiSerialBusDescriptor (
     UINT32                  ResourceSourceOffset;
 
 
-    AcpiDmIndent (Level);
+    /* DeviceSelection, DeviceSelectionPolarity, WireMode, DataBitLength */
 
+    AcpiDmIndent (Level);
     AcpiOsPrintf ("SpiSerialBus (0x%4.4X, %s, %s, 0x%2.2X,\n",
         Resource->SpiSerialBus.DeviceSelection,
         AcpiGbl_DpDecode [(Resource->SpiSerialBus.TypeSpecificFlags >> 1) & 1],
         AcpiGbl_WmDecode [(Resource->SpiSerialBus.TypeSpecificFlags & 1)],
         Resource->SpiSerialBus.DataBitLength);
+
+    /* SlaveMode, ConnectionSpeed, ClockPolarity, ClockPhase */
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("%s, 0x%8.8X, %s,\n",
@@ -1619,6 +1634,8 @@ AcpiDmSpiSerialBusDescriptor (
     AcpiUtPrintString (
         ACPI_ADD_PTR (char, Resource, ResourceSourceOffset),
         ACPI_UINT8_MAX);
+
+    /* ResourceSourceIndex, ResourceUsage */
 
     AcpiOsPrintf (",\n");
     AcpiDmIndent (Level + 1);
@@ -1663,19 +1680,24 @@ AcpiDmUartSerialBusDescriptor (
     UINT32                  ResourceSourceOffset;
 
 
-    AcpiDmIndent (Level);
+    /* ConnectionSpeed, BitsPerByte, StopBits */
 
+    AcpiDmIndent (Level);
     AcpiOsPrintf ("UartSerialBus (0x%8.8X, %s, %s,\n",
         Resource->UartSerialBus.DefaultBaudRate,
-        AcpiGbl_BpbDecode [(Resource->UartSerialBus.TypeSpecificFlags >> 12 ) & 3],
-        AcpiGbl_SbDecode [(Resource->UartSerialBus.TypeSpecificFlags >> 10 ) & 3]);
+        AcpiGbl_BpbDecode [(Resource->UartSerialBus.TypeSpecificFlags >> 4) & 3],
+        AcpiGbl_SbDecode [(Resource->UartSerialBus.TypeSpecificFlags >> 2) & 3]);
+
+    /* LinesInUse, IsBigEndian, Parity, FlowControl */
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%2.2X, %s, %s, %s,\n",
-        Resource->UartSerialBus.TypeSpecificFlags & 0xFF,
-        AcpiGbl_EdDecode [(Resource->UartSerialBus.TypeSpecificFlags >> 15 ) & 1],
-        AcpiGbl_PtDecode [(Resource->UartSerialBus.Parity & 7)],
-        AcpiGbl_FcDecode [(Resource->UartSerialBus.TypeSpecificFlags >> 8 ) & 3]);
+        Resource->UartSerialBus.LinesEnabled,
+        AcpiGbl_EdDecode [(Resource->UartSerialBus.TypeSpecificFlags >> 7) & 1],
+        AcpiGbl_PtDecode [Resource->UartSerialBus.Parity & 7],
+        AcpiGbl_FcDecode [Resource->UartSerialBus.TypeSpecificFlags & 3]);
+
+    /* ReceiveBufferSize, TransmitBufferSize */
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%4.4X, 0x%4.4X, ",
@@ -1690,6 +1712,8 @@ AcpiDmUartSerialBusDescriptor (
     AcpiUtPrintString (
         ACPI_ADD_PTR (char, Resource, ResourceSourceOffset),
         ACPI_UINT8_MAX);
+
+    /* ResourceSourceIndex, ResourceUsage */
 
     AcpiOsPrintf (",\n");
     AcpiDmIndent (Level + 1);
