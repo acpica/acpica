@@ -1168,19 +1168,19 @@ AeSmbusRegionHandler (
     case ACPI_READ:
         switch (Function >> 16)
         {
-        case AML_FIELD_ATTRIB_SMB_QUICK:
-        case AML_FIELD_ATTRIB_SMB_SEND_RCV:
-        case AML_FIELD_ATTRIB_SMB_BYTE:
+        case AML_FIELD_ATTRIB_QUICK:
+        case AML_FIELD_ATTRIB_SEND_RCV:
+        case AML_FIELD_ATTRIB_BYTE:
             Length = 1;
             break;
 
-        case AML_FIELD_ATTRIB_SMB_WORD:
-        case AML_FIELD_ATTRIB_SMB_WORD_CALL:
+        case AML_FIELD_ATTRIB_WORD:
+        case AML_FIELD_ATTRIB_WORD_CALL:
             Length = 2;
             break;
 
-        case AML_FIELD_ATTRIB_SMB_BLOCK:
-        case AML_FIELD_ATTRIB_SMB_BLOCK_CALL:
+        case AML_FIELD_ATTRIB_BLOCK:
+        case AML_FIELD_ATTRIB_BLOCK_CALL:
             Length = 32;
             break;
 
@@ -1192,19 +1192,19 @@ AeSmbusRegionHandler (
     case ACPI_WRITE:
         switch (Function >> 16)
         {
-        case AML_FIELD_ATTRIB_SMB_QUICK:
-        case AML_FIELD_ATTRIB_SMB_SEND_RCV:
-        case AML_FIELD_ATTRIB_SMB_BYTE:
-        case AML_FIELD_ATTRIB_SMB_WORD:
-        case AML_FIELD_ATTRIB_SMB_BLOCK:
+        case AML_FIELD_ATTRIB_QUICK:
+        case AML_FIELD_ATTRIB_SEND_RCV:
+        case AML_FIELD_ATTRIB_BYTE:
+        case AML_FIELD_ATTRIB_WORD:
+        case AML_FIELD_ATTRIB_BLOCK:
             Length = 0;
             break;
 
-        case AML_FIELD_ATTRIB_SMB_WORD_CALL:
+        case AML_FIELD_ATTRIB_WORD_CALL:
             Length = 2;
             break;
 
-        case AML_FIELD_ATTRIB_SMB_BLOCK_CALL:
+        case AML_FIELD_ATTRIB_BLOCK_CALL:
             Length = 32;
             break;
 
