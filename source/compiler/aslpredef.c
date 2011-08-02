@@ -174,7 +174,6 @@ static const ACPI_PREDEFINED_INFO      ResourceNames[] = {
     {{"_BM_",     0,      0}},
     {{"_DBT",     0,      0}},  /* Acpi 5.0 */
     {{"_DEC",     0,      0}},
-    {{"_DMA",     0,      0}},  /* Acpi 5.0 */
     {{"_DPL",     0,      0}},  /* Acpi 5.0 */
     {{"_DRS",     0,      0}},  /* Acpi 5.0 */
     {{"_END",     0,      0}},  /* Acpi 5.0 */
@@ -910,4 +909,3 @@ ApGetExpectedTypes (
         ThisRtype <<= 1;    /* Next Rtype */
     }
 }
-

@@ -304,6 +304,10 @@ static const ACPI_PREDEFINED_INFO     PredefinedNames[] =
     {{"_CID", 0, ACPI_RTYPE_INTEGER | ACPI_RTYPE_STRING | ACPI_RTYPE_PACKAGE}}, /* Variable-length (Ints/Strs) */
                     {{{ACPI_PTYPE1_VAR, ACPI_RTYPE_INTEGER | ACPI_RTYPE_STRING, 0,0}, 0,0}},
 
+    {{"_CLS", 0, ACPI_RTYPE_INTEGER}},
+    {{"_CPC", 0, ACPI_RTYPE_PACKAGE}}, /* Variable-length (Ints/Bufs) */
+                    {{{ACPI_PTYPE1_VAR, ACPI_RTYPE_INTEGER | ACPI_RTYPE_BUFFER, 0,0}, 0,0}},
+
     {{"_CRS", 0, ACPI_RTYPE_BUFFER}},
     {{"_CRT", 0, ACPI_RTYPE_INTEGER}},
     {{"_CSD", 0, ACPI_RTYPE_PACKAGE}}, /* Variable-length (1 Int(n), n-1 Int) */
@@ -312,11 +316,14 @@ static const ACPI_PREDEFINED_INFO     PredefinedNames[] =
     {{"_CST", 0, ACPI_RTYPE_PACKAGE}}, /* Variable-length (1 Int(n), n Pkg (1 Buf/3 Int) */
                     {{{ACPI_PTYPE2_PKG_COUNT,ACPI_RTYPE_BUFFER, 1, ACPI_RTYPE_INTEGER}, 3,0}},
 
+    {{"_CWS", 1, ACPI_RTYPE_INTEGER}},
     {{"_DCK", 1, ACPI_RTYPE_INTEGER}},
     {{"_DCS", 0, ACPI_RTYPE_INTEGER}},
     {{"_DDC", 1, ACPI_RTYPE_INTEGER | ACPI_RTYPE_BUFFER}},
     {{"_DDN", 0, ACPI_RTYPE_STRING}},
-    {{"_DEP", 0, ACPI_RTYPE_PACKAGE}},
+    {{"_DEP", 0, ACPI_RTYPE_PACKAGE}}, /* Variable-length (Refs) */
+                    {{{ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0}, 0,0}},
+
     {{"_DGS", 0, ACPI_RTYPE_INTEGER}},
     {{"_DIS", 0, 0}},
     {{"_DMA", 0, ACPI_RTYPE_BUFFER}},
@@ -359,14 +366,17 @@ static const ACPI_PREDEFINED_INFO     PredefinedNames[] =
 
 
     {{"_GAI", 0, ACPI_RTYPE_INTEGER}},
+    {{"_GCP", 0, ACPI_RTYPE_INTEGER}},
     {{"_GHL", 0, ACPI_RTYPE_INTEGER}},
     {{"_GLK", 0, ACPI_RTYPE_INTEGER}},
     {{"_GPD", 0, ACPI_RTYPE_INTEGER}},
     {{"_GPE", 0, ACPI_RTYPE_INTEGER}}, /* _GPE method, not _GPE scope */
+    {{"_GRT", 0, ACPI_RTYPE_BUFFER}},
     {{"_GSB", 0, ACPI_RTYPE_INTEGER}},
     {{"_GTF", 0, ACPI_RTYPE_BUFFER}},
     {{"_GTM", 0, ACPI_RTYPE_BUFFER}},
     {{"_GTS", 1, 0}},
+    {{"_GWS", 1, ACPI_RTYPE_INTEGER}},
     {{"_HID", 0, ACPI_RTYPE_INTEGER | ACPI_RTYPE_STRING}},
     {{"_HOT", 0, ACPI_RTYPE_INTEGER}},
     {{"_HPP", 0, ACPI_RTYPE_PACKAGE}}, /* Fixed-length (4 Int) */
@@ -381,6 +391,7 @@ static const ACPI_PREDEFINED_INFO     PredefinedNames[] =
     {{"_HPX", 0, ACPI_RTYPE_PACKAGE}}, /* Variable-length (Pkgs) each (var Ints) */
                     {{{ACPI_PTYPE2_MIN, ACPI_RTYPE_INTEGER, 5,0}, 0,0}},
 
+    {{"_HRV", 0, ACPI_RTYPE_INTEGER}},
     {{"_IFT", 0, ACPI_RTYPE_INTEGER}}, /* See IPMI spec */
     {{"_INI", 0, 0}},
     {{"_IRC", 0, 0}},
@@ -534,6 +545,7 @@ static const ACPI_PREDEFINED_INFO     PredefinedNames[] =
     {{"_SLI", 0, ACPI_RTYPE_BUFFER}},
     {{"_SPD", 1, ACPI_RTYPE_INTEGER}},
     {{"_SRS", 1, 0}},
+    {{"_SRT", 1, ACPI_RTYPE_INTEGER}},
     {{"_SRV", 0, ACPI_RTYPE_INTEGER}}, /* See IPMI spec */
     {{"_SST", 1, 0}},
     {{"_STA", 0, ACPI_RTYPE_INTEGER}},
@@ -541,6 +553,7 @@ static const ACPI_PREDEFINED_INFO     PredefinedNames[] =
     {{"_STP", 2, ACPI_RTYPE_INTEGER}},
     {{"_STR", 0, ACPI_RTYPE_BUFFER}},
     {{"_STV", 2, ACPI_RTYPE_INTEGER}},
+    {{"_SUB", 0, ACPI_RTYPE_STRING}},
     {{"_SUN", 0, ACPI_RTYPE_INTEGER}},
     {{"_SWS", 0, ACPI_RTYPE_INTEGER}},
     {{"_TC1", 0, ACPI_RTYPE_INTEGER}},
