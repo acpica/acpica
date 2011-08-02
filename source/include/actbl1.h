@@ -993,7 +993,7 @@ typedef struct acpi_madt_generic_interrupt
     ACPI_SUBTABLE_HEADER    Header;
     UINT16                  Reserved;           /* Reserved - must be zero */
     UINT32                  GicId;
-    UINT32                  ProcessorUid;
+    UINT32                  Uid;
     UINT32                  Flags;
     UINT32                  ParkingVersion;
     UINT32                  PerformanceInterrupt;
@@ -1011,7 +1011,7 @@ typedef struct acpi_madt_generic_distributor
     UINT16                  Reserved;           /* Reserved - must be zero */
     UINT32                  GicId;
     UINT64                  BaseAddress;
-    UINT32                  VectorBase;
+    UINT32                  GlobalIrqBase;
     UINT32                  Reserved2;          /* Reserved - must be zero */
 
 } ACPI_MADT_GENERIC_DISTRIBUTOR;
