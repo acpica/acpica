@@ -1217,6 +1217,12 @@ AcpiDmDumpMadt (
         case ACPI_MADT_TYPE_LOCAL_X2APIC_NMI:
             InfoTable = AcpiDmTableInfoMadt10;
             break;
+        case ACPI_MADT_TYPE_GENERIC_INTERRUPT:
+            InfoTable = AcpiDmTableInfoMadt11;
+            break;
+        case ACPI_MADT_TYPE_GENERIC_DISTRIBUTOR:
+            InfoTable = AcpiDmTableInfoMadt12;
+            break;
         default:
             AcpiOsPrintf ("\n**** Unknown MADT sub-table type 0x%X\n\n", SubTable->Type);
 

@@ -268,6 +268,8 @@ static const char           *AcpiDmMadtSubnames[] =
     "Platform Interrupt Sources",   /* ACPI_MADT_TYPE_INTERRUPT_SOURCE */
     "Processor Local x2APIC",       /* ACPI_MADT_TYPE_LOCAL_X2APIC */
     "Local x2APIC NMI",             /* ACPI_MADT_TYPE_LOCAL_X2APIC_NMI */
+    "Generic Interrupt Controller", /* ACPI_MADT_GENERIC_INTERRUPT */
+    "Generic Interrupt Distributor",/* ACPI_MADT_GENERIC_DISTRIBUTOR */
     "Unknown SubTable Type"         /* Reserved */
 };
 
