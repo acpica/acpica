@@ -358,16 +358,16 @@ typedef struct acpi_einj_error_type_with_addr
     UINT32                  ApicId;
     UINT64                  Address;
     UINT64                  Range;
-    UINT32                  PcieSbdf;
+    UINT32                  PcieId;
 
 } ACPI_EINJ_ERROR_TYPE_WITH_ADDR;
 
 typedef struct acpi_einj_vendor
 {
     UINT32                  Length;
-    UINT32                  Sbdf;
+    UINT32                  PcieId;
     UINT16                  VendorId;
-    UINT32                  DeviceId;
+    UINT16                  DeviceId;
     UINT8                   RevisionId;
     UINT8                   Reserved[3];
 
