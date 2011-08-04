@@ -152,59 +152,79 @@ typedef const struct acpi_dmtable_info
 
 /*
  * Values for Opcode above.
- * Note: 0-7 must not change, used as a flag shift value
+ * Note: 0-7 must not change, they are used as a flag shift value. Other
+ * than those, new values can be added wherever appropriate.
  */
-#define ACPI_DMT_FLAG0                  0
-#define ACPI_DMT_FLAG1                  1
-#define ACPI_DMT_FLAG2                  2
-#define ACPI_DMT_FLAG3                  3
-#define ACPI_DMT_FLAG4                  4
-#define ACPI_DMT_FLAG5                  5
-#define ACPI_DMT_FLAG6                  6
-#define ACPI_DMT_FLAG7                  7
-#define ACPI_DMT_FLAGS0                 8
-#define ACPI_DMT_FLAGS2                 9
-#define ACPI_DMT_UINT8                  10
-#define ACPI_DMT_UINT16                 11
-#define ACPI_DMT_UINT24                 12
-#define ACPI_DMT_UINT32                 13
-#define ACPI_DMT_UINT56                 14
-#define ACPI_DMT_UINT64                 15
-#define ACPI_DMT_STRING                 16
-#define ACPI_DMT_NAME4                  17
-#define ACPI_DMT_NAME6                  18
-#define ACPI_DMT_NAME8                  19
-#define ACPI_DMT_CHKSUM                 20
-#define ACPI_DMT_SPACEID                21
-#define ACPI_DMT_GAS                    22
-#define ACPI_DMT_ASF                    23
-#define ACPI_DMT_DMAR                   24
-#define ACPI_DMT_HEST                   25
-#define ACPI_DMT_HESTNTFY               26
-#define ACPI_DMT_HESTNTYP               27
-#define ACPI_DMT_MADT                   28
-#define ACPI_DMT_SRAT                   29
-#define ACPI_DMT_EXIT                   30
-#define ACPI_DMT_SIG                    31
-#define ACPI_DMT_FADTPM                 32
-#define ACPI_DMT_BUF16                  33
-#define ACPI_DMT_IVRS                   34
-#define ACPI_DMT_BUFFER                 35
-#define ACPI_DMT_PCI_PATH               36
-#define ACPI_DMT_EINJACT                37
-#define ACPI_DMT_EINJINST               38
-#define ACPI_DMT_ERSTACT                39
-#define ACPI_DMT_ERSTINST               40
-#define ACPI_DMT_ACCWIDTH               41
-#define ACPI_DMT_UNICODE                42
-#define ACPI_DMT_UUID                   43
-#define ACPI_DMT_DEVICE_PATH            44
-#define ACPI_DMT_LABEL                  45
-#define ACPI_DMT_BUF7                   46
-#define ACPI_DMT_BUF128                 47
-#define ACPI_DMT_SLIC                   48
-#define ACPI_DMT_UINT40                 49
-#define ACPI_DMT_UINT48                 50
+typedef enum
+{
+    /* Simple Data Types */
+
+    ACPI_DMT_FLAG0          = 0,
+    ACPI_DMT_FLAG1          = 1,
+    ACPI_DMT_FLAG2          = 2,
+    ACPI_DMT_FLAG3          = 3,
+    ACPI_DMT_FLAG4          = 4,
+    ACPI_DMT_FLAG5          = 5,
+    ACPI_DMT_FLAG6          = 6,
+    ACPI_DMT_FLAG7          = 7,
+    ACPI_DMT_FLAGS0,
+    ACPI_DMT_FLAGS1,
+    ACPI_DMT_FLAGS2,
+    ACPI_DMT_UINT8,
+    ACPI_DMT_UINT16,
+    ACPI_DMT_UINT24,
+    ACPI_DMT_UINT32,
+    ACPI_DMT_UINT40,
+    ACPI_DMT_UINT48,
+    ACPI_DMT_UINT56,
+    ACPI_DMT_UINT64,
+    ACPI_DMT_BUF7,
+    ACPI_DMT_BUF16,
+    ACPI_DMT_BUF128,
+    ACPI_DMT_SIG,
+    ACPI_DMT_STRING,
+    ACPI_DMT_NAME4,
+    ACPI_DMT_NAME6,
+    ACPI_DMT_NAME8,
+
+    /* Types that are decoded to strings and miscellaneous */
+
+    ACPI_DMT_ACCWIDTH,
+    ACPI_DMT_CHKSUM,
+    ACPI_DMT_GAS,
+    ACPI_DMT_SPACEID,
+    ACPI_DMT_UNICODE,
+    ACPI_DMT_UUID,
+
+    /* Types used only for the Data Table Compiler */
+
+    ACPI_DMT_BUFFER,
+    ACPI_DMT_DEVICE_PATH,
+    ACPI_DMT_LABEL,
+    ACPI_DMT_PCI_PATH,
+
+    /* Types that are specific to particular ACPI tables */
+
+    ACPI_DMT_ASF,
+    ACPI_DMT_DMAR,
+    ACPI_DMT_EINJACT,
+    ACPI_DMT_EINJINST,
+    ACPI_DMT_ERSTACT,
+    ACPI_DMT_ERSTINST,
+    ACPI_DMT_FADTPM,
+    ACPI_DMT_HEST,
+    ACPI_DMT_HESTNTFY,
+    ACPI_DMT_HESTNTYP,
+    ACPI_DMT_IVRS,
+    ACPI_DMT_MADT,
+    ACPI_DMT_SLIC,
+    ACPI_DMT_SRAT,
+
+    /* Table terminator */
+
+    ACPI_DMT_EXIT
+
+} ACPI_ENTRY_TYPES;
 
 typedef
 void (*ACPI_DMTABLE_HANDLER) (
