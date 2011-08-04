@@ -3,8 +3,7 @@
 # Make linux patches for ACPICA
 #
 # Usage:
-#   edit $old_release to reflect desired tag (release) of ACPICA
-#   run perl make-patches.pl
+#   ./make-patches.pl <old_commit> [new_commit];
 #   collect *.patch files
 #
 # Requires: git
@@ -16,12 +15,31 @@ use File::stat;
 #
 # Configuration
 #
-$old_release = "R03_21_08";
-$new_release = "R05_14_08";
+
+$old_release;
+$new_release = "HEAD";
+$git_repo = "../../..";
+$git_root = "acpica_tmp";
+
+$argcnt = $#ARGV + 1;
+
+if ($argcnt < 1) {
+        print "usage: ./make-patches.pl <old_commit> [new_commit]\n\n";
+        print "    Creates the linuxized patches from old_commit to new_commit in ACPICA git repository\n\n";
+        print "    old_commit: the old commit id\n";
+        print "    new_commit: optional, the new commit id, default to HEAD in the repository\n";
+
+        exit
+} else {
+        $old_release = $ARGV[0];
+
+        if ($argcnt > 1) {
+                $new_release = $ARGV[1];
+        }
+}
+
 #
 $mbox_date = `date`;
-
-$GIT_ARGS = "$old_release";
 
 $patch_from = "Bob Moore <robert.moore\@intel.com>";
 $patch_signoff = "Bob Moore <robert.moore\@intel.com>";
@@ -29,7 +47,7 @@ $linux_patch_dir = "patches.linux";
 $git_patch_dir = "patches.git";
 $git_patch_name = $old_release.patch;
 $git_log = 'git.log';
-$mbox_name = "$linux_patch_dir/$old_release.mbox";
+$mbox_name = "$linux_patch_dir/$new_release.mbox";
 $linux_archive_dir = "archive.linux";
 
 $linux_patch_count;
@@ -49,7 +67,7 @@ $patch_num;
 # Save previous mbox file
 
 system("mkdir -p $linux_archive_dir");
-system("cp $linux_patch_dir/*.mbox $linux_archive_dir");
+system("[ -f $linux_patch_dir/*.mbox ] && cp $linux_patch_dir/*.mbox $linux_archive_dir");
 
 
 # Make clean patch directories
@@ -61,27 +79,27 @@ system("mkdir -p $linux_patch_dir");
 
 
 # Checkout the latest ACPICA release
-
-system("echo [make-patches] Getting clean ACPICA release, new version $new_release");
-system("perl get-acpi.pl $new_release");
-
+ 
+system("echo [make-patches] Getting clean ACPICA source from $git_repo");
+system("rm -rf $git_root; git clone $git_repo $git_root > /dev/null");
+system("cd $git_root; old_release=`git log --pretty=format:%H $old_release~1..$old_release`");
+system("cd $git_root; new_release=`git log --pretty=format:%H $new_release~1..$new_release`");
 
 # Generate latest version of the acpisrc utility
 
 system("echo [make-patches] Generate acpisrc utility from source");
-system("perl acpisrc.pl");
+system("sh acpisrc.sh $git_root > /dev/null");
 
 
 # Create GIT log
 
 system("echo [make-patches] Creating the GIT log");
-system("cd acpica; sh ../create-git-log.sh $old_release $new_release  > ../$git_log");
-
+system("cd $git_root; sh ../create-git-log.sh $old_release $new_release  > ../$git_log");
 
 # Create GIT patches
 
 system("echo [make-patches] Creating the GIT patches");
-system("cd acpica; sh ../git-patches.sh $old_release $new_release ../$git_patch_dir");
+system("cd $git_root; sh ../git-patches.sh $old_release $new_release ../$git_patch_dir");
 
 
 # Create the merged patchfile for "native" ACPICA code
@@ -93,7 +111,7 @@ system("echo [make-patches] Creating the merged native patch file");
 # Create "linuxized" reference ACPICA directory from the "older" ACPICA tree
 
 system("echo [make-patches] Creating the Linuxized ACPICA source from $old_release");
-system("sh linuxize.sh $old_release");
+system("sh linuxize.sh $git_root $old_release > /dev/null 2>&1");
 
 
 # Create the linux patches, one per file
@@ -107,6 +125,9 @@ system("echo [make-patches] Creating the Linux patches");
 system("echo [make-patches] Creating the mbox patch file");
 &make_mbox;
 
+# Remove the temporary files/dirs 
+
+#system("rm -rf $git_root acpi_include bin drivers patches.git git.log");
 
 #
 # Walk the log created by git, invoke callback for each entry
@@ -303,8 +324,8 @@ sub make_patch
 
     # Apply GIT patch to the non-linuxized ACPICA tree and linuxize the tree to "new.linux"
 
-    system("cd acpica; patch -p1 < ../$git_patch_dir/$patch_name.patch");
-    system("sh linuxize.sh");
+    system("cd $git_root; patch -p1 < ../$git_patch_dir/$patch_name.patch > /dev/null");
+    system("sh linuxize.sh $git_root");
 
     # diff the new and original linuxed trees
 

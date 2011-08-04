@@ -3,19 +3,19 @@
 old_release=$1
 new_release=$2
 
-commits="`git-rev-list --reverse $old_release..$new_release`"
-commits_count="`git-rev-list --reverse $old_release..$new_release | wc -l`"
+commits="`git rev-list --reverse $old_release..$new_release`"
+commits_count="`git rev-list --reverse $old_release..$new_release | wc -l`"
 
 digit=1
 while [ $commits_count -gt 9 ] ; do
-        (( commits_count = commits_count / 10 ))
-        (( digit = digit + 1 ))
+        commits_count=`expr $commits_count / 10`
+        digit=`expr $digit + 1`
 done
 
 num=0
 
 for commit in $commits ; do
-        (( num = num + 1 ))
+        num=`expr $num + 1`
 
 	#create git log similar to cvs log, so we can reuse code in make-patches.pl
         patchnum=`printf "%.${digit}d" $num`
@@ -31,7 +31,7 @@ for commit in $commits ; do
 
 	l=`git show --pretty=format:"${format}%n" $commit | grep -n "diff --git" | head -n 1 | awk -F: '{print $1}'`
 	if [ ! -z "$l" ] ; then
-		(( l = l - 1 ))
+		l=`expr $l - 1`
+		git show --pretty=format:"${format}%n" $commit | head -n $l 
 	fi
-	git show --pretty=format:"${format}%n" $commit | head -n $l 
 done

@@ -5,17 +5,19 @@
 
 # Convert ACPICA source to Linux format
 
-version=$1
+git_root=$1
+version=$2
+
 branch=master
 
 if [ ! -z "$version" ] ; then
-	cd acpica
+	cd $git_root
 	git checkout $version
 	cd ..
 fi
 
 rm -rf new.linux
-bin/acpisrc -ldqy acpica/source new.linux
+bin/acpisrc -ldqy $git_root/source new.linux > /dev/null
 cd new.linux
 
 
@@ -52,9 +54,15 @@ mkdir -p acpi_include
 mv -f include/* acpi_include
 mv -f acpi_include include/acpi
 
-mkdir -p drivers/acpi
-mv dispatcher events executer hardware namespace parser resources tables utilities drivers/acpi/
+mkdir -p drivers/acpi/acpica
+mv dispatcher/* events/* executer/* hardware/* namespace/* parser/* resources/* tables/* utilities/* drivers/acpi/acpica
+rm -rf dispatcher events executer hardware namespace parser resources tables utilities
 
+private_includes="accommon.h acdebug.h acevents.h achware.h aclocal.h acnamesp.h acopcode.h acpredef.h acstruct.h acutils.h amlresrc.h"
+private_includes="$private_includes acconfig.h acdispat.h acglobal.h acinterp.h acmacros.h acobject.h acparser.h acresrc.h actables.h amlcode.h"
+for inc in $private_includes ; do
+	mv include/acpi/$inc drivers/acpi/acpica/
+done
 
 # indent all .c and .h files
 
