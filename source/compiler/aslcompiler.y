@@ -3473,13 +3473,13 @@ OptionalReference
     ;
 
 OptionalResourceType_First
-    :                               {$$ = NULL;}
+    :                               {$$ = TrCreateLeafNode (PARSEOP_RESOURCETYPE_CONSUMER);}
     | ResourceTypeKeyword           {$$ = $1;}
     ;
 
 OptionalResourceType
-    :                               {$$ = NULL;}
-    | ','                           {$$ = NULL;}
+    :                               {$$ = TrCreateLeafNode (PARSEOP_RESOURCETYPE_CONSUMER);}
+    | ','                           {$$ = TrCreateLeafNode (PARSEOP_RESOURCETYPE_CONSUMER);}
     | ',' ResourceTypeKeyword       {$$ = $2;}
     ;
 

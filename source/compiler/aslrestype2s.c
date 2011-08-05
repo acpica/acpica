@@ -758,20 +758,17 @@ RsDoI2cSerialBusDescriptor (
     Descriptor->I2cSerialBus.RevisionId     = AML_RESOURCE_I2C_REVISION;
     Descriptor->I2cSerialBus.TypeRevisionId = AML_RESOURCE_I2C_TYPE_REVISION;
     Descriptor->I2cSerialBus.Type           = AML_RESOURCE_I2C_BUS_TYPE;
-    Descriptor->I2cSerialBus.TypeDataLength = AML_RESOURCE_I2C_MIN_DATA_LEN;
+    Descriptor->I2cSerialBus.TypeDataLength = AML_RESOURCE_I2C_MIN_DATA_LEN + VendorLength;
 
     /* Build pointers to optional areas */
 
     VendorData = ACPI_ADD_PTR (UINT8, Descriptor, sizeof (AML_RESOURCE_I2C_SERIALBUS));
     ResourceSource = ACPI_ADD_PTR (char, VendorData, VendorLength);
 
-    /* Setup optional offsets and lengths */
-
-    Descriptor->I2cSerialBus.TypeDataLength += VendorLength;
-
-    printf ("%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X\n",
+    printf ("%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X, TypLen: %.2X\n",
         "I2cSerialBus", Descriptor->I2cSerialBus.ResourceLength,
-        (UINT16) sizeof (AML_RESOURCE_I2C_SERIALBUS), ResSourceLength, VendorLength);
+        (UINT16) sizeof (AML_RESOURCE_I2C_SERIALBUS), ResSourceLength,
+        VendorLength, Descriptor->I2cSerialBus.TypeDataLength);
 
     /* Process all child initialization nodes */
 
@@ -828,7 +825,7 @@ RsDoI2cSerialBusDescriptor (
 
         case 6: /* Resource Usage (consumer/producer) */
 
-            RsSetFlagBits (&Descriptor->I2cSerialBus.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->I2cSerialBus.Flags, InitializerOp, 1, 1);
             break;
 
         case 7: /* ResourceTag (Descriptor Name) */
@@ -906,20 +903,17 @@ RsDoSpiSerialBusDescriptor (
     Descriptor->SpiSerialBus.RevisionId     = AML_RESOURCE_SPI_REVISION;
     Descriptor->SpiSerialBus.TypeRevisionId = AML_RESOURCE_SPI_TYPE_REVISION;
     Descriptor->SpiSerialBus.Type           = AML_RESOURCE_SPI_BUS_TYPE;
-    Descriptor->SpiSerialBus.TypeDataLength = AML_RESOURCE_SPI_MIN_DATA_LEN;
+    Descriptor->SpiSerialBus.TypeDataLength = AML_RESOURCE_SPI_MIN_DATA_LEN + VendorLength;
 
     /* Build pointers to optional areas */
 
     VendorData = ACPI_ADD_PTR (UINT8, Descriptor, sizeof (AML_RESOURCE_SPI_SERIALBUS));
     ResourceSource = ACPI_ADD_PTR (char, VendorData, VendorLength);
 
-    /* Setup optional offsets and lengths */
-
-    Descriptor->SpiSerialBus.TypeDataLength += VendorLength;
-
-    printf ("%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X\n",
+    printf ("%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X, TypLen: %.2X\n",
         "SpiSerialBus", Descriptor->SpiSerialBus.ResourceLength,
-        (UINT16) sizeof (AML_RESOURCE_SPI_SERIALBUS), ResSourceLength, VendorLength);
+        (UINT16) sizeof (AML_RESOURCE_SPI_SERIALBUS), ResSourceLength,
+        VendorLength, Descriptor->SpiSerialBus.TypeDataLength);
 
     /* Process all child initialization nodes */
 
@@ -1004,7 +998,7 @@ RsDoSpiSerialBusDescriptor (
 
         case 10: /* Resource Usage (consumer/producer) */
 
-            RsSetFlagBits (&Descriptor->SpiSerialBus.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->SpiSerialBus.Flags, InitializerOp, 1, 1);
             break;
 
         case 11: /* ResourceTag (Descriptor Name) */
@@ -1082,20 +1076,17 @@ RsDoUartSerialBusDescriptor (
     Descriptor->UartSerialBus.RevisionId     = AML_RESOURCE_UART_REVISION;
     Descriptor->UartSerialBus.TypeRevisionId = AML_RESOURCE_UART_TYPE_REVISION;
     Descriptor->UartSerialBus.Type           = AML_RESOURCE_UART_BUS_TYPE;
-    Descriptor->UartSerialBus.TypeDataLength = AML_RESOURCE_UART_MIN_DATA_LEN;
+    Descriptor->UartSerialBus.TypeDataLength = AML_RESOURCE_UART_MIN_DATA_LEN + VendorLength;
 
     /* Build pointers to optional areas */
 
     VendorData = ACPI_ADD_PTR (UINT8, Descriptor, sizeof (AML_RESOURCE_UART_SERIALBUS));
     ResourceSource = ACPI_ADD_PTR (char, VendorData, VendorLength);
 
-    /* Setup optional offsets and lengths */
-
-    Descriptor->UartSerialBus.TypeDataLength += VendorLength;
-
-    printf ("%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X\n",
+    printf ("%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X, TypLen: %.2X\n",
         "UartSerialBus", Descriptor->UartSerialBus.ResourceLength,
-        (UINT16) sizeof (AML_RESOURCE_UART_SERIALBUS), ResSourceLength, VendorLength);
+        (UINT16) sizeof (AML_RESOURCE_UART_SERIALBUS), ResSourceLength,
+        VendorLength, Descriptor->UartSerialBus.TypeDataLength);
 
     /* Process all child initialization nodes */
 
@@ -1112,14 +1103,14 @@ RsDoUartSerialBusDescriptor (
 
         case 1: /* Bits Per Byte [Flags] (_LEN) */
 
-            RsSetFlagBits16 (&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 4, 0);
+            RsSetFlagBits16 (&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 4, 3);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 4);
             break;
 
         case 2: /* Stop Bits [Flags] (_STB) */
 
-            RsSetFlagBits16 (&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 2, 0);
+            RsSetFlagBits16 (&Descriptor->UartSerialBus.TypeSpecificFlags, InitializerOp, 2, 1);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_STOPBITS,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags), 2);
             break;
@@ -1187,7 +1178,7 @@ RsDoUartSerialBusDescriptor (
 
         case 11: /* Resource Usage (consumer/producer) */
 
-            RsSetFlagBits (&Descriptor->UartSerialBus.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->UartSerialBus.Flags, InitializerOp, 1, 1);
             break;
 
         case 12: /* ResourceTag (Descriptor Name) */
