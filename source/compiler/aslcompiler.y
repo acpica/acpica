@@ -178,7 +178,7 @@ void *                      AslLocalAllocate (unsigned int Size);
  * These shift/reduce conflicts are expected. There should be zero
  * reduce/reduce conflicts.
  */
-%expect 74
+%expect 83
 
 /*
  * Token types: These are returned by the lexer
