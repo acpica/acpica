@@ -239,7 +239,7 @@ typedef struct acpi_resource_irq
 
 } ACPI_RESOURCE_IRQ;
 
-typedef struct ACPI_RESOURCE_DMA
+typedef struct acpi_resource_dma
 {
     UINT8                           Type;
     UINT8                           BusMaster;
