@@ -417,6 +417,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* PARITYTYPE_ODD */            OP_TABLE_ENTRY (AML_BYTE_OP,                2,                              0,                  0),
 /* PARITYTYPE_SPACE */          OP_TABLE_ENTRY (AML_BYTE_OP,                4,                              0,                  0),
 /* PIN_NOPULL */                OP_TABLE_ENTRY (AML_BYTE_OP,                3,                              0,                  0),
+/* PIN_PULLDEFAULT */           OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* PIN_PULLDOWN */              OP_TABLE_ENTRY (AML_BYTE_OP,                2,                              0,                  0),
 /* PIN_PULLUP */                OP_TABLE_ENTRY (AML_BYTE_OP,                1,                              0,                  0),
 /* POWERRESOURCE */             OP_TABLE_ENTRY (AML_POWER_RES_OP,           0,                              NODE_AML_PACKAGE,   0),

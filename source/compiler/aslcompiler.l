@@ -526,9 +526,10 @@ NamePathTail                [.]{NameSeg}
 "ParityTypeEven"            { count (0); return (PARSEOP_PARITYTYPE_EVEN); }
 "ParityTypeNone"            { count (0); return (PARSEOP_PARITYTYPE_NONE); }
 
+"PullDefault"               { count (0); return (PARSEOP_PIN_PULLDEFAULT); }
 "PullUp"                    { count (0); return (PARSEOP_PIN_PULLUP); }
 "PullDown"                  { count (0); return (PARSEOP_PIN_PULLDOWN); }
-"NoPull"                    { count (0); return (PARSEOP_PIN_NOPULL); }
+"PullNone"                  { count (0); return (PARSEOP_PIN_NOPULL); }
 
 "IoRestrictionNone"         { count (0); return (PARSEOP_IORESTRICT_NONE); }
 "IoRestrictionInputOnly"    { count (0); return (PARSEOP_IORESTRICT_IN); }

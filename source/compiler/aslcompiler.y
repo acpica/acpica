@@ -406,6 +406,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_PARITYTYPE_ODD
 %token <i> PARSEOP_PARITYTYPE_SPACE
 %token <i> PARSEOP_PIN_NOPULL
+%token <i> PARSEOP_PIN_PULLDEFAULT
 %token <i> PARSEOP_PIN_PULLDOWN
 %token <i> PARSEOP_PIN_PULLUP
 %token <i> PARSEOP_POWERRESOURCE
@@ -2491,6 +2492,7 @@ PinConfigKeyword
     : PARSEOP_PIN_NOPULL                    {$$ = TrCreateLeafNode (PARSEOP_PIN_NOPULL);}
     | PARSEOP_PIN_PULLDOWN                  {$$ = TrCreateLeafNode (PARSEOP_PIN_PULLDOWN);}
     | PARSEOP_PIN_PULLUP                    {$$ = TrCreateLeafNode (PARSEOP_PIN_PULLUP);}
+    | PARSEOP_PIN_PULLDEFAULT               {$$ = TrCreateLeafNode (PARSEOP_PIN_PULLDEFAULT);}
     ;
 
 IoRestrictionKeyword
@@ -3476,7 +3478,8 @@ OptionalResourceType_First
     ;
 
 OptionalResourceType
-    : ','                           {$$ = NULL;}
+    :                               {$$ = NULL;}
+    | ','                           {$$ = NULL;}
     | ',' ResourceTypeKeyword       {$$ = $2;}
     ;
 
