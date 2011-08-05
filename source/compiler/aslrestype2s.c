@@ -378,9 +378,9 @@ RsDoGpioIntDescriptor (
     Descriptor->Gpio.ResSourceOffset = (UINT16)
         ACPI_PTR_DIFF (ResourceSource, Descriptor);
 
-    printf ("GPIO_INT: Base: %.2X, ResLen: %.2X, VendLen: %.2X, IntLen: %.2X, ACTUAL: %X\n",
-        (UINT16) sizeof (AML_RESOURCE_GPIO), ResSourceLength, VendorLength, InterruptLength,
-        Descriptor->Gpio.ResourceLength);
+    printf ("%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X, IntLen: %.2X\n",
+        "GpioInt", Descriptor->Gpio.ResourceLength, (UINT16) sizeof (AML_RESOURCE_GPIO),
+        ResSourceLength, VendorLength, InterruptLength);
 
     /* Process all child initialization nodes */
 
@@ -577,9 +577,9 @@ RsDoGpioIoDescriptor (
     Descriptor->Gpio.ResSourceOffset = (UINT16)
         ACPI_PTR_DIFF (ResourceSource, Descriptor);
 
-    printf ("GPIO_IO: Base: %.2X, ResLen: %.2X, VendLen: %.2X, IntLen: %.2X, ACTUAL: %X\n",
-        (UINT16) sizeof (AML_RESOURCE_GPIO), ResSourceLength, VendorLength, InterruptLength,
-        Descriptor->Gpio.ResourceLength);
+    printf ("%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X, IntLen: %.2X\n",
+        "GpioIo", Descriptor->Gpio.ResourceLength, (UINT16) sizeof (AML_RESOURCE_GPIO),
+        ResSourceLength, VendorLength, InterruptLength);
 
     /* Process all child initialization nodes */
 
@@ -769,9 +769,9 @@ RsDoI2cSerialBusDescriptor (
 
     Descriptor->I2cSerialBus.TypeDataLength += VendorLength;
 
-    printf ("I2C: Base: %.2X, ResLen: %.2X, VendLen: %.2X, ACTUAL: %X\n",
-        (UINT16) sizeof (AML_RESOURCE_I2C_SERIALBUS), ResSourceLength, VendorLength,
-        Descriptor->I2cSerialBus.ResourceLength);
+    printf ("%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X\n",
+        "I2cSerialBus", Descriptor->I2cSerialBus.ResourceLength,
+        (UINT16) sizeof (AML_RESOURCE_I2C_SERIALBUS), ResSourceLength, VendorLength);
 
     /* Process all child initialization nodes */
 
@@ -917,9 +917,9 @@ RsDoSpiSerialBusDescriptor (
 
     Descriptor->SpiSerialBus.TypeDataLength += VendorLength;
 
-    printf ("SPI: Base: %.2X, ResLen: %.2X, VendLen: %.2X, ACTUAL: %X\n",
-        (UINT16) sizeof (AML_RESOURCE_SPI_SERIALBUS), ResSourceLength, VendorLength,
-        Descriptor->SpiSerialBus.ResourceLength);
+    printf ("%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X\n",
+        "SpiSerialBus", Descriptor->SpiSerialBus.ResourceLength,
+        (UINT16) sizeof (AML_RESOURCE_SPI_SERIALBUS), ResSourceLength, VendorLength);
 
     /* Process all child initialization nodes */
 
@@ -1093,9 +1093,9 @@ RsDoUartSerialBusDescriptor (
 
     Descriptor->UartSerialBus.TypeDataLength += VendorLength;
 
-    printf ("UART: Base: %.2X, ResLen: %.2X, VendLen: %.2X, ACTUAL: %X\n",
-        (UINT16) sizeof (AML_RESOURCE_UART_SERIALBUS), ResSourceLength, VendorLength,
-        Descriptor->UartSerialBus.ResourceLength);
+    printf ("%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X\n",
+        "UartSerialBus", Descriptor->UartSerialBus.ResourceLength,
+        (UINT16) sizeof (AML_RESOURCE_UART_SERIALBUS), ResSourceLength, VendorLength);
 
     /* Process all child initialization nodes */
 
