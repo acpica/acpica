@@ -535,12 +535,12 @@ NamePathTail                [.]{NameSeg}
 "IoRestrictionInputOnly"    { count (0); return (PARSEOP_IORESTRICT_IN); }
 "IoRestrictionOutputOnly"   { count (0); return (PARSEOP_IORESTRICT_OUT); }
 
-"8-bit"                     { count (0); return (PARSEOP_XFERSIZE_8); }
-"16-bit"                    { count (0); return (PARSEOP_XFERSIZE_16); }
-"32-bit"                    { count (0); return (PARSEOP_XFERSIZE_32); }
-"64-bit"                    { count (0); return (PARSEOP_XFERSIZE_64); }
-"128-bit"                   { count (0); return (PARSEOP_XFERSIZE_128); }
-"256-bit"                   { count (0); return (PARSEOP_XFERSIZE_256); }
+"Width8bit"                 { count (0); return (PARSEOP_XFERSIZE_8); }
+"Width16bit"                { count (0); return (PARSEOP_XFERSIZE_16); }
+"Width32bit"                { count (0); return (PARSEOP_XFERSIZE_32); }
+"Width64bit"                { count (0); return (PARSEOP_XFERSIZE_64); }
+"Width128bit"               { count (0); return (PARSEOP_XFERSIZE_128); }
+"Width256bit"               { count (0); return (PARSEOP_XFERSIZE_256); }
 
 "FlowControlHardware"       { count (0); return (PARSEOP_FLOWCONTROL_HW); }
 "FlowControlNone"           { count (0); return (PARSEOP_FLOWCONTROL_NONE); }
