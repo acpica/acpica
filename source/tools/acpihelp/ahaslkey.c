@@ -122,8 +122,10 @@
 const AH_ASL_KEYWORD        AslKeywordInfo[] =
 {
     {"AccessAttribKeyword", "Serial Bus Attributes",
-        ":= AttribQuick | AttribSendReceive | AttribByte | AttribWord | "
-        "AttribBlock | AttribProcessCall | AttribBlockProcessCall"},
+        ":= AttribQuick (SMBusQuick) | AttribSendReceive (SMBusSendReceive) | "
+        "AttribByte (SMBusByte) | AttribWord (SMBusWord) | "
+        "AttribBlock (SMBusBlock) | AttribProcessCall (SMBusProcessCall) | "
+        "AttribBlockProcessCall (SMBusProcessCall)"},
     {"AccessTypeKeyword", "Field Access Types",
         ":= AnyAcc | ByteAcc | WordAcc | DWordAcc | QWordAcc | BufferAcc"},
     {"AddressingModeKeyword", "Mode - Resource Descriptors",
@@ -145,8 +147,6 @@ const AH_ASL_KEYWORD        AslKeywordInfo[] =
         ":= SubDecode | PosDecode"},
     {"DmaTypeKeyword", "DMA Types - DMA Resource Descriptor",
         ":= Compatibility | TypeA | TypeB | TypeF"},
-    {"DmaWidthKeyword", "DMA Widths - Fixed DMA Resource Descriptor",
-        ":= 8-bit | 16-bit | 32-bit | 64-bit | 128-bit | 256-bit"},
     {"EndianKeyword", "Endian type - Resource Descriptor",
         ":= BigEndian | LittleEndian"},
     {"ExtendedAttribKeyword", "Bus Attributes (with AccessLength) - Resource Descriptor",
@@ -200,6 +200,9 @@ const AH_ASL_KEYWORD        AslKeywordInfo[] =
         ":= ControllerInitiated | DeviceInitiated"},
     {"StopBitsKeyword", "Resource Descriptors",
         ":= StopBitsZero | StopBitsOne | StopBitsOnePlusHalf | StopBitsTwo"},
+    {"TransferWidthKeyword", "DMA Widths - Fixed DMA Resource Descriptor",
+        ":= Width8bit | Width16bit | Width32bit | Width64bit | "
+        "Width128bit | Width256bit"},
     {"TranslationKeyword", "Translation Density Types - Resource Descriptors",
         ":= SparseTranslation | DenseTranslation"},
     {"TypeKeyword", "Translation Types - Resource Descriptors",
