@@ -190,7 +190,8 @@ static ACPI_ADR_SPACE_TYPE  DefaultSpaceIdList[] =
  * We will install handlers for some of the various address space IDs.
  * Test one user-defined address space (used by aslts.)
  */
-#define ACPI_ADR_SPACE_USER_DEFINED     0x80
+#define ACPI_ADR_SPACE_USER_DEFINED1        0x80
+#define ACPI_ADR_SPACE_USER_DEFINED2        0xE4
 
 static ACPI_ADR_SPACE_TYPE  SpaceIdList[] =
 {
@@ -201,7 +202,8 @@ static ACPI_ADR_SPACE_TYPE  SpaceIdList[] =
     ACPI_ADR_SPACE_PCI_BAR_TARGET,
     ACPI_ADR_SPACE_IPMI,
     ACPI_ADR_SPACE_FIXED_HARDWARE,
-    ACPI_ADR_SPACE_USER_DEFINED
+    ACPI_ADR_SPACE_USER_DEFINED1,
+    ACPI_ADR_SPACE_USER_DEFINED2
 };
 
 

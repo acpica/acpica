@@ -1063,6 +1063,24 @@ AcpiDbDisplayHandlers (
 
         FoundHandler:;
         }
+
+        /* Find all handlers for user-defined SpaceIDs */
+
+        HandlerObj = ObjDesc->Device.Handler;
+        while (HandlerObj)
+        {
+            if (HandlerObj->AddressSpace.SpaceId >= ACPI_USER_REGION_BEGIN)
+            {
+                AcpiOsPrintf (ACPI_PREDEFINED_PREFIX,
+                    "User-defined ID", HandlerObj->AddressSpace.SpaceId);
+                AcpiOsPrintf (ACPI_HANDLER_PRESENT_STRING,
+                    (HandlerObj->AddressSpace.HandlerFlags &
+                        ACPI_ADDR_HANDLER_DEFAULT_INSTALLED) ? "Default" : "User",
+                    HandlerObj->AddressSpace.Handler);
+            }
+
+            HandlerObj = HandlerObj->AddressSpace.Next;
+        }
     }
 
     /* Fixed event handlers */
