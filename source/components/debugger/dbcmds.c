@@ -628,6 +628,8 @@ AcpiDmCompareAmlResources (
 {
     UINT8                   *Aml1;
     UINT8                   *Aml2;
+    UINT8                   *Aml1End;
+    UINT8                   *Aml2End;
     ACPI_RSDESC_SIZE        Aml1Length;
     ACPI_RSDESC_SIZE        Aml2Length;
     ACPI_RSDESC_SIZE        Offset = 0;
@@ -640,16 +642,18 @@ AcpiDmCompareAmlResources (
     if (Aml1BufferLength != Aml2BufferLength)
     {
         AcpiOsPrintf (
-            "**** Buffer length mismatch in converted AML: original %X new %X ****\n",
+            "**** Buffer length mismatch in converted AML: Original %X, New %X ****\n",
             Aml1BufferLength, Aml2BufferLength);
     }
 
     Aml1 = Aml1Buffer;
     Aml2 = Aml2Buffer;
+    Aml1End = Aml1Buffer + Aml1BufferLength;
+    Aml2End = Aml2Buffer + Aml2BufferLength;
 
     /* Walk the descriptor lists, comparing each descriptor */
 
-    while (Aml1 < (Aml1Buffer + Aml1BufferLength))
+    while ((Aml1 < Aml1End) && (Aml2 < Aml2End))
     {
         /* Get the lengths of each descriptor */
 
@@ -662,7 +666,7 @@ AcpiDmCompareAmlResources (
         if (Aml1Length != Aml2Length)
         {
             AcpiOsPrintf (
-                "**** Length mismatch in descriptor [%.2X] type %2.2X, Offset %8.8X L1 %X L2 %X ****\n",
+                "**** Length mismatch in descriptor [%.2X] type %2.2X, Offset %8.8X Len1 %X, Len2 %X ****\n",
                 Count, ResourceType, Offset, Aml1Length, Aml2Length);
         }
 
