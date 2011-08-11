@@ -1045,7 +1045,7 @@ AcpiDbDisplayHandlers (
 
             while (HandlerObj)
             {
-                if (i == HandlerObj->AddressSpace.SpaceId)
+                if (AcpiGbl_SpaceIdList[i] == HandlerObj->AddressSpace.SpaceId)
                 {
                     AcpiOsPrintf (ACPI_HANDLER_PRESENT_STRING,
                         (HandlerObj->AddressSpace.HandlerFlags &

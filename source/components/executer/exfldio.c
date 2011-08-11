@@ -170,6 +170,7 @@ AcpiExSetupRegion (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *RgnDesc;
+    UINT8                   SpaceId;
 
 
     ACPI_FUNCTION_TRACE_U32 (ExSetupRegion, FieldDatumByteOffset);
@@ -186,6 +187,16 @@ AcpiExSetupRegion (
             AcpiUtGetObjectTypeName (RgnDesc)));
 
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+    }
+
+    SpaceId = RgnDesc->Region.SpaceId;
+
+    /* Validate the Space ID */
+
+    if (!AcpiIsValidSpaceId (SpaceId))
+    {
+        ACPI_ERROR ((AE_INFO, "Invalid/unknown Address Space ID: 0x%2.2X", SpaceId));
+        return_ACPI_STATUS (AE_AML_INVALID_SPACE_ID);
     }
 
     /*
@@ -205,9 +216,9 @@ AcpiExSetupRegion (
      * Exit now for SMBus, GSBus or IPMI address space, it has a non-linear
      * address space and the request cannot be directly validated
      */
-    if (RgnDesc->Region.SpaceId == ACPI_ADR_SPACE_SMBUS ||
-        RgnDesc->Region.SpaceId == ACPI_ADR_SPACE_GSBUS ||
-        RgnDesc->Region.SpaceId == ACPI_ADR_SPACE_IPMI)
+    if (SpaceId == ACPI_ADR_SPACE_SMBUS ||
+        SpaceId == ACPI_ADR_SPACE_GSBUS ||
+        SpaceId == ACPI_ADR_SPACE_IPMI)
     {
         /* SMBus or IPMI has a non-linear address space */
 
