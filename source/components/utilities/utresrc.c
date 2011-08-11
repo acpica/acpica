@@ -531,6 +531,10 @@ AcpiUtWalkAmlResources (
         Status = AcpiUtValidateResource (Aml, &ResourceIndex);
         if (ACPI_FAILURE (Status))
         {
+            /*
+             * Exit on failure. Cannot continue because the descriptor length
+             * may be bogus also.
+             */
             return_ACPI_STATUS (Status);
         }
 
@@ -545,7 +549,7 @@ AcpiUtWalkAmlResources (
             Status = UserFunction (Aml, Length, Offset, ResourceIndex, Context);
             if (ACPI_FAILURE (Status))
             {
-                return (Status);
+                return_ACPI_STATUS (Status);
             }
         }
 
@@ -580,7 +584,7 @@ AcpiUtWalkAmlResources (
 
     /* Did not find an EndTag descriptor */
 
-    return (AE_AML_NO_RESOURCE_END_TAG);
+    return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
 }
 
 
@@ -629,7 +633,7 @@ AcpiUtValidateResource (
 
         if (ResourceType > ACPI_RESOURCE_NAME_LARGE_MAX)
         {
-            return (AE_AML_INVALID_RESOURCE_TYPE);
+            goto InvalidResource;
         }
 
         /*
@@ -654,7 +658,7 @@ AcpiUtValidateResource (
      */
     if (!AcpiGbl_ResourceTypes[ResourceIndex])
     {
-        return (AE_AML_INVALID_RESOURCE_TYPE);
+        goto InvalidResource;
     }
 
 #ifndef ACPI_ASL_COMPILER
@@ -666,7 +670,7 @@ AcpiUtValidateResource (
      */
     if (!AcpiGbl_GetResourceDispatch[ResourceIndex])
     {
-        return (AE_AML_INVALID_RESOURCE_TYPE);
+        goto InvalidResource;
     }
 #endif
 
@@ -687,7 +691,7 @@ AcpiUtValidateResource (
 
         if (ResourceLength != MinimumResourceLength)
         {
-            return (AE_AML_BAD_RESOURCE_LENGTH);
+            goto BadResourceLength;
         }
         break;
 
@@ -697,7 +701,7 @@ AcpiUtValidateResource (
 
         if (ResourceLength < MinimumResourceLength)
         {
-            return (AE_AML_BAD_RESOURCE_LENGTH);
+            goto BadResourceLength;
         }
         break;
 
@@ -708,7 +712,7 @@ AcpiUtValidateResource (
         if ((ResourceLength > MinimumResourceLength) ||
             (ResourceLength < (MinimumResourceLength - 1)))
         {
-            return (AE_AML_BAD_RESOURCE_LENGTH);
+            goto BadResourceLength;
         }
         break;
 
@@ -716,7 +720,7 @@ AcpiUtValidateResource (
 
         /* Shouldn't happen (because of validation earlier), but be sure */
 
-        return (AE_AML_INVALID_RESOURCE_TYPE);
+        goto InvalidResource;
     }
 
     /* Optionally return the resource table index */
@@ -727,6 +731,22 @@ AcpiUtValidateResource (
     }
 
     return (AE_OK);
+
+
+InvalidResource:
+
+    ACPI_ERROR ((AE_INFO,
+        "Invalid/unsupported resource descriptor: Type 0x%2.2X",
+        ResourceType));
+    return (AE_AML_INVALID_RESOURCE_TYPE);
+
+BadResourceLength:
+
+    ACPI_ERROR ((AE_INFO,
+        "Invalid resource descriptor length: Type "
+        "0x%2.2X, Length 0x%4.4X, MinLength 0x%4.4X",
+        ResourceType, ResourceLength, MinimumResourceLength));
+    return (AE_AML_BAD_RESOURCE_LENGTH);
 }
 
 

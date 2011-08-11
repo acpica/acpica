@@ -484,6 +484,10 @@ AcpiRsGetListLength (
         Status = AcpiUtValidateResource (AmlBuffer, &ResourceIndex);
         if (ACPI_FAILURE (Status))
         {
+            /*
+             * Exit on failure. Cannot continue because the descriptor length
+             * may be bogus also.
+             */
             return_ACPI_STATUS (Status);
         }
 
