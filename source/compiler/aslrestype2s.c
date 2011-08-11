@@ -1199,5 +1199,15 @@ RsDoUartSerialBusDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
+    /*
+     * Slave Mode [Flag] (_SLV)
+     *
+     * Note: There is no SlaveMode argument to the UartSerialBus macro, but
+     * we add this name anyway to allow the flag to be set by ASL in the
+     * rare case where there is a slave mode associated with the UART.
+     */
+    RsCreateBitField (InitializerOp, ACPI_RESTAG_SLAVEMODE,
+        CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.Flags), 0);
+
     return (Rnode);
 }
