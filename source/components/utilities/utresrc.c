@@ -443,36 +443,36 @@ static const UINT8          AcpiGbl_ResourceTypes[] =
     0,
     0,
     0,
-    ACPI_SMALL_VARIABLE_LENGTH,
-    ACPI_FIXED_LENGTH,
-    ACPI_SMALL_VARIABLE_LENGTH,
-    ACPI_FIXED_LENGTH,
-    ACPI_FIXED_LENGTH,
-    ACPI_FIXED_LENGTH,
-    ACPI_FIXED_LENGTH,      /* FixedDMA */
+    ACPI_SMALL_VARIABLE_LENGTH,     /* 04 IRQ */
+    ACPI_FIXED_LENGTH,              /* 05 DMA */
+    ACPI_SMALL_VARIABLE_LENGTH,     /* 06 StartDependentFunctions */
+    ACPI_FIXED_LENGTH,              /* 07 EndDependentFunctions */
+    ACPI_FIXED_LENGTH,              /* 08 IO */
+    ACPI_FIXED_LENGTH,              /* 09 FixedIO */
+    ACPI_FIXED_LENGTH,              /* 0A FixedDMA */
     0,
     0,
     0,
-    ACPI_VARIABLE_LENGTH,
-    ACPI_FIXED_LENGTH,
+    ACPI_VARIABLE_LENGTH,           /* 0E VendorShort */
+    ACPI_FIXED_LENGTH,              /* 0F EndTag */
 
     /* Large descriptors */
 
     0,
-    ACPI_FIXED_LENGTH,
-    ACPI_FIXED_LENGTH,
+    ACPI_FIXED_LENGTH,              /* 01 Memory24 */
+    ACPI_FIXED_LENGTH,              /* 02 GenericRegister */
     0,
-    ACPI_VARIABLE_LENGTH,
-    ACPI_FIXED_LENGTH,
-    ACPI_FIXED_LENGTH,
-    ACPI_VARIABLE_LENGTH,
-    ACPI_VARIABLE_LENGTH,
-    ACPI_VARIABLE_LENGTH,
-    ACPI_VARIABLE_LENGTH,
-    ACPI_FIXED_LENGTH,
-    ACPI_VARIABLE_LENGTH,   /* GPIO */
+    ACPI_VARIABLE_LENGTH,           /* 04 VendorLong */
+    ACPI_FIXED_LENGTH,              /* 05 Memory32 */
+    ACPI_FIXED_LENGTH,              /* 06 Memory32Fixed */
+    ACPI_VARIABLE_LENGTH,           /* 07 Dword* address */
+    ACPI_VARIABLE_LENGTH,           /* 08 Word* address */
+    ACPI_VARIABLE_LENGTH,           /* 09 ExtendedIRQ */
+    ACPI_VARIABLE_LENGTH,           /* 0A Qword* address */
+    ACPI_FIXED_LENGTH,              /* 0B Extended* address */
+    ACPI_VARIABLE_LENGTH,           /* 0C Gpio* */
     0,
-    ACPI_VARIABLE_LENGTH    /* SerialBus */
+    ACPI_VARIABLE_LENGTH            /* 0E *SerialBus */
 };
 
 
