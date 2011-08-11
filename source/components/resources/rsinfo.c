@@ -173,7 +173,7 @@ ACPI_RSCONVERT_INFO         *AcpiGbl_GetResourceDispatch[] =
     AcpiRsConvertEndDpf,            /* 0x07, ACPI_RESOURCE_NAME_END_DEPENDENT */
     AcpiRsConvertIo,                /* 0x08, ACPI_RESOURCE_NAME_IO */
     AcpiRsConvertFixedIo,           /* 0x09, ACPI_RESOURCE_NAME_FIXED_IO */
-    NULL,                           /* 0x0A, Reserved */
+    NULL,                           /* 0x0A, ACPI_RESOURCE_NAME_FIXED_DMA */
     NULL,                           /* 0x0B, Reserved */
     NULL,                           /* 0x0C, Reserved */
     NULL,                           /* 0x0D, Reserved */
@@ -193,7 +193,10 @@ ACPI_RSCONVERT_INFO         *AcpiGbl_GetResourceDispatch[] =
     AcpiRsConvertAddress16,         /* 0x08, ACPI_RESOURCE_NAME_ADDRESS16 */
     AcpiRsConvertExtIrq,            /* 0x09, ACPI_RESOURCE_NAME_EXTENDED_IRQ */
     AcpiRsConvertAddress64,         /* 0x0A, ACPI_RESOURCE_NAME_ADDRESS64 */
-    AcpiRsConvertExtAddress64       /* 0x0B, ACPI_RESOURCE_NAME_EXTENDED_ADDRESS64 */
+    AcpiRsConvertExtAddress64,      /* 0x0B, ACPI_RESOURCE_NAME_EXTENDED_ADDRESS64 */
+    NULL,                           /* 0x0C, ACPI_RESOURCE_NAME_GPIO */
+    NULL,                           /* 0x0D, Reserved */
+    NULL                            /* 0x0E, ACPI_RESOURCE_NAME_SERIAL_BUS */
 };
 
 

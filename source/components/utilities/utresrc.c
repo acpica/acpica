@@ -118,6 +118,7 @@
 
 #include "acpi.h"
 #include "accommon.h"
+#include "acresrc.h"
 #include "amlresrc.h"
 
 
@@ -647,13 +648,27 @@ AcpiUtValidateResource (
             ((ResourceType & ACPI_RESOURCE_NAME_SMALL_MASK) >> 3);
     }
 
-    /* Check validity of the resource type, zero indicates name is invalid */
-
+    /*
+     * Check validity of the resource type, via AcpiGbl_ResourceTypes. Zero
+     * indicates an invalid resource.
+     */
     if (!AcpiGbl_ResourceTypes[ResourceIndex])
     {
         return (AE_AML_INVALID_RESOURCE_TYPE);
     }
 
+#ifndef ACPI_ASL_COMPILER
+    /*
+     * Via AcpiGbl_GetResourceDispatch, ensure that the resource type is not
+     * "reserved" or not supported by the Resource Manager code. NULL
+     * indicates an invalid resource. This is essentially a "double check"
+     * to make sure that we have a valid dispatch table for the resource.
+     */
+    if (!AcpiGbl_GetResourceDispatch[ResourceIndex])
+    {
+        return (AE_AML_INVALID_RESOURCE_TYPE);
+    }
+#endif
 
     /*
      * 2) Validate the ResourceLength field. This ensures that the length
