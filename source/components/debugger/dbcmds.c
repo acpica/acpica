@@ -141,6 +141,11 @@ AcpiDmTestResourceConversion (
     ACPI_NAMESPACE_NODE     *Node,
     char                    *Name);
 
+static ACPI_STATUS
+AcpiDbResourceCallback (
+    ACPI_RESOURCE           *Resource,
+    void                    *Context);
+
 
 /*******************************************************************************
  *
@@ -770,6 +775,28 @@ Exit1:
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDbResourceCallback
+ *
+ * PARAMETERS:  ACPI_WALK_RESOURCE_CALLBACK
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Simple callback to exercise AcpiWalkResources
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiDbResourceCallback (
+    ACPI_RESOURCE           *Resource,
+    void                    *Context)
+{
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDbDisplayResources
  *
  * PARAMETERS:  ObjectArg       - String with hex value of the object
@@ -847,6 +874,17 @@ GetCrs:
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could not obtain _CRS: %s\n",
+            AcpiFormatException (Status));
+        goto GetPrs;
+    }
+
+    /* This code is here to exercise the AcpiWalkResources interface */
+
+    Status = AcpiWalkResources (Node, METHOD_NAME__CRS,
+        AcpiDbResourceCallback, NULL);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("AcpiWalkResources failed: %s\n",
             AcpiFormatException (Status));
         goto GetPrs;
     }
