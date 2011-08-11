@@ -207,7 +207,6 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_ADD
 %token <i> PARSEOP_ADDRESSINGMODE_7BIT
 %token <i> PARSEOP_ADDRESSINGMODE_10BIT
-%token <i> PARSEOP_ADDRESSSPACE_FFIXEDHW
 %token <i> PARSEOP_ADDRESSTYPE_ACPI
 %token <i> PARSEOP_ADDRESSTYPE_MEMORY
 %token <i> PARSEOP_ADDRESSTYPE_NVS
@@ -424,6 +423,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_REFOF
 %token <i> PARSEOP_REGIONSPACE_CMOS
 %token <i> PARSEOP_REGIONSPACE_EC
+%token <i> PARSEOP_REGIONSPACE_FFIXEDHW
 %token <i> PARSEOP_REGIONSPACE_GPIO
 %token <i> PARSEOP_REGIONSPACE_GSBUS
 %token <i> PARSEOP_REGIONSPACE_IO
@@ -2306,12 +2306,12 @@ RegionSpaceKeyword
     | PARSEOP_REGIONSPACE_IPMI              {$$ = TrCreateLeafNode (PARSEOP_REGIONSPACE_IPMI);}
     | PARSEOP_REGIONSPACE_GPIO              {$$ = TrCreateLeafNode (PARSEOP_REGIONSPACE_GPIO);}
     | PARSEOP_REGIONSPACE_GSBUS             {$$ = TrCreateLeafNode (PARSEOP_REGIONSPACE_GSBUS);}
+    | PARSEOP_REGIONSPACE_FFIXEDHW          {$$ = TrCreateLeafNode (PARSEOP_REGIONSPACE_FFIXEDHW);}
     ;
 
 AddressSpaceKeyword
     : ByteConst								{$$ = UtCheckIntegerRange ($1, 0x80, 0xFF);}
     | RegionSpaceKeyword					{}
-    | PARSEOP_ADDRESSSPACE_FFIXEDHW         {$$ = TrCreateLeafNode (PARSEOP_ADDRESSSPACE_FFIXEDHW);}
     ;
 
 

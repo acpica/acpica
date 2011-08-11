@@ -397,8 +397,7 @@ NamePathTail                [.]{NameSeg}
 "IPMI"                      { count (0); return (PARSEOP_REGIONSPACE_IPMI); }
 "GeneralPurposeIo"          { count (0); return (PARSEOP_REGIONSPACE_GPIO); }
 "GenericSerialBus"          { count (0); return (PARSEOP_REGIONSPACE_GSBUS); }
-
-"FFixedHW"                  { count (0); return (PARSEOP_ADDRESSSPACE_FFIXEDHW); }
+"FFixedHW"                  { count (0); return (PARSEOP_REGIONSPACE_FFIXEDHW); }
 
 "SMBQuick"                  { count (0); return (PARSEOP_ACCESSATTRIB_QUICK); }
 "SMBSendReceive"            { count (0); return (PARSEOP_ACCESSATTRIB_SND_RCV); }
