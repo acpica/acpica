@@ -1179,6 +1179,16 @@ RsDoUartSerialBusDescriptor (
         case 11: /* Resource Usage (consumer/producer) */
 
             RsSetFlagBits (&Descriptor->UartSerialBus.Flags, InitializerOp, 1, 1);
+
+            /*
+             * Slave Mode [Flag] (_SLV)
+             *
+             * Note: There is no SlaveMode argument to the UartSerialBus macro, but
+             * we add this name anyway to allow the flag to be set by ASL in the
+             * rare case where there is a slave mode associated with the UART.
+             */
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_SLAVEMODE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.Flags), 0);
             break;
 
         case 12: /* ResourceTag (Descriptor Name) */
@@ -1198,16 +1208,6 @@ RsDoUartSerialBusDescriptor (
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
-
-    /*
-     * Slave Mode [Flag] (_SLV)
-     *
-     * Note: There is no SlaveMode argument to the UartSerialBus macro, but
-     * we add this name anyway to allow the flag to be set by ASL in the
-     * rare case where there is a slave mode associated with the UART.
-     */
-    RsCreateBitField (InitializerOp, ACPI_RESTAG_SLAVEMODE,
-        CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.Flags), 0);
 
     return (Rnode);
 }
