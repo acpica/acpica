@@ -2080,6 +2080,28 @@
 				Filter=".c"
 				>
 				<File
+					RelativePath="..\..\source\COMPONENTS\Disassembler\dmnames.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath="..\..\source\common\getopt.c"
 					>
 					<FileConfiguration
@@ -2421,28 +2443,6 @@
 				>
 				<File
 					RelativePath="..\..\source\COMPONENTS\Disassembler\dmbuffer.c"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\source\COMPONENTS\Disassembler\dmnames.c"
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
@@ -3774,6 +3774,10 @@
 			</File>
 			<File
 				RelativePath="..\..\source\Include\acresrc.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\include\acrestyp.h"
 				>
 			</File>
 			<File

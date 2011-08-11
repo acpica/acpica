@@ -117,7 +117,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy iasl.exe to Libraries"
-				CommandLine="copy AslCompiler\aslcompiler.exe ..\..\libraries\iasl.exe&#x0D;&#x0A;dir \acpica\libraries\iasl.exe&#x0D;&#x0A;"
+				CommandLine="copy AslCompiler\aslcompiler.exe ..\..\libraries\iasl.exe&#x0D;&#x0A;dir ..\..\libraries\iasl.exe&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -222,7 +222,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy iaslDebug.exe to Libraries (DEBUG)"
-				CommandLine="copy AslCompilerDebug\aslcompiler.exe ..\..\libraries\iaslDebug.exe&#x0D;&#x0A;dir \acpica\libraries\iasldebug.exe&#x0D;&#x0A;"
+				CommandLine="copy AslCompilerDebug\aslcompiler.exe ..\..\libraries\iaslDebug.exe&#x0D;&#x0A;dir ..\..\libraries\iasldebug.exe&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
