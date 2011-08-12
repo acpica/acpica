@@ -180,6 +180,8 @@ NamePathTail                [.]{NameSeg}
 "//"                        { if (!comment2 ()) yyterminate (); }
 
 "\""                        { if (literal ()) return (PARSEOP_STRING_LITERAL); else yyterminate (); }
+";"                         { count (0); return(';'); }
+
 
 0[xX]{HexDigitChar}+ |
 {DigitChar}+                { AslCompilerlval.i = UtDoConstant ((char *) AslCompilertext);
@@ -660,7 +662,6 @@ NamePathTail                [.]{NameSeg}
 ","                         { count (0); return(','); }
 "("                         { count (0); return('('); }
 ")"                         { count (0); return(')'); }
-
 
 {NameSeg}                   { char *s;
                                 count (0);

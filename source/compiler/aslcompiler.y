@@ -177,7 +177,7 @@ void *                      AslLocalAllocate (unsigned int Size);
  * These shift/reduce conflicts are expected. There should be zero
  * reduce/reduce conflicts.
  */
-%expect 83
+%expect 85
 
 /******************************************************************************
  *
@@ -910,7 +910,9 @@ DefinitionBlockTerm
 TermList
     :                               {$$ = NULL;}
     | TermList Term                 {$$ = TrLinkPeerNode (TrSetNodeFlags ($1, NODE_RESULT_NOT_USED),$2);}
+    | TermList Term ';'             {$$ = TrLinkPeerNode (TrSetNodeFlags ($1, NODE_RESULT_NOT_USED),$2);}
     | TermList ';' Term             {$$ = TrLinkPeerNode (TrSetNodeFlags ($1, NODE_RESULT_NOT_USED),$3);}
+    | TermList ';' Term ';'         {$$ = TrLinkPeerNode (TrSetNodeFlags ($1, NODE_RESULT_NOT_USED),$3);}
     ;
 
 Term
