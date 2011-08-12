@@ -2945,7 +2945,7 @@ GpioIntTerm
         OptionalNameString          // 15: DescriptorName
         OptionalBuffer_Last         // 16: VendorData
         ')' '{'
-            DWordList '}'           {$$ = TrLinkChildren ($<n>3,11,$4,$6,$7,$9,$10,$12,$13,$14,$15,$16,$19);}
+            DWordConstExpr '}'      {$$ = TrLinkChildren ($<n>3,11,$4,$6,$7,$9,$10,$12,$13,$14,$15,$16,$19);}
     | PARSEOP_GPIO_INT '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
