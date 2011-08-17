@@ -2170,6 +2170,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\disassembler\dmresrcl2.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\COMPONENTS\disassembler\dmresrcs.c"
 					>
 					<FileConfiguration
