@@ -342,7 +342,7 @@ AcpiDbDisplayHelp (
     AcpiOsPrintf ("  Predefined                          Check all predefined names\n");
     AcpiOsPrintf ("  Prefix [<NamePath>]                 Set or Get current execution prefix\n");
     AcpiOsPrintf ("  References <Addr>                   Find all references to object at addr\n");
-    AcpiOsPrintf ("  Resources <Device>                  Get and display Device resources\n");
+    AcpiOsPrintf ("  Resources <DeviceName | *>          Display Device resources (* = all devices)\n");
     AcpiOsPrintf ("  Set N <NamedObject> <Value>         Set value for named integer\n");
     AcpiOsPrintf ("  Sleep <SleepState>                  Simulate sleep/wake sequence\n");
     AcpiOsPrintf ("  Template <Object>                   Format/dump a Buffer/ResourceTemplate\n");

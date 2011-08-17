@@ -118,6 +118,7 @@
 #include "accommon.h"
 #include "acevents.h"
 #include "acdebug.h"
+#include "acnamesp.h"
 #include "acresrc.h"
 #include "actables.h"
 
@@ -145,6 +146,13 @@ static ACPI_STATUS
 AcpiDbResourceCallback (
     ACPI_RESOURCE           *Resource,
     void                    *Context);
+
+static ACPI_STATUS
+AcpiDbDeviceResources (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
 
 
 /*******************************************************************************
@@ -801,9 +809,196 @@ AcpiDbResourceCallback (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDbDeviceResources
+ *
+ * PARAMETERS:  ACPI_WALK_CALLBACK
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Display the _PRT/_CRS/_PRS resources for a device object.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiDbDeviceResources (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_NAMESPACE_NODE     *PrtNode = NULL;
+    ACPI_NAMESPACE_NODE     *CrsNode = NULL;
+    ACPI_NAMESPACE_NODE     *PrsNode = NULL;
+    char                    *ParentPath;
+    ACPI_BUFFER             ReturnObj;
+    ACPI_STATUS             Status;
+
+
+    Node = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, ObjHandle);
+    ParentPath = AcpiNsGetExternalPathname (Node);
+    if (!ParentPath)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    /* Get handles to the resource methods for this device */
+
+    (void) AcpiGetHandle (Node, METHOD_NAME__PRT, ACPI_CAST_PTR (ACPI_HANDLE, &PrtNode));
+    (void) AcpiGetHandle (Node, METHOD_NAME__CRS, ACPI_CAST_PTR (ACPI_HANDLE, &CrsNode));
+    (void) AcpiGetHandle (Node, METHOD_NAME__PRS, ACPI_CAST_PTR (ACPI_HANDLE, &PrsNode));
+    if (!PrtNode && !CrsNode && !PrsNode)
+    {
+        goto Cleanup;   /* Nothing to do */
+    }
+
+    AcpiOsPrintf ("\nDevice: %s\n", ParentPath);
+
+    /* Prepare for a return object of arbitrary size */
+
+    ReturnObj.Pointer = AcpiGbl_DbBuffer;
+    ReturnObj.Length  = ACPI_DEBUG_BUFFER_SIZE;
+
+
+    /* _PRT */
+
+    if (PrtNode)
+    {
+        AcpiOsPrintf ("Evaluating _PRT\n");
+
+        Status = AcpiEvaluateObject (PrtNode, NULL, NULL, &ReturnObj);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiOsPrintf ("Could not evaluate _PRT: %s\n",
+                AcpiFormatException (Status));
+            goto GetCrs;
+        }
+
+        ReturnObj.Pointer = AcpiGbl_DbBuffer;
+        ReturnObj.Length  = ACPI_DEBUG_BUFFER_SIZE;
+
+        Status = AcpiGetIrqRoutingTable (Node, &ReturnObj);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiOsPrintf ("GetIrqRoutingTable failed: %s\n",
+                AcpiFormatException (Status));
+            goto GetCrs;
+        }
+
+        AcpiRsDumpIrqList (ACPI_CAST_PTR (UINT8, AcpiGbl_DbBuffer));
+    }
+
+
+    /* _CRS */
+
+GetCrs:
+    if (CrsNode)
+    {
+        AcpiOsPrintf ("Evaluating _CRS\n");
+
+        ReturnObj.Pointer = AcpiGbl_DbBuffer;
+        ReturnObj.Length  = ACPI_DEBUG_BUFFER_SIZE;
+
+        Status = AcpiEvaluateObject (CrsNode, NULL, NULL, &ReturnObj);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiOsPrintf ("Could not evaluate _CRS: %s\n",
+                AcpiFormatException (Status));
+            goto GetPrs;
+        }
+
+        /* This code is here to exercise the AcpiWalkResources interface */
+
+        Status = AcpiWalkResources (Node, METHOD_NAME__CRS,
+            AcpiDbResourceCallback, NULL);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiOsPrintf ("AcpiWalkResources failed: %s\n",
+                AcpiFormatException (Status));
+            goto GetPrs;
+        }
+
+        /* Get the _CRS resource list */
+
+        ReturnObj.Pointer = AcpiGbl_DbBuffer;
+        ReturnObj.Length  = ACPI_DEBUG_BUFFER_SIZE;
+
+        Status = AcpiGetCurrentResources (Node, &ReturnObj);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiOsPrintf ("AcpiGetCurrentResources failed: %s\n",
+                AcpiFormatException (Status));
+            goto GetPrs;
+        }
+
+        /* Dump the _CRS resource list */
+
+        AcpiRsDumpResourceList (ACPI_CAST_PTR (ACPI_RESOURCE,
+            ReturnObj.Pointer));
+
+        /*
+         * Perform comparison of original AML to newly created AML. This tests both
+         * the AML->Resource conversion and the Resource->Aml conversion.
+         */
+        Status = AcpiDmTestResourceConversion (Node, METHOD_NAME__CRS);
+
+        /* Execute _SRS with the resource list */
+
+        Status = AcpiSetCurrentResources (Node, &ReturnObj);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiOsPrintf ("AcpiSetCurrentResources failed: %s\n",
+                AcpiFormatException (Status));
+            goto GetPrs;
+        }
+    }
+
+
+    /* _PRS */
+
+GetPrs:
+    if (PrsNode)
+    {
+        AcpiOsPrintf ("Evaluating _PRS\n");
+
+        ReturnObj.Pointer = AcpiGbl_DbBuffer;
+        ReturnObj.Length  = ACPI_DEBUG_BUFFER_SIZE;
+
+        Status = AcpiEvaluateObject (PrsNode, NULL, NULL, &ReturnObj);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiOsPrintf ("Could not evaluate _PRS: %s\n",
+                AcpiFormatException (Status));
+            goto Cleanup;
+        }
+
+        ReturnObj.Pointer = AcpiGbl_DbBuffer;
+        ReturnObj.Length  = ACPI_DEBUG_BUFFER_SIZE;
+
+        Status = AcpiGetPossibleResources (Node, &ReturnObj);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiOsPrintf ("AcpiGetPossibleResources failed: %s\n",
+                AcpiFormatException (Status));
+            goto Cleanup;
+        }
+
+        AcpiRsDumpResourceList (ACPI_CAST_PTR (ACPI_RESOURCE, AcpiGbl_DbBuffer));
+    }
+
+
+Cleanup:
+    ACPI_FREE (ParentPath);
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDbDisplayResources
  *
- * PARAMETERS:  ObjectArg       - String with hex value of the object
+ * PARAMETERS:  ObjectArg       - String object name or object pointer.
+ *                                "*" means "display resources for all devices"
  *
  * RETURN:      None
  *
@@ -816,153 +1011,38 @@ AcpiDbDisplayResources (
     char                    *ObjectArg)
 {
     ACPI_NAMESPACE_NODE     *Node;
-    ACPI_STATUS             Status;
-    ACPI_BUFFER             ReturnObj;
 
 
     AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
     AcpiDbgLevel |= ACPI_LV_RESOURCES;
 
-    /* Convert string to object pointer */
+    /* Asterisk means "display resources for all devices" */
 
-    Node = AcpiDbConvertToNode (ObjectArg);
-    if (!Node)
+    if (!ACPI_STRCMP (ObjectArg, "*"))
     {
-        return;
+        (void) AcpiWalkNamespace (ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT,
+                    ACPI_UINT32_MAX, AcpiDbDeviceResources, NULL, NULL, NULL);
     }
-
-    /* Prepare for a return object of arbitrary size */
-
-    ReturnObj.Pointer = AcpiGbl_DbBuffer;
-    ReturnObj.Length  = ACPI_DEBUG_BUFFER_SIZE;
-
-    /* _PRT */
-
-    AcpiOsPrintf ("Evaluating _PRT\n");
-
-    /* Check if _PRT exists */
-
-    Status = AcpiEvaluateObject (Node, METHOD_NAME__PRT, NULL, &ReturnObj);
-    if (ACPI_FAILURE (Status))
+    else
     {
-        AcpiOsPrintf ("Could not obtain _PRT: %s\n",
-            AcpiFormatException (Status));
-        goto GetCrs;
+        /* Convert string to object pointer */
+
+        Node = AcpiDbConvertToNode (ObjectArg);
+        if (Node)
+        {
+            if (Node->Type != ACPI_TYPE_DEVICE)
+            {
+                AcpiOsPrintf ("%4.4s: Name is not a device object (%s)\n",
+                    Node->Name.Ascii, AcpiUtGetTypeName (Node->Type));
+            }
+            else
+            {
+                (void) AcpiDbDeviceResources (Node, 0, NULL, NULL);
+            }
+        }
     }
-
-    ReturnObj.Pointer = AcpiGbl_DbBuffer;
-    ReturnObj.Length  = ACPI_DEBUG_BUFFER_SIZE;
-
-    Status = AcpiGetIrqRoutingTable (Node, &ReturnObj);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsPrintf ("GetIrqRoutingTable failed: %s\n",
-            AcpiFormatException (Status));
-        goto GetCrs;
-    }
-
-    AcpiRsDumpIrqList (ACPI_CAST_PTR (UINT8, AcpiGbl_DbBuffer));
-
-
-    /* _CRS */
-
-GetCrs:
-    AcpiOsPrintf ("Evaluating _CRS\n");
-
-    ReturnObj.Pointer = AcpiGbl_DbBuffer;
-    ReturnObj.Length  = ACPI_DEBUG_BUFFER_SIZE;
-
-    /* Check if _CRS exists */
-
-    Status = AcpiEvaluateObject (Node, METHOD_NAME__CRS, NULL, &ReturnObj);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsPrintf ("Could not obtain _CRS: %s\n",
-            AcpiFormatException (Status));
-        goto GetPrs;
-    }
-
-    /* This code is here to exercise the AcpiWalkResources interface */
-
-    Status = AcpiWalkResources (Node, METHOD_NAME__CRS,
-        AcpiDbResourceCallback, NULL);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsPrintf ("AcpiWalkResources failed: %s\n",
-            AcpiFormatException (Status));
-        goto GetPrs;
-    }
-
-    /* Get the _CRS resource list */
-
-    ReturnObj.Pointer = AcpiGbl_DbBuffer;
-    ReturnObj.Length  = ACPI_DEBUG_BUFFER_SIZE;
-
-    Status = AcpiGetCurrentResources (Node, &ReturnObj);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsPrintf ("AcpiGetCurrentResources failed: %s\n",
-            AcpiFormatException (Status));
-        goto GetPrs;
-    }
-
-    /* Dump the _CRS resource list */
-
-    AcpiRsDumpResourceList (ACPI_CAST_PTR (ACPI_RESOURCE,
-        ReturnObj.Pointer));
-
-    /*
-     * Perform comparison of original AML to newly created AML. This tests both
-     * the AML->Resource conversion and the Resource->Aml conversion.
-     */
-    Status = AcpiDmTestResourceConversion (Node, METHOD_NAME__CRS);
-
-    /* Execute _SRS with the resource list */
-
-    Status = AcpiSetCurrentResources (Node, &ReturnObj);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsPrintf ("AcpiSetCurrentResources failed: %s\n",
-            AcpiFormatException (Status));
-        goto GetPrs;
-    }
-
-
-    /* _PRS */
-
-GetPrs:
-    AcpiOsPrintf ("Evaluating _PRS\n");
-
-    ReturnObj.Pointer = AcpiGbl_DbBuffer;
-    ReturnObj.Length  = ACPI_DEBUG_BUFFER_SIZE;
-
-    /* Check if _PRS exists */
-
-    Status = AcpiEvaluateObject (Node, METHOD_NAME__PRS, NULL, &ReturnObj);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsPrintf ("Could not obtain _PRS: %s\n",
-            AcpiFormatException (Status));
-        goto Cleanup;
-    }
-
-    ReturnObj.Pointer = AcpiGbl_DbBuffer;
-    ReturnObj.Length  = ACPI_DEBUG_BUFFER_SIZE;
-
-    Status = AcpiGetPossibleResources (Node, &ReturnObj);
-    if (ACPI_FAILURE (Status))
-    {
-        AcpiOsPrintf ("AcpiGetPossibleResources failed: %s\n",
-            AcpiFormatException (Status));
-        goto Cleanup;
-    }
-
-    AcpiRsDumpResourceList (ACPI_CAST_PTR (ACPI_RESOURCE, AcpiGbl_DbBuffer));
-
-Cleanup:
 
     AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
-    return;
 }
 
 
