@@ -301,6 +301,12 @@ AsDisplayStats (
 
     printf ("\nAcpiSrc statistics:\n\n");
     printf ("%8u Files processed\n", Gbl_Files);
+
+    if (!Gbl_Files)
+    {
+        return;
+    }
+
     printf ("%8u Total bytes (%.1fK/file)\n",
         Gbl_TotalSize, ((double) Gbl_TotalSize/Gbl_Files)/1024);
     printf ("%8u Tabs found\n", Gbl_Tabs);
@@ -315,6 +321,12 @@ AsDisplayStats (
         ((float) Gbl_SourceLines / (float) Gbl_WhiteLines));
     printf ("%8.1f Ratio of code to comments\n",
         ((float) Gbl_SourceLines / (float) (Gbl_CommentLines + Gbl_NonAnsiComments)));
+
+    if (!Gbl_TotalLines)
+    {
+        return;
+    }
+
     printf ("         %u%% code, %u%% comments, %u%% whitespace, %u%% headers\n",
         (Gbl_SourceLines * 100) / Gbl_TotalLines,
         (Gbl_CommentLines * 100) / Gbl_TotalLines,
