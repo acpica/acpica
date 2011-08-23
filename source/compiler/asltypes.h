@@ -216,8 +216,10 @@ typedef struct asl_file_status
 } ASL_FILE_STATUS;
 
 
-/* File types */
-
+/*
+ * File types. Note: Any changes to this table must also be reflected
+ * in the AslFileTypeNames array.
+ */
 typedef enum
 {
     ASL_FILE_STDOUT             = 0,

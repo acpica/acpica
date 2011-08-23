@@ -922,9 +922,9 @@ LsFinishSourceListing (
 
         FlPrintFile (FileId, "\n\nSummary of errors and warnings\n\n");
         AePrintErrorLog (FileId);
-        FlPrintFile (FileId, "\n\n");
+        FlPrintFile (FileId, "\n");
         UtDisplaySummary (FileId);
-        FlPrintFile (FileId, "\n\n");
+        FlPrintFile (FileId, "\n");
     }
 }
 
@@ -1437,7 +1437,6 @@ LsDoHexOutputC (
     }
 
     FlPrintFile (ASL_FILE_HEX_OUTPUT, "};\n");
-    FlCloseFile (ASL_FILE_HEX_OUTPUT);
 }
 
 
@@ -1525,7 +1524,6 @@ LsDoHexOutputAsl (
     }
 
     FlPrintFile (ASL_FILE_HEX_OUTPUT, "    })\n");
-    FlCloseFile (ASL_FILE_HEX_OUTPUT);
 }
 
 
@@ -1608,7 +1606,6 @@ LsDoHexOutputAsm (
     }
 
     FlPrintFile (ASL_FILE_HEX_OUTPUT, "\n");
-    FlCloseFile (ASL_FILE_HEX_OUTPUT);
 }
 
 
