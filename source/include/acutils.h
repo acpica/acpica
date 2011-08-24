@@ -118,6 +118,7 @@
 
 
 extern const UINT8                      AcpiGbl_ResourceAmlSizes[];
+extern const UINT8                      AcpiGbl_ResourceAmlSerialBusSizes[];
 
 /* Strings used by the disassembler and debugger resource dump routines */
 
@@ -144,6 +145,8 @@ extern const char                       *AcpiGbl_TypDecode[];
 extern const char                       *AcpiGbl_PpcDecode[];
 extern const char                       *AcpiGbl_IorDecode[];
 extern const char                       *AcpiGbl_DtsDecode[];
+extern const char                       *AcpiGbl_CtDecode[];
+extern const char                       *AcpiGbl_SbtDecode[];
 extern const char                       *AcpiGbl_AmDecode[];
 extern const char                       *AcpiGbl_SmDecode[];
 extern const char                       *AcpiGbl_WmDecode[];

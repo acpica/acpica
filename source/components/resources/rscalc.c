@@ -417,6 +417,26 @@ AcpiRsGetAmlLength (
             break;
 
 
+        case ACPI_RESOURCE_TYPE_GPIO:
+
+            TotalSize = (ACPI_RS_LENGTH) (TotalSize + (Resource->Data.Gpio.PinTableLength * 2) +
+                Resource->Data.Gpio.ResourceSource.StringLength +
+                Resource->Data.Gpio.VendorLength);
+
+            break;
+
+
+        case ACPI_RESOURCE_TYPE_SERIAL_BUS:
+
+            TotalSize = AcpiGbl_AmlResourceSerialBusSizes [Resource->Data.CommonSerialBus.Type];
+
+            TotalSize = (ACPI_RS_LENGTH) (TotalSize +
+                Resource->Data.I2cSerialBus.ResourceSource.StringLength +
+                Resource->Data.I2cSerialBus.VendorLength);
+
+            break;
+
+
         default:
             break;
         }
@@ -467,6 +487,7 @@ AcpiRsGetListLength (
     UINT32                  ExtraStructBytes;
     UINT8                   ResourceIndex;
     UINT8                   MinimumAmlResourceLength;
+    AML_RESOURCE            *AmlResource;
 
 
     ACPI_FUNCTION_TRACE (RsGetListLength);
@@ -490,6 +511,8 @@ AcpiRsGetListLength (
              */
             return_ACPI_STATUS (Status);
         }
+
+        AmlResource = (void *) AmlBuffer;
 
         /* Get the resource length and base (minimum) AML size */
 
@@ -570,6 +593,19 @@ AcpiRsGetListLength (
                 ResourceLength - ExtraStructBytes, MinimumAmlResourceLength);
             break;
 
+        case ACPI_RESOURCE_NAME_GPIO:
+
+            ExtraStructBytes += AmlResource->Gpio.VendorOffset -
+                AmlResource->Gpio.PinTableOffset + AmlResource->Gpio.VendorLength;
+            break;
+
+        case ACPI_RESOURCE_NAME_SERIAL_BUS:
+
+            MinimumAmlResourceLength = AcpiGbl_ResourceAmlSerialBusSizes[
+                AmlResource->CommonSerialBus.Type];
+            ExtraStructBytes += AmlResource->CommonSerialBus.ResourceLength -
+                MinimumAmlResourceLength;
+            break;
 
         default:
             break;
@@ -581,8 +617,16 @@ AcpiRsGetListLength (
          * Important: Round the size up for the appropriate alignment. This
          * is a requirement on IA64.
          */
-        BufferSize = AcpiGbl_ResourceStructSizes[ResourceIndex] +
+        if (AcpiUtGetResourceType (AmlBuffer) == ACPI_RESOURCE_NAME_SERIAL_BUS)
+        {
+            BufferSize = AcpiGbl_ResourceStructSerialBusSizes[
+                AmlResource->CommonSerialBus.Type] + ExtraStructBytes;
+        }
+        else
+        {
+            BufferSize = AcpiGbl_ResourceStructSizes[ResourceIndex] +
                         ExtraStructBytes;
+        }
         BufferSize = (UINT32) ACPI_ROUND_UP_TO_NATIVE_WORD (BufferSize);
 
         *SizeNeeded += BufferSize;

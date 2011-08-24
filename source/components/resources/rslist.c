@@ -149,6 +149,7 @@ AcpiRsConvertAmlToResources (
     ACPI_RESOURCE           **ResourcePtr = ACPI_CAST_INDIRECT_PTR (
                                 ACPI_RESOURCE, Context);
     ACPI_RESOURCE           *Resource;
+    AML_RESOURCE            *AmlResource;
     ACPI_STATUS             Status;
 
 
@@ -168,9 +169,19 @@ AcpiRsConvertAmlToResources (
 
     /* Convert the AML byte stream resource to a local resource struct */
 
-    Status = AcpiRsConvertAmlToResource (
-                Resource, ACPI_CAST_PTR (AML_RESOURCE, Aml),
+    AmlResource = ACPI_CAST_PTR (AML_RESOURCE, Aml);
+    if (AcpiUtGetResourceType (Aml) == ACPI_RESOURCE_NAME_SERIAL_BUS)
+    {
+        Status = AcpiRsConvertAmlToResource (
+                Resource, AmlResource,
+                AcpiGbl_ConvertResourceSerialBusDispatch[AmlResource->CommonSerialBus.Type]);
+    }
+    else
+    {
+        Status = AcpiRsConvertAmlToResource (
+                Resource, AmlResource,
                 AcpiGbl_GetResourceDispatch[ResourceIndex]);
+    }
     if (ACPI_FAILURE (Status))
     {
         ACPI_EXCEPTION ((AE_INFO, Status,
@@ -185,7 +196,7 @@ AcpiRsConvertAmlToResources (
 
     /* Point to the next structure in the output buffer */
 
-    *ResourcePtr = ACPI_ADD_PTR (void, Resource, Resource->Length);
+    *ResourcePtr = ACPI_NEXT_RESOURCE (Resource);
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -239,9 +250,19 @@ AcpiRsConvertResourcesToAml (
 
         /* Perform the conversion */
 
-        Status = AcpiRsConvertResourceToAml (Resource,
+        if (Resource->Type == ACPI_RESOURCE_TYPE_SERIAL_BUS)
+        {
+            Status = AcpiRsConvertResourceToAml (Resource,
+                    ACPI_CAST_PTR (AML_RESOURCE, Aml),
+                    AcpiGbl_ConvertResourceSerialBusDispatch[
+                        Resource->Data.CommonSerialBus.Type]);
+        }
+        else
+        {
+            Status = AcpiRsConvertResourceToAml (Resource,
                     ACPI_CAST_PTR (AML_RESOURCE, Aml),
                     AcpiGbl_SetResourceDispatch[Resource->Type]);
+        }
         if (ACPI_FAILURE (Status))
         {
             ACPI_EXCEPTION ((AE_INFO, Status,
@@ -276,7 +297,7 @@ AcpiRsConvertResourcesToAml (
 
         /* Point to the next input resource descriptor */
 
-        Resource = ACPI_ADD_PTR (ACPI_RESOURCE, Resource, Resource->Length);
+        Resource = ACPI_NEXT_RESOURCE (Resource);
     }
 
     /* Completed buffer, but did not find an EndTag resource descriptor */

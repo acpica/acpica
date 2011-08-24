@@ -119,7 +119,6 @@
 #include "acpi.h"
 #include "accommon.h"
 #include "acresrc.h"
-#include "amlresrc.h"
 
 
 #define _COMPONENT          ACPI_UTILITIES
@@ -270,12 +269,30 @@ const char                      *AcpiGbl_IorDecode[] =
 
 const char                      *AcpiGbl_DtsDecode[] =
 {
-    "8-bit",
-    "16-bit",
-    "32-bit",
-    "64-bit",
-    "128-bit",
-    "256-bit",
+    "Width8bit",
+    "Width16bit",
+    "Width32bit",
+    "Width64bit",
+    "Width128bit",
+    "Width256bit",
+};
+
+/* GPIO connection type */
+
+const char                      *AcpiGbl_CtDecode[] =
+{
+    "Interrupt",
+    "I/O"
+};
+
+/* Serial bus type */
+
+const char                      *AcpiGbl_SbtDecode[] =
+{
+    "/* UNKNOWN serial bus type */",
+    "I2C",
+    "SPI",
+    "UART"
 };
 
 /* I2C serial bus access mode */
@@ -427,6 +444,14 @@ const UINT8                 AcpiGbl_ResourceAmlSizes[] =
     ACPI_AML_SIZE_LARGE (AML_RESOURCE_GPIO),
     0,
     ACPI_AML_SIZE_LARGE (AML_RESOURCE_COMMON_SERIALBUS),
+};
+
+const UINT8                 AcpiGbl_ResourceAmlSerialBusSizes[] =
+{
+    0,
+    ACPI_AML_SIZE_LARGE (AML_RESOURCE_I2C_SERIALBUS),
+    ACPI_AML_SIZE_LARGE (AML_RESOURCE_SPI_SERIALBUS),
+    ACPI_AML_SIZE_LARGE (AML_RESOURCE_UART_SERIALBUS),
 };
 
 

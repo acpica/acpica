@@ -281,6 +281,14 @@ typedef struct acpi_resource_fixed_io
 
 } ACPI_RESOURCE_FIXED_IO;
 
+typedef struct acpi_resource_fixed_dma
+{
+    UINT16                          RequestLines;
+    UINT16                          Channels;
+    UINT8                           Width;
+
+} ACPI_RESOURCE_FIXED_DMA;
+
 typedef struct acpi_resource_vendor
 {
     UINT16                          ByteLength;
@@ -457,6 +465,80 @@ typedef struct acpi_resource_generic_register
 
 } ACPI_RESOURCE_GENERIC_REGISTER;
 
+typedef struct acpi_resource_gpio
+{
+    UINT8                           RevisionId;
+    UINT8                           ConnectionType;
+    UINT8                           ProducerConsumer;
+    UINT8                           PinConfig;
+    UINT8                           Sharable;
+    UINT8                           IoRestriction;
+    UINT8                           Triggering;
+    UINT8                           Polarity;
+    UINT16                          DriveStrength;
+    UINT16                          DebounceTimeout;
+    UINT16                          PinTableLength;
+    UINT16                          VendorLength;
+    ACPI_RESOURCE_SOURCE            ResourceSource;
+    UINT16                          *PinTable;
+    UINT8                           *VendorData;
+
+} ACPI_RESOURCE_GPIO;
+
+#define ACPI_RESOURCE_SERIAL_COMMON \
+    UINT8                           RevisionId; \
+    UINT8                           Type; \
+    UINT8                           ProducerConsumer; \
+    UINT8                           SlaveMode; \
+    UINT8                           TypeRevisionId; \
+    UINT16                          TypeDataLength; \
+    UINT16                          VendorLength; \
+    ACPI_RESOURCE_SOURCE            ResourceSource; \
+    UINT8                           *VendorData;
+
+typedef struct acpi_resource_common_serialbus
+{
+    ACPI_RESOURCE_SERIAL_COMMON
+
+} ACPI_RESOURCE_COMMON_SERIALBUS;
+
+typedef struct acpi_resource_i2c_serialbus
+{
+    ACPI_RESOURCE_SERIAL_COMMON
+    UINT8                           AccessMode;
+    UINT16                          SlaveAddress;
+    UINT32                          ConnectionSpeed;
+
+} ACPI_RESOURCE_I2C_SERIALBUS;
+
+typedef struct acpi_resource_spi_serialbus
+{
+    ACPI_RESOURCE_SERIAL_COMMON
+    UINT8                           WireMode;
+    UINT8                           DevicePolarity;
+    UINT8                           DataBitLength;
+    UINT8                           ClockPhase;
+    UINT8                           ClockPolarity;
+    UINT16                          DeviceSelection;
+    UINT32                          ConnectionSpeed;
+
+} ACPI_RESOURCE_SPI_SERIALBUS;
+
+typedef struct acpi_resource_uart_serialbus
+{
+    ACPI_RESOURCE_SERIAL_COMMON
+    UINT8                           Endian;
+    UINT8                           DataBits;
+    UINT8                           StopBits;
+    UINT8                           FlowControl;
+    UINT8                           Parity;
+    UINT8                           LinesEnabled;
+    UINT16                          RxFifoSize;
+    UINT16                          TxFifoSize;
+    UINT32                          DefaultBaudRate;
+
+} ACPI_RESOURCE_UART_SERIALBUS;
+
 
 /* ACPI_RESOURCE_TYPEs */
 
@@ -477,7 +559,10 @@ typedef struct acpi_resource_generic_register
 #define ACPI_RESOURCE_TYPE_EXTENDED_ADDRESS64   14  /* ACPI 3.0 */
 #define ACPI_RESOURCE_TYPE_EXTENDED_IRQ         15
 #define ACPI_RESOURCE_TYPE_GENERIC_REGISTER     16
-#define ACPI_RESOURCE_TYPE_MAX                  16
+#define ACPI_RESOURCE_TYPE_GPIO                 17
+#define ACPI_RESOURCE_TYPE_FIXED_DMA            18
+#define ACPI_RESOURCE_TYPE_SERIAL_BUS           19
+#define ACPI_RESOURCE_TYPE_MAX                  19
 
 /* Master union for resource descriptors */
 
@@ -488,6 +573,7 @@ typedef union acpi_resource_data
     ACPI_RESOURCE_START_DEPENDENT           StartDpf;
     ACPI_RESOURCE_IO                        Io;
     ACPI_RESOURCE_FIXED_IO                  FixedIo;
+    ACPI_RESOURCE_FIXED_DMA                 FixedDma;
     ACPI_RESOURCE_VENDOR                    Vendor;
     ACPI_RESOURCE_VENDOR_TYPED              VendorTyped;
     ACPI_RESOURCE_END_TAG                   EndTag;
@@ -500,6 +586,11 @@ typedef union acpi_resource_data
     ACPI_RESOURCE_EXTENDED_ADDRESS64        ExtAddress64;
     ACPI_RESOURCE_EXTENDED_IRQ              ExtendedIrq;
     ACPI_RESOURCE_GENERIC_REGISTER          GenericReg;
+    ACPI_RESOURCE_GPIO                      Gpio;
+    ACPI_RESOURCE_I2C_SERIALBUS             I2cSerialBus;
+    ACPI_RESOURCE_SPI_SERIALBUS             SpiSerialBus;
+    ACPI_RESOURCE_UART_SERIALBUS            UartSerialBus;
+    ACPI_RESOURCE_COMMON_SERIALBUS          CommonSerialBus;
 
     /* Common fields */
 
