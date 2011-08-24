@@ -2394,6 +2394,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\resources\rsserial.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\resources\rsutils.c"
 					>
 					<FileConfiguration
