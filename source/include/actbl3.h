@@ -399,11 +399,37 @@ typedef struct acpi_mpst_power_node
 
 #define ACPI_MPST_ENABLED               1
 #define ACPI_MPST_POWER_MANAGED         2
+#define ACPI_MPST_HOT_PLUG_CAPABLE      4
 
 
-/* Memory Power State Characteristics Structure */
+/* Memory Power State Structure (follows POWER_NODE above) */
 
 typedef struct acpi_mpst_power_state
+{
+    UINT8                   PowerState;
+    UINT8                   InfoIndex;
+
+} ACPI_MPST_POWER_STATE;
+
+
+/* Physical Component ID Structure (follows POWER_STATE above) */
+
+typedef struct acpi_mpst_component
+{
+    UINT16                  ComponentId;
+
+} ACPI_MPST_COMPONENT;
+
+
+/* Memory Power State Characteristics Structure (follows all POWER_NODEs) */
+
+typedef struct acpi_mpst_data_hdr
+{
+    UINT16                  CharacteristicsCount;
+
+} ACPI_MPST_DATA_HDR;
+
+typedef struct acpi_mpst_power_data
 {
     UINT8                   Revision;
     UINT8                   Flags;
@@ -413,7 +439,30 @@ typedef struct acpi_mpst_power_state
     UINT64                  ExitLatency;
     UINT64                  Reserved2;
 
-} ACPI_MPST_POWER_STATE;
+} ACPI_MPST_POWER_DATA;
+
+/* Values for Flags field above */
+
+#define ACPI_MPST_PRESERVE              1
+#define ACPI_MPST_AUTOENTRY             2
+#define ACPI_MPST_AUTOEXIT              4
+
+
+/* Shared Memory Region (not part of an ACPI table) */
+
+typedef struct acpi_mpst_shared
+{
+    UINT32                  Signature;
+    UINT16                  PccCommand;
+    UINT16                  PccStatus;
+    UINT16                  CommandRegister;
+    UINT16                  StatusRegister;
+    UINT16                  PowerStateId;
+    UINT16                  PowerNodeId;
+    UINT64                  EnergyConsumed;
+    UINT64                  AveragePower;
+
+} ACPI_MPST_SHARED;
 
 
 /*******************************************************************************
@@ -478,7 +527,7 @@ typedef struct acpi_pcct_shared_memory
 typedef struct acpi_table_pmtt
 {
     ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
-    UINT32                  Length;
+    UINT32                  Reserved;
     UINT16                  AggregatorCount;
 
 } ACPI_TABLE_PMTT;
@@ -494,12 +543,16 @@ typedef struct acpi_pmtt_header
 
 } ACPI_PMTT_HEADER;
 
+/* Values for Flags field above */
+
+#define ACPI_PMTT_PHYSICAL              1
+
 
 /*
  * PMTT subtables, correspond to Type in acpi_pmtt_header
  */
 
-/* 0: Socket Structure */
+/* 1: Socket Structure */
 
 typedef struct acpi_pmtt_socket
 {
@@ -509,10 +562,11 @@ typedef struct acpi_pmtt_socket
 
 } ACPI_PMTT_SOCKET;
 
-/* 0: Socket Structure: Memory Controller subtable */
+/* 1A: Sub-subtable: Memory Controller subtable */
 
 typedef struct acpi_pmtt_memory
 {
+    UINT16                  Length;
     UINT16                  ProximityDomain;
     UINT32                  Flags;
     UINT32                  ReadLatency;
@@ -526,7 +580,7 @@ typedef struct acpi_pmtt_memory
 
 } ACPI_PMTT_MEMORY;
 
-/* 0: Socket Structure: Physical Component Identifier */
+/* 1AA: Socket Structure: Physical Component Identifier */
 
 typedef struct acpi_pmtt_physical_component
 {
@@ -534,15 +588,15 @@ typedef struct acpi_pmtt_physical_component
     UINT16                  ComponentId;
     UINT16                  ComponentType;
     UINT16                  Size;
-    UINT16                  SmBiosHandle;
+    UINT8                   SmBiosHandle[12];
 
 } ACPI_PMTT_PHYSICAL_COMPONENT;
 
 
-/* 1: Node Controller */
+/* 2: Node Controller */
 
 
-/* 2: Memory Hub */
+/* 3: Memory Hub */
 
 
 /*******************************************************************************

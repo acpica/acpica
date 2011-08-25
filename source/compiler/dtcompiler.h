@@ -554,6 +554,7 @@ extern const unsigned char  TemplateIvrs[];
 extern const unsigned char  TemplateMadt[];
 extern const unsigned char  TemplateMcfg[];
 extern const unsigned char  TemplateMchi[];
+extern const unsigned char  TemplateMpst[];
 extern const unsigned char  TemplateMsct[];
 extern const unsigned char  TemplateRsdt[];
 extern const unsigned char  TemplateS3pt[];

@@ -170,6 +170,7 @@
 #define ACPI_MADT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_MADT,f)
 #define ACPI_MCFG_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_MCFG,f)
 #define ACPI_MCHI_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_MCHI,f)
+#define ACPI_MPST_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_MPST,f)
 #define ACPI_MSCT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_MSCT,f)
 #define ACPI_PCCT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_PCCT,f)
 #define ACPI_S3PT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_S3PT,f)
@@ -236,6 +237,11 @@
 #define ACPI_MADT12_OFFSET(f)           (UINT8) ACPI_OFFSET (ACPI_MADT_GENERIC_DISTRIBUTOR,f)
 #define ACPI_MADTH_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_SUBTABLE_HEADER,f)
 #define ACPI_MCFG0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_MCFG_ALLOCATION,f)
+#define ACPI_MPST0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_MPST_POWER_NODE,f)
+#define ACPI_MPST0A_OFFSET(f)           (UINT8) ACPI_OFFSET (ACPI_MPST_POWER_STATE,f)
+#define ACPI_MPST0B_OFFSET(f)           (UINT8) ACPI_OFFSET (ACPI_MPST_COMPONENT,f)
+#define ACPI_MPST1_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_MPST_DATA_HDR,f)
+#define ACPI_MPST2_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_MPST_POWER_DATA,f)
 #define ACPI_MSCT0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_MSCT_PROXIMITY,f)
 #define ACPI_PCCT0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_PCCT_SUBSPACE,f)
 #define ACPI_S3PTH_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_S3PT_HEADER,f)
@@ -273,6 +279,8 @@
 #define ACPI_MADT9_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_MADT_LOCAL_X2APIC,f,o)
 #define ACPI_MADT10_FLAG_OFFSET(f,o)    ACPI_FLAG_OFFSET (ACPI_MADT_LOCAL_X2APIC_NMI,f,o)
 #define ACPI_MADT11_FLAG_OFFSET(f,o)    ACPI_FLAG_OFFSET (ACPI_MADT_GENERIC_INTERRUPT,f,o)
+#define ACPI_MPST0_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_MPST_POWER_NODE,f,o)
+#define ACPI_MPST2_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_MPST_POWER_DATA,f,o)
 #define ACPI_PCCT_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_PCCT,f,o)
 #define ACPI_WDDT_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_WDDT,f,o)
 #define ACPI_EINJ0_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_WHEA_HEADER,f,o)
@@ -1432,6 +1440,87 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMchi[] =
     {ACPI_DMT_UINT8,    ACPI_MCHI_OFFSET (PciBus),                  "Pci Bus", 0},
     {ACPI_DMT_UINT8,    ACPI_MCHI_OFFSET (PciDevice),               "Pci Device", 0},
     {ACPI_DMT_UINT8,    ACPI_MCHI_OFFSET (PciFunction),             "Pci Function", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
+ * MPST - Memory Power State Table
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMpst[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_MPST_OFFSET (Reserved1),               "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_MPST_OFFSET (ChannelId),               "Channel ID", 0},
+    {ACPI_DMT_UINT8,    ACPI_MPST_OFFSET (Reserved2),               "Reserved", 0},
+    {ACPI_DMT_UINT16,   ACPI_MPST_OFFSET (PowerNodeCount),          "Power Node Count", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* MPST subtables */
+
+/* 0: Memory Power Node Structure */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMpst0[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_MPST0_OFFSET (Flags),                  "Flags (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG0,    ACPI_MPST0_FLAG_OFFSET (Flags,0),           "Node Enabled", 0},
+    {ACPI_DMT_FLAG1,    ACPI_MPST0_FLAG_OFFSET (Flags,0),           "Power Managed", 0},
+    {ACPI_DMT_FLAG2,    ACPI_MPST0_FLAG_OFFSET (Flags,0),           "Hot Plug Capable", 0},
+
+    {ACPI_DMT_UINT8,    ACPI_MPST0_OFFSET (Reserved1),              "Reserved", 0},
+    {ACPI_DMT_UINT16,   ACPI_MPST0_OFFSET (NodeId),                 "Node ID", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPST0_OFFSET (Length),                 "Length", 0},
+    {ACPI_DMT_UINT64,   ACPI_MPST0_OFFSET (RangeAddress),           "Range Address", 0},
+    {ACPI_DMT_UINT64,   ACPI_MPST0_OFFSET (RangeLength),            "Range Length", 0},
+    {ACPI_DMT_UINT8,    ACPI_MPST0_OFFSET (NumPowerStates),         "Num Power States", 0},
+    {ACPI_DMT_UINT8,    ACPI_MPST0_OFFSET (NumPhysicalComponents),  "Num Physical Components", 0},
+    {ACPI_DMT_UINT16,   ACPI_MPST0_OFFSET (Reserved2),              "Reserved", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 0A: Sub-subtable - Memory Power State Structure (follows Memory Power Node above) */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMpst0A[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_MPST0A_OFFSET (PowerState),            "Power State", 0},
+    {ACPI_DMT_UINT8,    ACPI_MPST0A_OFFSET (InfoIndex),             "InfoIndex", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 0B: Sub-subtable - Physical Component ID Structure (follows Memory Power State(s) above) */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMpst0B[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_MPST0B_OFFSET (ComponentId),           "Component Id", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 01: Power Characteristics Count (follows all Power Node(s) above) */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMpst1[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_MPST1_OFFSET (CharacteristicsCount),   "Characteristics Count", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 02: Memory Power State Characteristics Structure */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMpst2[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_MPST2_OFFSET (Revision),               "Revision", 0},
+    {ACPI_DMT_UINT8,    ACPI_MPST2_OFFSET (Flags),                  "Flags (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG0,    ACPI_MPST2_FLAG_OFFSET (Flags,0),           "Memory Preserved", 0},
+    {ACPI_DMT_FLAG1,    ACPI_MPST2_FLAG_OFFSET (Flags,0),           "Auto Entry", 0},
+    {ACPI_DMT_FLAG2,    ACPI_MPST2_FLAG_OFFSET (Flags,0),           "Auto Exit", 0},
+
+    {ACPI_DMT_UINT16,   ACPI_MPST2_OFFSET (Reserved1),              "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPST2_OFFSET (AveragePower),           "Average Power", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPST2_OFFSET (PowerSaving),            "Power Saving", 0},
+    {ACPI_DMT_UINT64,   ACPI_MPST2_OFFSET (ExitLatency),            "Exit Latency", 0},
+    {ACPI_DMT_UINT64,   ACPI_MPST2_OFFSET (Reserved2),              "Reserved", 0},
     ACPI_DMT_TERMINATOR
 };
 
