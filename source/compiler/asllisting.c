@@ -1381,6 +1381,7 @@ LsDoHexOutputC (
     /* Get AML size, seek back to start */
 
     AmlFileSize = FlGetFileSize (ASL_FILE_AML_OUTPUT);
+    FlSeekFile (ASL_FILE_AML_OUTPUT, 0);
 
     FlPrintFile (ASL_FILE_HEX_OUTPUT, " * C source code output\n");
     FlPrintFile (ASL_FILE_HEX_OUTPUT, " * AML code block contains 0x%X bytes\n *\n */\n",
@@ -1468,6 +1469,7 @@ LsDoHexOutputAsl (
     /* Get AML size, seek back to start */
 
     AmlFileSize = FlGetFileSize (ASL_FILE_AML_OUTPUT);
+    FlSeekFile (ASL_FILE_AML_OUTPUT, 0);
 
     FlPrintFile (ASL_FILE_HEX_OUTPUT, " * ASL source code output\n");
     FlPrintFile (ASL_FILE_HEX_OUTPUT, " * AML code block contains 0x%X bytes\n *\n */\n",
@@ -1555,6 +1557,7 @@ LsDoHexOutputAsm (
     /* Get AML size, seek back to start */
 
     AmlFileSize = FlGetFileSize (ASL_FILE_AML_OUTPUT);
+    FlSeekFile (ASL_FILE_AML_OUTPUT, 0);
 
     FlPrintFile (ASL_FILE_HEX_OUTPUT, "; Assembly code source output\n");
     FlPrintFile (ASL_FILE_HEX_OUTPUT, "; AML code block contains 0x%X bytes\n;\n",
