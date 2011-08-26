@@ -757,7 +757,7 @@ RsDoI2cSerialBusDescriptor (
     Descriptor->I2cSerialBus.DescriptorType = ACPI_RESOURCE_NAME_SERIAL_BUS;
     Descriptor->I2cSerialBus.RevisionId     = AML_RESOURCE_I2C_REVISION;
     Descriptor->I2cSerialBus.TypeRevisionId = AML_RESOURCE_I2C_TYPE_REVISION;
-    Descriptor->I2cSerialBus.Type           = AML_RESOURCE_I2C_BUS_TYPE;
+    Descriptor->I2cSerialBus.Type           = AML_RESOURCE_I2C_SERIALBUSTYPE;
     Descriptor->I2cSerialBus.TypeDataLength = AML_RESOURCE_I2C_MIN_DATA_LEN + VendorLength;
 
     /* Build pointers to optional areas */
@@ -902,7 +902,7 @@ RsDoSpiSerialBusDescriptor (
     Descriptor->SpiSerialBus.DescriptorType = ACPI_RESOURCE_NAME_SERIAL_BUS;
     Descriptor->SpiSerialBus.RevisionId     = AML_RESOURCE_SPI_REVISION;
     Descriptor->SpiSerialBus.TypeRevisionId = AML_RESOURCE_SPI_TYPE_REVISION;
-    Descriptor->SpiSerialBus.Type           = AML_RESOURCE_SPI_BUS_TYPE;
+    Descriptor->SpiSerialBus.Type           = AML_RESOURCE_SPI_SERIALBUSTYPE;
     Descriptor->SpiSerialBus.TypeDataLength = AML_RESOURCE_SPI_MIN_DATA_LEN + VendorLength;
 
     /* Build pointers to optional areas */
@@ -1075,7 +1075,7 @@ RsDoUartSerialBusDescriptor (
     Descriptor->UartSerialBus.DescriptorType = ACPI_RESOURCE_NAME_SERIAL_BUS;
     Descriptor->UartSerialBus.RevisionId     = AML_RESOURCE_UART_REVISION;
     Descriptor->UartSerialBus.TypeRevisionId = AML_RESOURCE_UART_TYPE_REVISION;
-    Descriptor->UartSerialBus.Type           = AML_RESOURCE_UART_BUS_TYPE;
+    Descriptor->UartSerialBus.Type           = AML_RESOURCE_UART_SERIALBUSTYPE;
     Descriptor->UartSerialBus.TypeDataLength = AML_RESOURCE_UART_MIN_DATA_LEN + VendorLength;
 
     /* Build pointers to optional areas */

@@ -487,7 +487,7 @@ AcpiDmDumpSerialBusVendorData (
 
     switch (Resource->CommonSerialBus.Type)
     {
-    case AML_RESOURCE_I2C_BUS_TYPE:
+    case AML_RESOURCE_I2C_SERIALBUSTYPE:
 
         VendorLength = Resource->CommonSerialBus.TypeDataLength -
             AML_RESOURCE_I2C_MIN_DATA_LEN;
@@ -496,7 +496,7 @@ AcpiDmDumpSerialBusVendorData (
             sizeof (AML_RESOURCE_I2C_SERIALBUS));
         break;
 
-    case AML_RESOURCE_SPI_BUS_TYPE:
+    case AML_RESOURCE_SPI_SERIALBUSTYPE:
 
         VendorLength = Resource->CommonSerialBus.TypeDataLength -
             AML_RESOURCE_SPI_MIN_DATA_LEN;
@@ -505,7 +505,7 @@ AcpiDmDumpSerialBusVendorData (
             sizeof (AML_RESOURCE_SPI_SERIALBUS));
         break;
 
-    case AML_RESOURCE_UART_BUS_TYPE:
+    case AML_RESOURCE_UART_SERIALBUSTYPE:
 
         VendorLength = Resource->CommonSerialBus.TypeDataLength -
             AML_RESOURCE_UART_MIN_DATA_LEN;

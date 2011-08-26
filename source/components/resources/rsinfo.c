@@ -199,7 +199,7 @@ ACPI_RSCONVERT_INFO         *AcpiGbl_GetResourceDispatch[] =
     AcpiRsConvertExtAddress64,      /* 0x0B, ACPI_RESOURCE_NAME_EXTENDED_ADDRESS64 */
     AcpiRsConvertGpio,              /* 0x0C, ACPI_RESOURCE_NAME_GPIO */
     NULL,                           /* 0x0D, Reserved */
-    AcpiRsConvertCommonSerialBus,   /* 0x0E, ACPI_RESOURCE_NAME_SERIAL_BUS */
+    NULL,                           /* 0x0E, ACPI_RESOURCE_NAME_SERIAL_BUS */
 };
 
 ACPI_RSCONVERT_INFO         *AcpiGbl_ConvertResourceSerialBusDispatch[] =
@@ -236,7 +236,7 @@ ACPI_RSDUMP_INFO            *AcpiGbl_DumpResourceDispatch[] =
     AcpiRsDumpGenericReg,           /* ACPI_RESOURCE_TYPE_GENERIC_REGISTER */
     AcpiRsDumpGpio,                 /* ACPI_RESOURCE_TYPE_GPIO */
     AcpiRsDumpFixedDma,             /* ACPI_RESOURCE_TYPE_FIXED_DMA */
-    AcpiRsDumpCommonSerialBus,      /* ACPI_RESOURCE_TYPE_SERIAL_BUS */
+    NULL,                           /* ACPI_RESOURCE_TYPE_SERIAL_BUS */
 };
 
 ACPI_RSDUMP_INFO            *AcpiGbl_DumpSerialBusDispatch[] =

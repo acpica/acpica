@@ -150,6 +150,7 @@ AcpiRsConvertAmlToResources (
                                 ACPI_RESOURCE, Context);
     ACPI_RESOURCE           *Resource;
     AML_RESOURCE            *AmlResource;
+    ACPI_RSCONVERT_INFO     *ConversionTable;
     ACPI_STATUS             Status;
 
 
@@ -167,21 +168,42 @@ AcpiRsConvertAmlToResources (
             "Misaligned resource pointer %p", Resource));
     }
 
-    /* Convert the AML byte stream resource to a local resource struct */
+    /* Get the appropriate conversion info table */
 
     AmlResource = ACPI_CAST_PTR (AML_RESOURCE, Aml);
     if (AcpiUtGetResourceType (Aml) == ACPI_RESOURCE_NAME_SERIAL_BUS)
     {
-        Status = AcpiRsConvertAmlToResource (
-                Resource, AmlResource,
-                AcpiGbl_ConvertResourceSerialBusDispatch[AmlResource->CommonSerialBus.Type]);
+        if (AmlResource->CommonSerialBus.Type > AML_RESOURCE_MAX_SERIALBUSTYPE)
+        {
+            ConversionTable = NULL;
+        }
+        else
+        {
+            /* This is an I2C, SPI, or UART SerialBus descriptor */
+
+            ConversionTable =
+                AcpiGbl_ConvertResourceSerialBusDispatch[
+                    AmlResource->CommonSerialBus.Type];
+        }
     }
     else
     {
-        Status = AcpiRsConvertAmlToResource (
-                Resource, AmlResource,
-                AcpiGbl_GetResourceDispatch[ResourceIndex]);
+        ConversionTable =
+            AcpiGbl_GetResourceDispatch[ResourceIndex];
     }
+
+    if (!ConversionTable)
+    {
+        ACPI_ERROR ((AE_INFO,
+            "Invalid/unsupported resource descriptor: Type 0x%2.2X",
+            ResourceIndex));
+        return (AE_AML_INVALID_RESOURCE_TYPE);
+    }
+
+     /* Convert the AML byte stream resource to a local resource struct */
+
+    Status = AcpiRsConvertAmlToResource (
+        Resource, AmlResource, ConversionTable);
     if (ACPI_FAILURE (Status))
     {
         ACPI_EXCEPTION ((AE_INFO, Status,
@@ -228,6 +250,7 @@ AcpiRsConvertResourcesToAml (
 {
     UINT8                   *Aml = OutputBuffer;
     UINT8                   *EndAml = OutputBuffer + AmlSizeNeeded;
+    ACPI_RSCONVERT_INFO     *ConversionTable;
     ACPI_STATUS             Status;
 
 
@@ -252,17 +275,34 @@ AcpiRsConvertResourcesToAml (
 
         if (Resource->Type == ACPI_RESOURCE_TYPE_SERIAL_BUS)
         {
-            Status = AcpiRsConvertResourceToAml (Resource,
-                    ACPI_CAST_PTR (AML_RESOURCE, Aml),
-                    AcpiGbl_ConvertResourceSerialBusDispatch[
-                        Resource->Data.CommonSerialBus.Type]);
+            if (Resource->Data.CommonSerialBus.Type > AML_RESOURCE_MAX_SERIALBUSTYPE)
+            {
+                ConversionTable = NULL;
+            }
+            else
+            {
+                /* This is an I2C, SPI, or UART SerialBus descriptor */
+
+                ConversionTable = AcpiGbl_ConvertResourceSerialBusDispatch[
+                    Resource->Data.CommonSerialBus.Type];
+            }
         }
         else
         {
-            Status = AcpiRsConvertResourceToAml (Resource,
-                    ACPI_CAST_PTR (AML_RESOURCE, Aml),
-                    AcpiGbl_SetResourceDispatch[Resource->Type]);
+            ConversionTable = AcpiGbl_SetResourceDispatch[Resource->Type];
         }
+
+        if (!ConversionTable)
+        {
+            ACPI_ERROR ((AE_INFO,
+                "Invalid/unsupported resource descriptor: Type 0x%2.2X",
+                Resource->Type));
+            return (AE_AML_INVALID_RESOURCE_TYPE);
+        }
+
+        Status = AcpiRsConvertResourceToAml (Resource,
+                ACPI_CAST_PTR (AML_RESOURCE, Aml),
+                ConversionTable);
         if (ACPI_FAILURE (Status))
         {
             ACPI_EXCEPTION ((AE_INFO, Status,

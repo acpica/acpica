@@ -634,6 +634,7 @@ AcpiUtValidateResource (
     void                    *Aml,
     UINT8                   *ReturnIndex)
 {
+    AML_RESOURCE            *AmlResource;
     UINT8                   ResourceType;
     UINT8                   ResourceIndex;
     ACPI_RS_LENGTH          ResourceLength;
@@ -686,6 +687,7 @@ AcpiUtValidateResource (
         goto InvalidResource;
     }
 
+#if 0
 #ifndef ACPI_ASL_COMPILER
     /*
      * Via AcpiGbl_GetResourceDispatch, ensure that the resource type is not
@@ -697,6 +699,7 @@ AcpiUtValidateResource (
     {
         goto InvalidResource;
     }
+#endif
 #endif
 
     /*
@@ -746,6 +749,21 @@ AcpiUtValidateResource (
         /* Shouldn't happen (because of validation earlier), but be sure */
 
         goto InvalidResource;
+    }
+
+    AmlResource = ACPI_CAST_PTR (AML_RESOURCE, Aml);
+    if (ResourceType == ACPI_RESOURCE_NAME_SERIAL_BUS)
+    {
+        /* Validate the BusType field */
+
+        if ((AmlResource->CommonSerialBus.Type == 0) ||
+            (AmlResource->CommonSerialBus.Type > AML_RESOURCE_MAX_SERIALBUSTYPE))
+        {
+            ACPI_ERROR ((AE_INFO,
+                "Invalid/unsupported SerialBus resource descriptor: BusType 0x%2.2X",
+                AmlResource->CommonSerialBus.Type));
+            return (AE_AML_INVALID_RESOURCE_TYPE);
+        }
     }
 
     /* Optionally return the resource table index */

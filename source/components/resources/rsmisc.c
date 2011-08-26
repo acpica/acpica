@@ -166,6 +166,11 @@ AcpiRsConvertAmlToResource (
     ACPI_FUNCTION_TRACE (RsConvertAmlToResource);
 
 
+    if (!Info)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
     if (((ACPI_SIZE) Resource) & 0x3)
     {
         /* Each internal resource struct is expected to be 32-bit aligned */
@@ -557,6 +562,11 @@ AcpiRsConvertResourceToAml (
 
     ACPI_FUNCTION_TRACE (RsConvertResourceToAml);
 
+
+    if (!Info)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
 
     /*
      * First table entry must be ACPI_RSC_INITxxx and must contain the
