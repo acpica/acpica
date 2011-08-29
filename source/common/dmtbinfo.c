@@ -1929,6 +1929,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoWdrt[] =
     ACPI_DMT_TERMINATOR
 };
 
+/*! [Begin] no source code translation */
+
 /*
  * Generic types (used in UEFI and custom tables)
  *
@@ -1949,7 +1951,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoWdrt[] =
  * DevicePath : "\PciRoot(0)\Pci(0x1f,1)\Usb(0,0)"
  */
 
-#define ACPI_DM_GENERIC_ENTRY(FieldType, FieldName)\
+#define ACPI_DM_GENERIC_ENTRY(FieldType, FieldName) \
     {{FieldType, 0, FieldName, 0}, ACPI_DMT_TERMINATOR}
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoGeneric[][2] =
@@ -1970,3 +1972,4 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoGeneric[][2] =
     ACPI_DM_GENERIC_ENTRY (ACPI_DMT_LABEL,      "Label"),
     {ACPI_DMT_TERMINATOR}
 };
+/*! [End] no source code translation !*/

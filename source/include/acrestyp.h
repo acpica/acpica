@@ -134,11 +134,14 @@ typedef UINT32                          ACPI_RSDESC_SIZE;  /* Max Resource Descr
 #define ACPI_WRITE_COMBINING_MEMORY     (UINT8) 0x02
 #define ACPI_PREFETCHABLE_MEMORY        (UINT8) 0x03
 
+/*! [Begin] no source code translation */
 /*
  * IO Attributes
  * The ISA IO ranges are:     n000-n0FFh,  n400-n4FFh, n800-n8FFh, nC00-nCFFh.
  * The non-ISA IO ranges are: n100-n3FFh,  n500-n7FFh, n900-nBFFh, nCD0-nFFFh.
  */
+/*! [End] no source code translation !*/
+
 #define ACPI_NON_ISA_ONLY_RANGES        (UINT8) 0x01
 #define ACPI_ISA_ONLY_RANGES            (UINT8) 0x02
 #define ACPI_ENTIRE_RANGE               (ACPI_NON_ISA_ONLY_RANGES | ACPI_ISA_ONLY_RANGES)
