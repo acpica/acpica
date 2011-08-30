@@ -687,24 +687,9 @@ AcpiUtValidateResource (
         goto InvalidResource;
     }
 
-#if 0
-#ifndef ACPI_ASL_COMPILER
     /*
-     * Via AcpiGbl_GetResourceDispatch, ensure that the resource type is not
-     * "reserved" or not supported by the Resource Manager code. NULL
-     * indicates an invalid resource. This is essentially a "double check"
-     * to make sure that we have a valid dispatch table for the resource.
-     */
-    if (!AcpiGbl_GetResourceDispatch[ResourceIndex])
-    {
-        goto InvalidResource;
-    }
-#endif
-#endif
-
-    /*
-     * 2) Validate the ResourceLength field. This ensures that the length
-     *    is at least reasonable, and guarantees that it is non-zero.
+     * Validate the ResourceLength field. This ensures that the length
+     * is at least reasonable, and guarantees that it is non-zero.
      */
     ResourceLength = AcpiUtGetResourceLength (Aml);
     MinimumResourceLength = AcpiGbl_ResourceAmlSizes[ResourceIndex];

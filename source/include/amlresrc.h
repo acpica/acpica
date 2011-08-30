@@ -503,6 +503,7 @@ typedef struct aml_resource_gpio
 
 #define AML_RESOURCE_GPIO_TYPE_INT              0
 #define AML_RESOURCE_GPIO_TYPE_IO               1
+#define AML_RESOURCE_MAX_GPIOTYPE               1
 
 
 /* Common preamble for all serial descriptors (ACPI 5.0) */
