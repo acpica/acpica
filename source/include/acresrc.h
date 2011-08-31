@@ -450,7 +450,6 @@ extern ACPI_RSCONVERT_INFO      AcpiRsConvertAddress64[];
 extern ACPI_RSCONVERT_INFO      AcpiRsConvertExtAddress64[];
 extern ACPI_RSCONVERT_INFO      AcpiRsConvertGpio[];
 extern ACPI_RSCONVERT_INFO      AcpiRsConvertFixedDma[];
-extern ACPI_RSCONVERT_INFO      AcpiRsConvertCommonSerialBus[];
 extern ACPI_RSCONVERT_INFO      AcpiRsConvertI2cSerialBus[];
 extern ACPI_RSCONVERT_INFO      AcpiRsConvertSpiSerialBus[];
 extern ACPI_RSCONVERT_INFO      AcpiRsConvertUartSerialBus[];

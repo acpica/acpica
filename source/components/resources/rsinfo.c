@@ -157,7 +157,7 @@ ACPI_RSCONVERT_INFO         *AcpiGbl_SetResourceDispatch[] =
     AcpiRsConvertGenericReg,        /* 0x10, ACPI_RESOURCE_TYPE_GENERIC_REGISTER */
     AcpiRsConvertGpio,              /* 0x11, ACPI_RESOURCE_TYPE_GPIO */
     AcpiRsConvertFixedDma,          /* 0x12, ACPI_RESOURCE_TYPE_FIXED_DMA */
-    AcpiRsConvertCommonSerialBus,   /* 0x13, ACPI_RESOURCE_TYPE_SERIAL_BUS */
+    NULL,                           /* 0x13, ACPI_RESOURCE_TYPE_SERIAL_BUS - Use subtype table below */
 };
 
 /* Dispatch tables for AML-to-resource (Get Resource) conversion functions */
@@ -199,8 +199,10 @@ ACPI_RSCONVERT_INFO         *AcpiGbl_GetResourceDispatch[] =
     AcpiRsConvertExtAddress64,      /* 0x0B, ACPI_RESOURCE_NAME_EXTENDED_ADDRESS64 */
     AcpiRsConvertGpio,              /* 0x0C, ACPI_RESOURCE_NAME_GPIO */
     NULL,                           /* 0x0D, Reserved */
-    NULL,                           /* 0x0E, ACPI_RESOURCE_NAME_SERIAL_BUS */
+    NULL,                           /* 0x0E, ACPI_RESOURCE_NAME_SERIAL_BUS - Use subtype table below */
 };
+
+/* Subtype table for SerialBus -- I2C, SPI, and UART */
 
 ACPI_RSCONVERT_INFO         *AcpiGbl_ConvertResourceSerialBusDispatch[] =
 {
