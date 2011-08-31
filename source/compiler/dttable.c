@@ -1234,6 +1234,143 @@ DtCompileMcfg (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileMpst
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile MPST.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileMpst (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    ACPI_MPST_CHANNEL       *MpstChannelInfo;
+    ACPI_MPST_POWER_NODE    *MpstPowerNode;
+    ACPI_MPST_DATA_HDR      *MpstDataHeader;
+    UINT16                  SubtableCount;
+    UINT8                   PowerStateCount;
+    UINT8                   ComponentCount;
+
+
+    /* Main table */
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoMpst, &Subtable, TRUE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    ParentTable = DtPeekSubtable ();
+    DtInsertSubtable (ParentTable, Subtable);
+    DtPushSubtable (Subtable);
+
+    MpstChannelInfo = ACPI_CAST_PTR (ACPI_MPST_CHANNEL, Subtable->Buffer);
+    SubtableCount = MpstChannelInfo->PowerNodeCount;
+
+    while (*PFieldList && SubtableCount)
+    {
+        /* Subtable: Memory Power Node(s) */
+
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoMpst0,
+                    &Subtable, TRUE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+        DtPushSubtable (Subtable);
+
+        MpstPowerNode = ACPI_CAST_PTR (ACPI_MPST_POWER_NODE, Subtable->Buffer);
+        PowerStateCount = MpstPowerNode->NumPowerStates;
+        ComponentCount = MpstPowerNode->NumPhysicalComponents;
+
+        ParentTable = DtPeekSubtable ();
+
+        /* Sub-subtables - Memory Power State Structure(s) */
+
+        while (*PFieldList && PowerStateCount)
+        {
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoMpst0A,
+                        &Subtable, TRUE);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            DtInsertSubtable (ParentTable, Subtable);
+            PowerStateCount--;
+        }
+
+        /* Sub-subtables - Physical Component ID Structure(s) */
+
+        while (*PFieldList && ComponentCount)
+        {
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoMpst0B,
+                        &Subtable, TRUE);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            DtInsertSubtable (ParentTable, Subtable);
+            ComponentCount--;
+        }
+
+        SubtableCount--;
+        DtPopSubtable ();
+    }
+
+    /* Subtable: Count of Memory Power State Characteristic structures */
+
+    DtPopSubtable ();
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoMpst1, &Subtable, TRUE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    ParentTable = DtPeekSubtable ();
+    DtInsertSubtable (ParentTable, Subtable);
+    DtPushSubtable (Subtable);
+
+    MpstDataHeader = ACPI_CAST_PTR (ACPI_MPST_DATA_HDR, Subtable->Buffer);
+    SubtableCount = MpstDataHeader->CharacteristicsCount;
+
+    ParentTable = DtPeekSubtable ();
+
+    /* Subtable: Memory Power State Characteristics structure(s) */
+
+    while (*PFieldList && SubtableCount)
+    {
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoMpst2,
+                    &Subtable, TRUE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        DtInsertSubtable (ParentTable, Subtable);
+        SubtableCount--;
+    }
+
+    DtPopSubtable ();
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileMsct
  *
  * PARAMETERS:  List                - Current field list pointer

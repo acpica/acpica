@@ -1472,7 +1472,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMpst0[] =
 
     {ACPI_DMT_UINT8,    ACPI_MPST0_OFFSET (Reserved1),              "Reserved", 0},
     {ACPI_DMT_UINT16,   ACPI_MPST0_OFFSET (NodeId),                 "Node ID", 0},
-    {ACPI_DMT_UINT32,   ACPI_MPST0_OFFSET (Length),                 "Length", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPST0_OFFSET (Length),                 "Length", DT_LENGTH},
     {ACPI_DMT_UINT64,   ACPI_MPST0_OFFSET (RangeAddress),           "Range Address", 0},
     {ACPI_DMT_UINT64,   ACPI_MPST0_OFFSET (RangeLength),            "Range Length", 0},
     {ACPI_DMT_UINT8,    ACPI_MPST0_OFFSET (NumPowerStates),         "Num Power States", 0},

@@ -368,15 +368,29 @@ typedef struct acpi_matr_buffer_header
  *
  ******************************************************************************/
 
+#define ACPI_MPST_CHANNEL_INFO \
+    UINT16                  Reserved1; \
+    UINT8                   ChannelId; \
+    UINT8                   Reserved2; \
+    UINT16                  PowerNodeCount;
+
+/* Main table */
+
 typedef struct acpi_table_mpst
 {
     ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
-    UINT16                  Reserved1;
-    UINT8                   ChannelId;
-    UINT8                   Reserved2;
-    UINT16                  PowerNodeCount;
+    ACPI_MPST_CHANNEL_INFO                      /* Platform Communication Channel */
 
 } ACPI_TABLE_MPST;
+
+
+/* Memory Platform Communication Channel Info */
+
+typedef struct acpi_mpst_channel
+{
+    ACPI_MPST_CHANNEL_INFO                      /* Platform Communication Channel */
+
+} ACPI_MPST_CHANNEL;
 
 
 /* Memory Power Node Structure */
