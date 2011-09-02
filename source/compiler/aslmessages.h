@@ -139,9 +139,7 @@ typedef enum
     ASL_MSG_ARG_COUNT_LO,
     ASL_MSG_ARG_INIT,
     ASL_MSG_BACKWARDS_OFFSET,
-    ASL_MSG_BITS_TO_BYTES,
     ASL_MSG_BUFFER_LENGTH,
-    ASL_MSG_BYTES_TO_BITS,
     ASL_MSG_CLOSE,
     ASL_MSG_COMPILER_INTERNAL,
     ASL_MSG_CONSTANT_EVALUATION,
@@ -263,6 +261,8 @@ typedef enum
     ASL_MSG_RESERVED_NO_RETURN_VAL,
     ASL_MSG_GPE_NAME_CONFLICT,
     ASL_MSG_NO_REGION,
+    ASL_MSG_TAG_LARGER,
+    ASL_MSG_TAG_SMALLER,
 
     ASL_MSG_INVALID_FIELD_NAME,
     ASL_MSG_INTEGER_SIZE,
@@ -293,9 +293,7 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_ARG_COUNT_LO */               "Too few arguments",
 /*    ASL_MSG_ARG_INIT */                   "Method argument is not initialized",
 /*    ASL_MSG_BACKWARDS_OFFSET */           "Invalid backwards offset",
-/*    ASL_MSG_BITS_TO_BYTES */              "Field offset is in bits, but a byte offset is required",
 /*    ASL_MSG_BUFFER_LENGTH */              "Effective AML buffer length is zero",
-/*    ASL_MSG_BYTES_TO_BITS */              "Field offset is in bytes, but a bit offset is required",
 /*    ASL_MSG_CLOSE */                      "Could not close file",
 /*    ASL_MSG_COMPILER_INTERNAL */          "Internal compiler error",
 /*    ASL_MSG_CONSTANT_EVALUATION */        "Could not evaluate constant expression",
@@ -417,6 +415,8 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_RESERVED_NO_RETURN_VAL */     "Reserved method should not return a value",
 /*    ASL_MSG_GPE_NAME_CONFLICT */          "Name conflicts with a previous GPE method",
 /*    ASL_MSG_NO_REGION */                  "_REG has no corresponding Operation Region",
+/*    ASL_MSG_TAG_LARGER */                 "ResourceTag larger than Field",
+/*    ASL_MSG_TAG_SMALLER */                "ResourceTag smaller than Field",
 
 /* These messages are used by the data table compiler only */
 

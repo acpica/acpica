@@ -174,8 +174,8 @@ RsDoDmaDescriptor (
         case 0: /* DMA type */
 
             RsSetFlagBits (&Descriptor->Dma.Flags, InitializerOp, 5, 0);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_DMATYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Dma.Flags), 5);
+            RsCreateMultiBitField (InitializerOp, ACPI_RESTAG_DMATYPE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Dma.Flags), 5, 2);
             break;
 
         case 1: /* Bus Master */
@@ -188,8 +188,8 @@ RsDoDmaDescriptor (
         case 2: /* Xfer Type (transfer width) */
 
             RsSetFlagBits (&Descriptor->Dma.Flags, InitializerOp, 0, 0);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_XFERTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Dma.Flags), 0);
+            RsCreateMultiBitField (InitializerOp, ACPI_RESTAG_XFERTYPE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Dma.Flags), 0, 2);
             break;
 
         case 3: /* Name */
@@ -295,7 +295,7 @@ RsDoFixedIoDescriptor (
 
             Descriptor->FixedIo.Address =
                 (UINT16) InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_BASEADDRESS,
+            RsCreateWordField (InitializerOp, ACPI_RESTAG_BASEADDRESS,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (FixedIo.Address));
             AddressOp = InitializerOp;
             break;
@@ -386,7 +386,7 @@ RsDoIoDescriptor (
 
             Descriptor->Io.Minimum =
                 (UINT16) InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
+            RsCreateWordField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Io.Minimum));
             MinOp = InitializerOp;
             break;
@@ -395,7 +395,7 @@ RsDoIoDescriptor (
 
             Descriptor->Io.Maximum =
                 (UINT16) InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
+            RsCreateWordField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Io.Maximum));
             MaxOp = InitializerOp;
             break;
@@ -552,7 +552,7 @@ RsDoIrqDescriptor (
 
                 /* Create a named field at the start of the list */
 
-                RsCreateByteField (InitializerOp, ACPI_RESTAG_INTERRUPT,
+                RsCreateWordField (InitializerOp, ACPI_RESTAG_INTERRUPT,
                     CurrentByteOffset + ASL_RESDESC_OFFSET (Irq.IrqMask));
             }
             break;
@@ -652,7 +652,7 @@ RsDoIrqNoFlagsDescriptor (
 
                 /* Create a named field at the start of the list */
 
-                RsCreateByteField (InitializerOp, ACPI_RESTAG_INTERRUPT,
+                RsCreateWordField (InitializerOp, ACPI_RESTAG_INTERRUPT,
                     CurrentByteOffset + ASL_RESDESC_OFFSET (Irq.IrqMask));
             }
             break;

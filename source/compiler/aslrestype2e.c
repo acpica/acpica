@@ -208,14 +208,14 @@ RsDoExtendedIoDescriptor (
         case 4: /* Range Type */
 
             RsSetFlagBits (&Descriptor->ExtAddress64.SpecificFlags, InitializerOp, 0, 3);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_RANGETYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.SpecificFlags), 0);
+            RsCreateMultiBitField (InitializerOp, ACPI_RESTAG_RANGETYPE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.SpecificFlags), 0, 2);
             break;
 
         case 5: /* Address Granularity */
 
             Descriptor->ExtAddress64.Granularity = InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_GRANULARITY,
+            RsCreateQwordField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Granularity));
             GranOp = InitializerOp;
            break;
@@ -223,7 +223,7 @@ RsDoExtendedIoDescriptor (
         case 6: /* Address Min */
 
             Descriptor->ExtAddress64.Minimum = InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
+            RsCreateQwordField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Minimum));
             MinOp = InitializerOp;
             break;
@@ -231,7 +231,7 @@ RsDoExtendedIoDescriptor (
         case 7: /* Address Max */
 
             Descriptor->ExtAddress64.Maximum = InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
+            RsCreateQwordField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Maximum));
             MaxOp = InitializerOp;
             break;
@@ -239,14 +239,14 @@ RsDoExtendedIoDescriptor (
         case 8: /* Translation Offset */
 
             Descriptor->ExtAddress64.TranslationOffset = InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_TRANSLATION,
+            RsCreateQwordField (InitializerOp, ACPI_RESTAG_TRANSLATION,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TranslationOffset));
             break;
 
         case 9: /* Address Length */
 
             Descriptor->ExtAddress64.AddressLength = InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
+            RsCreateQwordField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.AddressLength));
             LengthOp = InitializerOp;
             break;
@@ -254,7 +254,7 @@ RsDoExtendedIoDescriptor (
         case 10: /* Type-Specific Attributes */
 
             Descriptor->ExtAddress64.TypeSpecific = InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_TYPESPECIFICATTRIBUTES,
+            RsCreateQwordField (InitializerOp, ACPI_RESTAG_TYPESPECIFICATTRIBUTES,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TypeSpecific));
             break;
 
@@ -381,8 +381,8 @@ RsDoExtendedMemoryDescriptor (
         case 4: /* Memory Type */
 
             RsSetFlagBits (&Descriptor->ExtAddress64.SpecificFlags, InitializerOp, 1, 0);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_MEMTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.SpecificFlags), 1);
+            RsCreateMultiBitField (InitializerOp, ACPI_RESTAG_MEMTYPE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.SpecificFlags), 1, 2);
             break;
 
         case 5: /* Read/Write Type */
@@ -395,7 +395,7 @@ RsDoExtendedMemoryDescriptor (
         case 6: /* Address Granularity */
 
             Descriptor->ExtAddress64.Granularity = InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_GRANULARITY,
+            RsCreateQwordField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Granularity));
             GranOp = InitializerOp;
             break;
@@ -403,7 +403,7 @@ RsDoExtendedMemoryDescriptor (
         case 7: /* Min Address */
 
             Descriptor->ExtAddress64.Minimum = InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
+            RsCreateQwordField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Minimum));
             MinOp = InitializerOp;
             break;
@@ -411,7 +411,7 @@ RsDoExtendedMemoryDescriptor (
         case 8: /* Max Address */
 
             Descriptor->ExtAddress64.Maximum = InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
+            RsCreateQwordField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Maximum));
             MaxOp = InitializerOp;
             break;
@@ -419,14 +419,14 @@ RsDoExtendedMemoryDescriptor (
         case 9: /* Translation Offset */
 
             Descriptor->ExtAddress64.TranslationOffset = InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_TRANSLATION,
+            RsCreateQwordField (InitializerOp, ACPI_RESTAG_TRANSLATION,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TranslationOffset));
             break;
 
         case 10: /* Address Length */
 
             Descriptor->ExtAddress64.AddressLength = InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
+            RsCreateQwordField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.AddressLength));
             LengthOp = InitializerOp;
             break;
@@ -434,7 +434,7 @@ RsDoExtendedMemoryDescriptor (
         case 11: /* Type-Specific Attributes */
 
             Descriptor->ExtAddress64.TypeSpecific = InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_TYPESPECIFICATTRIBUTES,
+            RsCreateQwordField (InitializerOp, ACPI_RESTAG_TYPESPECIFICATTRIBUTES,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TypeSpecific));
             break;
 
@@ -447,8 +447,8 @@ RsDoExtendedMemoryDescriptor (
         case 13: /* Address Range */
 
             RsSetFlagBits (&Descriptor->ExtAddress64.SpecificFlags, InitializerOp, 3, 0);
-            RsCreateBitField (InitializerOp, ACPI_RESTAG_MEMATTRIBUTES,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.SpecificFlags), 3);
+            RsCreateMultiBitField (InitializerOp, ACPI_RESTAG_MEMATTRIBUTES,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.SpecificFlags), 3, 2);
             break;
 
         case 14: /* Type */
@@ -573,7 +573,7 @@ RsDoExtendedSpaceDescriptor (
         case 6: /* Address Granularity */
 
             Descriptor->ExtAddress64.Granularity = InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_GRANULARITY,
+            RsCreateQwordField (InitializerOp, ACPI_RESTAG_GRANULARITY,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Granularity));
             GranOp = InitializerOp;
             break;
@@ -581,7 +581,7 @@ RsDoExtendedSpaceDescriptor (
         case 7: /* Min Address */
 
             Descriptor->ExtAddress64.Minimum = InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_MINADDR,
+            RsCreateQwordField (InitializerOp, ACPI_RESTAG_MINADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Minimum));
             MinOp = InitializerOp;
             break;
@@ -589,7 +589,7 @@ RsDoExtendedSpaceDescriptor (
         case 8: /* Max Address */
 
             Descriptor->ExtAddress64.Maximum = InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_MAXADDR,
+            RsCreateQwordField (InitializerOp, ACPI_RESTAG_MAXADDR,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Maximum));
             MaxOp = InitializerOp;
             break;
@@ -597,14 +597,14 @@ RsDoExtendedSpaceDescriptor (
         case 9: /* Translation Offset */
 
             Descriptor->ExtAddress64.TranslationOffset = InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_TRANSLATION,
+            RsCreateQwordField (InitializerOp, ACPI_RESTAG_TRANSLATION,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TranslationOffset));
             break;
 
         case 10: /* Address Length */
 
             Descriptor->ExtAddress64.AddressLength = InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_LENGTH,
+            RsCreateQwordField (InitializerOp, ACPI_RESTAG_LENGTH,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.AddressLength));
             LengthOp = InitializerOp;
             break;
@@ -612,7 +612,7 @@ RsDoExtendedSpaceDescriptor (
         case 11: /* Type-Specific Attributes */
 
             Descriptor->ExtAddress64.TypeSpecific = InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_TYPESPECIFICATTRIBUTES,
+            RsCreateQwordField (InitializerOp, ACPI_RESTAG_TYPESPECIFICATTRIBUTES,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TypeSpecific));
             break;
 
