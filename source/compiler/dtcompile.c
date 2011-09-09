@@ -401,7 +401,7 @@ DtCompileDataTable (
     /* Validate the signature via the ACPI table list */
 
     TableData = AcpiDmGetTableData (Signature);
-    if (!TableData)
+    if (!TableData || Gbl_CompileGeneric)
     {
         DtCompileGeneric ((void **) FieldList);
         goto Out;

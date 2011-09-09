@@ -168,7 +168,7 @@ AslDoResponseFile (
 
 
 #define ASL_TOKEN_SEPARATORS    " \t\n"
-#define ASL_SUPPORTED_OPTIONS   "@:2b:c:d^e:fgh^i^I:l^no:p:r:s:t:T:v:w:x:z"
+#define ASL_SUPPORTED_OPTIONS   "@:2b:c:d^e:fgh^i^I:l^no:p:r:s:t:T:G^v:w:x:z"
 
 
 /*******************************************************************************
@@ -220,6 +220,7 @@ Options (
     ACPI_OPTION ("-ls",             "Create combined source file (expanded includes) (*.src)");
 
     printf ("\nACPI Data Tables:\n");
+    ACPI_OPTION ("-G",              "Compile custom table containing generic operators");
     ACPI_OPTION ("-T <sig>|ALL|*",  "Create table template file(s) for <Sig>");
     ACPI_OPTION ("-vt",             "Create verbose templates (full disassembly)");
 
@@ -789,6 +790,11 @@ AslDoOptions (
             printf ("Unknown option: -t%s\n", AcpiGbl_Optarg);
             return (-1);
         }
+        break;
+
+
+    case 'G':
+        Gbl_CompileGeneric = TRUE;
         break;
 
 
