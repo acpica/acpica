@@ -51,7 +51,7 @@ DefinitionBlock("extra_aslts.aml", "DSDT", 0x2, "INTEL", "ABCDE", 0x1)
 	{
 		Device(ABBU)
 		{
-			Name(_HID, "ACPIABBU")
+			Name(_HID, "ACPIABB0")
 			Method(ENBL)
 			{
 				Return(Zero)
