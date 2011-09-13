@@ -616,8 +616,9 @@ AcpiRsMatchVendorResource (
  *
  * PARAMETERS:  DeviceHandle    - Handle to the device object for the
  *                                device we are querying
- *              Name            - Method name of the resources we want
- *                                (METHOD_NAME__CRS or METHOD_NAME__PRS)
+ *              Name            - Method name of the resources we want.
+ *                                (METHOD_NAME__CRS, METHOD_NAME__PRS, or
+ *                                METHOD_NAME__AEI)
  *              UserFunction    - Called for each resource
  *              Context         - Passed to UserFunction
  *
@@ -649,12 +650,13 @@ AcpiWalkResources (
 
     if (!DeviceHandle || !UserFunction || !Name ||
         (!ACPI_COMPARE_NAME (Name, METHOD_NAME__CRS) &&
-         !ACPI_COMPARE_NAME (Name, METHOD_NAME__PRS)))
+         !ACPI_COMPARE_NAME (Name, METHOD_NAME__PRS) &&
+         !ACPI_COMPARE_NAME (Name, METHOD_NAME__AEI)))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Get the _CRS or _PRS resource list */
+    /* Get the _CRS/_PRS/_AEI resource list */
 
     Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
     Status = AcpiRsGetMethodData (DeviceHandle, Name, &Buffer);
