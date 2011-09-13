@@ -655,12 +655,13 @@ main (
                 *WildcardList = NULL;
                 WildcardList++;
 
-                /*
-                 * Ignore an FACS or RSDT, we can't use them.
-                 */
-                if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_FACS) ||
-                    ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_RSDT))
+                /* Ignore non-AML tables, we can't use them. Except for an FADT */
+
+                if (!ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_FADT) &&
+                    !AcpiUtIsAmlTable (Table))
                 {
+                    ACPI_WARNING ((AE_INFO,"Table %4.4s is not an AML table, ignoring",
+                        Table->Signature));
                     AcpiOsFree (Table);
                     continue;
                 }
