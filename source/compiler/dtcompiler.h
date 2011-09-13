@@ -552,6 +552,7 @@ extern const unsigned char  TemplateEinj[];
 extern const unsigned char  TemplateErst[];
 extern const unsigned char  TemplateFadt[];
 extern const unsigned char  TemplateFpdt[];
+extern const unsigned char  TemplateGtdt[];
 extern const unsigned char  TemplateHest[];
 extern const unsigned char  TemplateHpet[];
 extern const unsigned char  TemplateIvrs[];

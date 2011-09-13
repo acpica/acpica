@@ -359,7 +359,7 @@ ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_ERST, NULL,                   AcpiDmDumpErst, DtCompileErst,  TemplateErst,   "Error Record Serialization Table"},
     {ACPI_SIG_FADT, NULL,                   AcpiDmDumpFadt, DtCompileFadt,  TemplateFadt,   "Fixed ACPI Description Table"},
     {ACPI_SIG_FPDT, NULL,                   AcpiDmDumpFpdt, DtCompileFpdt,  TemplateFpdt,   "Firmware Performance Data Table"},
-    {ACPI_SIG_GTDT, AcpiDmTableInfoGtdt,    NULL,           NULL,           NULL,           "Generic Timer Description Table"},
+    {ACPI_SIG_GTDT, AcpiDmTableInfoGtdt,    NULL,           NULL,           TemplateGtdt,   "Generic Timer Description Table"},
     {ACPI_SIG_HEST, NULL,                   AcpiDmDumpHest, DtCompileHest,  TemplateHest,   "Hardware Error Source Table"},
     {ACPI_SIG_HPET, AcpiDmTableInfoHpet,    NULL,           NULL,           TemplateHpet,   "High Precision Event Timer table"},
     {ACPI_SIG_IVRS, NULL,                   AcpiDmDumpIvrs, DtCompileIvrs,  TemplateIvrs,   "I/O Virtualization Reporting Structure"},
