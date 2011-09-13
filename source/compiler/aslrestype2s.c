@@ -378,7 +378,8 @@ RsDoGpioIntDescriptor (
     Descriptor->Gpio.ResSourceOffset = (UINT16)
         ACPI_PTR_DIFF (ResourceSource, Descriptor);
 
-    printf ("%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X, IntLen: %.2X\n",
+    DbgPrint (ASL_DEBUG_OUTPUT,
+        "%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X, IntLen: %.2X\n",
         "GpioInt", Descriptor->Gpio.ResourceLength, (UINT16) sizeof (AML_RESOURCE_GPIO),
         ResSourceLength, VendorLength, InterruptLength);
 
@@ -577,7 +578,8 @@ RsDoGpioIoDescriptor (
     Descriptor->Gpio.ResSourceOffset = (UINT16)
         ACPI_PTR_DIFF (ResourceSource, Descriptor);
 
-    printf ("%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X, IntLen: %.2X\n",
+    DbgPrint (ASL_DEBUG_OUTPUT,
+        "%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X, IntLen: %.2X\n",
         "GpioIo", Descriptor->Gpio.ResourceLength, (UINT16) sizeof (AML_RESOURCE_GPIO),
         ResSourceLength, VendorLength, InterruptLength);
 
@@ -765,7 +767,8 @@ RsDoI2cSerialBusDescriptor (
     VendorData = ACPI_ADD_PTR (UINT8, Descriptor, sizeof (AML_RESOURCE_I2C_SERIALBUS));
     ResourceSource = ACPI_ADD_PTR (char, VendorData, VendorLength);
 
-    printf ("%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X, TypLen: %.2X\n",
+    DbgPrint (ASL_DEBUG_OUTPUT,
+        "%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X, TypLen: %.2X\n",
         "I2cSerialBus", Descriptor->I2cSerialBus.ResourceLength,
         (UINT16) sizeof (AML_RESOURCE_I2C_SERIALBUS), ResSourceLength,
         VendorLength, Descriptor->I2cSerialBus.TypeDataLength);
@@ -910,7 +913,8 @@ RsDoSpiSerialBusDescriptor (
     VendorData = ACPI_ADD_PTR (UINT8, Descriptor, sizeof (AML_RESOURCE_SPI_SERIALBUS));
     ResourceSource = ACPI_ADD_PTR (char, VendorData, VendorLength);
 
-    printf ("%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X, TypLen: %.2X\n",
+    DbgPrint (ASL_DEBUG_OUTPUT,
+        "%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X, TypLen: %.2X\n",
         "SpiSerialBus", Descriptor->SpiSerialBus.ResourceLength,
         (UINT16) sizeof (AML_RESOURCE_SPI_SERIALBUS), ResSourceLength,
         VendorLength, Descriptor->SpiSerialBus.TypeDataLength);
@@ -1083,7 +1087,8 @@ RsDoUartSerialBusDescriptor (
     VendorData = ACPI_ADD_PTR (UINT8, Descriptor, sizeof (AML_RESOURCE_UART_SERIALBUS));
     ResourceSource = ACPI_ADD_PTR (char, VendorData, VendorLength);
 
-    printf ("%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X, TypLen: %.2X\n",
+    DbgPrint (ASL_DEBUG_OUTPUT,
+        "%16s - Actual: %.2X, Base: %.2X, ResLen: %.2X, VendLen: %.2X, TypLen: %.2X\n",
         "UartSerialBus", Descriptor->UartSerialBus.ResourceLength,
         (UINT16) sizeof (AML_RESOURCE_UART_SERIALBUS), ResSourceLength,
         VendorLength, Descriptor->UartSerialBus.TypeDataLength);
