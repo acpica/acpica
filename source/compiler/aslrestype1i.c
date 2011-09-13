@@ -294,14 +294,14 @@ RsDoFixedDmaDescriptor (
         case 0: /* DMA Request Lines [WORD] (_DMA) */
 
             Descriptor->FixedDma.RequestLines = (UINT16) InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_DMA,
+            RsCreateWordField (InitializerOp, ACPI_RESTAG_DMA,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (FixedDma.RequestLines));
             break;
 
         case 1: /* DMA Channel [WORD] (_TYP) */
 
             Descriptor->FixedDma.Channels = (UINT16) InitializerOp->Asl.Value.Integer;
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_DMATYPE,
+            RsCreateWordField (InitializerOp, ACPI_RESTAG_DMATYPE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (FixedDma.Channels));
             break;
 
