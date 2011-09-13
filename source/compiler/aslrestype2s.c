@@ -122,11 +122,11 @@
         ACPI_MODULE_NAME    ("aslrestype2s")
 
 
-UINT16
+static UINT16
 RsGetBufferDataLength (
     ACPI_PARSE_OBJECT       *InitializerOp);
 
-UINT16
+static UINT16
 RsGetInterruptDataLength (
     ACPI_PARSE_OBJECT       *InitializerOp);
 
@@ -151,15 +151,24 @@ RsGetVendorData (
  *
  * FUNCTION:    RsGetBufferDataLength
  *
+ * PARAMETERS:  InitializerOp       - Current parse op, start of the resource
+ *                                    descriptor
+ *
+ * RETURN:      Length of the data buffer
+ *
+ * DESCRIPTION: Get the length of a RawDataBuffer, used for vendor data.
+ *
  ******************************************************************************/
 
-UINT16
+static UINT16
 RsGetBufferDataLength (
     ACPI_PARSE_OBJECT       *InitializerOp)
 {
     UINT16                  ExtraDataSize = 0;
     ACPI_PARSE_OBJECT       *DataList;
 
+
+    /* Find the byte-initializer list */
 
     while (InitializerOp)
     {
@@ -180,6 +189,7 @@ RsGetBufferDataLength (
 
             return (ExtraDataSize);
         }
+
         InitializerOp = ASL_GET_PEER_NODE (InitializerOp);
     }
 
@@ -191,9 +201,17 @@ RsGetBufferDataLength (
  *
  * FUNCTION:    RsGetInterruptDataLength
  *
+ * PARAMETERS:  InitializerOp       - Current parse op, start of the resource
+ *                                    descriptor
+ *
+ * RETURN:      Length of the interrupt data list
+ *
+ * DESCRIPTION: Get the length of a list of interrupt DWORDs for the GPIO
+ *              descriptors.
+ *
  ******************************************************************************/
 
-UINT16
+static UINT16
 RsGetInterruptDataLength (
     ACPI_PARSE_OBJECT       *InitializerOp)
 {
@@ -208,6 +226,8 @@ RsGetInterruptDataLength (
     {
         InitializerOp = ASL_GET_PEER_NODE (InitializerOp);
 
+        /* Interrupt list starts at offset 10 (Gpio descriptors) */
+
         if (i >= 10)
         {
             InterruptLength += 2;
@@ -221,6 +241,15 @@ RsGetInterruptDataLength (
 /*******************************************************************************
  *
  * FUNCTION:    RsGetVendorData
+ *
+ * PARAMETERS:  InitializerOp       - Current parse op, start of the resource
+ *                                    descriptor.
+ *              VendorData          - Where the vendor data is returned
+ *              DescriptorOffset    - Where vendor data begins in descriptor
+ *
+ * RETURN:      TRUE if valid vendor data was returned, FALSE otherwise.
+ *
+ * DESCRIPTION: Extract the vendor data and construct a vendor data buffer.
  *
  ******************************************************************************/
 
