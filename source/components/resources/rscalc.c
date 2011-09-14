@@ -595,8 +595,19 @@ AcpiRsGetListLength (
 
         case ACPI_RESOURCE_NAME_GPIO:
 
-            ExtraStructBytes += AmlResource->Gpio.VendorOffset -
-                AmlResource->Gpio.PinTableOffset + AmlResource->Gpio.VendorLength;
+            /* Vendor data is optional */
+
+            if (AmlResource->Gpio.VendorLength)
+            {
+                ExtraStructBytes += AmlResource->Gpio.VendorOffset -
+                    AmlResource->Gpio.PinTableOffset + AmlResource->Gpio.VendorLength;
+            }
+            else
+            {
+                ExtraStructBytes += AmlResource->LargeHeader.ResourceLength +
+                    sizeof (AML_RESOURCE_LARGE_HEADER) -
+                    AmlResource->Gpio.PinTableOffset;
+            }
             break;
 
         case ACPI_RESOURCE_NAME_SERIAL_BUS:

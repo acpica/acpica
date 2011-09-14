@@ -144,7 +144,6 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertGpio[17] =
      * RevisionId
      * ConnectionType
      */
-
     {ACPI_RSC_MOVE8,    ACPI_RS_OFFSET (Data.Gpio.RevisionId),
                         AML_OFFSET (Gpio.RevisionId),
                         2},
@@ -178,7 +177,6 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertGpio[17] =
      * DriveStrength
      * DebounceTimeout
      */
-
     {ACPI_RSC_MOVE16,   ACPI_RS_OFFSET (Data.Gpio.DriveStrength),
                         AML_OFFSET (Gpio.DriveStrength),
                         2},
@@ -195,7 +193,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertGpio[17] =
 
     /* Resource Source */
 
-    {ACPI_RSC_MOVE16,   ACPI_RS_OFFSET (Data.Gpio.ResourceSource.Index),
+    {ACPI_RSC_MOVE8,    ACPI_RS_OFFSET (Data.Gpio.ResourceSource.Index),
                         AML_OFFSET (Gpio.ResSourceIndex),
                         1},
 

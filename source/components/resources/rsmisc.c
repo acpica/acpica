@@ -290,8 +290,26 @@ AcpiRsConvertAmlToResource (
 
         case ACPI_RSC_COUNT_GPIO_RES:
 
-            Target = ACPI_ADD_PTR (void, Aml, Info->Value);
-            ItemCount = ACPI_GET16 (Target) - ACPI_GET16 (Source);
+            /*
+             * Vendor data is optional (length/offset may both be zero)
+             * Examine vendor data length field first
+             */
+            Target = ACPI_ADD_PTR (void, Aml, (Info->Value + 2));
+            if (ACPI_GET16 (Target))
+            {
+                /* Use vendor offset to get resource source length */
+
+                Target = ACPI_ADD_PTR (void, Aml, Info->Value);
+                ItemCount = ACPI_GET16 (Target) - ACPI_GET16 (Source);
+            }
+            else
+            {
+                /* No vendor data to worry about */
+
+                ItemCount = Aml->LargeHeader.ResourceLength +
+                    sizeof (AML_RESOURCE_LARGE_HEADER) -
+                    ACPI_GET16 (Source);
+            }
 
             Resource->Length = Resource->Length + ItemCount;
             ACPI_SET16 (Destination) = ItemCount;
@@ -653,6 +671,7 @@ AcpiRsConvertResourceToAml (
 
             ItemCount = ACPI_GET16 (Source);
             ACPI_SET16 (Destination) = (UINT16) AmlLength;
+
             AmlLength = (UINT16) (AmlLength + ItemCount * 2);
             Target = ACPI_ADD_PTR (void, Aml, Info->Value);
             ACPI_SET16 (Target) = (UINT16) AmlLength;
@@ -662,8 +681,8 @@ AcpiRsConvertResourceToAml (
 
         case ACPI_RSC_COUNT_GPIO_VEN:
 
-            ItemCount = ACPI_GET8 (Source);
-            ACPI_SET8 (Destination) = (UINT8) ItemCount;
+            ItemCount = ACPI_GET16 (Source);
+            ACPI_SET16 (Destination) = (UINT16) ItemCount;
 
             AmlLength = (UINT16) (AmlLength + (Info->Value * ItemCount));
             AcpiRsSetResourceLength (AmlLength, Aml);
@@ -672,11 +691,23 @@ AcpiRsConvertResourceToAml (
 
         case ACPI_RSC_COUNT_GPIO_RES:
 
+            /* Set resource source string length */
+
             ItemCount = ACPI_GET16 (Source);
             ACPI_SET16 (Destination) = (UINT16) AmlLength;
+
+            /* Compute offset for the Vendor Data */
+
             AmlLength = (UINT16) (AmlLength + ItemCount);
             Target = ACPI_ADD_PTR (void, Aml, Info->Value);
-            ACPI_SET16 (Target) = (UINT16) AmlLength;
+
+            /* Set vendor offset only if there is vendor data */
+
+            if (Resource->Data.Gpio.VendorLength)
+            {
+                ACPI_SET16 (Target) = (UINT16) AmlLength;
+            }
+
             AcpiRsSetResourceLength (AmlLength, Aml);
             break;
 
@@ -727,6 +758,8 @@ AcpiRsConvertResourceToAml (
 
 
         case ACPI_RSC_MOVE_GPIO_RES:
+
+            /* Used for both ResourceSource string and VendorData */
 
             Destination = (char *) ACPI_ADD_PTR (void, Aml,
                   ACPI_GET16 (Destination));
