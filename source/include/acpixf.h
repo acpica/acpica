@@ -589,6 +589,11 @@ AcpiGetPossibleResources (
     ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
+AcpiGetEventResources (
+    ACPI_HANDLE             DeviceHandle,
+    ACPI_BUFFER             *RetBuffer);
+
+ACPI_STATUS
 AcpiWalkResources (
     ACPI_HANDLE                 Device,
     char                        *Name,

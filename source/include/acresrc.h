@@ -308,6 +308,10 @@ AcpiRsSetSrsMethodData (
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_BUFFER             *RetBuffer);
 
+ACPI_STATUS
+AcpiRsGetAeiMethodData (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_BUFFER             *RetBuffer);
 
 /*
  * rscalc
