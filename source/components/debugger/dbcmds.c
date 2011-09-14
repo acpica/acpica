@@ -643,6 +643,7 @@ AcpiDmCompareAmlResources (
     ACPI_RSDESC_SIZE        Offset = 0;
     UINT8                   ResourceType;
     UINT32                  Count = 0;
+    UINT32                  i;
 
 
     /* Compare overall buffer sizes (may be different due to size rounding) */
@@ -685,6 +686,15 @@ AcpiDmCompareAmlResources (
             AcpiOsPrintf (
                 "**** Data mismatch in descriptor [%.2X] type %2.2X, Offset %8.8X ****\n",
                 Count, ResourceType, Offset);
+
+            for (i = 0; i < Aml1Length; i++)
+            {
+                if (Aml1[i] != Aml2[i])
+                {
+                    AcpiOsPrintf ("Mismatch at byte offset %.2X: is %2.2X, should be %2.2X\n",
+                        i, Aml2[i], Aml1[i]);
+                }
+            }
         }
 
         /* Exit on EndTag descriptor */
@@ -830,6 +840,7 @@ AcpiDbDeviceResources (
     ACPI_NAMESPACE_NODE     *PrtNode = NULL;
     ACPI_NAMESPACE_NODE     *CrsNode = NULL;
     ACPI_NAMESPACE_NODE     *PrsNode = NULL;
+    ACPI_NAMESPACE_NODE     *AeiNode = NULL;
     char                    *ParentPath;
     ACPI_BUFFER             ReturnObj;
     ACPI_STATUS             Status;
@@ -847,7 +858,8 @@ AcpiDbDeviceResources (
     (void) AcpiGetHandle (Node, METHOD_NAME__PRT, ACPI_CAST_PTR (ACPI_HANDLE, &PrtNode));
     (void) AcpiGetHandle (Node, METHOD_NAME__CRS, ACPI_CAST_PTR (ACPI_HANDLE, &CrsNode));
     (void) AcpiGetHandle (Node, METHOD_NAME__PRS, ACPI_CAST_PTR (ACPI_HANDLE, &PrsNode));
-    if (!PrtNode && !CrsNode && !PrsNode)
+    (void) AcpiGetHandle (Node, METHOD_NAME__AEI, ACPI_CAST_PTR (ACPI_HANDLE, &AeiNode));
+    if (!PrtNode && !CrsNode && !PrsNode && !AeiNode)
     {
         goto Cleanup;   /* Nothing to do */
     }
@@ -969,7 +981,7 @@ GetPrs:
         {
             AcpiOsPrintf ("Could not evaluate _PRS: %s\n",
                 AcpiFormatException (Status));
-            goto Cleanup;
+            goto GetAei;
         }
 
         ReturnObj.Pointer = AcpiGbl_DbBuffer;
@@ -979,6 +991,39 @@ GetPrs:
         if (ACPI_FAILURE (Status))
         {
             AcpiOsPrintf ("AcpiGetPossibleResources failed: %s\n",
+                AcpiFormatException (Status));
+            goto GetAei;
+        }
+
+        AcpiRsDumpResourceList (ACPI_CAST_PTR (ACPI_RESOURCE, AcpiGbl_DbBuffer));
+    }
+
+
+    /* _AEI */
+
+GetAei:
+    if (AeiNode)
+    {
+        AcpiOsPrintf ("Evaluating _AEI\n");
+
+        ReturnObj.Pointer = AcpiGbl_DbBuffer;
+        ReturnObj.Length  = ACPI_DEBUG_BUFFER_SIZE;
+
+        Status = AcpiEvaluateObject (AeiNode, NULL, NULL, &ReturnObj);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiOsPrintf ("Could not evaluate _AEI: %s\n",
+                AcpiFormatException (Status));
+            goto Cleanup;
+        }
+
+        ReturnObj.Pointer = AcpiGbl_DbBuffer;
+        ReturnObj.Length  = ACPI_DEBUG_BUFFER_SIZE;
+
+        Status = AcpiGetEventResources (Node, &ReturnObj);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiOsPrintf ("AcpiGetEventResources failed: %s\n",
                 AcpiFormatException (Status));
             goto Cleanup;
         }
