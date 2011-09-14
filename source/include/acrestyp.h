@@ -488,6 +488,14 @@ typedef struct acpi_resource_gpio
 
 } ACPI_RESOURCE_GPIO;
 
+/* Values for GPIO ConnectionType above */
+
+#define ACPI_RESOURCE_GPIO_TYPE_INT              0
+#define ACPI_RESOURCE_GPIO_TYPE_IO               1
+
+
+/* Common structure for I2C, SPI, and UART serial descriptors */
+
 #define ACPI_RESOURCE_SERIAL_COMMON \
     UINT8                           RevisionId; \
     UINT8                           Type; \
@@ -498,6 +506,13 @@ typedef struct acpi_resource_gpio
     UINT16                          VendorLength; \
     ACPI_RESOURCE_SOURCE            ResourceSource; \
     UINT8                           *VendorData;
+
+/* Values for the Type field above */
+
+#define ACPI_RESOURCE_SERIAL_TYPE_I2C           1
+#define ACPI_RESOURCE_SERIAL_TYPE_SPI           2
+#define ACPI_RESOURCE_SERIAL_TYPE_UART          3
+
 
 typedef struct acpi_resource_common_serialbus
 {
