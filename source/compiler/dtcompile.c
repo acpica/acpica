@@ -526,6 +526,11 @@ DtCompileTable (
      */
     for (; Info->Name; Info++)
     {
+        if (Info->Opcode == ACPI_DMT_EXTRA_TEXT)
+        {
+            continue;
+        }
+
         if (!LocalField)
         {
             sprintf (MsgBuffer, "Found NULL field - Field name \"%s\" needed",
