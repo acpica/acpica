@@ -182,7 +182,8 @@ AcpiUtGetMutexObject (
 
     /* Ensure that we actually have a Mutex object */
 
-    if (MutexNode->Type != ACPI_TYPE_MUTEX)
+    if (!MutexNode ||
+        (MutexNode->Type != ACPI_TYPE_MUTEX))
     {
         return (AE_TYPE);
     }
@@ -225,9 +226,9 @@ AcpiAcquireMutex (
     UINT16                  Timeout)
 {
     ACPI_STATUS             Status;
-    ACPI_OPERAND_OBJECT     *MutexObj;    
+    ACPI_OPERAND_OBJECT     *MutexObj;
 
-   
+
     /* Get the low-level mutex associated with Handle:Pathname */
 
     Status = AcpiUtGetMutexObject (Handle, Pathname, &MutexObj);
@@ -266,9 +267,9 @@ AcpiReleaseMutex (
     ACPI_STRING             Pathname)
 {
     ACPI_STATUS             Status;
-    ACPI_OPERAND_OBJECT     *MutexObj;    
+    ACPI_OPERAND_OBJECT     *MutexObj;
 
-   
+
     /* Get the low-level mutex associated with Handle:Pathname */
 
     Status = AcpiUtGetMutexObject (Handle, Pathname, &MutexObj);
