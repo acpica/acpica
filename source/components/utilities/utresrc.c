@@ -501,6 +501,17 @@ static const UINT8          AcpiGbl_ResourceTypes[] =
     ACPI_VARIABLE_LENGTH            /* 0E *SerialBus */
 };
 
+/*
+ * For the iASL compiler/disassembler, we don't want any error messages
+ * because the disassembler uses the resource validation code to determine
+ * if Buffer objects are actually Resource Templates.
+ */
+#ifdef ACPI_ASL_COMPILER
+#define ACPI_RESOURCE_ERROR(plist)
+#else
+#define ACPI_RESOURCE_ERROR(plist)  ACPI_ERROR(plist)
+#endif
+
 
 /*******************************************************************************
  *
@@ -744,7 +755,7 @@ AcpiUtValidateResource (
         if ((AmlResource->CommonSerialBus.Type == 0) ||
             (AmlResource->CommonSerialBus.Type > AML_RESOURCE_MAX_SERIALBUSTYPE))
         {
-            ACPI_ERROR ((AE_INFO,
+            ACPI_RESOURCE_ERROR ((AE_INFO,
                 "Invalid/unsupported SerialBus resource descriptor: BusType 0x%2.2X",
                 AmlResource->CommonSerialBus.Type));
             return (AE_AML_INVALID_RESOURCE_TYPE);
@@ -763,14 +774,14 @@ AcpiUtValidateResource (
 
 InvalidResource:
 
-    ACPI_ERROR ((AE_INFO,
+    ACPI_RESOURCE_ERROR ((AE_INFO,
         "Invalid/unsupported resource descriptor: Type 0x%2.2X",
         ResourceType));
     return (AE_AML_INVALID_RESOURCE_TYPE);
 
 BadResourceLength:
 
-    ACPI_ERROR ((AE_INFO,
+    ACPI_RESOURCE_ERROR ((AE_INFO,
         "Invalid resource descriptor length: Type "
         "0x%2.2X, Length 0x%4.4X, MinLength 0x%4.4X",
         ResourceType, ResourceLength, MinimumResourceLength));
