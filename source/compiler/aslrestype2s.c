@@ -484,11 +484,16 @@ RsDoGpioIntDescriptor (
 
         case 9: /* Vendor Data (Optional - Buffer of BYTEs) (_VEN) */
 
-            if (RsGetVendorData (InitializerOp, VendorData,
-                CurrentByteOffset + Descriptor->Gpio.VendorOffset))
+            /*
+             * Always set the VendorOffset even if there is no Vendor Data.
+             * This field is required in order to calculate the length
+             * of the ResourceSource at runtime.
+             */
+            Descriptor->Gpio.VendorOffset = (UINT16)
+                ACPI_PTR_DIFF (VendorData, Descriptor);
+
+            if (RsGetVendorData (InitializerOp, VendorData, CurrentByteOffset))
             {
-                Descriptor->Gpio.VendorOffset = (UINT16)
-                    ACPI_PTR_DIFF (VendorData, Descriptor);
                 Descriptor->Gpio.VendorLength = VendorLength;
             }
             break;
@@ -684,11 +689,16 @@ RsDoGpioIoDescriptor (
 
         case 9: /* Vendor Data (Optional - Buffer of BYTEs) (_VEN) */
 
-            if (RsGetVendorData (InitializerOp, VendorData,
-                CurrentByteOffset + Descriptor->Gpio.VendorOffset))
+            /*
+             * Always set the VendorOffset even if there is no Vendor Data.
+             * This field is required in order to calculate the length
+             * of the ResourceSource at runtime.
+             */
+            Descriptor->Gpio.VendorOffset = (UINT16)
+                ACPI_PTR_DIFF (VendorData, Descriptor);
+
+            if (RsGetVendorData (InitializerOp, VendorData, CurrentByteOffset))
             {
-                Descriptor->Gpio.VendorOffset = (UINT16)
-                    ACPI_PTR_DIFF (VendorData, Descriptor);
                 Descriptor->Gpio.VendorLength = VendorLength;
             }
             break;
