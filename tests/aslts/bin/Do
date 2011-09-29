@@ -303,7 +303,7 @@ make_install_1()
 {
 	local dir restore_dir
 
-	restore_dir=`PWD`
+	restore_dir=$PWD
 	dir="$1"
 
 	cd "$dir"
@@ -323,7 +323,7 @@ do_test_cases_make_install()
 {
 	local errors=0 dir restore_dir
 
-	restore_dir=`PWD`
+	restore_dir=$PWD
 
 	for filename in $2
 	do
@@ -375,7 +375,7 @@ do_collections_make_install()
 {
 	local errors=0 dir restore_dir
 
-	restore_dir=`PWD`
+	restore_dir=$PWD
 
 	for filename in $2
 	do
