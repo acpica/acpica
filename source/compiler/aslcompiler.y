@@ -177,7 +177,7 @@ void *                      AslLocalAllocate (unsigned int Size);
  * These shift/reduce conflicts are expected. There should be zero
  * reduce/reduce conflicts.
  */
-%expect 85
+%expect 86
 
 /******************************************************************************
  *
@@ -856,6 +856,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> OptionalWireMode
 %type <n> OptionalWordConst
 %type <n> OptionalWordConstExpr
+%type <n> OptionalXferSize
 
 %%
 /*******************************************************************************
@@ -2915,9 +2916,9 @@ FixedDmaTerm
     : PARSEOP_FIXEDDMA '('          {$<n>$ = TrCreateLeafNode (PARSEOP_FIXEDDMA);}
         WordConstExpr               // 04: DMA RequestLines
         ',' WordConstExpr           // 06: DMA Channels
-        ',' XferSizeKeyword         // 08: DMA TransferSize
-        OptionalNameString          // 09: DescriptorName
-        ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$6,$8,$9);}
+        OptionalXferSize            // 07: DMA TransferSize
+        OptionalNameString          // 08: DescriptorName
+        ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$6,$7,$8);}
     | PARSEOP_FIXEDDMA '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -3557,6 +3558,12 @@ OptionalWordConst
 OptionalWordConstExpr
     : ','                           {$$ = NULL;}
     | ',' WordConstExpr             {$$ = $2;}
+    ;
+
+OptionalXferSize
+    :                               {$$ = TrCreateValuedLeafNode (PARSEOP_XFERSIZE_32, 2);}
+    | ','                           {$$ = TrCreateValuedLeafNode (PARSEOP_XFERSIZE_32, 2);}
+    | ',' XferSizeKeyword           {$$ = $2;}
     ;
 
 %%
