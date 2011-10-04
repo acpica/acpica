@@ -470,6 +470,7 @@ TrDoSwitch (
     ACPI_PARSE_OBJECT       *MethodOp;
     ACPI_PARSE_OBJECT       *StoreOp;
     ACPI_PARSE_OBJECT       *BreakOp;
+    ACPI_PARSE_OBJECT       *BufferOp;
     char                    *PredicateValueName;
     UINT16                  Index;
     UINT32                  Btype;
@@ -719,6 +720,7 @@ TrDoSwitch (
 
     Predicate = StartNode->Asl.Child;
     NewOp = TrCreateLeafNode (PARSEOP_NAME);
+    TrAmlInitLineNumbers (NewOp, StartNode);
 
     /* Find the parent method */
 
@@ -762,6 +764,7 @@ TrDoSwitch (
 
     NewOp2 = TrCreateValuedLeafNode (PARSEOP_NAMESEG,
                 (UINT64) ACPI_TO_INTEGER (PredicateValueName));
+    TrAmlInitLineNumbers (NewOp2, NewOp);
     NewOp2->Asl.CompileFlags |= NODE_IS_NAME_DECLARATION;
     NewOp->Asl.Child  = NewOp2;
 
@@ -772,21 +775,27 @@ TrDoSwitch (
     case ACPI_BTYPE_INTEGER:
         NewOp2->Asl.Next = TrCreateValuedLeafNode (PARSEOP_ZERO,
                                 (UINT64) 0);
+        TrAmlInitLineNumbers (NewOp2->Asl.Next, NewOp);
         break;
 
     case ACPI_BTYPE_STRING:
         NewOp2->Asl.Next = TrCreateValuedLeafNode (PARSEOP_STRING_LITERAL,
                                 (UINT64) ACPI_TO_INTEGER (""));
+        TrAmlInitLineNumbers (NewOp2->Asl.Next, NewOp);
         break;
 
     case ACPI_BTYPE_BUFFER:
         (void) TrLinkPeerNode (NewOp2, TrCreateValuedLeafNode (PARSEOP_BUFFER,
                                     (UINT64) 0));
         Next = NewOp2->Asl.Next;
+        TrAmlInitLineNumbers (Next, NewOp2);
         (void) TrLinkChildren (Next, 1, TrCreateValuedLeafNode (PARSEOP_ZERO,
                                     (UINT64) 1));
-        (void) TrLinkPeerNode (Next->Asl.Child,
-            TrCreateValuedLeafNode (PARSEOP_DEFAULT_ARG, (UINT64) 0));
+        TrAmlInitLineNumbers (Next->Asl.Child, Next);
+
+        BufferOp = TrCreateValuedLeafNode (PARSEOP_DEFAULT_ARG, (UINT64) 0);
+        TrAmlInitLineNumbers (BufferOp, Next->Asl.Child);
+        (void) TrLinkPeerNode (Next->Asl.Child, BufferOp);
 
         TrAmlSetSubtreeParent (Next->Asl.Child, Next);
         break;
@@ -805,6 +814,7 @@ TrDoSwitch (
      */
     TrAmlInitNode (StartNode, PARSEOP_WHILE);
     NewOp = TrCreateLeafNode (PARSEOP_ONE);
+    TrAmlInitLineNumbers (NewOp, StartNode);
     NewOp->Asl.Next = Predicate->Asl.Next;
     NewOp->Asl.Parent = StartNode;
     StartNode->Asl.Child = NewOp;
@@ -812,6 +822,7 @@ TrDoSwitch (
     /* Create a Store() node */
 
     StoreOp = TrCreateLeafNode (PARSEOP_STORE);
+    TrAmlInitLineNumbers (StoreOp, NewOp);
     StoreOp->Asl.Parent = StartNode;
     TrAmlInsertPeer (NewOp, StoreOp);
 
@@ -822,6 +833,7 @@ TrDoSwitch (
 
     NewOp = TrCreateValuedLeafNode (PARSEOP_NAMESEG,
                 (UINT64) ACPI_TO_INTEGER (PredicateValueName));
+    TrAmlInitLineNumbers (NewOp, StoreOp);
     NewOp->Asl.Parent    = StoreOp;
     Predicate->Asl.Next  = NewOp;
 
@@ -834,6 +846,7 @@ TrDoSwitch (
     }
 
     BreakOp = TrCreateLeafNode (PARSEOP_BREAK);
+    TrAmlInitLineNumbers (BreakOp, NewOp);
     BreakOp->Asl.Parent = StartNode;
     TrAmlInsertPeer (Conditional, BreakOp);
 }
