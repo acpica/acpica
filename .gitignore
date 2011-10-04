@@ -61,18 +61,25 @@ generate/msvc9/AcpiSubsystem64
 
 generate/linux/bin
 generate/unix/bin
+generate/unix/acpibin/acpibin
 generate/unix/acpibin/*.o
 generate/unix/acpibin/*.exe
+generate/unix/acpiexec/acpiexec
 generate/unix/acpiexec/*.o
 generate/unix/acpiexec/*.exe
+generate/unix/acpihelp/acpihelp
 generate/unix/acpihelp/*.o
 generate/unix/acpihelp/*.exe
+generate/unix/acpinames/acpinames
 generate/unix/acpinames/*.o
 generate/unix/acpinames/*.exe
+generate/unix/acpisrc/acpisrc
 generate/unix/acpisrc/*.o
 generate/unix/acpisrc/*.exe
+generate/unix/acpixtract/acpixtract
 generate/unix/acpixtract/*.o
 generate/unix/acpixtract/*.exe
+generate/unix/iasl/iasl
 generate/unix/iasl/*.o
 generate/unix/iasl/*.h
 generate/unix/iasl/*.c
@@ -104,6 +111,7 @@ libraries/apitest.exe
 libraries/AcpiNames.exe
 libraries/AcpiNamesDebug.exe
 libraries/*.ex_
+
 chmod.sh
 crlf.sh
 pull.sh
