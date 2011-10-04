@@ -550,7 +550,6 @@ AslPopInputFileStack (
     void)
 {
     ASL_FILE_NODE           *Fnode;
-    FILE                    *InputFile = NULL;
 
 
     Fnode = InputStack;
@@ -569,7 +568,6 @@ AslPopInputFileStack (
     /* Update the top-of-stack */
 
     InputStack = Fnode->Next;
-    InputFile = Fnode->File;
 
     /* Reset global line counter and filename */
 

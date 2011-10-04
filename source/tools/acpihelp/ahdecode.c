@@ -458,7 +458,6 @@ AhDecodeAmlOpcode (
 {
     const AH_AML_OPCODE     *Op;
     UINT32                  Opcode;
-    BOOLEAN                 Found = FALSE;
     UINT8                   Prefix;
 
 
@@ -493,7 +492,6 @@ AhDecodeAmlOpcode (
             (Opcode <= Op->OpcodeRangeEnd))
         {
             AhDisplayAmlOpcode (Op);
-            Found = TRUE;
         }
     }
 }
