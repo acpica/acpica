@@ -416,6 +416,8 @@ Method(RT15)
 
 	m330(ts, 27, "p42e", p42e, p42f)
 
+    // Check resource descriptor tag offsets
+
 	Store (
 		ResourceTemplate () {
 			DWordSpace (0xc0, ResourceProducer, PosDecode, MinNotFixed, MaxNotFixed, 0x5a,
@@ -424,12 +426,12 @@ Method(RT15)
 				0xecedeeef, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, , , DSP1)
 		}, Local0)
 
-	m331(ts, 1, DSP0._DEC, 0x21, DSP1._DEC, 0xf1, "_DEC")
-	m331(ts, 2, DSP0._MIF, 0x22, DSP1._MIF, 0xf2, "_MIF")
-	m331(ts, 3, DSP0._MAF, 0x23, DSP1._MAF, 0xf3, "_MAF")
-	m331(ts, 7, DSP0._GRA, 6, DSP1._GRA, 32, "_GRA")
-	m331(ts, 8, DSP0._MIN, 10, DSP1._MIN, 36, "_MIN")
-	m331(ts, 9, DSP0._MAX, 14, DSP1._MAX, 40, "_MAX")
-	m331(ts, 10, DSP0._TRA, 18, DSP1._TRA, 44, "_TRA")
-	m331(ts, 11, DSP0._LEN, 22, DSP1._LEN, 48, "_LEN")
+	m331(ts, 1,  DSP0._DEC, 0x21, DSP1._DEC, 0xf1, "_DEC")
+	m331(ts, 2,  DSP0._MIF, 0x22, DSP1._MIF, 0xf2, "_MIF")
+	m331(ts, 3,  DSP0._MAF, 0x23, DSP1._MAF, 0xf3, "_MAF")
+	m331(ts, 7,  DSP0._GRA, 0x30, DSP1._GRA, 0x100, "_GRA")
+	m331(ts, 8,  DSP0._MIN, 0x50, DSP1._MIN, 0x120, "_MIN")
+	m331(ts, 9,  DSP0._MAX, 0x70, DSP1._MAX, 0x140, "_MAX")
+	m331(ts, 10, DSP0._TRA, 0x90, DSP1._TRA, 0x160, "_TRA")
+	m331(ts, 11, DSP0._LEN, 0xB0, DSP1._LEN, 0x180, "_LEN")
 }

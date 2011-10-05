@@ -671,6 +671,9 @@ Method(RT0c)
 	Store("TEST: RT0c, QWord IO Resource Descriptor Macro", Debug)
 
 	m330(ts, 37, "p416", p416, p417)
+	
+    // Check resource descriptor tag offsets
+
 	Store (
 		ResourceTemplate () {
 			QWordIO (ResourceProducer, MinNotFixed, MaxNotFixed, PosDecode, EntireRange,
@@ -681,17 +684,17 @@ Method(RT0c)
 				0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff, , , QIO1)
 		}, Local0)
 
-	m331(ts, 1, QIO0._DEC, 0x21, QIO1._DEC, 0x191, "_DEC")
-	m331(ts, 2, QIO0._MIF, 0x22, QIO1._MIF, 0x192, "_MIF")
-	m331(ts, 3, QIO0._MAF, 0x23, QIO1._MAF, 0x193, "_MAF")
-	m331(ts, 4, QIO0._RNG, 0x28, QIO1._RNG, 0x198, "_RNG")
-	m331(ts, 5, QIO0._TTP, 0x2c, QIO1._TTP, 0x19c, "_TTP")
-	m331(ts, 6, QIO0._TRS, 0x2d, QIO1._TRS, 0x19d, "_TRS")
-	m331(ts, 7, QIO0._GRA, 6, QIO1._GRA, 52, "_GRA")
-	m331(ts, 8, QIO0._MIN, 14, QIO1._MIN, 60, "_MIN")
-	m331(ts, 9, QIO0._MAX, 22, QIO1._MAX, 68, "_MAX")
-	m331(ts, 10, QIO0._TRA, 30, QIO1._TRA, 76, "_TRA")
-	m331(ts, 11, QIO0._LEN, 38, QIO1._LEN, 84, "_LEN")
+	m331(ts, 1,  QIO0._DEC, 0x21, QIO1._DEC, 0x0191, "_DEC")
+	m331(ts, 2,  QIO0._MIF, 0x22, QIO1._MIF, 0x0192, "_MIF")
+	m331(ts, 3,  QIO0._MAF, 0x23, QIO1._MAF, 0x0193, "_MAF")
+	m331(ts, 4,  QIO0._RNG, 0x28, QIO1._RNG, 0x0198, "_RNG")
+	m331(ts, 5,  QIO0._TTP, 0x2c, QIO1._TTP, 0x019c, "_TTP")
+	m331(ts, 6,  QIO0._TRS, 0x2d, QIO1._TRS, 0x019d, "_TRS")
+	m331(ts, 7,  QIO0._GRA, 0x30, QIO1._GRA, 0x01A0, "_GRA")
+	m331(ts, 8,  QIO0._MIN, 0x70, QIO1._MIN, 0x01E0, "_MIN")
+	m331(ts, 9,  QIO0._MAX, 0xB0, QIO1._MAX, 0x0220, "_MAX")
+	m331(ts, 10, QIO0._TRA, 0xF0, QIO1._TRA, 0x0260, "_TRA")
+	m331(ts, 11, QIO0._LEN, 0x0130, QIO1._LEN, 0x02A0, "_LEN")
 }
 
 

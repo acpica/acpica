@@ -40,7 +40,7 @@ Name (p438, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5)
-		FixedIO (0xf0f1, 0xf2)
+		FixedIO (0x03f1, 0xf2)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff)
@@ -134,14 +134,14 @@ Name (p438, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5)
-		FixedIO (0xf0f1, 0xf2)
+		FixedIO (0x03f1, 0xf2)
 		}
 		StartDependentFn (0, 2) {
 		IRQ (Level, ActiveHigh, Exclusive) {0}
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5)
-		FixedIO (0xf0f1, 0xf2)
+		FixedIO (0x03f1, 0xf2)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		}
 		StartDependentFn (1, 0) {
@@ -149,7 +149,7 @@ Name (p438, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5)
-		FixedIO (0xf0f1, 0xf2)
+		FixedIO (0x03f1, 0xf2)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7)
 		}
@@ -158,7 +158,7 @@ Name (p438, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5)
-		FixedIO (0xf0f1, 0xf2)
+		FixedIO (0x03f1, 0xf2)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff)
@@ -168,7 +168,7 @@ Name (p438, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5)
-		FixedIO (0xf0f1, 0xf2)
+		FixedIO (0x03f1, 0xf2)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff)
@@ -246,7 +246,7 @@ Name (p438, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5)
-		FixedIO (0xf0f1, 0xf2)
+		FixedIO (0x03f1, 0xf2)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff)
@@ -258,7 +258,7 @@ Name (p438, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5)
-		FixedIO (0xf0f1, 0xf2)
+		FixedIO (0x03f1, 0xf2)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff)
@@ -281,7 +281,7 @@ Name (p445, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAZ) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0Z)
-		FixedIO (0xf0f1, 0xf2, FIOZ)
+		FixedIO (0x03f1, 0xf2, FIOZ)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24Z)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32Z)
@@ -360,7 +360,7 @@ Name (p445, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMA1) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO01)
-		FixedIO (0xf0f1, 0xf2, FIO1)
+		FixedIO (0x03f1, 0xf2, FIO1)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M241)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32Y)
@@ -455,14 +455,14 @@ Name (p445, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMA8) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO08)
-		FixedIO (0xf0f1, 0xf2, FIO8)
+		FixedIO (0x03f1, 0xf2, FIO8)
 		}
 		StartDependentFn (0, 2) {
 		IRQ (Level, ActiveHigh, Exclusive, IRQA) {0}
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAA) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0A)
-		FixedIO (0xf0f1, 0xf2, FIOA)
+		FixedIO (0x03f1, 0xf2, FIOA)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		}
 		StartDependentFn (1, 0) {
@@ -470,7 +470,7 @@ Name (p445, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAC) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0C)
-		FixedIO (0xf0f1, 0xf2, FIOC)
+		FixedIO (0x03f1, 0xf2, FIOC)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24C)
 		}
@@ -479,7 +479,7 @@ Name (p445, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAE) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0E)
-		FixedIO (0xf0f1, 0xf2, FIOE)
+		FixedIO (0x03f1, 0xf2, FIOE)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24E)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32E)
@@ -489,7 +489,7 @@ Name (p445, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAG) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0G)
-		FixedIO (0xf0f1, 0xf2, FIOG)
+		FixedIO (0x03f1, 0xf2, FIOG)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24G)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32G)
@@ -567,7 +567,7 @@ Name (p445, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAI) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0I)
-		FixedIO (0xf0f1, 0xf2, FIOI)
+		FixedIO (0x03f1, 0xf2, FIOI)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24I)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32I)
@@ -579,7 +579,7 @@ Name (p445, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAK) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0K)
-		FixedIO (0xf0f1, 0xf2, FIOK)
+		FixedIO (0x03f1, 0xf2, FIOK)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24K)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32K)
@@ -614,14 +614,14 @@ Name (p445, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMA9) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO09)
-		FixedIO (0xf0f1, 0xf2, FIO9)
+		FixedIO (0x03f1, 0xf2, FIO9)
 		}
 		StartDependentFn (0, 2) {
 		IRQ (Level, ActiveHigh, Exclusive, IRQB) {0}
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAB) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0B)
-		FixedIO (0xf0f1, 0xf2, FIOB)
+		FixedIO (0x03f1, 0xf2, FIOB)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		}
 		StartDependentFn (1, 0) {
@@ -629,7 +629,7 @@ Name (p445, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAD) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0D)
-		FixedIO (0xf0f1, 0xf2, FIOD)
+		FixedIO (0x03f1, 0xf2, FIOD)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24D)
 		}
@@ -638,7 +638,7 @@ Name (p445, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAF) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0F)
-		FixedIO (0xf0f1, 0xf2, FIOF)
+		FixedIO (0x03f1, 0xf2, FIOF)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24F)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32F)
@@ -648,7 +648,7 @@ Name (p445, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAH) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0H)
-		FixedIO (0xf0f1, 0xf2, FIOH)
+		FixedIO (0x03f1, 0xf2, FIOH)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24H)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32H)
@@ -726,7 +726,7 @@ Name (p445, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAJ) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0J)
-		FixedIO (0xf0f1, 0xf2, FIOJ)
+		FixedIO (0x03f1, 0xf2, FIOJ)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24J)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32J)
@@ -738,7 +738,7 @@ Name (p445, Package() {
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAL) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0L)
-		FixedIO (0xf0f1, 0xf2, FIOL)
+		FixedIO (0x03f1, 0xf2, FIOL)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24L)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32L)
@@ -776,7 +776,7 @@ Name (p439, Package() {
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
 		0x85, 0x11, 0x00, 0x01,
@@ -975,20 +975,20 @@ Name (p439, Package() {
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 	0x31, 0x08,
 		0x23, 0x01, 0x00, 0x00,
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 	0x31, 0x01,
 		0x23, 0x01, 0x00, 0x00,
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
 	0x31, 0x05,
@@ -996,7 +996,7 @@ Name (p439, Package() {
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
 		0x85, 0x11, 0x00, 0x01,
@@ -1007,7 +1007,7 @@ Name (p439, Package() {
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
 		0x85, 0x11, 0x00, 0x01,
@@ -1192,7 +1192,7 @@ Name (p439, Package() {
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
 		0x85, 0x11, 0x00, 0x01,
@@ -1206,7 +1206,7 @@ Name (p439, Package() {
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
 		0x85, 0x11, 0x00, 0x01,
@@ -1230,7 +1230,7 @@ Name (p446, Package() {
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
 		0x85, 0x11, 0x00, 0x01,
@@ -1414,7 +1414,7 @@ Name (p446, Package() {
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
 		0x85, 0x11, 0x00, 0x01,
@@ -1614,20 +1614,20 @@ Name (p446, Package() {
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 	0x31, 0x08,
 		0x23, 0x01, 0x00, 0x00,
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 	0x31, 0x01,
 		0x23, 0x01, 0x00, 0x00,
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
 	0x31, 0x05,
@@ -1635,7 +1635,7 @@ Name (p446, Package() {
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
 		0x85, 0x11, 0x00, 0x01,
@@ -1646,7 +1646,7 @@ Name (p446, Package() {
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
 		0x85, 0x11, 0x00, 0x01,
@@ -1831,7 +1831,7 @@ Name (p446, Package() {
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
 		0x85, 0x11, 0x00, 0x01,
@@ -1845,7 +1845,7 @@ Name (p446, Package() {
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
 		0x85, 0x11, 0x00, 0x01,
@@ -1876,20 +1876,20 @@ Name (p446, Package() {
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 	0x31, 0x08,
 		0x23, 0x01, 0x00, 0x00,
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 	0x31, 0x01,
 		0x23, 0x01, 0x00, 0x00,
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
 	0x31, 0x05,
@@ -1897,7 +1897,7 @@ Name (p446, Package() {
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
 		0x85, 0x11, 0x00, 0x01,
@@ -1908,7 +1908,7 @@ Name (p446, Package() {
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
 		0x85, 0x11, 0x00, 0x01,
@@ -2093,7 +2093,7 @@ Name (p446, Package() {
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
 		0x85, 0x11, 0x00, 0x01,
@@ -2107,7 +2107,7 @@ Name (p446, Package() {
 		0x22, 0x02, 0x00,
 		0x2a, 0x04, 0x02,
 		0x47, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf4, 0xf5,
-		0x4b, 0xf1, 0xf0, 0xf2,
+		0x4b, 0xf1, 0x03, 0xf2,
 		0x77, 0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7,
 		0x81, 0x09, 0x00, 0x01, 0xf1, 0xf0, 0xf3, 0xf2, 0xf5, 0xf4, 0xf7, 0xf6,
 		0x85, 0x11, 0x00, 0x01,
@@ -2145,7 +2145,7 @@ Method(RT1c)
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMA0) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO00)
-		FixedIO (0xf0f1, 0xf2, FIO0)
+		FixedIO (0x03f1, 0xf2, FIO0)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M240)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M320)
@@ -2224,7 +2224,7 @@ Method(RT1c)
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMA1) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO01)
-		FixedIO (0xf0f1, 0xf2, FIO1)
+		FixedIO (0x03f1, 0xf2, FIO1)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M241)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M321)
@@ -2319,14 +2319,14 @@ Method(RT1c)
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMA8) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO08)
-		FixedIO (0xf0f1, 0xf2, FIO8)
+		FixedIO (0x03f1, 0xf2, FIO8)
 		}
 		StartDependentFn (0, 2) {
 		IRQ (Level, ActiveHigh, Exclusive, IRQA) {0}
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAA) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0A)
-		FixedIO (0xf0f1, 0xf2, FIOA)
+		FixedIO (0x03f1, 0xf2, FIOA)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		}
 		StartDependentFn (1, 0) {
@@ -2334,7 +2334,7 @@ Method(RT1c)
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAC) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0C)
-		FixedIO (0xf0f1, 0xf2, FIOC)
+		FixedIO (0x03f1, 0xf2, FIOC)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24C)
 		}
@@ -2343,7 +2343,7 @@ Method(RT1c)
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAE) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0E)
-		FixedIO (0xf0f1, 0xf2, FIOE)
+		FixedIO (0x03f1, 0xf2, FIOE)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24E)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32E)
@@ -2353,7 +2353,7 @@ Method(RT1c)
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAG) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0G)
-		FixedIO (0xf0f1, 0xf2, FIOG)
+		FixedIO (0x03f1, 0xf2, FIOG)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24G)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32G)
@@ -2431,7 +2431,7 @@ Method(RT1c)
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAI) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0I)
-		FixedIO (0xf0f1, 0xf2, FIOI)
+		FixedIO (0x03f1, 0xf2, FIOI)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24I)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32I)
@@ -2443,7 +2443,7 @@ Method(RT1c)
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAK) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0K)
-		FixedIO (0xf0f1, 0xf2, FIOK)
+		FixedIO (0x03f1, 0xf2, FIOK)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24K)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32K)
@@ -2478,14 +2478,14 @@ Method(RT1c)
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMA9) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO09)
-		FixedIO (0xf0f1, 0xf2, FIO9)
+		FixedIO (0x03f1, 0xf2, FIO9)
 		}
 		StartDependentFn (0, 2) {
 		IRQ (Level, ActiveHigh, Exclusive, IRQB) {0}
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAB) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0B)
-		FixedIO (0xf0f1, 0xf2, FIOB)
+		FixedIO (0x03f1, 0xf2, FIOB)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		}
 		StartDependentFn (1, 0) {
@@ -2493,7 +2493,7 @@ Method(RT1c)
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAD) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0D)
-		FixedIO (0xf0f1, 0xf2, FIOD)
+		FixedIO (0x03f1, 0xf2, FIOD)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24D)
 		}
@@ -2502,7 +2502,7 @@ Method(RT1c)
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAF) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0F)
-		FixedIO (0xf0f1, 0xf2, FIOF)
+		FixedIO (0x03f1, 0xf2, FIOF)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24F)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32F)
@@ -2512,7 +2512,7 @@ Method(RT1c)
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAH) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0H)
-		FixedIO (0xf0f1, 0xf2, FIOH)
+		FixedIO (0x03f1, 0xf2, FIOH)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24H)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32H)
@@ -2590,7 +2590,7 @@ Method(RT1c)
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAJ) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0J)
-		FixedIO (0xf0f1, 0xf2, FIOJ)
+		FixedIO (0x03f1, 0xf2, FIOJ)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24J)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32J)
@@ -2602,7 +2602,7 @@ Method(RT1c)
 		IRQNoFlags () {1}
 		DMA (Compatibility, NotBusMaster, Transfer16, DMAL) {2}
 		IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0L)
-		FixedIO (0xf0f1, 0xf2, FIOL)
+		FixedIO (0x03f1, 0xf2, FIOL)
 		VendorShort () {0x00, 0xa2, 0xb3, 0x76, 0xd5, 0xe6, 0xf7}
 		Memory24 (ReadWrite, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M24L)
 		Memory32 (ReadWrite, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M32L)
@@ -2620,114 +2620,114 @@ Method(RT1c)
 
 	// Checkings relating to RT00
 
-	m331(ts, 1, IRQ0._HE, 0x18, IRQ1._HE, 0x3b68, "_HE")
-	m331(ts, 2, IRQ0._LL, 0x1b, IRQ1._LL, 0x3b6b, "_LL")
-	m331(ts, 3, IRQ0._SHR, 0x1c, IRQ1._SHR, 0x3b6c, "_SHR")
+	m331(ts, 1,  IRQ0._HE,  0x0018, IRQ1._HE,  0x3b68, "_HE")
+	m331(ts, 2,  IRQ0._LL,  0x001b, IRQ1._LL,  0x3b6b, "_LL")
+	m331(ts, 3,  IRQ0._SHR, 0x001c, IRQ1._SHR, 0x3b6c, "_SHR")
 
-	m331(ts, 4, DMA0._TYP, 0x4d, DMA1._TYP, 0x3b9d, "_TYP")
-	m331(ts, 5, DMA0._BM, 0x4a, DMA1._BM, 0x3b9a, "_BM")
-	m331(ts, 6, DMA0._SIZ, 0x48, DMA1._SIZ, 0x3b98, "_SIZ")
+	m331(ts, 4,  DMA0._TYP, 0x004d, DMA1._TYP, 0x3b9d, "_TYP")
+	m331(ts, 5,  DMA0._BM,  0x004a, DMA1._BM,  0x3b9a, "_BM")
+	m331(ts, 6,  DMA0._SIZ, 0x0048, DMA1._SIZ, 0x3b98, "_SIZ")
 
-	m331(ts, 7, IO00._DEC, 0x58, IO01._DEC, 0x3ba8, "_DEC")
-	m331(ts, 8, IO00._MIN, 12, IO01._MIN, 1910, "_MIN")
-	m331(ts, 9, IO00._MAX, 14, IO01._MAX, 1912, "_MAX")
-	m331(ts, 10, IO00._ALN, 16, IO01._ALN, 1914, "_ALN")
-	m331(ts, 11, IO00._LEN, 17, IO01._LEN, 1915, "_LEN")
+	m331(ts, 7,  IO00._DEC, 0x0058, IO01._DEC, 0x3ba8, "_DEC")
+	m331(ts, 8,  IO00._MIN, 0x0060, IO01._MIN, 0x3bb0, "_MIN")
+	m331(ts, 9,  IO00._MAX, 0x0070, IO01._MAX, 0x3bc0, "_MAX")
+	m331(ts, 10, IO00._ALN, 0x0080, IO01._ALN, 0x3bd0, "_ALN")
+	m331(ts, 11, IO00._LEN, 0x0088, IO01._LEN, 0x3bd8, "_LEN")
 
-	m331(ts, 12, FIO0._BAS, 19, FIO1._BAS, 1917, "_BAS")
-	m331(ts, 13, FIO0._LEN, 21, FIO1._LEN, 1919, "_LEN")
+	m331(ts, 12, FIO0._BAS, 0x0098, FIO1._BAS, 0x3be8, "_BAS")
+	m331(ts, 13, FIO0._LEN, 0x00a8, FIO1._LEN, 0x3bf8, "_LEN")
 
-	m331(ts, 14, M240._RW, 0x108, M241._RW, 0x3C58, "_RW")
-	m331(ts, 15, M240._MIN, 34, M241._MIN, 1932, "_MIN")
-	m331(ts, 16, M240._MAX, 36, M241._MAX, 1934, "_MAX")
-	m331(ts, 17, M240._ALN, 38, M241._ALN, 1936, "_ALN")
-	m331(ts, 18, M240._LEN, 40, M241._LEN, 1938, "_LEN")
+	m331(ts, 14, M240._RW,  0x0108, M241._RW,  0x3C58, "_RW")
+	m331(ts, 15, M240._MIN, 0x0110, M241._MIN, 0x3c60, "_MIN")
+	m331(ts, 16, M240._MAX, 0x0120, M241._MAX, 0x3c70, "_MAX")
+	m331(ts, 17, M240._ALN, 0x0130, M241._ALN, 0x3c80, "_ALN")
+	m331(ts, 18, M240._LEN, 0x0140, M241._LEN, 0x3c90, "_LEN")
 
-	m331(ts, 19, M320._RW, 0x168, M321._RW, 0x3CB8, "_RW")
-	m331(ts, 20, M320._MIN, 46, M321._MIN, 1944, "_MIN")
-	m331(ts, 21, M320._MAX, 50, M321._MAX, 1948, "_MAX")
-	m331(ts, 22, M320._ALN, 54, M321._ALN, 1952, "_ALN")
-	m331(ts, 23, M320._LEN, 58, M321._LEN, 1956, "_LEN")
+	m331(ts, 19, M320._RW,  0x0168, M321._RW,  0x3CB8, "_RW")
+	m331(ts, 20, M320._MIN, 0x0170, M321._MIN, 0x3cc0, "_MIN")
+	m331(ts, 21, M320._MAX, 0x0190, M321._MAX, 0x3ce0, "_MAX")
+	m331(ts, 22, M320._ALN, 0x01b0, M321._ALN, 0x3d00, "_ALN")
+	m331(ts, 23, M320._LEN, 0x01d0, M321._LEN, 0x3d20, "_LEN")
 
-	m331(ts, 24, M3F0._RW, 0x208, M3F1._RW, 0x3D58, "_RW")
-	m331(ts, 25, M3F0._BAS, 66, M3F1._BAS, 1964, "_BAS")
-	m331(ts, 26, M3F0._LEN, 70, M3F1._LEN, 1968, "_LEN")
+	m331(ts, 24, M3F0._RW,  0x0208, M3F1._RW,  0x3D58, "_RW")
+	m331(ts, 25, M3F0._BAS, 0x0210, M3F1._BAS, 0x3d60, "_BAS")
+	m331(ts, 26, M3F0._LEN, 0x0230, M3F1._LEN, 0x3d80, "_LEN")
 
-	m331(ts, 27, QIO0._DEC, 0x331, QIO1._DEC, 0x3e81, "_DEC")
-	m331(ts, 28, QIO0._MIF, 0x332, QIO1._MIF, 0x3e82, "_MIF")
-	m331(ts, 29, QIO0._MAF, 0x333, QIO1._MAF, 0x3e83, "_MAF")
-	m331(ts, 30, QIO0._RNG, 0x338, QIO1._RNG, 0x3e88, "_RNG")
-	m331(ts, 31, QIO0._TTP, 0x33c, QIO1._TTP, 0x3e8c, "_TTP")
-	m331(ts, 32, QIO0._TRS, 0x33d, QIO1._TRS, 0x3e8d, "_TRS")
-	m331(ts, 33, QIO0._GRA, 104, QIO1._GRA, 2002, "_GRA")
-	m331(ts, 34, QIO0._MIN, 112, QIO1._MIN, 2010, "_MIN")
-	m331(ts, 35, QIO0._MAX, 120, QIO1._MAX, 2018, "_MAX")
-	m331(ts, 36, QIO0._TRA, 128, QIO1._TRA, 2026, "_TRA")
-	m331(ts, 37, QIO0._LEN, 136, QIO1._LEN, 2034, "_LEN")
+	m331(ts, 27, QIO0._DEC, 0x0331, QIO1._DEC, 0x3e81, "_DEC")
+	m331(ts, 28, QIO0._MIF, 0x0332, QIO1._MIF, 0x3e82, "_MIF")
+	m331(ts, 29, QIO0._MAF, 0x0333, QIO1._MAF, 0x3e83, "_MAF")
+	m331(ts, 30, QIO0._RNG, 0x0338, QIO1._RNG, 0x3e88, "_RNG")
+	m331(ts, 31, QIO0._TTP, 0x033c, QIO1._TTP, 0x3e8c, "_TTP")
+	m331(ts, 32, QIO0._TRS, 0x033d, QIO1._TRS, 0x3e8d, "_TRS")
+	m331(ts, 33, QIO0._GRA, 0x0340, QIO1._GRA, 0x3e90, "_GRA")
+	m331(ts, 34, QIO0._MIN, 0x0380, QIO1._MIN, 0x3ed0, "_MIN")
+	m331(ts, 35, QIO0._MAX, 0x03c0, QIO1._MAX, 0x3f10, "_MAX")
+	m331(ts, 36, QIO0._TRA, 0x0400, QIO1._TRA, 0x3f50, "_TRA")
+	m331(ts, 37, QIO0._LEN, 0x0440, QIO1._LEN, 0x3f90, "_LEN")
 
-	m331(ts, 38, DIO0._DEC, 0x511, DIO1._DEC, 0x4061, "_DEC")
-	m331(ts, 39, DIO0._MIF, 0x512, DIO1._MIF, 0x4062, "_MIF")
-	m331(ts, 40, DIO0._MAF, 0x513, DIO1._MAF, 0x4063, "_MAF")
-	m331(ts, 41, DIO0._RNG, 0x518, DIO1._RNG, 0x4068, "_RNG")
-	m331(ts, 42, DIO0._TTP, 0x51c, DIO1._TTP, 0x406c, "_TTP")
-	m331(ts, 43, DIO0._TRS, 0x51d, DIO1._TRS, 0x406d, "_TRS")
-	m331(ts, 44, DIO0._GRA, 164, DIO1._GRA, 2062, "_GRA")
-	m331(ts, 45, DIO0._MIN, 168, DIO1._MIN, 2066, "_MIN")
-	m331(ts, 46, DIO0._MAX, 172, DIO1._MAX, 2070, "_MAX")
-	m331(ts, 47, DIO0._TRA, 176, DIO1._TRA, 2074, "_TRA")
-	m331(ts, 48, DIO0._LEN, 180, DIO1._LEN, 2078, "_LEN")
+	m331(ts, 38, DIO0._DEC, 0x0511, DIO1._DEC, 0x4061, "_DEC")
+	m331(ts, 39, DIO0._MIF, 0x0512, DIO1._MIF, 0x4062, "_MIF")
+	m331(ts, 40, DIO0._MAF, 0x0513, DIO1._MAF, 0x4063, "_MAF")
+	m331(ts, 41, DIO0._RNG, 0x0518, DIO1._RNG, 0x4068, "_RNG")
+	m331(ts, 42, DIO0._TTP, 0x051c, DIO1._TTP, 0x406c, "_TTP")
+	m331(ts, 43, DIO0._TRS, 0x051d, DIO1._TRS, 0x406d, "_TRS")
+	m331(ts, 44, DIO0._GRA, 0x0520, DIO1._GRA, 0x4070, "_GRA")
+	m331(ts, 45, DIO0._MIN, 0x0540, DIO1._MIN, 0x4090, "_MIN")
+	m331(ts, 46, DIO0._MAX, 0x0560, DIO1._MAX, 0x40b0, "_MAX")
+	m331(ts, 47, DIO0._TRA, 0x0580, DIO1._TRA, 0x40d0, "_TRA")
+	m331(ts, 48, DIO0._LEN, 0x05a0, DIO1._LEN, 0x40f0, "_LEN")
 
-	m331(ts, 49, WIO0._DEC, 0x651, WIO1._DEC, 0x41a1, "_DEC")
-	m331(ts, 50, WIO0._MIF, 0x652, WIO1._MIF, 0x41a2, "_MIF")
-	m331(ts, 51, WIO0._MAF, 0x653, WIO1._MAF, 0x41a3, "_MAF")
-	m331(ts, 52, WIO0._RNG, 0x658, WIO1._RNG, 0x41a8, "_RNG")
-	m331(ts, 53, WIO0._TTP, 0x65c, WIO1._TTP, 0x41ac, "_TTP")
-	m331(ts, 54, WIO0._TRS, 0x65d, WIO1._TRS, 0x41ad, "_TRS")
-	m331(ts, 55, WIO0._GRA, 204, WIO1._GRA, 2102, "_GRA")
-	m331(ts, 56, WIO0._MIN, 206, WIO1._MIN, 2104, "_MIN")
-	m331(ts, 57, WIO0._MAX, 208, WIO1._MAX, 2106, "_MAX")
-	m331(ts, 58, WIO0._TRA, 210, WIO1._TRA, 2108, "_TRA")
-	m331(ts, 59, WIO0._LEN, 212, WIO1._LEN, 2110, "_LEN")
+	m331(ts, 49, WIO0._DEC, 0x0651, WIO1._DEC, 0x41a1, "_DEC")
+	m331(ts, 50, WIO0._MIF, 0x0652, WIO1._MIF, 0x41a2, "_MIF")
+	m331(ts, 51, WIO0._MAF, 0x0653, WIO1._MAF, 0x41a3, "_MAF")
+	m331(ts, 52, WIO0._RNG, 0x0658, WIO1._RNG, 0x41a8, "_RNG")
+	m331(ts, 53, WIO0._TTP, 0x065c, WIO1._TTP, 0x41ac, "_TTP")
+	m331(ts, 54, WIO0._TRS, 0x065d, WIO1._TRS, 0x41ad, "_TRS")
+	m331(ts, 55, WIO0._GRA, 0x0660, WIO1._GRA, 0x41b0, "_GRA")
+	m331(ts, 56, WIO0._MIN, 0x0670, WIO1._MIN, 0x41c0, "_MIN")
+	m331(ts, 57, WIO0._MAX, 0x0680, WIO1._MAX, 0x41d0, "_MAX")
+	m331(ts, 58, WIO0._TRA, 0x0690, WIO1._TRA, 0x41e0, "_TRA")
+	m331(ts, 59, WIO0._LEN, 0x06a0, WIO1._LEN, 0x41f0, "_LEN")
 
-	m331(ts, 60, QME0._DEC, 0x741, QME1._DEC, 0x4291, "_DEC")
-	m331(ts, 61, QME0._MIF, 0x742, QME1._MIF, 0x4292, "_MIF")
-	m331(ts, 62, QME0._MAF, 0x743, QME1._MAF, 0x4293, "_MAF")
-	m331(ts, 63, QME0._RW, 0x748, QME1._RW, 0x4298, "_RW")
-	m331(ts, 64, QME0._MEM, 0x749, QME1._MEM, 0x4299, "_MEM")
-	m331(ts, 65, QME0._MTP, 0x74b, QME1._MTP, 0x429b, "_MTP")
-	m331(ts, 66, QME0._TTP, 0x74d, QME1._TTP, 0x429d, "_TTP")
-	m331(ts, 67, QME0._GRA, 234, QME1._GRA, 2132, "_GRA")
-	m331(ts, 68, QME0._MIN, 242, QME1._MIN, 2140, "_MIN")
-	m331(ts, 69, QME0._MAX, 250, QME1._MAX, 2148, "_MAX")
-	m331(ts, 70, QME0._TRA, 258, QME1._TRA, 2156, "_TRA")
-	m331(ts, 71, QME0._LEN, 266, QME1._LEN, 2164, "_LEN")
+	m331(ts, 60, QME0._DEC, 0x0741, QME1._DEC, 0x4291, "_DEC")
+	m331(ts, 61, QME0._MIF, 0x0742, QME1._MIF, 0x4292, "_MIF")
+	m331(ts, 62, QME0._MAF, 0x0743, QME1._MAF, 0x4293, "_MAF")
+	m331(ts, 63, QME0._RW,  0x0748, QME1._RW,  0x4298, "_RW")
+	m331(ts, 64, QME0._MEM, 0x0749, QME1._MEM, 0x4299, "_MEM")
+	m331(ts, 65, QME0._MTP, 0x074b, QME1._MTP, 0x429b, "_MTP")
+	m331(ts, 66, QME0._TTP, 0x074d, QME1._TTP, 0x429d, "_TTP")
+	m331(ts, 67, QME0._GRA, 0x0750, QME1._GRA, 0x42a0, "_GRA")
+	m331(ts, 68, QME0._MIN, 0x0790, QME1._MIN, 0x42e0, "_MIN")
+	m331(ts, 69, QME0._MAX, 0x07d0, QME1._MAX, 0x4320, "_MAX")
+	m331(ts, 70, QME0._TRA, 0x0810, QME1._TRA, 0x4360, "_TRA")
+	m331(ts, 71, QME0._LEN, 0x0850, QME1._LEN, 0x43a0, "_LEN")
 
-	m331(ts, 72, DME0._DEC, 0x921, DME1._DEC, 0x4471, "_DEC")
-	m331(ts, 73, DME0._MIF, 0x922, DME1._MIF, 0x4472, "_MIF")
-	m331(ts, 74, DME0._MAF, 0x923, DME1._MAF, 0x4473, "_MAF")
-	m331(ts, 75, DME0._RW, 0x928, DME1._RW, 0x4478, "_RW")
-	m331(ts, 76, DME0._MEM, 0x929, DME1._MEM, 0x4479, "_MEM")
-	m331(ts, 77, DME0._MTP, 0x92b, DME1._MTP, 0x447b, "_MTP")
-	m331(ts, 78, DME0._TTP, 0x92d, DME1._TTP, 0x447d, "_TTP")
-	m331(ts, 79, DME0._GRA, 294, DME1._GRA, 2192, "_GRA")
-	m331(ts, 80, DME0._MIN, 298, DME1._MIN, 2196, "_MIN")
-	m331(ts, 81, DME0._MAX, 302, DME1._MAX, 2200, "_MAX")
-	m331(ts, 82, DME0._TRA, 306, DME1._TRA, 2204, "_TRA")
-	m331(ts, 83, DME0._LEN, 310, DME1._LEN, 2208, "_LEN")
+	m331(ts, 72, DME0._DEC, 0x0921, DME1._DEC, 0x4471, "_DEC")
+	m331(ts, 73, DME0._MIF, 0x0922, DME1._MIF, 0x4472, "_MIF")
+	m331(ts, 74, DME0._MAF, 0x0923, DME1._MAF, 0x4473, "_MAF")
+	m331(ts, 75, DME0._RW,  0x0928, DME1._RW,  0x4478, "_RW")
+	m331(ts, 76, DME0._MEM, 0x0929, DME1._MEM, 0x4479, "_MEM")
+	m331(ts, 77, DME0._MTP, 0x092b, DME1._MTP, 0x447b, "_MTP")
+	m331(ts, 78, DME0._TTP, 0x092d, DME1._TTP, 0x447d, "_TTP")
+	m331(ts, 79, DME0._GRA, 0x0930, DME1._GRA, 0x4480, "_GRA")
+	m331(ts, 80, DME0._MIN, 0x0950, DME1._MIN, 0x44a0, "_MIN")
+	m331(ts, 81, DME0._MAX, 0x0970, DME1._MAX, 0x44c0, "_MAX")
+	m331(ts, 82, DME0._TRA, 0x0990, DME1._TRA, 0x44e0, "_TRA")
+	m331(ts, 83, DME0._LEN, 0x09b0, DME1._LEN, 0x4500, "_LEN")
 
-	m331(ts, 84, WBN0._DEC, 0xa61, WBN1._DEC, 0x45b1, "_DEC")
-	m331(ts, 85, WBN0._MIF, 0xa62, WBN1._MIF, 0x45b2, "_MIF")
-	m331(ts, 86, WBN0._MAF, 0xa63, WBN1._MAF, 0x45b3, "_MAF")
-	m331(ts, 87, WBN0._GRA, 334, WBN1._GRA, 2232, "_GRA")
-	m331(ts, 88, WBN0._MIN, 336, WBN1._MIN, 2234, "_MIN")
-	m331(ts, 89, WBN0._MAX, 338, WBN1._MAX, 2236, "_MAX")
-	m331(ts, 90, WBN0._TRA, 340, WBN1._TRA, 2238, "_TRA")
-	m331(ts, 91, WBN0._LEN, 342, WBN1._LEN, 2240, "_LEN")
+	m331(ts, 84, WBN0._DEC, 0x0a61, WBN1._DEC, 0x45b1, "_DEC")
+	m331(ts, 85, WBN0._MIF, 0x0a62, WBN1._MIF, 0x45b2, "_MIF")
+	m331(ts, 86, WBN0._MAF, 0x0a63, WBN1._MAF, 0x45b3, "_MAF")
+	m331(ts, 87, WBN0._GRA, 0x0a70, WBN1._GRA, 0x45c0, "_GRA")
+	m331(ts, 88, WBN0._MIN, 0x0a80, WBN1._MIN, 0x45d0, "_MIN")
+	m331(ts, 89, WBN0._MAX, 0x0a90, WBN1._MAX, 0x45e0, "_MAX")
+	m331(ts, 90, WBN0._TRA, 0x0aa0, WBN1._TRA, 0x45f0, "_TRA")
+	m331(ts, 91, WBN0._LEN, 0x0ab0, WBN1._LEN, 0x4600, "_LEN")
 
-	m331(ts, 92, INT0._HE, 0xb49, INT1._HE, 0x4699, "_HE")
-	m331(ts, 93, INT0._LL, 0xb4a, INT1._LL, 0x469a, "_LL")
-	m331(ts, 94, INT0._SHR, 0xb4b, INT1._SHR, 0x469b, "_SHR")
-	m331(ts, 95, INT0._INT, 363, INT1._INT, 2261, "_INT")
+	m331(ts, 92, INT0._HE,  0x0b49, INT1._HE,  0x4699, "_HE")
+	m331(ts, 93, INT0._LL,  0x0b4a, INT1._LL,  0x469a, "_LL")
+	m331(ts, 94, INT0._SHR, 0x0b4b, INT1._SHR, 0x469b, "_SHR")
+	m331(ts, 95, INT0._INT, 0x0b58, INT1._INT, 0x46a8, "_INT")
 
 	m331(ts, 96, EIO0._DEC, 0x3221, EIO1._DEC, 0x6d71, "_DEC")
 	m331(ts, 97, EIO0._MIF, 0x3222, EIO1._MIF, 0x6d72, "_MIF")
@@ -2735,189 +2735,189 @@ Method(RT1c)
 	m331(ts, 99, EIO0._RNG, 0x3228, EIO1._RNG, 0x6d78, "_RNG")
 	m331(ts, 100, EIO0._TTP, 0x322c, EIO1._TTP, 0x6d7c, "_TTP")
 	m331(ts, 101, EIO0._TRS, 0x322d, EIO1._TRS, 0x6d7d, "_TRS")
-	m331(ts, 102, EIO0._GRA, 1608, EIO1._GRA, 3506, "_GRA")
-	m331(ts, 103, EIO0._MIN, 1616, EIO1._MIN, 3514, "_MIN")
-	m331(ts, 104, EIO0._MAX, 1624, EIO1._MAX, 3522, "_MAX")
-	m331(ts, 105, EIO0._TRA, 1632, EIO1._TRA, 3530, "_TRA")
-	m331(ts, 106, EIO0._LEN, 1640, EIO1._LEN, 3538, "_LEN")
-	m331(ts, 107, EIO0._ATT, 1648, EIO1._ATT, 3546, "_ATT")
+	m331(ts, 102, EIO0._GRA, 0x3240, EIO1._GRA, 0x6d90, "_GRA")
+	m331(ts, 103, EIO0._MIN, 0x3280, EIO1._MIN, 0x6dd0, "_MIN")
+	m331(ts, 104, EIO0._MAX, 0x32c0, EIO1._MAX, 0x6e10, "_MAX")
+	m331(ts, 105, EIO0._TRA, 0x3300, EIO1._TRA, 0x6e50, "_TRA")
+	m331(ts, 106, EIO0._LEN, 0x3340, EIO1._LEN, 0x6e90, "_LEN")
+	m331(ts, 107, EIO0._ATT, 0x3380, EIO1._ATT, 0x6ed0, "_ATT")
 
 	m331(ts, 108, EME0._DEC, 0x33e1, EME1._DEC, 0x6f31, "_DEC")
 	m331(ts, 109, EME0._MIF, 0x33e2, EME1._MIF, 0x6f32, "_MIF")
 	m331(ts, 110, EME0._MAF, 0x33e3, EME1._MAF, 0x6f33, "_MAF")
-	m331(ts, 111, EME0._RW, 0x33e8, EME1._RW, 0x6f38, "_RW")
+	m331(ts, 111, EME0._RW,  0x33e8, EME1._RW,  0x6f38, "_RW")
 	m331(ts, 112, EME0._MEM, 0x33e9, EME1._MEM, 0x6f39, "_MEM")
 	m331(ts, 113, EME0._MTP, 0x33eb, EME1._MTP, 0x6f3b, "_MTP")
 	m331(ts, 114, EME0._TTP, 0x33ed, EME1._TTP, 0x6f3d, "_TTP")
-	m331(ts, 115, EME0._GRA, 1664, EME1._GRA, 3562, "_GRA")
-	m331(ts, 116, EME0._MIN, 1672, EME1._MIN, 3570, "_MIN")
-	m331(ts, 117, EME0._MAX, 1680, EME1._MAX, 3578, "_MAX")
-	m331(ts, 118, EME0._TRA, 1688, EME1._TRA, 3586, "_TRA")
-	m331(ts, 119, EME0._LEN, 1696, EME1._LEN, 3594, "_LEN")
-	m331(ts, 120, EME0._ATT, 1704, EME1._ATT, 3602, "_ATT")
+	m331(ts, 115, EME0._GRA, 0x3400, EME1._GRA, 0x6f50, "_GRA")
+	m331(ts, 116, EME0._MIN, 0x3440, EME1._MIN, 0x6f90, "_MIN")
+	m331(ts, 117, EME0._MAX, 0x3480, EME1._MAX, 0x6fd0, "_MAX")
+	m331(ts, 118, EME0._TRA, 0x34c0, EME1._TRA, 0x7010, "_TRA")
+	m331(ts, 119, EME0._LEN, 0x3500, EME1._LEN, 0x7050, "_LEN")
+	m331(ts, 120, EME0._ATT, 0x3540, EME1._ATT, 0x7090, "_ATT")
 
 	m331(ts, 121, ESP0._DEC, 0x35a1, ESP1._DEC, 0x70f1, "_DEC")
 	m331(ts, 122, ESP0._MIF, 0x35a2, ESP1._MIF, 0x70f2, "_MIF")
 	m331(ts, 123, ESP0._MAF, 0x35a3, ESP1._MAF, 0x70f3, "_MAF")
-	m331(ts, 124, ESP0._GRA, 1720, ESP1._GRA, 3618, "_GRA")
-	m331(ts, 125, ESP0._MIN, 1728, ESP1._MIN, 3626, "_MIN")
-	m331(ts, 126, ESP0._MAX, 1736, ESP1._MAX, 3634, "_MAX")
-	m331(ts, 127, ESP0._TRA, 1744, ESP1._TRA, 3642, "_TRA")
-	m331(ts, 128, ESP0._LEN, 1752, ESP1._LEN, 3650, "_LEN")
-	m331(ts, 129, ESP0._ATT, 1760, ESP1._ATT, 3658, "_ATT")
+	m331(ts, 124, ESP0._GRA, 0x35c0, ESP1._GRA, 0x7110, "_GRA")
+	m331(ts, 125, ESP0._MIN, 0x3600, ESP1._MIN, 0x7150, "_MIN")
+	m331(ts, 126, ESP0._MAX, 0x3640, ESP1._MAX, 0x7190, "_MAX")
+	m331(ts, 127, ESP0._TRA, 0x3680, ESP1._TRA, 0x71d0, "_TRA")
+	m331(ts, 128, ESP0._LEN, 0x36c0, ESP1._LEN, 0x7210, "_LEN")
+	m331(ts, 129, ESP0._ATT, 0x3700, ESP1._ATT, 0x7250, "_ATT")
 
 	m331(ts, 130, DSP0._DEC, 0x3761, DSP1._DEC, 0x72b1, "_DEC")
 	m331(ts, 131, DSP0._MIF, 0x3762, DSP1._MIF, 0x72b2, "_MIF")
 	m331(ts, 132, DSP0._MAF, 0x3763, DSP1._MAF, 0x72b3, "_MAF")
-	m331(ts, 133, DSP0._GRA, 1774, DSP1._GRA, 3672, "_GRA")
-	m331(ts, 134, DSP0._MIN, 1778, DSP1._MIN, 3676, "_MIN")
-	m331(ts, 135, DSP0._MAX, 1782, DSP1._MAX, 3680, "_MAX")
-	m331(ts, 136, DSP0._TRA, 1786, DSP1._TRA, 3684, "_TRA")
-	m331(ts, 137, DSP0._LEN, 1790, DSP1._LEN, 3688, "_LEN")
+	m331(ts, 133, DSP0._GRA, 0x3770, DSP1._GRA, 0x72c0, "_GRA")
+	m331(ts, 134, DSP0._MIN, 0x3790, DSP1._MIN, 0x72e0, "_MIN")
+	m331(ts, 135, DSP0._MAX, 0x37b0, DSP1._MAX, 0x7300, "_MAX")
+	m331(ts, 136, DSP0._TRA, 0x37d0, DSP1._TRA, 0x7320, "_TRA")
+	m331(ts, 137, DSP0._LEN, 0x37f0, DSP1._LEN, 0x7340, "_LEN")
 
 	m331(ts, 138, QSP0._DEC, 0x38a1, QSP1._DEC, 0x73f1, "_DEC")
 	m331(ts, 139, QSP0._MIF, 0x38a2, QSP1._MIF, 0x73f2, "_MIF")
 	m331(ts, 140, QSP0._MAF, 0x38a3, QSP1._MAF, 0x73f3, "_MAF")
-	m331(ts, 141, QSP0._GRA, 1814, QSP1._GRA, 3712, "_GRA")
-	m331(ts, 142, QSP0._MIN, 1822, QSP1._MIN, 3720, "_MIN")
-	m331(ts, 143, QSP0._MAX, 1830, QSP1._MAX, 3728, "_MAX")
-	m331(ts, 144, QSP0._TRA, 1838, QSP1._TRA, 3736, "_TRA")
-	m331(ts, 145, QSP0._LEN, 1846, QSP1._LEN, 3744, "_LEN")
+	m331(ts, 141, QSP0._GRA, 0x38b0, QSP1._GRA, 0x7400, "_GRA")
+	m331(ts, 142, QSP0._MIN, 0x38f0, QSP1._MIN, 0x7440, "_MIN")
+	m331(ts, 143, QSP0._MAX, 0x3930, QSP1._MAX, 0x7480, "_MAX")
+	m331(ts, 144, QSP0._TRA, 0x3970, QSP1._TRA, 0x74c0, "_TRA")
+	m331(ts, 145, QSP0._LEN, 0x39b0, QSP1._LEN, 0x7500, "_LEN")
 
 	m331(ts, 146, WSP0._DEC, 0x3a81, WSP1._DEC, 0x75d1, "_DEC")
 	m331(ts, 147, WSP0._MIF, 0x3a82, WSP1._MIF, 0x75d2, "_MIF")
 	m331(ts, 148, WSP0._MAF, 0x3a83, WSP1._MAF, 0x75d3, "_MAF")
-	m331(ts, 149, WSP0._GRA, 1874, WSP1._GRA, 3772, "_GRA")
-	m331(ts, 150, WSP0._MIN, 1876, WSP1._MIN, 3774, "_MIN")
-	m331(ts, 151, WSP0._MAX, 1878, WSP1._MAX, 3776, "_MAX")
-	m331(ts, 152, WSP0._TRA, 1880, WSP1._TRA, 3778, "_TRA")
-	m331(ts, 153, WSP0._LEN, 1882, WSP1._LEN, 3780, "_LEN")
+	m331(ts, 149, WSP0._GRA, 0x3a90, WSP1._GRA, 0x75e0, "_GRA")
+	m331(ts, 150, WSP0._MIN, 0x3aa0, WSP1._MIN, 0x75f0, "_MIN")
+	m331(ts, 151, WSP0._MAX, 0x3ab0, WSP1._MAX, 0x7600, "_MAX")
+	m331(ts, 152, WSP0._TRA, 0x3ac0, WSP1._TRA, 0x7610, "_TRA")
+	m331(ts, 153, WSP0._LEN, 0x3ad0, WSP1._LEN, 0x7620, "_LEN")
 
 	// Checkings relating to RT01
 
-	m331(ts, 154, IRQ2._HE, 0x18, IRQ3._HE, 0x4778, "_HE")
-	m331(ts, 155, IRQ2._LL, 0x1b, IRQ3._LL, 0x477b, "_LL")
+	m331(ts, 154, IRQ2._HE,  0x18, IRQ3._HE,  0x4778, "_HE")
+	m331(ts, 155, IRQ2._LL,  0x1b, IRQ3._LL,  0x477b, "_LL")
 	m331(ts, 156, IRQ2._SHR, 0x1c, IRQ3._SHR, 0x477c, "_SHR")
 
-	m331(ts, 157, IRQ4._HE, 0x58, IRQ5._HE, 0x47b8, "_HE")
-	m331(ts, 158, IRQ4._LL, 0x5b, IRQ5._LL, 0x47bb, "_LL")
+	m331(ts, 157, IRQ4._HE,  0x58, IRQ5._HE,  0x47b8, "_HE")
+	m331(ts, 158, IRQ4._LL,  0x5b, IRQ5._LL,  0x47bb, "_LL")
 	m331(ts, 159, IRQ4._SHR, 0x5c, IRQ5._SHR, 0x47bc, "_SHR")
 
 	m331(ts, 160, DMA4._TYP, 0x8d, DMA5._TYP, 0x47ed, "_TYP")
-	m331(ts, 161, DMA4._BM, 0x8a, DMA5._BM, 0x47ea, "_BM")
+	m331(ts, 161, DMA4._BM,  0x8a, DMA5._BM,  0x47ea, "_BM")
 	m331(ts, 162, DMA4._SIZ, 0x88, DMA5._SIZ, 0x47e8, "_SIZ")
 
-	m331(ts, 163, IRQ6._HE, 0xb0, IRQ7._HE, 0x4810, "_HE")
-	m331(ts, 164, IRQ6._LL, 0xb3, IRQ7._LL, 0x4813, "_LL")
+	m331(ts, 163, IRQ6._HE,  0xb0, IRQ7._HE,  0x4810, "_HE")
+	m331(ts, 164, IRQ6._LL,  0xb3, IRQ7._LL,  0x4813, "_LL")
 	m331(ts, 165, IRQ6._SHR, 0xb4, IRQ7._SHR, 0x4814, "_SHR")
 
 	m331(ts, 166, DMA6._TYP, 0xe5, DMA7._TYP, 0x4845, "_TYP")
-	m331(ts, 167, DMA6._BM, 0xe2, DMA7._BM, 0x4842, "_BM")
+	m331(ts, 167, DMA6._BM,  0xe2, DMA7._BM,  0x4842, "_BM")
 	m331(ts, 168, DMA6._SIZ, 0xe0, DMA7._SIZ, 0x4840, "_SIZ")
 
 	m331(ts, 169, IO06._DEC, 0xf0, IO07._DEC, 0x4850, "_DEC")
-	m331(ts, 170, IO06._MIN, 31, IO07._MIN, 2315, "_MIN")
-	m331(ts, 171, IO06._MAX, 33, IO07._MAX, 2317, "_MAX")
-	m331(ts, 172, IO06._ALN, 35, IO07._ALN, 2319, "_ALN")
-	m331(ts, 173, IO06._LEN, 36, IO07._LEN, 2320, "_LEN")
+	m331(ts, 170, IO06._MIN, 0xf8, IO07._MIN, 0x4858, "_MIN")
+	m331(ts, 171, IO06._MAX, 0x108, IO07._MAX, 0x4868, "_MAX")
+	m331(ts, 172, IO06._ALN, 0x118, IO07._ALN, 0x4878, "_ALN")
+	m331(ts, 173, IO06._LEN, 0x120, IO07._LEN, 0x4880, "_LEN")
 
-	m331(ts, 174, IRQ8._HE, 0x150, IRQ9._HE, 0x48b0, "_HE")
-	m331(ts, 175, IRQ8._LL, 0x153, IRQ9._LL, 0x48b3, "_LL")
+	m331(ts, 174, IRQ8._HE,  0x150, IRQ9._HE,  0x48b0, "_HE")
+	m331(ts, 175, IRQ8._LL,  0x153, IRQ9._LL,  0x48b3, "_LL")
 	m331(ts, 176, IRQ8._SHR, 0x154, IRQ9._SHR, 0x48b4, "_SHR")
 
 	m331(ts, 177, DMA8._TYP, 0x185, DMA9._TYP, 0x48e5, "_TYP")
-	m331(ts, 178, DMA8._BM, 0x182, DMA9._BM, 0x48e2, "_BM")
+	m331(ts, 178, DMA8._BM,  0x182, DMA9._BM,  0x48e2, "_BM")
 	m331(ts, 179, DMA8._SIZ, 0x180, DMA9._SIZ, 0x48e0, "_SIZ")
 
 	m331(ts, 180, IO08._DEC, 0x190, IO09._DEC, 0x48f0, "_DEC")
-	m331(ts, 181, IO08._MIN, 51, IO09._MIN, 2335, "_MIN")
-	m331(ts, 182, IO08._MAX, 53, IO09._MAX, 2337, "_MAX")
-	m331(ts, 183, IO08._ALN, 55, IO09._ALN, 2339, "_ALN")
-	m331(ts, 184, IO08._LEN, 56, IO09._LEN, 2340, "_LEN")
+	m331(ts, 181, IO08._MIN, 0x198, IO09._MIN, 0x48f8, "_MIN")
+	m331(ts, 182, IO08._MAX, 0x1a8, IO09._MAX, 0x4908, "_MAX")
+	m331(ts, 183, IO08._ALN, 0x1b8, IO09._ALN, 0x4918, "_ALN")
+	m331(ts, 184, IO08._LEN, 0x1c0, IO09._LEN, 0x4920, "_LEN")
 
-	m331(ts, 185, FIO8._BAS, 58, FIO9._BAS, 2342, "_BAS")
-	m331(ts, 186, FIO8._LEN, 60, FIO9._LEN, 2344, "_LEN")
+	m331(ts, 185, FIO8._BAS, 0x1d0, FIO9._BAS, 0x4930, "_BAS")
+	m331(ts, 186, FIO8._LEN, 0x1e0, FIO9._LEN, 0x4940, "_LEN")
 
-	m331(ts, 187, IRQA._HE, 0x210, IRQB._HE, 0x4970, "_HE")
-	m331(ts, 188, IRQA._LL, 0x213, IRQB._LL, 0x4973, "_LL")
+	m331(ts, 187, IRQA._HE,  0x210, IRQB._HE,  0x4970, "_HE")
+	m331(ts, 188, IRQA._LL,  0x213, IRQB._LL,  0x4973, "_LL")
 	m331(ts, 189, IRQA._SHR, 0x214, IRQB._SHR, 0x4974, "_SHR")
 
 	m331(ts, 190, DMAA._TYP, 0x245, DMAB._TYP, 0x49a5, "_TYP")
-	m331(ts, 191, DMAA._BM, 0x242, DMAB._BM, 0x49a2, "_BM")
+	m331(ts, 191, DMAA._BM,  0x242, DMAB._BM,  0x49a2, "_BM")
 	m331(ts, 192, DMAA._SIZ, 0x240, DMAB._SIZ, 0x49a0, "_SIZ")
 
 	m331(ts, 193, IO0A._DEC, 0x250, IO0B._DEC, 0x49b0, "_DEC")
-	m331(ts, 194, IO0A._MIN, 75, IO0B._MIN, 2359, "_MIN")
-	m331(ts, 195, IO0A._MAX, 77, IO0B._MAX, 2361, "_MAX")
-	m331(ts, 196, IO0A._ALN, 79, IO0B._ALN, 2363, "_ALN")
-	m331(ts, 197, IO0A._LEN, 80, IO0B._LEN, 2364, "_LEN")
+	m331(ts, 194, IO0A._MIN, 0x258, IO0B._MIN, 0x49b8, "_MIN")
+	m331(ts, 195, IO0A._MAX, 0x268, IO0B._MAX, 0x49c8, "_MAX")
+	m331(ts, 196, IO0A._ALN, 0x278, IO0B._ALN, 0x49d8, "_ALN")
+	m331(ts, 197, IO0A._LEN, 0x280, IO0B._LEN, 0x49e0, "_LEN")
 
-	m331(ts, 198, FIOA._BAS, 82, FIOB._BAS, 2366, "_BAS")
-	m331(ts, 199, FIOA._LEN, 84, FIOB._LEN, 2368, "_LEN")
+	m331(ts, 198, FIOA._BAS, 0x290, FIOB._BAS, 0x49f0, "_BAS")
+	m331(ts, 199, FIOA._LEN, 0x2a0, FIOB._LEN, 0x4a00, "_LEN")
 
-	m331(ts, 200, IRQC._HE, 0x310, IRQD._HE, 0x4a70, "_HE")
-	m331(ts, 201, IRQC._LL, 0x313, IRQD._LL, 0x4a73, "_LL")
+	m331(ts, 200, IRQC._HE,  0x310, IRQD._HE,  0x4a70, "_HE")
+	m331(ts, 201, IRQC._LL,  0x313, IRQD._LL,  0x4a73, "_LL")
 	m331(ts, 202, IRQC._SHR, 0x314, IRQD._SHR, 0x4a74, "_SHR")
 
 	m331(ts, 203, DMAC._TYP, 0x345, DMAD._TYP, 0x4aa5, "_TYP")
-	m331(ts, 204, DMAC._BM, 0x342, DMAD._BM, 0x4aa2, "_BM")
+	m331(ts, 204, DMAC._BM,  0x342, DMAD._BM,  0x4aa2, "_BM")
 	m331(ts, 205, DMAC._SIZ, 0x340, DMAD._SIZ, 0x4aa0, "_SIZ")
 
 	m331(ts, 206, IO0C._DEC, 0x350, IO0D._DEC, 0x4ab0, "_DEC")
-	m331(ts, 207, IO0C._MIN, 107, IO0D._MIN, 2391, "_MIN")
-	m331(ts, 208, IO0C._MAX, 109, IO0D._MAX, 2393, "_MAX")
-	m331(ts, 209, IO0C._ALN, 111, IO0D._ALN, 2395, "_ALN")
-	m331(ts, 210, IO0C._LEN, 112, IO0D._LEN, 2396, "_LEN")
+	m331(ts, 207, IO0C._MIN, 0x358, IO0D._MIN, 0x4ab8, "_MIN")
+	m331(ts, 208, IO0C._MAX, 0x368, IO0D._MAX, 0x4ac8, "_MAX")
+	m331(ts, 209, IO0C._ALN, 0x378, IO0D._ALN, 0x4ad8, "_ALN")
+	m331(ts, 210, IO0C._LEN, 0x380, IO0D._LEN, 0x4ae0, "_LEN")
 
-	m331(ts, 211, FIOC._BAS, 114, FIOD._BAS, 2398, "_BAS")
-	m331(ts, 212, FIOC._LEN, 116, FIOD._LEN, 2400, "_LEN")
+	m331(ts, 211, FIOC._BAS, 0x390, FIOD._BAS, 0x4af0, "_BAS")
+	m331(ts, 212, FIOC._LEN, 0x3a0, FIOD._LEN, 0x4b00, "_LEN")
 
-	m331(ts, 213, M24C._RW, 0x400, M24D._RW, 0x4b60, "_RW")
-	m331(ts, 214, M24C._MIN, 129, M24D._MIN, 2413, "_MIN")
-	m331(ts, 215, M24C._MAX, 131, M24D._MAX, 2415, "_MAX")
-	m331(ts, 216, M24C._ALN, 133, M24D._ALN, 2417, "_ALN")
-	m331(ts, 217, M24C._LEN, 135, M24D._LEN, 2419, "_LEN")
+	m331(ts, 213, M24C._RW,  0x400, M24D._RW,  0x4b60, "_RW")
+	m331(ts, 214, M24C._MIN, 0x408, M24D._MIN, 0x4b68, "_MIN")
+	m331(ts, 215, M24C._MAX, 0x418, M24D._MAX, 0x4b78, "_MAX")
+	m331(ts, 216, M24C._ALN, 0x428, M24D._ALN, 0x4b88, "_ALN")
+	m331(ts, 217, M24C._LEN, 0x438, M24D._LEN, 0x4b98, "_LEN")
 
-	m331(ts, 218, IRQE._HE, 0x470, IRQF._HE, 0x4bd0, "_HE")
-	m331(ts, 219, IRQE._LL, 0x473, IRQF._LL, 0x4bd3, "_LL")
+	m331(ts, 218, IRQE._HE,  0x470, IRQF._HE,  0x4bd0, "_HE")
+	m331(ts, 219, IRQE._LL,  0x473, IRQF._LL,  0x4bd3, "_LL")
 	m331(ts, 220, IRQE._SHR, 0x474, IRQF._SHR, 0x4bd4, "_SHR")
 
 	m331(ts, 221, DMAE._TYP, 0x4a5, DMAF._TYP, 0x4c05, "_TYP")
-	m331(ts, 222, DMAE._BM, 0x4a2, DMAF._BM, 0x4c02, "_BM")
+	m331(ts, 222, DMAE._BM,  0x4a2, DMAF._BM,  0x4c02, "_BM")
 	m331(ts, 223, DMAE._SIZ, 0x4a0, DMAF._SIZ, 0x4c00, "_SIZ")
 
 	m331(ts, 224, IO0E._DEC, 0x4b0, IO0F._DEC, 0x4c10, "_DEC")
-	m331(ts, 225, IO0E._MIN, 151, IO0F._MIN, 2435, "_MIN")
-	m331(ts, 226, IO0E._MAX, 153, IO0F._MAX, 2437, "_MAX")
-	m331(ts, 227, IO0E._ALN, 155, IO0F._ALN, 2439, "_ALN")
-	m331(ts, 228, IO0E._LEN, 156, IO0F._LEN, 2440, "_LEN")
+	m331(ts, 225, IO0E._MIN, 0x4b8, IO0F._MIN, 0x4c18, "_MIN")
+	m331(ts, 226, IO0E._MAX, 0x4c8, IO0F._MAX, 0x4c28, "_MAX")
+	m331(ts, 227, IO0E._ALN, 0x4d8, IO0F._ALN, 0x4c38, "_ALN")
+	m331(ts, 228, IO0E._LEN, 0x4e0, IO0F._LEN, 0x4c40, "_LEN")
 
-	m331(ts, 229, FIOE._BAS, 158, FIOF._BAS, 2442, "_BAS")
-	m331(ts, 230, FIOE._LEN, 160, FIOF._LEN, 2444, "_LEN")
+	m331(ts, 229, FIOE._BAS, 0x4f0, FIOF._BAS, 0x4c50, "_BAS")
+	m331(ts, 230, FIOE._LEN, 0x500, FIOF._LEN, 0x4c60, "_LEN")
 
-	m331(ts, 231, M24E._RW, 0x560, M24F._RW, 0x4cc0, "_RW")
-	m331(ts, 232, M24E._MIN, 173, M24F._MIN, 2457, "_MIN")
-	m331(ts, 233, M24E._MAX, 175, M24F._MAX, 2459, "_MAX")
-	m331(ts, 234, M24E._ALN, 177, M24F._ALN, 2461, "_ALN")
-	m331(ts, 235, M24E._LEN, 179, M24F._LEN, 2463, "_LEN")
+	m331(ts, 231, M24E._RW,  0x560, M24F._RW,  0x4cc0, "_RW")
+	m331(ts, 232, M24E._MIN, 0x568, M24F._MIN, 0x4cc8, "_MIN")
+	m331(ts, 233, M24E._MAX, 0x578, M24F._MAX, 0x4cd8, "_MAX")
+	m331(ts, 234, M24E._ALN, 0x588, M24F._ALN, 0x4ce8, "_ALN")
+	m331(ts, 235, M24E._LEN, 0x598, M24F._LEN, 0x4cf8, "_LEN")
 
-	m331(ts, 236, M32E._RW, 0x5c0, M32F._RW, 0x4d20, "_RW")
-	m331(ts, 237, M32E._MIN, 185, M32F._MIN, 2469, "_MIN")
-	m331(ts, 238, M32E._MAX, 189, M32F._MAX, 2473, "_MAX")
-	m331(ts, 239, M32E._ALN, 193, M32F._ALN, 2477, "_ALN")
-	m331(ts, 240, M32E._LEN, 197, M32F._LEN, 2481, "_LEN")
+	m331(ts, 236, M32E._RW,  0x5c0, M32F._RW,  0x4d20, "_RW")
+	m331(ts, 237, M32E._MIN, 0x5c8, M32F._MIN, 0x4d28, "_MIN")
+	m331(ts, 238, M32E._MAX, 0x5e8, M32F._MAX, 0x4d48, "_MAX")
+	m331(ts, 239, M32E._ALN, 0x608, M32F._ALN, 0x4d68, "_ALN")
+	m331(ts, 240, M32E._LEN, 0x628, M32F._LEN, 0x4d88, "_LEN")
 
 	// Checkings below are not exhaustive
 
-	m331(ts, 241, M3FG._RW, 0x860, M3FH._RW, 0x4fc0, "_RW")
-	m331(ts, 242, M3FG._BAS, 269, M3FH._BAS, 2553, "_BAS")
-	m331(ts, 243, M3FG._LEN, 273, M3FH._LEN, 2557, "_LEN")
+	m331(ts, 241, M3FG._RW,  0x860, M3FH._RW,  0x4fc0, "_RW")
+	m331(ts, 242, M3FG._BAS, 0x868, M3FH._BAS, 0x4fc8, "_BAS")
+	m331(ts, 243, M3FG._LEN, 0x888, M3FH._LEN, 0x4fe8, "_LEN")
 
-	m331(ts, 244, M3FI._RW, 0x43c0, M3FJ._RW, 0x8b20, "_RW")
-	m331(ts, 245, M3FI._BAS, 2169, M3FJ._BAS, 4453, "_BAS")
-	m331(ts, 246, M3FI._LEN, 2173, M3FJ._LEN, 4457, "_LEN")
+	m331(ts, 244, M3FI._RW,  0x43c0, M3FJ._RW,  0x8b20, "_RW")
+	m331(ts, 245, M3FI._BAS, 0x43c8, M3FJ._BAS, 0x8b28, "_BAS")
+	m331(ts, 246, M3FI._LEN, 0x43e8, M3FJ._LEN, 0x8b48, "_LEN")
 
-	m331(ts, 247, M3FK._RW, 0x4630, M3FL._RW, 0x8d90, "_RW")
-	m331(ts, 248, M3FK._BAS, 2247, M3FL._BAS, 4531, "_BAS")
-	m331(ts, 249, M3FK._LEN, 2251, M3FL._LEN, 4535, "_LEN")
+	m331(ts, 247, M3FK._RW,  0x4630, M3FL._RW,  0x8d90, "_RW")
+	m331(ts, 248, M3FK._BAS, 0x4638, M3FL._BAS, 0x8d98, "_BAS")
+	m331(ts, 249, M3FK._LEN, 0x4658, M3FL._LEN, 0x8db8, "_LEN")
 }

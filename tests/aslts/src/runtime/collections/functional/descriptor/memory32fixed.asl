@@ -85,13 +85,15 @@ Method(RT0b)
 
 	m330(ts, 3, "p414", p414, p415)
 
+    // Check resource descriptor tag offsets
+
 	Store (
 		ResourceTemplate () {
 			Memory32Fixed (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7, M3F0)
 			Memory32Fixed (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7, M3F1)
 		}, Local0)
 
-	m331(ts, 1, M3F0._RW, 0x18, M3F1._RW, 0x78, "_RW")
-	m331(ts, 2, M3F0._BAS, 4, M3F1._BAS, 16, "_BAS")
-	m331(ts, 3, M3F0._LEN, 8, M3F1._LEN, 20, "_LEN")
+	m331(ts, 1, M3F0._RW,  0x18, M3F1._RW,  0x78, "_RW")
+	m331(ts, 2, M3F0._BAS, 0x20, M3F1._BAS, 0x80, "_BAS")
+	m331(ts, 3, M3F0._LEN, 0x40, M3F1._LEN, 0xA0, "_LEN")
 }

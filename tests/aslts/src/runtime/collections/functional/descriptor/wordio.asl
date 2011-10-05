@@ -457,6 +457,9 @@ Method(RT0e)
 	Store("TEST: RT0e, Word IO Resource Descriptor Macro", Debug)
 
 	m330(ts, 37, "p420", p420, p421)
+
+    // Check resource descriptor tag offsets
+
 	Store (
 		ResourceTemplate () {
 			WordIO (ResourceProducer, MinNotFixed, MaxNotFixed, PosDecode, EntireRange,
@@ -465,17 +468,17 @@ Method(RT0e)
 				0xf6f7, 0xf8f9, 0xfafb, 0xfcfd, 0xfeff, , , WIO1)
 		}, Local0)
 
-	m331(ts, 1, WIO0._DEC, 0x21, WIO1._DEC, 0xa1, "_DEC")
-	m331(ts, 2, WIO0._MIF, 0x22, WIO1._MIF, 0xa2, "_MIF")
-	m331(ts, 3, WIO0._MAF, 0x23, WIO1._MAF, 0xa3, "_MAF")
-	m331(ts, 4, WIO0._RNG, 0x28, WIO1._RNG, 0xa8, "_RNG")
-	m331(ts, 5, WIO0._TTP, 0x2c, WIO1._TTP, 0xac, "_TTP")
-	m331(ts, 6, WIO0._TRS, 0x2d, WIO1._TRS, 0xad, "_TRS")
-	m331(ts, 7, WIO0._GRA, 6, WIO1._GRA, 22, "_GRA")
-	m331(ts, 8, WIO0._MIN, 8, WIO1._MIN, 24, "_MIN")
-	m331(ts, 9, WIO0._MAX, 10, WIO1._MAX, 26, "_MAX")
-	m331(ts, 10, WIO0._TRA, 12, WIO1._TRA, 28, "_TRA")
-	m331(ts, 11, WIO0._LEN, 14, WIO1._LEN, 30, "_LEN")
+	m331(ts, 1,  WIO0._DEC, 0x21, WIO1._DEC, 0xa1, "_DEC")
+	m331(ts, 2,  WIO0._MIF, 0x22, WIO1._MIF, 0xa2, "_MIF")
+	m331(ts, 3,  WIO0._MAF, 0x23, WIO1._MAF, 0xa3, "_MAF")
+	m331(ts, 4,  WIO0._RNG, 0x28, WIO1._RNG, 0xa8, "_RNG")
+	m331(ts, 5,  WIO0._TTP, 0x2c, WIO1._TTP, 0xac, "_TTP")
+	m331(ts, 6,  WIO0._TRS, 0x2d, WIO1._TRS, 0xad, "_TRS")
+	m331(ts, 7,  WIO0._GRA, 0x30, WIO1._GRA, 0xB0, "_GRA")
+	m331(ts, 8,  WIO0._MIN, 0x40, WIO1._MIN, 0xC0, "_MIN")
+	m331(ts, 9,  WIO0._MAX, 0x50, WIO1._MAX, 0xD0, "_MAX")
+	m331(ts, 10, WIO0._TRA, 0x60, WIO1._TRA, 0xE0, "_TRA")
+	m331(ts, 11, WIO0._LEN, 0x70, WIO1._LEN, 0xF0, "_LEN")
 }
 
 

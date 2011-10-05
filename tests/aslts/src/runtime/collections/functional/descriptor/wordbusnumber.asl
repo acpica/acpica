@@ -332,6 +332,9 @@ Method(RT12)
 	Store("TEST: RT12, Word Bus Number Resource Descriptor Macro", Debug)
 
 	m330(ts, 25, "p428", p428, p429)
+
+    // Check resource descriptor tag offsets
+
 	Store (
 		ResourceTemplate () {
 			WordBusNumber (ResourceProducer, MinNotFixed, MaxNotFixed, PosDecode,
@@ -340,12 +343,12 @@ Method(RT12)
 				0xf6f7, 0xf8f9, 0xfafb, 0xfcfd, 0xfeff, , , WBN1)
 		}, Local0)
 
-	m331(ts, 1, WBN0._DEC, 0x21, WBN1._DEC, 0xa1, "_DEC")
-	m331(ts, 2, WBN0._MIF, 0x22, WBN1._MIF, 0xa2, "_MIF")
-	m331(ts, 3, WBN0._MAF, 0x23, WBN1._MAF, 0xa3, "_MAF")
-	m331(ts, 7, WBN0._GRA, 6, WBN1._GRA, 22, "_GRA")
-	m331(ts, 8, WBN0._MIN, 8, WBN1._MIN, 24, "_MIN")
-	m331(ts, 9, WBN0._MAX, 10, WBN1._MAX, 26, "_MAX")
-	m331(ts, 10, WBN0._TRA, 12, WBN1._TRA, 28, "_TRA")
-	m331(ts, 11, WBN0._LEN, 14, WBN1._LEN, 30, "_LEN")
+	m331(ts, 1,  WBN0._DEC, 0x21, WBN1._DEC, 0xa1, "_DEC")
+	m331(ts, 2,  WBN0._MIF, 0x22, WBN1._MIF, 0xa2, "_MIF")
+	m331(ts, 3,  WBN0._MAF, 0x23, WBN1._MAF, 0xa3, "_MAF")
+	m331(ts, 7,  WBN0._GRA, 0x30, WBN1._GRA, 0xB0, "_GRA")
+	m331(ts, 8,  WBN0._MIN, 0x40, WBN1._MIN, 0xC0, "_MIN")
+	m331(ts, 9,  WBN0._MAX, 0x50, WBN1._MAX, 0xD0, "_MAX")
+	m331(ts, 10, WBN0._TRA, 0x60, WBN1._TRA, 0xE0, "_TRA")
+	m331(ts, 11, WBN0._LEN, 0x70, WBN1._LEN, 0xF0, "_LEN")
 }

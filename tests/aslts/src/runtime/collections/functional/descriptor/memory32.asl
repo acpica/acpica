@@ -96,15 +96,17 @@ Method(RT0a)
 
 	m330(ts, 3, "p412", p412, p413)
 
+    // Check resource descriptor tag offsets
+
 	Store (
 		ResourceTemplate () {
 			Memory32 (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M320)
 			Memory32 (ReadOnly, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, M321)
 		}, Local0)
 
-	m331(ts, 1, M320._RW, 0x18, M321._RW, 0xb8, "_RW")
-	m331(ts, 2, M320._MIN, 4, M321._MIN, 24, "_MIN")
-	m331(ts, 3, M320._MAX, 8, M321._MAX, 28, "_MAX")
-	m331(ts, 4, M320._ALN, 12, M321._ALN, 32, "_ALN")
-	m331(ts, 5, M320._LEN, 16, M321._LEN, 36, "_LEN")
+	m331(ts, 1, M320._RW,  0x18, M321._RW,  0xB8, "_RW")
+	m331(ts, 2, M320._MIN, 0x20, M321._MIN, 0xC0, "_MIN")
+	m331(ts, 3, M320._MAX, 0x40, M321._MAX, 0xE0, "_MAX")
+	m331(ts, 4, M320._ALN, 0x60, M321._ALN, 0x0100, "_ALN")
+	m331(ts, 5, M320._LEN, 0x80, M321._LEN, 0x0120, "_LEN")
 }

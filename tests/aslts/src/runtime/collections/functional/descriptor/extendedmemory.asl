@@ -1300,6 +1300,8 @@ Method(RT13)
 
 	m330(ts, 86, "p42a", p42a, p42b)
 
+    // Check resource descriptor tag offsets
+
 	Store (
 		ResourceTemplate () {
 			ExtendedMemory (ResourceProducer, PosDecode, MinNotFixed, MaxNotFixed, NonCacheable, ReadOnly,
@@ -1310,19 +1312,19 @@ Method(RT13)
 				0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff, EME1)
 		}, Local0)
 
-	m331(ts, 1, EME0._DEC, 0x21, EME1._DEC, 0x1e1, "_DEC")
-	m331(ts, 2, EME0._MIF, 0x22, EME1._MIF, 0x1e2, "_MIF")
-	m331(ts, 3, EME0._MAF, 0x23, EME1._MAF, 0x1e3, "_MAF")
-	m331(ts, 4, EME0._RW, 0x28, EME1._RW, 0x1e8, "_RW")
-	m331(ts, 5, EME0._MEM, 0x29, EME1._MEM, 0x1e9, "_MEM")
-	m331(ts, 6, EME0._MTP, 0x2b, EME1._MTP, 0x1eb, "_MTP")
-	m331(ts, 6, EME0._TTP, 0x2d, EME1._TTP, 0x1ed, "_TTP")
-	m331(ts, 7, EME0._GRA, 8, EME1._GRA, 64, "_GRA")
-	m331(ts, 8, EME0._MIN, 16, EME1._MIN, 72, "_MIN")
-	m331(ts, 9, EME0._MAX, 24, EME1._MAX, 80, "_MAX")
-	m331(ts, 10, EME0._TRA, 32, EME1._TRA, 88, "_TRA")
-	m331(ts, 11, EME0._LEN, 40, EME1._LEN, 96, "_LEN")
-	m331(ts, 12, EME0._ATT, 48, EME1._ATT, 104, "_ATT")
+	m331(ts, 1,  EME0._DEC, 0x21, EME1._DEC, 0x1e1, "_DEC")
+	m331(ts, 2,  EME0._MIF, 0x22, EME1._MIF, 0x1e2, "_MIF")
+	m331(ts, 3,  EME0._MAF, 0x23, EME1._MAF, 0x1e3, "_MAF")
+	m331(ts, 4,  EME0._RW,  0x28, EME1._RW,  0x1e8, "_RW")
+	m331(ts, 5,  EME0._MEM, 0x29, EME1._MEM, 0x1e9, "_MEM")
+	m331(ts, 6,  EME0._MTP, 0x2b, EME1._MTP, 0x1eb, "_MTP")
+	m331(ts, 6,  EME0._TTP, 0x2d, EME1._TTP, 0x1ed, "_TTP")
+	m331(ts, 7,  EME0._GRA, 0x40, EME1._GRA, 0x200, "_GRA")
+	m331(ts, 8,  EME0._MIN, 0x80, EME1._MIN, 0x240, "_MIN")
+	m331(ts, 9,  EME0._MAX, 0xC0, EME1._MAX, 0x280, "_MAX")
+	m331(ts, 10, EME0._TRA, 0x100, EME1._TRA, 0x2C0, "_TRA")
+	m331(ts, 11, EME0._LEN, 0x140, EME1._LEN, 0x300, "_LEN")
+	m331(ts, 12, EME0._ATT, 0x180, EME1._ATT, 0x340, "_ATT")
 }
 
 

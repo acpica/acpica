@@ -1297,6 +1297,9 @@ Method(RT10)
 	Store("TEST: RT10, QWord Memory Resource Descriptor Macro", Debug)
 
 	m330(ts, 89, "p424", p424, p425)
+
+    // Check resource descriptor tag offsets
+
 	Store (
 		ResourceTemplate () {
 			QWordMemory (ResourceProducer, PosDecode, MinNotFixed, MaxNotFixed, NonCacheable, ReadOnly,
@@ -1307,18 +1310,18 @@ Method(RT10)
 				0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff, , , QME1)
 		}, Local0)
 
-	m331(ts, 1, QME0._DEC, 0x21, QME1._DEC, 0x191, "_DEC")
-	m331(ts, 2, QME0._MIF, 0x22, QME1._MIF, 0x192, "_MIF")
-	m331(ts, 3, QME0._MAF, 0x23, QME1._MAF, 0x193, "_MAF")
-	m331(ts, 4, QME0._RW, 0x28, QME1._RW, 0x198, "_RW")
-	m331(ts, 5, QME0._MEM, 0x29, QME1._MEM, 0x199, "_MEM")
-	m331(ts, 6, QME0._MTP, 0x2b, QME1._MTP, 0x19b, "_MTP")
-	m331(ts, 6, QME0._TTP, 0x2d, QME1._TTP, 0x19d, "_TTP")
-	m331(ts, 7, QME0._GRA, 6, QME1._GRA, 52, "_GRA")
-	m331(ts, 8, QME0._MIN, 14, QME1._MIN, 60, "_MIN")
-	m331(ts, 9, QME0._MAX, 22, QME1._MAX, 68, "_MAX")
-	m331(ts, 10, QME0._TRA, 30, QME1._TRA, 76, "_TRA")
-	m331(ts, 11, QME0._LEN, 38, QME1._LEN, 84, "_LEN")
+	m331(ts, 1,  QME0._DEC, 0x21, QME1._DEC, 0x191, "_DEC")
+	m331(ts, 2,  QME0._MIF, 0x22, QME1._MIF, 0x192, "_MIF")
+	m331(ts, 3,  QME0._MAF, 0x23, QME1._MAF, 0x193, "_MAF")
+	m331(ts, 4,  QME0._RW,  0x28, QME1._RW,  0x198, "_RW")
+	m331(ts, 5,  QME0._MEM, 0x29, QME1._MEM, 0x199, "_MEM")
+	m331(ts, 6,  QME0._MTP, 0x2b, QME1._MTP, 0x19b, "_MTP")
+	m331(ts, 6,  QME0._TTP, 0x2d, QME1._TTP, 0x19d, "_TTP")
+	m331(ts, 7,  QME0._GRA, 0x30, QME1._GRA, 0x1A0, "_GRA")
+	m331(ts, 8,  QME0._MIN, 0x70, QME1._MIN, 0x1E0, "_MIN")
+	m331(ts, 9,  QME0._MAX, 0xB0, QME1._MAX, 0x220, "_MAX")
+	m331(ts, 10, QME0._TRA, 0xF0, QME1._TRA, 0x260, "_TRA")
+	m331(ts, 11, QME0._LEN, 0x130, QME1._LEN, 0x2A0, "_LEN")
 }
 
 

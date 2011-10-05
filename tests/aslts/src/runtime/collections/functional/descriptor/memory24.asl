@@ -98,15 +98,17 @@ Method(RT08)
 
 	m330(ts, 3, "p40e", p40e, p40f)
 
+    // Check resource descriptor tag offsets
+
 	Store (
 		ResourceTemplate () {
 			Memory24 (ReadOnly, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M240)
 			Memory24 (ReadOnly, 0xf0f1, 0xf2f3, 0xf4f5, 0xf6f7, M241)
 		}, Local0)
 
-	m331(ts, 1, M240._RW, 0x18, M241._RW, 0x78, "_RW")
-	m331(ts, 2, M240._MIN, 4, M241._MIN, 16, "_MIN")
-	m331(ts, 3, M240._MAX, 6, M241._MAX, 18, "_MAX")
-	m331(ts, 4, M240._ALN, 8, M241._ALN, 20, "_ALN")
-	m331(ts, 5, M240._LEN, 10, M241._LEN, 22, "_LEN")
+	m331(ts, 1, M240._RW,  0x18, M241._RW,  0x78, "_RW")
+	m331(ts, 2, M240._MIN, 0x20, M241._MIN, 0x80, "_MIN")
+	m331(ts, 3, M240._MAX, 0x30, M241._MAX, 0x90, "_MAX")
+	m331(ts, 4, M240._ALN, 0x40, M241._ALN, 0xA0, "_ALN")
+	m331(ts, 5, M240._LEN, 0x50, M241._LEN, 0xB0, "_LEN")
 }

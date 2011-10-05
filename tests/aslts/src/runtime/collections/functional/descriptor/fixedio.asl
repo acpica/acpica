@@ -34,7 +34,7 @@
 
 Name (p40a, Package() {
 	ResourceTemplate () {
-		FixedIO (0xf0f1, 0xf2)
+		FixedIO (0x03f1, 0xf2)
 	},
 	ResourceTemplate () {
 		FixedIO (0, 0)
@@ -56,7 +56,7 @@ Byte 3 (Range length, _LEN)
 */
 
 Name (p40b, Package() {
-	Buffer () {0x4b, 0xf1, 0xf0, 0xf2, 0x79, 0x00},
+	Buffer () {0x4b, 0xf1, 0x03, 0xf2, 0x79, 0x00},
 	Buffer () {0x4b, 0x00, 0x00, 0x00, 0x79, 0x00},
 })
 
@@ -68,12 +68,14 @@ Method(RT06)
 
 	m330(ts, 2, "p40a", p40a, p40b)
 
+    // Check resource descriptor tag offsets
+
 	Store (
 		ResourceTemplate () {
 			FixedIO (0x0001, 0xff, FIO0)
 			FixedIO (0x0001, 0xff, FIO1)
 		}, Local0)
 
-	m331(ts, 1, FIO0._BAS, 1, FIO1._BAS, 5, "_BAS")
-	m331(ts, 2, FIO0._LEN, 3, FIO1._LEN, 7, "_LEN")
+	m331(ts, 1, FIO0._BAS, 0x08, FIO1._BAS, 0x28, "_BAS")
+	m331(ts, 2, FIO0._LEN, 0x18, FIO1._LEN, 0x38, "_LEN")
 }

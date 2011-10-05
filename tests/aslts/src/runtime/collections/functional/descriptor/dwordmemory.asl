@@ -1011,6 +1011,9 @@ Method(RT11)
 	Store("TEST: RT11, DWord Memory Resource Descriptor Macro", Debug)
 
 	m330(ts, 89, "p426", p426, p427)
+
+    // Check resource descriptor tag offsets
+
 	Store (
 		ResourceTemplate () {
 			DWordMemory (ResourceProducer, PosDecode, MinNotFixed, MaxNotFixed, NonCacheable, ReadOnly,
@@ -1019,17 +1022,17 @@ Method(RT11)
 				0xecedeeef, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, , , DME1)
 		}, Local0)
 
-	m331(ts, 1, DME0._DEC, 0x21, DME1._DEC, 0xf1, "_DEC")
-	m331(ts, 2, DME0._MIF, 0x22, DME1._MIF, 0xf2, "_MIF")
-	m331(ts, 3, DME0._MAF, 0x23, DME1._MAF, 0xf3, "_MAF")
-	m331(ts, 4, DME0._RW, 0x28, DME1._RW, 0xf8, "_RW")
-	m331(ts, 5, DME0._MEM, 0x29, DME1._MEM, 0xf9, "_MEM")
-	m331(ts, 6, DME0._MTP, 0x2b, DME1._MTP, 0xfb, "_MTP")
-	m331(ts, 6, DME0._TTP, 0x2d, DME1._TTP, 0xfd, "_TTP")
-	m331(ts, 7, DME0._GRA, 6, DME1._GRA, 32, "_GRA")
-	m331(ts, 8, DME0._MIN, 10, DME1._MIN, 36, "_MIN")
-	m331(ts, 9, DME0._MAX, 14, DME1._MAX, 40, "_MAX")
-	m331(ts, 10, DME0._TRA, 18, DME1._TRA, 44, "_TRA")
-	m331(ts, 11, DME0._LEN, 22, DME1._LEN, 48, "_LEN")
+	m331(ts, 1,  DME0._DEC, 0x21, DME1._DEC, 0xf1, "_DEC")
+	m331(ts, 2,  DME0._MIF, 0x22, DME1._MIF, 0xf2, "_MIF")
+	m331(ts, 3,  DME0._MAF, 0x23, DME1._MAF, 0xf3, "_MAF")
+	m331(ts, 4,  DME0._RW,  0x28, DME1._RW,  0xf8, "_RW")
+	m331(ts, 5,  DME0._MEM, 0x29, DME1._MEM, 0xf9, "_MEM")
+	m331(ts, 6,  DME0._MTP, 0x2b, DME1._MTP, 0xfb, "_MTP")
+	m331(ts, 6,  DME0._TTP, 0x2d, DME1._TTP, 0xfd, "_TTP")
+	m331(ts, 7,  DME0._GRA, 0x30, DME1._GRA, 0x100, "_GRA")
+	m331(ts, 8,  DME0._MIN, 0x50, DME1._MIN, 0x120, "_MIN")
+	m331(ts, 9,  DME0._MAX, 0x70, DME1._MAX, 0x140, "_MAX")
+	m331(ts, 10, DME0._TRA, 0x90, DME1._TRA, 0x160, "_TRA")
+	m331(ts, 11, DME0._LEN, 0xB0, DME1._LEN, 0x180, "_LEN")
 }
 

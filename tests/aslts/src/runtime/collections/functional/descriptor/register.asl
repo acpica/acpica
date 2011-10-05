@@ -164,15 +164,17 @@ Method(RT19)
 
 	/* Register macro DescriptorName is recently implemented */
 
+    // Check resource descriptor tag offsets
+
 	Store (
 		ResourceTemplate () {
 			Register (SystemMemory, 0xf0, 0xf1, 0xf2f3f4f5f6f7f8f9, 0, REG0)
 			Register (SystemMemory, 0xf0, 0xf1, 0xf2f3f4f5f6f7f8f9, 0, REG1)
 		}, Local0)
 
-	m331(ts, 1, REG0._ASI, 3, REG1._ASI, 18, "_ASI")
-	m331(ts, 2, REG0._RBW, 4, REG1._RBW, 19, "_RBW")
-	m331(ts, 3, REG0._RBO, 5, REG1._RBO, 20, "_RBO")
-	m331(ts, 4, REG0._ASZ, 6, REG1._ASZ, 21, "_ASZ")
-	m331(ts, 5, REG0._ADR, 7, REG1._ADR, 22, "_ADR")
+	m331(ts, 1, REG0._ASI, 0x18, REG1._ASI, 0x90, "_ASI")
+	m331(ts, 2, REG0._RBW, 0x20, REG1._RBW, 0x98, "_RBW")
+	m331(ts, 3, REG0._RBO, 0x28, REG1._RBO, 0xA0, "_RBO")
+	m331(ts, 4, REG0._ASZ, 0x30, REG1._ASZ, 0xA8, "_ASZ")
+	m331(ts, 5, REG0._ADR, 0x38, REG1._ADR, 0xB0, "_ADR")
 }

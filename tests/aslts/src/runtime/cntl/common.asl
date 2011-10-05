@@ -237,9 +237,9 @@ Name(ERR7, 0)	// The number of errors detected during the loading stage
  * ATTENTION:
  * These globals are introduced due to the lack of
  * parameters of ASL-Method (7).
- * Somethimes these parameters may mislead, because
- * may be redirected by the following more dipper
- * calls. We dont restore the previous values - it
+ * Sometimes these parameters may mislead, because
+ * may be redirected by the following more deeper
+ * calls. We don't restore the previous values - it
  * would be too complicated.
  *
  * Apply it when the common Methods are used and
@@ -247,11 +247,11 @@ Name(ERR7, 0)	// The number of errors detected during the loading stage
  * is somewhere in another file and there is no remained
  * ArgX to pass that information.
  *
- * Aply it also when there are many entries with the
+ * Apply it also when there are many entries with the
  * "index of checking" in the same file. It is more
- * convenient to erange them inside the particular
+ * convenient to arrange them inside the particular
  * Methods than to update all them inside the entire
- * file each time when it is needed to chahge any
+ * file each time when it is needed to change any
  * or add some new.
  *
  * Note:
@@ -1353,7 +1353,7 @@ Method(TCN0, 1) {
  * arg0 - index of test collection
  * arg1 - index of test inside the collection
  */
-Method(TNIC, 2) {
+Method(TNIC, 2, Serialized) {
 	Store("?", Local7)
 	switch (arg0) {
 		case (1) {
@@ -1666,7 +1666,7 @@ Name(TFN0, Package() {
  * arg1 - information of checking (Word 1)
  * arg2 - name of Method initiating the checking (Word 2)
  */
-Method(UNP0, 3)
+Method(UNP0, 3, Serialized)
 {
 	// c - index of tests collection
 	ShiftRight(arg0, 28, Local7)

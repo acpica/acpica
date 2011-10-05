@@ -516,6 +516,8 @@ Method(RT14)
 
 	m330(ts, 27, "p42c", p42c, p42d)
 
+    // Check resource descriptor tag offsets
+
 	Store (
 		ResourceTemplate () {
 			QWordSpace (0xc0, ResourceProducer, PosDecode, MinNotFixed, MaxNotFixed, 0x5a,
@@ -526,14 +528,14 @@ Method(RT14)
 				0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff, , , QSP1)
 		}, Local0)
 
-	m331(ts, 1, QSP0._DEC, 0x21, QSP1._DEC, 0x191, "_DEC")
-	m331(ts, 2, QSP0._MIF, 0x22, QSP1._MIF, 0x192, "_MIF")
-	m331(ts, 3, QSP0._MAF, 0x23, QSP1._MAF, 0x193, "_MAF")
-	m331(ts, 7, QSP0._GRA, 6, QSP1._GRA, 52, "_GRA")
-	m331(ts, 8, QSP0._MIN, 14, QSP1._MIN, 60, "_MIN")
-	m331(ts, 9, QSP0._MAX, 22, QSP1._MAX, 68, "_MAX")
-	m331(ts, 10, QSP0._TRA, 30, QSP1._TRA, 76, "_TRA")
-	m331(ts, 11, QSP0._LEN, 38, QSP1._LEN, 84, "_LEN")
+	m331(ts, 1,  QSP0._DEC, 0x21, QSP1._DEC, 0x191, "_DEC")
+	m331(ts, 2,  QSP0._MIF, 0x22, QSP1._MIF, 0x192, "_MIF")
+	m331(ts, 3,  QSP0._MAF, 0x23, QSP1._MAF, 0x193, "_MAF")
+	m331(ts, 7,  QSP0._GRA, 0x30, QSP1._GRA, 0x1A0, "_GRA")
+	m331(ts, 8,  QSP0._MIN, 0x70, QSP1._MIN, 0x1E0, "_MIN")
+	m331(ts, 9,  QSP0._MAX, 0xB0, QSP1._MAX, 0x220, "_MAX")
+	m331(ts, 10, QSP0._TRA, 0xF0, QSP1._TRA, 0x260, "_TRA")
+	m331(ts, 11, QSP0._LEN, 0x130, QSP1._LEN, 0x2A0, "_LEN")
 }
 
 

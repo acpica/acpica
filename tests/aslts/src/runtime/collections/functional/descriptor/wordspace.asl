@@ -352,6 +352,8 @@ Method(RT16)
 
 	m330(ts, 27, "p430", p430, p431)
 
+    // Check resource descriptor tag offsets
+
 	Store (
 		ResourceTemplate () {
 			WordSpace (0xc0, ResourceProducer, PosDecode, MinNotFixed, MaxNotFixed, 0x5a,
@@ -360,12 +362,12 @@ Method(RT16)
 				0xf6f7, 0xf8f9, 0xfafb, 0xfcfd, 0xfeff, , , WSP1)
 		}, Local0)
 
-	m331(ts, 1, WSP0._DEC, 0x21, WSP1._DEC, 0xa1, "_DEC")
-	m331(ts, 2, WSP0._MIF, 0x22, WSP1._MIF, 0xa2, "_MIF")
-	m331(ts, 3, WSP0._MAF, 0x23, WSP1._MAF, 0xa3, "_MAF")
-	m331(ts, 7, WSP0._GRA, 6, WSP1._GRA, 22, "_GRA")
-	m331(ts, 8, WSP0._MIN, 8, WSP1._MIN, 24, "_MIN")
-	m331(ts, 9, WSP0._MAX, 10, WSP1._MAX, 26, "_MAX")
-	m331(ts, 10, WSP0._TRA, 12, WSP1._TRA, 28, "_TRA")
-	m331(ts, 11, WSP0._LEN, 14, WSP1._LEN, 30, "_LEN")
+	m331(ts, 1,  WSP0._DEC, 0x21, WSP1._DEC, 0xa1, "_DEC")
+	m331(ts, 2,  WSP0._MIF, 0x22, WSP1._MIF, 0xa2, "_MIF")
+	m331(ts, 3,  WSP0._MAF, 0x23, WSP1._MAF, 0xa3, "_MAF")
+	m331(ts, 7,  WSP0._GRA, 0x30, WSP1._GRA, 0xB0, "_GRA")
+	m331(ts, 8,  WSP0._MIN, 0x40, WSP1._MIN, 0xC0, "_MIN")
+	m331(ts, 9,  WSP0._MAX, 0x50, WSP1._MAX, 0xD0, "_MAX")
+	m331(ts, 10, WSP0._TRA, 0x60, WSP1._TRA, 0xE0, "_TRA")
+	m331(ts, 11, WSP0._LEN, 0x70, WSP1._LEN, 0xF0, "_LEN")
 }

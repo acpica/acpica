@@ -455,6 +455,8 @@ Method(RT17)
 
 	m330(ts, 24, "p432", p432, p433)
 
+    // Check resource descriptor tag offsets
+
 	Store (
 		ResourceTemplate () {
 			ExtendedSpace (0xc0, ResourceProducer, PosDecode, MinNotFixed, MaxNotFixed, 0x5a,
@@ -468,12 +470,12 @@ Method(RT17)
 	m331(ts, 1, ESP0._DEC, 0x21, ESP1._DEC, 0x1e1, "_DEC")
 	m331(ts, 2, ESP0._MIF, 0x22, ESP1._MIF, 0x1e2, "_MIF")
 	m331(ts, 3, ESP0._MAF, 0x23, ESP1._MAF, 0x1e3, "_MAF")
-	m331(ts, 4, ESP0._GRA, 8, ESP1._GRA, 64, "_GRA")
-	m331(ts, 5, ESP0._MIN, 16, ESP1._MIN, 72, "_MIN")
-	m331(ts, 6, ESP0._MAX, 24, ESP1._MAX, 80, "_MAX")
-	m331(ts, 7, ESP0._TRA, 32, ESP1._TRA, 88, "_TRA")
-	m331(ts, 8, ESP0._LEN, 40, ESP1._LEN, 96, "_LEN")
-	m331(ts, 9, ESP0._ATT, 48, ESP1._ATT, 104, "_ATT")
+	m331(ts, 4, ESP0._GRA, 0x40, ESP1._GRA, 0x200, "_GRA")
+	m331(ts, 5, ESP0._MIN, 0x80, ESP1._MIN, 0x240, "_MIN")
+	m331(ts, 6, ESP0._MAX, 0xC0, ESP1._MAX, 0x280, "_MAX")
+	m331(ts, 7, ESP0._TRA, 0x100, ESP1._TRA, 0x2C0, "_TRA")
+	m331(ts, 8, ESP0._LEN, 0x140, ESP1._LEN, 0x300, "_LEN")
+	m331(ts, 9, ESP0._ATT, 0x180, ESP1._ATT, 0x340, "_ATT")
 }
 
 

@@ -84,6 +84,8 @@ Method(RT05)
 
 	m330(ts, 3, "p408", p408, p409)
 
+    // Check resource descriptor tag offsets
+
 	Store (
 		ResourceTemplate () {
 			IO (Decode16, 0xf0f1, 0xf2f3, 0xf4, 0xf5, IO0)
@@ -91,8 +93,8 @@ Method(RT05)
 		}, Local0)
 
 	m331(ts, 1, IO0._DEC, 0x08, IO1._DEC, 0x48, "_DEC")
-	m331(ts, 2, IO0._MIN, 2, IO1._MIN, 10, "_MIN")
-	m331(ts, 3, IO0._MAX, 4, IO1._MAX, 12, "_MAX")
-	m331(ts, 4, IO0._ALN, 6, IO1._ALN, 14, "_ALN")
-	m331(ts, 5, IO0._LEN, 7, IO1._LEN, 15, "_LEN")
+	m331(ts, 2, IO0._MIN, 0x10, IO1._MIN, 0x50, "_MIN")
+	m331(ts, 3, IO0._MAX, 0x20, IO1._MAX, 0x60, "_MAX")
+	m331(ts, 4, IO0._ALN, 0x30, IO1._ALN, 0x70, "_ALN")
+	m331(ts, 5, IO0._LEN, 0x38, IO1._LEN, 0x78, "_LEN")
 }

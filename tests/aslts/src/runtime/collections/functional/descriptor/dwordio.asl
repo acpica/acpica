@@ -504,6 +504,9 @@ Method(RT0d)
 	Store("TEST: RT0d, DWord IO Resource Descriptor Macro", Debug)
 
 	m330(ts, 37, "p418", p418, p419)
+
+    // Check resource descriptor tag offsets
+
 	Store (
 		ResourceTemplate () {
 			DWordIO (ResourceProducer, MinNotFixed, MaxNotFixed, PosDecode, EntireRange,
@@ -512,17 +515,17 @@ Method(RT0d)
 				0xecedeeef, 0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff, , , DIO1)
 		}, Local0)
 
-	m331(ts, 1, DIO0._DEC, 0x21, DIO1._DEC, 0xf1, "_DEC")
-	m331(ts, 2, DIO0._MIF, 0x22, DIO1._MIF, 0xf2, "_MIF")
-	m331(ts, 3, DIO0._MAF, 0x23, DIO1._MAF, 0xf3, "_MAF")
-	m331(ts, 4, DIO0._RNG, 0x28, DIO1._RNG, 0xf8, "_RNG")
-	m331(ts, 5, DIO0._TTP, 0x2c, DIO1._TTP, 0xfc, "_TTP")
-	m331(ts, 6, DIO0._TRS, 0x2d, DIO1._TRS, 0xfd, "_TRS")
-	m331(ts, 7, DIO0._GRA, 6, DIO1._GRA, 32, "_GRA")
-	m331(ts, 8, DIO0._MIN, 10, DIO1._MIN, 36, "_MIN")
-	m331(ts, 9, DIO0._MAX, 14, DIO1._MAX, 40, "_MAX")
-	m331(ts, 10, DIO0._TRA, 18, DIO1._TRA, 44, "_TRA")
-	m331(ts, 11, DIO0._LEN, 22, DIO1._LEN, 48, "_LEN")
+	m331(ts, 1,  DIO0._DEC, 0x21, DIO1._DEC, 0xf1, "_DEC")
+	m331(ts, 2,  DIO0._MIF, 0x22, DIO1._MIF, 0xf2, "_MIF")
+	m331(ts, 3,  DIO0._MAF, 0x23, DIO1._MAF, 0xf3, "_MAF")
+	m331(ts, 4,  DIO0._RNG, 0x28, DIO1._RNG, 0xf8, "_RNG")
+	m331(ts, 5,  DIO0._TTP, 0x2c, DIO1._TTP, 0xfc, "_TTP")
+	m331(ts, 6,  DIO0._TRS, 0x2d, DIO1._TRS, 0xfd, "_TRS")
+	m331(ts, 7,  DIO0._GRA, 0x30, DIO1._GRA, 0x100, "_GRA")
+	m331(ts, 8,  DIO0._MIN, 0x50, DIO1._MIN, 0x120, "_MIN")
+	m331(ts, 9,  DIO0._MAX, 0x70, DIO1._MAX, 0x140, "_MAX")
+	m331(ts, 10, DIO0._TRA, 0x90, DIO1._TRA, 0x160, "_TRA")
+	m331(ts, 11, DIO0._LEN, 0xB0, DIO1._LEN, 0x180, "_LEN")
 }
 
 

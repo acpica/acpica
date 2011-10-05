@@ -936,7 +936,7 @@ Name (p440, Package() {
 
 // Particular cases
 
-Name (p441, Package(2) {
+Name (p441, Package() {
 	ResourceTemplate () {
 		DMA (Compatibility, BusMaster, Transfer8_16) {4}
 	},
@@ -983,21 +983,21 @@ Method(RT1b)
 
 	Store("TEST: RT1b, Concatenate two resource templates", Debug)
 
-	// Calculate the checksum
-	// m334(p440, 3)
-
-	m332(ts, 3, "p440", p438, p438, p440)
+	// Calculate the checksum for the target first
+	
+//	m334(p440, 3)
+//	m332(ts, 3, "p440", p438, p438, p440)
 
 
 	// Particular cases
 
-	Store(0, Local0)
-	Store(Buffer(Local0){}, Local1)
-	Store(Local1, Index(p441, 1))
+//	Store(0, Local0)
+//	Store(Buffer(Local0){}, Local1)
+//	Store(Local1, Index(p441, 1))
 
-	m332(ts, 2, "p443", p441, p442, p443)
+	m332(ts, 1, "p443", p441, p442, p443)
 
-	m332(ts, 2, "p444", p442, p441, p444)
+	m332(ts, 1, "p444", p442, p441, p444)
 
 	CH03(ts, z007, 0x123, 0, 0)
 }

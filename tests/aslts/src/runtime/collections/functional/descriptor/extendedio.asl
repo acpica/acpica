@@ -623,6 +623,8 @@ Method(RT0f)
 
 	m330(ts, 34, "p422", p422, p423)
 
+    // Check resource descriptor tag offsets
+
 	Store (
 		ResourceTemplate () {
 			ExtendedIO (ResourceProducer, MinNotFixed, MaxNotFixed, PosDecode, EntireRange,
@@ -633,18 +635,18 @@ Method(RT0f)
 				0xe8e9eaebecedeeef, 0xf0f1f2f3f4f5f6f7, 0xf8f9fafbfcfdfeff, EIO1)
 		}, Local0)
 
-	m331(ts, 1, EIO0._DEC, 0x21, EIO1._DEC, 0x1e1, "_DEC")
-	m331(ts, 2, EIO0._MIF, 0x22, EIO1._MIF, 0x1e2, "_MIF")
-	m331(ts, 3, EIO0._MAF, 0x23, EIO1._MAF, 0x1e3, "_MAF")
-	m331(ts, 4, EIO0._RNG, 0x28, EIO1._RNG, 0x1e8, "_RNG")
-	m331(ts, 5, EIO0._TTP, 0x2c, EIO1._TTP, 0x1ec, "_TTP")
-	m331(ts, 6, EIO0._TRS, 0x2d, EIO1._TRS, 0x1ed, "_TRS")
-	m331(ts, 7, EIO0._GRA, 8, EIO1._GRA, 64, "_GRA")
-	m331(ts, 8, EIO0._MIN, 16, EIO1._MIN, 72, "_MIN")
-	m331(ts, 9, EIO0._MAX, 24, EIO1._MAX, 80, "_MAX")
-	m331(ts, 10, EIO0._TRA, 32, EIO1._TRA, 88, "_TRA")
-	m331(ts, 11, EIO0._LEN, 40, EIO1._LEN, 96, "_LEN")
-	m331(ts, 12, EIO0._ATT, 48, EIO1._ATT, 104, "_ATT")
+	m331(ts, 1,  EIO0._DEC, 0x21, EIO1._DEC, 0x1e1, "_DEC")
+	m331(ts, 2,  EIO0._MIF, 0x22, EIO1._MIF, 0x1e2, "_MIF")
+	m331(ts, 3,  EIO0._MAF, 0x23, EIO1._MAF, 0x1e3, "_MAF")
+	m331(ts, 4,  EIO0._RNG, 0x28, EIO1._RNG, 0x1e8, "_RNG")
+	m331(ts, 5,  EIO0._TTP, 0x2c, EIO1._TTP, 0x1ec, "_TTP")
+	m331(ts, 6,  EIO0._TRS, 0x2d, EIO1._TRS, 0x1ed, "_TRS")
+	m331(ts, 7,  EIO0._GRA, 0x40, EIO1._GRA, 0x200, "_GRA")
+	m331(ts, 8,  EIO0._MIN, 0x80, EIO1._MIN, 0x240, "_MIN")
+	m331(ts, 9,  EIO0._MAX, 0xC0, EIO1._MAX, 0x280, "_MAX")
+	m331(ts, 10, EIO0._TRA, 0x100, EIO1._TRA, 0x2C0, "_TRA")
+	m331(ts, 11, EIO0._LEN, 0x140, EIO1._LEN, 0x300, "_LEN")
+	m331(ts, 12, EIO0._ATT, 0x180, EIO1._ATT, 0x340, "_ATT")
 }
 
 

@@ -234,7 +234,7 @@ Byte 4n+5	Interrupt Number, _INT bits [7:0]	Interrupt number
 Byte 4n+6	Interrupt Number, _INT bits [15:8]	
 Byte 4n+7	Interrupt Number, _INT bits [23:16]	
 Byte 4n+8	Interrupt Number, _INT bits [31:24]	
-…	…	Additional interrupt numbers
+            Additional interrupt numbers
 Byte x	Resource Source Index	(Optional) Only present if Resource Source (below) is present.
 				This field gives an index to the specific resource descriptor
 				that this device consumes from in the current resource template
@@ -552,7 +552,9 @@ Method(RT18)
 
 	Store("TEST: RT18, Interrupt() Interrupt Resource Descriptor Macro", Debug)
 
-	m330(ts, 24, "p434", p434, p435)
+	m330(ts, 23, "p434", p434, p435)
+
+    // Check resource descriptor tag offsets
 
 	Store (
 		ResourceTemplate () {
@@ -560,10 +562,10 @@ Method(RT18)
 			Interrupt (ResourceProducer, Edge, ActiveLow, Shared, , , INT1) {0xfcfdfeff}
 		}, Local0)
 
-	m331(ts, 1, INT0._HE, 0x19, INT1._HE, 0x61, "_HE")
-	m331(ts, 2, INT0._LL, 0x1a, INT1._LL, 0x62, "_LL")
+	m331(ts, 1, INT0._HE,  0x19, INT1._HE,  0x61, "_HE")
+	m331(ts, 2, INT0._LL,  0x1a, INT1._LL,  0x62, "_LL")
 	m331(ts, 3, INT0._SHR, 0x1b, INT1._SHR, 0x63, "_SHR")
-	m331(ts, 4, INT0._INT, 5, INT1._INT, 14, "_INT")
+	m331(ts, 4, INT0._INT, 0x28, INT1._INT, 0x70, "_INT")
 
 	CH03(ts, z017, 0x123, 0, 0)
 }

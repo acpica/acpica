@@ -492,7 +492,7 @@ Name(SETN, 5)
  *
  * arg0 - settings number of aslts (see SETN for comment)
  */
-Method(SET2, 1) {
+Method(SET2, 1, Serialized) {
 
 	Store(arg0, Local0)
 
