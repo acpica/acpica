@@ -492,7 +492,8 @@ RsDoGpioIntDescriptor (
             Descriptor->Gpio.VendorOffset = (UINT16)
                 ACPI_PTR_DIFF (VendorData, Descriptor);
 
-            if (RsGetVendorData (InitializerOp, VendorData, CurrentByteOffset))
+            if (RsGetVendorData (InitializerOp, VendorData,
+                    (CurrentByteOffset +  Descriptor->Gpio.VendorOffset)))
             {
                 Descriptor->Gpio.VendorLength = VendorLength;
             }
@@ -697,7 +698,8 @@ RsDoGpioIoDescriptor (
             Descriptor->Gpio.VendorOffset = (UINT16)
                 ACPI_PTR_DIFF (VendorData, Descriptor);
 
-            if (RsGetVendorData (InitializerOp, VendorData, CurrentByteOffset))
+            if (RsGetVendorData (InitializerOp, VendorData,
+                    (CurrentByteOffset + Descriptor->Gpio.VendorOffset)))
             {
                 Descriptor->Gpio.VendorLength = VendorLength;
             }
@@ -1163,7 +1165,7 @@ RsDoUartSerialBusDescriptor (
 
             Descriptor->UartSerialBus.LinesEnabled = (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_LINE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.TypeSpecificFlags));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.LinesEnabled));
             break;
 
         case 4: /* Endianness [Flag] (_END) */
