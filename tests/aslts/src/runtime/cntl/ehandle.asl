@@ -26,6 +26,8 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+External (_ERR, MethodObj)
+
 /*
  * Exceptional conditions support
  */

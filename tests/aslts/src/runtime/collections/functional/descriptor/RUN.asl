@@ -84,5 +84,18 @@ if (STTT("Resource Descriptor macros", TCLF, 4, W004)) {
 	RT1b()
 	SRMT("RT1c")
 	RT1c()
+	SRMT("RT20")
+	RT20()
+	SRMT("RT21")
+	RT21()
+	SRMT("RT22")
+	RT22()
+	SRMT("RT23")
+	RT23()
+	SRMT("RT24")
+	RT24()
+	SRMT("RT25")
+	RT25()
+
 }
 FTTT()

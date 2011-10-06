@@ -62,3 +62,12 @@ Include("../../../../runtime/collections/functional/descriptor/interrupt.asl")
 Include("../../../../runtime/collections/functional/descriptor/register.asl")
 Include("../../../../runtime/collections/functional/descriptor/resourcetemplate.asl")
 Include("../../../../runtime/collections/functional/descriptor/concatenaterestemplate.asl")
+
+/* ACPI 5.0 Resource Descriptors */
+
+Include("../../../../runtime/collections/functional/descriptor/fixeddma.asl")
+Include("../../../../runtime/collections/functional/descriptor/gpioint.asl")
+Include("../../../../runtime/collections/functional/descriptor/gpioio.asl")
+Include("../../../../runtime/collections/functional/descriptor/i2cserialbus.asl")
+Include("../../../../runtime/collections/functional/descriptor/spiserialbus.asl")
+Include("../../../../runtime/collections/functional/descriptor/uartserialbus.asl")

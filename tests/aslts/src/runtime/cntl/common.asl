@@ -1657,6 +1657,14 @@ Name(TFN0, Package() {
 	"I2MS_ns4.asl",
 	"I2MS_ns5.asl",
 	"I2MS_ns6.asl",
+	
+// ACPI 5.0
+    "fixeddma.asl", // 177
+    "gpioint.asl",
+    "gpioio.asl",
+    "i2cserialbus.asl",
+    "spiserialbus.asl",
+    "uartserialbus.asl",
 })
 
 /*
