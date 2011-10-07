@@ -139,7 +139,7 @@ const AH_ASL_KEYWORD        AslKeywordInfo[] =
         ":= Compatibility | TypeA | TypeB | TypeF"},
     {"InterruptTypeKeyword", "Interrupt Types",
         ":= Edge | Level"},
-    {"InterruptLevel", "Interrupt Active Types",
+    {"InterruptLevelKeyword", "Interrupt Active Types",
         ":= ActiveHigh | ActiveLow"},
     {"IODecodeKeyword", "I/O Decoding - IO Resource Descriptor",
         ":= Decode16 | Decode10"},

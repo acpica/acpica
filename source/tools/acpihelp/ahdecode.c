@@ -118,7 +118,11 @@
 #define ACPI_CREATE_PREDEFINED_TABLE
 #include "acpredef.h"
 
-static char         Gbl_Buffer[64];
+#define BUFFER_LENGTH           128
+#define LINE_BUFFER_LENGTH      512
+
+static char         Gbl_Buffer[BUFFER_LENGTH];
+static char         Gbl_LineBuffer[LINE_BUFFER_LENGTH];
 static const char   *AcpiRtypeNames[] =
 {
     "/Integer",
@@ -151,6 +155,10 @@ AhDisplayAmlOpcode (
 
 static void
 AhDisplayAslOperator (
+    const AH_ASL_OPERATOR   *Op);
+
+static void
+AhDisplayOperatorKeywords (
     const AH_ASL_OPERATOR   *Op);
 
 static void
@@ -728,6 +736,62 @@ AhDisplayAslOperator (
 
     AhPrintOneField (18, 0, AH_MAX_ASL_LINE_LENGTH, Op->Syntax);
     printf ("\n");
+
+    AhDisplayOperatorKeywords (Op);
+    printf ("\n");
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AhDisplayOperatorKeywords
+ *
+ * PARAMETERS:  Op                  - Pointer to ASL keyword with syntax info
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display any/all keywords that are associated with the ASL
+ *              operator.
+ *
+ ******************************************************************************/
+
+static void
+AhDisplayOperatorKeywords (
+    const AH_ASL_OPERATOR   *Op)
+{
+    char                    *Token;
+    char                    *Separators = "(){}, ";
+    BOOLEAN                 FirstKeyword = TRUE;
+
+
+    if (!Op || !Op->Syntax)
+    {
+        return;
+    }
+
+    /*
+     * Find all parameters that have the word "keyword" within, and then
+     * display the info about that keyword
+     */
+    strcpy (Gbl_LineBuffer, Op->Syntax);
+    Token = strtok (Gbl_LineBuffer, Separators);
+    while (Token)
+    {
+        if (strstr (Token, "Keyword"))
+        {
+            if (FirstKeyword)
+            {
+                printf ("\n");
+                FirstKeyword = FALSE;
+            }
+
+            /* Found a keyword, display keyword information */
+
+            AhFindAslKeywords (Token);
+        }
+
+        Token = strtok (NULL, Separators);
+    }
 }
 
 
