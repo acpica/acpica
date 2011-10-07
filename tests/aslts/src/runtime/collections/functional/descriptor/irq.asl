@@ -137,7 +137,11 @@ Method(RT01)
 {
 	Name(ts, "RT01")
 
-	Store("TEST: RT01, IRQ() Interrupt Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "IRQ Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 18, "p400", p400, p401)
 

@@ -668,7 +668,11 @@ Method(RT0c)
 {
 	Name(ts, "RT0c")
 
-	Store("TEST: RT0c, QWord IO Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "QWordIO Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 37, "p416", p416, p417)
 	

@@ -150,7 +150,11 @@ Method(RT09)
 {
 	Name(ts, "RT09")
 
-	Store("TEST: RT09, Long Vendor Resource Descriptor", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "Long Vendor Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 7, "p410", p410, p411)
 

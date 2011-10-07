@@ -348,7 +348,11 @@ Method(RT16)
 {
 	Name(ts, "RT16")
 
-	Store("TEST: RT16, Word Space Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "WordSpace Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 27, "p430", p430, p431)
 

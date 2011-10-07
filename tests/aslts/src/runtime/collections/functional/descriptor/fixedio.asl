@@ -64,7 +64,11 @@ Method(RT06)
 {
 	Name(ts, "RT06")
 
-	Store("TEST: RT06, Fixed IO Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "FixedIO Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 2, "p40a", p40a, p40b)
 

@@ -981,7 +981,9 @@ Method(RT1b)
 {
 	Name(ts, "RT1b")
 
-	Store("TEST: RT1b, Concatenate two resource templates", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "Concatenate two resource templates", __FILE__)
 
 	// Calculate the checksum for the target first
 	

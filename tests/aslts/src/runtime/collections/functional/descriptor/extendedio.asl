@@ -619,7 +619,11 @@ Method(RT0f)
 {
 	Name(ts, "RT0f")
 
-	Store("TEST: RT0f, Extended IO Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "ExtendedIo Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 34, "p422", p422, p423)
 

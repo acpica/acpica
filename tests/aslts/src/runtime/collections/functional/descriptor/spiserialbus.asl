@@ -71,7 +71,11 @@ Method(RT24)
 {
 	Name(ts, "RT24")
 
-	Store("TEST: RT24, SpiSerialBus Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "SpiSerialBus Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 2, "p458", p458, p459)
 

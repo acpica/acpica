@@ -1294,7 +1294,11 @@ Method(RT10)
 {
 	Name(ts, "RT10")
 
-	Store("TEST: RT10, QWord Memory Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "QWordMemory Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 89, "p424", p424, p425)
 

@@ -68,7 +68,11 @@ Method(RT23)
 {
 	Name(ts, "RT23")
 
-	Store("TEST: RT23, I2cSerialBus Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "I2cSerialBus Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 2, "p456", p456, p457)
 

@@ -81,7 +81,11 @@ Method(RT0b)
 {
 	Name(ts, "RT0b")
 
-	Store("TEST: RT0b, Memory32Fixed() Memory Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "Memory32Fixed Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 3, "p414", p414, p415)
 

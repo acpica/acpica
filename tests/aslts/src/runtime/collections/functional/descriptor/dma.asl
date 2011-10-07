@@ -181,7 +181,11 @@ Method(RT03)
 {
 	Name(ts, "RT03")
 
-	Store("TEST: RT03, DMA Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "DMA Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 27, "p404", p404, p405)
 

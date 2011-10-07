@@ -226,6 +226,7 @@ Name(ERR5, 0)	// Used to calculate the number of errors of root Method
 Name(ERR6, 0)	// The number of failed root Methods (tests)
 Name(ERR7, 0)	// The number of errors detected during the loading stage
 
+Name(FNAM, 0)   // Test filename
 
 /*
  * Set parameters of current checking
@@ -284,6 +285,7 @@ Method(RST0) {
 	CopyObject(0, ERR0)
 	CopyObject(0, ERR1)
 	CopyObject(0, ERR2)
+	CopyObject(0, FNAM)
 }
 
 // Reset current indicator of errors
@@ -356,6 +358,34 @@ Name(FLG6, 0)
  * Flag, compiler the test in the abbu layout
  */
 Name(ABUU, 0)
+
+// Set global test filename
+Method(SETF, 1) {
+    CopyObject(arg0, FNAM)
+}
+
+/*
+ * Test Header - Display common test header
+ *
+ * Arg0 - Name of test (RT25, etc)
+ * Arg1 - Full Name of test ("Resource Descriptor Macro", etc.)
+ * Arg2 - Test filename (via __FILE__ macro)
+ */
+Method (THDR, 3)
+{
+    // Save the test filename in the FNAM global
+	SETF (Arg2)
+
+	// Build output string and store to debug object
+    Concatenate ("TEST: ", Arg0, Local1)
+    Concatenate (Local1, ", ", Local2)
+    Concatenate (Local2, Arg1, Local3)
+    Concatenate (Local3, " (", Local4)
+    Concatenate (Local4, Arg2, Local5)
+    Concatenate (Local5, ")", Local6)
+
+    Store (Local6, Debug)
+}
 
 
 // Report completion of root Method
@@ -645,6 +675,7 @@ Method(PK03, 2)
  * arg5 - first value (usually, received value)
  * arg6 - second value (usually, expected value)
  */
+
 Method(err, 7)
 {
 	Store(0, Local3)
@@ -711,9 +742,9 @@ Method(err, 7)
 
 	ERP0(arg1, arg2, Local4, Local3, Local5)
 
-	Store("(r):", Debug)
+	Store("**** Actual Result:", Debug)
 	Store(arg5, Debug)
-	Store("(e):", Debug)
+	Store("**** Expected Result:", Debug)
 	Store(arg6, Debug)
 	Store("---------- END.", Debug)
 
@@ -760,7 +791,12 @@ Method(ERP0, 5)
 
 	// Error
 
-	if (LEqual(arg0, zFFF)) {
+    if (LNotEqual (FNAM, 0))
+    {
+        // Use global filename, set via SETF
+        Store (FNAM, Local1)
+    }
+	elseif (LEqual(arg0, zFFF)) {
 
 		// ATTENTION: dont use zFFF in tests other than TCLD
 

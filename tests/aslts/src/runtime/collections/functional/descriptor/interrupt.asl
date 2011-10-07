@@ -550,7 +550,11 @@ Method(RT18)
 {
 	Name(ts, "RT18")
 
-	Store("TEST: RT18, Interrupt() Interrupt Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "Interrupt Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 23, "p434", p434, p435)
 

@@ -94,7 +94,11 @@ Method(RT08)
 {
 	Name(ts, "RT08")
 
-	Store("TEST: RT08, Memory24() Memory Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "Memory24 Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 3, "p40e", p40e, p40f)
 

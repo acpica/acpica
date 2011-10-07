@@ -329,7 +329,11 @@ Method(RT12)
 {
 	Name(ts, "RT12")
 
-	Store("TEST: RT12, Word Bus Number Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "WordBusNumber Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 25, "p428", p428, p429)
 

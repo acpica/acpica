@@ -80,7 +80,11 @@ Method(RT05)
 {
 	Name(ts, "RT05")
 
-	Store("TEST: RT05, IO Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "IO Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 3, "p408", p408, p409)
 

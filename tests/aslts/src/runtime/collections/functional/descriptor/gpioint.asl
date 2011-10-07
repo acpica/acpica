@@ -72,7 +72,11 @@ Method(RT21)
 {
 	Name(ts, "RT21")
 
-	Store("TEST: RT21, GpioInt Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "GpioInt Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 2, "p452", p452, p453)
 	

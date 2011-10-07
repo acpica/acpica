@@ -2128,7 +2128,11 @@ Method(RT1a)
 {
 	Name(ts, "RT1a")
 
-	Store("TEST: RT1a, Resource To Buffer Conversion Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "Resource To Buffer Conversion Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 3, "p438", p438, p439)
 
@@ -2138,7 +2142,9 @@ Method(RT1c)
 {
 	Name(ts, "RT1c")
 
-	Store("TEST: RT1c, Resource Conversion Macros complex test", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "Resource Conversion Macros complex test", __FILE__)
 
 	Name (RT00, ResourceTemplate () {
 		IRQ (Level, ActiveHigh, Exclusive, IRQ0) {0}

@@ -71,8 +71,11 @@ Method(RT25)
 {
 	Name(ts, "RT25")
 
-	Store("TEST: RT25, UartSerialBus Resource Descriptor Macro", Debug)
-	Store(__FILE__, Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "UartSerialBus Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 2, "p45A", p45A, p45B)
 

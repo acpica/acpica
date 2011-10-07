@@ -412,7 +412,11 @@ Method(RT15)
 {
 	Name(ts, "RT15")
 
-	Store("TEST: RT15, DWord Space Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "DWordSpace Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 27, "p42e", p42e, p42f)
 

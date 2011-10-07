@@ -79,7 +79,11 @@ Method(RT20)
 {
 	Name(ts, "RT20")
 
-	Store("TEST: RT20, Fixed DMA Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "FixedDMA Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 8, "p450", p450, p451)
 	

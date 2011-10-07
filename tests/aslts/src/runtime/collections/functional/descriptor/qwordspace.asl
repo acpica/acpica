@@ -512,7 +512,11 @@ Method(RT14)
 {
 	Name(ts, "RT14")
 
-	Store("TEST: RT14, QWord Space Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "QWordSpace Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 27, "p42c", p42c, p42d)
 

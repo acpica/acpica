@@ -85,7 +85,11 @@ Method(RT07)
 {
 	Name(ts, "RT07")
 
-	Store("TEST: RT07, Short Vendor Resource Descriptor", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "Short Vendor Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 8, "p40c", p40c, p40d)
 }

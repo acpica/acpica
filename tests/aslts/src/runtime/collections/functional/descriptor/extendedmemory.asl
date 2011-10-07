@@ -1296,7 +1296,11 @@ Method(RT13)
 {
 	Name(ts, "RT13")
 
-	Store("TEST: RT13, Extended Memory Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "ExtendedMemory Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 86, "p42a", p42a, p42b)
 

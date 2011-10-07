@@ -171,7 +171,11 @@ Method(RT04)
 {
 	Name(ts, "RT04")
 
-	Store("TEST: RT04, Start/End Dependent Function Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "Start/End DependentFunction Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 14, "p406", p406, p407)
 }

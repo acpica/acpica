@@ -158,7 +158,11 @@ Method(RT19)
 {
 	Name(ts, "RT19")
 
-	Store("TEST: RT19, Generic Register Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "Register Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 13, "p436", p436, p437)
 

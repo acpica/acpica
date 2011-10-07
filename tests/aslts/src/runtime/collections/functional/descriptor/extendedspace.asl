@@ -451,7 +451,11 @@ Method(RT17)
 {
 	Name(ts, "RT17")
 
-	Store("TEST: RT17, Extended Space Resource Descriptor Macro", Debug)
+	// Emit test header, set the filename
+
+	THDR (ts, "ExtendedSpace Resource Descriptor Macro", __FILE__)
+
+    // Main test case for packages above
 
 	m330(ts, 24, "p432", p432, p433)
 
