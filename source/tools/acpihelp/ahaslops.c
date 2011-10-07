@@ -136,9 +136,9 @@ const AH_ASL_OPERATOR       AslOperatorInfo[] =
                                 "Method argument data objects"},
     {"BankField",               "(RegionName, BankName, BankValue, AccessTypeKeyword, LockRuleKeyword, UpdateRuleKeyword) {FieldUnitList}",
                                 "Declare fields in a banked configuration object"},
-    {"Break",                   NULL,
+    {"Break",                   "No parameters",
                                 "Continue following the innermost enclosing While"},
-    {"BreakPoint",              NULL,
+    {"BreakPoint",              "No parameters",
                                 "Used for debugging, stops execution in the debugger"},
     {"Buffer",                  "(BufferSize) {String or ByteList} => Buffer",
                                 "Declare Buffer object"},
@@ -152,7 +152,7 @@ const AH_ASL_OPERATOR       AslOperatorInfo[] =
                                 "Conditional reference to an object"},
     {"Connection",              "(ResourceMacro)",
                                 "Associate connection with FieldUnits within a Field object"},
-    {"Continue",                NULL,
+    {"Continue",                "No parameters",
                                 "Continue innermost enclosing While loop"},
     {"CopyObject",              "(Source, Destination) => DataRefObject",
                                 "Copy and existing object"},
@@ -170,7 +170,7 @@ const AH_ASL_OPERATOR       AslOperatorInfo[] =
                                 "Declare a Word field object of a buffer object"},
     {"DataTableRegion",         "(RegionName, SignatureString, OemIDString, OemTableIDString)",
                                 "Declare a Data Table Region"},
-    {"Debug",                   NULL,
+    {"Debug",                   "No parameters",
                                 "Debugger output"},
     {"Decrement",               "(Minuend) => Integer",
                                 "Decrement an Integer"},
@@ -239,14 +239,16 @@ const AH_ASL_OPERATOR       AslOperatorInfo[] =
                                 "Convert from BCD to numeric"},
     {"Function",                "(FunctionName, ReturnType, ParameterTypes) {TermList}",
                                 "Declare control method"},
-    {"GpioInt",                 "(EdgeLevel, ActiveLevel, Shared, PinConfig, DebounceTimeout, ResourceSource, "
-                                "ResourceSourceIndex, ResourceUsage, DescriptorName, VendorData) {PinList}",
+    {"GpioInt",                 "(InterruptTypeKeyword, InterruptLevelKeyword, ShareTypeKeyword, PinConfigKeyword, "
+                                "DebounceTimeout, ResourceSource, "
+                                "ResourceSourceIndex, ResourceTypeKeyword, DescriptorName, VendorData) {PinList}",
                                 "GPIO Interrupt Connection Resource Descriptor Macro"},
-    {"GpioIo",                  "(Shared, PinConfig, DebounceTimeout, DriveStrength, IoRestriction, ResourceSource, "
-                                "ResourceSourceIndex, ResourceUsage, DescriptorName, VendorData) {PinList}",
+    {"GpioIo",                  "(ShareTypeKeyword, PinConfigKeyword, DebounceTimeout, DriveStrength, "
+                                "IoRestrictionKeyword, ResourceSource, "
+                                "ResourceSourceIndex, ResourceTypeKeyword, DescriptorName, VendorData) {PinList}",
                                 "GPIO I/O Connection Resource Descriptor Macro"},
-    {"I2cSerialBus",            "(SlaveAddress, SlaveMode, ConnectionSpeed, AddressingMode, ResourceSource, "
-                                "ResourceSourceIndex, ResourceUsage, DescriptorName, VendorData)",
+    {"I2cSerialBus",            "(SlaveAddress, SlaveModeKeyword, ConnectionSpeed, AddressingModeKeyword, ResourceSource, "
+                                "ResourceSourceIndex, ResourceTypeKeyword, DescriptorName, VendorData)",
                                 "I2C Serial Bus Connection Resource Descriptor Macro"},
     {"If",                      "(Predicate) {TermList}",
                                 "Conditional execution"},
@@ -317,7 +319,7 @@ const AH_ASL_OPERATOR       AslOperatorInfo[] =
                                 "Declare a Named object"},
     {"NAnd",                    "(Source1, Source2, Result) => Integer",
                                 "Integer Bitwise Nand"},
-    {"NoOp",                    NULL,
+    {"NoOp",                    "No parameters",
                                 "No operation"},
     {"NOr",                     "(Source1, Source2, Result) => Integer",
                                 "Integer Bitwise Nor"},
@@ -386,9 +388,9 @@ const AH_ASL_OPERATOR       AslOperatorInfo[] =
                                 "Get the size of a buffer}, string}, or package"},
     {"Sleep",                   "(MilliSeconds)",
                                 "Sleep n milliseconds (yields the processor)"},
-    {"SpiSerialBus",            "(DeviceSelection, DeviceSelectionPolarity, WireMode, DataBitLength, SlaveMode, "
-                                "ConnectionSpeed, ClockPolarity, ClockPhase, ResourceSource, ResourceSourceIndex, "
-                                "ResourceUsage, DescriptorName, VendorData)",
+    {"SpiSerialBus",            "(DeviceSelection, PolarityKeyword, WireModeKeyword, DataBitLength, SlaveModeKeyword, "
+                                "ConnectionSpeed, ClockPolarityKeyword, ClockPhaseKeyword, ResourceSource, ResourceSourceIndex, "
+                                "ResourceTypeKeyword, DescriptorName, VendorData)",
                                 "SPI Serial Bus Connection Resource Descriptor Macro"},
     {"Stall",                   "(MicroSeconds)",
                                 "Delay n microseconds (does not yield the processor)"},
@@ -420,9 +422,9 @@ const AH_ASL_OPERATOR       AslOperatorInfo[] =
                                 "Copy ASCII string from buffer"},
     {"ToUUID",                  "(AsciiString) => Buffer",
                                 "Convert Ascii string to UUID"},
-    {"UartSerialBus",           "(ConnectionSpeed, BitsPerByte, StopBits, LinesInUse, IsBigEndian, Parity, "
-                                "FlowControl, ReceiveBufferSize, TransmitBufferSize, ResourceSource, "
-                                "ResourceSourceIndex, ResourceUsage, DescriptorName, VendorData)",
+    {"UartSerialBus",           "(ConnectionSpeed, ByteLengthKeyword, StopBitsKeyword, LinesInUse, EndianKeyword, ParityKeyword, "
+                                "FlowControlKeyword, ReceiveBufferSize, TransmitBufferSize, ResourceSource, "
+                                "ResourceSourceIndex, ResourceTypeKeyword, DescriptorName, VendorData)",
                                 "UART Serial Bus Connection Resource Descriptor Macro"},
     {"Unicode",                 "(String) => Buffer",
                                 "String to Unicode conversion macro"},
