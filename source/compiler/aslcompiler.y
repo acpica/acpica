@@ -456,6 +456,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP___DATE__
 %token <i> PARSEOP___FILE__
 %token <i> PARSEOP___LINE__
+%token <i> PARSEOP___PATH__
 
 /*
  * Production names
@@ -2398,6 +2399,7 @@ ConstExprTerm
     | PARSEOP___DATE__              {$$ = TrCreateConstantLeafNode (PARSEOP___DATE__);}
     | PARSEOP___FILE__              {$$ = TrCreateConstantLeafNode (PARSEOP___FILE__);}
     | PARSEOP___LINE__              {$$ = TrCreateConstantLeafNode (PARSEOP___LINE__);}
+    | PARSEOP___PATH__              {$$ = TrCreateConstantLeafNode (PARSEOP___PATH__);}
     ;
 
 /* OptionalCount must appear before ByteList or an incorrect reduction will result */

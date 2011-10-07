@@ -467,6 +467,7 @@ NamePathTail                [.]{NameSeg}
 "__DATE__"                  { count (0); return (PARSEOP___DATE__); }
 "__FILE__"                  { count (0); return (PARSEOP___FILE__); }
 "__LINE__"                  { count (0); return (PARSEOP___LINE__); }
+"__PATH__"                  { count (0); return (PARSEOP___PATH__); }
 
 "{"                         { count (0); return('{'); }
 "}"                         { count (0); return('}'); }
