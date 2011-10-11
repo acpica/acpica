@@ -343,6 +343,7 @@ ACPI_EXTERN BOOLEAN                     AcpiGbl_AcpiHardwarePresent;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_EventsInitialized;
 ACPI_EXTERN UINT8                       AcpiGbl_OsiData;
 ACPI_EXTERN ACPI_INTERFACE_INFO        *AcpiGbl_SupportedInterfaces;
+UINT8       ACPI_INIT_GLOBAL            (AcpiGbl_NoResourceDisassembly, FALSE);
 
 
 #ifndef DEFINE_ACPI_GLOBALS

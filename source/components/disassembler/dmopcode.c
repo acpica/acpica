@@ -498,16 +498,19 @@ AcpiDmDisassembleOneOp (
          * types of buffers, we have to closely look at the data in the
          * buffer to determine the type.
          */
-        Status = AcpiDmIsResourceTemplate (Op);
-        if (ACPI_SUCCESS (Status))
+        if (!AcpiGbl_NoResourceDisassembly)
         {
-            Op->Common.DisasmOpcode = ACPI_DASM_RESOURCE;
-            AcpiOsPrintf ("ResourceTemplate");
-            break;
-        }
-        else if (Status == AE_AML_NO_RESOURCE_END_TAG)
-        {
-            AcpiOsPrintf ("/**** Is ResourceTemplate, but EndTag not at buffer end ****/ ");
+            Status = AcpiDmIsResourceTemplate (Op);
+            if (ACPI_SUCCESS (Status))
+            {
+                Op->Common.DisasmOpcode = ACPI_DASM_RESOURCE;
+                AcpiOsPrintf ("ResourceTemplate");
+                break;
+            }
+            else if (Status == AE_AML_NO_RESOURCE_END_TAG)
+            {
+                AcpiOsPrintf ("/**** Is ResourceTemplate, but EndTag not at buffer end ****/ ");
+            }
         }
 
         if (AcpiDmIsUnicodeBuffer (Op))
