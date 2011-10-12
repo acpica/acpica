@@ -426,6 +426,14 @@ AcpiExCreateRegion (
     RegionObj2 = ObjDesc->Common.NextObject;
     RegionObj2->Extra.AmlStart = AmlStart;
     RegionObj2->Extra.AmlLength = AmlLength;
+    if (WalkState->ScopeInfo)
+    {
+        RegionObj2->Extra.ScopeNode = WalkState->ScopeInfo->Scope.Node;
+    }
+    else
+    {
+        RegionObj2->Extra.ScopeNode = Node;
+    }
 
     /* Init the region from the operands */
 

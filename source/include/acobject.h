@@ -535,6 +535,7 @@ typedef struct acpi_object_extra
 {
     ACPI_OBJECT_COMMON_HEADER
     ACPI_NAMESPACE_NODE             *Method_REG;        /* _REG method for this region (if any) */
+    ACPI_NAMESPACE_NODE             *ScopeNode;
     void                            *RegionContext;     /* Region-specific data */
     UINT8                           *AmlStart;
     UINT32                          AmlLength;
