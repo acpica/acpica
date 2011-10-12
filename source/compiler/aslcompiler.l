@@ -608,10 +608,10 @@ NamePathTail                [.]{NameSeg}
 
     /* StopBitsKeyword: Resource Descriptors (ACPI 5.0) */
 
-"StopBitsTwo"               { count (0); return (PARSEOP_STOPBITS_TWO); }
-"StopBitsOnePlusHalf"       { count (0); return (PARSEOP_STOPBITS_ONEPLUSHALF); }
 "StopBitsOne"               { count (0); return (PARSEOP_STOPBITS_ONE); }
-"StopBitsNone"              { count (0); return (PARSEOP_STOPBITS_NONE); }
+"StopBitsOnePlusHalf"       { count (0); return (PARSEOP_STOPBITS_ONEPLUSHALF); }
+"StopBitsTwo"               { count (0); return (PARSEOP_STOPBITS_TWO); }
+"StopBitsZero"              { count (0); return (PARSEOP_STOPBITS_ZERO); }
 
     /* TransferWidthKeyword: DMA Widths - Fixed DMA Resource Descriptor (ACPI 5.0) */
 

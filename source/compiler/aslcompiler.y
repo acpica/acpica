@@ -461,10 +461,10 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_STALL
 %token <i> PARSEOP_STARTDEPENDENTFN
 %token <i> PARSEOP_STARTDEPENDENTFN_NOPRI
-%token <i> PARSEOP_STOPBITS_NONE
 %token <i> PARSEOP_STOPBITS_ONE
 %token <i> PARSEOP_STOPBITS_ONEPLUSHALF
 %token <i> PARSEOP_STOPBITS_TWO
+%token <i> PARSEOP_STOPBITS_ZERO
 %token <i> PARSEOP_STORE
 %token <s> PARSEOP_STRING_LITERAL
 %token <i> PARSEOP_SUBTRACT
@@ -2465,7 +2465,7 @@ StopBitsKeyword
     : PARSEOP_STOPBITS_TWO                  {$$ = TrCreateLeafNode (PARSEOP_STOPBITS_TWO);}
     | PARSEOP_STOPBITS_ONEPLUSHALF          {$$ = TrCreateLeafNode (PARSEOP_STOPBITS_ONEPLUSHALF);}
     | PARSEOP_STOPBITS_ONE                  {$$ = TrCreateLeafNode (PARSEOP_STOPBITS_ONE);}
-    | PARSEOP_STOPBITS_NONE                 {$$ = TrCreateLeafNode (PARSEOP_STOPBITS_NONE);}
+    | PARSEOP_STOPBITS_ZERO                 {$$ = TrCreateLeafNode (PARSEOP_STOPBITS_ZERO);}
     ;
 
 TranslationKeyword
