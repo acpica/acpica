@@ -1243,8 +1243,11 @@ ACPI_THREAD_ID
 AcpiOsGetThreadId (
     void)
 {
+    pthread_t               thread;
 
-    return (ACPI_CAST_PTHREAD_T (pthread_self()));
+
+    thread = pthread_self();
+    return (ACPI_CAST_PTHREAD_T (thread));
 }
 
 
