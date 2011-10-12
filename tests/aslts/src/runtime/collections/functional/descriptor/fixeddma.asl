@@ -83,9 +83,17 @@ Method(RT20)
 
 	THDR (ts, "FixedDMA Resource Descriptor Macro", __FILE__)
 
+    // The main test packages must have the same number of entries
+    
+    If (LNotEqual (SizeOf (p450), SizeOf (p451)))
+    {
+        err (ts, 177, 0, 0, 0, 0, "Incorrect package length")
+        Return ()
+    }
+
     // Main test case for packages above
 
-	m330(ts, 8, "p450", p450, p451)
+	m330(ts, SizeOf (p450), "p450", p450, p451)
 	
     // Check resource descriptor tag offsets
 

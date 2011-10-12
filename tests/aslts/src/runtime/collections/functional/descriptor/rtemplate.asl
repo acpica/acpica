@@ -31,11 +31,11 @@
  */
 
 Name(z029, 29)
+Name(lpN0, 0)
+Name(lpC0, 0)
 
 Method(m330, 5)	// ts, len, msg, op, res
 {
-	Name(lpN0, 0)
-	Name(lpC0, 0)
 
 	Store(arg1, lpN0)
 	Store(0, lpC0)
