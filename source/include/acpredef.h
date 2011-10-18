@@ -313,7 +313,9 @@ static const ACPI_PREDEFINED_INFO     PredefinedNames[] =
     {{"_CID", 0, ACPI_RTYPE_INTEGER | ACPI_RTYPE_STRING | ACPI_RTYPE_PACKAGE}}, /* Variable-length (Ints/Strs) */
                     {{{ACPI_PTYPE1_VAR, ACPI_RTYPE_INTEGER | ACPI_RTYPE_STRING, 0,0}, 0,0}},
 
-    {{"_CLS", 0, ACPI_RTYPE_INTEGER}},
+    {{"_CLS", 0, ACPI_RTYPE_PACKAGE}}, /* Fixed-length (3 Int) */
+                    {{{ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 3,0}, 0,0}},
+
     {{"_CPC", 0, ACPI_RTYPE_PACKAGE}}, /* Variable-length (Ints/Bufs) */
                     {{{ACPI_PTYPE1_VAR, ACPI_RTYPE_INTEGER | ACPI_RTYPE_BUFFER, 0,0}, 0,0}},
 
