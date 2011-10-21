@@ -51,15 +51,25 @@ build_acpi_tools() {
 	cd ${generation_dir}
 	rm -f $tmp_iasl $tmp_acpiexec
 
-	# Build iASL compiler
+	# Build native-width iASL compiler and acpiexec
 	make clean
-	make -j16 iasl
-	cp bin/iasl $tmp_iasl
+	make iasl
+	make acpiexec
 
-	# Build AcpiExec utility
-	make -j16 acpiexec
-	cp bin/acpiexec $tmp_acpiexec
+	if [ -d "bin64" ] && [ -f "bin64/iasl" ]; then
+		echo "Installing 64-bit tools"
+		cp bin64/iasl $tmp_iasl
+		cp bin64/acpiexec $tmp_acpiexec
+	elif [ -d "bin32" ] && [ -f "bin32/iasl" ]; then
+		echo "Installing 32-bit tools"
+		cp bin32/iasl $tmp_iasl
+		cp bin32/acpiexec $tmp_acpiexec
+	else
+		echo "Could not find iASL/acpiexec tools"
+		exit
+	fi
 
+	# Ensure that the tools are available
 	if [ ! -f $tmp_iasl ] ; then
 		echo "iasl compiler not found"
 		exit
@@ -94,13 +104,16 @@ run_aslts() {
 	rm -f $tmp_iasl $tmp_acpiexec
 }
 
+NPARAM=$#
 
 # Main - arguments are optional
-if [ $# == 2 ] ; then
+
+if [ $NPARAM -eq 2 ]; then
 	setup_environment $1 $2
 else
 	setup_environment aslts ../generate/unix
 fi
+
 
 build_acpi_tools
 run_aslts
