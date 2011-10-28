@@ -179,6 +179,10 @@ AcpiDbDisplayTableInfo (
     char                    *TableArg);
 
 void
+AcpiDbDisplayTemplate (
+    char                    *BufferArg);
+
+void
 AcpiDbUnloadAcpiTable (
     char                    *TableArg,
     char                    *InstanceArg);

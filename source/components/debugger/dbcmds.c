@@ -528,6 +528,78 @@ AcpiDbDisplayInterfaces (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDbDisplayTemplate
+ *
+ * PARAMETERS:  BufferArg           - Buffer name or addrss
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Dump a buffer that contains a resource template
+ *
+ ******************************************************************************/
+
+void
+AcpiDbDisplayTemplate (
+    char                    *BufferArg)
+{
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_STATUS             Status;
+    ACPI_BUFFER             ReturnObj;
+
+
+    /* Translate BufferArg to an Named object */
+
+    Node = AcpiDbConvertToNode (BufferArg);
+    if (!Node || (Node == AcpiGbl_RootNode))
+    {
+        AcpiOsPrintf ("Invalid argument: %s\n", BufferArg);
+        return;
+    }
+
+    /* We must have a buffer object */
+
+    if (Node->Type != ACPI_TYPE_BUFFER)
+    {
+        AcpiOsPrintf ("Not a Buffer object, cannot be a template: %s\n",
+            BufferArg);
+        return;
+    }
+
+    ReturnObj.Length = ACPI_DEBUG_BUFFER_SIZE;
+    ReturnObj.Pointer = AcpiGbl_DbBuffer;
+
+    /* Attempt to convert the raw buffer to a resource list */
+
+    Status = AcpiRsCreateResourceList (Node->Object, &ReturnObj);
+
+    AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
+    AcpiDbgLevel |= ACPI_LV_RESOURCES;
+
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("Could not convert Buffer to a resource list: %s, %s\n",
+            BufferArg, AcpiFormatException (Status));
+        goto DumpBuffer;
+    }
+
+    /* Now we can dump the resource list */
+
+    AcpiRsDumpResourceList (ACPI_CAST_PTR (ACPI_RESOURCE,
+        ReturnObj.Pointer));
+
+DumpBuffer:
+    AcpiOsPrintf ("\nRaw data buffer:\n");
+    AcpiUtDumpBuffer ((UINT8 *) Node->Object->Buffer.Pointer,
+        Node->Object->Buffer.Length,
+        DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+
+    AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
+    return;
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmCompareAmlResources
  *
  * PARAMETERS:  Aml1Buffer          - Contains first resource list
