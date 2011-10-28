@@ -409,6 +409,8 @@ AcpiExRegisterOverflow (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT64                  Value)
 {
+    ACPI_FUNCTION_NAME (ExRegisterOverflow);
+
 
     if (ObjDesc->CommonField.BitLength >= ACPI_INTEGER_BIT_SIZE)
     {
@@ -425,6 +427,11 @@ AcpiExRegisterOverflow (
          * The Value is larger than the maximum value that can fit into
          * the register.
          */
+        ACPI_ERROR ((AE_INFO,
+            "Index value 0x%8.8X%8.8X overflows field width 0x%X",
+            ACPI_FORMAT_UINT64 (Value),
+            ObjDesc->CommonField.BitLength));
+
         return (TRUE);
     }
 
