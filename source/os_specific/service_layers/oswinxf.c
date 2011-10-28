@@ -1234,6 +1234,8 @@ AcpiOsReadPort (
     UINT32                  *Value,
     UINT32                  Width)
 {
+    ACPI_FUNCTION_NAME (OsReadPort);
+
 
     switch (Width)
     {
@@ -1250,6 +1252,7 @@ AcpiOsReadPort (
         break;
 
     default:
+        ACPI_ERROR ((AE_INFO, "Bad width parameter: %X", Width));
         return (AE_BAD_PARAMETER);
     }
 
@@ -1277,8 +1280,16 @@ AcpiOsWritePort (
     UINT32                  Value,
     UINT32                  Width)
 {
+    ACPI_FUNCTION_NAME (OsWritePort);
 
-    return (AE_OK);
+
+    if ((Width == 8) || (Width == 16) || (Width == 32))
+    {
+        return (AE_OK);
+    }
+
+    ACPI_ERROR ((AE_INFO, "Bad width parameter: %X", Width));
+    return (AE_BAD_PARAMETER);
 }
 
 
