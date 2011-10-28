@@ -1104,7 +1104,7 @@ ACPI_STATUS (*ACPI_ADR_SPACE_HANDLER) (
 
 #define ACPI_DEFAULT_HANDLER            NULL
 
-/* Special Context field for Generic Serial Bus (ACPI 5.0) */
+/* Special Context field for GenericSerialBus/GeneralPurposeIo (ACPI 5.0) */
 
 typedef struct acpi_gsbus_context
 {
