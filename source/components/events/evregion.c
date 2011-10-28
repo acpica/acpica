@@ -578,12 +578,14 @@ AcpiEvAddressSpaceDispatch (
 
 
     /*
-     * Special handling for Generic Serial Bus. There are two extra
-     * parameters that must be passed to the handler via the context:
+     * Special handling for GenericSerialBus and GeneralPurposeIo:
+     * There are two extra parameters that must be passed to the
+     * handler via the context:
      *   1) Connection buffer, a resource template from Connection() op.
      *   2) Actual access length from the AccessAs() op.
      */
-    if ((RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GSBUS) &&
+    if (((RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GSBUS) ||
+            (RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GPIO)) &&
         Context &&
         FieldObj)
     {
