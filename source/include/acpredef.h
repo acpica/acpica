@@ -336,6 +336,7 @@ static const ACPI_PREDEFINED_INFO     PredefinedNames[] =
     {{"_EJ3", 1, 0}},
     {{"_EJ4", 1, 0}},
     {{"_EJD", 0, ACPI_RTYPE_STRING}},
+    {{"_ERR", 3, ACPI_RTYPE_INTEGER}}, /* Internal use only, used by ACPICA test suites */
     {{"_FDE", 0, ACPI_RTYPE_BUFFER}},
     {{"_FDI", 0, ACPI_RTYPE_PACKAGE}}, /* Fixed-length (16 Int) */
                     {{{ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 16,0}, 0,0}},
