@@ -353,7 +353,6 @@ AcpiDsGetFieldNames (
             Info->FieldBitPosition = (UINT32) Position;
             break;
 
-
         case AML_INT_ACCESSFIELD_OP:
         case AML_INT_EXTACCESSFIELD_OP:
             /*
@@ -383,7 +382,17 @@ AcpiDsGetFieldNames (
             break;
 
         case AML_INT_CONNECTION_OP:
+            /*
+             * Clear any previous connection. New connection is used for all
+             * fields that follow, similar to AccessAs
+             */
+            Info->ResourceBuffer = NULL;
+            Info->ConnectionNode = NULL;
 
+            /*
+             * A Connection() is either an actual resource descriptor (buffer)
+             * or a named reference to a resource template
+             */
             Child = Arg->Common.Value.Arg;
             if (Child->Common.AmlOpcode == AML_INT_BYTELIST_OP)
             {
@@ -404,7 +413,6 @@ AcpiDsGetFieldNames (
                 }
             }
             break;
-
 
         case AML_INT_NAMEDFIELD_OP:
 
@@ -455,7 +463,6 @@ AcpiDsGetFieldNames (
 
             Info->FieldBitPosition += Info->FieldBitLength;
             break;
-
 
         default:
 
