@@ -1260,6 +1260,10 @@ AnOtherSemanticAnalysisWalkBegin (
          */
         ArgNode = Op->Asl.Child;        /* 1st child is the OpRegion Name */
         Node = ArgNode->Asl.Node;       /* OpRegion namespace node */
+        if (!Node)
+        {
+            break;
+        }
 
         ArgNode = Node->Op;             /* OpRegion definition */
         ArgNode = ArgNode->Asl.Child;   /* First child is the OpRegion Name */
