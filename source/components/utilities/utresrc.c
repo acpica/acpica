@@ -264,7 +264,7 @@ const char                      *AcpiGbl_IorDecode[] =
     "IoRestrictionNone",
     "IoRestrictionInputOnly",
     "IoRestrictionOutputOnly",
-    "/* UNKNOWN IoRestriction */"
+    "IoRestrictionNoneAndPreserve"
 };
 
 const char                      *AcpiGbl_DtsDecode[] =

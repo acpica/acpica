@@ -488,6 +488,7 @@ NamePathTail                [.]{NameSeg}
 "IoRestrictionNone"         { count (0); return (PARSEOP_IORESTRICT_NONE); }
 "IoRestrictionInputOnly"    { count (0); return (PARSEOP_IORESTRICT_IN); }
 "IoRestrictionOutputOnly"   { count (0); return (PARSEOP_IORESTRICT_OUT); }
+"IoRestrictionNoneAndPreserve"   { count (0); return (PARSEOP_IORESTRICT_PRESERVE); }
 
     /* LockRuleKeyword: Global Lock use for Field Operator */
 

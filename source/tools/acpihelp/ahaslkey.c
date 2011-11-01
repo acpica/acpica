@@ -160,7 +160,8 @@ const AH_ASL_KEYWORD        AslKeywordInfo[] =
     {"IoDecodeKeyword", "I/O Decoding - IO Resource Descriptor",
         ":= Decode16 | Decode10"},
     {"IoRestrictionKeyword", "I/O Restriction - GPIO Resource Descriptors",
-        ":= IoRestrictionNone | IoRestrictionInputOnly | IoRestrictionOutputOnly"},
+        ":= IoRestrictionNone | IoRestrictionInputOnly | "
+        "IoRestrictionOutputOnly | IoRestrictionNoneAndPreserve"},
     {"LockRuleKeyword", "Global Lock use for Field Operator",
         ":= Lock | NoLock"},
     {"MatchOpKeyword", "Types for Match Operator",

@@ -330,6 +330,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* IORESTRICT_IN */             OP_TABLE_ENTRY (AML_BYTE_OP,                1,                              0,                  0),
 /* IORESTRICT_NONE */           OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* IORESTRICT_OUT */            OP_TABLE_ENTRY (AML_BYTE_OP,                2,                              0,                  0),
+/* IORESTRICT_PRESERVE */       OP_TABLE_ENTRY (AML_BYTE_OP,                3,                              0,                  0),
 /* IRQ */                       OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
 /* IRQNOFLAGS */                OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
 /* LAND */                      OP_TABLE_ENTRY (AML_LAND_OP,                0,                              0,                  ACPI_BTYPE_INTEGER),

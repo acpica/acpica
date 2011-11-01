@@ -524,9 +524,10 @@ typedef struct acpi_resource_gpio
 
 /* Values for IoRestriction field above */
 
-#define ACPI_IO_INPUT_OUTPUT                    0
-#define ACPI_IO_INPUT_ONLY                      1
-#define ACPI_IO_OUTPUT_ONLY                     2
+#define ACPI_IO_RESTRICT_NONE                   0
+#define ACPI_IO_RESTRICT_INPUT                  1
+#define ACPI_IO_RESTRICT_OUTPUT                 2
+#define ACPI_IO_RESTRICT_NONE_PRESERVE          3
 
 
 /* Common structure for I2C, SPI, and UART serial descriptors */

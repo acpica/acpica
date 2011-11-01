@@ -321,6 +321,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_IORESTRICT_IN
 %token <i> PARSEOP_IORESTRICT_NONE
 %token <i> PARSEOP_IORESTRICT_OUT
+%token <i> PARSEOP_IORESTRICT_PRESERVE
 %token <i> PARSEOP_IRQ
 %token <i> PARSEOP_IRQNOFLAGS
 %token <i> PARSEOP_LAND
@@ -2347,6 +2348,7 @@ IoRestrictionKeyword
     : PARSEOP_IORESTRICT_IN                 {$$ = TrCreateLeafNode (PARSEOP_IORESTRICT_IN);}
     | PARSEOP_IORESTRICT_OUT                {$$ = TrCreateLeafNode (PARSEOP_IORESTRICT_OUT);}
     | PARSEOP_IORESTRICT_NONE               {$$ = TrCreateLeafNode (PARSEOP_IORESTRICT_NONE);}
+    | PARSEOP_IORESTRICT_PRESERVE           {$$ = TrCreateLeafNode (PARSEOP_IORESTRICT_PRESERVE);}
     ;
 
 LockRuleKeyword
