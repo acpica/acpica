@@ -1026,11 +1026,12 @@ AeRegionHandler (
                 Length = 32;
                 break;
 
-// (-2) for status/length - is this correct?
 
             case AML_FIELD_ATTRIB_MULTIBYTE:
             case AML_FIELD_ATTRIB_RAW_BYTES:
             case AML_FIELD_ATTRIB_RAW_PROCESS:
+
+                /* (-2) for status/length */
                 Length = MyContext->AccessLength - 2;
                 break;
 
@@ -1058,11 +1059,11 @@ AeRegionHandler (
                 Length = 32;
                 break;
 
-// (-2) for status/length - is this correct?
-
             case AML_FIELD_ATTRIB_MULTIBYTE:
             case AML_FIELD_ATTRIB_RAW_BYTES:
             case AML_FIELD_ATTRIB_RAW_PROCESS:
+
+                /* (-2) for status/length */
                 Length = MyContext->AccessLength - 2;
                 break;
 
