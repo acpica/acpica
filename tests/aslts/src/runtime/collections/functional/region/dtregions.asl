@@ -73,14 +73,13 @@ Device(DTR0) {
 
 	// Specific DataTable Regions availability notification Method
 	// \DTR0._REG(RegionSpaceKeyword, Flag)
+    OperationRegion(JUNK, SystemMemory, 0x2000, 0x100)
 	Method(_REG, 2)
 	{
 		Name(dbgf, 1)
 
 		if (dbgf) {
-			Store("ASLTS \\DTR0._REG:", Debug)
-			Store(arg0, Debug)
-			Store(arg1, Debug)
+		    DNAM (Arg0, Arg1, "\\DTR0._REG")
 		}
 
 		/*
@@ -136,7 +135,7 @@ Method(m7f1, 1)
 
 	Name(IFLG, 0)   // Counter of the Invalid Flags
 
-	Name(VRSK, 0)	// Counter of the Valid RSK 0x07
+	Name(VRSK, 0)	// Counter of the Valid RSK 0x7E (DataTableRegion)
 	Name(ERSK, 2)	// Expected Counters of the Valid RSK
 
 	Name(VFLG,		// Counters of the Valid Flags
@@ -144,17 +143,17 @@ Method(m7f1, 1)
 
 	// Specific DataTable Regions availability notification Method
 	// \m7f1._REG(RegionSpaceKeyword, Flag)
+    OperationRegion(JUNK, SystemMemory, 0x2000, 0x100)
 	Method(_REG, 2)
 	{
 		Name(dbgf, 1)
 
 		if (dbgf) {
-			Store("ASLTS \\m7f1._REG:", Debug)
-			Store(arg0, Debug)
-			Store(arg1, Debug)
+		    DNAM (Arg0, Arg1, "\\m7f1._REG")
 		}
 
-		if (LEqual(arg0, 0x07)) {
+        // DataTableRegion is SpaceID 0x7E
+		if (LEqual(arg0, 0x7E)) {
 			Increment(VRSK)
 		} else {
 			Increment(IRSK)
@@ -367,11 +366,7 @@ Method(DRC0)
 
 	// Dynamic DataTableRegions
 	SRMT("m7f1")
-	if (y217) {
-		m7f1(ts)
-	} else {
-		BLCK()
-	}
+    m7f1(ts)
 
 	// DataTableRegion Lengths
 	SRMT("m7f2")

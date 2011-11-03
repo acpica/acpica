@@ -363,14 +363,14 @@ Method(m71e, 1)
 	m72f(arg0, 1, "pp0e", pp0e)
 }
 
-// Check BufferAcc access
+// Check BufferAcc access for SMBus
 // m71f(CallChain)
 // CallChain: String
 Method(m71f, 1)
 {
 	Concatenate(arg0, "-m71f", arg0)
 
-	Store("TEST: m71f, Check Region Fields specified for BufferAcc access", Debug)
+	Store("TEST: m71f, Check SMBus Region Fields (BufferAcc access)", Debug)
 
 	/*
 	 * Examples from Acpi Spec (chapter 13.7 Using the SMBus Protocols)
@@ -425,23 +425,23 @@ Method(m751, 1)
 	Store(Store(BUFF, FLD0), BUFR)		// Invoke Write Quick transaction
 
 	if (LNotEqual(OB10, 0x00)) {
-		err(arg0, z143, 1, 0, 0, OB10, 0x00)
+		err(arg0, z143, 4, 0, 0, OB10, 0x00)
 	}
 	if (LNotEqual(LEN0, 0x00)) {
-		err(arg0, z143, 2, 0, 0, LEN0, 0x00)
+		err(arg0, z143, 8, 0, 0, LEN0, 0x00)
 	}
 	if (LNotEqual(DAT0, 0x00)) {
-		err(arg0, z143, 3, 0, 0, DAT0, 0x00)
+		err(arg0, z143, 12, 0, 0, DAT0, 0x00)
 	}
 
 	if (LNotEqual(OB11, 0x7A)) {
-		err(arg0, z143, 4, 0, 0, OB11, 0x7A)
+		err(arg0, z143, 16, 0, 0, OB11, 0x7A)
 	}
 	if (LNotEqual(LEN1, 0x00)) {
-		err(arg0, z143, 5, 0, 0, LEN1, 0x00)
+		err(arg0, z143, 20, 0, 0, LEN1, 0x00)
 	}
 	if (LNotEqual(DAT1, 0x00)) {
-		err(arg0, z143, 6, 0, 0, DAT1, 0x00)
+		err(arg0, z143, 24, 0, 0, DAT1, 0x00)
 	}
 
 	Store(0x00, OB10)
@@ -452,13 +452,13 @@ Method(m751, 1)
 	Store(FLD0, BUFF)					// Invoke Read Quick transaction
 
 	if (LNotEqual(OB10, 0x7A)) {
-		err(arg0, z143, 7, 0, 0, OB10, 0x7A)
+		err(arg0, z143, 28, 0, 0, OB10, 0x7A)
 	}
 	if (LNotEqual(LEN0, 0x01)) {
-		err(arg0, z143, 8, 0, 0, LEN0, 0x01)
+		err(arg0, z143, 32, 0, 0, LEN0, 0x01)
 	}
 	if (LNotEqual(DAT0, 0xA0)) {
-		err(arg0, z143, 9, 0, 0, DAT0, 0xA0)
+		err(arg0, z143, 36, 0, 0, DAT0, 0xA0)
 	}
 }
 
@@ -492,36 +492,36 @@ Method(m752, 1)
 	Store(Store(BUFF, FLD0), BUFR)		// Invoke a Send Byte transaction
 
 	if (LNotEqual(OB10, 0x00)) {
-		err(arg0, z143, 10, 0, 0, OB10, 0x00)
+		err(arg0, z143, 40, 0, 0, OB10, 0x00)
 	}
 	if (LNotEqual(LEN0, 0x00)) {
-		err(arg0, z143, 11, 0, 0, LEN0, 0x00)
+		err(arg0, z143, 44, 0, 0, LEN0, 0x00)
 	}
 	if (LNotEqual(DAT0, 0x16)) {
-		err(arg0, z143, 12, 0, 0, DAT0, 0x16)
+		err(arg0, z143, 48, 0, 0, DAT0, 0x16)
 	}
 
 	if (LNotEqual(OB11, 0x7A)) {
-		err(arg0, z143, 13, 0, 0, OB11, 0x7A)
+		err(arg0, z143, 52, 0, 0, OB11, 0x7A)
 	}
 	if (LNotEqual(LEN1, 0x00)) {
-		err(arg0, z143, 14, 0, 0, LEN1, 0x00)
+		err(arg0, z143, 56, 0, 0, LEN1, 0x00)
 	}
 	if (LNotEqual(DAT1, 0x16)) {
-		err(arg0, z143, 15, 0, 0, DAT1, 0x00)
+		err(arg0, z143, 60, 0, 0, DAT1, 0x00)
 	}
 
 	/* Receive a byte of data from the device */
 	Store(FLD0, BUFF)					// Invoke a Receive Byte transaction
 
 	if (LNotEqual(OB10, 0x7A)) {
-		err(arg0, z143, 16, 0, 0, OB10, 0x7A)
+		err(arg0, z143, 64, 0, 0, OB10, 0x7A)
 	}
 	if (LNotEqual(LEN0, 0x01)) {
-		err(arg0, z143, 17, 0, 0, LEN0, 0x01)
+		err(arg0, z143, 68, 0, 0, LEN0, 0x01)
 	}
 	if (LNotEqual(DAT0, 0xA0)) {
-		err(arg0, z143, 18, 0, 0, DAT0, 0xA0)
+		err(arg0, z143, 72, 0, 0, DAT0, 0xA0)
 	}
 }
 
@@ -557,36 +557,36 @@ Method(m753, 1)
 	Store(Store(BUFF, FLD2), BUFR)		// Invoke a Write Byte transaction
 
 	if (LNotEqual(OB10, 0x00)) {
-		err(arg0, z143, 19, 0, 0, OB10, 0x00)
+		err(arg0, z143, 76, 0, 0, OB10, 0x00)
 	}
 	if (LNotEqual(LEN0, 0x00)) {
-		err(arg0, z143, 20, 0, 0, LEN0, 0x00)
+		err(arg0, z143, 80, 0, 0, LEN0, 0x00)
 	}
 	if (LNotEqual(DAT0, 0x16)) {
-		err(arg0, z143, 21, 0, 0, DAT0, 0x16)
+		err(arg0, z143, 84, 0, 0, DAT0, 0x16)
 	}
 
 	if (LNotEqual(OB11, 0x7A)) {
-		err(arg0, z143, 22, 0, 0, OB11, 0x7A)
+		err(arg0, z143, 88, 0, 0, OB11, 0x7A)
 	}
 	if (LNotEqual(LEN1, 0x00)) {
-		err(arg0, z143, 23, 0, 0, LEN1, 0x00)
+		err(arg0, z143, 92, 0, 0, LEN1, 0x00)
 	}
 	if (LNotEqual(DAT1, 0x16)) {
-		err(arg0, z143, 24, 0, 0, DAT1, 0x00)
+		err(arg0, z143, 96, 0, 0, DAT1, 0x00)
 	}
 
 	/* Read a byte of data from the device using command value 1 */
 	Store(FLD1, BUFF)					// Invoke a Read Byte transaction
 
 	if (LNotEqual(OB10, 0x7A)) {
-		err(arg0, z143, 25, 0, 0, OB10, 0x7A)
+		err(arg0, z143, 100, 0, 0, OB10, 0x7A)
 	}
 	if (LNotEqual(LEN0, 0x01)) {
-		err(arg0, z143, 26, 0, 0, LEN0, 0x01)
+		err(arg0, z143, 104, 0, 0, LEN0, 0x01)
 	}
 	if (LNotEqual(DAT0, 0xA0)) {
-		err(arg0, z143, 27, 0, 0, DAT0, 0xA0)
+		err(arg0, z143, 108, 0, 0, DAT0, 0xA0)
 	}
 }
 
@@ -622,36 +622,36 @@ Method(m754, 1)
 	Store(Store(BUFF, FLD2), BUFR)		// Invoke a Write Word transaction
 
 	if (LNotEqual(OB10, 0x00)) {
-		err(arg0, z143, 28, 0, 0, OB10, 0x00)
+		err(arg0, z143, 112, 0, 0, OB10, 0x00)
 	}
 	if (LNotEqual(LEN0, 0x00)) {
-		err(arg0, z143, 29, 0, 0, LEN0, 0x00)
+		err(arg0, z143, 116, 0, 0, LEN0, 0x00)
 	}
 	if (LNotEqual(DAT0, 0x5416)) {
-		err(arg0, z143, 30, 0, 0, DAT0, 0x16)
+		err(arg0, z143, 120, 0, 0, DAT0, 0x16)
 	}
 
 	if (LNotEqual(OB11, 0x7A)) {
-		err(arg0, z143, 31, 0, 0, OB11, 0x7A)
+		err(arg0, z143, 124, 0, 0, OB11, 0x7A)
 	}
 	if (LNotEqual(LEN1, 0x00)) {
-		err(arg0, z143, 32, 0, 0, LEN1, 0x00)
+		err(arg0, z143, 128, 0, 0, LEN1, 0x00)
 	}
 	if (LNotEqual(DAT1, 0x5416)) {
-		err(arg0, z143, 33, 0, 0, DAT1, 0x00)
+		err(arg0, z143, 132, 0, 0, DAT1, 0x00)
 	}
 
 	/* Read two bytes of data from the device using command value 1 */
 	Store(FLD1, BUFF)					// Invoke a Read Word transaction
 
 	if (LNotEqual(OB10, 0x7A)) {
-		err(arg0, z143, 34, 0, 0, OB10, 0x7A)
+		err(arg0, z143, 136, 0, 0, OB10, 0x7A)
 	}
 	if (LNotEqual(LEN0, 0x02)) {
-		err(arg0, z143, 35, 0, 0, LEN0, 0x02)
+		err(arg0, z143, 140, 0, 0, LEN0, 0x02)
 	}
 	if (LNotEqual(DAT0, 0xA1A0)) {
-		err(arg0, z143, 36, 0, 0, DAT0, 0xA1A0)
+		err(arg0, z143, 144, 0, 0, DAT0, 0xA1A0)
 	}
 }
 
@@ -687,34 +687,34 @@ Method(m755, 1)
 	Store(Store(BUFF, FLD2), BUFR)		// Invoke a Write Block transaction
 
 	if (LNotEqual(OB10, 0x00)) {
-		err(arg0, z143, 37, 0, 0, OB10, 0x00)
+		err(arg0, z143, 148, 0, 0, OB10, 0x00)
 	}
 	if (LNotEqual(LEN0, 0x04)) {
-		err(arg0, z143, 38, 0, 0, LEN0, 0x04)
+		err(arg0, z143, 152, 0, 0, LEN0, 0x04)
 	}
 	Store(Buffer(0x20){"TEST"}, Local0)
 	if (LNotEqual(DAT0, Local0)) {
-		err(arg0, z143, 39, 0, 0, DAT0, Local0)
+		err(arg0, z143, 156, 0, 0, DAT0, Local0)
 	}
 
 	if (LNotEqual(OB11, 0x7A)) {
-		err(arg0, z143, 40, 0, 0, OB11, 0x7A)
+		err(arg0, z143, 160, 0, 0, OB11, 0x7A)
 	}
 	if (LNotEqual(LEN1, 0x00)) {
-		err(arg0, z143, 41, 0, 0, LEN1, 0x00)
+		err(arg0, z143, 164, 0, 0, LEN1, 0x00)
 	}
 	if (LNotEqual(DAT1, Local0)) {
-		err(arg0, z143, 42, 0, 0, DAT1, Local0)
+		err(arg0, z143, 168, 0, 0, DAT1, Local0)
 	}
 
 	/* Read block of data from the device using command value 1 */
 	Store(FLD1, BUFF)					// Invoke a Read Block transaction
 
 	if (LNotEqual(OB10, 0x7A)) {
-		err(arg0, z143, 43, 0, 0, OB10, 0x7A)
+		err(arg0, z143, 172, 0, 0, OB10, 0x7A)
 	}
 	if (LNotEqual(LEN0, 0x20)) {
-		err(arg0, z143, 44, 0, 0, LEN0, 0x20)
+		err(arg0, z143, 176, 0, 0, LEN0, 0x20)
 	}
 	Store(Buffer(0x20){
 			0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
@@ -723,7 +723,7 @@ Method(m755, 1)
 			0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF},
 		Local1)
 	if (LNotEqual(DAT0, Local1)) {
-		err(arg0, z143, 45, 0, 0, DAT0, Local1)
+		err(arg0, z143, 180, 0, 0, DAT0, Local1)
 	}
 }
 
@@ -759,23 +759,23 @@ Method(m756, 1)
 	Store(Store(BUFF, FLD1), BUFR)		// Invoke a Process Call transaction
 
 	if (LNotEqual(OB10, 0x00)) {
-		err(arg0, z143, 46, 0, 0, OB10, 0x00)
+		err(arg0, z143, 184, 0, 0, OB10, 0x00)
 	}
 	if (LNotEqual(LEN0, 0x00)) {
-		err(arg0, z143, 47, 0, 0, LEN0, 0x00)
+		err(arg0, z143, 188, 0, 0, LEN0, 0x00)
 	}
 	if (LNotEqual(DAT0, 0x5416)) {
-		err(arg0, z143, 48, 0, 0, DAT0, 0x16)
+		err(arg0, z143, 192, 0, 0, DAT0, 0x16)
 	}
 
 	if (LNotEqual(OB11, 0x7A)) {
-		err(arg0, z143, 49, 0, 0, OB11, 0x7A)
+		err(arg0, z143, 196, 0, 0, OB11, 0x7A)
 	}
 	if (LNotEqual(LEN1, 0x02)) {
-		err(arg0, z143, 50, 0, 0, LEN1, 0x02)
+		err(arg0, z143, 200, 0, 0, LEN1, 0x02)
 	}
 	if (LNotEqual(DAT1, 0xA1A0)) {
-		err(arg0, z143, 51, 0, 0, DAT1, 0xA1A0)
+		err(arg0, z143, 204, 0, 0, DAT1, 0xA1A0)
 	}
 }
 
@@ -810,21 +810,21 @@ Method(m757, 1)
 	Store(Store(BUFF, FLD1), BUFR)		// Invoke a Write Block transaction
 
 	if (LNotEqual(OB10, 0x00)) {
-		err(arg0, z143, 52, 0, 0, OB10, 0x00)
+		err(arg0, z143, 208, 0, 0, OB10, 0x00)
 	}
 	if (LNotEqual(LEN0, 0x04)) {
-		err(arg0, z143, 53, 0, 0, LEN0, 0x04)
+		err(arg0, z143, 212, 0, 0, LEN0, 0x04)
 	}
 	Store(Buffer(0x20){"TEST"}, Local0)
 	if (LNotEqual(DAT0, Local0)) {
-		err(arg0, z143, 54, 0, 0, DAT0, Local0)
+		err(arg0, z143, 216, 0, 0, DAT0, Local0)
 	}
 
 	if (LNotEqual(OB11, 0x7A)) {
-		err(arg0, z143, 55, 0, 0, OB11, 0x7A)
+		err(arg0, z143, 220, 0, 0, OB11, 0x7A)
 	}
 	if (LNotEqual(LEN1, 0x20)) {
-		err(arg0, z143, 56, 0, 0, LEN1, 0x20)
+		err(arg0, z143, 224, 0, 0, LEN1, 0x20)
 	}
 	Store(Buffer(0x20){
 			0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
@@ -833,9 +833,884 @@ Method(m757, 1)
 			0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF},
 		Local1)
 	if (LNotEqual(DAT1, Local1)) {
-		err(arg0, z143, 57, 0, 0, DAT1, Local1)
+		err(arg0, z143, 228, 0, 0, DAT1, Local1)
 	}
 }
+
+//**** GenericSerialBus (ACPI 5.0) - similar to SMBUS ****************************
+
+Device (\GSB1) {}
+
+// Check BufferAcc access for GenericSerialBus
+// m740(CallChain)
+// CallChain: String
+Method(m740, 1)
+{
+	Concatenate(arg0, "-m740", arg0)
+
+	Store("TEST: m740, Check GenericSerialBus Region Fields (BufferAcc access)", Debug)
+
+	/*
+	 * Examples from Acpi Spec (Using the GenericSerialBus Protocols)
+	 */
+
+	// Read/Write Quick (AttribQuick)
+	m758(arg0)
+
+	// Send/Receive Byte (AttribSendReceive)
+	m759(arg0)
+
+	// Read/Write Byte (AttribByte)
+	m75a(arg0)
+
+	// Read/Write Word (AttribWord)
+	m75b(arg0)
+
+	// Read/Write Block (AttribBlock)
+	m75c(arg0)
+
+	// Word Process Call (AttribProcessCall)
+	m75d(arg0)
+
+	// Block Process Call (AttribBlockProcessCall)
+	m75e(arg0)
+
+	// Next 3 types are used for GenericSerialBus only
+
+    // Read/Write N Bytes (AttribBytes)
+	m75f(arg0)
+
+    // Raw Read/Write N Bytes (AttribRawBytes)
+    m760(Arg0)
+
+    // Raw Process Call (AttribRawProcessBytes)
+    m761(Arg0)
+}
+
+// Read/Write Quick (AttribQuick)
+// m758(CallChain)
+// CallChain: String
+Method(m758, 1)
+{
+	Concatenate(arg0, "-m758", arg0)
+
+	OperationRegion(GSBD, GenericSerialBus, 0x4400, 0x100)
+
+	Field(GSBD, BufferAcc, NoLock, Preserve) {
+		AccessAs(BufferAcc, AttribQuick),	// Use the GenericSerialBus Read/Write Quick protocol
+
+        // A Connection is required
+        Connection (
+            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            AddressingMode10Bit, "\\GPI1", 0xEE,
+            ResourceConsumer)),
+
+		FLD0, 8}						    // Virtual register at command value 0.
+
+	/* Create the GenericSerialBus data buffer */
+	Name(BUFF, Buffer(34){})			// Create GenericSerialBus data buffer as BUFF
+	Name(BUFR, Buffer(34){})			// Create GenericSerialBus result buffer
+	CreateByteField(BUFF, 0x00, OB10)	// Status (Byte)
+	CreateByteField(BUFF, 0x01, LEN0)	// Length (Byte)
+	CreateByteField(BUFF, 0x02, DAT0)
+	CreateByteField(BUFR, 0x00, OB11)
+	CreateByteField(BUFR, 0x01, LEN1)
+	CreateByteField(BUFR, 0x02, DAT1)
+
+	/* Signal device (e.g. ON) */
+	Store(Store(BUFF, FLD0), BUFR)		// Invoke Write Quick transaction
+
+	if (LNotEqual(OB10, 0x00)) {
+		err(arg0, z143, 232, 0, 0, OB10, 0x00)
+	}
+	if (LNotEqual(LEN0, 0x00)) {
+		err(arg0, z143, 236, 0, 0, LEN0, 0x00)
+	}
+	if (LNotEqual(DAT0, 0x00)) {
+		err(arg0, z143, 240, 0, 0, DAT0, 0x00)
+	}
+
+	if (LNotEqual(OB11, 0x7A)) {
+		err(arg0, z143, 244, 0, 0, OB11, 0x7A)
+	}
+	if (LNotEqual(LEN1, 0x00)) {
+		err(arg0, z143, 248, 0, 0, LEN1, 0x00)
+	}
+	if (LNotEqual(DAT1, 0x00)) {
+		err(arg0, z143, 252, 0, 0, DAT1, 0x00)
+	}
+
+	Store(0x00, OB10)
+	Store(0xff, LEN0)
+	Store(0x00, DAT0)
+
+	/* Signal device (e.g. OFF) */
+	Store(FLD0, BUFF)					// Invoke Read Quick transaction
+
+	if (LNotEqual(OB10, 0x7A)) {
+		err(arg0, z143, 256, 0, 0, OB10, 0x7A)
+	}
+	if (LNotEqual(LEN0, 0x01)) {
+		err(arg0, z143, 260, 0, 0, LEN0, 0x01)
+	}
+	if (LNotEqual(DAT0, 0xA0)) {
+		err(arg0, z143, 264, 0, 0, DAT0, 0xA0)
+	}
+}
+
+// Read/Write Quick (AttribQuick)
+// m759(CallChain)
+// CallChain: String
+Method(m759, 1)
+{
+	Concatenate(arg0, "-m759", arg0)
+
+	OperationRegion(GSBD, GenericSerialBus, 0x5400, 0x100)
+
+	Field(GSBD, BufferAcc, NoLock, Preserve) {
+		AccessAs(BufferAcc, AttribSendReceive), // Use the GenericSerialBus Send/Receive Byte protocol
+
+        // A Connection is required
+        Connection (
+            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            AddressingMode10Bit, "\\GPI1", 0xEE,
+            ResourceConsumer)),
+
+		FLD0, 8}							    // Virtual register at command value 0.
+
+	/* Create the GenericSerialBus data buffer */
+	Name(BUFF, Buffer(34){})			// Create GenericSerialBus data buffer as BUFF
+	Name(BUFR, Buffer(34){})			// Create GenericSerialBus result buffer
+	CreateByteField (BUFF, 0x00, OB10)	// Status (Byte)
+	CreateByteField (BUFF, 0x01, LEN0)	// Length (Byte)
+	CreateByteField (BUFF, 0x02, DAT0)
+	CreateByteField (BUFR, 0x00, OB11)
+	CreateByteField (BUFR, 0x01, LEN1)
+	CreateByteField (BUFR, 0x02, DAT1)
+
+	/* Send the byte '0x16' to the device */
+	Store(0x00, OB10)
+	Store(0x00, LEN0)
+	Store(0x16, DAT0)					// Save 0x16 into the data buffer
+	Store(Store(BUFF, FLD0), BUFR)		// Invoke a Send Byte transaction
+
+	if (LNotEqual(OB10, 0x00)) {
+		err(arg0, z143, 268, 0, 0, OB10, 0x00)
+	}
+	if (LNotEqual(LEN0, 0x00)) {
+		err(arg0, z143, 272, 0, 0, LEN0, 0x00)
+	}
+	if (LNotEqual(DAT0, 0x16)) {
+		err(arg0, z143, 276, 0, 0, DAT0, 0x16)
+	}
+
+	if (LNotEqual(OB11, 0x7A)) {
+		err(arg0, z143, 280, 0, 0, OB11, 0x7A)
+	}
+	if (LNotEqual(LEN1, 0x00)) {
+		err(arg0, z143, 284, 0, 0, LEN1, 0x00)
+	}
+	if (LNotEqual(DAT1, 0x16)) {
+		err(arg0, z143, 288, 0, 0, DAT1, 0x00)
+	}
+
+	/* Receive a byte of data from the device */
+	Store(FLD0, BUFF)					// Invoke a Receive Byte transaction
+
+	if (LNotEqual(OB10, 0x7A)) {
+		err(arg0, z143, 292, 0, 0, OB10, 0x7A)
+	}
+	if (LNotEqual(LEN0, 0x01)) {
+		err(arg0, z143, 296, 0, 0, LEN0, 0x01)
+	}
+	if (LNotEqual(DAT0, 0xA0)) {
+		err(arg0, z143, 300, 0, 0, DAT0, 0xA0)
+	}
+}
+
+// Read/Write Byte (AttribByte)
+// m75a(CallChain)
+// CallChain: String
+Method(m75a, 1)
+{
+	Concatenate(arg0, "-m75a", arg0)
+
+	OperationRegion(GSBD, GenericSerialBus, 0x6400, 0x100)
+
+	Field(GSBD, BufferAcc, NoLock, Preserve) {
+		AccessAs(BufferAcc, AttribByte),// Use the GenericSerialBus Read/Write Byte protocol
+
+        // A Connection is required
+        Connection (
+            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            AddressingMode10Bit, "\\GPI1", 0xEE,
+            ResourceConsumer)),
+
+		FLD0, 8,						// Virtual register at command value 0.
+		FLD1, 8,						// Virtual register at command value 1.
+		FLD2, 8}						// Virtual register at command value 2.
+
+	/* Create the GenericSerialBus data buffer */
+	Name(BUFF, Buffer(34){})			// Create GenericSerialBus data buffer as BUFF
+	Name(BUFR, Buffer(34){})			// Create GenericSerialBus result buffer
+	CreateByteField (BUFF, 0x00, OB10)	// Status (Byte)
+	CreateByteField (BUFF, 0x01, LEN0)	// Length (Byte)
+	CreateByteField (BUFF, 0x02, DAT0)
+	CreateByteField (BUFR, 0x00, OB11)
+	CreateByteField (BUFR, 0x01, LEN1)
+	CreateByteField (BUFR, 0x02, DAT1)
+
+	/* Write the byte '0x16' to the device using command value 2 */
+	Store(0x00, OB10)
+	Store(0x00, LEN0)
+	Store(0x16, DAT0)					// Save 0x16 into the data buffer
+	Store(Store(BUFF, FLD2), BUFR)		// Invoke a Write Byte transaction
+
+	if (LNotEqual(OB10, 0x00)) {
+		err(arg0, z143, 304, 0, 0, OB10, 0x00)
+	}
+	if (LNotEqual(LEN0, 0x00)) {
+		err(arg0, z143, 308, 0, 0, LEN0, 0x00)
+	}
+	if (LNotEqual(DAT0, 0x16)) {
+		err(arg0, z143, 312, 0, 0, DAT0, 0x16)
+	}
+
+	if (LNotEqual(OB11, 0x7A)) {
+		err(arg0, z143, 316, 0, 0, OB11, 0x7A)
+	}
+	if (LNotEqual(LEN1, 0x00)) {
+		err(arg0, z143, 320, 0, 0, LEN1, 0x00)
+	}
+	if (LNotEqual(DAT1, 0x16)) {
+		err(arg0, z143, 324, 0, 0, DAT1, 0x00)
+	}
+
+	/* Read a byte of data from the device using command value 1 */
+	Store(FLD1, BUFF)					// Invoke a Read Byte transaction
+
+	if (LNotEqual(OB10, 0x7A)) {
+		err(arg0, z143, 328, 0, 0, OB10, 0x7A)
+	}
+	if (LNotEqual(LEN0, 0x01)) {
+		err(arg0, z143, 332, 0, 0, LEN0, 0x01)
+	}
+	if (LNotEqual(DAT0, 0xA0)) {
+		err(arg0, z143, 336, 0, 0, DAT0, 0xA0)
+	}
+}
+
+// Read/Write Word (AttribWord)
+// m75b(CallChain)
+// CallChain: String
+Method(m75b, 1)
+{
+	Concatenate(arg0, "-m75b", arg0)
+
+	OperationRegion(GSBD, GenericSerialBus, 0x7400, 0x100)
+
+	Field(GSBD, BufferAcc, NoLock, Preserve) {
+		AccessAs(BufferAcc, AttribWord),// Use the GenericSerialBus Read/Write Word protocol
+
+        // A Connection is required
+        Connection (
+            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            AddressingMode10Bit, "\\GPI1", 0xEE,
+            ResourceConsumer)),
+
+		FLD0, 8,						// Virtual register at command value 0.
+		FLD1, 8,						// Virtual register at command value 1.
+		FLD2, 8}						// Virtual register at command value 2.
+
+	/* Create the GenericSerialBus data buffer */
+	Name(BUFF, Buffer(34){})			// Create GenericSerialBus data buffer as BUFF
+	Name(BUFR, Buffer(34){})			// Create GenericSerialBus result buffer
+	CreateByteField (BUFF, 0x00, OB10)	// Status (Byte)
+	CreateByteField (BUFF, 0x01, LEN0)	// Length (Byte)
+	CreateWordField (BUFF, 0x02, DAT0)
+	CreateByteField (BUFR, 0x00, OB11)
+	CreateByteField (BUFR, 0x01, LEN1)
+	CreateWordField (BUFR, 0x02, DAT1)
+
+	/* Write the word '0x5416' to the device using command value 2 */
+	Store(0x00, OB10)
+	Store(0x00, LEN0)
+	Store(0x5416, DAT0)					// Save 0x5416 into the data buffer
+	Store(Store(BUFF, FLD2), BUFR)		// Invoke a Write Word transaction
+
+	if (LNotEqual(OB10, 0x00)) {
+		err(arg0, z143, 340, 0, 0, OB10, 0x00)
+	}
+	if (LNotEqual(LEN0, 0x00)) {
+		err(arg0, z143, 344, 0, 0, LEN0, 0x00)
+	}
+	if (LNotEqual(DAT0, 0x5416)) {
+		err(arg0, z143, 348, 0, 0, DAT0, 0x16)
+	}
+
+	if (LNotEqual(OB11, 0x7A)) {
+		err(arg0, z143, 352, 0, 0, OB11, 0x7A)
+	}
+	if (LNotEqual(LEN1, 0x00)) {
+		err(arg0, z143, 356, 0, 0, LEN1, 0x00)
+	}
+	if (LNotEqual(DAT1, 0x5416)) {
+		err(arg0, z143, 360, 0, 0, DAT1, 0x00)
+	}
+
+	/* Read two bytes of data from the device using command value 1 */
+	Store(FLD1, BUFF)					// Invoke a Read Word transaction
+
+	if (LNotEqual(OB10, 0x7A)) {
+		err(arg0, z143, 364, 0, 0, OB10, 0x7A)
+	}
+	if (LNotEqual(LEN0, 0x02)) {
+		err(arg0, z143, 368, 0, 0, LEN0, 0x02)
+	}
+	if (LNotEqual(DAT0, 0xA1A0)) {
+		err(arg0, z143, 372, 0, 0, DAT0, 0xA1A0)
+	}
+}
+
+// Read/Write Block (AttribBlock)
+// m75c(CallChain)
+// CallChain: String
+Method(m75c, 1)
+{
+	Concatenate(arg0, "-m75c", arg0)
+
+	OperationRegion(GSBD, GenericSerialBus, 0x8400, 0x100)
+
+	Field(GSBD, BufferAcc, NoLock, Preserve) {
+		AccessAs(BufferAcc, AttribBlock),	// Use the GenericSerialBus Read/Write Block protocol
+
+        // A Connection is required
+        Connection (
+            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            AddressingMode10Bit, "\\GPI1", 0xEE,
+            ResourceConsumer)),
+
+		FLD0, 8,						    // Virtual register at command value 0.
+		FLD1, 8,						    // Virtual register at command value 1.
+		FLD2, 8}						    // Virtual register at command value 2.
+
+	/* Create the GenericSerialBus data buffer */
+	Name(BUFF, Buffer(34){})			// Create GenericSerialBus data buffer as BUFF
+	Name(BUFR, Buffer(34){})			// Create GenericSerialBus result buffer
+	CreateByteField (BUFF, 0x00, OB10)	// Status (Byte)
+	CreateByteField (BUFF, 0x01, LEN0)	// Length (Byte)
+	CreateField     (BUFF, 0x10, 0x100, DAT0)
+	CreateByteField (BUFR, 0x00, OB11)
+	CreateByteField (BUFR, 0x01, LEN1)
+	CreateField     (BUFR, 0x10, 0x100, DAT1)
+
+	/* Write the block 'TEST' to the device using command value 2 */
+	Store(0x00, OB10)
+	Store(0x04, LEN0)
+	Store("TEST", DAT0)					// Save 'TEST' into the data buffer
+	Store(Store(BUFF, FLD2), BUFR)		// Invoke a Write Block transaction
+
+	if (LNotEqual(OB10, 0x00)) {
+		err(arg0, z143, 376, 0, 0, OB10, 0x00)
+	}
+	if (LNotEqual(LEN0, 0x04)) {
+		err(arg0, z143, 380, 0, 0, LEN0, 0x04)
+	}
+	Store(Buffer(0x20){"TEST"}, Local0)
+	if (LNotEqual(DAT0, Local0)) {
+		err(arg0, z143, 384, 0, 0, DAT0, Local0)
+	}
+
+	if (LNotEqual(OB11, 0x7A)) {
+		err(arg0, z143, 388, 0, 0, OB11, 0x7A)
+	}
+	if (LNotEqual(LEN1, 0x00)) {
+		err(arg0, z143, 392, 0, 0, LEN1, 0x00)
+	}
+	if (LNotEqual(DAT1, Local0)) {
+		err(arg0, z143, 396, 0, 0, DAT1, Local0)
+	}
+
+	/* Read block of data from the device using command value 1 */
+	Store(FLD1, BUFF)					// Invoke a Read Block transaction
+
+	if (LNotEqual(OB10, 0x7A)) {
+		err(arg0, z143, 400, 0, 0, OB10, 0x7A)
+	}
+	if (LNotEqual(LEN0, 0x20)) {
+		err(arg0, z143, 404, 0, 0, LEN0, 0x20)
+	}
+	Store(Buffer(0x20){
+			0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
+			0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF,
+			0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7,
+			0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF},
+		Local1)
+	if (LNotEqual(DAT0, Local1)) {
+		err(arg0, z143, 408, 0, 0, DAT0, Local1)
+	}
+}
+
+// Word Process Call (AttribProcessCall)
+// m75d(CallChain)
+// CallChain: String
+Method(m75d, 1)
+{
+	Concatenate(arg0, "-m75d", arg0)
+
+	OperationRegion(GSBD, GenericSerialBus, 0x9400, 0x100)
+
+	Field(GSBD, BufferAcc, NoLock, Preserve) {
+		AccessAs(BufferAcc, AttribProcessCall), // Use the GenericSerialBus Process Call protocol
+
+        // A Connection is required
+        Connection (
+            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            AddressingMode10Bit, "\\GPI1", 0xEE,
+            ResourceConsumer)),
+
+		FLD0, 8,						        // Virtual register at command value 0.
+		FLD1, 8,						        // Virtual register at command value 1.
+		FLD2, 8}						        // Virtual register at command value 2.
+
+	/* Create the GenericSerialBus data buffer */
+	Name(BUFF, Buffer(34){})			// Create GenericSerialBus data buffer as BUFF
+	Name(BUFR, Buffer(34){})			// Create GenericSerialBus result buffer
+	CreateByteField (BUFF, 0x00, OB10)	// Status (Byte)
+	CreateByteField (BUFF, 0x01, LEN0)	// Length (Byte)
+	CreateWordField (BUFF, 0x02, DAT0)
+	CreateByteField (BUFR, 0x00, OB11)
+	CreateByteField (BUFR, 0x01, LEN1)
+	CreateWordField (BUFR, 0x02, DAT1)
+
+	/* Process Call with input value '0x5416' to the device using command value 1 */
+	Store(0x00, OB10)
+	Store(0x00, LEN0)
+	Store(0x5416, DAT0)					// Save 0x5416 into the data buffer
+	Store(Store(BUFF, FLD1), BUFR)		// Invoke a Process Call transaction
+
+	if (LNotEqual(OB10, 0x00)) {
+		err(arg0, z143, 412, 0, 0, OB10, 0x00)
+	}
+	if (LNotEqual(LEN0, 0x00)) {
+		err(arg0, z143, 416, 0, 0, LEN0, 0x00)
+	}
+	if (LNotEqual(DAT0, 0x5416)) {
+		err(arg0, z143, 420, 0, 0, DAT0, 0x16)
+	}
+
+	if (LNotEqual(OB11, 0x7A)) {
+		err(arg0, z143, 424, 0, 0, OB11, 0x7A)
+	}
+	if (LNotEqual(LEN1, 0x02)) {
+		err(arg0, z143, 428, 0, 0, LEN1, 0x02)
+	}
+	if (LNotEqual(DAT1, 0xA1A0)) {
+		err(arg0, z143, 432, 0, 0, DAT1, 0xA1A0)
+	}
+}
+
+// Block Process Call (AttribBlockProcessCall)
+// m75e(CallChain)
+// CallChain: String
+Method(m75e, 1)
+{
+	Concatenate(arg0, "-m75e", arg0)
+
+	OperationRegion(GSBD, GenericSerialBus, 0xa400, 0x100)
+
+	Field(GSBD, BufferAcc, NoLock, Preserve) {
+		AccessAs(BufferAcc, AttribBlockProcessCall),// Use the Block Process Call protocol
+
+        // A Connection is required
+        Connection (
+            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            AddressingMode10Bit, "\\GPI1", 0xEE,
+            ResourceConsumer)),
+
+		FLD0, 8,						            // Virtual register at command value 0.
+		FLD1, 8}						            // Virtual register at command value 1.
+
+	/* Create the GenericSerialBus data buffer */
+	Name(BUFF, Buffer(34){})			// Create GenericSerialBus data buffer as BUFF
+	Name(BUFR, Buffer(34){})			// Create GenericSerialBus result buffer
+	CreateByteField (BUFF, 0x00, OB10)	// Status (Byte)
+	CreateByteField (BUFF, 0x01, LEN0)	// Length (Byte)
+	CreateField     (BUFF, 0x10, 0x100, DAT0)
+	CreateByteField (BUFR, 0x00, OB11)
+	CreateByteField (BUFR, 0x01, LEN1)
+	CreateField     (BUFR, 0x10, 0x100, DAT1)
+
+	/* Process Call with input value "TEST" to the device using command value 1 */
+	Store(0x00, OB10)
+	Store(0x04, LEN0)
+	Store("TEST", DAT0)					// Save 'TEST' into the data buffer
+	Store(Store(BUFF, FLD1), BUFR)		// Invoke a Write Block transaction
+
+	if (LNotEqual(OB10, 0x00)) {
+		err(arg0, z143, 436, 0, 0, OB10, 0x00)
+	}
+	if (LNotEqual(LEN0, 0x04)) {
+		err(arg0, z143, 440, 0, 0, LEN0, 0x04)
+	}
+	Store(Buffer(0x20){"TEST"}, Local0)
+	if (LNotEqual(DAT0, Local0)) {
+		err(arg0, z143, 444, 0, 0, DAT0, Local0)
+	}
+
+	if (LNotEqual(OB11, 0x7A)) {
+		err(arg0, z143, 448, 0, 0, OB11, 0x7A)
+	}
+	if (LNotEqual(LEN1, 0x20)) {
+		err(arg0, z143, 452, 0, 0, LEN1, 0x20)
+	}
+	Store(Buffer(0x20){
+			0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
+			0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF,
+			0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7,
+			0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF},
+		Local1)
+	if (LNotEqual(DAT1, Local1)) {
+		err(arg0, z143, 456, 0, 0, DAT1, Local1)
+	}
+}
+
+// Read/Write N Bytes (AttribBytes)
+// m75f(CallChain)
+// CallChain: String
+Method(m75f, 1)
+{
+	Concatenate(arg0, "-m75f", arg0)
+
+	OperationRegion(GSBD, GenericSerialBus, 0xB400, 0x100)
+
+	Field(GSBD, BufferAcc, NoLock, Preserve) {
+        AccessAs (BufferAcc, AttribBytes (34)),
+
+        // A Connection is required
+        Connection (
+            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            AddressingMode10Bit, "\\GPI1", 0xEE,
+            ResourceConsumer)),
+
+		FLD0, 8,					    // Virtual register at command value 0.
+		FLD1, 8}					    // Virtual register at command value 1.
+
+	/* Create the GenericSerialBus data buffer */
+	Name(BUFF, Buffer(34){})			// Create GenericSerialBus data buffer as BUFF
+	Name(BUFR, Buffer(34){})			// Create GenericSerialBus result buffer
+
+	CreateByteField (BUFF, 0x00, OB10)	// Status (Byte)
+	CreateByteField (BUFF, 0x01, LEN0)	// Length (Byte)
+	CreateField     (BUFF, 0x10, 0x100, DAT0)
+
+	CreateByteField (BUFR, 0x00, OB11)
+	CreateByteField (BUFR, 0x01, LEN1)
+	CreateField     (BUFR, 0x10, 0x100, DAT1)
+
+	/* Process Call with input value "TEST" to the device using command value 1 */
+	Store(0x00, OB10)
+	Store(0x04, LEN0)
+	Store("TEST", DAT0)					// Save 'TEST' into the data buffer
+	Store(Store(BUFF, FLD1), BUFR)		// Invoke a Write Block transaction
+
+	if (LNotEqual(OB10, 0x00)) {
+		err(arg0, z143, 460, 0, 0, OB10, 0x00)
+	}
+	if (LNotEqual(LEN0, 0x04)) {
+		err(arg0, z143, 464, 0, 0, LEN0, 0x04)
+	}
+	Store(Buffer(0x20){"TEST"}, Local0)
+	if (LNotEqual(DAT0, Local0)) {
+		err(arg0, z143, 468, 0, 0, DAT0, Local0)
+	}
+
+	if (LNotEqual(OB11, 0x7A)) {
+		err(arg0, z143, 472, 0, 0, OB11, 0x7A)
+	}
+	if (LNotEqual(LEN1, 0x20)) {
+		err(arg0, z143, 476, 0, 0, LEN1, 0x20)
+	}
+	Store(Buffer(0x20){
+			0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
+			0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF,
+			0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7,
+			0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF},
+		Local1)
+	if (LNotEqual(DAT1, Local1)) {
+		err(arg0, z143, 480, 0, 0, DAT1, Local1)
+	}
+}
+
+// Raw Read/Write N Bytes (AttribRawBytes)
+// m760(CallChain)
+// CallChain: String
+Method(m760, 1)
+{
+	Concatenate(arg0, "-m760", arg0)
+
+	OperationRegion(GSBD, GenericSerialBus, 0xB400, 0x100)
+
+	Field(GSBD, BufferAcc, NoLock, Preserve) {
+        AccessAs (BufferAcc, AttribRawBytes (34)),
+
+        // A Connection is required
+        Connection (
+            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            AddressingMode10Bit, "\\GPI1", 0xEE,
+            ResourceConsumer)),
+
+		FLD0, 8,					    // Virtual register at command value 0.
+		FLD1, 8}					    // Virtual register at command value 1.
+
+	/* Create the GenericSerialBus data buffer */
+	Name(BUFF, Buffer(34){})			// Create GenericSerialBus data buffer as BUFF
+	Name(BUFR, Buffer(34){})			// Create GenericSerialBus result buffer
+
+	CreateByteField (BUFF, 0x00, OB10)	// Status (Byte)
+	CreateByteField (BUFF, 0x01, LEN0)	// Length (Byte)
+	CreateField     (BUFF, 0x10, 0x100, DAT0)
+
+	CreateByteField (BUFR, 0x00, OB11)
+	CreateByteField (BUFR, 0x01, LEN1)
+	CreateField     (BUFR, 0x10, 0x100, DAT1)
+
+	/* Process Call with input value "TEST" to the device using command value 1 */
+	Store(0x00, OB10)
+	Store(0x04, LEN0)
+	Store("TEST", DAT0)					// Save 'TEST' into the data buffer
+	Store(Store(BUFF, FLD1), BUFR)		// Invoke a Write Block transaction
+
+	if (LNotEqual(OB10, 0x00)) {
+		err(arg0, z143, 484, 0, 0, OB10, 0x00)
+	}
+	if (LNotEqual(LEN0, 0x04)) {
+		err(arg0, z143, 488, 0, 0, LEN0, 0x04)
+	}
+	Store(Buffer(0x20){"TEST"}, Local0)
+	if (LNotEqual(DAT0, Local0)) {
+		err(arg0, z143, 492, 0, 0, DAT0, Local0)
+	}
+
+	if (LNotEqual(OB11, 0x7A)) {
+		err(arg0, z143, 496, 0, 0, OB11, 0x7A)
+	}
+	if (LNotEqual(LEN1, 0x20)) {
+		err(arg0, z143, 500, 0, 0, LEN1, 0x20)
+	}
+	Store(Buffer(0x20){
+			0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
+			0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF,
+			0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7,
+			0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF},
+		Local1)
+	if (LNotEqual(DAT1, Local1)) {
+		err(arg0, z143, 504, 0, 0, DAT1, Local1)
+	}
+}
+
+// Raw Process Call (AttribRawProcessBytes)
+// m761(CallChain)
+// CallChain: String
+Method(m761, 1)
+{
+	Concatenate(arg0, "-m761", arg0)
+
+	OperationRegion(GSBD, GenericSerialBus, 0xB400, 0x100)
+
+	Field(GSBD, BufferAcc, NoLock, Preserve) {
+        AccessAs (BufferAcc, AttribRawProcessBytes (34)),
+
+        // A Connection is required
+        Connection (
+            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            AddressingMode10Bit, "\\GPI1", 0xEE,
+            ResourceConsumer)),
+
+		FLD0, 8,					    // Virtual register at command value 0.
+		FLD1, 8}					    // Virtual register at command value 1.
+
+	/* Create the GenericSerialBus data buffer */
+	Name(BUFF, Buffer(34){})			// Create GenericSerialBus data buffer as BUFF
+	Name(BUFR, Buffer(34){})			// Create GenericSerialBus result buffer
+
+	CreateByteField (BUFF, 0x00, OB10)	// Status (Byte)
+	CreateByteField (BUFF, 0x01, LEN0)	// Length (Byte)
+	CreateField     (BUFF, 0x10, 0x100, DAT0)
+
+	CreateByteField (BUFR, 0x00, OB11)
+	CreateByteField (BUFR, 0x01, LEN1)
+	CreateField     (BUFR, 0x10, 0x100, DAT1)
+
+	/* Process Call with input value "TEST" to the device using command value 1 */
+	Store(0x00, OB10)
+	Store(0x04, LEN0)
+	Store("TEST", DAT0)					// Save 'TEST' into the data buffer
+	Store(Store(BUFF, FLD1), BUFR)		// Invoke a Write Block transaction
+
+	if (LNotEqual(OB10, 0x00)) {
+		err(arg0, z143, 508, 0, 0, OB10, 0x00)
+	}
+	if (LNotEqual(LEN0, 0x04)) {
+		err(arg0, z143, 512, 0, 0, LEN0, 0x04)
+	}
+	Store(Buffer(0x20){"TEST"}, Local0)
+	if (LNotEqual(DAT0, Local0)) {
+		err(arg0, z143, 516, 0, 0, DAT0, Local0)
+	}
+
+	if (LNotEqual(OB11, 0x7A)) {
+		err(arg0, z143, 520, 0, 0, OB11, 0x7A)
+	}
+	if (LNotEqual(LEN1, 0x20)) {
+		err(arg0, z143, 524, 0, 0, LEN1, 0x20)
+	}
+	Store(Buffer(0x20){
+			0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
+			0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF,
+			0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7,
+			0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF},
+		Local1)
+	if (LNotEqual(DAT1, Local1)) {
+		err(arg0, z143, 528, 0, 0, DAT1, Local1)
+	}
+}
+
+
+//**** GeneralPurposeIo (ACPI 5.0) **************************************
+
+//
+// Test the use of Connection() operator and simple ByteAcc
+//
+Method(m764, 1)
+{
+	Concatenate(arg0, "-m764", arg0)
+
+	Store("TEST: m764, Check GeneralPurposeIo Region Fields (ByteAcc access)", Debug)
+
+    //...Other required stuff for this device
+    Name (GMOD, ResourceTemplate ()     //An existing GPIO Connection (to be used later)
+    {
+        //2 Outputs that define the Power mode of the device
+        GpioIo (Exclusive, PullDown, , , , "\\_SB.GPI2") {10, 12}
+    })
+
+    // Offset is ignored (From ACPI spec)
+
+    OperationRegion (GPO2, GeneralPurposeIO, 0, 64)
+    Method(_REG,2) {}
+    Name(_DEP, Package() {"\\_SB.GPI2"})
+
+    // Update rule must be Preserve
+
+    Field(GPO2, ByteAcc, NoLock, Preserve)
+    {
+        Connection (GMOD),      // Reuse an existing connection (defined above)
+        MODE, 2,                // Power Mode
+
+        Connection (GpioIo (Exclusive, PullUp, , , , "\\_SB.GPI2") {7}),
+        STAT, 1,                // e.g. Status signal from the device
+
+        Connection (GpioIo (Exclusive, PullUp, , , , "\\_SB.GPI2") {9}),
+        RSET, 1,                 // e.g. Reset signal to the device
+
+        Offset (32),
+        BUFF, 128
+    }
+
+    Store(0x03, MODE)    //Set both MODE bits. Power Mode 3
+    Store (MODE, Local0)
+	if (LNotEqual(Local0, 0x03)) {
+		err(arg0, z143, 532, 0, 0, Local0, 0x03)
+	}
+
+    Store(0x01, MODE)
+    Store (MODE, Local0)
+	if (LNotEqual(Local0, 0x01)) {
+		err(arg0, z143, 536, 0, 0, Local0, 0x01)
+	}
+
+    Store(0x01, STAT)
+    Store (STAT, Local0)
+	if (LNotEqual(Local0, 0x01)) {
+		err(arg0, z143, 540, 0, 0, Local0, 0x01)
+	}
+
+	Name (TBUF, Buffer(0x10) {
+        0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
+        0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF})
+
+    Store(TBUF, BUFF)
+    Store (BUFF, Local0)
+	if (LNotEqual(Local0, TBUF)) {
+		err(arg0, z143, 544, 0, 0, Local0, TBUF)
+	}
+}
+
+
+//**** IPMI (ACPI 4.0) - bidirectional buffer ****************************
+
+Method(m768, 1)
+{
+	Concatenate(arg0, "-m768", arg0)
+
+	Store("TEST: m768, Check IPMI Region Fields (BufferAcc access)", Debug)
+
+    OperationRegion(POWR, IPMI, 0x3000, 0x100) // Power network function
+    Field(POWR, BufferAcc, NoLock, Preserve)
+    {
+        Offset(0xC1),   // Skip to command value 0xC1
+        SPWL, 8,        // Set power limit [command value 0xC1]
+        GPWL, 8,        // Get power limit [command value 0xC2]
+        Offset(0xC8),   // Skip to command value 0xC8
+        GPMM, 8         // Get power meter measurement [command value 0xC8]
+    }
+
+    /* Create the IPMI data buffer - ALWAYS 66 bytes */
+
+    Name(BUFF, Buffer(66){})            // Create IPMI data buffer as BUFF
+
+    CreateByteField(BUFF, 0x00, STAT)   // STAT = Status (Byte)
+    CreateByteField(BUFF, 0x01, LENG)   // LENG = Length (Byte)
+    CreateByteField(BUFF, 0x02, MODE)   // MODE = Mode (Byte)
+    CreateByteField(BUFF, 0x03, RESV)   // RESV = Reserved (Byte)
+
+    Store(0x2, LENG)                    // Request message is 2 bytes long
+    Store(0x1, MODE)                    // Set Mode to 1
+
+    Store(Store(BUFF, GPMM), BUFF)      // Write the request into the GPMM command,
+                                        // then read the results
+    CreateByteField(BUFF, 0x02, CMPC)   // CMPC = Completion code (Byte)
+    CreateWordField(BUFF, 0x03, RSVD)   // Reserved
+
+    /* Buffer expected back from ACPIEXEC utility */
+
+    Store (Buffer(66) {0, 0x40, 0, 0,
+        0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,
+        0x0C,0x0D,0x0E,0x0F,0x10,0x11,0x12,0x13,
+        0x14,0x15,0x16,0x17,0x18,0x19,0x1A,0x1B,
+        0x1C,0x1D,0x1E,0x1F,0x20,0x21,0x22,0x23,
+        0x24,0x25,0x26,0x27,0x28,0x29,0x2A,0x2B,
+        0x2C,0x2D,0x2E,0x2F,0x30,0x31,0x32,0x33,
+        0x34,0x35,0x36,0x37,0x38,0x39,0x3A,0x3B,
+        0x3C,0x3D,0x3E,0x3F,0x40,0x41}, Local1)
+
+    If (LNotEqual (STAT, 0))
+    {
+		err(arg0, z143, 548, 0, 0, STAT, 0)
+    }
+    If (LNotEqual (CMPC, 0))
+    {
+		err(arg0, z143, 552, 0, 0, CMPC, 0)
+    }
+    If (LNotEqual (BUFF, Local1))
+    {
+		err(arg0, z143, 556, 0, 0, Local1, BUFF)
+    }
+}
+
+
+
 
 // Splitting of Fields
 // m742(CallChain)
@@ -1425,37 +2300,37 @@ Method(m72a, 3)
 	// 1-1-1
 	Store(Derefof(Index(arg2, 0)), Local4)
 	if(LNotEqual(Local4, Local0)) {
-		err(arg0, z143, 61, z143, Local3, Local4, Local0)
+		err(arg0, z143, 560, z143, Local3, Local4, Local0)
 	}
 	Store(Derefof(Index(arg2, 1)), Local4)
 	if(LNotEqual(Local4, Local1)) {
-		err(arg0, z143, 62, z143, Local3, Local4, Local1)
+		err(arg0, z143, 564, z143, Local3, Local4, Local1)
 	}
 	Store(Derefof(Index(arg2, 2)), Local4)
 	if(LNotEqual(Local4, Local2)) {
-		err(arg0, z143, 63, z143, Local3, Local4, Local2)
+		err(arg0, z143, 568, z143, Local3, Local4, Local2)
 	}
 
 	// 1-2
 	Store(Derefof(Index(arg2, 3)), Local4)
 	if(LNotEqual(Local4, Local0)) {
-		err(arg0, z143, 64, z143, Local3, Local4, Local0)
+		err(arg0, z143, 572, z143, Local3, Local4, Local0)
 	}
 	Store(Derefof(Index(arg2, 4)), Local4)
 	Or(Local1, ShiftLeft(Local2, 1), Local5)
 	if(LNotEqual(Local4, Local5)) {
-		err(arg0, z143, 65, z143, Local3, Local4, Local5)
+		err(arg0, z143, 576, z143, Local3, Local4, Local5)
 	}
 
 	// 2-1
 	Store(Derefof(Index(arg2, 5)), Local4)
 	Or(Local0, ShiftLeft(Local1, 1), Local5)
 	if(LNotEqual(Local4, Local5)) {
-		err(arg0, z143, 66, z143, Local3, Local4, Local5)
+		err(arg0, z143, 580, z143, Local3, Local4, Local5)
 	}
 	Store(Derefof(Index(arg2, 6)), Local4)
 	if(LNotEqual(Local4, Local2)) {
-		err(arg0, z143, 67, z143, Local3, Local4, Local2)
+		err(arg0, z143, 584, z143, Local3, Local4, Local2)
 	}
 }
 
@@ -1578,7 +2453,7 @@ Method(m72f, 4)
 //     0 - Integer
 //     <=256 - Buffer
 //     >256  - String (size-256)
-Method(m72e, 6)
+Method(m72e, 6, Serialized)
 {
 	Name(pr00, 0)
 
@@ -1607,7 +2482,7 @@ Method(m72e, 6)
 	// Num of bits have to be non-zero
 
 	if (LEqual(arg3, 0)) {
-		err(arg0, z143, 68, 0, 0, 0, 0)
+		err(arg0, z143, 588, 0, 0, 0, 0)
 		return (Ones)
 	}
 
@@ -1752,7 +2627,7 @@ Method(m72e, 6)
 		ToInteger(Local6, Local6)
 	}
 
-	switch (Mid(Derefof(Index(arg4, 5)), 1, 3)) {
+	switch (ToString (Mid(Derefof(Index(arg4, 5)), 1, 3))) {
 	case ("730") {
 			// (ByteAcc, NoLock, Preserve)
 			m730(arg0, arg1, arg2, arg3, arg5, Local6)
@@ -1854,7 +2729,7 @@ Method(m72e, 6)
 			m7d4(arg0, arg1, arg2, arg3, arg5, Local6)
 		}
 	default {
-			err(arg0, z143, 69, 0, 0, Local4, Local5)
+			err(arg0, z143, 592, 0, 0, Local4, Local5)
 			return (Ones)
 		}
 	}
@@ -1875,7 +2750,7 @@ Method(m72e, 6)
 //     <=256 - Buffer
 //     >256  - String (size-256)
 // <the benchmark buffer for Field comparison with>
-Method(m730, 6)
+Method(m730, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, RS00)
 
@@ -1885,9 +2760,9 @@ Method(m730, 6)
 
 	Concatenate(arg0, "-m730", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
 					, 0, f000, 1}
@@ -1969,13 +2844,13 @@ Method(m730, 6)
 				Store(Refof(f00f), Local3)
 			}
 			default {
-				err(arg0, z143, 70, 0, 0, arg2, arg3)
+				err(arg0, z143, 596, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
 					, 1, f010, 1}
@@ -2057,13 +2932,13 @@ Method(m730, 6)
 				Store(Refof(f01f), Local3)
 			}
 			default {
-				err(arg0, z143, 71, 0, 0, arg2, arg3)
+				err(arg0, z143, 600, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
 					Offset(0), , 2, f020, 1}
@@ -2145,13 +3020,13 @@ Method(m730, 6)
 				Store(Refof(f02f), Local3)
 			}
 			default {
-				err(arg0, z143, 72, 0, 0, arg2, arg3)
+				err(arg0, z143, 604, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
 					, 3, f030, 1}
@@ -2233,13 +3108,13 @@ Method(m730, 6)
 				Store(Refof(f03f), Local3)
 			}
 			default {
-				err(arg0, z143, 73, 0, 0, arg2, arg3)
+				err(arg0, z143, 608, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
 					, 4, f040, 1}
@@ -2321,13 +3196,13 @@ Method(m730, 6)
 				Store(Refof(f04f), Local3)
 			}
 			default {
-				err(arg0, z143, 74, 0, 0, arg2, arg3)
+				err(arg0, z143, 612, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
 					, 5, f050, 1}
@@ -2409,13 +3284,13 @@ Method(m730, 6)
 				Store(Refof(f05f), Local3)
 			}
 			default {
-				err(arg0, z143, 75, 0, 0, arg2, arg3)
+				err(arg0, z143, 616, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
 					, 6, f060, 1}
@@ -2497,13 +3372,13 @@ Method(m730, 6)
 				Store(Refof(f06f), Local3)
 			}
 			default {
-				err(arg0, z143, 76, 0, 0, arg2, arg3)
+				err(arg0, z143, 620, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
 					, 7, f070, 1}
@@ -2585,13 +3460,13 @@ Method(m730, 6)
 				Store(Refof(f07f), Local3)
 			}
 			default {
-				err(arg0, z143, 77, 0, 0, arg2, arg3)
+				err(arg0, z143, 624, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
 					Offset(1), f080, 1}
@@ -2673,13 +3548,13 @@ Method(m730, 6)
 				Store(Refof(f08f), Local3)
 			}
 			default {
-				err(arg0, z143, 78, 0, 0, arg2, arg3)
+				err(arg0, z143, 628, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
 					, 9, f090, 1}
@@ -2761,13 +3636,13 @@ Method(m730, 6)
 				Store(Refof(f09f), Local3)
 			}
 			default {
-				err(arg0, z143, 79, 0, 0, arg2, arg3)
+				err(arg0, z143, 632, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
 					Offset(3), , 7, f0a0, 1}
@@ -2849,13 +3724,13 @@ Method(m730, 6)
 				Store(Refof(f0af), Local3)
 			}
 			default {
-				err(arg0, z143, 80, 0, 0, arg2, arg3)
+				err(arg0, z143, 636, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
 					, 32, f0b0, 1}
@@ -2937,13 +3812,13 @@ Method(m730, 6)
 				Store(Refof(f0bf), Local3)
 			}
 			default {
-				err(arg0, z143, 81, 0, 0, arg2, arg3)
+				err(arg0, z143, 640, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
 					, 33, f0c0, 1}
@@ -3025,13 +3900,13 @@ Method(m730, 6)
 				Store(Refof(f0cf), Local3)
 			}
 			default {
-				err(arg0, z143, 82, 0, 0, arg2, arg3)
+				err(arg0, z143, 644, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
 					, 63, f0d0, 1}
@@ -3113,13 +3988,13 @@ Method(m730, 6)
 				Store(Refof(f0df), Local3)
 			}
 			default {
-				err(arg0, z143, 83, 0, 0, arg2, arg3)
+				err(arg0, z143, 648, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
 					, 64, f0e0, 1}
@@ -3201,13 +4076,13 @@ Method(m730, 6)
 				Store(Refof(f0ef), Local3)
 			}
 			default {
-				err(arg0, z143, 84, 0, 0, arg2, arg3)
+				err(arg0, z143, 652, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
 					Offset(8), , 1, f0f0, 1}
@@ -3289,13 +4164,13 @@ Method(m730, 6)
 				Store(Refof(f0ff), Local3)
 			}
 			default {
-				err(arg0, z143, 85, 0, 0, arg2, arg3)
+				err(arg0, z143, 656, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z143, 86, 0, 0, arg2, arg3)
+		err(arg0, z143, 660, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -3304,7 +4179,7 @@ Method(m730, 6)
 
 // Create Region Field Unit
 // (ByteAcc, NoLock, WriteAsOnes)
-Method(m731, 6)
+Method(m731, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, RS00)
 
@@ -3314,9 +4189,9 @@ Method(m731, 6)
 
 	Concatenate(arg0, "-m731", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsOnes) {
 					, 0, f000, 1}
@@ -3398,13 +4273,13 @@ Method(m731, 6)
 				Store(Refof(f00f), Local3)
 			}
 			default {
-				err(arg0, z143, 87, 0, 0, arg2, arg3)
+				err(arg0, z143, 664, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsOnes) {
 					, 1, f010, 1}
@@ -3486,13 +4361,13 @@ Method(m731, 6)
 				Store(Refof(f01f), Local3)
 			}
 			default {
-				err(arg0, z143, 88, 0, 0, arg2, arg3)
+				err(arg0, z143, 668, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsOnes) {
 					Offset(0), , 2, f020, 1}
@@ -3574,13 +4449,13 @@ Method(m731, 6)
 				Store(Refof(f02f), Local3)
 			}
 			default {
-				err(arg0, z143, 89, 0, 0, arg2, arg3)
+				err(arg0, z143, 672, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsOnes) {
 					, 3, f030, 1}
@@ -3662,13 +4537,13 @@ Method(m731, 6)
 				Store(Refof(f03f), Local3)
 			}
 			default {
-				err(arg0, z143, 90, 0, 0, arg2, arg3)
+				err(arg0, z143, 676, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsOnes) {
 					, 4, f040, 1}
@@ -3750,13 +4625,13 @@ Method(m731, 6)
 				Store(Refof(f04f), Local3)
 			}
 			default {
-				err(arg0, z143, 91, 0, 0, arg2, arg3)
+				err(arg0, z143, 680, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsOnes) {
 					, 5, f050, 1}
@@ -3838,13 +4713,13 @@ Method(m731, 6)
 				Store(Refof(f05f), Local3)
 			}
 			default {
-				err(arg0, z143, 92, 0, 0, arg2, arg3)
+				err(arg0, z143, 684, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsOnes) {
 					, 6, f060, 1}
@@ -3926,13 +4801,13 @@ Method(m731, 6)
 				Store(Refof(f06f), Local3)
 			}
 			default {
-				err(arg0, z143, 93, 0, 0, arg2, arg3)
+				err(arg0, z143, 688, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsOnes) {
 					, 7, f070, 1}
@@ -4014,13 +4889,13 @@ Method(m731, 6)
 				Store(Refof(f07f), Local3)
 			}
 			default {
-				err(arg0, z143, 94, 0, 0, arg2, arg3)
+				err(arg0, z143, 692, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsOnes) {
 					Offset(1), f080, 1}
@@ -4102,13 +4977,13 @@ Method(m731, 6)
 				Store(Refof(f08f), Local3)
 			}
 			default {
-				err(arg0, z143, 95, 0, 0, arg2, arg3)
+				err(arg0, z143, 696, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsOnes) {
 					, 9, f090, 1}
@@ -4190,13 +5065,13 @@ Method(m731, 6)
 				Store(Refof(f09f), Local3)
 			}
 			default {
-				err(arg0, z143, 96, 0, 0, arg2, arg3)
+				err(arg0, z143, 700, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsOnes) {
 					Offset(3), , 7, f0a0, 1}
@@ -4278,13 +5153,13 @@ Method(m731, 6)
 				Store(Refof(f0af), Local3)
 			}
 			default {
-				err(arg0, z143, 97, 0, 0, arg2, arg3)
+				err(arg0, z143, 704, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsOnes) {
 					, 32, f0b0, 1}
@@ -4366,13 +5241,13 @@ Method(m731, 6)
 				Store(Refof(f0bf), Local3)
 			}
 			default {
-				err(arg0, z143, 98, 0, 0, arg2, arg3)
+				err(arg0, z143, 708, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsOnes) {
 					, 33, f0c0, 1}
@@ -4454,13 +5329,13 @@ Method(m731, 6)
 				Store(Refof(f0cf), Local3)
 			}
 			default {
-				err(arg0, z143, 99, 0, 0, arg2, arg3)
+				err(arg0, z143, 712, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsOnes) {
 					, 63, f0d0, 1}
@@ -4542,13 +5417,13 @@ Method(m731, 6)
 				Store(Refof(f0df), Local3)
 			}
 			default {
-				err(arg0, z143, 100, 0, 0, arg2, arg3)
+				err(arg0, z143, 716, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsOnes) {
 					, 64, f0e0, 1}
@@ -4630,13 +5505,13 @@ Method(m731, 6)
 				Store(Refof(f0ef), Local3)
 			}
 			default {
-				err(arg0, z143, 101, 0, 0, arg2, arg3)
+				err(arg0, z143, 720, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsOnes) {
 					Offset(8), , 1, f0f0, 1}
@@ -4718,13 +5593,13 @@ Method(m731, 6)
 				Store(Refof(f0ff), Local3)
 			}
 			default {
-				err(arg0, z143, 102, 0, 0, arg2, arg3)
+				err(arg0, z143, 724, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z143, 103, 0, 0, arg2, arg3)
+		err(arg0, z143, 728, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -4733,7 +5608,7 @@ Method(m731, 6)
 
 // Create Region Field Unit
 // (ByteAcc, NoLock, WriteAsZeros)
-Method(m732, 6)
+Method(m732, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, RS00)
 
@@ -4743,9 +5618,9 @@ Method(m732, 6)
 
 	Concatenate(arg0, "-m732", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 					, 0, f000, 1}
@@ -4827,13 +5702,13 @@ Method(m732, 6)
 				Store(Refof(f00f), Local3)
 			}
 			default {
-				err(arg0, z143, 104, 0, 0, arg2, arg3)
+				err(arg0, z143, 732, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 					, 1, f010, 1}
@@ -4915,13 +5790,13 @@ Method(m732, 6)
 				Store(Refof(f01f), Local3)
 			}
 			default {
-				err(arg0, z143, 105, 0, 0, arg2, arg3)
+				err(arg0, z143, 736, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 					Offset(0), , 2, f020, 1}
@@ -5003,13 +5878,13 @@ Method(m732, 6)
 				Store(Refof(f02f), Local3)
 			}
 			default {
-				err(arg0, z143, 106, 0, 0, arg2, arg3)
+				err(arg0, z143, 740, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 					, 3, f030, 1}
@@ -5091,13 +5966,13 @@ Method(m732, 6)
 				Store(Refof(f03f), Local3)
 			}
 			default {
-				err(arg0, z143, 107, 0, 0, arg2, arg3)
+				err(arg0, z143, 744, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 					, 4, f040, 1}
@@ -5179,13 +6054,13 @@ Method(m732, 6)
 				Store(Refof(f04f), Local3)
 			}
 			default {
-				err(arg0, z143, 108, 0, 0, arg2, arg3)
+				err(arg0, z143, 748, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 					, 5, f050, 1}
@@ -5267,13 +6142,13 @@ Method(m732, 6)
 				Store(Refof(f05f), Local3)
 			}
 			default {
-				err(arg0, z143, 109, 0, 0, arg2, arg3)
+				err(arg0, z143, 752, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 					, 6, f060, 1}
@@ -5355,13 +6230,13 @@ Method(m732, 6)
 				Store(Refof(f06f), Local3)
 			}
 			default {
-				err(arg0, z143, 110, 0, 0, arg2, arg3)
+				err(arg0, z143, 756, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 					, 7, f070, 1}
@@ -5443,13 +6318,13 @@ Method(m732, 6)
 				Store(Refof(f07f), Local3)
 			}
 			default {
-				err(arg0, z143, 111, 0, 0, arg2, arg3)
+				err(arg0, z143, 760, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 					Offset(1), f080, 1}
@@ -5531,13 +6406,13 @@ Method(m732, 6)
 				Store(Refof(f08f), Local3)
 			}
 			default {
-				err(arg0, z143, 112, 0, 0, arg2, arg3)
+				err(arg0, z143, 764, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 					, 9, f090, 1}
@@ -5619,13 +6494,13 @@ Method(m732, 6)
 				Store(Refof(f09f), Local3)
 			}
 			default {
-				err(arg0, z143, 113, 0, 0, arg2, arg3)
+				err(arg0, z143, 768, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 					Offset(3), , 7, f0a0, 1}
@@ -5707,13 +6582,13 @@ Method(m732, 6)
 				Store(Refof(f0af), Local3)
 			}
 			default {
-				err(arg0, z143, 114, 0, 0, arg2, arg3)
+				err(arg0, z143, 772, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 					, 32, f0b0, 1}
@@ -5795,13 +6670,13 @@ Method(m732, 6)
 				Store(Refof(f0bf), Local3)
 			}
 			default {
-				err(arg0, z143, 115, 0, 0, arg2, arg3)
+				err(arg0, z143, 776, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 					, 33, f0c0, 1}
@@ -5883,13 +6758,13 @@ Method(m732, 6)
 				Store(Refof(f0cf), Local3)
 			}
 			default {
-				err(arg0, z143, 116, 0, 0, arg2, arg3)
+				err(arg0, z143, 780, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 					, 63, f0d0, 1}
@@ -5971,13 +6846,13 @@ Method(m732, 6)
 				Store(Refof(f0df), Local3)
 			}
 			default {
-				err(arg0, z143, 117, 0, 0, arg2, arg3)
+				err(arg0, z143, 784, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 					, 64, f0e0, 1}
@@ -6059,13 +6934,13 @@ Method(m732, 6)
 				Store(Refof(f0ef), Local3)
 			}
 			default {
-				err(arg0, z143, 118, 0, 0, arg2, arg3)
+				err(arg0, z143, 788, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 					Offset(8), , 1, f0f0, 1}
@@ -6147,13 +7022,13 @@ Method(m732, 6)
 				Store(Refof(f0ff), Local3)
 			}
 			default {
-				err(arg0, z143, 119, 0, 0, arg2, arg3)
+				err(arg0, z143, 792, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z143, 120, 0, 0, arg2, arg3)
+		err(arg0, z143, 796, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -6162,7 +7037,7 @@ Method(m732, 6)
 
 // Create Region Field Unit
 // (WordAcc, NoLock, Preserve)
-Method(m733, 6)
+Method(m733, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, RS00)
 
@@ -6172,9 +7047,9 @@ Method(m733, 6)
 
 	Concatenate(arg0, "-m733", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, Preserve) {
 					, 0, f000, 1}
@@ -6256,13 +7131,13 @@ Method(m733, 6)
 				Store(Refof(f00f), Local3)
 			}
 			default {
-				err(arg0, z143, 121, 0, 0, arg2, arg3)
+				err(arg0, z143, 800, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, Preserve) {
 					, 1, f010, 1}
@@ -6344,13 +7219,13 @@ Method(m733, 6)
 				Store(Refof(f01f), Local3)
 			}
 			default {
-				err(arg0, z143, 122, 0, 0, arg2, arg3)
+				err(arg0, z143, 804, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, Preserve) {
 					Offset(0), , 2, f020, 1}
@@ -6432,13 +7307,13 @@ Method(m733, 6)
 				Store(Refof(f02f), Local3)
 			}
 			default {
-				err(arg0, z143, 123, 0, 0, arg2, arg3)
+				err(arg0, z143, 808, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, Preserve) {
 					, 3, f030, 1}
@@ -6520,13 +7395,13 @@ Method(m733, 6)
 				Store(Refof(f03f), Local3)
 			}
 			default {
-				err(arg0, z143, 124, 0, 0, arg2, arg3)
+				err(arg0, z143, 812, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, Preserve) {
 					, 4, f040, 1}
@@ -6608,13 +7483,13 @@ Method(m733, 6)
 				Store(Refof(f04f), Local3)
 			}
 			default {
-				err(arg0, z143, 125, 0, 0, arg2, arg3)
+				err(arg0, z143, 816, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, Preserve) {
 					, 5, f050, 1}
@@ -6696,13 +7571,13 @@ Method(m733, 6)
 				Store(Refof(f05f), Local3)
 			}
 			default {
-				err(arg0, z143, 126, 0, 0, arg2, arg3)
+				err(arg0, z143, 820, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, Preserve) {
 					, 6, f060, 1}
@@ -6784,13 +7659,13 @@ Method(m733, 6)
 				Store(Refof(f06f), Local3)
 			}
 			default {
-				err(arg0, z143, 127, 0, 0, arg2, arg3)
+				err(arg0, z143, 824, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, Preserve) {
 					, 7, f070, 1}
@@ -6872,13 +7747,13 @@ Method(m733, 6)
 				Store(Refof(f07f), Local3)
 			}
 			default {
-				err(arg0, z143, 128, 0, 0, arg2, arg3)
+				err(arg0, z143, 828, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, Preserve) {
 					Offset(1), f080, 1}
@@ -6960,13 +7835,13 @@ Method(m733, 6)
 				Store(Refof(f08f), Local3)
 			}
 			default {
-				err(arg0, z143, 129, 0, 0, arg2, arg3)
+				err(arg0, z143, 832, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, Preserve) {
 					, 9, f090, 1}
@@ -7048,13 +7923,13 @@ Method(m733, 6)
 				Store(Refof(f09f), Local3)
 			}
 			default {
-				err(arg0, z143, 130, 0, 0, arg2, arg3)
+				err(arg0, z143, 836, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, Preserve) {
 					Offset(3), , 7, f0a0, 1}
@@ -7136,13 +8011,13 @@ Method(m733, 6)
 				Store(Refof(f0af), Local3)
 			}
 			default {
-				err(arg0, z143, 131, 0, 0, arg2, arg3)
+				err(arg0, z143, 840, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, Preserve) {
 					, 32, f0b0, 1}
@@ -7224,13 +8099,13 @@ Method(m733, 6)
 				Store(Refof(f0bf), Local3)
 			}
 			default {
-				err(arg0, z143, 132, 0, 0, arg2, arg3)
+				err(arg0, z143, 844, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, Preserve) {
 					, 33, f0c0, 1}
@@ -7312,13 +8187,13 @@ Method(m733, 6)
 				Store(Refof(f0cf), Local3)
 			}
 			default {
-				err(arg0, z143, 133, 0, 0, arg2, arg3)
+				err(arg0, z143, 848, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, Preserve) {
 					, 63, f0d0, 1}
@@ -7400,13 +8275,13 @@ Method(m733, 6)
 				Store(Refof(f0df), Local3)
 			}
 			default {
-				err(arg0, z143, 134, 0, 0, arg2, arg3)
+				err(arg0, z143, 852, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, Preserve) {
 					, 64, f0e0, 1}
@@ -7488,13 +8363,13 @@ Method(m733, 6)
 				Store(Refof(f0ef), Local3)
 			}
 			default {
-				err(arg0, z143, 135, 0, 0, arg2, arg3)
+				err(arg0, z143, 856, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, Preserve) {
 					Offset(8), , 1, f0f0, 1}
@@ -7576,13 +8451,13 @@ Method(m733, 6)
 				Store(Refof(f0ff), Local3)
 			}
 			default {
-				err(arg0, z143, 136, 0, 0, arg2, arg3)
+				err(arg0, z143, 860, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z143, 137, 0, 0, arg2, arg3)
+		err(arg0, z143, 864, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -7591,7 +8466,7 @@ Method(m733, 6)
 
 // Create Region Field Unit
 // (WordAcc, NoLock, WriteAsOnes)
-Method(m734, 6)
+Method(m734, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, RS00)
 
@@ -7601,9 +8476,9 @@ Method(m734, 6)
 
 	Concatenate(arg0, "-m734", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsOnes) {
 					, 0, f000, 1}
@@ -7685,13 +8560,13 @@ Method(m734, 6)
 				Store(Refof(f00f), Local3)
 			}
 			default {
-				err(arg0, z143, 138, 0, 0, arg2, arg3)
+				err(arg0, z143, 868, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsOnes) {
 					, 1, f010, 1}
@@ -7773,13 +8648,13 @@ Method(m734, 6)
 				Store(Refof(f01f), Local3)
 			}
 			default {
-				err(arg0, z143, 139, 0, 0, arg2, arg3)
+				err(arg0, z143, 872, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsOnes) {
 					Offset(0), , 2, f020, 1}
@@ -7861,13 +8736,13 @@ Method(m734, 6)
 				Store(Refof(f02f), Local3)
 			}
 			default {
-				err(arg0, z143, 140, 0, 0, arg2, arg3)
+				err(arg0, z143, 876, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsOnes) {
 					, 3, f030, 1}
@@ -7949,13 +8824,13 @@ Method(m734, 6)
 				Store(Refof(f03f), Local3)
 			}
 			default {
-				err(arg0, z143, 141, 0, 0, arg2, arg3)
+				err(arg0, z143, 880, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsOnes) {
 					, 4, f040, 1}
@@ -8037,13 +8912,13 @@ Method(m734, 6)
 				Store(Refof(f04f), Local3)
 			}
 			default {
-				err(arg0, z143, 142, 0, 0, arg2, arg3)
+				err(arg0, z143, 884, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsOnes) {
 					, 5, f050, 1}
@@ -8125,13 +9000,13 @@ Method(m734, 6)
 				Store(Refof(f05f), Local3)
 			}
 			default {
-				err(arg0, z143, 143, 0, 0, arg2, arg3)
+				err(arg0, z143, 888, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsOnes) {
 					, 6, f060, 1}
@@ -8213,13 +9088,13 @@ Method(m734, 6)
 				Store(Refof(f06f), Local3)
 			}
 			default {
-				err(arg0, z143, 144, 0, 0, arg2, arg3)
+				err(arg0, z143, 892, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsOnes) {
 					, 7, f070, 1}
@@ -8301,13 +9176,13 @@ Method(m734, 6)
 				Store(Refof(f07f), Local3)
 			}
 			default {
-				err(arg0, z143, 145, 0, 0, arg2, arg3)
+				err(arg0, z143, 896, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsOnes) {
 					Offset(1), f080, 1}
@@ -8389,13 +9264,13 @@ Method(m734, 6)
 				Store(Refof(f08f), Local3)
 			}
 			default {
-				err(arg0, z143, 146, 0, 0, arg2, arg3)
+				err(arg0, z143, 900, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsOnes) {
 					, 9, f090, 1}
@@ -8477,13 +9352,13 @@ Method(m734, 6)
 				Store(Refof(f09f), Local3)
 			}
 			default {
-				err(arg0, z143, 147, 0, 0, arg2, arg3)
+				err(arg0, z143, 904, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsOnes) {
 					Offset(3), , 7, f0a0, 1}
@@ -8565,13 +9440,13 @@ Method(m734, 6)
 				Store(Refof(f0af), Local3)
 			}
 			default {
-				err(arg0, z143, 148, 0, 0, arg2, arg3)
+				err(arg0, z143, 908, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsOnes) {
 					, 32, f0b0, 1}
@@ -8653,13 +9528,13 @@ Method(m734, 6)
 				Store(Refof(f0bf), Local3)
 			}
 			default {
-				err(arg0, z143, 149, 0, 0, arg2, arg3)
+				err(arg0, z143, 912, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsOnes) {
 					, 33, f0c0, 1}
@@ -8741,13 +9616,13 @@ Method(m734, 6)
 				Store(Refof(f0cf), Local3)
 			}
 			default {
-				err(arg0, z143, 150, 0, 0, arg2, arg3)
+				err(arg0, z143, 916, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsOnes) {
 					, 63, f0d0, 1}
@@ -8829,13 +9704,13 @@ Method(m734, 6)
 				Store(Refof(f0df), Local3)
 			}
 			default {
-				err(arg0, z143, 151, 0, 0, arg2, arg3)
+				err(arg0, z143, 920, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsOnes) {
 					, 64, f0e0, 1}
@@ -8917,13 +9792,13 @@ Method(m734, 6)
 				Store(Refof(f0ef), Local3)
 			}
 			default {
-				err(arg0, z143, 152, 0, 0, arg2, arg3)
+				err(arg0, z143, 924, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsOnes) {
 					Offset(8), , 1, f0f0, 1}
@@ -9005,13 +9880,13 @@ Method(m734, 6)
 				Store(Refof(f0ff), Local3)
 			}
 			default {
-				err(arg0, z143, 153, 0, 0, arg2, arg3)
+				err(arg0, z143, 928, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z143, 154, 0, 0, arg2, arg3)
+		err(arg0, z143, 932, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -9020,7 +9895,7 @@ Method(m734, 6)
 
 // Create Region Field Unit
 // (WordAcc, NoLock, WriteAsZeros)
-Method(m735, 6)
+Method(m735, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, RS00)
 
@@ -9030,9 +9905,9 @@ Method(m735, 6)
 
 	Concatenate(arg0, "-m735", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 					, 0, f000, 1}
@@ -9114,13 +9989,13 @@ Method(m735, 6)
 				Store(Refof(f00f), Local3)
 			}
 			default {
-				err(arg0, z143, 155, 0, 0, arg2, arg3)
+				err(arg0, z143, 936, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 					, 1, f010, 1}
@@ -9202,13 +10077,13 @@ Method(m735, 6)
 				Store(Refof(f01f), Local3)
 			}
 			default {
-				err(arg0, z143, 156, 0, 0, arg2, arg3)
+				err(arg0, z143, 940, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 					Offset(0), , 2, f020, 1}
@@ -9290,13 +10165,13 @@ Method(m735, 6)
 				Store(Refof(f02f), Local3)
 			}
 			default {
-				err(arg0, z143, 157, 0, 0, arg2, arg3)
+				err(arg0, z143, 944, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 					, 3, f030, 1}
@@ -9378,13 +10253,13 @@ Method(m735, 6)
 				Store(Refof(f03f), Local3)
 			}
 			default {
-				err(arg0, z143, 158, 0, 0, arg2, arg3)
+				err(arg0, z143, 948, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 					, 4, f040, 1}
@@ -9466,13 +10341,13 @@ Method(m735, 6)
 				Store(Refof(f04f), Local3)
 			}
 			default {
-				err(arg0, z143, 159, 0, 0, arg2, arg3)
+				err(arg0, z143, 952, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 					, 5, f050, 1}
@@ -9554,13 +10429,13 @@ Method(m735, 6)
 				Store(Refof(f05f), Local3)
 			}
 			default {
-				err(arg0, z143, 160, 0, 0, arg2, arg3)
+				err(arg0, z143, 956, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 					, 6, f060, 1}
@@ -9642,13 +10517,13 @@ Method(m735, 6)
 				Store(Refof(f06f), Local3)
 			}
 			default {
-				err(arg0, z143, 161, 0, 0, arg2, arg3)
+				err(arg0, z143, 960, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 					, 7, f070, 1}
@@ -9730,13 +10605,13 @@ Method(m735, 6)
 				Store(Refof(f07f), Local3)
 			}
 			default {
-				err(arg0, z143, 162, 0, 0, arg2, arg3)
+				err(arg0, z143, 964, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 					Offset(1), f080, 1}
@@ -9818,13 +10693,13 @@ Method(m735, 6)
 				Store(Refof(f08f), Local3)
 			}
 			default {
-				err(arg0, z143, 163, 0, 0, arg2, arg3)
+				err(arg0, z143, 968, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 					, 9, f090, 1}
@@ -9906,13 +10781,13 @@ Method(m735, 6)
 				Store(Refof(f09f), Local3)
 			}
 			default {
-				err(arg0, z143, 164, 0, 0, arg2, arg3)
+				err(arg0, z143, 972, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 					Offset(3), , 7, f0a0, 1}
@@ -9994,13 +10869,13 @@ Method(m735, 6)
 				Store(Refof(f0af), Local3)
 			}
 			default {
-				err(arg0, z143, 165, 0, 0, arg2, arg3)
+				err(arg0, z143, 976, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 					, 32, f0b0, 1}
@@ -10082,13 +10957,13 @@ Method(m735, 6)
 				Store(Refof(f0bf), Local3)
 			}
 			default {
-				err(arg0, z143, 165, 0, 0, arg2, arg3)
+				err(arg0, z143, 980, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 					, 33, f0c0, 1}
@@ -10170,13 +11045,13 @@ Method(m735, 6)
 				Store(Refof(f0cf), Local3)
 			}
 			default {
-				err(arg0, z143, 166, 0, 0, arg2, arg3)
+				err(arg0, z143, 984, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 					, 63, f0d0, 1}
@@ -10258,13 +11133,13 @@ Method(m735, 6)
 				Store(Refof(f0df), Local3)
 			}
 			default {
-				err(arg0, z143, 167, 0, 0, arg2, arg3)
+				err(arg0, z143, 988, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 					, 64, f0e0, 1}
@@ -10346,13 +11221,13 @@ Method(m735, 6)
 				Store(Refof(f0ef), Local3)
 			}
 			default {
-				err(arg0, z143, 168, 0, 0, arg2, arg3)
+				err(arg0, z143, 992, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 					Offset(8), , 1, f0f0, 1}
@@ -10434,13 +11309,13 @@ Method(m735, 6)
 				Store(Refof(f0ff), Local3)
 			}
 			default {
-				err(arg0, z143, 169, 0, 0, arg2, arg3)
+				err(arg0, z143, 996, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z143, 170, 0, 0, arg2, arg3)
+		err(arg0, z143, 1000, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -10449,7 +11324,7 @@ Method(m735, 6)
 
 // Create Region Field Unit
 // (DWordAcc, NoLock, Preserve)
-Method(m736, 6)
+Method(m736, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, RS00)
 
@@ -10459,9 +11334,9 @@ Method(m736, 6)
 
 	Concatenate(arg0, "-m736", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, Preserve) {
 					, 0, f000, 1}
@@ -10543,13 +11418,13 @@ Method(m736, 6)
 				Store(Refof(f00f), Local3)
 			}
 			default {
-				err(arg0, z143, 171, 0, 0, arg2, arg3)
+				err(arg0, z143, 1004, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, Preserve) {
 					, 1, f010, 1}
@@ -10631,13 +11506,13 @@ Method(m736, 6)
 				Store(Refof(f01f), Local3)
 			}
 			default {
-				err(arg0, z143, 172, 0, 0, arg2, arg3)
+				err(arg0, z143, 1008, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, Preserve) {
 					Offset(0), , 2, f020, 1}
@@ -10719,13 +11594,13 @@ Method(m736, 6)
 				Store(Refof(f02f), Local3)
 			}
 			default {
-				err(arg0, z143, 173, 0, 0, arg2, arg3)
+				err(arg0, z143, 1012, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, Preserve) {
 					, 3, f030, 1}
@@ -10807,13 +11682,13 @@ Method(m736, 6)
 				Store(Refof(f03f), Local3)
 			}
 			default {
-				err(arg0, z143, 174, 0, 0, arg2, arg3)
+				err(arg0, z143, 1016, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, Preserve) {
 					, 4, f040, 1}
@@ -10895,13 +11770,13 @@ Method(m736, 6)
 				Store(Refof(f04f), Local3)
 			}
 			default {
-				err(arg0, z143, 175, 0, 0, arg2, arg3)
+				err(arg0, z143, 1020, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, Preserve) {
 					, 5, f050, 1}
@@ -10983,13 +11858,13 @@ Method(m736, 6)
 				Store(Refof(f05f), Local3)
 			}
 			default {
-				err(arg0, z143, 176, 0, 0, arg2, arg3)
+				err(arg0, z143, 1024, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, Preserve) {
 					, 6, f060, 1}
@@ -11071,13 +11946,13 @@ Method(m736, 6)
 				Store(Refof(f06f), Local3)
 			}
 			default {
-				err(arg0, z143, 177, 0, 0, arg2, arg3)
+				err(arg0, z143, 1028, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, Preserve) {
 					, 7, f070, 1}
@@ -11159,13 +12034,13 @@ Method(m736, 6)
 				Store(Refof(f07f), Local3)
 			}
 			default {
-				err(arg0, z143, 178, 0, 0, arg2, arg3)
+				err(arg0, z143, 1032, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, Preserve) {
 					Offset(1), f080, 1}
@@ -11247,13 +12122,13 @@ Method(m736, 6)
 				Store(Refof(f08f), Local3)
 			}
 			default {
-				err(arg0, z143, 179, 0, 0, arg2, arg3)
+				err(arg0, z143, 1036, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, Preserve) {
 					, 9, f090, 1}
@@ -11335,13 +12210,13 @@ Method(m736, 6)
 				Store(Refof(f09f), Local3)
 			}
 			default {
-				err(arg0, z143, 180, 0, 0, arg2, arg3)
+				err(arg0, z143, 1040, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, Preserve) {
 					Offset(3), , 7, f0a0, 1}
@@ -11423,13 +12298,13 @@ Method(m736, 6)
 				Store(Refof(f0af), Local3)
 			}
 			default {
-				err(arg0, z143, 181, 0, 0, arg2, arg3)
+				err(arg0, z143, 1044, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, Preserve) {
 					, 32, f0b0, 1}
@@ -11511,13 +12386,13 @@ Method(m736, 6)
 				Store(Refof(f0bf), Local3)
 			}
 			default {
-				err(arg0, z143, 182, 0, 0, arg2, arg3)
+				err(arg0, z143, 1048, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, Preserve) {
 					, 33, f0c0, 1}
@@ -11599,13 +12474,13 @@ Method(m736, 6)
 				Store(Refof(f0cf), Local3)
 			}
 			default {
-				err(arg0, z143, 183, 0, 0, arg2, arg3)
+				err(arg0, z143, 1052, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, Preserve) {
 					, 63, f0d0, 1}
@@ -11687,13 +12562,13 @@ Method(m736, 6)
 				Store(Refof(f0df), Local3)
 			}
 			default {
-				err(arg0, z143, 184, 0, 0, arg2, arg3)
+				err(arg0, z143, 1056, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, Preserve) {
 					, 64, f0e0, 1}
@@ -11775,13 +12650,13 @@ Method(m736, 6)
 				Store(Refof(f0ef), Local3)
 			}
 			default {
-				err(arg0, z143, 185, 0, 0, arg2, arg3)
+				err(arg0, z143, 1060, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, Preserve) {
 					Offset(8), , 1, f0f0, 1}
@@ -11863,13 +12738,13 @@ Method(m736, 6)
 				Store(Refof(f0ff), Local3)
 			}
 			default {
-				err(arg0, z143, 186, 0, 0, arg2, arg3)
+				err(arg0, z143, 1064, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z143, 187, 0, 0, arg2, arg3)
+		err(arg0, z143, 1068, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -11878,7 +12753,7 @@ Method(m736, 6)
 
 // Create Region Field Unit
 // (DWordAcc, NoLock, WriteAsOnes)
-Method(m737, 6)
+Method(m737, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, RS00)
 
@@ -11888,9 +12763,9 @@ Method(m737, 6)
 
 	Concatenate(arg0, "-m737", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsOnes) {
 					, 0, f000, 1}
@@ -11972,13 +12847,13 @@ Method(m737, 6)
 				Store(Refof(f00f), Local3)
 			}
 			default {
-				err(arg0, z143, 188, 0, 0, arg2, arg3)
+				err(arg0, z143, 1072, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsOnes) {
 					, 1, f010, 1}
@@ -12060,13 +12935,13 @@ Method(m737, 6)
 				Store(Refof(f01f), Local3)
 			}
 			default {
-				err(arg0, z143, 189, 0, 0, arg2, arg3)
+				err(arg0, z143, 1076, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsOnes) {
 					Offset(0), , 2, f020, 1}
@@ -12148,13 +13023,13 @@ Method(m737, 6)
 				Store(Refof(f02f), Local3)
 			}
 			default {
-				err(arg0, z143, 190, 0, 0, arg2, arg3)
+				err(arg0, z143, 1080, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsOnes) {
 					, 3, f030, 1}
@@ -12236,13 +13111,13 @@ Method(m737, 6)
 				Store(Refof(f03f), Local3)
 			}
 			default {
-				err(arg0, z143, 191, 0, 0, arg2, arg3)
+				err(arg0, z143, 1084, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsOnes) {
 					, 4, f040, 1}
@@ -12324,13 +13199,13 @@ Method(m737, 6)
 				Store(Refof(f04f), Local3)
 			}
 			default {
-				err(arg0, z143, 192, 0, 0, arg2, arg3)
+				err(arg0, z143, 1088, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsOnes) {
 					, 5, f050, 1}
@@ -12412,13 +13287,13 @@ Method(m737, 6)
 				Store(Refof(f05f), Local3)
 			}
 			default {
-				err(arg0, z143, 193, 0, 0, arg2, arg3)
+				err(arg0, z143, 1092, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsOnes) {
 					, 6, f060, 1}
@@ -12500,13 +13375,13 @@ Method(m737, 6)
 				Store(Refof(f06f), Local3)
 			}
 			default {
-				err(arg0, z143, 194, 0, 0, arg2, arg3)
+				err(arg0, z143, 1096, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsOnes) {
 					, 7, f070, 1}
@@ -12588,13 +13463,13 @@ Method(m737, 6)
 				Store(Refof(f07f), Local3)
 			}
 			default {
-				err(arg0, z143, 195, 0, 0, arg2, arg3)
+				err(arg0, z143, 1100, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsOnes) {
 					Offset(1), f080, 1}
@@ -12676,13 +13551,13 @@ Method(m737, 6)
 				Store(Refof(f08f), Local3)
 			}
 			default {
-				err(arg0, z143, 196, 0, 0, arg2, arg3)
+				err(arg0, z143, 1104, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsOnes) {
 					, 9, f090, 1}
@@ -12764,13 +13639,13 @@ Method(m737, 6)
 				Store(Refof(f09f), Local3)
 			}
 			default {
-				err(arg0, z143, 197, 0, 0, arg2, arg3)
+				err(arg0, z143, 1108, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsOnes) {
 					Offset(3), , 7, f0a0, 1}
@@ -12852,13 +13727,13 @@ Method(m737, 6)
 				Store(Refof(f0af), Local3)
 			}
 			default {
-				err(arg0, z143, 198, 0, 0, arg2, arg3)
+				err(arg0, z143, 1112, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsOnes) {
 					, 32, f0b0, 1}
@@ -12940,13 +13815,13 @@ Method(m737, 6)
 				Store(Refof(f0bf), Local3)
 			}
 			default {
-				err(arg0, z143, 199, 0, 0, arg2, arg3)
+				err(arg0, z143, 1116, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsOnes) {
 					, 33, f0c0, 1}
@@ -13028,13 +13903,13 @@ Method(m737, 6)
 				Store(Refof(f0cf), Local3)
 			}
 			default {
-				err(arg0, z143, 200, 0, 0, arg2, arg3)
+				err(arg0, z143, 1120, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsOnes) {
 					, 63, f0d0, 1}
@@ -13116,13 +13991,13 @@ Method(m737, 6)
 				Store(Refof(f0df), Local3)
 			}
 			default {
-				err(arg0, z143, 201, 0, 0, arg2, arg3)
+				err(arg0, z143, 1124, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsOnes) {
 					, 64, f0e0, 1}
@@ -13204,13 +14079,13 @@ Method(m737, 6)
 				Store(Refof(f0ef), Local3)
 			}
 			default {
-				err(arg0, z143, 202, 0, 0, arg2, arg3)
+				err(arg0, z143, 1128, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsOnes) {
 					Offset(8), , 1, f0f0, 1}
@@ -13292,13 +14167,13 @@ Method(m737, 6)
 				Store(Refof(f0ff), Local3)
 			}
 			default {
-				err(arg0, z143, 203, 0, 0, arg2, arg3)
+				err(arg0, z143, 1132, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z143, 204, 0, 0, arg2, arg3)
+		err(arg0, z143, 1136, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -13307,7 +14182,7 @@ Method(m737, 6)
 
 // Create Region Field Unit
 // (DWordAcc, NoLock, WriteAsZeros)
-Method(m738, 6)
+Method(m738, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, RS00)
 
@@ -13317,9 +14192,9 @@ Method(m738, 6)
 
 	Concatenate(arg0, "-m738", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 					, 0, f000, 1}
@@ -13401,13 +14276,13 @@ Method(m738, 6)
 				Store(Refof(f00f), Local3)
 			}
 			default {
-				err(arg0, z143, 205, 0, 0, arg2, arg3)
+				err(arg0, z143, 1140, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 					, 1, f010, 1}
@@ -13489,13 +14364,13 @@ Method(m738, 6)
 				Store(Refof(f01f), Local3)
 			}
 			default {
-				err(arg0, z143, 206, 0, 0, arg2, arg3)
+				err(arg0, z143, 1144, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 					Offset(0), , 2, f020, 1}
@@ -13577,13 +14452,13 @@ Method(m738, 6)
 				Store(Refof(f02f), Local3)
 			}
 			default {
-				err(arg0, z143, 207, 0, 0, arg2, arg3)
+				err(arg0, z143, 1148, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 					, 3, f030, 1}
@@ -13665,13 +14540,13 @@ Method(m738, 6)
 				Store(Refof(f03f), Local3)
 			}
 			default {
-				err(arg0, z143, 208, 0, 0, arg2, arg3)
+				err(arg0, z143, 1152, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 					, 4, f040, 1}
@@ -13753,13 +14628,13 @@ Method(m738, 6)
 				Store(Refof(f04f), Local3)
 			}
 			default {
-				err(arg0, z143, 209, 0, 0, arg2, arg3)
+				err(arg0, z143, 1156, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 					, 5, f050, 1}
@@ -13841,13 +14716,13 @@ Method(m738, 6)
 				Store(Refof(f05f), Local3)
 			}
 			default {
-				err(arg0, z143, 210, 0, 0, arg2, arg3)
+				err(arg0, z143, 1160, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 					, 6, f060, 1}
@@ -13929,13 +14804,13 @@ Method(m738, 6)
 				Store(Refof(f06f), Local3)
 			}
 			default {
-				err(arg0, z143, 211, 0, 0, arg2, arg3)
+				err(arg0, z143, 1164, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 					, 7, f070, 1}
@@ -14017,13 +14892,13 @@ Method(m738, 6)
 				Store(Refof(f07f), Local3)
 			}
 			default {
-				err(arg0, z143, 212, 0, 0, arg2, arg3)
+				err(arg0, z143, 1168, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 					Offset(1), f080, 1}
@@ -14105,13 +14980,13 @@ Method(m738, 6)
 				Store(Refof(f08f), Local3)
 			}
 			default {
-				err(arg0, z143, 213, 0, 0, arg2, arg3)
+				err(arg0, z143, 1172, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 					, 9, f090, 1}
@@ -14193,13 +15068,13 @@ Method(m738, 6)
 				Store(Refof(f09f), Local3)
 			}
 			default {
-				err(arg0, z143, 214, 0, 0, arg2, arg3)
+				err(arg0, z143, 1176, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 					Offset(3), , 7, f0a0, 1}
@@ -14281,13 +15156,13 @@ Method(m738, 6)
 				Store(Refof(f0af), Local3)
 			}
 			default {
-				err(arg0, z143, 215, 0, 0, arg2, arg3)
+				err(arg0, z143, 1180, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 					, 32, f0b0, 1}
@@ -14369,13 +15244,13 @@ Method(m738, 6)
 				Store(Refof(f0bf), Local3)
 			}
 			default {
-				err(arg0, z143, 216, 0, 0, arg2, arg3)
+				err(arg0, z143, 1184, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 					, 33, f0c0, 1}
@@ -14457,13 +15332,13 @@ Method(m738, 6)
 				Store(Refof(f0cf), Local3)
 			}
 			default {
-				err(arg0, z143, 217, 0, 0, arg2, arg3)
+				err(arg0, z143, 1188, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 					, 63, f0d0, 1}
@@ -14545,13 +15420,13 @@ Method(m738, 6)
 				Store(Refof(f0df), Local3)
 			}
 			default {
-				err(arg0, z143, 218, 0, 0, arg2, arg3)
+				err(arg0, z143, 1192, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 					, 64, f0e0, 1}
@@ -14633,13 +15508,13 @@ Method(m738, 6)
 				Store(Refof(f0ef), Local3)
 			}
 			default {
-				err(arg0, z143, 219, 0, 0, arg2, arg3)
+				err(arg0, z143, 1196, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 					Offset(8), , 1, f0f0, 1}
@@ -14721,13 +15596,13 @@ Method(m738, 6)
 				Store(Refof(f0ff), Local3)
 			}
 			default {
-				err(arg0, z143, 220, 0, 0, arg2, arg3)
+				err(arg0, z143, 1200, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z143, 221, 0, 0, arg2, arg3)
+		err(arg0, z143, 1204, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -14736,7 +15611,7 @@ Method(m738, 6)
 
 // Create Region Field Unit
 // (QWordAcc, NoLock, Preserve)
-Method(m739, 6)
+Method(m739, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, RS00)
 
@@ -14746,9 +15621,9 @@ Method(m739, 6)
 
 	Concatenate(arg0, "-m739", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, Preserve) {
 					, 0, f000, 1}
@@ -14830,13 +15705,13 @@ Method(m739, 6)
 				Store(Refof(f00f), Local3)
 			}
 			default {
-				err(arg0, z143, 222, 0, 0, arg2, arg3)
+				err(arg0, z143, 1208, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, Preserve) {
 					, 1, f010, 1}
@@ -14918,13 +15793,13 @@ Method(m739, 6)
 				Store(Refof(f01f), Local3)
 			}
 			default {
-				err(arg0, z143, 223, 0, 0, arg2, arg3)
+				err(arg0, z143, 1212, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, Preserve) {
 					Offset(0), , 2, f020, 1}
@@ -15006,13 +15881,13 @@ Method(m739, 6)
 				Store(Refof(f02f), Local3)
 			}
 			default {
-				err(arg0, z143, 224, 0, 0, arg2, arg3)
+				err(arg0, z143, 1216, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, Preserve) {
 					, 3, f030, 1}
@@ -15094,13 +15969,13 @@ Method(m739, 6)
 				Store(Refof(f03f), Local3)
 			}
 			default {
-				err(arg0, z143, 225, 0, 0, arg2, arg3)
+				err(arg0, z143, 1220, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, Preserve) {
 					, 4, f040, 1}
@@ -15182,13 +16057,13 @@ Method(m739, 6)
 				Store(Refof(f04f), Local3)
 			}
 			default {
-				err(arg0, z143, 226, 0, 0, arg2, arg3)
+				err(arg0, z143, 1224, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, Preserve) {
 					, 5, f050, 1}
@@ -15270,13 +16145,13 @@ Method(m739, 6)
 				Store(Refof(f05f), Local3)
 			}
 			default {
-				err(arg0, z143, 227, 0, 0, arg2, arg3)
+				err(arg0, z143, 1228, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, Preserve) {
 					, 6, f060, 1}
@@ -15358,13 +16233,13 @@ Method(m739, 6)
 				Store(Refof(f06f), Local3)
 			}
 			default {
-				err(arg0, z143, 228, 0, 0, arg2, arg3)
+				err(arg0, z143, 1232, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, Preserve) {
 					, 7, f070, 1}
@@ -15446,13 +16321,13 @@ Method(m739, 6)
 				Store(Refof(f07f), Local3)
 			}
 			default {
-				err(arg0, z143, 229, 0, 0, arg2, arg3)
+				err(arg0, z143, 1236, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, Preserve) {
 					Offset(1), f080, 1}
@@ -15534,13 +16409,13 @@ Method(m739, 6)
 				Store(Refof(f08f), Local3)
 			}
 			default {
-				err(arg0, z143, 230, 0, 0, arg2, arg3)
+				err(arg0, z143, 1240, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, Preserve) {
 					, 9, f090, 1}
@@ -15622,13 +16497,13 @@ Method(m739, 6)
 				Store(Refof(f09f), Local3)
 			}
 			default {
-				err(arg0, z143, 231, 0, 0, arg2, arg3)
+				err(arg0, z143, 1244, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, Preserve) {
 					Offset(3), , 7, f0a0, 1}
@@ -15710,13 +16585,13 @@ Method(m739, 6)
 				Store(Refof(f0af), Local3)
 			}
 			default {
-				err(arg0, z143, 231, 0, 0, arg2, arg3)
+				err(arg0, z143, 1248, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, Preserve) {
 					, 32, f0b0, 1}
@@ -15798,13 +16673,13 @@ Method(m739, 6)
 				Store(Refof(f0bf), Local3)
 			}
 			default {
-				err(arg0, z143, 233, 0, 0, arg2, arg3)
+				err(arg0, z143, 1252, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, Preserve) {
 					, 33, f0c0, 1}
@@ -15886,13 +16761,13 @@ Method(m739, 6)
 				Store(Refof(f0cf), Local3)
 			}
 			default {
-				err(arg0, z143, 234, 0, 0, arg2, arg3)
+				err(arg0, z143, 1256, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, Preserve) {
 					, 63, f0d0, 1}
@@ -15974,13 +16849,13 @@ Method(m739, 6)
 				Store(Refof(f0df), Local3)
 			}
 			default {
-				err(arg0, z143, 235, 0, 0, arg2, arg3)
+				err(arg0, z143, 1260, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, Preserve) {
 					, 64, f0e0, 1}
@@ -16062,13 +16937,13 @@ Method(m739, 6)
 				Store(Refof(f0ef), Local3)
 			}
 			default {
-				err(arg0, z143, 236, 0, 0, arg2, arg3)
+				err(arg0, z143, 1264, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, Preserve) {
 					Offset(8), , 1, f0f0, 1}
@@ -16150,13 +17025,13 @@ Method(m739, 6)
 				Store(Refof(f0ff), Local3)
 			}
 			default {
-				err(arg0, z143, 237, 0, 0, arg2, arg3)
+				err(arg0, z143, 1268, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z143, 238, 0, 0, arg2, arg3)
+		err(arg0, z143, 1272, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -16165,7 +17040,7 @@ Method(m739, 6)
 
 // Create Region Field Unit
 // (QWordAcc, NoLock, WriteAsOnes)
-Method(m73a, 6)
+Method(m73a, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, RS00)
 
@@ -16175,9 +17050,9 @@ Method(m73a, 6)
 
 	Concatenate(arg0, "-m73a", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsOnes) {
 					, 0, f000, 1}
@@ -16259,13 +17134,13 @@ Method(m73a, 6)
 				Store(Refof(f00f), Local3)
 			}
 			default {
-				err(arg0, z143, 239, 0, 0, arg2, arg3)
+				err(arg0, z143, 1276, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsOnes) {
 					, 1, f010, 1}
@@ -16347,13 +17222,13 @@ Method(m73a, 6)
 				Store(Refof(f01f), Local3)
 			}
 			default {
-				err(arg0, z143, 240, 0, 0, arg2, arg3)
+				err(arg0, z143, 1280, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsOnes) {
 					Offset(0), , 2, f020, 1}
@@ -16435,13 +17310,13 @@ Method(m73a, 6)
 				Store(Refof(f02f), Local3)
 			}
 			default {
-				err(arg0, z143, 241, 0, 0, arg2, arg3)
+				err(arg0, z143, 1284, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsOnes) {
 					, 3, f030, 1}
@@ -16523,13 +17398,13 @@ Method(m73a, 6)
 				Store(Refof(f03f), Local3)
 			}
 			default {
-				err(arg0, z143, 242, 0, 0, arg2, arg3)
+				err(arg0, z143, 1288, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsOnes) {
 					, 4, f040, 1}
@@ -16611,13 +17486,13 @@ Method(m73a, 6)
 				Store(Refof(f04f), Local3)
 			}
 			default {
-				err(arg0, z143, 243, 0, 0, arg2, arg3)
+				err(arg0, z143, 1292, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsOnes) {
 					, 5, f050, 1}
@@ -16699,13 +17574,13 @@ Method(m73a, 6)
 				Store(Refof(f05f), Local3)
 			}
 			default {
-				err(arg0, z143, 244, 0, 0, arg2, arg3)
+				err(arg0, z143, 1296, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsOnes) {
 					, 6, f060, 1}
@@ -16787,13 +17662,13 @@ Method(m73a, 6)
 				Store(Refof(f06f), Local3)
 			}
 			default {
-				err(arg0, z143, 245, 0, 0, arg2, arg3)
+				err(arg0, z143, 1300, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsOnes) {
 					, 7, f070, 1}
@@ -16875,13 +17750,13 @@ Method(m73a, 6)
 				Store(Refof(f07f), Local3)
 			}
 			default {
-				err(arg0, z143, 246, 0, 0, arg2, arg3)
+				err(arg0, z143, 1304, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsOnes) {
 					Offset(1), f080, 1}
@@ -16963,13 +17838,13 @@ Method(m73a, 6)
 				Store(Refof(f08f), Local3)
 			}
 			default {
-				err(arg0, z143, 247, 0, 0, arg2, arg3)
+				err(arg0, z143, 1308, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsOnes) {
 					, 9, f090, 1}
@@ -17051,13 +17926,13 @@ Method(m73a, 6)
 				Store(Refof(f09f), Local3)
 			}
 			default {
-				err(arg0, z143, 248, 0, 0, arg2, arg3)
+				err(arg0, z143, 1312, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsOnes) {
 					Offset(3), , 7, f0a0, 1}
@@ -17139,13 +18014,13 @@ Method(m73a, 6)
 				Store(Refof(f0af), Local3)
 			}
 			default {
-				err(arg0, z143, 249, 0, 0, arg2, arg3)
+				err(arg0, z143, 1316, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsOnes) {
 					, 32, f0b0, 1}
@@ -17227,13 +18102,13 @@ Method(m73a, 6)
 				Store(Refof(f0bf), Local3)
 			}
 			default {
-				err(arg0, z143, 250, 0, 0, arg2, arg3)
+				err(arg0, z143, 1320, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsOnes) {
 					, 33, f0c0, 1}
@@ -17315,13 +18190,13 @@ Method(m73a, 6)
 				Store(Refof(f0cf), Local3)
 			}
 			default {
-				err(arg0, z143, 251, 0, 0, arg2, arg3)
+				err(arg0, z143, 1324, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsOnes) {
 					, 63, f0d0, 1}
@@ -17403,13 +18278,13 @@ Method(m73a, 6)
 				Store(Refof(f0df), Local3)
 			}
 			default {
-				err(arg0, z143, 252, 0, 0, arg2, arg3)
+				err(arg0, z143, 1328, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsOnes) {
 					, 64, f0e0, 1}
@@ -17491,13 +18366,13 @@ Method(m73a, 6)
 				Store(Refof(f0ef), Local3)
 			}
 			default {
-				err(arg0, z143, 253, 0, 0, arg2, arg3)
+				err(arg0, z143, 1332, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsOnes) {
 					Offset(8), , 1, f0f0, 1}
@@ -17579,13 +18454,13 @@ Method(m73a, 6)
 				Store(Refof(f0ff), Local3)
 			}
 			default {
-				err(arg0, z143, 254, 0, 0, arg2, arg3)
+				err(arg0, z143, 1336, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z143, 255, 0, 0, arg2, arg3)
+		err(arg0, z143, 1340, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -17594,7 +18469,7 @@ Method(m73a, 6)
 
 // Create Region Field Unit
 // (QWordAcc, NoLock, WriteAsZeros)
-Method(m73b, 6)
+Method(m73b, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, RS00)
 
@@ -17604,9 +18479,9 @@ Method(m73b, 6)
 
 	Concatenate(arg0, "-m73b", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsZeros) {
 					, 0, f000, 1}
@@ -17688,13 +18563,13 @@ Method(m73b, 6)
 				Store(Refof(f00f), Local3)
 			}
 			default {
-				err(arg0, z143, 256, 0, 0, arg2, arg3)
+				err(arg0, z143, 1344, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsZeros) {
 					, 1, f010, 1}
@@ -17776,13 +18651,13 @@ Method(m73b, 6)
 				Store(Refof(f01f), Local3)
 			}
 			default {
-				err(arg0, z143, 257, 0, 0, arg2, arg3)
+				err(arg0, z143, 1348, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsZeros) {
 					Offset(0), , 2, f020, 1}
@@ -17864,13 +18739,13 @@ Method(m73b, 6)
 				Store(Refof(f02f), Local3)
 			}
 			default {
-				err(arg0, z143, 258, 0, 0, arg2, arg3)
+				err(arg0, z143, 1352, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsZeros) {
 					, 3, f030, 1}
@@ -17952,13 +18827,13 @@ Method(m73b, 6)
 				Store(Refof(f03f), Local3)
 			}
 			default {
-				err(arg0, z143, 259, 0, 0, arg2, arg3)
+				err(arg0, z143, 1356, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsZeros) {
 					, 4, f040, 1}
@@ -18040,13 +18915,13 @@ Method(m73b, 6)
 				Store(Refof(f04f), Local3)
 			}
 			default {
-				err(arg0, z143, 260, 0, 0, arg2, arg3)
+				err(arg0, z143, 1360, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsZeros) {
 					, 5, f050, 1}
@@ -18128,13 +19003,13 @@ Method(m73b, 6)
 				Store(Refof(f05f), Local3)
 			}
 			default {
-				err(arg0, z143, 261, 0, 0, arg2, arg3)
+				err(arg0, z143, 1364, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsZeros) {
 					, 6, f060, 1}
@@ -18216,13 +19091,13 @@ Method(m73b, 6)
 				Store(Refof(f06f), Local3)
 			}
 			default {
-				err(arg0, z143, 262, 0, 0, arg2, arg3)
+				err(arg0, z143, 1368, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsZeros) {
 					, 7, f070, 1}
@@ -18304,13 +19179,13 @@ Method(m73b, 6)
 				Store(Refof(f07f), Local3)
 			}
 			default {
-				err(arg0, z143, 263, 0, 0, arg2, arg3)
+				err(arg0, z143, 1372, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsZeros) {
 					Offset(1), f080, 1}
@@ -18392,13 +19267,13 @@ Method(m73b, 6)
 				Store(Refof(f08f), Local3)
 			}
 			default {
-				err(arg0, z143, 264, 0, 0, arg2, arg3)
+				err(arg0, z143, 1376, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsZeros) {
 					, 9, f090, 1}
@@ -18480,13 +19355,13 @@ Method(m73b, 6)
 				Store(Refof(f09f), Local3)
 			}
 			default {
-				err(arg0, z143, 265, 0, 0, arg2, arg3)
+				err(arg0, z143, 1380, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsZeros) {
 					Offset(3), , 7, f0a0, 1}
@@ -18568,13 +19443,13 @@ Method(m73b, 6)
 				Store(Refof(f0af), Local3)
 			}
 			default {
-				err(arg0, z143, 266, 0, 0, arg2, arg3)
+				err(arg0, z143, 1384, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsZeros) {
 					, 32, f0b0, 1}
@@ -18656,13 +19531,13 @@ Method(m73b, 6)
 				Store(Refof(f0bf), Local3)
 			}
 			default {
-				err(arg0, z143, 267, 0, 0, arg2, arg3)
+				err(arg0, z143, 1388, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsZeros) {
 					, 33, f0c0, 1}
@@ -18744,13 +19619,13 @@ Method(m73b, 6)
 				Store(Refof(f0cf), Local3)
 			}
 			default {
-				err(arg0, z143, 268, 0, 0, arg2, arg3)
+				err(arg0, z143, 1392, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsZeros) {
 					, 63, f0d0, 1}
@@ -18832,13 +19707,13 @@ Method(m73b, 6)
 				Store(Refof(f0df), Local3)
 			}
 			default {
-				err(arg0, z143, 269, 0, 0, arg2, arg3)
+				err(arg0, z143, 1396, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsZeros) {
 					, 64, f0e0, 1}
@@ -18920,13 +19795,13 @@ Method(m73b, 6)
 				Store(Refof(f0ef), Local3)
 			}
 			default {
-				err(arg0, z143, 270, 0, 0, arg2, arg3)
+				err(arg0, z143, 1400, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, QWordAcc, NoLock, WriteAsZeros) {
 					Offset(8), , 1, f0f0, 1}
@@ -19008,13 +19883,13 @@ Method(m73b, 6)
 				Store(Refof(f0ff), Local3)
 			}
 			default {
-				err(arg0, z143, 271, 0, 0, arg2, arg3)
+				err(arg0, z143, 1404, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z143, 272, 0, 0, arg2, arg3)
+		err(arg0, z143, 1408, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -19023,7 +19898,7 @@ Method(m73b, 6)
 
 // Create Region Field Unit
 // (AnyAcc, NoLock, Preserve)
-Method(m73c, 6)
+Method(m73c, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, RS00)
 
@@ -19033,9 +19908,9 @@ Method(m73c, 6)
 
 	Concatenate(arg0, "-m73c", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, Preserve) {
 					, 0, f000, 1}
@@ -19117,13 +19992,13 @@ Method(m73c, 6)
 				Store(Refof(f00f), Local3)
 			}
 			default {
-				err(arg0, z143, 273, 0, 0, arg2, arg3)
+				err(arg0, z143, 1412, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, Preserve) {
 					, 1, f010, 1}
@@ -19205,13 +20080,13 @@ Method(m73c, 6)
 				Store(Refof(f01f), Local3)
 			}
 			default {
-				err(arg0, z143, 274, 0, 0, arg2, arg3)
+				err(arg0, z143, 1416, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, Preserve) {
 					Offset(0), , 2, f020, 1}
@@ -19293,13 +20168,13 @@ Method(m73c, 6)
 				Store(Refof(f02f), Local3)
 			}
 			default {
-				err(arg0, z143, 275, 0, 0, arg2, arg3)
+				err(arg0, z143, 1420, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, Preserve) {
 					, 3, f030, 1}
@@ -19381,13 +20256,13 @@ Method(m73c, 6)
 				Store(Refof(f03f), Local3)
 			}
 			default {
-				err(arg0, z143, 276, 0, 0, arg2, arg3)
+				err(arg0, z143, 1424, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, Preserve) {
 					, 4, f040, 1}
@@ -19469,13 +20344,13 @@ Method(m73c, 6)
 				Store(Refof(f04f), Local3)
 			}
 			default {
-				err(arg0, z143, 277, 0, 0, arg2, arg3)
+				err(arg0, z143, 1428, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, Preserve) {
 					, 5, f050, 1}
@@ -19557,13 +20432,13 @@ Method(m73c, 6)
 				Store(Refof(f05f), Local3)
 			}
 			default {
-				err(arg0, z143, 278, 0, 0, arg2, arg3)
+				err(arg0, z143, 1432, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, Preserve) {
 					, 6, f060, 1}
@@ -19645,13 +20520,13 @@ Method(m73c, 6)
 				Store(Refof(f06f), Local3)
 			}
 			default {
-				err(arg0, z143, 279, 0, 0, arg2, arg3)
+				err(arg0, z143, 1436, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, Preserve) {
 					, 7, f070, 1}
@@ -19733,13 +20608,13 @@ Method(m73c, 6)
 				Store(Refof(f07f), Local3)
 			}
 			default {
-				err(arg0, z143, 280, 0, 0, arg2, arg3)
+				err(arg0, z143, 1440, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, Preserve) {
 					Offset(1), f080, 1}
@@ -19821,13 +20696,13 @@ Method(m73c, 6)
 				Store(Refof(f08f), Local3)
 			}
 			default {
-				err(arg0, z143, 281, 0, 0, arg2, arg3)
+				err(arg0, z143, 1444, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, Preserve) {
 					, 9, f090, 1}
@@ -19909,13 +20784,13 @@ Method(m73c, 6)
 				Store(Refof(f09f), Local3)
 			}
 			default {
-				err(arg0, z143, 282, 0, 0, arg2, arg3)
+				err(arg0, z143, 1448, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, Preserve) {
 					Offset(3), , 7, f0a0, 1}
@@ -19997,13 +20872,13 @@ Method(m73c, 6)
 				Store(Refof(f0af), Local3)
 			}
 			default {
-				err(arg0, z143, 283, 0, 0, arg2, arg3)
+				err(arg0, z143, 1452, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, Preserve) {
 					, 32, f0b0, 1}
@@ -20085,13 +20960,13 @@ Method(m73c, 6)
 				Store(Refof(f0bf), Local3)
 			}
 			default {
-				err(arg0, z143, 284, 0, 0, arg2, arg3)
+				err(arg0, z143, 1456, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, Preserve) {
 					, 33, f0c0, 1}
@@ -20173,13 +21048,13 @@ Method(m73c, 6)
 				Store(Refof(f0cf), Local3)
 			}
 			default {
-				err(arg0, z143, 285, 0, 0, arg2, arg3)
+				err(arg0, z143, 1460, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, Preserve) {
 					, 63, f0d0, 1}
@@ -20261,13 +21136,13 @@ Method(m73c, 6)
 				Store(Refof(f0df), Local3)
 			}
 			default {
-				err(arg0, z143, 286, 0, 0, arg2, arg3)
+				err(arg0, z143, 1464, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, Preserve) {
 					, 64, f0e0, 1}
@@ -20349,13 +21224,13 @@ Method(m73c, 6)
 				Store(Refof(f0ef), Local3)
 			}
 			default {
-				err(arg0, z143, 287, 0, 0, arg2, arg3)
+				err(arg0, z143, 1468, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, Preserve) {
 					Offset(8), , 1, f0f0, 1}
@@ -20437,13 +21312,13 @@ Method(m73c, 6)
 				Store(Refof(f0ff), Local3)
 			}
 			default {
-				err(arg0, z143, 288, 0, 0, arg2, arg3)
+				err(arg0, z143, 1472, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z143, 289, 0, 0, arg2, arg3)
+		err(arg0, z143, 1476, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -20452,7 +21327,7 @@ Method(m73c, 6)
 
 // Create Region Field Unit
 // (AnyAcc, NoLock, WriteAsOnes)
-Method(m73d, 6)
+Method(m73d, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, RS00)
 
@@ -20462,9 +21337,9 @@ Method(m73d, 6)
 
 	Concatenate(arg0, "-m73d", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, WriteAsOnes) {
 					, 0, f000, 1}
@@ -20546,13 +21421,13 @@ Method(m73d, 6)
 				Store(Refof(f00f), Local3)
 			}
 			default {
-				err(arg0, z143, 290, 0, 0, arg2, arg3)
+				err(arg0, z143, 1480, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, WriteAsOnes) {
 					, 1, f010, 1}
@@ -20634,13 +21509,13 @@ Method(m73d, 6)
 				Store(Refof(f01f), Local3)
 			}
 			default {
-				err(arg0, z143, 291, 0, 0, arg2, arg3)
+				err(arg0, z143, 1484, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, WriteAsOnes) {
 					Offset(0), , 2, f020, 1}
@@ -20722,13 +21597,13 @@ Method(m73d, 6)
 				Store(Refof(f02f), Local3)
 			}
 			default {
-				err(arg0, z143, 292, 0, 0, arg2, arg3)
+				err(arg0, z143, 1488, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, WriteAsOnes) {
 					, 3, f030, 1}
@@ -20810,13 +21685,13 @@ Method(m73d, 6)
 				Store(Refof(f03f), Local3)
 			}
 			default {
-				err(arg0, z143, 293, 0, 0, arg2, arg3)
+				err(arg0, z143, 1492, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, WriteAsOnes) {
 					, 4, f040, 1}
@@ -20898,13 +21773,13 @@ Method(m73d, 6)
 				Store(Refof(f04f), Local3)
 			}
 			default {
-				err(arg0, z143, 294, 0, 0, arg2, arg3)
+				err(arg0, z143, 1496, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, WriteAsOnes) {
 					, 5, f050, 1}
@@ -20986,13 +21861,13 @@ Method(m73d, 6)
 				Store(Refof(f05f), Local3)
 			}
 			default {
-				err(arg0, z143, 295, 0, 0, arg2, arg3)
+				err(arg0, z143, 1500, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, WriteAsOnes) {
 					, 6, f060, 1}
@@ -21074,13 +21949,13 @@ Method(m73d, 6)
 				Store(Refof(f06f), Local3)
 			}
 			default {
-				err(arg0, z143, 296, 0, 0, arg2, arg3)
+				err(arg0, z143, 1504, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, WriteAsOnes) {
 					, 7, f070, 1}
@@ -21162,13 +22037,13 @@ Method(m73d, 6)
 				Store(Refof(f07f), Local3)
 			}
 			default {
-				err(arg0, z143, 297, 0, 0, arg2, arg3)
+				err(arg0, z143, 1508, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, WriteAsOnes) {
 					Offset(1), f080, 1}
@@ -21250,13 +22125,13 @@ Method(m73d, 6)
 				Store(Refof(f08f), Local3)
 			}
 			default {
-				err(arg0, z143, 298, 0, 0, arg2, arg3)
+				err(arg0, z143, 1512, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, WriteAsOnes) {
 					, 9, f090, 1}
@@ -21338,13 +22213,13 @@ Method(m73d, 6)
 				Store(Refof(f09f), Local3)
 			}
 			default {
-				err(arg0, z143, 299, 0, 0, arg2, arg3)
+				err(arg0, z143, 1516, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, WriteAsOnes) {
 					Offset(3), , 7, f0a0, 1}
@@ -21426,13 +22301,13 @@ Method(m73d, 6)
 				Store(Refof(f0af), Local3)
 			}
 			default {
-				err(arg0, z143, 300, 0, 0, arg2, arg3)
+				err(arg0, z143, 1520, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, WriteAsOnes) {
 					, 32, f0b0, 1}
@@ -21514,13 +22389,13 @@ Method(m73d, 6)
 				Store(Refof(f0bf), Local3)
 			}
 			default {
-				err(arg0, z143, 301, 0, 0, arg2, arg3)
+				err(arg0, z143, 1524, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, WriteAsOnes) {
 					, 33, f0c0, 1}
@@ -21602,13 +22477,13 @@ Method(m73d, 6)
 				Store(Refof(f0cf), Local3)
 			}
 			default {
-				err(arg0, z143, 302, 0, 0, arg2, arg3)
+				err(arg0, z143, 1528, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, WriteAsOnes) {
 					, 63, f0d0, 1}
@@ -21690,13 +22565,13 @@ Method(m73d, 6)
 				Store(Refof(f0df), Local3)
 			}
 			default {
-				err(arg0, z143, 303, 0, 0, arg2, arg3)
+				err(arg0, z143, 1532, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, WriteAsOnes) {
 					, 64, f0e0, 1}
@@ -21778,13 +22653,13 @@ Method(m73d, 6)
 				Store(Refof(f0ef), Local3)
 			}
 			default {
-				err(arg0, z143, 304, 0, 0, arg2, arg3)
+				err(arg0, z143, 1536, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, NoLock, WriteAsOnes) {
 					Offset(8), , 1, f0f0, 1}
@@ -21866,13 +22741,13 @@ Method(m73d, 6)
 				Store(Refof(f0ff), Local3)
 			}
 			default {
-				err(arg0, z143, 305, 0, 0, arg2, arg3)
+				err(arg0, z143, 1540, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z143, 306, 0, 0, arg2, arg3)
+		err(arg0, z143, 1544, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -21881,7 +22756,7 @@ Method(m73d, 6)
 
 // Create Region Field Unit
 // (AnyAcc, Lock, WriteAsZeros)
-Method(m73e, 6)
+Method(m73e, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, RS00)
 
@@ -21891,9 +22766,9 @@ Method(m73e, 6)
 
 	Concatenate(arg0, "-m73e", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, Lock, WriteAsZeros) {
 					, 0, f000, 1}
@@ -21975,13 +22850,13 @@ Method(m73e, 6)
 				Store(Refof(f00f), Local3)
 			}
 			default {
-				err(arg0, z143, 307, 0, 0, arg2, arg3)
+				err(arg0, z143, 1548, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, Lock, WriteAsZeros) {
 					, 1, f010, 1}
@@ -22063,13 +22938,13 @@ Method(m73e, 6)
 				Store(Refof(f01f), Local3)
 			}
 			default {
-				err(arg0, z143, 308, 0, 0, arg2, arg3)
+				err(arg0, z143, 1552, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, Lock, WriteAsZeros) {
 					Offset(0), , 2, f020, 1}
@@ -22151,13 +23026,13 @@ Method(m73e, 6)
 				Store(Refof(f02f), Local3)
 			}
 			default {
-				err(arg0, z143, 309, 0, 0, arg2, arg3)
+				err(arg0, z143, 1556, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, Lock, WriteAsZeros) {
 					, 3, f030, 1}
@@ -22239,13 +23114,13 @@ Method(m73e, 6)
 				Store(Refof(f03f), Local3)
 			}
 			default {
-				err(arg0, z143, 310, 0, 0, arg2, arg3)
+				err(arg0, z143, 1560, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, Lock, WriteAsZeros) {
 					, 4, f040, 1}
@@ -22327,13 +23202,13 @@ Method(m73e, 6)
 				Store(Refof(f04f), Local3)
 			}
 			default {
-				err(arg0, z143, 311, 0, 0, arg2, arg3)
+				err(arg0, z143, 1564, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, Lock, WriteAsZeros) {
 					, 5, f050, 1}
@@ -22415,13 +23290,13 @@ Method(m73e, 6)
 				Store(Refof(f05f), Local3)
 			}
 			default {
-				err(arg0, z143, 312, 0, 0, arg2, arg3)
+				err(arg0, z143, 1568, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, Lock, WriteAsZeros) {
 					, 6, f060, 1}
@@ -22503,13 +23378,13 @@ Method(m73e, 6)
 				Store(Refof(f06f), Local3)
 			}
 			default {
-				err(arg0, z143, 313, 0, 0, arg2, arg3)
+				err(arg0, z143, 1572, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, Lock, WriteAsZeros) {
 					, 7, f070, 1}
@@ -22591,13 +23466,13 @@ Method(m73e, 6)
 				Store(Refof(f07f), Local3)
 			}
 			default {
-				err(arg0, z143, 314, 0, 0, arg2, arg3)
+				err(arg0, z143, 1576, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, Lock, WriteAsZeros) {
 					Offset(1), f080, 1}
@@ -22679,13 +23554,13 @@ Method(m73e, 6)
 				Store(Refof(f08f), Local3)
 			}
 			default {
-				err(arg0, z143, 315, 0, 0, arg2, arg3)
+				err(arg0, z143, 1580, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, Lock, WriteAsZeros) {
 					, 9, f090, 1}
@@ -22767,13 +23642,13 @@ Method(m73e, 6)
 				Store(Refof(f09f), Local3)
 			}
 			default {
-				err(arg0, z143, 316, 0, 0, arg2, arg3)
+				err(arg0, z143, 1584, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, Lock, WriteAsZeros) {
 					Offset(3), , 7, f0a0, 1}
@@ -22855,13 +23730,13 @@ Method(m73e, 6)
 				Store(Refof(f0af), Local3)
 			}
 			default {
-				err(arg0, z143, 317, 0, 0, arg2, arg3)
+				err(arg0, z143, 1588, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, Lock, WriteAsZeros) {
 					, 32, f0b0, 1}
@@ -22943,13 +23818,13 @@ Method(m73e, 6)
 				Store(Refof(f0bf), Local3)
 			}
 			default {
-				err(arg0, z143, 318, 0, 0, arg2, arg3)
+				err(arg0, z143, 1592, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, Lock, WriteAsZeros) {
 					, 33, f0c0, 1}
@@ -23031,13 +23906,13 @@ Method(m73e, 6)
 				Store(Refof(f0cf), Local3)
 			}
 			default {
-				err(arg0, z143, 319, 0, 0, arg2, arg3)
+				err(arg0, z143, 1596, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, Lock, WriteAsZeros) {
 					, 63, f0d0, 1}
@@ -23119,13 +23994,13 @@ Method(m73e, 6)
 				Store(Refof(f0df), Local3)
 			}
 			default {
-				err(arg0, z143, 320, 0, 0, arg2, arg3)
+				err(arg0, z143, 1600, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, Lock, WriteAsZeros) {
 					, 64, f0e0, 1}
@@ -23207,13 +24082,13 @@ Method(m73e, 6)
 				Store(Refof(f0ef), Local3)
 			}
 			default {
-				err(arg0, z143, 321, 0, 0, arg2, arg3)
+				err(arg0, z143, 1604, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Field(OPR0, AnyAcc, Lock, WriteAsZeros) {
 					Offset(8), , 1, f0f0, 1}
@@ -23295,13 +24170,13 @@ Method(m73e, 6)
 				Store(Refof(f0ff), Local3)
 			}
 			default {
-				err(arg0, z143, 322, 0, 0, arg2, arg3)
+				err(arg0, z143, 1608, 0, 0, arg2, arg3)
 				return
 			}
 		}
 	}
 	default {
-		err(arg0, z143, 323, 0, 0, arg2, arg3)
+		err(arg0, z143, 1612, 0, 0, arg2, arg3)
 		return}
 	}
 
@@ -23309,7 +24184,7 @@ Method(m73e, 6)
 }
 
 // Check Region Field Unit
-Method(m72d, 7)
+Method(m72d, 7, Serialized)
 {
 	Name(pr00, 0) // Debug print flag
 	Name(pr01, 0) // Index/Bank fields additional control flag
@@ -23341,7 +24216,7 @@ Method(m72d, 7)
 
 	// Fill the entire region (ground)
 
-	switch(pr01) {
+	switch(ToInteger (pr01)) {
 		case(2) {
 			// Write some predefined value to Bank selection register
 
@@ -23349,7 +24224,7 @@ Method(m72d, 7)
 
 			Store(Derefof(Derefof(Index(fcp0, 1))), Local0)
 			if (LNotEqual(Local0, 0xa5)) {
-				err(arg0, z143, 324, 0, 0, Local0, 0xa5)
+				err(arg0, z143, 1616, 0, 0, Local0, 0xa5)
 			}
 		}
 	}
@@ -23357,13 +24232,13 @@ Method(m72d, 7)
 	Store(Refof(arg6), Local1)
 	Store(brG0, Derefof(Local1))
 
-	switch(pr01) {
+	switch(ToInteger (pr01)) {
 		case(2) {
 			// Check Bank selection register value
 
 			Store(Derefof(Derefof(Index(fcp0, 1))), Local0)
 			if (LNotEqual(Local0, Derefof(Index(fcp0, 2)))) {
-				err(arg0, z143, 325, 0, 0, Local0, Derefof(Index(fcp0, 2)))
+				err(arg0, z143, 1620, 0, 0, Local0, Derefof(Index(fcp0, 2)))
 			}
 		}
 	}
@@ -23375,7 +24250,7 @@ Method(m72d, 7)
 
 	// Fill into the field of region
 
-	switch(pr01) {
+	switch(ToInteger (pr01)) {
 		case(2) {
 			// Write some predefined value to Bank selection register
 
@@ -23383,7 +24258,7 @@ Method(m72d, 7)
 
 			Store(Derefof(Derefof(Index(fcp0, 1))), Local0)
 			if (LNotEqual(Local0, 0xa5)) {
-				err(arg0, z143, 326, 0, 0, Local0, 0xa5)
+				err(arg0, z143, 1624, 0, 0, Local0, 0xa5)
 			}
 		}
 	}
@@ -23400,13 +24275,13 @@ Method(m72d, 7)
 		Store(INT1, Derefof(Local1))
 	}
 
-	switch(pr01) {
+	switch(ToInteger (pr01)) {
 		case(2) {
 			// Check Bank selection register value
 
 			Store(Derefof(Derefof(Index(fcp0, 1))), Local0)
 			if (LNotEqual(Local0, Derefof(Index(fcp0, 2)))) {
-				err(arg0, z143, 327, 0, 0, Local0, Derefof(Index(fcp0, 2)))
+				err(arg0, z143, 1628, 0, 0, Local0, Derefof(Index(fcp0, 2)))
 			}
 		}
 	}
@@ -23415,12 +24290,12 @@ Method(m72d, 7)
 
 	Store(ObjectType(arg1), Local0)
 	if (LNotEqual(Local0, c00d)) {
-		err(arg0, z143, 328, 0, 0, Local0, c00d)
+		err(arg0, z143, 1632, 0, 0, Local0, c00d)
 	}
 
 	// Retrieve the field back
 
-	switch(pr01) {
+	switch(ToInteger (pr01)) {
 		case(2) {
 			// Write some predefined value to Bank selection register
 
@@ -23428,7 +24303,7 @@ Method(m72d, 7)
 
 			Store(Derefof(Derefof(Index(fcp0, 1))), Local0)
 			if (LNotEqual(Local0, 0xa5)) {
-				err(arg0, z143, 329, 0, 0, Local0, 0xa5)
+				err(arg0, z143, 1636, 0, 0, Local0, 0xa5)
 			}
 		}
 	}
@@ -23450,27 +24325,27 @@ Method(m72d, 7)
 
 	Store(ObjectType(Local0), Local1)
 	if (LNotEqual(Local1, INT0)) {
-		err(arg0, z143, 330, 0, 0, Local1, INT0)
+		err(arg0, z143, 1640, 0, 0, Local1, INT0)
 	}
 
 	if (LNotEqual(Local0, arg5)) {
-			err(arg0, z143, 331, 0, 0, Local0, arg5)
+			err(arg0, z143, 1644, 0, 0, Local0, arg5)
 	}
 
-	switch(pr01) {
+	switch(ToInteger (pr01)) {
 		case(2) {
 			// Check Bank selection register value
 
 			Store(Derefof(Derefof(Index(fcp0, 1))), Local0)
 			if (LNotEqual(Local0, Derefof(Index(fcp0, 2)))) {
-				err(arg0, z143, 332, 0, 0, Local0, Derefof(Index(fcp0, 2)))
+				err(arg0, z143, 1648, 0, 0, Local0, Derefof(Index(fcp0, 2)))
 			}
 		}
 	}
 
 	// Check Contents of Region
 
-	switch(pr01) {
+	switch(ToInteger (pr01)) {
 		case(2) {
 			// Write some predefined value to Bank selection register
 
@@ -23478,26 +24353,26 @@ Method(m72d, 7)
 
 			Store(Derefof(Derefof(Index(fcp0, 1))), Local0)
 			if (LNotEqual(Local0, 0xa5)) {
-				err(arg0, z143, 333, 0, 0, Local0, 0xa5)
+				err(arg0, z143, 1652, 0, 0, Local0, 0xa5)
 			}
 		}
 	}
 
 	Store(Derefof(arg6), Local1)
 
-	switch(pr01) {
+	switch(ToInteger (pr01)) {
 		case(2) {
 			// Check Bank selection register value
 
 			Store(Derefof(Derefof(Index(fcp0, 1))), Local0)
 			if (LNotEqual(Local0, Derefof(Index(fcp0, 2)))) {
-				err(arg0, z143, 334, 0, 0, Local0, Derefof(Index(fcp0, 2)))
+				err(arg0, z143, 1656, 0, 0, Local0, Derefof(Index(fcp0, 2)))
 			}
 		}
 	}
 
 	if (LNotEqual(Local1, brB0)) {
-		err(arg0, z143, 335, 0, 0, Local1, brB0)
+		err(arg0, z143, 1660, 0, 0, Local1, brB0)
 	} elseif (pr00) {
 		Store("==PostGround==:", Debug)
 		Store(Local1, Debug)
@@ -23508,14 +24383,14 @@ Method(m72d, 7)
 //
 // <source: 0 - Zero, 1 - 0xff, else - index>
 // <the target buffer for filling>
-Method(m72c, 2)
+Method(m72c, 2, Serialized)
 {
 	Store(Sizeof(arg1), Local0)
 
 	while(Local0) {
 		Decrement(Local0)
 
-		switch (arg0) {
+		switch(ToInteger (arg0)) {
 			case (0) {
 				Store(0, Index(arg1, Local0))
 			}
@@ -23531,7 +24406,7 @@ Method(m72c, 2)
 
 // Long List of Fields
 // m743(CallChain)
-Method(m743, 1)
+Method(m743, 1, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, 0x800)
 
@@ -23739,9 +24614,9 @@ Method(m743, 1)
 		Store(0, Local3)
 
 		while(Local2) {
-			switch(Local1) {
+			switch(ToInteger (Local1)) {
 				case (0) {
-					switch(Local3) {
+					switch(ToInteger (Local3)) {
 						case (0) { Store(Refof(f000), Local4) }
 						case (1) { Store(Refof(f001), Local4) }
 						case (2) { Store(Refof(f002), Local4) }
@@ -23759,13 +24634,13 @@ Method(m743, 1)
 						case (14) { Store(Refof(f00e), Local4) }
 						case (15) { Store(Refof(f00f), Local4) }
 						default {
-							err(arg0, z143, 336, 0, 0, Local1, Local3)
+							err(arg0, z143, 1664, 0, 0, Local1, Local3)
 							return
 						}
 					}
 				}
 				case (1) {
-					switch(Local3) {
+					switch(ToInteger (Local3)) {
 						case (0) { Store(Refof(f010), Local4) }
 						case (1) { Store(Refof(f011), Local4) }
 						case (2) { Store(Refof(f012), Local4) }
@@ -23783,13 +24658,13 @@ Method(m743, 1)
 						case (14) { Store(Refof(f01e), Local4) }
 						case (15) { Store(Refof(f01f), Local4) }
 						default {
-							err(arg0, z143, 337, 0, 0, Local1, Local3)
+							err(arg0, z143, 1668, 0, 0, Local1, Local3)
 							return
 						}
 					}
 				}
 				case (2) {
-					switch(Local3) {
+					switch(ToInteger (Local3)) {
 						case (0) { Store(Refof(f020), Local4) }
 						case (1) { Store(Refof(f021), Local4) }
 						case (2) { Store(Refof(f022), Local4) }
@@ -23807,13 +24682,13 @@ Method(m743, 1)
 						case (14) { Store(Refof(f02e), Local4) }
 						case (15) { Store(Refof(f02f), Local4) }
 						default {
-							err(arg0, z143, 338, 0, 0, Local1, Local3)
+							err(arg0, z143, 1672, 0, 0, Local1, Local3)
 							return
 						}
 					}
 				}
 				case (3) {
-					switch(Local3) {
+					switch(ToInteger (Local3)) {
 						case (0) { Store(Refof(f030), Local4) }
 						case (1) { Store(Refof(f031), Local4) }
 						case (2) { Store(Refof(f032), Local4) }
@@ -23831,13 +24706,13 @@ Method(m743, 1)
 						case (14) { Store(Refof(f03e), Local4) }
 						case (15) { Store(Refof(f03f), Local4) }
 						default {
-							err(arg0, z143, 339, 0, 0, Local1, Local3)
+							err(arg0, z143, 1676, 0, 0, Local1, Local3)
 							return
 						}
 					}
 				}
 				default {
-					err(arg0, z143, 340, 0, 0, Local1, Local3)
+					err(arg0, z143, 1680, 0, 0, Local1, Local3)
 					return
 				}
 			}
@@ -23883,7 +24758,7 @@ Method(m743, 1)
 			Mid(Local6, Derefof(Index(Local4, 0)), Sizeof (Local5), Local7)
 
 			if (LNotEqual(Local7, Local5)) {
-				err(arg0, z143, 341, z143, Add(Multiply(16, Local1), Local3), Local7, Local5)
+				err(arg0, z143, 1684, z143, Add(Multiply(16, Local1), Local3), Local7, Local5)
 			}
 
 			// Check contents of the external accessed memory
@@ -23906,7 +24781,7 @@ Method(m743, 1)
 						Derefof(Index(Local6,
 							Subtract(Subtract(Derefof(Index(Local4, 0)), Local7), 1))),
 						0x00)) {
-					err(arg0, z143, 342, z143, Add(Multiply(16, Local1), Local3),
+					err(arg0, z143, 1688, z143, Add(Multiply(16, Local1), Local3),
 						Derefof(Index(Local6, Subtract(Derefof(Index(Local4, 0)), Local7))),
 						0x00
 					)
@@ -23918,7 +24793,7 @@ Method(m743, 1)
 				if (LNotEqual(
 						Derefof(Index(Local6, Subtract(Derefof(Index(Local4, 0)), Local7))),
 						0xff)) {
-					err(arg0, z143, 343, z143, Add(Multiply(16, Local1), Local3),
+					err(arg0, z143, 1692, z143, Add(Multiply(16, Local1), Local3),
 						Derefof(Index(Local6, Subtract(Derefof(Index(Local4, 0)), Local7))),
 						0xff
 					)
@@ -23944,7 +24819,7 @@ Method(m743, 1)
 			if (LNotEqual(
 					Derefof(Index(Local6, Add(i000, Local7))),
 					0x00)) {
-				err(arg0, z143, 344, z143, Add(Multiply(16, Local1), Local3),
+				err(arg0, z143, 1696, z143, Add(Multiply(16, Local1), Local3),
 					Derefof(Index(Local6, Add(i000, Local7))),
 					0x00
 				)
@@ -23956,7 +24831,7 @@ Method(m743, 1)
 				if (LNotEqual(
 						Derefof(Index(Local6, Add(i000, Local7))),
 						0xff)) {
-					err(arg0, z143, 345, z143, Add(Multiply(16, Local1), Local3),
+					err(arg0, z143, 1700, z143, Add(Multiply(16, Local1), Local3),
 						Derefof(Index(Local6, Add(i000, Local7))),
 						0xff
 					)
@@ -23994,11 +24869,12 @@ Method(m744, 1)
 
 	Concatenate(arg0, "-m744", arg0)
 
-	Store(0x1, f001)
+	Store("TEST: m744, Check large Field offsets", Debug)
 
+	Store(0x1, f001)
 	if (LNotEqual(f000, 0x08)) {
-		err(arg0, z143, 346, 0, 0, f000, 0x08)
-	}
+		err(arg0, z143, 1704, 0, 0, f000, 0x08)
+    }
 }
 
 // Run-method
@@ -24066,9 +24942,21 @@ Method(RFC0)
 	SRMT("m71e")
 	m71e(ts)
 
-	// Check BufferAcc access
+	// Check SMBus/BufferAcc access
 	SRMT("m71f")
 	m71f(ts)
+
+	// Check GeneralPurposeIo/ByteAcc access
+	SRMT("m764")
+	m764(ts)
+
+	// Check IPMI/BufferAcc access
+	SRMT("m768")
+	m768(ts)
+
+	// Check GenericSerialBus/BufferAcc access
+	SRMT("m740")
+	m740(ts)
 
 	// Splitting of Fields
 	SRMT("m742")

@@ -465,7 +465,7 @@ Name(run4, 0)
  *   01.03.2007 - 6, (1403 files, 415 folder, 17.0 MB, 2227 tests, 40(46) test cases, 305 bugs of ACPICA)
  *   21.03.2007 - 7, (1409 files, 417 folder, 17.1 MB, 2236 tests, 40(46) test cases, 307 bugs of ACPICA)
  */
-Name(REL0, 0x00000007)
+Name(REL0, 0x20111027)
 
 /*
  * Settings number, used to adjust the aslts tests for different releases of ACPICA
@@ -504,7 +504,7 @@ Method(SET2, 1, Serialized) {
 	}
 */
 
-	Switch (Local0) {
+	Switch (ToInteger (Local0)) {
 	Case (0) {
 		Store(0, y135)
 		Store(1, y900)
@@ -583,6 +583,7 @@ Method(SET2, 1, Serialized) {
 	}
 
 	if (LNot(run4)){
+		Concatenate("Release of parent ACPICA code 0x", Revision, Debug)
 		Concatenate("Release of ASLTS test suite  0x", REL0, Debug)
 		Concatenate("Settings of ASLTS test suite 0x", arg0, Debug)
 	}

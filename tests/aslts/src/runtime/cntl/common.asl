@@ -204,8 +204,8 @@ Name(ISZ0, 0)
  *        root Methods run results.
  * RMRC - current number of root Methods runs
  */
-Name(ETR0, 600)
-Name(ETR1, 200)
+Name(ETR0, 1200)
+Name(ETR1, 400)
 Name(ERRP, Package(ETR0) {})
 Name(RP0P, Package(ETR0) {})
 Name(RMRC, 0)
@@ -345,11 +345,11 @@ Name(FLG5, 0)
  * The test will be run when the conditions are changed. Up to that
  * moment, the status of such test is reported as 'blocked'.
  *
- * For example, some tests temporary cause abort of testing
- * so preventing normal completion of all the tests of aslts
+ * For example, some tests temporarily cause abort of testing,
+ * thus preventing normal completion of all the tests of aslts
  * and generating the summary status of run of aslts.
  * To provide the normal conditions for other tests of aslts
- * we do blocking such the tests which prevent normal work
+ * we block the tests which prevent normal work
  * until the relevant causes are fixed in ACPICA.
  */
 Name(FLG6, 0)
@@ -396,7 +396,7 @@ Method(RPT0) {
 
 	if (SizeOf(NRMT)) {
 
-		// Analize privious run of root Method
+		// Analize previous run of root Method
 
 		Concatenate(":", TCN0(TCLL), Local1)
 		Concatenate(Local1, ":", Local0)
@@ -467,7 +467,7 @@ Method(SKIP) {
 /*
  * Set 'blocked' status of execution of root method.
  * Used only to report that the root-method was not
- * run but blocked.
+ * run, it was blocked.
  */
 Method(BLCK) {
 	Store(1, FLG6)
@@ -1356,7 +1356,7 @@ Method(STRT, 1)
 	RST0()
 	RST2()
 
-	/* Adjust some skippings of tests for different ACPICA rereales */
+	/* Adjust some skippings of tests for different ACPICA releases */
 	SET2(SETN)
 }
 
@@ -1391,7 +1391,7 @@ Method(TCN0, 1) {
  */
 Method(TNIC, 2, Serialized) {
 	Store("?", Local7)
-	switch (arg0) {
+	switch (ToInteger (arg0)) {
 		case (1) {
 			Store(DeRefOf(Index(TNF0, arg1)), Local7)
 		}
@@ -1730,7 +1730,7 @@ Method(UNP0, 3, Serialized)
 	Store("", Local6)
 	Store("", Local7)
 
-	Switch (Local0) {
+	Switch (ToInteger (Local0)) {
 		case (1) {
 			Store(DeRefOf(Index(TNF0, Local1)), Local6)
 			if (ERR4) {
@@ -1858,7 +1858,7 @@ Method(RERR)
 
 	Store(0, Local0)
 
-	Store("========= ERRORS SUMMARY (max 200):", Debug)
+	Store("========= ERRORS SUMMARY (max 400):", Debug)
 
 	While (lpN0) {
 

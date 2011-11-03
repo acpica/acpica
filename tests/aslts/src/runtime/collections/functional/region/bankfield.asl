@@ -94,6 +94,11 @@ Method(m7c0, 1)
 
 	Concatenate(arg0, "-m7c0", arg0)
 
+//
+// Full support for bank fields not implemented in acpiexec, so
+// we have to perform write/reads in order. Otherwise, we would
+// interleave them.
+
 	// Write bf00
 
 	Store(0xff, bnk0)
@@ -101,14 +106,6 @@ Method(m7c0, 1)
 
 	Store(0x67, bf00)
 	m7bf(arg0, bnk0, 2, 2)
-
-	// Write bf01
-
-	Store(0xff, bnk0)
-	m7bf(arg0, bnk0, 0xff, 3)
-
-	Store(0x89, bf01)
-	m7bf(arg0, bnk0, 3, 4)
 
 	// Read bf00
 
@@ -118,6 +115,14 @@ Method(m7c0, 1)
 	Store(bf00, Local1)
 	m7bf(arg0, Local1, 0x67, 6)
 	m7bf(arg0, bnk0, 2, 7)
+
+	// Write bf01
+
+	Store(0xff, bnk0)
+	m7bf(arg0, bnk0, 0xff, 3)
+
+	Store(0x89, bf01)
+	m7bf(arg0, bnk0, 3, 4)
 
 	// Read bf01
 
@@ -214,7 +219,7 @@ Method(m7c5, 1)
 
 // Create BankField Unit
 // (ByteAcc, NoLock, Preserve)
-Method(m7d0, 6)
+Method(m7d0, 6, Serialized)
 {
 	OperationRegion(OPRb, SystemIO, 0, 9)
 	OperationRegion(OPR0, SystemIO, 11, 256)
@@ -271,9 +276,9 @@ Method(m7d0, 6)
 
 	Concatenate(arg0, "-m7d0", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(0, Local2)
 				BankField(OPR0, BNK0, 0, ByteAcc, NoLock, Preserve) {
@@ -401,7 +406,7 @@ Method(m7d0, 6)
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(1, Local2)
 				BankField(OPR0, BNK0, 1, AnyAcc, NoLock, Preserve) {
@@ -529,7 +534,7 @@ Method(m7d0, 6)
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(2, Local2)
 				BankField(OPR0, BNK0, 2, ByteAcc, NoLock, Preserve) {
@@ -657,7 +662,7 @@ Method(m7d0, 6)
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(3, Local2)
 				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
@@ -785,7 +790,7 @@ Method(m7d0, 6)
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(4, Local2)
 				BankField(OPR0, BNK0, 4, ByteAcc, NoLock, Preserve) {
@@ -913,7 +918,7 @@ Method(m7d0, 6)
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(5, Local2)
 				BankField(OPR0, BNK0, 5, WordAcc, NoLock, Preserve) {
@@ -1041,7 +1046,7 @@ Method(m7d0, 6)
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(6, Local2)
 				BankField(OPR0, BNK0, 6, ByteAcc, NoLock, Preserve) {
@@ -1169,7 +1174,7 @@ Method(m7d0, 6)
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(7, Local2)
 				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, Preserve) {
@@ -1297,7 +1302,7 @@ Method(m7d0, 6)
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(8, Local2)
 				BankField(OPR0, BNK0, 8, ByteAcc, NoLock, Preserve) {
@@ -1425,7 +1430,7 @@ Method(m7d0, 6)
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(9, Local2)
 				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
@@ -1553,7 +1558,7 @@ Method(m7d0, 6)
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(63, Local2)
 				BankField(OPR0, BNK0, 63, ByteAcc, NoLock, Preserve) {
@@ -1681,7 +1686,7 @@ Method(m7d0, 6)
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(64, Local2)
 				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, Preserve) {
@@ -1809,7 +1814,7 @@ Method(m7d0, 6)
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(127, Local2)
 				BankField(OPR0, BNK0, 127, ByteAcc, NoLock, Preserve) {
@@ -1937,7 +1942,7 @@ Method(m7d0, 6)
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(128, Local2)
 				BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
@@ -2065,7 +2070,7 @@ Method(m7d0, 6)
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(255, Local2)
 				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
@@ -2193,7 +2198,7 @@ Method(m7d0, 6)
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(0, Local2)
 				BankField(OPR0, BNK0, 0, WordAcc, NoLock, Preserve) {
@@ -2334,7 +2339,7 @@ Method(m7d0, 6)
 
 // Create BankField Unit
 // (WordAcc, NoLock, WriteAsOnes)
-Method(m7d1, 6)
+Method(m7d1, 6, Serialized)
 {
 	OperationRegion(OPRb, SystemIO, 0, 9)
 	OperationRegion(OPR0, SystemIO, 11, 256)
@@ -2384,16 +2389,16 @@ Method(m7d1, 6)
 	BankField(OPR0, BNK0, 128, ByteAcc, NoLock, Preserve) {
 		g00d, 2048,
 	}
-	BankField(OPR0, BNK0, 255, ByteAcc, NoLock, Preserve) {
+	BankField(OPR0, BNK0, 255, DwordAcc, NoLock, Preserve) {
 		g00e, 2048,
 	}
 
 
 	Concatenate(arg0, "-m7d1", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(0, Local2)
 				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsOnes) {
@@ -2521,7 +2526,7 @@ Method(m7d1, 6)
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(1, Local2)
 				BankField(OPR0, BNK0, 1, AnyAcc, NoLock, WriteAsOnes) {
@@ -2649,7 +2654,7 @@ Method(m7d1, 6)
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(2, Local2)
 				BankField(OPR0, BNK0, 2, WordAcc, NoLock, WriteAsOnes) {
@@ -2777,7 +2782,7 @@ Method(m7d1, 6)
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(3, Local2)
 				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, WriteAsOnes) {
@@ -2905,7 +2910,7 @@ Method(m7d1, 6)
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(4, Local2)
 				BankField(OPR0, BNK0, 4, WordAcc, NoLock, WriteAsOnes) {
@@ -3033,7 +3038,7 @@ Method(m7d1, 6)
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(5, Local2)
 				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsOnes) {
@@ -3161,7 +3166,7 @@ Method(m7d1, 6)
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(6, Local2)
 				BankField(OPR0, BNK0, 6, WordAcc, NoLock, WriteAsOnes) {
@@ -3289,7 +3294,7 @@ Method(m7d1, 6)
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(7, Local2)
 				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsOnes) {
@@ -3417,7 +3422,7 @@ Method(m7d1, 6)
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(8, Local2)
 				BankField(OPR0, BNK0, 8, WordAcc, NoLock, WriteAsOnes) {
@@ -3545,7 +3550,7 @@ Method(m7d1, 6)
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(9, Local2)
 				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, WriteAsOnes) {
@@ -3673,7 +3678,7 @@ Method(m7d1, 6)
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(63, Local2)
 				BankField(OPR0, BNK0, 63, WordAcc, NoLock, WriteAsOnes) {
@@ -3801,7 +3806,7 @@ Method(m7d1, 6)
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(64, Local2)
 				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, WriteAsOnes) {
@@ -3929,7 +3934,7 @@ Method(m7d1, 6)
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(127, Local2)
 				BankField(OPR0, BNK0, 127, WordAcc, NoLock, WriteAsOnes) {
@@ -4057,7 +4062,7 @@ Method(m7d1, 6)
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(128, Local2)
 				BankField(OPR0, BNK0, 128, WordAcc, NoLock, WriteAsOnes) {
@@ -4185,7 +4190,7 @@ Method(m7d1, 6)
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(255, Local2)
 				BankField(OPR0, BNK0, 255, WordAcc, NoLock, WriteAsOnes) {
@@ -4313,7 +4318,7 @@ Method(m7d1, 6)
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(0, Local2)
 				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsOnes) {
@@ -4454,7 +4459,7 @@ Method(m7d1, 6)
 
 // Create BankField Unit
 // (DWordAcc, NoLock, WriteAsZeros)
-Method(m7d2, 6)
+Method(m7d2, 6, Serialized)
 {
 	OperationRegion(OPRb, SystemIO, 0, 9)
 	OperationRegion(OPR0, SystemIO, 11, 256)
@@ -4511,9 +4516,9 @@ Method(m7d2, 6)
 
 	Concatenate(arg0, "-m7d2", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(0, Local2)
 				BankField(OPR0, BNK0, 0, DWordAcc, NoLock, WriteAsZeros) {
@@ -4641,7 +4646,7 @@ Method(m7d2, 6)
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(1, Local2)
 				BankField(OPR0, BNK0, 1, AnyAcc, NoLock, WriteAsZeros) {
@@ -4769,7 +4774,7 @@ Method(m7d2, 6)
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(2, Local2)
 				BankField(OPR0, BNK0, 2, DWordAcc, NoLock, WriteAsZeros) {
@@ -4897,7 +4902,7 @@ Method(m7d2, 6)
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(3, Local2)
 				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, WriteAsZeros) {
@@ -5025,7 +5030,7 @@ Method(m7d2, 6)
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(4, Local2)
 				BankField(OPR0, BNK0, 4, DWordAcc, NoLock, WriteAsZeros) {
@@ -5153,7 +5158,7 @@ Method(m7d2, 6)
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(5, Local2)
 				BankField(OPR0, BNK0, 5, WordAcc, NoLock, WriteAsZeros) {
@@ -5281,7 +5286,7 @@ Method(m7d2, 6)
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(6, Local2)
 				BankField(OPR0, BNK0, 6, DWordAcc, NoLock, WriteAsZeros) {
@@ -5409,7 +5414,7 @@ Method(m7d2, 6)
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(7, Local2)
 				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, WriteAsZeros) {
@@ -5537,7 +5542,7 @@ Method(m7d2, 6)
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(8, Local2)
 				BankField(OPR0, BNK0, 8, DWordAcc, NoLock, WriteAsZeros) {
@@ -5665,7 +5670,7 @@ Method(m7d2, 6)
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(9, Local2)
 				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, WriteAsZeros) {
@@ -5793,7 +5798,7 @@ Method(m7d2, 6)
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(63, Local2)
 				BankField(OPR0, BNK0, 63, DWordAcc, NoLock, WriteAsZeros) {
@@ -5921,7 +5926,7 @@ Method(m7d2, 6)
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(64, Local2)
 				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, WriteAsZeros) {
@@ -6049,7 +6054,7 @@ Method(m7d2, 6)
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(127, Local2)
 				BankField(OPR0, BNK0, 127, DWordAcc, NoLock, WriteAsZeros) {
@@ -6177,7 +6182,7 @@ Method(m7d2, 6)
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(128, Local2)
 				BankField(OPR0, BNK0, 128, DWordAcc, NoLock, WriteAsZeros) {
@@ -6187,8 +6192,12 @@ Method(m7d2, 6)
 				Store(Refof(g00d), Local4)
 			}
 			case (6) {
+
+			    // November 2011: Changed to DWordAcc from ByteAcc to enable
+			    // correct operation ("Expected" buffer assumes DWordAcc)
+
 				Store(255, Local2)
-				BankField(OPR0, BNK0, 255, ByteAcc, NoLock, WriteAsZeros) {
+				BankField(OPR0, BNK0, 255, DWordAcc, NoLock, WriteAsZeros) {
 					, 63, f0d1, 6}
 				Store(Refof(f0d1), Local3)
 				Store(Refof(g00e), Local4)
@@ -6202,8 +6211,12 @@ Method(m7d2, 6)
 				Store(Refof(g000), Local4)
 			}
 			case (8) {
+
+			    // November 2011: Changed to DWordAcc from WordAcc to enable
+			    // correct operation ("Expected" buffer assumes DWordAcc)
+
 				Store(1, Local2)
-				BankField(OPR0, BNK0, 1, WordAcc, NoLock, WriteAsZeros) {
+				BankField(OPR0, BNK0, 1, DWordAcc, NoLock, WriteAsZeros) {
 					, 63, f0d3, 8}
 				Store(Refof(f0d3), Local3)
 				Store(Refof(g001), Local4)
@@ -6305,7 +6318,7 @@ Method(m7d2, 6)
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(255, Local2)
 				BankField(OPR0, BNK0, 255, DWordAcc, NoLock, WriteAsZeros) {
@@ -6433,7 +6446,7 @@ Method(m7d2, 6)
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(0, Local2)
 				BankField(OPR0, BNK0, 0, WordAcc, NoLock, WriteAsZeros) {
@@ -6555,7 +6568,7 @@ Method(m7d2, 6)
 				Store(Refof(g000), Local4)
 			}
 			default {
-				err(arg0, z145, 5935, 0, 0, arg2, arg3)
+				err(arg0, z145, 59, 0, 0, arg2, arg3)
 				return
 			}
 		}
@@ -6574,7 +6587,7 @@ Method(m7d2, 6)
 
 // Create BankField Unit
 // (QWordAcc, NoLock, Preserve)
-Method(m7d3, 6)
+Method(m7d3, 6, Serialized)
 {
 	OperationRegion(OPRb, SystemIO, 0, 9)
 	OperationRegion(OPR0, SystemIO, 11, 256)
@@ -6631,9 +6644,9 @@ Method(m7d3, 6)
 
 	Concatenate(arg0, "-m7d3", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(0, Local2)
 				BankField(OPR0, BNK0, 0, QWordAcc, NoLock, Preserve) {
@@ -6761,7 +6774,7 @@ Method(m7d3, 6)
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(1, Local2)
 				BankField(OPR0, BNK0, 1, AnyAcc, NoLock, Preserve) {
@@ -6889,7 +6902,7 @@ Method(m7d3, 6)
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(2, Local2)
 				BankField(OPR0, BNK0, 2, QWordAcc, NoLock, Preserve) {
@@ -7017,7 +7030,7 @@ Method(m7d3, 6)
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(3, Local2)
 				BankField(OPR0, BNK0, 3, ByteAcc, NoLock, Preserve) {
@@ -7145,7 +7158,7 @@ Method(m7d3, 6)
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(4, Local2)
 				BankField(OPR0, BNK0, 4, QWordAcc, NoLock, Preserve) {
@@ -7273,7 +7286,7 @@ Method(m7d3, 6)
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(5, Local2)
 				BankField(OPR0, BNK0, 5, WordAcc, NoLock, Preserve) {
@@ -7401,7 +7414,7 @@ Method(m7d3, 6)
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(6, Local2)
 				BankField(OPR0, BNK0, 6, QWordAcc, NoLock, Preserve) {
@@ -7529,7 +7542,7 @@ Method(m7d3, 6)
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(7, Local2)
 				BankField(OPR0, BNK0, 7, DWordAcc, NoLock, Preserve) {
@@ -7657,7 +7670,7 @@ Method(m7d3, 6)
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(8, Local2)
 				BankField(OPR0, BNK0, 8, QWordAcc, NoLock, Preserve) {
@@ -7785,7 +7798,7 @@ Method(m7d3, 6)
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(9, Local2)
 				BankField(OPR0, BNK0, 9, QWordAcc, NoLock, Preserve) {
@@ -7913,7 +7926,7 @@ Method(m7d3, 6)
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(63, Local2)
 				BankField(OPR0, BNK0, 63, QWordAcc, NoLock, Preserve) {
@@ -8041,7 +8054,7 @@ Method(m7d3, 6)
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(64, Local2)
 				BankField(OPR0, BNK0, 64, AnyAcc, NoLock, Preserve) {
@@ -8169,7 +8182,7 @@ Method(m7d3, 6)
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(127, Local2)
 				BankField(OPR0, BNK0, 127, QWordAcc, NoLock, Preserve) {
@@ -8297,7 +8310,7 @@ Method(m7d3, 6)
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(128, Local2)
 				BankField(OPR0, BNK0, 128, QWordAcc, NoLock, Preserve) {
@@ -8425,7 +8438,7 @@ Method(m7d3, 6)
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(255, Local2)
 				BankField(OPR0, BNK0, 255, QWordAcc, NoLock, Preserve) {
@@ -8553,7 +8566,7 @@ Method(m7d3, 6)
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(0, Local2)
 				BankField(OPR0, BNK0, 0, WordAcc, NoLock, Preserve) {
@@ -8694,7 +8707,7 @@ Method(m7d3, 6)
 
 // Create BankField Unit
 // (AnyAcc, Lock, Preserve)
-Method(m7d4, 6)
+Method(m7d4, 6, Serialized)
 {
 	OperationRegion(OPRb, SystemIO, 0, 9)
 	OperationRegion(OPR0, SystemIO, 11, 256)
@@ -8751,9 +8764,9 @@ Method(m7d4, 6)
 
 	Concatenate(arg0, "-m7d4", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(0, Local2)
 				BankField(OPR0, BNK0, 0, AnyAcc, Lock, Preserve) {
@@ -8881,7 +8894,7 @@ Method(m7d4, 6)
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(1, Local2)
 				BankField(OPR0, BNK0, 1, AnyAcc, Lock, Preserve) {
@@ -9009,7 +9022,7 @@ Method(m7d4, 6)
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(2, Local2)
 				BankField(OPR0, BNK0, 2, AnyAcc, Lock, Preserve) {
@@ -9137,7 +9150,7 @@ Method(m7d4, 6)
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(3, Local2)
 				BankField(OPR0, BNK0, 3, ByteAcc, Lock, Preserve) {
@@ -9265,7 +9278,7 @@ Method(m7d4, 6)
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(4, Local2)
 				BankField(OPR0, BNK0, 4, AnyAcc, Lock, Preserve) {
@@ -9393,7 +9406,7 @@ Method(m7d4, 6)
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(5, Local2)
 				BankField(OPR0, BNK0, 5, WordAcc, Lock, Preserve) {
@@ -9521,7 +9534,7 @@ Method(m7d4, 6)
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(6, Local2)
 				BankField(OPR0, BNK0, 6, AnyAcc, Lock, Preserve) {
@@ -9649,7 +9662,7 @@ Method(m7d4, 6)
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(7, Local2)
 				BankField(OPR0, BNK0, 7, DWordAcc, Lock, Preserve) {
@@ -9777,7 +9790,7 @@ Method(m7d4, 6)
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(8, Local2)
 				BankField(OPR0, BNK0, 8, AnyAcc, Lock, Preserve) {
@@ -9905,7 +9918,7 @@ Method(m7d4, 6)
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(9, Local2)
 				BankField(OPR0, BNK0, 9, QWordAcc, Lock, Preserve) {
@@ -10033,7 +10046,7 @@ Method(m7d4, 6)
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(63, Local2)
 				BankField(OPR0, BNK0, 63, AnyAcc, Lock, Preserve) {
@@ -10161,7 +10174,7 @@ Method(m7d4, 6)
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(64, Local2)
 				BankField(OPR0, BNK0, 64, AnyAcc, Lock, Preserve) {
@@ -10289,7 +10302,7 @@ Method(m7d4, 6)
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(127, Local2)
 				BankField(OPR0, BNK0, 127, AnyAcc, Lock, Preserve) {
@@ -10417,7 +10430,7 @@ Method(m7d4, 6)
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(128, Local2)
 				BankField(OPR0, BNK0, 128, ByteAcc, Lock, Preserve) {
@@ -10545,7 +10558,7 @@ Method(m7d4, 6)
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(255, Local2)
 				BankField(OPR0, BNK0, 255, AnyAcc, Lock, Preserve) {
@@ -10673,7 +10686,7 @@ Method(m7d4, 6)
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				Store(0, Local2)
 				BankField(OPR0, BNK0, 0, WordAcc, Lock, Preserve) {
@@ -11533,13 +11546,19 @@ Method(m7c8, 1)
 	Name(vals, "2")
 
 	BankField (OPRj, bnk0, 2, ByteAcc, NoLock, Preserve) {
-		Offset(8), bf00, 20,
+		Offset(8), bf00, 32,
 	}
-	BankField (OPRj, bnk0, valb, ByteAcc, NoLock, Preserve) {
-		Offset(8), bf01, 20,
+
+    //
+    // BUG: ToInteger should not be necessary. The buffer and string
+    // arguments should be implicitly converted to integers.
+    //
+	BankField (OPRj, bnk0, ToInteger (valb), ByteAcc, NoLock, Preserve) {
+		Offset(8), bf01, 32,
 	}
-	BankField (OPRj, bnk0, vals, ByteAcc, NoLock, Preserve) {
-		Offset(8), bf02, 20,
+
+	BankField (OPRj, bnk0, ToInteger (vals), ByteAcc, NoLock, Preserve) {
+		Offset(8), bf02, 32,
 	}
 
 	Name(i000, 0x12345678)
@@ -11549,7 +11568,7 @@ Method(m7c8, 1)
 		Store(1, Local0)
 
 		BankField (OPRj, bnk0, arg1, ByteAcc, NoLock, Preserve) {
-			Offset(8), bf03, 20,
+			Offset(8), bf03, 32,
 		}
 
 		if (LNotEqual(bf03, i000)) {
@@ -11571,9 +11590,13 @@ Method(m7c8, 1)
 		err(arg0, z145, 117, 0, 0, bf00, i000)
 	}
 
+    //
+    // BUG: ToInteger should not be necessary. The buffer and string
+    // arguments should be implicitly converted to integers.
+    //
 	m000(arg0, val0, 118)
-	m000(arg0, valb, 119)
-	m000(arg0, vals, 120)
+	m000(arg0, ToInteger (valb), 119)
+	m000(arg0, ToInteger (vals), 120)
 }
 
 // Run-method

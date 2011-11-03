@@ -49,7 +49,7 @@
 
 Name(z141, 141)
 
-Name(NRSK, 8)	// Number of the specific RegionSpaceKeywords
+Name(NRSK, 11)	// Number of the specific RegionSpaceKeywords
 Name(IRSK, 0)   // Counter of the Invalid RSKs
 
 Name(NFLG, 2)	// Number of turn on/off Flag values
@@ -65,7 +65,10 @@ Name(PRSK, Package(NRSK){
 	0x03 /* EmbeddedControl */,
 	0x04 /* SMBus */,
 	0x05 /* SystemCMOS */,
-	0x06 /* PciBarTarget */
+	0x06 /* PciBarTarget */,
+	0x07 /* IPMI */,
+	0x08 /* GeneralPurposeIo */,
+	0x09 /* GenericSerialBus */
 })
 
 // DefaultAddressSpaces
@@ -76,30 +79,30 @@ Name(DRSK, Package(3){
 })
 
 Name(VRSK,		// Counters of the Valid RSKs
-	Package(NRSK){0, 0, 0, 0, 0, 0, 0, 0})
+	Package(NRSK){0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
 
 // Expected Counters of the Valid RSKs
 // actually, not only default spaces are initialized
 // by ACPICA, but AcpiExec provided ones also,
 // from aeexec.c:
 /*
- * FUNCTION:    AeInstallHandlers
- * DESCRIPTION: Install handlers for the AcpiExec utility.
-ACPI_ADR_SPACE_TYPE         SpaceId[] = {0, 1, 2, 3, 4, 0x80};
-#define AEXEC_NUM_REGIONS   6
-...
-    for (i = 0; i < AEXEC_NUM_REGIONS; i++)
-    {
-        if (i == 2)
-        {
-            continue;
-        }
- */
-
+static ACPI_ADR_SPACE_TYPE  SpaceIdList[] =
+{
+    ACPI_ADR_SPACE_EC,
+    ACPI_ADR_SPACE_SMBUS,
+    ACPI_ADR_SPACE_GSBUS,
+    ACPI_ADR_SPACE_GPIO,
+    ACPI_ADR_SPACE_PCI_BAR_TARGET,
+    ACPI_ADR_SPACE_IPMI,
+    ACPI_ADR_SPACE_FIXED_HARDWARE,
+    ACPI_ADR_SPACE_USER_DEFINED1,
+    ACPI_ADR_SPACE_USER_DEFINED2
+};
+*/
 
 Name(ERSK,
 	// 2 for \RGN0, \OPRK; 3 for \RGN0, \OPRI, and \OPRJ
-	Package(NRSK){1, 2, 3, 1, 1, 1, 0, 0})
+	Package(NRSK){1, 2, 3, 1, 1, 1, 0, 0, 0, 0, 0})
 
 Name(VFLG,		// Counters of the Valid Flags
 	Package(NFLG){0, 0})
@@ -108,16 +111,15 @@ Name(VFLG,		// Counters of the Valid Flags
 // _REG(RegionSpaceKeyword, Flag)
 // RegionSpaceKeyword:
 //	     UserDefRegionSpace | SystemIO | SystemMemory | PCI_Config |
-//	     EmbeddedControl | SMBus | SystemCMOS | PciBarTarget
+//	     EmbeddedControl | SMBus | SystemCMOS | PciBarTarget |
+//       IPMI | GeneralPurposeIo | GenericSerialBus
 // Flag: 1/0 - turn on/off accessing operation regions of that Space
 Method(_REG, 2)
 {
 	Name(dbgf, 1)
 
 	if (dbgf) {
-		Store("ASLTS \\_REG:", Debug)
-		Store(arg0, Debug)
-		Store(arg1, Debug)
+	    DNAM (Arg0, Arg1, "\\_REG")
 	}
 
 	Store(Match(PRSK, MEQ, arg0, MTR, 0, 1), Local0)
@@ -145,20 +147,29 @@ Method(_REG, 2)
 
 // Combination of the OperationRegion operator arguments
 
-OperationRegion(RGN0, SystemMemory, 0x00, 0x101)
-OperationRegion(RGN1, SystemIO, 0x200, 0x103)
-OperationRegion(RGN2, PCI_Config, 0x400, 0x105)
-OperationRegion(RGN3, EmbeddedControl, 0x600, 0x107)
-OperationRegion(RGN4, SMBus, 0x800, 0x109)
-OperationRegion(RGN5, SystemCMOS, 0xa00, 0x10b)
-OperationRegion(RGN6, PciBarTarget, 0xc00, 0x10d)
+OperationRegion(RGN0, SystemMemory,     0x0000, 0x101)
+OperationRegion(RGN1, SystemIO,         0x0200, 0x103)
+OperationRegion(RGN2, PCI_Config,       0x0400, 0x105)
+OperationRegion(RGN3, EmbeddedControl,  0x0600, 0x107)
+OperationRegion(RGN4, SMBus,            0x0800, 0x109)
+OperationRegion(RGN5, SystemCMOS,       0x0a00, 0x10b)
+OperationRegion(RGN6, PciBarTarget,     0x0c00, 0x10d)
 
 // UserDefRegionSpace
-OperationRegion(RGN7, 0x80, 0xd00, 0x117)
-OperationRegion(RGN8, 0xcf, 0xe00, 0x118)
-OperationRegion(RGN9, 0xff, 0xf00, 0x119)
 
-// OpRegion Lengths checking task package
+OperationRegion(RGN7, 0x80,             0x0d00, 0x117)
+OperationRegion(RGN8, 0xcf,             0x0e00, 0x118)
+OperationRegion(RGN9, 0xff,             0x0f00, 0x119)
+
+// ACPI 4/5 new space IDs
+OperationRegion(RGNa, GeneralPurposeIo, 0x1100, 0x11a)
+
+// NOTE: These spaces have special buffer protocols, can't be tested here
+//OperationRegion(RGNb, IPMI,             0x1000, 528)
+//OperationRegion(RGNc, GenericSerialBus, 0x1200, 272)
+
+
+// OpRegion Lengths checking task package: Name, SpaceID, Length
 Name(p702, Package(){
 	RGN0, 0x00, 0x101,
 	RGN1, 0x01, 0x103,
@@ -170,7 +181,53 @@ Name(p702, Package(){
 	RGN7, 0x80, 0x117,
 	RGN8, 0xcf, 0x118,
 	RGN9, 0xff, 0x119,
+	RGNa, 0x08, 0x11a,
 })
+
+// Region Space keyword strings
+Name(NNAM, 10)
+Name(RNAM, Package(NNAM){
+	/* 0x00 */ "SystemMemory",
+	/* 0x01 */ "SystemIO",
+	/* 0x02 */ "PCI_Config",
+	/* 0x03 */ "EmbeddedControl",
+	/* 0x04 */ "SMBus",
+	/* 0x05 */ "SystemCMOS",
+	/* 0x06 */ "PciBarTarget",
+	/* 0x07 */ "IPMI",
+	/* 0x08 */ "GeneralPurposeIo",
+	/* 0x09 */ "GenericSerialBus"
+})
+
+/*
+ * Display _REG method info
+ */
+
+// Arg0: SpaceID
+// Arg1: Enable/Disable flag
+// Arg2: _REG method name
+Method (DNAM, 3)
+{
+    Concatenate ("Executing _REG method: ", Arg2, Local1)
+    Concatenate (Local1, "  (", Local1)
+
+    if (LGreaterEqual (Arg0, NNAM)) {
+        if (LEqual (Arg0, 0x7E)) {
+            Concatenate (Local1, "Data Table", Local2)
+        }
+        else {
+            Concatenate (Local1, "User-defined or unknown SpaceId", Local2)
+        }
+    }
+    else {
+        Concatenate (Local1, DeRefOf (Index (RNAM, Arg0)), Local2)
+    }
+
+    Concatenate (Local2, ")", Local2)
+    Store (Local2, Debug)
+    Store(arg0, Debug)
+    Store(arg1, Debug)
+}
 
 Device(DOR0) {
 	Name(IRSK, 0)   // Counter of the Invalid RSKs
@@ -178,9 +235,9 @@ Device(DOR0) {
 	Name(IFLG, 0)   // Counter of the Invalid Flags
 
 	Name(VRSK,		// Counters of the Valid RSKs
-		Package(NRSK){0, 0, 0, 0, 0, 0, 0, 0})
+		Package(NRSK){0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
 	Name(ERSK,		// Expected Counters of the Valid RSKs
-		Package(NRSK){1, 1, 1, 1, 1, 1, 0, 0})
+		Package(NRSK){1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0})
 
 	Name(VFLG,		// Counters of the Valid Flags
 		Package(NFLG){0, 0})
@@ -192,9 +249,7 @@ Device(DOR0) {
 		Name(dbgf, 1)
 
 		if (dbgf) {
-			Store("ASLTS \\DOR0._REG:", Debug)
-			Store(arg0, Debug)
-			Store(arg1, Debug)
+		    DNAM (Arg0, Arg1, "\\DOR0._REG")
 		}
 
 		Store(Match(PRSK, MEQ, arg0, MTR, 0, 1), Local0)
@@ -222,18 +277,25 @@ Device(DOR0) {
 
 	// Combination of the OperationRegion operator arguments
 
-	OperationRegion(RGN0, SystemMemory, 0x1000, 0x102)
-	OperationRegion(RGN1, SystemIO, 0x1200, 0x104)
-	OperationRegion(RGN2, PCI_Config, 0x1400, 0x106)
-	OperationRegion(RGN3, EmbeddedControl, 0x1600, 0x108)
-	OperationRegion(RGN4, SMBus, 0x1800, 0x10a)
-	OperationRegion(RGN5, SystemCMOS, 0x1a00, 0x10c)
-	OperationRegion(RGN6, PciBarTarget, 0x1c00, 0x10d)
+	OperationRegion(RGN0, SystemMemory,     0x1000, 0x102)
+	OperationRegion(RGN1, SystemIO,         0x1200, 0x104)
+	OperationRegion(RGN2, PCI_Config,       0x1400, 0x106)
+	OperationRegion(RGN3, EmbeddedControl,  0x1600, 0x108)
+	OperationRegion(RGN4, SMBus,            0x1800, 0x10a)
+	OperationRegion(RGN5, SystemCMOS,       0x1a00, 0x10c)
+	OperationRegion(RGN6, PciBarTarget,     0x1c00, 0x10d)
 
 	// UserDefRegionSpace
-	OperationRegion(RGN7, 0x80, 0, 0x127)
-	OperationRegion(RGN8, 0xa5, 0, 0x128)
-	OperationRegion(RGN9, 0xff, 0, 0x129)
+
+	OperationRegion(RGN7, 0x80,             0, 0x127)
+	OperationRegion(RGN8, 0xa5,             0, 0x128)
+	OperationRegion(RGN9, 0xff,             0, 0x129)
+
+    // ACPI 4/5 new space IDs
+
+    OperationRegion(RGNa, IPMI,             0x1e00, 0x10e)
+    OperationRegion(RGNb, GeneralPurposeIo, 0x2000, 0x10f)
+    OperationRegion(RGNc, GenericSerialBus, 0x2200, 0x110)
 }
 
 Device(DOR1) {
@@ -242,9 +304,9 @@ Device(DOR1) {
 	Name(IFLG, 0)   // Counter of the Invalid Flags
 
 	Name(VRSK,		// Counters of the Valid RSKs
-		Package(NRSK){0, 0, 0, 0, 0, 0, 0, 0})
+		Package(NRSK){0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
 	Name(ERSK,		// Expected Counters of the Valid RSKs
-		Package(NRSK){1, 1, 1, 1, 1, 1, 0, 0})
+		Package(NRSK){1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0})
 
 	Name(VFLG,		// Counters of the Valid Flags
 		Package(NFLG){0, 0})
@@ -253,14 +315,13 @@ Device(DOR1) {
 
 	// Specific Operation Regions availability notification Method
 	// \DOR1._REG(RegionSpaceKeyword, Flag)
+    OperationRegion(JUNK, SystemMemory, 0x2000, 0x100)
 	Method(_REG, 2)
 	{
 		Name(dbgf, 1)
 
 		if (dbgf) {
-			Store("ASLTS \\DOR1._REG:", Debug)
-			Store(arg0, Debug)
-			Store(arg1, Debug)
+	        DNAM (Arg0, Arg1, "\\DOR1._REG")
 		}
 
 		Increment(IREG)
@@ -274,9 +335,7 @@ Device(DOR1) {
 			Name(dbgf, 1)
 
 			if (dbgf) {
-				Store("ASLTS \\m701._REG:", Debug)
-				Store(arg0, Debug)
-				Store(arg1, Debug)
+	            DNAM (Arg0, Arg1, "\\m701._REG")
 			}
 
 			Store(Match(PRSK, MEQ, arg0, MTR, 0, 1), Local0)
@@ -304,18 +363,25 @@ Device(DOR1) {
 
 		// Combination of the OperationRegion operator arguments
 
-		OperationRegion(RGN0, SystemMemory, 0x2000, 0x100)
-		OperationRegion(RGN1, SystemIO, 0x2200, 0x300)
-		OperationRegion(RGN2, PCI_Config, 0x2400, 0x500)
-		OperationRegion(RGN3, EmbeddedControl, 0x2600, 0x700)
-		OperationRegion(RGN4, SMBus, 0x2800, 0x900)
-		OperationRegion(RGN5, SystemCMOS, 0x2a00, 0xb00)
-		OperationRegion(RGN6, PciBarTarget, 0x2c00, 0xd00)
+		OperationRegion(RGN0, SystemMemory,     0x2000, 0x100)
+		OperationRegion(RGN1, SystemIO,         0x2200, 0x300)
+		OperationRegion(RGN2, PCI_Config,       0x2400, 0x500)
+		OperationRegion(RGN3, EmbeddedControl,  0x2600, 0x700)
+		OperationRegion(RGN4, SMBus,            0x2800, 0x900)
+		OperationRegion(RGN5, SystemCMOS,       0x2a00, 0xb00)
+		OperationRegion(RGN6, PciBarTarget,     0x2c00, 0xd00)
 
 		// UserDefRegionSpace
-		OperationRegion(RGN7, 0x80, 0, 0x100)
-		OperationRegion(RGN8, 0xa5, 0, 0x100)
-		OperationRegion(RGN9, 0xff, 0, 0x100)
+
+		OperationRegion(RGN7, 0x80,             0, 0x100)
+		OperationRegion(RGN8, 0xa5,             0, 0x100)
+		OperationRegion(RGN9, 0xff,             0, 0x100)
+
+        // ACPI 4/5 new space IDs
+
+        OperationRegion(RGNa, IPMI,             0x2e00, 0xf00)
+        OperationRegion(RGNb, GeneralPurposeIo, 0x3000, 0x1100)
+        OperationRegion(RGNc, GenericSerialBus, 0x3200, 0x1300)
 
 		// Incorrect call
 		_REG(FRSK, 2)
@@ -469,16 +535,16 @@ Method(m703, 1)
 	m70f(arg0, \RGN0, RGN0, 1, 0)
 	m70f(arg0, \RGN1, RGN1, 1, 1)
 
-	// m70f(arg0, \RGN2, RGN2, 1, 2)
-	// m70f(arg0, \RGN3, RGN3, 1, 3)
-	//	m70f(arg0, \RGN4, RGN4, 1, 4)
-	//	m70f(arg0, \RGN5, RGN5, 1, 5)
-	//	m70f(arg0, \RGN6, RGN6, 1, 6)
+	//  m70f(arg0, \RGN2, RGN2, 1, 2)
+	//  m70f(arg0, \RGN3, RGN3, 1, 3)
+	//  m70f(arg0, \RGN4, RGN4, 1, 4)
+	//  m70f(arg0, \RGN5, RGN5, 1, 5)
+	//  m70f(arg0, \RGN6, RGN6, 1, 6)
 
 	m70f(arg0, \RGN7, RGN7, 1, 7)
 
-	//	m70f(arg0, \RGN8, RGN8, 1, 8)
-	//	m70f(arg0, \RGN9, RGN9, 1, 9)
+	//  m70f(arg0, \RGN8, RGN8, 1, 8)
+	//  m70f(arg0, \RGN9, RGN9, 1, 9)
 
 	m70f(arg0, \DOR0.RGN0, RGNa, 0, 10)
 }
@@ -513,12 +579,13 @@ Method(m70c, 3)
 
 	m70d(arg2, b000)
 
-	if (LEqual(Local3, 0x02 /* PCI_Config */)) {
-	} elseif (LEqual(Local3, 0x04 /* SMBus */)) {
-	} elseif (LEqual(Local3, 0x05 /* SystemCMOS */)) {
-	} elseif (LEqual(Local3, 0x06 /* PciBarTarget */)) {
-	} elseif (LGreater(Local3, 0x80 /* UserDefRegionSpace <> 0x80 */)) {
-	} else {
+	if (LEqual(Local3, 0x02 /* PCI_Config */)) {}
+	elseif (LEqual(Local3, 0x04 /* SMBus */)) {}
+	elseif (LEqual(Local3, 0x05 /* SystemCMOS */)) {}
+	elseif (LEqual(Local3, 0x06 /* PciBarTarget */)) {}
+	elseif (LGreater(Local3, 0x80 /* UserDefRegionSpace <> 0x80 */)) {}
+
+	else {
 		Store(b000, Derefof(Local5))
 
 		CH03(arg0, z141, 24, arg2, Local3)
@@ -540,14 +607,14 @@ Method(m70c, 3)
 // m70d(Source, Target)
 // Source: 0x100 - index, else - this byte
 // Target: buffer for filling
-Method(m70d, 2)
+Method(m70d, 2, Serialized)
 {
 	Store(Sizeof(arg1), Local0)
 
 	while(Local0) {
 		Decrement(Local0)
 
-		switch (arg0) {
+		switch (ToInteger (arg0)) {
 			case (0x100) {
 				Store(Local0, Index(arg1, Local0))
 			}
@@ -565,7 +632,7 @@ Method(m70d, 2)
 // Results:   actual VRSK Values
 // Benchmark: expected VRSK Values
 // ErrId:     index of the error
-Method(m70e, 5)
+Method(m70e, 5, Serialized)
 {
 	Concatenate(arg0, "-m70e", arg0)
 
@@ -576,7 +643,7 @@ Method(m70e, 5)
 		Store(Index(arg2, Local0), Local1)
 		Store(Refof(Local1), Local2)
 
-		switch (arg1) {
+		switch(ToInteger (arg1)) {
 			case (0) {
 				Store (0, Derefof(Local2))
 			}
@@ -689,15 +756,15 @@ Method(m704, 1)
 // Check non-constant OpRegion arguments
 // m705(CallChain)
 // CallChain: String
-Method(m705, 1)
+Method(m705, 1, Serialized)
 {
 	Name(i000, 0x56)
 	Name(i001, 0x78)
 	Name(i002, 0x89abcdef)
 
 	// ArgX
-	Method(m000, 4) {
-		switch (arg1) {
+	Method(m000, 4, Serialized) {
+		switch(ToInteger (arg1)) {
 			case(0) {
 				OperationRegion(OPR0, SystemMemory, arg2, arg3)
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
@@ -731,8 +798,8 @@ Method(m705, 1)
 	}
 
 	// Named
-	Method(m001, 2) {
-		switch (arg1) {
+	Method(m001, 2, Serialized) {
+		switch(ToInteger (arg1)) {
 			case(0) {
 				OperationRegion(OPR0, SystemMemory, i000, i001)
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
@@ -766,11 +833,11 @@ Method(m705, 1)
 	}
 
 	// LocalX
-	Method(m002, 2) {
+	Method(m002, 2, Serialized) {
 		Store(i000, Local0)
 		Store(i001, Local1)
 
-		switch (arg1) {
+		switch(ToInteger (arg1)) {
 			case(0) {
 				OperationRegion(OPR0, SystemMemory, Local0, Local1)
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
@@ -805,10 +872,10 @@ Method(m705, 1)
 
 
 	// Expression
-	Method(m003, 2) {
+	Method(m003, 2, Serialized) {
 		Store(i001, Local1)
 
-		switch (arg1) {
+		switch(ToInteger (arg1)) {
 			case(0) {
 				OperationRegion(OPR0, SystemMemory, Add(i000, 1), Subtract(Local1, 1))
 				Field(OPR0, ByteAcc, NoLock, Preserve) {
@@ -993,7 +1060,7 @@ Method(ORC0)
 	SRMT("m705")
 	m705(ts)
 
-	// Non-Integert OpRegion arguments
+	// Non-Integer OpRegion arguments
 	SRMT("m706")
 	m706(ts)
 }

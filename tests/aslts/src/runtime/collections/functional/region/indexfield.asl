@@ -74,22 +74,28 @@ Field(OPRk, ByteAcc, NoLock, Preserve) {
 Method(m770, 1)
 {
 	Field(OPRk, ByteAcc, NoLock, Preserve) {
-		idx0, 4,
-		dta0, 3,
+		idx0, 8,
+		dta0, 8,
 	}
 
 	IndexField(idx0, dta0, ByteAcc, NoLock, Preserve) {
-		reg0, 3,
-		reg1, 3,
-		reg2, 3,
-		reg3, 3,
+	    Offset (0x1A),
+		reg0, 8,
+		Offset (0x5B),
+		reg1, 8,
+		Offset (0x9C),
+		reg2, 8,
+		Offset (0xED),
+		reg3, 8,
 	}
 
-	Name(i000, 0)
+	Name(i000, 0x1122)
 
 	Concatenate(arg0, "-m770", arg0)
 
 	Store("TEST: m770, initial IndexFields check", Debug)
+
+    // Check object types
 
 	Store(ObjectType(reg0), Local0)
 	Store(c00d, Local1)
@@ -115,38 +121,42 @@ Method(m770, 1)
 		err(arg0, z144, 4, 0, 0, Local0, Local1)
 	}
 
+    // Check actual writes to the IndexField(s).
+    // Uses fk32 overlay to check what exactly was written to the
+    // Index/Data register pair.
+
 	Store(i000, fk32)
-	Store(0xf, reg0)
+	Store(0xF1, reg0)
 
 	Store(fk32, Local0)
-	Store(0x70, Local1)
+	Store(0xF11A, Local1)
 	if (LNotEqual(Local1, Local0)) {
 		err(arg0, z144, 5, 0, 0, Local0, Local1)
 	}
 
 	Store(i000, fk32)
-	Store(0xf, reg1)
+	Store(0xD2, reg1)
 
 	Store(fk32, Local0)
-	Store(0x70, Local1)
+	Store(0xD25B, Local1)
 	if (LNotEqual(Local1, Local0)) {
 		err(arg0, z144, 6, 0, 0, Local0, Local1)
 	}
 
 	Store(i000, fk32)
-	Store(0xf, reg2)
+	Store(0x93, reg2)
 
 	Store(fk32, Local0)
-	Store(0x31, Local1)
+	Store(0x939C, Local1)
 	if (LNotEqual(Local1, Local0)) {
 		err(arg0, z144, 7, 0, 0, Local0, Local1)
 	}
 
 	Store(i000, fk32)
-	Store(0xf, reg3)
+	Store(0x54, reg3)
 
 	Store(fk32, Local0)
-	Store(0x71, Local1)
+	Store(0x54ED, Local1)
 	if (LNotEqual(Local1, Local0)) {
 		err(arg0, z144, 8, 0, 0, Local0, Local1)
 	}
@@ -164,10 +174,18 @@ Method(m771, 1)
 		dta0, 16,
 	}
 	IndexField(idx0, dta0, ByteAcc, NoLock, WriteAsZeros) {
-		idf0, 1, , 6, idf1, 1,
-		idf2, 1, , 6, idf3, 1,
-		idf4, 1, , 6, idf5, 1,
-		idf6, 1, , 6, idf7, 1,
+		idf0, 1,
+		    , 6,
+		idf1, 1,
+		idf2, 1,
+		    , 6,
+		idf3, 1,
+		idf4, 1,
+		    , 6,
+		idf5, 1,
+		idf6, 1,
+		    , 6,
+		idf7, 1,
 	}
 
 	m77e(arg0, 1, Refof(idf0), Refof(fk32), 0xffffffff, 0x00010000, 0)
@@ -325,6 +343,8 @@ Method(m77e, 7)
 		err(arg0, z144, 9, z144, arg6, Local2, arg5)
 	}
 
+    // Fill then immediately read
+
 	// Fill Index/Data common Region Field
 	Store(arg4, Derefof(Local1))
 
@@ -335,13 +355,20 @@ Method(m77e, 7)
 		err(arg0, z144, 10, z144, arg6, Local2, arg1)
 	}
 
+/*
+ * November 2011:
+ * This code does not make sense. It fills the region overlay and then
+ * reads the IndexField, and expects the resulting data to match the
+ * compare value (BenchMark). Commented out.
+ */
+/*
 	// Retrieve Index/Data common Region Field
 	Store(Derefof(arg3), Local2)
 
 	if (LNotEqual(arg5, Local2)) {
 		err(arg0, z144, 11, z144, arg6, Local2, arg5)
 	}
-
+*/
 }
 
 // Splitting of IndexFields
@@ -1050,7 +1077,7 @@ Method(m77a, 1)
 
 // Create IndexField Unit
 // (ByteAcc, NoLock, Preserve)
-Method(m790, 6)
+Method(m790, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 3000, 135)
 
@@ -1209,9 +1236,12 @@ Method(m790, 6)
 
 	Concatenate(arg0, "-m790", arg0)
 
-	switch(arg2) {
+BreakPoint
+
+
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX0, DAT0, ByteAcc, NoLock, Preserve) {
 					, 0, f000, 1}
@@ -1323,7 +1353,7 @@ Method(m790, 6)
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX1, DAT1, QWordAcc, NoLock, Preserve) {
 					AccessAs(ByteAcc),
@@ -1435,7 +1465,7 @@ Method(m790, 6)
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX2, DAT2, ByteAcc, NoLock, Preserve) {
 					, 2, f020, 1}
@@ -1547,7 +1577,7 @@ Method(m790, 6)
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX3, DAT3, AnyAcc, NoLock, Preserve) {
 					AccessAs(ByteAcc),
@@ -1659,7 +1689,7 @@ Method(m790, 6)
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX4, DAT4, ByteAcc, NoLock, Preserve) {
 					, 4, f040, 1}
@@ -1771,7 +1801,7 @@ Method(m790, 6)
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX5, DAT5, ByteAcc, NoLock, Preserve) {
 					AccessAs(ByteAcc),
@@ -1883,7 +1913,7 @@ Method(m790, 6)
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX6, DAT6, ByteAcc, NoLock, Preserve) {
 					, 6, f060, 1}
@@ -1995,7 +2025,7 @@ Method(m790, 6)
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX7, DAT7, WordAcc, NoLock, Preserve) {
 					AccessAs(ByteAcc),
@@ -2107,7 +2137,7 @@ Method(m790, 6)
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX8, DAT8, ByteAcc, NoLock, Preserve) {
 					Offset(1), f080, 1}
@@ -2219,7 +2249,7 @@ Method(m790, 6)
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX9, DAT9, QWordAcc, NoLock, Preserve) {
 					AccessAs(ByteAcc),
@@ -2331,7 +2361,7 @@ Method(m790, 6)
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXA, DATA, ByteAcc, NoLock, Preserve) {
 					Offset(3), , 7, f0a0, 1}
@@ -2443,7 +2473,7 @@ Method(m790, 6)
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXB, DATB, AnyAcc, NoLock, Preserve) {
 					AccessAs(ByteAcc),
@@ -2555,7 +2585,7 @@ Method(m790, 6)
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXC, DATC, ByteAcc, NoLock, Preserve) {
 					, 33, f0c0, 1}
@@ -2667,7 +2697,7 @@ Method(m790, 6)
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXD, DATD, ByteAcc, NoLock, Preserve) {
 					AccessAs(ByteAcc),
@@ -2779,7 +2809,7 @@ Method(m790, 6)
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXE, DATE, ByteAcc, NoLock, Preserve) {
 					, 64, f0e0, 1}
@@ -2891,7 +2921,7 @@ Method(m790, 6)
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX0, DAT0, WordAcc, NoLock, Preserve) {
 					AccessAs(ByteAcc),
@@ -3012,7 +3042,7 @@ Method(m790, 6)
 
 // Create IndexField Unit
 // (WordAcc, NoLock, WriteAsOnes)
-Method(m791, 6)
+Method(m791, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 4000, 135)
 
@@ -3171,9 +3201,9 @@ Method(m791, 6)
 
 	Concatenate(arg0, "-m791", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX0, DAT0, WordAcc, NoLock, WriteAsOnes) {
 					, 0, f000, 1}
@@ -3277,7 +3307,7 @@ Method(m791, 6)
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX1, DAT1, WordAcc, NoLock, WriteAsOnes) {
 					Offset(0), , 1, f010, 1}
@@ -3381,7 +3411,7 @@ Method(m791, 6)
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX2, DAT2, WordAcc, NoLock, WriteAsOnes) {
 					, 2, f020, 1}
@@ -3485,7 +3515,7 @@ Method(m791, 6)
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX3, DAT3, WordAcc, NoLock, WriteAsOnes) {
 					, 3, f030, 1}
@@ -3589,7 +3619,7 @@ Method(m791, 6)
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX4, DAT4, WordAcc, NoLock, WriteAsOnes) {
 					, 4, f040, 1}
@@ -3693,7 +3723,7 @@ Method(m791, 6)
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX5, DAT5, WordAcc, NoLock, WriteAsOnes) {
 					, 5, f050, 1}
@@ -3797,7 +3827,7 @@ Method(m791, 6)
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX6, DAT6, WordAcc, NoLock, WriteAsOnes) {
 					, 6, f060, 1}
@@ -3901,7 +3931,7 @@ Method(m791, 6)
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX7, DAT7, WordAcc, NoLock, WriteAsOnes) {
 					, 7, f070, 1}
@@ -4005,7 +4035,7 @@ Method(m791, 6)
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX8, DAT8, WordAcc, NoLock, WriteAsOnes) {
 					Offset(1), f080, 1}
@@ -4109,7 +4139,7 @@ Method(m791, 6)
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX9, DAT9, WordAcc, NoLock, WriteAsOnes) {
 					, 9, f090, 1}
@@ -4213,7 +4243,7 @@ Method(m791, 6)
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXA, DATA, WordAcc, NoLock, WriteAsOnes) {
 					Offset(3), , 7, f0a0, 1}
@@ -4317,7 +4347,7 @@ Method(m791, 6)
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXB, DATB, WordAcc, NoLock, WriteAsOnes) {
 					, 32, f0b0, 1}
@@ -4421,7 +4451,7 @@ Method(m791, 6)
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXC, DATC, WordAcc, NoLock, WriteAsOnes) {
 					, 33, f0c0, 1}
@@ -4525,7 +4555,7 @@ Method(m791, 6)
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXD, DATD, WordAcc, NoLock, WriteAsOnes) {
 					, 63, f0d0, 1}
@@ -4629,7 +4659,7 @@ Method(m791, 6)
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXE, DATE, WordAcc, NoLock, WriteAsOnes) {
 					, 64, f0e0, 1}
@@ -4733,7 +4763,7 @@ Method(m791, 6)
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX0, DAT0, WordAcc, NoLock, WriteAsOnes) {
 					Offset(8), , 1, f0f0, 1}
@@ -4846,7 +4876,7 @@ Method(m791, 6)
 
 // Create IndexField Unit
 // (DWordAcc, NoLock, WriteAsZeros)
-Method(m792, 6)
+Method(m792, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 5000, 135)
 
@@ -5005,9 +5035,9 @@ Method(m792, 6)
 
 	Concatenate(arg0, "-m792", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros) {
 					, 0, f000, 1}
@@ -5111,7 +5141,7 @@ Method(m792, 6)
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX1, DAT1, DWordAcc, NoLock, WriteAsZeros) {
 					Offset(0), , 1, f010, 1}
@@ -5215,7 +5245,7 @@ Method(m792, 6)
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX2, DAT2, DWordAcc, NoLock, WriteAsZeros) {
 					, 2, f020, 1}
@@ -5319,7 +5349,7 @@ Method(m792, 6)
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX3, DAT3, DWordAcc, NoLock, WriteAsZeros) {
 					, 3, f030, 1}
@@ -5423,7 +5453,7 @@ Method(m792, 6)
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX4, DAT4, DWordAcc, NoLock, WriteAsZeros) {
 					, 4, f040, 1}
@@ -5527,7 +5557,7 @@ Method(m792, 6)
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX5, DAT5, DWordAcc, NoLock, WriteAsZeros) {
 					, 5, f050, 1}
@@ -5631,7 +5661,7 @@ Method(m792, 6)
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX6, DAT6, DWordAcc, NoLock, WriteAsZeros) {
 					, 6, f060, 1}
@@ -5735,7 +5765,7 @@ Method(m792, 6)
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX7, DAT7, DWordAcc, NoLock, WriteAsZeros) {
 					, 7, f070, 1}
@@ -5839,7 +5869,7 @@ Method(m792, 6)
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX8, DAT8, DWordAcc, NoLock, WriteAsZeros) {
 					Offset(1), f080, 1}
@@ -5943,7 +5973,7 @@ Method(m792, 6)
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX9, DAT9, DWordAcc, NoLock, WriteAsZeros) {
 					, 9, f090, 1}
@@ -6047,7 +6077,7 @@ Method(m792, 6)
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXA, DATA, DWordAcc, NoLock, WriteAsZeros) {
 					Offset(3), , 7, f0a0, 1}
@@ -6151,7 +6181,7 @@ Method(m792, 6)
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXB, DATB, DWordAcc, NoLock, WriteAsZeros) {
 					, 32, f0b0, 1}
@@ -6255,7 +6285,7 @@ Method(m792, 6)
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXC, DATC, DWordAcc, NoLock, WriteAsZeros) {
 					, 33, f0c0, 1}
@@ -6359,7 +6389,7 @@ Method(m792, 6)
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXD, DATD, DWordAcc, NoLock, WriteAsZeros) {
 					, 63, f0d0, 1}
@@ -6463,7 +6493,7 @@ Method(m792, 6)
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXE, DATE, DWordAcc, NoLock, WriteAsZeros) {
 					, 64, f0e0, 1}
@@ -6567,7 +6597,7 @@ Method(m792, 6)
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX0, DAT0, DWordAcc, NoLock, WriteAsZeros) {
 					Offset(8), , 1, f0f0, 1}
@@ -6680,7 +6710,7 @@ Method(m792, 6)
 
 // Create IndexField Unit
 // (QWordAcc, NoLock, Preserve)
-Method(m793, 6)
+Method(m793, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 6000, 168)
 
@@ -6841,9 +6871,9 @@ Method(m793, 6)
 
 	Concatenate(arg0, "-m793", arg0)
 
-	switch(arg2) {
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX0, DAT0, QWordAcc, NoLock, Preserve) {
 					, 0, f000, 1}
@@ -6947,7 +6977,7 @@ Method(m793, 6)
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX1, DAT1, QWordAcc, NoLock, Preserve) {
 					Offset(0), , 1, f010, 1}
@@ -7051,7 +7081,7 @@ Method(m793, 6)
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX2, DAT2, QWordAcc, NoLock, Preserve) {
 					, 2, f020, 1}
@@ -7155,7 +7185,7 @@ Method(m793, 6)
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX3, DAT3, QWordAcc, NoLock, Preserve) {
 					, 3, f030, 1}
@@ -7259,7 +7289,7 @@ Method(m793, 6)
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX4, DAT4, QWordAcc, NoLock, Preserve) {
 					, 4, f040, 1}
@@ -7363,7 +7393,7 @@ Method(m793, 6)
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX5, DAT5, QWordAcc, NoLock, Preserve) {
 					, 5, f050, 1}
@@ -7467,7 +7497,7 @@ Method(m793, 6)
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX6, DAT6, QWordAcc, NoLock, Preserve) {
 					, 6, f060, 1}
@@ -7571,7 +7601,7 @@ Method(m793, 6)
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX7, DAT7, QWordAcc, NoLock, Preserve) {
 					, 7, f070, 1}
@@ -7675,7 +7705,7 @@ Method(m793, 6)
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX8, DAT8, QWordAcc, NoLock, Preserve) {
 					Offset(1), f080, 1}
@@ -7779,7 +7809,7 @@ Method(m793, 6)
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX9, DAT9, QWordAcc, NoLock, Preserve) {
 					, 9, f090, 1}
@@ -7883,7 +7913,7 @@ Method(m793, 6)
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXA, DATA, QWordAcc, NoLock, Preserve) {
 					Offset(3), , 7, f0a0, 1}
@@ -7987,7 +8017,7 @@ Method(m793, 6)
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXB, DATB, QWordAcc, NoLock, Preserve) {
 					, 32, f0b0, 1}
@@ -8091,7 +8121,7 @@ Method(m793, 6)
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXC, DATC, QWordAcc, NoLock, Preserve) {
 					, 33, f0c0, 1}
@@ -8195,7 +8225,7 @@ Method(m793, 6)
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXD, DATD, QWordAcc, NoLock, Preserve) {
 					, 63, f0d0, 1}
@@ -8299,7 +8329,7 @@ Method(m793, 6)
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXE, DATE, QWordAcc, NoLock, Preserve) {
 					, 64, f0e0, 1}
@@ -8403,7 +8433,7 @@ Method(m793, 6)
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX0, DAT0, QWordAcc, NoLock, Preserve) {
 					Offset(8), , 1, f0f0, 1}
@@ -8516,7 +8546,7 @@ Method(m793, 6)
 
 // Create IndexField Unit
 // (AnyAcc, Lock, Preserve)
-Method(m794, 6)
+Method(m794, 6, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 7000, 135)
 
@@ -8675,9 +8705,11 @@ Method(m794, 6)
 
 	Concatenate(arg0, "-m794", arg0)
 
-	switch(arg2) {
+BreakPoint
+
+	switch(ToInteger (arg2)) {
 	case (0) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX0, DAT0, AnyAcc, Lock, Preserve) {
 					, 0, f000, 1}
@@ -8781,7 +8813,7 @@ Method(m794, 6)
 		}
 	}
 	case (1) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX1, DAT1, AnyAcc, Lock, Preserve) {
 					Offset(0), , 1, f010, 1}
@@ -8885,7 +8917,7 @@ Method(m794, 6)
 		}
 	}
 	case (2) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX2, DAT2, AnyAcc, Lock, Preserve) {
 					, 2, f020, 1}
@@ -8989,7 +9021,7 @@ Method(m794, 6)
 		}
 	}
 	case (3) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX3, DAT3, AnyAcc, Lock, Preserve) {
 					, 3, f030, 1}
@@ -9093,7 +9125,7 @@ Method(m794, 6)
 		}
 	}
 	case (4) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX4, DAT4, AnyAcc, Lock, Preserve) {
 					, 4, f040, 1}
@@ -9197,7 +9229,7 @@ Method(m794, 6)
 		}
 	}
 	case (5) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX5, DAT5, AnyAcc, Lock, Preserve) {
 					, 5, f050, 1}
@@ -9301,7 +9333,7 @@ Method(m794, 6)
 		}
 	}
 	case (6) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX6, DAT6, AnyAcc, Lock, Preserve) {
 					, 6, f060, 1}
@@ -9405,7 +9437,7 @@ Method(m794, 6)
 		}
 	}
 	case (7) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX7, DAT7, AnyAcc, Lock, Preserve) {
 					, 7, f070, 1}
@@ -9509,7 +9541,7 @@ Method(m794, 6)
 		}
 	}
 	case (8) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX8, DAT8, AnyAcc, Lock, Preserve) {
 					Offset(1), f080, 1}
@@ -9613,7 +9645,7 @@ Method(m794, 6)
 		}
 	}
 	case (9) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX9, DAT9, AnyAcc, Lock, Preserve) {
 					, 9, f090, 1}
@@ -9717,7 +9749,7 @@ Method(m794, 6)
 		}
 	}
 	case (31) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXA, DATA, AnyAcc, Lock, Preserve) {
 					Offset(3), , 7, f0a0, 1}
@@ -9821,7 +9853,7 @@ Method(m794, 6)
 		}
 	}
 	case (32) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXB, DATB, AnyAcc, Lock, Preserve) {
 					, 32, f0b0, 1}
@@ -9925,7 +9957,7 @@ Method(m794, 6)
 		}
 	}
 	case (33) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXC, DATC, AnyAcc, Lock, Preserve) {
 					, 33, f0c0, 1}
@@ -10029,7 +10061,7 @@ Method(m794, 6)
 		}
 	}
 	case (63) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXD, DATD, AnyAcc, Lock, Preserve) {
 					, 63, f0d0, 1}
@@ -10133,7 +10165,7 @@ Method(m794, 6)
 		}
 	}
 	case (64) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDXE, DATE, AnyAcc, Lock, Preserve) {
 					, 64, f0e0, 1}
@@ -10237,7 +10269,7 @@ Method(m794, 6)
 		}
 	}
 	case (65) {
-		switch(arg3) {
+		switch(ToInteger (arg3)) {
 			case (1) {
 				IndexField(IDX0, DAT0, AnyAcc, Lock, Preserve) {
 					Offset(8), , 1, f0f0, 1}
@@ -10358,27 +10390,15 @@ Method(IFC0)
 
 	// Access to 1-bit IndexFields, ByteAcc
 	SRMT("m771")
-	if (y224) {
-		m771(ts)
-	} else {
-		BLCK()
-	}
+    m771(ts)
 
 	// Access to 1-bit IndexFields, WordAcc
 	SRMT("m772")
-	if (y224) {
-		m772(ts)
-	} else {
-		BLCK()
-	}
+    m772(ts)
 
 	// Access to 1-bit IndexFields, DWordAcc
 	SRMT("m773")
-	if (y224) {
-		m773(ts)
-	} else {
-		BLCK()
-	}
+    m773(ts)
 
 	// Access to 1-bit IndexFields, QWordAcc
 	SRMT("m774")
@@ -10390,11 +10410,7 @@ Method(IFC0)
 
 	// Splitting of IndexFields
 	SRMT("m775")
-	if (y214) {
-		m775(ts)
-	} else {
-		BLCK()
-	}
+    m775(ts)
 
 	// Check IndexField access: ByteAcc, NoLock, Preserve
 	SRMT("m776")
