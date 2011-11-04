@@ -817,7 +817,7 @@ Method(m36c)
 	 * arg2 - 1 - acquire 0-level mutex instead of arg1
 	 *        2 - acquire Global lock   instead of arg1
 	 */
-	Method(m000, 3)
+	Method(m000, 3, Serialized)
 	{
 		/* Acquire the first mutex */
 
@@ -831,7 +831,7 @@ Method(m36c)
 		 * It is supposed that the second acquired
 		 * is a mutex of level not greater than (N-1)
 		 */
-		Switch (arg2) {
+		Switch (ToInteger (arg2)) {
 			Case (1) {
 				m36f(0, 0, 1, 0) // Acquire 0 level mux
 			}

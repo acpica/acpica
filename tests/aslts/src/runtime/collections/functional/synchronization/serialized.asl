@@ -224,7 +224,7 @@ Method(m3b3, 3)
 	Method(m015,1,Serialized,15) {if (arg0) {Store(15,i004)} else {Store(15,i003)} mm00(1,i000,i001)}
 
 
-	Method(mm00, 3)
+	Method(mm00, 3, Serialized)
 	{
 		Name(iii0, 0)
 		Name(iii1, 0)
@@ -244,7 +244,7 @@ Method(m3b3, 3)
 			Store(arg1, Local1)
 		}
 
-		Switch (Local1) {
+		Switch (ToInteger (Local1)) {
 			Case (0) {
 				m000(Local0)
 			}
@@ -1072,7 +1072,7 @@ Method(m3bb, 3)
 	 * arg1 - level of first call
 	 * arg2 - level of second call
 	 */
-	Method(mm00, 3)
+	Method(mm00, 3, Serialized)
 	{
 		Store(i002, Local0)
 		Increment(i002)
@@ -1109,7 +1109,7 @@ Method(m3bb, 3)
 			Store(1, Local4) // Check return of Acquire, success is expected
 		}
 
-		Switch (Local1) {
+		Switch (ToInteger (Local1)) {
 			Case (0) {
 				m000(Local0)
 			}

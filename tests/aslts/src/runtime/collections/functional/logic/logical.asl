@@ -33,7 +33,7 @@
 Name(z035, 35)
 
 // Verifying 2-parameters, 1-result operator
-Method(m003, 6)
+Method(m003, 6, Serialized)
 {
 	Store(0, Local5)
 	Store(arg1, Local3)
@@ -51,7 +51,7 @@ Method(m003, 6)
 
 		Store(DeRefOf(Index(arg4, Local5)), Local2)
 
-		switch (arg5) {
+		switch (ToInteger (arg5)) {
 			case (0) {
 				Store(LNotEqual(Local0, Local1), Local7)
 				if (LNotEqual(Local7, Local2)) {
@@ -133,7 +133,7 @@ Method(m003, 6)
 }
 
 // Verifying 1-parameter, 1-result operator
-Method(m004, 6)
+Method(m004, 6, Serialized)
 {
 	Store(0, Local5)
 	Store(arg1, Local3)
@@ -148,7 +148,7 @@ Method(m004, 6)
 
 		Store(DeRefOf(Index(arg4, Local5)), Local1)
 
-		switch (arg5) {
+		switch (ToInteger (arg5)) {
 			case (0) {
 				Store(LNot(Local0), Local2)
 				if (LNotEqual(Local2, Local1)) {

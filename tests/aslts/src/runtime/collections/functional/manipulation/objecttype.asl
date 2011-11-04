@@ -136,7 +136,7 @@ Name(b003, Buffer(4) {12, 13, 14, 15})
 //
 // Local7 - returned result
 //
-Method(m0f1, 7)
+Method(m0f1, 7, Serialized)
 {
 	OperationRegion(r000, SystemMemory, 0x100, 0x100)
 	OperationRegion(r001, SystemMemory, 0x100, 0x100)
@@ -145,7 +145,7 @@ Method(m0f1, 7)
 		Store(0, Local7)
 	}
 
-	switch (arg1) {
+	switch (ToInteger (arg1)) {
 		case (0) {
 
 			// Uninitialized
@@ -997,7 +997,7 @@ Store("==================================== uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu"
 	return (Local7)
 }
 
-Method(m0f0)
+Method(m0f0, 0, Serialized)
 {
 	Name(ts, "m0f0")
 
@@ -1010,7 +1010,7 @@ Method(m0f0)
 
 		Store(0, Local2)
 
-		switch (Local5) {
+		switch (ToInteger (Local5)) {
 			case (1) {
 				Store(0x81223344, Local2)
 			}

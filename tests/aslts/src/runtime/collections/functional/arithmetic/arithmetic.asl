@@ -33,7 +33,7 @@
 Name(z083, 83)
 
 // Verifying 2-parameters, 1-result operator
-Method(m000, 6)
+Method(m000, 6, Serialized)
 {
 	Store(0, Local5)
 	Store(arg1, Local3)
@@ -51,7 +51,7 @@ Method(m000, 6)
 
 		Store(DeRefOf(Index(arg4, Local5)), Local2)
 
-		switch (arg5) {
+		switch (ToInteger (arg5)) {
 			case (0) {
 				Add(Local0, Local1, Local7)
 				if (LNotEqual(Local7, Local2)) {
@@ -153,7 +153,7 @@ Method(m000, 6)
 }
 
 // Verifying 2-parameters, 2-results operator
-Method(m001, 6)
+Method(m001, 6, Serialized)
 {
 	Store(0, Local5)
 	Store(arg1, Local4)
@@ -174,7 +174,7 @@ Method(m001, 6)
 		Increment(Local6)
 		Store(DeRefOf(Index(arg4, Local6)), Local3)
 
-		switch (arg5) {
+		switch (ToInteger (arg5)) {
 			case (0) {
 				Divide(Local0, Local1, Local6, Local7)
 				if (LNotEqual(Local7, Local2)) {
@@ -191,7 +191,7 @@ Method(m001, 6)
 }
 
 // Verifying 1-parameter, 1-result operator
-Method(m002, 6)
+Method(m002, 6, Serialized)
 {
 	Store(0, Local5)
 	Store(arg1, Local3)
@@ -206,7 +206,7 @@ Method(m002, 6)
 
 		Store(DeRefOf(Index(arg4, Local5)), Local1)
 
-		switch (arg5) {
+		switch (ToInteger (arg5)) {
 			case (0) {
 				Increment(Local0)
 				if (LNotEqual(Local0, Local1)) {

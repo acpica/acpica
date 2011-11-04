@@ -259,7 +259,7 @@ Method(m36e, 1)
  * arg2 - opcode of exception to be generated or zero
  * arg3 - opcode of TimeOutValue (see comment to ma00)
  */
-Method(m36f, 4)
+Method(m36f, 4, Serialized)
 {
 	Store(1, Local0) // Init with FAIL
 
@@ -273,7 +273,7 @@ Method(m36f, 4)
 		if (arg2) {
 			Concatenate(Local1, ", Exception expected", Local1)
 		} else {
-			Switch (arg3) {
+			Switch (ToInteger (arg3)) {
 				Case (5) { // TOV0
 					Concatenate(Local1, ", tout 0", Local1)
 				}
@@ -293,7 +293,7 @@ Method(m36f, 4)
 		return (0)
 	}
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Store(ma00(arg1, arg2, arg3), Local0)
 		}
@@ -360,7 +360,7 @@ Method(m36f, 4)
  * arg1 - Index of mutex
  * arg2 - opcode of exception to be generated or zero
  */
-Method(m388, 3)
+Method(m388, 3, Serialized)
 {
 	if (FL02) {
 		Store(m21e("Release mutex, ", arg0, arg1), Local1)
@@ -380,7 +380,7 @@ Method(m388, 3)
 		return
 	}
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			ma10(arg1)
 		}

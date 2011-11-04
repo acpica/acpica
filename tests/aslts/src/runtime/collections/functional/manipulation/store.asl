@@ -35,7 +35,7 @@ Name(z042, 42)
 Mutex(MT04, 0)
 
 // Verifying 1-parameter, 1-result operator
-Method(m302, 6)
+Method(m302, 6, Serialized)
 {
 	Store(0, Local5)
 	Store(arg1, Local3)
@@ -50,7 +50,7 @@ Method(m302, 6)
 
 		Store(DeRefOf(Index(arg4, Local5)), Local1)
 
-		switch (arg5) {
+		switch (ToInteger (arg5)) {
 			case (0) {
 				ToInteger(Local0, Local2)
 				if (LNotEqual(Local2, Local1)) {
@@ -66,7 +66,7 @@ Method(m302, 6)
 				}
 			}
 			case (2) {
-				ToString(Local0, Local2)
+				ToString(Local0, , Local2)
 				if (LNotEqual(Local2, Local1)) {
 					err(arg0, z042, 2, 0, 0, Local5, arg2)
 					return (1)

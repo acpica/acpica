@@ -100,7 +100,7 @@ Name(FLG4, 0)
 // arg0-arg4 - parameters of operators
 // arg5      - miscellaneous
 // arg6      - opcode of operation
-Method(m480, 7)
+Method(m480, 7, Serialized)
 {
 	Name(ts, "m480")
 
@@ -188,7 +188,7 @@ Method(m480, 7)
 		Store("=====================.", Debug)
 	}
 
-	switch (Arg6) {
+	switch (ToInteger (Arg6)) {
 		case (0) {
 			Store(Acquire(arg0, 100), Local7)
 		}
@@ -538,11 +538,11 @@ Method(m480, 7)
 }
 
 // Compare the contents of arg3 and arg4, arg2 - the type of objects
-Method(m481, 5)
+Method(m481, 5, Serialized)
 {
 	Store(0, Local0)
 
-	switch (arg2) {
+	switch (ToInteger (arg2)) {
 		case (1) {
 			if (LNotEqual(arg3, arg4)) {
 				err(arg0, z082, 24, 0, 0, arg1, 0)

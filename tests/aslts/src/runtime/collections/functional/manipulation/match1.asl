@@ -38,11 +38,11 @@ Name(z038, 38)
 Name(c099, 0)
 
 // Match operator wrapper
-Method(m306, 6)	// SPkg, Op1, MO1, Op2, MO2, SInd
+Method(m306, 6, Serialized)	// SPkg, Op1, MO1, Op2, MO2, SInd
 {
-	switch (arg1) {
+	switch (ToInteger (arg1)) {
 		case (0) {
-			switch (arg3) {
+			switch (ToInteger (arg3)) {
 				case (0) {
 					Store(Match(arg0, MTR, arg2, MTR, arg4, arg5), Local0)
 				}
@@ -64,7 +64,7 @@ Method(m306, 6)	// SPkg, Op1, MO1, Op2, MO2, SInd
 			}
 		}
 		case (1) {
-			switch (arg3) {
+			switch (ToInteger (arg3)) {
 				case (0) {
 					Store(Match(arg0, MEQ, arg2, MTR, arg4, arg5), Local0)
 				}
@@ -86,7 +86,7 @@ Method(m306, 6)	// SPkg, Op1, MO1, Op2, MO2, SInd
 			}
 		}
 		case (2) {
-			switch (arg3) {
+			switch (ToInteger (arg3)) {
 				case (0) {
 					Store(Match(arg0, MLE, arg2, MTR, arg4, arg5), Local0)
 				}
@@ -108,7 +108,7 @@ Method(m306, 6)	// SPkg, Op1, MO1, Op2, MO2, SInd
 			}
 		}
 		case (3) {
-			switch (arg3) {
+			switch (ToInteger (arg3)) {
 				case (0) {
 					Store(Match(arg0, MLT, arg2, MTR, arg4, arg5), Local0)
 				}
@@ -130,7 +130,7 @@ Method(m306, 6)	// SPkg, Op1, MO1, Op2, MO2, SInd
 			}
 		}
 		case (4) {
-			switch (arg3) {
+			switch (ToInteger (arg3)) {
 				case (0) {
 					Store(Match(arg0, MGE, arg2, MTR, arg4, arg5), Local0)
 				}
@@ -152,7 +152,7 @@ Method(m306, 6)	// SPkg, Op1, MO1, Op2, MO2, SInd
 			}
 		}
 		case (5) {
-			switch (arg3) {
+			switch (ToInteger (arg3)) {
 				case (0) {
 					Store(Match(arg0, MGT, arg2, MTR, arg4, arg5), Local0)
 				}

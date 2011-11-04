@@ -213,11 +213,11 @@ Method(m078, 1)
  *        1 - 1
  *        otherwise - oxffff
  */
-Method(ma00, 3)
+Method(ma00, 3, Serialized)
 {
 	Store(1, Local0)
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			if (arg1) {
 				Acquire(T000, 0xffff)
@@ -436,11 +436,11 @@ Method(ma00, 3)
  * Acquire mutex of level 1
  * (Index of mux, opcode of exception to be generated or zero, opcode of TimeOutValue)
  */
-Method(ma01, 3)
+Method(ma01, 3, Serialized)
 {
 	Store(1, Local0)
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			if (arg1) {
 				Acquire(T100, 0xffff)
@@ -493,11 +493,11 @@ Method(ma01, 3)
  * Acquire mutex of level 2
  * (Index of mux, opcode of exception to be generated or zero, opcode of TimeOutValue)
  */
-Method(ma02, 3)
+Method(ma02, 3, Serialized)
 {
 	Store(1, Local0)
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			if (arg1) {
 				Acquire(T200, 0xffff)
@@ -550,11 +550,11 @@ Method(ma02, 3)
  * Acquire mutex of level 3
  * (Index of mux, opcode of exception to be generated or zero, opcode of TimeOutValue)
  */
-Method(ma03, 3)
+Method(ma03, 3, Serialized)
 {
 	Store(1, Local0)
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			if (arg1) {
 				Acquire(T300, 0xffff)
@@ -607,11 +607,11 @@ Method(ma03, 3)
  * Acquire mutex of level 4
  * (Index of mux, opcode of exception to be generated or zero, opcode of TimeOutValue)
  */
-Method(ma04, 3)
+Method(ma04, 3, Serialized)
 {
 	Store(1, Local0)
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			if (arg1) {
 				Acquire(T400, 0xffff)
@@ -664,11 +664,11 @@ Method(ma04, 3)
  * Acquire mutex of level 5
  * (Index of mux, opcode of exception to be generated or zero, opcode of TimeOutValue)
  */
-Method(ma05, 3)
+Method(ma05, 3, Serialized)
 {
 	Store(1, Local0)
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			if (arg1) {
 				Acquire(T500, 0xffff)
@@ -721,11 +721,11 @@ Method(ma05, 3)
  * Acquire mutex of level 6
  * (Index of mux, opcode of exception to be generated or zero, opcode of TimeOutValue)
  */
-Method(ma06, 3)
+Method(ma06, 3, Serialized)
 {
 	Store(1, Local0)
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			if (arg1) {
 				Acquire(T600, 0xffff)
@@ -778,11 +778,11 @@ Method(ma06, 3)
  * Acquire mutex of level 7
  * (Index of mux, opcode of exception to be generated or zero, opcode of TimeOutValue)
  */
-Method(ma07, 3)
+Method(ma07, 3, Serialized)
 {
 	Store(1, Local0)
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			if (arg1) {
 				Acquire(T700, 0xffff)
@@ -835,11 +835,11 @@ Method(ma07, 3)
  * Acquire mutex of level 8
  * (Index of mux, opcode of exception to be generated or zero, opcode of TimeOutValue)
  */
-Method(ma08, 3)
+Method(ma08, 3, Serialized)
 {
 	Store(1, Local0)
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			if (arg1) {
 				Acquire(T800, 0xffff)
@@ -892,11 +892,11 @@ Method(ma08, 3)
  * Acquire mutex of level 9
  * (Index of mux, opcode of exception to be generated or zero, opcode of TimeOutValue)
  */
-Method(ma09, 3)
+Method(ma09, 3, Serialized)
 {
 	Store(1, Local0)
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			if (arg1) {
 				Acquire(T900, 0xffff)
@@ -949,11 +949,11 @@ Method(ma09, 3)
  * Acquire mutex of level 10
  * (Index of mux, opcode of exception to be generated or zero, opcode of TimeOutValue)
  */
-Method(ma0a, 3)
+Method(ma0a, 3, Serialized)
 {
 	Store(1, Local0)
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			if (arg1) {
 				Acquire(Ta00, 0xffff)
@@ -1006,11 +1006,11 @@ Method(ma0a, 3)
  * Acquire mutex of level 11
  * (Index of mux, opcode of exception to be generated or zero, opcode of TimeOutValue)
  */
-Method(ma0b, 3)
+Method(ma0b, 3, Serialized)
 {
 	Store(1, Local0)
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			if (arg1) {
 				Acquire(Tb00, 0xffff)
@@ -1063,11 +1063,11 @@ Method(ma0b, 3)
  * Acquire mutex of level 12
  * (Index of mux, opcode of exception to be generated or zero, opcode of TimeOutValue)
  */
-Method(ma0c, 3)
+Method(ma0c, 3, Serialized)
 {
 	Store(1, Local0)
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			if (arg1) {
 				Acquire(Tc00, 0xffff)
@@ -1120,11 +1120,11 @@ Method(ma0c, 3)
  * Acquire mutex of level 13
  * (Index of mux, opcode of exception to be generated or zero, opcode of TimeOutValue)
  */
-Method(ma0d, 3)
+Method(ma0d, 3, Serialized)
 {
 	Store(1, Local0)
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			if (arg1) {
 				Acquire(Td00, 0xffff)
@@ -1177,11 +1177,11 @@ Method(ma0d, 3)
  * Acquire mutex of level 14
  * (Index of mux, opcode of exception to be generated or zero, opcode of TimeOutValue)
  */
-Method(ma0e, 3)
+Method(ma0e, 3, Serialized)
 {
 	Store(1, Local0)
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			if (arg1) {
 				Acquire(Te00, 0xffff)
@@ -1234,11 +1234,11 @@ Method(ma0e, 3)
  * Acquire mutex of level 15
  * (Index of mux, opcode of exception to be generated or zero, opcode of TimeOutValue)
  */
-Method(ma0f, 3)
+Method(ma0f, 3, Serialized)
 {
 	Store(1, Local0)
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			if (arg1) {
 				Acquire(Tf00, 0xffff)
@@ -1292,9 +1292,9 @@ Method(ma0f, 3)
  *
  * arg0 - Index of mutex
  */
-Method(ma10, 1)
+Method(ma10, 1, Serialized)
 {
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Release(T000)
 		}
@@ -1359,9 +1359,9 @@ Method(ma10, 1)
 /*
  * Release mutex of level 1 (Index of mux)
  */
-Method(ma11, 1)
+Method(ma11, 1, Serialized)
 {
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Release(T100)
 		}
@@ -1380,9 +1380,9 @@ Method(ma11, 1)
 /*
  * Release mutex of level 2 (Index of mux)
  */
-Method(ma12, 1)
+Method(ma12, 1, Serialized)
 {
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Release(T200)
 		}
@@ -1401,9 +1401,9 @@ Method(ma12, 1)
 /*
  * Release mutex of level 3 (Index of mux)
  */
-Method(ma13, 1)
+Method(ma13, 1, Serialized)
 {
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Release(T300)
 		}
@@ -1422,9 +1422,9 @@ Method(ma13, 1)
 /*
  * Release mutex of level 4 (Index of mux)
  */
-Method(ma14, 1)
+Method(ma14, 1, Serialized)
 {
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Release(T400)
 		}
@@ -1443,9 +1443,9 @@ Method(ma14, 1)
 /*
  * Release mutex of level 5 (Index of mux)
  */
-Method(ma15, 1)
+Method(ma15, 1, Serialized)
 {
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Release(T500)
 		}
@@ -1464,9 +1464,9 @@ Method(ma15, 1)
 /*
  * Release mutex of level 6 (Index of mux)
  */
-Method(ma16, 1)
+Method(ma16, 1, Serialized)
 {
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Release(T600)
 		}
@@ -1485,9 +1485,9 @@ Method(ma16, 1)
 /*
  * Release mutex of level 7 (Index of mux)
  */
-Method(ma17, 1)
+Method(ma17, 1, Serialized)
 {
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Release(T700)
 		}
@@ -1506,9 +1506,9 @@ Method(ma17, 1)
 /*
  * Release mutex of level 8 (Index of mux)
  */
-Method(ma18, 1)
+Method(ma18, 1, Serialized)
 {
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Release(T800)
 		}
@@ -1527,9 +1527,9 @@ Method(ma18, 1)
 /*
  * Release mutex of level 9 (Index of mux)
  */
-Method(ma19, 1)
+Method(ma19, 1, Serialized)
 {
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Release(T900)
 		}
@@ -1548,9 +1548,9 @@ Method(ma19, 1)
 /*
  * Release mutex of level 10 (Index of mux)
  */
-Method(ma1a, 1)
+Method(ma1a, 1, Serialized)
 {
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Release(Ta00)
 		}
@@ -1569,9 +1569,9 @@ Method(ma1a, 1)
 /*
  * Release mutex of level 11 (Index of mux)
  */
-Method(ma1b, 1)
+Method(ma1b, 1, Serialized)
 {
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Release(Tb00)
 		}
@@ -1590,9 +1590,9 @@ Method(ma1b, 1)
 /*
  * Release mutex of level 12 (Index of mux)
  */
-Method(ma1c, 1)
+Method(ma1c, 1, Serialized)
 {
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Release(Tc00)
 		}
@@ -1611,9 +1611,9 @@ Method(ma1c, 1)
 /*
  * Release mutex of level 13 (Index of mux)
  */
-Method(ma1d, 1)
+Method(ma1d, 1, Serialized)
 {
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Release(Td00)
 		}
@@ -1632,9 +1632,9 @@ Method(ma1d, 1)
 /*
  * Release mutex of level 14 (Index of mux)
  */
-Method(ma1e, 1)
+Method(ma1e, 1, Serialized)
 {
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Release(Te00)
 		}
@@ -1653,9 +1653,9 @@ Method(ma1e, 1)
 /*
  * Release mutex of level 15 (Index of mux)
  */
-Method(ma1f, 1)
+Method(ma1f, 1, Serialized)
 {
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Release(Tf00)
 		}

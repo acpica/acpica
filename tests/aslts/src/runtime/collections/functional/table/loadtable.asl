@@ -1395,7 +1395,7 @@ Device(DTM2) {
 		Name(PPST, "DTM2.PLDT")
 		Name(DSTR, "01234")
 
-		Method(m000, 3)
+		Method(m000, 3, Serialized)
 		{
 			Name(DDBH, 2)
 

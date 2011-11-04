@@ -1541,7 +1541,7 @@ Method(m21a, 6)
 // <num of bits>,
 // <opcode of buffer to fill the ground>
 // <opcode of buffer to fill the field>
-Method(m21b, 6)
+Method(m21b, 6, Serialized)
 {
 	Name(pr00, 0)
 
@@ -1584,7 +1584,7 @@ Method(m21b, 6)
 	// Prepare the buffer for filling the ground
 	// =========================================
 
-	switch (arg4) {
+	switch (ToInteger (arg4)) {
 		case (0) {
 			Store(b000, b0G0)
 		}
@@ -1600,7 +1600,7 @@ Method(m21b, 6)
 	// Prepare the buffer for filling the field (over the ground)
 	// ==========================================================
 
-	switch (arg5) {
+	switch (ToInteger (arg5)) {
 		case (0) {
 			Store(b000, b0F0)
 		}

@@ -37,7 +37,7 @@ Name(z039, 39)
 Name(s200, "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ !\"#$%&'()*")
 
 // Verifying 3-parameters, 1-result operator
-Method(m304, 6)
+Method(m304, 6, Serialized)
 {
 	Store(0, Local5)
 	Store(arg1, Local3)
@@ -57,7 +57,7 @@ Method(m304, 6)
 
 		Store(DeRefOf(Index(arg4, Local5)), Local2)
 
-		switch (arg5) {
+		switch (ToInteger (arg5)) {
 			case (0) {
 				Mid(Local0, Local1, Local4, Local7)
 				if (LNotEqual(Local7, Local2)) {

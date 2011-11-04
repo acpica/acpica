@@ -64,7 +64,7 @@ Name(i205, 0)
  *
  * arg0 - index of iteration
  */
-Method(m1e1, 1)
+Method(m1e1, 1, Serialized)
 {
 	Mod(arg0, 6, Local7)
 
@@ -128,7 +128,7 @@ Method(m1e3, 1)
 }
 
 // arg0 - strategy of traveling the Cases of Switch
-Method(m1e0, 1)
+Method(m1e0, 1, Serialized)
 {
 /*
 	// ################################## Check all the test:

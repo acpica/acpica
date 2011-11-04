@@ -302,7 +302,7 @@ Device(DTM0) {
 	// Simple Load test auxiliary method
 	// Arg1: DDBH, 0 - Local Named, 1 - Global Named,
 	//             2 - LocalX, 3 - element of Package
-	Method(m000, 2)
+	Method(m000, 2, Serialized)
 	{
 		Name(HI0, 0)
 		Name(PHI0, Package(1){})
@@ -581,7 +581,7 @@ Device(DTM0) {
 		// Auxiliary method:
 		// Arg1 - choice of a target
 		// Arg2 - OpRegion Object of a specified type
-		Method(m000, 3)
+		Method(m000, 3, Serialized)
 		{
 			Name(HI0, 0)
 			Name(PHI0, Package(1){})

@@ -718,7 +718,12 @@ Method(m032, 4)
 
 Method(m033) {
 	Mutex(MTX0, 0)
-	Acquire(MTX0, 0)
+	Store (Acquire(MTX0, 0), Local0)
+    if (Local0)
+    {
+        Store ("M033: Could not acquire mutex", Debug)
+        Return
+    }
 	Release(MTX0)
 }
 
