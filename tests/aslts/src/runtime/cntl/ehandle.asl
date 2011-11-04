@@ -223,8 +223,8 @@ Method(CH02)
 
 /*
  * Check that the counter of current exceptions is zero. Set it to zero.
- * arg0 - diagnistic message
- * arg1 - absoulute index of file initiating the checking
+ * arg0 - diagnostic message
+ * arg1 - absolute index of file initiating the checking
  * arg2 - index of checking
  * arg3 - arg5 of err, "received value"
  * arg4 - arg6 of err, "expected value"
@@ -248,6 +248,19 @@ Method(CH03, 5)
 	return (Local7)
 }
 
+//
+// Convert 32/64 bit integer to 16-bit Hex value
+//
+Method(ST16, 1)
+{
+    Name (EBUF, Buffer(ISZC){}) /* 8 or 16 bytes, depending on 32/64 mode */
+    Name (RBUF, Buffer(4){})
+
+    Store (ToHexString (Arg0), EBUF)
+    Mid (EBUF, Subtract(ISZC, 4), 4, RBUF)
+    Return (Concatenate ("0x", ToString (RBUF)))
+}
+
 /*
  * Check that exceptions are handled as expected, report errors
  * (if any) and set the current number of exceptions to zero.
@@ -257,7 +270,7 @@ Method(CH03, 5)
  * - check the number of exceptions
  * - the last arisen exception matches one described by arguments
  *
- * arg0 - diagnistic message
+ * arg0 - diagnostic message
  * arg1 -
  *   zero means:
  *        - check that only one exception has arisen (curent number is equal to 1)
@@ -269,7 +282,7 @@ Method(CH03, 5)
  *     2:   check that the last opcode is equal to that specified by arg2
  *
  * arg2 - index of exception info in pf00 Package
- * arg3 - absoulute index of file initiating the checking
+ * arg3 - absolute index of file initiating the checking
  * arg4 - index of checking
  * arg5 - arg5 of err, "received value"
  * arg6 - arg6 of err, "expected value"
@@ -295,14 +308,14 @@ Method(CH04, 7)
 
 	if (LEqual(EXC0, 0)) {
 		Store (1, Local5)
-		Concatenate("No exception has arisen, expected one: ", Local4, Local0)
-		Concatenate(", opcode 0x", Local3, Local1)
-		Concatenate(Local0, Local1, Local0)
+		Concatenate("No exception - expected: ", Local4, Local0)
+		Concatenate(Local0, "-", Local0)
+		Concatenate(Local0, ST16(Local3), Local0)
 		Store(Local0, Debug)
 	} else {
 		if (LAnd(LNot(arg1), LGreater(EXC0, 1))) {
 			Store(1, Local5)
-			Concatenate("More than one exceptions have arisen: 0x", EXC0, Local0)
+			Concatenate("More than one exception: 0x", EXC0, Local0)
 			Store(Local0, Debug)
 		} else {
 			if (LEqual(arg1, 1)) {
@@ -317,20 +330,23 @@ Method(CH04, 7)
 
 			if (LNotEqual(Local3, Local6)) {
 				Store(1, Local5)
-				Concatenate("The exception: ", Local7, Local0)
-				Concatenate(", opcode 0x", Local6, Local1)
+				Concatenate("Exception: ", Local7, Local0)
+
+				Concatenate(Local0, "-", Local0)
+				Concatenate(Local0, ST16(Local6), Local0)
+
+				Concatenate(" differs from expected: ", Local4, Local1)
 				Concatenate(Local0, Local1, Local0)
-				Concatenate(" differs expected one: ", Local4, Local1)
-				Concatenate(Local0, Local1, Local0)
-				Concatenate(", opcode 0x", Local3, Local1)
-				Concatenate(Local0, Local1, Local0)
+
+				Concatenate(Local0, "-", Local0)
+				Concatenate(Local0, ST16(Local3), Local0)
 				Store(Local0, Debug)
 			}
 			if (LNotEqual(Local4, Local7)) {
 				Store(1, Local5)
-				Store("Unexpected name of exception:", Debug)
-				Store(Concatenate("expected: ", Local4), Debug)
-				Store(Concatenate("received: ", Local7), Debug)
+				Store("Unexpected exception:", Debug)
+				Store(Concatenate("Expected: ", Local4), Debug)
+				Store(Concatenate("Received: ", Local7), Debug)
 			}
 		}
 	}
@@ -439,9 +455,9 @@ Method(MTEX, 1)
 /*
  * The same as CH03, but to be used in multi-threading mode
  *
- * arg0 - diagnistic message
+ * arg0 - diagnostic message
  * arg1 - ID of current thread
- * arg2 - absoulute index of file initiating the checking
+ * arg2 - absolute index of file initiating the checking
  * arg3 - index of checking
  * arg4 - arg5 of err, "received value"
  * arg5 - arg6 of err, "expected value"
@@ -479,7 +495,7 @@ Method(CH08, 6)
  * arg0 - non-zero means to treat "More than one exceptions" as error
  * arg1 - ID of current thread
  * arg2 - index of exception info in pf00 Package
- * arg3 - absoulute index of file initiating the checking
+ * arg3 - absolute index of file initiating the checking
  * arg4 - index of checking
  * arg5 - RefOf to Integer to return 'current number of exceptions occur on this thread'
  *
@@ -510,14 +526,14 @@ Method(CH09, 6)
 	if (LEqual(Local7, 0)) {
 		/* No exceptions */
 		Store (1, Local5)
-		Concatenate("No exception has arisen, expected one: ", Local4, Local0)
+		Concatenate("No exception has arisen, expected: ", Local4, Local0)
 		Concatenate(", opcode 0x", Local3, Local1)
 		Concatenate(Local0, Local1, Local0)
 		MSG0(arg1, Local0)
 	} else {
 		if (LAnd(arg0, LGreater(Local7, 1))) {
 			Store(1, Local5)
-			Concatenate("More than one exceptions have arisen: 0x", Local7, Local0)
+			Concatenate("More than one exception has arisen: 0x", Local7, Local0)
 			MSG0(arg1, Local0)
 		} else {
 
@@ -526,8 +542,8 @@ Method(CH09, 6)
 			if (LNotEqual(Local3, Local6)) {
 				Store(1, Local5)
 				Concatenate("The exception 0x", Local6, Local0)
-				Concatenate(Local0, " differs expected one 0x", Local1)
-				Concatenate(Local1, Local3, Local0)
+				Concatenate(Local0, " differs from expected ", Local1)
+				Concatenate(Local1, ST16 (Local3), Local0)
 				MSG0(arg1, Local0)
 			}
 		}

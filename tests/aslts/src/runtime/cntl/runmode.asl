@@ -464,8 +464,9 @@ Name(run4, 0)
  *   25.12.2006 - 5, (1277 files, 382 folder, 15.3 MB, 2006 tests, 38(44) test cases, 278 bugs of ACPICA)
  *   01.03.2007 - 6, (1403 files, 415 folder, 17.0 MB, 2227 tests, 40(46) test cases, 305 bugs of ACPICA)
  *   21.03.2007 - 7, (1409 files, 417 folder, 17.1 MB, 2236 tests, 40(46) test cases, 307 bugs of ACPICA)
+ *   December 2011: - 0x15 (ACPI 5.0)
  */
-Name(REL0, 0x20111027)
+Name(REL0, 0x15)
 
 /*
  * Settings number, used to adjust the aslts tests for different releases of ACPICA

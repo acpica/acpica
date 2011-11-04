@@ -1404,7 +1404,7 @@ Device(DTM2) {
 			Concatenate(arg0, "-m000.", arg0)
 			Concatenate(arg0, Mid(DSTR, arg2, 1), arg0)
 
-			Switch(arg2) {
+			Switch(ToInteger (arg2)) {
 				Case(0) {
 					Store(LoadTable(arg1, SOID, STID, RPST, PPST, 1), DDBH)
 				}

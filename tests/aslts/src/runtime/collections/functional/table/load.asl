@@ -42,7 +42,7 @@
  *
  * On testing the following issues should be covered:
  *
- * - loading SSDT (or PSDT) from a SystemMemory OpRegion,
+ * - loading SSDT from a SystemMemory OpRegion,
  *
  * - loading SSDT from a Region Field in a OpRegion of any type,
  *
@@ -69,7 +69,7 @@
  *   = the Object argument does not refer to an operation region field
  *     or an operation region,
  *   = an OpRegion passed as the Object argument is not of SystemMemory type,
- *   = the table contained in an OpRegion (Field) is not SSDT or PSDT one,
+ *   = the table contained in an OpRegion (Field) is not an SSDT,
  *   = the length of the supplied SSDT is greater than the length of the
  *     respective OpRegion or Region Field,
  *   = the length of the supplied SSDT is less than the length the Header
@@ -302,8 +302,7 @@ Device(DTM0) {
 	// Simple Load test auxiliary method
 	// Arg1: DDBH, 0 - Local Named, 1 - Global Named,
 	//             2 - LocalX, 3 - element of Package
-	// Arg2: Object, 0 - SSDT, 1 - PSDT,
-	Method(m000, 3)
+	Method(m000, 2)
 	{
 		Name(HI0, 0)
 		Name(PHI0, Package(1){})
@@ -315,12 +314,6 @@ Device(DTM0) {
 		if (CondRefof(\SSS0, Local0)) {
 			err(arg0, z174, 0x000, 0, 0, "\\SSS0", 1)
 			return
-		}
-
-		// Check PSDT case
-		if (Arg2) {
-			Concatenate(arg0, ".PSDT", arg0)
-			Store("PSDT", SIG)
 		}
 
 		// Modify Revision field of SSDT
@@ -335,7 +328,7 @@ Device(DTM0) {
 		}
 
 		// Load operator execution
-		switch (arg1) {
+		switch (ToInteger (arg1)) {
 			case (0) {Load(RFU0, HI0)}
 			case (1) {Load(RFU0, \DTM0.HI0)}
 			case (2) {Load(RFU0, Local2)}
@@ -355,7 +348,7 @@ Device(DTM0) {
 
 		// Check DDBHandle ObjectType
 		if (y260) {
-			switch (arg1) {
+			switch (ToInteger (arg1)) {
 				case (0) {Store(ObjectType(HI0), Local1)}
 				case (1) {Store(ObjectType(\DTM0.HI0), Local1)}
 				case (2) {Store(ObjectType(Local2), Local1)}
@@ -387,7 +380,7 @@ Device(DTM0) {
 		}
 
 		// UnLoad operator execution
-		switch (arg1) {
+		switch (ToInteger (arg1)) {
 			case (0) {UnLoad(HI0)}
 			case (1) {UnLoad(\DTM0.HI0)}
 			case (2) {UnLoad(Local2)}
@@ -404,7 +397,7 @@ Device(DTM0) {
 			err(arg0, z174, 0x00a, 0, 0, "\\SSS0", 1)
 		}
 
-		return (0)
+		return
 	}
 
 	// Simple Load test auxiliary method for ArgX, part1
@@ -489,7 +482,7 @@ Device(DTM0) {
 			err(arg0, z174, 0x014, 0, 0, "\\SSS0", 1)
 		}
 
-		return (0)
+		return
 	}
 
 	// Loading SSDT from a SystemMemory OpRegion,
@@ -502,18 +495,10 @@ Device(DTM0) {
 		Concatenate(arg0, "-tst0", arg0)
 
 		// Local Named Integer
-		m000(arg0, 0, 0)
+		m000(arg0, 0)
 
 		// Global Named Integer
-		m000(arg0, 1, 0)
-
-		// PSDT case
-
-		// Local Named Integer
-		m000(arg0, 0, 1)
-
-		// Global Named Integer
-		m000(arg0, 1, 1)
+		m000(arg0, 1)
 	}
 
 	// DDBHandle storing into LocalX
@@ -522,10 +507,7 @@ Device(DTM0) {
 		Concatenate(arg0, "-tst1", arg0)
 
 		// LocalX
-		m000(arg0, 2, 0)
-
-		// PSDT case
-		m000(arg0, 2, 1)
+		m000(arg0, 2)
 	}
 
 	// DDBHandle storing into Package element
@@ -536,10 +518,7 @@ Device(DTM0) {
 		// Package element
 		// Crash on copying the specific reference Object
 		if (y261) {
-			m000(arg0, 3, 0)
-
-			// PSDT case
-			m000(arg0, 3, 1)
+			m000(arg0, 3)
 		}
 	}
 
@@ -650,7 +629,7 @@ Device(DTM0) {
 			}
 
 			// Load operator execution
-			switch (arg1) {
+			switch (ToInteger (arg1)) {
 				case (0) {Load(RFU0, HI0)}
 				case (1) {Load(RFU0, \DTM0.HI0)}
 				case (2) {Load(RFU0, Local2)}
@@ -670,7 +649,7 @@ Device(DTM0) {
 
 			// Check DDBHandle ObjectType
 			if (y260) {
-				switch (arg1) {
+				switch (ToInteger (arg1)) {
 					case (0) {Store(ObjectType(HI0), Local1)}
 					case (1) {Store(ObjectType(\DTM0.HI0), Local1)}
 					case (2) {Store(ObjectType(Local2), Local1)}
@@ -702,7 +681,7 @@ Device(DTM0) {
 			}
 
 			// UnLoad operator execution
-			switch (arg1) {
+			switch (ToInteger (arg1)) {
 				case (0) {UnLoad(HI0)}
 				case (1) {UnLoad(\DTM0.HI0)}
 				case (2) {UnLoad(Local2)}
@@ -719,7 +698,7 @@ Device(DTM0) {
 				err(arg0, z174, 0x01f, 0, 0, "\\SSS0", 1)
 			}
 
-			return (0)
+			return
 		}
 
 		// Auxiliary method for ArgX, part1
@@ -1502,7 +1481,7 @@ Device(DTM0) {
 	}
 
 	// Exceptions when the table contained in an OpRegion
-	// (Field) is not SSDT or PSDT one,
+	// (Field) is not an SSDT
 	Method(tstd, 1)
 	{
 		Name(HI0, 0)
@@ -1592,7 +1571,7 @@ Device(DTM0) {
 		// Load operator execution, OpRegion case
 		if (y290) {
 			Load(IST0, HI0)
-			CH04(arg0, 0, 38, z174, 0x092, 0, 0)	// AE_BAD_HEADER
+			CH04(arg0, 0, 42, z174, 0x092, 0, 0)	// AE_INVALID_TABLE_LENGTH
 
 			if (CondRefof(\SSS0, Local0)) {
 				err(arg0, z174, 0x093, 0, 0, "\\SSS0", 1)
@@ -1611,7 +1590,7 @@ Device(DTM0) {
 
 		// Load operator execution, OpRegion Field case
 		Load(RFU0, HI0)
-		CH04(arg0, 0, 38, z174, 0x096, 0, 0)	// AE_BAD_HEADER
+		CH04(arg0, 0, 42, z174, 0x096, 0, 0)	// AE_INVALID_TABLE_LENGTH
 
 		if (CondRefof(\SSS0, Local0)) {
 			err(arg0, z174, 0x097, 0, 0, "\\SSS0", 1)
@@ -2167,7 +2146,7 @@ Method(TLD1)
 	\DTM0.tstc(ts)
 
 	// Exceptions when the table contained in an OpRegion
-	// (Field) is not SSDT or PSDT one,
+	// (Field) is not an SSDT
 	SRMT("TLD1.tstd")
 	\DTM0.tstd(ts)
 

@@ -274,12 +274,12 @@ Device(DTM1) {
 
 		Concatenate(arg0, "-tst1", arg0)
 
-		// Check absence of the Auxiliry table Objects before Load
+		// Check absence of the auxiliary table Objects before Load
 		if (m001(Concatenate(arg0, ".before"))) {
 			return (1)
 		}
 
-		// Load Auxiliry table
+		// Load auxiliary table
 		Store(\DTM0.BUF3, \DTM0.RFU3)
 		Load(\DTM0.RFU3, DDB0)
 
@@ -391,7 +391,7 @@ Device(DTM1) {
 
 		CH03(arg0, z175, 0x02f, 0, 0)
 
-		// Check absence of the Auxiliry table Objects after UnLoad
+		// Check absence of the auxiliary table Objects after UnLoad
 		if (m001(Concatenate(arg0, ".after"))) {
 			return (1)
 		}
@@ -442,7 +442,7 @@ Device(DTM1) {
 
 		Concatenate(arg0, "-tst3", arg0)
 
-		// Load Auxiliry table
+		// Load auxiliary table
 		Store(\DTM0.BUF3, \DTM0.RFU3)
 		Load(\DTM0.RFU3, DDB0)
 
@@ -546,7 +546,7 @@ Device(DTM1) {
 
 		Concatenate(arg0, "-tst4", arg0)
 
-		// Load Auxiliry table
+		// Load auxiliary table
 		Store(\DTM0.BUF3, \DTM0.RFU3)
 		Load(\DTM0.RFU3, DDB0)
 
@@ -567,7 +567,7 @@ Device(DTM1) {
 			// Any next
 			UnLoad(DDB0)
 
-			CH04(arg0, 0, 47, z175, 0x03f, 5, Local0) // AE_AML_OPERAND_TYPE
+			CH04(arg0, 0, 28, z175, 0x03f, 5, Local0) // AE_BAD_PARAMETER
 
 			Decrement(Local0)
 		}
@@ -586,7 +586,7 @@ Device(DTM1) {
 			// Any next
 			UnLoad(DDB0)
 
-			CH04(arg0, 0, 47, z175, 0x041, 5, Local0) // AE_AML_OPERAND_TYPE
+			CH04(arg0, 0, 28, z175, 0x041, 5, Local0) // AE_BAD_PARAMETER
 
 			Decrement(Local0)
 		}
@@ -610,7 +610,7 @@ Device(DTM1) {
 
 		Concatenate(arg0, "-tst5", arg0)
 
-		// Load Auxiliry table
+		// Load auxiliary table
 		Store(\DTM0.BUF3, \DTM0.RFU3)
 		Load(\DTM0.RFU3, DDB0)
 

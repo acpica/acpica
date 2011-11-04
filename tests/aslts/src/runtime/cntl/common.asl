@@ -190,9 +190,10 @@ Name(zFFF, 0x7FF)
 Name(F64, 0)
 
 /*
- * Byte size of Integer
+ * Byte and character size of Integer
  */
 Name(ISZ0, 0)
+Name(ISZC, 0)
 
 /*
  * The tests execution trace.
@@ -1325,10 +1326,12 @@ Method(STRT, 1)
 	If (LLess (REV, 2)) {
 		Store(0, F64)
 		Store(4, ISZ0)
+		Store(8, ISZC)
 		Store ("32-bit mode", Debug)
 	} else {
 		Store(1, F64)
 		Store(8, ISZ0)
+		Store(16, ISZC)
 		Store ("64-bit mode", Debug)
 	}
 
