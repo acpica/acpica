@@ -122,7 +122,7 @@
  */
 const AH_ASL_OPERATOR       AslOperatorInfo[] =
 {
-    {"AccessAs",                "(AccessType, AccessAttribKeyword)",
+    {"AccessAs",                "(AccessType, AccessAttibute (AccessLength))",
                                 "ChangeFieldUnitAccess"},
     {"Acquire",                 "(SyncObject, TimeoutValue) => Boolean",
                                 "Acquire a mutex"},
@@ -150,6 +150,8 @@ const AH_ASL_OPERATOR       AslOperatorInfo[] =
                                 "Concatenate two resource templates"},
     {"CondRefOf",               "(Source, Result) => Boolean",
                                 "Conditional reference to an object"},
+    {"Connection",              "(ResourceMacro)",
+                                "Associate connection with FieldUnits within a Field object"},
     {"Continue",                NULL,
                                 "Continue innermost enclosing While loop"},
     {"CopyObject",              "(Source, Destination) => DataRefObject",
@@ -229,12 +231,23 @@ const AH_ASL_OPERATOR       AslOperatorInfo[] =
                                 "Index of first least significant bit set"},
     {"FindSetRightBit",         "(Source, Result) => Integer",
                                 "Index of first most significant bit set"},
+    {"FixedDMA",                "(DmaRequestLine, Channel, DmaTransferWidth, DescriptorName) => Buffer",
+                                "Fixed DMA Resource Descriptor macro"},
     {"FixedIO",                 "(AddressBase, RangeLength, DescriptorName) => Buffer",
                                 "Fixed I/O Resource Descriptor macro"},
     {"FromBCD",                 "(BCDValue, Result) => Integer",
                                 "Convert from BCD to numeric"},
     {"Function",                "(FunctionName, ReturnType, ParameterTypes) {TermList}",
                                 "Declare control method"},
+    {"GpioInt",                 "(EdgeLevel, ActiveLevel, Shared, PinConfig, DebounceTimeout, ResourceSource, "
+                                "ResourceSourceIndex, ResourceUsage, DescriptorName, VendorData) {PinList}",
+                                "GPIO Interrupt Connection Resource Descriptor Macro"},
+    {"GpioIo",                  "(Shared, PinConfig, DebounceTimeout, DriveStrength, IoRestriction, ResourceSource, "
+                                "ResourceSourceIndex, ResourceUsage, DescriptorName, VendorData) {PinList}",
+                                "GPIO I/O Connection Resource Descriptor Macro"},
+    {"I2cSerialBus",            "(SlaveAddress, SlaveMode, ConnectionSpeed, AddressingMode, ResourceSource, "
+                                "ResourceSourceIndex, ResourceUsage, DescriptorName, VendorData)",
+                                "I2C Serial Bus Connection Resource Descriptor Macro"},
     {"If",                      "(Predicate) {TermList}",
                                 "Conditional execution"},
     {"Include",                 "(FilePathName)",
@@ -248,7 +261,7 @@ const AH_ASL_OPERATOR       AslOperatorInfo[] =
     {"Interrupt",               "(ResourceTypeKeyword, InterruptTypeKeyword, InterruptLevelKeyword, ShareTypeKeyword, ResourceSourceIndex, "
                                 "ResourceSource, DescriptorName) {InterruptList} => Buffer",
                                 "Interrupt Resource Descriptor macro"},
-    {"IO",                      "(IODecodeKeyword, AddressMin, AddressMax, AddressAlignment, RangeLength, DescriptorName) => Buffer",
+    {"IO",                      "(IoDecodeKeyword, AddressMin, AddressMax, AddressAlignment, RangeLength, DescriptorName) => Buffer",
                                 "IO Resource Descriptor macro"},
     {"IRQ",                     "(InterruptTypeKeyword, InterruptLevelKeyword, ShareTypeKeyword, DescriptorName) {InterruptList} => Buffer",
                                 "Interrupt Resource Descriptor macro"},
@@ -344,6 +357,8 @@ const AH_ASL_OPERATOR       AslOperatorInfo[] =
                                 "AddressGranularity, AddressMinimum, AddressMaximum, AddressTranslation, "
                                 "RangeLength, ResourceSourceIndex, ResourceSource, DescriptorName)",
                                 "Qword Space Resource Descriptor macro"},
+    {"RawDataBuffer",           "(BufferSize) {ByteList} => RawDataBuffer",
+                                "Create a raw data buffer (does not use Buffer AML opcode)"},
     {"RefOf",                   "(Object) => ObjectReference",
                                 "Create Reference to an object"},
     {"Register",                "(AddressSpaceKeyword, RegisterBitWidth, RegisterBitOffset, RegisterAddress, "
@@ -371,6 +386,10 @@ const AH_ASL_OPERATOR       AslOperatorInfo[] =
                                 "Get the size of a buffer}, string}, or package"},
     {"Sleep",                   "(MilliSeconds)",
                                 "Sleep n milliseconds (yields the processor)"},
+    {"SpiSerialBus",            "(DeviceSelection, DeviceSelectionPolarity, WireMode, DataBitLength, SlaveMode, "
+                                "ConnectionSpeed, ClockPolarity, ClockPhase, ResourceSource, ResourceSourceIndex, "
+                                "ResourceUsage, DescriptorName, VendorData)",
+                                "SPI Serial Bus Connection Resource Descriptor Macro"},
     {"Stall",                   "(MicroSeconds)",
                                 "Delay n microseconds (does not yield the processor)"},
     {"StartDependentFn",        "(CompatibilityPriority, PerformancePriority) {ResourceList}",
@@ -401,6 +420,10 @@ const AH_ASL_OPERATOR       AslOperatorInfo[] =
                                 "Copy ASCII string from buffer"},
     {"ToUUID",                  "(AsciiString) => Buffer",
                                 "Convert Ascii string to UUID"},
+    {"UartSerialBus",           "(ConnectionSpeed, BitsPerByte, StopBits, LinesInUse, IsBigEndian, Parity, "
+                                "FlowControl, ReceiveBufferSize, TransmitBufferSize, ResourceSource, "
+                                "ResourceSourceIndex, ResourceUsage, DescriptorName, VendorData)",
+                                "UART Serial Bus Connection Resource Descriptor Macro"},
     {"Unicode",                 "(String) => Buffer",
                                 "String to Unicode conversion macro"},
     {"Unload",                  "(Handle)",

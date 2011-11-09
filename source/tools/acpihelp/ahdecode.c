@@ -639,7 +639,7 @@ AhDisplayAslKeyword (
 
     /* ASL keyword name and description */
 
-    printf ("%20s: %s\n", Op->Name, Op->Description);
+    printf ("%22s: %s\n", Op->Name, Op->Description);
     if (!Op->KeywordList)
     {
         return;
@@ -647,7 +647,7 @@ AhDisplayAslKeyword (
 
     /* List of actual keywords */
 
-    AhPrintOneField (22, 0, AH_MAX_ASL_LINE_LENGTH, Op->KeywordList);
+    AhPrintOneField (24, 0, AH_MAX_ASL_LINE_LENGTH, Op->KeywordList);
     printf ("\n");
 }
 
