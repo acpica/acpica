@@ -1369,6 +1369,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\compiler\aslrestype2s.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\compiler\aslrestype2w.c"
 					>
 					<FileConfiguration
@@ -1414,28 +1418,6 @@
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslstubs.c"
-					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\source\compiler\asltransform.c"
 					>
 					<FileConfiguration
 						Name="Release|Win32"
@@ -2011,6 +1993,28 @@
 			<Filter
 				Name="Disassembler"
 				>
+				<File
+					RelativePath="..\..\source\compiler\asltransform.c"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+				</File>
 				<File
 					RelativePath="..\..\source\COMPONENTS\DEBUGGER\dbfileio.c"
 					>
