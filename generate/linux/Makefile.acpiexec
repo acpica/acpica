@@ -226,7 +226,8 @@ OBJECTS = \
 	uttrack.o \
 	utosi.o \
 	utxferror.o \
-	utxface.o
+	utxface.o \
+	utxfmutex.o
 
 CFLAGS+= \
     -D$(HOST) \

@@ -465,6 +465,21 @@ AcpiReleaseGlobalLock (
 
 
 /*
+ * Interfaces to AML mutex objects
+ */
+ACPI_STATUS
+AcpiAcquireMutex (
+    ACPI_HANDLE             Handle,
+    ACPI_STRING             Pathname,
+    UINT16                  Timeout);
+
+ACPI_STATUS
+AcpiReleaseMutex (
+    ACPI_HANDLE             Handle,
+    ACPI_STRING             Pathname);
+
+
+/*
  * Fixed Event interfaces
  */
 ACPI_STATUS
