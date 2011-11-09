@@ -1495,6 +1495,296 @@ AcpiDmDumpPcct (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpPmtt
+ *
+ * PARAMETERS:  Table               - A PMTT table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a PMTT. This table type consists
+ *              of an open-ended number of subtables.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpPmtt (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_PMTT_HEADER        *SubTable;
+    ACPI_PMTT_HEADER        *MemSubTable;
+    ACPI_PMTT_HEADER        *DimmSubTable;
+    ACPI_PMTT_DOMAIN        *DomainArray;
+    UINT32                  Length = Table->Length;
+    UINT32                  Offset = sizeof (ACPI_TABLE_PMTT);
+    UINT32                  MemOffset;
+    UINT32                  DimmOffset;
+    UINT32                  DomainOffset;
+    UINT32                  DomainCount;
+
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoPmtt);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    /* Subtables */
+
+    SubTable = ACPI_ADD_PTR (ACPI_PMTT_HEADER, Table, Offset);
+    while (Offset < Table->Length)
+    {
+        /* Common subtable header */
+
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Length, Offset, SubTable,
+                    SubTable->Length, AcpiDmTableInfoPmttHdr);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        /* Only Socket subtables are expected at this level */
+
+        if (SubTable->Type != ACPI_PMTT_TYPE_SOCKET)
+        {
+            AcpiOsPrintf (
+                "\n**** Unexpected or unknown PMTT subtable type 0x%X\n\n",
+                SubTable->Type);
+            return;
+        }
+
+        /* Dump the fixed-length portion of the subtable */
+
+        Status = AcpiDmDumpTable (Length, Offset, SubTable,
+                    SubTable->Length, AcpiDmTableInfoPmtt0);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        /* Walk the memory controller subtables */
+
+        MemOffset = sizeof (ACPI_PMTT_SOCKET);
+        MemSubTable = ACPI_ADD_PTR (ACPI_PMTT_HEADER, SubTable,
+            sizeof (ACPI_PMTT_SOCKET));
+
+        while (((Offset + MemOffset) < Table->Length) &&
+            (MemOffset < SubTable->Length))
+        {
+            /* Common subtable header */
+
+            AcpiOsPrintf ("\n");
+            Status = AcpiDmDumpTable (Length,
+                        Offset + MemOffset, MemSubTable,
+                        MemSubTable->Length, AcpiDmTableInfoPmttHdr);
+            if (ACPI_FAILURE (Status))
+            {
+                return;
+            }
+
+            /* Only memory controller subtables are expected at this level */
+
+            if (MemSubTable->Type != ACPI_PMTT_TYPE_CONTROLLER)
+            {
+                AcpiOsPrintf (
+                    "\n**** Unexpected or unknown PMTT subtable type 0x%X\n\n",
+                    MemSubTable->Type);
+                return;
+            }
+
+            /* Dump the fixed-length portion of the controller subtable */
+
+            Status = AcpiDmDumpTable (Length,
+                        Offset + MemOffset, MemSubTable,
+                        MemSubTable->Length, AcpiDmTableInfoPmtt1);
+            if (ACPI_FAILURE (Status))
+            {
+                return;
+            }
+
+            /* Walk the variable count of proximity domains */
+
+            DomainCount = ((ACPI_PMTT_CONTROLLER *) MemSubTable)->DomainCount;
+            DomainOffset = sizeof (ACPI_PMTT_CONTROLLER);
+            DomainArray = ACPI_ADD_PTR (ACPI_PMTT_DOMAIN, MemSubTable,
+                sizeof (ACPI_PMTT_CONTROLLER));
+
+            while (((Offset + MemOffset + DomainOffset) < Table->Length) &&
+                ((MemOffset + DomainOffset) < SubTable->Length) &&
+                DomainCount)
+            {
+                Status = AcpiDmDumpTable (Length,
+                            Offset + MemOffset + DomainOffset, DomainArray,
+                            sizeof (ACPI_PMTT_DOMAIN), AcpiDmTableInfoPmtt1a);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+
+                DomainOffset += sizeof (ACPI_PMTT_DOMAIN);
+                DomainArray++;
+                DomainCount--;
+            }
+
+            if (DomainCount)
+            {
+                AcpiOsPrintf (
+                    "\n**** DomainCount exceeds subtable length\n\n",
+                    MemSubTable->Type);
+            }
+
+            /* Walk the physical component (DIMM) subtables */
+
+            DimmOffset = DomainOffset;
+            DimmSubTable = ACPI_ADD_PTR (ACPI_PMTT_HEADER, MemSubTable,
+                DomainOffset);
+
+            while (((Offset + MemOffset + DimmOffset) < Table->Length) &&
+                (DimmOffset < MemSubTable->Length))
+            {
+                /* Common subtable header */
+
+                AcpiOsPrintf ("\n");
+                Status = AcpiDmDumpTable (Length,
+                            Offset + MemOffset + DimmOffset, DimmSubTable,
+                            DimmSubTable->Length, AcpiDmTableInfoPmttHdr);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+
+                /* Only DIMM subtables are expected at this level */
+
+                if (DimmSubTable->Type != ACPI_PMTT_TYPE_DIMM)
+                {
+                    AcpiOsPrintf (
+                        "\n**** Unexpected or unknown PMTT subtable type 0x%X\n\n",
+                        DimmSubTable->Type);
+                    return;
+                }
+
+                /* Dump the fixed-length DIMM subtable */
+
+                Status = AcpiDmDumpTable (Length,
+                            Offset + MemOffset + DimmOffset, DimmSubTable,
+                            DimmSubTable->Length, AcpiDmTableInfoPmtt2);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+
+                /* Point to next DIMM subtable */
+
+                DimmOffset += DimmSubTable->Length;
+                DimmSubTable = ACPI_ADD_PTR (ACPI_PMTT_HEADER,
+                    DimmSubTable, DimmSubTable->Length);
+            }
+
+            /* Point to next Controller subtable */
+
+            MemOffset += MemSubTable->Length;
+            MemSubTable = ACPI_ADD_PTR (ACPI_PMTT_HEADER,
+                MemSubTable, MemSubTable->Length);
+        }
+
+        /* Point to next Socket subtable */
+
+        Offset += SubTable->Length;
+        SubTable = ACPI_ADD_PTR (ACPI_PMTT_HEADER,
+            SubTable, SubTable->Length);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDumpS3pt
+ *
+ * PARAMETERS:  Table               - A S3PT table
+ *
+ * RETURN:      Length of the table
+ *
+ * DESCRIPTION: Format the contents of a S3PT
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiDmDumpS3pt (
+    ACPI_TABLE_HEADER       *Tables)
+{
+    ACPI_STATUS             Status;
+    UINT32                  Offset = sizeof (ACPI_TABLE_S3PT);
+    ACPI_S3PT_HEADER        *SubTable;
+    ACPI_DMTABLE_INFO       *InfoTable;
+    ACPI_TABLE_S3PT         *S3ptTable = ACPI_CAST_PTR (ACPI_TABLE_S3PT, Tables);
+
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Offset, 0, S3ptTable, 0, AcpiDmTableInfoS3pt);
+    if (ACPI_FAILURE (Status))
+    {
+        return 0;
+    }
+
+    SubTable = ACPI_ADD_PTR (ACPI_S3PT_HEADER, S3ptTable, Offset);
+    while (Offset < S3ptTable->Length)
+    {
+        /* Common sub-table header */
+
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (S3ptTable->Length, Offset, SubTable,
+                    SubTable->Length, AcpiDmTableInfoS3ptHdr);
+        if (ACPI_FAILURE (Status))
+        {
+            return 0;
+        }
+
+        switch (SubTable->Type)
+        {
+        case ACPI_S3PT_TYPE_RESUME:
+            InfoTable = AcpiDmTableInfoS3pt0;
+            break;
+        case ACPI_S3PT_TYPE_SUSPEND:
+            InfoTable = AcpiDmTableInfoS3pt1;
+            break;
+        default:
+            AcpiOsPrintf ("\n**** Unknown S3PT sub-table type 0x%X\n", SubTable->Type);
+
+            /* Attempt to continue */
+
+            if (!SubTable->Length)
+            {
+                AcpiOsPrintf ("Invalid zero length subtable\n");
+                return 0;
+            }
+            goto NextSubTable;
+        }
+
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (S3ptTable->Length, Offset, SubTable,
+                    SubTable->Length, InfoTable);
+        if (ACPI_FAILURE (Status))
+        {
+            return 0;
+        }
+
+NextSubTable:
+        /* Point to next sub-table */
+
+        Offset += SubTable->Length;
+        SubTable = ACPI_ADD_PTR (ACPI_S3PT_HEADER, SubTable, SubTable->Length);
+    }
+
+    return (S3ptTable->Length);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpSlic
  *
  * PARAMETERS:  Table               - A SLIC table

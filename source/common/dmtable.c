@@ -350,7 +350,7 @@ ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_EINJ, NULL,                   AcpiDmDumpEinj, DtCompileEinj,  TemplateEinj,   "Error Injection table"},
     {ACPI_SIG_ERST, NULL,                   AcpiDmDumpErst, DtCompileErst,  TemplateErst,   "Error Record Serialization Table"},
     {ACPI_SIG_FADT, NULL,                   AcpiDmDumpFadt, DtCompileFadt,  TemplateFadt,   "Fixed ACPI Description Table"},
-    {ACPI_SIG_FPDT, NULL,                   AcpiDmDumpFpdt, NULL,           NULL,           "Firmware Performance Data Table"},
+    {ACPI_SIG_FPDT, NULL,                   AcpiDmDumpFpdt, DtCompileFpdt,  TemplateFpdt,   "Firmware Performance Data Table"},
     {ACPI_SIG_HEST, NULL,                   AcpiDmDumpHest, DtCompileHest,  TemplateHest,   "Hardware Error Source Table"},
     {ACPI_SIG_HPET, AcpiDmTableInfoHpet,    NULL,           NULL,           TemplateHpet,   "High Precision Event Timer table"},
     {ACPI_SIG_IVRS, NULL,                   AcpiDmDumpIvrs, DtCompileIvrs,  TemplateIvrs,   "I/O Virtualization Reporting Structure"},
@@ -360,6 +360,7 @@ ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_MSCT, NULL,                   AcpiDmDumpMsct, DtCompileMsct,  TemplateMsct,   "Maximum System Characteristics Table"},
     {ACPI_SIG_PCCT, NULL,                   AcpiDmDumpPcct, NULL,           NULL,           "Platform Communications Channel Table"},
     {ACPI_SIG_RSDT, NULL,                   AcpiDmDumpRsdt, DtCompileRsdt,  TemplateRsdt,   "Root System Description Table"},
+    {ACPI_SIG_S3PT, NULL,                   NULL,           NULL,           TemplateS3pt,   "S3 Performance Table"},
     {ACPI_SIG_SBST, AcpiDmTableInfoSbst,    NULL,           NULL,           TemplateSbst,   "Smart Battery Specification Table"},
     {ACPI_SIG_SLIC, NULL,                   AcpiDmDumpSlic, DtCompileSlic,  TemplateSlic,   "Software Licensing Description Table"},
     {ACPI_SIG_SLIT, NULL,                   AcpiDmDumpSlit, DtCompileSlit,  TemplateSlit,   "System Locality Information Table"},
@@ -477,7 +478,7 @@ AcpiDmDumpDataTable (
 
     /*
      * Handle tables that don't use the common ACPI table header structure.
-     * Currently, these are the FACS and RSDP.
+     * Currently, these are the FACS, RSDP, and S3PT.
      */
     if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_FACS))
     {
@@ -487,6 +488,10 @@ AcpiDmDumpDataTable (
     else if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_RSDP))
     {
         Length = AcpiDmDumpRsdp (Table);
+    }
+    else if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_S3PT))
+    {
+        Length = AcpiDmDumpS3pt (Table);
     }
     else
     {

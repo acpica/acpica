@@ -382,6 +382,17 @@ DtCompileDataTable (
         Status = DtCompileRsdp (FieldList);
         return (Status);
     }
+    else if (ACPI_COMPARE_NAME (Signature, ACPI_SIG_S3PT))
+    {
+        Status = DtCompileS3pt (FieldList);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        DtSetTableLength ();
+        return (Status);
+    }
 
     /*
      * All other tables must use the common ACPI table header. Insert the

@@ -471,6 +471,10 @@ DtCompileFadt (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileFpdt (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompileHest (
     void                    **PFieldList);
 
@@ -493,6 +497,10 @@ DtCompileMsct (
 ACPI_STATUS
 DtCompileRsdt (
     void                    **PFieldList);
+
+ACPI_STATUS
+DtCompileS3pt (
+    DT_FIELD                **PFieldList);
 
 ACPI_STATUS
 DtCompileSlic (
@@ -539,6 +547,7 @@ extern const unsigned char  TemplateEcdt[];
 extern const unsigned char  TemplateEinj[];
 extern const unsigned char  TemplateErst[];
 extern const unsigned char  TemplateFadt[];
+extern const unsigned char  TemplateFpdt[];
 extern const unsigned char  TemplateHest[];
 extern const unsigned char  TemplateHpet[];
 extern const unsigned char  TemplateIvrs[];
@@ -547,6 +556,7 @@ extern const unsigned char  TemplateMcfg[];
 extern const unsigned char  TemplateMchi[];
 extern const unsigned char  TemplateMsct[];
 extern const unsigned char  TemplateRsdt[];
+extern const unsigned char  TemplateS3pt[];
 extern const unsigned char  TemplateSbst[];
 extern const unsigned char  TemplateSlic[];
 extern const unsigned char  TemplateSlit[];
