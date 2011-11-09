@@ -849,9 +849,19 @@ AcpiDmDumpTable (
             AcpiOsPrintf ("%1.1X\n", *Target & 0x03);
             break;
 
+        case ACPI_DMT_FLAGS1:
+
+            AcpiOsPrintf ("%1.1X\n", (*Target >> 1) & 0x03);
+            break;
+
         case ACPI_DMT_FLAGS2:
 
             AcpiOsPrintf ("%1.1X\n", (*Target >> 2) & 0x03);
+            break;
+
+        case ACPI_DMT_FLAGS4:
+
+            AcpiOsPrintf ("%1.1X\n", (*Target >> 4) & 0x03);
             break;
 
         /* Integer Data Types */
