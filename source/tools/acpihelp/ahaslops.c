@@ -122,7 +122,7 @@
  */
 const AH_ASL_OPERATOR       AslOperatorInfo[] =
 {
-    {"AccessAs",                "(AccessType, AccessAttibute (AccessLength))",
+    {"AccessAs",                "(AccessType, AccessAttribKeyword | ExtendedAttribKeyword (AccessLength))",
                                 "ChangeFieldUnitAccess"},
     {"Acquire",                 "(SyncObject, TimeoutValue) => Boolean",
                                 "Acquire a mutex"},

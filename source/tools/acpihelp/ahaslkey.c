@@ -121,7 +121,7 @@
  */
 const AH_ASL_KEYWORD        AslKeywordInfo[] =
 {
-    {"AccessAttribKeyword", "Serial Bus Attributes",
+    {"AccessAttribKeyword", "Serial Bus Attributes (with legacy SMBus aliases)",
         ":= AttribQuick (SMBusQuick) | AttribSendReceive (SMBusSendReceive) | "
         "AttribByte (SMBusByte) | AttribWord (SMBusWord) | "
         "AttribBlock (SMBusBlock) | AttribProcessCall (SMBusProcessCall) | "
@@ -149,8 +149,9 @@ const AH_ASL_KEYWORD        AslKeywordInfo[] =
         ":= Compatibility | TypeA | TypeB | TypeF"},
     {"EndianKeyword", "Endian type - Resource Descriptor",
         ":= BigEndian | LittleEndian"},
-    {"ExtendedAttribKeyword", "Bus Attributes (with AccessLength) - Resource Descriptor",
-        ":= AttribBytes(n) | AttribRawBytes(n) | AttribRawProcessBytes(n)"},
+    {"ExtendedAttribKeyword", "Extended Bus Attributes",
+        ":= AttribBytes (AccessLength) | AttribRawBytes (AccessLength) | "
+        "AttribRawProcessBytes (AccessLength)"},
     {"FlowControlKeyword", "Resource Descriptor",
         ":= FlowControlNone | FlowControlXon | FlowControlHardware"},
     {"InterruptLevelKeyword", "Interrupt Active Types",
