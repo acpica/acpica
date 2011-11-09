@@ -166,6 +166,14 @@
  * ACPI_PTYPE2_REV_FIXED: Revision at start, each subpackage is Fixed-length
  *      (Used for _ART, _FPS)
  *
+ * ACPI_PTYPE2_FIX_VAR: Each subpackage consists of some fixed-length elements
+ *      followed by an optional element
+ *      object type
+ *      count
+ *      object type
+ *      count = 0 (optional)
+ *      (Used for _DLM)
+ *
  *****************************************************************************/
 
 enum AcpiReturnPackageTypes
@@ -178,7 +186,8 @@ enum AcpiReturnPackageTypes
     ACPI_PTYPE2_PKG_COUNT   = 6,
     ACPI_PTYPE2_FIXED       = 7,
     ACPI_PTYPE2_MIN         = 8,
-    ACPI_PTYPE2_REV_FIXED   = 9
+    ACPI_PTYPE2_REV_FIXED   = 9,
+    ACPI_PTYPE2_FIX_VAR     = 10
 };
 
 
@@ -326,6 +335,10 @@ static const ACPI_PREDEFINED_INFO     PredefinedNames[] =
 
     {{"_DGS", 0, ACPI_RTYPE_INTEGER}},
     {{"_DIS", 0, 0}},
+
+    {{"_DLM", 0, ACPI_RTYPE_PACKAGE}}, /* Variable-length (Pkgs) each (1 Ref, 0/1 Optional Buf/Ref) */
+                    {{{ACPI_PTYPE2_FIX_VAR, ACPI_RTYPE_REFERENCE, 1, ACPI_RTYPE_REFERENCE | ACPI_RTYPE_BUFFER}, 0,0}},
+
     {{"_DMA", 0, ACPI_RTYPE_BUFFER}},
     {{"_DOD", 0, ACPI_RTYPE_PACKAGE}}, /* Variable-length (Ints) */
                     {{{ACPI_PTYPE1_VAR, ACPI_RTYPE_INTEGER, 0,0}, 0,0}},
@@ -346,6 +359,7 @@ static const ACPI_PREDEFINED_INFO     PredefinedNames[] =
     {{"_EJ4", 1, 0}},
     {{"_EJD", 0, ACPI_RTYPE_STRING}},
     {{"_ERR", 3, ACPI_RTYPE_INTEGER}}, /* Internal use only, used by ACPICA test suites */
+    {{"_EVT", 1, 0}},
     {{"_FDE", 0, ACPI_RTYPE_BUFFER}},
     {{"_FDI", 0, ACPI_RTYPE_PACKAGE}}, /* Fixed-length (16 Int) */
                     {{{ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 16,0}, 0,0}},
@@ -449,6 +463,9 @@ static const ACPI_PREDEFINED_INFO     PredefinedNames[] =
     {{"_PR3", 0, ACPI_RTYPE_PACKAGE}}, /* Variable-length (Refs) */
                     {{{ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0}, 0,0}},
 
+    {{"_PRE", 0, ACPI_RTYPE_PACKAGE}}, /* Variable-length (Refs) */
+                    {{{ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0}, 0,0}},
+
     {{"_PRL", 0, ACPI_RTYPE_PACKAGE}}, /* Variable-length (Refs) */
                     {{{ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0}, 0,0}},
 
@@ -479,6 +496,7 @@ static const ACPI_PREDEFINED_INFO     PredefinedNames[] =
     {{"_PSD", 0, ACPI_RTYPE_PACKAGE}}, /* Variable-length (Pkgs) each (5 Int) with count */
                     {{{ACPI_PTYPE2_COUNT, ACPI_RTYPE_INTEGER,0,0}, 0,0}},
 
+    {{"_PSE", 1, 0}},
     {{"_PSL", 0, ACPI_RTYPE_PACKAGE}}, /* Variable-length (Refs) */
                     {{{ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0}, 0,0}},
 
