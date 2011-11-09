@@ -94,6 +94,7 @@ OBJECTS = \
 	dmopcode.o \
 	dmresrc.o \
 	dmresrcl.o \
+	dmresrcl2.o \
 	dmresrcs.o \
 	dmutils.o \
 	dmwalk.o \
