@@ -531,6 +531,7 @@ DtGetGenericTableInfo (
 extern const unsigned char  TemplateAsf[];
 extern const unsigned char  TemplateBoot[];
 extern const unsigned char  TemplateBert[];
+extern const unsigned char  TemplateBgrt[];
 extern const unsigned char  TemplateCpep[];
 extern const unsigned char  TemplateDbgp[];
 extern const unsigned char  TemplateDmar[];

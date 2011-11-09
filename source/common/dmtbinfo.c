@@ -154,11 +154,13 @@
 #define ACPI_GAS_OFFSET(f)              (UINT8) ACPI_OFFSET (ACPI_GENERIC_ADDRESS,f)
 #define ACPI_HDR_OFFSET(f)              (UINT8) ACPI_OFFSET (ACPI_TABLE_HEADER,f)
 #define ACPI_RSDP_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_RSDP,f)
-#define ACPI_BOOT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_BOOT,f)
 #define ACPI_BERT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_BERT,f)
+#define ACPI_BGRT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_BGRT,f)
+#define ACPI_BOOT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_BOOT,f)
 #define ACPI_CPEP_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_CPEP,f)
 #define ACPI_DBGP_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_DBGP,f)
 #define ACPI_DMAR_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_DMAR,f)
+#define ACPI_DRTM_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_DRTM,f)
 #define ACPI_ECDT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_ECDT,f)
 #define ACPI_EINJ_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_EINJ,f)
 #define ACPI_ERST_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_ERST,f)
@@ -169,6 +171,7 @@
 #define ACPI_MCFG_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_MCFG,f)
 #define ACPI_MCHI_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_MCHI,f)
 #define ACPI_MSCT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_MSCT,f)
+#define ACPI_PCCT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_PCCT,f)
 #define ACPI_SBST_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_SBST,f)
 #define ACPI_SLIT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_SLIT,f)
 #define ACPI_SPCR_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_SPCR,f)
@@ -198,6 +201,9 @@
 #define ACPI_DMAR3_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_DMAR_RHSA,f)
 #define ACPI_EINJ0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_WHEA_HEADER,f)
 #define ACPI_ERST0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_WHEA_HEADER,f)
+#define ACPI_FPDTH_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_FPDT_HEADER,f)
+#define ACPI_FPDT0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_FPDT_BOOT,f)
+#define ACPI_FPDT1_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_FPDT_S3PT_PTR,f)
 #define ACPI_HEST0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_HEST_IA_MACHINE_CHECK,f)
 #define ACPI_HEST1_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_HEST_IA_CORRECTED,f)
 #define ACPI_HEST2_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_HEST_IA_NMI,f)
@@ -230,6 +236,7 @@
 #define ACPI_MADTH_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_SUBTABLE_HEADER,f)
 #define ACPI_MCFG0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_MCFG_ALLOCATION,f)
 #define ACPI_MSCT0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_MSCT_PROXIMITY,f)
+#define ACPI_PCCT0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_PCCT_SUBSPACE,f)
 #define ACPI_SLICH_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_SLIC_HEADER,f)
 #define ACPI_SLIC0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_SLIC_KEY,f)
 #define ACPI_SLIC1_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_SLIC_MARKER,f)
@@ -262,6 +269,7 @@
 #define ACPI_MADT9_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_MADT_LOCAL_X2APIC,f,o)
 #define ACPI_MADT10_FLAG_OFFSET(f,o)    ACPI_FLAG_OFFSET (ACPI_MADT_LOCAL_X2APIC_NMI,f,o)
 #define ACPI_MADT11_FLAG_OFFSET(f,o)    ACPI_FLAG_OFFSET (ACPI_MADT_GENERIC_INTERRUPT,f,o)
+#define ACPI_PCCT_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_PCCT,f,o)
 #define ACPI_WDDT_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_WDDT,f,o)
 #define ACPI_EINJ0_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_WHEA_HEADER,f,o)
 #define ACPI_ERST0_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_WHEA_HEADER,f,o)
@@ -627,6 +635,24 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoBert[] =
 
 /*******************************************************************************
  *
+ * BGRT -  Boot Graphics Resource Table (ACPI 5.0)
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoBgrt[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_BGRT_OFFSET (Version),                 "Version", 0},
+    {ACPI_DMT_UINT8,    ACPI_BGRT_OFFSET (Status),                  "Status", 0},
+    {ACPI_DMT_UINT8,    ACPI_BGRT_OFFSET (ImageType),               "Image Type", 0},
+    {ACPI_DMT_UINT64,   ACPI_BGRT_OFFSET (ImageAddress),            "Image Address", 0},
+    {ACPI_DMT_UINT32,   ACPI_BGRT_OFFSET (ImageOffsetX),            "Image OffsetX", 0},
+    {ACPI_DMT_UINT32,   ACPI_BGRT_OFFSET (ImageOffsetY),            "Image OffsetY", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
  * BOOT - Simple Boot Flag Table
  *
  ******************************************************************************/
@@ -758,6 +784,19 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoDmar3[] =
 
 /*******************************************************************************
  *
+ * DRTM - Dynamic Root of Trust for Measurement table
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoDrtm[] =
+{
+
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
  * ECDT - Embedded Controller Boot Resources Table
  *
  ******************************************************************************/
@@ -828,6 +867,47 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoErst0[] =
     {ACPI_DMT_GAS,      ACPI_ERST0_OFFSET (RegisterRegion),         "Register Region", 0},
     {ACPI_DMT_UINT64,   ACPI_ERST0_OFFSET (Value),                  "Value", 0},
     {ACPI_DMT_UINT64,   ACPI_ERST0_OFFSET (Mask),                   "Mask", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
+ * FPDT - Firmware Performance Data Table (ACPI 5.0)
+ *
+ ******************************************************************************/
+
+/* Main table consists of only the standard ACPI header - subtables follow */
+
+/* FPDT subtable header */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoFpdtHdr[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_FPDTH_OFFSET (Type),                   "Subtable Type", 0},
+    {ACPI_DMT_UINT8,    ACPI_FPDTH_OFFSET (Length),                 "Length", DT_LENGTH},
+    {ACPI_DMT_UINT8,    ACPI_FPDTH_OFFSET (Revision),               "Revision", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 0: Firmware Basic Boot Performance Record */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoFpdt0[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_FPDT0_OFFSET (Reserved),               "Reserved", 0},
+    {ACPI_DMT_UINT64,   ACPI_FPDT0_OFFSET (ResetEnd),               "Reset End", 0},
+    {ACPI_DMT_UINT64,   ACPI_FPDT0_OFFSET (LoadStart),              "Load Image Start", 0},
+    {ACPI_DMT_UINT64,   ACPI_FPDT0_OFFSET (StartupStart),           "Start Image Start", 0},
+    {ACPI_DMT_UINT64,   ACPI_FPDT0_OFFSET (ExitServicesEntry),      "Exit Services Entry", 0},
+    {ACPI_DMT_UINT64,   ACPI_FPDT0_OFFSET (ExitServicesExit),       "Exit Services Exit", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 1: S3 Performance Table Pointer Record */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoFpdt1[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_FPDT1_OFFSET (Reserved),               "Reserved", 0},
+    {ACPI_DMT_UINT64,   ACPI_FPDT1_OFFSET (Address),                "S3PT Address", 0},
     ACPI_DMT_TERMINATOR
 };
 
@@ -1383,6 +1463,39 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMsct0[] =
 
 /*******************************************************************************
  *
+ * PCCT - Platform Communications Channel Table (ACPI 5.0)
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoPcct[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_PCCT_OFFSET (Flags),                   "Flags (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG0,    ACPI_PCCT_FLAG_OFFSET (Flags,0),            "Doorbell", 0},
+    {ACPI_DMT_UINT32,   ACPI_PCCT_OFFSET (Latency),                 "Command Latency", 0},
+    {ACPI_DMT_UINT32,   ACPI_PCCT_OFFSET (Reserved),                "Reserved", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* PCCT subtables */
+
+/* 0: Generic Communications Subspace */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoPcct0[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_PCCT0_OFFSET (Header.Type),            "Subtable Type", 0},
+    {ACPI_DMT_UINT8,    ACPI_PCCT0_OFFSET (Header.Length),          "Length", DT_LENGTH},
+    {ACPI_DMT_UINT48,   ACPI_PCCT0_OFFSET (Reserved[0]),            "Reserved", 0},
+    {ACPI_DMT_UINT64,   ACPI_PCCT0_OFFSET (BaseAddress),            "Base Address", 0},
+    {ACPI_DMT_UINT64,   ACPI_PCCT0_OFFSET (Length),                 "Address Length", 0},
+    {ACPI_DMT_GAS,      ACPI_PCCT0_OFFSET (DoorbellRegister),       "Doorbell Register", 0},
+    {ACPI_DMT_UINT64,   ACPI_PCCT0_OFFSET (PreserveMask),           "Preserve Mask", 0},
+    {ACPI_DMT_UINT64,   ACPI_PCCT0_OFFSET (WriteMask),              "Write Mask", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
  * SBST - Smart Battery Specification Table
  *
  ******************************************************************************/
@@ -1724,7 +1837,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoWdrt[] =
 };
 
 /*
- * Generic types (used in UEFI)
+ * Generic types (used in UEFI and custom tables)
  *
  * Examples:
  *
@@ -1752,6 +1865,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoGeneric[][2] =
     ACPI_DM_GENERIC_ENTRY (ACPI_DMT_UINT16,     "UINT16"),
     ACPI_DM_GENERIC_ENTRY (ACPI_DMT_UINT24,     "UINT24"),
     ACPI_DM_GENERIC_ENTRY (ACPI_DMT_UINT32,     "UINT32"),
+    ACPI_DM_GENERIC_ENTRY (ACPI_DMT_UINT40,     "UINT40"),
+    ACPI_DM_GENERIC_ENTRY (ACPI_DMT_UINT48,     "UINT48"),
     ACPI_DM_GENERIC_ENTRY (ACPI_DMT_UINT56,     "UINT56"),
     ACPI_DM_GENERIC_ENTRY (ACPI_DMT_UINT64,     "UINT64"),
     ACPI_DM_GENERIC_ENTRY (ACPI_DMT_STRING,     "String"),

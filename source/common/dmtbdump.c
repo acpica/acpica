@@ -834,6 +834,84 @@ AcpiDmDumpErst (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpFpdt
+ *
+ * PARAMETERS:  Table               - A FPDT table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a FPDT. This table type consists
+ *              of an open-ended number of subtables.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpFpdt (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_FPDT_HEADER        *SubTable;
+    UINT32                  Length = Table->Length;
+    UINT32                  Offset = sizeof (ACPI_TABLE_FPDT);
+    ACPI_DMTABLE_INFO       *InfoTable;
+
+
+    /* There is no main table (other than the standard ACPI header) */
+
+    /* Sub-tables */
+
+    SubTable = ACPI_ADD_PTR (ACPI_FPDT_HEADER, Table, Offset);
+    while (Offset < Table->Length)
+    {
+        /* Common sub-table header */
+
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Length, Offset, SubTable,
+                    SubTable->Length, AcpiDmTableInfoFpdtHdr);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        switch (SubTable->Type)
+        {
+        case ACPI_FPDT_TYPE_BOOT:
+            InfoTable = AcpiDmTableInfoFpdt0;
+            break;
+        case ACPI_FPDT_TYPE_S3PERF:
+            InfoTable = AcpiDmTableInfoFpdt1;
+            break;
+        default:
+            AcpiOsPrintf ("\n**** Unknown FPDT sub-table type 0x%X\n\n", SubTable->Type);
+
+            /* Attempt to continue */
+
+            if (!SubTable->Length)
+            {
+                AcpiOsPrintf ("Invalid zero length subtable\n");
+                return;
+            }
+            goto NextSubTable;
+        }
+
+        Status = AcpiDmDumpTable (Length, Offset, SubTable,
+                    SubTable->Length, InfoTable);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+NextSubTable:
+        /* Point to next sub-table */
+
+        Offset += SubTable->Length;
+        SubTable = ACPI_ADD_PTR (ACPI_FPDT_HEADER, SubTable, SubTable->Length);
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpHest
  *
  * PARAMETERS:  Table               - A HEST table
@@ -1358,6 +1436,59 @@ AcpiDmDumpMsct (
 
         Offset += sizeof (ACPI_MSCT_PROXIMITY);
         SubTable = ACPI_ADD_PTR (ACPI_MSCT_PROXIMITY, SubTable, sizeof (ACPI_MSCT_PROXIMITY));
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDumpPcct
+ *
+ * PARAMETERS:  Table               - A PCCT table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a PCCT. This table type consists
+ *              of an open-ended number of subtables.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpPcct (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_PCCT_SUBSPACE      *SubTable;
+    UINT32                  Length = Table->Length;
+    UINT32                  Offset = sizeof (ACPI_TABLE_PCCT);
+
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoPcct);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    /* Sub-tables */
+
+    SubTable = ACPI_ADD_PTR (ACPI_PCCT_SUBSPACE, Table, Offset);
+    while (Offset < Table->Length)
+    {
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Length, Offset, SubTable,
+                    SubTable->Header.Length, AcpiDmTableInfoPcct0);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        /* Point to next sub-table */
+
+        Offset += SubTable->Header.Length;
+        SubTable = ACPI_ADD_PTR (ACPI_PCCT_SUBSPACE, SubTable,
+                    SubTable->Header.Length);
     }
 }
 

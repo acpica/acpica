@@ -622,6 +622,11 @@ DtGetFieldLength (
         ByteLength = 4;
         break;
 
+    case ACPI_DMT_UINT40:
+        ByteLength = 5;
+        break;
+
+    case ACPI_DMT_UINT48:
     case ACPI_DMT_NAME6:
         ByteLength = 6;
         break;

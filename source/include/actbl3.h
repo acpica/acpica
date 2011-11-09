@@ -147,6 +147,7 @@
 #define ACPI_SIG_WPBT           "WPBT"      /* Windows Platform Binary Table */
 
 #define ACPI_SIG_S3PT           "S3PT"      /* S3 Performance (sub)Table */
+#define ACPI_SIG_PCCS           "PCC"       /* PCC Shared Memory Region */
 
 /*
  * All tables must be byte-packed to match the ACPI specification, since
@@ -232,29 +233,29 @@ typedef struct acpi_drtm_id_list
  *
  ******************************************************************************/
 
-typedef struct acpi_table_fbdt
+typedef struct acpi_table_fpdt
 {
     ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 
-} ACPI_TABLE_FBDT;
+} ACPI_TABLE_FPDT;
 
 
 /* FPDT subtable header */
 
-typedef struct acpi_fbdt_header
+typedef struct acpi_fpdt_header
 {
     UINT16                  Type;
     UINT8                   Length;
     UINT8                   Revision;
 
-} ACPI_FBDT_HEADER;
+} ACPI_FPDT_HEADER;
 
 /* Values for Type field above */
 
-enum AcpiFbdtType
+enum AcpiFpdtType
 {
-    ACPI_FBDT_TYPE_BOOT                 = 0,
-    ACPI_FBDT_TYPE_S3PERF               = 1,
+    ACPI_FPDT_TYPE_BOOT                 = 0,
+    ACPI_FPDT_TYPE_S3PERF               = 1,
 };
 
 
@@ -266,13 +267,13 @@ enum AcpiFbdtType
 
 typedef struct acpi_fpdt_boot
 {
-    ACPI_FBDT_HEADER        Header;
+    ACPI_FPDT_HEADER        Header;
     UINT8                   Reserved[4];
     UINT64                  ResetEnd;
     UINT64                  LoadStart;
     UINT64                  StartupStart;
-    UINT64                  EnterExitServices;
-    UINT64                  ExitExitServices;
+    UINT64                  ExitServicesEntry;
+    UINT64                  ExitServicesExit;
 
 } ACPI_FPDT_BOOT;
 
@@ -281,7 +282,7 @@ typedef struct acpi_fpdt_boot
 
 typedef struct acpi_fpdt_s3pt_ptr
 {
-    ACPI_FBDT_HEADER        Header;
+    ACPI_FPDT_HEADER        Header;
     UINT8                   Reserved[4];
     UINT64                  Address;
 
@@ -434,18 +435,38 @@ typedef struct acpi_table_pcct
 
 #define ACPI_PCCT_DOORBELL              1
 
+/*
+ * PCCT subtables
+ */
 
-typedef struct acpi_pcct_generic
+/* 0: Generic Communications Subspace */
+
+typedef struct acpi_pcct_subspace
 {
     ACPI_SUBTABLE_HEADER    Header;
     UINT8                   Reserved[6];
     UINT64                  BaseAddress;
     UINT64                  Length;
     ACPI_GENERIC_ADDRESS    DoorbellRegister;
-    UINT64                  Preserve;
-    UINT64                  Write;
+    UINT64                  PreserveMask;
+    UINT64                  WriteMask;
 
-} ACPI_PCCT_GENERIC;
+} ACPI_PCCT_SUBSPACE;
+
+
+/*
+ * PCC memory structures (not part of the ACPI table)
+ */
+
+/* Shared Memory Region */
+
+typedef struct acpi_pcct_shared_memory
+{
+    UINT32                  Signature;
+    UINT16                  Command;
+    UINT16                  Status;
+
+} ACPI_PCCT_SHARED_MEMORY;
 
 
 /*******************************************************************************
