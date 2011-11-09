@@ -127,6 +127,7 @@ UINT8                   AcpiGbl_RegionFillValue = 0;
 BOOLEAN                 AcpiGbl_IgnoreErrors = FALSE;
 BOOLEAN                 AcpiGbl_DbOpt_NoRegionSupport = FALSE;
 BOOLEAN                 AcpiGbl_DebugTimeout = FALSE;
+UINT8                   AcpiGbl_UseHwReducedFadt = FALSE;
 
 static UINT8            AcpiGbl_BatchMode = 0;
 static char             BatchBuffer[128];
@@ -136,7 +137,7 @@ static AE_TABLE_DESC    *AeTableListHead = NULL;
 static char             *FileList[ASL_MAX_FILES];
 
 
-#define AE_SUPPORTED_OPTIONS    "?b:d:e:f:gm^ovx:"
+#define AE_SUPPORTED_OPTIONS    "?b:d:e:f:gm^orvx:"
 
 
 /******************************************************************************
@@ -176,6 +177,7 @@ usage (void)
     printf ("\n");
 
     ACPI_OPTION ("-f <Value>",          "Operation Region initialization fill value");
+    ACPI_OPTION ("-r",                  "Use hardware-reduced FADT V5");
     ACPI_OPTION ("-v",                  "Verbose initialization output");
     ACPI_OPTION ("-x <DebugLevel>",     "Debug output level");
 }
@@ -577,6 +579,11 @@ main (
     case 'o':
         AcpiGbl_DbOpt_disasm = TRUE;
         AcpiGbl_DbOpt_stats = TRUE;
+        break;
+
+    case 'r':
+        AcpiGbl_UseHwReducedFadt = TRUE;
+        printf ("Using ACPI 5.0 Hardware Reduced Mode and FADT\n");
         break;
 
     case 'v':

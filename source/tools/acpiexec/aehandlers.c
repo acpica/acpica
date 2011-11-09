@@ -653,13 +653,16 @@ AeInstallLateHandlers (
     UINT32                  i;
 
 
-    /* Install some fixed event handlers */
+    if (!AcpiGbl_ReducedHardware)
+    {
+        /* Install some fixed event handlers */
 
-    Status = AcpiInstallFixedEventHandler (ACPI_EVENT_GLOBAL, AeEventHandler, NULL);
-    AE_CHECK_OK (AcpiInstallFixedEventHandler, Status);
+        Status = AcpiInstallFixedEventHandler (ACPI_EVENT_GLOBAL, AeEventHandler, NULL);
+        AE_CHECK_OK (AcpiInstallFixedEventHandler, Status);
 
-    Status = AcpiInstallFixedEventHandler (ACPI_EVENT_RTC, AeEventHandler, NULL);
-    AE_CHECK_OK (AcpiInstallFixedEventHandler, Status);
+        Status = AcpiInstallFixedEventHandler (ACPI_EVENT_RTC, AeEventHandler, NULL);
+        AE_CHECK_OK (AcpiInstallFixedEventHandler, Status);
+    }
 
     /*
      * Install handlers for some of the "device driver" address spaces
