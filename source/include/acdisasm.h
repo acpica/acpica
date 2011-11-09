@@ -217,11 +217,13 @@ typedef enum
     ACPI_DMT_HESTNTYP,
     ACPI_DMT_IVRS,
     ACPI_DMT_MADT,
+    ACPI_DMT_PMTT,
     ACPI_DMT_SLIC,
     ACPI_DMT_SRAT,
 
-    /* Table terminator */
+    /* Special opcodes */
 
+    ACPI_DMT_EXTRA_TEXT,
     ACPI_DMT_EXIT
 
 } ACPI_ENTRY_TYPES;
@@ -328,6 +330,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFpdtHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFpdt0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFpdt1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGas[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGtdt[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHeader[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHest[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHest0[];
@@ -374,6 +377,12 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMpst1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMpst2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMsct[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMsct0[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPmtt[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPmtt0[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPmtt1[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPmtt1a[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPmtt2[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPmttHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPcct[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPcct0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRsdp1[];
@@ -503,6 +512,10 @@ AcpiDmDumpMsct (
 
 void
 AcpiDmDumpPcct (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpPmtt (
     ACPI_TABLE_HEADER       *Table);
 
 UINT32

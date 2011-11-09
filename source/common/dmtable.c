@@ -273,6 +273,14 @@ static const char           *AcpiDmMadtSubnames[] =
     "Unknown SubTable Type"         /* Reserved */
 };
 
+static const char           *AcpiDmPmttSubnames[] =
+{
+    "Socket",                       /* ACPI_PMTT_TYPE_SOCKET */
+    "Memory Controller",            /* ACPI_PMTT_TYPE_CONTROLLER */
+    "Physical Component (DIMM)",    /* ACPI_PMTT_TYPE_DIMM  */
+    "Unknown SubTable Type"         /* Reserved */
+};
+
 static const char           *AcpiDmSlicSubnames[] =
 {
     "Public Key Structure",
@@ -351,6 +359,7 @@ ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_ERST, NULL,                   AcpiDmDumpErst, DtCompileErst,  TemplateErst,   "Error Record Serialization Table"},
     {ACPI_SIG_FADT, NULL,                   AcpiDmDumpFadt, DtCompileFadt,  TemplateFadt,   "Fixed ACPI Description Table"},
     {ACPI_SIG_FPDT, NULL,                   AcpiDmDumpFpdt, DtCompileFpdt,  TemplateFpdt,   "Firmware Performance Data Table"},
+    {ACPI_SIG_GTDT, AcpiDmTableInfoGtdt,    NULL,           NULL,           NULL,           "Generic Timer Description Table"},
     {ACPI_SIG_HEST, NULL,                   AcpiDmDumpHest, DtCompileHest,  TemplateHest,   "Hardware Error Source Table"},
     {ACPI_SIG_HPET, AcpiDmTableInfoHpet,    NULL,           NULL,           TemplateHpet,   "High Precision Event Timer table"},
     {ACPI_SIG_IVRS, NULL,                   AcpiDmDumpIvrs, DtCompileIvrs,  TemplateIvrs,   "I/O Virtualization Reporting Structure"},
@@ -360,6 +369,7 @@ ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_MPST, AcpiDmTableInfoMpst,    AcpiDmDumpMpst, DtCompileMpst,  TemplateMpst,   "Memory Power State Table"},
     {ACPI_SIG_MSCT, NULL,                   AcpiDmDumpMsct, DtCompileMsct,  TemplateMsct,   "Maximum System Characteristics Table"},
     {ACPI_SIG_PCCT, NULL,                   AcpiDmDumpPcct, NULL,           NULL,           "Platform Communications Channel Table"},
+    {ACPI_SIG_PMTT, NULL,                   AcpiDmDumpPmtt, NULL,           NULL,           "Platform Memory Topology Table"},
     {ACPI_SIG_RSDT, NULL,                   AcpiDmDumpRsdt, DtCompileRsdt,  TemplateRsdt,   "Root System Description Table"},
     {ACPI_SIG_S3PT, NULL,                   NULL,           NULL,           TemplateS3pt,   "S3 Performance Table"},
     {ACPI_SIG_SBST, AcpiDmTableInfoSbst,    NULL,           NULL,           TemplateSbst,   "Smart Battery Specification Table"},
@@ -729,6 +739,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_ACCWIDTH:
         case ACPI_DMT_IVRS:
         case ACPI_DMT_MADT:
+        case ACPI_DMT_PMTT:
         case ACPI_DMT_SRAT:
         case ACPI_DMT_ASF:
         case ACPI_DMT_HESTNTYP:
@@ -803,6 +814,12 @@ AcpiDmDumpTable (
         {
             AcpiOsPrintf ("**** ACPI table terminates in the middle of a data structure!\n");
             return (AE_BAD_DATA);
+        }
+
+        if (Info->Opcode == ACPI_DMT_EXTRA_TEXT)
+        {
+            AcpiOsPrintf ("%s", Info->Name);
+            continue;
         }
 
         /* Start a new line and decode the opcode */
@@ -1108,6 +1125,19 @@ AcpiDmDumpTable (
             }
 
             AcpiOsPrintf (UINT8_FORMAT, *Target, AcpiDmMadtSubnames[Temp8]);
+            break;
+
+        case ACPI_DMT_PMTT:
+
+            /* PMTT subtable types */
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_PMTT_TYPE_RESERVED)
+            {
+                Temp8 = ACPI_PMTT_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf (UINT8_FORMAT, *Target, AcpiDmPmttSubnames[Temp8]);
             break;
 
         case ACPI_DMT_SLIC:

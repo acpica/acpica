@@ -138,6 +138,7 @@
 #define ACPI_SIG_CSRT           "CSRT"      /* Core System Resources Table */
 #define ACPI_SIG_DRTM           "DRTM"      /* Dynamic Root of Trust for Measurement table */
 #define ACPI_SIG_FPDT           "FPDT"      /* Firmware Performance Data Table */
+#define ACPI_SIG_GTDT           "GTDT"      /* Generic Timer Description Table */
 #define ACPI_SIG_MATR           "MATR"      /* Memory Address Translation Table */
 #define ACPI_SIG_MPST           "MPST"      /* Memory Power State Table */
 #define ACPI_SIG_MSDM           "MSDM"      /* Microsoft Data Management Table */
@@ -336,6 +337,38 @@ typedef struct acpi_s3pt_suspend
     UINT64                  SuspendEnd;
 
 } ACPI_S3PT_SUSPEND;
+
+
+/*******************************************************************************
+ *
+ * GTDT - Generic Timer Description Table
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_gtdt
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT64                  Address;
+    UINT32                  Flags;
+    UINT32                  SecurePl1Interrupt;
+    UINT32                  SecurePl1Flags;
+    UINT32                  NonSecurePl1Interrupt;
+    UINT32                  NonSecurePl1Flags;
+    UINT32                  VirtualTimerInterrupt;
+    UINT32                  VirtualTimerFlags;
+    UINT32                  NonSecurePl2Interrupt;
+    UINT32                  NonSecurePl2Flags;
+
+} ACPI_TABLE_GTDT;
+
+/* Values for Flags field above */
+
+#define ACPI_GTDT_MAPPED_BLOCK_PRESENT      1
+
+/* Values for all "TimerFlags" fields above */
+
+#define ACPI_GTDT_INTERRUPT_MODE            1
+#define ACPI_GTDT_INTERRUPT_POLARITY        2
 
 
 /*******************************************************************************
@@ -542,75 +575,87 @@ typedef struct acpi_table_pmtt
 {
     ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
     UINT32                  Reserved;
-    UINT16                  AggregatorCount;
 
 } ACPI_TABLE_PMTT;
 
 
-/* Common header for PMTT subtables */
+/* Common header for PMTT subtables that follow main table */
 
 typedef struct acpi_pmtt_header
 {
     UINT8                   Type;
-    UINT8                   Flags;
-    UINT32                  Length;
+    UINT8                   Reserved1;
+    UINT16                  Length;
+    UINT16                  Flags;
+    UINT16                  Reserved2;
 
 } ACPI_PMTT_HEADER;
 
+/* Values for Type field above */
+
+#define ACPI_PMTT_TYPE_SOCKET           0
+#define ACPI_PMTT_TYPE_CONTROLLER       1
+#define ACPI_PMTT_TYPE_DIMM             2
+#define ACPI_PMTT_TYPE_RESERVED         3 /* 0x03-0xFF are reserved */
+
 /* Values for Flags field above */
 
-#define ACPI_PMTT_PHYSICAL              1
+#define ACPI_PMTT_TOP_LEVEL             0x0001
+#define ACPI_PMTT_PHYSICAL              0x0002
+#define ACPI_PMTT_MEMORY_TYPE           0x000C
 
 
 /*
  * PMTT subtables, correspond to Type in acpi_pmtt_header
  */
 
-/* 1: Socket Structure */
+
+/* 0: Socket Structure */
 
 typedef struct acpi_pmtt_socket
 {
     ACPI_PMTT_HEADER        Header;
     UINT16                  SocketId;
-    UINT16                  ControllerCount;    /* Count of controller subtables */
 
 } ACPI_PMTT_SOCKET;
 
-/* 1A: Sub-subtable: Memory Controller subtable */
 
-typedef struct acpi_pmtt_memory
+/* 1: Memory Controller subtable */
+
+typedef struct acpi_pmtt_controller
 {
-    UINT16                  Length;
-    UINT16                  ProximityDomain;
-    UINT32                  Flags;
+    ACPI_PMTT_HEADER        Header;
     UINT32                  ReadLatency;
     UINT32                  WriteLatency;
     UINT32                  ReadBandwidth;
     UINT32                  WriteBandwidth;
     UINT16                  AccessWidth;
     UINT16                  Alignment;
-    UINT32                  Endurance;
-    UINT16                  ComponentCount;     /* Count of physical component subtables */
+    UINT16                  Reserved;
+    UINT16                  DomainCount;
 
-} ACPI_PMTT_MEMORY;
+} ACPI_PMTT_CONTROLLER;
 
-/* 1AA: Socket Structure: Physical Component Identifier */
+/* 1a: Proximity Domain substructure */
+
+typedef struct acpi_pmtt_domain
+{
+    UINT32                  ProximityDomain;
+
+} ACPI_PMTT_DOMAIN;
+
+
+/* 2: Physical Component Identifier (DIMM) */
 
 typedef struct acpi_pmtt_physical_component
 {
-    UINT32                  Length;
+    ACPI_PMTT_HEADER        Header;
     UINT16                  ComponentId;
-    UINT16                  ComponentType;
-    UINT16                  Size;
-    UINT8                   SmBiosHandle[12];
+    UINT16                  Reserved;
+    UINT32                  MemorySize;
+    UINT32                  BiosHandle;
 
 } ACPI_PMTT_PHYSICAL_COMPONENT;
-
-
-/* 2: Node Controller */
-
-
-/* 3: Memory Hub */
 
 
 /*******************************************************************************

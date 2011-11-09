@@ -164,6 +164,7 @@
 #define ACPI_ECDT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_ECDT,f)
 #define ACPI_EINJ_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_EINJ,f)
 #define ACPI_ERST_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_ERST,f)
+#define ACPI_GTDT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_GTDT,f)
 #define ACPI_HEST_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_HEST,f)
 #define ACPI_HPET_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_HPET,f)
 #define ACPI_IVRS_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_IVRS,f)
@@ -173,6 +174,7 @@
 #define ACPI_MPST_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_MPST,f)
 #define ACPI_MSCT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_MSCT,f)
 #define ACPI_PCCT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_PCCT,f)
+#define ACPI_PMTT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_PMTT,f)
 #define ACPI_S3PT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_S3PT,f)
 #define ACPI_SBST_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_SBST,f)
 #define ACPI_SLIT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_SLIT,f)
@@ -244,6 +246,11 @@
 #define ACPI_MPST2_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_MPST_POWER_DATA,f)
 #define ACPI_MSCT0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_MSCT_PROXIMITY,f)
 #define ACPI_PCCT0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_PCCT_SUBSPACE,f)
+#define ACPI_PMTT0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_PMTT_SOCKET,f)
+#define ACPI_PMTT1_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_PMTT_CONTROLLER,f)
+#define ACPI_PMTT1A_OFFSET(f)           (UINT8) ACPI_OFFSET (ACPI_PMTT_DOMAIN,f)
+#define ACPI_PMTT2_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_PMTT_PHYSICAL_COMPONENT,f)
+#define ACPI_PMTTH_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_PMTT_HEADER,f)
 #define ACPI_S3PTH_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_S3PT_HEADER,f)
 #define ACPI_S3PT0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_S3PT_RESUME,f)
 #define ACPI_S3PT1_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_S3PT_SUSPEND,f)
@@ -269,6 +276,7 @@
 #define ACPI_SRAT0_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_SRAT_CPU_AFFINITY,f,o)
 #define ACPI_SRAT1_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_SRAT_MEM_AFFINITY,f,o)
 #define ACPI_SRAT2_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_SRAT_X2APIC_CPU_AFFINITY,f,o)
+#define ACPI_GTDT_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_GTDT,f,o)
 #define ACPI_MADT_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_MADT,f,o)
 #define ACPI_MADT0_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_MADT_LOCAL_APIC,f,o)
 #define ACPI_MADT2_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_MADT_INTERRUPT_OVERRIDE,f,o)
@@ -282,6 +290,7 @@
 #define ACPI_MPST0_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_MPST_POWER_NODE,f,o)
 #define ACPI_MPST2_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_MPST_POWER_DATA,f,o)
 #define ACPI_PCCT_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_PCCT,f,o)
+#define ACPI_PMTTH_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_PMTT_HEADER,f,o)
 #define ACPI_WDDT_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_WDDT,f,o)
 #define ACPI_EINJ0_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_WHEA_HEADER,f,o)
 #define ACPI_ERST0_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_WHEA_HEADER,f,o)
@@ -293,6 +302,7 @@
  * Required terminator for all tables below
  */
 #define ACPI_DMT_TERMINATOR             {ACPI_DMT_EXIT, 0, NULL, 0}
+#define ACPI_DMT_NEW_LINE               {ACPI_DMT_EXTRA_TEXT, 0, "\n", 0}
 
 
 /*
@@ -920,6 +930,41 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFpdt1[] =
 {
     {ACPI_DMT_UINT32,   ACPI_FPDT1_OFFSET (Reserved),               "Reserved", 0},
     {ACPI_DMT_UINT64,   ACPI_FPDT1_OFFSET (Address),                "S3PT Address", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
+ * GTDT - Generic Timer Description Table
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoGtdt[] =
+{
+    {ACPI_DMT_UINT64,   ACPI_GTDT_OFFSET (Address),                 "Timer Address", 0},
+    {ACPI_DMT_UINT32,   ACPI_GTDT_OFFSET (Flags),                   "Flags (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG0,    ACPI_GTDT_FLAG_OFFSET (Flags,0),            "Memory Present", 0},
+    ACPI_DMT_NEW_LINE,
+    {ACPI_DMT_UINT32,   ACPI_GTDT_OFFSET (SecurePl1Interrupt),      "Secure PL1 Interrupt", 0},
+    {ACPI_DMT_UINT32,   ACPI_GTDT_OFFSET (SecurePl1Flags),          "SPL1 Flags (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG0,    ACPI_GTDT_FLAG_OFFSET (SecurePl1Flags,0),   "Trigger Mode", 0},
+    {ACPI_DMT_FLAG1,    ACPI_GTDT_FLAG_OFFSET (SecurePl1Flags,0),   "Polarity", 0},
+    ACPI_DMT_NEW_LINE,
+    {ACPI_DMT_UINT32,   ACPI_GTDT_OFFSET (NonSecurePl1Interrupt),   "Non-Secure PL1 Interrupt", 0},
+    {ACPI_DMT_UINT32,   ACPI_GTDT_OFFSET (NonSecurePl1Flags),       "NSPL1 Flags (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG0,    ACPI_GTDT_FLAG_OFFSET (NonSecurePl1Flags,0),"Trigger Mode", 0},
+    {ACPI_DMT_FLAG1,    ACPI_GTDT_FLAG_OFFSET (NonSecurePl1Flags,0),"Polarity", 0},
+    ACPI_DMT_NEW_LINE,
+    {ACPI_DMT_UINT32,   ACPI_GTDT_OFFSET (VirtualTimerInterrupt),   "Virtual Timer Interrupt", 0},
+    {ACPI_DMT_UINT32,   ACPI_GTDT_OFFSET (VirtualTimerFlags),       "VT Flags (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG0,    ACPI_GTDT_FLAG_OFFSET (VirtualTimerFlags,0),"Trigger Mode", 0},
+    {ACPI_DMT_FLAG1,    ACPI_GTDT_FLAG_OFFSET (VirtualTimerFlags,0),"Polarity", 0},
+    ACPI_DMT_NEW_LINE,
+    {ACPI_DMT_UINT32,   ACPI_GTDT_OFFSET (NonSecurePl2Interrupt),   "Non-Secure PL2 Interrupt", 0},
+    {ACPI_DMT_UINT32,   ACPI_GTDT_OFFSET (NonSecurePl2Flags),       "NSPL2 Flags (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG0,    ACPI_GTDT_FLAG_OFFSET (NonSecurePl2Flags,0),"Trigger Mode", 0},
+    {ACPI_DMT_FLAG1,    ACPI_GTDT_FLAG_OFFSET (NonSecurePl2Flags,0),"Polarity", 0},
     ACPI_DMT_TERMINATOR
 };
 

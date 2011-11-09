@@ -584,6 +584,7 @@ DtGetFieldLength (
     case ACPI_DMT_FLAGS0:
     case ACPI_DMT_FLAGS2:
     case ACPI_DMT_LABEL:
+    case ACPI_DMT_EXTRA_TEXT:
         ByteLength = 0;
         break;
 
@@ -593,6 +594,7 @@ DtGetFieldLength (
     case ACPI_DMT_ACCWIDTH:
     case ACPI_DMT_IVRS:
     case ACPI_DMT_MADT:
+    case ACPI_DMT_PMTT:
     case ACPI_DMT_SRAT:
     case ACPI_DMT_ASF:
     case ACPI_DMT_HESTNTYP:
