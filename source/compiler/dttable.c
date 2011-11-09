@@ -1396,6 +1396,147 @@ DtCompileMsct (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompilePmtt
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile PMTT.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompilePmtt (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    DT_FIELD                *SubtableStart;
+    ACPI_PMTT_HEADER        *PmttHeader;
+    ACPI_PMTT_CONTROLLER    *PmttController;
+    UINT16                  DomainCount;
+    UINT8                   PrevType = ACPI_PMTT_TYPE_SOCKET;
+
+
+    /* Main table */
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoPmtt, &Subtable, TRUE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    ParentTable = DtPeekSubtable ();
+    DtInsertSubtable (ParentTable, Subtable);
+    DtPushSubtable (Subtable);
+
+    while (*PFieldList)
+    {
+        SubtableStart = *PFieldList;
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoPmttHdr,
+                    &Subtable, TRUE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        PmttHeader = ACPI_CAST_PTR (ACPI_PMTT_HEADER, Subtable->Buffer);
+        while (PrevType >= PmttHeader->Type)
+        {
+            DtPopSubtable ();
+
+            if (PrevType == ACPI_PMTT_TYPE_SOCKET)
+            {
+                break;
+            }
+            PrevType--;
+        }
+        PrevType = PmttHeader->Type;
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+        DtPushSubtable (Subtable);
+
+        switch (PmttHeader->Type)
+        {
+        case ACPI_PMTT_TYPE_SOCKET:
+
+            /* Subtable: Socket Structure */
+
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoPmtt0,
+                    &Subtable, TRUE);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            ParentTable = DtPeekSubtable ();
+            DtInsertSubtable (ParentTable, Subtable);
+            break;
+
+        case ACPI_PMTT_TYPE_CONTROLLER:
+
+            /* Subtable: Memory Controller Structure */
+
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoPmtt1,
+                    &Subtable, TRUE);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            ParentTable = DtPeekSubtable ();
+            DtInsertSubtable (ParentTable, Subtable);
+
+            PmttController = ACPI_CAST_PTR (ACPI_PMTT_CONTROLLER,
+                (Subtable->Buffer - sizeof (ACPI_PMTT_HEADER)));
+            DomainCount = PmttController->DomainCount;
+
+            while (DomainCount)
+            {
+                Status = DtCompileTable (PFieldList, AcpiDmTableInfoPmtt1a,
+                    &Subtable, TRUE);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+
+                DtInsertSubtable (ParentTable, Subtable);
+                DomainCount--;
+            }
+            break;
+
+        case ACPI_PMTT_TYPE_DIMM:
+
+            /* Subtable: Physical Component Structure */
+
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoPmtt2,
+                    &Subtable, TRUE);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+
+            ParentTable = DtPeekSubtable ();
+            DtInsertSubtable (ParentTable, Subtable);
+            break;
+
+        default:
+
+            DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "PMTT");
+            return (AE_ERROR);
+        }
+    }
+
+    return (Status);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileRsdt
  *
  * PARAMETERS:  List                - Current field list pointer
