@@ -853,6 +853,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> OptionalFlowControl
 %type <n> OptionalDevicePolarity
 %type <n> OptionalBuffer_Last
+%type <n> OptionalWordConst
 %type <n> TermArgItem
 %type <n> NameStringItem
 
@@ -2619,9 +2620,16 @@ BufferTermData
     | StringData                    {}
     ;
 
+OptionalWordConst
+    :                               {$$ = NULL;}
+    | WordConst                     {$$ = $1;}
+    ;
+
 DataBufferTerm
-    : PARSEOP_DATABUFFER '{'        {$<n>$ = TrCreateLeafNode (PARSEOP_DATABUFFER);}
-        ByteList '}'                {$$ = TrLinkChildren ($<n>3,1,$4);}
+    : PARSEOP_DATABUFFER  '('       {$<n>$ = TrCreateLeafNode (PARSEOP_DATABUFFER);}
+        OptionalWordConst
+        ')' '{'
+            ByteList '}'            {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
     | PARSEOP_DATABUFFER '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;

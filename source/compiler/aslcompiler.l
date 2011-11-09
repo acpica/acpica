@@ -351,7 +351,7 @@ NamePathTail                [.]{NameSeg}
 "SPISerialBus"              { count (1); return (PARSEOP_SPI_SERIALBUS); }
 "UARTSerialBus"             { count (1); return (PARSEOP_UART_SERIALBUS); }
 "FixedDma"                  { count (1); return (PARSEOP_FIXEDDMA); }
-"DataBuffer"                { count (1); return (PARSEOP_DATABUFFER); }
+"RawDataBuffer"             { count (1); return (PARSEOP_DATABUFFER); }
 
 "UnknownObj"                { count (0); return (PARSEOP_OBJECTTYPE_UNK); }
 "IntObj"                    { count (0); return (PARSEOP_OBJECTTYPE_INT); }

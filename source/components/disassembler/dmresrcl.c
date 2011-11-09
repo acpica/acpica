@@ -1171,6 +1171,7 @@ AcpiDmGpioDescriptor (
     UINT32                  PinCount;
     UINT16                  *PinList;
     UINT32                  i;
+    UINT8                   *VendorData;
 
 
     AcpiDmIndent (Level);
@@ -1206,10 +1207,9 @@ AcpiDmGpioDescriptor (
             ACPI_ADD_PTR (char, Resource, Resource->GpioInt.ResSourceOffset),
             ACPI_UINT8_MAX);
     }
+
     AcpiOsPrintf (", ");
-
     AcpiOsPrintf ("0x%2.2X, ", Resource->GpioInt.ResSourceIndex);
-
     AcpiOsPrintf ("%s, ", AcpiGbl_ConsumeDecode [(Resource->GpioInt.Flags & 1)]);
 
     /* Insert a descriptor name */
@@ -1223,19 +1223,15 @@ AcpiDmGpioDescriptor (
 
     if (Resource->GpioInt.VendorOffset)
     {
-        UINT8 *VendorData =
+        VendorData =
             ACPI_ADD_PTR (UINT8, Resource, Resource->GpioInt.VendorOffset);
 
-        AcpiOsPrintf ("DataBuffer {");
+        AcpiOsPrintf ("RawDataBuffer () {");
         for (i = 0; i < Resource->GpioInt.VendorLength; i++)
         {
             AcpiOsPrintf ("0x%2.2X, ", VendorData[i]);
         }
         AcpiOsPrintf ("}");
-    }
-    else
-    {
-        AcpiOsPrintf (",");
     }
 
     AcpiOsPrintf (")\n");

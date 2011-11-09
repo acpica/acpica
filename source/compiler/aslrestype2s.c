@@ -130,6 +130,12 @@ UINT16
 RsGetInterruptDataLength (
     ACPI_PARSE_OBJECT       *InitializerOp);
 
+static BOOLEAN
+RsGetVendorData (
+    ACPI_PARSE_OBJECT       *InitializerOp,
+    UINT8                   *VendorData,
+    ACPI_SIZE               DescriptorOffset);
+
 /*
  * This module contains descriptors for serial buses and GPIO:
  *
@@ -159,13 +165,19 @@ RsGetBufferDataLength (
     {
         if (InitializerOp->Asl.ParseOpcode == PARSEOP_DATABUFFER)
         {
+            /* First child is the optional length (ignore it here) */
+
             DataList = InitializerOp->Asl.Child;
+            DataList = ASL_GET_PEER_NODE (DataList);
+
+            /* Count the data items (each one is a byte of data) */
 
             while (DataList)
             {
                 ExtraDataSize++;
-                DataList = DataList->Asl.Next;
+                DataList = ASL_GET_PEER_NODE (DataList);
             }
+
             return (ExtraDataSize);
         }
         InitializerOp = ASL_GET_PEER_NODE (InitializerOp);
@@ -208,6 +220,95 @@ RsGetInterruptDataLength (
 
 /*******************************************************************************
  *
+ * FUNCTION:    RsGetVendorData
+ *
+ ******************************************************************************/
+
+static BOOLEAN
+RsGetVendorData (
+    ACPI_PARSE_OBJECT       *InitializerOp,
+    UINT8                   *VendorData,
+    ACPI_SIZE               DescriptorOffset)
+{
+    ACPI_PARSE_OBJECT       *BufferOp;
+    UINT32                  SpecifiedLength = ACPI_UINT32_MAX;
+    UINT16                  ActualLength = 0;
+
+
+    /* VendorData field is always optional */
+
+    if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+    {
+        return (FALSE);
+    }
+
+    BufferOp = InitializerOp->Asl.Child;
+    if (!BufferOp)
+    {
+        AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
+        return (FALSE);
+    }
+
+    /* First child is the optional buffer length (WORD) */
+
+    if (BufferOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
+    {
+        SpecifiedLength = (UINT16) BufferOp->Asl.Value.Integer;
+    }
+
+    /* Insert field tag _VEN */
+
+    RsCreateByteField (InitializerOp, ACPI_RESTAG_VENDORDATA,
+        (UINT16) DescriptorOffset);
+
+    /* Walk the list of buffer initializers (each is one byte) */
+
+    BufferOp = RsCompleteNodeAndGetNext (BufferOp);
+    if (BufferOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
+    {
+        while (BufferOp)
+        {
+            *VendorData = (UINT8) BufferOp->Asl.Value.Integer;
+            VendorData++;
+            ActualLength++;
+            BufferOp = RsCompleteNodeAndGetNext (BufferOp);
+        }
+    }
+
+    /* Length validation. Buffer cannot be of zero length */
+
+    if ((SpecifiedLength == 0) ||
+        ((SpecifiedLength == ACPI_UINT32_MAX) && (ActualLength == 0)))
+    {
+        AslError (ASL_ERROR, ASL_MSG_BUFFER_LENGTH, InitializerOp, NULL);
+        return (FALSE);
+    }
+
+    if (SpecifiedLength != ACPI_UINT32_MAX)
+    {
+        /* ActualLength > SpecifiedLength -> error */
+
+        if (ActualLength > SpecifiedLength)
+        {
+            AslError (ASL_ERROR, ASL_MSG_LIST_LENGTH_LONG, InitializerOp, NULL);
+            return (FALSE);
+        }
+
+        /* ActualLength < SpecifiedLength -> remark */
+
+        else if (ActualLength < SpecifiedLength)
+        {
+            AslError (ASL_REMARK, ASL_MSG_LIST_LENGTH_SHORT, InitializerOp, NULL);
+            return (FALSE);
+        }
+    }
+
+    return (TRUE);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    RsDoGpioIntDescriptor
  *
  * PARAMETERS:  Op                  - Parent resource descriptor parse node
@@ -227,7 +328,6 @@ RsDoGpioIntDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
-    ACPI_PARSE_OBJECT       *BufferOp;
     ASL_RESOURCE_NODE       *Rnode;
     char                    *ResourceSource = NULL;
     UINT8                   *VendorData = NULL;
@@ -277,10 +377,6 @@ RsDoGpioIntDescriptor (
 
     Descriptor->GpioInt.ResSourceOffset = (UINT16)
         ACPI_PTR_DIFF (ResourceSource, Descriptor);
-
-    Descriptor->GpioInt.VendorOffset = (UINT16)
-        ACPI_PTR_DIFF (VendorData, Descriptor);
-    Descriptor->GpioInt.VendorLength = VendorLength;
 
     printf ("GPIO_INT: Base: %.2X, ResLen: %.2X, VendLen: %.2X, IntLen: %.2X, ACTUAL: %X\n",
         (UINT16) sizeof (AML_RESOURCE_GPIO_INT),   ResSourceLength, VendorLength, InterruptLength,
@@ -358,28 +454,12 @@ RsDoGpioIntDescriptor (
 
         case 9: /* Vendor Data (Optional - Buffer of BYTEs) (_VEN) */
 
-            if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+            if (RsGetVendorData (InitializerOp, VendorData,
+                CurrentByteOffset + Descriptor->GpioInt.VendorOffset))
             {
-                break;
-            }
-
-            BufferOp = InitializerOp->Asl.Child;
-            if (!BufferOp)
-            {
-                AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
-                return (Rnode);
-            }
-
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_VENDORDATA,
-                CurrentByteOffset + Descriptor->GpioInt.VendorOffset);
-
-            /* Walk the list of buffer initializers (each is one byte) */
-
-            while (BufferOp)
-            {
-                *VendorData = (UINT8) BufferOp->Asl.Value.Integer;
-                VendorData++;
-                BufferOp = RsCompleteNodeAndGetNext (BufferOp);
+                Descriptor->GpioInt.VendorOffset = (UINT16)
+                    ACPI_PTR_DIFF (VendorData, Descriptor);
+                Descriptor->GpioInt.VendorLength = VendorLength;
             }
             break;
 
@@ -447,7 +527,6 @@ RsDoGpioIoDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
-    ACPI_PARSE_OBJECT       *BufferOp;
     ASL_RESOURCE_NODE       *Rnode;
     char                    *ResourceSource = NULL;
     UINT8                   *VendorData = NULL;
@@ -497,10 +576,6 @@ RsDoGpioIoDescriptor (
 
     Descriptor->GpioIo.ResSourceOffset = (UINT16)
         ACPI_PTR_DIFF (ResourceSource, Descriptor);
-
-    Descriptor->GpioIo.VendorOffset = (UINT16)
-        ACPI_PTR_DIFF (VendorData, Descriptor);
-    Descriptor->GpioIo.VendorLength = VendorLength;
 
     printf ("GPIO_IO: Base: %.2X, ResLen: %.2X, VendLen: %.2X, IntLen: %.2X, ACTUAL: %X\n",
         (UINT16) sizeof (AML_RESOURCE_GPIO_IO), ResSourceLength, VendorLength, InterruptLength,
@@ -578,28 +653,12 @@ RsDoGpioIoDescriptor (
 
         case 9: /* Vendor Data (Optional - Buffer of BYTEs) (_VEN) */
 
-            if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+            if (RsGetVendorData (InitializerOp, VendorData,
+                CurrentByteOffset + Descriptor->GpioIo.VendorOffset))
             {
-                break;
-            }
-
-            BufferOp = InitializerOp->Asl.Child;
-            if (!BufferOp)
-            {
-                AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
-                return (Rnode);
-            }
-
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_VENDORDATA,
-                CurrentByteOffset + Descriptor->GpioIo.VendorOffset);
-
-            /* Walk the list of buffer initializers (each is one byte) */
-
-            while (BufferOp)
-            {
-                *VendorData = (UINT8) BufferOp->Asl.Value.Integer;
-                VendorData++;
-                BufferOp = RsCompleteNodeAndGetNext (BufferOp);
+                Descriptor->GpioIo.VendorOffset = (UINT16)
+                    ACPI_PTR_DIFF (VendorData, Descriptor);
+                Descriptor->GpioIo.VendorLength = VendorLength;
             }
             break;
 
@@ -667,7 +726,6 @@ RsDoI2cSerialBusDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
-    ACPI_PARSE_OBJECT       *BufferOp;
     ASL_RESOURCE_NODE       *Rnode;
     char                    *ResourceSource = NULL;
     UINT8                   *VendorData = NULL;
@@ -780,29 +838,8 @@ RsDoI2cSerialBusDescriptor (
 
         case 8: /* Vendor Data (Optional - Buffer of BYTEs) (_VEN) */
 
-            if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
-            {
-                break;
-            }
-
-            BufferOp = InitializerOp->Asl.Child;
-            if (!BufferOp)
-            {
-                AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
-                return (Rnode);
-            }
-
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_VENDORDATA,
+            RsGetVendorData (InitializerOp, VendorData,
                 CurrentByteOffset + sizeof (AML_RESOURCE_I2C_SERIALBUS));
-
-            /* Walk the list of buffer initializers (each is one byte) */
-
-            while (BufferOp)
-            {
-                *VendorData = (UINT8) BufferOp->Asl.Value.Integer;
-                VendorData++;
-                BufferOp = RsCompleteNodeAndGetNext (BufferOp);
-            }
             break;
 
         default:    /* Ignore any extra nodes */
@@ -837,7 +874,6 @@ RsDoSpiSerialBusDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
-    ACPI_PARSE_OBJECT       *BufferOp;
     ASL_RESOURCE_NODE       *Rnode;
     char                    *ResourceSource = NULL;
     UINT8                   *VendorData = NULL;
@@ -978,29 +1014,8 @@ RsDoSpiSerialBusDescriptor (
 
         case 12: /* Vendor Data (Optional - Buffer of BYTEs) (_VEN) */
 
-            if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
-            {
-                break;
-            }
-
-            BufferOp = InitializerOp->Asl.Child;
-            if (!BufferOp)
-            {
-                AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
-                return (Rnode);
-            }
-
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_VENDORDATA,
+            RsGetVendorData (InitializerOp, VendorData,
                 CurrentByteOffset + sizeof (AML_RESOURCE_SPI_SERIALBUS));
-
-            /* Walk the list of buffer initializers (each is one byte) */
-
-            while (BufferOp)
-            {
-                *VendorData = (UINT8) BufferOp->Asl.Value.Integer;
-                VendorData++;
-                BufferOp = RsCompleteNodeAndGetNext (BufferOp);
-            }
             break;
 
         default:    /* Ignore any extra nodes */
@@ -1035,7 +1050,6 @@ RsDoUartSerialBusDescriptor (
 {
     AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
-    ACPI_PARSE_OBJECT       *BufferOp;
     ASL_RESOURCE_NODE       *Rnode;
     char                    *ResourceSource = NULL;
     UINT8                   *VendorData = NULL;
@@ -1183,29 +1197,8 @@ RsDoUartSerialBusDescriptor (
 
         case 13: /* Vendor Data (Optional - Buffer of BYTEs) (_VEN) */
 
-            if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
-            {
-                break;
-            }
-
-            BufferOp = InitializerOp->Asl.Child;
-            if (!BufferOp)
-            {
-                AslError (ASL_ERROR, ASL_MSG_SYNTAX, InitializerOp, "");
-                return (Rnode);
-            }
-
-            RsCreateByteField (InitializerOp, ACPI_RESTAG_VENDORDATA,
+            RsGetVendorData (InitializerOp, VendorData,
                 CurrentByteOffset + sizeof (AML_RESOURCE_UART_SERIALBUS));
-
-            /* Walk the list of buffer initializers (each is one byte) */
-
-            while (BufferOp)
-            {
-                *VendorData = (UINT8) BufferOp->Asl.Value.Integer;
-                VendorData++;
-                BufferOp = RsCompleteNodeAndGetNext (BufferOp);
-            }
             break;
 
         default:    /* Ignore any extra nodes */
