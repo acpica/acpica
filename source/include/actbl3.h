@@ -119,7 +119,7 @@
 
 /*******************************************************************************
  *
- * Additional ACPI Tables (1+)
+ * Additional ACPI Tables (3)
  *
  * These tables are not consumed directly by the ACPICA subsystem, but are
  * included here to support device drivers and the AML disassembler.
@@ -135,20 +135,24 @@
  * the wrong signature.
  */
 #define ACPI_SIG_BGRT           "BGRT"      /* Boot Graphics Resource Table */
-#define ACPI_SIG_CSRT           "CSRT"      /* Core System Resources Table */
 #define ACPI_SIG_DRTM           "DRTM"      /* Dynamic Root of Trust for Measurement table */
 #define ACPI_SIG_FPDT           "FPDT"      /* Firmware Performance Data Table */
 #define ACPI_SIG_GTDT           "GTDT"      /* Generic Timer Description Table */
-#define ACPI_SIG_MATR           "MATR"      /* Memory Address Translation Table */
 #define ACPI_SIG_MPST           "MPST"      /* Memory Power State Table */
-#define ACPI_SIG_MSDM           "MSDM"      /* Microsoft Data Management Table */
 #define ACPI_SIG_PCCT           "PCCT"      /* Platform Communications Channel Table */
 #define ACPI_SIG_PMTT           "PMTT"      /* Platform Memory Topology Table */
 #define ACPI_SIG_RASF           "RASF"      /* RAS Feature table */
-#define ACPI_SIG_WPBT           "WPBT"      /* Windows Platform Binary Table */
 
 #define ACPI_SIG_S3PT           "S3PT"      /* S3 Performance (sub)Table */
 #define ACPI_SIG_PCCS           "PCC"       /* PCC Shared Memory Region */
+
+/* Reserved table signatures */
+
+#define ACPI_SIG_CSRT           "CSRT"      /* Core System Resources Table */
+#define ACPI_SIG_DBG2           "DBG2"      /* Debug Port table 2 */
+#define ACPI_SIG_MATR           "MATR"      /* Memory Address Translation Table */
+#define ACPI_SIG_MSDM           "MSDM"      /* Microsoft Data Management Table */
+#define ACPI_SIG_WPBT           "WPBT"      /* Windows Platform Binary Table */
 
 /*
  * All tables must be byte-packed to match the ACPI specification, since
@@ -165,7 +169,8 @@
 
 /*******************************************************************************
  *
- * BGRT - Boot Graphics Resource Table
+ * BGRT - Boot Graphics Resource Table (ACPI 5.0)
+ *        Version 1
  *
  ******************************************************************************/
 
@@ -230,7 +235,8 @@ typedef struct acpi_drtm_id_list
 
 /*******************************************************************************
  *
- * FPDT - Firmware Performance Data Table
+ * FPDT - Firmware Performance Data Table (ACPI 5.0)
+ *        Version 1
  *
  ******************************************************************************/
 
@@ -341,7 +347,8 @@ typedef struct acpi_s3pt_suspend
 
 /*******************************************************************************
  *
- * GTDT - Generic Timer Description Table
+ * GTDT - Generic Timer Description Table (ACPI 5.0)
+ *        Version 1
  *
  ******************************************************************************/
 
@@ -373,31 +380,8 @@ typedef struct acpi_table_gtdt
 
 /*******************************************************************************
  *
- * MATR - Memory Address Translation Table
- *
- ******************************************************************************/
-
-typedef struct acpi_table_matr
-{
-    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
-    UINT32                  ActionHeaderSize;
-    UINT32                  Reserved;
-    UINT32                  EntryCount;
-
-} ACPI_TABLE_MATR;
-
-typedef struct acpi_matr_buffer_header
-{
-    UINT16                  Revision;
-    UINT16                  EntryCount;
-    UINT32                  DataLength;
-
-} ACPI_MATR_BUFFER_HEADER;
-
-
-/*******************************************************************************
- *
- * MPST - Memory Power State Table
+ * MPST - Memory Power State Table (ACPI 5.0)
+ *        Version 1
  *
  ******************************************************************************/
 
@@ -514,7 +498,8 @@ typedef struct acpi_mpst_shared
 
 /*******************************************************************************
  *
- * PCCT - Platform Communications Channel Table
+ * PCCT - Platform Communications Channel Table (ACPI 5.0)
+ *        Version 1
  *
  ******************************************************************************/
 
@@ -567,7 +552,8 @@ typedef struct acpi_pcct_shared_memory
 
 /*******************************************************************************
  *
- * PMTT - Platform Memory Topology Table
+ * PMTT - Platform Memory Topology Table (ACPI 5.0)
+ *        Version 1
  *
  ******************************************************************************/
 
@@ -661,7 +647,8 @@ typedef struct acpi_pmtt_physical_component
 
 /*******************************************************************************
  *
- * RASF - RAS Feature Table
+ * RASF - RAS Feature Table (ACPI 5.0)
+ *        Version 1
  *
  ******************************************************************************/
 
