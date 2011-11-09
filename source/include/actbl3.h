@@ -616,6 +616,7 @@ typedef struct acpi_pmtt_socket
 {
     ACPI_PMTT_HEADER        Header;
     UINT16                  SocketId;
+    UINT16                  Reserved;
 
 } ACPI_PMTT_SOCKET;
 
