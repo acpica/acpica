@@ -59,6 +59,7 @@ OBJECTS = \
 	$(OBJDIR)/dmopcode.o \
 	$(OBJDIR)/dmresrc.o \
 	$(OBJDIR)/dmresrcl.o \
+	$(OBJDIR)/dmresrcl2.o \
 	$(OBJDIR)/dmresrcs.o \
 	$(OBJDIR)/dmutils.o \
 	$(OBJDIR)/dmwalk.o \
@@ -161,6 +162,7 @@ OBJECTS = \
 	$(OBJDIR)/rslist.o \
 	$(OBJDIR)/rsmemory.o \
 	$(OBJDIR)/rsmisc.o \
+	$(OBJDIR)/rsserial.o \
 	$(OBJDIR)/rsutils.o \
 	$(OBJDIR)/rsxface.o \
 	$(OBJDIR)/tbfadt.o \
@@ -188,8 +190,9 @@ OBJECTS = \
 	$(OBJDIR)/utstate.o \
 	$(OBJDIR)/uttrack.o \
 	$(OBJDIR)/utosi.o \
+	$(OBJDIR)/utxface.o \
 	$(OBJDIR)/utxferror.o \
-	$(OBJDIR)/utxface.o
+	$(OBJDIR)/utxfmutex.o
 
 #
 # Flags specific to acpiexec utility

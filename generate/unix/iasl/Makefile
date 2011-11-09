@@ -66,6 +66,7 @@ OBJECTS = \
 	$(OBJDIR)/aslrestype2d.o \
 	$(OBJDIR)/aslrestype2e.o \
 	$(OBJDIR)/aslrestype2q.o \
+	$(OBJDIR)/aslrestype2s.o \
 	$(OBJDIR)/aslrestype2w.o \
 	$(OBJDIR)/aslstartup.o \
 	$(OBJDIR)/aslstubs.o \
@@ -90,6 +91,7 @@ OBJECTS = \
 	$(OBJDIR)/dmopcode.o \
 	$(OBJDIR)/dmresrc.o \
 	$(OBJDIR)/dmresrcl.o \
+	$(OBJDIR)/dmresrcl2.o \
 	$(OBJDIR)/dmresrcs.o \
 	$(OBJDIR)/dmrestag.o \
 	$(OBJDIR)/dmtable.o \

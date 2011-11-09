@@ -196,6 +196,7 @@ OBJECTS = \
 	rsirq.o \
 	rslist.o \
 	rsmemory.o \
+	rsserial.o \
 	rsmisc.o \
 	rsutils.o \
 	rsxface.o \
