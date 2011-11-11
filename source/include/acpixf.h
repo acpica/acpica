@@ -631,6 +631,12 @@ AcpiResourceToAddress64 (
     ACPI_RESOURCE           *Resource,
     ACPI_RESOURCE_ADDRESS64 *Out);
 
+ACPI_STATUS
+AcpiBufferToResource (
+    UINT8                   *AmlBuffer,
+    UINT16                  AmlBufferLength,
+    ACPI_RESOURCE           **ResourcePtr);
+
 
 /*
  * Hardware (ACPI device) interfaces
