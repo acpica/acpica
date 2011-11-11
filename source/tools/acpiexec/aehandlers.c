@@ -208,7 +208,7 @@ static ACPI_ADR_SPACE_TYPE  SpaceIdList[] =
 };
 
 
-static ACPI_GSBUS_CONTEXT   AeMyContext;
+static ACPI_CONNECTION_INFO   AeMyContext;
 
 /******************************************************************************
  *
@@ -881,9 +881,10 @@ AeRegionHandler (
     UINT32                  ByteWidth;
     UINT32                  i;
     UINT8                   SpaceId;
-    ACPI_GSBUS_CONTEXT      *MyContext;
+    ACPI_CONNECTION_INFO    *MyContext;
     UINT32                  Value1;
     UINT32                  Value2;
+    ACPI_RESOURCE           *Resource;
 
 
     ACPI_FUNCTION_NAME (AeRegionHandler);
@@ -904,7 +905,7 @@ AeRegionHandler (
             HandlerContext, &AeMyContext);
     }
 
-    MyContext = ACPI_CAST_PTR (ACPI_GSBUS_CONTEXT, HandlerContext);
+    MyContext = ACPI_CAST_PTR (ACPI_CONNECTION_INFO, HandlerContext);
 
     /*
      * Find the region's address space and length before searching
@@ -1090,6 +1091,9 @@ AeRegionHandler (
 
             if (SpaceId == ACPI_ADR_SPACE_GSBUS)
             {
+                Status = AcpiBufferToResource (MyContext->Connection,
+                    MyContext->Length, &Resource);
+
                 AcpiOsPrintf (" [AccLen %.2X Conn %p]",
                     MyContext->AccessLength, MyContext->Connection);
             }
@@ -1285,7 +1289,10 @@ DoFunction:
 
         case ACPI_ADR_SPACE_GPIO:   /* ACPI 5.0 */
 
-        /* This space is required to always be ByteAcc */
+            /* This space is required to always be ByteAcc */
+
+            Status = AcpiBufferToResource (MyContext->Connection,
+                MyContext->Length, &Resource);
 
             AcpiOsPrintf ("AcpiExec: GeneralPurposeIo "
                 "%s: Val %.8X Addr %.4X BaseAddr %.4X Len %.2X Width %X AccLen %.2X Conn %p\n",
