@@ -221,8 +221,13 @@ BOOLEAN                     AcpiGbl_SystemAwakeAndRunning;
  * a reduced HW machine, and that flag is duplicated here for convenience.
  */
 BOOLEAN                     AcpiGbl_ReducedHardware;
+
+
 #endif
 
+/* Do not disassemble buffers to resource descriptors */
+
+ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_NoResourceDisassembly, FALSE);
 
 /*****************************************************************************
  *
@@ -350,7 +355,6 @@ ACPI_EXTERN BOOLEAN                     AcpiGbl_AcpiHardwarePresent;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_EventsInitialized;
 ACPI_EXTERN UINT8                       AcpiGbl_OsiData;
 ACPI_EXTERN ACPI_INTERFACE_INFO        *AcpiGbl_SupportedInterfaces;
-UINT8       ACPI_INIT_GLOBAL            (AcpiGbl_NoResourceDisassembly, FALSE);
 
 
 #ifndef DEFINE_ACPI_GLOBALS
