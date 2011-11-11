@@ -575,11 +575,12 @@ AcpiExPrepFieldValue (
             }
 
             ObjDesc->Field.ResourceBuffer = SecondDesc->Buffer.Pointer;
+            ObjDesc->Field.ResourceLength = (UINT16) SecondDesc->Buffer.Length;
         }
         else if (Info->ResourceBuffer)
         {
-            ObjDesc->Field.ResourceBuffer =
-                Info->ResourceBuffer;
+            ObjDesc->Field.ResourceBuffer = Info->ResourceBuffer;
+            ObjDesc->Field.ResourceLength = Info->ResourceLength;
         }
 
         /* Allow full data read from EC address space */

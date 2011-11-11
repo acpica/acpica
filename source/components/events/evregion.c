@@ -473,7 +473,7 @@ AcpiEvAddressSpaceDispatch (
     ACPI_OPERAND_OBJECT     *HandlerDesc;
     ACPI_OPERAND_OBJECT     *RegionObj2;
     void                    *RegionContext = NULL;
-    ACPI_GSBUS_CONTEXT      *Context;
+    ACPI_CONNECTION_INFO    *Context;
 
 
     ACPI_FUNCTION_TRACE (EvAddressSpaceDispatch);
@@ -579,10 +579,11 @@ AcpiEvAddressSpaceDispatch (
 
     /*
      * Special handling for GenericSerialBus and GeneralPurposeIo:
-     * There are two extra parameters that must be passed to the
+     * There are three extra parameters that must be passed to the
      * handler via the context:
      *   1) Connection buffer, a resource template from Connection() op.
-     *   2) Actual access length from the AccessAs() op.
+     *   2) Length of the above buffer.
+     *   3) Actual access length from the AccessAs() op.
      */
     if (((RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GSBUS) ||
             (RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GPIO)) &&
@@ -592,6 +593,7 @@ AcpiEvAddressSpaceDispatch (
         /* Get the Connection (ResourceTemplate) buffer */
 
         Context->Connection = FieldObj->Field.ResourceBuffer;
+        Context->Length = FieldObj->Field.ResourceLength;
         Context->AccessLength = FieldObj->Field.AccessLength;
     }
 

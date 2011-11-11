@@ -1104,14 +1104,15 @@ ACPI_STATUS (*ACPI_ADR_SPACE_HANDLER) (
 
 #define ACPI_DEFAULT_HANDLER            NULL
 
-/* Special Context field for GenericSerialBus/GeneralPurposeIo (ACPI 5.0) */
+/* Special Context data for GenericSerialBus/GeneralPurposeIo (ACPI 5.0) */
 
-typedef struct acpi_gsbus_context
+typedef struct acpi_connection_info
 {
-    void                    *Connection;
-    UINT8                   AccessLength;
+    UINT8                           *Connection;
+    UINT16                          Length;
+    UINT8                           AccessLength;
 
-} ACPI_GSBUS_CONTEXT;
+} ACPI_CONNECTION_INFO;
 
 
 typedef

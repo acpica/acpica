@@ -493,7 +493,7 @@ AcpiRsGetListLength (
     ACPI_FUNCTION_TRACE (RsGetListLength);
 
 
-    *SizeNeeded = 0;
+    *SizeNeeded = ACPI_RS_SIZE_MIN;         /* Minimum size is one EndTag */
     EndAml = AmlBuffer + AmlBufferLength;
 
     /* Walk the list of AML resource descriptors */
@@ -559,10 +559,8 @@ AcpiRsGetListLength (
 
         case ACPI_RESOURCE_NAME_END_TAG:
             /*
-             * End Tag:
-             * This is the normal exit, add size of EndTag
+             * End Tag: This is the normal exit
              */
-            *SizeNeeded += ACPI_RS_SIZE_MIN;
             return_ACPI_STATUS (AE_OK);
 
 

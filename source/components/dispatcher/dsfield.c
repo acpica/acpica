@@ -397,6 +397,7 @@ AcpiDsGetFieldNames (
             if (Child->Common.AmlOpcode == AML_INT_BYTELIST_OP)
             {
                 Info->ResourceBuffer = Child->Named.Data;
+                Info->ResourceLength = (UINT16) Child->Named.Value.Integer;
             }
             else
             {

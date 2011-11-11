@@ -542,6 +542,7 @@ AcpiUtWalkAmlResources (
     UINT8                   ResourceIndex;
     UINT32                  Length;
     UINT32                  Offset = 0;
+    UINT8                   EndTag[2] = {0x79, 0x00};
 
 
     ACPI_FUNCTION_TRACE (UtWalkAmlResources);
@@ -619,6 +620,18 @@ AcpiUtWalkAmlResources (
     }
 
     /* Did not find an EndTag descriptor */
+
+    if (UserFunction)
+    {
+        /* Insert an EndTag anyway. AcpiRsGetListLength always leaves room */
+
+        (void) AcpiUtValidateResource (EndTag, &ResourceIndex);
+        Status = UserFunction (EndTag, 2, Offset, ResourceIndex, Context);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
 
     return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
 }
