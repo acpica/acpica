@@ -1894,7 +1894,9 @@ DtGetGenericTableInfo (
             break;
         }
 
-        if (!ACPI_STRCMP (Name, Info->Name))
+        /* Use caseless compare for generic keywords */
+
+        if (!AcpiUtStricmp (Name, Info->Name))
         {
             break;
         }

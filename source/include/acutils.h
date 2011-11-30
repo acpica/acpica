@@ -811,6 +811,11 @@ void
 AcpiUtStrlwr (
     char                    *SrcString);
 
+int
+AcpiUtStricmp (
+    char                    *String1,
+    char                    *String2);
+
 void
 AcpiUtPrintString (
     char                    *String,
