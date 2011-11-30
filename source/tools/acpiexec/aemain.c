@@ -584,7 +584,7 @@ main (
 
     case 'r':
         AcpiGbl_UseHwReducedFadt = TRUE;
-        printf ("Using ACPI 5.0 Hardware Reduced Mode and FADT\n");
+        printf ("Using ACPI 5.0 Hardware Reduced Mode via version 5 FADT\n");
         break;
 
     case 'v':

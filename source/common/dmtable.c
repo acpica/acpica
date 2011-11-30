@@ -304,7 +304,7 @@ static const char           *AcpiDmIvrsSubnames[] =
 };
 
 
-#define ACPI_FADT_PM_RESERVED       8
+#define ACPI_FADT_PM_RESERVED       9
 
 static const char           *AcpiDmFadtProfiles[] =
 {
@@ -316,6 +316,7 @@ static const char           *AcpiDmFadtProfiles[] =
     "SOHO Server",
     "Appliance PC",
     "Performance Server",
+    "Tablet",
     "Unknown Profile Type"
 };
 

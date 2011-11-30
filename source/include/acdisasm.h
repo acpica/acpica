@@ -135,7 +135,7 @@
 typedef const struct acpi_dmtable_info
 {
     UINT8                       Opcode;
-    UINT8                       Offset;
+    UINT16                      Offset;
     char                        *Name;
     UINT8                       Flags;
 
