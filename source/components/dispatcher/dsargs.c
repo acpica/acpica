@@ -498,5 +498,13 @@ AcpiDsGetRegionArguments (
 
     Status = AcpiDsExecuteArguments (Node, ExtraDesc->Extra.ScopeNode,
                 ExtraDesc->Extra.AmlLength, ExtraDesc->Extra.AmlStart);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    Status = AcpiUtAddAddressRange (ObjDesc->Region.SpaceId,
+                 ObjDesc->Region.Address, ObjDesc->Region.Length,
+                 Node);
     return_ACPI_STATUS (Status);
 }

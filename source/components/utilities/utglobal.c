@@ -305,6 +305,13 @@ AcpiUtInitGlobals (
         return_ACPI_STATUS (Status);
     }
 
+    /* Address Range lists */
+
+    for (i = 0; i < ACPI_ADDRESS_RANGE_MAX; i++)
+    {
+        AcpiGbl_AddressRangeList[i] = NULL;
+    }
+
     /* Mutex locked flags */
 
     for (i = 0; i < ACPI_NUM_MUTEX; i++)

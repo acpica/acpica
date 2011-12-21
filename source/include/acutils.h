@@ -202,7 +202,6 @@ typedef struct acpi_pkg_info
 #define DB_DWORD_DISPLAY    4
 #define DB_QWORD_DISPLAY    8
 
-
 /*
  * utglobal - Global data structures and procedures
  */
@@ -991,6 +990,31 @@ AcpiUtCreateList (
 
 #endif /* ACPI_DBG_TRACK_ALLOCATIONS */
 
+/*
+ * utaddress - address range check
+ */
+ACPI_STATUS
+AcpiUtAddAddressRange (
+    ACPI_ADR_SPACE_TYPE     SpaceId,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  Length,
+    ACPI_NAMESPACE_NODE     *RegionNode);
+
+void
+AcpiUtRemoveAddressRange (
+    ACPI_ADR_SPACE_TYPE     SpaceId,
+    ACPI_NAMESPACE_NODE     *RegionNode);
+
+UINT32
+AcpiUtCheckAddressRange (
+    ACPI_ADR_SPACE_TYPE     SpaceId,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  Length,
+    BOOLEAN                 Warn);
+
+void
+AcpiUtDeleteAddressLists (
+    void);
 
 /*
  * utxferror - various error/warning output functions

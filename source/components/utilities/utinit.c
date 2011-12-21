@@ -176,6 +176,7 @@ AcpiUtTerminate (
         GpeXruptInfo = NextGpeXruptInfo;
     }
 
+    AcpiUtDeleteAddressLists ();
     return_VOID;
 }
 

@@ -355,6 +355,7 @@ ACPI_EXTERN BOOLEAN                     AcpiGbl_AcpiHardwarePresent;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_EventsInitialized;
 ACPI_EXTERN UINT8                       AcpiGbl_OsiData;
 ACPI_EXTERN ACPI_INTERFACE_INFO        *AcpiGbl_SupportedInterfaces;
+ACPI_EXTERN ACPI_ADDRESS_RANGE         *AcpiGbl_AddressRangeList[ACPI_ADDRESS_RANGE_MAX];
 
 
 #ifndef DEFINE_ACPI_GLOBALS

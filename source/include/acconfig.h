@@ -197,6 +197,10 @@
 
 #define ACPI_MAX_SLEEP                  2000    /* 2000 millisec == two seconds */
 
+/* Address Range lists are per-SpaceId (Memory and I/O only) */
+
+#define ACPI_ADDRESS_RANGE_MAX          2
+
 
 /******************************************************************************
  *

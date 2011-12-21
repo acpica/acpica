@@ -217,6 +217,13 @@ ACPI_STATUS
 AcpiRemoveInterface (
     ACPI_STRING             InterfaceName);
 
+UINT32
+AcpiCheckAddressRange (
+    ACPI_ADR_SPACE_TYPE     SpaceId,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    ACPI_SIZE               Length,
+    BOOLEAN                 Warn);
+
 
 /*
  * ACPI Memory management

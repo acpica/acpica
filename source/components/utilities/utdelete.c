@@ -307,6 +307,16 @@ AcpiUtDeleteInternalObj (
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
             "***** Region %p\n", Object));
 
+        /*
+         * Update AddressRange list. However, only permanent regions
+         * are installed in this list. (Not created within a method)
+         */
+        if (!(Object->Region.Node->Flags & ANOBJ_TEMPORARY))
+        {
+            AcpiUtRemoveAddressRange (Object->Region.SpaceId,
+                Object->Region.Node);
+        }
+
         SecondDesc = AcpiNsGetSecondaryObject (Object);
         if (SecondDesc)
         {
