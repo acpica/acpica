@@ -235,6 +235,10 @@
 				Filter=".c"
 				>
 				<File
+					RelativePath="..\..\source\components\utilities\utaddress.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utalloc.c"
 					>
 					<FileConfiguration
