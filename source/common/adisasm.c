@@ -527,7 +527,7 @@ AdAmlDisassemble (
             Status = AcpiNsRootInitialize ();
             AcpiDmAddExternalsToNamespace ();
 
-            /* Parse table. No need to reload it, however */
+            /* Parse the table again. No need to reload it, however */
 
             Status = AdParseTable (Table, NULL, FALSE, FALSE);
             if (ACPI_FAILURE (Status))
@@ -582,11 +582,12 @@ Cleanup:
 
     if (OutToFile && File)
     {
+        if (AslCompilerdebug) /* Display final namespace, with transforms */
+        {
+            LsSetupNsList (File);
+            LsDisplayNamespace ();
+        }
 
-#ifdef ASL_DISASM_DEBUG
-        LsSetupNsList (File);
-        LsDisplayNamespace ();
-#endif
         fclose (File);
         AcpiOsRedirectOutput (stdout);
     }
