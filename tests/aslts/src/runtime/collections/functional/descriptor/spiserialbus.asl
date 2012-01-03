@@ -1,5 +1,5 @@
 /*
- * Some or all of this work - Copyright (c) 2006 - 2011, Intel Corp.
+ * Some or all of this work - Copyright (c) 2006 - 2012, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -1729,7 +1729,7 @@ Method(RT24)
 	THDR (ts, "SpiSerialBus Resource Descriptor Macro", __FILE__)
 
     // The main test packages must have the same number of entries
-    
+
     If (LNotEqual (SizeOf (p458), SizeOf (p459)))
     {
         err (ts, 181, 0, 0, 0, 0, "Incorrect package length")

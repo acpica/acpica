@@ -1,5 +1,5 @@
 /*
- * Some or all of this work - Copyright (c) 2006 - 2011, Intel Corp.
+ * Some or all of this work - Copyright (c) 2006 - 2012, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -2767,7 +2767,7 @@ Name (p455, Package() {
         /* 0018 */   0x11, 0xE2, 0x22, 0xE3, 0x33, 0x5C, 0x47, 0x50,
         /* 0020 */   0x49, 0x4F, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0x79,
         /* 0028 */   0x00
-    }, 
+    },
     Buffer (0x23)
     {
         /* 0000 */   0x8C, 0x1E, 0x00, 0x01, 0x01, 0x01, 0x00, 0x1B,
@@ -2775,7 +2775,7 @@ Name (p455, Package() {
         /* 0010 */   0xEE, 0x1B, 0x00, 0x21, 0x00, 0x00, 0x00, 0xE1,
         /* 0018 */   0x11, 0xE2, 0x22, 0x5C, 0x47, 0x50, 0x49, 0x4F,
         /* 0020 */   0x00, 0x79, 0x00
-    }, 
+    },
 
     Buffer (0x21)
     {
@@ -2784,7 +2784,7 @@ Name (p455, Package() {
         /* 0010 */   0xEE, 0x19, 0x00, 0x1F, 0x00, 0x00, 0x00, 0xE1,
         /* 0018 */   0x11, 0x5C, 0x47, 0x50, 0x49, 0x4F, 0x00, 0x79,
         /* 0020 */   0x00
-    }, 
+    },
     Buffer (0x25)
     {
         /* 0000 */    0x8C, 0x20, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00,
@@ -2804,7 +2804,7 @@ Method(RT22)
 	THDR (ts, "GpioIO Resource Descriptor Macro", __FILE__)
 
     // The main test packages must have the same number of entries
-    
+
     If (LNotEqual (SizeOf (p454), SizeOf (p455)))
     {
         err (ts, 179, 0, 0, 0, 0, "Incorrect package length")

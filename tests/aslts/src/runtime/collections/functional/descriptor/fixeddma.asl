@@ -1,5 +1,5 @@
 /*
- * Some or all of this work - Copyright (c) 2006 - 2011, Intel Corp.
+ * Some or all of this work - Copyright (c) 2006 - 2012, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -84,7 +84,7 @@ Method(RT20)
 	THDR (ts, "FixedDMA Resource Descriptor Macro", __FILE__)
 
     // The main test packages must have the same number of entries
-    
+
     If (LNotEqual (SizeOf (p450), SizeOf (p451)))
     {
         err (ts, 177, 0, 0, 0, 0, "Incorrect package length")

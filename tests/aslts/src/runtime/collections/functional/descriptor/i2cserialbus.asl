@@ -1,5 +1,5 @@
 /*
- * Some or all of this work - Copyright (c) 2006 - 2011, Intel Corp.
+ * Some or all of this work - Copyright (c) 2006 - 2012, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -385,7 +385,7 @@ Method(RT23)
 	THDR (ts, "I2cSerialBus Resource Descriptor Macro", __FILE__)
 
     // The main test packages must have the same number of entries
-    
+
     If (LNotEqual (SizeOf (p456), SizeOf (p457)))
     {
         err (ts, 180, 0, 0, 0, 0, "Incorrect package length")
