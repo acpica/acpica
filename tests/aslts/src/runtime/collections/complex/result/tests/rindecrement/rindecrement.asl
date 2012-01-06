@@ -221,7 +221,7 @@ Method(m692, 2)
 	}
 
 	// Prepare Source of specified type
-	Method(m004, 3)
+	Method(m004, 3, Serialized)
 	{
 		Switch(ToInteger(arg1)) {
 			Case(0) {
@@ -293,7 +293,7 @@ Method(m692, 2)
 	// Check Target Object to have the expected type and value
 	// m006(<msg>, <ref to target>, <target type>, <source type>,
 	//      <op>, <target save type>)
-	Method(m006, 6)
+	Method(m006, 6, Serialized)
 	{
 		Name(MMM2, 0) // The auxiliary Object to invoke Method
 

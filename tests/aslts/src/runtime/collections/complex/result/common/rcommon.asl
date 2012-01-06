@@ -345,11 +345,11 @@ Method(m681, 2)
 
 // Return the value of an Auxiliary Source Named Object
 // m682(<type>, <index>)
-Method(m682, 2)
+Method(m682, 2, Serialized)
 {
-	Switch(arg0) {
+	Switch(ToInteger(arg0)) {
 		Case(1) {
-			Switch(arg1) {
+			Switch(ToInteger(arg1)) {
 				Case(0) {Return (i6e0)}
 				Case(1) {Return (i6e1)}
 				Case(2) {Return (i6e2)}
@@ -363,7 +363,7 @@ Method(m682, 2)
 			}
 		}
 		Case(2) {
-			Switch(arg1) {
+			Switch(ToInteger(arg1)) {
 				Case(0) {Return (s6e0)}
 				Case(1) {Return (s6e1)}
 				Case(2) {Return (s6e2)}
@@ -377,7 +377,7 @@ Method(m682, 2)
 			}
 		}
 		Case(3) {
-			Switch(arg1) {
+			Switch(ToInteger(arg1)) {
 				Case(0) {Return (b6e0)}
 				Case(1) {Return (b6e1)}
 				Case(2) {Return (b6e2)}
@@ -1035,9 +1035,9 @@ if (y361) {
 	}
 
 	// Prepare Target of specified type
-	Method(m003, 4)
+	Method(m003, 4, Serialized)
 	{
-		Switch(arg1) {
+		Switch(ToInteger(arg1)) {
 			Case(0) {	// Only check
 			}
 			Case(1) {
@@ -1125,9 +1125,9 @@ if (y361) {
 	}
 
 	// Prepare Source of specified type
-	Method(m004, 4)
+	Method(m004, 4, Serialized)
 	{
-		Switch(arg1) {
+		Switch(ToInteger(arg1)) {
 			Case(0) {
 			}
 			Case(1) {
@@ -1233,7 +1233,7 @@ if (y361) {
 	// Check Source Object type is not corrupted after storing,
 	// for the computational data types verify its value against
 	// the Object-initializer value
-	Method(m005, 4)
+	Method(m005, 4, Serialized)
 	{
 		Name(MMM2, 0) // An auxiliary Object to invoke Method
 
@@ -1256,7 +1256,7 @@ if (y361) {
 			Return (1)
 		}
 
-		Switch(arg1) {
+		Switch(ToInteger(arg1)) {
 			Case(0) {
 				Return (0)
 			}
@@ -1332,7 +1332,7 @@ if (y361) {
 			Return (1)
 		} else {
 			// Check equality of the Source value to the Object-initializer one
-			Switch(arg1) {
+			Switch(ToInteger(arg1)) {
 				Case(1) {
 					if (LNotEqual(INT0, Derefof(arg3))) {
 						err(arg0, z122, 14, 0, 0, INT0, Derefof(arg3))
@@ -3150,9 +3150,9 @@ if (y361) {
 	}
 
 	// Prepare Target as Package Element of specified type
-	Method(m013, 4)
+	Method(m013, 4, Serialized)
 	{
-		Switch(arg1) {
+		Switch(ToInteger(arg1)) {
 			Case(0) {	// Only check
 			}
 			Case(1) {
@@ -3212,7 +3212,7 @@ if (y361) {
 	// Check Target Object type is not corrupted after storing,
 	// for the computational data types verify its value against
 	// the Object-initializer value
-	Method(m015, 4)
+	Method(m015, 4, Serialized)
 	{
 		Name(MMM2, 0) // An auxiliary Object to invoke Method
 
@@ -3234,7 +3234,7 @@ if (y361) {
 			}
 		}
 
-		Switch(arg1) {
+		Switch(ToInteger(arg1)) {
 			Case(0) {
 				Return (0)
 			}
@@ -3304,7 +3304,7 @@ if (y361) {
 			Return (1)
 		} else {
 			// Check equality of the Source value to the Object-initializer one
-			Switch(arg1) {
+			Switch(ToInteger(arg1)) {
 				Case(1) {
 					if (LNotEqual(INT1, Derefof(arg3))) {
 						err(arg0, z122, 106, 0, 0, INT1, Derefof(arg3))
@@ -3414,9 +3414,9 @@ if (y361) {
 	// Check auxiliary Target Named Object type is not corrupted,
 	// for the computational data types verify its value against
 	// the Object-initializer value
-	Method(m016, 4)
+	Method(m016, 4, Serialized)
 	{
-		Switch(arg1) {
+		Switch(ToInteger(arg1)) {
 			Case(0) {
 				Return (0)
 			}
@@ -3486,7 +3486,7 @@ if (y361) {
 			Return (1)
 		} else {
 			// Check equality of the Source value to the Object-initializer one
-			Switch(arg1) {
+			Switch(ToInteger(arg1)) {
 				Case(1) {
 					if (LNotEqual(INT1, Derefof(arg3))) {
 						err(arg0, z122, 124, 0, 0, INT1, Derefof(arg3))

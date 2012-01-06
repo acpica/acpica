@@ -268,7 +268,7 @@ Method(m694, 5)
 	}
 
 	// Prepare Target of specified type
-	Method(m003, 4)
+	Method(m003, 4, Serialized)
 	{
 		Switch(ToInteger(arg1)) {
 			Case(0) {	// Only check
@@ -358,7 +358,7 @@ Method(m694, 5)
 	}
 
 	// Prepare Source of specified type
-	Method(m004, 4)
+	Method(m004, 4, Serialized)
 	{
 		Switch(ToInteger(arg1)) {
 			Case(1) {
@@ -405,7 +405,7 @@ Method(m694, 5)
 	// Check Source Object type is not corrupted after storing,
 	// for the computational data types verify its value against
 	// the Object-initializer value
-	Method(m005, 4)
+	Method(m005, 4, Serialized)
 	{
 		Store(ObjectType(arg2), Local0)
 		if (LNotEqual(Local0, arg1)) {
@@ -557,7 +557,7 @@ Method(m694, 5)
 	// on immediate storing to a Target Named Object of the specified type
 	// m008(<msg>, <aux>, <target type>, <source type>,
 	//      <op>, <exc. condition>, <test data package>)
-	Method(m008, 7)
+	Method(m008, 7, Serialized)
 	{
 		// Source Named Object
 		Name(SRC0, 0)
@@ -606,7 +606,7 @@ Method(m694, 5)
 		// Use a Source Object to immediately store into the Target
 		if (LEqual(arg2, 5)) {				// Field Unit Target
 			if (LEqual(arg4, 0)) {				// Store
-				Switch(Local6) {
+				Switch(ToInteger(Local6)) {
 					Case(0) {Store(FindSetLeftBit(SRC0), FLU1)}
 					Case(1) {Store(FindSetRightBit(SRC0), FLU1)}
 					Case(2) {Store(Not(SRC0), FLU1)}
@@ -628,7 +628,7 @@ Method(m694, 5)
 					Case(18) {Store(Mid(SRC0, 0, Ones), FLU1)}
 				}
 			} elseif (LEqual(arg4, 1)) {		// CopyObject
-				Switch(Local6) {
+				Switch(ToInteger(Local6)) {
 					Case(0) {CopyObject(FindSetLeftBit(SRC0), FLU1)}
 					Case(1) {CopyObject(FindSetRightBit(SRC0), FLU1)}
 					Case(2) {CopyObject(Not(SRC0), FLU1)}
@@ -650,7 +650,7 @@ Method(m694, 5)
 					Case(18) {CopyObject(Mid(SRC0, 0, Ones), FLU1)}
 				}
 			} elseif (LEqual(arg4, 2)) {		// Optional storing
-				Switch(Local6) {
+				Switch(ToInteger(Local6)) {
 					Case(0) {FindSetLeftBit(SRC0, FLU1)}
 					Case(1) {FindSetRightBit(SRC0, FLU1)}
 					Case(2) {Not(SRC0, FLU1)}
@@ -678,7 +678,7 @@ Method(m694, 5)
 			}
 		} elseif (LEqual(arg2, 14)) {		// Buffer Field Target
 			if (LEqual(arg4, 0)) {				// Store
-				Switch(Local6) {
+				Switch(ToInteger(Local6)) {
 					Case(0) {Store(FindSetLeftBit(SRC0), BFL1)}
 					Case(1) {Store(FindSetRightBit(SRC0), BFL1)}
 					Case(2) {Store(Not(SRC0), BFL1)}
@@ -700,7 +700,7 @@ Method(m694, 5)
 					Case(18) {Store(Mid(SRC0, 0, Ones), BFL1)}
 				}
 			} elseif (LEqual(arg4, 1)) {		// CopyObject
-				Switch(Local6) {
+				Switch(ToInteger(Local6)) {
 					Case(0) {CopyObject(FindSetLeftBit(SRC0), BFL1)}
 					Case(1) {CopyObject(FindSetRightBit(SRC0), BFL1)}
 					Case(2) {CopyObject(Not(SRC0), BFL1)}
@@ -722,7 +722,7 @@ Method(m694, 5)
 					Case(18) {CopyObject(Mid(SRC0, 0, Ones), BFL1)}
 				}
 			} elseif (LEqual(arg4, 2)) {		// Optional storing
-				Switch(Local6) {
+				Switch(ToInteger(Local6)) {
 					Case(0) {FindSetLeftBit(SRC0, BFL1)}
 					Case(1) {FindSetRightBit(SRC0, BFL1)}
 					Case(2) {Not(SRC0, BFL1)}
@@ -750,7 +750,7 @@ Method(m694, 5)
 			}
 
 		} elseif (LEqual(arg4, 0)) {		// Store
-			Switch(Local6) {
+			Switch(ToInteger(Local6)) {
 				Case(0) {Store(FindSetLeftBit(SRC0), DST0)}
 				Case(1) {Store(FindSetRightBit(SRC0), DST0)}
 				Case(2) {Store(Not(SRC0), DST0)}
@@ -772,7 +772,7 @@ Method(m694, 5)
 				Case(18) {Store(Mid(SRC0, 0, Ones), DST0)}
 			}
 		} elseif (LEqual(arg4, 1)) {		// CopyObject
-			Switch(Local6) {
+			Switch(ToInteger(Local6)) {
 				Case(0) {CopyObject(FindSetLeftBit(SRC0), DST0)}
 				Case(1) {CopyObject(FindSetRightBit(SRC0), DST0)}
 				Case(2) {CopyObject(Not(SRC0), DST0)}
@@ -794,7 +794,7 @@ Method(m694, 5)
 				Case(18) {CopyObject(Mid(SRC0, 0, Ones), DST0)}
 			}
 		} elseif (LEqual(arg4, 2)) {		// Optional storing
-			Switch(Local6) {
+			Switch(ToInteger(Local6)) {
 				Case(0) {FindSetLeftBit(SRC0, DST0)}
 				Case(1) {FindSetRightBit(SRC0, DST0)}
 				Case(2) {Not(SRC0, DST0)}
@@ -854,7 +854,7 @@ Method(m694, 5)
 	// on immediate storing to a Target LocalX Object of the specified type
 	// m009(<msg>, <aux>, <target type>, <source type>,
 	//      <op>, <exc. condition>, <test data package>)
-	Method(m009, 7)
+	Method(m009, 7, Serialized)
 	{
 		// Source Named Object
 		Name(SRC0, 0)
@@ -885,7 +885,7 @@ Method(m694, 5)
 
 		// Use a Source Object to immediately store into the Target
 		if (LEqual(arg4, 0)) {		// Store
-			Switch(Local6) {
+			Switch(ToInteger(Local6)) {
 				Case(0) {Store(FindSetLeftBit(SRC0), Local4)}
 				Case(1) {Store(FindSetRightBit(SRC0), Local4)}
 				Case(2) {Store(Not(SRC0), Local4)}
@@ -907,7 +907,7 @@ Method(m694, 5)
 				Case(18) {Store(Mid(SRC0, 0, Ones), Local4)}
 			}
 		} elseif (LEqual(arg4, 1)) {		// CopyObject
-			Switch(Local6) {
+			Switch(ToInteger(Local6)) {
 				Case(0) {CopyObject(FindSetLeftBit(SRC0), Local4)}
 				Case(1) {CopyObject(FindSetRightBit(SRC0), Local4)}
 				Case(2) {CopyObject(Not(SRC0), Local4)}
@@ -929,7 +929,7 @@ Method(m694, 5)
 				Case(18) {CopyObject(Mid(SRC0, 0, Ones), Local4)}
 			}
 		} elseif (LEqual(arg4, 2)) {		// Optional storing
-			Switch(Local6) {
+			Switch(ToInteger(Local6)) {
 				Case(0) {FindSetLeftBit(SRC0, Local4)}
 				Case(1) {FindSetRightBit(SRC0, Local4)}
 				Case(2) {Not(SRC0, Local4)}
