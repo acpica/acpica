@@ -1,616 +1,487 @@
+#!/bin/bash
+
 #******************************************************************************
 #
-# ACPICA release generation script for Cygwin/Windows execution
+# ACPICA package generation script for Cygwin/Windows execution
 #
 # Requires cygwin be installed - http://www.cygwin.com
 # and its /bin be *first* in your path.
 #
-# Also requires pkzip25 (free, and is available from numerous sources -
-# search for "pkzip25" or "pkzip25.exe")
+# Windows packages require pkzip25 (free, and is available from numerous
+# sources - search for "pkzip25" or "pkzip25.exe")
 #
-# Execute this script from the top level ACPICA source directory.
+# Execute this script from the acpica/generate/release directory.
 #
-# Parameters:
-#   notests - do not generate test source code package
+# Constructed packages are placed in the acpica/generate/release/current
+# directory.
+#
+# Line Terminators: Windows source packages leave the CR/LF terminator.
+# Unix packages convert the CR/LF terminators to LF only.
+#
+# Usage:
+#
+#   build <package_type> <target_type>
+#
+#   where:
+#       <package_type> is one of:
+#           source  - Build an ACPICA source package (core and all tools)
+#           test    - Build an ACPICA test suite package
+#           binary  - Build an ACPICA binary tools package
+#
+#       <target_type> is one of:
+#           win     - Generate Windows package (Intel license, CRLF line terminators)
+#           unix    - Generate Unix package (Intel license, LF line terminators)
+#           unix2   - Generate Unix package (dual license, LF line terminators)
 #
 #******************************************************************************
 
-PKZIP="c:/command/pkzip25.exe"
+# Configuration
 
-#
-# Move and preserve any previous versions of the various release packages
-#
-echo Moving previous release to archive
-if [ ! -f current ]; then
-    mkdir -p current
-fi
-if [ ! -f archive ]; then
-    mkdir -p archive
-fi
+ZIP_UTILITY="c:/windows/pkzip25.exe"
+ACPISRC="libraries/acpisrc.exe"
+DOS2UNIX="dos2unix"
+UNIX2DOS="unix2dos"
 
+# Filenames and paths
+
+TARGET_DIR="generate/release/current"
+TEMP_DIR=acpitemp
+TEST_PREFIX=acpitests
+SOURCE_PREFIX=acpica
+BINARY_PREFIX=iasl
+PACKAGE_SUFFIX=`date +%Y%m%d`
+
+NPARAM=$#
+
+
+#******************************************************************************
 #
-# Save any older versions of the release packages
+# Miscellaneous utility functions
 #
-for file in current/*
-do
-    if [ -f $file ]; then
-        cp $file archive
-        rm $file
-        echo moved $file to archive
-    fi
-done
-echo Completed save of previous release to archive
+#******************************************************************************
+
+usage()
+{
+	echo "$1"
+	echo
+	echo "Low-level build script for ACPICA release packages"
+	echo "Usage:"
+	echo "    $0 source <win | unix | unix2>"
+	echo "    $0 test   <win | unix>"
+	echo "    $0 binary <win>"
+}
+
+banner()
+{
+	echo
+	echo "$1"
+	echo
+}
+
+check_zip_utility_exists()
+{
+	#
+	# Need pkzip (or similar) to build the windows packages
+	#
+	if [ ! -e "$ZIP_UTILITY" ]; then
+		echo "ZIP_UTILITY ($ZIP_UTILITY) does not exist!"
+		exit 1
+	fi
+}
+
+convert_to_unix_line_terminators()
+{
+	#
+	# Convert all CR/LF pairs to Unix format (LF only)
+	#
+	cd $TEMP_DIR
+	echo Starting CR/LF to LF Conversion
+	find . -name "*" | xargs $DOS2UNIX
+	echo Completed CR/LF to LF Conversion
+	cd ..
+}
+
+convert_to_dos_line_terminators()
+{
+	#
+	# Convert all lone LF terminators to CR/LF
+	# Note: Checks shell scripts only (*.sh)
+	#
+	cd $TEMP_DIR
+	echo Starting LF to CR/LF Conversion
+	find . -name "*.sh" | xargs $UNIX2DOS
+	echo Completed LF to CR/LF Conversion
+	cd ..
+}
+
+insert_dual_license_headers()
+{
+	#
+	# Need acpisrc utility to insert the headers
+	#
+	if [ ! -e "$ACPISRC" ]; then
+		echo "acpisrc ($ACPISRC) does not exist!"
+		exit 1
+	fi
+
+	#
+	# Insert the dual license into *.c and *.h files
+	#
+	echo "Inserting dual-license into all source files"
+	$ACPISRC -h -y $TEMP_DIR
+}
+
+build_unix_package()
+{
+	convert_to_unix_line_terminators
+
+	#
+	# Build release package
+	#
+	rm -r -f $PACKAGE_FILENAME
+	mv $TEMP_DIR $PACKAGE_FILENAME
+	tar czf $PACKAGE_FILENAME.tar.gz $PACKAGE_FILENAME
+
+	#
+	# Move the completed package
+	#
+	mv $PACKAGE_FILENAME.tar.gz $TARGET_DIR
+	mv $PACKAGE_FILENAME $TEMP_DIR
+}
+
+build_windows_package()
+{
+	convert_to_dos_line_terminators
+
+	#
+	# Build release package
+	#
+	cd $TEMP_DIR
+	rm -r -f ../$TARGET_DIR/$PACKAGE_FILENAME
+	$ZIP_UTILITY -add -max -dir -sort=name ../$TARGET_DIR/$PACKAGE_FILENAME
+	cd ..
+}
+
+
+#******************************************************************************
+#
+# generate_source_package
+#
+# Generates the ACPICA source code packages (core and all tools)
+#
+# Arguments:
+#   %1  - Target type (win or unix or unix2)
+#
+#******************************************************************************
+
+generate_source_package ()
+{
+	#
+	# Parameter evaluation
+	#
+	if [ $1 == win ]; then
+		PACKAGE_NAME=Windows
+		PACKAGE_TYPE=Win
+		LICENSE=Intel
+		check_zip_utility_exists
+
+	elif [ $1 == unix ]; then
+		PACKAGE_NAME="Unix (Intel License)"
+		PACKAGE_TYPE=Unix
+		LICENSE=Intel
+
+	elif [ $1 == unix2 ]; then
+		PACKAGE_NAME="Unix (Dual License)"
+		PACKAGE_TYPE=Unix
+		LICENSE=Dual
+
+	else
+		usage "Invalid argument ($1)"
+		exit 1
+	fi
+
+	PACKAGE_FILENAME=$SOURCE_PREFIX-$1-$PACKAGE_SUFFIX
+	banner "ACPICA - Generating $PACKAGE_NAME source code package ($PACKAGE_FILENAME)"
+
+	#
+	# Make directories common to all source packages
+	#
+	mkdir $TEMP_DIR
+	mkdir $TEMP_DIR/libraries
+	mkdir $TEMP_DIR/generate
+	mkdir $TEMP_DIR/generate/lint
+	mkdir $TEMP_DIR/generate/release
+	mkdir $TEMP_DIR/generate/unix
+	mkdir $TEMP_DIR/generate/unix/acpibin
+	mkdir $TEMP_DIR/generate/unix/acpiexec
+	mkdir $TEMP_DIR/generate/unix/acpihelp
+	mkdir $TEMP_DIR/generate/unix/acpinames
+	mkdir $TEMP_DIR/generate/unix/acpisrc
+	mkdir $TEMP_DIR/generate/unix/acpixtract
+	mkdir $TEMP_DIR/generate/unix/iasl
+	mkdir $TEMP_DIR/tests
+	mkdir $TEMP_DIR/tests/misc
+	mkdir $TEMP_DIR/tests/templates
+	mkdir -p $TEMP_DIR/source/os_specific/service_layers
+
+	#
+	# Copy ACPICA subsystem source code
+	#
+	cp -r documents/changes.txt             $TEMP_DIR/changes.txt
+	cp -r source/common                     $TEMP_DIR/source/common
+	cp -r source/components                 $TEMP_DIR/source/
+	cp -r source/include                    $TEMP_DIR/source/include
+	cp -r generate/release/*.sh             $TEMP_DIR/generate/release
+
+	#
+	# Copy iASL compiler and tools source
+	#
+	cp -r source/compiler                   $TEMP_DIR/source/compiler
+	cp -r source/tools                      $TEMP_DIR/source/tools
+
+	#
+	# Copy iASL/ACPICA miscellaneous tests (not full test suites)
+	#
+	cp -r tests/misc/*.asl                  $TEMP_DIR/tests/misc
+	cp -r tests/templates/Makefile          $TEMP_DIR/tests/templates
+	cp -r tests/templates/templates.sh      $TEMP_DIR/tests/templates
+
+	#
+	# Copy all OS-specific interfaces
+	#
+	cp source/os_specific/service_layers/*.c $TEMP_DIR/source/os_specific/service_layers
+
+	#
+	# Copy generic UNIX makefiles
+	#
+	cp generate/unix/readme.txt             $TEMP_DIR/generate/unix/readme.txt
+	cp generate/unix/Makefile*              $TEMP_DIR/generate/unix
+	cp generate/unix/acpibin/Makefile       $TEMP_DIR/generate/unix/acpibin
+	cp generate/unix/acpiexec/Makefile      $TEMP_DIR/generate/unix/acpiexec
+	cp generate/unix/acpihelp/Makefile      $TEMP_DIR/generate/unix/acpihelp
+	cp generate/unix/acpinames/Makefile     $TEMP_DIR/generate/unix/acpinames
+	cp generate/unix/acpisrc/Makefile       $TEMP_DIR/generate/unix/acpisrc
+	cp generate/unix/acpixtract/Makefile    $TEMP_DIR/generate/unix/acpixtract
+	cp generate/unix/iasl/Makefile          $TEMP_DIR/generate/unix/iasl
+
+	#
+	# Copy Lint directory
+	#
+	cp -r generate/lint $TEMP_DIR/generate
+	rm -f $TEMP_DIR/generate/lint/co*
+	rm -f $TEMP_DIR/generate/lint/env*
+	rm -f $TEMP_DIR/generate/lint/lib*
+	rm -f $TEMP_DIR/generate/lint/LintOut.txt
+
+	if [ $PACKAGE_TYPE == Unix ]; then
+		#
+		# Unix/Linux-specific activities
+		#
+		
+		# Copy Linux/UNIX utility generation makefiles
+
+		cp generate/linux/Makefile.acpibin      $TEMP_DIR/source/tools/acpibin/Makefile
+		cp generate/linux/Makefile.acpiexec     $TEMP_DIR/source/tools/acpiexec/Makefile
+		cp generate/linux/Makefile.acpihelp     $TEMP_DIR/source/tools/acpihelp/Makefile
+		cp generate/linux/Makefile.acpinames    $TEMP_DIR/source/tools/acpinames/Makefile
+		cp generate/linux/Makefile.acpisrc      $TEMP_DIR/source/tools/acpisrc/Makefile
+		cp generate/linux/Makefile.acpixtract   $TEMP_DIR/source/tools/acpixtract/Makefile
+		cp generate/linux/Makefile.iasl         $TEMP_DIR/source/compiler/Makefile
+		cp generate/linux/README.acpica-unix    $TEMP_DIR/README
+
+		#
+		# For Unix2 case, insert the dual license header into all source files
+		#
+		if [ $LICENSE == Dual ]; then
+			insert_dual_license_headers
+		fi
+
+		build_unix_package
+
+	else
+		#
+		# Windows-specific activities
+		#
+
+		# Copy project files for MS Visual Studio 2008 (VC++ 9.0)
+
+		mkdir $TEMP_DIR/generate/msvc9
+		cp -r generate/msvc9/*.sln $TEMP_DIR/generate/msvc9/
+		cp -r generate/msvc9/*.vcproj $TEMP_DIR/generate/msvc9/
+
+		build_windows_package
+	fi
+
+	banner "ACPICA - Completed $PACKAGE_NAME source code package ($PACKAGE_FILENAME)"
+}
+
+
+#******************************************************************************
+#
+# generate_test_package
+#
+# Generates the ACPICA test suite packages
+#
+# Arguments:
+#   %1  - Target type (win or unix)
+#
+#******************************************************************************
+
+generate_test_package()
+{
+	#
+	# Parameter evaluation
+	#
+	if [ $1 == win ]; then
+		PACKAGE_NAME=Windows
+		PACKAGE_TYPE=Win
+		check_zip_utility_exists
+
+	elif [ $1 == unix ]; then
+		PACKAGE_NAME="Unix"
+		PACKAGE_TYPE=Unix
+
+	else
+		usage "Invalid argument ($1)"
+		exit 1
+	fi
+
+	PACKAGE_FILENAME=$TEST_PREFIX-$1-$PACKAGE_SUFFIX
+	banner "ACPICA - Generating $PACKAGE_NAME test suite package ($PACKAGE_FILENAME)"
+
+	#
+	# Copy the ASL Test source
+	#
+	mkdir $TEMP_DIR
+	cp -r tests $TEMP_DIR/tests
+
+	#
+	# Delete extraneous files
+	#
+	cd $TEMP_DIR
+	find . -name "tmp" | xargs rm -r -f
+	find . -name "aml" | xargs rm -r -f
+	find . -name "CVS" | xargs rm -r -f
+	cd ..
+
+	if [ $PACKAGE_TYPE == Unix ]; then
+		#
+		# Unix/Linux-specific activities
+		#
+		build_unix_package
+
+	else
+		#
+		# Windows-specific activities
+		#
+		build_windows_package
+	fi
+
+	banner "ACPICA - Completed $PACKAGE_NAME test suite package ($PACKAGE_FILENAME)"
+}
+
+
+#******************************************************************************
+#
+# generate_binary_package
+#
+# Generates the ACPICA binary package (Currently Windows only)
+#
+# Arguments:
+#   %1  - Target type (win)
+#
+#******************************************************************************
+
+generate_binary_package()
+{
+	#
+	# Parameter evaluation
+	#
+	if [ $1 == win ]; then
+		PACKAGE_NAME=Windows
+		PACKAGE_TYPE=Win
+		check_zip_utility_exists
+
+	else
+		usage "Invalid argument ($1)"
+		exit 1
+	fi
+
+	PACKAGE_FILENAME=$BINARY_PREFIX-$1-$PACKAGE_SUFFIX
+	banner "ACPICA - Generating $PACKAGE_NAME binary tools package ($PACKAGE_FILENAME)"
+
+	#
+	# Copy executables and documentation
+	#
+	mkdir $TEMP_DIR
+	cp -r documents/changes.txt     $TEMP_DIR/changes.txt
+	cp documents/aslcompiler.pdf    $TEMP_DIR
+	cp libraries/acpibin.exe        $TEMP_DIR
+	cp libraries/acpiexec.exe       $TEMP_DIR
+	cp libraries/acpihelp.exe       $TEMP_DIR
+	cp libraries/acpinames.exe      $TEMP_DIR
+	cp libraries/acpisrc.exe        $TEMP_DIR
+	cp libraries/acpixtract.exe     $TEMP_DIR
+	cp libraries/iasl.exe           $TEMP_DIR
+	cp tests/misc/badcode.asl       $TEMP_DIR
+
+	build_windows_package
+	banner "ACPICA - Completed $PACKAGE_NAME binary tools package ($PACKAGE_FILENAME)"
+}
+
+
+#******************************************************************************
+#
+# main
+#
+# Arguments:
+#       $1 (package_type) is one of:
+#           source  - Build an ACPICA source package (core and all tools)
+#           test    - Build an ACPICA test suite package
+#           binary  - Build an ACPICA binary tools package
+#
+#       $2 (target_type) is one of:
+#           win     - Generate Windows package (Intel license, CRLF line terminators)
+#           unix    - Generate Unix package (Intel license, LF line terminators)
+#           unix2   - Generate Unix package (dual license, LF line terminators)
+#
+#******************************************************************************
+
+set -e		# Abort on any error
+
+if [ $NPARAM -ne 2 ]; then
+	usage "Wrong argument count ($NPARAM)"
+	exit 1
+fi
 
 #
 # cd from acpica/generate/release to acpica
 #
 cd ../..
 
-
-#
-# Ensure that the temporary directories are created fresh
-#
-rm -rf wintemp
-rm -rf unixtemp
-rm -rf acpica-unix-`date +%Y%m%d`
-rm -rf acpica-unix2-`date +%Y%m%d`
-
-#******************************************************************************
-#
-# Unix source code package
-#
-#******************************************************************************
-echo
-echo ACPICA - Unix source code package
-echo
-
-#
-# Make temp directories
-#
-mkdir -p unixtemp/generate
-mkdir -p unixtemp/tools
-mkdir -p unixtemp/os_specific
-mkdir -p unixtemp/tests
-mkdir -p unixtemp/tests/misc
-mkdir -p unixtemp/tests/templates
-
-#
-# Copy ACPICA subsystem source code
-#
-cp -r documents/changes.txt unixtemp/changes.txt
-cp -r source/common unixtemp/common
-cp -r source/components/* unixtemp
-cp -r source/include unixtemp/include
-
-#
-# iASL compiler source
-#
-cp -r source/compiler unixtemp/compiler
-
-#
-# ACPICA tools source
-#
-cp -r source/tools/acpibin unixtemp/tools
-cp -r source/tools/acpiexec unixtemp/tools
-cp -r source/tools/acpihelp unixtemp/tools
-cp -r source/tools/acpinames unixtemp/tools
-cp -r source/tools/acpisrc unixtemp/tools
-cp -r source/tools/acpixtract unixtemp/tools
-cp -r source/tools/examples unixtemp/tools
-
-#
-# iASL/ACPICA miscellaneous tests (not full test suites)
-#
-cp -r tests/misc/*.asl unixtemp/tests/misc
-cp -r tests/templates/Makefile unixtemp/tests/templates
-cp -r tests/templates/templates.sh unixtemp/tests/templates
-
-#
-# Copy OS-specific interfaces
-#
-cp -r source/os_specific/service_layers unixtemp/os_specific/service_layers
-
-#
-# Copy Linux/UNIX makefiles
-#
-cp generate/linux/Makefile.acpibin unixtemp/tools/acpibin/Makefile
-cp generate/linux/Makefile.acpiexec unixtemp/tools/acpiexec/Makefile
-cp generate/linux/Makefile.acpihelp unixtemp/tools/acpihelp/Makefile
-cp generate/linux/Makefile.acpinames unixtemp/tools/acpinames/Makefile
-cp generate/linux/Makefile.acpisrc unixtemp/tools/acpisrc/Makefile
-cp generate/linux/Makefile.acpixtract unixtemp/tools/acpixtract/Makefile
-cp generate/linux/Makefile.iasl unixtemp/compiler/Makefile
-cp generate/linux/README.acpica-unix unixtemp/README
-
-#
-# Copy generic UNIX makefiles
-#
-mkdir -p unixtemp/generate/unix
-mkdir -p unixtemp/generate/unix/acpibin
-mkdir -p unixtemp/generate/unix/acpiexec
-mkdir -p unixtemp/generate/unix/acpihelp
-mkdir -p unixtemp/generate/unix/acpinames
-mkdir -p unixtemp/generate/unix/acpisrc
-mkdir -p unixtemp/generate/unix/acpixtract
-mkdir -p unixtemp/generate/unix/iasl
-mkdir -p unixtemp/generate/unix/bin
-
-cp generate/unix/readme.txt unixtemp/generate/unix/readme.txt
-cp generate/unix/Makefile* unixtemp/generate/unix
-cp generate/unix/acpibin/Makefile unixtemp/generate/unix/acpibin
-cp generate/unix/acpiexec/Makefile unixtemp/generate/unix/acpiexec
-cp generate/unix/acpihelp/Makefile unixtemp/generate/unix/acpihelp
-cp generate/unix/acpinames/Makefile unixtemp/generate/unix/acpinames
-cp generate/unix/acpisrc/Makefile unixtemp/generate/unix/acpisrc
-cp generate/unix/acpixtract/Makefile unixtemp/generate/unix/acpixtract
-cp generate/unix/iasl/Makefile unixtemp/generate/unix/iasl
-
-#
-# Copy Lint directory
-#
-cp -r generate/lint unixtemp/generate/lint
-rm -f unixtemp/generate/lint/co*
-rm -f unixtemp/generate/lint/env*
-rm -f unixtemp/generate/lint/lib*
-rm -f unixtemp/generate/lint/LintOut.txt
-
-#
-# Delete extraneous files
-#
-cd unixtemp
-find . -name "*.scc"|xargs rm -f
-find . -name "CVS"|xargs rm -r -f
-
-#
-# Convert all LF/CR pairs to Unix format (LF only)
-#
-echo Start LF/CR Conversion
-find . -name "*"|xargs d2u
-echo LF/CR Conversion complete
-cd ..
-
-#
-# Build release package
-#
-mv unixtemp acpica-unix-`date +%Y%m%d`
-tar czf acpica-unix-`date +%Y%m%d`.tar.gz acpica-unix-`date +%Y%m%d`
-
-#
-# Move the completed package
-#
-mv acpica-unix-`date +%Y%m%d`.tar.gz generate/release/current
-
-#
-# Remove the temporary directory
-#
-rm -rf acpica-unix-`date +%Y%m%d`
-rm -rf unixtemp
-
-
-#******************************************************************************
-#
-# Unix source code package with dual-license
-#
-#******************************************************************************
-echo
-echo ACPICA - Dual-license Unix source code package
-echo
-
-#
-# Make temp directories
-#
-mkdir -p unixtemp/generate
-mkdir -p unixtemp/tools
-mkdir -p unixtemp/os_specific
-mkdir -p unixtemp/tests
-mkdir -p unixtemp/tests/misc
-mkdir -p unixtemp/tests/templates
-
-#
-# Copy ACPICA subsystem source code
-#
-cp -r documents/changes.txt unixtemp/changes.txt
-cp -r source/common unixtemp/common
-cp -r source/components/* unixtemp
-cp -r source/include unixtemp/include
-
-#
-# iASL compiler source
-#
-cp -r source/compiler unixtemp/compiler
-
-#
-# ACPICA tools source
-#
-cp -r source/tools/acpibin unixtemp/tools
-cp -r source/tools/acpiexec unixtemp/tools
-cp -r source/tools/acpihelp unixtemp/tools
-cp -r source/tools/acpinames unixtemp/tools
-cp -r source/tools/acpisrc unixtemp/tools
-cp -r source/tools/acpixtract unixtemp/tools
-cp -r source/tools/examples unixtemp/tools
-
-#
-# iASL/ACPICA miscellaneous tests (not full test suites)
-#
-cp -r tests/misc/*.asl unixtemp/tests/misc
-cp -r tests/templates/Makefile unixtemp/tests/templates
-cp -r tests/templates/templates.sh unixtemp/tests/templates
-
-#
-# Copy OS-specific interfaces
-#
-cp -r source/os_specific/service_layers unixtemp/os_specific/service_layers
-
-#
-# Insert the dual-license into *.c and *.h files
-#
-libraries/acpisrc -h -y unixtemp
-
-#
-# Copy Linux/UNIX makefiles
-#
-cp generate/linux/Makefile.acpibin unixtemp/tools/acpibin/Makefile
-cp generate/linux/Makefile.acpiexec unixtemp/tools/acpiexec/Makefile
-cp generate/linux/Makefile.acpihelp unixtemp/tools/acpihelp/Makefile
-cp generate/linux/Makefile.acpinames unixtemp/tools/acpinames/Makefile
-cp generate/linux/Makefile.acpisrc unixtemp/tools/acpisrc/Makefile
-cp generate/linux/Makefile.acpixtract unixtemp/tools/acpixtract/Makefile
-cp generate/linux/Makefile.iasl unixtemp/compiler/Makefile
-cp generate/linux/README.acpica-unix unixtemp/README
-
-#
-# Copy generic UNIX makefiles
-#
-mkdir -p unixtemp/generate/unix
-mkdir -p unixtemp/generate/unix/acpibin
-mkdir -p unixtemp/generate/unix/acpiexec
-mkdir -p unixtemp/generate/unix/acpihelp
-mkdir -p unixtemp/generate/unix/acpinames
-mkdir -p unixtemp/generate/unix/acpisrc
-mkdir -p unixtemp/generate/unix/acpixtract
-mkdir -p unixtemp/generate/unix/iasl
-mkdir -p unixtemp/generate/unix/bin
-
-cp generate/unix/readme.txt unixtemp/generate/unix/readme.txt
-cp generate/unix/Makefile* unixtemp/generate/unix
-cp generate/unix/acpibin/Makefile unixtemp/generate/unix/acpibin
-cp generate/unix/acpiexec/Makefile unixtemp/generate/unix/acpiexec
-cp generate/unix/acpihelp/Makefile unixtemp/generate/unix/acpihelp
-cp generate/unix/acpinames/Makefile unixtemp/generate/unix/acpinames
-cp generate/unix/acpisrc/Makefile unixtemp/generate/unix/acpisrc
-cp generate/unix/acpixtract/Makefile unixtemp/generate/unix/acpixtract
-cp generate/unix/iasl/Makefile unixtemp/generate/unix/iasl
-
-#
-# Copy Lint directory
 #
-cp -r generate/lint unixtemp/generate/lint
-rm -f unixtemp/generate/lint/co*
-rm -f unixtemp/generate/lint/env*
-rm -f unixtemp/generate/lint/lib*
-rm -f unixtemp/generate/lint/LintOut.txt
-
-#
-# Delete extraneous files
-#
-cd unixtemp
-find . -name "*.scc"|xargs rm -f
-find . -name "CVS"|xargs rm -r -f
-
-#
-# Convert all LF/CR pairs to Unix format (LF only)
-#
-echo Start LF/CR Conversion
-find . -name "*"|xargs d2u
-echo LF/CR Conversion complete
-cd ..
-
-#
-# Build release package
-#
-mv unixtemp acpica-unix2-`date +%Y%m%d`
-tar czf acpica-unix2-`date +%Y%m%d`.tar.gz acpica-unix2-`date +%Y%m%d`
-
-#
-# Move the completed package
-#
-mv acpica-unix2-`date +%Y%m%d`.tar.gz generate/release/current
-
-#
-# Remove the temporary directory
-#
-rm -rf acpica-unix2-`date +%Y%m%d`
-rm -rf unixtemp
-
-
-#******************************************************************************
-#
-# Windows source code package
-#
-#******************************************************************************
-echo
-echo ACPICA - Windows source code package
-echo
-
-#
-# Make temp directories
-#
-mkdir wintemp
-mkdir wintemp/libraries
-mkdir -p wintemp/generate/msvc9
-mkdir -p wintemp/source/os_specific/service_layers
-mkdir -p wintemp/tests
-mkdir -p wintemp/tests/misc
-mkdir -p wintemp/tests/templates
-
-#
-# Copy ACPICA subsystem source code
-#
-cp -r documents/changes.txt wintemp/changes.txt
-cp -r source/common wintemp/source/common
-cp -r source/components wintemp/source/
-cp -r source/include wintemp/source/include
-
-#
-# iASL compiler source
-#
-cp -r source/compiler wintemp/source/compiler
-
-#
-# ACPICA tools source
-#
-cp -r source/tools wintemp/source/tools
-
-#
-# iASL/ACPICA miscellaneous tests (not full test suites)
-#
-cp -r tests/misc/*.asl wintemp/tests/misc
-cp -r tests/templates/Makefile wintemp/tests/templates
-cp -r tests/templates/templates.sh wintemp/tests/templates
-
-#
-# Copy all OS-specific interfaces
-#
-cp source/os_specific/service_layers/*.c wintemp/source/os_specific/service_layers
-
-#
-# Copy project files for MS Visual Studio 2008 (VC++ 9.0)
-#
-cp -r generate/msvc9/*.sln wintemp/generate/msvc9/
-cp -r generate/msvc9/*.vcproj wintemp/generate/msvc9/
-
+# Ensure that the temporary directory is created fresh
 #
-# Copy generic UNIX makefiles
+rm -rf $TEMP_DIR
+		
 #
-mkdir -p wintemp/generate/unix
-mkdir -p wintemp/generate/unix/acpibin
-mkdir -p wintemp/generate/unix/acpiexec
-mkdir -p wintemp/generate/unix/acpihelp
-mkdir -p wintemp/generate/unix/acpinames
-mkdir -p wintemp/generate/unix/acpisrc
-mkdir -p wintemp/generate/unix/acpixtract
-mkdir -p wintemp/generate/unix/iasl
-mkdir -p wintemp/generate/unix/bin
-
-cp generate/unix/readme.txt wintemp/generate/unix/readme.txt
-cp generate/unix/Makefile* wintemp/generate/unix
-cp generate/unix/acpibin/Makefile wintemp/generate/unix/acpibin
-cp generate/unix/acpiexec/Makefile wintemp/generate/unix/acpiexec
-cp generate/unix/acpihelp/Makefile wintemp/generate/unix/acpihelp
-cp generate/unix/acpinames/Makefile wintemp/generate/unix/acpinames
-cp generate/unix/acpisrc/Makefile wintemp/generate/unix/acpisrc
-cp generate/unix/acpixtract/Makefile wintemp/generate/unix/acpixtract
-cp generate/unix/iasl/Makefile wintemp/generate/unix/iasl
-
-#
-# Copy Lint directory, delete extraneous files
-#
-cp -r generate/lint wintemp/generate/lint
-rm -f wintemp/generate/lint/co*
-rm -f wintemp/generate/lint/env*
-rm -f wintemp/generate/lint/lib*
-rm -f wintemp/generate/lint/LintOut.txt
-
-#
-# Delete extraneous files
-#
-cd wintemp
-find . -name "*.scc"|xargs rm -f
-find . -name "*.ncb"|xargs rm -f
-find . -name "*.opt"|xargs rm -f
-find . -name "CVS"|xargs rm -r -f
-
-#
-# Build release package
-#
-$PKZIP -add -max -dir -sort=name ../generate/release/current/acpica-win-`date +%Y%m%d`
-cd ..
-
-#
-# Remove temporary directory
-#
-rm -rf wintemp
-
-
-#******************************************************************************
-#
-# Windows iASL and other binary tools executable package
-#
-#******************************************************************************
-echo
-echo iASL Compiler - Windows executable package
-echo
-
-#
-# Make temp directory
-#
-mkdir wintemp
-
+# Parameter evaluation
 #
-# Copy executables and documentation
-#
-cp -r documents/changes.txt wintemp/changes.txt
-cp documents/aslcompiler.pdf wintemp
-cp libraries/acpibin.exe wintemp
-cp libraries/acpiexec.exe wintemp
-cp libraries/acpihelp.exe wintemp
-cp libraries/acpinames.exe wintemp
-cp libraries/acpisrc.exe wintemp
-cp libraries/acpixtract.exe wintemp
-cp libraries/iasl.exe wintemp
-cp tests/misc/badcode.asl wintemp
-
-#
-# Build release package
-#
-cd wintemp
-$PKZIP -add -max -dir -sort=name ../generate/release/current/iasl-win-`date +%Y%m%d`
-cd ..
-
-#
-# Remove temporary directory
-#
-rm -rf wintemp
-
-
-#******************************************************************************
-#
-# iasl email package
-# Contains: iASL executable and changes.txt file
-#
-# This zipfile is created with a password so that it can be safely emailed
-# without interference from overzealous email scanners.
-# Password is acpica
-#
-#******************************************************************************
-echo
-echo ACPICA - iASL release package
-echo
-
-#
-# Make temp directory
-#
-mkdir wintemp
+if [ $1 == source ]; then
+	generate_source_package $2
 
-cp documents/changes.txt wintemp
-cp libraries/iasl.exe wintemp
-cp documents/aslcompiler.pdf wintemp
-cd wintemp
+elif [ $1 == test ]; then
+	generate_test_package $2
 
-$PKZIP -add -max -password=acpica ../generate/release/current/iasl-release-`date +%Y%m%d`
-cd ..
+elif [ $1 == binary ]; then
+	generate_binary_package $2
 
-#
-# Remove temporary directory
-#
-rm -rf wintemp
-
-
-#******************************************************************************
-#
-# Exit now if "notests" option specified
-#
-#******************************************************************************
-if [ "$1" = notests ]
-then
-    echo APCICA test suites will not be generated
-    exit 0;
+else
+	usage "Invalid argument ($1)"
+	exit 1
 fi
 
-
-#******************************************************************************
-#
-# Unix ASL Test source code package
-#
-#******************************************************************************
-echo
-echo ACPICA - Unix ASL Test source code package
-echo
-
-#
-# Make temp directory
-#
-mkdir unixtemp
-
-#
-# ASL Test source
-#
-cp -r tests unixtemp/tests
-
-#
-# Delete extraneous files
-#
-cd unixtemp
-find . -name "tmp"|xargs rm -r -f
-find . -name "CVS"|xargs rm -r -f
-cd ..
-
-#
-# Convert all LF/CR pairs to Unix format (LF only)
-#
-echo Start LF/CR Conversion
-cd unixtemp
-find . -name "*"|xargs d2u
-echo LF/CR Conversion complete
-cd ..
-
-#
-# Build release package
-#
-mv unixtemp acpitests-unix-`date +%Y%m%d`
-tar czf acpitests-unix-`date +%Y%m%d`.tar.gz acpitests-unix-`date +%Y%m%d`
-
-#
-# Move the completed package
-#
-mv acpitests-unix-`date +%Y%m%d`.tar.gz generate/release/current
-
-#
-# Remove the temporary directory
-#
-rm -rf acpitests-unix-`date +%Y%m%d`
-
-
-#******************************************************************************
-#
-# Windows ASL Test source code package
-#
-#******************************************************************************
-echo
-echo ACPICA - Windows ASL Test source code package
-echo
-
-#
-# Make temp directory
-#
-mkdir wintemp
-
-#
-# ASL Test source
-#
-cp -r tests wintemp/tests
-
-#
-# Delete extraneous files
-#
-cd wintemp
-find . -name "tmp"|xargs rm -r -f
-find . -name "CVS"|xargs rm -r -f
-cd ..
-
-#
-# Build release package
-#
-cd wintemp
-$PKZIP -add -max -dir -sort=name ../generate/release/current/acpitests-win-`date +%Y%m%d`
-cd ..
-
 #
 # Remove temporary directory
 #
-rm -rf wintemp
-
-
-date
-
+rm -rf $TEMP_DIR
