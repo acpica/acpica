@@ -3,9 +3,8 @@
 # space. Loads ACPI tables, displays the namespace, and allows
 # execution of control methods.
 #
-# NOTE: This makefile is intended to be used in the Linux environment,
-# with the Linux directory structure. It will not work directly
-# on the native ACPICA source tree.
+# NOTE: This makefile is intended to be used within the native
+# ACPICA source tree.
 #
 
 #
@@ -24,13 +23,12 @@ NOMAN =         YES
 COMPILE =       $(CC) -c $(CFLAGS) $(CWARNINGFLAGS) -o$@ $<
 LDFLAGS +=      -lpthread -lrt
 
-ACPICA_COMPONENTS =
-ACPICA_SRC =            ../..
-ACPICA_INCLUDE =        $(ACPICA_SRC)/include
+ACPICA_SRC =            ../../../source
 ACPICA_COMMON =         $(ACPICA_SRC)/common
-ACPICA_CORE =           $(ACPICA_SRC)$(ACPICA_COMPONENTS)
 ACPICA_TOOLS =          $(ACPICA_SRC)/tools
 ACPICA_OSL =            $(ACPICA_SRC)/os_specific/service_layers
+ACPICA_CORE =           $(ACPICA_SRC)/components
+ACPICA_INCLUDE =        $(ACPICA_SRC)/include
 ACPICA_DEBUGGER =       $(ACPICA_CORE)/debugger
 ACPICA_DISASSEMBLER =   $(ACPICA_CORE)/disassembler
 ACPICA_DISPATCHER =     $(ACPICA_CORE)/dispatcher
