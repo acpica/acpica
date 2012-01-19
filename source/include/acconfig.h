@@ -167,7 +167,7 @@
 
 /* Version of ACPI supported */
 
-#define ACPI_CA_SUPPORT_LEVEL           3
+#define ACPI_CA_SUPPORT_LEVEL           5
 
 /* Maximum count for a semaphore object */
 
