@@ -123,6 +123,7 @@ OBJECTS = \
 	$(OBJDIR)/hwsleep.o \
 	$(OBJDIR)/hwvalid.o \
 	$(OBJDIR)/hwxface.o \
+	$(OBJDIR)/hwxfsleep.o \
 	$(OBJDIR)/nsaccess.o \
 	$(OBJDIR)/nsalloc.o \
 	$(OBJDIR)/nsdump.o \

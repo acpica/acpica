@@ -182,6 +182,30 @@ AcpiHwClearAcpiStatus (
 
 
 /*
+ * hwsleep - sleep/wake support
+ */
+void
+AcpiHwExecuteSST (
+    UINT32                  Value);
+
+ACPI_STATUS
+AcpiHwExtendedSleep (
+    UINT8                   SleepState);
+
+ACPI_STATUS
+AcpiHwLegacySleep (
+    UINT8                   SleepState);
+
+ACPI_STATUS
+AcpiHwExtendedWake (
+    UINT8                   SleepState);
+
+ACPI_STATUS
+AcpiHwLegacyWake (
+    UINT8                   SleepState);
+
+
+/*
  * hwvalid - Port I/O with validation
  */
 ACPI_STATUS

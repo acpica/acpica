@@ -156,6 +156,7 @@ OBJECTS = \
 	hwsleep.o \
 	hwvalid.o \
 	hwxface.o \
+	hwxfsleep.o \
 	nsaccess.o \
 	nsalloc.o \
 	nsdump.o \
