@@ -121,6 +121,8 @@
 #define _COMPONENT          ACPI_EVENTS
         ACPI_MODULE_NAME    ("evgpe")
 
+#if (!ACPI_REDUCED_HARDWARE) /* Entire module */
+
 /* Local prototypes */
 
 static void ACPI_SYSTEM_XFACE
@@ -898,3 +900,4 @@ AcpiEvGpeDispatch (
     return_UINT32 (ACPI_INTERRUPT_HANDLED);
 }
 
+#endif /* !ACPI_REDUCED_HARDWARE */

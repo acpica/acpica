@@ -120,6 +120,8 @@
 #define _COMPONENT          ACPI_EVENTS
         ACPI_MODULE_NAME    ("evevent")
 
+#if (!ACPI_REDUCED_HARDWARE) /* Entire module */
+
 /* Local prototypes */
 
 static ACPI_STATUS
@@ -400,5 +402,7 @@ AcpiEvFixedEventDispatch (
     return ((AcpiGbl_FixedEventHandlers[Event].Handler)(
                 AcpiGbl_FixedEventHandlers[Event].Context));
 }
+
+#endif /* !ACPI_REDUCED_HARDWARE */
 
 

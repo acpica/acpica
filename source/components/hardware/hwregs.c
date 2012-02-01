@@ -125,6 +125,8 @@
         ACPI_MODULE_NAME    ("hwregs")
 
 
+#if (!ACPI_REDUCED_HARDWARE)
+
 /* Local Prototypes */
 
 static ACPI_STATUS
@@ -139,6 +141,7 @@ AcpiHwWriteMultiple (
     ACPI_GENERIC_ADDRESS    *RegisterA,
     ACPI_GENERIC_ADDRESS    *RegisterB);
 
+#endif /* !ACPI_REDUCED_HARDWARE */
 
 /******************************************************************************
  *
@@ -343,6 +346,7 @@ AcpiHwWrite (
 }
 
 
+#if (!ACPI_REDUCED_HARDWARE)
 /*******************************************************************************
  *
  * FUNCTION:    AcpiHwClearAcpiStatus
@@ -393,7 +397,7 @@ UnlockAndExit:
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiHwGetRegisterBitMask
+ * FUNCTION:    AcpiHwGetBitRegisterInfo
  *
  * PARAMETERS:  RegisterId          - Index of ACPI Register to access
  *
@@ -803,3 +807,4 @@ AcpiHwWriteMultiple (
     return (Status);
 }
 
+#endif /* !ACPI_REDUCED_HARDWARE */

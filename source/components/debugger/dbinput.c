@@ -734,12 +734,15 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_ENABLEACPI:
+#if (!ACPI_REDUCED_HARDWARE)
+
         Status = AcpiEnable();
         if (ACPI_FAILURE(Status))
         {
             AcpiOsPrintf("AcpiEnable failed (Status=%X)\n", Status);
             return (Status);
         }
+#endif /* !ACPI_REDUCED_HARDWARE */
         break;
 
     case CMD_EVENT:

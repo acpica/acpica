@@ -124,6 +124,7 @@
         ACPI_MODULE_NAME    ("evxfevnt")
 
 
+#if (!ACPI_REDUCED_HARDWARE) /* Entire module */
 /*******************************************************************************
  *
  * FUNCTION:    AcpiEnable
@@ -449,4 +450,4 @@ AcpiGetEventStatus (
 
 ACPI_EXPORT_SYMBOL (AcpiGetEventStatus)
 
-
+#endif /* !ACPI_REDUCED_HARDWARE */

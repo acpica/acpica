@@ -120,6 +120,8 @@
         ACPI_MODULE_NAME    ("hwxfsleep")
 
 
+#if (!ACPI_REDUCED_HARDWARE)
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiSetFirmwareWakingVector
@@ -272,6 +274,8 @@ AcpiEnterSleepStateS4bios (
 
 ACPI_EXPORT_SYMBOL (AcpiEnterSleepStateS4bios)
 
+#endif /* !ACPI_REDUCED_HARDWARE */
+
 
 /*******************************************************************************
  *
@@ -388,6 +392,8 @@ AcpiEnterSleepState (
         return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
     }
 
+#if (!ACPI_REDUCED_HARDWARE)
+
     /* If Hardware Reduced flag is set, must use the extended sleep registers */
 
     if (AcpiGbl_ReducedHardware ||
@@ -401,6 +407,11 @@ AcpiEnterSleepState (
 
         Status = AcpiHwLegacySleep (SleepState);
     }
+
+#else
+    Status = AcpiHwExtendedSleep (SleepState);
+
+#endif /* !ACPI_REDUCED_HARDWARE */
 
     return_ACPI_STATUS (Status);
 }
@@ -431,6 +442,8 @@ AcpiLeaveSleepState (
     ACPI_FUNCTION_TRACE (AcpiLeaveSleepState);
 
 
+#if (!ACPI_REDUCED_HARDWARE)
+
     /* If Hardware Reduced flag is set, must use the extended sleep registers */
 
     if (AcpiGbl_ReducedHardware ||
@@ -444,6 +457,11 @@ AcpiLeaveSleepState (
 
         Status = AcpiHwLegacyWake (SleepState);
     }
+
+#else
+    Status = AcpiHwExtendedWake (SleepState);
+
+#endif /* !ACPI_REDUCED_HARDWARE */
 
     return_ACPI_STATUS (Status);
 }

@@ -395,6 +395,7 @@ AcpiWrite (
 ACPI_EXPORT_SYMBOL (AcpiWrite)
 
 
+#if (!ACPI_REDUCED_HARDWARE)
 /*******************************************************************************
  *
  * FUNCTION:    AcpiReadBitRegister
@@ -576,6 +577,8 @@ UnlockAndExit:
 }
 
 ACPI_EXPORT_SYMBOL (AcpiWriteBitRegister)
+
+#endif /* !ACPI_REDUCED_HARDWARE */
 
 
 /*******************************************************************************

@@ -124,6 +124,7 @@
         ACPI_MODULE_NAME    ("hwacpi")
 
 
+#if (!ACPI_REDUCED_HARDWARE) /* Entire module */
 /******************************************************************************
  *
  * FUNCTION:    AcpiHwSetMode
@@ -276,3 +277,5 @@ AcpiHwGetMode (
         return_UINT32 (ACPI_SYS_MODE_LEGACY);
     }
 }
+
+#endif /* !ACPI_REDUCED_HARDWARE */

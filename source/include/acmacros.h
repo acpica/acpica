@@ -500,7 +500,6 @@
 
 #endif /* ACPI_SIMPLE_RETURN_MACROS */
 
-
 /* Conditional execution */
 
 #define ACPI_DEBUG_EXEC(a)              a

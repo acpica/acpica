@@ -121,6 +121,7 @@
         ACPI_MODULE_NAME    ("hwtimer")
 
 
+#if (!ACPI_REDUCED_HARDWARE) /* Entire module */
 /******************************************************************************
  *
  * FUNCTION:    AcpiGetTimerResolution
@@ -286,3 +287,4 @@ AcpiGetTimerDuration (
 
 ACPI_EXPORT_SYMBOL (AcpiGetTimerDuration)
 
+#endif /* !ACPI_REDUCED_HARDWARE */

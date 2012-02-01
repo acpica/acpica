@@ -121,6 +121,8 @@
 #define _COMPONENT          ACPI_HARDWARE
         ACPI_MODULE_NAME    ("hwgpe")
 
+#if (!ACPI_REDUCED_HARDWARE) /* Entire module */
+
 /* Local prototypes */
 
 static ACPI_STATUS
@@ -610,3 +612,4 @@ AcpiHwEnableAllWakeupGpes (
     return_ACPI_STATUS (Status);
 }
 
+#endif /* !ACPI_REDUCED_HARDWARE */

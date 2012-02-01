@@ -227,6 +227,7 @@ const ACPI_PREDEFINED_NAMES     AcpiGbl_PreDefinedNames[] =
 };
 
 
+#if (!ACPI_REDUCED_HARDWARE)
 /******************************************************************************
  *
  * Event and Hardware globals
@@ -271,6 +272,7 @@ ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventInfo[ACPI_NUM_FIXED_EVENTS] =
     /* ACPI_EVENT_SLEEP_BUTTON  */  {ACPI_BITREG_SLEEP_BUTTON_STATUS,   ACPI_BITREG_SLEEP_BUTTON_ENABLE, ACPI_BITMASK_SLEEP_BUTTON_STATUS,   ACPI_BITMASK_SLEEP_BUTTON_ENABLE},
     /* ACPI_EVENT_RTC           */  {ACPI_BITREG_RT_CLOCK_STATUS,       ACPI_BITREG_RT_CLOCK_ENABLE,     ACPI_BITMASK_RT_CLOCK_STATUS,       ACPI_BITMASK_RT_CLOCK_ENABLE},
 };
+#endif /* !ACPI_REDUCED_HARDWARE */
 
 
 /*******************************************************************************
@@ -341,6 +343,8 @@ AcpiUtInitGlobals (
         AcpiFixedEventCount[i]              = 0;
     }
 
+#if (!ACPI_REDUCED_HARDWARE)
+
     /* GPE support */
 
     AcpiGbl_AllGpesInitialized          = FALSE;
@@ -348,6 +352,10 @@ AcpiUtInitGlobals (
     AcpiGbl_GpeFadtBlocks[0]            = NULL;
     AcpiGbl_GpeFadtBlocks[1]            = NULL;
     AcpiCurrentGpeCount                 = 0;
+
+    AcpiGbl_GlobalEventHandler          = NULL;
+
+#endif /* !ACPI_REDUCED_HARDWARE */
 
     /* Global handlers */
 
@@ -357,7 +365,6 @@ AcpiUtInitGlobals (
     AcpiGbl_InitHandler                 = NULL;
     AcpiGbl_TableHandler                = NULL;
     AcpiGbl_InterfaceHandler            = NULL;
-    AcpiGbl_GlobalEventHandler          = NULL;
 
     /* Global Lock support */
 

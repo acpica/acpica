@@ -257,6 +257,7 @@ AcpiHwExecuteWakeMethods (
 }
 
 
+#if (!ACPI_REDUCED_HARDWARE)
 /*******************************************************************************
  *
  * FUNCTION:    AcpiHwLegacySleep
@@ -544,6 +545,8 @@ AcpiHwLegacyWake (
     AcpiHwExecuteSST (ACPI_SST_WORKING);
     return_ACPI_STATUS (Status);
 }
+
+#endif /* !ACPI_REDUCED_HARDWARE */
 
 
 /*******************************************************************************

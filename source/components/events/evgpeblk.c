@@ -121,6 +121,8 @@
 #define _COMPONENT          ACPI_EVENTS
         ACPI_MODULE_NAME    ("evgpeblk")
 
+#if (!ACPI_REDUCED_HARDWARE) /* Entire module */
+
 /* Local prototypes */
 
 static ACPI_STATUS
@@ -617,3 +619,4 @@ AcpiEvInitializeGpeBlock (
     return_ACPI_STATUS (AE_OK);
 }
 
+#endif /* !ACPI_REDUCED_HARDWARE */

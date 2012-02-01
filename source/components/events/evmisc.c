@@ -363,6 +363,7 @@ AcpiEvNotifyDispatch (
 }
 
 
+#if (!ACPI_REDUCED_HARDWARE)
 /******************************************************************************
  *
  * FUNCTION:    AcpiEvTerminate
@@ -442,3 +443,5 @@ AcpiEvTerminate (
     }
     return_VOID;
 }
+
+#endif /* !ACPI_REDUCED_HARDWARE */

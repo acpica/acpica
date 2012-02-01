@@ -256,16 +256,17 @@ AcpiEvInitializeOpRegions (
 }
 
 ACPI_STATUS
-AcpiEvDeleteGpeBlock (
-    ACPI_GPE_BLOCK_INFO     *GpeBlock)
+AcpiEvInitializeRegion (
+    ACPI_OPERAND_OBJECT     *RegionObj,
+    BOOLEAN                 AcpiNsLocked)
 {
     return (AE_OK);
 }
 
+#if (!ACPI_REDUCED_HARDWARE)
 ACPI_STATUS
-AcpiEvInitializeRegion (
-    ACPI_OPERAND_OBJECT     *RegionObj,
-    BOOLEAN                 AcpiNsLocked)
+AcpiEvDeleteGpeBlock (
+    ACPI_GPE_BLOCK_INFO     *GpeBlock)
 {
     return (AE_OK);
 }
@@ -276,6 +277,7 @@ AcpiEnable (
 {
     return (AE_OK);
 }
+#endif /* !ACPI_REDUCED_HARDWARE */
 
 
 /* AML Interpreter */

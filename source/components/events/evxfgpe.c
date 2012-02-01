@@ -125,6 +125,7 @@
         ACPI_MODULE_NAME    ("evxfgpe")
 
 
+#if (!ACPI_REDUCED_HARDWARE) /* Entire module */
 /*******************************************************************************
  *
  * FUNCTION:    AcpiUpdateAllGpes
@@ -970,3 +971,5 @@ AcpiGetGpeDevice (
 }
 
 ACPI_EXPORT_SYMBOL (AcpiGetGpeDevice)
+
+#endif /* !ACPI_REDUCED_HARDWARE */

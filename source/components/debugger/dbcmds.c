@@ -213,6 +213,7 @@ AcpiDbConvertToNode (
 }
 
 
+#if (!ACPI_REDUCED_HARDWARE)
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbSleep
@@ -254,6 +255,8 @@ AcpiDbSleep (
 
     return (Status);
 }
+#endif /* !ACPI_REDUCED_HARDWARE */
+
 
 /*******************************************************************************
  *
@@ -1091,6 +1094,7 @@ AcpiDbDisplayResources (
 }
 
 
+#if (!ACPI_REDUCED_HARDWARE)
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbGenerateGpe
@@ -1129,5 +1133,6 @@ AcpiDbGenerateGpe (
 
     (void) AcpiEvGpeDispatch (NULL, GpeEventInfo, GpeNumber);
 }
+#endif /* !ACPI_REDUCED_HARDWARE */
 
 #endif /* ACPI_DEBUGGER */

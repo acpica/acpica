@@ -157,13 +157,15 @@ ACPI_STATUS
 AcpiEvInitGlobalLockHandler (
     void);
 
-ACPI_STATUS
-AcpiEvAcquireGlobalLock(
-    UINT16                  Timeout);
+ACPI_HW_DEPENDENT_RETURN_OK (\
+ACPI_STATUS \
+AcpiEvAcquireGlobalLock( \
+    UINT16                  Timeout))
 
-ACPI_STATUS
-AcpiEvReleaseGlobalLock(
-    void);
+ACPI_HW_DEPENDENT_RETURN_OK (\
+ACPI_STATUS \
+AcpiEvReleaseGlobalLock( \
+    void))
 
 ACPI_STATUS
 AcpiEvRemoveGlobalLockHandler (
@@ -226,9 +228,10 @@ AcpiEvInitializeGpeBlock (
     ACPI_GPE_BLOCK_INFO     *GpeBlock,
     void                    *Context);
 
-ACPI_STATUS
-AcpiEvDeleteGpeBlock (
-    ACPI_GPE_BLOCK_INFO     *GpeBlock);
+ACPI_HW_DEPENDENT_RETURN_OK ( \
+ACPI_STATUS \
+AcpiEvDeleteGpeBlock ( \
+    ACPI_GPE_BLOCK_INFO     *GpeBlock))
 
 UINT32
 AcpiEvGpeDispatch (
@@ -243,9 +246,10 @@ ACPI_STATUS
 AcpiEvGpeInitialize (
     void);
 
-void
-AcpiEvUpdateGpes (
-    ACPI_OWNER_ID           TableOwnerId);
+ACPI_HW_DEPENDENT_RETURN_VOID (\
+void \
+AcpiEvUpdateGpes (\
+    ACPI_OWNER_ID           TableOwnerId))
 
 ACPI_STATUS
 AcpiEvMatchGpeMethod (
@@ -407,9 +411,9 @@ UINT32
 AcpiEvInitializeSCI (
     UINT32                  ProgramSCI);
 
-void
-AcpiEvTerminate (
-    void);
-
+ACPI_HW_DEPENDENT_RETURN_VOID ( \
+void \
+AcpiEvTerminate ( \
+    void))
 
 #endif  /* __ACEVENTS_H__  */

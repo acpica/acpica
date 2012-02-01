@@ -163,9 +163,18 @@ AeInterfaceHandler (
     ACPI_STRING             InterfaceName,
     UINT32                  Supported);
 
+#if (!ACPI_REDUCED_HARDWARE)
 static UINT32
 AeEventHandler (
     void                    *Context);
+
+static char                *TableEvents[] =
+{
+    "LOAD",
+    "UNLOAD",
+    "UNKNOWN"
+};
+#endif /* !ACPI_REDUCED_HARDWARE */
 
 static UINT32               SigintCount = 0;
 static AE_DEBUG_REGIONS     AeRegions;
@@ -458,20 +467,15 @@ AeExceptionHandler (
  *
  *****************************************************************************/
 
-static char                *TableEvents[] =
-{
-    "LOAD",
-    "UNLOAD",
-    "UNKNOWN"
-};
-
 static ACPI_STATUS
 AeTableHandler (
     UINT32                  Event,
     void                    *Table,
     void                    *Context)
 {
+#if (!ACPI_REDUCED_HARDWARE)
     ACPI_STATUS             Status;
+#endif /* !ACPI_REDUCED_HARDWARE */
 
 
     if (Event > ACPI_NUM_TABLE_EVENTS)
@@ -479,6 +483,7 @@ AeTableHandler (
         Event = ACPI_NUM_TABLE_EVENTS;
     }
 
+#if (!ACPI_REDUCED_HARDWARE)
     /* Enable any GPEs associated with newly-loaded GPE methods */
 
     Status = AcpiUpdateAllGpes ();
@@ -486,6 +491,8 @@ AeTableHandler (
 
     printf ("[AcpiExec] Table Event %s, [%4.4s] %p\n",
         TableEvents[Event], ((ACPI_TABLE_HEADER *) Table)->Signature, Table);
+#endif /* !ACPI_REDUCED_HARDWARE */
+
     return (AE_OK);
 }
 
@@ -598,6 +605,7 @@ AeInterfaceHandler (
 }
 
 
+#if (!ACPI_REDUCED_HARDWARE)
 /******************************************************************************
  *
  * FUNCTION:    AeEventHandler
@@ -612,6 +620,7 @@ AeEventHandler (
 {
     return (0);
 }
+#endif /* !ACPI_REDUCED_HARDWARE */
 
 
 /******************************************************************************
@@ -662,6 +671,7 @@ AeInstallLateHandlers (
     UINT32                  i;
 
 
+#if (!ACPI_REDUCED_HARDWARE)
     if (!AcpiGbl_ReducedHardware)
     {
         /* Install some fixed event handlers */
@@ -672,6 +682,7 @@ AeInstallLateHandlers (
         Status = AcpiInstallFixedEventHandler (ACPI_EVENT_RTC, AeEventHandler, NULL);
         AE_CHECK_OK (AcpiInstallFixedEventHandler, Status);
     }
+#endif /* !ACPI_REDUCED_HARDWARE */
 
     AeMyContext.Connection = NULL;
     AeMyContext.AccessLength = 0xA5;

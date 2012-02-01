@@ -113,7 +113,6 @@
  *
  *****************************************************************************/
 
-
 #include "acpi.h"
 #include "accommon.h"
 #include "acevents.h"
@@ -122,6 +121,7 @@
         ACPI_MODULE_NAME    ("evgpeutil")
 
 
+#if (!ACPI_REDUCED_HARDWARE) /* Entire module */
 /*******************************************************************************
  *
  * FUNCTION:    AcpiEvWalkGpeList
@@ -494,3 +494,4 @@ AcpiEvDeleteGpeHandlers (
     return_ACPI_STATUS (AE_OK);
 }
 
+#endif /* !ACPI_REDUCED_HARDWARE */

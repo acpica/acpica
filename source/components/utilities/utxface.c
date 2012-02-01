@@ -235,6 +235,8 @@ AcpiEnableSubsystem (
     ACPI_FUNCTION_TRACE (AcpiEnableSubsystem);
 
 
+#if (!ACPI_REDUCED_HARDWARE)
+
     /* Enable ACPI mode */
 
     if (!(Flags & ACPI_NO_ACPI_ENABLE))
@@ -262,6 +264,8 @@ AcpiEnableSubsystem (
         return_ACPI_STATUS (Status);
     }
 
+#endif /* !ACPI_REDUCED_HARDWARE */
+
     /*
      * Install the default OpRegion handlers.  These are installed unless
      * other handlers have already been installed via the
@@ -279,6 +283,7 @@ AcpiEnableSubsystem (
         }
     }
 
+#if (!ACPI_REDUCED_HARDWARE)
     /*
      * Initialize ACPI Event handling (Fixed and General Purpose)
      *
@@ -320,6 +325,8 @@ AcpiEnableSubsystem (
             return_ACPI_STATUS (Status);
         }
     }
+
+#endif /* !ACPI_REDUCED_HARDWARE */
 
     return_ACPI_STATUS (Status);
 }

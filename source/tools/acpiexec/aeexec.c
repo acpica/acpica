@@ -125,10 +125,6 @@ AeSetupConfiguration (
     void                    *RegionAddr);
 
 static void
-AfInstallGpeBlock (
-    void);
-
-static void
 AeTestBufferArgument (
     void);
 
@@ -159,6 +155,12 @@ AeHardwareInterfaces (
 static void
 AeGenericRegisters (
     void);
+
+#if (!ACPI_REDUCED_HARDWARE)
+static void
+AfInstallGpeBlock (
+    void);
+#endif /* !ACPI_REDUCED_HARDWARE */
 
 extern unsigned char Ssdt3Code[];
 
@@ -198,6 +200,7 @@ AeSetupConfiguration (
 }
 
 
+#if (!ACPI_REDUCED_HARDWARE)
 /******************************************************************************
  *
  * FUNCTION:    AfInstallGpeBlock
@@ -269,6 +272,7 @@ AfInstallGpeBlock (
         AE_CHECK_OK (AcpiInstallGpeBlock, Status);
     }
 }
+#endif /* !ACPI_REDUCED_HARDWARE */
 
 
 /* Test using a Buffer object as a method argument */
@@ -537,6 +541,8 @@ static void
 AeHardwareInterfaces (
     void)
 {
+#if (!ACPI_REDUCED_HARDWARE)
+
     ACPI_STATUS             Status;
     UINT32                  Value;
 
@@ -572,6 +578,8 @@ AeHardwareInterfaces (
 
     Status = AcpiReadBitRegister (ACPI_BITREG_ARB_DISABLE, &Value);
     AE_CHECK_OK (AcpiReadBitRegister, Status);
+
+#endif /* !ACPI_REDUCED_HARDWARE */
 }
 
 
@@ -587,14 +595,17 @@ void
 AeMiscellaneousTests (
     void)
 {
-    ACPI_HANDLE             Handle;
     ACPI_BUFFER             ReturnBuf;
     char                    Buffer[32];
-    ACPI_VENDOR_UUID        Uuid = {0, {ACPI_INIT_UUID (0,0,0,0,0,0,0,0,0,0,0)}};
     ACPI_STATUS             Status;
+    ACPI_STATISTICS         Stats;
+
+#if (!ACPI_REDUCED_HARDWARE)
+    ACPI_HANDLE             Handle;
+    ACPI_VENDOR_UUID        Uuid = {0, {ACPI_INIT_UUID (0,0,0,0,0,0,0,0,0,0,0)}};
     UINT32                  LockHandle1;
     UINT32                  LockHandle2;
-    ACPI_STATISTICS         Stats;
+#endif /* !ACPI_REDUCED_HARDWARE */
 
 
     AeHardwareInterfaces ();
@@ -640,9 +651,6 @@ AeMiscellaneousTests (
     Status = AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
     AE_CHECK_OK (AcpiGetName, Status);
 
-    Status = AcpiInstallGlobalEventHandler (AeGlobalEventHandler, NULL);
-    AE_CHECK_OK (AcpiInstallGlobalEventHandler, Status);
-
     /* Get Devices */
 
     Status = AcpiGetDevices (NULL, AeGetDevices, NULL, NULL);
@@ -650,6 +658,12 @@ AeMiscellaneousTests (
 
     Status = AcpiGetStatistics (&Stats);
     AE_CHECK_OK (AcpiGetStatistics, Status);
+
+
+#if (!ACPI_REDUCED_HARDWARE)
+
+    Status = AcpiInstallGlobalEventHandler (AeGlobalEventHandler, NULL);
+    AE_CHECK_OK (AcpiInstallGlobalEventHandler, Status);
 
     /* If Hardware Reduced flag is set, we are all done */
 
@@ -773,5 +787,6 @@ AeMiscellaneousTests (
     Status = AcpiReleaseGlobalLock (LockHandle2);
     AE_CHECK_OK (AcpiReleaseGlobalLock, Status);
 
+#endif /* !ACPI_REDUCED_HARDWARE */
 }
 

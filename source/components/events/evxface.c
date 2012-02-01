@@ -128,257 +128,6 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiInstallExceptionHandler
- *
- * PARAMETERS:  Handler         - Pointer to the handler function for the
- *                                event
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Saves the pointer to the handler function
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiInstallExceptionHandler (
-    ACPI_EXCEPTION_HANDLER  Handler)
-{
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_TRACE (AcpiInstallExceptionHandler);
-
-
-    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Don't allow two handlers. */
-
-    if (AcpiGbl_ExceptionHandler)
-    {
-        Status = AE_ALREADY_EXISTS;
-        goto Cleanup;
-    }
-
-    /* Install the handler */
-
-    AcpiGbl_ExceptionHandler = Handler;
-
-Cleanup:
-    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
-    return_ACPI_STATUS (Status);
-}
-
-ACPI_EXPORT_SYMBOL (AcpiInstallExceptionHandler)
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiInstallGlobalEventHandler
- *
- * PARAMETERS:  Handler         - Pointer to the global event handler function
- *              Context         - Value passed to the handler on each event
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Saves the pointer to the handler function. The global handler
- *              is invoked upon each incoming GPE and Fixed Event. It is
- *              invoked at interrupt level at the time of the event dispatch.
- *              Can be used to update event counters, etc.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiInstallGlobalEventHandler (
-    ACPI_GBL_EVENT_HANDLER  Handler,
-    void                    *Context)
-{
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_TRACE (AcpiInstallGlobalEventHandler);
-
-
-    /* Parameter validation */
-
-    if (!Handler)
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Don't allow two handlers. */
-
-    if (AcpiGbl_GlobalEventHandler)
-    {
-        Status = AE_ALREADY_EXISTS;
-        goto Cleanup;
-    }
-
-    AcpiGbl_GlobalEventHandler = Handler;
-    AcpiGbl_GlobalEventHandlerContext = Context;
-
-
-Cleanup:
-    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
-    return_ACPI_STATUS (Status);
-}
-
-ACPI_EXPORT_SYMBOL (AcpiInstallGlobalEventHandler)
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiInstallFixedEventHandler
- *
- * PARAMETERS:  Event           - Event type to enable.
- *              Handler         - Pointer to the handler function for the
- *                                event
- *              Context         - Value passed to the handler on each GPE
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Saves the pointer to the handler function and then enables the
- *              event.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiInstallFixedEventHandler (
-    UINT32                  Event,
-    ACPI_EVENT_HANDLER      Handler,
-    void                    *Context)
-{
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_TRACE (AcpiInstallFixedEventHandler);
-
-
-    /* Parameter validation */
-
-    if (Event > ACPI_EVENT_MAX)
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Don't allow two handlers. */
-
-    if (NULL != AcpiGbl_FixedEventHandlers[Event].Handler)
-    {
-        Status = AE_ALREADY_EXISTS;
-        goto Cleanup;
-    }
-
-    /* Install the handler before enabling the event */
-
-    AcpiGbl_FixedEventHandlers[Event].Handler = Handler;
-    AcpiGbl_FixedEventHandlers[Event].Context = Context;
-
-    Status = AcpiEnableEvent (Event, 0);
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_WARNING ((AE_INFO, "Could not enable fixed event 0x%X", Event));
-
-        /* Remove the handler */
-
-        AcpiGbl_FixedEventHandlers[Event].Handler = NULL;
-        AcpiGbl_FixedEventHandlers[Event].Context = NULL;
-    }
-    else
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "Enabled fixed event %X, Handler=%p\n", Event, Handler));
-    }
-
-
-Cleanup:
-    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
-    return_ACPI_STATUS (Status);
-}
-
-ACPI_EXPORT_SYMBOL (AcpiInstallFixedEventHandler)
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiRemoveFixedEventHandler
- *
- * PARAMETERS:  Event           - Event type to disable.
- *              Handler         - Address of the handler
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Disables the event and unregisters the event handler.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiRemoveFixedEventHandler (
-    UINT32                  Event,
-    ACPI_EVENT_HANDLER      Handler)
-{
-    ACPI_STATUS             Status = AE_OK;
-
-
-    ACPI_FUNCTION_TRACE (AcpiRemoveFixedEventHandler);
-
-
-    /* Parameter validation */
-
-    if (Event > ACPI_EVENT_MAX)
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Disable the event before removing the handler */
-
-    Status = AcpiDisableEvent (Event, 0);
-
-    /* Always Remove the handler */
-
-    AcpiGbl_FixedEventHandlers[Event].Handler = NULL;
-    AcpiGbl_FixedEventHandlers[Event].Context = NULL;
-
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_WARNING ((AE_INFO,
-            "Could not write to fixed event enable register 0x%X", Event));
-    }
-    else
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Disabled fixed event %X\n", Event));
-    }
-
-    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
-    return_ACPI_STATUS (Status);
-}
-
-ACPI_EXPORT_SYMBOL (AcpiRemoveFixedEventHandler)
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiInstallNotifyHandler
  *
  * PARAMETERS:  Device          - The device for which notifies will be handled
@@ -730,6 +479,258 @@ ACPI_EXPORT_SYMBOL (AcpiRemoveNotifyHandler)
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiInstallExceptionHandler
+ *
+ * PARAMETERS:  Handler         - Pointer to the handler function for the
+ *                                event
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Saves the pointer to the handler function
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiInstallExceptionHandler (
+    ACPI_EXCEPTION_HANDLER  Handler)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (AcpiInstallExceptionHandler);
+
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Don't allow two handlers. */
+
+    if (AcpiGbl_ExceptionHandler)
+    {
+        Status = AE_ALREADY_EXISTS;
+        goto Cleanup;
+    }
+
+    /* Install the handler */
+
+    AcpiGbl_ExceptionHandler = Handler;
+
+Cleanup:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiInstallExceptionHandler)
+
+
+#if (!ACPI_REDUCED_HARDWARE)
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiInstallGlobalEventHandler
+ *
+ * PARAMETERS:  Handler         - Pointer to the global event handler function
+ *              Context         - Value passed to the handler on each event
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Saves the pointer to the handler function. The global handler
+ *              is invoked upon each incoming GPE and Fixed Event. It is
+ *              invoked at interrupt level at the time of the event dispatch.
+ *              Can be used to update event counters, etc.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiInstallGlobalEventHandler (
+    ACPI_GBL_EVENT_HANDLER  Handler,
+    void                    *Context)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (AcpiInstallGlobalEventHandler);
+
+
+    /* Parameter validation */
+
+    if (!Handler)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Don't allow two handlers. */
+
+    if (AcpiGbl_GlobalEventHandler)
+    {
+        Status = AE_ALREADY_EXISTS;
+        goto Cleanup;
+    }
+
+    AcpiGbl_GlobalEventHandler = Handler;
+    AcpiGbl_GlobalEventHandlerContext = Context;
+
+
+Cleanup:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiInstallGlobalEventHandler)
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiInstallFixedEventHandler
+ *
+ * PARAMETERS:  Event           - Event type to enable.
+ *              Handler         - Pointer to the handler function for the
+ *                                event
+ *              Context         - Value passed to the handler on each GPE
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Saves the pointer to the handler function and then enables the
+ *              event.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiInstallFixedEventHandler (
+    UINT32                  Event,
+    ACPI_EVENT_HANDLER      Handler,
+    void                    *Context)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (AcpiInstallFixedEventHandler);
+
+
+    /* Parameter validation */
+
+    if (Event > ACPI_EVENT_MAX)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Don't allow two handlers. */
+
+    if (NULL != AcpiGbl_FixedEventHandlers[Event].Handler)
+    {
+        Status = AE_ALREADY_EXISTS;
+        goto Cleanup;
+    }
+
+    /* Install the handler before enabling the event */
+
+    AcpiGbl_FixedEventHandlers[Event].Handler = Handler;
+    AcpiGbl_FixedEventHandlers[Event].Context = Context;
+
+    Status = AcpiEnableEvent (Event, 0);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_WARNING ((AE_INFO, "Could not enable fixed event 0x%X", Event));
+
+        /* Remove the handler */
+
+        AcpiGbl_FixedEventHandlers[Event].Handler = NULL;
+        AcpiGbl_FixedEventHandlers[Event].Context = NULL;
+    }
+    else
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "Enabled fixed event %X, Handler=%p\n", Event, Handler));
+    }
+
+
+Cleanup:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiInstallFixedEventHandler)
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiRemoveFixedEventHandler
+ *
+ * PARAMETERS:  Event           - Event type to disable.
+ *              Handler         - Address of the handler
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Disables the event and unregisters the event handler.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiRemoveFixedEventHandler (
+    UINT32                  Event,
+    ACPI_EVENT_HANDLER      Handler)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    ACPI_FUNCTION_TRACE (AcpiRemoveFixedEventHandler);
+
+
+    /* Parameter validation */
+
+    if (Event > ACPI_EVENT_MAX)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Disable the event before removing the handler */
+
+    Status = AcpiDisableEvent (Event, 0);
+
+    /* Always Remove the handler */
+
+    AcpiGbl_FixedEventHandlers[Event].Handler = NULL;
+    AcpiGbl_FixedEventHandlers[Event].Context = NULL;
+
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_WARNING ((AE_INFO,
+            "Could not write to fixed event enable register 0x%X", Event));
+    }
+    else
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Disabled fixed event %X\n", Event));
+    }
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiRemoveFixedEventHandler)
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiInstallGpeHandler
  *
  * PARAMETERS:  GpeDevice       - Namespace node for the GPE (NULL for FADT
@@ -1047,3 +1048,4 @@ AcpiReleaseGlobalLock (
 
 ACPI_EXPORT_SYMBOL (AcpiReleaseGlobalLock)
 
+#endif /* !ACPI_REDUCED_HARDWARE */

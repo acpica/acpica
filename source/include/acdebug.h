@@ -197,9 +197,10 @@ AcpiDbDisplayInterfaces (
     char                    *ActionArg,
     char                    *InterfaceNameArg);
 
-ACPI_STATUS
-AcpiDbSleep (
-    char                    *ObjectArg);
+ACPI_HW_DEPENDENT_RETURN_OK (\
+ACPI_STATUS \
+AcpiDbSleep ( \
+    char                    *ObjectArg))
 
 void
 AcpiDbDisplayLocks (
@@ -209,18 +210,20 @@ void
 AcpiDbDisplayResources (
     char                    *ObjectArg);
 
-void
-AcpiDbDisplayGpes (
-    void);
+ACPI_HW_DEPENDENT_RETURN_VOID (\
+void \
+AcpiDbDisplayGpes ( \
+    void))
 
 void
 AcpiDbDisplayHandlers (
     void);
 
-void
-AcpiDbGenerateGpe (
-    char                    *GpeArg,
-    char                    *BlockArg);
+ACPI_HW_DEPENDENT_RETURN_VOID (\
+void \
+AcpiDbGenerateGpe ( \
+    char                    *GpeArg, \
+    char                    *BlockArg))
 
 
 /*

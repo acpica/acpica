@@ -842,6 +842,7 @@ AcpiDbDisplayArgumentObject (
 }
 
 
+#if (!ACPI_REDUCED_HARDWARE)
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbDisplayGpes
@@ -1004,6 +1005,7 @@ AcpiDbDisplayGpes (
         GpeXruptInfo = GpeXruptInfo->Next;
     }
 }
+#endif /* !ACPI_REDUCED_HARDWARE */
 
 
 /*******************************************************************************
@@ -1083,6 +1085,8 @@ AcpiDbDisplayHandlers (
         }
     }
 
+#if (!ACPI_REDUCED_HARDWARE)
+
     /* Fixed event handlers */
 
     AcpiOsPrintf ("\nFixed Event Handlers:\n");
@@ -1100,6 +1104,8 @@ AcpiDbDisplayHandlers (
             AcpiOsPrintf (ACPI_HANDLER_NOT_PRESENT_STRING, "None");
         }
     }
+
+#endif /* !ACPI_REDUCED_HARDWARE */
 
     /* Miscellaneous global handlers */
 
