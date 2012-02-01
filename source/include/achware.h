@@ -284,22 +284,4 @@ AcpiHwDerivePciId (
     ACPI_HANDLE             PciRegion);
 
 
-/*
- * hwtimer - ACPI Timer prototypes
- */
-ACPI_STATUS
-AcpiGetTimerResolution (
-    UINT32                  *Resolution);
-
-ACPI_STATUS
-AcpiGetTimer (
-    UINT32                  *Ticks);
-
-ACPI_STATUS
-AcpiGetTimerDuration (
-    UINT32                  StartTicks,
-    UINT32                  EndTicks,
-    UINT32                  *TimeElapsed);
-
-
 #endif /* __ACHWARE_H__ */

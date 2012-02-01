@@ -706,6 +706,24 @@ AcpiSetFirmwareWakingVector64 (
 
 
 /*
+ * ACPI Timer interfaces
+ */
+ACPI_STATUS
+AcpiGetTimerResolution (
+    UINT32                  *Resolution);
+
+ACPI_STATUS
+AcpiGetTimer (
+    UINT32                  *Ticks);
+
+ACPI_STATUS
+AcpiGetTimerDuration (
+    UINT32                  StartTicks,
+    UINT32                  EndTicks,
+    UINT32                  *TimeElapsed);
+
+
+/*
  * Error/Warning output
  */
 void ACPI_INTERNAL_VAR_XFACE
