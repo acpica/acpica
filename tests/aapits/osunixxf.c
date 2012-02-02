@@ -1072,7 +1072,7 @@ AcpiOsActualWritePort (
 ACPI_STATUS
 AcpiOsActualReadMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  *Value,
+    UINT64                  *Value,
     UINT32                  Width)
 {
 
@@ -1081,6 +1081,7 @@ AcpiOsActualReadMemory (
     case 8:
     case 16:
     case 32:
+    case 64:
         *Value = 0;
         break;
 
@@ -1109,7 +1110,7 @@ AcpiOsActualReadMemory (
 ACPI_STATUS
 AcpiOsActualWriteMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  Value,
+    UINT64                  Value,
     UINT32                  Width)
 {
 

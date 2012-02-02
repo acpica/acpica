@@ -220,13 +220,13 @@ AcpiOsActualWritePort (
 ACPI_STATUS
 AcpiOsActualReadMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  *Value,
+    UINT64                  *Value,
     UINT32                  Width);
 
 ACPI_STATUS
 AcpiOsActualWriteMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  Value,
+    UINT64                  Value,
     UINT32                  Width);
 
 

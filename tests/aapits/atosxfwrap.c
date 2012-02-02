@@ -1145,7 +1145,7 @@ AcpiOsWritePort (
  *              Width               Number of bits
  *
  * RETURN:      Value read from physical memory address.  Always returned
- *              as a 32-bit integer, regardless of the read width.
+ *              as a 64-bit integer, regardless of the read width.
  *
  * DESCRIPTION: Read data from a physical memory address
  *
@@ -1154,9 +1154,12 @@ AcpiOsWritePort (
 ACPI_STATUS
 AcpiOsReadMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  *Value,
+    UINT64                  *Value,
     UINT32                  Width)
 {
+    UINT32                  Value32;
+
+
     AT_CTRL_DECL(AcpiOsReadMemory);
 
     AT_CHCK_RET_STATUS(AcpiOsReadMemory);
@@ -1166,7 +1169,8 @@ AcpiOsReadMemory (
     }
     else
     {
-        Status = OsxfCtrlReadReg(EMUL_REG_SYS, Address, Value, Width);
+        Status = OsxfCtrlReadReg(EMUL_REG_SYS, Address, &Value32, Width);
+        *Value = (UINT64) Value32;
     }
 
     AT_CTRL_SUCCESS(AcpiOsReadMemory);
@@ -1192,7 +1196,7 @@ AcpiOsReadMemory (
 ACPI_STATUS
 AcpiOsWriteMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  Value,
+    UINT64                  Value,
     UINT32                  Width)
 {
     AT_CTRL_DECL(AcpiOsWriteMemory);
@@ -1204,7 +1208,7 @@ AcpiOsWriteMemory (
     }
     else
     {
-        Status = OsxfCtrlWriteReg(EMUL_REG_SYS, Address, Value, Width);
+        Status = OsxfCtrlWriteReg(EMUL_REG_SYS, Address, (UINT32) Value, Width);
     }
 
     AT_CTRL_SUCCESS(AcpiOsWriteMemory);

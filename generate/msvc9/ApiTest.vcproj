@@ -2060,6 +2060,10 @@
 						/>
 					</FileConfiguration>
 				</File>
+				<File
+					RelativePath="..\..\source\components\hardware\hwxfsleep.c"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Events"

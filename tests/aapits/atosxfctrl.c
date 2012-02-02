@@ -716,7 +716,7 @@ OsxfCtrlWriteReg(
         /* Clear bits being set to 1 */
         Value = Reg->Value & ~Value;
     }
-    Status = OsxfCtrlSetReg(Reg, Value);
+    Status = OsxfCtrlSetReg(Reg, (UINT32) Value);
     if (Status == AE_OK)
     {
         Reg->WriteCount++;
