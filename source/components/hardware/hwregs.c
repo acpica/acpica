@@ -245,6 +245,7 @@ AcpiHwRead (
     ACPI_GENERIC_ADDRESS    *Reg)
 {
     UINT64                  Address;
+    UINT64                  Value64;
     ACPI_STATUS             Status;
 
 
@@ -270,7 +271,9 @@ AcpiHwRead (
     if (Reg->SpaceId == ACPI_ADR_SPACE_SYSTEM_MEMORY)
     {
         Status = AcpiOsReadMemory ((ACPI_PHYSICAL_ADDRESS)
-                    Address, Value, Reg->BitWidth);
+                    Address, &Value64, Reg->BitWidth);
+
+        *Value = (UINT32) Value64;
     }
     else /* ACPI_ADR_SPACE_SYSTEM_IO, validated earlier */
     {
@@ -329,7 +332,7 @@ AcpiHwWrite (
     if (Reg->SpaceId == ACPI_ADR_SPACE_SYSTEM_MEMORY)
     {
         Status = AcpiOsWriteMemory ((ACPI_PHYSICAL_ADDRESS)
-                    Address, Value, Reg->BitWidth);
+                    Address, (UINT64) Value, Reg->BitWidth);
     }
     else /* ACPI_ADR_SPACE_SYSTEM_IO, validated earlier */
     {

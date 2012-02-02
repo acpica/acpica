@@ -1089,9 +1089,10 @@ AcpiOsWritePort (
  *
  * PARAMETERS:  Address             - Physical Memory Address to read
  *              Value               - Where value is placed
- *              Width               - Number of bits
+ *              Width               - Number of bits (8,16,32, or 64)
  *
- * RETURN:      Value read from physical memory address
+ * RETURN:      Value read from physical memory address. Always returned
+ *              as a 64-bit integer, regardless of the read width.
  *
  * DESCRIPTION: Read data from a physical memory address
  *
@@ -1100,7 +1101,7 @@ AcpiOsWritePort (
 ACPI_STATUS
 AcpiOsReadMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  *Value,
+    UINT64                  *Value,
     UINT32                  Width)
 {
 
@@ -1109,6 +1110,7 @@ AcpiOsReadMemory (
     case 8:
     case 16:
     case 32:
+    case 64:
         *Value = 0;
         break;
 
@@ -1125,7 +1127,7 @@ AcpiOsReadMemory (
  *
  * PARAMETERS:  Address             - Physical Memory Address to write
  *              Value               - Value to write
- *              Width               - Number of bits
+ *              Width               - Number of bits (8,16,32, or 64)
  *
  * RETURN:      None
  *
@@ -1136,7 +1138,7 @@ AcpiOsReadMemory (
 ACPI_STATUS
 AcpiOsWriteMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  Value,
+    UINT64                  Value,
     UINT32                  Width)
 {
 
