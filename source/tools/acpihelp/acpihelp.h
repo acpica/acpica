@@ -140,6 +140,7 @@
 #define     AH_DECODE_PREDEFINED_NAME   3
 #define     AH_DECODE_AML               4
 #define     AH_DECODE_AML_OPCODE        5
+#define     AH_DISPLAY_DEVICE_IDS       6
 
 #define     AH_MAX_ASL_LINE_LENGTH      70
 #define     AH_MAX_AML_LINE_LENGTH      100
@@ -182,6 +183,13 @@ typedef struct ah_predefined_name
 
 } AH_PREDEFINED_NAME;
 
+typedef struct ah_device_id
+{
+    char            *Name;
+    char            *Description;
+
+} AH_DEVICE_ID;
+
 
 extern const AH_AML_OPCODE          AmlOpcodeInfo[];
 extern const AH_ASL_OPERATOR        AslOperatorInfo[];
@@ -212,5 +220,9 @@ AhFindAslOperators (
 void
 AhFindAslKeywords (
     char                    *Name);
+
+void
+AhDisplayDeviceIds (
+    void);
 
 #endif /* __ACPIHELP_H */

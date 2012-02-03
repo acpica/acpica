@@ -137,6 +137,8 @@ AhDisplayUsage (
 {
 
     ACPI_USAGE_HEADER ("acpihelp <options> [NamePrefix | HexValue]");
+    ACPI_OPTION ("-h",                      "Display help");
+    ACPI_OPTION ("-i",                      "Display known ACPI Device IDs (_HID)");
     ACPI_OPTION ("-k [NamePrefix]",         "Find/Display ASL non-operator keyword(s)");
     ACPI_OPTION ("-m [NamePrefix]",         "Find/Display AML opcode name(s)");
     ACPI_OPTION ("-o [HexValue]",           "Decode hex AML opcode");
@@ -178,8 +180,12 @@ main (
 
     /* Command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "hkmops")) != EOF) switch (j)
+    while ((j = AcpiGetopt (argc, argv, "hikmops")) != EOF) switch (j)
     {
+    case 'i':
+        DecodeType = AH_DISPLAY_DEVICE_IDS;
+        break;
+
     case 'k':
         DecodeType = AH_DECODE_ASL_KEYWORD;
         break;
@@ -230,6 +236,10 @@ main (
 
     case AH_DECODE_ASL_KEYWORD:
         AhFindAslKeywords (Name);
+        break;
+
+    case AH_DISPLAY_DEVICE_IDS:
+        AhDisplayDeviceIds ();
         break;
 
     default:
