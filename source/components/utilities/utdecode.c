@@ -639,20 +639,21 @@ AcpiUtGetMutexName (
 
 /* Names for Notify() values, used for debug output */
 
-static const char           *AcpiGbl_NotifyValueNames[] =
+static const char           *AcpiGbl_NotifyValueNames[ACPI_NOTIFY_MAX + 1] =
 {
-    "Bus Check",
-    "Device Check",
-    "Device Wake",
-    "Eject Request",
-    "Device Check Light",
-    "Frequency Mismatch",
-    "Bus Mode Mismatch",
-    "Power Fault",
-    "Capabilities Check",
-    "Device PLD Check",
-    "Reserved",
-    "System Locality Update"
+    /* 00 */ "Bus Check",
+    /* 01 */ "Device Check",
+    /* 02 */ "Device Wake",
+    /* 03 */ "Eject Request",
+    /* 04 */ "Device Check Light",
+    /* 05 */ "Frequency Mismatch",
+    /* 06 */ "Bus Mode Mismatch",
+    /* 07 */ "Power Fault",
+    /* 08 */ "Capabilities Check",
+    /* 09 */ "Device PLD Check",
+    /* 10 */ "Reserved",
+    /* 11 */ "System Locality Update",
+    /* 12 */ "Shutdown Request"
 };
 
 const char *
@@ -668,9 +669,13 @@ AcpiUtGetNotifyName (
     {
         return ("Reserved");
     }
-    else /* Greater or equal to 0x80 */
+    else if (NotifyValue <= ACPI_MAX_DEVICE_SPECIFIC_NOTIFY)
     {
-        return ("**Device Specific**");
+        return ("Device Specific");
+    }
+    else
+    {
+        return ("Hardware Specific");
     }
 }
 #endif

@@ -192,27 +192,29 @@ AcpiEvQueueNotifyRequest (
 
 
     /*
-     * For value 3 (Ejection Request), some device method may need to be run.
-     * For value 2 (Device Wake) if _PRW exists, the _PS0 method may need
-     *   to be run.
+     * For value 0x03 (Ejection Request), may need to run a device method.
+     * For value 0x02 (Device Wake), if _PRW exists, may need to run
+     *   the _PS0 method.
      * For value 0x80 (Status Change) on the power button or sleep button,
-     *   initiate soft-off or sleep operation?
+     *   initiate soft-off or sleep operation.
+     *
+     * For all cases, simply dispatch the notify to the handler.
      */
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-        "Dispatching Notify on [%4.4s] Node %p Value 0x%2.2X (%s)\n",
-        AcpiUtGetNodeName (Node), Node, NotifyValue,
-        AcpiUtGetNotifyName (NotifyValue)));
+        "Dispatching Notify on [%4.4s] (%s) Value 0x%2.2X (%s) Node %p\n",
+        AcpiUtGetNodeName (Node), AcpiUtGetTypeName (Node->Type),
+        NotifyValue, AcpiUtGetNotifyName (NotifyValue), Node));
 
     /* Get the notify object attached to the NS Node */
 
     ObjDesc = AcpiNsGetAttachedObject (Node);
     if (ObjDesc)
     {
-        /* We have the notify object, Get the right handler */
+        /* We have the notify object, Get the correct handler */
 
         switch (Node->Type)
         {
-        /* Notify allowed only on these types */
+        /* Notify is allowed only on these types */
 
         case ACPI_TYPE_DEVICE:
         case ACPI_TYPE_THERMAL:
@@ -237,7 +239,7 @@ AcpiEvQueueNotifyRequest (
     }
 
     /*
-     * If there is any handler to run, schedule the dispatcher.
+     * If there is a handler to run, schedule the dispatcher.
      * Check for:
      * 1) Global system notify handler
      * 2) Global device notify handler
