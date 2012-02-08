@@ -575,7 +575,7 @@ AcpiDmI2cSerialBusDescriptor (
     AcpiOsPrintf ("0x%2.2X, ", Resource->I2cSerialBus.ResSourceIndex);
 
     AcpiOsPrintf ("%s, ",
-        AcpiGbl_ConsumeDecode [(Resource->I2cSerialBus.Flags & 1)]);
+        AcpiGbl_ConsumeDecode [(Resource->I2cSerialBus.Flags >> 1) & 1]);
 
     /* Insert a descriptor name */
 
@@ -650,7 +650,7 @@ AcpiDmSpiSerialBusDescriptor (
     AcpiOsPrintf ("0x%2.2X, ", Resource->SpiSerialBus.ResSourceIndex);
 
     AcpiOsPrintf ("%s, ",
-        AcpiGbl_ConsumeDecode [(Resource->SpiSerialBus.Flags & 1)]);
+        AcpiGbl_ConsumeDecode [(Resource->SpiSerialBus.Flags >> 1) & 1]);
 
     /* Insert a descriptor name */
 
@@ -728,7 +728,7 @@ AcpiDmUartSerialBusDescriptor (
     AcpiOsPrintf ("0x%2.2X, ", Resource->UartSerialBus.ResSourceIndex);
 
     AcpiOsPrintf ("%s, ",
-        AcpiGbl_ConsumeDecode [(Resource->UartSerialBus.Flags & 1)]);
+        AcpiGbl_ConsumeDecode [(Resource->UartSerialBus.Flags >> 1) & 1]);
 
     /* Insert a descriptor name */
 
