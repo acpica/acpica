@@ -264,7 +264,7 @@ RsGetVendorData (
     UINT16                  ActualLength = 0;
 
 
-    /* VendorData field is always optional */
+    /* Vendor Data field is always optional */
 
     if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
     {
@@ -446,7 +446,7 @@ RsDoGpioIntDescriptor (
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Gpio.PinConfig));
             break;
 
-        case 4: /* DebounceTimeout [WORD] (_DBT) */
+        case 4: /* Debounce Timeout [WORD] (_DBT) */
 
             Descriptor->Gpio.DebounceTimeout = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateWordField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
@@ -477,7 +477,7 @@ RsDoGpioIntDescriptor (
             RsSetFlagBits16 (&Descriptor->Gpio.Flags, InitializerOp, 0, 1);
             break;
 
-        case 8: /* ResourceTag (Descriptor Name) */
+        case 8: /* Resource Tag (Descriptor Name) */
 
             UtAttachNamepathToOwner (Op, InitializerOp);
             break;
@@ -638,7 +638,7 @@ RsDoGpioIoDescriptor (
                 CurrentByteOffset + ASL_RESDESC_OFFSET (Gpio.PinConfig));
             break;
 
-        case 2: /* DebounceTimeout [WORD] (_DBT) */
+        case 2: /* Debounce Timeout [WORD] (_DBT) */
 
             Descriptor->Gpio.DebounceTimeout = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateWordField (InitializerOp, ACPI_RESTAG_DEBOUNCETIME,
@@ -683,7 +683,7 @@ RsDoGpioIoDescriptor (
             RsSetFlagBits16 (&Descriptor->Gpio.Flags, InitializerOp, 0, 1);
             break;
 
-        case 8: /* ResourceTag (Descriptor Name) */
+        case 8: /* Resource Tag (Descriptor Name) */
 
             UtAttachNamepathToOwner (Op, InitializerOp);
             break;
@@ -834,14 +834,14 @@ RsDoI2cSerialBusDescriptor (
                 CurrentByteOffset + ASL_RESDESC_OFFSET (I2cSerialBus.Flags), 0);
             break;
 
-        case 2: /* ConnectionSpeed [DWORD] (_SPE) */
+        case 2: /* Connection Speed [DWORD] (_SPE) */
 
             Descriptor->I2cSerialBus.ConnectionSpeed = (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_SPEED,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (I2cSerialBus.ConnectionSpeed));
             break;
 
-        case 3: /* Addresssing Mode [Flag] (_MOD) */
+        case 3: /* Addressing Mode [Flag] (_MOD) */
 
             RsSetFlagBits16 (&Descriptor->I2cSerialBus.TypeSpecificFlags, InitializerOp, 0, 0);
             RsCreateBitField (InitializerOp, ACPI_RESTAG_MODE,
@@ -872,7 +872,7 @@ RsDoI2cSerialBusDescriptor (
             RsSetFlagBits (&Descriptor->I2cSerialBus.Flags, InitializerOp, 1, 1);
             break;
 
-        case 7: /* ResourceTag (Descriptor Name) */
+        case 7: /* Resource Tag (Descriptor Name) */
 
             UtAttachNamepathToOwner (Op, InitializerOp);
             break;
@@ -1001,7 +1001,7 @@ RsDoSpiSerialBusDescriptor (
                 CurrentByteOffset + ASL_RESDESC_OFFSET (SpiSerialBus.Flags), 0);
             break;
 
-        case 5: /* ConnectionSpeed [DWORD] (_SPE) */
+        case 5: /* Connection Speed [DWORD] (_SPE) */
 
             Descriptor->SpiSerialBus.ConnectionSpeed = (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_SPEED,
@@ -1046,7 +1046,7 @@ RsDoSpiSerialBusDescriptor (
             RsSetFlagBits (&Descriptor->SpiSerialBus.Flags, InitializerOp, 1, 1);
             break;
 
-        case 11: /* ResourceTag (Descriptor Name) */
+        case 11: /* Resource Tag (Descriptor Name) */
 
             UtAttachNamepathToOwner (Op, InitializerOp);
             break;
@@ -1140,7 +1140,7 @@ RsDoUartSerialBusDescriptor (
     {
         switch (i)
         {
-        case 0: /* ConnectionSpeed (Baud Rate) [DWORD] (_SPE) */
+        case 0: /* Connection Speed (Baud Rate) [DWORD] (_SPE) */
 
             Descriptor->UartSerialBus.DefaultBaudRate = (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateDwordField (InitializerOp, ACPI_RESTAG_SPEED,
@@ -1237,7 +1237,7 @@ RsDoUartSerialBusDescriptor (
                 CurrentByteOffset + ASL_RESDESC_OFFSET (UartSerialBus.Flags), 0);
             break;
 
-        case 12: /* ResourceTag (Descriptor Name) */
+        case 12: /* Resource Tag (Descriptor Name) */
 
             UtAttachNamepathToOwner (Op, InitializerOp);
             break;
