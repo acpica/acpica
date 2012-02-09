@@ -122,6 +122,7 @@
 #define _COMPONENT          ACPI_TABLES
         ACPI_MODULE_NAME    ("tbutils")
 
+
 /* Local prototypes */
 
 static void
@@ -497,7 +498,7 @@ AcpiTbCopyDsdt (
  * RETURN:      None
  *
  * DESCRIPTION: Install an ACPI table into the global data structure. The
- *              table override mechanism is implemented here to allow the host
+ *              table override mechanism is called to allow the host
  *              OS to replace any table before it is installed in the root
  *              table array.
  *
@@ -509,11 +510,7 @@ AcpiTbInstallTable (
     char                    *Signature,
     UINT32                  TableIndex)
 {
-    UINT8                   Flags;
-    ACPI_STATUS             Status;
-    ACPI_TABLE_HEADER       *TableToInstall;
-    ACPI_TABLE_HEADER       *MappedTable;
-    ACPI_TABLE_HEADER       *OverrideTable = NULL;
+    ACPI_TABLE_HEADER       *Table;
 
 
     if (!Address)
@@ -525,8 +522,8 @@ AcpiTbInstallTable (
 
     /* Map just the table header */
 
-    MappedTable = AcpiOsMapMemory (Address, sizeof (ACPI_TABLE_HEADER));
-    if (!MappedTable)
+    Table = AcpiOsMapMemory (Address, sizeof (ACPI_TABLE_HEADER));
+    if (!Table)
     {
         return;
     }
@@ -534,13 +531,24 @@ AcpiTbInstallTable (
     /* If a particular signature is expected (DSDT/FACS), it must match */
 
     if (Signature &&
-        !ACPI_COMPARE_NAME (MappedTable->Signature, Signature))
+        !ACPI_COMPARE_NAME (Table->Signature, Signature))
     {
         ACPI_ERROR ((AE_INFO,
             "Invalid signature 0x%X for ACPI table, expected [%s]",
-            *ACPI_CAST_PTR (UINT32, MappedTable->Signature), Signature));
+            *ACPI_CAST_PTR (UINT32, Table->Signature), Signature));
         goto UnmapAndExit;
     }
+
+    /* Initialize the table entry */
+
+    AcpiGbl_RootTableList.Tables[TableIndex].Address = Address;
+    AcpiGbl_RootTableList.Tables[TableIndex].Pointer = Table;
+    AcpiGbl_RootTableList.Tables[TableIndex].Length = Table->Length;
+    AcpiGbl_RootTableList.Tables[TableIndex].Flags = ACPI_TABLE_ORIGIN_MAPPED;
+
+    ACPI_MOVE_32_TO_32 (
+        &(AcpiGbl_RootTableList.Tables[TableIndex].Signature),
+        Table->Signature);
 
     /*
      * ACPI Table Override:
@@ -549,46 +557,21 @@ AcpiTbInstallTable (
      * one if desired. Any table within the RSDT/XSDT can be replaced,
      * including the DSDT which is pointed to by the FADT.
      */
-    Status = AcpiOsTableOverride (MappedTable, &OverrideTable);
-    if (ACPI_SUCCESS (Status) && OverrideTable)
-    {
-        ACPI_INFO ((AE_INFO,
-            "%4.4s @ 0x%p Table override, replaced with:",
-            MappedTable->Signature, ACPI_CAST_PTR (void, Address)));
+    AcpiTbTableOverride (&AcpiGbl_RootTableList.Tables[TableIndex]);
 
-        AcpiGbl_RootTableList.Tables[TableIndex].Pointer = OverrideTable;
-        Address = ACPI_PTR_TO_PHYSADDR (OverrideTable);
-
-        TableToInstall = OverrideTable;
-        Flags = ACPI_TABLE_ORIGIN_OVERRIDE;
-    }
-    else
-    {
-        TableToInstall = MappedTable;
-        Flags = ACPI_TABLE_ORIGIN_MAPPED;
-    }
-
-    /* Initialize the table entry */
-
-    AcpiGbl_RootTableList.Tables[TableIndex].Address = Address;
-    AcpiGbl_RootTableList.Tables[TableIndex].Length = TableToInstall->Length;
-    AcpiGbl_RootTableList.Tables[TableIndex].Flags = Flags;
-
-    ACPI_MOVE_32_TO_32 (
-        &(AcpiGbl_RootTableList.Tables[TableIndex].Signature),
-        TableToInstall->Signature);
-
-    AcpiTbPrintTableHeader (Address, TableToInstall);
+    Table = AcpiGbl_RootTableList.Tables[TableIndex].Pointer;
+    AcpiTbPrintTableHeader (AcpiGbl_RootTableList.Tables[TableIndex].Address,
+        Table);
 
     if (TableIndex == ACPI_TABLE_INDEX_DSDT)
     {
         /* Global integer width is based upon revision of the DSDT */
 
-        AcpiUtSetIntegerWidth (TableToInstall->Revision);
+        AcpiUtSetIntegerWidth (Table->Revision);
     }
 
 UnmapAndExit:
-    AcpiOsUnmapMemory (MappedTable, sizeof (ACPI_TABLE_HEADER));
+    AcpiOsUnmapMemory (Table, sizeof (ACPI_TABLE_HEADER));
 }
 
 

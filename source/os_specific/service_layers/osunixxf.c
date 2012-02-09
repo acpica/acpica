@@ -286,6 +286,33 @@ AcpiOsTableOverride (
 
 /******************************************************************************
  *
+ * FUNCTION:    AcpiOsPhysicalTableOverride
+ *
+ * PARAMETERS:  ExistingTable       - Header of current table (probably firmware)
+ *              NewAddress          - Where new table address is returned
+ *                                    (Physical address)
+ *              NewTableLength      - Where new table length is returned
+ *
+ * RETURN:      Status, address/length of new table. Null pointer returned
+ *              if no table is available to override.
+ *
+ * DESCRIPTION: Returns AE_SUPPORT, function not used in user space.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsPhysicalTableOverride (
+    ACPI_TABLE_HEADER       *ExistingTable,
+    ACPI_PHYSICAL_ADDRESS   *NewAddress,
+    UINT32                  *NewTableLength)
+{
+
+    return (AE_SUPPORT);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AcpiOsRedirectOutput
  *
  * PARAMETERS:  Destination         - An open file handle/pointer

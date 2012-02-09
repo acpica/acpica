@@ -200,7 +200,6 @@ AcpiTbAddTable (
 {
     UINT32                  i;
     ACPI_STATUS             Status = AE_OK;
-    ACPI_TABLE_HEADER       *OverrideTable = NULL;
 
 
     ACPI_FUNCTION_TRACE (TbAddTable);
@@ -315,25 +314,7 @@ AcpiTbAddTable (
      * ACPI Table Override:
      * Allow the host to override dynamically loaded tables.
      */
-    Status = AcpiOsTableOverride (TableDesc->Pointer, &OverrideTable);
-    if (ACPI_SUCCESS (Status) && OverrideTable)
-    {
-        ACPI_INFO ((AE_INFO,
-            "%4.4s @ 0x%p Table override, replaced with:",
-            TableDesc->Pointer->Signature,
-            ACPI_CAST_PTR (void, TableDesc->Address)));
-
-        /* We can delete the table that was passed as a parameter */
-
-        AcpiTbDeleteTable (TableDesc);
-
-        /* Setup descriptor for the new table */
-
-        TableDesc->Address = ACPI_PTR_TO_PHYSADDR (OverrideTable);
-        TableDesc->Pointer = OverrideTable;
-        TableDesc->Length = OverrideTable->Length;
-        TableDesc->Flags = ACPI_TABLE_ORIGIN_OVERRIDE;
-    }
+    AcpiTbTableOverride (TableDesc);
 
     /* Add the table to the global root table list */
 
@@ -350,6 +331,91 @@ PrintHeader:
 Release:
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
     return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbTableOverride
+ *
+ * PARAMETERS:  TableDesc           - Table descriptor initialized for the
+ *                                    original table.
+ *
+ * RETURN:      If overridden, installs new table within the input table
+ *              descriptor.
+ *
+ * DESCRIPTION: Attempt table override by calling the OSL override functions.
+ *
+ ******************************************************************************/
+
+void
+AcpiTbTableOverride (
+    ACPI_TABLE_DESC         *TableDesc)
+{
+    ACPI_STATUS             Status;
+    ACPI_TABLE_HEADER       *NewTable = NULL;
+    ACPI_PHYSICAL_ADDRESS   NewAddress = 0;
+    UINT32                  NewTableLength = 0;
+    UINT8                   NewFlags;
+    char                    *OverrideType;
+
+
+    /* (1) Attempt logical override (returns a logical address) */
+
+    Status = AcpiOsTableOverride (TableDesc->Pointer, &NewTable);
+    if (ACPI_SUCCESS (Status) && NewTable)
+    {
+        NewAddress = ACPI_PTR_TO_PHYSADDR (NewTable);
+        NewTableLength = NewTable->Length;
+        NewFlags = ACPI_TABLE_ORIGIN_OVERRIDE;
+        OverrideType = "Logical";
+        goto FinishOverride;
+    }
+
+    /* (2) Attempt physical override (returns a physical address) */
+
+    Status = AcpiOsPhysicalTableOverride (TableDesc->Pointer,
+        &NewAddress, &NewTableLength);
+    if (ACPI_SUCCESS (Status) && NewAddress && NewTableLength)
+    {
+        /* Map memory for the new table */
+
+        NewTable = AcpiOsMapMemory (NewAddress, NewTableLength);
+        if (!NewTable)
+        {
+            ACPI_EXCEPTION ((AE_INFO, AE_NO_MEMORY,
+                "%4.4s %p Attempted physical table override failed",
+                TableDesc->Pointer->Signature,
+                ACPI_CAST_PTR (void, TableDesc->Address)));
+            return;
+        }
+
+        OverrideType = "Physical";
+        NewFlags = ACPI_TABLE_ORIGIN_MAPPED;
+        goto FinishOverride;
+    }
+
+    return; /* There was no override */
+
+
+FinishOverride:
+
+    ACPI_INFO ((AE_INFO,
+        "%4.4s %p %s table override, new table: %p",
+        TableDesc->Pointer->Signature,
+        ACPI_CAST_PTR (void, TableDesc->Address),
+        OverrideType, NewTable));
+
+    /* We can now unmap/delete the original table */
+
+    AcpiTbDeleteTable (TableDesc);
+
+    /* Setup descriptor for the new table */
+
+    TableDesc->Address = NewAddress;
+    TableDesc->Pointer = NewTable;
+    TableDesc->Length = NewTableLength;
+    TableDesc->Flags = NewFlags;
 }
 
 
