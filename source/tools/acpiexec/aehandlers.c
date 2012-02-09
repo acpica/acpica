@@ -931,7 +931,7 @@ AeRegionHandler (
             (UINT32) Address));
 
     /*
-     * Region support can be disabled with the -r option.
+     * Region support can be disabled with the -do option.
      * We use this to support dynamically loaded tables where we pass a valid
      * address to the AML.
      */

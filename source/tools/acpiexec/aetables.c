@@ -185,7 +185,7 @@ AeTableOverride (
 
     /* This code tests override of dynamically loaded tables */
 
-    else if (ACPI_COMPARE_NAME (ExistingTable->Signature, "TSDT"))
+    else if (ACPI_COMPARE_NAME (ExistingTable->Signature, "OEM9"))
     {
         *NewTable = ACPI_CAST_PTR (ACPI_TABLE_HEADER, Ssdt3Code);
     }
