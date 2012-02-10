@@ -213,7 +213,6 @@ AcpiDbConvertToNode (
 }
 
 
-#if (!ACPI_REDUCED_HARDWARE)
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbSleep
@@ -234,28 +233,47 @@ AcpiDbSleep (
     UINT8                   SleepState;
 
 
+    ACPI_FUNCTION_TRACE (AcpiDbSleep);
+
+
     SleepState = (UINT8) ACPI_STRTOUL (ObjectArg, NULL, 0);
 
     AcpiOsPrintf ("**** Prepare to sleep ****\n");
     Status = AcpiEnterSleepStatePrep (SleepState);
     if (ACPI_FAILURE (Status))
     {
-        return (Status);
+        goto ErrorExit;
     }
 
     AcpiOsPrintf ("**** Going to sleep ****\n");
     Status = AcpiEnterSleepState (SleepState);
     if (ACPI_FAILURE (Status))
     {
-        return (Status);
+        goto ErrorExit;
     }
 
-    AcpiOsPrintf ("**** returning from sleep ****\n");
+    AcpiOsPrintf ("**** Prepare to return from sleep ****\n");
+    Status = AcpiLeaveSleepStatePrep (SleepState);
+    if (ACPI_FAILURE (Status))
+    {
+        goto ErrorExit;
+    }
+
+    AcpiOsPrintf ("**** Returning from sleep ****\n");
     Status = AcpiLeaveSleepState (SleepState);
+    if (ACPI_FAILURE (Status))
+    {
+        goto ErrorExit;
+    }
 
     return (Status);
+
+
+ErrorExit:
+
+    ACPI_EXCEPTION ((AE_INFO, Status, "During sleep test"));
+    return (Status);
 }
-#endif /* !ACPI_REDUCED_HARDWARE */
 
 
 /*******************************************************************************
