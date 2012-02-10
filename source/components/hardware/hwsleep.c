@@ -522,6 +522,13 @@ AcpiHwLegacyWake (
      * are enabled before the wake methods are executed.
      */
     AcpiHwExecuteWakeMethods (SleepState);
+
+    /*
+     * Some BIOS code assumes that WAK_STS will be cleared on resume
+     * and use it to determine whether the system is rebooting or
+     * resuming. Clear WAK_STS for compatibility.
+     */
+    AcpiWriteBitRegister (ACPI_BITREG_WAKE_STATUS, 1);
     AcpiGbl_SystemAwakeAndRunning = TRUE;
 
     /* Enable power button */
@@ -681,8 +688,15 @@ AcpiHwExtendedWake (
     /* Execute the wake methods */
 
     AcpiHwExecuteWakeMethods (SleepState);
-    AcpiGbl_SystemAwakeAndRunning = TRUE;
-    AcpiHwExecuteSST (ACPI_SST_WORKING);
 
+    /*
+     * Some BIOS code assumes that WAK_STS will be cleared on resume
+     * and use it to determine whether the system is rebooting or
+     * resuming. Clear WAK_STS for compatibility.
+     */
+    (void) AcpiWrite (ACPI_X_WAKE_STATUS, &AcpiGbl_FADT.SleepStatus);
+    AcpiGbl_SystemAwakeAndRunning = TRUE;
+
+    AcpiHwExecuteSST (ACPI_SST_WORKING);
     return_ACPI_STATUS (AE_OK);
 }
