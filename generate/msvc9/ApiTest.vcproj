@@ -1907,6 +1907,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\hardware\hwesleep.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\hardware\hwgpe.c"
 					>
 					<FileConfiguration
