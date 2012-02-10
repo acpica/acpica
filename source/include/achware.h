@@ -185,8 +185,9 @@ AcpiHwClearAcpiStatus (
  * hwsleep - sleep/wake support
  */
 void
-AcpiHwExecuteSST (
-    UINT32                  Value);
+AcpiHwExecuteSleepMethod (
+    char                    *MethodName,
+    UINT32                  IntegerArgument);
 
 ACPI_STATUS
 AcpiHwExtendedSleep (

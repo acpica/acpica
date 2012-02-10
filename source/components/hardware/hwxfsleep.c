@@ -354,7 +354,7 @@ AcpiEnterSleepStatePrep (
      * Set the system indicators to show the desired sleep state.
      * _SST is an optional method (return no error if not found)
      */
-    AcpiHwExecuteSST (SstValue);
+    AcpiHwExecuteSleepMethod (METHOD_NAME__SST, SstValue);
     return_ACPI_STATUS (AE_OK);
 }
 
