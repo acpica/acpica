@@ -500,8 +500,6 @@ AcpiHwLegacyWake (
 
     AcpiGbl_SleepTypeA = ACPI_SLEEP_TYPE_INVALID;
 
-    AcpiHwExecuteWakeMethods (SleepState);
-
     /*
      * Restore the GPEs:
      * 1) Disable/Clear all GPEs
@@ -513,13 +511,18 @@ AcpiHwLegacyWake (
         return_ACPI_STATUS (Status);
     }
 
-    AcpiGbl_SystemAwakeAndRunning = TRUE;
-
     Status = AcpiHwEnableAllRuntimeGpes ();
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
+
+    /*
+     * Now we can execute _WAK, etc. Some machines require that the GPEs
+     * are enabled before the wake methods are executed.
+     */
+    AcpiHwExecuteWakeMethods (SleepState);
+    AcpiGbl_SystemAwakeAndRunning = TRUE;
 
     /* Enable power button */
 
