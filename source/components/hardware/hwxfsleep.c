@@ -119,9 +119,39 @@
 #define _COMPONENT          ACPI_HARDWARE
         ACPI_MODULE_NAME    ("hwxfsleep")
 
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiHwSleepDispatch (
+    UINT8                   SleepState,
+    UINT32                  FunctionId);
+
+/*
+ * Dispatch table used to efficiently branch to the various sleep
+ * functions.
+ */
+#define ACPI_SLEEP_FUNCTION         0
+#define ACPI_WAKE_PREP_FUNCTION     1
+#define ACPI_WAKE_FUNCTION          2
+
+/* Legacy functions are optional, based upon ACPI_REDUCED_HARDWARE */
+
+static ACPI_SLEEP_FUNCTIONS         AcpiSleepDispatch[] =
+{
+    {ACPI_HW_OPTIONAL_FUNCTION (AcpiHwLegacySleep),    AcpiHwExtendedSleep},
+    {ACPI_HW_OPTIONAL_FUNCTION (AcpiHwLegacyWakePrep), AcpiHwExtendedWakePrep},
+    {ACPI_HW_OPTIONAL_FUNCTION (AcpiHwLegacyWake),     AcpiHwExtendedWake}
+};
+
+
+/*
+ * These functions are removed for the ACPI_REDUCED_HARDWARE case:
+ *      AcpiSetFirmwareWakingVector
+ *      AcpiSetFirmwareWakingVector64
+ *      AcpiEnterSleepStateS4bios
+ */
 
 #if (!ACPI_REDUCED_HARDWARE)
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiSetFirmwareWakingVector
@@ -279,13 +309,68 @@ ACPI_EXPORT_SYMBOL (AcpiEnterSleepStateS4bios)
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiHwSleepDispatch
+ *
+ * PARAMETERS:  SleepState          - Which sleep state to enter/exit
+ *              FunctionId          - Sleep, WakePrep, or Wake
+ *
+ * RETURN:      Status from the invoked sleep handling function.
+ *
+ * DESCRIPTION: Dispatch a sleep/wake request to the appropriate handling
+ *              function.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiHwSleepDispatch (
+    UINT8                   SleepState,
+    UINT32                  FunctionId)
+{
+    ACPI_STATUS             Status;
+    ACPI_SLEEP_FUNCTIONS    *SleepFunctions = &AcpiSleepDispatch[FunctionId];
+
+
+#if (!ACPI_REDUCED_HARDWARE)
+
+    /*
+     * If the Hardware Reduced flag is set (from the FADT), we must
+     * use the extended sleep registers
+     */
+    if (AcpiGbl_ReducedHardware ||
+        AcpiGbl_FADT.SleepControl.Address)
+    {
+        Status = SleepFunctions->ExtendedFunction (SleepState);
+    }
+    else
+    {
+        /* Legacy sleep */
+
+        Status = SleepFunctions->LegacyFunction (SleepState);
+    }
+
+    return (Status);
+
+#else
+    /*
+     * For the case where reduced-hardware-only code is being generated,
+     * we know that only the extended sleep registers are available
+     */
+    Status = SleepFunctions->ExtendedFunction (SleepState);
+    return (Status);
+
+#endif /* !ACPI_REDUCED_HARDWARE */
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiEnterSleepStatePrep
  *
  * PARAMETERS:  SleepState          - Which sleep state to enter
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Prepare to enter a system sleep state (see ACPI 2.0 spec p 231)
+ * DESCRIPTION: Prepare to enter a system sleep state.
  *              This function must execute with interrupts enabled.
  *              We break sleeping into 2 stages so that OSPM can handle
  *              various OS-specific tasks between the two steps.
@@ -392,27 +477,7 @@ AcpiEnterSleepState (
         return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
     }
 
-#if (!ACPI_REDUCED_HARDWARE)
-
-    /* If Hardware Reduced flag is set, must use the extended sleep registers */
-
-    if (AcpiGbl_ReducedHardware ||
-        AcpiGbl_FADT.SleepControl.Address)
-    {
-        Status = AcpiHwExtendedSleep (SleepState);
-    }
-    else
-    {
-        /* Legacy sleep */
-
-        Status = AcpiHwLegacySleep (SleepState);
-    }
-
-#else
-    Status = AcpiHwExtendedSleep (SleepState);
-
-#endif /* !ACPI_REDUCED_HARDWARE */
-
+    Status = AcpiHwSleepDispatch (SleepState, ACPI_SLEEP_FUNCTION);
     return_ACPI_STATUS (Status);
 }
 
@@ -428,8 +493,9 @@ ACPI_EXPORT_SYMBOL (AcpiEnterSleepState)
  * RETURN:      Status
  *
  * DESCRIPTION: Perform the first state of OS-independent ACPI cleanup after a
- *              sleep.
- *              Called with interrupts DISABLED.
+ *              sleep. Called with interrupts DISABLED.
+ *              We break wake/resume into 2 stages so that OSPM can handle
+ *              various OS-specific tasks between the two steps.
  *
  ******************************************************************************/
 
@@ -440,30 +506,10 @@ AcpiLeaveSleepStatePrep (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE (AcpiLeaveSleepState);
+    ACPI_FUNCTION_TRACE (AcpiLeaveSleepStatePrep);
 
 
-#if (!ACPI_REDUCED_HARDWARE)
-
-    /* If Hardware Reduced flag is set, must use the extended sleep registers */
-
-    if (AcpiGbl_ReducedHardware ||
-        AcpiGbl_FADT.SleepControl.Address)
-    {
-        Status = AcpiHwExtendedWakePrep (SleepState);
-    }
-    else
-    {
-        /* Legacy sleep */
-
-        Status = AcpiHwLegacyWakePrep (SleepState);
-    }
-
-#else
-    Status = AcpiHwExtendedWakePrep (SleepState);
-
-#endif /* !ACPI_REDUCED_HARDWARE */
-
+    Status = AcpiHwSleepDispatch (SleepState, ACPI_WAKE_PREP_FUNCTION);
     return_ACPI_STATUS (Status);
 }
 
@@ -474,7 +520,7 @@ ACPI_EXPORT_SYMBOL (AcpiLeaveSleepStatePrep)
  *
  * FUNCTION:    AcpiLeaveSleepState
  *
- * PARAMETERS:  SleepState          - Which sleep state we just exited
+ * PARAMETERS:  SleepState          - Which sleep state we are exiting
  *
  * RETURN:      Status
  *
@@ -493,27 +539,7 @@ AcpiLeaveSleepState (
     ACPI_FUNCTION_TRACE (AcpiLeaveSleepState);
 
 
-#if (!ACPI_REDUCED_HARDWARE)
-
-    /* If Hardware Reduced flag is set, must use the extended sleep registers */
-
-    if (AcpiGbl_ReducedHardware ||
-        AcpiGbl_FADT.SleepControl.Address)
-    {
-        Status = AcpiHwExtendedWake (SleepState);
-    }
-    else
-    {
-        /* Legacy sleep */
-
-        Status = AcpiHwLegacyWake (SleepState);
-    }
-
-#else
-    Status = AcpiHwExtendedWake (SleepState);
-
-#endif /* !ACPI_REDUCED_HARDWARE */
-
+    Status = AcpiHwSleepDispatch (SleepState, ACPI_WAKE_FUNCTION);
     return_ACPI_STATUS (Status);
 }
 

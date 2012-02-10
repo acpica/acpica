@@ -866,6 +866,19 @@ typedef UINT8                           ACPI_ADR_SPACE_TYPE;
 #define ACPI_DISABLE_EVENT                      0
 
 
+/* Sleep function dispatch */
+
+typedef ACPI_STATUS (*ACPI_SLEEP_FUNCTION) (
+    UINT8                   SleepState);
+
+typedef struct acpi_sleep_functions
+{
+    ACPI_SLEEP_FUNCTION     LegacyFunction;
+    ACPI_SLEEP_FUNCTION     ExtendedFunction;
+
+} ACPI_SLEEP_FUNCTIONS;
+
+
 /*
  * External ACPI object definition
  */
