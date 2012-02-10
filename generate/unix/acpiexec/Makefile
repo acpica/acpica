@@ -117,6 +117,7 @@ OBJECTS = \
 	$(OBJDIR)/exutils.o \
 	$(OBJDIR)/getopt.o \
 	$(OBJDIR)/hwacpi.o \
+	$(OBJDIR)/hwesleep.o \
 	$(OBJDIR)/hwgpe.o \
 	$(OBJDIR)/hwpci.o \
 	$(OBJDIR)/hwregs.o \

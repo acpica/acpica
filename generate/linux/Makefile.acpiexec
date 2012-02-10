@@ -150,6 +150,7 @@ OBJECTS = \
 	exutils.o \
 	getopt.o \
 	hwacpi.o \
+	hwesleep.o \
 	hwgpe.o \
 	hwpci.o \
 	hwregs.o \

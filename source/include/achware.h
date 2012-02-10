@@ -182,7 +182,23 @@ AcpiHwClearAcpiStatus (
 
 
 /*
- * hwsleep - sleep/wake support
+ * hwsleep - sleep/wake support (Legacy sleep registers)
+ */
+ACPI_STATUS
+AcpiHwLegacySleep (
+    UINT8                   SleepState);
+
+ACPI_STATUS
+AcpiHwLegacyWakePrep (
+    UINT8                   SleepState);
+
+ACPI_STATUS
+AcpiHwLegacyWake (
+    UINT8                   SleepState);
+
+
+/*
+ * hwesleep - sleep/wake support (Extended FADT-V5 sleep registers)
  */
 void
 AcpiHwExecuteSleepMethod (
@@ -194,23 +210,11 @@ AcpiHwExtendedSleep (
     UINT8                   SleepState);
 
 ACPI_STATUS
-AcpiHwLegacySleep (
-    UINT8                   SleepState);
-
-ACPI_STATUS
 AcpiHwExtendedWakePrep (
     UINT8                   SleepState);
 
 ACPI_STATUS
 AcpiHwExtendedWake (
-    UINT8                   SleepState);
-
-ACPI_STATUS
-AcpiHwLegacyWakePrep (
-    UINT8                   SleepState);
-
-ACPI_STATUS
-AcpiHwLegacyWake (
     UINT8                   SleepState);
 
 
