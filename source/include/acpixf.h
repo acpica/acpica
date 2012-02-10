@@ -754,6 +754,10 @@ AcpiEnterSleepStateS4bios ( \
     void))
 
 ACPI_STATUS
+AcpiLeaveSleepStatePrep (
+    UINT8                   SleepState);
+
+ACPI_STATUS
 AcpiLeaveSleepState (
     UINT8                   SleepState);
 

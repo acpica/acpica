@@ -126,7 +126,11 @@ AcpiHwExecuteGTS (
     UINT8                   SleepState);
 
 static void
-AcpiHwExecuteWakeMethods (
+AcpiHwExecuteBFS (
+    UINT8                   SleepState);
+
+static void
+AcpiHwExecuteWAK (
     UINT8                   SleepState);
 
 
@@ -168,6 +172,79 @@ AcpiHwExecuteGTS (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiHwExecuteBFS
+ *
+ * PARAMETERS:  SleepState          - Which sleep state we just exited
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Execute the optional _BFS method (Back From Sleep)
+ *
+ ******************************************************************************/
+
+static void
+AcpiHwExecuteBFS (
+    UINT8                   SleepState)
+{
+    ACPI_OBJECT_LIST        ArgList;
+    ACPI_OBJECT             Arg;
+    ACPI_STATUS             Status;
+
+
+    /* One argument, SleepState */
+
+    ArgList.Count = 1;
+    ArgList.Pointer = &Arg;
+    Arg.Type = ACPI_TYPE_INTEGER;
+    Arg.Integer.Value = SleepState;
+
+    Status = AcpiEvaluateObject (NULL, METHOD_NAME__BFS, &ArgList, NULL);
+    if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status, "While executing method _BFS"));
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiHwExecuteWAK
+ *
+ * PARAMETERS:  SleepState          - Which sleep state we just exited
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Execute the _WAK method (System Wake)
+ *
+ ******************************************************************************/
+
+static void
+AcpiHwExecuteWAK (
+    UINT8                   SleepState)
+{
+    ACPI_OBJECT_LIST        ArgList;
+    ACPI_OBJECT             Arg;
+    ACPI_STATUS             Status;
+
+
+    /* One argument, SleepState */
+
+    ArgList.Count = 1;
+    ArgList.Pointer = &Arg;
+    Arg.Type = ACPI_TYPE_INTEGER;
+    Arg.Integer.Value = SleepState;
+
+    Status = AcpiEvaluateObject (NULL, METHOD_NAME__WAK, &ArgList, NULL);
+    if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status, "While executing method _WAK"));
+    }
+    /* TBD: _WAK "sometimes" returns stuff - do we want to look at it? */
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiHwExecuteSST
  *
  * PARAMETERS:  IndicatorId         - Value to be passed to the _SST method
@@ -199,61 +276,6 @@ AcpiHwExecuteSST (
     {
         ACPI_EXCEPTION ((AE_INFO, Status, "While executing method _SST"));
     }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiHwExecuteWakeMethods
- *
- * PARAMETERS:  SleepState          - Which sleep state we just exited
- *
- * RETURN:      None
- *
- * DESCRIPTION: Execute optional methods associated with a wake event:
- *              _SST: System Status - set system indicator light
- *              _BFS: Back From Sleep - inform AML of the wake event
- *              _WAK: Wake - inform AML of the wake event
- *
- ******************************************************************************/
-
-static void
-AcpiHwExecuteWakeMethods (
-    UINT8                   SleepState)
-{
-    ACPI_OBJECT_LIST        ArgList;
-    ACPI_OBJECT             Arg;
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_TRACE (HwExecuteWakeMethods);
-
-
-    AcpiHwExecuteSST (ACPI_SST_WAKING);
-
-    /* Setup parameter object */
-
-    ArgList.Count = 1;
-    ArgList.Pointer = &Arg;
-    Arg.Type = ACPI_TYPE_INTEGER;
-    Arg.Integer.Value = SleepState;
-
-    /* These methods have the same SleepState argument */
-
-    Status = AcpiEvaluateObject (NULL, METHOD_NAME__BFS, &ArgList, NULL);
-    if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
-    {
-        ACPI_EXCEPTION ((AE_INFO, Status, "While executing method _BFS"));
-    }
-
-    Status = AcpiEvaluateObject (NULL, METHOD_NAME__WAK, &ArgList, NULL);
-    if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
-    {
-        ACPI_EXCEPTION ((AE_INFO, Status, "While executing method _WAK"));
-    }
-    /* TBD: _WAK "sometimes" returns stuff - do we want to look at it? */
-
-    return_VOID;
 }
 
 
@@ -433,19 +455,20 @@ AcpiHwLegacySleep (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiHwLegacyWake
+ * FUNCTION:    AcpiHwLegacyWakePrep
  *
  * PARAMETERS:  SleepState          - Which sleep state we just exited
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Perform OS-independent ACPI cleanup after a sleep
+ * DESCRIPTION: Perform the first state of OS-independent ACPI cleanup after a
+ *              sleep.
  *              Called with interrupts ENABLED.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiHwLegacyWake (
+AcpiHwLegacyWakePrep (
     UINT8                   SleepState)
 {
     ACPI_STATUS             Status;
@@ -455,7 +478,7 @@ AcpiHwLegacyWake (
     UINT32                  Pm1bControl;
 
 
-    ACPI_FUNCTION_TRACE (AcpiHwLegacyWake);
+    ACPI_FUNCTION_TRACE (HwLegacyWakePrep);
 
     /*
      * Set SLP_TYPE and SLP_EN to state S0.
@@ -496,11 +519,43 @@ AcpiHwLegacyWake (
         }
     }
 
+    AcpiHwExecuteBFS (SleepState);
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiHwLegacyWake
+ *
+ * PARAMETERS:  SleepState          - Which sleep state we just exited
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Perform OS-independent ACPI cleanup after a sleep
+ *              Called with interrupts ENABLED.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiHwLegacyWake (
+    UINT8                   SleepState)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (HwLegacyWake);
+
+
     /* Ensure EnterSleepStatePrep -> EnterSleepState ordering */
 
     AcpiGbl_SleepTypeA = ACPI_SLEEP_TYPE_INVALID;
+    AcpiHwExecuteSST (ACPI_SST_WAKING);
 
     /*
+     * GPEs must be enabled before _WAK is called as GPEs
+     * might get fired there
+     *
      * Restore the GPEs:
      * 1) Disable/Clear all GPEs
      * 2) Enable all runtime GPEs
@@ -521,7 +576,7 @@ AcpiHwLegacyWake (
      * Now we can execute _WAK, etc. Some machines require that the GPEs
      * are enabled before the wake methods are executed.
      */
-    AcpiHwExecuteWakeMethods (SleepState);
+    AcpiHwExecuteWAK (SleepState);
 
     /*
      * Some BIOS code assumes that WAK_STS will be cleared on resume
@@ -648,6 +703,46 @@ AcpiHwExtendedSleep (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiHwExtendedWakePrep
+ *
+ * PARAMETERS:  SleepState          - Which sleep state we just exited
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Perform first part of OS-independent ACPI cleanup after
+ *              a sleep. Called with interrupts ENABLED.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiHwExtendedWakePrep (
+    UINT8                   SleepState)
+{
+    ACPI_STATUS             Status;
+    UINT8                   SleepTypeValue;
+
+
+    ACPI_FUNCTION_TRACE (HwExtendedWakePrep);
+
+
+    Status = AcpiGetSleepTypeData (ACPI_STATE_S0,
+                    &AcpiGbl_SleepTypeA, &AcpiGbl_SleepTypeB);
+    if (ACPI_SUCCESS (Status))
+    {
+        SleepTypeValue = ((AcpiGbl_SleepTypeA << ACPI_X_SLEEP_TYPE_POSITION) &
+            ACPI_X_SLEEP_TYPE_MASK);
+
+        (void) AcpiWrite ((SleepTypeValue | ACPI_X_SLEEP_ENABLE),
+            &AcpiGbl_FADT.SleepControl);
+    }
+
+    AcpiHwExecuteBFS (SleepState);
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiHwExtendedWake
  *
  * PARAMETERS:  SleepState          - Which sleep state we just exited
@@ -663,23 +758,8 @@ ACPI_STATUS
 AcpiHwExtendedWake (
     UINT8                   SleepState)
 {
-    ACPI_STATUS             Status;
-    UINT8                   SleepTypeValue;
+    ACPI_FUNCTION_TRACE (HwExtendedWake);
 
-
-    ACPI_FUNCTION_TRACE (AcpiHwExtendedWake);
-
-
-    Status = AcpiGetSleepTypeData (ACPI_STATE_S0,
-                    &AcpiGbl_SleepTypeA, &AcpiGbl_SleepTypeB);
-    if (ACPI_SUCCESS (Status))
-    {
-        SleepTypeValue = ((AcpiGbl_SleepTypeA << ACPI_X_SLEEP_TYPE_POSITION) &
-            ACPI_X_SLEEP_TYPE_MASK);
-
-        (void) AcpiWrite ((SleepTypeValue | ACPI_X_SLEEP_ENABLE),
-            &AcpiGbl_FADT.SleepControl);
-    }
 
     /* Ensure EnterSleepStatePrep -> EnterSleepState ordering */
 
@@ -687,7 +767,8 @@ AcpiHwExtendedWake (
 
     /* Execute the wake methods */
 
-    AcpiHwExecuteWakeMethods (SleepState);
+    AcpiHwExecuteSST (ACPI_SST_WAKING);
+    AcpiHwExecuteWAK (SleepState);
 
     /*
      * Some BIOS code assumes that WAK_STS will be cleared on resume

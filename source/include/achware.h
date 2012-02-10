@@ -197,7 +197,15 @@ AcpiHwLegacySleep (
     UINT8                   SleepState);
 
 ACPI_STATUS
+AcpiHwExtendedWakePrep (
+    UINT8                   SleepState);
+
+ACPI_STATUS
 AcpiHwExtendedWake (
+    UINT8                   SleepState);
+
+ACPI_STATUS
+AcpiHwLegacyWakePrep (
     UINT8                   SleepState);
 
 ACPI_STATUS

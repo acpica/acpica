@@ -421,6 +421,57 @@ ACPI_EXPORT_SYMBOL (AcpiEnterSleepState)
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiLeaveSleepStatePrep
+ *
+ * PARAMETERS:  SleepState          - Which sleep state we are exiting
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Perform the first state of OS-independent ACPI cleanup after a
+ *              sleep.
+ *              Called with interrupts DISABLED.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiLeaveSleepStatePrep (
+    UINT8                   SleepState)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (AcpiLeaveSleepState);
+
+
+#if (!ACPI_REDUCED_HARDWARE)
+
+    /* If Hardware Reduced flag is set, must use the extended sleep registers */
+
+    if (AcpiGbl_ReducedHardware ||
+        AcpiGbl_FADT.SleepControl.Address)
+    {
+        Status = AcpiHwExtendedWakePrep (SleepState);
+    }
+    else
+    {
+        /* Legacy sleep */
+
+        Status = AcpiHwLegacyWakePrep (SleepState);
+    }
+
+#else
+    Status = AcpiHwExtendedWakePrep (SleepState);
+
+#endif /* !ACPI_REDUCED_HARDWARE */
+
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiLeaveSleepStatePrep)
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiLeaveSleepState
  *
  * PARAMETERS:  SleepState          - Which sleep state we just exited
