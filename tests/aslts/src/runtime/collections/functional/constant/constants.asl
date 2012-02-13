@@ -63,7 +63,7 @@ Method(CST1)
 		err(ts, z002, 5, 0, 0, Revision, 0x20500000)
 	}
 
-	if (LNotEqual(\_REV, 3)){
-		err(ts, z002, 6, 0, 0, \_REV, 3)
+	if (LNotEqual(\_REV, 5)){
+		err(ts, z002, 6, 0, 0, \_REV, 5)
 	}
 }
