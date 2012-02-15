@@ -448,6 +448,8 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_SEMAPHORE",                      SRC_TYPE_SIMPLE},
     {"ACPI_SIGNAL_FATAL_INFO",              SRC_TYPE_STRUCT},
     {"ACPI_SIZE",                           SRC_TYPE_SIMPLE},
+    {"ACPI_SLEEP_FUNCTION",                 SRC_TYPE_SIMPLE},
+    {"ACPI_SLEEP_FUNCTIONS",                SRC_TYPE_STRUCT},
     {"ACPI_SPINLOCK",                       SRC_TYPE_SIMPLE},
     {"ACPI_STATISTICS",                     SRC_TYPE_STRUCT},
     {"ACPI_STATUS",                         SRC_TYPE_SIMPLE},
