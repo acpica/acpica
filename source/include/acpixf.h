@@ -210,14 +210,14 @@ AcpiTerminate (
 /*
  * Miscellaneous global interfaces
  */
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiEnable ( \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiEnable (
     void))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiDisable ( \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiDisable (
     void))
 
 ACPI_STATUS
@@ -424,39 +424,39 @@ AcpiInstallInitializationHandler (
     ACPI_INIT_HANDLER       Handler,
     UINT32                  Function);
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
 AcpiInstallGlobalEventHandler (
-    ACPI_GBL_EVENT_HANDLER  Handler, \
+    ACPI_GBL_EVENT_HANDLER  Handler,
     void                    *Context))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiInstallFixedEventHandler ( \
-    UINT32                  AcpiEvent, \
-    ACPI_EVENT_HANDLER      Handler, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiInstallFixedEventHandler (
+    UINT32                  AcpiEvent,
+    ACPI_EVENT_HANDLER      Handler,
     void                    *Context))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiRemoveFixedEventHandler ( \
-    UINT32                  AcpiEvent, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiRemoveFixedEventHandler (
+    UINT32                  AcpiEvent,
     ACPI_EVENT_HANDLER      Handler))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiInstallGpeHandler ( \
-    ACPI_HANDLE             GpeDevice, \
-    UINT32                  GpeNumber, \
-    UINT32                  Type, \
-    ACPI_GPE_HANDLER        Address, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiInstallGpeHandler (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber,
+    UINT32                  Type,
+    ACPI_GPE_HANDLER        Address,
     void                    *Context))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
 AcpiRemoveGpeHandler (
-    ACPI_HANDLE             GpeDevice, \
-    UINT32                  GpeNumber, \
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber,
     ACPI_GPE_HANDLER        Address))
 
 ACPI_STATUS
@@ -498,15 +498,15 @@ AcpiInstallInterfaceHandler (
 /*
  * Global Lock interfaces
  */
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiAcquireGlobalLock ( \
-    UINT16                  Timeout, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiAcquireGlobalLock (
+    UINT16                  Timeout,
     UINT32                  *Handle))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiReleaseGlobalLock ( \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiReleaseGlobalLock (
     UINT32                  Handle))
 
 
@@ -528,117 +528,117 @@ AcpiReleaseMutex (
 /*
  * Fixed Event interfaces
  */
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiEnableEvent ( \
-    UINT32                  Event, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiEnableEvent (
+    UINT32                  Event,
     UINT32                  Flags))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiDisableEvent ( \
-    UINT32                  Event, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiDisableEvent (
+    UINT32                  Event,
     UINT32                  Flags))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiClearEvent ( \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiClearEvent (
     UINT32                  Event))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiGetEventStatus ( \
-    UINT32                  Event, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiGetEventStatus (
+    UINT32                  Event,
     ACPI_EVENT_STATUS       *EventStatus))
 
 
 /*
  * General Purpose Event (GPE) Interfaces
  */
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiUpdateAllGpes ( \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiUpdateAllGpes (
     void))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiEnableGpe ( \
-    ACPI_HANDLE             GpeDevice, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiEnableGpe (
+    ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiDisableGpe ( \
-    ACPI_HANDLE             GpeDevice, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiDisableGpe (
+    ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiClearGpe ( \
-    ACPI_HANDLE             GpeDevice, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiClearGpe (
+    ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiSetGpe ( \
-    ACPI_HANDLE             GpeDevice, \
-    UINT32                  GpeNumber, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiSetGpe (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber,
     UINT8                   Action))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiFinishGpe ( \
-    ACPI_HANDLE             GpeDevice, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiFinishGpe (
+    ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiSetupGpeForWake ( \
-    ACPI_HANDLE             ParentDevice, \
-    ACPI_HANDLE             GpeDevice, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiSetupGpeForWake (
+    ACPI_HANDLE             ParentDevice,
+    ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiSetGpeWakeMask ( \
-    ACPI_HANDLE             GpeDevice, \
-    UINT32                  GpeNumber, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiSetGpeWakeMask (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber,
     UINT8                   Action))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiGetGpeStatus ( \
-    ACPI_HANDLE             GpeDevice, \
-    UINT32                  GpeNumber, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiGetGpeStatus (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber,
     ACPI_EVENT_STATUS       *EventStatus))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiDisableAllGpes ( \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiDisableAllGpes (
     void))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
 AcpiEnableAllRuntimeGpes (
     void))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiGetGpeDevice ( \
-    UINT32                  GpeIndex, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiGetGpeDevice (
+    UINT32                  GpeIndex,
     ACPI_HANDLE             *GpeDevice))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiInstallGpeBlock ( \
-    ACPI_HANDLE             GpeDevice, \
-    ACPI_GENERIC_ADDRESS    *GpeBlockAddress, \
-    UINT32                  RegisterCount, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiInstallGpeBlock (
+    ACPI_HANDLE             GpeDevice,
+    ACPI_GENERIC_ADDRESS    *GpeBlockAddress,
+    UINT32                  RegisterCount,
     UINT32                  InterruptNumber))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiRemoveGpeBlock ( \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiRemoveGpeBlock (
     ACPI_HANDLE             GpeDevice))
 
 
@@ -718,16 +718,16 @@ AcpiWrite (
     UINT64                  Value,
     ACPI_GENERIC_ADDRESS    *Reg);
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiReadBitRegister ( \
-    UINT32                  RegisterId, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiReadBitRegister (
+    UINT32                  RegisterId,
     UINT32                  *ReturnValue))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiWriteBitRegister ( \
-    UINT32                  RegisterId, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiWriteBitRegister (
+    UINT32                  RegisterId,
     UINT32                  Value))
 
 
@@ -748,9 +748,9 @@ ACPI_STATUS
 AcpiEnterSleepState (
     UINT8                   SleepState);
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiEnterSleepStateS4bios ( \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiEnterSleepStateS4bios (
     void))
 
 ACPI_STATUS
@@ -761,15 +761,15 @@ ACPI_STATUS
 AcpiLeaveSleepState (
     UINT8                   SleepState);
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiSetFirmwareWakingVector ( \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiSetFirmwareWakingVector (
     UINT32                  PhysicalAddress))
 
 #if ACPI_MACHINE_WIDTH == 64
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiSetFirmwareWakingVector64 ( \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiSetFirmwareWakingVector64 (
     UINT64                  PhysicalAddress))
 #endif
 
@@ -777,21 +777,21 @@ AcpiSetFirmwareWakingVector64 ( \
 /*
  * ACPI Timer interfaces
  */
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiGetTimerResolution ( \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiGetTimerResolution (
     UINT32                  *Resolution))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiGetTimer ( \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiGetTimer (
     UINT32                  *Ticks))
 
-ACPI_HW_DEPENDENT_RETURN_STATUS ( \
-ACPI_STATUS \
-AcpiGetTimerDuration ( \
-    UINT32                  StartTicks, \
-    UINT32                  EndTicks, \
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiGetTimerDuration (
+    UINT32                  StartTicks,
+    UINT32                  EndTicks,
     UINT32                  *TimeElapsed))
 
 
