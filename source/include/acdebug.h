@@ -197,10 +197,9 @@ AcpiDbDisplayInterfaces (
     char                    *ActionArg,
     char                    *InterfaceNameArg);
 
-ACPI_HW_DEPENDENT_RETURN_OK (\
-ACPI_STATUS \
-AcpiDbSleep ( \
-    char                    *ObjectArg))
+ACPI_STATUS
+AcpiDbSleep (
+    char                    *ObjectArg);
 
 void
 AcpiDbDisplayLocks (
