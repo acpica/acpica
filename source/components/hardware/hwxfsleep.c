@@ -130,9 +130,9 @@ AcpiHwSleepDispatch (
  * Dispatch table used to efficiently branch to the various sleep
  * functions.
  */
-#define ACPI_SLEEP_FUNCTION         0
-#define ACPI_WAKE_PREP_FUNCTION     1
-#define ACPI_WAKE_FUNCTION          2
+#define ACPI_SLEEP_FUNCTION_ID          0
+#define ACPI_WAKE_PREP_FUNCTION_ID      1
+#define ACPI_WAKE_FUNCTION_ID           2
 
 /* Legacy functions are optional, based upon ACPI_REDUCED_HARDWARE */
 
@@ -477,7 +477,7 @@ AcpiEnterSleepState (
         return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
     }
 
-    Status = AcpiHwSleepDispatch (SleepState, ACPI_SLEEP_FUNCTION);
+    Status = AcpiHwSleepDispatch (SleepState, ACPI_SLEEP_FUNCTION_ID);
     return_ACPI_STATUS (Status);
 }
 
@@ -509,7 +509,7 @@ AcpiLeaveSleepStatePrep (
     ACPI_FUNCTION_TRACE (AcpiLeaveSleepStatePrep);
 
 
-    Status = AcpiHwSleepDispatch (SleepState, ACPI_WAKE_PREP_FUNCTION);
+    Status = AcpiHwSleepDispatch (SleepState, ACPI_WAKE_PREP_FUNCTION_ID);
     return_ACPI_STATUS (Status);
 }
 
@@ -539,7 +539,7 @@ AcpiLeaveSleepState (
     ACPI_FUNCTION_TRACE (AcpiLeaveSleepState);
 
 
-    Status = AcpiHwSleepDispatch (SleepState, ACPI_WAKE_FUNCTION);
+    Status = AcpiHwSleepDispatch (SleepState, ACPI_WAKE_FUNCTION_ID);
     return_ACPI_STATUS (Status);
 }
 

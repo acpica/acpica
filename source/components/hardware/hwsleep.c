@@ -425,7 +425,7 @@ AcpiHwLegacyWake (
      * and use it to determine whether the system is rebooting or
      * resuming. Clear WAK_STS for compatibility.
      */
-    AcpiWriteBitRegister (ACPI_BITREG_WAKE_STATUS, 1);
+    (void) AcpiWriteBitRegister (ACPI_BITREG_WAKE_STATUS, ACPI_CLEAR_STATUS);
     AcpiGbl_SystemAwakeAndRunning = TRUE;
 
     /* Enable power button */

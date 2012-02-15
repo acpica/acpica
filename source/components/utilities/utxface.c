@@ -122,14 +122,12 @@
 #include "acnamesp.h"
 #include "acdebug.h"
 #include "actables.h"
-#include "acinterp.h"
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utxface")
 
 
 #ifndef ACPI_ASL_COMPILER
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiInitializeSubsystem

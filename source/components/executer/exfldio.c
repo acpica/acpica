@@ -422,8 +422,6 @@ AcpiExRegisterOverflow (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT64                  Value)
 {
-    ACPI_FUNCTION_NAME (ExRegisterOverflow);
-
 
     if (ObjDesc->CommonField.BitLength >= ACPI_INTEGER_BIT_SIZE)
     {
