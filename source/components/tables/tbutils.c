@@ -511,6 +511,8 @@ AcpiTbInstallTable (
     UINT32                  TableIndex)
 {
     ACPI_TABLE_HEADER       *Table;
+    ACPI_TABLE_HEADER       *FinalTable;
+    ACPI_TABLE_DESC         *TableDesc;
 
 
     if (!Address)
@@ -525,6 +527,8 @@ AcpiTbInstallTable (
     Table = AcpiOsMapMemory (Address, sizeof (ACPI_TABLE_HEADER));
     if (!Table)
     {
+        ACPI_ERROR ((AE_INFO, "Could not map memory for table [%s] at %p",
+            Signature, ACPI_CAST_PTR (void, Address)));
         return;
     }
 
@@ -539,16 +543,17 @@ AcpiTbInstallTable (
         goto UnmapAndExit;
     }
 
-    /* Initialize the table entry */
+    /*
+     * Initialize the table entry. Set the pointer to NULL, since the
+     * table is not fully mapped at this time.
+     */
+    TableDesc = &AcpiGbl_RootTableList.Tables[TableIndex];
 
-    AcpiGbl_RootTableList.Tables[TableIndex].Address = Address;
-    AcpiGbl_RootTableList.Tables[TableIndex].Pointer = Table;
-    AcpiGbl_RootTableList.Tables[TableIndex].Length = Table->Length;
-    AcpiGbl_RootTableList.Tables[TableIndex].Flags = ACPI_TABLE_ORIGIN_MAPPED;
-
-    ACPI_MOVE_32_TO_32 (
-        &(AcpiGbl_RootTableList.Tables[TableIndex].Signature),
-        Table->Signature);
+    TableDesc->Address = Address;
+    TableDesc->Pointer = NULL;
+    TableDesc->Length = Table->Length;
+    TableDesc->Flags = ACPI_TABLE_ORIGIN_MAPPED;
+    ACPI_MOVE_32_TO_32 (TableDesc->Signature.Ascii, Table->Signature);
 
     /*
      * ACPI Table Override:
@@ -556,21 +561,31 @@ AcpiTbInstallTable (
      * Before we install the table, let the host OS override it with a new
      * one if desired. Any table within the RSDT/XSDT can be replaced,
      * including the DSDT which is pointed to by the FADT.
+     *
+     * NOTE: If the table is overridden, then FinalTable will contain a
+     * mapped pointer to the full new table. If the table is not overridden,
+     * then the table will be fully mapped elsewhere (in verify table).
+     * In any case, we must unmap the header that was mapped above.
      */
-    AcpiTbTableOverride (&AcpiGbl_RootTableList.Tables[TableIndex]);
+    FinalTable = AcpiTbTableOverride (Table, TableDesc);
+    if (!FinalTable)
+    {
+        FinalTable = Table; /* There was no override */
+    }
 
-    Table = AcpiGbl_RootTableList.Tables[TableIndex].Pointer;
-    AcpiTbPrintTableHeader (AcpiGbl_RootTableList.Tables[TableIndex].Address,
-        Table);
+    AcpiTbPrintTableHeader (TableDesc->Address, FinalTable);
+
+    /* Set the global integer width (based upon revision of the DSDT) */
 
     if (TableIndex == ACPI_TABLE_INDEX_DSDT)
     {
-        /* Global integer width is based upon revision of the DSDT */
-
-        AcpiUtSetIntegerWidth (Table->Revision);
+        AcpiUtSetIntegerWidth (FinalTable->Revision);
     }
 
 UnmapAndExit:
+
+    /* Always unmap the table header that we mapped above */
+
     AcpiOsUnmapMemory (Table, sizeof (ACPI_TABLE_HEADER));
 }
 
