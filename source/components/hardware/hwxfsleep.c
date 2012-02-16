@@ -406,7 +406,7 @@ AcpiEnterSleepStatePrep (
     Arg.Type = ACPI_TYPE_INTEGER;
     Arg.Integer.Value = SleepState;
 
-    Status = AcpiEvaluateObject (NULL, METHOD_NAME__PTS, &ArgList, NULL);
+    Status = AcpiEvaluateObject (NULL, METHOD_PATHNAME__PTS, &ArgList, NULL);
     if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
         return_ACPI_STATUS (Status);
@@ -439,7 +439,7 @@ AcpiEnterSleepStatePrep (
      * Set the system indicators to show the desired sleep state.
      * _SST is an optional method (return no error if not found)
      */
-    AcpiHwExecuteSleepMethod (METHOD_NAME__SST, SstValue);
+    AcpiHwExecuteSleepMethod (METHOD_PATHNAME__SST, SstValue);
     return_ACPI_STATUS (AE_OK);
 }
 

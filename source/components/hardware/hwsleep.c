@@ -202,7 +202,7 @@ AcpiHwLegacySleep (
 
     /* Execute the _GTS method (Going To Sleep) */
 
-    AcpiHwExecuteSleepMethod (METHOD_NAME__GTS, SleepState);
+    AcpiHwExecuteSleepMethod (METHOD_PATHNAME__GTS, SleepState);
 
     /* Get current value of PM1A control */
 
@@ -361,7 +361,7 @@ AcpiHwLegacyWakePrep (
         }
     }
 
-    AcpiHwExecuteSleepMethod (METHOD_NAME__BFS, SleepState);
+    AcpiHwExecuteSleepMethod (METHOD_PATHNAME__BFS, SleepState);
     return_ACPI_STATUS (Status);
 }
 
@@ -392,7 +392,7 @@ AcpiHwLegacyWake (
     /* Ensure EnterSleepStatePrep -> EnterSleepState ordering */
 
     AcpiGbl_SleepTypeA = ACPI_SLEEP_TYPE_INVALID;
-    AcpiHwExecuteSleepMethod (METHOD_NAME__SST, ACPI_SST_WAKING);
+    AcpiHwExecuteSleepMethod (METHOD_PATHNAME__SST, ACPI_SST_WAKING);
 
     /*
      * GPEs must be enabled before _WAK is called as GPEs
@@ -418,7 +418,7 @@ AcpiHwLegacyWake (
      * Now we can execute _WAK, etc. Some machines require that the GPEs
      * are enabled before the wake methods are executed.
      */
-    AcpiHwExecuteSleepMethod (METHOD_NAME__WAK, SleepState);
+    AcpiHwExecuteSleepMethod (METHOD_PATHNAME__WAK, SleepState);
 
     /*
      * Some BIOS code assumes that WAK_STS will be cleared on resume
@@ -449,7 +449,7 @@ AcpiHwLegacyWake (
         return_ACPI_STATUS (Status);
     }
 
-    AcpiHwExecuteSleepMethod (METHOD_NAME__SST, ACPI_SST_WORKING);
+    AcpiHwExecuteSleepMethod (METHOD_PATHNAME__SST, ACPI_SST_WORKING);
     return_ACPI_STATUS (Status);
 }
 
