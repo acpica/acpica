@@ -85,7 +85,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/LTCG"
-				AdditionalDependencies="..\..\tools_3rd_party\BisonFlex\libflex.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib"
 				OutputFile=".\AslCompiler\AslCompiler.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -188,7 +188,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\tools_3rd_party\BisonFlex\libflex.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib"
 				OutputFile=".\AslCompilerDebug\AslCompiler.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -3440,8 +3440,8 @@
 				>
 				<Tool
 					Name="VCCustomBuildTool"
-					Description="Flex - lexer generation ($(InputPath))"
-					CommandLine="..\..\Tools_3rd_Party\BisonFlex\flex.exe -PAslCompiler -i -s -oAslCompiler\$(InputName).l.c $(InputPath)&#x0D;&#x0A;"
+					Description="Flex - Main compiler lexer generation ($(InputPath))"
+					CommandLine="c:\GnuWin32\bin\flex.exe -PAslCompiler -i -s -oAslCompiler\$(InputName).l.c $(InputPath)&#x0D;&#x0A;"
 					Outputs="AslCompiler\$(InputName).l.c "
 				/>
 			</FileConfiguration>
@@ -3450,8 +3450,8 @@
 				>
 				<Tool
 					Name="VCCustomBuildTool"
-					Description="Flex - lexer generation ($(InputPath)) DEBUG"
-					CommandLine="..\..\Tools_3rd_Party\BisonFlex\flex.exe -PAslCompiler -i -s -oAslCompilerDebug\AslCompilerDebug.l.c $(InputPath)&#x0D;&#x0A;"
+					Description="Flex - Main compiler lexer generation ($(InputPath)) DEBUG"
+					CommandLine="c:\GnuWin32\bin\flex.exe -PAslCompiler -i -s -oAslCompilerDebug\AslCompilerDebug.l.c $(InputPath)&#x0D;&#x0A;"
 					Outputs="AslCompilerDebug\AslCompilerDebug.l.c "
 				/>
 			</FileConfiguration>
@@ -3464,8 +3464,8 @@
 				>
 				<Tool
 					Name="VCCustomBuildTool"
-					Description="Bison - parser generation ($(InputPath))"
-					CommandLine="..\..\Tools_3rd_Party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -oAslCompiler/$(InputName).y.c ../../source/compiler/aslcompiler.y&#x0D;&#x0A;"
+					Description="Bison - Main compiler parser generation ($(InputPath))"
+					CommandLine="c:\GnuWin32\bin\bison -pAslCompiler -t -d -v --warnings=yacc -oAslCompiler/$(InputName).y.c ../../source/compiler/aslcompiler.y&#x0D;&#x0A;"
 					Outputs="AslCompiler\$(InputName).y.c;AslCompiler\$(InputName).y.h"
 				/>
 			</FileConfiguration>
@@ -3474,8 +3474,8 @@
 				>
 				<Tool
 					Name="VCCustomBuildTool"
-					Description="Bison - parser generation ($(InputPath)) DEBUG"
-					CommandLine="..\..\Tools_3rd_Party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -oAslCompilerDebug/AslCompilerDebug.y.c ../../source/compiler/aslcompiler.y&#x0D;&#x0A;copy /Y AslCompilerDebug\AslCompilerDebug.y.h AslCompilerDebug\AslCompiler.y.h&#x0D;&#x0A;"
+					Description="Bison - Main compiler parser generation ($(InputPath)) DEBUG"
+					CommandLine="c:\GnuWin32\bin\bison -pAslCompiler -t -d -v --warnings=yacc -oAslCompilerDebug/AslCompilerDebug.y.c ../../source/compiler/aslcompiler.y&#x0D;&#x0A;copy /Y AslCompilerDebug\AslCompilerDebug.y.h AslCompilerDebug\AslCompiler.y.h&#x0D;&#x0A;"
 					Outputs="AslCompilerDebug\AslCompilerDebug.y.c;AslCompilerDebug\AslCompilerDebug.y.h"
 				/>
 			</FileConfiguration>
@@ -3488,8 +3488,8 @@
 				>
 				<Tool
 					Name="VCCustomBuildTool"
-					Description="Flex - lexer generation ($(InputPath))"
-					CommandLine="..\..\Tools_3rd_Party\BisonFlex\flex.exe -PDtParser -i -s -oAslCompiler\$(InputName).l.c $(InputPath)&#x0D;&#x0A;"
+					Description="Flex - Table compiler lexer generation ($(InputPath))"
+					CommandLine="c:\GnuWin32\bin\flex.exe -PDtParser -i -s -oAslCompiler\$(InputName).l.c $(InputPath)&#x0D;&#x0A;"
 					Outputs="AslCompiler\$(InputName).l.c "
 				/>
 			</FileConfiguration>
@@ -3498,8 +3498,8 @@
 				>
 				<Tool
 					Name="VCCustomBuildTool"
-					Description="Flex - lexer generation ($(InputPath)) DEBUG"
-					CommandLine="..\..\Tools_3rd_Party\BisonFlex\flex.exe -PDtParser -i -s -oAslCompilerDebug\DtParserDebug.l.c $(InputPath)&#x0D;&#x0A;"
+					Description="Flex - Table compiler lexer generation ($(InputPath)) DEBUG"
+					CommandLine="c:\GnuWin32\bin\flex.exe -PDtParser -i -s -oAslCompilerDebug\DtParserDebug.l.c $(InputPath)&#x0D;&#x0A;"
 					Outputs="AslCompilerDebug\DtParser.l.c "
 				/>
 			</FileConfiguration>
@@ -3512,8 +3512,8 @@
 				>
 				<Tool
 					Name="VCCustomBuildTool"
-					Description="Bison - parser generation ($(InputPath))"
-					CommandLine="..\..\Tools_3rd_Party\BisonFlex\bison_custom.exe -pDtParser -t -d -v -oAslCompiler/$(InputName).y.c ../../source/compiler/dtparser.y&#x0D;&#x0A;"
+					Description="Bison - Table compiler parser generation ($(InputPath))"
+					CommandLine="c:\GnuWin32\bin\bison -pDtParser -t -d -v --warnings=yacc -oAslCompiler/$(InputName).y.c ../../source/compiler/dtparser.y&#x0D;&#x0A;"
 					Outputs="AslCompiler\$(InputName).y.c;AslCompiler\$(InputName).y.h"
 				/>
 			</FileConfiguration>
@@ -3522,8 +3522,8 @@
 				>
 				<Tool
 					Name="VCCustomBuildTool"
-					Description="Bison - parser generation ($(InputPath)) DEBUG"
-					CommandLine="..\..\Tools_3rd_Party\BisonFlex\bison_custom.exe -pDtParser -t -d -v -oAslCompilerDebug/DtParserDebug.y.c ../../source/compiler/dtparser.y&#x0D;&#x0A;copy /Y AslCompilerDebug\DtParserDebug.y.h AslCompilerDebug\DtParser.y.h&#x0D;&#x0A;"
+					Description="Bison - Table compiler parser generation ($(InputPath)) DEBUG"
+					CommandLine="c:\GnuWin32\bin\bison -pDtParser -t -d -v --warnings=yacc -oAslCompilerDebug/DtParserDebug.y.c ../../source/compiler/dtparser.y&#x0D;&#x0A;copy /Y AslCompilerDebug\DtParserDebug.y.h AslCompilerDebug\DtParser.y.h&#x0D;&#x0A;"
 					Outputs="AslCompilerDebug\DtParser.y.c;AslCompilerDebug\DtParser.y.h"
 				/>
 			</FileConfiguration>
