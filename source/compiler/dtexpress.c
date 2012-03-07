@@ -263,7 +263,7 @@ DtDoOperator (
         break;
 
     case EXPOP_EQUAL:
-        Result = LeftValue = RightValue;
+        Result = LeftValue == RightValue;
         break;
 
     case EXPOP_NOT_EQUAL:
