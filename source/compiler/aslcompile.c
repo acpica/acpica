@@ -523,7 +523,6 @@ CmDoCompile (
     ACPI_STATUS             Status;
     UINT8                   FullCompile;
     UINT8                   Event;
-    UINT8                   Error;
 
 
     FullCompile = UtBeginEvent ("*** Total Compile time ***");
@@ -533,7 +532,7 @@ CmDoCompile (
     /* Preprocessor */
 
     Event = UtBeginEvent ("Preprocess input file");
-    Error = PrDoPreprocess ();
+    PrDoPreprocess ();
     UtEndEvent (Event);
     if (Gbl_PreprocessOnly)
     {
