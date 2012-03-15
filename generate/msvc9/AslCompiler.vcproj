@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="AslCompiler"
 	ProjectGUID="{567F2240-BCAA-48BE-BAB8-4E812BD273D8}"
+	RootNamespace="AslCompiler"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -1993,6 +1994,90 @@
 						/>
 					</FileConfiguration>
 				</File>
+				<File
+					RelativePath=".\AslCompiler\prparser.l.c"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\AslCompiler\prparser.y.c"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\AslCompilerDebug\PrParserDebug.l.c"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\AslCompilerDebug\PrParserDebug.y.c"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
+				</File>
 			</Filter>
 			<Filter
 				Name="Disassembler"
@@ -3389,6 +3474,26 @@
 					</FileConfiguration>
 				</File>
 			</Filter>
+			<Filter
+				Name="Preprocessor"
+				>
+				<File
+					RelativePath="..\..\source\compiler\prexpress.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\compiler\prmacros.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\compiler\prscan.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\compiler\prutils.c"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -3500,7 +3605,7 @@
 					Name="VCCustomBuildTool"
 					Description="Flex - Table compiler lexer generation ($(InputPath)) DEBUG"
 					CommandLine="c:\GnuWin32\bin\flex.exe -PDtParser -i -s -oAslCompilerDebug\DtParserDebug.l.c $(InputPath)&#x0D;&#x0A;"
-					Outputs="AslCompilerDebug\DtParser.l.c "
+					Outputs="AslCompilerDebug\DtParserDebug.l.c "
 				/>
 			</FileConfiguration>
 		</File>
@@ -3524,7 +3629,55 @@
 					Name="VCCustomBuildTool"
 					Description="Bison - Table compiler parser generation ($(InputPath)) DEBUG"
 					CommandLine="c:\GnuWin32\bin\bison -pDtParser -t -d -v --warnings=yacc -oAslCompilerDebug/DtParserDebug.y.c ../../source/compiler/dtparser.y&#x0D;&#x0A;copy /Y AslCompilerDebug\DtParserDebug.y.h AslCompilerDebug\DtParser.y.h&#x0D;&#x0A;"
-					Outputs="AslCompilerDebug\DtParser.y.c;AslCompilerDebug\DtParser.y.h"
+					Outputs="AslCompilerDebug\DtParserDebug.y.c;AslCompilerDebug\DtParserDebug.y.h"
+				/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\source\compiler\prparser.l"
+			>
+			<FileConfiguration
+				Name="Release|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Flex - Preprocessor lexer generation ($(InputPath))"
+					CommandLine="c:\GnuWin32\bin\flex.exe -PPrParser -i -s -oAslCompiler\$(InputName).l.c $(InputPath)&#x0D;&#x0A;"
+					Outputs="AslCompiler\$(InputName).l.c "
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Flex - Preprocessor lexer generation ($(InputPath)) DEBUG"
+					CommandLine="c:\GnuWin32\bin\flex.exe -PPrParser -i -s -oAslCompilerDebug\PrParserDebug.l.c $(InputPath)&#x0D;&#x0A;"
+					Outputs="AslCompilerDebug\PrParserDebug.l.c "
+				/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\source\compiler\prparser.y"
+			>
+			<FileConfiguration
+				Name="Release|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Bison - Preprocessor parser generation ($(InputPath))"
+					CommandLine="c:\GnuWin32\bin\bison -pPrParser -t -d -v --warnings=yacc -oAslCompiler/$(InputName).y.c ../../source/compiler/prparser.y&#x0D;&#x0A;"
+					Outputs="AslCompiler\$(InputName).y.c;AslCompiler\$(InputName).y.h"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Bison - Preprocessor parser generation ($(InputPath)) DEBUG"
+					CommandLine="c:\GnuWin32\bin\bison -pPrParser -t -d -v --warnings=yacc -oAslCompilerDebug/PrParserDebug.y.c ../../source/compiler/prparser.y&#x0D;&#x0A;copy /Y AslCompilerDebug\PrParserDebug.y.h AslCompilerDebug\PrParser.y.h&#x0D;&#x0A;"
+					Outputs="AslCompilerDebug\PrParserDebug.y.c;AslCompilerDebug\PrParserDebug.y.h"
 				/>
 			</FileConfiguration>
 		</File>
