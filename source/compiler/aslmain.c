@@ -168,7 +168,7 @@ AslDoResponseFile (
 
 
 #define ASL_TOKEN_SEPARATORS    " \t\n"
-#define ASL_SUPPORTED_OPTIONS   "@:2b|c|d^e:fgh^i|I:l^mno|p:r:s|t|T:G^v|w|x:z"
+#define ASL_SUPPORTED_OPTIONS   "@:2b|c|d^D:e:fgh^i|I:l^mno|p:Pr:s|t|T:G^v|w|x:z"
 
 
 /*******************************************************************************
@@ -191,6 +191,11 @@ Options (
     printf ("\nGlobal:\n");
     ACPI_OPTION ("-@ <file>",       "Specify command file");
     ACPI_OPTION ("-I <dir>",        "Specify additional include directory");
+
+    printf ("\nPreprocessor:\n");
+    ACPI_OPTION ("-D <symbol>",     "Define symbol for preprocessor use");
+    ACPI_OPTION ("-li",             "Create preprocessed output file (*.i)");
+    ACPI_OPTION ("-P",              "Preprocess only and create preprocessor output file (*.i)");
 
     printf ("\nGeneral Output:\n");
     ACPI_OPTION ("-p <prefix>",     "Specify path/filename prefix for all output files");
@@ -498,11 +503,13 @@ AslDoOptions (
         case 'b':
             AslCompilerdebug = 1; /* same as yydebug */
             DtParserdebug = 1;
+            PrParserdebug = 1;
             break;
 
         case 'p':
             AslCompilerdebug = 1; /* same as yydebug */
             DtParserdebug = 1;
+            PrParserdebug = 1;
             break;
 
         case 't':
@@ -554,6 +561,11 @@ AslDoOptions (
         }
 
         Gbl_DisasmFlag = TRUE;
+        break;
+
+
+    case 'D':   /* Define a symbol */
+        PrAddDefine (AcpiGbl_Optarg, NULL, TRUE);
         break;
 
 
@@ -634,7 +646,7 @@ AslDoOptions (
             break;
 
         default:
-            printf ("Unknown option: -s%s\n", AcpiGbl_Optarg);
+            printf ("Unknown option: -i%s\n", AcpiGbl_Optarg);
             return (-1);
         }
         break;
@@ -647,6 +659,12 @@ AslDoOptions (
             /* Produce listing file (Mixed source/aml) */
 
             Gbl_ListingFlag = TRUE;
+            break;
+
+        case 'i':
+            /* Produce preprocessor output file */
+
+            Gbl_PreprocessorOutputFlag = TRUE;
             break;
 
         case 'n':
@@ -722,6 +740,12 @@ AslDoOptions (
             printf ("Unknown option: -c%s\n", AcpiGbl_Optarg);
             return (-1);
         }
+        break;
+
+
+    case 'P':   /* Preprocess (plus .i file) only */
+        Gbl_PreprocessOnly = TRUE;
+        Gbl_PreprocessorOutputFlag = TRUE;
         break;
 
 
@@ -975,6 +999,7 @@ main (
     /* Init and command line */
 
     AslInitialize ();
+    PrInitializePreprocessor ();
     Index1 = Index2 = AslCommandLine (argc, argv);
 
     /* Options that have no additional parameters or pathnames */

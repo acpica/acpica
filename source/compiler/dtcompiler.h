@@ -227,6 +227,10 @@ DtCompileTable (
 
 /* dtio - binary and text input/output */
 
+UINT32
+DtGetNextLine (
+    FILE                    *Handle);
+
 DT_FIELD *
 DtScanFile (
     FILE                    *Handle);

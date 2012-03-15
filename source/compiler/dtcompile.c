@@ -173,6 +173,17 @@ DtDoCompile (
         return (Status);
     }
 
+    /* Preprocessor */
+
+    Event = UtBeginEvent ("Preprocess input file");
+    PrDoPreprocess ();
+    UtEndEvent (Event);
+
+    if (Gbl_PreprocessOnly)
+    {
+        return AE_OK;
+    }
+
     /*
      * Scan the input file (file is already open) and
      * build the parse tree

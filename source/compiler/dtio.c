@@ -138,10 +138,6 @@ DtParseLine (
     UINT32                  Line,
     UINT32                  Offset);
 
-UINT32
-DtGetNextLine (
-    FILE                    *Handle);
-
 static void
 DtWriteBinary (
     DT_SUBTABLE             *Subtable,

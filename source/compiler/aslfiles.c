@@ -122,7 +122,7 @@
 
 /* Local prototypes */
 
-static FILE *
+FILE *
 FlOpenIncludeWithPrefix (
     char                    *PrefixDir,
     char                    *Filename);
@@ -435,14 +435,13 @@ FlCloseFile (
     }
 
     Error = fclose (Gbl_Files[FileId].Handle);
-    Gbl_Files[FileId].Handle = NULL;
-
     if (Error)
     {
         FlFileError (FileId, ASL_MSG_CLOSE);
         AslAbort ();
     }
 
+    Gbl_Files[FileId].Handle = NULL;
     return;
 }
 
@@ -550,7 +549,7 @@ FlAddIncludeDirectory (
  *
  ******************************************************************************/
 
-static FILE *
+FILE *
 FlOpenIncludeWithPrefix (
     char                    *PrefixDir,
     char                    *Filename)
@@ -812,6 +811,13 @@ FlOpenMiscOutputFiles (
         Gbl_Files[ASL_FILE_DEBUG_OUTPUT].Handle =
             freopen (Filename, "w+t", stderr);
 
+        if (!Gbl_Files[ASL_FILE_DEBUG_OUTPUT].Handle)
+        {
+            AslCommonError (ASL_ERROR, ASL_MSG_DEBUG_FILENAME,
+                0, 0, 0, 0, NULL, NULL);
+            return (AE_ERROR);
+        }
+
         AslCompilerSignon (ASL_FILE_DEBUG_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_DEBUG_OUTPUT);
     }
@@ -836,12 +842,26 @@ FlOpenMiscOutputFiles (
         AslCompilerFileHeader (ASL_FILE_LISTING_OUTPUT);
     }
 
+    /* Create the preprocessor output file */
+
+    Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_PREPROCESSOR);
+    if (!Filename)
+    {
+        AslCommonError (ASL_ERROR, ASL_MSG_PREPROCESSOR_FILENAME,
+            0, 0, 0, 0, NULL, NULL);
+        return (AE_ERROR);
+    }
+
+    FlOpenFile (ASL_FILE_PREPROCESSOR, Filename, "w+b");
+
+    /* All done for data table compiler */
+
     if (Gbl_FileType == ASL_INPUT_TYPE_ASCII_DATA)
     {
         return (AE_OK);
     }
 
-    /* Create/Open a combined source output file */
+   /* Create/Open a combined source output file */
 
     Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_SOURCE);
     if (!Filename)
@@ -858,6 +878,10 @@ FlOpenMiscOutputFiles (
      */
     FlOpenFile (ASL_FILE_SOURCE_OUTPUT, Filename, "w+b");
 
+/*
+// TBD: TEMP
+//    AslCompilerin = Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Handle;
+*/
     /* Create/Open a assembly code source output file if asked */
 
     if (Gbl_AsmOutputFlag)

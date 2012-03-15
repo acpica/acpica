@@ -1,7 +1,6 @@
-
 /******************************************************************************
  *
- * Module Name: asltypes.h - compiler data types and struct definitions
+ * Module Name: preprocess.h - header for iASL Preprocessor
  *
  *****************************************************************************/
 
@@ -114,197 +113,250 @@
  *
  *****************************************************************************/
 
+#define __PREPROCESS_H__
 
-#ifndef __ASLTYPES_H
-#define __ASLTYPES_H
+#ifndef _PREPROCESS
+#define _PREPROCESS
 
+#undef PR_EXTERN
 
-/*******************************************************************************
- *
- * Structure definitions
- *
- ******************************************************************************/
-
-
-/* Op flags for the ACPI_PARSE_OBJECT */
-
-#define NODE_VISITED                0x00000001
-#define NODE_AML_PACKAGE            0x00000002
-#define NODE_IS_TARGET              0x00000004
-#define NODE_IS_RESOURCE_DESC       0x00000008
-#define NODE_IS_RESOURCE_FIELD      0x00000010
-#define NODE_HAS_NO_EXIT            0x00000020
-#define NODE_IF_HAS_NO_EXIT         0x00000040
-#define NODE_NAME_INTERNALIZED      0x00000080
-#define NODE_METHOD_NO_RETVAL       0x00000100
-#define NODE_METHOD_SOME_NO_RETVAL  0x00000200
-#define NODE_RESULT_NOT_USED        0x00000400
-#define NODE_METHOD_TYPED           0x00000800
-#define NODE_UNUSED_FLAG            0x00001000
-#define NODE_COMPILE_TIME_CONST     0x00002000
-#define NODE_IS_TERM_ARG            0x00004000
-#define NODE_WAS_ONES_OP            0x00008000
-#define NODE_IS_NAME_DECLARATION    0x00010000
-#define NODE_COMPILER_EMITTED       0x00020000
-#define NODE_IS_DUPLICATE           0x00040000
-#define NODE_IS_RESOURCE_DATA       0x00080000
-#define NODE_IS_NULL_RETURN         0x00100000
-
-/* Keeps information about individual control methods */
-
-typedef struct asl_method_info
-{
-    UINT8                   NumArguments;
-    UINT8                   LocalInitialized[ACPI_METHOD_NUM_LOCALS];
-    UINT8                   ArgInitialized[ACPI_METHOD_NUM_ARGS];
-    UINT32                  ValidArgTypes[ACPI_METHOD_NUM_ARGS];
-    UINT32                  ValidReturnTypes;
-    UINT32                  NumReturnNoValue;
-    UINT32                  NumReturnWithValue;
-    ACPI_PARSE_OBJECT       *Op;
-    struct asl_method_info  *Next;
-    UINT8                   HasBeenTyped;
-
-} ASL_METHOD_INFO;
-
-
-/* Parse tree walk info for control method analysis */
-
-typedef struct asl_analysis_walk_info
-{
-    ASL_METHOD_INFO         *MethodStack;
-
-} ASL_ANALYSIS_WALK_INFO;
-
-
-/* An entry in the ParseOpcode to AmlOpcode mapping table */
-
-typedef struct asl_mapping_entry
-{
-    UINT32                      Value;
-    UINT32                      AcpiBtype;   /* Object type or return type */
-    UINT16                      AmlOpcode;
-    UINT8                       Flags;
-
-} ASL_MAPPING_ENTRY;
-
-
-/* Parse tree walk info structure */
-
-typedef struct asl_walk_info
-{
-    ACPI_PARSE_OBJECT           **NodePtr;
-    UINT32                      *LevelPtr;
-
-} ASL_WALK_INFO;
-
-
-/* File info */
-
-typedef struct asl_file_info
-{
-    FILE                        *Handle;
-    char                        *Filename;
-
-} ASL_FILE_INFO;
-
-typedef struct asl_file_status
-{
-    UINT32                  Line;
-    UINT32                  Offset;
-
-} ASL_FILE_STATUS;
-
-
-/*
- * File types. Note: Any changes to this table must also be reflected
- * in the AslFileTypeNames array.
- */
-typedef enum
-{
-    ASL_FILE_STDOUT             = 0,
-    ASL_FILE_STDERR,
-    ASL_FILE_INPUT,             /* Don't move these first 3 file types */
-    ASL_FILE_AML_OUTPUT,
-    ASL_FILE_SOURCE_OUTPUT,
-    ASL_FILE_PREPROCESSOR,
-    ASL_FILE_LISTING_OUTPUT,
-    ASL_FILE_HEX_OUTPUT,
-    ASL_FILE_NAMESPACE_OUTPUT,
-    ASL_FILE_DEBUG_OUTPUT,
-    ASL_FILE_ASM_SOURCE_OUTPUT,
-    ASL_FILE_C_SOURCE_OUTPUT,
-    ASL_FILE_ASM_INCLUDE_OUTPUT,
-    ASL_FILE_C_INCLUDE_OUTPUT
-
-} ASL_FILE_TYPES;
-
-
-#define ASL_MAX_FILE_TYPE       13
-#define ASL_NUM_FILES           (ASL_MAX_FILE_TYPE + 1)
-
-
-typedef struct asl_include_dir
-{
-    char                        *Dir;
-    struct asl_include_dir      *Next;
-
-} ASL_INCLUDE_DIR;
-
-
-/* An entry in the exception list, one for each error/warning */
-
-typedef struct asl_error_msg
-{
-    UINT32                      LineNumber;
-    UINT32                      LogicalLineNumber;
-    UINT32                      LogicalByteOffset;
-    UINT32                      Column;
-    char                        *Message;
-    struct asl_error_msg        *Next;
-    char                        *Filename;
-    char                        *SourceLine;
-    UINT32                      FilenameLength;
-    UINT8                       MessageId;
-    UINT8                       Level;
-
-} ASL_ERROR_MSG;
-
-
-/* An entry in the listing file stack (for include files) */
-
-typedef struct asl_listing_node
-{
-    char                        *Filename;
-    UINT32                      LineNumber;
-    struct asl_listing_node     *Next;
-
-} ASL_LISTING_NODE;
-
-
-/* Callback interface for a parse tree walk */
-
-/*
- * TBD - another copy of this is in adisasm.h, fix
- */
-#ifndef ASL_WALK_CALLBACK_DEFINED
-typedef
-ACPI_STATUS (*ASL_WALK_CALLBACK) (
-    ACPI_PARSE_OBJECT           *Op,
-    UINT32                      Level,
-    void                        *Context);
-#define ASL_WALK_CALLBACK_DEFINED
+#ifdef _DECLARE_PR_GLOBALS
+#define PR_EXTERN
+#define PR_INIT_GLOBAL(a,b)         (a)=(b)
+#else
+#define PR_EXTERN                   extern
+#define PR_INIT_GLOBAL(a,b)         (a)
 #endif
 
 
-typedef struct asl_event_info
+/*
+ * Configuration
+ */
+#define PR_MAX_MACRO_ARGS       32              /* Max number of macro args */
+#define PR_MAX_ARG_INSTANCES    24              /* Max instances of any one arg */
+#define PR_LINES_PER_BLOCK      4096            /* Max input source lines per block */
+
+
+/*
+ * Local defines and macros
+ */
+#define PR_TOKEN_SEPARATORS     " ,(){}\t\n"
+#define PR_MACRO_SEPARATORS     " ,(){}~!*/%+-<>=&^|\"\t\n"
+#define PR_MACRO_ARGUMENTS      " ,\t\n"
+#define PR_EXPR_SEPARATORS      " ,(){}~!*/%+-<>=&^|\"\t\n"
+
+#define PR_PREFIX_ID            "Pr(%.4u) - "             /* Used for debug output */
+
+#define THIS_TOKEN_OFFSET(t)    ((t-Gbl_MainTokenBuffer) + 1)
+
+
+/*
+ * Preprocessor structures
+ */
+typedef struct pr_macro_arg
 {
-    UINT64                      StartTime;
-    UINT64                      EndTime;
-    char                        *EventName;
-    BOOLEAN                     Valid;
+    char                        *Name;
+    UINT32                      Offset[PR_MAX_ARG_INSTANCES];
+    UINT16                      UseCount;
 
-} ASL_EVENT_INFO;
+} PR_MACRO_ARG;
+
+typedef struct pr_define_info
+{
+    struct pr_define_info       *Previous;
+    struct pr_define_info       *Next;
+    char                        *Identifier;
+    char                        *Replacement;
+    char                        *Body;          /* Macro body */
+    PR_MACRO_ARG                *Args;          /* Macro arg list */
+    UINT16                      ArgCount;       /* Macro arg count */
+    BOOLEAN                     Persist;        /* Keep for entire compiler run */
+
+} PR_DEFINE_INFO;
+
+typedef struct pr_directive_info
+{
+    char                        *Name;          /* Directive name */
+    UINT8                       ArgCount;       /* Required # of args */
+
+} PR_DIRECTIVE_INFO;
+
+typedef struct pr_operator_info
+{
+    char                        *Op;
+
+} PR_OPERATOR_INFO;
+
+typedef struct pr_file_node
+{
+    struct pr_file_node         *Next;
+    FILE                        *File;
+    char                        *Filename;
+    UINT32                      CurrentLineNumber;
+
+} PR_FILE_NODE;
+
+typedef struct pr_line_mapping
+{
+    UINT32                      *Map;
+    struct pr_line_mapping      *Next;
+
+} PR_LINE_MAPPING;
 
 
-#endif  /* __ASLTYPES_H */
+/*
+ * Globals
+ */
+PR_EXTERN char                  XXXEvalBuffer[ASL_LINE_BUFFER_SIZE];
+PR_EXTERN char                  Gbl_MainTokenBuffer[ASL_LINE_BUFFER_SIZE];
+PR_EXTERN char                  Gbl_MacroTokenBuffer[ASL_LINE_BUFFER_SIZE];
+PR_EXTERN char                  Gbl_ExpressionTokenBuffer[ASL_LINE_BUFFER_SIZE];
+
+PR_EXTERN PR_LINE_MAPPING       *Gbl_MapBlockHead;
+PR_EXTERN PR_FILE_NODE          *Gbl_InputFileList;
+PR_EXTERN PR_DEFINE_INFO        PR_INIT_GLOBAL (*Gbl_DefineList, NULL);
+PR_EXTERN UINT32                Gbl_PreprocessorLineNumber;
+PR_EXTERN int                   Gbl_IfDepth;
+PR_EXTERN BOOLEAN               PR_INIT_GLOBAL (Gbl_PreprocessorError, FALSE);
+
+
+/*
+ * prscan - Preprocessor entry
+ */
+void
+PrInitializePreprocessor (
+    void);
+
+void
+PrInitializeGlobals (
+    void);
+
+void
+PrTerminatePreprocessor (
+    void);
+
+BOOLEAN
+PrDoPreprocess (
+    void);
+
+UINT32
+PrGetLineNumber (
+    UINT32                  PreprocessorLineNumber);
+
+UINT64
+PrIsDefined (
+    char                    *Identifier);
+
+UINT64
+PrResolveDefine (
+    char                    *Identifier);
+
+int
+PrInitLexer (
+    char                    *String);
+
+void
+PrTerminateLexer (
+    void);
+
+
+/*
+ * prmacros - Support for #defines and macros
+ */
+void
+PrDumpPredefinedNames (
+    void);
+
+PR_DEFINE_INFO *
+PrAddDefine (
+    char                    *Token,
+    char                    *Token2,
+    BOOLEAN                 Persist);
+
+void
+PrRemoveDefine (
+    char                    *DefineName);
+
+PR_DEFINE_INFO *
+PrMatchDefine (
+    char                    *MatchString);
+
+void
+PrAddMacro (
+    char                    *Name,
+    char                    **Next);
+
+void
+PrDoMacroInvocation (
+    char                    *TokenBuffer,
+    char                    *MacroStart,
+    PR_DEFINE_INFO          *DefineInfo,
+    char                    **Next);
+
+
+/*
+ * prexpress - #if expression support
+ */
+ACPI_STATUS
+PrResolveIntegerExpression (
+    char                    *Line,
+    UINT64                  *ReturnValue);
+
+char *
+PrPrioritizeExpression (
+    char                    *OriginalLine);
+
+/*
+ * prparser - lex/yacc expression parser
+ */
+UINT64
+PrEvaluateExpression (
+    char                    *ExprString);
+
+
+/*
+ * prutils - Preprocesor utilities
+ */
+char *
+PrGetNextToken (
+    char                    *Buffer,
+    char                    *MatchString,
+    char                    **Next);
+
+void
+PrSetLineNumber (
+    UINT32                  OriginalLineNumber,
+    UINT32                  NewLineNumber);
+
+void
+PrError (
+    UINT8                   Level,
+    UINT8                   MessageId,
+    UINT32                  Column);
+
+void
+PrReplaceData (
+    char                    *Buffer,
+    UINT32                  LengthToRemove,
+    char                    *BufferToAdd,
+    UINT32                  LengthToAdd);
+
+void
+PrOpenIncludeFile (
+    char                    *Filename);
+
+FILE *
+PrOpenIncludeWithPrefix (
+    char                    *PrefixDir,
+    char                    *Filename);
+
+void
+PrPushInputFileStack (
+    FILE                    *InputFile,
+    char                    *Filename);
+
+BOOLEAN
+PrPopInputFileStack (
+    void);
+
+#endif

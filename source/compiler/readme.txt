@@ -75,11 +75,11 @@ Windows GNU Flex and GNU Bison Notes:
 
 GNU Flex/Bison must be installed in a directory that has no embedded
 spaces in the name. They cannot be installed in the default
-c:\"Program Files"\ directory. This is a bug in Bison. The default
+c:\"Program Files" directory. This is a bug in Bison. The default
 Windows project file for iASL assumes that these tools are
-installed at c:\GnuWin32\.
+installed at c:\GnuWin32.
 
-When installed, ensure that c:\GnuWin32 is added to the default
+When installed, ensure that c:\GnuWin32\bin is added to the default
 system $PATH environment variable.
 
 iASL has been generated with these versions on Windows:
