@@ -186,15 +186,18 @@ AcpiHwClearAcpiStatus (
  */
 ACPI_STATUS
 AcpiHwLegacySleep (
-    UINT8                   SleepState);
+    UINT8                   SleepState,
+    UINT8                   Flags);
 
 ACPI_STATUS
 AcpiHwLegacyWakePrep (
-    UINT8                   SleepState);
+    UINT8                   SleepState,
+    UINT8                   Flags);
 
 ACPI_STATUS
 AcpiHwLegacyWake (
-    UINT8                   SleepState);
+    UINT8                   SleepState,
+    UINT8                   Flags);
 
 
 /*
@@ -207,15 +210,18 @@ AcpiHwExecuteSleepMethod (
 
 ACPI_STATUS
 AcpiHwExtendedSleep (
-    UINT8                   SleepState);
+    UINT8                   SleepState,
+    UINT8                   Flags);
 
 ACPI_STATUS
 AcpiHwExtendedWakePrep (
-    UINT8                   SleepState);
+    UINT8                   SleepState,
+    UINT8                   Flags);
 
 ACPI_STATUS
 AcpiHwExtendedWake (
-    UINT8                   SleepState);
+    UINT8                   SleepState,
+    UINT8                   Flags);
 
 
 /*

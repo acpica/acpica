@@ -746,7 +746,8 @@ AcpiEnterSleepStatePrep (
 
 ACPI_STATUS
 AcpiEnterSleepState (
-    UINT8                   SleepState);
+    UINT8                   SleepState,
+    UINT8                   Flags);
 
 ACPI_HW_DEPENDENT_RETURN_STATUS (
 ACPI_STATUS
@@ -755,7 +756,8 @@ AcpiEnterSleepStateS4bios (
 
 ACPI_STATUS
 AcpiLeaveSleepStatePrep (
-    UINT8                   SleepState);
+    UINT8                   SleepState,
+    UINT8                   Flags);
 
 ACPI_STATUS
 AcpiLeaveSleepState (
