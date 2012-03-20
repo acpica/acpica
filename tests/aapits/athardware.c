@@ -1490,7 +1490,7 @@ AtHardwTest0021(void)
             return Status;
         }
 
-        Status = AcpiEnterSleepState(SleepState);
+        Status = AcpiEnterSleepState(SleepState, ACPI_NO_OPTIONAL_METHODS);
 
         if (ACPI_FAILURE(Status))
         {
