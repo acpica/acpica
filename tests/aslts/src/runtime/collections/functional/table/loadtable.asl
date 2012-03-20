@@ -1711,7 +1711,7 @@ Device(DTM2) {
 
 			LoadTable("OEM1", "", "", Derefof(arg2), "\\DTM2.PLDT", 1)
 			if (Derefof(Index(BTYP, arg3))) {
-				CH04(arg0, 0, 28, z176, 0x107, 0, 0) // AE_BAD_PARAMETER
+				CH04(arg0, 0, 30, z176, 0x107, 0, 0) // AE_BAD_PATHNAME
 			} else {
 				CH04(arg0, 0, 47, z176, 0x108, 0, 0) // AE_AML_OPERAND_TYPE
 			}
@@ -1732,7 +1732,7 @@ Device(DTM2) {
 
 			LoadTable("OEM1", "", "", "\\", Derefof(arg2), 1)
 			if (Derefof(Index(BTYP, arg3))) {
-				CH04(arg0, 0, 28, z176, 0x10a, 0, 0) // AE_BAD_PARAMETER
+				CH04(arg0, 0, 30, z176, 0x10a, 0, 0) // AE_BAD_PATHNAME
 			} else {
 				CH04(arg0, 0, 47, z176, 0x10b, 0, 0) // AE_AML_OPERAND_TYPE
 			}
