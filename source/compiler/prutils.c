@@ -197,6 +197,11 @@ PrGetLineNumber (
     UINT32                  i;
 
 
+    if ((!Gbl_PreprocessFlag) || (!Gbl_MapBlockHead))
+    {
+        return (PreprocessorLineNumber);
+    }
+
     Entry = PreprocessorLineNumber / PR_LINES_PER_BLOCK;
     Index = PreprocessorLineNumber % PR_LINES_PER_BLOCK;
     Block = Gbl_MapBlockHead;
@@ -558,7 +563,7 @@ PrPushInputFileStack (
     Gbl_InputFileList = Fnode;
 
     DbgPrint (ASL_PARSE_OUTPUT, PR_PREFIX_ID
-        "Push InputFile Stack, returning %p\n\n",
+        "Push InputFile Stack: handle %p\n\n",
         Gbl_CurrentLineNumber, InputFile);
 
     /* Reset the global line count and filename */

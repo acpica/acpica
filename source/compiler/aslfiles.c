@@ -842,17 +842,20 @@ FlOpenMiscOutputFiles (
         AslCompilerFileHeader (ASL_FILE_LISTING_OUTPUT);
     }
 
-    /* Create the preprocessor output file */
+    /* Create the preprocessor output file if preprocessor enabled */
 
-    Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_PREPROCESSOR);
-    if (!Filename)
+    if (Gbl_PreprocessFlag)
     {
-        AslCommonError (ASL_ERROR, ASL_MSG_PREPROCESSOR_FILENAME,
-            0, 0, 0, 0, NULL, NULL);
-        return (AE_ERROR);
-    }
+        Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_PREPROCESSOR);
+        if (!Filename)
+        {
+            AslCommonError (ASL_ERROR, ASL_MSG_PREPROCESSOR_FILENAME,
+                0, 0, 0, 0, NULL, NULL);
+            return (AE_ERROR);
+        }
 
-    FlOpenFile (ASL_FILE_PREPROCESSOR, Filename, "w+b");
+        FlOpenFile (ASL_FILE_PREPROCESSOR, Filename, "w+b");
+    }
 
     /* All done for data table compiler */
 

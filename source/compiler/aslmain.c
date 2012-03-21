@@ -168,7 +168,7 @@ AslDoResponseFile (
 
 
 #define ASL_TOKEN_SEPARATORS    " \t\n"
-#define ASL_SUPPORTED_OPTIONS   "@:2b|c|d^D:e:fgh^i|I:l^mno|p:Pr:s|t|T:G^v|w|x:z"
+#define ASL_SUPPORTED_OPTIONS   "@:2b|c|d^D:e:fgh^i|I:l^mno|p:P^r:s|t|T:G^v|w|x:z"
 
 
 /*******************************************************************************
@@ -196,6 +196,7 @@ Options (
     ACPI_OPTION ("-D <symbol>",     "Define symbol for preprocessor use");
     ACPI_OPTION ("-li",             "Create preprocessed output file (*.i)");
     ACPI_OPTION ("-P",              "Preprocess only and create preprocessor output file (*.i)");
+    ACPI_OPTION ("-Pn",             "Disable preprocessor");
 
     printf ("\nGeneral Output:\n");
     ACPI_OPTION ("-p <prefix>",     "Specify path/filename prefix for all output files");
@@ -743,9 +744,22 @@ AslDoOptions (
         break;
 
 
-    case 'P':   /* Preprocess (plus .i file) only */
-        Gbl_PreprocessOnly = TRUE;
-        Gbl_PreprocessorOutputFlag = TRUE;
+    case 'P':   /* Preprocessor options */
+        switch (AcpiGbl_Optarg[0])
+        {
+        case '^':   /* Proprocess only, emit (.i) file */
+            Gbl_PreprocessOnly = TRUE;
+            Gbl_PreprocessorOutputFlag = TRUE;
+            break;
+
+        case 'n':   /* Disable preprocessor */
+            Gbl_PreprocessFlag = FALSE;
+            break;
+
+        default:
+            printf ("Unknown option: -P%s\n", AcpiGbl_Optarg);
+            return (-1);
+        }
         break;
 
 

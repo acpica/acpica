@@ -529,16 +529,20 @@ CmDoCompile (
     Event = UtBeginEvent ("Open input and output files");
     UtEndEvent (Event);
 
-    /* Preprocessor */
-
     Event = UtBeginEvent ("Preprocess input file");
-    PrDoPreprocess ();
-    UtEndEvent (Event);
-    if (Gbl_PreprocessOnly)
+    if (Gbl_PreprocessFlag)
     {
-        CmCleanupAndExit ();
-        return 0;
+        /* Preprocessor */
+
+        PrDoPreprocess ();
+        if (Gbl_PreprocessOnly)
+        {
+            UtEndEvent (Event);
+            CmCleanupAndExit ();
+            return 0;
+        }
     }
+    UtEndEvent (Event);
 
     /* Build the parse tree */
 
@@ -909,7 +913,9 @@ CmCleanupAndExit (
 
     /* Delete the preprocessor output file (.i) unless -li flag is set */
 
-    if (!Gbl_PreprocessorOutputFlag && Gbl_Files[ASL_FILE_PREPROCESSOR].Filename)
+    if (!Gbl_PreprocessorOutputFlag &&
+        Gbl_PreprocessFlag &&
+        Gbl_Files[ASL_FILE_PREPROCESSOR].Filename)
     {
         if (remove (Gbl_Files[ASL_FILE_PREPROCESSOR].Filename))
         {
