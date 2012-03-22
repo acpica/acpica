@@ -744,6 +744,7 @@ AcpiPsGetNextField (
                 Arg = AcpiPsAllocOp (AML_INT_BYTELIST_OP);
                 if (!Arg)
                 {
+                    AcpiPsFreeOp (Field);
                     return_PTR (NULL);
                 }
 
@@ -789,6 +790,7 @@ AcpiPsGetNextField (
             Arg = AcpiPsAllocOp (AML_INT_NAMEPATH_OP);
             if (!Arg)
             {
+                AcpiPsFreeOp (Field);
                 return_PTR (NULL);
             }
 
