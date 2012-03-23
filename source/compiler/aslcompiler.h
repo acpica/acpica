@@ -719,6 +719,10 @@ void
 FlSetLineNumber (
     ACPI_PARSE_OBJECT       *Op);
 
+void
+FlSetFilename (
+    ACPI_PARSE_OBJECT       *Op);
+
 ACPI_STATUS
 FlOpenInputFile (
     char                    *InputFilename);

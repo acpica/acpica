@@ -331,7 +331,7 @@ AePrintException (
     {
         if (Gbl_VerboseErrors)
         {
-            fprintf (OutputFile, "%6s", Enode->Filename);
+            fprintf (OutputFile, "%-8s", Enode->Filename);
 
             if (Enode->LineNumber)
             {
@@ -342,12 +342,7 @@ AePrintException (
                 }
                 else
                 {
-                    if (Gbl_FileType == ASL_INPUT_TYPE_ASCII_ASL)
-                        fprintf (OutputFile, " %6u: ",
-                            PrGetLineNumber (Enode->LineNumber));
-                    else
-                        fprintf (OutputFile, " %6u: ",
-                            Enode->LineNumber);
+                    fprintf (OutputFile, " %6u: ", Enode->LineNumber);
 
                     /*
                      * If not at EOF, get the corresponding source code line and
@@ -396,16 +391,8 @@ AePrintException (
 
             if (Enode->LineNumber)
             {
-                if (Gbl_FileType == ASL_INPUT_TYPE_ASCII_ASL)
-                {
-                    fprintf (OutputFile, "(%u) i:%6u : ",
-                        PrGetLineNumber (Enode->LineNumber), Enode->LineNumber);
-                }
-                else
-                {
-                    fprintf (OutputFile, "(%u) i:%6u : ",
-                        Enode->LineNumber, Enode->LineNumber);
-                }
+                fprintf (OutputFile, "(%u) i:%6u : ",
+                    Enode->LineNumber, Enode->LineNumber);
             }
         }
     }

@@ -463,8 +463,35 @@ FlSetLineNumber (
     ACPI_PARSE_OBJECT       *Op)
 {
 
+    DbgPrint (ASL_PARSE_OUTPUT, "\n#line: New line number %u (old %u)\n",
+         (UINT32) Op->Asl.Value.Integer, Gbl_LogicalLineNumber);
+
     Gbl_CurrentLineNumber = (UINT32) Op->Asl.Value.Integer;
     Gbl_LogicalLineNumber = (UINT32) Op->Asl.Value.Integer;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    FlSetFilename
+ *
+ * PARAMETERS:  Op        - Parse node for the LINE asl statement
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Set the current filename
+ *
+ ******************************************************************************/
+
+void
+FlSetFilename (
+    ACPI_PARSE_OBJECT       *Op)
+{
+
+    DbgPrint (ASL_PARSE_OUTPUT, "\n#line: New filename %s (old %s)\n",
+         Op->Asl.Value.String, Gbl_Files[ASL_FILE_INPUT].Filename);
+
+    Gbl_Files[ASL_FILE_INPUT].Filename = Op->Asl.Value.String;
 }
 
 

@@ -196,13 +196,6 @@ typedef struct pr_file_node
 
 } PR_FILE_NODE;
 
-typedef struct pr_line_mapping
-{
-    UINT32                      *Map;
-    struct pr_line_mapping      *Next;
-
-} PR_LINE_MAPPING;
-
 
 /*
  * Globals
@@ -212,7 +205,6 @@ PR_EXTERN char                  Gbl_MainTokenBuffer[ASL_LINE_BUFFER_SIZE];
 PR_EXTERN char                  Gbl_MacroTokenBuffer[ASL_LINE_BUFFER_SIZE];
 PR_EXTERN char                  Gbl_ExpressionTokenBuffer[ASL_LINE_BUFFER_SIZE];
 
-PR_EXTERN PR_LINE_MAPPING       *Gbl_MapBlockHead;
 PR_EXTERN PR_FILE_NODE          *Gbl_InputFileList;
 PR_EXTERN PR_DEFINE_INFO        PR_INIT_GLOBAL (*Gbl_DefineList, NULL);
 PR_EXTERN UINT32                Gbl_PreprocessorLineNumber;
@@ -238,10 +230,6 @@ PrTerminatePreprocessor (
 BOOLEAN
 PrDoPreprocess (
     void);
-
-UINT32
-PrGetLineNumber (
-    UINT32                  PreprocessorLineNumber);
 
 UINT64
 PrIsDefined (
@@ -322,11 +310,6 @@ PrGetNextToken (
     char                    *Buffer,
     char                    *MatchString,
     char                    **Next);
-
-void
-PrSetLineNumber (
-    UINT32                  OriginalLineNumber,
-    UINT32                  NewLineNumber);
 
 void
 PrError (

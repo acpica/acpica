@@ -182,7 +182,7 @@ void *                      AslLocalAllocate (unsigned int Size);
  * These shift/reduce conflicts are expected. There should be zero
  * reduce/reduce conflicts.
  */
-%expect 86
+%expect 87
 
 /******************************************************************************
  *
@@ -832,6 +832,7 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> OptionalEndian
 %type <n> OptionalFlowControl
 %type <n> OptionalIoRestriction
+%type <n> OptionalLineList
 %type <n> OptionalListString
 %type <n> OptionalMaxType
 %type <n> OptionalMemType
@@ -877,13 +878,24 @@ void *                      AslLocalAllocate (unsigned int Size);
 
 
 /*
- * Blocks, Data, and Opcodes
+ * Root rule. Allow multiple #line directives before the definition block
+ * to handle output from preprocessors
  */
-
 ASLCode
-    : DefinitionBlockTerm
+    : OptionalLineList DefinitionBlockTerm
     | error                         {YYABORT; $$ = NULL;}
     ;
+
+OptionalLineList
+    :                               {$$ = NULL;}
+    | LineTerm
+    | OptionalLineList LineTerm
+    ;
+
+
+/*
+ * Blocks, Data, and Opcodes
+ */
 
 /*
  * Note concerning support for "module-level code".
@@ -1235,9 +1247,19 @@ IncludeCStyleTerm
         String                      {FlOpenIncludeFile ($2);}
     ;
 
+/*
+ * The #line directive is emitted by the preprocesser, and is used to
+ * pass through line numbers from the original source code file to the
+ * preprocessor output file (.i). This allows any compiler-generated
+ * error messages to be displayed with the correct line number.
+ */
 LineTerm
 	: PARSEOP_LINE_CSTYLE
 		Integer						{FlSetLineNumber ($2);}
+	| PARSEOP_LINE_CSTYLE
+		Integer String			    {FlSetLineNumber ($2); FlSetFilename ($3);}
+	| PARSEOP_LINE_CSTYLE
+		Integer String Integer		{FlSetLineNumber ($2); FlSetFilename ($3);}
 	;
 
 ExternalTerm

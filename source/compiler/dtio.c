@@ -484,6 +484,7 @@ DtGetNextLine (
     BOOLEAN                 LineNotAllBlanks = FALSE;
     UINT32                  State = DT_NORMAL_TEXT;
     UINT32                  CurrentLineOffset;
+    UINT32                  BeyondBufferCount;
     UINT32                  i;
     char                    c;
 
@@ -701,7 +702,19 @@ DtGetNextLine (
         }
     }
 
-    printf ("ERROR - Input line is too long (max %u)\n", ASL_LINE_BUFFER_SIZE);
+    /* Line is too long for internal buffer. Determine actual length */
+
+    BeyondBufferCount = 1;
+    c = (char) getc (Handle);
+    while (c != '\n')
+    {
+        c = (char) getc (Handle);
+        BeyondBufferCount++;
+    }
+
+    printf ("ERROR - At %u: Input line (%u bytes) is too long (max %u)\n",
+        Gbl_CurrentLineNumber++, ASL_LINE_BUFFER_SIZE + BeyondBufferCount,
+        ASL_LINE_BUFFER_SIZE);
     return (ASL_EOF);
 }
 

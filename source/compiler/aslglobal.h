@@ -146,7 +146,7 @@ extern int                          PrParserdebug;
 extern const ASL_MAPPING_ENTRY      AslKeywordMapping[];
 extern char                         *AslCompilertext;
 
-#define ASL_LINE_BUFFER_SIZE        4096
+#define ASL_LINE_BUFFER_SIZE        (4096 * 4) /* 16K */
 #define ASL_MSG_BUFFER_SIZE         4096
 #define HEX_TABLE_LINE_SIZE         8
 #define HEX_LISTING_LINE_SIZE       8
@@ -156,6 +156,7 @@ extern char                         *AslCompilertext;
 
 ASL_EXTERN char                     Gbl_CurrentLineBuffer[ASL_LINE_BUFFER_SIZE];
 ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_CurrentColumn, 0);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_PreviousLineNumber, 0);
 ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_CurrentLineNumber, 1);
 ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_LogicalLineNumber, 1);
 ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_CurrentLineOffset, 0);
