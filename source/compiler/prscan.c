@@ -617,8 +617,9 @@ PrDoDirective (
         if (*(&Gbl_CurrentLineBuffer[TokenOffset]) == '(')
         {
 #ifndef MACROS_SUPPORTED
-            AcpiOsPrintf ("#define macros not supported\n");
-            goto SyntaxError;
+            AcpiOsPrintf ("%s ERROR - line %u: #define macros are not supported yet\n",
+                Gbl_CurrentLineBuffer, Gbl_CurrentLineNumber);
+            exit(1);
 #else
             PrAddMacro (Token, Next);
 #endif
