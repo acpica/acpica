@@ -460,14 +460,14 @@ FlCloseFile (
 
 void
 FlSetLineNumber (
-    ACPI_PARSE_OBJECT       *Op)
+    UINT32                  LineNumber)
 {
 
     DbgPrint (ASL_PARSE_OUTPUT, "\n#line: New line number %u (old %u)\n",
-         (UINT32) Op->Asl.Value.Integer, Gbl_LogicalLineNumber);
+         LineNumber, Gbl_LogicalLineNumber);
 
-    Gbl_CurrentLineNumber = (UINT32) Op->Asl.Value.Integer;
-    Gbl_LogicalLineNumber = (UINT32) Op->Asl.Value.Integer;
+    Gbl_CurrentLineNumber = LineNumber;
+    Gbl_LogicalLineNumber = LineNumber;
 }
 
 
@@ -485,13 +485,13 @@ FlSetLineNumber (
 
 void
 FlSetFilename (
-    ACPI_PARSE_OBJECT       *Op)
+    char                    *Filename)
 {
 
     DbgPrint (ASL_PARSE_OUTPUT, "\n#line: New filename %s (old %s)\n",
-         Op->Asl.Value.String, Gbl_Files[ASL_FILE_INPUT].Filename);
+         Filename, Gbl_Files[ASL_FILE_INPUT].Filename);
 
-    Gbl_Files[ASL_FILE_INPUT].Filename = Op->Asl.Value.String;
+    Gbl_Files[ASL_FILE_INPUT].Filename = Filename;
 }
 
 

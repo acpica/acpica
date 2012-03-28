@@ -182,7 +182,7 @@ void *                      AslLocalAllocate (unsigned int Size);
  * These shift/reduce conflicts are expected. There should be zero
  * reduce/reduce conflicts.
  */
-%expect 87
+%expect 86
 
 /******************************************************************************
  *
@@ -578,7 +578,6 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> FieldUnitList
 %type <n> IncludeCStyleTerm
 %type <n> IncludeTerm
-%type <n> LineTerm
 %type <n> OffsetTerm
 %type <n> OptionalAccessAttribTerm
 
@@ -832,7 +831,6 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> OptionalEndian
 %type <n> OptionalFlowControl
 %type <n> OptionalIoRestriction
-%type <n> OptionalLineList
 %type <n> OptionalListString
 %type <n> OptionalMaxType
 %type <n> OptionalMemType
@@ -882,16 +880,9 @@ void *                      AslLocalAllocate (unsigned int Size);
  * to handle output from preprocessors
  */
 ASLCode
-    : OptionalLineList DefinitionBlockTerm
+    : DefinitionBlockTerm
     | error                         {YYABORT; $$ = NULL;}
     ;
-
-OptionalLineList
-    :                               {$$ = NULL;}
-    | LineTerm
-    | OptionalLineList LineTerm
-    ;
-
 
 /*
  * Blocks, Data, and Opcodes
@@ -948,7 +939,6 @@ Term
 CompilerDirective
     : IncludeTerm                   {}
     | IncludeCStyleTerm             {$$ = NULL;}
-    | LineTerm						{$$ = NULL;}
     | ExternalTerm                  {}
     ;
 
@@ -1246,21 +1236,6 @@ IncludeCStyleTerm
     : PARSEOP_INCLUDE_CSTYLE
         String                      {FlOpenIncludeFile ($2);}
     ;
-
-/*
- * The #line directive is emitted by the preprocesser, and is used to
- * pass through line numbers from the original source code file to the
- * preprocessor output file (.i). This allows any compiler-generated
- * error messages to be displayed with the correct line number.
- */
-LineTerm
-	: PARSEOP_LINE_CSTYLE
-		Integer						{FlSetLineNumber ($2);}
-	| PARSEOP_LINE_CSTYLE
-		Integer String			    {FlSetLineNumber ($2); FlSetFilename ($3);}
-	| PARSEOP_LINE_CSTYLE
-		Integer String Integer		{FlSetLineNumber ($2); FlSetFilename ($3);}
-	;
 
 ExternalTerm
     : PARSEOP_EXTERNAL '('

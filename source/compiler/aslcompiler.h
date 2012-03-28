@@ -717,11 +717,11 @@ FlPrintFile (
 
 void
 FlSetLineNumber (
-    ACPI_PARSE_OBJECT       *Op);
+    UINT32                  LineNumber);
 
 void
 FlSetFilename (
-    ACPI_PARSE_OBJECT       *Op);
+    char                    *Filename);
 
 ACPI_STATUS
 FlOpenInputFile (

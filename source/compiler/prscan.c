@@ -732,6 +732,31 @@ PrDoDirective (
         PrOpenIncludeFile (Token);
         break;
 
+    case PR_DIRECTIVE_LINE:
+        TokenOffset = Token - Gbl_MainTokenBuffer;
+
+        Status = PrResolveIntegerExpression (
+            &Gbl_CurrentLineBuffer[TokenOffset-1], &Value);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
+            "User #line invocation %s\n", Gbl_CurrentLineNumber,
+            Token);
+
+        /* Update local line numbers */
+
+        Gbl_CurrentLineNumber = (UINT32) Value;
+        Gbl_PreviousLineNumber = 0;
+
+        /* Emit #line into the preprocessor file */
+
+        FlPrintFile (ASL_FILE_PREPROCESSOR, "#line %u \"%s\"\n",
+            Gbl_CurrentLineNumber, Gbl_Files[ASL_FILE_INPUT].Filename);
+        break;
+
     case PR_DIRECTIVE_PRAGMA:
         /* Only "#pragma message" supported at this time */
 
@@ -764,8 +789,6 @@ PrDoDirective (
             THIS_TOKEN_OFFSET (Token));
         break;
 
-    case PR_DIRECTIVE_LINE:
-        /* TBD: set line number -- or, do this in main compiler */
     default:
         /* Should never get here */
         DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID

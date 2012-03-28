@@ -134,6 +134,8 @@ YYSTYPE AslCompilerlval;
 
 /* Local prototypes */
 
+void
+AslDoLineDirective (char *Line);
 char
 comment (void);
 char
@@ -189,7 +191,7 @@ NamePathTail                [.]{NameSeg}
 
 "Include"                   { count (1); return (PARSEOP_INCLUDE); }
 "#include"                  { count (1); return (PARSEOP_INCLUDE_CSTYLE); }
-"#line"						{ count (1); return (PARSEOP_LINE_CSTYLE); }
+"#line"                     { count (1); AslDoLineDirective ((char *) AslCompilertext);}
 "External"                  { count (1); return (PARSEOP_EXTERNAL); }
 
  /****************************************************************************
@@ -721,6 +723,76 @@ ASL_FILE_NODE               *InputStack = NULL;
 
 /*******************************************************************************
  *
+ * FUNCTION:    AslDoLineDirective
+ *
+ * PARAMETERS:  Line            - Current input line
+ *
+ * RETURN:      Updates global line number and filename
+ *
+ * DESCRIPTION: Handle #line directives emitted by the preprocessor.
+ *
+ * The #line directive is emitted by the preprocesser, and is used to
+ * pass through line numbers from the original source code file to the
+ * preprocessor output file (.i). This allows any compiler-generated
+ * error messages to be displayed with the correct line number.
+ *
+ ******************************************************************************/
+
+void
+AslDoLineDirective (
+    char                    *Line)
+{
+    char                    c;
+    char                    *Token;
+    UINT32                  LineNumber;
+    char                    *Filename;
+
+
+    /* Eat the entire line that contains the #line directive */
+
+    ResetCurrentLineBuffer ();
+    while ((c = (char) input()) != '\n' && c != EOF)
+    {
+        InsertLineBuffer (c);
+    }
+    InsertLineBuffer (0);
+
+    /* First argument is the actual line number */
+
+    Token = strtok (Gbl_CurrentLineBuffer, " ");
+    if (!Token)
+    {
+        goto ResetAndExit;
+    }
+
+    /* Convert line number. (-1) to handle _this_ line */
+
+    LineNumber = (UINT32) UtDoConstant (Token);
+    LineNumber--;
+    FlSetLineNumber (LineNumber);
+    printf ("#line %6s %6u", Token, LineNumber);
+
+    /* Second argument is the optional filename */
+
+    Token = strtok (NULL, " \"");
+    if (Token)
+    {
+        printf (" Filename: %s", Token);
+        Filename = ACPI_ALLOCATE_ZEROED (strlen (Token) + 1);
+        strcpy (Filename, Token);
+        FlSetFilename (Filename);
+    }
+
+    /* Third argument is not supported */
+
+ResetAndExit:
+    printf ("\n");
+    ResetCurrentLineBuffer ();
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AslPopInputFileStack
  *
  * PARAMETERS:  None
@@ -1223,7 +1295,7 @@ DoCharacter:
                                 Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
                                 Gbl_CurrentLineOffset, Gbl_CurrentColumn,
                                 Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
-				break;
+                break;
             }
             break;
 
