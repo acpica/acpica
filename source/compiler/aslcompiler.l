@@ -190,7 +190,6 @@ NamePathTail                [.]{NameSeg}
                                 count (1); return (PARSEOP_INTEGER); }
 
 "Include"                   { count (1); return (PARSEOP_INCLUDE); }
-"#include"                  { count (1); return (PARSEOP_INCLUDE_CSTYLE); }
 "#line"                     { count (1); AslDoLineDirective ((char *) AslCompilertext);}
 "External"                  { count (1); return (PARSEOP_EXTERNAL); }
 

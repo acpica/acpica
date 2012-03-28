@@ -308,7 +308,6 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_I2C_SERIALBUS
 %token <i> PARSEOP_IF
 %token <i> PARSEOP_INCLUDE
-%token <i> PARSEOP_INCLUDE_CSTYLE
 %token <i> PARSEOP_INCLUDE_END
 %token <i> PARSEOP_INCREMENT
 %token <i> PARSEOP_INDEX
@@ -333,7 +332,6 @@ void *                      AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_LEQUAL
 %token <i> PARSEOP_LGREATER
 %token <i> PARSEOP_LGREATEREQUAL
-%token <i> PARSEOP_LINE_CSTYLE
 %token <i> PARSEOP_LLESS
 %token <i> PARSEOP_LLESSEQUAL
 %token <i> PARSEOP_LNOT
@@ -576,7 +574,6 @@ void *                      AslLocalAllocate (unsigned int Size);
 %type <n> FieldUnit
 %type <n> FieldUnitEntry
 %type <n> FieldUnitList
-%type <n> IncludeCStyleTerm
 %type <n> IncludeTerm
 %type <n> OffsetTerm
 %type <n> OptionalAccessAttribTerm
@@ -938,7 +935,6 @@ Term
 
 CompilerDirective
     : IncludeTerm                   {}
-    | IncludeCStyleTerm             {$$ = NULL;}
     | ExternalTerm                  {}
     ;
 
@@ -1230,11 +1226,6 @@ IncludeTerm
 
 IncludeEndTerm
     : PARSEOP_INCLUDE_END			{$$ = TrCreateLeafNode (PARSEOP_INCLUDE_END);}
-    ;
-
-IncludeCStyleTerm
-    : PARSEOP_INCLUDE_CSTYLE
-        String                      {FlOpenIncludeFile ($2);}
     ;
 
 ExternalTerm
