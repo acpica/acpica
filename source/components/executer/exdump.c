@@ -1073,10 +1073,7 @@ AcpiExDumpPackageObj (
     case ACPI_TYPE_STRING:
 
         AcpiOsPrintf ("[String]  Value: ");
-        for (i = 0; i < ObjDesc->String.Length; i++)
-        {
-            AcpiOsPrintf ("%c", ObjDesc->String.Pointer[i]);
-        }
+        AcpiUtPrintString (ObjDesc->String.Pointer, ACPI_UINT8_MAX);
         AcpiOsPrintf ("\n");
         break;
 
