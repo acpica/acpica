@@ -901,7 +901,7 @@ ASLCode
  * of Type1 and Type2 opcodes at module level.
  */
 DefinitionBlockTerm
-    : PARSEOP_DEFINITIONBLOCK '('	{$<n>$ = TrCreateLeafNode (PARSEOP_DEFINITIONBLOCK);}
+    : PARSEOP_DEFINITIONBLOCK '('   {$<n>$ = TrCreateLeafNode (PARSEOP_DEFINITIONBLOCK);}
         String ','
         String ','
         ByteConst ','
@@ -1218,14 +1218,14 @@ Type6Opcode
     ;
 
 IncludeTerm
-    : PARSEOP_INCLUDE '('			{$<n>$ = TrCreateLeafNode (PARSEOP_INCLUDE);}
+    : PARSEOP_INCLUDE '('           {$<n>$ = TrCreateLeafNode (PARSEOP_INCLUDE);}
         String  ')'                 {TrLinkChildren ($<n>3,1,$4);FlOpenIncludeFile ($4);}
         TermList
         IncludeEndTerm              {$$ = TrLinkPeerNodes (3,$<n>3,$7,$8);}
     ;
 
 IncludeEndTerm
-    : PARSEOP_INCLUDE_END			{$$ = TrCreateLeafNode (PARSEOP_INCLUDE_END);}
+    : PARSEOP_INCLUDE_END           {$$ = TrCreateLeafNode (PARSEOP_INCLUDE_END);}
     ;
 
 ExternalTerm
@@ -1244,7 +1244,7 @@ ExternalTerm
 
 
 BankFieldTerm
-    : PARSEOP_BANKFIELD '('			{$<n>$ = TrCreateLeafNode (PARSEOP_BANKFIELD);}
+    : PARSEOP_BANKFIELD '('         {$<n>$ = TrCreateLeafNode (PARSEOP_BANKFIELD);}
         NameString
         NameStringItem
         TermArgItem
@@ -1311,7 +1311,7 @@ ConnectionTerm
     ;
 
 CreateBitFieldTerm
-    : PARSEOP_CREATEBITFIELD '('	{$<n>$ = TrCreateLeafNode (PARSEOP_CREATEBITFIELD);}
+    : PARSEOP_CREATEBITFIELD '('    {$<n>$ = TrCreateLeafNode (PARSEOP_CREATEBITFIELD);}
         TermArg
         TermArgItem
         NameStringItem
@@ -1321,7 +1321,7 @@ CreateBitFieldTerm
     ;
 
 CreateByteFieldTerm
-    : PARSEOP_CREATEBYTEFIELD '('	{$<n>$ = TrCreateLeafNode (PARSEOP_CREATEBYTEFIELD);}
+    : PARSEOP_CREATEBYTEFIELD '('   {$<n>$ = TrCreateLeafNode (PARSEOP_CREATEBYTEFIELD);}
         TermArg
         TermArgItem
         NameStringItem
@@ -1331,7 +1331,7 @@ CreateByteFieldTerm
     ;
 
 CreateDWordFieldTerm
-    : PARSEOP_CREATEDWORDFIELD '('	{$<n>$ = TrCreateLeafNode (PARSEOP_CREATEDWORDFIELD);}
+    : PARSEOP_CREATEDWORDFIELD '('  {$<n>$ = TrCreateLeafNode (PARSEOP_CREATEDWORDFIELD);}
         TermArg
         TermArgItem
         NameStringItem
@@ -1341,7 +1341,7 @@ CreateDWordFieldTerm
     ;
 
 CreateFieldTerm
-    : PARSEOP_CREATEFIELD '('		{$<n>$ = TrCreateLeafNode (PARSEOP_CREATEFIELD);}
+    : PARSEOP_CREATEFIELD '('       {$<n>$ = TrCreateLeafNode (PARSEOP_CREATEFIELD);}
         TermArg
         TermArgItem
         TermArgItem
@@ -1352,7 +1352,7 @@ CreateFieldTerm
     ;
 
 CreateQWordFieldTerm
-    : PARSEOP_CREATEQWORDFIELD '('	{$<n>$ = TrCreateLeafNode (PARSEOP_CREATEQWORDFIELD);}
+    : PARSEOP_CREATEQWORDFIELD '('  {$<n>$ = TrCreateLeafNode (PARSEOP_CREATEQWORDFIELD);}
         TermArg
         TermArgItem
         NameStringItem
@@ -1362,7 +1362,7 @@ CreateQWordFieldTerm
     ;
 
 CreateWordFieldTerm
-    : PARSEOP_CREATEWORDFIELD '('	{$<n>$ = TrCreateLeafNode (PARSEOP_CREATEWORDFIELD);}
+    : PARSEOP_CREATEWORDFIELD '('   {$<n>$ = TrCreateLeafNode (PARSEOP_CREATEWORDFIELD);}
         TermArg
         TermArgItem
         NameStringItem
@@ -1372,7 +1372,7 @@ CreateWordFieldTerm
     ;
 
 DataRegionTerm
-    : PARSEOP_DATATABLEREGION '('	{$<n>$ = TrCreateLeafNode (PARSEOP_DATATABLEREGION);}
+    : PARSEOP_DATATABLEREGION '('   {$<n>$ = TrCreateLeafNode (PARSEOP_DATATABLEREGION);}
         NameString
         TermArgItem
         TermArgItem
@@ -1383,7 +1383,7 @@ DataRegionTerm
     ;
 
 DeviceTerm
-    : PARSEOP_DEVICE '('			{$<n>$ = TrCreateLeafNode (PARSEOP_DEVICE);}
+    : PARSEOP_DEVICE '('            {$<n>$ = TrCreateLeafNode (PARSEOP_DEVICE);}
         NameString
         ')' '{'
             ObjectList '}'          {$$ = TrLinkChildren ($<n>3,2,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$7);}
@@ -1392,7 +1392,7 @@ DeviceTerm
     ;
 
 EventTerm
-    : PARSEOP_EVENT '('				{$<n>$ = TrCreateLeafNode (PARSEOP_EVENT);}
+    : PARSEOP_EVENT '('             {$<n>$ = TrCreateLeafNode (PARSEOP_EVENT);}
         NameString
         ')'                         {$$ = TrLinkChildren ($<n>3,1,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION));}
     | PARSEOP_EVENT '('
@@ -1400,7 +1400,7 @@ EventTerm
     ;
 
 FieldTerm
-    : PARSEOP_FIELD '('				{$<n>$ = TrCreateLeafNode (PARSEOP_FIELD);}
+    : PARSEOP_FIELD '('             {$<n>$ = TrCreateLeafNode (PARSEOP_FIELD);}
         NameString
         ',' AccessTypeKeyword
         ',' LockRuleKeyword
@@ -1412,7 +1412,7 @@ FieldTerm
     ;
 
 FunctionTerm
-    : PARSEOP_FUNCTION '('			{$<n>$ = TrCreateLeafNode (PARSEOP_METHOD);}
+    : PARSEOP_FUNCTION '('          {$<n>$ = TrCreateLeafNode (PARSEOP_METHOD);}
         NameString
         OptionalParameterTypePackage
         OptionalParameterTypesPackage
@@ -1426,7 +1426,7 @@ FunctionTerm
     ;
 
 IndexFieldTerm
-    : PARSEOP_INDEXFIELD '('		{$<n>$ = TrCreateLeafNode (PARSEOP_INDEXFIELD);}
+    : PARSEOP_INDEXFIELD '('        {$<n>$ = TrCreateLeafNode (PARSEOP_INDEXFIELD);}
         NameString
         NameStringItem
         ',' AccessTypeKeyword
@@ -1439,7 +1439,7 @@ IndexFieldTerm
     ;
 
 MethodTerm
-    : PARSEOP_METHOD  '('			{$<n>$ = TrCreateLeafNode (PARSEOP_METHOD);}
+    : PARSEOP_METHOD  '('           {$<n>$ = TrCreateLeafNode (PARSEOP_METHOD);}
         NameString
         OptionalByteConstExpr       {UtCheckIntegerRange ($5, 0, 7);}
         OptionalSerializeRuleKeyword
@@ -1453,7 +1453,7 @@ MethodTerm
     ;
 
 MutexTerm
-    : PARSEOP_MUTEX '('				{$<n>$ = TrCreateLeafNode (PARSEOP_MUTEX);}
+    : PARSEOP_MUTEX '('             {$<n>$ = TrCreateLeafNode (PARSEOP_MUTEX);}
         NameString
         ',' ByteConstExpr
         ')'                         {$$ = TrLinkChildren ($<n>3,2,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$6);}
@@ -1462,7 +1462,7 @@ MutexTerm
     ;
 
 OpRegionTerm
-    : PARSEOP_OPERATIONREGION '('	{$<n>$ = TrCreateLeafNode (PARSEOP_OPERATIONREGION);}
+    : PARSEOP_OPERATIONREGION '('   {$<n>$ = TrCreateLeafNode (PARSEOP_OPERATIONREGION);}
         NameString
         ',' OpRegionSpaceIdTerm
         TermArgItem
@@ -1478,7 +1478,7 @@ OpRegionSpaceIdTerm
     ;
 
 PowerResTerm
-    : PARSEOP_POWERRESOURCE '('		{$<n>$ = TrCreateLeafNode (PARSEOP_POWERRESOURCE);}
+    : PARSEOP_POWERRESOURCE '('     {$<n>$ = TrCreateLeafNode (PARSEOP_POWERRESOURCE);}
         NameString
         ',' ByteConstExpr
         ',' WordConstExpr
@@ -1489,7 +1489,7 @@ PowerResTerm
     ;
 
 ProcessorTerm
-    : PARSEOP_PROCESSOR '('			{$<n>$ = TrCreateLeafNode (PARSEOP_PROCESSOR);}
+    : PARSEOP_PROCESSOR '('         {$<n>$ = TrCreateLeafNode (PARSEOP_PROCESSOR);}
         NameString
         ',' ByteConstExpr
         OptionalDWordConstExpr
@@ -1501,7 +1501,7 @@ ProcessorTerm
     ;
 
 ThermalZoneTerm
-    : PARSEOP_THERMALZONE '('		{$<n>$ = TrCreateLeafNode (PARSEOP_THERMALZONE);}
+    : PARSEOP_THERMALZONE '('       {$<n>$ = TrCreateLeafNode (PARSEOP_THERMALZONE);}
         NameString
         ')' '{'
             ObjectList '}'          {$$ = TrLinkChildren ($<n>3,2,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$7);}
@@ -1514,7 +1514,7 @@ ThermalZoneTerm
 
 
 AliasTerm
-    : PARSEOP_ALIAS '('				{$<n>$ = TrCreateLeafNode (PARSEOP_ALIAS);}
+    : PARSEOP_ALIAS '('             {$<n>$ = TrCreateLeafNode (PARSEOP_ALIAS);}
         NameString
         NameStringItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,TrSetNodeFlags ($5, NODE_IS_NAME_DECLARATION));}
@@ -1523,7 +1523,7 @@ AliasTerm
     ;
 
 NameTerm
-    : PARSEOP_NAME '('				{$<n>$ = TrCreateLeafNode (PARSEOP_NAME);}
+    : PARSEOP_NAME '('              {$<n>$ = TrCreateLeafNode (PARSEOP_NAME);}
         NameString
         ',' DataObject
         ')'                         {$$ = TrLinkChildren ($<n>3,2,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$6);}
@@ -1532,7 +1532,7 @@ NameTerm
     ;
 
 ScopeTerm
-    : PARSEOP_SCOPE '('				{$<n>$ = TrCreateLeafNode (PARSEOP_SCOPE);}
+    : PARSEOP_SCOPE '('             {$<n>$ = TrCreateLeafNode (PARSEOP_SCOPE);}
         NameString
         ')' '{'
             ObjectList '}'          {$$ = TrLinkChildren ($<n>3,2,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$7);}
@@ -1545,19 +1545,19 @@ ScopeTerm
 
 
 BreakTerm
-    : PARSEOP_BREAK					{$$ = TrCreateNode (PARSEOP_BREAK, 0);}
+    : PARSEOP_BREAK                 {$$ = TrCreateNode (PARSEOP_BREAK, 0);}
     ;
 
 BreakPointTerm
-    : PARSEOP_BREAKPOINT			{$$ = TrCreateNode (PARSEOP_BREAKPOINT, 0);}
+    : PARSEOP_BREAKPOINT            {$$ = TrCreateNode (PARSEOP_BREAKPOINT, 0);}
     ;
 
 ContinueTerm
-    : PARSEOP_CONTINUE				{$$ = TrCreateNode (PARSEOP_CONTINUE, 0);}
+    : PARSEOP_CONTINUE              {$$ = TrCreateNode (PARSEOP_CONTINUE, 0);}
     ;
 
 FatalTerm
-    : PARSEOP_FATAL '('				{$<n>$ = TrCreateLeafNode (PARSEOP_FATAL);}
+    : PARSEOP_FATAL '('             {$<n>$ = TrCreateLeafNode (PARSEOP_FATAL);}
         ByteConstExpr
         ',' DWordConstExpr
         TermArgItem
@@ -1571,7 +1571,7 @@ IfElseTerm
     ;
 
 IfTerm
-    : PARSEOP_IF '('				{$<n>$ = TrCreateLeafNode (PARSEOP_IF);}
+    : PARSEOP_IF '('                {$<n>$ = TrCreateLeafNode (PARSEOP_IF);}
         TermArg
         ')' '{'
             TermList '}'            {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
@@ -1582,7 +1582,7 @@ IfTerm
 
 ElseTerm
     :                               {$$ = NULL;}
-    | PARSEOP_ELSE '{'				{$<n>$ = TrCreateLeafNode (PARSEOP_ELSE);}
+    | PARSEOP_ELSE '{'              {$<n>$ = TrCreateLeafNode (PARSEOP_ELSE);}
         TermList '}'                {$$ = TrLinkChildren ($<n>3,1,$4);}
 
     | PARSEOP_ELSE '{'
@@ -1591,10 +1591,10 @@ ElseTerm
     | PARSEOP_ELSE
         error                       {$$ = AslDoError(); yyclearin;}
 
-    | PARSEOP_ELSEIF '('			{$<n>$ = TrCreateLeafNode (PARSEOP_ELSE);}
-        TermArg						{$<n>$ = TrCreateLeafNode (PARSEOP_IF);}
+    | PARSEOP_ELSEIF '('            {$<n>$ = TrCreateLeafNode (PARSEOP_ELSE);}
+        TermArg                     {$<n>$ = TrCreateLeafNode (PARSEOP_IF);}
         ')' '{'
-            TermList '}'		    {TrLinkChildren ($<n>5,2,$4,$8);}
+            TermList '}'            {TrLinkChildren ($<n>5,2,$4,$8);}
         ElseTerm                    {TrLinkPeerNode ($<n>5,$11);}
                                     {$$ = TrLinkChildren ($<n>3,1,$<n>5);}
 
@@ -1606,7 +1606,7 @@ ElseTerm
     ;
 
 LoadTerm
-    : PARSEOP_LOAD '('				{$<n>$ = TrCreateLeafNode (PARSEOP_LOAD);}
+    : PARSEOP_LOAD '('              {$<n>$ = TrCreateLeafNode (PARSEOP_LOAD);}
         NameString
         RequiredTarget
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
@@ -1615,11 +1615,11 @@ LoadTerm
     ;
 
 NoOpTerm
-    : PARSEOP_NOOP					{$$ = TrCreateNode (PARSEOP_NOOP, 0);}
+    : PARSEOP_NOOP                  {$$ = TrCreateNode (PARSEOP_NOOP, 0);}
     ;
 
 NotifyTerm
-    : PARSEOP_NOTIFY '('			{$<n>$ = TrCreateLeafNode (PARSEOP_NOTIFY);}
+    : PARSEOP_NOTIFY '('            {$<n>$ = TrCreateLeafNode (PARSEOP_NOTIFY);}
         SuperName
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
@@ -1628,7 +1628,7 @@ NotifyTerm
     ;
 
 ReleaseTerm
-    : PARSEOP_RELEASE '('			{$<n>$ = TrCreateLeafNode (PARSEOP_RELEASE);}
+    : PARSEOP_RELEASE '('           {$<n>$ = TrCreateLeafNode (PARSEOP_RELEASE);}
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4);}
     | PARSEOP_RELEASE '('
@@ -1636,7 +1636,7 @@ ReleaseTerm
     ;
 
 ResetTerm
-    : PARSEOP_RESET '('				{$<n>$ = TrCreateLeafNode (PARSEOP_RESET);}
+    : PARSEOP_RESET '('             {$<n>$ = TrCreateLeafNode (PARSEOP_RESET);}
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4);}
     | PARSEOP_RESET '('
@@ -1644,16 +1644,16 @@ ResetTerm
     ;
 
 ReturnTerm
-    : PARSEOP_RETURN '('			{$<n>$ = TrCreateLeafNode (PARSEOP_RETURN);}
+    : PARSEOP_RETURN '('            {$<n>$ = TrCreateLeafNode (PARSEOP_RETURN);}
         OptionalReturnArg
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4);}
-    | PARSEOP_RETURN 				{$$ = TrLinkChildren (TrCreateLeafNode (PARSEOP_RETURN),1,TrSetNodeFlags (TrCreateLeafNode (PARSEOP_ZERO), NODE_IS_NULL_RETURN));}
+    | PARSEOP_RETURN                {$$ = TrLinkChildren (TrCreateLeafNode (PARSEOP_RETURN),1,TrSetNodeFlags (TrCreateLeafNode (PARSEOP_ZERO), NODE_IS_NULL_RETURN));}
     | PARSEOP_RETURN '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
 
 SignalTerm
-    : PARSEOP_SIGNAL '('			{$<n>$ = TrCreateLeafNode (PARSEOP_SIGNAL);}
+    : PARSEOP_SIGNAL '('            {$<n>$ = TrCreateLeafNode (PARSEOP_SIGNAL);}
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4);}
     | PARSEOP_SIGNAL '('
@@ -1661,7 +1661,7 @@ SignalTerm
     ;
 
 SleepTerm
-    : PARSEOP_SLEEP '('				{$<n>$ = TrCreateLeafNode (PARSEOP_SLEEP);}
+    : PARSEOP_SLEEP '('             {$<n>$ = TrCreateLeafNode (PARSEOP_SLEEP);}
         TermArg
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4);}
     | PARSEOP_SLEEP '('
@@ -1669,7 +1669,7 @@ SleepTerm
     ;
 
 StallTerm
-    : PARSEOP_STALL '('				{$<n>$ = TrCreateLeafNode (PARSEOP_STALL);}
+    : PARSEOP_STALL '('             {$<n>$ = TrCreateLeafNode (PARSEOP_STALL);}
         TermArg
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4);}
     | PARSEOP_STALL '('
@@ -1677,7 +1677,7 @@ StallTerm
     ;
 
 SwitchTerm
-    : PARSEOP_SWITCH '('			{$<n>$ = TrCreateLeafNode (PARSEOP_SWITCH);}
+    : PARSEOP_SWITCH '('            {$<n>$ = TrCreateLeafNode (PARSEOP_SWITCH);}
         TermArg
         ')' '{'
             CaseDefaultTermList '}'
@@ -1720,7 +1720,7 @@ CaseTermList
 */
 
 CaseTerm
-    : PARSEOP_CASE '('				{$<n>$ = TrCreateLeafNode (PARSEOP_CASE);}
+    : PARSEOP_CASE '('              {$<n>$ = TrCreateLeafNode (PARSEOP_CASE);}
         DataObject
         ')' '{'
             TermList '}'            {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
@@ -1729,14 +1729,14 @@ CaseTerm
     ;
 
 DefaultTerm
-    : PARSEOP_DEFAULT '{'			{$<n>$ = TrCreateLeafNode (PARSEOP_DEFAULT);}
+    : PARSEOP_DEFAULT '{'           {$<n>$ = TrCreateLeafNode (PARSEOP_DEFAULT);}
         TermList '}'                {$$ = TrLinkChildren ($<n>3,1,$4);}
     | PARSEOP_DEFAULT '{'
         error '}'                   {$$ = AslDoError(); yyclearin;}
     ;
 
 UnloadTerm
-    : PARSEOP_UNLOAD '('			{$<n>$ = TrCreateLeafNode (PARSEOP_UNLOAD);}
+    : PARSEOP_UNLOAD '('            {$<n>$ = TrCreateLeafNode (PARSEOP_UNLOAD);}
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4);}
     | PARSEOP_UNLOAD '('
@@ -1744,7 +1744,7 @@ UnloadTerm
     ;
 
 WhileTerm
-    : PARSEOP_WHILE '('				{$<n>$ = TrCreateLeafNode (PARSEOP_WHILE);}
+    : PARSEOP_WHILE '('             {$<n>$ = TrCreateLeafNode (PARSEOP_WHILE);}
         TermArg
         ')' '{' TermList '}'
                                     {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
@@ -1756,7 +1756,7 @@ WhileTerm
 /******* Type 2 opcodes *******************************************************/
 
 AcquireTerm
-    : PARSEOP_ACQUIRE '('			{$<n>$ = TrCreateLeafNode (PARSEOP_ACQUIRE);}
+    : PARSEOP_ACQUIRE '('           {$<n>$ = TrCreateLeafNode (PARSEOP_ACQUIRE);}
         SuperName
         ',' WordConstExpr
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$6);}
@@ -1765,7 +1765,7 @@ AcquireTerm
     ;
 
 AddTerm
-    : PARSEOP_ADD '('				{$<n>$ = TrCreateLeafNode (PARSEOP_ADD);}
+    : PARSEOP_ADD '('               {$<n>$ = TrCreateLeafNode (PARSEOP_ADD);}
         TermArg
         TermArgItem
         Target
@@ -1775,7 +1775,7 @@ AddTerm
     ;
 
 AndTerm
-    : PARSEOP_AND '('				{$<n>$ = TrCreateLeafNode (PARSEOP_AND);}
+    : PARSEOP_AND '('               {$<n>$ = TrCreateLeafNode (PARSEOP_AND);}
         TermArg
         TermArgItem
         Target
@@ -1785,7 +1785,7 @@ AndTerm
     ;
 
 ConcatTerm
-    : PARSEOP_CONCATENATE '('		{$<n>$ = TrCreateLeafNode (PARSEOP_CONCATENATE);}
+    : PARSEOP_CONCATENATE '('       {$<n>$ = TrCreateLeafNode (PARSEOP_CONCATENATE);}
         TermArg
         TermArgItem
         Target
@@ -1805,7 +1805,7 @@ ConcatResTerm
     ;
 
 CondRefOfTerm
-    : PARSEOP_CONDREFOF '('			{$<n>$ = TrCreateLeafNode (PARSEOP_CONDREFOF);}
+    : PARSEOP_CONDREFOF '('         {$<n>$ = TrCreateLeafNode (PARSEOP_CONDREFOF);}
         SuperName
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
@@ -1814,7 +1814,7 @@ CondRefOfTerm
     ;
 
 CopyObjectTerm
-    : PARSEOP_COPYOBJECT '('		{$<n>$ = TrCreateLeafNode (PARSEOP_COPYOBJECT);}
+    : PARSEOP_COPYOBJECT '('        {$<n>$ = TrCreateLeafNode (PARSEOP_COPYOBJECT);}
         TermArg
         ',' SimpleTarget
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,TrSetNodeFlags ($6, NODE_IS_TARGET));}
@@ -1823,7 +1823,7 @@ CopyObjectTerm
     ;
 
 DecTerm
-    : PARSEOP_DECREMENT '('			{$<n>$ = TrCreateLeafNode (PARSEOP_DECREMENT);}
+    : PARSEOP_DECREMENT '('         {$<n>$ = TrCreateLeafNode (PARSEOP_DECREMENT);}
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4);}
     | PARSEOP_DECREMENT '('
@@ -1831,7 +1831,7 @@ DecTerm
     ;
 
 DerefOfTerm
-    : PARSEOP_DEREFOF '('			{$<n>$ = TrCreateLeafNode (PARSEOP_DEREFOF);}
+    : PARSEOP_DEREFOF '('           {$<n>$ = TrCreateLeafNode (PARSEOP_DEREFOF);}
         TermArg
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4);}
     | PARSEOP_DEREFOF '('
@@ -1839,7 +1839,7 @@ DerefOfTerm
     ;
 
 DivideTerm
-    : PARSEOP_DIVIDE '('			{$<n>$ = TrCreateLeafNode (PARSEOP_DIVIDE);}
+    : PARSEOP_DIVIDE '('            {$<n>$ = TrCreateLeafNode (PARSEOP_DIVIDE);}
         TermArg
         TermArgItem
         Target
@@ -1850,7 +1850,7 @@ DivideTerm
     ;
 
 FindSetLeftBitTerm
-    : PARSEOP_FINDSETLEFTBIT '('	{$<n>$ = TrCreateLeafNode (PARSEOP_FINDSETLEFTBIT);}
+    : PARSEOP_FINDSETLEFTBIT '('    {$<n>$ = TrCreateLeafNode (PARSEOP_FINDSETLEFTBIT);}
         TermArg
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
@@ -1859,7 +1859,7 @@ FindSetLeftBitTerm
     ;
 
 FindSetRightBitTerm
-    : PARSEOP_FINDSETRIGHTBIT '('	{$<n>$ = TrCreateLeafNode (PARSEOP_FINDSETRIGHTBIT);}
+    : PARSEOP_FINDSETRIGHTBIT '('   {$<n>$ = TrCreateLeafNode (PARSEOP_FINDSETRIGHTBIT);}
         TermArg
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
@@ -1868,7 +1868,7 @@ FindSetRightBitTerm
     ;
 
 FromBCDTerm
-    : PARSEOP_FROMBCD '('			{$<n>$ = TrCreateLeafNode (PARSEOP_FROMBCD);}
+    : PARSEOP_FROMBCD '('           {$<n>$ = TrCreateLeafNode (PARSEOP_FROMBCD);}
         TermArg
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
@@ -1877,7 +1877,7 @@ FromBCDTerm
     ;
 
 IncTerm
-    : PARSEOP_INCREMENT '('			{$<n>$ = TrCreateLeafNode (PARSEOP_INCREMENT);}
+    : PARSEOP_INCREMENT '('         {$<n>$ = TrCreateLeafNode (PARSEOP_INCREMENT);}
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4);}
     | PARSEOP_INCREMENT '('
@@ -1885,7 +1885,7 @@ IncTerm
     ;
 
 IndexTerm
-    : PARSEOP_INDEX '('				{$<n>$ = TrCreateLeafNode (PARSEOP_INDEX);}
+    : PARSEOP_INDEX '('             {$<n>$ = TrCreateLeafNode (PARSEOP_INDEX);}
         TermArg
         TermArgItem
         Target
@@ -1895,7 +1895,7 @@ IndexTerm
     ;
 
 LAndTerm
-    : PARSEOP_LAND '('				{$<n>$ = TrCreateLeafNode (PARSEOP_LAND);}
+    : PARSEOP_LAND '('              {$<n>$ = TrCreateLeafNode (PARSEOP_LAND);}
         TermArg
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
@@ -1904,7 +1904,7 @@ LAndTerm
     ;
 
 LEqualTerm
-    : PARSEOP_LEQUAL '('			{$<n>$ = TrCreateLeafNode (PARSEOP_LEQUAL);}
+    : PARSEOP_LEQUAL '('            {$<n>$ = TrCreateLeafNode (PARSEOP_LEQUAL);}
         TermArg
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
@@ -1913,7 +1913,7 @@ LEqualTerm
     ;
 
 LGreaterTerm
-    : PARSEOP_LGREATER '('			{$<n>$ = TrCreateLeafNode (PARSEOP_LGREATER);}
+    : PARSEOP_LGREATER '('          {$<n>$ = TrCreateLeafNode (PARSEOP_LGREATER);}
         TermArg
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
@@ -1922,7 +1922,7 @@ LGreaterTerm
     ;
 
 LGreaterEqualTerm
-    : PARSEOP_LGREATEREQUAL '('		{$<n>$ = TrCreateLeafNode (PARSEOP_LLESS);}
+    : PARSEOP_LGREATEREQUAL '('     {$<n>$ = TrCreateLeafNode (PARSEOP_LLESS);}
         TermArg
         TermArgItem
         ')'                         {$$ = TrCreateNode (PARSEOP_LNOT, 1, TrLinkChildren ($<n>3,2,$4,$5));}
@@ -1931,7 +1931,7 @@ LGreaterEqualTerm
     ;
 
 LLessTerm
-    : PARSEOP_LLESS '('				{$<n>$ = TrCreateLeafNode (PARSEOP_LLESS);}
+    : PARSEOP_LLESS '('             {$<n>$ = TrCreateLeafNode (PARSEOP_LLESS);}
         TermArg
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
@@ -1940,7 +1940,7 @@ LLessTerm
     ;
 
 LLessEqualTerm
-    : PARSEOP_LLESSEQUAL '('		{$<n>$ = TrCreateLeafNode (PARSEOP_LGREATER);}
+    : PARSEOP_LLESSEQUAL '('        {$<n>$ = TrCreateLeafNode (PARSEOP_LGREATER);}
         TermArg
         TermArgItem
         ')'                         {$$ = TrCreateNode (PARSEOP_LNOT, 1, TrLinkChildren ($<n>3,2,$4,$5));}
@@ -1949,7 +1949,7 @@ LLessEqualTerm
     ;
 
 LNotTerm
-    : PARSEOP_LNOT '('				{$<n>$ = TrCreateLeafNode (PARSEOP_LNOT);}
+    : PARSEOP_LNOT '('              {$<n>$ = TrCreateLeafNode (PARSEOP_LNOT);}
         TermArg
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4);}
     | PARSEOP_LNOT '('
@@ -1957,7 +1957,7 @@ LNotTerm
     ;
 
 LNotEqualTerm
-    : PARSEOP_LNOTEQUAL '('			{$<n>$ = TrCreateLeafNode (PARSEOP_LEQUAL);}
+    : PARSEOP_LNOTEQUAL '('         {$<n>$ = TrCreateLeafNode (PARSEOP_LEQUAL);}
         TermArg
         TermArgItem
         ')'                         {$$ = TrCreateNode (PARSEOP_LNOT, 1, TrLinkChildren ($<n>3,2,$4,$5));}
@@ -1966,7 +1966,7 @@ LNotEqualTerm
     ;
 
 LoadTableTerm
-    : PARSEOP_LOADTABLE '('			{$<n>$ = TrCreateLeafNode (PARSEOP_LOADTABLE);}
+    : PARSEOP_LOADTABLE '('         {$<n>$ = TrCreateLeafNode (PARSEOP_LOADTABLE);}
         TermArg
         TermArgItem
         TermArgItem
@@ -1979,7 +1979,7 @@ LoadTableTerm
     ;
 
 LOrTerm
-    : PARSEOP_LOR '('				{$<n>$ = TrCreateLeafNode (PARSEOP_LOR);}
+    : PARSEOP_LOR '('               {$<n>$ = TrCreateLeafNode (PARSEOP_LOR);}
         TermArg
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
@@ -1988,7 +1988,7 @@ LOrTerm
     ;
 
 MatchTerm
-    : PARSEOP_MATCH '('				{$<n>$ = TrCreateLeafNode (PARSEOP_MATCH);}
+    : PARSEOP_MATCH '('             {$<n>$ = TrCreateLeafNode (PARSEOP_MATCH);}
         TermArg
         ',' MatchOpKeyword
         TermArgItem
@@ -2001,7 +2001,7 @@ MatchTerm
     ;
 
 MidTerm
-    : PARSEOP_MID '('				{$<n>$ = TrCreateLeafNode (PARSEOP_MID);}
+    : PARSEOP_MID '('               {$<n>$ = TrCreateLeafNode (PARSEOP_MID);}
         TermArg
         TermArgItem
         TermArgItem
@@ -2012,7 +2012,7 @@ MidTerm
     ;
 
 ModTerm
-    : PARSEOP_MOD '('				{$<n>$ = TrCreateLeafNode (PARSEOP_MOD);}
+    : PARSEOP_MOD '('               {$<n>$ = TrCreateLeafNode (PARSEOP_MOD);}
         TermArg
         TermArgItem
         Target
@@ -2022,7 +2022,7 @@ ModTerm
     ;
 
 MultiplyTerm
-    : PARSEOP_MULTIPLY '('			{$<n>$ = TrCreateLeafNode (PARSEOP_MULTIPLY);}
+    : PARSEOP_MULTIPLY '('          {$<n>$ = TrCreateLeafNode (PARSEOP_MULTIPLY);}
         TermArg
         TermArgItem
         Target
@@ -2032,7 +2032,7 @@ MultiplyTerm
     ;
 
 NAndTerm
-    : PARSEOP_NAND '('				{$<n>$ = TrCreateLeafNode (PARSEOP_NAND);}
+    : PARSEOP_NAND '('              {$<n>$ = TrCreateLeafNode (PARSEOP_NAND);}
         TermArg
         TermArgItem
         Target
@@ -2042,7 +2042,7 @@ NAndTerm
     ;
 
 NOrTerm
-    : PARSEOP_NOR '('				{$<n>$ = TrCreateLeafNode (PARSEOP_NOR);}
+    : PARSEOP_NOR '('               {$<n>$ = TrCreateLeafNode (PARSEOP_NOR);}
         TermArg
         TermArgItem
         Target
@@ -2052,7 +2052,7 @@ NOrTerm
     ;
 
 NotTerm
-    : PARSEOP_NOT '('				{$<n>$ = TrCreateLeafNode (PARSEOP_NOT);}
+    : PARSEOP_NOT '('               {$<n>$ = TrCreateLeafNode (PARSEOP_NOT);}
         TermArg
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
@@ -2061,7 +2061,7 @@ NotTerm
     ;
 
 ObjectTypeTerm
-    : PARSEOP_OBJECTTYPE '('		{$<n>$ = TrCreateLeafNode (PARSEOP_OBJECTTYPE);}
+    : PARSEOP_OBJECTTYPE '('        {$<n>$ = TrCreateLeafNode (PARSEOP_OBJECTTYPE);}
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4);}
     | PARSEOP_OBJECTTYPE '('
@@ -2069,7 +2069,7 @@ ObjectTypeTerm
     ;
 
 OrTerm
-    : PARSEOP_OR '('				{$<n>$ = TrCreateLeafNode (PARSEOP_OR);}
+    : PARSEOP_OR '('                {$<n>$ = TrCreateLeafNode (PARSEOP_OR);}
         TermArg
         TermArgItem
         Target
@@ -2083,7 +2083,7 @@ OrTerm
  * we've taken a pointer to it. (hard to tell if a local becomes initialized this way.)
  */
 RefOfTerm
-    : PARSEOP_REFOF '('				{$<n>$ = TrCreateLeafNode (PARSEOP_REFOF);}
+    : PARSEOP_REFOF '('             {$<n>$ = TrCreateLeafNode (PARSEOP_REFOF);}
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,TrSetNodeFlags ($4, NODE_IS_TARGET));}
     | PARSEOP_REFOF '('
@@ -2091,7 +2091,7 @@ RefOfTerm
     ;
 
 ShiftLeftTerm
-    : PARSEOP_SHIFTLEFT '('			{$<n>$ = TrCreateLeafNode (PARSEOP_SHIFTLEFT);}
+    : PARSEOP_SHIFTLEFT '('         {$<n>$ = TrCreateLeafNode (PARSEOP_SHIFTLEFT);}
         TermArg
         TermArgItem
         Target
@@ -2101,7 +2101,7 @@ ShiftLeftTerm
     ;
 
 ShiftRightTerm
-    : PARSEOP_SHIFTRIGHT '('		{$<n>$ = TrCreateLeafNode (PARSEOP_SHIFTRIGHT);}
+    : PARSEOP_SHIFTRIGHT '('        {$<n>$ = TrCreateLeafNode (PARSEOP_SHIFTRIGHT);}
         TermArg
         TermArgItem
         Target
@@ -2111,7 +2111,7 @@ ShiftRightTerm
     ;
 
 SizeOfTerm
-    : PARSEOP_SIZEOF '('			{$<n>$ = TrCreateLeafNode (PARSEOP_SIZEOF);}
+    : PARSEOP_SIZEOF '('            {$<n>$ = TrCreateLeafNode (PARSEOP_SIZEOF);}
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4);}
     | PARSEOP_SIZEOF '('
@@ -2119,7 +2119,7 @@ SizeOfTerm
     ;
 
 StoreTerm
-    : PARSEOP_STORE '('				{$<n>$ = TrCreateLeafNode (PARSEOP_STORE);}
+    : PARSEOP_STORE '('             {$<n>$ = TrCreateLeafNode (PARSEOP_STORE);}
         TermArg
         ',' SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,TrSetNodeFlags ($6, NODE_IS_TARGET));}
@@ -2128,7 +2128,7 @@ StoreTerm
     ;
 
 SubtractTerm
-    : PARSEOP_SUBTRACT '('			{$<n>$ = TrCreateLeafNode (PARSEOP_SUBTRACT);}
+    : PARSEOP_SUBTRACT '('          {$<n>$ = TrCreateLeafNode (PARSEOP_SUBTRACT);}
         TermArg
         TermArgItem
         Target
@@ -2138,15 +2138,15 @@ SubtractTerm
     ;
 
 TimerTerm
-    : PARSEOP_TIMER '('			    {$<n>$ = TrCreateLeafNode (PARSEOP_TIMER);}
+    : PARSEOP_TIMER '('             {$<n>$ = TrCreateLeafNode (PARSEOP_TIMER);}
         ')'                         {$$ = TrLinkChildren ($<n>3,0);}
-    | PARSEOP_TIMER		            {$$ = TrLinkChildren (TrCreateLeafNode (PARSEOP_TIMER),0);}
+    | PARSEOP_TIMER                 {$$ = TrLinkChildren (TrCreateLeafNode (PARSEOP_TIMER),0);}
     | PARSEOP_TIMER '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
 
 ToBCDTerm
-    : PARSEOP_TOBCD '('				{$<n>$ = TrCreateLeafNode (PARSEOP_TOBCD);}
+    : PARSEOP_TOBCD '('             {$<n>$ = TrCreateLeafNode (PARSEOP_TOBCD);}
         TermArg
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
@@ -2155,7 +2155,7 @@ ToBCDTerm
     ;
 
 ToBufferTerm
-    : PARSEOP_TOBUFFER '('			{$<n>$ = TrCreateLeafNode (PARSEOP_TOBUFFER);}
+    : PARSEOP_TOBUFFER '('          {$<n>$ = TrCreateLeafNode (PARSEOP_TOBUFFER);}
         TermArg
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
@@ -2164,7 +2164,7 @@ ToBufferTerm
     ;
 
 ToDecimalStringTerm
-    : PARSEOP_TODECIMALSTRING '('	{$<n>$ = TrCreateLeafNode (PARSEOP_TODECIMALSTRING);}
+    : PARSEOP_TODECIMALSTRING '('   {$<n>$ = TrCreateLeafNode (PARSEOP_TODECIMALSTRING);}
         TermArg
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
@@ -2173,7 +2173,7 @@ ToDecimalStringTerm
     ;
 
 ToHexStringTerm
-    : PARSEOP_TOHEXSTRING '('		{$<n>$ = TrCreateLeafNode (PARSEOP_TOHEXSTRING);}
+    : PARSEOP_TOHEXSTRING '('       {$<n>$ = TrCreateLeafNode (PARSEOP_TOHEXSTRING);}
         TermArg
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
@@ -2182,7 +2182,7 @@ ToHexStringTerm
     ;
 
 ToIntegerTerm
-    : PARSEOP_TOINTEGER '('			{$<n>$ = TrCreateLeafNode (PARSEOP_TOINTEGER);}
+    : PARSEOP_TOINTEGER '('         {$<n>$ = TrCreateLeafNode (PARSEOP_TOINTEGER);}
         TermArg
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
@@ -2191,7 +2191,7 @@ ToIntegerTerm
     ;
 
 ToStringTerm
-    : PARSEOP_TOSTRING '('			{$<n>$ = TrCreateLeafNode (PARSEOP_TOSTRING);}
+    : PARSEOP_TOSTRING '('          {$<n>$ = TrCreateLeafNode (PARSEOP_TOSTRING);}
         TermArg
         OptionalCount
         Target
@@ -2208,7 +2208,7 @@ ToUUIDTerm
     ;
 
 WaitTerm
-    : PARSEOP_WAIT '('				{$<n>$ = TrCreateLeafNode (PARSEOP_WAIT);}
+    : PARSEOP_WAIT '('              {$<n>$ = TrCreateLeafNode (PARSEOP_WAIT);}
         SuperName
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
@@ -2217,7 +2217,7 @@ WaitTerm
     ;
 
 XOrTerm
-    : PARSEOP_XOR '('				{$<n>$ = TrCreateLeafNode (PARSEOP_XOR);}
+    : PARSEOP_XOR '('               {$<n>$ = TrCreateLeafNode (PARSEOP_XOR);}
         TermArg
         TermArgItem
         Target
@@ -2271,8 +2271,8 @@ AddressKeyword
     ;
 
 AddressSpaceKeyword
-    : ByteConst								{$$ = UtCheckIntegerRange ($1, 0x80, 0xFF);}
-    | RegionSpaceKeyword					{}
+    : ByteConst                             {$$ = UtCheckIntegerRange ($1, 0x80, 0xFF);}
+    | RegionSpaceKeyword                    {}
     ;
 
 BitsPerByteKeyword
