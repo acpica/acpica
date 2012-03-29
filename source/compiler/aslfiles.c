@@ -647,7 +647,7 @@ FlOpenIncludeFile (
      * Flush out the "include ()" statement on this line, start
      * the actual include file on the next line
      */
-    ResetCurrentLineBuffer ();
+    AslResetCurrentLineBuffer ();
     FlPrintFile (ASL_FILE_SOURCE_OUTPUT, "\n");
     Gbl_CurrentLineOffset++;
 

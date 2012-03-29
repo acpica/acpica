@@ -314,10 +314,10 @@ CmFlushSourceCode (
 
     while (FlReadFile (ASL_FILE_INPUT, &Buffer, 1) != AE_ERROR)
     {
-        InsertLineBuffer ((int) Buffer);
+        AslInsertLineBuffer ((int) Buffer);
     }
 
-    ResetCurrentLineBuffer ();
+    AslResetCurrentLineBuffer ();
 }
 
 

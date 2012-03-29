@@ -172,11 +172,11 @@ AslCompilerlex(
     void);
 
 void
-ResetCurrentLineBuffer (
+AslResetCurrentLineBuffer (
     void);
 
 void
-InsertLineBuffer (
+AslInsertLineBuffer (
     int                     SourceChar);
 
 int

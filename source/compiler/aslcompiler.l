@@ -132,20 +132,32 @@ YYSTYPE AslCompilerlval;
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslscan")
 
+/* Configuration */
+
+#define ASL_SPACES_PER_TAB      4
+
+#define ASL_NORMAL_CHAR         0
+#define ASL_ESCAPE_SEQUENCE     1
+#define ASL_OCTAL_CONSTANT      2
+#define ASL_HEX_CONSTANT        3
+
+
 /* Local prototypes */
 
-void
+static void
 AslDoLineDirective (void);
-char
-comment (void);
-char
-comment2 (void);
-void
+
+static char
+AslDoComment (void);
+
+static char
+AslDoCommentType2 (void);
+
+static char
+AslDoStringLiteral (void);
+
+static void
 count (int type);
-char
-literal (void);
-void
-copy (void);
 
 /*! [Begin] no source code translation */
 
@@ -178,10 +190,10 @@ NamePathTail                [.]{NameSeg}
 [ \t]                       { count (0); }
 
 
-"/*"                        { if (!comment ()) yyterminate (); }
-"//"                        { if (!comment2 ()) yyterminate (); }
+"/*"                        { if (!AslDoComment ()) yyterminate (); }
+"//"                        { if (!AslDoCommentType2 ()) yyterminate (); }
 
-"\""                        { if (literal ()) return (PARSEOP_STRING_LITERAL); else yyterminate (); }
+"\""                        { if (AslDoStringLiteral ()) return (PARSEOP_STRING_LITERAL); else yyterminate (); }
 ";"                         { count (0); return(';'); }
 
 
@@ -744,7 +756,7 @@ ASL_FILE_NODE               *InputStack = NULL;
  *
  ******************************************************************************/
 
-void
+static void
 AslDoLineDirective (
     void)
 {
@@ -758,9 +770,9 @@ AslDoLineDirective (
 
     while ((c = (char) input()) != '\n' && c != EOF)
     {
-        InsertLineBuffer (c);
+        AslInsertLineBuffer (c);
     }
-    InsertLineBuffer (0);
+    AslInsertLineBuffer (0);
 
     /* First argument is the actual line number */
 
@@ -788,7 +800,7 @@ AslDoLineDirective (
     /* Third argument is not supported at this time */
 
 ResetAndExit:
-    ResetCurrentLineBuffer ();
+    AslResetCurrentLineBuffer ();
 }
 
 
@@ -902,7 +914,7 @@ AslPushInputFileStack (
 
 /*******************************************************************************
  *
- * FUNCTION:    ResetCurrentLineBuffer
+ * FUNCTION:    AslResetCurrentLineBuffer
  *
  * PARAMETERS:  None
  *
@@ -913,7 +925,7 @@ AslPushInputFileStack (
  ******************************************************************************/
 
 void
-ResetCurrentLineBuffer (
+AslResetCurrentLineBuffer (
     void)
 {
 
@@ -934,7 +946,7 @@ ResetCurrentLineBuffer (
 
 /*******************************************************************************
  *
- * FUNCTION:    InsertLineBuffer
+ * FUNCTION:    AslInsertLineBuffer
  *
  * PARAMETERS:  SourceChar      - One char from the input ASL source file
  *
@@ -944,10 +956,8 @@ ResetCurrentLineBuffer (
  *
  ******************************************************************************/
 
-#define ASL_SPACES_PER_TAB  4
-
 void
-InsertLineBuffer (
+AslInsertLineBuffer (
     int                     SourceChar)
 {
     UINT32                  i;
@@ -969,7 +979,6 @@ InsertLineBuffer (
         Count = ASL_SPACES_PER_TAB -
                     (Gbl_CurrentColumn & (ASL_SPACES_PER_TAB-1));
     }
-
 
     for (i = 0; i < Count; i++)
     {
@@ -994,13 +1003,13 @@ InsertLineBuffer (
                             Gbl_Files[ASL_FILE_INPUT].Filename, MsgBuffer);
 #endif
 
-            ResetCurrentLineBuffer ();
+            AslResetCurrentLineBuffer ();
         }
         else if (SourceChar == '\n')
         {
             /* End of line */
 
-            ResetCurrentLineBuffer ();
+            AslResetCurrentLineBuffer ();
         }
     }
 }
@@ -1023,7 +1032,7 @@ InsertLineBuffer (
  *
  ******************************************************************************/
 
-void
+static void
 count (
     int                 Type)
 {
@@ -1045,7 +1054,7 @@ count (
 
     for (i = 0; (yytext[i] != 0) && (yytext[i] != EOF); i++)
     {
-        InsertLineBuffer (yytext[i]);
+        AslInsertLineBuffer (yytext[i]);
         *Gbl_LineBufPtr = 0;
     }
 }
@@ -1053,7 +1062,7 @@ count (
 
 /*******************************************************************************
  *
- * FUNCTION:    comment
+ * FUNCTION:    AslDoComment
  *
  * PARAMETERS:  none
  *
@@ -1063,15 +1072,15 @@ count (
  *
  ******************************************************************************/
 
-char
-comment (void)
+static char
+AslDoComment (void)
 {
     char                c;
     char                c1 = 0;
 
 
-    InsertLineBuffer ('/');
-    InsertLineBuffer ('*');
+    AslInsertLineBuffer ('/');
+    AslInsertLineBuffer ('*');
 
 loop:
 
@@ -1079,7 +1088,7 @@ loop:
 
     while ((c = (char) input()) != '*' && c != EOF)
     {
-        InsertLineBuffer (c);
+        AslInsertLineBuffer (c);
         c1 = c;
     }
 
@@ -1102,7 +1111,7 @@ loop:
 
     /* Comment is closed only if the NEXT character is a slash */
 
-    InsertLineBuffer (c);
+    AslInsertLineBuffer (c);
 
     if ((c1 = (char) input()) != '/' && c1 != EOF)
     {
@@ -1115,7 +1124,7 @@ loop:
         goto EarlyEOF;
     }
 
-    InsertLineBuffer (c1);
+    AslInsertLineBuffer (c1);
     return TRUE;
 
 
@@ -1133,7 +1142,7 @@ EarlyEOF:
 
 /*******************************************************************************
  *
- * FUNCTION:    comment2
+ * FUNCTION:    AslDoCommentType2
  *
  * PARAMETERS:  none
  *
@@ -1143,18 +1152,18 @@ EarlyEOF:
  *
  ******************************************************************************/
 
-char
-comment2 (void)
+static char
+AslDoCommentType2 (void)
 {
     char                c;
 
 
-    InsertLineBuffer ('/');
-    InsertLineBuffer ('/');
+    AslInsertLineBuffer ('/');
+    AslInsertLineBuffer ('/');
 
     while ((c = (char) input()) != '\n' && c != EOF)
     {
-        InsertLineBuffer (c);
+        AslInsertLineBuffer (c);
     }
 
     if (c == EOF)
@@ -1164,14 +1173,14 @@ comment2 (void)
         c = '\n';
     }
 
-    InsertLineBuffer (c);
+    AslInsertLineBuffer (c);
     return (TRUE);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    literal
+ * FUNCTION:    AslDoStringLiteral
  *
  * PARAMETERS:  none
  *
@@ -1181,13 +1190,8 @@ comment2 (void)
  *
  ******************************************************************************/
 
-#define ASL_NORMAL_CHAR         0
-#define ASL_ESCAPE_SEQUENCE     1
-#define ASL_OCTAL_CONSTANT      2
-#define ASL_HEX_CONSTANT        3
-
-char
-literal (void)
+static char
+AslDoStringLiteral (void)
 {
     char                *StringBuffer = MsgBuffer;
     char                *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
@@ -1204,10 +1208,10 @@ literal (void)
      * NOTE:  Put back the original surrounding quotes into the
      * source line buffer.
      */
-    InsertLineBuffer ('\"');
+    AslInsertLineBuffer ('\"');
     while ((StringChar = (char) input()) != EOF)
     {
-        InsertLineBuffer (StringChar);
+        AslInsertLineBuffer (StringChar);
 
 DoCharacter:
 
