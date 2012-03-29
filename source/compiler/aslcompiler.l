@@ -135,7 +135,7 @@ YYSTYPE AslCompilerlval;
 /* Local prototypes */
 
 void
-AslDoLineDirective (char *Line);
+AslDoLineDirective (void);
 char
 comment (void);
 char
@@ -190,8 +190,15 @@ NamePathTail                [.]{NameSeg}
                                 count (1); return (PARSEOP_INTEGER); }
 
 "Include"                   { count (1); return (PARSEOP_INCLUDE); }
-"#line"                     { count (1); AslDoLineDirective ((char *) AslCompilertext);}
 "External"                  { count (1); return (PARSEOP_EXTERNAL); }
+
+ /*
+  * The #line directive is emitted by the preprocessor and handled
+  * here in the main iASL lexer - simply set the line number and
+  * optionally the current filename.
+  */
+"#line"                     { AslDoLineDirective ();}
+
 
  /****************************************************************************
   *
@@ -724,7 +731,7 @@ ASL_FILE_NODE               *InputStack = NULL;
  *
  * FUNCTION:    AslDoLineDirective
  *
- * PARAMETERS:  Line            - Current input line
+ * PARAMETERS:  None. Uses input() to access current source code line
  *
  * RETURN:      Updates global line number and filename
  *
@@ -739,7 +746,7 @@ ASL_FILE_NODE               *InputStack = NULL;
 
 void
 AslDoLineDirective (
-    char                    *Line)
+    void)
 {
     char                    c;
     char                    *Token;
@@ -749,7 +756,6 @@ AslDoLineDirective (
 
     /* Eat the entire line that contains the #line directive */
 
-    ResetCurrentLineBuffer ();
     while ((c = (char) input()) != '\n' && c != EOF)
     {
         InsertLineBuffer (c);
@@ -764,28 +770,24 @@ AslDoLineDirective (
         goto ResetAndExit;
     }
 
-    /* Convert line number. (-1) to handle _this_ line */
+    /* Convert line number. Subtract one to handle _this_ line */
 
     LineNumber = (UINT32) UtDoConstant (Token);
-    LineNumber--;
-    FlSetLineNumber (LineNumber);
-    printf ("#line %6s %6u", Token, LineNumber);
+    FlSetLineNumber (LineNumber - 1);
 
-    /* Second argument is the optional filename */
+    /* Second argument is the optional filename (in double quotes) */
 
     Token = strtok (NULL, " \"");
     if (Token)
     {
-        printf (" Filename: %s", Token);
         Filename = ACPI_ALLOCATE_ZEROED (strlen (Token) + 1);
         strcpy (Filename, Token);
         FlSetFilename (Filename);
     }
 
-    /* Third argument is not supported */
+    /* Third argument is not supported at this time */
 
 ResetAndExit:
-    printf ("\n");
     ResetCurrentLineBuffer ();
 }
 
@@ -814,7 +816,6 @@ AslPopInputFileStack (
 
     Fnode = InputStack;
     DbgPrint (ASL_PARSE_OUTPUT, "\nPop InputFile Stack, Fnode %p\n\n", Fnode);
-
 
     if (!Fnode)
     {
@@ -1132,7 +1133,7 @@ EarlyEOF:
 
 /*******************************************************************************
  *
- * FUNCTION:    comment
+ * FUNCTION:    comment2
  *
  * PARAMETERS:  none
  *
@@ -1440,5 +1441,3 @@ BufferOverflow:
                     Gbl_Files[ASL_FILE_INPUT].Filename, "Max length 4096");
     return (FALSE);
 }
-
-
