@@ -206,6 +206,7 @@ Options (
     ACPI_OPTION ("-vr",             "Disable remarks");
     ACPI_OPTION ("-vs",             "Disable signon");
     ACPI_OPTION ("-w1 -w2 -w3",     "Set warning reporting level");
+    ACPI_OPTION ("-we",             "Report warnings as errors");
 
     printf ("\nAML Output Files:\n");
     ACPI_OPTION ("-sa -sc",         "Create AML in assembler or C source file (*.asm or *.c)");
@@ -877,6 +878,10 @@ AslDoOptions (
 
         case '3':
             Gbl_WarningLevel = ASL_WARNING3;
+            break;
+
+        case 'e':
+            Gbl_WarningsAsErrors = TRUE;
             break;
 
         default:
