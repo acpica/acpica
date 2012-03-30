@@ -559,8 +559,17 @@ CmDoCompile (
 
     if (!RootNode)
     {
-        AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL,
-            NULL, "- Could not resolve parse tree root node");
+        /*
+         * If there are no errors, then we have some sort of
+         * internal problem.
+         */
+        Status = AslCheckForErrorExit ();
+        if (Status == AE_OK)
+        {
+            AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL,
+                NULL, "- Could not resolve parse tree root node");
+        }
+
         goto ErrorExit;
     }
 

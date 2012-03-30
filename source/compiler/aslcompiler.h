@@ -208,6 +208,11 @@ ACPI_STATUS
 AslDoOneFile (
     char                    *Filename);
 
+ACPI_STATUS
+AslCheckForErrorExit (
+    void);
+
+
 /*
  * aslcompile - compile mainline
  */

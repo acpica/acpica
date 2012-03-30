@@ -139,10 +139,6 @@ static UINT8
 AslDetectSourceFileType (
     ASL_FILE_INFO           *Info);
 
-static ACPI_STATUS
-AslCheckForErrorExit (
-    void);
-
 
 /*******************************************************************************
  *
@@ -630,7 +626,7 @@ AslDoOnePathname (
  *
  ******************************************************************************/
 
-static ACPI_STATUS
+ACPI_STATUS
 AslCheckForErrorExit (
     void)
 {
