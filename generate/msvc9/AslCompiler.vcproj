@@ -3547,7 +3547,8 @@
 					Name="VCCustomBuildTool"
 					Description="Flex - Main compiler lexer generation ($(InputPath))"
 					CommandLine="c:\GnuWin32\bin\flex.exe -PAslCompiler -i -s -oAslCompiler\$(InputName).l.c $(InputPath)&#x0D;&#x0A;"
-					Outputs="AslCompiler\$(InputName).l.c "
+					AdditionalDependencies="$(InputDir)aslsupport.l"
+					Outputs="AslCompiler\$(InputName).l.c"
 				/>
 			</FileConfiguration>
 			<FileConfiguration
@@ -3557,6 +3558,7 @@
 					Name="VCCustomBuildTool"
 					Description="Flex - Main compiler lexer generation ($(InputPath)) DEBUG"
 					CommandLine="c:\GnuWin32\bin\flex.exe -PAslCompiler -i -s -oAslCompilerDebug\AslCompilerDebug.l.c $(InputPath)&#x0D;&#x0A;"
+					AdditionalDependencies="$(InputDir)aslsupport.l"
 					Outputs="AslCompilerDebug\AslCompilerDebug.l.c "
 				/>
 			</FileConfiguration>
@@ -3584,6 +3586,10 @@
 					Outputs="AslCompilerDebug\AslCompilerDebug.y.c;AslCompilerDebug\AslCompilerDebug.y.h"
 				/>
 			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\source\compiler\aslsupport.l"
+			>
 		</File>
 		<File
 			RelativePath="..\..\source\compiler\dtparser.l"
