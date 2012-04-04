@@ -12,6 +12,7 @@ install:	FORCE
 			else \
 				pwd; make install; \
 			fi); \
+		echo "---- Completed test package [$$d]"; \
 		done
 
 clean:	FORCE

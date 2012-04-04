@@ -26,6 +26,7 @@ SETOF_INDEXES= 0 1 2 3
 SETOF_AMLDIRS= nopt/32 nopt/64 opt/32 opt/64
 SETOF_ASLFAGS= "-oa -r 1" "-oa -r 2" "-r 1" "-r 2"
 COMMON_ASL_FLAGS= "-cr -vs -va"
+COMPILER_LOG="$(TOP)/tmp/aml/$(aslversion)/compile.txt"
 
 # Create general directory
 
@@ -49,15 +50,19 @@ ${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%}:
 install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%}
 	@rval=0; \
 	if [ -f "$(ASL)" ]; then \
+		dd=`pwd`; \
+		echo "---- Test path: $$dd" >> $(COMPILER_LOG); \
 		for i in ${SETOF_INDEXES}; do \
 			set -- $(SETOF_AMLDIRS); \
 			shift $$i; \
 			CUR_AMLDIR=$$1; \
+			echo "---- Test type: $$CUR_AMLDIR   (Flags $(COMMON_ASL_FLAGS) $$CUR_ASLFLAGS $(ADD_ASLFLAGS))" >> $(COMPILER_LOG); \
 			set -- $(SETOF_ASLFAGS); \
 			shift $$i; \
 			CUR_ASLFLAGS=$$1; \
 			for j in ${ASLMOD} $(ASLMODADD); do \
-				"$(ASL)" $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$j.asl; \
+				"$(ASL)" $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$j.asl >> $(COMPILER_LOG); \
+				echo "" >> $(COMPILER_LOG); \
 				ret=$$?; \
 				if [ $$ret != 0 ]; then rval=1; echo "**** Unexpected iASL failure!"; exit 1; fi; \
 			done; \
@@ -69,7 +74,7 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 			done; \
 		done; \
 	else \
-		echo "Bad iASL 0: <$(ASL)>"; \
+		echo "Bad iASL 0: <$(ASL)> does not exist"; \
 		rval=1; \
 	fi; \
 	if [ $$rval != 0 ]; then exit 1; fi
@@ -78,12 +83,13 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 # Move results to aslts/tmp/aml directory.
 # Determine current version of iASL.
 # Create aslts/tmp/aml/<version> directory with the precautions.
+#aslversion=`echo "$$x" | awk -F" " '{ print $$5}'`; \
 
 install_test_case:
 	@if [ ! -f "$(ASL)" ]; then \
-		echo "Bad iASL 1: <$(ASL)>"; exit 1; \
+		echo "Bad iASL 1: <$(ASL)> does not exist"; exit 1; \
 	else \
-		aslversion=00000000; \
+		aslversion=""; \
 		testcasedir=`pwd`; \
 		cd $(TOP); \
 		if [ $$? -ne 0 ]; then \
@@ -95,12 +101,13 @@ install_test_case:
 				echo "Bad base name of ASLTS Test Suite: <$$base> of <$$dd>"; exit 1; \
 			else \
 				x=`"$(ASL)" xxx | grep "Compiler version"`; \
-				if [ x"$$x" == x ]; then \
-					echo "Bad iASL 2: <$(ASL)>"; exit 1; \
+				echo "---- iASL version: $$x"; \
+				if [ -z "$$x" ]; then \
+					echo "Bad iASL 2: bad signon <$(ASL)>"; exit 1; \
 				else \
 					aslversion=`echo "$$x" | awk -F" " '{ print $$5}'`; \
-					if [ x$$aslversion == x ]; then \
-						echo "Bad iASL 3: <$(ASL)>"; exit 1; \
+					if [ -z "$$aslversion" ]; then \
+						echo "Bad iASL 3: could not get version <$(ASL)>"; exit 1; \
 					else \
 						if [ ! -d ./tmp ]; then \
 							mkdir tmp; \
@@ -139,6 +146,9 @@ install_test_case:
 
 compile_test_case:
 	@rval=0; \
+
+	echo "Compile_test_case"
+
 	if [ -f "$(ASL)" ]; then \
 		for i in ${SETOF_INDEXES}; do \
 			set -- $(SETOF_AMLDIRS); \
@@ -148,13 +158,14 @@ compile_test_case:
 			shift $$i; \
 			CUR_ASLFLAGS=$$1; \
 			for j in ${ASLMOD} $(ASLMODADD); do \
-				"$(ASL)" $$CUR_ASLFLAGS $(ADD_ASLFLAGS) $$j.asl; \
+				"$(ASL)" $$CUR_ASLFLAGS $(ADD_ASLFLAGS) $$j.asl \
 				ret=$$?; \
 				if [ $$ret != 0 ]; then rval=1; echo "**** Unexpected iASL failure!"; exit 1; fi; \
 			done; \
 		done; \
 	else \
-		echo "Bad iASL 4: <$(ASL)>"; \
+		echo "Bad iASL 4: <$(ASL)> does not exist"; \
 		rval=1; \
 	fi; \
 	if [ $$rval != 0 ]; then exit 1; fi
+
