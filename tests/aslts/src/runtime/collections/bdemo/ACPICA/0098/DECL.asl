@@ -77,7 +77,7 @@
 
 	// Arg0 - the type of object
 	// (for 8 (- Method) causes crash, Bug 0097)
-	Method(me54, 1)
+	Method(me54, 1, Serialized)
 	{
 		Name(pd02, Package(32) {
 			0,
@@ -87,7 +87,7 @@
 
 		Store("============= Test started:", Debug)
 
-		Switch (Arg0) {
+		Switch (ToInteger (Arg0)) {
 		Case (0) {
 			Store("============= Uninitialized:", Debug)
 		}

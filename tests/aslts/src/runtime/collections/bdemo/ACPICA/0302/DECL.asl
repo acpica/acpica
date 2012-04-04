@@ -38,9 +38,9 @@ Method(m1eb)
 	{
 		Method(m200)
 		{
-			Store("---------------- Before <Scope(\_SB)>",debug)
+			Store("---------------- Before <Scope(\\_SB)>",debug)
 			Scope(\_SB) { Name(i2z7, 0xabcd0007) }
-			Store("---------------- After Scope(\_SB)",debug)
+			Store("---------------- After Scope(\\_SB)",debug)
 			m201()
 			Store("---------------- Completed.",debug)
 		}
@@ -59,9 +59,9 @@ Method(m1eb)
 	{
 		Method(m202)
 		{
-			Store("---------------- Before <Scope(\)>",debug)
+			Store("---------------- Before <Scope(\\)>",debug)
 			Scope(\) { Name(i2z4, 0xabcd0004) }
-			Store("---------------- After Scope(\)",debug)
+			Store("---------------- After Scope(\\)",debug)
 			m203()
 			Store("---------------- Completed.",debug)
 		}

@@ -33,7 +33,7 @@
 Name(z131, 131)
 
 // Check the Method Execution Control operators
-Method(m372)
+Method(m372, 0, Serialized)
 {
 	// The Created Objects benchmark Package
 	Name(pp00, Package(1) {})
@@ -972,7 +972,7 @@ if (rn02) {
 
 	Store(0, i000)
 	_TCI(c200, Local0)
-	Switch (i000) {
+	switch (ToInteger (i000)) {
 		Case (0) {
 		}
 	}
@@ -984,7 +984,7 @@ if (rn02) {
 
 	Store(1, i000)
 	_TCI(c200, Local0)
-	Switch (i000) {
+	switch (ToInteger (i000)) {
 		Case (1) {
 		}
 	}
@@ -996,7 +996,7 @@ if (rn02) {
 
 	Store(0, i000)
 	_TCI(c200, Local0)
-	Switch (i000) {
+	switch (ToInteger (i000)) {
 		Case (1) {
 		}
 	}
@@ -1010,7 +1010,7 @@ if (rn02) {
 
 	Store(0, Local4)
 	_TCI(c200, Local0)
-	Switch (Local4) {
+	switch (ToInteger (Local4)) {
 		Case (0) {
 		}
 	}
@@ -1023,7 +1023,7 @@ if (rn02) {
 
 	Store(1, Local4)
 	_TCI(c200, Local0)
-	Switch (Local4) {
+	switch (ToInteger (Local4)) {
 		Case (1) {
 		}
 	}
@@ -1036,7 +1036,7 @@ if (rn02) {
 
 	Store(0, Local4)
 	_TCI(c200, Local0)
-	Switch (Local4) {
+	switch (ToInteger (Local4)) {
 		Case (1) {
 		}
 	}
@@ -1056,7 +1056,7 @@ if (rn02) {
 
 	Store(0, i000)
 	_TCI(c200, Local0)
-	Switch (i000) {
+	switch (ToInteger (i000)) {
 		Case (0) {
 		}
 		Default {
@@ -1070,7 +1070,7 @@ if (rn02) {
 
 	Store(1, i000)
 	_TCI(c200, Local0)
-	Switch (i000) {
+	switch (ToInteger (i000)) {
 		Case (1) {
 		}
 		Default {
@@ -1084,7 +1084,7 @@ if (rn02) {
 
 	Store(0, i000)
 	_TCI(c200, Local0)
-	Switch (i000) {
+	switch (ToInteger (i000)) {
 		Case (1) {
 		}
 		Default {
@@ -1100,7 +1100,7 @@ if (rn02) {
 
 	Store(0, Local4)
 	_TCI(c200, Local0)
-	Switch (Local4) {
+	switch (ToInteger (Local4)) {
 		Case (0) {
 		}
 		Default {
@@ -1115,7 +1115,7 @@ if (rn02) {
 
 	Store(1, Local4)
 	_TCI(c200, Local0)
-	Switch (Local4) {
+	switch (ToInteger (Local4)) {
 		Case (1) {
 		}
 		Default {
@@ -1130,7 +1130,7 @@ if (rn02) {
 
 	Store(0, Local4)
 	_TCI(c200, Local0)
-	Switch (Local4) {
+	switch (ToInteger (Local4)) {
 		Case (1) {
 		}
 		Default {
@@ -1148,7 +1148,7 @@ if (rn02) {
 
 	Store(1, i000)
 	_TCI(c200, Local0)
-	Switch (i000) {
+	switch (ToInteger (i000)) {
 		Case (1) {
 		}
 		Case (2) {
@@ -1174,7 +1174,7 @@ if (rn02) {
 
 	Store(7, i000)
 	_TCI(c200, Local0)
-	Switch (i000) {
+	switch (ToInteger (i000)) {
 		Case (1) {
 		}
 		Case (2) {
@@ -1200,7 +1200,7 @@ if (rn02) {
 
 	Store(10000, i000)
 	_TCI(c200, Local0)
-	Switch (i000) {
+	switch (ToInteger (i000)) {
 		Case (1) {
 		}
 		Case (2) {
@@ -1228,7 +1228,7 @@ if (rn02) {
 if (rn02) {
 	Store(1, Local4)
 	_TCI(c200, Local0)
-	Switch (Local4) {
+	switch (ToInteger (Local4)) {
 		Case (1) {
 		}
 		Case (2) {
@@ -1254,7 +1254,7 @@ if (rn02) {
 
 	Store(7, Local4)
 	_TCI(c200, Local0)
-	Switch (Local4) {
+	switch (ToInteger (Local4)) {
 		Case (1) {
 		}
 		Case (2) {
@@ -1280,7 +1280,7 @@ if (rn02) {
 
 	Store(10000, Local4)
 	_TCI(c200, Local0)
-	Switch (Local4) {
+	switch (ToInteger (Local4)) {
 		Case (1) {
 		}
 		Case (2) {

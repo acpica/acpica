@@ -34,141 +34,141 @@
  * Compiler should return an error...
  */
 
-	Method(me0c, 1)
+	Method(me0c, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (1) {
 				Store(1, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (2) {
 				Store(2, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (3) {
 				Store(3, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (4) {
 				Store(4, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (5) {
 				Store(5, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (6) {
 				Store(6, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (7) {
 				Store(7, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (8) {
 				Store(8, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (9) {
 				Store(9, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (10) {
 				Store(10, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (11) {
 				Store(11, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (12) {
 				Store(12, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (13) {
 				Store(13, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (14) {
 				Store(14, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (15) {
 				Store(15, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (16) {
 				Store(16, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (17) {
 				Store(17, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (18) {
 				Store(18, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (19) {
 				Store(19, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (20) {
 				Store(20, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (21) {
 				Store(21, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (22) {
 				Store(22, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (23) {
 				Store(23, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (24) {
 				Store(24, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (25) {
 				Store(25, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (26) {
 				Store(26, Local0)
 			}
 		}
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (27) {
 				Store(27, Local0)
 			}
@@ -195,11 +195,11 @@
 
 	// //////////////////////
 
-	Method(me0e, 1)
+	Method(me0e, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (1) {
 				Store(1, Local0)
 			}
@@ -208,11 +208,11 @@
 		return (Local0)
 	}
 
-	Method(me0f, 1)
+	Method(me0f, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (2) {
 				Store(2, Local0)
 			}
@@ -221,11 +221,11 @@
 		return (Local0)
 	}
 
-	Method(me10, 1)
+	Method(me10, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (3) {
 				Store(3, Local0)
 			}
@@ -234,11 +234,11 @@
 		return (Local0)
 	}
 
-	Method(me11, 1)
+	Method(me11, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (4) {
 				Store(4, Local0)
 			}
@@ -247,11 +247,11 @@
 		return (Local0)
 	}
 
-	Method(me12, 1)
+	Method(me12, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (5) {
 				Store(5, Local0)
 			}
@@ -260,11 +260,11 @@
 		return (Local0)
 	}
 
-	Method(me13, 1)
+	Method(me13, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (6) {
 				Store(6, Local0)
 			}
@@ -273,11 +273,11 @@
 		return (Local0)
 	}
 
-	Method(me14, 1)
+	Method(me14, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (7) {
 				Store(7, Local0)
 			}
@@ -286,11 +286,11 @@
 		return (Local0)
 	}
 
-	Method(me15, 1)
+	Method(me15, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (8) {
 				Store(8, Local0)
 			}
@@ -299,11 +299,11 @@
 		return (Local0)
 	}
 
-	Method(me16, 1)
+	Method(me16, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (9) {
 				Store(9, Local0)
 			}
@@ -312,11 +312,11 @@
 		return (Local0)
 	}
 
-	Method(me17, 1)
+	Method(me17, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (10) {
 				Store(10, Local0)
 			}
@@ -325,11 +325,11 @@
 		return (Local0)
 	}
 
-	Method(me18, 1)
+	Method(me18, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (11) {
 				Store(11, Local0)
 			}
@@ -338,11 +338,11 @@
 		return (Local0)
 	}
 
-	Method(me19, 1)
+	Method(me19, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (12) {
 				Store(12, Local0)
 			}
@@ -351,11 +351,11 @@
 		return (Local0)
 	}
 
-	Method(me1a, 1)
+	Method(me1a, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (13) {
 				Store(13, Local0)
 			}
@@ -364,11 +364,11 @@
 		return (Local0)
 	}
 
-	Method(me1b, 1)
+	Method(me1b, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (14) {
 				Store(14, Local0)
 			}
@@ -377,11 +377,11 @@
 		return (Local0)
 	}
 
-	Method(me1c, 1)
+	Method(me1c, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (15) {
 				Store(15, Local0)
 			}
@@ -390,11 +390,11 @@
 		return (Local0)
 	}
 
-	Method(me1d, 1)
+	Method(me1d, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (16) {
 				Store(16, Local0)
 			}
@@ -403,11 +403,11 @@
 		return (Local0)
 	}
 
-	Method(me1e, 1)
+	Method(me1e, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (17) {
 				Store(17, Local0)
 			}
@@ -416,11 +416,11 @@
 		return (Local0)
 	}
 
-	Method(me1f, 1)
+	Method(me1f, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (18) {
 				Store(18, Local0)
 			}
@@ -429,11 +429,11 @@
 		return (Local0)
 	}
 
-	Method(me20, 1)
+	Method(me20, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (19) {
 				Store(19, Local0)
 			}
@@ -442,11 +442,11 @@
 		return (Local0)
 	}
 
-	Method(me21, 1)
+	Method(me21, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (20) {
 				Store(20, Local0)
 			}
@@ -455,11 +455,11 @@
 		return (Local0)
 	}
 
-	Method(me22, 1)
+	Method(me22, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (21) {
 				Store(21, Local0)
 			}
@@ -468,11 +468,11 @@
 		return (Local0)
 	}
 
-	Method(me23, 1)
+	Method(me23, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (22) {
 				Store(22, Local0)
 			}
@@ -481,11 +481,11 @@
 		return (Local0)
 	}
 
-	Method(me24, 1)
+	Method(me24, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (23) {
 				Store(23, Local0)
 			}
@@ -494,11 +494,11 @@
 		return (Local0)
 	}
 
-	Method(me25, 1)
+	Method(me25, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (24) {
 				Store(24, Local0)
 			}
@@ -507,11 +507,11 @@
 		return (Local0)
 	}
 
-	Method(me26, 1)
+	Method(me26, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (25) {
 				Store(25, Local0)
 			}
@@ -520,11 +520,11 @@
 		return (Local0)
 	}
 
-	Method(me27, 1)
+	Method(me27, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (26) {
 				Store(26, Local0)
 			}
@@ -533,11 +533,11 @@
 		return (Local0)
 	}
 
-	Method(me28, 1)
+	Method(me28, 1, Serialized)
 	{
 		Store(0x100, Local0)
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (27) {
 				Store(27, Local0)
 			}

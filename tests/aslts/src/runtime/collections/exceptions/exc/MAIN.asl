@@ -37,11 +37,17 @@ DefinitionBlock(
 	0x00000001  // OEM Revision
 	) {
 
+//TMP
+Method (XXXX, 1)
+{
+    Add (Arg0, 4)
+}
+
 	// All declarations
-	Include("../../../../runtime/cntl/DECL.asl")
-	Include("../../../../runtime/common/data.asl")
-	Include("../../../../runtime/collections/exceptions/exc/exc.asl")
-	Include("../../../../runtime/collections/functional/reference/ref71.asl")
+	#include("../../../../runtime/cntl/DECL.asl")
+	#include("../../../../runtime/common/data.asl")
+	#include("../../../../runtime/collections/exceptions/exc/exc.asl")
+	#include("../../../../runtime/collections/functional/reference/ref71.asl")
 
 	Method(MAIN) {
 
@@ -54,6 +60,9 @@ DefinitionBlock(
 
 		// Final actions
 		Store(FNSH(), Local7)
+
+// TMP:
+Add (Local7, 1)
 
 		return (Local7)
 	}

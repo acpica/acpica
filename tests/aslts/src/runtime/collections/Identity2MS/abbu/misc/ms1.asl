@@ -91,7 +91,7 @@ Method(DSTO, 2) {Store(Derefof(arg0), arg1)}
  *
  * SUMMARY: String to Integer conversion contradicts new April 2005 Conversion Rules
  */
-Method(ms10, 1)
+Method(ms10, 1, Serialized)
 {
 	Name(ts, "ms10")
 
@@ -156,7 +156,7 @@ Method(ms10, 1)
 
 	CH03(ts, z179, 0x002, 0, 0)
 
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() }
 		case (1) { m063("0", 0) }
 		case (2) { m063("0x", 0) }
@@ -187,7 +187,7 @@ Method(h063) { IIN0() ms10(8) Return(POUT) }
  *
  * SUMMARY: No exception on DerefOf of an arbitrary Source
  */
-Method(ms11, 1)
+Method(ms11, 1, Serialized)
 {
 	Name(ts, "ms11")
 
@@ -245,7 +245,7 @@ Method(ms11, 1)
 
 	CH03(ts, z179, 0x008, 0, 0)
 
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() }
 		case (1) { m083(0) }
 		case (2) { m083(1) }
@@ -307,7 +307,7 @@ Method(a100) { IIN0() ms12() Return(POUT) }
  * SUMMARY: Unexpected dereference of Index reference immediately passed to Method
  */
 
-Method(ms13, 1)
+Method(ms13, 1, Serialized)
 {
 	Name(ts, "ms13")
 
@@ -383,7 +383,7 @@ Method(ms13, 1)
 	}
 
 	CH03(ts, z179, 0x018, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { a113() b113() s113()}
 		case (1) { a113() }
 		case (2) { b113() }
@@ -402,7 +402,7 @@ Method(c113) { IIN0() ms13(3) Return(POUT) }
  *
  * SUMMARY: Method object as a Source of Index operation is treated by iASL mistakenly as a call to that Method
  */
-Method(ms14, 1)
+Method(ms14, 1, Serialized)
 {
 	Name(ts, "ms14")
 
@@ -469,7 +469,7 @@ Method(ms14, 1)
 	}
 
 	CH03(ts, z179, 0x01e, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000()}
 		case (1) { m114(0) }
 		case (2) { m114(1) }
@@ -488,7 +488,7 @@ Method(c114) { IIN0() ms14(3) Return(POUT) }
  *
  * SUMMARY: Unexpected dereference of Index reference returned by Method and immediately passed to another Method
  */
-Method(ms15, 1)
+Method(ms15, 1, Serialized)
 {
 	Name(ts, "ms15")
 
@@ -614,7 +614,7 @@ Method(ms15, 1)
 	}
 
 	CH03(ts, z179, 0x02c, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { a115() b115() c115() d115() e115() f115()}
 		case (1) { a115() }
 		case (2) { b115() }
@@ -639,7 +639,7 @@ Method(f115) { IIN0() ms15(6) Return(POUT) }
  *
  * SUMMARY: Access to FieldObject element of Package causes exception
  */
-Method(ms16, 1)
+Method(ms16, 1, Serialized)
 {
 	Name(ts, "ms16")
 
@@ -924,7 +924,7 @@ Method(ms16, 1)
 	}
 
 	CH03(ts, z179, 0x03c, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() }
 		case (1) { a118() }
 		case (2) { b118() }
@@ -951,7 +951,7 @@ Method(g118) { IIN0() ms16(7) Return(POUT) }
  *
  * SUMMARY: The Read access automatic dereference for RefOf reference doesn't work
  */
-Method(ms17, 1)
+Method(ms17, 1, Serialized)
 {
 	Name(ts, "ms17")
 
@@ -1069,7 +1069,7 @@ Method(ms17, 1)
 	}
 
 	CH03(ts, z179, 0x049, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() }
 		case (1) { m126(0) }
 		case (2) { m126(1) }
@@ -1135,7 +1135,7 @@ Method(a127) { IIN0() ms18() Return(POUT) }
  *
  * SUMMARY: Copying the RefOf reference to Named object spoils that reference
  */
-Method(ms19, 1)
+Method(ms19, 1, Serialized)
 {
 	Name(ts, "ms19")
 
@@ -1273,7 +1273,7 @@ Method(ms19, 1)
 	}
 
 	CH03(ts, z179, 0x057, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() }
 		case (1) { a128() }
 		case (2) { b128() }
@@ -1296,7 +1296,7 @@ Method(e128) { IIN0() ms19(5) Return(POUT) }
  *
  * SUMMARY: Store to the Index reference immediately returned by Method doesn't work
  */
-Method(ms1a, 1)
+Method(ms1a, 1, Serialized)
 {
 	Name(ts, "ms1a")
 
@@ -1474,7 +1474,7 @@ Method(ms1a, 1)
 	OUTP("Bug 131: Writing to the reference immediately returned by Method")
 
 	CH03(ts, z179, 0x062, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() }
 		case (1) { a131() }
 		case (2) { b131() }
@@ -1497,7 +1497,7 @@ Method(e131) { IIN0() ms1a(4) Return(POUT) }
  *
  * SUMMARY: The Read access automatic dereference for Index reference doesn't work
  */
-Method(ms1b, 1)
+Method(ms1b, 1, Serialized)
 {
 	Name(ts, "ms1b")
 
@@ -1562,7 +1562,7 @@ Method(ms1b, 1)
 	}
 
 	CH03(ts, z179, 0x066, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() }
 		case (1) { m132(0, 0) }
 		case (2) { m132(1, 0) }
@@ -1583,7 +1583,7 @@ Method(d132) { IIN0() ms1b(4) Return(POUT) }
  *
  * SUMMARY: The Write access automatic dereference for Index reference doesn't work
  */
-Method(ms1c, 1)
+Method(ms1c, 1, Serialized)
 {
 	Name(ts, "ms1c")
 
@@ -1685,7 +1685,7 @@ Method(ms1c, 1)
 	}
 
 	CH03(ts, z179, 0x06d, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() }
 		case (1) { m133(0) }
 		case (2) { m133(1) }
@@ -1708,7 +1708,7 @@ Method(e133) { IIN0() ms1c(5) Return(POUT) }
  *
  * SUMMARY: Writing RefOf reference from inside Method breaks effectively local Arg
  */
-Method(ms1d, 1)
+Method(ms1d, 1, Serialized)
 {
 	Name(ts, "ms1d")
 
@@ -1840,7 +1840,7 @@ Method(ms1d, 1)
 	}
 
 	CH03(ts, z179, 0x075, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() }
 		case (1) { m134(0) }
 		case (2) { m134(1) }
@@ -1894,7 +1894,7 @@ Method(a136) { IIN0() ms1e() Return(POUT) }
  *
  * Checks store of a Local Reference into the Package
  */
-Method(ms1f, 1)
+Method(ms1f, 1, Serialized)
 {
 	Name(ts, "ms1f")
 
@@ -1957,7 +1957,7 @@ Method(ms1f, 1)
 	}
 
 	CH03(ts, z179, 0x07c, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() }
 		case (1) { mlr0() }
 		case (2) { mlr1() }
@@ -1979,7 +1979,7 @@ Method(elrp) { IIN0() ms1f(0) Return(POUT) }
  *
  * Forward reference within a control method
  */
-Method(ms20, 1)
+Method(ms20, 1, Serialized)
 {
 	Name(ts, "ms20")
 
@@ -2060,7 +2060,7 @@ Method(ms20, 1)
 	}
 
 	CH03(ts, z179, 0x085, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() }
 		case (1) { mfr0() }
 		case (2) { mfr1() }
@@ -2081,7 +2081,7 @@ Method(dmfr) { IIN0() ms20(4) Return(POUT) }
  *
  * Recursive Serialized method execution
  */
-Method(ms21, 1)
+Method(ms21, 1, Serialized)
 {
 	Name(ts, "ms21")
 
@@ -2139,7 +2139,7 @@ Method(ms21, 1)
 	}
 
 	CH03(ts, z179, 0x088, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() }
 		case (1) { mac0() }
 		case (2) { mac1() }
@@ -2162,7 +2162,7 @@ Method(erec) { IIN0() ms21(5) Return(POUT) }
  *
  * Conditional reference within a control method
  */
-Method(ms22, 1)
+Method(ms22, 1, Serialized)
 {
 	Name(ts, "ms22")
 
@@ -2201,7 +2201,7 @@ Method(ms22, 1)
 	}
 
 	CH03(ts, z179, 0x08c, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() m001() }
 		case (1) { m000() }
 		case (2) { m001() }
@@ -2218,7 +2218,7 @@ Method(bmcr) { IIN0() ms22(2) Return(POUT) }
  *
  * Implicit return
  */
-Method(ms23, 1)
+Method(ms23, 1, Serialized)
 {
 	Name(ts, "ms23")
 
@@ -2325,9 +2325,9 @@ Method(ms23, 1)
 		Name(i000, 0xabcd0000)
 		Name(i001, 0xabcd0001)
 
-		Method(m000)
+		Method(m000, 0, Serialized)
 		{
-			Switch (Store(0xabcd000f, i001)) {
+			Switch (ToInteger (Store(0xabcd000f, i001))) {
 				Case (0) {
 					if (fl00) {
 						Return (0)
@@ -2460,7 +2460,7 @@ Method(ms23, 1)
 	}
 
 	CH03(ts, z179, 0x09f, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() }
 		case (1) { mir0() }
 		case (2) { mir1() }
@@ -2549,7 +2549,7 @@ Method(amid) { IIN0() ms24() Return(POUT) }
  *
  * Check Store(..., DeRefof(...)) behavior
  */
-Method(ms25, 1)
+Method(ms25, 1, Serialized)
 {
 	Name(ts, "ms25")
 
@@ -2622,7 +2622,7 @@ Method(ms25, 1)
 	}
 
 	CH03(ts, z179, 0x0b1, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { msd0() msd1() msd2() msd3() }
 		case (1) { msd0() }
 		case (2) { msd1() }
@@ -2652,7 +2652,7 @@ Name(SMBA, 1)
  *
  * Exceeding Field Unit
  */
-Method(ms26, 1)
+Method(ms26, 1, Serialized)
 {
 	Name(ts, "ms26")
 
@@ -3083,7 +3083,7 @@ Method(ms26, 1)
 	}
 
 	CH03(ts, z179, 0x0d4, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() }
 		case (1) { rfu0() }
 		case (2) { rfu1() }
@@ -3115,7 +3115,7 @@ Method(irfu) { IIN0() ms26(9) Return(POUT) }
  *
  * Check IndexField implementation
  */
-Method(ms27, 1)
+Method(ms27, 1, Serialized)
 {
 	Name(ts, "ms27")
 
@@ -3140,10 +3140,10 @@ Method(ms27, 1)
 			re13, 3,
 		}
 
-		Method(TRY0, 3)
+		Method(TRY0, 3, Serialized)
 		{
 			Store(Zero, tot0)
-			Switch (arg0) {
+			switch (ToInteger (Arg0)) {
 			Case (0) {Store(Ones, ^re10)}
 			Case (1) {Store(Ones, ^re11)}
 			Case (2) {Store(Ones, ^re12)}
@@ -3190,10 +3190,10 @@ Method(ms27, 1)
 			re13, 8,
 		}
 
-		Method(TRY0, 3)
+		Method(TRY0, 3, Serialized)
 		{
 			Store(Zero, tot0)
-			Switch (arg0) {
+			switch (ToInteger (Arg0)) {
 			Case (0) {Store(0x12345678, ^re10)}
 			Case (1) {Store(0x12345678, ^re11)}
 			Case (2) {Store(0x12345678, ^re12)}
@@ -3236,10 +3236,10 @@ Method(ms27, 1)
 			re13, 4,
 		}
 
-		Method(TRY0, 3)
+		Method(TRY0, 3, Serialized)
 		{
 			Store(Zero, tot0)
-			Switch (arg0) {
+			switch (ToInteger (Arg0)) {
 			Case (0) {Store(Ones, ^re10)}
 			Case (1) {Store(Ones, ^re11)}
 			Case (2) {Store(Ones, ^re12)}
@@ -3295,10 +3295,10 @@ Method(ms27, 1)
 			re13, 8,
 		}
 
-		Method(TRY0, 3)
+		Method(TRY0, 3, Serialized)
 		{
 			Store(Zero, tot0)
-			Switch (arg0) {
+			switch (ToInteger (Arg0)) {
 			Case (0) {Store(0x12345678, ^re10)}
 			Case (1) {Store(0x12345678, ^re11)}
 			Case (2) {Store(0x12345678, ^re12)}
@@ -3326,7 +3326,7 @@ Method(ms27, 1)
 	}
 
 	CH03(ts, z179, 0x0e6, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) {
 			ifd0()
 			ifd1()
@@ -3341,7 +3341,7 @@ Method(ms27, 1)
 	CH03(ts, z179, 0x0e7, 0, 0)
 }
 
-Method(mt27, 1)
+Method(mt27, 1, Serialized)
 {
 	Name(ts, "mt27")
 
@@ -3366,10 +3366,10 @@ Method(mt27, 1)
 			re13, 8,
 		}
 
-		Method(TRY0, 3)
+		Method(TRY0, 3, Serialized)
 		{
 			Store(Zero, tot0)
-			Switch (arg0) {
+			switch (ToInteger (Arg0)) {
 			Case (0) {Store(0x12345678, ^re10)}
 			Case (1) {Store(0x12345678, ^re11)}
 			Case (2) {Store(0x12345678, ^re12)}
@@ -3425,10 +3425,10 @@ Method(mt27, 1)
 			re13, 8,
 		}
 
-		Method(TRY0, 3)
+		Method(TRY0, 3, Serialized)
 		{
 			Store(Zero, tot0)
-			Switch (arg0) {
+			switch (ToInteger (Arg0)) {
 			Case (0) {Store(Ones, ^re10)}
 			Case (1) {Store(Ones, ^re11)}
 			Case (2) {Store(Ones, ^re12)}
@@ -3469,11 +3469,11 @@ Method(mt27, 1)
 			re13, 8,
 		}
 
-		Method(TRY0, 3)
+		Method(TRY0, 3, Serialized)
 		{
 			Store(Zero, tot0)
 			Store(Zero, tot1)
-			Switch (arg0) {
+			switch (ToInteger (Arg0)) {
 			Case (0) {Store(Ones, ^re10)}
 			Case (1) {Store(Ones, ^re11)}
 			Case (2) {Store(Ones, ^re12)}
@@ -3533,10 +3533,10 @@ Method(mt27, 1)
 			re13, 7,
 		}
 
-		Method(TRY0, 3)
+		Method(TRY0, 3, Serialized)
 		{
 			Store(Zero, tot0)
-			Switch (arg0) {
+			switch (ToInteger (Arg0)) {
 			Case (0) {Store(Ones, ^re10)}
 			Case (1) {Store(Ones, ^re11)}
 			Case (2) {Store(Ones, ^re12)}
@@ -3583,7 +3583,7 @@ Method(mt27, 1)
 	}
 
 	CH03(ts, z179, 0x0e8, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) {
 			ifd4()
 			ifd5()
@@ -3598,7 +3598,7 @@ Method(mt27, 1)
 	CH03(ts, z179, 0x0e9, 0, 0)
 }
 
-Method(mu27, 1)
+Method(mu27, 1, Serialized)
 {
 	Name(ts, "mu27")
 
@@ -3627,11 +3627,11 @@ Method(mu27, 1)
 			re13, 8,
 		}
 
-		Method(TRY0, 3)
+		Method(TRY0, 3, Serialized)
 		{
 			Store(Zero, tot0)
 			Store(Zero, tot1)
-			Switch (arg0) {
+			switch (ToInteger (Arg0)) {
 			Case (0) {Store(0x12345678, ^re10)}
 			Case (1) {Store(0x12345678, ^re11)}
 			Case (2) {Store(0x12345678, ^re12)}
@@ -3695,10 +3695,10 @@ Method(mu27, 1)
 			re13, 8,
 		}
 
-		Method(TRY0, 3)
+		Method(TRY0, 3, Serialized)
 		{
 			Store(Zero, tot0)
-			Switch (arg0) {
+			switch (ToInteger (Arg0)) {
 			Case (0) {Store(0x12345678, ^re10)}
 			Case (1) {Store(0x12345678, ^re11)}
 			Case (2) {Store(0x12345678, ^re12)}
@@ -3754,10 +3754,10 @@ Method(mu27, 1)
 			re13, 8,
 		}
 
-		Method(TRY0, 3)
+		Method(TRY0, 3, Serialized)
 		{
 			Store(Zero, tot0)
-			Switch (arg0) {
+			switch (ToInteger (Arg0)) {
 			Case (0) {Store(0x12345678, ^re10)}
 			Case (1) {Store(0x12345678, ^re11)}
 			Case (2) {Store(0x12345678, ^re12)}
@@ -3802,10 +3802,10 @@ Method(mu27, 1)
 			re13, 8,
 		}
 
-		Method(TRY0, 3)
+		Method(TRY0, 3, Serialized)
 		{
 			Store(Zero, tot0)
-			Switch (arg0) {
+			switch (ToInteger (Arg0)) {
 			Case (0) {Store(0x12345678, ^re10)}
 			Case (1) {Store(0x12345678, ^re11)}
 			Case (2) {Store(0x12345678, ^re12)}
@@ -3833,7 +3833,7 @@ Method(mu27, 1)
 	}
 
 	CH03(ts, z179, 0x0ea, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) {
 			ifd8()
 			ifd9()
@@ -3848,7 +3848,7 @@ Method(mu27, 1)
 	CH03(ts, z179, 0x0eb, 0, 0)
 }
 
-Method(mv27, 1)
+Method(mv27, 1, Serialized)
 {
 	Name(ts, "mv27")
 
@@ -4048,7 +4048,7 @@ Method(mv27, 1)
 	}
 
 	CH03(ts, z179, 0x0ec, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) {
 			ifdc()
 			ifdd()
@@ -4063,7 +4063,7 @@ Method(mv27, 1)
 	CH03(ts, z179, 0x0ed, 0, 0)
 }
 
-Method(mw27, 1)
+Method(mw27, 1, Serialized)
 {
 	Name(ts, "mw27")
 
@@ -4228,7 +4228,7 @@ Method(mw27, 1)
 
 
 	CH03(ts, z179, 0x0ee, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) {
 			ife0()
 			ife1()
@@ -4243,7 +4243,7 @@ Method(mw27, 1)
 	CH03(ts, z179, 0x0ef, 0, 0)
 }
 
-Method(mx27, 1)
+Method(mx27, 1, Serialized)
 {
 	Name(ts, "mx27")
 
@@ -4417,7 +4417,7 @@ Method(mx27, 1)
 	}
 
 	CH03(ts, z179, 0x1c8, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) {
 			ife4()
 			ife5()
@@ -4432,7 +4432,7 @@ Method(mx27, 1)
 	CH03(ts, z179, 0x1c9, 0, 0)
 }
 
-Method(my27, 1)
+Method(my27, 1, Serialized)
 {
 	Name(ts, "my27")
 
@@ -4541,10 +4541,10 @@ Method(my27, 1)
 			idf4, 1, , 6, idf5, 1,
 			idf6, 1, , 6, idf7, 1,
 		}
-		Method(m000, 4)
+		Method(m000, 4, Serialized)
 		{
 			Store(arg0, tot0)
-			Switch(arg1) {
+			switch (ToInteger (Arg1)) {
 			case (0) {Store(1, idf0)}
 			case (1) {Store(1, idf1)}
 			case (2) {Store(1, idf2)}
@@ -4585,10 +4585,10 @@ Method(my27, 1)
 			idf4, 1, , 6, idf5, 1,
 			idf6, 1, , 6, idf7, 1,
 		}
-		Method(m000, 4)
+		Method(m000, 4, Serialized)
 		{
 			Store(arg0, tot0)
-			Switch(arg1) {
+			switch (ToInteger (Arg1)) {
 			case (0) {Store(1, idf0)}
 			case (1) {Store(1, idf1)}
 			case (2) {Store(1, idf2)}
@@ -4618,7 +4618,7 @@ Method(my27, 1)
 	}
 
 	CH03(ts, z179, 0x1ca, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) {
 			ife8()
 
@@ -4645,7 +4645,7 @@ Method(my27, 1)
 	CH03(ts, z179, 0x1cb, 0, 0)
 }
 
-Method(mz27, 1)
+Method(mz27, 1, Serialized)
 {
 	Name(ts, "mz27")
 
@@ -4668,11 +4668,11 @@ Method(mz27, 1)
 			idf4, 1, , 14, idf5, 1,
 			idf6, 1, , 14, idf7, 1,
 		}
-		Method(m000, 5)
+		Method(m000, 5, Serialized)
 		{
 			Store(0xffffffff, tot0)
 			Store(arg0, tot1)
-			Switch(arg1) {
+			switch (ToInteger (Arg1)) {
 			case (0) {Store(1, idf0)}
 			case (1) {Store(1, idf1)}
 			case (2) {Store(1, idf2)}
@@ -4765,10 +4765,10 @@ Method(mz27, 1)
 			re13, 3,
 		}
 
-		Method(TRY0, 3)
+		Method(TRY0, 3, Serialized)
 		{
 			Store(Zero, tot0)
-			Switch (arg0) {
+			switch (ToInteger (Arg0)) {
 			Case (0) {Store(Ones, ^re10)}
 			Case (1) {Store(Ones, ^re11)}
 			Case (2) {Store(Ones, ^re12)}
@@ -4796,7 +4796,7 @@ Method(mz27, 1)
 	}
 
 	CH03(ts, z179, 0x1cc, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) {
 			ifec()
 			ifed()
@@ -4944,7 +4944,7 @@ Mutex (C159, 0)
  *
  * Check Acquire/Release
  */
-Method(ms29, 1)
+Method(ms29, 1, Serialized)
 {
 	Name(ts, "ms29")
 
@@ -5218,7 +5218,7 @@ Method(ms29, 1)
 	}
 
 	CH03(ts, z179, 0x292, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() }
 		case (1) { mut0() }
 		case (2) { mut1() }
@@ -5278,7 +5278,7 @@ Method(BCMP, 2)
  *
  * Check ToBuffer optional store (Bug 194)
  */
-Method(ms2a, 1)
+Method(ms2a, 1, Serialized)
 {
 	Name(ts, "ms2a")
 	Name(F64, 0)
@@ -5485,7 +5485,7 @@ Method(ms2a, 1)
 	}
 
 	CH03(ts, z179, 0x2a4, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() }
 		case (1) { tob0() }
 		case (2) { tob1() }
@@ -5520,7 +5520,7 @@ Method(ktob) { IIN0() ms2a(11) Return(POUT) }
  *
  * Check Package size calculation
  */
-Method(ms2b, 1)
+Method(ms2b, 1, Serialized)
 {
 	Name(ts, "ms2b")
 
@@ -5576,7 +5576,7 @@ Method(ms2b, 1)
 	}
 
 	CH03(ts, z179, 0x2ab, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { pac0() pac1() pac2() }
 		case (1) { pac0() }
 		case (2) { pac1() }
@@ -5597,17 +5597,17 @@ Method(cpac) { IIN0() ms2b(3) Return(POUT) }
  *
  * isw0 test should expectedly fail
  */
-Method(ms2c, 1)
+Method(ms2c, 1, Serialized)
 {
 	Name(ts, "ms2c")
 
-	Method(sw00)
+	Method(sw00, 0, Serialized)
 	{
-		Method(m000, 1)
+		Method(m000, 1, Serialized)
 		{
 			Store(0, Local1)
 
-			switch (arg0) {
+			switch (ToInteger (Arg0)) {
 				case (1) { Store(1, Local1) }
 				case (2) { Store(2, Local1) }
 			}
@@ -5620,7 +5620,7 @@ Method(ms2c, 1)
 		Store(2, Local0)
 		Store(0, Local1)
 
-		switch (Local0) {
+		switch (ToInteger (Local0)) {
 			case (1) { Store(1, Local1) }
 			case (2) { Store(2, Local1) }
 		}
@@ -5656,7 +5656,7 @@ Method(ms2c, 1)
 		}
 	}
 
-	Method(sw02)
+	Method(sw02, 0, Serialized)
 	{
 		OUTP("Check Switch implementation 2: inside While (1 step)")
 
@@ -5665,7 +5665,7 @@ Method(ms2c, 1)
 		Store(0, Local2)
 
 		while (Local0) {
-			switch (Local0) {
+			switch (ToInteger (Local0)) {
 				case (1) { Increment(Local1) }
 				case (2) { Increment(Local2) }
 			}
@@ -5679,7 +5679,7 @@ Method(ms2c, 1)
 		}
 	}
 
-	Method(sw03)
+	Method(sw03, 0, Serialized)
 	{
 		OUTP("Check Switch implementation 3: inside While (2 steps)")
 
@@ -5688,7 +5688,7 @@ Method(ms2c, 1)
 		Store(0, Local2)
 
 		while (Local0) {
-			switch (Local0) {
+			switch (ToInteger (Local0)) {
 				case (1) { Increment(Local1) }
 				case (2) { Increment(Local2) }
 			}
@@ -5702,7 +5702,7 @@ Method(ms2c, 1)
 		}
 	}
 
-	Method(sw04)
+	Method(sw04, 0, Serialized)
 	{
 		OUTP("Check Switch implementation 4: inside While 2, 2 Breaks")
 
@@ -5711,7 +5711,7 @@ Method(ms2c, 1)
 		Store(0, Local2)
 
 		while (Local0) {
-			switch (Local0) {
+			switch (ToInteger (Local0)) {
 				case (1) {
 				 Increment(Local1)
 				 Break
@@ -5734,7 +5734,7 @@ Method(ms2c, 1)
 		}
 	}
 
-	Method(sw05)
+	Method(sw05, 0, Serialized)
 	{
 		OUTP("Check Switch implementation 5: inside While 1, 2 Breaks")
 
@@ -5743,7 +5743,7 @@ Method(ms2c, 1)
 		Store(0, Local2)
 
 		while (Local0) {
-			switch (Local0) {
+			switch (ToInteger (Local0)) {
 				case (1) {
 				 Increment(Local1)
 				 Break
@@ -5767,7 +5767,7 @@ Method(ms2c, 1)
 	}
 
 
-	Method(sw06)
+	Method(sw06, 0, Serialized)
 	{
 		OUTP("Check Switch implementation 6: inside While 2, 1 Break")
 
@@ -5776,7 +5776,7 @@ Method(ms2c, 1)
 		Store(0, Local2)
 
 		while (Local0) {
-			switch (Local0) {
+			switch (ToInteger (Local0)) {
 				case (1) {
 				 Increment(Local1)
 				}
@@ -5863,7 +5863,7 @@ Method(ms2c, 1)
 	}
 
 	CH03(ts, z179, 0x2c1, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() }
 		case (1) { sw00() }
 		case (2) { sw01() }
@@ -5896,7 +5896,7 @@ Method(isw0) { IIN0() ms2c(9) Return(POUT) }
  *
  * bwac & cwac tests should expectedly fail
  */
-Method(ms2d, 1)
+Method(ms2d, 1, Serialized)
 {
 	Name(ts, "ms2d")
 	Name(Y, 0)
@@ -5964,7 +5964,7 @@ Method(ms2d, 1)
 	}
 
 	CH03(ts, z179, 0x2c5, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m000() }
 		case (1) { wac0() }
 		case (2) { wac1() }
@@ -6082,11 +6082,11 @@ Method(abuf) { IIN0() ms2e() Return(POUT) }
  * SUMMARY: Switch implementation can cause AE_ALREADY_EXISTS exception
  *          when Switch is within While
  */
-Method(ms2f, 1)
+Method(ms2f, 1, Serialized)
 {
 	Name(ts, "ms2f")
 
-	Method(B246)
+	Method(B246, 0, Serialized)
 	{
 		Name(LN00, 2)
 
@@ -6095,7 +6095,7 @@ Method(ms2f, 1)
 		Store(0, Local1)
 
 		while (LN00) {
-			switch (LN00) {
+			switch (ToInteger (LN00)) {
 				case (1) {
 					Add(Local1, 1, Local1)
 				}
@@ -6111,7 +6111,7 @@ Method(ms2f, 1)
 		}
 	}
 
-	Method(U246)
+	Method(U246, 0, Serialized)
 	{
 		Name(LN00, 1)
 
@@ -6120,7 +6120,7 @@ Method(ms2f, 1)
 		Store(0, Local1)
 
 		while (LN00) {
-			switch (LN00) {
+			switch (ToInteger (LN00)) {
 				case (1) {
 					Add(Local1, 1, Local1)
 				}
@@ -6137,7 +6137,7 @@ Method(ms2f, 1)
 	}
 
 	CH03(ts, z179, 0x2cc, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { b246() u246() }
 		case (1) { b246() }
 		case (2) { u246() }
@@ -6163,7 +6163,7 @@ Method(ms30)
 	// Comment the wrappers and compile with -f iASL option.
 	Method(B247)
 	{
-		Method(m000, 4)
+		Method(m000, 4, Serialized)
 		{
 			Name(LN00, 2)
 			Name(CH10, 0)
@@ -6175,7 +6175,7 @@ Method(ms30)
 
 // Workaround for "No enclosing While statement" iASl error
 while (1) {
-			switch (arg3) {
+			switch (ToInteger (arg3)) {
 				case (1) {
 					if (Arg1) {
 						Store(1, CH10)
@@ -6236,7 +6236,7 @@ Method(a247) { IIN0() ms30() Return(POUT) }
  *
  * Load ASL operator
  */
-Method(ms31, 1)
+Method(ms31, 1, Serialized)
 {
 	Name(ts, "ms31")
 
@@ -6496,7 +6496,7 @@ Method(ms31, 1)
 	}
 
 	CH03(ts, z179, 0x2ee, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m010() }
 		case (1) { m000() }
 		case (2) { m001() }
@@ -6531,7 +6531,7 @@ Method(kldt) { IIN0() ms31(11) Return(POUT) }
  *
  * CondRefOf ASL operator
  */
-Method(ms32, 1)
+Method(ms32, 1, Serialized)
 {
 	Name(ts, "ms32")
 
@@ -6622,7 +6622,7 @@ Method(ms32, 1)
 	}
 
 	CH03(ts, z179, 0x2f8, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) { m010() }
 		case (1) { m000() }
 		case (2) { m001() }
@@ -6645,7 +6645,7 @@ Method(ecnr) { IIN0() ms32(5) Return(POUT) }
  *
  * Check storing of a Device into LocalX
  */
-Method(ms33, 1)
+Method(ms33, 1, Serialized)
 {
 	Name(ts, "ms33")
 
@@ -6723,7 +6723,7 @@ Method(ms33, 1)
 	}
 
 	CH03(ts, z179, 0x2a2, 0, 0)
-	switch (arg0) {
+	switch (ToInteger (Arg0)) {
 		case (0) {
 			asdl()
 			bsdl()

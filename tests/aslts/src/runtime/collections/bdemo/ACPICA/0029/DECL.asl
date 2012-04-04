@@ -32,9 +32,9 @@
  * SUMMARY: Looks, like Sleep (or Wait) spend less time than specified
  */
 
-Method(mdbf, 2)
+Method(mdbf, 2, Serialized)
 {
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 	case (0) {
 		Store(Timer, Local1)
 		Sleep(arg1)

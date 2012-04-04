@@ -32,10 +32,10 @@
  * SUMMARY: The ASL compiler refuses Package in Case operator
  */
 
-	Method(mf3a, 1)
+	Method(mf3a, 1, Serialized)
 	{
 		Store(0, Local7)
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (Package(1) {Buffer(1) {10}}) {
 				Store(0x12389, Local7)
 			}

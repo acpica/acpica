@@ -32,7 +32,7 @@
  * SUMMARY: Spec of Match operator should be changed (conversion/null package entries)
  */
 
-	Method(me3d, 1)
+	Method(me3d, 1, Serialized)
 	{
 		Store(0, Local0)
 
@@ -50,7 +50,7 @@
 		}
 	}
 
-	Method(me3e, 1)
+	Method(me3e, 1, Serialized)
 	{
 		Store(0, Local0)
 

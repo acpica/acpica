@@ -909,7 +909,7 @@ Method(m610)
 	// converted to String by ToDecimalString, ToHexString
 	// or ToString
 
-	Method(m643, 1)
+	Method(m643, 1, Serialized)
 	{
 		Name(i000, 0)
 
@@ -1006,7 +1006,7 @@ Method(m610)
 		}
 	}
 
-	Method(m323, 1)
+	Method(m323, 1, Serialized)
 	{
 		Name(i000, 0)
 
@@ -2461,7 +2461,7 @@ Method(m610)
 	// is either static Buffer data or explicitly converted to
 	// Buffer by ToBuffer
 
-	Method(m64a, 1)
+	Method(m64a, 1, Serialized)
 	{
 		Name(i000, 0)
 
@@ -2558,7 +2558,7 @@ Method(m610)
 		}
 	}
 
-	Method(m32a, 1)
+	Method(m32a, 1, Serialized)
 	{
 		Name(i000, 0)
 
@@ -13316,7 +13316,7 @@ Method(m610)
 	// of Expression of Case statement when Expression in
 	// Switch is evaluated as Integer
 
-	Method(m64k, 1)
+	Method(m64k, 1, Serialized)
 	{
 		Name(i000, 0)
 
@@ -13413,7 +13413,7 @@ Method(m610)
 		}
 	}
 
-	Method(m32k, 1)
+	Method(m32k, 1, Serialized)
 	{
 		Name(i000, 0)
 
@@ -14434,7 +14434,7 @@ Method(m610)
 	// is either static Buffer data or explicitly converted to
 	// Buffer by ToBuffer
 
-	Method(m039, 1)
+	Method(m039, 1, Serialized)
 	{
 		Name(i000, 0)
 
@@ -25319,7 +25319,7 @@ Method(m610)
 		}
 	}
 
-	Method(m32u, 1)
+	Method(m32u, 1, Serialized)
 	{
 		Name(i000, 0)
 

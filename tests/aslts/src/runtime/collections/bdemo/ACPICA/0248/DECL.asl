@@ -39,11 +39,11 @@ Method(m02d)
 	 * all them are for tracking only - to simplify debugging
 	 */
 
-	Method(m003, 1)
+	Method(m003, 1, Serialized)
 	{
 		NoOp
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (0) {
 				Store("m003", debug)
 			}

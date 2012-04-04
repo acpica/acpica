@@ -77,11 +77,11 @@ Method(obt0, 2)
  * arg1 - object
  * arg2 - depends on arg0
  */
-Method(act0, 4)
+Method(act0, 4, Serialized)
 {
 	Name(ts, "act0")
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 	Case (0) {		// ObjectType
 		Store(ObjectType(arg1), Local0)
 		if (LNotEqual(Local0, arg2)) {
@@ -151,7 +151,7 @@ Method(act0, 4)
 
 /* Methods with different # of args but doing the same */
 
-Method(mI01, 1)
+Method(mI01, 1, Serialized)
 {
 	if (LNot(chk0)) {
 
@@ -372,7 +372,7 @@ Method(mI01, 1)
 		}
 	}
 
-	Switch (cmd0) {
+	Switch (ToInteger (cmd0)) {
 		Case (1) {		// Integer
 			act0(OT00, arg0, c009, 0)
 			act0(LN00, arg0, 0, 0)

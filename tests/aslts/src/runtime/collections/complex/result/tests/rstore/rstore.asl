@@ -43,7 +43,7 @@ Method(m690)
 	Name(i000, 0)
 
 	// Common testing control
-	Method(m100, 3)
+	Method(m100, 3, Serialized)
 	{
 		Name(lpN0, 0)
 		Name(lpC0, 0)
@@ -64,7 +64,7 @@ Method(m690)
 		  // Enumerate types of the result Object
 		  While (lpN1) {
 			// Choose a type and a value of the Object to store into
-		 	Switch (arg1) {
+		 	Switch (ToInteger (arg1)) {
 				Case(0) {	// Uninitialized
 					// Store(Src0, Local0)
 				}
@@ -246,7 +246,7 @@ Method(m690)
 	}
 
 	// Store() Result Object to Integer Constant
-	Method(m010, 3)
+	Method(m010, 3, Serialized)
 	{
 		Name(p000, Package(){Zero, One, Ones, 0xfe7cb391d650a284})
 
@@ -262,9 +262,9 @@ Method(m690)
 		}
 
 		// ArgX as a way to obtain some result object
-		Method(m000, 5)
+		Method(m000, 5, Serialized)
 		{
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					Store(arg2, Derefof(m200(1)))
 					m680(arg0, 24, 0, Derefof(m200(1)), 1)
@@ -294,9 +294,9 @@ Method(m690)
 			Return (0)
 		}
 		// Reference in ArgX as a way to obtain some result object
-		Method(m001, 5)
+		Method(m001, 5, Serialized)
 		{
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					Store(Derefof(arg2), Derefof(m200(1)))
 					m680(arg0, 32, 0, Derefof(m200(1)), 1)
@@ -329,14 +329,14 @@ Method(m690)
 		m680(arg0, 40, 0, Derefof(m200(1)), 1)
 
 		// Choose a way to obtain some result object
-		Switch(arg1) {
+		Switch(ToInteger (arg1)) {
 			Case(0) {	// Data Image
 
 				// Choose a type of the result Object and specific source
 				// objects to obtain the result Object of the specified type.
 				// Check that the destination Object is properly initialized.
 				// Perform storing expression and check result.
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(0xfe7cb391d650a284, Derefof(m200(1)))
 						m680(arg0, 41, 0, Derefof(m200(1)), 1)
@@ -362,7 +362,7 @@ Method(m690)
 				}
 			}
 			Case(1) {	// Named Object
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(i6e0, Derefof(m200(1)))
 						m680(arg0, 46, 0, Derefof(m200(1)), 1)
@@ -395,7 +395,7 @@ Method(m690)
 					0xfe7cb391d650a284, "FE7CB391D650A284", Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
 			}
 			Case(3) {	// Method LocalX Object
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(0xfe7cb391d650a284, Local0)
 					}
@@ -416,7 +416,7 @@ Method(m690)
 						Return (1)
 					}
 				}
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(Local0, Derefof(m200(1)))
 						m680(arg0, 56, 0, Derefof(m200(1)), 1)
@@ -448,7 +448,7 @@ Method(m690)
 				m001(Concatenate(arg0, "-m001"), arg2, Refof(i6e1), Refof(s6e1), Refof(b6e1))
 			}
 			Case(5) {	// Derefof of immediate Index(...)
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(Derefof(Index(p690, 0)), Derefof(m200(1)))
 						m680(arg0, 64, 0, Derefof(m200(1)), 1)
@@ -477,7 +477,7 @@ Method(m690)
 				}
 			}
 			Case(6) {	// Derefof of Indexed Reference returned by called Method
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(Derefof(m681(p690, 3)), Derefof(m200(1)))
 						m680(arg0, 72, 0, Derefof(m200(1)), 1)
@@ -506,7 +506,7 @@ Method(m690)
 				}
 			}
 			Case(7) {	// Result Object returned by called Method
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(m682(arg2, 2), Derefof(m200(1)))
 						m680(arg0, 80, 0, Derefof(m200(1)), 1)
@@ -535,7 +535,7 @@ Method(m690)
 				}
 			}
 			Case(8) {	// Result Object returned by any Operator (Op)
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(Add(i6e3, 0), Derefof(m200(1)))
 						m680(arg0, 88, 0, Derefof(m200(1)), 1)
@@ -577,12 +577,12 @@ Method(m690)
 	}
 
 	// Store() Result Object to Integer Named Object
-	Method(m011, 3)
+	Method(m011, 3, Serialized)
 	{
 		// ArgX as a way to obtain some result object
-		Method(m000, 5)
+		Method(m000, 5, Serialized)
 		{
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					m680(arg0, 97, 0, i680, 0xa0a1a2a35f5e5d80)
 					Store(arg2, i680)
@@ -634,9 +634,9 @@ Method(m690)
 		}
 
 		// Reference in ArgX as a way to obtain some result object
-		Method(m001, 5)
+		Method(m001, 5, Serialized)
 		{
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					m680(arg0, 111, 0, i683, 0xa0a1a2a35f5e5d83)
 					Store(Derefof(arg2), i683)
@@ -688,14 +688,14 @@ Method(m690)
 		}
 
 		// Choose a way to obtain some result object
-		Switch(arg1) {
+		Switch(ToInteger (arg1)) {
 			Case(0) {	// Data Image
 
 				// Choose a type of the result Object and specific source
 				// objects to obtain the result Object of the specified type.
 				// Check that the destination Object is properly initialized.
 				// Perform storing expression and check result.
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 125, 0, i686, 0xa0a1a2a35f5e5d86)
 						Store(0xfe7cb391d650a284, i686)
@@ -736,7 +736,7 @@ Method(m690)
 				}
 			}
 			Case(1) {	// Named Object
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 133, 0, i689, 0xa0a1a2a35f5e5d89)
 						Store(i6e0, i689)
@@ -793,7 +793,7 @@ Method(m690)
 					0xfe7cb391d650a284, "FE7CB391D650A284", Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
 			}
 			Case(3) {	// Method LocalX Object
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(0xfe7cb391d650a284, Local0)
 					}
@@ -814,7 +814,7 @@ Method(m690)
 						Return (1)
 					}
 				}
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 149, 0, i68c, 0xa0a1a2a35f5e5d8c)
 						Store(Local0, i68c)
@@ -857,7 +857,7 @@ Method(m690)
 				m001(Concatenate(arg0, "-m001"), arg2, Refof(i6e1), Refof(s6e1), Refof(b6e1))
 			}
 			Case(5) {	// Derefof of immediate Index(...)
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 161, 0, i68f, 0xa0a1a2a35f5e5d8f)
 						Store(Derefof(Index(p690, 0)), i68f)
@@ -907,7 +907,7 @@ Method(m690)
 				}
 			}
 			Case(6) {	// Derefof of Indexed Reference returned by called Method
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 175, 0, i692, 0xa0a1a2a35f5e5d92)
 						Store(Derefof(m681(p690, 3)), i692)
@@ -957,7 +957,7 @@ Method(m690)
 				}
 			}
 			Case(7) {	// Result Object returned by called Method
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 189, 0, i695, 0xa0a1a2a35f5e5d95)
 						Store(m682(arg2, 2), i695)
@@ -1007,7 +1007,7 @@ Method(m690)
 				}
 			}
 			Case(8) {	// Result Object returned by any Operator (Op)
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 203, 0, i698, 0xa0a1a2a35f5e5d98)
 						Store(Add(i6e3, 0), i698)
@@ -1070,14 +1070,14 @@ Method(m690)
 	}
 
 	// Store() Result Object to Integer Method LocalX Object
-	Method(m013, 3)
+	Method(m013, 3, Serialized)
 	{
 		// ArgX as a way to obtain some result object
-		Method(m000, 5)
+		Method(m000, 5, Serialized)
 		{
 			Store(0xa0a1a2a35f5e5d5c, Local1)
 
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					m680(arg0, 218, 0, Local1, 0xa0a1a2a35f5e5d5c)
 					Store(arg2, Local1)
@@ -1121,11 +1121,11 @@ Method(m690)
 		}
 
 		// Reference in ArgX as a way to obtain some result object
-		Method(m001, 5)
+		Method(m001, 5, Serialized)
 		{
 			Store(0xa0a1a2a35f5e5d5c, Local1)
 
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					m680(arg0, 233, 0, Local1, 0xa0a1a2a35f5e5d5c)
 					Store(Derefof(arg2), Local1)
@@ -1171,14 +1171,14 @@ Method(m690)
 		Store(0xa0a1a2a35f5e5d5c, Local1)
 
 		// Choose a way to obtain some result object
-		Switch(arg1) {
+		Switch(ToInteger (arg1)) {
 			Case(0) {	// Data Image
 
 				// Choose a type of the result Object and specific source
 				// objects to obtain the result Object of the specified type.
 				// Check that the destination Object is properly initialized.
 				// Perform storing expression and check result.
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 248, 0, Local1, 0xa0a1a2a35f5e5d5c)
 						Store(0xfe7cb391d650a284, Local1)
@@ -1211,7 +1211,7 @@ Method(m690)
 				}
 			}
 			Case(1) {	// Named Object
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 257, 0, Local1, 0xa0a1a2a35f5e5d5c)
 						Store(i6e4, Local1)
@@ -1252,7 +1252,7 @@ Method(m690)
 					0xfe7cb391d650a284, "FE7CB391D650A284", Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
 			}
 			Case(3) {	// Method LocalX Object
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(0) {	// Stuff
 						Return (0)
 					}
@@ -1276,7 +1276,7 @@ Method(m690)
 						Return (1)
 					}
 				}
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 273, 0, Local1, 0xa0a1a2a35f5e5d5c)
 						Store(Local0, Local1)
@@ -1311,7 +1311,7 @@ Method(m690)
 				m001(Concatenate(arg0, "-m001"), arg2, Refof(i6e5), Refof(s6e5), Refof(b6e5))
 			}
 			Case(5) {	// Derefof of immediate Index(...)
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 286, 0, Local1, 0xa0a1a2a35f5e5d5c)
 						Store(Derefof(Index(p690, 6)), Local1)
@@ -1353,7 +1353,7 @@ Method(m690)
 				}
 			}
 			Case(6) {	// Derefof of Indexed Reference returned by called Method
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 301, 0, Local1, 0xa0a1a2a35f5e5d5c)
 						Store(Derefof(m681(p690, 9)), Local1)
@@ -1385,7 +1385,7 @@ Method(m690)
 				}
 			}
 			Case(7) {	// Result Object returned by called Method
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 314, 0, Local1, 0xa0a1a2a35f5e5d5c)
 						Store(m682(arg2, 6), Local1)
@@ -1428,7 +1428,7 @@ Method(m690)
 			}
 			Case(8) {	// Result Object returned by any Operator (Op):
 						// Add, Mid
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 329, 0, Local1, 0xa0a1a2a35f5e5d5c)
 						Store(Add(i6e7, 0), Local1)
@@ -1483,12 +1483,12 @@ Method(m690)
 	}
 
 	// Store() Result Object to String Named Object
-	Method(m021, 3)
+	Method(m021, 3, Serialized)
 	{
 		// ArgX as a way to obtain some result object
-		Method(m000, 5)
+		Method(m000, 5, Serialized)
 		{
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					m680(arg0, 345, 0, s680, "initial named string80")
 					Store(arg2, s680)
@@ -1536,9 +1536,9 @@ Method(m690)
 		}
 
 		// Reference in ArgX as a way to obtain some result object
-		Method(m001, 5)
+		Method(m001, 5, Serialized)
 		{
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					m680(arg0, 361, 0, s683, "initial named string83")
 					Store(Derefof(arg2), s683)
@@ -1586,14 +1586,14 @@ Method(m690)
 		}
 
 		// Choose a way to obtain some result object
-		Switch(arg1) {
+		Switch(ToInteger (arg1)) {
 			Case(0) {	// Data Image
 
 				// Choose a type of the result Object and specific source
 				// objects to obtain the result Object of the specified type.
 				// Check that the destination Object is properly initialized.
 				// Perform storing expression and check result.
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 377, 0, s686, "initial named string86")
 						Store(0xfe7cb391d650a284, s686)
@@ -1626,7 +1626,7 @@ Method(m690)
 				}
 			}
 			Case(1) {	// Named Object
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 386, 0, s689, "initial named string89")
 						Store(i6e4, s689)
@@ -1676,7 +1676,7 @@ Method(m690)
 					0xfe7cb391d650a284, "FE7CB391D650A284", Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
 			}
 			Case(3) {	// Method LocalX Object
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(0xfe7cb391d650a284, Local0)
 					}
@@ -1697,7 +1697,7 @@ Method(m690)
 						Return (1)
 					}
 				}
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 404, 0, s68c, "initial named string8c")
 						Store(Local0, s68c)
@@ -1736,7 +1736,7 @@ Method(m690)
 				m001(Concatenate(arg0, "-m001"), arg2, Refof(i6e5), Refof(s6e5), Refof(b6e5))
 			}
 			Case(5) {	// Derefof of immediate Index(...)
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 418, 0, s68f, "initial named string8f")
 						Store(Derefof(Index(p690, 6)), s68f)
@@ -1782,7 +1782,7 @@ Method(m690)
 				}
 			}
 			Case(6) {	// Derefof of Indexed Reference returned by called Method
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 434, 0, s692, "initial named string92")
 						Store(Derefof(m681(p690, 9)), s692)
@@ -1828,7 +1828,7 @@ Method(m690)
 				}
 			}
 			Case(7) {	// Result Object returned by called Method
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 450, 0, s695, "initial named string95")
 						Store(m682(arg2, 6), s695)
@@ -1875,7 +1875,7 @@ Method(m690)
 			}
 			Case(8) {	// Result Object returned by any Operator (Op):
 						// Add, Mid
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 466, 0, s698, "initial named string98")
 						Store(Add(i6e7, 0), s698)
@@ -1934,12 +1934,12 @@ Method(m690)
 	}
 
 	// Store() Result Object to Buffer Named Object
-	Method(m031, 3)
+	Method(m031, 3, Serialized)
 	{
 		// ArgX as a way to obtain some result object
-		Method(m000, 5)
+		Method(m000, 5, Serialized)
 		{
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					m680(arg0, 483, 0, b680, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x80})
 					Store(arg2, b680)
@@ -1987,9 +1987,9 @@ Method(m690)
 		}
 
 		// Reference in ArgX as a way to obtain some result object
-		Method(m001, 5)
+		Method(m001, 5, Serialized)
 		{
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					m680(arg0, 499, 0, b683, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x83})
 					Store(Derefof(arg2), b683)
@@ -2039,14 +2039,14 @@ Method(m690)
 // Store(Concatenate(Concatenate(arg0, arg1), arg2), Debug)
 
 		// Choose a way to obtain some result object
-		Switch(arg1) {
+		Switch(ToInteger (arg1)) {
 			Case(0) {	// Data Image
 
 				// Choose a type of the result Object and specific source
 				// objects to obtain the result Object of the specified type.
 				// Check that the destination Object is properly initialized.
 				// Perform storing expression and check result.
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 515, 0, b686, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x86})
 						Store(0xfe7cb391d650a284, b686)
@@ -2079,7 +2079,7 @@ Method(m690)
 				}
 			}
 			Case(1) {	// Named Object
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 524, 0, b689, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x89})
 						Store(i6e4, b689)
@@ -2129,7 +2129,7 @@ Method(m690)
 					0xfe7cb391d650a284, "FE7CB391D650A284", Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
 			}
 			Case(3) {	// Method LocalX Object
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(0xfe7cb391d650a284, Local0)
 					}
@@ -2150,7 +2150,7 @@ Method(m690)
 						Return (1)
 					}
 				}
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 542, 0, b68c, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x8c})
 						Store(Local0, b68c)
@@ -2189,7 +2189,7 @@ Method(m690)
 				m001(Concatenate(arg0, "-m001"), arg2, Refof(i6e5), Refof(s6e5), Refof(b6e5))
 			}
 			Case(5) {	// Derefof of immediate Index(...)
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 556, 0, b68f, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x8f})
 						Store(Derefof(Index(p690, 6)), b68f)
@@ -2235,7 +2235,7 @@ Method(m690)
 				}
 			}
 			Case(6) {	// Derefof of Indexed Reference returned by called Method
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 572, 0, b692, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x92})
 						Store(Derefof(m681(p690, 9)), b692)
@@ -2281,7 +2281,7 @@ Method(m690)
 				}
 			}
 			Case(7) {	// Result Object returned by called Method
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 588, 0, b695, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x95})
 						Store(m682(arg2, 6), b695)
@@ -2328,7 +2328,7 @@ Method(m690)
 			}
 			Case(8) {	// Result Object returned by any Operator (Op):
 						// Add, Mid
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 604, 0, b698, Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x98})
 						Store(Add(i6e7, 0), b698)
@@ -2388,12 +2388,12 @@ Method(m690)
 
 	// Store() Result Object to Buffer Field Named Object,
 	// case of the field, which is 31-bit long (bf80)
-	Method(m0e0, 3)
+	Method(m0e0, 3, Serialized)
 	{
 		// ArgX as a way to obtain some result object
-		Method(m000, 5)
+		Method(m000, 5, Serialized)
 		{
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					Store(arg2, bf80)
 					m010(arg0, 130, 1)
@@ -2424,9 +2424,9 @@ Method(m690)
 		}
 
 		// Reference in ArgX as a way to obtain some result object
-		Method(m001, 5)
+		Method(m001, 5, Serialized)
 		{
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					Store(Derefof(arg2), bf80)
 					m010(arg0, 153, 1)
@@ -2496,14 +2496,14 @@ Method(m690)
 		m683(b675, 35, 63, 0xa5)
 
 		// Choose a way to obtain some result object
-		Switch(arg1) {
+		Switch(ToInteger (arg1)) {
 			Case(0) {	// Data Image
 
 				// Choose a type of the result Object and specific source
 				// objects to obtain the result Object of the specified type.
 				// Check that the destination Object is properly initialized.
 				// Perform storing expression and check result.
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(0xfe7cb391d650a284, bf80)
 						m010(arg0, 176, 0)
@@ -2529,7 +2529,7 @@ Method(m690)
 				}
 			}
 			Case(1) {	// Named Object
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(i6e4, bf80)
 						m010(arg0, 196, 1)
@@ -2562,7 +2562,7 @@ Method(m690)
 					0xfe7cb391d650a284, "FE7CB391D650A284", Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
 			}
 			Case(3) {	// Method LocalX Object
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(0xfe7cb391d650a284, Local0)
 					}
@@ -2583,7 +2583,7 @@ Method(m690)
 						Return (1)
 					}
 				}
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(Local0, bf80)
 						m010(arg0, 221, 1)
@@ -2605,7 +2605,7 @@ Method(m690)
 				m001(Concatenate(arg0, "-m001"), arg2, Refof(i6e5), Refof(s6e5), Refof(b6e5))
 			}
 			Case(5) {	// Derefof of immediate Index(...)
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(Derefof(Index(p690, 6)), bf80)
 						m010(arg0, 242, 1)
@@ -2634,7 +2634,7 @@ Method(m690)
 				}
 			}
 			Case(6) {	// Derefof of Indexed Reference returned by called Method
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(Derefof(m681(p690, 9)), bf80)
 						m010(arg0, 265, 1)
@@ -2663,7 +2663,7 @@ Method(m690)
 				}
 			}
 			Case(7) {	// Result Object returned by called Method
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(m682(arg2, 6), bf80)
 						m010(arg0, 293, 1)
@@ -2693,7 +2693,7 @@ Method(m690)
 			}
 			Case(8) {	// Result Object returned by any Operator (Op):
 						// Add, Mid
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(Add(i6e7, 0), bf80)
 						m010(arg0, 316, 1)
@@ -2744,12 +2744,12 @@ Method(m690)
 
 	// Store() Result Object to Buffer Field Named Object
 	// case of the field, which is 63-bit long (bf81)
-	Method(m0e1, 3)
+	Method(m0e1, 3, Serialized)
 	{
 		// ArgX as a way to obtain some result object
-		Method(m000, 5)
+		Method(m000, 5, Serialized)
 		{
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					Store(arg2, bf81)
 					m010(arg0, 130, 1)
@@ -2780,9 +2780,9 @@ Method(m690)
 		}
 
 		// Reference in ArgX as a way to obtain some result object
-		Method(m001, 5)
+		Method(m001, 5, Serialized)
 		{
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					Store(Derefof(arg2), bf81)
 					m010(arg0, 153, 1)
@@ -2882,14 +2882,14 @@ Method(m690)
 		m683(b675, 35, 63, 0xa5)
 
 		// Choose a way to obtain some result object
-		Switch(arg1) {
+		Switch(ToInteger (arg1)) {
 			Case(0) {	// Data Image
 
 				// Choose a type of the result Object and specific source
 				// objects to obtain the result Object of the specified type.
 				// Check that the destination Object is properly initialized.
 				// Perform storing expression and check result.
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(0xfe7cb391d650a284, bf81)
 						m010(arg0, 176, 0)
@@ -2915,7 +2915,7 @@ Method(m690)
 				}
 			}
 			Case(1) {	// Named Object
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(i6e4, bf81)
 						m010(arg0, 196, 1)
@@ -2948,7 +2948,7 @@ Method(m690)
 					0xfe7cb391d650a284, "FE7CB391D650A284", Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
 			}
 			Case(3) {	// Method LocalX Object
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(0xfe7cb391d650a284, Local0)
 					}
@@ -2969,7 +2969,7 @@ Method(m690)
 						Return (1)
 					}
 				}
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(Local0, bf81)
 						m010(arg0, 221, 1)
@@ -2991,7 +2991,7 @@ Method(m690)
 				m001(Concatenate(arg0, "-m001"), arg2, Refof(i6e5), Refof(s6e5), Refof(b6e5))
 			}
 			Case(5) {	// Derefof of immediate Index(...)
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(Derefof(Index(p690, 6)), bf81)
 						m010(arg0, 242, 1)
@@ -3020,7 +3020,7 @@ Method(m690)
 				}
 			}
 			Case(6) {	// Derefof of Indexed Reference returned by called Method
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(Derefof(m681(p690, 9)), bf81)
 						m010(arg0, 265, 1)
@@ -3049,7 +3049,7 @@ Method(m690)
 				}
 			}
 			Case(7) {	// Result Object returned by called Method
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(m682(arg2, 6), bf81)
 						m010(arg0, 293, 1)
@@ -3079,7 +3079,7 @@ Method(m690)
 			}
 			Case(8) {	// Result Object returned by any Operator (Op):
 						// Add, Mid
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(Add(i6e7, 0), bf81)
 						m010(arg0, 316, 1)
@@ -3146,12 +3146,12 @@ Method(m690)
 
 	// Store() Result Object to Buffer Field Named Object
 	// case of the field, which is 69-bit long (bf82)
-	Method(m0e2, 3)
+	Method(m0e2, 3, Serialized)
 	{
 		// ArgX as a way to obtain some result object
-		Method(m000, 5)
+		Method(m000, 5, Serialized)
 		{
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					Store(arg2, bf82)
 					m010(arg0, 130, 1)
@@ -3182,9 +3182,9 @@ Method(m690)
 		}
 
 		// Reference in ArgX as a way to obtain some result object
-		Method(m001, 5)
+		Method(m001, 5, Serialized)
 		{
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					Store(Derefof(arg2), bf82)
 					m010(arg0, 153, 1)
@@ -3264,14 +3264,14 @@ Method(m690)
 		m683(b675, 110, 69, 0xa5)
 
 		// Choose a way to obtain some result object
-		Switch(arg1) {
+		Switch(ToInteger (arg1)) {
 			Case(0) {	// Data Image
 
 				// Choose a type of the result Object and specific source
 				// objects to obtain the result Object of the specified type.
 				// Check that the destination Object is properly initialized.
 				// Perform storing expression and check result.
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(0xfe7cb391d650a284, bf82)
 						m010(arg0, 176, 0)
@@ -3297,7 +3297,7 @@ Method(m690)
 				}
 			}
 			Case(1) {	// Named Object
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(i6e4, bf82)
 						m010(arg0, 196, 1)
@@ -3330,7 +3330,7 @@ Method(m690)
 					0xfe7cb391d650a284, "FE7CB391D650A284", Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
 			}
 			Case(3) {	// Method LocalX Object
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(0xfe7cb391d650a284, Local0)
 					}
@@ -3351,7 +3351,7 @@ Method(m690)
 						Return (1)
 					}
 				}
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(Local0, bf82)
 						m010(arg0, 221, 1)
@@ -3373,7 +3373,7 @@ Method(m690)
 				m001(Concatenate(arg0, "-m001"), arg2, Refof(i6e5), Refof(s6e5), Refof(b6e5))
 			}
 			Case(5) {	// Derefof of immediate Index(...)
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(Derefof(Index(p690, 6)), bf82)
 						m010(arg0, 242, 1)
@@ -3402,7 +3402,7 @@ Method(m690)
 				}
 			}
 			Case(6) {	// Derefof of Indexed Reference returned by called Method
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(Derefof(m681(p690, 9)), bf82)
 						m010(arg0, 265, 1)
@@ -3431,7 +3431,7 @@ Method(m690)
 				}
 			}
 			Case(7) {	// Result Object returned by called Method
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(m682(arg2, 6), bf82)
 						m010(arg0, 293, 1)
@@ -3461,7 +3461,7 @@ Method(m690)
 			}
 			Case(8) {	// Result Object returned by any Operator (Op):
 						// Add, Mid
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						Store(Add(i6e7, 0), bf82)
 						m010(arg0, 316, 1)
@@ -3511,14 +3511,14 @@ Method(m690)
 	}
 
 	// Store() Result Object to String Method LocalX Object
-	Method(m023, 3)
+	Method(m023, 3, Serialized)
 	{
 		// ArgX as a way to obtain some result object
-		Method(m000, 5)
+		Method(m000, 5, Serialized)
 		{
 			Store("initial named string", Local1)
 
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					m680(arg0, 778, 0, Local1, "initial named string")
 					Store(arg2, Local1)
@@ -3562,11 +3562,11 @@ Method(m690)
 		}
 
 		// Reference in ArgX as a way to obtain some result object
-		Method(m001, 5)
+		Method(m001, 5, Serialized)
 		{
 			Store("initial named string", Local1)
 
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					m680(arg0, 793, 0, Local1, "initial named string")
 					Store(Derefof(arg2), Local1)
@@ -3612,14 +3612,14 @@ Method(m690)
 		Store("initial named string", Local1)
 
 		// Choose a way to obtain some result object
-		Switch(arg1) {
+		Switch(ToInteger (arg1)) {
 			Case(0) {	// Data Image
 
 				// Choose a type of the result Object and specific source
 				// objects to obtain the result Object of the specified type.
 				// Check that the destination Object is properly initialized.
 				// Perform storing expression and check result.
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 808, 0, Local1, "initial named string")
 						Store(0xfe7cb391d650a284, Local1)
@@ -3652,7 +3652,7 @@ Method(m690)
 				}
 			}
 			Case(1) {	// Named Object
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 817, 0, Local1, "initial named string")
 						Store(i6e4, Local1)
@@ -3693,7 +3693,7 @@ Method(m690)
 					0xfe7cb391d650a284, "FE7CB391D650A284", Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
 			}
 			Case(3) {	// Method LocalX Object
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(0) {	// Stuff
 						Return (0)
 					}
@@ -3717,7 +3717,7 @@ Method(m690)
 						Return (1)
 					}
 				}
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 833, 0, Local1, "initial named string")
 						Store(Local0, Local1)
@@ -3752,7 +3752,7 @@ Method(m690)
 				m001(Concatenate(arg0, "-m001"), arg2, Refof(i6e5), Refof(s6e5), Refof(b6e5))
 			}
 			Case(5) {	// Derefof of immediate Index(...)
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 846, 0, Local1, "initial named string")
 						Store(Derefof(Index(p690, 6)), Local1)
@@ -3794,7 +3794,7 @@ Method(m690)
 				}
 			}
 			Case(6) {	// Derefof of Indexed Reference returned by called Method
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 861, 0, Local1, "initial named string")
 						Store(Derefof(m681(p690, 9)), Local1)
@@ -3826,7 +3826,7 @@ Method(m690)
 				}
 			}
 			Case(7) {	// Result Object returned by called Method
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 874, 0, Local1, "initial named string")
 						Store(m682(arg2, 6), Local1)
@@ -3869,7 +3869,7 @@ Method(m690)
 			}
 			Case(8) {	// Result Object returned by any Operator (Op):
 						// Add, Mid
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(1) {	// Integer
 						m680(arg0, 889, 0, Local1, "initial named string")
 						Store(Add(i6e7, 0), Local1)

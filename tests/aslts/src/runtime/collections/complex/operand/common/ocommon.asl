@@ -794,11 +794,11 @@ Method(m600, 4)
 // as result of a Method invocation (by Return)
 // m601(<type>,
 //	<opcode>)
-Method(m601, 2)
+Method(m601, 2, Serialized)
 {
-	Switch(arg0) {
+	Switch(ToInteger (arg0)) {
 		Case(1) {	// Integer
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(0) {
 					Store(0, Local0)
 					Return (Ones)
@@ -875,7 +875,7 @@ Method(m601, 2)
 			}
 		}
 		Case(2) {	// String
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(0) {
 					Return ("")
 				}
@@ -915,7 +915,7 @@ Method(m601, 2)
 			}
 		}
 		Case(3) {	// Buffer
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(0) {
 					Return (Buffer(){0x5a})
 				}
@@ -949,7 +949,7 @@ Method(m601, 2)
 			}
 		}
 		Case(4) {	// Package
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(0) {
 					Return (Package(){
 						0xa50, 0xa51, 0xa52, 0xa53, 0xa54, 0xa55, 0xa56, 0xa57,
@@ -973,12 +973,12 @@ Method(m601, 2)
 // m602(<type>,
 //	<opcode>,
 //	<ref_key>)
-Method(m602, 3)
+Method(m602, 3, Serialized)
 {
 	if (LLess(arg2, 3)) {
-		Switch(arg0) {
+		Switch(ToInteger (arg0)) {
 			Case(1) {	// Integer
-				Switch(arg1) {
+				Switch(ToInteger (arg1)) {
 					Case(0) {
 						if (LEqual(arg2, 0)) {
 							Return (aui0)
@@ -1215,7 +1215,7 @@ Method(m602, 3)
 				}
 			}
 			Case(2) {	// String
-				Switch(arg1) {
+				Switch(ToInteger (arg1)) {
 					Case(0) {
 						if (LEqual(arg2, 0)) {
 							Return (aus0)
@@ -1332,7 +1332,7 @@ Method(m602, 3)
 				}
 			}
 			Case(3) {	// Buffer
-				Switch(arg1) {
+				Switch(ToInteger (arg1)) {
 					Case(0) {
 						if (LEqual(arg2, 0)) {
 							Return (aub0)
@@ -1429,7 +1429,7 @@ Method(m602, 3)
 				}
 			}
 			Case(4) {	// Package
-				Switch(arg1) {
+				Switch(ToInteger (arg1)) {
 					Case(0) {
 						if (LEqual(arg2, 0)) {
 							Return (aup0)
@@ -1461,12 +1461,12 @@ Method(m602, 3)
 // m603(<type>,
 //	<opcode>,
 //	<ref_key>)
-Method(m603, 3)
+Method(m603, 3, Serialized)
 {
-	Switch(arg0) {
+	Switch(ToInteger (arg0)) {
 		Case(1) {	// Integer
 			if (LLess(arg1, 23)) {
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(0) {
 						Return (Derefof(Index(paui, arg1)))
 					}
@@ -1487,7 +1487,7 @@ Method(m603, 3)
 		}
 		Case(2) {	// String
 			if (LLess(arg1, 11)) {
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(0) {
 						Return (Derefof(Index(paus, arg1)))
 					}
@@ -1508,7 +1508,7 @@ Method(m603, 3)
 		}
 		Case(3) {	// Buffer
 			if (LLess(arg1, 9)) {
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(0) {
 						Return (Derefof(Index(paub, arg1)))
 					}
@@ -1529,7 +1529,7 @@ Method(m603, 3)
 		}
 		Case(4) {	// Package
 			if (LLess(arg1, 6)) {
-				Switch(arg2) {
+				Switch(ToInteger (arg2)) {
 					Case(0) {
 						Return (Derefof(Index(paup, arg1)))
 					}
@@ -1560,16 +1560,16 @@ Method(m603, 3)
 //  <type>,
 //	<opcode>,
 //	<ref_key>)
-Method(m604, 4)
+Method(m604, 4, Serialized)
 {
-	Switch(arg0) {
+	Switch(ToInteger (arg0)) {
 		Case(0) {	// Constant
 			if (arg3) {
 				err(terr, z084, 0, 0, 0, arg1, arg2)
 			}
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
-					Switch(arg2) {
+					Switch(ToInteger (arg2)) {
 						Case(3) {
 							Return (0xc179b3fe)
 						}
@@ -1594,7 +1594,7 @@ Method(m604, 4)
 					}
 				}
 				Case(2) {	// String
-					Switch(arg2) {
+					Switch(ToInteger (arg2)) {
 						Case(0) {
 							Return ("0")
 						}
@@ -1637,7 +1637,7 @@ Method(m604, 4)
 					}
 				}
 				Case(3) {	// Buffer
-					Switch(arg2) {
+					Switch(ToInteger (arg2)) {
 						Case(0) {
 							Return (Buffer(1){0x00})
 						}
@@ -1684,11 +1684,11 @@ Method(m604, 4)
 			}
 		}
 		Case(1) {	// Global Named Object
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
-					Switch(arg2) {
+					Switch(ToInteger (arg2)) {
 						Case(3) {
-							Switch(arg3) {
+							Switch(ToInteger (arg3)) {
 								Case(0) {
 									Return (i603)
 								}
@@ -1705,7 +1705,7 @@ Method(m604, 4)
 							}
 						}
 						Case(4) {
-							Switch(arg3) {
+							Switch(ToInteger (arg3)) {
 								Case(0) {
 									Return (i604)
 								}
@@ -1732,10 +1732,10 @@ Method(m604, 4)
 			}
 		}
 		Case(2) {	// Element of Package
-			Switch(arg1) {
+			Switch(ToInteger (arg1)) {
 				Case(1) {	// Integer
 					if (LLess(arg2, 16)) {
-						Switch(arg3) {
+						Switch(ToInteger (arg3)) {
 							Case(0) {
 								Return (Derefof(Index(pi60, arg2)))
 							}
@@ -1756,7 +1756,7 @@ Method(m604, 4)
 				}
 				Case(2) {	// String
 					if (LLess(arg2, 28)) {
-						Switch(arg3) {
+						Switch(ToInteger (arg3)) {
 							Case(0) {
 								Return (Derefof(Index(ps60, arg2)))
 							}
@@ -1777,7 +1777,7 @@ Method(m604, 4)
 				}
 				Case(3) {	// Buffer
 					if (LLess(arg2, 20)) {
-						Switch(arg3) {
+						Switch(ToInteger (arg3)) {
 							Case(0) {
 								Return (Derefof(Index(pb60, arg2)))
 							}

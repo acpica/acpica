@@ -32,7 +32,7 @@
  * SUMMARY: Exception on Switch operator applied to the result of ToBuffer operator
  */
 
-	Method(me3c)
+	Method(me3c, 0, Serialized)
 	{
 		Name(b000, Buffer(1){10})
 		Name(s000, "qwrtyuiop")

@@ -34,7 +34,7 @@ Name(z054, 54)
 
 // Looks like Default is at all not implemented
 
-Method(m110, 1)
+Method(m110, 1, Serialized)
 {
 	Store(0, Local0)
 	Store(0, Local1)
@@ -46,7 +46,7 @@ Method(m110, 1)
 	// and fall into recursion:
 	// Remark   3040 -     Recursive method call ^  (ERR_)
 	// Note: (0x5B5F545F is equal to "[_T_")
-	Switch (Local1) {
+	Switch (ToInteger (Local1)) {
 		Case (5) {
 			Store(5, Local0)
 		}
@@ -908,10 +908,10 @@ Method(m125, 1)
 }
 
 // No exception should arisen.
-Method(mf74)
+Method(mf74, , Serialized)
 {
 	Store(0, Local0)
-	switch (Local0) {
+	switch (ToInteger (Local0)) {
 		case (101) {
 			Device(d000) {}
 			Method(m002) {}
@@ -921,10 +921,10 @@ Method(mf74)
 
 Method(mf75, 1)
 {
-	Method(mm00)
+	Method(mm00, ,Serialized)
 	{
 		Store(0, Local0)
-		switch (Local0) {
+		switch (ToInteger (Local0)) {
 			case (101) {
 				Method(m000) {}
 				Method(m001) {}
@@ -932,10 +932,10 @@ Method(mf75, 1)
 		}
 	}
 
-	Method(mm01)
+	Method(mm01, ,Serialized)
 	{
 		Store(0, Local0)
-		switch (Local0) {
+		switch (ToInteger (Local0)) {
 			case (101) {
 				Method(m002) {}
 				Device(dv00) {}
@@ -943,10 +943,10 @@ Method(mf75, 1)
 		}
 	}
 
-	Method(mm02)
+	Method(mm02, ,Serialized)
 	{
 		Store(0, Local0)
-		switch (Local0) {
+		switch (ToInteger (Local0)) {
 			case (101) {
 				Device(dv01) {}
 				Method(m003) {}
@@ -954,10 +954,10 @@ Method(mf75, 1)
 		}
 	}
 
-	Method(mm03)
+	Method(mm03, ,Serialized)
 	{
 		Store(0, Local0)
-		switch (Local0) {
+		switch (ToInteger (Local0)) {
 			case (101) {
 				Device(dv02) {}
 				Device(dv03) {}

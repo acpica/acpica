@@ -160,14 +160,14 @@ Method(mfcd, 4)
  *
  * arg6 - for auxiliary usage
  */
-Method(mfc8, 7)
+Method(mfc8, 7, Serialized)
 {
 	Name(i000, 0)
 	Name(i001, 0)
 
 	While (arg4) {
 
-		Switch (arg5) {
+		Switch (ToInteger (arg5)) {
 
 			/* (none, none) */
 
@@ -354,7 +354,7 @@ Method(mfc9, 5)
  * arg5 - for auxiliary usage (see comment to "additional assignments")
  * arg6 - for auxiliary usage (see comment to "additional assignments")
  */
-Method(mfc6, 7)
+Method(mfc6, 7, Serialized)
 {
 	Name(pr00, 0)
 	Name(num, 0)		// half-size of Package
@@ -426,14 +426,14 @@ Method(mfc6, 7)
 
 	/* Identical calculations for different AR20 below */
 
-	Switch (AR23) {
+	Switch (ToInteger (AR23)) {
 
 
 	Case (0) {
 
 	/* AR23: 0 ( , ) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		/* 0 - (pd12, pd13) */
@@ -686,7 +686,7 @@ Method(mfc6, 7)
 
 	/* AR23: 1 (Named0, Named1) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		CopyObject(pd12, nm00)
@@ -827,7 +827,7 @@ Method(mfc6, 7)
 
 	/* AR23: 2 (arg5, Named1) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		CopyObject(pd12, arg5)
@@ -968,7 +968,7 @@ Method(mfc6, 7)
 
 	/* AR23: 3 (Loc4, Named1) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		CopyObject(pd12, Local4)
@@ -1109,7 +1109,7 @@ Method(mfc6, 7)
 
 	/* AR23: 4 (Named0, Arg6) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		CopyObject(pd12, nm00)
@@ -1250,7 +1250,7 @@ Method(mfc6, 7)
 
 	/* AR23: 5 (Arg5, Arg6) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		CopyObject(pd12, arg5)
@@ -1391,7 +1391,7 @@ Method(mfc6, 7)
 
 	/* AR23: 6 (Loc4, Arg6) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		CopyObject(pd12, Local4)
@@ -1532,7 +1532,7 @@ Method(mfc6, 7)
 
 	/* AR23: 7 (Named0, Loc5) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		CopyObject(pd12, nm00)
@@ -1673,7 +1673,7 @@ Method(mfc6, 7)
 
 	/* AR23: 8 (Arg5, Loc5) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		CopyObject(pd12, arg5)
@@ -1814,7 +1814,7 @@ Method(mfc6, 7)
 
 	/* AR23: 9 (Loc4, Loc5) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		CopyObject(pd12, Local4)
@@ -1955,7 +1955,7 @@ Method(mfc6, 7)
 
 	/* AR23: 10 (Arg5, Arg5) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		CopyObject(pd12, arg5)
@@ -2096,7 +2096,7 @@ Method(mfc6, 7)
 
 	/* AR23: 11 (Loc4, Loc4) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		CopyObject(pd12, Local4)
@@ -2237,7 +2237,7 @@ Method(mfc6, 7)
 
 	/* AR23: 12 (Named0, Named0) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		CopyObject(pd12, nm00)
@@ -2378,7 +2378,7 @@ Method(mfc6, 7)
 
 	/* AR23: 13 (Named0,  ) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		/* 0 - (pd12, pd13) */
@@ -2655,7 +2655,7 @@ Method(mfc6, 7)
 
 	/* AR23: 14 (Arg5,  ) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		/* 0 - (pd12, pd13) */
@@ -2932,7 +2932,7 @@ Method(mfc6, 7)
 
 	/* AR23: 15 (Loc4,  ) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		/* 0 - (pd12, pd13) */
@@ -3209,7 +3209,7 @@ Method(mfc6, 7)
 
 	/* AR23: 16 (  , Named1) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		/* 0 - (pd12, pd13) */
@@ -3486,7 +3486,7 @@ Method(mfc6, 7)
 
 	/* AR23: 17 (  , Arg6) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		/* 0 - (pd12, pd13) */
@@ -3763,7 +3763,7 @@ Method(mfc6, 7)
 
 	/* AR23: 18 (  , Loc5) */
 
-	Switch (AR20) {
+	Switch (ToInteger (AR20)) {
 	Case (0) {
 
 		/* 0 - (pd12, pd13) */

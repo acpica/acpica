@@ -33,7 +33,7 @@
  *          is within While
  */
 
-Method(m17b)
+Method(m17b, 0, Serialized)
 {
 	Store(2, Local0)
 	Store(0, Local1)
@@ -44,7 +44,7 @@ Method(m17b)
 			return
 		}
 		Increment(Local2)
-		switch (Local0) {
+		switch (ToInteger (Local0)) {
 			case (1) {
 				Store("Case 1", Debug)
 				Add(Local1, 1, Local1)

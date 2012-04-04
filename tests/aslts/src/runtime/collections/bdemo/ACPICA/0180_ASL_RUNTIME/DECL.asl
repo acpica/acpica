@@ -32,11 +32,11 @@
  * SUMMARY: Failed to compiler Switch/Case operators
  */
 
-Method(me89, 1)
+Method(me89, 1, Serialized)
 {
 	Store(0xff, Local0)
 
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Store(0, Local0)
 		}

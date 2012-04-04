@@ -124,7 +124,7 @@ CreateDWordField(b002, 3, bfz0)
 // Return object of required type
 //
 // arg0 - type of object
-Method(m484, 1)
+Method(m484, 1, Serialized)
 {
 	Name(ts, "m484")
 
@@ -263,7 +263,7 @@ Method(m484, 1)
 
 	Store(0, Local7)
 
-	switch (Arg0) {
+	switch (ToInteger(Arg0)) {
 
 		// Uninitialized
 
@@ -707,9 +707,9 @@ Method(m486)
 //
 //	Method, Thermal Zone, DDB Handle
 //
-Method(m487, 1)
+Method(m487, 1, Serialized)
 {
-	switch (Arg0) {
+	switch (ToInteger (Arg0)) {
 
 		case (0) {
 			// Uninitialized

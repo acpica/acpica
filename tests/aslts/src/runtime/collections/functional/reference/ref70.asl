@@ -40,7 +40,7 @@ SEE: FILE BUG: CondRefOf doesnt cause exception but only under some conditions
 Name(z081, 81)
 
 // Run operator and expect ANY exception(s)
-Method(m1a7, 7)
+Method(m1a7, 7, Serialized)
 {
 	Name(ts, "m1a7")
 
@@ -65,7 +65,7 @@ Method(m1a7, 7)
 	}
 */
 
-	Switch (Arg6) {
+	Switch (ToInteger (Arg6)) {
 		Case (7) {
 			Store(Acquire(arg0, 100), Local7)
 		}
@@ -97,10 +97,10 @@ Method(m1a7, 7)
  * So, it is blocked, and in order to show 'Test is blocked'
  * it is run also additionally separately.
  */
-Method(m167, 1)
+Method(m167, 1, Serialized)
 {
 	CH03("m167", z081, 0x206, 56, 56)
-	Switch (arg0) {
+	Switch (ToInteger (arg0)) {
 		Case (0) {
 			Store(0, Local7)
 		}
@@ -115,7 +115,7 @@ Method(m167, 1)
 // arg0 - reference to the value of arbitrary type
 // arg1 - absolute index of file initiating the checking
 // arg2 - index of checking (inside the file)
-Method(m1a8, 3)
+Method(m1a8, 3, Serialized)
 {
 	Name(ts, "m1a8")
 
@@ -233,7 +233,7 @@ Method(m1a8, 3)
 		Store(0, Local0)
 		Store(ObjectType(arg0), Local1)
 
-		Switch (Local1) {
+		Switch (ToInteger (Local1)) {
 			Case (1) {	// Integer
 				Store(1, Local0)
 			}
@@ -252,7 +252,7 @@ Method(m1a8, 3)
 
 			// Buffer Field and Field Unit types should allow SizeOf()
 
-			Switch (Local1) {
+			Switch (ToInteger (Local1)) {
 				Case (5) {	// Field Unit
 					Store(1, Local0)
 				}

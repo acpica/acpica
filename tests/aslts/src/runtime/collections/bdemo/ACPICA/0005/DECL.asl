@@ -34,11 +34,11 @@
  * Default is not yet implemented at all.
  */
 
-Method(mda1, 1)
+Method(mda1, 1, Serialized)
 {
 	Store(0, Local7)
 
-	Switch (Arg0) {
+	Switch (ToInteger (Arg0)) {
 		Case (5) {
 			Store(0x1234, Local7)
 		}

@@ -78,7 +78,7 @@ Method(m18a, 1)
 	 * arg0 - ID of method (1,2,3...)
 	 * arg1 - the message to be reported
 	 */
-	Method(m800, 2)
+	Method(m800, 2, Serialized)
 	{
 		if (rpt0) {
 			Store(arg1, Debug)
@@ -89,7 +89,7 @@ Method(m18a, 1)
 			Store(cnt0, max0)
 		}
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (1) {
 				Store(ix00, Index(p100, ind1))
 				Increment(ind1)
@@ -127,7 +127,7 @@ Method(m18a, 1)
 	 * arg2 - Package
 	 * arg3 - Package with the benchmark values
 	 */
-	Method(m802, 4) {
+	Method(m802, 4, Serialized) {
 		Name(lpN0, 0)
 		Name(lpC0, 0)
 
@@ -147,7 +147,7 @@ Method(m18a, 1)
 			Increment(lpC0)
 		}
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (1) {
 				if (LNotEqual(ind1, n100)) {
 					err("", zFFF, 0x001, 0, 0, ind1, n100)

@@ -595,7 +595,7 @@ Method(mfe1, 6)
  * arg3 - start index of location of references in pkg-nodes
  * arg4 - bit-map of operations
  */
-Method(mfe4, 5)
+Method(mfe4, 5, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -622,7 +622,7 @@ Method(mfe4, 5)
 
 	And(arg4, OPFF, op00)
 
-	Switch (op00) {
+	Switch (ToInteger (op00)) {
 	Case (0x02) {
 		/* re-write Integer-IDs */
 		Store(1, wrID)

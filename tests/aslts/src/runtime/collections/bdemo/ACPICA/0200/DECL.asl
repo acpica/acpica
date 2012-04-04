@@ -88,7 +88,7 @@ Method(mfb9)
 	}
 }
 
-Method(mfba)
+Method(mfba, 0, Serialized)
 {
 	Store(0, Local7)
 	Divide(1, Local7, Local2)
@@ -100,7 +100,7 @@ Method(mfba)
 	}
 }
 
-Method(mfbb)
+Method(mfbb, 0, Serialized)
 {
 	Store(0, Local7)
 	Divide(1, Local7, Local2)
@@ -134,9 +134,9 @@ Method(mfbe)
 	}
 }
 
-Method(mfbf)
+Method(mfbf, 0, Serialized)
 {
-	switch (mfbc()) {
+	switch (ToInteger (mfbc())) {
 		case (0)
 		{
 			Store("Message 4 !!!!!!!!!!!!!!!!!!!!!!", Debug)

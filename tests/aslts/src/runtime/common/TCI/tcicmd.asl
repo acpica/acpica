@@ -155,14 +155,14 @@ Method(_TCI, 2)
  *   - otherwise - the Package of length depending on
  *     the command is additionally initialized
  */
-Method(m165, 2)
+Method(m165, 2, Serialized)
 {
 	Name(num, 0)
 	Name(tag, 0)
 
 	if (arg0) {
 
-		Switch (arg0) {
+		Switch (ToInteger (arg0)) {
 			Case (0xcd0000) {
 				// _TCI-end statistics
 				Store(c208, tag)

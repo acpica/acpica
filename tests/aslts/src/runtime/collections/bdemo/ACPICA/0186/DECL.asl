@@ -33,7 +33,7 @@
  */
 
 
-Method(mf6d)
+Method(mf6d, 0, Serialized)
 {
 	Name(fl00, 0)
 	Name(i000, 0xabcd0000)
@@ -41,7 +41,7 @@ Method(mf6d)
 
 	Method(m000)
 	{
-		Switch (Store(0xabcd0000, i001)) {
+		Switch (ToInteger (Store(0xabcd0000, i001))) {
 			Case (0) {
 				if (fl00) {
 					Return (0)
