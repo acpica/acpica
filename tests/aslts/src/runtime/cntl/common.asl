@@ -734,7 +734,7 @@ Method(err, 7)
 	// Add ID of test case being executed
 	Or(ERRB, Local0, Local7)
 
-	Concatenate("---------- ERROR : 0x", Local7, Local1)
+	Concatenate("---------- ERROR    : 0x", Local7, Local1)
 	Concatenate(", 0x", Local6, Local2)
 	Concatenate(Local1, Local2, Local0)
 	Concatenate(Local0, ", ", Local1)
@@ -743,11 +743,38 @@ Method(err, 7)
 
 	ERP0(arg1, arg2, Local4, Local3, Local5)
 
-	Store("**** Actual Result:", Debug)
-	Store(arg5, Debug)
-	Store("**** Expected Result:", Debug)
-	Store(arg6, Debug)
-	Store("---------- END.", Debug)
+    if (LEqual (ObjectType (arg5), 1)) // Check for Integer
+    {
+        /* Format/print the Expected result value */
+
+        ToHexString (arg6, Local0)
+        ToDecimalString (arg6, Local1)
+
+        Concatenate ("**** Expected Result: 0x", Local0, Local0)
+        Concatenate (Local0, ", (", Local0)
+        Concatenate (Local0, Local1, Local0)
+        Concatenate (Local0, ")", Local0)
+        Store (Local0, Debug)
+
+         /* Format/print the Actual result value */
+
+        ToHexString (arg5, Local0)
+        ToDecimalString (arg5, Local1)
+
+        Concatenate ("**** Actual Result  : 0x", Local0, Local0)
+        Concatenate (Local0, ", (", Local0)
+        Concatenate (Local0, Local1, Local0)
+        Concatenate (Local0, ")", Local0)
+        Store (Local0, Debug)
+   }
+    else
+    {
+	    Store("**** Actual Result:", Debug)
+	    Store(arg5, Debug)
+	    Store("**** Expected Result:", Debug)
+	    Store(arg6, Debug)
+    }
+	Store("---------- END\n", Debug)
 
 	// Pack the summary information about the first N errors
 
@@ -776,18 +803,18 @@ Method(err, 7)
  */
 Method(ERP0, 5)
 {
-	Concatenate("TITLE            : ", TSNM, Local0)
+	Concatenate("TITLE               : ", TSNM, Local0)
 	Store(Local0, Debug)
 
-	Concatenate("COLLECTION       : ", TCN0(TCLL), Local0)
+	Concatenate("COLLECTION          : ", TCN0(TCLL), Local0)
 	Store(TNIC(TCLL, TIND), Local1)
 
 	Store(Local0, Debug)
 
-	Concatenate("TEST CASE        : ", Local1, Local0)
+	Concatenate("TEST CASE           : ", Local1, Local0)
 	Store(Local0, Debug)
 
-	Concatenate("TEST             : ", NRMT, Local0)
+	Concatenate("TEST                : ", NRMT, Local0)
 	Store(Local0, Debug)
 
 	// Error
@@ -805,10 +832,13 @@ Method(ERP0, 5)
 	} else {
 		Store(DeRefOf(Index(TFN0, arg0)), Local1)
 	}
-	Concatenate("ERROR,    file   : ", Local1, Local0)
+	Concatenate("ERROR,    File      : ", Local1, Local0)
 	Store(Local0, Debug)
 
-	Concatenate("          index  : ", arg1, Local0)
+	Concatenate("          Index     : 0x", arg1, Local0)
+	Concatenate(Local0, ", (", Local0)
+	Concatenate(Local0, ToDecimalString (arg1), Local0)
+	Concatenate(Local0, ")", Local0)
 	Store(Local0, Debug)
 
 	// Checking
@@ -821,15 +851,15 @@ Method(ERP0, 5)
 			Store(DeRefOf(Index(TFN0, arg2)), Local1)
 		}
 
-		Concatenate("CHECKING, file   : ", Local1, Local0)
+		Concatenate("CHECKING, File      : ", Local1, Local0)
 		Store(Local0, Debug)
 
 		if (LEqual(ObjectType(arg3), c00a)) {
-			Concatenate("          method : ", arg3, Local0)
+			Concatenate("             Method : ", arg3, Local0)
 			Store(Local0, Debug)
 		}
 
-		Concatenate("          index  : ", arg4, Local0)
+		Concatenate("             Index  : ", arg4, Local0)
 		Store(Local0, Debug)
 	}
 }
