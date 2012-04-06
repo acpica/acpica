@@ -465,8 +465,9 @@ Name(run4, 0)
  *   01.03.2007 - 6, (1403 files, 415 folder, 17.0 MB, 2227 tests, 40(46) test cases, 305 bugs of ACPICA)
  *   21.03.2007 - 7, (1409 files, 417 folder, 17.1 MB, 2236 tests, 40(46) test cases, 307 bugs of ACPICA)
  *   December 2011: - 0x15 (ACPI 5.0)
+ *   April 2011: - 0x16, iASL fix for StartDependentFunction* descriptors to account for descriptor length.
  */
-Name(REL0, 0x15)
+Name(REL0, 0x16)
 
 /*
  * Settings number, used to adjust the aslts tests for different releases of ACPICA

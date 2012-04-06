@@ -63,10 +63,10 @@ Method(m330, 5)	// ts, len, msg, op, res
 Method(m331, 7)	// ts, grerr, val0, ver0, val1, ver1, msg
 {
 	if (LNotEqual(arg2, arg3)) {
-		err(arg0, z029, arg1, 0, 0, 0, arg6)
+		err(arg0, z029, arg1, arg6, arg6, arg2, arg3)
 	}
 	if (LNotEqual(arg4, arg5)) {
-		err(arg0, z029, arg1, 0, 0, 1, arg6)
+		err(arg0, z029, arg1, arg6, arg6, arg4, arg5)
 	}
 }
 
