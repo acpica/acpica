@@ -2271,7 +2271,7 @@ AddressKeyword
     ;
 
 AddressSpaceKeyword
-    : ByteConst                             {$$ = UtCheckIntegerRange ($1, 0x80, 0xFF);}
+    : ByteConst                             {$$ = UtCheckIntegerRange ($1, 0x0A, 0xFF);}
     | RegionSpaceKeyword                    {}
     ;
 
