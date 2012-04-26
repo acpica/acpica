@@ -580,7 +580,7 @@ AcpiDmAddExternalsToNamespace (
 {
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node;
-    ACPI_OPERAND_OBJECT     *MethodDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_EXTERNAL_LIST      *External = AcpiGbl_ExternalList;
 
 
@@ -599,13 +599,29 @@ AcpiDmAddExternalsToNamespace (
                 "while adding external to namespace [%s]",
                 External->Path));
         }
-        else if (External->Type == ACPI_TYPE_METHOD)
+
+        else switch (External->Type)
         {
+        case ACPI_TYPE_METHOD:
+
             /* For methods, we need to save the argument count */
 
-            MethodDesc = AcpiUtCreateInternalObject (ACPI_TYPE_METHOD);
-            MethodDesc->Method.ParamCount = (UINT8) External->Value;
-            Node->Object = MethodDesc;
+            ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_METHOD);
+            ObjDesc->Method.ParamCount = (UINT8) External->Value;
+            Node->Object = ObjDesc;
+            break;
+
+        case ACPI_TYPE_REGION:
+
+            /* Regions require a region sub-object */
+
+            ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_REGION);
+            ObjDesc->Region.Node = Node;
+            Node->Object = ObjDesc;
+            break;
+
+        default:
+            break;
         }
 
         External = External->Next;
