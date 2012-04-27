@@ -526,12 +526,12 @@ AcpiDmAddToExternalList (
 
     NewExternal->InternalPath = Path;
 
-    /* Link the new descriptor into the global list, ordered by string length */
+    /* Link the new descriptor into the global list, alphabetically ordered */
 
     NextExternal = AcpiGbl_ExternalList;
     while (NextExternal)
     {
-        if (NewExternal->Length <= NextExternal->Length)
+        if (AcpiUtStricmp (NewExternal->Path, NextExternal->Path) < 0)
         {
             if (PrevExternal)
             {
