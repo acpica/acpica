@@ -131,12 +131,12 @@ CmFlushSourceCode (
 
 static void
 FlConsumeAnsiComment (
-    ASL_FILE_INFO           *FileInfo,
+    FILE                    *Handle,
     ASL_FILE_STATUS         *Status);
 
 static void
 FlConsumeNewComment (
-    ASL_FILE_INFO           *FileInfo,
+    FILE                    *Handle,
     ASL_FILE_STATUS         *Status);
 
 
@@ -325,7 +325,8 @@ CmFlushSourceCode (
  *
  * FUNCTION:    FlConsume*
  *
- * PARAMETERS:  FileInfo        - Points to an open input file
+ * PARAMETERS:  Handle              - Open input file
+ *              Status              - File current status struct
  *
  * RETURN:      Number of lines consumed
  *
@@ -335,14 +336,14 @@ CmFlushSourceCode (
 
 static void
 FlConsumeAnsiComment (
-    ASL_FILE_INFO           *FileInfo,
+    FILE                    *Handle,
     ASL_FILE_STATUS         *Status)
 {
     UINT8                   Byte;
     BOOLEAN                 ClosingComment = FALSE;
 
 
-    while (fread (&Byte, 1, 1, FileInfo->Handle))
+    while (fread (&Byte, 1, 1, Handle))
     {
         /* Scan until comment close is found */
 
@@ -379,13 +380,13 @@ FlConsumeAnsiComment (
 
 static void
 FlConsumeNewComment (
-    ASL_FILE_INFO           *FileInfo,
+    FILE                    *Handle,
     ASL_FILE_STATUS         *Status)
 {
     UINT8                   Byte;
 
 
-    while (fread (&Byte, 1, 1, FileInfo->Handle))
+    while (fread (&Byte, 1, 1, Handle))
     {
         Status->Offset++;
 
@@ -404,7 +405,9 @@ FlConsumeNewComment (
  *
  * FUNCTION:    FlCheckForAscii
  *
- * PARAMETERS:  FileInfo        - Points to an open input file
+ * PARAMETERS:  Handle              - Open input file
+ *              Filename            - Input filename
+ *              DisplayErrors       - TRUE if error messages desired
  *
  * RETURN:      Status
  *
@@ -419,7 +422,9 @@ FlConsumeNewComment (
 
 ACPI_STATUS
 FlCheckForAscii (
-    ASL_FILE_INFO           *FileInfo)
+    FILE                    *Handle,
+    char                    *Filename,
+    BOOLEAN                 DisplayErrors)
 {
     UINT8                   Byte;
     ACPI_SIZE               BadBytes = 0;
@@ -432,7 +437,7 @@ FlCheckForAscii (
 
     /* Read the entire file */
 
-    while (fread (&Byte, 1, 1, FileInfo->Handle))
+    while (fread (&Byte, 1, 1, Handle))
     {
         /* Ignore comment fields (allow non-ascii within) */
 
@@ -442,12 +447,12 @@ FlCheckForAscii (
 
             if (Byte == '*')
             {
-                FlConsumeAnsiComment (FileInfo, &Status);
+                FlConsumeAnsiComment (Handle, &Status);
             }
 
             if (Byte == '/')
             {
-                FlConsumeNewComment (FileInfo, &Status);
+                FlConsumeNewComment (Handle, &Status);
             }
 
             /* Reset */
@@ -463,7 +468,7 @@ FlCheckForAscii (
 
         if (!ACPI_IS_ASCII (Byte))
         {
-            if (BadBytes < 10)
+            if ((BadBytes < 10) && (DisplayErrors))
             {
                 AcpiOsPrintf (
                     "Non-ASCII character [0x%2.2X] found in line %u, file offset 0x%.2X\n",
@@ -485,20 +490,24 @@ FlCheckForAscii (
 
     /* Seek back to the beginning of the source file */
 
-    fseek (FileInfo->Handle, 0, SEEK_SET);
+    fseek (Handle, 0, SEEK_SET);
 
     /* Were there any non-ASCII characters in the file? */
 
     if (BadBytes)
     {
-        AcpiOsPrintf (
-            "%u non-ASCII characters found in input source text, could be a binary file\n",
-            BadBytes);
-        AslError (ASL_ERROR, ASL_MSG_NON_ASCII, NULL, FileInfo->Filename);
+        if (DisplayErrors)
+        {
+            AcpiOsPrintf (
+                "%u non-ASCII characters found in input source text, could be a binary file\n",
+                BadBytes);
+            AslError (ASL_ERROR, ASL_MSG_NON_ASCII, NULL, Filename);
+        }
+
         return (AE_BAD_CHARACTER);
     }
 
-    /* File is OK */
+    /* File is OK (100% ASCII) */
 
     return (AE_OK);
 }
