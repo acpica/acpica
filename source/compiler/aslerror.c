@@ -387,12 +387,16 @@ AePrintException (
         }
         else
         {
+            /*
+             * Less verbose version of the error message, enabled via the
+             * -vi switch. The format is compatible with MS Visual Studio.
+             */
             fprintf (OutputFile, "%s", Enode->Filename);
 
             if (Enode->LineNumber)
             {
-                fprintf (OutputFile, "(%u) i:%6u : ",
-                    Enode->LineNumber, Enode->LineNumber);
+                fprintf (OutputFile, "(%u) : ",
+                    Enode->LineNumber);
             }
         }
     }
