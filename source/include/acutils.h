@@ -775,6 +775,10 @@ AcpiUtShortDivide (
 /*
  * utmisc
  */
+void
+UtConvertBackslashes (
+    char                    *Pathname);
+
 const char *
 AcpiUtValidateException (
     ACPI_STATUS             Status);

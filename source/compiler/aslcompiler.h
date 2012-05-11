@@ -682,6 +682,11 @@ void
 FlAddIncludeDirectory (
     char                    *Dir);
 
+char *
+FlMergePathnames (
+    char                    *PrefixDir,
+    char                    *FilePathname);
+
 void
 FlOpenIncludeFile (
     ACPI_PARSE_OBJECT       *Op);
