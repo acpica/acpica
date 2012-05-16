@@ -352,11 +352,9 @@ AcpiRemoveNotifyHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-#ifdef _UNDER_DEVELOPMENT
-    /* Make sure all deferred tasks are completed */
+    /* Make sure all deferred notify tasks are completed */
 
-    AcpiOsWaitEventsComplete (NULL);
-#endif
+    AcpiOsWaitEventsComplete ();
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
     if (ACPI_FAILURE (Status))
@@ -873,6 +871,10 @@ AcpiRemoveGpeHandler (
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
+
+    /* Make sure all deferred GPE tasks are completed */
+
+    AcpiOsWaitEventsComplete ();
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
     if (ACPI_FAILURE (Status))
