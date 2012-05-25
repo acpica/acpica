@@ -151,6 +151,7 @@ AcpiDmPredefinedDescription (
 #ifdef ACPI_ASL_COMPILER
     const AH_PREDEFINED_NAME    *Info;
     char                        *NameString;
+    const char                  *Description = NULL;
 
 
     if (!Op)
@@ -161,7 +162,7 @@ AcpiDmPredefinedDescription (
     /* Predefined name must start with an underscore */
 
     NameString = ACPI_CAST_PTR (char, &Op->Named.Name);
-    if (*NameString != '_')
+    if (NameString[0] != '_')
     {
         return;
     }
@@ -172,14 +173,83 @@ AcpiDmPredefinedDescription (
     {
         if (ACPI_COMPARE_NAME (NameString, Info->Name))
         {
-            AcpiOsPrintf ("  // %4.4s: %s",
-                NameString, Info->Description);
-            return;
+            Description = Info->Description;
+            goto Exit;
         }
     }
 
-    /* TBD: How to handle these cases: */
-    /* _ACx, _ALx, _EJx, _Lxx, _Exx, _Qxx, _Wxx, _T_x */
+    /*
+     * Name was not matched above. Check for special names:
+     * _ACd, _ALd, _EJd, _Exx, _Lxx, _Qxx, _Wxx, _T_a
+     * (where d=decimal_digit, x=hex_digit, a=anything)
+     *
+     * Note: NameString is guaranteed to be upper case here.
+     */
+    switch (NameString[1])
+    {
+    case 'A':
+        if ((NameString[2] == 'C') && (ACPI_IS_DIGIT (NameString[3])))
+        {
+            Description = "Active Cooling";
+        }
+        else if ((NameString[2] == 'L') && (ACPI_IS_DIGIT (NameString[3])))
+        {
+            Description = "Active List";
+        }
+        break;
+
+    case 'E':
+        if ((NameString[2] == 'J') && (ACPI_IS_DIGIT (NameString[3])))
+        {
+            Description = "Eject";
+        }
+        else if ((ACPI_IS_XDIGIT (NameString[2])) &&
+                 (ACPI_IS_XDIGIT (NameString[3])))
+        {
+            Description = "Edge-triggered GPE";
+        }
+        break;
+
+    case 'L':
+        if ((ACPI_IS_XDIGIT (NameString[2])) &&
+            (ACPI_IS_XDIGIT (NameString[3])))
+        {
+            Description = "Level-triggered GPE";
+        }
+        break;
+
+    case 'Q':
+        if ((ACPI_IS_XDIGIT (NameString[2])) &&
+            (ACPI_IS_XDIGIT (NameString[3])))
+        {
+            Description = "Embedded Controller Query";
+        }
+        break;
+
+    case 'T':
+        if (NameString[2] == '_')
+        {
+            Description = "Compiler Emitted";
+        }
+        break;
+
+    case 'W':
+        if ((ACPI_IS_XDIGIT (NameString[2])) &&
+            (ACPI_IS_XDIGIT (NameString[3])))
+        {
+            Description = "Wake Event";
+        }
+        break;
+
+    default:
+        return;
+    }
+
+Exit:
+    if (Description)
+    {
+        AcpiOsPrintf ("  // %4.4s: %s", NameString, (char *) Description);
+    }
 
 #else
     return;
