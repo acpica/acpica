@@ -525,7 +525,7 @@ AcpiDmDescendingOp (
      * keep track of the current column.
      */
     Info->Count++;
-    if (Info->Count /*+Info->LastLevel*/ > 10)
+    if (Info->Count /* +Info->LastLevel */ > 10)
     {
         Info->Count = 0;
         AcpiOsPrintf ("\n");
@@ -605,6 +605,10 @@ AcpiDmDescendingOp (
 
                 AcpiDmMethodFlags (Op);
                 AcpiOsPrintf (")");
+
+                /* Emit description comment for Name() with a predefined ACPI name */
+
+                AcpiDmPredefinedDescription (Op);
                 break;
 
 
@@ -675,7 +679,8 @@ AcpiDmDescendingOp (
 
             default:
 
-                AcpiOsPrintf ("*** Unhandled named opcode %X\n", Op->Common.AmlOpcode);
+                AcpiOsPrintf ("*** Unhandled named opcode %X\n",
+                    Op->Common.AmlOpcode);
                 break;
             }
         }
@@ -716,7 +721,8 @@ AcpiDmDescendingOp (
                 NextOp = NextOp->Common.Next;
 
                 Info->Flags = ACPI_PARSEOP_PARAMLIST;
-                AcpiDmWalkParseTree (NextOp, AcpiDmDescendingOp, AcpiDmAscendingOp, Info);
+                AcpiDmWalkParseTree (NextOp, AcpiDmDescendingOp,
+                    AcpiDmAscendingOp, Info);
                 Info->Flags = 0;
                 Info->Level = Level;
 
@@ -758,12 +764,19 @@ AcpiDmDescendingOp (
             if (Op->Common.DisasmOpcode == ACPI_DASM_RESOURCE)
             {
                 /*
-                 * We have a resource list.  Don't need to output
-                 * the buffer size Op.  Open up a new block
+                 * We have a resource list. Don't need to output
+                 * the buffer size Op. Open up a new block
                  */
                 NextOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
                 NextOp = NextOp->Common.Next;
-                AcpiOsPrintf (")\n");
+                AcpiOsPrintf (")");
+
+                /* Emit description comment for Name() with a predefined ACPI name */
+
+                AcpiDmPredefinedDescription (Op->Asl.Parent);
+                Op->Asl.Parent->Common.DisasmFlags |= ACPI_PARSEOP_PREDEF_CHECKED;
+
+                AcpiOsPrintf ("\n");
                 AcpiDmIndent (Info->Level);
                 AcpiOsPrintf ("{\n");
                 return (AE_OK);
@@ -791,7 +804,7 @@ AcpiDmDescendingOp (
 
         case AML_PACKAGE_OP:
 
-            /* The next op is the size or predicate parameter */
+            /* The next op is the size parameter */
 
             NextOp = AcpiPsGetDepthNext (NULL, Op);
             if (NextOp)
@@ -844,6 +857,7 @@ AcpiDmAscendingOp (
     void                    *Context)
 {
     ACPI_OP_WALK_INFO       *Info = Context;
+    ACPI_PARSE_OBJECT       *ParentOp;
 
 
     if (Op->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)
@@ -868,6 +882,14 @@ AcpiDmAscendingOp (
         /* Completed an op that has arguments, add closing paren */
 
         AcpiOsPrintf (")");
+
+        /* Emit description comment for Name() with a predefined ACPI name */
+
+        if ((Op->Common.AmlOpcode == AML_NAME_OP) &&
+            (!(Op->Common.DisasmFlags & ACPI_PARSEOP_PREDEF_CHECKED)))
+        {
+            AcpiDmPredefinedDescription (Op);
+        }
 
         /* Could be a nested operator, check if comma required */
 
@@ -983,7 +1005,21 @@ AcpiDmAscendingOp (
          */
         if (Op->Common.Next)
         {
-            AcpiOsPrintf (")\n");
+            AcpiOsPrintf (")");
+
+            /* Emit description comment for Name() with a predefined ACPI name */
+
+            ParentOp = Op->Common.Parent;
+            if (ParentOp)
+            {
+                ParentOp = ParentOp->Common.Parent;
+                if (ParentOp && ParentOp->Asl.AmlOpcode == AML_NAME_OP)
+                {
+                    AcpiDmPredefinedDescription (ParentOp);
+                    ParentOp->Common.DisasmFlags |= ACPI_PARSEOP_PREDEF_CHECKED;
+                }
+            }
+            AcpiOsPrintf ("\n");
             AcpiDmIndent (Level - 1);
             AcpiOsPrintf ("{\n");
         }

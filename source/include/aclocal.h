@@ -1032,6 +1032,7 @@ typedef struct acpi_parse_state
 #define ACPI_PARSEOP_IGNORE             0x01
 #define ACPI_PARSEOP_PARAMLIST          0x02
 #define ACPI_PARSEOP_EMPTY_TERMLIST     0x04
+#define ACPI_PARSEOP_PREDEF_CHECKED     0x08
 #define ACPI_PARSEOP_SPECIAL            0x10
 
 
@@ -1382,5 +1383,21 @@ typedef struct acpi_debug_mem_block
 #define ACPI_MEM_LIST_MAX               1
 #define ACPI_NUM_MEM_LISTS              2
 
+
+/*****************************************************************************
+ *
+ * Info/help support
+ *
+ ****************************************************************************/
+
+typedef struct ah_predefined_name
+{
+    char            *Name;
+    char            *Description;
+#ifndef ACPI_ASL_COMPILER
+    char            *Action;
+#endif
+
+} AH_PREDEFINED_NAME;
 
 #endif /* __ACLOCAL_H__ */

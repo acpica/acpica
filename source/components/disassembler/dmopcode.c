@@ -133,6 +133,62 @@ AcpiDmMatchKeyword (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmPredefinedDescription
+ *
+ * PARAMETERS:  Op              - Name() parse object
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Emit a description comment for a predefined ACPI name.
+ *              Used for iASL compiler only.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmPredefinedDescription (
+    ACPI_PARSE_OBJECT       *Op)
+{
+#ifdef ACPI_ASL_COMPILER
+    const AH_PREDEFINED_NAME    *Info;
+    char                        *NameString;
+
+
+    if (!Op)
+    {
+        return;
+    }
+
+    /* Predefined name must start with an underscore */
+
+    NameString = ACPI_CAST_PTR (char, &Op->Named.Name);
+    if (*NameString != '_')
+    {
+        return;
+    }
+
+    /* Match the name in the info table */
+
+    for (Info = AslPredefinedInfo; Info->Name; Info++)
+    {
+        if (ACPI_COMPARE_NAME (NameString, Info->Name))
+        {
+            AcpiOsPrintf ("  // %4.4s: %s",
+                NameString, Info->Description);
+            return;
+        }
+    }
+
+    /* TBD: How to handle these cases: */
+    /* _ACx, _ALx, _EJx, _Lxx, _Exx, _Qxx, _Wxx, _T_x */
+
+#else
+    return;
+#endif
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmMethodFlags
  *
  * PARAMETERS:  Op              - Method Object to be examined
