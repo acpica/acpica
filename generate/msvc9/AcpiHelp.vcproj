@@ -248,15 +248,15 @@
 					RelativePath="..\..\source\tools\acpihelp\ahmain.c"
 					>
 				</File>
-				<File
-					RelativePath="..\..\source\tools\acpihelp\ahpredef.c"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Common"
 				Filter=".c"
 				>
+				<File
+					RelativePath="..\..\source\common\ahpredef.c"
+					>
+				</File>
 				<File
 					RelativePath="..\..\source\common\getopt.c"
 					>

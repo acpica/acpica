@@ -1603,6 +1603,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\common\ahpredef.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\common\dmextern.c"
 					>
 					<FileConfiguration
