@@ -211,7 +211,7 @@ UtDisplaySupportedTables (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsDisplayConstantOpcodes
+ * FUNCTION:    UtDisplayConstantOpcodes
  *
  * PARAMETERS:  None
  *
@@ -244,11 +244,11 @@ UtDisplayConstantOpcodes (
  *
  * FUNCTION:    UtLocalCalloc
  *
- * PARAMETERS:  Size        - Bytes to be allocated
+ * PARAMETERS:  Size                - Bytes to be allocated
  *
- * RETURN:      Pointer to the allocated memory.  Guaranteed to be valid.
+ * RETURN:      Pointer to the allocated memory. Guaranteed to be valid.
  *
- * DESCRIPTION: Allocate zero-initialized memory.  Aborts the compile on an
+ * DESCRIPTION: Allocate zero-initialized memory. Aborts the compile on an
  *              allocation failure, on the assumption that nothing more can be
  *              accomplished.
  *
@@ -283,9 +283,9 @@ UtLocalCalloc (
  *
  * FUNCTION:    UtBeginEvent
  *
- * PARAMETERS:  Name        - Ascii name of this event
+ * PARAMETERS:  Name                - Ascii name of this event
  *
- * RETURN:      Event       - Event number (integer index)
+ * RETURN:      Event number (integer index)
  *
  * DESCRIPTION: Saves the current time with this event
  *
@@ -316,7 +316,7 @@ UtBeginEvent (
  *
  * FUNCTION:    UtEndEvent
  *
- * PARAMETERS:  Event       - Event number (integer index)
+ * PARAMETERS:  Event               - Event number (integer index)
  *
  * RETURN:      None
  *
@@ -326,7 +326,7 @@ UtBeginEvent (
 
 void
 UtEndEvent (
-    UINT8                  Event)
+    UINT8                   Event)
 {
 
     if (Event >= ASL_NUM_EVENTS)
@@ -344,7 +344,7 @@ UtEndEvent (
  *
  * FUNCTION:    UtHexCharToValue
  *
- * PARAMETERS:  HexChar         - Hex character in Ascii
+ * PARAMETERS:  HexChar             - Hex character in Ascii
  *
  * RETURN:      The binary value of the hex character
  *
@@ -375,12 +375,13 @@ UtHexCharToValue (
  *
  * FUNCTION:    UtConvertByteToHex
  *
- * PARAMETERS:  RawByte         - Binary data
- *              Buffer          - Pointer to where the hex bytes will be stored
+ * PARAMETERS:  RawByte             - Binary data
+ *              Buffer              - Pointer to where the hex bytes will be
+ *                                    stored
  *
  * RETURN:      Ascii hex byte is stored in Buffer.
  *
- * DESCRIPTION: Perform hex-to-ascii translation.  The return data is prefixed
+ * DESCRIPTION: Perform hex-to-ascii translation. The return data is prefixed
  *              with "0x"
  *
  ******************************************************************************/
@@ -403,12 +404,13 @@ UtConvertByteToHex (
  *
  * FUNCTION:    UtConvertByteToAsmHex
  *
- * PARAMETERS:  RawByte         - Binary data
- *              Buffer          - Pointer to where the hex bytes will be stored
+ * PARAMETERS:  RawByte             - Binary data
+ *              Buffer              - Pointer to where the hex bytes will be
+ *                                    stored
  *
  * RETURN:      Ascii hex byte is stored in Buffer.
  *
- * DESCRIPTION: Perform hex-to-ascii translation.  The return data is prefixed
+ * DESCRIPTION: Perform hex-to-ascii translation. The return data is prefixed
  *              with "0x"
  *
  ******************************************************************************/
@@ -430,13 +432,13 @@ UtConvertByteToAsmHex (
  *
  * FUNCTION:    DbgPrint
  *
- * PARAMETERS:  Type            - Type of output
- *              Fmt             - Printf format string
- *              ...             - variable printf list
+ * PARAMETERS:  Type                - Type of output
+ *              Fmt                 - Printf format string
+ *              ...                 - variable printf list
  *
  * RETURN:      None
  *
- * DESCRIPTION: Conditional print statement.  Prints to stderr only if the
+ * DESCRIPTION: Conditional print statement. Prints to stderr only if the
  *              debug flag is set.
  *
  ******************************************************************************/
@@ -510,7 +512,7 @@ UtPrintFormattedName (
  *
  * FUNCTION:    UtSetParseOpName
  *
- * PARAMETERS:  Op
+ * PARAMETERS:  Op                  - Parse op to be named.
  *
  * RETURN:      None
  *
@@ -532,7 +534,7 @@ UtSetParseOpName (
  *
  * FUNCTION:    UtDisplaySummary
  *
- * PARAMETERS:  FileID          - ID of outpout file
+ * PARAMETERS:  FileID              - ID of outpout file
  *
  * RETURN:      None
  *
@@ -643,11 +645,11 @@ UtDisplaySummary (
 
 /*******************************************************************************
  *
- * FUNCTION:    UtDisplaySummary
+ * FUNCTION:    UtCheckIntegerRange
  *
- * PARAMETERS:  Op              - Integer parse node
- *              LowValue        - Smallest allowed value
- *              HighValue       - Largest allowed value
+ * PARAMETERS:  Op                  - Integer parse node
+ *              LowValue            - Smallest allowed value
+ *              HighValue           - Largest allowed value
  *
  * RETURN:      Op if OK, otherwise NULL
  *
@@ -698,11 +700,11 @@ UtCheckIntegerRange (
  *
  * FUNCTION:    UtGetStringBuffer
  *
- * PARAMETERS:  Length          - Size of buffer requested
+ * PARAMETERS:  Length              - Size of buffer requested
  *
- * RETURN:      Pointer to the buffer.  Aborts on allocation failure
+ * RETURN:      Pointer to the buffer. Aborts on allocation failure
  *
- * DESCRIPTION: Allocate a string buffer.  Bypass the local
+ * DESCRIPTION: Allocate a string buffer. Bypass the local
  *              dynamic memory manager for performance reasons (This has a
  *              major impact on the speed of the compiler.)
  *
@@ -733,8 +735,8 @@ UtGetStringBuffer (
  *
  * FUNCTION:    UtInternalizeName
  *
- * PARAMETERS:  ExternalName            - Name to convert
- *              ConvertedName           - Where the converted name is returned
+ * PARAMETERS:  ExternalName        - Name to convert
+ *              ConvertedName       - Where the converted name is returned
  *
  * RETURN:      Status
  *
@@ -786,8 +788,8 @@ UtInternalizeName (
  *
  * FUNCTION:    UtPadNameWithUnderscores
  *
- * PARAMETERS:  NameSeg         - Input nameseg
- *              PaddedNameSeg   - Output padded nameseg
+ * PARAMETERS:  NameSeg             - Input nameseg
+ *              PaddedNameSeg       - Output padded nameseg
  *
  * RETURN:      Padded nameseg.
  *
@@ -824,8 +826,8 @@ UtPadNameWithUnderscores (
  *
  * FUNCTION:    UtAttachNameseg
  *
- * PARAMETERS:  Op              - Parent parse node
- *              Name            - Full ExternalName
+ * PARAMETERS:  Op                  - Parent parse node
+ *              Name                - Full ExternalName
  *
  * RETURN:      None; Sets the NameSeg field in parent node
  *
@@ -881,12 +883,12 @@ UtAttachNameseg (
  *
  * FUNCTION:    UtAttachNamepathToOwner
  *
- * PARAMETERS:  Op            - Parent parse node
- *              NameOp        - Node that contains the name
+ * PARAMETERS:  Op                  - Parent parse node
+ *              NameOp              - Node that contains the name
  *
  * RETURN:      Sets the ExternalName and Namepath in the parent node
  *
- * DESCRIPTION: Store the name in two forms in the parent node:  The original
+ * DESCRIPTION: Store the name in two forms in the parent node: The original
  *              (external) name, and the internalized name that is used within
  *              the ACPI namespace manager.
  *
@@ -926,11 +928,11 @@ UtAttachNamepathToOwner (
  *
  * FUNCTION:    UtDoConstant
  *
- * PARAMETERS:  String      - Hex, Octal, or Decimal string
+ * PARAMETERS:  String              - Hex, Octal, or Decimal string
  *
  * RETURN:      Converted Integer
  *
- * DESCRIPTION: Convert a string to an integer.  With error checking.
+ * DESCRIPTION: Convert a string to an integer, with error checking.
  *
  ******************************************************************************/
 
@@ -961,10 +963,10 @@ UtDoConstant (
  *
  * FUNCTION:    UtStrtoul64
  *
- * PARAMETERS:  String          - Null terminated string
- *              Terminater      - Where a pointer to the terminating byte is
- *                                returned
- *              Base            - Radix of the string
+ * PARAMETERS:  String              - Null terminated string
+ *              Terminater          - Where a pointer to the terminating byte
+ *                                    is returned
+ *              Base                - Radix of the string
  *
  * RETURN:      Converted value
  *
@@ -1144,5 +1146,3 @@ ErrorExit:
 
     return (Status);
 }
-
-
