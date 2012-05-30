@@ -151,7 +151,8 @@ AcpiDmPredefinedDescription (
 #ifdef ACPI_ASL_COMPILER
     const AH_PREDEFINED_NAME    *Info;
     char                        *NameString;
-    const char                  *Description = NULL;
+    int                         LastCharIsDigit;
+    int                         LastCharsAreHex;
 
 
     if (!Op)
@@ -167,88 +168,86 @@ AcpiDmPredefinedDescription (
         return;
     }
 
-    /* Match the name in the info table */
-
-    for (Info = AslPredefinedInfo; Info->Name; Info++)
-    {
-        if (ACPI_COMPARE_NAME (NameString, Info->Name))
-        {
-            Description = Info->Description;
-            goto Exit;
-        }
-    }
-
     /*
-     * Name was not matched above. Check for special names:
+     * Check for the special ACPI names:
      * _ACd, _ALd, _EJd, _Exx, _Lxx, _Qxx, _Wxx, _T_a
      * (where d=decimal_digit, x=hex_digit, a=anything)
      *
+     * Convert these to the generic name for table lookup.
      * Note: NameString is guaranteed to be upper case here.
      */
+    LastCharIsDigit =
+        (ACPI_IS_DIGIT (NameString[3]));    /* d */
+    LastCharsAreHex =
+        (ACPI_IS_XDIGIT (NameString[2]) &&  /* xx */
+         ACPI_IS_XDIGIT (NameString[3]));
+
     switch (NameString[1])
     {
     case 'A':
-        if ((NameString[2] == 'C') && (ACPI_IS_DIGIT (NameString[3])))
+        if ((NameString[2] == 'C') && (LastCharIsDigit))
         {
-            Description = "Active Cooling";
+            NameString = "_ACx";
         }
-        else if ((NameString[2] == 'L') && (ACPI_IS_DIGIT (NameString[3])))
+        else if ((NameString[2] == 'L') && (LastCharIsDigit))
         {
-            Description = "Active List";
+            NameString = "_ALx";
         }
         break;
 
     case 'E':
-        if ((NameString[2] == 'J') && (ACPI_IS_DIGIT (NameString[3])))
+        if ((NameString[2] == 'J') && (LastCharIsDigit))
         {
-            Description = "Eject";
+            NameString = "_EJx";
         }
-        else if ((ACPI_IS_XDIGIT (NameString[2])) &&
-                 (ACPI_IS_XDIGIT (NameString[3])))
+        else if (LastCharsAreHex)
         {
-            Description = "Edge-triggered GPE";
+            NameString = "_Exx";
         }
         break;
 
     case 'L':
-        if ((ACPI_IS_XDIGIT (NameString[2])) &&
-            (ACPI_IS_XDIGIT (NameString[3])))
+        if (LastCharsAreHex)
         {
-            Description = "Level-triggered GPE";
+            NameString = "_Lxx";
         }
         break;
 
     case 'Q':
-        if ((ACPI_IS_XDIGIT (NameString[2])) &&
-            (ACPI_IS_XDIGIT (NameString[3])))
+        if (LastCharsAreHex)
         {
-            Description = "Embedded Controller Query";
+            NameString = "_Qxx";
         }
         break;
 
     case 'T':
         if (NameString[2] == '_')
         {
-            Description = "Compiler Emitted";
+            NameString = "_T_x";
         }
         break;
 
     case 'W':
-        if ((ACPI_IS_XDIGIT (NameString[2])) &&
-            (ACPI_IS_XDIGIT (NameString[3])))
+        if (LastCharsAreHex)
         {
-            Description = "Wake Event";
+            NameString = "_Wxx";
         }
         break;
 
     default:
-        return;
+        break;
     }
 
-Exit:
-    if (Description)
+    /* Match the name in the info table */
+
+    for (Info = AslPredefinedInfo; Info->Name; Info++)
     {
-        AcpiOsPrintf ("  // %4.4s: %s", NameString, (char *) Description);
+        if (ACPI_COMPARE_NAME (NameString, Info->Name))
+        {
+            AcpiOsPrintf ("  // %4.4s: %s",
+                NameString, (char *) Info->Description);
+            return;
+        }
     }
 
 #else
