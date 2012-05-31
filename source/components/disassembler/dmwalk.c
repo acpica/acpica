@@ -606,7 +606,7 @@ AcpiDmDescendingOp (
                 AcpiDmMethodFlags (Op);
                 AcpiOsPrintf (")");
 
-                /* Emit description comment for Name() with a predefined ACPI name */
+                /* Emit description comment for Method() with a predefined ACPI name */
 
                 AcpiDmPredefinedDescription (Op);
                 break;
@@ -774,7 +774,6 @@ AcpiDmDescendingOp (
                 /* Emit description comment for Name() with a predefined ACPI name */
 
                 AcpiDmPredefinedDescription (Op->Asl.Parent);
-                Op->Asl.Parent->Common.DisasmFlags |= ACPI_PARSEOP_PREDEF_CHECKED;
 
                 AcpiOsPrintf ("\n");
                 AcpiDmIndent (Info->Level);
@@ -883,12 +882,17 @@ AcpiDmAscendingOp (
 
         AcpiOsPrintf (")");
 
-        /* Emit description comment for Name() with a predefined ACPI name */
-
-        if ((Op->Common.AmlOpcode == AML_NAME_OP) &&
-            (!(Op->Common.DisasmFlags & ACPI_PARSEOP_PREDEF_CHECKED)))
+        if (Op->Common.AmlOpcode == AML_NAME_OP)
         {
+            /* Emit description comment for Name() with a predefined ACPI name */
+
             AcpiDmPredefinedDescription (Op);
+        }
+        else
+        {
+            /* For Create* operators, attempt to emit resource tag description */
+
+            AcpiDmFieldPredefinedDescription (Op);
         }
 
         /* Could be a nested operator, check if comma required */
@@ -1016,7 +1020,6 @@ AcpiDmAscendingOp (
                 if (ParentOp && ParentOp->Asl.AmlOpcode == AML_NAME_OP)
                 {
                     AcpiDmPredefinedDescription (ParentOp);
-                    ParentOp->Common.DisasmFlags |= ACPI_PARSEOP_PREDEF_CHECKED;
                 }
             }
             AcpiOsPrintf ("\n");

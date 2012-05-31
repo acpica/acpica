@@ -118,6 +118,7 @@
 #include "acparser.h"
 #include "amlcode.h"
 #include "acdisasm.h"
+#include "acnamesp.h"
 
 #ifdef ACPI_DISASSEMBLER
 
@@ -159,6 +160,14 @@ AcpiDmPredefinedDescription (
     {
         return;
     }
+
+    /* Ensure that the comment field is emitted only once */
+
+    if (Op->Common.DisasmFlags & ACPI_PARSEOP_PREDEF_CHECKED)
+    {
+        return;
+    }
+    Op->Common.DisasmFlags |= ACPI_PARSEOP_PREDEF_CHECKED;
 
     /* Predefined name must start with an underscore */
 
@@ -245,14 +254,93 @@ AcpiDmPredefinedDescription (
         if (ACPI_COMPARE_NAME (NameString, Info->Name))
         {
             AcpiOsPrintf ("  // %4.4s: %s",
-                NameString, (char *) Info->Description);
+                NameString, ACPI_CAST_PTR (char, Info->Description));
             return;
         }
     }
 
-#else
-    return;
 #endif
+    return;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmFieldPredefinedDescription
+ *
+ * PARAMETERS:  Op              - Parse object
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Emit a description comment for a resource descriptor tag
+ *              (which is a predefined ACPI name.) Used for iASL compiler only.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmFieldPredefinedDescription (
+    ACPI_PARSE_OBJECT       *Op)
+{
+#ifdef ACPI_ASL_COMPILER
+    ACPI_PARSE_OBJECT       *IndexOp;
+    char                    *Tag;
+    const ACPI_OPCODE_INFO  *OpInfo;
+    const AH_PREDEFINED_NAME *Info;
+
+
+    if (!Op)
+    {
+        return;
+    }
+
+    /* Ensure that the comment field is emitted only once */
+
+    if (Op->Common.DisasmFlags & ACPI_PARSEOP_PREDEF_CHECKED)
+    {
+        return;
+    }
+    Op->Common.DisasmFlags |= ACPI_PARSEOP_PREDEF_CHECKED;
+
+    /*
+     * Op must be one of the Create* operators: CreateField, CreateBitField,
+     * CreateByteField, CreateWordField, CreateDWordField, CreateQWordField
+     */
+    OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
+    if (!(OpInfo->Flags & AML_CREATE))
+    {
+        return;
+    }
+
+    /* Second argument is the Index argument */
+
+    IndexOp = Op->Common.Value.Arg;
+    IndexOp = IndexOp->Common.Next;
+
+    /* Index argument must be a namepath */
+
+    if (IndexOp->Common.AmlOpcode != AML_INT_NAMEPATH_OP)
+    {
+        return;
+    }
+
+    /* Major cheat: We previously put the Tag ptr in the Node field */
+
+    Tag = ACPI_CAST_PTR (char, IndexOp->Common.Node);
+
+    /* Match the name in the info table */
+
+    for (Info = AslPredefinedInfo; Info->Name; Info++)
+    {
+        if (ACPI_COMPARE_NAME (Tag, Info->Name))
+        {
+            AcpiOsPrintf ("  // %4.4s: %s", Tag,
+                ACPI_CAST_PTR (char, Info->Description));
+            return;
+        }
+    }
+
+#endif
+    return;
 }
 
 
