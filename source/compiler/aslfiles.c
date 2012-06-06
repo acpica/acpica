@@ -826,7 +826,7 @@ FlOpenInputFile (
 
     /* Open the input ASL file, text mode */
 
-    FlOpenFile (ASL_FILE_INPUT, InputFilename, "r");
+    FlOpenFile (ASL_FILE_INPUT, InputFilename, "rt");
     AslCompilerin = Gbl_Files[ASL_FILE_INPUT].Handle;
 
     return (AE_OK);
@@ -910,7 +910,7 @@ FlOpenMiscOutputFiles (
 
         /* Open the hex file, text mode */
 
-        FlOpenFile (ASL_FILE_HEX_OUTPUT, Filename, "w+");
+        FlOpenFile (ASL_FILE_HEX_OUTPUT, Filename, "w+t");
 
         AslCompilerSignon (ASL_FILE_HEX_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_HEX_OUTPUT);
@@ -961,7 +961,7 @@ FlOpenMiscOutputFiles (
 
         /* Open the listing file, text mode */
 
-        FlOpenFile (ASL_FILE_LISTING_OUTPUT, Filename, "w+");
+        FlOpenFile (ASL_FILE_LISTING_OUTPUT, Filename, "w+t");
 
         AslCompilerSignon (ASL_FILE_LISTING_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_LISTING_OUTPUT);
@@ -979,7 +979,7 @@ FlOpenMiscOutputFiles (
             return (AE_ERROR);
         }
 
-        FlOpenFile (ASL_FILE_PREPROCESSOR, Filename, "w+b");
+        FlOpenFile (ASL_FILE_PREPROCESSOR, Filename, "w+t");
     }
 
     /* All done for data table compiler */
@@ -1024,7 +1024,7 @@ FlOpenMiscOutputFiles (
 
         /* Open the assembly code source file, text mode */
 
-        FlOpenFile (ASL_FILE_ASM_SOURCE_OUTPUT, Filename, "w+");
+        FlOpenFile (ASL_FILE_ASM_SOURCE_OUTPUT, Filename, "w+t");
 
         AslCompilerSignon (ASL_FILE_ASM_SOURCE_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_ASM_SOURCE_OUTPUT);
@@ -1044,7 +1044,7 @@ FlOpenMiscOutputFiles (
 
         /* Open the C code source file, text mode */
 
-        FlOpenFile (ASL_FILE_C_SOURCE_OUTPUT, Filename, "w+");
+        FlOpenFile (ASL_FILE_C_SOURCE_OUTPUT, Filename, "w+t");
 
         FlPrintFile (ASL_FILE_C_SOURCE_OUTPUT, "/*\n");
         AslCompilerSignon (ASL_FILE_C_SOURCE_OUTPUT);
@@ -1065,7 +1065,7 @@ FlOpenMiscOutputFiles (
 
         /* Open the assembly include file, text mode */
 
-        FlOpenFile (ASL_FILE_ASM_INCLUDE_OUTPUT, Filename, "w+");
+        FlOpenFile (ASL_FILE_ASM_INCLUDE_OUTPUT, Filename, "w+t");
 
         AslCompilerSignon (ASL_FILE_ASM_INCLUDE_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_ASM_INCLUDE_OUTPUT);
@@ -1085,7 +1085,7 @@ FlOpenMiscOutputFiles (
 
         /* Open the C include file, text mode */
 
-        FlOpenFile (ASL_FILE_C_INCLUDE_OUTPUT, Filename, "w+");
+        FlOpenFile (ASL_FILE_C_INCLUDE_OUTPUT, Filename, "w+t");
 
         FlPrintFile (ASL_FILE_C_INCLUDE_OUTPUT, "/*\n");
         AslCompilerSignon (ASL_FILE_C_INCLUDE_OUTPUT);
@@ -1106,7 +1106,7 @@ FlOpenMiscOutputFiles (
 
         /* Open the namespace file, text mode */
 
-        FlOpenFile (ASL_FILE_NAMESPACE_OUTPUT, Filename, "w+");
+        FlOpenFile (ASL_FILE_NAMESPACE_OUTPUT, Filename, "w+t");
 
         AslCompilerSignon (ASL_FILE_NAMESPACE_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_NAMESPACE_OUTPUT);
