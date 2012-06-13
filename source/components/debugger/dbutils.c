@@ -432,7 +432,7 @@ AcpiDbLocalNsLookup (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDbUInt32ToHexString
+ * FUNCTION:    AcpiDbUint32ToHexString
  *
  * PARAMETERS:  Value           - The value to be converted to string
  *              Buffer          - Buffer for result (not less than 11 bytes)
@@ -447,7 +447,7 @@ AcpiDbLocalNsLookup (
  ******************************************************************************/
 
 void
-AcpiDbUInt32ToHexString (
+AcpiDbUint32ToHexString (
     UINT32                  Value,
     char                    *Buffer)
 {

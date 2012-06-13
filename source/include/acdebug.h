@@ -477,7 +477,7 @@ AcpiDbLocalNsLookup (
     char                    *Name);
 
 void
-AcpiDbUInt32ToHexString (
+AcpiDbUint32ToHexString (
     UINT32                  Value,
     char                    *Buffer);
 
