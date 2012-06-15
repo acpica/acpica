@@ -501,7 +501,7 @@ AcpiUtDumpBuffer (
     UINT8                   *Buffer,
     UINT32                  Count,
     UINT32                  Display,
-    UINT32                  componentId);
+    UINT32                  ComponentId);
 
 void
 AcpiUtDumpBuffer2 (

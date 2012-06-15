@@ -303,7 +303,7 @@ AcpiDmFieldPredefinedDescription (
 
     /*
      * Op must be one of the Create* operators: CreateField, CreateBitField,
-     * CreateByteField, CreateWordField, CreateDWordField, CreateQWordField
+     * CreateByteField, CreateWordField, CreateDwordField, CreateQwordField
      */
     OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
     if (!(OpInfo->Flags & AML_CREATE))

@@ -224,8 +224,8 @@ AcpiDsCreateExternalRegion (
  *              CreateBitFieldOp,
  *              CreateByteFieldOp,
  *              CreateWordFieldOp,
- *              CreateDWordFieldOp,
- *              CreateQWordFieldOp,
+ *              CreateDwordFieldOp,
+ *              CreateQwordFieldOp,
  *              CreateFieldOp       (all of which define a field in a buffer)
  *
  ******************************************************************************/
