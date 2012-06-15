@@ -335,7 +335,8 @@ AsTrimLines (
 
 void
 AsMixedCaseToUnderscores (
-    char                    *Buffer);
+    char                    *Buffer,
+    char                    *Filename);
 
 void
 AsCountTabs (
