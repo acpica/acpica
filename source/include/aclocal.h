@@ -534,6 +534,15 @@ typedef struct acpi_gpe_handler_info
 
 } ACPI_GPE_HANDLER_INFO;
 
+/* Notify info for implicit notify, multiple device objects */
+
+typedef struct acpi_gpe_notify_info
+{
+    ACPI_NAMESPACE_NODE             *DeviceNode;    /* Device to be notified */
+    struct acpi_gpe_notify_info     *Next;
+
+} ACPI_GPE_NOTIFY_INFO;
+
 /*
  * GPE dispatch info. At any time, the GPE can have at most one type
  * of dispatch - Method, Handler, or Implicit Notify.
@@ -541,8 +550,8 @@ typedef struct acpi_gpe_handler_info
 typedef union acpi_gpe_dispatch_info
 {
     ACPI_NAMESPACE_NODE             *MethodNode;    /* Method node for this GPE level */
-    struct acpi_gpe_handler_info    *Handler;       /* Installed GPE handler */
-    ACPI_NAMESPACE_NODE             *DeviceNode;    /* Parent _PRW device for implicit notify */
+    ACPI_GPE_HANDLER_INFO           *Handler;       /* Installed GPE handler */
+    ACPI_GPE_NOTIFY_INFO            *NotifyList;    /* List of _PRW devices for implicit notifies */
 
 } ACPI_GPE_DISPATCH_INFO;
 
@@ -552,7 +561,7 @@ typedef union acpi_gpe_dispatch_info
  */
 typedef struct acpi_gpe_event_info
 {
-    union acpi_gpe_dispatch_info    Dispatch;       /* Either Method or Handler */
+    union acpi_gpe_dispatch_info    Dispatch;       /* Either Method, Handler, or NotifyList */
     struct acpi_gpe_register_info   *RegisterInfo;  /* Backpointer to register info */
     UINT8                           Flags;          /* Misc info about this GPE */
     UINT8                           GpeNumber;      /* This GPE */

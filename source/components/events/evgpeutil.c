@@ -463,6 +463,8 @@ AcpiEvDeleteGpeHandlers (
     void                    *Context)
 {
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
+    ACPI_GPE_NOTIFY_INFO    *Notify;
+    ACPI_GPE_NOTIFY_INFO    *Next;
     UINT32                  i;
     UINT32                  j;
 
@@ -484,8 +486,25 @@ AcpiEvDeleteGpeHandlers (
             if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
                     ACPI_GPE_DISPATCH_HANDLER)
             {
+                /* Delete an installed handler block */
+
                 ACPI_FREE (GpeEventInfo->Dispatch.Handler);
                 GpeEventInfo->Dispatch.Handler = NULL;
+                GpeEventInfo->Flags &= ~ACPI_GPE_DISPATCH_MASK;
+            }
+            else if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
+                    ACPI_GPE_DISPATCH_NOTIFY)
+            {
+                /* Delete the implicit notification device list */
+
+                Notify = GpeEventInfo->Dispatch.NotifyList;
+                while (Notify)
+                {
+                    Next = Notify->Next;
+                    ACPI_FREE (Notify);
+                    Notify = Next;
+                }
+                GpeEventInfo->Dispatch.NotifyList = NULL;
                 GpeEventInfo->Flags &= ~ACPI_GPE_DISPATCH_MASK;
             }
         }
