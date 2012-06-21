@@ -164,7 +164,7 @@ static void
 AslDoLineDirective (
     void)
 {
-    UINT8                   c;
+    int                     c;
     char                    *Token;
     UINT32                  LineNumber;
     char                    *Filename;
@@ -175,7 +175,7 @@ AslDoLineDirective (
 
     Gbl_LineBufPtr = Gbl_CurrentLineBuffer;
 
-    while ((c = (UINT8) input()) != '\n' && c != EOF)
+    while ((c = input()) != '\n' && c != EOF)
     {
         *Gbl_LineBufPtr = c;
         Gbl_LineBufPtr++;
@@ -502,8 +502,8 @@ static char
 AslDoComment (
     void)
 {
-    char                c;
-    char                c1 = 0;
+    int                 c;
+    int                 c1 = 0;
 
 
     AslInsertLineBuffer ('/');
@@ -513,7 +513,7 @@ loop:
 
     /* Eat chars until end-of-comment */
 
-    while ((c = (char) input()) != '*' && c != EOF)
+    while ((c = input()) != '*' && c != EOF)
     {
         AslInsertLineBuffer (c);
         c1 = c;
@@ -540,7 +540,7 @@ loop:
 
     AslInsertLineBuffer (c);
 
-    if ((c1 = (char) input()) != '/' && c1 != EOF)
+    if ((c1 = input()) != '/' && c1 != EOF)
     {
         unput(c1);
         goto loop;
@@ -583,13 +583,13 @@ static char
 AslDoCommentType2 (
     void)
 {
-    char                c;
+    int                 c;
 
 
     AslInsertLineBuffer ('/');
     AslInsertLineBuffer ('/');
 
-    while ((c = (char) input()) != '\n' && c != EOF)
+    while ((c = input()) != '\n' && c != EOF)
     {
         AslInsertLineBuffer (c);
     }
@@ -625,7 +625,7 @@ AslDoStringLiteral (
     char                *StringBuffer = MsgBuffer;
     char                *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
     char                *CleanString;
-    char                StringChar;
+    int                 StringChar;
     UINT32              State = ASL_NORMAL_CHAR;
     UINT32              i = 0;
     UINT8               Digit;
@@ -638,7 +638,7 @@ AslDoStringLiteral (
      * source line buffer.
      */
     AslInsertLineBuffer ('\"');
-    while ((StringChar = (char) input()) != EOF)
+    while ((StringChar = input()) != EOF)
     {
         AslInsertLineBuffer (StringChar);
 
