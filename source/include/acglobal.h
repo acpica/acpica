@@ -360,7 +360,7 @@ ACPI_EXTERN ACPI_INTERFACE_INFO        *AcpiGbl_SupportedInterfaces;
 ACPI_EXTERN ACPI_ADDRESS_RANGE         *AcpiGbl_AddressRangeList[ACPI_ADDRESS_RANGE_MAX];
 
 
-#ifndef DEFINE_ACPI_GLOBALS
+#ifndef ACPI_DEFINE_EXCEPTION_TABLE
 
 /* Exception codes */
 
@@ -369,6 +369,9 @@ extern char const                       *AcpiGbl_ExceptionNames_Pgm[];
 extern char const                       *AcpiGbl_ExceptionNames_Tbl[];
 extern char const                       *AcpiGbl_ExceptionNames_Aml[];
 extern char const                       *AcpiGbl_ExceptionNames_Ctrl[];
+#endif
+
+#ifndef DEFINE_ACPI_GLOBALS
 
 /* Other miscellaneous */
 
