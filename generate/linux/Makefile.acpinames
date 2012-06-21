@@ -121,6 +121,7 @@ OBJECTS = \
 	utdebug.o \
 	utdecode.o \
 	utdelete.o \
+	utexcep.o \
 	utglobal.o \
 	utlock.o \
 	utmath.o \

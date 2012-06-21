@@ -88,6 +88,7 @@ OBJECTS = \
 	$(OBJDIR)/utdebug.o \
 	$(OBJDIR)/utdecode.o \
 	$(OBJDIR)/utdelete.o \
+	$(OBJDIR)/utexcep.o \
 	$(OBJDIR)/utglobal.o \
 	$(OBJDIR)/utlock.o \
 	$(OBJDIR)/utmath.o \

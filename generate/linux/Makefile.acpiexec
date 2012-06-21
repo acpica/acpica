@@ -214,6 +214,7 @@ OBJECTS = \
 	utdecode.o \
 	utdelete.o \
 	uteval.o \
+	utexcep.o \
 	utglobal.o \
 	utids.o \
 	utinit.o \

@@ -181,6 +181,7 @@ OBJECTS = \
 	$(OBJDIR)/utdecode.o \
 	$(OBJDIR)/utdelete.o \
 	$(OBJDIR)/uteval.o \
+	$(OBJDIR)/utexcep.o \
 	$(OBJDIR)/utglobal.o \
 	$(OBJDIR)/utids.o \
 	$(OBJDIR)/utinit.o \
