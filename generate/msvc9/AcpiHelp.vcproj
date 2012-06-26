@@ -279,6 +279,10 @@
 						/>
 					</FileConfiguration>
 				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utexcep.c"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
