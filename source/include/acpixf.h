@@ -829,6 +829,20 @@ AcpiInfo (
     const char              *Format,
     ...) ACPI_PRINTF_LIKE(3);
 
+void ACPI_INTERNAL_VAR_XFACE
+AcpiBiosError (
+    const char              *ModuleName,
+    UINT32                  LineNumber,
+    const char              *Format,
+    ...) ACPI_PRINTF_LIKE(3);
+
+void ACPI_INTERNAL_VAR_XFACE
+AcpiBiosWarning (
+    const char              *ModuleName,
+    UINT32                  LineNumber,
+    const char              *Format,
+    ...) ACPI_PRINTF_LIKE(3);
+
 
 /*
  * Debug output
