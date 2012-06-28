@@ -155,7 +155,7 @@ AcpiUpdateAllGpes (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE (AcpiUpdateGpes);
+    ACPI_FUNCTION_TRACE (AcpiUpdateAllGpes);
 
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);

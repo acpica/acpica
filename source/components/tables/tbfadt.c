@@ -264,7 +264,7 @@ static ACPI_FADT_PM_INFO    FadtPmInfoTable[] =
  *
  * PARAMETERS:  GenericAddress      - GAS struct to be initialized
  *              SpaceId             - ACPI Space ID for this register
- *              ByteWidth           - Width of this register, in bytes
+ *              ByteWidth           - Width of this register
  *              Address             - Address of the register
  *
  * RETURN:      None
