@@ -2987,6 +2987,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\tables\tbxfload.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\tables\tbxfroot.c"
 					>
 					<FileConfiguration

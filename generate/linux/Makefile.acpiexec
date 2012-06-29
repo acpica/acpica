@@ -205,6 +205,7 @@ OBJECTS = \
 	tbinstal.o \
 	tbutils.o \
 	tbxface.o \
+	tbxfload.o \
 	tbxfroot.o \
 	utaddress.o \
 	utalloc.o \

@@ -81,6 +81,7 @@ OBJECTS = \
 	$(OBJDIR)/tbinstal.o \
 	$(OBJDIR)/tbutils.o \
 	$(OBJDIR)/tbxface.o \
+	$(OBJDIR)/tbxfload.o \
 	$(OBJDIR)/tbxfroot.o \
 	$(OBJDIR)/utaddress.o \
 	$(OBJDIR)/utalloc.o \
