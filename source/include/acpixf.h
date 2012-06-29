@@ -273,6 +273,22 @@ AcpiFree (
 
 
 /*
+ * ACPI table load/unload interfaces
+ */
+ACPI_STATUS
+AcpiLoadTable (
+    ACPI_TABLE_HEADER       *Table);
+
+ACPI_STATUS
+AcpiUnloadParentTable (
+    ACPI_HANDLE             Object);
+
+ACPI_STATUS
+AcpiLoadTables (
+    void);
+
+
+/*
  * ACPI table manipulation interfaces
  */
 ACPI_STATUS
@@ -282,10 +298,6 @@ AcpiReallocateRootTable (
 ACPI_STATUS
 AcpiFindRootPointer (
     ACPI_SIZE               *RsdpAddress);
-
-ACPI_STATUS
-AcpiLoadTables (
-    void);
 
 ACPI_STATUS
 AcpiGetTableHeader (

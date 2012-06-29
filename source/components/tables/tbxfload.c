@@ -277,3 +277,202 @@ UnlockAndExit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
     return_ACPI_STATUS (Status);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiLoadTable
+ *
+ * PARAMETERS:  Table               - Pointer to a buffer containing the ACPI
+ *                                    table to be loaded.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Dynamically load an ACPI table from the caller's buffer. Must
+ *              be a valid ACPI table with a valid ACPI table header.
+ *              Note1: Mainly intended to support hotplug addition of SSDTs.
+ *              Note2: Does not copy the incoming table. User is reponsible
+ *              to ensure that the table is not deleted or unmapped.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiLoadTable (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_TABLE_DESC         TableDesc;
+    UINT32                  TableIndex;
+
+
+    ACPI_FUNCTION_TRACE (AcpiLoadTable);
+
+
+    /* Parameter validation */
+
+    if (!Table)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /* Init local table descriptor */
+
+    ACPI_MEMSET (&TableDesc, 0, sizeof (ACPI_TABLE_DESC));
+    TableDesc.Address = ACPI_PTR_TO_PHYSADDR (Table);
+    TableDesc.Pointer = Table;
+    TableDesc.Length = Table->Length;
+    TableDesc.Flags = ACPI_TABLE_ORIGIN_UNKNOWN;
+
+    /* Must acquire the interpreter lock during this operation */
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_INTERPRETER);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Install the table and load it into the namespace */
+
+    ACPI_INFO ((AE_INFO, "Host-directed Dynamic ACPI Table Load:"));
+    Status = AcpiTbAddTable (&TableDesc, &TableIndex);
+    if (ACPI_FAILURE (Status))
+    {
+        goto UnlockAndExit;
+    }
+
+    Status = AcpiNsLoadTable (TableIndex, AcpiGbl_RootNode);
+
+    /* Invoke table handler if present */
+
+    if (AcpiGbl_TableHandler)
+    {
+        (void) AcpiGbl_TableHandler (ACPI_TABLE_EVENT_LOAD, Table,
+                    AcpiGbl_TableHandlerContext);
+    }
+
+UnlockAndExit:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_INTERPRETER);
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiLoadTable)
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUnloadParentTable
+ *
+ * PARAMETERS:  Object              - Handle to any namespace object owned by
+ *                                    the table to be unloaded
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Via any namespace object within an SSDT or OEMx table, unloads
+ *              the table and deletes all namespace objects associated with
+ *              that table. Unloading of the DSDT is not allowed.
+ *              Note: Mainly intended to support hotplug removal of SSDTs.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiUnloadParentTable (
+    ACPI_HANDLE             Object)
+{
+    ACPI_NAMESPACE_NODE     *Node = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, Object);
+    ACPI_STATUS             Status = AE_NOT_EXIST;
+    ACPI_OWNER_ID           OwnerId;
+    UINT32                  i;
+
+
+    ACPI_FUNCTION_TRACE (AcpiUnloadParentTable);
+
+
+    /* Parameter validation */
+
+    if (!Object)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /*
+     * The node OwnerId is currently the same as the parent table ID.
+     * However, this could change in the future.
+     */
+    OwnerId = Node->OwnerId;
+    if (!OwnerId)
+    {
+        /* OwnerId==0 means DSDT is the owner. DSDT cannot be unloaded */
+
+        return_ACPI_STATUS (AE_TYPE);
+    }
+
+    /* Must acquire the interpreter lock during this operation */
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_INTERPRETER);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Find the table in the global table list */
+
+    for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; i++)
+    {
+        if (OwnerId != AcpiGbl_RootTableList.Tables[i].OwnerId)
+        {
+            continue;
+        }
+
+        /*
+         * Allow unload of SSDT and OEMx tables only. Do not allow unload
+         * of the DSDT. No other types of tables should get here, since
+         * only these types can contain AML and thus are the only types
+         * that can create namespace objects.
+         */
+        if (ACPI_COMPARE_NAME (
+            AcpiGbl_RootTableList.Tables[i].Signature.Ascii,
+            ACPI_SIG_DSDT))
+        {
+            Status = AE_TYPE;
+            break;
+        }
+
+        /* Ensure the table is actually loaded */
+
+        if (!AcpiTbIsTableLoaded (i))
+        {
+            Status = AE_NOT_EXIST;
+            break;
+        }
+
+        /* Invoke table handler if present */
+
+        if (AcpiGbl_TableHandler)
+        {
+            (void) AcpiGbl_TableHandler (ACPI_TABLE_EVENT_UNLOAD,
+                        AcpiGbl_RootTableList.Tables[i].Pointer,
+                        AcpiGbl_TableHandlerContext);
+        }
+
+        /*
+         * Delete all namespace objects owned by this table. Note that
+         * these objects can appear anywhere in the namespace by virtue
+         * of the AML "Scope" operator. Thus, we need to track ownership
+         * by an ID, not simply a position within the hierarchy.
+         */
+        Status = AcpiTbDeleteNamespaceByOwner (i);
+        if (ACPI_FAILURE (Status))
+        {
+            break;
+        }
+
+        Status = AcpiTbReleaseOwnerId (i);
+        AcpiTbSetTableLoadedFlag (i, FALSE);
+        break;
+    }
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_INTERPRETER);
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiUnloadParentTable)
