@@ -610,49 +610,52 @@ AeMiscellaneousTests (
 #endif /* !ACPI_REDUCED_HARDWARE */
 
 
-    /*
-     * Tests for AcpiLoadTable and AcpiUnloadParentTable
-     */
+    if (AcpiGbl_DoInterfaceTests)
+    {
+        /*
+         * Tests for AcpiLoadTable and AcpiUnloadParentTable
+         */
 
-    /* Attempt unload of DSDT, should fail */
+        /* Attempt unload of DSDT, should fail */
 
-    Status = AcpiGetHandle (NULL, "\\_SB_", &Handle);
-    AE_CHECK_OK (AcpiGetHandle, Status);
+        Status = AcpiGetHandle (NULL, "\\_SB_", &Handle);
+        AE_CHECK_OK (AcpiGetHandle, Status);
 
-    Status = AcpiUnloadParentTable (Handle);
-    AE_CHECK_STATUS (AcpiUnloadParentTable, Status, AE_TYPE);
+        Status = AcpiUnloadParentTable (Handle);
+        AE_CHECK_STATUS (AcpiUnloadParentTable, Status, AE_TYPE);
 
-    /* Load and unload SSDT4 */
+        /* Load and unload SSDT4 */
 
-    Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt4Code);
-    AE_CHECK_OK (AcpiLoadTable, Status);
+        Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt4Code);
+        AE_CHECK_OK (AcpiLoadTable, Status);
 
-    Status = AcpiGetHandle (NULL, "\\_T96", &Handle);
-    AE_CHECK_OK (AcpiGetHandle, Status);
+        Status = AcpiGetHandle (NULL, "\\_T96", &Handle);
+        AE_CHECK_OK (AcpiGetHandle, Status);
 
-    Status = AcpiUnloadParentTable (Handle);
-    AE_CHECK_OK (AcpiUnloadParentTable, Status);
+        Status = AcpiUnloadParentTable (Handle);
+        AE_CHECK_OK (AcpiUnloadParentTable, Status);
 
-    /* Re-load SSDT4 */
+        /* Re-load SSDT4 */
 
-    Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt4Code);
-    AE_CHECK_OK (AcpiLoadTable, Status);
+        Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt4Code);
+        AE_CHECK_OK (AcpiLoadTable, Status);
 
-    /* Unload and re-load SSDT2 (SSDT2 is in the XSDT) */
+        /* Unload and re-load SSDT2 (SSDT2 is in the XSDT) */
 
-    Status = AcpiGetHandle (NULL, "\\_T99", &Handle);
-    AE_CHECK_OK (AcpiGetHandle, Status);
+        Status = AcpiGetHandle (NULL, "\\_T99", &Handle);
+        AE_CHECK_OK (AcpiGetHandle, Status);
 
-    Status = AcpiUnloadParentTable (Handle);
-    AE_CHECK_OK (AcpiUnloadParentTable, Status);
+        Status = AcpiUnloadParentTable (Handle);
+        AE_CHECK_OK (AcpiUnloadParentTable, Status);
 
-    Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt2Code);
-    AE_CHECK_OK (AcpiLoadTable, Status);
+        Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt2Code);
+        AE_CHECK_OK (AcpiLoadTable, Status);
 
-    /* Load OEM9 table (causes table override) */
+        /* Load OEM9 table (causes table override) */
 
-    Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt3Code);
-    AE_CHECK_OK (AcpiLoadTable, Status);
+        Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt3Code);
+        AE_CHECK_OK (AcpiLoadTable, Status);
+    }
 
 
     AeHardwareInterfaces ();
