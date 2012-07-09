@@ -50,13 +50,17 @@ Device(DTR0) {
 	DataTableRegion (DR00, "DSDT", "", "")
 	DataTableRegion (DR01, "SSDT", "", "")
 
-	Name(SSDT, Buffer(0x30){
-		0x53,0x53,0x44,0x54,0x30,0x00,0x00,0x00,
-		0x01,0xB8,0x49,0x6E,0x74,0x65,0x6C,0x00,
-		0x4D,0x61,0x6E,0x79,0x00,0x00,0x00,0x00,
-		0x01,0x00,0x00,0x00,0x49,0x4E,0x54,0x4C,
-		0x24,0x04,0x03,0x20,0x14,0x0B,0x5F,0x54,
-		0x39,0x38,0x00,0x70,0x0A,0x04,0x60,0xA4,
+    /* This SSDT must be identical to SSDT1 in the AcpiExec utility */
+
+	Name(SSDT, Buffer(0x3E){
+        0x53,0x53,0x44,0x54,0x3E,0x00,0x00,0x00,  /* 00000000    "SSDT>..." */
+        0x02,0x08,0x49,0x6E,0x74,0x65,0x6C,0x00,  /* 00000008    "..Intel." */
+        0x73,0x73,0x64,0x74,0x31,0x00,0x00,0x00,  /* 00000010    "ssdt1..." */
+        0x01,0x00,0x00,0x00,0x49,0x4E,0x54,0x4C,  /* 00000018    "....INTL" */
+        0x20,0x06,0x12,0x20,0x14,0x19,0x5F,0x54,  /* 00000020    " .. .._T" */
+        0x39,0x38,0x01,0x70,0x0D,0x53,0x53,0x44,  /* 00000028    "98.p.SSD" */
+        0x54,0x31,0x20,0x2D,0x20,0x5F,0x54,0x39,  /* 00000030    "T1 - _T9" */
+        0x38,0x00,0x5B,0x31,0xA4,0x00             /* 00000038    "8.[1.."   */
 	})
 
 	Name(NFLG, 2)	// Number of turn on/off Flag values
@@ -210,7 +214,7 @@ Method(m7f2, 1)
 	Concatenate(arg0, "-m7f2", arg0)
 
 	Field(\DTR0.DR01, AnyAcc, NoLock, Preserve) {
-		FU01, 0x180}
+		FU01, 0x1F0}            /* 0x1F0 == length of SSDT */
 	Store(Refof(FU01), Local0)
 
 	Store(Refof(Local0), Local1)
@@ -239,7 +243,7 @@ Method(m7f3, 1)
 		DataTableRegion (DR00, "SSDT", "", "")
 
 		Field(DR00, AnyAcc, NoLock, Preserve) {
-			FU01, 0x180}
+			FU01, 0x1F0}            /* 0x1F0 == length of SSDT */
 
 		Store(FU01, Local0)
 		Store(\DTR0.SSDT, Local1)
@@ -254,7 +258,7 @@ Method(m7f3, 1)
 		DataTableRegion (DR00, arg1, arg2, arg3)
 
 		Field(DR00, AnyAcc, NoLock, Preserve) {
-			FU01, 0x180}
+			FU01, 0x1F0}            /* 0x1F0 == length of SSDT */
 
 		Store(FU01, Local0)
 		Store(\DTR0.SSDT, Local1)
@@ -269,7 +273,7 @@ Method(m7f3, 1)
 		DataTableRegion (DR00, s000, s001, s002)
 
 		Field(DR00, AnyAcc, NoLock, Preserve) {
-			FU01, 0x180}
+			FU01, 0x1F0}            /* 0x1F0 == length of SSDT */
 
 		Store(FU01, Local0)
 		Store(\DTR0.SSDT, Local1)
@@ -288,7 +292,7 @@ Method(m7f3, 1)
 		DataTableRegion (DR00, Local2, Local3, Local4)
 
 		Field(DR00, AnyAcc, NoLock, Preserve) {
-			FU01, 0x180}
+			FU01, 0x1F0}            /* 0x1F0 == length of SSDT */
 
 		Store(FU01, Local0)
 		Store(\DTR0.SSDT, Local1)
@@ -306,7 +310,7 @@ Method(m7f3, 1)
 		DataTableRegion (DR00, Concatenate(Local2, Local3), Mid(s000, 1, 0), s002)
 
 		Field(DR00, AnyAcc, NoLock, Preserve) {
-			FU01, 0x180}
+			FU01, 0x1F0}            /* 0x1F0 == length of SSDT */
 
 		Store(FU01, Local0)
 		Store(\DTR0.SSDT, Local1)

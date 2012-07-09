@@ -1222,7 +1222,7 @@ Method(m708)
 		Field(RGN2, ByteAcc, NoLock, Preserve) {
 			FU02, 0x801}
 		Field(DR00, AnyAcc, NoLock, Preserve) {
-			FU03, 0x181}
+			FU03, 0x1F1}            /* 0x1F0 == length of SSDT */
 
 		Store(4, Local0)
 		Store(0, Local1)
