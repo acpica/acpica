@@ -143,6 +143,8 @@ static unsigned char LocalDsdtCode[] =
 
 /* Several example SSDTs */
 
+/* SSDT1 is used by ASLTS; if changed here, must also be changed in dtregions.asl */
+
 static unsigned char Ssdt1Code[] = /* Has method _T98 */
 {
     0x53,0x53,0x44,0x54,0x3E,0x00,0x00,0x00,  /* 00000000    "SSDT>..." */
