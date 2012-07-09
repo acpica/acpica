@@ -171,19 +171,14 @@ AcpiHwLegacySleep (
         return_ACPI_STATUS (Status);
     }
 
-    if (SleepState != ACPI_STATE_S5)
-    {
-        /*
-         * Disable BM arbitration. This feature is contained within an
-         * optional register (PM2 Control), so ignore a BAD_ADDRESS
-         * exception.
-         */
-        Status = AcpiWriteBitRegister (ACPI_BITREG_ARB_DISABLE, 1);
-        if (ACPI_FAILURE (Status) && (Status != AE_BAD_ADDRESS))
-        {
-            return_ACPI_STATUS (Status);
-        }
-    }
+    /*
+     * Code removed: no longer set the ARB_DIS bit in the PM2_CNT
+     * register when suspending. Use of ARB_DIS causes resume
+     * problems on many machines.
+     *
+     * if (SleepState != ACPI_STATE_S5)
+     *    Status = AcpiWriteBitRegister (ACPI_BITREG_ARB_DISABLE, 1);
+     */
 
     /*
      * 1) Disable/Clear all GPEs
@@ -453,15 +448,12 @@ AcpiHwLegacyWake (
             ACPI_CLEAR_STATUS);
 
     /*
-     * Enable BM arbitration. This feature is contained within an
-     * optional register (PM2 Control), so ignore a BAD_ADDRESS
-     * exception.
+     * Code removed: no longer clear the ARB_DIS bit in the PM2_CNT
+     * register when resuming. Use of ARB_DIS causes resume problems
+     * on many machines.
+     *
+     * Status = AcpiWriteBitRegister (ACPI_BITREG_ARB_DISABLE, 0);
      */
-    Status = AcpiWriteBitRegister (ACPI_BITREG_ARB_DISABLE, 0);
-    if (ACPI_FAILURE (Status) && (Status != AE_BAD_ADDRESS))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     AcpiHwExecuteSleepMethod (METHOD_PATHNAME__SST, ACPI_SST_WORKING);
     return_ACPI_STATUS (Status);
