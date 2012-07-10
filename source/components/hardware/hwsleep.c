@@ -172,15 +172,6 @@ AcpiHwLegacySleep (
     }
 
     /*
-     * Code removed: no longer set the ARB_DIS bit in the PM2_CNT
-     * register when suspending. Use of ARB_DIS causes resume
-     * problems on many machines.
-     *
-     * if (SleepState != ACPI_STATE_S5)
-     *    Status = AcpiWriteBitRegister (ACPI_BITREG_ARB_DISABLE, 1);
-     */
-
-    /*
      * 1) Disable/Clear all GPEs
      * 2) Enable all wakeup GPEs
      */
@@ -446,14 +437,6 @@ AcpiHwLegacyWake (
     (void) AcpiWriteBitRegister(
             AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].StatusRegisterId,
             ACPI_CLEAR_STATUS);
-
-    /*
-     * Code removed: no longer clear the ARB_DIS bit in the PM2_CNT
-     * register when resuming. Use of ARB_DIS causes resume problems
-     * on many machines.
-     *
-     * Status = AcpiWriteBitRegister (ACPI_BITREG_ARB_DISABLE, 0);
-     */
 
     AcpiHwExecuteSleepMethod (METHOD_PATHNAME__SST, ACPI_SST_WORKING);
     return_ACPI_STATUS (Status);
