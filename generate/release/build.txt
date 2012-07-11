@@ -1,0 +1,109 @@
+
+Instructions to create a full release of the ACPICA software
+and utilities.
+
+Last update 11 July 2012.
+
+Note: The build uses MS Visual Studio and Cygwin to accomplish the
+goal of releasing both Windows and Unix versions of the code
+and utilities. For Windows, binary versions of the ACPICA utilities
+(including the iASL compiler) are created.
+
+
+Build the ACPICA Software
+-------------------------
+
+Cleanup any extraneous files in the local git tree
+
+Complete any updates to the ACPICA documentation (ACPICA ref, iASL ref)
+Create the .PDF versions of the .DOC files
+Checkin any changed documents
+
+Update the version number (form 0xyyyymmdd) in source/include/acpixf.h
+Build Windows debug versions of all software and utilities
+Build Windows nodebug versions of all software and utilities
+    (generate/msvc9)
+Build Unix versions of all software and utilities
+    (generate/unix/make)
+
+Write the release notes
+Generate sizes for the acpica library from generate/release/size.bat
+Sizes appear in the files size_rel.txt and size_dbg.txt
+Integrate code/data and debug/nodebug sizes into the release notes
+Add the release notes to the documents/changes.txt document
+
+Checkin the windows binaries
+Checkin documents/changes.txt
+Checkin the new version number, source/include/acpixf.h
+Git push everything
+
+Tag the version file with a name of the form Rmm_dd_yy
+    git tag -m"version yyyymmdd" Rmm_dd_yy <commit #>
+    git push --tags
+
+Build the various tar/zip release files:
+    Convert .sh files to unix format: d2u *.sh
+    On cygwin, execute generate/release/release.sh
+
+
+
+Update ACPICA website
+---------------------
+
+Checkout the latest version of the website code:
+    svn co https://umd.jf.intel.com/svn/repos/websites/acpica.org
+
+Copy all tar/zip files from release/current to (acpica.org)/download
+Copy all changed documents from acpica/documents to (acpica.org)/download
+
+Update modules.php:
+    Add a line for the 2nd previous version
+    Update previous_releases.php to the previous version
+    Update current_version() to the current version
+
+Update version files:
+    Create downloads/version-#.php <# == 2nd previous version>
+        (copy from another version-#.php file and update it)
+    Update previous_releases.php for previous version
+
+Windows source code:
+    Create downloads/acpica-win-#.php for previous version
+    Create downloads/acpitests-win-# for previous version
+    Update downloads/source_code.php for current version
+    Update downloads/test_suite.php for current version
+
+Unix source code:
+    Create downloads/acpica-unix-#.php for previous version
+    Create downloads/acpitests-unix-# for previous version
+    Update downloads/unix_source_code.php for current version
+    Update downloads/unix2_source_code.php for current version
+    Update downloads/unix_test_suite.php for current version
+
+Windows binary tools:
+    Create downloads/iasl-win-#.php for previous version
+    Update downloads/binary_tools.php for current version + file size
+
+Update file sizes:
+    documentation/index.php - ACPICA documentation sizes and info
+
+Add and commit new files and changed files:
+    svn add acpica.org --force
+    svn commit -m"version yyyymmdd" acpica.org
+
+
+
+Email the release notes
+-----------------------
+
+Send separate copies of the notes (in plain text) to the following:
+    acpica.intel.com
+    devel@acpica.org
+    acpi@linux.intel.com
+    CaClients (undisclosed recipients/BCC: list)
+
+
+
+Update ACPICA bugzilla
+----------------------
+
+Close any problem reports that have been resolved.
