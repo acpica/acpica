@@ -39,7 +39,7 @@ ACPICA_TABLES =         $(ACPICA_CORE)/tables
 ACPICA_UTILITIES =      $(ACPICA_CORE)/utilities
 ASL_COMPILER =          $(ACPICA_SRC)/compiler
 INSTALLDIR =            /usr/bin
-INSTALLPROG =           cp --remove-destination $(PROG) $(INSTALLDIR)
+INSTALLPROG =           install -D $(PROG) $(DESTDIR)$(INSTALLDIR)/$(PROG)
 
 ACPICA_HEADERS = \
     $(wildcard $(ACPICA_INCLUDE)/*.h) \
@@ -236,6 +236,7 @@ MISC = \
 CFLAGS+= \
     -D$(HOST) \
     -D_GNU_SOURCE \
+    -D_FORTIFY_SOURCE=2 \
     -DACPI_ASL_COMPILER \
     -I$(ACPICA_INCLUDE) \
     -I$(ASL_COMPILER)

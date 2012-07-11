@@ -19,12 +19,12 @@ ${PROGS}: FORCE
 		mkdir -p obj64; \
 		make BITS=64; \
 		echo "64-bit version of $@:"; \
-		ls -al obj64/$@; \
+		ls -al ../bin64/$@; \
 	else \
 		mkdir -p obj32; \
 		make BITS=32; \
 		echo "32-bit version of $@:"; \
-		ls -al obj32/$@; \
+		ls -al ../bin32/$@; \
 	fi;
 
 #
@@ -83,10 +83,10 @@ install:	FORCE
 		(cd $(BUILD_DIRECTORY_PATH)/$$toolname; \
 		pwd; \
 		if [ $(findstring 64,$(HARDWARE_NAME)) ]; then \
-			make BITS=64 install; \
+			make BITS=64 PROG=$$toolname install; \
 			echo "Installed 64-bit version of $$toolname"; \
 		else \
-			make BITS=32 install; \
+			make BITS=32 PROG=$$toolname install; \
 			echo "Installed 32-bit version of $$toolname"; \
 		fi; \
 		); \

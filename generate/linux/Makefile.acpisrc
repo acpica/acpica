@@ -40,7 +40,7 @@ ACPICA_TABLES =         $(ACPICA_CORE)/tables
 ACPICA_UTILITIES =      $(ACPICA_CORE)/utilities
 ACPISRC =               $(ACPICA_TOOLS)/acpisrc
 INSTALLDIR =            /usr/bin
-INSTALLPROG =           cp --remove-destination $(PROG) $(INSTALLDIR)
+INSTALLPROG =           install -D $(PROG) $(DESTDIR)$(INSTALLDIR)/$(PROG)
 
 ACPICA_HEADERS = \
     $(wildcard $(ACPICA_INCLUDE)/*.h) \
@@ -71,6 +71,7 @@ OBJECTS = \
 CFLAGS+= \
     -D$(HOST) \
     -D_GNU_SOURCE \
+    -D_FORTIFY_SOURCE=2 \
     -DACPI_SRC_APP \
     -I$(ACPISRC) \
     -I$(ACPICA_INCLUDE)
