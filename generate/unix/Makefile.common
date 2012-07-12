@@ -15,7 +15,13 @@ HARDWARE_NAME := $(shell uname -m)
 all:	${PROGS}
 ${PROGS}: FORCE
 	@cd $(BUILD_DIRECTORY_PATH)/$@; \
-	if [ $(findstring 64,$(HARDWARE_NAME)) ]; then \
+	if [ "$(BITS)" == "32" ]; then \
+		echo "Forced 32-bit generation"; \
+		mkdir -p obj32; \
+		make BITS=32; \
+		echo "32-bit version of $@:"; \
+		ls -al ../bin32/$@; \
+	elif [ $(findstring 64,$(HARDWARE_NAME)) ]; then \
 		mkdir -p obj64; \
 		make BITS=64; \
 		echo "64-bit version of $@:"; \
