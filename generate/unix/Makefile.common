@@ -70,6 +70,7 @@ both:	32 64
 clean:	FORCE
 	@for toolname in ${PROGS}; do \
 		(cd $(BUILD_DIRECTORY_PATH)/$$toolname; \
+		echo "Removing $$toolname"; \
 		pwd; \
 		if [ -d "obj32" ] ; then \
 			make BITS=32 clean; \
@@ -79,6 +80,7 @@ clean:	FORCE
 			make BITS=64 clean; \
 			rmdir obj64; \
 		fi; \
+		echo ""; \
 		); \
 	done;
 
@@ -96,6 +98,7 @@ install:	FORCE
 			make BITS=32 PROG=$$toolname install; \
 			echo "Installed 32-bit version of $$toolname"; \
 		fi; \
+		echo ""; \
 		); \
 	done;
 
