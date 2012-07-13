@@ -9,21 +9,33 @@
 #
 # Usage: ./divergence.sh <Path to root of linux source code>
 #
-
 if [ -z $1 ] ; then
 	echo "Usage: $0 <Linux>"
 	echo "  Linux: Path of Linux source"
 	exit 1
 fi
+if [ ! -e $1 ] ; then
+	echo "$1, Linux source directory does not exist"
+	exit 1
+fi
+if [ ! -d $1 ] ; then
+	echo "$1, Not a directory"
+	exit 1
+fi
+
+LINUX=$1
+ACPICA_TMP=acpica_tmp
+LINUX_ACPICA=linux-acpica
+ACPICA_LINUXIZED=acpica-linuxized
 
 # Get the root of the ACPICA source tree
 ACPICA=`readlink -f ../..`
 
-LINUX=$1
 LINDENT=$ACPICA/generate/linux/patches/lindent.sh
-ACPICA_TMP=acpica_tmp
-LINUX_ACPICA=linux-acpica
-ACPICA_LINUXIZED=acpica-linuxized
+if [ ! -e $LINDENT ] ; then
+	echo "Could not find lindent.sh script"
+	exit 1
+fi
 
 #
 # Build the AcpiSrc utility if necessary
