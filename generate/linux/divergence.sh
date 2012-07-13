@@ -35,7 +35,7 @@ ACPISRC=${ACPICA}/generate/unix/acpisrc/obj32/acpisrc
 #
 # Copy the actual Linux ACPICA files locally
 #
-echo "Create local Linux ACPICA files subdirectory"
+echo "Creating local Linux ACPICA files subdirectory"
 rm -rf $ACPICA_TMP $LINUX_ACPICA $ACPICA_LINUXIZED
 mkdir $ACPICA_TMP $LINUX_ACPICA
 
@@ -67,20 +67,20 @@ $ACPISRC -ldqy $ACPICA_TMP $ACPICA_LINUXIZED
 #
 # Enable cross platform generation
 #
-d2u -q $LINDENT
-d2u -q $ACPICA_LINUXIZED/*
-d2u -q $LINUX_ACPICA/*
+dos2unix -q $LINDENT
+dos2unix -q $ACPICA_LINUXIZED/*
+dos2unix -q $LINUX_ACPICA/*
 
 #
 # Lindent both sets of files
 #
-echo "Build lindented linuxized ACPICA files"
+echo "Building lindented linuxized ACPICA files"
 cd $ACPICA_LINUXIZED
 find . -name "*.[ch]" | xargs $LINDENT
 rm -f *~
 cd ..
 
-echo "Build lindented actual linux ACPICA files"
+echo "Building lindented actual linux ACPICA files"
 cd $LINUX_ACPICA
 find . -name "*.[ch]" | xargs $LINDENT
 rm -f *~
@@ -89,7 +89,7 @@ cd ..
 #
 # Now we can finally do the big diff
 #
-echo "Create ACPICA/Linux diff"
+echo "Creating ACPICA/Linux diff"
 diff -E -b -w -B -rpuN $LINUX_ACPICA $ACPICA_LINUXIZED > divergence.diff
 ls -l divergence.diff
 

@@ -7,6 +7,7 @@
 # string will be treated as a 64-bit OS. Otherwise, the default is 32-bit.
 #
 HARDWARE_NAME := $(shell uname -m)
+BITS=0
 
 #
 # Main rule will only generate versions that are appropriate for the running
@@ -15,8 +16,8 @@ HARDWARE_NAME := $(shell uname -m)
 all:	${PROGS}
 ${PROGS}: FORCE
 	@cd $(BUILD_DIRECTORY_PATH)/$@; \
-	if [ "$(BITS)" == "32" ]; then \
-		echo "Forced 32-bit generation"; \
+	if [ $(BITS) -eq 32 ]; then \
+		echo "Forced 32-bit generation of $@"; \
 		mkdir -p obj32; \
 		make BITS=32; \
 		echo "32-bit version of $@:"; \
