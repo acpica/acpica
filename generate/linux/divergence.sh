@@ -103,7 +103,8 @@ cd ..
 #
 echo "Creating ACPICA/Linux diff"
 diff -E -b -w -B -rpuN $LINUX_ACPICA $ACPICA_LINUXIZED > divergence.diff
-ls -l divergence.diff
+diffstat divergence.diff > diffstat.txt
+ls -l divergence.diff diffstat.txt
 
 #
 # Cleanup
