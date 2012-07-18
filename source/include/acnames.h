@@ -134,6 +134,7 @@
 #define METHOD_NAME__AEI        "_AEI"
 #define METHOD_NAME__PRW        "_PRW"
 #define METHOD_NAME__SRS        "_SRS"
+#define METHOD_NAME__PLD        "_PLD"
 
 /* Method names - these methods must appear at the namespace root */
 

@@ -906,4 +906,97 @@ AcpiCheckAddressRange (
 
 ACPI_EXPORT_SYMBOL (AcpiCheckAddressRange)
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDecodePldBuffer
+ *
+ * PARAMETERS:  InBuffer            - Buffer returned by _PLD method
+ *              Length              - Length of the InBuffer
+                ReturnBuffer        - Where the decode buffer is returned
+ *
+ * RETURN:      Status and the decoded _PLD buffer. User must deallocate
+ *              the buffer via ACPI_FREE.
+ *
+ * DESCRIPTION: Decode the bit-packed buffer returned by the _PLD method into
+ *              a local struct that is much more useful to an ACPI driver.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDecodePldBuffer (
+    UINT8                   *InBuffer,
+    ACPI_SIZE               Length,
+    ACPI_PLD_INFO           **ReturnBuffer)
+{
+    ACPI_PLD_INFO           *PldInfo;
+    UINT32                  *Buffer = ACPI_CAST_PTR (UINT32, InBuffer);
+
+
+    /* Parameter validation */
+
+    if (!InBuffer || !ReturnBuffer || (Length < 16))
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    PldInfo = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_PLD_INFO));
+    if (!PldInfo)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    /* First 32-bit DWord */
+
+    PldInfo->Revision =             ACPI_PLD_GET_REVISION (Buffer);
+    PldInfo->IgnoreColor =          ACPI_PLD_GET_IGNORE_COLOR (Buffer);
+    PldInfo->Color =                ACPI_PLD_GET_COLOR (Buffer);
+
+    /* Second 32-bit DWord */
+
+    Buffer++;
+    PldInfo->Width =                ACPI_PLD_GET_WIDTH (Buffer);
+    PldInfo->Height =               ACPI_PLD_GET_HEIGHT(Buffer);
+
+    /* Third 32-bit DWord */
+
+    Buffer++;
+    PldInfo->UserVisible =          ACPI_PLD_GET_USER_VISIBLE (Buffer);
+    PldInfo->Dock =                 ACPI_PLD_GET_DOCK (Buffer);
+    PldInfo->Lid =                  ACPI_PLD_GET_LID (Buffer);
+    PldInfo->Panel =                ACPI_PLD_GET_PANEL (Buffer);
+    PldInfo->VerticalPosition =     ACPI_PLD_GET_VERTICAL (Buffer);
+    PldInfo->HorizontalPosition =   ACPI_PLD_GET_HORIZONTAL (Buffer);
+    PldInfo->Shape =                ACPI_PLD_GET_SHAPE (Buffer);
+    PldInfo->GroupOrientation =     ACPI_PLD_GET_ORIENTATION (Buffer);
+    PldInfo->GroupToken =           ACPI_PLD_GET_TOKEN (Buffer);
+    PldInfo->GroupPosition =        ACPI_PLD_GET_POSITION (Buffer);
+    PldInfo->Bay =                  ACPI_PLD_GET_BAY (Buffer);
+
+    /* Fourth 32-bit DWord */
+
+    Buffer++;
+    PldInfo->Ejectable =            ACPI_PLD_GET_EJECTABLE (Buffer);
+    PldInfo->OspmEjectRequired =    ACPI_PLD_GET_OSPM_EJECT (Buffer);
+    PldInfo->CabinetNumber =        ACPI_PLD_GET_CABINET (Buffer);
+    PldInfo->CardCageNumber =       ACPI_PLD_GET_CARD_CAGE (Buffer);
+    PldInfo->Reference =            ACPI_PLD_GET_REFERENCE (Buffer);
+    PldInfo->Rotation =             ACPI_PLD_GET_ROTATION (Buffer);
+    PldInfo->Order =                ACPI_PLD_GET_ORDER (Buffer);
+
+    if (Length >= ACPI_PLD_BUFFER_SIZE)
+    {
+        /* Fifth 32-bit DWord (Revision 2 of _PLD) */
+
+        Buffer++;
+        PldInfo->VerticalOffset =       ACPI_PLD_GET_VERT_OFFSET (Buffer);
+        PldInfo->HorizontalOffset =     ACPI_PLD_GET_HORIZ_OFFSET (Buffer);
+    }
+
+    *ReturnBuffer = PldInfo;
+    return (AE_OK);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiDecodePldBuffer)
+
 #endif /* !ACPI_ASL_COMPILER */

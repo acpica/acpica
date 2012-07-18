@@ -125,6 +125,7 @@
 #include "acconfig.h"
 #include "actypes.h"
 #include "actbl.h"
+#include "acbuffer.h"
 
 /*
  * Globals that are publically available
@@ -255,6 +256,11 @@ AcpiCheckAddressRange (
     ACPI_SIZE               Length,
     BOOLEAN                 Warn);
 
+ACPI_STATUS
+AcpiDecodePldBuffer (
+    UINT8                   *InBuffer,
+    ACPI_SIZE               Length,
+    ACPI_PLD_INFO           **ReturnBuffer);
 
 /*
  * ACPI Memory management

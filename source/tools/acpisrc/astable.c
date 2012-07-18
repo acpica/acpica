@@ -483,6 +483,12 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_WALK_STATE",                     SRC_TYPE_STRUCT},
     {"ACPI_WHEA_HEADER",                    SRC_TYPE_STRUCT},
 
+    /* Buffers related to predefined ACPI names (_PLD, etc.) */
+
+    {"ACPI_PLD_INFO",                       SRC_TYPE_STRUCT},
+
+    /* Resources */
+
     {"ACPI_RS_LENGTH",                      SRC_TYPE_SIMPLE},
     {"ACPI_RSDESC_SIZE",                    SRC_TYPE_SIMPLE},
 

@@ -1309,6 +1309,7 @@ typedef struct acpi_external_file
 
 typedef struct acpi_db_method_info
 {
+    ACPI_HANDLE                     Method;
     ACPI_HANDLE                     MainThreadGate;
     ACPI_HANDLE                     ThreadCompleteGate;
     ACPI_HANDLE                     InfoGate;
