@@ -1778,6 +1778,8 @@
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
+							AssemblerOutput="0"
+							AssemblerListingLocation=".\AcpiExec\"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3706,6 +3708,10 @@
 			>
 			<File
 				RelativePath="..\..\source\include\acapps.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\include\acbuffer.h"
 				>
 			</File>
 			<File

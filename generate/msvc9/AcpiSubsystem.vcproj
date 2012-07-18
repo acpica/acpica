@@ -3493,6 +3493,10 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
+				RelativePath="..\..\source\include\acbuffer.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\source\include\accommon.h"
 				>
 			</File>
