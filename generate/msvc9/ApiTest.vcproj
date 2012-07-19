@@ -728,6 +728,10 @@
 						/>
 					</FileConfiguration>
 				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utxfinit.c"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Interpreter"
