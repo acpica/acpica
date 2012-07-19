@@ -485,6 +485,9 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
 
     /* Buffers related to predefined ACPI names (_PLD, etc.) */
 
+    {"ACPI_FDE_INFO",                       SRC_TYPE_STRUCT},
+    {"ACPI_GRT_INFO",                       SRC_TYPE_STRUCT},
+    {"ACPI_GTM_INFO",                       SRC_TYPE_STRUCT},
     {"ACPI_PLD_INFO",                       SRC_TYPE_STRUCT},
 
     /* Resources */
