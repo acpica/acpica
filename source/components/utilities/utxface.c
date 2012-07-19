@@ -906,6 +906,8 @@ AcpiCheckAddressRange (
 
 ACPI_EXPORT_SYMBOL (AcpiCheckAddressRange)
 
+#endif /* !ACPI_ASL_COMPILER */
+
 
 /*******************************************************************************
  *
@@ -913,7 +915,7 @@ ACPI_EXPORT_SYMBOL (AcpiCheckAddressRange)
  *
  * PARAMETERS:  InBuffer            - Buffer returned by _PLD method
  *              Length              - Length of the InBuffer
-                ReturnBuffer        - Where the decode buffer is returned
+ *              ReturnBuffer        - Where the decode buffer is returned
  *
  * RETURN:      Status and the decoded _PLD buffer. User must deallocate
  *              the buffer via ACPI_FREE.
@@ -998,5 +1000,3 @@ AcpiDecodePldBuffer (
 }
 
 ACPI_EXPORT_SYMBOL (AcpiDecodePldBuffer)
-
-#endif /* !ACPI_ASL_COMPILER */

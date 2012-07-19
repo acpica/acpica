@@ -685,6 +685,10 @@ BOOLEAN
 AcpiDmIsStringBuffer (
     ACPI_PARSE_OBJECT       *Op);
 
+BOOLEAN
+AcpiDmIsPldBuffer (
+    ACPI_PARSE_OBJECT       *Op);
+
 
 /*
  * dmextern
