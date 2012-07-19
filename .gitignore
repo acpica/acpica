@@ -59,7 +59,6 @@ generate/msvc9/AslCompiler_Linux/
 generate/msvc9/AslCompiler_LinuxDebug/
 generate/msvc9/AcpiSubsystem64
 
-generate/linux/bin
 generate/unix/bin
 generate/unix/bin32
 generate/unix/bin64
@@ -85,25 +84,14 @@ generate/release/size_rel.txt
 
 generate/lint/LintOut.txt
 
-libraries/AcpiHelp.exe
-libraries/AcpiHelpDebug.exe
-libraries/AcpiExecDebug.exe
-libraries/acpiexecdebug.exe
-libraries/AcpiXtractDebug.exe
-libraries/AcpiBinDebug.exe
-libraries/AcpiSrcDebug.exe
-libraries/iaslDebug.exe
-libraries/Acpica.lib
-libraries/Acpica_dbg.lib
-libraries/Examples.exe
-libraries/ExamplesDebug.exe
-libraries/ApiTest.exe
-libraries/apitestdebug.exe
-libraries/ApiTestDebug.exe
-libraries/apitest.exe
-libraries/AcpiNames.exe
-libraries/AcpiNamesDebug.exe
-libraries/*.ex_
+generate/linux/bin
+generate/linux/diffstat.txt
+generate/linux/divergence.diff
+
+libraries
+
+tests/misc/grammar.aml
+tests/misc/grammar.dsl
 
 chmod.sh
 crlf.sh
