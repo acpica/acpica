@@ -97,10 +97,11 @@ OBJECTS = \
 	$(OBJDIR)/utmisc.o \
 	$(OBJDIR)/utmutex.o \
 	$(OBJDIR)/utobject.o \
-	$(OBJDIR)/utstate.o \
 	$(OBJDIR)/utosi.o \
+	$(OBJDIR)/utstate.o \
+	$(OBJDIR)/utxface.o \
 	$(OBJDIR)/utxferror.o \
-	$(OBJDIR)/utxface.o
+	$(OBJDIR)/utxfinit.o
 
 #
 # Flags specific to acpinames utility

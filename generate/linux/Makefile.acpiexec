@@ -224,12 +224,13 @@ OBJECTS = \
 	utmisc.o \
 	utmutex.o \
 	utobject.o \
+	utosi.o \
 	utresrc.o \
 	utstate.o \
 	uttrack.o \
-	utosi.o \
-	utxferror.o \
 	utxface.o \
+	utxferror.o \
+	utxfinit.o \
 	utxfmutex.o
 
 CFLAGS+= \

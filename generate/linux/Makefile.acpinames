@@ -129,10 +129,11 @@ OBJECTS = \
 	utmisc.o \
 	utmutex.o \
 	utobject.o \
-	utstate.o \
 	utosi.o \
-	utxferror.o \
-	utxface.o
+	utstate.o \
+	utxface.o \
+	utxfinit.o \
+	utxferror.o
 
 CFLAGS+= \
     -D$(HOST) \

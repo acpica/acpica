@@ -192,12 +192,13 @@ OBJECTS = \
 	$(OBJDIR)/utmisc.o \
 	$(OBJDIR)/utmutex.o \
 	$(OBJDIR)/utobject.o \
+	$(OBJDIR)/utosi.o \
 	$(OBJDIR)/utresrc.o \
 	$(OBJDIR)/utstate.o \
 	$(OBJDIR)/uttrack.o \
-	$(OBJDIR)/utosi.o \
 	$(OBJDIR)/utxface.o \
 	$(OBJDIR)/utxferror.o \
+	$(OBJDIR)/utxfinit.o \
 	$(OBJDIR)/utxfmutex.o
 
 #

@@ -211,8 +211,8 @@ OBJECTS = \
 	utobject.o \
 	utresrc.o \
 	utstate.o \
-	utxferror.o \
-	utxface.o
+	utxface.o \
+	utxferror.o
 
 INTERMEDIATES = \
 	aslcompilerlex.c \

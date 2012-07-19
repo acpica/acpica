@@ -180,8 +180,8 @@ OBJECTS = \
 	$(OBJDIR)/utobject.o \
 	$(OBJDIR)/utresrc.o \
 	$(OBJDIR)/utstate.o \
-	$(OBJDIR)/utxferror.o \
-	$(OBJDIR)/utxface.o
+	$(OBJDIR)/utxface.o \
+	$(OBJDIR)/utxferror.o
 
 INTERMEDIATES = \
 	$(OBJDIR)/aslcompilerlex.c \
