@@ -9,43 +9,66 @@
 #
 # Usage: ./divergence.sh <Path to root of linux source code>
 #
-if [ -z $1 ] ; then
-	echo "Usage: $0 <Linux>"
-	echo "  Linux: Path of Linux source"
-	exit 1
-fi
-if [ ! -e $1 ] ; then
-	echo "$1, Linux source directory does not exist"
-	exit 1
-fi
-if [ ! -d $1 ] ; then
-	echo "$1, Not a directory"
-	exit 1
-fi
-
-LINUX=$1
+HARDWARE_NAME=`uname -m`
+BINDIR=not_initialized
 ACPICA_TMP=acpica_tmp
 LINUX_ACPICA=linux-acpica
 ACPICA_LINUXIZED=acpica-linuxized
 
 # Get the root of the ACPICA source tree
 ACPICA=`readlink -f ../..`
-
 LINDENT=$ACPICA/generate/linux/patches/lindent.sh
+LINUX=$1
+
+
+# Parameter validation
+
+if [ -z $1 ] ; then
+	echo "Usage: $0 <Linux>"
+	echo "  Linux: Path of Linux source"
+	return 1
+fi
+if [ ! -e $1 ] ; then
+	echo "$1, Linux source directory does not exist"
+	return 1
+fi
+if [ ! -d $1 ] ; then
+	echo "$1, Not a directory"
+	return 1
+fi
+
 if [ ! -e $LINDENT ] ; then
 	echo "Could not find lindent.sh script"
-	exit 1
+	return 1
 fi
 
 #
-# Build the AcpiSrc utility if necessary
+# Determine if we are on a 32-bit or 64-bit OS.
+# Any machine hardware name containing a substring "64" is
+# considered to be a 64-bit platform (such as x86_64).
 #
-echo "Ensure the 32-bit AcpiSrc utility is up-to-date"
-make -C $ACPICA BITS=32 acpisrc
-ACPISRC=${ACPICA}/generate/unix/acpisrc/obj32/acpisrc
+get_platform_bitwidth () {
+
+	case "$HARDWARE_NAME" in
+		*64* ) WIDTH=64;;
+		*    ) WIDTH=32;;
+	esac
+
+	BINDIR=bin$WIDTH
+	WIDTHNAME=$WIDTH-bit
+}
 
 #
-# Copy the actual Linux ACPICA files locally
+# Build the AcpiSrc utility if necessary, in the native
+# width of the platform.
+#
+get_platform_bitwidth
+echo "Ensure the $WIDTHNAME AcpiSrc utility is up-to-date on platform type $HARDWARE_NAME"
+make -C $ACPICA BITS=$WIDTH acpisrc
+ACPISRC=${ACPICA}/generate/unix/$BINDIR/acpisrc
+
+#
+# Copy the actual Linux ACPICA files locally (from the Linux tree)
 #
 echo "Creating local Linux ACPICA files subdirectory"
 rm -rf $ACPICA_TMP $LINUX_ACPICA $ACPICA_LINUXIZED
@@ -56,7 +79,8 @@ cp $LINUX/include/acpi/*.h $LINUX_ACPICA/
 cp $LINUX/include/acpi/platform/*.h $LINUX_ACPICA/
 
 #
-# Ensure that the files in the two directories match
+# Ensure that the files in the two directories
+# (native ACPICA and Linux ACPICA) match
 #
 cd $LINUX_ACPICA
 ALL_FILES=`ls`
@@ -73,6 +97,7 @@ done
 #
 # Linuxize the ACPICA source
 #
+echo "Linuxizing the ACPICA source code:"
 cd ..
 $ACPISRC -ldqy $ACPICA_TMP $ACPICA_LINUXIZED
 
@@ -112,3 +137,4 @@ ls -l divergence.diff diffstat.txt
 rm -r $LINUX_ACPICA
 rm -r $ACPICA_TMP
 rm -r $ACPICA_LINUXIZED
+return 0
