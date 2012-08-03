@@ -2579,30 +2579,38 @@ ConstExprTerm
     | PARSEOP___PATH__              {$$ = TrCreateConstantLeafNode (PARSEOP___PATH__);}
     ;
 
+/*
+ * The NODE_COMPILE_TIME_CONST flag in the following constant expressions
+ * enables compile-time constant folding to reduce the Type3Opcodes/Type2IntegerOpcodes
+ * to simple integers. It is an error if these types of expressions cannot be
+ * reduced, since the AML grammar for ****ConstExpr requires a simple constant.
+ * Note: The required byte length of the constant is passed through to the
+ * constant folding code in the node AmlLength field.
+ */
 ByteConstExpr
-    : Type3Opcode                   {$$ = TrUpdateNode (PARSEOP_BYTECONST, $1);}
-    | Type2IntegerOpcode            {$$ = TrUpdateNode (PARSEOP_BYTECONST, $1);}
+    : Type3Opcode                   {$$ = TrSetNodeFlags ($1, NODE_COMPILE_TIME_CONST); TrSetNodeAmlLength ($1, 1);}
+    | Type2IntegerOpcode            {$$ = TrSetNodeFlags ($1, NODE_COMPILE_TIME_CONST); TrSetNodeAmlLength ($1, 1);}
     | ConstExprTerm                 {$$ = TrUpdateNode (PARSEOP_BYTECONST, $1);}
     | ByteConst                     {}
     ;
 
 WordConstExpr
-    : Type3Opcode                   {$$ = TrUpdateNode (PARSEOP_WORDCONST, $1);}
-    | Type2IntegerOpcode            {$$ = TrUpdateNode (PARSEOP_WORDCONST, $1);}
+    : Type3Opcode                   {$$ = TrSetNodeFlags ($1, NODE_COMPILE_TIME_CONST); TrSetNodeAmlLength ($1, 2);}
+    | Type2IntegerOpcode            {$$ = TrSetNodeFlags ($1, NODE_COMPILE_TIME_CONST); TrSetNodeAmlLength ($1, 2);}
     | ConstExprTerm                 {$$ = TrUpdateNode (PARSEOP_WORDCONST, $1);}
     | WordConst                     {}
     ;
 
 DWordConstExpr
-    : Type3Opcode                   {$$ = TrUpdateNode (PARSEOP_DWORDCONST, $1);}
-    | Type2IntegerOpcode            {$$ = TrUpdateNode (PARSEOP_DWORDCONST, $1);}
+    : Type3Opcode                   {$$ = TrSetNodeFlags ($1, NODE_COMPILE_TIME_CONST); TrSetNodeAmlLength ($1, 4);}
+    | Type2IntegerOpcode            {$$ = TrSetNodeFlags ($1, NODE_COMPILE_TIME_CONST); TrSetNodeAmlLength ($1, 4);}
     | ConstExprTerm                 {$$ = TrUpdateNode (PARSEOP_DWORDCONST, $1);}
     | DWordConst                    {}
     ;
 
 QWordConstExpr
-    : Type3Opcode                   {$$ = TrUpdateNode (PARSEOP_QWORDCONST, $1);}
-    | Type2IntegerOpcode            {$$ = TrUpdateNode (PARSEOP_QWORDCONST, $1);}
+    : Type3Opcode                   {$$ = TrSetNodeFlags ($1, NODE_COMPILE_TIME_CONST); TrSetNodeAmlLength ($1, 8);}
+    | Type2IntegerOpcode            {$$ = TrSetNodeFlags ($1, NODE_COMPILE_TIME_CONST); TrSetNodeAmlLength ($1, 8);}
     | ConstExprTerm                 {$$ = TrUpdateNode (PARSEOP_QWORDCONST, $1);}
     | QWordConst                    {}
     ;

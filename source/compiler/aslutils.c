@@ -663,36 +663,23 @@ UtCheckIntegerRange (
     UINT32                  LowValue,
     UINT32                  HighValue)
 {
-    char                    *ParseError = NULL;
-    char                    Buffer[64];
-
 
     if (!Op)
     {
         return NULL;
     }
 
-    if (Op->Asl.Value.Integer < LowValue)
+    if ((Op->Asl.Value.Integer < LowValue) ||
+        (Op->Asl.Value.Integer > HighValue))
     {
-        ParseError = "Value below valid range";
-        Op->Asl.Value.Integer = LowValue;
+        sprintf (MsgBuffer, "0x%X, allowable: 0x%X-0x%X",
+            (UINT32) Op->Asl.Value.Integer, LowValue, HighValue);
+
+        AslError (ASL_ERROR, ASL_MSG_RANGE, Op, MsgBuffer);
+        return (NULL);
     }
 
-    if (Op->Asl.Value.Integer > HighValue)
-    {
-        ParseError = "Value above valid range";
-        Op->Asl.Value.Integer = HighValue;
-    }
-
-    if (ParseError)
-    {
-        sprintf (Buffer, "%s 0x%X-0x%X", ParseError, LowValue, HighValue);
-        AslCompilererror (Buffer);
-
-        return NULL;
-    }
-
-    return Op;
+    return (Op);
 }
 
 

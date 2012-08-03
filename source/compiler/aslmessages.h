@@ -269,6 +269,7 @@ typedef enum
     ASL_MSG_UPPER_CASE,
     ASL_MSG_VENDOR_LIST,
     ASL_MSG_WRITE,
+    ASL_MSG_RANGE,
 
     /* These messages are used by the Preprocessor only */
 
@@ -443,6 +444,7 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_UPPER_CASE */                 "Non-hex letters must be upper case",
 /*    ASL_MSG_VENDOR_LIST */                "Too many vendor data bytes (7 max)",
 /*    ASL_MSG_WRITE */                      "Could not write file",
+/*    ASL_MSG_RANGE */                      "Constant out of range",
 
 /* Preprocessor */
 
