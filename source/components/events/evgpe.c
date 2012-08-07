@@ -164,7 +164,7 @@ AcpiEvUpdateGpeEnableMask (
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
-    RegisterBit = AcpiHwGetGpeRegisterBit (GpeEventInfo, GpeRegisterInfo);
+    RegisterBit = AcpiHwGetGpeRegisterBit (GpeEventInfo);
 
     /* Clear the run bit up front */
 

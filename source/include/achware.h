@@ -245,8 +245,7 @@ AcpiHwWritePort (
  */
 UINT32
 AcpiHwGetGpeRegisterBit (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
-    ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo);
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 ACPI_STATUS
 AcpiHwLowSetGpe (

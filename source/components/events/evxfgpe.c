@@ -552,7 +552,7 @@ AcpiSetGpeWakeMask (
         goto UnlockAndExit;
     }
 
-    RegisterBit = AcpiHwGetGpeRegisterBit (GpeEventInfo, GpeRegisterInfo);
+    RegisterBit = AcpiHwGetGpeRegisterBit (GpeEventInfo);
 
     /* Perform the action */
 
