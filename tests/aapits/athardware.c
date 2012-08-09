@@ -1411,7 +1411,7 @@ AtHardwTest0020(void)
             return Status;
         }
 
-        /* Ensure that _PTS and _GTS have been executed */
+        /* Ensure that _PTS has been executed */
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\PTSA", SleepState)))
         {
             return Status;
@@ -1490,7 +1490,7 @@ AtHardwTest0021(void)
             return Status;
         }
 
-        Status = AcpiEnterSleepState(SleepState, ACPI_NO_OPTIONAL_METHODS);
+        Status = AcpiEnterSleepState(SleepState);
 
         if (ACPI_FAILURE(Status))
         {
