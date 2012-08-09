@@ -624,6 +624,7 @@ AcpiDecodePldBuffer (
 {
     ACPI_PLD_INFO           *PldInfo;
     UINT32                  *Buffer = ACPI_CAST_PTR (UINT32, InBuffer);
+    UINT32                  Dword;
 
 
     /* Parameter validation */
@@ -641,49 +642,50 @@ AcpiDecodePldBuffer (
 
     /* First 32-bit DWord */
 
-    PldInfo->Revision =             ACPI_PLD_GET_REVISION (Buffer);
-    PldInfo->IgnoreColor =          ACPI_PLD_GET_IGNORE_COLOR (Buffer);
-    PldInfo->Color =                ACPI_PLD_GET_COLOR (Buffer);
+    ACPI_MOVE_32_TO_32 (&Dword, &Buffer[0]);
+    PldInfo->Revision =             ACPI_PLD_GET_REVISION (&Dword);
+    PldInfo->IgnoreColor =          ACPI_PLD_GET_IGNORE_COLOR (&Dword);
+    PldInfo->Color =                ACPI_PLD_GET_COLOR (&Dword);
 
     /* Second 32-bit DWord */
 
-    Buffer++;
-    PldInfo->Width =                ACPI_PLD_GET_WIDTH (Buffer);
-    PldInfo->Height =               ACPI_PLD_GET_HEIGHT(Buffer);
+    ACPI_MOVE_32_TO_32 (&Dword, &Buffer[1]);
+    PldInfo->Width =                ACPI_PLD_GET_WIDTH (&Dword);
+    PldInfo->Height =               ACPI_PLD_GET_HEIGHT(&Dword);
 
     /* Third 32-bit DWord */
 
-    Buffer++;
-    PldInfo->UserVisible =          ACPI_PLD_GET_USER_VISIBLE (Buffer);
-    PldInfo->Dock =                 ACPI_PLD_GET_DOCK (Buffer);
-    PldInfo->Lid =                  ACPI_PLD_GET_LID (Buffer);
-    PldInfo->Panel =                ACPI_PLD_GET_PANEL (Buffer);
-    PldInfo->VerticalPosition =     ACPI_PLD_GET_VERTICAL (Buffer);
-    PldInfo->HorizontalPosition =   ACPI_PLD_GET_HORIZONTAL (Buffer);
-    PldInfo->Shape =                ACPI_PLD_GET_SHAPE (Buffer);
-    PldInfo->GroupOrientation =     ACPI_PLD_GET_ORIENTATION (Buffer);
-    PldInfo->GroupToken =           ACPI_PLD_GET_TOKEN (Buffer);
-    PldInfo->GroupPosition =        ACPI_PLD_GET_POSITION (Buffer);
-    PldInfo->Bay =                  ACPI_PLD_GET_BAY (Buffer);
+    ACPI_MOVE_32_TO_32 (&Dword, &Buffer[2]);
+    PldInfo->UserVisible =          ACPI_PLD_GET_USER_VISIBLE (&Dword);
+    PldInfo->Dock =                 ACPI_PLD_GET_DOCK (&Dword);
+    PldInfo->Lid =                  ACPI_PLD_GET_LID (&Dword);
+    PldInfo->Panel =                ACPI_PLD_GET_PANEL (&Dword);
+    PldInfo->VerticalPosition =     ACPI_PLD_GET_VERTICAL (&Dword);
+    PldInfo->HorizontalPosition =   ACPI_PLD_GET_HORIZONTAL (&Dword);
+    PldInfo->Shape =                ACPI_PLD_GET_SHAPE (&Dword);
+    PldInfo->GroupOrientation =     ACPI_PLD_GET_ORIENTATION (&Dword);
+    PldInfo->GroupToken =           ACPI_PLD_GET_TOKEN (&Dword);
+    PldInfo->GroupPosition =        ACPI_PLD_GET_POSITION (&Dword);
+    PldInfo->Bay =                  ACPI_PLD_GET_BAY (&Dword);
 
     /* Fourth 32-bit DWord */
 
-    Buffer++;
-    PldInfo->Ejectable =            ACPI_PLD_GET_EJECTABLE (Buffer);
-    PldInfo->OspmEjectRequired =    ACPI_PLD_GET_OSPM_EJECT (Buffer);
-    PldInfo->CabinetNumber =        ACPI_PLD_GET_CABINET (Buffer);
-    PldInfo->CardCageNumber =       ACPI_PLD_GET_CARD_CAGE (Buffer);
-    PldInfo->Reference =            ACPI_PLD_GET_REFERENCE (Buffer);
-    PldInfo->Rotation =             ACPI_PLD_GET_ROTATION (Buffer);
-    PldInfo->Order =                ACPI_PLD_GET_ORDER (Buffer);
+    ACPI_MOVE_32_TO_32 (&Dword, &Buffer[3]);
+    PldInfo->Ejectable =            ACPI_PLD_GET_EJECTABLE (&Dword);
+    PldInfo->OspmEjectRequired =    ACPI_PLD_GET_OSPM_EJECT (&Dword);
+    PldInfo->CabinetNumber =        ACPI_PLD_GET_CABINET (&Dword);
+    PldInfo->CardCageNumber =       ACPI_PLD_GET_CARD_CAGE (&Dword);
+    PldInfo->Reference =            ACPI_PLD_GET_REFERENCE (&Dword);
+    PldInfo->Rotation =             ACPI_PLD_GET_ROTATION (&Dword);
+    PldInfo->Order =                ACPI_PLD_GET_ORDER (&Dword);
 
     if (Length >= ACPI_PLD_BUFFER_SIZE)
     {
         /* Fifth 32-bit DWord (Revision 2 of _PLD) */
 
-        Buffer++;
-        PldInfo->VerticalOffset =       ACPI_PLD_GET_VERT_OFFSET (Buffer);
-        PldInfo->HorizontalOffset =     ACPI_PLD_GET_HORIZ_OFFSET (Buffer);
+        ACPI_MOVE_32_TO_32 (&Dword, &Buffer[4]);
+        PldInfo->VerticalOffset =       ACPI_PLD_GET_VERT_OFFSET (&Dword);
+        PldInfo->HorizontalOffset =     ACPI_PLD_GET_HORIZ_OFFSET (&Dword);
     }
 
     *ReturnBuffer = PldInfo;
