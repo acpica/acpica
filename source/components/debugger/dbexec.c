@@ -1353,6 +1353,17 @@ AcpiDbCreateExecutionThreads (
 
     AcpiDbExecuteSetup (&AcpiGbl_DbMethodInfo);
 
+    /* Get the NS node, determines existence also */
+
+    Status = AcpiGetHandle (NULL, AcpiGbl_DbMethodInfo.Pathname,
+        &AcpiGbl_DbMethodInfo.Method);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("%s Could not get handle for %s\n",
+            AcpiFormatException (Status), AcpiGbl_DbMethodInfo.Pathname);
+        goto CleanupAndExit;
+    }
+
     /* Create the threads */
 
     AcpiOsPrintf ("Creating %X threads to execute %X times each\n",
@@ -1375,6 +1386,8 @@ AcpiDbCreateExecutionThreads (
     AcpiDbSetOutputDestination (ACPI_DB_DUPLICATE_OUTPUT);
     AcpiOsPrintf ("All threads (%X) have completed\n", NumThreads);
     AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
+
+CleanupAndExit:
 
     /* Cleanup and exit */
 
