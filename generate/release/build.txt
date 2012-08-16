@@ -2,7 +2,7 @@
 Instructions to create a full release of the ACPICA software
 and utilities.
 
-Last update 11 July 2012.
+Last update 16 August 2012.
 
 Note: The build uses MS Visual Studio and Cygwin to accomplish the
 goal of releasing both Windows and Unix versions of the code
@@ -32,7 +32,6 @@ Sizes appear in the files size_rel.txt and size_dbg.txt
 Integrate code/data and debug/nodebug sizes into the release notes
 Add the release notes to the documents/changes.txt document
 
-Checkin the windows binaries
 Checkin documents/changes.txt
 Checkin the new version number, source/include/acpixf.h
 Git push everything
@@ -42,7 +41,7 @@ Tag the version file with a name of the form Rmm_dd_yy
     git push --tags
 
 Build the various tar/zip release files:
-    Convert .sh files to unix format: d2u *.sh
+    Convert the generate/release/.sh files to unix format: d2u *.sh
     On cygwin, execute generate/release/release.sh
 
 
@@ -53,18 +52,19 @@ Update ACPICA website
 Checkout the latest version of the website code:
     svn co https://umd.jf.intel.com/svn/repos/websites/acpica.org
 
+The main acpica.org directory is at: acpica.org/trunk/html
 Copy all tar/zip files from release/current to (acpica.org)/download
 Copy all changed documents from acpica/documents to (acpica.org)/download
 
 Update modules.php:
     Add a line for the 2nd previous version
-    Update previous_releases.php to the previous version
+    Update entry for previous_releases.php to the previous version
     Update current_version() to the current version
 
 Update version files:
     Create downloads/version-#.php <# == 2nd previous version>
         (copy from another version-#.php file and update it)
-    Update previous_releases.php for previous version
+    Update previous_releases.php for previous version number
 
 Windows source code:
     Create downloads/acpica-win-#.php for previous version
