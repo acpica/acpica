@@ -851,6 +851,10 @@ char *
 UtGetStringBuffer (
     UINT32                  Length);
 
+void
+UtExpandLineBuffers (
+    void);
+
 ACPI_STATUS
 UtInternalizeName (
     char                    *ExternalName,
