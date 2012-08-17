@@ -474,7 +474,7 @@ AcpiDbWalkForExecute (
     void                    **ReturnValue)
 {
     ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
-    ACPI_EXECUTE_WALK       *Info = (ACPI_EXECUTE_WALK *) Context;
+    ACPI_DB_EXECUTE_WALK    *Info = (ACPI_DB_EXECUTE_WALK *) Context;
     ACPI_BUFFER             ReturnObj;
     ACPI_STATUS             Status;
     char                    *Pathname;
@@ -574,7 +574,7 @@ void
 AcpiDbBatchExecute (
     char                    *CountArg)
 {
-    ACPI_EXECUTE_WALK       Info;
+    ACPI_DB_EXECUTE_WALK    Info;
 
 
     Info.Count = 0;
