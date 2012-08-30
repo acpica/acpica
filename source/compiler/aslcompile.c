@@ -872,6 +872,7 @@ CmCleanupAndExit (
     void)
 {
     UINT32                  i;
+    BOOLEAN                 DeleteAmlFile = FALSE;
 
 
     AePrintErrorLog (ASL_FILE_STDERR);
@@ -923,6 +924,16 @@ CmCleanupAndExit (
 
     UtDisplaySummary (ASL_FILE_STDOUT);
 
+    /*
+     * We will delete the AML file if there are errors and the
+     * force AML output option has not been used.
+     */
+    if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors) &&
+        Gbl_Files[ASL_FILE_AML_OUTPUT].Handle)
+    {
+        DeleteAmlFile = TRUE;
+    }
+
     /* Close all open files */
 
     Gbl_Files[ASL_FILE_PREPROCESSOR].Handle = NULL; /* the .i file is same as source file */
@@ -934,8 +945,7 @@ CmCleanupAndExit (
 
     /* Delete AML file if there are errors */
 
-    if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors) &&
-        Gbl_Files[ASL_FILE_AML_OUTPUT].Handle)
+    if (DeleteAmlFile)
     {
         if (remove (Gbl_Files[ASL_FILE_AML_OUTPUT].Filename))
         {
