@@ -333,7 +333,6 @@ AslInitialize (
     _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CrtSetDbgFlag(0));
 #endif
 
-    AcpiDbgLevel = 0;
 
     for (i = 0; i < ASL_NUM_FILES; i++)
     {
@@ -1033,6 +1032,7 @@ main (
 
 
     AcpiGbl_ExternalFileList = NULL;
+    AcpiDbgLevel = 0;
 
 #ifdef _DEBUG
     _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF |
