@@ -254,6 +254,10 @@ OpnDoMethod (
     Next = Next->Asl.Next;
     if (Next->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
     {
+        /* This is a ByteConstExpr, so eval the constant now */
+
+        OpcAmlConstantWalk (Next, 0, NULL);
+
         if (Next->Asl.Value.Integer > 15)
         {
             AslError (ASL_ERROR, ASL_MSG_SYNC_LEVEL, Next, NULL);
