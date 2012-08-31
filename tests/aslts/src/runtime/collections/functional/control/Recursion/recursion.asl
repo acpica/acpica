@@ -945,22 +945,27 @@ Method(m18b, 1)
 			Store(cnt0, max0)
 		}
 
-		Switch (arg0) {
-			Case (1) {
-				Store(ix00, Index(p100, ind1))
-				Increment(ind1)
-			}
-			Case (2) {
+		/*
+		 * Don't use Switch() here because we want this method to
+		 * be reentrant.
+		 */
+		if (LEqual(arg0, 1)) {
+			Store(ix00, Index(p100, ind1))
+			Increment(ind1)
+		} else {
+			if (LEqual(arg0, 2)) {
 				Store(ix00, Index(p200, ind2))
 				Increment(ind2)
-			}
-			Case (3) {
-				Store(ix00, Index(p300, ind3))
-				Increment(ind3)
-			}
-			Case (4) {
-				Store(ix00, Index(p400, ind4))
-				Increment(ind4)
+			} else {
+				if (LEqual(arg0, 3)) {
+					Store(ix00, Index(p300, ind3))
+					Increment(ind3)
+				} else {
+					if (LEqual(arg0, 4)) {
+						Store(ix00, Index(p400, ind4))
+						Increment(ind4)
+					}
+				}
 			}
 		}
 
@@ -1937,9 +1942,9 @@ Method(m1ee)
 			}
 		}
 		if (arg0) {
-			Store(0x66667777, i2z8)
+			Store(0x66667777, \_SB.i0q8)
 		} else {
-			Store(0x44445555, i2z8)
+			Store(0x44445555, \_SB.i0q8)
 		}
 	}
 
@@ -1991,9 +1996,9 @@ Method(m1ef)
 		}
 
 		if (arg0) {
-			Store(0x66667777, i2z8)
+			Store(0x66667777, \_SB.i0q9)
 		} else {
-			Store(0x44445555, i2z8)
+			Store(0x44445555, \_SB.i0q9)
 		}
 	}
 
@@ -2044,9 +2049,9 @@ Method(m1bf)
 			}
 		}
 		if (arg0) {
-			Store(0x66667777, i2z8)
+			Store(0x66667777, \_SB.i1q8)
 		} else {
-			Store(0x44445555, i2z8)
+			Store(0x44445555, \_SB.i1q8)
 		}
 	}
 
@@ -2097,9 +2102,9 @@ Method(m1dd)
 			}
 		}
 		if (arg0) {
-			Store(0x66667777, i2z8)
+			Store(0x66667777, \_SB.i1q9)
 		} else {
-			Store(0x44445555, i2z8)
+			Store(0x44445555, \_SB.i1q9)
 		}
 	}
 
