@@ -947,26 +947,15 @@ CmCleanupAndExit (
 
     if (DeleteAmlFile)
     {
-        if (remove (Gbl_Files[ASL_FILE_AML_OUTPUT].Filename))
-        {
-            printf ("%s: ",
-                Gbl_Files[ASL_FILE_AML_OUTPUT].Filename);
-            perror ("Could not delete AML file");
-        }
+        FlDeleteFile (ASL_FILE_AML_OUTPUT);
     }
 
     /* Delete the preprocessor output file (.i) unless -li flag is set */
 
     if (!Gbl_PreprocessorOutputFlag &&
-        Gbl_PreprocessFlag &&
-        Gbl_Files[ASL_FILE_PREPROCESSOR].Filename)
+        Gbl_PreprocessFlag)
     {
-        if (remove (Gbl_Files[ASL_FILE_PREPROCESSOR].Filename))
-        {
-            printf ("%s: ",
-                Gbl_Files[ASL_FILE_PREPROCESSOR].Filename);
-            perror ("Could not delete preprocessor .i file");
-        }
+        FlDeleteFile (ASL_FILE_PREPROCESSOR);
     }
 
     /*
@@ -983,14 +972,9 @@ CmCleanupAndExit (
      *
      * TBD: SourceOutput should be .TMP, then rename if we want to keep it?
      */
-    if (!Gbl_SourceOutputFlag && Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Filename)
+    if (!Gbl_SourceOutputFlag)
     {
-        if (remove (Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Filename))
-        {
-            printf ("%s: ",
-                Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Filename);
-            perror ("Could not delete SRC file");
-        }
+        FlDeleteFile (ASL_FILE_SOURCE_OUTPUT);
     }
 }
 

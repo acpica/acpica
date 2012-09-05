@@ -126,31 +126,6 @@
         ACPI_MODULE_NAME    ("aslutils")
 
 
-char                        AslHexLookup[] =
-{
-    '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
-};
-
-/* Table below must match ASL_FILE_TYPES in asltypes.h */
-
-static const char       *AslFileTypeNames [ASL_NUM_FILES] =
-{
-    "stdout:       ",
-    "stderr:       ",
-    "Table Input:  ",
-    "Binary Output:",
-    "Source Output:",
-    "Preprocessor: ",
-    "Listing File: ",
-    "Hex Dump:     ",
-    "Namespace:    ",
-    "Debug File:   ",
-    "ASM Source:   ",
-    "C Source:     ",
-    "ASM Include:  ",
-    "C Include:    "
-};
-
 
 /* Local prototypes */
 
@@ -619,7 +594,7 @@ UtDisplaySummary (
         }
 
         FlPrintFile (FileId, "%14s %s - %u bytes\n",
-            AslFileTypeNames [i],
+            Gbl_Files[i].ShortDescription,
             Gbl_Files[i].Filename, FlGetFileSize (i));
     }
 

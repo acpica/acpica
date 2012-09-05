@@ -120,6 +120,7 @@
 #include "aslcompiler.h"
 #include "acapps.h"
 #include "acdisasm.h"
+#include <signal.h>
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -141,6 +142,10 @@ FilenameHelp (
 static void
 Usage (
     void);
+
+static void ACPI_SYSTEM_XFACE
+AslSignalHandler (
+    int                     Sig);
 
 static void
 AslInitialize (
@@ -307,6 +312,49 @@ Usage (
     printf ("%s\n\n", ASL_COMPLIANCE);
     ACPI_USAGE_HEADER ("iasl [Options] [Files]");
     Options ();
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AslSignalHandler
+ *
+ * PARAMETERS:  Sig                 - Signal that invoked this handler
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Control-C handler. Delete any intermediate files and any
+ *              output files that may be left in an indeterminate state.
+ *
+ *****************************************************************************/
+
+static void ACPI_SYSTEM_XFACE
+AslSignalHandler (
+    int                     Sig)
+{
+    UINT32                  i;
+
+
+    signal (Sig, SIG_IGN);
+    printf ("Aborting\n\n");
+
+    /* Close all open files */
+
+    Gbl_Files[ASL_FILE_PREPROCESSOR].Handle = NULL; /* the .i file is same as source file */
+
+    for (i = ASL_FILE_INPUT; i < ASL_MAX_FILE_TYPE; i++)
+    {
+        FlCloseFile (i);
+    }
+
+    /* Delete any output files */
+
+    for (i = ASL_FILE_AML_OUTPUT; i < ASL_MAX_FILE_TYPE; i++)
+    {
+        FlDeleteFile (i);
+    }
+
+    exit (0);
 }
 
 
@@ -1030,6 +1078,8 @@ main (
     int                     Index1;
     int                     Index2;
 
+
+    signal (SIGINT, AslSignalHandler);
 
     AcpiGbl_ExternalFileList = NULL;
     AcpiDbgLevel = 0;

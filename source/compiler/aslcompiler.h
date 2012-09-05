@@ -733,6 +733,10 @@ FlPrintFile (
     ...);
 
 void
+FlDeleteFile (
+    UINT32                  FileId);
+
+void
 FlSetLineNumber (
     UINT32                  LineNumber);
 
