@@ -174,6 +174,7 @@ enum AcpiExDebuggerCommands
     CMD_DISASSEMBLE,
     CMD_DUMP,
     CMD_ENABLEACPI,
+    CMD_EVALUATE,
     CMD_EVENT,
     CMD_EXECUTE,
     CMD_EXIT,
@@ -243,6 +244,7 @@ static const ACPI_DB_COMMAND_INFO   AcpiGbl_DbCommands[] =
     {"DISASSEMBLE",  1},
     {"DUMP",         1},
     {"ENABLEACPI",   0},
+    {"EVALUATE",     1},
     {"EVENT",        1},
     {"EXECUTE",      1},
     {"EXIT",         0},
@@ -352,6 +354,7 @@ static const ACPI_DB_COMMAND_HELP   AcpiGbl_DbCommandHelp[] =
     {1, "  Breakpoint <AmlOffset>",            "Set an AML execution breakpoint\n"},
     {1, "  Call",                              "Run to next control method invocation\n"},
     {1, "  Debug <Namepath> [Arguments]",      "Single Step a control method\n"},
+    {6, "  Evaluate",                          "Synonym for Execute\n"},
     {5, "  Execute <Namepath> [Arguments]",    "Execute control method\n"},
     {1, "     Hex Integer",                    "Integer method argument\n"},
     {1, "     \"Ascii String\"",               "String method argument\n"},
@@ -888,6 +891,7 @@ AcpiDbCommandDispatch (
         AcpiOsPrintf ("Event command not implemented\n");
         break;
 
+    case CMD_EVALUATE:
     case CMD_EXECUTE:
         AcpiDbExecute (AcpiGbl_DbArgs[1],
             &AcpiGbl_DbArgs[2], &AcpiGbl_DbArgTypes[2], EX_NO_SINGLE_STEP);

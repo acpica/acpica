@@ -591,7 +591,7 @@ AcpiDbBatchExecute (
     (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                 AcpiDbWalkForExecute, NULL, (void *) &Info, NULL);
 
-    AcpiOsPrintf ("Executed %u predefined names in the namespace\n", Info.Count);
+    AcpiOsPrintf ("Evaluated %u predefined names in the namespace\n", Info.Count);
 }
 
 #endif /* ACPI_DEBUGGER */
