@@ -250,9 +250,11 @@ Method(m22c)
 		if (LNotEqual(bf90, 0x77)) {
 			err(ts, z111, 2, 0, 0, bf90, 0x77)
 		}
+		Store(0x2b, bf90)
+
 		CopyObject(0x9999992b, bf90)
-		if (LNotEqual(bf90, 0x2b)) {
-			err(ts, z111, 3, 0, 0, bf90, 0x2b)
+		if (LNotEqual(bf90, 0x9999992b)) {
+			err(ts, z111, 3, 0, 0, bf90, 0x9999992b)
 		}
 	}
 
@@ -388,8 +390,8 @@ Method(m234)
 			err(ts, z111, 2, 0, 0, bf90, 0x77)
 		}
 		CopyObject(0x9999992b, bf90)
-		if (LNotEqual(bf90, 0x2b)) {
-			err(ts, z111, 3, 0, 0, bf90, 0x2b)
+		if (LNotEqual(bf90, 0x9999992b)) {
+			err(ts, z111, 3, 0, 0, bf90, 0x9999992b)
 		}
 	}
 
