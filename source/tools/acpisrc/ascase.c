@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: ascase - Source conversion - lower/upper case utilities

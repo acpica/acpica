@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
@@ -169,6 +168,7 @@ BOOLEAN                 Gbl_Overwrite = FALSE;
 BOOLEAN                 Gbl_WidenDeclarations = FALSE;
 BOOLEAN                 Gbl_IgnoreLoneLineFeeds = FALSE;
 BOOLEAN                 Gbl_HasLoneLineFeeds = FALSE;
+BOOLEAN                 Gbl_Cleanup = FALSE;
 
 
 /******************************************************************************
@@ -418,6 +418,7 @@ main (
 
         printf ("Code cleanup\n");
         ConversionTable = &CleanupConversionTable;
+        Gbl_Cleanup = TRUE;
         break;
 
     case 'h':

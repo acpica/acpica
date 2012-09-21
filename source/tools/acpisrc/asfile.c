@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
@@ -131,6 +130,11 @@ BOOLEAN
 AsDetectLoneLineFeeds (
     char                    *Filename,
     char                    *Buffer);
+
+static void
+AsRemoveExtraLines (
+    char                    *FileBuffer,
+    char                    *Filename);
 
 static ACPI_INLINE int
 AsMaxInt (int a, int b)
@@ -358,6 +362,45 @@ AsDetectLoneLineFeeds (
 
 /******************************************************************************
  *
+ * FUNCTION:    AsRemoveExtraLines
+ *
+ * DESCRIPTION: Remove all extra lines at the start and end of the file.
+ *
+ ******************************************************************************/
+
+static void
+AsRemoveExtraLines (
+    char                    *FileBuffer,
+    char                    *Filename)
+{
+    char                    *FileEnd;
+    int                     Length;
+
+
+    /* Remove any extra lines at the start of the file */
+
+    while (*FileBuffer == '\n')
+    {
+        printf ("Removing extra line at start of file: %s\n", Filename);
+        AsRemoveData (FileBuffer, FileBuffer + 1);
+    }
+
+    /* Remove any extra lines at the end of the file */
+
+    Length = strlen (FileBuffer);
+    FileEnd = FileBuffer + (Length - 2);
+
+    while (*FileEnd == '\n')
+    {
+        printf ("Removing extra line at end of file: %s\n", Filename);
+        AsRemoveData (FileEnd, FileEnd + 1);
+        FileEnd--;
+    }
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AsConvertFile
  *
  * DESCRIPTION: Perform the requested transforms on the file buffer (as
@@ -411,6 +454,11 @@ AsConvertFile (
     Gbl_Files++;
     VERBOSE_PRINT (("Processing %u bytes\n",
         (unsigned int) strlen (FileBuffer)));
+
+    if (Gbl_Cleanup)
+    {
+        AsRemoveExtraLines (FileBuffer, Filename);
+    }
 
     if (ConversionTable->LowerCaseTable)
     {

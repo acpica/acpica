@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
@@ -207,6 +206,7 @@ extern BOOLEAN                  Gbl_Overwrite;
 extern BOOLEAN                  Gbl_WidenDeclarations;
 extern BOOLEAN                  Gbl_IgnoreLoneLineFeeds;
 extern BOOLEAN                  Gbl_HasLoneLineFeeds;
+extern BOOLEAN                  Gbl_Cleanup;
 extern void                     *Gbl_StructDefs;
 
 #define PARAM_LIST(pl)          pl
@@ -474,5 +474,3 @@ AsInsertCarriageReturns (
 void
 AsConvertToLineFeeds (
     char                    *Buffer);
-
-

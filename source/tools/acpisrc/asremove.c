@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: asremove - Source conversion - removal functions
