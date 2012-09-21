@@ -3,10 +3,22 @@
 # Generate acpisrc utility
 #
 
+identify_bits()
+{
+	arch=`uname -m`
+	no64=`echo ${arch%64}`
+
+	if [ "x$arch" != "x$no64" ] ; then
+		echo 64
+	else
+		echo 32
+	fi
+}
+
 git_root=$1
+bits=`identify_bits`
 
 mkdir -p bin
-cp $git_root/generate/linux/Makefile.acpisrc $git_root/source/tools/acpisrc/Makefile
-cp $git_root/source/os_specific/service_layers/osunixdir.c $git_root/source/tools/acpisrc
-make -C $git_root/source/tools/acpisrc
-cp $git_root/source/tools/acpisrc/acpisrc bin
+make -C $git_root acpisrc
+cp $git_root/generate/unix/bin$bits/acpisrc bin
+
