@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths

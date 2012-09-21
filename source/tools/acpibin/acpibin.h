@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: acpibinh - Include file for AcpiBin utility
@@ -182,4 +181,3 @@ AbComputeChecksum (
 void
 AbDisplayHeader (
     char                    *File1Path);
-

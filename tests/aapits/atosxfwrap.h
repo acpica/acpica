@@ -340,4 +340,3 @@ AcpiOsActualDbgAssert(
     char                    *Message);
 
 #endif /* _AT_OSXF_WRAP */
-

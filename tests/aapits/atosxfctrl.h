@@ -398,4 +398,3 @@ OsxfCtrlRetError(
     ACPI_OSXF               OsxfNum);
 
 #endif /* _ATOSXFCTRL */
-

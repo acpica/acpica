@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: aslstubs - Stubs used to link to Aml interpreter

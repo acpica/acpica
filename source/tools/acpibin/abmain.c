@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: abmain - Main module for the acpi binary utility

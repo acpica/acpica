@@ -1,4 +1,3 @@
-
 /*
  * ACPICA API Test Suite.
  * Support for testing of invalid handle processing.

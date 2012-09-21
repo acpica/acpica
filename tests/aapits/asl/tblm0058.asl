@@ -1,4 +1,3 @@
-
 DefinitionBlock(
 	"tblm0058.aml",   // Output filename
 	"DSDT",     // Signature

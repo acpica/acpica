@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file for iASL
@@ -1200,4 +1199,3 @@ DtCreateTemplates (
     char                    *Signature);
 
 #endif /*  __ASLCOMPILER_H */
-

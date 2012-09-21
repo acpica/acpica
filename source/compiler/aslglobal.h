@@ -1,5 +1,3 @@
-
-
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
@@ -326,4 +324,3 @@ ASL_EXTERN char                     StringBuffer2[ASL_MSG_BUFFER_SIZE];
 
 
 #endif /* __ASLGLOBAL_H */
-

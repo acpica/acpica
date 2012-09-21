@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: aslrestype1 - Miscellaneous small resource descriptors

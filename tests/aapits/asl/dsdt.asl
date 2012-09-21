@@ -8048,4 +8048,3 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "INTEL ", "CALISTGA", 0x06040000)
         }
     }
 }
-

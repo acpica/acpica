@@ -1,4 +1,3 @@
-
 DefinitionBlock(
 	"init0066.aml",   // Output filename
 	"DSDT",     // Signature

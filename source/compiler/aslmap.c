@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table

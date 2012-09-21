@@ -2006,4 +2006,3 @@ AtAuxiliarySsdt(
     }
     return (Status);
 }
-

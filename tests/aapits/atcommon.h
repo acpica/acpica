@@ -397,4 +397,3 @@ AtAuxiliarySsdt(
     UINT32                  Action);
 
 #endif /* _ATCOMMON */
-

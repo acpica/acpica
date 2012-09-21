@@ -1272,5 +1272,3 @@ AcpiOsSignal (
 
     return (Status);
 }
-
-

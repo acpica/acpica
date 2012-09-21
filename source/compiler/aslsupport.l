@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: aslsupport.l - Flex/lex scanner C support routines.

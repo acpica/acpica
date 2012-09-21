@@ -4317,4 +4317,3 @@ AtInitTest0066(void)
 
     return (AE_OK);
 }
-

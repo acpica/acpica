@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: aslstartup - Compiler startup routines, called from main
