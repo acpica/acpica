@@ -790,14 +790,14 @@ LkCrossReferenceNamespace (
     WalkState = AcpiDsCreateWalkState (0, NULL, NULL, NULL);
     if (!WalkState)
     {
-        return AE_NO_MEMORY;
+        return (AE_NO_MEMORY);
     }
 
     /* Walk the entire parse tree */
 
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, LkNamespaceLocateBegin,
                         LkNamespaceLocateEnd, WalkState);
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -1469,5 +1469,3 @@ LkNamespaceLocateEnd (
 
     return (AE_OK);
 }
-
-

@@ -126,7 +126,6 @@
         ACPI_MODULE_NAME    ("aslutils")
 
 
-
 /* Local prototypes */
 
 static void
@@ -641,7 +640,7 @@ UtCheckIntegerRange (
 
     if (!Op)
     {
-        return NULL;
+        return (NULL);
     }
 
     if ((Op->Asl.Value.Integer < LowValue) ||

@@ -461,7 +461,7 @@ AslDoResponseFile (
     {
         printf ("Could not open command file %s, %s\n",
             Filename, strerror (errno));
-        return -1;
+        return (-1);
     }
 
     /* Must save the current GetOpt globals */
@@ -1142,5 +1142,3 @@ main (
 
     return (0);
 }
-
-

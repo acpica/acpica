@@ -526,5 +526,3 @@ LnAdjustLengthToRoot (
     Gbl_TableLength -= LengthDelta;
 }
 #endif
-
-

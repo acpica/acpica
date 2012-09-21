@@ -230,10 +230,10 @@ AbValidateHeader (
     if (!AcpiUtValidAcpiName (* (UINT32 *) &Header->Signature))
     {
         printf ("Header signature is invalid\n");
-        return FALSE;
+        return (FALSE);
     }
 
-    return TRUE;
+    return (TRUE);
 }
 
 
@@ -470,14 +470,14 @@ AbCompareAmlFiles (
     if (!File1)
     {
         printf ("Could not open file %s\n", File1Path);
-        return -1;
+        return (-1);
     }
 
     File2 = fopen (File2Path, "rb");
     if (!File2)
     {
         printf ("Could not open file %s\n", File2Path);
-        return -1;
+        return (-1);
     }
 
     /* Read the ACPI header from each file */
@@ -486,20 +486,20 @@ AbCompareAmlFiles (
     if (Actual1 < sizeof (ACPI_TABLE_HEADER))
     {
         printf ("File %s does not contain an ACPI table header\n", File1Path);
-        return -1;
+        return (-1);
     }
 
     Actual2 = fread (&Header2, 1, sizeof (ACPI_TABLE_HEADER), File2);
     if (Actual2 < sizeof (ACPI_TABLE_HEADER))
     {
         printf ("File %s does not contain an ACPI table header\n", File2Path);
-        return -1;
+        return (-1);
     }
 
     if ((!AbValidateHeader (&Header1)) ||
         (!AbValidateHeader (&Header2)))
     {
-        return -1;
+        return (-1);
     }
 
     /* Table signatures must match */
@@ -507,7 +507,7 @@ AbCompareAmlFiles (
     if (*((UINT32 *) Header1.Signature) != *((UINT32 *) Header2.Signature))
     {
         printf ("Table signatures do not match\n");
-        return -1;
+        return (-1);
     }
 
     if (!Gbl_TerseMode)
@@ -540,7 +540,7 @@ AbCompareAmlFiles (
             if (Mismatches > 100)
             {
                 printf ("100 Mismatches: Too many mismatches\n");
-                return -1;
+                return (-1);
             }
         }
 
@@ -572,7 +572,7 @@ AbCompareAmlFiles (
     }
 
     printf ("%u Mismatches found\n", Mismatches);
-    return 0;
+    return (0);
 }
 
 
@@ -600,7 +600,7 @@ AbGetFile (
     if (!FileHandle)
     {
         printf ("Could not open %s\n", Filename);
-        return NULL;
+        return (NULL);
     }
 
     /* Need file size to allocate a buffer */
@@ -668,12 +668,12 @@ AbDumpAmlFile (
     if (!FileOutHandle)
     {
         printf ("Could not open %s\n", File2Path);
-        return -1;
+        return (-1);
     }
 
     if (!AbValidateHeader ((ACPI_TABLE_HEADER *) FileBuffer))
     {
-        return -1;
+        return (-1);
     }
 
     /* Convert binary AML to text, using common dump buffer routine */
@@ -686,7 +686,7 @@ AbDumpAmlFile (
     AcpiUtDumpBuffer ((UINT8 *) FileBuffer, FileSize,
         DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
-    return 0;
+    return (0);
 }
 
 
@@ -720,14 +720,14 @@ AbExtractAmlFile (
     if (!FileHandle)
     {
         printf ("Could not open %s\n", File1Path);
-        return -1;
+        return (-1);
     }
 
     FileOutHandle = fopen (File2Path, "w+b");
     if (!FileOutHandle)
     {
         printf ("Could not open %s\n", File2Path);
-        return -1;
+        return (-1);
     }
 
     /* Force input table sig to uppercase */
@@ -797,13 +797,13 @@ AbExtractAmlFile (
 
     printf ("Could not match table signature\n");
     fclose (FileHandle);
-    return -1;
+    return (-1);
 
 Exit:
     printf ("%u (0x%X) bytes written to %s\n", Count, Count, File2Path);
     fclose (FileHandle);
     fclose (FileOutHandle);
-    return 0;
+    return (0);
 }
 
 
@@ -819,7 +819,7 @@ ACPI_PHYSICAL_ADDRESS
 AeLocalGetRootPointer (
     void)
 {
-    return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_THREAD_ID

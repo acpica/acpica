@@ -226,7 +226,7 @@ AsExaminePaths (
     if (Status)
     {
         printf ("Source path \"%s\" does not exist\n", Source);
-        return -1;
+        return (-1);
     }
 
     /* Return the filetype -- file or a directory */
@@ -243,7 +243,7 @@ AsExaminePaths (
     if ((ConversionTable->Flags & FLG_NO_FILE_OUTPUT) ||
         (Gbl_BatchMode))
     {
-        return 0;
+        return (0);
     }
 
     if (!AsStricmp (Source, Target))
@@ -255,7 +255,7 @@ AsExaminePaths (
 
         if (Response != 'y')
         {
-            return -1;
+            return (-1);
         }
 
         Gbl_Overwrite = TRUE;
@@ -272,12 +272,12 @@ AsExaminePaths (
 
             if (Response != 'y')
             {
-                return -1;
+                return (-1);
             }
         }
     }
 
-    return 0;
+    return (0);
 }
 
 
@@ -397,7 +397,7 @@ main (
     if (argc < 2)
     {
         AsDisplayUsage ();
-        return 0;
+        return (0);
     }
 
     /* Command line options */
@@ -465,7 +465,7 @@ main (
 
     default:
         AsDisplayUsage ();
-        return -1;
+        return (-1);
     }
 
 
@@ -474,7 +474,7 @@ main (
     {
         printf ("Missing source path\n");
         AsDisplayUsage ();
-        return -1;
+        return (-1);
     }
 
     TargetPath = argv[AcpiGbl_Optind+1];
@@ -502,7 +502,7 @@ main (
 
     if (AsExaminePaths (ConversionTable, SourcePath, TargetPath, &FileType))
     {
-        return -1;
+        return (-1);
     }
 
     /* Source/target can be either directories or a files */
@@ -533,5 +533,5 @@ main (
 
     AsDisplayStats ();
 
-    return 0;
+    return (0);
 }

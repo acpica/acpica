@@ -1256,5 +1256,3 @@ OpnGenerateAmlOperands (
 
     OpnAttachNameToNode (Op);
 }
-
-

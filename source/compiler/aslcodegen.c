@@ -661,5 +661,3 @@ CgWriteNode (
         break;
     }
 }
-
-

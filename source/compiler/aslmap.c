@@ -523,5 +523,3 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /*! [End] no source code translation !*/
 
 };
-
-

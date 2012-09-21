@@ -842,4 +842,3 @@ AeMiscellaneousTests (
 
 #endif /* !ACPI_REDUCED_HARDWARE */
 }
-

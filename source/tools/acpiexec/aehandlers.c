@@ -1438,5 +1438,3 @@ DoFunction:
 
     return (AE_OK);
 }
-
-

@@ -344,4 +344,3 @@ main (
      */
     return (NsDumpEntireNamespace (argv[AcpiGbl_Optind]));
 }
-

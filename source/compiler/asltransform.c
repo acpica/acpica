@@ -850,5 +850,3 @@ TrDoSwitch (
     BreakOp->Asl.Parent = StartNode;
     TrAmlInsertPeer (Conditional, BreakOp);
 }
-
-

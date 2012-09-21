@@ -855,5 +855,5 @@ AslCompilererror (
         Gbl_CurrentColumn, Gbl_Files[ASL_FILE_INPUT].Filename,
         ACPI_CAST_PTR (char, CompilerMessage));
 
-    return 0;
+    return (0);
 }

@@ -722,4 +722,3 @@ RsDoVendorSmallDescriptor (
     Descriptor->VendorSmall.DescriptorType |= (UINT8) i;
     return (Rnode);
 }
-

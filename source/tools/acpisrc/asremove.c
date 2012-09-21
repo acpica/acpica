@@ -684,5 +684,3 @@ AsRemoveDebugMacros (
     AsReplaceString ("return_acpi_status",  "return", REPLACE_WHOLE_WORD, Buffer);
     AsReplaceString ("return_VALUE",        "return", REPLACE_WHOLE_WORD, Buffer);
 }
-
-

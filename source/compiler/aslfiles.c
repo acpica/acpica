@@ -135,7 +135,6 @@ FlParseInputPathname (
 #endif
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AslAbort
@@ -1219,5 +1218,3 @@ FlParseInputPathname (
     return (AE_OK);
 }
 #endif
-
-

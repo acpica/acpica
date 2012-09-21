@@ -181,7 +181,7 @@ main (
     if (argc < 2)
     {
         AbDisplayUsage (0);
-        return 0;
+        return (0);
     }
 
     /* Command line options */
@@ -193,7 +193,7 @@ main (
         if (argc < 4)
         {
             AbDisplayUsage (2);
-            return -1;
+            return (-1);
         }
 
         Status = AbCompareAmlFiles (AcpiGbl_Optarg, argv[AcpiGbl_Optind]);
@@ -204,7 +204,7 @@ main (
         if (argc < 4)
         {
             AbDisplayUsage (2);
-            return -1;
+            return (-1);
         }
 
         Status = AbDumpAmlFile (AcpiGbl_Optarg, argv[AcpiGbl_Optind]);
@@ -215,7 +215,7 @@ main (
         if (argc < 5)
         {
             AbDisplayUsage (3);
-            return -1;
+            return (-1);
         }
 
         Status = AbExtractAmlFile (AcpiGbl_Optarg, argv[AcpiGbl_Optind],
@@ -227,7 +227,7 @@ main (
         if (argc < 3)
         {
             AbDisplayUsage (1);
-            return -1;
+            return (-1);
         }
 
         AbDisplayHeader (AcpiGbl_Optarg);
@@ -238,7 +238,7 @@ main (
         if (argc < 3)
         {
             AbDisplayUsage (1);
-            return -1;
+            return (-1);
         }
 
         AbComputeChecksum (AcpiGbl_Optarg);
@@ -251,7 +251,7 @@ main (
 
     default:
         AbDisplayUsage (0);
-        return -1;
+        return (-1);
     }
 
     return Status;

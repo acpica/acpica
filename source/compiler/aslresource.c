@@ -470,7 +470,7 @@ RsGetStringDataLength (
         InitializerOp = ASL_GET_PEER_NODE (InitializerOp);
     }
 
-    return 0;
+    return (0);
 }
 
 
@@ -1001,7 +1001,7 @@ RsLinkDescriptorChain (
 
     if (!Rnode)
     {
-        return 0;
+        return (0);
     }
 
     /* Point the previous node to the new node */
@@ -1021,7 +1021,7 @@ RsLinkDescriptorChain (
     /* Previous node becomes the last node in the chain */
 
     *PreviousRnode = LastRnode;
-    return CurrentByteOffset;
+    return (CurrentByteOffset);
 }
 
 

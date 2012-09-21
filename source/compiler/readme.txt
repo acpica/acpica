@@ -79,8 +79,11 @@ c:\"Program Files" directory. This is a bug in Bison. The default
 Windows project file for iASL assumes that these tools are
 installed at c:\GnuWin32.
 
-When installed, ensure that c:\GnuWin32\bin is added to the default
-system $PATH environment variable.
+Once the tools are installed, ensure that c:\GnuWin32\bin is added to the
+default system $PATH environment variable.
+
+At this point, you will need to reboot Windows to make system aware of the
+updated $PATH.
 
 iASL has been generated with these versions on Windows:
 

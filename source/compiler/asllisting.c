@@ -551,7 +551,7 @@ LsPopNode (
     {
         AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, NULL,
             "Could not pop empty listing stack");
-        return Gbl_ListingNode;
+        return (Gbl_ListingNode);
     }
 
     Gbl_ListingNode = Lnode->Next;
@@ -1610,5 +1610,3 @@ LsDoHexOutputAsm (
 
     FlPrintFile (ASL_FILE_HEX_OUTPUT, "\n");
 }
-
-

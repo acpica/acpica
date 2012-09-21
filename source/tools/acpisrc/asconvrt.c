@@ -218,7 +218,7 @@ AsCheckAndSkipLiterals (
 
         if (!LiteralEnd)
         {
-            return SubBuffer;
+            return (SubBuffer);
         }
 
         while (SubBuffer < LiteralEnd)
@@ -242,7 +242,7 @@ AsCheckAndSkipLiterals (
         LiteralEnd = AsSkipPastChar (SubBuffer, '\"');
         if (!LiteralEnd)
         {
-            return SubBuffer;
+            return (SubBuffer);
         }
     }
 
@@ -250,7 +250,7 @@ AsCheckAndSkipLiterals (
     {
         (*TotalLines) += NewLines;
     }
-    return SubBuffer;
+    return (SubBuffer);
 }
 
 
@@ -508,7 +508,7 @@ AsReplaceString (
         SubString1 = strstr (SubBuffer, Target);
         if (!SubString1)
         {
-            return ReplaceCount;
+            return (ReplaceCount);
         }
 
         /*
@@ -527,7 +527,7 @@ AsReplaceString (
             {
                 /* Didn't find terminator */
 
-                return ReplaceCount;
+                return (ReplaceCount);
             }
 
             /* Move buffer to end of escape block and continue */
@@ -560,7 +560,7 @@ AsReplaceString (
         }
     }
 
-    return ReplaceCount;
+    return (ReplaceCount);
 }
 
 
@@ -1109,7 +1109,7 @@ AsCountLines (
         if (!EndOfLine)
         {
             Gbl_TotalLines += LineCount;
-            return LineCount;
+            return (LineCount);
         }
 
         if ((EndOfLine - SubBuffer) > 80)
@@ -1129,7 +1129,7 @@ AsCountLines (
     }
 
     Gbl_TotalLines += LineCount;
-    return LineCount;
+    return (LineCount);
 }
 
 
@@ -1516,5 +1516,3 @@ Exit:
     }
 }
 #endif
-
-

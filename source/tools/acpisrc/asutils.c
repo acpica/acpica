@@ -135,7 +135,7 @@ AsSkipUntilChar (
     {
         if (!*Buffer)
         {
-            return NULL;
+            return (NULL);
         }
 
         Buffer++;
@@ -164,7 +164,7 @@ AsSkipPastChar (
     {
         if (!*Buffer)
         {
-            return NULL;
+            return (NULL);
         }
 
         Buffer++;
@@ -303,4 +303,3 @@ AsRemoveData (
 
     return (StartPointer);
 }
-

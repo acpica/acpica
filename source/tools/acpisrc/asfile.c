@@ -260,7 +260,7 @@ AsProcessTree (
             if (errno != EEXIST)
             {
                 printf ("Could not create target directory\n");
-                return -1;
+                return (-1);
             }
         }
     }
@@ -295,7 +295,7 @@ AsProcessTree (
     AsDoWildcard (ConversionTable, SourcePath, TargetPath, MaxPathLength,
             FILE_TYPE_DIRECTORY, "*");
 
-    return 0;
+    return (0);
 }
 
 
@@ -319,7 +319,7 @@ AsDetectLoneLineFeeds (
 
     if (!Buffer[0])
     {
-        return FALSE;
+        return (FALSE);
     }
 
     while (Buffer[i])
@@ -349,7 +349,7 @@ AsDetectLoneLineFeeds (
         {
             printf ("%s: %u lone linefeeds in file\n", Filename, LfCount);
         }
-        return TRUE;
+        return (TRUE);
     }
 
     return (FALSE);
@@ -610,7 +610,7 @@ AsProcessOneFile (
     if (!Pathname)
     {
         printf ("Could not allocate buffer for file pathnames\n");
-        return -1;
+        return (-1);
     }
 
     Gbl_FileType = FileType;
@@ -627,7 +627,7 @@ AsProcessOneFile (
 
     if (AsGetFile (Pathname, &Gbl_FileBuffer, &Gbl_FileSize))
     {
-        return -1;
+        return (-1);
     }
 
     Gbl_HeaderSize = 0;
@@ -669,7 +669,7 @@ AsProcessOneFile (
             if (!OutPathname)
             {
                 printf ("Could not allocate buffer for file pathnames\n");
-                return -1;
+                return (-1);
             }
 
             strcpy (OutPathname, TargetPath);
@@ -690,7 +690,7 @@ AsProcessOneFile (
         free (OutPathname);
     }
 
-    return 0;
+    return (0);
 }
 
 
@@ -719,14 +719,14 @@ AsCheckForDirectory (
     if (!(strcmp (Filename, ".")) ||
         !(strcmp (Filename, "..")))
     {
-        return -1;
+        return (-1);
     }
 
     SrcPath = calloc (strlen (SourceDirPath) + strlen (Filename) + 2, 1);
     if (!SrcPath)
     {
         printf ("Could not allocate buffer for directory source pathname\n");
-        return -1;
+        return (-1);
     }
 
     TgtPath = calloc (strlen (TargetDirPath) + strlen (Filename) + 2, 1);
@@ -734,7 +734,7 @@ AsCheckForDirectory (
     {
         printf ("Could not allocate buffer for directory target pathname\n");
         free (SrcPath);
-        return -1;
+        return (-1);
     }
 
     strcpy (SrcPath, SourceDirPath);
@@ -747,7 +747,7 @@ AsCheckForDirectory (
 
     *SourcePath = SrcPath;
     *TargetPath = TgtPath;
-    return 0;
+    return (0);
 }
 
 
@@ -777,7 +777,7 @@ AsGetFile (
     if (!FileHandle)
     {
         printf ("Could not open %s\n", Filename);
-        return -1;
+        return (-1);
     }
 
     if (fstat (FileHandle, &Gbl_StatBuf))
@@ -825,13 +825,13 @@ AsGetFile (
     *FileBuffer = Buffer;
     *FileSize = Size;
 
-    return 0;
+    return (0);
 
 
 ErrorExit:
 
     close (FileHandle);
-    return -1;
+    return (-1);
 }
 
 
@@ -871,7 +871,7 @@ AsPutFile (
     {
         perror ("Could not create destination file");
         printf ("Could not create destination file \"%s\"\n", Pathname);
-        return -1;
+        return (-1);
     }
 
     /* Write the buffer to the file */
@@ -881,7 +881,5 @@ AsPutFile (
 
     close (DestHandle);
 
-    return 0;
+    return (0);
 }
-
-

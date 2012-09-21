@@ -875,4 +875,3 @@ OptOptimizeNamePath (
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, "\n"));
     return_VOID;
 }
-

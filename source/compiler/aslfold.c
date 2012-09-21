@@ -406,7 +406,7 @@ OpcAmlConstantWalk (
     WalkState = AcpiDsCreateWalkState (0, NULL, NULL, NULL);
     if (!WalkState)
     {
-        return AE_NO_MEMORY;
+        return (AE_NO_MEMORY);
     }
 
     WalkState->NextOp = NULL;

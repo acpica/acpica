@@ -158,7 +158,7 @@ AsLowerCaseString (
         SubString1 = strstr (SubBuffer, Target);
         if (!SubString1)
         {
-            return LowerCaseCount;
+            return (LowerCaseCount);
         }
 
         /*
@@ -177,7 +177,7 @@ AsLowerCaseString (
             {
                 /* Didn't find terminator */
 
-                return LowerCaseCount;
+                return (LowerCaseCount);
             }
 
             /* Move buffer to end of escape block and continue */
@@ -214,7 +214,7 @@ AsLowerCaseString (
         }
     }
 
-    return LowerCaseCount;
+    return (LowerCaseCount);
 }
 
 

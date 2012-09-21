@@ -283,7 +283,7 @@ OpcSetOptimalIntegerSize (
         Op->Asl.Parent->Asl.Parent &&
        (Op->Asl.Parent->Asl.Parent->Asl.ParseOpcode == PARSEOP_DEFINITIONBLOCK))
     {
-        return 0;
+        return (0);
     }
 #endif
 
@@ -303,14 +303,14 @@ OpcSetOptimalIntegerSize (
             Op->Asl.AmlOpcode = AML_ZERO_OP;
             AslError (ASL_OPTIMIZATION, ASL_MSG_INTEGER_OPTIMIZATION,
                 Op, "Zero");
-            return 1;
+            return (1);
 
         case 1:
 
             Op->Asl.AmlOpcode = AML_ONE_OP;
             AslError (ASL_OPTIMIZATION, ASL_MSG_INTEGER_OPTIMIZATION,
                 Op, "One");
-            return 1;
+            return (1);
 
         case ACPI_UINT32_MAX:
 
@@ -321,7 +321,7 @@ OpcSetOptimalIntegerSize (
                 Op->Asl.AmlOpcode = AML_ONES_OP;
                 AslError (ASL_OPTIMIZATION, ASL_MSG_INTEGER_OPTIMIZATION,
                     Op, "Ones");
-                return 1;
+                return (1);
             }
             break;
 
@@ -334,7 +334,7 @@ OpcSetOptimalIntegerSize (
                 Op->Asl.AmlOpcode = AML_ONES_OP;
                 AslError (ASL_OPTIMIZATION, ASL_MSG_INTEGER_OPTIMIZATION,
                     Op, "Ones");
-                return 1;
+                return (1);
             }
             break;
 
@@ -348,17 +348,17 @@ OpcSetOptimalIntegerSize (
     if (Op->Asl.Value.Integer <= ACPI_UINT8_MAX)
     {
         Op->Asl.AmlOpcode = AML_BYTE_OP;
-        return 1;
+        return (1);
     }
     if (Op->Asl.Value.Integer <= ACPI_UINT16_MAX)
     {
         Op->Asl.AmlOpcode = AML_WORD_OP;
-        return 2;
+        return (2);
     }
     if (Op->Asl.Value.Integer <= ACPI_UINT32_MAX)
     {
         Op->Asl.AmlOpcode = AML_DWORD_OP;
-        return 4;
+        return (4);
     }
     else
     {
@@ -371,12 +371,12 @@ OpcSetOptimalIntegerSize (
             {
                 /* Truncate the integer to 32-bit */
                 Op->Asl.AmlOpcode = AML_DWORD_OP;
-                return 4;
+                return (4);
             }
         }
 
         Op->Asl.AmlOpcode = AML_QWORD_OP;
-        return 8;
+        return (8);
     }
 }
 
@@ -882,5 +882,3 @@ OpcGenerateAmlOpcode (
 
     return;
 }
-
-
