@@ -944,7 +944,7 @@ DtCompileHest (
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 

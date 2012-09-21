@@ -181,7 +181,7 @@ DtDoCompile (
 
     if (Gbl_PreprocessOnly)
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
     /*
