@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
@@ -648,5 +647,3 @@ Exit:
     }
     return_ACPI_STATUS (AE_OK);
 }
-
-

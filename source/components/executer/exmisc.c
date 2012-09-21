@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
@@ -869,5 +868,3 @@ Cleanup:
     *LogicalResult = LocalResult;
     return_ACPI_STATUS (Status);
 }
-
-

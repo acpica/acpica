@@ -449,4 +449,3 @@ Cleanup:
     AcpiUtRemoveReference (ObjDesc);
     return_ACPI_STATUS (Status);
 }
-

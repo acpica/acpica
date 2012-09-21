@@ -474,5 +474,3 @@ AcpiExWriteDataToField (
 
     return_ACPI_STATUS (Status);
 }
-
-

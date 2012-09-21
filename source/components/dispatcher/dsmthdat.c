@@ -840,5 +840,3 @@ AcpiDsMethodDataGetType (
     return_VALUE (Object->Type);
 }
 #endif
-
-

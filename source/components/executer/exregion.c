@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
@@ -633,5 +632,3 @@ AcpiExDataTableSpaceHandler (
 
     return_ACPI_STATUS (AE_OK);
 }
-
-

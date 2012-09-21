@@ -643,5 +643,3 @@ Exit:
     AcpiUtRemoveReference (Operand[1]);
     return_ACPI_STATUS (Status);
 }
-
-

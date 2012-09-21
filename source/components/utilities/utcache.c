@@ -429,5 +429,3 @@ AcpiOsAcquireObject (
     return (Object);
 }
 #endif /* ACPI_USE_LOCAL_CACHE */
-
-

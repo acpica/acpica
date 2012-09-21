@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: exstorob - AML Interpreter object store support, store to object
@@ -312,5 +311,3 @@ AcpiExStoreStringToString (
     TargetDesc->String.Length = Length;
     return_ACPI_STATUS (AE_OK);
 }
-
-

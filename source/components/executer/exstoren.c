@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: exstoren - AML Interpreter object store support,
@@ -382,5 +381,3 @@ AcpiExStoreObjectToObject (
     *NewDesc = DestDesc;
     return_ACPI_STATUS (Status);
 }
-
-

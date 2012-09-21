@@ -1194,4 +1194,3 @@ AcpiExDumpObjectDescriptor (
 }
 
 #endif
-

@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: osunixdir - Unix directory access interfaces

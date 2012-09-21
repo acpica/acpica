@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: exsystem - Interface to OS services
@@ -424,4 +423,3 @@ AcpiExSystemResetEvent (
 
     return (Status);
 }
-

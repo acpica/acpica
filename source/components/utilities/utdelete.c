@@ -845,5 +845,3 @@ AcpiUtRemoveReference (
     (void) AcpiUtUpdateObjectReference (Object, REF_DECREMENT);
     return_VOID;
 }
-
-

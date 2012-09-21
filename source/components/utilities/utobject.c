@@ -855,5 +855,3 @@ AcpiUtGetObjectSize (
 
     return (Status);
 }
-
-

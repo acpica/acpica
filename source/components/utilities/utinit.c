@@ -260,5 +260,3 @@ AcpiUtSubsystemShutdown (
     (void) AcpiUtDeleteCaches ();
     return_VOID;
 }
-
-

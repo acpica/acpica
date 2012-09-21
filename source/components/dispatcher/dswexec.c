@@ -865,5 +865,3 @@ Cleanup:
     WalkState->NumOperands = 0;
     return_ACPI_STATUS (Status);
 }
-
-

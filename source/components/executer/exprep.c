@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
@@ -717,4 +716,3 @@ AcpiExPrepFieldValue (
     AcpiUtRemoveReference (ObjDesc);
     return_ACPI_STATUS (Status);
 }
-

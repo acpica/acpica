@@ -914,5 +914,3 @@ AcpiDsDeleteWalkState (
     ACPI_FREE (WalkState);
     return_VOID;
 }
-
-

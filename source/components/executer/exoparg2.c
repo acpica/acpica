@@ -710,5 +710,3 @@ Cleanup:
 
     return_ACPI_STATUS (Status);
 }
-
-

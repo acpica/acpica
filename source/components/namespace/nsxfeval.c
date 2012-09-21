@@ -1028,5 +1028,3 @@ UnlockAndExit:
 }
 
 ACPI_EXPORT_SYMBOL (AcpiGetData)
-
-

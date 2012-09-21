@@ -291,4 +291,3 @@ Cleanup:
     RegCloseKey (Handle);
     return (ReturnTable);
 }
-

@@ -466,5 +466,3 @@ AcpiUtDeleteGenericState (
     }
     return_VOID;
 }
-
-

@@ -796,4 +796,3 @@ AcpiTbSetupFadtRegisters (
         }
     }
 }
-

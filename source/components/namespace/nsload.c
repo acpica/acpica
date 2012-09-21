@@ -425,4 +425,3 @@ AcpiNsUnloadNamespace (
 }
 #endif
 #endif
-

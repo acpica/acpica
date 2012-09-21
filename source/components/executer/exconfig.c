@@ -758,4 +758,3 @@ AcpiExUnloadTable (
     DdbHandle->Common.Flags &= ~AOPOBJ_DATA_VALID;
     return_ACPI_STATUS (AE_OK);
 }
-

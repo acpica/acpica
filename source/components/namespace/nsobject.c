@@ -573,5 +573,3 @@ AcpiNsGetAttachedData (
 
     return (AE_NOT_FOUND);
 }
-
-

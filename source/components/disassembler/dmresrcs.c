@@ -427,4 +427,3 @@ AcpiDmVendorSmallDescriptor (
 }
 
 #endif
-

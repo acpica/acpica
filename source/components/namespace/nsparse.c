@@ -293,5 +293,3 @@ AcpiNsParseTable (
 
     return_ACPI_STATUS (Status);
 }
-
-

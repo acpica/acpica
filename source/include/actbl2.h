@@ -1406,4 +1406,3 @@ typedef struct acpi_table_wdrt
 #pragma pack()
 
 #endif /* __ACTBL2_H__ */
-

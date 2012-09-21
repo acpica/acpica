@@ -475,5 +475,3 @@ AcpiRsSetAddressCommon (
         Aml->Address.SpecificFlags = Resource->Data.Address.Info.TypeSpecific;
     }
 }
-
-

@@ -354,4 +354,3 @@ UnlockAndExit:
 }
 
 ACPI_EXPORT_SYMBOL (AcpiGetNextObject)
-

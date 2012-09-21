@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: exresnte - AML Interpreter object resolution
@@ -370,5 +369,3 @@ AcpiExResolveNodeToValue (
     *ObjectPtr = (void *) ObjDesc;
     return_ACPI_STATUS (Status);
 }
-
-

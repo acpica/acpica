@@ -359,4 +359,3 @@ AcpiPsSetName (
 
     Op->Named.Name = name;
 }
-

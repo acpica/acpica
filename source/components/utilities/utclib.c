@@ -958,4 +958,3 @@ const UINT8 _acpi_ctype[257] = {
 
 
 #endif /* ACPI_USE_SYSTEM_CLIBRARY */
-

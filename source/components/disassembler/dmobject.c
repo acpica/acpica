@@ -657,5 +657,3 @@ AcpiDmDisplayArguments (
 }
 
 #endif
-
-

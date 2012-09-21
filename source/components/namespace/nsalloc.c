@@ -656,5 +656,3 @@ AcpiNsDeleteNamespaceByOwner (
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_VOID;
 }
-
-

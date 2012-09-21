@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: exnames - interpreter/scanner name load/execute
@@ -556,5 +555,3 @@ AcpiExGetNameString (
 
     return_ACPI_STATUS (Status);
 }
-
-

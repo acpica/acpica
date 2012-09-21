@@ -1575,4 +1575,3 @@ AcpiOsWaitEventsComplete (
 {
     return;
 }
-

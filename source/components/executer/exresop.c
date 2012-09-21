@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
@@ -806,5 +805,3 @@ NextOperand:
 
     return_ACPI_STATUS (Status);
 }
-
-

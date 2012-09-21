@@ -371,5 +371,3 @@ AcpiNsHandleToPathname (
         (char *) Buffer->Pointer, (UINT32) RequiredSize));
     return_ACPI_STATUS (AE_OK);
 }
-
-

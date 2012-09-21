@@ -900,5 +900,3 @@ AcpiDsCreateIndexField (
     Status = AcpiDsGetFieldNames (&Info, WalkState, Arg->Common.Next);
     return_ACPI_STATUS (Status);
 }
-
-

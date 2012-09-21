@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: exoparg3 - AML execution - opcodes with 3 arguments
@@ -373,5 +372,3 @@ Cleanup:
     }
     return_ACPI_STATUS (Status);
 }
-
-

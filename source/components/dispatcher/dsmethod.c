@@ -794,5 +794,3 @@ AcpiDsTerminateControlMethod (
 
     return_VOID;
 }
-
-

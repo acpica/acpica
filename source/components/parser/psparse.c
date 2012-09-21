@@ -779,5 +779,3 @@ AcpiPsParseAml (
     AcpiGbl_CurrentWalkList = PrevWalkList;
     return_ACPI_STATUS (Status);
 }
-
-

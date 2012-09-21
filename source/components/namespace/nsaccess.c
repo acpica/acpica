@@ -769,4 +769,3 @@ AcpiNsLookup (
     *ReturnNode = ThisNode;
     return_ACPI_STATUS (AE_OK);
 }
-

@@ -1337,4 +1337,3 @@ AcpiPsParseLoop (
     Status = AcpiPsCompleteFinalOp (WalkState, Op, Status);
     return_ACPI_STATUS (Status);
 }
-

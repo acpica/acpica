@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Module Name: hwvalid - I/O request validation
@@ -436,5 +435,3 @@ AcpiHwWritePort (
 
     return (AE_OK);
 }
-
-

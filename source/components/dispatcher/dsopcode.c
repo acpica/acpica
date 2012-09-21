@@ -878,4 +878,3 @@ AcpiDsEvalBankFieldOperands (
     AcpiUtRemoveReference (OperandDesc);
     return_ACPI_STATUS (Status);
 }
-

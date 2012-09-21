@@ -603,4 +603,3 @@ AcpiRsCreateAmlResources (
             OutputBuffer->Pointer, (UINT32) OutputBuffer->Length));
     return_ACPI_STATUS (AE_OK);
 }
-

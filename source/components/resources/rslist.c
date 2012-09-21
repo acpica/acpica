@@ -344,4 +344,3 @@ AcpiRsConvertResourcesToAml (
 
     return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
 }
-

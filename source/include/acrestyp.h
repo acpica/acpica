@@ -761,4 +761,3 @@ typedef struct acpi_pci_routing_table
 } ACPI_PCI_ROUTING_TABLE;
 
 #endif /* __ACRESTYP_H__ */
-

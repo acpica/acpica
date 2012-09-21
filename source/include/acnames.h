@@ -153,5 +153,3 @@
 #define ACPI_NS_ROOT_PATH       "\\"
 
 #endif  /* __ACNAMES_H__  */
-
-

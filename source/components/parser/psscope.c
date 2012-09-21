@@ -371,4 +371,3 @@ AcpiPsCleanupScope (
 
     return_VOID;
 }
-

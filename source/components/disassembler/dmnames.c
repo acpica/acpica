@@ -521,5 +521,3 @@ AcpiDmValidateName (
 #endif
 
 #endif
-
-

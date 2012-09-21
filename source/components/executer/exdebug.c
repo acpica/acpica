@@ -346,5 +346,3 @@ AcpiExDoDebugObject (
     return_VOID;
 }
 #endif
-
-
