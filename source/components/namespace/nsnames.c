@@ -295,7 +295,7 @@ AcpiNsGetPathnameLength (
             ACPI_ERROR ((AE_INFO,
                 "Invalid Namespace Node (%p) while traversing namespace",
                 NextNode));
-            return 0;
+            return (0);
         }
         Size += ACPI_PATH_SEGMENT_LENGTH;
         NextNode = NextNode->Parent;

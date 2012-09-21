@@ -401,7 +401,7 @@ AcpiTbChecksum (
         Sum = (UINT8) (Sum + *(Buffer++));
     }
 
-    return Sum;
+    return (Sum);
 }
 
 

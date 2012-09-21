@@ -591,5 +591,3 @@ AcpiDbDumpBuffer (
 #endif
 
 #endif /* ACPI_DEBUGGER */
-
-

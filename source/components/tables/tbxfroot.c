@@ -151,8 +151,6 @@ static ACPI_STATUS
 AcpiTbValidateRsdp (
     ACPI_TABLE_RSDP         *Rsdp)
 {
-    ACPI_FUNCTION_ENTRY ();
-
 
     /*
      * The signature and checksum must both be correct
@@ -368,4 +366,3 @@ AcpiTbScanMemoryForRsdp (
         StartAddress));
     return_PTR (NULL);
 }
-

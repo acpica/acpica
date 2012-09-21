@@ -662,7 +662,7 @@ AcpiUtDumpAllocations (
 
     if (AcpiGbl_DisableMemTracking)
     {
-        return;
+        return_VOID;
     }
 
     /*
@@ -670,7 +670,7 @@ AcpiUtDumpAllocations (
      */
     if (ACPI_FAILURE (AcpiUtAcquireMutex (ACPI_MTX_MEMORY)))
     {
-        return;
+        return_VOID;
     }
 
     Element = AcpiGbl_GlobalList->ListHead;

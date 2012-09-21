@@ -649,6 +649,8 @@ AcpiTbTerminate (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "ACPI Tables freed\n"));
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
+
+    return_VOID;
 }
 
 
@@ -888,4 +890,3 @@ AcpiTbSetTableLoadedFlag (
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
 }
-

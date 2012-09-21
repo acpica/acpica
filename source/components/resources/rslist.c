@@ -197,7 +197,7 @@ AcpiRsConvertAmlToResources (
         ACPI_ERROR ((AE_INFO,
             "Invalid/unsupported resource descriptor: Type 0x%2.2X",
             ResourceIndex));
-        return (AE_AML_INVALID_RESOURCE_TYPE);
+        return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
     }
 
      /* Convert the AML byte stream resource to a local resource struct */
@@ -297,7 +297,7 @@ AcpiRsConvertResourcesToAml (
             ACPI_ERROR ((AE_INFO,
                 "Invalid/unsupported resource descriptor: Type 0x%2.2X",
                 Resource->Type));
-            return (AE_AML_INVALID_RESOURCE_TYPE);
+            return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
         }
 
         Status = AcpiRsConvertResourceToAml (Resource,

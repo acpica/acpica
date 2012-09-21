@@ -172,7 +172,7 @@ AdGenerateFilename (
 
     FilenameBuf[i] = 0;
     strcat (FilenameBuf, ACPI_TABLE_FILE_SUFFIX);
-    return FilenameBuf;
+    return (FilenameBuf);
 }
 
 
@@ -295,7 +295,7 @@ FlGenerateFilename (
         strcat (NewFilename, Suffix);
     }
 
-    return NewFilename;
+    return (NewFilename);
 }
 
 
@@ -404,5 +404,3 @@ FlSplitInputPathname (
     *OutFilename = Filename;
     return (AE_OK);
 }
-
-

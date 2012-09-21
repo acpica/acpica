@@ -1401,5 +1401,3 @@ CleanupAndExit:
 }
 
 #endif /* ACPI_DEBUGGER */
-
-

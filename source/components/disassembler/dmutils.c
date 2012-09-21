@@ -324,7 +324,7 @@ AcpiDmCommaIfListMember (
 
     if (!Op->Common.Next)
     {
-        return FALSE;
+        return (FALSE);
     }
 
     if (AcpiDmListType (Op->Common.Parent) & BLOCK_COMMA_LIST)
@@ -342,14 +342,14 @@ AcpiDmCommaIfListMember (
              */
             if (!Op->Common.Next->Common.Next)
             {
-                return FALSE;
+                return (FALSE);
             }
         }
 
         if ((Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST) &&
             (!(Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST)))
         {
-            return FALSE;
+            return (FALSE);
         }
 
         AcpiOsPrintf (", ");

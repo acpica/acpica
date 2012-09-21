@@ -266,13 +266,13 @@ AcpiDbSleep (
         goto ErrorExit;
     }
 
-    return (Status);
+    return_ACPI_STATUS (Status);
 
 
 ErrorExit:
 
     ACPI_EXCEPTION ((AE_INFO, Status, "During sleep test"));
-    return (Status);
+    return_ACPI_STATUS (Status);
 }
 
 

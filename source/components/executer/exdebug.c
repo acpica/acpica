@@ -277,7 +277,7 @@ AcpiExDoDebugObject (
             /* Case for DdbHandle */
 
             AcpiOsPrintf ("Table Index 0x%X\n", SourceDesc->Reference.Value);
-            return;
+            return_VOID;
 
         default:
             break;

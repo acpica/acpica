@@ -1303,4 +1303,3 @@ AcpiDbUserCommands (
 }
 
 #endif  /* ACPI_DEBUGGER */
-

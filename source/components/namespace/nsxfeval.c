@@ -609,7 +609,7 @@ AcpiWalkNamespace (
     Status = AcpiUtAcquireReadLock (&AcpiGbl_NamespaceRwLock);
     if (ACPI_FAILURE (Status))
     {
-        return (Status);
+        return_ACPI_STATUS (Status);
     }
 
     /*

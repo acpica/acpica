@@ -282,7 +282,7 @@ AcpiExDoMatch (
         return (FALSE);
     }
 
-    return LogicalResult;
+    return (LogicalResult);
 }
 
 

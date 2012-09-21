@@ -660,4 +660,3 @@ AcpiDbGetTableFromFile (
 }
 
 #endif  /* ACPI_DEBUGGER */
-

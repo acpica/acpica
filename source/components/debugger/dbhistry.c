@@ -289,4 +289,3 @@ AcpiDbGetFromHistory (
 }
 
 #endif /* ACPI_DEBUGGER */
-

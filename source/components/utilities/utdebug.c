@@ -414,6 +414,7 @@ AcpiUtTracePtr (
     UINT32                  ComponentId,
     void                    *Pointer)
 {
+
     AcpiGbl_NestingLevel++;
     AcpiUtTrackStackPtr ();
 
@@ -809,5 +810,3 @@ AcpiUtDumpBuffer (
 
     AcpiUtDumpBuffer2 (Buffer, Count, Display);
 }
-
-

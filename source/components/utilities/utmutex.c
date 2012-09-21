@@ -297,6 +297,8 @@ AcpiUtDeleteMutex (
 
     AcpiGbl_MutexInfo[MutexId].Mutex = NULL;
     AcpiGbl_MutexInfo[MutexId].ThreadId = ACPI_MUTEX_NOT_ACQUIRED;
+
+    return_VOID;
 }
 
 
@@ -409,6 +411,7 @@ AcpiUtReleaseMutex (
 {
     ACPI_FUNCTION_NAME (UtReleaseMutex);
 
+
     ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX, "Thread %u releasing Mutex [%s]\n",
         (UINT32) AcpiOsGetThreadId (), AcpiUtGetMutexName (MutexId)));
 
@@ -465,5 +468,3 @@ AcpiUtReleaseMutex (
     AcpiOsReleaseMutex (AcpiGbl_MutexInfo[MutexId].Mutex);
     return (AE_OK);
 }
-
-

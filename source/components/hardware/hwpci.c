@@ -364,7 +364,7 @@ AcpiHwProcessPciList (
             &BusNumber, &IsBridge);
         if (ACPI_FAILURE (Status))
         {
-            return_ACPI_STATUS (Status);
+            return (Status);
         }
 
         Info = Info->Next;
@@ -376,7 +376,7 @@ AcpiHwProcessPciList (
         PciId->Segment, PciId->Bus, PciId->Device, PciId->Function,
         Status, BusNumber, IsBridge));
 
-    return_ACPI_STATUS (AE_OK);
+    return (AE_OK);
 }
 
 

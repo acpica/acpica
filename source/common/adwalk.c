@@ -1090,5 +1090,3 @@ AcpiDmInspectPossibleArgs (
 
     return (Last);
 }
-
-

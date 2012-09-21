@@ -862,14 +862,14 @@ AcpiDsDeleteWalkState (
 
     if (!WalkState)
     {
-        return;
+        return_VOID;
     }
 
     if (WalkState->DescriptorType != ACPI_DESC_TYPE_WALK)
     {
         ACPI_ERROR ((AE_INFO, "%p is not a valid walk state",
             WalkState));
-        return;
+        return_VOID;
     }
 
     /* There should not be any open scopes */

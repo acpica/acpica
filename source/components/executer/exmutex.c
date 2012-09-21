@@ -413,7 +413,7 @@ AcpiExReleaseMutexObject (
 
     if (ObjDesc->Mutex.AcquisitionDepth == 0)
     {
-        return (AE_NOT_ACQUIRED);
+        return_ACPI_STATUS (AE_NOT_ACQUIRED);
     }
 
     /* Match multiple Acquires with multiple Releases */
