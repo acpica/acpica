@@ -222,7 +222,7 @@ extern ACPI_OSXF_CONTROL        Init_OsxfCtrl;
 #define AT_CHCK_RET_STATUS(inds) \
         if (OsxfCtrlRetError(OSXF_NUM(inds))) \
         { \
-            return AE_ERROR; \
+            return (AE_ERROR); \
         }
 
 #define AT_CHCK_RET_STATUS2(inds) \
@@ -236,7 +236,7 @@ extern ACPI_OSXF_CONTROL        Init_OsxfCtrl;
                 OsxfCtrl[AcpiOsTotalC].CtrlAct.CallsCount = 0; \
             } \
             OsxfCtrl[AcpiOsTotalC].CtrlAct.ActOsxf = OSXF_NUM(inds); \
-            return AE_ERROR; \
+            return (AE_ERROR); \
         } \
         AT_ACT_EXIT(inds); \
     }
@@ -252,7 +252,7 @@ extern ACPI_OSXF_CONTROL        Init_OsxfCtrl;
                 Ctrl->CtrlAct.CallsCount = 0; \
             } \
             Ctrl->CtrlAct.ActOsxf = OSXF_NUM(inds); \
-            return AE_ERROR; \
+            return (AE_ERROR); \
         } \
         AT_ACT_EXIT(inds); \
     }
@@ -268,7 +268,7 @@ extern ACPI_OSXF_CONTROL        Init_OsxfCtrl;
                 Ctrl->CtrlAct.CallsCount = 0; \
             } \
             Ctrl->CtrlAct.ActOsxf = OSXF_NUM(inds); \
-            return NULL; \
+            return (NULL); \
         } \
         AT_ACT_EXIT(inds); \
     }
@@ -284,7 +284,7 @@ extern ACPI_OSXF_CONTROL        Init_OsxfCtrl;
                 Ctrl->CtrlAct.CallsCount = 0; \
             } \
             Ctrl->CtrlAct.ActOsxf = OSXF_NUM(inds); \
-            return 0; \
+            return (0); \
         } \
         AT_ACT_EXIT(inds); \
     }
@@ -300,7 +300,7 @@ extern ACPI_OSXF_CONTROL        Init_OsxfCtrl;
                 Ctrl->CtrlAct.CallsCount = 0; \
             } \
             Ctrl->CtrlAct.ActOsxf = OSXF_NUM(inds); \
-            return AE_NO_MEMORY; \
+            return (AE_NO_MEMORY); \
 	    } \
         AT_ACT_EXIT(inds); \
     }

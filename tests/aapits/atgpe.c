@@ -38,7 +38,7 @@ AtInstallGpeBlockCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("gpev0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -46,14 +46,14 @@ AtInstallGpeBlockCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 1)
     {
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
         {
-            return Status;
+            return (Status);
         }
         Pathname = "\\AUX2.DEV0";
     }
@@ -69,7 +69,7 @@ AtInstallGpeBlockCommon(
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 1)
@@ -77,7 +77,7 @@ AtInstallGpeBlockCommon(
         /* Make Device handle invalid by unloading SSDT table*/
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
     }
     else if (CheckAction == 3)
@@ -99,15 +99,15 @@ AtInstallGpeBlockCommon(
             AcpiFormatException(ExpectedStatus));
         if (Status != AE_OK)
         {
-            return Status;
+            return (Status);
         }
         else
         {
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -116,7 +116,7 @@ AtInstallGpeBlockCommon(
 ACPI_STATUS
 AtGpeTest0000(void)
 {
-    return AtInstallGpeBlockCommon(0, AE_OK);
+    return (AtInstallGpeBlockCommon(0, AE_OK));
 }
 
 /*
@@ -125,7 +125,7 @@ AtGpeTest0000(void)
 ACPI_STATUS
 AtGpeTest0001(void)
 {
-    return AtInstallGpeBlockCommon(1, AE_BAD_PARAMETER);
+    return (AtInstallGpeBlockCommon(1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -134,7 +134,7 @@ AtGpeTest0001(void)
 ACPI_STATUS
 AtGpeTest0002(void)
 {
-    return AtInstallGpeBlockCommon(2, AE_BAD_PARAMETER);
+    return (AtInstallGpeBlockCommon(2, AE_BAD_PARAMETER));
 }
 
 /*
@@ -143,7 +143,7 @@ AtGpeTest0002(void)
 ACPI_STATUS
 AtGpeTest0003(void)
 {
-    return AtInstallGpeBlockCommon(3, AE_BAD_PARAMETER);
+    return (AtInstallGpeBlockCommon(3, AE_BAD_PARAMETER));
 }
 
 /*
@@ -152,7 +152,7 @@ AtGpeTest0003(void)
 ACPI_STATUS
 AtGpeTest0004(void)
 {
-    return AtInstallGpeBlockCommon(4, AE_BAD_PARAMETER);
+    return (AtInstallGpeBlockCommon(4, AE_BAD_PARAMETER));
 }
 
 ACPI_STATUS
@@ -180,7 +180,7 @@ AtInstallGpeBlockExceptionTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetHandle (NULL, Pathname, &GpeDevice);
@@ -189,7 +189,7 @@ AtInstallGpeBlockExceptionTest(
             AapiErrors++;
             printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                 Pathname, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -198,7 +198,7 @@ AtInstallGpeBlockExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiInstallGpeBlock (GpeDevice, &GpeBlockAddress,
@@ -222,24 +222,24 @@ AtInstallGpeBlockExceptionTest(
                 printf ("API Error: AcpiInstallGpeBlock returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -252,7 +252,7 @@ AtGpeTest0005(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("gpev0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -265,7 +265,7 @@ AtGpeTest0005(void)
         AE_NO_MEMORY);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -278,10 +278,10 @@ AtGpeTest0005(void)
         AE_NO_MEMORY);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -295,7 +295,7 @@ AtRemoveGpeBlockCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("gpev0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -303,14 +303,14 @@ AtRemoveGpeBlockCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 1)
     {
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
         {
-            return Status;
+            return (Status);
         }
         Pathname = "\\AUX2.DEV0";
     }
@@ -321,7 +321,7 @@ AtRemoveGpeBlockCommon(
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiInstallGpeBlock (GpeDevice, &GpeBlockAddress,
@@ -331,7 +331,7 @@ AtRemoveGpeBlockCommon(
         AapiErrors++;
         printf ("Api Error: AcpiInstallGpeBlock(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 1)
@@ -339,7 +339,7 @@ AtRemoveGpeBlockCommon(
         /* Make Device handle invalid by unloading SSDT table*/
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
     }
     else if (CheckAction == 2)
@@ -356,15 +356,15 @@ AtRemoveGpeBlockCommon(
             AcpiFormatException(ExpectedStatus));
         if (Status != AE_OK)
         {
-            return Status;
+            return (Status);
         }
         else
         {
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -373,7 +373,7 @@ AtRemoveGpeBlockCommon(
 ACPI_STATUS
 AtGpeTest0006(void)
 {
-    return AtRemoveGpeBlockCommon(0, AE_OK);
+    return (AtRemoveGpeBlockCommon(0, AE_OK));
 }
 
 /*
@@ -382,7 +382,7 @@ AtGpeTest0006(void)
 ACPI_STATUS
 AtGpeTest0007(void)
 {
-    return AtRemoveGpeBlockCommon(1, AE_BAD_PARAMETER);
+    return (AtRemoveGpeBlockCommon(1, AE_BAD_PARAMETER));
 }
 
 ACPI_STATUS
@@ -404,7 +404,7 @@ AtGpeCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("gpev0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -412,14 +412,14 @@ AtGpeCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 1)
     {
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
         {
-            return Status;
+            return (Status);
         }
         Pathname = "\\AUX2.DEV0";
     }
@@ -432,7 +432,7 @@ AtGpeCommon(
             AapiErrors++;
             printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                 Pathname, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         if (CheckAction != 2)
@@ -444,7 +444,7 @@ AtGpeCommon(
                 AapiErrors++;
                 printf ("Api Error: AcpiInstallGpeBlock(%s) returned %s\n",
                     Pathname, AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
     }
@@ -465,7 +465,7 @@ AtGpeCommon(
                 AapiErrors++;
                 printf ("API Error: AcpiSetGpeType(0x%x, 0x%x) returned %s\n",
                     Gpe, (UINT32)Type, AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
     }
@@ -477,7 +477,7 @@ AtGpeCommon(
         /* Make Device handle invalid by unloading SSDT table*/
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -524,7 +524,7 @@ AtGpeCommon(
             TestErrors++;
             printf ("Test Error: the ApiCall number (%d) should be in range 0-4\n",
                 ApiCall);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         if (Status != ExpectedStatus)
@@ -535,16 +535,16 @@ AtGpeCommon(
                 AcpiFormatException(ExpectedStatus));
             if (Status != AE_OK)
             {
-                return Status;
+                return (Status);
             }
             else
             {
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 static UINT32           GpeNumber[] = {0, 7, 8, 15, 16, 31, 63};
@@ -576,9 +576,9 @@ static UINT8            GpeEolType[] = {
 ACPI_STATUS
 AtGpeTest0008(void)
 {
-    return AtGpeCommon(NULL, GpeNumber, NULL,
+    return (AtGpeCommon(NULL, GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        0 /* SetGpeType */, 0, AE_OK);
+        0 /* SetGpeType */, 0, AE_OK));
 }
 
 /*
@@ -587,9 +587,9 @@ AtGpeTest0008(void)
 ACPI_STATUS
 AtGpeTest0009(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        0 /* SetGpeType */, 0, AE_OK);
+        0 /* SetGpeType */, 0, AE_OK));
 }
 
 /*
@@ -598,9 +598,9 @@ AtGpeTest0009(void)
 ACPI_STATUS
 AtGpeTest0010(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        0 /* SetGpeType */, 1, AE_BAD_PARAMETER);
+        0 /* SetGpeType */, 1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -609,9 +609,9 @@ AtGpeTest0010(void)
 ACPI_STATUS
 AtGpeTest0011(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        0 /* SetGpeType */, 2, AE_BAD_PARAMETER);
+        0 /* SetGpeType */, 2, AE_BAD_PARAMETER));
 }
 
 /*
@@ -620,9 +620,9 @@ AtGpeTest0011(void)
 ACPI_STATUS
 AtGpeTest0012(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        0 /* SetGpeType */, 3, AE_BAD_PARAMETER);
+        0 /* SetGpeType */, 3, AE_BAD_PARAMETER));
 }
 
 /*
@@ -631,9 +631,9 @@ AtGpeTest0012(void)
 ACPI_STATUS
 AtGpeTest0013(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        0 /* SetGpeType */, 4, AE_BAD_PARAMETER);
+        0 /* SetGpeType */, 4, AE_BAD_PARAMETER));
 }
 
 /*
@@ -642,9 +642,9 @@ AtGpeTest0013(void)
 ACPI_STATUS
 AtGpeTest0014(void)
 {
-    return AtGpeCommon(NULL, GpeNumber, NULL,
+    return (AtGpeCommon(NULL, GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        1 /* EnableGpe */, 0, AE_OK);
+        1 /* EnableGpe */, 0, AE_OK));
 }
 
 /*
@@ -653,9 +653,9 @@ AtGpeTest0014(void)
 ACPI_STATUS
 AtGpeTest0015(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        1 /* EnableGpe */, 0, AE_OK);
+        1 /* EnableGpe */, 0, AE_OK));
 }
 
 /*
@@ -664,9 +664,9 @@ AtGpeTest0015(void)
 ACPI_STATUS
 AtGpeTest0016(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        1 /* EnableGpe */, 1, AE_BAD_PARAMETER);
+        1 /* EnableGpe */, 1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -675,9 +675,9 @@ AtGpeTest0016(void)
 ACPI_STATUS
 AtGpeTest0017(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        1 /* EnableGpe */, 2, AE_BAD_PARAMETER);
+        1 /* EnableGpe */, 2, AE_BAD_PARAMETER));
 }
 
 /*
@@ -686,9 +686,9 @@ AtGpeTest0017(void)
 ACPI_STATUS
 AtGpeTest0018(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        1 /* EnableGpe */, 3, AE_BAD_PARAMETER);
+        1 /* EnableGpe */, 3, AE_BAD_PARAMETER));
 }
 
 /*
@@ -697,9 +697,9 @@ AtGpeTest0018(void)
 ACPI_STATUS
 AtGpeTest0019(void)
 {
-    return AtGpeCommon(NULL, GpeNumber, NULL,
+    return (AtGpeCommon(NULL, GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        2 /* ClearGpe */, 0, AE_OK);
+        2 /* ClearGpe */, 0, AE_OK));
 }
 
 /*
@@ -708,9 +708,9 @@ AtGpeTest0019(void)
 ACPI_STATUS
 AtGpeTest0020(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        2 /* ClearGpe */, 0, AE_OK);
+        2 /* ClearGpe */, 0, AE_OK));
 }
 
 /*
@@ -719,9 +719,9 @@ AtGpeTest0020(void)
 ACPI_STATUS
 AtGpeTest0021(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        2 /* ClearGpe */, 1, AE_BAD_PARAMETER);
+        2 /* ClearGpe */, 1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -730,9 +730,9 @@ AtGpeTest0021(void)
 ACPI_STATUS
 AtGpeTest0022(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        2 /* ClearGpe */, 2, AE_BAD_PARAMETER);
+        2 /* ClearGpe */, 2, AE_BAD_PARAMETER));
 }
 
 /*
@@ -741,9 +741,9 @@ AtGpeTest0022(void)
 ACPI_STATUS
 AtGpeTest0023(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        2 /* ClearGpe */, 3, AE_BAD_PARAMETER);
+        2 /* ClearGpe */, 3, AE_BAD_PARAMETER));
 }
 
 /*
@@ -752,9 +752,9 @@ AtGpeTest0023(void)
 ACPI_STATUS
 AtGpeTest0024(void)
 {
-    return AtGpeCommon(NULL, GpeNumber, NULL,
+    return (AtGpeCommon(NULL, GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        3 /* GetGpeStatus */, 0, AE_OK);
+        3 /* GetGpeStatus */, 0, AE_OK));
 }
 
 /*
@@ -763,9 +763,9 @@ AtGpeTest0024(void)
 ACPI_STATUS
 AtGpeTest0025(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        3 /* GetGpeStatus */, 0, AE_OK);
+        3 /* GetGpeStatus */, 0, AE_OK));
 }
 
 /*
@@ -774,9 +774,9 @@ AtGpeTest0025(void)
 ACPI_STATUS
 AtGpeTest0026(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        3 /* GetGpeStatus */, 1, AE_BAD_PARAMETER);
+        3 /* GetGpeStatus */, 1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -785,9 +785,9 @@ AtGpeTest0026(void)
 ACPI_STATUS
 AtGpeTest0027(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        3 /* GetGpeStatus */, 2, AE_BAD_PARAMETER);
+        3 /* GetGpeStatus */, 2, AE_BAD_PARAMETER));
 }
 
 /*
@@ -796,9 +796,9 @@ AtGpeTest0027(void)
 ACPI_STATUS
 AtGpeTest0028(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        3 /* GetGpeStatus */, 3, AE_BAD_PARAMETER);
+        3 /* GetGpeStatus */, 3, AE_BAD_PARAMETER));
 }
 
 /*
@@ -807,9 +807,9 @@ AtGpeTest0028(void)
 ACPI_STATUS
 AtGpeTest0029(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        3 /* GetGpeStatus */, 5, AE_BAD_PARAMETER);
+        3 /* GetGpeStatus */, 5, AE_BAD_PARAMETER));
 }
 
 /*
@@ -818,9 +818,9 @@ AtGpeTest0029(void)
 ACPI_STATUS
 AtGpeTest0030(void)
 {
-    return AtGpeCommon(NULL, GpeNumber, NULL,
+    return (AtGpeCommon(NULL, GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        4 /* DisableGpe */, 0, AE_OK);
+        4 /* DisableGpe */, 0, AE_OK));
 }
 
 /*
@@ -829,9 +829,9 @@ AtGpeTest0030(void)
 ACPI_STATUS
 AtGpeTest0031(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        4 /* DisableGpe */, 0, AE_OK);
+        4 /* DisableGpe */, 0, AE_OK));
 }
 
 /*
@@ -840,9 +840,9 @@ AtGpeTest0031(void)
 ACPI_STATUS
 AtGpeTest0032(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        4 /* DisableGpe */, 1, AE_BAD_PARAMETER);
+        4 /* DisableGpe */, 1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -851,9 +851,9 @@ AtGpeTest0032(void)
 ACPI_STATUS
 AtGpeTest0033(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        4 /* DisableGpe */, 2, AE_BAD_PARAMETER);
+        4 /* DisableGpe */, 2, AE_BAD_PARAMETER));
 }
 
 /*
@@ -862,9 +862,9 @@ AtGpeTest0033(void)
 ACPI_STATUS
 AtGpeTest0034(void)
 {
-    return AtGpeCommon("\\DGPE", GpeNumber, NULL,
+    return (AtGpeCommon("\\DGPE", GpeNumber, NULL,
         sizeof (GpeNumber) / sizeof (UINT32),
-        4 /* DisableGpe */, 3, AE_BAD_PARAMETER);
+        4 /* DisableGpe */, 3, AE_BAD_PARAMETER));
 }
 
 #define AT_NUM_GPE_EVENTS   5
@@ -889,7 +889,7 @@ AtGpeHandler0 (
             Context, GpeHandlerContext, AT_NUM_GPE_EVENTS);
     }
 
-    return 0;
+    return (0);
 }
 
 UINT32
@@ -910,7 +910,7 @@ AtGpeHandler1 (
             Context, GpeHandlerContext, AT_NUM_GPE_EVENTS);
     }
 
-    return 0;
+    return (0);
 }
 
 UINT32
@@ -931,7 +931,7 @@ AtGpeHandler2 (
             Context, GpeHandlerContext, AT_NUM_GPE_EVENTS);
     }
 
-    return 0;
+    return (0);
 }
 
 static ACPI_GPE_HANDLER   GpeHandlers[AT_NUM_GPE_EVENTS] = {
@@ -955,7 +955,7 @@ AtInstallGpeHandlerCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("gpev0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 1)
@@ -968,14 +968,14 @@ AtInstallGpeHandlerCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 1)
     {
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
         {
-            return Status;
+            return (Status);
         }
         Pathname = "\\AUX2.DEV0";
     }
@@ -986,7 +986,7 @@ AtInstallGpeHandlerCommon(
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (CheckAction != 2)
@@ -998,7 +998,7 @@ AtInstallGpeHandlerCommon(
             AapiErrors++;
             printf ("Api Error: AcpiInstallGpeBlock(%s) returned %s\n",
                 Pathname, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
@@ -1007,7 +1007,7 @@ AtInstallGpeHandlerCommon(
         /* Make Device handle invalid by unloading SSDT table*/
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
     }
     else if (CheckAction == 5)
@@ -1017,7 +1017,7 @@ AtInstallGpeHandlerCommon(
             TestErrors++;
             printf ("Test Error: ExpectedStatus %s != AE_ALREADY_EXISTS\n",
                 AcpiFormatException(ExpectedStatus));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         ExpectedStatus = AE_OK;
     }
@@ -1052,11 +1052,11 @@ AtInstallGpeHandlerCommon(
                 AcpiFormatException(ExpectedStatus));
             if (Status != AE_OK)
             {
-                return Status;
+                return (Status);
             }
             else
             {
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
@@ -1078,7 +1078,7 @@ AtInstallGpeHandlerCommon(
                     " expected %s\n",
                     Gpe, EolType, EventHandler, AcpiFormatException(Status),
                     AcpiFormatException(AE_ALREADY_EXISTS));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
@@ -1088,10 +1088,10 @@ AtInstallGpeHandlerCommon(
         AapiErrors++;
         printf ("Api Error: Gpe Handler invoked %d times\n",
             GpeHandlerCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1101,7 +1101,7 @@ AtInstallGpeHandlerCommon(
 ACPI_STATUS
 AtGpeTest0035(void)
 {
-    return AtInstallGpeHandlerCommon(0, AE_OK);
+    return (AtInstallGpeHandlerCommon(0, AE_OK));
 }
 
 /*
@@ -1111,7 +1111,7 @@ AtGpeTest0035(void)
 ACPI_STATUS
 AtGpeTest0036(void)
 {
-    return AtInstallGpeHandlerCommon(1, AE_BAD_PARAMETER);
+    return (AtInstallGpeHandlerCommon(1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1121,7 +1121,7 @@ AtGpeTest0036(void)
 ACPI_STATUS
 AtGpeTest0037(void)
 {
-    return AtInstallGpeHandlerCommon(2, AE_BAD_PARAMETER);
+    return (AtInstallGpeHandlerCommon(2, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1131,7 +1131,7 @@ AtGpeTest0037(void)
 ACPI_STATUS
 AtGpeTest0038(void)
 {
-    return AtInstallGpeHandlerCommon(3, AE_BAD_PARAMETER);
+    return (AtInstallGpeHandlerCommon(3, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1141,7 +1141,7 @@ AtGpeTest0038(void)
 ACPI_STATUS
 AtGpeTest0039(void)
 {
-    return AtInstallGpeHandlerCommon(4, AE_BAD_PARAMETER);
+    return (AtInstallGpeHandlerCommon(4, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1151,7 +1151,7 @@ AtGpeTest0039(void)
 ACPI_STATUS
 AtGpeTest0040(void)
 {
-    return AtInstallGpeHandlerCommon(5, AE_ALREADY_EXISTS);
+    return (AtInstallGpeHandlerCommon(5, AE_ALREADY_EXISTS));
 }
 
 ACPI_STATUS
@@ -1170,7 +1170,7 @@ AtRemoveGpeHandlerCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("gpev0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 1)
@@ -1183,14 +1183,14 @@ AtRemoveGpeHandlerCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 1)
     {
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
         {
-            return Status;
+            return (Status);
         }
         Pathname = "\\AUX2.DEV0";
     }
@@ -1201,7 +1201,7 @@ AtRemoveGpeHandlerCommon(
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     GpeHandlerCounter = 0;
@@ -1215,7 +1215,7 @@ AtRemoveGpeHandlerCommon(
             AapiErrors++;
             printf ("Api Error: AcpiInstallGpeBlock(%s) returned %s\n",
                 Pathname, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         if (CheckAction != 6)
@@ -1234,7 +1234,7 @@ AtRemoveGpeHandlerCommon(
                     AapiErrors++;
                     printf ("Error: AcpiInstallGpeHandler(%d, 0x%x, 0x%p) returned %s\n",
                         Gpe, EolType, EventHandler, AcpiFormatException(Status));
-                    return Status;
+                    return (Status);
                 }
             }
         }
@@ -1245,7 +1245,7 @@ AtRemoveGpeHandlerCommon(
         /* Make Device handle invalid by unloading SSDT table*/
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -1279,11 +1279,11 @@ AtRemoveGpeHandlerCommon(
                 AcpiFormatException(ExpectedStatus));
             if (Status != AE_OK)
             {
-                return Status;
+                return (Status);
             }
             else
             {
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
@@ -1293,10 +1293,10 @@ AtRemoveGpeHandlerCommon(
         AapiErrors++;
         printf ("Api Error: Gpe Handler invoked %d times\n",
             GpeHandlerCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1306,7 +1306,7 @@ AtRemoveGpeHandlerCommon(
 ACPI_STATUS
 AtGpeTest0041(void)
 {
-    return AtRemoveGpeHandlerCommon(0, AE_OK);
+    return (AtRemoveGpeHandlerCommon(0, AE_OK));
 }
 
 /*
@@ -1316,7 +1316,7 @@ AtGpeTest0041(void)
 ACPI_STATUS
 AtGpeTest0042(void)
 {
-    return AtRemoveGpeHandlerCommon(1, AE_BAD_PARAMETER);
+    return (AtRemoveGpeHandlerCommon(1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1326,7 +1326,7 @@ AtGpeTest0042(void)
 ACPI_STATUS
 AtGpeTest0043(void)
 {
-    return AtRemoveGpeHandlerCommon(2, AE_BAD_PARAMETER);
+    return (AtRemoveGpeHandlerCommon(2, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1336,7 +1336,7 @@ AtGpeTest0043(void)
 ACPI_STATUS
 AtGpeTest0044(void)
 {
-    return AtRemoveGpeHandlerCommon(3, AE_BAD_PARAMETER);
+    return (AtRemoveGpeHandlerCommon(3, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1346,7 +1346,7 @@ AtGpeTest0044(void)
 ACPI_STATUS
 AtGpeTest0045(void)
 {
-    return AtRemoveGpeHandlerCommon(4, AE_BAD_PARAMETER);
+    return (AtRemoveGpeHandlerCommon(4, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1356,7 +1356,7 @@ AtGpeTest0045(void)
 ACPI_STATUS
 AtGpeTest0046(void)
 {
-    return AtRemoveGpeHandlerCommon(5, AE_BAD_PARAMETER);
+    return (AtRemoveGpeHandlerCommon(5, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1366,5 +1366,5 @@ AtGpeTest0046(void)
 ACPI_STATUS
 AtGpeTest0047(void)
 {
-    return AtRemoveGpeHandlerCommon(6, AE_NOT_EXIST);
+    return (AtRemoveGpeHandlerCommon(6, AE_NOT_EXIST));
 }

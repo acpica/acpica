@@ -28,7 +28,7 @@ AtFixedEventsCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++)
@@ -54,7 +54,7 @@ AtFixedEventsCommon(
             TestErrors++;
             printf ("Test Error: the number of Fixed Events (%d) too big (should be 5)\n",
                 ACPI_NUM_FIXED_EVENTS);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         if (CheckAction == 1)
         {
@@ -87,7 +87,7 @@ AtFixedEventsCommon(
             TestErrors++;
             printf ("Test Error: the ApiCall number (%d) should be in range 0-3\n",
                 ApiCall);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         if (Status != ExpectedStatus)
@@ -98,16 +98,16 @@ AtFixedEventsCommon(
                 AcpiFormatException(ExpectedStatus));
             if (Status != AE_OK)
             {
-                return Status;
+                return (Status);
             }
             else
             {
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -116,7 +116,7 @@ AtFixedEventsCommon(
 ACPI_STATUS
 AtFixEvTest0000(void)
 {
-    return AtFixedEventsCommon(0 /* Enable */, 0, AE_OK);
+    return (AtFixedEventsCommon(0 /* Enable */, 0, AE_OK));
 }
 
 /*
@@ -125,7 +125,7 @@ AtFixEvTest0000(void)
 ACPI_STATUS
 AtFixEvTest0001(void)
 {
-    return AtFixedEventsCommon(0 /* Enable */, 1, AE_BAD_PARAMETER);
+    return (AtFixedEventsCommon(0 /* Enable */, 1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -134,7 +134,7 @@ AtFixEvTest0001(void)
 ACPI_STATUS
 AtFixEvTest0002(void)
 {
-    return AtFixedEventsCommon(1 /* Disable */, 0, AE_OK);
+    return (AtFixedEventsCommon(1 /* Disable */, 0, AE_OK));
 }
 
 /*
@@ -143,7 +143,7 @@ AtFixEvTest0002(void)
 ACPI_STATUS
 AtFixEvTest0003(void)
 {
-    return AtFixedEventsCommon(1 /* Disable */, 1, AE_BAD_PARAMETER);
+    return (AtFixedEventsCommon(1 /* Disable */, 1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -152,7 +152,7 @@ AtFixEvTest0003(void)
 ACPI_STATUS
 AtFixEvTest0004(void)
 {
-    return AtFixedEventsCommon(2 /* Clear */, 0, AE_OK);
+    return (AtFixedEventsCommon(2 /* Clear */, 0, AE_OK));
 }
 
 /*
@@ -161,7 +161,7 @@ AtFixEvTest0004(void)
 ACPI_STATUS
 AtFixEvTest0005(void)
 {
-    return AtFixedEventsCommon(2 /* Clear */, 1, AE_BAD_PARAMETER);
+    return (AtFixedEventsCommon(2 /* Clear */, 1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -170,7 +170,7 @@ AtFixEvTest0005(void)
 ACPI_STATUS
 AtFixEvTest0006(void)
 {
-    return AtFixedEventsCommon(3 /* Status */, 0, AE_OK);
+    return (AtFixedEventsCommon(3 /* Status */, 0, AE_OK));
 }
 
 /*
@@ -179,7 +179,7 @@ AtFixEvTest0006(void)
 ACPI_STATUS
 AtFixEvTest0007(void)
 {
-    return AtFixedEventsCommon(3 /* Status */, 1, AE_BAD_PARAMETER);
+    return (AtFixedEventsCommon(3 /* Status */, 1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -188,7 +188,7 @@ AtFixEvTest0007(void)
 ACPI_STATUS
 AtFixEvTest0008(void)
 {
-    return AtFixedEventsCommon(3 /* Status */, 2, AE_BAD_PARAMETER);
+    return (AtFixedEventsCommon(3 /* Status */, 2, AE_BAD_PARAMETER));
 }
 
 static UINT32           FixedEventHandlerCounter;
@@ -210,7 +210,7 @@ AtFixedEventHandler0 (
             Context, FixedEventHandlerContext, ACPI_NUM_FIXED_EVENTS);
     }
 
-    return 0;
+    return (0);
 }
 
 UINT32
@@ -229,7 +229,7 @@ AtFixedEventHandler1 (
             Context, FixedEventHandlerContext, ACPI_NUM_FIXED_EVENTS);
     }
 
-    return 0;
+    return (0);
 }
 
 UINT32
@@ -248,7 +248,7 @@ AtFixedEventHandler2 (
             Context, FixedEventHandlerContext, ACPI_NUM_FIXED_EVENTS);
     }
 
-    return 0;
+    return (0);
 }
 
 static ACPI_EVENT_HANDLER   FixedEventHandlers[ACPI_NUM_FIXED_EVENTS] = {
@@ -272,7 +272,7 @@ AtInstallFixedEventHandlerCommon(
         AAPITS_EN_FLAGS | ACPI_NO_HANDLER_INIT, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 4)
@@ -282,7 +282,7 @@ AtInstallFixedEventHandlerCommon(
             TestErrors++;
             printf ("Test Error: ExpectedStatus %s != AE_ALREADY_EXISTS\n",
                 AcpiFormatException(ExpectedStatus));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         ExpectedStatus = AE_OK;
     }
@@ -311,7 +311,7 @@ AtInstallFixedEventHandlerCommon(
             TestErrors++;
             printf ("Test Error: the number of Fixed Events (%d) too big (should be 5)\n",
                 ACPI_NUM_FIXED_EVENTS);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         EventHandler = FixedEventHandlers[i];
 
@@ -336,7 +336,7 @@ AtInstallFixedEventHandlerCommon(
                 TestErrors++;
                 printf ("Test error: OsxfCtrlSet returned %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
 
@@ -350,7 +350,7 @@ AtInstallFixedEventHandlerCommon(
         {
             TestSkipped++;
             printf ("Test note: test action hasn't occur\n");
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         TestPass++;
 
@@ -363,11 +363,11 @@ AtInstallFixedEventHandlerCommon(
                 AcpiFormatException(ExpectedStatus));
             if (Status != AE_OK)
             {
-                return Status;
+                return (Status);
             }
             else
             {
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
@@ -405,7 +405,7 @@ AtInstallFixedEventHandlerCommon(
                     " expected %s\n",
                     Event, EventHandler, AcpiFormatException(Status),
                     AcpiFormatException(AE_ALREADY_EXISTS));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
@@ -415,10 +415,10 @@ AtInstallFixedEventHandlerCommon(
         AapiErrors++;
         printf ("Api Error: FixedEvent Handler invoked %d times\n",
             FixedEventHandlerCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -428,7 +428,7 @@ AtInstallFixedEventHandlerCommon(
 ACPI_STATUS
 AtFixEvTest0009(void)
 {
-    return AtInstallFixedEventHandlerCommon(0, AE_OK);
+    return (AtInstallFixedEventHandlerCommon(0, AE_OK));
 }
 
 /*
@@ -438,7 +438,7 @@ AtFixEvTest0009(void)
 ACPI_STATUS
 AtFixEvTest0010(void)
 {
-    return AtInstallFixedEventHandlerCommon(1, AE_BAD_PARAMETER);
+    return (AtInstallFixedEventHandlerCommon(1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -448,7 +448,7 @@ AtFixEvTest0010(void)
 ACPI_STATUS
 AtFixEvTest0011(void)
 {
-    return AtInstallFixedEventHandlerCommon(2, AE_BAD_PARAMETER);
+    return (AtInstallFixedEventHandlerCommon(2, AE_BAD_PARAMETER));
 }
 
 /*
@@ -458,7 +458,7 @@ AtFixEvTest0011(void)
 ACPI_STATUS
 AtFixEvTest0012(void)
 {
-    return AtInstallFixedEventHandlerCommon(3, AE_ERROR);
+    return (AtInstallFixedEventHandlerCommon(3, AE_ERROR));
 }
 
 /*
@@ -468,7 +468,7 @@ AtFixEvTest0012(void)
 ACPI_STATUS
 AtFixEvTest0013(void)
 {
-    return AtInstallFixedEventHandlerCommon(4, AE_ALREADY_EXISTS);
+    return (AtInstallFixedEventHandlerCommon(4, AE_ALREADY_EXISTS));
 }
 
 ACPI_STATUS
@@ -487,7 +487,7 @@ AtRemoveFixedEventHandlerCommon(
         AAPITS_EN_FLAGS | ACPI_NO_HANDLER_INIT, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     FixedEventHandlerCounter = 0;
@@ -518,7 +518,7 @@ AtRemoveFixedEventHandlerCommon(
             TestErrors++;
             printf ("Test Error: the number of Fixed Events (%d) too big (should be 5)\n",
                 ACPI_NUM_FIXED_EVENTS);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         EventHandler = FixedEventHandlers[i];
 
@@ -531,7 +531,7 @@ AtRemoveFixedEventHandlerCommon(
             AapiErrors++;
             printf ("Api Error: AcpiInstallFixedEventHandler(%d) returned %s\n",
                 Event, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
@@ -578,7 +578,7 @@ AtRemoveFixedEventHandlerCommon(
                 TestErrors++;
                 printf ("Test error: OsxfCtrlSet returned %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
         else if (CheckAction == 4)
@@ -593,7 +593,7 @@ AtRemoveFixedEventHandlerCommon(
         {
             TestSkipped++;
             printf ("Test note: test action hasn't occur\n");
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         TestPass++;
 
@@ -606,11 +606,11 @@ AtRemoveFixedEventHandlerCommon(
                 AcpiFormatException(ExpectedStatus));
             if (Status != AE_OK)
             {
-                return Status;
+                return (Status);
             }
             else
             {
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
@@ -620,10 +620,10 @@ AtRemoveFixedEventHandlerCommon(
         AapiErrors++;
         printf ("Api Error: FixedEvent Handler invoked %d times\n",
             FixedEventHandlerCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -633,7 +633,7 @@ AtRemoveFixedEventHandlerCommon(
 ACPI_STATUS
 AtFixEvTest0014(void)
 {
-    return AtRemoveFixedEventHandlerCommon(0, AE_OK);
+    return (AtRemoveFixedEventHandlerCommon(0, AE_OK));
 }
 
 /*
@@ -643,7 +643,7 @@ AtFixEvTest0014(void)
 ACPI_STATUS
 AtFixEvTest0015(void)
 {
-    return AtRemoveFixedEventHandlerCommon(1, AE_BAD_PARAMETER);
+    return (AtRemoveFixedEventHandlerCommon(1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -653,7 +653,7 @@ AtFixEvTest0015(void)
 ACPI_STATUS
 AtFixEvTest0016(void)
 {
-    return AtRemoveFixedEventHandlerCommon(2, AE_BAD_PARAMETER);
+    return (AtRemoveFixedEventHandlerCommon(2, AE_BAD_PARAMETER));
 }
 
 /*
@@ -663,7 +663,7 @@ AtFixEvTest0016(void)
 ACPI_STATUS
 AtFixEvTest0017(void)
 {
-    return AtRemoveFixedEventHandlerCommon(3, AE_ERROR);
+    return (AtRemoveFixedEventHandlerCommon(3, AE_ERROR));
 }
 
 /*
@@ -673,7 +673,7 @@ AtFixEvTest0017(void)
 ACPI_STATUS
 AtFixEvTest0018(void)
 {
-    return AtRemoveFixedEventHandlerCommon(4, AE_BAD_PARAMETER);
+    return (AtRemoveFixedEventHandlerCommon(4, AE_BAD_PARAMETER));
 }
 
 /*
@@ -683,5 +683,5 @@ AtFixEvTest0018(void)
 ACPI_STATUS
 AtFixEvTest0019(void)
 {
-    return AtRemoveFixedEventHandlerCommon(5, AE_NOT_EXIST);
+    return (AtRemoveFixedEventHandlerCommon(5, AE_NOT_EXIST));
 }

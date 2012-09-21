@@ -151,7 +151,7 @@ ACPI_STATUS
 AtInitializeTables (
     BOOLEAN                 AllowResize)
 {
-    return AcpiInitializeTables(Tables, ACPI_MAX_INIT_TABLES, AllowResize);
+    return (AcpiInitializeTables(Tables, ACPI_MAX_INIT_TABLES, AllowResize));
 }
 
 
@@ -756,7 +756,7 @@ AtBuildLocalXSDT (
         printf ("Test Error in AtBuildLocalXSDT: instances"
             " for RSDP (%d) should be < %d\n",
             i, RSDT_TABLES);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     LocalXSDT->Header.Length = ((ACPI_SIZE) i * sizeof (UINT64)) +
@@ -776,7 +776,7 @@ AtBuildLocalXSDT (
         LocalXSDT->Header.Checksum = (UINT8)~LocalXSDT->Header.Checksum;
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -1048,7 +1048,7 @@ AeGetRegionBufferAddress (
     if ((RegionObject->Region.Type != ACPI_TYPE_REGION) ||
         (RegionObject->Region.SpaceId == ACPI_ADR_SPACE_SMBUS))
     {
-        return RetAddress;
+        return (RetAddress);
     }
 
     /*
@@ -1097,7 +1097,7 @@ AeGetRegionBufferAddress (
         RegionElement = malloc (sizeof (REGION));
         if (!RegionElement)
         {
-            return RetAddress;
+            return (RetAddress);
         }
 
 /*
@@ -1110,7 +1110,7 @@ AeGetRegionBufferAddress (
             AcpiOsFree (RegionElement);
 */
             free (RegionElement);
-            return RetAddress;
+            return (RetAddress);
         }
 
         ACPI_MEMSET (RegionElement->Buffer, 0, Length);
@@ -1135,7 +1135,7 @@ AeGetRegionBufferAddress (
         RetAddress = (ACPI_PHYSICAL_ADDRESS) RegionElement->Buffer;
     }
 
-    return RetAddress;
+    return (RetAddress);
 }
 
 
@@ -1225,7 +1225,7 @@ AeSmbusRegionHandler (
     ((UINT8 *) Value)[0] = 0x7A;
     ((UINT8 *) Value)[1] = (UINT8) Length;
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -1267,7 +1267,7 @@ AeRegionHandler (
      */
     if (RegionObject->Region.Type != ACPI_TYPE_REGION)
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
     /*
@@ -1283,13 +1283,13 @@ AeRegionHandler (
 
     if (RegionObject->Region.SpaceId == ACPI_ADR_SPACE_SMBUS)
     {
-        return AeSmbusRegionHandler(Function, Value);
+        return (AeSmbusRegionHandler(Function, Value));
     }
 
     BufferAddress = AeGetRegionBufferAddress(RegionObject);
     if (!BufferAddress)
     {
-        return AE_NO_MEMORY;
+        return (AE_NO_MEMORY);
     }
 
     /*
@@ -1317,7 +1317,7 @@ AeRegionHandler (
             (RegionObject->Region.Node)->Name.Ascii, (UINT32) Address,
             ByteWidth, (UINT32) BufferAddress, Length));
 
-        return AE_AML_REGION_LIMIT;
+        return (AE_AML_REGION_LIMIT);
     }
 
     /*
@@ -1346,9 +1346,9 @@ AeRegionHandler (
         break;
 
     default:
-        return AE_BAD_PARAMETER;
+        return (AE_BAD_PARAMETER);
     }
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -1376,7 +1376,7 @@ AeRegionInit (
      */
     *RegionContext = RegionHandle;
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -1469,7 +1469,7 @@ AeInstallHandlers (void)
     AeRegions.NumberOfRegions = 0;
     AeRegions.RegionList = NULL;
 
-    return Status;
+    return (Status);
 }
 
 
@@ -1583,7 +1583,7 @@ AtAMLcodeFileNameSet(
     {
         TestErrors++;
         printf ("Test Error: AML code FileDir Name path is not specified\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (strlen(AtAMLcodeFileDir) + strlen(CodeName) + 1 >= AT_PATHNAME_MAX)
@@ -1591,7 +1591,7 @@ AtAMLcodeFileNameSet(
         TestErrors++;
         printf ("Test Error: AML code FileName path (%s + %s) is too long\n",
             AtAMLcodeFileDir, CodeName);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     strcpy(PathName, AtAMLcodeFileDir);
@@ -1599,7 +1599,7 @@ AtAMLcodeFileNameSet(
     strcat(PathName, CodeName);
     AtAMLcodeFileName = PathName;
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -1654,7 +1654,7 @@ AtCheckInteger(
             AapiErrors++;
             printf ("API Error: AcpiGetName(0x%p) returned %s\n",
                 ObjHandle, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
         Path = (ACPI_STRING) OutName.Pointer;
     }
@@ -1664,7 +1664,7 @@ AtCheckInteger(
         AapiErrors++;
         printf ("API Error: AcpiEvaluateObject(%s) returned %s\n",
             Path, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AE_OK;
@@ -1688,7 +1688,7 @@ AtCheckInteger(
         Status = AE_ERROR;
     }
 
-    return Status;
+    return (Status);
 }
 
 
@@ -1728,7 +1728,7 @@ AtCheckBytes(
             break;
         }
     }
-    return Status;
+    return (Status);
 }
 
 
@@ -1763,7 +1763,7 @@ AtCheckString(
         TestErrors++;
         printf ("Test Error: cant allocate buffer of %d bytes\n",
             Results.Length);
-        return AE_NO_MEMORY;
+        return (AE_NO_MEMORY);
     }
     Results.Pointer = Object;
     memset(Results.Pointer, 0, Results.Length);
@@ -1801,7 +1801,7 @@ AtCheckString(
 Cleanup:
     free(Object);
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -1836,7 +1836,7 @@ AtCheckBuffer(
         AapiErrors++;
         printf ("API Error: AcpiEvaluateObject(%s) returned %s\n",
             Path, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (Results.Length != ACPI_ROUND_UP_TO_NATIVE_WORD(sizeof (ACPI_OBJECT) + Length))
@@ -1853,7 +1853,7 @@ AtCheckBuffer(
         TestErrors++;
         printf ("Test Error: cant allocate buffer of %d bytes\n",
             Results.Length);
-        return AE_NO_MEMORY;
+        return (AE_NO_MEMORY);
     }
     Results.Pointer = Object;
     memset(Results.Pointer, 0, Results.Length);
@@ -1896,7 +1896,7 @@ AtCheckBuffer(
 Cleanup:
     free(Object);
 
-    return Status;
+    return (Status);
 }
 
 
@@ -1928,7 +1928,7 @@ AtCheckName(
         AapiErrors++;
         printf ("API Error: AcpiGetName(0x%p) returned %s\n",
             ObjHandle, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (strcmp(CheckName, (char *)OutName.Pointer))
@@ -1942,7 +1942,7 @@ AtCheckName(
 
     AcpiOsFree(OutName.Pointer);
 
-    return Status;
+    return (Status);
 }
 
 
@@ -1951,14 +1951,14 @@ AeIndexFieldHandler (
     ACPI_OBJECT_INDEX_FIELD *IndexField,
     UINT32                  ReadWrite)
 {
-    return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
 AeBankFieldHandler (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -2004,6 +2004,6 @@ AtAuxiliarySsdt(
                 AcpiFormatException(Status));
         }
     }
-    return Status;
+    return (Status);
 }
 

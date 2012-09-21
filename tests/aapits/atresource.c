@@ -31,7 +31,7 @@ AtRsrcTest0000(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -39,7 +39,7 @@ AtRsrcTest0000(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -48,7 +48,7 @@ AtRsrcTest0000(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetCurrentResources (Device, &OutBuffer);
@@ -57,7 +57,7 @@ AtRsrcTest0000(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetCurrentResources(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (OutBuffer.Length != RT0000_DEV0_CRS_LEN)
@@ -66,7 +66,7 @@ AtRsrcTest0000(void)
         printf ("API Error: AcpiGetCurrentResources(%s) returned Length %d,"
             " expected %d\n",
             Pathname, OutBuffer.Length, RT0000_DEV0_CRS_LEN);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     /*
@@ -129,7 +129,7 @@ AtRsrcTest0000(void)
 
     AcpiOsFree(OutBuffer.Pointer);
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -145,7 +145,7 @@ AtRsrcTest0001(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -153,12 +153,12 @@ AtRsrcTest0001(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -167,13 +167,13 @@ AtRsrcTest0001(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /* Make Device handle invalid by unloading SSDT table*/
     if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetCurrentResources (Device, &OutBuffer);
@@ -183,10 +183,10 @@ AtRsrcTest0001(void)
         printf ("Api Error: AcpiGetCurrentResources(%s) returned %s,"
             " expected AE_BAD_PARAMETER\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -201,7 +201,7 @@ AtRsrcTest0002(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -209,7 +209,7 @@ AtRsrcTest0002(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -218,7 +218,7 @@ AtRsrcTest0002(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetCurrentResources (Device, NULL);
@@ -228,10 +228,10 @@ AtRsrcTest0002(void)
         printf ("Api Error: AcpiGetCurrentResources(%s) returned %s,"
             " expected AE_BAD_PARAMETER\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -247,7 +247,7 @@ AtRsrcTest0003(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -255,7 +255,7 @@ AtRsrcTest0003(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -264,7 +264,7 @@ AtRsrcTest0003(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     OutBuffer.Length = 1;
@@ -277,10 +277,10 @@ AtRsrcTest0003(void)
         printf ("Api Error: AcpiGetCurrentResources(%s) returned %s,"
             " expected AE_BAD_PARAMETER\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -296,7 +296,7 @@ AtRsrcTest0004(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -304,7 +304,7 @@ AtRsrcTest0004(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -313,7 +313,7 @@ AtRsrcTest0004(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetCurrentResources (Device, &OutBuffer);
@@ -323,10 +323,10 @@ AtRsrcTest0004(void)
         printf ("Api Error: AcpiGetCurrentResources(%s) returned %s,"
             " expected AE_TYPE\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -343,7 +343,7 @@ AtRsrcTest0005(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -351,7 +351,7 @@ AtRsrcTest0005(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -360,7 +360,7 @@ AtRsrcTest0005(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     OutBuffer.Length = 4;
@@ -373,7 +373,7 @@ AtRsrcTest0005(void)
         printf ("Api Error: AcpiGetCurrentResources(%s) returned %s,"
             " expected AE_BUFFER_OVERFLOW\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (OutBuffer.Length != RT0000_DEV0_CRS_LEN)
@@ -382,10 +382,10 @@ AtRsrcTest0005(void)
         printf ("API Error: AcpiGetCurrentResources(%s) returned Length %d,"
             " expected %d\n",
             Pathname, OutBuffer.Length, RT0000_DEV0_CRS_LEN);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 ACPI_STATUS
@@ -416,7 +416,7 @@ AtGetCurrentResourcesExceptionTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -425,7 +425,7 @@ AtGetCurrentResourcesExceptionTest(
             AapiErrors++;
             printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                 Pathname, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -434,7 +434,7 @@ AtGetCurrentResourcesExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetCurrentResources (Device, &OutBuffer);
@@ -457,7 +457,7 @@ AtGetCurrentResourcesExceptionTest(
                 printf ("API Error: AcpiGetCurrentResources returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
         if (ACPI_SUCCESS(Status))
@@ -468,17 +468,17 @@ AtGetCurrentResourcesExceptionTest(
         Status = AtTerminateCtrlCheck(AE_OK, CtrlCheck);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -491,7 +491,7 @@ AtRsrcTest0006(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -503,16 +503,16 @@ AtRsrcTest0006(void)
         AE_NO_MEMORY);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
      * AcpiOsAllocate returns NULL one time on the specified call
      */
-    return AtGetCurrentResourcesExceptionTest(
+    return (AtGetCurrentResourcesExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
-        AE_NO_MEMORY);
+        AE_NO_MEMORY));
 }
 
 /*
@@ -529,7 +529,7 @@ AtRsrcTest0007(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -537,7 +537,7 @@ AtRsrcTest0007(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -546,7 +546,7 @@ AtRsrcTest0007(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetPossibleResources (Device, &OutBuffer);
@@ -555,7 +555,7 @@ AtRsrcTest0007(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetPossibleResources(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /*
@@ -620,7 +620,7 @@ AtRsrcTest0007(void)
 
     AcpiOsFree(OutBuffer.Pointer);
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -636,7 +636,7 @@ AtRsrcTest0008(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -644,12 +644,12 @@ AtRsrcTest0008(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -658,13 +658,13 @@ AtRsrcTest0008(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /* Make Device handle invalid by unloading SSDT table*/
     if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetPossibleResources (Device, &OutBuffer);
@@ -674,10 +674,10 @@ AtRsrcTest0008(void)
         printf ("Api Error: AcpiGetPossibleResources(%s) returned %s,"
             " expected AE_BAD_PARAMETER\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -692,7 +692,7 @@ AtRsrcTest0009(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -700,7 +700,7 @@ AtRsrcTest0009(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -709,7 +709,7 @@ AtRsrcTest0009(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetPossibleResources (Device, NULL);
@@ -719,10 +719,10 @@ AtRsrcTest0009(void)
         printf ("Api Error: AcpiGetPossibleResources(%s) returned %s,"
             " expected AE_BAD_PARAMETER\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -738,7 +738,7 @@ AtRsrcTest0010(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -746,7 +746,7 @@ AtRsrcTest0010(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -755,7 +755,7 @@ AtRsrcTest0010(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     OutBuffer.Length = 1;
@@ -768,10 +768,10 @@ AtRsrcTest0010(void)
         printf ("Api Error: AcpiGetPossibleResources(%s) returned %s,"
             " expected AE_BAD_PARAMETER\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -787,7 +787,7 @@ AtRsrcTest0011(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -795,7 +795,7 @@ AtRsrcTest0011(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -804,7 +804,7 @@ AtRsrcTest0011(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetPossibleResources (Device, &OutBuffer);
@@ -814,10 +814,10 @@ AtRsrcTest0011(void)
         printf ("Api Error: AcpiGetPossibleResources(%s) returned %s,"
             " expected AE_TYPE\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -834,7 +834,7 @@ AtRsrcTest0012(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -842,7 +842,7 @@ AtRsrcTest0012(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -851,7 +851,7 @@ AtRsrcTest0012(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     OutBuffer.Length = 4;
@@ -864,7 +864,7 @@ AtRsrcTest0012(void)
         printf ("Api Error: AcpiGetPossibleResources(%s) returned %s,"
             " expected AE_BUFFER_OVERFLOW\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (OutBuffer.Length != RT0000_DEV0_CRS_LEN)
@@ -873,10 +873,10 @@ AtRsrcTest0012(void)
         printf ("API Error: AcpiGetPossibleResources(%s) returned Length %d,"
             " expected %d\n",
             Pathname, OutBuffer.Length, RT0000_DEV0_CRS_LEN);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 ACPI_STATUS
@@ -907,7 +907,7 @@ AtGetPossibleResourcesExceptionTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -916,7 +916,7 @@ AtGetPossibleResourcesExceptionTest(
             AapiErrors++;
             printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                 Pathname, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -925,7 +925,7 @@ AtGetPossibleResourcesExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetPossibleResources (Device, &OutBuffer);
@@ -948,7 +948,7 @@ AtGetPossibleResourcesExceptionTest(
                 printf ("API Error: AcpiGetPossibleResources returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
         if (ACPI_SUCCESS(Status))
@@ -959,17 +959,17 @@ AtGetPossibleResourcesExceptionTest(
         Status = AtTerminateCtrlCheck(AE_OK, CtrlCheck);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -982,7 +982,7 @@ AtRsrcTest0013(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -994,16 +994,16 @@ AtRsrcTest0013(void)
         AE_NO_MEMORY);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
      * AcpiOsAllocate returns NULL one time on the specified call
      */
-    return AtGetPossibleResourcesExceptionTest(
+    return (AtGetPossibleResourcesExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
-        AE_NO_MEMORY);
+        AE_NO_MEMORY));
 }
 
 ACPI_RESOURCE           Resource[2];
@@ -1049,7 +1049,7 @@ AtRsrcTest0014(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1057,7 +1057,7 @@ AtRsrcTest0014(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -1066,7 +1066,7 @@ AtRsrcTest0014(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     AtInitResourceBuffer(&InBuffer);
@@ -1080,10 +1080,10 @@ AtRsrcTest0014(void)
         AapiErrors++;
         printf ("Api Error: AcpiSetCurrentResources(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1099,7 +1099,7 @@ AtRsrcTest0015(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1107,12 +1107,12 @@ AtRsrcTest0015(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -1121,13 +1121,13 @@ AtRsrcTest0015(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /* Make Device handle invalid by unloading SSDT table*/
     if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
     {
-        return Status;
+        return (Status);
     }
 
     AtInitResourceBuffer(&InBuffer);
@@ -1139,10 +1139,10 @@ AtRsrcTest0015(void)
         printf ("Api Error: AcpiSetCurrentResources(%s) returned %s,"
             " expected AE_BAD_PARAMETER\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1157,7 +1157,7 @@ AtRsrcTest0016(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1165,7 +1165,7 @@ AtRsrcTest0016(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -1174,7 +1174,7 @@ AtRsrcTest0016(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiSetCurrentResources (Device, NULL);
@@ -1184,10 +1184,10 @@ AtRsrcTest0016(void)
         printf ("Api Error: AcpiSetCurrentResources(%s) returned %s,"
             " expected AE_BAD_PARAMETER\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1203,7 +1203,7 @@ AtRsrcTest0017(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1211,7 +1211,7 @@ AtRsrcTest0017(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -1220,7 +1220,7 @@ AtRsrcTest0017(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     InBuffer.Length = 1;
@@ -1233,10 +1233,10 @@ AtRsrcTest0017(void)
         printf ("Api Error: AcpiSetCurrentResources(%s) returned %s,"
             " expected AE_BAD_PARAMETER\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1252,7 +1252,7 @@ AtRsrcTest0018(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1260,7 +1260,7 @@ AtRsrcTest0018(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -1269,7 +1269,7 @@ AtRsrcTest0018(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     AtInitResourceBuffer(&InBuffer);
@@ -1282,10 +1282,10 @@ AtRsrcTest0018(void)
         printf ("Api Error: AcpiSetCurrentResources(%s) returned %s,"
             " expected AE_BAD_PARAMETER\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1301,7 +1301,7 @@ AtRsrcTest0019(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1309,7 +1309,7 @@ AtRsrcTest0019(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -1318,7 +1318,7 @@ AtRsrcTest0019(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     AtInitResourceBuffer(&InBuffer);
@@ -1330,10 +1330,10 @@ AtRsrcTest0019(void)
         printf ("Api Error: AcpiSetCurrentResources(%s) returned %s,"
             " expected AE_TYPE\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 ACPI_STATUS
@@ -1364,7 +1364,7 @@ AtSetCurrentResourcesExceptionTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -1373,7 +1373,7 @@ AtSetCurrentResourcesExceptionTest(
             AapiErrors++;
             printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                 Pathname, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -1382,7 +1382,7 @@ AtSetCurrentResourcesExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         AtInitResourceBuffer(&InBuffer);
@@ -1407,24 +1407,24 @@ AtSetCurrentResourcesExceptionTest(
                 printf ("API Error: AcpiSetCurrentResources returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, CtrlCheck);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1437,7 +1437,7 @@ AtRsrcTest0020(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -1449,16 +1449,16 @@ AtRsrcTest0020(void)
         AE_NO_MEMORY);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
      * AcpiOsAllocate returns NULL one time on the specified call
      */
-    return AtSetCurrentResourcesExceptionTest(
+    return (AtSetCurrentResourcesExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
-        AE_NO_MEMORY);
+        AE_NO_MEMORY));
 }
 
 /*
@@ -1477,7 +1477,7 @@ AtRsrcTest0021(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1485,7 +1485,7 @@ AtRsrcTest0021(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -1494,7 +1494,7 @@ AtRsrcTest0021(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetIrqRoutingTable (Device, &OutBuffer);
@@ -1503,7 +1503,7 @@ AtRsrcTest0021(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetIrqRoutingTable(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /*
@@ -1562,7 +1562,7 @@ AtRsrcTest0021(void)
 
     AcpiOsFree(OutBuffer.Pointer);
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1578,7 +1578,7 @@ AtRsrcTest0022(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1586,12 +1586,12 @@ AtRsrcTest0022(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -1600,13 +1600,13 @@ AtRsrcTest0022(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /* Make Device handle invalid by unloading SSDT table*/
     if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetIrqRoutingTable (Device, &OutBuffer);
@@ -1616,10 +1616,10 @@ AtRsrcTest0022(void)
         printf ("Api Error: AcpiGetIrqRoutingTable(%s) returned %s,"
             " expected AE_BAD_PARAMETER\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1634,7 +1634,7 @@ AtRsrcTest0023(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1642,7 +1642,7 @@ AtRsrcTest0023(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -1651,7 +1651,7 @@ AtRsrcTest0023(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetIrqRoutingTable (Device, NULL);
@@ -1661,10 +1661,10 @@ AtRsrcTest0023(void)
         printf ("Api Error: AcpiGetIrqRoutingTable(%s) returned %s,"
             " expected AE_BAD_PARAMETER\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1680,7 +1680,7 @@ AtRsrcTest0024(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1688,7 +1688,7 @@ AtRsrcTest0024(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -1697,7 +1697,7 @@ AtRsrcTest0024(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     OutBuffer.Length = 1;
@@ -1710,10 +1710,10 @@ AtRsrcTest0024(void)
         printf ("Api Error: AcpiGetIrqRoutingTable(%s) returned %s,"
             " expected AE_BAD_PARAMETER\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1729,7 +1729,7 @@ AtRsrcTest0025(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1737,7 +1737,7 @@ AtRsrcTest0025(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -1746,7 +1746,7 @@ AtRsrcTest0025(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetIrqRoutingTable (Device, &OutBuffer);
@@ -1756,10 +1756,10 @@ AtRsrcTest0025(void)
         printf ("Api Error: AcpiGetIrqRoutingTable(%s) returned %s,"
             " expected AE_TYPE\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1776,7 +1776,7 @@ AtRsrcTest0026(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1784,7 +1784,7 @@ AtRsrcTest0026(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -1793,7 +1793,7 @@ AtRsrcTest0026(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     OutBuffer.Length = 4;
@@ -1806,7 +1806,7 @@ AtRsrcTest0026(void)
         printf ("Api Error: AcpiGetIrqRoutingTable(%s) returned %s,"
             " expected AE_BUFFER_OVERFLOW\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (OutBuffer.Length != 0xB8)
@@ -1815,10 +1815,10 @@ AtRsrcTest0026(void)
         printf ("API Error: AcpiGetIrqRoutingTable(%s) returned Length %d,"
             " expected %d\n",
             Pathname, OutBuffer.Length, 0xA48);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 ACPI_STATUS
@@ -1849,7 +1849,7 @@ AtGetIRQRoutingTableExceptionTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -1858,7 +1858,7 @@ AtGetIRQRoutingTableExceptionTest(
             AapiErrors++;
             printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                 Pathname, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -1867,7 +1867,7 @@ AtGetIRQRoutingTableExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetIrqRoutingTable (Device, &OutBuffer);
@@ -1890,7 +1890,7 @@ AtGetIRQRoutingTableExceptionTest(
                 printf ("API Error: AcpiGetIrqRoutingTable returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
         if (ACPI_SUCCESS(Status))
@@ -1901,17 +1901,17 @@ AtGetIRQRoutingTableExceptionTest(
         Status = AtTerminateCtrlCheck(AE_OK, CtrlCheck);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1924,7 +1924,7 @@ AtRsrcTest0027(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -1936,16 +1936,16 @@ AtRsrcTest0027(void)
         AE_NO_MEMORY);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
      * AcpiOsAllocate returns NULL one time on the specified call
      */
-    return AtGetIRQRoutingTableExceptionTest(
+    return (AtGetIRQRoutingTableExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
-        AE_NO_MEMORY);
+        AE_NO_MEMORY));
 }
 
 static UINT32               WalkResourcesHandlerCounter;
@@ -2041,7 +2041,7 @@ AtWalkResourcesTestCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -2049,7 +2049,7 @@ AtWalkResourcesTestCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -2058,7 +2058,7 @@ AtWalkResourcesTestCommon(
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     WalkResourcesHandlerCounter = 0;
@@ -2075,7 +2075,7 @@ AtWalkResourcesTestCommon(
             Pathname, MethodPath,
             AcpiFormatException(Status),
             AcpiFormatException(ExpectedStatus));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (WalkResourcesHandlerCounter != ExpectedCounter)
@@ -2084,7 +2084,7 @@ AtWalkResourcesTestCommon(
         printf ("Api Error: WalkResourcesHandlerCounter (%d) !="
             "ExpectedCounter (%d)\n",
             WalkResourcesHandlerCounter, ExpectedCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (WalkResourcesHandlerLength != ExpectedLength)
@@ -2093,10 +2093,10 @@ AtWalkResourcesTestCommon(
         printf ("Api Error: WalkResourcesHandlerLength (%d) !="
             " ExpectedLength (%d)\n",
             WalkResourcesHandlerLength, ExpectedLength);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2111,17 +2111,17 @@ AtRsrcTest0028(void)
         25, RT0000_DEV0_CRS_LEN);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtWalkResourcesTestCommon("_PRS", AE_OK, AE_OK,
         25, RT0000_DEV0_CRS_LEN);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2136,17 +2136,17 @@ AtRsrcTest0029(void)
         25, RT0000_DEV0_CRS_LEN);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtWalkResourcesTestCommon("_PRS", AE_CTRL_DEPTH, AE_OK,
         25, RT0000_DEV0_CRS_LEN);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2160,16 +2160,16 @@ AtRsrcTest0030(void)
     Status = AtWalkResourcesTestCommon("_CRS", AE_CTRL_TERMINATE, AE_OK, 1, 16);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtWalkResourcesTestCommon("_PRS", AE_CTRL_TERMINATE, AE_OK, 1, 16);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2184,17 +2184,17 @@ AtRsrcTest0031(void)
         AE_ERROR, AE_ERROR, 1, 16);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtWalkResourcesTestCommon("_PRS",
         AE_ERROR, AE_ERROR, 1, 16);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2210,7 +2210,7 @@ AtRsrcTest0032(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -2218,12 +2218,12 @@ AtRsrcTest0032(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -2232,13 +2232,13 @@ AtRsrcTest0032(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /* Make Device handle invalid by unloading SSDT table*/
     if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
     {
-        return Status;
+        return (Status);
     }
 
         /* Empty cash to force actual memory allocations */
@@ -2248,7 +2248,7 @@ AtRsrcTest0032(void)
             AapiErrors++;
             printf ("API Error: AcpiPurgeCachedObjects() failure, %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
     WalkResourcesHandlerCounter = 0;
@@ -2263,7 +2263,7 @@ AtRsrcTest0032(void)
             " expected AE_BAD_PARAMETER\n",
             Pathname, "_CRS",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (WalkResourcesHandlerCounter != 0)
@@ -2272,10 +2272,10 @@ AtRsrcTest0032(void)
         printf ("Api Error: WalkResourcesHandlerCounter (%d) !="
             "ExpectedCounter (%d)\n",
             WalkResourcesHandlerCounter, 0);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2291,7 +2291,7 @@ AtRsrcTest0033(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -2299,7 +2299,7 @@ AtRsrcTest0033(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -2308,7 +2308,7 @@ AtRsrcTest0033(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     WalkResourcesHandlerCounter = 0;
@@ -2323,7 +2323,7 @@ AtRsrcTest0033(void)
             " expected AE_BAD_PARAMETER\n",
             Pathname, "_CRS",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (WalkResourcesHandlerCounter != 0)
@@ -2332,10 +2332,10 @@ AtRsrcTest0033(void)
         printf ("Api Error: WalkResourcesHandlerCounter (%d) !="
             "ExpectedCounter (%d)\n",
             WalkResourcesHandlerCounter, 0);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 ACPI_STATUS
@@ -2366,7 +2366,7 @@ AtWalkResourcesExceptionTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -2375,7 +2375,7 @@ AtWalkResourcesExceptionTest(
             AapiErrors++;
             printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                 Pathname, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -2384,7 +2384,7 @@ AtWalkResourcesExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         WalkResourcesHandlerCounter = 0;
@@ -2411,7 +2411,7 @@ AtWalkResourcesExceptionTest(
                 printf ("API Error: AcpiWalkResources returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
 
             if (WalkResourcesHandlerCounter != 0)
@@ -2420,24 +2420,24 @@ AtWalkResourcesExceptionTest(
                 printf ("Api Error: WalkResourcesHandlerCounter (%d) !="
                     "ExpectedCounter (%d)\n",
                     WalkResourcesHandlerCounter, 0);
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, CtrlCheck);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2450,7 +2450,7 @@ AtRsrcTest0034(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -2462,16 +2462,16 @@ AtRsrcTest0034(void)
         AE_NO_MEMORY);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
      * AcpiOsAllocate returns NULL one time on the specified call
      */
-    return AtWalkResourcesExceptionTest(
+    return (AtWalkResourcesExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
-        AE_NO_MEMORY);
+        AE_NO_MEMORY));
 }
 
 static	UINT8           Buffer0035[] =  {
@@ -2674,7 +2674,7 @@ AtRsrcTest0035(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0035.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -2682,13 +2682,13 @@ AtRsrcTest0035(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckBuffer("\\DEV0._PRS",
             sizeof (Buffer0035), Buffer0035)))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -2697,7 +2697,7 @@ AtRsrcTest0035(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetPossibleResources (Device, &OutBuffer);
@@ -2706,7 +2706,7 @@ AtRsrcTest0035(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetCurrentResources(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /* Add the flag to print contents of buffers */
@@ -2718,18 +2718,18 @@ AtRsrcTest0035(void)
         AapiErrors++;
         printf ("Api Error: AcpiSetCurrentResources(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckBuffer("\\DEV0.ECRS",
             sizeof (Buffer0035), Buffer0035)))
     {
-        return Status;
+        return (Status);
     }
 
     AcpiOsFree(OutBuffer.Pointer);
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 typedef struct {
@@ -3039,7 +3039,7 @@ AtRsrcTest0036(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0036.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     NumChecks = sizeof (BufLen0036) / sizeof (UINT32);
@@ -3049,7 +3049,7 @@ AtRsrcTest0036(void)
         printf ("Test error: NumChecks (%d) != sizeof (Buffer0036) /"
             " sizeof (UINT8ARR) (%d)\n",
             NumChecks, (UINT32)(sizeof (Buffer0036) / sizeof (UINT8ARR)));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     Status = AtSubsystemInit(
@@ -3057,7 +3057,7 @@ AtRsrcTest0036(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /* Add the flag to print contents of buffers */
@@ -3069,7 +3069,7 @@ AtRsrcTest0036(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < NumChecks; i++)
@@ -3084,7 +3084,7 @@ AtRsrcTest0036(void)
             AapiErrors++;
             printf ("Api Error: AcpiGetCurrentResources(%s) returned %s\n",
                 Pathname, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiSetCurrentResources (Device, &OutBuffer);
@@ -3093,7 +3093,7 @@ AtRsrcTest0036(void)
             AapiErrors++;
             printf ("Api Error: AcpiSetCurrentResources(%s) returned %s\n",
                 Pathname, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         (void)AtCheckBuffer("\\DEV0.ECRS", BufLen0036[i], Buffer0036[i].Bytes);
@@ -3101,7 +3101,7 @@ AtRsrcTest0036(void)
         AcpiOsFree(OutBuffer.Pointer);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 
@@ -3148,7 +3148,7 @@ static int acpi_pci_link_set(struct acpi_pci_link *link, int irq)
 
 
 	if (!link || !irq)
-		return -1;
+		return (-1);
 
 	memset(resource, 0, sizeof(resource_obj));
 	buffer.Length = sizeof(resource_obj);
@@ -3210,7 +3210,7 @@ static int acpi_pci_link_set(struct acpi_pci_link *link, int irq)
 ...
  */
       end:
-	return result;
+	return (result);
 }
 
 ACPI_STATUS
@@ -3225,7 +3225,7 @@ AtRsrcTest0037(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("rt0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -3233,7 +3233,7 @@ AtRsrcTest0037(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Device);
@@ -3242,7 +3242,7 @@ AtRsrcTest0037(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /* Add the flag to print contents of buffers */
@@ -3252,7 +3252,7 @@ AtRsrcTest0037(void)
     Status =  AtTerminateCtrlCheck(AE_OK, ALL_STAT);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 */
 
@@ -3276,8 +3276,8 @@ AtRsrcTest0037(void)
     {
         printf ("acpi_pci_link_set: %d errors\n",
             NumErr);
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }

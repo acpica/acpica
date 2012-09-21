@@ -24,7 +24,7 @@ AtHardwTest0000(void)
         AAPITS_EN_FLAGS/* | ACPI_NO_ACPI_ENABLE*/, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /* Legacy */
@@ -34,7 +34,7 @@ AtHardwTest0000(void)
         TestErrors++;
         printf ("AcpiOsWritePort(0x00000001, 0x00000000, 0x00000008) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /* Status */
@@ -44,7 +44,7 @@ AtHardwTest0000(void)
         TestErrors++;
         printf ("AcpiOsWritePort(0x000000b0, 0x00000000, 0x00000010) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
 /*
@@ -56,10 +56,10 @@ AtHardwTest0000(void)
         AapiErrors++;
         printf ("API error: AcpiEnable() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -77,7 +77,7 @@ AtHardwTest0001(void)
         AAPITS_EN_FLAGS/* | ACPI_NO_ACPI_ENABLE*/, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /* Legacy */
@@ -87,7 +87,7 @@ AtHardwTest0001(void)
         TestErrors++;
         printf ("AcpiOsWritePort(0x00000001, 0x00000000, 0x00000008) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /* Status */
@@ -97,7 +97,7 @@ AtHardwTest0001(void)
         TestErrors++;
         printf ("AcpiOsWritePort(0x000000b0, 0x00000000, 0x00000010) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiEnable();
@@ -106,10 +106,10 @@ AtHardwTest0001(void)
         AapiErrors++;
         printf ("API error: AcpiEnable() returned %s, expected AE_ERROR\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -125,7 +125,7 @@ AtHardwTest0002(void)
         AAPITS_EN_FLAGS/* | ACPI_NO_ACPI_ENABLE*/, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /* Legacy */
@@ -135,7 +135,7 @@ AtHardwTest0002(void)
         TestErrors++;
         printf ("AcpiOsWritePort(0x00000001, 0x00000000, 0x00000008) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /* Status */
@@ -145,7 +145,7 @@ AtHardwTest0002(void)
         TestErrors++;
         printf ("AcpiOsWritePort(0x000000b0, 0x00000000, 0x00000010) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiEnable();
@@ -154,10 +154,10 @@ AtHardwTest0002(void)
         AapiErrors++;
         printf ("API error: AcpiEnable() returned %s, expected AE_ERROR\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -171,7 +171,7 @@ AtHardwTest0003(void)
     Status = AtSubsystemInit(AAPITS_INITIALIZE_SS, 0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /* Legacy */
@@ -181,7 +181,7 @@ AtHardwTest0003(void)
         TestErrors++;
         printf ("AcpiOsWritePort(0x00000001, 0x00000000, 0x00000008) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /* Status */
@@ -191,7 +191,7 @@ AtHardwTest0003(void)
         TestErrors++;
         printf ("AcpiOsWritePort(0x000000b0, 0x00000000, 0x00000010) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiEnable();
@@ -200,10 +200,10 @@ AtHardwTest0003(void)
         AapiErrors++;
         printf ("API error: AcpiEnable() returned %s, expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_NO_ACPI_TABLES));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -219,7 +219,7 @@ AtHardwTest0004(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
 /*
@@ -231,10 +231,10 @@ AtHardwTest0004(void)
         AapiErrors++;
         printf ("API error: AcpiDisable() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -250,7 +250,7 @@ AtHardwTest0005(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiDisable();
@@ -259,10 +259,10 @@ AtHardwTest0005(void)
         AapiErrors++;
         printf ("API error: AcpiDisable() returned %s, expected AE_ERROR\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /* Bit registers interface Ids */
@@ -373,42 +373,42 @@ IsBitRegOfType(UINT32 RegisterId, UINT32 RegIds[], UINT32 NumIds)
             break;
         }
     }
-    return Ret;
+    return (Ret);
 }
 
 UINT32
 IsStatusRegister(UINT32 RegisterId)
 {
-    return IsBitRegOfType(RegisterId, StatusRegIds,
-        sizeof (StatusRegIds) / sizeof (UINT32));
+    return (IsBitRegOfType(RegisterId, StatusRegIds,
+        sizeof (StatusRegIds) / sizeof (UINT32)));
 }
 
 UINT32
 IsEnableRegister(UINT32 RegisterId)
 {
-    return IsBitRegOfType(RegisterId, EnableRegIds,
-        sizeof (EnableRegIds) / sizeof (UINT32));
+    return (IsBitRegOfType(RegisterId, EnableRegIds,
+        sizeof (EnableRegIds) / sizeof (UINT32)));
 }
 
 UINT32
 IsControlRegister(UINT32 RegisterId)
 {
-    return IsBitRegOfType(RegisterId, ControlRegIds,
-        sizeof (ControlRegIds) / sizeof (UINT32));
+    return (IsBitRegOfType(RegisterId, ControlRegIds,
+        sizeof (ControlRegIds) / sizeof (UINT32)));
 }
 
 UINT32
 IsControl2Register(UINT32 RegisterId)
 {
-    return IsBitRegOfType(RegisterId, Control2RegIds,
-        sizeof (Control2RegIds) / sizeof (UINT32));
+    return (IsBitRegOfType(RegisterId, Control2RegIds,
+        sizeof (Control2RegIds) / sizeof (UINT32)));
 }
 
 UINT32
 IsBitDefinedRegister(UINT32 RegisterId)
 {
-    return IsBitRegOfType(RegisterId, BitRegIds,
-        sizeof (BitRegIds) / sizeof (UINT32));
+    return (IsBitRegOfType(RegisterId, BitRegIds,
+        sizeof (BitRegIds) / sizeof (UINT32)));
 }
 
 AT_FIXED_REG_NUM
@@ -416,23 +416,23 @@ GetRegNum(UINT32 RegisterId)
 {
     if (IsStatusRegister(RegisterId))
     {
-        return AtPm1aStatus;
+        return (AtPm1aStatus);
     }
     else if (IsEnableRegister(RegisterId))
     {
-        return AtPm1aEnable;
+        return (AtPm1aEnable);
     }
     else if (IsControlRegister(RegisterId))
     {
-        return AtPm1aControl;
+        return (AtPm1aControl);
     }
     else if (IsControl2Register(RegisterId))
     {
-        return AtPm2Control;
+        return (AtPm2Control);
     }
     else
     {
-        return AtFixeReg_All;
+        return (AtFixeReg_All);
     }
 }
 
@@ -454,7 +454,7 @@ AtHardwTest0006(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < sizeof (BitRegIds) / sizeof (UINT32); i++)
@@ -467,7 +467,7 @@ AtHardwTest0006(void)
             TestErrors++;
             printf ("Test error %d: OsxfCtrlClearFixedRegs() returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         /* Check cleared BitReg */
@@ -478,7 +478,7 @@ AtHardwTest0006(void)
             AapiErrors++;
             printf ("API error %d: AcpiGetRegister(%d) returned %s\n",
                 i, RegisterId, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         if (ReturnValue != 0x0)
@@ -487,7 +487,7 @@ AtHardwTest0006(void)
             printf ("API error %d: AcpiGetRegister(%d) extracted  0x%x"
                 ", expected 0x0\n",
                 i, RegisterId, ReturnValue);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         /* Set BitReg to 1 */
@@ -502,7 +502,7 @@ AtHardwTest0006(void)
             TestErrors++;
             printf ("Test error %d: OsxfCtrlSetFixedReg() returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         /* Check BitReg to be set */
@@ -513,7 +513,7 @@ AtHardwTest0006(void)
             AapiErrors++;
             printf ("API error %d: AcpiGetRegister(%d) returned %s\n",
                 i, RegisterId, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         if (!AT_SKIP_WRITE_ONLY_BITS_CHECK &&
@@ -528,11 +528,11 @@ AtHardwTest0006(void)
             printf ("API error %d: AcpiGetRegister(%d) extracted 0x%x"
                 ", expected 0x%x\n",
                 i, RegisterId, ReturnValue, NormValue);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 
@@ -553,7 +553,7 @@ AtHardwTest0007(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < MaxId; i++)
@@ -578,7 +578,7 @@ AtHardwTest0007(void)
             AapiErrors++;
             printf ("API error: AcpiGetRegister(%d) returned %s, expected %s\n",
                 i, AcpiFormatException(Status), AcpiFormatException(AE_BAD_PARAMETER));
-            return Status;
+            return (Status);
         }
         CheckCount++;
     }
@@ -588,10 +588,10 @@ AtHardwTest0007(void)
         TestErrors++;
         printf ("Test error: number of checks less then expected(%d) limit %u\n",
             CheckCount, CheckLimit);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 static UINT32           BitDefinedRegMasks[AtFixeReg_All] =
@@ -626,7 +626,7 @@ AtHardwTest0008(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < sizeof (BitRegIds) / sizeof (UINT32); i++)
@@ -639,7 +639,7 @@ AtHardwTest0008(void)
             TestErrors++;
             printf ("Test error %d: OsxfCtrlClearFixedRegs() returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         RegNum = GetRegNum(RegisterId);
@@ -651,7 +651,7 @@ AtHardwTest0008(void)
             TestErrors++;
             printf ("Test error %d: OsxfCtrlSetFixedRegOnes() returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
         (void)OsxfCtrlGetFixedReg(RegNum, &IniValue);
 
@@ -663,7 +663,7 @@ AtHardwTest0008(void)
             AapiErrors++;
             printf ("API error %d: AcpiSetRegister() returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         NormValue = (IS3BITREG(RegisterId))? 0x07: 0x01;
@@ -685,7 +685,7 @@ AtHardwTest0008(void)
             TestErrors++;
             printf ("Test error %d: OsxfCtrlSetFixedReg() returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         /* Check cleared bits */
@@ -696,7 +696,7 @@ AtHardwTest0008(void)
             printf ("API error %d: AcpiSetRegister(0) results in 0x%x,"
                 " expected 0x%x\n",
                 i, SetValue, IniValue & ~(NormValue << BitRegPos[i]));
-            return Status;
+            return (Status);
         }
 
         /* Check reserved and ignored bits */
@@ -712,7 +712,7 @@ AtHardwTest0008(void)
                     " expected 0x%x\n",
                     i, ~BitDefinedRegMask & SetValue,
                     ~BitDefinedRegMask & (IniValue & ~(NormValue << BitRegPos[i])));
-                return Status;
+                return (Status);
             }
         }
         else if (!AT_SKIP_ENABLE_REG_RESBIT_CHECK &&
@@ -725,7 +725,7 @@ AtHardwTest0008(void)
                 printf ("API error %d: undefined bits of Enable Register results in 0x%x,"
                     " expected 0x%x\n",
                     i, ~BitDefinedRegMask & SetValue, 0);
-                return Status;
+                return (Status);
             }
         }
         else if (IsControlRegister(RegisterId))
@@ -739,7 +739,7 @@ AtHardwTest0008(void)
                     " expected 0x%x\n",
                     i, ~BitDefinedRegMask & SetValue,
                     ~BitDefinedRegMask & (IniValue & ~(NormValue << BitRegPos[i])));
-                return Status;
+                return (Status);
             }
         }
 
@@ -751,7 +751,7 @@ AtHardwTest0008(void)
             TestErrors++;
             printf ("Test error %d: OsxfCtrlSetFixedRegOnes() returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
         (void)OsxfCtrlGetFixedReg(RegNum, &IniValue);
 
@@ -765,7 +765,7 @@ AtHardwTest0008(void)
             AapiErrors++;
             printf ("API error %d: AcpiSetRegister(1) returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         if (IsStatusRegister(RegisterId))
@@ -785,7 +785,7 @@ AtHardwTest0008(void)
             TestErrors++;
             printf ("Test error %d: OsxfCtrlSetFixedReg() returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         /* Check set bits */
@@ -796,7 +796,7 @@ AtHardwTest0008(void)
             printf ("API error %d: AcpiSetRegister(1) results in 0x%x,"
                 " expected 0x%x\n",
                 i, SetValue, IniValue | (NormValue << BitRegPos[i]));
-            return Status;
+            return (Status);
         }
 
         /* Check reserved and ignored bits */
@@ -812,7 +812,7 @@ AtHardwTest0008(void)
                     " expected 0x%x\n",
                     i, ~BitDefinedRegMask & SetValue,
                     ~BitDefinedRegMask & (IniValue & ~(NormValue << BitRegPos[i])));
-                return Status;
+                return (Status);
             }
         }
         else if (!AT_SKIP_ENABLE_REG_RESBIT_CHECK &&
@@ -825,7 +825,7 @@ AtHardwTest0008(void)
                 printf ("API error %d: undefined bits of Enable Register results in 0x%x,"
                     " expected 0x%x\n",
                     i, ~BitDefinedRegMask & SetValue, 0);
-                return Status;
+                return (Status);
             }
         }
         else if (IsControlRegister(RegisterId))
@@ -839,7 +839,7 @@ AtHardwTest0008(void)
                     " expected 0x%x\n",
                     i, ~BitDefinedRegMask & SetValue,
                     ~BitDefinedRegMask & (IniValue & ~(NormValue << BitRegPos[i])));
-                return Status;
+                return (Status);
             }
         }
 
@@ -856,7 +856,7 @@ AtHardwTest0008(void)
             TestErrors++;
             printf ("Test error %d: OsxfCtrlSetFixedRegOnes() returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
         (void)OsxfCtrlGetFixedReg(RegNum, &IniValue);
 
@@ -866,7 +866,7 @@ AtHardwTest0008(void)
             AapiErrors++;
             printf ("API error %d: AcpiSetRegister(1) returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlGetFixedReg(RegNum, &SetValue);
@@ -875,7 +875,7 @@ AtHardwTest0008(void)
             TestErrors++;
             printf ("Test error %d: OsxfCtrlSetFixedReg() returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         /* Check set bits */
@@ -886,7 +886,7 @@ AtHardwTest0008(void)
             printf ("API error %d: AcpiSetRegister(1) results in 0x%x,"
                 " expected 0x%x\n",
                 i, SetValue, IniValue & ~(1 << BitRegPos[i]));
-            return Status;
+            return (Status);
         }
 
         /* Check reserved and ignored bits*/
@@ -900,11 +900,11 @@ AtHardwTest0008(void)
                 " expected 0x%x\n",
                 i, ~BitDefinedRegMask & SetValue,
                 ~BitDefinedRegMask & (IniValue & ~(NormValue << BitRegPos[i])));
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 
@@ -925,7 +925,7 @@ AtHardwTest0009(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < MaxId; i++)
@@ -949,7 +949,7 @@ AtHardwTest0009(void)
             AapiErrors++;
             printf ("API error: AcpiSetRegister(%d) returned %s, expected %s\n",
                 i, AcpiFormatException(Status), AcpiFormatException(AE_BAD_PARAMETER));
-            return Status;
+            return (Status);
         }
         CheckCount++;
     }
@@ -959,10 +959,10 @@ AtHardwTest0009(void)
         TestErrors++;
         printf ("Test error: number of checks less then expected(%d) limit %u\n",
             CheckCount, CheckLimit);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -983,7 +983,7 @@ AtHardwTest0010(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiSetFirmwareWakingVector(PhysicalAddress);
@@ -992,10 +992,10 @@ AtHardwTest0010(void)
         AapiErrors++;
         printf ("API error: AcpiSetFirmwareWakingVector() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1022,7 +1022,7 @@ AtHardwTest0011(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtInitializeTables(FALSE);
@@ -1031,7 +1031,7 @@ AtHardwTest0011(void)
         AapiErrors++;
         printf ("API error: AcpiInitializeTables() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiSetFirmwareWakingVector(PhysicalAddress);
@@ -1040,10 +1040,10 @@ AtHardwTest0011(void)
         AapiErrors++;
         printf ("API error: AcpiSetFirmwareWakingVector() returned %s, expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_NO_ACPI_TABLES));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1059,7 +1059,7 @@ AtHardwTest0012(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
 #if OBSOLETE_CODE
@@ -1071,11 +1071,11 @@ AtHardwTest0012(void)
         AapiErrors++;
         printf ("API error: AcpiGetFirmwareWakingVector() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 #endif
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1090,7 +1090,7 @@ AtHardwTest0013(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
 #if OBSOLETE_CODE
@@ -1102,11 +1102,11 @@ AtHardwTest0013(void)
         AapiErrors++;
         printf ("API error: AcpiGetFirmwareWakingVector() returned %s, expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_NO_ACPI_TABLES));
-        return Status;
+        return (Status);
     }
 #endif
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1121,7 +1121,7 @@ AtHardwTest0014(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
 #if OBSOLETE_CODE
@@ -1131,11 +1131,11 @@ AtHardwTest0014(void)
         AapiErrors++;
         printf ("API error: AcpiGetFirmwareWakingVector() returned %s, expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_BAD_PARAMETER));
-        return Status;
+        return (Status);
     }
 #endif
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1151,7 +1151,7 @@ AtHardwTest0015(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hdwr0015.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1159,7 +1159,7 @@ AtHardwTest0015(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (SleepState = 0; SleepState < 6; SleepState++)
@@ -1170,7 +1170,7 @@ AtHardwTest0015(void)
             AapiErrors++;
             printf ("API error: AcpiGetSleepTypeData(%d) returned %s\n",
                 SleepState, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         if (SleepTypeA != SleepState)
@@ -1179,7 +1179,7 @@ AtHardwTest0015(void)
             printf ("API error: SleepState %d, incorrect SleepTypeA 0x%x"
                 " from AcpiGetSleepTypeData(), expected 0x%x\n",
                 (UINT8)SleepState, (UINT8)SleepTypeA, (UINT8)SleepState);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         if (SleepTypeB != SleepState + 0x10)
@@ -1188,11 +1188,11 @@ AtHardwTest0015(void)
             printf ("API error: SleepState %d, incorrect SleepTypeB 0x%x"
                 " from AcpiGetSleepTypeData(), expected 0x%x\n",
                 (UINT8)SleepState, (UINT8)SleepTypeA, (UINT8)SleepState + 0x10);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1208,7 +1208,7 @@ AtHardwTest0016(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hdwr0015.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1216,7 +1216,7 @@ AtHardwTest0016(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (SleepState = 6; SleepState < 10; SleepState++)
@@ -1228,11 +1228,11 @@ AtHardwTest0016(void)
             printf ("API error: AcpiGetSleepTypeData(%d) returned %s, expected %s\n",
                 SleepState,
                 AcpiFormatException(Status), AcpiFormatException(AE_BAD_PARAMETER));
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1248,7 +1248,7 @@ AtHardwTest0017(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hdwr0015.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1256,7 +1256,7 @@ AtHardwTest0017(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetSleepTypeData(SleepState, NULL, &SleepTypeB);
@@ -1265,7 +1265,7 @@ AtHardwTest0017(void)
         AapiErrors++;
         printf ("API error: AcpiGetSleepTypeData(NULL, B) returned %s, expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_BAD_PARAMETER));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetSleepTypeData(SleepState, NULL, NULL);
@@ -1274,7 +1274,7 @@ AtHardwTest0017(void)
         AapiErrors++;
         printf ("API error: AcpiGetSleepTypeData(NULL, NULL) returned %s, expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_BAD_PARAMETER));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetSleepTypeData(SleepState, &SleepTypeA, NULL);
@@ -1283,10 +1283,10 @@ AtHardwTest0017(void)
         AapiErrors++;
         printf ("API error: AcpiGetSleepTypeData(A, NULL) returned %s, expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_BAD_PARAMETER));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1302,7 +1302,7 @@ AtHardwTest0018(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hdwr0018.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1310,7 +1310,7 @@ AtHardwTest0018(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (SleepState = 0; SleepState < 6; SleepState++)
@@ -1322,11 +1322,11 @@ AtHardwTest0018(void)
             printf ("API error: AcpiGetSleepTypeData(%d) returned %s, expected %s\n",
                 SleepState,
                 AcpiFormatException(Status), AcpiFormatException(AE_AML_NO_OPERAND));
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1342,7 +1342,7 @@ AtHardwTest0019(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hdwr0019.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1350,7 +1350,7 @@ AtHardwTest0019(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (SleepState = 0; SleepState < 6; SleepState++)
@@ -1362,11 +1362,11 @@ AtHardwTest0019(void)
             printf ("API error: AcpiGetSleepTypeData(%d) returned %s, expected %s\n",
                 SleepState,
                 AcpiFormatException(Status), AcpiFormatException(AE_AML_OPERAND_TYPE));
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1380,7 +1380,7 @@ AtHardwTest0020(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hdwr0020.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     for (SleepState = 1; SleepState < 6; SleepState++)
@@ -1390,16 +1390,16 @@ AtHardwTest0020(void)
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\PTSA", 0)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\GTSA", 0)))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AcpiEnterSleepStatePrep(SleepState);
@@ -1408,27 +1408,27 @@ AtHardwTest0020(void)
             AapiErrors++;
             printf ("API error: AcpiEnterSleepStatePrep(%d) returned %s\n",
                 SleepState, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         /* Ensure that _PTS has been executed */
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\PTSA", SleepState)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\GTSA", SleepState)))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 void ACPI_SYSTEM_XFACE
@@ -1467,7 +1467,7 @@ AtHardwTest0021(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hdwr0020.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     for (SleepState = 1; SleepState < 6; SleepState++)
@@ -1477,7 +1477,7 @@ AtHardwTest0021(void)
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         /* Set up waking condition */
@@ -1487,7 +1487,7 @@ AtHardwTest0021(void)
         {
             printf ("API error: AcpiOsExecute() returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiEnterSleepState(SleepState);
@@ -1497,17 +1497,17 @@ AtHardwTest0021(void)
             AapiErrors++;
             printf ("API error: AcpiEnterSleepState(%d) returned %s\n",
                 SleepState, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1521,7 +1521,7 @@ AtHardwTest0022(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hdwr0022.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     for (SleepState = 1; SleepState < 6; SleepState++)
@@ -1531,56 +1531,56 @@ AtHardwTest0022(void)
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\ORDR", 0)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\SST0", 0)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\SSA0", 0)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\SSO0", 0)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\SSA1", 0)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\SSO1", 0)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\BFS0", 0)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\BFSA", 0)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\BFSO", 0)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\WAK0", 0)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\WAKA", 0)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\WAKO", 0)))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AcpiLeaveSleepState(SleepState);
@@ -1590,66 +1590,66 @@ AtHardwTest0022(void)
             AapiErrors++;
             printf ("API error: AcpiLeaveSleepState(%d) returned %s\n",
                 SleepState, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\ORDR", 4)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\SST0", 2)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\SSA0", 2))) /* Waking */
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\SSO0", 1)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\SSA1", 1))) /* Working */
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\SSO1", 4)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\BFS0", 1)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\BFSA", SleepState)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\BFSO", 2)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\WAK0", 1)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\WAKA", SleepState)))
         {
-            return Status;
+            return (Status);
         }
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\WAKO", 3)))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 static ACPI_TABLE_FACS      *AtFacs = NULL;
@@ -1668,7 +1668,7 @@ AtHardwTest0023(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTable (ACPI_SIG_FACS, 0, (ACPI_TABLE_HEADER **) &AtFacs);
@@ -1677,7 +1677,7 @@ AtHardwTest0023(void)
         AapiErrors++;
         printf ("API error: AcpiGetTable() returned %s\n",
             AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     /* Simulate GlobalLock is not acquired */
@@ -1689,10 +1689,10 @@ AtHardwTest0023(void)
         AapiErrors++;
         printf ("API error: AcpiAcquireGlobalLock() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1706,7 +1706,7 @@ AtHardwTest0024(void)
     Status = AtSubsystemInit(AAPITS_INITIALIZE_SS, 0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiAcquireGlobalLock(0, NULL);
@@ -1715,10 +1715,10 @@ AtHardwTest0024(void)
         AapiErrors++;
         printf ("API error: AcpiAcquireGlobalLock(0, NULL) returned %s, expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_BAD_PARAMETER));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1776,7 +1776,7 @@ AtActions0025(void)
     {
         printf ("API error: AcpiOsExecute() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     AcpiOsSleep(1000); /* 1 second */
@@ -1789,7 +1789,7 @@ AtActions0025(void)
             printf ("API error: case %d AcpiAcquireGlobalLock() returned %s,"
                 " expected AE_TIME\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
@@ -1799,7 +1799,7 @@ AtActions0025(void)
     {
         TestErrors++;
         printf ("Test error: ConcurrentFlag has not been fired\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     /* Try to acquire GlobalLock repeatedly */
@@ -1810,7 +1810,7 @@ AtActions0025(void)
         AapiErrors++;
         printf ("API error: AcpiAcquireGlobalLock() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < 3; i++) {
@@ -1820,7 +1820,7 @@ AtActions0025(void)
             AapiErrors++;
             printf ("API error: case %d AcpiAcquireGlobalLock() returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
         if (Handle2 != Handle)
         {
@@ -1828,7 +1828,7 @@ AtActions0025(void)
             printf ("API error: case %d repeated AcpiAcquireGlobalLock()"
                 " returned %d Handle, not the original %d\n",
                 i, Handle2, Handle);
-            return Status;
+            return (Status);
         }
     }
 
@@ -1839,11 +1839,11 @@ AtActions0025(void)
             AapiErrors++;
             printf ("API error: case %d AcpiReleaseGlobalLock() returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
-    return Status;
+    return (Status);
 }
 
 ACPI_STATUS
@@ -1855,7 +1855,7 @@ AtHardwTest0025(void)
     Status = AtSubsystemInit(AAPITS_INITIALIZE_SS, 0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTable (ACPI_SIG_FACS, 0, (ACPI_TABLE_HEADER **) &AtFacs);
@@ -1863,7 +1863,7 @@ AtHardwTest0025(void)
     {
         AapiErrors++;
         printf ("API error: AcpiGetTable() returned SUCCESS\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     for (i = 0; i < 3; i++) {
@@ -1873,11 +1873,11 @@ AtHardwTest0025(void)
             AapiErrors++;
             printf ("API error: case %d AtActions0025() returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1892,7 +1892,7 @@ AtHardwTest0026(void)
     Status = AtSubsystemInit(AAPITS_INITABLES, 0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTable (ACPI_SIG_FACS, 0, (ACPI_TABLE_HEADER **) &AtFacs);
@@ -1901,7 +1901,7 @@ AtHardwTest0026(void)
         AapiErrors++;
         printf ("API error: AcpiGetTable() returned %s\n",
             AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     /* Simulate GlobalLock is not acquired */
@@ -1914,10 +1914,10 @@ AtHardwTest0026(void)
         printf ("API error: AcpiAcquireGlobalLock returned %s,"
             " expected AE_BAD_PARAMETER\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1935,7 +1935,7 @@ AtHardwTest0027(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTable (ACPI_SIG_FACS, 0, (ACPI_TABLE_HEADER **) &AtFacs);
@@ -1944,7 +1944,7 @@ AtHardwTest0027(void)
         AapiErrors++;
         printf ("API error: AcpiGetTable() returned %s\n",
             AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     /* Simulate GlobalLock is not acquired */
@@ -1958,7 +1958,7 @@ AtHardwTest0027(void)
             AapiErrors++;
             printf ("API error: AcpiAcquireGlobalLock() returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiReleaseGlobalLock(Handle);
@@ -1967,11 +1967,11 @@ AtHardwTest0027(void)
             AapiErrors++;
             printf ("API error: AcpiReleaseGlobalLock() returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1989,7 +1989,7 @@ AtHardwTest0028(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTable (ACPI_SIG_FACS, 0, (ACPI_TABLE_HEADER **) &AtFacs);
@@ -1998,7 +1998,7 @@ AtHardwTest0028(void)
         AapiErrors++;
         printf ("API error: AcpiGetTable() returned %s\n",
             AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     /* Simulate GlobalLock is not acquired */
@@ -2010,7 +2010,7 @@ AtHardwTest0028(void)
         AapiErrors++;
         printf ("API error: AcpiReleaseGlobalLock(0) returned %s, expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_BAD_PARAMETER));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     Handle = 1;
@@ -2020,7 +2020,7 @@ AtHardwTest0028(void)
         AapiErrors++;
         printf ("API error: AcpiReleaseGlobalLock(1) returned %s, expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_BAD_PARAMETER));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     Handle = (UINT32)-1;
@@ -2030,7 +2030,7 @@ AtHardwTest0028(void)
         AapiErrors++;
         printf ("API error: AcpiReleaseGlobalLock(-1) returned %s, expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_BAD_PARAMETER));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     for (i = 0; i < 2; i++)
@@ -2041,7 +2041,7 @@ AtHardwTest0028(void)
             AapiErrors++;
             printf ("API error: AcpiAcquireGlobalLock() returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         if (i == 0)
@@ -2057,7 +2057,7 @@ AtHardwTest0028(void)
                 printf ("API error: AcpiReleaseGlobalLock returned %s,"
                     " expected AE_BAD_PARAMETER\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
 
@@ -2067,11 +2067,11 @@ AtHardwTest0028(void)
             AapiErrors++;
             printf ("API error: AcpiReleaseGlobalLock() returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2089,7 +2089,7 @@ AtHardwTest0029(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTable (ACPI_SIG_FACS, 0, (ACPI_TABLE_HEADER **) &AtFacs);
@@ -2098,7 +2098,7 @@ AtHardwTest0029(void)
         AapiErrors++;
         printf ("API error: AcpiGetTable() returned %s\n",
             AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     /* Simulate GlobalLock is not acquired */
@@ -2112,7 +2112,7 @@ AtHardwTest0029(void)
             AapiErrors++;
             printf ("API error: AcpiAcquireGlobalLock() returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiReleaseGlobalLock(Handle);
@@ -2121,7 +2121,7 @@ AtHardwTest0029(void)
             AapiErrors++;
             printf ("API error: AcpiReleaseGlobalLock() returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiReleaseGlobalLock(Handle);
@@ -2130,11 +2130,11 @@ AtHardwTest0029(void)
             AapiErrors++;
             printf ("API error: AcpiReleaseGlobalLock() returned %s, expected %s\n",
                 AcpiFormatException(Status), AcpiFormatException(AE_NOT_ACQUIRED));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2150,7 +2150,7 @@ AtHardwTest0030(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTimerResolution(&Resolution);
@@ -2159,7 +2159,7 @@ AtHardwTest0030(void)
         AapiErrors++;
         printf ("API error: AcpiGetTimerResolution() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (Resolution != 24) /* Value 0 of FADT TMR_VAL_EXT field */
@@ -2168,10 +2168,10 @@ AtHardwTest0030(void)
         printf ("API error: AcpiGetTimerResolution() returned unexpected"
             " Resolution %d, expected 24\n",
             Resolution);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2186,7 +2186,7 @@ AtHardwTest0031(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTimerResolution(NULL);
@@ -2195,10 +2195,10 @@ AtHardwTest0031(void)
         AapiErrors++;
         printf ("API error: AcpiGetTimerResolution(NULL) returned %s, expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_BAD_PARAMETER));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2222,7 +2222,7 @@ AtHardwTest0032(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < 3; i++)
@@ -2233,7 +2233,7 @@ AtHardwTest0032(void)
             AapiErrors++;
             printf ("API error: AcpiGetTimerDuration() returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         if (TimeElapsed != d24[i].Usec)
@@ -2243,11 +2243,11 @@ AtHardwTest0032(void)
                 " TimeElapsed %d, expected %d\n",
                 d24[i].StartTicks, d24[i].EndTicks,
                 TimeElapsed, d24[i].Usec);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2262,7 +2262,7 @@ AtHardwTest0033(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTimerDuration(0, 1, NULL);
@@ -2271,10 +2271,10 @@ AtHardwTest0033(void)
         AapiErrors++;
         printf ("API error: AcpiGetTimerDuration(0, 1, NULL) returned %s, expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_BAD_PARAMETER));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2290,7 +2290,7 @@ AtHardwTest0034(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTimer(&OutValue);
@@ -2299,7 +2299,7 @@ AtHardwTest0034(void)
         AapiErrors++;
         printf ("API error: AcpiGetTimer() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (OutValue < 0xFFFFFF)
@@ -2308,10 +2308,10 @@ AtHardwTest0034(void)
         printf ("API error: AcpiGetTimer() returned unexpected"
             " OutValue 0x%x, expected >= 0xFFFFFF\n",
             OutValue);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2326,7 +2326,7 @@ AtHardwTest0035(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTimer(NULL);
@@ -2335,10 +2335,10 @@ AtHardwTest0035(void)
         AapiErrors++;
         printf ("API error: AcpiGetTimer(NULL) returned %s, expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_BAD_PARAMETER));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2380,7 +2380,7 @@ AtHardwTest0036(void)
     Status = AtSubsystemInit(AAPITS_INITIALIZE_SS, 0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTable (ACPI_SIG_FACS, 0, (ACPI_TABLE_HEADER **) &AtFacs);
@@ -2388,7 +2388,7 @@ AtHardwTest0036(void)
     {
         AapiErrors++;
         printf ("API error: AcpiGetTable() returned SUCCESS\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     Status = AcpiAcquireGlobalLock(0, &Handle);
@@ -2397,7 +2397,7 @@ AtHardwTest0036(void)
         AapiErrors++;
         printf ("API error: AcpiAcquireGlobalLock() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /* Run GlobalLock concurrent acquiring */
@@ -2407,7 +2407,7 @@ AtHardwTest0036(void)
     {
         printf ("API error: AcpiOsExecute() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     AcpiOsSleep(1000); /* 1 second */
@@ -2416,10 +2416,10 @@ AtHardwTest0036(void)
     {
         TestErrors++;
         printf ("Test error: ConcurrentFlag has not been fired\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2497,14 +2497,14 @@ AtActions0037(void)
     {
         printf ("API error: AcpiOsExecute() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (EmulatedFlag)
     {
         TestErrors++;
         printf ("Test error: EmulatedFlag has already been fired\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     T0 = AcpiOsGetTimer();
@@ -2515,7 +2515,7 @@ AtActions0037(void)
         AapiErrors++;
         printf ("API error: AcpiAcquireGlobalLock() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if ((Dt = AcpiOsGetTimer() - T0) < 9000000)
@@ -2523,7 +2523,7 @@ AtActions0037(void)
         AapiErrors++;
         printf ("API error: %d ms too short time to acquire locked GL\n",
             (UINT32) (Dt / 10000));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     /* Delay for 1 second to allow concurrent thread finishing */
@@ -2534,7 +2534,7 @@ AtActions0037(void)
         AapiErrors++;
         printf ("API error: AcpiAcquireGlobalLock() returned SUCCESS"
             " for acquired GlobalLock\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     Status = AcpiReleaseGlobalLock(Handle);
@@ -2543,7 +2543,7 @@ AtActions0037(void)
         AapiErrors++;
         printf ("API error: AcpiReleaseGlobalLock() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiReleaseGlobalLock(Handle);
@@ -2552,12 +2552,12 @@ AtActions0037(void)
         AapiErrors++;
         printf ("API error: AcpiReleaseGlobalLock() returned %s, expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_NOT_ACQUIRED));
-        return AE_ERROR;
+        return (AE_ERROR);
     } else {
         Status = AE_OK;
     }
 
-    return Status;
+    return (Status);
 }
 
 ACPI_STATUS
@@ -2571,7 +2571,7 @@ AtHardwTest0037(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTable (ACPI_SIG_FACS, 0, (ACPI_TABLE_HEADER **) &AtFacs);
@@ -2580,7 +2580,7 @@ AtHardwTest0037(void)
         AapiErrors++;
         printf ("API error: AcpiGetTable() returned %s\n",
             AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     for (i = 0; i < 3; i++) {
@@ -2590,11 +2590,11 @@ AtHardwTest0037(void)
             AapiErrors++;
             printf ("API error: case %d AtActions0037() returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 
@@ -2633,7 +2633,7 @@ AtHardwTest0038(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTable (ACPI_SIG_FACS, 0, (ACPI_TABLE_HEADER **) &AtFacs);
@@ -2642,7 +2642,7 @@ AtHardwTest0038(void)
         AapiErrors++;
         printf ("API error: AcpiGetTable() returned %s\n",
             AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     /* Simulate GlobalLock is not acquired */
@@ -2656,7 +2656,7 @@ AtHardwTest0038(void)
             AapiErrors++;
             printf ("API error: AcpiAcquireGlobalLock() returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         /* Set up GlobalLock Concurrent Release */
@@ -2666,13 +2666,13 @@ AtHardwTest0038(void)
         {
             printf ("API error: AcpiOsExecute() returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         AcpiOsSleep(1000); /* 1 second */
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 
@@ -2695,7 +2695,7 @@ AtActions0039(void)
     {
         printf ("API error: AcpiOsExecute() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     AcpiOsSleep(1000); /* delay for 1 second the Global Lock to be held */
@@ -2704,7 +2704,7 @@ AtActions0039(void)
     {
         TestErrors++;
         printf ("Test error: EmulatedFlag has already been fired\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     T0 = AcpiOsGetTimer();
@@ -2715,7 +2715,7 @@ AtActions0039(void)
         AapiErrors++;
         printf ("API error: AcpiAcquireGlobalLock() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if ((Dt = AcpiOsGetTimer() - T0) < 9000000)
@@ -2723,7 +2723,7 @@ AtActions0039(void)
         AapiErrors++;
         printf ("API error: %d ms too short time to acquire locked GL\n",
             (UINT32) (Dt / 10000));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     /* Delay for 1 second to allow concurrent thread finishing */
@@ -2734,7 +2734,7 @@ AtActions0039(void)
         AapiErrors++;
         printf ("API error: AcpiAcquireGlobalLock() returned SUCCESS"
             " for acquired GlobalLock\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     Status = AcpiReleaseGlobalLock(Handle);
@@ -2743,7 +2743,7 @@ AtActions0039(void)
         AapiErrors++;
         printf ("API error: AcpiReleaseGlobalLock() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiReleaseGlobalLock(Handle);
@@ -2752,12 +2752,12 @@ AtActions0039(void)
         AapiErrors++;
         printf ("API error: AcpiReleaseGlobalLock() returned %s, expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_NOT_ACQUIRED));
-        return AE_ERROR;
+        return (AE_ERROR);
     } else {
         Status = AE_OK;
     }
 
-    return Status;
+    return (Status);
 }
 
 ACPI_STATUS
@@ -2771,7 +2771,7 @@ AtHardwTest0039(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTable (ACPI_SIG_FACS, 0, (ACPI_TABLE_HEADER **) &AtFacs);
@@ -2780,7 +2780,7 @@ AtHardwTest0039(void)
         AapiErrors++;
         printf ("API error: AcpiGetTable() returned %s\n",
             AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     AtFacs->GlobalLock = 0;
@@ -2792,11 +2792,11 @@ AtHardwTest0039(void)
             AapiErrors++;
             printf ("API error: case %d AtActions0039() returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 
@@ -2839,7 +2839,7 @@ AtActions0040(void)
     {
         printf ("API error: AcpiOsExecute() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     AcpiOsSleep(1000); /* delay for 1 second the Global Lock to be held */
@@ -2848,7 +2848,7 @@ AtActions0040(void)
     {
         TestErrors++;
         printf ("Test error: EmulatedFlag has already been fired\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     T0 = AcpiOsGetTimer();
@@ -2859,7 +2859,7 @@ AtActions0040(void)
         AapiErrors++;
         printf ("API error: AcpiAcquireGlobalLock() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if ((Dt = AcpiOsGetTimer() - T0) < 9000000)
@@ -2867,7 +2867,7 @@ AtActions0040(void)
         AapiErrors++;
         printf ("API error: %d ms too short time to acquire locked GL\n",
             (UINT32) (Dt / 10000));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     /* Delay for 1 second to allow concurrent thread finishing */
@@ -2878,7 +2878,7 @@ AtActions0040(void)
         AapiErrors++;
         printf ("API error: AcpiAcquireGlobalLock() returned SUCCESS"
             " for acquired GlobalLock\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     Status = AcpiReleaseGlobalLock(Handle);
@@ -2887,7 +2887,7 @@ AtActions0040(void)
         AapiErrors++;
         printf ("API error: AcpiReleaseGlobalLock() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiReleaseGlobalLock(Handle);
@@ -2896,12 +2896,12 @@ AtActions0040(void)
         AapiErrors++;
         printf ("API error: AcpiReleaseGlobalLock() returned %s, expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_NOT_ACQUIRED));
-        return AE_ERROR;
+        return (AE_ERROR);
     } else {
         Status = AE_OK;
     }
 
-    return Status;
+    return (Status);
 }
 
 ACPI_STATUS
@@ -2912,7 +2912,7 @@ AtHardwTest0040(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hdwr0040.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -2920,7 +2920,7 @@ AtHardwTest0040(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTable (ACPI_SIG_FACS, 0, (ACPI_TABLE_HEADER **) &AtFacs);
@@ -2929,7 +2929,7 @@ AtHardwTest0040(void)
         AapiErrors++;
         printf ("API error: AcpiGetTable() returned %s\n",
             AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     AtFacs->GlobalLock = 0;
@@ -2941,11 +2941,11 @@ AtHardwTest0040(void)
             AapiErrors++;
             printf ("API error: case %d AtActions0040() returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 
@@ -2967,14 +2967,14 @@ AtActions0041(UINT32 Step)
         AapiErrors++;
         printf ("API error: AcpiAcquireGlobalLock() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     T0 = AcpiOsGetTimer();
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\TNOL", Step)))
     {
-        return Status;
+        return (Status);
     }
 
     if ((Dt = AcpiOsGetTimer() - T0) > 1000000)
@@ -2982,7 +2982,7 @@ AtActions0041(UINT32 Step)
         AapiErrors++;
         printf ("API error: %d ms too long time of NoLock field access 0\n",
             (UINT32) (Dt / 10000));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     T0 = AcpiOsGetTimer();
@@ -2992,7 +2992,7 @@ AtActions0041(UINT32 Step)
      */
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\TLCK", Step)))
     {
-        return Status;
+        return (Status);
     }
 
     if ((Dt = AcpiOsGetTimer() - T0) > 1000000)
@@ -3000,7 +3000,7 @@ AtActions0041(UINT32 Step)
         AapiErrors++;
         printf ("API error: %d ms too long time of NoLock field access 1\n",
             (UINT32) (Dt / 10000));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     Status = AcpiReleaseGlobalLock(Handle);
@@ -3009,7 +3009,7 @@ AtActions0041(UINT32 Step)
         AapiErrors++;
         printf ("API error: AcpiReleaseGlobalLock() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /* Set up GlobalLock 2000 mls holding */
@@ -3019,7 +3019,7 @@ AtActions0041(UINT32 Step)
     {
         printf ("API error: AcpiOsExecute() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     AcpiOsSleep(1000); /* delay for 1 second the Global Lock to be held */
@@ -3028,14 +3028,14 @@ AtActions0041(UINT32 Step)
     {
         TestErrors++;
         printf ("Test error: EmulatedFlag has already been fired\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     T0 = AcpiOsGetTimer();
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\TNOL", Step + 1)))
     {
-        return Status;
+        return (Status);
     }
 
     if ((Dt = AcpiOsGetTimer() - T0) > 1000000)
@@ -3043,7 +3043,7 @@ AtActions0041(UINT32 Step)
         AapiErrors++;
         printf ("API error: %d ms too long time of NoLock field access2\n",
             (UINT32) (Dt / 10000));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     T0 = AcpiOsGetTimer();
@@ -3053,7 +3053,7 @@ AtActions0041(UINT32 Step)
      */
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\TLCK", Step + 1)))
     {
-        return Status;
+        return (Status);
     }
 
     if ((Dt = AcpiOsGetTimer() - T0) < 9000000)
@@ -3061,7 +3061,7 @@ AtActions0041(UINT32 Step)
         AapiErrors++;
         printf ("API error: %d ms too short time of Lock field access\n",
             (UINT32) (Dt / 10000));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     /* Delay for 1 second to allow concurrent thread finishing */
@@ -3072,10 +3072,10 @@ AtActions0041(UINT32 Step)
         AapiErrors++;
         printf ("API error: AcpiAcquireGlobalLock() returned SUCCESS"
             " for acquired GlobalLock\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return Status;
+    return (Status);
 }
 
 ACPI_STATUS
@@ -3086,7 +3086,7 @@ AtHardwTest0041(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hdwr0041.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -3094,7 +3094,7 @@ AtHardwTest0041(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTable (ACPI_SIG_FACS, 0, (ACPI_TABLE_HEADER **) &AtFacs);
@@ -3103,7 +3103,7 @@ AtHardwTest0041(void)
         AapiErrors++;
         printf ("API error: AcpiGetTable() returned %s\n",
             AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     AtFacs->GlobalLock = 0;
@@ -3115,9 +3115,9 @@ AtHardwTest0041(void)
             AapiErrors++;
             printf ("API error: case %d AtActions0041() returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }

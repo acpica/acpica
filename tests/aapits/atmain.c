@@ -207,7 +207,7 @@ ExecuteTest (
         printf ("ACPICA API TS err: test num %ld of test case %ld"
             " is not implemented\n",
             test_num, test_case);
-        return AtRetNotImpl;
+        return (AtRetNotImpl);
     }
 
     if (DBG_OUTPUT_SET)
@@ -274,7 +274,7 @@ ExecuteTest (
         status = AtRetPass;
     }
 
-    return status;
+    return (status);
 }
 
 
@@ -303,7 +303,7 @@ main(
 /*
         printf ("ACPICA API TS: <test case: 1 - 9 > <test number>"
             " should be specified\n");
-        return AtRetBadParam;
+        return (AtRetBadParam);
 */
         for (i = 7; i < 8 /*AT_TEST_CASE_NUM */; i++)
         {
@@ -312,7 +312,7 @@ main(
                 ExecuteTest (7, 0);
             }
         }
-        return 0;
+        return (0);
     }
 
     test_case = strtoul (argv[1], NULL, 0);
@@ -320,7 +320,7 @@ main(
     {
         printf ("ACPICA API TS err: test case %ld is out of range 1 - %d\n",
             test_case, AT_TEST_CASE_NUM);
-        return AtRetBadParam;
+        return (AtRetBadParam);
     }
 
     test_num = strtoul (argv[2], NULL, 0);
@@ -328,7 +328,7 @@ main(
     {
         printf ("ACPICA API TS err: test num %ld is out of range 0 - %d\n",
             test_num, AtTestCase[test_case].TestsNum);
-        return AtRetBadParam;
+        return (AtRetBadParam);
     }
 
     if (argc > 3)
@@ -337,6 +337,6 @@ main(
     }
 
     ExecuteTest (test_case, test_num);
-    return 0;
+    return (0);
 
 }

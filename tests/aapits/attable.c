@@ -63,7 +63,7 @@ AtTableTest0000(void)
     if (AT_SKIP_FIND_ROOT_PPOINTER_CHECK) {
         TestSkipped++;
         printf ("Skip: AcpiFindRootPointer(NULL) results in a crash\n");
-        return AE_OK;
+        return (AE_OK);
     }
     Status = AcpiFindRootPointer(NULL);
     if (Status != Benchmark)
@@ -73,9 +73,9 @@ AtTableTest0000(void)
             "           expected to return %s\n",
             AcpiFormatException(Status),
             AcpiFormatException(Benchmark));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -100,9 +100,9 @@ AtTableTest0001(void)
             "           expected to return %s\n",
             AcpiFormatException(Status),
             AcpiFormatException(Benchmark));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -131,10 +131,10 @@ AtTableTest0002(void)
                 "           expected to return %s\n",
                 AcpiFormatException(Status),
                 AcpiFormatException(Benchmark));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -162,7 +162,7 @@ AtTableTest0003(void)
         AapiErrors++;
         printf ("API Error 1: AcpiOS* calls withoout Subsystem init., %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < RMax; i++)
@@ -175,7 +175,7 @@ AtTableTest0003(void)
                 "           expected to return %s\n",
                 AcpiFormatException(Status),
                 AcpiFormatException(Benchmark));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -188,10 +188,10 @@ AtTableTest0003(void)
         AapiErrors++;
         printf ("API Error 2: AcpiOS* calls during AcpiInitializeTables, %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -211,7 +211,7 @@ AtTableTest0004(void)
     Status = AtInitCommonTest(AAPITS_INITIALIZE_SS, 0, 0, 0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiInitializeTables(NULL, 20, FALSE);
@@ -222,9 +222,9 @@ AtTableTest0004(void)
             "           expected to return %s\n",
             AcpiFormatException(Status),
             AcpiFormatException(Benchmark));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -257,7 +257,7 @@ AtInitializeTablesExceptionTest1(
         Status = AtInitCommonTest(AAPITS_INITIALIZE_SS, 0, 0, 0, 0, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -266,7 +266,7 @@ AtInitializeTablesExceptionTest1(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiInitializeTables(NULL, 20, FALSE);
@@ -289,24 +289,24 @@ AtInitializeTablesExceptionTest1(
                 printf ("API Error: AcpiInitializeTables returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -323,16 +323,16 @@ AtTableTest0005(void)
         AE_NO_MEMORY);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
      * AcpiOsAllocate returns NULL one time on the specified call
      */
-    return AtInitializeTablesExceptionTest1(
+    return (AtInitializeTablesExceptionTest1(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
-        AE_NO_MEMORY);
+        AE_NO_MEMORY));
 }
 
 /*
@@ -352,7 +352,7 @@ AtTableTest0006(void)
     Status = AtInitCommonTest(AAPITS_INITIALIZE_SS, 0, 0, 0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtInitializeTables(TRUE);
@@ -363,7 +363,7 @@ AtTableTest0006(void)
             "           expected to return %s\n",
             AcpiFormatException(Status),
             AcpiFormatException(Benchmark));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     Status = AcpiReallocateRootTable();
@@ -374,9 +374,9 @@ AtTableTest0006(void)
             "           expected to return %s\n",
             AcpiFormatException(Status),
             AcpiFormatException(Benchmark));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
-    return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -407,7 +407,7 @@ AtReallocateRootTableExceptionTest(
             AAPITS_INITIALIZE_SS | AAPITS_INITABLES, 0, 0, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -416,7 +416,7 @@ AtReallocateRootTableExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiReallocateRootTable();
@@ -439,24 +439,24 @@ AtReallocateRootTableExceptionTest(
                 printf ("API Error: AcpiReallocateRootTable returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, CtrlCheck);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -476,16 +476,16 @@ AtTableTest0007(void)
         AE_NO_MEMORY);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
      * AcpiOsAllocate returns NULL one time on the specified call
      */
-    return AtReallocateRootTableExceptionTest(
+    return (AtReallocateRootTableExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
-        AE_NO_MEMORY);
+        AE_NO_MEMORY));
 }
 
 /*
@@ -511,7 +511,7 @@ AtTableTest0008(void)
         AapiErrors++;
         printf ("API Error 1: AcpiOS* calls withoout Subsystem init., %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AtInitializeTables(TRUE);
@@ -520,7 +520,7 @@ AtTableTest0008(void)
         AapiErrors++;
         printf ("API Error: AcpiInitializeTables( , , 1) returned %s\n",
             AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     Status = AcpiReallocateRootTable();
@@ -531,7 +531,7 @@ AtTableTest0008(void)
             "           expected to return %s\n",
             AcpiFormatException(Status),
             AcpiFormatException(Benchmark));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     /*
@@ -543,10 +543,10 @@ AtTableTest0008(void)
         AapiErrors++;
         printf ("API Error 2: AcpiOS* calls during AcpiInitializeTables, %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -572,7 +572,7 @@ AtTableTest0009(void)
         AapiErrors++;
         printf ("API Error 1: AcpiOS* calls withoout Subsystem init., %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AtInitializeTables(FALSE);
@@ -581,7 +581,7 @@ AtTableTest0009(void)
         AapiErrors++;
         printf ("API Error: AcpiInitializeTables( , , 0) returned %s\n",
             AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     Status = AcpiReallocateRootTable();
@@ -592,7 +592,7 @@ AtTableTest0009(void)
             "           expected to return %s\n",
             AcpiFormatException(Status),
             AcpiFormatException(Benchmark));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     /*
@@ -604,10 +604,10 @@ AtTableTest0009(void)
         AapiErrors++;
         printf ("API Error 2: AcpiOS* calls during AcpiInitializeTables, %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -629,7 +629,7 @@ AtTableTest0010(void)
     Status = AtInitCommonTest(AAPITS_INITIALIZE_SS, 0, 0, 0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiInitializeTables(NULL, 20, TRUE);
@@ -638,7 +638,7 @@ AtTableTest0010(void)
         AapiErrors++;
         printf ("API Error: AcpiInitializeTables(NULL) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < RMax; i++)
@@ -651,11 +651,11 @@ AtTableTest0010(void)
                 "           expected to return %s\n",
                 i, AcpiFormatException(Status),
                 AcpiFormatException(Benchmark));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -683,7 +683,7 @@ AtGetTableTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -699,16 +699,16 @@ AtGetTableTest(
                 "           expected to return %s\n",
                 TestSignInst[i].Signature, TestSignInst[i].Instance,
                 AcpiFormatException(Status), AcpiFormatException(Benchmark));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
     if (StagesScale & AAPITS_INITIALIZE_SS)
     {
-        return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+        return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -717,11 +717,11 @@ AtGetTableTest(
 ACPI_STATUS
 AtTableTest0011(void)
 {
-    return AtGetTableTest(
+    return (AtGetTableTest(
         AAPITS_INITABLES,
         TestSignInstOk,
         sizeof (TestSignInstOk) / sizeof (AT_SIGN_INST),
-        AE_OK);
+        AE_OK));
 }
 
 /*
@@ -730,11 +730,11 @@ AtTableTest0011(void)
 ACPI_STATUS
 AtTableTest0012(void)
 {
-    return AtGetTableTest(
+    return (AtGetTableTest(
         AAPITS_INI_PRELOAD & ~AAPITS_REALLOCROOTTABLE,
         TestSignInstOk,
         sizeof (TestSignInstOk) / sizeof (AT_SIGN_INST),
-        AE_OK);
+        AE_OK));
 }
 
 /*
@@ -770,7 +770,7 @@ AtInitializeTablesExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AtInitializeTables(FALSE);
@@ -793,11 +793,11 @@ AtInitializeTablesExceptionTest(
                 printf ("API Error: AcpiInitializeTables returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
-    return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -806,10 +806,10 @@ AtTableTest0013(void)
     /*
      * AcpiOsGetRootPointer returns AE_ERROR
      */
-    return AtInitializeTablesExceptionTest(
+    return (AtInitializeTablesExceptionTest(
         OSXF_NUM(AcpiOsGetRootPointer),
         AtActD_OneTime, AtActRet_NULL, 1,
-        AE_NOT_FOUND);
+        AE_NOT_FOUND));
 }
 
 ACPI_STATUS
@@ -845,7 +845,7 @@ AtGetTableExceptionTest(
         Status = AtSubsystemInit(AAPITS_INITIALIZE_SS, 0, 0, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -854,7 +854,7 @@ AtGetTableExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         j = (i - TFst) % (sizeof (TestSignInstOk) / sizeof (AT_SIGN_INST));
@@ -881,24 +881,24 @@ AtGetTableExceptionTest(
                 printf ("API Error: AcpiGetFirmwareTable returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, CtrlCheck);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -907,11 +907,11 @@ AtGetTableExceptionTest(
 ACPI_STATUS
 AtTableTest0014(void)
 {
-    return AtGetTableTest(
+    return (AtGetTableTest(
         AAPITS_INITABLES,
         TestSignInstError,
         sizeof (TestSignInstError) / sizeof (AT_SIGN_INST),
-        AE_NOT_FOUND);
+        AE_NOT_FOUND));
 }
 
 /*
@@ -920,11 +920,11 @@ AtTableTest0014(void)
 ACPI_STATUS
 AtTableTest0015(void)
 {
-    return AtGetTableTest(
+    return (AtGetTableTest(
         AAPITS_INI_PRELOAD,
         TestSignInstOk,
         sizeof (TestSignInstOk) / sizeof (AT_SIGN_INST),
-        AE_OK);
+        AE_OK));
 }
 
 /*
@@ -946,7 +946,7 @@ AtTableTest0016(void)
         AapiErrors++;
         printf ("API Error: AcpiInitializeTables() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -954,10 +954,10 @@ AtTableTest0016(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -973,10 +973,10 @@ AtTableTest0017(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -992,10 +992,10 @@ AtTableTest0018(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 ACPI_STATUS
@@ -1018,7 +1018,7 @@ AtLoadTablesInvalidTest(int Var)
         AapiErrors++;
         printf ("API Error 1: AcpiOS* calls withoout Subsystem init., %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (Var)
@@ -1028,7 +1028,7 @@ AtLoadTablesInvalidTest(int Var)
             0, 0, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -1042,7 +1042,7 @@ AtLoadTablesInvalidTest(int Var)
                 AapiErrors++;
                 printf ("API Error 2: AcpiInitializeTables returned %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
 
@@ -1053,7 +1053,7 @@ AtLoadTablesInvalidTest(int Var)
             printf ("API Error 3-%d: AcpiLoadTables() returned %s,"
                 " expected AE_NO_ACPI_TABLES\n",
                 i, AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         else if ((i >= (RMax - 2)) && ACPI_SUCCESS(Status))
         {
@@ -1061,7 +1061,7 @@ AtLoadTablesInvalidTest(int Var)
             printf ("API Error 3-%d: AcpiLoadTables() returned %s,"
                 " expected a FAILURE\n",
                 i, AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -1074,10 +1074,10 @@ AtLoadTablesInvalidTest(int Var)
         AapiErrors++;
         printf ("API Error 4: AcpiOS* calls during AcpiLoadTables, %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1086,7 +1086,7 @@ AtLoadTablesInvalidTest(int Var)
 ACPI_STATUS
 AtTableTest0019(void)
 {
-    return AtLoadTablesInvalidTest(0);
+    return (AtLoadTablesInvalidTest(0));
 }
 
 /*
@@ -1095,7 +1095,7 @@ AtTableTest0019(void)
 ACPI_STATUS
 AtTableTest0020(void)
 {
-    return AtLoadTablesInvalidTest(1);
+    return (AtLoadTablesInvalidTest(1));
 }
 
 /*
@@ -1111,10 +1111,10 @@ AtTableTest0021(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1131,10 +1131,10 @@ AtTableTest0022(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1152,7 +1152,7 @@ AtTableTest0023(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < RMax; i++)
@@ -1162,11 +1162,11 @@ AtTableTest0023(void)
             0, 0, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 UINT32
@@ -1181,10 +1181,10 @@ AtIsCheckedAttempt(
     {
         if (TSkip[2 * i] <= Ind && Ind <= TSkip[2 * i + 1])
         {
-            return FALSE;
+            return (FALSE);
         }
     }
-    return TRUE;
+    return (TRUE);
 }
 
 ACPI_STATUS
@@ -1221,7 +1221,7 @@ AtLoadTablesExceptionTest(
         Status = AtSubsystemInit(AAPITS_INI_PRELOAD, 0, 0, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -1230,7 +1230,7 @@ AtLoadTablesExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiLoadTables();
@@ -1256,7 +1256,7 @@ AtLoadTablesExceptionTest(
                     AcpiFormatException(Benchmark));
                 if (Status == AE_OK)
                 {
-                    return AE_ERROR;
+                    return (AE_ERROR);
                 }
             }
         }
@@ -1264,17 +1264,17 @@ AtLoadTablesExceptionTest(
         Status = AtTerminateCtrlCheck(AE_OK, CtrlCheck);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1296,16 +1296,16 @@ AtTableTest0024(void)
         AE_NO_MEMORY, sizeof (TSkip) / sizeof (UINT32), TSkip);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
      * AcpiOsAllocate returns NULL one time on the specified call
      */
-    return AtLoadTablesExceptionTest(
+    return (AtLoadTablesExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
-        AE_NO_MEMORY, sizeof (TSkip) / sizeof (UINT32), TSkip);
+        AE_NO_MEMORY, sizeof (TSkip) / sizeof (UINT32), TSkip));
 }
 
 /*
@@ -1328,7 +1328,7 @@ AtInitializeTablesErrTest(
         Status = AtSubsystemInit(AAPITS_INITIALIZE_SS, 0, 0, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
@@ -1344,17 +1344,17 @@ AtInitializeTablesErrTest(
                 " expected %s\n",
                 AcpiFormatException(Status),
                 AcpiFormatException(ErrBenchmarks[i]));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, CtrlCheck);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1368,9 +1368,9 @@ AtTableTest0025(void)
     ACPI_STATUS             ErrBenchmarks[] = {
         AE_INVALID_TABLE_LENGTH};
 
-    return AtInitializeTablesErrTest(ErrFlags,
+    return (AtInitializeTablesErrTest(ErrFlags,
         (sizeof (ErrFlags) / sizeof (UINT32)),
-        ErrBenchmarks);
+        ErrBenchmarks));
 }
 
 /*
@@ -1390,9 +1390,9 @@ AtTableTest0026(void)
         AE_NO_ACPI_TABLES,
         AE_NO_ACPI_TABLES};
 
-    return AtInitializeTablesErrTest(ErrFlags,
+    return (AtInitializeTablesErrTest(ErrFlags,
         (sizeof (ErrFlags) / sizeof (UINT32)),
-        ErrBenchmarks);
+        ErrBenchmarks));
 }
 
 /*
@@ -1419,7 +1419,7 @@ AtLoadTablesErrTest(UINT32 *ErrFlags, int NumCases, ACPI_STATUS *ErrBenchmarks)
         Status = AtSubsystemInit(AAPITS_INITIALIZE_SS, 0, 0, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         memset(&UserTableStructure, 0, sizeof (ACPI_TABLE_HEADER));
@@ -1438,7 +1438,7 @@ AtLoadTablesErrTest(UINT32 *ErrFlags, int NumCases, ACPI_STATUS *ErrBenchmarks)
                     " expected %s\n",
                     AcpiFormatException(Status),
                     AcpiFormatException(ErrBenchmarks[i]));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
         else
@@ -1448,7 +1448,7 @@ AtLoadTablesErrTest(UINT32 *ErrFlags, int NumCases, ACPI_STATUS *ErrBenchmarks)
                 AapiErrors++;
                 printf ("API Error: AcpiInitializeTables() returned %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
 
             Status = AcpiLoadTables();
@@ -1457,7 +1457,7 @@ AtLoadTablesErrTest(UINT32 *ErrFlags, int NumCases, ACPI_STATUS *ErrBenchmarks)
                 AapiErrors++;
                 printf ("API Error: AcpiLoadTables() returned %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
 
             Status = AcpiEnableSubsystem(AAPITS_EN_FLAGS);
@@ -1468,18 +1468,18 @@ AtLoadTablesErrTest(UINT32 *ErrFlags, int NumCases, ACPI_STATUS *ErrBenchmarks)
                     " expected %s\n",
                     AcpiFormatException(Status),
                     AcpiFormatException(ErrBenchmarks[i]));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, CtrlCheck);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1506,9 +1506,9 @@ AtTableTest0027(void)
 #endif
     };
 
-    return AtLoadTablesErrTest(ErrFlags,
+    return (AtLoadTablesErrTest(ErrFlags,
         (sizeof (ErrFlags) / sizeof (UINT32)),
-        ErrBenchmarks);
+        ErrBenchmarks));
 }
 
 /*
@@ -1528,9 +1528,9 @@ AtTableTest0028(void)
         AE_BAD_SIGNATURE,
         AE_BAD_SIGNATURE};
 
-    return AtInitializeTablesErrTest(ErrFlags,
+    return (AtInitializeTablesErrTest(ErrFlags,
         (sizeof (ErrFlags) / sizeof (UINT32)),
-        ErrBenchmarks);
+        ErrBenchmarks));
 }
 
 /*
@@ -1552,9 +1552,9 @@ AtTableTest0029(void)
     {
         ErrBenchmarks[0] = AE_NO_ACPI_TABLES;
     }
-    return AtLoadTablesErrTest(ErrFlags,
+    return (AtLoadTablesErrTest(ErrFlags,
         (sizeof (ErrFlags) / sizeof (UINT32)),
-        ErrBenchmarks);
+        ErrBenchmarks));
 }
 
 /*
@@ -1572,9 +1572,9 @@ AtTableTest0030(void)
         AE_INVALID_TABLE_LENGTH,
         AE_INVALID_TABLE_LENGTH};
 
-    return AtLoadTablesErrTest(ErrFlags,
+    return (AtLoadTablesErrTest(ErrFlags,
         (sizeof (ErrFlags) / sizeof (UINT32)),
-        ErrBenchmarks);
+        ErrBenchmarks));
 }
 
 /*
@@ -1602,7 +1602,7 @@ AtGetTableByIndexTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -1616,16 +1616,16 @@ AtGetTableByIndexTest(
                 "           expected to return %s\n",
                 i,
                 AcpiFormatException(Status), AcpiFormatException(Benchmark));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
     if (StagesScale & AAPITS_INITIALIZE_SS)
     {
-        return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+        return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1634,10 +1634,10 @@ AtGetTableByIndexTest(
 ACPI_STATUS
 AtTableTest0031(void)
 {
-    return AtGetTableByIndexTest(
+    return (AtGetTableByIndexTest(
         AAPITS_INITABLES,
         0, 8,
-        AE_OK);
+        AE_OK));
 }
 
 /*
@@ -1646,10 +1646,10 @@ AtTableTest0031(void)
 ACPI_STATUS
 AtTableTest0032(void)
 {
-    return AtGetTableByIndexTest(
+    return (AtGetTableByIndexTest(
         AAPITS_INI_PRELOAD,
         0, 10,
-        AE_OK);
+        AE_OK));
 }
 
 /*
@@ -1658,10 +1658,10 @@ AtTableTest0032(void)
 ACPI_STATUS
 AtTableTest0033(void)
 {
-    return AtGetTableByIndexTest(
+    return (AtGetTableByIndexTest(
         AAPITS_INI_PRELOAD,
         10, 3,
-        AE_BAD_PARAMETER);
+        AE_BAD_PARAMETER));
 }
 
 /*
@@ -1678,7 +1678,7 @@ AtTableTest0034(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < 8; i++)
@@ -1690,11 +1690,11 @@ AtTableTest0034(void)
             printf ("API Error: AcpiGetTableByIndex(%d, NULL) returned %s,"
                 " expected AE_BAD_PARAMETER\n",
                 i, AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -1708,7 +1708,7 @@ AtTableTest0035(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("tblm0047.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1716,7 +1716,7 @@ AtTableTest0035(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiEvaluateObject (NULL, "\\INIT",
@@ -1726,7 +1726,7 @@ AtTableTest0035(void)
         AapiErrors++;
         printf ("API Error : AcpiEvaluateObject(INIT) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /*
@@ -1743,7 +1743,7 @@ AtTableTest0035(void)
                 printf ("API Error: AcpiGetTableByIndex(%d) returned %s,"
                     " expected AE_BAD_PARAMETER\n",
                     OutInd, AcpiFormatException(Status));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
             break;
         }
@@ -1753,7 +1753,7 @@ AtTableTest0035(void)
             printf ("API Error: Success of AcpiGetTableByIndex(%d)"
                 " out of the registered Tables range\n",
                 SanityLimitInd);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -1767,7 +1767,7 @@ AtTableTest0035(void)
             printf ("API Error %d: AcpiEvaluateObject(_PR_.CPU0._PPC)"
                 " returned %s, expected AE_NOT_FOUND\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiEvaluateObject (NULL, "\\LD__",
@@ -1777,7 +1777,7 @@ AtTableTest0035(void)
             AapiErrors++;
             printf ("API Error %d: AcpiEvaluateObject(LD) returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiEvaluateObject (NULL, "\\_PR_.CPU0._PPC",
@@ -1787,7 +1787,7 @@ AtTableTest0035(void)
             AapiErrors++;
             printf ("API Error %d: AcpiEvaluateObject(_PR_.CPU0._PPC) returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetTableByIndex(OutInd, &OutTable);
@@ -1796,7 +1796,7 @@ AtTableTest0035(void)
             AapiErrors++;
             printf ("API Error %d: AcpiGetTableByIndex(%d) returned %s\n",
                     i, OutInd, AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         Status = AcpiEvaluateObject (NULL, "\\UNLD",
@@ -1806,7 +1806,7 @@ AtTableTest0035(void)
             AapiErrors++;
             printf ("API Error %d: AcpiEvaluateObject(UNLD) returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetTableByIndex(OutInd, &OutTable);
@@ -1815,7 +1815,7 @@ AtTableTest0035(void)
             AapiErrors++;
             printf ("API Error %d(UNLD): AcpiGetTableByIndex(%d) returned %s\n",
                 i, OutInd, AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -1826,10 +1826,10 @@ AtTableTest0035(void)
         printf ("API Error: AcpiGetTableByIndex(%d) returned %s,"
             " expected AE_BAD_PARAMETER\n",
             OutInd + 1, AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1845,7 +1845,7 @@ AtTableTest0036(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("tblm0047.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1853,7 +1853,7 @@ AtTableTest0036(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiEvaluateObject (NULL, "\\INIT",
@@ -1863,7 +1863,7 @@ AtTableTest0036(void)
         AapiErrors++;
         printf ("API Error : AcpiEvaluateObject(INIT) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTableByIndex(OutInd, &OutTable);
@@ -1873,7 +1873,7 @@ AtTableTest0036(void)
         printf ("API Error: AcpiGetTableByIndex(%d) returned %s,"
             " expected AE_BAD_PARAMETER\n",
             OutInd, AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     for (i = 0; i < 7; i++)
@@ -1886,7 +1886,7 @@ AtTableTest0036(void)
             printf ("API Error %d: AcpiEvaluateObject(_PR_.CPU0._PPC)"
                 " returned %s, expected AE_NOT_FOUND\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiEvaluateObject (NULL, "\\LD__",
@@ -1897,7 +1897,7 @@ AtTableTest0036(void)
             printf ("API Error %d: AcpiEvaluateObject(LD) returned %s,"
                 " expected AE_SUPPORT\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetTableByIndex(OutInd, &OutTable);
@@ -1907,11 +1907,11 @@ AtTableTest0036(void)
             printf ("API Error %d: AcpiGetTableByIndex(%d) returned %s,"
                 " expected AE_BAD_PARAMETER\n",
                 i, OutInd, AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1925,7 +1925,7 @@ AtTableTest0037(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("tblm0037.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1933,7 +1933,7 @@ AtTableTest0037(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiEvaluateObject (NULL, "\\INIT",
@@ -1943,7 +1943,7 @@ AtTableTest0037(void)
         AapiErrors++;
         printf ("API Error : AcpiEvaluateObject(INIT) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < 99; i++)
@@ -1955,11 +1955,11 @@ AtTableTest0037(void)
             AapiErrors++;
             printf ("API Error %d: AcpiEvaluateObject(LD) returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1976,7 +1976,7 @@ AtTableTest0038(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("tblm0037.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtReadTableFromFile (AtAMLcodeFileName, &UserTable);
@@ -1985,7 +1985,7 @@ AtTableTest0038(void)
         TestErrors++;
         printf ("Test error: AtReadTableFromFile(DSDT) failure, %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     AtBuildLocalTables(UserTable, NullBldTask);
@@ -1993,7 +1993,7 @@ AtTableTest0038(void)
     Status = AtInitCommonTest(AAPITS_INITIALIZE_SS, 0, 0, 0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiInitializeTables(NULL, 10, FALSE);
@@ -2002,7 +2002,7 @@ AtTableTest0038(void)
         AapiErrors++;
         printf ("API Error: AcpiInitializeTables(NULL) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -2011,7 +2011,7 @@ AtTableTest0038(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
 
@@ -2022,7 +2022,7 @@ AtTableTest0038(void)
         AapiErrors++;
         printf ("API Error : AcpiEvaluateObject(INIT) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < 99; i++)
@@ -2034,11 +2034,11 @@ AtTableTest0038(void)
             AapiErrors++;
             printf ("API Error %d: AcpiEvaluateObject(LD) returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 ACPI_STATUS
@@ -2060,7 +2060,7 @@ AtCheckGetTableHeader(void)
             AapiErrors++;
             printf ("API Error: AcpiGetTableHeader(%d, %d) returned %s\n",
                 i, Instance, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AtGetTableHeader(TableSignSet[i], 1, &TablePointer, BldTask);
@@ -2069,7 +2069,7 @@ AtCheckGetTableHeader(void)
             TestErrors++;
             printf ("Test Error: AtGetTableHeader(%d) failed (%s)\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         if (ACPI_COMPARE_NAME(TableSignSet[i], ACPI_SIG_FADT) &&
@@ -2082,7 +2082,7 @@ AtCheckGetTableHeader(void)
                 printf ("API Error: Length field of FADT header %d,"
                     " expected %d\n",
                     (int)OutTableHeader.Length, (int)ACPI_FADT_OFFSET (ResetRegister));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
             OutTableHeader.Length = TablePointer->Length;
         }
@@ -2092,12 +2092,12 @@ AtCheckGetTableHeader(void)
         {
             printf ("API Error: AcpiGetTableHeader(%d, %d) table\n",
                 i, Instance);
-            return Status;
+            return (Status);
         }
 //        AcpiOsUnmapMemory(OutTableHeader, (ACPI_SIZE) sizeof (ACPI_TABLE_HEADER));
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2119,10 +2119,10 @@ AtTableTest0039(void)
         AapiErrors++;
         printf ("API Error: AcpiInitializeTables() returned %s\n",
             AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtCheckGetTableHeader();
+    return (AtCheckGetTableHeader());
 }
 
 /*
@@ -2138,10 +2138,10 @@ AtTableTest0040(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtCheckGetTableHeader();
+    return (AtCheckGetTableHeader());
 }
 
 ACPI_STATUS
@@ -2158,7 +2158,7 @@ AtCheckGetTableHeaderInstance(void)
         TestErrors++;
         printf ("Test Error: AtGetTableHeader(SSDT1) failed (%s)\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /* Caller should unmap the header with AcpiOsUnmapMemory */
@@ -2169,13 +2169,13 @@ AtCheckGetTableHeaderInstance(void)
         AapiErrors++;
         printf ("API Error: AcpiGetTableHeader(SSDT, %d) returned %s\n",
             1, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckBytes("SSDT1",
         (UINT8 *)&OutTableHeader, (UINT8 *)TablePointer,
         sizeof (ACPI_TABLE_HEADER))))
     {
-        return Status;
+        return (Status);
     }
 //    AcpiOsUnmapMemory(OutTableHeader, (ACPI_SIZE) sizeof (ACPI_TABLE_HEADER));
 
@@ -2185,7 +2185,7 @@ AtCheckGetTableHeaderInstance(void)
         TestErrors++;
         printf ("Test Error: AtGetTableHeader(SSDT2) failed (%s)\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /* Caller should unmap the header with AcpiOsUnmapMemory */
@@ -2196,17 +2196,17 @@ AtCheckGetTableHeaderInstance(void)
         AapiErrors++;
         printf ("API Error: AcpiGetTableHeader(SSDT, %d) returned %s\n",
             2, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckBytes("SSDT2",
         (UINT8 *)&OutTableHeader, (UINT8 *)TablePointer,
         sizeof (ACPI_TABLE_HEADER))))
     {
-        return Status;
+        return (Status);
     }
 //    AcpiOsUnmapMemory(OutTableHeader, (ACPI_SIZE) sizeof (ACPI_TABLE_HEADER));
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2228,10 +2228,10 @@ AtTableTest0041(void)
         AapiErrors++;
         printf ("API Error: AcpiInitializeTables() returned %s\n",
             AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtCheckGetTableHeaderInstance();
+    return (AtCheckGetTableHeaderInstance());
 }
 
 /*
@@ -2247,16 +2247,16 @@ AtTableTest0042(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtCheckGetTableHeader();
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtCheckGetTableHeaderInstance();
+    return (AtCheckGetTableHeaderInstance());
 }
 
 /*
@@ -2274,7 +2274,7 @@ AtTableTest0043(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = ACPI_NUM_TABLE_TYPES; i < ACPI_NUM_TABLE_TYPES + 4; i++)
@@ -2286,11 +2286,11 @@ AtTableTest0043(void)
             printf ("API Error: AcpiGetTableHeader('%s', %d) returned %s,"
                 " expected AE_NOT_FOUND\n",
                 TableSignSet[i], 1, AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2307,7 +2307,7 @@ AtTableTest0044(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < ACPI_NUM_TABLE_TYPES + 4; i++)
@@ -2319,11 +2319,11 @@ AtTableTest0044(void)
             printf ("API Error: AcpiGetTableHeader('%s', 1, NULL) returned %s,"
                 " expected AE_BAD_PARAMETER\n",
                 TableSignSet[i], AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2341,7 +2341,7 @@ AtTableTest0045(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < ACPI_NUM_TABLE_TYPES; i++)
@@ -2360,12 +2360,12 @@ AtTableTest0045(void)
                 printf ("API Error: AcpiGetTableHeader('%s', %d) returned %s,"
                     " expected AE_NOT_FOUND\n",
                     TableSignSet[i], j, AcpiFormatException(Status));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2381,7 +2381,7 @@ AtTableTest0046(void)
     Status = AtSubsystemInit(AAPITS_INITIALIZE_SS, 0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 1; i < ACPI_NUM_TABLE_TYPES; i++)
@@ -2393,7 +2393,7 @@ AtTableTest0046(void)
             printf ("API Error: AcpiGetTableHeader(%d, 1) returned %s,"
                 " expected AE_NOT_EXIST\n",
                 i, AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -2407,11 +2407,11 @@ AtTableTest0046(void)
             printf ("API Error: AcpiGetTableHeader(SSDT, %d) returned %s,"
                 " expected AE_NOT_EXIST\n",
                 i, AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2426,7 +2426,7 @@ AtTableTest0047(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("tblm0047.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -2434,7 +2434,7 @@ AtTableTest0047(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiEvaluateObject (NULL, "\\INIT",
@@ -2444,7 +2444,7 @@ AtTableTest0047(void)
         AapiErrors++;
         printf ("API Error : AcpiEvaluateObject(INIT) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTableHeader(ACPI_SIG_SSDT, 4,
@@ -2455,7 +2455,7 @@ AtTableTest0047(void)
         printf ("API Error: AcpiGetTableHeader(SSDT, 4) returned %s,"
             " expected AE_NOT_FOUND\n",
             AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     for (i = 0; i < 150; i++)
@@ -2468,7 +2468,7 @@ AtTableTest0047(void)
             printf ("API Error %d: AcpiEvaluateObject(_PR_.CPU0._PPC)"
                 " returned %s, expected AE_NOT_FOUND\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiEvaluateObject (NULL, "\\LD__",
@@ -2478,7 +2478,7 @@ AtTableTest0047(void)
             AapiErrors++;
             printf ("API Error %d: AcpiEvaluateObject(LD) returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiEvaluateObject (NULL, "\\_PR_.CPU0._PPC",
@@ -2488,7 +2488,7 @@ AtTableTest0047(void)
             AapiErrors++;
             printf ("API Error %d: AcpiEvaluateObject(_PR_.CPU0._PPC) returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         /* Caller should unmap the header with AcpiOsUnmapMemory */
@@ -2500,7 +2500,7 @@ AtTableTest0047(void)
             printf ("API Error %d: AcpiGetTableHeader(SSDT, 4) returned %s,"
                 " expected AE_OK\n",
                 i, AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 //        AcpiOsUnmapMemory(OutTableHeader, (ACPI_SIZE) sizeof (ACPI_TABLE_HEADER));
 
@@ -2511,7 +2511,7 @@ AtTableTest0047(void)
             AapiErrors++;
             printf ("API Error %d: AcpiEvaluateObject(UNLD) returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         /* Caller should unmap the header with AcpiOsUnmapMemory */
@@ -2523,12 +2523,12 @@ AtTableTest0047(void)
             printf ("API Error %d(UNLD): AcpiGetTableHeader(SSDT, 4) returned %s,"
                 " expected AE_OK\n",
                 i, AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 //        AcpiOsUnmapMemory(OutTableHeader, (ACPI_SIZE) sizeof (ACPI_TABLE_HEADER));
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 ACPI_STATUS
@@ -2549,7 +2549,7 @@ AtCheckGetTable(void)
             AapiErrors++;
             printf ("API Error: AcpiGetTable(%d, %d) returned %s\n",
                 i, Instance, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AtGetTableHeader(TableSignSet[i], 1, &TablePointer, BldTask);
@@ -2558,7 +2558,7 @@ AtCheckGetTable(void)
             TestErrors++;
             printf ("Test Error: AtGetTableHeader(%d) failed (%s)\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         if (ACPI_COMPARE_NAME(TableSignSet[i], ACPI_SIG_FADT) &&
@@ -2571,7 +2571,7 @@ AtCheckGetTable(void)
                 printf ("API Error: Length field of FADT header %d,"
                     " expected %d\n",
                     (int)OutTableHeader->Length, (int)ACPI_FADT_OFFSET (ResetRegister));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
             OutTableHeader->Length = TablePointer->Length;
         }
@@ -2581,11 +2581,11 @@ AtCheckGetTable(void)
         {
             printf ("API Error: AcpiGetTable(%d, %d) table\n",
                 i, Instance);
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2607,10 +2607,10 @@ AtTableTest0048(void)
         AapiErrors++;
         printf ("API Error: AcpiInitializeTables() returned %s\n",
             AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtCheckGetTable();
+    return (AtCheckGetTable());
 }
 
 /*
@@ -2626,10 +2626,10 @@ AtTableTest0049(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtCheckGetTable();
+    return (AtCheckGetTable());
 }
 
 ACPI_STATUS
@@ -2646,7 +2646,7 @@ AtCheckGetTableInstance(void)
         TestErrors++;
         printf ("Test Error: AtGetTableHeader(SSDT1) failed (%s)\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
     Status = AcpiGetTable(ACPI_SIG_SSDT, 1,
         &OutTableHeader);
@@ -2655,13 +2655,13 @@ AtCheckGetTableInstance(void)
         AapiErrors++;
         printf ("API Error: AcpiGetTable(SSDT, %d) returned %s\n",
             1, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckBytes("SSDT1",
         (UINT8 *)OutTableHeader, (UINT8 *)TablePointer,
         sizeof (ACPI_TABLE_HEADER))))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtGetTableHeader(ACPI_SIG_SSDT, 2, &TablePointer, BldTask);
@@ -2670,7 +2670,7 @@ AtCheckGetTableInstance(void)
         TestErrors++;
         printf ("Test Error: AtGetTableHeader(SSDT2) failed (%s)\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
     Status = AcpiGetTable(ACPI_SIG_SSDT, 2,
         &OutTableHeader);
@@ -2679,16 +2679,16 @@ AtCheckGetTableInstance(void)
         AapiErrors++;
         printf ("API Error: AcpiGetTable(SSDT, %d) returned %s\n",
             2, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckBytes("SSDT2",
         (UINT8 *)OutTableHeader, (UINT8 *)TablePointer,
         sizeof (ACPI_TABLE_HEADER))))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2710,10 +2710,10 @@ AtTableTest0050(void)
         AapiErrors++;
         printf ("API Error: AcpiInitializeTables() returned %s\n",
             AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtCheckGetTableInstance();
+    return (AtCheckGetTableInstance());
 }
 
 /*
@@ -2729,16 +2729,16 @@ AtTableTest0051(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtCheckGetTable();
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtCheckGetTableInstance();
+    return (AtCheckGetTableInstance());
 }
 
 /*
@@ -2756,7 +2756,7 @@ AtTableTest0052(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = ACPI_NUM_TABLE_TYPES; i < ACPI_NUM_TABLE_TYPES + 4; i++)
@@ -2768,11 +2768,11 @@ AtTableTest0052(void)
             printf ("API Error: AcpiGetTable('%s', %d) returned %s,"
                 " expected AE_NOT_FOUND\n",
                 TableSignSet[i], 1, AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2789,7 +2789,7 @@ AtTableTest0053(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < ACPI_NUM_TABLE_TYPES + 4; i++)
@@ -2801,11 +2801,11 @@ AtTableTest0053(void)
             printf ("API Error: AcpiGetTable('%s', 1, NULL) returned %s,"
                 " expected AE_BAD_PARAMETER\n",
                 TableSignSet[i], AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2823,7 +2823,7 @@ AtTableTest0054(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < ACPI_NUM_TABLE_TYPES; i++)
@@ -2842,12 +2842,12 @@ AtTableTest0054(void)
                 printf ("API Error: AcpiGetTable('%s', %d) returned %s,"
                     " expected AE_NOT_FOUND\n",
                     TableSignSet[i], j, AcpiFormatException(Status));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2863,7 +2863,7 @@ AtTableTest0055(void)
     Status = AtSubsystemInit(AAPITS_INITIALIZE_SS, 0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 1; i < ACPI_NUM_TABLE_TYPES; i++)
@@ -2875,7 +2875,7 @@ AtTableTest0055(void)
             printf ("API Error: AcpiGetTable(%d, 1) returned %s,"
                 " expected AE_NOT_EXIST\n",
                 i, AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -2889,11 +2889,11 @@ AtTableTest0055(void)
             printf ("API Error: AcpiGetTable(SSDT, %d) returned %s,"
                 " expected AE_NOT_EXIST\n",
                 i, AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2908,7 +2908,7 @@ AtTableTest0056(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("tblm0047.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -2916,7 +2916,7 @@ AtTableTest0056(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiEvaluateObject (NULL, "\\INIT",
@@ -2926,7 +2926,7 @@ AtTableTest0056(void)
         AapiErrors++;
         printf ("API Error : AcpiEvaluateObject(INIT) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetTable(ACPI_SIG_SSDT, 4,
@@ -2937,7 +2937,7 @@ AtTableTest0056(void)
         printf ("API Error: AcpiGetTable(SSDT, 4) returned %s,"
             " expected AE_NOT_FOUND\n",
             AcpiFormatException(Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     for (i = 0; i < 150; i++)
@@ -2950,7 +2950,7 @@ AtTableTest0056(void)
             printf ("API Error %d: AcpiEvaluateObject(_PR_.CPU0._PPC)"
                 " returned %s, expected AE_NOT_FOUND\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiEvaluateObject (NULL, "\\LD__",
@@ -2960,7 +2960,7 @@ AtTableTest0056(void)
             AapiErrors++;
             printf ("API Error %d: AcpiEvaluateObject(LD) returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiEvaluateObject (NULL, "\\_PR_.CPU0._PPC",
@@ -2970,7 +2970,7 @@ AtTableTest0056(void)
             AapiErrors++;
             printf ("API Error %d: AcpiEvaluateObject(_PR_.CPU0._PPC) returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetTable(ACPI_SIG_SSDT, 4,
@@ -2981,7 +2981,7 @@ AtTableTest0056(void)
             printf ("API Error %d: AcpiGetTable(SSDT, 4) returned %s,"
                 " expected AE_OK\n",
                 i, AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         Status = AcpiEvaluateObject (NULL, "\\UNLD",
@@ -2991,7 +2991,7 @@ AtTableTest0056(void)
             AapiErrors++;
             printf ("API Error %d: AcpiEvaluateObject(UNLD) returned %s\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetTable(ACPI_SIG_SSDT, 4,
@@ -3002,11 +3002,11 @@ AtTableTest0056(void)
             printf ("API Error %d(UNLD): AcpiGetTable(SSDT, 4) returned %s,"
                 " expected AE_OK\n",
                 i, AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -3025,7 +3025,7 @@ AtTableTest0057(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 1; i < ACPI_NUM_TABLE_TYPES; i++)
@@ -3036,7 +3036,7 @@ AtTableTest0057(void)
             AapiErrors++;
             printf ("API Error: AcpiGetTable('%s', 1) returned %s\n",
                 TableSignSet[i], AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         /* Caller should unmap the header with AcpiOsUnmapMemory */
@@ -3046,7 +3046,7 @@ AtTableTest0057(void)
             AapiErrors++;
             printf ("API Error: AcpiGetTableHeader('%s', 1) returned %s\n",
                 TableSignSet[i], AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 //        if (!(OutTableHeader0 == OutTableHeader1))
         Status = AtCheckBytes("Headers", (UINT8 *)OutTableHeader0,
@@ -3058,16 +3058,16 @@ AtTableTest0057(void)
             printf ("API Error: AcpiGetTable and AcpiGetTableHeader returned"
                 " different pointers %p != %p",
                 OutTableHeader0, OutTableHeader1);
-            return AE_ERROR;
+            return (AE_ERROR);
 */
             printf ("API Error: AcpiGetTable and AcpiGetTableHeader returned"
                 " different contents");
-            return Status;
+            return (Status);
         }
 //        AcpiOsUnmapMemory(OutTableHeader1, (ACPI_SIZE) sizeof (ACPI_TABLE_HEADER));
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -3081,14 +3081,14 @@ AtTableTest0058(void)
 #if (!ACPI_CHECKSUM_ABORT)
         TestSkipped++;
         printf ("Test note: ACPI_CHECKSUM_ABORT macros is not TRUE\n");
-        return AE_ERROR;
+        return (AE_ERROR);
 #else
     ACPI_STATUS             Status;
     UINT32                  i;
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("tblm0058.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -3096,7 +3096,7 @@ AtTableTest0058(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiEvaluateObject (NULL, "\\INIT",
@@ -3106,7 +3106,7 @@ AtTableTest0058(void)
         AapiErrors++;
         printf ("API Error : AcpiEvaluateObject(INIT) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < 3; i++)
@@ -3119,11 +3119,11 @@ AtTableTest0058(void)
             printf ("API Error %d: AcpiEvaluateObject(LD) returned %s,"
                 " expected AE_ALREADY_EXISTS\n",
                 i, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 #endif
 }
 
@@ -3144,9 +3144,9 @@ AtTableTest0059(void)
 //        AE_NO_ACPI_TABLES,
         AE_NO_ACPI_TABLES};
 
-    return AtLoadTablesErrTest(ErrFlags,
+    return (AtLoadTablesErrTest(ErrFlags,
         sizeof (ErrFlags) / sizeof (UINT32),
-        ErrBenchmarks);
+        ErrBenchmarks));
 }
 
 /*
@@ -3163,7 +3163,7 @@ AtTableTest0060(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("dsdt1.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -3171,7 +3171,7 @@ AtTableTest0060(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /* Caller should unmap the header with AcpiOsUnmapMemory */
@@ -3182,7 +3182,7 @@ AtTableTest0060(void)
         AapiErrors++;
         printf ("API Error: AcpiGetTableHeader(DSDT, 1) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     AtAMLcodeFileName[strlen(AtAMLcodeFileName) - 5] = '2';
@@ -3193,7 +3193,7 @@ AtTableTest0060(void)
         TestErrors++;
         printf ("Test error: AtReadTableFromFile(DSDT) failure, %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     free(UserTable);
@@ -3206,7 +3206,7 @@ AtTableTest0060(void)
         AapiErrors++;
         printf ("API Error: AcpiGetTableHeader(DSDT, 1) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
     Status = AtReadTableFromFile (AtAMLcodeFileName, &UserTable);
     if (ACPI_FAILURE(Status))
@@ -3214,14 +3214,14 @@ AtTableTest0060(void)
         TestErrors++;
         printf ("Test error: AtReadTableFromFile(DSDT) failure, %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckBytes("DSDT",
         (UINT8 *)&OutTableHeader2, (UINT8 *)UserTable,
         sizeof (ACPI_TABLE_HEADER))))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < sizeof (ACPI_TABLE_HEADER); i++)
@@ -3236,13 +3236,13 @@ AtTableTest0060(void)
         TestErrors++;
         printf ("Test Error: both internal and %s DSDTs are the same\n",
             AtAMLcodeFileName);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
 //    AcpiOsUnmapMemory(OutTableHeader, (ACPI_SIZE) sizeof (ACPI_TABLE_HEADER));
 //    AcpiOsUnmapMemory(OutTableHeader2, (ACPI_SIZE) sizeof (ACPI_TABLE_HEADER));
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -3255,7 +3255,7 @@ AtTableTest0061(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("dsdt.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtInitCommonTest(AAPITS_INI_PRELOAD | AAPITS_LOADTABLES |
@@ -3264,8 +3264,8 @@ AtTableTest0061(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }

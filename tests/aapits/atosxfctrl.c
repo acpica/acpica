@@ -80,7 +80,7 @@ OsxfCtrlInit(
 
     InitOsxfCtrl = OsxfCtrl[OSXF_NUM(AcpiOsInitialize)];
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -93,10 +93,10 @@ OsxfCtrlGet(ACPI_OSXF OsxfNum, ACPI_OSXF_CONTROL *Ctrl)
     if (OsxfNum < AcpiOsAllC)
     {
         *Ctrl = OsxfCtrl[OsxfNum];
-        return AE_OK;
+        return (AE_OK);
     }
 
-    return AE_ERROR;
+    return (AE_ERROR);
 }
 
 /*
@@ -119,7 +119,7 @@ OsxfCtrlGetCalls(
         Count = OsxfCtrl[OsxfNum].CallsCount;
     }
 
-    return Count;
+    return (Count);
 }
 
 /*
@@ -145,7 +145,7 @@ OsxfCtrlTotalCalls(
         Count = OsxfCtrl[OSXF_NUM(AcpiOsTotal)].CallsCount;
     }
 
-    return Count;
+    return (Count);
 }
 
 /*
@@ -171,7 +171,7 @@ OsxfCtrlSet(
                 " action for CallsCount %d, ActFlag %d, ActCode %d\n",
                 OSXF_NAME(OsxfNum), (UINT32)Ctrl->CtrlAct.CallsCount,
                 Ctrl->CtrlAct.ActFlag, Ctrl->CtrlAct.ActCode);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
     else
@@ -180,7 +180,7 @@ OsxfCtrlSet(
             " CallsCount(%d) > 0 && %d < ActCode(%d) < %d\n",
             OSXF_NAME(OsxfNum),
             (UINT32)CallsCount, ActCode, AtActUndefined, AtActAll);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     Ctrl->CtrlAct.CallsCount = Ctrl->CallsCount + CallsCount;
@@ -188,7 +188,7 @@ OsxfCtrlSet(
     Ctrl->CtrlAct.ActCode = ActCode;
     Ctrl->CtrlAct.ActOsxf = 0;
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -207,7 +207,7 @@ OsxfCtrlGetActOsxf(
     {
         OsxfCtrl[OsxfNum].CtrlAct.CallsCount = 0;
     }
-    return ActOsxf;
+    return (ActOsxf);
 }
 
 /*
@@ -248,9 +248,9 @@ InitOsxfCtrlCheck(
     {
         printf("API error: invalid AcpiOsInitialize call conditions"
             " on Status %s\n", AcpiFormatException(Check_Status));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -304,7 +304,7 @@ OsxfCtrlGetDiff(
         Diff64 = OsxfCtrl[OsxfNum0].SuccessCount - OsxfCtrl[OsxfNum1].SuccessCount;
     }
 
-    return Diff64;
+    return (Diff64);
 }
 
 const char              *stat_msg[] = {
@@ -344,7 +344,7 @@ OsxfCtrlCheck(
         if (Diff64 < 0)
         {
             printf("Test error: invalid CallsCount calculation\n");
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         if ((Diff64 == 0 && (FreeCond == 0)) ||
@@ -352,7 +352,7 @@ OsxfCtrlCheck(
         {
             printf("API error: contradictory %d AcpiOS* invocations"
                 " on FreeCond %d\n", (UINT32)Diff64, FreeCond);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -360,11 +360,11 @@ OsxfCtrlCheck(
     {
         printf("Test error: unexpected CondFlags 0x%x\n",
             ~ALL_STAT & CondFlags);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
     if (!CondFlags)
     {
-        return AE_OK;
+        return (AE_OK);
     }
     for (i = 0; i < 5; i++)
     {
@@ -376,7 +376,7 @@ OsxfCtrlCheck(
             {
                 printf("%s API error: there were invalid"
                     " freeings, Diff = %d\n", stat_msg[i], (UINT32)Diff64);
-                return AE_ERROR;
+                return (AE_ERROR);
             }
 
             if ((FreeCond == 0 && Diff64 == 0) ||
@@ -414,7 +414,7 @@ OsxfCtrlCheck(
                 {
                     printf("%s API error: there were unexpected"
                         " freeings, Diff = %d\n", stat_msg[i], (UINT32)Diff64);
-                    return AE_ERROR;
+                    return (AE_ERROR);
                 }
             }
         }
@@ -424,10 +424,10 @@ OsxfCtrlCheck(
     {
         printf("API error: unexpected free conditions,"
             " FreeCond %d, Diff_Flags = 0x%.2x\n", FreeCond, Diff_Flags);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -471,7 +471,7 @@ OsxfCtrlPrint(
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -487,19 +487,19 @@ OsxfCtrlSetReg(
 
     if (!Reg)
     {
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     MaxValue = (UINT32)((((1 << (Reg->Width - 1)) - 1) << 1) + 1);
 
     if (Value > MaxValue)
     {
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     Reg->Value = Value;
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -513,12 +513,12 @@ OsxfCtrlGetReg(
 {
     if (!Reg)
     {
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     *Value = Reg->Value;
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -542,10 +542,10 @@ OsxfCtrlSetFixedReg(
 {
     if (RegNum >= AtFixeReg_All)
     {
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return OsxfCtrlSetReg(FixedRegs[RegNum], Value);
+    return (OsxfCtrlSetReg(FixedRegs[RegNum], Value));
 }
 
 /*
@@ -558,12 +558,12 @@ OsxfCtrlSetFixedRegOnes(
 {
     if (RegNum >= AtFixeReg_All)
     {
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     OsxfCtrlSetRegOnes(FixedRegs[RegNum]);
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -577,10 +577,10 @@ OsxfCtrlGetFixedReg(
 {
     if (RegNum >= AtFixeReg_All)
     {
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return OsxfCtrlGetReg(FixedRegs[RegNum], Value);
+    return (OsxfCtrlGetReg(FixedRegs[RegNum], Value));
 }
 
 /*
@@ -601,7 +601,7 @@ OsxfCtrlClearFixedRegs(void)
             break;
         }
     }
-    return Status;
+    return (Status);
 }
 
 /*
@@ -630,7 +630,7 @@ ACPI_OSXF_EMUL_REG
         printf("OsxfCtrlFingReg: unexpected Width %d of Reg 0x%x\n",
 #endif
             Width, Address);
-        return NULL;
+        return (NULL);
     }
 
     while (Reg)
@@ -642,7 +642,7 @@ ACPI_OSXF_EMUL_REG
         {
             if (Reg->Address == Address && Reg->Width == Width)
             {
-                return Reg;
+                return (Reg);
             }
             else if (Max < Min)
             {
@@ -659,7 +659,7 @@ ACPI_OSXF_EMUL_REG
                     " and (0x%x: 0x%x)\n",
 #endif
                     Reg->Address, Reg->Width, Address, Width);
-                return NULL;
+                return (NULL);
             }
         }
         Reg = Reg->Next;
@@ -679,7 +679,7 @@ ACPI_OSXF_EMUL_REG
             printf("OsxfCtrlFingReg: no memory for Reg (0x%x: 0x%x)\n",
 #endif
                 Reg->Address, Reg->Width);
-            return NULL;
+            return (NULL);
         }
         Reg->Type = Type;
         Reg->Address = Address;
@@ -691,7 +691,7 @@ ACPI_OSXF_EMUL_REG
         RegList = Reg;
     }
 
-    return Reg;
+    return (Reg);
 }
 
 /*
@@ -721,7 +721,7 @@ OsxfCtrlWriteReg(
     {
         Reg->WriteCount++;
     }
-    return Status;
+    return (Status);
 }
 
 /*
@@ -743,7 +743,7 @@ OsxfCtrlReadReg(
     {
         Reg->ReadCount++;
     }
-    return Status;
+    return (Status);
 }
 
 /*
@@ -761,7 +761,7 @@ OsxfCtrlAcpiRegsInit(
     if (!(Reg = OsxfCtrlFingReg(EMUL_REG_IO,\
         (ACPI_PHYSICAL_ADDRESS)Adr, Size, 1)))\
     {\
-        return AE_ERROR;\
+        return (AE_ERROR);\
     }\
     FixedRegs[Ind] = Reg
 
@@ -786,7 +786,7 @@ OsxfCtrlAcpiRegsInit(
     /* ACPI_REGISTER_SMI_COMMAND_BLOCK, 8-bit access */
     INIT_REG(AtSmiCmdBlock, FADT->SmiCommand, 8);
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -849,7 +849,7 @@ OsxfCtrlRetError(
             OsxfCtrl[AcpiOsTotalC].CtrlAct.ActOsxf = OsxfNum;
             printf("OsxfCtrlRetError: ret AE_ERROR from %s\n",
                 OSXF_NAME(OsxfNum));
-            return 1;
+            return (1);
         }
         printf("Test error: for %s specified unknown test action %d,"
             " Calls %d\n", OSXF_NAME(OsxfNum),
@@ -857,5 +857,5 @@ OsxfCtrlRetError(
             (UINT32)OsxfCtrl[AcpiOsTotalC].CtrlAct.CallsCount);
         exit(-1);
     }
-    return 0;
+    return (0);
 }

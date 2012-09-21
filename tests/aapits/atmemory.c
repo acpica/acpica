@@ -24,10 +24,10 @@ AtMemoryTest0000(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     TestSkipped++;
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }

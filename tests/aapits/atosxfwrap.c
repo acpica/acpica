@@ -28,13 +28,13 @@ AcpiOsInitialize (void)
     if (OsInitialized)
     {
         printf("AcpiOsInitialize: OSL has already been initialized\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
     if (Calls)
     {
         printf("AcpiOsInitialize: there were %u OSL interfaces calls"
             " done ahead of OsInitialize\n", (UINT32)Calls);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     AT_CHCK_RET_STATUS(AcpiOsInitialize);
@@ -49,7 +49,7 @@ AcpiOsInitialize (void)
         OsInitialized = 1;
     }
 
-    return Status;
+    return (Status);
 }
 
 
@@ -65,7 +65,7 @@ AcpiOsTerminate (void)
     if (!OsInitialized)
     {
         printf("AcpiOsTerminate: OSL has not been initialized\n");
-//        return AE_ERROR;
+//        return (AE_ERROR);
     }
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
@@ -93,7 +93,7 @@ AcpiOsTerminate (void)
 
     OsxfUpdateCallsMark();
 
-    return Status;
+    return (Status);
 }
 
 
@@ -131,7 +131,7 @@ AcpiOsGetRootPointer (
 
     AT_CTRL_SUCCESS(AcpiOsGetRootPointer);
 
-    return Status;
+    return (Status);
 }
 */
 ACPI_PHYSICAL_ADDRESS
@@ -150,7 +150,7 @@ AcpiOsGetRootPointer (
         AT_CTRL_SUCCESS0(AcpiOsGetRootPointer);
     }
 
-    return Pointer;
+    return (Pointer);
 }
 
 
@@ -184,7 +184,7 @@ AcpiOsPredefinedOverride (
 
     AT_CTRL_SUCCESS(AcpiOsPredefinedOverride);
 
-    return Status;
+    return (Status);
 }
 
 
@@ -215,7 +215,7 @@ AcpiOsTableOverride (
 
     AT_CTRL_SUCCESS(AcpiOsTableOverride);
 
-    return Status;
+    return (Status);
 }
 
 
@@ -266,7 +266,7 @@ AcpiOsGetTimer (
 
     AT_CTRL_SUCCESS0(AcpiOsGetTimer);
 
-    return AcpiOsActualGetTimer();
+    return (AcpiOsActualGetTimer());
 }
 
 
@@ -292,7 +292,7 @@ AcpiOsReadable (
 
     AT_CTRL_SUCCESS0(AcpiOsReadable);
 
-    return AcpiOsActualReadable(Pointer, Length);
+    return (AcpiOsActualReadable(Pointer, Length));
 }
 
 
@@ -318,7 +318,7 @@ AcpiOsWritable (
 
     AT_CTRL_SUCCESS0(AcpiOsWritable);
 
-    return AcpiOsActualWritable(Pointer, Length);
+    return (AcpiOsActualWritable(Pointer, Length));
 }
 
 
@@ -468,7 +468,7 @@ AcpiOsMapMemory (
 
     AT_CTRL_SUCCESS(AcpiOsMapMemory);
 
-    return Status;
+    return (Status);
 }
 */
 void *
@@ -493,7 +493,7 @@ AcpiOsMapMemory (
         AT_CTRL_SUCCESS0(AcpiOsMapMemory);
     }
 
-    return Mem;
+    return (Mem);
 }
 
 
@@ -559,7 +559,7 @@ AcpiOsAllocate (
         AT_CTRL_SUCCESS0(AcpiOsAllocate);
     }
 
-    return Mem;
+    return (Mem);
 }
 
 
@@ -619,7 +619,7 @@ AcpiOsCreateSemaphore (
 
     AT_CTRL_SUCCESS(AcpiOsCreateSemaphore);
 
-    return Status;
+    return (Status);
 }
 
 
@@ -647,7 +647,7 @@ AcpiOsDeleteSemaphore (
 
     AT_CTRL_SUCCESS(AcpiOsDeleteSemaphore);
 
-    return Status;
+    return (Status);
 }
 
 
@@ -679,7 +679,7 @@ AcpiOsWaitSemaphore (
 
     AT_CTRL_SUCCESS(AcpiOsWaitSemaphore);
 
-    return Status;
+    return (Status);
 }
 
 
@@ -712,7 +712,7 @@ AcpiOsSignalSemaphore (
 
     AT_CTRL_SUCCESS(AcpiOsSignalSemaphore);
 
-    return Status;
+    return (Status);
 }
 
 
@@ -730,7 +730,7 @@ AcpiOsCreateLock (
 
     AT_CTRL_SUCCESS(AcpiOsCreateLock);
 
-    return Status;
+    return (Status);
 }
 
 void
@@ -755,7 +755,7 @@ AcpiOsAcquireLock (
 
     AT_CTRL_SUCCESS0(AcpiOsAcquireLock);
 
-    return AcpiOsActualAcquireLock(Handle);
+    return (AcpiOsActualAcquireLock(Handle));
 }
 
 
@@ -799,8 +799,8 @@ AcpiOsInstallInterruptHandler (
 
     AT_CTRL_SUCCESS0(AcpiOsInstallInterruptHandler);
 
-    return AcpiOsActualInstallInterruptHandler(
-        InterruptNumber, ServiceRoutine, Context);
+    return (AcpiOsActualInstallInterruptHandler(
+        InterruptNumber, ServiceRoutine, Context));
 }
 
 
@@ -825,8 +825,8 @@ AcpiOsRemoveInterruptHandler (
 
     AT_CTRL_SUCCESS0(AcpiOsRemoveInterruptHandler);
 
-    return AcpiOsActualRemoveInterruptHandler(
-        InterruptNumber, ServiceRoutine);
+    return (AcpiOsActualRemoveInterruptHandler(
+        InterruptNumber, ServiceRoutine));
 }
 
 
@@ -850,7 +850,7 @@ AcpiOsGetThreadId (
 
     AT_CTRL_SUCCESS0(AcpiOsGetThreadId);
 
-    return AcpiOsActualGetThreadId();
+    return (AcpiOsActualGetThreadId());
 }
 
 
@@ -882,7 +882,7 @@ AcpiOsExecute (
 
     AT_CTRL_SUCCESS(AcpiOsExecute);
 
-    return Status;
+    return (Status);
 }
 
 
@@ -963,7 +963,7 @@ AcpiOsValidateInterface (
 
     AT_CTRL_SUCCESS(AcpiOsValidateInterface);
 
-    return Status;
+    return (Status);
 }
 
 
@@ -997,7 +997,7 @@ AcpiOsValidateAddress (
 
     AT_CTRL_SUCCESS(AcpiOsValidateAddress);
 
-    return Status;
+    return (Status);
 }
 
 
@@ -1031,7 +1031,7 @@ AcpiOsReadPciConfiguration (
 
     AT_CTRL_SUCCESS(AcpiOsReadPciConfiguration);
 
-    return Status;
+    return (Status);
 }
 
 
@@ -1065,7 +1065,7 @@ AcpiOsWritePciConfiguration (
 
     AT_CTRL_SUCCESS(AcpiOsWritePciConfiguration);
 
-    return Status;
+    return (Status);
 }
 
 /* TEMPORARY STUB FUNCTION */
@@ -1119,7 +1119,7 @@ AcpiOsReadPort (
 
     AT_CTRL_SUCCESS(AcpiOsReadPort);
 
-    return Status;
+    return (Status);
 }
 
 
@@ -1159,7 +1159,7 @@ AcpiOsWritePort (
 
     AT_CTRL_SUCCESS(AcpiOsWritePort);
 
-    return Status;
+    return (Status);
 }
 
 
@@ -1202,7 +1202,7 @@ AcpiOsReadMemory (
 
     AT_CTRL_SUCCESS(AcpiOsReadMemory);
 
-    return Status;
+    return (Status);
 }
 
 
@@ -1240,7 +1240,7 @@ AcpiOsWriteMemory (
 
     AT_CTRL_SUCCESS(AcpiOsWriteMemory);
 
-    return Status;
+    return (Status);
 }
 
 
@@ -1270,7 +1270,7 @@ AcpiOsSignal (
 
     AT_CTRL_SUCCESS(AcpiOsSignal);
 
-    return Status;
+    return (Status);
 }
 
 

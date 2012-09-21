@@ -188,7 +188,7 @@ UINT64                      TimerFrequency;
 ACPI_STATUS
 AcpiOsActualTerminate (void)
 {
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -370,7 +370,7 @@ AcpiOsActualInitialize (void)
         TimerFrequency = LocalTimerFrequency.QuadPart;
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -400,7 +400,7 @@ ACPI_PHYSICAL_ADDRESS
 AcpiOsActualGetRootPointer (
     void)
 {
-    return AeLocalGetRootPointer ();
+    return (AeLocalGetRootPointer ());
 }
 
 
@@ -755,7 +755,7 @@ AcpiOsActualMapMemory (
 
     *there = ACPI_TO_POINTER ((ACPI_NATIVE_UINT) where);
 
-    return AE_OK;
+    return (AE_OK);
 }
 */
 void *
@@ -763,7 +763,7 @@ AcpiOsActualMapMemory (
     ACPI_PHYSICAL_ADDRESS   Where,
     ACPI_SIZE               Length)
 {
-    return (void *)Where;
+    return ((void *)Where);
 }
 
 
@@ -812,7 +812,7 @@ AcpiOsActualAllocate (
 
     Mem = (void *) malloc ((size_t) size);
 
-    return Mem;
+    return (Mem);
 }
 
 
@@ -877,7 +877,7 @@ AcpiOsActualCreateSemaphore (
 
     if (InitialUnits > MaxUnits)
     {
-        return AE_BAD_PARAMETER;
+        return (AE_BAD_PARAMETER);
     }
 
 #ifdef _MULTI_THREADED
@@ -893,7 +893,7 @@ AcpiOsActualCreateSemaphore (
     }
     if (i >= NUM_SEMAPHORES)
     {
-        return AE_LIMIT;
+        return (AE_LIMIT);
     }
 
     /* Create an OS semaphore */
@@ -902,7 +902,7 @@ AcpiOsActualCreateSemaphore (
     if (!Mutex)
     {
         ACPI_ERROR ((AE_INFO, "Could not create semaphore"));
-        return AE_NO_MEMORY;
+        return (AE_NO_MEMORY);
     }
 
     AcpiGbl_Semaphores[i].MaxUnits = (UINT16) MaxUnits;
@@ -915,7 +915,7 @@ AcpiOsActualCreateSemaphore (
     *OutHandle = (void *) i;
 #endif
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /******************************************************************************
@@ -940,7 +940,7 @@ AcpiOsActualDeleteSemaphore (
     if ((Index >= NUM_SEMAPHORES) ||
         !AcpiGbl_Semaphores[Index].OsHandle)
     {
-        return AE_BAD_PARAMETER;
+        return (AE_BAD_PARAMETER);
     }
 
 
@@ -950,7 +950,7 @@ AcpiOsActualDeleteSemaphore (
     AcpiGbl_Semaphores[Index].OsHandle = NULL;
 #endif
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -986,13 +986,13 @@ AcpiOsActualWaitSemaphore (
     if ((Index >= NUM_SEMAPHORES) ||
         !AcpiGbl_Semaphores[Index].OsHandle)
     {
-        return AE_BAD_PARAMETER;
+        return (AE_BAD_PARAMETER);
     }
 
     if (Units > 1)
     {
         printf ("WaitSemaphore: Attempt to receive %d units\n", Units);
-        return AE_NOT_IMPLEMENTED;
+        return (AE_NOT_IMPLEMENTED);
     }
 
 
@@ -1021,7 +1021,7 @@ AcpiOsActualWaitSemaphore (
         ACPI_ERROR ((AE_INFO, "Timeout on semaphore %d",
             Handle));
 */
-        return AE_TIME;
+        return (AE_TIME);
     }
 
     if (AcpiGbl_Semaphores[Index].CurrentUnits == 0)
@@ -1029,13 +1029,13 @@ AcpiOsActualWaitSemaphore (
         ACPI_ERROR ((AE_INFO, "%s - No unit received. Timeout %X, OSstatus 0x%X",
             AcpiUtGetMutexName (Index), Timeout, WaitStatus));
 
-        return AE_OK;
+        return (AE_OK);
     }
 
     AcpiGbl_Semaphores[Index].CurrentUnits--;
 #endif
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -1068,19 +1068,19 @@ AcpiOsActualSignalSemaphore (
     if (Index >= NUM_SEMAPHORES)
     {
         printf ("SignalSemaphore: Index/Handle out of range: %2.2X\n", Index);
-        return AE_BAD_PARAMETER;
+        return (AE_BAD_PARAMETER);
     }
 
     if (!AcpiGbl_Semaphores[Index].OsHandle)
     {
         printf ("SignalSemaphore: Null OS handle, Index %2.2X\n", Index);
-        return AE_BAD_PARAMETER;
+        return (AE_BAD_PARAMETER);
     }
 
     if (Units > 1)
     {
         printf ("SignalSemaphore: Attempt to signal %d units, Index %2.2X\n", Units, Index);
-        return AE_NOT_IMPLEMENTED;
+        return (AE_NOT_IMPLEMENTED);
     }
 
     if ((AcpiGbl_Semaphores[Index].CurrentUnits + 1) >
@@ -1157,7 +1157,7 @@ AcpiOsActualInstallInterruptHandler (
     void                    *Context)
 {
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -1179,7 +1179,7 @@ AcpiOsActualRemoveInterruptHandler (
     ACPI_OSD_HANDLER        ServiceRoutine)
 {
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -1229,7 +1229,7 @@ AcpiOsActualExecute (
     _beginthread (Function, (unsigned) 0, Context);
 #endif
 
-    return 0;
+    return (0);
 }
 
 
@@ -1587,5 +1587,3 @@ AcpiOsActualSignal (
 
     return (AE_OK);
 }
-
-

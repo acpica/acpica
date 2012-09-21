@@ -224,7 +224,7 @@ AtAcpiInitHandler(
             AtAcpiInitHandlerSpecRet = AE_OK;
         }
     }
-    return Status;
+    return (Status);
 }
 
 ACPI_STATUS
@@ -235,7 +235,7 @@ AlternativeAcpiInitHandler(
     printf ("\nAlternativeAcpiInitHandler: Object %p, Function %d\n",
         Object, Function);
     ++AlternativeHandlerCounter;
-    return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -245,7 +245,7 @@ AtInitTest0030AcpiInitHandler(
 {
     printf ("\nAtInitTest0030AcpiInitHandler: Object %p, Function %d\n",
         Object, Function);
-    return AE_ERROR;
+    return (AE_ERROR);
 }
 
 /*
@@ -260,7 +260,7 @@ AtInitTest0030AcpiInitHandler(
             " returned %s, expected %s\n", \
             AcpiFormatException(Status), \
             AcpiFormatException(Benchmark)); \
-        return AE_ERROR; \
+        return (AE_ERROR); \
     }
 
 /*
@@ -282,8 +282,8 @@ AtSubsystemInit(
     UINT32              OiFlags,
     char                *AMLcodeFileName)
 {
-    return AtInitCommonTest(StagesScale, 0, 0,
-        EnFlags, OiFlags, AMLcodeFileName);
+    return (AtInitCommonTest(StagesScale, 0, 0,
+        EnFlags, OiFlags, AMLcodeFileName));
 }
 
 void
@@ -373,7 +373,7 @@ AtInitCommonTest(
         TestErrors++;
         printf ("AtInitCommonTest test error 1: StagesScale & ErrStagesScale (0x%x)"
             " != ErrStagesScale (0x%x)\n", StagesScale & ErrStagesScale, ErrStagesScale);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if ((StagesScale & ErrExpScale) != ErrExpScale)
@@ -381,7 +381,7 @@ AtInitCommonTest(
         TestErrors++;
         printf ("AtInitCommonTest test error 2: StagesScale & ErrExpScale (0x%x)"
             " != ErrStagesScale (0x%x)\n", StagesScale & ErrExpScale, ErrExpScale);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (ErrStagesScale & ErrExpScale)
@@ -389,7 +389,7 @@ AtInitCommonTest(
         TestErrors++;
         printf ("AtInitCommonTest test error 3: ErrStagesScale"
             " & ErrExpScale (0x%x) != 0\n", ErrStagesScale & ErrExpScale);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if ((StagesScale & AAPITS_INSTALL_IH) &&
@@ -398,7 +398,7 @@ AtInitCommonTest(
         TestErrors++;
         printf ("AtInitCommonTest test error 4: AAPITS_INSTALL_IH and"
             " ErrStagesScale & AAPITS_INITIALIZE_OBJS simulteneously\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (StagesScale & AAPITS_INITIALIZE_SS)
@@ -412,7 +412,7 @@ AtInitCommonTest(
                 TestErrors++;
                 printf ("AtInitCommonTest test error 5: %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
 
@@ -431,7 +431,7 @@ AtInitCommonTest(
                 AapiErrors++;
                 printf ("AtInitCommonTest: AcpiInitializeSubsystem() failure, %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
             else if (Status != AE_ERROR)
             {
@@ -439,7 +439,7 @@ AtInitCommonTest(
                 printf ("AtInitCommonTest: AcpiInitializeSubsystem()"
                     " returned %s, expected AE_ERROR emulation\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
         else if (ErrExpScale & AAPITS_INITIALIZE_SS)
@@ -447,14 +447,14 @@ AtInitCommonTest(
             AapiErrors++;
             printf ("AtInitCommonTest: AcpiInitializeSubsystem()"
                 " succeeded, expected to fail\n");
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         else if (ErrStagesScale & AAPITS_INITIALIZE_SS)
         {
             TestErrors++;
             printf ("AtInitCommonTest: AcpiInitializeSubsystem()"
                 " succeeded, expected AE_ERROR emulation\n");
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         /*
          * Mark the total number of AcpiOS* invocations
@@ -463,7 +463,7 @@ AtInitCommonTest(
         if (ACPI_FAILURE(Status))
         {
             AapiErrors++;
-            return Status;
+            return (Status);
         }
     }
 
@@ -474,7 +474,7 @@ AtInitCommonTest(
         {
             printf ("AtInitCommonTest: AcpiInstallInitializationHandler() failure, %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
@@ -490,7 +490,7 @@ AtInitCommonTest(
                 TestErrors++;
                 printf ("AtInitCommonTest: AtReadTableFromFile() failure, %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
             if (AmlControl.Flag)
             {
@@ -500,7 +500,7 @@ AtInitCommonTest(
                     printf ("AtInitCommonTest: AmlControl.Index (%d) >="
                         " UserTable->Length (%d)\n",
                         AmlControl.Index, UserTable->Length);
-                    return AE_ERROR;
+                    return (AE_ERROR);
                 }
                 ((UINT8 *)UserTable)[AmlControl.Index] = AmlControl.Value;
                 printf ("AtInitCommonTest: AmlCode Index %d updated into %c\n",
@@ -519,7 +519,7 @@ AtInitCommonTest(
                 TestErrors++;
                 printf ("AtInitCommonTest test error 6: %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
 
             Status = AcpiInitializeTables(NULL, 20, FALSE);
@@ -540,7 +540,7 @@ AtInitCommonTest(
                 AapiErrors++;
                 printf ("AtInitCommonTest: AcpiInitializeTables() failure, %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
             else if (Status != AE_NO_MEMORY)
             {
@@ -548,7 +548,7 @@ AtInitCommonTest(
                 printf ("AtInitCommonTest: AcpiInitializeTables()"
                     " returned %s, expected AE_NO_MEMORY emulation\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
         else if (ErrExpScale & AAPITS_INITABLES)
@@ -556,14 +556,14 @@ AtInitCommonTest(
             AapiErrors++;
             printf ("AtInitCommonTest: AcpiInitializeTables()"
                 " succeeded, expected to fail\n");
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         else if (ErrStagesScale & AAPITS_INITABLES)
         {
             TestErrors++;
             printf ("AtInitCommonTest: AcpiInitializeTables()"
                 " succeeded, expected AE_NO_MEMORY emulation\n");
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -582,7 +582,7 @@ AtInitCommonTest(
                 AapiErrors++;
                 printf ("AtInitCommonTest: AcpiReallocateRootTable() failure, %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
             else if (Status != AE_NO_MEMORY)
             {
@@ -590,7 +590,7 @@ AtInitCommonTest(
                 printf ("AtInitCommonTest: AcpiReallocateRootTable()"
                     " returned %s, expected AE_NO_MEMORY emulation\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
         else if (ErrExpScale & AAPITS_REALLOCROOTTABLE)
@@ -598,14 +598,14 @@ AtInitCommonTest(
             AapiErrors++;
             printf ("AtInitCommonTest: AcpiReallocateRootTable()"
                 " succeeded, expected to fail\n");
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         else if (ErrStagesScale & AAPITS_REALLOCROOTTABLE)
         {
             TestErrors++;
             printf ("AtInitCommonTest: AcpiReallocateRootTable()"
                 " succeeded, expected AE_NO_MEMORY emulation\n");
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -629,7 +629,7 @@ A warning is issued for tables that do not pass one or more of these tests
                 TestErrors++;
                 printf ("AtInitCommonTest test error 6: %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
 
@@ -646,7 +646,7 @@ A warning is issued for tables that do not pass one or more of these tests
                 AapiErrors++;
                 printf ("AtInitCommonTest: AcpiLoadTables() failure, %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
             else if (Status != AE_NO_MEMORY)
             {
@@ -654,7 +654,7 @@ A warning is issued for tables that do not pass one or more of these tests
                 printf ("AtInitCommonTest: AcpiLoadTables()"
                     " returned %s, expected AE_NO_MEMORY emulation\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
         else if (ErrExpScale & AAPITS_LOADTABLES)
@@ -662,14 +662,14 @@ A warning is issued for tables that do not pass one or more of these tests
             AapiErrors++;
             printf ("AtInitCommonTest: AcpiLoadTables()"
                 " succeeded, expected to fail\n");
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         else if (ErrStagesScale & AAPITS_LOADTABLES)
         {
             TestErrors++;
             printf ("AtInitCommonTest: AcpiLoadTables()"
                 " succeeded, expected AE_NO_MEMORY emulation\n");
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         Status = OsxfCtrlAcpiRegsInit(
@@ -678,7 +678,7 @@ A warning is issued for tables that do not pass one or more of these tests
         {
             TestErrors++;
             printf ("AtInitCommonTest: OsxfCtrlAcpiRegsInit failed\n");
-            return Status;
+            return (Status);
         }
 
     }
@@ -691,7 +691,7 @@ A warning is issued for tables that do not pass one or more of these tests
             AapiErrors++;
             printf ("AtInitCommonTest: AtInstallHandlers() failure, %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
@@ -706,7 +706,7 @@ A warning is issued for tables that do not pass one or more of these tests
                 TestErrors++;
                 printf ("AtInitCommonTest test error 7: %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
 
@@ -722,7 +722,7 @@ A warning is issued for tables that do not pass one or more of these tests
                 AapiErrors++;
                 printf ("AtInitCommonTest: AcpiEnableSubsystem() failure, %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
             else if (Status != AE_NO_MEMORY)
             {
@@ -730,7 +730,7 @@ A warning is issued for tables that do not pass one or more of these tests
                 printf ("AtInitCommonTest: AcpiEnableSubsystem()"
                     " returned %s, expected AE_NO_MEMORY emulation\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
         else if (ErrExpScale & AAPITS_ENABLE_SS)
@@ -738,14 +738,14 @@ A warning is issued for tables that do not pass one or more of these tests
             AapiErrors++;
             printf ("AtInitCommonTest: AcpiEnableSubsystem()"
                 " succeeded, expected to fail\n");
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         else if (ErrStagesScale & AAPITS_ENABLE_SS)
         {
             TestErrors++;
             printf ("AtInitCommonTest: AcpiEnableSubsystem()"
                 " succeeded, expected AE_NO_MEMORY emulation\n");
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
     }
@@ -762,7 +762,7 @@ A warning is issued for tables that do not pass one or more of these tests
                 TestErrors++;
                 printf ("AtInitCommonTest test error 8: %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
 */
             Status = AcpiInstallInitializationHandler(AtInitTest0030AcpiInitHandler, 0);
@@ -771,7 +771,7 @@ A warning is issued for tables that do not pass one or more of these tests
                 TestErrors++;
                 printf ("AtInitCommonTest: AcpiInstallInitializationHandler() failure, %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
 
@@ -787,7 +787,7 @@ A warning is issued for tables that do not pass one or more of these tests
                 AapiErrors++;
                 printf ("AtInitCommonTest: AcpiInitializeObjects() failure, %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
             else if (Status != AE_ERROR)
             {
@@ -795,7 +795,7 @@ A warning is issued for tables that do not pass one or more of these tests
                 printf ("AtInitCommonTest: AcpiInitializeObjects()"
                     " returned %s, expected AE_ERROR emulation\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
         else if (ErrExpScale & AAPITS_INITIALIZE_OBJS)
@@ -803,18 +803,18 @@ A warning is issued for tables that do not pass one or more of these tests
             AapiErrors++;
             printf ("AtInitCommonTest: AcpiInitializeObjects()"
                 " succeeded, expected to fail\n");
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         else if (ErrStagesScale & AAPITS_INITIALIZE_OBJS)
         {
             AapiErrors++;
             printf ("AtInitCommonTest: AcpiInitializeObjects()"
                 " succeeded, expected AE_ERROR emulation\n");
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 #ifdef xxxxACPI_DEBUGGER
@@ -856,10 +856,10 @@ AtTerminateCheck(
     if (ACPI_FAILURE(Status))
     {
         AapiErrors++;
-        return Status;
+        return (Status);
     }
 
-    return SuccessStatus;
+    return (SuccessStatus);
 }
 
 /*
@@ -878,10 +878,10 @@ AtTerminateCtrlCheck(
         AapiErrors++;
         printf ("API error: AcpiTerminate() failure, %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCheck(SuccessStatus, CtrlCheck);
+    return (AtTerminateCheck(SuccessStatus, CtrlCheck));
 }
 
 /*
@@ -931,7 +931,7 @@ AtInitTermCommonTest(
     {
         TestErrors++;
         printf ("Test error, TFst = 0\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (Check_Flags & CHECK_INIT_TERM)
@@ -950,7 +950,7 @@ AtInitTermCommonTest(
             TestErrors++;
             printf ("Test error: %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Init_Sub_Status = AcpiInitializeSubsystem();
@@ -961,7 +961,7 @@ AtInitTermCommonTest(
             {
                 TestSkipped++;
                 printf ("Test note: test action hasn't occur\n");
-                return AE_ERROR;
+                return (AE_ERROR);
             }
             TestPass++;
             Continue_Cond = 0;
@@ -976,7 +976,7 @@ AtInitTermCommonTest(
                     "           expected to return %s\n",
                     AcpiFormatException(Init_Sub_Status),
                     AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
             else if (Init_Sub_Status != Benchmark)
             {
@@ -1002,7 +1002,7 @@ AtInitTermCommonTest(
         if (ACPI_FAILURE(Status))
         {
             AapiErrors++;
-            return Status;
+            return (Status);
         }
 
         if (Check_Flags & CHECK_INIT_COND)
@@ -1011,7 +1011,7 @@ AtInitTermCommonTest(
             if (ACPI_FAILURE(Status))
             {
                 TestErrors++;
-                return Status;
+                return (Status);
             }
         }
 
@@ -1023,7 +1023,7 @@ AtInitTermCommonTest(
                 AapiErrors++;
                 printf ("API Error: AcpiTerminate() failure, %s\n",
                     AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
 #ifdef xxxxACPI_DEBUGGER
             /* Shut down the debugger */
@@ -1057,7 +1057,7 @@ AtInitTermCommonTest(
             if (ACPI_FAILURE(Status))
             {
                 AapiErrors++;
-                return Status;
+                return (Status);
             }
         }
     }
@@ -1065,10 +1065,10 @@ AtInitTermCommonTest(
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1105,7 +1105,7 @@ AtExceptionCommonTest(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("init0032.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     if (FlagIFVerified != AAPITS_LOADTABLES &&
@@ -1115,14 +1115,14 @@ AtExceptionCommonTest(
         TestErrors++;
         printf ("AtExceptionCommonTest: test error, incorrect"
             " FlagIFVerified (0x%x)\n", FlagIFVerified);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (TFst == 0)
     {
         TestErrors++;
         printf ("Test error, TFst = 0\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (FlagIFVerified == AAPITS_ENABLE_SS)
@@ -1145,7 +1145,7 @@ AtExceptionCommonTest(
             AAPITS_EN_FLAGS, 0, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -1154,7 +1154,7 @@ AtExceptionCommonTest(
             TestErrors++;
             printf ("Test error: %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         switch (FlagIFVerified)
@@ -1176,7 +1176,7 @@ AtExceptionCommonTest(
             {
                 TestSkipped++;
                 printf ("Test note: test action hasn't occur\n");
-                return AE_ERROR;
+                return (AE_ERROR);
             }
             TestPass++;
             Continue_Cond = 0;
@@ -1189,24 +1189,24 @@ AtExceptionCommonTest(
                 printf ("API Error: %s returned %s,\n"
                     "           expected to return %s\n", NameIF,
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1223,7 +1223,7 @@ AtInitTest0000(void)
     {
         AapiErrors++;
         printf ("API Error: AcpiInitializeSubsystem returned %s,\n"
-            "           expected to return AE_OK\n",
+            "           expected to return (AE_OK)\n",
             AcpiFormatException(Status));
     }
 
@@ -1233,7 +1233,7 @@ AtInitTest0000(void)
         AapiErrors++;
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1242,8 +1242,8 @@ AtInitTest0000(void)
 ACPI_STATUS
 AtInitTest0001(void)
 {
-    return AtInitTermCommonTest(OSXF_NUM(AcpiOsInitialize),
-        AtActD_OneTime, AtActRet_ERROR, 1, CHECK_INIT_TERM, AE_ERROR);
+    return (AtInitTermCommonTest(OSXF_NUM(AcpiOsInitialize),
+        AtActD_OneTime, AtActRet_ERROR, 1, CHECK_INIT_TERM, AE_ERROR));
 }
 
 /*
@@ -1266,21 +1266,21 @@ Init_NO_MEMORY_Test1(
         AE_NO_MEMORY);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
      * AcpiOsAllocate returns NULL one time on the specified call
      */
-    return AtInitTermCommonTest(OSXF_NUM(AcpiOsAllocate),
+    return (AtInitTermCommonTest(OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, TFst2, Check,
-        AE_NO_MEMORY);
+        AE_NO_MEMORY));
 }
 
 ACPI_STATUS
 AtInitTest0002(void)
 {
-    return Init_NO_MEMORY_Test1(1, 1, CHECK_TERM_ACT);
+    return (Init_NO_MEMORY_Test1(1, 1, CHECK_TERM_ACT));
 }
 
 /*
@@ -1303,21 +1303,21 @@ Init_NO_MEMORY_Test2(
         AE_NO_MEMORY);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
      * AcpiOsCreateLock returns AE_NO_MEMORY one time on the specified call
      */
-    return AtInitTermCommonTest(OSXF_NUM(AcpiOsCreateLock),
+    return (AtInitTermCommonTest(OSXF_NUM(AcpiOsCreateLock),
         AtActD_OneTime, AtActRet_NO_MEMORY, TFst2, Check,
-        AE_NO_MEMORY);
+        AE_NO_MEMORY));
 }
 
 ACPI_STATUS
 AtInitTest0003(void)
 {
-    return Init_NO_MEMORY_Test2(1, 1, CHECK_TERM_ACT);
+    return (Init_NO_MEMORY_Test2(1, 1, CHECK_TERM_ACT));
 }
 
 /*
@@ -1341,22 +1341,22 @@ Init_NO_MEMORY_Test3(
         AE_NO_MEMORY);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
      * AcpiOsCreateSemaphore returns AE_NO_MEMORY
      * one time on the specified call
      */
-    return AtInitTermCommonTest(OSXF_NUM(AcpiOsCreateSemaphore),
+    return (AtInitTermCommonTest(OSXF_NUM(AcpiOsCreateSemaphore),
         AtActD_OneTime, AtActRet_NO_MEMORY, TFst2, Check,
-        AE_NO_MEMORY);
+        AE_NO_MEMORY));
 }
 
 ACPI_STATUS
 AtInitTest0004(void)
 {
-    return Init_NO_MEMORY_Test3(1, 1, CHECK_TERM_ACT);
+    return (Init_NO_MEMORY_Test3(1, 1, CHECK_TERM_ACT));
 }
 
 /*
@@ -1394,7 +1394,7 @@ AtInitTest0005(void)
             break;
         }
     }
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1432,7 +1432,7 @@ AtInitTest0006(void)
             break;
         }
     }
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1453,20 +1453,20 @@ AtInitTest0007(void)
             AapiErrors++;
             printf ("AcpiInitializeSubsystem() failure, %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlCheck(SYS_STAT, 0);
         if (ACPI_FAILURE(Status))
         {
             AapiErrors++;
-            return Status;
+            return (Status);
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         /*
@@ -1476,7 +1476,7 @@ AtInitTest0007(void)
         if (ACPI_FAILURE(Status))
         {
             AapiErrors++;
-            return Status;
+            return (Status);
         }
 
         for (j = 0; j < TMax; j++)
@@ -1489,11 +1489,11 @@ AtInitTest0007(void)
             Status = AtTerminateCtrlCheck(AE_OK, TOTAL_STAT);
             if (ACPI_FAILURE(Status))
             {
-                return Status;
+                return (Status);
             }
         }
     }
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1502,8 +1502,8 @@ AtInitTest0007(void)
 ACPI_STATUS
 AtInitTest0008(void)
 {
-    return AtInitTermCommonTest(OSXF_NUM(AcpiOsInitialize),
-        AtActD_OneTime, AtActRet_ERROR, 1, CHECK_TERM_ACT, AE_ERROR);
+    return (AtInitTermCommonTest(OSXF_NUM(AcpiOsInitialize),
+        AtActD_OneTime, AtActRet_ERROR, 1, CHECK_TERM_ACT, AE_ERROR));
 }
 
 /*
@@ -1521,7 +1521,7 @@ AtInitTest0009(void)
             CHECK_INIT_COND | CHECK_TERM_ACT | CHECK_FREE_COND);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -1531,7 +1531,7 @@ AtInitTest0009(void)
             CHECK_INIT_COND | CHECK_TERM_ACT | CHECK_FREE_COND);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -1541,10 +1541,10 @@ AtInitTest0009(void)
             CHECK_INIT_COND | CHECK_TERM_ACT | CHECK_FREE_COND);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1560,9 +1560,9 @@ AtInitTest0010(void)
     {
         Check_Flags &= ~CHECK_FREE_COND;
     }
-    return AtInitTermCommonTest(OSXF_NUM(AcpiOsTotal),
+    return (AtInitTermCommonTest(OSXF_NUM(AcpiOsTotal),
         AtActD_OneTime, AtActRet_ERROR, 1,
-        Check_Flags, AE_ERROR);
+        Check_Flags, AE_ERROR));
 }
 
 /*
@@ -1579,7 +1579,7 @@ AtInitTest0011(void)
         Status = Init_NO_MEMORY_Test1(1, 1, CHECK_INIT_TERM | CHECK_FREE_COND);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -1588,7 +1588,7 @@ AtInitTest0011(void)
         Status = Init_NO_MEMORY_Test2(1, 1, CHECK_INIT_TERM | CHECK_FREE_COND);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -1597,10 +1597,10 @@ AtInitTest0011(void)
         Status = Init_NO_MEMORY_Test3(1, 1, CHECK_INIT_TERM | CHECK_FREE_COND);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1622,7 +1622,7 @@ AtInitTest0012(void)
             AapiErrors++;
             printf ("API Error: AcpiInitializeSubsystem() failure, %s,"
                 " step %d\n", AcpiFormatException(Status), i);
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlCheck(SYS_STAT, 0);
@@ -1630,16 +1630,16 @@ AtInitTest0012(void)
         {
             AapiErrors++;
             printf ("API Error: no any resources allocated, step %d\n", i);
-            return Status;
+            return (Status);
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1660,7 +1660,7 @@ AtInitTest0013(void)
         AapiErrors++;
         printf ("API Error: AcpiInitializeSubsystem() failure, %s,"
             " step %d\n", AcpiFormatException(Status), 0);
-        return Status;
+        return (Status);
     }
 
     Status = OsxfCtrlCheck(SYS_STAT, 0);
@@ -1668,7 +1668,7 @@ AtInitTest0013(void)
     {
         AapiErrors++;
         printf ("API Error: no any resources allocated, step %d\n", 1);
-        return Status;
+        return (Status);
     }
 
     /*
@@ -1678,7 +1678,7 @@ AtInitTest0013(void)
     if (ACPI_FAILURE(Status))
     {
         AapiErrors++;
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < RMax; i++)
@@ -1690,7 +1690,7 @@ AtInitTest0013(void)
             AapiErrors++;
             printf ("API Error: repeated AcpiInitializeSubsystem() returned %s,"
                 " step %d\n", AcpiFormatException(Status), i + 2);
-            return Status;
+            return (Status);
         }
 
         /*
@@ -1704,7 +1704,7 @@ AtInitTest0013(void)
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1721,10 +1721,10 @@ AtInitTest0014(void)
         AAPITS_EN_FLAGS, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1741,10 +1741,10 @@ AtInitTest0015(void)
         AAPITS_EN_FLAGS, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1766,7 +1766,7 @@ AtInitTest0016(void)
         AapiErrors++;
         printf ("API Error 1: AcpiOS* calls withoout Subsystem init., %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < RMax; i++)
@@ -1778,7 +1778,7 @@ AtInitTest0016(void)
             printf ("API Error 2: AcpiEnableSubsystem() returned %s,"
                 " expected AE_ERROR\n",
                 AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -1791,10 +1791,10 @@ AtInitTest0016(void)
         AapiErrors++;
         printf ("API Error 2: AcpiOS* calls during AcpiEnableSubsystem, %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1812,7 +1812,7 @@ AtInitTest0017(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < RMax; i++)
@@ -1824,7 +1824,7 @@ AtInitTest0017(void)
             printf ("API Error: AcpiEnableSubsystem() returned %s,"
                 " expected AE_ERROR\n",
                 AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -1837,10 +1837,10 @@ AtInitTest0017(void)
         AapiErrors++;
         printf ("API Error: AcpiOS* calls during AcpiEnableSubsystem, %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1856,10 +1856,10 @@ AtInitTest0018(void)
         AAPITS_EN_FLAGS, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1876,10 +1876,10 @@ AtInitTest0019(void)
         AAPITS_EN_FLAGS, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -1896,10 +1896,10 @@ AtInitTest0020(void)
         AAPITS_EN_FLAGS, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1918,7 +1918,7 @@ AtInitTest0021(void)
         AAPITS_EN_FLAGS, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < RMax; i++)
@@ -1928,11 +1928,11 @@ AtInitTest0021(void)
             AAPITS_EN_FLAGS, 0, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1949,7 +1949,7 @@ AtInitTest0121(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("init0121.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtInitCommonTest(AAPITS_INI_LOAD |
@@ -1958,7 +1958,7 @@ AtInitTest0121(void)
         ~(UINT32)(ACPI_NO_HARDWARE_INIT | ACPI_NO_ACPI_ENABLE), 0, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < RMax; i++)
@@ -1968,11 +1968,11 @@ AtInitTest0121(void)
             ACPI_NO_HARDWARE_INIT | ACPI_NO_ACPI_ENABLE, 0, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1989,10 +1989,10 @@ AtInitTest0022(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2009,10 +2009,10 @@ AtInitTest0023(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2034,7 +2034,7 @@ AtInitTest0024(void)
         AapiErrors++;
         printf ("API Error 1: AcpiOS* calls withoout Subsystem init., %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < RMax; i++)
@@ -2046,7 +2046,7 @@ AtInitTest0024(void)
             printf ("API Error 2: AcpiInitializeObjects() returned %s,"
                 " expected AE_ERROR\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
@@ -2059,10 +2059,10 @@ AtInitTest0024(void)
         AapiErrors++;
         printf ("API Error 2: AcpiOS* calls during AcpiInitializeObjects, %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2080,7 +2080,7 @@ AtInitTest0025(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < RMax; i++)
@@ -2092,7 +2092,7 @@ AtInitTest0025(void)
             printf ("API Error: AcpiInitializeObjects() returned %s,"
                 " expected AE_ERROR\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
@@ -2105,10 +2105,10 @@ AtInitTest0025(void)
         AapiErrors++;
         printf ("API Error: AcpiOS* calls during AcpiInitializeObjects, %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2124,10 +2124,10 @@ AtInitTest0026(void)
         0, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2144,10 +2144,10 @@ AtInitTest0027(void)
         0, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2164,10 +2164,10 @@ AtInitTest0028(void)
         0, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2184,10 +2184,10 @@ AtInitTest0029(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2200,7 +2200,7 @@ AtInitTest0030(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("init0030.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtInitCommonTest(AAPITS_INI_LOAD |
@@ -2209,10 +2209,10 @@ AtInitTest0030(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2231,7 +2231,7 @@ AtInitTest0031(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < RMax; i++)
@@ -2241,11 +2241,11 @@ AtInitTest0031(void)
             0, AAPITS_OI_FLAGS, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2258,7 +2258,7 @@ AtInitTest0032(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("init0032.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtInitCommonTest(AAPITS_INI_LOAD |
@@ -2267,17 +2267,17 @@ AtInitTest0032(void)
         AAPITS_EN_FLAGS, 0, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INVC", 0)))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INVM", 0)))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtInitCommonTest(AAPITS_INITIALIZE_OBJS,
@@ -2285,22 +2285,22 @@ AtInitTest0032(void)
         0, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INVC",
         _INI_TOTAL + _STA_TOTAL - 2)))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INVM",
         TOTAL_MASK | _STA_NEGATIV_MASK)))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2318,7 +2318,7 @@ AtInitializationHandlerCallsCheck(
             printf ("API Error: %d INI Function calls"
                 " of InitializationHandler, expected %d ones\n",
                 IhFunctionIniCounter, Function_INI);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
     else
@@ -2329,7 +2329,7 @@ AtInitializationHandlerCallsCheck(
             printf ("API Error: unexpected INI Function calls"
                 " of InitializationHandler, %d times\n",
                 IhFunctionIniCounter);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -2339,7 +2339,7 @@ AtInitializationHandlerCallsCheck(
             printf ("API Error: unexpected Unknown Function calls"
                 " of InitializationHandler, %d times\n",
             IhFunctionOthersCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (!AT_SKIP_IH_OTYPE_CHECK && IhUnexpectedTypeCounter)
@@ -2348,7 +2348,7 @@ AtInitializationHandlerCallsCheck(
             printf ("API Error: unexpected type of Object"
                 " in InitializationHandler, %d times\n",
             IhUnexpectedTypeCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (AlternativeHandlerCounter)
@@ -2357,10 +2357,10 @@ AtInitializationHandlerCallsCheck(
             printf ("API Error: unexpected calls"
                 " of AlternativeInitHandler, %d times\n",
             AlternativeHandlerCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2373,7 +2373,7 @@ AtInitTest0033(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("init0032.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtInitCommonTest(AAPITS_INI_LOAD |
@@ -2382,25 +2382,25 @@ AtInitTest0033(void)
         AAPITS_EN_FLAGS, ACPI_NO_DEVICE_INIT, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtInitializationHandlerCallsCheck(0)))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INVC", 0)))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INVM", 0)))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2417,7 +2417,7 @@ AtInitTest0034(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("init0034.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtInitCommonTest(AAPITS_INI_LOAD |
@@ -2426,47 +2426,47 @@ AtInitTest0034(void)
         AAPITS_EN_FLAGS, 0, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /* Region */
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTR", 49)))
     {
-        return Status;
+        return (Status);
     }
 
     /* Buffer Fields */
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTF", 64)))
     {
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTG", 6)))
     {
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTH", 4)))
     {
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTI", 2)))
     {
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTJ", 0)))
     {
-        return Status;
+        return (Status);
     }
 
     /* Buffer */
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTB", 9)))
     {
-        return Status;
+        return (Status);
     }
 
     /* Package */
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTP", 3)))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtInitCommonTest(AAPITS_INITIALIZE_OBJS,
@@ -2474,7 +2474,7 @@ AtInitTest0034(void)
         0, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -2485,71 +2485,71 @@ AtInitTest0034(void)
     /* Region */
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTR", 50)))
     {
-        return Status;
+        return (Status);
     }
 
     /* Buffer Fields */
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTF", 65)))
     {
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckBuffer("\\BFL0",
             sizeof (BenchmarkField), BenchmarkField)))
     {
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTG", 7)))
     {
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\BFL1", 0x87)))
     {
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTH", 5)))
     {
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\BFL2", 0x8685)))
     {
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTI", 3)))
     {
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\BFL3", 0x86858483)))
     {
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTJ", 1)))
     {
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\BFL4",
         ((UINT64)0x8090a0b << 32) |  0x0c0d0e0f)))
     {
-        return Status;
+        return (Status);
     }
 
     /* Buffer */
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTB", 10)))
     {
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckBuffer("\\BUF0",
             sizeof (BenchmarkBuffer), BenchmarkBuffer)))
     {
-        return Status;
+        return (Status);
     }
 
     /* Package */
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTP", 4)))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2562,7 +2562,7 @@ AtInitTest0035(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("init0034.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtInitCommonTest(AAPITS_INI_LOAD |
@@ -2571,7 +2571,7 @@ AtInitTest0035(void)
         AAPITS_EN_FLAGS, ACPI_NO_OBJECT_INIT, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -2582,44 +2582,44 @@ AtInitTest0035(void)
     /* Region */
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTR", 49)))
     {
-        return Status;
+        return (Status);
     }
 
     /* Buffer Fields */
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTF", 64)))
     {
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTG", 6)))
     {
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTH", 4)))
     {
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTI", 2)))
     {
-        return Status;
+        return (Status);
     }
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTJ", 0)))
     {
-        return Status;
+        return (Status);
     }
 
     /* Buffer */
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTB", 9)))
     {
-        return Status;
+        return (Status);
     }
 
     /* Package */
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INTP", 3)))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2636,7 +2636,7 @@ AtInitTest0036(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -2646,7 +2646,7 @@ AtInitTest0036(void)
     if (ACPI_FAILURE(Status))
     {
         TestErrors++;
-        return Status;
+        return (Status);
     }
 
     Status = AcpiPurgeCachedObjects();
@@ -2655,7 +2655,7 @@ AtInitTest0036(void)
         AapiErrors++;
         printf ("API Error: AcpiPurgeCachedObjects() failure, %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /*
@@ -2667,10 +2667,10 @@ AtInitTest0036(void)
         AapiErrors++;
         printf ("API Error: AcpiOS* calls during AcpiPurgeCachedObjects, %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2687,12 +2687,12 @@ AtInitTest0037(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     CHECK_SUBSYSTEM_STATUS(AE_OK);
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2715,7 +2715,7 @@ AtInitTest0038(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     CHECK_SUBSYSTEM_STATUS(AE_OK);
@@ -2726,7 +2726,7 @@ AtInitTest0038(void)
         AapiErrors++;
         printf ("API Error: AcpiTerminate() failure, %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     CHECK_SUBSYSTEM_STATUS(AE_ERROR);
@@ -2736,10 +2736,10 @@ AtInitTest0038(void)
     {
         AapiErrors++;
         printf ("API Error: some resources don't released\n");
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2763,7 +2763,7 @@ AtInitTest0039(void)
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         CHECK_SUBSYSTEM_STATUS(AE_ERROR);
@@ -2774,7 +2774,7 @@ AtInitTest0039(void)
             AapiErrors++;
             printf ("API Error: AcpiTerminate() failure, %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         CHECK_SUBSYSTEM_STATUS(AE_ERROR);
@@ -2782,11 +2782,11 @@ AtInitTest0039(void)
         Status = AtTerminateCheck(Status, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2805,7 +2805,7 @@ AtInitTest0040(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("init0030.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < 5; i++)
@@ -2818,7 +2818,7 @@ AtInitTest0040(void)
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         CHECK_SUBSYSTEM_STATUS(AE_ERROR);
@@ -2830,7 +2830,7 @@ AtInitTest0040(void)
             AapiErrors++;
             printf ("API Error: AcpiTerminate() failure, %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         CHECK_SUBSYSTEM_STATUS(AE_ERROR);
@@ -2843,11 +2843,11 @@ AtInitTest0040(void)
         {
             AapiErrors++;
             printf ("API Error: some resources don't released\n");
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 #define NUM_ACPI_TABLE_TYPES    7
@@ -2867,10 +2867,10 @@ AtCheckSystemInfo(
         printf ("API Error: AcpiGetSystemInfo() returned"
             " TimerResolution (%d) != 24 (or 32)\n",
             InfoPtr->TimerResolution);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2894,7 +2894,7 @@ AtInitTest0041(void)
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         OutBuffer.Pointer = &Info;
@@ -2907,7 +2907,7 @@ AtInitTest0041(void)
             printf ("API Error: AcpiGetSystemInfo() returned %s,"
                 " expected AE_BUFFER_OVERFLOW\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         if (OutBuffer.Length != sizeof (Info))
@@ -2916,7 +2916,7 @@ AtInitTest0041(void)
             printf ("API Error: AcpiGetSystemInfo() returned"
                 " Length %d, expected %d\n",
                 OutBuffer.Length, sizeof (Info));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         OutBuffer.Pointer = &Info;
@@ -2929,7 +2929,7 @@ AtInitTest0041(void)
             printf ("API Error: AcpiGetSystemInfo() returned %s,"
                 " expected AE_BUFFER_OVERFLOW\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         if (OutBuffer.Length != sizeof (Info))
@@ -2938,7 +2938,7 @@ AtInitTest0041(void)
             printf ("API Error: AcpiGetSystemInfo() returned"
                 " Length %d, expected %d\n",
                 OutBuffer.Length, sizeof (Info));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         OutBuffer.Pointer = &Info;
@@ -2950,7 +2950,7 @@ AtInitTest0041(void)
             AapiErrors++;
             printf ("API Error: AcpiGetSystemInfo() returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
         else if (OutBuffer.Length != sizeof (Info))
         {
@@ -2958,7 +2958,7 @@ AtInitTest0041(void)
             printf ("API Error: AcpiGetSystemInfo() returned"
                 " Length %d, expected %d\n",
                 OutBuffer.Length, sizeof (Info));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         else if (OutBuffer.Pointer != &Info)
         {
@@ -2966,15 +2966,15 @@ AtInitTest0041(void)
             printf ("API Error: AcpiGetSystemInfo() succeeded but"
                 " OutBuffer.Pointer (%p) is not &Info (%p)\n",
                 OutBuffer.Pointer, &Info);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         if (ACPI_FAILURE(Status = AtCheckSystemInfo(OutBuffer.Pointer)))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2998,7 +2998,7 @@ AtInitTest0042(void)
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetSystemInfo(NULL);
@@ -3008,7 +3008,7 @@ AtInitTest0042(void)
             printf ("API Error: AcpiGetSystemInfo(NULL) returned %s,"
                 " expected AE_BAD_PARAMETER\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         OutBuffer.Pointer = NULL;
@@ -3021,7 +3021,7 @@ AtInitTest0042(void)
             printf ("API Error: AcpiGetSystemInfo(OutBuffer.Pointer = NULL)"
                 " returned %s, expected AE_BAD_PARAMETER\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         OutBuffer.Pointer = &Info;
@@ -3033,7 +3033,7 @@ AtInitTest0042(void)
             AapiErrors++;
             printf ("API Error: AcpiGetSystemInfo() returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
         else if (OutBuffer.Length != sizeof (Info))
         {
@@ -3041,7 +3041,7 @@ AtInitTest0042(void)
             printf ("API Error: AcpiGetSystemInfo() returned"
                 " Length %d, expected %d\n",
                 OutBuffer.Length, sizeof (Info));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         else if (OutBuffer.Pointer != &Info)
         {
@@ -3049,15 +3049,15 @@ AtInitTest0042(void)
             printf ("API Error: AcpiGetSystemInfo() succeeded but"
                 " OutBuffer.Pointer (%p) is not &Info (%p)\n",
                 OutBuffer.Pointer, &Info);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         if (ACPI_FAILURE(Status = AtCheckSystemInfo(OutBuffer.Pointer)))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -3080,7 +3080,7 @@ AtInitTest0043(void)
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         OutBuffer.Length = ACPI_ALLOCATE_BUFFER;
@@ -3092,13 +3092,13 @@ AtInitTest0043(void)
             AapiErrors++;
             printf ("API Error: AcpiGetSystemInfo() returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
         else if (OutBuffer.Pointer == NULL)
         {
             AapiErrors++;
             printf ("API Error: AcpiGetSystemInfo() succeeded but returned NULL\n");
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         else if (OutBuffer.Length != sizeof (ACPI_SYSTEM_INFO))
         {
@@ -3106,20 +3106,20 @@ AtInitTest0043(void)
             printf ("API Error: AcpiGetSystemInfo() returned"
                 " Length %d, expected %d\n",
                 OutBuffer.Length, sizeof (ACPI_SYSTEM_INFO));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         else
         {
             /* Check ACPI_SYSTEM_INFO structure*/
             if (ACPI_FAILURE(Status = AtCheckSystemInfo(OutBuffer.Pointer)))
         {
-                return Status;
+                return (Status);
             }
             AcpiOsFree(OutBuffer.Pointer);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -3142,7 +3142,7 @@ AtInitTest0044(void)
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlSet(OSXF_NUM(AcpiOsAllocate),
@@ -3152,7 +3152,7 @@ AtInitTest0044(void)
             TestErrors++;
             printf ("Test Error: OsxfCtrlSet() returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         OutBuffer.Length = ACPI_ALLOCATE_BUFFER;
@@ -3165,11 +3165,11 @@ AtInitTest0044(void)
             printf ("API Error: AcpiGetSystemInfo() returned %s,\n"
                 " expected AE_NO_MEMORY\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -3191,10 +3191,10 @@ AtInitTest0045(void)
         printf ("API Error: AcpiGetSystemInfo() returned %s,"
             " expected FAILURE\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AtInitTest0044();
+    return (AtInitTest0044());
 }
 
 /*
@@ -3219,7 +3219,7 @@ AtInitTest0046(void)
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AcpiInstallInitializationHandler(NULL, 0);
@@ -3229,7 +3229,7 @@ AtInitTest0046(void)
             printf ("API Error: AcpiInstallInitializationHandler(NULL)"
                 " returned %s, expected FAILURE\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         if (i < 1) continue;
@@ -3240,7 +3240,7 @@ AtInitTest0046(void)
             AapiErrors++;
             printf ("API Error: AcpiTerminate() failure, %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         /* AcpiOsTerminate redundancy issue */
@@ -3251,11 +3251,11 @@ AtInitTest0046(void)
         {
             AapiErrors++;
             printf ("API Error: some resources don't released\n");
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -3299,7 +3299,7 @@ AtInitializationHandlerCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet(AmlName)))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < 3; i++)
@@ -3311,7 +3311,7 @@ AtInitializationHandlerCommon(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         IhFunctionIniCounter = 0;
@@ -3323,7 +3323,7 @@ AtInitializationHandlerCommon(
             printf ("API Error: AcpiInstallInitializationHandler()"
                 " returned %s, expected SUCCESS\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         for (j = i + 1; j < 3; j++)
@@ -3333,7 +3333,7 @@ AtInitializationHandlerCommon(
                 AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
             if (ACPI_FAILURE(Status))
             {
-                return Status;
+                return (Status);
             }
 
             if (ACPI_FAILURE(Status = AtInitializationHandlerCallsCheck(0)))
@@ -3341,18 +3341,18 @@ AtInitializationHandlerCommon(
                 printf ("AtInitializationHandlerCallsCheck Error"
                     " after Stage 0x%x (0x%x)\n",
                     Stages[j], StagesScale);
-                return Status;
+                return (Status);
             }
         }
 
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INVC", 0)))
         {
-            return Status;
+            return (Status);
         }
 
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INVM", 0)))
         {
-            return Status;
+            return (Status);
         }
 
         AtAcpiInitHandlerSpecName = SpecName;
@@ -3365,7 +3365,7 @@ AtInitializationHandlerCommon(
             0, AAPITS_OI_FLAGS, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (AtAcpiInitHandlerSpecRet != AE_OK)
@@ -3374,7 +3374,7 @@ AtInitializationHandlerCommon(
             printf ("API Error: None InitializationHandler() call"
                 " on the Object Name '%s'\n",
                 AtAcpiInitHandlerSpecName);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         if (EstimatedINVM & ExpectedNegativeM_STA)
@@ -3383,19 +3383,19 @@ AtInitializationHandlerCommon(
             printf ("API Error: EstimatedINVM (0x%x) & ExpectedNegativeM_STA"
                 " (0x%x) != 0 (unexpected call for not present device)\n",
                 EstimatedINVM, ExpectedNegativeM_STA);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INVC",
             EstimatedINVC + ExpectedNegativeC_STA)))
         {
-            return Status;
+            return (Status);
         }
 
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INVM",
             EstimatedINVM | ExpectedNegativeM_STA)))
         {
-            return Status;
+            return (Status);
         }
 
         if (EstimatedINVC != ExpectedINVC)
@@ -3403,7 +3403,7 @@ AtInitializationHandlerCommon(
             AapiErrors++;
             printf ("API Error: EstimatedINVC (%d) != ExpectedINVC (%d)\n",
                 EstimatedINVC, ExpectedINVC);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         if (EstimatedINVM != ExpectedINVM)
@@ -3411,23 +3411,23 @@ AtInitializationHandlerCommon(
             AapiErrors++;
             printf ("API Error: EstimatedINVM (0x%x) != ExpectedINVM (0x%x)\n",
                 EstimatedINVM, ExpectedINVM);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         if (ACPI_FAILURE(Status = AtInitializationHandlerCallsCheck(
                 ExpectedCalls)))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -3436,10 +3436,10 @@ AtInitializationHandlerCommon(
 ACPI_STATUS
 AtInitTest0047(void)
 {
-    return AtInitializationHandlerCommon(
+    return (AtInitializationHandlerCommon(
         "init0032.aml",
         NULL, AE_OK, 10, TOTAL_MASK,
-        _STA_NEGATIV_CALLS, _STA_NEGATIV_MASK, 8);
+        _STA_NEGATIV_CALLS, _STA_NEGATIV_MASK, 8));
 }
 
 /*
@@ -3456,7 +3456,7 @@ AtInitTest0048(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("init0032.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < 3; i++)
@@ -3468,7 +3468,7 @@ AtInitTest0048(void)
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         IhFunctionIniCounter = 0;
@@ -3480,7 +3480,7 @@ AtInitTest0048(void)
             printf ("API Error: AcpiInstallInitializationHandler()"
                 " returned %s, expected SUCCESS\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiInstallInitializationHandler(AlternativeAcpiInitHandler, 0);
@@ -3490,7 +3490,7 @@ AtInitTest0048(void)
             printf ("API Error: AcpiInstallInitializationHandler()"
                 " returned %s, expected AE_ALREADY_EXISTS\n",
                 AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         for (j = i + 1; j < 3; j++)
@@ -3500,7 +3500,7 @@ AtInitTest0048(void)
                 AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
             if (ACPI_FAILURE(Status))
             {
-                return Status;
+                return (Status);
             }
 
             if (ACPI_FAILURE(Status = AtInitializationHandlerCallsCheck(0)))
@@ -3508,7 +3508,7 @@ AtInitTest0048(void)
                 printf ("AtInitializationHandlerCallsCheck Error"
                     " after Stage 0x%x (0x%x)\n",
                     Stages[j], StagesScale);
-                return Status;
+                return (Status);
             }
 
             Status = AcpiInstallInitializationHandler(AlternativeAcpiInitHandler, 0);
@@ -3518,7 +3518,7 @@ AtInitTest0048(void)
                 printf ("API Error: AcpiInstallInitializationHandler()"
                     " returned %s, expected AE_ALREADY_EXISTS\n",
                     AcpiFormatException(Status));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
@@ -3527,22 +3527,22 @@ AtInitTest0048(void)
             0, AAPITS_OI_FLAGS, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (ACPI_FAILURE(Status = AtInitializationHandlerCallsCheck(5)))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -3564,7 +3564,7 @@ AtInitTest0049(void)
         AapiErrors++;
         printf ("API Error 1: AcpiOS* calls withoout Subsystem init., %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < RMax; i++)
@@ -3576,7 +3576,7 @@ AtInitTest0049(void)
             printf ("API Error: AcpiInstallInitializationHandler()"
                 " returned %s, expected AE_ERROR\n",
                 AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -3589,10 +3589,10 @@ AtInitTest0049(void)
         AapiErrors++;
         printf ("API Error 2: AcpiOS* calls during AcpiInitializeObjects, %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -3610,7 +3610,7 @@ AtInitTest0050(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < RMax; i++)
@@ -3623,7 +3623,7 @@ AtInitTest0050(void)
             printf ("API Error: AcpiInstallInitializationHandler()"
                 " returned %s, expected AE_ERROR\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
@@ -3636,10 +3636,10 @@ AtInitTest0050(void)
         AapiErrors++;
         printf ("API Error: AcpiOS* calls during AcpiInitializeObjects, %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -3648,10 +3648,10 @@ AtInitTest0050(void)
 ACPI_STATUS
 AtInitTest0051(void)
 {
-    return AtInitializationHandlerCommon(
+    return (AtInitializationHandlerCommon(
         "init0032.aml",
         (UINT8 *)"DEV5", AE_CTRL_TERMINATE, 5, 0xCE,
-        1, 0x20 /* DEV4 */, 5);
+        1, 0x20 /* DEV4 */, 5));
 }
 
 /*
@@ -3660,11 +3660,11 @@ AtInitTest0051(void)
 ACPI_STATUS
 AtInitTest0052(void)
 {
-    return AtInitializationHandlerCommon(
+    return (AtInitializationHandlerCommon(
         "init0032.aml",
         (UINT8 *)"DEV5", AE_CTRL_DEPTH,
         8, TOTAL_MASK & ~0x330,
-        _STA_NEGATIV_CALLS, _STA_NEGATIV_MASK, 7);
+        _STA_NEGATIV_CALLS, _STA_NEGATIV_MASK, 7));
 }
 
 /*
@@ -3716,7 +3716,7 @@ AtInitTest0053(void)
             EnFlags, AAPITS_OI_FLAGS, NULL);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         CHECK_SUBSYSTEM_STATUS(AE_OK);
@@ -3724,11 +3724,11 @@ AtInitTest0053(void)
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -3748,16 +3748,16 @@ AtInitTest0054(void)
         AE_NO_MEMORY);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
      * AcpiOsAllocate returns NULL one time on the specified call
      */
-    return AtExceptionCommonTest(AAPITS_ENABLE_SS,
+    return (AtExceptionCommonTest(AAPITS_ENABLE_SS,
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
-        AE_NO_MEMORY);
+        AE_NO_MEMORY));
 }
 
 /*
@@ -3777,16 +3777,16 @@ AtInitTest0055(void)
         AE_NO_MEMORY);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
      * AcpiOsAllocate returns NULL one time on the specified call
      */
-    return AtExceptionCommonTest(AAPITS_INITIALIZE_OBJS,
+    return (AtExceptionCommonTest(AAPITS_INITIALIZE_OBJS,
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
-        AE_NO_MEMORY);
+        AE_NO_MEMORY));
 }
 
 #define    TO_STRING(a)    #a
@@ -3991,7 +3991,7 @@ AtInitTest0056(void)
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -4057,7 +4057,7 @@ AtInitTest0057(void)
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -4079,12 +4079,12 @@ AtInitTest0058(void)
         printf ("Test Error: AtInitTest0058 skipped due to too small"
             "ACPI_MAX_OBJECT_CACHE_DEPTH constant (%d)\n",
             ACPI_MAX_OBJECT_CACHE_DEPTH);
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("init0058.aml")))
     {
-        return Status;
+        return (Status);
     }
     Status = AtInitCommonTest(AAPITS_INI_LOAD |
         AAPITS_ENABLE_SS | AAPITS_INITIALIZE_OBJS,
@@ -4092,7 +4092,7 @@ AtInitTest0058(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     MallocCount[0] = OsxfCtrlGetCalls(OSXF_NUM(AcpiOsAllocate), 1);
@@ -4105,7 +4105,7 @@ AtInitTest0058(void)
         AapiErrors++;
         printf ("API Error: AcpiEvaluateObject(\\MAIN) returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     MallocCount[1] = OsxfCtrlGetCalls(OSXF_NUM(AcpiOsAllocate), 1);
@@ -4123,7 +4123,7 @@ AtInitTest0058(void)
         printf ("Test Error: AtInitTest0058 skipped due to too weak"
             " memory allocation activity (%d)\n",
             (UINT32)(Diff[1] - Diff[0]));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     /*
@@ -4138,7 +4138,7 @@ AtInitTest0058(void)
             AapiErrors++;
             printf ("API Error: AcpiEvaluateObject(\\MAIN) returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         MallocCount[2] = OsxfCtrlGetCalls(OSXF_NUM(AcpiOsAllocate), 1);
@@ -4155,7 +4155,7 @@ AtInitTest0058(void)
             printf ("Test Error %d: too little %d memory allocations"
                 " shortening basing on caches\n",
                 i, (UINT32)(MallocDiff[0] - MallocDiff[1]));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         if (Diff[2] != Diff[1])
         {
@@ -4163,7 +4163,7 @@ AtInitTest0058(void)
             printf ("Test Error %d: AtInitTest0058 skipped due to %d memory allocations"
                 " outside caches\n",
                 i, (UINT32)(Diff[2] - Diff[1]));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         if (i > 0)
         {
@@ -4173,7 +4173,7 @@ AtInitTest0058(void)
                 printf ("API Error %d: %d memory allocations"
                     " against %d previous\n",
                     i, (UINT32)MallocDiff[2], (UINT32)MallocDiff[1]);
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
         MallocCount[1] = MallocCount[2];
@@ -4186,7 +4186,7 @@ AtInitTest0058(void)
         AapiErrors++;
         printf ("API Error: AcpiPurgeCachedObjects() failure, %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     MallocCount[3] = OsxfCtrlGetCalls(OSXF_NUM(AcpiOsAllocate), 1);
@@ -4201,10 +4201,10 @@ AtInitTest0058(void)
         printf ("API Error: AcpiPurgeCachedObjects is not release %d"
             " allocations\n",
             (UINT32)(Diff[3] - Diff[0]));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -4213,11 +4213,11 @@ AtInitTest0058(void)
 ACPI_STATUS
 AtInitTest0059(void)
 {
-    return AtInitializationHandlerCommon(
+    return (AtInitializationHandlerCommon(
         "init0059.aml",
         NULL, AE_OK, 12, TOTAL_MASK | 0xC000,
         _STA_NEGATIV_CALLS + 1, _STA_NEGATIV_MASK | 0x20000,
-        9);
+        9));
 }
 
 /*
@@ -4238,7 +4238,7 @@ AtInitTest0060(void)
         0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtInitializeTables(FALSE);
@@ -4247,7 +4247,7 @@ AtInitTest0060(void)
         AapiErrors++;
         printf ("API error: AcpiInitializeTables() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiLoadTables();
@@ -4256,7 +4256,7 @@ AtInitTest0060(void)
         AapiErrors++;
         printf ("API error: AcpiLoadTables() returned %s\n",
             AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     Status = AcpiEnableSubsystem(0);
@@ -4265,10 +4265,10 @@ AtInitTest0060(void)
         AapiErrors++;
         printf ("API error: AcpiEnableSubsystem () returned %s, expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_NO_ACPI_TABLES));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -4282,7 +4282,7 @@ AtInitTest0066(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("init0066.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtInitCommonTest(AAPITS_INI_LOAD |
@@ -4291,7 +4291,7 @@ AtInitTest0066(void)
         AAPITS_EN_FLAGS, 0, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
 /*
@@ -4300,21 +4300,21 @@ AtInitTest0066(void)
         0, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 */
     /* Buffer Fields */
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\INT0", 64)))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckBuffer("\\MBF0",
             sizeof (BenchmarkBuffer), BenchmarkBuffer)))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 

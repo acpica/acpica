@@ -309,7 +309,7 @@ AtInstallNotifyHandlerCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hndl0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 1)
@@ -322,14 +322,14 @@ AtInstallNotifyHandlerCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 1)
     {
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -344,7 +344,7 @@ AtInstallNotifyHandlerCommon(
                 AapiErrors++;
                 printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                     TestData[i].Pathname, AcpiFormatException(Status));
-               return Status;
+               return (Status);
             }
         }
         else
@@ -358,7 +358,7 @@ AtInstallNotifyHandlerCommon(
         /* Make Device handle invalid by unloading SSDT table*/
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
     }
     else if (CheckAction == 4)
@@ -368,7 +368,7 @@ AtInstallNotifyHandlerCommon(
             TestErrors++;
             printf ("Test Error: ExpectedStatus %s != AE_ALREADY_EXISTS\n",
                 AcpiFormatException(ExpectedStatus));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         ExpectedStatus = AE_OK;
     }
@@ -412,11 +412,11 @@ AtInstallNotifyHandlerCommon(
                     AcpiFormatException(ExpectedStatus));
                 if (Status != AE_OK)
                 {
-                    return Status;
+                    return (Status);
                 }
                 else
                 {
-                    return AE_ERROR;
+                    return (AE_ERROR);
                 }
             }
         }
@@ -448,7 +448,7 @@ AtInstallNotifyHandlerCommon(
                         " returned %s, expected %s\n",
                         Object, Type, Handler, Context, AcpiFormatException(Status),
                         AcpiFormatException(AE_ALREADY_EXISTS));
-                    return AE_ERROR;
+                    return (AE_ERROR);
                 }
             }
         }
@@ -462,7 +462,7 @@ AtInstallNotifyHandlerCommon(
             AapiErrors++;
             printf ("Api Error: AcpiEvaluateObject(%s) returned %s\n",
                 NotifyMethod, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         for (i = 0; i < NumData; i++)
@@ -480,7 +480,7 @@ AtInstallNotifyHandlerCommon(
                     AapiErrors++;
                     printf ("Api Error: %s, %d, Notify Handlers invoked %d times instead of 1\n",
                         TestData[i].Pathname, j, TestData[i].NotifyCount[j]);
-                    return AE_ERROR;
+                    return (AE_ERROR);
                 }
             }
         }
@@ -491,7 +491,7 @@ AtInstallNotifyHandlerCommon(
         AapiErrors++;
         printf ("Api Error: Notify Handlers invoked %d times instead of %d\n",
             NotifyHandlerCounter, ExpectedNotifyHandlerCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (NotifyHandlerMissCounter != 0)
@@ -499,10 +499,10 @@ AtInstallNotifyHandlerCommon(
         AapiErrors++;
         printf ("Api Error: Notify Handlers unexpectedly invoked %d times\n",
             NotifyHandlerMissCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -512,9 +512,9 @@ AtInstallNotifyHandlerCommon(
 ACPI_STATUS
 AtHndlrTest0000(void)
 {
-    return AtInstallNotifyHandlerCommon("\\TST0", NotifyTestData0000,
+    return (AtInstallNotifyHandlerCommon("\\TST0", NotifyTestData0000,
         sizeof (NotifyTestData0000) / sizeof (AT_NOTIFY_TEST_DATA),
-        0, AE_OK);
+        0, AE_OK));
 }
 
 /*
@@ -524,9 +524,9 @@ AtHndlrTest0000(void)
 ACPI_STATUS
 AtHndlrTest0001(void)
 {
-    return AtInstallNotifyHandlerCommon("\\TST0", NotifyTestData0001,
+    return (AtInstallNotifyHandlerCommon("\\TST0", NotifyTestData0001,
         sizeof (NotifyTestData0001) / sizeof (AT_NOTIFY_TEST_DATA),
-        0, AE_OK);
+        0, AE_OK));
 }
 
 /*
@@ -536,9 +536,9 @@ AtHndlrTest0001(void)
 ACPI_STATUS
 AtHndlrTest0002(void)
 {
-    return AtInstallNotifyHandlerCommon("\\TST0", NotifyTestDataSsdt,
+    return (AtInstallNotifyHandlerCommon("\\TST0", NotifyTestDataSsdt,
         sizeof (NotifyTestDataSsdt) / sizeof (AT_NOTIFY_TEST_DATA),
-        1, AE_BAD_PARAMETER);
+        1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -548,9 +548,9 @@ AtHndlrTest0002(void)
 ACPI_STATUS
 AtHndlrTest0003(void)
 {
-    return AtInstallNotifyHandlerCommon("\\TST0", NotifyTestData0001,
+    return (AtInstallNotifyHandlerCommon("\\TST0", NotifyTestData0001,
         sizeof (NotifyTestData0001) / sizeof (AT_NOTIFY_TEST_DATA),
-        2, AE_BAD_PARAMETER);
+        2, AE_BAD_PARAMETER));
 }
 
 /*
@@ -560,9 +560,9 @@ AtHndlrTest0003(void)
 ACPI_STATUS
 AtHndlrTest0004(void)
 {
-    return AtInstallNotifyHandlerCommon("\\TST0", NotifyTestData0001,
+    return (AtInstallNotifyHandlerCommon("\\TST0", NotifyTestData0001,
         sizeof (NotifyTestData0001) / sizeof (AT_NOTIFY_TEST_DATA),
-        3, AE_BAD_PARAMETER);
+        3, AE_BAD_PARAMETER));
 }
 
 /*
@@ -572,9 +572,9 @@ AtHndlrTest0004(void)
 ACPI_STATUS
 AtHndlrTest0005(void)
 {
-    return AtInstallNotifyHandlerCommon("\\TST0", NotifyTestData0001,
+    return (AtInstallNotifyHandlerCommon("\\TST0", NotifyTestData0001,
         sizeof (NotifyTestData0001) / sizeof (AT_NOTIFY_TEST_DATA),
-        4, AE_ALREADY_EXISTS);
+        4, AE_ALREADY_EXISTS));
 }
 
 /*
@@ -584,9 +584,9 @@ AtHndlrTest0005(void)
 ACPI_STATUS
 AtHndlrTest0006(void)
 {
-    return AtInstallNotifyHandlerCommon("\\TST0", NotifyTestData0006,
+    return (AtInstallNotifyHandlerCommon("\\TST0", NotifyTestData0006,
         sizeof (NotifyTestData0006) / sizeof (AT_NOTIFY_TEST_DATA),
-        0, AE_TYPE);
+        0, AE_TYPE));
 }
 
 ACPI_STATUS
@@ -635,7 +635,7 @@ AtInstallNotifyHandlerExceptionTest(
                     AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
                 if (ACPI_FAILURE(Status))
                 {
-                    return Status;
+                    return (Status);
                 }
 
                 if (TestData[ii].Pathname)
@@ -647,7 +647,7 @@ AtInstallNotifyHandlerExceptionTest(
                         AapiErrors++;
                         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                             TestData[ii].Pathname, AcpiFormatException(Status));
-                        return Status;
+                        return (Status);
                     }
                 }
                 else
@@ -666,7 +666,7 @@ AtInstallNotifyHandlerExceptionTest(
                     TestErrors++;
                     printf ("Test error: OsxfCtrlSet returned %s\n",
                         AcpiFormatException(Status));
-                    return Status;
+                    return (Status);
                 }
 
                 Status = AcpiInstallNotifyHandler(Object, Type, Handler, Context);
@@ -689,7 +689,7 @@ AtInstallNotifyHandlerExceptionTest(
                         printf ("API Error: AcpiInstallNotifyHandler returned %s,\n"
                             "           expected to return %s\n",
                             AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                        return AE_ERROR;
+                        return (AE_ERROR);
                     }
                 }
 
@@ -701,26 +701,26 @@ AtInstallNotifyHandlerExceptionTest(
                         AapiErrors++;
                         printf ("API Error: AcpiRemoveNotifyHandler returned %s\n",
                             AcpiFormatException(Status));
-                        return Status;
+                        return (Status);
                     }
                 }
 
                 Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
                 if (ACPI_FAILURE(Status))
                 {
-                    return Status;
+                    return (Status);
                 }
             }
             if (i >= TMax)
             {
                 TestErrors++;
                 printf ("Test error: there are test cases remained\n");
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -733,7 +733,7 @@ AtHndlrTest0007(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hndl0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -747,7 +747,7 @@ AtHndlrTest0007(void)
         sizeof (NotifyTestData0000) / sizeof (AT_NOTIFY_TEST_DATA));
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -761,10 +761,10 @@ AtHndlrTest0007(void)
         sizeof (NotifyTestData0000) / sizeof (AT_NOTIFY_TEST_DATA));
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -777,7 +777,7 @@ AtHndlrTest0008(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hndl0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -791,7 +791,7 @@ AtHndlrTest0008(void)
         sizeof (NotifyTestData0001) / sizeof (AT_NOTIFY_TEST_DATA));
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -805,10 +805,10 @@ AtHndlrTest0008(void)
         sizeof (NotifyTestData0001) / sizeof (AT_NOTIFY_TEST_DATA));
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -829,7 +829,7 @@ AtRemoveNotifyHandlerCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hndl0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 1)
@@ -842,14 +842,14 @@ AtRemoveNotifyHandlerCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 1)
     {
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -864,7 +864,7 @@ AtRemoveNotifyHandlerCommon(
                 AapiErrors++;
                 printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                     TestData[i].Pathname, AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
         else
@@ -902,7 +902,7 @@ AtRemoveNotifyHandlerCommon(
                     printf ("Api Error: AcpiInstallNotifyHandler(0x%p, %d, 0x%p, 0x%p)"
                         " returned %s\n",
                         Object, Type, Handler, Context, AcpiFormatException(Status));
-                    return Status;
+                    return (Status);
                 }
             }
         }
@@ -913,7 +913,7 @@ AtRemoveNotifyHandlerCommon(
         /* Make Device handle invalid by unloading SSDT table*/
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -955,11 +955,11 @@ AtRemoveNotifyHandlerCommon(
                     AcpiFormatException(ExpectedStatus));
                 if (Status != AE_OK)
                 {
-                    return Status;
+                    return (Status);
                 }
                 else
                 {
-                    return AE_ERROR;
+                    return (AE_ERROR);
                 }
             }
         }
@@ -973,7 +973,7 @@ AtRemoveNotifyHandlerCommon(
             AapiErrors++;
             printf ("Api Error: AcpiEvaluateObject(%s) returned %s\n",
                 NotifyMethod, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         for (i = 0; i < NumData; i++)
@@ -990,7 +990,7 @@ AtRemoveNotifyHandlerCommon(
                     AapiErrors++;
                     printf ("Api Error: %s, %d, Notify Handlers invoked %d times\n",
                         TestData[i].Pathname, j, TestData[i].NotifyCount[j]);
-                    return AE_ERROR;
+                    return (AE_ERROR);
                 }
             }
         }
@@ -1001,7 +1001,7 @@ AtRemoveNotifyHandlerCommon(
         AapiErrors++;
         printf ("Api Error: Notify Handlers invoked %d times\n",
             NotifyHandlerCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (NotifyHandlerMissCounter != 0)
@@ -1009,10 +1009,10 @@ AtRemoveNotifyHandlerCommon(
         AapiErrors++;
         printf ("Api Error: Notify Handlers unexpectedly invoked %d times\n",
             NotifyHandlerMissCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1022,9 +1022,9 @@ AtRemoveNotifyHandlerCommon(
 ACPI_STATUS
 AtHndlrTest0009(void)
 {
-    return AtRemoveNotifyHandlerCommon("\\TST0", NotifyTestData0000,
+    return (AtRemoveNotifyHandlerCommon("\\TST0", NotifyTestData0000,
         sizeof (NotifyTestData0000) / sizeof (AT_NOTIFY_TEST_DATA),
-        0, AE_OK);
+        0, AE_OK));
 }
 
 /*
@@ -1034,9 +1034,9 @@ AtHndlrTest0009(void)
 ACPI_STATUS
 AtHndlrTest0010(void)
 {
-    return AtRemoveNotifyHandlerCommon("\\TST0", NotifyTestData0001,
+    return (AtRemoveNotifyHandlerCommon("\\TST0", NotifyTestData0001,
         sizeof (NotifyTestData0001) / sizeof (AT_NOTIFY_TEST_DATA),
-        0, AE_OK);
+        0, AE_OK));
 }
 
 /*
@@ -1046,9 +1046,9 @@ AtHndlrTest0010(void)
 ACPI_STATUS
 AtHndlrTest0011(void)
 {
-    return AtRemoveNotifyHandlerCommon("\\TST0", NotifyTestDataSsdt,
+    return (AtRemoveNotifyHandlerCommon("\\TST0", NotifyTestDataSsdt,
         sizeof (NotifyTestDataSsdt) / sizeof (AT_NOTIFY_TEST_DATA),
-        1, AE_BAD_PARAMETER);
+        1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1058,9 +1058,9 @@ AtHndlrTest0011(void)
 ACPI_STATUS
 AtHndlrTest0012(void)
 {
-    return AtRemoveNotifyHandlerCommon("\\TST0", NotifyTestData0001,
+    return (AtRemoveNotifyHandlerCommon("\\TST0", NotifyTestData0001,
         sizeof (NotifyTestData0001) / sizeof (AT_NOTIFY_TEST_DATA),
-        2, AE_BAD_PARAMETER);
+        2, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1070,9 +1070,9 @@ AtHndlrTest0012(void)
 ACPI_STATUS
 AtHndlrTest0013(void)
 {
-    return AtRemoveNotifyHandlerCommon("\\TST0", NotifyTestData0001,
+    return (AtRemoveNotifyHandlerCommon("\\TST0", NotifyTestData0001,
         sizeof (NotifyTestData0001) / sizeof (AT_NOTIFY_TEST_DATA),
-        3, AE_BAD_PARAMETER);
+        3, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1082,9 +1082,9 @@ AtHndlrTest0013(void)
 ACPI_STATUS
 AtHndlrTest0014(void)
 {
-    return AtRemoveNotifyHandlerCommon("\\TST0", NotifyTestData0001,
+    return (AtRemoveNotifyHandlerCommon("\\TST0", NotifyTestData0001,
         sizeof (NotifyTestData0001) / sizeof (AT_NOTIFY_TEST_DATA),
-        4, AE_NOT_EXIST);
+        4, AE_NOT_EXIST));
 }
 
 /*
@@ -1094,9 +1094,9 @@ AtHndlrTest0014(void)
 ACPI_STATUS
 AtHndlrTest0015(void)
 {
-    return AtRemoveNotifyHandlerCommon("\\TST0", NotifyTestData0001,
+    return (AtRemoveNotifyHandlerCommon("\\TST0", NotifyTestData0001,
         sizeof (NotifyTestData0001) / sizeof (AT_NOTIFY_TEST_DATA),
-        5, AE_BAD_PARAMETER);
+        5, AE_BAD_PARAMETER));
 }
 
 #define AT_NUM_ADR_SPACE_ID   7
@@ -1200,7 +1200,7 @@ AtAdrSpaceHandlerCommon (
             /* The test specific prepearing to the next call check after writing */
             AccData->AccAdr += BitWidth / 8;
         }
-        return AE_OK;
+        return (AE_OK);
     }
 
     printf ("AtAdrSpaceHandler%d %d (%d) error: *RegionContext 0x%p,\n"
@@ -1209,7 +1209,7 @@ AtAdrSpaceHandlerCommon (
         RegionContext);
     AccData->AccErr++;
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 #define DEF_ADR_SPACE_HANDLER(Hid) \
@@ -1222,8 +1222,8 @@ AtAdrSpaceHandler##Hid (\
     void                    *HandlerContext,\
     void                    *RegionContext)\
 {\
-    return AtAdrSpaceHandlerCommon(Function, Address, BitWidth,\
-        Value, HandlerContext, RegionContext, Hid);\
+    return (AtAdrSpaceHandlerCommon(Function, Address, BitWidth,\
+        Value, HandlerContext, RegionContext, Hid));\
 }
 
 DEF_ADR_SPACE_HANDLER(0)
@@ -1289,7 +1289,7 @@ AtAdrSpaceSetupCommon (
         printf ("AtAdrSpaceSetup%d (%d) error: there is no"
             " appropriate setup data\n",
             HandlerId, AdrSpaceHandlerCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     for (i = 0; i < AdrSpaceHandlerTestData.NumAcc; i++)
@@ -1357,7 +1357,7 @@ AtAdrSpaceSetupCommon (
         InstData->SetupErr++;
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 #define DEF_ADR_SPACE_SETUP(Hid) \
@@ -1368,8 +1368,8 @@ AtAdrSpaceSetup##Hid (\
     void                    *HandlerContext,\
     void                    **RegionContext)\
 {\
-    return AtAdrSpaceSetupCommon(RegionHandle, Function,\
-        HandlerContext, RegionContext, Hid);\
+    return (AtAdrSpaceSetupCommon(RegionHandle, Function,\
+        HandlerContext, RegionContext, Hid));\
 }
 
 DEF_ADR_SPACE_SETUP(0)
@@ -1562,7 +1562,7 @@ AtInstallAdrSpaceHandlerCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hndl0016.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 1)
@@ -1576,14 +1576,14 @@ AtInstallAdrSpaceHandlerCommon(
         AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 1)
     {
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -1598,7 +1598,7 @@ AtInstallAdrSpaceHandlerCommon(
                 AapiErrors++;
                 printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                     TestData[i].Pathname, AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
         else
@@ -1618,7 +1618,7 @@ AtInstallAdrSpaceHandlerCommon(
                 AapiErrors++;
                 printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                     AccData[i].RegionName, AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
             else if (AT_SKIP_ADR_SPACE_SETUP_HANDLER_CHECK)
             {
@@ -1648,7 +1648,7 @@ AtInstallAdrSpaceHandlerCommon(
         /* Make Device handle invalid by unloading SSDT table*/
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
     }
     else if (CheckAction == 4)
@@ -1658,7 +1658,7 @@ AtInstallAdrSpaceHandlerCommon(
             TestErrors++;
             printf ("Test Error: ExpectedStatus %s != AE_ALREADY_EXISTS\n",
                 AcpiFormatException(ExpectedStatus));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         ExpectedStatus = AE_OK;
     }
@@ -1718,11 +1718,11 @@ AtInstallAdrSpaceHandlerCommon(
                     AcpiFormatException(ExpectedStatus));
                 if (Status != AE_OK)
                 {
-                    return Status;
+                    return (Status);
                 }
                 else
                 {
-                    return AE_ERROR;
+                    return (AE_ERROR);
                 }
             }
         }
@@ -1752,7 +1752,7 @@ AtInstallAdrSpaceHandlerCommon(
                         " returned %s, expected %s\n",
                         Device, SpaceId, Handler, Setup, AcpiFormatException(Status),
                         AcpiFormatException(AE_ALREADY_EXISTS));
-                    return AE_ERROR;
+                    return (AE_ERROR);
                 }
             }
         }
@@ -1767,14 +1767,14 @@ AtInstallAdrSpaceHandlerCommon(
             AapiErrors++;
             printf ("Api Error: AcpiEvaluateObject(%s) returned %s\n",
                 AdrSpaceMethod, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         /* Unload DSDT table to initiate the OpRegions deletion */
 /*
         TestSkipped++;
         printf ("Test note: test actions not implemented\n");
-        return AE_ERROR;
+        return (AE_ERROR);
 */
         for (i = 0; i < NumData; i++)
         {
@@ -1829,7 +1829,7 @@ AtInstallAdrSpaceHandlerCommon(
         AapiErrors++;
         printf ("Api Error: AdrSpace Handlers invoked %d times instead of %d\n",
             AdrSpaceHandlerCounter, ExpectedAdrSpaceHandlerCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (AdrSpaceSetupCounter != ExpectedAdrSpaceSetupCounter)
@@ -1837,10 +1837,10 @@ AtInstallAdrSpaceHandlerCommon(
         AapiErrors++;
         printf ("Api Error: AdrSpace Setup invoked %d times instead of %d\n",
             AdrSpaceSetupCounter, ExpectedAdrSpaceSetupCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1850,11 +1850,11 @@ AtInstallAdrSpaceHandlerCommon(
 ACPI_STATUS
 AtHndlrTest0016(void)
 {
-    return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0000,
+    return (AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0000,
         sizeof (AdrSpaceTestData0000) / sizeof (AT_ADR_SPACE_TEST_DATA),
         "\\TST0", AdrSpaceAccData0000,
         sizeof (AdrSpaceAccData0000) / sizeof (AT_ADR_SPACE_ACC_DATA),
-        0, AE_OK);
+        0, AE_OK));
 }
 
 /*
@@ -1864,11 +1864,11 @@ AtHndlrTest0016(void)
 ACPI_STATUS
 AtHndlrTest0017(void)
 {
-    return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0001,
+    return (AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0001,
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA),
         "\\TST1", AdrSpaceAccData0001,
         sizeof (AdrSpaceAccData0001) / sizeof (AT_ADR_SPACE_ACC_DATA),
-        0, AE_OK);
+        0, AE_OK));
 }
 
 /*
@@ -1878,11 +1878,11 @@ AtHndlrTest0017(void)
 ACPI_STATUS
 AtHndlrTest0018(void)
 {
-    return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0002,
+    return (AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0002,
         sizeof (AdrSpaceTestData0002) / sizeof (AT_ADR_SPACE_TEST_DATA),
         "\\TST2", AdrSpaceAccData0002,
         sizeof (AdrSpaceAccData0002) / sizeof (AT_ADR_SPACE_ACC_DATA),
-        5, AE_OK);
+        5, AE_OK));
 }
 
 /*
@@ -1892,11 +1892,11 @@ AtHndlrTest0018(void)
 ACPI_STATUS
 AtHndlrTest0019(void)
 {
-    return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0003,
+    return (AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0003,
         sizeof (AdrSpaceTestData0003) / sizeof (AT_ADR_SPACE_TEST_DATA),
         "\\TST3", AdrSpaceAccData0003,
         sizeof (AdrSpaceAccData0003) / sizeof (AT_ADR_SPACE_ACC_DATA),
-        5, AE_OK);
+        5, AE_OK));
 }
 
 /*
@@ -1906,10 +1906,10 @@ AtHndlrTest0019(void)
 ACPI_STATUS
 AtHndlrTest0020(void)
 {
-    return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0004,
+    return (AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0004,
         sizeof (AdrSpaceTestData0004) / sizeof (AT_ADR_SPACE_TEST_DATA),
         NULL, NULL, 0,
-        6, AE_BAD_PARAMETER);
+        6, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1919,10 +1919,10 @@ AtHndlrTest0020(void)
 ACPI_STATUS
 AtHndlrTest0021(void)
 {
-    return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestDataSsdt,
+    return (AtInstallAdrSpaceHandlerCommon(AdrSpaceTestDataSsdt,
         sizeof (AdrSpaceTestDataSsdt) / sizeof (AT_ADR_SPACE_TEST_DATA),
         NULL, NULL, 0,
-        1, AE_BAD_PARAMETER);
+        1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1932,10 +1932,10 @@ AtHndlrTest0021(void)
 ACPI_STATUS
 AtHndlrTest0022(void)
 {
-    return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0001,
+    return (AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0001,
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA),
         NULL, NULL, 0,
-        2, AE_BAD_PARAMETER);
+        2, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1945,10 +1945,10 @@ AtHndlrTest0022(void)
 ACPI_STATUS
 AtHndlrTest0023(void)
 {
-    return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0001,
+    return (AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0001,
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA),
         NULL, NULL, 0,
-        3, AE_BAD_PARAMETER);
+        3, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1958,10 +1958,10 @@ AtHndlrTest0023(void)
 ACPI_STATUS
 AtHndlrTest0024(void)
 {
-    return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0001,
+    return (AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0001,
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA),
         NULL, NULL, 0,
-        4, AE_ALREADY_EXISTS);
+        4, AE_ALREADY_EXISTS));
 }
 
 /*
@@ -1971,10 +1971,10 @@ AtHndlrTest0024(void)
 ACPI_STATUS
 AtHndlrTest0025(void)
 {
-    return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0005,
+    return (AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0005,
         sizeof (AdrSpaceTestData0005) / sizeof (AT_ADR_SPACE_TEST_DATA),
         NULL, NULL, 0,
-        5, AE_NOT_EXIST);
+        5, AE_NOT_EXIST));
 }
 
 ACPI_STATUS
@@ -2023,7 +2023,7 @@ AtInstallAddressSpaceHandlerExceptionTest(
                     AAPITS_OI_FLAGS, AtAMLcodeFileName);
                 if (ACPI_FAILURE(Status))
                 {
-                    return Status;
+                    return (Status);
                 }
 
                 if (TestData[ii].Pathname)
@@ -2035,7 +2035,7 @@ AtInstallAddressSpaceHandlerExceptionTest(
                         AapiErrors++;
                         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                             TestData[ii].Pathname, AcpiFormatException(Status));
-                        return Status;
+                        return (Status);
                     }
                 }
                 else
@@ -2056,7 +2056,7 @@ AtInstallAddressSpaceHandlerExceptionTest(
                     TestErrors++;
                     printf ("Test error: OsxfCtrlSet returned %s\n",
                         AcpiFormatException(Status));
-                    return Status;
+                    return (Status);
                 }
 
                 Status = AcpiInstallAddressSpaceHandler(Device, SpaceId,
@@ -2080,7 +2080,7 @@ AtInstallAddressSpaceHandlerExceptionTest(
                         printf ("API Error: AcpiInstallAddressSpaceHandler returned %s,\n"
                             "           expected to return %s\n",
                             AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                        return AE_ERROR;
+                        return (AE_ERROR);
                     }
                 }
 
@@ -2092,26 +2092,26 @@ AtInstallAddressSpaceHandlerExceptionTest(
                         AapiErrors++;
                         printf ("API Error: AcpiRemoveAddressSpaceHandler returned %s\n",
                             AcpiFormatException(Status));
-                        return Status;
+                        return (Status);
                     }
                 }
 
                 Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
                 if (ACPI_FAILURE(Status))
                 {
-                    return Status;
+                    return (Status);
                 }
             }
             if (i >= TMax)
             {
                 TestErrors++;
                 printf ("Test error: there are test cases remained\n");
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2124,7 +2124,7 @@ AtHndlrTest0026(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hndl0016.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -2138,9 +2138,9 @@ AtHndlrTest0026(void)
         sizeof (AdrSpaceTestData0000) / sizeof (AT_ADR_SPACE_TEST_DATA));
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
-    return AE_OK;
+    return (AE_OK);
 
     /*
      * AcpiOsAllocate returns NULL one time on the specified call
@@ -2153,10 +2153,10 @@ AtHndlrTest0026(void)
         sizeof (AdrSpaceTestData0000) / sizeof (AT_ADR_SPACE_TEST_DATA));
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -2170,7 +2170,7 @@ AtHndlrTest0027(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hndl0016.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -2184,7 +2184,7 @@ AtHndlrTest0027(void)
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA));
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -2198,10 +2198,10 @@ AtHndlrTest0027(void)
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA));
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -2227,7 +2227,7 @@ AtRemoveAdrSpaceHandlerCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hndl0016.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 1)
@@ -2241,14 +2241,14 @@ AtRemoveAdrSpaceHandlerCommon(
         AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 1)
     {
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -2263,7 +2263,7 @@ AtRemoveAdrSpaceHandlerCommon(
                 AapiErrors++;
                 printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                     TestData[i].Pathname, AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
         else
@@ -2283,7 +2283,7 @@ AtRemoveAdrSpaceHandlerCommon(
                 AapiErrors++;
                 printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                     AccData[i].RegionName, AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
             AccData[i].NumAcc = 0;
             ExpectedAdrSpaceHandlerCounter += AccData[i].NumAcc;
@@ -2337,7 +2337,7 @@ AtRemoveAdrSpaceHandlerCommon(
                         "(0x%p, %d, 0x%p, 0x%p) returned %s\n",
                         Device, SpaceId, Handler, Setup,
                         AcpiFormatException(Status));
-                    return Status;
+                    return (Status);
                 }
             }
         }
@@ -2348,7 +2348,7 @@ AtRemoveAdrSpaceHandlerCommon(
         /* Make Device handle invalid by unloading SSDT table*/
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -2396,11 +2396,11 @@ AtRemoveAdrSpaceHandlerCommon(
                     AcpiFormatException(ExpectedStatus));
                 if (Status != AE_OK)
                 {
-                    return Status;
+                    return (Status);
                 }
                 else
                 {
-                    return AE_ERROR;
+                    return (AE_ERROR);
                 }
             }
             else if (Status == AE_OK)
@@ -2413,7 +2413,7 @@ AtRemoveAdrSpaceHandlerCommon(
                         " returned %s, expected %s\n",
                         Device, SpaceId, Handler, AcpiFormatException(Status),
                         AcpiFormatException(AE_NOT_EXIST));
-                    return AE_ERROR;
+                    return (AE_ERROR);
                 }
             }
             else if (CheckAction == 4)
@@ -2428,7 +2428,7 @@ AtRemoveAdrSpaceHandlerCommon(
                         Device, SpaceId, TestData[i].InstData[j].Handler,
                         AcpiFormatException(Status),
                         AcpiFormatException(AE_NOT_EXIST));
-                    return Status;
+                    return (Status);
                 }
             }
         }
@@ -2443,7 +2443,7 @@ AtRemoveAdrSpaceHandlerCommon(
             printf ("Api Error: AcpiEvaluateObject(%s) returned %s"
                 " expected AE_NOT_EXIST\n",
                 AdrSpaceMethod, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         for (i = 0; i < NumData; i++)
@@ -2493,7 +2493,7 @@ AtRemoveAdrSpaceHandlerCommon(
         AapiErrors++;
         printf ("Api Error: AdrSpace Handlers invoked %d times instead of %d\n",
             AdrSpaceHandlerCounter, ExpectedAdrSpaceHandlerCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (AdrSpaceSetupCounter != ExpectedAdrSpaceSetupCounter)
@@ -2501,10 +2501,10 @@ AtRemoveAdrSpaceHandlerCommon(
         AapiErrors++;
         printf ("Api Error: AdrSpace Setup invoked %d times instead of %d\n",
             AdrSpaceSetupCounter, ExpectedAdrSpaceSetupCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2514,11 +2514,11 @@ AtRemoveAdrSpaceHandlerCommon(
 ACPI_STATUS
 AtHndlrTest0028(void)
 {
-    return AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0000,
+    return (AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0000,
         sizeof (AdrSpaceTestData0000) / sizeof (AT_ADR_SPACE_TEST_DATA),
         "\\TST0", AdrSpaceAccData0000,
         sizeof (AdrSpaceAccData0000) / sizeof (AT_ADR_SPACE_ACC_DATA),
-        0, AE_OK);
+        0, AE_OK));
 }
 
 /*
@@ -2528,11 +2528,11 @@ AtHndlrTest0028(void)
 ACPI_STATUS
 AtHndlrTest0029(void)
 {
-    return AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0001,
+    return (AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0001,
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA),
         "\\TST1", AdrSpaceAccData0000,
         sizeof (AdrSpaceAccData0000) / sizeof (AT_ADR_SPACE_ACC_DATA),
-        0, AE_OK);
+        0, AE_OK));
 }
 
 /*
@@ -2542,10 +2542,10 @@ AtHndlrTest0029(void)
 ACPI_STATUS
 AtHndlrTest0030(void)
 {
-    return AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0004,
+    return (AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0004,
         sizeof (AdrSpaceTestData0004) / sizeof (AT_ADR_SPACE_TEST_DATA),
         NULL, NULL, 0,
-        6, AE_BAD_PARAMETER);
+        6, AE_BAD_PARAMETER));
 }
 
 /*
@@ -2555,10 +2555,10 @@ AtHndlrTest0030(void)
 ACPI_STATUS
 AtHndlrTest0031(void)
 {
-    return AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestDataSsdt,
+    return (AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestDataSsdt,
         sizeof (AdrSpaceTestDataSsdt) / sizeof (AT_ADR_SPACE_TEST_DATA),
         NULL, NULL, 0,
-        1, AE_BAD_PARAMETER);
+        1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -2568,10 +2568,10 @@ AtHndlrTest0031(void)
 ACPI_STATUS
 AtHndlrTest0032(void)
 {
-    return AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0001,
+    return (AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0001,
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA),
         NULL, NULL, 0,
-        2, AE_BAD_PARAMETER);
+        2, AE_BAD_PARAMETER));
 }
 
 /*
@@ -2581,10 +2581,10 @@ AtHndlrTest0032(void)
 ACPI_STATUS
 AtHndlrTest0033(void)
 {
-    return AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0001,
+    return (AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0001,
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA),
         NULL, NULL, 0,
-        3, AE_BAD_PARAMETER);
+        3, AE_BAD_PARAMETER));
 }
 
 /*
@@ -2594,10 +2594,10 @@ AtHndlrTest0033(void)
 ACPI_STATUS
 AtHndlrTest0034(void)
 {
-    return AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0001,
+    return (AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0001,
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA),
         NULL, NULL, 0,
-        4, AE_BAD_PARAMETER);
+        4, AE_BAD_PARAMETER));
 }
 
 /*
@@ -2607,10 +2607,10 @@ AtHndlrTest0034(void)
 ACPI_STATUS
 AtHndlrTest0035(void)
 {
-    return AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0001,
+    return (AtRemoveAdrSpaceHandlerCommon(AdrSpaceTestData0001,
         sizeof (AdrSpaceTestData0001) / sizeof (AT_ADR_SPACE_TEST_DATA),
         NULL, NULL, 0,
-        6, AE_NOT_EXIST);
+        6, AE_NOT_EXIST));
 }
 
 /*
@@ -2660,11 +2660,11 @@ AtAuxHndlrTest0036(
             AcpiFormatException(ExpectedStatus));
         if (Status != AE_OK)
         {
-            return Status;
+            return (Status);
         }
         else
         {
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -2674,14 +2674,14 @@ AtAuxHndlrTest0036(
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             DevPath, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     strcpy(RegCount, DevPath);
     strcat(RegCount, ".REGC");
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, RegCount, 0)))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiInstallAddressSpaceHandler(Device, SpaceId,
@@ -2693,26 +2693,26 @@ AtAuxHndlrTest0036(
         printf ("Api Error: AcpiInstallAddressSpaceHandler(0x%p, %d, 0x%p, 0x%p)"
             " returned %s\n",
             Device, SpaceId, Handler, Setup, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, RegCount, 1)))
     {
-        return Status;
+        return (Status);
     }
 
     strcpy(RegErrors, DevPath);
     strcat(RegErrors, ".REGE");
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, RegErrors, 0)))
     {
-        return Status;
+        return (Status);
     }
 
     strcpy(RegStatus, DevPath);
     strcat(RegStatus, ".REGS");
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, RegStatus, 1)))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiEvaluateObject (NULL, AdrSpaceMethod, NULL, NULL);
@@ -2725,10 +2725,10 @@ AtAuxHndlrTest0036(
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, RegCount, 1)))
     {
-        return Status;
+        return (Status);
     }
 
-    return Status;
+    return (Status);
 }
 
 ACPI_STATUS
@@ -2739,7 +2739,7 @@ AtHndlrTest0036(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hndl0016.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -2749,37 +2749,37 @@ AtHndlrTest0036(void)
         AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 /*
     if (ACPI_FAILURE(Status = AtAuxHndlrTest0036(
         "\\PCI1", AE_NOT_EXIST)))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtAuxHndlrTest0036(
         "\\PCI2.DEVA", AE_NOT_EXIST)))
     {
-        return Status;
+        return (Status);
     }
 */
     if (ACPI_FAILURE(Status = AtAuxHndlrTest0036(
         "\\PCI2.DEVB", AE_NOT_EXIST)))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
 AtHndlrTest0037(void)
 {
-    return AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0036,
+    return (AtInstallAdrSpaceHandlerCommon(AdrSpaceTestData0036,
         sizeof (AdrSpaceTestData0036) / sizeof (AT_ADR_SPACE_TEST_DATA),
         NULL, NULL, 0,
-        0, AE_OK);
+        0, AE_OK));
 }
 
 ACPI_STATUS
@@ -2804,7 +2804,7 @@ AtRemoveAdrSpaceHandlerDynReg(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("hndl0038.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -2813,7 +2813,7 @@ AtRemoveAdrSpaceHandlerDynReg(
         AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < NumData; i++)
@@ -2827,7 +2827,7 @@ AtRemoveAdrSpaceHandlerDynReg(
                 AapiErrors++;
                 printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                     TestData[i].Pathname, AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
         else
@@ -2896,11 +2896,11 @@ AtRemoveAdrSpaceHandlerDynReg(
                     AcpiFormatException(ExpectedStatus));
                 if (Status != AE_OK)
                 {
-                    return Status;
+                    return (Status);
                 }
                 else
                 {
-                    return AE_ERROR;
+                    return (AE_ERROR);
                 }
             }
         }
@@ -2915,7 +2915,7 @@ AtRemoveAdrSpaceHandlerDynReg(
             AapiErrors++;
             printf ("Api Error: AcpiEvaluateObject(%s) returned %s\n",
                 AdrSpaceMethod, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
     }
@@ -2941,11 +2941,11 @@ AtRemoveAdrSpaceHandlerDynReg(
                     AcpiFormatException(ExpectedStatus));
                 if (Status != AE_OK)
                 {
-                    return Status;
+                    return (Status);
                 }
                 else
                 {
-                    return AE_ERROR;
+                    return (AE_ERROR);
                 }
             }
             else if (Status == AE_OK)
@@ -2958,7 +2958,7 @@ AtRemoveAdrSpaceHandlerDynReg(
                         " returned %s, expected %s\n",
                         Device, SpaceId, Handler, AcpiFormatException(Status),
                         AcpiFormatException(AE_NOT_EXIST));
-                    return AE_ERROR;
+                    return (AE_ERROR);
                 }
             }
         }
@@ -3020,7 +3020,7 @@ AtRemoveAdrSpaceHandlerDynReg(
         AapiErrors++;
         printf ("Api Error: AdrSpace Handlers invoked %d times instead of %d\n",
             AdrSpaceHandlerCounter, ExpectedAdrSpaceHandlerCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (AdrSpaceSetupCounter != ExpectedAdrSpaceSetupCounter)
@@ -3028,10 +3028,10 @@ AtRemoveAdrSpaceHandlerDynReg(
         AapiErrors++;
         printf ("Api Error: AdrSpace Setup invoked %d times instead of %d\n",
             AdrSpaceSetupCounter, ExpectedAdrSpaceSetupCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 static AT_ADR_SPACE_ACC_DATA    AdrSpaceAccData0038[] = {
@@ -3065,9 +3065,9 @@ static AT_ADR_SPACE_ACC_DATA    AdrSpaceAccData0038[] = {
 ACPI_STATUS
 AtHndlrTest0038(void)
 {
-    return AtRemoveAdrSpaceHandlerDynReg(AdrSpaceTestData0000,
+    return (AtRemoveAdrSpaceHandlerDynReg(AdrSpaceTestData0000,
         sizeof (AdrSpaceTestData0000) / sizeof (AT_ADR_SPACE_TEST_DATA),
         "\\TST7", AdrSpaceAccData0038,
         sizeof (AdrSpaceAccData0038) / sizeof (AT_ADR_SPACE_ACC_DATA),
-        AE_OK);
+        AE_OK));
 }

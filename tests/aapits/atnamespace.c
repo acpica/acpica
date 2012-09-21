@@ -661,7 +661,7 @@ AtEvaluateObjectCommon(
 
     if (CheckAction == 7 && ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
     {
-        return Status;
+        return (Status);
     }
 
     Name = ObjName;
@@ -675,7 +675,7 @@ AtEvaluateObjectCommon(
             AapiErrors++;
             printf ("AtEvaluateObjectCommon: AcpiGetHandle(NULL, %s) returned %s\n",
                 ScopePath, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
     else
@@ -721,14 +721,14 @@ AtEvaluateObjectCommon(
             AapiErrors++;
             printf ("AtEvaluateObjectCommon: AcpiTerminate() failure, %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
         break;
     case 7:
         /* Make Device handle invalid by unloading SSDT table */
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
         break;
     }
@@ -743,7 +743,7 @@ AtEvaluateObjectCommon(
             " expected %s\n",
             AcpiFormatException(Status),
             AcpiFormatException(ExpectedStatus));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
     else if (Status != AE_OK)
     {
@@ -754,12 +754,12 @@ AtEvaluateObjectCommon(
             printf ("AtEvaluateObjectCommon: AcpiEvaluateObject() returned invalid"
                 " Length %d, expected %d\n",
                 (UINT32)ReturnObjectPointer->Length, Length);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
-        return AE_OK;
+        return (AE_OK);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -781,7 +781,7 @@ AtEvaluateObjectTypeCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -789,7 +789,7 @@ AtEvaluateObjectTypeCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < NamesCount; i++)
@@ -810,7 +810,7 @@ AtEvaluateObjectTypeCommon(
             ExpectedStatus, 0, 0);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         /* Relative Path */
@@ -823,7 +823,7 @@ AtEvaluateObjectTypeCommon(
             ExpectedStatus, 0, 0);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (ExpectedStatus != AE_OK)
@@ -838,7 +838,7 @@ AtEvaluateObjectTypeCommon(
                 PathNames[2 * i + 1],
                 (UINT32)ReturnObjectAbs.Length,
                 (UINT32)ReturnObjectRel.Length);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         ObjectAbs = (ACPI_OBJECT *)ReturnObjectAbs.Pointer;
@@ -852,7 +852,7 @@ AtEvaluateObjectTypeCommon(
             ReturnObjectAbs.Pointer, ReturnObjectRel.Pointer,
             ReturnObjectAbs.Length)))
         {
-            return Status;
+            return (Status);
         }
 
         AcpiOsFree(ReturnObjectAbs.Pointer);
@@ -861,7 +861,7 @@ AtEvaluateObjectTypeCommon(
         ReturnObjectRel = ReturnBuffer;
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -871,10 +871,10 @@ AtEvaluateObjectTypeCommon(
 ACPI_STATUS
 AtNSpaceTest0000(void)
 {
-    return AtEvaluateObjectTypeCommon(
+    return (AtEvaluateObjectTypeCommon(
         EvPathNames0000,
         sizeof (EvPathNames0000) / sizeof (ACPI_STRING) / 2,
-        AE_OK);
+        AE_OK));
 }
 
 ACPI_STATUS
@@ -892,7 +892,7 @@ AtEvaluateObjectMethodCommon(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -900,7 +900,7 @@ AtEvaluateObjectMethodCommon(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     NamesCount = sizeof (MethodPathNames0000) / sizeof (ACPI_STRING) / 2;
@@ -925,12 +925,12 @@ AtEvaluateObjectMethodCommon(void)
             AE_OK, 0, 0);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\IOUT", 0x200 + i)))
         {
-            return Status;
+            return (Status);
         }
 
         /* Relative Path */
@@ -943,7 +943,7 @@ AtEvaluateObjectMethodCommon(void)
             AE_OK, 0, 0);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (ReturnObjectRel.Length != Length)
@@ -951,7 +951,7 @@ AtEvaluateObjectMethodCommon(void)
             AapiErrors++;
             printf ("API Error: unexpected Length of result: %d != %d\n",
                 (UINT32)ReturnObjectRel.Length, Length);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         ObjectRel = (ACPI_OBJECT *)ReturnObjectRel.Pointer;
@@ -961,7 +961,7 @@ AtEvaluateObjectMethodCommon(void)
             AapiErrors++;
             printf ("API Error: unexpected Type of result: %d != %d\n",
                 ObjectRel->Type, ACPI_TYPE_INTEGER);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         if (ObjectRel->Integer.Value != 0x200 + i)
@@ -969,14 +969,14 @@ AtEvaluateObjectMethodCommon(void)
             AapiErrors++;
             printf ("API Error: unexpected Value of result: %d != %d\n",
                 (UINT32)ObjectRel->Integer.Value, 0x200 + i);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         AcpiOsFree(ReturnObjectRel.Pointer);
         ReturnObjectRel = ReturnBuffer;
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -986,7 +986,7 @@ AtEvaluateObjectMethodCommon(void)
 ACPI_STATUS
 AtNSpaceTest0001(void)
 {
-    return AtEvaluateObjectMethodCommon();
+    return (AtEvaluateObjectMethodCommon());
 }
 
 ACPI_STATUS
@@ -1010,7 +1010,7 @@ AtEvaluateObjectMethodArgCommon(UINT32 MoreArgs)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1018,7 +1018,7 @@ AtEvaluateObjectMethodArgCommon(UINT32 MoreArgs)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     NamesCount = sizeof (MethodArgPathNames0000) / sizeof (ACPI_STRING) / 2;
@@ -1066,7 +1066,7 @@ AtEvaluateObjectMethodArgCommon(UINT32 MoreArgs)
             AE_OK, 0, 0);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (ReturnObjectAbs.Length != Length)
@@ -1074,7 +1074,7 @@ AtEvaluateObjectMethodArgCommon(UINT32 MoreArgs)
             AapiErrors++;
             printf ("API Error: Result Length %d != %d\n",
                 (UINT32)ReturnObjectAbs.Length, Length);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         if (ACPI_FAILURE(Status = AtCheckBytes(
@@ -1082,7 +1082,7 @@ AtEvaluateObjectMethodArgCommon(UINT32 MoreArgs)
                 (UINT8 *)ReturnObjectAbs.Pointer + sizeof (ACPI_OBJECT),
                 OutBuffer, OUT_BUF_LEN)))
         {
-            return Status;
+            return (Status);
         }
 
         /* Relative Path */
@@ -1095,7 +1095,7 @@ AtEvaluateObjectMethodArgCommon(UINT32 MoreArgs)
             AE_OK, 0, 0);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (ReturnObjectAbs.Length != ReturnObjectRel.Length)
@@ -1105,7 +1105,7 @@ AtEvaluateObjectMethodArgCommon(UINT32 MoreArgs)
                 MethodArgPathNames0000[2 * i + 1],
                 (UINT32)ReturnObjectAbs.Length,
                 (UINT32)ReturnObjectRel.Length);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         ObjectAbs = (ACPI_OBJECT *)ReturnObjectAbs.Pointer;
@@ -1116,7 +1116,7 @@ AtEvaluateObjectMethodArgCommon(UINT32 MoreArgs)
             AapiErrors++;
             printf ("API Error: unexpected Type of result: %d != %d\n",
                 ObjectRel->Type, ACPI_TYPE_BUFFER);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         AtCleanPointer(ObjectAbs);
@@ -1127,7 +1127,7 @@ AtEvaluateObjectMethodArgCommon(UINT32 MoreArgs)
             ReturnObjectAbs.Pointer, ReturnObjectRel.Pointer,
             ReturnObjectAbs.Length)))
         {
-            return Status;
+            return (Status);
         }
 
         AcpiOsFree(ReturnObjectAbs.Pointer);
@@ -1137,7 +1137,7 @@ AtEvaluateObjectMethodArgCommon(UINT32 MoreArgs)
         free(ParameterObjects.Pointer);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1147,7 +1147,7 @@ AtEvaluateObjectMethodArgCommon(UINT32 MoreArgs)
 ACPI_STATUS
 AtNSpaceTest0002(void)
 {
-    return AtEvaluateObjectMethodArgCommon(0);
+    return (AtEvaluateObjectMethodArgCommon(0));
 }
 
 /*
@@ -1157,7 +1157,7 @@ AtNSpaceTest0002(void)
 ACPI_STATUS
 AtNSpaceTest0003(void)
 {
-    return AtEvaluateObjectMethodArgCommon(1);
+    return (AtEvaluateObjectMethodArgCommon(1));
 }
 
 /*
@@ -1179,7 +1179,7 @@ AtNSpaceTest0004(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1187,7 +1187,7 @@ AtNSpaceTest0004(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     NamesCount = sizeof (MethodPathNames0000) / sizeof (ACPI_STRING) / 2;
@@ -1206,12 +1206,12 @@ AtNSpaceTest0004(void)
             AE_OK, 0, 0);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\IOUT", 0x200 + i)))
         {
-            return Status;
+            return (Status);
         }
 
         /* non-NULL Result Buffer */
@@ -1224,7 +1224,7 @@ AtNSpaceTest0004(void)
             AE_OK, 0, 0);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (ReturnObject.Length != Length)
@@ -1232,7 +1232,7 @@ AtNSpaceTest0004(void)
             AapiErrors++;
             printf ("API Error: unexpected Length of result: %d != %d\n",
                 (UINT32)ReturnObject.Length, Length);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         Object = (ACPI_OBJECT *)ReturnObject.Pointer;
@@ -1242,7 +1242,7 @@ AtNSpaceTest0004(void)
             AapiErrors++;
             printf ("API Error: unexpected Type of result: %d != %d\n",
                 Object->Type, ACPI_TYPE_INTEGER);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         if (Object->Integer.Value != 0x200 + i)
@@ -1250,14 +1250,14 @@ AtNSpaceTest0004(void)
             AapiErrors++;
             printf ("API Error: unexpected Value of result: %d != %d\n",
                 (UINT32)Object->Integer.Value, 0x200 + i);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         AcpiOsFree(ReturnObject.Pointer);
         ReturnObject = ReturnBuffer;
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1275,7 +1275,7 @@ AtNSpaceTest0005(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1283,12 +1283,12 @@ AtNSpaceTest0005(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\IOUT", 0x1FF)))
     {
-        return Status;
+        return (Status);
     }
 
     /* NULL Result Buffer */
@@ -1298,12 +1298,12 @@ AtNSpaceTest0005(void)
         AE_OK, 0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\IOUT", 0x200)))
     {
-        return Status;
+        return (Status);
     }
 
     /* non-NULL Result Buffer */
@@ -1313,7 +1313,7 @@ AtNSpaceTest0005(void)
         AE_OK, 0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (AcpiGbl_EnableInterpreterSlack)
@@ -1326,7 +1326,7 @@ AtNSpaceTest0005(void)
         AapiErrors++;
         printf ("API Error: unexpected Length of result: %d != %d\n",
             (UINT32)ReturnObject.Length, ExpectedLength);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (ReturnObject.Length)
@@ -1336,10 +1336,10 @@ AtNSpaceTest0005(void)
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\IOUT", 0x201)))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1353,7 +1353,7 @@ AtNSpaceTest0006(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1361,7 +1361,7 @@ AtNSpaceTest0006(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectCommon(
@@ -1369,13 +1369,13 @@ AtNSpaceTest0006(void)
         AE_OK, 0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\ICCS", 0x222)))
     {
         printf ("AtNSpaceTest0006: AE_OK error M001\n");
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectCommon(
@@ -1383,13 +1383,13 @@ AtNSpaceTest0006(void)
         AE_AML_DIVIDE_BY_ZERO, 0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\ICCS", 0x111)))
     {
         printf ("AtNSpaceTest0006: AE_AML_DIVIDE_BY_ZERO error M001\n");
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectCommon(
@@ -1397,13 +1397,13 @@ AtNSpaceTest0006(void)
         AE_OK, 0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\ICCS", 0x22002)))
     {
         printf ("AtNSpaceTest0006: AE_OK error M101\n");
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectCommon(
@@ -1411,16 +1411,16 @@ AtNSpaceTest0006(void)
         AE_AML_DIVIDE_BY_ZERO, 0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\ICCS", 0x11001)))
     {
         printf ("AtNSpaceTest0006: AE_AML_DIVIDE_BY_ZERO error M101\n");
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1430,10 +1430,10 @@ AtNSpaceTest0006(void)
 ACPI_STATUS
 AtNSpaceTest0007(void)
 {
-    return AtEvaluateObjectTypeCommon(
+    return (AtEvaluateObjectTypeCommon(
         AeTypePathNames0000,
         sizeof (AeTypePathNames0000) / sizeof (ACPI_STRING) / 2,
-        AE_TYPE);
+        AE_TYPE));
 }
 
 ACPI_STATUS
@@ -1447,7 +1447,7 @@ AtEvaluateObjectExceptionCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1455,7 +1455,7 @@ AtEvaluateObjectExceptionCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 7)
@@ -1475,10 +1475,10 @@ AtEvaluateObjectExceptionCommon(
 
     if (ACPI_FAILURE(Status) || CheckAction == 6)
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 ACPI_STATUS
@@ -1493,7 +1493,7 @@ AtEvaluateObjectMethodException1(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet(CodeName)))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1501,7 +1501,7 @@ AtEvaluateObjectMethodException1(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectCommon(
@@ -1509,15 +1509,15 @@ AtEvaluateObjectMethodException1(
         ExpectedStatus, 0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, ControlName, ExpectedValue)))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1531,7 +1531,7 @@ AtNSpaceTest0010(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0010.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1539,7 +1539,7 @@ AtNSpaceTest0010(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectCommon(
@@ -1547,20 +1547,20 @@ AtNSpaceTest0010(void)
         AE_AML_BAD_OPCODE, 0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\I000", 0x0)))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\I001", 0x0)))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1574,7 +1574,7 @@ AtNSpaceTest0011(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0011.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1582,7 +1582,7 @@ AtNSpaceTest0011(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectCommon(
@@ -1590,30 +1590,30 @@ AtNSpaceTest0011(void)
         AE_AML_NO_OPERAND, 0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\I000", 0x0)))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\I001", 0x1)))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\I002", 0x1)))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\I003", 0x0)))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1627,7 +1627,7 @@ AtNSpaceTest0012(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0012.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1635,7 +1635,7 @@ AtNSpaceTest0012(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectCommon(
@@ -1643,20 +1643,20 @@ AtNSpaceTest0012(void)
         AE_AML_OPERAND_TYPE, 0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\I000", 0x0)))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\I001", 0x0)))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1666,10 +1666,10 @@ AtNSpaceTest0012(void)
 ACPI_STATUS
 AtNSpaceTest0013(void)
 {
-    return AtEvaluateObjectMethodException1(
+    return (AtEvaluateObjectMethodException1(
         "nmsp0013.aml",
         "\\M000", AE_AML_OPERAND_VALUE,
-        "\\I000", 0x0);
+        "\\I000", 0x0));
 }
 
 /*
@@ -1679,11 +1679,11 @@ AtNSpaceTest0013(void)
 ACPI_STATUS
 AtNSpaceTest0014(void)
 {
-    return AtEvaluateObjectMethodException1(
+    return (AtEvaluateObjectMethodException1(
         "nmsp0014.aml",
         "\\M000", (AcpiGbl_EnableInterpreterSlack)? AE_OK:
             AE_AML_UNINITIALIZED_LOCAL,
-        "\\I000", (AcpiGbl_EnableInterpreterSlack)? 0x1: 0x0);
+        "\\I000", (AcpiGbl_EnableInterpreterSlack)? 0x1: 0x0));
 }
 
 /*
@@ -1698,7 +1698,7 @@ AtNSpaceTest0015(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0015.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -1706,7 +1706,7 @@ AtNSpaceTest0015(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectCommon(
@@ -1714,13 +1714,13 @@ AtNSpaceTest0015(void)
         (AcpiGbl_EnableInterpreterSlack)? AE_OK: AE_AML_UNINITIALIZED_ARG, 0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\I000",
         (AcpiGbl_EnableInterpreterSlack)? 0x1: 0x0)))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectCommon(
@@ -1728,22 +1728,22 @@ AtNSpaceTest0015(void)
         (AcpiGbl_EnableInterpreterSlack)? AE_OK: AE_AML_UNINITIALIZED_ARG, 0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\I001",
         (AcpiGbl_EnableInterpreterSlack)? 0x1: 0x0)))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtCheckInteger(NULL, "\\I002",
         (AcpiGbl_EnableInterpreterSlack)? 0x2: 0x1)))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -1753,10 +1753,10 @@ AtNSpaceTest0015(void)
 ACPI_STATUS
 AtNSpaceTest0016(void)
 {
-    return AtEvaluateObjectMethodException1(
+    return (AtEvaluateObjectMethodException1(
         "nmsp0016.aml",
         "\\M000", AE_AML_NUMERIC_OVERFLOW,
-        "\\I000", 0x0);
+        "\\I000", 0x0));
 }
 
 /*
@@ -1766,10 +1766,10 @@ AtNSpaceTest0016(void)
 ACPI_STATUS
 AtNSpaceTest0017(void)
 {
-    return AtEvaluateObjectMethodException1(
+    return (AtEvaluateObjectMethodException1(
         "nmsp0017.aml",
         "\\M000", AE_AML_REGION_LIMIT,
-        "\\I000", 0x1);
+        "\\I000", 0x1));
 }
 
 /*
@@ -1779,10 +1779,10 @@ AtNSpaceTest0017(void)
 ACPI_STATUS
 AtNSpaceTest0018(void)
 {
-    return AtEvaluateObjectMethodException1(
+    return (AtEvaluateObjectMethodException1(
         "nmsp0018.aml",
         "\\M000", AE_AML_BUFFER_LIMIT,
-        "\\I000", 0x1);
+        "\\I000", 0x1));
 }
 
 /*
@@ -1792,10 +1792,10 @@ AtNSpaceTest0018(void)
 ACPI_STATUS
 AtNSpaceTest0019(void)
 {
-    return AtEvaluateObjectMethodException1(
+    return (AtEvaluateObjectMethodException1(
         "nmsp0019.aml",
         "\\M000", AE_AML_PACKAGE_LIMIT,
-        "\\I000", 0x1);
+        "\\I000", 0x1));
 }
 
 /*
@@ -1805,10 +1805,10 @@ AtNSpaceTest0019(void)
 ACPI_STATUS
 AtNSpaceTest0020(void)
 {
-    return AtEvaluateObjectMethodException1(
+    return (AtEvaluateObjectMethodException1(
         "nmsp0020.aml",
         "\\M000", AE_AML_STRING_LIMIT,
-        "\\I000", 0x1);
+        "\\I000", 0x1));
 }
 
 /*
@@ -1818,10 +1818,10 @@ AtNSpaceTest0020(void)
 ACPI_STATUS
 AtNSpaceTest0021(void)
 {
-    return AtEvaluateObjectMethodException1(
+    return (AtEvaluateObjectMethodException1(
         "nmsp0021.aml",
         "\\M000", AE_AML_DIVIDE_BY_ZERO,
-        "\\I000", 0x0);
+        "\\I000", 0x0));
 }
 
 /*
@@ -1833,10 +1833,10 @@ AtNSpaceTest0022(void)
 {
     AtSetAmlControl(0x49, '!');
 
-    return AtEvaluateObjectMethodException1(
+    return (AtEvaluateObjectMethodException1(
         "nmsp0022.aml",
         "\\M000", AE_AML_BAD_NAME,
-        "\\I000", 0x0);
+        "\\I000", 0x0));
 }
 
 /*
@@ -1848,10 +1848,10 @@ AtNSpaceTest0023(void)
 {
     AtSetAmlControl(0x46, 'M');
 
-    return AtEvaluateObjectMethodException1(
+    return (AtEvaluateObjectMethodException1(
         "nmsp0023.aml",
         "\\M000", AE_AML_NAME_NOT_FOUND,
-        "\\I000", 0x0);
+        "\\I000", 0x0));
 }
 
 /*
@@ -1861,10 +1861,10 @@ AtNSpaceTest0023(void)
 ACPI_STATUS
 AtNSpaceTest0025(void)
 {
-    return AtEvaluateObjectMethodException1(
+    return (AtEvaluateObjectMethodException1(
         "nmsp0025.aml",
         "\\M000", AE_AML_INTERNAL,
-        "\\I000", 0x0);
+        "\\I000", 0x0));
 }
 
 /*
@@ -1874,7 +1874,7 @@ AtNSpaceTest0025(void)
 ACPI_STATUS
 AtNSpaceTest0026(void)
 {
-    return AtEvaluateObjectExceptionCommon(1, AE_BAD_CHARACTER);
+    return (AtEvaluateObjectExceptionCommon(1, AE_BAD_CHARACTER));
 }
 
 /*
@@ -1889,10 +1889,10 @@ AtNSpaceTest0027(void)
     Status = AtEvaluateObjectExceptionCommon(2, AE_BAD_PATHNAME);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtEvaluateObjectExceptionCommon(8, AE_BAD_PATHNAME);
+    return (AtEvaluateObjectExceptionCommon(8, AE_BAD_PATHNAME));
 }
 
 /*
@@ -1902,7 +1902,7 @@ AtNSpaceTest0027(void)
 ACPI_STATUS
 AtNSpaceTest0029(void)
 {
-    return AtEvaluateObjectExceptionCommon(3, AE_BAD_PARAMETER);
+    return (AtEvaluateObjectExceptionCommon(3, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1912,7 +1912,7 @@ AtNSpaceTest0029(void)
 ACPI_STATUS
 AtNSpaceTest0030(void)
 {
-    return AtEvaluateObjectExceptionCommon(9, AE_BAD_PARAMETER);
+    return (AtEvaluateObjectExceptionCommon(9, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1922,7 +1922,7 @@ AtNSpaceTest0030(void)
 ACPI_STATUS
 AtNSpaceTest0031(void)
 {
-    return AtEvaluateObjectExceptionCommon(7, AE_BAD_PARAMETER);
+    return (AtEvaluateObjectExceptionCommon(7, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1932,7 +1932,7 @@ AtNSpaceTest0031(void)
 ACPI_STATUS
 AtNSpaceTest0032(void)
 {
-    return AtEvaluateObjectExceptionCommon(4, AE_BAD_PARAMETER);
+    return (AtEvaluateObjectExceptionCommon(4, AE_BAD_PARAMETER));
 }
 
 /*
@@ -1942,7 +1942,7 @@ AtNSpaceTest0032(void)
 ACPI_STATUS
 AtNSpaceTest0033(void)
 {
-    return AtEvaluateObjectExceptionCommon(5, AE_BUFFER_OVERFLOW);
+    return (AtEvaluateObjectExceptionCommon(5, AE_BUFFER_OVERFLOW));
 }
 
 ACPI_STATUS
@@ -1973,7 +1973,7 @@ AtEvaluateObjectExceptionTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (ScopePath)
@@ -1985,7 +1985,7 @@ AtEvaluateObjectExceptionTest(
                 printf ("API error: AcpiEvaluateObject(NULL, %s)"
                     " returned %s\n",
                     ScopePath, AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
         else
@@ -1999,7 +1999,7 @@ AtEvaluateObjectExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiEvaluateObject (ScopeHandle, Name,
@@ -2024,24 +2024,24 @@ AtEvaluateObjectExceptionTest(
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
                 printf ("           ObjName '%s', i = %d\n", ObjName, i);
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, CtrlCheck);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2054,7 +2054,7 @@ AtNSpaceTest0035(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -2068,7 +2068,7 @@ AtNSpaceTest0035(void)
         "\\D1L1.D2L0.D3L0.D4L_.D5L0", "L4__");
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectExceptionTest(
@@ -2078,7 +2078,7 @@ AtNSpaceTest0035(void)
         NULL, "\\D1L1.D2L0.D3L0.D4L_.D5L0.L4__");
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectExceptionTest(
@@ -2088,7 +2088,7 @@ AtNSpaceTest0035(void)
         "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0", "PAC1");
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectExceptionTest(
@@ -2098,7 +2098,7 @@ AtNSpaceTest0035(void)
         NULL, "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0.PAC1");
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectExceptionTest(
@@ -2108,7 +2108,7 @@ AtNSpaceTest0035(void)
         "\\D1L1.D2L0.D3L0.D4L_.D5L0", "M000");
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectExceptionTest(
@@ -2118,7 +2118,7 @@ AtNSpaceTest0035(void)
         NULL, "\\D1L1.D2L0.D3L0.D4L_.D5L0.M000");
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -2132,7 +2132,7 @@ AtNSpaceTest0035(void)
         "\\D1L1.D2L0.D3L0.D4L_.D5L0", "L4__");
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectExceptionTest(
@@ -2142,7 +2142,7 @@ AtNSpaceTest0035(void)
         NULL, "\\D1L1.D2L0.D3L0.D4L_.D5L0.L4__");
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectExceptionTest(
@@ -2152,7 +2152,7 @@ AtNSpaceTest0035(void)
         "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0", "PAC1");
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectExceptionTest(
@@ -2162,7 +2162,7 @@ AtNSpaceTest0035(void)
         NULL, "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0.PAC1");
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectExceptionTest(
@@ -2172,14 +2172,14 @@ AtNSpaceTest0035(void)
         "\\D1L1.D2L0.D3L0.D4L_.D5L0", "M000");
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtEvaluateObjectExceptionTest(
+    return (AtEvaluateObjectExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
         AE_NO_MEMORY,
-        NULL, "\\D1L1.D2L0.D3L0.D4L_.D5L0.M000");
+        NULL, "\\D1L1.D2L0.D3L0.D4L_.D5L0.M000"));
 }
 
 /*
@@ -2193,7 +2193,7 @@ AtNSpaceTest0036(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -2201,7 +2201,7 @@ AtNSpaceTest0036(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectCommon(
@@ -2209,7 +2209,7 @@ AtNSpaceTest0036(void)
         NULL, NULL, AE_NOT_FOUND, 0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectCommon(
@@ -2217,7 +2217,7 @@ AtNSpaceTest0036(void)
         NULL, NULL, AE_NOT_FOUND, 0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtEvaluateObjectCommon(
@@ -2225,10 +2225,10 @@ AtNSpaceTest0036(void)
         NULL, NULL, AE_NOT_FOUND, 0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2238,10 +2238,10 @@ AtNSpaceTest0036(void)
 ACPI_STATUS
 AtNSpaceTest0037(void)
 {
-    return AtEvaluateObjectMethodException1(
+    return (AtEvaluateObjectMethodException1(
         "nmsp0037.aml",
         "\\M000", AE_NULL_OBJECT,
-        "\\I000", 0x0);
+        "\\I000", 0x0));
 }
 
 ACPI_STATUS
@@ -2258,7 +2258,7 @@ AtGetObjectInfoCommon(
 
     if (CheckAction == 3 && ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, ObjName, &ObjHandle);
@@ -2267,7 +2267,7 @@ AtGetObjectInfoCommon(
         AapiErrors++;
         printf ("AtGetObjectInfoCommon: AcpiGetHandle(NULL, %s) returned %s\n",
             ObjName, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     switch (CheckAction)
@@ -2283,14 +2283,14 @@ AtGetObjectInfoCommon(
             AapiErrors++;
             printf ("AtGetObjectInfoCommon: AcpiTerminate() failure, %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
         break;
     case 3:
         /* Make Device handle invalid by unloading SSDT table */
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
         break;
     case 4:
@@ -2308,14 +2308,14 @@ AtGetObjectInfoCommon(
             " expected %s\n",
             AcpiFormatException(Status),
             AcpiFormatException(ExpectedStatus));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
     else if (Status != AE_OK)
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -2335,7 +2335,7 @@ AtGetObjectInfoTypeCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -2343,7 +2343,7 @@ AtGetObjectInfoTypeCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < NamesCount; i++)
@@ -2362,7 +2362,7 @@ AtGetObjectInfoTypeCommon(
             Node, ExpectedStatus, &Info, 0);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (ExpectedStatus != AE_OK)
@@ -2374,7 +2374,7 @@ AtGetObjectInfoTypeCommon(
         {
             AapiErrors++;
             printf ("API Error: Null return buffer\n");
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         if (strncmp((ACPI_STRING)&Info->Name, PathNames[2 * i + 1],
@@ -2384,7 +2384,7 @@ AtGetObjectInfoTypeCommon(
             printf ("API Error: Name of %s is incorrect (%x)\n",
                 PathNames[2 * i + 1],
                 Info->Name);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         if (Info->Type != ExpectedTypes[i])
@@ -2393,7 +2393,7 @@ AtGetObjectInfoTypeCommon(
             printf ("API Error: Type of %s (%d) != (%d)\n",
                 PathNames[2 * i + 1],
                 Info->Type, ExpectedTypes[i]);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         if (Info->Type != ACPI_TYPE_DEVICE && Info->Valid != 0)
@@ -2402,7 +2402,7 @@ AtGetObjectInfoTypeCommon(
             printf ("API Error: Valid of %s (%d) != (%d)\n",
                 PathNames[2 * i + 1],
                 Info->Valid, 0);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         else if (Info->Type == ACPI_TYPE_DEVICE && ExpectedInfo)
         {
@@ -2412,7 +2412,7 @@ AtGetObjectInfoTypeCommon(
                 printf ("API Error: Valid of %s (%d) != (%d)\n",
                     PathNames[2 * i + 1],
                     Info->Valid, ExpectedInfo[i].Valid);
-                return AE_ERROR;
+                return (AE_ERROR);
             }
             if ((Info->Valid & ACPI_VALID_ADR) &&
                 Info->Address != ExpectedInfo[i].Address)
@@ -2433,7 +2433,7 @@ AtGetObjectInfoTypeCommon(
                     PathNames[2 * i + 1],
                     (UINT32) Info->Address, (UINT32) ExpectedInfo[i].Address);
 #endif
-                return AE_ERROR;
+                return (AE_ERROR);
             }
             if ((Info->Valid & ACPI_VALID_STA) &&
                 Info->CurrentStatus != ExpectedInfo[i].CurrentStatus)
@@ -2442,7 +2442,7 @@ AtGetObjectInfoTypeCommon(
                 printf ("API Error: CurrentStatus of %s (0x%X) != (0x%X)\n",
                     PathNames[2 * i + 1],
                     Info->CurrentStatus, ExpectedInfo[i].CurrentStatus);
-                return AE_ERROR;
+                return (AE_ERROR);
             }
             memcpy(&HighestDstates4, Info->HighestDstates, sizeof (HighestDstates4));
             if ((Info->Valid & ACPI_VALID_SXDS) &&
@@ -2452,7 +2452,7 @@ AtGetObjectInfoTypeCommon(
                 printf ("API Error: CurrentStatus of %s (0x%X) != (0x%X)\n",
                     PathNames[2 * i + 1],
                     HighestDstates4, ExpectedInfo[i].HighestDstates4);
-                return AE_ERROR;
+                return (AE_ERROR);
             }
             if ((Info->Valid & ACPI_VALID_HID) &&
                 strcmp(Info->HardwareId.String, ExpectedInfo[i].HardwareId))
@@ -2461,7 +2461,7 @@ AtGetObjectInfoTypeCommon(
                 printf ("API Error: HardwareId of %s (%s) != (%s)\n",
                     PathNames[2 * i + 1],
                     Info->HardwareId.String, ExpectedInfo[i].HardwareId);
-                return AE_ERROR;
+                return (AE_ERROR);
             }
             if ((Info->Valid & ACPI_VALID_UID) &&
             /*
@@ -2475,7 +2475,7 @@ AtGetObjectInfoTypeCommon(
                 printf ("API Error: UniqueId of %s (%s) != (%s)\n",
                     PathNames[2 * i + 1],
                     Info->UniqueId.String, ExpectedInfo[i].UniqueId);
-                return AE_ERROR;
+                return (AE_ERROR);
             }
             if ((Info->Valid & ACPI_VALID_CID) &&
                 Info->CompatibleIdList.Count != ExpectedInfo[i].CidCount)
@@ -2484,7 +2484,7 @@ AtGetObjectInfoTypeCommon(
                 printf ("API Error: CidCount of %s (%d) != (%d)\n",
                     PathNames[2 * i + 1],
                     Info->CompatibleIdList.Count, ExpectedInfo[i].CidCount);
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
@@ -2492,7 +2492,7 @@ AtGetObjectInfoTypeCommon(
 //        ReturnObjBuffer = ReturnBuffer;
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2510,7 +2510,7 @@ AtNSpaceTest0040(void)
         AE_OK, TypesEvPathNames0000, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtGetObjectInfoTypeCommon(
@@ -2519,7 +2519,7 @@ AtNSpaceTest0040(void)
         AE_OK, TypesAeTypePathNames0000, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtGetObjectInfoTypeCommon(
@@ -2528,13 +2528,13 @@ AtNSpaceTest0040(void)
         AE_OK, TypesTermalPathNames0000, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtGetObjectInfoTypeCommon(
+    return (AtGetObjectInfoTypeCommon(
         DevicePathNames0000,
         sizeof (DevicePathNames0000) / sizeof (ACPI_STRING) / 2,
-        AE_OK, TypesDevicePathNames0000, DeviceInfo0000);
+        AE_OK, TypesDevicePathNames0000, DeviceInfo0000));
 }
 
 ACPI_STATUS
@@ -2548,7 +2548,7 @@ AtGetObjectInfoException(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -2556,7 +2556,7 @@ AtGetObjectInfoException(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (Action == 3)
@@ -2568,10 +2568,10 @@ AtGetObjectInfoException(
         Node, AE_BAD_PARAMETER, &ReturnBuffer, Action);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2581,7 +2581,7 @@ AtGetObjectInfoException(
 ACPI_STATUS
 AtNSpaceTest0041(void)
 {
-    return AtGetObjectInfoException(AE_BAD_PARAMETER, 3);
+    return (AtGetObjectInfoException(AE_BAD_PARAMETER, 3));
 }
 
 /*
@@ -2591,7 +2591,7 @@ AtNSpaceTest0041(void)
 ACPI_STATUS
 AtNSpaceTest0042(void)
 {
-    return AtGetObjectInfoException(AE_BAD_PARAMETER, 4);
+    return (AtGetObjectInfoException(AE_BAD_PARAMETER, 4));
 }
 
 /*
@@ -2601,7 +2601,7 @@ AtNSpaceTest0042(void)
 ACPI_STATUS
 AtNSpaceTest0043(void)
 {
-    return AtGetObjectInfoException(AE_BAD_PARAMETER, 1);
+    return (AtGetObjectInfoException(AE_BAD_PARAMETER, 1));
 }
 
 ACPI_STATUS
@@ -2632,7 +2632,7 @@ AtGetObjectInfoExceptionTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetHandle (NULL, ObjName, &ObjHandle);
@@ -2641,7 +2641,7 @@ AtGetObjectInfoExceptionTest(
             AapiErrors++;
             printf ("API error: AcpiGetHandle(NULL, %s) returned %s\n",
                 ObjName, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -2650,7 +2650,7 @@ AtGetObjectInfoExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetObjectInfo (ObjHandle, &ReturnBuffer);
@@ -2677,24 +2677,24 @@ AtGetObjectInfoExceptionTest(
                 printf ("API Error: AcpiGetObjectInfo returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, CtrlCheck);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -2708,7 +2708,7 @@ AtNSpaceTest0044(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -2720,16 +2720,16 @@ AtNSpaceTest0044(void)
         AE_NO_MEMORY, Node);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
      * AcpiOsAllocate returns NULL one time on the specified call
      */
-    return AtGetObjectInfoExceptionTest(
+    return (AtGetObjectInfoExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
-        AE_NO_MEMORY, Node);
+        AE_NO_MEMORY, Node));
 }
 
 ACPI_STATUS
@@ -2750,7 +2750,7 @@ AtGetNextObjectCommon(
         /* Make Device handle invalid by unloading SSDT table*/
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
         break;
     default:
@@ -2767,14 +2767,14 @@ AtGetNextObjectCommon(
             Type, Parent, Child,
             AcpiFormatException(Status),
             AcpiFormatException(ExpectedStatus));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
     else if (Status != AE_OK)
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
-    return AtCheckName(OutHandle, ExpectedName);
+    return (AtCheckName(OutHandle, ExpectedName));
 }
 
 ACPI_STATUS
@@ -2791,7 +2791,7 @@ AtGetNextObjectTypeCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     if (TypesCount != sizeof (LevelTypes0000) / sizeof (ACPI_OBJECT_TYPE))
@@ -2800,7 +2800,7 @@ AtGetNextObjectTypeCommon(
         printf ("AtGetNextObjectTypeCommon: different numbers of entities"
             "in TypesNames (%d) and LevelTypes0000 (%d)\n",
             TypesCount, sizeof (LevelTypes0000) / sizeof (ACPI_OBJECT_TYPE));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     Status = AtSubsystemInit(
@@ -2808,7 +2808,7 @@ AtGetNextObjectTypeCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ParentName)
@@ -2819,7 +2819,7 @@ AtGetNextObjectTypeCommon(
             AapiErrors++;
             printf ("AtGetHandleCommon: AcpiGetHandle(NULL, %s) returned %s\n",
                 ParentName, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
@@ -2838,7 +2838,7 @@ AtGetNextObjectTypeCommon(
                 AapiErrors++;
                 printf ("AtGetHandleCommon: AcpiGetHandle(NULL, %s) returned %s\n",
                     StartNames[i], AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
         else
@@ -2850,11 +2850,11 @@ AtGetNextObjectTypeCommon(
             (ExpectedNames[i])? AE_OK: AE_NOT_FOUND, ExpectedNames[i], 0);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -2864,10 +2864,10 @@ AtGetNextObjectTypeCommon(
 ACPI_STATUS
 AtNSpaceTest0045(void)
 {
-    return AtGetNextObjectTypeCommon(
+    return (AtGetNextObjectTypeCommon(
         NULL, NULL,
         Level0TypeNames0000,
-        sizeof (Level0TypeNames0000) / sizeof (ACPI_STRING));
+        sizeof (Level0TypeNames0000) / sizeof (ACPI_STRING)));
 }
 
 /*
@@ -2885,13 +2885,13 @@ AtNSpaceTest0046(void)
         sizeof (Level1TypeNames0000) / sizeof (ACPI_STRING));
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtGetNextObjectTypeCommon(
+    return (AtGetNextObjectTypeCommon(
         "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0", NULL,
         LevelATypeNames0000,
-        sizeof (LevelATypeNames0000) / sizeof (ACPI_STRING));
+        sizeof (LevelATypeNames0000) / sizeof (ACPI_STRING)));
 }
 
 /*
@@ -2913,11 +2913,11 @@ AtNSpaceTest0047(void)
             sizeof (Level1TypeNames0000) / sizeof (ACPI_STRING));
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -2934,7 +2934,7 @@ AtGetNextObjectException(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -2942,12 +2942,12 @@ AtGetNextObjectException(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (Action == 1 && ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
     {
-        return Status;
+        return (Status);
     }
 
     if (ParentName)
@@ -2958,7 +2958,7 @@ AtGetNextObjectException(
             AapiErrors++;
             printf ("AtGetHandleCommon: AcpiGetHandle(NULL, %s) returned %s\n",
                 ParentName, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
@@ -2969,7 +2969,7 @@ AtGetNextObjectException(
             AapiErrors++;
             printf ("AtGetHandleCommon: AcpiGetHandle(NULL, %s) returned %s\n",
                 StartName, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
     else
@@ -2982,10 +2982,10 @@ AtGetNextObjectException(
         ExpectedStatus, NULL, Action);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -3007,11 +3007,11 @@ AtNSpaceTest0048(void)
             AE_BAD_PARAMETER, 1);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 static ACPI_STRING      SsdtTypeNames0000[] = {
@@ -3051,11 +3051,11 @@ AtNSpaceTest0049(void)
             AE_BAD_PARAMETER, 1);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -3077,11 +3077,11 @@ AtNSpaceTest0050(void)
             AE_BAD_PARAMETER, 0);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -3103,11 +3103,11 @@ AtNSpaceTest0051(void)
             AE_NOT_FOUND, 0);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -3129,7 +3129,7 @@ AtNSpaceTest0052(void)
             TestErrors++;
             printf ("Test Error: too many (%d) > (%d) test scopes\n",
                 i + 1, n);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         strcpy(ScopePath, "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0");
         PathName[strlen(ScopePath) - 1] = ScopeEndDigit[i];
@@ -3140,15 +3140,15 @@ AtNSpaceTest0052(void)
             AE_NOT_FOUND, 0);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AtGetNextObjectException(
+    return (AtGetNextObjectException(
             LevelTypes0000[0], /* ANY */
             "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DALZ",
             NULL,
-            AE_NOT_FOUND, 0);
+            AE_NOT_FOUND, 0));
 }
 
 ACPI_STATUS
@@ -3181,7 +3181,7 @@ AtGetNextObjectExceptionTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (ParentName)
@@ -3192,7 +3192,7 @@ AtGetNextObjectExceptionTest(
                 AapiErrors++;
                 printf ("API Error: AcpiGetHandle(NULL, %s) returned %s\n",
                     ParentName, AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
 
@@ -3203,7 +3203,7 @@ AtGetNextObjectExceptionTest(
                 AapiErrors++;
                 printf ("API Error: AcpiGetHandle(NULL, %s) returned %s\n",
                     StartName, AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
         else
@@ -3218,7 +3218,7 @@ AtGetNextObjectExceptionTest(
             AapiErrors++;
             printf ("API Error: AcpiPurgeCachedObjects() failure, %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -3227,7 +3227,7 @@ AtGetNextObjectExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetNextObject (Type, Parent, Child, &OutHandle);
@@ -3250,24 +3250,24 @@ AtGetNextObjectExceptionTest(
                 printf ("API Error: AcpiGetNextObject returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, CtrlCheck);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -3281,7 +3281,7 @@ AtNSpaceTest0053(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -3297,7 +3297,7 @@ AtNSpaceTest0053(void)
             LevelATypeNames0000[i]);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -3314,11 +3314,11 @@ AtNSpaceTest0053(void)
             LevelATypeNames0000[i]);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -3339,7 +3339,7 @@ AtGetParentCommon(
         AapiErrors++;
         printf ("AtGetParentCommon: AcpiGetHandle(NULL, %s) returned %s\n",
             ObjName, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     switch (CheckAction)
@@ -3348,7 +3348,7 @@ AtGetParentCommon(
         /* Make Device handle invalid by unloading SSDT table*/
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
         break;
     case 2:
@@ -3365,14 +3365,14 @@ AtGetParentCommon(
             " expected %s\n",
             AcpiFormatException(Status),
             AcpiFormatException(ExpectedStatus));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
     else if (Status != AE_OK)
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
-    return AtCheckName(OutHandle, Parent);
+    return (AtCheckName(OutHandle, Parent));
 }
 
 UINT32
@@ -3399,7 +3399,7 @@ AtGetParentRawCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     if (!AtCompareConsts(NamesCount, ValuesCount))
@@ -3408,7 +3408,7 @@ AtGetParentRawCommon(
             "in PathNames0000 (%d) and Values0000 (%d)\n",
             NamesCount, ValuesCount);
         TestErrors++;
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     Status = AtSubsystemInit(
@@ -3416,7 +3416,7 @@ AtGetParentRawCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
     for (i = 1; i < NamesCount; i++)
     {
@@ -3433,7 +3433,7 @@ AtGetParentRawCommon(
             ExpectedStatus, CheckAction);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -3444,7 +3444,7 @@ AtGetParentRawCommon(
             ExpectedStatus, CheckAction);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -3455,11 +3455,11 @@ AtGetParentRawCommon(
             ExpectedStatus, CheckAction);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -3469,7 +3469,7 @@ AtGetParentRawCommon(
 ACPI_STATUS
 AtNSpaceTest0054(void)
 {
-    return AtGetParentRawCommon(AE_OK, 0);
+    return (AtGetParentRawCommon(AE_OK, 0));
 }
 
 /*
@@ -3485,7 +3485,7 @@ AtNSpaceTest0055(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 1; i < sizeof (LevelTypes0000) / sizeof (ACPI_OBJECT_TYPE); i++)
@@ -3495,29 +3495,29 @@ AtNSpaceTest0055(void)
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AtGetParentCommon(SsdtTypeNames0000[i], Parent,
             AE_BAD_PARAMETER, 1);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -3527,7 +3527,7 @@ AtNSpaceTest0055(void)
 ACPI_STATUS
 AtNSpaceTest0056(void)
 {
-    return AtGetParentRawCommon(AE_BAD_PARAMETER, 2);
+    return (AtGetParentRawCommon(AE_BAD_PARAMETER, 2));
 }
 
 /*
@@ -3541,7 +3541,7 @@ AtNSpaceTest0057(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -3549,16 +3549,16 @@ AtNSpaceTest0057(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtGetParentCommon("\\", NULL, AE_NULL_ENTRY, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 ACPI_STATUS
@@ -3588,7 +3588,7 @@ AtGetParentExceptionTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetHandle (NULL, ObjName, &ObjHandle);
@@ -3597,7 +3597,7 @@ AtGetParentExceptionTest(
             AapiErrors++;
             printf ("API Error: AcpiGetHandle(NULL, %s) returned %s\n",
                 ObjName, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         /* Empty cash to force actual memory allocations */
@@ -3607,7 +3607,7 @@ AtGetParentExceptionTest(
             AapiErrors++;
             printf ("API Error: AcpiPurgeCachedObjects() failure, %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -3616,7 +3616,7 @@ AtGetParentExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetParent (ObjHandle, &OutHandle);
@@ -3639,24 +3639,24 @@ AtGetParentExceptionTest(
                 printf ("API Error: AcpiGetHandle returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, CtrlCheck);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -3669,7 +3669,7 @@ AtNSpaceTest0058(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -3682,17 +3682,17 @@ AtNSpaceTest0058(void)
         "\\D1L1.D2L0.D3L0.D4L_.D5L0.L4__");
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
      * AcpiOsAllocate returns NULL one time on the specified call
      */
-    return AtGetParentExceptionTest(
+    return (AtGetParentExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
         AE_NO_MEMORY,
-        "\\D1L1.D2L0.D3L0.D4L_.D5L0.L4__");
+        "\\D1L1.D2L0.D3L0.D4L_.D5L0.L4__"));
 }
 
 ACPI_STATUS
@@ -3713,7 +3713,7 @@ AtGetTypeCommon(
         AapiErrors++;
         printf ("AtGetTypeCommon: AcpiGetHandle(NULL, %s) returned %s\n",
             ObjName, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     switch (CheckAction)
@@ -3722,7 +3722,7 @@ AtGetTypeCommon(
         /* Make Device handle invalid by unloading SSDT table*/
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
         break;
     case 2:
@@ -3739,11 +3739,11 @@ AtGetTypeCommon(
             " expected %s\n",
             AcpiFormatException(Status),
             AcpiFormatException(ExpectedStatus));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
     else if (Status != AE_OK)
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
     if (RetType != ExpectedType)
@@ -3752,10 +3752,10 @@ AtGetTypeCommon(
         printf ("AtGetTypeCommon: AcpiGetType() returned Type 0x%x,"
             " expected 0x%x\n",
             RetType, ExpectedType);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -3768,7 +3768,7 @@ AtGetTypeRawCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -3776,7 +3776,7 @@ AtGetTypeRawCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 1; i < sizeof (LevelTypes0000) / sizeof (ACPI_OBJECT_TYPE); i++)
@@ -3791,7 +3791,7 @@ AtGetTypeRawCommon(
             ExpectedStatus, CheckAction);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -3807,11 +3807,11 @@ AtGetTypeRawCommon(
             ExpectedStatus, CheckAction);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -3821,7 +3821,7 @@ AtGetTypeRawCommon(
 ACPI_STATUS
 AtNSpaceTest0059(void)
 {
-    return AtGetTypeRawCommon(AE_OK, 0);
+    return (AtGetTypeRawCommon(AE_OK, 0));
 }
 
 /*
@@ -3836,7 +3836,7 @@ AtNSpaceTest0060(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 1; i < sizeof (LevelTypes0000) / sizeof (ACPI_OBJECT_TYPE); i++)
@@ -3846,29 +3846,29 @@ AtNSpaceTest0060(void)
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AtGetTypeCommon(SsdtTypeNames0000[i], LevelTypes0000[i],
             AE_BAD_PARAMETER, 1);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -3878,7 +3878,7 @@ AtNSpaceTest0060(void)
 ACPI_STATUS
 AtNSpaceTest0061(void)
 {
-    return AtGetTypeRawCommon(AE_BAD_PARAMETER, 2);
+    return (AtGetTypeRawCommon(AE_BAD_PARAMETER, 2));
 }
 
 ACPI_STATUS
@@ -3908,7 +3908,7 @@ AtGetTypeExceptionTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetHandle (NULL, ObjName, &ObjHandle);
@@ -3917,7 +3917,7 @@ AtGetTypeExceptionTest(
             AapiErrors++;
             printf ("API error: AcpiGetHandle(NULL, %s) returned %s\n",
                 ObjName, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         /* Empty cash to force actual memory allocations */
@@ -3927,7 +3927,7 @@ AtGetTypeExceptionTest(
             AapiErrors++;
             printf ("API Error: AcpiPurgeCachedObjects() failure, %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -3936,7 +3936,7 @@ AtGetTypeExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetType (ObjHandle, &OutType);
@@ -3959,24 +3959,24 @@ AtGetTypeExceptionTest(
                 printf ("API Error: AcpiGetHandle returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, CtrlCheck);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -3990,7 +3990,7 @@ AtNSpaceTest0062(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -4005,7 +4005,7 @@ AtNSpaceTest0062(void)
             LevelATypeNames0000[i]);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -4021,10 +4021,10 @@ AtNSpaceTest0062(void)
             LevelATypeNames0000[i]);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*******************************************************************************
@@ -4065,7 +4065,7 @@ AtCheckHandlePathMapping(
         AapiErrors++;
         printf ("API Error: AcpiEvaluateObject(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     if (Obj.Type != 1)
@@ -4088,7 +4088,7 @@ AtCheckHandlePathMapping(
         Status = AE_ERROR;
     }
 
-    return Status;
+    return (Status);
 }
 
 ACPI_STATUS
@@ -4112,7 +4112,7 @@ AtGetHandleCommon(
             AapiErrors++;
             printf ("AtGetHandleCommon: AcpiGetHandle(NULL, %s) returned %s\n",
                 ScopePath, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
@@ -4142,7 +4142,7 @@ AtGetHandleCommon(
         {
             TestErrors++;
             printf ("AtGetHandleCommon: ScopeHandle == NULL\n");
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         ScopeHandle = NULL;
         break;
@@ -4157,7 +4157,7 @@ AtGetHandleCommon(
             AapiErrors++;
             printf ("AtGetHandleCommon: AcpiTerminate() failure, %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
         Name = PathName;
         strcpy(Name, ScopePath);
@@ -4168,7 +4168,7 @@ AtGetHandleCommon(
         /* Make Device handle invalid by unloading SSDT table*/
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
         break;
     }
@@ -4183,22 +4183,22 @@ AtGetHandleCommon(
             Name,
             AcpiFormatException(Status),
             AcpiFormatException(ExpectedStatus));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
     else if (Status != AE_OK)
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
     Status = AtCheckInteger(OutHandle, Name, ExpectedValue);
     if (ACPI_FAILURE(Status)) {
-        return Status;
+        return (Status);
     }
 
     /* Check that interpretation of (Handle, Name) pair of parameters
      * is aligned with AcpiEvaluateObject behavior
      */
-    return AtCheckHandlePathMapping(ScopeHandle, Name, ExpectedValue);
+    return (AtCheckHandlePathMapping(ScopeHandle, Name, ExpectedValue));
 }
 
 ACPI_STATUS
@@ -4216,7 +4216,7 @@ AtGetHandleTypeCommon(UINT32 AbsolutePathFlag)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -4224,7 +4224,7 @@ AtGetHandleTypeCommon(UINT32 AbsolutePathFlag)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (!AtCompareConsts(NamesCount, ValuesCount))
@@ -4233,7 +4233,7 @@ AtGetHandleTypeCommon(UINT32 AbsolutePathFlag)
         printf ("AtGetHandleTypeCommon: different numbers of entities"
             "in PathNames0000 (%d) and Values0000 (%d)\n",
             NamesCount, ValuesCount);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     for (i = 1; i < NamesCount; i++)
@@ -4259,7 +4259,7 @@ AtGetHandleTypeCommon(UINT32 AbsolutePathFlag)
             AE_OK, Values0000[i], 0);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (AbsolutePathFlag)
@@ -4270,7 +4270,7 @@ AtGetHandleTypeCommon(UINT32 AbsolutePathFlag)
                 EXpectedStatus, Values0000[i], 0);
             if (ACPI_FAILURE(Status))
             {
-                return Status;
+                return (Status);
             }
         }
 
@@ -4282,12 +4282,12 @@ AtGetHandleTypeCommon(UINT32 AbsolutePathFlag)
                 AE_OK, Values0000[i], 0);
             if (ACPI_FAILURE(Status))
             {
-                return Status;
+                return (Status);
             }
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -4297,7 +4297,7 @@ AtGetHandleTypeCommon(UINT32 AbsolutePathFlag)
 ACPI_STATUS
 AtNSpaceTest0063(void)
 {
-    return AtGetHandleTypeCommon(1);
+    return (AtGetHandleTypeCommon(1));
 }
 
 /*
@@ -4307,7 +4307,7 @@ AtNSpaceTest0063(void)
 ACPI_STATUS
 AtNSpaceTest0064(void)
 {
-    return AtGetHandleTypeCommon(0);
+    return (AtGetHandleTypeCommon(0));
 }
 
 ACPI_STATUS
@@ -4320,7 +4320,7 @@ AtGetHandleExceptionCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -4328,7 +4328,7 @@ AtGetHandleExceptionCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 4) {
@@ -4340,10 +4340,10 @@ AtGetHandleExceptionCommon(
 
     if (ACPI_FAILURE(Status) || CheckAction == 6)
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -4353,7 +4353,7 @@ AtGetHandleExceptionCommon(
 ACPI_STATUS
 AtNSpaceTest0065(void)
 {
-    return AtGetHandleExceptionCommon(1, AE_BAD_CHARACTER);
+    return (AtGetHandleExceptionCommon(1, AE_BAD_CHARACTER));
 }
 
 /*
@@ -4363,7 +4363,7 @@ AtNSpaceTest0065(void)
 ACPI_STATUS
 AtNSpaceTest0066(void)
 {
-    return AtGetHandleExceptionCommon(2, AE_BAD_PATHNAME);
+    return (AtGetHandleExceptionCommon(2, AE_BAD_PATHNAME));
 }
 
 /*
@@ -4373,7 +4373,7 @@ AtNSpaceTest0066(void)
 ACPI_STATUS
 AtNSpaceTest0067(void)
 {
-    return AtGetHandleExceptionCommon(3, AE_BAD_PARAMETER);
+    return (AtGetHandleExceptionCommon(3, AE_BAD_PARAMETER));
 }
 
 /*
@@ -4383,7 +4383,7 @@ AtNSpaceTest0067(void)
 ACPI_STATUS
 AtNSpaceTest0068(void)
 {
-    return AtGetHandleExceptionCommon(4, AE_BAD_PARAMETER);
+    return (AtGetHandleExceptionCommon(4, AE_BAD_PARAMETER));
 }
 
 /*
@@ -4393,7 +4393,7 @@ AtNSpaceTest0068(void)
 ACPI_STATUS
 AtNSpaceTest0069(void)
 {
-    return AtGetHandleExceptionCommon(5, AE_BAD_PARAMETER);
+    return (AtGetHandleExceptionCommon(5, AE_BAD_PARAMETER));
 }
 
 /*
@@ -4409,7 +4409,7 @@ AtNSpaceTest0070(void)
     Status = AtSubsystemInit(AAPITS_INITIALIZE_SS, 0, 0, NULL);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, "\\D1L1.D2L0.D3L0.D4L_.D5L0.L4__", &OutHandle);
@@ -4421,12 +4421,12 @@ AtNSpaceTest0070(void)
             " expected %s\n",
             AcpiFormatException(Status),
             AcpiFormatException(AE_NO_NAMESPACE));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 /*
-    return AtGetHandleExceptionCommon(6, AE_NO_NAMESPACE);
+    return (AtGetHandleExceptionCommon(6, AE_NO_NAMESPACE));
 */
 }
 
@@ -4441,7 +4441,7 @@ AtNSpaceTest0071(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -4449,7 +4449,7 @@ AtNSpaceTest0071(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtGetHandleCommon(
@@ -4457,7 +4457,7 @@ AtNSpaceTest0071(void)
         AE_NOT_FOUND, 0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtGetHandleCommon(
@@ -4465,7 +4465,7 @@ AtNSpaceTest0071(void)
         AE_NOT_FOUND, 0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtGetHandleCommon(
@@ -4473,10 +4473,10 @@ AtNSpaceTest0071(void)
         AE_NOT_FOUND, 0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 ACPI_STATUS
@@ -4508,7 +4508,7 @@ AtGetHandleExceptionTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (ScopePath)
@@ -4520,7 +4520,7 @@ AtGetHandleExceptionTest(
                 printf ("API error: AcpiGetHandle(NULL, %s)"
                     " returned %s\n",
                     ScopePath, AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
         else
@@ -4534,7 +4534,7 @@ AtGetHandleExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetHandle (ScopeHandle, Name, &OutHandle);
@@ -4557,24 +4557,24 @@ AtGetHandleExceptionTest(
                 printf ("API Error: AcpiGetHandle returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, CtrlCheck);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -4587,7 +4587,7 @@ AtNSpaceTest0072(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -4601,7 +4601,7 @@ AtNSpaceTest0072(void)
         "\\D1L1.D2L0.D3L0.D4L_.D5L0", "L4__");
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtGetHandleExceptionTest(
@@ -4611,7 +4611,7 @@ AtNSpaceTest0072(void)
         NULL, "\\D1L1.D2L0.D3L0.D4L_.D5L0.L4__");
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -4625,14 +4625,14 @@ AtNSpaceTest0072(void)
         "\\D1L1.D2L0.D3L0.D4L_.D5L0", "L4__");
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtGetHandleExceptionTest(
+    return (AtGetHandleExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
         AE_NO_MEMORY,
-        NULL, "\\D1L1.D2L0.D3L0.D4L_.D5L0.L4__");
+        NULL, "\\D1L1.D2L0.D3L0.D4L_.D5L0.L4__"));
 }
 
 /*
@@ -4645,7 +4645,7 @@ AtNSpaceTest0073(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -4653,7 +4653,7 @@ AtNSpaceTest0073(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtGetHandleCommon(
@@ -4662,10 +4662,10 @@ AtNSpaceTest0073(void)
 
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 ACPI_STATUS
@@ -4694,7 +4694,7 @@ AtGetNameCommon(
             printf ("AtGetNameCommon: AcpiGetHandle(NULL, %s)"
                 " returned %s\n",
                 ScopePath, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
@@ -4705,7 +4705,7 @@ AtGetNameCommon(
         printf ("AtGetNameCommon: AcpiGetHandle(Scope, \"%s\")"
             "returned %s\n",
             Name, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     OutName.Length = AllocLength;
@@ -4721,7 +4721,7 @@ AtGetNameCommon(
             AapiErrors++;
             printf ("AtGetNameCommon: ReturnBuffer(%d) returned NULL\n",
                 (UINT32)OutName.Length);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -4736,7 +4736,7 @@ AtGetNameCommon(
         /* Make Device handle invalid by unloading SSDT table*/
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
     case 2:
         OutNamePointer = NULL;
@@ -4757,7 +4757,7 @@ AtGetNameCommon(
             AapiErrors++;
             printf ("AtGetNameCommon: AcpiTerminate() failure, %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
         break;
     }
@@ -4771,7 +4771,7 @@ AtGetNameCommon(
             " expected %s\n", NameType,
             AcpiFormatException(Status),
             AcpiFormatException(ExpectedStatus));
-        return AE_ERROR;
+        return (AE_ERROR);
     }
     else if (Status != AE_OK)
     {
@@ -4786,10 +4786,10 @@ AtGetNameCommon(
             printf ("AtGetNameCommon: AcpiGetName() returned invalid"
                 " OutName.Length %d, expected %d\n",
                 (UINT32)OutName.Length, CheckLength + 1);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
-        return AE_OK;
+        return (AE_OK);
     }
     else if ((AllocLength == ACPI_ALLOCATE_BUFFER &&
             (strlen(OutName.Pointer) + 1) != OutName.Length) ||
@@ -4837,7 +4837,7 @@ AtGetNameCommon(
     }
     AcpiOsFree(OutName.Pointer);
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -4850,7 +4850,7 @@ AtGetNameTypeCommon(UINT32 NameType)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -4858,7 +4858,7 @@ AtGetNameTypeCommon(UINT32 NameType)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     NamesCount = sizeof (PathNames0000) / sizeof (ACPI_STRING) / 2;
@@ -4873,7 +4873,7 @@ AtGetNameTypeCommon(UINT32 NameType)
             AE_OK, 0);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         BufferLength = strlen(PathNames0000[2 * i + 1]) + 1;
@@ -4891,7 +4891,7 @@ AtGetNameTypeCommon(UINT32 NameType)
             AE_OK, 0);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -4904,11 +4904,11 @@ AtGetNameTypeCommon(UINT32 NameType)
             AE_OK, 0);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -4918,7 +4918,7 @@ AtGetNameTypeCommon(UINT32 NameType)
 ACPI_STATUS
 AtNSpaceTest0074(void)
 {
-    return AtGetNameTypeCommon(ACPI_FULL_PATHNAME);
+    return (AtGetNameTypeCommon(ACPI_FULL_PATHNAME));
 }
 
 /*
@@ -4928,7 +4928,7 @@ AtNSpaceTest0074(void)
 ACPI_STATUS
 AtNSpaceTest0075(void)
 {
-    return AtGetNameTypeCommon(ACPI_SINGLE_NAME);
+    return (AtGetNameTypeCommon(ACPI_SINGLE_NAME));
 }
 
 ACPI_STATUS
@@ -4942,7 +4942,7 @@ AtGetNameExceptionCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -4950,14 +4950,14 @@ AtGetNameExceptionCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (CheckAction == 1)
     {
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
         {
-            return Status;
+            return (Status);
         }
         ScopePath = "\\AUX2";
         Name = "SS00";
@@ -4970,10 +4970,10 @@ AtGetNameExceptionCommon(
         ExpectedStatus, CheckAction);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -4983,7 +4983,7 @@ AtGetNameExceptionCommon(
 ACPI_STATUS
 AtNSpaceTest0076(void)
 {
-    return AtGetNameExceptionCommon(1, AE_BAD_PARAMETER);
+    return (AtGetNameExceptionCommon(1, AE_BAD_PARAMETER));
 }
 
 /*
@@ -4993,7 +4993,7 @@ AtNSpaceTest0076(void)
 ACPI_STATUS
 AtNSpaceTest0077(void)
 {
-    return AtGetNameExceptionCommon(2, AE_BAD_PARAMETER);
+    return (AtGetNameExceptionCommon(2, AE_BAD_PARAMETER));
 }
 
 /*
@@ -5003,7 +5003,7 @@ AtNSpaceTest0077(void)
 ACPI_STATUS
 AtNSpaceTest0078(void)
 {
-    return AtGetNameExceptionCommon(3, AE_BAD_PARAMETER);
+    return (AtGetNameExceptionCommon(3, AE_BAD_PARAMETER));
 }
 
 /*
@@ -5013,7 +5013,7 @@ AtNSpaceTest0078(void)
 ACPI_STATUS
 AtNSpaceTest0079(void)
 {
-    return AtGetNameExceptionCommon(4, AE_BUFFER_OVERFLOW);
+    return (AtGetNameExceptionCommon(4, AE_BUFFER_OVERFLOW));
 }
 
 /*
@@ -5023,7 +5023,7 @@ AtNSpaceTest0079(void)
 ACPI_STATUS
 AtNSpaceTest0080(void)
 {
-    return AtGetNameExceptionCommon(5, AE_NO_NAMESPACE);
+    return (AtGetNameExceptionCommon(5, AE_NO_NAMESPACE));
 }
 
 ACPI_STATUS
@@ -5057,7 +5057,7 @@ AtGetNameExceptionTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetHandle (NULL, ScopePath, &ScopeHandle);
@@ -5066,7 +5066,7 @@ AtGetNameExceptionTest(
             AapiErrors++;
             printf ("API Error: AcpiGetHandle(NULL, %s) returned %s\n",
                 ScopePath, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetHandle (ScopeHandle, Name, &OutHandle);
@@ -5075,7 +5075,7 @@ AtGetNameExceptionTest(
             AapiErrors++;
             printf ("API Error: AcpiGetHandle(Scope, %s) returned %s\n",
                 Name, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         OutName.Length = AllocLength;
@@ -5091,7 +5091,7 @@ AtGetNameExceptionTest(
                 AapiErrors++;
                 printf ("API Error: AcpiOsAllocate(%d) returned NULL\n",
                     OutName.Length);
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
@@ -5101,7 +5101,7 @@ AtGetNameExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
 
@@ -5131,24 +5131,24 @@ AtGetNameExceptionTest(
                 printf ("API Error: AcpiGetName returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -5161,7 +5161,7 @@ AtNSpaceTest0081(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -5177,7 +5177,7 @@ AtNSpaceTest0081(void)
         ACPI_ALLOCATE_BUFFER);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtGetNameExceptionTest(
@@ -5189,7 +5189,7 @@ AtNSpaceTest0081(void)
         31);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -5205,16 +5205,16 @@ AtNSpaceTest0081(void)
         ACPI_ALLOCATE_BUFFER);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtGetNameExceptionTest(
+    return (AtGetNameExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
         AE_NO_MEMORY,
         "\\D1L1.D2L0.D3L0.D4L_.D5L0", "L4__",
         ACPI_FULL_PATHNAME,
-        31);
+        31));
 }
 
 static UINT32               GetDevicesHandlerCounter;
@@ -5294,7 +5294,7 @@ AtGetDevicesCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -5302,7 +5302,7 @@ AtGetDevicesCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     GetDevicesHandlerCounter = 0;
@@ -5321,7 +5321,7 @@ AtGetDevicesCommon(
             " expected %s\n",
             (HID)? HID: "NULL",
             AcpiFormatException(Status), AcpiFormatException(ExpectedStatus));
-        return Status;
+        return (Status);
     }
 
     if (GetDevicesHandlerCounter != ExpectedCounter)
@@ -5330,7 +5330,7 @@ AtGetDevicesCommon(
         printf ("Api Error: GetDevicesHandlerCounter (%d) !="
             "ExpectedCounter (%d)\n",
             GetDevicesHandlerCounter, ExpectedCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     for (i = 0; i < ExpectedCounter; i++)
@@ -5365,7 +5365,7 @@ AtGetDevicesCommon(
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -5382,7 +5382,7 @@ AtNSpaceTest0082(void)
         DeviceWalkInfoDev5);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtGetDevicesCommon("PCI\\VEN_ffff&DEV_dddd&SUBSYS_cccccccc&REV_01", AE_OK, AE_OK,
@@ -5391,7 +5391,7 @@ AtNSpaceTest0082(void)
         DeviceWalkInfoDev7);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtGetDevicesCommon("PNP0A04", AE_OK, AE_OK,
@@ -5400,10 +5400,10 @@ AtNSpaceTest0082(void)
         DeviceWalkInfo2Dev);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -5420,10 +5420,10 @@ AtNSpaceTest0083(void)
         DeviceWalkInfo2Dev);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -5440,10 +5440,10 @@ AtNSpaceTest0084(void)
         DeviceWalkInfo2Dev);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -5460,10 +5460,10 @@ AtNSpaceTest0085(void)
         DeviceWalkInfo2Dev);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -5480,7 +5480,7 @@ AtNSpaceTest0086(void)
         DeviceWalkInfo0000);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtGetDevicesCommon(NULL, AE_OK, AE_CTRL_DEPTH,
@@ -5489,7 +5489,7 @@ AtNSpaceTest0086(void)
         DeviceWalkInfoDepth);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtGetDevicesCommon(NULL, AE_OK, AE_CTRL_TERMINATE,
@@ -5498,7 +5498,7 @@ AtNSpaceTest0086(void)
         DeviceWalkInfoTerminate);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtGetDevicesCommon(NULL, AE_ERROR, AE_ERROR,
@@ -5507,10 +5507,10 @@ AtNSpaceTest0086(void)
         DeviceWalkInfoError);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -5524,7 +5524,7 @@ AtNSpaceTest0087(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -5532,7 +5532,7 @@ AtNSpaceTest0087(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetDevices (
@@ -5544,10 +5544,10 @@ AtNSpaceTest0087(void)
         printf ("Api Error: AcpiGetDevices( , NULL) returned %s,"
             " expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_BAD_PARAMETER));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 ACPI_STATUS
@@ -5580,7 +5580,7 @@ AtGetDevicesExceptionTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -5589,7 +5589,7 @@ AtGetDevicesExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         GetDevicesHandlerCounter = 0;
@@ -5620,24 +5620,24 @@ AtGetDevicesExceptionTest(
                 printf ("API Error: AcpiGetDevices returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -5650,7 +5650,7 @@ AtNSpaceTest0088(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -5667,7 +5667,7 @@ AtNSpaceTest0088(void)
         DeviceWalkInfoDev5);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtGetDevicesExceptionTest(
@@ -5680,7 +5680,7 @@ AtNSpaceTest0088(void)
         DeviceWalkInfo0000);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -5697,17 +5697,17 @@ AtNSpaceTest0088(void)
         DeviceWalkInfoDev5);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AtGetDevicesExceptionTest(
+    return (AtGetDevicesExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
         AE_NO_MEMORY,
         NULL, AE_OK,
         sizeof (DeviceWalkInfo0000) / sizeof (AT_WALK_INFO) + 1,
         sizeof (DeviceWalkInfo0000) / sizeof (AT_WALK_INFO),
-        DeviceWalkInfo0000);
+        DeviceWalkInfo0000));
 }
 
 static UINT32               AttachDataCounter[3];
@@ -5786,7 +5786,7 @@ AtAttachDataCommon(
     {
         TestErrors++;
         printf ("Test Error: NumId (%d) > 3\n", NumId);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     Objects = (ACPI_HANDLE *) malloc(NumNm * sizeof (ACPI_HANDLE));
@@ -5794,12 +5794,12 @@ AtAttachDataCommon(
     {
         TestErrors++;
         printf ("Test Error: no memory for Objects\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -5807,14 +5807,14 @@ AtAttachDataCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if ((UnloadFlag == 1) || (UnloadFlag == 2))
     {
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -5828,7 +5828,7 @@ AtAttachDataCommon(
         {
             printf ("API error: AcpiOsExecute() returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
         AcpiOsSleep(1000);
     }
@@ -5841,7 +5841,7 @@ AtAttachDataCommon(
             AapiErrors++;
             printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                 Pathnames[i], AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
@@ -5849,7 +5849,7 @@ AtAttachDataCommon(
     {
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -5865,7 +5865,7 @@ AtAttachDataCommon(
                 Pathnames[HandleId[i]],
                 AcpiFormatException(Status),
                 AcpiFormatException(ExpectedStatus[i]));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -5875,14 +5875,14 @@ AtAttachDataCommon(
         {
             TestErrors++;
             printf ("Test Error: HandlerId[%d] (%d) > 2\n", i, HandlerId[i]);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         if (AttachDataCounter[HandlerId[i]] != 0)
         {
             AapiErrors++;
             printf ("API Error: unexpectedly AttachDataCounter[%d] (%d) != 0\n",
                 HandlerId[i], AttachDataCounter[HandlerId[i]]);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -5890,7 +5890,7 @@ AtAttachDataCommon(
     {
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -5905,7 +5905,7 @@ AtAttachDataCommon(
             AapiErrors++;
             printf ("API Error: AcpiEvaluateObject(REL0) returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
@@ -5927,7 +5927,7 @@ AtAttachDataCommon(
                 AapiErrors++;
                 printf ("API Error: unexpectedly AttachDataCounter[%d] (%d) != %d\n",
                     HandlerId[i], AttachDataCounter[HandlerId[i]], ExpectedCounter);
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
@@ -5940,7 +5940,7 @@ AtAttachDataCommon(
                 AapiErrors++;
                 printf ("API Error: unexpectedly AttachDataCounter[%d] (%d) != %d\n",
                     HandlerId[i], AttachDataCounter[HandlerId[i]], 0);
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
@@ -5948,7 +5948,7 @@ AtAttachDataCommon(
     Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (!((UnloadFlag == 1) || (UnloadFlag == 3) || (UnloadFlag == 4)))
@@ -5969,7 +5969,7 @@ AtAttachDataCommon(
                 AapiErrors++;
                 printf ("API Error: unexpectedly AttachDataCounter[%d] (%d) != %d\n",
                     HandlerId[i], AttachDataCounter[HandlerId[i]], ExpectedCounter);
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
@@ -5988,7 +5988,7 @@ AtAttachDataCommon(
             printf ("API Error: Handler's Object (0x%p) is different from"
                 " expected (0x%p)\n",
                 Stat[0].Object, Objects[HandleId[i]]);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         if (Stat[0].Data != Data[i])
         {
@@ -5996,11 +5996,11 @@ AtAttachDataCommon(
             printf ("API Error: Handler's Data (0x%p) is different from"
                 " expected (0x%p)\n",
                 Stat[0].Data, &Data[i]);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -6018,8 +6018,8 @@ AtNSpaceTest0089(void)
     ACPI_OBJECT_HANDLER     Handlers[] = {AttachDataHandler0};
     ACPI_STATUS             ExpectedStatus[] = {AE_OK};
 
-    return AtAttachDataCommon(0,
-        1, Pathnames, 1, HandleId, Data, Handlers, HandlerId, ExpectedStatus);
+    return (AtAttachDataCommon(0,
+        1, Pathnames, 1, HandleId, Data, Handlers, HandlerId, ExpectedStatus));
 }
 
 /*
@@ -6037,8 +6037,8 @@ AtNSpaceTest0090(void)
     ACPI_OBJECT_HANDLER     Handlers[] = {AttachDataHandler1};
     ACPI_STATUS             ExpectedStatus[] = {AE_OK};
 
-    return AtAttachDataCommon(1,
-        1, Pathnames, 1, HandleId, Data, Handlers, HandlerId, ExpectedStatus);
+    return (AtAttachDataCommon(1,
+        1, Pathnames, 1, HandleId, Data, Handlers, HandlerId, ExpectedStatus));
 }
 
 /*
@@ -6057,8 +6057,8 @@ AtNSpaceTest0091(void)
         AttachDataHandler1, AttachDataHandler2};
     ACPI_STATUS             ExpectedStatus[] = {AE_OK, AE_OK, AE_OK};
 
-    return AtAttachDataCommon(0,
-        1, Pathnames, 3, HandleId, Data, Handlers, HandlerId, ExpectedStatus);
+    return (AtAttachDataCommon(0,
+        1, Pathnames, 3, HandleId, Data, Handlers, HandlerId, ExpectedStatus));
 }
 
 /*
@@ -6077,8 +6077,8 @@ AtNSpaceTest0092(void)
         AttachDataHandler0, AttachDataHandler1};
     ACPI_STATUS             ExpectedStatus[] = {AE_OK, AE_ALREADY_EXISTS, AE_OK};
 
-    return AtAttachDataCommon(0,
-        1, Pathnames, 3, HandleId, Data, Handlers, HandlerId, ExpectedStatus);
+    return (AtAttachDataCommon(0,
+        1, Pathnames, 3, HandleId, Data, Handlers, HandlerId, ExpectedStatus));
 }
 
 /*
@@ -6097,8 +6097,8 @@ AtNSpaceTest0093(void)
     ACPI_STATUS             ExpectedStatus[] = {AE_BAD_PARAMETER,
         AE_BAD_PARAMETER, AE_BAD_PARAMETER};
 
-    return AtAttachDataCommon(2,
-        1, Pathnames, 3, HandleId, Data, Handlers, HandlerId, ExpectedStatus);
+    return (AtAttachDataCommon(2,
+        1, Pathnames, 3, HandleId, Data, Handlers, HandlerId, ExpectedStatus));
 }
 
 /*
@@ -6117,8 +6117,8 @@ AtNSpaceTest0094(void)
     ACPI_STATUS             ExpectedStatus[] = {AE_BAD_PARAMETER,
         AE_OK, AE_BAD_PARAMETER};
 
-    return AtAttachDataCommon(0,
-        1, Pathnames, 3, HandleId, Data, Handlers, HandlerId, ExpectedStatus);
+    return (AtAttachDataCommon(0,
+        1, Pathnames, 3, HandleId, Data, Handlers, HandlerId, ExpectedStatus));
 }
 
 /*
@@ -6138,8 +6138,8 @@ AtNSpaceTest0095(void)
     ACPI_STATUS             ExpectedStatus[] = {AE_BAD_PARAMETER,
         AE_OK, AE_BAD_PARAMETER};
 
-    return AtAttachDataCommon(0,
-        1, Pathnames, 3, HandleId, Data, Handlers, HandlerId, ExpectedStatus);
+    return (AtAttachDataCommon(0,
+        1, Pathnames, 3, HandleId, Data, Handlers, HandlerId, ExpectedStatus));
 }
 
 ACPI_STATUS
@@ -6171,7 +6171,7 @@ AtAttachDataExceptionTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetHandle (NULL, Pathname, &Object);
@@ -6180,7 +6180,7 @@ AtAttachDataExceptionTest(
             AapiErrors++;
             printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                 Pathname, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -6189,7 +6189,7 @@ AtAttachDataExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiAttachData(Object, Handler, Data);
@@ -6212,24 +6212,24 @@ AtAttachDataExceptionTest(
                 printf ("API Error: AcpiAttachData returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -6242,7 +6242,7 @@ AtNSpaceTest0096(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -6256,18 +6256,18 @@ AtNSpaceTest0096(void)
         DataBuffer, AttachDataHandler0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
      * AcpiOsAllocate returns NULL one time on the specified call
      */
-    return AtAttachDataExceptionTest(
+    return (AtAttachDataExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
         AE_NO_MEMORY,
         "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0.DEV0",
-        DataBuffer, AttachDataHandler0, 0);
+        DataBuffer, AttachDataHandler0, 0));
 }
 
 UINT8
@@ -6284,10 +6284,10 @@ AtIsDataHandlerAttached(
         if (HandlerId == DetachHandlerId[i] &&
             ExpectedStatus[i] == AE_OK)
         {
-            return 0;
+            return (0);
         }
     }
-    return 1;
+    return (1);
 }
 
 ACPI_STATUS
@@ -6313,12 +6313,12 @@ AtDetachDataCommon(
     {
         TestErrors++;
         printf ("Test Error: NumId (%d) > 3\n", NumId);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -6326,7 +6326,7 @@ AtDetachDataCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, Pathname, &Object);
@@ -6335,7 +6335,7 @@ AtDetachDataCommon(
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < NumId; i++)
@@ -6347,7 +6347,7 @@ AtDetachDataCommon(
             AapiErrors++;
             printf ("API error: AcpiAttachData() returned %s\n",
                 AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -6357,14 +6357,14 @@ AtDetachDataCommon(
         {
             TestErrors++;
             printf ("Test Error: HandlerId[%d] (%d) > 2\n", i, HandlerId[i]);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         if (AttachDataCounter[HandlerId[i]] != 0)
         {
             AapiErrors++;
             printf ("API Error: unexpectedly AttachDataCounter[%d] (%d) != 0\n",
                 HandlerId[i], AttachDataCounter[HandlerId[i]]);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -6376,7 +6376,7 @@ AtDetachDataCommon(
             AapiErrors++;
             printf ("Api Error: AcpiEvaluateObject(%s) returned %s\n",
                 UpdateMethod, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
 
@@ -6391,7 +6391,7 @@ AtDetachDataCommon(
                 " expected %s\n",
                 AcpiFormatException(Status),
                 AcpiFormatException(ExpectedStatus[i]));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -6399,7 +6399,7 @@ AtDetachDataCommon(
     {
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
         for (i = 0; i < NumId; i++)
         {
@@ -6418,7 +6418,7 @@ AtDetachDataCommon(
                 AapiErrors++;
                 printf ("API Error: unexpectedly AttachDataCounter[%d] (%d) != %d\n",
                     HandlerId[i], AttachDataCounter[HandlerId[i]], ExpectedCounter);
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
@@ -6426,7 +6426,7 @@ AtDetachDataCommon(
     Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (UnloadFlag != 1)
@@ -6448,7 +6448,7 @@ AtDetachDataCommon(
                 AapiErrors++;
                 printf ("API Error: unexpectedly AttachDataCounter[%d] (%d) != %d\n",
                     HandlerId[i], AttachDataCounter[HandlerId[i]], ExpectedCounter);
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
@@ -6468,7 +6468,7 @@ AtDetachDataCommon(
             printf ("API Error: Handler's Object (0x%p) is different from"
                 " expected (0x%p)\n",
                 Stat[0].Object, Object);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         if (Stat[0].Data != Data[i])
         {
@@ -6476,11 +6476,11 @@ AtDetachDataCommon(
             printf ("API Error: Handler's Data (0x%p) is different from"
                 " expected (0x%p)\n",
                 Stat[0].Data, &Data[i]);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -6498,10 +6498,10 @@ AtNSpaceTest0098(void)
     ACPI_OBJECT_HANDLER     DetachHandlers[] = {AttachDataHandler0, AttachDataHandler2};
     ACPI_STATUS             ExpectedStatus[] = {AE_OK, AE_OK};
 
-    return AtDetachDataCommon(0,
+    return (AtDetachDataCommon(0,
         "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0.DEV0",
         Data, Handlers, HandlerId, 3,
-        DetachHandlers, DetachHandlerId, 2, ExpectedStatus);
+        DetachHandlers, DetachHandlerId, 2, ExpectedStatus));
 }
 
 /*
@@ -6519,10 +6519,10 @@ AtNSpaceTest0099(void)
     ACPI_OBJECT_HANDLER     DetachHandlers[] = {AttachDataHandler0, AttachDataHandler2};
     ACPI_STATUS             ExpectedStatus[] = {AE_BAD_PARAMETER, AE_BAD_PARAMETER};
 
-    return AtDetachDataCommon(2,
+    return (AtDetachDataCommon(2,
         "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0.DEV0",
         Data, Handlers, HandlerId, 0,
-        DetachHandlers, DetachHandlerId, 2, ExpectedStatus);
+        DetachHandlers, DetachHandlerId, 2, ExpectedStatus));
 }
 
 /*
@@ -6542,10 +6542,10 @@ AtNSpaceTest0100(void)
     ACPI_STATUS             ExpectedStatus[] = {AE_BAD_PARAMETER,
         AE_OK, AE_BAD_PARAMETER};
 
-    return AtDetachDataCommon(0,
+    return (AtDetachDataCommon(0,
         "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0.DEV0",
         Data, Handlers, HandlerId, 3,
-        DetachHandlers, DetachHandlerId, 3, ExpectedStatus);
+        DetachHandlers, DetachHandlerId, 3, ExpectedStatus));
 }
 
 ACPI_STATUS
@@ -6576,7 +6576,7 @@ AtDetachDataExceptionTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetHandle (NULL, Pathname, &Object);
@@ -6585,7 +6585,7 @@ AtDetachDataExceptionTest(
             AapiErrors++;
             printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                 Pathname, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiAttachData(Object, Handler, Data);
@@ -6594,7 +6594,7 @@ AtDetachDataExceptionTest(
             AapiErrors++;
             printf ("API error: AcpiAttachData() returned %s\n",
                 AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -6603,7 +6603,7 @@ AtDetachDataExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiDetachData(Object, Handler);
@@ -6626,24 +6626,24 @@ AtDetachDataExceptionTest(
                 printf ("API Error: AcpiDetachData returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -6656,7 +6656,7 @@ AtNSpaceTest0101(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -6670,18 +6670,18 @@ AtNSpaceTest0101(void)
         DataBuffer, AttachDataHandler0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
      * AcpiOsAllocate returns NULL one time on the specified call
      */
-    return AtDetachDataExceptionTest(
+    return (AtDetachDataExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
         AE_NO_MEMORY,
         "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0.DEV0",
-        DataBuffer, AttachDataHandler0, 0);
+        DataBuffer, AttachDataHandler0, 0));
 }
 
 /*
@@ -6699,10 +6699,10 @@ AtNSpaceTest0103(void)
         AttachDataHandler1, AttachDataHandler2};
     ACPI_STATUS             ExpectedStatus[] = {AE_NOT_FOUND, AE_OK, AE_NOT_FOUND};
 
-    return AtDetachDataCommon(0,
+    return (AtDetachDataCommon(0,
         "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0.DEV0",
         Data, Handlers, HandlerId, 1,
-        DetachHandlers, DetachHandlerId, 3, ExpectedStatus);
+        DetachHandlers, DetachHandlerId, 3, ExpectedStatus));
 }
 
 ACPI_STATUS
@@ -6728,12 +6728,12 @@ AtGetDataCommon(
     {
         TestErrors++;
         printf ("Test Error: NumId (%d) > 3\n", NumId);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -6741,13 +6741,13 @@ AtGetDataCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
     if ((UnloadFlag == 1) || (UnloadFlag == 2))
     {
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -6757,7 +6757,7 @@ AtGetDataCommon(
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             Pathname, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     for (i = 0; i < NumId; i++)
@@ -6769,7 +6769,7 @@ AtGetDataCommon(
             AapiErrors++;
             printf ("API error: AcpiAttachData() returned %s\n",
                 AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -6779,14 +6779,14 @@ AtGetDataCommon(
         {
             TestErrors++;
             printf ("Test Error: HandlerId[%d] (%d) > 2\n", i, HandlerId[i]);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         if (AttachDataCounter[HandlerId[i]] != 0)
         {
             AapiErrors++;
             printf ("API Error: unexpectedly AttachDataCounter[%d] (%d) != 0\n",
                 HandlerId[i], AttachDataCounter[HandlerId[i]]);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -6794,7 +6794,7 @@ AtGetDataCommon(
     {
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
     }
     else if (UnloadFlag == 4)
@@ -6813,7 +6813,7 @@ AtGetDataCommon(
                 " expected %s\n",
                 AcpiFormatException(Status),
                 AcpiFormatException(ExpectedStatus[i]));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         else if (Status == AE_OK && RetData != Data[i])
         {
@@ -6821,7 +6821,7 @@ AtGetDataCommon(
             printf ("API error: AcpiGetData() returned Pointer 0x%p,"
                 " expected 0x%p\n",
                 RetData, Data[i]);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
@@ -6829,7 +6829,7 @@ AtGetDataCommon(
     {
         if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
         {
-            return Status;
+            return (Status);
         }
         for (i = 0; i < NumId; i++)
         {
@@ -6838,7 +6838,7 @@ AtGetDataCommon(
                 AapiErrors++;
                 printf ("API Error: unexpectedly AttachDataCounter[%d] (%d) != 1\n",
                     HandlerId[i], AttachDataCounter[HandlerId[i]]);
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
@@ -6846,7 +6846,7 @@ AtGetDataCommon(
     Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (UnloadFlag != 1)
@@ -6858,7 +6858,7 @@ AtGetDataCommon(
                 AapiErrors++;
                 printf ("API Error: unexpectedly AttachDataCounter[%d] (%d) != 1\n",
                     HandlerId[i], AttachDataCounter[HandlerId[i]]);
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
     }
@@ -6871,7 +6871,7 @@ AtGetDataCommon(
             printf ("API Error: Handler called %d times,"
                 " expected to be caled one time only\n",
                 AttachDataCounter[HandlerId[i]]);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         Stat = AttachDataStat[HandlerId[i]];
@@ -6881,7 +6881,7 @@ AtGetDataCommon(
             printf ("API Error: Handler's Object (0x%p) is different from"
                 " expected (0x%p)\n",
                 Stat[0].Object, Object);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
         if (Stat[0].Data != Data[i])
         {
@@ -6889,11 +6889,11 @@ AtGetDataCommon(
             printf ("API Error: Handler's Data (0x%p) is different from"
                 " expected (0x%p)\n",
                 Stat[0].Data, &Data[i]);
-            return AE_ERROR;
+            return (AE_ERROR);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -6912,10 +6912,10 @@ AtNSpaceTest0104(void)
         AttachDataHandler1, AttachDataHandler2};
     ACPI_STATUS             ExpectedStatus[] = {AE_OK, AE_OK, AE_OK};
 
-    return AtGetDataCommon(0,
+    return (AtGetDataCommon(0,
         "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0.DEV0",
         Data, Handlers, HandlerId, 3,
-        GetHandlers, GetHandlerId, 3, ExpectedStatus);
+        GetHandlers, GetHandlerId, 3, ExpectedStatus));
 }
 
 /*
@@ -6935,10 +6935,10 @@ AtNSpaceTest0105(void)
     ACPI_STATUS             ExpectedStatus[] = {AE_BAD_PARAMETER,
         AE_BAD_PARAMETER, AE_BAD_PARAMETER};
 
-    return AtGetDataCommon(2,
+    return (AtGetDataCommon(2,
         "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0.DEV0",
         Data, Handlers, HandlerId, 3,
-        GetHandlers, GetHandlerId, 3, ExpectedStatus);
+        GetHandlers, GetHandlerId, 3, ExpectedStatus));
 }
 
 /*
@@ -6958,10 +6958,10 @@ AtNSpaceTest0106(void)
     ACPI_STATUS             ExpectedStatus[] = {AE_BAD_PARAMETER,
         AE_OK, AE_BAD_PARAMETER};
 
-    return AtGetDataCommon(0,
+    return (AtGetDataCommon(0,
         "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0.DEV0",
         Data, Handlers, HandlerId, 3,
-        GetHandlers, GetHandlerId, 3, ExpectedStatus);
+        GetHandlers, GetHandlerId, 3, ExpectedStatus));
 }
 
 /*
@@ -6981,10 +6981,10 @@ AtNSpaceTest0107(void)
     ACPI_STATUS             ExpectedStatus[] = {AE_BAD_PARAMETER,
         AE_BAD_PARAMETER, AE_BAD_PARAMETER};
 
-    return AtGetDataCommon(4,
+    return (AtGetDataCommon(4,
         "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0.DEV0",
         Data, Handlers, HandlerId, 3,
-        GetHandlers, GetHandlerId, 3, ExpectedStatus);
+        GetHandlers, GetHandlerId, 3, ExpectedStatus));
 }
 
 ACPI_STATUS
@@ -7017,7 +7017,7 @@ AtGetDataExceptionTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetHandle (NULL, Pathname, &Object);
@@ -7026,7 +7026,7 @@ AtGetDataExceptionTest(
             AapiErrors++;
             printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                 Pathname, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiAttachData(Object, Handler, Data);
@@ -7035,7 +7035,7 @@ AtGetDataExceptionTest(
             AapiErrors++;
             printf ("API error: AcpiAttachData() returned %s\n",
                 AcpiFormatException(Status));
-            return AE_ERROR;
+            return (AE_ERROR);
         }
 
         Status = OsxfCtrlSet(OsxfNum, i, ActFlag, ActCode);
@@ -7044,7 +7044,7 @@ AtGetDataExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         Status = AcpiGetData(Object, Handler, &RetData);
@@ -7067,24 +7067,24 @@ AtGetDataExceptionTest(
                 printf ("API Error: AcpiGetData returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -7097,7 +7097,7 @@ AtNSpaceTest0108(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -7111,18 +7111,18 @@ AtNSpaceTest0108(void)
         DataBuffer, AttachDataHandler0, 0);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     /*
      * AcpiOsAllocate returns NULL one time on the specified call
      */
-    return AtGetDataExceptionTest(
+    return (AtGetDataExceptionTest(
         OSXF_NUM(AcpiOsAllocate),
         AtActD_OneTime, AtActRet_NULL, 1,
         AE_NO_MEMORY,
         "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0.DEV0",
-        DataBuffer, AttachDataHandler0, 0);
+        DataBuffer, AttachDataHandler0, 0));
 }
 
 /*
@@ -7140,10 +7140,10 @@ AtNSpaceTest0110(void)
         AttachDataHandler1, AttachDataHandler2};
     ACPI_STATUS             ExpectedStatus[] = {AE_NOT_FOUND, AE_OK, AE_NOT_FOUND};
 
-    return AtGetDataCommon(0,
+    return (AtGetDataCommon(0,
         "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0.DEV0",
         Data, Handlers, HandlerId, 1,
-        DetachHandlers, DetachHandlerId, 3, ExpectedStatus);
+        DetachHandlers, DetachHandlerId, 3, ExpectedStatus));
 }
 
 static UINT32               WalkNamespaceHandlerCounter;
@@ -7231,7 +7231,7 @@ AtWalkNamespaceCommon(
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -7239,7 +7239,7 @@ AtWalkNamespaceCommon(
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (StartObjectName)
@@ -7250,7 +7250,7 @@ AtWalkNamespaceCommon(
             AapiErrors++;
             printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                 StartObjectName, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
     }
     else
@@ -7274,7 +7274,7 @@ AtWalkNamespaceCommon(
             " expected %s\n",
             Type,
             AcpiFormatException(Status), AcpiFormatException(ExpectedStatus));
-        return Status;
+        return (Status);
     }
 
     if (WalkNamespaceHandlerCounter != ExpectedCounter)
@@ -7283,7 +7283,7 @@ AtWalkNamespaceCommon(
         printf ("Api Error: Type 0x%x, WalkNamespaceHandlerCounter (%d) !="
             " ExpectedCounter (%d)\n",
             Type, WalkNamespaceHandlerCounter, ExpectedCounter);
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
     for (i = 0; i < ExpectedCounter; i++)
@@ -7320,7 +7320,7 @@ AtWalkNamespaceCommon(
         }
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -7340,7 +7340,7 @@ AtNSpaceTest0111(void)
         DeviceWalkInfo0000);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtWalkNamespaceCommon(ACPI_TYPE_DEVICE,
@@ -7351,7 +7351,7 @@ AtNSpaceTest0111(void)
         DeviceWalkInfoDepth);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtWalkNamespaceCommon(ACPI_TYPE_DEVICE,
@@ -7362,7 +7362,7 @@ AtNSpaceTest0111(void)
         DeviceWalkInfoLevel5);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 1; i < sizeof (LevelTypes0000) / sizeof (ACPI_OBJECT_TYPE); i++)
@@ -7381,11 +7381,11 @@ AtNSpaceTest0111(void)
             TypesWalkInfoLevel2 + i);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -7404,10 +7404,10 @@ AtNSpaceTest0112(void)
         DeviceWalkInfoDepth);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -7426,10 +7426,10 @@ AtNSpaceTest0113(void)
         DeviceWalkInfoDepth);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -7448,10 +7448,10 @@ AtNSpaceTest0114(void)
         DeviceWalkInfoDepth);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -7470,10 +7470,10 @@ AtNSpaceTest0115(void)
         DeviceWalkInfo0000);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -7487,7 +7487,7 @@ AtNSpaceTest0116(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -7495,7 +7495,7 @@ AtNSpaceTest0116(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiWalkNamespace (
@@ -7507,10 +7507,10 @@ AtNSpaceTest0116(void)
         printf ("Api Error: AcpiWalkNamespace( , , , NULL) returned %s,"
             " expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_BAD_PARAMETER));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -7526,7 +7526,7 @@ AtNSpaceTest0117(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -7534,12 +7534,12 @@ AtNSpaceTest0117(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_LOAD)))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiGetHandle (NULL, StartObjectName, &StartObject);
@@ -7548,13 +7548,13 @@ AtNSpaceTest0117(void)
         AapiErrors++;
         printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
             StartObjectName, AcpiFormatException(Status));
-        return Status;
+        return (Status);
     }
 
     /* Make Object handle invalid by unloading SSDT table */
     if (ACPI_FAILURE(Status = AtAuxiliarySsdt(AT_UNLOAD)))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiWalkNamespace (
@@ -7566,10 +7566,10 @@ AtNSpaceTest0117(void)
         printf ("Api Error: AcpiWalkNamespace(invalid StartObject) returned %s,"
             " expected %s\n",
             AcpiFormatException(Status), AcpiFormatException(AE_BAD_PARAMETER));
-        return Status;
+        return (Status);
     }
 
-    return AtTerminateCtrlCheck(AE_OK, ALL_STAT);
+    return (AtTerminateCtrlCheck(AE_OK, ALL_STAT));
 }
 
 /*
@@ -7591,11 +7591,11 @@ AtNSpaceTest0118(void)
             TypesWalkInfoLevel2);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -7631,7 +7631,7 @@ AtWalkNamespaceExceptionTest(
             AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
 
         if (StartObjectName)
@@ -7642,7 +7642,7 @@ AtWalkNamespaceExceptionTest(
                 AapiErrors++;
                 printf ("Api Error: AcpiGetHandle(%s) returned %s\n",
                     StartObjectName, AcpiFormatException(Status));
-                return Status;
+                return (Status);
             }
         }
         else
@@ -7656,7 +7656,7 @@ AtWalkNamespaceExceptionTest(
             TestErrors++;
             printf ("Test error: OsxfCtrlSet returned %s\n",
                 AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
         WalkNamespaceHandlerCounter = 0;
@@ -7687,24 +7687,24 @@ AtWalkNamespaceExceptionTest(
                 printf ("API Error: AcpiWalkNamespace returned %s,\n"
                     "           expected to return %s\n",
                     AcpiFormatException(Status), AcpiFormatException(Benchmark));
-                return AE_ERROR;
+                return (AE_ERROR);
             }
         }
 
         Status = AtTerminateCtrlCheck(AE_OK, ALL_STAT);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
     if (i >= TMax)
     {
         TestErrors++;
         printf ("Test error: there are test cases remained\n");
-        return AE_ERROR;
+        return (AE_ERROR);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -7718,7 +7718,7 @@ AtNSpaceTest0119(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0000.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     /*
@@ -7735,7 +7735,7 @@ AtNSpaceTest0119(void)
         DeviceWalkInfo0000);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtWalkNamespaceExceptionTest(
@@ -7748,7 +7748,7 @@ AtNSpaceTest0119(void)
         DeviceWalkInfo0000);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 1; i < sizeof (LevelTypes0000) / sizeof (ACPI_OBJECT_TYPE); i++)
@@ -7762,7 +7762,7 @@ AtNSpaceTest0119(void)
             TypesWalkInfoLevel2 + i);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
@@ -7780,7 +7780,7 @@ AtNSpaceTest0119(void)
         DeviceWalkInfo0000);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtWalkNamespaceExceptionTest(
@@ -7793,7 +7793,7 @@ AtNSpaceTest0119(void)
         DeviceWalkInfo0000);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
     for (i = 1; i < sizeof (LevelTypes0000) / sizeof (ACPI_OBJECT_TYPE); i++)
@@ -7807,11 +7807,11 @@ AtNSpaceTest0119(void)
             TypesWalkInfoLevel2 + i);
         if (ACPI_FAILURE(Status))
         {
-            return Status;
+            return (Status);
         }
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 /*
@@ -7828,10 +7828,10 @@ AtNSpaceTest0120(void)
     ACPI_OBJECT_HANDLER     DetachHandlers[] = {AttachDataHandler0};
     ACPI_STATUS             ExpectedStatus[] = {AE_OK};
 
-    return AtDetachDataCommon(0,
+    return (AtDetachDataCommon(0,
         "\\D1L1.D2L0.D3L0.D4L_.D5L0.D6L0.D7L0.D8L0.D9L0.DAL0.INT0",
         Data, Handlers, HandlerId, 1,
-        DetachHandlers, DetachHandlerId, 1, ExpectedStatus);
+        DetachHandlers, DetachHandlerId, 1, ExpectedStatus));
 }
 
 /*
@@ -7841,7 +7841,7 @@ AtNSpaceTest0120(void)
 ACPI_STATUS
 AtNSpaceTest0121(void)
 {
-    return AtGetHandleExceptionCommon(8, AE_OK);
+    return (AtGetHandleExceptionCommon(8, AE_OK));
 }
 
 /*
@@ -7859,8 +7859,8 @@ AtNSpaceTest0122(void)
         AttachDataHandler1, AttachDataHandler2};
     ACPI_STATUS             ExpectedStatus[] = {AE_OK, AE_OK, AE_OK};
 
-    return AtAttachDataCommon(0,
-        1, Pathnames, 3, HandleId, Data, Handlers, HandlerId, ExpectedStatus);
+    return (AtAttachDataCommon(0,
+        1, Pathnames, 3, HandleId, Data, Handlers, HandlerId, ExpectedStatus));
 }
 
 /*
@@ -7878,8 +7878,8 @@ AtNSpaceTest0123(void)
         AttachDataHandler1, AttachDataHandler2};
     ACPI_STATUS             ExpectedStatus[] = {AE_OK, AE_OK, AE_OK};
 
-    return AtAttachDataCommon(3,
-        1, Pathnames, 3, HandleId, Data, Handlers, HandlerId, ExpectedStatus);
+    return (AtAttachDataCommon(3,
+        1, Pathnames, 3, HandleId, Data, Handlers, HandlerId, ExpectedStatus));
 }
 
 /*
@@ -7898,8 +7898,8 @@ AtNSpaceTest0124(void)
         AttachDataHandler1, AttachDataHandler2};
     ACPI_STATUS             ExpectedStatus[] = {AE_OK, AE_OK, AE_OK};
 
-    return AtAttachDataCommon(4,
-        1, Pathnames, 3, HandleId, Data, Handlers, HandlerId, ExpectedStatus);
+    return (AtAttachDataCommon(4,
+        1, Pathnames, 3, HandleId, Data, Handlers, HandlerId, ExpectedStatus));
 }
 
 /*
@@ -7920,8 +7920,8 @@ AtNSpaceTest0125(void)
         AttachDataHandler1, AttachDataHandler2};
     ACPI_STATUS             ExpectedStatus[] = {AE_OK, AE_OK, AE_OK};
 
-    return AtAttachDataCommon(0,
-        3, Pathnames, 3, HandleId, Data, Handlers, HandlerId, ExpectedStatus);
+    return (AtAttachDataCommon(0,
+        3, Pathnames, 3, HandleId, Data, Handlers, HandlerId, ExpectedStatus));
 }
 
 /*
@@ -7947,7 +7947,7 @@ AtNSpaceTest0126(void)
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("nmsp0126.aml")))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AtSubsystemInit(
@@ -7955,7 +7955,7 @@ AtNSpaceTest0126(void)
         AAPITS_EN_FLAGS, AAPITS_OI_FLAGS, AtAMLcodeFileName);
     if (ACPI_FAILURE(Status))
     {
-        return Status;
+        return (Status);
     }
 
         Status = AcpiGetHandle (NULL, ParentDev, &atadev->obj_handle);
@@ -7964,7 +7964,7 @@ AtNSpaceTest0126(void)
             AapiErrors++;
             printf ("AtNSpaceTest0126: AcpiGetHandle(NULL, %s) returned %s\n",
                 ParentDev, AcpiFormatException(Status));
-            return Status;
+            return (Status);
         }
 
     /* from drivers/ata/libata-acpi.c */
@@ -7988,8 +7988,8 @@ AtNSpaceTest0126(void)
             AapiErrors++;
             printf ("AtNSpaceTest0126: AcpiEvaluateObject(%s) returned %s\n",
                 "_SDD", AcpiFormatException(Status));
-            return Status;
+            return (Status);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }

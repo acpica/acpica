@@ -161,14 +161,14 @@ AcpiOsActualInitialize (void)
 {
     AcpiGbl_OutputFile = stdout;
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
 ACPI_STATUS
 AcpiOsActualTerminate (void)
 {
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -189,7 +189,7 @@ ACPI_PHYSICAL_ADDRESS
 AcpiOsActualGetRootPointer (
     void)
 {
-    return AeLocalGetRootPointer ();
+    return (AeLocalGetRootPointer ());
 }
 
 
@@ -265,7 +265,7 @@ AcpiOsActualTableOverride (
 
     return (AE_OK);
 #else
-    return AE_NO_ACPI_TABLES;
+    return (AE_NO_ACPI_TABLES);
 #endif
 }
 
@@ -476,7 +476,7 @@ AcpiOsActualMapMemory (
     ACPI_PHYSICAL_ADDRESS   Where,
     ACPI_SIZE               length)
 {
-    return (void *)Where;
+    return ((void *)Where);
 }
 
 
@@ -509,7 +509,7 @@ xxxxAcpiOsMapMemory (
     ACPI_SIZE               length)
 {
 
-    return (void *)Where;
+    return ((void *)Where);
 }
 
 
@@ -534,7 +534,7 @@ AcpiOsActualAllocate (
 
     Mem = (void *) malloc ((size_t) size);
 
-    return Mem;
+    return (Mem);
 }
 
 
@@ -582,7 +582,7 @@ AcpiOsActualCreateSemaphore (
 
 
     *OutHandle = (ACPI_HANDLE) 1;
-    return AE_OK;
+    return (AE_OK);
 }
 
 /******************************************************************************
@@ -604,10 +604,10 @@ AcpiOsActualDeleteSemaphore (
 
     if (!Handle)
     {
-        return AE_BAD_PARAMETER;
+        return (AE_BAD_PARAMETER);
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -633,7 +633,7 @@ AcpiOsActualWaitSemaphore (
 {
 
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -657,7 +657,7 @@ AcpiOsActualSignalSemaphore (
 {
 
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -718,7 +718,7 @@ AcpiOsActualInstallInterruptHandler (
 {
 
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -740,7 +740,7 @@ AcpiOsActualRemoveInterruptHandler (
     ACPI_OSD_HANDLER        ServiceRoutine)
 {
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -766,7 +766,7 @@ AcpiOsActualExecute (
 {
 
 //    _beginthread (Function, (unsigned) 0, Context);
-    return 0;
+    return (0);
 }
 
 
@@ -796,7 +796,7 @@ AcpiOsActualBreakpoint (
         AcpiOsPrintf ("At AcpiOsBreakpoint ****\n");
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -1166,5 +1166,3 @@ AcpiOsActualSignal (
 
     return (AE_OK);
 }
-
-
