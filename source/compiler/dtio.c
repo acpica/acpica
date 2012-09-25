@@ -649,7 +649,7 @@ DtGetNextLine (
                 break;
 
             default:    /* Not a comment */
-                i++;    /* Save the preceeding slash */
+                i++;    /* Save the preceding slash */
                 if (i >= Gbl_LineBufferSize)
                 {
                     UtExpandLineBuffers ();

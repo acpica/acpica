@@ -618,7 +618,7 @@ OpcDoUnicode (
  *              values as follows:
  *                  1) Find hex ASCII value for each letter
  *                  2) Subtract 40h from each ASCII value
- *                  3) Retain 5 least signficant bits for each letter by
+ *                  3) Retain 5 least significant bits for each letter by
  *                     discarding upper 3 bits because they are always 0.
  *                  4) Compressed code = concatenate 0 and the 3 5-bit values
  *

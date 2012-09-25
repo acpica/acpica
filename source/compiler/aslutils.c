@@ -903,7 +903,7 @@ UtAttachNameseg (
             Name++;
         }
 
-        /* Remaing string should be one single nameseg */
+        /* Remaining string should be one single nameseg */
 
         UtPadNameWithUnderscores (Name, PaddedNameSeg);
     }

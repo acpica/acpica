@@ -4208,7 +4208,7 @@ AtInitTest0058(void)
 }
 
 /*
- * ASSERTION 0059: extention of 0047
+ * ASSERTION 0059: extension of 0047
  */
 ACPI_STATUS
 AtInitTest0059(void)

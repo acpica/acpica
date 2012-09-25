@@ -1761,7 +1761,7 @@ AtCheckString(
     if (!Object)
     {
         TestErrors++;
-        printf ("Test Error: cant allocate buffer of %d bytes\n",
+        printf ("Test Error: cannot allocate buffer of %d bytes\n",
             Results.Length);
         return (AE_NO_MEMORY);
     }
@@ -1851,7 +1851,7 @@ AtCheckBuffer(
     if (!Object)
     {
         TestErrors++;
-        printf ("Test Error: cant allocate buffer of %d bytes\n",
+        printf ("Test Error: cannot allocate buffer of %d bytes\n",
             Results.Length);
         return (AE_NO_MEMORY);
     }
