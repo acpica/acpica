@@ -118,7 +118,6 @@
 #include "acparser.h"
 #include "amlcode.h"
 #include "acdisasm.h"
-#include "acnamesp.h"
 
 #ifdef ACPI_DISASSEMBLER
 
