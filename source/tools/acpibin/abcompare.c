@@ -781,7 +781,12 @@ AbExtractAmlFile (
 
                     /* Write the converted (binary) byte */
 
-                    fwrite (&Value, 1, 1, FileOutHandle);
+                    if (fwrite (&Value, 1, 1, FileOutHandle) < 1)
+                    {
+                        printf ("Error writing byte %u to output file: %s\n",
+                            Count, File2Path);
+                        goto Exit;
+                    }
                     Count++;
                 }
             }
