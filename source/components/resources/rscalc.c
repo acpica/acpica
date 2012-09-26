@@ -554,6 +554,16 @@ AcpiRsGetListLength (
              * Get the number of vendor data bytes
              */
             ExtraStructBytes = ResourceLength;
+
+            /*
+             * There is already one byte included in the minimum
+             * descriptor size. If there are extra struct bytes,
+             * subtract one from the count.
+             */
+            if (ExtraStructBytes)
+            {
+                ExtraStructBytes--;
+            }
             break;
 
 
