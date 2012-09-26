@@ -879,8 +879,8 @@ AdDeferredParse (
 
     /*
      * We need to update all of the Aml offsets, since the parser thought
-     * that the method began at offset zero.  In reality, it began somewhere
-     * within the ACPI table, at the BaseAmlOffset.  Walk the entire tree that
+     * that the method began at offset zero. In reality, it began somewhere
+     * within the ACPI table, at the BaseAmlOffset. Walk the entire tree that
      * was just created and update the AmlOffset in each Op
      */
     BaseAmlOffset = (Op->Common.Value.Arg)->Common.AmlOffset + 1;
@@ -1070,7 +1070,7 @@ AdGetLocalTables (
         /*
          * Determine the number of tables pointed to by the RSDT/XSDT.
          * This is defined by the ACPI Specification to be the number of
-         * pointers contained within the RSDT/XSDT.  The size of the pointers
+         * pointers contained within the RSDT/XSDT. The size of the pointers
          * is architecture-dependent.
          */
         NumTables = (NewTable->Length - sizeof (ACPI_TABLE_HEADER)) / PointerSize;

@@ -119,7 +119,7 @@
 
 
 /*
- * Global variables.  Defined in aslmain.c only, externed in all other files
+ * Global variables. Defined in aslmain.c only, externed in all other files
  */
 
 #undef ASL_EXTERN

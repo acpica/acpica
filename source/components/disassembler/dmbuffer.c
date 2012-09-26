@@ -577,7 +577,7 @@ AcpiDmPldBuffer (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Dump Unicode string as a standard ASCII string.  (Remove
+ * DESCRIPTION: Dump Unicode string as a standard ASCII string. (Remove
  *              the extra zero bytes).
  *
  ******************************************************************************/

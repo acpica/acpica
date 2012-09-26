@@ -117,9 +117,9 @@
  * These procedures are used for tracking memory leaks in the subsystem, and
  * they get compiled out when the ACPI_DBG_TRACK_ALLOCATIONS is not set.
  *
- * Each memory allocation is tracked via a doubly linked list.  Each
+ * Each memory allocation is tracked via a doubly linked list. Each
  * element contains the caller's component, module name, function name, and
- * line number.  AcpiUtAllocate and AcpiUtAllocateZeroed call
+ * line number. AcpiUtAllocate and AcpiUtAllocateZeroed call
  * AcpiUtTrackAllocation to add an element to the list; deletion
  * occurs in the body of AcpiUtFree.
  */
@@ -638,7 +638,7 @@ AcpiUtDumpAllocationInfo (
  * FUNCTION:    AcpiUtDumpAllocations
  *
  * PARAMETERS:  Component           - Component(s) to dump info for.
- *              Module              - Module to dump info for.  NULL means all.
+ *              Module              - Module to dump info for. NULL means all.
  *
  * RETURN:      None
  *

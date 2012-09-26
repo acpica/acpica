@@ -169,7 +169,7 @@ AcpiExCheckObjectType (
     {
         /*
          * Allow the AML "Constant" opcodes (Zero, One, etc.) to be reference
-         * objects and thus allow them to be targets.  (As per the ACPI
+         * objects and thus allow them to be targets. (As per the ACPI
          * specification, a store to a constant is a noop.)
          */
         if ((ThisType == ACPI_TYPE_INTEGER) &&
@@ -745,7 +745,7 @@ AcpiExResolveOperands (
                 {
                     /*
                      * Enable original behavior of Store(), allowing any and all
-                     * objects as the source operand.  The ACPI spec does not
+                     * objects as the source operand. The ACPI spec does not
                      * allow this, however.
                      */
                     break;

@@ -859,7 +859,7 @@ AcpiDmXrefDescendingOp (
     }
 
     /*
-     * Lookup the name in the namespace.  Name must exist at this point, or it
+     * Lookup the name in the namespace. Name must exist at this point, or it
      * is an invalid reference.
      *
      * The namespace is also used as a lookup table for references to resource

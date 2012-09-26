@@ -201,7 +201,9 @@ AsRemoveSpacesAfterPeriod (
         Possible = strstr (Possible, ".  ");
         if (Possible)
         {
-            if ((*(Possible -1) == '.') || (*(Possible -1) == '\n'))
+            if ((*(Possible -1) == '.')  ||
+                (*(Possible -1) == '\"') ||
+                (*(Possible -1) == '\n'))
             {
                 Possible += 3;
                 continue;
@@ -437,7 +439,7 @@ AsCheckForBraces (
  *
  * FUNCTION:    AsTrimLines
  *
- * DESCRIPTION: Remove extra blanks from the end of source lines.  Does not
+ * DESCRIPTION: Remove extra blanks from the end of source lines. Does not
  *              check for tabs.
  *
  ******************************************************************************/
@@ -563,7 +565,7 @@ AsReplaceHeader (
  * FUNCTION:    AsReplaceString
  *
  * DESCRIPTION: Replace all instances of a target string with a replacement
- *              string.  Returns count of the strings replaced.
+ *              string. Returns count of the strings replaced.
  *
  ******************************************************************************/
 
@@ -884,7 +886,7 @@ AsBracesOnSameLine (
  *
  * FUNCTION:    AsTabify4
  *
- * DESCRIPTION: Convert the text to tabbed text.  Alignment of text is
+ * DESCRIPTION: Convert the text to tabbed text. Alignment of text is
  *              preserved.
  *
  ******************************************************************************/
@@ -974,7 +976,7 @@ AsTabify4 (
  *
  * FUNCTION:    AsTabify8
  *
- * DESCRIPTION: Convert the text to tabbed text.  Alignment of text is
+ * DESCRIPTION: Convert the text to tabbed text. Alignment of text is
  *              preserved.
  *
  ******************************************************************************/
@@ -1022,7 +1024,7 @@ AsTabify8 (
 
             /*
              * This mechanism limits the difference in tab counts from
-             * line to line.  It helps avoid the situation where a second
+             * line to line. It helps avoid the situation where a second
              * continuation line (which was indented correctly for tabs=4) would
              * get indented off the screen if we just blindly converted to tabs.
              */
@@ -1174,7 +1176,7 @@ AsTabify8 (
  *
  * FUNCTION:    AsCountLines
  *
- * DESCRIPTION: Count the number of lines in the input buffer.  Also count
+ * DESCRIPTION: Count the number of lines in the input buffer. Also count
  *              the number of long lines (lines longer than 80 chars).
  *
  ******************************************************************************/
@@ -1259,7 +1261,7 @@ AsCountTabs (
  *
  * FUNCTION:    AsCountNonAnsiComments
  *
- * DESCRIPTION: Count the number of "//" comments.  This type of comment is
+ * DESCRIPTION: Count the number of "//" comments. This type of comment is
  *              non-ANSI C.
  *
  ******************************************************************************/
@@ -1295,7 +1297,7 @@ AsCountNonAnsiComments (
  *
  * FUNCTION:    AsCountSourceLines
  *
- * DESCRIPTION: Count the number of C source lines.  Defined by 1) not a
+ * DESCRIPTION: Count the number of C source lines. Defined by 1) not a
  *              comment, and 2) not a blank line.
  *
  ******************************************************************************/

@@ -158,7 +158,7 @@ AcpiDsMethodDataGetType (
  * RETURN:      Status
  *
  * DESCRIPTION: Initialize the data structures that hold the method's arguments
- *              and locals.  The data struct is an array of namespace nodes for
+ *              and locals. The data struct is an array of namespace nodes for
  *              each - this allows RefOf and DeRefOf to work properly for these
  *              special data types.
  *
@@ -215,7 +215,7 @@ AcpiDsMethodDataInit (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Delete method locals and arguments.  Arguments are only
+ * DESCRIPTION: Delete method locals and arguments. Arguments are only
  *              deleted if this method was called from another method.
  *
  ******************************************************************************/
@@ -274,7 +274,7 @@ AcpiDsMethodDataDeleteAll (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Initialize arguments for a method.  The parameter list is a list
+ * DESCRIPTION: Initialize arguments for a method. The parameter list is a list
  *              of ACPI operand objects, either null terminated or whose length
  *              is defined by MaxParamCount.
  *
@@ -515,7 +515,7 @@ AcpiDsMethodDataGetValue (
          * This means that either 1) The expected argument was
          * not passed to the method, or 2) A local variable
          * was referenced by the method (via the ASL)
-         * before it was initialized.  Either case is an error.
+         * before it was initialized. Either case is an error.
          */
 
         /* If slack enabled, init the LocalX/ArgX to an Integer of value zero */
@@ -580,7 +580,7 @@ AcpiDsMethodDataGetValue (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Delete the entry at Opcode:Index.  Inserts
+ * DESCRIPTION: Delete the entry at Opcode:Index. Inserts
  *              a null into the stack slot after the object is deleted.
  *
  ******************************************************************************/
@@ -645,7 +645,7 @@ AcpiDsMethodDataDeleteValue (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Store a value in an Arg or Local.  The ObjDesc is installed
+ * DESCRIPTION: Store a value in an Arg or Local. The ObjDesc is installed
  *              as the new value for the Arg or Local and the reference count
  *              for ObjDesc is incremented.
  *
@@ -693,7 +693,7 @@ AcpiDsStoreObjectToLocal (
 
     /*
      * If the reference count on the object is more than one, we must
-     * take a copy of the object before we store.  A reference count
+     * take a copy of the object before we store. A reference count
      * of exactly 1 means that the object was just created during the
      * evaluation of an expression, and we can safely use it since it
      * is not used anywhere else.

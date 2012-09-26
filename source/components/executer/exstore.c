@@ -470,7 +470,7 @@ AcpiExStoreObjectToIndex (
  *              with the input value.
  *
  *              When storing into an object the data is converted to the
- *              target object type then stored in the object.  This means
+ *              target object type then stored in the object. This means
  *              that the target object type (for an initialized target) will
  *              not be changed by a store operation.
  *
@@ -590,7 +590,7 @@ AcpiExStoreObjectToNode (
             "Storing %s (%p) directly into node (%p) with no implicit conversion\n",
             AcpiUtGetObjectTypeName (SourceDesc), SourceDesc, Node));
 
-        /* No conversions for all other types.  Just attach the source object */
+        /* No conversions for all other types. Just attach the source object */
 
         Status = AcpiNsAttachObject (Node, SourceDesc,
                     SourceDesc->Common.Type);

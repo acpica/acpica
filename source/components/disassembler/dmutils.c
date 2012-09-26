@@ -336,8 +336,8 @@ AcpiDmCommaIfListMember (
         {
             /*
              * To handle the Divide() case where there are two optional
-             * targets, look ahead one more op.  If null, this null target
-             * is the one and only target -- no comma needed.  Otherwise,
+             * targets, look ahead one more op. If null, this null target
+             * is the one and only target -- no comma needed. Otherwise,
              * we need a comma to prepare for the next target.
              */
             if (!Op->Common.Next->Common.Next)

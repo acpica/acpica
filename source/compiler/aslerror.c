@@ -166,7 +166,7 @@ AeClearErrorLog (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Add a new error node to the error log.  The error log is
+ * DESCRIPTION: Add a new error node to the error log. The error log is
  *              ordered by the "logical" line number (cumulative line number
  *              including all include files.)
  *

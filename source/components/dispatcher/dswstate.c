@@ -457,7 +457,7 @@ AcpiDsObjStackPush (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Pop this walk's object stack.  Objects on the stack are NOT
+ * DESCRIPTION: Pop this walk's object stack. Objects on the stack are NOT
  *              deleted by this routine.
  *
  ******************************************************************************/
@@ -621,7 +621,7 @@ AcpiDsPushWalkState (
  * RETURN:      A WalkState object popped from the thread's stack
  *
  * DESCRIPTION: Remove and return the walkstate object that is at the head of
- *              the walk stack for the given walk list.  NULL indicates that
+ *              the walk stack for the given walk list. NULL indicates that
  *              the list is empty.
  *
  ******************************************************************************/
@@ -666,7 +666,7 @@ AcpiDsPopWalkState (
  *
  * RETURN:      Pointer to the new walk state.
  *
- * DESCRIPTION: Allocate and initialize a new walk state.  The current walk
+ * DESCRIPTION: Allocate and initialize a new walk state. The current walk
  *              state is set to this new state.
  *
  ******************************************************************************/
@@ -802,7 +802,7 @@ AcpiDsInitAmlWalk (
         /*
          * Setup the current scope.
          * Find a Named Op that has a namespace node associated with it.
-         * search upwards from this Op.  Current scope is the first
+         * search upwards from this Op. Current scope is the first
          * Op with a namespace node.
          */
         ExtraOp = ParserState->StartOp;

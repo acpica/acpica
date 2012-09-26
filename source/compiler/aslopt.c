@@ -199,9 +199,9 @@ OptSearchToRoot (
 
 
     /*
-     * Check if search-to-root can be utilized.  Use the last NameSeg of
+     * Check if search-to-root can be utilized. Use the last NameSeg of
      * the NamePath and 1) See if can be found and 2) If found, make
-     * sure that it is the same node that we want.  If there is another
+     * sure that it is the same node that we want. If there is another
      * name in the search path before the one we want, the nodes will
      * not match, and we cannot use this optimization.
      */
@@ -221,7 +221,7 @@ OptSearchToRoot (
 
     /*
      * We found the name, but we must check to make sure that the node
-     * matches.  Otherwise, there is another identical name in the search
+     * matches. Otherwise, there is another identical name in the search
      * path that precludes the use of this optimization.
      */
     if (Node != TargetNode)
@@ -305,7 +305,7 @@ OptBuildShortestPath (
 
     /*
      * Determine the maximum number of NameSegs that the Target and Current paths
-     * can possibly have in common.  (To optimize, we have to have at least 1)
+     * can possibly have in common. (To optimize, we have to have at least 1)
      *
      * Note: The external NamePath string lengths are always a multiple of 5
      * (ACPI_NAME_SIZE + separator)
@@ -443,7 +443,7 @@ OptBuildShortestPath (
 
     /*
      * Check to make sure that the optimization finds the node we are
-     * looking for.  This is simply a sanity check on the new
+     * looking for. This is simply a sanity check on the new
      * path that has been created.
      */
     Status = AcpiNsLookup (&ScopeInfo,  NewPath,
@@ -525,7 +525,7 @@ OptOptimizeNameDeclaration (
     {
         /*
          * The current scope is the root, and the namepath has a root prefix
-         * that is therefore extraneous.  Remove it.
+         * that is therefore extraneous. Remove it.
          */
         *NewPath = &AmlNameString[1];
 
@@ -542,7 +542,7 @@ OptOptimizeNameDeclaration (
 
         /*
          * Check to make sure that the optimization finds the node we are
-         * looking for.  This is simply a sanity check on the new
+         * looking for. This is simply a sanity check on the new
          * path that has been created.
          *
          * We know that we are at the root, so NULL is used for the scope.
@@ -605,7 +605,7 @@ OptOptimizeNameDeclaration (
  *              AmlNameString       - Unoptimized namepath
  *              TargetNode          - Node to which AmlNameString refers
  *
- * RETURN:      None.  If path is optimized, the Op is updated with new path
+ * RETURN:      None. If path is optimized, the Op is updated with new path
  *
  * DESCRIPTION: Optimize a Named Declaration or Reference to the minimal length.
  *              Must take into account both the current location in the
@@ -680,7 +680,7 @@ OptOptimizeNamePath (
 
     /*
      * We need to obtain the node that represents the current scope -- where
-     * we are right now in the namespace.  We will compare this path
+     * we are right now in the namespace. We will compare this path
      * against the Namepath, looking for commonality.
      */
     CurrentNode = AcpiGbl_RootNode;
@@ -813,7 +813,7 @@ OptOptimizeNamePath (
 
     /*
      * Success from above indicates that the NamePath was successfully
-     * optimized.  We need to update the parse op with the new name
+     * optimized. We need to update the parse op with the new name
      */
     if (ACPI_SUCCESS (Status))
     {

@@ -236,7 +236,7 @@ AcpiHwSetMode (
  *
  * RETURN:      SYS_MODE_ACPI or SYS_MODE_LEGACY
  *
- * DESCRIPTION: Return current operating state of system.  Determined by
+ * DESCRIPTION: Return current operating state of system. Determined by
  *              querying the SCI_EN bit.
  *
  ******************************************************************************/

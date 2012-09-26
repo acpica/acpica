@@ -251,7 +251,7 @@ AcpiExOpcode_3A_1T_1R (
     case AML_MID_OP:    /* Mid (Source[0], Index[1], Length[2], Result[3]) */
 
         /*
-         * Create the return object.  The Source operand is guaranteed to be
+         * Create the return object. The Source operand is guaranteed to be
          * either a String or a Buffer, so just use its type.
          */
         ReturnDesc = AcpiUtCreateInternalObject (

@@ -338,9 +338,9 @@ AcpiUtAcquireMutex (
         /*
          * Mutex debug code, for internal debugging only.
          *
-         * Deadlock prevention.  Check if this thread owns any mutexes of value
-         * greater than or equal to this one.  If so, the thread has violated
-         * the mutex ordering rule.  This indicates a coding error somewhere in
+         * Deadlock prevention. Check if this thread owns any mutexes of value
+         * greater than or equal to this one. If so, the thread has violated
+         * the mutex ordering rule. This indicates a coding error somewhere in
          * the ACPI subsystem code.
          */
         for (i = MutexId; i < ACPI_NUM_MUTEX; i++)
@@ -437,9 +437,9 @@ AcpiUtReleaseMutex (
         /*
          * Mutex debug code, for internal debugging only.
          *
-         * Deadlock prevention.  Check if this thread owns any mutexes of value
-         * greater than this one.  If so, the thread has violated the mutex
-         * ordering rule.  This indicates a coding error somewhere in
+         * Deadlock prevention. Check if this thread owns any mutexes of value
+         * greater than this one. If so, the thread has violated the mutex
+         * ordering rule. This indicates a coding error somewhere in
          * the ACPI subsystem code.
          */
         for (i = MutexId; i < ACPI_NUM_MUTEX; i++)

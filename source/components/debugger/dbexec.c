@@ -746,7 +746,7 @@ AcpiDbGetOutstandingAllocations (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute a control method.  Name is relative to the current
+ * DESCRIPTION: Execute a control method. Name is relative to the current
  *              scope.
  *
  ******************************************************************************/
@@ -996,7 +996,7 @@ AcpiDbDumpPldBuffer (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Execute a control method.  Name is relative to the current
+ * DESCRIPTION: Execute a control method. Name is relative to the current
  *              scope.
  *
  ******************************************************************************/
@@ -1130,7 +1130,7 @@ AcpiDbExecute (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Debugger execute thread.  Waits for a command line, then
+ * DESCRIPTION: Debugger execute thread. Waits for a command line, then
  *              simply dispatches it.
  *
  ******************************************************************************/

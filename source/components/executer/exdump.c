@@ -900,7 +900,7 @@ AcpiExDumpOperands (
  * PARAMETERS:  Title               - Descriptive text
  *              Value               - Value to be displayed
  *
- * DESCRIPTION: Object dump output formatting functions.  These functions
+ * DESCRIPTION: Object dump output formatting functions. These functions
  *              reduce the number of format strings required and keeps them
  *              all in one place for easy modification.
  *

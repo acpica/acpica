@@ -133,8 +133,8 @@
  * PARAMETERS:  ObjectPtr       - Pointer to a location that contains
  *                                a pointer to a NS node, and will receive a
  *                                pointer to the resolved object.
- *              WalkState       - Current state.  Valid only if executing AML
- *                                code.  NULL if simply resolving an object
+ *              WalkState       - Current state. Valid only if executing AML
+ *                                code. NULL if simply resolving an object
  *
  * RETURN:      Status
  *
@@ -142,7 +142,7 @@
  *
  * Note: for some of the data types, the pointer attached to the Node
  * can be either a pointer to an actual internal object or a pointer into the
- * AML stream itself.  These types are currently:
+ * AML stream itself. These types are currently:
  *
  *      ACPI_TYPE_INTEGER
  *      ACPI_TYPE_STRING
@@ -169,7 +169,7 @@ AcpiExResolveNodeToValue (
 
 
     /*
-     * The stack pointer points to a ACPI_NAMESPACE_NODE (Node).  Get the
+     * The stack pointer points to a ACPI_NAMESPACE_NODE (Node). Get the
      * object that is attached to the Node.
      */
     Node       = *ObjectPtr;

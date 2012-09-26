@@ -189,7 +189,7 @@ AcpiDbMatchArgument (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Set the current destination for debugger output.  Also sets
+ * DESCRIPTION: Set the current destination for debugger output. Also sets
  *              the debug output level accordingly.
  *
  ******************************************************************************/
@@ -388,7 +388,7 @@ AcpiDbPrepNamestring (
  *
  * DESCRIPTION: Lookup a name in the ACPI namespace
  *
- * Note: Currently begins search from the root.  Could be enhanced to use
+ * Note: Currently begins search from the root. Could be enhanced to use
  * the current prefix (scope) node as the search beginning point.
  *
  ******************************************************************************/
@@ -479,7 +479,7 @@ AcpiDbUint32ToHexString (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Second pass parse of the ACPI tables.  We need to wait until
+ * DESCRIPTION: Second pass parse of the ACPI tables. We need to wait until
  *              second pass to parse the control methods
  *
  ******************************************************************************/

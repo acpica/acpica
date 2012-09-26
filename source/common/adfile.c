@@ -255,7 +255,7 @@ AdWriteTable (
  * RETURN:      New filename containing the original base + the new suffix
  *
  * DESCRIPTION: Generate a new filename from the ASL source filename and a new
- *              extension.  Used to create the *.LST, *.TXT, etc. files.
+ *              extension. Used to create the *.LST, *.TXT, etc. files.
  *
  ******************************************************************************/
 

@@ -482,7 +482,7 @@ main (
 
     if (!ConversionTable)
     {
-        /* Just generate statistics.  Ignore target path */
+        /* Just generate statistics. Ignore target path */
 
         TargetPath = SourcePath;
 

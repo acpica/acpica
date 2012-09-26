@@ -248,7 +248,7 @@ AcpiDbDumpParserDescriptor (
  *
  * FUNCTION:    AcpiDbDecodeAndDisplayObject
  *
- * PARAMETERS:  Target          - String with object to be displayed.  Names
+ * PARAMETERS:  Target          - String with object to be displayed. Names
  *                                and hex pointers are supported.
  *              OutputType      - Byte, Word, Dword, or Qword (B|W|D|Q)
  *

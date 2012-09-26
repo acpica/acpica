@@ -529,7 +529,7 @@ AcpiDbDisplayHelp (
  *
  * RETURN:      Pointer to the start of the next token.
  *
- * DESCRIPTION: Command line parsing.  Get the next token on the command line
+ * DESCRIPTION: Command line parsing. Get the next token on the command line
  *
  ******************************************************************************/
 
@@ -682,7 +682,7 @@ AcpiDbGetNextToken (
  *
  * RETURN:      Count of arguments to the command
  *
- * DESCRIPTION: Get the next command line from the user.  Gets entire line
+ * DESCRIPTION: Get the next command line from the user. Gets entire line
  *              up to the next newline
  *
  ******************************************************************************/
@@ -1155,7 +1155,7 @@ AcpiDbCommandDispatch (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Debugger execute thread.  Waits for a command line, then
+ * DESCRIPTION: Debugger execute thread. Waits for a command line, then
  *              simply dispatches it.
  *
  ******************************************************************************/
@@ -1198,7 +1198,7 @@ AcpiDbExecuteThread (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Debugger execute thread.  Waits for a command line, then
+ * DESCRIPTION: Debugger execute thread. Waits for a command line, then
  *              simply dispatches it.
  *
  ******************************************************************************/
@@ -1224,7 +1224,7 @@ AcpiDbSingleThread (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Command line execution for the AML debugger.  Commands are
+ * DESCRIPTION: Command line execution for the AML debugger. Commands are
  *              matched and dispatched here.
  *
  ******************************************************************************/

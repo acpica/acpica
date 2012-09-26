@@ -280,7 +280,7 @@ ErrorExit:
  *
  * RETURN:      None
  *
- * DESCRIPTION: Dump entire namespace or a subtree.  Each node is displayed
+ * DESCRIPTION: Dump entire namespace or a subtree. Each node is displayed
  *              with type and other information.
  *
  ******************************************************************************/
@@ -377,7 +377,7 @@ AcpiDbDumpNamespaceByOwner (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Find a particular name/names within the namespace.  Wildcards
+ * DESCRIPTION: Find a particular name/names within the namespace. Wildcards
  *              are supported -- '?' matches any character.
  *
  ******************************************************************************/

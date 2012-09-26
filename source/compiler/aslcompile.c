@@ -692,7 +692,7 @@ CmDoCompile (
     UtEndEvent (AslGbl_NamespaceEvent);
 
     /*
-     * Semantic analysis.  This can happen only after the
+     * Semantic analysis. This can happen only after the
      * namespace has been loaded and cross-referenced.
      *
      * part one - check control methods

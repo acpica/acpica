@@ -495,7 +495,7 @@ LsDoOnePathname (
  * RETURN:      Status
  *
  * DESCRIPTION: Walk the namespace an display information about each node
- *              in the tree.  Information is written to the optional
+ *              in the tree. Information is written to the optional
  *              namespace output file.
  *
  ******************************************************************************/
@@ -763,8 +763,8 @@ LkFindUnreferencedObjects (
  * RETURN:      Status
  *
  * DESCRIPTION: Perform a cross reference check of the parse tree against the
- *              namespace.  Every named referenced within the parse tree
- *              should be get resolved with a namespace lookup.  If not, the
+ *              namespace. Every named referenced within the parse tree
+ *              should be get resolved with a namespace lookup. If not, the
  *              original reference in the ASL code is invalid -- i.e., refers
  *              to a non-existent object.
  *
@@ -831,7 +831,7 @@ LkCheckFieldRange (
 
 
     /*
-     * Check each field unit against the region size.  The entire
+     * Check each field unit against the region size. The entire
      * field unit (start offset plus length) must fit within the
      * region.
      */
@@ -847,7 +847,7 @@ LkCheckFieldRange (
 
     /*
      * Now check that the field plus AccessWidth doesn't go beyond
-     * the end-of-region.  Assumes AccessBitWidth is a power of 2
+     * the end-of-region. Assumes AccessBitWidth is a power of 2
      */
     FieldEndBitOffset = ACPI_ROUND_UP (FieldEndBitOffset, AccessBitWidth);
 
@@ -867,13 +867,13 @@ LkCheckFieldRange (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Descending callback used during cross-reference.  For named
+ * DESCRIPTION: Descending callback used during cross-reference. For named
  *              object references, attempt to locate the name in the
  *              namespace.
  *
  * NOTE: ASL references to named fields within resource descriptors are
- *       resolved to integer values here.  Therefore, this step is an
- *       important part of the code generation.  We don't know that the
+ *       resolved to integer values here. Therefore, this step is an
+ *       important part of the code generation. We don't know that the
  *       name refers to a resource descriptor until now.
  *
  ******************************************************************************/
@@ -907,7 +907,7 @@ LkNamespaceLocateBegin (
     /*
      * If this node is the actual declaration of a name
      * [such as the XXXX name in "Method (XXXX)"],
-     * we are not interested in it here.  We only care about names that are
+     * we are not interested in it here. We only care about names that are
      * references to other objects within the namespace and the parent objects
      * of name declarations
      */
@@ -993,7 +993,7 @@ LkNamespaceLocateBegin (
         "Type=%s\n", AcpiUtGetTypeName (ObjectType)));
 
     /*
-     * Lookup the name in the namespace.  Name must exist at this point, or it
+     * Lookup the name in the namespace. Name must exist at this point, or it
      * is an invalid reference.
      *
      * The namespace is also used as a lookup table for references to resource
@@ -1298,9 +1298,9 @@ LkNamespaceLocateBegin (
              (Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_BANKFIELD)))
     {
         /*
-         * Offset checking for fields.  If the parent operation region has a
+         * Offset checking for fields. If the parent operation region has a
          * constant length (known at compile time), we can check fields
-         * defined in that region against the region length.  This will catch
+         * defined in that region against the region length. This will catch
          * fields and field units that cannot possibly fit within the region.
          *
          * Note: Index fields do not directly reference an operation region,
@@ -1310,7 +1310,7 @@ LkNamespaceLocateBegin (
         {
             /*
              * This is the first child of the field node, which is
-             * the name of the region.  Get the parse node for the
+             * the name of the region. Get the parse node for the
              * region -- which contains the length of the region.
              */
             OwningOp = Node->Op;
@@ -1387,7 +1387,7 @@ LkNamespaceLocateBegin (
         else
         {
             /*
-             * This is one element of the field list.  Check to make sure
+             * This is one element of the field list. Check to make sure
              * that it does not go beyond the end of the parent operation region.
              *
              * In the code below:
@@ -1420,7 +1420,7 @@ LkNamespaceLocateBegin (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Ascending callback used during cross reference.  We only
+ * DESCRIPTION: Ascending callback used during cross reference. We only
  *              need to worry about scope management here.
  *
  ******************************************************************************/

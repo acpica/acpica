@@ -128,7 +128,7 @@ AsUppercaseTokens (
  * FUNCTION:    AsLowerCaseString
  *
  * DESCRIPTION: LowerCase all instances of a target string with a replacement
- *              string.  Returns count of the strings replaced.
+ *              string. Returns count of the strings replaced.
  *
  ******************************************************************************/
 
@@ -536,7 +536,7 @@ AsMixedCaseToUnderscores (
  *
  * FUNCTION:    AsLowerCaseIdentifiers
  *
- * DESCRIPTION: Converts mixed case identifiers to lower case.  Leaves comments,
+ * DESCRIPTION: Converts mixed case identifiers to lower case. Leaves comments,
  *              quoted strings, and all-upper-case macros alone.
  *
  ******************************************************************************/

@@ -181,7 +181,7 @@ AsSkipPastChar (
  *
  * DESCRIPTION: This function inserts and removes data from the file buffer.
  *              if more data is inserted than is removed, the data in the buffer
- *              is moved to make room.  If less data is inserted than is removed,
+ *              is moved to make room. If less data is inserted than is removed,
  *              the remaining data is moved to close the hole.
  *
  ******************************************************************************/
@@ -234,7 +234,7 @@ AsReplaceData (
  *
  * DESCRIPTION: This function inserts and removes data from the file buffer.
  *              if more data is inserted than is removed, the data in the buffer
- *              is moved to make room.  If less data is inserted than is removed,
+ *              is moved to make room. If less data is inserted than is removed,
  *              the remaining data is moved to close the hole.
  *
  ******************************************************************************/
@@ -279,7 +279,7 @@ AsInsertData (
  *
  * DESCRIPTION: This function inserts and removes data from the file buffer.
  *              if more data is inserted than is removed, the data in the buffer
- *              is moved to make room.  If less data is inserted than is removed,
+ *              is moved to make room. If less data is inserted than is removed,
  *              the remaining data is moved to close the hole.
  *
  ******************************************************************************/

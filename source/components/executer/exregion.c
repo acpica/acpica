@@ -291,7 +291,7 @@ AcpiExSystemMemorySpaceHandler (
      * Perform the memory read or write
      *
      * Note: For machines that do not support non-aligned transfers, the target
-     * address was checked for alignment above.  We do not attempt to break the
+     * address was checked for alignment above. We do not attempt to break the
      * transfer up into smaller (byte-size) chunks because the AML specifically
      * asked for a transfer width that the hardware may require.
      */

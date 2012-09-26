@@ -147,8 +147,8 @@ AcpiNsCopyDeviceId (
  * RETURN:      Status
  *
  * DESCRIPTION: This routine will search for a caller specified name in the
- *              name space.  The caller can restrict the search region by
- *              specifying a non NULL parent.  The parent value is itself a
+ *              name space. The caller can restrict the search region by
+ *              specifying a non NULL parent. The parent value is itself a
  *              namespace handle.
  *
  ******************************************************************************/
@@ -236,7 +236,7 @@ ACPI_EXPORT_SYMBOL (AcpiGetHandle)
  * RETURN:      Pointer to a string containing the fully qualified Name.
  *
  * DESCRIPTION: This routine returns the fully qualified name associated with
- *              the Handle parameter.  This and the AcpiPathnameToHandle are
+ *              the Handle parameter. This and the AcpiPathnameToHandle are
  *              complementary functions.
  *
  ******************************************************************************/

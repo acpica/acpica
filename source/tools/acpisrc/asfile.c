@@ -230,7 +230,7 @@ AsDoWildcard (
  *
  * FUNCTION:    AsProcessTree
  *
- * DESCRIPTION: Process the directory tree.  Files with the extension ".C" and
+ * DESCRIPTION: Process the directory tree. Files with the extension ".C" and
  *              ".H" are processed as the tree is traversed.
  *
  ******************************************************************************/
@@ -591,7 +591,7 @@ AsConvertFile (
  *
  * FUNCTION:    AsProcessOneFile
  *
- * DESCRIPTION: Process one source file.  The file is opened, read entirely
+ * DESCRIPTION: Process one source file. The file is opened, read entirely
  *              into a buffer, converted, then written to a new file.
  *
  ******************************************************************************/
@@ -703,7 +703,7 @@ AsProcessOneFile (
  *
  * FUNCTION:    AsCheckForDirectory
  *
- * DESCRIPTION: Check if the current file is a valid directory.  If not,
+ * DESCRIPTION: Check if the current file is a valid directory. If not,
  *              construct the full pathname for the source and target paths.
  *              Checks for the dot and dot-dot files (they are ignored)
  *
@@ -822,7 +822,7 @@ AsGetFile (
     Gbl_HasLoneLineFeeds = AsDetectLoneLineFeeds (Filename, Buffer);
 
     /*
-     * Convert all CR/LF pairs to LF only.  We do this locally so that
+     * Convert all CR/LF pairs to LF only. We do this locally so that
      * this code is portable across operating systems.
      */
     AsConvertToLineFeeds (Buffer);
@@ -845,7 +845,7 @@ ErrorExit:
  * FUNCTION:    AsPutFile
  *
  * DESCRIPTION: Create a new output file and write the entire contents of the
- *              buffer to the new file.  Buffer must be a zero terminated string
+ *              buffer to the new file. Buffer must be a zero terminated string
  *
  ******************************************************************************/
 

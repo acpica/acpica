@@ -259,10 +259,10 @@ OpcGetIntegerWidth (
  *
  * PARAMETERS:  Op        - A parse tree node
  *
- * RETURN:      Integer width, in bytes.  Also sets the node AML opcode to the
+ * RETURN:      Integer width, in bytes. Also sets the node AML opcode to the
  *              optimal integer AML prefix opcode.
  *
- * DESCRIPTION: Determine the optimal AML encoding of an integer.  All leading
+ * DESCRIPTION: Determine the optimal AML encoding of an integer. All leading
  *              zeros can be truncated to squeeze the integer into the
  *              minimal number of AML bytes.
  *
@@ -530,7 +530,7 @@ OpcDoConnection (
  * RETURN:      None
  *
  * DESCRIPTION: Implement the UNICODE ASL "macro".  Convert the input string
- *              to a unicode buffer.  There is no Unicode AML opcode.
+ *              to a unicode buffer. There is no Unicode AML opcode.
  *
  * Note:  The Unicode string is 16 bits per character, no leading signature,
  *        with a 16-bit terminating NULL.
@@ -606,14 +606,14 @@ OpcDoUnicode (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Convert a string EISA ID to numeric representation.  See the
- *              Pnp BIOS Specification for details.  Here is an excerpt:
+ * DESCRIPTION: Convert a string EISA ID to numeric representation. See the
+ *              Pnp BIOS Specification for details. Here is an excerpt:
  *
  *              A seven character ASCII representation of the product
- *              identifier compressed into a 32-bit identifier.  The seven
+ *              identifier compressed into a 32-bit identifier. The seven
  *              character ID consists of a three character manufacturer code,
  *              a three character hexadecimal product identifier, and a one
- *              character hexadecimal revision number.  The manufacturer code
+ *              character hexadecimal revision number. The manufacturer code
  *              is a 3 uppercase character code that is compressed into 3 5-bit
  *              values as follows:
  *                  1) Find hex ASCII value for each letter
@@ -797,7 +797,7 @@ OpcDoUuId (
  * RETURN:      None
  *
  * DESCRIPTION: Generate the AML opcode associated with the node and its
- *              parse (lex/flex) keyword opcode.  Essentially implements
+ *              parse (lex/flex) keyword opcode. Essentially implements
  *              a mapping between the parse opcodes and the actual AML opcodes.
  *
  ******************************************************************************/

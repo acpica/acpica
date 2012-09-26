@@ -160,7 +160,7 @@ CgWriteNode (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Generate AML code.  Currently generates the listing file
+ * DESCRIPTION: Generate AML code. Currently generates the listing file
  *              simultaneously.
  *
  ******************************************************************************/

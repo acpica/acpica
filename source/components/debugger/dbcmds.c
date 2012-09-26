@@ -163,7 +163,7 @@ AcpiDbDeviceResources (
  *
  * RETURN:      Pointer to a NS node
  *
- * DESCRIPTION: Convert a string to a valid NS pointer.  Handles numeric or
+ * DESCRIPTION: Convert a string to a valid NS pointer. Handles numeric or
  *              alpha strings.
  *
  ******************************************************************************/
@@ -312,7 +312,7 @@ AcpiDbDisplayLocks (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Display information about loaded tables.  Current
+ * DESCRIPTION: Display information about loaded tables. Current
  *              implementation displays all loaded tables.
  *
  ******************************************************************************/
@@ -454,7 +454,7 @@ AcpiDbUnloadAcpiTable (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Send an ACPI notification.  The value specified is sent to the
+ * DESCRIPTION: Send an ACPI notification. The value specified is sent to the
  *              named object as an ACPI notify.
  *
  ******************************************************************************/

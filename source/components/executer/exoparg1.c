@@ -739,7 +739,7 @@ AcpiExOpcode_1A_0T_1R (
         }
 
         /*
-         * Set result to ONES (TRUE) if Value == 0.  Note:
+         * Set result to ONES (TRUE) if Value == 0. Note:
          * ReturnDesc->Integer.Value is initially == 0 (FALSE) from above.
          */
         if (!Operand[0]->Integer.Value)
@@ -753,7 +753,7 @@ AcpiExOpcode_1A_0T_1R (
     case AML_INCREMENT_OP:          /* Increment (Operand)  */
 
         /*
-         * Create a new integer.  Can't just get the base integer and
+         * Create a new integer. Can't just get the base integer and
          * increment it because it may be an Arg or Field.
          */
         ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
@@ -821,7 +821,7 @@ AcpiExOpcode_1A_0T_1R (
 
         /*
          * Note: The operand is not resolved at this point because we want to
-         * get the associated object, not its value.  For example, we don't
+         * get the associated object, not its value. For example, we don't
          * want to resolve a FieldUnit to its value, we want the actual
          * FieldUnit object.
          */
@@ -863,7 +863,7 @@ AcpiExOpcode_1A_0T_1R (
 
         /*
          * The type of the base object must be integer, buffer, string, or
-         * package.  All others are not supported.
+         * package. All others are not supported.
          *
          * NOTE: Integer is not specifically supported by the ACPI spec,
          * but is supported implicitly via implicit operand conversion.
@@ -1101,7 +1101,7 @@ AcpiExOpcode_1A_0T_1R (
                 case ACPI_TYPE_PACKAGE:
 
                     /*
-                     * Return the referenced element of the package.  We must
+                     * Return the referenced element of the package. We must
                      * add another reference to the referenced object, however.
                      */
                     ReturnDesc = *(Operand[0]->Reference.Where);

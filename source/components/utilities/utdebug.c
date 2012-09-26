@@ -322,7 +322,7 @@ ACPI_EXPORT_SYMBOL (AcpiDebugPrint)
  *
  * RETURN:      None
  *
- * DESCRIPTION: Print message with no headers.  Has same interface as
+ * DESCRIPTION: Print message with no headers. Has same interface as
  *              DebugPrint so that the same macros can be used.
  *
  ******************************************************************************/
@@ -365,7 +365,7 @@ ACPI_EXPORT_SYMBOL (AcpiDebugPrintRaw)
  *
  * RETURN:      None
  *
- * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
+ * DESCRIPTION: Function entry trace. Prints only if TRACE_FUNCTIONS bit is
  *              set in DebugLevel
  *
  ******************************************************************************/
@@ -401,7 +401,7 @@ ACPI_EXPORT_SYMBOL (AcpiUtTrace)
  *
  * RETURN:      None
  *
- * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
+ * DESCRIPTION: Function entry trace. Prints only if TRACE_FUNCTIONS bit is
  *              set in DebugLevel
  *
  ******************************************************************************/
@@ -436,7 +436,7 @@ AcpiUtTracePtr (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
+ * DESCRIPTION: Function entry trace. Prints only if TRACE_FUNCTIONS bit is
  *              set in DebugLevel
  *
  ******************************************************************************/
@@ -471,7 +471,7 @@ AcpiUtTraceStr (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Function entry trace.  Prints only if TRACE_FUNCTIONS bit is
+ * DESCRIPTION: Function entry trace. Prints only if TRACE_FUNCTIONS bit is
  *              set in DebugLevel
  *
  ******************************************************************************/
@@ -505,7 +505,7 @@ AcpiUtTraceU32 (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
+ * DESCRIPTION: Function exit trace. Prints only if TRACE_FUNCTIONS bit is
  *              set in DebugLevel
  *
  ******************************************************************************/
@@ -540,8 +540,8 @@ ACPI_EXPORT_SYMBOL (AcpiUtExit)
  *
  * RETURN:      None
  *
- * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
- *              set in DebugLevel.  Prints exit status also.
+ * DESCRIPTION: Function exit trace. Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel. Prints exit status also.
  *
  ******************************************************************************/
 
@@ -587,8 +587,8 @@ ACPI_EXPORT_SYMBOL (AcpiUtStatusExit)
  *
  * RETURN:      None
  *
- * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
- *              set in DebugLevel.  Prints exit value also.
+ * DESCRIPTION: Function exit trace. Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel. Prints exit value also.
  *
  ******************************************************************************/
 
@@ -624,8 +624,8 @@ ACPI_EXPORT_SYMBOL (AcpiUtValueExit)
  *
  * RETURN:      None
  *
- * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
- *              set in DebugLevel.  Prints exit value also.
+ * DESCRIPTION: Function exit trace. Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel. Prints exit value also.
  *
  ******************************************************************************/
 

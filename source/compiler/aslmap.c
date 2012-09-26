@@ -171,7 +171,7 @@ AslMapNamedOpcodeToDataType (
  *
  * DATA STRUCTURE:  AslKeywordMapping
  *
- * DESCRIPTION:     Maps the ParseOpcode to the actual AML opcode.  The parse
+ * DESCRIPTION:     Maps the ParseOpcode to the actual AML opcode. The parse
  *                  opcodes are generated from Bison, and this table must
  *                  track any additions to them.
  *

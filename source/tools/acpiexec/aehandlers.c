@@ -239,7 +239,7 @@ static ACPI_CONNECTION_INFO   AeMyContext;
  *
  * RETURN:      none
  *
- * DESCRIPTION: Control-C handler.  Abort running control method if any.
+ * DESCRIPTION: Control-C handler. Abort running control method if any.
  *
  *****************************************************************************/
 
@@ -371,7 +371,7 @@ AeCommonNotifyHandler (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: System notify handler for AcpiExec utility.  Used by the ASL
+ * DESCRIPTION: System notify handler for AcpiExec utility. Used by the ASL
  *              test suite(s) to communicate errors and other information to
  *              this utility via the Notify() operator.
  *
@@ -404,7 +404,7 @@ AeSystemNotifyHandler (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Device notify handler for AcpiExec utility.  Used by the ASL
+ * DESCRIPTION: Device notify handler for AcpiExec utility. Used by the ASL
  *              test suite(s) to communicate errors and other information to
  *              this utility via the Notify() operator.
  *

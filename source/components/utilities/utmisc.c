@@ -353,7 +353,7 @@ Exit:
  *              control method or unloading a table. Either way, we would
  *              ignore any error anyway.
  *
- * DESCRIPTION: Release a table or method owner ID.  Valid IDs are 1 - 255
+ * DESCRIPTION: Release a table or method owner ID. Valid IDs are 1 - 255
  *
  ******************************************************************************/
 
@@ -684,8 +684,8 @@ AcpiUtDwordByteSwap (
  * RETURN:      None
  *
  * DESCRIPTION: Set the global integer bit width based upon the revision
- *              of the DSDT.  For Revision 1 and 0, Integers are 32 bits.
- *              For Revision 2 and above, Integers are 64 bits.  Yes, this
+ *              of the DSDT. For Revision 1 and 0, Integers are 32 bits.
+ *              For Revision 2 and above, Integers are 64 bits. Yes, this
  *              makes a difference.
  *
  ******************************************************************************/
@@ -840,7 +840,7 @@ AcpiUtValidAcpiChar (
  *
  * RETURN:      TRUE if the name is valid, FALSE otherwise
  *
- * DESCRIPTION: Check for a valid ACPI name.  Each character must be one of:
+ * DESCRIPTION: Check for a valid ACPI name. Each character must be one of:
  *              1) Upper case alpha
  *              2) numeric
  *              3) underscore
@@ -1239,10 +1239,10 @@ AcpiUtWalkPackageTree (
 
         /*
          * Check for:
-         * 1) An uninitialized package element.  It is completely
+         * 1) An uninitialized package element. It is completely
          *    legal to declare a package and leave it uninitialized
          * 2) Not an internal object - can be a namespace node instead
-         * 3) Any type other than a package.  Packages are handled in else
+         * 3) Any type other than a package. Packages are handled in else
          *    case below.
          */
         if ((!ThisSourceObj) ||
@@ -1261,7 +1261,7 @@ AcpiUtWalkPackageTree (
             {
                 /*
                  * We've handled all of the objects at this level,  This means
-                 * that we have just completed a package.  That package may
+                 * that we have just completed a package. That package may
                  * have contained one or more packages itself.
                  *
                  * Delete this state and pop the previous state (package).

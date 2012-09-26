@@ -295,7 +295,7 @@ AcpiExLoadTableOp (
     if (Operand[3]->String.Length > 0)
     {
         /*
-         * Find the node referenced by the RootPathString.  This is the
+         * Find the node referenced by the RootPathString. This is the
          * location within the namespace where the table will be loaded.
          */
         Status = AcpiNsGetNode (StartNode, Operand[3]->String.Pointer,

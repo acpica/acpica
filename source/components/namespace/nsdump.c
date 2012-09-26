@@ -809,7 +809,7 @@ AcpiNsDumpEntry (
  *
  * PARAMETERS:  SearchBase          - Root of subtree to be dumped, or
  *                                    NS_ALL to dump the entire namespace
- *              MaxDepth            - Maximum depth of dump.  Use INT_MAX
+ *              MaxDepth            - Maximum depth of dump. Use INT_MAX
  *                                    for an effectively unlimited depth.
  *
  * RETURN:      None

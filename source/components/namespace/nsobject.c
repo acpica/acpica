@@ -138,7 +138,7 @@
  * RETURN:      Status
  *
  * DESCRIPTION: Record the given object as the value associated with the
- *              name whose ACPI_HANDLE is passed.  If Object is NULL
+ *              name whose ACPI_HANDLE is passed. If Object is NULL
  *              and Type is ACPI_TYPE_ANY, set the name as having no value.
  *              Note: Future may require that the Node->Flags field be passed
  *              as a parameter.
@@ -218,7 +218,7 @@ AcpiNsAttachObject (
     {
         /*
          * Value passed is a name handle and that name has a
-         * non-null value.  Use that name's value and type.
+         * non-null value. Use that name's value and type.
          */
         ObjDesc    = ((ACPI_NAMESPACE_NODE *) Object)->Object;
         ObjectType = ((ACPI_NAMESPACE_NODE *) Object)->Type;
@@ -426,7 +426,7 @@ AcpiNsGetSecondaryObject (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Low-level attach data.  Create and attach a Data object.
+ * DESCRIPTION: Low-level attach data. Create and attach a Data object.
  *
  ******************************************************************************/
 
@@ -492,7 +492,7 @@ AcpiNsAttachData (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Low-level detach data.  Delete the data node, but the caller
+ * DESCRIPTION: Low-level detach data. Delete the data node, but the caller
  *              is responsible for the actual data.
  *
  ******************************************************************************/

@@ -136,7 +136,7 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Read from a named field.  Returns either an Integer or a
+ * DESCRIPTION: Read from a named field. Returns either an Integer or a
  *              Buffer, depending on the size of the field.
  *
  ******************************************************************************/
@@ -233,7 +233,7 @@ AcpiExReadDataFromField (
      * Allocate a buffer for the contents of the field.
      *
      * If the field is larger than the current integer width, create
-     * a BUFFER to hold it.  Otherwise, use an INTEGER.  This allows
+     * a BUFFER to hold it. Otherwise, use an INTEGER. This allows
      * the use of arithmetic operators on the returned value if the
      * field size is equal or smaller than an Integer.
      *
