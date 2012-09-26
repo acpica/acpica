@@ -517,7 +517,7 @@ AbCompareAmlFiles (
         AbPrintHeaderInfo (&Header2);
     }
 
-    if (memcmp (Header1.Signature, Header2.Signature, sizeof (ACPI_TABLE_HEADER)))
+    if (memcmp (&Header1, &Header2, sizeof (ACPI_TABLE_HEADER)))
     {
         printf ("Headers do not match exactly\n");
         HeaderMismatch = TRUE;
