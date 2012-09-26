@@ -439,6 +439,16 @@ AsCheckForDirectory (
     char                    **SourcePath,
     char                    **TargetPath);
 
+void
+AsRemoveExtraLines (
+    char                    *FileBuffer,
+    char                    *Filename);
+
+void
+AsRemoveSpacesAfterPeriod (
+    char                    *FileBuffer,
+    char                    *Filename);
+
 BOOLEAN
 AsMatchExactWord (
     char                    *Word,

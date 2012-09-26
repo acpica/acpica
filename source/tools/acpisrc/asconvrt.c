@@ -134,6 +134,94 @@ char        *HeaderBegin = "/***************************************************
 
 /******************************************************************************
  *
+ * FUNCTION:    AsRemoveExtraLines
+ *
+ * DESCRIPTION: Remove all extra lines at the start and end of the file.
+ *
+ ******************************************************************************/
+
+void
+AsRemoveExtraLines (
+    char                    *FileBuffer,
+    char                    *Filename)
+{
+    char                    *FileEnd;
+    int                     Length;
+
+
+    /* Remove any extra lines at the start of the file */
+
+    while (*FileBuffer == '\n')
+    {
+        printf ("Removing extra line at start of file: %s\n", Filename);
+        AsRemoveData (FileBuffer, FileBuffer + 1);
+    }
+
+    /* Remove any extra lines at the end of the file */
+
+    Length = strlen (FileBuffer);
+    FileEnd = FileBuffer + (Length - 2);
+
+    while (*FileEnd == '\n')
+    {
+        printf ("Removing extra line at end of file: %s\n", Filename);
+        AsRemoveData (FileEnd, FileEnd + 1);
+        FileEnd--;
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsRemoveSpacesAfterPeriod
+ *
+ * DESCRIPTION: Remove an extra space after a period.
+ *
+ ******************************************************************************/
+
+void
+AsRemoveSpacesAfterPeriod (
+    char                    *FileBuffer,
+    char                    *Filename)
+{
+    int                     ReplaceCount = 0;
+    char                    *Possible;
+
+
+    FileBuffer = strstr (FileBuffer, "* such license, approval or letter.");
+    if (!FileBuffer)
+    {
+        printf ("**** Could not find legal header: %s\n", Filename);
+        return;
+    }
+
+    Possible = FileBuffer;
+    while (Possible)
+    {
+        Possible = strstr (Possible, ".  ");
+        if (Possible)
+        {
+            if ((*(Possible -1) == '.') || (*(Possible -1) == '\n'))
+            {
+                Possible += 3;
+                continue;
+            }
+
+            Possible = AsReplaceData (Possible, 3, ". ", 2);
+            ReplaceCount++;
+        }
+    }
+
+    if (ReplaceCount)
+    {
+        printf ("Removed %d extra blanks after a period: %s\n",
+            ReplaceCount, Filename);
+    }
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AsMatchExactWord
  *
  * DESCRIPTION: Check previous and next characters for whitespace
