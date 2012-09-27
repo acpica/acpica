@@ -193,7 +193,7 @@ AtBuildLocalDSDT (
     ACPI_TABLE_HEADER       **Actual_DSDT)
 {
     /*
-     * Examine the incoming user table.  At this point, it has been verified
+     * Examine the incoming user table. At this point, it has been verified
      * to be either a DSDT, SSDT, or a PSDT, but they must be handled differently
      */
     if (UserTable && !ACPI_STRNCMP ((char *) UserTable->Signature, ACPI_SIG_DSDT, 4))

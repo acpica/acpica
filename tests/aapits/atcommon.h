@@ -32,7 +32,7 @@
  */
 
 /*
- * ACPI Table Info.  One per ACPI table _type_
+ * ACPI Table Info. One per ACPI table _type_
  */
 typedef struct acpi_table_info
 {

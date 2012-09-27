@@ -161,7 +161,7 @@ AcpiOsGetRootPointer (
  * PARAMETERS:  InitVal     - Initial value of the predefined object
  *              NewVal      - The new value for the object
  *
- * RETURN:      Status, pointer to value.  Null pointer returned if not
+ * RETURN:      Status, pointer to value. Null pointer returned if not
  *              overriding.
  *
  * DESCRIPTION: Allow the OS to override predefined names
@@ -195,7 +195,7 @@ AcpiOsPredefinedOverride (
  * PARAMETERS:  ExistingTable   - Header of current table (probably firmware)
  *              NewTable        - Where an entire new table is returned.
  *
- * RETURN:      Status, pointer to new table.  Null pointer returned if no
+ * RETURN:      Status, pointer to new table. Null pointer returned if no
  *              table is available to override
  *
  * DESCRIPTION: Return a different version of a table if one is available
@@ -448,7 +448,7 @@ AcpiOsGetLine (
  *              length              How much memory to map
  *              there               Logical address of mapped memory
  *
- * RETURN:      Pointer to mapped memory.  Null on error.
+ * RETURN:      Pointer to mapped memory. Null on error.
  *
  * DESCRIPTION: Map physical memory into caller's address space
  *
@@ -506,7 +506,7 @@ AcpiOsMapMemory (
  *
  * RETURN:      None.
  *
- * DESCRIPTION: Delete a previously created mapping.  Where and Length must
+ * DESCRIPTION: Delete a previously created mapping. Where and Length must
  *              correspond to a previous mapping exactly.
  *
  *****************************************************************************/
@@ -537,9 +537,9 @@ AcpiOsUnmapMemory (
  *
  * PARAMETERS:  Size                Amount to allocate, in bytes
  *
- * RETURN:      Pointer to the new allocation.  Null on error.
+ * RETURN:      Pointer to the new allocation. Null on error.
  *
- * DESCRIPTION: Allocate memory.  Algorithm is dependent on the OS.
+ * DESCRIPTION: Allocate memory. Algorithm is dependent on the OS.
  *
  *****************************************************************************/
 
@@ -784,7 +784,7 @@ AcpiOsReleaseLock (
  *
  * RETURN:      Handle to the newly installed handler.
  *
- * DESCRIPTION: Install an interrupt handler.  Used to install the ACPI
+ * DESCRIPTION: Install an interrupt handler. Used to install the ACPI
  *              OS-independent handler.
  *
  *****************************************************************************/
@@ -1171,7 +1171,7 @@ AcpiOsWritePort (
  *              Value               Where value is placed
  *              Width               Number of bits
  *
- * RETURN:      Value read from physical memory address.  Always returned
+ * RETURN:      Value read from physical memory address. Always returned
  *              as a 64-bit integer, regardless of the read width.
  *
  * DESCRIPTION: Read data from a physical memory address
