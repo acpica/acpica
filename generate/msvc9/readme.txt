@@ -1,28 +1,37 @@
-
 /*
  * Generation of ACPICA with MS Visual Studio 2008
  */
 
-ACPICA generates with all language extensions disabled, since the code
-is meant to be highly portable.
+The Visual Studio project file (for Visual Studio 2008)
+appears in this directory:
+
+    generate/msvc9/AcpiComponents.sln
+
+ACPICA generates with all MS C language extensions disabled, since the
+code is ANSI conformant and is meant to be highly portable.
 
 There are a couple of include files in MS Visual Studio 2008 that
-contain // comments. These will be flagged as warnings. To eliminate
-these warnings, modify these include files:
+unfortunately contain non-ANSI // style comments. These will be flagged
+as warnings since language extensions are disabled.
+
+The VC include files are under one of these directories:
+
+    \Program Files\Microsoft Visual Studio 9.0\VC\include
+    \Program Files (x86)\Microsoft Visual Studio 9.0\VC\include
+
+To eliminate these warnings, modify each of these include files:
+
+    sal.h
+    stdlib.h
+
+For each file, add this statement to the start of the file:
+
+    #pragma warning( disable : 4001 ) /* no warning about "//" comments */
+
+and add this statement to the end of the file:
+
+    #pragma warning( default : 4001 )
 
 
-1) \Program Files\Microsoft Visual Studio 9.0\VC\include\sal.h
-
-Add this to the start of the file:
-
-#pragma warning( disable : 4001 ) /* no warning about "//" comments */
-
-Add this to the end of the file:
-
-#pragma warning( default : 4001 )
-
-
-2) \Program Files\Microsoft Visual Studio 9.0\VC\include\stdlib.h
-
-Line 773: Change // comment to a /* */ comment
-
+Note: you may have to change the permissions on these files in order
+to write to them.
