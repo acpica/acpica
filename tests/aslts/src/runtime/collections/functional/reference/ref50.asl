@@ -3166,27 +3166,12 @@ Method(m365)
 	m380(ts, i000, 0, 17)
 
 	// 10.
-	if (X131) {
-		Store(RefOf(i000), m003())
-		Store(DerefOf(iii1), Local1)
-		m380(ts, i000, 0, 18)
-		m380(ts, Local1, 0, 19)
-	}
-
-	if (X131) {
-		Store(RefOf(i000), m009())
-		Store(DerefOf(iii7), Local1)
-		m380(ts, i000, 0, 20)
-		m380(ts, Local1, 0, 21)
-	}
+	/*
+	 * There are some statements try to pass a value of an integer to a LocalX via reference,
+	 * But they all use the wrong expression, so they are removed from here.
+	 */
 
 	// 11.
-	if (X131) {
-		Store(RefOf(i000), m004(0))
-		Store(DerefOf(iii2), Local1)
-		m380(ts, i000, 0, 22)
-		m380(ts, Local1, 0, 23)
-	}
 
 	// 12.
 	if (y524) {

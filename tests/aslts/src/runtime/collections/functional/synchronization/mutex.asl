@@ -714,6 +714,7 @@ Method(m032, 4)
 		Increment(Local7)
 		Decrement(arg1)
 	}
+	CH03("MUX0", Z150, 0x000, 0, 0)
 }
 
 Method(m033) {

@@ -47,53 +47,6 @@ Name(cn00, 0)
  * and Release operations in a global level AML code.
  */
 Name(i101, 0) // non-zero means that this test was run
-Name(i102, 1)
-Name(i103, 1)
-Name(b11c, Buffer(Add(1, Store(Acquire(T804, 0xffff), i102))){0})
-Name(b11d, Buffer(m137()){0})
-Method(m137)
-{
-	Store(1, i101)
-
-	// Store("m137 started", Debug)
-
-	if (LNot(i102)) {
-		Release(T804)
-	}
-
-	// Store("m137 completed", Debug)
-
-	return (1)
-}
-Name(b11e, Buffer(m13e()){0})
-Name(b11f, Buffer(m13f()){0})
-Method(m13e)
-{
-	Store(1, i101)
-
-	// Store("m13e started", Debug)
-
-	Store(Acquire(T805, 0xffff), i103)
-
-	// Store("m13e completed", Debug)
-
-	return (1)
-}
-Method(m13f)
-{
-	Store(1, i101)
-
-	// Store("m13f started", Debug)
-
-	if (LNot(i103)) {
-		Release(T805)
-	}
-
-	// Store("m13f completed", Debug)
-
-	return (1)
-}
-
 
 /*
  * Valid sequence of requests, no exceptions expected.
@@ -1381,15 +1334,6 @@ Method(m0b9)
 
 	CH03(ts, z150, 0x000, 0, 0)
 
-	if (i102) {
-		Store("Acquire(T804, 0xffff) failed", Debug)
-		err(ts, z150, 0x001, 0, 0, 0, i102)
-	}
-
-	if (i103) {
-		Store("Acquire(T805, 0xffff) failed", Debug)
-		err(ts, z150, 0x002, 0, 0, 0, i103)
-	}
 }
 
 /*
@@ -1827,6 +1771,7 @@ Method(m0ba)
 		// Check that all mutexes are Released (doesn't check T804..)
 		m08a()
 	}
+	CH04 (ts, 1, 64, z150, 0x001, 0, 0)
 }
 
 /*
