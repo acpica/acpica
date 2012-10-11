@@ -210,6 +210,7 @@ Options (
     ACPI_OPTION ("-vo",             "Enable optimization comments");
     ACPI_OPTION ("-vr",             "Disable remarks");
     ACPI_OPTION ("-vs",             "Disable signon");
+    ACPI_OPTION ("-vt",             "Disassembler: Dump raw binary table data in hex format");
     ACPI_OPTION ("-w1 -w2 -w3",     "Set warning reporting level");
     ACPI_OPTION ("-we",             "Report warnings as errors");
 

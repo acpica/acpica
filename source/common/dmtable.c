@@ -487,6 +487,17 @@ AcpiDmDumpDataTable (
 
     if (AcpiUtIsAmlTable (Table))
     {
+        if (Gbl_VerboseTemplates)
+        {
+            /* Dump the raw table data */
+
+            Length = Table->Length;
+
+            AcpiOsPrintf ("\n/*\n%s: Length %d (0x%X)\n\n",
+                ACPI_RAW_TABLE_DATA_HEADER, Length, Length);
+            AcpiUtDumpBuffer2 (ACPI_CAST_PTR (UINT8, Table), Length, DB_BYTE_DISPLAY);
+            AcpiOsPrintf (" */\n");
+        }
         return;
     }
 

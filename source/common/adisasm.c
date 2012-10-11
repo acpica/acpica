@@ -602,7 +602,14 @@ AdAmlDisassemble (
 
         if (AcpiGbl_DbOpt_disasm)
         {
+            /* This is the real disassembly */
+
             AdDisplayTables (Filename, Table);
+
+            /* Dump hex table if requested (-vt) */
+
+            AcpiDmDumpDataTable (Table);
+
             fprintf (stderr, "Disassembly completed\n");
             fprintf (stderr, "ASL Output:    %s - %u bytes\n",
                 DisasmFilename, AdGetFileSize (File));
