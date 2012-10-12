@@ -299,8 +299,7 @@ AcpiGetName (
 
     /* Just copy the ACPI name from the Node and zero terminate it */
 
-    ACPI_STRNCPY (Buffer->Pointer, AcpiUtGetNodeName (Node),
-                ACPI_NAME_SIZE);
+    ACPI_MOVE_NAME (Buffer->Pointer, AcpiUtGetNodeName (Node));
     ((char *) Buffer->Pointer) [ACPI_NAME_SIZE] = 0;
     Status = AE_OK;
 

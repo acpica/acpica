@@ -908,7 +908,7 @@ UtAttachNameseg (
         UtPadNameWithUnderscores (Name, PaddedNameSeg);
     }
 
-    strncpy (Op->Asl.NameSeg, PaddedNameSeg, 4);
+    ACPI_MOVE_NAME (Op->Asl.NameSeg, PaddedNameSeg);
 }
 
 

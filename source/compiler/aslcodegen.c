@@ -517,7 +517,7 @@ CgWriteTableHeader (
 
     /* Compiler ID */
 
-    strncpy (TableHeader.AslCompilerId, ASL_CREATOR_ID, 4);
+    ACPI_MOVE_NAME (TableHeader.AslCompilerId, ASL_CREATOR_ID);
 
     /* Compiler version */
 

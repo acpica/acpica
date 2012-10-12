@@ -743,7 +743,7 @@ AbExtractAmlFile (
     {
         /* The 4-char ACPI signature appears at the beginning of a line */
 
-        if (!strncmp (Buffer, TableSig, 4))
+        if (ACPI_COMPARE_NAME (Buffer, TableSig))
         {
             printf ("Found table [%4.4s]\n", TableSig);
 

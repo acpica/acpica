@@ -726,8 +726,8 @@ AcpiDmLoadDescendingOp (
 
         while (AcpiGbl_PreDefinedNames[PreDefineIndex].Name)
         {
-            if (!ACPI_STRNCMP (Node->Name.Ascii,
-                AcpiGbl_PreDefinedNames[PreDefineIndex].Name, 4))
+            if (ACPI_COMPARE_NAME (Node->Name.Ascii,
+                AcpiGbl_PreDefinedNames[PreDefineIndex].Name))
             {
                 PreDefined = TRUE;
                 break;

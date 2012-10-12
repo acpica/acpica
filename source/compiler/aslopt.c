@@ -326,12 +326,11 @@ OptBuildShortestPath (
     {
         /* Compare two single NameSegs */
 
-        if (ACPI_STRNCMP (
-            &((char *) TargetPath->Pointer)[(NumCommonSegments *
-                                             ACPI_PATH_SEGMENT_LENGTH) + 1],
-            &((char *) CurrentPath->Pointer)[(NumCommonSegments *
-                                              ACPI_PATH_SEGMENT_LENGTH) + 1],
-            ACPI_NAME_SIZE))
+        if (!ACPI_COMPARE_NAME (
+            &((char *) TargetPath->Pointer)[
+                (NumCommonSegments * ACPI_PATH_SEGMENT_LENGTH) + 1],
+            &((char *) CurrentPath->Pointer)[
+                (NumCommonSegments * ACPI_PATH_SEGMENT_LENGTH) + 1]))
         {
             /* Mismatch */
 

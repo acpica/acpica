@@ -340,8 +340,8 @@ AcpiOsTableOverride (
 
     /* Construct a null-terminated string from table signature */
 
+    ACPI_MOVE_NAME (TableName, ExistingTable->Signature);
     TableName[ACPI_NAME_SIZE] = 0;
-    ACPI_STRNCPY (TableName, ExistingTable->Signature, ACPI_NAME_SIZE);
 
     *NewTable = OsGetTable (TableName);
     if (*NewTable)

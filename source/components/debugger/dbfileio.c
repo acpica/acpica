@@ -400,9 +400,9 @@ AcpiDbReadTable (
 #ifdef ACPI_OBSOLETE_CODE
         /* We only support a limited number of table types */
 
-        if (ACPI_STRNCMP ((char *) TableHeader.Signature, DSDT_SIG, 4) &&
-            ACPI_STRNCMP ((char *) TableHeader.Signature, PSDT_SIG, 4) &&
-            ACPI_STRNCMP ((char *) TableHeader.Signature, SSDT_SIG, 4))
+        if (!ACPI_COMPARE_NAME ((char *) TableHeader.Signature, ACPI_SIG_DSDT) &&
+            !ACPI_COMPARE_NAME ((char *) TableHeader.Signature, ACPI_SIG_PSDT) &&
+            !ACPI_COMPARE_NAME ((char *) TableHeader.Signature, ACPI_SIG_SSDT))
         {
             AcpiOsPrintf ("Table signature [%4.4s] is invalid or not supported\n",
                 (char *) TableHeader.Signature);
