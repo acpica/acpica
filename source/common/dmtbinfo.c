@@ -1590,10 +1590,10 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMchi[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoMpst[] =
 {
-    {ACPI_DMT_UINT16,   ACPI_MPST_OFFSET (Reserved1),               "Reserved", 0},
     {ACPI_DMT_UINT8,    ACPI_MPST_OFFSET (ChannelId),               "Channel ID", 0},
-    {ACPI_DMT_UINT8,    ACPI_MPST_OFFSET (Reserved2),               "Reserved", 0},
+    {ACPI_DMT_UINT24,   ACPI_MPST_OFFSET (Reserved1[0]),            "Reserved", 0},
     {ACPI_DMT_UINT16,   ACPI_MPST_OFFSET (PowerNodeCount),          "Power Node Count", 0},
+    {ACPI_DMT_UINT16,   ACPI_MPST_OFFSET (Reserved2),               "Reserved", 0},
     ACPI_DMT_TERMINATOR
 };
 
@@ -1613,9 +1613,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMpst0[] =
     {ACPI_DMT_UINT32,   ACPI_MPST0_OFFSET (Length),                 "Length", DT_LENGTH},
     {ACPI_DMT_UINT64,   ACPI_MPST0_OFFSET (RangeAddress),           "Range Address", 0},
     {ACPI_DMT_UINT64,   ACPI_MPST0_OFFSET (RangeLength),            "Range Length", 0},
-    {ACPI_DMT_UINT8,    ACPI_MPST0_OFFSET (NumPowerStates),         "Num Power States", 0},
-    {ACPI_DMT_UINT8,    ACPI_MPST0_OFFSET (NumPhysicalComponents),  "Num Physical Components", 0},
-    {ACPI_DMT_UINT16,   ACPI_MPST0_OFFSET (Reserved2),              "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPST0_OFFSET (NumPowerStates),         "Num Power States", 0},
+    {ACPI_DMT_UINT32,   ACPI_MPST0_OFFSET (NumPhysicalComponents),  "Num Physical Components", 0},
     ACPI_DMT_TERMINATOR
 };
 
@@ -1641,6 +1640,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMpst0B[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoMpst1[] =
 {
     {ACPI_DMT_UINT16,   ACPI_MPST1_OFFSET (CharacteristicsCount),   "Characteristics Count", 0},
+    {ACPI_DMT_UINT16,   ACPI_MPST1_OFFSET (Reserved),               "Reserved", 0},
     ACPI_DMT_TERMINATOR
 };
 
@@ -1648,7 +1648,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMpst1[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoMpst2[] =
 {
-    {ACPI_DMT_UINT8,    ACPI_MPST2_OFFSET (Revision),               "Revision", 0},
+    {ACPI_DMT_UINT8,    ACPI_MPST2_OFFSET (StructureId),            "Structure ID", 0},
     {ACPI_DMT_UINT8,    ACPI_MPST2_OFFSET (Flags),                  "Flags (decoded below)", DT_FLAG},
     {ACPI_DMT_FLAG0,    ACPI_MPST2_FLAG_OFFSET (Flags,0),           "Memory Preserved", 0},
     {ACPI_DMT_FLAG1,    ACPI_MPST2_FLAG_OFFSET (Flags,0),           "Auto Entry", 0},
