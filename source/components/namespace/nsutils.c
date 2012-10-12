@@ -727,8 +727,10 @@ AcpiNsExternalizeName (
                 (*ConvertedName)[j++] = '.';
             }
 
-            ACPI_MOVE_NAME (*ConvertedName, InternalName);
-            AcpiUtRepairName (*ConvertedName);
+            /* Copy and validate the 4-char name segment */
+
+            ACPI_MOVE_NAME (&(*ConvertedName)[j], &InternalName[NamesIndex]);
+            AcpiUtRepairName (&(*ConvertedName)[j]);
 
             j += ACPI_NAME_SIZE;
             NamesIndex += ACPI_NAME_SIZE;
