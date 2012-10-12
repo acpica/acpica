@@ -727,10 +727,11 @@ AcpiNsExternalizeName (
                 (*ConvertedName)[j++] = '.';
             }
 
-            (*ConvertedName)[j++] = InternalName[NamesIndex++];
-            (*ConvertedName)[j++] = InternalName[NamesIndex++];
-            (*ConvertedName)[j++] = InternalName[NamesIndex++];
-            (*ConvertedName)[j++] = InternalName[NamesIndex++];
+            ACPI_MOVE_NAME (*ConvertedName, InternalName);
+            AcpiUtRepairName (*ConvertedName);
+
+            j += ACPI_NAME_SIZE;
+            NamesIndex += ACPI_NAME_SIZE;
         }
     }
 

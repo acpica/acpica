@@ -897,10 +897,13 @@ AcpiUtRepairName (
 {
     UINT32                  i;
     BOOLEAN                 FoundBadChar = FALSE;
+    UINT32                  OriginalName;
 
 
     ACPI_FUNCTION_NAME (UtRepairName);
 
+
+    ACPI_MOVE_NAME (&OriginalName, Name);
 
     /* Check each character in the name */
 
@@ -927,12 +930,14 @@ AcpiUtRepairName (
         if (!AcpiGbl_EnableInterpreterSlack)
         {
             ACPI_WARNING ((AE_INFO,
-                "Found bad character(s) in name, repaired: [%4.4s]\n", Name));
+                "Invalid character(s) in name (0x%.8X), repaired: [%4.4s]",
+                OriginalName, Name));
         }
         else
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-                "Found bad character(s) in name, repaired: [%4.4s]\n", Name));
+                "Invalid character(s) in name (0x%.8X), repaired: [%4.4s]",
+                OriginalName, Name));
         }
     }
 }

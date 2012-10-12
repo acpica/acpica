@@ -227,15 +227,34 @@ AcpiPsGetAmlOpcode (
 
         /* The opcode is unrecognized. Just skip unknown opcodes */
 
-        ACPI_ERROR ((AE_INFO,
-             "Found unknown opcode 0x%X at AML address %p offset 0x%X, ignoring",
-              WalkState->Opcode, WalkState->ParserState.Aml, WalkState->AmlOffset));
+        if (WalkState->PassNumber == 2)
+        {
+            ACPI_ERROR ((AE_INFO,
+                 "Unknown opcode 0x%.2X at table offset 0x%.4X, ignoring",
+                  WalkState->Opcode, WalkState->AmlOffset + sizeof (ACPI_TABLE_HEADER)));
 
-        ACPI_DUMP_BUFFER (WalkState->ParserState.Aml, 128);
+            ACPI_DUMP_BUFFER (WalkState->ParserState.Aml, 128);
 
-        /* Assume one-byte bad opcode */
+#ifdef ACPI_ASL_COMPILER
+
+            AcpiOsPrintf ("/*\nError: Unknown opcode 0x%.2X at table offset 0x%.4X, context:\n",
+                WalkState->Opcode, WalkState->AmlOffset + sizeof (ACPI_TABLE_HEADER));
+
+            /* TBD: Pass current offset to DumpBuffer */
+
+            AcpiUtDumpBuffer2 (((UINT8 *) WalkState->ParserState.Aml - 16), 48, DB_BYTE_DISPLAY);
+            AcpiOsPrintf (" */\n");
+#endif
+        }
+
+        /* Increment past one or two-byte opcode */
 
         WalkState->ParserState.Aml++;
+        if (WalkState->Opcode > 0xFF)
+        {
+            WalkState->ParserState.Aml++;
+        }
+
         return_ACPI_STATUS (AE_CTRL_PARSE_CONTINUE);
 
     default:
@@ -623,8 +642,8 @@ AcpiPsGetArguments (
                         (!Arg))
                     {
                         ACPI_WARNING ((AE_INFO,
-                            "Detected an unsupported executable opcode "
-                            "at module-level: [0x%.4X] at table offset 0x%.4X",
+                            "Unsupported module-level executable opcode "
+                            "0x%.2X at table offset 0x%.4X",
                             Op->Common.AmlOpcode,
                             (UINT32) (ACPI_PTR_DIFF (AmlOpStart,
                                 WalkState->ParserState.AmlStart) +
