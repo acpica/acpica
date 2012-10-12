@@ -497,17 +497,18 @@ AcpiUtPtrExit (
     UINT8                   *Ptr);
 
 void
-AcpiUtDumpBuffer (
+AcpiUtDebugDumpBuffer (
     UINT8                   *Buffer,
     UINT32                  Count,
     UINT32                  Display,
     UINT32                  ComponentId);
 
 void
-AcpiUtDumpBuffer2 (
+AcpiUtDumpBuffer (
     UINT8                   *Buffer,
     UINT32                  Count,
-    UINT32                  Display);
+    UINT32                  Display,
+    UINT32                  Offset);
 
 void
 AcpiUtReportError (

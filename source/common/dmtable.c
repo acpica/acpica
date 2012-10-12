@@ -495,7 +495,8 @@ AcpiDmDumpDataTable (
 
             AcpiOsPrintf ("\n/*\n%s: Length %d (0x%X)\n\n",
                 ACPI_RAW_TABLE_DATA_HEADER, Length, Length);
-            AcpiUtDumpBuffer2 (ACPI_CAST_PTR (UINT8, Table), Length, DB_BYTE_DISPLAY);
+            AcpiUtDumpBuffer (ACPI_CAST_PTR (UINT8, Table),
+                Length, DB_BYTE_DISPLAY, 0);
             AcpiOsPrintf (" */\n");
         }
         return;
@@ -567,7 +568,8 @@ AcpiDmDumpDataTable (
 
         AcpiOsPrintf ("\n%s: Length %d (0x%X)\n\n",
             ACPI_RAW_TABLE_DATA_HEADER, Length, Length);
-        AcpiUtDumpBuffer2 (ACPI_CAST_PTR (UINT8, Table), Length, DB_BYTE_DISPLAY);
+        AcpiUtDumpBuffer (ACPI_CAST_PTR (UINT8, Table),
+            Length, DB_BYTE_DISPLAY, 0);
     }
 }
 

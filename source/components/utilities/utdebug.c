@@ -655,7 +655,7 @@ AcpiUtPtrExit (
  * PARAMETERS:  Buffer              - Buffer to dump
  *              Count               - Amount to dump, in bytes
  *              Display             - BYTE, WORD, DWORD, or QWORD display
- *              ComponentID         - Caller's component ID
+ *              Offset              - Beginning buffer offset (display only)
  *
  * RETURN:      None
  *
@@ -664,10 +664,11 @@ AcpiUtPtrExit (
  ******************************************************************************/
 
 void
-AcpiUtDumpBuffer2 (
+AcpiUtDumpBuffer (
     UINT8                   *Buffer,
     UINT32                  Count,
-    UINT32                  Display)
+    UINT32                  Display,
+    UINT32                  BaseOffset)
 {
     UINT32                  i = 0;
     UINT32                  j;
@@ -692,7 +693,7 @@ AcpiUtDumpBuffer2 (
     {
         /* Print current offset */
 
-        AcpiOsPrintf ("%6.4X: ", i);
+        AcpiOsPrintf ("%6.4X: ", (BaseOffset + i));
 
         /* Print 16 hex chars */
 
@@ -779,7 +780,7 @@ AcpiUtDumpBuffer2 (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtDumpBuffer
+ * FUNCTION:    AcpiUtDebugDumpBuffer
  *
  * PARAMETERS:  Buffer              - Buffer to dump
  *              Count               - Amount to dump, in bytes
@@ -793,7 +794,7 @@ AcpiUtDumpBuffer2 (
  ******************************************************************************/
 
 void
-AcpiUtDumpBuffer (
+AcpiUtDebugDumpBuffer (
     UINT8                   *Buffer,
     UINT32                  Count,
     UINT32                  Display,
@@ -808,5 +809,5 @@ AcpiUtDumpBuffer (
         return;
     }
 
-    AcpiUtDumpBuffer2 (Buffer, Count, Display);
+    AcpiUtDumpBuffer (Buffer, Count, Display, 0);
 }

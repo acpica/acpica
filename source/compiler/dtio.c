@@ -1080,7 +1080,7 @@ DtWriteTableToListing (
 
     AcpiOsPrintf ("\n%s: Length %d (0x%X)\n\n",
         ACPI_RAW_TABLE_DATA_HEADER, Gbl_TableLength, Gbl_TableLength);
-    AcpiUtDumpBuffer2 (Buffer, Gbl_TableLength, DB_BYTE_DISPLAY);
+    AcpiUtDumpBuffer (Buffer, Gbl_TableLength, DB_BYTE_DISPLAY, 0);
 
     AcpiOsRedirectOutput (stdout);
 }

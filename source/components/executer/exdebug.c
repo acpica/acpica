@@ -234,9 +234,9 @@ AcpiExDoDebugObject (
     case ACPI_TYPE_BUFFER:
 
         AcpiOsPrintf ("[0x%.2X]\n", (UINT32) SourceDesc->Buffer.Length);
-        AcpiUtDumpBuffer2 (SourceDesc->Buffer.Pointer,
+        AcpiUtDumpBuffer (SourceDesc->Buffer.Pointer,
             (SourceDesc->Buffer.Length < 256) ?
-                SourceDesc->Buffer.Length : 256, DB_BYTE_DISPLAY);
+                SourceDesc->Buffer.Length : 256, DB_BYTE_DISPLAY, 0);
         break;
 
     case ACPI_TYPE_STRING:

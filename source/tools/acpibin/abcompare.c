@@ -682,7 +682,7 @@ AbDumpAmlFile (
 
     AcpiOsPrintf ("%4.4s\n", ((ACPI_TABLE_HEADER *) FileBuffer)->Signature);
     AcpiDbgLevel = ACPI_UINT32_MAX;
-    AcpiUtDumpBuffer ((UINT8 *) FileBuffer, FileSize,
+    AcpiUtDebugDumpBuffer ((UINT8 *) FileBuffer, FileSize,
         DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
     return (0);

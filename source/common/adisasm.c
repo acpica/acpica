@@ -811,12 +811,12 @@ AdDisplayTables (
     if (AcpiGbl_DbOpt_verbose)
     {
         AcpiOsPrintf ("\n\nTable Header:\n");
-        AcpiUtDumpBuffer ((UINT8 *) Table, sizeof (ACPI_TABLE_HEADER),
+        AcpiUtDebugDumpBuffer ((UINT8 *) Table, sizeof (ACPI_TABLE_HEADER),
             DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
         AcpiOsPrintf ("Table Body (Length 0x%X)\n", Table->Length);
-        AcpiUtDumpBuffer (((UINT8 *) Table + sizeof (ACPI_TABLE_HEADER)), Table->Length,
-            DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+        AcpiUtDebugDumpBuffer (((UINT8 *) Table + sizeof (ACPI_TABLE_HEADER)),
+            Table->Length, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
     }
 
     return (AE_OK);

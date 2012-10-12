@@ -225,32 +225,40 @@ AcpiPsGetAmlOpcode (
 
     case AML_CLASS_UNKNOWN:
 
-        /* The opcode is unrecognized. Just skip unknown opcodes */
+        /* The opcode is unrecognized. Complain and skip unknown opcodes */
 
         if (WalkState->PassNumber == 2)
         {
             ACPI_ERROR ((AE_INFO,
-                 "Unknown opcode 0x%.2X at table offset 0x%.4X, ignoring",
-                  WalkState->Opcode, WalkState->AmlOffset + sizeof (ACPI_TABLE_HEADER)));
+                "Unknown opcode 0x%.2X at table offset 0x%.4X, ignoring",
+                WalkState->Opcode,
+                WalkState->AmlOffset + sizeof (ACPI_TABLE_HEADER)));
 
-            ACPI_DUMP_BUFFER (WalkState->ParserState.Aml, 128);
+            ACPI_DUMP_BUFFER (WalkState->ParserState.Aml - 16, 48);
 
 #ifdef ACPI_ASL_COMPILER
+            /*
+             * This is executed for the disassembler only. Output goes
+             * to the disassembled ASL output file.
+             */
+            AcpiOsPrintf (
+                "/*\nError: Unknown opcode 0x%.2X at table offset 0x%.4X, context:\n",
+                WalkState->Opcode,
+                WalkState->AmlOffset + sizeof (ACPI_TABLE_HEADER));
 
-            AcpiOsPrintf ("/*\nError: Unknown opcode 0x%.2X at table offset 0x%.4X, context:\n",
-                WalkState->Opcode, WalkState->AmlOffset + sizeof (ACPI_TABLE_HEADER));
+            /* Dump the context surrounding the invalid opcode */
 
-            /* TBD: Pass current offset to DumpBuffer */
-
-            AcpiUtDumpBuffer2 (((UINT8 *) WalkState->ParserState.Aml - 16), 48, DB_BYTE_DISPLAY);
+            AcpiUtDumpBuffer (((UINT8 *) WalkState->ParserState.Aml - 16),
+                48, DB_BYTE_DISPLAY,
+                WalkState->AmlOffset + sizeof (ACPI_TABLE_HEADER) - 16);
             AcpiOsPrintf (" */\n");
 #endif
         }
 
-        /* Increment past one or two-byte opcode */
+        /* Increment past one-byte or two-byte opcode */
 
         WalkState->ParserState.Aml++;
-        if (WalkState->Opcode > 0xFF)
+        if (WalkState->Opcode > 0xFF) /* Can only happen if first byte is 0x5B */
         {
             WalkState->ParserState.Aml++;
         }

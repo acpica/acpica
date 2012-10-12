@@ -934,8 +934,8 @@ AcpiDbDumpPldBuffer (
     {
         AcpiOsPrintf ("Converted _PLD buffer does not compare. New:\n");
 
-        AcpiUtDumpBuffer2 (NewBuffer,
-            BufferDesc->Buffer.Length, DB_BYTE_DISPLAY);
+        AcpiUtDumpBuffer (NewBuffer,
+            BufferDesc->Buffer.Length, DB_BYTE_DISPLAY, 0);
     }
 
     /* First 32-bit dword */

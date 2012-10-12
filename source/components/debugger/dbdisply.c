@@ -342,7 +342,7 @@ AcpiDbDecodeAndDisplayObject (
                 return;
             }
 
-            AcpiUtDumpBuffer (ObjPtr, sizeof (ACPI_OPERAND_OBJECT), Display,
+            AcpiUtDebugDumpBuffer (ObjPtr, sizeof (ACPI_OPERAND_OBJECT), Display,
                 ACPI_UINT32_MAX);
             AcpiExDumpObjectDescriptor (ObjPtr, 1);
             break;
@@ -359,7 +359,7 @@ AcpiDbDecodeAndDisplayObject (
                 return;
             }
 
-            AcpiUtDumpBuffer (ObjPtr, sizeof (ACPI_PARSE_OBJECT), Display,
+            AcpiUtDebugDumpBuffer (ObjPtr, sizeof (ACPI_PARSE_OBJECT), Display,
                 ACPI_UINT32_MAX);
             AcpiDbDumpParserDescriptor ((ACPI_PARSE_OBJECT *) ObjPtr);
             break;
@@ -377,7 +377,7 @@ AcpiDbDecodeAndDisplayObject (
 
             /* Just dump some memory */
 
-            AcpiUtDumpBuffer (ObjPtr, Size, Display, ACPI_UINT32_MAX);
+            AcpiUtDebugDumpBuffer (ObjPtr, Size, Display, ACPI_UINT32_MAX);
             break;
         }
 
@@ -414,7 +414,7 @@ DumpNode:
         return;
     }
 
-    AcpiUtDumpBuffer ((void *) Node, sizeof (ACPI_NAMESPACE_NODE),
+    AcpiUtDebugDumpBuffer ((void *) Node, sizeof (ACPI_NAMESPACE_NODE),
         Display, ACPI_UINT32_MAX);
     AcpiExDumpNamespaceNode (Node, 1);
 
@@ -429,7 +429,7 @@ DumpNode:
             return;
         }
 
-        AcpiUtDumpBuffer ((void *) ObjDesc, sizeof (ACPI_OPERAND_OBJECT),
+        AcpiUtDebugDumpBuffer ((void *) ObjDesc, sizeof (ACPI_OPERAND_OBJECT),
             Display, ACPI_UINT32_MAX);
         AcpiExDumpObjectDescriptor (ObjDesc, 1);
     }

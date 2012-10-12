@@ -276,7 +276,7 @@ AcpiDbDumpExternalObject (
             {
                 AcpiOsPrintf ("\n");
             }
-            AcpiUtDumpBuffer (ACPI_CAST_PTR (UINT8, ObjDesc->Buffer.Pointer),
+            AcpiUtDebugDumpBuffer (ACPI_CAST_PTR (UINT8, ObjDesc->Buffer.Pointer),
                     ObjDesc->Buffer.Length, DB_BYTE_DISPLAY, _COMPONENT);
         }
         else
@@ -585,7 +585,7 @@ AcpiDbDumpBuffer (
     AcpiOsPrintf ("\nLocation %X:\n", Address);
 
     AcpiDbgLevel |= ACPI_LV_TABLES;
-    AcpiUtDumpBuffer (ACPI_TO_POINTER (Address), 64, DB_BYTE_DISPLAY,
+    AcpiUtDebugDumpBuffer (ACPI_TO_POINTER (Address), 64, DB_BYTE_DISPLAY,
             ACPI_UINT32_MAX);
 }
 #endif

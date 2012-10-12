@@ -649,7 +649,7 @@ AcpiDbDisplayTemplate (
 
 DumpBuffer:
     AcpiOsPrintf ("\nRaw data buffer:\n");
-    AcpiUtDumpBuffer ((UINT8 *) Node->Object->Buffer.Pointer,
+    AcpiUtDebugDumpBuffer ((UINT8 *) Node->Object->Buffer.Pointer,
         Node->Object->Buffer.Length,
         DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
