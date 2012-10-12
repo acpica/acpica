@@ -526,10 +526,14 @@ typedef UINT64                          ACPI_INTEGER;
 #define ACPI_PHYSADDR_TO_PTR(i)         ACPI_TO_POINTER(i)
 #define ACPI_PTR_TO_PHYSADDR(i)         ACPI_TO_INTEGER(i)
 
+/* Optimizations for 4-character (32-bit) ACPI_NAME manipulation */
+
 #ifndef ACPI_MISALIGNMENT_NOT_SUPPORTED
 #define ACPI_COMPARE_NAME(a,b)          (*ACPI_CAST_PTR (UINT32, (a)) == *ACPI_CAST_PTR (UINT32, (b)))
+#define ACPI_MOVE_NAME(dest,src)        (*ACPI_CAST_PTR (UINT32, (dest)) = *ACPI_CAST_PTR (UINT32, (src)))
 #else
 #define ACPI_COMPARE_NAME(a,b)          (!ACPI_STRNCMP (ACPI_CAST_PTR (char, (a)), ACPI_CAST_PTR (char, (b)), ACPI_NAME_SIZE))
+#define ACPI_MOVE_NAME(dest,src)        (ACPI_STRNCPY (ACPI_CAST_PTR (char, (dest)), ACPI_CAST_PTR (char, (src)), ACPI_NAME_SIZE))
 #endif
 
 
