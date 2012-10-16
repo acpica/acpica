@@ -232,7 +232,7 @@ AcpiPsGetAmlOpcode (
             ACPI_ERROR ((AE_INFO,
                 "Unknown opcode 0x%.2X at table offset 0x%.4X, ignoring",
                 WalkState->Opcode,
-                WalkState->AmlOffset + sizeof (ACPI_TABLE_HEADER)));
+                (UINT32) (WalkState->AmlOffset + sizeof (ACPI_TABLE_HEADER))));
 
             ACPI_DUMP_BUFFER (WalkState->ParserState.Aml - 16, 48);
 
@@ -244,7 +244,7 @@ AcpiPsGetAmlOpcode (
             AcpiOsPrintf (
                 "/*\nError: Unknown opcode 0x%.2X at table offset 0x%.4X, context:\n",
                 WalkState->Opcode,
-                WalkState->AmlOffset + sizeof (ACPI_TABLE_HEADER));
+                (UINT32) (WalkState->AmlOffset + sizeof (ACPI_TABLE_HEADER)));
 
             /* Dump the context surrounding the invalid opcode */
 
