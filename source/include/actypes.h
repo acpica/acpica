@@ -1181,7 +1181,7 @@ UINT32 (*ACPI_INTERFACE_HANDLER) (
 #define ACPI_UUID_LENGTH                16
 
 
-/* Structures used for device/processor HID, UID, CID */
+/* Structures used for device/processor HID, UID, CID, and SUB */
 
 typedef struct acpi_pnp_device_id
 {
@@ -1216,6 +1216,7 @@ typedef struct acpi_device_info
     UINT64                          Address;            /* _ADR value */
     ACPI_PNP_DEVICE_ID              HardwareId;         /* _HID value */
     ACPI_PNP_DEVICE_ID              UniqueId;           /* _UID value */
+    ACPI_PNP_DEVICE_ID              SubsystemId;        /* _SUB value */
     ACPI_PNP_DEVICE_ID_LIST         CompatibleIdList;   /* _CID list <must be last> */
 
 } ACPI_DEVICE_INFO;
@@ -1230,11 +1231,12 @@ typedef struct acpi_device_info
 #define ACPI_VALID_ADR                  0x02
 #define ACPI_VALID_HID                  0x04
 #define ACPI_VALID_UID                  0x08
-#define ACPI_VALID_CID                  0x10
-#define ACPI_VALID_SXDS                 0x20
-#define ACPI_VALID_SXWS                 0x40
+#define ACPI_VALID_SUB                  0x10
+#define ACPI_VALID_CID                  0x20
+#define ACPI_VALID_SXDS                 0x40
+#define ACPI_VALID_SXWS                 0x80
 
-/* Flags for _STA method */
+/* Flags for _STA return value (CurrentStatus above) */
 
 #define ACPI_STA_DEVICE_PRESENT         0x01
 #define ACPI_STA_DEVICE_ENABLED         0x02

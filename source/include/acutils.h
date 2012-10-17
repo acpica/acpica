@@ -592,6 +592,11 @@ AcpiUtExecute_UID (
     ACPI_PNP_DEVICE_ID      **ReturnId);
 
 ACPI_STATUS
+AcpiUtExecute_SUB (
+    ACPI_NAMESPACE_NODE     *DeviceNode,
+    ACPI_PNP_DEVICE_ID      **ReturnId);
+
+ACPI_STATUS
 AcpiUtExecute_CID (
     ACPI_NAMESPACE_NODE     *DeviceNode,
     ACPI_PNP_DEVICE_ID_LIST **ReturnCidList);

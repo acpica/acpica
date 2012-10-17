@@ -171,6 +171,14 @@ AcpiUtExecute_UID (
 }
 
 ACPI_STATUS
+AcpiUtExecute_SUB (
+    ACPI_NAMESPACE_NODE     *DeviceNode,
+    ACPI_PNP_DEVICE_ID      **ReturnId)
+{
+    return (AE_NOT_IMPLEMENTED);
+}
+
+ACPI_STATUS
 AcpiUtExecutePowerMethods (
     ACPI_NAMESPACE_NODE     *DeviceNode,
     const char              **MethodNames,

@@ -715,7 +715,7 @@ AcpiDbDisplayCallingTree (
  *
  * FUNCTION:    AcpiDbDisplayObjectType
  *
- * PARAMETERS:  ObjectArg       - User entered NS node handle
+ * PARAMETERS:  Name            - User entered NS node handle or name
  *
  * RETURN:      None
  *
@@ -725,17 +725,21 @@ AcpiDbDisplayCallingTree (
 
 void
 AcpiDbDisplayObjectType (
-    char                    *ObjectArg)
+    char                    *Name)
 {
-    ACPI_HANDLE             Handle;
+    ACPI_NAMESPACE_NODE     *Node;
     ACPI_DEVICE_INFO        *Info;
     ACPI_STATUS             Status;
     UINT32                  i;
 
 
-    Handle = ACPI_TO_POINTER (ACPI_STRTOUL (ObjectArg, NULL, 16));
+    Node = AcpiDbConvertToNode (Name);
+    if (!Node)
+    {
+        return;
+    }
 
-    Status = AcpiGetObjectInfo (Handle, &Info);
+    Status = AcpiGetObjectInfo (ACPI_CAST_PTR (ACPI_HANDLE, Node), &Info);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could not get object info, %s\n",
@@ -743,18 +747,25 @@ AcpiDbDisplayObjectType (
         return;
     }
 
-    AcpiOsPrintf ("ADR: %8.8X%8.8X, STA: %8.8X, Flags: %X\n",
-        ACPI_FORMAT_UINT64 (Info->Address),
-        Info->CurrentStatus, Info->Flags);
-
-    AcpiOsPrintf ("S1D-%2.2X S2D-%2.2X S3D-%2.2X S4D-%2.2X\n",
-        Info->HighestDstates[0], Info->HighestDstates[1],
-        Info->HighestDstates[2], Info->HighestDstates[3]);
-
-    AcpiOsPrintf ("S0W-%2.2X S1W-%2.2X S2W-%2.2X S3W-%2.2X S4W-%2.2X\n",
-        Info->LowestDstates[0], Info->LowestDstates[1],
-        Info->LowestDstates[2], Info->LowestDstates[3],
-        Info->LowestDstates[4]);
+    if (Info->Valid & ACPI_VALID_ADR)
+    {
+        AcpiOsPrintf ("ADR: %8.8X%8.8X, STA: %8.8X, Flags: %X\n",
+            ACPI_FORMAT_UINT64 (Info->Address),
+            Info->CurrentStatus, Info->Flags);
+    }
+    if (Info->Valid & ACPI_VALID_SXDS)
+    {
+        AcpiOsPrintf ("S1D-%2.2X S2D-%2.2X S3D-%2.2X S4D-%2.2X\n",
+            Info->HighestDstates[0], Info->HighestDstates[1],
+            Info->HighestDstates[2], Info->HighestDstates[3]);
+    }
+    if (Info->Valid & ACPI_VALID_SXWS)
+    {
+        AcpiOsPrintf ("S0W-%2.2X S1W-%2.2X S2W-%2.2X S3W-%2.2X S4W-%2.2X\n",
+            Info->LowestDstates[0], Info->LowestDstates[1],
+            Info->LowestDstates[2], Info->LowestDstates[3],
+            Info->LowestDstates[4]);
+    }
 
     if (Info->Valid & ACPI_VALID_HID)
     {
@@ -763,6 +774,10 @@ AcpiDbDisplayObjectType (
     if (Info->Valid & ACPI_VALID_UID)
     {
         AcpiOsPrintf ("UID: %s\n", Info->UniqueId.String);
+    }
+    if (Info->Valid & ACPI_VALID_SUB)
+    {
+        AcpiOsPrintf ("SUB: %s\n", Info->SubsystemId.String);
     }
     if (Info->Valid & ACPI_VALID_CID)
     {
