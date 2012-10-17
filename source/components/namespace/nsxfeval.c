@@ -663,8 +663,8 @@ AcpiNsGetDeviceCallback (
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node;
     UINT32                  Flags;
-    ACPI_DEVICE_ID          *Hid;
-    ACPI_DEVICE_ID_LIST     *Cid;
+    ACPI_PNP_DEVICE_ID      *Hid;
+    ACPI_PNP_DEVICE_ID_LIST *Cid;
     UINT32                  i;
     BOOLEAN                 Found;
     int                     NoMatch;

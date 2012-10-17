@@ -130,8 +130,8 @@
 
 static char *
 AcpiNsCopyDeviceId (
-    ACPI_DEVICE_ID          *Dest,
-    ACPI_DEVICE_ID          *Source,
+    ACPI_PNP_DEVICE_ID      *Dest,
+    ACPI_PNP_DEVICE_ID      *Source,
     char                    *StringArea);
 
 
@@ -317,23 +317,23 @@ ACPI_EXPORT_SYMBOL (AcpiGetName)
  *
  * FUNCTION:    AcpiNsCopyDeviceId
  *
- * PARAMETERS:  Dest                - Pointer to the destination DEVICE_ID
- *              Source              - Pointer to the source DEVICE_ID
+ * PARAMETERS:  Dest                - Pointer to the destination PNP_DEVICE_ID
+ *              Source              - Pointer to the source PNP_DEVICE_ID
  *              StringArea          - Pointer to where to copy the dest string
  *
  * RETURN:      Pointer to the next string area
  *
- * DESCRIPTION: Copy a single DEVICE_ID, including the string data.
+ * DESCRIPTION: Copy a single PNP_DEVICE_ID, including the string data.
  *
  ******************************************************************************/
 
 static char *
 AcpiNsCopyDeviceId (
-    ACPI_DEVICE_ID          *Dest,
-    ACPI_DEVICE_ID          *Source,
+    ACPI_PNP_DEVICE_ID      *Dest,
+    ACPI_PNP_DEVICE_ID      *Source,
     char                    *StringArea)
 {
-    /* Create the destination DEVICE_ID */
+    /* Create the destination PNP_DEVICE_ID */
 
     Dest->String = StringArea;
     Dest->Length = Source->Length;
@@ -372,9 +372,9 @@ AcpiGetObjectInfo (
 {
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_DEVICE_INFO        *Info;
-    ACPI_DEVICE_ID_LIST     *CidList = NULL;
-    ACPI_DEVICE_ID          *Hid = NULL;
-    ACPI_DEVICE_ID          *Uid = NULL;
+    ACPI_PNP_DEVICE_ID_LIST *CidList = NULL;
+    ACPI_PNP_DEVICE_ID      *Hid = NULL;
+    ACPI_PNP_DEVICE_ID      *Uid = NULL;
     char                    *NextIdString;
     ACPI_OBJECT_TYPE        Type;
     ACPI_NAME               Name;
@@ -459,7 +459,7 @@ AcpiGetObjectInfo (
         {
             /* Add size of CID strings and CID pointer array */
 
-            InfoSize += (CidList->ListSize - sizeof (ACPI_DEVICE_ID_LIST));
+            InfoSize += (CidList->ListSize - sizeof (ACPI_PNP_DEVICE_ID_LIST));
             Valid |= ACPI_VALID_CID;
         }
     }
@@ -534,9 +534,9 @@ AcpiGetObjectInfo (
     NextIdString = ACPI_CAST_PTR (char, Info->CompatibleIdList.Ids);
     if (CidList)
     {
-        /* Point past the CID DEVICE_ID array */
+        /* Point past the CID PNP_DEVICE_ID array */
 
-        NextIdString += ((ACPI_SIZE) CidList->Count * sizeof (ACPI_DEVICE_ID));
+        NextIdString += ((ACPI_SIZE) CidList->Count * sizeof (ACPI_PNP_DEVICE_ID));
     }
 
     /*

@@ -1183,20 +1183,20 @@ UINT32 (*ACPI_INTERFACE_HANDLER) (
 
 /* Structures used for device/processor HID, UID, CID */
 
-typedef struct acpi_device_id
+typedef struct acpi_pnp_device_id
 {
     UINT32                          Length;             /* Length of string + null */
     char                            *String;
 
-} ACPI_DEVICE_ID;
+} ACPI_PNP_DEVICE_ID;
 
-typedef struct acpi_device_id_list
+typedef struct acpi_pnp_device_id_list
 {
     UINT32                          Count;              /* Number of IDs in Ids array */
     UINT32                          ListSize;           /* Size of list, including ID strings */
-    ACPI_DEVICE_ID                  Ids[1];             /* ID array */
+    ACPI_PNP_DEVICE_ID              Ids[1];             /* ID array */
 
-} ACPI_DEVICE_ID_LIST;
+} ACPI_PNP_DEVICE_ID_LIST;
 
 /*
  * Structure returned from AcpiGetObjectInfo.
@@ -1214,9 +1214,9 @@ typedef struct acpi_device_info
     UINT8                           LowestDstates[5];   /* _SxW values: 0xFF indicates not valid */
     UINT32                          CurrentStatus;      /* _STA value */
     UINT64                          Address;            /* _ADR value */
-    ACPI_DEVICE_ID                  HardwareId;         /* _HID value */
-    ACPI_DEVICE_ID                  UniqueId;           /* _UID value */
-    ACPI_DEVICE_ID_LIST             CompatibleIdList;   /* _CID list <must be last> */
+    ACPI_PNP_DEVICE_ID              HardwareId;         /* _HID value */
+    ACPI_PNP_DEVICE_ID              UniqueId;           /* _UID value */
+    ACPI_PNP_DEVICE_ID_LIST         CompatibleIdList;   /* _CID list <must be last> */
 
 } ACPI_DEVICE_INFO;
 
