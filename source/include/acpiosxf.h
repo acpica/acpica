@@ -194,9 +194,11 @@ AcpiOsPhysicalTableOverride (
 /*
  * Spinlock primitives
  */
+#ifndef AcpiOsCreateLock
 ACPI_STATUS
 AcpiOsCreateLock (
     ACPI_SPINLOCK           *OutHandle);
+#endif
 
 void
 AcpiOsDeleteLock (
