@@ -195,6 +195,7 @@ Options (
     printf ("\nGlobal:\n");
     ACPI_OPTION ("-@ <file>",       "Specify command file");
     ACPI_OPTION ("-I <dir>",        "Specify additional include directory");
+    ACPI_OPTION ("-T <sig>|ALL|*",  "Create table template file for ACPI <Sig>");
     ACPI_OPTION ("-v",              "Display compiler version");
 
     printf ("\nPreprocessor:\n");
@@ -210,14 +211,13 @@ Options (
     ACPI_OPTION ("-vo",             "Enable optimization comments");
     ACPI_OPTION ("-vr",             "Disable remarks");
     ACPI_OPTION ("-vs",             "Disable signon");
-    ACPI_OPTION ("-vt",             "Disassembler: Dump raw binary table data in hex format");
     ACPI_OPTION ("-w1 -w2 -w3",     "Set warning reporting level");
     ACPI_OPTION ("-we",             "Report warnings as errors");
 
-    printf ("\nAML Output Files:\n");
-    ACPI_OPTION ("-sa -sc",         "Create AML in assembler or C source file (*.asm or *.c)");
+    printf ("\nAML and Data Output Files:\n");
+    ACPI_OPTION ("-sa -sc",         "Create assembler or C source file (*.asm or *.c)");
     ACPI_OPTION ("-ia -ic",         "Create assembler or C include file (*.inc or *.h)");
-    ACPI_OPTION ("-ta -tc -ts",     "Create AML in assembler, C, or ASL hex table (*.hex)");
+    ACPI_OPTION ("-ta -tc -ts",     "Create assembler, C, or ASL hex table (*.hex)");
 
     printf ("\nAML Code Generation:\n");
     ACPI_OPTION ("-oa",             "Disable all optimizations (compatibility mode)");
@@ -234,7 +234,6 @@ Options (
 
     printf ("\nACPI Data Tables:\n");
     ACPI_OPTION ("-G",              "Compile custom table containing generic operators");
-    ACPI_OPTION ("-T <sig>|ALL|*",  "Create table template file(s) for <Sig>");
     ACPI_OPTION ("-vt",             "Create verbose templates (full disassembly)");
 
     printf ("\nAML Disassembler:\n");
@@ -246,6 +245,7 @@ Options (
     ACPI_OPTION ("-e  [f1,f2]",     "Include ACPI table(s) for external symbol resolution");
     ACPI_OPTION ("-2",              "Emit ACPI 2.0 compatible ASL code");
     ACPI_OPTION ("-g",              "Get ACPI tables and write to files (*.dat)");
+    ACPI_OPTION ("-vt",             "Dump binary table data in hex format within output file");
 
     printf ("\nHelp:\n");
     ACPI_OPTION ("-h",              "This message");
