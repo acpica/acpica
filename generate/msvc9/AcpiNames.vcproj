@@ -100,7 +100,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\AcpiNamesDebug\AcpiNames.bsc"
+				OutputFile="$(IntDir)\"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -202,7 +202,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\AcpiNames/AcpiNames.bsc"
+				OutputFile="$(IntDir)\"
 			/>
 			<Tool
 				Name="VCFxCopTool"

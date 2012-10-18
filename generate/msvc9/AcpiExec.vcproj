@@ -59,6 +59,7 @@
 				ObjectFile=".\AcpiExecDebug\"
 				ProgramDataBaseFileName=".\AcpiExecDebug\"
 				BrowseInformation="1"
+				BrowseInformationFile="$(IntDir)\"
 				WarningLevel="4"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -107,7 +108,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\AcpiExecDebug\AcpiExec.bsc"
+				OutputFile="$(IntDir)\"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -211,7 +212,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\AcpiExec\AcpiExec.bsc"
+				OutputFile="$(IntDir)\"
 			/>
 			<Tool
 				Name="VCFxCopTool"

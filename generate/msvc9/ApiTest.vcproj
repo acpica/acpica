@@ -106,7 +106,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\ApiTestDebug\ApiTestDebug.bsc"
+				OutputFile="$(IntDir)\"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -208,7 +208,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\ApiTest\ApiTest.bsc"
+				OutputFile="$(IntDir)\"
 			/>
 			<Tool
 				Name="VCFxCopTool"
