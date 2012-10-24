@@ -649,17 +649,43 @@ AcpiUtUpdateObjectReference (
             for (i = 0; i < Object->Package.Count; i++)
             {
                 /*
-                 * Push each element onto the stack for later processing.
-                 * Note: There can be null elements within the package,
-                 * these are simply ignored
+                 * Null package elements are legal and can be simply
+                 * ignored.
                  */
-                Status = AcpiUtCreateUpdateStateAndPush (
-                            Object->Package.Elements[i], Action, &StateList);
-                if (ACPI_FAILURE (Status))
+                NextObject = Object->Package.Elements[i];
+                if (!NextObject)
                 {
-                    goto ErrorExit;
+                    continue;
+                }
+
+                switch (NextObject->Common.Type)
+                {
+                case ACPI_TYPE_INTEGER:
+                case ACPI_TYPE_STRING:
+                case ACPI_TYPE_BUFFER:
+                    /*
+                     * For these very simple sub-objects, we can just
+                     * update the reference count here and continue.
+                     * Greatly increases performance of this operation.
+                     */
+                    AcpiUtUpdateRefCount (NextObject, Action);
+                    break;
+
+                default:
+                    /*
+                     * For complex sub-objects, push them onto the stack
+                     * for later processing (this eliminates recursion.)
+                     */
+                    Status = AcpiUtCreateUpdateStateAndPush (
+                                 NextObject, Action, &StateList);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        goto ErrorExit;
+                    }
+                    break;
                 }
             }
+            NextObject = NULL;
             break;
 
         case ACPI_TYPE_BUFFER_FIELD:
