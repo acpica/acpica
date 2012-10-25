@@ -122,6 +122,15 @@
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslcompile")
 
+/*
+ * Main parser entry
+ * External is here in case the parser emits the same external in the
+ * generated header. (Newer versions of Bison)
+ */
+int
+AslCompilerparse(
+    void);
+
 /* Local prototypes */
 
 static void
