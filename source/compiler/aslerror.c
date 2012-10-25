@@ -376,7 +376,12 @@ AePrintException (
                             {
                                 while (RActual && SourceByte && (SourceByte != '\n') && (Total < 256))
                                 {
-                                    fwrite (&SourceByte, 1, 1, OutputFile);
+                                    if (fwrite (&SourceByte, 1, 1, OutputFile) != 1)
+                                    {
+                                        printf ("[*** iASL: Write error on output file ***]\n");
+                                        return;
+                                    }
+
                                     RActual = fread (&SourceByte, 1, 1, SourceFile);
                                     Total++;
                                 }
