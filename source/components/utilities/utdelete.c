@@ -440,7 +440,7 @@ AcpiUtDeleteInternalObjectList (
     ACPI_OPERAND_OBJECT     **InternalObj;
 
 
-    ACPI_FUNCTION_TRACE (UtDeleteInternalObjectList);
+    ACPI_FUNCTION_NAME (UtDeleteInternalObjectList);
 
 
     /* Walk the null-terminated internal list */
@@ -453,7 +453,7 @@ AcpiUtDeleteInternalObjectList (
     /* Free the combined parameter pointer list and object array */
 
     ACPI_FREE (ObjList);
-    return_VOID;
+    return;
 }
 
 
@@ -600,7 +600,7 @@ AcpiUtUpdateObjectReference (
     UINT32                  i;
 
 
-    ACPI_FUNCTION_TRACE_PTR (UtUpdateObjectReference, Object);
+    ACPI_FUNCTION_NAME (UtUpdateObjectReference);
 
 
     while (Object)
@@ -611,7 +611,7 @@ AcpiUtUpdateObjectReference (
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
                 "Object %p is NS handle\n", Object));
-            return_ACPI_STATUS (AE_OK);
+            return (AE_OK);
         }
 
         /*
@@ -761,7 +761,7 @@ AcpiUtUpdateObjectReference (
         }
     }
 
-    return_ACPI_STATUS (AE_OK);
+    return (AE_OK);
 
 
 ErrorExit:
@@ -777,7 +777,7 @@ ErrorExit:
         AcpiUtDeleteGenericState (State);
     }
 
-    return_ACPI_STATUS (Status);
+    return (Status);
 }
 
 
@@ -799,14 +799,14 @@ AcpiUtAddReference (
     ACPI_OPERAND_OBJECT     *Object)
 {
 
-    ACPI_FUNCTION_TRACE_PTR (UtAddReference, Object);
+    ACPI_FUNCTION_NAME (UtAddReference);
 
 
     /* Ensure that we have a valid object */
 
     if (!AcpiUtValidInternalObject (Object))
     {
-        return_VOID;
+        return;
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
@@ -816,7 +816,7 @@ AcpiUtAddReference (
     /* Increment the reference count */
 
     (void) AcpiUtUpdateObjectReference (Object, REF_INCREMENT);
-    return_VOID;
+    return;
 }
 
 
@@ -837,7 +837,7 @@ AcpiUtRemoveReference (
     ACPI_OPERAND_OBJECT     *Object)
 {
 
-    ACPI_FUNCTION_TRACE_PTR (UtRemoveReference, Object);
+    ACPI_FUNCTION_NAME (UtRemoveReference);
 
 
     /*
@@ -849,14 +849,14 @@ AcpiUtRemoveReference (
         (ACPI_GET_DESCRIPTOR_TYPE (Object) == ACPI_DESC_TYPE_NAMED))
 
     {
-        return_VOID;
+        return;
     }
 
     /* Ensure that we have a valid object */
 
     if (!AcpiUtValidInternalObject (Object))
     {
-        return_VOID;
+        return;
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
@@ -869,5 +869,5 @@ AcpiUtRemoveReference (
      * of all subobjects!)
      */
     (void) AcpiUtUpdateObjectReference (Object, REF_DECREMENT);
-    return_VOID;
+    return;
 }
