@@ -882,9 +882,11 @@ AsPutFile (
     /* Write the buffer to the file */
 
     FileSize = strlen (FileBuffer);
-    write (DestHandle, FileBuffer, FileSize);
+    if (write (DestHandle, FileBuffer, FileSize) == -1)
+    {
+        printf ("Error writing output file \"%s\"\n", Pathname);
+    }
 
     close (DestHandle);
-
     return (0);
 }
