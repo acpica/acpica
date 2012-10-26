@@ -2,9 +2,9 @@
 Instructions to create a full release of the ACPICA software
 and utilities.
 
-Last update 16 August 2012.
+Last update 18 October 2012.
 
-Note: The build uses MS Visual Studio and Cygwin to accomplish the
+The build uses MS Visual Studio and Cygwin to accomplish the
 goal of releasing both Windows and Unix versions of the code
 and utilities. For Windows, binary versions of the ACPICA utilities
 (including the iASL compiler) are created.
@@ -28,9 +28,14 @@ Build Unix versions of all software and utilities
 
 Write the release notes
 Generate sizes for the acpica library from generate/release/size.bat
+   Note: This step uses MS dumpbin(link) which is a part of the VC package.
+   It might not work unless the environment variables are set correctly.
+   Execute VC/vcvarsall.bat from the command line if necessary.
 Sizes appear in the files size_rel.txt and size_dbg.txt
 Integrate code/data and debug/nodebug sizes into the release notes
 Add the release notes to the documents/changes.txt document
+   Note: From Word, use "Save As", then check MS-DOS and "insert line breaks"
+   boxes before saving.
 
 Checkin documents/changes.txt
 Checkin the new version number, source/include/acpixf.h
@@ -41,7 +46,7 @@ Tag the version file with a name of the form Rmm_dd_yy
     git push --tags
 
 Build the various tar/zip release files:
-    Convert the generate/release/.sh files to unix format: d2u *.sh
+    Convert the generate/release/.sh files to unix format: dos2unix *.sh
     On cygwin, execute generate/release/release.sh
 
 
@@ -87,7 +92,8 @@ Update file sizes:
     documentation/index.php - ACPICA documentation sizes and info
 
 Add and commit new files and changed files:
-    svn add acpica.org --force
+    svn status acpica.org
+    svn add acpica.org/trunk/html --force
     svn commit -m"version yyyymmdd" acpica.org
 
 
@@ -96,7 +102,7 @@ Email the release notes
 -----------------------
 
 Send separate copies of the notes (in plain text) to the following:
-    acpica.intel.com
+    AcpiCa (acpica.intel.com)
     devel@acpica.org
     acpi@linux.intel.com
     CaClients (undisclosed recipients/BCC: list)
