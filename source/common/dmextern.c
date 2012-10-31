@@ -227,8 +227,14 @@ AcpiDmNormalizeParentPrefix (
     ACPI_SIZE               Length;
 
 
-    /* Search upwards in the parse tree until we reach a namespace node */
+    if (!Op)
+    {
+        return (NULL);
+    }
 
+    /* Search upwards in the parse tree until we reach the next namespace node */
+
+    Op = Op->Common.Parent;
     while (Op)
     {
         if (Op->Common.Node)
