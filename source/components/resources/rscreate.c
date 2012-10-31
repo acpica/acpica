@@ -178,7 +178,7 @@ AcpiBufferToResource (
 
     /* Perform the AML-to-Resource conversion */
 
-    Status = AcpiUtWalkAmlResources (AmlBuffer, AmlBufferLength,
+    Status = AcpiUtWalkAmlResources (NULL, AmlBuffer, AmlBufferLength,
                 AcpiRsConvertAmlToResources, &CurrentResourcePtr);
     if (Status == AE_AML_NO_RESOURCE_END_TAG)
     {
@@ -264,7 +264,7 @@ AcpiRsCreateResourceList (
     /* Do the conversion */
 
     Resource = OutputBuffer->Pointer;
-    Status = AcpiUtWalkAmlResources (AmlStart, AmlBufferLength,
+    Status = AcpiUtWalkAmlResources (NULL, AmlStart, AmlBufferLength,
                 AcpiRsConvertAmlToResources, &Resource);
     if (ACPI_FAILURE (Status))
     {

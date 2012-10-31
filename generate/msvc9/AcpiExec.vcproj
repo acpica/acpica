@@ -108,7 +108,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile="$(IntDir)\"
+				OutputFile="$(IntDir)\AcpiExec.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -212,7 +212,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile="$(IntDir)\"
+				OutputFile="$(IntDir)\AcpiExec.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -2497,6 +2497,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\disassembler\dmdeferred.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\SOURCE\COMPONENTS\disassembler\dmobject.c"

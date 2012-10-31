@@ -90,6 +90,7 @@ OBJECTS = \
 	$(OBJDIR)/dtutils.o \
 	$(OBJDIR)/dbfileio.o \
 	$(OBJDIR)/dmbuffer.o \
+	$(OBJDIR)/dmdeferred.o \
 	$(OBJDIR)/dmextern.o \
 	$(OBJDIR)/dmnames.o \
 	$(OBJDIR)/dmobject.o \

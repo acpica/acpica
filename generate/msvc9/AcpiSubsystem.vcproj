@@ -2026,6 +2026,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\disassembler\dmdeferred.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\COMPONENTS\Disassembler\dmnames.c"
 					>
 					<FileConfiguration
