@@ -1017,7 +1017,7 @@ AcpiDmInterruptDescriptor (
         AcpiGbl_ConsumeDecode [(Resource->ExtendedIrq.Flags & 1)],
         AcpiGbl_HeDecode [(Resource->ExtendedIrq.Flags >> 1) & 1],
         AcpiGbl_LlDecode [(Resource->ExtendedIrq.Flags >> 2) & 1],
-        AcpiGbl_ShrDecode [(Resource->ExtendedIrq.Flags >> 3) & 1]);
+        AcpiGbl_ShrDecode [(Resource->ExtendedIrq.Flags >> 3) & 3]);
 
     /*
      * The ResourceSource fields are optional and appear after the interrupt

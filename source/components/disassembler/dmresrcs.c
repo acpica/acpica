@@ -157,7 +157,7 @@ AcpiDmIrqDescriptor (
         AcpiOsPrintf ("%s, %s, %s, ",
             AcpiGbl_HeDecode [Resource->Irq.Flags & 1],
             AcpiGbl_LlDecode [(Resource->Irq.Flags >> 3) & 1],
-            AcpiGbl_ShrDecode [(Resource->Irq.Flags >> 4) & 1]);
+            AcpiGbl_ShrDecode [(Resource->Irq.Flags >> 4) & 3]);
     }
 
     /* Insert a descriptor name */

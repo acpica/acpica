@@ -220,7 +220,9 @@ const char                      *AcpiGbl_RwDecode[] =
 const char                      *AcpiGbl_ShrDecode[] =
 {
     "Exclusive",
-    "Shared"
+    "Shared",
+    "ExclusiveAndWake",         /* ACPI 5.0 */
+    "SharedAndWake"             /* ACPI 5.0 */
 };
 
 const char                      *AcpiGbl_SizDecode[] =

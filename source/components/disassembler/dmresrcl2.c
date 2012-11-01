@@ -347,7 +347,7 @@ AcpiDmGpioIntDescriptor (
     AcpiOsPrintf ("GpioInt (%s, %s, %s, ",
         AcpiGbl_HeDecode [(Resource->Gpio.IntFlags & 1)],
         AcpiGbl_LlDecode [(Resource->Gpio.IntFlags >> 1) & 1],
-        AcpiGbl_ShrDecode [(Resource->Gpio.IntFlags >> 3) & 1]);
+        AcpiGbl_ShrDecode [(Resource->Gpio.IntFlags >> 3) & 3]);
 
     /* PinConfig, DebounceTimeout */
 
@@ -395,7 +395,7 @@ AcpiDmGpioIoDescriptor (
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("GpioIo (%s, ",
-        AcpiGbl_ShrDecode [(Resource->Gpio.IntFlags >> 3) & 1]);
+        AcpiGbl_ShrDecode [(Resource->Gpio.IntFlags >> 3) & 3]);
 
     if (Resource->Gpio.PinConfig <= 3)
     {
