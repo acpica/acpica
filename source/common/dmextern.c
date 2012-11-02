@@ -225,6 +225,7 @@ AcpiDmNormalizeParentPrefix (
     char                    *Fullpath;
     char                    *ParentPath;
     ACPI_SIZE               Length;
+    UINT32                  Index = 0;
 
 
     if (!Op)
@@ -283,6 +284,13 @@ AcpiDmNormalizeParentPrefix (
          * for the required dot separator (ParentPath.Path)
          */
         Length++;
+
+        /* For External() statements, we do not want a leading '\' */
+
+        if (*ParentPath == AML_ROOT_PREFIX)
+        {
+            Index = 1;
+        }
     }
 
     Fullpath = ACPI_ALLOCATE_ZEROED (Length);
@@ -297,7 +305,7 @@ AcpiDmNormalizeParentPrefix (
      *
      * Copy the parent path
      */
-    ACPI_STRCAT (Fullpath, ParentPath);
+    ACPI_STRCPY (Fullpath, &ParentPath[Index]);
 
     /*
      * Add dot separator
@@ -444,7 +452,22 @@ AcpiDmAddToExternalList (
         return;
     }
 
-    /* Externalize the ACPI path */
+    /*
+     * We don't want External() statements to contain a leading '\'.
+     * This prevents duplicate external statements of the form:
+     *
+     *    External (\ABCD)
+     *    External (ABCD)
+     *
+     * This would cause a compile time error when the disassembled
+     * output file is recompiled.
+     */
+    if ((*Path == AML_ROOT_PREFIX) && (Path[1]))
+    {
+        Path++;
+    }
+
+    /* Externalize the ACPI pathname */
 
     Status = AcpiNsExternalizeName (ACPI_UINT32_MAX, Path,
                 NULL, &ExternalPath);
@@ -453,8 +476,10 @@ AcpiDmAddToExternalList (
         return;
     }
 
-    /* Get the full pathname from root if "Path" has a parent prefix */
-
+    /*
+     * Get the full pathname from the root if "Path" has one or more
+     * parent prefixes (^). Note: path will not contain a leading '\'.
+     */
     if (*Path == (UINT8) AML_PARENT_PREFIX)
     {
         Fullpath = AcpiDmNormalizeParentPrefix (Op, ExternalPath);
