@@ -397,7 +397,7 @@ AcpiGetObjectInfo (
     Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
     if (ACPI_FAILURE (Status))
     {
-        goto Cleanup;
+        return (Status);
     }
 
     Node = AcpiNsValidateHandle (Handle);
