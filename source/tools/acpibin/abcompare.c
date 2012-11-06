@@ -146,6 +146,11 @@ static void
 AbPrintHeaderInfo (
     ACPI_TABLE_HEADER       *Header);
 
+static void
+AbPrintHeadersInfo (
+    ACPI_TABLE_HEADER       *Header,
+    ACPI_TABLE_HEADER       *Header2);
+
 ACPI_PHYSICAL_ADDRESS
 AeLocalGetRootPointer (
     void);
@@ -302,6 +307,26 @@ AbPrintHeaderInfo (
     printf ("OEM Revision      : %8.8X\n",    Header->OemRevision);
     printf ("ASL Compiler ID   : %4.4s\n",    Header->AslCompilerId);
     printf ("Compiler Revision : %8.8X\n",    Header->AslCompilerRevision);
+    printf ("\n");
+}
+
+static void
+AbPrintHeadersInfo (
+    ACPI_TABLE_HEADER       *Header,
+    ACPI_TABLE_HEADER       *Header2)
+{
+
+    /* Display header information for both headers */
+
+    printf ("Signature          %8.4s : %4.4s\n",    Header->Signature, Header2->Signature);
+    printf ("Length             %8.8X : %8.8X\n",    Header->Length, Header2->Length);
+    printf ("Revision           %8.2X : %2.2X\n",    Header->Revision, Header2->Revision);
+    printf ("Checksum           %8.2X : %2.2X\n",    Header->Checksum, Header2->Checksum);
+    printf ("OEM ID             %8.6s : %6.6s\n",    Header->OemId, Header2->OemId);
+    printf ("OEM Table ID       %8.8s : %8.8s\n",    Header->OemTableId, Header2->OemTableId);
+    printf ("OEM Revision       %8.8X : %8.8X\n",    Header->OemRevision, Header2->OemRevision);
+    printf ("ASL Compiler ID    %8.4s : %4.4s\n",    Header->AslCompilerId, Header2->AslCompilerId);
+    printf ("Compiler Revision  %8.8X : %8.8X\n",    Header->AslCompilerRevision, Header2->AslCompilerRevision);
     printf ("\n");
 }
 
@@ -513,8 +538,7 @@ AbCompareAmlFiles (
     {
         /* Display header information */
 
-        AbPrintHeaderInfo (&Header1);
-        AbPrintHeaderInfo (&Header2);
+        AbPrintHeadersInfo (&Header1, &Header2);
     }
 
     if (memcmp (&Header1, &Header2, sizeof (ACPI_TABLE_HEADER)))
