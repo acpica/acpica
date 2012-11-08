@@ -120,7 +120,6 @@ FILE                        *File1;
 FILE                        *File2;
 ACPI_TABLE_HEADER           Header1;
 ACPI_TABLE_HEADER           Header2;
-struct stat                 Gbl_StatBuf;
 
 #define BUFFER_SIZE         256
 char                        Buffer[BUFFER_SIZE];
@@ -612,15 +611,18 @@ AbGetFile (
     char                    *Filename,
     UINT32                  *FileSize)
 {
-    int                     FileHandle;
+    FILE                    *File;
     UINT32                  Size;
     char                    *Buffer = NULL;
+    int                     Seek1;
+    int                     Seek2;
+    size_t                  Actual;
 
 
     /* Binary mode does not alter CR/LF pairs */
 
-    FileHandle = open (Filename, O_BINARY | O_RDONLY);
-    if (!FileHandle)
+    File = fopen (Filename, "rb");
+    if (!File)
     {
         printf ("Could not open %s\n", Filename);
         return (NULL);
@@ -628,15 +630,18 @@ AbGetFile (
 
     /* Need file size to allocate a buffer */
 
-    if (fstat (FileHandle, &Gbl_StatBuf))
+    Seek1 = fseek (File, 0L, SEEK_END);
+    Size = ftell (File);
+    Seek2 = fseek (File, 0L, SEEK_SET);
+
+    if (Seek1 || Seek2 || (Size == -1))
     {
-        printf ("Could not get file status for %s\n", Filename);
+        printf ("Could not get file size (seek) for %s\n", Filename);
         goto ErrorExit;
     }
 
     /* Allocate a buffer for the entire file */
 
-    Size = Gbl_StatBuf.st_size;
     Buffer = calloc (Size, 1);
     if (!Buffer)
     {
@@ -646,8 +651,8 @@ AbGetFile (
 
     /* Read the entire file */
 
-    Size = read (FileHandle, Buffer, Size);
-    if (Size == -1)
+    Actual = fread (Buffer, 1, Size, File);
+    if (Actual != Size)
     {
         printf ("Could not read the input file %s\n", Filename);
         free (Buffer);
@@ -658,8 +663,7 @@ AbGetFile (
     *FileSize = Size;
 
 ErrorExit:
-    close (FileHandle);
-
+    fclose (File);
     return (Buffer);
 }
 
