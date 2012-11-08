@@ -708,7 +708,9 @@ AbDumpAmlFile (
     AcpiGbl_DebugFile = FileOutHandle;
     AcpiGbl_DbOutputFlags = ACPI_DB_REDIRECTABLE_OUTPUT;
 
-    AcpiOsPrintf ("%4.4s\n", ((ACPI_TABLE_HEADER *) FileBuffer)->Signature);
+    AcpiOsPrintf ("%4.4s @ 0x%8.8X\n",
+        ((ACPI_TABLE_HEADER *) FileBuffer)->Signature, 0);
+
     AcpiDbgLevel = ACPI_UINT32_MAX;
     AcpiUtDebugDumpBuffer ((UINT8 *) FileBuffer, FileSize,
         DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
@@ -722,7 +724,7 @@ AbDumpAmlFile (
  * FUNCTION:    AbExtractAmlFile
  *
  * DESCRIPTION: Extract a binary AML file from a text file (as produced by the
- *              DumpAmlFile procedure or the "acpidmp" table utility.
+ *              DumpAmlFile procedure or the "acpidump" table utility.
  *
  ******************************************************************************/
 
