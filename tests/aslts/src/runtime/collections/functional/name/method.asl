@@ -463,6 +463,9 @@ Method(m207)
 		Buffer(9){19,18,17,16,15,14,13,12,11},
 	})
 
+	// Operation Region
+	OperationRegion(OPR0, SystemMemory, 0, 48)
+
 	// Field Unit
 	Field(OPR0, ByteAcc, NoLock, Preserve) {
 		FLU0, 69,
@@ -481,9 +484,6 @@ Method(m207)
 
 	// Mutex
 	Mutex(MTX0, 0)
-
-	// Operation Region
-	OperationRegion(OPR0, SystemMemory, 0, 48)
 
 	// Power Resource
 	PowerResource(PWR0, 0, 0) {Name(s000, "PWR0")}
@@ -1013,7 +1013,7 @@ Method(m207)
 	// Mutex if Mutex's SyncLevel is not lower than the Method's
 	Method(m24c)
 	{
-		Mutex(MTX0, 8)
+		Mutex(MTX0, 0)
 		Name(i000, 0)
 
 		Method(mm00, 1)
@@ -1030,7 +1030,7 @@ Method(m207)
 			}
 		}
 
-		Method(mm01, 0, Serialized, 8)
+		Method(mm01, 0, Serialized)
 		{
 			Increment(i000)
 			Release(MTX0)

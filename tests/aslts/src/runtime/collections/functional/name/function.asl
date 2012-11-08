@@ -171,6 +171,9 @@ Method(m20e)
 		Buffer(9){19,18,17,16,15,14,13,12,11},
 	})
 
+	// Operation Region
+	OperationRegion(OPR0, SystemMemory, 0, 48)
+
 	// Field Unit
 	Field(OPR0, ByteAcc, NoLock, Preserve) {
 		FLU0, 69,
@@ -189,9 +192,6 @@ Method(m20e)
 
 	// Mutex
 	Mutex(MTX0, 0)
-
-	// Operation Region
-	OperationRegion(OPR0, SystemMemory, 0, 48)
 
 	// Power Resource
 	PowerResource(PWR0, 0, 0) {Name(s000, "PWR0")}
