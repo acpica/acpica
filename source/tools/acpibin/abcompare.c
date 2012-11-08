@@ -342,7 +342,7 @@ void
 AbDisplayHeader (
     char                    *File1Path)
 {
-    UINT32                  Actual1;
+    UINT32                  Actual;
 
 
     File1 = fopen (File1Path, "rb");
@@ -352,8 +352,8 @@ AbDisplayHeader (
         return;
     }
 
-    Actual1 = fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
-    if (Actual1 < sizeof (ACPI_TABLE_HEADER))
+    Actual = fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
+    if (Actual != sizeof (ACPI_TABLE_HEADER))
     {
         printf ("File %s does not contain an ACPI table header\n", File1Path);
         return;
@@ -380,7 +380,7 @@ void
 AbComputeChecksum (
     char                    *File1Path)
 {
-    UINT32                  Actual1;
+    UINT32                  Actual;
     ACPI_TABLE_HEADER       *Table;
     UINT8                   Checksum;
 
@@ -392,8 +392,8 @@ AbComputeChecksum (
         return;
     }
 
-    Actual1 = fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
-    if (Actual1 < sizeof (ACPI_TABLE_HEADER))
+    Actual = fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
+    if (Actual < sizeof (ACPI_TABLE_HEADER))
     {
         printf ("File %s does not contain an ACPI table header\n", File1Path);
         return;
@@ -421,10 +421,10 @@ AbComputeChecksum (
     /* Read the entire table, including header */
 
     fseek (File1, 0, SEEK_SET);
-    Actual1 = fread (Table, 1, Header1.Length, File1);
-    if (Actual1 < Header1.Length)
+    Actual = fread (Table, 1, Header1.Length, File1);
+    if (Actual != Header1.Length)
     {
-        printf ("could not read table\n");
+        printf ("could not read table, length %u\n", Header1.Length);
         return;
     }
 
@@ -455,8 +455,8 @@ AbComputeChecksum (
 
     Header1.Checksum = Checksum;
 
-    Actual1 = fwrite (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
-    if (Actual1 < sizeof (ACPI_TABLE_HEADER))
+    Actual = fwrite (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
+    if (Actual != sizeof (ACPI_TABLE_HEADER))
     {
         printf ("Could not write updated table header\n");
         return;
@@ -506,14 +506,14 @@ AbCompareAmlFiles (
     /* Read the ACPI header from each file */
 
     Actual1 = fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
-    if (Actual1 < sizeof (ACPI_TABLE_HEADER))
+    if (Actual1 != sizeof (ACPI_TABLE_HEADER))
     {
         printf ("File %s does not contain an ACPI table header\n", File1Path);
         return (-1);
     }
 
     Actual2 = fread (&Header2, 1, sizeof (ACPI_TABLE_HEADER), File2);
-    if (Actual2 < sizeof (ACPI_TABLE_HEADER))
+    if (Actual2 != sizeof (ACPI_TABLE_HEADER))
     {
         printf ("File %s does not contain an ACPI table header\n", File2Path);
         return (-1);
@@ -552,7 +552,7 @@ AbCompareAmlFiles (
     Actual2 = fread (&Char2, 1, 1, File2);
     Offset = sizeof (ACPI_TABLE_HEADER);
 
-    while (Actual1 && Actual2)
+    while ((Actual1 == 1) && (Actual2 == 1))
     {
         if (Char1 != Char2)
         {
@@ -600,7 +600,7 @@ AbCompareAmlFiles (
 
 /******************************************************************************
  *
- * FUNCTION:    AsGetFile
+ * FUNCTION:    AbGetFile
  *
  * DESCRIPTION: Open a file and read it entirely into a new buffer
  *
@@ -624,7 +624,7 @@ AbGetFile (
     File = fopen (Filename, "rb");
     if (!File)
     {
-        printf ("Could not open %s\n", Filename);
+        printf ("Could not open file %s\n", Filename);
         return (NULL);
     }
 
@@ -694,7 +694,7 @@ AbDumpAmlFile (
     FileOutHandle = fopen (File2Path, "wb");
     if (!FileOutHandle)
     {
-        printf ("Could not open %s\n", File2Path);
+        printf ("Could not open file %s\n", File2Path);
         return (-1);
     }
 
@@ -746,14 +746,14 @@ AbExtractAmlFile (
     FileHandle = fopen (File1Path, "rt");
     if (!FileHandle)
     {
-        printf ("Could not open %s\n", File1Path);
+        printf ("Could not open file %s\n", File1Path);
         return (-1);
     }
 
     FileOutHandle = fopen (File2Path, "w+b");
     if (!FileOutHandle)
     {
-        printf ("Could not open %s\n", File2Path);
+        printf ("Could not open file %s\n", File2Path);
         return (-1);
     }
 
@@ -809,7 +809,7 @@ AbExtractAmlFile (
 
                     /* Write the converted (binary) byte */
 
-                    if (fwrite (&Value, 1, 1, FileOutHandle) < 1)
+                    if (fwrite (&Value, 1, 1, FileOutHandle) != 1)
                     {
                         printf ("Error writing byte %u to output file: %s\n",
                             Count, File2Path);

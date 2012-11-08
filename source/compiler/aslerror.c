@@ -366,7 +366,7 @@ AePrintException (
                         else
                         {
                             RActual = fread (&SourceByte, 1, 1, SourceFile);
-                            if (!RActual)
+                            if (RActual != 1)
                             {
                                 fprintf (OutputFile,
                                     "[*** iASL: Read error on source code temp file %s ***]",
@@ -383,6 +383,13 @@ AePrintException (
                                     }
 
                                     RActual = fread (&SourceByte, 1, 1, SourceFile);
+                                    if (RActual != 1)
+                                    {
+                                        fprintf (OutputFile,
+                                            "[*** iASL: Read error on source code temp file %s ***]",
+                                            Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Filename);
+                                        return;
+                                    }
                                     Total++;
                                 }
 

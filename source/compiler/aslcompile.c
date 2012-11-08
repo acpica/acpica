@@ -355,7 +355,7 @@ FlConsumeAnsiComment (
     BOOLEAN                 ClosingComment = FALSE;
 
 
-    while (fread (&Byte, 1, 1, Handle))
+    while (fread (&Byte, 1, 1, Handle) == 1)
     {
         /* Scan until comment close is found */
 
@@ -398,7 +398,7 @@ FlConsumeNewComment (
     UINT8                   Byte;
 
 
-    while (fread (&Byte, 1, 1, Handle))
+    while (fread (&Byte, 1, 1, Handle) == 1)
     {
         Status->Offset++;
 
@@ -449,7 +449,7 @@ FlCheckForAscii (
 
     /* Read the entire file */
 
-    while (fread (&Byte, 1, 1, Handle))
+    while (fread (&Byte, 1, 1, Handle) == 1)
     {
         /* Ignore comment fields (allow non-ascii within) */
 

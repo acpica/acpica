@@ -352,6 +352,7 @@ DtCreateOneTemplate (
     char                    *DisasmFilename;
     FILE                    *File;
     ACPI_STATUS             Status = AE_OK;
+    ACPI_SIZE               Actual;
 
 
     /* New file will have a .asl suffix */
@@ -406,18 +407,32 @@ DtCreateOneTemplate (
     }
     else
     {
-        /* Special ACPI tables - DSDT, SSDT, FACS, RSDP */
+        /* Special ACPI tables - DSDT, SSDT, FADT, RSDP */
 
         AcpiOsPrintf (" */\n\n");
         if (ACPI_COMPARE_NAME (Signature, ACPI_SIG_DSDT))
         {
-            fwrite (TemplateDsdt, sizeof (TemplateDsdt) -1, 1, File);
+            Actual = fwrite (TemplateDsdt, 1, sizeof (TemplateDsdt) -1, File);
+            if (Actual != sizeof (TemplateDsdt) -1)
+            {
+                fprintf (stderr,
+                    "Could not write to output file %s\n", DisasmFilename);
+                Status = AE_ERROR;
+                goto Cleanup;
+            }
         }
         else if (ACPI_COMPARE_NAME (Signature, ACPI_SIG_SSDT))
         {
-            fwrite (TemplateSsdt, sizeof (TemplateSsdt) -1, 1, File);
+            Actual = fwrite (TemplateSsdt, 1, sizeof (TemplateSsdt) -1, File);
+            if (Actual != sizeof (TemplateSsdt) -1)
+            {
+                fprintf (stderr,
+                    "Could not write to output file %s\n", DisasmFilename);
+                Status = AE_ERROR;
+                goto Cleanup;
+            }
         }
-        else if (ACPI_COMPARE_NAME (Signature, ACPI_SIG_FACS))
+        else if (ACPI_COMPARE_NAME (Signature, ACPI_SIG_FACS)) /* FADT */
         {
             AcpiDmDumpDataTable (ACPI_CAST_PTR (ACPI_TABLE_HEADER,
                 TemplateFacs));
@@ -431,7 +446,8 @@ DtCreateOneTemplate (
         {
             fprintf (stderr,
                 "%4.4s, Unrecognized ACPI table signature\n", Signature);
-            return (AE_ERROR);
+            Status = AE_ERROR;
+            goto Cleanup;
         }
     }
 
@@ -439,6 +455,7 @@ DtCreateOneTemplate (
         "Created ACPI table template for [%4.4s], written to \"%s\"\n",
         Signature, DisasmFilename);
 
+Cleanup:
     fclose (File);
     AcpiOsRedirectOutput (stdout);
     ACPI_FREE (DisasmFilename);

@@ -783,7 +783,7 @@ AsGetFile (
     File = fopen (Filename, "rb");
     if (!File)
     {
-        printf ("Could not open %s\n", Filename);
+        printf ("Could not open file %s\n", Filename);
         return (-1);
     }
 
