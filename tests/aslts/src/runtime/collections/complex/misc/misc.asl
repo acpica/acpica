@@ -987,33 +987,37 @@ Method(mf75, 1)
 }
 
 
-Method(mf76, 1)
-{
-	if (LNotEqual(arg0, "Strang")) {
-		err(arg0, z054, 72, 0, 0, arg0, "Strang")
-	}
-}
-
 /*
  * Bug 153, Bugzilla 5314.
+ * The corresponding bug has been fixed.
+ * This is an invalid test, should be removed from test suite.
+ * Method mf77 will fail on ABBU unexpectedly even without Method mf76.
+ *
+ * Method(mf76, 1)
+ * {
+ *	if (LNotEqual(arg0, "Strang")) {
+ *		err(arg0, z054, 72, 0, 0, arg0, "Strang")
+ *	}
+ * }
+ *
+ * Method(mf77, 1)
+ * {
+ *	Name(s000, "String")
+ *	Name(p000, Package(){0})
+ *
+ *	Store(s000, p000)
+ *
+ *	Store(s000, Debug)
+ *	Store(p000, Debug)
+ *
+ *	Store (0x61, Index(p000, 3))
+ *
+ *	mf76(p000)
+ *	if (LNotEqual(s000, "String")) {
+ *		err(arg0, z054, 73, 0, 0, s000, "String")
+ *	}
+ * }
  */
-Method(mf77, 1)
-{
-	Name(s000, "String")
-	Name(p000, Package(){0})
-
-	Store(s000, p000)
-
-	Store(s000, Debug)
-	Store(p000, Debug)
-
-	Store (0x61, Index(p000, 3))
-
-	mf76(p000)
-	if (LNotEqual(s000, "String")) {
-		err(arg0, z054, 73, 0, 0, s000, "String")
-	}
-}
 
 /* Bug 196 */
 Method(mf86, 1)
@@ -1310,8 +1314,8 @@ Method(MSC0)
 	m125(ts)
 	SRMT("mf75")
 	mf75(ts)
-	SRMT("mf77")
-	mf77(ts)
+	//SRMT("mf77")
+	//mf77(ts)
 	SRMT("mf86")
 	mf86(ts)
 	SRMT("mf87")
