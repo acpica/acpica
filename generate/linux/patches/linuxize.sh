@@ -11,12 +11,14 @@ version=$2
 branch=master
 
 if [ ! -z "$version" ] ; then
-	cd $git_root
-	git checkout $version
-	cd ..
+	(
+		cd $git_root
+		git checkout $version >/dev/null 2>&1
+	)
 fi
 
 rm -rf new.linux
+echo "[linuxize.sh] Coverting format (AcpiSrc)..."
 bin/acpisrc -ldqy $git_root/source new.linux > /dev/null
 cd new.linux
 
@@ -50,6 +52,7 @@ rm -rf common compiler components debugger disassembler interpreter os_specific 
 # 1) Move all ACPICA include files to include/acpi
 # 2) Move all ACPICA code to drivers/acpi
 #
+echo "[linuxize.sh] Coverting hierarchy (drivers/acpi/acpica|include/acpi)..."
 mkdir -p acpi_include
 mv -f include/* acpi_include
 mv -f acpi_include include/acpi
@@ -58,14 +61,28 @@ mkdir -p drivers/acpi/acpica
 mv dispatcher/* events/* executer/* hardware/* namespace/* parser/* resources/* tables/* utilities/* drivers/acpi/acpica
 rm -rf dispatcher events executer hardware namespace parser resources tables utilities
 
-private_includes="accommon.h acdebug.h acevents.h achware.h aclocal.h acnamesp.h acopcode.h acpredef.h acstruct.h acutils.h amlresrc.h"
-private_includes="$private_includes acconfig.h acdispat.h acglobal.h acinterp.h acmacros.h acobject.h acparser.h acresrc.h actables.h amlcode.h"
+private_includes="accommon.h"
+private_includes="$private_includes acdebug.h acdispat.h"
+private_includes="$private_includes acevents.h"
+private_includes="$private_includes acglobal.h"
+private_includes="$private_includes achware.h"
+private_includes="$private_includes acinterp.h"
+private_includes="$private_includes aclocal.h"
+private_includes="$private_includes acmacros.h"
+private_includes="$private_includes acnamesp.h"
+private_includes="$private_includes acobject.h acopcode.h"
+private_includes="$private_includes acparser.h acpredef.h"
+private_includes="$private_includes acresrc.h"
+private_includes="$private_includes acstruct.h"
+private_includes="$private_includes actables.h"
+private_includes="$private_includes acutils.h"
+private_includes="$private_includes amlcode.h amlresrc.h"
 for inc in $private_includes ; do
 	mv include/acpi/$inc drivers/acpi/acpica/
 done
 
 # indent all .c and .h files
-
+echo "[linuxize.sh] Converting format (lindent.sh)..."
 find . -name "*.[ch]" | xargs ../lindent.sh
 
 

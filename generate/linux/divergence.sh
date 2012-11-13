@@ -9,6 +9,25 @@
 #
 # Usage: ./divergence.sh <Path to root of linux source code>
 #
+
+usage () {
+	echo "Usage: `basename $0` [-s] <path>"
+	echo "Where:"
+	echo "  -s: indent on (Linux) rather than on (Linux and ACPICA)"
+	echo "  path is path to root of Linux source code."
+	return 0
+}
+
+while getopts "s" opt
+do
+	case $opt in
+	s) LINDENT_DIR=single;;
+	?) echo "Invalid argument $opt"
+	   usage;;
+	esac
+done
+shift $(($OPTIND - 1))
+
 HARDWARE_NAME=`uname -m`
 BINDIR=not_initialized
 ACPICA_TMP=acpica_tmp
@@ -40,6 +59,9 @@ fi
 if [ ! -e $LINDENT ] ; then
 	echo "Could not find lindent.sh script"
 	return 1
+fi
+if [ -z $LINDENT_DIR ] ; then
+	LINDENT_DIR=multiple
 fi
 
 #
@@ -74,23 +96,40 @@ echo "Creating local Linux ACPICA files subdirectory"
 rm -rf $ACPICA_TMP $LINUX_ACPICA $ACPICA_LINUXIZED
 mkdir $ACPICA_TMP $LINUX_ACPICA
 
-cp $LINUX/drivers/acpi/acpica/* $LINUX_ACPICA/
-cp $LINUX/include/acpi/*.h $LINUX_ACPICA/
-cp $LINUX/include/acpi/platform/*.h $LINUX_ACPICA/
+mkdir -p $LINUX_ACPICA/drivers/acpi/acpica
+cp $LINUX/drivers/acpi/acpica/* $LINUX_ACPICA/drivers/acpi/acpica/
+mkdir -p $LINUX_ACPICA/include/acpi/platform
+cp $LINUX/include/acpi/*.h $LINUX_ACPICA/include/acpi/
+cp $LINUX/include/acpi/platform/*.h $LINUX_ACPICA/include/acpi/platform/
 
 #
 # Ensure that the files in the two directories
 # (native ACPICA and Linux ACPICA) match
 #
-cd $LINUX_ACPICA
-ALL_FILES=`ls`
 
-for f in $ALL_FILES ; do
-	tmp_f=`find $ACPICA/source -name $f`
-	if [ ! -z $tmp_f ] ; then
-		cp $tmp_f ../$ACPICA_TMP
-	else
-		rm $f
+ALL_FILES=`find $LINUX_ACPICA`
+
+for t in $ALL_FILES ; do
+	if [ -f $t ] ; then
+		d=$ACPICA_TMP`dirname ${t#${LINUX_ACPICA}}`
+		f=`find $ACPICA/source -name \`basename $t\``
+		if [ ! -z $f ] ; then
+			mkdir -p $d
+			cp -f $f $d
+		else
+			rm -f $t
+		fi
+	fi
+done
+
+# Do we need to perform things on private_includes?
+private_includes="accommon.h acdebug.h acevents.h achware.h aclocal.h acnamesp.h acopcode.h acpredef.h acstruct.h acutils.h amlresrc.h"
+private_includes="$private_includes acconfig.h acdispat.h acglobal.h acinterp.h acmacros.h acobject.h acparser.h acresrc.h actables.h amlcode.h"
+for inc in $private_includes ; do
+	if [ -f $ACPICA_TMP/include/acpi/$inc ] ; then
+		echo "Warning: private include file $inc is now public.  Please check the linuxize.sh"
+	elif [ ! -f $ACPICA_TMP/drivers/acpi/acpica/$inc ] ; then
+		echo "Warning: private include file $inc does not exist.  Please check the linuxize.sh."
 	fi
 done
 
@@ -98,38 +137,35 @@ done
 # Linuxize the ACPICA source
 #
 echo "Linuxizing the ACPICA source code:"
-cd ..
 $ACPISRC -ldqy $ACPICA_TMP $ACPICA_LINUXIZED
 
 #
 # Enable cross platform generation
 #
 dos2unix -q $LINDENT
-dos2unix -q $ACPICA_LINUXIZED/*
-dos2unix -q $LINUX_ACPICA/*
+find $ACPICA_LINUXIZED | xargs dos2unix -q
+find $LINUX_ACPICA | xargs dos2unix -q
 
 #
 # Lindent both sets of files
 #
 echo "Building lindented linuxized ACPICA files"
-cd $ACPICA_LINUXIZED
-find . -name "*.[ch]" | xargs $LINDENT
-rm -f *~
-cd ..
+find $ACPICA_LINUXIZED -name "*.[ch]" | xargs $LINDENT
+find $ACPICA_LINUXIZED -name *~ | xargs rm -f
 
-echo "Building lindented actual linux ACPICA files"
-cd $LINUX_ACPICA
-find . -name "*.[ch]" | xargs $LINDENT
-rm -f *~
-cd ..
+if [ "x$LINDENT_DIR" = "xmultiple" ] ; then
+	echo "Building lindented actual linux ACPICA files"
+	find $LINUX_ACPICA -name "*.[ch]" | xargs $LINDENT
+	find $LINUX_ACPICA -name *~ | xargs rm -f
+fi
 
 #
 # Now we can finally do the big diff
 #
 echo "Creating ACPICA/Linux diff"
-diff -E -b -w -B -rpuN $LINUX_ACPICA $ACPICA_LINUXIZED > divergence.diff
-diffstat divergence.diff > diffstat.txt
-ls -l divergence.diff diffstat.txt
+diff -E -b -w -B -rpuN $LINUX_ACPICA $ACPICA_LINUXIZED > divergence-$LINDENT_DIR.diff
+diffstat divergence-$LINDENT_DIR.diff > diffstat-$LINDENT_DIR.txt
+ls -l divergence-$LINDENT_DIR.diff diffstat-$LINDENT_DIR.txt
 
 #
 # Cleanup
