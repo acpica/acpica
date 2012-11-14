@@ -850,7 +850,8 @@ Exit1:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Simple callback to exercise AcpiWalkResources
+ * DESCRIPTION: Simple callback to exercise AcpiWalkResources and
+ *              AcpiWalkResourceBuffer.
  *
  ******************************************************************************/
 
@@ -966,7 +967,7 @@ GetCrs:
             goto GetPrs;
         }
 
-        /* This code is here to exercise the AcpiWalkResources interface */
+        /* This code exercises the AcpiWalkResources interface */
 
         Status = AcpiWalkResources (Node, METHOD_NAME__CRS,
             AcpiDbResourceCallback, NULL);
@@ -977,10 +978,10 @@ GetCrs:
             goto GetPrs;
         }
 
-        /* Get the _CRS resource list */
+        /* Get the _CRS resource list (test ALLOCATE buffer) */
 
-        ReturnObj.Pointer = AcpiGbl_DbBuffer;
-        ReturnObj.Length  = ACPI_DEBUG_BUFFER_SIZE;
+        ReturnObj.Pointer = NULL;
+        ReturnObj.Length  = ACPI_ALLOCATE_LOCAL_BUFFER;
 
         Status = AcpiGetCurrentResources (Node, &ReturnObj);
         if (ACPI_FAILURE (Status))
@@ -990,16 +991,28 @@ GetCrs:
             goto GetPrs;
         }
 
+        /* This code exercises the AcpiWalkResourceBuffer interface */
+
+        Status = AcpiWalkResourceBuffer (&ReturnObj,
+            AcpiDbResourceCallback, NULL);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiOsPrintf ("AcpiWalkResourceBuffer failed: %s\n",
+                AcpiFormatException (Status));
+            goto EndCrs;
+        }
+
         /* Dump the _CRS resource list */
 
         AcpiRsDumpResourceList (ACPI_CAST_PTR (ACPI_RESOURCE,
             ReturnObj.Pointer));
 
         /*
-         * Perform comparison of original AML to newly created AML. This tests both
-         * the AML->Resource conversion and the Resource->Aml conversion.
+         * Perform comparison of original AML to newly created AML. This
+         * tests both the AML->Resource conversion and the Resource->AML
+         * conversion.
          */
-        Status = AcpiDmTestResourceConversion (Node, METHOD_NAME__CRS);
+        (void) AcpiDmTestResourceConversion (Node, METHOD_NAME__CRS);
 
         /* Execute _SRS with the resource list */
 
@@ -1008,8 +1021,11 @@ GetCrs:
         {
             AcpiOsPrintf ("AcpiSetCurrentResources failed: %s\n",
                 AcpiFormatException (Status));
-            goto GetPrs;
+            goto EndCrs;
         }
+
+EndCrs:
+        ACPI_FREE_BUFFER (ReturnObj);
     }
 
 
