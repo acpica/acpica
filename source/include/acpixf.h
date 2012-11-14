@@ -690,6 +690,12 @@ AcpiGetEventResources (
     ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
+AcpiWalkResourceBuffer (
+    ACPI_BUFFER                 *Buffer,
+    ACPI_WALK_RESOURCE_CALLBACK UserFunction,
+    void                        *Context);
+
+ACPI_STATUS
 AcpiWalkResources (
     ACPI_HANDLE                 Device,
     char                        *Name,
