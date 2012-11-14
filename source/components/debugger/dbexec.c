@@ -1055,12 +1055,10 @@ AcpiDbExecute (
 
         Status = AcpiGetHandle (NULL, AcpiGbl_DbMethodInfo.Pathname,
             &AcpiGbl_DbMethodInfo.Method);
-        if (ACPI_FAILURE (Status))
+        if (ACPI_SUCCESS (Status))
         {
-            return;
+            Status = AcpiDbExecuteMethod (&AcpiGbl_DbMethodInfo, &ReturnObj);
         }
-
-        Status = AcpiDbExecuteMethod (&AcpiGbl_DbMethodInfo, &ReturnObj);
         ACPI_FREE (NameString);
     }
 
@@ -1069,7 +1067,6 @@ AcpiDbExecute (
      * (Such as Notify handlers invoked from AML executed above).
      */
     AcpiOsSleep ((UINT64) 10);
-
 
 #ifdef ACPI_DEBUG_OUTPUT
 
