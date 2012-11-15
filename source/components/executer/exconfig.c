@@ -123,6 +123,7 @@
 #include "actables.h"
 #include "acdispat.h"
 #include "acevents.h"
+#include "amlcode.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -258,14 +259,15 @@ AcpiExLoadTableOp (
         (Operand[1]->String.Length > ACPI_OEM_ID_SIZE) ||
         (Operand[2]->String.Length > ACPI_OEM_TABLE_ID_SIZE))
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        return_ACPI_STATUS (AE_AML_STRING_LIMIT);
     }
 
     /* Find the ACPI table in the RSDT/XSDT */
 
-    Status = AcpiTbFindTable (Operand[0]->String.Pointer,
-                              Operand[1]->String.Pointer,
-                              Operand[2]->String.Pointer, &TableIndex);
+    Status = AcpiTbFindTable (
+                Operand[0]->String.Pointer,
+                Operand[1]->String.Pointer,
+                Operand[2]->String.Pointer, &TableIndex);
     if (ACPI_FAILURE (Status))
     {
         if (Status != AE_NOT_FOUND)
@@ -310,8 +312,8 @@ AcpiExLoadTableOp (
 
     if (Operand[4]->String.Length > 0)
     {
-        if ((Operand[4]->String.Pointer[0] != '\\') &&
-            (Operand[4]->String.Pointer[0] != '^'))
+        if ((Operand[4]->String.Pointer[0] != AML_ROOT_PREFIX) &&
+            (Operand[4]->String.Pointer[0] != AML_PARENT_PREFIX))
         {
             /*
              * Path is not absolute, so it will be relative to the node
@@ -372,7 +374,7 @@ AcpiExLoadTableOp (
     }
 
     *ReturnDesc = DdbHandle;
-    return_ACPI_STATUS  (Status);
+    return_ACPI_STATUS (Status);
 }
 
 
