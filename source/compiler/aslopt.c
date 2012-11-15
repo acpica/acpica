@@ -377,7 +377,7 @@ OptBuildShortestPath (
 
     for (i = 0; i < NumCarats; i++)
     {
-        NewPathExternal[i] = '^';
+        NewPathExternal[i] = AML_PARENT_PREFIX;
     }
 
     /*
@@ -401,7 +401,7 @@ OptBuildShortestPath (
 
         if (Op->Asl.AmlOpcode == AML_SCOPE_OP)
         {
-            NewPathExternal[i] = '^';
+            NewPathExternal[i] = AML_PARENT_PREFIX;
             i++;
             ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, "(EXTRA ^)"));
         }
@@ -520,7 +520,7 @@ OptOptimizeNameDeclaration (
 
     if (((CurrentNode == AcpiGbl_RootNode) ||
         (Op->Common.Parent->Asl.ParseOpcode == PARSEOP_DEFINITIONBLOCK)) &&
-            (AmlNameString[0] == '\\'))
+            (ACPI_IS_ROOT_PREFIX (AmlNameString[0])))
     {
         /*
          * The current scope is the root, and the namepath has a root prefix

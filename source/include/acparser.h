@@ -366,10 +366,6 @@ BOOLEAN
 AcpiPsIsLeadingChar (
     UINT32                  c);
 
-BOOLEAN
-AcpiPsIsPrefixChar (
-    UINT32                  c);
-
 UINT32
 AcpiPsGetName(
     ACPI_PARSE_OBJECT       *op);

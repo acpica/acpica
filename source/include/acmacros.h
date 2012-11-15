@@ -386,6 +386,12 @@
 #define ACPI_EXTRACT_3BIT_FLAG(Field, Position)     (ACPI_GET_3BIT_FLAG ((Field) >> Position))
 #define ACPI_EXTRACT_4BIT_FLAG(Field, Position)     (ACPI_GET_4BIT_FLAG ((Field) >> Position))
 
+/* ACPI Pathname helpers */
+
+#define ACPI_IS_ROOT_PREFIX(c)      ((c) == (UINT8) 0x5C) /* Backslash */
+#define ACPI_IS_PARENT_PREFIX(c)    ((c) == (UINT8) 0x5E) /* Carat */
+#define ACPI_IS_PATH_SEPARATOR(c)   ((c) == (UINT8) 0x2E) /* Period (dot) */
+
 /*
  * An object of type ACPI_NAMESPACE_NODE can appear in some contexts
  * where a pointer to an object of type ACPI_OPERAND_OBJECT can also

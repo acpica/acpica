@@ -502,10 +502,6 @@ AcpiNsInstallNode (
 /*
  * nsutils - Utility functions
  */
-BOOLEAN
-AcpiNsValidRootPrefix (
-    char                    Prefix);
-
 ACPI_OBJECT_TYPE
 AcpiNsGetType (
     ACPI_NAMESPACE_NODE     *Node);
