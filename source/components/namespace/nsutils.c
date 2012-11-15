@@ -855,6 +855,8 @@ AcpiNsGetNode (
     ACPI_FUNCTION_TRACE_PTR (NsGetNode, ACPI_CAST_PTR (char, Pathname));
 
 
+    /* Simplest case is a null pathname */
+
     if (!Pathname)
     {
         *ReturnNode = PrefixNode;
@@ -862,6 +864,14 @@ AcpiNsGetNode (
         {
             *ReturnNode = AcpiGbl_RootNode;
         }
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* Quick check for a reference to the root */
+
+    if (ACPI_IS_ROOT_PREFIX (Pathname[0]) && (!Pathname[1]))
+    {
+        *ReturnNode = AcpiGbl_RootNode;
         return_ACPI_STATUS (AE_OK);
     }
 
