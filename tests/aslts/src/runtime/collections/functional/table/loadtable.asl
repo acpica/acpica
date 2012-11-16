@@ -1564,6 +1564,22 @@ Device(DTM2) {
 
 	// LoadTable returns 0 if some SSDT matching the LoadTable
 	// parameters is originally not listed in XSDT
+	/* 
+	 * This test should never happen in real ASL code. So it is removed.
+	 * 
+	 * The Load operation will add a table to global table list, which is 
+	 * the master list that can be find in XSDT.
+	 *
+	 * The Unload operation will just delete the namespace owned by the table,
+	 * release OwnerId and reset the table flag, but the table remains in
+	 * global table list.
+	 *
+	 * So, LoadTable after Load and UnLoad operation will cause exception.
+	 *
+	 * Nothing like this should happen in real ASL code. The BIOS writer
+	 * knows whether the table is in the XSDT or not.
+	 */
+	/*	
 	Method(tstf, 1)
 	{
 		Name(DDBH, 0)
@@ -1631,6 +1647,7 @@ Device(DTM2) {
 
 		return (0)
 	}
+	*/
 
 	// AE_OWNER_ID_LIMIT exception when too many Tables loaded
 	Method(tstg, 1)
@@ -2261,8 +2278,8 @@ Method(TLT0)
 
 	// LoadTable returns 0 if some SSDT matching the LoadTable
 	// parameters is originally not listed in XSDT
-	SRMT("TLT0.tstf")
-	\DTM2.tstf(ts)
+	//SRMT("TLT0.tstf")
+	//\DTM2.tstf(ts)
 
 	CH03(ts, z176, 0x20b, 0, 0)
 }
