@@ -799,17 +799,21 @@ Method(m124, 1)
 	}
 
 	// Bug 81.
-	Store(ObjectType(m000()), Local0)
-	if (LNotEqual(Local0, c009)) {
-		err(arg0, z054, 44, 0, 0, Local0, c009)
-	}
-
-	Store(ObjectType(m001(123)), Local1)
-	if (LNotEqual(Local1, c009)) {
-		err(arg0, z054, 45, 0, 0, Local1, c009)
-	}
-
-	CH03(arg0, z054, 0x106, 0, 0)
+	/*
+	 * Removed, invalid test.
+	 * Compiler disallow method invocation as an operand to ObjectType.
+	 */
+	//Store(ObjectType(m000()), Local0)
+	//if (LNotEqual(Local0, c009)) {
+	//	err(arg0, z054, 44, 0, 0, Local0, c009)
+	//}
+	//
+	//Store(ObjectType(m001(123)), Local1)
+	//if (LNotEqual(Local1, c009)) {
+	//	err(arg0, z054, 45, 0, 0, Local1, c009)
+	//}
+	//
+	//CH03(arg0, z054, 0x106, 0, 0)
 }
 
 /*
