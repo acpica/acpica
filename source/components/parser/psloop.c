@@ -234,7 +234,7 @@ AcpiPsGetAmlOpcode (
                 WalkState->Opcode,
                 (UINT32) (WalkState->AmlOffset + sizeof (ACPI_TABLE_HEADER))));
 
-            ACPI_DUMP_BUFFER (WalkState->ParserState.Aml - 16, 48);
+            ACPI_DUMP_BUFFER ((WalkState->ParserState.Aml - 16), 48);
 
 #ifdef ACPI_ASL_COMPILER
             /*
@@ -250,7 +250,7 @@ AcpiPsGetAmlOpcode (
 
             AcpiUtDumpBuffer (((UINT8 *) WalkState->ParserState.Aml - 16),
                 48, DB_BYTE_DISPLAY,
-                WalkState->AmlOffset + sizeof (ACPI_TABLE_HEADER) - 16);
+                (WalkState->AmlOffset + sizeof (ACPI_TABLE_HEADER) - 16));
             AcpiOsPrintf (" */\n");
 #endif
         }
