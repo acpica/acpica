@@ -1127,12 +1127,12 @@ Device(DTM2) {
 
 		// SignatureString is greater than four characters
 		if (y287) {
-			LoadTable("OEM1X", "", "", RPST, PPST, 1)
-		} else {
 			Store(LoadTable("OEM1X", "", "", RPST, PPST, 1), DDBH)
+		} else {
+			LoadTable("OEM1X", "", "", RPST, PPST, 1)
 		}
 
-		CH04(arg0, 0, 28, z176, 0x0a0, 0, 0)	// AE_BAD_PARAMETER
+		CH04(arg0, 0, 61, z176, 0x0a0, 0, 0)	// AE_AML_STRING_LIMIT
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
 			err(arg0, z176, 0x0a1, 0, 0, \DTM2.PLDT, 1)
@@ -1149,7 +1149,7 @@ Device(DTM2) {
 		// OEMIDString is greater than six characters
 		LoadTable("OEM1", "IntelXX", "", RPST, PPST, 1)
 
-		CH04(arg0, 0, 28, z176, 0x0a2, 0, 0)	// AE_BAD_PARAMETER
+		CH04(arg0, 0, 61, z176, 0x0a2, 0, 0)	// AE_AML_STRING_LIMIT
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
 			err(arg0, z176, 0x0a3, 0, 0, \DTM2.PLDT, 1)
@@ -1159,7 +1159,7 @@ Device(DTM2) {
 		// OEMTableID is greater than eight characters
 		LoadTable("OEM1", "", "ManyXXXXX", RPST, PPST, 1)
 
-		CH04(arg0, 0, 28, z176, 0x0a4, 0, 0)	// AE_BAD_PARAMETER
+		CH04(arg0, 0, 61, z176, 0x0a4, 0, 0)	// AE_AML_STRING_LIMIT
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
 			err(arg0, z176, 0x0a5, 0, 0, \DTM2.PLDT, 1)
@@ -1406,7 +1406,8 @@ Device(DTM2) {
 
 			Switch(ToInteger (arg2)) {
 				Case(0) {
-					Store(LoadTable(arg1, SOID, STID, RPST, PPST, 1), DDBH)
+					LoadTable(arg1, SOID, STID, RPST, PPST, 1)
+					return (CH04(arg0, 0, 61, z176, 0x0d0, 0, 0))// AE_AML_STRING_LIMIT
 				}
 				Case(1) {
 					Store(LoadTable(SOEM, arg1, STID, RPST, PPST, 1), DDBH)
@@ -1416,11 +1417,11 @@ Device(DTM2) {
 				}
 				Case(3) {
 					LoadTable(SOEM, SOID, STID, arg1, PPST, 1)
-					return (CH04(arg0, 0, 28, z176, 0x0d0, 0, 0)) // AE_BAD_PARAMETER
+					return (CH04(arg0, 0, 30, z176, 0x0d0, 0, 0)) // AE_BAD_PATHNAME
 				}
 				Case(4) {
 					LoadTable(SOEM, SOID, STID, RPST, arg1, 1)
-					return (CH04(arg0, 0, 28, z176, 0x0d1, 0, 0)) // AE_BAD_PARAMETER
+					return (CH04(arg0, 0, 30, z176, 0x0d1, 0, 0)) // AE_BAD_PATHNAME
 				}
 			}
 
@@ -1511,8 +1512,8 @@ Device(DTM2) {
 		ToInteger(Local4, Local4)
 
 		if (m000(arg0, Local0, 0)) {return (1)}
-		if (m000(arg0, Local1, 1)) {return (1)}
-		if (m000(arg0, Local2, 2)) {return (1)}
+		//if (m000(arg0, Local1, 1)) {return (1)}
+		//if (m000(arg0, Local2, 2)) {return (1)}
 		if (m000(arg0, Local3, 3)) {return (1)}
 		if (m000(arg0, Local4, 4)) {return (1)}
 
