@@ -82,16 +82,16 @@ usage()
 	echo "   compare two multi-results of two runs of tests:"
 	echo "     Do $DIFFRESULTS"
 	echo "     Do $DIFFRESULTS <multi-result directory>"
-	echo "     Do $DIFFRESULTS <first multi-result directory> <second multi-result directory>"
+	echo "     Do $DIFFRESULTS <new multi-result directory> <old multi-result directory>"
 	echo "   print out names of all the available test cases:"
 	echo "     Do $PRINTTESTCASES"
 	echo "   $STR_BDEMOSTABS:"
-	echo "     Do $BDEMOSTABS <first multi-result directory> <second multi-result directory> <ALLBUGS Description File>"
+	echo "     Do $BDEMOSTABS <new multi-result directory> <old multi-result directory> <ALLBUGS Description File>"
 	echo "                     <kernel bugzilla Bug List file> <local bugzilla Bug List file>"
 	echo "   $STR_BDEMOSSUM:"
 	echo "     Do $BDEMOSSUM <multi-result directory>"
 	echo "   $STR_CONCBDEMOS:"
-	echo "     Do $CONCBDEMOS <first multi-result directory> <second multi-result directory>"
+	echo "     Do $CONCBDEMOS <new multi-result directory> <old multi-result directory>"
 }
 
 # Report message
@@ -141,7 +141,7 @@ cmp_cmd_string()
 	case $1 in
 		1) msg="Compare the last multi-result against the previous one:";;
 		2) msg="Compare the last multi-result against the specified one:";;
-		3) msg="Compare the first specified multi-result against the second one:";;
+		3) msg="Compare the first(new) specified multi-result against the second(old):";;
 		*) msg="?"
 	esac
 
@@ -215,8 +215,8 @@ do_cmp3()
 	DIR0="$2"
 	DIR1="$1"
 
-	echo "  the first specified multi-result          : $DIR1"
-	echo "  against the second specified multi-result : $DIR0"
+	echo "  First  (new) specified multi-result : $DIR1"
+	echo "  Second (old) specified multi-result : $DIR0"
 
 	asltsdiffres "$DIR0" "$DIR1"
 }

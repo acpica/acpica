@@ -11,8 +11,13 @@
 # arg2 - the second run test status lines file
 cmp_two_runs()
 {
+	local ret
+
+	echo "diff old: $1 -- new: $2"
 	diff -s "$1" "$2"
-	return $?
+	ret=$?
+	echo ""
+	return $ret
 }
 
 # Chose line of file by head
@@ -91,23 +96,30 @@ report_mem_stat_cmp()
 {
 	local rval=0 x percent
 
+	if [[ $4 -eq 0 ]]; then
+		return 0
+	fi
+
+#
+# We are only interested in memory differences that are greater than 10%
+#
 	if [[ $3 -gt $4 ]]; then
 		x=$[ $3 - $4 ]
-		if [[ $4 -gt 0 ]]; then
-			percent=$[ ($x * 100) / $4 ]
-			echo "WARNING, $1, memory use grown ($2): $3, $4, (+$x, $percent% of $4)"
-		else
-			echo "WARNING, $1, memory use grown ($2): $3, $4, (+$x)"
+		percent=$[ ($x * 100) / $4 ]
+
+		if [[ $percent -lt 10 ]]; then
+			return 1
 		fi
+		echo "WARNING, $1, memory use grown ($2): $3, $4, (+$x, $percent% of $4)"
 		rval=1
 	elif [[ $3 -lt $4 ]]; then
 		x=$[ $4 - $3 ]
-		if [[ $4 -gt 0 ]]; then
-			percent=$[ ($x * 100) / $4 ]
-			echo "INFO,    $1, memory use reduced ($2): $3, $4, (-$x, $percent% of $4)"
-		else
-			echo "INFO,    $1, memory use reduced ($2): $3, $4, (-$x)"
+		percent=$[ ($x * 100) / $4 ]
+
+		if [[ $percent -lt 10 ]]; then
+			return 2
 		fi
+		echo "INFO,    $1, memory use reduced ($2): $3, $4, (-$x, $percent% of $4)"
 		rval=2
 	fi
 	return $rval
@@ -441,6 +453,7 @@ do_compare_two_runs()
 	path0="$1/$modepart0/__STATUS_OF_TESTS"
 	path1="$3/$modepart1/__STATUS_OF_TESTS"
 
+	echo ""
 	mark="================"
 	echo "$mark Comparing results of <$modename0> and <$modename1>:"
 
@@ -486,6 +499,10 @@ do_compare_two_runs()
 		echo "$mark `cmp_result_opcode_to_str $rval`"
 	fi
 
+	echo ""
+	echo "Failures in new version: `grep -c FAIL $path1` -- $path1"
+	echo "Failures in old version: `grep -c FAIL $path0` -- $path0"
+	echo ""
 	return $rval
 }
 

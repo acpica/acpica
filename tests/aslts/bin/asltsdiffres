@@ -30,8 +30,8 @@ report_multi_runs_cmp()
 
 	echo ""
 	echo "Summary of comparing:"
-	echo "  -         multi-result directory : $1"
-	echo "  - against multi-result directory : $2"
+	echo "  -         multi-result directory (new) : $1"
+	echo "  - against multi-result directory (old) : $2"
 	echo "Summary of comparing:"
 	echo "  `get_mode_string $NORM32 1`: `cmp_result_opcode_to_str $3`"
 	echo "  `get_mode_string $NORM64 1`: `cmp_result_opcode_to_str $4`"
