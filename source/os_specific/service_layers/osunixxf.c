@@ -714,7 +714,10 @@ AcpiOsWaitSemaphore (
 {
     ACPI_STATUS         Status = AE_OK;
     sem_t               *Sem = (sem_t *) Handle;
-    struct timespec     T;
+#ifndef ACPI_USE_ALTERNATE_TIMEOUT
+    struct timespec     Time;
+    int                 RetVal;
+#endif
 
 
     if (!Sem)
@@ -753,9 +756,6 @@ AcpiOsWaitSemaphore (
 
     default:
 
-        T.tv_sec = Timeout / 1000;
-        T.tv_nsec = (Timeout - (T.tv_sec * 1000)) * 1000000;
-
 #ifdef ACPI_USE_ALTERNATE_TIMEOUT
         /*
          * Alternate timeout mechanism for environments where
@@ -768,18 +768,55 @@ AcpiOsWaitSemaphore (
                 /* Got the semaphore */
                 return (AE_OK);
             }
-            usleep (1000);  /* one millisecond */
-            Timeout--;
+
+            if (Timeout >= 10)
+            {
+                Timeout -= 10;
+                usleep (10000); /* ten milliseconds */
+            }
+            else
+            {
+                Timeout--;
+                usleep (1000);  /* one millisecond */
+            }
         }
         Status = (AE_TIME);
 #else
-
-        if (sem_timedwait (Sem, &T))
+        /*
+         * The interface to sem_timedwait is an absolute time, so we need to
+         * get the current time, then add in the millisecond Timeout value.
+         */
+        if (clock_gettime (CLOCK_REALTIME, &Time) == -1)
         {
+            perror ("clock_gettime");
+            return (AE_TIME);
+        }
+
+        Time.tv_sec += (Timeout / 1000);
+        Time.tv_nsec += ((Timeout % 1000) * 1000000);
+
+        /* Handle nanosecond overflow (field must be less than one second) */
+
+        if (Time.tv_nsec >= 1000000000)
+        {
+            Time.tv_sec += (Time.tv_nsec / 1000000000);
+            Time.tv_nsec = (Time.tv_nsec % 1000000000);
+        }
+
+        while (((RetVal = sem_timedwait (Sem, &Time)) == -1) && (errno == EINTR))
+        {
+            continue;
+        }
+
+        if (RetVal != 0)
+        {
+            if (errno != ETIMEDOUT)
+            {
+                perror ("sem_timedwait");
+            }
             Status = (AE_TIME);
         }
 #endif
-
         break;
     }
 
@@ -983,6 +1020,8 @@ AcpiOsGetTimer (
 {
     struct timeval          time;
 
+
+    /* This timer has sufficient resolution for user-space application code */
 
     gettimeofday (&time, NULL);
 
