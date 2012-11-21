@@ -338,7 +338,7 @@ AcpiRsConvertAmlToResources (
     UINT32                  Length,
     UINT32                  Offset,
     UINT8                   ResourceIndex,
-    void                    *Context);
+    void                    **Context);
 
 ACPI_STATUS
 AcpiRsConvertResourcesToAml (

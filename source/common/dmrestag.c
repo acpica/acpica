@@ -161,7 +161,7 @@ AcpiDmAddResourceToNamespace (
     UINT32                  Length,
     UINT32                  Offset,
     UINT8                   ResourceIndex,
-    void                    *Context);
+    void                    **Context);
 
 static void
 AcpiDmAddResourcesToNamespace (
@@ -1065,7 +1065,7 @@ AcpiDmAddResourcesToNamespace (
      */
     AcpiUtWalkAmlResources (NULL, (UINT8 *) NextOp->Named.Data,
         (ACPI_SIZE) NextOp->Common.Value.Integer,
-        AcpiDmAddResourceToNamespace, BufferNode);
+        AcpiDmAddResourceToNamespace, (void **) BufferNode);
 }
 
 
@@ -1091,7 +1091,7 @@ AcpiDmAddResourceToNamespace (
     UINT32                  Length,
     UINT32                  Offset,
     UINT8                   ResourceIndex,
-    void                    *Context)
+    void                    **Context)
 {
     ACPI_STATUS             Status;
     ACPI_GENERIC_STATE      ScopeInfo;
