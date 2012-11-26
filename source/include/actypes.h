@@ -367,7 +367,7 @@ typedef UINT32                          ACPI_PHYSICAL_ADDRESS;
 /*
  * Some compilers complain about unused variables. Sometimes we don't want to
  * use all the variables (for example, _AcpiModuleName). This allows us
- * to to tell the compiler in a per-variable manner that a variable
+ * to tell the compiler in a per-variable manner that a variable
  * is unused
  */
 #ifndef ACPI_UNUSED_VAR
@@ -668,7 +668,7 @@ typedef UINT32                          ACPI_OBJECT_TYPE;
 
 /*
  * These are special object types that never appear in
- * a Namespace node, only in an ACPI_OPERAND_OBJECT
+ * a Namespace node, only in an object of ACPI_OPERAND_OBJECT
  */
 #define ACPI_TYPE_LOCAL_EXTRA           0x1C
 #define ACPI_TYPE_LOCAL_DATA            0x1D
