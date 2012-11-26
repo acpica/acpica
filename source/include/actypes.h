@@ -418,7 +418,7 @@ typedef UINT32                          ACPI_PHYSICAL_ADDRESS;
 
 /* PM Timer ticks per second (HZ) */
 
-#define PM_TIMER_FREQUENCY              3579545
+#define ACPI_PM_TIMER_FREQUENCY         3579545
 
 
 /*******************************************************************************
@@ -451,6 +451,22 @@ typedef UINT32                          ACPI_STATUS;    /* All ACPI Exceptions *
 typedef UINT32                          ACPI_NAME;      /* 4-byte ACPI name */
 typedef char *                          ACPI_STRING;    /* Null terminated ASCII string */
 typedef void *                          ACPI_HANDLE;    /* Actually a ptr to a NS Node */
+
+
+/* Time constants for timer calculations */
+
+#define ACPI_MSEC_PER_SEC               1000L
+
+#define ACPI_USEC_PER_MSEC              1000L
+#define ACPI_USEC_PER_SEC               1000000L
+
+#define ACPI_100NSEC_PER_USEC           10L
+#define ACPI_100NSEC_PER_MSEC           10000L
+#define ACPI_100NSEC_PER_SEC            10000000L
+
+#define ACPI_NSEC_PER_USEC              1000L
+#define ACPI_NSEC_PER_MSEC              1000000L
+#define ACPI_NSEC_PER_SEC               1000000000L
 
 
 /* Owner IDs are used to track namespace nodes for selective deletion */

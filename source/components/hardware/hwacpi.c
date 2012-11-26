@@ -213,13 +213,13 @@ AcpiHwSetMode (
     Retry = 3000;
     while (Retry)
     {
-        if (AcpiHwGetMode() == Mode)
+        if (AcpiHwGetMode () == Mode)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Mode %X successfully enabled\n",
                 Mode));
             return_ACPI_STATUS (AE_OK);
         }
-        AcpiOsStall(1000);
+        AcpiOsStall (ACPI_USEC_PER_MSEC);
         Retry--;
     }
 

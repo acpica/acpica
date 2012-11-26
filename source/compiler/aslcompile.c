@@ -838,12 +838,12 @@ CmDumpAllEvents (
 
             Delta = (UINT32) (Event->EndTime - Event->StartTime);
 
-            USec = Delta / 10;
-            MSec = Delta / 10000;
+            USec = Delta / ACPI_100NSEC_PER_USEC;
+            MSec = Delta / ACPI_100NSEC_PER_MSEC;
 
             /* Round milliseconds up */
 
-            if ((USec - (MSec * 1000)) >= 500)
+            if ((USec - (MSec * ACPI_USEC_PER_MSEC)) >= 500)
             {
                 MSec++;
             }
