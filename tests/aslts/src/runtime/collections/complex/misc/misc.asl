@@ -803,6 +803,8 @@ Method(m124, 1)
 	 * Removed, invalid test.
 	 * Compiler disallow method invocation as an operand to ObjectType.
 	 */
+    /* Nov. 2012: Method invocation as arg to ObjectType is now illegal */
+
 	//Store(ObjectType(m000()), Local0)
 	//if (LNotEqual(Local0, c009)) {
 	//	err(arg0, z054, 44, 0, 0, Local0, c009)

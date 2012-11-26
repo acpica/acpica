@@ -578,15 +578,17 @@ Method(m116, 1)
 		err(arg0, z054, 31, Local0, c010)
 	}
 
-	Store(ObjectType(m000()), Local0)
-	if (LNotEqual(Local0, c009)) {
-		err(arg0, z054, 32, Local0, c009)
-	}
-
-	Store(ObjectType(m001(123)), Local1)
-	if (LNotEqual(Local1, c009)) {
-		err(arg0, z054, 33, Local1, c009)
-	}
+    /* Nov. 2012: Method invocation as arg to ObjectType is now illegal */
+//
+//	Store(ObjectType(m000()), Local0)
+//	if (LNotEqual(Local0, c009)) {
+//		err(arg0, z054, 32, Local0, c009)
+//	}
+//
+//	Store(ObjectType(m001(123)), Local1)
+//	if (LNotEqual(Local1, c009)) {
+//		err(arg0, z054, 33, Local1, c009)
+//	}
 }
 
 // Run-method

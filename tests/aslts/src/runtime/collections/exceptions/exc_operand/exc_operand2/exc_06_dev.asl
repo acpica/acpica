@@ -1139,9 +1139,10 @@ Method(m4b6)
 		CH06(arg0, 13, 47)
 
 		// ObjectType
-
-		ObjectType(m000())
-		CH03(ts, z098, 8, 0, 0)
+        /* Nov. 2012: Method invocation as arg to ObjectType is now illegal */
+//
+//		ObjectType(m000())
+//		CH03(ts, z098, 8, 0, 0)
 
 		// RefOf
 
