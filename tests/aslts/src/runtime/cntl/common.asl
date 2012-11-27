@@ -1398,7 +1398,7 @@ Name(TCNP, Package() {
 	"functional",
 	"complex",
 	"exceptions",
-	"bug-demo",
+	"bdemo",
 	"service",
 	"mt",
 	"Identity2MS",
