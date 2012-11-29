@@ -29,24 +29,26 @@
 /*
  * Bug 244:
  *
- * SUMMARY: Acquire/Release in a global level AML code don't work
+ * SUMMARY: Acquire/Release in a global level AML code is not valid,
+ * removed from test suite.
  */
 
-	Mutex(T804, 8)
-	Mutex(T805, 8)
-	Mutex(T806, 8)
-	Mutex(T807, 8)
+	//Mutex(T804, 8)
+	//Mutex(T805, 8)
+	//Mutex(T806, 8)
+	//Mutex(T807, 8)
 
 	/*
 	 * These declarations are used for to check the Acquire
 	 * and Release operations in a global level AML code.
 	 */
-	Name(i101, 0) // non-zero means that this test was run
-	Name(i104, 1)
-	Name(i105, 1)
-	Name(i106, 1)
-	Name(i107, 1)
+	//Name(i101, 0) // non-zero means that this test was run
+	//Name(i104, 1)
+	//Name(i105, 1)
+	//Name(i106, 1)
+	//Name(i107, 1)
 
+	/*
 	Method(m137)
 	{
 		Store(1, i101)
@@ -102,33 +104,34 @@
 
 		return (1)
 	}
-
+	*/
 	/* Acquire/Release T804 */
 
-	Name(b11c, Buffer(Add(1, Store(Acquire(T804, 0xffff), i104))){0})
-	Name(b11d, Buffer(m137()){0})
+	//Name(b11c, Buffer(Add(1, Store(Acquire(T804, 0xffff), i104))){0})
+	//Name(b11d, Buffer(m137()){0})
 
 
 	/* Acquire/Release T805 */
 
-	Name(b11e, Buffer(m13e()){0})
-	Name(b11f, Buffer(m13f()){0})
+	//Name(b11e, Buffer(m13e()){0})
+	//Name(b11f, Buffer(m13f()){0})
 
 	/* Acquire T806 */
 
-	Name(b120, Buffer(Add(1, Store(Acquire(T806, 0xffff), i106))){0})
+	//Name(b120, Buffer(Add(1, Store(Acquire(T806, 0xffff), i106))){0})
 
 	/* Acquire T807 */
 
-	Name(b121, Buffer(m140()){0})
+	//Name(b121, Buffer(m140()){0})
 
 
 /*
  * m03c - check, register errors and reset the global level execution exception,
  *        set up id01 to non-zero in error case.
  */
-Name(i108, 0)
-Name(BUF2, Buffer(m03c()){})
+//Name(i108, 0)
+//Name(BUF2, Buffer(m03c()){})
+/*
 Method(m03c)
 {
 	if (CH03("", 0, 0x000, 0, 0))
@@ -136,9 +139,10 @@ Method(m03c)
 		Store(1, i108)
 	}
 }
-
+*/
 Method(m02e)
 {
+/*
 	Method(m0b9)
 	{
 		if (i108) {
@@ -176,7 +180,7 @@ Method(m02e)
 		Release(T805)
 		CH04("", 0, 65, 0, 0x007, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
 
-		/* Release T807 */
+		// Release T807
 
 		if (LNot(i107)) {
 			Release(T807)
@@ -186,7 +190,7 @@ Method(m02e)
 		}
 		CH03("", 0, 0x009, 0, 0)
 
-		/* Release T806 */
+		// Release T806 
 
 		if (LNot(i106)) {
 			Release(T806)
@@ -205,6 +209,7 @@ Method(m02e)
 	}
 
 	mm00()
+*/
 }
 
 Method(m030)

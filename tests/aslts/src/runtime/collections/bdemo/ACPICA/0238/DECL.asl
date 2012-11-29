@@ -66,6 +66,8 @@ Method(m039)
 		 *   3. So, the Release below should succeed
 		 */
 		Release(MX09)
+		Release(MX08)
+		Release(MX07)
 		CH03("", 0, 0x003, 0, 0)
 	}
 	m000()
