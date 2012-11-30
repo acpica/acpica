@@ -784,7 +784,9 @@ AcpiRsDumpResourceList (
     ACPI_FUNCTION_ENTRY ();
 
 
-    if (!(AcpiDbgLevel & ACPI_LV_RESOURCES) || !( _COMPONENT & AcpiDbgLayer))
+    /* Check if debug output enabled */
+
+    if (!ACPI_IS_DEBUG_ENABLED (ACPI_LV_RESOURCES, _COMPONENT))
     {
         return;
     }
@@ -853,7 +855,9 @@ AcpiRsDumpIrqList (
     ACPI_FUNCTION_ENTRY ();
 
 
-    if (!(AcpiDbgLevel & ACPI_LV_RESOURCES) || !( _COMPONENT & AcpiDbgLayer))
+    /* Check if debug output enabled */
+
+    if (!ACPI_IS_DEBUG_ENABLED (ACPI_LV_RESOURCES, _COMPONENT))
     {
         return;
     }
