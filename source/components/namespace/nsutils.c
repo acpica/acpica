@@ -200,10 +200,10 @@ AcpiNsGetType (
     if (!Node)
     {
         ACPI_WARNING ((AE_INFO, "Null Node parameter"));
-        return_UINT32 (ACPI_TYPE_ANY);
+        return_VALUE (ACPI_TYPE_ANY);
     }
 
-    return_UINT32 ((ACPI_OBJECT_TYPE) Node->Type);
+    return_VALUE (Node->Type);
 }
 
 
@@ -232,10 +232,10 @@ AcpiNsLocal (
         /* Type code out of range  */
 
         ACPI_WARNING ((AE_INFO, "Invalid Object Type 0x%X", Type));
-        return_UINT32 (ACPI_NS_NORMAL);
+        return_VALUE (ACPI_NS_NORMAL);
     }
 
-    return_UINT32 ((UINT32) AcpiGbl_NsProperties[Type] & ACPI_NS_LOCAL);
+    return_VALUE (AcpiGbl_NsProperties[Type] & ACPI_NS_LOCAL);
 }
 
 

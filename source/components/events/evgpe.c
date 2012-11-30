@@ -842,7 +842,7 @@ AcpiEvGpeDispatch (
         {
             ACPI_EXCEPTION ((AE_INFO, Status,
                 "Unable to clear GPE%02X", GpeNumber));
-            return_UINT32 (ACPI_INTERRUPT_NOT_HANDLED);
+            return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
         }
     }
 
@@ -860,7 +860,7 @@ AcpiEvGpeDispatch (
     {
         ACPI_EXCEPTION ((AE_INFO, Status,
             "Unable to disable GPE%02X", GpeNumber));
-        return_UINT32 (ACPI_INTERRUPT_NOT_HANDLED);
+        return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
     }
 
     /*
@@ -918,7 +918,7 @@ AcpiEvGpeDispatch (
         break;
     }
 
-    return_UINT32 (ACPI_INTERRUPT_HANDLED);
+    return_VALUE (ACPI_INTERRUPT_HANDLED);
 }
 
 #endif /* !ACPI_REDUCED_HARDWARE */

@@ -459,7 +459,7 @@ AcpiExDigitsNeeded (
 
     if (Value == 0)
     {
-        return_UINT32 (1);
+        return_VALUE (1);
     }
 
     CurrentValue = Value;
@@ -473,7 +473,7 @@ AcpiExDigitsNeeded (
         NumDigits++;
     }
 
-    return_UINT32 (NumDigits);
+    return_VALUE (NumDigits);
 }
 
 

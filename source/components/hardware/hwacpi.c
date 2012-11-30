@@ -258,22 +258,22 @@ AcpiHwGetMode (
      */
     if (!AcpiGbl_FADT.SmiCommand)
     {
-        return_UINT32 (ACPI_SYS_MODE_ACPI);
+        return_VALUE (ACPI_SYS_MODE_ACPI);
     }
 
     Status = AcpiReadBitRegister (ACPI_BITREG_SCI_ENABLE, &Value);
     if (ACPI_FAILURE (Status))
     {
-        return_UINT32 (ACPI_SYS_MODE_LEGACY);
+        return_VALUE (ACPI_SYS_MODE_LEGACY);
     }
 
     if (Value)
     {
-        return_UINT32 (ACPI_SYS_MODE_ACPI);
+        return_VALUE (ACPI_SYS_MODE_ACPI);
     }
     else
     {
-        return_UINT32 (ACPI_SYS_MODE_LEGACY);
+        return_VALUE (ACPI_SYS_MODE_LEGACY);
     }
 }
 
