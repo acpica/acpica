@@ -362,7 +362,7 @@
 /* Helper macros for DEBUG_PRINT */
 
 #define ACPI_IS_DEBUG_ENABLED(Level, Component) \
-    (Level & AcpiDbgLevel) && (Component & AcpiDbgLayer)
+    ((Level & AcpiDbgLevel) && (Component & AcpiDbgLayer))
 
 #define ACPI_DEBUG(Function, Level, Line, Filename, Modulename, Component, ...) \
     if (ACPI_IS_DEBUG_ENABLED (Level, Component)) \
