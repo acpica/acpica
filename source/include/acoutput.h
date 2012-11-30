@@ -339,16 +339,43 @@
  * Common parameters used for debug output functions:
  * line number, function name, module(file) name, component ID
  */
-#define ACPI_DEBUG_PARAMETERS           __LINE__, ACPI_GET_FUNCTION_NAME, _AcpiModuleName, _COMPONENT
+#define ACPI_DEBUG_PARAMETERS \
+    __LINE__, ACPI_GET_FUNCTION_NAME, _AcpiModuleName, _COMPONENT
 
 /*
  * Master debug print macros
  * Print message if and only if:
  *    1) Debug print for the current component is enabled
  *    2) Debug error level or trace level for the print statement is enabled
+ *
+ * November 2012: Moved the runtime check for whether to actually emit the
+ * debug message outside of the print function itself. This improves overall
+ * performance at a relatively small code cost. Implementation involves the
+ * use of variadic macros supported by C99.
  */
-#define ACPI_DEBUG_PRINT(plist)         AcpiDebugPrint plist
-#define ACPI_DEBUG_PRINT_RAW(plist)     AcpiDebugPrintRaw plist
+
+/* DEBUG_PRINT functions */
+
+#define ACPI_DEBUG_PRINT(plist)         ACPI_ACTUAL_DEBUG plist
+#define ACPI_DEBUG_PRINT_RAW(plist)     ACPI_ACTUAL_DEBUG_RAW plist
+
+/* Helper macros for DEBUG_PRINT */
+
+#define ACPI_IS_DEBUG_ENABLED(Level, Component) \
+    (Level & AcpiDbgLevel) && (Component & AcpiDbgLayer)
+
+#define ACPI_DEBUG(Function, Level, Line, Filename, Modulename, Component, ...) \
+    if (ACPI_IS_DEBUG_ENABLED (Level, Component)) \
+    { \
+        Function (Level, Line, Filename, Modulename, Component, __VA_ARGS__); \
+    }
+
+#define ACPI_ACTUAL_DEBUG(Level, Line, Filename, Modulename, Component, ...) \
+    ACPI_DEBUG (AcpiDebugPrint, Level, Line, Filename, Modulename, Component, __VA_ARGS__)
+
+#define ACPI_ACTUAL_DEBUG_RAW(Level, Line, Filename, Modulename, Component, ...) \
+    ACPI_DEBUG (AcpiDebugPrintRaw, Level, Line, Filename, Modulename, Component, __VA_ARGS__)
+
 
 #else
 /*
@@ -360,6 +387,5 @@
 #define ACPI_DEBUG_PRINT_RAW(pl)
 
 #endif /* ACPI_DEBUG_OUTPUT */
-
 
 #endif /* __ACOUTPUT_H__ */
