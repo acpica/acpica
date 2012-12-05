@@ -309,6 +309,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCpep[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCpep0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCsrt0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCsrt1[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCsrt2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDbg2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDbg2Device[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDbg2Addr[];

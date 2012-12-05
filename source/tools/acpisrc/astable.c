@@ -606,6 +606,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_CPEP_POLLING",                   SRC_TYPE_STRUCT},
     {"ACPI_CSRT_GROUP",                     SRC_TYPE_STRUCT},
     {"ACPI_CSRT_DESCRIPTOR",                SRC_TYPE_STRUCT},
+    {"ACPI_CSRT_SHARED_INFO",               SRC_TYPE_STRUCT},
     {"ACPI_DBG2_DEVICE",                    SRC_TYPE_STRUCT},
     {"ACPI_DMAR_HEADER",                    SRC_TYPE_STRUCT},
     {"ACPI_DMAR_DEVICE_SCOPE",              SRC_TYPE_STRUCT},

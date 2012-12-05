@@ -686,6 +686,7 @@ AcpiDmDumpCsrt (
 {
     ACPI_STATUS             Status;
     ACPI_CSRT_GROUP         *SubTable;
+    ACPI_CSRT_SHARED_INFO   *SharedInfoTable;
     ACPI_CSRT_DESCRIPTOR    *SubSubTable;
     UINT32                  Length = Table->Length;
     UINT32                  Offset = sizeof (ACPI_TABLE_CSRT);
@@ -701,6 +702,8 @@ AcpiDmDumpCsrt (
     SubTable = ACPI_ADD_PTR (ACPI_CSRT_GROUP, Table, Offset);
     while (Offset < Table->Length)
     {
+        /* Resource group subtable */
+
         AcpiOsPrintf ("\n");
         Status = AcpiDmDumpTable (Length, Offset, SubTable,
                     SubTable->Length, AcpiDmTableInfoCsrt0);
@@ -709,15 +712,23 @@ AcpiDmDumpCsrt (
             return;
         }
 
+        /* Shared info subtable (One per resource group) */
+
         SubOffset = sizeof (ACPI_CSRT_GROUP);
+        SharedInfoTable = ACPI_ADD_PTR (ACPI_CSRT_SHARED_INFO, Table,
+            Offset + SubOffset);
 
-        /* Shared resource group info buffer */
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Length, Offset + SubOffset, SharedInfoTable,
+                    sizeof (ACPI_CSRT_SHARED_INFO), AcpiDmTableInfoCsrt1);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
 
-        AcpiDmDumpBuffer (SubTable, SubOffset, SubTable->InfoLength,
-            Offset+SubOffset, "Shared Data");
-        SubOffset += SubTable->InfoLength;
+        SubOffset += SubTable->SharedInfoLength;
 
-        /* Sub-Sub-tables (Resource Descriptors) */
+        /* Sub-Subtables (Resource Descriptors) */
 
         SubSubTable = ACPI_ADD_PTR (ACPI_CSRT_DESCRIPTOR, Table,
             Offset + SubOffset);
@@ -727,7 +738,7 @@ AcpiDmDumpCsrt (
         {
             AcpiOsPrintf ("\n");
             Status = AcpiDmDumpTable (Length, Offset + SubOffset, SubSubTable,
-                        SubSubTable->Length, AcpiDmTableInfoCsrt1);
+                        SubSubTable->Length, AcpiDmTableInfoCsrt2);
             if (ACPI_FAILURE (Status))
             {
                 return;
@@ -743,7 +754,7 @@ AcpiDmDumpCsrt (
                 Offset + SubOffset + SubSubOffset, "ResourceInfo");
             SubSubOffset += InfoLength;
 
-            /* Point to next sub-sub-table */
+            /* Point to next sub-subtable */
 
             SubOffset += SubSubTable->Length;
             SubSubTable = ACPI_ADD_PTR (ACPI_CSRT_DESCRIPTOR, SubSubTable,
