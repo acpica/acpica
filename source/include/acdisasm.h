@@ -413,6 +413,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSrat0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSrat1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSrat2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTcpa[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTpm2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoUefi[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoWaet[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoWdat[];

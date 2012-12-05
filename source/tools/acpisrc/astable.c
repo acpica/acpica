@@ -587,6 +587,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_TABLE_SPMI",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_SRAT",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_TCPA",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_TPM2",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_UEFI",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_WAET",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_WDAT",                     SRC_TYPE_STRUCT},
@@ -682,6 +683,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_SRAT_HEADER",                    SRC_TYPE_STRUCT},
     {"ACPI_SRAT_MEM_AFFINITY",              SRC_TYPE_STRUCT},
     {"ACPI_SRAT_X2APIC_CPU_AFFINITY",       SRC_TYPE_STRUCT},
+    {"ACPI_TPM2_CONTROL",                   SRC_TYPE_STRUCT},
     {"ACPI_WDAT_ENTRY",                     SRC_TYPE_STRUCT},
 
     /* Data Table compiler */

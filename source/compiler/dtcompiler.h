@@ -584,6 +584,7 @@ extern const unsigned char  TemplateSpcr[];
 extern const unsigned char  TemplateSpmi[];
 extern const unsigned char  TemplateSrat[];
 extern const unsigned char  TemplateTcpa[];
+extern const unsigned char  TemplateTpm2[];
 extern const unsigned char  TemplateUefi[];
 extern const unsigned char  TemplateWaet[];
 extern const unsigned char  TemplateWdat[];
