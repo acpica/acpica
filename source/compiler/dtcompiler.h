@@ -185,6 +185,7 @@ typedef struct dt_subtable
     UINT32                  Length;
     UINT32                  TotalLength;
     UINT32                  SizeOfLengthField;
+    UINT16                  Depth;
     UINT8                   Flags;
 
 } DT_SUBTABLE;
@@ -238,6 +239,14 @@ DtScanFile (
 void
 DtOutputBinary (
     DT_SUBTABLE             *RootTable);
+
+void
+DtDumpSubtableList (
+    void);
+
+void
+DtDumpFieldList (
+    DT_FIELD                *Field);
 
 void
 DtWriteFieldToListing (

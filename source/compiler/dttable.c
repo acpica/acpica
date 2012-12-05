@@ -568,7 +568,6 @@ DtCompileCsrt (
 
             ParentTable = DtPeekSubtable ();
             DtInsertSubtable (ParentTable, Subtable);
-            DtPushSubtable (Subtable);
             DescriptorCount--;
         }
 

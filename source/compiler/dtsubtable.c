@@ -184,6 +184,7 @@ DtInsertSubtable (
 
     Subtable->Peer = NULL;
     Subtable->Parent = ParentTable;
+    Subtable->Depth = ParentTable->Depth + 1;
 
     /* Link the new entry into the child list */
 
