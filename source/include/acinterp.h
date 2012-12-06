@@ -692,7 +692,7 @@ void
 AcpiExRelinquishInterpreter (
     void);
 
-void
+BOOLEAN
 AcpiExTruncateFor32bitTable (
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
