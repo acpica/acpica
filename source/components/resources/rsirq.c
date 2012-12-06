@@ -157,7 +157,7 @@ ACPI_RSCONVERT_INFO     AcpiRsGetIrq[8] =
 
     {ACPI_RSC_EXIT_NE,  ACPI_RSC_COMPARE_AML_LENGTH, 0, 3},
 
-    /* Get flags: Triggering[0], Polarity[3], Sharing[4] */
+    /* Get flags: Triggering[0], Polarity[3], SharingAndWake[4:5] */
 
     {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.Irq.Triggering),
                         AML_OFFSET (Irq.Flags),
@@ -167,7 +167,7 @@ ACPI_RSCONVERT_INFO     AcpiRsGetIrq[8] =
                         AML_OFFSET (Irq.Flags),
                         3},
 
-    {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.Irq.Sharable),
+    {ACPI_RSC_2BITFLAG, ACPI_RS_OFFSET (Data.Irq.Sharable),
                         AML_OFFSET (Irq.Flags),
                         4}
 };
@@ -193,7 +193,7 @@ ACPI_RSCONVERT_INFO     AcpiRsSetIrq[13] =
                         AML_OFFSET (Irq.IrqMask),
                         ACPI_RS_OFFSET (Data.Irq.InterruptCount)},
 
-    /* Set the flags byte */
+    /* Set flags: Triggering[0], Polarity[3], SharingAndWake[4:5] */
 
     {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.Irq.Triggering),
                         AML_OFFSET (Irq.Flags),
@@ -203,7 +203,7 @@ ACPI_RSCONVERT_INFO     AcpiRsSetIrq[13] =
                         AML_OFFSET (Irq.Flags),
                         3},
 
-    {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.Irq.Sharable),
+    {ACPI_RSC_2BITFLAG, ACPI_RS_OFFSET (Data.Irq.Sharable),
                         AML_OFFSET (Irq.Flags),
                         4},
 
