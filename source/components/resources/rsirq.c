@@ -271,8 +271,10 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertExtIrq[9] =
                         sizeof (AML_RESOURCE_EXTENDED_IRQ),
                         0},
 
-    /* Flag bits */
-
+    /*
+     * Flags: Producer/Consumer[0], Triggering[1], Polarity[2],
+     *        SharingAndWake[3:4]
+     */
     {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.ExtendedIrq.ProducerConsumer),
                         AML_OFFSET (ExtendedIrq.Flags),
                         0},
@@ -285,7 +287,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertExtIrq[9] =
                         AML_OFFSET (ExtendedIrq.Flags),
                         2},
 
-    {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.ExtendedIrq.Sharable),
+    {ACPI_RSC_2BITFLAG, ACPI_RS_OFFSET (Data.ExtendedIrq.Sharable),
                         AML_OFFSET (ExtendedIrq.Flags),
                         3},
 
@@ -368,7 +370,6 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertFixedDma[4] =
      * RequestLines
      * Channels
      */
-
     {ACPI_RSC_MOVE16,   ACPI_RS_OFFSET (Data.FixedDma.RequestLines),
                         AML_OFFSET (FixedDma.RequestLines),
                         2},
@@ -376,5 +377,4 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertFixedDma[4] =
     {ACPI_RSC_MOVE8,    ACPI_RS_OFFSET (Data.FixedDma.Width),
                         AML_OFFSET (FixedDma.Width),
                         1},
-
 };
