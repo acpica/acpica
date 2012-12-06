@@ -370,7 +370,6 @@ DtCompileDataTable (
         return (AE_ERROR);
     }
 
-    DtDumpFieldList (RootField);
     Gbl_Signature = UtLocalCalloc (ACPI_STRLEN (Signature) + 1);
     strcpy (Gbl_Signature, Signature);
 

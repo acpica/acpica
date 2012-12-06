@@ -792,7 +792,6 @@ DtScanFile (
 {
     ACPI_STATUS             Status;
     UINT32                  Offset;
-    DT_FIELD                *Next;
 
 
     ACPI_FUNCTION_NAME (DtScanFile);
@@ -822,28 +821,7 @@ DtScanFile (
 
     /* Dump the parse tree if debug enabled */
 
-    if (Gbl_DebugFlag)
-    {
-        Next = Gbl_FieldList;
-        DbgPrint (ASL_DEBUG_OUTPUT, "Tree:  %32s %32s %8s %8s %8s %8s %8s %8s\n\n",
-            "Name", "Value", "Line", "ByteOff", "NameCol", "Column", "TableOff", "Flags");
-
-        while (Next)
-        {
-            DbgPrint (ASL_DEBUG_OUTPUT, "Field: %32.32s %32.32s %.8X %.8X %.8X %.8X %.8X %.8X\n",
-                Next->Name,
-                Next->Value,
-                Next->Line,
-                Next->ByteOffset,
-                Next->NameColumn,
-                Next->Column,
-                Next->TableOffset,
-                Next->Flags);
-
-            Next = Next->Next;
-        }
-    }
-
+    DtDumpFieldList (Gbl_FieldList);
     return (Gbl_FieldList);
 }
 
@@ -1012,14 +990,14 @@ DtDumpFieldList (
     DT_FIELD                *Field)
 {
 
-    if (!Gbl_ListingFlag || !Field)
+    if (!Gbl_DebugFlag || !Field)
     {
         return;
     }
 
     DbgPrint (ASL_DEBUG_OUTPUT,  "\nField List:\n"
-        "LineNo   ByteOff  NameCol  Col      TableOff "
-        "Flags    %32s : %s\n", "Name", "Value");
+        "LineNo   ByteOff  NameCol  Column   TableOff "
+        "Flags    %32s : %s\n\n", "Name", "Value");
     while (Field)
     {
         DbgPrint (ASL_DEBUG_OUTPUT,
@@ -1070,7 +1048,8 @@ DtDumpSubtableTree (
 {
 
     DbgPrint (ASL_DEBUG_OUTPUT,
-        "%*s%08X (%.02X) - (%.02X)\n", 4 * Subtable->Depth, " ",
+        "[%.04X] %*s%08X (%.02X) - (%.02X)\n",
+        Subtable->Depth, (4 * Subtable->Depth), " ",
         Subtable, Subtable->Length, Subtable->TotalLength);
 }
 
@@ -1094,17 +1073,19 @@ DtDumpSubtableList (
     void)
 {
 
-    if (!Gbl_ListingFlag || !Gbl_RootTable)
+    if (!Gbl_DebugFlag || !Gbl_RootTable)
     {
         return;
     }
 
-    DbgPrint (ASL_DEBUG_OUTPUT, "Subtable Info:\n"
+    DbgPrint (ASL_DEBUG_OUTPUT,
+        "Subtable Info:\n"
         "Depth  Length   TotalLen LenSize  Flags    "
-        "This     Parent   Child    Peer\n");
+        "This     Parent   Child    Peer\n\n");
     DtWalkTableTree (Gbl_RootTable, DtDumpSubtableInfo, NULL, NULL);
 
-    DbgPrint (ASL_DEBUG_OUTPUT, "\nSubtable Tree:\n");
+    DbgPrint (ASL_DEBUG_OUTPUT,
+        "\nSubtable Tree: (Depth, Subtable, Length, TotalLength)\n\n");
     DtWalkTableTree (Gbl_RootTable, DtDumpSubtableTree, NULL, NULL);
 }
 
