@@ -193,7 +193,7 @@ AcpiNsInitializeObjects (
     }
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
-        "Initialized %u/%u Regions %u/%u Fields %u/%u "
+        "    Initialized %u/%u Regions %u/%u Fields %u/%u "
         "Buffers %u/%u Packages (%u nodes)\n",
         Info.OpRegionInit,  Info.OpRegionCount,
         Info.FieldInit,     Info.FieldCount,
@@ -244,7 +244,7 @@ AcpiNsInitializeDevices (
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
         "Initializing Device/Processor/Thermal objects "
-        "and executing _INI methods:\n"));
+        "and executing _INI/_STA methods:\n"));
 
     /* Tree analysis: find all subtrees that contain _INI methods */
 
@@ -302,7 +302,7 @@ AcpiNsInitializeDevices (
     }
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
-        "Executed %u _INI methods requiring %u _STA executions "
+        "    Executed %u _INI methods requiring %u _STA executions "
         "(examined %u objects)\n",
         Info.Num_INI, Info.Num_STA, Info.DeviceCount));
 
