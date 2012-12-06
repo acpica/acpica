@@ -176,7 +176,7 @@ AcpiNsInitializeObjects (
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
         "**** Starting initialization of namespace objects ****\n"));
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
-        "Completing Region/Field/Buffer/Package initialization:"));
+        "Completing Region/Field/Buffer/Package initialization:\n"));
 
     /* Set all init info to zero */
 
@@ -193,7 +193,7 @@ AcpiNsInitializeObjects (
     }
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
-        "\nInitialized %u/%u Regions %u/%u Fields %u/%u "
+        "Initialized %u/%u Regions %u/%u Fields %u/%u "
         "Buffers %u/%u Packages (%u nodes)\n",
         Info.OpRegionInit,  Info.OpRegionCount,
         Info.FieldInit,     Info.FieldCount,
@@ -244,7 +244,7 @@ AcpiNsInitializeDevices (
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
         "Initializing Device/Processor/Thermal objects "
-        "by executing _INI methods:"));
+        "and executing _INI methods:\n"));
 
     /* Tree analysis: find all subtrees that contain _INI methods */
 
@@ -302,7 +302,7 @@ AcpiNsInitializeDevices (
     }
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
-        "\nExecuted %u _INI methods requiring %u _STA executions "
+        "Executed %u _INI methods requiring %u _STA executions "
         "(examined %u objects)\n",
         Info.Num_INI, Info.Num_STA, Info.DeviceCount));
 
@@ -450,15 +450,6 @@ AcpiNsInitOneObject (
         ACPI_EXCEPTION ((AE_INFO, Status,
             "Could not execute arguments for [%4.4s] (%s)",
             AcpiUtGetNodeName (Node), AcpiUtGetTypeName (Type)));
-    }
-
-    /*
-     * Print a dot for each object unless we are going to print the entire
-     * pathname
-     */
-    if (!(AcpiDbgLevel & ACPI_LV_INIT_NAMES))
-    {
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "."));
     }
 
     /*
@@ -699,12 +690,6 @@ AcpiNsInitOneDevice (
     if (ACPI_SUCCESS (Status))
     {
         WalkInfo->Num_INI++;
-
-        if ((AcpiDbgLevel <= ACPI_LV_ALL_EXCEPTIONS) &&
-            (!(AcpiDbgLevel & ACPI_LV_INFO)))
-        {
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "."));
-        }
     }
 
 #ifdef ACPI_DEBUG_OUTPUT
