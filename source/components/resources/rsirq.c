@@ -129,7 +129,7 @@
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsGetIrq[8] =
+ACPI_RSCONVERT_INFO     AcpiRsGetIrq[9] =
 {
     {ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_IRQ,
                         ACPI_RS_SIZE (ACPI_RESOURCE_IRQ),
@@ -157,7 +157,7 @@ ACPI_RSCONVERT_INFO     AcpiRsGetIrq[8] =
 
     {ACPI_RSC_EXIT_NE,  ACPI_RSC_COMPARE_AML_LENGTH, 0, 3},
 
-    /* Get flags: Triggering[0], Polarity[3], SharingAndWake[4:5] */
+    /* Get flags: Triggering[0], Polarity[3], Sharing[4], Wake[5] */
 
     {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.Irq.Triggering),
                         AML_OFFSET (Irq.Flags),
@@ -167,9 +167,13 @@ ACPI_RSCONVERT_INFO     AcpiRsGetIrq[8] =
                         AML_OFFSET (Irq.Flags),
                         3},
 
-    {ACPI_RSC_2BITFLAG, ACPI_RS_OFFSET (Data.Irq.Sharable),
+    {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.Irq.Sharable),
                         AML_OFFSET (Irq.Flags),
-                        4}
+                        4},
+
+    {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.Irq.WakeCapable),
+                        AML_OFFSET (Irq.Flags),
+                        5}
 };
 
 
@@ -179,7 +183,7 @@ ACPI_RSCONVERT_INFO     AcpiRsGetIrq[8] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsSetIrq[13] =
+ACPI_RSCONVERT_INFO     AcpiRsSetIrq[14] =
 {
     /* Start with a default descriptor of length 3 */
 
@@ -193,7 +197,7 @@ ACPI_RSCONVERT_INFO     AcpiRsSetIrq[13] =
                         AML_OFFSET (Irq.IrqMask),
                         ACPI_RS_OFFSET (Data.Irq.InterruptCount)},
 
-    /* Set flags: Triggering[0], Polarity[3], SharingAndWake[4:5] */
+    /* Set flags: Triggering[0], Polarity[3], Sharing[4], Wake[5] */
 
     {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.Irq.Triggering),
                         AML_OFFSET (Irq.Flags),
@@ -203,9 +207,13 @@ ACPI_RSCONVERT_INFO     AcpiRsSetIrq[13] =
                         AML_OFFSET (Irq.Flags),
                         3},
 
-    {ACPI_RSC_2BITFLAG, ACPI_RS_OFFSET (Data.Irq.Sharable),
+    {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.Irq.Sharable),
                         AML_OFFSET (Irq.Flags),
                         4},
+
+    {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.Irq.WakeCapable),
+                        AML_OFFSET (Irq.Flags),
+                        5},
 
     /*
      * All done if the output descriptor length is required to be 3
@@ -261,7 +269,7 @@ ACPI_RSCONVERT_INFO     AcpiRsSetIrq[13] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsConvertExtIrq[9] =
+ACPI_RSCONVERT_INFO     AcpiRsConvertExtIrq[10] =
 {
     {ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_EXTENDED_IRQ,
                         ACPI_RS_SIZE (ACPI_RESOURCE_EXTENDED_IRQ),
@@ -273,7 +281,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertExtIrq[9] =
 
     /*
      * Flags: Producer/Consumer[0], Triggering[1], Polarity[2],
-     *        SharingAndWake[3:4]
+     *        Sharing[3], Wake[4]
      */
     {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.ExtendedIrq.ProducerConsumer),
                         AML_OFFSET (ExtendedIrq.Flags),
@@ -287,9 +295,13 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertExtIrq[9] =
                         AML_OFFSET (ExtendedIrq.Flags),
                         2},
 
-    {ACPI_RSC_2BITFLAG, ACPI_RS_OFFSET (Data.ExtendedIrq.Sharable),
+    {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.ExtendedIrq.Sharable),
                         AML_OFFSET (ExtendedIrq.Flags),
                         3},
+
+    {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.ExtendedIrq.WakeCapable),
+                        AML_OFFSET (ExtendedIrq.Flags),
+                        4},
 
     /* IRQ Table length (Byte4) */
 
