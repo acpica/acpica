@@ -429,8 +429,8 @@ Name(X193, 1) // 32-bit mode optional storing of Not, NAnd, or NOr
 		  // ASL operators result to Buffer Field produces 64-bit
 Name(X194, 1) // Unexpected implicit result object conversion when the
 		  // Target operand of ToBuffer operator is a Named Buffer
-Name(X195, 1) // Increment and Decrement of an either String or Buffer
-		  // Object change the type of the Object to Integer (~ y501)
+Name(X195, 0) // Increment and Decrement of an either String or Buffer
+		  // Object will not change the type of the Object to Integer (~ y501)
 
 
 /*

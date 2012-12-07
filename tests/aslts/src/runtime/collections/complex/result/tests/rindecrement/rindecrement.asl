@@ -302,9 +302,8 @@ Method(m692, 2)
 		// Target must save type
 		if (LNotEqual(Local2, arg2)) {
 			// Types mismatch Target/Target on storing
-			if (LAnd(LEqual(arg2, c009),	// Target (Result) type is Integer
-					// Source (Target) type is String, Buffer
-					Lor(LEqual(arg3, c00a), LEqual(arg3, c00b)))) {
+			// Target (Result) type should keep the original type
+			if (LOr(LEqual(arg3, c00a), LEqual(arg3, c00b))) {
 				if (X195) {
 					err(arg0, z125, 4, 0, 0, Local2, arg2)
 				}
