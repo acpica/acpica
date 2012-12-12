@@ -601,6 +601,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\utownerid.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utresrc.c"
 					>
 					<FileConfiguration
@@ -643,6 +647,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utstring.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\uttrack.c"
@@ -963,6 +971,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\namespace\nsprepkg.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\components\namespace\nsrepair.c"
@@ -1443,6 +1455,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\events\evhandler.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\events\evmisc.c"
 					>
 					<FileConfiguration
@@ -1741,6 +1757,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\debugger\dbconvert.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\COMPONENTS\DEBUGGER\dbdisply.c"
@@ -2291,6 +2311,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\resources\rsdumpinfo.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\components\resources\rsinfo.c"
@@ -3243,6 +3267,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\parser\psobject.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\parser\psopcode.c"
 					>
 					<FileConfiguration
@@ -3263,6 +3291,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\parser\psopinfo.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\components\parser\psparse.c"

@@ -561,6 +561,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\utstring.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utxferror.c"
 					>
 					<FileConfiguration

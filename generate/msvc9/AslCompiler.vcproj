@@ -533,6 +533,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\utownerid.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utresrc.c"
 					>
 					<FileConfiguration
@@ -575,6 +579,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utstring.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utxface.c"
@@ -2925,6 +2933,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\parser\psobject.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\parser\psopcode.c"
 					>
 					<FileConfiguration
@@ -2945,6 +2957,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\parser\psopinfo.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\components\parser\psparse.c"
