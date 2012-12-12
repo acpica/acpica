@@ -1508,7 +1508,8 @@ if (y361) {
 				// Types mismatch Target/Target on storing
 				if (LEqual(arg2, c016)) {
 					if (X170) {
-						err(arg0, z122, 39, 0, 0, Local2, arg2)
+						//this sentence is for m00d and invalid, removed.
+						//err(arg0, z122, 39, 0, 0, Local2, arg2)
 					}
 				} else {
 					err(arg0, z122, 39, 0, 0, Local2, arg2)

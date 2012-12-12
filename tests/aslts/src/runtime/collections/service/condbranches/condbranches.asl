@@ -64,7 +64,12 @@ Method(SRV0) {
 	m280(X192, "X192")
 	m280(X193, "X193")
 	m280(X194, "X194")
-	m280(X195, "X195")
+	/*
+	 * X195 is about Increment and Decrement of an either String or Buffer
+	 * Since object will not change the type of the Object to Integer
+	 * So this conditional branches should be disabled.
+	 */
+	//m280(X195, "X195")
 	m280(q001, "q001")
 	m280(q002, "q002")
 	m280(q003, "q003")
