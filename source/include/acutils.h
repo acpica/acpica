@@ -781,10 +781,6 @@ AcpiUtShortDivide (
 /*
  * utmisc
  */
-void
-UtConvertBackslashes (
-    char                    *Pathname);
-
 const char *
 AcpiUtValidateException (
     ACPI_STATUS             Status);
@@ -798,56 +794,12 @@ AcpiUtIsAmlTable (
     ACPI_TABLE_HEADER       *Table);
 
 ACPI_STATUS
-AcpiUtAllocateOwnerId (
-    ACPI_OWNER_ID           *OwnerId);
-
-void
-AcpiUtReleaseOwnerId (
-    ACPI_OWNER_ID           *OwnerId);
-
-ACPI_STATUS
 AcpiUtWalkPackageTree (
     ACPI_OPERAND_OBJECT     *SourceObject,
     void                    *TargetObject,
     ACPI_PKG_CALLBACK       WalkCallback,
     void                    *Context);
 
-void
-AcpiUtStrupr (
-    char                    *SrcString);
-
-void
-AcpiUtStrlwr (
-    char                    *SrcString);
-
-int
-AcpiUtStricmp (
-    char                    *String1,
-    char                    *String2);
-
-void
-AcpiUtPrintString (
-    char                    *String,
-    UINT8                   MaxLength);
-
-BOOLEAN
-AcpiUtValidAcpiName (
-    UINT32                  Name);
-
-void
-AcpiUtRepairName (
-    char                    *Name);
-
-BOOLEAN
-AcpiUtValidAcpiChar (
-    char                    Character,
-    UINT32                  Position);
-
-ACPI_STATUS
-AcpiUtStrtoul64 (
-    char                    *String,
-    UINT32                  Base,
-    UINT64                  *RetInteger);
 
 /* Values for Base above (16=Hex, 10=Decimal) */
 
@@ -868,6 +820,18 @@ AcpiUtDisplayInitPathname (
     ACPI_NAMESPACE_NODE     *ObjHandle,
     char                    *Path);
 #endif
+
+
+/*
+ * utownerid - Support for Table/Method Owner IDs
+ */
+ACPI_STATUS
+AcpiUtAllocateOwnerId (
+    ACPI_OWNER_ID           *OwnerId);
+
+void
+AcpiUtReleaseOwnerId (
+    ACPI_OWNER_ID           *OwnerId);
 
 
 /*
@@ -907,6 +871,51 @@ ACPI_STATUS
 AcpiUtGetResourceEndTag (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT8                   **EndTag);
+
+
+/*
+ * utstring - String and character utilities
+ */
+void
+AcpiUtStrupr (
+    char                    *SrcString);
+
+void
+AcpiUtStrlwr (
+    char                    *SrcString);
+
+int
+AcpiUtStricmp (
+    char                    *String1,
+    char                    *String2);
+
+ACPI_STATUS
+AcpiUtStrtoul64 (
+    char                    *String,
+    UINT32                  Base,
+    UINT64                  *RetInteger);
+
+void
+AcpiUtPrintString (
+    char                    *String,
+    UINT8                   MaxLength);
+
+void
+UtConvertBackslashes (
+    char                    *Pathname);
+
+BOOLEAN
+AcpiUtValidAcpiName (
+    UINT32                  Name);
+
+BOOLEAN
+AcpiUtValidAcpiChar (
+    char                    Character,
+    UINT32                  Position);
+
+void
+AcpiUtRepairName (
+    char                    *Name);
 
 
 /*
