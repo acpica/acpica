@@ -154,7 +154,9 @@ OBJECTS = \
 	$(OBJDIR)/prutils.o \
 	$(OBJDIR)/psargs.o \
 	$(OBJDIR)/psloop.o \
+	$(OBJDIR)/psobject.o \
 	$(OBJDIR)/psopcode.o \
+	$(OBJDIR)/psopinfo.o \
 	$(OBJDIR)/psparse.o \
 	$(OBJDIR)/psscope.o \
 	$(OBJDIR)/pstree.o \
@@ -179,8 +181,10 @@ OBJECTS = \
 	$(OBJDIR)/utmisc.o \
 	$(OBJDIR)/utmutex.o \
 	$(OBJDIR)/utobject.o \
+	$(OBJDIR)/utownerid.o \
 	$(OBJDIR)/utresrc.o \
 	$(OBJDIR)/utstate.o \
+	$(OBJDIR)/utstring.o \
 	$(OBJDIR)/utxface.o \
 	$(OBJDIR)/utxferror.o
 
