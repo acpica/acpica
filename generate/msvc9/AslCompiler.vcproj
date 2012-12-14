@@ -968,6 +968,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\compiler\aslfileio.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\compiler\aslfiles.c"
 					>
 					<FileConfiguration
@@ -1010,6 +1014,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\compiler\aslhex.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\asllength.c"
@@ -1142,6 +1150,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\compiler\aslmethod.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\compiler\aslnamesp.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslopcodes.c"
@@ -1564,6 +1580,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\compiler\aslxref.c"
+					>
 				</File>
 			</Filter>
 			<Filter

@@ -53,13 +53,17 @@ OBJECTS = \
 	$(OBJDIR)/aslcompile.o \
 	$(OBJDIR)/aslerror.o \
 	$(OBJDIR)/aslfiles.o \
+	$(OBJDIR)/aslfileio.o \
 	$(OBJDIR)/aslfold.o \
+	$(OBJDIR)/aslhex.o \
 	$(OBJDIR)/asllength.o \
 	$(OBJDIR)/asllisting.o \
 	$(OBJDIR)/aslload.o \
 	$(OBJDIR)/asllookup.o \
 	$(OBJDIR)/aslmain.o \
 	$(OBJDIR)/aslmap.o \
+	$(OBJDIR)/aslmethod.o \
+	$(OBJDIR)/aslnamesp.o \
 	$(OBJDIR)/aslopcodes.o \
 	$(OBJDIR)/asloperands.o \
 	$(OBJDIR)/aslopt.o \
@@ -80,6 +84,7 @@ OBJECTS = \
 	$(OBJDIR)/aslutils.o \
 	$(OBJDIR)/asluuid.o \
 	$(OBJDIR)/aslwalks.o \
+	$(OBJDIR)/aslxref.o \
 	$(OBJDIR)/dtcompile.o \
 	$(OBJDIR)/dtexpress.o \
 	$(OBJDIR)/dtfield.o \
