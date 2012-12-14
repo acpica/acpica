@@ -494,7 +494,8 @@ Method(m694, 5)
 				// Types mismatch Target/Target on storing
 				if (LEqual(arg2, c016)) {
 					if (X170) {
-						err(arg0, z127, 17, 0, 0, Local2, arg2)
+						//this error report is unnecessary, should be removed.
+						//err(arg0, z127, 17, 0, 0, Local2, arg2)
 					}
 				} else {
 					err(arg0, z127, 17, 0, 0, Local2, arg2)
