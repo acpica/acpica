@@ -260,19 +260,23 @@ AnOperandTypecheckWalkEnd (
     void                    *Context);
 
 ACPI_STATUS
-AnMethodAnalysisWalkBegin (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
-
-ACPI_STATUS
-AnMethodAnalysisWalkEnd (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
-
-ACPI_STATUS
 AnMethodTypingWalkEnd (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
+
+/*
+ * aslmethod - Control method analysis walk
+ */
+ACPI_STATUS
+MtMethodAnalysisWalkBegin (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
+ACPI_STATUS
+MtMethodAnalysisWalkEnd (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context);
@@ -414,6 +418,12 @@ LsDoListings (
     void);
 
 void
+LsDumpAsciiInComment (
+    UINT32                  FileId,
+    UINT32                  Count,
+    UINT8                   *Buffer);
+
+void
 LsWriteNodeToAsmListing (
     ACPI_PARSE_OBJECT       *Op);
 
@@ -423,12 +433,17 @@ LsWriteNode (
     UINT32                  FileId);
 
 void
-LsDoHexOutput (
-    void);
-
-void
 LsDumpParseTree (
     void);
+
+
+/*
+ * aslhex - generate all "hex" output files (C, ASM, ASL)
+ */
+void
+HxDoHexOutput (
+    void);
+
 
 /*
  * aslfold - constant folding
@@ -761,23 +776,31 @@ LdLoadNamespace (
 
 
 /*
- * asllookup - namespace cross reference
+ * asllookup - namespace lookup functions
  */
-ACPI_STATUS
-LkCrossReferenceNamespace (
-    void);
-
 void
 LkFindUnreferencedObjects (
     void);
 
+
+/*
+ * aslnamesp - namespace output file generation
+ */
 ACPI_STATUS
-LsDisplayNamespace (
+NsDisplayNamespace (
     void);
 
 void
-LsSetupNsList (
+NsSetupNamespaceListing (
     void                    *Handle);
+
+
+/*
+ * aslxref - namespace cross reference
+ */
+ACPI_STATUS
+XfCrossReferenceNamespace (
+    void);
 
 
 /*

@@ -141,11 +141,11 @@ extern int                  AslCompilerdebug;
 #endif
 
 ACPI_STATUS
-LsDisplayNamespace (
+NsDisplayNamespace (
     void);
 
 void
-LsSetupNsList (
+NsSetupNamespaceListing (
     void                    *Handle);
 
 
@@ -501,8 +501,8 @@ AdAmlDisassemble (
         {
             AcpiOsPrintf ("/**** Before second load\n");
 
-            LsSetupNsList (File);
-            LsDisplayNamespace ();
+            NsSetupNamespaceListing (File);
+            NsDisplayNamespace ();
             AcpiOsPrintf ("*****/\n");
         }
 
@@ -570,8 +570,8 @@ AdAmlDisassemble (
             if (AslCompilerdebug)
             {
                 AcpiOsPrintf ("/**** After second load and resource conversion\n");
-                LsSetupNsList (File);
-                LsDisplayNamespace ();
+                NsSetupNamespaceListing (File);
+                NsDisplayNamespace ();
                 AcpiOsPrintf ("*****/\n");
 
                 AcpiDmDumpTree (AcpiGbl_ParseOpRoot);
@@ -621,8 +621,8 @@ Cleanup:
     {
         if (AslCompilerdebug) /* Display final namespace, with transforms */
         {
-            LsSetupNsList (File);
-            LsDisplayNamespace ();
+            NsSetupNamespaceListing (File);
+            NsDisplayNamespace ();
         }
 
         fclose (File);

@@ -529,7 +529,7 @@ DtCompileCsrt (
 
         /* Compute the number of resource descriptors */
 
-        GroupLength = 
+        GroupLength =
             (ACPI_CAST_PTR (ACPI_CSRT_GROUP,
                 Subtable->Buffer))->Length -
             (ACPI_CAST_PTR (ACPI_CSRT_GROUP,

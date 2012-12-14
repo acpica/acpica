@@ -237,7 +237,7 @@ DtDoCompile (
     /* Write the binary, then the optional hex file */
 
     DtOutputBinary (Gbl_RootTable);
-    LsDoHexOutput ();
+    HxDoHexOutput ();
     DtWriteTableToListing ();
 
 CleanupAndExit:

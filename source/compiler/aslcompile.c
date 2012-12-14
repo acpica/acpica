@@ -689,7 +689,7 @@ CmDoCompile (
     /* Namespace cross-reference */
 
     AslGbl_NamespaceEvent = UtBeginEvent ("Cross reference parse tree and Namespace");
-    Status = LkCrossReferenceNamespace ();
+    Status = XfCrossReferenceNamespace ();
     if (ACPI_FAILURE (Status))
     {
         goto ErrorExit;
@@ -711,8 +711,8 @@ CmDoCompile (
 
     DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - Method analysis\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE,
-        AnMethodAnalysisWalkBegin,
-        AnMethodAnalysisWalkEnd, &AnalysisWalkInfo);
+        MtMethodAnalysisWalkBegin,
+        MtMethodAnalysisWalkEnd, &AnalysisWalkInfo);
     UtEndEvent (Event);
 
     /* Semantic error checking part two - typing of method returns */
@@ -791,11 +791,11 @@ CmDoOutputFiles (
     /* Create listings and hex files */
 
     LsDoListings ();
-    LsDoHexOutput ();
+    HxDoHexOutput ();
 
     /* Dump the namespace to the .nsp file if requested */
 
-    (void) LsDisplayNamespace ();
+    (void) NsDisplayNamespace ();
 }
 
 
