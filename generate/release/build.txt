@@ -5,7 +5,7 @@ and utilities.
 Last update 18 October 2012.
 
 The build uses MS Visual Studio and Cygwin to accomplish the
-goal of releasing both Windows and Unix versions of the code
+goal of releasing both Windows and Unix versions of the ACPICA code
 and utilities. For Windows, binary versions of the ACPICA utilities
 (including the iASL compiler) are created.
 
@@ -47,7 +47,7 @@ Tag the version file with a name of the form Rmm_dd_yy
 
 Build the various tar/zip release files:
     Convert the generate/release/.sh files to unix format: dos2unix *.sh
-    On cygwin, execute generate/release/release.sh
+    On cygwin, execute generate/release/release.sh (sh release.sh)
 
 
 
@@ -61,7 +61,7 @@ The main acpica.org directory is at: acpica.org/trunk/html
 Copy all tar/zip files from release/current to (acpica.org)/download
 Copy all changed documents from acpica/documents to (acpica.org)/download
 
-Update modules.php:
+Update (acpica.org) modules.php:
     Add a line for the 2nd previous version
     Update entry for previous_releases.php to the previous version
     Update current_version() to the current version
