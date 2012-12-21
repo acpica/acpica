@@ -231,10 +231,20 @@ AcpiDbSleep (
 {
     ACPI_STATUS             Status;
     UINT8                   SleepState;
+    UINT8                   i;
+    UINT8                   SleepTypeA;
+    UINT8                   SleepTypeB;
 
 
     ACPI_FUNCTION_TRACE (AcpiDbSleep);
 
+
+    /* Check all possible sleep states */
+
+    for (i = 0; i < ACPI_S_STATES_MAX; i++)
+    {
+        Status = AcpiGetSleepTypeData (i, &SleepTypeA, &SleepTypeB);
+    }
 
     SleepState = (UINT8) ACPI_STRTOUL (ObjectArg, NULL, 0);
 
