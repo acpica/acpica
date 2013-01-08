@@ -1,5 +1,5 @@
 /*
- * Some or all of this work - Copyright (c) 2006 - 2012, Intel Corp.
+ * Some or all of this work - Copyright (c) 2006 - 2013, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -1564,10 +1564,10 @@ Device(DTM2) {
 
 	// LoadTable returns 0 if some SSDT matching the LoadTable
 	// parameters is originally not listed in XSDT
-	/* 
+	/*
 	 * This test should never happen in real ASL code. So it is removed.
-	 * 
-	 * The Load operation will add a table to global table list, which is 
+	 *
+	 * The Load operation will add a table to global table list, which is
 	 * the master list that can be find in XSDT.
 	 *
 	 * The Unload operation will just delete the namespace owned by the table,

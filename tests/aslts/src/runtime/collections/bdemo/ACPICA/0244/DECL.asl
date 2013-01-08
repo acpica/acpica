@@ -1,5 +1,5 @@
 /*
- * Some or all of this work - Copyright (c) 2006 - 2012, Intel Corp.
+ * Some or all of this work - Copyright (c) 2006 - 2013, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -190,7 +190,7 @@ Method(m02e)
 		}
 		CH03("", 0, 0x009, 0, 0)
 
-		// Release T806 
+		// Release T806
 
 		if (LNot(i106)) {
 			Release(T806)
