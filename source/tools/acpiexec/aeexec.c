@@ -701,7 +701,7 @@ AeMiscellaneousTests (
     ReturnBuf.Length = 32;
     ReturnBuf.Pointer = Buffer;
 
-    Status = AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
+    Status = AcpiGetName (ACPI_ROOT_OBJECT, ACPI_FULL_PATHNAME, &ReturnBuf);
     AE_CHECK_OK (AcpiGetName, Status);
 
     /* Get Devices */

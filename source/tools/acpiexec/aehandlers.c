@@ -768,7 +768,7 @@ AeInstallLateHandlers (
     {
         /* Install handler at the root object */
 
-        Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
+        Status = AcpiInstallAddressSpaceHandler (ACPI_ROOT_OBJECT,
                     SpaceIdList[i], AeRegionHandler,
                     AeRegionInit, &AeMyContext);
         if (ACPI_FAILURE (Status))
@@ -954,7 +954,7 @@ AeInstallEarlyHandlers (
     {
         /* Install handler at the root object */
 
-        Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
+        Status = AcpiInstallAddressSpaceHandler (ACPI_ROOT_OBJECT,
                     DefaultSpaceIdList[i], AeRegionHandler,
                     AeRegionInit, &AeMyContext);
         if (ACPI_FAILURE (Status))
