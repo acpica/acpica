@@ -154,6 +154,10 @@ AcpiDbDeviceResources (
     void                    *Context,
     void                    **ReturnValue);
 
+static void
+AcpiDbDoOneSleepState (
+    UINT8                   SleepState);
+
 
 /*******************************************************************************
  *
@@ -217,11 +221,12 @@ AcpiDbConvertToNode (
  *
  * FUNCTION:    AcpiDbSleep
  *
- * PARAMETERS:  ObjectArg           - Desired sleep state (0-5)
+ * PARAMETERS:  ObjectArg           - Desired sleep state (0-5). NULL means
+ *                                    invoke all possible sleep states.
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Simulate a sleep/wake sequence
+ * DESCRIPTION: Simulate sleep/wake sequences
  *
  ******************************************************************************/
 
@@ -229,60 +234,124 @@ ACPI_STATUS
 AcpiDbSleep (
     char                    *ObjectArg)
 {
-    ACPI_STATUS             Status;
     UINT8                   SleepState;
-    UINT8                   i;
-    UINT8                   SleepTypeA;
-    UINT8                   SleepTypeB;
+    UINT32                  i;
 
 
     ACPI_FUNCTION_TRACE (AcpiDbSleep);
 
 
-    /* Check all possible sleep states */
+    /* Null input (no arguments) means to invoke all sleep states */
 
-    for (i = 0; i < ACPI_S_STATES_MAX; i++)
+    if (!ObjectArg)
     {
-        Status = AcpiGetSleepTypeData (i, &SleepTypeA, &SleepTypeB);
+        AcpiOsPrintf ("Invoking all possible sleep states, 0-%d\n",
+            ACPI_S_STATES_MAX);
+
+        for (i = 0; i <= ACPI_S_STATES_MAX; i++)
+        {
+            AcpiDbDoOneSleepState ((UINT8) i);
+        }
+
+        return_ACPI_STATUS (AE_OK);
     }
 
-    SleepState = (UINT8) ACPI_STRTOUL (ObjectArg, NULL, 0);
+    /* Convert argument to binary and invoke the sleep state */
 
-    AcpiOsPrintf ("**** Prepare to sleep ****\n");
+    SleepState = (UINT8) ACPI_STRTOUL (ObjectArg, NULL, 0);
+    AcpiDbDoOneSleepState (SleepState);
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbDoOneSleepState
+ *
+ * PARAMETERS:  SleepState          - Desired sleep state (0-5)
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Simulate a sleep/wake sequence
+ *
+ ******************************************************************************/
+
+static void
+AcpiDbDoOneSleepState (
+    UINT8                   SleepState)
+{
+    ACPI_STATUS             Status;
+    UINT8                   SleepTypeA;
+    UINT8                   SleepTypeB;
+
+
+    /* Validate parameter */
+
+    if (SleepState > ACPI_S_STATES_MAX)
+    {
+        AcpiOsPrintf ("Sleep state %d out of range (%d max)\n",
+            SleepState, ACPI_S_STATES_MAX);
+        return;
+    }
+
+    AcpiOsPrintf ("\n---- Invoking sleep state S%d (%s):\n",
+        SleepState, AcpiGbl_SleepStateNames[SleepState]);
+
+    /* Get the values for the sleep type registers (for display only) */
+
+    Status = AcpiGetSleepTypeData (SleepState, &SleepTypeA, &SleepTypeB);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("Could not evaluate [%s] method, %s\n",
+            AcpiGbl_SleepStateNames[SleepState],
+            AcpiFormatException (Status));
+        return;
+    }
+
+    AcpiOsPrintf (
+        "Register values for sleep state S%d: Sleep-A: %.2X, Sleep-B: %.2X\n",
+        SleepState, SleepTypeA, SleepTypeB);
+
+    /* Invoke the various sleep/wake interfaces */
+
+    AcpiOsPrintf ("**** Sleep: Prepare to sleep (S%d) ****\n",
+        SleepState);
     Status = AcpiEnterSleepStatePrep (SleepState);
     if (ACPI_FAILURE (Status))
     {
         goto ErrorExit;
     }
 
-    AcpiOsPrintf ("**** Going to sleep ****\n");
+    AcpiOsPrintf ("**** Sleep: Going to sleep (S%d) ****\n",
+        SleepState);
     Status = AcpiEnterSleepState (SleepState);
     if (ACPI_FAILURE (Status))
     {
         goto ErrorExit;
     }
 
-    AcpiOsPrintf ("**** Prepare to return from sleep ****\n");
+    AcpiOsPrintf ("**** Wake: Prepare to return from sleep (S%d) ****\n",
+        SleepState);
     Status = AcpiLeaveSleepStatePrep (SleepState);
     if (ACPI_FAILURE (Status))
     {
         goto ErrorExit;
     }
 
-    AcpiOsPrintf ("**** Returning from sleep ****\n");
+    AcpiOsPrintf ("**** Wake: Return from sleep (S%d) ****\n",
+        SleepState);
     Status = AcpiLeaveSleepState (SleepState);
     if (ACPI_FAILURE (Status))
     {
         goto ErrorExit;
     }
 
-    return_ACPI_STATUS (Status);
+    return;
 
 
 ErrorExit:
-
-    ACPI_EXCEPTION ((AE_INFO, Status, "During sleep test"));
-    return_ACPI_STATUS (Status);
+    ACPI_EXCEPTION ((AE_INFO, Status, "During invocation of sleep state S%d",
+        SleepState));
 }
 
 
