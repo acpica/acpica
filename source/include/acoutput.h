@@ -357,7 +357,16 @@
  * debug message outside of the print function itself. This improves overall
  * performance at a relatively small code cost. Implementation involves the
  * use of variadic macros supported by C99.
+ *
+ * Note: the ACPI_DO_WHILE0 macro is used to prevent some compilers from
+ * complaining about these constructs. On other compilers the do...while
+ * adds some extra code, so this feature is optional.
  */
+#ifdef ACPI_USE_DO_WHILE_0
+#define ACPI_DO_WHILE0(a)               do a while(0)
+#else
+#define ACPI_DO_WHILE0(a)               a
+#endif
 
 /* DEBUG_PRINT functions */
 
@@ -366,17 +375,21 @@
 
 /* Helper macros for DEBUG_PRINT */
 
-#define ACPI_DEBUG(Function, Level, Line, Filename, Modulename, Component, ...) \
-    if (ACPI_IS_DEBUG_ENABLED (Level, Component)) \
-    { \
-        Function (Level, Line, Filename, Modulename, Component, __VA_ARGS__); \
-    }
+#define ACPI_DO_DEBUG_PRINT(Function, Level, Line, Filename, Modulename, Component, ...) \
+    ACPI_DO_WHILE0 ({ \
+        if (ACPI_IS_DEBUG_ENABLED (Level, Component)) \
+        { \
+            Function (Level, Line, Filename, Modulename, Component, __VA_ARGS__); \
+        } \
+    })
 
 #define ACPI_ACTUAL_DEBUG(Level, Line, Filename, Modulename, Component, ...) \
-    ACPI_DEBUG (AcpiDebugPrint, Level, Line, Filename, Modulename, Component, __VA_ARGS__)
+    ACPI_DO_DEBUG_PRINT (AcpiDebugPrint, Level, Line, \
+        Filename, Modulename, Component, __VA_ARGS__)
 
 #define ACPI_ACTUAL_DEBUG_RAW(Level, Line, Filename, Modulename, Component, ...) \
-    ACPI_DEBUG (AcpiDebugPrintRaw, Level, Line, Filename, Modulename, Component, __VA_ARGS__)
+    ACPI_DO_DEBUG_PRINT (AcpiDebugPrintRaw, Level, Line, \
+        Filename, Modulename, Component, __VA_ARGS__)
 
 
 /*
@@ -420,16 +433,7 @@
  *
  * One of the FUNCTION_TRACE macros above must be used in conjunction
  * with these macros so that "_AcpiFunctionName" is defined.
- *
- * Note: the DO_WHILE0 macro is used to prevent some compilers from
- * complaining about these constructs. On other compilers the do...while
- * adds some extra code, so this feature is optional.
  */
-#ifdef ACPI_USE_DO_WHILE_0
-#define ACPI_DO_WHILE0(a)               do a while(0)
-#else
-#define ACPI_DO_WHILE0(a)               a
-#endif
 
 /* Exit trace helper macro */
 
