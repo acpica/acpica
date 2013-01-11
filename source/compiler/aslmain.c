@@ -225,6 +225,7 @@ Options (
     ACPI_OPTION ("-oi",             "Disable integer optimization to Zero/One/Ones");
     ACPI_OPTION ("-on",             "Disable named reference string optimization");
     ACPI_OPTION ("-cr",             "Disable Resource Descriptor error checking");
+    ACPI_OPTION ("-in",             "Ignore NoOp operators");
     ACPI_OPTION ("-r <revision>",   "Override table header Revision (1-255)");
 
     printf ("\nASL Listing Files:\n");
@@ -244,6 +245,7 @@ Options (
     ACPI_OPTION ("",                "(Obtain DSDT from current system if no input file)");
     ACPI_OPTION ("-e  [f1,f2]",     "Include ACPI table(s) for external symbol resolution");
     ACPI_OPTION ("-g",              "Get ACPI tables and write to files (*.dat)");
+    ACPI_OPTION ("-in",             "Ignore NoOp opcodes");
     ACPI_OPTION ("-vt",             "Dump binary table data in hex format within output file");
 
     printf ("\nHelp:\n");
@@ -692,6 +694,13 @@ AslDoOptions (
             /* Produce C include file */
 
             Gbl_C_IncludeOutputFlag = TRUE;
+            break;
+
+        case 'n':
+
+            /* Compiler/Disassembler: Ignore the NOOP operator */
+
+            AcpiGbl_IgnoreNoopOperator = TRUE;
             break;
 
         default:

@@ -273,7 +273,7 @@ NamePathTail                [.]{NameSeg}
 "Mutex"                     { count (2); return (PARSEOP_MUTEX); }
 "Name"                      { count (2); return (PARSEOP_NAME); }
 "NAnd"                      { count (3); return (PARSEOP_NAND); }
-"Noop"                      { count (3); return (PARSEOP_NOOP); }
+"Noop"                      { if (!AcpiGbl_IgnoreNoopOperator) {count (3); return (PARSEOP_NOOP);} }
 "NOr"                       { count (3); return (PARSEOP_NOR); }
 "Not"                       { count (3); return (PARSEOP_NOT); }
 "Notify"                    { count (3); return (PARSEOP_NOTIFY); }
