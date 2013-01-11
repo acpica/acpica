@@ -732,7 +732,6 @@ AslCommonError (
 
         Gbl_SourceLine = 0;
         Gbl_NextError = Gbl_ErrorLog;
-        CmDoOutputFiles ();
         CmCleanupAndExit ();
         exit(1);
     }
