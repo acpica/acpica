@@ -189,6 +189,8 @@ LsTreeWriteWalk (
     UINT32                  Level,
     void                    *Context);
 
+#define ASL_LISTING_LINE_PREFIX         ":  "
+
 
 /*******************************************************************************
  *
@@ -737,7 +739,8 @@ LsWriteListingHexBytes (
             {
             case ASL_FILE_LISTING_OUTPUT:
 
-                FlPrintFile (FileId, "%8.8X....", Gbl_CurrentAmlOffset);
+                FlPrintFile (FileId, "%8.8X%s", Gbl_CurrentAmlOffset,
+                    ASL_LISTING_LINE_PREFIX);
                 break;
 
             case ASL_FILE_ASM_SOURCE_OUTPUT:
@@ -797,6 +800,24 @@ LsWriteOneSourceLine (
     Gbl_SourceLine++;
     Gbl_ListingNode->LineNumber++;
 
+    /* Ignore lines that are completely blank (but count the line above) */
+
+    if (FlReadFile (ASL_FILE_SOURCE_OUTPUT, &FileByte, 1) != AE_OK)
+    {
+        return (0);
+    }
+    if (FileByte == '\n')
+    {
+        return (1);
+    }
+
+    /*
+     * This is a non-empty line, we will print the entire line with
+     * the line number and possibly other prefixes and transforms.
+     */
+
+    /* Line prefixes for special files, C and ASM output */
+
     if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
     {
         FlPrintFile (FileId, "     *");
@@ -812,19 +833,21 @@ LsWriteOneSourceLine (
          * This file contains "include" statements, print the current
          * filename and line number within the current file
          */
-        FlPrintFile (FileId, "%12s %5d....",
-                    Gbl_ListingNode->Filename, Gbl_ListingNode->LineNumber);
+        FlPrintFile (FileId, "%12s %5d%s",
+            Gbl_ListingNode->Filename, Gbl_ListingNode->LineNumber,
+            ASL_LISTING_LINE_PREFIX);
     }
     else
     {
         /* No include files, just print the line number */
 
-        FlPrintFile (FileId, "%8d....", Gbl_SourceLine);
+        FlPrintFile (FileId, "%8u%s", Gbl_SourceLine,
+            ASL_LISTING_LINE_PREFIX);
     }
 
-    /* Read one line (up to a newline or EOF) */
+    /* Read the rest of this line (up to a newline or EOF) */
 
-    while (FlReadFile (ASL_FILE_SOURCE_OUTPUT, &FileByte, 1) == AE_OK)
+    do
     {
         if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
         {
@@ -838,13 +861,15 @@ LsWriteOneSourceLine (
         if (FileByte == '\n')
         {
             /*
+             * This line has been completed.
              * Check if an error occurred on this source line during the compile.
              * If so, we print the error message after the source line.
              */
             LsCheckException (Gbl_SourceLine, FileId);
             return (1);
         }
-    }
+
+    } while (FlReadFile (ASL_FILE_SOURCE_OUTPUT, &FileByte, 1) == AE_OK);
 
     /* EOF on the input file was reached */
 
