@@ -340,7 +340,8 @@ AcpiOsRedirectOutput (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Formatted output
+ * DESCRIPTION: Formatted output. Note: very similar to AcpiOsVprintf
+ *              (performance), changes should be tracked in both functions.
  *
  *****************************************************************************/
 
@@ -350,11 +351,36 @@ AcpiOsPrintf (
     ...)
 {
     va_list                 Args;
+    UINT8                   Flags;
 
 
-    va_start (Args, Fmt);
-    AcpiOsVprintf (Fmt, Args);
-    va_end (Args);
+    Flags = AcpiGbl_DbOutputFlags;
+    if (Flags & ACPI_DB_REDIRECTABLE_OUTPUT)
+    {
+        /* Output is directable to either a file (if open) or the console */
+
+        if (AcpiGbl_DebugFile)
+        {
+            /* Output file is open, send the output there */
+
+            va_start (Args, Fmt);
+            vfprintf (AcpiGbl_DebugFile, Fmt, Args);
+            va_end (Args);
+        }
+        else
+        {
+            /* No redirection, send output to console (once only!) */
+
+            Flags |= ACPI_DB_CONSOLE_OUTPUT;
+        }
+    }
+
+    if (Flags & ACPI_DB_CONSOLE_OUTPUT)
+    {
+        va_start (Args, Fmt);
+        vfprintf (AcpiGbl_OutputFile, Fmt, Args);
+        va_end (Args);
+    }
 }
 
 
@@ -367,7 +393,9 @@ AcpiOsPrintf (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Formatted output with argument list pointer
+ * DESCRIPTION: Formatted output with argument list pointer. Note: very
+ *              similar to AcpiOsPrintf, changes should be tracked in both
+ *              functions.
  *
  *****************************************************************************/
 
