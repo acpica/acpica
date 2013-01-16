@@ -613,7 +613,7 @@ AcpiDsBuildInternalPackageObj (
         }
 
         ACPI_INFO ((AE_INFO,
-            "Actual Package length (%u) is larger than NumElements field (%u), truncated\n",
+            "Actual Package length (%u) is larger than NumElements field (%u), truncated",
             i, ElementCount));
     }
     else if (i < ElementCount)

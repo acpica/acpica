@@ -222,7 +222,7 @@ AcpiHwLowSetGpe (
         break;
 
     default:
-        ACPI_ERROR ((AE_INFO, "Invalid GPE Action, %u\n", Action));
+        ACPI_ERROR ((AE_INFO, "Invalid GPE Action, %u", Action));
         return (AE_BAD_PARAMETER);
     }
 
