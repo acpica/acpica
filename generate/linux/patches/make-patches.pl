@@ -125,6 +125,13 @@ system("echo [make-patches] Creating the Linux patches");
 system("echo [make-patches] Creating the mbox patch file");
 &make_mbox;
 
+
+# Purify the linux patches, one per file
+
+system("echo [make-patches] Purifying the Linux patches");
+&purify_patches;
+
+
 # Remove the temporary files/dirs 
 
 #system("rm -rf $git_root acpi_include bin drivers patches.git git.log");
@@ -230,6 +237,20 @@ sub make_mbox
     
     &walk_git_log (count_patches);
     &walk_git_log (make_mbox_entry);
+}
+
+
+#
+# This function purifies the linux patches from the GIT log file.
+# Requires the git log and the git patch set (both created by git)
+#
+sub purify_patches
+{
+    $linux_patch_count = 0;
+    $patch_num = 0;
+
+    &walk_git_log (count_patches);
+    &walk_git_log (purify_patch);
 }
 
 
@@ -375,3 +396,41 @@ sub make_patch
     system("rm -f diff.linux");
 }
 
+
+
+#
+# This function purifies a linux patch from the corresponding
+# GIT patch against the original ACPICA source tree
+#
+sub purify_patch
+{
+    my $patch_name = @_[0];
+    my $date = @_[1];
+    my $file_name = @_[2];
+    my $short_log = @_[3];
+    my $long_log = @_[4];
+
+
+
+    open(PTCH, $file_name) or return;
+    close(PTCH);
+
+    $patch_num++;
+
+    # Append the header
+
+    system("rm -f temp");
+    open(PTCH, ">temp") or die ("Cannot open temp for writing");
+    print(PTCH "From nobody $mbox_date\n");
+    print(PTCH "Subject: [Patch $patch_num/$linux_patch_count] ACPICA: $short_log\n");
+    print(PTCH "From: $patch_from\n");
+    print(PTCH "Date: $date\n");
+    print(PTCH "\n");
+    close(PTCH);
+
+    # Append the full patch to the purified file
+
+    system("cat $file_name >> temp");
+    system("cat temp > $file_name");
+    system("rm -f temp");
+}
