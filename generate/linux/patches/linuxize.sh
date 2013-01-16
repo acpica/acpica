@@ -17,6 +17,11 @@ if [ ! -z "$version" ] ; then
 	)
 fi
 
+# Generate latest version of the acpisrc utility
+
+echo "[linuxize.sh] Generate acpisrc utility from source"
+sh acpisrc.sh $git_root > /dev/null
+
 rm -rf new.linux
 echo "[linuxize.sh] Coverting format (AcpiSrc)..."
 bin/acpisrc -ldqy $git_root/source new.linux > /dev/null

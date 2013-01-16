@@ -85,11 +85,6 @@ system("rm -rf $git_root; git clone $git_repo $git_root > /dev/null");
 system("cd $git_root; old_release=`git log --pretty=format:%H $old_release~1..$old_release`");
 system("cd $git_root; new_release=`git log --pretty=format:%H $new_release~1..$new_release`");
 
-# Generate latest version of the acpisrc utility
-
-system("echo [make-patches] Generate acpisrc utility from source");
-system("sh acpisrc.sh $git_root > /dev/null");
-
 
 # Create GIT log
 
