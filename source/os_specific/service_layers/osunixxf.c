@@ -156,6 +156,10 @@ AeTableOverride (
 
 typedef void* (*PTHREAD_CALLBACK) (void *);
 
+/* Buffer used by AcpiOsVprintf */
+
+#define ACPI_VPRINTF_BUFFER_SIZE        512
+
 /* Apple-specific */
 
 #ifdef __APPLE__
@@ -405,7 +409,20 @@ AcpiOsVprintf (
     va_list                 Args)
 {
     UINT8                   Flags;
+    char                    Buffer[ACPI_VPRINTF_BUFFER_SIZE];
 
+
+    /*
+     * We build the output string in a local buffer because we may be
+     * outputting the buffer twice. Using vfprintf is problematic because
+     * some implementations modify the args pointer/structure during
+     * execution. Thus, we use the local buffer for portability.
+     *
+     * Note: Since this module is intended for use by the various ACPICA
+     * utilities/applications, we can safely declare the buffer on the stack.
+     * Also, This function is used for relatively small error messages only.
+     */
+    vsnprintf (Buffer, ACPI_VPRINTF_BUFFER_SIZE, Fmt, Args);
 
     Flags = AcpiGbl_DbOutputFlags;
     if (Flags & ACPI_DB_REDIRECTABLE_OUTPUT)
@@ -416,7 +433,7 @@ AcpiOsVprintf (
         {
             /* Output file is open, send the output there */
 
-            vfprintf (AcpiGbl_DebugFile, Fmt, Args);
+            fputs (Buffer, AcpiGbl_DebugFile);
         }
         else
         {
@@ -428,7 +445,7 @@ AcpiOsVprintf (
 
     if (Flags & ACPI_DB_CONSOLE_OUTPUT)
     {
-        vfprintf (AcpiGbl_OutputFile, Fmt, Args);
+        fputs (Buffer, AcpiGbl_OutputFile);
     }
 }
 
