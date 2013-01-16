@@ -122,6 +122,7 @@
 #define ACPI_USE_SYSTEM_CLIBRARY
 #define ACPI_USE_DO_WHILE_0
 #define ACPI_FLUSH_CPU_CACHE()
+
 /*
  * This is needed since sem_timedwait does not appear to work properly
  * on cygwin (always hangs forever).
@@ -160,5 +161,14 @@
 /* Cygwin uses GCC */
 
 #include "acgcc.h"
+
+
+/*
+ * The vsnprintf function is defined by c99, but earlier versions of
+ * cygwin/gcc do not enable this prototype when the -ansi flag is set.
+ *
+ * int
+ * vsnprintf (char *s, size_t n, const char *format, va_list ap);
+ */
 
 #endif /* __ACCYGWIN_H__ */
