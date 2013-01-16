@@ -120,14 +120,12 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-/* mkdir/strlwr support */
+/* mkdir support */
 
 #ifdef WIN32
 #include <direct.h>
-
 #else
 #define mkdir(x) mkdir(x, 0770)
-char * strlwr(char* str);
 #endif
 
 
@@ -474,3 +472,7 @@ AsInsertCarriageReturns (
 void
 AsConvertToLineFeeds (
     char                    *Buffer);
+
+void
+AsStrlwr (
+    char                    *SrcString);
