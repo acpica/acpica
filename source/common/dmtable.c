@@ -547,6 +547,8 @@ AcpiDmDumpDataTable (
             {
                 AcpiOsPrintf ("\n**** Unknown ACPI table type [%4.4s]\n\n",
                     Table->Signature);
+                fprintf (stderr, "Unknown ACPI table signature [%4.4s], decoding header only\n",
+                    Table->Signature);
             }
         }
         else if (TableData->TableHandler)
