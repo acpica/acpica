@@ -1096,6 +1096,8 @@ GetCrs:
 
         /* Execute _SRS with the resource list */
 
+        AcpiOsPrintf ("Evaluating _SRS\n");
+
         Status = AcpiSetCurrentResources (Node, &ReturnBuffer);
         if (ACPI_FAILURE (Status))
         {
@@ -1186,8 +1188,8 @@ Cleanup:
  * FUNCTION:    AcpiDbDisplayResources
  *
  * PARAMETERS:  ObjectArg           - String object name or object pointer.
- *                                    "*" means "display resources for all
- *                                    devices"
+ *                                    NULL or "*" means "display resources for
+ *                                    all devices"
  *
  * RETURN:      None
  *
@@ -1207,7 +1209,7 @@ AcpiDbDisplayResources (
 
     /* Asterisk means "display resources for all devices" */
 
-    if (!ACPI_STRCMP (ObjectArg, "*"))
+    if (!ObjectArg || (!ACPI_STRCMP (ObjectArg, "*")))
     {
         (void) AcpiWalkNamespace (ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT,
                     ACPI_UINT32_MAX, AcpiDbDeviceResources, NULL, NULL, NULL);
