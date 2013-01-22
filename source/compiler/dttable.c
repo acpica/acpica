@@ -2046,6 +2046,31 @@ DtCompileUefi (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileVrtc
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile VRTC.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileVrtc (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+
+
+    Status = DtCompileTwoSubtables (List,
+                 AcpiDmTableInfoVrtc, AcpiDmTableInfoVrtc0);
+    return (Status);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileWdat
  *
  * PARAMETERS:  List                - Current field list pointer

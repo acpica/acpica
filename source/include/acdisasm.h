@@ -415,6 +415,8 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSrat2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTcpa[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTpm2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoUefi[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoVrtc[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoVrtc0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoWaet[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoWdat[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoWdat0[];
@@ -558,6 +560,10 @@ AcpiDmDumpSlit (
 
 void
 AcpiDmDumpSrat (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpVrtc (
     ACPI_TABLE_HEADER       *Table);
 
 void

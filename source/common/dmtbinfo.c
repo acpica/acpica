@@ -267,6 +267,7 @@
 #define ACPI_SRAT0_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_SRAT_CPU_AFFINITY,f)
 #define ACPI_SRAT1_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_SRAT_MEM_AFFINITY,f)
 #define ACPI_SRAT2_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_SRAT_X2APIC_CPU_AFFINITY,f)
+#define ACPI_VRTC0_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_VRTC_ENTRY,f)
 #define ACPI_WDAT0_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_WDAT_ENTRY,f)
 
 /*
@@ -2101,6 +2102,27 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoUefi[] =
 {
     {ACPI_DMT_UUID,     ACPI_UEFI_OFFSET (Identifier[0]),           "UUID Identifier", 0},
     {ACPI_DMT_UINT16,   ACPI_UEFI_OFFSET (DataOffset),              "Data Offset", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
+ * VRTC - Virtual Real Time Clock Table
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoVrtc[] =
+{
+    ACPI_DMT_TERMINATOR
+};
+
+/* VRTC Subtables - VRTC Entry */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoVrtc0[] =
+{
+    {ACPI_DMT_GAS,      ACPI_VRTC0_OFFSET (PhysicalAddress),        "PhysicalAddress", 0},
+    {ACPI_DMT_UINT32,   ACPI_VRTC0_OFFSET (Irq),                    "IRQ", 0},
     ACPI_DMT_TERMINATOR
 };
 

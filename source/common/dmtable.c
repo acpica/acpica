@@ -384,6 +384,7 @@ ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_TCPA, AcpiDmTableInfoTcpa,    NULL,           NULL,           TemplateTcpa,   "Trusted Computing Platform Alliance table"},
     {ACPI_SIG_TPM2, AcpiDmTableInfoTpm2,    NULL,           NULL,           TemplateTpm2,   "Trusted Platform Module hardware interface table"},
     {ACPI_SIG_UEFI, AcpiDmTableInfoUefi,    NULL,           DtCompileUefi,  TemplateUefi,   "UEFI Boot Optimization Table"},
+    {ACPI_SIG_VRTC, AcpiDmTableInfoVrtc,    AcpiDmDumpVrtc, DtCompileVrtc,  TemplateVrtc,   "Virtual Real-Time Clock Table"},
     {ACPI_SIG_WAET, AcpiDmTableInfoWaet,    NULL,           NULL,           TemplateWaet,   "Windows ACPI Emulated Devices Table"},
     {ACPI_SIG_WDAT, NULL,                   AcpiDmDumpWdat, DtCompileWdat,  TemplateWdat,   "Watchdog Action Table"},
     {ACPI_SIG_WDDT, AcpiDmTableInfoWddt,    NULL,           NULL,           TemplateWddt,   "Watchdog Description Table"},

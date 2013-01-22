@@ -2450,6 +2450,58 @@ NextSubTable:
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpVrtc
+ *
+ * PARAMETERS:  Table               - A VRTC table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a VRTC
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpVrtc (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    UINT32                  Offset = sizeof (ACPI_TABLE_VRTC);
+    ACPI_VRTC_ENTRY         *SubTable;
+
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoVrtc);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    /* Sub-tables */
+
+    SubTable = ACPI_ADD_PTR (ACPI_VRTC_ENTRY, Table, Offset);
+    while (Offset < Table->Length)
+    {
+        /* Common sub-table header */
+
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Table->Length, Offset, SubTable,
+                    sizeof (ACPI_VRTC_ENTRY), AcpiDmTableInfoVrtc0);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        /* Point to next sub-table */
+
+        Offset += sizeof (ACPI_VRTC_ENTRY);
+        SubTable = ACPI_ADD_PTR (ACPI_VRTC_ENTRY, SubTable, sizeof (ACPI_VRTC_ENTRY));
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpWdat
  *
  * PARAMETERS:  Table               - A WDAT table
