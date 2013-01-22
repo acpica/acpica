@@ -251,6 +251,7 @@
 #define ACPI_MPST1_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_MPST_DATA_HDR,f)
 #define ACPI_MPST2_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_MPST_POWER_DATA,f)
 #define ACPI_MSCT0_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_MSCT_PROXIMITY,f)
+#define ACPI_MTMR0_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_MTMR_ENTRY,f)
 #define ACPI_PCCT0_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_PCCT_SUBSPACE,f)
 #define ACPI_PMTT0_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_PMTT_SOCKET,f)
 #define ACPI_PMTT1_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_PMTT_CONTROLLER,f)
@@ -1711,6 +1712,28 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMsct0[] =
     {ACPI_DMT_UINT32,   ACPI_MSCT0_OFFSET (RangeEnd),               "Domain Range End", 0},
     {ACPI_DMT_UINT32,   ACPI_MSCT0_OFFSET (ProcessorCapacity),      "Processor Capacity", 0},
     {ACPI_DMT_UINT64,   ACPI_MSCT0_OFFSET (MemoryCapacity),         "Memory Capacity", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
+ * MTMR - MID Timer Table
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMtmr[] =
+{
+    ACPI_DMT_TERMINATOR
+};
+
+/* MTMR Subtables - MTMR Entry */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoMtmr0[] =
+{
+    {ACPI_DMT_GAS,      ACPI_MTMR0_OFFSET (PhysicalAddress),        "PhysicalAddress", 0},
+    {ACPI_DMT_UINT32,   ACPI_MTMR0_OFFSET (Frequency),              "Frequency", 0},
+    {ACPI_DMT_UINT32,   ACPI_MTMR0_OFFSET (Irq),                    "IRQ", 0},
     ACPI_DMT_TERMINATOR
 };
 

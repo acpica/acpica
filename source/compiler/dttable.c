@@ -1484,6 +1484,31 @@ DtCompileMsct (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileMtmr
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile MTMR.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileMtmr (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+
+
+    Status = DtCompileTwoSubtables (List,
+                 AcpiDmTableInfoMtmr, AcpiDmTableInfoMtmr0);
+    return (Status);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompilePmtt
  *
  * PARAMETERS:  List                - Current field list pointer

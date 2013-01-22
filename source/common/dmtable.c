@@ -371,6 +371,7 @@ ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_MCHI, AcpiDmTableInfoMchi,    NULL,           NULL,           TemplateMchi,   "Management Controller Host Interface table"},
     {ACPI_SIG_MPST, AcpiDmTableInfoMpst,    AcpiDmDumpMpst, DtCompileMpst,  TemplateMpst,   "Memory Power State Table"},
     {ACPI_SIG_MSCT, NULL,                   AcpiDmDumpMsct, DtCompileMsct,  TemplateMsct,   "Maximum System Characteristics Table"},
+    {ACPI_SIG_MTMR, NULL,                   AcpiDmDumpMtmr, DtCompileMtmr,  TemplateMtmr,   "MID Timer Table"},
     {ACPI_SIG_PCCT, NULL,                   AcpiDmDumpPcct, NULL,           NULL,           "Platform Communications Channel Table"},
     {ACPI_SIG_PMTT, NULL,                   AcpiDmDumpPmtt, DtCompilePmtt,  TemplatePmtt,   "Platform Memory Topology Table"},
     {ACPI_SIG_RSDT, NULL,                   AcpiDmDumpRsdt, DtCompileRsdt,  TemplateRsdt,   "Root System Description Table"},

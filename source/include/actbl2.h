@@ -146,6 +146,7 @@
 #define ACPI_SIG_IVRS           "IVRS"      /* I/O Virtualization Reporting Structure */
 #define ACPI_SIG_MCFG           "MCFG"      /* PCI Memory Mapped Configuration table */
 #define ACPI_SIG_MCHI           "MCHI"      /* Management Controller Host Interface table */
+#define ACPI_SIG_MTMR           "MTMR"      /* MID Timer table */
 #define ACPI_SIG_SLIC           "SLIC"      /* Software Licensing Description Table */
 #define ACPI_SIG_SPCR           "SPCR"      /* Serial Port Console Redirection table */
 #define ACPI_SIG_SPMI           "SPMI"      /* Server Platform Management Interface table */
@@ -1052,6 +1053,34 @@ typedef struct acpi_table_mchi
     UINT8                   PciFunction;
 
 } ACPI_TABLE_MCHI;
+
+
+/*******************************************************************************
+ *
+ * MTMR - MID Timer Table
+ *        Version 1
+ *
+ * Conforms to "Simple Firmware Interface Specification",
+ * Draft 0.8.2, Oct 19, 2010
+ * NOTE: The ACPI MTMR is equivalent to the SFI MTMR table.
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_mtmr
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+
+} ACPI_TABLE_MTMR;
+
+/* MTMR entry */
+
+typedef struct acpi_mtmr_entry
+{
+    ACPI_GENERIC_ADDRESS    PhysicalAddress;
+    UINT32                  Frequency;
+    UINT32                  Irq;
+
+} ACPI_MTMR_ENTRY;
 
 
 /*******************************************************************************
