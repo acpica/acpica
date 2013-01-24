@@ -167,7 +167,6 @@ AcpiOsCreateCache (
     /* Populate the cache object and return it */
 
     ACPI_MEMSET (Cache, 0, sizeof (ACPI_MEMORY_LIST));
-    Cache->LinkOffset = 8;
     Cache->ListName   = CacheName;
     Cache->ObjectSize = ObjectSize;
     Cache->MaxDepth   = MaxDepth;
@@ -193,7 +192,7 @@ ACPI_STATUS
 AcpiOsPurgeCache (
     ACPI_MEMORY_LIST        *Cache)
 {
-    char                    *Next;
+    void                    *Next;
     ACPI_STATUS             Status;
 
 
@@ -217,8 +216,7 @@ AcpiOsPurgeCache (
     {
         /* Delete and unlink one cached state object */
 
-        Next = *(ACPI_CAST_INDIRECT_PTR (char,
-                    &(((char *) Cache->ListHead)[Cache->LinkOffset])));
+        Next = ((ACPI_OBJECT_COMMON *) Cache->ListHead)->NextObject;
         ACPI_FREE (Cache->ListHead);
 
         Cache->ListHead = Next;
@@ -323,8 +321,7 @@ AcpiOsReleaseObject (
 
         /* Put the object at the head of the cache list */
 
-        * (ACPI_CAST_INDIRECT_PTR (char,
-            &(((char *) Object)[Cache->LinkOffset]))) = Cache->ListHead;
+        ((ACPI_OBJECT_COMMON *) Object)->NextObject = Cache->ListHead;
         Cache->ListHead = Object;
         Cache->CurrentDepth++;
 
@@ -379,8 +376,7 @@ AcpiOsAcquireObject (
         /* There is an object available, use it */
 
         Object = Cache->ListHead;
-        Cache->ListHead = *(ACPI_CAST_INDIRECT_PTR (char,
-                                &(((char *) Object)[Cache->LinkOffset])));
+        Cache->ListHead = ((ACPI_OBJECT_COMMON *) Object)->NextObject;
 
         Cache->CurrentDepth--;
 

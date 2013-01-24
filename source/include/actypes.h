@@ -1298,7 +1298,6 @@ typedef struct acpi_memory_list
     UINT16                          ObjectSize;
     UINT16                          MaxDepth;
     UINT16                          CurrentDepth;
-    UINT16                          LinkOffset;
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
 
