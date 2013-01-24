@@ -37,12 +37,12 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "/acpica/generate/msvc/AcpiSubsystem"
-# PROP Intermediate_Dir "/acpica/generate/msvc/AcpiSubsystem"
+# PROP Output_Dir "AcpiSubsystem"
+# PROP Intermediate_Dir "AcpiSubsystem"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /Gr /MT /Za /W4 /O1 /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "NDEBUG" /D "_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
-# SUBTRACT CPP /YX
+# ADD CPP /nologo /W3 /Gi /Ob1 /Gf /I "..\..\source\include" /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_CONSOLE" /D "__STDC__" /D "ACPI_LIBRARY" /FD /c
+# SUBTRACT CPP /Fr /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -50,13 +50,12 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /out:"/acpica/generate/msvc/AcpiSubsystem\AcpiSubsystem.lib"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
-PreLink_Desc=Checking existence of acpi/libraries directory
+PreLink_Desc=Checking existence of acpica/libraries directory
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
-PostBuild_Desc=Copy library to libraries
-PostBuild_Cmds=copy AcpiSubsystem\acpisubsystem.lib ..\..\libraries\acpica.lib	dir ..\..\libraries\acpica.lib
+PostBuild_Desc=Copying libacpica to libraries...
+PostBuild_Cmds=copy acpisubsystem\acpisubsystem.lib ..\..\libraries\acpica.lib
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "AcpiSubsystem - Win32 Debug"
@@ -68,11 +67,12 @@ PostBuild_Cmds=copy AcpiSubsystem\acpisubsystem.lib ..\..\libraries\acpica.lib	d
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "/acpica/generate/msvc/AcpiSubsystemDebug"
-# PROP Intermediate_Dir "/acpica/generate/msvc/AcpiSubsystemDebug"
+# PROP Output_Dir "AcpiSubsystemDebug"
+# PROP Intermediate_Dir "AcpiSubsystemDebug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /Gr /MTd /Za /W4 /Zi /Oa /Og /Os /Oy /Gf /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "ACPI_FULL_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
+# ADD CPP /nologo /MTd /W3 /Gm /Gi /Zi /Od /Oy /Ob1 /Gf /I "..\..\source\include" /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_CONSOLE" /D "__STDC__" /D "ACPI_LIBRARY" /FD /c
+# SUBTRACT CPP /Fr
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409
 BSC32=bscmake.exe
@@ -80,13 +80,13 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiSubsystemDebug/AcpiSubsystem.bsc"
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"/acpica/generate/msvc/AcpiSubsystemDebug\AcpiSubsystem.lib"
+# ADD LIB32 /nologo
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
-PreLink_Desc=Checking existence of acpi/libraries directory
+PreLink_Desc=Checking existence of acpica/libraries directory
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
-PostBuild_Desc=Copy library to libraries
-PostBuild_Cmds=copy AcpiSubsystemDebug\acpisubsystem.lib ..\..\libraries\acpica_dbg.lib	dir ..\..\libraries\acpica_dbg.lib
+PostBuild_Desc=Copying libacpica to libraries...
+PostBuild_Cmds=copy acpisubsystemdebug\acpisubsystem.lib ..\..\libraries\acpica_dbg.lib
 # End Special Build Tool
 
 !ENDIF 
@@ -103,7 +103,15 @@ PostBuild_Cmds=copy AcpiSubsystemDebug\acpisubsystem.lib ..\..\libraries\acpica_
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utaddress.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utalloc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utbuffer.c
 # End Source File
 # Begin Source File
 
@@ -123,11 +131,23 @@ SOURCE=..\..\source\components\utilities\utdebug.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utdecode.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utdelete.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\uterror.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\uteval.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utexcep.c
 # End Source File
 # Begin Source File
 
@@ -168,11 +188,27 @@ SOURCE=..\..\source\components\utilities\utosi.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utownerid.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utpredef.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utresrc.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utstate.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utstring.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\uttrack.c
 # End Source File
 # Begin Source File
 
@@ -182,6 +218,14 @@ SOURCE=..\..\source\components\utilities\utxface.c
 
 SOURCE=..\..\source\components\utilities\utxferror.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utxfinit.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utxfmutex.c
+# End Source File
 # End Group
 # Begin Group "Events"
 
@@ -189,6 +233,10 @@ SOURCE=..\..\source\components\utilities\utxferror.c
 # Begin Source File
 
 SOURCE=..\..\source\components\events\evevent.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\events\evglock.c
 # End Source File
 # Begin Source File
 
@@ -205,6 +253,10 @@ SOURCE=..\..\source\components\events\evgpeinit.c
 # Begin Source File
 
 SOURCE=..\..\source\components\events\evgpeutil.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\events\evhandler.c
 # End Source File
 # Begin Source File
 
@@ -248,6 +300,10 @@ SOURCE=..\..\source\components\hardware\hwacpi.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\hardware\hwesleep.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\hardware\hwgpe.c
 # End Source File
 # Begin Source File
@@ -275,6 +331,10 @@ SOURCE=..\..\source\components\hardware\hwvalid.c
 
 SOURCE=..\..\source\components\hardware\hwxface.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\hardware\hwxfsleep.c
+# End Source File
 # End Group
 # Begin Group "Namespace"
 
@@ -286,6 +346,14 @@ SOURCE=..\..\source\components\namespace\nsaccess.c
 # Begin Source File
 
 SOURCE=..\..\source\components\namespace\nsalloc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\namespace\nsarguments.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\namespace\nsconvert.c
 # End Source File
 # Begin Source File
 
@@ -322,6 +390,10 @@ SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsparse.c
 # Begin Source File
 
 SOURCE=..\..\source\components\namespace\nspredef.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\namespace\nsprepkg.c
 # End Source File
 # Begin Source File
 
@@ -377,6 +449,10 @@ SOURCE=..\..\source\components\resources\rsdump.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\resources\rsdumpinfo.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\resources\rsinfo.c
 # End Source File
 # Begin Source File
@@ -401,6 +477,10 @@ SOURCE=..\..\source\components\resources\rsmisc.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\resources\rsserial.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\resources\rsutils.c
 # End Source File
 # Begin Source File
@@ -411,6 +491,10 @@ SOURCE=..\..\source\components\resources\rsxface.c
 # Begin Group "Tables"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\components\tables\tbdata.c
+# End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\tables\tbfadt.c
@@ -425,11 +509,19 @@ SOURCE=..\..\source\components\tables\tbinstal.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\tables\tbprint.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\tables\tbutils.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\tables\tbxface.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\tables\tbxfload.c
 # End Source File
 # Begin Source File
 
@@ -442,6 +534,10 @@ SOURCE=..\..\source\components\tables\tbxfroot.c
 # Begin Source File
 
 SOURCE=..\..\source\COMPONENTS\Disassembler\dmbuffer.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\disassembler\dmdeferred.c
 # End Source File
 # Begin Source File
 
@@ -465,6 +561,10 @@ SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrcl.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\disassembler\dmresrcl2.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrcs.c
 # End Source File
 # Begin Source File
@@ -482,6 +582,10 @@ SOURCE=..\..\source\COMPONENTS\Disassembler\dmwalk.c
 # Begin Source File
 
 SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbcmds.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\debugger\dbconvert.c
 # End Source File
 # Begin Source File
 
@@ -505,7 +609,19 @@ SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbinput.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\debugger\dbmethod.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\debugger\dbnames.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbstats.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\debugger\dbtest.c
 # End Source File
 # Begin Source File
 
@@ -621,6 +737,14 @@ SOURCE=..\..\source\components\executer\exutils.c
 # PROP Default_Filter "*.c"
 # Begin Source File
 
+SOURCE=..\..\source\components\dispatcher\dsargs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dscontrol.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\dispatcher\dsfield.c
 # End Source File
 # Begin Source File
@@ -657,6 +781,10 @@ SOURCE=..\..\source\components\dispatcher\dswload.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\dispatcher\dswload2.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\dispatcher\dswscope.c
 # End Source File
 # Begin Source File
@@ -677,7 +805,15 @@ SOURCE=..\..\source\components\parser\psloop.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\parser\psobject.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\parser\psopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psopinfo.c
 # End Source File
 # Begin Source File
 
@@ -704,10 +840,26 @@ SOURCE=..\..\source\components\parser\pswalk.c
 SOURCE=..\..\source\components\parser\psxface.c
 # End Source File
 # End Group
+# Begin Group "Common"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\common\ahids.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\cmfsize.c
+# End Source File
+# End Group
 # End Group
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=..\..\source\include\acbuffer.h
+# End Source File
 # Begin Source File
 
 SOURCE=..\..\source\include\accommon.h
@@ -826,6 +978,10 @@ SOURCE=..\..\source\Include\acresrc.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\include\acrestyp.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\include\acstruct.h
 # End Source File
 # Begin Source File
@@ -843,6 +999,10 @@ SOURCE=..\..\source\Include\actbl1.h
 # Begin Source File
 
 SOURCE=..\..\source\Include\actbl2.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\include\actbl3.h
 # End Source File
 # Begin Source File
 
@@ -865,9 +1025,5 @@ SOURCE=..\..\source\Include\amlcode.h
 SOURCE=..\..\source\INCLUDE\amlresrc.h
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=.\AcpiSubsystem.plg
-# End Source File
 # End Target
 # End Project

@@ -38,13 +38,13 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "/acpica/generate/msvc/AslCompiler"
-# PROP Intermediate_Dir "/acpica/generate/msvc/AslCompiler"
+# PROP Output_Dir "AslCompiler"
+# PROP Intermediate_Dir "AslCompiler"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /c
-# ADD CPP /nologo /Za /W4 /O2 /I "$(OutDir)..\\" /I "..\..\source\Include" /I "$(OutDir)" /I "..\..\source\compiler" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /FR /FD /c
-# SUBTRACT CPP /X /YX
+# ADD CPP /nologo /W3 /Gi /Ob1 /Gf /I "..\..\source\include" /I "..\..\source\compiler" /I "." /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_CONSOLE" /D "__STDC__" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /FD /c
+# SUBTRACT CPP /X /Fr /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
@@ -54,12 +54,14 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo /o"/acpica/generate/msvc/AslCompiler/AslCompiler.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /machine:I386 /pdb:"/acpica/generate/msvc/AslCompiler/AslCompiler.pdb" /out:"/acpica/generate/msvc/AslCompiler/AslCompiler.exe" /pdb:"/acpica/generate/msvc/AslCompiler/AslCompiler.pdb"
+# ADD LINK32 kernel32.lib advapi32.lib setargv.obj /nologo /machine:I386
+# SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
+PreLink_Desc=Checking existence of acpica/libraries directory
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
-PostBuild_Desc=Copy iasl.exe to libraries directory
-PostBuild_Cmds=copy AslCompiler\aslcompiler.exe \acpica\Libraries\iasl.exe	dir \acpica\libraries\iasl.exe
+PostBuild_Desc=Copying iasl to libraries...
+PostBuild_Cmds=copy aslcompiler\aslcompiler.exe ..\..\libraries\iasl.exe
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
@@ -71,12 +73,13 @@ PostBuild_Cmds=copy AslCompiler\aslcompiler.exe \acpica\Libraries\iasl.exe	dir \
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "/acpica/generate/msvc/AslCompilerDebug"
-# PROP Intermediate_Dir "/acpica/generate/msvc/AslCompilerDebug"
+# PROP Output_Dir "AslCompilerDebug"
+# PROP Intermediate_Dir "AslCompilerDebug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
-# ADD CPP /nologo /Za /W4 /Gi /Zi /Ot /Oa /Oy /Gf /I "$(OutDir)..\\" /I "..\..\source\Include" /I "$(OutDir)" /I "..\..\source\compiler" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /FR /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /Gi /Zi /Od /Oy /Ob1 /Gf /I "..\..\source\include" /I "..\..\source\compiler" /I "." /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_CONSOLE" /D "__STDC__" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /FD /GZ /c
+# SUBTRACT CPP /Fr
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
@@ -86,12 +89,13 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo /o"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:no /debug /machine:I386 /nodefaultlib:"libcmt.lib" /pdbtype:sept /pdb:"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.pdb" /out:"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.exe" /pdb:"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.pdb" /map:"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.map"
+# ADD LINK32 kernel32.lib advapi32.lib setargv.obj /nologo /pdb:none /debug /machine:I386 /nodefaultlib:"libcmt.lib" /pdb:"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.pdb"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
+PreLink_Desc=Checking existence of acpica/libraries directory
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
-PostBuild_Desc=Copy iasldebug.exe to libraries directory
-PostBuild_Cmds=copy AslCompilerDebug\aslcompiler.exe \acpica\Libraries\iasldebug.exe	dir \acpica\libraries\iasldebug.exe
+PostBuild_Desc=Copying iasl to libraries...
+PostBuild_Cmds=copy aslcompilerdebug\aslcompiler.exe ..\..\\libraries\iasl_dbg.exe
 # End Special Build Tool
 
 !ENDIF 
@@ -108,7 +112,15 @@ PostBuild_Cmds=copy AslCompilerDebug\aslcompiler.exe \acpica\Libraries\iasldebug
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utaddress.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utalloc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utbuffer.c
 # End Source File
 # Begin Source File
 
@@ -124,11 +136,31 @@ SOURCE=..\..\source\components\utilities\utdebug.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utdecode.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utdelete.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\uterror.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utexcep.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utfileio.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utglobal.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\uthex.c
 # End Source File
 # Begin Source File
 
@@ -156,11 +188,31 @@ SOURCE=..\..\source\components\utilities\utobject.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utownerid.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utpredef.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utprint.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utresrc.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utstate.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utstring.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utuuid.c
 # End Source File
 # Begin Source File
 
@@ -224,6 +276,14 @@ SOURCE=..\..\source\compiler\aslanalyze.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\compiler\aslascii.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslbtypes.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\compiler\aslcodegen.c
 # End Source File
 # Begin Source File
@@ -236,6 +296,10 @@ SOURCE=..\..\source\compiler\aslerror.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\compiler\aslfileio.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\compiler\aslfiles.c
 # End Source File
 # Begin Source File
@@ -244,11 +308,19 @@ SOURCE=..\..\source\compiler\aslfold.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\compiler\aslhex.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\compiler\asllength.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\compiler\asllisting.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\asllistsup.c
 # End Source File
 # Begin Source File
 
@@ -268,6 +340,34 @@ SOURCE=..\..\source\compiler\aslmap.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\compiler\aslmapenter.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslmapoutput.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslmaputils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslmessages.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslmethod.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslnamesp.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\asloffset.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\compiler\aslopcodes.c
 # End Source File
 # Begin Source File
@@ -280,7 +380,23 @@ SOURCE=..\..\source\compiler\aslopt.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\compiler\asloptions.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\compiler\aslpredef.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslprepkg.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslprintf.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslprune.c
 # End Source File
 # Begin Source File
 
@@ -312,6 +428,10 @@ SOURCE=..\..\source\compiler\aslrestype2q.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\compiler\aslrestype2s.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\compiler\aslrestype2w.c
 # End Source File
 # Begin Source File
@@ -334,6 +454,18 @@ SOURCE=..\..\source\compiler\asltree.c
 
 SOURCE=..\..\source\compiler\aslutils.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\asluuid.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslwalks.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslxref.c
+# End Source File
 # End Group
 # Begin Group "Common"
 
@@ -349,6 +481,22 @@ SOURCE=..\..\source\common\adisasm.c
 # Begin Source File
 
 SOURCE=..\..\source\common\adwalk.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\ahids.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\ahpredef.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\ahuuids.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\cmfsize.c
 # End Source File
 # Begin Source File
 
@@ -376,6 +524,10 @@ SOURCE=..\..\source\common\getopt.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\os_specific\service_layers\oslibcfs.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\os_specific\service_layers\oswindir.c
 # End Source File
 # Begin Source File
@@ -394,67 +546,27 @@ SOURCE=..\..\source\os_specific\service_layers\oswinxf.c
 # PROP Default_Filter "*.c, *.h"
 # Begin Source File
 
-SOURCE=.\AslCompiler\AslCompiler.l.c
-
-!IF  "$(CFG)" == "AslCompiler - Win32 Release"
-
-# ADD CPP /W3
-
-!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
-
-# PROP Exclude_From_Build 1
-# ADD CPP /W3
-
-!ENDIF 
-
+SOURCE=.\aslcompiler.l.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\AslCompiler\AslCompiler.y.c
-
-!IF  "$(CFG)" == "AslCompiler - Win32 Release"
-
-# ADD CPP /W3
-
-!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
-
-# PROP Exclude_From_Build 1
-# ADD CPP /W3
-
-!ENDIF 
-
+SOURCE=.\aslcompiler.y.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\AslCompilerDebug\AslCompilerDebug.l.c
-
-!IF  "$(CFG)" == "AslCompiler - Win32 Release"
-
-# PROP Exclude_From_Build 1
-# ADD CPP /W3
-
-!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
-
-# ADD CPP /W3
-
-!ENDIF 
-
+SOURCE=.\dtparser.l.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\AslCompilerDebug\AslCompilerDebug.y.c
+SOURCE=.\dtparser.y.c
+# End Source File
+# Begin Source File
 
-!IF  "$(CFG)" == "AslCompiler - Win32 Release"
+SOURCE=.\prparser.l.c
+# End Source File
+# Begin Source File
 
-# PROP Exclude_From_Build 1
-# ADD CPP /W3
-
-!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
-
-# ADD CPP /W3
-
-!ENDIF 
-
+SOURCE=.\prparser.y.c
 # End Source File
 # End Group
 # Begin Group "Disassembler"
@@ -467,6 +579,14 @@ SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbfileio.c
 # Begin Source File
 
 SOURCE=..\..\source\COMPONENTS\disassembler\dmbuffer.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\disassembler\dmcstyle.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\disassembler\dmdeferred.c
 # End Source File
 # Begin Source File
 
@@ -490,6 +610,10 @@ SOURCE=..\..\source\COMPONENTS\disassembler\dmresrcl.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\disassembler\dmresrcl2.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\COMPONENTS\disassembler\dmresrcs.c
 # End Source File
 # Begin Source File
@@ -506,6 +630,10 @@ SOURCE=..\..\source\COMPONENTS\disassembler\dmwalk.c
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\source\components\tables\tbdata.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\tables\tbfadt.c
 # End Source File
 # Begin Source File
@@ -514,11 +642,19 @@ SOURCE=..\..\source\COMPONENTS\tables\tbinstal.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\tables\tbprint.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\COMPONENTS\tables\tbutils.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\tables\tbxface.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\tables\tbxfload.c
 # End Source File
 # End Group
 # Begin Group "Interpreter"
@@ -610,6 +746,22 @@ SOURCE=..\..\source\components\executer\exutils.c
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\source\compiler\prexpress.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\prmacros.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\prscan.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\prutils.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\parser\psargs.c
 # End Source File
 # Begin Source File
@@ -618,7 +770,15 @@ SOURCE=..\..\source\components\parser\psloop.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\parser\psobject.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\parser\psopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psopinfo.c
 # End Source File
 # Begin Source File
 
@@ -646,6 +806,14 @@ SOURCE=..\..\source\components\parser\pswalk.c
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\source\components\dispatcher\dsargs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dscontrol.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\dispatcher\dsfield.c
 # End Source File
 # Begin Source File
@@ -670,6 +838,10 @@ SOURCE=..\..\source\components\dispatcher\dswload.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\dispatcher\dswload2.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\dispatcher\dswscope.c
 # End Source File
 # Begin Source File
@@ -683,6 +855,10 @@ SOURCE=..\..\source\components\dispatcher\dswstate.c
 # Begin Source File
 
 SOURCE=..\..\source\compiler\dtcompile.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\dtexpress.c
 # End Source File
 # Begin Source File
 
@@ -753,25 +929,24 @@ SOURCE=../../source/compiler/aslcompiler.l
 !IF  "$(CFG)" == "AslCompiler - Win32 Release"
 
 # PROP Ignore_Default_Tool 1
-# Begin Custom Build - Building iASL Lexer  from $(InputPath) to AslCompiler/$(InputName).l.c
-ProjDir=.
+# Begin Custom Build - Lexing $(InputPath)...
 InputPath=../../source/compiler/aslcompiler.l
 InputName=aslcompiler
 
-"AslCompiler/$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	..\..\Tools_3rd_party\BisonFlex\flex.exe -PAslCompiler -i -s -o$(ProjDir)/AslCompiler/$(InputName).l.c $(InputPath)
+"$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	flex -i -PAslCompiler -o$(InputName).l.c $(InputPath)
 
 # End Custom Build
 
 !ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
 
 # PROP Ignore_Default_Tool 1
-# Begin Custom Build - Building iASL Lexer  from $(InputPath) to AslCompilerDebug/$(InputName)Debug.l.c
+# Begin Custom Build - Lexing $(InputPath)...
 InputPath=../../source/compiler/aslcompiler.l
 InputName=aslcompiler
 
-"AslCompilerDebug/$(InputName)Debug.l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	..\..\Tools_3rd_party\BisonFlex\flex.exe -PAslCompiler -i -s -oAslCompilerDebug/$(InputName)Debug.l.c $(InputPath)
+"$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	flex -i -PAslCompiler -o$(InputName).l.c $(InputPath)
 
 # End Custom Build
 
@@ -785,37 +960,205 @@ SOURCE=../../source/compiler/aslcompiler.y
 !IF  "$(CFG)" == "AslCompiler - Win32 Release"
 
 # PROP Ignore_Default_Tool 1
-# Begin Custom Build - Building iASL Parser from $(InputPath) to AslCompiler/$(InputName).y.c
-ProjDir=.
+# Begin Custom Build - Yaccing $(InputPath)...
 InputPath=../../source/compiler/aslcompiler.y
 InputName=aslcompiler
 
 BuildCmds= \
-	..\..\Tools_3rd_party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(ProjDir)/AslCompiler/$(InputName).y.c $(InputPath)
+	bison -d -l -pAslCompiler -v $(InputPath) -vd -o$(InputName).y.c
 
-"AslCompiler/$(InputName).y.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+"$(InputName).y.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
    $(BuildCmds)
 
-"AslCompiler/$(InputName).y.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+"$(InputName).y.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
    $(BuildCmds)
 # End Custom Build
 
 !ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
 
 # PROP Ignore_Default_Tool 1
-# Begin Custom Build - Building iASL Parser from $(InputPath) to AslCompilerDebug/$(InputName)Debug.y.c
+# Begin Custom Build - Yaccing $(InputPath)...
 InputPath=../../source/compiler/aslcompiler.y
 InputName=aslcompiler
 
 BuildCmds= \
-	..\..\Tools_3rd_party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -oAslCompilerDebug/$(InputName).y.c $(InputPath) \
-	move AslCompilerDebug\$(InputName).y.c AslCompilerDebug\$(InputName)Debug.y.c \
-	
+	bison -d -l -pAslCompiler -v $(InputPath) -vd -o$(InputName).y.c
 
-"AslCompilerDebug/$(InputName)Debug.y.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+"$(InputName).y.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
    $(BuildCmds)
 
-"AslCompilerDebug/$(InputName).y.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+"$(InputName).y.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslparser.y
+
+!IF  "$(CFG)" == "AslCompiler - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build - Macro-processing $(InputPath)...
+InputDir=\workspace\acpica\source\compiler
+InputPath=..\..\source\compiler\aslparser.y
+
+"$(InputDir)/aslcompiler.y" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	m4 -P -I$(InputDir) $(InputPath) > $(InputDir)/aslcompiler.y
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build - Macro-processing $(InputPath)...
+InputDir=\workspace\acpica\source\compiler
+InputPath=..\..\source\compiler\aslparser.y
+
+"$(InputDir)/aslcompiler.y" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	m4 -P -I$(InputDir) $(InputPath) > $(InputDir)/aslcompiler.y
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\dtparser.l
+
+!IF  "$(CFG)" == "AslCompiler - Win32 Release"
+
+# Begin Custom Build - Lexing $(InputPath)...
+InputPath=..\..\source\compiler\dtparser.l
+InputName=dtparser
+
+"$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	flex -PDtParser -o$(InputName).l.c $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build - Lexing $(InputPath)...
+InputPath=..\..\source\compiler\dtparser.l
+InputName=dtparser
+
+"$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	flex -PDtParser -o$(InputName).l.c $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\dtparser.y
+
+!IF  "$(CFG)" == "AslCompiler - Win32 Release"
+
+# Begin Custom Build - Yaccing $(InputPath)...
+InputPath=..\..\source\compiler\dtparser.y
+InputName=dtparser
+
+BuildCmds= \
+	bison -d -l -pDtParser -v $(InputPath) -vd -o$(InputName).y.c
+
+"$(InputName).y.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"$(InputName).y.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build - Yaccing $(InputPath)...
+InputPath=..\..\source\compiler\dtparser.y
+InputName=dtparser
+
+BuildCmds= \
+	bison -d -l -pDtParser -v $(InputPath) -vd -o$(InputName).y.c
+
+"$(InputName).y.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"$(InputName).y.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\prparser.l
+
+!IF  "$(CFG)" == "AslCompiler - Win32 Release"
+
+# Begin Custom Build - Lexing $(InputPath)...
+InputPath=..\..\source\compiler\prparser.l
+InputName=prparser
+
+"$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	flex -PPrParser -o$(InputName).l.c $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build - Lexing $(InputPath)...
+InputPath=..\..\source\compiler\prparser.l
+InputName=prparser
+
+"$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	flex -PPrParser -o$(InputName).l.c $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\prparser.y
+
+!IF  "$(CFG)" == "AslCompiler - Win32 Release"
+
+# Begin Custom Build - Yaccing $(InputPath)...
+InputPath=..\..\source\compiler\prparser.y
+InputName=prparser
+
+BuildCmds= \
+	bison -d -l -pPrParser -v $(InputPath) -vd -o$(InputName).y.c
+
+"$(InputName).y.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"$(InputName).y.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build - Yaccing $(InputPath)...
+InputPath=..\..\source\compiler\prparser.y
+InputName=prparser
+
+BuildCmds= \
+	bison -d -l -pPrParser -v $(InputPath) -vd -o$(InputName).y.c
+
+"$(InputName).y.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"$(InputName).y.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
    $(BuildCmds)
 # End Custom Build
 

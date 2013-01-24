@@ -37,13 +37,13 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "/acpica/generate/msvc/AcpiExec"
-# PROP Intermediate_Dir "/acpica/generate/msvc/AcpiExec"
+# PROP Output_Dir "AcpiExec"
+# PROP Intermediate_Dir "AcpiExec"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /Gr /MT /Za /W4 /O2 /Ob0 /I "..\..\source\include" /D "NDEBUG" /D "ACPI_EXEC_APP" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /FR /FD /c
-# SUBTRACT CPP /YX
+# ADD CPP /nologo /MT /W3 /Gi /Ob1 /Gf /I "..\..\source\include" /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_CONSOLE" /D "__STDC__" /D "ACPI_EXEC_APP" /FD /c
+# SUBTRACT CPP /Fr /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -51,14 +51,14 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /map /machine:I386
+# ADD LINK32 kernel32.lib advapi32.lib setargv.obj /nologo /subsystem:console /map /machine:I386
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
-PreLink_Desc=Checking existence of acpi/libraries directory
+PreLink_Desc=Checking existence of acpica/libraries directory
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
-PostBuild_Desc=Copy acpiexec.exe to libraries
-PostBuild_Cmds=copy acpiexec\acpiexec.exe ..\..\libraries	dir ..\..\libraries\acpiexec.exe
+PostBuild_Desc=Copying acpiexec to libraries...
+PostBuild_Cmds=copy acpiexec\acpiexec.exe ..\..\libraries\acpiexec.exe
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
@@ -70,12 +70,13 @@ PostBuild_Cmds=copy acpiexec\acpiexec.exe ..\..\libraries	dir ..\..\libraries\ac
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "/acpica/generate/msvc/AcpiExecDebug"
-# PROP Intermediate_Dir "/acpica/generate/msvc/AcpiExecDebug"
+# PROP Output_Dir "AcpiExecDebug"
+# PROP Intermediate_Dir "AcpiExecDebug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /Gr /MTd /Za /W4 /Zi /Oa /Os /Oy /Gf /I "..\..\source\include" /D "_DEBUG" /D "WIN32_LEAN_AND_MEAN" /D "ACPI_EXEC_APP" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /Gi /Zi /Od /Oy /Ob1 /Gf /I "..\..\source\include" /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_CONSOLE" /D "__STDC__" /D "ACPI_EXEC_APP" /FD /GZ /c
+# SUBTRACT CPP /Fr
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -83,14 +84,14 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiExecDebug/AcpiExec.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 libcmtd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /map /debug /machine:I386 /nodefaultlib:"libcmt.lib" /pdbtype:sept /out:"/acpica/generate/msvc/AcpiExecDebug/AcpiExec.exe"
+# ADD LINK32 libcmtd.lib kernel32.lib advapi32.lib setargv.obj /nologo /subsystem:console /incremental:no /map /debug /machine:I386 /nodefaultlib:"libcmt.lib" /pdbtype:sept
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
-PreLink_Desc=Checking existence of acpi/libraries directory
+PreLink_Desc=Checking existence of acpica/libraries directory
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
-PostBuild_Desc=Copy acpiexecdebug.exe to libraries
-PostBuild_Cmds=copy acpiexecdebug\acpiexec.exe ..\..\libraries\acpiexecdebug.exe	dir ..\..\libraries\acpiexecdebug.exe
+PostBuild_Desc=Copying acpiexec to libraries...
+PostBuild_Cmds=copy acpiexecdebug\acpiexec.exe ..\..\libraries\acpiexec_dbg.exe
 # End Special Build Tool
 
 !ENDIF 
@@ -107,7 +108,15 @@ PostBuild_Cmds=copy acpiexecdebug\acpiexec.exe ..\..\libraries\acpiexecdebug.exe
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utaddress.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utalloc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utbuffer.c
 # End Source File
 # Begin Source File
 
@@ -123,7 +132,15 @@ SOURCE=..\..\source\components\utilities\utdebug.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utdecode.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utdelete.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\uterror.c
 # End Source File
 # Begin Source File
 
@@ -131,7 +148,19 @@ SOURCE=..\..\source\components\utilities\uteval.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utexcep.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utfileio.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utglobal.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\uthex.c
 # End Source File
 # Begin Source File
 
@@ -177,6 +206,18 @@ SOURCE=..\..\source\components\utilities\utosi.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utownerid.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utpredef.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utprint.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utresrc.c
 # End Source File
 # Begin Source File
@@ -185,7 +226,15 @@ SOURCE=..\..\source\components\utilities\utstate.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utstring.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\uttrack.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utuuid.c
 # End Source File
 # Begin Source File
 
@@ -194,6 +243,14 @@ SOURCE=..\..\source\components\utilities\utxface.c
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utxferror.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utxfinit.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utxfmutex.c
 # End Source File
 # End Group
 # Begin Group "Namespace"
@@ -206,6 +263,14 @@ SOURCE=..\..\source\components\namespace\nsaccess.c
 # Begin Source File
 
 SOURCE=..\..\source\components\namespace\nsalloc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\namespace\nsarguments.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\namespace\nsconvert.c
 # End Source File
 # Begin Source File
 
@@ -242,6 +307,10 @@ SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsparse.c
 # Begin Source File
 
 SOURCE=..\..\source\components\namespace\nspredef.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\namespace\nsprepkg.c
 # End Source File
 # Begin Source File
 
@@ -285,6 +354,10 @@ SOURCE=..\..\source\components\hardware\hwacpi.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\hardware\hwesleep.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\hardware\hwgpe.c
 # End Source File
 # Begin Source File
@@ -307,6 +380,10 @@ SOURCE=..\..\source\components\hardware\hwvalid.c
 
 SOURCE=..\..\source\components\hardware\hwxface.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\hardware\hwxfsleep.c
+# End Source File
 # End Group
 # Begin Group "Events"
 
@@ -314,6 +391,10 @@ SOURCE=..\..\source\components\hardware\hwxface.c
 # Begin Source File
 
 SOURCE=..\..\source\components\events\evevent.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\events\evglock.c
 # End Source File
 # Begin Source File
 
@@ -330,6 +411,10 @@ SOURCE=..\..\source\components\events\evgpeinit.c
 # Begin Source File
 
 SOURCE=..\..\source\components\events\evgpeutil.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\events\evhandler.c
 # End Source File
 # Begin Source File
 
@@ -378,6 +463,10 @@ SOURCE=..\..\source\tools\acpiexec\aehandlers.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\tools\acpiexec\aeinitfile.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\Tools\AcpiExec\aemain.c
 
 !IF  "$(CFG)" == "AcpiExec - Win32 Release"
@@ -393,6 +482,10 @@ SOURCE=..\..\source\Tools\AcpiExec\aemain.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\tools\acpiexec\aeregion.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\tools\acpiexec\aetables.c
 # End Source File
 # End Group
@@ -402,6 +495,10 @@ SOURCE=..\..\source\tools\acpiexec\aetables.c
 # Begin Source File
 
 SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbcmds.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\debugger\dbconvert.c
 # End Source File
 # Begin Source File
 
@@ -425,7 +522,19 @@ SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbinput.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\debugger\dbmethod.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\debugger\dbnames.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbstats.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\debugger\dbtest.c
 # End Source File
 # Begin Source File
 
@@ -441,6 +550,10 @@ SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbxface.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\source\components\tables\tbdata.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\tables\tbfadt.c
 # End Source File
 # Begin Source File
@@ -453,11 +566,19 @@ SOURCE=..\..\source\components\tables\tbinstal.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\tables\tbprint.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\tables\tbutils.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\tables\tbxface.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\tables\tbxfload.c
 # End Source File
 # Begin Source File
 
@@ -469,7 +590,23 @@ SOURCE=..\..\source\components\tables\tbxfroot.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\source\common\ahids.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\ahuuids.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\cmfsize.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\common\getopt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\os_specific\service_layers\oslibcfs.c
 # End Source File
 # Begin Source File
 
@@ -502,6 +639,10 @@ SOURCE=..\..\source\components\resources\rsdump.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\resources\rsdumpinfo.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\resources\rsinfo.c
 # End Source File
 # Begin Source File
@@ -526,6 +667,10 @@ SOURCE=..\..\source\components\resources\rsmisc.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\resources\rsserial.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\resources\rsutils.c
 # End Source File
 # Begin Source File
@@ -539,6 +684,14 @@ SOURCE=..\..\source\components\resources\rsxface.c
 # Begin Source File
 
 SOURCE=..\..\source\COMPONENTS\Disassembler\dmbuffer.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\disassembler\dmcstyle.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\disassembler\dmdeferred.c
 # End Source File
 # Begin Source File
 
@@ -559,6 +712,10 @@ SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrc.c
 # Begin Source File
 
 SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrcl.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\disassembler\dmresrcl2.c
 # End Source File
 # Begin Source File
 
@@ -686,7 +843,15 @@ SOURCE=..\..\source\components\parser\psloop.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\parser\psobject.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\parser\psopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psopinfo.c
 # End Source File
 # Begin Source File
 
@@ -716,6 +881,14 @@ SOURCE=..\..\source\components\parser\psxface.c
 # Begin Group "Dispatcher"
 
 # PROP Default_Filter ".c"
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsargs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dscontrol.c
+# End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\dispatcher\dsfield.c
@@ -751,6 +924,10 @@ SOURCE=..\..\source\components\dispatcher\dswexec.c
 # Begin Source File
 
 SOURCE=..\..\source\components\dispatcher\dswload.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dswload2.c
 # End Source File
 # Begin Source File
 

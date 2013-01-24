@@ -37,13 +37,13 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "/acpica/generate/msvc/AcpiNames"
-# PROP Intermediate_Dir "/acpica/generate/msvc/AcpiNames"
+# PROP Output_Dir "AcpiNames"
+# PROP Intermediate_Dir "AcpiNames"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /Gr /Za /W4 /Gi /GX /O2 /I "..\..\source\Include" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_APPLICATION" /D "ACPI_SINGLE_THREADED" /D "ACPI_DEBUGGER" /FR /FD /c
-# SUBTRACT CPP /YX
+# ADD CPP /nologo /W3 /Gi /Ob1 /Gf /I "..\..\source\include" /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_CONSOLE" /D "__STDC__" /D "ACPI_NAMES_APP" /FD /c
+# SUBTRACT CPP /Fr /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -51,10 +51,13 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
+# ADD LINK32 kernel32.lib advapi32.lib /nologo /subsystem:console /machine:I386
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
-PostBuild_Cmds=copy AcpiNames\AcpiNames.exe ..\..\libraries
+PreLink_Desc=Checking existence of acpica/libraries directory
+PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
+PostBuild_Desc=Copying acpinames to libraries...
+PostBuild_Cmds=copy acpinames\acpinames.exe ..\..\libraries\acpinames.exe
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "AcpiNames - Win32 Debug"
@@ -66,12 +69,12 @@ PostBuild_Cmds=copy AcpiNames\AcpiNames.exe ..\..\libraries
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "/acpica/generate/msvc/AcpiNamesDebug"
-# PROP Intermediate_Dir "/acpica/generate/msvc/AcpiNamesDebug"
+# PROP Output_Dir "AcpiNamesDebug"
+# PROP Intermediate_Dir "AcpiNamesDebug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /Gr /Za /W4 /Gm /Gi /GX /ZI /Od /I "..\..\source\Include" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_APPLICATION" /D "ACPI_SINGLE_THREADED" /D "ACPI_DEBUGGER" /FR /FD /GZ /c
-# SUBTRACT CPP /YX
+# ADD CPP /nologo /W3 /Gm /Gi /Zi /Od /Ob1 /I "..\..\source\include" /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_CONSOLE" /D "__STDC__" /D "ACPI_NAMES_APP" /FD /GZ /c
+# SUBTRACT CPP /Fr /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -79,10 +82,13 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 kernel32.lib advapi32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
-PostBuild_Cmds=copy AcpiNamesdebug\AcpiNames.exe ..\..\libraries\AcpiNamesdebug.exe
+PreLink_Desc=Checking existence of acpica/libraries directory
+PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
+PostBuild_Desc=Copying acpinames to libraries...
+PostBuild_Cmds=copy acpinamesdebug\acpinames.exe ..\..\libraries\acpinames_dbg.exe
 # End Special Build Tool
 
 !ENDIF 
@@ -99,7 +105,15 @@ PostBuild_Cmds=copy AcpiNamesdebug\AcpiNames.exe ..\..\libraries\AcpiNamesdebug.
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\source\common\cmfsize.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\common\getopt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\os_specific\service_layers\oslibcfs.c
 # End Source File
 # Begin Source File
 
@@ -112,7 +126,15 @@ SOURCE=..\..\source\os_specific\service_layers\oswinxf.c
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utaddress.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utalloc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utbuffer.c
 # End Source File
 # Begin Source File
 
@@ -120,11 +142,47 @@ SOURCE=..\..\source\components\utilities\utcache.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utdebug.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utdecode.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utdelete.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\uterror.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\uteval.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utexcep.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utfileio.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utglobal.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\uthex.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utids.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utinit.c
 # End Source File
 # Begin Source File
 
@@ -162,7 +220,23 @@ SOURCE=..\..\source\components\utilities\utosi.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utownerid.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utprint.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utstate.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utstring.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utuuid.c
 # End Source File
 # Begin Source File
 
@@ -172,10 +246,18 @@ SOURCE=..\..\source\components\utilities\utxface.c
 
 SOURCE=..\..\source\components\utilities\utxferror.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utxfinit.c
+# End Source File
 # End Group
 # Begin Group "Tables"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\components\tables\tbdata.c
+# End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\tables\tbfadt.c
@@ -190,11 +272,19 @@ SOURCE=..\..\source\components\tables\tbinstal.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\tables\tbprint.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\tables\tbutils.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\tables\tbxface.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\tables\tbxfload.c
 # End Source File
 # Begin Source File
 
@@ -211,6 +301,10 @@ SOURCE=..\..\source\components\namespace\nsaccess.c
 # Begin Source File
 
 SOURCE=..\..\source\components\namespace\nsalloc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\namespace\nsconvert.c
 # End Source File
 # Begin Source File
 
@@ -274,7 +368,15 @@ SOURCE=..\..\source\components\parser\psloop.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\parser\psobject.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\parser\psopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psopinfo.c
 # End Source File
 # Begin Source File
 
@@ -334,6 +436,10 @@ SOURCE=..\..\source\components\dispatcher\dswload.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\dispatcher\dswload2.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\dispatcher\dswscope.c
 # End Source File
 # Begin Source File
@@ -350,6 +456,14 @@ SOURCE=..\..\source\components\executer\excreate.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\executer\exdump.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exmutex.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\executer\exnames.c
 # End Source File
 # Begin Source File
@@ -362,7 +476,19 @@ SOURCE=..\..\source\components\executer\exresolv.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\executer\exsystem.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\executer\exutils.c
+# End Source File
+# End Group
+# Begin Group "Executer"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exconvrt.c
 # End Source File
 # End Group
 # Begin Source File
