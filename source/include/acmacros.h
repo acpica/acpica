@@ -397,8 +397,10 @@
  * where a pointer to an object of type ACPI_OPERAND_OBJECT can also
  * appear. This macro is used to distinguish them.
  *
- * The "Descriptor" field is the first field in both structures.
+ * The "DescriptorType" field is the second field in both structures.
  */
+#define ACPI_GET_DESCRIPTOR_PTR(d)      (((ACPI_DESCRIPTOR *)(void *)(d))->Common.CommonPointer)
+#define ACPI_SET_DESCRIPTOR_PTR(d, o)   (((ACPI_DESCRIPTOR *)(void *)(d))->Common.CommonPointer = o)
 #define ACPI_GET_DESCRIPTOR_TYPE(d)     (((ACPI_DESCRIPTOR *)(void *)(d))->Common.DescriptorType)
 #define ACPI_SET_DESCRIPTOR_TYPE(d, t)  (((ACPI_DESCRIPTOR *)(void *)(d))->Common.DescriptorType = t)
 

@@ -216,7 +216,7 @@ AcpiOsPurgeCache (
     {
         /* Delete and unlink one cached state object */
 
-        Next = ((ACPI_OBJECT_COMMON *) Cache->ListHead)->NextObject;
+        Next = ACPI_GET_DESCRIPTOR_PTR (Cache->ListHead);
         ACPI_FREE (Cache->ListHead);
 
         Cache->ListHead = Next;
@@ -321,7 +321,7 @@ AcpiOsReleaseObject (
 
         /* Put the object at the head of the cache list */
 
-        ((ACPI_OBJECT_COMMON *) Object)->NextObject = Cache->ListHead;
+        ACPI_SET_DESCRIPTOR_PTR (Object, Cache->ListHead);
         Cache->ListHead = Object;
         Cache->CurrentDepth++;
 
@@ -376,7 +376,7 @@ AcpiOsAcquireObject (
         /* There is an object available, use it */
 
         Object = Cache->ListHead;
-        Cache->ListHead = ((ACPI_OBJECT_COMMON *) Object)->NextObject;
+        Cache->ListHead = ACPI_GET_DESCRIPTOR_PTR (Object);
 
         Cache->CurrentDepth--;
 
