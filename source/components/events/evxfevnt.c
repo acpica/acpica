@@ -154,6 +154,13 @@ AcpiEnable (
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
+    /* If the Hardware Reduced flag is set, machine is always in acpi mode */
+
+    if (AcpiGbl_ReducedHardware)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
     /* Check current mode */
 
     if (AcpiHwGetMode() == ACPI_SYS_MODE_ACPI)
@@ -202,6 +209,13 @@ AcpiDisable (
 
     ACPI_FUNCTION_TRACE (AcpiDisable);
 
+
+    /* If the Hardware Reduced flag is set, machine is always in acpi mode */
+
+    if (AcpiGbl_ReducedHardware)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
 
     if (AcpiHwGetMode() == ACPI_SYS_MODE_LEGACY)
     {
