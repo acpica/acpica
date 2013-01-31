@@ -778,10 +778,11 @@ AcpiUtShortDivide (
     UINT64                  *OutQuotient,
     UINT32                  *OutRemainder);
 
+
 /*
  * utmisc
  */
-const char *
+const ACPI_EXCEPTION_INFO *
 AcpiUtValidateException (
     ACPI_STATUS             Status);
 
