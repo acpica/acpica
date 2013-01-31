@@ -117,8 +117,10 @@
 #define __ACEXCEP_H__
 
 
+/* This module contains all possible exception codes for ACPI_STATUS */
+
 /*
- * Exceptions returned by external ACPI interfaces
+ * Exception code classes
  */
 #define AE_CODE_ENVIRONMENTAL           0x0000
 #define AE_CODE_PROGRAMMER              0x1000
@@ -128,7 +130,18 @@
 #define AE_CODE_MAX                     0x4000
 #define AE_CODE_MASK                    0xF000
 
+/*
+ * Macros to insert the exception code classes
+ */
+#define EXCEP_ENV(code)                 ((ACPI_STATUS) (code | AE_CODE_ENVIRONMENTAL))
+#define EXCEP_PGM(code)                 ((ACPI_STATUS) (code | AE_CODE_PROGRAMMER))
+#define EXCEP_TBL(code)                 ((ACPI_STATUS) (code | AE_CODE_ACPI_TABLES))
+#define EXCEP_AML(code)                 ((ACPI_STATUS) (code | AE_CODE_AML))
+#define EXCEP_CTL(code)                 ((ACPI_STATUS) (code | AE_CODE_CONTROL))
 
+/*
+ * Success is always zero, failure is non-zero
+ */
 #define ACPI_SUCCESS(a)                 (!(a))
 #define ACPI_FAILURE(a)                 (a)
 
@@ -138,34 +151,34 @@
 /*
  * Environmental exceptions
  */
-#define AE_ERROR                        (ACPI_STATUS) (0x0001 | AE_CODE_ENVIRONMENTAL)
-#define AE_NO_ACPI_TABLES               (ACPI_STATUS) (0x0002 | AE_CODE_ENVIRONMENTAL)
-#define AE_NO_NAMESPACE                 (ACPI_STATUS) (0x0003 | AE_CODE_ENVIRONMENTAL)
-#define AE_NO_MEMORY                    (ACPI_STATUS) (0x0004 | AE_CODE_ENVIRONMENTAL)
-#define AE_NOT_FOUND                    (ACPI_STATUS) (0x0005 | AE_CODE_ENVIRONMENTAL)
-#define AE_NOT_EXIST                    (ACPI_STATUS) (0x0006 | AE_CODE_ENVIRONMENTAL)
-#define AE_ALREADY_EXISTS               (ACPI_STATUS) (0x0007 | AE_CODE_ENVIRONMENTAL)
-#define AE_TYPE                         (ACPI_STATUS) (0x0008 | AE_CODE_ENVIRONMENTAL)
-#define AE_NULL_OBJECT                  (ACPI_STATUS) (0x0009 | AE_CODE_ENVIRONMENTAL)
-#define AE_NULL_ENTRY                   (ACPI_STATUS) (0x000A | AE_CODE_ENVIRONMENTAL)
-#define AE_BUFFER_OVERFLOW              (ACPI_STATUS) (0x000B | AE_CODE_ENVIRONMENTAL)
-#define AE_STACK_OVERFLOW               (ACPI_STATUS) (0x000C | AE_CODE_ENVIRONMENTAL)
-#define AE_STACK_UNDERFLOW              (ACPI_STATUS) (0x000D | AE_CODE_ENVIRONMENTAL)
-#define AE_NOT_IMPLEMENTED              (ACPI_STATUS) (0x000E | AE_CODE_ENVIRONMENTAL)
-#define AE_SUPPORT                      (ACPI_STATUS) (0x000F | AE_CODE_ENVIRONMENTAL)
-#define AE_LIMIT                        (ACPI_STATUS) (0x0010 | AE_CODE_ENVIRONMENTAL)
-#define AE_TIME                         (ACPI_STATUS) (0x0011 | AE_CODE_ENVIRONMENTAL)
-#define AE_ACQUIRE_DEADLOCK             (ACPI_STATUS) (0x0012 | AE_CODE_ENVIRONMENTAL)
-#define AE_RELEASE_DEADLOCK             (ACPI_STATUS) (0x0013 | AE_CODE_ENVIRONMENTAL)
-#define AE_NOT_ACQUIRED                 (ACPI_STATUS) (0x0014 | AE_CODE_ENVIRONMENTAL)
-#define AE_ALREADY_ACQUIRED             (ACPI_STATUS) (0x0015 | AE_CODE_ENVIRONMENTAL)
-#define AE_NO_HARDWARE_RESPONSE         (ACPI_STATUS) (0x0016 | AE_CODE_ENVIRONMENTAL)
-#define AE_NO_GLOBAL_LOCK               (ACPI_STATUS) (0x0017 | AE_CODE_ENVIRONMENTAL)
-#define AE_ABORT_METHOD                 (ACPI_STATUS) (0x0018 | AE_CODE_ENVIRONMENTAL)
-#define AE_SAME_HANDLER                 (ACPI_STATUS) (0x0019 | AE_CODE_ENVIRONMENTAL)
-#define AE_NO_HANDLER                   (ACPI_STATUS) (0x001A | AE_CODE_ENVIRONMENTAL)
-#define AE_OWNER_ID_LIMIT               (ACPI_STATUS) (0x001B | AE_CODE_ENVIRONMENTAL)
-#define AE_NOT_CONFIGURED               (ACPI_STATUS) (0x001C | AE_CODE_ENVIRONMENTAL)
+#define AE_ERROR                        EXCEP_ENV (0x0001)
+#define AE_NO_ACPI_TABLES               EXCEP_ENV (0x0002)
+#define AE_NO_NAMESPACE                 EXCEP_ENV (0x0003)
+#define AE_NO_MEMORY                    EXCEP_ENV (0x0004)
+#define AE_NOT_FOUND                    EXCEP_ENV (0x0005)
+#define AE_NOT_EXIST                    EXCEP_ENV (0x0006)
+#define AE_ALREADY_EXISTS               EXCEP_ENV (0x0007)
+#define AE_TYPE                         EXCEP_ENV (0x0008)
+#define AE_NULL_OBJECT                  EXCEP_ENV (0x0009)
+#define AE_NULL_ENTRY                   EXCEP_ENV (0x000A)
+#define AE_BUFFER_OVERFLOW              EXCEP_ENV (0x000B)
+#define AE_STACK_OVERFLOW               EXCEP_ENV (0x000C)
+#define AE_STACK_UNDERFLOW              EXCEP_ENV (0x000D)
+#define AE_NOT_IMPLEMENTED              EXCEP_ENV (0x000E)
+#define AE_SUPPORT                      EXCEP_ENV (0x000F)
+#define AE_LIMIT                        EXCEP_ENV (0x0010)
+#define AE_TIME                         EXCEP_ENV (0x0011)
+#define AE_ACQUIRE_DEADLOCK             EXCEP_ENV (0x0012)
+#define AE_RELEASE_DEADLOCK             EXCEP_ENV (0x0013)
+#define AE_NOT_ACQUIRED                 EXCEP_ENV (0x0014)
+#define AE_ALREADY_ACQUIRED             EXCEP_ENV (0x0015)
+#define AE_NO_HARDWARE_RESPONSE         EXCEP_ENV (0x0016)
+#define AE_NO_GLOBAL_LOCK               EXCEP_ENV (0x0017)
+#define AE_ABORT_METHOD                 EXCEP_ENV (0x0018)
+#define AE_SAME_HANDLER                 EXCEP_ENV (0x0019)
+#define AE_NO_HANDLER                   EXCEP_ENV (0x001A)
+#define AE_OWNER_ID_LIMIT               EXCEP_ENV (0x001B)
+#define AE_NOT_CONFIGURED               EXCEP_ENV (0x001C)
 
 #define AE_CODE_ENV_MAX                 0x001C
 
@@ -173,15 +186,15 @@
 /*
  * Programmer exceptions
  */
-#define AE_BAD_PARAMETER                (ACPI_STATUS) (0x0001 | AE_CODE_PROGRAMMER)
-#define AE_BAD_CHARACTER                (ACPI_STATUS) (0x0002 | AE_CODE_PROGRAMMER)
-#define AE_BAD_PATHNAME                 (ACPI_STATUS) (0x0003 | AE_CODE_PROGRAMMER)
-#define AE_BAD_DATA                     (ACPI_STATUS) (0x0004 | AE_CODE_PROGRAMMER)
-#define AE_BAD_HEX_CONSTANT             (ACPI_STATUS) (0x0005 | AE_CODE_PROGRAMMER)
-#define AE_BAD_OCTAL_CONSTANT           (ACPI_STATUS) (0x0006 | AE_CODE_PROGRAMMER)
-#define AE_BAD_DECIMAL_CONSTANT         (ACPI_STATUS) (0x0007 | AE_CODE_PROGRAMMER)
-#define AE_MISSING_ARGUMENTS            (ACPI_STATUS) (0x0008 | AE_CODE_PROGRAMMER)
-#define AE_BAD_ADDRESS                  (ACPI_STATUS) (0x0009 | AE_CODE_PROGRAMMER)
+#define AE_BAD_PARAMETER                EXCEP_PGM (0x0001)
+#define AE_BAD_CHARACTER                EXCEP_PGM (0x0002)
+#define AE_BAD_PATHNAME                 EXCEP_PGM (0x0003)
+#define AE_BAD_DATA                     EXCEP_PGM (0x0004)
+#define AE_BAD_HEX_CONSTANT             EXCEP_PGM (0x0005)
+#define AE_BAD_OCTAL_CONSTANT           EXCEP_PGM (0x0006)
+#define AE_BAD_DECIMAL_CONSTANT         EXCEP_PGM (0x0007)
+#define AE_MISSING_ARGUMENTS            EXCEP_PGM (0x0008)
+#define AE_BAD_ADDRESS                  EXCEP_PGM (0x0009)
 
 #define AE_CODE_PGM_MAX                 0x0009
 
@@ -189,11 +202,11 @@
 /*
  * Acpi table exceptions
  */
-#define AE_BAD_SIGNATURE                (ACPI_STATUS) (0x0001 | AE_CODE_ACPI_TABLES)
-#define AE_BAD_HEADER                   (ACPI_STATUS) (0x0002 | AE_CODE_ACPI_TABLES)
-#define AE_BAD_CHECKSUM                 (ACPI_STATUS) (0x0003 | AE_CODE_ACPI_TABLES)
-#define AE_BAD_VALUE                    (ACPI_STATUS) (0x0004 | AE_CODE_ACPI_TABLES)
-#define AE_INVALID_TABLE_LENGTH         (ACPI_STATUS) (0x0005 | AE_CODE_ACPI_TABLES)
+#define AE_BAD_SIGNATURE                EXCEP_TBL (0x0001)
+#define AE_BAD_HEADER                   EXCEP_TBL (0x0002)
+#define AE_BAD_CHECKSUM                 EXCEP_TBL (0x0003)
+#define AE_BAD_VALUE                    EXCEP_TBL (0x0004)
+#define AE_INVALID_TABLE_LENGTH         EXCEP_TBL (0x0005)
 
 #define AE_CODE_TBL_MAX                 0x0005
 
@@ -202,39 +215,39 @@
  * AML exceptions. These are caused by problems with
  * the actual AML byte stream
  */
-#define AE_AML_BAD_OPCODE               (ACPI_STATUS) (0x0001 | AE_CODE_AML)
-#define AE_AML_NO_OPERAND               (ACPI_STATUS) (0x0002 | AE_CODE_AML)
-#define AE_AML_OPERAND_TYPE             (ACPI_STATUS) (0x0003 | AE_CODE_AML)
-#define AE_AML_OPERAND_VALUE            (ACPI_STATUS) (0x0004 | AE_CODE_AML)
-#define AE_AML_UNINITIALIZED_LOCAL      (ACPI_STATUS) (0x0005 | AE_CODE_AML)
-#define AE_AML_UNINITIALIZED_ARG        (ACPI_STATUS) (0x0006 | AE_CODE_AML)
-#define AE_AML_UNINITIALIZED_ELEMENT    (ACPI_STATUS) (0x0007 | AE_CODE_AML)
-#define AE_AML_NUMERIC_OVERFLOW         (ACPI_STATUS) (0x0008 | AE_CODE_AML)
-#define AE_AML_REGION_LIMIT             (ACPI_STATUS) (0x0009 | AE_CODE_AML)
-#define AE_AML_BUFFER_LIMIT             (ACPI_STATUS) (0x000A | AE_CODE_AML)
-#define AE_AML_PACKAGE_LIMIT            (ACPI_STATUS) (0x000B | AE_CODE_AML)
-#define AE_AML_DIVIDE_BY_ZERO           (ACPI_STATUS) (0x000C | AE_CODE_AML)
-#define AE_AML_BAD_NAME                 (ACPI_STATUS) (0x000D | AE_CODE_AML)
-#define AE_AML_NAME_NOT_FOUND           (ACPI_STATUS) (0x000E | AE_CODE_AML)
-#define AE_AML_INTERNAL                 (ACPI_STATUS) (0x000F | AE_CODE_AML)
-#define AE_AML_INVALID_SPACE_ID         (ACPI_STATUS) (0x0010 | AE_CODE_AML)
-#define AE_AML_STRING_LIMIT             (ACPI_STATUS) (0x0011 | AE_CODE_AML)
-#define AE_AML_NO_RETURN_VALUE          (ACPI_STATUS) (0x0012 | AE_CODE_AML)
-#define AE_AML_METHOD_LIMIT             (ACPI_STATUS) (0x0013 | AE_CODE_AML)
-#define AE_AML_NOT_OWNER                (ACPI_STATUS) (0x0014 | AE_CODE_AML)
-#define AE_AML_MUTEX_ORDER              (ACPI_STATUS) (0x0015 | AE_CODE_AML)
-#define AE_AML_MUTEX_NOT_ACQUIRED       (ACPI_STATUS) (0x0016 | AE_CODE_AML)
-#define AE_AML_INVALID_RESOURCE_TYPE    (ACPI_STATUS) (0x0017 | AE_CODE_AML)
-#define AE_AML_INVALID_INDEX            (ACPI_STATUS) (0x0018 | AE_CODE_AML)
-#define AE_AML_REGISTER_LIMIT           (ACPI_STATUS) (0x0019 | AE_CODE_AML)
-#define AE_AML_NO_WHILE                 (ACPI_STATUS) (0x001A | AE_CODE_AML)
-#define AE_AML_ALIGNMENT                (ACPI_STATUS) (0x001B | AE_CODE_AML)
-#define AE_AML_NO_RESOURCE_END_TAG      (ACPI_STATUS) (0x001C | AE_CODE_AML)
-#define AE_AML_BAD_RESOURCE_VALUE       (ACPI_STATUS) (0x001D | AE_CODE_AML)
-#define AE_AML_CIRCULAR_REFERENCE       (ACPI_STATUS) (0x001E | AE_CODE_AML)
-#define AE_AML_BAD_RESOURCE_LENGTH      (ACPI_STATUS) (0x001F | AE_CODE_AML)
-#define AE_AML_ILLEGAL_ADDRESS          (ACPI_STATUS) (0x0020 | AE_CODE_AML)
-#define AE_AML_INFINITE_LOOP            (ACPI_STATUS) (0x0021 | AE_CODE_AML)
+#define AE_AML_BAD_OPCODE               EXCEP_AML (0x0001)
+#define AE_AML_NO_OPERAND               EXCEP_AML (0x0002)
+#define AE_AML_OPERAND_TYPE             EXCEP_AML (0x0003)
+#define AE_AML_OPERAND_VALUE            EXCEP_AML (0x0004)
+#define AE_AML_UNINITIALIZED_LOCAL      EXCEP_AML (0x0005)
+#define AE_AML_UNINITIALIZED_ARG        EXCEP_AML (0x0006)
+#define AE_AML_UNINITIALIZED_ELEMENT    EXCEP_AML (0x0007)
+#define AE_AML_NUMERIC_OVERFLOW         EXCEP_AML (0x0008)
+#define AE_AML_REGION_LIMIT             EXCEP_AML (0x0009)
+#define AE_AML_BUFFER_LIMIT             EXCEP_AML (0x000A)
+#define AE_AML_PACKAGE_LIMIT            EXCEP_AML (0x000B)
+#define AE_AML_DIVIDE_BY_ZERO           EXCEP_AML (0x000C)
+#define AE_AML_BAD_NAME                 EXCEP_AML (0x000D)
+#define AE_AML_NAME_NOT_FOUND           EXCEP_AML (0x000E)
+#define AE_AML_INTERNAL                 EXCEP_AML (0x000F)
+#define AE_AML_INVALID_SPACE_ID         EXCEP_AML (0x0010)
+#define AE_AML_STRING_LIMIT             EXCEP_AML (0x0011)
+#define AE_AML_NO_RETURN_VALUE          EXCEP_AML (0x0012)
+#define AE_AML_METHOD_LIMIT             EXCEP_AML (0x0013)
+#define AE_AML_NOT_OWNER                EXCEP_AML (0x0014)
+#define AE_AML_MUTEX_ORDER              EXCEP_AML (0x0015)
+#define AE_AML_MUTEX_NOT_ACQUIRED       EXCEP_AML (0x0016)
+#define AE_AML_INVALID_RESOURCE_TYPE    EXCEP_AML (0x0017)
+#define AE_AML_INVALID_INDEX            EXCEP_AML (0x0018)
+#define AE_AML_REGISTER_LIMIT           EXCEP_AML (0x0019)
+#define AE_AML_NO_WHILE                 EXCEP_AML (0x001A)
+#define AE_AML_ALIGNMENT                EXCEP_AML (0x001B)
+#define AE_AML_NO_RESOURCE_END_TAG      EXCEP_AML (0x001C)
+#define AE_AML_BAD_RESOURCE_VALUE       EXCEP_AML (0x001D)
+#define AE_AML_CIRCULAR_REFERENCE       EXCEP_AML (0x001E)
+#define AE_AML_BAD_RESOURCE_LENGTH      EXCEP_AML (0x001F)
+#define AE_AML_ILLEGAL_ADDRESS          EXCEP_AML (0x0020)
+#define AE_AML_INFINITE_LOOP            EXCEP_AML (0x0021)
 
 #define AE_CODE_AML_MAX                 0x0021
 
@@ -242,19 +255,19 @@
 /*
  * Internal exceptions used for control
  */
-#define AE_CTRL_RETURN_VALUE            (ACPI_STATUS) (0x0001 | AE_CODE_CONTROL)
-#define AE_CTRL_PENDING                 (ACPI_STATUS) (0x0002 | AE_CODE_CONTROL)
-#define AE_CTRL_TERMINATE               (ACPI_STATUS) (0x0003 | AE_CODE_CONTROL)
-#define AE_CTRL_TRUE                    (ACPI_STATUS) (0x0004 | AE_CODE_CONTROL)
-#define AE_CTRL_FALSE                   (ACPI_STATUS) (0x0005 | AE_CODE_CONTROL)
-#define AE_CTRL_DEPTH                   (ACPI_STATUS) (0x0006 | AE_CODE_CONTROL)
-#define AE_CTRL_END                     (ACPI_STATUS) (0x0007 | AE_CODE_CONTROL)
-#define AE_CTRL_TRANSFER                (ACPI_STATUS) (0x0008 | AE_CODE_CONTROL)
-#define AE_CTRL_BREAK                   (ACPI_STATUS) (0x0009 | AE_CODE_CONTROL)
-#define AE_CTRL_CONTINUE                (ACPI_STATUS) (0x000A | AE_CODE_CONTROL)
-#define AE_CTRL_SKIP                    (ACPI_STATUS) (0x000B | AE_CODE_CONTROL)
-#define AE_CTRL_PARSE_CONTINUE          (ACPI_STATUS) (0x000C | AE_CODE_CONTROL)
-#define AE_CTRL_PARSE_PENDING           (ACPI_STATUS) (0x000D | AE_CODE_CONTROL)
+#define AE_CTRL_RETURN_VALUE            EXCEP_CTL (0x0001)
+#define AE_CTRL_PENDING                 EXCEP_CTL (0x0002)
+#define AE_CTRL_TERMINATE               EXCEP_CTL (0x0003)
+#define AE_CTRL_TRUE                    EXCEP_CTL (0x0004)
+#define AE_CTRL_FALSE                   EXCEP_CTL (0x0005)
+#define AE_CTRL_DEPTH                   EXCEP_CTL (0x0006)
+#define AE_CTRL_END                     EXCEP_CTL (0x0007)
+#define AE_CTRL_TRANSFER                EXCEP_CTL (0x0008)
+#define AE_CTRL_BREAK                   EXCEP_CTL (0x0009)
+#define AE_CTRL_CONTINUE                EXCEP_CTL (0x000A)
+#define AE_CTRL_SKIP                    EXCEP_CTL (0x000B)
+#define AE_CTRL_PARSE_CONTINUE          EXCEP_CTL (0x000C)
+#define AE_CTRL_PARSE_PENDING           EXCEP_CTL (0x000D)
 
 #define AE_CODE_CTRL_MAX                0x000D
 
