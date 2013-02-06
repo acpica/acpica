@@ -176,6 +176,18 @@ AcpiNsMatchSimpleRepair (
  */
 static const ACPI_SIMPLE_REPAIR_INFO    AcpiObjectRepairInfo[] =
 {
+    /* Resource descriptor conversions */
+
+    { "_CRS", ACPI_RTYPE_INTEGER | ACPI_RTYPE_STRING | ACPI_RTYPE_BUFFER | ACPI_RTYPE_NONE,
+                ACPI_NOT_PACKAGE_ELEMENT,
+                AcpiNsConvertToResource },
+    { "_DMA", ACPI_RTYPE_INTEGER | ACPI_RTYPE_STRING | ACPI_RTYPE_BUFFER | ACPI_RTYPE_NONE,
+                ACPI_NOT_PACKAGE_ELEMENT,
+                AcpiNsConvertToResource },
+    { "_PRS", ACPI_RTYPE_INTEGER | ACPI_RTYPE_STRING | ACPI_RTYPE_BUFFER | ACPI_RTYPE_NONE,
+                ACPI_NOT_PACKAGE_ELEMENT,
+                AcpiNsConvertToResource },
+
     /* Unicode conversions */
 
     { "_MLS", ACPI_RTYPE_STRING, 1,

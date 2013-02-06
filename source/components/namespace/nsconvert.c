@@ -467,3 +467,87 @@ AcpiNsConvertToUnicode (
     *ReturnObject = NewObject;
     return (AE_OK);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsConvertToResource
+ *
+ * PARAMETERS:  OriginalObject      - Object to be converted
+ *              ReturnObject        - Where the new converted object is returned
+ *
+ * RETURN:      Status. AE_OK if conversion was successful
+ *
+ * DESCRIPTION: Attempt to convert a Integer object to a ResourceTemplate
+ *              Buffer.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiNsConvertToResource (
+    ACPI_OPERAND_OBJECT     *OriginalObject,
+    ACPI_OPERAND_OBJECT     **ReturnObject)
+{
+    ACPI_OPERAND_OBJECT     *NewObject;
+    UINT8                   *Buffer;
+
+
+    /*
+     * We can fix the following cases for an expected resource template:
+     * 1. No return value (interpreter slack mode is disabled)
+     * 2. A "Return (Zero)" statement
+     * 3. A "Return empty buffer" statement
+     *
+     * We will return a buffer containing a single EndTag
+     * resource descriptor.
+     */
+    if (OriginalObject)
+    {
+        switch (OriginalObject->Common.Type)
+        {
+        case ACPI_TYPE_INTEGER:
+
+            /* We can only repair an Integer==0 */
+
+            if (OriginalObject->Integer.Value)
+            {
+                return (AE_AML_OPERAND_TYPE);
+            }
+            break;
+
+        case ACPI_TYPE_BUFFER:
+
+            if (OriginalObject->Buffer.Length)
+            {
+                /* Additional checks can be added in the future */
+
+                *ReturnObject = NULL;
+                return (AE_OK);
+            }
+            break;
+
+        case ACPI_TYPE_STRING:
+        default:
+
+            return (AE_AML_OPERAND_TYPE);
+        }
+    }
+
+    /* Create the new buffer object for the resource descriptor */
+
+    NewObject = AcpiUtCreateBufferObject (2);
+    if (!NewObject)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    Buffer = ACPI_CAST_PTR (UINT8, NewObject->Buffer.Pointer);
+
+    /* Initialize the Buffer with a single EndTag descriptor */
+
+    Buffer[0] = (ACPI_RESOURCE_NAME_END_TAG | ASL_RDESC_END_TAG_SIZE);
+    Buffer[1] = 0x00;
+
+    *ReturnObject = NewObject;
+    return (AE_OK);
+}
