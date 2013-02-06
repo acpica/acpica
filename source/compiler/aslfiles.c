@@ -585,6 +585,13 @@ FlOpenMiscOutputFiles (
     char                    *Filename;
 
 
+    /* All done for disassembler */
+
+    if (Gbl_FileType == ASL_INPUT_TYPE_ACPI_TABLE)
+    {
+        return (AE_OK);
+    }
+
     /* Create/Open a hex output file if asked */
 
     if (Gbl_HexOutputFlag)

@@ -239,6 +239,7 @@ Options (
 
     printf ("\nAML Disassembler:\n");
     ACPI_OPTION ("-d  [file]",      "Disassemble or decode binary ACPI table to file (*.dsl)");
+    ACPI_OPTION ("",                "  (Optional, file type is automatically detected)");
     ACPI_OPTION ("-da [f1,f2]",     "Disassemble multiple tables from single namespace");
     ACPI_OPTION ("-db",             "Do not translate Buffers to Resource Templates");
     ACPI_OPTION ("-dc [file]",      "Disassemble AML and immediately compile it");

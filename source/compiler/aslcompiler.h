@@ -232,6 +232,10 @@ CmCleanupAndExit (
     void);
 
 ACPI_STATUS
+FlCheckForAcpiTable (
+    FILE                    *Handle);
+
+ACPI_STATUS
 FlCheckForAscii (
     FILE                    *Handle,
     char                    *Filename,
