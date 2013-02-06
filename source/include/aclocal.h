@@ -489,6 +489,7 @@ typedef struct acpi_predefined_data
     union acpi_operand_object   *ParentPackage;
     ACPI_NAMESPACE_NODE         *Node;
     UINT32                      Flags;
+    UINT32                      ReturnBtype;
     UINT8                       NodeFlags;
 
 } ACPI_PREDEFINED_DATA;
@@ -497,6 +498,22 @@ typedef struct acpi_predefined_data
 
 #define ACPI_OBJECT_REPAIRED    1
 #define ACPI_OBJECT_WRAPPED     2
+
+
+/* Return object auto-repair info */
+
+typedef ACPI_STATUS (*ACPI_OBJECT_CONVERTER) (
+    union acpi_operand_object   *OriginalObject,
+    union acpi_operand_object   **ConvertedObject);
+
+typedef struct acpi_simple_repair_info
+{
+    char                        Name[ACPI_NAME_SIZE];
+    UINT32                      UnexpectedBtypes;
+    UINT32                      PackageIndex;
+    ACPI_OBJECT_CONVERTER       ObjectConverter;
+
+} ACPI_SIMPLE_REPAIR_INFO;
 
 
 /*

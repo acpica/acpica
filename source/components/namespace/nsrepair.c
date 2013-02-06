@@ -120,6 +120,7 @@
 #include "acnamesp.h"
 #include "acinterp.h"
 #include "acpredef.h"
+#include "amlresrc.h"
 
 #define _COMPONENT          ACPI_NAMESPACE
         ACPI_MODULE_NAME    ("nsrepair")
@@ -146,6 +147,11 @@
  * Buffer  -> String
  * Buffer  -> Package of Integers
  * Package -> Package of one Package
+ *
+ * Additional conversions that are available:
+ *  Convert a null return or zero return value to an EndTag descriptor
+ *  Convert an ASCII string to a Unicode buffer
+ *
  * An incorrect standalone object is wrapped with required outer package
  *
  * Additional possible repairs:
@@ -171,10 +177,27 @@ AcpiNsConvertToBuffer (
     ACPI_OPERAND_OBJECT     *OriginalObject,
     ACPI_OPERAND_OBJECT     **ReturnObject);
 
+static const ACPI_SIMPLE_REPAIR_INFO *
+AcpiNsMatchSimpleRepair (
+    ACPI_NAMESPACE_NODE     *Node,
+    UINT32                  ReturnBtype,
+    UINT32                  PackageIndex);
+
+
+/*
+ * Special but simple repairs for some names.
+ *
+ * 2nd argument: Unexpected types that can be repaired
+ */
+static const ACPI_SIMPLE_REPAIR_INFO    AcpiObjectRepairInfo[] =
+{
+    { {0,0,0,0}, 0, 0, NULL } /* Table terminator */
+};
+
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiNsRepairObject
+ * FUNCTION:    AcpiNsSimpleRepair
  *
  * PARAMETERS:  Data                - Pointer to validation data structure
  *              ExpectedBtypes      - Object types expected
@@ -192,19 +215,58 @@ AcpiNsConvertToBuffer (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiNsRepairObject (
+AcpiNsSimpleRepair (
     ACPI_PREDEFINED_DATA    *Data,
     UINT32                  ExpectedBtypes,
     UINT32                  PackageIndex,
     ACPI_OPERAND_OBJECT     **ReturnObjectPtr)
 {
     ACPI_OPERAND_OBJECT     *ReturnObject = *ReturnObjectPtr;
-    ACPI_OPERAND_OBJECT     *NewObject;
+    ACPI_OPERAND_OBJECT     *NewObject = NULL;
     ACPI_STATUS             Status;
+    const ACPI_SIMPLE_REPAIR_INFO   *Predefined;
 
 
-    ACPI_FUNCTION_NAME (NsRepairObject);
+    ACPI_FUNCTION_NAME (NsSimpleRepair);
 
+
+    /*
+     * Special repairs for certain names that are in the repair table.
+     * Check if this name is in the list of repairable names.
+     */
+    Predefined = AcpiNsMatchSimpleRepair (Data->Node,
+        Data->ReturnBtype, PackageIndex);
+    if (Predefined)
+    {
+        if (!ReturnObject)
+        {
+            ACPI_WARN_PREDEFINED ((AE_INFO, Data->Pathname,
+                ACPI_WARN_ALWAYS, "Missing expected return value"));
+        }
+
+        Status = Predefined->ObjectConverter (ReturnObject, &NewObject);
+        if (ACPI_FAILURE (Status))
+        {
+            /* A fatal error occurred during a conversion */
+
+            ACPI_EXCEPTION ((AE_INFO, Status,
+                "During return object analysis"));
+            return (Status);
+        }
+        if (NewObject)
+        {
+            goto ObjectRepaired;
+        }
+    }
+
+    /*
+     * Do not perform simple object repair unless the return type is not
+     * expected.
+     */
+    if (Data->ReturnBtype & ExpectedBtypes)
+    {
+        return (AE_OK);
+    }
 
     /*
      * At this point, we know that the type of the returned object was not
@@ -212,6 +274,25 @@ AcpiNsRepairObject (
      * repair the object by converting it to one of the expected object
      * types for this predefined name.
      */
+
+    /*
+     * If there is no return value, check if we require a return value for
+     * this predefined name. Either one return value is expected, or none,
+     * for both methods and other objects.
+     *
+     * Exit now if there is no return object. Warning if one was expected.
+     */
+    if (!ReturnObject)
+    {
+        if (ExpectedBtypes && (!(ExpectedBtypes & ACPI_RTYPE_NONE)))
+        {
+            ACPI_WARN_PREDEFINED ((AE_INFO, Data->Pathname,
+                ACPI_WARN_ALWAYS, "Missing expected return value"));
+
+            return (AE_AML_NO_RETURN_VALUE);
+        }
+    }
+
     if (ExpectedBtypes & ACPI_RTYPE_INTEGER)
     {
         Status = AcpiNsConvertToInteger (ReturnObject, &NewObject);
@@ -309,6 +390,55 @@ ObjectRepaired:
     *ReturnObjectPtr = NewObject;
     Data->Flags |= ACPI_OBJECT_REPAIRED;
     return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiNsMatchSimpleRepair
+ *
+ * PARAMETERS:  Node                - Namespace node for the method/object
+ *              ReturnBtype         - Object type that was returned
+ *              PackageIndex        - Index of object within parent package (if
+ *                                    applicable - ACPI_NOT_PACKAGE_ELEMENT
+ *                                    otherwise)
+ *
+ * RETURN:      Pointer to entry in repair table. NULL indicates not found.
+ *
+ * DESCRIPTION: Check an object name against the repairable object list.
+ *
+ *****************************************************************************/
+
+static const ACPI_SIMPLE_REPAIR_INFO *
+AcpiNsMatchSimpleRepair (
+    ACPI_NAMESPACE_NODE     *Node,
+    UINT32                  ReturnBtype,
+    UINT32                  PackageIndex)
+{
+    const ACPI_SIMPLE_REPAIR_INFO   *ThisName;
+
+
+    /* Search info table for a repairable predefined method/object name */
+
+    ThisName = AcpiObjectRepairInfo;
+    while (ThisName->ObjectConverter)
+    {
+        if (ACPI_COMPARE_NAME (Node->Name.Ascii, ThisName->Name))
+        {
+            /* Check if we can actually repair this name/type combination */
+
+            if ((ReturnBtype & ThisName->UnexpectedBtypes) &&
+                (PackageIndex == ThisName->PackageIndex))
+            {
+                return (ThisName);
+            }
+
+            return (NULL);
+        }
+        ThisName++;
+    }
+
+    return (NULL); /* Name was not found in the repair table */
 }
 
 

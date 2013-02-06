@@ -449,7 +449,7 @@ AcpiNsGetAttachedData (
  * predefined methods/objects
  */
 ACPI_STATUS
-AcpiNsRepairObject (
+AcpiNsSimpleRepair (
     ACPI_PREDEFINED_DATA    *Data,
     UINT32                  ExpectedBtypes,
     UINT32                  PackageIndex,
