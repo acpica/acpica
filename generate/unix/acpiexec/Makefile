@@ -131,6 +131,7 @@ OBJECTS = \
 	$(OBJDIR)/hwxfsleep.o\
 	$(OBJDIR)/nsaccess.o\
 	$(OBJDIR)/nsalloc.o\
+	$(OBJDIR)/nsconvert.o\
 	$(OBJDIR)/nsdump.o\
 	$(OBJDIR)/nsdumpdv.o\
 	$(OBJDIR)/nseval.o\

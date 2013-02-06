@@ -1245,6 +1245,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\namespace\nsconvert.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\namespace\nsdump.c"
 					>
 					<FileConfiguration
