@@ -419,7 +419,18 @@ Method(m14a, 1)
 Method(m14b)
 {
 	m149(100)
-	m14a(101)
+	/*
+	 * We are forced by Windows and BIOS code to increase the maximum stall
+	 * time to 255, this is in violation of the ACPI specification.
+	 * ACPI specification requires that Stall() does not relinquish the
+	 * processor, and delays longer than 100 usec should use Sleep()
+	 * instead. We allow stall up to 255 usec for compatibility with other
+	 * interpreters and existing BIOS.
+	 *
+	 * So we remove this test from test suite.
+	 *
+	 * m14a(101)
+	 */
 }
 
 // Concatenate() when the number of result characters in string exceeds 200
@@ -707,8 +718,14 @@ Method(m154)
 
 	ConcatenateResTemplate(RT00, Local2)
 
+	/*
+	 * Note: As for there is not a separate type for ResourceTemplate,
+	 * ResourceTemplate is in fact a buffer but interpreted as
+	 * ResourceTemplate. If the buffer has no complete END_TAG descriptor,
+	 * we get AE_AML_NO_RESOURCE_END_TAG instead of AE_AML_OPERAND_TYPE.
+	 */
 	if (EXCV) {
-		CH04(ts, 0, 47, z058, 100, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(ts, 0, 71, z058, 100, 0, 0) // AE_AML_NO_RESOURCE_END_TAG
 	} else {
 		CH04(ts, 0, 0xff, z058, 100, 0, 0)
 	}
@@ -720,7 +737,7 @@ Method(m154)
 	ConcatenateResTemplate(RT00, Local2)
 
 	// Bug 189.
-	CH04(ts, 0, 47, z058, 101, 0, 0)	// AE_AML_OPERAND_TYPE
+	CH04(ts, 0, 71, z058, 101, 0, 0)	// AE_AML_NO_RESOURCE_END_TAG
 
 	// Not resource template buffer
 
@@ -729,7 +746,7 @@ Method(m154)
 	ConcatenateResTemplate(RT00, Local2)
 
 	if (EXCV) {
-		CH04(ts, 0, 47, z058, 102, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(ts, 0, 71, z058, 102, 0, 0) // AE_AML_NO_RESOURCE_END_TAG
 	} else {
 		CH04(ts, 0, 0xff, z058, 102, 0, 0)
 	}
@@ -741,7 +758,7 @@ Method(m154)
 	ConcatenateResTemplate(RT00, Local2)
 
 	// Bug 190.
-	CH04(ts, 0, 47, z058, 103, 0, 0)	// AE_AML_OPERAND_TYPE
+	CH04(ts, 0, 71, z058, 103, 0, 0)	// AE_AML_NO_RESOURCE_END_TAG
 
 	// Like resource template buffer
 
@@ -750,7 +767,7 @@ Method(m154)
 	ConcatenateResTemplate(RT00, Local2)
 
 	if (EXCV) {
-		CH04(ts, 0, 47, z058, 104, 0, 0)	// AE_AML_OPERAND_TYPE
+		CH04(ts, 0, 71, z058, 104, 0, 0) // AE_AML_NO_RESOURCE_END_TAG
 	} else {
 		CH04(ts, 0, 0xff, z058, 104, 0, 0)
 	}
@@ -1292,14 +1309,22 @@ Method(m70a)
 
 	OperationRegion(OPR0, SystemMemory, off0, len0)
 
+	//17+1 > 17.
 	Field(OPR0, AnyAcc, NoLock, Preserve) {
-		Offset(0x10), FU00, 8}
-
-	Store(0x12, FU00)
+		Offset(0x11), FU00, 8}
+	//16+2 > 17.
+	Field(OPR0, WordAcc, NoLock, Preserve) {
+		Offset(0x10), FU01, 8}
 
 	CH03(ts, z058, 191, 0, 0)
 
+	Store(0x12, FU00)
+
 	CH04(ts, 0, 53, z058, 192, 0, 0)	// AE_AML_REGION_LIMIT
+
+	Store(0x12, FU01)
+
+	CH04(ts, 0, 53, z058, 193, 0, 0)	// AE_AML_REGION_LIMIT
 }
 
 // Attempt to write into DataTableRegion
@@ -1314,11 +1339,11 @@ Method(m70b)
 
 	Store(FU00, Local0)
 
-	CH03(ts, z058, 193, 0, 0)
+	CH03(ts, z058, 194, 0, 0)
 
 	Store(0, FU00)
 
-	CH04(ts, 0, 16, z058, 194, 0, 0)	// AE_SUPPORT
+	CH04(ts, 0, 16, z058, 195, 0, 0)	// AE_SUPPORT
 }
 
 // Check non-String DataTableRegion *String arguments
@@ -1333,31 +1358,31 @@ Method(m7f5)
 	CH03(ts, z058, 193, 0, 0)
 
 	DataTableRegion (DR00, b000, "", "")
-	CH04(ts, 0, 5, z058, 195, 0, 0)	// AE_NOT_FOUND
-
-	DataTableRegion (DR01, "SSDT", b000, "")
 	CH04(ts, 0, 5, z058, 196, 0, 0)	// AE_NOT_FOUND
 
-	DataTableRegion (DR02, "SSDT", "", b000)
+	DataTableRegion (DR01, "SSDT", b000, "")
 	CH04(ts, 0, 5, z058, 197, 0, 0)	// AE_NOT_FOUND
 
-	DataTableRegion (DR03, i000, "", "")
+	DataTableRegion (DR02, "SSDT", "", b000)
 	CH04(ts, 0, 5, z058, 198, 0, 0)	// AE_NOT_FOUND
 
-	DataTableRegion (DR04, "SSDT", i000, "")
+	DataTableRegion (DR03, i000, "", "")
 	CH04(ts, 0, 5, z058, 199, 0, 0)	// AE_NOT_FOUND
 
-	DataTableRegion (DR05, "SSDT", "", i000)
+	DataTableRegion (DR04, "SSDT", i000, "")
 	CH04(ts, 0, 5, z058, 200, 0, 0)	// AE_NOT_FOUND
 
-	DataTableRegion (DR06, p000, "", i000)
-	CH04(ts, 0, 47, z058, 201, 0, 0)	// AE_AML_OPERAND_TYPE
+	DataTableRegion (DR05, "SSDT", "", i000)
+	CH04(ts, 0, 5, z058, 201, 0, 0)	// AE_NOT_FOUND
 
-	DataTableRegion (DR07, "SSDT", p000, "")
+	DataTableRegion (DR06, p000, "", i000)
 	CH04(ts, 0, 47, z058, 202, 0, 0)	// AE_AML_OPERAND_TYPE
 
-	DataTableRegion (DR08, "SSDT", "", p000)
+	DataTableRegion (DR07, "SSDT", p000, "")
 	CH04(ts, 0, 47, z058, 203, 0, 0)	// AE_AML_OPERAND_TYPE
+
+	DataTableRegion (DR08, "SSDT", "", p000)
+	CH04(ts, 0, 47, z058, 204, 0, 0)	// AE_AML_OPERAND_TYPE
 }
 
 // Check SMBus OpRegion restictions
@@ -1375,12 +1400,12 @@ Method(m7f6)
 	// Create improper SMBus data buffer
 	Name(BUFF, Buffer(33){})
 
-	CH03(ts, z058, 204, 0, 0)
+	CH03(ts, z058, 205, 0, 0)
 
 	// Invoke Write Quick transaction
 	Store(BUFF, FLD0)
 
-	CH04(ts, 0, 54, z058, 205, 0, 0)	// AE_AML_BUFFER_LIMIT
+	CH04(ts, 0, 54, z058, 206, 0, 0)	// AE_AML_BUFFER_LIMIT
 }
 
 /* Name space issues */

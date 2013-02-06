@@ -50,7 +50,10 @@ Method(m1b3)
 		}
 		CH03(ts, z109, 0, 0, 0)
 		Store(Local7, Local0)
-		CH04(ts, 0, 0xff, z109, 1, 0, 0)
+		if (LNot(SLCK))
+		{
+		    CH04(ts, 0, 0xff, z109, 1, 0, 0)
+		}
 	}
 
 	Method(m901) { return (0xabc0012) }
@@ -89,42 +92,60 @@ Method(m1b3)
 
 	CH03(ts, z109, 7, 0, 0)
 	Store(d900, Local0)
-	CH04(ts, 0, 0xff, z109, 8, 0, 0)
+	if (LNot(SLCK)){
+	    CH04(ts, 0, 0xff, z109, 8, 0, 0)
+	}
 
 	CH03(ts, z109, 9, 0, 0)
 	Store(e900, Local0)
-	CH04(ts, 0, 0xff, z109, 10, 0, 0)
+	if (LNot(SLCK)){
+	    CH04(ts, 0, 0xff, z109, 10, 0, 0)
+	}
 
 	/*
 	 * 21.12.2005.
 	 * No exception now.
 	 * Bug 114: could work improperly by the same reason as Bug 114.
+	 * MS compiler allow this situation, iASL compiler just allows this
+	 * for compatibility, iASL assume this is compiled to a method
+	 * invacation.
 	 */
 	if (X114) {
 		CH03(ts, z109, 11, 0, 0)
 		Store(m901, Local0)
-		CH04(ts, 0, 0xff, z109, 12, 0, 0)
+		//CH04(ts, 0, 0xff, z109, 12, 0, 0)
 	}
 
 	CH03(ts, z109, 13, 0, 0)
 	Store(mx90, Local0)
-	CH04(ts, 0, 0xff, z109, 14, 0, 0)
+	if (LNot(SLCK)){
+	    CH04(ts, 0, 0xff, z109, 14, 0, 0)
+	}
 
 	CH03(ts, z109, 15, 0, 0)
 	Store(r900, Local0)
-	CH04(ts, 0, 0xff, z109, 16, 0, 0)
+	if (LNot(SLCK)){
+	    CH04(ts, 0, 0xff, z109, 16, 0, 0)
+	}
 
 	CH03(ts, z109, 17, 0, 0)
 	Store(pw90, Local0)
-	CH04(ts, 0, 0xff, z109, 18, 0, 0)
+	if (LNot(SLCK)){
+	    CH04(ts, 0, 0xff, z109, 18, 0, 0)
+	}
 
 	CH03(ts, z109, 19, 0, 0)
 	Store(pr90, Local0)
-	CH04(ts, 0, 0xff, z109, 20, 0, 0)
+	if (LNot(SLCK)){
+	    CH04(ts, 0, 0xff, z109, 20, 0, 0)
+	}
 
 	CH03(ts, z109, 21, 0, 0)
 	Store(tz90, Local0)
-	CH04(ts, 0, 0xff, z109, 22, 0, 0)
+	if (LNot(SLCK))
+	{
+	    CH04(ts, 0, 0xff, z109, 22, 0, 0)
+	}
 
 	Store(bf90, Local0)
 	Store(ObjectType(Local0), Local7)
