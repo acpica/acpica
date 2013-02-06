@@ -5,8 +5,36 @@
 
 # Convert ACPICA source to Linux format
 
+
+gen_acpisrc=no
+
+usage()
+{
+	echo "Usage:"
+	echo "`basename $0` [-s] <repository> [commit]"
+	echo "Where:"
+	echo "        -s: generate acpisrc"
+	echo "repository: git repository directory"
+	echo "    commit: git commit id"
+	exit -1
+}
+
+while getopts "s" opt
+do
+	case $opt in
+	s) gen_acpisrc=yes;;
+	?) echo "Invalid argument $opt"
+	   usage;;
+	esac
+done
+shift $(($OPTIND - 1))
+
 git_root=$1
 version=$2
+
+if [ -z "$git_root" ] ; then
+	usage
+fi
 
 branch=master
 
@@ -19,8 +47,10 @@ fi
 
 # Generate latest version of the acpisrc utility
 
-echo "[linuxize.sh] Generate acpisrc utility from source"
-sh acpisrc.sh $git_root > /dev/null
+if [ "x$gen_acpisrc" = "xyes" ]; then
+	echo "[linuxize.sh] Generate acpisrc utility from source"
+	sh acpisrc.sh $git_root > /dev/null
+fi
 
 rm -rf new.linux
 echo "[linuxize.sh] Coverting format (AcpiSrc)..."

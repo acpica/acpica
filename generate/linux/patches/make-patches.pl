@@ -11,6 +11,7 @@
 # Note: Must get the *previous* release of ACPICA to generate the patches
 #
 use File::stat;
+use Getopt::Long;
 
 #
 # Configuration
@@ -20,14 +21,18 @@ $old_release;
 $new_release = "HEAD";
 $git_repo = "../../..";
 $git_root = "acpica_tmp";
+$per_commit = 0;
+
+GetOptions ("per-commit|c" => \$per_commit);
 
 $argcnt = $#ARGV + 1;
 
 if ($argcnt < 1) {
-        print "usage: ./make-patches.pl <old_commit> [new_commit]\n\n";
-        print "    Creates the linuxized patches from old_commit to new_commit in ACPICA git repository\n\n";
-        print "    old_commit: the old commit id\n";
-        print "    new_commit: optional, the new commit id, default to HEAD in the repository\n";
+        print "usage: ./make-patches.pl [--per-commit|-c] <old_commit> [new_commit]\n\n";
+        print "     Creates the linuxized patches from old_commit to new_commit in ACPICA git repository\n\n";
+        print "     old_commit: the old commit id\n";
+        print "     new_commit: optional, the new commit id, default to HEAD in the repository\n";
+        print "--per-commit|-c: generate acpisrc per commit\n";
 
         exit
 } else {
@@ -85,6 +90,12 @@ system("rm -rf $git_root; git clone $git_repo $git_root > /dev/null");
 system("cd $git_root; old_release=`git log --pretty=format:%H $old_release~1..$old_release`");
 system("cd $git_root; new_release=`git log --pretty=format:%H $new_release~1..$new_release`");
 
+# Generate latest version of the acpisrc utility
+
+if (!$per_commit == 0) {
+        system("echo [make-patches] Generate acpisrc utility from source");
+        system("sh acpisrc.sh $git_root > /dev/null");
+}
 
 # Create GIT log
 
@@ -106,7 +117,11 @@ system("echo [make-patches] Creating the merged native patch file");
 # Create "linuxized" reference ACPICA directory from the "older" ACPICA tree
 
 system("echo [make-patches] Creating the Linuxized ACPICA source from $old_release");
-system("sh linuxize.sh $git_root $old_release > /dev/null 2>&1");
+if ($per_commit == 0) {
+        system("sh linuxize.sh $git_root $old_release > /dev/null 2>&1");
+} else {
+        system("sh linuxize.sh -s $git_root $old_release > /dev/null 2>&1");
+}
 
 
 # Create the linux patches, one per file
