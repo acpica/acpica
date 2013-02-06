@@ -267,7 +267,7 @@ typedef struct acpi_fpdt_header
 enum AcpiFpdtType
 {
     ACPI_FPDT_TYPE_BOOT                 = 0,
-    ACPI_FPDT_TYPE_S3PERF               = 1,
+    ACPI_FPDT_TYPE_S3PERF               = 1
 };
 
 
@@ -329,7 +329,7 @@ typedef struct acpi_s3pt_header
 enum AcpiS3ptType
 {
     ACPI_S3PT_TYPE_RESUME               = 0,
-    ACPI_S3PT_TYPE_SUSPEND              = 1,
+    ACPI_S3PT_TYPE_SUSPEND              = 1
 };
 
 typedef struct acpi_s3pt_resume
