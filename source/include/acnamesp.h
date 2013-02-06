@@ -293,6 +293,11 @@ AcpiNsConvertToBuffer (
     ACPI_OPERAND_OBJECT     *OriginalObject,
     ACPI_OPERAND_OBJECT     **ReturnObject);
 
+ACPI_STATUS
+AcpiNsConvertToUnicode (
+    ACPI_OPERAND_OBJECT     *OriginalObject,
+    ACPI_OPERAND_OBJECT     **ReturnObject);
+
 
 /*
  * nsdump - Namespace dump/print utilities

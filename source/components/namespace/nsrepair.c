@@ -176,6 +176,13 @@ AcpiNsMatchSimpleRepair (
  */
 static const ACPI_SIMPLE_REPAIR_INFO    AcpiObjectRepairInfo[] =
 {
+    /* Unicode conversions */
+
+    { "_MLS", ACPI_RTYPE_STRING, 1,
+                AcpiNsConvertToUnicode },
+    { "_STR", ACPI_RTYPE_STRING | ACPI_RTYPE_BUFFER,
+                ACPI_NOT_PACKAGE_ELEMENT,
+                AcpiNsConvertToUnicode },
     { {0,0,0,0}, 0, 0, NULL } /* Table terminator */
 };
 

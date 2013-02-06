@@ -395,3 +395,75 @@ AcpiNsConvertToBuffer (
     *ReturnObject = NewObject;
     return (AE_OK);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsConvertToUnicode
+ *
+ * PARAMETERS:  OriginalObject      - ASCII String Object to be converted
+ *              ReturnObject        - Where the new converted object is returned
+ *
+ * RETURN:      Status. AE_OK if conversion was successful.
+ *
+ * DESCRIPTION: Attempt to convert a String object to a Unicode string Buffer.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiNsConvertToUnicode (
+    ACPI_OPERAND_OBJECT     *OriginalObject,
+    ACPI_OPERAND_OBJECT     **ReturnObject)
+{
+    ACPI_OPERAND_OBJECT     *NewObject;
+    char                    *AsciiString;
+    UINT16                  *UnicodeBuffer;
+    UINT32                  UnicodeLength;
+    UINT32                  i;
+
+
+    if (!OriginalObject)
+    {
+        return (AE_OK);
+    }
+
+    /* If a Buffer was returned, it must be at least two bytes long */
+
+    if (OriginalObject->Common.Type == ACPI_TYPE_BUFFER)
+    {
+        if (OriginalObject->Buffer.Length < 2)
+        {
+            return (AE_AML_OPERAND_VALUE);
+        }
+
+        *ReturnObject = NULL;
+        return (AE_OK);
+    }
+
+    /*
+     * The original object is an ASCII string. Convert this string to
+     * a unicode buffer.
+     */
+    AsciiString = OriginalObject->String.Pointer;
+    UnicodeLength = (OriginalObject->String.Length * 2) + 2;
+
+    /* Create a new buffer object for the Unicode data */
+
+    NewObject = AcpiUtCreateBufferObject (UnicodeLength);
+    if (!NewObject)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    UnicodeBuffer = ACPI_CAST_PTR (UINT16, NewObject->Buffer.Pointer);
+
+    /* Convert ASCII to Unicode */
+
+    for (i = 0; i < OriginalObject->String.Length; i++)
+    {
+        UnicodeBuffer[i] = (UINT16) AsciiString[i];
+    }
+
+    *ReturnObject = NewObject;
+    return (AE_OK);
+}
