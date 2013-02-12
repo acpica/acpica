@@ -68,6 +68,7 @@ OBJECTS = \
 	$(OBJDIR)/asloperands.o\
 	$(OBJDIR)/aslopt.o\
 	$(OBJDIR)/aslpredef.o\
+	$(OBJDIR)/aslprepkg.o\
 	$(OBJDIR)/aslresource.o\
 	$(OBJDIR)/aslrestype1.o\
 	$(OBJDIR)/aslrestype1i.o\

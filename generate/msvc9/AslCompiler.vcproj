@@ -1248,6 +1248,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\compiler\aslprepkg.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\compiler\aslresource.c"
 					>
 					<FileConfiguration
