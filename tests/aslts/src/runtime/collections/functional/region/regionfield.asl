@@ -1599,7 +1599,7 @@ Method(m764, 1)
 
     OperationRegion (GPO2, GeneralPurposeIO, 0, 64)
     Method(_REG,2) {}
-    Name(_DEP, Package() {"\\_SB.GPI2"})
+    Name(_DEP, Package() {\_SB})
 
     // Update rule must be Preserve
 
