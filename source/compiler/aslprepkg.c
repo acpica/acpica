@@ -197,11 +197,16 @@ ApCheckPackage (
     Op = ParentOp->Asl.Child;
     Count = (UINT32) Op->Asl.Value.Integer;
 
-    /* The package must have at least one element */
-
+    /*
+     * Most packages must have at least one element. The only exception
+     * is the variable-length package (ACPI_PTYPE1_VAR).
+     */
     if (!Count)
     {
-        ApZeroLengthPackage (Predefined->Info.Name, ParentOp);
+        if (Package->RetInfo.Type != ACPI_PTYPE1_VAR)
+        {
+            ApZeroLengthPackage (Predefined->Info.Name, ParentOp);
+        }
         return;
     }
 
@@ -680,7 +685,9 @@ ApPackageTooSmall (
  * RETURN:      None
  *
  * DESCRIPTION: Issue error message for a zero-length package (a package that
- *              is required to have a non-zero length).
+ *              is required to have a non-zero length). Variable length
+ *              packages seem to be allowed to have zero length, however.
+ *              Even if not allowed, BIOS code does it.
  *
  ******************************************************************************/
 
