@@ -98,6 +98,7 @@ tests/misc/grammar.aml
 tests/misc/grammar.dsl
 
 chmod.sh
+clean.sh
 crlf.sh
 pull.sh
 push.sh
