@@ -116,6 +116,7 @@
 
 #include "aslcompiler.h"
 #include "actables.h"
+#include "acdisasm.h"
 #include "acapps.h"
 
 #define _COMPONENT          ACPI_COMPILER
@@ -408,6 +409,10 @@ AslDoDisassembly (
     {
         return (Status);
     }
+
+    /* Check if any control methods were unresolved */
+
+    AcpiDmUnresolvedWarning (0);
 
 #if 0
     /* TBD: Handle additional output files for disassembler */

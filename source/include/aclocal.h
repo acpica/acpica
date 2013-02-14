@@ -1306,6 +1306,7 @@ typedef struct acpi_external_list
     UINT16                      Length;
     UINT8                       Type;
     UINT8                       Flags;
+    BOOLEAN                     Resolved;
 
 } ACPI_EXTERNAL_LIST;
 

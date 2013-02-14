@@ -415,6 +415,8 @@ AcpiUtInitGlobals (
 
 #ifdef ACPI_DISASSEMBLER
     AcpiGbl_ExternalList                = NULL;
+    AcpiGbl_NumExternalMethods          = 0;
+    AcpiGbl_ResolvedExternalMethods     = 0;
 #endif
 
 #ifdef ACPI_DEBUG_OUTPUT

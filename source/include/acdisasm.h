@@ -761,6 +761,10 @@ void
 AcpiDmEmitExternals (
     void);
 
+void
+AcpiDmUnresolvedWarning (
+    UINT8                   Type);
+
 
 /*
  * dmresrc
