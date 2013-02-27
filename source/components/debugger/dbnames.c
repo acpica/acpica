@@ -118,6 +118,7 @@
 #include "accommon.h"
 #include "acnamesp.h"
 #include "acdebug.h"
+#include "acpredef.h"
 
 
 #ifdef ACPI_DEBUGGER
@@ -508,7 +509,7 @@ AcpiDbWalkForPredefinedNames (
     char                        *Pathname;
 
 
-    Predefined = AcpiNsCheckForPredefinedName (Node);
+    Predefined = AcpiUtMatchPredefinedMethod (Node->Name.Ascii);
     if (!Predefined)
     {
         return (AE_OK);
@@ -522,13 +523,14 @@ AcpiDbWalkForPredefinedNames (
 
     /* If method returns a package, the info is in the next table entry */
 
-    if (Predefined->Info.ExpectedBtypes & ACPI_BTYPE_PACKAGE)
+    if (Predefined->Info.ExpectedBtypes & ACPI_RTYPE_PACKAGE)
     {
         Package = Predefined + 1;
     }
 
     AcpiOsPrintf ("%-32s arg %X ret %2.2X", Pathname,
-        Predefined->Info.ParamCount, Predefined->Info.ExpectedBtypes);
+        (Predefined->Info.ArgumentList & METHOD_ARG_MASK),
+        Predefined->Info.ExpectedBtypes);
 
     if (Package)
     {
