@@ -605,6 +605,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\utpredef.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utresrc.c"
 					>
 					<FileConfiguration

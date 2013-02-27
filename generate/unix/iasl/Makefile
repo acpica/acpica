@@ -188,6 +188,7 @@ OBJECTS = \
 	$(OBJDIR)/utmutex.o\
 	$(OBJDIR)/utobject.o\
 	$(OBJDIR)/utownerid.o\
+	$(OBJDIR)/utpredef.o\
 	$(OBJDIR)/utresrc.o\
 	$(OBJDIR)/utstate.o\
 	$(OBJDIR)/utstring.o\

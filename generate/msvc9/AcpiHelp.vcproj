@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="AcpiHelp"
 	ProjectGUID="{543CE235-637F-4302-BCD4-02C08A4277D9}"
+	RootNamespace="AcpiHelp"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -243,6 +244,15 @@
 				<File
 					RelativePath="..\..\source\tools\acpihelp\ahdecode.c"
 					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							DisableLanguageExtensions="true"
+							AssemblerOutput="0"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\tools\acpihelp\ahmain.c"
@@ -281,6 +291,14 @@
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utexcep.c"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Utilities"
+				>
+				<File
+					RelativePath="..\..\source\components\utilities\utpredef.c"
 					>
 				</File>
 			</Filter>
