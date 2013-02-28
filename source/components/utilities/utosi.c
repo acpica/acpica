@@ -187,10 +187,15 @@ ACPI_STATUS
 AcpiUtInitializeInterfaces (
     void)
 {
+    ACPI_STATUS             Status;
     UINT32                  i;
 
 
-    (void) AcpiOsAcquireMutex (AcpiGbl_OsiMutex, ACPI_WAIT_FOREVER);
+    Status = AcpiOsAcquireMutex (AcpiGbl_OsiMutex, ACPI_WAIT_FOREVER);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
     AcpiGbl_SupportedInterfaces = AcpiDefaultSupportedInterfaces;
 
     /* Link the static list of supported interfaces */
@@ -212,21 +217,26 @@ AcpiUtInitializeInterfaces (
  *
  * PARAMETERS:  None
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Delete all interfaces in the global list. Sets
  *              AcpiGbl_SupportedInterfaces to NULL.
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 AcpiUtInterfaceTerminate (
     void)
 {
+    ACPI_STATUS             Status;
     ACPI_INTERFACE_INFO     *NextInterface;
 
 
-    (void) AcpiOsAcquireMutex (AcpiGbl_OsiMutex, ACPI_WAIT_FOREVER);
+    Status = AcpiOsAcquireMutex (AcpiGbl_OsiMutex, ACPI_WAIT_FOREVER);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
     NextInterface = AcpiGbl_SupportedInterfaces;
 
     while (NextInterface)
@@ -245,6 +255,7 @@ AcpiUtInterfaceTerminate (
     }
 
     AcpiOsReleaseMutex (AcpiGbl_OsiMutex);
+    return (AE_OK);
 }
 
 
@@ -422,6 +433,7 @@ AcpiUtOsiImplementation (
     ACPI_OPERAND_OBJECT     *ReturnDesc;
     ACPI_INTERFACE_INFO     *InterfaceInfo;
     ACPI_INTERFACE_HANDLER  InterfaceHandler;
+    ACPI_STATUS             Status;
     UINT32                  ReturnValue;
 
 
@@ -448,7 +460,12 @@ AcpiUtOsiImplementation (
     /* Default return value is 0, NOT SUPPORTED */
 
     ReturnValue = 0;
-    (void) AcpiOsAcquireMutex (AcpiGbl_OsiMutex, ACPI_WAIT_FOREVER);
+    Status = AcpiOsAcquireMutex (AcpiGbl_OsiMutex, ACPI_WAIT_FOREVER);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiUtDeleteObjectDesc (ReturnDesc);
+        return_ACPI_STATUS (Status);
+    }
 
     /* Lookup the interface in the global _OSI list */
 
