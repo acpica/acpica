@@ -71,21 +71,21 @@ Method(m4b5)
 		// Like Integer behaviour
 
 		if (y083) {
-			DerefOf(fu02)
+			Store (DerefOf(fu02), Local1)
 			CH06(arg0, 0, 47)
 		}
 
-		Index(fu02, 0)
+		Store (Index(fu02, 0), Local1)
 		CH06(arg0, 1, 47)
 
 		// Like Buffer behaviour
 
 		if (y083) {
-			DerefOf(fu03)
+			Store (DerefOf(fu03), Local1)
 			CH06(arg0, 2, 47)
 		}
 
-		Index(fu03, 0)
+		Store (Index(fu03, 0), Local1)
 		if (y900) {
 			CH03(ts, z097, 0, 0, 0)
 		} else {
@@ -102,21 +102,21 @@ Method(m4b5)
 		// Like Integer behaviour
 
 		if (y083) {
-			DerefOf(fu00)
+			Store (DerefOf(fu00), Local1)
 			CH06(arg0, 3, 47)
 		}
 
-		Index(fu00, 0)
+		Store (Index(fu00, 0), Local1)
 		CH06(arg0, 4, 47)
 
 		// Like Buffer behaviour
 
 		if (y083) {
-			DerefOf(fu01)
+			Store (DerefOf(fu01), Local1)
 			CH06(arg0, 5, 47)
 		}
 
-		Index(fu01, 0)
+		Store (Index(fu01, 0), Local1)
 		if (y900) {
 			CH03(ts, z097, 1, 0, 0)
 		} else {
@@ -136,13 +136,13 @@ Method(m4b5)
 			return (1)
 		}
 
-		DerefOf(arg1)
+		Store (DerefOf(arg1), Local1)
 		CH03(ts, z097, 2, 0, 0)
 
-		DerefOf(DerefOf(arg1))
+		Store (DerefOf(DerefOf(arg1)), Local1)
 		CH06(arg0, 7, 47)
 
-		Index(DerefOf(arg1), 0)
+		Store (Index(DerefOf(arg1), 0), Local1)
 
 		if (arg2) {
 			// Like Buffer behaviour
@@ -156,7 +156,7 @@ Method(m4b5)
 			CH06(arg0, 8, 47)
 		}
 
-		Match(DerefOf(arg1), MTR, 0, MTR, 0, 0)
+		Store (Match(DerefOf(arg1), MTR, 0, MTR, 0, 0), Local1)
 		CH06(arg0, 9, 47)
 
 		return (0)
@@ -207,16 +207,16 @@ Method(m4b5)
 
 			Store(0, i000)
 
-			DerefOf(m000(1, lpC0))
+			Store (DerefOf(m000(1, lpC0)), Local1)
 			CH03(ts, z097, Add(4, lpC0), 0, 0)
 			CH00(arg0, 1)
 
 
-			DerefOf(DerefOf(m000(2, lpC0)))
+			Store (DerefOf(DerefOf(m000(2, lpC0))), Local1)
 			CH06(arg0, Add(11, Local0), 47)
 			CH00(arg0, 2)
 
-			Index(DerefOf(m000(3, lpC0)), 0)
+			Store (Index(DerefOf(m000(3, lpC0)), 0), Local1)
 			if (Mod(lpC0, 2)) {
 				// Like Buffer behaviour
 				if (y900) {
@@ -230,7 +230,7 @@ Method(m4b5)
 			}
 			CH00(arg0, 3)
 
-			Match(DerefOf(m000(4, lpC0)), MTR, 0, MTR, 0, 0)
+			Store (Match(DerefOf(m000(4, lpC0)), MTR, 0, MTR, 0, 0), Local1)
 			CH06(arg0, Add(13, Local0), 47)
 			CH00(arg0, 4)
 

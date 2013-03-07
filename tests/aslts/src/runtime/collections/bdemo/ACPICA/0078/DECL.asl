@@ -34,7 +34,7 @@
 
 	Method(me2b)
 	{
-		Derefof(Refof(id0b))
+		Store(Derefof(Refof(id0b)), Local0)
 
 		Store(id0b, Debug)
 	}

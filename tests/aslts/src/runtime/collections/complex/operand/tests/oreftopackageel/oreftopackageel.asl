@@ -11820,13 +11820,13 @@ Method(m61a)
 
 			CH03(arg0, z119, 0, 0, 0)
 
-			Index(m601(2, 6), Derefof(m604(2, 2, 20, 1)))
+			Store(Index(m601(2, 6), Derefof(m604(2, 2, 20, 1))), Local3)
 			CH04(arg0, 0, 85, z119, 9, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
-			Index(m601(3, 6), Derefof(m604(2, 2, 20, 1)))
+			Store(Index(m601(3, 6), Derefof(m604(2, 2, 20, 1))), Local3)
 			CH04(arg0, 0, 85, z119, 10, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
-			Index(m601(4, 0), Derefof(m604(2, 2, 20, 1)))
+			Store(Index(m601(4, 0), Derefof(m604(2, 2, 20, 1))), Local3)
 			CH04(arg0, 0, 85, z119, 11, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 		}
 
@@ -23242,13 +23242,13 @@ Method(m61a)
 
 			CH03(arg0, z119, 0, 0, 0)
 
-			Index(m601(2, 6), Derefof(m604(2, 3, 14, 1)))
+			Store(Index(m601(2, 6), Derefof(m604(2, 3, 14, 1))), Local3)
 			CH04(arg0, 0, 85, z119, 9, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
-			Index(m601(3, 6), Derefof(m604(2, 3, 14, 1)))
+			Store(Index(m601(3, 6), Derefof(m604(2, 3, 14, 1))), Local3)
 			CH04(arg0, 0, 85, z119, 10, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
-			Index(m601(4, 0), Derefof(m604(2, 3, 14, 1)))
+			Store(Index(m601(4, 0), Derefof(m604(2, 3, 14, 1))), Local3)
 			CH04(arg0, 0, 85, z119, 11, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 		}
 

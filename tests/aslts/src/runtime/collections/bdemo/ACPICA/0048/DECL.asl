@@ -45,7 +45,7 @@ Method(mdd8)
 
 	CH03("", 0, 0x000, 0, 0)
 
-	Concatenate(Local0, Local1)
+	Store(Concatenate(Local0, Local1), Local2)
 
 	/*
 	 * No restriction on the length of String objects now:

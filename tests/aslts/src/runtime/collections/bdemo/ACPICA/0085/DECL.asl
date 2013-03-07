@@ -41,12 +41,12 @@
 		Name(p000, Package(1){})
 
 
-		DeRefOf(Index(p000, 0))
+		Store(DeRefOf(Index(p000, 0)), Local1)
 
 
 		Index(p000, 0, Local0)
 		Store(Local0, Debug)
-		DeRefOf(Local0)
+		Store(DeRefOf(Local0), Local1)
 
 
 		Index(p000, 0, Local0)
@@ -62,7 +62,7 @@
 			// Ref #2
 
 			Store(arg0, Debug)
-			DeRefOf(arg0)
+			Store(DeRefOf(arg0), Local1)
 		} else {
 			Increment(DeRefOf(arg0))
 		}

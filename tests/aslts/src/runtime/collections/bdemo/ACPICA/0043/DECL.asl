@@ -36,7 +36,7 @@ Method(mdd4)
 {
 	Store("a", Local0)
 	Store(Local0, Debug)
-	ToHexString(Local0)
+	Store(ToHexString(Local0), Local1)
 	Store(Local0, Debug)
 
 	Add(Local0, 1, Local7)

@@ -45,7 +45,7 @@ Method(m130, 1)
 
 	Store(0, Local0)
 
-	ToString(B000, Local0)
+	Store(ToString(B000, Local0), Local2)
 
 	if (LNotequal(Local0, 0)) {
 		err(arg0, z055, 0, 0, 0, Local0, 0)

@@ -1241,7 +1241,7 @@ if (y361) {
 			// Source object is a reference
 			// Check that it can be used as reference
 			Store(Derefof(arg2), Local0)
-			Derefof(Local0)
+			Store(Derefof(Local0) ,Local3)
 			if (CH03(arg0, z122, 10, arg1, Local0)) {
 				// Derefof caused unexpected exception
 				Return (1)
@@ -1528,7 +1528,7 @@ if (y361) {
 					// Result object is a reference
 					// Check that Target can be used as reference
 					Store(Derefof(arg1), Local0)
-					Derefof(Local0)
+					Store(Derefof(Local0), Local3)
 					if (CH03(arg0, z122, 40, Local2, arg3)) {
 						// Derefof caused unexpected exception
 						Return (1)
@@ -3221,7 +3221,7 @@ if (y361) {
 			// Target object is a reference
 			// Check that it can be used as reference
 			Store(Derefof(arg2), Local0)
-			Derefof(Local0)
+			Store(Derefof(Local0), Local3)
 			if (CH03(arg0, z122, 101, arg1, Local0)) {
 				// Derefof caused unexpected exception
 				Return (1)
@@ -3282,7 +3282,7 @@ if (y361) {
 				Store(14, Local0)
 			}
 			Case(17) {
-				Derefof(REF1)
+				Store(Derefof(REF1), Local3)
 				if (CH03(arg0, z122, 103, arg1, Local0)) {
 					// Derefof caused unexpected exception
 					Return (1)
@@ -3464,7 +3464,7 @@ if (y361) {
 				Store(14, Local0)
 			}
 			Case(17) {
-				Derefof(REF1)
+				Store(Derefof(REF1), Local3)
 				if (CH03(arg0, z122, 121, arg1, 0)) {
 					// Derefof caused unexpected exception
 					Return (1)

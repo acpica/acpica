@@ -51,21 +51,21 @@
 		// Named
 
 		CH03("", 0, 0x000, 0, 0)
-		Index(p000, 2)
+		Store(Index(p000, 2), Local1)
 		CH04("", 0, 55, 0, 0x001, 0, 0) // AE_AML_PACKAGE_LIMIT
 
 		CH03("", 0, 0x002, 0, 0)
-		Index(b000, 3)
+		Store(Index(b000, 3), Local1)
 		CH04("", 0, 54, 0, 0x003, 0, 0) // AE_AML_BUFFER_LIMIT
 
 		CH03("", 0, 0x004, 0, 0)
-		Index(s000, 4)
+		Store(Index(s000, 4), Local1)
 		CH04("", 0, 61, 0, 0x005, 0, 0) // AE_AML_STRING_LIMIT
 
 		// Immediate
 
 		CH03("", 0, 0x006, 0, 0)
-		Index(Package(2){0, 1}, 2)
+		Store(Index(Package(2){0, 1}, 2), Local1)
 		if (y900) {
 			CH04("", 0, 55, 0, 0x007, 0, 0) // AE_AML_PACKAGE_LIMIT
 		} else {
@@ -73,7 +73,7 @@
 		}
 
 		CH03("", 0, 0x009, 0, 0)
-		Index(Buffer(3){2, 3, 4}, 3)
+		Store(Index(Buffer(3){2, 3, 4}, 3), Local1)
 		if (y900) {
 			CH04("", 0, 54, 0, 0x00a, 0, 0) // AE_AML_BUFFER_LIMIT
 		} else {
@@ -81,7 +81,7 @@
 		}
 
 		CH03("", 0, 0x00c, 0, 0)
-		Index("5678", 4)
+		Store(Index("5678", 4), Local1)
 		if (y900) {
 			CH04("", 0, 61, 0, 0x00d, 0, 0) // AE_AML_STRING_LIMIT
 		} else {

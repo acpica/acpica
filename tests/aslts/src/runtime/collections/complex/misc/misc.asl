@@ -63,7 +63,7 @@ Method(m110, 1, Serialized)
 // Concatenate operator affects the object passed as Source2 parameter
 
 Method(m111, 1) {
-	Concatenate("qwertyuiop", arg0)
+	Store(Concatenate("qwertyuiop", arg0), Local5)
 }
 
 Method(m112, 1)
@@ -75,7 +75,7 @@ Method(m112, 1)
 	}
 
 	Store(0, Local0)
-	Concatenate("qwertyuiop", Local0)
+	Store(Concatenate("qwertyuiop", Local0), Local5)
 	if (LNotequal(Local0, 0)) {
 		err(arg0, z054, 2, 0, 0, Local0, 0)
 	}
@@ -339,7 +339,7 @@ Method(m11c, 1)
 
 	CH03(ts, z054, 0x103, 0, 0)
 
-	Add( Buffer() {0x79}, Buffer() {0x79} )
+	Store(Add( Buffer() {0x79}, Buffer() {0x79} ), Local5)
 
 	CH03(ts, z054, 0x104, 0, 0)
 }

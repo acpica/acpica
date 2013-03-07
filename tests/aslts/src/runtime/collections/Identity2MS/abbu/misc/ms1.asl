@@ -200,10 +200,10 @@ Method(ms11, 1, Serialized)
 		OUTP("Name(i000, 0x89abcdef)")
 
 		if (arg0) {
-			Derefof(i000)
+			Store(Derefof(i000), Local0)
 			CH04(ts, 0, 0xff, z179, 0x004, 0, 0)
 		} else {
-			Derefof(Refof(i000))
+			Store(Derefof(Refof(i000)), Local0)
 			CH03(ts, z179, 0x005, 0, 0)
 		}
 	}
@@ -221,7 +221,7 @@ Method(ms11, 1, Serialized)
 			Store(Refof(i000), Local0)
 			OUTP("Store(Refof(i000), Local0)")
 		}
-		Derefof(Local0)
+		Store(Derefof(Local0), Local1)
 		if (arg0) {
 			CH04(ts, 0, 0xff, z179, 0x006, 0, 0)
 		} else {
@@ -1105,20 +1105,20 @@ Method(ms18)
 
 		Store(Index(p000, 0, Local0), Local1)
 
-		Derefof(Local0)
+		Store(Derefof(Local0), Local4)
 		CH03(ts, z179, 0x04b, 0, 0)
 
-		Derefof(Local1)
+		Store(Derefof(Local1), Local4)
 		CH03(ts, z179, 0x04c, 0, 0)
 
 		OUTP("CopyObject(Index(p000, 0, Local2), Local3):")
 
 		CopyObject(Index(p000, 0, Local2), Local3)
 
-		Derefof(Local2)
+		Store(Derefof(Local2), Local4)
 		CH03(ts, z179, 0x04d, 0, 0)
 
-		Derefof(Local3)
+		Store(Derefof(Local3), Local4)
 		CH03(ts, z179, 0x04e, 0, 0)
 	}
 
@@ -2229,7 +2229,7 @@ Method(ms23, 1, Serialized)
 		Method(m001)
 		{
 			if (fl00) {
-				Add (0xabcd, 0)
+				Store(Add (0xabcd, 0), Local1)
 			} elseif (0) {
 				return (1)
 			}
@@ -2250,7 +2250,7 @@ Method(ms23, 1, Serialized)
 		Method(m001)
 		{
 			if (fl00) {
-				Add (0xabcd, 0)
+				Store(Add (0xabcd, 0), Local1)
 			} else {
 				return (1)
 			}

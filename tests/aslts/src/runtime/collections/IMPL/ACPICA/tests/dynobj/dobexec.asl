@@ -136,6 +136,8 @@ if (rn00) {
 // Check simple particular operations
 Method(m371)
 {
+	// Because Local0-7 all have been taken, we declare a new variable here.
+	Name(temp,0)
 	// The Created Objects benchmark Package
 	Name(pp00, Package(1) {})
 
@@ -359,7 +361,7 @@ if (rn00) {
 	m000()
 
 	_TCI(c200, Local0)
-	Add(3, 4)
+	Store(Add(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -367,8 +369,8 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 5)
 
 	_TCI(c200, Local0)
-	Add(3, 4)
-	Add(3, 4)
+	Store(Add(3, 4), temp)
+	Store(Add(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -379,7 +381,7 @@ if (rn00) {
 	Store(0, lpC0)
 	_TCI(c200, Local0)
 	While (lpN0) {
-		Add(3, 4)
+		Store(Add(3, 4), temp)
 		Decrement(lpN0)
 		Increment(lpC0)
 	}
@@ -394,7 +396,7 @@ if (rn00) {
 	Store(4, i001)
 
 	_TCI(c200, Local0)
-	Add(i000, i001)
+	Store(Add(i000, i001), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -522,7 +524,7 @@ if (rn00) {
 	m001()
 
 	_TCI(c200, Local0)
-	And(3, 4)
+	Store(And(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -563,7 +565,7 @@ if (rn00) {
 	Store("Concatenate", Debug)
 
 	_TCI(c200, Local0)
-	Concatenate(3, 4)
+	Store(Concatenate(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -590,7 +592,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 21)
 
 	_TCI(c200, Local0)
-	Concatenate("3", "4")
+	Store(Concatenate("3", "4"), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -610,7 +612,7 @@ if (rn00) {
 	Store(3, i001)
 
 	_TCI(c200, Local0)
-	Concatenate(Buffer(i000) {3,4}, Buffer(i001) {6,7,8})
+	Store(Concatenate(Buffer(i000) {3,4}, Buffer(i001) {6,7,8}), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -747,7 +749,7 @@ if (rn01) {
 	// Investigate: why 3 objects, but not 2
 
 	_TCI(c200, Local0)
-	CondRefOf(i003)
+	Store(CondRefOf(i003), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -758,7 +760,7 @@ if (rn01) {
 	CopyObject("sssss", s000)
 
 	_TCI(c200, Local0)
-	CondRefOf(s000)
+	Store(CondRefOf(s000), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -767,8 +769,8 @@ if (rn01) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 34)
 
 	_TCI(c200, Local0)
-	CondRefOf(i003)
-	CondRefOf(i003)
+	Store(CondRefOf(i003), temp)
+	Store(CondRefOf(i003), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -904,7 +906,7 @@ if (rn00) {
 	Store(RefOf(i000), Local4)
 
 	_TCI(c200, Local0)
-	DerefOf(Local4)
+	Store(DerefOf(Local4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -931,7 +933,7 @@ if (rn01) {
 	// Investigate: why 6 objects, but not 5
 
 	_TCI(c200, Local0)
-	Divide(1, 2)
+	Store(Divide(1, 2), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1019,7 +1021,7 @@ if (rn00) {
 	Store("FindSetLeftBit", Debug)
 
 	_TCI(c200, Local0)
-	FindSetLeftBit(5)
+	Store(FindSetLeftBit(5), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1027,7 +1029,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 53)
 
 	_TCI(c200, Local0)
-	FindSetLeftBit(i000)
+	Store(FindSetLeftBit(i000), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1079,7 +1081,7 @@ if (rn00) {
 	Store("FindSetRightBit", Debug)
 
 	_TCI(c200, Local0)
-	FindSetRightBit(5)
+	Store(FindSetRightBit(5), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1087,7 +1089,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 59)
 
 	_TCI(c200, Local0)
-	FindSetRightBit(i000)
+	Store(FindSetRightBit(i000), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1156,7 +1158,7 @@ if (rn00) {
 	Store("FromBCD", Debug)
 
 	_TCI(c200, Local0)
-	FromBCD(4)
+	Store(FromBCD(4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1167,7 +1169,7 @@ if (rn00) {
 	Store(1, i001)
 
 	_TCI(c200, Local0)
-	FromBCD(i000)
+	Store(FromBCD(i000), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1246,7 +1248,7 @@ if (rn00) {
 	// Package
 
 	_TCI(c200, Local0)
-	Index(p001, 1)
+	Store(Index(p001, 1), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1255,7 +1257,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 73)
 
 	_TCI(c200, Local0)
-	Index(Package(16) {1,2,3,4,5,6,7,8}, 1)
+	Store(Index(Package(16) {1,2,3,4,5,6,7,8}, 1), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1302,7 +1304,7 @@ if (rn00) {
 	// Buffer
 
 	_TCI(c200, Local0)
-	Index(b004, 1)
+	Store(Index(b004, 1), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1311,7 +1313,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 77)
 
 	_TCI(c200, Local0)
-	Index(Buffer(16) {1,2,3,4,5,6,7,8}, 1)
+	Store(Index(Buffer(16) {1,2,3,4,5,6,7,8}, 1), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1377,7 +1379,7 @@ if (rn00) {
 	// String
 
 	_TCI(c200, Local0)
-	Index(s002, 1)
+	Store(Index(s002, 1), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1386,7 +1388,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 82)
 
 	_TCI(c200, Local0)
-	Index("sdrtghjkiopuiy", 1)
+	Store(Index("sdrtghjkiopuiy", 1), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1441,7 +1443,7 @@ if (rn00) {
 	Store(1, i001)
 
 	_TCI(c200, Local0)
-	LAnd(3, 4)
+	Store(LAnd(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1449,7 +1451,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 86)
 
 	_TCI(c200, Local0)
-	LAnd(i000, i001)
+	Store(LAnd(i000, i001), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1460,7 +1462,7 @@ if (rn00) {
 	Store(1, Local5)
 
 	_TCI(c200, Local0)
-	LAnd(Local4, Local4)
+	Store(LAnd(Local4, Local4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1471,7 +1473,7 @@ if (rn00) {
 	Store(1, Local5)
 
 	_TCI(c200, Local0)
-	LAnd(i000, Local5)
+	Store(LAnd(i000, Local5), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1492,7 +1494,7 @@ if (rn00) {
 	Store(1, i001)
 
 	_TCI(c200, Local0)
-	LEqual(3, 4)
+	Store(LEqual(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1500,7 +1502,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 90)
 
 	_TCI(c200, Local0)
-	LEqual(i000, i001)
+	Store(LEqual(i000, i001), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1508,7 +1510,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 91)
 
 	_TCI(c200, Local0)
-	LEqual(Local4, Local4)
+	Store(LEqual(Local4, Local4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1517,7 +1519,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 92)
 
 	_TCI(c200, Local0)
-	LEqual(i000, Local5)
+	Store(LEqual(i000, Local5), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1533,7 +1535,7 @@ if (rn00) {
 	Store("LGreater", Debug)
 
 	_TCI(c200, Local0)
-	LGreater(3, 4)
+	Store(LGreater(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1541,7 +1543,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 94)
 
 	_TCI(c200, Local0)
-	LGreater(i000, i001)
+	Store(LGreater(i000, i001), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1549,7 +1551,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 95)
 
 	_TCI(c200, Local0)
-	LGreater(Local4, Local4)
+	Store(LGreater(Local4, Local4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1558,7 +1560,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 96)
 
 	_TCI(c200, Local0)
-	LGreater(i000, Local5)
+	Store(LGreater(i000, Local5), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1577,7 +1579,7 @@ if (rn01) {
 	// those of LGreater (+1 Integer).
 
 	_TCI(c200, Local0)
-	LGreaterEqual(3, 4)
+	Store(LGreaterEqual(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1585,7 +1587,7 @@ if (rn01) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 98)
 
 	_TCI(c200, Local0)
-	LGreaterEqual(i000, i001)
+	Store(LGreaterEqual(i000, i001), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1593,7 +1595,7 @@ if (rn01) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 99)
 
 	_TCI(c200, Local0)
-	LGreaterEqual(Local4, Local4)
+	Store(LGreaterEqual(Local4, Local4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1602,7 +1604,7 @@ if (rn01) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 100)
 
 	_TCI(c200, Local0)
-	LGreaterEqual(i000, Local5)
+	Store(LGreaterEqual(i000, Local5), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1618,7 +1620,7 @@ if (rn00) {
 	Store("LLess", Debug)
 
 	_TCI(c200, Local0)
-	LLess(3, 4)
+	Store(LLess(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1626,7 +1628,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 102)
 
 	_TCI(c200, Local0)
-	LLess(i000, i001)
+	Store(LLess(i000, i001), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1634,7 +1636,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 103)
 
 	_TCI(c200, Local0)
-	LLess(Local4, Local4)
+	Store(LLess(Local4, Local4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1643,7 +1645,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 104)
 
 	_TCI(c200, Local0)
-	LLess(i000, Local5)
+	Store(LLess(i000, Local5), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1663,7 +1665,7 @@ if (rn01) {
 	// identical to LGreaterEqual).
 
 	_TCI(c200, Local0)
-	LLessEqual(3, 4)
+	Store(LLessEqual(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1671,7 +1673,7 @@ if (rn01) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 106)
 
 	_TCI(c200, Local0)
-	LLessEqual(i000, i001)
+	Store(LLessEqual(i000, i001), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1679,7 +1681,7 @@ if (rn01) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 107)
 
 	_TCI(c200, Local0)
-	LLessEqual(Local4, Local4)
+	Store(LLessEqual(Local4, Local4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1688,7 +1690,7 @@ if (rn01) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 108)
 
 	_TCI(c200, Local0)
-	LLessEqual(i000, Local5)
+	Store(LLessEqual(i000, Local5), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1704,7 +1706,7 @@ if (rn00) {
 	Store("LNot", Debug)
 
 	_TCI(c200, Local0)
-	LNot(3)
+	Store(LNot(3), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1712,7 +1714,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 110)
 
 	_TCI(c200, Local0)
-	LNot(i000)
+	Store(LNot(i000), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1720,7 +1722,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 111)
 
 	_TCI(c200, Local0)
-	LNot(Local4)
+	Store(LNot(Local4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1740,7 +1742,7 @@ if (rn01) {
 	// identical to LGreaterEqual).
 
 	_TCI(c200, Local0)
-	LNotEqual(3, 4)
+	Store(LNotEqual(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1748,7 +1750,7 @@ if (rn01) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 113)
 
 	_TCI(c200, Local0)
-	LNotEqual(i000, i001)
+	Store(LNotEqual(i000, i001), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1756,7 +1758,7 @@ if (rn01) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 114)
 
 	_TCI(c200, Local0)
-	LNotEqual(Local4, Local4)
+	Store(LNotEqual(Local4, Local4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1765,7 +1767,7 @@ if (rn01) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 115)
 
 	_TCI(c200, Local0)
-	LNotEqual(i000, Local5)
+	Store(LNotEqual(i000, Local5), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1781,7 +1783,7 @@ if (rn00) {
 	Store("LOr", Debug)
 
 	_TCI(c200, Local0)
-	LOr(3, 4)
+	Store(LOr(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1789,7 +1791,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 117)
 
 	_TCI(c200, Local0)
-	LOr(i000, i001)
+	Store(LOr(i000, i001), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1797,7 +1799,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 118)
 
 	_TCI(c200, Local0)
-	LOr(Local4, Local4)
+	Store(LOr(Local4, Local4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1806,7 +1808,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 119)
 
 	_TCI(c200, Local0)
-	LOr(i000, Local5)
+	Store(LOr(i000, Local5), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1827,7 +1829,7 @@ if (rn00) {
 	Store(1, i001)
 
 	_TCI(c200, Local0)
-	Match(Package(8) {1,2,3,4,5,6,7,8}, MTR, 2, MTR, 3, 0)
+	Store(Match(Package(8) {1,2,3,4,5,6,7,8}, MTR, 2, MTR, 3, 0), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1836,7 +1838,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 121)
 
 	_TCI(c200, Local0)
-	Match(Package(i001) {1,2,3,4,5,6,7,8}, MTR, i000, MTR, Local4, Local4)
+	Store(Match(Package(i001) {1,2,3,4,5,6,7,8}, MTR, i000, MTR, Local4, Local4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1846,7 +1848,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 122)
 
 	_TCI(c200, Local0)
-	Match(p002, MTR, i000, MTR, Local4, Local4)
+	Store(Match(p002, MTR, i000, MTR, Local4, Local4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1862,7 +1864,7 @@ if (rn00) {
 	Store("Mid", Debug)
 
 	_TCI(c200, Local0)
-	Mid("asdfghjk", 0, 1)
+	Store(Mid("asdfghjk", 0, 1), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1931,7 +1933,7 @@ if (rn00) {
 	Store("Mod", Debug)
 
 	_TCI(c200, Local0)
-	Mod(3, 4)
+	Store(Mod(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -1972,7 +1974,7 @@ if (rn00) {
 	Store("Multiply", Debug)
 
 	_TCI(c200, Local0)
-	Multiply(3, 4)
+	Store(Multiply(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2006,7 +2008,7 @@ if (rn00) {
 	Store("NAnd", Debug)
 
 	_TCI(c200, Local0)
-	NAnd(3, 4)
+	Store(NAnd(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2038,7 +2040,7 @@ if (rn00) {
 	Store("NOr", Debug)
 
 	_TCI(c200, Local0)
-	NOr(3, 4)
+	Store(NOr(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2070,7 +2072,7 @@ if (rn00) {
 	Store("Not", Debug)
 
 	_TCI(c200, Local0)
-	Not(3)
+	Store(Not(3), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2129,7 +2131,7 @@ if (rn00) {
 	Store("ObjectType", Debug)
 
 	_TCI(c200, Local0)
-	ObjectType(i000)
+	Store(ObjectType(i000), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2139,7 +2141,7 @@ if (rn00) {
 	Store(Package(1){}, Local4)
 
 	_TCI(c200, Local0)
-	ObjectType(Local4)
+	Store(ObjectType(Local4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2155,7 +2157,7 @@ if (rn00) {
 	Store("Or", Debug)
 
 	_TCI(c200, Local0)
-	Or(3, 4)
+	Store(Or(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2193,7 +2195,7 @@ if (rn00) {
 	Store("RefOf", Debug)
 
 	_TCI(c200, Local0)
-	RefOf(i000)
+	Store(RefOf(i000), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2203,7 +2205,7 @@ if (rn00) {
 	Store(1, Local4)
 
 	_TCI(c200, Local0)
-	RefOf(Local4)
+	Store(RefOf(Local4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2248,7 +2250,7 @@ if (rn00) {
 	Store("ShiftLeft", Debug)
 
 	_TCI(c200, Local0)
-	ShiftLeft(3, 4)
+	Store(ShiftLeft(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2290,7 +2292,7 @@ if (rn00) {
 	Store("ShiftRight", Debug)
 
 	_TCI(c200, Local0)
-	ShiftRight(3, 4)
+	Store(ShiftRight(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2350,7 +2352,7 @@ if (rn00) {
 	Store(Package(9) {}, Local4)
 
 	_TCI(c200, Local0)
-	SizeOf(Local4)
+	Store(SizeOf(Local4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2359,7 +2361,7 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 161)
 
 	_TCI(c200, Local0)
-	SizeOf(b000)
+	Store(SizeOf(b000), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2583,7 +2585,7 @@ if (rn00) {
 	Store("Subtract", Debug)
 
 	_TCI(c200, Local0)
-	Subtract(3, 4)
+	Store(Subtract(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2591,8 +2593,8 @@ if (rn00) {
 	m3a4(Local0, pp0a, Local1, pp00, 0, 0, 178)
 
 	_TCI(c200, Local0)
-	Subtract(3, 4)
-	Subtract(3, 4)
+	Store(Subtract(3, 4), temp)
+	Store(Subtract(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2604,7 +2606,7 @@ if (rn00) {
 	Store(0, lpC0)
 	_TCI(c200, Local0)
 	While (lpN0) {
-		Subtract(3, 4)
+		Store(Subtract(3, 4), temp)
 		Decrement(lpN0)
 		Increment(lpC0)
 	}
@@ -2619,7 +2621,7 @@ if (rn00) {
 	Store(4, i001)
 
 	_TCI(c200, Local0)
-	Subtract(i000, i001)
+	Store(Subtract(i000, i001), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2667,7 +2669,7 @@ if (rn00) {
 	Store("ToBCD", Debug)
 
 	_TCI(c200, Local0)
-	ToBCD(3)
+	Store(ToBCD(3), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2716,7 +2718,7 @@ if (rn00) {
 	Store("ToBuffer", Debug)
 
 	_TCI(c200, Local0)
-	ToBuffer(3)
+	Store(ToBuffer(3), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2804,7 +2806,7 @@ if (rn00) {
 	Store("ToDecimalString", Debug)
 
 	_TCI(c200, Local0)
-	ToDecimalString(3)
+	Store(ToDecimalString(3), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2875,7 +2877,7 @@ if (rn00) {
 	Store("ToHexString", Debug)
 
 	_TCI(c200, Local0)
-	ToHexString(3)
+	Store(ToHexString(3), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2949,7 +2951,7 @@ if (rn01) {
 	// Investigate: why only 2 objects, but not 3
 
 	_TCI(c200, Local0)
-	ToInteger(3)
+	Store(ToInteger(3), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -2993,7 +2995,7 @@ if (rn01) {
 	// See: there are created all the expected 3 objects
 
 	_TCI(c200, Local0)
-	ToInteger("0xaaaa")
+	Store(ToInteger("0xaaaa"), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -3037,7 +3039,7 @@ if (rn01) {
 	m3a4(Local0, pp0a, Local1, pp00, pp01, 0, 213)
 
 	_TCI(c200, Local0)
-	ToInteger(Buffer(9){1,2,3,4,5,6,7,8,9})
+	Store(ToInteger(Buffer(9){1,2,3,4,5,6,7,8,9}), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -3058,7 +3060,7 @@ if (rn02) {
 	// Error: 1 Integer is not deleted
 
 	_TCI(c200, Local0)
-	ToString(2)
+	Store(ToString(2), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)
@@ -3200,7 +3202,7 @@ if (rn00) {
 	Store("XOr", Debug)
 
 	_TCI(c200, Local0)
-	XOr(3, 4)
+	Store(XOr(3, 4), temp)
 	_TCI(c201, pp0a)
 	m3a3(Local0, pp0a, Local1)
 	Store(m3a8(), pp00)

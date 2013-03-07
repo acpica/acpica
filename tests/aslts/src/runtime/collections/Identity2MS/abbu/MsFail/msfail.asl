@@ -131,7 +131,7 @@ Method(mf02)
 	Name(s000, "qwertyuiop")
 	Name(s001, "_sdfghjkl")
 
-	LEqual("qwerty", "sdfghj")
+	Store(LEqual("qwerty", "sdfghj"), Local3)
 
 	if (chk0) {
 		/* This LNotEqual breaks */
@@ -333,7 +333,7 @@ Method(mf08)
 	CreateField(b000, 0, 8, bf00)
 
 	// Doesn't work
-	LNotEqual(bf00, 0x80)
+	Store(LNotEqual(bf00, 0x80), Local3)
 
 	if (chk0) {
 
@@ -341,11 +341,11 @@ Method(mf08)
 	Store(bf00, Local0)
 
 	// Doesn't work (!) too:
-	LNotEqual(Local0, 0x80)
+	Store(LNotEqual(Local0, 0x80), Local3)
 
 	// Doesn't work (!) too:
 	Store(Local0, Local1)
-	LNotEqual(Local1, 0x80)
+	Store(LNotEqual(Local1, 0x80), Local3)
 
 	// Works
 	if (pr) {
@@ -789,7 +789,7 @@ Method(mf11)
 	Name(b000, Buffer(4) {0x10, 0x11, 0x12, 0x13})
 	Name(b001, Buffer(4) {0x10, 0x11, 0x12, 0x13})
 
-	LEqual(b000, b001)
+	Store(LEqual(b000, b001), Local3)
 
 	Return(POUT)
 }
@@ -1213,7 +1213,7 @@ Method(mf18)
 	Name(s000, "qwertyuiop")
 	Name(s001, "qwertyuiop")
 
-	LEqual(s000, s001)
+	Store(LEqual(s000, s001), Local3)
 
 	if (chk0) {
 		Store(LEqual(s000, s001), Local0)
@@ -1236,7 +1236,7 @@ Method(mf19)
 	Name(b000, Buffer(4) {0x10, 0x11, 0x12, 0x13})
 	Name(b001, Buffer(4) {0x10, 0x11, 0x12, 0x13})
 
-	LEqual(b000, b001)
+	Store(LEqual(b000, b001), Local3)
 
 	if (chk0) {
 		Store(LEqual(b000, b001), Local0)
@@ -1283,7 +1283,7 @@ Method(mf1b)
 	Name(s000, "12345678")
 	Name(s001, "56789012")
 
-	Add(s000, s001)
+	Store(Add(s000, s001), Local3)
 
 	if (chk0) {
 		Store(Add(s000, s001), Local0)
@@ -1306,7 +1306,7 @@ Method(mf1c)
 	Name(b000, Buffer(4) {0x10, 0x11, 0x12, 0x13})
 	Name(b001, Buffer(4) {0x24, 0x35, 0x46, 0x57})
 
-	Add(b000, b001)
+	Store(Add(b000, b001), Local3)
 
 	if (chk0) {
 		Store(Add(b000, b001), Local0)
@@ -1331,7 +1331,7 @@ Method(mf1d)
 
 	Store(0xabcd0000, f000)
 
-	LEqual(f000, 0xabcd0000)
+	Store(LEqual(f000, 0xabcd0000), Local3)
 
 	Store(LEqual(f000, 0xabcd0000), Local0)
 	if (LNot(Local0)) {
@@ -1408,7 +1408,7 @@ Method(mf20)
 
 	Store(0xabcd0000, f000)
 
-	Add(f000, 0x12)
+	Store(Add(f000, 0x12), Local3)
 
 	Store(Add(f000, 0x12), Local0)
 	if (LNotEqual(Local0, 0xabcd0012)) {

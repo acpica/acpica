@@ -128,12 +128,12 @@ Method(mf72, 1)
           m001()
           if (Store(0xaaaa0007, i001)) {
               Increment(i002)
-              Add(0xaaaa0008, 0)
-              Subtract(0xaaaa0009, 0)
+              Store(Add(0xaaaa0008, 0), Local5) 
+              Store(Subtract(0xaaaa0009, 0), Local5)
               if (LEqual(arg0, 0)) {
                   return (0x55550000)
               }
-              Multiply(0xaaaa000a, 1)
+              Store(Multiply(0xaaaa000a, 1), Local5)
               Store(0xaaaa000d, i001)
               Decrement(i001)
           }
@@ -158,12 +158,12 @@ Method(mf72, 1)
                   while (0xabcd0004) {
                     if (Store(0xaaaa0007, i001)) {
                         Increment(i002)
-                        Add(0xaaaa0008, 0)
-                        Subtract(0xaaaa0009, 0)
+                        Store(Add(0xaaaa0008, 0), Local5)
+                        Store(Subtract(0xaaaa0009, 0), Local5)
                         if (LEqual(arg0, 3)) {
                             return (0x55550003)
                         }
-                        Multiply(0xaaaa000a, 1)
+                        Store(Multiply(0xaaaa000a, 1), Local5)
                         Store(0xaaaa000d, i001)
                         Decrement(i001)
                     }
@@ -300,8 +300,8 @@ Method(mf72, 1)
           m001()
           if (Store(0xaaaa0007, i001)) {
               Increment(i002)
-              Add(0xaaaa0008, 0)
-              Subtract(0xaaaa0009, 0)
+              Store(Add(0xaaaa0008, 0), Local5)
+              Store(Subtract(0xaaaa0009, 0), Local5)
               if (LEqual(arg0, 0)) {
                   CopyObject(Store(CopyObject(Store(CopyObject(CopyObject(Store(Store(
                       m008(arg0, arg1, arg2, arg3, arg4, arg5, arg6),
@@ -309,7 +309,7 @@ Method(mf72, 1)
                   return (ret9)
               //  return (0x55550000)
               }
-              Multiply(0xaaaa000a, 1)
+              Store(Multiply(0xaaaa000a, 1), Local5)
               Store(0xaaaa000d, i001)
               Decrement(i001)
           }
@@ -338,8 +338,8 @@ Method(mf72, 1)
                   while (0xabcd0004) {
                     if (Store(0xaaaa0007, i001)) {
                         Increment(i002)
-                        Add(0xaaaa0008, 0)
-                        Subtract(0xaaaa0009, 0)
+                        Store(Add(0xaaaa0008, 0), Local5)
+                        Store(Subtract(0xaaaa0009, 0), Local5)
                         if (LEqual(arg0, 3)) {
                             Store(Store(CopyObject(Store(Store(Store(Store(Store(
                                   m008(arg0, arg1, arg2, arg3, arg4, arg5, arg6),
@@ -347,7 +347,7 @@ Method(mf72, 1)
                             return (ret9)
                          // return (0x55550003)
                         }
-                        Multiply(0xaaaa000a, 1)
+                        Store(Multiply(0xaaaa000a, 1), Local5)
                         Store(0xaaaa000d, i001)
                         Decrement(i001)
                     }

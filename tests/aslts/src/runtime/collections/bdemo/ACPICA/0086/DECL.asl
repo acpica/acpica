@@ -37,38 +37,38 @@
 		if (0) {
 			// 1 Outstanding allocation
 
-			ToString("qwrtyu")
+			Store(ToString("qwrtyu"), Local0)
 
 		} elseif (0) {
 
 			// 6 Outstanding allocations
 
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
 		} else {
 
 			// 17 Outstanding allocations
 
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
-			ToString("qwrtyu")
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
+			Store(ToString("qwrtyu"), Local0)
 		}
 	}

@@ -12014,13 +12014,13 @@ Method(m613)
 
 			CH03(arg0, z088, 0, 0, 0)
 
-			Index(m601(2, 6), s614)
+			Store(Index(m601(2, 6), s614), Local3)
 			CH04(arg0, 0, 85, z088, 9, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
-			Index(m601(3, 6), s614)
+			Store(Index(m601(3, 6), s614), Local3)
 			CH04(arg0, 0, 85, z088, 10, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
-			Index(m601(4, 0), s614)
+			Store(Index(m601(4, 0), s614), Local3)
 			CH04(arg0, 0, 85, z088, 11, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 		}
 
@@ -23630,13 +23630,13 @@ Method(m613)
 
 			CH03(arg0, z088, 0, 0, 0)
 
-			Index(m601(2, 6), b60e)
+			Store(Index(m601(2, 6), b60e), Local3)
 			CH04(arg0, 0, 85, z088, 9, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
-			Index(m601(3, 6), b60e)
+			Store(Index(m601(3, 6), b60e), Local3)
 			CH04(arg0, 0, 85, z088, 10, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
-			Index(m601(4, 0), b60e)
+			Store(Index(m601(4, 0), b60e), Local3)
 			CH04(arg0, 0, 85, z088, 11, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 		}
 

@@ -512,7 +512,7 @@ Method(m694, 5)
 					// Result object is a reference
 					// Check that Target can be used as reference
 					Store(Derefof(arg1), Local0)
-					Derefof(Local0)
+					Store(Derefof(Local0), Local3)
 					if (CH03(arg0, z127, 18, Local2, arg3)) {
 						// Derefof caused unexpected exception
 						Return (1)

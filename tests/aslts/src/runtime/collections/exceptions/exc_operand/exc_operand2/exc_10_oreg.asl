@@ -55,7 +55,7 @@ Method(m4ba)
 	{
 		OperationRegion(opr2, SystemMemory, 0x100, 0x100)
 
-		DerefOf(opr2)
+		Store (DerefOf(opr2), Local1)
 		CH06(arg0, 0, 47)
 	}
 
@@ -63,7 +63,7 @@ Method(m4ba)
 	Method(m001, 1)
 	{
 		if (y083) {
-			DerefOf(opr9)
+			Store (DerefOf(opr9), Local1)
 			CH06(arg0, 1, 47)
 		}
 	}
@@ -79,7 +79,7 @@ Method(m4ba)
 
 		// CondRefOf
 		
-		CondRefOf(Local0)
+		Store (CondRefOf(Local0), Local1)
 		CH03(ts, z102, 0, 0, 0)
 
 		CondRefOf(Local0, Local1)
@@ -97,29 +97,20 @@ Method(m4ba)
 
 		// DerefOf
 
-		DerefOf(Local0)
+		Store (DerefOf(Local0), Local1)
 		CH06(arg0, 2, 47)
 
 		// FindSetLeftBit
-
-		FindSetLeftBit(Local0)
-		CH06(arg0, 3, 47)
 
 		FindSetLeftBit(Local0, Local1)
 		CH06(arg0, 4, 47)
 
 		// FindSetRightBit
 
-		FindSetRightBit(Local0)
-		CH06(arg0, 5, 47)
-
 		FindSetRightBit(Local0, Local1)
 		CH06(arg0, 6, 47)
 
 		// FromBCD
-
-		FromBCD(Local0)
-		CH06(arg0, 7, 47)
 
 		FromBCD(Local0, Local1)
 		CH06(arg0, 8, 47)
@@ -131,25 +122,22 @@ Method(m4ba)
 
 		// LNot
 
-		LNot(Local0)
+		Store (LNot(Local0), Local1)
 		CH06(arg0, 10, 47)
 
 		// Not
-
-		Not(Local0)
-		CH06(arg0, 11, 47)
 
 		Not(Local0, Local1)
 		CH06(arg0, 12, 47)
 
 		// ObjectType
 
-		ObjectType(Local0)
+		Store (ObjectType(Local0), Local1)
 		CH03(ts, z102, 3, 0, 0)
 
 		// RefOf
 
-		RefOf(Local0)
+		Store (RefOf(Local0), Local1)
 		CH03(ts, z102, 4, 0, 0)
 
 		// Release
@@ -169,7 +157,7 @@ Method(m4ba)
 
 		// SizeOf
 
-		SizeOf(Local0)
+		Store (SizeOf(Local0), Local1)
 		CH06(arg0, 16, 47)
 
 		// Sleep
@@ -189,56 +177,35 @@ Method(m4ba)
 
 		// ToBCD
 
-		ToBCD(Local0)
-		CH06(arg0, 20, 47)
-
 		ToBCD(Local0, Local1)
 		CH06(arg0, 21, 47)
 
 		// ToBuffer
-
-		ToBuffer(Local0)
-		CH06(arg0, 22, 47)
 
 		ToBuffer(Local0, Local1)
 		CH06(arg0, 23, 47)
 
 		// ToDecimalString
 
-		ToDecimalString(Local0)
-		CH06(arg0, 24, 47)
-
 		ToDecimalString(Local0, Local1)
 		CH06(arg0, 25, 47)
 
 		// ToHexString
-
-		ToHexString(Local0)
-		CH06(arg0, 26, 47)
 
 		ToHexString(Local0, Local1)
 		CH06(arg0, 27, 47)
 
 		// ToInteger
 
-		ToInteger(Local0)
-		CH06(arg0, 28, 47)
-
 		ToInteger(Local0, Local1)
 		CH06(arg0, 29, 47)
 
 		// Acquire
 
-		Acquire(Local0, 100)
+		Store(Acquire(Local0, 100), Local1)
 		CH06(arg0, 30, 47)
 
 		// Add
-
-		Add(Local0, i000)
-		CH06(arg0, 31, 47)
-
-		Add(i000, Local0)
-		CH06(arg0, 32, 47)
 
 		Add(Local0, i000, Local1)
 		CH06(arg0, 33, 47)
@@ -248,12 +215,6 @@ Method(m4ba)
 
 		// And
 
-		And(Local0, i000)
-		CH06(arg0, 35, 47)
-
-		And(i000, Local0)
-		CH06(arg0, 36, 47)
-
 		And(Local0, i000, Local1)
 		CH06(arg0, 37, 47)
 
@@ -261,12 +222,6 @@ Method(m4ba)
 		CH06(arg0, 38, 47)
 
 		// Concatenate
-
-		Concatenate(Local0, i000)
-		CH06(arg0, 39, 47)
-
-		Concatenate(i000, Local0)
-		CH06(arg0, 40, 47)
 
 		Concatenate(Local0, i000, Local1)
 		CH06(arg0, 41, 47)
@@ -276,12 +231,6 @@ Method(m4ba)
 
 		// ConcatenateResTemplate
 
-		ConcatenateResTemplate(Local0, ResourceTemplate(){})
-		CH06(arg0, 43, 47)
-
-		ConcatenateResTemplate(ResourceTemplate(){}, Local0)
-		CH06(arg0, 44, 47)
-
 		ConcatenateResTemplate(Local0, ResourceTemplate(){}, Local1)
 		CH06(arg0, 45, 47)
 
@@ -289,12 +238,6 @@ Method(m4ba)
 		CH06(arg0, 46, 47)
 
 		// Divide
-
-		Divide(Local0, i000)
-		CH06(arg0, 47, 47)
-
-		Divide(i000, Local0)
-		CH06(arg0, 48, 47)
 
 		Divide(Local0, i000, Local2)
 		CH06(arg0, 49, 47)
@@ -315,12 +258,6 @@ Method(m4ba)
 
 		// Index
 
-		Index(Local0, 0)
-		CH06(arg0, 54, 47)
-
-		Index("0", Local0)
-		CH06(arg0, 55, 47)
-
 		Index(Local0, 0, Local1)
 		CH06(arg0, 56, 47)
 
@@ -329,67 +266,61 @@ Method(m4ba)
 
 		// LEqual
 
-		LEqual(Local0, i000)
+		Store (LEqual(Local0, i000), Local1)
 		CH06(arg0, 58, 47)
 
-		LEqual(i000, Local0)
+		Store (LEqual(i000, Local0), Local1)
 		CH06(arg0, 59, 47)
 
 		// LGreater
 
-		LGreater(Local0, i000)
+		Store (LGreater(Local0, i000), Local1)
 		CH06(arg0, 60, 47)
 
-		LGreater(i000, Local0)
+		Store (LGreater(i000, Local0), Local1)
 		CH06(arg0, 61, 47)
 
 		// LGreaterEqual
 
-		LGreaterEqual(Local0, i000)
+		Store (LGreaterEqual(Local0, i000), Local1)
 		CH06(arg0, 62, 0xff)
 
-		LGreaterEqual(i000, Local0)
+		Store (LGreaterEqual(i000, Local0), Local1)
 		CH06(arg0, 63, 0xff)
 
 		// LLess
 
-		LLess(Local0, i000)
+		Store (LLess(Local0, i000), Local1)
 		CH06(arg0, 64, 47)
 
-		LLess(i000, Local0)
+		Store (LLess(i000, Local0), Local1)
 		CH06(arg0, 65, 47)
 
 		// LLessEqual
 
-		LLessEqual(Local0, i000)
+		Store (LLessEqual(Local0, i000), Local1)
 		CH06(arg0, 66, 0xff)
 
-		LLessEqual(i000, Local0)
+		Store (LLessEqual(i000, Local0), Local1)
 		CH06(arg0, 67, 0xff)
 
 		// LNotEqual
 
-		LNotEqual(Local0, i000)
+		Store (LNotEqual(Local0, i000), Local1)
 		CH06(arg0, 68, 0xff)
 
-		LNotEqual(i000, Local0)
+		Store (LNotEqual(i000, Local0), Local1)
 		CH06(arg0, 69, 0xff)
 
 		// LOr
 
-		LOr(Local0, i000)
+		Store (LOr(Local0, i000), Local1)
 		CH06(arg0, 70, 47)
 
-		LOr(i000, Local0)
+		Store (LOr(i000, Local0), Local1)
 		CH06(arg0, 71, 47)
 
 		// Mod
-
-		Mod(Local0, i000)
-		CH06(arg0, 72, 47)
-
-		Mod(i000, Local0)
-		CH06(arg0, 73, 47)
 
 		Mod(Local0, i000, Local1)
 		CH06(arg0, 74, 47)
@@ -399,12 +330,6 @@ Method(m4ba)
 
 		// Multiply
 
-		Multiply(Local0, i000)
-		CH06(arg0, 76, 47)
-
-		Multiply(i000, Local0)
-		CH06(arg0, 77, 47)
-
 		Multiply(Local0, i000, Local1)
 		CH06(arg0, 78, 47)
 
@@ -412,12 +337,6 @@ Method(m4ba)
 		CH06(arg0, 79, 47)
 
 		// NAnd
-
-		NAnd(Local0, i000)
-		CH06(arg0, 80, 47)
-
-		NAnd(i000, Local0)
-		CH06(arg0, 81, 47)
 
 		NAnd(Local0, i000, Local1)
 		CH06(arg0, 82, 47)
@@ -427,12 +346,6 @@ Method(m4ba)
 
 		// NOr
 
-		NOr(Local0, i000)
-		CH06(arg0, 84, 47)
-
-		NOr(i000, Local0)
-		CH06(arg0, 85, 47)
-
 		NOr(Local0, i000, Local1)
 		CH06(arg0, 86, 47)
 
@@ -440,12 +353,6 @@ Method(m4ba)
 		CH06(arg0, 87, 47)
 
 		// Or
-
-		Or(Local0, i000)
-		CH06(arg0, 88, 47)
-
-		Or(i000, Local0)
-		CH06(arg0, 89, 47)
 
 		Or(Local0, i000, Local1)
 		CH06(arg0, 90, 47)
@@ -455,12 +362,6 @@ Method(m4ba)
 
 		// ShiftLeft
 
-		ShiftLeft(Local0, i000)
-		CH06(arg0, 92, 47)
-
-		ShiftLeft(i000, Local0)
-		CH06(arg0, 93, 47)
-
 		ShiftLeft(Local0, i000, Local1)
 		CH06(arg0, 94, 47)
 
@@ -468,12 +369,6 @@ Method(m4ba)
 		CH06(arg0, 95, 47)
 
 		// ShiftRight
-
-		ShiftRight(Local0, i000)
-		CH06(arg0, 96, 47)
-
-		ShiftRight(i000, Local0)
-		CH06(arg0, 97, 47)
 
 		ShiftRight(Local0, i000, Local1)
 		CH06(arg0, 98, 47)
@@ -483,12 +378,6 @@ Method(m4ba)
 
 		// Subtract
 
-		Subtract(Local0, i000)
-		CH06(arg0, 100, 47)
-
-		Subtract(i000, Local0)
-		CH06(arg0, 101, 47)
-
 		Subtract(Local0, i000, Local1)
 		CH06(arg0, 102, 47)
 
@@ -496,12 +385,6 @@ Method(m4ba)
 		CH06(arg0, 103, 47)
 
 		// ToString
-
-		ToString(Local0, 1)
-		CH06(arg0, 104, 47)
-
-		ToString(i000, Local0)
-		CH06(arg0, 105, 47)
 
 		ToString(Local0, 1, Local1)
 		CH06(arg0, 106, 47)
@@ -511,19 +394,13 @@ Method(m4ba)
 
 		// Wait
 
-		Wait(Local0, i000)
+		Store(Wait(Local0, i000), Local1)
 		CH06(arg0, 108, 47)
 
-		Wait(e000, Local0)
+		Store(Wait(e000, Local0), Local1)
 		CH06(arg0, 109, 47)
 
 		// XOr
-
-		XOr(Local0, i000)
-		CH06(arg0, 110, 47)
-
-		XOr(i000, Local0)
-		CH06(arg0, 111, 47)
 
 		XOr(Local0, i000, Local1)
 		CH06(arg0, 112, 47)
@@ -532,15 +409,6 @@ Method(m4ba)
 		CH06(arg0, 113, 47)
 
 		// Mid
-
-		Mid(Local0, 1, 1)
-		CH06(arg0, 114, 47)
-
-		Mid("123", Local0, 1)
-		CH06(arg0, 115, 47)
-
-		Mid("123", 1, Local0)
-		CH06(arg0, 116, 47)
 
 		Mid(Local0, 1, 1, Local1)
 		CH06(arg0, 117, 47)
@@ -553,16 +421,16 @@ Method(m4ba)
 
 		// Match
 
-		Match(Local0, MTR, 0, MTR, 0, 0)
+		Store (Match(Local0, MTR, 0, MTR, 0, 0), Local1)
 		CH06(arg0, 120, 47)
 
-		Match(Package(){1}, MTR, Local0, MTR, 0, 0)
+		Store (Match(Package(){1}, MTR, Local0, MTR, 0, 0), Local1)
 		CH06(arg0, 121, 47)
 
-		Match(Package(){1}, MTR, 0, MTR, Local0, 0)
+		Store (Match(Package(){1}, MTR, 0, MTR, Local0, 0), Local1)
 		CH06(arg0, 122, 47)
 
-		Match(Package(){1}, MTR, 0, MTR, 0, Local0)
+		Store (Match(Package(){1}, MTR, 0, MTR, 0, Local0), Local1)
 		CH06(arg0, 123, 47)
 	}
 
@@ -575,14 +443,11 @@ Method(m4ba)
 			return (1)
 		}
 
-		DeRefOf(arg1)
+		Store (DeRefOf(arg1), Local1)
 		CH03(ts, z102, 5, 0, 0)
 
 		// CondRefOf
 		
-		CondRefOf(DeRefOf(arg1))
-		CH06(arg0, 0, 47)
-
 		CondRefOf(DeRefOf(arg1), Local1)
 		CH06(arg0, 1, 47)
 
@@ -598,29 +463,20 @@ Method(m4ba)
 
 		// DerefOf
 
-		DerefOf(DeRefOf(arg1))
+		Store (DerefOf(DeRefOf(arg1)), Local1)
 		CH06(arg0, 4, 47)
 
 		// FindSetLeftBit
-
-		FindSetLeftBit(DeRefOf(arg1))
-		CH06(arg0, 5, 47)
 
 		FindSetLeftBit(DeRefOf(arg1), Local1)
 		CH06(arg0, 6, 47)
 
 		// FindSetRightBit
 
-		FindSetRightBit(DeRefOf(arg1))
-		CH06(arg0, 7, 47)
-
 		FindSetRightBit(DeRefOf(arg1), Local1)
 		CH06(arg0, 8, 47)
 
 		// FromBCD
-
-		FromBCD(DeRefOf(arg1))
-		CH06(arg0, 9, 47)
 
 		FromBCD(DeRefOf(arg1), Local1)
 		CH06(arg0, 10, 47)
@@ -632,25 +488,22 @@ Method(m4ba)
 
 		// LNot
 
-		LNot(DeRefOf(arg1))
+		Store (LNot(DeRefOf(arg1)), Local1)
 		CH06(arg0, 12, 47)
 
 		// Not
-
-		Not(DeRefOf(arg1))
-		CH06(arg0, 13, 47)
 
 		Not(DeRefOf(arg1), Local1)
 		CH06(arg0, 14, 47)
 
 		// ObjectType
 
-		ObjectType(DeRefOf(arg1))
+		Store (ObjectType(DeRefOf(arg1)), Local1)
 		CH03(ts, z102, 6, 0, 0)
 
 		// RefOf
 
-		RefOf(DeRefOf(arg1))
+		Store (RefOf(DeRefOf(arg1)), Local1)
 		CH06(arg0, 15, 47)
 
 		// Release
@@ -661,7 +514,7 @@ Method(m4ba)
 
 		// SizeOf
 
-		SizeOf(DeRefOf(arg1))
+		Store (SizeOf(DeRefOf(arg1)), Local1)
 		CH06(arg0, 16, 47)
 
 		// Sleep
@@ -681,40 +534,25 @@ Method(m4ba)
 
 		// ToBCD
 
-		ToBCD(DeRefOf(arg1))
-		CH06(arg0, 20, 47)
-
 		ToBCD(DeRefOf(arg1), Local1)
 		CH06(arg0, 21, 47)
 
 		// ToBuffer
-
-		ToBuffer(DeRefOf(arg1))
-		CH06(arg0, 22, 47)
 
 		ToBuffer(DeRefOf(arg1), Local1)
 		CH06(arg0, 23, 47)
 
 		// ToDecimalString
 
-		ToDecimalString(DeRefOf(arg1))
-		CH06(arg0, 24, 47)
-
 		ToDecimalString(DeRefOf(arg1), Local1)
 		CH06(arg0, 25, 47)
 
 		// ToHexString
 
-		ToHexString(DeRefOf(arg1))
-		CH06(arg0, 26, 47)
-
 		ToHexString(DeRefOf(arg1), Local1)
 		CH06(arg0, 27, 47)
 
 		// ToInteger
-
-		ToInteger(DeRefOf(arg1))
-		CH06(arg0, 28, 47)
 
 		ToInteger(DeRefOf(arg1), Local1)
 		CH06(arg0, 29, 47)
@@ -722,12 +560,6 @@ Method(m4ba)
 		// Acquire
 
 		// Add
-
-		Add(DeRefOf(arg1), i000)
-		CH06(arg0, 31, 47)
-
-		Add(i000, DeRefOf(arg1))
-		CH06(arg0, 32, 47)
 
 		Add(DeRefOf(arg1), i000, Local1)
 		CH06(arg0, 33, 47)
@@ -737,12 +569,6 @@ Method(m4ba)
 
 		// And
 
-		And(DeRefOf(arg1), i000)
-		CH06(arg0, 35, 47)
-
-		And(i000, DeRefOf(arg1))
-		CH06(arg0, 36, 47)
-
 		And(DeRefOf(arg1), i000, Local1)
 		CH06(arg0, 37, 47)
 
@@ -750,12 +576,6 @@ Method(m4ba)
 		CH06(arg0, 38, 47)
 
 		// Concatenate
-
-		Concatenate(DeRefOf(arg1), i000)
-		CH06(arg0, 39, 47)
-
-		Concatenate(i000, DeRefOf(arg1))
-		CH06(arg0, 40, 47)
 
 		Concatenate(DeRefOf(arg1), i000, Local1)
 		CH06(arg0, 41, 47)
@@ -765,12 +585,6 @@ Method(m4ba)
 
 		// ConcatenateResTemplate
 
-		ConcatenateResTemplate(DeRefOf(arg1), ResourceTemplate(){})
-		CH06(arg0, 43, 47)
-
-		ConcatenateResTemplate(ResourceTemplate(){}, DeRefOf(arg1))
-		CH06(arg0, 44, 47)
-
 		ConcatenateResTemplate(DeRefOf(arg1), ResourceTemplate(){}, Local1)
 		CH06(arg0, 45, 47)
 
@@ -778,12 +592,6 @@ Method(m4ba)
 		CH06(arg0, 46, 47)
 
 		// Divide
-
-		Divide(DeRefOf(arg1), i000)
-		CH06(arg0, 47, 47)
-
-		Divide(i000, DeRefOf(arg1))
-		CH06(arg0, 48, 47)
 
 		Divide(DeRefOf(arg1), i000, Local2)
 		CH06(arg0, 49, 47)
@@ -804,12 +612,6 @@ Method(m4ba)
 
 		// Index
 
-		Index(DeRefOf(arg1), 0)
-		CH06(arg0, 54, 47)
-
-		Index("0", DeRefOf(arg1))
-		CH06(arg0, 55, 47)
-
 		Index(DeRefOf(arg1), 0, Local1)
 		CH06(arg0, 56, 47)
 
@@ -818,67 +620,61 @@ Method(m4ba)
 
 		// LEqual
 
-		LEqual(DeRefOf(arg1), i000)
+		Store (LEqual(DeRefOf(arg1), i000), Local1)
 		CH06(arg0, 58, 47)
 
-		LEqual(i000, DeRefOf(arg1))
+		Store (LEqual(i000, DeRefOf(arg1)), Local1)
 		CH06(arg0, 59, 47)
 
 		// LGreater
 
-		LGreater(DeRefOf(arg1), i000)
+		Store (LGreater(DeRefOf(arg1), i000), Local1)
 		CH06(arg0, 60, 47)
 
-		LGreater(i000, DeRefOf(arg1))
+		Store (LGreater(i000, DeRefOf(arg1)), Local1)
 		CH06(arg0, 61, 47)
 
 		// LGreaterEqual
 
-		LGreaterEqual(DeRefOf(arg1), i000)
+		Store (LGreaterEqual(DeRefOf(arg1), i000), Local1)
 		CH06(arg0, 62, 0xff)
 
-		LGreaterEqual(i000, DeRefOf(arg1))
+		Store (LGreaterEqual(i000, DeRefOf(arg1)), Local1)
 		CH06(arg0, 63, 0xff)
 
 		// LLess
 
-		LLess(DeRefOf(arg1), i000)
+		Store (LLess(DeRefOf(arg1), i000), Local1)
 		CH06(arg0, 64, 47)
 
-		LLess(i000, DeRefOf(arg1))
+		Store (LLess(i000, DeRefOf(arg1)), Local1)
 		CH06(arg0, 65, 47)
 
 		// LLessEqual
 
-		LLessEqual(DeRefOf(arg1), i000)
+		Store (LLessEqual(DeRefOf(arg1), i000), Local1)
 		CH06(arg0, 66, 0xff)
 
-		LLessEqual(i000, DeRefOf(arg1))
+		Store (LLessEqual(i000, DeRefOf(arg1)), Local1)
 		CH06(arg0, 67, 0xff)
 
 		// LNotEqual
 
-		LNotEqual(DeRefOf(arg1), i000)
+		Store (LNotEqual(DeRefOf(arg1), i000), Local1)
 		CH06(arg0, 68, 0xff)
 
-		LNotEqual(i000, DeRefOf(arg1))
+		Store (LNotEqual(i000, DeRefOf(arg1)), Local1)
 		CH06(arg0, 69, 0xff)
 
 		// LOr
 
-		LOr(DeRefOf(arg1), i000)
+		Store (LOr(DeRefOf(arg1), i000), Local1)
 		CH06(arg0, 70, 47)
 
-		LOr(i000, DeRefOf(arg1))
+		Store (LOr(i000, DeRefOf(arg1)), Local1)
 		CH06(arg0, 71, 47)
 
 		// Mod
-
-		Mod(DeRefOf(arg1), i000)
-		CH06(arg0, 72, 47)
-
-		Mod(i000, DeRefOf(arg1))
-		CH06(arg0, 73, 47)
 
 		Mod(DeRefOf(arg1), i000, Local1)
 		CH06(arg0, 74, 47)
@@ -888,12 +684,6 @@ Method(m4ba)
 
 		// Multiply
 
-		Multiply(DeRefOf(arg1), i000)
-		CH06(arg0, 76, 47)
-
-		Multiply(i000, DeRefOf(arg1))
-		CH06(arg0, 77, 47)
-
 		Multiply(DeRefOf(arg1), i000, Local1)
 		CH06(arg0, 78, 47)
 
@@ -901,12 +691,6 @@ Method(m4ba)
 		CH06(arg0, 79, 47)
 
 		// NAnd
-
-		NAnd(DeRefOf(arg1), i000)
-		CH06(arg0, 80, 47)
-
-		NAnd(i000, DeRefOf(arg1))
-		CH06(arg0, 81, 47)
 
 		NAnd(DeRefOf(arg1), i000, Local1)
 		CH06(arg0, 82, 47)
@@ -916,12 +700,6 @@ Method(m4ba)
 
 		// NOr
 
-		NOr(DeRefOf(arg1), i000)
-		CH06(arg0, 84, 47)
-
-		NOr(i000, DeRefOf(arg1))
-		CH06(arg0, 85, 47)
-
 		NOr(DeRefOf(arg1), i000, Local1)
 		CH06(arg0, 86, 47)
 
@@ -929,12 +707,6 @@ Method(m4ba)
 		CH06(arg0, 87, 47)
 
 		// Or
-
-		Or(DeRefOf(arg1), i000)
-		CH06(arg0, 88, 47)
-
-		Or(i000, DeRefOf(arg1))
-		CH06(arg0, 89, 47)
 
 		Or(DeRefOf(arg1), i000, Local1)
 		CH06(arg0, 90, 47)
@@ -944,12 +716,6 @@ Method(m4ba)
 
 		// ShiftLeft
 
-		ShiftLeft(DeRefOf(arg1), i000)
-		CH06(arg0, 92, 47)
-
-		ShiftLeft(i000, DeRefOf(arg1))
-		CH06(arg0, 93, 47)
-
 		ShiftLeft(DeRefOf(arg1), i000, Local1)
 		CH06(arg0, 94, 47)
 
@@ -957,12 +723,6 @@ Method(m4ba)
 		CH06(arg0, 95, 47)
 
 		// ShiftRight
-
-		ShiftRight(DeRefOf(arg1), i000)
-		CH06(arg0, 96, 47)
-
-		ShiftRight(i000, DeRefOf(arg1))
-		CH06(arg0, 97, 47)
 
 		ShiftRight(DeRefOf(arg1), i000, Local1)
 		CH06(arg0, 98, 47)
@@ -972,12 +732,6 @@ Method(m4ba)
 
 		// Subtract
 
-		Subtract(DeRefOf(arg1), i000)
-		CH06(arg0, 100, 47)
-
-		Subtract(i000, DeRefOf(arg1))
-		CH06(arg0, 101, 47)
-
 		Subtract(DeRefOf(arg1), i000, Local1)
 		CH06(arg0, 102, 47)
 
@@ -985,12 +739,6 @@ Method(m4ba)
 		CH06(arg0, 103, 47)
 
 		// ToString
-
-		ToString(DeRefOf(arg1), 1)
-		CH06(arg0, 104, 47)
-
-		ToString(i000, DeRefOf(arg1))
-		CH06(arg0, 105, 47)
 
 		ToString(DeRefOf(arg1), 1, Local1)
 		CH06(arg0, 106, 47)
@@ -1000,16 +748,10 @@ Method(m4ba)
 
 		// Wait
 
-		Wait(e000, DeRefOf(arg1))
+		Store(Wait(e000, DeRefOf(arg1)), Local1)
 		CH06(arg0, 109, 47)
 
 		// XOr
-
-		XOr(DeRefOf(arg1), i000)
-		CH06(arg0, 110, 47)
-
-		XOr(i000, DeRefOf(arg1))
-		CH06(arg0, 111, 47)
 
 		XOr(DeRefOf(arg1), i000, Local1)
 		CH06(arg0, 112, 47)
@@ -1018,15 +760,6 @@ Method(m4ba)
 		CH06(arg0, 113, 47)
 
 		// Mid
-
-		Mid(DeRefOf(arg1), 1, 1)
-		CH06(arg0, 114, 47)
-
-		Mid("123", DeRefOf(arg1), 1)
-		CH06(arg0, 115, 47)
-
-		Mid("123", 1, DeRefOf(arg1))
-		CH06(arg0, 116, 47)
 
 		Mid(DeRefOf(arg1), 1, 1, Local1)
 		CH06(arg0, 117, 47)
@@ -1039,16 +772,16 @@ Method(m4ba)
 
 		// Match
 
-		Match(DeRefOf(arg1), MTR, 0, MTR, 0, 0)
+		Store (Match(DeRefOf(arg1), MTR, 0, MTR, 0, 0), Local1)
 		CH06(arg0, 120, 47)
 
-		Match(Package(){1}, MTR, DeRefOf(arg1), MTR, 0, 0)
+		Store (Match(Package(){1}, MTR, DeRefOf(arg1), MTR, 0, 0), Local1)
 		CH06(arg0, 121, 47)
 
-		Match(Package(){1}, MTR, 0, MTR, DeRefOf(arg1), 0)
+		Store (Match(Package(){1}, MTR, 0, MTR, DeRefOf(arg1), 0), Local1)
 		CH06(arg0, 122, 47)
 
-		Match(Package(){1}, MTR, 0, MTR, 0, DeRefOf(arg1))
+		Store (Match(Package(){1}, MTR, 0, MTR, 0, DeRefOf(arg1)), Local1)
 		CH06(arg0, 123, 47)
 
 		return (0)
@@ -1067,9 +800,6 @@ Method(m4ba)
 
 		// CondRefOf
 		
-		CondRefOf(m000())
-		CH06(arg0, 0, 47)
-
 		CondRefOf(m000(), Local1)
 		CH06(arg0, 1, 47)
 
@@ -1085,29 +815,20 @@ Method(m4ba)
 
 		// DerefOf
 
-		DerefOf(m000())
+		Store (DerefOf(m000()), Local1)
 		CH06(arg0, 3, 47)
 
 		// FindSetLeftBit
-
-		FindSetLeftBit(m000())
-		CH06(arg0, 4, 47)
 
 		FindSetLeftBit(m000(), Local1)
 		CH06(arg0, 5, 47)
 
 		// FindSetRightBit
 
-		FindSetRightBit(m000())
-		CH06(arg0, 6, 47)
-
 		FindSetRightBit(m000(), Local1)
 		CH06(arg0, 7, 47)
 
 		// FromBCD
-
-		FromBCD(m000())
-		CH06(arg0, 8, 47)
 
 		FromBCD(m000(), Local1)
 		CH06(arg0, 9, 47)
@@ -1119,13 +840,10 @@ Method(m4ba)
 
 		// LNot
 
-		LNot(m000())
+		Store (LNot(m000()), Local1)
 		CH06(arg0, 11, 47)
 
 		// Not
-
-		Not(m000())
-		CH06(arg0, 12, 47)
 
 		Not(m000(), Local1)
 		CH06(arg0, 13, 47)
@@ -1138,7 +856,7 @@ Method(m4ba)
 
 		// RefOf
 
-		RefOf(m000())
+		Store (RefOf(m000()), Local1)
 		CH06(arg0, 14, 47)
 
 		// Release
@@ -1158,7 +876,7 @@ Method(m4ba)
 
 		// SizeOf
 
-		SizeOf(m000())
+		Store (SizeOf(m000()), Local1)
 		CH06(arg0, 16, 47)
 
 		// Sleep
@@ -1178,56 +896,35 @@ Method(m4ba)
 
 		// ToBCD
 
-		ToBCD(m000())
-		CH06(arg0, 20, 47)
-
 		ToBCD(m000(), Local1)
 		CH06(arg0, 21, 47)
 
 		// ToBuffer
-
-		ToBuffer(m000())
-		CH06(arg0, 22, 47)
 
 		ToBuffer(m000(), Local1)
 		CH06(arg0, 23, 47)
 
 		// ToDecimalString
 
-		ToDecimalString(m000())
-		CH06(arg0, 24, 47)
-
 		ToDecimalString(m000(), Local1)
 		CH06(arg0, 25, 47)
 
 		// ToHexString
-
-		ToHexString(m000())
-		CH06(arg0, 26, 47)
 
 		ToHexString(m000(), Local1)
 		CH06(arg0, 27, 47)
 
 		// ToInteger
 
-		ToInteger(m000())
-		CH06(arg0, 28, 47)
-
 		ToInteger(m000(), Local1)
 		CH06(arg0, 29, 47)
 
 		// Acquire
 
-		Acquire(m000(), 100)
+		Store(Acquire(m000(), 100), Local1)
 		CH06(arg0, 30, 47)
 
 		// Add
-
-		Add(m000(), i000)
-		CH06(arg0, 31, 47)
-
-		Add(i000, m000())
-		CH06(arg0, 32, 47)
 
 		Add(m000(), i000, Local1)
 		CH06(arg0, 33, 47)
@@ -1237,12 +934,6 @@ Method(m4ba)
 
 		// And
 
-		And(m000(), i000)
-		CH06(arg0, 35, 47)
-
-		And(i000, m000())
-		CH06(arg0, 36, 47)
-
 		And(m000(), i000, Local1)
 		CH06(arg0, 37, 47)
 
@@ -1250,12 +941,6 @@ Method(m4ba)
 		CH06(arg0, 38, 47)
 
 		// Concatenate
-
-		Concatenate(m000(), i000)
-		CH06(arg0, 39, 47)
-
-		Concatenate(i000, m000())
-		CH06(arg0, 40, 47)
 
 		Concatenate(m000(), i000, Local1)
 		CH06(arg0, 41, 47)
@@ -1265,12 +950,6 @@ Method(m4ba)
 
 		// ConcatenateResTemplate
 
-		ConcatenateResTemplate(m000(), ResourceTemplate(){})
-		CH06(arg0, 43, 47)
-
-		ConcatenateResTemplate(ResourceTemplate(){}, m000())
-		CH06(arg0, 44, 47)
-
 		ConcatenateResTemplate(m000(), ResourceTemplate(){}, Local1)
 		CH06(arg0, 45, 47)
 
@@ -1278,12 +957,6 @@ Method(m4ba)
 		CH06(arg0, 46, 47)
 
 		// Divide
-
-		Divide(m000(), i000)
-		CH06(arg0, 47, 47)
-
-		Divide(i000, m000())
-		CH06(arg0, 48, 47)
 
 		Divide(m000(), i000, Local2)
 		CH06(arg0, 49, 47)
@@ -1304,12 +977,6 @@ Method(m4ba)
 
 		// Index
 
-		Index(m000(), 0)
-		CH06(arg0, 54, 47)
-
-		Index("0", m000())
-		CH06(arg0, 55, 47)
-
 		Index(m000(), 0, Local1)
 		CH06(arg0, 56, 47)
 
@@ -1318,67 +985,61 @@ Method(m4ba)
 
 		// LEqual
 
-		LEqual(m000(), i000)
+		Store (LEqual(m000(), i000), Local1)
 		CH06(arg0, 58, 47)
 
-		LEqual(i000, m000())
+		Store (LEqual(i000, m000()), Local1)
 		CH06(arg0, 59, 47)
 
 		// LGreater
 
-		LGreater(m000(), i000)
+		Store (LGreater(m000(), i000), Local1)
 		CH06(arg0, 60, 47)
 
-		LGreater(i000, m000())
+		Store (LGreater(i000, m000()), Local1)
 		CH06(arg0, 61, 47)
 
 		// LGreaterEqual
 
-		LGreaterEqual(m000(), i000)
+		Store (LGreaterEqual(m000(), i000), Local1)
 		CH06(arg0, 62, 0xff)
 
-		LGreaterEqual(i000, m000())
+		Store (LGreaterEqual(i000, m000()), Local1)
 		CH06(arg0, 63, 0xff)
 
 		// LLess
 
-		LLess(m000(), i000)
+		Store (LLess(m000(), i000), Local1)
 		CH06(arg0, 64, 47)
 
-		LLess(i000, m000())
+		Store (LLess(i000, m000()), Local1)
 		CH06(arg0, 65, 47)
 
 		// LLessEqual
 
-		LLessEqual(m000(), i000)
+		Store (LLessEqual(m000(), i000), Local1)
 		CH06(arg0, 66, 0xff)
 
-		LLessEqual(i000, m000())
+		Store (LLessEqual(i000, m000()), Local1)
 		CH06(arg0, 67, 0xff)
 
 		// LNotEqual
 
-		LNotEqual(m000(), i000)
+		Store (LNotEqual(m000(), i000), Local1)
 		CH06(arg0, 68, 0xff)
 
-		LNotEqual(i000, m000())
+		Store (LNotEqual(i000, m000()), Local1)
 		CH06(arg0, 69, 0xff)
 
 		// LOr
 
-		LOr(m000(), i000)
+		Store (LOr(m000(), i000), Local1)
 		CH06(arg0, 70, 47)
 
-		LOr(i000, m000())
+		Store (LOr(i000, m000()), Local1)
 		CH06(arg0, 71, 47)
 
 		// Mod
-
-		Mod(m000(), i000)
-		CH06(arg0, 72, 47)
-
-		Mod(i000, m000())
-		CH06(arg0, 73, 47)
 
 		Mod(m000(), i000, Local1)
 		CH06(arg0, 74, 47)
@@ -1388,12 +1049,6 @@ Method(m4ba)
 
 		// Multiply
 
-		Multiply(m000(), i000)
-		CH06(arg0, 76, 47)
-
-		Multiply(i000, m000())
-		CH06(arg0, 77, 47)
-
 		Multiply(m000(), i000, Local1)
 		CH06(arg0, 78, 47)
 
@@ -1401,12 +1056,6 @@ Method(m4ba)
 		CH06(arg0, 79, 47)
 
 		// NAnd
-
-		NAnd(m000(), i000)
-		CH06(arg0, 80, 47)
-
-		NAnd(i000, m000())
-		CH06(arg0, 81, 47)
 
 		NAnd(m000(), i000, Local1)
 		CH06(arg0, 82, 47)
@@ -1416,12 +1065,6 @@ Method(m4ba)
 
 		// NOr
 
-		NOr(m000(), i000)
-		CH06(arg0, 84, 47)
-
-		NOr(i000, m000())
-		CH06(arg0, 85, 47)
-
 		NOr(m000(), i000, Local1)
 		CH06(arg0, 86, 47)
 
@@ -1429,12 +1072,6 @@ Method(m4ba)
 		CH06(arg0, 87, 47)
 
 		// Or
-
-		Or(m000(), i000)
-		CH06(arg0, 88, 47)
-
-		Or(i000, m000())
-		CH06(arg0, 89, 47)
 
 		Or(m000(), i000, Local1)
 		CH06(arg0, 90, 47)
@@ -1444,12 +1081,6 @@ Method(m4ba)
 
 		// ShiftLeft
 
-		ShiftLeft(m000(), i000)
-		CH06(arg0, 92, 47)
-
-		ShiftLeft(i000, m000())
-		CH06(arg0, 93, 47)
-
 		ShiftLeft(m000(), i000, Local1)
 		CH06(arg0, 94, 47)
 
@@ -1457,12 +1088,6 @@ Method(m4ba)
 		CH06(arg0, 95, 47)
 
 		// ShiftRight
-
-		ShiftRight(m000(), i000)
-		CH06(arg0, 96, 47)
-
-		ShiftRight(i000, m000())
-		CH06(arg0, 97, 47)
 
 		ShiftRight(m000(), i000, Local1)
 		CH06(arg0, 98, 47)
@@ -1472,12 +1097,6 @@ Method(m4ba)
 
 		// Subtract
 
-		Subtract(m000(), i000)
-		CH06(arg0, 100, 47)
-
-		Subtract(i000, m000())
-		CH06(arg0, 101, 47)
-
 		Subtract(m000(), i000, Local1)
 		CH06(arg0, 102, 47)
 
@@ -1485,12 +1104,6 @@ Method(m4ba)
 		CH06(arg0, 103, 47)
 
 		// ToString
-
-		ToString(m000(), 1)
-		CH06(arg0, 104, 47)
-
-		ToString(i000, m000())
-		CH06(arg0, 105, 47)
 
 		ToString(m000(), 1, Local1)
 		CH06(arg0, 106, 47)
@@ -1500,19 +1113,13 @@ Method(m4ba)
 
 		// Wait
 
-		Wait(m000(), i000)
+		Store(Wait(m000(), i000), Local1)
 		CH06(arg0, 108, 47)
 
-		Wait(e000, m000())
+		Store(Wait(e000, m000()), Local1)
 		CH06(arg0, 109, 47)
 
 		// XOr
-
-		XOr(m000(), i000)
-		CH06(arg0, 110, 47)
-
-		XOr(i000, m000())
-		CH06(arg0, 111, 47)
 
 		XOr(m000(), i000, Local1)
 		CH06(arg0, 112, 47)
@@ -1521,15 +1128,6 @@ Method(m4ba)
 		CH06(arg0, 113, 47)
 
 		// Mid
-
-		Mid(m000(), 1, 1)
-		CH06(arg0, 114, 47)
-
-		Mid("123", m000(), 1)
-		CH06(arg0, 115, 47)
-
-		Mid("123", 1, m000())
-		CH06(arg0, 116, 47)
 
 		Mid(m000(), 1, 1, Local1)
 		CH06(arg0, 117, 47)
@@ -1542,16 +1140,16 @@ Method(m4ba)
 
 		// Match
 
-		Match(m000(), MTR, 0, MTR, 0, 0)
+		Store (Match(m000(), MTR, 0, MTR, 0, 0), Local1)
 		CH06(arg0, 120, 47)
 
-		Match(Package(){1}, MTR, m000(), MTR, 0, 0)
+		Store (Match(Package(){1}, MTR, m000(), MTR, 0, 0), Local1)
 		CH06(arg0, 121, 47)
 
-		Match(Package(){1}, MTR, 0, MTR, m000(), 0)
+		Store (Match(Package(){1}, MTR, 0, MTR, m000(), 0), Local1)
 		CH06(arg0, 122, 47)
 
-		Match(Package(){1}, MTR, 0, MTR, 0, m000())
+		Store (Match(Package(){1}, MTR, 0, MTR, 0, m000()), Local1)
 		CH06(arg0, 123, 47)
 	}
 
@@ -1588,19 +1186,19 @@ Method(m4ba)
 
 			Store(0, i000)
 
-			DerefOf(m000(1, lpC0))
+			Store (DerefOf(m000(1, lpC0)), Local1)
 			CH03(ts, z102, Add(9, lpC0), 0, 0)
 			CH00(arg0, 1)
 
-			DerefOf(DerefOf(m000(2, lpC0)))
+			Store (DerefOf(DerefOf(m000(2, lpC0))), Local1)
 			CH06(arg0, Add(1, Local0), 47)
 			CH00(arg0, 2)
 
-			Index(DerefOf(m000(3, lpC0)), 0)
+			Store (Index(DerefOf(m000(3, lpC0)), 0), Local1)
 			CH06(arg0, Add(2, Local0), 47)
 			CH00(arg0, 3)
 
-			Match(DerefOf(m000(4, lpC0)), MTR, 0, MTR, 0, 0)
+			Store (Match(DerefOf(m000(4, lpC0)), MTR, 0, MTR, 0, 0), Local1)
 			CH06(arg0, Add(3, Local0), 47)
 			CH00(arg0, 4)
 

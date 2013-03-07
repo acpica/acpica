@@ -323,31 +323,31 @@ Method(mf8e)
 
 	CH03("", 0, 0x04a, 0, 0)
 
-	DerefOf("b006")
+	Store(DerefOf("b006"), Local2)
 
-	DerefOf(Local0)
+	Store(DerefOf(Local0), Local2)
 
-	DerefOf(Local7)
+	Store(DerefOf(Local7), Local2)
 
-	DerefOf(s006)
-	DerefOf(s006)
-	DerefOf(s006)
-	DerefOf(s006)
-	DerefOf(s006)
-	DerefOf(s006)
-	DerefOf(s006)
-	DerefOf(s006)
-	DerefOf(s006)
+	Store(DerefOf(s006), Local2)
+	Store(DerefOf(s006), Local2)
+	Store(DerefOf(s006), Local2)
+	Store(DerefOf(s006), Local2)
+	Store(DerefOf(s006), Local2)
+	Store(DerefOf(s006), Local2)
+	Store(DerefOf(s006), Local2)
+	Store(DerefOf(s006), Local2)
+	Store(DerefOf(s006), Local2)
 
-	DerefOf(mm60())
+	Store(DerefOf(mm60()), Local2)
 
-	DerefOf(mm61(ss06))
+	Store(DerefOf(mm61(ss06)), Local2)
 
-	DerefOf(ToString("b006"))
+	Store(DerefOf(ToString("b006")), Local2)
 
-	DerefOf(Store("b006", Local6))
+	Store(DerefOf(Store("b006", Local6)), Local2)
 
-	DerefOf(i006)
+	Store(DerefOf(i006), Local2)
 
 	CH03("", 0, 0x04b, 0, 0)
 }
@@ -368,31 +368,31 @@ Method(mf8f)
 	// Checkings
 
 	CH03("", 0, 0x04c, 0, 0)
-	DerefOf("e007")
+	Store(DerefOf("e007"), Local2)
 	CH03("", 0, 0x04d, 0, 0)
 
 	CH03("", 0, 0x04e, 0, 0)
-	DerefOf("mx07")
+	Store(DerefOf("mx07"), Local2)
 	CH03("", 0, 0x04f, 0, 0)
 
 	CH03("", 0, 0x050, 0, 0)
-	DerefOf("d007")
+	Store(DerefOf("d007"), Local2)
 	CH03("", 0, 0x051, 0, 0)
 
 	CH03("", 0, 0x052, 0, 0)
-	DerefOf("tz07")
+	Store(DerefOf("tz07"), Local2)
 	CH03("", 0, 0x053, 0, 0)
 
 	CH03("", 0, 0x054, 0, 0)
-	DerefOf("pr07")
+	Store(DerefOf("pr07"), Local2)
 	CH03("", 0, 0x055, 0, 0)
 
 	CH03("", 0, 0x056, 0, 0)
-	DerefOf("r007")
+	Store(DerefOf("r007"), Local2)
 	CH03("", 0, 0x057, 0, 0)
 
 	CH03("", 0, 0x058, 0, 0)
-	DerefOf("pw07")
+	Store(DerefOf("pw07"), Local2)
 	CH03("", 0, 0x059, 0, 0)
 }
 
@@ -408,15 +408,15 @@ Method(mf90)
 	// Checkings
 
 	CH03("", 0, 0x05a, 0, 0)
-	DerefOf(b008)
+	Store(DerefOf(b008), Local2)
 	CH04("", 0, 0xff, 0, 0x05b, 0, 0)
 
 	CH03("", 0, 0x05c, 0, 0)
-	DerefOf(i008)
+	Store(DerefOf(i008), Local2)
 	CH04("", 0, 0xff, 0, 0x05d, 0, 0)
 
 	CH03("", 0, 0x05e, 0, 0)
-	DerefOf(p008)
+	Store(DerefOf(p008), Local2)
 	CH04("", 0, 0xff, 0, 0x05f, 0, 0)
 }
 
@@ -426,19 +426,19 @@ Method(mf90)
 Method(mf91)
 {
 	CH03("", 0, 0x060, 0, 0)
-	DerefOf("0123")
+	Store(DerefOf("0123"), Local2)
 	CH04("", 0, 0xff, 0, 0x061, 0, 0)
 
 	CH03("", 0, 0x062, 0, 0)
-	DerefOf("zxcvbnm,./;'\][0123")
+	Store(DerefOf("zxcvbnm,./;'\][0123"), Local2)
 	CH04("", 0, 0xff, 0, 0x063, 0, 0)
 
 	CH03("", 0, 0x064, 0, 0)
-	DerefOf("mf_d")
+	Store(DerefOf("mf_d"), Local2)
 	CH04("", 0, 0xff, 0, 0x065, 0, 0)
 
 	CH03("", 0, 0x066, 0, 0)
-	DerefOf("b009")
+	Store(DerefOf("b009"), Local2)
 	CH04("", 0, 0xff, 0, 0x067, 0, 0)
 }
 
@@ -542,31 +542,31 @@ Method(mfa2)
 	// Checkings
 
 	CH03("", 0, 0x08a, 0, 0)
-	DerefOf(e00c)
+	Store(DerefOf(e00c), Local2)
 	CH04("", 0, 0xff, 0, 0x08b, 0, 0)
 
 	CH03("", 0, 0x08c, 0, 0)
-	DerefOf(mx0c)
+	Store(DerefOf(mx0c), Local2)
 	CH04("", 0, 0xff, 0, 0x08d, 0, 0)
 
 	CH03("", 0, 0x08e, 0, 0)
-	DerefOf(d00c)
+	Store(DerefOf(d00c), Local2)
 	CH04("", 0, 0xff, 0, 0x08f, 0, 0)
 
 	CH03("", 0, 0x090, 0, 0)
-	DerefOf(tz0c)
+	Store(DerefOf(tz0c), Local2)
 	CH04("", 0, 0xff, 0, 0x091, 0, 0)
 
 	CH03("", 0, 0x092, 0, 0)
-	DerefOf(pr0c)
+	Store(DerefOf(pr0c), Local2)
 	CH04("", 0, 0xff, 0, 0x093, 0, 0)
 
 	CH03("", 0, 0x094, 0, 0)
-	DerefOf(r00c)
+	Store(DerefOf(r00c), Local2)
 	CH04("", 0, 0xff, 0, 0x095, 0, 0)
 
 	CH03("", 0, 0x096, 0, 0)
-	DerefOf(pw0c)
+	Store(DerefOf(pw0c), Local2)
 	CH04("", 0, 0xff, 0, 0x097, 0, 0)
 }
 

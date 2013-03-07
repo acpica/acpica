@@ -42,7 +42,7 @@ Method(mf7e)
 
 	CH03("", 0, 0x000, 0, 0)
 
-	ConcatenateResTemplate(RT00, Local0)
+	Store(ConcatenateResTemplate(RT00, Local0), Local1)
 
 	CH04("", 0, 0xff, 0, 0x001, 0, 0)
 }

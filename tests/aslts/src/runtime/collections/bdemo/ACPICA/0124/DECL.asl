@@ -42,15 +42,15 @@
 		// c) Modulo(Index, 0x100000000) < Size.
 
 		CH03("", 0, 0x000, 0, 0)
-		Index(p000, 0x100000001)
+		Store(Index(p000, 0x100000001), Local0)
 		CH04("", 0, 55, 0, 0x001, 0, 0) // AE_AML_PACKAGE_LIMIT
 
 		CH03("", 0, 0x002, 0, 0)
-		Index(b000, 0x100000002)
+		Store(Index(b000, 0x100000002), Local0)
 		CH04("", 0, 54, 0, 0x003, 0, 0) // AE_AML_BUFFER_LIMIT
 
 		CH03("", 0, 0x004, 0, 0)
-		Index(s000, 0x100000003)
+		Store(Index(s000, 0x100000003), Local0)
 		CH04("", 0, 61, 0, 0x005, 0, 0) // AE_AML_STRING_LIMIT
 	}
 

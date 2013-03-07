@@ -50,7 +50,7 @@ Method(mdfa)
 	Store(1, f001)
 	Store(2, f002)
 
-	Add(f001, f002)
+	Store(Add(f001, f002), Local0)
 }
 
 // Outstanding: 0x1 allocations after execution
@@ -65,31 +65,31 @@ Method(mdfb)
 	Store(1, f001)
 	Store(2, f002)
 
-	Add(f001, f002)
+	Store(Add(f001, f002), Local0)
 }
 
 // No outstanding allocations
 Method(mdfc)
 {
-	Add(1, 2)
+	Store(Add(1, 2), Local0)
 }
 
 // Outstanding: 0x1 allocations after execution
 Method(mdfd)
 {
-	Add(1, "2")
+	Store(Add(1, "2"), Local0)
 }
 
 // Outstanding: 0x1 allocations after execution
 Method(mdfe)
 {
-	Add("1", 2)
+	Store(Add("1", 2), Local0)
 }
 
 // Outstanding: 0x2 allocations after execution
 Method(mdff)
 {
-	Add("1", "2")
+	Store(Add("1", "2"), Local0)
 }
 
 // Outstanding: 0x1 allocations after execution
@@ -97,7 +97,7 @@ Method(me00)
 {
 	Name(b000, Buffer() {0x91})
 
-	Add(b000, 2)
+	Store(Add(b000, 2), Local0)
 }
 
 Method(me01)

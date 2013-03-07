@@ -66,7 +66,7 @@ Method(m375)
 
 /* to be implemented, now arbitrary operation only */
 
-	Add(0, 1)
+	Store(Add(0, 1), Local2)
 
 	// Use NamedX for _TCI-begin statistics Package
 	// not to touch the LOCAL_REFERENCE entry.

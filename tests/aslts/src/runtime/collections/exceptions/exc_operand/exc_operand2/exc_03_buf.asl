@@ -52,11 +52,11 @@ Method(m4b3, 1)
 		Name(b000, Buffer(){0x63})
 
 		if (y083) {
-			DerefOf(b000)
+			Store (DerefOf(b000), Local1)
 			CH06(arg0, 0, 47)
 		}
 
-		Index(b000, 0)
+		Store (Index(b000, 0), Local1)
 		CH03(ts, z095, 0, 0, 0)
 	}
 
@@ -64,18 +64,18 @@ Method(m4b3, 1)
 	Method(m001, 1)
 	{
 		if (y083) {
-			DerefOf(b100)
+			Store (DerefOf(b100), Local1)
 			CH06(arg0, 1, 47)
 		}
 
-		Index(b100, 0)
+		Store (Index(b100, 0), Local1)
 		CH03(ts, z095, 1, 0, 0)
 	}
 
 	// Argument
 	Method(m002, 2)
 	{
-		DerefOf(arg1)
+		Store (DerefOf(arg1), Local1)
 		CH06(arg0, 2, 47)
 
 		Release(arg1)
@@ -87,16 +87,16 @@ Method(m4b3, 1)
 		Signal(arg1)
 		CH06(arg0, 5, 47)
 
-		Acquire(arg1, 0)
+		Store(Acquire(arg1, 0), Local1)
 		CH06(arg0, 6, 47)
 
-		Index(arg1, 0)
+		Store (Index(arg1, 0), Local1)
 		CH03(ts, z095, 2, 0, 0)
 
-		Wait(arg1, 0)
+		Store(Wait(arg1, 0), Local1)
 		CH06(arg0, 7, 47)
 
-		Match(arg1, MTR, 0, MTR, 0, 0)
+		Store (Match(arg1, MTR, 0, MTR, 0, 0), Local1)
 		CH06(arg0, 8, 47)
 	}
 
@@ -105,7 +105,7 @@ Method(m4b3, 1)
 	{
 		Store(Buffer(){0x63}, Local0)
 
-		DerefOf(Local0)
+		Store (DerefOf(Local0), Local1)
 		CH06(arg0, 9, 47)
 
 		Release(Local0)
@@ -117,16 +117,16 @@ Method(m4b3, 1)
 		Signal(Local0)
 		CH06(arg0, 12, 47)
 
-		Acquire(Local0, 0)
+		Store(Acquire(Local0, 0), Local1)
 		CH06(arg0, 13, 47)
 
-		Index(Local0, 0)
+		Store (Index(Local0, 0), Local1)
 		CH03(ts, z095, 3, 0, 0)
 
-		Wait(Local0, 0)
+		Store(Wait(Local0, 0), Local1)
 		CH06(arg0, 14, 47)
 
-		Match(Local0, MTR, 0, MTR, 0, 0)
+		Store (Match(Local0, MTR, 0, MTR, 0, 0), Local1)
 		CH06(arg0, 15, 47)
 	}
 
@@ -135,26 +135,15 @@ Method(m4b3, 1)
 	{
 		Name(p000, Package(){Buffer(){0x63}})
 
-		// DeRefOf(Index(Package, Ind))
-
-		DerefOf(DeRefOf(Index(p000, 0)))
-		CH06(arg0, 16, 47)
-
-		Index(DeRefOf(Index(p000, 0)), 0)
-		CH03(ts, z095, 4, 0, 0)
-
-		Match(DeRefOf(Index(p000, 0)), MTR, 0, MTR, 0, 0)
-		CH06(arg0, 17, 47)
-
 		// DeRefOf(Index(Package, Ind, Dest))
 
-		DerefOf(DeRefOf(Index(p000, 0, Local0)))
+		Store (DerefOf(DeRefOf(Index(p000, 0, Local0))), Local1)
 		CH06(arg0, 18, 47)
 
-		Index(DeRefOf(Index(p000, 0, Local0)), 0)
+		Store (Index(DeRefOf(Index(p000, 0, Local0)), 0), Local1)
 		CH03(ts, z095, 5, 0, 0)
 
-		Match(DeRefOf(Index(p000, 0, Local0)), MTR, 0, MTR, 0, 0)
+		Store (Match(DeRefOf(Index(p000, 0, Local0)), MTR, 0, MTR, 0, 0), Local1)
 		CH06(arg0, 19, 47)
 	}
 
@@ -170,16 +159,16 @@ Method(m4b3, 1)
 			return (1)
 		}
 
-		DerefOf(arg1)
+		Store (DerefOf(arg1), Local1)
 		CH03(ts, z095, 6, 0, 0)
 
-		DerefOf(DerefOf(arg1))
+		Store (DerefOf(DerefOf(arg1)), Local1)
 		CH06(arg0, 21, 47)
 
-		Index(DerefOf(arg1), 0)
+		Store (Index(DerefOf(arg1), 0), Local1)
 		CH03(ts, z095, 7, 0, 0)
 
-		Match(DerefOf(arg1), MTR, 0, MTR, 0, 0)
+		Store (Match(DerefOf(arg1), MTR, 0, MTR, 0, 0), Local1)
 		CH06(arg0, 22, 47)
 
 		return (0)
@@ -204,7 +193,7 @@ Method(m4b3, 1)
 			}
 		}
 
-		DerefOf(m000(1))
+		Store (DerefOf(m000(1)), Local1)
 		CH06(arg0, 24, 47)
 		CH00(arg0, 1)
 
@@ -226,14 +215,14 @@ Method(m4b3, 1)
 			CH00(arg0, 4)
 		}
 
-		Acquire(m000(5), 0)
+		Store(Acquire(m000(5), 0), Local1)
 		CH06(arg0, 28, 47)
 		if (y600) {
 			CH00(arg0, 5)
 		}
 
 		CH03(ts, z095, 12, 0, 0)
-		Index(m000(6), 0)
+		Store (Index(m000(6), 0), Local1)
 		if (y900) {
 			CH03(ts, z095, 8, 0, 0)
 			CH00(arg0, 6)
@@ -241,13 +230,13 @@ Method(m4b3, 1)
 			CH04(ts, 0, 85, z095, 0x123, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 		}
 
-		Wait(m000(7), 0)
+		Store(Wait(m000(7), 0), Local1)
 		CH06(arg0, 29, 47)
 		if (y600) {
 			CH00(arg0, 7)
 		}
 
-		Match(m000(8), MTR, 0, MTR, 0, 0)
+		Store (Match(m000(8), MTR, 0, MTR, 0, 0), Local1)
 		CH06(arg0, 30, 47)
 		CH00(arg0, 8)
 	}
@@ -285,19 +274,19 @@ Method(m4b3, 1)
 
 			Store(0, i000)
 
-			DerefOf(m000(1, lpC0))
+			Store (DerefOf(m000(1, lpC0)), Local1)
 			CH03(ts, z095, Add(9, lpC0), 0, 0)
 			CH00(arg0, 1)
 
-			DerefOf(DerefOf(m000(2, lpC0)))
+			Store (DerefOf(DerefOf(m000(2, lpC0))), Local1)
 			CH06(arg0, Add(32, Local0), 47)
 			CH00(arg0, 2)
 
-			Index(DerefOf(m000(3, lpC0)), 0)
+			Store (Index(DerefOf(m000(3, lpC0)), 0), Local1)
 			CH06(arg0, Add(33, Local0), 47)
 			CH00(arg0, 3)
 
-			Match(DerefOf(m000(4, lpC0)), MTR, 0, MTR, 0, 0)
+			Store (Match(DerefOf(m000(4, lpC0)), MTR, 0, MTR, 0, 0), Local1)
 			CH06(arg0, Add(34, Local0), 47)
 			CH00(arg0, 4)
 

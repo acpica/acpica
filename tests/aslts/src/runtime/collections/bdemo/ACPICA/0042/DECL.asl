@@ -36,7 +36,7 @@ Method(mdd3)
 {
 	Store("0", Local0)
 	Store(Local0, Debug)
-	ToDecimalString(Local0)
+	Store(ToDecimalString(Local0), Local2)
 	Store(Local0, Debug)
 	Add(Local0, 1, Local7)
 	if (LNotEqual(Local7, 1)){

@@ -63,7 +63,7 @@
 
 			Store("DeRefof(Local0)" , Debug)
 
-			DeRefof(Local0)
+			Store(DeRefof(Local0), Local1)
 
 			if (LNotEqual(id1c, 0xfedcba9876543211)) {
 				err("", zFFF, 0x003, 0, 0, id1c, 0xfedcba9876543211)

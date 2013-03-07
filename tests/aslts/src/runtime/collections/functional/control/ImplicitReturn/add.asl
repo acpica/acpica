@@ -42,7 +42,7 @@ Method(mf71)
 
 	Method(m000)
 	{
-		Add(0xabcd0002, i001)
+		Store(Add(0xabcd0002, i001), Local1)
 		if (fl00) {
 			Store(0xdddd0000, i001)
 			Return (0)
@@ -55,7 +55,7 @@ Method(mf71)
 			Store(0xdddd0001, i001)
 			Return (0)
 		}
-		Add(0xabcd0003, i001)
+		Store(Add(0xabcd0003, i001), Local1)
 	}
 
 	Method(m002, 1)
@@ -68,7 +68,7 @@ Method(mf71)
 			Return (0)
 		}
 		if (arg0) {
-			Add(0xabcd0004, i001)
+			Store(Add(0xabcd0004, i001), Local1)
 		}
 	}
 
@@ -82,9 +82,9 @@ Method(mf71)
 			Return (0)
 		}
 		if (arg0) {
-			Add(0xabcd0005, i001)
+			Store(Add(0xabcd0005, i001), Local1)
 		} else {
-			Add(0xabcd0006, i001)
+			Store(Add(0xabcd0006, i001), Local1)
 		}
 	}
 
@@ -96,13 +96,13 @@ Method(mf71)
 
 		switch (arg0) {
 			case (0) {
-				Add(0xabcd0007, i001)
+				Store(Add(0xabcd0007, i001), Local1)
 			}
 			case (0x12345678) {
-				Add(0xabcd0008, i001)
+				Store(Add(0xabcd0008, i001), Local1)
 			}
 			default {
-				Add(0xabcd0009, i001)
+				Store(Add(0xabcd0009, i001), Local1)
 			}
 		}
 	}
@@ -114,7 +114,7 @@ Method(mf71)
 		}
 
 		While (1) {
-			Add(0xabcd000a, i001)
+			Store(Add(0xabcd000a, i001), Local1)
 			Break
 		}
 	}
@@ -125,7 +125,7 @@ Method(mf71)
 			Return (0)
 		}
 
-		Add(0xabcd000b, i001)
+		Store(Add(0xabcd000b, i001), Local1)
 		While (0xabcd0003) {
 			Break
 		}
@@ -154,7 +154,7 @@ Method(mf71)
 			Decrement(lpN0)
 			Increment(lpC0)
 			Store(0xabcd0001, i000)
-			Add(0xabcd000c, i001)
+			Store(Add(0xabcd000c, i001), Local1)
 			Continue
 		}
 	}
@@ -163,7 +163,7 @@ Method(mf71)
 	{
 		Method(m000)
 		{
-			Add(0xabcd000d, i001)
+			Store(Add(0xabcd000d, i001), Local1)
 		}
 
 		if (fl00) {
@@ -388,7 +388,7 @@ Method(mff0)
 	{
 		Store(0, Local0)
 
-		Add(0xabcd0002, Local0)
+		Store(Add(0xabcd0002, Local0), Local1)
 		if (fl00) {
 			Store(0xdddd0000, Local0)
 			Return (0)
@@ -403,7 +403,7 @@ Method(mff0)
 			Store(0xdddd0001, Local0)
 			Return (0)
 		}
-		Add(0xabcd0003, Local0)
+		Store(Add(0xabcd0003, Local0), Local1)
 	}
 
 	Method(m002, 1)
@@ -418,7 +418,7 @@ Method(mff0)
 			Return (0)
 		}
 		if (arg0) {
-			Add(0xabcd0004, Local0)
+			Store(Add(0xabcd0004, Local0), Local1)
 		}
 	}
 
@@ -434,9 +434,9 @@ Method(mff0)
 			Return (0)
 		}
 		if (arg0) {
-			Add(0xabcd0005, Local0)
+			Store(Add(0xabcd0005, Local0), Local1)
 		} else {
-			Add(0xabcd0006, Local0)
+			Store(Add(0xabcd0006, Local0), Local1)
 		}
 	}
 
@@ -450,13 +450,13 @@ Method(mff0)
 
 		switch (arg0) {
 			case (0) {
-				Add(0xabcd0007, Local0)
+				Store(Add(0xabcd0007, Local0), Local1)
 			}
 			case (0x12345678) {
-				Add(0xabcd0008, Local0)
+				Store(Add(0xabcd0008, Local0), Local1)
 			}
 			default {
-				Add(0xabcd0009, Local0)
+				Store(Add(0xabcd0009, Local0), Local1)
 			}
 		}
 	}
@@ -470,7 +470,7 @@ Method(mff0)
 		}
 
 		While (1) {
-			Add(0xabcd000a, Local0)
+			Store(Add(0xabcd000a, Local0), Local1)
 			Break
 		}
 	}
@@ -483,7 +483,7 @@ Method(mff0)
 			Return (0)
 		}
 
-		Add(0xabcd000b, Local0)
+		Store(Add(0xabcd000b, Local0), Local1)
 		While (0xabcd0002) {
 			Break
 		}
@@ -514,7 +514,7 @@ Method(mff0)
 			Decrement(lpN0)
 			Increment(lpC0)
 			Store(0xabcd0005, i000)
-			Add(0xabcd000c, Local0)
+			Store(Add(0xabcd000c, Local0), Local1)
 			Continue
 		}
 	}
@@ -525,7 +525,7 @@ Method(mff0)
 		{
 			Store(0, Local0)
 
-			Add(0xabcd000d, Local0)
+			Store(Add(0xabcd000d, Local0), Local1)
 		}
 
 		if (fl00) {
@@ -541,7 +541,7 @@ Method(mff0)
 		{
 			Store(0, Local0)
 
-			Add(0xabcd000e, Local0, Local0)
+			Store(Add(0xabcd000e, Local0, Local0), Local1)
 			m001(Local0)
 		}
 

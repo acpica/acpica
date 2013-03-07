@@ -391,9 +391,9 @@ Method(mf6e)
 			Return (0)
 		}
 		Increment(i002)
-		Add(0xaaaa0003, 0)
-		Subtract(0xaaaa0004, 0)
-		Multiply(0xaaaa0005, 1)
+		Store(Add(0xaaaa0003, 0), Local1)
+		Store(Subtract(0xaaaa0004, 0), Local1)
+		Store(Multiply(0xaaaa0005, 1), Local1)
 		Store(0xaaaa0006, i001)
 	}
 
@@ -404,9 +404,9 @@ Method(mf6e)
 		}
 		if (Store(0xaaaa0007, i001)) {
 			Increment(i002)
-			Add(0xaaaa0008, 0)
-			Subtract(0xaaaa0009, 0)
-			Multiply(0xaaaa000a, 1)
+			Store(Add(0xaaaa0008, 0), Local1)
+			Store(Subtract(0xaaaa0009, 0), Local1)
+			Store(Multiply(0xaaaa000a, 1), Local1)
 			Store(0xaaaa000d, i001)
 			Decrement(i001)
 		}
@@ -420,9 +420,9 @@ Method(mf6e)
 		if (Add(0xaaaa000d, 0)) {
 		if (0xaaaa000e) {
 			Increment(i002)
-			Add(0xaaaa000f, 0)
-			Subtract(0xaaaa0010, 0)
-			Multiply(0xaaaa0011, 1)
+			Store(Add(0xaaaa000f, 0), Local1)
+			Store(Subtract(0xaaaa0010, 0), Local1)
+			Store(Multiply(0xaaaa0011, 1), Local1)
 			Store(0xaaaa0012, i001)
 			Increment(i001)
 		}}
@@ -435,11 +435,11 @@ Method(mf6e)
 		}
 		while (Subtract(0xaaaa0014, 0)) {
 			Increment(i002)
-			Add(0xaaaa0015, 0)
-			Subtract(0xaaaa0016, 0)
-			Multiply(0xaaaa0017, 1)
+			Store(Add(0xaaaa0015, 0), Local1)
+			Store(Subtract(0xaaaa0016, 0), Local1)
+			Store(Multiply(0xaaaa0017, 1), Local1)
 			Store(0xaaaa0018, i001)
-			Multiply(0xaaaa0019, 1)
+			Store(Multiply(0xaaaa0019, 1), Local1)
 			Break
 		}
 	}

@@ -34,7 +34,7 @@
 
 Method(md9f, 1)
 {
-	Concatenate("qwertyuiop", arg0)
+	Concatenate("qwertyuiop", arg0, Local1)
 }
 
 Method(mda0)

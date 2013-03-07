@@ -38,11 +38,11 @@
 
 		CH03("", 0, 0x000, 0, 0)
 
-		ToInteger("0")    // AE_BAD_DECIMAL_CONSTANT
+		Store(ToInteger("0"), Local0)    // AE_BAD_DECIMAL_CONSTANT
 
-		ToInteger("0x0")  // AE_BAD_HEX_CONSTANT
+		Store(ToInteger("0x0"), Local0)  // AE_BAD_HEX_CONSTANT
 
-		Add("0", 1)       // AE_BAD_HEX_CONSTANT
+		Store(Add("0", 1), Local0)       // AE_BAD_HEX_CONSTANT
 
 		Store("0", i000)  // AE_BAD_HEX_CONSTANT
 

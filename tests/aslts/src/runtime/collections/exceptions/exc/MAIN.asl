@@ -40,7 +40,7 @@ DefinitionBlock(
 //TMP
 Method (XXXX, 1)
 {
-    Add (Arg0, 4)
+    Add (Arg0, 4, Local0)
 }
 
 	// All declarations
@@ -62,7 +62,7 @@ Method (XXXX, 1)
 		Store(FNSH(), Local7)
 
 // TMP:
-Add (Local7, 1)
+Add (Local7, 1, Local0)
 
 		return (Local7)
 	}

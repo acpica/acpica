@@ -47,7 +47,7 @@
 
 		// 1.
 
-		Concatenate(b000, b001)
+		Store(Concatenate(b000, b001), Local1)
 		Store("Ok: Concatenate(<Default empty buffer>, ...)", Debug)
 
 		Concatenate(b000, b001, Local0)
@@ -62,7 +62,7 @@
 		Store(Sizeof(Local0), Debug)
 
 		Store("Try: Concatenate(<Mid empty buffer result object>, ...)", Debug)
-		Concatenate(Local0, b001)
+		Store(Concatenate(Local0, b001), Local1)
 		Store("Ok: Concatenate(<Mid empty buffer result object>, ...)", Debug)
 
 		Concatenate(Local0, b001, Local0)
@@ -84,7 +84,7 @@
 
 		// 3.
 
-		Concatenate(s000, s001)
+		Store(Concatenate(s000, s001), Local1)
 		Store("Ok: Concatenate(<Default empty string>, ...)", Debug)
 
 		Concatenate(s000, s001, Local0)
@@ -99,7 +99,7 @@
 		Store(Sizeof(Local0), Debug)
 
 		Store("Try: Concatenate(<Mid empty string result object>, ...)", Debug)
-		Concatenate(Local0, s001)
+		Store(Concatenate(Local0, s001), Local1)
 		Store("Ok: Concatenate(<Mid empty string result object>, ...)", Debug)
 
 		Concatenate(Local0, s001, Local0)

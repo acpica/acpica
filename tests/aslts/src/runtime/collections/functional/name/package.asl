@@ -1015,7 +1015,7 @@ Method(m1f7)
 //	Store(DeRefOf(Index(p000, 0)), Local0)
 	Store(Index(p000, 0), Local0)
 
-	ObjectType(Local0)
+	Store(ObjectType(Local0), Local2)
 //	Store(ObjectType(Local0), Local1)
 }
 

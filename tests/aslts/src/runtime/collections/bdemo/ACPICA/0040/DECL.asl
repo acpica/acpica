@@ -34,7 +34,7 @@
 
 Method(mdd0) {
 	Mutex(MTX0, 0)
-	Acquire(MTX0, 0)
+	Store(Acquire(MTX0, 0), Local0)
 	Release(MTX0)
 }
 

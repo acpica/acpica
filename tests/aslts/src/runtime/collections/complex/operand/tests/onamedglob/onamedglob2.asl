@@ -11072,13 +11072,13 @@ Method(m612)
 
 			CH03(arg0, z087, 0, 0, 0)
 
-			Index(m601(2, 6), bf74)
+			Store(Index(m601(2, 6), bf74), Local3)
 			CH04(arg0, 0, 85, z087, 9, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
-			Index(m601(3, 6), bf74)
+			Store(Index(m601(3, 6), bf74), Local3)
 			CH04(arg0, 0, 85, z087, 10, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
-			Index(m601(4, 0), bf74)
+			Store(Index(m601(4, 0), bf74), Local3)
 			CH04(arg0, 0, 85, z087, 11, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 		}
 

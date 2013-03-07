@@ -63,77 +63,77 @@
 		// Expected exception for each DerefOf below
 
 		CH03("", 0, 0x000, 0, 0)
-		DerefOf(i000)
+		Store(DerefOf(i000), Local0)
 		CH04("", 0, 0xff, 0, 0x001, 0, 0)
 
 		CH03("", 0, 0x000, 0, 0)
-		DerefOf(b000)
+		Store(DerefOf(b000), Local0)
 		CH04("", 0, 0xff, 0, 0x001, 0, 0)
 
 		CH03("", 0, 0x000, 0, 0)
-		DerefOf(p000)
+		Store(DerefOf(p000), Local0)
 		CH04("", 0, 0xff, 0, 0x001, 0, 0)
 
 		CH03("", 0, 0x000, 0, 0)
-		DerefOf(d000)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
-
-
-		CH03("", 0, 0x000, 0, 0)
-		DerefOf(e000)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
-
-		CH03("", 0, 0x000, 0, 0)
-		DerefOf(mx00)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
-
-		CH03("", 0, 0x000, 0, 0)
-		DerefOf(tz00)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
-
-		CH03("", 0, 0x000, 0, 0)
-		DerefOf(pr00)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
-
-		CH03("", 0, 0x000, 0, 0)
-		DerefOf(pw00)
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
-
-		CH03("", 0, 0x000, 0, 0)
-		DerefOf(r000)
+		Store(DerefOf(d000), Local0)
 		CH04("", 0, 0xff, 0, 0x001, 0, 0)
 
 
 		CH03("", 0, 0x000, 0, 0)
-		DerefOf(bf90)
+		Store(DerefOf(e000), Local0)
 		CH04("", 0, 0xff, 0, 0x001, 0, 0)
 
 		CH03("", 0, 0x000, 0, 0)
-		DerefOf(f900)
+		Store(DerefOf(mx00), Local0)
 		CH04("", 0, 0xff, 0, 0x001, 0, 0)
 
 		CH03("", 0, 0x000, 0, 0)
-		DerefOf(f901)
+		Store(DerefOf(tz00), Local0)
 		CH04("", 0, 0xff, 0, 0x001, 0, 0)
 
 		CH03("", 0, 0x000, 0, 0)
-		DerefOf(f902)
+		Store(DerefOf(pr00), Local0)
 		CH04("", 0, 0xff, 0, 0x001, 0, 0)
 
 		CH03("", 0, 0x000, 0, 0)
-		DerefOf(f903)
+		Store(DerefOf(pw00), Local0)
 		CH04("", 0, 0xff, 0, 0x001, 0, 0)
 
 		CH03("", 0, 0x000, 0, 0)
-		DerefOf(bn90)
+		Store(DerefOf(r000), Local0)
+		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+
+
+		CH03("", 0, 0x000, 0, 0)
+		Store(DerefOf(bf90), Local0)
 		CH04("", 0, 0xff, 0, 0x001, 0, 0)
 
 		CH03("", 0, 0x000, 0, 0)
-		DerefOf(if90)
+		Store(DerefOf(f900), Local0)
 		CH04("", 0, 0xff, 0, 0x001, 0, 0)
 
 		CH03("", 0, 0x000, 0, 0)
-		DerefOf(if91)
+		Store(DerefOf(f901), Local0)
+		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+
+		CH03("", 0, 0x000, 0, 0)
+		Store(DerefOf(f902), Local0)
+		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+
+		CH03("", 0, 0x000, 0, 0)
+		Store(DerefOf(f903), Local0)
+		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+
+		CH03("", 0, 0x000, 0, 0)
+		Store(DerefOf(bn90), Local0)
+		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+
+		CH03("", 0, 0x000, 0, 0)
+		Store(DerefOf(if90), Local0)
+		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+
+		CH03("", 0, 0x000, 0, 0)
+		Store(DerefOf(if91), Local0)
 		CH04("", 0, 0xff, 0, 0x001, 0, 0)
 
 

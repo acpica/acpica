@@ -36,6 +36,6 @@
 	{
 		Store(0, Local0)
 
-		ToBuffer("1234567")
+		Store(ToBuffer("1234567"), Local1)
 		Store(ToBuffer("1234567"), Local0)
 	}

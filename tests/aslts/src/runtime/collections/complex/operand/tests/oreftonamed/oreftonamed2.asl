@@ -11058,13 +11058,13 @@ Method(m61b)
 
 			CH03(arg0, z120, 0, 0, 0)
 
-			Index(m601(2, 6), Derefof(Refof(bf74)))
+			Store(Index(m601(2, 6), Derefof(Refof(bf74))), Local3)
 			CH04(arg0, 0, 85, z120, 9, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
-			Index(m601(3, 6), Derefof(Refof(bf74)))
+			Store(Index(m601(3, 6), Derefof(Refof(bf74))), Local3)
 			CH04(arg0, 0, 85, z120, 10, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 
-			Index(m601(4, 0), Derefof(Refof(bf74)))
+			Store(Index(m601(4, 0), Derefof(Refof(bf74))), local3)
 			CH04(arg0, 0, 85, z120, 11, 0, 0)	// AE_INDEX_TO_NOT_ATTACHED
 		}
 

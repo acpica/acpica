@@ -38,7 +38,7 @@ Method(mda4)
 
 	Store(0, Local0)
 
-	ToString(B000, Local0)
+	ToString(B000, Local0, Local1)
 
 	if (LNotequal(Local0, 0)) {
 		err("", zFFF, 0x000, 0, 0, Local0, 0)

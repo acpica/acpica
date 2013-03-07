@@ -36,7 +36,7 @@ Method(mdd2)
 {
 	Store(0, Local0)
 	Store(Local0, Debug)
-	ToInteger(Local0)
+	Store(ToInteger(Local0), Local1)
 	Store(Local0, Debug)
 	Add(Local0, 1, Local7)
 	if (LNotEqual(Local7, 1)){

@@ -146,38 +146,38 @@ Method(m143)
 
 	CH03(ts, z058, 10, 0, 0)
 
-	SizeOf (STR0)
-	SizeOf (BUF0)
-	SizeOf (PAC0)
-	SizeOf (INT0)
+	Store(SizeOf(STR0), Local5)
+	Store(SizeOf(BUF0), Local5)
+	Store(SizeOf(PAC0), Local5)
+	Store(SizeOf(INT0), Local5)
 
 	CH03(ts, z058, 11, 0, 0)
 
 	if (INT0) {
 		Store(0, Local1)
 	}
-	SizeOf (Local1)
+	Store(SizeOf(Local1), Local5)
 	CH04(ts, 0, 49, z058, 12, 0, 0)	// AE_AML_UNINITIALIZED_LOCAL
 
-	SizeOf (DEV0)
+	Store(SizeOf(DEV0), Local5)
 	CH04(ts, 0, 47, z058, 13, 0, 0)	// AE_AML_OPERAND_TYPE
 
-	SizeOf (EVE0)
+	Store(SizeOf(EVE0), Local5)
 	CH04(ts, 0, 47, z058, 14, 0, 0)	// AE_AML_OPERAND_TYPE
 
-	SizeOf (MTX0)
+	Store(SizeOf(MTX0), Local5)
 	CH04(ts, 0, 47, z058, 15, 0, 0)	// AE_AML_OPERAND_TYPE
 
-	SizeOf (OPR0)
+	Store(SizeOf(OPR0), Local5)
 	CH04(ts, 0, 47, z058, 16, 0, 0)	// AE_AML_OPERAND_TYPE
 
-	SizeOf (PWR0)
+	Store(SizeOf(PWR0), Local5)
 	CH04(ts, 0, 47, z058, 17, 0, 0)	// AE_AML_OPERAND_TYPE
 
-	SizeOf (CPU0)
+	Store(SizeOf(CPU0), Local5)
 	CH04(ts, 0, 47, z058, 18, 0, 0)	// AE_AML_OPERAND_TYPE
 
-	SizeOf (TZN0)
+	Store(SizeOf(TZN0), Local5)
 	CH04(ts, 0, 47, z058, 19, 0, 0)	// AE_AML_OPERAND_TYPE
 }
 
@@ -196,7 +196,7 @@ Method(m144)
 
 	CH03(ts, z058, 20, 0, 0)
 
-	ToString(b000, Ones)
+	ToString(b000, Ones, Local5)
 
 	CH03(ts, z058, 21, 0, 0)
 
@@ -208,7 +208,7 @@ Method(m144)
 		Increment(Local0)
 	}
 
-	ToString(b001, Ones)
+	ToString(b001, Ones, Local5)
 
 	/*
 	 * CH04(ts, 0, 61, z058, 22, 0, 0)	// AE_AML_STRING_LIMIT
@@ -231,11 +231,11 @@ Method(m145)
 
 	// Package()
 
-	Index(p000, 2)
+	Store(Index(p000, 2), Local5)
 
 	CH03(ts, z058, 24, 0, 0)
 
-	Index(p000, 3)
+	Store(Index(p000, 3), Local5)
 
 	CH04(ts, 0, 55, z058, 25, 0, 0)	// AE_AML_PACKAGE_LIMIT
 
@@ -249,11 +249,11 @@ Method(m145)
 
 	// Package(3)
 
-	Index(p001, 2)
+	Store(Index(p001, 2), Local5)
 
 	CH03(ts, z058, 28, 0, 0)
 
-	Index(p001, 3)
+	Index(p001, 3, Local5)
 
 	CH04(ts, 0, 55, z058, 29, 0, 0)	// AE_AML_PACKAGE_LIMIT
 
@@ -275,11 +275,11 @@ Method(m085)
 
 	CH03(ts, z058, 32, 0, 0)
 
-	Index(s000, 2)
+	Index(s000, 2, Local5)
 
 	CH03(ts, z058, 33, 0, 0)
 
-	Index(s000, 3)
+	Index(s000, 3, Local5)
 
 	// Bug 177, Bugzilla 5480.
 	CH04(ts, 0, 61, z058, 34, 0, 0)	// AE_AML_STRING_LIMIT
@@ -305,11 +305,11 @@ Method(m086)
 
 	// Buffer()
 
-	Index(b000, 2)
+	Index(b000, 2, Local5)
 
 	CH03(ts, z058, 38, 0, 0)
 
-	Index(b000, 3)
+	Index(b000, 3, Local5)
 
 	CH04(ts, 0, 54, z058, 39, 0, 0)	// AE_AML_BUFFER_LIMIT
 
@@ -323,11 +323,11 @@ Method(m086)
 
 	// Buffer(3)
 
-	Index(b001, 2)
+	Index(b001, 2, Local5)
 
 	CH03(ts, z058, 42, 0, 0)
 
-	Index(b001, 3)
+	Index(b001, 3, Local5)
 
 	CH04(ts, 0, 54, z058, 43, 0, 0)	// AE_AML_BUFFER_LIMIT
 
@@ -353,7 +353,7 @@ Method(m146)
 	} else {
 		Store("0xffffffff", Local0)
 	}
-	ToInteger(Local0)
+	ToInteger(Local0, Local5)
 
 	CH03(ts, z058, 47, 0, 0)
 
@@ -362,7 +362,7 @@ Method(m146)
 	} else {
 		Store("0x111111111", Local0)
 	}
-	ToInteger(Local0)
+	ToInteger(Local0, Local5)
 
 	CH04(ts, 0, 46, z058, 48, 0, 0)	// AE_AML_NO_OPERAND
 }
@@ -446,11 +446,11 @@ Method(m14c)
 
 	CH03(ts, z058, 55, 0, 0)
 
-	Concatenate(Local0, Local0)
+	Concatenate(Local0, Local0, Local5)
 
 	CH03(ts, z058, 56, 0, 0)
 
-	Concatenate(Local0, Local1)
+	Concatenate(Local0, Local1, Local5)
 
 	/*
 	 * CH04(ts, 0, 61, z058, 57, 0, 0)	// AE_AML_STRING_LIMIT
@@ -489,11 +489,11 @@ Method(m14d)
 
 	CH03(ts, z058, 58, 0, 0)
 
-	ToDecimalString(b000)
+	ToDecimalString(b000, Local5)
 
 	CH03(ts, z058, 59, 0, 0)
 
-	ToDecimalString(b001)
+	ToDecimalString(b001, Local5)
 
 	/*
 	 * CH04(ts, 0, 61, z058, 60, 0, 0)	// AE_AML_STRING_LIMIT
@@ -513,17 +513,17 @@ Method(m14e)
 	CH03(ts, z058, 61, 0, 0)
 
 	if (LEqual(F64, 1)) {
-		ToBCD(9999999999999999)
+		ToBCD(9999999999999999, Local5)
 	} else {
-		ToBCD(99999999)
+		ToBCD(99999999, Local5)
 	}
 
 	CH03(ts, z058, 62, 0, 0)
 
 	if (LEqual(F64, 1)) {
-		ToBCD(10000000000000000)
+		ToBCD(10000000000000000, Local5)
 	} else {
-		ToBCD(100000000)
+		ToBCD(100000000, Local5)
 	}
 
 	CH04(ts, 0, 52, z058, 63, 0, 0)	// AE_AML_NUMERIC_OVERFLOW
@@ -590,7 +590,7 @@ Method(m150, 1)
 
 	CH03(ts, z058, 85, 0, 0)
 
-	Index(Local0, 0)
+	Index(Local0, 0, Local5)
 
 	CH04(ts, 0, 49, z058, 86, 0, 0)	// AE_AML_UNINITIALIZED_LOCAL
 }
@@ -604,11 +604,11 @@ Method(m151)
 
 	CH03(ts, z058, 87, 0, 0)
 
-	DeRefOf(Index(p000, 2))
+	Store(DeRefOf(Index(p000, 2)), Local5)
 
 	CH03(ts, z058, 88, 0, 0)
 
-	DeRefOf(Index(p000, 3))
+	Store(DeRefOf(Index(p000, 3)), Local5)
 
 	/*
 	 * Obsolete:
@@ -619,7 +619,7 @@ Method(m151)
 	 */
 	CH03(ts, z058, 89, 0, 0)
 
-	Add(DeRefOf(Index(p000, 3)), 1)
+	Add(DeRefOf(Index(p000, 3)), 1, Local5)
 
 	if (EXCV) {
 		CH04(ts, 0, 51, z058, 169, 0, 0)	// AE_AML_UNINITIALIZED_ELEMENT
@@ -653,11 +653,11 @@ Method(m152)
 
 	CH03(ts, z058, 90, 0, 0)
 
-	ToHexString(b000)
+	ToHexString(b000, Local5)
 
 	CH03(ts, z058, 91, 0, 0)
 
-	ToHexString(b001)
+	ToHexString(b001, Local5)
 
 	/*
 	 * CH04(ts, 0, 61, z058, 92, 0, 0)	// AE_AML_STRING_LIMIT
@@ -678,11 +678,11 @@ Method(m153)
 
 	CH03(ts, z058, 93, 0, 0)
 
-	Match(PAC0, MTR, 0, MTR, 0, 0)
+	Store(Match(PAC0, MTR, 0, MTR, 0, 0), Local5)
 
 	CH03(ts, z058, 94, 0, 0)
 
-	Match(PAC0, MTR, 0, MTR, 0, 1)
+	Store(Match(PAC0, MTR, 0, MTR, 0, 1), Local5)
 
 	CH04(ts, 0, 55, z058, 95, 0, 0)	// AE_AML_PACKAGE_LIMIT
 }
@@ -702,11 +702,11 @@ Method(m154)
 
 	CH03(ts, z058, 96, 0, 0)
 
-	ConcatenateResTemplate(RT00, RT00)
+	ConcatenateResTemplate(RT00, RT00, Local5)
 
 	CH03(ts, z058, 97, 0, 0)
 
-	ConcatenateResTemplate(RT00, Local2)
+	ConcatenateResTemplate(RT00, Local2, Local5)
 
 	// Bug 188.
 	CH03(ts, z058, 98, 0, 0)
@@ -716,7 +716,7 @@ Method(m154)
 
 	Store(Buffer(){0}, Local2)
 
-	ConcatenateResTemplate(RT00, Local2)
+	ConcatenateResTemplate(RT00, Local2, Local5)
 
 	/*
 	 * Note: As for there is not a separate type for ResourceTemplate,
@@ -734,7 +734,7 @@ Method(m154)
 
 	Store(Buffer(){0x79}, Local2)
 
-	ConcatenateResTemplate(RT00, Local2)
+	ConcatenateResTemplate(RT00, Local2, Local5)
 
 	// Bug 189.
 	CH04(ts, 0, 71, z058, 101, 0, 0)	// AE_AML_NO_RESOURCE_END_TAG
@@ -743,7 +743,7 @@ Method(m154)
 
 	Store(Buffer(){0x2a, 0x04, 0x02}, Local2)
 
-	ConcatenateResTemplate(RT00, Local2)
+	ConcatenateResTemplate(RT00, Local2, Local5)
 
 	if (EXCV) {
 		CH04(ts, 0, 71, z058, 102, 0, 0) // AE_AML_NO_RESOURCE_END_TAG
@@ -755,7 +755,7 @@ Method(m154)
 
 	Store(Buffer(){0x2a, 0x10, 0x05, 0x79}, Local2)
 
-	ConcatenateResTemplate(RT00, Local2)
+	ConcatenateResTemplate(RT00, Local2, Local5)
 
 	// Bug 190.
 	CH04(ts, 0, 71, z058, 103, 0, 0)	// AE_AML_NO_RESOURCE_END_TAG
@@ -764,7 +764,7 @@ Method(m154)
 
 	Store(Buffer(){0x00, 0x00, 0x00, 0x79, 0x00}, Local2)
 
-	ConcatenateResTemplate(RT00, Local2)
+	ConcatenateResTemplate(RT00, Local2, Local5)
 
 	if (EXCV) {
 		CH04(ts, 0, 71, z058, 104, 0, 0) // AE_AML_NO_RESOURCE_END_TAG
@@ -825,36 +825,36 @@ Method(m156)
 	CH03(ts, z058, 107, 0, 0)
 
 	// Add, empty String
-	Add("", 0)
+	Add("", 0, Local5)
 
 //	CH04(ts, 0, 34, z058, 108, 0, 0)	// AE_BAD_HEX_CONSTANT
 	CH03(ts, z058, 108, 0, 0)
 
 	// Add, String filled with blanks
-	Add("                 ", 0)
+	Add("                 ", 0, Local5)
 
 //	CH04(ts, 0, 34, z058, 109, 0, 0)	// AE_BAD_HEX_CONSTANT
 	CH03(ts, z058, 109, 0, 0)
 
 	// ToInteger, empty String
-	ToInteger("")
+	ToInteger("", Local5)
 
 	CH04(ts, 0, 36, z058, 110, 0, 0)	// AE_BAD_DECIMAL_CONSTANT
 
 	// ToInteger, String filled with blanks
-	ToInteger("                 ")
+	ToInteger("                 ", Local5)
 
 //	CH04(ts, 0, 34, z058, 111, 0, 0)	// AE_BAD_HEX_CONSTANT
 	CH04(ts, 0, 36, z058, 111, 0, 0)	// AE_BAD_DECIMAL_CONSTANT
 
 	// Add, zero-length Buffer
-	Add(b000, 0)
+	Add(b000, 0, Local5)
 
 //	CH04(ts, 0, 34, z058, 112, 0, 0)	// AE_BAD_HEX_CONSTANT
 	CH04(ts, 0, 54, z058, 112, 0, 0)	// AE_AML_BUFFER_LIMIT
 
 	// ToInteger, zero-length Buffer
-	ToInteger(b000)
+	ToInteger(b000, Local5)
 
 //	CH04(ts, 0, 34, z058, 113, 0, 0)	// AE_BAD_HEX_CONSTANT
 	CH04(ts, 0, 54, z058, 113, 0, 0)	// AE_AML_BUFFER_LIMIT
@@ -875,7 +875,7 @@ Method(m157)
 
 	CH03(ts, z058, 114, 0, 0)
 
-	Index(i000, 0)
+	Store(Index(i000, 0), Local5)
 
 	CH04(ts, 0, 47, z058, 115, 0, 0)	// AE_AML_OPERAND_TYPE
 
@@ -903,7 +903,7 @@ Method(m158)
 	CH03(ts, z058, 119, 0, 0)
 
 	// Bug 83, Bugzilla 5387.
-	DerefOf(i000)
+	Store(DerefOf(i000), Local5)
 
 	CH04(ts, 0, 0xff, z058, 120, 0, 0)
 
@@ -927,7 +927,7 @@ Method(m087)
 
 	// Index(Integer)
 
-	Index(Local7, 0)
+	Store(Index(Local7, 0), Local5)
 
 	CH04(ts, 0, 47, z058, 123, 0, 0)	// AE_AML_OPERAND_TYPE
 
@@ -945,7 +945,7 @@ Method(m087)
 
 	// DerefOf(Integer)
 
-	DerefOf(Local7)
+	Store(DerefOf(Local7), Local5)
 
 	CH04(ts, 0, 0xff, z058, 127, 0, 0)
 
@@ -964,7 +964,7 @@ Method(m159)
 
 	CH03(ts, z058, 129, 0, 0)
 
-	Index(bf00, 0)
+	Store(Index(bf00, 0), Local5)
 
 	CH04(ts, 0, 47, z058, 130, 0, 0)	// AE_AML_OPERAND_TYPE
 
@@ -996,7 +996,7 @@ Method(m15a)
 
 	CH03(ts, z058, 135, 0, 0)
 
-	DerefOf(bf00)
+	Store(DerefOf(bf00), Local5)
 
 	// Bug 83, Bugzilla 5387.
 	CH04(ts, 0, 0xff, z058, 136, 0, 0)
@@ -1022,7 +1022,7 @@ Method(m15d)
 
 	// Field
 
-	Index(f000, 0)
+	Store(Index(f000, 0), Local5)
 
 	CH04(ts, 0, 47, z058, 139, 0, 0)	// AE_AML_OPERAND_TYPE
 
@@ -1044,7 +1044,7 @@ Method(m15d)
 
 	// BankField
 
-	Index(bkf0, 0)
+	Store(Index(bkf0, 0), Local5)
 
 	CH04(ts, 0, 47, z058, 144, 0, 0)	// AE_AML_OPERAND_TYPE
 
@@ -1066,7 +1066,7 @@ Method(m15d)
 
 	// IndexField
 
-	Index(if00, 0)
+	Store(Index(if00, 0), Local5)
 
 	CH04(ts, 0, 47, z058, 149, 0, 0)	// AE_AML_OPERAND_TYPE
 
@@ -1103,7 +1103,7 @@ Method(m15e)
 
 	// Field
 
-	DerefOf(f000)
+	Store(DerefOf(f000), Local5)
 
 	// Bug 83, Bugzilla 5387.
 	CH04(ts, 0, 0xff, z058, 155, 0, 0)
@@ -1115,7 +1115,7 @@ Method(m15e)
 
 	// BankField
 
-	DerefOf(bkf0)
+	Store(DerefOf(bkf0), Local5)
 
 	// Bug 83, Bugzilla 5387.
 	CH04(ts, 0, 0xff, z058, 157, 0, 0)
@@ -1127,7 +1127,7 @@ Method(m15e)
 
 	// IndexField
 
-	DerefOf(if00)
+	Store(DerefOf(if00), Local5)
 
 	// Bug 83, Bugzilla 5387.
 	CH04(ts, 0, 0xff, z058, 159, 0, 0)
