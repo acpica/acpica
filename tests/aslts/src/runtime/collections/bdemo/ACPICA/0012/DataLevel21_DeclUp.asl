@@ -403,31 +403,45 @@ Method(mf8f)
 
 	CH03("", 0, 0x04c, 0, 0)
 	Store(DerefOf("e007"), Local2)
-	CH03("", 0, 0x04d, 0, 0)
+	if(LNot(SLCK)){
+		CH04("", 0, 47, 0, 0x04d, 0, 0)
+	}
 
 	CH03("", 0, 0x04e, 0, 0)
 	Store(DerefOf("mx07"), Local2)
-	CH03("", 0, 0x04f, 0, 0)
+	if(LNot(SLCK)){
+		CH04("", 0, 47, 0, 0x04f, 0, 0)
+	}
 
 	CH03("", 0, 0x050, 0, 0)
 	Store(DerefOf("d007"), Local2)
-	CH03("", 0, 0x051, 0, 0)
+	if(LNot(SLCK)){
+		CH04("", 0, 47, 0, 0x051, 0, 0)
+	}
 
 	CH03("", 0, 0x052, 0, 0)
 	Store(DerefOf("tz07"), Local2)
-	CH03("", 0, 0x053, 0, 0)
+	if(LNot(SLCK)){
+		CH04("", 0, 47, 0, 0x053, 0, 0)
+	}
 
 	CH03("", 0, 0x054, 0, 0)
 	Store(DerefOf("pr07"), Local2)
-	CH03("", 0, 0x055, 0, 0)
+	if(LNot(SLCK)){
+		CH04("", 0, 47, 0, 0x055, 0, 0)
+	}
 
 	CH03("", 0, 0x056, 0, 0)
 	Store(DerefOf("r007"), Local2)
-	CH03("", 0, 0x057, 0, 0)
+	if(LNot(SLCK)){
+		CH04("", 0, 47, 0, 0x057, 0, 0)
+	}
 
 	CH03("", 0, 0x058, 0, 0)
 	Store(DerefOf("pw07"), Local2)
-	CH03("", 0, 0x059, 0, 0)
+	if(LNot(SLCK)){
+		CH04("", 0, 47, 0, 0x059, 0, 0)
+	}
 }
 
 /*

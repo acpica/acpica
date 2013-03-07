@@ -63,6 +63,7 @@
 
 			Store(arg0, Debug)
 			Store(DeRefOf(arg0), Local1)
+			CH04("", 2 , 62, 1, 0, 0 ,0)
 		} else {
 			Increment(DeRefOf(arg0))
 		}

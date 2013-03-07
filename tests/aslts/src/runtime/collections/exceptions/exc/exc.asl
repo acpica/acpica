@@ -157,28 +157,28 @@ Method(m143)
 		Store(0, Local1)
 	}
 	Store(SizeOf(Local1), Local5)
-	CH04(ts, 0, 49, z058, 12, 0, 0)	// AE_AML_UNINITIALIZED_LOCAL
+	CH04(ts, 1, 49, z058, 12, 0, 0)	// AE_AML_UNINITIALIZED_LOCAL
 
 	Store(SizeOf(DEV0), Local5)
-	CH04(ts, 0, 47, z058, 13, 0, 0)	// AE_AML_OPERAND_TYPE
+	CH04(ts, 1, 47, z058, 13, 0, 0)	// AE_AML_OPERAND_TYPE
 
 	Store(SizeOf(EVE0), Local5)
-	CH04(ts, 0, 47, z058, 14, 0, 0)	// AE_AML_OPERAND_TYPE
+	CH04(ts, 1, 47, z058, 14, 0, 0)	// AE_AML_OPERAND_TYPE
 
 	Store(SizeOf(MTX0), Local5)
-	CH04(ts, 0, 47, z058, 15, 0, 0)	// AE_AML_OPERAND_TYPE
+	CH04(ts, 1, 47, z058, 15, 0, 0)	// AE_AML_OPERAND_TYPE
 
 	Store(SizeOf(OPR0), Local5)
-	CH04(ts, 0, 47, z058, 16, 0, 0)	// AE_AML_OPERAND_TYPE
+	CH04(ts, 1, 47, z058, 16, 0, 0)	// AE_AML_OPERAND_TYPE
 
 	Store(SizeOf(PWR0), Local5)
-	CH04(ts, 0, 47, z058, 17, 0, 0)	// AE_AML_OPERAND_TYPE
+	CH04(ts, 1, 47, z058, 17, 0, 0)	// AE_AML_OPERAND_TYPE
 
 	Store(SizeOf(CPU0), Local5)
-	CH04(ts, 0, 47, z058, 18, 0, 0)	// AE_AML_OPERAND_TYPE
+	CH04(ts, 1, 47, z058, 18, 0, 0)	// AE_AML_OPERAND_TYPE
 
 	Store(SizeOf(TZN0), Local5)
-	CH04(ts, 0, 47, z058, 19, 0, 0)	// AE_AML_OPERAND_TYPE
+	CH04(ts, 1, 47, z058, 19, 0, 0)	// AE_AML_OPERAND_TYPE
 }
 
 // ToString() when the number of characters copied from buffer exceeds 200
@@ -237,7 +237,7 @@ Method(m145)
 
 	Store(Index(p000, 3), Local5)
 
-	CH04(ts, 0, 55, z058, 25, 0, 0)	// AE_AML_PACKAGE_LIMIT
+	CH04(ts, 1, 55, z058, 25, 0, 0)	// AE_AML_PACKAGE_LIMIT
 
 	Index(p000, 2, Local0)
 
@@ -617,7 +617,7 @@ Method(m151)
 	 * Updated according to Bug 85 fix: no exception is expected
 	 * since the value is not processed.
 	 */
-	CH03(ts, z058, 89, 0, 0)
+	CH04(ts, 0, 62, z058, 89, 0, 0)
 
 	Add(DeRefOf(Index(p000, 3)), 1, Local5)
 
@@ -684,7 +684,7 @@ Method(m153)
 
 	Store(Match(PAC0, MTR, 0, MTR, 0, 1), Local5)
 
-	CH04(ts, 0, 55, z058, 95, 0, 0)	// AE_AML_PACKAGE_LIMIT
+	CH04(ts, 1, 55, z058, 95, 0, 0)	// AE_AML_PACKAGE_LIMIT
 }
 
 // Exeptional conditions of ConcatenateResTemplate
@@ -877,7 +877,7 @@ Method(m157)
 
 	Store(Index(i000, 0), Local5)
 
-	CH04(ts, 0, 47, z058, 115, 0, 0)	// AE_AML_OPERAND_TYPE
+	CH04(ts, 1, 47, z058, 115, 0, 0)	// AE_AML_OPERAND_TYPE
 
 	Index(i000, 0, Local0)
 
@@ -929,7 +929,7 @@ Method(m087)
 
 	Store(Index(Local7, 0), Local5)
 
-	CH04(ts, 0, 47, z058, 123, 0, 0)	// AE_AML_OPERAND_TYPE
+	CH04(ts, 1, 47, z058, 123, 0, 0)	// AE_AML_OPERAND_TYPE
 
 	Index(Local7, 0, Local0)
 
@@ -966,7 +966,7 @@ Method(m159)
 
 	Store(Index(bf00, 0), Local5)
 
-	CH04(ts, 0, 47, z058, 130, 0, 0)	// AE_AML_OPERAND_TYPE
+	CH04(ts, 1, 47, z058, 130, 0, 0)	// AE_AML_OPERAND_TYPE
 
 	Index(bf00, 0, Local0)
 
@@ -1024,7 +1024,7 @@ Method(m15d)
 
 	Store(Index(f000, 0), Local5)
 
-	CH04(ts, 0, 47, z058, 139, 0, 0)	// AE_AML_OPERAND_TYPE
+	CH04(ts, 1, 47, z058, 139, 0, 0)	// AE_AML_OPERAND_TYPE
 
 	Index(f000, 0, Local0)
 
@@ -1046,7 +1046,7 @@ Method(m15d)
 
 	Store(Index(bkf0, 0), Local5)
 
-	CH04(ts, 0, 47, z058, 144, 0, 0)	// AE_AML_OPERAND_TYPE
+	CH04(ts, 1, 47, z058, 144, 0, 0)	// AE_AML_OPERAND_TYPE
 
 	Index(bkf0, 0, Local0)
 
@@ -1068,7 +1068,7 @@ Method(m15d)
 
 	Store(Index(if00, 0), Local5)
 
-	CH04(ts, 0, 47, z058, 149, 0, 0)	// AE_AML_OPERAND_TYPE
+	CH04(ts, 1, 47, z058, 149, 0, 0)	// AE_AML_OPERAND_TYPE
 
 	Index(if00, 0, Local0)
 

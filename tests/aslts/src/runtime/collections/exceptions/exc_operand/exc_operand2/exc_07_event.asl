@@ -443,7 +443,9 @@ Method(m4b7)
 		}
 
 		Store (DeRefOf(arg1), Local1)
-		CH03(ts, z099, 5, 0, 0)
+		if(LNot(SLCK)){
+			CH04(ts, 0, 47, z099, 5, 0, 0)
+		}
 
 		// CondRefOf
 		
@@ -1193,11 +1195,15 @@ Method(m4b7)
 			Store(0, i000)
 
 			Store (DerefOf(m000(1, lpC0)), Local1)
-			CH03(ts, z099, Add(9, lpC0), 0, 0)
+			if(LNot(SLCK)){
+				CH04(ts, 0, 47, z099, Add(9, lpC0), 0, 0)
+			}
 			CH00(arg0, 1)
 
 			Store (DerefOf(DerefOf(m000(2, lpC0))), Local1)
-			CH06(arg0, Add(1, Local0), 47)
+			if(LNot(SLCK)){
+				CH06(arg0, Add(1, Local0), 47)
+			}
 			CH00(arg0, 2)
 
 			Store (Index(DerefOf(m000(3, lpC0)), 0), Local1)

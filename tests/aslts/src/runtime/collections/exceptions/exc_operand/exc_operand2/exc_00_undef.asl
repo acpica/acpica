@@ -415,7 +415,7 @@ Method(m4b0, 1)
 		// DeRefOf(Index(Package, Ind))
 
 		Store (DeRefOf(Index(p000, 0)), Local1)
-		CH03(ts, z092, 4, 0, 0)
+		CH04(ts, 0, 62, z092, 4, 0, 0)
 
 		// CondRefOf
 		
@@ -1270,7 +1270,7 @@ Method(m4b0, 1)
 		}
 
 		Store (DeRefOf(arg1), Local1)
-		CH03(ts, z092, 10, 0, 0)
+		CH04(ts, 0, 62, z092, 10, 0, 0)
 
 		// CondRefOf
 		
