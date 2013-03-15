@@ -1068,6 +1068,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\compiler\asllistsup.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\compiler\aslload.c"
 					>
 					<FileConfiguration
@@ -1161,6 +1165,10 @@
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslnamesp.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\compiler\asloffset.c"
 					>
 				</File>
 				<File

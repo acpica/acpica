@@ -198,6 +198,7 @@ AslCompilerSignon (
         break;
 
     case ASL_FILE_C_SOURCE_OUTPUT:
+    case ASL_FILE_C_OFFSET_OUTPUT:
     case ASL_FILE_C_INCLUDE_OUTPUT:
 
         Prefix = " * ";
@@ -271,6 +272,7 @@ AslCompilerFileHeader (
         break;
 
     case ASL_FILE_C_SOURCE_OUTPUT:
+    case ASL_FILE_C_OFFSET_OUTPUT:
     case ASL_FILE_C_INCLUDE_OUTPUT:
 
         Prefix = " * ";
@@ -294,6 +296,7 @@ AslCompilerFileHeader (
     switch (FileId)
     {
     case ASL_FILE_C_SOURCE_OUTPUT:
+    case ASL_FILE_C_OFFSET_OUTPUT:
     case ASL_FILE_C_INCLUDE_OUTPUT:
         FlPrintFile (FileId, " */\n");
         break;
