@@ -358,7 +358,7 @@ AcpiExOpcode_2A_1T_1R (
     ACPI_OPERAND_OBJECT     *ReturnDesc = NULL;
     UINT64                  Index;
     ACPI_STATUS             Status = AE_OK;
-    ACPI_SIZE               Length;
+    ACPI_SIZE               Length = 0;
 
 
     ACPI_FUNCTION_TRACE_STR (ExOpcode_2A_1T_1R,
@@ -428,7 +428,6 @@ AcpiExOpcode_2A_1T_1R (
          * NOTE: A length of zero is ok, and will create a zero-length, null
          *       terminated string.
          */
-        Length = 0;
         while ((Length < Operand[0]->Buffer.Length) &&
                (Length < Operand[1]->Integer.Value) &&
                (Operand[0]->Buffer.Pointer[Length]))
@@ -490,6 +489,7 @@ AcpiExOpcode_2A_1T_1R (
 
             if (Index >= Operand[0]->String.Length)
             {
+                Length = Operand[0]->String.Length;
                 Status = AE_AML_STRING_LIMIT;
             }
 
@@ -500,6 +500,7 @@ AcpiExOpcode_2A_1T_1R (
 
             if (Index >= Operand[0]->Buffer.Length)
             {
+                Length = Operand[0]->Buffer.Length;
                 Status = AE_AML_BUFFER_LIMIT;
             }
 
@@ -510,6 +511,7 @@ AcpiExOpcode_2A_1T_1R (
 
             if (Index >= Operand[0]->Package.Count)
             {
+                Length = Operand[0]->Package.Count;
                 Status = AE_AML_PACKAGE_LIMIT;
             }
 
@@ -528,8 +530,8 @@ AcpiExOpcode_2A_1T_1R (
         if (ACPI_FAILURE (Status))
         {
             ACPI_EXCEPTION ((AE_INFO, Status,
-                "Index (0x%8.8X%8.8X) is beyond end of object",
-                ACPI_FORMAT_UINT64 (Index)));
+                "Index (0x%X%8.8X) is beyond end of object (length 0x%X)",
+                ACPI_FORMAT_UINT64 (Index), Length));
             goto Cleanup;
         }
 
