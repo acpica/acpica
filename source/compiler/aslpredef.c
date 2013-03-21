@@ -744,12 +744,12 @@ TypeErrorExit:
 
     if (PackageIndex == ACPI_NOT_PACKAGE_ELEMENT)
     {
-        sprintf (MsgBuffer, "%s: found %s, %s required",
+        sprintf (MsgBuffer, "%4.4s: found %s, %s required",
             PredefinedName, TypeName, StringBuffer);
     }
     else
     {
-        sprintf (MsgBuffer, "%s: found %s at index %u, %s required",
+        sprintf (MsgBuffer, "%4.4s: found %s at index %u, %s required",
             PredefinedName, TypeName, PackageIndex, StringBuffer);
     }
 
