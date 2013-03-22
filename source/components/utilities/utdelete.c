@@ -537,16 +537,6 @@ AcpiUtUpdateRefCount (
         }
         break;
 
-    case REF_FORCE_DELETE:
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
-            "Obj %p Refs=%X, Force delete! (Set to 0)\n", Object, Count));
-
-        NewCount = 0;
-        Object->Common.ReferenceCount = NewCount;
-        AcpiUtDeleteInternalObj (Object);
-        break;
-
     default:
 
         ACPI_ERROR ((AE_INFO, "Unknown action (0x%X)", Action));
@@ -571,8 +561,7 @@ AcpiUtUpdateRefCount (
  *
  * PARAMETERS:  Object              - Increment ref count for this object
  *                                    and all sub-objects
- *              Action              - Either REF_INCREMENT or REF_DECREMENT or
- *                                    REF_FORCE_DELETE
+ *              Action              - Either REF_INCREMENT or REF_DECREMENT
  *
  * RETURN:      Status
  *
