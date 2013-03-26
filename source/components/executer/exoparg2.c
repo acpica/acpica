@@ -531,7 +531,7 @@ AcpiExOpcode_2A_1T_1R (
         {
             ACPI_EXCEPTION ((AE_INFO, Status,
                 "Index (0x%X%8.8X) is beyond end of object (length 0x%X)",
-                ACPI_FORMAT_UINT64 (Index), Length));
+                ACPI_FORMAT_UINT64 (Index), (UINT32) Length));
             goto Cleanup;
         }
 
