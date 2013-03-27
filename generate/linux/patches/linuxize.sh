@@ -41,7 +41,7 @@ branch=master
 if [ ! -z "$version" ] ; then
 	(
 		cd $git_root
-		git checkout $version >/dev/null 2>&1
+		git reset --hard $version >/dev/null 2>&1
 	)
 fi
 

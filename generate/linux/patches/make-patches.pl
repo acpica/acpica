@@ -28,19 +28,17 @@ GetOptions ("per-commit|c" => \$per_commit);
 $argcnt = $#ARGV + 1;
 
 if ($argcnt < 1) {
-        print "usage: ./make-patches.pl [--per-commit|-c] <old_commit> [new_commit]\n\n";
-        print "     Creates the linuxized patches from old_commit to new_commit in ACPICA git repository\n\n";
-        print "     old_commit: the old commit id\n";
-        print "     new_commit: optional, the new commit id, default to HEAD in the repository\n";
-        print "--per-commit|-c: generate acpisrc per commit\n";
-
-        exit
+    print "usage: ./make-patches.pl [--per-commit|-c] <old_commit> [new_commit]\n\n";
+    print "     Creates the linuxized patches from old_commit to new_commit in ACPICA git repository\n\n";
+    print "     old_commit: the old commit id\n";
+    print "     new_commit: optional, the new commit id, default to HEAD in the repository\n";
+    print "--per-commit|-c: generate acpisrc per commit\n";
+    exit
 } else {
-        $old_release = $ARGV[0];
-
-        if ($argcnt > 1) {
-                $new_release = $ARGV[1];
-        }
+    $old_release = $ARGV[0];
+    if ($argcnt > 1) {
+        $new_release = $ARGV[1];
+    }
 }
 
 #
@@ -92,20 +90,21 @@ system("cd $git_root; new_release=`git log --pretty=format:%H $new_release~1..$n
 
 # Generate latest version of the acpisrc utility
 
-if (!$per_commit == 0) {
-        system("echo [make-patches] Generate acpisrc utility from source");
-        system("sh acpisrc.sh $git_root > /dev/null");
+if ($per_commit == 0) {
+    system("echo [make-patches] Generate acpisrc utility from source");
+    system("rm -f bin/acpisrc");
+    system("./acpisrc.sh $git_repo > /dev/null");
 }
 
 # Create GIT log
 
 system("echo [make-patches] Creating the GIT log");
-system("cd $git_root; sh ../create-git-log.sh $old_release $new_release  > ../$git_log");
+system("cd $git_root; ../create-git-log.sh $old_release $new_release  > ../$git_log");
 
 # Create GIT patches
 
 system("echo [make-patches] Creating the GIT patches");
-system("cd $git_root; sh ../git-patches.sh $old_release $new_release ../$git_patch_dir");
+system("cd $git_root; ../git-patches.sh $old_release $new_release ../$git_patch_dir");
 
 
 # Create the merged patchfile for "native" ACPICA code
@@ -118,9 +117,9 @@ system("echo [make-patches] Creating the merged native patch file");
 
 system("echo [make-patches] Creating the Linuxized ACPICA source from $old_release");
 if ($per_commit == 0) {
-        system("sh linuxize.sh $git_root $old_release > /dev/null 2>&1");
+    system("./linuxize.sh $git_root $old_release > /dev/null 2>&1");
 } else {
-        system("sh linuxize.sh -s $git_root $old_release > /dev/null 2>&1");
+    system("./linuxize.sh -s $git_root $old_release > /dev/null 2>&1");
 }
 
 
@@ -356,7 +355,12 @@ sub make_patch
     # Apply GIT patch to the non-linuxized ACPICA tree and linuxize the tree to "new.linux"
 
     system("cd $git_root; patch -p1 < ../$git_patch_dir/$patch_name.patch > /dev/null");
-    system("sh linuxize.sh $git_root");
+    system("echo [make-patches] Creating the Linuxized ACPICA source from $new_release");
+    if ($per_commit == 0) {
+        system("./linuxize.sh $git_root");
+    } else {
+        system("./linuxize.sh -s $git_root");
+    }
 
     # diff the new and original linuxed trees
 

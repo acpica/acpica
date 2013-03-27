@@ -15,7 +15,7 @@ usage () {
 	echo "Where:"
 	echo "  -s: indent on (Linux) rather than on (Linux and ACPICA)"
 	echo "  path is path to root of Linux source code."
-	return 0
+	exit 1
 }
 
 while getopts "s" opt
@@ -45,20 +45,20 @@ LINUX=$1
 if [ -z $1 ] ; then
 	echo "Usage: $0 <Linux>"
 	echo "  Linux: Path of Linux source"
-	return 1
+	exit 1
 fi
 if [ ! -e $1 ] ; then
 	echo "$1, Linux source directory does not exist"
-	return 1
+	exit 1
 fi
 if [ ! -d $1 ] ; then
 	echo "$1, Not a directory"
-	return 1
+	exit 1
 fi
 
 if [ ! -e $LINDENT ] ; then
 	echo "Could not find lindent.sh script"
-	return 1
+	exit 1
 fi
 if [ -z $LINDENT_DIR ] ; then
 	LINDENT_DIR=multiple
@@ -123,8 +123,22 @@ for t in $ALL_FILES ; do
 done
 
 # Do we need to perform things on private_includes?
-private_includes="accommon.h acdebug.h acevents.h achware.h aclocal.h acnamesp.h acopcode.h acpredef.h acstruct.h acutils.h amlresrc.h"
-private_includes="$private_includes acconfig.h acdispat.h acglobal.h acinterp.h acmacros.h acobject.h acparser.h acresrc.h actables.h amlcode.h"
+private_includes="accommon.h"
+private_includes="$private_includes acdebug.h acdispat.h"
+private_includes="$private_includes acevents.h"
+private_includes="$private_includes acglobal.h"
+private_includes="$private_includes achware.h"
+private_includes="$private_includes acinterp.h"
+private_includes="$private_includes aclocal.h"
+private_includes="$private_includes acmacros.h"
+private_includes="$private_includes acnamesp.h"
+private_includes="$private_includes acobject.h acopcode.h"
+private_includes="$private_includes acparser.h acpredef.h"
+private_includes="$private_includes acresrc.h"
+private_includes="$private_includes acstruct.h"
+private_includes="$private_includes actables.h"
+private_includes="$private_includes acutils.h"
+private_includes="$private_includes amlcode.h amlresrc.h"
 for inc in $private_includes ; do
 	if [ -f $ACPICA_TMP/include/acpi/$inc ] ; then
 		echo "Warning: private include file $inc is now public.  Please check the linuxize.sh"
@@ -173,4 +187,4 @@ ls -l divergence-$LINDENT_DIR.diff diffstat-$LINDENT_DIR.txt
 rm -r $LINUX_ACPICA
 rm -r $ACPICA_TMP
 rm -r $ACPICA_LINUXIZED
-return 0
+exit 0
