@@ -90,12 +90,16 @@ generate/lint/LintOut.txt
 
 generate/linux/bin
 generate/linux/diffstat.txt
+generate/linux/diffstat-single.txt
 generate/linux/divergence.diff
+generate/linux/divergence-single.diff
 
 libraries
 
 tests/misc/grammar.aml
 tests/misc/grammar.dsl
+
+.pc
 
 chmod.sh
 clean.sh
