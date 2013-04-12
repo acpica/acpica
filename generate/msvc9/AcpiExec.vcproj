@@ -779,6 +779,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\namespace\nsarguments.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\namespace\nsconvert.c"
 					>
 				</File>
