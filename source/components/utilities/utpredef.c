@@ -238,6 +238,12 @@ AcpiUtGetExpectedReturnTypes (
     UINT32                  j;
 
 
+    if (!ExpectedBtypes)
+    {
+        ACPI_STRCPY (Buffer, "NONE");
+        return;
+    }
+
     j = 1;
     Buffer[0] = 0;
     ThisRtype = ACPI_RTYPE_INTEGER;
@@ -445,9 +451,7 @@ AcpiUtGetArgumentTypes (
 
     /* First field in the types list is the count of args to follow */
 
-    ArgCount = (ArgumentTypes & METHOD_ARG_MASK);
-    ArgumentTypes >>= METHOD_ARG_BIT_WIDTH;
-
+    ArgCount = METHOD_GET_ARG_COUNT (ArgumentTypes);
     if (ArgCount > METHOD_PREDEF_ARGS_MAX)
     {
         printf ("**** Invalid argument count (%u) "
@@ -459,7 +463,8 @@ AcpiUtGetArgumentTypes (
 
     for (i = 0; i < ArgCount; i++)
     {
-        ThisArgumentType = (ArgumentTypes & METHOD_ARG_MASK);
+        ThisArgumentType = METHOD_GET_NEXT_TYPE (ArgumentTypes);
+
         if (!ThisArgumentType || (ThisArgumentType > METHOD_MAX_ARG_TYPE))
         {
             printf ("**** Invalid argument type (%u) "
@@ -468,10 +473,6 @@ AcpiUtGetArgumentTypes (
         }
 
         strcat (Buffer, UtExternalTypeNames[ThisArgumentType] + SubIndex);
-
-        /* Shift to next argument type field */
-
-        ArgumentTypes >>= METHOD_ARG_BIT_WIDTH;
         SubIndex = 0;
     }
 

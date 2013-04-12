@@ -167,7 +167,7 @@ AcpiUtEvaluateObject (
     }
 
     Info->PrefixNode = PrefixNode;
-    Info->Pathname = Path;
+    Info->RelativePathname = Path;
 
     /* Evaluate the object/method */
 

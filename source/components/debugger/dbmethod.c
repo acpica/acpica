@@ -121,6 +121,7 @@
 #include "acdebug.h"
 #include "acdisasm.h"
 #include "acparser.h"
+#include "acpredef.h"
 
 
 #ifdef ACPI_DEBUGGER
@@ -505,17 +506,22 @@ AcpiDbWalkForExecute (
     void                    *Context,
     void                    **ReturnValue)
 {
-    ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
-    ACPI_DB_EXECUTE_WALK    *Info = (ACPI_DB_EXECUTE_WALK *) Context;
-    ACPI_BUFFER             ReturnObj;
-    ACPI_STATUS             Status;
-    char                    *Pathname;
-    UINT32                  i;
-    ACPI_DEVICE_INFO        *ObjInfo;
-    ACPI_OBJECT_LIST        ParamObjects;
-    ACPI_OBJECT             Params[ACPI_METHOD_NUM_ARGS];
-    const ACPI_PREDEFINED_INFO *Predefined;
+    ACPI_NAMESPACE_NODE         *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+    ACPI_DB_EXECUTE_WALK        *Info = (ACPI_DB_EXECUTE_WALK *) Context;
+    char                        *Pathname;
+    const ACPI_PREDEFINED_INFO  *Predefined;
+    ACPI_DEVICE_INFO            *ObjInfo;
+    ACPI_OBJECT_LIST            ParamObjects;
+    ACPI_OBJECT                 Params[ACPI_METHOD_NUM_ARGS];
+    ACPI_BUFFER                 ReturnObj;
+    ACPI_STATUS                 Status;
+    UINT16                      ArgTypeList;
+    UINT8                       ArgCount;
+    UINT8                       ArgType;
+    UINT32                      i;
 
+
+    /* The name must be a predefined ACPI name */
 
     Predefined = AcpiUtMatchPredefinedMethod (Node->Name.Ascii);
     if (!Predefined)
@@ -542,21 +548,56 @@ AcpiDbWalkForExecute (
         return (Status);
     }
 
+    ParamObjects.Count = 0;
     ParamObjects.Pointer = NULL;
-    ParamObjects.Count   = 0;
 
     if (ObjInfo->Type == ACPI_TYPE_METHOD)
     {
-        /* Setup default parameters */
+        /* Setup default parameters (with proper types) */
 
-        for (i = 0; i < ObjInfo->ParamCount; i++)
+        ArgTypeList = Predefined->Info.ArgumentList;
+        ArgCount = METHOD_GET_ARG_COUNT (ArgTypeList);
+
+        /*
+         * Setup the ACPI-required number of arguments, regardless of what
+         * the actual method defines. If there is a difference, then the
+         * method is wrong and a warning will be issued during execution.
+         */
+        for (i = 0; i < ArgCount; i++)
         {
-            Params[i].Type           = ACPI_TYPE_INTEGER;
-            Params[i].Integer.Value  = 1;
+            ArgType = METHOD_GET_NEXT_TYPE (ArgTypeList);
+            Params[i].Type = ArgType;
+
+            switch (ArgType)
+            {
+            case ACPI_TYPE_INTEGER:
+                Params[i].Integer.Value = 1;
+                break;
+
+            case ACPI_TYPE_STRING:
+                Params[i].String.Pointer = "This is the default argument string";
+                Params[i].String.Length = strlen (Params[i].String.Pointer);
+                break;
+
+            case ACPI_TYPE_BUFFER:
+                Params[i].Buffer.Pointer = (UINT8 *) Params; /* just a garbage buffer */
+                Params[i].Buffer.Length = 48;
+                break;
+
+             case ACPI_TYPE_PACKAGE:
+                Params[i].Package.Elements = NULL;
+                Params[i].Package.Count = 0;
+                break;
+
+           default:
+                AcpiOsPrintf ("%s: Unsupported argument type: %u\n",
+                    Pathname, ArgType);
+                break;
+            }
         }
 
-        ParamObjects.Pointer     = Params;
-        ParamObjects.Count       = ObjInfo->ParamCount;
+        ParamObjects.Count = ArgCount;
+        ParamObjects.Pointer = Params;
     }
 
     ACPI_FREE (ObjInfo);

@@ -700,7 +700,6 @@ AcpiEvAsynchExecuteGpeMethod (
                 "while evaluating GPE method [%4.4s]",
                 AcpiUtGetNodeName (LocalGpeEventInfo->Dispatch.MethodNode)));
         }
-
         break;
 
     default:
