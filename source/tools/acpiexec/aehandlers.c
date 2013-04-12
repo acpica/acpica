@@ -188,17 +188,17 @@ static char                *TableEvents[] =
 };
 #endif /* !ACPI_REDUCED_HARDWARE */
 
+
 static UINT32               SigintCount = 0;
 static AE_DEBUG_REGIONS     AeRegions;
 BOOLEAN                     AcpiGbl_DisplayRegionAccess = FALSE;
-
 
 /*
  * We will override some of the default region handlers, especially the
  * SystemMemory handler, which must be implemented locally. Do not override
  * the PCI_Config handler since we would like to exercise the default handler
  * code. These handlers are installed "early" - before any _REG methods
- * are executed - since they are special in the sense that tha ACPI spec
+ * are executed - since they are special in the sense that the ACPI spec
  * declares that they must "always be available". Cannot override the
  * DataTable region handler either -- needed for test execution.
  */
@@ -210,7 +210,7 @@ static ACPI_ADR_SPACE_TYPE  DefaultSpaceIdList[] =
 
 /*
  * We will install handlers for some of the various address space IDs.
- * Test one user-defined address space (used by aslts.)
+ * Test one user-defined address space (used by aslts).
  */
 #define ACPI_ADR_SPACE_USER_DEFINED1        0x80
 #define ACPI_ADR_SPACE_USER_DEFINED2        0xE4
@@ -219,17 +219,18 @@ static ACPI_ADR_SPACE_TYPE  SpaceIdList[] =
 {
     ACPI_ADR_SPACE_EC,
     ACPI_ADR_SPACE_SMBUS,
-    ACPI_ADR_SPACE_GSBUS,
-    ACPI_ADR_SPACE_GPIO,
+    ACPI_ADR_SPACE_CMOS,
     ACPI_ADR_SPACE_PCI_BAR_TARGET,
     ACPI_ADR_SPACE_IPMI,
+    ACPI_ADR_SPACE_GPIO,
+    ACPI_ADR_SPACE_GSBUS,
     ACPI_ADR_SPACE_FIXED_HARDWARE,
     ACPI_ADR_SPACE_USER_DEFINED1,
     ACPI_ADR_SPACE_USER_DEFINED2
 };
 
-
 static ACPI_CONNECTION_INFO   AeMyContext;
+
 
 /******************************************************************************
  *
