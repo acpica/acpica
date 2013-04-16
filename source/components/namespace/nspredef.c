@@ -186,14 +186,11 @@ AcpiNsCheckReturnValue (
 {
     ACPI_STATUS                 Status;
     const ACPI_PREDEFINED_INFO  *Predefined;
-    char                        *Pathname;
 
-
-    Predefined = Info->Predefined;
-    Pathname = Info->FullPathname;
 
     /* If not a predefined name, we cannot validate the return object */
 
+    Predefined = Info->Predefined;
     if (!Predefined)
     {
         return (AE_OK);
