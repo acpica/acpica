@@ -1778,31 +1778,31 @@ Device(DTM2) {
 		} else {
 			LoadTable(Local1, "", "", "\\", "\\DTM2.PLDT", 1)
 			if (SLCK) {
-				CH04(arg0, 0, 47, z176, 0x10e, 0, 0) // AE_AML_OPERAND_TYPE
+				CH04(arg0, 0, 61, z176, 0x10e, 0, 0) // AE_AML_STRING_LIMIT
 			} else {
 				CH04(arg0, 0, 49, z176, 0x10e, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
 			}
 			LoadTable("OEM1", Local1, "", "\\", "\\DTM2.PLDT", 1)
 			if (SLCK) {
-				CH04(arg0, 0, 47, z176, 0x10f, 0, 0) // AE_AML_OPERAND_TYPE
+				CH04(arg0, 0, 61, z176, 0x10f, 0, 0) // AE_AML_STRING_LIMIT
 			} else {
 				CH04(arg0, 0, 49, z176, 0x10f, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
 			}
 			LoadTable("OEM1", "", Local1, "\\", "\\DTM2.PLDT", 1)
 			if (SLCK) {
-				CH04(arg0, 0, 47, z176, 0x110, 0, 0) // AE_AML_OPERAND_TYPE
+				CH04(arg0, 0, 61, z176, 0x110, 0, 0) // AE_AML_STRING_LIMIT
 			} else {
 				CH04(arg0, 0, 49, z176, 0x110, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
 			}
 			LoadTable("OEM1", "", "", Local1, "\\DTM2.PLDT", 1)
 			if (SLCK) {
-				CH04(arg0, 0, 47, z176, 0x111, 0, 0) // AE_AML_OPERAND_TYPE
+				CH04(arg0, 0, 30, z176, 0x111, 0, 0) // AE_BAD_PATHNAME
 			} else {
 				CH04(arg0, 0, 49, z176, 0x111, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
 			}
 			LoadTable("OEM1", "", "", "\\", Local1, 1)
 			if (SLCK) {
-				CH04(arg0, 0, 47, z176, 0x112, 0, 0) // AE_AML_OPERAND_TYPE
+				CH04(arg0, 0, 30, z176, 0x112, 0, 0) // AE_BAD_PATHNAME
 			} else {
 				CH04(arg0, 0, 49, z176, 0x112, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
 			}

@@ -400,7 +400,8 @@ Method(c113) { IIN0() ms13(3) Return(POUT) }
 /*
  * Bug 114 issue:
  *
- * SUMMARY: Method object as a Source of Index operation is treated by iASL mistakenly as a call to that Method
+ * SUMMARY: Method object as a Source of Index operation is treated by iASL as a call to that Method
+ * Note: M001 will become a method call. No parens needed because it has no argument.
  */
 Method(ms14, 1, Serialized)
 {
@@ -430,20 +431,16 @@ Method(ms14, 1, Serialized)
 				OUTP("Index(m001, 0, Local0)")
 				Index(m001, 0, Local0)
 				if (LAnd(ABUU, LNot(q005))) {
-				} elseif (i001) {
+				} elseif (LNot(i001)) {
 					err(ts, z179, 0x01a, 0, 0, i001, 0)
-				} else {
-					CH04(ts, 0, 0xff, z179, 0x01b, 0, 0)
 				}
 			} elseif (LEqual(arg0, 1)) {
 				OUTP("Start of test: Method returns (Package(){10,2,3,4,5})")
 				OUTP("Index(m001, 0, Local0)")
 				Index(m001, 0, Local0)
 				if (LAnd(ABUU, LNot(q005))) {
-				} elseif (i001) {
+				} elseif (LNot(i001)) {
 					err(ts, z179, 0x01c, 0, 0, i001, 0)
-				} else {
-					CH04(ts, 0, 0xff, z179, 0x01d, 0, 0)
 				}
 			} elseif (LEqual(arg0, 2)) {
 				OUTP("Start of test: Name(b001, Buffer(){10,2,3,4,5})")

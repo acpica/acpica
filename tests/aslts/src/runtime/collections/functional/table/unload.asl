@@ -633,7 +633,7 @@ Device(DTM1) {
 		if (SLCK) {
 			CH04(arg0, 0, 47, z175, 0x046, 0, 0) // AE_AML_OPERAND_TYPE
 		} else {
-			CH04(arg0, 0, 62, z175, 0x047, 0, 0) // AE_AML_NO_RETURN_VALUE
+			CH04(arg0, 0, 47, z175, 0x047, 0, 0) // AE_AML_OPERAND_TYPE
 		}
 
 		UnLoad(DDB0)

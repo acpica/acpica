@@ -1590,7 +1590,13 @@ Device(DTM0) {
 
 		// Load operator execution, OpRegion Field case
 		Load(RFU0, HI0)
-		CH04(arg0, 0, 42, z174, 0x096, 0, 0)	// AE_INVALID_TABLE_LENGTH
+		if(LNot(arg1)){
+			// If the table length in the header is larger than the buffer.
+			CH04(arg0, 0, 54, z174, 0x096, 0, 0)	// AE_AML_BUFFER_LIMIT
+		} else {
+			// If the table length is smaller than an ACPI table header.
+			CH04(arg0, 0, 42, z174, 0x096, 0, 0)    // AE_INVALID_TABLE_LENGTH
+		}
 
 		if (CondRefof(\SSS0, Local0)) {
 			err(arg0, z174, 0x097, 0, 0, "\\SSS0", 1)
