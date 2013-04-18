@@ -929,7 +929,7 @@ AcpiDbCommandDispatch (
         AcpiDbDisplayHistory ();
         break;
 
-    case CMD_HISTORY_EXE:
+    case CMD_HISTORY_EXE: /* ! command */
         CommandLine = AcpiDbGetFromHistory (AcpiGbl_DbArgs[1]);
         if (!CommandLine)
         {
@@ -939,7 +939,7 @@ AcpiDbCommandDispatch (
         Status = AcpiDbCommandDispatch (CommandLine, WalkState, Op);
         return (Status);
 
-    case CMD_HISTORY_LAST:
+    case CMD_HISTORY_LAST: /* !! command */
         CommandLine = AcpiDbGetFromHistory (NULL);
         if (!CommandLine)
         {
