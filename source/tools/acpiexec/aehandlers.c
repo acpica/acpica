@@ -175,6 +175,17 @@ AeInterfaceHandler (
     ACPI_STRING             InterfaceName,
     UINT32                  Supported);
 
+static ACPI_STATUS
+AeInstallOneEcHandler (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue);
+
+static ACPI_STATUS
+AeInstallEcHandlers (
+    void);
+
 #if (!ACPI_REDUCED_HARDWARE)
 static UINT32
 AeEventHandler (
@@ -217,7 +228,6 @@ static ACPI_ADR_SPACE_TYPE  DefaultSpaceIdList[] =
 
 static ACPI_ADR_SPACE_TYPE  SpaceIdList[] =
 {
-    ACPI_ADR_SPACE_EC,
     ACPI_ADR_SPACE_SMBUS,
     ACPI_ADR_SPACE_CMOS,
     ACPI_ADR_SPACE_PCI_BAR_TARGET,
@@ -725,6 +735,55 @@ AeRegionInit (
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AeInstallEcHandlers, AeInstallOneEcHandler
+ *
+ * PARAMETERS:  ACPI_WALK_NAMESPACE callback
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Walk entire namespace, install a handler for every EC
+ *              device found.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AeInstallOneEcHandler (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_STATUS             Status;
+
+
+    /* Install the handler for this EC device */
+
+    Status = AcpiInstallAddressSpaceHandler (ObjHandle, ACPI_ADR_SPACE_EC,
+        AeRegionHandler, AeRegionInit, &AeMyContext);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status,
+            "Could not install an OpRegion handler for EC device (%p)",
+            ObjHandle));
+    }
+
+    return (Status);
+}
+
+static ACPI_STATUS
+AeInstallEcHandlers (
+    void)
+{
+
+    /* Find all Embedded Controller devices */
+
+    AcpiGetDevices ("PNP0C09", AeInstallOneEcHandler, NULL, NULL);
+    return (AE_OK);
+}
+
+
 /******************************************************************************
  *
  * FUNCTION:    AeInstallLateHandlers
@@ -762,8 +821,15 @@ AeInstallLateHandlers (
     AeMyContext.AccessLength = 0xA5;
 
     /*
+     * We will install a handler for each EC device, directly under the EC
+     * device definition. This is unlike the other handlers which we install
+     * at the root node.
+     */
+    AeInstallEcHandlers ();
+
+    /*
      * Install handlers for some of the "device driver" address spaces
-     * such as EC, SMBus, etc.
+     * such as SMBus, etc.
      */
     for (i = 0; i < ACPI_ARRAY_LENGTH (SpaceIdList); i++)
     {
