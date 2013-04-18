@@ -572,6 +572,14 @@ main (
             goto EnterDebugger;
         }
 
+        /*
+         * Install handlers for "device driver" space IDs (EC,SMBus, etc.)
+         * and fixed event handlers
+         */
+        AeInstallLateHandlers ();
+
+        /* Finish the ACPICA initialization */
+
         Status = AcpiInitializeObjects (InitFlags);
         if (ACPI_FAILURE (Status))
         {
@@ -580,11 +588,6 @@ main (
             goto EnterDebugger;
         }
 
-        /*
-         * Install handlers for "device driver" space IDs (EC,SMBus, etc.)
-         * and fixed event handlers
-         */
-        AeInstallLateHandlers ();
         AeMiscellaneousTests ();
     }
 
