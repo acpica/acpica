@@ -176,6 +176,7 @@ OBJECTS = \
 	$(OBJDIR)/tbxface.o\
 	$(OBJDIR)/utaddress.o\
 	$(OBJDIR)/utalloc.o\
+	$(OBJDIR)/utbuffer.o\
 	$(OBJDIR)/utcache.o\
 	$(OBJDIR)/utcopy.o\
 	$(OBJDIR)/utdebug.o\

@@ -261,6 +261,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\utbuffer.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utcache.c"
 					>
 					<FileConfiguration

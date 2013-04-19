@@ -359,29 +359,11 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\source\components\utilities\utcache.c"
+					RelativePath="..\..\source\components\utilities\utbuffer.c"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\source\components\utilities\utdebug.c"
+					RelativePath="..\..\source\components\utilities\utcache.c"
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
