@@ -379,6 +379,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\uterror.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\uteval.c"
 					>
 					<FileConfiguration
