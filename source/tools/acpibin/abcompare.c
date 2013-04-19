@@ -141,6 +141,10 @@ AbGetFile (
     char                    *Filename,
     UINT32                  *FileSize);
 
+static UINT32
+AbGetFileSize (
+    FILE                    *File);
+
 static void
 AbPrintHeaderInfo (
     ACPI_TABLE_HEADER       *Header);
@@ -600,6 +604,42 @@ AbCompareAmlFiles (
 
 /******************************************************************************
  *
+ * FUNCTION:    AbGetFileSize
+ *
+ * DESCRIPTION: Get the size of an open file
+ *
+ ******************************************************************************/
+
+static UINT32
+AbGetFileSize (
+    FILE                    *File)
+{
+    UINT32                  FileSize;
+    long                    Offset;
+
+
+    Offset = ftell (File);
+
+    if (fseek (File, 0, SEEK_END))
+    {
+        return (0);
+    }
+
+    FileSize = (UINT32) ftell (File);
+
+    /* Restore file pointer */
+
+    if (fseek (File, Offset, SEEK_SET))
+    {
+        return (0);
+    }
+
+    return (FileSize);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AbGetFile
  *
  * DESCRIPTION: Open a file and read it entirely into a new buffer
@@ -614,8 +654,6 @@ AbGetFile (
     FILE                    *File;
     UINT32                  Size;
     char                    *Buffer = NULL;
-    int                     Seek1;
-    int                     Seek2;
     size_t                  Actual;
 
 
@@ -630,11 +668,8 @@ AbGetFile (
 
     /* Need file size to allocate a buffer */
 
-    Seek1 = fseek (File, 0L, SEEK_END);
-    Size = ftell (File);
-    Seek2 = fseek (File, 0L, SEEK_SET);
-
-    if (Seek1 || Seek2 || (Size == -1))
+    Size = AbGetFileSize (File);
+    if (!Size)
     {
         printf ("Could not get file size (seek) for %s\n", Filename);
         goto ErrorExit;
@@ -682,14 +717,20 @@ AbDumpAmlFile (
     char                    *File2Path)
 {
     char                    *FileBuffer;
-    UINT32                  FileSize = 0;
     FILE                    *FileOutHandle;
+    UINT32                  FileSize = 0;
 
 
     /* Get the entire AML file, validate header */
 
     FileBuffer = AbGetFile (File1Path, &FileSize);
-    printf ("File %s contains 0x%X bytes\n\n", File1Path, FileSize);
+    if (!FileBuffer)
+    {
+        return (-1);
+    }
+
+    printf ("Input file:  %s contains %u (0x%X) bytes\n",
+        File1Path, FileSize, FileSize);
 
     FileOutHandle = fopen (File2Path, "wb");
     if (!FileOutHandle)
@@ -711,9 +752,13 @@ AbDumpAmlFile (
     AcpiOsPrintf ("%4.4s @ 0x%8.8X\n",
         ((ACPI_TABLE_HEADER *) FileBuffer)->Signature, 0);
 
-    AcpiDbgLevel = ACPI_UINT32_MAX;
-    AcpiUtDebugDumpBuffer ((UINT8 *) FileBuffer, FileSize,
-        DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
+    AcpiUtDumpBuffer ((UINT8 *) FileBuffer, FileSize, DB_BYTE_DISPLAY, 0);
+
+    /* Summary for the output file */
+
+    FileSize = AbGetFileSize (FileOutHandle);
+    printf ("Output file: %s contains %u (0x%X) bytes\n\n",
+        File2Path, FileSize, FileSize);
 
     return (0);
 }
