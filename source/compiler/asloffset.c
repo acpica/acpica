@@ -235,6 +235,7 @@ LsAmlOffsetWalk (
             break;
 
         default:
+
             break;
         }
 
@@ -281,6 +282,7 @@ LsAmlOffsetWalk (
             return (AE_OK);
 
         default:
+
             break;
         }
     }

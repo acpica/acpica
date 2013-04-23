@@ -322,14 +322,17 @@ AcpiSetGpe (
     switch (Action)
     {
     case ACPI_GPE_ENABLE:
+
         Status = AcpiEvEnableGpe (GpeEventInfo);
         break;
 
     case ACPI_GPE_DISABLE:
+
         Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_DISABLE);
         break;
 
     default:
+
         Status = AE_BAD_PARAMETER;
         break;
     }
@@ -559,14 +562,17 @@ AcpiSetGpeWakeMask (
     switch (Action)
     {
     case ACPI_GPE_ENABLE:
+
         ACPI_SET_BIT (GpeRegisterInfo->EnableForWake, (UINT8) RegisterBit);
         break;
 
     case ACPI_GPE_DISABLE:
+
         ACPI_CLEAR_BIT (GpeRegisterInfo->EnableForWake, (UINT8) RegisterBit);
         break;
 
     default:
+
         ACPI_ERROR ((AE_INFO, "%u, Invalid action", Action));
         Status = AE_BAD_PARAMETER;
         break;

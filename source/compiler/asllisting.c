@@ -391,16 +391,20 @@ LsWriteNodeToListing (
             break;
 
         default:
+
             switch (OpClass)
             {
             case AML_CLASS_NAMED_OBJECT:
+
                 switch (Op->Asl.AmlOpcode)
                 {
                 case AML_SCOPE_OP:
                 case AML_ALIAS_OP:
+
                     break;
 
                 default:
+
                     if (Op->Asl.ExternalName)
                     {
                         LsFlushListingBuffer (FileId);
@@ -411,7 +415,9 @@ LsWriteNodeToListing (
                 break;
 
             default:
+
                 /* Don't care about other objects */
+
                 break;
             }
             break;
@@ -499,7 +505,9 @@ LsWriteNodeToListing (
 
 
     default:
+
         /* All other opcodes have an AML opcode */
+
         break;
     }
 
@@ -515,7 +523,6 @@ LsWriteNodeToListing (
 
         break;
 
-
     case AML_CLASS_NAMED_OBJECT:
 
         switch (Op->Asl.AmlOpcode)
@@ -523,7 +530,6 @@ LsWriteNodeToListing (
         case AML_FIELD_OP:
         case AML_INDEX_FIELD_OP:
         case AML_BANK_FIELD_OP:
-
             /*
              * For fields, we want to dump all the AML after the
              * entire definition
@@ -551,6 +557,7 @@ LsWriteNodeToListing (
             break;
 
         default:
+
             LsWriteSourceLines (Op->Asl.LineNumber, Op->Asl.LogicalLineNumber,
                 FileId);
             break;
@@ -575,7 +582,6 @@ LsWriteNodeToListing (
             case ASL_FILE_C_SOURCE_OUTPUT:
             case ASL_FILE_ASM_INCLUDE_OUTPUT:
             case ASL_FILE_C_INCLUDE_OUTPUT:
-
                 /*
                  * For named objects, we will create a valid symbol so that the
                  * AML code can be referenced from C or ASM
@@ -630,7 +636,9 @@ LsWriteNodeToListing (
                 break;
 
             default:
+
                 /* Nothing to do for listing file */
+
                 break;
             }
         }
@@ -651,6 +659,7 @@ LsWriteNodeToListing (
         break;
 
     case AML_CLASS_UNKNOWN:
+
         break;
     }
 }

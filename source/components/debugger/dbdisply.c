@@ -337,7 +337,6 @@ AcpiDbDecodeAndDisplayObject (
             Node = ObjPtr;
             goto DumpNode;
 
-
         case ACPI_DESC_TYPE_OPERAND:
 
             /* This is a ACPI OPERAND OBJECT */
@@ -354,7 +353,6 @@ AcpiDbDecodeAndDisplayObject (
             AcpiExDumpObjectDescriptor (ObjPtr, 1);
             break;
 
-
         case ACPI_DESC_TYPE_PARSER:
 
             /* This is a Parser Op object */
@@ -370,7 +368,6 @@ AcpiDbDecodeAndDisplayObject (
                 ACPI_UINT32_MAX);
             AcpiDbDumpParserDescriptor ((ACPI_PARSE_OBJECT *) ObjPtr);
             break;
-
 
         default:
 
@@ -518,6 +515,7 @@ AcpiDbDisplayMethodInfo (
         switch (OpInfo->Class)
         {
         case AML_CLASS_ARGUMENT:
+
             if (CountRemaining)
             {
                 NumRemainingOperands++;
@@ -527,11 +525,13 @@ AcpiDbDisplayMethodInfo (
             break;
 
         case AML_CLASS_UNKNOWN:
+
             /* Bad opcode or ASCII character */
 
             continue;
 
         default:
+
             if (CountRemaining)
             {
                 NumRemainingOperators++;
@@ -1003,15 +1003,21 @@ AcpiDbDisplayGpes (
                     switch (GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK)
                     {
                     case ACPI_GPE_DISPATCH_NONE:
+
                         AcpiOsPrintf ("NotUsed");
                         break;
+
                     case ACPI_GPE_DISPATCH_METHOD:
+
                         AcpiOsPrintf ("Method");
                         break;
                     case ACPI_GPE_DISPATCH_HANDLER:
+
                         AcpiOsPrintf ("Handler");
                         break;
+
                     case ACPI_GPE_DISPATCH_NOTIFY:
+
                         Count = 0;
                         Notify = GpeEventInfo->Dispatch.NotifyList;
                         while (Notify)
@@ -1021,7 +1027,9 @@ AcpiDbDisplayGpes (
                         }
                         AcpiOsPrintf ("Implicit Notify on %u devices", Count);
                         break;
+
                     default:
+
                         AcpiOsPrintf ("UNKNOWN: %X",
                             GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK);
                         break;

@@ -200,20 +200,18 @@ AcpiDsInitOneObject (
         Info->OpRegionCount++;
         break;
 
-
     case ACPI_TYPE_METHOD:
 
         Info->MethodCount++;
         break;
-
 
     case ACPI_TYPE_DEVICE:
 
         Info->DeviceCount++;
         break;
 
-
     default:
+
         break;
     }
 

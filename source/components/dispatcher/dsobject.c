@@ -749,7 +749,6 @@ AcpiDsInitObjectFromOp (
     switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_BUFFER:
-
         /*
          * Defer evaluation of Buffer TermArg operand
          */
@@ -759,9 +758,7 @@ AcpiDsInitObjectFromOp (
         ObjDesc->Buffer.AmlLength = Op->Named.Length;
         break;
 
-
     case ACPI_TYPE_PACKAGE:
-
         /*
          * Defer evaluation of Package TermArg operand
          */
@@ -770,7 +767,6 @@ AcpiDsInitObjectFromOp (
         ObjDesc->Package.AmlStart  = Op->Named.Data;
         ObjDesc->Package.AmlLength = Op->Named.Length;
         break;
-
 
     case ACPI_TYPE_INTEGER:
 
@@ -824,7 +820,6 @@ AcpiDsInitObjectFromOp (
             }
             break;
 
-
         case AML_TYPE_LITERAL:
 
             ObjDesc->Integer.Value = Op->Common.Value.Integer;
@@ -842,15 +837,14 @@ AcpiDsInitObjectFromOp (
 #endif
             break;
 
-
         default:
+
             ACPI_ERROR ((AE_INFO, "Unknown Integer type 0x%X",
                 OpInfo->Type));
             Status = AE_AML_OPERAND_TYPE;
             break;
         }
         break;
-
 
     case ACPI_TYPE_STRING:
 
@@ -864,10 +858,8 @@ AcpiDsInitObjectFromOp (
         ObjDesc->Common.Flags |= AOPOBJ_STATIC_POINTER;
         break;
 
-
     case ACPI_TYPE_METHOD:
         break;
-
 
     case ACPI_TYPE_LOCAL_REFERENCE:
 
@@ -887,7 +879,6 @@ AcpiDsInitObjectFromOp (
                             &ObjDesc->Reference.Object));
 #endif
             break;
-
 
         case AML_TYPE_METHOD_ARGUMENT:
 
@@ -931,7 +922,6 @@ AcpiDsInitObjectFromOp (
             break;
         }
         break;
-
 
     default:
 

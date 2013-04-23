@@ -622,6 +622,7 @@ AcpiNsResolveReferences (
         break;
 
     default:
+
         return;
     }
 

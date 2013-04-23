@@ -423,20 +423,24 @@ AcpiEnterSleepStatePrep (
     switch (SleepState)
     {
     case ACPI_STATE_S0:
+
         SstValue = ACPI_SST_WORKING;
         break;
 
     case ACPI_STATE_S1:
     case ACPI_STATE_S2:
     case ACPI_STATE_S3:
+
         SstValue = ACPI_SST_SLEEPING;
         break;
 
     case ACPI_STATE_S4:
+
         SstValue = ACPI_SST_SLEEP_CONTEXT;
         break;
 
     default:
+
         SstValue = ACPI_SST_INDICATOR_OFF; /* Default is off */
         break;
     }

@@ -501,10 +501,12 @@ AcpiUtDisplayInitPathname (
     switch (Type)
     {
     case ACPI_TYPE_METHOD:
+
         AcpiOsPrintf ("Executing    ");
         break;
 
     default:
+
         AcpiOsPrintf ("Initializing ");
         break;
     }

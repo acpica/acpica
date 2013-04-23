@@ -196,6 +196,7 @@ AcpiExStore (
     switch (DestDesc->Common.Type)
     {
     case ACPI_TYPE_LOCAL_REFERENCE:
+
         break;
 
     case ACPI_TYPE_INTEGER:
@@ -239,14 +240,12 @@ AcpiExStore (
                     WalkState, ACPI_IMPLICIT_CONVERSION);
         break;
 
-
     case ACPI_REFCLASS_INDEX:
 
         /* Storing to an Index (pointer into a packager or buffer) */
 
         Status = AcpiExStoreObjectToIndex (SourceDesc, RefDesc, WalkState);
         break;
-
 
     case ACPI_REFCLASS_LOCAL:
     case ACPI_REFCLASS_ARG:
@@ -257,9 +256,7 @@ AcpiExStore (
                     RefDesc->Reference.Value, SourceDesc, WalkState);
         break;
 
-
     case ACPI_REFCLASS_DEBUG:
-
         /*
          * Storing to the Debug object causes the value stored to be
          * displayed and otherwise has no effect -- see ACPI Specification
@@ -270,7 +267,6 @@ AcpiExStore (
 
         ACPI_DEBUG_OBJECT (SourceDesc, 0, 0);
         break;
-
 
     default:
 
@@ -380,9 +376,7 @@ AcpiExStoreObjectToIndex (
 
         break;
 
-
     case ACPI_TYPE_BUFFER_FIELD:
-
         /*
          * Store into a Buffer or String (not actually a real BufferField)
          * at a location defined by an Index.
@@ -439,7 +433,6 @@ AcpiExStoreObjectToIndex (
 
         ObjDesc->Buffer.Pointer[IndexDesc->Reference.Value] = Value;
         break;
-
 
     default:
         ACPI_ERROR ((AE_INFO,
@@ -545,11 +538,9 @@ AcpiExStoreObjectToNode (
                     &WalkState->ResultObj);
         break;
 
-
     case ACPI_TYPE_INTEGER:
     case ACPI_TYPE_STRING:
     case ACPI_TYPE_BUFFER:
-
         /*
          * These target types are all of type Integer/String/Buffer, and
          * therefore support implicit conversion before the store.
@@ -582,7 +573,6 @@ AcpiExStoreObjectToNode (
                 AcpiUtGetObjectTypeName (NewDesc)));
         }
         break;
-
 
     default:
 

@@ -286,6 +286,7 @@ AcpiOsGetNextFilename (
             break;
 
         default:
+
             return (NULL);
         }
     }

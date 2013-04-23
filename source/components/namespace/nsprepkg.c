@@ -221,7 +221,6 @@ AcpiNsCheckPackage (
     switch (Package->RetInfo.Type)
     {
     case ACPI_PTYPE1_FIXED:
-
         /*
          * The package count is fixed and there are no sub-packages
          *
@@ -248,9 +247,7 @@ AcpiNsCheckPackage (
                     Package->RetInfo.ObjectType2, Package->RetInfo.Count2, 0);
         break;
 
-
     case ACPI_PTYPE1_VAR:
-
         /*
          * The package count is variable, there are no sub-packages, and all
          * elements must be of the same type
@@ -267,9 +264,7 @@ AcpiNsCheckPackage (
         }
         break;
 
-
     case ACPI_PTYPE1_OPTION:
-
         /*
          * The package count is variable, there are no sub-packages. There are
          * a fixed number of required elements, and a variable number of
@@ -313,7 +308,6 @@ AcpiNsCheckPackage (
         }
         break;
 
-
     case ACPI_PTYPE2_REV_FIXED:
 
         /* First element is the (Integer) revision */
@@ -332,7 +326,6 @@ AcpiNsCheckPackage (
 
         Status = AcpiNsCheckPackageList (Info, Package, Elements, Count);
         break;
-
 
     case ACPI_PTYPE2_PKG_COUNT:
 
@@ -363,13 +356,11 @@ AcpiNsCheckPackage (
         Status = AcpiNsCheckPackageList (Info, Package, Elements, Count);
         break;
 
-
     case ACPI_PTYPE2:
     case ACPI_PTYPE2_FIXED:
     case ACPI_PTYPE2_MIN:
     case ACPI_PTYPE2_COUNT:
     case ACPI_PTYPE2_FIX_VAR:
-
         /*
          * These types all return a single Package that consists of a
          * variable number of sub-Packages.
@@ -401,7 +392,6 @@ AcpiNsCheckPackage (
 
         Status = AcpiNsCheckPackageList (Info, Package, Elements, Count);
         break;
-
 
     default:
 
@@ -510,7 +500,6 @@ AcpiNsCheckPackageList (
             }
             break;
 
-
         case ACPI_PTYPE2_FIX_VAR:
             /*
              * Each subpackage has a fixed number of elements and an
@@ -532,7 +521,6 @@ AcpiNsCheckPackageList (
                 return (Status);
             }
             break;
-
 
         case ACPI_PTYPE2_FIXED:
 
@@ -557,7 +545,6 @@ AcpiNsCheckPackageList (
             }
             break;
 
-
         case ACPI_PTYPE2_MIN:
 
             /* Each sub-package has a variable but minimum length */
@@ -579,9 +566,7 @@ AcpiNsCheckPackageList (
             }
             break;
 
-
         case ACPI_PTYPE2_COUNT:
-
             /*
              * First element is the (Integer) count of elements, including
              * the count field (the ACPI name is NumElements)
@@ -629,7 +614,6 @@ AcpiNsCheckPackageList (
                 return (Status);
             }
             break;
-
 
         default: /* Should not get here, type was validated by caller */
 

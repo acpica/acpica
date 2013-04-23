@@ -382,7 +382,6 @@ ApCheckPredefinedReturnValue (
             break;
 
         default:
-
             /*
              * All other ops are very difficult or impossible to typecheck at
              * compile time. These include all Localx, Argx, and method
@@ -451,6 +450,7 @@ ApCheckForPredefinedObject (
         return;
 
     default:
+
         break;
     }
 
@@ -696,33 +696,39 @@ ApCheckObjectType (
     case PARSEOP_ONE:
     case PARSEOP_ONES:
     case PARSEOP_INTEGER:
+
         ReturnBtype = ACPI_RTYPE_INTEGER;
         TypeName = "Integer";
         break;
 
     case PARSEOP_STRING_LITERAL:
+
         ReturnBtype = ACPI_RTYPE_STRING;
         TypeName = "String";
         break;
 
     case PARSEOP_BUFFER:
+
         ReturnBtype = ACPI_RTYPE_BUFFER;
         TypeName = "Buffer";
         break;
 
     case PARSEOP_PACKAGE:
     case PARSEOP_VAR_PACKAGE:
+
         ReturnBtype = ACPI_RTYPE_PACKAGE;
         TypeName = "Package";
         break;
 
     case PARSEOP_NAMESEG:
     case PARSEOP_NAMESTRING:
+
         ReturnBtype = ACPI_RTYPE_REFERENCE;
         TypeName = "Reference";
         break;
 
     default:
+
         /* Not one of the supported object types */
 
         TypeName = UtGetOpName (Op->Asl.ParseOpcode);

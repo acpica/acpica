@@ -549,20 +549,23 @@ AslDoOptions (
         }
         break;
 
-
     case 'b':   /* Debug output options */
+
         switch (AcpiGbl_Optarg[0])
         {
         case 'f':
+
             AslCompilerdebug = 1; /* same as yydebug */
             DtParserdebug = 1;
             PrParserdebug = 1;
             break;
 
         case 't':
+
             break;
 
         default:
+
             printf ("Unknown option: -b%s\n", AcpiGbl_Optarg);
             return (-1);
         }
@@ -572,41 +575,48 @@ AslDoOptions (
         Gbl_DebugFlag = TRUE;
         break;
 
-
     case 'c':
+
         switch (AcpiGbl_Optarg[0])
         {
         case 'r':
+
             Gbl_NoResourceChecking = TRUE;
             break;
 
         default:
+
             printf ("Unknown option: -c%s\n", AcpiGbl_Optarg);
             return (-1);
         }
         break;
 
-
     case 'd':   /* Disassembler */
+
         switch (AcpiGbl_Optarg[0])
         {
         case '^':
+
             Gbl_DoCompile = FALSE;
             break;
 
         case 'a':
+
             Gbl_DoCompile = FALSE;
             Gbl_DisassembleAll = TRUE;
             break;
 
         case 'b':   /* Do not convert buffers to resource descriptors */
+
             AcpiGbl_NoResourceDisassembly = TRUE;
             break;
 
         case 'c':
+
             break;
 
         default:
+
             printf ("Unknown option: -d%s\n", AcpiGbl_Optarg);
             return (-1);
         }
@@ -614,13 +624,13 @@ AslDoOptions (
         Gbl_DisasmFlag = TRUE;
         break;
 
-
     case 'D':   /* Define a symbol */
+
         PrAddDefine (AcpiGbl_Optarg, NULL, TRUE);
         break;
 
-
     case 'e':   /* External files for disassembler */
+
         Status = AcpiDmAddToExternalFileList (AcpiGbl_Optarg);
         if (ACPI_FAILURE (Status))
         {
@@ -629,16 +639,15 @@ AslDoOptions (
         }
         break;
 
-
     case 'f':   /* Ignore errors and force creation of aml file */
+
         Gbl_IgnoreErrors = TRUE;
         break;
 
-
     case 'G':
+
         Gbl_CompileGeneric = TRUE;
         break;
-
 
     case 'g':   /* Get all ACPI tables */
 
@@ -646,44 +655,50 @@ AslDoOptions (
         Gbl_DoCompile = FALSE;
         break;
 
-
     case 'h':
+
         switch (AcpiGbl_Optarg[0])
         {
         case '^':
+
             Usage ();
             exit (0);
 
         case 'c':
+
             UtDisplayConstantOpcodes ();
             exit (0);
 
         case 'f':
+
             FilenameHelp ();
             exit (0);
 
         case 'r':
+
             /* reserved names */
 
             ApDisplayReservedNames ();
             exit (0);
 
         case 't':
+
             UtDisplaySupportedTables ();
             exit (0);
 
         default:
+
             printf ("Unknown option: -h%s\n", AcpiGbl_Optarg);
             return (-1);
         }
 
-
     case 'I':   /* Add an include file search directory */
+
         FlAddIncludeDirectory (AcpiGbl_Optarg);
         break;
 
-
     case 'i':   /* Output AML as an include file */
+
         switch (AcpiGbl_Optarg[0])
         {
         case 'a':
@@ -708,47 +723,53 @@ AslDoOptions (
             break;
 
         default:
+
             printf ("Unknown option: -i%s\n", AcpiGbl_Optarg);
             return (-1);
         }
         break;
 
-
     case 'l':   /* Listing files */
+
         switch (AcpiGbl_Optarg[0])
         {
         case '^':
+
             /* Produce listing file (Mixed source/aml) */
 
             Gbl_ListingFlag = TRUE;
             break;
 
         case 'i':
+
             /* Produce preprocessor output file */
 
             Gbl_PreprocessorOutputFlag = TRUE;
             break;
 
         case 'n':
+
             /* Produce namespace file */
 
             Gbl_NsOutputFlag = TRUE;
             break;
 
         case 's':
+
             /* Produce combined source file */
 
             Gbl_SourceOutputFlag = TRUE;
             break;
 
         default:
+
             printf ("Unknown option: -l%s\n", AcpiGbl_Optarg);
             return (-1);
         }
         break;
 
-
     case 'm':   /* Set line buffer size */
+
         Gbl_LineBufferSize = (UINT32) strtoul (AcpiGbl_Optarg, NULL, 0) * 1024;
         if (Gbl_LineBufferSize < ASL_DEFAULT_LINE_BUFFER_SIZE)
         {
@@ -757,13 +778,13 @@ AslDoOptions (
         printf ("Line Buffer Size: %u\n", Gbl_LineBufferSize);
         break;
 
-
     case 'n':   /* Parse only */
+
         Gbl_ParseOnlyFlag = TRUE;
         break;
 
-
     case 'o':   /* Control compiler AML optimizations */
+
         switch (AcpiGbl_Optarg[0])
         {
         case 'a':
@@ -804,43 +825,47 @@ AslDoOptions (
             break;
 
         default:
+
             printf ("Unknown option: -c%s\n", AcpiGbl_Optarg);
             return (-1);
         }
         break;
 
-
     case 'P':   /* Preprocessor options */
+
         switch (AcpiGbl_Optarg[0])
         {
         case '^':   /* Proprocess only, emit (.i) file */
+
             Gbl_PreprocessOnly = TRUE;
             Gbl_PreprocessorOutputFlag = TRUE;
             break;
 
         case 'n':   /* Disable preprocessor */
+
             Gbl_PreprocessFlag = FALSE;
             break;
 
         default:
+
             printf ("Unknown option: -P%s\n", AcpiGbl_Optarg);
             return (-1);
         }
         break;
 
-
     case 'p':   /* Override default AML output filename */
+
         Gbl_OutputFilenamePrefix = AcpiGbl_Optarg;
         Gbl_UseDefaultAmlFilename = FALSE;
         break;
 
-
     case 'r':   /* Override revision found in table header */
+
         Gbl_RevisionOverride = (UINT8) strtoul (AcpiGbl_Optarg, NULL, 0);
         break;
 
-
     case 's':   /* Create AML in a source code file */
+
         switch (AcpiGbl_Optarg[0])
         {
         case 'a':
@@ -865,48 +890,55 @@ AslDoOptions (
             break;
 
         default:
+
             printf ("Unknown option: -s%s\n", AcpiGbl_Optarg);
             return (-1);
         }
         break;
 
-
     case 't':   /* Produce hex table output file */
+
         switch (AcpiGbl_Optarg[0])
         {
         case 'a':
+
             Gbl_HexOutputFlag = HEX_OUTPUT_ASM;
             break;
 
         case 'c':
+
             Gbl_HexOutputFlag = HEX_OUTPUT_C;
             break;
 
         case 's':
+
             Gbl_HexOutputFlag = HEX_OUTPUT_ASL;
             break;
 
         default:
+
             printf ("Unknown option: -t%s\n", AcpiGbl_Optarg);
             return (-1);
         }
         break;
 
-
     case 'T':   /* Create a ACPI table template file */
+
         Gbl_DoTemplates = TRUE;
         Gbl_TemplateSignature = AcpiGbl_Optarg;
         break;
 
-
     case 'v':   /* Version and verbosity settings */
+
         switch (AcpiGbl_Optarg[0])
         {
         case '^':
+
             printf (ACPI_COMMON_SIGNON (ASL_COMPILER_NAME));
             exit (0);
 
         case 'a':
+
             /* Disable All error/warning messages */
 
             Gbl_NoErrors = TRUE;
@@ -928,14 +960,17 @@ AslDoOptions (
             break;
 
         case 'o':
+
             Gbl_DisplayOptimizations = TRUE;
             break;
 
         case 'r':
+
             Gbl_DisplayRemarks = FALSE;
             break;
 
         case 's':
+
             Gbl_DoSignon = FALSE;
             break;
 
@@ -944,49 +979,55 @@ AslDoOptions (
             break;
 
         default:
+
             printf ("Unknown option: -v%s\n", AcpiGbl_Optarg);
             return (-1);
         }
         break;
 
-
     case 'w': /* Set warning levels */
+
         switch (AcpiGbl_Optarg[0])
         {
         case '1':
+
             Gbl_WarningLevel = ASL_WARNING;
             break;
 
         case '2':
+
             Gbl_WarningLevel = ASL_WARNING2;
             break;
 
         case '3':
+
             Gbl_WarningLevel = ASL_WARNING3;
             break;
 
         case 'e':
+
             Gbl_WarningsAsErrors = TRUE;
             break;
 
         default:
+
             printf ("Unknown option: -w%s\n", AcpiGbl_Optarg);
             return (-1);
         }
         break;
 
-
     case 'x':   /* Set debug print output level */
+
         AcpiDbgLevel = strtoul (AcpiGbl_Optarg, NULL, 16);
         break;
 
-
     case 'z':
+
         Gbl_UseOriginalCompilerId = TRUE;
         break;
 
-
     default:
+
         return (-1);
     }
 

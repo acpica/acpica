@@ -1296,18 +1296,22 @@ AcpiOsReadPort (
     switch (Width)
     {
     case 8:
+
         *Value = 0xFF;
         break;
 
     case 16:
+
         *Value = 0xFFFF;
         break;
 
     case 32:
+
         *Value = 0xFFFFFFFF;
         break;
 
     default:
+
         ACPI_ERROR ((AE_INFO, "Bad width parameter: %X", Width));
         return (AE_BAD_PARAMETER);
     }
@@ -1377,10 +1381,12 @@ AcpiOsReadMemory (
     case 16:
     case 32:
     case 64:
+
         *Value = 0;
         break;
 
     default:
+
         return (AE_BAD_PARAMETER);
         break;
     }
@@ -1436,12 +1442,15 @@ AcpiOsSignal (
     switch (Function)
     {
     case ACPI_SIGNAL_FATAL:
+
         break;
 
     case ACPI_SIGNAL_BREAKPOINT:
+
         break;
 
     default:
+
         break;
     }
 

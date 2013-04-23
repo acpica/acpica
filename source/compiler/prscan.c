@@ -549,6 +549,7 @@ PrDoDirective (
     switch (Directive)
     {
     case PR_DIRECTIVE_ELIF:
+
         *IgnoringThisCodeBlock = !(*IgnoringThisCodeBlock);
         if (*IgnoringThisCodeBlock == TRUE)
         {
@@ -565,10 +566,12 @@ PrDoDirective (
         break;
 
     case PR_DIRECTIVE_ELSE:
+
         *IgnoringThisCodeBlock = !(*IgnoringThisCodeBlock);
         return;
 
     case PR_DIRECTIVE_ENDIF:
+
         *IgnoringThisCodeBlock = FALSE;
         Gbl_IfDepth--;
         if (Gbl_IfDepth < 0)
@@ -580,6 +583,7 @@ PrDoDirective (
         return;
 
     default:
+
         break;
     }
 
@@ -662,6 +666,7 @@ PrDoDirective (
         break;
 
     case PR_DIRECTIVE_ERROR:
+
         /* TBD compiler should abort */
         /* Note: No macro expansion */
 
@@ -670,6 +675,7 @@ PrDoDirective (
         break;
 
     case PR_DIRECTIVE_IF:
+
         TokenOffset = Token - Gbl_MainTokenBuffer;
 
         /* Need to expand #define macros in the expression string first */
@@ -695,6 +701,7 @@ PrDoDirective (
         break;
 
     case PR_DIRECTIVE_IFDEF:
+
         if (!PrMatchDefine (Token))
         {
             *IgnoringThisCodeBlock = TRUE;
@@ -707,6 +714,7 @@ PrDoDirective (
         break;
 
     case PR_DIRECTIVE_IFNDEF:
+
         if (PrMatchDefine (Token))
         {
             *IgnoringThisCodeBlock = TRUE;
@@ -719,6 +727,7 @@ PrDoDirective (
         break;
 
     case PR_DIRECTIVE_INCLUDE:
+
         Token = PrGetNextToken (NULL, " \"<>", Next);
         if (!Token)
         {
@@ -733,6 +742,7 @@ PrDoDirective (
         break;
 
     case PR_DIRECTIVE_LINE:
+
         TokenOffset = Token - Gbl_MainTokenBuffer;
 
         Status = PrResolveIntegerExpression (
@@ -758,6 +768,7 @@ PrDoDirective (
         break;
 
     case PR_DIRECTIVE_PRAGMA:
+
         /* Only "#pragma message" supported at this time */
 
         if (strcmp (Token, "message"))
@@ -778,6 +789,7 @@ PrDoDirective (
         break;
 
     case PR_DIRECTIVE_UNDEF:
+
         DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
             "#undef: %s\n", Gbl_CurrentLineNumber, Token);
 
@@ -785,11 +797,13 @@ PrDoDirective (
         break;
 
     case PR_DIRECTIVE_WARNING:
+
         PrError (ASL_WARNING, ASL_MSG_ERROR_DIRECTIVE,
             THIS_TOKEN_OFFSET (Token));
         break;
 
     default:
+
         /* Should never get here */
         DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
             "Unrecognized directive: %u\n",

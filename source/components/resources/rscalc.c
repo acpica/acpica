@@ -443,8 +443,8 @@ AcpiRsGetAmlLength (
 
             break;
 
-
         default:
+
             break;
         }
 
@@ -634,6 +634,7 @@ AcpiRsGetListLength (
             break;
 
         default:
+
             break;
         }
 

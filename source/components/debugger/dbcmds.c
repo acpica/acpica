@@ -433,22 +433,27 @@ AcpiDbDisplayTableInfo (
         switch (TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK)
         {
         case ACPI_TABLE_ORIGIN_UNKNOWN:
+
             AcpiOsPrintf ("Unknown   ");
             break;
 
         case ACPI_TABLE_ORIGIN_MAPPED:
+
             AcpiOsPrintf ("Mapped    ");
             break;
 
         case ACPI_TABLE_ORIGIN_ALLOCATED:
+
             AcpiOsPrintf ("Allocated ");
             break;
 
         case ACPI_TABLE_ORIGIN_OVERRIDE:
+
             AcpiOsPrintf ("Override  ");
             break;
 
         default:
+
             AcpiOsPrintf ("INVALID   ");
             break;
         }

@@ -158,6 +158,7 @@ AcpiEvIsNotifyObject (
         return (TRUE);
 
     default:
+
         return (FALSE);
     }
 }

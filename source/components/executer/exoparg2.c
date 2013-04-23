@@ -216,7 +216,6 @@ AcpiExOpcode_2A_0T_0R (
         Status = AcpiEvQueueNotifyRequest (Node, Value);
         break;
 
-
     default:
 
         ACPI_ERROR ((AE_INFO, "Unknown AML opcode 0x%X",
@@ -288,7 +287,6 @@ AcpiExOpcode_2A_2T_1R (
             goto Cleanup;
         }
         break;
-
 
     default:
 
@@ -403,16 +401,13 @@ AcpiExOpcode_2A_1T_1R (
                                &ReturnDesc->Integer.Value);
         break;
 
-
     case AML_CONCAT_OP: /* Concatenate (Data1, Data2, Result) */
 
         Status = AcpiExDoConcatenate (Operand[0], Operand[1],
                     &ReturnDesc, WalkState);
         break;
 
-
     case AML_TO_STRING_OP: /* ToString (Buffer, Length, Result) (ACPI 2.0) */
-
         /*
          * Input object is guaranteed to be a buffer at this point (it may have
          * been converted.)  Copy the raw buffer data to a new object of
@@ -452,7 +447,6 @@ AcpiExOpcode_2A_1T_1R (
             Operand[0]->Buffer.Pointer, Length);
         break;
 
-
     case AML_CONCAT_RES_OP:
 
         /* ConcatenateResTemplate (Buffer, Buffer, Result) (ACPI 2.0) */
@@ -460,7 +454,6 @@ AcpiExOpcode_2A_1T_1R (
         Status = AcpiExConcatTemplate (Operand[0], Operand[1],
                     &ReturnDesc, WalkState);
         break;
-
 
     case AML_INDEX_OP:              /* Index (Source Index Result) */
 
@@ -550,7 +543,6 @@ AcpiExOpcode_2A_1T_1R (
 
         WalkState->ResultObj = ReturnDesc;
         goto Cleanup;
-
 
     default:
 
@@ -673,7 +665,6 @@ AcpiExOpcode_2A_0T_1R (
             Status = AE_OK;
         }
         break;
-
 
     default:
 

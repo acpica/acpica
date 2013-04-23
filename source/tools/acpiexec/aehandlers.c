@@ -331,6 +331,7 @@ AeCommonNotifyHandler (
     {
 #if 0
     case 0:
+
         printf ("[AcpiExec] Method Error 0x%X: Results not equal\n", Value);
         if (AcpiGbl_DebugFile)
         {
@@ -338,8 +339,8 @@ AeCommonNotifyHandler (
         }
         break;
 
-
     case 1:
+
         printf ("[AcpiExec] Method Error: Incorrect numeric result\n");
         if (AcpiGbl_DebugFile)
         {
@@ -347,8 +348,8 @@ AeCommonNotifyHandler (
         }
         break;
 
-
     case 2:
+
         printf ("[AcpiExec] Method Error: An operand was overwritten\n");
         if (AcpiGbl_DebugFile)
         {
@@ -359,6 +360,7 @@ AeCommonNotifyHandler (
 #endif
 
     default:
+
         printf ("[AcpiExec] Handler %u: Received a %s Notify on [%4.4s] %p Value 0x%2.2X (%s)\n",
             HandlerId, Type, AcpiUtGetNodeName (Device), Device, Value,
             AcpiUtGetNotifyName (Value));
@@ -626,14 +628,17 @@ AeGlobalEventHandler (
     switch (Type)
     {
     case ACPI_EVENT_TYPE_GPE:
+
         TypeName = "GPE";
         break;
 
     case ACPI_EVENT_TYPE_FIXED:
+
         TypeName = "FixedEvent";
         break;
 
     default:
+
         TypeName = "UNKNOWN";
         break;
     }
@@ -1182,6 +1187,7 @@ AeRegionHandler (
             break;
 
         default:
+
             Status = AE_BAD_PARAMETER;
             break;
         }
@@ -1206,24 +1212,27 @@ AeRegionHandler (
         switch (Function & ACPI_IO_MASK)
         {
         case ACPI_READ:
+
             switch (Function >> 16)
             {
             case AML_FIELD_ATTRIB_QUICK:
             case AML_FIELD_ATTRIB_SEND_RCV:
             case AML_FIELD_ATTRIB_BYTE:
+                
                 Length = 1;
                 break;
 
             case AML_FIELD_ATTRIB_WORD:
             case AML_FIELD_ATTRIB_WORD_CALL:
+
                 Length = 2;
                 break;
 
             case AML_FIELD_ATTRIB_BLOCK:
             case AML_FIELD_ATTRIB_BLOCK_CALL:
+
                 Length = 32;
                 break;
-
 
             case AML_FIELD_ATTRIB_MULTIBYTE:
             case AML_FIELD_ATTRIB_RAW_BYTES:
@@ -1234,11 +1243,13 @@ AeRegionHandler (
                 break;
 
             default:
+
                 break;
             }
             break;
 
         case ACPI_WRITE:
+
             switch (Function >> 16)
             {
             case AML_FIELD_ATTRIB_QUICK:
@@ -1246,6 +1257,7 @@ AeRegionHandler (
             case AML_FIELD_ATTRIB_BYTE:
             case AML_FIELD_ATTRIB_WORD:
             case AML_FIELD_ATTRIB_BLOCK:
+
                 Length = 0;
                 break;
 
@@ -1266,11 +1278,13 @@ AeRegionHandler (
                 break;
 
             default:
+
                 break;
             }
             break;
 
         default:
+
             break;
         }
 
@@ -1469,6 +1483,7 @@ DoFunction:
         break;
 
     default:
+
         return (AE_BAD_PARAMETER);
     }
 
@@ -1499,6 +1514,7 @@ DoFunction:
             break;
 
         default:
+
             break;
         }
     }

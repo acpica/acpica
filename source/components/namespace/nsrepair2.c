@@ -426,6 +426,7 @@ AcpiNsRepair_FDE (
         break;
 
     default:
+
         return (AE_AML_OPERAND_TYPE);
     }
 

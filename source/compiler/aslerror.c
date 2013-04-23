@@ -273,6 +273,7 @@ AePrintException (
         switch (Enode->Level)
         {
         case ASL_REMARK:
+
             if (!Gbl_DisplayRemarks)
             {
                 return;
@@ -280,6 +281,7 @@ AePrintException (
             break;
 
         case ASL_OPTIMIZATION:
+
             if (!Gbl_DisplayOptimizations)
             {
                 return;
@@ -287,6 +289,7 @@ AePrintException (
             break;
 
         default:
+
             break;
         }
     }
@@ -774,6 +777,7 @@ AslError (
     {
     case ASL_WARNING2:
     case ASL_WARNING3:
+
         if (Gbl_WarningLevel < Level)
         {
             return;
@@ -781,6 +785,7 @@ AslError (
         break;
 
     default:
+
         break;
     }
 

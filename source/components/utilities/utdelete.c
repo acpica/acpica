@@ -190,7 +190,6 @@ AcpiUtDeleteInternalObj (
         }
         break;
 
-
     case ACPI_TYPE_BUFFER:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "**** Buffer %p, ptr %p\n",
@@ -206,7 +205,6 @@ AcpiUtDeleteInternalObj (
         }
         break;
 
-
     case ACPI_TYPE_PACKAGE:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, " **** Package of count %X\n",
@@ -221,7 +219,6 @@ AcpiUtDeleteInternalObj (
 
         ObjPointer = Object->Package.Elements;
         break;
-
 
     /*
      * These objects have a possible list of notify handlers.
@@ -250,7 +247,6 @@ AcpiUtDeleteInternalObj (
         }
         break;
 
-
     case ACPI_TYPE_MUTEX:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
@@ -274,7 +270,6 @@ AcpiUtDeleteInternalObj (
         }
         break;
 
-
     case ACPI_TYPE_EVENT:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
@@ -284,7 +279,6 @@ AcpiUtDeleteInternalObj (
         (void) AcpiOsDeleteSemaphore (Object->Event.OsSemaphore);
         Object->Event.OsSemaphore = NULL;
         break;
-
 
     case ACPI_TYPE_METHOD:
 
@@ -300,7 +294,6 @@ AcpiUtDeleteInternalObj (
             Object->Method.Mutex = NULL;
         }
         break;
-
 
     case ACPI_TYPE_REGION:
 
@@ -370,7 +363,6 @@ AcpiUtDeleteInternalObj (
         }
         break;
 
-
     case ACPI_TYPE_BUFFER_FIELD:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
@@ -382,7 +374,6 @@ AcpiUtDeleteInternalObj (
             AcpiUtDeleteObjectDesc (SecondDesc);
         }
         break;
-
 
     case ACPI_TYPE_LOCAL_BANK_FIELD:
 
@@ -396,8 +387,8 @@ AcpiUtDeleteInternalObj (
         }
         break;
 
-
     default:
+
         break;
     }
 
@@ -629,7 +620,6 @@ AcpiUtUpdateObjectReference (
         case ACPI_TYPE_PROCESSOR:
         case ACPI_TYPE_POWER:
         case ACPI_TYPE_THERMAL:
-
             /*
              * Update the notify objects for these types (if present)
              * Two lists, system and device notify handlers.
@@ -740,6 +730,7 @@ AcpiUtUpdateObjectReference (
 
         case ACPI_TYPE_REGION:
         default:
+
             break; /* No subobjects for all other types */
         }
 

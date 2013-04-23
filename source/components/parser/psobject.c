@@ -508,8 +508,8 @@ AcpiPsCompleteOp (
     switch (Status)
     {
     case AE_OK:
-        break;
 
+        break;
 
     case AE_CTRL_TRANSFER:
 
@@ -518,7 +518,6 @@ AcpiPsCompleteOp (
         WalkState->PrevOp = NULL;
         WalkState->PrevArgTypes = WalkState->ArgTypes;
         return_ACPI_STATUS (Status);
-
 
     case AE_CTRL_END:
 
@@ -543,7 +542,6 @@ AcpiPsCompleteOp (
 
         Status = AE_OK;
         break;
-
 
     case AE_CTRL_BREAK:
     case AE_CTRL_CONTINUE:
@@ -574,7 +572,6 @@ AcpiPsCompleteOp (
         Status = AE_OK;
         break;
 
-
     case AE_CTRL_TERMINATE:
 
         /* Clean up */
@@ -598,7 +595,6 @@ AcpiPsCompleteOp (
         } while (*Op);
 
         return_ACPI_STATUS (AE_OK);
-
 
     default:  /* All other non-AE_OK status */
 

@@ -409,6 +409,7 @@ AcpiDmResourceTemplate (
             return;
 
         default:
+
             break;
         }
 

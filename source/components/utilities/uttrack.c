@@ -747,6 +747,7 @@ AcpiUtDumpAllocations (
                     switch (ACPI_GET_DESCRIPTOR_TYPE (Descriptor))
                     {
                     case ACPI_DESC_TYPE_OPERAND:
+
                         if (Element->Size == sizeof (ACPI_OPERAND_OBJECT))
                         {
                             DescriptorType = ACPI_DESC_TYPE_OPERAND;
@@ -754,6 +755,7 @@ AcpiUtDumpAllocations (
                         break;
 
                     case ACPI_DESC_TYPE_PARSER:
+
                         if (Element->Size == sizeof (ACPI_PARSE_OBJECT))
                         {
                             DescriptorType = ACPI_DESC_TYPE_PARSER;
@@ -761,6 +763,7 @@ AcpiUtDumpAllocations (
                         break;
 
                     case ACPI_DESC_TYPE_NAMED:
+
                         if (Element->Size == sizeof (ACPI_NAMESPACE_NODE))
                         {
                             DescriptorType = ACPI_DESC_TYPE_NAMED;
@@ -768,6 +771,7 @@ AcpiUtDumpAllocations (
                         break;
 
                     default:
+
                         break;
                     }
 
@@ -776,22 +780,26 @@ AcpiUtDumpAllocations (
                     switch (DescriptorType)
                     {
                     case ACPI_DESC_TYPE_OPERAND:
+
                         AcpiOsPrintf ("%12.12s  RefCount 0x%04X\n",
                             AcpiUtGetTypeName (Descriptor->Object.Common.Type),
                             Descriptor->Object.Common.ReferenceCount);
                         break;
 
                     case ACPI_DESC_TYPE_PARSER:
+
                         AcpiOsPrintf ("AmlOpcode 0x%04hX\n",
                             Descriptor->Op.Asl.AmlOpcode);
                         break;
 
                     case ACPI_DESC_TYPE_NAMED:
+
                         AcpiOsPrintf ("%4.4s\n",
                             AcpiUtGetNodeName (&Descriptor->Node));
                         break;
 
                     default:
+
                         AcpiOsPrintf ( "\n");
                         break;
                     }

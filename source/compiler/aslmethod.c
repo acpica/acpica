@@ -253,7 +253,6 @@ MtMethodAnalysisWalkBegin (
         }
         break;
 
-
     case PARSEOP_METHODCALL:
 
         if (MethodInfo &&
@@ -262,7 +261,6 @@ MtMethodAnalysisWalkBegin (
             AslError (ASL_REMARK, ASL_MSG_RECURSION, Op, Op->Asl.ExternalName);
         }
         break;
-
 
     case PARSEOP_LOCAL0:
     case PARSEOP_LOCAL1:
@@ -307,7 +305,6 @@ MtMethodAnalysisWalkBegin (
             AslError (ASL_ERROR, ASL_MSG_LOCAL_INIT, Op, LocalName);
         }
         break;
-
 
     case PARSEOP_ARG0:
     case PARSEOP_ARG1:
@@ -359,7 +356,6 @@ MtMethodAnalysisWalkBegin (
         }
         break;
 
-
     case PARSEOP_RETURN:
 
         if (!MethodInfo)
@@ -392,7 +388,6 @@ MtMethodAnalysisWalkBegin (
         }
         break;
 
-
     case PARSEOP_BREAK:
     case PARSEOP_CONTINUE:
 
@@ -412,7 +407,6 @@ MtMethodAnalysisWalkBegin (
         }
         break;
 
-
     case PARSEOP_STALL:
 
         /* We can range check if the argument is an integer */
@@ -423,7 +417,6 @@ MtMethodAnalysisWalkBegin (
             AslError (ASL_ERROR, ASL_MSG_INVALID_TIME, Op, NULL);
         }
         break;
-
 
     case PARSEOP_DEVICE:
     case PARSEOP_EVENT:
@@ -443,7 +436,6 @@ MtMethodAnalysisWalkBegin (
             AslError (ASL_ERROR, ASL_MSG_RESERVED_USE, Op, Op->Asl.ExternalName);
         }
         break;
-
 
     case PARSEOP_NAME:
 
@@ -482,8 +474,8 @@ MtMethodAnalysisWalkBegin (
         }
         break;
 
-
     default:
+
         break;
     }
 
@@ -518,6 +510,7 @@ MtMethodAnalysisWalkEnd (
     {
     case PARSEOP_METHOD:
     case PARSEOP_RETURN:
+
         if (!MethodInfo)
         {
             printf ("No method info for method! [%s]\n", Op->Asl.Namepath);
@@ -530,6 +523,7 @@ MtMethodAnalysisWalkEnd (
         break;
 
     default:
+
         break;
     }
 
@@ -606,14 +600,12 @@ MtMethodAnalysisWalkEnd (
         ACPI_FREE (MethodInfo);
         break;
 
-
     case PARSEOP_NAME:
 
          /* Special check for two names like _L01 and _E01 in same scope */
 
         ApCheckForGpeNameConflict (Op);
         break;
-
 
     case PARSEOP_RETURN:
 
@@ -644,7 +636,6 @@ MtMethodAnalysisWalkEnd (
         }
         break;
 
-
     case PARSEOP_IF:
 
         if ((Op->Asl.CompileFlags & NODE_HAS_NO_EXIT) &&
@@ -659,7 +650,6 @@ MtMethodAnalysisWalkEnd (
             Op->Asl.Next->Asl.CompileFlags |= NODE_IF_HAS_NO_EXIT;
         }
         break;
-
 
     case PARSEOP_ELSE:
 

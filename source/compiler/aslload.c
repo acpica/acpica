@@ -249,7 +249,9 @@ LdLoadFieldElements (
         break;
 
     default:
+
         /* No other opcodes should arrive here */
+
         return (AE_BAD_PARAMETER);
     }
 
@@ -446,6 +448,7 @@ LdNamespace1Begin (
     default:
 
         /* All other opcodes go below */
+
         break;
     }
 
@@ -494,7 +497,6 @@ LdNamespace1Begin (
 
 
     case PARSEOP_EXTERNAL:
-
         /*
          * "External" simply enters a name and type into the namespace.
          * We must be careful to not open a new scope, however, no matter
@@ -538,7 +540,6 @@ LdNamespace1Begin (
 
 
     case PARSEOP_SCOPE:
-
         /*
          * The name referenced by Scope(Name) must already exist at this point.
          * In other words, forward references for Scope() are not supported.
@@ -593,7 +594,6 @@ LdNamespace1Begin (
         case ACPI_TYPE_INTEGER:
         case ACPI_TYPE_STRING:
         case ACPI_TYPE_BUFFER:
-
             /*
              * These types we will allow, but we will change the type.
              * This enables some existing code of the form:

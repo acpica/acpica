@@ -533,6 +533,7 @@ AcpiDmDescendingOp (
                 /* Fallthrough */
 
             default:
+
                 AcpiDmIndent (Level);
                 break;
             }
@@ -771,7 +772,6 @@ AcpiDmDescendingOp (
             AcpiDmFieldFlags (NextOp);
             break;
 
-
         case AML_BUFFER_OP:
 
             /* The next op is the size parameter */
@@ -809,7 +809,6 @@ AcpiDmDescendingOp (
             NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMLIST;
             return (AE_OK);
 
-
         case AML_VAR_PACKAGE_OP:
         case AML_IF_OP:
         case AML_WHILE_OP:
@@ -823,7 +822,6 @@ AcpiDmDescendingOp (
             }
             return (AE_OK);
 
-
         case AML_PACKAGE_OP:
 
             /* The next op is the size parameter */
@@ -835,12 +833,10 @@ AcpiDmDescendingOp (
             }
             return (AE_OK);
 
-
         case AML_MATCH_OP:
 
             AcpiDmMatchOp (Op);
             break;
-
 
         default:
 
@@ -938,7 +934,6 @@ AcpiDmAscendingOp (
         }
         break;
 
-
     case BLOCK_BRACE:
     case (BLOCK_BRACE | BLOCK_PAREN):
 
@@ -977,7 +972,6 @@ AcpiDmAscendingOp (
             }
         }
         break;
-
 
     case BLOCK_NONE:
     default:

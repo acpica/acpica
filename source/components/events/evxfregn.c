@@ -221,6 +221,7 @@ AcpiInstallAddressSpaceHandler (
         break;
 
     default:
+
         break;
     }
 

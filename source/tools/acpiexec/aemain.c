@@ -238,6 +238,7 @@ AeDoOptions (
     while ((j = AcpiGetopt (argc, argv, AE_SUPPORTED_OPTIONS)) != EOF) switch (j)
     {
     case 'b':
+
         if (strlen (AcpiGbl_Optarg) > (AE_BUFFER_SIZE -1))
         {
             printf ("**** The length of command line (%u) exceeded maximum (%u)\n",
@@ -249,120 +250,146 @@ AeDoOptions (
         break;
 
     case 'd':
+
         switch (AcpiGbl_Optarg[0])
         {
         case 'a':
+
             AcpiGbl_IgnoreErrors = TRUE;
             break;
 
         case 'i':
+
             AcpiGbl_DbOpt_ini_methods = FALSE;
             break;
 
         case 'o':
+
             AcpiGbl_DbOpt_NoRegionSupport = TRUE;
             break;
 
         case 'r':
+            
             AcpiGbl_DisableAutoRepair = TRUE;
             break;
 
         case 't':
+            
             #ifdef ACPI_DBG_TRACK_ALLOCATIONS
                 AcpiGbl_DisableMemTracking = TRUE;
             #endif
             break;
 
         default:
+            
             printf ("Unknown option: -d%s\n", AcpiGbl_Optarg);
             return (-1);
         }
         break;
 
     case 'e':
+
         switch (AcpiGbl_Optarg[0])
         {
         case 'f':
+
             #ifdef ACPI_DBG_TRACK_ALLOCATIONS
                 AcpiGbl_DisplayFinalMemStats = TRUE;
             #endif
             break;
 
         case 'i':
+
             AcpiGbl_DoInterfaceTests = TRUE;
             break;
 
         case 'm':
+
             AcpiGbl_AllMethodsSerialized = TRUE;
             printf ("Enabling AML Interpreter serialized mode\n");
             break;
 
         case 's':
+
             AcpiGbl_EnableInterpreterSlack = TRUE;
             printf ("Enabling AML Interpreter slack mode\n");
             break;
 
         case 't':
+
             AcpiGbl_DebugTimeout = TRUE;
             break;
 
         default:
+
             printf ("Unknown option: -e%s\n", AcpiGbl_Optarg);
             return (-1);
         }
         break;
 
     case 'f':
+
         AcpiGbl_RegionFillValue = (UINT8) strtoul (AcpiGbl_Optarg, NULL, 0);
         break;
 
     case 'g':
+
         AcpiGbl_DbOpt_tables = TRUE;
         AcpiGbl_DbFilename = NULL;
         break;
 
     case 'm':
+
         AcpiGbl_ExecutionMode = AE_MODE_BATCH_SINGLE;
         switch (AcpiGbl_Optarg[0])
         {
         case '^':
+
             strcpy (BatchBuffer, "MAIN");
             break;
 
         default:
+
             strcpy (BatchBuffer, AcpiGbl_Optarg);
             break;
         }
         break;
 
     case 'o':
+
         AcpiGbl_DbOpt_disasm = TRUE;
         AcpiGbl_DbOpt_stats = TRUE;
         break;
 
     case 'r':
+
         AcpiGbl_UseHwReducedFadt = TRUE;
         printf ("Using ACPI 5.0 Hardware Reduced Mode via version 5 FADT\n");
         break;
 
     case 'v':
+
         switch (AcpiGbl_Optarg[0])
         {
         case 'i':
+
             AcpiDbgLevel |= ACPI_LV_INIT_NAMES;
             break;
 
         case 'r':
+
             AcpiGbl_DisplayRegionAccess = TRUE;
             break;
 
         default:
+
             printf ("Unknown option: -v%s\n", AcpiGbl_Optarg);
             return (-1);
         }
         break;
 
     case 'x':
+
         AcpiDbgLevel = strtoul (AcpiGbl_Optarg, NULL, 0);
         AcpiGbl_DbConsoleDebugLevel = AcpiDbgLevel;
         printf ("Debug Level: 0x%8.8X\n", AcpiDbgLevel);
@@ -371,6 +398,7 @@ AeDoOptions (
     case '?':
     case 'h':
     default:
+        
         usage();
         return (-1);
     }

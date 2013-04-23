@@ -202,19 +202,23 @@ main (
     while ((j = AcpiGetopt (argc, argv, "ahls:")) != EOF) switch (j)
     {
     case 'a':
+
         AxAction = AX_EXTRACT_ALL;          /* Extract all tables found */
         break;
 
     case 'l':
+
         AxAction = AX_LIST_ALL;             /* List tables only, do not extract */
         break;
 
     case 's':
+
         AxAction = AX_EXTRACT_SIGNATURE;    /* Extract only tables with this sig */
         break;
 
     case 'h':
     default:
+
         DisplayUsage ();
         return (0);
     }
@@ -233,14 +237,17 @@ main (
     switch (AxAction)
     {
     case AX_EXTRACT_ALL:
+
         Status = AxExtractTables (Filename, NULL, AX_OPTIONAL_TABLES);
         break;
 
     case AX_LIST_ALL:
+
         Status = AxListTables (Filename);
         break;
 
     case AX_EXTRACT_SIGNATURE:
+
         Status = AxExtractTables (Filename, AcpiGbl_Optarg, AX_REQUIRED_TABLE);
         break;
 

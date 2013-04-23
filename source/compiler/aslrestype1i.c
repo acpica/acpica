@@ -317,6 +317,7 @@ RsDoFixedDmaDescriptor (
             break;
 
         default:    /* Ignore any extra nodes */
+
             break;
         }
 

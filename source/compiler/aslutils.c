@@ -1028,6 +1028,7 @@ UtStrtoul64 (
     case 8:
     case 10:
     case 16:
+
         break;
 
     default:
@@ -1162,19 +1163,24 @@ ErrorExit:
     switch (Base)
     {
     case 8:
+
         Status = AE_BAD_OCTAL_CONSTANT;
         break;
 
     case 10:
+
         Status = AE_BAD_DECIMAL_CONSTANT;
         break;
 
     case 16:
+
         Status = AE_BAD_HEX_CONSTANT;
         break;
 
     default:
+
         /* Base validated above */
+
         break;
     }
 

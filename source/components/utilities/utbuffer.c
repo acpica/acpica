@@ -194,20 +194,17 @@ AcpiUtDumpBuffer (
                 AcpiOsPrintf ("%02X ", Buffer[(ACPI_SIZE) i + j]);
                 break;
 
-
             case DB_WORD_DISPLAY:
 
                 ACPI_MOVE_16_TO_32 (&Temp32, &Buffer[(ACPI_SIZE) i + j]);
                 AcpiOsPrintf ("%04X ", Temp32);
                 break;
 
-
             case DB_DWORD_DISPLAY:
 
                 ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[(ACPI_SIZE) i + j]);
                 AcpiOsPrintf ("%08X ", Temp32);
                 break;
-
 
             case DB_QWORD_DISPLAY:
 

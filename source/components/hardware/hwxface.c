@@ -664,10 +664,12 @@ AcpiGetSleepTypeData (
     switch (Info->ReturnObject->Package.Count)
     {
     case 0:
+
         Status = AE_AML_PACKAGE_LIMIT;
         break;
 
     case 1:
+
         if (Elements[0]->Common.Type != ACPI_TYPE_INTEGER)
         {
             Status = AE_AML_OPERAND_TYPE;
@@ -682,6 +684,7 @@ AcpiGetSleepTypeData (
 
     case 2:
     default:
+
         if ((Elements[0]->Common.Type != ACPI_TYPE_INTEGER) ||
             (Elements[1]->Common.Type != ACPI_TYPE_INTEGER))
         {

@@ -239,6 +239,7 @@ AcpiUtValidateException (
         break;
 
     default:
+
         break;
     }
 

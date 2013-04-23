@@ -524,6 +524,7 @@ DtGetNextLine (
                 break;
 
             default:
+
                 break;
             }
 
@@ -555,10 +556,12 @@ DtGetNextLine (
             switch (c)
             {
             case '/':
+
                 State = DT_START_COMMENT;
                 break;
 
             case '"':
+
                 State = DT_START_QUOTED_STRING;
                 LineNotAllBlanks = TRUE;
                 i++;
@@ -573,6 +576,7 @@ DtGetNextLine (
                 break;
 
             case '\n':
+
                 CurrentLineOffset = Gbl_NextLineOffset;
                 Gbl_NextLineOffset = (UINT32) ftell (Handle);
                 Gbl_CurrentLineNumber++;
@@ -599,6 +603,7 @@ DtGetNextLine (
                 break;
 
             default:
+
                 if (c != ' ')
                 {
                     LineNotAllBlanks = TRUE;
@@ -619,20 +624,24 @@ DtGetNextLine (
             switch (c)
             {
             case '"':
+
                 State = DT_NORMAL_TEXT;
                 break;
 
             case '\\':
+
                 State = DT_ESCAPE_SEQUENCE;
                 break;
 
             case '\n':
+
                 AcpiOsPrintf ("ERROR at line %u: Unterminated quoted string\n",
                     Gbl_CurrentLineNumber++);
                 State = DT_NORMAL_TEXT;
                 break;
 
             default:    /* Get next character */
+
                 break;
             }
             break;
@@ -653,14 +662,17 @@ DtGetNextLine (
             switch (c)
             {
             case '*':
+
                 State = DT_SLASH_ASTERISK_COMMENT;
                 break;
 
             case '/':
+
                 State = DT_SLASH_SLASH_COMMENT;
                 break;
 
             default:    /* Not a comment */
+
                 i++;    /* Save the preceding slash */
                 if (i >= Gbl_LineBufferSize)
                 {
@@ -681,15 +693,18 @@ DtGetNextLine (
             switch (c)
             {
             case '\n':
+
                 Gbl_NextLineOffset = (UINT32) ftell (Handle);
                 Gbl_CurrentLineNumber++;
                 break;
 
             case '*':
+
                 State = DT_END_COMMENT;
                 break;
 
             default:
+
                 break;
             }
             break;
@@ -714,20 +729,24 @@ DtGetNextLine (
             switch (c)
             {
             case '/':
+
                 State = DT_NORMAL_TEXT;
                 break;
 
             case '\n':
+
                 CurrentLineOffset = Gbl_NextLineOffset;
                 Gbl_NextLineOffset = (UINT32) ftell (Handle);
                 Gbl_CurrentLineNumber++;
                 break;
 
             case '*':
+
                 /* Consume all adjacent asterisks */
                 break;
 
             default:
+
                 State = DT_SLASH_ASTERISK_COMMENT;
                 break;
             }
@@ -766,6 +785,7 @@ DtGetNextLine (
             break;
 
         default:
+
             DtFatal (ASL_MSG_COMPILER_INTERNAL, NULL, "Unknown input state");
             return (ASL_EOF);
         }

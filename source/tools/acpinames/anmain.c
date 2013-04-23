@@ -334,6 +334,7 @@ main (
     case '?':
     case 'h':
     default:
+
         usage();
         return (0);
     }

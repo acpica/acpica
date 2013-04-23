@@ -181,6 +181,7 @@ AcpiDbDeleteObjects (
         switch (Objects[i].Type)
         {
         case ACPI_TYPE_BUFFER:
+
             ACPI_FREE (Objects[i].Buffer.Pointer);
             break;
 
@@ -197,6 +198,7 @@ AcpiDbDeleteObjects (
             break;
 
         default:
+
             break;
         }
     }

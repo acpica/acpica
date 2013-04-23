@@ -472,7 +472,6 @@ AcpiRsCreatePciRoutingTable (
                 UserPrt->Length += (UINT32) ACPI_STRLEN (UserPrt->Source) + 1;
                 break;
 
-
             case ACPI_TYPE_STRING:
 
                 ACPI_STRCPY (UserPrt->Source, ObjDesc->String.Pointer);
@@ -484,7 +483,6 @@ AcpiRsCreatePciRoutingTable (
                 UserPrt->Length += ObjDesc->String.Length + 1;
                 break;
 
-
             case ACPI_TYPE_INTEGER:
                 /*
                  * If this is a number, then the Source Name is NULL, since the
@@ -494,7 +492,6 @@ AcpiRsCreatePciRoutingTable (
                  */
                 UserPrt->Length += sizeof (UINT32);
                 break;
-
 
             default:
 
