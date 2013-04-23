@@ -175,13 +175,13 @@ AcpiDbAddToHistory (
             AcpiOsFree (AcpiGbl_HistoryBuffer[AcpiGbl_NextHistoryIndex].
                 Command);
             AcpiGbl_HistoryBuffer[AcpiGbl_NextHistoryIndex].Command =
-                AcpiOsAllocate (CmdLen);
+                AcpiOsAllocate (CmdLen + 1);
         }
     }
     else
     {
         AcpiGbl_HistoryBuffer[AcpiGbl_NextHistoryIndex].Command =
-            AcpiOsAllocate (CmdLen);
+            AcpiOsAllocate (CmdLen + 1);
     }
 
     ACPI_STRCPY (AcpiGbl_HistoryBuffer[AcpiGbl_NextHistoryIndex].Command,
