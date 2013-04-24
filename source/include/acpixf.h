@@ -151,6 +151,7 @@ extern UINT8                AcpiGbl_EnableAmlDebugObject;
 extern UINT8                AcpiGbl_CopyDsdtLocally;
 extern UINT8                AcpiGbl_TruncateIoAddresses;
 extern UINT8                AcpiGbl_DisableAutoRepair;
+extern UINT8                AcpiGbl_DisableSsdtTableLoad;
 
 
 /*
