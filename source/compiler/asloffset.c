@@ -130,7 +130,6 @@ LsEmitOffsetTableEntry (
     UINT32                  FileId,
     ACPI_NAMESPACE_NODE     *Node,
     UINT32                  Offset,
-    UINT32                  Length,
     char                    *OpName,
     UINT64                  Value,
     UINT8                   AmlOpcode);
@@ -150,6 +149,7 @@ LsEmitOffsetTableEntry (
  *   1) Tagged (named) resource descriptors
  *   2) Named integer objects with constant integer values
  *   3) Operation Regions that have constant Offset (address) parameters
+ *   4) Control methods
  *
  * The offset table allows the BIOS to dynamically update the values of these
  * objects at boot time.
@@ -191,7 +191,7 @@ LsAmlOffsetWalk (
         (Op->Asl.CompileFlags & NODE_IS_RESOURCE_DESC))
     {
         LsEmitOffsetTableEntry (FileId, Node, Gbl_CurrentAmlOffset,
-            Op->Asl.FinalAmlLength, Op->Asl.ParseOpName, 0, Op->Asl.Extra);
+            Op->Asl.ParseOpName, 0, Op->Asl.Extra);
     }
 
     /* Named object -- Name (NameString, DataRefObject) */
@@ -230,8 +230,8 @@ LsAmlOffsetWalk (
 
             LsEmitOffsetTableEntry (FileId, Node,
                 (Gbl_CurrentAmlOffset + OffsetOfOpcode + 1),
-                (Op->Asl.FinalAmlLength - 1), Op->Asl.ParseOpName,
-                Op->Asl.Value.Integer, (UINT8) Op->Asl.AmlOpcode);
+                Op->Asl.ParseOpName, Op->Asl.Value.Integer,
+                (UINT8) Op->Asl.AmlOpcode);
             break;
 
         default:
@@ -275,8 +275,8 @@ LsAmlOffsetWalk (
 
             LsEmitOffsetTableEntry (FileId, Node,
                 (Gbl_CurrentAmlOffset + OffsetOfOpcode + 1),
-                (AddressOp->Asl.FinalAmlLength - 1), Op->Asl.ParseOpName,
-                AddressOp->Asl.Value.Integer, (UINT8) AddressOp->Asl.AmlOpcode);
+                Op->Asl.ParseOpName, AddressOp->Asl.Value.Integer,
+                (UINT8) AddressOp->Asl.AmlOpcode);
 
             Gbl_CurrentAmlOffset += Length;
             return (AE_OK);
@@ -285,6 +285,14 @@ LsAmlOffsetWalk (
 
             break;
         }
+    }
+    else if (Op->Asl.AmlOpcode == AML_METHOD_OP)
+    {
+        Length = Op->Asl.FinalAmlLength;
+
+        LsEmitOffsetTableEntry (FileId, Node,
+            (Gbl_CurrentAmlOffset + Length),
+            Op->Asl.ParseOpName, 0, (UINT8) Op->Asl.AmlOpcode);
     }
 
     Gbl_CurrentAmlOffset += Op->Asl.FinalAmlLength;
@@ -299,7 +307,6 @@ LsAmlOffsetWalk (
  * PARAMETERS:  FileId          - ID of current listing file
  *              Node            - Namespace node associated with the name
  *              Offset          - Offset of the value within the AML table
- *              Length          - Length in bytes of the value
  *              OpName          - Name of the AML opcode
  *              Value           - Current value of the AML field
  *              AmlOpcode       - Opcode associated with the field
@@ -315,7 +322,6 @@ LsEmitOffsetTableEntry (
     UINT32                  FileId,
     ACPI_NAMESPACE_NODE     *Node,
     UINT32                  Offset,
-    UINT32                  Length,
     char                    *OpName,
     UINT64                  Value,
     UINT8                   AmlOpcode)
@@ -367,8 +373,6 @@ LsDoOffsetTableHeader (
     UINT32                  FileId)
 {
 
-    Gbl_CurrentAmlOffset = 0;
-
     FlPrintFile (FileId,
         "#ifndef __AML_OFFSET_TABLE_H\n"
         "#define __AML_OFFSET_TABLE_H\n\n");
@@ -376,12 +380,34 @@ LsDoOffsetTableHeader (
     FlPrintFile (FileId, "typedef struct {\n"
         "    char                   *Pathname;\n"
         "    unsigned long          Offset;\n"
-        "    unsigned char          AmlOpcode;\n"
-        "    unsigned long long     AmlValue;\n"
+        "    unsigned char          Opcode;\n"
+        "    unsigned long long     Value;\n"
         "} AML_OFFSET_TABLE_ENTRY;\n\n");
 
     FlPrintFile (FileId,
         "#endif /* __AML_OFFSET_TABLE_H */\n\n");
+
+    FlPrintFile (FileId,
+        "/*\n"
+        " * Information about supported object types:\n"
+        " *\n"
+        " * Integers:\n"
+        " *    Offset points to the actual integer data\n"
+        " *    Opcode is the integer prefix, indicates length of the data\n"
+        " *    Value is the existing value in the AML\n"
+        " *\n"
+        " * Operation Regions:\n"
+        " *    Offset points to the region address data\n"
+        " *    Opcode is the address integer prefix, indicates length of the data\n"
+        " *    Value is the existing address value in the AML\n"
+        " *\n"
+        " * Control Methods:\n"
+        " *    Offset points to the first byte of the namepath\n"
+        " *\n"
+        " * Resource Descriptors:\n"
+        " *    Offset points to the start of the descriptor\n"
+        " *    Opcode is the descriptor type\n"
+        " */\n");
 
     FlPrintFile (FileId,
         "AML_OFFSET_TABLE_ENTRY   %s_%s_OffsetTable[] =\n{\n",

@@ -229,6 +229,8 @@ LsGenerateListing (
 
     if (FileId == ASL_FILE_C_OFFSET_OUTPUT)
     {
+        Gbl_CurrentAmlOffset = 0;
+
         /* Offset table file has a special header and footer */
 
         LsDoOffsetTableHeader (FileId);
