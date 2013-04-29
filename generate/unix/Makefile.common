@@ -19,17 +19,17 @@ ${PROGS}: FORCE
 	if [ $(BITS) -eq 32 ]; then \
 		echo "Forced 32-bit generation of $@"; \
 		mkdir -p obj32; \
-		make BITS=32; \
+		make BITS=32 || exit "$$?"; \
 		echo "32-bit version of $@:"; \
 		ls -al ../bin32/$@; \
 	elif [ $(findstring 64,$(HARDWARE_NAME)) ]; then \
 		mkdir -p obj64; \
-		make BITS=64; \
+		make BITS=64 || exit "$$?"; \
 		echo "64-bit version of $@:"; \
 		ls -al ../bin64/$@; \
 	else \
 		mkdir -p obj32; \
-		make BITS=32; \
+		make BITS=32 || exit "$$?"; \
 		echo "32-bit version of $@:"; \
 		ls -al ../bin32/$@; \
 	fi;
@@ -44,13 +44,14 @@ both:	32 64
 #
 32:	FORCE
 	@for toolname in ${PROGS}; do \
-		(cd $(BUILD_DIRECTORY_PATH)/$$toolname; \
-		pwd; \
-		mkdir -p obj32; \
-		make BITS=32; \
-		echo "32-bit version of $$toolname:"; \
-		ls -al obj32/$$toolname \
-		); \
+		{ cd $(BUILD_DIRECTORY_PATH)/$$toolname && \
+		pwd && \
+		mkdir -p obj32 && \
+		make BITS=32 && \
+		echo "32-bit version of $$toolname:" && \
+		ls -al obj32/$$toolname && \
+		cd -; \
+		} || exit "$$?"; \
 	done;
 
 #
@@ -58,13 +59,14 @@ both:	32 64
 #
 64:	FORCE
 	@for toolname in ${PROGS}; do \
-		(cd $(BUILD_DIRECTORY_PATH)/$$toolname; \
-		pwd; \
-		mkdir -p obj64; \
-		make BITS=64; \
-		echo "64-bit version of $$toolname:"; \
-		ls -al obj64/$$toolname \
-		); \
+		{ cd $(BUILD_DIRECTORY_PATH)/$$toolname && \
+		pwd && \
+		mkdir -p obj64 && \
+		make BITS=64 && \
+		echo "64-bit version of $$toolname:" && \
+		ls -al obj64/$$toolname && \
+		cd -; \
+		} || exit "$$?"; \
 	done;
 
 clean:	FORCE
