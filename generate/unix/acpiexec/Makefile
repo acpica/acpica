@@ -180,6 +180,7 @@ OBJECTS = \
 	$(OBJDIR)/tbfadt.o\
 	$(OBJDIR)/tbfind.o\
 	$(OBJDIR)/tbinstal.o\
+	$(OBJDIR)/tbprint.o\
 	$(OBJDIR)/tbutils.o\
 	$(OBJDIR)/tbxface.o\
 	$(OBJDIR)/tbxfload.o\

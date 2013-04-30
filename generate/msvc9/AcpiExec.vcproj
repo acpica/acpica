@@ -2076,6 +2076,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\tables\tbprint.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\tables\tbutils.c"
 					>
 					<FileConfiguration
