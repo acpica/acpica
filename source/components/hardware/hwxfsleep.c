@@ -339,13 +339,14 @@ AcpiHwSleepDispatch (
 
 
 #if (!ACPI_REDUCED_HARDWARE)
-
     /*
      * If the Hardware Reduced flag is set (from the FADT), we must
-     * use the extended sleep registers
+     * use the extended sleep registers (FADT). Note: As per the ACPI
+     * specification, these extended registers are to be used for HW-reduced
+     * platforms only. They are not general-purpose replacements for the
+     * legacy PM register sleep support.
      */
-    if (AcpiGbl_ReducedHardware ||
-        AcpiGbl_FADT.SleepControl.Address)
+    if (AcpiGbl_ReducedHardware)
     {
         Status = SleepFunctions->ExtendedFunction (SleepState);
     }
