@@ -166,7 +166,7 @@ static char                 BatchBuffer[AE_BUFFER_SIZE];    /* Batch command buf
 static char                 *FileList[ASL_MAX_FILES];
 static AE_TABLE_DESC        *AeTableListHead = NULL;
 
-#define AE_SUPPORTED_OPTIONS        "?b:d:e:f:gm^orv:x:"
+#define AE_SUPPORTED_OPTIONS        "?b:d:e:f:ghm^orv:x:"
 
 
 /******************************************************************************
@@ -188,8 +188,8 @@ usage (
 
     ACPI_USAGE_HEADER ("acpiexec [options] AMLfile1 AMLfile2 ...");
 
-    ACPI_OPTION ("-?",                  "Display this message");
     ACPI_OPTION ("-b \"CommandLine\"",  "Batch mode command line execution (cmd1;cmd2;...)");
+    ACPI_OPTION ("-h -?",               "Display this help message");
     ACPI_OPTION ("-m [Method]",         "Batch mode method execution. Default=MAIN");
     printf ("\n");
 
@@ -338,6 +338,12 @@ AeDoOptions (
         AcpiGbl_DbFilename = NULL;
         break;
 
+    case 'h':
+    case '?':
+
+        usage();
+        return (0);
+
     case 'm':
 
         AcpiGbl_ExecutionMode = AE_MODE_BATCH_SINGLE;
@@ -395,8 +401,6 @@ AeDoOptions (
         printf ("Debug Level: 0x%8.8X\n", AcpiDbgLevel);
         break;
 
-    case '?':
-    case 'h':
     default:
         
         usage();
