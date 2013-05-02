@@ -147,7 +147,7 @@ ApIsValidHeader (
 
     /* Make sure signature is all ASCII and a valid ACPI name */
 
-    if (!AcpiUtValidAcpiName (*(UINT32 *) Table->Signature))
+    if (!AcpiUtValidAcpiName (Table->Signature))
     {
         fprintf (stderr, "Table signature (0x%X) is invalid\n",
             *(UINT32 *) Table->Signature);

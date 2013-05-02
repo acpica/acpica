@@ -613,7 +613,8 @@ AcpiUtValidAcpiChar (
  *
  * FUNCTION:    AcpiUtValidAcpiName
  *
- * PARAMETERS:  Name            - The name to be examined
+ * PARAMETERS:  Name            - The name to be examined. Does not have to
+ *                                be NULL terminated string.
  *
  * RETURN:      TRUE if the name is valid, FALSE otherwise
  *
@@ -626,7 +627,7 @@ AcpiUtValidAcpiChar (
 
 BOOLEAN
 AcpiUtValidAcpiName (
-    UINT32                  Name)
+    char                    *Name)
 {
     UINT32                  i;
 
@@ -636,7 +637,7 @@ AcpiUtValidAcpiName (
 
     for (i = 0; i < ACPI_NAME_SIZE; i++)
     {
-        if (!AcpiUtValidAcpiChar ((ACPI_CAST_PTR (char, &Name))[i], i))
+        if (!AcpiUtValidAcpiChar (Name[i], i))
         {
             return (FALSE);
         }

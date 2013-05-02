@@ -234,7 +234,7 @@ AbValidateHeader (
     ACPI_TABLE_HEADER       *Header)
 {
 
-    if (!AcpiUtValidAcpiName (* (UINT32 *) &Header->Signature))
+    if (!AcpiUtValidAcpiName (Header->Signature))
     {
         printf ("Header signature is invalid\n");
         return (FALSE);

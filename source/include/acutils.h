@@ -983,7 +983,7 @@ UtConvertBackslashes (
 
 BOOLEAN
 AcpiUtValidAcpiName (
-    UINT32                  Name);
+    char                    *Name);
 
 BOOLEAN
 AcpiUtValidAcpiChar (
