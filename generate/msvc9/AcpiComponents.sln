@@ -28,6 +28,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Makefiles", "Makefiles.vcpr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Scripts", "Scripts.vcproj", "{50B1F35B-91C8-478F-8BA0-F409BA1BA69B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AcpiDump", "AcpiDump.vcproj", "{120C599E-9399-4D80-836A-2980B214CBA0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -78,6 +80,10 @@ Global
 		{762CF0FE-FDDC-46CC-ABBC-36A08B81920D}.Release|Win32.ActiveCfg = Release|Win32
 		{50B1F35B-91C8-478F-8BA0-F409BA1BA69B}.Debug|Win32.ActiveCfg = Debug|Win32
 		{50B1F35B-91C8-478F-8BA0-F409BA1BA69B}.Release|Win32.ActiveCfg = Release|Win32
+		{120C599E-9399-4D80-836A-2980B214CBA0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{120C599E-9399-4D80-836A-2980B214CBA0}.Debug|Win32.Build.0 = Debug|Win32
+		{120C599E-9399-4D80-836A-2980B214CBA0}.Release|Win32.ActiveCfg = Release|Win32
+		{120C599E-9399-4D80-836A-2980B214CBA0}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

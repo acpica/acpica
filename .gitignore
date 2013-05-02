@@ -35,6 +35,8 @@ generate/msvc9/*.aps
 generate/msvc9/*.rc
 generate/msvc9/AcpiBin
 generate/msvc9/AcpiBinDebug
+generate/msvc9/AcpiDump
+generate/msvc9/AcpiDumpDebug
 generate/msvc9/AcpiSrc
 generate/msvc9/AcpiSrcDebug
 generate/msvc9/AcpiSubsystem
@@ -68,6 +70,8 @@ generate/unix/bin32
 generate/unix/bin64
 generate/unix/acpibin/obj32
 generate/unix/acpibin/obj64
+generate/unix/acpidump/obj32
+generate/unix/acpidump/obj64
 generate/unix/acpiexec/obj32
 generate/unix/acpiexec/obj64
 generate/unix/acpihelp/obj32

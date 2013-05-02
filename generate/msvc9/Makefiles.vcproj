@@ -289,6 +289,14 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="AcpiDump"
+			>
+			<File
+				RelativePath="..\unix\acpidump\Makefile"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>
