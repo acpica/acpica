@@ -171,6 +171,8 @@ main (
     int                     Status = AE_OK;
 
 
+    ACPI_DEBUG_INITIALIZE (); /* For debug version only */
+
     AcpiGbl_DebugFile = NULL;
     AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT;
 

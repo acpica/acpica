@@ -224,6 +224,12 @@
 #ifdef _DEBUG
 #include <crtdbg.h>
 
+/*
+ * Debugging memory corruption issues with windows:
+ * Add #include <crtdbg.h> to accommon.h if necessary.
+ * Add _ASSERTE(_CrtCheckMemory()); where needed to test memory integrity.
+ * This can quickly localize the memory corruption.
+ */
 #define ACPI_DEBUG_INITIALIZE() \
     _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | \
         _CRTDBG_ALLOC_MEM_DF | _CRTDBG_CHECK_CRT_DF | \

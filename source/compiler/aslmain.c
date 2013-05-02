@@ -121,10 +121,6 @@
 #include "acdisasm.h"
 #include <signal.h>
 
-#ifdef _DEBUG
-#include <crtdbg.h>
-#endif
-
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslmain")
 
@@ -380,11 +376,6 @@ AslInitialize (
     void)
 {
     UINT32                  i;
-
-
-#ifdef _DEBUG
-    _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CrtSetDbgFlag(0));
-#endif
 
 
     for (i = 0; i < ASL_NUM_FILES; i++)
@@ -1134,17 +1125,13 @@ main (
     int                     Index2;
 
 
-    signal (SIGINT, AslSignalHandler);
-
-    AcpiGbl_ExternalFileList = NULL;
-    AcpiDbgLevel = 0;
-
-#ifdef _DEBUG
-    _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF |
-                    _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
-#endif
+    ACPI_DEBUG_INITIALIZE (); /* For debug version only */
 
     /* Init and command line */
+
+    signal (SIGINT, AslSignalHandler);
+    AcpiGbl_ExternalFileList = NULL;
+    AcpiDbgLevel = 0;
 
     Index1 = Index2 = AslCommandLine (argc, argv);
 

@@ -115,12 +115,9 @@
 
 #include "aecommon.h"
 
-#ifdef _DEBUG
-#include <crtdbg.h>
-#endif
-
 #define _COMPONENT          ACPI_TOOLS
         ACPI_MODULE_NAME    ("aemain")
+
 
 /* Local prototypes */
 
@@ -439,18 +436,9 @@ main (
     char                    *FullPathname;
 
 
-#ifdef _DEBUG
-    _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF |
-                    _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
-/*
- * Debugging memory corruption issues with windows:
- * Add #include <crtdbg.h> to accommon.h
- * Add _ASSERTE(_CrtCheckMemory()); where needed to test memory integrity
- */
-#endif
+    ACPI_DEBUG_INITIALIZE (); /* For debug version only */
 
     printf (ACPI_COMMON_SIGNON ("AML Execution/Debug Utility"));
-
     if (argc < 2)
     {
         usage ();

@@ -189,6 +189,7 @@ main (
     int                     j;
 
 
+    ACPI_DEBUG_INITIALIZE (); /* For debug version only */
     printf (ACPI_COMMON_SIGNON ("ACPI Binary Table Extraction Utility"));
 
     if (argc < 2)

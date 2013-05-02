@@ -175,6 +175,7 @@ main (
     int                     j;
 
 
+    ACPI_DEBUG_INITIALIZE (); /* For debug version only */
     printf (ACPI_COMMON_SIGNON ("ACPI Help Utility"));
     DecodeType = AH_DECODE_DEFAULT;
 
