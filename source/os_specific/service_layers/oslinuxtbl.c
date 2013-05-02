@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: acapps - common include for ACPI applications/tools
+ * Module Name: oslinuxtbl - Linux OSL for obtaining ACPI tables
  *
  *****************************************************************************/
 
@@ -113,178 +113,97 @@
  *
  *****************************************************************************/
 
-#ifndef _ACAPPS
-#define _ACAPPS
+#include "acpi.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define _COMPONENT          ACPI_OS_SERVICES
+        ACPI_MODULE_NAME    ("oslinuxtbl")
 
 
-#ifdef _MSC_VER                 /* disable some level-4 warnings */
-#pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
-#endif
-
-/* Common info for tool signons */
-
-#define ACPICA_NAME                 "Intel ACPI Component Architecture"
-#define ACPICA_COPYRIGHT            "Copyright (c) 2000 - 2013 Intel Corporation"
-
-#if ACPI_MACHINE_WIDTH == 64
-#define ACPI_WIDTH          "-64"
-
-#elif ACPI_MACHINE_WIDTH == 32
-#define ACPI_WIDTH          "-32"
-
-#else
-#error unknown ACPI_MACHINE_WIDTH
-#define ACPI_WIDTH          "-??"
-
-#endif
-
-/* Macros for signons and file headers */
-
-#define ACPI_COMMON_SIGNON(UtilityName) \
-    "\n%s\n%s version %8.8X%s [%s]\n%s\n\n", \
-    ACPICA_NAME, \
-    UtilityName, ((UINT32) ACPI_CA_VERSION), ACPI_WIDTH, __DATE__, \
-    ACPICA_COPYRIGHT
-
-#define ACPI_COMMON_HEADER(UtilityName, Prefix) \
-    "%s%s\n%s%s version %8.8X%s [%s]\n%s%s\n%s\n", \
-    Prefix, ACPICA_NAME, \
-    Prefix, UtilityName, ((UINT32) ACPI_CA_VERSION), ACPI_WIDTH, __DATE__, \
-    Prefix, ACPICA_COPYRIGHT, \
-    Prefix
-
-/* Macros for usage messages */
-
-#define ACPI_USAGE_HEADER(Usage) \
-    printf ("Usage: %s\nOptions:\n", Usage);
-
-#define ACPI_OPTION(Name, Description) \
-    printf ("  %-18s%s\n", Name, Description);
-
-
-#define FILE_SUFFIX_DISASSEMBLY     "dsl"
-#define ACPI_TABLE_FILE_SUFFIX      ".dat"
-
-
-/*
- * getopt
- */
-int
-AcpiGetopt(
-    int                     argc,
-    char                    **argv,
-    char                    *opts);
-
-extern int                  AcpiGbl_Optind;
-extern int                  AcpiGbl_Opterr;
-extern char                 *AcpiGbl_Optarg;
-
-
-#ifndef ACPI_DUMP_APP
-/*
- * adisasm
- */
-ACPI_STATUS
-AdAmlDisassemble (
-    BOOLEAN                 OutToFile,
-    char                    *Filename,
-    char                    *Prefix,
-    char                    **OutFilename,
-    BOOLEAN                 GetAllTables);
-
-void
-AdPrintStatistics (
-    void);
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsGetTableByAddress
+ *
+ * PARAMETERS:  Address         - Physical address of the ACPI table
+ *              Table           - Where a pointer to the table is returned
+ *
+ * RETURN:      Status; Table buffer is returned if AE_OK.
+ *              AE_NOT_FOUND: A valid table was not found at the address
+ *
+ * DESCRIPTION: Get an ACPI table via a physical memory address.
+ *
+ *****************************************************************************/
 
 ACPI_STATUS
-AdFindDsdt(
-    UINT8                   **DsdtPtr,
-    UINT32                  *DsdtLength);
+AcpiOsGetTableByAddress (
+    ACPI_PHYSICAL_ADDRESS   Address,
+    ACPI_TABLE_HEADER       **Table)
+{
 
-void
-AdDumpTables (
-    void);
-
-ACPI_STATUS
-AdGetLocalTables (
-    char                    *Filename,
-    BOOLEAN                 GetAllTables);
-
-ACPI_STATUS
-AdParseTable (
-    ACPI_TABLE_HEADER       *Table,
-    ACPI_OWNER_ID           *OwnerId,
-    BOOLEAN                 LoadTable,
-    BOOLEAN                 External);
-
-ACPI_STATUS
-AdDisplayTables (
-    char                    *Filename,
-    ACPI_TABLE_HEADER       *Table);
-
-ACPI_STATUS
-AdDisplayStatistics (
-    void);
+    fprintf (stderr, "Linux version not implemented yet\n");
+    return (AE_SUPPORT);
+}
 
 
-/*
- * adwalk
- */
-void
-AcpiDmCrossReferenceNamespace (
-    ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot,
-    ACPI_OWNER_ID           OwnerId);
-
-void
-AcpiDmDumpTree (
-    ACPI_PARSE_OBJECT       *Origin);
-
-void
-AcpiDmFindOrphanMethods (
-    ACPI_PARSE_OBJECT       *Origin);
-
-void
-AcpiDmFinishNamespaceLoad (
-    ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot,
-    ACPI_OWNER_ID           OwnerId);
-
-void
-AcpiDmConvertResourceIndexes (
-    ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot);
-
-
-/*
- * adfile
- */
-ACPI_STATUS
-AdInitialize (
-    void);
-
-char *
-FlGenerateFilename (
-    char                    *InputFilename,
-    char                    *Suffix);
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsGetTableByIndex
+ *
+ * PARAMETERS:  Index           - Which table to get
+ *              Table           - Where a pointer to the table is returned
+ *              Address         - Where the table physical address is returned
+ *
+ * RETURN:      Status; Table buffer and physical address returned if AE_OK.
+ *              AE_LIMIT: Index is beyond valid limit
+ *
+ * DESCRIPTION: Get an ACPI table via an index value (0 through n). Returns
+ *              AE_LIMIT when an invalid index is reached. Index is not
+ *              necessarily an index into the RSDT/XSDT.
+ *
+ *****************************************************************************/
 
 ACPI_STATUS
-FlSplitInputPathname (
-    char                    *InputPath,
-    char                    **OutDirectoryPath,
-    char                    **OutFilename);
+AcpiOsGetTableByIndex (
+    UINT32                  Index,
+    ACPI_TABLE_HEADER       **Table,
+    ACPI_PHYSICAL_ADDRESS   *Address)
+{
 
-char *
-AdGenerateFilename (
-    char                    *Prefix,
-    char                    *TableId);
+    fprintf (stderr, "Linux version not implemented yet\n");
+    return (AE_SUPPORT);
+}
 
-void
-AdWriteTable (
-    ACPI_TABLE_HEADER       *Table,
-    UINT32                  Length,
-    char                    *TableName,
-    char                    *OemTableId);
-#endif
 
-#endif /* _ACAPPS */
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsGetTableByName
+ *
+ * PARAMETERS:  Signature       - ACPI Signature for desired table. Must be
+ *                                a null terminated 4-character string.
+ *              Instance        - For SSDTs (0...n)
+ *              Table           - Where a pointer to the table is returned
+ *              Address         - Where the table physical address is returned
+ *
+ * RETURN:      Status; Table buffer and physical address returned if AE_OK.
+ *
+ * RETURN:      Status; Table buffer and physical address returned if AE_OK.
+ *              AE_LIMIT: Instance is beyond valid limit
+ *              AE_NOT_FOUND: A table with the signature was not found
+ *
+ * NOTE:        Assumes the input signature is uppercase.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsGetTableByName (
+    char                    *Signature,
+    UINT32                  Instance,
+    ACPI_TABLE_HEADER       **Table,
+    ACPI_PHYSICAL_ADDRESS   *Address)
+{
+
+    fprintf (stderr, "Linux version not implemented yet\n");
+    return (AE_SUPPORT);
+}

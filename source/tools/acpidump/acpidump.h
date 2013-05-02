@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: acapps - common include for ACPI applications/tools
+ * Module Name: acpidump.h - Include file for AcpiDump utility
  *
  *****************************************************************************/
 
@@ -113,178 +113,99 @@
  *
  *****************************************************************************/
 
-#ifndef _ACAPPS
-#define _ACAPPS
+#include "acpi.h"
+#include "accommon.h"
+#include "actables.h"
 
-
-#ifdef _MSC_VER                 /* disable some level-4 warnings */
-#pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
-#endif
-
-/* Common info for tool signons */
-
-#define ACPICA_NAME                 "Intel ACPI Component Architecture"
-#define ACPICA_COPYRIGHT            "Copyright (c) 2000 - 2013 Intel Corporation"
-
-#if ACPI_MACHINE_WIDTH == 64
-#define ACPI_WIDTH          "-64"
-
-#elif ACPI_MACHINE_WIDTH == 32
-#define ACPI_WIDTH          "-32"
-
-#else
-#error unknown ACPI_MACHINE_WIDTH
-#define ACPI_WIDTH          "-??"
-
-#endif
-
-/* Macros for signons and file headers */
-
-#define ACPI_COMMON_SIGNON(UtilityName) \
-    "\n%s\n%s version %8.8X%s [%s]\n%s\n\n", \
-    ACPICA_NAME, \
-    UtilityName, ((UINT32) ACPI_CA_VERSION), ACPI_WIDTH, __DATE__, \
-    ACPICA_COPYRIGHT
-
-#define ACPI_COMMON_HEADER(UtilityName, Prefix) \
-    "%s%s\n%s%s version %8.8X%s [%s]\n%s%s\n%s\n", \
-    Prefix, ACPICA_NAME, \
-    Prefix, UtilityName, ((UINT32) ACPI_CA_VERSION), ACPI_WIDTH, __DATE__, \
-    Prefix, ACPICA_COPYRIGHT, \
-    Prefix
-
-/* Macros for usage messages */
-
-#define ACPI_USAGE_HEADER(Usage) \
-    printf ("Usage: %s\nOptions:\n", Usage);
-
-#define ACPI_OPTION(Name, Description) \
-    printf ("  %-18s%s\n", Name, Description);
-
-
-#define FILE_SUFFIX_DISASSEMBLY     "dsl"
-#define ACPI_TABLE_FILE_SUFFIX      ".dat"
-
+#include <stdio.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/stat.h>
 
 /*
- * getopt
+ * Global variables. Defined in main.c only, externed in all other files
+ */
+#ifdef _DECLARE_GLOBALS
+#define EXTERN
+#define INIT_GLOBAL(a,b)        a=b
+#else
+#define EXTERN                  extern
+#define INIT_GLOBAL(a,b)        a
+#endif
+
+
+/* Globals */
+
+EXTERN BOOLEAN              INIT_GLOBAL (Gbl_SummaryMode, FALSE);
+EXTERN BOOLEAN              INIT_GLOBAL (Gbl_VerboseMode, FALSE);
+EXTERN BOOLEAN              INIT_GLOBAL (Gbl_BinaryMode, FALSE);
+EXTERN UINT32               INIT_GLOBAL (Gbl_SsdtCount, 0);
+EXTERN FILE                 INIT_GLOBAL (*Gbl_OutputFile, NULL);
+EXTERN char                 INIT_GLOBAL (*Gbl_OutputFilename, NULL);
+
+/* Globals required for use with ACPICA modules */
+
+#ifdef _DECLARE_GLOBALS
+UINT8                       AcpiGbl_EnableInterpreterSlack = FALSE;
+UINT8                       AcpiGbl_IntegerByteWidth = 8;
+UINT32                      AcpiDbgLevel = 0;
+UINT32                      AcpiDbgLayer = 0;
+#endif
+
+/* Action table used to defer requested options */
+
+typedef struct ap_dump_action
+{
+    char                    *Argument;
+    UINT32                  ToBeDone;
+
+} AP_DUMP_ACTION;
+
+#define AP_MAX_ACTIONS              32
+
+#define AP_DUMP_ALL_TABLES          0
+#define AP_DUMP_TABLE_BY_ADDRESS    1
+#define AP_DUMP_TABLE_BY_NAME       2
+#define AP_DUMP_TABLE_BY_FILE       3
+
+#define AP_MAX_ACPI_FILES           256 /* Prevent infinite loops */
+
+/*
+ * apdump - Table get/dump routines
  */
 int
-AcpiGetopt(
-    int                     argc,
-    char                    **argv,
-    char                    *opts);
+ApDumpTableFromFile (
+    char                    *Pathname);
 
-extern int                  AcpiGbl_Optind;
-extern int                  AcpiGbl_Opterr;
-extern char                 *AcpiGbl_Optarg;
+int
+ApDumpTableByName (
+    char                    *Signature);
+
+int
+ApDumpTableByAddress (
+    char                    *AsciiAddress);
+
+int
+ApDumpAllTables (
+    void);
 
 
-#ifndef ACPI_DUMP_APP
 /*
- * adisasm
+ * apfiles - File I/O utilities
  */
-ACPI_STATUS
-AdAmlDisassemble (
-    BOOLEAN                 OutToFile,
-    char                    *Filename,
-    char                    *Prefix,
-    char                    **OutFilename,
-    BOOLEAN                 GetAllTables);
+UINT32
+ApGetFileSize (
+    FILE                    *File);
 
-void
-AdPrintStatistics (
-    void);
+int
+ApOpenOutputFile (
+    char                    *Pathname);
 
-ACPI_STATUS
-AdFindDsdt(
-    UINT8                   **DsdtPtr,
-    UINT32                  *DsdtLength);
-
-void
-AdDumpTables (
-    void);
-
-ACPI_STATUS
-AdGetLocalTables (
-    char                    *Filename,
-    BOOLEAN                 GetAllTables);
-
-ACPI_STATUS
-AdParseTable (
-    ACPI_TABLE_HEADER       *Table,
-    ACPI_OWNER_ID           *OwnerId,
-    BOOLEAN                 LoadTable,
-    BOOLEAN                 External);
-
-ACPI_STATUS
-AdDisplayTables (
-    char                    *Filename,
+int
+ApWriteToBinaryFile (
     ACPI_TABLE_HEADER       *Table);
 
-ACPI_STATUS
-AdDisplayStatistics (
-    void);
-
-
-/*
- * adwalk
- */
-void
-AcpiDmCrossReferenceNamespace (
-    ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot,
-    ACPI_OWNER_ID           OwnerId);
-
-void
-AcpiDmDumpTree (
-    ACPI_PARSE_OBJECT       *Origin);
-
-void
-AcpiDmFindOrphanMethods (
-    ACPI_PARSE_OBJECT       *Origin);
-
-void
-AcpiDmFinishNamespaceLoad (
-    ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot,
-    ACPI_OWNER_ID           OwnerId);
-
-void
-AcpiDmConvertResourceIndexes (
-    ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot);
-
-
-/*
- * adfile
- */
-ACPI_STATUS
-AdInitialize (
-    void);
-
-char *
-FlGenerateFilename (
-    char                    *InputFilename,
-    char                    *Suffix);
-
-ACPI_STATUS
-FlSplitInputPathname (
-    char                    *InputPath,
-    char                    **OutDirectoryPath,
-    char                    **OutFilename);
-
-char *
-AdGenerateFilename (
-    char                    *Prefix,
-    char                    *TableId);
-
-void
-AdWriteTable (
-    ACPI_TABLE_HEADER       *Table,
-    UINT32                  Length,
-    char                    *TableName,
-    char                    *OemTableId);
-#endif
-
-#endif /* _ACAPPS */
+ACPI_TABLE_HEADER *
+ApGetTableFromFile (
+    char                    *Pathname,
+    UINT32                  *FileSize);

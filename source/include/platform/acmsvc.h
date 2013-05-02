@@ -218,4 +218,16 @@
 #pragma warning( disable : 4295 ) /* needed for acpredef.h array */
 #endif
 
+
+/* Debug support. Must be last in this file, do not move. */
+
+#ifdef _DEBUG
+#include <crtdbg.h>
+
+#define ACPI_DEBUG_INITIALIZE() \
+    _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | \
+        _CRTDBG_ALLOC_MEM_DF | _CRTDBG_CHECK_CRT_DF | \
+        _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG))
+#endif
+
 #endif /* __ACMSVC_H__ */

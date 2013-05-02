@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: acapps - common include for ACPI applications/tools
+ * Module Name: apfiles - File-related functions for acpidump utility
  *
  *****************************************************************************/
 
@@ -113,178 +113,237 @@
  *
  *****************************************************************************/
 
-#ifndef _ACAPPS
-#define _ACAPPS
+#include "acpidump.h"
+#include "acapps.h"
 
 
-#ifdef _MSC_VER                 /* disable some level-4 warnings */
-#pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
-#endif
+/******************************************************************************
+ *
+ * FUNCTION:    ApOpenOutputFile
+ *
+ * PARAMETERS:  Pathname            - Output filename
+ *
+ * RETURN:      Open file handle
+ *
+ * DESCRIPTION: Open a text output file for acpidump. Checks if file already
+ *              exists.
+ *
+ ******************************************************************************/
 
-/* Common info for tool signons */
-
-#define ACPICA_NAME                 "Intel ACPI Component Architecture"
-#define ACPICA_COPYRIGHT            "Copyright (c) 2000 - 2013 Intel Corporation"
-
-#if ACPI_MACHINE_WIDTH == 64
-#define ACPI_WIDTH          "-64"
-
-#elif ACPI_MACHINE_WIDTH == 32
-#define ACPI_WIDTH          "-32"
-
-#else
-#error unknown ACPI_MACHINE_WIDTH
-#define ACPI_WIDTH          "-??"
-
-#endif
-
-/* Macros for signons and file headers */
-
-#define ACPI_COMMON_SIGNON(UtilityName) \
-    "\n%s\n%s version %8.8X%s [%s]\n%s\n\n", \
-    ACPICA_NAME, \
-    UtilityName, ((UINT32) ACPI_CA_VERSION), ACPI_WIDTH, __DATE__, \
-    ACPICA_COPYRIGHT
-
-#define ACPI_COMMON_HEADER(UtilityName, Prefix) \
-    "%s%s\n%s%s version %8.8X%s [%s]\n%s%s\n%s\n", \
-    Prefix, ACPICA_NAME, \
-    Prefix, UtilityName, ((UINT32) ACPI_CA_VERSION), ACPI_WIDTH, __DATE__, \
-    Prefix, ACPICA_COPYRIGHT, \
-    Prefix
-
-/* Macros for usage messages */
-
-#define ACPI_USAGE_HEADER(Usage) \
-    printf ("Usage: %s\nOptions:\n", Usage);
-
-#define ACPI_OPTION(Name, Description) \
-    printf ("  %-18s%s\n", Name, Description);
-
-
-#define FILE_SUFFIX_DISASSEMBLY     "dsl"
-#define ACPI_TABLE_FILE_SUFFIX      ".dat"
-
-
-/*
- * getopt
- */
 int
-AcpiGetopt(
-    int                     argc,
-    char                    **argv,
-    char                    *opts);
-
-extern int                  AcpiGbl_Optind;
-extern int                  AcpiGbl_Opterr;
-extern char                 *AcpiGbl_Optarg;
+ApOpenOutputFile (
+    char                    *Pathname)
+{
+    struct stat             StatInfo;
+    FILE                    *File;
 
 
-#ifndef ACPI_DUMP_APP
-/*
- * adisasm
- */
-ACPI_STATUS
-AdAmlDisassemble (
-    BOOLEAN                 OutToFile,
-    char                    *Filename,
-    char                    *Prefix,
-    char                    **OutFilename,
-    BOOLEAN                 GetAllTables);
+    /* If file exists, prompt for overwrite */
 
-void
-AdPrintStatistics (
-    void);
+    if (!stat (Pathname, &StatInfo))
+    {
+        fprintf (stderr, "Target path already exists, overwrite? [y|n] ");
 
-ACPI_STATUS
-AdFindDsdt(
-    UINT8                   **DsdtPtr,
-    UINT32                  *DsdtLength);
+        if (getchar () != 'y')
+        {
+            return (-1);
+        }
+    }
 
-void
-AdDumpTables (
-    void);
+    /* Point stdout to the file */
 
-ACPI_STATUS
-AdGetLocalTables (
-    char                    *Filename,
-    BOOLEAN                 GetAllTables);
+    File = freopen (Pathname, "w", stdout);
+    if (!File)
+    {
+        perror ("Could not open output file");
+        return (-1);
+    }
 
-ACPI_STATUS
-AdParseTable (
-    ACPI_TABLE_HEADER       *Table,
-    ACPI_OWNER_ID           *OwnerId,
-    BOOLEAN                 LoadTable,
-    BOOLEAN                 External);
+    /* Save the file and path */
 
-ACPI_STATUS
-AdDisplayTables (
-    char                    *Filename,
-    ACPI_TABLE_HEADER       *Table);
-
-ACPI_STATUS
-AdDisplayStatistics (
-    void);
+    Gbl_OutputFile = File;
+    Gbl_OutputFilename = Pathname;
+    return (0);
+}
 
 
-/*
- * adwalk
- */
-void
-AcpiDmCrossReferenceNamespace (
-    ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot,
-    ACPI_OWNER_ID           OwnerId);
+/******************************************************************************
+ *
+ * FUNCTION:    ApWriteToBinaryFile
+ *
+ * PARAMETERS:  Table               - ACPI table to be written
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Write an ACPI table to a binary file. Builds the output
+ *              filename from the table signature.
+ *
+ ******************************************************************************/
 
-void
-AcpiDmDumpTree (
-    ACPI_PARSE_OBJECT       *Origin);
-
-void
-AcpiDmFindOrphanMethods (
-    ACPI_PARSE_OBJECT       *Origin);
-
-void
-AcpiDmFinishNamespaceLoad (
-    ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot,
-    ACPI_OWNER_ID           OwnerId);
-
-void
-AcpiDmConvertResourceIndexes (
-    ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot);
+int
+ApWriteToBinaryFile (
+    ACPI_TABLE_HEADER       *Table)
+{
+    char                    Filename[ACPI_NAME_SIZE + 16];
+    char                    SsdtInstance [16];
+    FILE                    *File;
+    size_t                  Actual;
 
 
-/*
- * adfile
- */
-ACPI_STATUS
-AdInitialize (
-    void);
+    /* Construct lower-case filename from the table signature */
 
-char *
-FlGenerateFilename (
-    char                    *InputFilename,
-    char                    *Suffix);
+    Filename[0] = (char) ACPI_TOLOWER (Table->Signature[0]);
+    Filename[1] = (char) ACPI_TOLOWER (Table->Signature[1]);
+    Filename[2] = (char) ACPI_TOLOWER (Table->Signature[2]);
+    Filename[3] = (char) ACPI_TOLOWER (Table->Signature[3]);
+    Filename[ACPI_NAME_SIZE] = 0;
 
-ACPI_STATUS
-FlSplitInputPathname (
-    char                    *InputPath,
-    char                    **OutDirectoryPath,
-    char                    **OutFilename);
+    /* Handle multiple SSDTs - create different filenames for each */
 
-char *
-AdGenerateFilename (
-    char                    *Prefix,
-    char                    *TableId);
+    if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_SSDT))
+    {
+        sprintf (SsdtInstance, "%u", Gbl_SsdtCount);
+        strcat (Filename, SsdtInstance);
+        Gbl_SsdtCount++;
+    }
 
-void
-AdWriteTable (
-    ACPI_TABLE_HEADER       *Table,
-    UINT32                  Length,
-    char                    *TableName,
-    char                    *OemTableId);
-#endif
+    strcat (Filename, ACPI_TABLE_FILE_SUFFIX);
 
-#endif /* _ACAPPS */
+    if (Gbl_VerboseMode)
+    {
+        fprintf (stderr,
+            "Writing [%4.4s] to binary file: %s 0x%X (%u) bytes\n",
+            Table->Signature, Filename, Table->Length, Table->Length);
+    }
+
+    /* Open the file and dump the entire table in binary mode */
+
+    File = fopen (Filename, "wb");
+    if (!File)
+    {
+        perror ("Could not open output file");
+        return (-1);
+    }
+
+    Actual = fwrite (Table, 1, Table->Length, File);
+    if (Actual != Table->Length)
+    {
+        perror ("Error writing binary output file");
+        fclose (File);
+        return (-1);
+    }
+
+    fclose (File);
+    return (0);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    ApGetTableFromFile
+ *
+ * PARAMETERS:  Pathname            - File containing the binary ACPI table
+ *              OutFileSize         - Where the file size is returned
+ *
+ * RETURN:      Buffer containing the ACPI table. NULL on error.
+ *
+ * DESCRIPTION: Open a file and read it entirely into a new buffer
+ *
+ ******************************************************************************/
+
+ACPI_TABLE_HEADER *
+ApGetTableFromFile (
+    char                    *Pathname,
+    UINT32                  *OutFileSize)
+{
+    ACPI_TABLE_HEADER       *Buffer = NULL;
+    FILE                    *File;
+    UINT32                  FileSize;
+    size_t                  Actual;
+
+
+    /* Must use binary mode */
+
+    File = fopen (Pathname, "rb");
+    if (!File)
+    {
+        perror ("Could not open input file");
+        return (NULL);
+    }
+
+    /* Need file size to allocate a buffer */
+
+    FileSize = ApGetFileSize (File);
+    if (!FileSize)
+    {
+        fprintf (stderr,
+            "Could not get input file size: %s\n", Pathname);
+        goto Cleanup;
+    }
+
+    /* Allocate a buffer for the entire file */
+
+    Buffer = calloc (1, FileSize);
+    if (!Buffer)
+    {
+        fprintf (stderr,
+            "Could not allocate file buffer of size: %u\n", FileSize);
+        goto Cleanup;
+    }
+
+    /* Read the entire file */
+
+    Actual = fread (Buffer, 1, FileSize, File);
+    if (Actual != FileSize)
+    {
+        fprintf (stderr,
+            "Could not read input file: %s\n", Pathname);
+        free (Buffer);
+        Buffer = NULL;
+        goto Cleanup;
+    }
+
+    *OutFileSize = FileSize;
+
+Cleanup:
+    fclose (File);
+    return (Buffer);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    ApGetFileSize
+ *
+ * PARAMETERS:  File                - Open file descriptor
+ *
+ * RETURN:      File size in bytes
+ *
+ * DESCRIPTION: Get the size of an open file
+ *
+ ******************************************************************************/
+
+UINT32
+ApGetFileSize (
+    FILE                    *File)
+{
+    UINT32                  FileSize;
+    long                    Offset;
+
+
+    Offset = ftell (File);
+    if (fseek (File, 0, SEEK_END))
+    {
+        return (0);
+    }
+
+    /* Get size and restore file pointer */
+
+    FileSize = (UINT32) ftell (File);
+    if (fseek (File, Offset, SEEK_SET))
+    {
+        return (0);
+    }
+
+    return (FileSize);
+}
