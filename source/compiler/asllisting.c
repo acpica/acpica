@@ -339,9 +339,10 @@ LsTreeWriteWalk (
 
     DbgPrint (ASL_TREE_OUTPUT,
         "%5.5d [%2d]", Op->Asl.LogicalLineNumber, Level);
+
     UtPrintFormattedName (Op->Asl.ParseOpcode, Level);
 
-    DbgPrint (ASL_TREE_OUTPUT, "\n");
+    DbgPrint (ASL_TREE_OUTPUT, "    (%.4X)\n", Op->Asl.ParseOpcode);
     return (AE_OK);
 }
 
