@@ -117,6 +117,29 @@
 #include "acpidump.h"
 #include "acapps.h"
 
+
+/*
+ * acpidump - A portable utility for obtaining system ACPI tables and dumping
+ * them in an ASCII hex format suitable for binary extraction via acpixtract.
+ *
+ * Obtaining the system ACPI tables is an OS-specific operation.
+ *
+ * This utility can be ported to any host operating system by providing a
+ * module containing system-specific versions of these interfaces:
+ *
+ *      AcpiOsGetTableByAddress
+ *      AcpiOsGetTableByIndex
+ *      AcpiOsGetTableByName
+ *
+ * See the ACPICA Reference Guide for the exact definitions of these
+ * interfaces. Also, see these ACPICA source code modules for example
+ * implementations:
+ *
+ *      source/os_specific/service_layers/oswintbl.c
+ *      source/os_specific/service_layers/oslinuxtbl.c
+ */
+
+
 /* Local prototypes */
 
 static void
