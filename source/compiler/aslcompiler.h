@@ -363,6 +363,15 @@ AslError (
     ACPI_PARSE_OBJECT       *Op,
     char                    *ExtraMessage);
 
+ACPI_STATUS
+AslDisableException (
+    char                    *MessageIdString);
+
+BOOLEAN
+AslIsExceptionDisabled (
+    UINT8                   Level,
+    UINT8                   MessageId);
+
 void
 AslCoreSubsystemError (
     ACPI_PARSE_OBJECT       *Op,

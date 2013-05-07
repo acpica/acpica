@@ -154,20 +154,11 @@ DtError (
     char                    *ExtraMessage)
 {
 
-    switch (Level)
+    /* Check if user wants to ignore this exception */
+
+    if (AslIsExceptionDisabled (Level, MessageId))
     {
-    case ASL_WARNING2:
-    case ASL_WARNING3:
-
-        if (Gbl_WarningLevel < Level)
-        {
-            return;
-        }
-        break;
-
-    default:
-
-        break;
+        return;
     }
 
     if (FieldObject)

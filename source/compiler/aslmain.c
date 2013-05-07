@@ -208,6 +208,7 @@ Options (
     ACPI_OPTION ("-vo",             "Enable optimization comments");
     ACPI_OPTION ("-vr",             "Disable remarks");
     ACPI_OPTION ("-vs",             "Disable signon");
+    ACPI_OPTION ("-vw <messageid>", "Disable specific warning or remark");
     ACPI_OPTION ("-w1 -w2 -w3",     "Set warning reporting level");
     ACPI_OPTION ("-we",             "Report warnings as errors");
 
@@ -518,8 +519,8 @@ AslDoOptions (
     char                    **argv,
     BOOLEAN                 IsResponseFile)
 {
-    int                     j;
     ACPI_STATUS             Status;
+    UINT32                  j;
 
 
     /* Get the command line options */
@@ -966,7 +967,24 @@ AslDoOptions (
             break;
 
         case 't':
+
             Gbl_VerboseTemplates = TRUE;
+            break;
+
+        case 'w':
+
+            /* Get the required argument */
+
+            if (AcpiGetoptArgument (argc, argv))
+            {
+                return (-1);
+            }
+
+            Status = AslDisableException (AcpiGbl_Optarg);
+            if (ACPI_FAILURE (Status))
+            {
+                return (-1);
+            }
             break;
 
         default:
@@ -1088,8 +1106,6 @@ AslCommandLine (
             printf ("Ignoring all errors, forcing AML file generation\n\n");
         }
     }
-
-    /* Abort if anything went wrong on the command line */
 
     if (BadCommandLine)
     {

@@ -769,23 +769,35 @@ PrDoDirective (
 
     case PR_DIRECTIVE_PRAGMA:
 
-        /* Only "#pragma message" supported at this time */
+        if (!strcmp (Token, "disable"))
+        {
+            Token = PrGetNextToken (NULL, PR_TOKEN_SEPARATORS, Next);
+            if (!Token)
+            {
+                goto SyntaxError;
+            }
 
-        if (strcmp (Token, "message"))
+            TokenOffset = Token - Gbl_MainTokenBuffer;
+            AslDisableException (&Gbl_CurrentLineBuffer[TokenOffset]);
+        }
+        else if (!strcmp (Token, "message"))
+        {
+            Token = PrGetNextToken (NULL, PR_TOKEN_SEPARATORS, Next);
+            if (!Token)
+            {
+                goto SyntaxError;
+            }
+
+            TokenOffset = Token - Gbl_MainTokenBuffer;
+            AcpiOsPrintf ("%s\n", &Gbl_CurrentLineBuffer[TokenOffset]);
+        }
+        else
         {
             PrError (ASL_ERROR, ASL_MSG_UNKNOWN_PRAGMA,
                 THIS_TOKEN_OFFSET (Token));
             return;
         }
 
-        Token = PrGetNextToken (NULL, PR_TOKEN_SEPARATORS, Next);
-        if (!Token)
-        {
-            goto SyntaxError;
-        }
-
-        TokenOffset = Token - Gbl_MainTokenBuffer;
-        AcpiOsPrintf ("%s\n", &Gbl_CurrentLineBuffer[TokenOffset]);
         break;
 
     case PR_DIRECTIVE_UNDEF:
