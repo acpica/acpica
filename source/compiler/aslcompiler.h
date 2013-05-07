@@ -872,6 +872,17 @@ void
 LkFindUnreferencedObjects (
     void);
 
+/*
+ * aslmain - startup
+ */
+void
+Usage (
+    void);
+
+void
+AslFilenameHelp (
+    void);
+
 
 /*
  * aslnamesp - namespace output file generation
@@ -884,6 +895,13 @@ void
 NsSetupNamespaceListing (
     void                    *Handle);
 
+/*
+ * asloptions - command line processing
+ */
+int
+AslCommandLine (
+    int                     argc,
+    char                    **argv);
 
 /*
  * aslxref - namespace cross reference

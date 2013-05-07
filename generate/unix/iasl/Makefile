@@ -69,6 +69,7 @@ OBJECTS = \
 	$(OBJDIR)/aslopcodes.o\
 	$(OBJDIR)/asloperands.o\
 	$(OBJDIR)/aslopt.o\
+	$(OBJDIR)/asloptions.o\
 	$(OBJDIR)/aslpredef.o\
 	$(OBJDIR)/aslprepkg.o\
 	$(OBJDIR)/aslresource.o\

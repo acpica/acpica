@@ -1246,6 +1246,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\compiler\asloptions.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\compiler\aslpredef.c"
 					>
 					<FileConfiguration
