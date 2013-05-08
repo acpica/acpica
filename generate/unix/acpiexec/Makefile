@@ -223,7 +223,7 @@ CFLAGS += \
     -DACPI_EXEC_APP\
     -I$(ACPIEXEC)
 
-LDFLAGS += -lpthread -lrt
+LDFLAGS += -lpthread
 
 #
 # Common Rules
