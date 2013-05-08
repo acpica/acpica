@@ -498,7 +498,7 @@ DtGetNextLine (
     UINT32                  State = DT_NORMAL_TEXT;
     UINT32                  CurrentLineOffset;
     UINT32                  i;
-    char                    c;
+    int                     c;
 
 
     for (i = 0; ;)
@@ -512,7 +512,7 @@ DtGetNextLine (
             UtExpandLineBuffers ();
         }
 
-        c = (char) getc (Handle);
+        c = getc (Handle);
         if (c == EOF)
         {
             switch (State)
@@ -552,7 +552,7 @@ DtGetNextLine (
 
             /* Normal text, insert char into line buffer */
 
-            Gbl_CurrentLineBuffer[i] = c;
+            Gbl_CurrentLineBuffer[i] = (char) c;
             switch (c)
             {
             case '/':
@@ -618,7 +618,7 @@ DtGetNextLine (
 
             /* Insert raw chars until end of quoted string */
 
-            Gbl_CurrentLineBuffer[i] = c;
+            Gbl_CurrentLineBuffer[i] = (char) c;
             i++;
 
             switch (c)
@@ -650,7 +650,7 @@ DtGetNextLine (
 
             /* Just copy the escaped character. TBD: sufficient for table compiler? */
 
-            Gbl_CurrentLineBuffer[i] = c;
+            Gbl_CurrentLineBuffer[i] = (char) c;
             i++;
             State = DT_START_QUOTED_STRING;
             break;
@@ -679,7 +679,7 @@ DtGetNextLine (
                     UtExpandLineBuffers ();
                 }
 
-                Gbl_CurrentLineBuffer[i] = c;
+                Gbl_CurrentLineBuffer[i] = (char) c;
                 i++;
                 State = DT_NORMAL_TEXT;
                 break;
