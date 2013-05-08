@@ -66,24 +66,14 @@ generate/msvc9/AslCompiler_LinuxDebug/
 generate/msvc9/AcpiSubsystem64
 
 generate/unix/bin
-generate/unix/bin32
-generate/unix/bin64
-generate/unix/acpibin/obj32
-generate/unix/acpibin/obj64
-generate/unix/acpidump/obj32
-generate/unix/acpidump/obj64
-generate/unix/acpiexec/obj32
-generate/unix/acpiexec/obj64
-generate/unix/acpihelp/obj32
-generate/unix/acpihelp/obj64
-generate/unix/acpinames/obj32
-generate/unix/acpinames/obj64
-generate/unix/acpisrc/obj32
-generate/unix/acpisrc/obj64
-generate/unix/acpixtract/obj32
-generate/unix/acpixtract/obj64
-generate/unix/iasl/obj32
-generate/unix/iasl/obj64
+generate/unix/acpibin/obj
+generate/unix/acpidump/obj
+generate/unix/acpiexec/obj
+generate/unix/acpihelp/obj
+generate/unix/acpinames/obj
+generate/unix/acpisrc/obj
+generate/unix/acpixtract/obj
+generate/unix/iasl/obj
 
 generate/release/current
 generate/release/archive
