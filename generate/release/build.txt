@@ -2,7 +2,7 @@
 Instructions to create a full release of the ACPICA software
 and utilities.
 
-Last update 18 October 2012.
+Last update 18 April 2013.
 
 The build uses MS Visual Studio and Cygwin to accomplish the
 goal of releasing both Windows and Unix versions of the ACPICA code
@@ -54,48 +54,38 @@ Build the various tar/zip release files:
 Update ACPICA website
 ---------------------
 
-Checkout the latest version of the website code:
-    svn co https://umd.jf.intel.com/svn/repos/websites/acpica.org
+Login to acpica.org (with update permission)
 
-The main acpica.org directory is at: acpica.org/trunk/html
-Copy all tar/zip files from release/current to (acpica.org)/download
-Copy all changed documents from acpica/documents to (acpica.org)/download
+Goto: ContentManagement->CreateContent->Downloads
 
-Update (acpica.org) modules.php:
-    Add a line for the 2nd previous version
-    Update entry for previous_releases.php to the previous version
-    Update current_version() to the current version
+Add a new download node:
+    Title: Use the new version number (e.g., 20130418)
+    Body: Insert the release notes for this version
+    Date: Current date
+    File Attachments: Attach all of the release zip/gz files (currently 6 files)
+        (From the generate/release/current directory)
+    Click "Save" at the bottom of the page
 
-Update version files:
-    Create downloads/version-#.php <# == 2nd previous version>
-        (copy from another version-#.php file and update it)
-    Update previous_releases.php for previous version number
+Version number headers and file pathnames:
+    Goto "Documentation", click edit, update version at body top, click save at bottom
+    Goto "Downloads", click edit, update version at body top, click save at bottom
+         Update paths to new file versions (3)
+    Goto "Downloads/Linux Support", click edit, update version at body top, click save at bottom
+    Goto "Downloads/Windows Source Code", click edit, update version at body top, click save at bottom
+         Update paths to new file versions (2)
+    Goto "Downloads/Windows Binary Tools", click edit, update version at body top, click save at bottom
+         Update paths to new file version (1)
+    Goto "Source", click edit, update version at body top, click save at bottom
 
-Windows source code:
-    Create downloads/acpica-win-#.php for previous version
-    Create downloads/acpitests-win-# for previous version
-    Update downloads/source_code.php for current version
-    Update downloads/test_suite.php for current version
-
-Unix source code:
-    Create downloads/acpica-unix-#.php for previous version
-    Create downloads/acpitests-unix-# for previous version
-    Update downloads/unix_source_code.php for current version
-    Update downloads/unix2_source_code.php for current version
-    Update downloads/unix_test_suite.php for current version
-
-Windows binary tools:
-    Create downloads/iasl-win-#.php for previous version
-    Update downloads/binary_tools.php for current version + file size
+New documents:
+    Goto the documents page.
+    Attach new document
+    uncheck the "List" box
+    Update pathname in body for the new filename (appears at bottom of attach)
+    <Note: may be fixed so that the filename can stay the same>
 
 Update file sizes:
     documentation/index.php - ACPICA documentation sizes and info
-
-Add and commit new files and changed files:
-    svn status acpica.org
-    svn add acpica.org/trunk/html --force
-    svn commit -m"version yyyymmdd" acpica.org
-
 
 
 Email the release notes
