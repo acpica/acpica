@@ -56,9 +56,13 @@ veryclean:	FORCE
 			echo ""; \
 		fi; \
 		); \
-		rm $(BUILD_DIRECTORY_PATH)/bin/$$toolname; \
+		if [ -e "$(BUILD_DIRECTORY_PATH)/bin/$$toolname" ] ; then \
+			rm $(BUILD_DIRECTORY_PATH)/bin/$$toolname; \
+		fi; \
 	done; \
-	rmdir bin;
+	if [ -d "bin" ] ; then \
+		rmdir bin; \
+	fi;
 
 #
 # Install all tools, either 32-bit or 64-bit as appropriate for the host OS

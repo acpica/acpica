@@ -56,14 +56,10 @@ build_acpi_tools() {
 	make iasl
 	make acpiexec
 
-	if [ -d "bin64" ] && [ -f "bin64/iasl" ]; then
-		echo "Installing 64-bit tools"
-		cp bin64/iasl $tmp_iasl
-		cp bin64/acpiexec $tmp_acpiexec
-	elif [ -d "bin32" ] && [ -f "bin32/iasl" ]; then
-		echo "Installing 32-bit tools"
-		cp bin32/iasl $tmp_iasl
-		cp bin32/acpiexec $tmp_acpiexec
+	if [ -d "bin" ] && [ -f "bin/iasl" ]; then
+		echo "Installing ACPICA tools"
+		cp bin/iasl $tmp_iasl
+		cp bin/acpiexec $tmp_acpiexec
 	else
 		echo "Could not find iASL/acpiexec tools"
 		exit
