@@ -574,6 +574,7 @@ AcpiDbTerminate (
     if (AcpiGbl_DbBuffer)
     {
         AcpiOsFree (AcpiGbl_DbBuffer);
+        AcpiGbl_DbBuffer = NULL;
     }
 }
 
