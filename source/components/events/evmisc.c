@@ -379,6 +379,8 @@ AcpiEvTerminate (
             ACPI_ERROR ((AE_INFO,
                 "Could not remove Global Lock handler"));
         }
+
+        AcpiGbl_EventsInitialized = FALSE;
     }
 
     /* Deallocate all handler objects installed within GPE info structs */
