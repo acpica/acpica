@@ -223,7 +223,11 @@ CFLAGS += \
     -DACPI_EXEC_APP\
     -I$(ACPIEXEC)
 
-LDFLAGS += -lpthread -lrt
+LDFLAGS += -lpthread
+
+ifneq ($(HOST),_APPLE)
+LDFLAGS += -lrt
+endif
 
 #
 # Common Rules
