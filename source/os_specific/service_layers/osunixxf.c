@@ -164,6 +164,7 @@ typedef void* (*PTHREAD_CALLBACK) (void *);
 
 #ifdef __APPLE__
 #define sem_destroy         sem_close
+#define ACPI_USE_ALTERNATE_TIMEOUT
 #endif
 
 
