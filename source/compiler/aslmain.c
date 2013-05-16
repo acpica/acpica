@@ -333,11 +333,6 @@ AslInitialize (
 
     Gbl_Files[ASL_FILE_STDERR].Handle   = stderr;
     Gbl_Files[ASL_FILE_STDERR].Filename = "STDERR";
-
-    /* Allocate the line buffer(s) */
-
-    Gbl_LineBufferSize /= 2;
-    UtExpandLineBuffers ();
 }
 
 
@@ -366,18 +361,22 @@ main (
 
     ACPI_DEBUG_INITIALIZE (); /* For debug version only */
 
-    /* Init and command line */
+    /* Initialize preprocessor and compiler before command line processing */
 
     signal (SIGINT, AslSignalHandler);
     AcpiGbl_ExternalFileList = NULL;
     AcpiDbgLevel = 0;
+    PrInitializePreprocessor ();
+    AslInitialize ();
 
     Index1 = Index2 = AslCommandLine (argc, argv);
 
-    AslInitialize ();
-    PrInitializePreprocessor ();
+    /* Allocate the line buffer(s), must be after command line */
 
-    /* Options that have no additional parameters or pathnames */
+    Gbl_LineBufferSize /= 2;
+    UtExpandLineBuffers ();
+
+    /* Perform global actions first/only */
 
     if (Gbl_GetAllTables)
     {
