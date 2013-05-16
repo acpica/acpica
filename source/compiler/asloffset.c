@@ -148,8 +148,9 @@ LsEmitOffsetTableEntry (
  * Three types of objects are currently emitted to the offset table:
  *   1) Tagged (named) resource descriptors
  *   2) Named integer objects with constant integer values
- *   3) Operation Regions that have constant Offset (address) parameters
- *   4) Control methods
+ *   3) Named package objects
+ *   4) Operation Regions that have constant Offset (address) parameters
+ *   5) Control methods
  *
  * The offset table allows the BIOS to dynamically update the values of these
  * objects at boot time.
@@ -166,7 +167,7 @@ LsAmlOffsetWalk (
     ACPI_NAMESPACE_NODE     *Node;
     UINT32                  Length;
     UINT32                  OffsetOfOpcode;
-    ACPI_PARSE_OBJECT       *AddressOp;
+    ACPI_PARSE_OBJECT       *NextOp;
 
 
     /* Ignore actual data blocks for resource descriptors */
@@ -192,12 +193,16 @@ LsAmlOffsetWalk (
     {
         LsEmitOffsetTableEntry (FileId, Node, Gbl_CurrentAmlOffset,
             Op->Asl.ParseOpName, 0, Op->Asl.Extra);
+        Gbl_CurrentAmlOffset += Op->Asl.FinalAmlLength;
+        return (AE_OK);
     }
 
-    /* Named object -- Name (NameString, DataRefObject) */
-
-    else if (Op->Asl.AmlOpcode == AML_NAME_OP)
+    switch (Op->Asl.AmlOpcode)
     {
+    case AML_NAME_OP:
+
+        /* Named object -- Name (NameString, DataRefObject) */
+
         if (!Op->Asl.Child)
         {
             FlPrintFile (FileId, "%s NO CHILD!\n", MsgBuffer);
@@ -226,7 +231,7 @@ LsAmlOffsetWalk (
         case AML_DWORD_OP:
         case AML_QWORD_OP:
 
-            /* The +1/-1 is to handle the integer size prefix (opcode) */
+            /* The +1 is to handle the integer size prefix (opcode) */
 
             LsEmitOffsetTableEntry (FileId, Node,
                 (Gbl_CurrentAmlOffset + OffsetOfOpcode + 1),
@@ -234,32 +239,42 @@ LsAmlOffsetWalk (
                 (UINT8) Op->Asl.AmlOpcode);
             break;
 
-        default:
+        case AML_PACKAGE_OP:
+        case AML_VAR_PACKAGE_OP:
 
+            NextOp = Op->Asl.Child;
+
+            LsEmitOffsetTableEntry (FileId, Node,
+                (Gbl_CurrentAmlOffset + OffsetOfOpcode),
+                Op->Asl.ParseOpName,
+                NextOp->Asl.Value.Integer,
+                (UINT8) Op->Asl.AmlOpcode);
             break;
+
+         default:
+             break;
         }
 
         Gbl_CurrentAmlOffset += Length;
         return (AE_OK);
-    }
 
-    /* OperationRegion (NameString, RegionSpace, RegionOffset, RegionLength) */
+    case AML_REGION_OP:
 
-    else if (Op->Asl.AmlOpcode == AML_REGION_OP)
-    {
+        /* OperationRegion (NameString, RegionSpace, RegionOffset, RegionLength) */
+
         Length = Op->Asl.FinalAmlLength;
 
         /* Get the name/namepath node */
 
-        AddressOp = Op->Asl.Child;
-        OffsetOfOpcode = Length + AddressOp->Asl.FinalAmlLength + 1;
+        NextOp = Op->Asl.Child;
+        OffsetOfOpcode = Length + NextOp->Asl.FinalAmlLength + 1;
 
         /* Get the SpaceId node, then the Offset (address) node */
 
-        AddressOp = AddressOp->Asl.Next;
-        AddressOp = AddressOp->Asl.Next;
+        NextOp = NextOp->Asl.Next;
+        NextOp = NextOp->Asl.Next;
 
-        switch (AddressOp->Asl.AmlOpcode)
+        switch (NextOp->Asl.AmlOpcode)
         {
         /*
          * We are only interested in integer constants that can be changed
@@ -271,28 +286,42 @@ LsAmlOffsetWalk (
         case AML_DWORD_OP:
         case AML_QWORD_OP:
 
-            /* The +1/-1 is to handle the integer size prefix (opcode) */
-
             LsEmitOffsetTableEntry (FileId, Node,
                 (Gbl_CurrentAmlOffset + OffsetOfOpcode + 1),
-                Op->Asl.ParseOpName, AddressOp->Asl.Value.Integer,
-                (UINT8) AddressOp->Asl.AmlOpcode);
+                Op->Asl.ParseOpName, NextOp->Asl.Value.Integer,
+                (UINT8) NextOp->Asl.AmlOpcode);
 
             Gbl_CurrentAmlOffset += Length;
             return (AE_OK);
 
         default:
-
             break;
         }
-    }
-    else if (Op->Asl.AmlOpcode == AML_METHOD_OP)
-    {
+        break;
+
+    case AML_METHOD_OP:
+
+        /* Method (Namepath, ...) */
+
         Length = Op->Asl.FinalAmlLength;
 
+        /* Get the NameSeg/NamePath Op */
+
+        NextOp = Op->Asl.Child;
+
+        /* Point to the *last* nameseg in the namepath */
+
+        OffsetOfOpcode = NextOp->Asl.FinalAmlLength - ACPI_NAME_SIZE;
+
         LsEmitOffsetTableEntry (FileId, Node,
-            (Gbl_CurrentAmlOffset + Length),
-            Op->Asl.ParseOpName, 0, (UINT8) Op->Asl.AmlOpcode);
+            (Gbl_CurrentAmlOffset + OffsetOfOpcode + Length),
+            Op->Asl.ParseOpName,
+            *((UINT32 *) &NextOp->Asl.Value.Buffer[OffsetOfOpcode]),
+            (UINT8) Op->Asl.AmlOpcode);
+        break;
+
+    default:
+        break;
     }
 
     Gbl_CurrentAmlOffset += Op->Asl.FinalAmlLength;
@@ -395,6 +424,11 @@ LsDoOffsetTableHeader (
         " *    Offset points to the actual integer data\n"
         " *    Opcode is the integer prefix, indicates length of the data\n"
         " *    Value is the existing value in the AML\n"
+        " *\n"
+        " * Packages:\n"
+        " *    Offset points to the package opcode\n"
+        " *    Opcode is the package or var_package opcode\n"
+        " *    Value is the package element cound\n"
         " *\n"
         " * Operation Regions:\n"
         " *    Offset points to the region address data\n"
