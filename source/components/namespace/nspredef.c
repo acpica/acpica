@@ -247,7 +247,12 @@ AcpiNsCheckReturnValue (
         Status = AcpiNsCheckPackage (Info, ReturnObjectPtr);
         if (ACPI_FAILURE (Status))
         {
-            goto Exit;
+            /* We might be able to fix an operand type error (_PRT) */
+
+            if (Status != AE_AML_OPERAND_TYPE)
+            {
+                goto Exit;
+            }
         }
     }
 
