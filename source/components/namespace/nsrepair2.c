@@ -573,19 +573,7 @@ AcpiNsRepair_CST (
 
 
     /*
-     * Entries (subpackages) in the _CST Package must be sorted by the
-     * C-state type, in ascending order.
-     */
-    Status = AcpiNsCheckSortedList (Info, ReturnObject, 1, 4, 1,
-                ACPI_SORT_ASCENDING, "C-State Type");
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
-    /*
-     * We now know the list is correctly sorted by C-state type. Check if
-     * the C-state type values are proportional.
+     * Check if the C-state type values are proportional.
      */
     OuterElementCount = ReturnObject->Package.Count - 1;
     i = 0;
@@ -599,6 +587,7 @@ AcpiNsRepair_CST (
             ACPI_WARN_PREDEFINED ((AE_INFO, Info->FullPathname, Info->NodeFlags,
                 "SubPackage[%u] - removing entry due to zero count", i));
             Removing = TRUE;
+            goto RemoveElement;
         }
 
         ObjDesc = (*OuterElements)->Package.Elements[1]; /* Index1 = Type */
@@ -609,6 +598,7 @@ AcpiNsRepair_CST (
             Removing = TRUE;
         }
 
+RemoveElement:
         if (Removing)
         {
             AcpiNsRemoveElement (ReturnObject, i + 1);
@@ -624,6 +614,18 @@ AcpiNsRepair_CST (
 
     ObjDesc = ReturnObject->Package.Elements[0];
     ObjDesc->Integer.Value = OuterElementCount;
+
+    /*
+     * Entries (subpackages) in the _CST Package must be sorted by the
+     * C-state type, in ascending order.
+     */
+    Status = AcpiNsCheckSortedList (Info, ReturnObject, 1, 4, 1,
+                ACPI_SORT_ASCENDING, "C-State Type");
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
     return (AE_OK);
 }
 
