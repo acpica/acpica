@@ -172,6 +172,7 @@ static const char           *AcpiDmEinjActions[] =
     "Execute Operation",
     "Check Busy Status",
     "Get Command Status",
+    "Set Error Type With Address",
     "Unknown Action"
 };
 
@@ -252,6 +253,8 @@ static const char           *AcpiDmHestNotifySubnames[] =
     "Local Interrupt",
     "SCI",
     "NMI",
+    "CMCI",                         /* ACPI 5.0 */
+    "MCE",                          /* ACPI 5.0 */
     "Unknown Notify Type"           /* Reserved */
 };
 
