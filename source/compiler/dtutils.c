@@ -469,6 +469,7 @@ DtGetFieldType (
 
     case ACPI_DMT_BUFFER:
     case ACPI_DMT_BUF7:
+    case ACPI_DMT_BUF10:
     case ACPI_DMT_BUF16:
     case ACPI_DMT_BUF128:
     case ACPI_DMT_PCI_PATH:
@@ -700,6 +701,11 @@ DtGetFieldLength (
             DtFatal (ASL_MSG_COMPILER_INTERNAL, NULL, MsgBuffer);
             return (0);
         }
+        break;
+
+    case ACPI_DMT_BUF10:
+
+        ByteLength = 10;
         break;
 
     case ACPI_DMT_BUF16:

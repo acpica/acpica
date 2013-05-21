@@ -944,6 +944,7 @@ AcpiDmDumpDmar (
         {
             return;
         }
+        AcpiOsPrintf ("\n");
 
         switch (SubTable->Type)
         {
@@ -996,6 +997,7 @@ AcpiDmDumpDmar (
             {
                 return;
             }
+            AcpiOsPrintf ("\n");
 
             /* Dump the PCI Path entries for this device scope */
 
@@ -1013,6 +1015,7 @@ AcpiDmDumpDmar (
 
                 PathOffset += 2;
                 PciPath += 2;
+                AcpiOsPrintf ("\n");
             }
 
             /* Point to next device scope entry */

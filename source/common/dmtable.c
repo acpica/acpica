@@ -819,6 +819,11 @@ AcpiDmDumpTable (
             ByteLength = 8;
             break;
 
+        case ACPI_DMT_BUF10:
+
+            ByteLength = 10;
+            break;
+
         case ACPI_DMT_BUF16:
         case ACPI_DMT_UUID:
 
@@ -937,6 +942,7 @@ AcpiDmDumpTable (
             break;
 
         case ACPI_DMT_BUF7:
+        case ACPI_DMT_BUF10:
         case ACPI_DMT_BUF16:
         case ACPI_DMT_BUF128:
             /*
