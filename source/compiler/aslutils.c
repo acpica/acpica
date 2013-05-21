@@ -425,8 +425,6 @@ DbgPrint (
     va_list                 Args;
 
 
-    va_start (Args, Fmt);
-
     if (!Gbl_DebugFlag)
     {
         return;
@@ -438,6 +436,7 @@ DbgPrint (
         return;
     }
 
+    va_start (Args, Fmt);
     (void) vfprintf (stderr, Fmt, Args);
     va_end (Args);
     return;
