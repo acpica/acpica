@@ -359,31 +359,21 @@ DtParseLine (
 
     while (Start < Colon)
     {
-        if (*Start == ' ')
-        {
-            Start++;
-            continue;
-        }
-
-        /* Found left bracket, go to the right bracket */
-
         if (*Start == '[')
         {
+            /* Found left bracket, go to the right bracket */
+
             while (Start < Colon && *Start != ']')
             {
                 Start++;
             }
-
-            if (Start == Colon)
-            {
-                break;
-            }
-
-            Start++;
-            continue;
+        }
+        else if (*Start != ' ')
+        {
+            break;
         }
 
-        break;
+        Start++;
     }
 
     /*
