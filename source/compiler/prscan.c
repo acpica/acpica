@@ -137,12 +137,26 @@ PrPreprocessInputFile (
 static void
 PrDoDirective (
     char                    *DirectiveToken,
-    char                    **Next,
-    BOOLEAN                 *IgnoringThisCodeBlock);
+    char                    **Next);
 
 static int
 PrMatchDirective (
     char                    *Directive);
+
+static void
+PrPushDirective (
+    int                     Directive,
+    char                    *Argument);
+
+static void
+PrPopDirective (
+    void);
+
+static void
+PrDbgPrint (
+    char                    *Action,
+    char                    *DirectiveName);
+
 
 /*
  * Supported preprocessor directives
@@ -228,11 +242,16 @@ PrInitializeGlobals (
 {
     /* Init globals */
 
-    Gbl_IfDepth = 0;
     Gbl_InputFileList = NULL;
     Gbl_CurrentLineNumber = 0;
     Gbl_PreprocessorLineNumber = 1;
     Gbl_PreprocessorError = FALSE;
+
+    /* These are used to track #if/#else blocks (possibly nested) */
+
+    Gbl_IfDepth = 0;
+    Gbl_IgnoringThisCodeBlock = FALSE;
+    Gbl_DirectiveStack = NULL;
 }
 
 
@@ -362,7 +381,6 @@ PrPreprocessInputFile (
     char                    *ReplaceString;
     PR_DEFINE_INFO          *DefineInfo;
     ACPI_SIZE               TokenOffset;
-    BOOLEAN                 IgnoringThisCodeBlock = FALSE;
     char                    *Next;
     int                     OffsetAdjust;
 
@@ -392,7 +410,7 @@ PrPreprocessInputFile (
 
             /* Execute the directive, do not write line to output file */
 
-            PrDoDirective (Token, &Next, &IgnoringThisCodeBlock);
+            PrDoDirective (Token, &Next);
             continue;
         }
 
@@ -401,7 +419,7 @@ PrPreprocessInputFile (
          * FALSE, ignore the line and do not write it to the output file.
          * This continues until an #else or #endif is encountered.
          */
-        if (IgnoringThisCodeBlock == TRUE)
+        if (Gbl_IgnoringThisCodeBlock)
         {
             continue;
         }
@@ -488,12 +506,8 @@ PrPreprocessInputFile (
  *
  * PARAMETERS:  Directive               - Pointer to directive name token
  *              Next                    - "Next" buffer from GetNextToken
- *              IgnoringThisCodeBlock   - Where the "ignore code" flag is
- *                                        returned.
  *
- * RETURN:      IgnoringThisCodeBlock: Set to TRUE if we are skipping the FALSE
- *              part of an #if or #else block. Set to FALSE when the
- *              corresponding #else or #endif is encountered.
+ * RETURN:      None.
  *
  * DESCRIPTION: Main processing for all preprocessor directives
  *
@@ -502,8 +516,7 @@ PrPreprocessInputFile (
 static void
 PrDoDirective (
     char                    *DirectiveToken,
-    char                    **Next,
-    BOOLEAN                 *IgnoringThisCodeBlock)
+    char                    **Next)
 {
     char                    *Token = Gbl_MainTokenBuffer;
     char                    *Token2;
@@ -531,14 +544,28 @@ PrDoDirective (
         return;
     }
 
-    /* TBD: Need a faster way to do this: */
-
-    if ((Directive == PR_DIRECTIVE_ELIF) ||
-        (Directive == PR_DIRECTIVE_ELSE) ||
-        (Directive == PR_DIRECTIVE_ENDIF))
+    /*
+     * If we are currently ignoring this block and we encounter a #else or
+     * #elif, we must ignore their blocks also if the parent block is also
+     * being ignored.
+     */
+    if (Gbl_IgnoringThisCodeBlock)
     {
-        DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID "Begin #%s\n",
-            Gbl_CurrentLineNumber, Gbl_DirectiveInfo[Directive].Name);
+        switch (Directive)
+        {
+        case PR_DIRECTIVE_ELSE:
+        case PR_DIRECTIVE_ELIF:
+
+            if (Gbl_DirectiveStack && Gbl_DirectiveStack->IgnoringThisCodeBlock)
+            {
+                PrDbgPrint ("Ignoring", Gbl_DirectiveInfo[Directive].Name);
+                return;
+            }
+            break;
+
+        default:
+            break;
+        }
     }
 
     /*
@@ -548,32 +575,35 @@ PrDoDirective (
      */
     switch (Directive)
     {
+    case PR_DIRECTIVE_ELSE:
+
+        Gbl_IgnoringThisCodeBlock = !(Gbl_IgnoringThisCodeBlock);
+        PrDbgPrint ("Executing", "else block");
+        return;
+
     case PR_DIRECTIVE_ELIF:
 
-        *IgnoringThisCodeBlock = !(*IgnoringThisCodeBlock);
-        if (*IgnoringThisCodeBlock == TRUE)
+        Gbl_IgnoringThisCodeBlock = !(Gbl_IgnoringThisCodeBlock);
+        Directive = PR_DIRECTIVE_IF;
+
+        if (Gbl_IgnoringThisCodeBlock == TRUE)
         {
             /* Not executing the ELSE part -- all done here */
+            PrDbgPrint ("Ignoring", "elif block");
             return;
         }
 
-        /* Will execute the ELSE..IF part */
+        /* Will fall down and execute the IF part */
 
-        DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
-            "#elif - Executing else block\n",
-            Gbl_CurrentLineNumber);
-        Directive = PR_DIRECTIVE_IF;
+        PrPopDirective (); /* Pop off the original #if */
+        PrDbgPrint ("Executing", "elif block");
         break;
-
-    case PR_DIRECTIVE_ELSE:
-
-        *IgnoringThisCodeBlock = !(*IgnoringThisCodeBlock);
-        return;
 
     case PR_DIRECTIVE_ENDIF:
 
-        *IgnoringThisCodeBlock = FALSE;
-        Gbl_IfDepth--;
+        PrDbgPrint ("Executing", "endif");
+        PrPopDirective ();
+
         if (Gbl_IfDepth < 0)
         {
             PrError (ASL_ERROR, ASL_MSG_ENDIF_MISMATCH,
@@ -583,21 +613,8 @@ PrDoDirective (
         return;
 
     default:
-
         break;
     }
-
-    /*
-     * At this point, if we are ignoring the current code block,
-     * do not process any more directives (i.e., ignore them also.)
-     */
-    if (*IgnoringThisCodeBlock == TRUE)
-    {
-        return;
-    }
-
-    DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID "Begin #%s\n",
-        Gbl_CurrentLineNumber, Gbl_DirectiveInfo[Directive].Name);
 
     /* Most directives have at least one argument */
 
@@ -610,8 +627,85 @@ PrDoDirective (
         }
     }
 
+    /*
+     * At this point, if we are ignoring the current code block,
+     * do not process any more directives (i.e., ignore them also.)
+     * For "if" style directives, open/push a new block anyway. We
+     * must do this to keep track of #endif directives
+     */
+    if (Gbl_IgnoringThisCodeBlock)
+    {
+        switch (Directive)
+        {
+        case PR_DIRECTIVE_IF:
+        case PR_DIRECTIVE_IFDEF:
+        case PR_DIRECTIVE_IFNDEF:
+
+            PrPushDirective (Directive, Token);
+            PrDbgPrint ("Ignoring", Gbl_DirectiveInfo[Directive].Name);
+            break;
+
+        default:
+            break;
+        }
+
+        return;
+    }
+
+    /*
+     * Execute the directive
+     */
+    PrDbgPrint ("Begin execution", Gbl_DirectiveInfo[Directive].Name);
+
     switch (Directive)
     {
+    case PR_DIRECTIVE_IF:
+
+        TokenOffset = Token - Gbl_MainTokenBuffer;
+
+        /* Need to expand #define macros in the expression string first */
+
+        Status = PrResolveIntegerExpression (
+            &Gbl_CurrentLineBuffer[TokenOffset-1], &Value);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        PrPushDirective (Directive, Token);
+        if (!Value)
+        {
+            Gbl_IgnoringThisCodeBlock = TRUE;
+        }
+
+        DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
+            "Resolved #if: %8.8X%8.8X %s\n",
+            Gbl_CurrentLineNumber, ACPI_FORMAT_UINT64 (Value),
+            Gbl_IgnoringThisCodeBlock ? "<Skipping Block>" : "<Executing Block>");
+        break;
+
+    case PR_DIRECTIVE_IFDEF:
+
+        PrPushDirective (Directive, Token);
+        if (!PrMatchDefine (Token))
+        {
+            Gbl_IgnoringThisCodeBlock = TRUE;
+        }
+
+        PrDbgPrint ("Evaluated", "ifdef");
+        break;
+
+    case PR_DIRECTIVE_IFNDEF:
+
+        PrPushDirective (Directive, Token);
+        if (PrMatchDefine (Token))
+        {
+            Gbl_IgnoringThisCodeBlock = TRUE;
+        }
+
+        PrDbgPrint ("Evaluated", "ifndef");
+        break;
+
     case PR_DIRECTIVE_DEFINE:
         /*
          * By definition, if first char after the name is a paren,
@@ -672,58 +766,6 @@ PrDoDirective (
 
         PrError (ASL_ERROR, ASL_MSG_ERROR_DIRECTIVE,
             THIS_TOKEN_OFFSET (Token));
-        break;
-
-    case PR_DIRECTIVE_IF:
-
-        TokenOffset = Token - Gbl_MainTokenBuffer;
-
-        /* Need to expand #define macros in the expression string first */
-
-        Status = PrResolveIntegerExpression (
-            &Gbl_CurrentLineBuffer[TokenOffset-1], &Value);
-        if (ACPI_FAILURE (Status))
-        {
-            return;
-        }
-
-        if (!Value)
-        {
-            *IgnoringThisCodeBlock = TRUE;
-        }
-
-        DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
-            "Resolved #if: %8.8X%8.8X %s\n",
-            Gbl_CurrentLineNumber, ACPI_FORMAT_UINT64 (Value),
-            *IgnoringThisCodeBlock ? "<Skipping Block>" : "<Executing Block>");
-
-        Gbl_IfDepth++;
-        break;
-
-    case PR_DIRECTIVE_IFDEF:
-
-        if (!PrMatchDefine (Token))
-        {
-            *IgnoringThisCodeBlock = TRUE;
-        }
-
-        Gbl_IfDepth++;
-        DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
-            "Start #ifdef %s\n", Gbl_CurrentLineNumber,
-            *IgnoringThisCodeBlock ? "<Skipping Block>" : "<Executing Block>");
-        break;
-
-    case PR_DIRECTIVE_IFNDEF:
-
-        if (PrMatchDefine (Token))
-        {
-            *IgnoringThisCodeBlock = TRUE;
-        }
-
-        Gbl_IfDepth++;
-        DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
-            "Start #ifndef %2.2X\n", Gbl_CurrentLineNumber,
-            *IgnoringThisCodeBlock, Gbl_CurrentLineNumber);
         break;
 
     case PR_DIRECTIVE_INCLUDE:
@@ -867,4 +909,132 @@ PrMatchDirective (
     }
 
     return (ASL_DIRECTIVE_NOT_FOUND);    /* Command not recognized */
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    PrPushDirective
+ *
+ * PARAMETERS:  Directive           - Encoded directive ID
+ *              Argument            - String containing argument to the
+ *                                    directive
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Push an item onto the directive stack. Used for processing
+ *              nested #if/#else type conditional compilation directives.
+ *              Specifically: Used on detection of #if/#ifdef/#ifndef to open
+ *              a block.
+ *
+ ******************************************************************************/
+
+static void
+PrPushDirective (
+    int                     Directive,
+    char                    *Argument)
+{
+    DIRECTIVE_INFO          *Info;
+
+
+    /* Allocate and populate a stack info item */
+
+    Info = ACPI_ALLOCATE (sizeof (DIRECTIVE_INFO));
+
+    Info->Next = Gbl_DirectiveStack;
+    Info->Directive = Directive;
+    Info->IgnoringThisCodeBlock = Gbl_IgnoringThisCodeBlock;
+    strncpy (Info->Argument, Argument, MAX_ARGUMENT_LENGTH);
+
+    DbgPrint (ASL_DEBUG_OUTPUT,
+        "Pr(%.4u) - [%u %s] %*s Pushed [#%s %s]: IgnoreFlag = %s\n",
+        Gbl_CurrentLineNumber, Gbl_IfDepth,
+        Gbl_IgnoringThisCodeBlock ? "I" : "E",
+        Gbl_IfDepth * 4, " ",
+        Gbl_DirectiveInfo[Directive].Name,
+        Argument, Gbl_IgnoringThisCodeBlock ? "TRUE" : "FALSE");
+
+    /* Push new item */
+
+    Gbl_DirectiveStack = Info;
+    Gbl_IfDepth++;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    PrPopDirective
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Pop an item off the directive stack. Used for processing
+ *              nested #if/#else type conditional compilation directives.
+ *              Specifically: Used on detection of #elif and #endif to remove
+ *              the original #if/#ifdef/#ifndef from the stack and close
+ *              the block.
+ *
+ ******************************************************************************/
+
+static void
+PrPopDirective (
+    void)
+{
+    DIRECTIVE_INFO          *Info;
+
+
+    /* Check for empty stack */
+
+    Info = Gbl_DirectiveStack;
+    if (!Info)
+    {
+        AcpiOsPrintf ("%s ERROR - line %u: Cannot pop empty directive stack!\n",
+            Gbl_CurrentLineBuffer, Gbl_CurrentLineNumber);
+        return;
+    }
+
+    /* Pop one item, keep globals up-to-date */
+
+    Gbl_IfDepth--;
+    Gbl_IgnoringThisCodeBlock = Info->IgnoringThisCodeBlock;
+    Gbl_DirectiveStack = Info->Next;
+
+    DbgPrint (ASL_DEBUG_OUTPUT,
+        "Pr(%.4u) - [%u %s] %*s Popped [#%s %s]: IgnoreFlag now = %s\n",
+        Gbl_CurrentLineNumber, Gbl_IfDepth,
+        Gbl_IgnoringThisCodeBlock ? "I" : "E",
+        Gbl_IfDepth * 4, " ",
+        Gbl_DirectiveInfo[Info->Directive].Name,
+        Info->Argument, Gbl_IgnoringThisCodeBlock ? "TRUE" : "FALSE");
+
+    ACPI_FREE (Info);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    PrDbgPrint
+ *
+ * PARAMETERS:  Action              - Action being performed
+ *              DirectiveName       - Directive being processed
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Special debug print for directive processing.
+ *
+ ******************************************************************************/
+
+static void
+PrDbgPrint (
+    char                    *Action,
+    char                    *DirectiveName)
+{
+
+    DbgPrint (ASL_DEBUG_OUTPUT, "Pr(%.4u) - [%u %s] "
+        "%*s %s #%s, Depth %u\n",
+        Gbl_CurrentLineNumber, Gbl_IfDepth,
+        Gbl_IgnoringThisCodeBlock ? "I" : "E",
+        Gbl_IfDepth * 4, " ",
+        Action, DirectiveName, Gbl_IfDepth);
 }
