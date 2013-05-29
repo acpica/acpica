@@ -761,12 +761,15 @@ PrDoDirective (
 
     case PR_DIRECTIVE_ERROR:
 
-        /* TBD compiler should abort */
         /* Note: No macro expansion */
 
         PrError (ASL_ERROR, ASL_MSG_ERROR_DIRECTIVE,
             THIS_TOKEN_OFFSET (Token));
-        break;
+
+        Gbl_SourceLine = 0;
+        Gbl_NextError = Gbl_ErrorLog;
+        CmCleanupAndExit ();
+        exit(1);
 
     case PR_DIRECTIVE_INCLUDE:
 
