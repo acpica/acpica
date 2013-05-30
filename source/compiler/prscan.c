@@ -336,7 +336,7 @@ PrDoPreprocess (
     {
         /* TBD: can't use source_output file for preprocessor error reporting */
 
-        Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Handle = NULL;
+        FlCloseFile (ASL_FILE_SOURCE_OUTPUT);
         PrTerminatePreprocessor ();
         return (TRUE);
     }
