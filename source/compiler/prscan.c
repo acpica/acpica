@@ -848,7 +848,7 @@ PrDoDirective (
 
     case PR_DIRECTIVE_WARNING:
 
-        PrError (ASL_WARNING, ASL_MSG_ERROR_DIRECTIVE,
+        PrError (ASL_WARNING, ASL_MSG_WARNING_DIRECTIVE,
             THIS_TOKEN_OFFSET (Token));
         break;
 
@@ -862,7 +862,6 @@ PrDoDirective (
     }
 
     return;
-
 
 SyntaxError:
 
