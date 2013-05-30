@@ -660,7 +660,6 @@ AeMiscellaneousTests (
         AE_CHECK_OK (AcpiLoadTable, Status);
     }
 
-
     AeHardwareInterfaces ();
     AeGenericRegisters ();
     AeSetupConfiguration (Ssdt3Code);
@@ -668,6 +667,8 @@ AeMiscellaneousTests (
     AeTestBufferArgument();
     AeTestPackageArgument ();
     AeMutexInterfaces ();
+
+    /* Test _OSI install/remove */
 
     Status = AcpiInstallInterface ("");
     AE_CHECK_STATUS (AcpiInstallInterface, Status, AE_BAD_PARAMETER);
@@ -690,6 +691,10 @@ AeMiscellaneousTests (
     Status = AcpiInstallInterface ("AnotherTestString");
     AE_CHECK_OK (AcpiInstallInterface, Status);
 
+    /* Test _OSI execution */
+
+    Status = ExecuteOSI ("Extended Address Space Descriptor", 0xFFFFFFFF);
+    AE_CHECK_OK (ExecuteOSI, Status);
 
     Status = ExecuteOSI ("Windows 2001", 0xFFFFFFFF);
     AE_CHECK_OK (ExecuteOSI, Status);
