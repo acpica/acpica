@@ -242,7 +242,7 @@ void
 PrTerminatePreprocessor (
     void);
 
-BOOLEAN
+void
 PrDoPreprocess (
     void);
 

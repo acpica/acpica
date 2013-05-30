@@ -148,7 +148,7 @@ PrPushDirective (
     int                     Directive,
     char                    *Argument);
 
-static void
+static ACPI_STATUS
 PrPopDirective (
     void);
 
@@ -298,7 +298,7 @@ PrTerminatePreprocessor (
  *
  * PARAMETERS:  None
  *
- * RETURN:      Error Status. TRUE if error, FALSE if OK.
+ * RETURN:      None
  *
  * DESCRIPTION: Main entry point for the iASL Preprocessor. Input file must
  *              be already open. Handles multiple input files via the
@@ -306,7 +306,7 @@ PrTerminatePreprocessor (
  *
  ******************************************************************************/
 
-BOOLEAN
+void
 PrDoPreprocess (
     void)
 {
@@ -328,20 +328,7 @@ PrDoPreprocess (
 
     } while (MoreInputFiles);
 
-
-    /*
-     * TBD: is this necessary? (Do we abort on any preprocessing errors?)
-     */
-    if (Gbl_PreprocessorError)
-    {
-        /* TBD: can't use source_output file for preprocessor error reporting */
-
-        FlCloseFile (ASL_FILE_SOURCE_OUTPUT);
-        PrTerminatePreprocessor ();
-        return (TRUE);
-    }
-
-    /* Point compiler input to the new preprocessor file (.i) */
+    /* Point compiler input to the new preprocessor output file (.i) */
 
     FlCloseFile (ASL_FILE_INPUT);
     Gbl_Files[ASL_FILE_INPUT].Handle = Gbl_Files[ASL_FILE_PREPROCESSOR].Handle;
@@ -353,7 +340,6 @@ PrDoPreprocess (
     Gbl_CurrentLineNumber = 1;
 
     DbgPrint (ASL_DEBUG_OUTPUT, "Preprocessing phase complete \n\n");
-    return (FALSE);
 }
 
 
@@ -593,22 +579,29 @@ PrDoDirective (
             return;
         }
 
-        /* Will fall down and execute the IF part */
+        /*
+         * After this, we will execute the IF part further below.
+         * First, however, pop off the original #if directive.
+         */
+        if (ACPI_FAILURE (PrPopDirective ()))
+        {
+            PrError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL,
+                THIS_TOKEN_OFFSET (DirectiveToken));
+        }
 
-        PrPopDirective (); /* Pop off the original #if */
         PrDbgPrint ("Executing", "elif block");
         break;
 
     case PR_DIRECTIVE_ENDIF:
 
         PrDbgPrint ("Executing", "endif");
-        PrPopDirective ();
 
-        if (Gbl_IfDepth < 0)
+        /* Pop the owning #if/#ifdef/#ifndef */
+
+        if (ACPI_FAILURE (PrPopDirective ()))
         {
             PrError (ASL_ERROR, ASL_MSG_ENDIF_MISMATCH,
                 THIS_TOKEN_OFFSET (DirectiveToken));
-            Gbl_IfDepth = 0;
         }
         return;
 
@@ -970,7 +963,7 @@ PrPushDirective (
  *
  * PARAMETERS:  None
  *
- * RETURN:      None
+ * RETURN:      Status. Error if the stack is empty.
  *
  * DESCRIPTION: Pop an item off the directive stack. Used for processing
  *              nested #if/#else type conditional compilation directives.
@@ -980,7 +973,7 @@ PrPushDirective (
  *
  ******************************************************************************/
 
-static void
+static ACPI_STATUS
 PrPopDirective (
     void)
 {
@@ -992,9 +985,7 @@ PrPopDirective (
     Info = Gbl_DirectiveStack;
     if (!Info)
     {
-        AcpiOsPrintf ("%s ERROR - line %u: Cannot pop empty directive stack!\n",
-            Gbl_CurrentLineBuffer, Gbl_CurrentLineNumber);
-        return;
+        return (AE_ERROR);
     }
 
     /* Pop one item, keep globals up-to-date */
@@ -1012,6 +1003,7 @@ PrPopDirective (
         Info->Argument, Gbl_IgnoringThisCodeBlock ? "TRUE" : "FALSE");
 
     ACPI_FREE (Info);
+    return (AE_OK);
 }
 
 
