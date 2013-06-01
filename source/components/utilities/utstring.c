@@ -479,7 +479,7 @@ ErrorExit:
 void
 AcpiUtPrintString (
     char                    *String,
-    UINT8                   MaxLength)
+    UINT16                  MaxLength)
 {
     UINT32                  i;
 

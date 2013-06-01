@@ -249,7 +249,7 @@ AcpiDmByteList (
     case ACPI_DASM_STRING:
 
         AcpiDmIndent (Info->Level);
-        AcpiUtPrintString ((char *) ByteData, ACPI_UINT8_MAX);
+        AcpiUtPrintString ((char *) ByteData, ACPI_UINT16_MAX);
         AcpiOsPrintf ("\n");
         break;
 
