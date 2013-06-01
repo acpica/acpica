@@ -189,6 +189,10 @@ int
 ApDumpAllTables (
     void);
 
+BOOLEAN
+ApIsValidHeader (
+    ACPI_TABLE_HEADER       *Table);
+
 
 /*
  * apfiles - File I/O utilities

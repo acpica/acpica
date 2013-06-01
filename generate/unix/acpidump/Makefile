@@ -32,6 +32,7 @@ OBJECTS = \
 	$(OBJDIR)/apfiles.o\
 	$(OBJDIR)/apmain.o\
 	$(OBJDIR)/tbprint.o\
+	$(OBJDIR)/tbxfroot.o\
 	$(OBJDIR)/utbuffer.o\
 	$(OBJDIR)/utexcep.o\
 	$(OBJDIR)/utmath.o\

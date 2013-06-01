@@ -118,10 +118,6 @@
 
 /* Local prototypes */
 
-static BOOLEAN
-ApIsValidHeader (
-    ACPI_TABLE_HEADER       *Table);
-
 static int
 ApDumpTableBuffer (
     ACPI_TABLE_HEADER       *Table,
@@ -140,7 +136,7 @@ ApDumpTableBuffer (
  *
  ******************************************************************************/
 
-static BOOLEAN
+BOOLEAN
 ApIsValidHeader (
     ACPI_TABLE_HEADER       *Table)
 {

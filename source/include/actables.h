@@ -122,6 +122,15 @@ AcpiAllocateRootTable (
     UINT32                  InitialTableCount);
 
 /*
+ * tbxfroot - Root pointer utilities
+ */
+UINT8 *
+AcpiTbScanMemoryForRsdp (
+    UINT8                   *StartAddress,
+    UINT32                  Length);
+
+
+/*
  * tbfadt - FADT parse/convert/validate
  */
 void
