@@ -113,21 +113,12 @@
  *
  *****************************************************************************/
 
-#include "acpi.h"
-#include "acmacros.h"
-#include "actables.h"
-#include "platform/acenv.h"
 #include "acpidump.h"
 
-#include <dirent.h>
-#include <fcntl.h>
 #include <kenv.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/param.h>
-#include <sys/stat.h>
 #include <sys/sysctl.h>
 
 
