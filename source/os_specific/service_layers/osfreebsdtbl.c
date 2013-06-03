@@ -801,7 +801,7 @@ OslGetRsdp (
 
     if (kenv (KENV_GET, SYSTEM_KENV, Buffer, sizeof (Buffer)) > 0)
     {
-        Address = strtoul (Buffer, NULL, 0);
+        Address = ACPI_STRTOUL (Buffer, NULL, 0);
     }
     if (!Address)
     {
