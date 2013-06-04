@@ -148,11 +148,16 @@ OslMapTable (
 #define SYSTEM_KENV         "hint.acpi.0.rsdp"
 #define SYSTEM_SYSCTL       "machdep.acpi_root"
 
+/* Initialization flags */
+
 UINT8                   Gbl_TableListInitialized = FALSE;
 UINT8                   Gbl_RsdpObtained = FALSE;
+
+/* Local copies of main ACPI tables */
+
 ACPI_TABLE_RSDP         Gbl_Rsdp;
 
-/* List for obtained ACPI tables */
+/* List of information about obtained ACPI tables */
 
 typedef struct          table_info
 {
@@ -189,6 +194,8 @@ AcpiOsGetTableByAddress (
     ACPI_STATUS             Status;
 
 
+    /* Validate the input physical address */
+
     if (Address < ACPI_HI_RSDP_WINDOW_BASE)
     {
         fprintf (stderr, "Invalid table address: 0x%8.8X%8.8X\n",
@@ -196,7 +203,7 @@ AcpiOsGetTableByAddress (
         return (AE_BAD_ADDRESS);
     }
 
-    /* Get the table and validate it */
+    /* Map the table and validate it */
 
     Status = OslMapTable (Address, NULL, &MappedTable);
     if (ACPI_FAILURE (Status))
@@ -204,7 +211,7 @@ AcpiOsGetTableByAddress (
         return (Status);
     }
 
-    /* Copy table to local buffer */
+    /* Copy table to local buffer and return it */
 
     LocalTable = calloc (1, MappedTable->Length);
     if (!LocalTable)
@@ -226,7 +233,7 @@ AcpiOsGetTableByAddress (
  *
  * PARAMETERS:  Signature       - ACPI Signature for desired table. Must be
  *                                a null terminated 4-character string.
- *              Instance        - For SSDTs (0...n)
+ *              Instance        - For SSDTs (0...n) - Must be 0 for non-SSDT
  *              Table           - Where a pointer to the table is returned
  *              Address         - Where the table physical address is returned
  *
@@ -250,9 +257,9 @@ AcpiOsGetTableByName (
     ACPI_TABLE_HEADER       *LocalTable = NULL;
     ACPI_TABLE_HEADER       *MappedTable;
     ACPI_TABLE_FADT         *Fadt;
+    UINT8                   *TableData;
     UINT8                   NumberOfTables;
     UINT8                   Revision;
-    UINT8                   *TableData;
     UINT8                   ItemSize;
     UINT32                  CurrentInstance = 0;
     ACPI_PHYSICAL_ADDRESS   TableAddress = 0;
@@ -491,7 +498,7 @@ AcpiOsGetTableByName (
         }
     }
 
-    /* Copy table to local buffer */
+    /* Copy table to local buffer and return it */
 
     LocalTable = calloc (1, MappedTable->Length);
     if (!LocalTable)
@@ -531,12 +538,12 @@ AcpiOsGetTableByIndex (
     ACPI_TABLE_HEADER       **Table,
     ACPI_PHYSICAL_ADDRESS   *Address)
 {
+    OSL_TABLE_INFO          *Info;
     ACPI_STATUS             Status;
-    OSL_TABLE_INFO          *Pointer;
     UINT32                  i;
 
 
-    /* Initialize the table list if necessary */
+    /* Initialize the table list on first invocation */
 
     if (!Gbl_TableListInitialized)
     {
@@ -545,6 +552,8 @@ AcpiOsGetTableByIndex (
         /* List head records the length of the list */
 
         Gbl_TableListHead->Instance = 0;
+
+        /* Add all tables found */ 
 
         Status = OslAddTablesToList ();
         if (ACPI_FAILURE (Status))
@@ -555,6 +564,8 @@ AcpiOsGetTableByIndex (
         Gbl_TableListInitialized = TRUE;
     }
 
+    /* Validate Index */
+
     if (Index >= Gbl_TableListHead->Instance)
     {
         return (AE_LIMIT);
@@ -562,14 +573,16 @@ AcpiOsGetTableByIndex (
 
     /* Point to the table list entry specified by the Index argument */
 
-    Pointer = Gbl_TableListHead;
+    Info = Gbl_TableListHead;
     for (i = 0; i <= Index; i++)
     {
-        Pointer = Pointer->Next;
+        Info = Info->Next;
     }
 
-    Status = AcpiOsGetTableByName (Pointer->Signature,
-        Pointer->Instance, Table, Address);
+    /* Now we can just get the table via the signature */
+
+    Status = AcpiOsGetTableByName (Info->Signature, Info->Instance,
+        Table, Address);
     return (Status);
 }
 
@@ -579,11 +592,11 @@ AcpiOsGetTableByIndex (
  * FUNCTION:    AcpiOsMapMemory
  *
  * PARAMETERS:  Where               - Physical address of memory to be mapped
- *              Length              - How much memory to mapped
+ *              Length              - How much memory to map
  *
  * RETURN:      Pointer to mapped memory. Null on error.
  *
- * DESCRIPTION: Map physical memory into caller's address space.
+ * DESCRIPTION: Map physical memory into local address space.
  *
  *****************************************************************************/
 
@@ -592,15 +605,15 @@ AcpiOsMapMemory (
     ACPI_PHYSICAL_ADDRESS   Where,
     ACPI_SIZE               Length)
 {
-    ACPI_PHYSICAL_ADDRESS   Offset;
     UINT8                   *MappedMemory;
+    ACPI_PHYSICAL_ADDRESS   Offset;
     int                     fd;
 
 
     fd = open (SYSTEM_MEMORY, O_RDONLY);
     if (fd < 0)
     {
-        fprintf (stderr, "Cannot open /dev/mem\n");
+        fprintf (stderr, "Cannot open %s\n", SYSTEM_MEMORY);
         return (NULL);
     }
 
@@ -610,9 +623,10 @@ AcpiOsMapMemory (
 
     /* Map the table header to get the length of the full table */
 
-    MappedMemory = mmap (NULL, Length + Offset, PROT_READ, MAP_SHARED,
-        fd, Where - Offset);
+    MappedMemory = mmap (NULL, (Length + Offset), PROT_READ, MAP_SHARED,
+        fd, (Where - Offset));
     close (fd);
+
     if (MappedMemory == MAP_FAILED)
     {
         return (NULL);
@@ -645,7 +659,7 @@ AcpiOsUnmapMemory (
 
 
     Offset = (ACPI_PHYSICAL_ADDRESS) Where % PAGE_SIZE;
-    munmap ((UINT8 *) Where - Offset, Length + Offset);
+    munmap ((UINT8 *) Where - Offset, (Length + Offset));
 }
 
 
@@ -666,8 +680,8 @@ OslAddTablesToList (
     void)
 {
     ACPI_PHYSICAL_ADDRESS   Address;
+    OSL_TABLE_INFO          *NewInfo;
     OSL_TABLE_INFO          *Info;
-    OSL_TABLE_INFO          *Pointer;
     ACPI_TABLE_HEADER       *Table;
     ACPI_TABLE_HEADER       *MappedTable;
     UINT8                   *TableData;
@@ -702,38 +716,38 @@ OslAddTablesToList (
         return (Status);
     }
 
-    Pointer = Gbl_TableListHead;
+    Info = Gbl_TableListHead;
 
-    /* Add mandatory tables first */
+    /* Add mandatory tables to global table list first */
 
     for (i = 0; i < 3; i++)
     {
-        Info = calloc (1, sizeof (*Info));
+        NewInfo = calloc (1, sizeof (*NewInfo));
 
         switch (i) {
         case 0:
 
-            ACPI_MOVE_NAME (Info->Signature,
+            ACPI_MOVE_NAME (NewInfo->Signature,
                 Revision ? ACPI_SIG_XSDT : ACPI_SIG_RSDT);
             break;
 
         case 1:
 
-            ACPI_MOVE_NAME (Info->Signature, ACPI_SIG_FACS);
+            ACPI_MOVE_NAME (NewInfo->Signature, ACPI_SIG_FACS);
             break;
 
         default:
 
-            ACPI_MOVE_NAME (Info->Signature, ACPI_SIG_DSDT);
+            ACPI_MOVE_NAME (NewInfo->Signature, ACPI_SIG_DSDT);
 
         }
 
-        Pointer->Next = Info;
-        Pointer = Info;
+        Info->Next = NewInfo;
+        Info = NewInfo;
         Gbl_TableListHead->Instance++;
     }
 
-    /* Add normal tables from RSDT/XSDT */
+    /* Add normal tables from RSDT/XSDT to global list */
 
     TableData = ACPI_CAST8 (MappedTable) + sizeof (*MappedTable);
     NumberOfTables = (MappedTable->Length - sizeof (*MappedTable)) / ItemSize;
@@ -747,25 +761,25 @@ OslAddTablesToList (
             return (AE_NO_MEMORY);
         }
 
-        Info = calloc (1, sizeof (*Info));
-        if (!Info)
+        NewInfo = calloc (1, sizeof (*NewInfo));
+        if (!NewInfo)
         {
             AcpiOsUnmapMemory (Table, sizeof (*Table));
             return (AE_NO_MEMORY);
         }
 
-        ACPI_MOVE_NAME (Info->Signature, Table->Signature);
+        ACPI_MOVE_NAME (NewInfo->Signature, Table->Signature);
 
-        if (ACPI_COMPARE_NAME (Info->Signature, ACPI_SIG_SSDT))
+        if (ACPI_COMPARE_NAME (NewInfo->Signature, ACPI_SIG_SSDT))
         {
-            Info->Instance = NumberOfSsdt;
+            NewInfo->Instance = NumberOfSsdt;
             NumberOfSsdt++;
         }
 
         AcpiOsUnmapMemory (Table, sizeof (*Table));
 
-        Pointer->Next = Info;
-        Pointer = Info;
+        Info->Next = NewInfo;
+        Info = NewInfo;
         Gbl_TableListHead->Instance++;
     }
 
@@ -836,6 +850,8 @@ OslGetRsdp (
         return (AE_NOT_FOUND);
     }
 
+    /* Search low memory for the RSDP */
+
     Table = AcpiTbScanMemoryForRsdp (RsdpAddress, RsdpSize);
     if (!Table)
     {
@@ -874,14 +890,14 @@ OslMapTable (
     char                    *Signature,
     ACPI_TABLE_HEADER       **Table)
 {
-    ACPI_TABLE_HEADER       *LocalTable;
+    ACPI_TABLE_HEADER       *MappedTable;
     UINT32                  Length;
 
 
-    /* Start by mapping just the header */
+    /* Map the header so we can get the table length */
 
-    LocalTable = AcpiOsMapMemory (Address, sizeof (*LocalTable));
-    if (!LocalTable)
+    MappedTable = AcpiOsMapMemory (Address, sizeof (*MappedTable));
+    if (!MappedTable)
     {
         fprintf (stderr, "Could not map table header at 0x%8.8X%8.8X\n",
             ACPI_FORMAT_UINT64 (Address));
@@ -890,7 +906,7 @@ OslMapTable (
 
     /* Check if table is valid */
 
-    if (!ApIsValidHeader (LocalTable))
+    if (!ApIsValidHeader (MappedTable))
     {
         return (AE_BAD_HEADER);
     }
@@ -898,24 +914,24 @@ OslMapTable (
     /* If specified, signature must match */
 
     if (Signature &&
-        !ACPI_COMPARE_NAME (Signature, LocalTable->Signature))
+        !ACPI_COMPARE_NAME (Signature, MappedTable->Signature))
     {
         return (AE_NOT_EXIST);
     }
 
     /* Map the entire table */
 
-    Length = LocalTable->Length;
+    Length = MappedTable->Length;
+    AcpiOsUnmapMemory (MappedTable, sizeof (ACPI_TABLE_HEADER));
 
-    AcpiOsUnmapMemory (LocalTable, sizeof (ACPI_TABLE_HEADER));
-    LocalTable = AcpiOsMapMemory (Address, Length);
-    if (!LocalTable)
+    MappedTable = AcpiOsMapMemory (Address, Length);
+    if (!MappedTable)
     {
         fprintf (stderr, "Could not map table at 0x%8.8X%8.8X\n",
             ACPI_FORMAT_UINT64 (Address));
         return (AE_NO_MEMORY);
     }
 
-    *Table = LocalTable;
+    *Table = MappedTable;
     return (AE_OK);
 }
