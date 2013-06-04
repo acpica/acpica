@@ -738,6 +738,7 @@ AcpiGetTagPathname (
     Status = AcpiNsBuildExternalPath (BufferNode, RequiredSize, Pathname);
     if (ACPI_FAILURE (Status))
     {
+        ACPI_FREE (Pathname);
         return (NULL);
     }
 

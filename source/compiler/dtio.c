@@ -1200,4 +1200,5 @@ DtWriteTableToListing (
     AcpiUtDumpBuffer (Buffer, Gbl_TableLength, DB_BYTE_DISPLAY, 0);
 
     AcpiOsRedirectOutput (stdout);
+    ACPI_FREE (Buffer);
 }
