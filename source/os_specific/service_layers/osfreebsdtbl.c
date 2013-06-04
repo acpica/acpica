@@ -704,18 +704,18 @@ OslAddTablesToList (
         switch (i) {
         case 0:
 
-            ACPI_MEMCPY (Info->Signature,
-                Revision ? ACPI_SIG_XSDT : ACPI_SIG_RSDT, ACPI_NAME_SIZE);
+            ACPI_MOVE_NAME (Info->Signature,
+                Revision ? ACPI_SIG_XSDT : ACPI_SIG_RSDT);
             break;
 
         case 1:
 
-            ACPI_MEMCPY (Info->Signature, ACPI_SIG_FACS, ACPI_NAME_SIZE);
+            ACPI_MOVE_NAME (Info->Signature, ACPI_SIG_FACS);
             break;
 
         default:
 
-            ACPI_MEMCPY (Info->Signature, ACPI_SIG_DSDT, ACPI_NAME_SIZE);
+            ACPI_MOVE_NAME (Info->Signature, ACPI_SIG_DSDT);
 
         }
 
