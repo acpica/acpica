@@ -855,7 +855,7 @@ AcpiDbFindReferences (
     char                    *ObjectArg)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_UINTPTR_T          Address;
+    ACPI_SIZE               Address;
 
 
     /* Convert string to object pointer */
