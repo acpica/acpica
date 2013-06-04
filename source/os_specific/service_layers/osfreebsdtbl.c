@@ -745,7 +745,7 @@ OslAddTablesToList (
             return (AE_NO_MEMORY);
         }
 
-        ACPI_MEMCPY (Info->Signature, Table->Signature, ACPI_NAME_SIZE);
+        ACPI_MOVE_NAME (Info->Signature, Table->Signature);
 
         if (ACPI_COMPARE_NAME (Info->Signature, ACPI_SIG_SSDT))
         {
