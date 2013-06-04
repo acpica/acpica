@@ -267,7 +267,7 @@ AcpiDmGpioCommon (
     {
         AcpiUtPrintString (
             ACPI_ADD_PTR (char, Resource, Resource->Gpio.ResSourceOffset),
-            ACPI_UINT8_MAX);
+            ACPI_UINT16_MAX);
     }
 
     AcpiOsPrintf (", ");
@@ -570,7 +570,7 @@ AcpiDmI2cSerialBusDescriptor (
 
     AcpiUtPrintString (
         ACPI_ADD_PTR (char, Resource, ResourceSourceOffset),
-        ACPI_UINT8_MAX);
+        ACPI_UINT16_MAX);
 
     /* ResourceSourceIndex, ResourceUsage */
 
@@ -645,7 +645,7 @@ AcpiDmSpiSerialBusDescriptor (
 
     AcpiUtPrintString (
         ACPI_ADD_PTR (char, Resource, ResourceSourceOffset),
-        ACPI_UINT8_MAX);
+        ACPI_UINT16_MAX);
 
     /* ResourceSourceIndex, ResourceUsage */
 
@@ -723,7 +723,7 @@ AcpiDmUartSerialBusDescriptor (
 
     AcpiUtPrintString (
         ACPI_ADD_PTR (char, Resource, ResourceSourceOffset),
-        ACPI_UINT8_MAX);
+        ACPI_UINT16_MAX);
 
     /* ResourceSourceIndex, ResourceUsage */
 

@@ -637,7 +637,7 @@ AcpiDmResourceSource (
     if (TotalLength > (MinimumTotalLength + 1))
     {
         AcpiOsPrintf (" ");
-        AcpiUtPrintString ((char *) &AmlResourceSource[1], ACPI_UINT8_MAX);
+        AcpiUtPrintString ((char *) &AmlResourceSource[1], ACPI_UINT16_MAX);
     }
 
     AcpiOsPrintf (", ");
