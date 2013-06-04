@@ -5826,7 +5826,7 @@ Method(ms2c, 1, Serialized)
 		Name(WHIN, Ones)
 
 		while (Local0) {
-			if (Local1) {
+			if (LGreater(Local1, 2)) {
 				CH04(ts, 0, 0xff, z179, 0x2bf, 0, 0)
 			} else {
 				CH03(ts, z179, 0x2c0, 0, 0)
