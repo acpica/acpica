@@ -480,6 +480,15 @@ AcpiOsGetTableByName (
 
             break;
         }
+
+        if (i >= NumberOfTables)
+        {
+            if (ACPI_COMPARE_NAME (Signature, ACPI_SIG_SSDT))
+            {
+                return (AE_LIMIT);
+            }
+            return (AE_NOT_FOUND);
+        }
     }
 
     /* Copy table to local buffer */
