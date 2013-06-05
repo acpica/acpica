@@ -16,7 +16,7 @@ all:	$(PROGS)
 $(PROGS): FORCE
 	@cd $(BUILD_DIRECTORY_PATH)/$@; \
 	mkdir -p obj; \
-	make || exit "$$?"; \
+	$(MAKE) || exit "$$?"; \
 	if [ $(findstring 64,$(HARDWARE_NAME)) ]; then \
 		echo "64-bit version of $@:"; \
 	else \
@@ -35,7 +35,7 @@ clean:	FORCE
 		if [ -d "obj" ] ; then \
 			echo "Removing $$toolname:"; \
 			pwd; \
-			make clean; \
+			$(MAKE) clean; \
 			rmdir obj; \
 			echo ""; \
 		fi; \
@@ -51,7 +51,7 @@ veryclean:	FORCE
 		if [ -d "obj" ] ; then \
 			echo "Removing $$toolname:"; \
 			pwd; \
-			make clean; \
+			$(MAKE) clean; \
 			rmdir obj; \
 			echo ""; \
 		fi; \
@@ -71,7 +71,7 @@ install:	FORCE
 	@for toolname in $(PROGS); do \
 		(cd $(BUILD_DIRECTORY_PATH)/$$toolname; \
 		pwd; \
-		make PROG=$$toolname install; \
+		$(MAKE) PROG=$$toolname install; \
 		if [ $(findstring 64,$(HARDWARE_NAME)) ]; then \
 			echo "Installed 64-bit version of $$toolname"; \
 		else \
