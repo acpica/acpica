@@ -282,7 +282,8 @@ AcpiOsGetTableByAddress (
  *
  * PARAMETERS:  Signature       - ACPI Signature for desired table. Must be
  *                                a null terminated 4-character string.
- *              Instance        - For SSDTs (0...n) - Must be 0 for non-SSDT
+ *              Instance        - Multiple table support for SSDT/UEFI (0...n)
+ *                                Must be 0 for other tables.
  *              Table           - Where a pointer to the table is returned
  *              Address         - Where the table physical address is returned
  *
@@ -306,7 +307,9 @@ AcpiOsGetTableByName (
 
     /* Instance is only valid for SSDTs */
 
-    if (Instance && !ACPI_COMPARE_NAME (Signature, ACPI_SIG_SSDT))
+    if (Instance &&
+        !ACPI_COMPARE_NAME (Signature, ACPI_SIG_SSDT) &&
+        !ACPI_COMPARE_NAME (Signature, ACPI_SIG_UEFI))
     {
         return (AE_LIMIT);
     }
@@ -686,7 +689,8 @@ OslTableInitialize (
  *
  * PARAMETERS:  Signature       - ACPI Signature for common table. Must be
  *                                a null terminated 4-character string.
- *              Instance        - For SSDTs (0...n) - Must be 0 for non-SSDT
+ *              Instance        - Multiple table support for SSDT/UEFI (0...n)
+ *                                Must be 0 for other tables.
  *              Table           - Where a pointer to the table is returned
  *              Address         - Where the table physical address is returned
  *
@@ -821,7 +825,7 @@ OslGetTableViaRoot (
                 continue;
             }
 
-            /* Match table instance (for SSDTs) */
+            /* Match table instance (for SSDT/UEFI tables) */
 
             if (CurrentInstance != Instance)
             {
@@ -884,6 +888,7 @@ OslAddTablesToList(
     struct dirent           *DirInfo;
     DIR                     *TableDir;
     char                    TempName[4];
+    char                    Filename[PATH_MAX];
     UINT32                  i;
 
 
@@ -925,7 +930,14 @@ OslAddTablesToList(
 
         /* Skip any subdirectories and create a new info node */
 
-        if (strlen (DirInfo->d_name) < 6)
+        sprintf (Filename, "%s/%s", Directory, DirInfo->d_name);
+
+        if (stat (Filename, &FileInfo) == -1)
+        {
+            return (AE_ERROR);
+        }
+
+        if (!S_ISDIR (FileInfo.st_mode))
         {
             NewInfo = calloc (1, sizeof (OSL_TABLE_INFO));
             if (strlen (DirInfo->d_name) > ACPI_NAME_SIZE)
@@ -1182,7 +1194,8 @@ OslReadTableFromFile (
  *
  * PARAMETERS:  Signature       - ACPI Signature for desired table. Must be
  *                                a null terminated 4-character string.
- *              Instance        - For SSDTs (0...n)
+ *              Instance        - Multiple table support for SSDT/UEFI (0...n)
+ *                                Must be 0 for other tables.
  *              Table           - Where a pointer to the table is returned
  *              Address         - Where the table physical address is returned
  *
