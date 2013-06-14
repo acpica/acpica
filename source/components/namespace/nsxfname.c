@@ -249,6 +249,7 @@ AcpiGetName (
 {
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node;
+    char                    *NodeName;
 
 
     /* Parameter validation */
@@ -299,7 +300,8 @@ AcpiGetName (
 
     /* Just copy the ACPI name from the Node and zero terminate it */
 
-    ACPI_MOVE_NAME (Buffer->Pointer, AcpiUtGetNodeName (Node));
+    NodeName = AcpiUtGetNodeName (Node);
+    ACPI_MOVE_NAME (Buffer->Pointer, NodeName);
     ((char *) Buffer->Pointer) [ACPI_NAME_SIZE] = 0;
     Status = AE_OK;
 
