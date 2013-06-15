@@ -506,7 +506,7 @@ AcpiOsUnmapMemory (
  * RETURN:      Status
  *
  * DESCRIPTION: Initialize ACPI table data. Get and store main ACPI tables to
- *              local variables. Main ACPI tables include RSDT, FADT, RSDT,
+ *              local variables. Main ACPI tables include RSDP, FADT, RSDT,
  *              and/or XSDT.
  *
  *****************************************************************************/
@@ -965,15 +965,14 @@ OslAddTablesToList(
 
         AcpiOsUnmapMemory (Table, sizeof (*Table));
 
-        NewInfo->Address = TableAddress;
         NewInfo->Instance = Instance;
+        NewInfo->Address = TableAddress;
         Info->Next = NewInfo;
         Info = NewInfo;
         Gbl_TableListHead->Instance++;
     }
 
     Gbl_TableListInitialized = TRUE;
-
     return (AE_OK);
 }
 
