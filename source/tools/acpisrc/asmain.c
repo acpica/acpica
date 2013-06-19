@@ -406,7 +406,7 @@ main (
     while ((j = AcpiGetopt (argc, argv, "cdhlqsuvy")) != EOF) switch(j)
     {
     case 'l':
-        
+
         /* Linux code generation */
 
         printf ("Creating Linux source code\n");
@@ -416,7 +416,7 @@ main (
         break;
 
     case 'c':
-        
+
         /* Cleanup code */
 
         printf ("Code cleanup\n");
@@ -447,7 +447,7 @@ main (
         break;
 
     case 'v':
-        
+
         /* Verbose mode */
 
         Gbl_VerboseMode = TRUE;
@@ -475,7 +475,7 @@ main (
         break;
 
     default:
-        
+
         AsDisplayUsage ();
         return (-1);
     }

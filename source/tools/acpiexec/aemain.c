@@ -266,19 +266,19 @@ AeDoOptions (
             break;
 
         case 'r':
-            
+
             AcpiGbl_DisableAutoRepair = TRUE;
             break;
 
         case 't':
-            
+
             #ifdef ACPI_DBG_TRACK_ALLOCATIONS
                 AcpiGbl_DisableMemTracking = TRUE;
             #endif
             break;
 
         default:
-            
+
             printf ("Unknown option: -d%s\n", AcpiGbl_Optarg);
             return (-1);
         }
@@ -399,7 +399,7 @@ AeDoOptions (
         break;
 
     default:
-        
+
         usage();
         return (-1);
     }

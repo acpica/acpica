@@ -275,7 +275,7 @@ AcpiRsDumpDescriptor (
             break;
 
         case ACPI_RSD_UINT64:
-            
+
             AcpiRsOutInteger64 (Name, ACPI_GET64 (Target));
             break;
 

@@ -384,7 +384,7 @@ AsConvertFile (
     switch (FileType)
     {
     case FILE_TYPE_SOURCE:
-        
+
         Functions           = ConversionTable->SourceFunctions;
         StringTable         = ConversionTable->SourceStringTable;
         LineTable           = ConversionTable->SourceLineTable;

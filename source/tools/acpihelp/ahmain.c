@@ -220,7 +220,7 @@ main (
         break;
 
     case 's':
-        
+
         DecodeType = AH_DECODE_ASL;
         break;
 
@@ -243,7 +243,7 @@ main (
         break;
 
     case AH_DECODE_AML_OPCODE:
-        
+
         AhDecodeAmlOpcode (Name);
         break;
 
