@@ -793,34 +793,30 @@ OslGetTableViaRoot (
 
             /* Does this table match the requested signature? */
 
-            if (!ACPI_COMPARE_NAME (MappedTable->Signature, Signature))
+            if (ACPI_COMPARE_NAME (MappedTable->Signature, Signature))
             {
-                AcpiOsUnmapMemory (MappedTable, MappedTable->Length);
-                MappedTable = NULL;
-                continue;
-            }
 
-            /* Match table instance (for SSDT/UEFI tables) */
+                /* Match table instance (for SSDT/UEFI tables) */
 
-            if (CurrentInstance != Instance)
-            {
-                AcpiOsUnmapMemory (MappedTable, MappedTable->Length);
-                MappedTable = NULL;
+                if (CurrentInstance == Instance)
+                {
+                    break;
+                }
+
                 CurrentInstance++;
-                continue;
             }
 
-            break;
+            AcpiOsUnmapMemory (MappedTable, MappedTable->Length);
+            MappedTable = NULL;
         }
-    }
-
-    if (CurrentInstance != Instance)
-    {
-        return (AE_LIMIT);
     }
 
     if (!MappedTable)
     {
+        if (CurrentInstance)
+        {
+            return (AE_LIMIT);
+        }
         return (AE_NOT_FOUND);
     }
 
@@ -829,14 +825,14 @@ OslGetTableViaRoot (
     LocalTable = calloc (1, MappedTable->Length);
     if (!LocalTable)
     {
+        AcpiOsUnmapMemory (MappedTable, MappedTable->Length);
         return (AE_NO_MEMORY);
     }
 
     ACPI_MEMCPY (LocalTable, MappedTable, MappedTable->Length);
     AcpiOsUnmapMemory (MappedTable, MappedTable->Length);
-    *Address = TableAddress;
-
     *Table = LocalTable;
+    *Address = TableAddress;
     return (AE_OK);
 }
 
