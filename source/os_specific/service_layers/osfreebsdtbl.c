@@ -464,6 +464,9 @@ AcpiOsMapMemory (
 
     if (MappedMemory == MAP_FAILED)
     {
+        fprintf (stderr,
+            "Could not map memory at 0x%8.8X%8.8X length 0x%8.8X%8.8X\n",
+            ACPI_FORMAT_UINT64 (Where), ACPI_FORMAT_NATIVE_UINT (Length));
         return (NULL);
     }
 
@@ -563,7 +566,7 @@ OslTableInitialize (
     RsdpAddress = AcpiOsMapMemory (RsdpBase, RsdpSize);
     if (!RsdpAddress)
     {
-        return (AE_ERROR);
+        return (AE_BAD_ADDRESS);
     }
 
     /* Search low memory for the RSDP */
@@ -774,7 +777,7 @@ OslGetTableViaRoot (
             MappedTable = AcpiOsMapMemory (TableAddress, sizeof (*MappedTable));
             if (!MappedTable)
             {
-                return (AE_ERROR);
+                return (AE_BAD_ADDRESS);
             }
 
             /* Does this table match the requested signature? */
@@ -931,7 +934,7 @@ OslAddTablesToList(
         Table = AcpiOsMapMemory (TableAddress, sizeof (*Table));
         if (!Table)
         {
-            return (AE_NO_MEMORY);
+            return (AE_BAD_ADDRESS);
         }
 
         Instance = 0;
@@ -1000,8 +1003,6 @@ OslMapTable (
     MappedTable = AcpiOsMapMemory (Address, sizeof (*MappedTable));
     if (!MappedTable)
     {
-        fprintf (stderr, "Could not map table header at 0x%8.8X%8.8X\n",
-            ACPI_FORMAT_UINT64 (Address));
         return (AE_BAD_ADDRESS);
     }
 
@@ -1030,9 +1031,7 @@ OslMapTable (
     MappedTable = AcpiOsMapMemory (Address, Length);
     if (!MappedTable)
     {
-        fprintf (stderr, "Could not map table at 0x%8.8X%8.8X length %8.8X\n",
-            ACPI_FORMAT_UINT64 (Address), Length);
-        return (AE_NO_MEMORY);
+        return (AE_BAD_ADDRESS);
     }
 
     *Table = MappedTable;
