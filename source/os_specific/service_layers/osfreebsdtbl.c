@@ -1060,20 +1060,5 @@ OslMapTable (
         }
     }
 
-    /* FACS does not have a checksum */
-
-    if (ACPI_COMPARE_NAME (MappedTable->Signature, ACPI_SIG_FACS))
-    {
-        return (AE_OK);
-    }
-
-    /* Validate checksum for most tables */
-
-    if (AcpiTbChecksum (ACPI_CAST8 (MappedTable), Length))
-    {
-        fprintf (stderr, "Warning: wrong checksum for %4.4s\n",
-            MappedTable->Signature);
-    }
-
     return (AE_OK);
 }
