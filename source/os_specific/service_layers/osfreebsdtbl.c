@@ -742,23 +742,6 @@ OslGetTableViaRoot (
                 TableAddress = (ACPI_PHYSICAL_ADDRESS) Gbl_Fadt->Facs;
             }
         }
-
-        if (!TableAddress)
-        {
-            fprintf (stderr,
-                "Could not find a valid address for %4.4s in the FADT\n",
-                Signature);
-
-            return (AE_NOT_FOUND);
-        }
-
-        /* Now we can get the requested table (DSDT or FACS) */
-
-        Status = OslMapTable (TableAddress, Signature, &MappedTable);
-        if (ACPI_FAILURE (Status))
-        {
-            return (Status);
-        }
     }
     else /* Case for a normal ACPI table */
     {
@@ -788,10 +771,10 @@ OslGetTableViaRoot (
                 TableAddress = Gbl_Rsdt->TableOffsetEntry[i];
             }
 
-            Status = OslMapTable (TableAddress, NULL, &MappedTable);
-            if (ACPI_FAILURE (Status))
+            MappedTable = AcpiOsMapMemory (TableAddress, sizeof (*MappedTable));
+            if (!MappedTable)
             {
-                return (Status);
+                return (AE_ERROR);
             }
 
             /* Does this table match the requested signature? */
@@ -803,6 +786,7 @@ OslGetTableViaRoot (
 
                 if (CurrentInstance == Instance)
                 {
+                    AcpiOsUnmapMemory (MappedTable, sizeof (*MappedTable));
                     break;
                 }
 
@@ -810,17 +794,25 @@ OslGetTableViaRoot (
             }
 
             AcpiOsUnmapMemory (MappedTable, MappedTable->Length);
-            MappedTable = NULL;
+            TableAddress = 0;
         }
     }
 
-    if (!MappedTable)
+    if (!TableAddress)
     {
         if (CurrentInstance)
         {
             return (AE_LIMIT);
         }
         return (AE_NOT_FOUND);
+    }
+
+    /* Now we can get the requested table */
+
+    Status = OslMapTable (TableAddress, Signature, &MappedTable);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
     }
 
     /* Copy table to local buffer and return it */
