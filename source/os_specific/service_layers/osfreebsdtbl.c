@@ -239,6 +239,7 @@ AcpiOsGetTableByAddress (
     LocalTable = calloc (1, MappedTable->Length);
     if (!LocalTable)
     {
+        AcpiOsUnmapMemory (MappedTable, MappedTable->Length);
         return (AE_NO_MEMORY);
     }
 
@@ -596,6 +597,7 @@ OslTableInitialize (
             fprintf (stderr,
                 "XSDT: Could not allocate buffer for table of length %X\n",
                 MappedTable->Length);
+            AcpiOsUnmapMemory (MappedTable, MappedTable->Length);
             return (AE_NO_MEMORY);
         }
 
@@ -620,6 +622,7 @@ OslTableInitialize (
             fprintf (stderr,
                 "RSDT: Could not allocate buffer for table of length %X\n",
                 MappedTable->Length);
+            AcpiOsUnmapMemory (MappedTable, MappedTable->Length);
             return (AE_NO_MEMORY);
         }
 
@@ -656,6 +659,7 @@ OslTableInitialize (
         fprintf (stderr,
             "FADT: Could not allocate buffer for table of length %X\n",
             MappedTable->Length);
+        AcpiOsUnmapMemory (MappedTable, MappedTable->Length);
         return (AE_NO_MEMORY);
     }
 
@@ -1014,6 +1018,7 @@ OslMapTable (
 
     if (!ApIsValidHeader (MappedTable))
     {
+        AcpiOsUnmapMemory (MappedTable, sizeof (*MappedTable));
         return (AE_BAD_HEADER);
     }
 
@@ -1022,6 +1027,7 @@ OslMapTable (
     if (Signature &&
         !ACPI_COMPARE_NAME (Signature, MappedTable->Signature))
     {
+        AcpiOsUnmapMemory (MappedTable, sizeof (*MappedTable));
         return (AE_NOT_EXIST);
     }
 
