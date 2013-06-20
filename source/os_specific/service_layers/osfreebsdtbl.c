@@ -569,14 +569,13 @@ OslTableInitialize (
     /* Search low memory for the RSDP */
 
     TableAddress = AcpiTbScanMemoryForRsdp (RsdpAddress, RsdpSize);
-    MappedTable = ACPI_CAST_PTR (ACPI_TABLE_HEADER, TableAddress);
-    if (!MappedTable)
+    if (!TableAddress)
     {
         AcpiOsUnmapMemory (RsdpAddress, RsdpSize);
         return (AE_ERROR);
     }
 
-    ACPI_MEMCPY (&Gbl_Rsdp, MappedTable, sizeof (Gbl_Rsdp));
+    ACPI_MEMCPY (&Gbl_Rsdp, TableAddress, sizeof (Gbl_Rsdp));
     AcpiOsUnmapMemory (RsdpAddress, RsdpSize);
 
     /* Get XSDT from memory */
