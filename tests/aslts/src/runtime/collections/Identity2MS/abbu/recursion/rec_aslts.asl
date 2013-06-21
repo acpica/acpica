@@ -43,6 +43,8 @@ Name(IG03, 0) // Do anything once only
 Name(RC00, 5)
 Name(RCFF, 1)
 
+Name(ts, "mr00")
+
 Processor(pr00, 0, 0x000, 0x008)
 {
 	Name(i000, 0xabcd0000)
@@ -71,12 +73,10 @@ Method(mrfe, 1)
  */
 Method(mr00)
 {
-    Name(ts, "mr00")
-    Name(i000, 0xabcd0000)
-
+    Store("mr00", ts)
     mrfe(ts)
 
-    Store(IG00, i000)
+    Store(IG00, Local0)
     Increment(IG00)
     Increment(IG02)
     if (LLess(IG00, RC00)) {
@@ -84,8 +84,8 @@ Method(mr00)
     }
 
     Decrement(IG00)
-    if (LNotEqual(i000, IG00)) {
-        err(ts, z172, 0x000, 0, 0, i000, IG00)
+    if (LNotEqual(Local0, IG00)) {
+        err(ts, z172, 0x000, 0, 0, Local0, IG00)
     }
 
     if (LNotEqual(IG02, RC00)) {
@@ -103,14 +103,12 @@ Method(mr00)
  */
 Method(mr01, 1)
 {
-    Name(ts, "mr01")
-    Name(i000, 0xabcd0000)
-    Name(i001, 0xabcd0001)
+    Store("mr01", ts)
 
     mrfe(ts)
 
-    Store(IG00, i000)
-    Store(arg0, i001)
+    Store(IG00, Local1)
+    Store(arg0, Local2)
     Increment(IG00)
     Increment(IG02)
     if (LLess(IG00, RC00)) {
@@ -118,11 +116,11 @@ Method(mr01, 1)
     }
 
     Decrement(IG00)
-    if (LNotEqual(i000, IG00)) {
-        err(ts, z172, 0x000, 0, 0, i000, IG00)
+    if (LNotEqual(Local1, IG00)) {
+        err(ts, z172, 0x000, 0, 0, Local1, IG00)
     }
-    if (LNotEqual(i001, arg0)) {
-        err(ts, z172, 0x000, 0, 0, i001, arg0)
+    if (LNotEqual(Local2, arg0)) {
+        err(ts, z172, 0x000, 0, 0, Local2, arg0)
     }
 
     Multiply(RC00, 2, Local0)
@@ -137,14 +135,12 @@ Method(mr01, 1)
 
 Method(mr02, 1)
 {
-    Name(ts, "mr02")
-    Name(i000, 0xabcd0000)
-    Name(i001, 0xabcd0001)
+    Store("mr02", ts)
 
     mrfe(ts)
 
-    Store(IG01, i000)
-    Store(arg0, i001)
+    Store(IG01, Local1)
+    Store(arg0, Local2)
     Increment(IG01)
     Increment(IG02)
     if (LLess(IG01, RC00)) {
@@ -152,11 +148,11 @@ Method(mr02, 1)
     }
 
     Decrement(IG01)
-    if (LNotEqual(i000, IG01)) {
-        err(ts, z172, 0x000, 0, 0, i000, IG01)
+    if (LNotEqual(Local1, IG01)) {
+        err(ts, z172, 0x000, 0, 0, Local1, IG01)
     }
-    if (LNotEqual(i001, arg0)) {
-        err(ts, z172, 0x000, 0, 0, i001, arg0)
+    if (LNotEqual(Local2, arg0)) {
+        err(ts, z172, 0x000, 0, 0, Local2, arg0)
     }
 
     Multiply(RC00, 2, Local0)
@@ -175,7 +171,7 @@ Method(mr02, 1)
  */
 Method(mr03)
 {
-    Name(ts, "mr03")
+    Store("mr03", ts)
 
     Device(d100)
     {
@@ -188,12 +184,9 @@ Method(mr03)
         Name(i202, 0xabcd0202)
         Method(m203)
         {
-            Name(i300, 0xabcd0300)
-            Name(i301, 0xabcd0301)
-
             mrfe("m203")
 
-            Store(IG00, i300)
+            Store(IG00, Local0)
             Increment(IG00)
             Increment(IG02)
             if (LLess(IG00, RC00)) {
@@ -201,8 +194,8 @@ Method(mr03)
             }
 
             Decrement(IG00)
-            if (LNotEqual(i300, IG00)) {
-                err(ts, z172, 0x000, 0, 0, i300, IG00)
+            if (LNotEqual(Local0, IG00)) {
+                err(ts, z172, 0x000, 0, 0, Local0, IG00)
             }
 
         }
@@ -235,7 +228,7 @@ Method(mr03)
  */
 Method(mr04)
 {
-    Name(ts, "mr04")
+    Store("mr04", ts)
 
     Device(d100)
     {
@@ -248,12 +241,9 @@ Method(mr04)
         Name(i202, 0xabcd0202)
         Method(m203, 1)
         {
-            Name(i300, 0xabcd0300)
-            Name(i301, 0xabcd0301)
-
             mrfe("m203")
 
-            Store(IG00, i300)
+            Store(IG00, Local0)
             Increment(IG00)
             Increment(IG02)
             if (LLess(IG00, RC00)) {
@@ -261,8 +251,8 @@ Method(mr04)
             }
 
             Decrement(IG00)
-            if (LNotEqual(i300, IG00)) {
-                err(ts, z172, 0x000, 0, 0, i300, IG00)
+            if (LNotEqual(Local0, IG00)) {
+                err(ts, z172, 0x000, 0, 0, Local0, IG00)
             }
 
         }
@@ -276,24 +266,24 @@ Method(mr04)
 
     d101.m203(0)
 
-    if (LNotEqual(IG02, RC00)) {
+    Multiply(RC00, 2, Local0)
+    Decrement(Local0)
+    if (LNotEqual(IG02, Local0)) {
         if (LNot(IG03)) {
             Store(1, IG03)
-            err(ts, z172, 0x000, 0, 0, IG02, RC00)
+            err(ts, z172, 0x000, 0, 0, IG02, Local0)
         }
     }
 }
 
 Method(mr05, 1)
 {
-    Name(ts, "mr05")
-    Name(i000, 0xabcd0000)
-    Name(i001, 0xabcd0001)
+    Store("mr05", ts)
 
     mrfe(ts)
 
-    Store(IG01, i000)
-    Store(arg0, i001)
+    Store(IG01, Local1)
+    Store(arg0, Local2)
     Increment(IG01)
     Increment(IG02)
     if (LLess(IG01, RC00)) {
@@ -301,11 +291,11 @@ Method(mr05, 1)
     }
 
     Decrement(IG01)
-    if (LNotEqual(i000, IG01)) {
-        err(ts, z172, 0x000, 0, 0, i000, IG01)
+    if (LNotEqual(Local1, IG01)) {
+        err(ts, z172, 0x000, 0, 0, Local1, IG01)
     }
-    if (LNotEqual(i001, arg0)) {
-        err(ts, z172, 0x000, 0, 0, i001, arg0)
+    if (LNotEqual(Local2, arg0)) {
+        err(ts, z172, 0x000, 0, 0, Local2, arg0)
     }
 
     Multiply(RC00, 2, Local0)
