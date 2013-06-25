@@ -1102,15 +1102,26 @@ AcpiExOpcode_1A_0T_1R (
                 ReturnDesc = Operand[0]->Reference.Object;
 
                 if (ACPI_GET_DESCRIPTOR_TYPE (ReturnDesc) ==
-                        ACPI_DESC_TYPE_NAMED)
+                    ACPI_DESC_TYPE_NAMED)
                 {
-                    ReturnDesc = AcpiNsGetAttachedObject (
-                                    (ACPI_NAMESPACE_NODE *) ReturnDesc);
+                    /*
+                     * June 2013:
+                     * Fully resolve the namespace node to a value. We want
+                     * to resolve the node to a value even if the node
+                     * refers to a FieldUnit or BufferField.
+                     */
+                    Status = AcpiExResolveToValue (&ReturnDesc, WalkState);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        goto Cleanup;
+                    }
                 }
+                else
+                {
+                    /* Simply add another reference to the object */
 
-                /* Add another reference to the object! */
-
-                AcpiUtAddReference (ReturnDesc);
+                    AcpiUtAddReference (ReturnDesc);
+                }
                 break;
 
             default:
