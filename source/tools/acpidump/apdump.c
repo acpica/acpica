@@ -192,9 +192,10 @@ ApDumpTableBuffer (
 
      /* Validate the table checksum (except FACS - has no checksum) */
 
-    if (!ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_FACS))
+    if (!ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_FACS) &&
+        AcpiTbChecksum (ACPI_CAST8 (Table), Table->Length))
     {
-        (void) AcpiTbVerifyChecksum (Table, Table->Length);
+        fprintf (stderr, "Warning: wrong checksum for %4.4s\n", Table->Signature);
     }
 
     /* Print only the header if requested */
