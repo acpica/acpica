@@ -265,6 +265,7 @@ AcpiOsGetTableByAddress (
     LocalTable = calloc (1, MappedTable->Length);
     if (!LocalTable)
     {
+        AcpiOsUnmapMemory (MappedTable, MappedTable->Length);
         return (AE_NO_MEMORY);
     }
 
@@ -578,7 +579,7 @@ OslTableInitialize (
     RsdpAddress = AcpiOsMapMemory (RsdpBase, RsdpSize);
     if (!RsdpAddress)
     {
-        return (AE_ERROR);
+        return (AE_BAD_ADDRESS);
     }
 
     /* Search low memory for the RSDP */
@@ -1027,8 +1028,10 @@ OslMapTable (
 
     *Table = MappedTable;
 
-    /* Checksum for RSDP */
-
+    /*
+     * Checksum for RSDP.
+     * Note: Other checksums are computed during the table dump.
+     */
     if (!ACPI_STRNCMP (MappedTable->Signature, ACPI_SIG_RSDP,
         sizeof (ACPI_SIG_RSDP) - 1))
     {
@@ -1049,21 +1052,6 @@ OslMapTable (
                 fprintf (stderr, "Warning: wrong checksum for RSDP\n");
             }
         }
-    }
-
-    /* FACS does not have a checksum */
-
-    if (ACPI_COMPARE_NAME (MappedTable->Signature, ACPI_SIG_FACS))
-    {
-        return (AE_OK);
-    }
-
-    /* Validate checksum for most tables */
-
-    if (AcpiTbChecksum (ACPI_CAST8 (MappedTable), Length))
-    {
-        fprintf (stderr, "Warning: wrong checksum for %4.4s\n",
-            MappedTable->Signature);
     }
 
     return (AE_OK);
