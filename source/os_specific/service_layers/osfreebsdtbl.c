@@ -996,7 +996,6 @@ OslMapTable (
 {
     ACPI_TABLE_HEADER       *MappedTable;
     UINT32                  Length;
-    ACPI_STATUS             Status;
 
 
     /* Map the header so we can get the table length */
@@ -1042,8 +1041,8 @@ OslMapTable (
      * Note: Other checksums are computed during the table dump.
      */
 
-    Status = AcpiTbValidateRsdp (ACPI_CAST_PTR (ACPI_TABLE_RSDP, MappedTable));
-    if (ACPI_FAILURE (Status) && Status != AE_BAD_SIGNATURE)
+    if (AcpiTbValidateRsdp (ACPI_CAST_PTR (ACPI_TABLE_RSDP, MappedTable)) ==
+        AE_BAD_CHECKSUM)
     {
         fprintf (stderr, "Warning: wrong checksum for RSDP\n");
     }
