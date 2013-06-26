@@ -239,6 +239,7 @@ AcpiOsGetTableByAddress (
     LocalTable = calloc (1, MappedTable->Length);
     if (!LocalTable)
     {
+        AcpiOsUnmapMemory (MappedTable, MappedTable->Length);
         return (AE_NO_MEMORY);
     }
 
@@ -463,6 +464,9 @@ AcpiOsMapMemory (
 
     if (MappedMemory == MAP_FAILED)
     {
+        fprintf (stderr,
+            "Could not map memory at 0x%8.8X%8.8X length 0x%8.8X%8.8X\n",
+            ACPI_FORMAT_UINT64 (Where), ACPI_FORMAT_NATIVE_UINT (Length));
         return (NULL);
     }
 
@@ -562,20 +566,19 @@ OslTableInitialize (
     RsdpAddress = AcpiOsMapMemory (RsdpBase, RsdpSize);
     if (!RsdpAddress)
     {
-        return (AE_ERROR);
+        return (AE_BAD_ADDRESS);
     }
 
     /* Search low memory for the RSDP */
 
     TableAddress = AcpiTbScanMemoryForRsdp (RsdpAddress, RsdpSize);
-    MappedTable = ACPI_CAST_PTR (ACPI_TABLE_HEADER, TableAddress);
-    if (!MappedTable)
+    if (!TableAddress)
     {
         AcpiOsUnmapMemory (RsdpAddress, RsdpSize);
         return (AE_ERROR);
     }
 
-    ACPI_MEMCPY (&Gbl_Rsdp, MappedTable, sizeof (Gbl_Rsdp));
+    ACPI_MEMCPY (&Gbl_Rsdp, TableAddress, sizeof (Gbl_Rsdp));
     AcpiOsUnmapMemory (RsdpAddress, RsdpSize);
 
     /* Get XSDT from memory */
@@ -596,6 +599,7 @@ OslTableInitialize (
             fprintf (stderr,
                 "XSDT: Could not allocate buffer for table of length %X\n",
                 MappedTable->Length);
+            AcpiOsUnmapMemory (MappedTable, MappedTable->Length);
             return (AE_NO_MEMORY);
         }
 
@@ -620,6 +624,7 @@ OslTableInitialize (
             fprintf (stderr,
                 "RSDT: Could not allocate buffer for table of length %X\n",
                 MappedTable->Length);
+            AcpiOsUnmapMemory (MappedTable, MappedTable->Length);
             return (AE_NO_MEMORY);
         }
 
@@ -656,6 +661,7 @@ OslTableInitialize (
         fprintf (stderr,
             "FADT: Could not allocate buffer for table of length %X\n",
             MappedTable->Length);
+        AcpiOsUnmapMemory (MappedTable, MappedTable->Length);
         return (AE_NO_MEMORY);
     }
 
@@ -739,23 +745,6 @@ OslGetTableViaRoot (
                 TableAddress = (ACPI_PHYSICAL_ADDRESS) Gbl_Fadt->Facs;
             }
         }
-
-        if (!TableAddress)
-        {
-            fprintf (stderr,
-                "Could not find a valid address for %4.4s in the FADT\n",
-                Signature);
-
-            return (AE_NOT_FOUND);
-        }
-
-        /* Now we can get the requested table (DSDT or FACS) */
-
-        Status = OslMapTable (TableAddress, Signature, &MappedTable);
-        if (ACPI_FAILURE (Status))
-        {
-            return (Status);
-        }
     }
     else /* Case for a normal ACPI table */
     {
@@ -785,10 +774,10 @@ OslGetTableViaRoot (
                 TableAddress = Gbl_Rsdt->TableOffsetEntry[i];
             }
 
-            Status = OslMapTable (TableAddress, NULL, &MappedTable);
-            if (ACPI_FAILURE (Status))
+            MappedTable = AcpiOsMapMemory (TableAddress, sizeof (*MappedTable));
+            if (!MappedTable)
             {
-                return (Status);
+                return (AE_BAD_ADDRESS);
             }
 
             /* Does this table match the requested signature? */
@@ -800,6 +789,7 @@ OslGetTableViaRoot (
 
                 if (CurrentInstance == Instance)
                 {
+                    AcpiOsUnmapMemory (MappedTable, sizeof (*MappedTable));
                     break;
                 }
 
@@ -807,17 +797,25 @@ OslGetTableViaRoot (
             }
 
             AcpiOsUnmapMemory (MappedTable, MappedTable->Length);
-            MappedTable = NULL;
+            TableAddress = 0;
         }
     }
 
-    if (!MappedTable)
+    if (!TableAddress)
     {
         if (CurrentInstance)
         {
             return (AE_LIMIT);
         }
         return (AE_NOT_FOUND);
+    }
+
+    /* Now we can get the requested table */
+
+    Status = OslMapTable (TableAddress, Signature, &MappedTable);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
     }
 
     /* Copy table to local buffer and return it */
@@ -936,7 +934,7 @@ OslAddTablesToList(
         Table = AcpiOsMapMemory (TableAddress, sizeof (*Table));
         if (!Table)
         {
-            return (AE_NO_MEMORY);
+            return (AE_BAD_ADDRESS);
         }
 
         Instance = 0;
@@ -1005,8 +1003,6 @@ OslMapTable (
     MappedTable = AcpiOsMapMemory (Address, sizeof (*MappedTable));
     if (!MappedTable)
     {
-        fprintf (stderr, "Could not map table header at 0x%8.8X%8.8X\n",
-            ACPI_FORMAT_UINT64 (Address));
         return (AE_BAD_ADDRESS);
     }
 
@@ -1014,6 +1010,7 @@ OslMapTable (
 
     if (!ApIsValidHeader (MappedTable))
     {
+        AcpiOsUnmapMemory (MappedTable, sizeof (*MappedTable));
         return (AE_BAD_HEADER);
     }
 
@@ -1022,6 +1019,7 @@ OslMapTable (
     if (Signature &&
         !ACPI_COMPARE_NAME (Signature, MappedTable->Signature))
     {
+        AcpiOsUnmapMemory (MappedTable, sizeof (*MappedTable));
         return (AE_NOT_EXIST);
     }
 
@@ -1033,9 +1031,7 @@ OslMapTable (
     MappedTable = AcpiOsMapMemory (Address, Length);
     if (!MappedTable)
     {
-        fprintf (stderr, "Could not map table at 0x%8.8X%8.8X length %8.8X\n",
-            ACPI_FORMAT_UINT64 (Address), Length);
-        return (AE_NO_MEMORY);
+        return (AE_BAD_ADDRESS);
     }
 
     *Table = MappedTable;
@@ -1062,21 +1058,6 @@ OslMapTable (
                 fprintf (stderr, "Warning: wrong checksum for RSDP\n");
             }
         }
-    }
-
-    /* FACS does not have a checksum */
-
-    if (ACPI_COMPARE_NAME (MappedTable->Signature, ACPI_SIG_FACS))
-    {
-        return (AE_OK);
-    }
-
-    /* Validate checksum for most tables */
-
-    if (AcpiTbChecksum (ACPI_CAST8 (MappedTable), Length))
-    {
-        fprintf (stderr, "Warning: wrong checksum for %4.4s\n",
-            MappedTable->Signature);
     }
 
     return (AE_OK);
