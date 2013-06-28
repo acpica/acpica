@@ -1293,6 +1293,7 @@ typedef struct acpi_external_list
     UINT8                       Type;
     UINT8                       Flags;
     BOOLEAN                     Resolved;
+    BOOLEAN                     Emitted;
 
 } ACPI_EXTERNAL_LIST;
 
