@@ -85,10 +85,10 @@ Method(md5d)
 	Store (0x61, Index(DeRefof(Local0), 3))
 	Store(DeRefof(Local0), Local1)
 
-	if (LNotEqual(Local1, Buffer() {1,2,3,0x61})) {
+	if (LNotEqual(Local1, Buffer(32) {1,2,3,0x61})) {
 		err("", zFFF, 0xd04, 0, 0, Local1, Buffer() {1,2,3,0x61})
 	}
-	if (LNotEqual(bd00, Buffer() {1,2,3,4})) {
+	if (LNotEqual(bd00, Buffer(32) {1,2,3,4})) {
 		err("", zFFF, 0xd05, 0, 0, bd00, Buffer() {1,2,3,4})
 	}
 }
@@ -194,10 +194,10 @@ Method(md61)
 	Store (0x61, Index(DeRefof(Local0), 3))
 	Store(DeRefof(Local0), Local1)
 
-	if (LNotEqual(Local1, Buffer() {1,2,3,0x61})) {
+	if (LNotEqual(Local1, Buffer(32) {1,2,3,0x61})) {
 		err("", zFFF, 0xd12, 0, 0, Local1, Buffer() {1,2,3,0x61})
 	}
-	if (LNotEqual(bd00, Buffer() {1,2,3,4})) {
+	if (LNotEqual(bd00, Buffer(32) {1,2,3,4})) {
 		err("", zFFF, 0xd13, 0, 0, bd00, Buffer() {1,2,3,4})
 	}
 }

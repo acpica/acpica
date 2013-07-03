@@ -31,6 +31,27 @@
  *
  * SUMMARY: Incorrect length of result of ToBuffer in case it is stored into a Named Buffer
  */
+Method (bcmp, 2)
+{
+	Store(Sizeof(Arg0), Local0)
+	Store(Sizeof(Arg1), Local1)
+
+	if (LGreater(Local0, Local1))
+	{
+		Store(Local1, Local0)
+	}
+	while(Local0) {
+		Decrement(Local0)
+		Store(Local0, Debug)
+		Store(DerefOf(Index(Arg0, Local0)), Local1)
+		Store(DerefOf(Index(Arg1, Local0)), Local2)
+		if (LNotEqual(Local1, Local2))
+		{
+			return (0)
+		}
+	}
+	return (1)
+}
 
 Method(mfa7, 1)
 {
@@ -43,13 +64,13 @@ Method(mfa7, 1)
 	if (arg0) {
 		Store("ToBuffer(b001, b000)", Debug)
 		ToBuffer(b001, b000)
-		if (LNotEqual(b000, bb01)) {
+		if (LNot(bcmp(b000, bb01))) {
 			err("", zFFF, 0x000, 0, 0, b000, bb01)
 		}
 	} else {
 		Store("ToBuffer(b000, b001)", Debug)
 		ToBuffer(b000, b001)
-		if (LNotEqual(b001, bb00)) {
+		if (Lnot(bcmp(b001, bb00))) {
 			err("", zFFF, 0x000, 0, 0, b001, bb00)
 		}
 	}

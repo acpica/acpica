@@ -102,7 +102,7 @@ Method(m02f)
 		/* (7) */
 		Store("Releasing mutex of level 5: T500 (Level 5, index 0)", Debug)
 		Release(T500)
-		CH04("", 0, 65, 0, 0x007, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+		CH03("", 0, 0x007, 0, 0)
 	}
 
 	Method(mm00)

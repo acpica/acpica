@@ -45,7 +45,7 @@
 			err("", zFFF, 0x000, 0, 0, Local0, 14)
 		} else {
 
-			CopyObject(0x9999992b, bf90)
+			Store(0x9999992b, bf90)
 
 			Store(ObjectType(bf90), Local1)
 
