@@ -84,7 +84,8 @@ New documents:
     Update pathnames (and file sizes) in body for each new filename
         (appears at bottom of each attach)
     Click save at bottom
-    <Note: may be fixed so that the filename can stay the same>
+    <Note: this may be fixed so that the filename can stay the same>
+    Update news: ContentManagement->CreateContent->News
 
 
 Email the release notes
