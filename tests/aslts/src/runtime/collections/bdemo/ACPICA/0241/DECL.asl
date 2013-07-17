@@ -33,6 +33,7 @@
  *          AcpiExReadDataFromField called from AcpiExResolveObjectToValue
  *
  * Note. The crash occurred when acpiexec is compiled in DEBUG mode.
+ * July 2013: Problem is fixed with change for DeRefOf operator with FieldUnits.
  */
 
 Method(m129)
@@ -53,7 +54,15 @@ Method(m129)
 		// Read, Access out of OpRegion
 		Store(DeRefof(Local2), Local0)
 
-		CH04("", 0, 53, 0, 0x001, 0, 0) // AE_AML_REGION_LIMIT
+		/* Store above should cause 2 errors:
+		 * 1) AE_AML_REGION_LIMIT
+		 * 2) AE_AML_NO_RETURN_VALUE
+		 */
+		if (LEqual (EXC0, 2))
+		{
+			Store (1, EXC0)
+		}
+		CH04("", 0, 62, 0, 0x001, 0, 0) // AE_AML_NO_RETURN_VALUE
 	}
 
 	m000(0x100)
