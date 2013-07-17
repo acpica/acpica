@@ -320,6 +320,24 @@ LsAmlOffsetWalk (
             (UINT8) Op->Asl.AmlOpcode);
         break;
 
+    case AML_PROCESSOR_OP:
+
+        /* Processor (Namepath, ProcessorId, Address, Length) */
+
+        Length = Op->Asl.FinalAmlLength;
+
+        NextOp = Op->Asl.Child;     /* Get Namepath */
+        OffsetOfOpcode = Length + NextOp->Asl.FinalAmlLength + 1;
+
+        NextOp = NextOp->Asl.Next;  /* Get ProcessorID (BYTE) */
+        NextOp = NextOp->Asl.Next;  /* Get Address (DWORD) */
+
+        LsEmitOffsetTableEntry (FileId, Node,
+            (Gbl_CurrentAmlOffset + OffsetOfOpcode),
+            Op->Asl.ParseOpName, NextOp->Asl.Value.Integer,
+            (UINT8) 0x0C); /* DWORD opcode */
+        break;
+
     default:
         break;
     }
@@ -437,6 +455,9 @@ LsDoOffsetTableHeader (
         " *\n"
         " * Control Methods:\n"
         " *    Offset points to the first byte of the namepath\n"
+        " *\n"
+        " * Processors:\n"
+        " *    Offset points to the first byte of the PBlock Address\n"
         " *\n"
         " * Resource Descriptors:\n"
         " *    Offset points to the start of the descriptor\n"
