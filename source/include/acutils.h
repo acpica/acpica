@@ -742,6 +742,10 @@ ACPI_STATUS
 AcpiUtRemoveInterface (
     ACPI_STRING             InterfaceName);
 
+ACPI_STATUS
+AcpiUtUpdateInterfaces (
+    UINT8                   Action);
+
 ACPI_INTERFACE_INFO *
 AcpiUtGetInterface (
     ACPI_STRING             InterfaceName);

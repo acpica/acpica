@@ -249,6 +249,10 @@ ACPI_STATUS
 AcpiRemoveInterface (
     ACPI_STRING             InterfaceName);
 
+ACPI_STATUS
+AcpiUpdateInterfaces (
+    UINT8                   Action);
+
 UINT32
 AcpiCheckAddressRange (
     ACPI_ADR_SPACE_TYPE     SpaceId,
