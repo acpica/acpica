@@ -223,8 +223,7 @@ LsAmlOffsetWalk (
         {
         /*
          * We are only interested in integer constants that can be changed
-         * at boot time. Note, the One/Ones/Zero opcodes are considered
-         * non-changeable, so we ignore them here.
+         * at boot time.
          */
         case AML_BYTE_OP:
         case AML_WORD_OP:
@@ -235,6 +234,18 @@ LsAmlOffsetWalk (
 
             LsEmitOffsetTableEntry (FileId, Node,
                 (Gbl_CurrentAmlOffset + OffsetOfOpcode + 1),
+                Op->Asl.ParseOpName, Op->Asl.Value.Integer,
+                (UINT8) Op->Asl.AmlOpcode);
+            break;
+
+        case AML_ONE_OP:
+        case AML_ONES_OP:
+        case AML_ZERO_OP:
+
+            /* For these, offset will point to the opcode */
+
+            LsEmitOffsetTableEntry (FileId, Node,
+                (Gbl_CurrentAmlOffset + OffsetOfOpcode),
                 Op->Asl.ParseOpName, Op->Asl.Value.Integer,
                 (UINT8) Op->Asl.AmlOpcode);
             break;
