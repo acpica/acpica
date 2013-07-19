@@ -20,5 +20,10 @@ bits=`identify_bits`
 
 mkdir -p bin
 make -C $git_root acpisrc
+
+if [ ! -f $git_root/generate/unix/bin$bits/acpisrc ]; then
+	bits=
+fi
+
 cp $git_root/generate/unix/bin$bits/acpisrc bin
 
