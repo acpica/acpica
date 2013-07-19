@@ -132,7 +132,8 @@ LsEmitOffsetTableEntry (
     UINT32                  Offset,
     char                    *OpName,
     UINT64                  Value,
-    UINT8                   AmlOpcode);
+    UINT8                   AmlOpcode,
+    ACPI_OBJECT_TYPE        ObjectType);
 
 
 /*******************************************************************************
@@ -192,7 +193,7 @@ LsAmlOffsetWalk (
         (Op->Asl.CompileFlags & NODE_IS_RESOURCE_DESC))
     {
         LsEmitOffsetTableEntry (FileId, Node, Gbl_CurrentAmlOffset,
-            Op->Asl.ParseOpName, 0, Op->Asl.Extra);
+            Op->Asl.ParseOpName, 0, Op->Asl.Extra, ACPI_TYPE_BUFFER);
         Gbl_CurrentAmlOffset += Op->Asl.FinalAmlLength;
         return (AE_OK);
     }
@@ -235,7 +236,7 @@ LsAmlOffsetWalk (
             LsEmitOffsetTableEntry (FileId, Node,
                 (Gbl_CurrentAmlOffset + OffsetOfOpcode + 1),
                 Op->Asl.ParseOpName, Op->Asl.Value.Integer,
-                (UINT8) Op->Asl.AmlOpcode);
+                (UINT8) Op->Asl.AmlOpcode, ACPI_TYPE_INTEGER);
             break;
 
         case AML_ONE_OP:
@@ -247,7 +248,7 @@ LsAmlOffsetWalk (
             LsEmitOffsetTableEntry (FileId, Node,
                 (Gbl_CurrentAmlOffset + OffsetOfOpcode),
                 Op->Asl.ParseOpName, Op->Asl.Value.Integer,
-                (UINT8) Op->Asl.AmlOpcode);
+                (UINT8) Op->Asl.AmlOpcode, ACPI_TYPE_INTEGER);
             break;
 
         case AML_PACKAGE_OP:
@@ -259,7 +260,7 @@ LsAmlOffsetWalk (
                 (Gbl_CurrentAmlOffset + OffsetOfOpcode),
                 Op->Asl.ParseOpName,
                 NextOp->Asl.Value.Integer,
-                (UINT8) Op->Asl.AmlOpcode);
+                (UINT8) Op->Asl.AmlOpcode, ACPI_TYPE_PACKAGE);
             break;
 
          default:
@@ -300,7 +301,7 @@ LsAmlOffsetWalk (
             LsEmitOffsetTableEntry (FileId, Node,
                 (Gbl_CurrentAmlOffset + OffsetOfOpcode + 1),
                 Op->Asl.ParseOpName, NextOp->Asl.Value.Integer,
-                (UINT8) NextOp->Asl.AmlOpcode);
+                (UINT8) NextOp->Asl.AmlOpcode, ACPI_TYPE_REGION);
 
             Gbl_CurrentAmlOffset += Length;
             return (AE_OK);
@@ -328,7 +329,7 @@ LsAmlOffsetWalk (
             (Gbl_CurrentAmlOffset + OffsetOfOpcode + Length),
             Op->Asl.ParseOpName,
             *((UINT32 *) &NextOp->Asl.Value.Buffer[OffsetOfOpcode]),
-            (UINT8) Op->Asl.AmlOpcode);
+            (UINT8) Op->Asl.AmlOpcode, ACPI_TYPE_METHOD);
         break;
 
     case AML_PROCESSOR_OP:
@@ -346,7 +347,7 @@ LsAmlOffsetWalk (
         LsEmitOffsetTableEntry (FileId, Node,
             (Gbl_CurrentAmlOffset + OffsetOfOpcode),
             Op->Asl.ParseOpName, NextOp->Asl.Value.Integer,
-            (UINT8) 0x0C); /* DWORD opcode */
+            (UINT8) 0x0C /* DWORD opcode */, ACPI_TYPE_PROCESSOR);
         break;
 
     default:
@@ -368,6 +369,7 @@ LsAmlOffsetWalk (
  *              OpName          - Name of the AML opcode
  *              Value           - Current value of the AML field
  *              AmlOpcode       - Opcode associated with the field
+ *              ObjectType      - ACPI object type
  *
  * RETURN:      None
  *
@@ -382,7 +384,8 @@ LsEmitOffsetTableEntry (
     UINT32                  Offset,
     char                    *OpName,
     UINT64                  Value,
-    UINT8                   AmlOpcode)
+    UINT8                   AmlOpcode,
+    ACPI_OBJECT_TYPE        ObjectType)
 {
     ACPI_BUFFER             TargetPath;
     ACPI_STATUS             Status;
@@ -409,8 +412,9 @@ LsEmitOffsetTableEntry (
      * Max Length for Integers is 8 bytes.
      */
     FlPrintFile (FileId,
-        "    {%-29s 0x%8.8X, 0x%2.2X, 0x%8.8X%8.8X}, /* %s */\n",
-        MsgBuffer, Offset, AmlOpcode, ACPI_FORMAT_UINT64 (Value), OpName);
+        "    {%-29s 0x%8.8X, 0x%2.2X, 0x%2.2X, 0x%8.8X%8.8X}, /* %s */\n",
+        MsgBuffer, Offset, AmlOpcode, ObjectType,
+        ACPI_FORMAT_UINT64 (Value), OpName);
 }
 
 
@@ -439,6 +443,7 @@ LsDoOffsetTableHeader (
         "    char                   *Pathname;\n"
         "    unsigned long          Offset;\n"
         "    unsigned char          Opcode;\n"
+        "    unsigned char          ObjectType;\n"
         "    unsigned long long     Value;\n"
         "} AML_OFFSET_TABLE_ENTRY;\n\n");
 
