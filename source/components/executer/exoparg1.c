@@ -1081,10 +1081,17 @@ AcpiExOpcode_1A_0T_1R (
                      * add another reference to the referenced object, however.
                      */
                     ReturnDesc = *(Operand[0]->Reference.Where);
-                    if (ReturnDesc)
+                    if (!ReturnDesc)
                     {
-                        AcpiUtAddReference (ReturnDesc);
+                        /*
+                         * Element is NULL, do not allow the dereference.
+                         * This provides compatibility with other ACPI
+                         * implementations.
+                         */
+                        return_ACPI_STATUS (AE_AML_UNINITIALIZED_ELEMENT);
                     }
+
+                    AcpiUtAddReference (ReturnDesc);
                     break;
 
                 default:
