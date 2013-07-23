@@ -580,6 +580,7 @@ Method(m70c, 3)
 	m70d(arg2, b000)
 
 	if (LEqual(Local3, 0x02 /* PCI_Config */)) {}
+	elseif (LEqual(Local3, 0x03 /* EmbbededControl */)) {}
 	elseif (LEqual(Local3, 0x04 /* SMBus */)) {}
 	elseif (LEqual(Local3, 0x05 /* SystemCMOS */)) {}
 	elseif (LEqual(Local3, 0x06 /* PciBarTarget */)) {}
@@ -591,7 +592,7 @@ Method(m70c, 3)
 		CH03(arg0, z141, 24, arg2, Local3)
 
 		Store(ObjectType(Derefof(Local6)), Local0)
-		Store(c00d, Local1)
+		Store(c00b, Local1)
 		if (LNotEqual(Local0, Local1)) {
 			err(arg0, z141, 25, 0, 0, Local0, Local1)
 		} else {
