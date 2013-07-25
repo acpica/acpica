@@ -617,7 +617,11 @@ Method(m151)
 	 * Updated according to Bug 85 fix: no exception is expected
 	 * since the value is not processed.
 	 */
-	CH04(ts, 0, 62, z058, 89, 0, 0)
+	/*
+	 * OBSOLETE July 2013. DerefOf on an empty package element now causes error
+	 * CH04(ts, 0, 62, z058, 89, 0, 0)
+	 */
+	CH04(ts, 1, 51, z058, 89, 0, 0)	// AE_AML_UNINITIALIZED_ELEMENT
 
 	Add(DeRefOf(Index(p000, 3)), 1, Local5)
 
