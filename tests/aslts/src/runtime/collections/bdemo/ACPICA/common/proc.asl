@@ -165,7 +165,7 @@ Method(md6a, 7)
 				Store(Index(arg0, arg2), Local0)
 				CH03("", 0, 0x100, 0, 0)
 				Store(DerefOf(Local0), Local1)
-				CH04("", 0, 62, 0, 0x101, 0, 0) // AE_AML_NO_RETURN_VALUE
+				CH04("", 1, 51, 0, 0x101, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
 
 				// Just before written area
 
@@ -174,7 +174,7 @@ Method(md6a, 7)
 				Store(Index(arg0, Local1), Local0)
 				CH03("", 0, 0x102, 0, 0)
 				Store(DerefOf(Local0), Local1)
-				CH04("", 0, 62, 0, 0x103, 0, 0) // AE_AML_NO_RETURN_VALUE
+				CH04("", 1, 51, 0, 0x103, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
 			}
 
 			// Just after pre-initialized and written areas
@@ -189,7 +189,7 @@ Method(md6a, 7)
 				Store(Index(arg0, Local7), Local0)
 				CH03("", 0, 0x104, 0, 0)
 				Store(DerefOf(Local0), Local1)
-				CH04("", 0, 62, 0, 0x105, 0, 0) // AE_AML_NO_RETURN_VALUE
+				CH04("", 1, 51, 0, 0x105, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
 
 				// Last element of Package
 
@@ -198,7 +198,7 @@ Method(md6a, 7)
 				Store(Index(arg0, Local1), Local0)
 				CH03("", 0, 0x106, 0, 0)
 				Store(DerefOf(Local0), Local1)
-				CH04("", 0, 62, 0, 0x107, 0, 0) // AE_AML_NO_RETURN_VALUE
+				CH04("", 1, 51, 0, 0x107, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
 			}
 		} else {
 			// Just after pre-initialized area
@@ -207,7 +207,7 @@ Method(md6a, 7)
 			Store(Index(arg0, arg2), Local0)
 			CH03("", 0, 0x108, 0, 0)
 			Store(DerefOf(Local0), Local1)
-			CH04("", 0, 62, 0, 0x109, 0, 0) // AE_AML_NO_RETURN_VALUE
+			CH04("", 1, 51, 0, 0x109, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
 
 			// Last element of Package
 
@@ -216,7 +216,7 @@ Method(md6a, 7)
 			Store(Index(arg0, Local1), Local0)
 			CH03("", 0, 0x10a, 0, 0)
 			Store(DerefOf(Local0), Local1)
-			CH04("", 0, 62, 0, 0x10b, 0, 0) // AE_AML_NO_RETURN_VALUE
+			CH04("", 1, 51, 0, 0x10b, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
 		}
 	}
 
@@ -296,7 +296,7 @@ Method(md6b, 6)
 		Store(Index(arg0, arg5), Local0)
 		CH03("", 0, 0x114, 0, 0)
 		Store(DerefOf(Local0), Local1)
-		CH04("", 0, 62, 0, 0x115, 0, 0) // AE_AML_NO_RETURN_VALUE
+		CH04("", 1, 51, 0, 0x115, 0, 0) // AE_AML_UNINITIALIZED_ELEMENT
 
 	} else {
 
