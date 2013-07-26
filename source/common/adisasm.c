@@ -413,6 +413,10 @@ AdAmlDisassemble (
         {
             AcpiDmClearExternalList ();
         }
+
+        /* Load any externals defined in the optional external ref file */
+
+        AcpiDmGetExternalsFromFile ();
     }
     else
     {

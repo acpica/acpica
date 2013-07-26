@@ -1289,7 +1289,8 @@ typedef struct acpi_external_list
 
 /* Values for Flags field above */
 
-#define ACPI_IPATH_ALLOCATED    0x01
+#define ACPI_IPATH_ALLOCATED        0x01
+#define ACPI_FROM_REFERENCE_FILE    0x02
 
 
 typedef struct acpi_external_file
