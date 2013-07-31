@@ -5,16 +5,21 @@
 #                          git repository
 #
 # SYNOPSIS:
-#         git-extract.sh [-r] <commit>
+#         git-extract.sh [-f from] [-i index] [-r] [-s sign] <commit>
 #
 # DESCRIPTION:
 #         Extract linuxized patches from the git repository.
+#         Modes:
 #         !-r mode (extracting patches mode):
 #                  Extract the linuxized patch of the given commit from the
 #                  ACPICA git repository.
 #          -r mode (extracting sources mode):
 #                  Extract the linuxized repository of the given commit from
 #                  the ACPICA git repository.
+#         Options:
+#          -f from  Specify name <email> for From field.
+#          -i index Specify patch index.
+#          -s sign  Specify name <email> for Signed-off-by field.
 #	  NOTE: Be careful using this script on a repo in detached HEAD mode.
 #
 # AUTHOR:
@@ -25,26 +30,35 @@
 #
 
 usage() {
-	echo "Usage: `basename $0` [-r] <commit>"
+	echo "Usage: `basename $0` [-f from] [-i index] [-r] [-s sign] <commit>"
 	echo "Where:"
+	echo "     -f: Specify name <email> for From field (default to author)."
+	echo "     -i: Specify patch index (default to 0)."
 	echo "     -r: Extract Linux repository of the commit."
 	echo "         or"
 	echo "         Extract Linux patch of the commit."
+	echo "     -s: Specify name <email> for Signed-off-by field."
 	echo " commit: GIT commit (default to HEAD)."
 	exit -1
 }
 
-while getopts "r" opt
+FROM_EMAIL="%aN <%aE>"
+INDEX=0
+
+while getopts "f:i:rs:" opt
 do
 	case $opt in
 	r) EXTRACT_REPO=true;;
+	s) SIGNED_OFF_BY=$OPTARG;;
+	f) FROM_EMAIL=$OPTARG;;
+	i) INDEX=$OPTARG;;
 	?) echo "Invalid argument $opt"
 	   usage;;
 	esac
 done
 shift $(($OPTIND - 1))
 
-version=$1
+version=`git log -1 -c $1 --format=%H | cut -c1-8`
 
 fulldir()
 {
@@ -97,7 +111,7 @@ linuxize_hierarchy()
 		if [ -d $subdir ]; then
 			mv $subdir/* drivers/acpi/acpica/
 			# Removing directories
-			echo "Removing $subdir"
+			echo "  Removing $subdir"
 			rm -rf $subdir
 		fi
 	done
@@ -132,17 +146,16 @@ linuxize()
 	repo_acpica=$1
 	repo_linux=$2
 
-	echo "Converting format (acpisrc)..."
+	echo " Converting format (acpisrc)..."
 	$ACPISRC -ldqy $repo_acpica/source $repo_linux > /dev/null
 
-	echo "Converting format (hierarchy)..."
+	echo " Converting format (hierarchy)..."
 	(
 		cd $repo_linux
-		ls
 		linuxize_hierarchy
 	)
 
-	echo "Converting format (lindent)..."
+	echo " Converting format (lindent)..."
 	(
 		cd $repo_linux
 		find . -name "*.[ch]" | xargs ../lindent.sh
@@ -150,7 +163,9 @@ linuxize()
 	)
 }
 
-{
+FORMAT="From %H Mon Sep 17 00:00:00 2001%nFrom: $FROM_EMAIL%nData: %aD%nSubject: [PATCH $INDEX] ACPICA: %s%n%n%b"
+
+(
 	echo "Extracting GIT ($GE_git_repo)..."
 	# Cleanup
 	rm -rf $GE_acpica_repo
@@ -177,10 +192,9 @@ linuxize()
 		echo "Creating Linux repository ($GE_linux_repo)..."
 		linuxize $GE_acpica_repo $GE_linux_repo
 	else
-		revision=`git log -1 --format=%H`
 
-		GE_acpica_patch=$CURDIR/acpica-$revision.patch
-		GE_linux_patch=$CURDIR/linux-$revision.patch
+		GE_acpica_patch=$CURDIR/acpica-$version.patch
+		GE_linux_patch=$CURDIR/linux-$version.patch
 
 		# Cleanup
 		rm -rf $GE_linux_after
@@ -211,10 +225,21 @@ linuxize()
 			cd $CURDIR
 			tmpfile=`tempfile`
 			diff -Nurp linux.before linux.after >> $tmpfile
-			git log -c $revision -1 --format="From %H Mon Sep 17 00:00:00 2001%nFrom: %aN <%aE>%nData: %aD%nSubject: [PATCH] %s%n%n%b---" > $GE_linux_patch
-			diffstat $tmpfile >> $GE_linux_patch
-			echo >> $GE_linux_patch
-			cat $tmpfile >> $GE_linux_patch
+
+			if [ $? -ne 0 ]; then
+				GIT_LOG_FORMAT=`echo $FORMAT`
+				eval "git log -c $version -1 --format=\"$GIT_LOG_FORMAT\" > $GE_linux_patch"
+				if [ "x$SIGNED_OFF_BY" != "x" ]; then
+					echo "" >> $GE_linux_patch
+					echo "Signed-off-by: $SIGNED_OFF_BY" >> $GE_linux_patch
+				fi
+				echo "---" >> $GE_linux_patch
+				diffstat $tmpfile >> $GE_linux_patch
+				echo >> $GE_linux_patch
+				cat $tmpfile >> $GE_linux_patch
+			else
+				echo "Linux version is empty, skipping $version..."
+			fi
 			rm -f $tmpfile
 		)
 
@@ -223,4 +248,4 @@ linuxize()
 		rm -rf $GE_linux_after
 		rm -rf $GE_acpica_repo
 	fi
-}
+)
