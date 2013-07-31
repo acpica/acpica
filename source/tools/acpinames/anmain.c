@@ -125,7 +125,8 @@ FILE                    *AcpiGbl_DebugFile;
 static AE_TABLE_DESC    *AeTableListHead = NULL;
 
 
-#define AE_SUPPORTED_OPTIONS    "?h"
+#define AN_UTILITY_NAME             "ACPI Namespace Dump Utility"
+#define AN_SUPPORTED_OPTIONS        "?hv"
 
 
 /******************************************************************************
@@ -147,6 +148,7 @@ usage (
 
     ACPI_USAGE_HEADER ("AcpiNames [options] AMLfile");
     ACPI_OPTION ("-?",                  "Display this message");
+    ACPI_OPTION ("-v",                  "Display version information");
 }
 
 
@@ -312,7 +314,7 @@ main (
 
 
     ACPI_DEBUG_INITIALIZE (); /* For debug version only */
-    printf (ACPI_COMMON_SIGNON ("ACPI Namespace Dump Utility"));
+    printf (ACPI_COMMON_SIGNON (AN_UTILITY_NAME));
 
     if (argc < 2)
     {
@@ -330,8 +332,12 @@ main (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, AE_SUPPORTED_OPTIONS)) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, AN_SUPPORTED_OPTIONS)) != EOF) switch(j)
     {
+    case 'v': /* -v: (Version): signon already emitted, just exit */
+
+        return (0);
+
     case '?':
     case 'h':
     default:

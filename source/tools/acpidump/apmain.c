@@ -186,7 +186,7 @@ ApDisplayUsage (
     ACPI_OPTION ("-h -?",                   "This help message");
     ACPI_OPTION ("-o <File>",               "Redirect output to file");
     ACPI_OPTION ("-s",                      "Print table summaries only");
-    ACPI_OPTION ("-v",                      "Version of this utility");
+    ACPI_OPTION ("-v",                      "Display version information");
     ACPI_OPTION ("-z",                      "Verbose mode");
 
     printf ("\nTable Options:\n");
