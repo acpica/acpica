@@ -217,6 +217,10 @@ AcpiPsGetArguments (
                 return_ACPI_STATUS (Status);
             }
 
+            ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
+                "Pass1: GetNextArg loop - Arg %p, Count %d\n",
+                Arg, WalkState->ArgCount));
+
             if (Arg)
             {
                 Arg->Common.AmlOffset = WalkState->AmlOffset;

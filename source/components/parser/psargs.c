@@ -335,7 +335,6 @@ AcpiPsGetNextNamepath (
     ACPI_PARSE_OBJECT       *NameOp;
     ACPI_OPERAND_OBJECT     *MethodDesc;
     ACPI_NAMESPACE_NODE     *Node;
-    UINT8                   *Start = ParserState->Aml;
 
 
     ACPI_FUNCTION_TRACE (PsGetNextNamepath);
@@ -372,24 +371,10 @@ AcpiPsGetNextNamepath (
         PossibleMethodCall &&
         (Node->Type == ACPI_TYPE_METHOD))
     {
-        if (WalkState->Opcode == AML_UNLOAD_OP)
-        {
-            /*
-             * AcpiPsGetNextNamestring has increased the AML pointer,
-             * so we need to restore the saved AML pointer for method call.
-             */
-            WalkState->ParserState.Aml = Start;
-            WalkState->ArgCount = 1;
-            AcpiPsInitOp (Arg, AML_INT_METHODCALL_OP);
-            return_ACPI_STATUS (AE_OK);
-        }
 
         /* This name is actually a control method invocation */
 
         MethodDesc = AcpiNsGetAttachedObject (Node);
-        ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
-            "Control Method - %p Desc %p Path=%p\n", Node, MethodDesc, Path));
-
         NameOp = AcpiPsAllocOp (AML_INT_NAMEPATH_OP);
         if (!NameOp)
         {
@@ -415,8 +400,8 @@ AcpiPsGetNextNamepath (
         }
 
         ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
-            "Control Method - %p Args %X\n",
-            Node, MethodDesc->Method.ParamCount));
+            "Method invocation [%4.4s] - Args %X, %p\n",
+            Node->Name.Ascii, MethodDesc->Method.ParamCount, Node));
 
         /* Get the number of arguments to expect */
 
@@ -840,7 +825,6 @@ AcpiPsGetNextArg (
     ACPI_PARSE_OBJECT       *Arg = NULL;
     ACPI_PARSE_OBJECT       *Prev = NULL;
     ACPI_PARSE_OBJECT       *Field;
-    UINT32                  Subop;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -931,52 +915,12 @@ AcpiPsGetNextArg (
     case ARGP_TARGET:
     case ARGP_SUPERNAME:
     case ARGP_SIMPLENAME:
-
-        Subop = AcpiPsPeekOpcode (ParserState);
-        if (Subop == 0                  ||
-            AcpiPsIsLeadingChar (Subop) ||
-            ACPI_IS_ROOT_PREFIX (Subop) ||
-            ACPI_IS_PARENT_PREFIX (Subop))
-        {
-            /* NullName or NameString */
-
-            Arg = AcpiPsAllocOp (AML_INT_NAMEPATH_OP);
-            if (!Arg)
-            {
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-
-            /* To support SuperName arg of Unload */
-
-            if (WalkState->Opcode == AML_UNLOAD_OP)
-            {
-                Status = AcpiPsGetNextNamepath (WalkState, ParserState, Arg, 1);
-
-                /*
-                 * If the SuperName arg of Unload is a method call,
-                 * we have restored the AML pointer, just free this Arg
-                 */
-                if (Arg->Common.AmlOpcode == AML_INT_METHODCALL_OP)
-                {
-                    AcpiPsFreeOp (Arg);
-                    Arg = NULL;
-                }
-            }
-            else
-            {
-                Status = AcpiPsGetNextNamepath (WalkState, ParserState, Arg, 0);
-            }
-        }
-        else
-        {
-            /* Single complex argument, nothing returned */
-
-            WalkState->ArgCount = 1;
-        }
-        break;
-
     case ARGP_DATAOBJ:
     case ARGP_TERMARG:
+        /*
+         * These terms must be treated as a possible complex argument
+         * (such as a method invocation).
+         */
 
         /* Single complex argument, nothing returned */
 
