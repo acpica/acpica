@@ -38,7 +38,7 @@
 		Store(Local0, Debug)
 	}
 
-	Method(me52)
+	Method(me52,, Serialized)
 	{
 		Name(run0, 1)
 		Name(run1, 1)
@@ -201,7 +201,7 @@
 	 * exercised simultaneously  during one call to me55
 	 * method.
 	 */
-	Method(me55)
+	Method(me55,, Serialized)
 	{
 		Name(pd02, Package(32) {
 			0,

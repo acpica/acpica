@@ -545,7 +545,7 @@ Method(m0c6, 1)
 }
 
 // Verivication of ?????????????
-Method(m0c7, 3)
+Method(m0c7, 3, Serialized)
 {
 	Name(bs00, 0)
 	Name(cnt0, 0)
@@ -602,7 +602,7 @@ Method(m0c7, 3)
 }
 
 // Run-method
-Method(SW01)
+Method(SW01,, Serialized)
 {
 	Store("TEST: SW01, Switch, Case, Default operators", Debug)
 

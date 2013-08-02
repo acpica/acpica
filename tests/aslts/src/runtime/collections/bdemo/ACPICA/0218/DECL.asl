@@ -53,7 +53,7 @@
  * > .....................
  */
 
-Method(m037)
+Method(m037,, Serialized)
 {
 	Name(i000, 0)
 

@@ -212,7 +212,7 @@ Method(m02e)
 */
 }
 
-Method(m030)
+Method(m030,, Serialized)
 {
 
 	Mutex(T804, 8)

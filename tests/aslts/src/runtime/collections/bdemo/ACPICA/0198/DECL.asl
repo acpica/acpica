@@ -36,7 +36,7 @@
 
 Name(id24, 0)
 
-Method(mfa9) {
+Method(mfa9,, Serialized) {
 
 	Event(e900)
 	Event(e9Z0)
@@ -83,7 +83,7 @@ Method(mfa9) {
 		Store("========================================.", Debug)
 	}
 
-	Method(m001) {
+	Method(m001,, Serialized) {
 
 		Name(b000, Buffer(4) {})
 

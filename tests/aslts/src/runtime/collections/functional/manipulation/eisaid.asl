@@ -63,7 +63,7 @@ Name(p361, Package()
 })
 
 // Run-method
-Method(EIS0)
+Method(EIS0,, Serialized)
 {
 	Name(ts, "EIS0")
 

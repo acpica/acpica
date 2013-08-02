@@ -41,7 +41,7 @@
  * arg5 - maximal number of pre-initialized elements to be verified
  * arg6 - maximal number of written elements to be verified
  */
-Method(md6a, 7)
+Method(md6a, 7, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)

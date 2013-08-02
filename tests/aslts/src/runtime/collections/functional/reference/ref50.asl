@@ -55,7 +55,7 @@ SEE: test ref70 now works in accordance with the current behaviour -
 Name(z111, 111)
 
 // TEST 1: Read of ArgX-ORef with DerefOf
-Method(m221)
+Method(m221,, Serialized)
 {
 	Name(ts, "m221")
 
@@ -71,7 +71,7 @@ Method(m221)
 }
 
 // TEST 2: Read of ArgX-ORef without DerefOf (automatic dereference)
-Method(m222)
+Method(m222,, Serialized)
 {
 	Name(ts, "m222")
 
@@ -91,7 +91,7 @@ Method(m222)
 }
 
 // TEST 3: Read of ArgX-IRef with DerefOf
-Method(m223)
+Method(m223,, Serialized)
 {
 	Name(ts, "m223")
 
@@ -106,7 +106,7 @@ Method(m223)
 }
 
 // TEST 4: Read of ArgX-IRef without DerefOf
-Method(m224)
+Method(m224,, Serialized)
 {
 	Name(ts, "m224")
 
@@ -126,7 +126,7 @@ Method(m224)
 }
 
 // TEST 5.0: Store into ArgX-object doesn't change original data
-Method(m225)
+Method(m225,, Serialized)
 {
 	Name(ts, "m225")
 
@@ -137,7 +137,7 @@ Method(m225)
 }
 
 // TEST 5.1: CopyObject into ArgX-object doesn't change original data
-Method(m226)
+Method(m226,, Serialized)
 {
 	Name(ts, "m226")
 
@@ -147,7 +147,7 @@ Method(m226)
 }
 
 // TEST 6.0: Store into ArgX-ORef changes original data
-Method(m227)
+Method(m227,, Serialized)
 {
 	Name(ts, "m227")
 
@@ -164,7 +164,7 @@ Method(m227)
 }
 
 // TEST 6.1: CopyObject into ArgX-ORef changes original data
-Method(m228)
+Method(m228,, Serialized)
 {
 	Name(ts, "m228")
 
@@ -177,7 +177,7 @@ Method(m228)
 // TEST 7.0: Store into ArgX-IRef
 //
 // ACTUALLY: doesn't write to the original object.
-Method(m229)
+Method(m229,, Serialized)
 {
 	Name(ts, "m229")
 
@@ -190,7 +190,7 @@ Method(m229)
 // TEST 7.1: CopyObject into ArgX-IRef
 //
 // ACTUALLY: doesn't write to the original object.
-Method(m22a)
+Method(m22a,, Serialized)
 {
 	Name(ts, "m22a")
 
@@ -219,7 +219,7 @@ Method(m22b)
 // Create Buffer Field inside Method and write to it.
 //
 // ACTUALLY: writes to the original object.
-Method(m22c)
+Method(m22c,, Serialized)
 {
 	Name(ts, "m22c")
 
@@ -274,7 +274,7 @@ Method(m22c)
 }
 
 // TEST 11: Check RefOf of ArgX-Object (ArgX is any type Object)
-Method(m22d)
+Method(m22d,, Serialized)
 {
 	Name(ts, "m22d")
 
@@ -355,7 +355,7 @@ Method(m233)
 // TEST 19: Check RefOf of ArgX-Buffer (check its Buffer Field)
 //
 // ACTUALLY: doesn't write to the original object.
-Method(m234)
+Method(m234,, Serialized)
 {
 	Name(ts, "m234")
 
@@ -492,7 +492,7 @@ Method(m234)
  *   e from ArgX-IRef to ArgY-ORef
  *   - from ArgX-IRef to ArgY-IRef
  */
-Method(m235)
+Method(m235,, Serialized)
 {
 	Name(ts, "m235")
 
@@ -744,7 +744,7 @@ Method(m235)
  *   - from ArgX-ORef to LocalX
  *   - from ArgX-IRef to LocalX
  */
-Method(m236)
+Method(m236,, Serialized)
 {
 	Name(ts, "m236")
 
@@ -843,7 +843,7 @@ Method(m236)
  *
  * ACTUALLY: doesn't write to the original object
  */
-Method(m237)
+Method(m237,, Serialized)
 {
 	Name(ts, "m237")
 
@@ -897,7 +897,7 @@ Method(m237)
  *
  * ACTUALLY: doesn't write to the original object
  */
-Method(m238)
+Method(m238,, Serialized)
 {
 	Name(ts, "m238")
 
@@ -983,7 +983,7 @@ Method(m238)
  *    - doesn't write to the original object
  *    - the repeated attempts to overwrite ORef-ArgX cause exceptions
  */
-Method(m239)
+Method(m239,, Serialized)
 {
 	Name(ts, "m239")
 
@@ -1138,7 +1138,7 @@ Method(m239)
  *    - doesn't write to the original object
  *    - the repeated attempts to overwrite ORef-ArgX cause exceptions
  */
-Method(m23a)
+Method(m23a,, Serialized)
 {
 	Name(ts, "m23a")
 
@@ -1396,7 +1396,7 @@ Method(m251)
  * and IRef to named objects
  * {type,size,value}.
  */
-Method(m252)
+Method(m252,, Serialized)
 {
 	Name(ts, "m252")
 
@@ -1465,7 +1465,7 @@ Method(m255)
 /*
  * TEST 39: Check write(x, Index(String))
  */
-Method(m256)
+Method(m256,, Serialized)
 {
 	Name(ts, "m256")
 
@@ -1495,7 +1495,7 @@ Method(m256)
 /*
  * TEST 40: Check write(x, Index(Buffer))
  */
-Method(m257)
+Method(m257,, Serialized)
 {
 	Name(ts, "m257")
 
@@ -1520,7 +1520,7 @@ Method(m257)
 /*
  * TEST 41: Check Store(Object, Index(Package(){Uninitialized}))
  */
-Method(m258, 1)
+Method(m258, 1, Serialized)
 {
 	Name(ts, "m258")
 
@@ -1564,7 +1564,7 @@ Method(m258, 1)
  *
  * CURRENTLY: compiler failed CopyObject(xx, Index(xx,xx))
  */
-Method(m259)
+Method(m259,, Serialized)
 {
 	ts00("m259")
 
@@ -1596,7 +1596,7 @@ Method(m259)
 /*
  * TEST 43: Check Store(RefOf(Object), Index(Package(){Uninitialized}))
  */
-Method(m25a)
+Method(m25a,, Serialized)
 {
 	ts00("m25a")
 
@@ -1612,7 +1612,7 @@ Method(m25a)
 /*
  * TEST 44: Check Store(Index(Object,x), Index(Package(){Uninitialized}))
  */
-Method(m25b)
+Method(m25b,, Serialized)
 {
 	ts00("m25b")
 
@@ -1630,7 +1630,7 @@ Method(m25b)
 /*
  * TEST 45: Check write(x, Index(Package(){Constant}))
  */
-Method(m25c)
+Method(m25c,, Serialized)
 {
 	Name(ts, "m25c")
 
@@ -1674,7 +1674,7 @@ Method(m25d)
 /*
  * TEST 47: Check Store(Object, Index(Package(){ORef}))
  */
-Method(m25e)
+Method(m25e,, Serialized)
 {
 	ts00("m25e")
 
@@ -1705,7 +1705,7 @@ Method(m25e)
 /*
  * TEST 48: Check Store(Object, Index(Package(){IRef}))
  */
-Method(m25f)
+Method(m25f,, Serialized)
 {
 	ts00("m25f")
 
@@ -1746,7 +1746,7 @@ Method(m260)
 	m355()
 }
 
-Method(m354)
+Method(m354,, Serialized)
 {
 	Name(ts, "m354")
 
@@ -1802,7 +1802,7 @@ Method(m354)
 	END0()
 }
 
-Method(m355)
+Method(m355,, Serialized)
 {
 	Name(ts, "m355")
 
@@ -1861,7 +1861,7 @@ Method(m355)
 /*
  * TEST 50: ORef-ArgX
  */
-Method(m261)
+Method(m261,, Serialized)
 {
 	Name(ts, "m261")
 
@@ -1893,7 +1893,7 @@ Method(m261)
 	END0()
 }
 
-Method(m356, 1)
+Method(m356, 1, Serialized)
 {
 	Name(ts, "m356")
 
@@ -1949,7 +1949,7 @@ Method(m356, 1)
 	END0()
 }
 
-Method(m357, 1)
+Method(m357, 1, Serialized)
 {
 	Name(ts, "m357")
 
@@ -2008,7 +2008,7 @@ Method(m357, 1)
 /*
  * TEST 51: ORef-NamedX
  */
-Method(m262)
+Method(m262,, Serialized)
 {
 	Name(ts, "m262")
 
@@ -2031,7 +2031,7 @@ Method(m262)
 	}
 }
 
-Method(m358)
+Method(m358,, Serialized)
 {
 	Name(ts, "m358")
 
@@ -2089,7 +2089,7 @@ Method(m358)
 	END0()
 }
 
-Method(m359)
+Method(m359,, Serialized)
 {
 	Name(ts, "m359")
 
@@ -2163,7 +2163,7 @@ Method(m263)
 	m35b()
 }
 
-Method(m35a)
+Method(m35a,, Serialized)
 {
 	Name(ts, "m35a")
 
@@ -2320,7 +2320,7 @@ Method(m264)
 	m35d()
 }
 
-Method(m35c)
+Method(m35c,, Serialized)
 {
 	Name(ts, "m35c")
 
@@ -2474,7 +2474,7 @@ Method(m35d)
 /*
  * TEST 54: IRef-ArgX
  */
-Method(m265)
+Method(m265,, Serialized)
 {
 	Name(ts, "m265")
 
@@ -2494,7 +2494,7 @@ Method(m265)
 	m380(ts, i010, z111, 1)
 }
 
-Method(m35e, 1)
+Method(m35e, 1, Serialized)
 {
 	Name(ts, "m35e")
 
@@ -2648,7 +2648,7 @@ Method(m35f, 1)
 /*
  * TEST 55: IRef-NamedX
  */
-Method(m266)
+Method(m266,, Serialized)
 {
 	Name(ts, "m266")
 
@@ -2667,7 +2667,7 @@ Method(m266)
 	m361()
 }
 
-Method(m360)
+Method(m360,, Serialized)
 {
 	Name(ts, "m360")
 
@@ -2825,7 +2825,7 @@ Method(m361)
 /*
  * TEST 56: IRef-El_of_Package
  */
-Method(m267)
+Method(m267,, Serialized)
 {
 	ts00("m267")
 
@@ -2876,7 +2876,7 @@ Method(m26a)
 /*
  * TEST 60: Package total
  */
-Method(m26b)
+Method(m26b,, Serialized)
 {
 	Name(ts, "m26b")
 
@@ -2995,7 +2995,7 @@ Method(m26d)
 /*
  * TEST 63: All the legal ways of WRITING ORef reference to some target location
  */
-Method(m26e)
+Method(m26e,, Serialized)
 {
 	Name(ts, "m26e")
 
@@ -3016,7 +3016,7 @@ Method(m26e)
 	CH03(ts, 0, 1, 0, 0)
 }
 
-Method(m365)
+Method(m365,, Serialized)
 {
 	Name(ts, "m365")
 
@@ -3038,7 +3038,7 @@ Method(m365)
 	Name(ppp0, Package(1) {0x11})
 	Name(ppp1, Package(1) {})
 
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		Name(i002, 0x77)
 
@@ -3247,7 +3247,7 @@ Method(m365)
 	END0()
 }
 
-Method(m366)
+Method(m366,, Serialized)
 {
 	Name(ts, "m366")
 
@@ -3260,7 +3260,7 @@ Method(m366)
 	Name(ppp0, Package(1) {})
 	Name(ppp1, Package(1) {0})
 
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		Name(i002, 0x77)
 
@@ -3359,7 +3359,7 @@ Method(m26f)
 /*
  * TEST 65: All the legal SOURCES of references (both ORef and IRef)
  */
-Method(m270)
+Method(m270,, Serialized)
 {
 	Name(ts, "m270")
 
@@ -3389,7 +3389,7 @@ Method(m270)
 	CH03(ts, 0, 4, 0, 0)
 }
 
-Method(m367)
+Method(m367,, Serialized)
 {
 	Name(ts, "m367")
 
@@ -3525,7 +3525,7 @@ Method(m367)
 	END0()
 }
 
-Method(m368)
+Method(m368,, Serialized)
 {
 	Name(ts, "m368")
 
@@ -3624,7 +3624,7 @@ Method(m276)
 
 
 // Simple TEST 1: read of ArgX-ORef with DerefOf
-Method(m341)
+Method(m341,, Serialized)
 {
 	Name(ts, "m341")
 
@@ -3644,7 +3644,7 @@ Method(m341)
 }
 
 // Simple TEST 2: read of ArgX-ORef without DerefOf
-Method(m342)
+Method(m342,, Serialized)
 {
 	Name(ts, "m342")
 
@@ -3664,7 +3664,7 @@ Method(m342)
 }
 
 // Simple TEST 3: read of ArgX-IRef with DerefOf
-Method(m343)
+Method(m343,, Serialized)
 {
 	Name(ts, "m343")
 
@@ -3684,7 +3684,7 @@ Method(m343)
 }
 
 // Simple TEST 4: read of ArgX-IRef without DerefOf
-Method(m344)
+Method(m344,, Serialized)
 {
 	Name(ts, "m344")
 
@@ -3703,7 +3703,7 @@ Method(m344)
 }
 
 // Simple TEST 8
-Method(m345)
+Method(m345,, Serialized)
 {
 	Name(ts, "m345")
 
@@ -3801,7 +3801,7 @@ Method(m345)
 	END0()
 }
 
-Method(m346)
+Method(m346,, Serialized)
 {
 	Name(ts, "m346")
 
@@ -3840,7 +3840,7 @@ Method(m346)
 	}
 }
 
-Method(m347)
+Method(m347,, Serialized)
 {
 	Name(ts, "m347")
 
@@ -3869,7 +3869,7 @@ Method(m347)
 	}
 }
 
-Method(m348)
+Method(m348,, Serialized)
 {
 	Name(ts, "m348")
 
@@ -3909,7 +3909,7 @@ Method(m348)
 	}
 }
 
-Method(m349)
+Method(m349,, Serialized)
 {
 	Name(ts, "m349")
 
@@ -3970,7 +3970,7 @@ Method(m349)
 	}
 }
 
-Method(m34a)
+Method(m34a,, Serialized)
 {
 	Name(ts, "m34a")
 
@@ -4113,7 +4113,7 @@ Method(m34a)
 	}
 }
 
-Method(m34b)
+Method(m34b,, Serialized)
 {
 	Name(ts, "m34b")
 
@@ -4264,7 +4264,7 @@ Method(m34b)
 }
 
 // Simple TEST 17
-Method(m34c)
+Method(m34c,, Serialized)
 {
 	Name(ts, "m34c")
 
@@ -4499,7 +4499,7 @@ Method(m34c)
 	END0()
 }
 
-Method(m34d, 1)
+Method(m34d, 1, Serialized)
 {
 	Name(ts, "m34d")
 
@@ -4775,7 +4775,7 @@ Method(m34d, 1)
 	END0()
 }
 
-Method(m34e, 1)
+Method(m34e, 1, Serialized)
 {
 	Name(ts, "m34e")
 
@@ -4850,7 +4850,7 @@ Method(m34e, 1)
 	END0()
 }
 
-Method(m34f)
+Method(m34f,, Serialized)
 {
 	Name(ts, "m34f")
 
@@ -4891,7 +4891,7 @@ Method(m34f)
 }
 
 // CURRENTLY: compiler failed CopyObject(xx, RefOf(xx))
-Method(m350)
+Method(m350,, Serialized)
 {
 	Name(ts, "m350")
 
@@ -4900,7 +4900,7 @@ Method(m350)
 
 // Write Integer into Package and verify the obtained contents
 // arg0 - Package
-Method(m351, 1)
+Method(m351, 1, Serialized)
 {
 	Name(ts, "m351")
 
@@ -4972,7 +4972,7 @@ Method(m352, 1)
 // Write IRef (Index(p955, x)) into Package
 // arg0 - Package
 // arg1 - 0 - Store, otherwise - CopyObject
-Method(m353, 2)
+Method(m353, 2, Serialized)
 {
 	Name(lpN0, 17)
 	Name(lpC0, 0)
@@ -5000,7 +5000,7 @@ Method(m353, 2)
 	}
 }
 
-Method(m362)
+Method(m362,, Serialized)
 {
 	Name(i000, 0)
 
@@ -5014,7 +5014,7 @@ Method(m362)
 	m380("m362", i000, z111, 0)
 }
 
-Method(m363)
+Method(m363,, Serialized)
 {
 	Name(i000, 0)
 
@@ -5028,7 +5028,7 @@ Method(m363)
 }
 
 
-Method(m364)
+Method(m364,, Serialized)
 {
 	Name(i000, 0)
 
@@ -5094,7 +5094,7 @@ Method(m4d3) {}
 Method(m1e0, 1) {}
 */
 
-Method(mfab)
+Method(mfab,, Serialized)
 {
 	/*
 	 * Update required: do this test for different type target objects
@@ -5136,7 +5136,7 @@ Method(mfab)
 	}
 }
 
-Method(mfad)
+Method(mfad,, Serialized)
 {
 	/*
 	 * Update required: do this test for different type target objects
@@ -5186,7 +5186,7 @@ Method(mfad)
 	}
 }
 
-Method(mfc3)
+Method(mfc3,, Serialized)
 {
 	/*
 	 * Update required: do this test for different type target objects
@@ -5237,7 +5237,7 @@ Method(mfc3)
 }
 
 
-Method(mfc4)
+Method(mfc4,, Serialized)
 {
 	/*
 	 * Update required: do this test for different type target objects

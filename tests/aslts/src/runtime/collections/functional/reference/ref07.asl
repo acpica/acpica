@@ -49,7 +49,7 @@ Name(V001, 0) // index of element of Package
  * Perform all the ways reading element of
  * Package passed by ArgX.
  */
-Method(m1c1)
+Method(m1c1,, Serialized)
 {
 	Name(ppp0, Package(4) {
 			0x77,
@@ -80,7 +80,7 @@ Method(m1c1)
  * Read NamedX element of Package
  * {Integer, String, Buffer, Package}.
  */
-Method(m1c2)
+Method(m1c2,, Serialized)
 {
 	Name(ts, "m1c2")
 
@@ -123,7 +123,7 @@ Method(m1c2)
 // arg4,
 // arg5,
 // arg6 - auxiliary, for arbitrary use
-Method(m1c3, 7)
+Method(m1c3, 7, Serialized)
 {
 	Name(ts, "m1c3")
 
@@ -698,7 +698,7 @@ Method(m1c3, 7)
 }
 
 // Check Uninitialized element of Package
-Method(m1c4)
+Method(m1c4,, Serialized)
 {
 	Name(ppp0, Package(10) {
 			0x77,
@@ -721,7 +721,7 @@ Method(m1c4)
 }
 
 // The chain of Index_References
-Method(m1c5)
+Method(m1c5,, Serialized)
 {
 	Name(ppp0, Package(4) {
 			0x77,
@@ -773,7 +773,7 @@ Method(m1c5)
 // Access to the Method named object element of Package
 
 // Methods without parameters
-Method(m1c7)
+Method(m1c7,, Serialized)
 {
 	Name(ts, "m1c7")
 
@@ -834,7 +834,7 @@ Method(m1c7)
 
 // CURRENTLY: compiler failed, Too few arguments (M002 requires X)
 // Methods with parameters
-Method(m1c8)
+Method(m1c8,, Serialized)
 {
 	Name(ts, "m1c8")
 
@@ -905,7 +905,7 @@ Method(m1c8)
 }
 
 // DerefOf of the Method named object element of Package
-Method(m1c9)
+Method(m1c9,, Serialized)
 {
 	Name(ts, "m1c9")
 
@@ -983,11 +983,11 @@ Method(m1c9)
 }
 
 // Size of Package
-Method(m1ca)
+Method(m1ca,, Serialized)
 {
 	Name(ts, "m1ca")
 
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		Name(p000, Package(arg0) {})
 
@@ -996,7 +996,7 @@ Method(m1ca)
 		CH04(ts, 0, 0xff, z116, 161, 0, 0)
 	}
 
-	Method(m001, 1)
+	Method(m001, 1, Serialized)
 	{
 		Name(p000, Package(Arg0) {})
 
@@ -1031,7 +1031,7 @@ Method(m1ca)
 		}
 	}
 
-	Method(m003)
+	Method(m003,, Serialized)
 	{
 		Name(p000, Package(2) {})
 
@@ -1040,7 +1040,7 @@ Method(m1ca)
 		CH04(ts, 0, 0xff, z116, 163, 0, 0)
 	}
 
-	Method(m004)
+	Method(m004,, Serialized)
 	{
 		Name(p000, Package(255) {})
 
@@ -1066,7 +1066,7 @@ Method(m1ca)
 }
 
 // Size of Package, see comma "6,})"
-Method(m1cb)
+Method(m1cb,, Serialized)
 {
 	Name(ts, "m1cb")
 
@@ -1118,7 +1118,7 @@ Method(m1cd, 4)
 // Check the read automatic dereference
 // when accessing element of Package.
 
-Method(m1ce)
+Method(m1ce,, Serialized)
 {
 	Name(ts, "m1ce")
 
@@ -1128,7 +1128,7 @@ Method(m1ce)
 	m1cd(ts, Index(p000, 0), 0x78, 0)
 }
 
-Method(m1cf)
+Method(m1cf,, Serialized)
 {
 	Name(ts, "m1cf")
 
@@ -1146,7 +1146,7 @@ Method(m1cf)
 	m1cd(ts, Local1, 0x78, 0)
 }
 
-Method(m1d0)
+Method(m1d0,, Serialized)
 {
 	Name(ts, "m1d0")
 
@@ -1179,7 +1179,7 @@ Method(m1d0)
 
 // LocalX
 
-Method(m1d1)
+Method(m1d1,, Serialized)
 {
 	Name(ts, "m1d1")
 
@@ -1198,7 +1198,7 @@ Method(m1d1)
 	CH04(ts, 0, 0xff, z116, 174, 0, 0)
 }
 
-Method(m1d2)
+Method(m1d2,, Serialized)
 {
 	Name(ts, "m1d2")
 
@@ -1219,7 +1219,7 @@ Method(m1d2)
 
 // ArgX
 
-Method(m1d3, 2)
+Method(m1d3, 2, Serialized)
 {
 	Name(ts, "m1d3")
 
@@ -1238,7 +1238,7 @@ Method(m1d3, 2)
 	CH04(ts, 0, 0xff, z116, 180, 0, 0)
 }
 
-Method(m1d4, 2)
+Method(m1d4, 2, Serialized)
 {
 	Name(ts, "m1d4")
 
@@ -1262,7 +1262,7 @@ Method(m1d4, 2)
 
 // NamedX
 
-Method(m1d5)
+Method(m1d5,, Serialized)
 {
 	Name(ts, "m1d5")
 	Name(i001, 0)
@@ -1341,7 +1341,7 @@ Method(m1d5)
 	Store("<-------- 1111>", debug)
 }
 
-Method(m1d6)
+Method(m1d6,, Serialized)
 {
 	Name(ts, "m1d6")
 
@@ -1362,7 +1362,7 @@ Method(m1d6)
 
 // Out of Package
 
-Method(m1d7)
+Method(m1d7,, Serialized)
 {
 	Name(ts, "m1d7")
 
@@ -1379,7 +1379,7 @@ Method(m1d7)
 	CH04(ts, 0, 0xff, z116, 195, 0, 0)
 }
 
-Method(m1d8)
+Method(m1d8,, Serialized)
 {
 	Name(ts, "m1d8")
 
@@ -1396,7 +1396,7 @@ Method(m1d8)
 	CH04(ts, 0, 0xff, z116, 198, 0, 0)
 }
 
-Method(m1db)
+Method(m1db,, Serialized)
 {
 	Name(ts, "m1db")
 
@@ -1427,7 +1427,7 @@ Method(m1db)
 // WRITE
 
 
-Method(m1d9)
+Method(m1d9,, Serialized)
 {
 	Name(p000, Package(3) {5,0,7})
 
@@ -1441,7 +1441,7 @@ Method(m1d9)
 	m383("m1d9", p000, z116, 140)
 }
 
-Method(m1da)
+Method(m1da,, Serialized)
 {
 	Name(p000, Package(3) {5,0,7})
 

@@ -69,7 +69,7 @@
 		Return(RefOf(id10))
 	}
 
-	Method(me86)
+	Method(me86,, Serialized)
 	{
 		Name(prn0, 0)
 

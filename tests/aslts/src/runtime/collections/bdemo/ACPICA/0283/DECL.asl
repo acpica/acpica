@@ -58,7 +58,7 @@ Device (D283) {
 		SUM, 8,
 	}
 
-	Method(TST0)
+	Method(TST0,, Serialized)
 	{
 		Name(HI0, 0)
 

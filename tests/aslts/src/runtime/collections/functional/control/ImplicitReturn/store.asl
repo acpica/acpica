@@ -34,7 +34,7 @@
 
 Name(z138, 138)
 
-Method(mf6c)
+Method(mf6c,, Serialized)
 {
 	Name(fl00, 0)
 	Name(i000, 0xabcd0000)
@@ -131,7 +131,7 @@ Method(mf6c)
 		}
 	}
 
-	Method(m007)
+	Method(m007,, Serialized)
 	{
 		Name(i000, 0)
 		Name(num, 0)
@@ -377,7 +377,7 @@ Method(mf6c)
 	}
 }
 
-Method(mf6e)
+Method(mf6e,, Serialized)
 {
 	Name(fl00, 0)
 	Name(i000, 0xaaaa0000)
@@ -488,7 +488,7 @@ Method(mf6e)
 		}
 	}
 
-	Method(m009)
+	Method(m009,, Serialized)
 	{
 		Name(i000, 0xabcd0000)
 
@@ -603,7 +603,7 @@ Method(mf6e)
 	Name(i006, 0x11220000)
 	Name(i007, 0x33440000)
 
-	Method(m005, 1)
+	Method(m005, 1, Serialized)
 	{
           Name(r001, 1)
           Name(r002, 1)
@@ -1108,7 +1108,7 @@ Method(mf6e)
 }
 
 // Reproduces specific implicit return conditions
-Method(mff1)
+Method(mff1,, Serialized)
 {
 	Name(fl00, 0)
 	Name(i000, 0)

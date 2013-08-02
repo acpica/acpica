@@ -1720,7 +1720,7 @@ Name (p459, Package() {
 })
 
 
-Method(RT24)
+Method(RT24,, Serialized)
 {
 	Name(ts, "RT24")
 

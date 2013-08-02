@@ -173,7 +173,7 @@ Method(m0f7, 1)
 // arg1 - trace of repetition Package
 // arg2 - task of repetition Package
 // arg3 - number of levels
-Method(m0f8, 4)
+Method(m0f8, 4, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -272,7 +272,7 @@ Method(m0f9, 4)
 // The test
 // arg0 - name of test
 // arg1 - the number of While operators to be traveled
-Method(m0fa, 2)
+Method(m0fa, 2, Serialized)
 {
 	Concatenate("The number of While operators to be traveled: ", arg1, Local0)
 	Store(Local0, Debug)
@@ -5788,7 +5788,7 @@ Method(m0fa, 2)
 }
 
 // Run-method
-Method(WHL0)
+Method(WHL0,, Serialized)
 {
 	Store("TEST: WHL0, While, Break, Continue operators", Debug)
 

@@ -544,7 +544,7 @@ Method(m1a8, 3, Serialized)
 }
 
 // Simple test, only some particular ways of obtaining references
-Method(m1a9)
+Method(m1a9,, Serialized)
 {
 	// FILE BUG: CondRefOf doesnt cause exception but only under some conditions,
 	// namely for rn00 == 2.
@@ -809,7 +809,7 @@ Method(m1a9)
 	} // if(rn00)
 }
 
-Method(m106)
+Method(m106,, Serialized)
 {
 	Name(ts, "m106")
 
@@ -829,7 +829,7 @@ Method(m106)
 
 
 // Run-method
-Method(REF5)
+Method(REF5,, Serialized)
 {
 	Name(p91e, Package() {0xabcd0000})
 

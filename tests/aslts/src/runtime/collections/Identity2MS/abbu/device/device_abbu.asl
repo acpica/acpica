@@ -32,7 +32,7 @@
 
 Name(z172, 172)
 
-Method(dvf2)
+Method(dvf2,, Serialized)
 {
 	Name(ts, "dvf2")
 	Device(d000) {
@@ -66,7 +66,7 @@ Method(dvf2)
  *
  * fail
  */
-Method(mf26)
+Method(mf26,, Serialized)
 {
 	Name(ts, "mf26")
 	Name(i000, 0xabcd0000)

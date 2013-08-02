@@ -34,7 +34,7 @@
 
 Method(m1e9)
 {
-	Method(m000)
+	Method(m000,, Serialized)
 	{
 		Name(i000, 0)
 		Name(max0, 10)

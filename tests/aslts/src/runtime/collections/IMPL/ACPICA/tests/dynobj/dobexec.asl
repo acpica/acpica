@@ -33,7 +33,7 @@
 Name(z129, 129)
 
 // The sample test
-Method(m370)
+Method(m370,, Serialized)
 {
 	// Flag of printing
 	Name(pr, 0)
@@ -134,7 +134,7 @@ if (rn00) {
 }
 
 // Check simple particular operations
-Method(m371)
+Method(m371,, Serialized)
 {
 	// Because Local0-7 all have been taken, we declare a new variable here.
 	Name(temp,0)
@@ -184,7 +184,7 @@ Method(m371)
 	// Optional Results, writing into uninitialized LocalX
 
 	// Add
-	Method(m000)
+	Method(m000,, Serialized)
 	{
 		Name(pp00, Package(1) {})
 		Name(pp01, Package(1) {})
@@ -219,7 +219,7 @@ Method(m371)
 	}
 
 	// And
-	Method(m001)
+	Method(m001,, Serialized)
 	{
 		Name(pp00, Package(1) {})
 		Name(pp01, Package(1) {})
@@ -254,7 +254,7 @@ Method(m371)
 	}
 
 	// Store
-	Method(m002)
+	Method(m002,, Serialized)
 	{
 		Name(pp00, Package(1) {})
 		Name(pp01, Package(1) {})

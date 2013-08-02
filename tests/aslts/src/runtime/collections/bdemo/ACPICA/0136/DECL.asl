@@ -34,7 +34,7 @@
  * ROOT CAUSE
  */
 
-	Method(mf27)
+	Method(mf27,, Serialized)
 	{
 		Name(b000, Buffer(1){0x3c})
 		Name(b001, Buffer(3){0x01, 0x02, 0x03})

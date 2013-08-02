@@ -32,7 +32,7 @@
  * SUMMARY: String to Buffer conversion doesn't reduce the size of resulting Buffer
  */
 
-Method(mdf9)
+Method(mdf9,, Serialized)
 {
 	// Table 17-8 Object Conversion Rules,
 	// String -->> Buffer Rule:

@@ -36,7 +36,7 @@
  */
 
 // Run-method
-Method(DYN0)
+Method(DYN0,, Serialized)
 {
 	Name(ts, "DYN0")
 

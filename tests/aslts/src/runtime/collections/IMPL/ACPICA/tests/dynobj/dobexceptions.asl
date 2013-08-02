@@ -33,7 +33,7 @@
 Name(z132, 132)
 
 // Check exceptions
-Method(m374)
+Method(m374,, Serialized)
 {
 	Name(ts, "m374")
 

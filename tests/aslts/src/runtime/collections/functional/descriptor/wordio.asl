@@ -450,7 +450,7 @@ Name (p421, Package() {
 		0x0f, 0x79, 0x00},
 })
 
-Method(RT0e)
+Method(RT0e,, Serialized)
 {
 	Name(ts, "RT0e")
 

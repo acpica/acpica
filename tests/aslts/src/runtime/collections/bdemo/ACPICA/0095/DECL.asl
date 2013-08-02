@@ -37,7 +37,7 @@
 		return (arg0)
 	}
 
-	Method(me47, 1)
+	Method(me47, 1, Serialized)
 	{
 		Name(lpN0, 0xF101)
 

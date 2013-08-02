@@ -37,7 +37,7 @@
  * Note: these 'Large Reference Count' could be detected automatically by Do utility
  */
 
-Method(mc76)
+Method(mc76,, Serialized)
 {
 
 	Name(ERR5, 0)
@@ -72,7 +72,7 @@ Method(mc76)
 		Increment(ERRS)
 	}
 
-	Method(mc73)
+	Method(mc73,, Serialized)
 	{
 		Name(DDBH, 0)
 		Method(m000) {}
@@ -86,7 +86,7 @@ Method(mc76)
 
 	Method(mmm2, 5) {}
 
-	Method(mmm3)
+	Method(mmm3,, Serialized)
 	{
 		Name(b000, Buffer(4) {})
 

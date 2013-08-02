@@ -163,7 +163,7 @@ Device(DTM0) {
 	}
 
 	// components/utilities/utmisc.c AcpiUtGenerateChecksum() analog
-	Method(CHSM, 2)	// buf, len
+	Method(CHSM, 2, Serialized)	// buf, len
 	{
 		Name(lpN0, 0)
 		Name(lpC0, 0)
@@ -219,7 +219,7 @@ Device(DTM0) {
 	}
 
 	// Prepares and Loads the next Table of multiple Tables Load test
-	Method(LD)
+	Method(LD,, Serialized)
 	{
 		if (LNot(LLess(HI0N, HI0M))) {
 			Store("LD: too many tables loaded", Debug)
@@ -523,7 +523,7 @@ Device(DTM0) {
 	}
 
 	// DDBHandle storing into an Object by Reference in Argx
-	Method(tst3, 1)
+	Method(tst3, 1, Serialized)
 	{
 		Name(HI0, 0)
 
@@ -704,7 +704,7 @@ Device(DTM0) {
 		// Auxiliary method for ArgX, part1
 		// Arg1 - reference to store the DDBHandle
 		// Arg2 - OpRegion Object of a specified type
-		Method(m001, 3)
+		Method(m001, 3, Serialized)
 		{
 			OperationRegion(OPRm, 0xff, 0, 0x1000)
 
@@ -761,7 +761,7 @@ Device(DTM0) {
 		}
 
 		// Arg1 - OpRegion Object of a specified type
-		Method(m003, 2)
+		Method(m003, 2, Serialized)
 		{
 			Concatenate(arg0, "-m003", arg0)
 
@@ -886,7 +886,7 @@ Device(DTM0) {
 		RFU1, 0x2f8,
 	}
 
-	Method(tst8, 1)
+	Method(tst8, 1, Serialized)
 	{
 		Name(DDBH, 0)
 
@@ -1002,7 +1002,7 @@ Device(DTM0) {
 
 	External(\AUXD.M000, MethodObj)
 
-	Method(tst9, 1)
+	Method(tst9, 1, Serialized)
 	{
 		Name(DDBH, 0)
 
@@ -1243,7 +1243,7 @@ Device(DTM0) {
 		RFU3, 0x8f8,
 	}
 
-	Method(tstb, 1)
+	Method(tstb, 1, Serialized)
 	{
 		Name(DDB0, 0)
 		Name(DDBH, 0)
@@ -1383,7 +1383,7 @@ Device(DTM0) {
 
 	// Exceptions when an OpRegion passed as the Object
 	// parameter of Load is not of SystemMemory type
-	Method(tstc, 1)
+	Method(tstc, 1, Serialized)
 	{
 		Name(DDBH, 0)
 
@@ -1482,7 +1482,7 @@ Device(DTM0) {
 
 	// Exceptions when the table contained in an OpRegion
 	// (Field) is not an SSDT
-	Method(tstd, 1)
+	Method(tstd, 1, Serialized)
 	{
 		Name(HI0, 0)
 
@@ -1534,7 +1534,7 @@ Device(DTM0) {
 	// than the length of the respective OpRegion or Region Field,
 	// or less than the length of the Table Header
 	// Arg1: 0 - the 'greater' case, 1 - the 'less' case
-	Method(tste, 2)
+	Method(tste, 2, Serialized)
 	{
 		Name(HI0, 0)
 
@@ -1614,7 +1614,7 @@ Device(DTM0) {
 	}
 
 	// Exceptions when the checksum of the supplied SSDT is invalid
-	Method(tstf, 1)
+	Method(tstf, 1, Serialized)
 	{
 		Name(HI0, 0)
 
@@ -1676,7 +1676,7 @@ Device(DTM0) {
 	}
 
 	// Object of any type can be used as the DDBHandle argument
-	Method(tstg, 1)
+	Method(tstg, 1, Serialized)
 	{
 		Name(DDB0, 0)
 		Name(DDB1, 0)
@@ -1801,7 +1801,7 @@ Device(DTM0) {
 
 	// AE_OWNER_ID_LIMIT exception when too many Tables loaded,
 	// Arg1: 0 - Load case, 1 - LoadTable case
-	Method(tsth, 2)
+	Method(tsth, 2, Serialized)
 	{
 		Name(MAXT, 0xf6)
 		Name(DDB1, 0)
@@ -1870,7 +1870,7 @@ Device(DTM0) {
 
 	// Exception when SSDT specified as the Object parameter
 	// of the Load operator is already loaded
-	Method(tsti, 1)
+	Method(tsti, 1, Serialized)
 	{
 		Name(HI0, 0)
 		Name(HI1, 0)
@@ -1941,7 +1941,7 @@ Device(DTM0) {
 
 	// Exception when there already is an previously created Object
 	// referred by the namepath of the new Object in the Table loaded
-	Method(tstj, 1)
+	Method(tstj, 1, Serialized)
 	{
 		Name(HI0, 0)
 		Name(HI1, 0)
@@ -2044,7 +2044,7 @@ Device(DTM0) {
 	}
 }
 
-Method(TLD0)
+Method(TLD0,, Serialized)
 {
 	Name(ts, "TLD0")
 
@@ -2137,7 +2137,7 @@ Method(TLD0)
 }
 
 // Exceptional conditions
-Method(TLD1)
+Method(TLD1,, Serialized)
 {
 	Name(ts, "TLD1")
 

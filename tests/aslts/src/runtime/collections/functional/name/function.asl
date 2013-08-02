@@ -109,7 +109,7 @@ Scope(\_SB){
 	Function(m20d){}
 }
 
-Method(m20e)
+Method(m20e,, Serialized)
 {
 	Name(ts, "m20e")
 
@@ -324,7 +324,7 @@ Method(m20e)
 		m205(ts, 54, mm01(), INT0)
 	}
 
-	Method(m31a)
+	Method(m31a,, Serialized)
 	{
 		Name(Flag, Ones)
 

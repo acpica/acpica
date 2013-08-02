@@ -133,7 +133,7 @@ Name (p401, Package() {
 	Buffer () {0x23, 0xff, 0xff, 0x00, 0x79, 0x00},
 })
 
-Method(RT01)
+Method(RT01,, Serialized)
 {
 	Name(ts, "RT01")
 

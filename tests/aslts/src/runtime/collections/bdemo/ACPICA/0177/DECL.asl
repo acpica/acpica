@@ -32,7 +32,7 @@
  * SUMMARY: Exception BUFFER_LIMIT occurs instead of STRING_LIMIT one
  */
 
-	Method(mf07)
+	Method(mf07,, Serialized)
 	{
 		Name(i000, 1)
 		OperationRegion(r000, SystemMemory, 0, i000)

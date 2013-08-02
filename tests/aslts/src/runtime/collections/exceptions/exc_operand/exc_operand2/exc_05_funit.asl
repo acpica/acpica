@@ -48,7 +48,7 @@ Name(bi00, Buffer() {0xa4,0xa5,0xa6,0xa7,0xb8,0xb9,0xba,0xbb,0xbc})
 // 47 - AE_AML_OPERAND_TYPE
 // See notes to m4b1 and m4b3
 //
-Method(m4b5)
+Method(m4b5,, Serialized)
 {
 	Name(ts, "m4b5")
 
@@ -58,7 +58,7 @@ Method(m4b5)
 		fu03, 65}
 
 	// Local Named Object
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		Field(rg01, ByteAcc, NoLock, Preserve) {
 			Offset(24),
@@ -163,7 +163,7 @@ Method(m4b5)
 	}
 
 	// Reference to Object as Result of Method invocation
-	Method(m003, 1)
+	Method(m003, 1, Serialized)
 	{
 		Field(rg01, ByteAcc, NoLock, Preserve) {
 			Offset(24),

@@ -32,7 +32,7 @@
  * SUMMARY: Named object as element of Package is handled by ACPICA differently than by MS
  */
 
-Method(mc74)
+Method(mc74,, Serialized)
 {
 	Name(i000, 0xabcd0000)
 	Name(i001, 0xabcd0001)

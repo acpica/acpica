@@ -131,7 +131,7 @@ Method(m0c8, 6)
 }
 
 // Sleep. Sleep n milliseconds (yields the processor)
-Method(m0c9)
+Method(m0c9,, Serialized)
 {
 	Name(ts, "m0c9")
 
@@ -150,7 +150,7 @@ Method(m0c9)
 }
 
 // Stall. Delay n microseconds (does not yield the processor)
-Method(m0ca)
+Method(m0ca,, Serialized)
 {
 	Name(ts, "m0ca")
 
@@ -171,7 +171,7 @@ Method(m0ca)
 }
 
 // Wait. The calling method blocks while waiting for the event to be signaled
-Method(m0cb)
+Method(m0cb,, Serialized)
 {
 	Name(ts, "m0cb")
 
@@ -204,7 +204,7 @@ Method(m0cb)
 }
 
 // Handle and summarize the Timer-times package.
-Method(m0cc, 3)
+Method(m0cc, 3, Serialized)
 {
 	Name(n000, 0)
 	Name(ncur, 0)
@@ -346,7 +346,7 @@ Method(m0cc, 3)
 //
 //  ndcr - # lower than previous
 //  nspl - # splashes exceeding the adjacent point by 2 or more times
-Method(m0cd)
+Method(m0cd,, Serialized)
 {
 	Name(ts, "m0cd")
 
@@ -379,7 +379,7 @@ Method(m0cd)
 }
 
 // Timer with Name
-Method(m0ce)
+Method(m0ce,, Serialized)
 {
 	Name(ts, "m0ce")
 
@@ -701,7 +701,7 @@ Method(m0ce)
 }
 
 // Timer with LocalX
-Method(m0cf)
+Method(m0cf,, Serialized)
 {
 	Name(ts, "m0cf")
 

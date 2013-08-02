@@ -70,7 +70,7 @@ Method(m331, 7)	// ts, grerr, val0, ver0, val1, ver1, msg
 	}
 }
 
-Method(m332, 6)	// ts, len, msg, op1, op2, res
+Method(m332, 6, Serialized)	// ts, len, msg, op1, op2, res
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -108,7 +108,7 @@ Method(m332, 6)	// ts, len, msg, op1, op2, res
 }
 
 // components/utilities/utmisc.c AcpiUtGenerateChecksum() analog
-Method(m335, 2)	// buf, len
+Method(m335, 2, Serialized)	// buf, len
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -136,7 +136,7 @@ Method(m335, 2)	// buf, len
 }
 
 // Updates the last byte of each buffer in package with checksum
-Method(m334, 2)	// pkg, len
+Method(m334, 2, Serialized)	// pkg, len
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)

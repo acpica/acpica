@@ -40,7 +40,7 @@ ThermalZone (tz00) {Name(n000, "tz00")}
 //
 // 47 - AE_AML_OPERAND_TYPE
 //
-Method(m4bd)
+Method(m4bd,, Serialized)
 {
 	Name(ts, "m4bd")
 
@@ -51,7 +51,7 @@ Method(m4bd)
 	Name(i000, 0)
 
 	// Local Named Object
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		ThermalZone (tz02) {Name(n000, "tz02")}
 
@@ -69,7 +69,7 @@ Method(m4bd)
 	}
 
 	// Local
-	Method(m002, 1)
+	Method(m002, 1, Serialized)
 	{
 		ThermalZone (tz02) {Name(n000, "tz02")}
 
@@ -432,7 +432,7 @@ Method(m4bd)
 	}
 
 	// Reference to Object
-	Method(m003, 3)
+	Method(m003, 3, Serialized)
 	{
 		Name(EXC0, 47)	// AE_AML_OPERAND_TYPE
 
@@ -793,7 +793,7 @@ Method(m4bd)
 	}
 
 	// Result of Method invocation
-	Method(m004, 1)
+	Method(m004, 1, Serialized)
 	{
 		Name(i000, 0) // Label to check m000 invocations
 
@@ -1159,7 +1159,7 @@ Method(m4bd)
 	}
 
 	// Reference to Object as Result of Method invocation
-	Method(m005, 1)
+	Method(m005, 1, Serialized)
 	{
 		ThermalZone (tz02) {Name(n000, "tz02")}
 

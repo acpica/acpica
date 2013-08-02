@@ -33,7 +33,7 @@
 
 // Integer
 
-Method(md18)
+Method(md18,, Serialized)
 {
 	Name(i000, 0xe0385bcd)
 	Event(OOO2)
@@ -53,7 +53,7 @@ Method(md18)
 
 // String
 
-Method(md19)
+Method(md19,, Serialized)
 {
 	Name(s000, "String")
 	Event(OOO2)
@@ -75,7 +75,7 @@ Method(md19)
 
 // Buffer
 
-Method(md1a)
+Method(md1a,, Serialized)
 {
 	Name(b000, Buffer() {1,2,3,4})
 	Event(OOO2)
@@ -96,7 +96,7 @@ Method(md1a)
 
 // Package
 
-Method(md1b)
+Method(md1b,, Serialized)
 {
 	Name(pppp, Package(1){Buffer() {1,2,3,4}})
 	Event(OOO2)
@@ -148,7 +148,7 @@ Method(md1b)
 
 // Integer
 
-Method(md1c)
+Method(md1c,, Serialized)
 {
 	Event(OOO2)
 
@@ -164,7 +164,7 @@ Method(md1c)
 
 // String
 
-Method(md1d)
+Method(md1d,, Serialized)
 {
 	Event(OOO2)
 
@@ -182,7 +182,7 @@ Method(md1d)
 
 // Buffer
 
-Method(md1e)
+Method(md1e,, Serialized)
 {
 	Event(OOO2)
 
@@ -199,7 +199,7 @@ Method(md1e)
 
 // Package
 
-Method(md1f)
+Method(md1f,, Serialized)
 {
 	Event(OOO2)
 

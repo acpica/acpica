@@ -33,7 +33,7 @@
 /*
  * Element of Package instead of i000 (in m001)
  */
-Method(m203, 1)
+Method(m203, 1, Serialized)
 {
 	Name(ts, "m203")
 	Name(i001, 0)
@@ -108,7 +108,7 @@ Method(m203, 1)
 /*
  * Buffer Field instead of i000 (in m001)
  */
-Method(m205, 1)
+Method(m205, 1, Serialized)
 {
 	Name(ts, "m205")
 	Name(i001, 0)

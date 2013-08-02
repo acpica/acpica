@@ -33,7 +33,7 @@
 
 // Integer
 
-Method(md4d)
+Method(md4d,, Serialized)
 {
 	Name(i000, 0xabcd)
 	Name(s000, "String")
@@ -51,7 +51,7 @@ Method(md4d)
 
 // String
 
-Method(md4e)
+Method(md4e,, Serialized)
 {
 	Name(s000, "zxcvbqwertynm")
 	Name(s001, "String")
@@ -69,7 +69,7 @@ Method(md4e)
 
 // Buffer
 
-Method(md4f)
+Method(md4f,, Serialized)
 {
 	Name(b000, Buffer() {1,2,3,4})
 	Name(s000, "String")

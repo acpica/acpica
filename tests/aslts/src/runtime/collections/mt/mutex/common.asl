@@ -362,7 +362,7 @@ Method(m100, 7)
  *
  * arg0 - number of threads
  */
-Method(m102, 1)
+Method(m102, 1, Serialized)
 {
 	Name(b000, Buffer(arg0){})
 	Name(p000, Package(arg0){})
@@ -449,7 +449,7 @@ Method(m102, 1)
  *
  * arg0 - number of threads
  */
-Method(m103, 1)
+Method(m103, 1, Serialized)
 {
 	/* Wait for all Slave threads and check their statuses */
 
@@ -620,7 +620,7 @@ Method(m105, 2)
  * arg0 - name of test
  * arg1 - number of threads
  */
-Method(m106, 2)
+Method(m106, 2, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -724,7 +724,7 @@ Method(m108, 4)
  *
  * arg0 - number of threads
  */
-Method(m10c, 1)
+Method(m10c, 1, Serialized)
 {
 	/* All slaves to exit the infinite loop */
 
@@ -774,7 +774,7 @@ Method(m10d, 1)
  *     0x10 - has checkings of completed operation
  *     0x20 - has checkings of hang on operation
  */
-Method(m10e, 2)
+Method(m10e, 2, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -817,7 +817,7 @@ Method(m10e, 2)
  * arg0,
  * arg1 - see m10e
  */
-Method(m10f, 2)
+Method(m10f, 2, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -852,7 +852,7 @@ Method(m10f, 2)
  * arg2 - the per-thread expectations of hang       status mapping buffer
  * arg3 - the per-thread expectations of idle       status mapping buffer
  */
-Method(m110, 4)
+Method(m110, 4, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -1154,7 +1154,7 @@ Method(m114, 1)
  *
  * arg0 - number of threads
  */
-Method(m115, 1)
+Method(m115, 1, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)

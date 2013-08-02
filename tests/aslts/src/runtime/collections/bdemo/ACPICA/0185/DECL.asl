@@ -33,7 +33,7 @@
  */
 
 
-Method(mfc2)
+Method(mfc2,, Serialized)
 {
 	Name(fl00, 0)
 	Name(i000, 0xabcd0000)

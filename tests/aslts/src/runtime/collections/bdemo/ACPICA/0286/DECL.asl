@@ -60,7 +60,7 @@ Device (D286) {
 		Unload(Derefof(arg0))
 	}
 
-	Method(TST0)
+	Method(TST0,, Serialized)
 	{
 		Name(DDB0, 0)
 

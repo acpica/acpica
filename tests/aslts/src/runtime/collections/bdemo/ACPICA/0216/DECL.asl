@@ -81,7 +81,7 @@ PowerResource(pwd3, 1, 0) {
 	CreateField(bd13, 0, 8, bf00)
 	}
 
-Method(m81e) {
+Method(m81e,, Serialized) {
 	Name(bd13, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 	CreateField(bd13, 0, 8, bf00)
 	}
@@ -108,7 +108,7 @@ PowerResource(pwd4, 1, 0) {
 	CreateField(bd11, 0, 8, bf00)
 	}
 
-Method(m81f) {
+Method(m81f,, Serialized) {
 	Name(bd11, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 	CreateField(bd11, 0, 8, bf00)
 	}
@@ -164,7 +164,7 @@ Device(dd11) {
 		CreateField(bd13, 0, 8, bf00)
 		}
 
-	Method(m81e) {
+	Method(m81e,, Serialized) {
 		Name(bd13, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 		CreateField(bd13, 0, 8, bf00)
 		}
@@ -191,7 +191,7 @@ Device(dd11) {
 		CreateField(bd11, 0, 8, bf00)
 		}
 
-	Method(m81f) {
+	Method(m81f,, Serialized) {
 		Name(bd11, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 		CreateField(bd11, 0, 8, bf00)
 		}
@@ -246,7 +246,7 @@ ThermalZone(tzd6) {
 		CreateField(bd13, 0, 8, bf00)
 		}
 
-	Method(m81e) {
+	Method(m81e,, Serialized) {
 		Name(bd13, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 		CreateField(bd13, 0, 8, bf00)
 		}
@@ -273,7 +273,7 @@ ThermalZone(tzd6) {
 		CreateField(bd11, 0, 8, bf00)
 		}
 
-	Method(m81f) {
+	Method(m81f,, Serialized) {
 		Name(bd11, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 		CreateField(bd11, 0, 8, bf00)
 		}
@@ -328,7 +328,7 @@ Processor(prd6, 0, 0xFFFFFFFF, 0) {
 		CreateField(bd13, 0, 8, bf00)
 		}
 
-	Method(m81e) {
+	Method(m81e,, Serialized) {
 		Name(bd13, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 		CreateField(bd13, 0, 8, bf00)
 		}
@@ -355,7 +355,7 @@ Processor(prd6, 0, 0xFFFFFFFF, 0) {
 		CreateField(bd11, 0, 8, bf00)
 		}
 
-	Method(m81f) {
+	Method(m81f,, Serialized) {
 		Name(bd11, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 		CreateField(bd11, 0, 8, bf00)
 		}
@@ -410,7 +410,7 @@ PowerResource(pwd6, 1, 0) {
 		CreateField(bd13, 0, 8, bf00)
 		}
 
-	Method(m81e) {
+	Method(m81e,, Serialized) {
 		Name(bd13, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 		CreateField(bd13, 0, 8, bf00)
 		}
@@ -437,7 +437,7 @@ PowerResource(pwd6, 1, 0) {
 		CreateField(bd11, 0, 8, bf00)
 		}
 
-	Method(m81f) {
+	Method(m81f,, Serialized) {
 		Name(bd11, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 		CreateField(bd11, 0, 8, bf00)
 		}
@@ -465,7 +465,7 @@ PowerResource(pwd6, 1, 0) {
 		}
 }
 
-Method(m821)
+Method(m821,, Serialized)
 {
 	/* ======== 0 ======= */
 
@@ -492,7 +492,7 @@ Method(m821)
 		CreateField(bd13, 0, 8, bf00)
 		}
 
-	Method(m81e) {
+	Method(m81e,, Serialized) {
 		Name(bd13, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 		CreateField(bd13, 0, 8, bf00)
 		}
@@ -519,7 +519,7 @@ Method(m821)
 		CreateField(bd11, 0, 8, bf00)
 		}
 
-	Method(m81f) {
+	Method(m81f,, Serialized) {
 		Name(bd11, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 		CreateField(bd11, 0, 8, bf00)
 		}
@@ -552,7 +552,7 @@ Method(m821)
 
 /* ======== 4 ======= */
 
-Method(m822)
+Method(m822,, Serialized)
 {
 	Device(dd0e) {
 		Name(bd13, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
@@ -560,7 +560,7 @@ Method(m822)
 		}
 }
 
-Method(m823)
+Method(m823,, Serialized)
 {
 	ThermalZone(tzd3) {
 		Name(bd13, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
@@ -568,7 +568,7 @@ Method(m823)
 		}
 }
 
-Method(m824)
+Method(m824,, Serialized)
 {
 	Processor(prd3, 0, 0xFFFFFFFF, 0) {
 		Name(bd13, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
@@ -576,7 +576,7 @@ Method(m824)
 		}
 }
 
-Method(m825)
+Method(m825,, Serialized)
 {
 	PowerResource(pwd3, 1, 0) {
 		Name(bd13, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
@@ -586,7 +586,7 @@ Method(m825)
 
 Method(m826)
 {
-	Method(m000) {
+	Method(m000,, Serialized) {
 		Name(bd13, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 		CreateField(bd13, 0, 8, bf00)
 		}
@@ -594,7 +594,7 @@ Method(m826)
 
 /* ======== 5 ======= */
 
-Method(m827)
+Method(m827,, Serialized)
 {
 	Device(dd0e) {
 		Name(bd11, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
@@ -602,7 +602,7 @@ Method(m827)
 		}
 }
 
-Method(m828)
+Method(m828,, Serialized)
 {
 	ThermalZone(tzd3) {
 		Name(bd11, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
@@ -610,7 +610,7 @@ Method(m828)
 		}
 }
 
-Method(m829)
+Method(m829,, Serialized)
 {
 	Processor(prd3, 0, 0xFFFFFFFF, 0) {
 		Name(bd11, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
@@ -618,7 +618,7 @@ Method(m829)
 		}
 }
 
-Method(m82a)
+Method(m82a,, Serialized)
 {
 	PowerResource(pwd3, 1, 0) {
 		Name(bd11, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
@@ -628,7 +628,7 @@ Method(m82a)
 
 Method(m82b)
 {
-	Method(m000) {
+	Method(m000,, Serialized) {
 		Name(bd11, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 		CreateField(bd11, 0, 8, bf00)
 		}
@@ -636,28 +636,28 @@ Method(m82b)
 
 /* ======== 6 ======= */
 
-Method(m82c)
+Method(m82c,, Serialized)
 {
 	Device(dd0e) {
 		CreateField(bd12, 0, 8, bf00)
 		}
 }
 
-Method(m82d)
+Method(m82d,, Serialized)
 {
 	ThermalZone(tzd3) {
 		CreateField(bd12, 0, 8, bf00)
 		}
 }
 
-Method(m82e)
+Method(m82e,, Serialized)
 {
 	Processor(prd3, 0, 0xFFFFFFFF, 0) {
 		CreateField(bd12, 0, 8, bf00)
 		}
 }
 
-Method(m82f)
+Method(m82f,, Serialized)
 {
 	PowerResource(pwd3, 1, 0) {
 		CreateField(bd12, 0, 8, bf00)
@@ -673,7 +673,7 @@ Method(m830)
 
 /* ======== 7 ======= */
 
-Method(m832)
+Method(m832,, Serialized)
 {
 	Device(dd0e) {
 		Name(dd12, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
@@ -681,7 +681,7 @@ Method(m832)
 		}
 }
 
-Method(m833)
+Method(m833,, Serialized)
 {
 	ThermalZone(tzd3) {
 		Name(dd12, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
@@ -689,7 +689,7 @@ Method(m833)
 		}
 }
 
-Method(m834)
+Method(m834,, Serialized)
 {
 	Processor(prd3, 0, 0xFFFFFFFF, 0) {
 		Name(dd12, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
@@ -697,7 +697,7 @@ Method(m834)
 		}
 }
 
-Method(m835)
+Method(m835,, Serialized)
 {
 	PowerResource(pwd3, 1, 0) {
 		Name(dd12, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
@@ -707,7 +707,7 @@ Method(m835)
 
 Method(m836)
 {
-	Method(m000) {
+	Method(m000,, Serialized) {
 		Name(dd12, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 		CreateField(dd12, 0, 8, bf00)
 		}

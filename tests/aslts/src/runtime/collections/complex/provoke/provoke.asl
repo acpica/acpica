@@ -39,7 +39,7 @@ Name(z055, 55)
 
 // Meaningless zero valued parameter
 
-Method(m130, 1)
+Method(m130, 1, Serialized)
 {
 	Name(B000, Buffer(2) {0x21, 0x21})
 
@@ -117,7 +117,7 @@ Method(m136, 1)
 }
 
 // Run-method
-Method(PRV0)
+Method(PRV0,, Serialized)
 {
 	Name(ts, "PRV0")
 

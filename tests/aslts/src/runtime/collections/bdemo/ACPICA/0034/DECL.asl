@@ -32,7 +32,7 @@
  * SUMMARY: Some data tables are corrupted when _BAS field of FixedIO Resource Descriptor Macro is specified
  */
 
-Method(mdc9)
+Method(mdc9,, Serialized)
 {
 	Name(RT00,
 		ResourceTemplate () {
@@ -41,7 +41,7 @@ Method(mdc9)
 	Store(FIO0._BAS, Debug)
 }
 
-Method(mdca)
+Method(mdca,, Serialized)
 {
 	Name(RT00,
 		ResourceTemplate () {

@@ -34,7 +34,7 @@
  *          see if to rewrite it for Fields but not for BufferFields
  */
 
-	Method(mf5c)
+	Method(mf5c,, Serialized)
 	{
 		Name(b010, Buffer(4) {1,0x77,3,4})
 		CreateField(b010, 8, 8, bf90)

@@ -44,7 +44,7 @@
 /*
  * 0 - Check different ways to pass String
  */
-Method(mdac)
+Method(mdac,, Serialized)
 {
 	Method(mm00)
 	{
@@ -121,7 +121,7 @@ Method(mdac)
 /*
  * 1 - Check different ways to specify elements of NameSpace
  */
-Method(mf89)
+Method(mf89,, Serialized)
 {
 	Name(i010, 0xaabc0123)
 	Processor(pr01, 0, 0xFFFFFFFF, 0)
@@ -172,7 +172,7 @@ Method(mf89)
 /*
  * 2 - Check access to calculated type objects - DerefOf(<String>)
  */
-Method(mf8a)
+Method(mf8a,, Serialized)
 {
 	Name(b002, Buffer(){ 1, 2, 3, 4, 0x95, 6, 7, 8})
 	Name(bb02, Buffer(){ 1, 2, 3, 4, 0x95, 6, 7, 8})
@@ -204,7 +204,7 @@ Method(mf8a)
 /*
  * 3 - Check access to special type objects - DerefOf(<String>)
  */
-Method(mf8b)
+Method(mf8b,, Serialized)
 {
 	Event(e003)
 	Mutex(mx03, 0)
@@ -250,7 +250,7 @@ Method(mf8b)
 /*
  * 4 - Check DerefOf(<Not-String>) - calculated type objects
  */
-Method(mf8c)
+Method(mf8c,, Serialized)
 {
 	Name(b004, Buffer(){ 1, 2, 3, 4, 0x95, 6, 7, 8})
 	Name(i004, 0xabbc0000)
@@ -293,7 +293,7 @@ Method(mf8d)
  * 6 - Check different ways to pass String (mdac
  * but without Store). Check - no exceptions.
  */
-Method(mf8e)
+Method(mf8e,, Serialized)
 {
 	Method(mm60)
 	{
@@ -352,7 +352,7 @@ Method(mf8e)
 /*
  * 7 - Check access to special type objects - DerefOf(<String>)
  */
-Method(mf8f)
+Method(mf8f,, Serialized)
 {
 	Event(e007)
 	Mutex(mx07, 0)
@@ -410,7 +410,7 @@ Method(mf8f)
 /*
  * 8 - Check DerefOf(<Not-String>) - calculated type objects
  */
-Method(mf90)
+Method(mf90,, Serialized)
 {
 	Name(b008, Buffer(){ 1, 2, 3, 4, 0x95, 6, 7, 8})
 	Name(i008, 0xabbc0000)
@@ -456,7 +456,7 @@ Method(mf91)
 /*
  * a - Check access to special type objects - DerefOf(<String>)
  */
-Method(mfa0)
+Method(mfa0,, Serialized)
 {
 	Name(b00a, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 	OperationRegion(r00a, SystemMemory, 0x100, 0x100)
@@ -496,7 +496,7 @@ Method(mfa0)
 }
 
 // b
-Method(mfa1)
+Method(mfa1,, Serialized)
 {
 	Name(b00b, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 	OperationRegion(r00b, SystemMemory, 0x100, 0x100)
@@ -540,7 +540,7 @@ Method(mfa1)
 }
 
 // c
-Method(mfa2)
+Method(mfa2,, Serialized)
 {
 	Event(e00c)
 	Mutex(mx0c, 0)

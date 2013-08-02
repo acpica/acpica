@@ -38,7 +38,7 @@
 
 Method(m129)
 {
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		OperationRegion(RGN1, SystemMemory, 0x200, arg0)
 

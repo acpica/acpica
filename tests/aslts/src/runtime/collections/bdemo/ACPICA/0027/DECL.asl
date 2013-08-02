@@ -35,7 +35,7 @@
  * Test remained as is (due to crash as a main symptom).
  */
 
-Method(mdbb)
+Method(mdbb,, Serialized)
 {
 	Name(b001, Buffer(200) {})
 

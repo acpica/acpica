@@ -32,7 +32,7 @@
  * SUMMARY: The Memory24 Resource Descriptor Macro specification should be updated
  */
 
-	Method(mf63)
+	Method(mf63,, Serialized)
 	{
 		Name (M241,
 			ResourceTemplate () {

@@ -32,7 +32,7 @@
  * SUMMARY: ReturnType argument of Method declaration is not supported
  */
 
-Method(m127)
+Method(m127,, Serialized)
 {
 	/* Data to be passed to Method */
 

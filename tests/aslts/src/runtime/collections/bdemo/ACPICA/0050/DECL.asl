@@ -32,7 +32,7 @@
  * SUMMARY: No exception on result of ToHexString longer than 210 bytes
  */
 
-Method(mdda)
+Method(mdda,, Serialized)
 {
 	// 68-byte long buffer
 	Name(b000, Buffer() {

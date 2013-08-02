@@ -34,7 +34,7 @@
  * This DECL.asl is for AML Interpreter, it should result in exceptions for this DECL.asl.
  */
 
-	Method(mf03)
+	Method(mf03,, Serialized)
 	{
 		Name(b000, Buffer(2){0xff, 0xff})
 		Name(i000, 0)

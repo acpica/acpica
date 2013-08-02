@@ -32,7 +32,7 @@
  * SUMMARY: Crash on sync-objects reusing
  */
 
-Method(mdd0) {
+Method(mdd0,, Serialized) {
 	Mutex(MTX0, 0)
 	Store(Acquire(MTX0, 0), Local0)
 	Release(MTX0)

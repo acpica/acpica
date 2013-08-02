@@ -41,7 +41,7 @@
  * don't change the type of Addend and Minuend respectively.
  */
 
-Method(mfaf)
+Method(mfaf,, Serialized)
 {
 	Name(s000, "0321")
 	Name(s001, "0321")

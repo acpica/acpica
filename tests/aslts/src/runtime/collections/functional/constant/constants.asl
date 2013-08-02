@@ -33,7 +33,7 @@
 Name(z002, 2)
 
 // Run-method
-Method(CST1)
+Method(CST1,, Serialized)
 {
 	Name(ts, "CST1")
 

@@ -40,7 +40,7 @@ Device (D281) {
 
 	Name(PLDT, 0)
 
-	Method(TST0)
+	Method(TST0,, Serialized)
 	{
 		Name(DDB0, 0)
 		Name(DDB1, 0)

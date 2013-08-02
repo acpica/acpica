@@ -45,7 +45,7 @@ Name(z154, 154)
  * Named Integer i000
  */
 
-Method(m000, 1)
+Method(m000, 1, Serialized)
 {
 	Name(ts, "m000")
 	Name(i000, 0x00000001)
@@ -81,7 +81,7 @@ Method(m000, 1)
 	CH03(ts, z154, 0x002, 0, 0)
 }
 
-Method(m001, 1)
+Method(m001, 1, Serialized)
 {
 	Name(ts, "m001")
 	Name(i000, 0x00000001)
@@ -146,7 +146,7 @@ Method(m001, 1)
 	CH03(ts, z154, 0x005, 0, 0)
 }
 
-Method(m002)
+Method(m002,, Serialized)
 {
 	Name(ts, "m002")
 	Name(i000, 0x00100000)
@@ -175,7 +175,7 @@ Method(m002)
 	CH03(ts, z154, 0x008, 0, 0)
 }
 
-Method(m003)
+Method(m003,, Serialized)
 {
 	Name(ts, "m003")
 	Name(i000, 0x00100000)
@@ -206,7 +206,7 @@ Method(m003)
 /*
  * Local instead of i000 (in m001)
  */
-Method(m004, 1)
+Method(m004, 1, Serialized)
 {
 	Name(ts, "m004")
 	Name(i001, 0)
@@ -275,7 +275,7 @@ Method(m004, 1)
 /*
  * Arg instead of i000 (in m001)
  */
-Method(m005, 2)
+Method(m005, 2, Serialized)
 {
 	Name(ts, "m005")
 	Name(i001, 0)

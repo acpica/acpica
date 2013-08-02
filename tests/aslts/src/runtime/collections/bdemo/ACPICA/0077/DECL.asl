@@ -32,7 +32,7 @@
  * SUMMARY: Exception on ToInteger operator under specific conditions
  */
 
-	Method(me2a)
+	Method(me2a,, Serialized)
 	{
 		Name (i000, 0x89abcdef)
 

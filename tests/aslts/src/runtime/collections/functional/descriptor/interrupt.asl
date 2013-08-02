@@ -546,7 +546,7 @@ Name (p435, Package() {
 		0x0f, 0x79, 0x00},
 })
 
-Method(RT18)
+Method(RT18,, Serialized)
 {
 	Name(ts, "RT18")
 

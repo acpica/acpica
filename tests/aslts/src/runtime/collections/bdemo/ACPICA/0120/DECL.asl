@@ -32,7 +32,7 @@
  * SUMMARY: Unexpected exception on Store of Device and ThermalZone elements of Package to Debug operation
  */
 
-	Method(mf64)
+	Method(mf64,, Serialized)
 	{
 		Name(pp00, Package(){prd2})
 		Index(pp00, 0, Local0)
@@ -45,7 +45,7 @@
 		}
 	}
 
-	Method(mf65)
+	Method(mf65,, Serialized)
 	{
 		Name(pp00, Package(){rd07})
 		Index(pp00, 0, Local0)
@@ -58,7 +58,7 @@
 		}
 	}
 
-	Method(mf66)
+	Method(mf66,, Serialized)
 	{
 		Name(pp00, Package(){pwd2})
 		Index(pp00, 0, Local0)
@@ -71,7 +71,7 @@
 		}
 	}
 
-	Method(mf67)
+	Method(mf67,, Serialized)
 	{
 		Name(pp00, Package(){ed05})
 		Index(pp00, 0, Local0)
@@ -84,7 +84,7 @@
 		}
 	}
 
-	Method(mf68)
+	Method(mf68,, Serialized)
 	{
 		Name(pp00, Package(){mxd3})
 		Index(pp00, 0, Local0)
@@ -97,7 +97,7 @@
 		}
 	}
 
-	Method(mf69)
+	Method(mf69,, Serialized)
 	{
 		Name(pp00, Package(){dd0d})
 
@@ -115,7 +115,7 @@
 		}
 	}
 
-	Method(mf6a)
+	Method(mf6a,, Serialized)
 	{
 		Name(pp00, Package(){tzd2})
 

@@ -34,7 +34,7 @@
 
 Method(m1ed)
 {
-Method(m18a, 1)
+Method(m18a, 1, Serialized, 3)
 {
 	Name(rpt0, 0)
 	Name(i000, 0)

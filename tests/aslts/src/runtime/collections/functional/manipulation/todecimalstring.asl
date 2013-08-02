@@ -186,7 +186,7 @@ Name(p343, Package()
 })
 
 // Run-method
-Method(TOD0)
+Method(TOD0,, Serialized)
 {
 	Name(ts, "TOD0")
 

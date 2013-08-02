@@ -43,7 +43,7 @@ Method(m80a, 4)
 
 Method(m809, 1)
 {
-    Method(mm00, 1)
+    Method(mm00, 1, Serialized)
     {
 	Name(FL00, 0)
 
@@ -90,7 +90,7 @@ Method(m809, 1)
 	Store(Index(p002, rd00), Index(p000, wr00))
 	m80a(p000, wr00, 0x70, 0x507)
 
-	Method(m001, 7)
+	Method(m001, 7, Serialized)
 	{
 		Name(i104, 0)
 		Name(i105, 0)
@@ -236,7 +236,7 @@ Method(m809, 1)
 
 	m001(p000,b000,b001,s000,p001,b002,s001)
 
-	Method(m002, 7)
+	Method(m002, 7, Serialized)
 	{
 		Name(i104, 0)
 		Name(i105, 0)
@@ -328,7 +328,7 @@ Method(m809, 1)
 	mm00(arg0)
 }
 
-Method(m80b)
+Method(m80b,, Serialized)
 {
 	Name(rd00, 0)
 	Name(wr00, 8)
@@ -543,7 +543,7 @@ Method(m80b)
 	}
 }
 
-Method(m80c)
+Method(m80c,, Serialized)
 {
 	Name(p000, Package(8) {0x78,1,2})
 	Name(p001, Package(8) {0,1,2,3,4,5,6,7})
@@ -591,7 +591,7 @@ Method(m80c)
 	Store(p001, Index(p000, 6))
 }
 
-Method(m80d)
+Method(m80d,, Serialized)
 {
 	Name(p000, Package(8) {0x78,1,2})
 	Name(p001, Package(8) {0,1,2,3,4,5,6,7})
@@ -639,7 +639,7 @@ Method(m80d)
 	Store(p001, Index(p000, 6))
 }
 
-Method(m80e)
+Method(m80e,, Serialized)
 {
 	Name(p000, Package(64){0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07})
 	Name(b000, Buffer(64) {0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17})
@@ -668,7 +668,7 @@ Method(m80e)
 		Store(DerefOf(DerefOf(Index(arg0, arg1))), Local0)
 	}
 
-	Method(m004)
+	Method(m004,, Serialized)
 	{
 		Name(p000, Package(64){0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07})
 		Name(b000, Buffer(64) {0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17})
@@ -711,7 +711,7 @@ Method(m80e)
 	m007()
 }
 
-Method(m812)
+Method(m812,, Serialized)
 {
 	Name(p000, Package(64){0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07})
 	Name(b000, Buffer(64) {0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17})

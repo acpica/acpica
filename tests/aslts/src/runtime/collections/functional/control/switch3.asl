@@ -330,7 +330,7 @@ Method(m0de, 1)
   }
 
   // Method(SW03)
-  Method(m001, 1)
+  Method(m001, 1, Serialized)
   {
 	// Store("m001 started", Debug)
 
@@ -691,7 +691,7 @@ Method(m0de, 1)
   }
 
   // Method(SW04)
-  Method(m003, 1)
+  Method(m003, 1, Serialized)
   {
 	// Store("m003 started", Debug)
 
@@ -925,7 +925,7 @@ Method(m0de, 1)
 }
 
 // Run-method
-Method(SW07)
+Method(SW07,, Serialized)
 {
 	Store("TEST: SW07, Switch, Case, Default operators", Debug)
 

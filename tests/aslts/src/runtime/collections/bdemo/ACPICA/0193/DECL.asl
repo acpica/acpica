@@ -37,7 +37,7 @@
  * the first 32 bits (though zeros are expected):
  */
 
-Method(mfa5, 1)
+Method(mfa5, 1, Serialized)
 {
 	// Source Named Object
 	Name(SRC0, 0xfedcba9876543210)

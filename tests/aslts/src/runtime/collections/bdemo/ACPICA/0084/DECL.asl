@@ -75,7 +75,7 @@ Method(me36)
 	Store("After me35(1) completion", Debug)
 }
 
-Method(m803)
+Method(m803,, Serialized)
 {
 	Name(i000, 0xabcd0000)
 
@@ -124,7 +124,7 @@ Method(m803)
 	m003()
 }
 
-Method(m804)
+Method(m804,, Serialized)
 {
 	Name(i000, 0xabcd0000)
 

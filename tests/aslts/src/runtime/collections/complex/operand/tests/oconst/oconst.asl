@@ -32,7 +32,7 @@
 
 Name(z085, 85)
 
-Method(m610)
+Method(m610,, Serialized)
 {
 	Name(ts, "m610")
 
@@ -13156,7 +13156,7 @@ Method(m610)
 
 	// String to Integer conversion of the String TimeoutValue
 	// (second) operand of the Acquire operator ???
-	Method(m032, 1)
+	Method(m032, 1, Serialized)
 	{
 		Mutex(MTX0, 0)
 
@@ -13179,7 +13179,7 @@ Method(m610)
 
 	// String to Integer conversion of the String TimeoutValue
 	// (second) operand of the Wait operator
-	Method(m033, 1)
+	Method(m033, 1, Serialized)
 	{
 		Event(EVT0)
 
@@ -13200,7 +13200,7 @@ Method(m610)
 	// String to Integer conversion of the String value
 	// of Predicate of the Method execution control statements
 	// (If, ElseIf, While)
-	Method(m034, 1)
+	Method(m034, 1, Serialized)
 	{
 		Name(ist0, 0)
 
@@ -25061,7 +25061,7 @@ Method(m610)
 	// Buffer to Integer conversion of the Buffer TimeoutValue
 	// (second) operand of the Acquire operator
 
-	Method(m06c, 1)
+	Method(m06c, 1, Serialized)
 	{
 		Mutex(MTX0, 0)
 
@@ -25084,7 +25084,7 @@ Method(m610)
 
 	// Buffer to Integer conversion of the Buffer TimeoutValue
 	// (second) operand of the Wait operator
-	Method(m06d, 1)
+	Method(m06d, 1, Serialized)
 	{
 		Event(EVT0)
 
@@ -25105,7 +25105,7 @@ Method(m610)
 	// Buffer to Integer conversion of the Buffer value
 	// of Predicate of the Method execution control statements
 	// (If, ElseIf, While)
-	Method(m06e, 1)
+	Method(m06e, 1, Serialized)
 	{
 		Name(ist0, 0)
 
@@ -25173,7 +25173,7 @@ Method(m610)
 			}
 		}
 
-		Method(m009)
+		Method(m009,, Serialized)
 		{
 			Name(buf0, Buffer(1){0x00})
 			while (buf0) {
@@ -26783,7 +26783,7 @@ Method(m610)
  *    = Buffer to Integer conversion if second operand is Buffer
  *    = Integer to Buffer conversion of the converted second operand
  */
-Method(m620)
+Method(m620,, Serialized)
 {
 	Name(ts, "m620")
 

@@ -2,7 +2,7 @@
 
 Name(z160, 160)
 
-Method(m600)
+Method(m600,, Serialized)
 {
 	Name(ts, "m600")
 	Name(i000, 0xabcd0000)

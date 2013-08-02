@@ -34,7 +34,7 @@
  * Check absence of crash..
  */
 
-	Method(mf3f, 1)
+	Method(mf3f, 1, Serialized)
 	{
 		Name(b000, Buffer(arg0){})
 		Name(b001, Buffer(7){1,2,3,4,5,6,7})
@@ -71,7 +71,7 @@
 		}
 	}
 
-	Method(mf40)
+	Method(mf40,, Serialized)
 	{
 		Name(s000, "")
 		Name(s001, "String1")

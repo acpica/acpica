@@ -433,7 +433,7 @@ if (0) {
 */
 
 // Run-method
-Method(MAT1)
+Method(MAT1,, Serialized)
 {
 	Store("TEST: MAT1, Find Object Match", Debug)
 

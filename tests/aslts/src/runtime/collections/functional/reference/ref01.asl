@@ -146,7 +146,7 @@ Method(m168)
 //
 // ///////////////////////////////////////////////////////////////////////////
 
-Method(m169)
+Method(m169,, Serialized)
 {
 	if (y100) {
 		ts00("m169")
@@ -1393,7 +1393,7 @@ Method(m169)
 }
 
 // arg0 - writing mode
-Method(m16a, 1)
+Method(m16a, 1, Serialized)
 {
 	if (y100) {
 		ts00("m16a")
@@ -2522,7 +2522,7 @@ Method(m16a, 1)
 	return
 }
 
-Method(m16b)
+Method(m16b,, Serialized)
 {
 	if (y100) {
 		ts00("m16b")
@@ -3552,7 +3552,7 @@ Method(m16b)
 }
 
 // arg0 - writing mode
-Method(m16c, 1)
+Method(m16c, 1, Serialized)
 {
 	if (y100) {
 		ts00("m16c")
@@ -4899,7 +4899,7 @@ Method(m16d)
 //
 // ///////////////////////////////////////////////////////////////////////////
 
-Method(m16e)
+Method(m16e,, Serialized)
 {
 	if (y100) {
 		ts00("m16e")

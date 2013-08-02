@@ -39,7 +39,7 @@
  */
 
 // No outstanding allocations
-Method(mdfa)
+Method(mdfa,, Serialized)
 {
 	OperationRegion(r001, SystemMemory, 0x10, 0x10)
 
@@ -54,7 +54,7 @@ Method(mdfa)
 }
 
 // Outstanding: 0x1 allocations after execution
-Method(mdfb)
+Method(mdfb,, Serialized)
 {
 	OperationRegion(r001, SystemMemory, 0x10, 0x10)
 
@@ -93,7 +93,7 @@ Method(mdff)
 }
 
 // Outstanding: 0x1 allocations after execution
-Method(me00)
+Method(me00,, Serialized)
 {
 	Name(b000, Buffer() {0x91})
 

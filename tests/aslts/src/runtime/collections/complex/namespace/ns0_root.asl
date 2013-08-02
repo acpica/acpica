@@ -33,7 +33,7 @@
 /*
  * Internal Integer of Device instead of i000 (in m001)
  */
-Method(m006, 1)
+Method(m006, 1, Serialized)
 {
 	Name(ts, "m006")
 	Device(d000)
@@ -109,7 +109,7 @@ Method(m006, 1)
 /*
  * Internal Integer of ThermalZone instead of i000 (in m001)
  */
-Method(m007, 1)
+Method(m007, 1, Serialized)
 {
 	Name(ts, "m007")
 	ThermalZone(tz00)
@@ -184,7 +184,7 @@ Method(m007, 1)
 /*
  * Internal Integer of Processor instead of i000 (in m001)
  */
-Method(m008, 1)
+Method(m008, 1, Serialized)
 {
 	Name(ts, "m008")
 	Processor(pr00, 0, 0xFFFFFFFF, 0)
@@ -260,7 +260,7 @@ Method(m008, 1)
 /*
  * Internal Integer of PowerResource instead of i000 (in m001)
  */
-Method(m009, 1)
+Method(m009, 1, Serialized)
 {
 	Name(ts, "m009")
 	PowerResource(pw00, 1, 0)

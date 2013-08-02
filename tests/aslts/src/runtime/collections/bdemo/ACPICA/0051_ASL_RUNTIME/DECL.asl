@@ -45,7 +45,7 @@ Method(mddb, 5)
 	}
 }
 
-Method(mddc)
+Method(mddc,, Serialized)
 {
 	Name(RT00,
 		ResourceTemplate () {

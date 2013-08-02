@@ -46,7 +46,7 @@
 		return (123)
 	}
 
-	Method(me66)
+	Method(me66,, Serialized)
 	{
 		Store("Start of test", Debug)
 

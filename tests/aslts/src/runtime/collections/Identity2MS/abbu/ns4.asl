@@ -13,7 +13,7 @@ in progress
 */
 Name(z100, 100)
 
-Method(m401, 1)
+Method(m401, 1, Serialized)
 {
 	Name(ts, "m401")
 	Name(i000, 0x00000001)

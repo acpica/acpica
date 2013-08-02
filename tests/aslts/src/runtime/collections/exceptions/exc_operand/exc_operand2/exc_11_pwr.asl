@@ -40,7 +40,7 @@ PowerResource(pw00, 1, 0) {Method(m000){return (0)}}
 //
 // 47 - AE_AML_OPERAND_TYPE
 //
-Method(m4bb)
+Method(m4bb,, Serialized)
 {
 	Name(ts, "m4bb")
 
@@ -51,7 +51,7 @@ Method(m4bb)
 	Name(i000, 0)
 
 	// Local Named Object
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		PowerResource(pw02, 1, 0) {Method(m000){return (0)}}
 
@@ -71,7 +71,7 @@ Method(m4bb)
 	}
 
 	// Local
-	Method(m002, 1)
+	Method(m002, 1, Serialized)
 	{
 		PowerResource(pw02, 1, 0) {Method(m000){return (0)}}
 
@@ -789,7 +789,7 @@ Method(m4bb)
 	}
 
 	// Result of Method invocation
-	Method(m004, 1)
+	Method(m004, 1, Serialized)
 	{
 		Name(i000, 0) // Label to check m000 invocations
 
@@ -1162,7 +1162,7 @@ Method(m4bb)
 	}
 
 	// Reference to Object as Result of Method invocation
-	Method(m005, 1)
+	Method(m005, 1, Serialized)
 	{
 		PowerResource(pw02, 1, 0) {Method(m000){return (0)}}
 

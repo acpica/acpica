@@ -55,7 +55,7 @@ Name(i101, 0) // non-zero means that this test was run
  * on level 0 too) for all available levels from 0 up to 15,
  * then Release them all in the inverse order.
  */
-Method(m301)
+Method(m301,, Serialized)
 {
     Mutex(MT00, 0)
     Mutex(MT10, 1)
@@ -194,7 +194,7 @@ Method(m301)
  *
  * arg0 - if to force AE_LIMIT by exceeding the maximal number of created mutexes
  */
-Method(m369, 1)
+Method(m369, 1, Serialized)
 {
     Name(ts, "m369")
 
@@ -463,7 +463,7 @@ Method(m369, 1)
  * Exactly m301 but additioanlly:
  *    all Release opreations are located into separate method.
  */
-Method(m36a)
+Method(m36a,, Serialized)
 {
     Mutex(MT00, 0)
     Mutex(MT10, 1)
@@ -611,7 +611,7 @@ Method(m36a)
  * Exactly m301 but additioanlly:
  *    all Acquire and Release opreations are located into separate methods.
  */
-Method(m36b)
+Method(m36b,, Serialized)
 {
     Mutex(MT00, 0)
     Mutex(MT10, 1)
@@ -758,7 +758,7 @@ Method(m36b)
  *      - Global lock
  *   3) exception AE_AML_MUTEX_ORDER is expected for each Acquire of (2)
  */
-Method(m36c)
+Method(m36c,, Serialized)
 {
 	Name(ts, "m36c")
 	Name(lpN0, 0)
@@ -807,7 +807,7 @@ Method(m36c)
 	 *
 	 * arg0 - N level (to be in range from 1 up to 15)
 	 */
-	Method(m001, 1)
+	Method(m001, 1, Serialized)
 	{
 		Name(lpN0, 0)
 		Name(lpC0, 0)
@@ -844,7 +844,7 @@ Method(m36c)
  * Exception is expected on the second Release.
  * Do it for all level mutexes and Global lock too.
  */
-Method(m389)
+Method(m389,, Serialized)
 {
 	Name(ts, "m389")
 	Name(lpN0, 0)
@@ -897,7 +897,7 @@ Method(m389)
  * Exception on Release.
  * Attempt ot Release clean mutex which was never Acquired.
  */
-Method(m07b)
+Method(m07b,, Serialized)
 {
 	Name(ts, "m07b")
 
@@ -1070,7 +1070,7 @@ Method(m07b)
  *      - Global lock
  *   4) Do 1-3 for all levels in range (N>=1 & N<=15)
  */
-Method(m38a)
+Method(m38a,, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -1137,7 +1137,7 @@ Method(m38a)
  * arg0 - the value of flag of GL
  * arg1 - order of Releasing bitmap (see m089)
  */
-Method(m08c, 2)
+Method(m08c, 2, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -1232,7 +1232,7 @@ Method(m07a, 1)
  * arg0 - how many times to Acquire it
  * arg1 - the value of flag of GL
  */
-Method(m079, 2)
+Method(m079, 2, Serialized)
 {
 	Name(ts, "m079")
 	Name(lpN0, 0)
@@ -1323,7 +1323,7 @@ Method(m079, 2)
  *
  * See m07c.
  */
-Method(m0b9)
+Method(m0b9,, Serialized)
 {
 	Name(ts, "m0b9")
 
@@ -1340,7 +1340,7 @@ Method(m0b9)
  * The same operations as m0b9 (the test for global level AML code)
  * but enclosed into Method.
  */
-Method(m0bb)
+Method(m0bb,, Serialized)
 {
 	Name(ts, "m0bb")
 
@@ -1413,7 +1413,7 @@ Method(m0bb)
  *
  * See m0b9.
  */
-Method(m07c)
+Method(m07c,, Serialized)
 {
 	Name(ts, "m07c")
 
@@ -1724,7 +1724,7 @@ Method(m07c)
 /*
  * Acquire/Release operations enclosed in other operations
  */
-Method(m0ba)
+Method(m0ba,, Serialized)
 {
 	Name(ts, "m0ba")
 
@@ -1807,7 +1807,7 @@ Method(m08e)
 /*
  * Acquire/Release combination #1
  */
-Method(m07e)
+Method(m07e,, Serialized)
 {
 	Name(num, 4)
 	Name(rpt0, 0)
@@ -1910,7 +1910,7 @@ Method(m07e)
  * arg0 - the value of flag of GL
  * arg1 - if non-zero do additional Acquire of MUX-(N-2) and MUX-(N-1) before Acquire of MUX-N
  */
-Method(m08b, 2)
+Method(m08b, 2, Serialized)
 {
 	Name(rpt0, 1)
 	Name(ord0, 0x0001)
@@ -1981,7 +1981,7 @@ Method(m08b, 2)
  *
  * arg0 - the value of flag of GL
  */
-Method(m08d, 1)
+Method(m08d, 1, Serialized)
 {
 	Name(rpt0, 1)
 	Name(ord0, 0x0001)
@@ -2038,7 +2038,7 @@ Method(m08d, 1)
  *
  * (for the current 20060828 ACPICA this doesn't help).
  */
-Method(m07f)
+Method(m07f,, Serialized)
 {
 	Name(rpt0, 1)
 	Name(ord0, 0x0001)

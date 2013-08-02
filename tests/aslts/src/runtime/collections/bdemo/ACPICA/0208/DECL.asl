@@ -36,7 +36,7 @@
 
 Method(m818)
 {
-	Method(m000)
+	Method(m000,, Serialized)
 	{
 		Name(p000, Package() {0x10,0x11,0x12,0x13})
 
@@ -51,7 +51,7 @@ Method(m818)
 		/* RING_OF_REFS_EXCEPTION? */
 	}
 
-	Method(m001)
+	Method(m001,, Serialized)
 	{
 		Name(p000, Package() {0x10,0x11,0x12,0x13})
 		Name(p001, Package() {0x20,0x21,0x22,0x23})
@@ -66,7 +66,7 @@ Method(m818)
 		/* RING_OF_REFS_EXCEPTION? */
 	}
 
-	Method(m002)
+	Method(m002,, Serialized)
 	{
 		Name(p000, Package() {0x10,0x11,0x12,0x13})
 

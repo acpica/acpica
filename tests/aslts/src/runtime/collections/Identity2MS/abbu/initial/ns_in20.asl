@@ -42,7 +42,7 @@ Name(z165, 165)
 /*
  * Simple, 3-level
  */
-Method(in20, 1)
+Method(in20, 1, Serialized)
 {
 	Name(ts, "in20")
 	Name(i000, 0x00000001)
@@ -88,7 +88,7 @@ Method(in20, 1)
  * added writing into i000:
  *    Store(0x00040000, i000)
  */
-Method(in21, 1)
+Method(in21, 1, Serialized)
 {
 	Name(ts, "in21")
 	Name(i000, 0x00000001)
@@ -156,7 +156,7 @@ Method(in21, 1)
  * Recurcive execution of m001:
  *   Add(i000, m001(), Local0)
  */
-Method(in22)
+Method(in22,, Serialized)
 {
 	Name(ts, "in22")
 	Name(i000, 0x00100000)
@@ -196,7 +196,7 @@ Method(in22)
 /*
  * Arg instead of i000 (in in01)
  */
-Method(in23, 2)
+Method(in23, 2, Serialized)
 {
 	Name(ts, "in23")
 	Name(i001, 0)

@@ -325,7 +325,7 @@ Name (p429, Package() {
 		0x0f, 0x79, 0x00},
 })
 
-Method(RT12)
+Method(RT12,, Serialized)
 {
 	Name(ts, "RT12")
 

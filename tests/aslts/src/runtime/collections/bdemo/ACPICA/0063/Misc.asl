@@ -84,7 +84,7 @@ return
 /*
  * All the possible attempts to confuse calculation
  */
-Method(md74) {
+Method(md74,, Serialized) {
 
 	Name(ts, "md74")
 
@@ -388,7 +388,7 @@ Method(md75) {
 	// Do here the same as md74 but store Result by Store
 }
 
-Method(md76) {
+Method(md76,, Serialized) {
 
 	Name(ts, "md76")
 

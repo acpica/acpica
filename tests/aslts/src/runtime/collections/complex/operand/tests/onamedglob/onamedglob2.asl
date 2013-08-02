@@ -51,7 +51,7 @@
 
 Name(z087, 87)
 
-Method(m612)
+Method(m612,, Serialized)
 {
 	Name(ts, "m612")
 
@@ -11891,7 +11891,7 @@ Method(m612)
 	// Buffer Field to Integer conversion of the Buffer Field TimeoutValue
 	// (second) operand of the Acquire operator
 
-	Method(m06c, 1)
+	Method(m06c, 1, Serialized)
 	{
 		Mutex(MTX0, 0)
 
@@ -11914,7 +11914,7 @@ Method(m612)
 
 	// Buffer Field to Integer conversion of the Buffer Field TimeoutValue
 	// (second) operand of the Wait operator
-	Method(m06d, 1)
+	Method(m06d, 1, Serialized)
 	{
 		Event(EVT0)
 
@@ -11935,7 +11935,7 @@ Method(m612)
 	// Buffer Field to Integer conversion of the Buffer Field value
 	// of Predicate of the Method execution control statements
 	// (If, ElseIf, While)
-	Method(m06e, 1)
+	Method(m06e, 1, Serialized)
 	{
 		Name(ist0, 0)
 

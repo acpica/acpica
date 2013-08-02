@@ -1290,7 +1290,7 @@ Name (p425, Package() {
 		0x0f, 0x79, 0x00},
 })
 
-Method(RT10)
+Method(RT10,, Serialized)
 {
 	Name(ts, "RT10")
 

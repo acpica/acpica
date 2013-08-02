@@ -353,7 +353,7 @@ Name(p315, Package()
 })
 
 // Run-method
-Method(TOI0)
+Method(TOI0,, Serialized)
 {
 	Name(ts, "TOI0")
 

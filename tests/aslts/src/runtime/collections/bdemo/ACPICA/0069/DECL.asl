@@ -32,7 +32,7 @@
  * SUMMARY: Exception on storing the result of Mid operation
  */
 
-Method(me08)
+Method(me08,, Serialized)
 {
 	Name(b000, Buffer(8) {1,2,3,4,5,6,7,8})
 

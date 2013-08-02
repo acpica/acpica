@@ -40,7 +40,7 @@ Name(p100, Package(){0x61})
 //
 // 47 - AE_AML_OPERAND_TYPE
 // Note: Package can be used with Index
-Method(m4b4, 1)
+Method(m4b4, 1, Serialized)
 {
 	Name(ts, "m4b4")
 
@@ -53,7 +53,7 @@ Method(m4b4, 1)
 	// Local Named Object
 	// ASL compiler prohibits to use Pakage
 	// Named Objects in the most of operators
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		Name(p000, Package(){0x63})
 
@@ -335,7 +335,7 @@ Method(m4b4, 1)
 	}
 
 	// Argument
-	Method(m002, 2)
+	Method(m002, 2, Serialized)
 	{
 		Event(e000)
 
@@ -1050,7 +1050,7 @@ Method(m4b4, 1)
 	}
 
 	// An element of Package
-	Method(m004, 1)
+	Method(m004, 1, Serialized)
 	{
 		Name(p000, Package(){Package(){0x63}})
 
@@ -2096,7 +2096,7 @@ Method(m4b4, 1)
 	}
 
 	// Result of Method invocation
-	Method(m006, 1)
+	Method(m006, 1, Serialized)
 	{
 		Method(m000)
 		{
@@ -2483,7 +2483,7 @@ Method(m4b4, 1)
 	}
 
 	// Reference to Object as Result of Method invocation
-	Method(m007, 1)
+	Method(m007, 1, Serialized)
 	{
 		Name(p000, Package(){0x63})
 
@@ -2537,7 +2537,7 @@ Method(m4b4, 1)
 	}
 
 	// Result of Method with checking of invocation
-	Method(m008, 1)
+	Method(m008, 1, Serialized)
 	{
 		Name(i000, 0) // Label to check m000 invocations
 

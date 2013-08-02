@@ -32,7 +32,7 @@
  * SUMMARY: ParameterTypes argument of Method declaration is not supported
  */
 
-Method(m128)
+Method(m128,, Serialized)
 {
 	/* Data to be passed to Method */
 

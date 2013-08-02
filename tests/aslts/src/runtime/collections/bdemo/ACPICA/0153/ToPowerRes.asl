@@ -33,7 +33,7 @@
 
 // Integer
 
-Method(md32)
+Method(md32,, Serialized)
 {
 	Name(i000, 0xe0385bcd)
 	PowerResource(OOO2, 1, 0) {Method(mmmm){return (0)}}
@@ -53,7 +53,7 @@ Method(md32)
 
 // String
 
-Method(md33)
+Method(md33,, Serialized)
 {
 	Name(s000, "String")
 	PowerResource(OOO2, 1, 0) {Method(mmmm){return (0)}}
@@ -75,7 +75,7 @@ Method(md33)
 
 // Buffer
 
-Method(md34)
+Method(md34,, Serialized)
 {
 	Name(b000, Buffer() {1,2,3,4})
 	PowerResource(OOO2, 1, 0) {Method(mmmm){return (0)}}
@@ -96,7 +96,7 @@ Method(md34)
 
 // Package
 
-Method(md35)
+Method(md35,, Serialized)
 {
 	Name(pppp, Package(1){Buffer() {1,2,3,4}})
 	PowerResource(OOO2, 1, 0) {Method(mmmm){return (0)}}
@@ -148,7 +148,7 @@ Method(md35)
 
 // Integer
 
-Method(md36)
+Method(md36,, Serialized)
 {
 	PowerResource(OOO2, 1, 0) {Method(mmmm){return (0)}}
 
@@ -164,7 +164,7 @@ Method(md36)
 
 // String
 
-Method(md37)
+Method(md37,, Serialized)
 {
 	PowerResource(OOO2, 1, 0) {Method(mmmm){return (0)}}
 
@@ -182,7 +182,7 @@ Method(md37)
 
 // Buffer
 
-Method(md38)
+Method(md38,, Serialized)
 {
 	PowerResource(OOO2, 1, 0) {Method(mmmm){return (0)}}
 
@@ -199,7 +199,7 @@ Method(md38)
 
 // Package
 
-Method(md39)
+Method(md39,, Serialized)
 {
 	PowerResource(OOO2, 1, 0) {Method(mmmm){return (0)}}
 

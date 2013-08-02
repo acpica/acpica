@@ -36,7 +36,7 @@ Name(z125, 125)
 // into different kinds of Target Objects by means of the specified
 // either Increment or Decrement operator
 // m692(<op (Increment/Decrement)>, <exc. conditions>)
-Method(m692, 2)
+Method(m692, 2, Serialized)
 {
 	Name(ts, "m692")
 
@@ -181,7 +181,7 @@ Method(m692, 2)
 	}
 
 	// Output statistics
-	Method(m002, 1)
+	Method(m002, 1, Serialized)
 	{
 		Name(lpN0, 0)
 		Name(lpC0, 0)
@@ -465,7 +465,7 @@ Method(m692, 2)
 	// as an immediate operand in Increment/Decrement operators
 	// m008(<msg>, <aux>, <target type>, <source type>,
 	//      <op>, <exc. condition>)
-	Method(m008, 6)
+	Method(m008, 6, Serialized)
 	{
 		// Source Named Object
 		Name(SRC0, 0)
@@ -652,7 +652,7 @@ Method(m692, 2)
 	// as an immediate operand in Increment/Decrement operators
 	// m00b(<msg>, <aux>, <target type>, <source type>,
 	//      <op>, <exc. condition>)
-	Method(m00b, 6)
+	Method(m00b, 6, Serialized)
 	{
 		// Source Named Object
 		Name(SRC0, 0)

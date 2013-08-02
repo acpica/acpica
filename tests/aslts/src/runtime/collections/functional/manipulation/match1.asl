@@ -185,7 +185,7 @@ Method(m306, 6, Serialized)	// SPkg, Op1, MO1, Op2, MO2, SInd
 // arg4 - benchmark package
 // arg5 - search package
 // arg6 - to do transposition of match objects flag
-Method(m308, 7)
+Method(m308, 7, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -912,7 +912,7 @@ Name(p385, Package()
 })
 
 // Run-method
-Method(MAT0)
+Method(MAT0,, Serialized)
 {
 	Name(ts, "MAT0")
 

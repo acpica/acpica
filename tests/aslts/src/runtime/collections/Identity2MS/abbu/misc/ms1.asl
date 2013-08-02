@@ -112,7 +112,7 @@ Method(ms10, 1, Serialized)
 		}
 	}
 
-	Method(n063, 3)
+	Method(n063, 3, Serialized)
 	{
 		Name (INT0, 0xffff)
 
@@ -191,7 +191,7 @@ Method(ms11, 1, Serialized)
 {
 	Name(ts, "ms11")
 
-	Method(m083, 1)
+	Method(m083, 1, Serialized)
 	{
 		Name(i000, 0x89abcdef)
 
@@ -208,7 +208,7 @@ Method(ms11, 1, Serialized)
 		}
 	}
 
-	Method(n083, 1)
+	Method(n083, 1, Serialized)
 	{
 		Name(i000, 0x89abcdef)
 
@@ -267,7 +267,7 @@ Method(d083) { IIN0() ms11(4) Return(POUT) }
  *
  * SUMMARY: The specific combination of operators aborts execution
  */
-Method(ms12)
+Method(ms12,, Serialized)
 {
 	Name(ts, "ms12")
 
@@ -278,7 +278,7 @@ Method(ms12)
 			return (0)
 		}
 
-		Method(m001)
+		Method(m001,, Serialized)
 		{
 			m000()
 
@@ -409,7 +409,7 @@ Method(ms14, 1, Serialized)
 
 	Method(m114, 1)
 	{
-		Method(m000, 1)
+		Method(m000, 1, Serialized)
 		{
 			Name(i001, 0)
 			Name(b001, Buffer(){10,2,3,4,5})
@@ -640,7 +640,7 @@ Method(ms16, 1, Serialized)
 {
 	Name(ts, "ms16")
 
-	Method(a118)
+	Method(a118,, Serialized)
 	{
 		Name(p90d, Package() {0xd650a284})
 
@@ -677,7 +677,7 @@ Method(ms16, 1, Serialized)
 		m000()
 	}
 
-	Method(b118)
+	Method(b118,, Serialized)
 	{
 		Name(i900, 0xd650a284)
 
@@ -715,7 +715,7 @@ Method(ms16, 1, Serialized)
 		m000()
 	}
 
-	Method(c118)
+	Method(c118,, Serialized)
 	{
 		Name(b900, Buffer() {10,2,3,4,5,6,7,8,9})
 
@@ -755,7 +755,7 @@ Method(ms16, 1, Serialized)
 		m001()
 	}
 
-	Method(d118)
+	Method(d118,, Serialized)
 	{
 		Name(b900, Buffer() {10,2,3,4,5,6,7,8,9})
 
@@ -792,7 +792,7 @@ Method(ms16, 1, Serialized)
 		m001()
 	}
 
-	Method(e118)
+	Method(e118,, Serialized)
 	{
 		Name(b900, Buffer() {10,2,3,4,5,6,7,8,9})
 
@@ -830,7 +830,7 @@ Method(ms16, 1, Serialized)
 		m001()
 	}
 
-	Method(f118)
+	Method(f118,, Serialized)
 	{
 		Name(b900, Buffer() {10,2,3,4,5,6,7,8,9})
 
@@ -868,7 +868,7 @@ Method(ms16, 1, Serialized)
 		m001()
 	}
 
-	Method(g118)
+	Method(g118,, Serialized)
 	{
 		Name(i900, 0xd650a284)
 
@@ -952,9 +952,9 @@ Method(ms17, 1, Serialized)
 {
 	Name(ts, "ms17")
 
-	Method(m126, 1)
+	Method(m126, 1, Serialized)
 	{
-		Method(m000, 1)
+		Method(m000, 1, Serialized)
 		{
 			Name(i001, 0)
 
@@ -978,7 +978,7 @@ Method(ms17, 1, Serialized)
 			OUTP("m000 finished")
 		}
 
-		Method(m001, 1)
+		Method(m001, 1, Serialized)
 		{
 
 			Name(i001, 0)
@@ -1088,11 +1088,11 @@ Method(d126) { IIN0() ms17(4) Return(POUT) }
  *
  * SUMMARY: Unexpectedly CopyObject of immediately passed Index reference is not reference
  */
-Method(ms18)
+Method(ms18,, Serialized)
 {
 	Name(ts, "ms18")
 
-	Method(m127)
+	Method(m127,, Serialized)
 	{
 		Name (p000, Package(2) {1, 2})
 
@@ -1137,7 +1137,7 @@ Method(ms19, 1, Serialized)
 	Name(ts, "ms19")
 
 	// Store Object_Reference to LocalX (No exception, Ok)
-	Method(a128)
+	Method(a128,, Serialized)
 	{
 		Name(i000, 0x1234)
 
@@ -1157,7 +1157,7 @@ Method(ms19, 1, Serialized)
 	}
 
 	// Store Object_Reference to NamedX (Exception, Ok)
-	Method(b128)
+	Method(b128,, Serialized)
 	{
 		Name(i000, 0x1234)
 		Name(ref0, 0)
@@ -1173,7 +1173,7 @@ Method(ms19, 1, Serialized)
 	}
 
 	// CopyObject Object_Reference to NamedX (Exception, Bug)
-	Method(c128)
+	Method(c128,, Serialized)
 	{
 		Name(i000, 0x1234)
 		Name(ref0, 0)
@@ -1201,7 +1201,7 @@ Method(ms19, 1, Serialized)
 	}
 
 	// Store Object_Reference to uninit Package element (No exception, Ok)
-	Method(d128)
+	Method(d128,, Serialized)
 	{
 		Name(i000, 0x1234)
 		Name(p000, Package(1){})
@@ -1222,7 +1222,7 @@ Method(ms19, 1, Serialized)
 	}
 
 	// Store Object_Reference to init Package element (No exception, Ok)
-	Method(e128)
+	Method(e128,, Serialized)
 	{
 		Name(i000, 0x1234)
 		Name(p000, Package(1){0x5678})
@@ -1297,7 +1297,7 @@ Method(ms1a, 1, Serialized)
 {
 	Name(ts, "ms1a")
 
-	Method(a131)
+	Method(a131,, Serialized)
 	{
 		Name(i000, 0x77)
 		Name(i001, 0)
@@ -1328,7 +1328,7 @@ Method(ms1a, 1, Serialized)
 		}
 	}
 
-	Method(b131)
+	Method(b131,, Serialized)
 	{
 		Name(i000, 0x77)
 		Name(i001, 0)
@@ -1359,7 +1359,7 @@ Method(ms1a, 1, Serialized)
 		}
 	}
 
-	Method(c131)
+	Method(c131,, Serialized)
 	{
 		Name(i000, 0x77)
 		Name(i001, 0)
@@ -1394,7 +1394,7 @@ Method(ms1a, 1, Serialized)
 		}
 	}
 
-	Method(d131)
+	Method(d131,, Serialized)
 	{
 		Name(i000, 0x77)
 		Name(i001, 0)
@@ -1425,7 +1425,7 @@ Method(ms1a, 1, Serialized)
 		}
 	}
 
-	Method(e131)
+	Method(e131,, Serialized)
 	{
 		Name(i000, 0x77)
 		Name(i001, 0)
@@ -1498,7 +1498,7 @@ Method(ms1b, 1, Serialized)
 {
 	Name(ts, "ms1b")
 
-	Method(m132, 2)
+	Method(m132, 2, Serialized)
 	{
 		Name(p000, Package(1) {0x77})
 
@@ -1584,7 +1584,7 @@ Method(ms1c, 1, Serialized)
 {
 	Name(ts, "ms1c")
 
-	Method(m133, 1)
+	Method(m133, 1, Serialized)
 	{
 		Name(i000, 0)
 		Name(s000, "q_er0000")
@@ -1709,7 +1709,7 @@ Method(ms1d, 1, Serialized)
 {
 	Name(ts, "ms1d")
 
-	Method(m134, 1)
+	Method(m134, 1, Serialized)
 	{
 		Name(i000, 0x11)
 		Name(i001, 0x22)
@@ -1856,11 +1856,11 @@ Method(c134) { IIN0() ms1d(3) Return(POUT) }
  *
  * SUMMARY: CopyObject of named Buffer to the longer named Buffer works incorrectly
  */
-Method(ms1e)
+Method(ms1e,, Serialized)
 {
 	Name(ts, "ms1e")
 
-	Method(m136)
+	Method(m136,, Serialized)
 	{
 		Name(b000, Buffer(1){0x3c})
 		Name(b001, Buffer(3){0x01, 0x02, 0x03})
@@ -1982,7 +1982,7 @@ Method(ms20, 1, Serialized)
 
     Name (Y, 2)
 
-	Method(mfr0)
+	Method(mfr0,, Serialized)
 	{
 		OUTP("Forward reference within a control method 0")
 
@@ -1998,7 +1998,7 @@ Method(ms20, 1, Serialized)
 			err(ts, z179, 0x07f, 0, 0, Local0, 1)
 		}
 	}
-	Method(mfr1)
+	Method(mfr1,, Serialized)
 	{
 		OUTP("Natural reference within a control method")
 
@@ -2016,7 +2016,7 @@ Method(ms20, 1, Serialized)
 		}
 	}
 
-	Method(mfr2)
+	Method(mfr2,, Serialized)
 	{
 		OUTP("Forward reference within a control method 2")
 
@@ -2031,7 +2031,7 @@ Method(ms20, 1, Serialized)
 		}
 	}
 
-	Method(mfr3)
+	Method(mfr3,, Serialized)
 	{
 		OUTP("Forward reference within a control method 3")
 
@@ -2165,7 +2165,7 @@ Method(ms22, 1, Serialized)
 
 	Name(iact, 0)
 
-	Method(cact, 1)
+	Method(cact, 1, Serialized)
 	{
 		if (Arg0) {
 			Name(iact, 0xffffffff)
@@ -2219,7 +2219,7 @@ Method(ms23, 1, Serialized)
 {
 	Name(ts, "ms23")
 
-	Method(mir0)
+	Method(mir0,, Serialized)
 	{
 		Name(fl00, 0)
 
@@ -2240,7 +2240,7 @@ Method(ms23, 1, Serialized)
 		CH04(ts, 0, 0xff, z179, 0x08e, 0, 0)
 	}
 
-	Method(mir1)
+	Method(mir1,, Serialized)
 	{
 		Name(fl00, 1)
 
@@ -2268,7 +2268,7 @@ Method(ms23, 1, Serialized)
 		}
 	}
 
-	Method(mir2)
+	Method(mir2,, Serialized)
 	{
 		Name(fl00, 0)
 
@@ -2288,7 +2288,7 @@ Method(ms23, 1, Serialized)
 		CH04(ts, 0, 0xff, z179, 0x092, 0, 0)
 	}
 
-	Method(mir3)
+	Method(mir3,, Serialized)
 	{
 		Name(fl00, 1)
 
@@ -2316,7 +2316,7 @@ Method(ms23, 1, Serialized)
 		}
 	}
 
-	Method(mir4)
+	Method(mir4,, Serialized)
 	{
 		Name(fl00, 0)
 		Name(i000, 0xabcd0000)
@@ -2356,7 +2356,7 @@ Method(ms23, 1, Serialized)
 		}
 	}
 
-	Method(mir5)
+	Method(mir5,, Serialized)
 	{
 		Name(fl00, 0)
 		Name(i000, 0xabcd0000)
@@ -2394,7 +2394,7 @@ Method(ms23, 1, Serialized)
 		}
 	}
 
-	Method(mir6)
+	Method(mir6,, Serialized)
 	{
 		Name(fl00, 0)
 		Name(i000, 0xabcd0000)
@@ -2484,11 +2484,11 @@ Method(gmir) { IIN0() ms23(7) Return(POUT) }
  *
  * Increment/Decrement with String/Buffer
  */
-Method(ms24)
+Method(ms24,, Serialized)
 {
 	Name(ts, "ms24")
 
-	Method(mmid)
+	Method(mmid,, Serialized)
 	{
 		Name(s000, "0321")
 		Name(s001, "0321")
@@ -2550,7 +2550,7 @@ Method(ms25, 1, Serialized)
 {
 	Name(ts, "ms25")
 
-	Method(msd0)
+	Method(msd0,, Serialized)
 	{
 		Name(i000, 0xffffffff)
 		Name(i001, 0x12345678)
@@ -2564,7 +2564,7 @@ Method(ms25, 1, Serialized)
 		}
 	}
 
-	Method(msd1)
+	Method(msd1,, Serialized)
 	{
 		Name(i000, 0xffffffff)
 		Name(i001, 0x12345678)
@@ -2578,7 +2578,7 @@ Method(ms25, 1, Serialized)
 		}
 	}
 
-	Method(msd2)
+	Method(msd2,, Serialized)
 	{
 		Name(i000, 0xffffffff)
 		Name(i001, 0x12345678)
@@ -2594,7 +2594,7 @@ Method(ms25, 1, Serialized)
 		}
 	}
 
-	Method(msd3)
+	Method(msd3,, Serialized)
 	{
 		Name(i000, 0xffffffff)
 		Name(i001, 0x12345678)
@@ -2655,7 +2655,7 @@ Method(ms26, 1, Serialized)
 
 	OperationRegion(OPR0, SystemMemory, VMEM, 256)
 
-	Method(rfu0)
+	Method(rfu0,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, Preserve) {
 			g001, 0x80,
@@ -2690,7 +2690,7 @@ Method(ms26, 1, Serialized)
 		}
 	}
 
-	Method(rfu1)
+	Method(rfu1,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, Preserve) {
 			g001, 0x80,
@@ -2730,7 +2730,7 @@ Method(ms26, 1, Serialized)
 		}
 	}
 
-	Method(rfu2)
+	Method(rfu2,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, Preserve) {
 			g001, 0x80,
@@ -2770,7 +2770,7 @@ Method(ms26, 1, Serialized)
 		}
 	}
 
-	Method(rfu3)
+	Method(rfu3,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, Preserve) {
 			g001, 0x80,
@@ -2821,7 +2821,7 @@ Method(ms26, 1, Serialized)
 		}
 	}
 
-	Method(rfu4)
+	Method(rfu4,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, Preserve) {
 			g001, 0x80,
@@ -2872,7 +2872,7 @@ Method(ms26, 1, Serialized)
 		}
 	}
 
-	Method(rfu5)
+	Method(rfu5,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, Preserve) {
 			g001, 0x80,
@@ -2918,7 +2918,7 @@ Method(ms26, 1, Serialized)
 		}
 	}
 
-	Method(rfu6)
+	Method(rfu6,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, Preserve) {
 			g001, 0x80,
@@ -2964,7 +2964,7 @@ Method(ms26, 1, Serialized)
 		}
 	}
 
-	Method(rfu7)
+	Method(rfu7,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, Preserve) {
 			g001, 0x80,
@@ -3015,7 +3015,7 @@ Method(ms26, 1, Serialized)
 		}
 	}
 
-	Method(rfu8)
+	Method(rfu8,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, Preserve) {
 			g001, 0x80,
@@ -3123,7 +3123,7 @@ Method(ms27, 1, Serialized)
 		tot1, 32,
 	}
 
-	Method(ifd0)
+	Method(ifd0,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx1, 4,
@@ -3173,7 +3173,7 @@ Method(ms27, 1, Serialized)
 		TRY0(3, 0, 0x06)
 	}
 
-	Method(ifd1)
+	Method(ifd1,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx1, 8,
@@ -3217,7 +3217,7 @@ Method(ms27, 1, Serialized)
 		TRY0(3, 3, 0x78)
 	}
 
-	Method(ifd2)
+	Method(ifd2,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx1, 8,
@@ -3274,7 +3274,7 @@ Method(ms27, 1, Serialized)
 		TRY0(3, 2, 0xf0)
 	}
 
-	Method(ifd3)
+	Method(ifd3,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx1, 8,
@@ -3349,7 +3349,7 @@ Method(mt27, 1, Serialized)
 		tot1, 32,
 	}
 
-	Method(ifd4)
+	Method(ifd4,, Serialized)
 	{
 		Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 			idx1, 16,
@@ -3404,7 +3404,7 @@ Method(mt27, 1, Serialized)
 		TRY0(3, 2, 0x7800)
 	}
 
-	Method(ifd5)
+	Method(ifd5,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx1, 8,
@@ -3452,7 +3452,7 @@ Method(mt27, 1, Serialized)
 		TRY0(3, 4, 0xf)
 	}
 
-	Method(ifd6)
+	Method(ifd6,, Serialized)
 	{
 		Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 			idx1, 32,
@@ -3512,7 +3512,7 @@ Method(mt27, 1, Serialized)
 		TRY0(3, 0, 0xff000000)
 	}
 
-	Method(ifd7)
+	Method(ifd7,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx1, 8,
@@ -3606,7 +3606,7 @@ Method(mu27, 1, Serialized)
 		tot1, 32,
 	}
 
-	Method(ifd8)
+	Method(ifd8,, Serialized)
 	{
 		Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 			idx1, 32,
@@ -3674,7 +3674,7 @@ Method(mu27, 1, Serialized)
 		TRY0(3, 12, Local0)
 	}
 
-	Method(ifd9)
+	Method(ifd9,, Serialized)
 	{
 		Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 			idx1, 16,
@@ -3733,7 +3733,7 @@ Method(mu27, 1, Serialized)
 		TRY0(3, 12, Local0)
 	}
 
-	Method(ifda)
+	Method(ifda,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx1, 16,
@@ -3781,7 +3781,7 @@ Method(mu27, 1, Serialized)
 		TRY0(3, 12, 0x78)
 	}
 
-	Method(ifdb)
+	Method(ifdb,, Serialized)
 	{
 		Field(OPR0, AnyAcc, NoLock, WriteAsZeros) {
 			idx1, 16,
@@ -3856,7 +3856,7 @@ Method(mv27, 1, Serialized)
 		tot1, 32,
 	}
 
-	Method(ifdc)
+	Method(ifdc,, Serialized)
 	{
 		Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 			idx0, 16,
@@ -3928,7 +3928,7 @@ Method(mv27, 1, Serialized)
 		TRY0(Local0, arg4, DeRefof(Index(arg0, 4)))
 	}
 
-	Method(ifdd)
+	Method(ifdd,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, Preserve) {
 			idx1, 8,
@@ -3973,7 +3973,7 @@ Method(mv27, 1, Serialized)
 		TRY4(Local0, Refof(re10), Refof(re11), Refof(re12), Refof(re13))
 	}
 
-	Method(ifde)
+	Method(ifde,, Serialized)
 	{
 		Field(OPR0, WordAcc, NoLock, Preserve) {
 			idx1, 16,
@@ -4008,7 +4008,7 @@ Method(mv27, 1, Serialized)
 		TRY4(Local0, Refof(re10), Refof(re11), Refof(re12), Refof(re13))
 	}
 
-	Method(ifdf)
+	Method(ifdf,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, Preserve) {
 			idx1, 8,
@@ -4071,7 +4071,7 @@ Method(mw27, 1, Serialized)
 		tot1, 32,
 	}
 
-	Method(ife0)
+	Method(ife0,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx0, 16,
@@ -4109,7 +4109,7 @@ Method(mw27, 1, Serialized)
 		m000(0x0080ffff, Refof(idf7), 0x15e, 0x1, 0x00800003)
 	}
 
-	Method(ife1)
+	Method(ife1,, Serialized)
 	{
 		Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 			idx0, 16,
@@ -4147,7 +4147,7 @@ Method(mw27, 1, Serialized)
 		m000(0x0080ffff, Refof(idf7), 0x16e, 0x1, 0x00800003)
 	}
 
-	Method(ife2)
+	Method(ife2,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx0, 16,
@@ -4185,7 +4185,7 @@ Method(mw27, 1, Serialized)
 		m000(0x0080ffff, Refof(idf7), 0x17e, 0x0, 0x00800002)
 	}
 
-	Method(ife3)
+	Method(ife3,, Serialized)
 	{
 		Field(OPR0, WordAcc, NoLock, WriteAsZeros) {
 			idx0, 16,
@@ -4251,7 +4251,7 @@ Method(mx27, 1, Serialized)
 		tot1, 32,
 	}
 
-	Method(ife4)
+	Method(ife4,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx0, 16,
@@ -4289,7 +4289,7 @@ Method(mx27, 1, Serialized)
 		m000(0xffffffff, Refof(idf7), 0x19e, 0x0, 0xffff0003)
 	}
 
-	Method(ife5)
+	Method(ife5,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx0, 8,
@@ -4327,7 +4327,7 @@ Method(mx27, 1, Serialized)
 		m000(0xffffffff, Refof(idf7), 0x1ae, 0x0, 0xffffff02)
 	}
 
-	Method(ife6)
+	Method(ife6,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx0, 32,
@@ -4370,7 +4370,7 @@ Method(mx27, 1, Serialized)
 		m000(0x00008000, Refof(idf7), 0x1c5, 0x1, 0x00008000, 2)
 	}
 
-	Method(ife7)
+	Method(ife7,, Serialized)
 	{
 		Field(OPR0, DWordAcc, NoLock, WriteAsZeros) {
 			idx0, 32,
@@ -4440,7 +4440,7 @@ Method(my27, 1, Serialized)
 		tot1, 32,
 	}
 
-	Method(ife8)
+	Method(ife8,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx0, 32,
@@ -4483,7 +4483,7 @@ Method(my27, 1, Serialized)
 		m000(0x80000000, Refof(idf7), 0x215, 0x1, 0x80000000, 4)
 	}
 
-	Method(ife9)
+	Method(ife9,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx0, 32,
@@ -4526,7 +4526,7 @@ Method(my27, 1, Serialized)
 		m000(0xffffffff, Refof(idf7), 0x235, 0x0, 0xffffffff, 0)
 	}
 
-	Method(ifea)
+	Method(ifea,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx0, 16,
@@ -4570,7 +4570,7 @@ Method(my27, 1, Serialized)
 		m000(0xffffffff, 7, 0x247, 0x00800003)
 	}
 
-	Method(ifeb)
+	Method(ifeb,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx0, 16,
@@ -4653,7 +4653,7 @@ Method(mz27, 1, Serialized)
 		tot1, 32,
 	}
 
-	Method(ifec)
+	Method(ifec,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx0, 32,
@@ -4702,7 +4702,7 @@ Method(mz27, 1, Serialized)
 		m000(0xffffffff, 7, 0x25e, 0x80000000, 4)
 	}
 
-	Method(ifed)
+	Method(ifed,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx0, 8,
@@ -4723,7 +4723,7 @@ Method(mz27, 1, Serialized)
 		}
 	}
 
-	Method(ifee)
+	Method(ifee,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx0, 8,
@@ -4744,7 +4744,7 @@ Method(mz27, 1, Serialized)
 		}
 	}
 
-	Method(ifef)
+	Method(ifef,, Serialized)
 	{
 		Field(OPR0, ByteAcc, NoLock, WriteAsZeros) {
 			idx1, 8,
@@ -4855,7 +4855,7 @@ Method(zife) { IIN0() mz27(0) Return(POUT) }
  *
  * Check BankField implementation
  */
-Method(ms28)
+Method(ms28,, Serialized)
 {
 	Name(ts, "ms28")
 
@@ -4866,7 +4866,7 @@ Method(ms28)
 		tot1, 32,
 	}
 
-	Method(bfd0)
+	Method(bfd0,, Serialized)
 	{
 		Field (OPR0, ByteAcc, NoLock, Preserve) {
 			bnk0, 8
@@ -5147,7 +5147,7 @@ Method(ms29, 1, Serialized)
 		Release (C153)
 	}
 
-	Method(mut9)
+	Method(mut9,, Serialized)
 	{
 		Mutex (C159, 0)
 
@@ -5283,7 +5283,7 @@ Method(ms2a, 1, Serialized)
 	Method(tob0)
 	{
 
-		Method(m000, 1)
+		Method(m000, 1, Serialized)
 		{
 			Name(b000, Buffer(1){0x3c})
 			Name(b001, Buffer(3){0x01, 0x02, 0x03})
@@ -5375,7 +5375,7 @@ Method(ms2a, 1, Serialized)
 		}
 	}
 
-	Method(tob7)
+	Method(tob7,, Serialized)
 	{
 		Name(i000, 0)
 
@@ -5394,7 +5394,7 @@ Method(ms2a, 1, Serialized)
 		}
 	}
 
-	Method(tob8)
+	Method(tob8,, Serialized)
 	{
 		Name(s000, "s000")
 
@@ -5409,7 +5409,7 @@ Method(ms2a, 1, Serialized)
 		}
 	}
 
-	Method(tob9)
+	Method(tob9,, Serialized)
 	{
 		Name(b000, Buffer(2){})
 
@@ -5427,7 +5427,7 @@ Method(ms2a, 1, Serialized)
 	Method(toba)
 	{
 
-		Method(m000, 1)
+		Method(m000, 1, Serialized)
 		{
 			Name(b000, Buffer(1){0x3c})
 			Name(b001, Buffer(3){0x01, 0x02, 0x03})
@@ -5521,7 +5521,7 @@ Method(ms2b, 1, Serialized)
 {
 	Name(ts, "ms2b")
 
-	Method(pac0)
+	Method(pac0,, Serialized)
 	{
 		Name(p000, Package(5){1, 2, 3})
 
@@ -5533,7 +5533,7 @@ Method(ms2b, 1, Serialized)
 		}
 	}
 
-	Method(pac1)
+	Method(pac1,, Serialized)
 	{
 		Name(p000, Package(5){1, 2, 3})
 
@@ -5554,7 +5554,7 @@ Method(ms2b, 1, Serialized)
 	// This test actually should be used with Package(3){1, 2, 3, 4, 5})
 	// declaration, but iASL reports "Initializer list too long" error.
 	// Uncomment, set 'fopt' below to 1 and use it with -f iASL option
-	Method(pac2)
+	Method(pac2,, Serialized)
 	{
 		Name(fopt, 0)
 //		Name(p000, Package(3){1, 2, 3, 4, 5})
@@ -5795,7 +5795,7 @@ Method(ms2c, 1, Serialized)
 		}
 	}
 
-	Method(sw07)
+	Method(sw07,, Serialized)
 	{
 		OUTP("Check While implementation 7: Name inside, 1 step")
 
@@ -5816,7 +5816,7 @@ Method(ms2c, 1, Serialized)
 		}
 	}
 
-	Method(sw08)
+	Method(sw08,, Serialized)
 	{
 		OUTP("Check While implementation 8: Name inside, 2 steps")
 
@@ -6049,7 +6049,7 @@ Method(dzac) { IIN0() zac3() Return(POUT) }
  * Example from Bob,
  * Buffer is not shortened on storing short string
  */
-Method(ms2e)
+Method(ms2e,, Serialized)
 {
 	Name(ts, "ms2e")
 
@@ -6151,7 +6151,7 @@ Method(b246) { IIN0() ms2f(2) Return(POUT) }
  *
  * SUMMARY: ASL compiler incorrectly implements Break within Switch
  */
-Method(ms30)
+Method(ms30,, Serialized)
 {
 	Name(ts, "ms30")
 
@@ -6337,7 +6337,7 @@ Method(ms31, 1, Serialized)
 		}
 	}
 
-	Method(m004)
+	Method(m004,, Serialized)
 	{
 		Name(DDBH, 0)
 
@@ -6360,7 +6360,7 @@ Method(ms31, 1, Serialized)
 	}
 
 	// Manual test for ABBU: hangs on MS
-	Method(m014)
+	Method(m014,, Serialized)
 	{
 		Name(DDBH, 0)
 
@@ -6378,7 +6378,7 @@ Method(ms31, 1, Serialized)
 		}
 	}
 
-	Method(m005)
+	Method(m005,, Serialized)
 	{
 		Name(PAC0, Package(1){})
 
@@ -6398,7 +6398,7 @@ Method(ms31, 1, Serialized)
 	}
 
 	// Manual test for ABBU
-	Method(m015)
+	Method(m015,, Serialized)
 	{
 		Name(PAC0, Package(1){})
 
@@ -6553,7 +6553,7 @@ Method(ms32, 1, Serialized)
 		}
 	}
 
-	Method(m002)
+	Method(m002,, Serialized)
 	{
 		Name(I000, 0x76543210)
 
@@ -6570,7 +6570,7 @@ Method(ms32, 1, Serialized)
 		}
 	}
 
-	Method(m003)
+	Method(m003,, Serialized)
 	{
 		OUTP("cnr3: Simple CondRefof( , ) negative test for dynamic object")
 
@@ -6675,7 +6675,7 @@ Method(ms33, 1, Serialized)
 		}
 	}
 
-	Method(csdl)
+	Method(csdl,, Serialized)
 	{
 		Device(DLOC) {}
 

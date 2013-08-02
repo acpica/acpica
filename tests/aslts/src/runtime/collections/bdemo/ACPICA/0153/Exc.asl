@@ -34,7 +34,7 @@
 
 // Package --> Integer
 
-Method(md01)
+Method(md01,, Serialized)
 {
 	Name(pppp, Package(1){Buffer() {1,2,3,4}})
 	Name(i000, 0x5678)
@@ -46,7 +46,7 @@ Method(md01)
 
 // Package --> String
 
-Method(md02)
+Method(md02,, Serialized)
 {
 	Name(pppp, Package(1){Buffer() {1,2,3,4}})
 	Name(s000, "String")
@@ -58,7 +58,7 @@ Method(md02)
 
 // Package --> Buffer
 
-Method(md03)
+Method(md03,, Serialized)
 {
 	Name(pppp, Package(1){Buffer() {1,2,3,4}})
 	Name(b000, Buffer() {1,2,3,4})

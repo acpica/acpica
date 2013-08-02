@@ -54,7 +54,7 @@ Device (D289) {
 
 	Name(PLDT, 0)
 
-	Method(TST0)
+	Method(TST0,, Serialized)
 	{
 		Name(DDBH, 2)
 

@@ -32,7 +32,7 @@
  * SUMMARY: No exception on DerefOf for parameter which is none of ObjectReference/IndexReference/String
  */
 
-Method(mfb2)
+Method(mfb2,, Serialized)
 	{
 	Name(b000, Buffer(){ 1, 2, 3, 4, 0x95, 6, 7, 8})
 	Name(i000, 0xabbc0000)
@@ -51,7 +51,7 @@ Method(mfb2)
 	CH04("", 1, 47, 0, 0x005, 0, 0) // AE_AML_OPERAND_TYPE
 }
 
-Method(mfb3)
+Method(mfb3,, Serialized)
 {
 	Event(e000)
 	Mutex(mx00, 0)

@@ -596,7 +596,7 @@ Name (p45B, Package() {
     }
 })
 
-Method(RT25)
+Method(RT25,, Serialized)
 {
 	Name(ts, "RT25")
 

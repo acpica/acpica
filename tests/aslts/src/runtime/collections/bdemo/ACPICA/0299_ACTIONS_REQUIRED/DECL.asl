@@ -61,7 +61,7 @@
 
 Method(m1e8)
 {
-	Method(m306, 2)
+	Method(m306, 2, Serialized)
 	{
 		Name(i000, 0)
 		Name(i001, 0)

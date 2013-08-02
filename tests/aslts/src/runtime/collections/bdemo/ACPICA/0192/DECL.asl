@@ -32,7 +32,7 @@
  * SUMMARY: Incorrect value of Bank register after storing to its banked field
  */
 
-Method(mfa4)
+Method(mfa4,, Serialized)
 {
 	// CHK0 (CheckValue, BenchMarkValue, CheckNum)
 	Method(CHK0, 3)
@@ -43,7 +43,7 @@ Method(mfa4)
 	}
 
 	// 8-bit Bank field
-	Method(m010)
+	Method(m010,, Serialized)
 	{
 		OperationRegion(r000, SystemMemory, 0x100, 0x100)
 		Field (r000, ByteAcc, NoLock, Preserve) {
@@ -100,7 +100,7 @@ Method(mfa4)
 	}
 
 	// 16-bit Bank field
-	Method(m011)
+	Method(m011,, Serialized)
 	{
 		OperationRegion(r000, SystemMemory, 0x100, 0x100)
 		Field (r000, WordAcc, NoLock, Preserve) {
@@ -157,7 +157,7 @@ Method(mfa4)
 	}
 
 	// 32-bit Bank field
-	Method(m012)
+	Method(m012,, Serialized)
 	{
 		OperationRegion(r000, SystemMemory, 0x100, 0x100)
 		Field (r000, DWordAcc, NoLock, Preserve) {
@@ -214,7 +214,7 @@ Method(mfa4)
 	}
 
 	// 33-bit Bank field and QWordAcc
-	Method(m013)
+	Method(m013,, Serialized)
 	{
 		OperationRegion(r000, SystemMemory, 0x100, 0x100)
 		Field (r000, QWordAcc, NoLock, Preserve) {
@@ -266,7 +266,7 @@ Method(mfa4)
 	Name(i005, 0x1FFFFFFFF)
 
 	// 8-bit Bank field
-	Method(m020)
+	Method(m020,, Serialized)
 	{
 		OperationRegion(r000, SystemMemory, 0x100, 0x100)
 		Field (r000, ByteAcc, NoLock, Preserve) {
@@ -323,7 +323,7 @@ Method(mfa4)
 	}
 
 	// 16-bit Bank field
-	Method(m021)
+	Method(m021,, Serialized)
 	{
 		OperationRegion(r000, SystemMemory, 0x100, 0x100)
 		Field (r000, WordAcc, NoLock, Preserve) {
@@ -380,7 +380,7 @@ Method(mfa4)
 	}
 
 	// 32-bit Bank field
-	Method(m022)
+	Method(m022,, Serialized)
 	{
 		OperationRegion(r000, SystemMemory, 0x100, 0x100)
 		Field (r000, DWordAcc, NoLock, Preserve) {
@@ -437,7 +437,7 @@ Method(mfa4)
 	}
 
 	// 33-bit Bank field and QWordAcc
-	Method(m023)
+	Method(m023,, Serialized)
 	{
 		OperationRegion(r000, SystemMemory, 0x100, 0x100)
 		Field (r000, QWordAcc, NoLock, Preserve) {
@@ -482,7 +482,7 @@ Method(mfa4)
 	// BankValues set up with LocalX
 
 	// 8-bit Bank field
-	Method(m030)
+	Method(m030,, Serialized)
 	{
 		Store(0, Local0)
 		Store(1, Local1)
@@ -543,7 +543,7 @@ Method(mfa4)
 	}
 
 	// 16-bit Bank field
-	Method(m031)
+	Method(m031,, Serialized)
 	{
 		Store(0, Local0)
 		Store(1, Local1)
@@ -604,7 +604,7 @@ Method(mfa4)
 	}
 
 	// 32-bit Bank field
-	Method(m032)
+	Method(m032,, Serialized)
 	{
 		Store(0, Local0)
 		Store(1, Local1)
@@ -665,7 +665,7 @@ Method(mfa4)
 	}
 
 	// 33-bit Bank field and QWordAcc
-	Method(m033)
+	Method(m033,, Serialized)
 	{
 		Store(0x1FFFFFFFF, Local5)
 
@@ -712,7 +712,7 @@ Method(mfa4)
 	// BankValues set up with ArgX
 
 	// 8-bit Bank field
-	Method(m040, 3)
+	Method(m040, 3, Serialized)
 	{
 		OperationRegion(r000, SystemMemory, 0x100, 0x100)
 		Field (r000, ByteAcc, NoLock, Preserve) {
@@ -769,7 +769,7 @@ Method(mfa4)
 	}
 
 	// 16-bit Bank field
-	Method(m041, 3)
+	Method(m041, 3, Serialized)
 	{
 		OperationRegion(r000, SystemMemory, 0x100, 0x100)
 		Field (r000, WordAcc, NoLock, Preserve) {
@@ -826,7 +826,7 @@ Method(mfa4)
 	}
 
 	// 32-bit Bank field
-	Method(m042, 3)
+	Method(m042, 3, Serialized)
 	{
 		OperationRegion(r000, SystemMemory, 0x100, 0x100)
 		Field (r000, DWordAcc, NoLock, Preserve) {
@@ -883,7 +883,7 @@ Method(mfa4)
 	}
 
 	// 33-bit Bank field and QWordAcc
-	Method(m043, 1)
+	Method(m043, 1, Serialized)
 	{
 		OperationRegion(r000, SystemMemory, 0x100, 0x100)
 		Field (r000, QWordAcc, NoLock, Preserve) {
@@ -928,7 +928,7 @@ Method(mfa4)
 	// BankValues set up with Expressions
 
 	// 8-bit Bank field
-	Method(m050, 3)
+	Method(m050, 3, Serialized)
 	{
 		Store(0, Local0)
 		Store(1, Local1)
@@ -988,7 +988,7 @@ Method(mfa4)
 	}
 
 	// 16-bit Bank field
-	Method(m051, 3)
+	Method(m051, 3, Serialized)
 	{
 		Store(0, Local0)
 		Store(1, Local1)
@@ -1048,7 +1048,7 @@ Method(mfa4)
 	}
 
 	// 32-bit Bank field
-	Method(m052, 3)
+	Method(m052, 3, Serialized)
 	{
 		Store(0, Local0)
 		Store(1, Local1)
@@ -1108,7 +1108,7 @@ Method(mfa4)
 	}
 
 	// 33-bit Bank field and QWordAcc
-	Method(m053, 1)
+	Method(m053, 1, Serialized)
 	{
 		OperationRegion(r000, SystemMemory, 0x100, 0x100)
 		Field (r000, QWordAcc, NoLock, Preserve) {

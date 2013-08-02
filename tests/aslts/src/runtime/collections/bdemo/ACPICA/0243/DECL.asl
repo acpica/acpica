@@ -32,7 +32,7 @@
  * SUMMARY: The normal work with mutexes is broken after the mutex Release order violation
  */
 
-Method(m02f)
+Method(m02f,, Serialized)
 {
 	Mutex(T500, 5)
 	Mutex(T600, 6)

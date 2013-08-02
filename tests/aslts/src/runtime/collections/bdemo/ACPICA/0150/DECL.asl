@@ -51,7 +51,7 @@
  *
  * Acquire N level mutex then acquire (N+k) level mutex.
  */
-Method(md8a)
+Method(md8a,, Serialized)
 {
 	Mutex(mx00, 0)
 	Mutex(mx01, 1)
@@ -84,7 +84,7 @@ Method(md8a)
  * Acquire N level mutex then acquire (N-k) level mutex.
  * Exception AE_AML_MUTEX_ORDER is expected in this case.
  */
-Method(md8b)
+Method(md8b,, Serialized)
 {
 	Mutex(mx00, 1)
 	Mutex(mx01, 0)
@@ -111,7 +111,7 @@ Method(md8b)
  * Acquire N level mutex then call to Serialized Method
  * declared with (N+k) SyncLevel.
  */
-Method(md8c)
+Method(md8c,, Serialized)
 {
 	Mutex(mx00, 0)
 	Method(mx01, 0, Serialized, 1)
@@ -142,7 +142,7 @@ Method(md8c)
  * Acquire N level mutex then call to Serialized Method declared with (N-k) SyncLevel.
  * Exception AE_AML_MUTEX_ORDER is expected in this case.
  */
-Method(md8d)
+Method(md8d,, Serialized)
 {
 	Mutex(mx00, 1)
 	Method(mx01, 0, Serialized, 0)

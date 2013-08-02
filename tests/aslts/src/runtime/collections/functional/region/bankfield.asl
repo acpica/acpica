@@ -76,7 +76,7 @@ Method(m7bf, 4)
 }
 
 // Simple BankField test
-Method(m7c0, 1)
+Method(m7c0, 1, Serialized)
 {
 	Field (OPRi, ByteAcc, NoLock, Preserve) {
 		bnk0, 8
@@ -10827,7 +10827,7 @@ Method(m7d4, 6, Serialized)
 
 // Splitting of BankFields
 // m7c6(CallChain)
-Method(m7c6, 1)
+Method(m7c6, 1, Serialized)
 {
 	OperationRegion(OPR0, SystemIO, 1000, 0x101)
 
@@ -10850,7 +10850,7 @@ Method(m7c6, 1)
 // Create BankFields that spans the same bits
 // and check possible inconsistence, 0-bit offset.
 // m7e0(CallChain, OpRegion, BankNum)
-Method(m7e0, 3)
+Method(m7e0, 3, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0x100, 0x08)
 	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
@@ -10910,7 +10910,7 @@ Method(m7e0, 3)
 // Create BankFields that spans the same bits
 // and check possible inconsistence, 1-bit offset.
 // m7e1(CallChain, OpRegion, BankNum)
-Method(m7e1, 3)
+Method(m7e1, 3, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x08)
 	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
@@ -10970,7 +10970,7 @@ Method(m7e1, 3)
 // Create BankFields that spans the same bits
 // and check possible inconsistence, 2-bit offset.
 // m7e2(CallChain, OpRegion, BankNum)
-Method(m7e2, 3)
+Method(m7e2, 3, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x08)
 	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
@@ -11030,7 +11030,7 @@ Method(m7e2, 3)
 // Create BankFields that spans the same bits
 // and check possible inconsistence, 3-bit offset.
 // m7e3(CallChain, OpRegion, BankNum)
-Method(m7e3, 3)
+Method(m7e3, 3, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x08)
 	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
@@ -11090,7 +11090,7 @@ Method(m7e3, 3)
 // Create BankFields that spans the same bits
 // and check possible inconsistence, 4-bit offset.
 // m7e4(CallChain, OpRegion, BankNum)
-Method(m7e4, 3)
+Method(m7e4, 3, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x08)
 	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
@@ -11150,7 +11150,7 @@ Method(m7e4, 3)
 // Create BankFields that spans the same bits
 // and check possible inconsistence, 5-bit offset.
 // m7e5(CallChain, OpRegion, BankNum)
-Method(m7e5, 3)
+Method(m7e5, 3, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x08)
 	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
@@ -11210,7 +11210,7 @@ Method(m7e5, 3)
 // Create BankFields that spans the same bits
 // and check possible inconsistence, 6-bit offset.
 // m7e6(CallChain, OpRegion, BankNum)
-Method(m7e6, 3)
+Method(m7e6, 3, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x08)
 	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
@@ -11270,7 +11270,7 @@ Method(m7e6, 3)
 // Create BankFields that spans the same bits
 // and check possible inconsistence, 7-bit offset.
 // m7e7(CallChain, OpRegion, BankNum)
-Method(m7e7, 3)
+Method(m7e7, 3, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x08)
 	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
@@ -11330,7 +11330,7 @@ Method(m7e7, 3)
 // Create BankFields that spans the same bits
 // and check possible inconsistence, 8-bit offset.
 // m7e8(CallChain, OpRegion, BankNum)
-Method(m7e8, 3)
+Method(m7e8, 3, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x08)
 	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
@@ -11390,7 +11390,7 @@ Method(m7e8, 3)
 // Create BankFields that spans the same bits
 // and check possible inconsistence, 2046-bit offset.
 // m7e9(CallChain, OpRegion, BankNum)
-Method(m7e9, 3)
+Method(m7e9, 3, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x101)
 	OperationRegion(OPRn, SystemIO, 0x10, 0x02)
@@ -11448,7 +11448,7 @@ Method(m7e9, 3)
 }
 
 // Check non-constant Bank value
-Method(m7c7, 1)
+Method(m7c7, 1, Serialized)
 {
 	Field (OPRi, ByteAcc, NoLock, Preserve) {
 		bnk0, 8
@@ -11479,7 +11479,7 @@ Method(m7c7, 1)
 	}
 
 	// ArgX
-	Method(m000, 2)
+	Method(m000, 2, Serialized)
 	{
 		BankField (OPRj, bnk0, arg1, ByteAcc, NoLock, Preserve) {
 			Offset(8),
@@ -11490,7 +11490,7 @@ Method(m7c7, 1)
 	}
 
 	// Named
-	Method(m001, 1)
+	Method(m001, 1, Serialized)
 	{
 		BankField (OPRj, bnk0, BVAL, ByteAcc, NoLock, Preserve) {
 			Offset(8),
@@ -11501,7 +11501,7 @@ Method(m7c7, 1)
 	}
 
 	// LocalX
-	Method(m002, 1)
+	Method(m002, 1, Serialized)
 	{
 		Store(BVAL, Local0)
 
@@ -11514,7 +11514,7 @@ Method(m7c7, 1)
 	}
 
 	// Expression
-	Method(m003, 1)
+	Method(m003, 1, Serialized)
 	{
 		Store(1, Local0)
 
@@ -11535,7 +11535,7 @@ Method(m7c7, 1)
 }
 
 // Check non-Integer Bank value
-Method(m7c8, 1)
+Method(m7c8, 1, Serialized)
 {
 	Field (OPRi, ByteAcc, NoLock, Preserve) {
 		bnk0, 8
@@ -11563,7 +11563,7 @@ Method(m7c8, 1)
 
 	Name(i000, 0x12345678)
 
-	Method(m000, 3)
+	Method(m000, 3, Serialized)
 	{
 		Store(1, Local0)
 
@@ -11600,7 +11600,7 @@ Method(m7c8, 1)
 }
 
 // Run-method
-Method(BFC0)
+Method(BFC0,, Serialized)
 {
 	Name(ts, "BFC0")
 

@@ -169,7 +169,7 @@ Method(mr02, 1)
  * 2-th level method M0 is recursively invoked from
  * the same M0 method.
  */
-Method(mr03)
+Method(mr03,, Serialized)
 {
     Store("mr03", ts)
 
@@ -226,7 +226,7 @@ Method(mr03)
  * sub-tree of M0 would be not created in that case and we fall to
  * AE_NOT_FOUND exception.
  */
-Method(mr04)
+Method(mr04,, Serialized)
 {
     Store("mr04", ts)
 
@@ -309,7 +309,7 @@ Method(mr05, 1)
 }
 
 
-Method(mrff)
+Method(mrff,, Serialized)
 {
     Name(ts, "mrff")
     Name(run0, 1)

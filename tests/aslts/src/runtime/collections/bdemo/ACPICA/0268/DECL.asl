@@ -32,7 +32,7 @@
  * SUMMARY: The manner parameters are passed to method in ACPICA contradicts to MS
  */
 
-Method(m023)
+Method(m023,, Serialized)
 {
 	Name(i000, 0xabcd0000)
 	Method(mm00, 1)

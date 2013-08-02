@@ -33,7 +33,7 @@
 
 // Integer
 
-Method(md5a)
+Method(md5a,, Serialized)
 {
 	Name(i000, 0xe0385bcd)
 	ThermalZone(OOO2) {}
@@ -53,7 +53,7 @@ Method(md5a)
 
 // String
 
-Method(md51)
+Method(md51,, Serialized)
 {
 	Name(s000, "String")
 	ThermalZone(OOO2) {}
@@ -75,7 +75,7 @@ Method(md51)
 
 // Buffer
 
-Method(md52)
+Method(md52,, Serialized)
 {
 	Name(b000, Buffer() {1,2,3,4})
 	ThermalZone(OOO2) {}
@@ -96,7 +96,7 @@ Method(md52)
 
 // Package
 
-Method(md53)
+Method(md53,, Serialized)
 {
 	Name(pppp, Package(1){Buffer() {1,2,3,4}})
 	ThermalZone(OOO2) {}
@@ -148,7 +148,7 @@ Method(md53)
 
 // Integer
 
-Method(md54)
+Method(md54,, Serialized)
 {
 	ThermalZone(OOO2) {}
 
@@ -164,7 +164,7 @@ Method(md54)
 
 // String
 
-Method(md55)
+Method(md55,, Serialized)
 {
 	ThermalZone(OOO2) {}
 
@@ -182,7 +182,7 @@ Method(md55)
 
 // Buffer
 
-Method(md56)
+Method(md56,, Serialized)
 {
 	ThermalZone(OOO2) {}
 
@@ -199,7 +199,7 @@ Method(md56)
 
 // Package
 
-Method(md57)
+Method(md57,, Serialized)
 {
 	ThermalZone(OOO2) {}
 

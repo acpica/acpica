@@ -575,7 +575,7 @@ Method(m481, 5, Serialized)
 // arg0-arg4 - parameters of operators
 // arg5      - miscellaneous
 // arg6      - opcode of operation
-Method(m482, 7)
+Method(m482, 7, Serialized)
 {
 ///////////////////
 //

@@ -51,7 +51,7 @@ Device (D285) {
 		RFU0, 0x1a0,
 	}
 
-	Method(TST0)
+	Method(TST0,, Serialized)
 	{
 		Name(HI0, 0)
 

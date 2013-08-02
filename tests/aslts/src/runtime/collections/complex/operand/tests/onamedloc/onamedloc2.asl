@@ -33,7 +33,7 @@
 
 Name(z089, 89)
 
-Method(m614)
+Method(m614,, Serialized)
 {
 	Name(ts, "m614")
 	Name(b640, Buffer(452){})
@@ -12304,7 +12304,7 @@ Method(m614)
 	// Buffer Field to Integer conversion of the Buffer Field TimeoutValue
 	// (second) operand of the Acquire operator
 
-	Method(m06c, 1)
+	Method(m06c, 1, Serialized)
 	{
 		CreateField(b640,   0, 31, bf61)
 
@@ -12331,7 +12331,7 @@ Method(m614)
 
 	// Buffer Field to Integer conversion of the Buffer Field TimeoutValue
 	// (second) operand of the Wait operator
-	Method(m06d, 1)
+	Method(m06d, 1, Serialized)
 	{
 		CreateField(b640,   0, 31, bf61)
 
@@ -12356,7 +12356,7 @@ Method(m614)
 	// Buffer Field to Integer conversion of the Buffer Field value
 	// of Predicate of the Method execution control statements
 	// (If, ElseIf, While)
-	Method(m06e, 1)
+	Method(m06e, 1, Serialized)
 	{
 		Name(ist0, 0)
 		CreateField(b640,   0, 31, bf61)

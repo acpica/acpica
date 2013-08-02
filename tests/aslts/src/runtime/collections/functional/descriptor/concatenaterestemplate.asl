@@ -977,7 +977,7 @@ Name (p444, Package() {
 	Buffer () {0x22, 0x02, 0x00, 0x79, 0},
 })
 
-Method(RT1b)
+Method(RT1b,, Serialized)
 {
 	Name(ts, "RT1b")
 

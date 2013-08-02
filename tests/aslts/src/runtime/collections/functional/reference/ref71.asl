@@ -37,7 +37,7 @@ Name(z109, 109)
 /*
  * Check exceptions for unavailable types of Store
  */
-Method(m1b3)
+Method(m1b3,, Serialized)
 {
 	Name(ts, "m1b3")
 

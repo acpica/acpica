@@ -50,7 +50,7 @@
 		Store("m000 finished", Debug)
 	}
 
-	Method(mf10, 1)
+	Method(mf10, 1, Serialized)
 	{
 		Name(i001, 0)
 
@@ -68,13 +68,13 @@
 		Store("m001 finished", Debug)
 	}
 
-	Method(mf11)
+	Method(mf11,, Serialized)
 	{
 		Name(i000, 7)
 		mf0f(RefOf(i000))
 	}
 
-	Method(mf12)
+	Method(mf12,, Serialized)
 	{
 		Name(i000, 7)
 		mf10(RefOf(i000))

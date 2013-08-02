@@ -32,7 +32,7 @@
  * SUMMARY: Invalid result of Index operator passed with the immediate image of Buffer
  */
 
-	Method(me42, 1)
+	Method(me42, 1, Serialized)
 	{
 		Name(b000, Buffer() {11,22,33,44,55,66,77,88})
 

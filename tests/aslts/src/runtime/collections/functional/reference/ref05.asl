@@ -242,7 +242,7 @@ Method(m1b0)
  *
  * Check each type after each one.
  */
-Method(m1b1)
+Method(m1b1,, Serialized)
 {
 	Name(ts, "m1b1")
 
@@ -1083,7 +1083,7 @@ Method(m1b1)
  *
  * Check each available type after each one
  */
-Method(m1b2)
+Method(m1b2,, Serialized)
 {
 	Name(ts, "m1b2")
 
@@ -1257,7 +1257,7 @@ Method(m1b2)
  *
  * The same as m1b1 but RefOf() added.
  */
-Method(m1b4)
+Method(m1b4,, Serialized)
 {
 	Name(ts, "m1b4")
 
@@ -1968,7 +1968,7 @@ Method(m1b4)
  *
  * The same as m1b4 but Store instead of CopyObject.
  */
-Method(m1b5)
+Method(m1b5,, Serialized)
 {
 	Name(ts, "m1b5")
 
@@ -2675,7 +2675,7 @@ Method(m1b5)
 }
 
 // CopyObject the result of Index to LocalX
-Method(m1b6)
+Method(m1b6,, Serialized)
 {
 	Name(ts, "m1b6")
 
@@ -2913,7 +2913,7 @@ Method(m1b6)
 // Store the result of Index to LocalX.
 //
 // The same as m1b6 but Store instead of CopyObject.
-Method(m1b7)
+Method(m1b7,, Serialized)
 {
 	Name(ts, "m1b7")
 

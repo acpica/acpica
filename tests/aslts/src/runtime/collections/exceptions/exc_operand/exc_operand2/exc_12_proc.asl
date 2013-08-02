@@ -40,7 +40,7 @@ Processor(pr10, 0, 0xFFFFFFFF, 0) {}
 //
 // 47 - AE_AML_OPERAND_TYPE
 //
-Method(m4bc)
+Method(m4bc,, Serialized)
 {
 	Name(ts, "m4bc")
 
@@ -51,7 +51,7 @@ Method(m4bc)
 	Name(i000, 0)
 
 	// Local Named Object
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		Processor(prc2, 0, 0xFFFFFFFF, 0) {}
 
@@ -71,7 +71,7 @@ Method(m4bc)
 	}
 
 	// Local
-	Method(m002, 1)
+	Method(m002, 1, Serialized)
 	{
 		Processor(prc2, 0, 0xFFFFFFFF, 0) {}
 
@@ -789,7 +789,7 @@ Method(m4bc)
 	}
 
 	// Result of Method invocation
-	Method(m004, 1)
+	Method(m004, 1, Serialized)
 	{
 		Name(i000, 0) // Label to check m000 invocations
 
@@ -1162,7 +1162,7 @@ Method(m4bc)
 	}
 
 	// Reference to Object as Result of Method invocation
-	Method(m005, 1)
+	Method(m005, 1, Serialized)
 	{
 		Processor(prc2, 0, 0xFFFFFFFF, 0) {}
 

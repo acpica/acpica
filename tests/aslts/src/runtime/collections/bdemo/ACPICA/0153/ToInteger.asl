@@ -33,7 +33,7 @@
 
 // Integer
 
-Method(md59)
+Method(md59,, Serialized)
 {
 	Name(i000, 0)
 	Name(i001, 1)
@@ -51,7 +51,7 @@ Method(md59)
 
 // String
 
-Method(md21)
+Method(md21,, Serialized)
 {
 	Name(s000, "String")
 	Name(i000, 0x1234)
@@ -69,7 +69,7 @@ Method(md21)
 
 // Buffer
 
-Method(md22)
+Method(md22,, Serialized)
 {
 	Name(b000, Buffer() {1,2,3,4})
 	Name(i000, 0x5678)

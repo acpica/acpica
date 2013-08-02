@@ -3770,7 +3770,7 @@ Name (P453, Package ()
     }
 })
 
-Method(RT21)
+Method(RT21,, Serialized)
 {
 	Name(ts, "RT21")
 

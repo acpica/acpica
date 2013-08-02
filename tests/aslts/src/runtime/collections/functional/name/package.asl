@@ -58,7 +58,7 @@ Name(c040, 16)
 Name(c041, 22)
 
 // Check Integers
-Method(m1f0)
+Method(m1f0,, Serialized)
 {
 	Name(ts, "m1f0")
 
@@ -180,7 +180,7 @@ Method(m1f0)
 }
 
 // Check Strings
-Method(m1f1)
+Method(m1f1,, Serialized)
 {
 	Name(ts, "m1f1")
 
@@ -225,7 +225,7 @@ Method(m1f1)
 }
 
 // Check Buffers
-Method(m1f2)
+Method(m1f2,, Serialized)
 {
 	Name(ts, "m1f2")
 
@@ -350,7 +350,7 @@ Method(m1f2)
 }
 
 // Packages
-Method(m1f3)
+Method(m1f3,, Serialized)
 {
 	Name(ts, "m1f3")
 
@@ -479,7 +479,7 @@ Method(m1f3)
 }
 
 // Do test for Methods, when Methods will be implemented !!!!!!!!!!!!!!!
-Method(m1f4)
+Method(m1f4,, Serialized)
 {
 	Name(ts, "m1f4")
 
@@ -503,7 +503,7 @@ Method(m1f4)
 	return (0)
 }
 
-Method(m1f5, 3)
+Method(m1f5, 3, Serialized)
 {
 	// n000 - decr cur counter (levels num)
 	// n001 - incr cur counter
@@ -585,7 +585,7 @@ Method(m1f5, 3)
 // Mix
 // - all one level combinations
 // - 255 levels in depth
-Method(m1f6)
+Method(m1f6,, Serialized)
 {
 	Name(ts, "m1f6")
 
@@ -1004,7 +1004,7 @@ Method(m1f6)
 //
 // Now - causes crash!!!!!!!
 // Do this test when ObjectType will be fixed.
-Method(m1f7)
+Method(m1f7,, Serialized)
 {
 	Name(ts, "m1f7")
 
@@ -1022,7 +1022,7 @@ Method(m1f7)
 // Write Integers into Package, then Read and verify
 //
 // <Package>,<size>,<start value>
-Method(m1f8, 3)
+Method(m1f8, 3, Serialized)
 {
 	Name(ts, "m1f8")
 
@@ -1075,7 +1075,7 @@ Method(m1f8, 3)
 	}
 }
 
-Method(m1f9, 1)
+Method(m1f9, 1, Serialized)
 {
 	Name(p000, Package(arg0) {})
 
@@ -1087,7 +1087,7 @@ Method(m1f9, 1)
 }
 
 // Write/rewrite Integers into Package and verify
-Method(m1fa)
+Method(m1fa,, Serialized)
 {
 	Name(ts, "m1fa")
 
@@ -1099,7 +1099,7 @@ Method(m1fa)
 // Write Strings into Package, then Read and verify
 //
 // <Package>,<size>,<start string>
-Method(m1fb, 3)
+Method(m1fb, 3, Serialized)
 {
 	Name(ts, "m1fb")
 
@@ -1150,7 +1150,7 @@ Method(m1fb, 3)
 	}
 }
 
-Method(m1fc, 1)
+Method(m1fc, 1, Serialized)
 {
 	Name(p000, Package(arg0) {})
 
@@ -1162,7 +1162,7 @@ Method(m1fc, 1)
 }
 
 // Write/rewrite Strings into Package and verify
-Method(m1fd)
+Method(m1fd,, Serialized)
 {
 	Name(ts, "m1fd")
 
@@ -1174,7 +1174,7 @@ Method(m1fd)
 // Write Buffers into Package, then Read and verify
 //
 // <Package>,<size>,<start buffer>
-Method(m1fe, 3)
+Method(m1fe, 3, Serialized)
 {
 	Name(ts, "m1fe")
 
@@ -1235,7 +1235,7 @@ Method(m1fe, 3)
 
 // More complex cases with buffers of different sizes
 // are performed into conversion tests.
-Method(m1ff, 1)
+Method(m1ff, 1, Serialized)
 {
 	Name(p000, Package(arg0) {})
 
@@ -1247,7 +1247,7 @@ Method(m1ff, 1)
 }
 
 // Write/rewrite Buffers into Package and verify
-Method(m200)
+Method(m200,, Serialized)
 {
 	Name(ts, "m200")
 
@@ -1259,7 +1259,7 @@ Method(m200)
 // Write Packages into Package, then Read (and verify)
 //
 // <Package>,<size>,<start Package>
-Method(m201, 3)
+Method(m201, 3, Serialized)
 {
 	Name(pr00, 0)
 
@@ -1322,7 +1322,7 @@ Method(m201, 3)
 }
 
 // More complex cases are performed into obj_deletion.asl test
-Method(m202, 1)
+Method(m202, 1, Serialized)
 {
 	Name(p000, Package(arg0) {})
 
@@ -1337,7 +1337,7 @@ Method(m202, 1)
 //
 // Verification of the contents of Packages is not
 // performed, too complex.
-Method(m203)
+Method(m203,, Serialized)
 {
 	Name(ts, "m203")
 

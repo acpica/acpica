@@ -32,7 +32,7 @@
  * SUMMARY: Exception on ToHexString for Buffer with 67 elements
  */
 
-Method(mdd7)
+Method(mdd7,, Serialized)
 {
 	Name(b000, Buffer() {
 			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,

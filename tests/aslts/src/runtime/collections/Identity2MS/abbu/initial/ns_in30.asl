@@ -51,7 +51,7 @@ Name(z166, 166)
  * Package is passed by ArgX to method:
  * - directly
  */
-Method(in30)
+Method(in30,, Serialized)
 {
 	Name(ts, "in30")
 	Name(p000, Package() {0xabcd0000, 0xabcd0001, 0xabcd0002})
@@ -92,7 +92,7 @@ Method(in30)
  * Package is passed by ArgX to method:
  * - by ORef
  */
-Method(in31)
+Method(in31,, Serialized)
 {
 	Name(ts, "in31")
 	Name(p000, Package() {0xabcd0000, 0xabcd0001, 0xabcd0002})
@@ -136,7 +136,7 @@ Method(in31)
  * - directly
  * - by ORef
  */
-Method(in32)
+Method(in32,, Serialized)
 {
 	Name(ts, "in32")
 	Name(p000, Package() {0xabcd0000, 0xabcd0001, 0xabcd0002})
@@ -181,7 +181,7 @@ Method(in32)
  * - do ORef and pass to LocalX
  * - do DerefOf and pass to LocalX
  */
-Method(in33)
+Method(in33,, Serialized)
 {
 	Name(ts, "in33")
 	Name(p000, Package() {0xabcd0000, 0xabcd0001, 0xabcd0002})
@@ -239,7 +239,7 @@ Method(in33)
  *   Named element of Package is simply not implemented by MS,
  *   i000 in Package(){i000} is, on MS, the same as Package(){"i000"}.
  */
-Method(in34)
+Method(in34,, Serialized)
 {
 	Name(ts, "in34")
 	Name(i000, 0xabcd0000)
@@ -306,7 +306,7 @@ Method(in34)
  * Buffer
  */
 
-Method(in36)
+Method(in36,, Serialized)
 {
 	Name(ts, "in36")
 	Name(b000, Buffer() {0x10, 0x11, 0x12})
@@ -364,7 +364,7 @@ Method(in36)
  *
  * Recursive call to m001
  */
-Method(in37)
+Method(in37,, Serialized)
 {
 	Name(ts, "in37")
 	Name(i001, 0)
@@ -420,7 +420,7 @@ Method(in37)
 /*
  * Field instead of i000 (in in01)
  */
-Method(in38, 1)
+Method(in38, 1, Serialized)
 {
 	Name(ts, "in38")
 	Name(i001, 0)
@@ -515,7 +515,7 @@ Method(in38, 1)
  *
  * (is this test correct?)
  */
-Method(in39, 1)
+Method(in39, 1, Serialized)
 {
 	Name(ts, "in39")
 	Name(i001, 0)
@@ -610,7 +610,7 @@ Method(in39, 1)
  *
  * (is this test correct?)
  */
-Method(in3a, 1)
+Method(in3a, 1, Serialized)
 {
 	Name(ts, "in3a")
 	Name(i001, 0)
@@ -722,7 +722,7 @@ Method(in3a, 1)
  *   added argument to methods and b000 passed without any use of that
  *   parameter inside the methods
  */
-Method(in3c, 1)
+Method(in3c, 1, Serialized)
 {
 	Name(ts, "in3c")
 	Name(i001, 0)
@@ -811,7 +811,7 @@ Method(in3c, 1)
  *   added argument to methods and b000 passed without any use of that
  *   parameter inside the methods
  */
-Method(in3e)
+Method(in3e,, Serialized)
 {
 	Name(ts, "in3e")
 	Name(i001, 0)

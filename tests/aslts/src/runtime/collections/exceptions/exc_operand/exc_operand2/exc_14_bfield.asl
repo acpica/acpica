@@ -46,7 +46,7 @@ Name(bi01, Buffer() {0xa4,0xa5,0xa6,0xa7,0xb8,0xb9,0xba,0xbb,0xbc})
 // 47 - AE_AML_OPERAND_TYPE
 // See notes to m4b1 and m4b3
 //
-Method(m4be)
+Method(m4be,, Serialized)
 {
 	Name(ts, "m4be")
 
@@ -55,7 +55,7 @@ Method(m4be)
 	CreateField(bbf1, 58, 65, bf03)
 
 	// Local Named Object
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		Name(bbf1, Buffer(20) {})
 		CreateField(bbf1, 11, 31, bf02)
@@ -160,7 +160,7 @@ Method(m4be)
 	}
 
 	// Reference to Object as Result of Method invocation
-	Method(m003, 1)
+	Method(m003, 1, Serialized)
 	{
 		Name(bbf1, Buffer(20) {})
 		CreateField(bbf1, 11, 31, bf02)

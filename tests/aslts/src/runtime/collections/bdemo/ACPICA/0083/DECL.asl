@@ -32,7 +32,7 @@
  * SUMMARY: No exception on DerefOf of an arbitrary Source
  */
 
-	Method(me34)
+	Method(me34,, Serialized)
 	{
 		Event(e000)
 		Mutex(mx00, 0)

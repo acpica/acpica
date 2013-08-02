@@ -32,7 +32,7 @@
 
 Name(z140, 140)
 
-Method(m375)
+Method(m375,, Serialized)
 {
 	// The Created Objects benchmark Package
 	Name(pp00, Package(1) {})

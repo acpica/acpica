@@ -32,7 +32,7 @@
  */
 Name(z157, 157)
 
-Method(m300)
+Method(m300,, Serialized)
 {
 	Name(ts, "m300")
 	Name(p000, Package() {0xabcd0000, 0xabcd0001, 0xabcd0002})
@@ -63,7 +63,7 @@ Method(m300)
 	CH03(ts, z157, 0x002, 0, 0)
 }
 
-Method(m301)
+Method(m301,, Serialized)
 {
 	Name(ts, "m301")
 	Name(b000, Buffer() {0x10, 0x11, 0x12})
@@ -95,7 +95,7 @@ Method(m301)
 	CH03(ts, z157, 0x005, 0, 0)
 }
 
-Method(m302)
+Method(m302,, Serialized)
 {
 	Name(ts, "m302")
 	Name(s000, "qqqqqqqqqqqqqq")
@@ -129,12 +129,12 @@ Method(m302)
 /*
  * Element of Package instead of i000 (in m001)
  */
-Method(m303, 1)
+Method(m303, 1, Serialized)
 {
 	Name(ts, "m303")
 	Name(pp00, Package() {0x11111111, 0x00000001, 0x22223333})
 
-	Method(m000, 2)
+	Method(m000, 2, Serialized)
 	{
 		Name(i001, 0)
 		Name(p000, Package() {1,2,3,4})
@@ -221,7 +221,7 @@ Method(m303, 1)
 /*
  * Element of Package instead of i000 (in m002)
  */
-Method(m304)
+Method(m304,, Serialized)
 {
 	Name(ts, "m304")
 	Name(i001, 0)
@@ -273,7 +273,7 @@ Method(m304)
 /*
  * Buffer Field instead of i000 (in m001)
  */
-Method(m305)
+Method(m305,, Serialized)
 {
 	Name(ts, "m305")
 	Name(b000, Buffer(16) {})
@@ -362,7 +362,7 @@ Method(m305)
 /*
  * Field instead of i000 (in m001)
  */
-Method(m306)
+Method(m306,, Serialized)
 {
 	Name(ts, "m306")
 	Name(i001, 0)
@@ -452,7 +452,7 @@ Method(m306)
 /*
  * Bank Field instead of i000 (in m001)
  */
-Method(m307)
+Method(m307,, Serialized)
 {
 	Name(ts, "m307")
 	Name(i001, 0)
@@ -543,7 +543,7 @@ Method(m307)
 /*
  * Index Field instead of i000 (in m001)
  */
-Method(m308)
+Method(m308,, Serialized)
 {
 	Name(ts, "m308")
 	Name(i001, 0)
@@ -634,7 +634,7 @@ Method(m308)
 /*
  * Element of Buffer instead of i000 (in m001)
  */
-Method(m309, 1)
+Method(m309, 1, Serialized)
 {
 	Name(ts, "m309")
 	Name(i001, 0)
@@ -736,7 +736,7 @@ Method(m309, 1)
 /*
  * Element of String instead of i000 (in m001)
  */
-Method(m30a, 1)
+Method(m30a, 1, Serialized)
 {
 	Name(ts, "m30a")
 	Name(i001, 0)
@@ -840,7 +840,7 @@ Method(m30a, 1)
  *
  * CreateField deeper than parent
  */
-Method(m30b, 1)
+Method(m30b, 1, Serialized)
 {
 	Name(ts, "m30b")
 	Name(i001, 0)

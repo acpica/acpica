@@ -32,7 +32,7 @@
  * SUMMARY: Releasing the mutex the first Acquired on the non-zero level makes Releasing the residuary mutexes of that level impossible
  */
 
-Method(m031)
+Method(m031,, Serialized)
 {
 	Mutex(T000, 0)
 	Mutex(T001, 0)

@@ -247,7 +247,7 @@ Method(m060, 4)
 	}
 }
 
-Method(WAI0)
+Method(WAI0,, Serialized)
 {
 	Name(ts, "WAI0")
 

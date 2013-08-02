@@ -32,7 +32,7 @@
  * SUMMARY: Exception on ToDecimalString for Buffer with 51 elements
  */
 
-Method(mdd6)
+Method(mdd6,, Serialized)
 {
 	// ToDecimalString() when the number of result characters in string
 	// exceeds 200. Results into 204 (51 * 4) characters.

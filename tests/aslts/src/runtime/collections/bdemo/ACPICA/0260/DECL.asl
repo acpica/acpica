@@ -32,7 +32,7 @@
  * SUMMARY: For a DDBHandle Object ObjectType unexpectedly results in AE_AML_INTERNAL
  */
 
-Method(m029)
+Method(m029,, Serialized)
 {
 	Name(BUF0, Buffer() {
 

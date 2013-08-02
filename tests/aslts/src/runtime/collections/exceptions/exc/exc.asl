@@ -36,7 +36,7 @@
 Name(z058, 58)
 
 // Divide by zero
-Method(m140)
+Method(m140,, Serialized)
 {
 	Name(ts, "m140")
 
@@ -60,7 +60,7 @@ Method(m140)
 }
 
 // Modulo divide by zero
-Method(m141)
+Method(m141,, Serialized)
 {
 	Name(ts, "m141")
 
@@ -84,7 +84,7 @@ Method(m141)
 }
 
 // Release ownership on a Mutex that is not currently owned
-Method(m142)
+Method(m142,, Serialized)
 {
 	Name(ts, "m142")
 
@@ -98,7 +98,7 @@ Method(m142)
 }
 
 // SizeOf for data types not an Integer, Buffer, String or Package object
-Method(m143)
+Method(m143,, Serialized)
 {
 	Name(ts, "m143")
 
@@ -182,7 +182,7 @@ Method(m143)
 }
 
 // ToString() when the number of characters copied from buffer exceeds 200
-Method(m144)
+Method(m144,, Serialized)
 {
 	Name(ts, "m144")
 
@@ -220,7 +220,7 @@ Method(m144)
 }
 
 // Access out of Package
-Method(m145)
+Method(m145,, Serialized)
 {
 	Name(ts, "m145")
 
@@ -267,7 +267,7 @@ Method(m145)
 }
 
 // Access out of String
-Method(m085)
+Method(m085,, Serialized)
 {
 	Name(ts, "m085")
 
@@ -294,7 +294,7 @@ Method(m085)
 }
 
 // Access out of Buffer
-Method(m086)
+Method(m086,, Serialized)
 {
 	Name(ts, "m086")
 
@@ -342,7 +342,7 @@ Method(m086)
 
 // ToInteger() passed with an image of a number which value
 // exceeds the maximum of an integer for the current mode.
-Method(m146)
+Method(m146,, Serialized)
 {
 	Name(ts, "m146")
 
@@ -370,7 +370,7 @@ Method(m146)
 // [Uninitialized] None.
 // Causes a fatal error when used as a source
 // operand in any ASL statement.
-Method(m147, 1)
+Method(m147, 1, Serialized)
 {
 	Name(ts, "m147")
 
@@ -392,7 +392,7 @@ Method(m148)
 
 // Stall, Time parameter is too large (> 100)
 
-Method(m149, 1)
+Method(m149, 1, Serialized)
 {
 	Name(ts, "m149")
 
@@ -403,7 +403,7 @@ Method(m149, 1)
 	CH03(ts, z058, 52, 0, 0)
 }
 
-Method(m14a, 1)
+Method(m14a, 1, Serialized)
 {
 	Name(ts, "m14a")
 
@@ -434,7 +434,7 @@ Method(m14b)
 }
 
 // Concatenate() when the number of result characters in string exceeds 200
-Method(m14c)
+Method(m14c,, Serialized)
 {
 	Name(ts, "m14c")
 
@@ -463,7 +463,7 @@ Method(m14c)
 }
 
 // ToDecimalString() when the number of result characters in string exceeds 200
-Method(m14d)
+Method(m14d,, Serialized)
 {
 	Name(ts, "m14d")
 
@@ -506,7 +506,7 @@ Method(m14d)
 }
 
 // ToBCD() when a specified integer overflows a number of the BCD format
-Method(m14e)
+Method(m14e,, Serialized)
 {
 	Name(ts, "m14e")
 
@@ -530,7 +530,7 @@ Method(m14e)
 }
 
 // Create field out of buffer
-Method(m14f)
+Method(m14f,, Serialized)
 {
 	Name(ts, "m14f")
 
@@ -580,7 +580,7 @@ Method(m14f)
 }
 
 // Access to uninitialized local
-Method(m150, 1)
+Method(m150, 1, Serialized)
 {
 	Name(ts, "m150")
 
@@ -596,7 +596,7 @@ Method(m150, 1)
 }
 
 // Access to an uninitialized element of package
-Method(m151)
+Method(m151,, Serialized)
 {
 	Name(ts, "m151")
 
@@ -635,7 +635,7 @@ Method(m151)
 }
 
 // ToHexString() when the number of result characters in string exceeds 200
-Method(m152)
+Method(m152,, Serialized)
 {
 	Name(ts, "m152")
 
@@ -674,7 +674,7 @@ Method(m152)
 }
 
 // StartIndex in Match greater than the package size
-Method(m153)
+Method(m153,, Serialized)
 {
 	Name(ts, "m153")
 
@@ -692,7 +692,7 @@ Method(m153)
 }
 
 // Exeptional conditions of ConcatenateResTemplate
-Method(m154)
+Method(m154,, Serialized)
 {
 	Name(ts, "m154")
 
@@ -791,7 +791,7 @@ Method(m154)
  * "Note: the first non-hex character terminates the conversion
  * without error, and a '0x' prefix is not allowed."
  */
-Method(m155)
+Method(m155,, Serialized)
 {
 	Name(ts, "m155")
 
@@ -819,7 +819,7 @@ Method(m155)
  * even if it is not the most appropreate one.
  * See 111,112,113.
  */
-Method(m156)
+Method(m156,, Serialized)
 {
 	Name(ts, "m156")
 
@@ -871,7 +871,7 @@ Method(m156)
 // //////////////////////////////////////////////////////////
 
 // Index(Integer)
-Method(m157)
+Method(m157,, Serialized)
 {
 	Name(ts, "m157")
 
@@ -898,7 +898,7 @@ Method(m157)
 
 // Bug 83
 // DerefOf(Integer)
-Method(m158)
+Method(m158,, Serialized)
 {
 	Name(ts, "m158")
 
@@ -919,7 +919,7 @@ Method(m158)
 
 // Index(Local7-Integer)
 // DerefOf(Integer)
-Method(m087)
+Method(m087,, Serialized)
 {
 	Name(ts, "m087")
 
@@ -959,7 +959,7 @@ Method(m087)
 }
 
 // Index(Buffer Field)
-Method(m159)
+Method(m159,, Serialized)
 {
 	Name(ts, "m159")
 
@@ -991,7 +991,7 @@ Method(m159)
 
 // Bug 83
 // DerefOf(Buffer Field)
-Method(m15a)
+Method(m15a,, Serialized)
 {
 	Name(ts, "m15a")
 
@@ -1012,7 +1012,7 @@ Method(m15a)
 }
 
 // Index(Field Unit)
-Method(m15d)
+Method(m15d,, Serialized)
 {
 	Name(ts, "m15d")
 
@@ -1093,7 +1093,7 @@ Method(m15d)
 
 // Bug 83
 // DerefOf(Field Unit)
-Method(m15e)
+Method(m15e,, Serialized)
 {
 	Name(ts, "m15e")
 
@@ -1145,7 +1145,7 @@ Method(m15e)
 // UPDATE exc.m084: Implement this test for all the types of objects
 //                  (see for example ref.asl files about objects) and
 //                  all the types of operators.
-Method(m084, 1)
+Method(m084, 1, Serialized)
 {
 	Name(ts, "m084")
 
@@ -1222,7 +1222,7 @@ Method(mf9d)
 }
 
 // Access out of OpRegion and DataTableRegion
-Method(m708)
+Method(m708,, Serialized)
 {
 	Name(ts, "m708")
 
@@ -1289,7 +1289,7 @@ Method(m708)
 }
 
 // Try non-copmputational data OpRegion arguments
-Method(m709)
+Method(m709,, Serialized)
 {
 	Name(ts, "m709")
 
@@ -1297,7 +1297,7 @@ Method(m709)
 	Name(lenp, Package(1){0x123})
 	Name(i000, 0x100)
 
-	Method(m000) {
+	Method(m000,, Serialized) {
 		OperationRegion(OPR0, SystemMemory, offp, 1)
 	}
 	
@@ -1313,7 +1313,7 @@ Method(m709)
 }
 
 // Try OpRegion arguments when Offset + Length > MaxInteger
-Method(m70a)
+Method(m70a,, Serialized)
 {
 	Name(ts, "m70a")
 
@@ -1341,7 +1341,7 @@ Method(m70a)
 }
 
 // Attempt to write into DataTableRegion
-Method(m70b)
+Method(m70b,, Serialized)
 {
 	Name(ts, "m70b")
 
@@ -1360,7 +1360,7 @@ Method(m70b)
 }
 
 // Check non-String DataTableRegion *String arguments
-Method(m7f5)
+Method(m7f5,, Serialized)
 {
 	Name(ts, "m7f5")
 
@@ -1399,7 +1399,7 @@ Method(m7f5)
 }
 
 // Check SMBus OpRegion restictions
-Method(m7f6)
+Method(m7f6,, Serialized)
 {
 	Name(ts, "m7f6")
 
@@ -1422,7 +1422,7 @@ Method(m7f6)
 }
 
 /* Name space issues */
-Method(m0bc)
+Method(m0bc,, Serialized)
 {
 	Name(ts, "m0bc")
 

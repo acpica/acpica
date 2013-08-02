@@ -128,7 +128,7 @@ Method(m302, 6, Serialized)
 	return (0)
 }
 
-Method(ST00)
+Method(ST00,, Serialized)
 {
 	Name(ts, "ST00")
 
@@ -491,7 +491,7 @@ Method(ST00)
 	}
 }
 
-Method(m30d)
+Method(m30d,, Serialized)
 {
 	Name(str0, "mnbvcxzlkjhgf")
 	Name(str1, "mnbvcxzlkjAgf")

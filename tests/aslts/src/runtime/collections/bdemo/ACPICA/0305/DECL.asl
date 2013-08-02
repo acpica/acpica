@@ -34,7 +34,7 @@
 
 Method(mff2)
 {
-	Method(m000, 1)
+	Method(m000, 1, Serialized, 3)
 	{
 		if (LNot(arg0)) {
 			Scope(\_SB) { Name(i2z6, 0xabcd0000) }

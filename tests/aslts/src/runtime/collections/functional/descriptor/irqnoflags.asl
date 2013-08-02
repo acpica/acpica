@@ -123,7 +123,7 @@ Name (p403, Package() {
 	Buffer () {0x22, 0xff, 0xff, 0x79, 0x00},
 })
 
-Method(RT02)
+Method(RT02,, Serialized)
 {
 	Name(ts, "RT02")
 

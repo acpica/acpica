@@ -32,7 +32,7 @@
 
 Name(z139, 139)
 
-Method(mf72, 1)
+Method(mf72, 1, Serialized)
 {
 	Name(i000, 0)
 	Name(cmp0, 0)
@@ -68,7 +68,7 @@ Method(mf72, 1)
 		}
 	}
 
-	Method(m004, 7)
+	Method(m004, 7, Serialized)
 	{
 	Name(ret4, 0)
 	Name(r400, 0)
@@ -80,7 +80,7 @@ Method(mf72, 1)
 	Name(r406, 0)
 	Name(r407, 0)
 
-	Method(m005, 7)
+	Method(m005, 7, Serialized)
 	{
 	Name(ret5, 0)
 	Name(r500, 0)
@@ -92,7 +92,7 @@ Method(mf72, 1)
 	Name(r506, 0)
 	Name(r507, 0)
 
-	Method(m006, 7)
+	Method(m006, 7, Serialized)
 	{
 	Name(ret6, 0)
 	Name(r600, 0)
@@ -104,7 +104,7 @@ Method(mf72, 1)
 	Name(r606, 0)
 	Name(r607, 0)
 
-	Method(m007, 7)
+	Method(m007, 7, Serialized)
 	{
 	Name(ret7, 0)
 	Name(r700, 0)

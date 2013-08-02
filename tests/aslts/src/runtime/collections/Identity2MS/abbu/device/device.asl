@@ -31,7 +31,7 @@ Name(z174, 174)
 /*
  * Exotic case of CopyObject usage
  */
-Method(md00)
+Method(md00,, Serialized)
 {
 	Name(ts, "md00")
 	Device(d000) {

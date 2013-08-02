@@ -785,7 +785,7 @@ Method(m040, 1)
 	return (Local0)
 }
 
-Method(IF00)
+Method(IF00,, Serialized)
 {
 	Name(ts, "IF00")
 

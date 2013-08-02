@@ -35,7 +35,7 @@
 /*
  * It is m369 od Synchronization test
  */
-Method(m1e4, 1)
+Method(m1e4, 1, Serialized)
 {
     CH03("", 0, 0x000, 0, 0)
 

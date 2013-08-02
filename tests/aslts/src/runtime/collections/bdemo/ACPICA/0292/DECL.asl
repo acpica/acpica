@@ -52,7 +52,7 @@ Device (D292) {
 		RFU4, 0x220,
 	}
 
-	Method(TST0)
+	Method(TST0,, Serialized)
 	{
 		Name(DDB0, 0)
 

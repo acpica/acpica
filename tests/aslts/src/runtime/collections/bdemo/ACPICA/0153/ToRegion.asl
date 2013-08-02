@@ -33,7 +33,7 @@
 
 // Integer
 
-Method(md44)
+Method(md44,, Serialized)
 {
 	Name(i000, 0xe0385bcd)
 	OperationRegion(OOO2, SystemMemory, 0x100, 0x100)
@@ -53,7 +53,7 @@ Method(md44)
 
 // String
 
-Method(md45)
+Method(md45,, Serialized)
 {
 	Name(s000, "String")
 	OperationRegion(OOO2, SystemMemory, 0x100, 0x100)
@@ -75,7 +75,7 @@ Method(md45)
 
 // Buffer
 
-Method(md46)
+Method(md46,, Serialized)
 {
 	Name(b000, Buffer() {1,2,3,4})
 	OperationRegion(OOO2, SystemMemory, 0x100, 0x100)
@@ -96,7 +96,7 @@ Method(md46)
 
 // Package
 
-Method(md47)
+Method(md47,, Serialized)
 {
 	Name(pppp, Package(1){Buffer() {1,2,3,4}})
 	OperationRegion(OOO2, SystemMemory, 0x100, 0x100)
@@ -148,7 +148,7 @@ Method(md47)
 
 // Integer
 
-Method(md48)
+Method(md48,, Serialized)
 {
 	OperationRegion(OOO2, SystemMemory, 0x100, 0x100)
 
@@ -164,7 +164,7 @@ Method(md48)
 
 // String
 
-Method(md49)
+Method(md49,, Serialized)
 {
 	OperationRegion(OOO2, SystemMemory, 0x100, 0x100)
 
@@ -182,7 +182,7 @@ Method(md49)
 
 // Buffer
 
-Method(md4a)
+Method(md4a,, Serialized)
 {
 	OperationRegion(OOO2, SystemMemory, 0x100, 0x100)
 
@@ -199,7 +199,7 @@ Method(md4a)
 
 // Package
 
-Method(md4b)
+Method(md4b,, Serialized)
 {
 	OperationRegion(OOO2, SystemMemory, 0x100, 0x100)
 

@@ -717,7 +717,7 @@ Method(m032, 4)
 	CH03("MUX0", Z150, 0x000, 0, 0)
 }
 
-Method(m033) {
+Method(m033,, Serialized) {
 	Mutex(MTX0, 0)
 	Store (Acquire(MTX0, 0), Local0)
     if (Local0)
@@ -737,7 +737,7 @@ Method(m034) {
 }
 
 // Run-method
-Method(MUX0)
+Method(MUX0,, Serialized)
 {
 	Name(ts, "MUX0")
 

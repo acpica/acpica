@@ -38,7 +38,7 @@
  */
 Method(mfe6)
 {
-	Method(m000)
+	Method(m000,, Serialized)
 	{
 		Name(p000, Package(16) {0x40,0x41,0x42,0x43,0x45,0x46,0x47,0x48,0x49,0x4a})
 
@@ -84,7 +84,7 @@ Method(mfe6)
 		}
 	}
 
-	Method(m001)
+	Method(m001,, Serialized)
 	{
 		Name(p000, Package() {0x54,0x55,0x56,0x57})
 		// Name(p001, Package() {1,2,3,4})
@@ -112,7 +112,7 @@ Method(mfe6)
 		Store("----------------------------- End.", Debug)
 	}
 
-	Method(m002)
+	Method(m002,, Serialized)
 	{
 		Name(p000, Package() {0x68,0x69,0x6a,0x6b})
 
@@ -127,7 +127,7 @@ Method(mfe6)
 		Store("=============================", Debug)
 	}
 
-	Method(m003)
+	Method(m003,, Serialized)
 	{
 		Name(p000, Package() {0x70,0x71,0x72,0x73,0x74,0x75,0x76,0x77})
 		Name(p001, Package() {0x80,0x81,0x82,0x83,0x84,0x85,0x86,0x87})
@@ -293,7 +293,7 @@ Method(mfe6)
 		Store("----------------------------- End.", Debug)
 	}
 
-	Method(m004)
+	Method(m004,, Serialized)
 	{
 		Name(p000, Package() {0x54,0x55,0x56,0x57})
 
@@ -314,7 +314,7 @@ Method(mfe6)
 		Store(0, Local0)
 	}
 
-	Method(m005)
+	Method(m005,, Serialized)
 	{
 		Name(p000, Package() {0x54,0x55,0x56,0x57})
 		Name(p001, Package() {0x64,0x65,0x66,0x67})
@@ -326,7 +326,7 @@ Method(mfe6)
 		Store(Local0, Debug)
 	}
 
-	Method(m006)
+	Method(m006,, Serialized)
 	{
 		Name(p000, Package() {0x54,0x55})
 		Name(p001, Package() {0x54,0x55,0x56,0x57})
@@ -337,7 +337,7 @@ Method(mfe6)
 		Store(p000, Debug)
 	}
 
-	Method(m007)
+	Method(m007,, Serialized)
 	{
 		Name(p000, Package(16) {0x50,0x51,0x52,0x53,0x54,0x55,0x56,0x57})
 		Name(p001, Package() {0x54,0x55,0x56,0x57})
@@ -357,7 +357,7 @@ Method(mfe6)
 		Store(p000, Debug)
 	}
 
-	Method(m008)
+	Method(m008,, Serialized)
 	{
 		Name(i000, 0xabcd0001)
 		Name(p000, Package() {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,
@@ -371,7 +371,7 @@ Method(mfe6)
 		Store(Index(p001,  0), Index(p000, 1))
 	}
 
-	Method(m009)
+	Method(m009,, Serialized)
 	{
 		Name(p000, Package() {0xa0,0xa1,0xa2,0xa3,0xa4})
 		Name(p001, Package() {0xb0,0xb1,0xb2,0xb3,0xb4,0xb5,0xb6,0xb7})
@@ -382,7 +382,7 @@ Method(mfe6)
 		Store(Index(p000,  0), Index(p001, 4))
 	}
 
-	Method(m00a)
+	Method(m00a,, Serialized)
 	{
 //		Name(p000, Package() {0xa0,0xa1,0xa2,0xa3,0xa4,0xa5,0xa6,0xa7})
 //		Name(p001, Package() {0xb0,0xb1,0xb2,0xb3,0xb4,0xb5,0xb6,0xb7})
@@ -406,7 +406,7 @@ Method(mfe6)
 		Store(p001, Debug)
 	}
 
-	Method(m00b)
+	Method(m00b,, Serialized)
 	{
 		Name(p000, Package() {0xa0,0xa1,0xa2,0xa3,0xa4,0xa5})
 		Name(p001, Package() {0xb0,0xb1,0xb2,0xb3,0xb4,0xb5,0xb6,0xb7})
@@ -425,7 +425,7 @@ Method(mfe6)
 		Store(p001, Debug)
 	}
 
-	Method(m00c)
+	Method(m00c,, Serialized)
 	{
 //		Name(i000, 0xabcd0000)
 //		Name(i001, 0xabcd0001)
@@ -460,7 +460,7 @@ Method(mfe6)
 //		Return (Local7)
 	}
 
-	Method(m00d)
+	Method(m00d,, Serialized)
 	{
 		Name(p000, Package() {0xa0,0xa1,0xa2,0xa3,0xa4,0xa5,0xa6,0xa7,0xa8,0xa9,0xaa,0xab})
 		Name(p001, Package() {0xb0,0xb1,0xb2,0xb3,0xb4,0xb5,0xb6,0xb7,0xb8,0xb9,0xba,0xbb,0xbc})
@@ -477,7 +477,7 @@ Method(mfe6)
 		Store(p001, Debug)
 	}
 
-	Method(m00e)
+	Method(m00e,, Serialized)
 	{
 		Name(p000, Package() {0x54,0x55,0x56,0x57})
 		Name(p001, Package() {0x64,0x65,0x66,0x67})
@@ -489,7 +489,7 @@ Method(mfe6)
 		Store(Index(p000, 0), Index(p000, 1))
 	}
 
-	Method(m00f)
+	Method(m00f,, Serialized)
 	{
 		Name(p000, Package() {0x54,0x55,0x56,0x57})
 
@@ -500,13 +500,13 @@ Method(mfe6)
 		Store(Index(p000, 0), Index(p000, 1))
 	}
 
-	Method(m010)
+	Method(m010,, Serialized)
 	{
 		Name(p000, Package() {0x54,0x55,0x56,0x57})
 		Store(Index(p000, 0), Index(p000, 0))
 	}
 
-	Method(m011)
+	Method(m011,, Serialized)
 	{
 		Name(p000, Package() {0xa0,0xa1,0xa2,0xa3,0xa4,0xa5,0xa6,0xa7})
 		Name(p001, Package() {0xb0,0xb1,0xb2,0xb3,0xb4,0xb5,0xb6,0xb7})
@@ -517,7 +517,7 @@ Method(mfe6)
 		Store(Index(p001,  6), Index(p001, 7))
 	}
 
-	Method(m012)
+	Method(m012,, Serialized)
 	{
 		Name(p000, Package() {0xa0,0xa1,0xa2,0xa3,0xa4,0xa5})
 		Name(p001, Package() {0xb0,0xb1,0xb2,0xb3,0xb4,0xb5,0xb6,0xb7})
@@ -565,7 +565,7 @@ Method(mfe6)
 		Store(p001, Debug)
 	}
 
-	Method(m013)
+	Method(m013,, Serialized)
 	{
 		Name(p000, Package() {0xa0,0xa1})
 		Name(p001, Package() {0xb0,0xb1,0xb2,0xb3,0xb4})
@@ -574,7 +574,7 @@ Method(mfe6)
 		Store(Index(p000,  0), Index(p001, 0))
 	}
 
-	Method(m014)
+	Method(m014,, Serialized)
 	{
 		Name(p000, Package() {
 			0xa0,0xa1,0xa2,0xa3,0xa4,0xa5,0xa6,0xa7,
@@ -622,7 +622,7 @@ Method(mfe6)
 		Store(Local0, Index(p001, 0))
 	}
 
-	Method(m015)
+	Method(m015,, Serialized)
 	{
 		Name(p000, Package() {0xa0,0xa1,0xa2})
 		Name(p001, Package() {0xb0,0xb1,0xb2,0xb3})
@@ -640,7 +640,7 @@ Method(mfe6)
 		Store(p001, Debug)
 	}
 
-	Method(m016)
+	Method(m016,, Serialized)
 	{
 		Name(p000, Package() {0xabcd0000})
 		Name(p001, Package() {0xabcd0001, 0xabcd0002})
@@ -650,7 +650,7 @@ Method(mfe6)
 		Store(p001, Debug)
 	}
 
-	Method(m017)
+	Method(m017,, Serialized)
 	{
 		Name(p000, Package() {0x20, 0x21})
 		Name(p001, Package(18) {0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17})
@@ -689,7 +689,7 @@ Method(mfe6)
 		Store(p001, Debug)
 	}
 
-	Method(m018)
+	Method(m018,, Serialized)
 	{
 		Name(p000, Package() {0xa0,0xa1,0xa2,0xa3,0xa4,0xa5})
 		Name(p001, Package() {0xb0,0xb1,0xb2,0xb3,0xb4,0xb5})
@@ -708,7 +708,7 @@ Method(mfe6)
 		Store(Index(p000,  4), Index(p001, 5))
 	}
 
-	Method(m019)
+	Method(m019,, Serialized)
 	{
 		Name(p000, Package() {0xa0,0xa1,0xa2,0xa3,0xa4,0xa5})
 		Name(p001, Package() {0xb0,0xb1,0xb2,0xb3,0xb4,0xb5})
@@ -730,7 +730,7 @@ Method(mfe6)
 		Store(Index(p000,  0), Index(p001, 0))
 	}
 
-	Method(m01a)
+	Method(m01a,, Serialized)
 	{
 		Name(p000, Package() {0xa0,0xa1,0xa2,0xa3,0xa4,0xa5})
 		Name(p001, Package() {0xb0,0xb1,0xb2,0xb3,0xb4,0xb5})
@@ -739,7 +739,7 @@ Method(mfe6)
 		Store(Refof(p000), Index(p001, 1))
 	}
 
-	Method(m01b)
+	Method(m01b,, Serialized)
 	{
 		Name(p000, Package() {0x20,0x21,0x22,0x23,0x24,0x25})
 		Name(p001, Package(18) {0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17})
@@ -820,7 +820,7 @@ Method(mfe6)
 		m004(p000)
 	}
 
-	Method(m01c)
+	Method(m01c,, Serialized)
 	{
 		Name(p000, Package() {0x20,0x21,0x22,0x23,0x24,0x25})
 		Name(p001, Package(18) {0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17})
@@ -839,7 +839,7 @@ Method(mfe6)
 		m000(p001)
 	}
 
-	Method(m01d)
+	Method(m01d,, Serialized)
 	{
 		Name(p000, Package() {0x20,0x21,0x22,0x23,0x24,0x25})
 		Name(p001, Package(18) {0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17})
@@ -858,7 +858,7 @@ Method(mfe6)
 		Store(p000, Index(p001, 1))
 	}
 
-	Method(m01e)
+	Method(m01e,, Serialized)
 	{
 		Name(p000, Package() {0x10, 0x11})
 		Name(p001, Package() {0x20, 0x21})
@@ -1010,7 +1010,7 @@ Method(mfe6)
 		m002(p001)
 	}
 
-	Method(m01f)
+	Method(m01f,, Serialized)
 	{
 		Name(s900, "qwertyuiop")
 
@@ -1041,7 +1041,7 @@ Method(mfe6)
 
 	Method(m020)
 	{
-		Method(m000)
+		Method(m000,, Serialized)
 		{
 			Name(p953, Package() {0xabcd2018, 0xabcd2019})
 			Name(p954, Package() {0xabcd2018, 0xabcd2019})
@@ -1057,7 +1057,7 @@ Method(mfe6)
 			Store(0xabcd0000, arg0)
 		}
 
-		Method(m001)
+		Method(m001,, Serialized)
 		{
 		Name(pp00, Package() {0xabcd0001})
 		Name(p000, Package() {0xabcd0002, 0xabcd0003})
@@ -1073,7 +1073,7 @@ Method(mfe6)
 		m001()
 	}
 
-	Method(m022)
+	Method(m022,, Serialized)
 	{
 		Name(i000, 0xabcd0000)
 		Name(p000, Package() {0xabcd0001})
@@ -1082,7 +1082,7 @@ Method(mfe6)
 		Store(i000, p000)
 	}
 
-	Method(m023)
+	Method(m023,, Serialized)
 	{
 		Name(p000, Package() {0xabcd0000})
 		Name(p001, Package() {0xabcd0001, 0xabcd0002})
@@ -1091,7 +1091,7 @@ Method(mfe6)
 		CopyObject(p001, p000)
 	}
 
-	Method(m024)
+	Method(m024,, Serialized)
 	{
 		Name(p000, Package() {0xabcd0000})
 		Name(i000, 0xabcd0000)

@@ -32,7 +32,7 @@
  * SUMMARY: The ASL Compiler fails on specific expressions with ObjectType
  */
 
-Method(mdcf)
+Method(mdcf,, Serialized)
 {
 	Name(c010, 8)	// Method
 	Name(c018, 16)	// Debug Object

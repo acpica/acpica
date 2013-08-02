@@ -38,7 +38,7 @@
 
 Name(z135, 135)
 
-Method(SRV0) {
+Method(SRV0,, Serialized) {
 
 	Name(i000, 0)
 

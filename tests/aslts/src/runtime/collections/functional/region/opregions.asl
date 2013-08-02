@@ -114,7 +114,7 @@ Name(VFLG,		// Counters of the Valid Flags
 //	     EmbeddedControl | SMBus | SystemCMOS | PciBarTarget |
 //       IPMI | GeneralPurposeIo | GenericSerialBus
 // Flag: 1/0 - turn on/off accessing operation regions of that Space
-Method(_REG, 2)
+Method(_REG, 2, Serialized)
 {
 	Name(dbgf, 1)
 
@@ -244,7 +244,7 @@ Device(DOR0) {
 
 	// Specific Operation Regions availability notification Method
 	// \DOR0._REG(RegionSpaceKeyword, Flag)
-	Method(_REG, 2)
+	Method(_REG, 2, Serialized)
 	{
 		Name(dbgf, 1)
 
@@ -316,7 +316,7 @@ Device(DOR1) {
 	// Specific Operation Regions availability notification Method
 	// \DOR1._REG(RegionSpaceKeyword, Flag)
     OperationRegion(JUNK, SystemMemory, 0x2000, 0x100)
-	Method(_REG, 2)
+	Method(_REG, 2, Serialized)
 	{
 		Name(dbgf, 1)
 
@@ -327,10 +327,10 @@ Device(DOR1) {
 		Increment(IREG)
 	}
 
-	Method(M000) {
+	Method(M000,, Serialized) {
 		// Dynamic Operation Regions availability notification Method
 		// \DOR1.M000._REG(RegionSpaceKeyword, Flag)
-		Method(_REG, 2)
+		Method(_REG, 2, Serialized)
 		{
 			Name(dbgf, 1)
 
@@ -509,7 +509,7 @@ Method(m702, 1)
 // Check Overlapping of OpRegions
 // m703(CallChain)
 // CallChain: String
-Method(m703, 1)
+Method(m703, 1, Serialized)
 {
 	Concatenate(arg0, "-m703", arg0)
 
@@ -552,7 +552,7 @@ Method(m703, 1)
 // Create Region Field about Region Length in length
 // and check possible exception
 // m70c(CallChain, Task, Index)
-Method(m70c, 3)
+Method(m70c, 3, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x1000)
 
@@ -666,7 +666,7 @@ Method(m70e, 5, Serialized)
 // Create Region Fields in two overlapping Regions
 // and check overlapping parts to be shared
 // m70f(CallChain, OpRegion0, OpRegion1, RangeNum, ErrNum)
-Method(m70f, 5)
+Method(m70f, 5, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x1000)
 	OperationRegion(OPRn, 0xff, 0, 0x1000)
@@ -713,7 +713,7 @@ Method(m70f, 5)
 // actually refer the different locations
 // m704(CallChain)
 // CallChain: String
-Method(m704, 1)
+Method(m704, 1, Serialized)
 {
 	Method(CHCK, 4)
 	{
@@ -931,7 +931,7 @@ Method(m705, 1, Serialized)
 // Check non-Integer OpRegion arguments
 // m706(CallChain)
 // CallChain: String
-Method(m706, 1)
+Method(m706, 1, Serialized)
 {
 	Name(off0, 0xfedcba987654321f)
 	Name(offb, Buffer(8){0x1f, 0x32,, 0x54, 0x76, 0x98, 0xba, 0xdc, 0xfe})
@@ -965,7 +965,7 @@ Method(m706, 1)
 
 	Name(i000, 0x12345678)
 
-	Method(m000, 4) {
+	Method(m000, 4, Serialized) {
 		OperationRegion(OPR4, SystemMemory, arg1, arg2)
 
 		Field(OPR4, AnyAcc, NoLock, Preserve) {
@@ -1016,7 +1016,7 @@ Method(m706, 1)
 	m000(arg0, offs, lens, 45)
 }
 
-Method(ORC0)
+Method(ORC0,, Serialized)
 {
 	Name(ts, "ORC0")
 

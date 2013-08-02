@@ -41,7 +41,7 @@ Processor(pr7d, 0, 0x000, 0x008)
 /*
  * Test shows maximal supported depth of enclosed method calls on MS
  */
-Method(mt00)
+Method(mt00,, Serialized)
 {
     Name(ts, "mt00")
 
@@ -113,7 +113,7 @@ Method(mt00)
  * The same as mt00, but contains more depth of enclosed method calls.
  * To be run on ACPICA only.
  */
-Method(mt01)
+Method(mt01,, Serialized)
 {
     Name(ts, "mt01")
 
@@ -263,7 +263,7 @@ Method(mt01)
 /*
  * Test shows maximal supported depth of enclosed method calls on MS
  */
-Method(mt02)
+Method(mt02,, Serialized)
 {
     Name(ts, "mt02")
 
@@ -350,7 +350,7 @@ Method(mt02)
  * The same as mt02, but contains more depth of enclosed method calls.
  * To be run on ACPICA only.
  */
-Method(mt03)
+Method(mt03,, Serialized)
 {
     Name(ts, "mt03")
 
@@ -500,7 +500,7 @@ Method(mt03)
 /*
  * Increment object with the name of method in the name path
  */
-Method(mt04)
+Method(mt04,, Serialized)
 {
     Name(ts, "mt04")
 
@@ -575,7 +575,7 @@ Method(mt04)
  * The same as mt04, but contains more depth of enclosed method calls.
  * To be run on ACPICA only.
  */
-Method(mt05)
+Method(mt05,, Serialized)
 {
     Name(ts, "mt05")
 
@@ -689,7 +689,7 @@ Method(mt05)
  * from the point inside the tree of that method being executed
  * but by the method statically declared outside that method.
  */
-Method(mt06)
+Method(mt06,, Serialized)
 {
     Name(ts, "mt06")
 
@@ -772,7 +772,7 @@ Method(mt06)
  * Unfortunately, we can run mt06 and mt07 simultaneously only
  * on the same thread (invocation).
  */
-Method(mt07)
+Method(mt07,, Serialized)
 {
     Name(ts, "mt07")
 
@@ -838,7 +838,7 @@ Method(mt07)
  * The same as mt06, but contains more depth of enclosed method calls.
  * To be run on ACPICA only.
  */
-Method(mt08)
+Method(mt08,, Serialized)
 {
     Name(ts, "mt08")
 
@@ -939,7 +939,7 @@ Method(mt08)
  *
  * see comment to mt07
  */
-Method(mt09)
+Method(mt09,, Serialized)
 {
     Name(ts, "mt09")
 
@@ -1037,7 +1037,7 @@ Method(mt09)
  * Check simple access to the object by the name path
  * without method name syllables
  */
-Method(mt0a)
+Method(mt0a,, Serialized)
 {
     Name(ts, "mt0a")
 
@@ -1056,7 +1056,7 @@ Method(mt0a)
 /*
  * Simple increment (see comment to mt0a)
  */
-Method(mt0b)
+Method(mt0b,, Serialized)
 {
     Name(ts, "mt0b")
 
@@ -1078,7 +1078,7 @@ Method(mt0b)
  * Check simple access to the object by the name path
  * which contains the method name syllables
  */
-Method(mt0c)
+Method(mt0c,, Serialized)
 {
     Name(ts, "mt0c")
 
@@ -1104,7 +1104,7 @@ Method(mt0c)
 /*
  * Simply long cycle in While
  */
-Method(mt0d)
+Method(mt0d,, Serialized)
 {
 	Name(ts, "mt0d")
 
@@ -1135,7 +1135,7 @@ Method(mt0d)
 /*
  * Access to the internal object of method mt0d
  */
-Method(mt0e)
+Method(mt0e,, Serialized)
 {
     Name(ts, "mt0e")
 
@@ -1156,7 +1156,7 @@ Method(mt0e)
  * Use Add for incrementing object with the
  * name of method in the name path.
  */
-Method(mt0f)
+Method(mt0f,, Serialized)
 {
     Name(ts, "mt0f")
 
@@ -1230,7 +1230,7 @@ Method(mt0f)
  * The same as mt0f, but contains more depth of enclosed method calls.
  * To be run on ACPICA only.
  */
-Method(mt10)
+Method(mt10,, Serialized)
 {
     Name(ts, "mt10")
 
@@ -1342,7 +1342,7 @@ Method(mt10)
 /*
  * Increment with the parent name paths
  */
-Method(mt11)
+Method(mt11,, Serialized)
 {
     Name(ts, "mt11")
 
@@ -1416,7 +1416,7 @@ Method(mt11)
  * The same as mt11, but contains more depth of enclosed method calls.
  * To be run on ACPICA only.
  */
-Method(mt12)
+Method(mt12,, Serialized)
 {
     Name(ts, "mt12")
 
@@ -1608,7 +1608,7 @@ Method(mt12)
 /*
  * Simple Store of object with the name of method in the name path
  */
-Method(mt13)
+Method(mt13,, Serialized)
 {
     Name(ts, "mt13")
 
@@ -1694,7 +1694,7 @@ Method(mt13)
  * The same as mt13, but contains more depth of enclosed method calls.
  * To be run on ACPICA only.
  */
-Method(mt14)
+Method(mt14,, Serialized)
 {
     Name(ts, "mt14")
 
@@ -2074,7 +2074,7 @@ Method(mt14)
  * The same as mt14, but contains parent name paths.
  * To be run on ACPICA only.
  */
-Method(mt15)
+Method(mt15,, Serialized)
 {
     Name(ts, "mt15")
 
@@ -2453,7 +2453,7 @@ Method(mt15)
 /*
  * Access to the internal object of invoked method
  */
-Method(mt16, 1)
+Method(mt16, 1, Serialized)
 {
     Name(ts, "mt16")
 
@@ -2468,7 +2468,7 @@ Method(mt16, 1)
         {
           Method(mm03)
           {
-            Method(mm04)
+            Method(mm04,, Serialized)
             {
                 Device(dz05)
                 {
@@ -2502,7 +2502,7 @@ Method(mt16, 1)
     {
       Method(mmF1, 1)
       {
-        Method(mmF2, 1)
+        Method(mmF2, 1, Serialized)
         {
             Device(dz05)
             {
@@ -2568,7 +2568,7 @@ Method(mt16, 1)
  * The same as mt16, but contains more depth of enclosed method calls.
  * To be run on ACPICA only.
  */
-Method(mt17, 1)
+Method(mt17, 1, Serialized)
 {
     Name(ts, "mt17")
 
@@ -2641,7 +2641,7 @@ Method(mt17, 1)
                                                                   {
                                                                     Method(mm20)
                                                                     {
-                                                                      Method(mm21)
+                                                                      Method(mm21,, Serialized)
                                                                       {
                                                                         Device(dz05)
                                                                         {
@@ -2779,7 +2779,7 @@ Method(mt17, 1)
                                   {
                                     Method(mm10, 1)
                                     {
-                                      Method(mm11, 1)
+                                      Method(mm11, 1, Serialized)
                                       {
                                         Device(dz05)
                                         {
@@ -2926,7 +2926,7 @@ if (LEqual(arg0, 1)) {
     CH03(ts, z170, 0x0cb, 0, 0)
 }
 
-Method(mt18, 1)
+Method(mt18, 1, Serialized)
 {
 	Name(ts, "mt18")
 
@@ -2952,7 +2952,7 @@ Method(mt18, 1)
 	CH03(ts, z170, 0x0cd, 0, 0)
 }
 
-Method(mt19, 1)
+Method(mt19, 1, Serialized)
 {
 	Name(ts, "mt19")
 
@@ -2978,7 +2978,7 @@ Method(mt19, 1)
 	CH03(ts, z170, 0x0cf, 0, 0)
 }
 
-Method(mt1a, 1)
+Method(mt1a, 1, Serialized)
 {
 	Name(ts, "mt1a")
 
@@ -2998,7 +2998,7 @@ Method(mt1a, 1)
 }
 
 
-Method(mtff)
+Method(mtff,, Serialized)
 {
 	Name(run0, 1)
 

@@ -52,7 +52,7 @@ Name(z152, 152)
  * arg2 - Index of mutex
  * arg3 - Number of mutexes of the same level
  */
-Method(m801, 4)
+Method(m801, 4, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -92,7 +92,7 @@ Method(m801, 4)
  * arg1 - Index of mutex
  * arg2 - Number of mutexes of the same level
  */
-Method(m802, 3)
+Method(m802, 3, Serialized)
 {
 	Name(numW, 0) // number of threads in work
 	Name(lpN0, 0)
@@ -147,7 +147,7 @@ Method(m802, 3)
  * arg1 - Index of mutex
  * arg2 - Number of mutexes of the same level
  */
-Method(m803, 1)
+Method(m803, 1, Serialized)
 {
 	Name(numW, 0) // number of threads in work
 	Name(lpN0, 0)
@@ -177,7 +177,7 @@ Method(m803, 1)
  * arg4 - Level of mutex (initial)
  * arg5 - Number of levels of mutexes
  */
-Method(m8ff, 6)
+Method(m8ff, 6, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -312,7 +312,7 @@ Method(m804, 1)
 /*
  * arg0 - number of threads
  */
-Method(m805, 1)
+Method(m805, 1, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -472,7 +472,7 @@ Method(m805, 1)
 /*
  * arg0 - number of threads (total)
  */
-Method(m806, 1)
+Method(m806, 1, Serialized)
 {
 	Name(numW, 0) // number of threads in work
 	Name(lpN0, 0)
@@ -484,7 +484,7 @@ Method(m806, 1)
 	 * arg0-arg5 - same as m33f
 	 * arg6 - index of thread according to the test scenario
 	 */
-	Method(m000, 7)
+	Method(m000, 7, Serialized)
 	{
 		Name(nth1, 0) // actually in work
 
@@ -587,7 +587,7 @@ Method(m806, 1)
 /*
  * arg0 - number of threads
  */
-Method(m807, 1)
+Method(m807, 1, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -700,7 +700,7 @@ Method(m807, 1)
 /*
  * arg0 - number of threads (total)
  */
-Method(m808, 1)
+Method(m808, 1, Serialized)
 {
 	Name(pr, 0)
 	Name(L000, 0)
@@ -776,7 +776,7 @@ Method(m808, 1)
  * arg3 - indexes of mutexes (buffer/Integer) - target point
  * arg4 - printing flag
  */
-Method(m8fe, 5)
+Method(m8fe, 5, Serialized)
 {
 	/*
 	 * Comments are for one particular transfer step from
@@ -908,7 +908,7 @@ Method(m809, 1)
  *           arg2 - indexes of mutexes (buffer/Integer) - start point
  *           arg3 - indexes of mutexes (buffer/Integer) - target point
  */
-Method(m80c, 2)
+Method(m80c, 2, Serialized)
 {
 
 	Name(pr, 0)
@@ -1019,7 +1019,7 @@ Method(m80c, 2)
  * arg4 - printing flag
  * arg5 - variant (see m80c)
  */
-Method(m8fd, 6)
+Method(m8fd, 6, Serialized)
 {
 	/* At this point threads have Acquired: x-0123 */
 
@@ -1349,7 +1349,7 @@ Method(m810, 1)
 /*
  * arg0 - number of threads (total)
  */
-Method(m811, 1)
+Method(m811, 1, Serialized)
 {
 	Name(rpt, 4)
 	Name(lpN0, 0)
@@ -1442,7 +1442,7 @@ Method(m811, 1)
 /*
  * arg0 - number of threads (total)
  */
-Method(m812, 1)
+Method(m812, 1, Serialized)
 {
 	Name(rpt, 3)  // number of repetition
 	Name(lpN0, 0) // level
@@ -1615,7 +1615,7 @@ Method(m812, 1)
 /*
  * arg0 - number of threads (total)
  */
-Method(m813, 1)
+Method(m813, 1, Serialized)
 {
 	Name(rpt, 256) // number of repetition
 	Name(lpN0, 0) // level
@@ -1725,7 +1725,7 @@ Method(m813, 1)
 /*
  * arg0 - number of threads (total)
  */
-Method(m814, 1)
+Method(m814, 1, Serialized)
 {
 	Name(lpN0, 0) // level
 	Name(lpC0, 0)
@@ -1846,7 +1846,7 @@ Method(m814, 1)
 /*
  * arg0 - number of threads (total)
  */
-Method(m815, 1)
+Method(m815, 1, Serialized)
 {
 	Name(lpN0, 0) // level
 	Name(lpC0, 0)
@@ -2140,7 +2140,7 @@ Method(m8f9, 3)
  * arg0 - number of threads (total)
  * arg1 - main command for slave thread
  */
-Method(m8fb, 2)
+Method(m8fb, 2, Serialized)
 {
 	Name(lpN0, 0) // level
 	Name(lpC0, 0)
@@ -2284,7 +2284,7 @@ Method(m817, 1)
  *
  * arg0 - number of threads (total)
  */
-Method(m818, 1)
+Method(m818, 1, Serialized)
 {
 	Name(lpN0, 0) // level
 	Name(lpC0, 0)

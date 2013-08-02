@@ -32,7 +32,7 @@
  * SUMMARY: Store to the Index reference immediately returned by Method doesn't work
  */
 
-Method(m126)
+Method(m126,, Serialized)
 {
 	Name(p000, Package() {1,2,3,4,5,6,7,8})
 

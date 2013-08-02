@@ -32,7 +32,7 @@
  * SUMMARY: ToDecimalString produces the Strings which have the length greater than expected
  */
 
-Method(mdb0)
+Method(mdb0,, Serialized)
 {
 	Name(b000, Buffer() { 1, 1 })
 

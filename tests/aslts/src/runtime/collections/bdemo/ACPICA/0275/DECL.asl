@@ -32,7 +32,7 @@
  * SUMMARY: pop result from bottom principle doesn't work
  */
 
-Method(mc75)
+Method(mc75,, Serialized)
 {
 	Name(i000, 0x11000000)
 	Name(i001, 0x00220000)

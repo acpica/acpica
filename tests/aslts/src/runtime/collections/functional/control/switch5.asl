@@ -1021,7 +1021,7 @@ Method(m0ec, 1)
 }
 
 // Run-method
-Method(SW09)
+Method(SW09,, Serialized)
 {
 	Store("TEST: SW09, Switch, Case, Default operators", Debug)
 

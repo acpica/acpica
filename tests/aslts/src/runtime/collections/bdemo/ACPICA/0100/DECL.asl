@@ -37,7 +37,7 @@
 		return (0)
 	}
 
-	Method(me5d)
+	Method(me5d,, Serialized)
 	{
 		Store("Start of test:", Debug)
 

@@ -371,7 +371,7 @@ Name(p003, Package()
 	0,
 })
 
-Method(ADD0)
+Method(ADD0,, Serialized)
 {
 	Name(ts, "ADD0")
 
@@ -475,7 +475,7 @@ Name(p007, Package()
 	0x22345678DCABEF98
 })
 
-Method(SUB0)
+Method(SUB0,, Serialized)
 {
 	Name(ts, "SUB0")
 
@@ -572,7 +572,7 @@ Name(p00b, Package()
 	// ACPI: Overflow conditions are ignored and results are undefined.
 })
 
-Method(MTP0)
+Method(MTP0,, Serialized)
 {
 	Name(ts, "MTP0")
 
@@ -644,7 +644,7 @@ Name(p00f, Package()
 	1,                  0x7FFFFFFFFFFFFFFF,
 })
 
-Method(DVD0)
+Method(DVD0,, Serialized)
 {
 	Name(ts, "DVD0")
 
@@ -702,7 +702,7 @@ Name(p017, Package()
 	0,
 })
 
-Method(ICR0)
+Method(ICR0,, Serialized)
 {
 	Name(ts, "ICR0")
 
@@ -758,7 +758,7 @@ Name(p01b, Package()
 	0x8000000000000000,
 })
 
-Method(DCR0)
+Method(DCR0,, Serialized)
 {
 	Name(ts, "DCR0")
 
@@ -802,7 +802,7 @@ Name(p01d, Package()
 	0x8021420011118822,
 })
 
-Method(AND0)
+Method(AND0,, Serialized)
 {
 	Name(ts, "AND0")
 
@@ -866,7 +866,7 @@ Name(p025, Package()
 	0x7FDEBDFFEEEE77DD,
 })
 
-Method(NAN0)
+Method(NAN0,, Serialized)
 {
 	Name(ts, "NAN0")
 
@@ -933,7 +933,7 @@ Name(p02d, Package()
 	0x6810985600663201,
 })
 
-Method(NOR0)
+Method(NOR0,, Serialized)
 {
 	Name(ts, "NOR0")
 
@@ -979,7 +979,7 @@ Name(p040, Package()
 	0xEDCBA987F5064312,
 })
 
-Method(NOT0)
+Method(NOT0,, Serialized)
 {
 	Name(ts, "NOT0")
 
@@ -1028,7 +1028,7 @@ Name(p046, Package()
 	0x97EF67A9FF99CDFE,
 })
 
-Method(OR00)
+Method(OR00,, Serialized)
 {
 	Name(ts, "OR00")
 
@@ -1094,7 +1094,7 @@ Name(p04d, Package()
 	0x17CE8EDF,
 })
 
-Method(XOR0)
+Method(XOR0,, Serialized)
 {
 	Name(ts, "XOR0")
 
@@ -1142,7 +1142,7 @@ Name(p04f, Package()
 	0x7FFFFFFFFFFFFFFF,
 })
 
-Method(MOD0)
+Method(MOD0,, Serialized)
 {
 	Name(ts, "MOD0")
 
@@ -1289,7 +1289,7 @@ Name(p054, Package()
 	0xC260000000000000,
 })
 
-Method(SHL0)
+Method(SHL0,, Serialized)
 {
 	Name(ts, "SHL0")
 
@@ -1354,7 +1354,7 @@ Name(p056, Package()
 	0x00000000000021D9,
 })
 
-Method(SHR0)
+Method(SHR0,, Serialized)
 {
 	Name(ts, "SHR0")
 
@@ -1410,7 +1410,7 @@ Name(p05a, Package()
 	59,
 })
 
-Method(FSL0)
+Method(FSL0,, Serialized)
 {
 	Name(ts, "FSL0")
 
@@ -1470,7 +1470,7 @@ Name(p05c, Package()
 	11,
 })
 
-Method(FSR0)
+Method(FSR0,, Serialized)
 {
 	Name(ts, "FSR0")
 

@@ -40,14 +40,14 @@ Name(b100, Buffer(){0x61})
 //
 // 47 - AE_AML_OPERAND_TYPE
 // Note: Buffer can be used with Index
-Method(m4b3, 1)
+Method(m4b3, 1, Serialized)
 {
 	Name(ts, "m4b3")
 
 	Name(b000, Buffer(){0x62})
 
 	// Local Named Object
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		Name(b000, Buffer(){0x63})
 
@@ -131,7 +131,7 @@ Method(m4b3, 1)
 	}
 
 	// An element of Package
-	Method(m004, 1)
+	Method(m004, 1, Serialized)
 	{
 		Name(p000, Package(){Buffer(){0x63}})
 
@@ -175,7 +175,7 @@ Method(m4b3, 1)
 	}
 
 	// Result of Method invocation
-	Method(m006, 1)
+	Method(m006, 1, Serialized)
 	{
 		Name(i000, 0) // Label to check m000 invocations
 
@@ -242,7 +242,7 @@ Method(m4b3, 1)
 	}
 
 	// Reference to Object as Result of Method invocation
-	Method(m007, 1)
+	Method(m007, 1, Serialized)
 	{
 		Name(b000, Buffer(){0x63})
 

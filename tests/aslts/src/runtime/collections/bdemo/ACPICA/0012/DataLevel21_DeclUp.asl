@@ -34,7 +34,7 @@
  * DataLevel<number_of_levels_in_model><data_are_N_levels_up>.asl
  */
 
-Method(m12d)
+Method(m12d,, Serialized)
 {
 	/* 0 */
 

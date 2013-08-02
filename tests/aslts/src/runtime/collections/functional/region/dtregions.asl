@@ -78,7 +78,7 @@ Device(DTR0) {
 	// Specific DataTable Regions availability notification Method
 	// \DTR0._REG(RegionSpaceKeyword, Flag)
     OperationRegion(JUNK, SystemMemory, 0x2000, 0x100)
-	Method(_REG, 2)
+	Method(_REG, 2, Serialized)
 	{
 		Name(dbgf, 1)
 
@@ -131,7 +131,7 @@ Method(m7f0, 1)
 // Dynamic DataTableRegions
 // m7f1(CallChain)
 // CallChain: String
-Method(m7f1, 1)
+Method(m7f1, 1, Serialized)
 {
 	Name(NFLG, 2)	// Number of turn on/off Flag values
 
@@ -148,7 +148,7 @@ Method(m7f1, 1)
 	// Specific DataTable Regions availability notification Method
 	// \m7f1._REG(RegionSpaceKeyword, Flag)
     OperationRegion(JUNK, SystemMemory, 0x2000, 0x100)
-	Method(_REG, 2)
+	Method(_REG, 2, Serialized)
 	{
 		Name(dbgf, 1)
 
@@ -209,7 +209,7 @@ Method(m7f1, 1)
 // DataTableRegion Lengths
 // m7f2(CallChain)
 // CallChain: String
-Method(m7f2, 1)
+Method(m7f2, 1, Serialized)
 {
 	Concatenate(arg0, "-m7f2", arg0)
 
@@ -233,13 +233,13 @@ Method(m7f2, 1)
 // Check non-constant DataTableRegion *String arguments
 // m7f3(CallChain)
 // CallChain: String
-Method(m7f3, 1)
+Method(m7f3, 1, Serialized)
 {
 	Name(s000, "SSDT")
 	Name(s001, "")
 	Name(s002, "")
 
-	Method(m000, 1) {
+	Method(m000, 1, Serialized) {
 		DataTableRegion (DR00, "SSDT", "", "")
 
 		Field(DR00, AnyAcc, NoLock, Preserve) {
@@ -254,7 +254,7 @@ Method(m7f3, 1)
 	}
 
 	// ArgX
-	Method(m001, 4) {
+	Method(m001, 4, Serialized) {
 		DataTableRegion (DR00, arg1, arg2, arg3)
 
 		Field(DR00, AnyAcc, NoLock, Preserve) {
@@ -269,7 +269,7 @@ Method(m7f3, 1)
 	}
 
 	// Named
-	Method(m002, 1) {
+	Method(m002, 1, Serialized) {
 		DataTableRegion (DR00, s000, s001, s002)
 
 		Field(DR00, AnyAcc, NoLock, Preserve) {
@@ -284,7 +284,7 @@ Method(m7f3, 1)
 	}
 
 	// LocalX
-	Method(m003, 1) {
+	Method(m003, 1, Serialized) {
 		Store(s000, Local2)
 		Store(s001, Local3)
 		Store(s002, Local4)
@@ -303,7 +303,7 @@ Method(m7f3, 1)
 	}
 
 	// Expression
-	Method(m004, 1) {
+	Method(m004, 1, Serialized) {
 		Store("SS", Local2)
 		Store("DT", Local3)
 
@@ -334,7 +334,7 @@ Method(m7f3, 1)
 // CallChain: String
 Method(m7f4, 1)
 {
-	Method(m000, 3) {
+	Method(m000, 3, Serialized) {
 		DataTableRegion (DR00, arg1, "", "")
 
 		Field(DR00, AnyAcc, NoLock, Preserve) {
@@ -360,7 +360,7 @@ Method(m7f4, 1)
 	m000(arg0, "OEM1", 34)
 }
 
-Method(DRC0)
+Method(DRC0,, Serialized)
 {
 	Name(ts, "DRC0")
 

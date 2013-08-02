@@ -34,7 +34,7 @@
 
 Name(z136, 136)
 
-Method(mf71)
+Method(mf71,, Serialized)
 {
 	Name(fl00, 0)
 	Name(i000, 0xabcd0000)
@@ -131,7 +131,7 @@ Method(mf71)
 		}
 	}
 
-	Method(m007)
+	Method(m007,, Serialized)
 	{
 		Name(i000, 0)
 		Name(num, 0)
@@ -379,7 +379,7 @@ Method(mf71)
 
 // Implements mf71 where i001 relocated with Local0
 // to extend implicit return conditions checked
-Method(mff0)
+Method(mff0,, Serialized)
 {
 	Name(fl00, 0)
 	Name(i000, 0xabcd0000)
@@ -489,7 +489,7 @@ Method(mff0)
 		}
 	}
 
-	Method(m007)
+	Method(m007,, Serialized)
 	{
 		Name(i000, 0)
 		Name(num, 0)

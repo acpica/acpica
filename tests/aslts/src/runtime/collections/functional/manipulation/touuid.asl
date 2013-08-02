@@ -49,7 +49,7 @@ Name(p357, Package()
 })
 
 // Run-method
-Method(TOU0)
+Method(TOU0,, Serialized)
 {
 	Name(ts, "TOU0")
 

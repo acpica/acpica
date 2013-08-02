@@ -37,7 +37,7 @@ do here all the tests ns0-ns... with Add replaced by MAdd
 
 Name(z158, 158)
 
-Method(m401, 1)
+Method(m401, 1, Serialized)
 {
 	Name(ts, "m401")
 	Name(i000, 0x00000001)

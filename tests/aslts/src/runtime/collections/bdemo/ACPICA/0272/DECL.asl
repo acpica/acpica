@@ -32,7 +32,7 @@
  * SUMMARY: CopyObject of ThermalZone works incorrectly
  */
 
-Method(m020)
+Method(m020,, Serialized)
 {
 	Name(i000, 0xabcd0000)
 	Name(i001, 0xabcd0001)

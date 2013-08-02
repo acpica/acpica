@@ -32,7 +32,7 @@
  * SUMMARY: ToString updates the LocalX value (if it is zero) passed as Length parameter
  */
 
-Method(mda4)
+Method(mda4,, Serialized)
 {
 	Name(B000, Buffer(4) {0x21, 0x21, 0x21, 0x21})
 

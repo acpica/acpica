@@ -146,7 +146,7 @@ Name(b0F0, Buffer(BS00) {})
 // <buf: 010>,
 // <buf: 101>,
 // <byte size of buf>
-Method(m210, 7)
+Method(m210, 7, Serialized)
 {
 	Name(pr00, 0)
 
@@ -283,7 +283,7 @@ Method(m210, 7)
 	}
 }
 
-Method(m211)
+Method(m211,, Serialized)
 {
 	Name(ts, "m211")
 
@@ -334,7 +334,7 @@ Method(m211)
 // <test name>,
 // <index of byte>,
 // <byte size of buf>
-Method(m212, 3)
+Method(m212, 3, Serialized)
 {
 	Name(pr00, 0)
 
@@ -495,7 +495,7 @@ Method(m212, 3)
 	}
 }
 
-Method(m213)
+Method(m213,, Serialized)
 {
 	Name(ts, "m213")
 
@@ -543,7 +543,7 @@ Method(m213)
 // <test name>,
 // <index of byte>,
 // <byte size of buf>
-Method(m214, 3)
+Method(m214, 3, Serialized)
 {
 	Name(pr00, 0)
 
@@ -717,7 +717,7 @@ Method(m214, 3)
 	}
 }
 
-Method(m215)
+Method(m215,, Serialized)
 {
 	Name(ts, "m215")
 
@@ -773,7 +773,7 @@ Method(m215)
 // <test name>,
 // <index of byte>,
 // <byte size of buf>
-Method(m216, 3)
+Method(m216, 3, Serialized)
 {
 	Name(pr00, 0)
 
@@ -947,7 +947,7 @@ Method(m216, 3)
 	}
 }
 
-Method(m217)
+Method(m217,, Serialized)
 {
 	Name(ts, "m217")
 
@@ -1015,7 +1015,7 @@ Method(m217)
 // <test name>,
 // <index of byte>,
 // <byte size of buf>
-Method(m218, 3)
+Method(m218, 3, Serialized)
 {
 	Name(pr00, 0)
 	Name(err0, 0)
@@ -1332,7 +1332,7 @@ Method(m218, 3)
 	return (Local0)
 }
 
-Method(m219)
+Method(m219,, Serialized)
 {
 	Name(ts, "m219")
 
@@ -1431,7 +1431,7 @@ Method(m219)
 // <num of bits>,
 // <byte size of buf>
 // <the benchmark buffer for Field comparison with>
-Method(m21a, 6)
+Method(m21a, 6, Serialized)
 {
 	Name(pr00, 0)
 
@@ -1681,7 +1681,7 @@ Method(m21b, 6, Serialized)
 	return (Zero)
 }
 
-Method(m21c, 4)
+Method(m21c, 4, Serialized)
 {
 	// For loop 0
 	Name(lpN0, 0)
@@ -1744,7 +1744,7 @@ Method(m21c, 4)
 	}
 }
 
-Method(m21d)
+Method(m21d,, Serialized)
 {
 	Name(ts, "m21d")
 

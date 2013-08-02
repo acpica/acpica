@@ -36,7 +36,7 @@ Name(z127, 127)
 
 // m694(<store op>, <exc. conditions>,
 //      <Target scale>, <Result scale>, <kind of Source-Target pair>)
-Method(m694, 5)
+Method(m694, 5, Serialized)
 {
 	Name(ts, "m694")
 
@@ -228,7 +228,7 @@ Method(m694, 5)
 	}
 
 	// Output statistics
-	Method(m002, 1)
+	Method(m002, 1, Serialized)
 	{
 		Name(lpN0, 0)
 		Name(lpC0, 0)

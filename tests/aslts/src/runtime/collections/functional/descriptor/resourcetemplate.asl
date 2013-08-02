@@ -2124,7 +2124,7 @@ Name (p446, Package() {
 	0x79, 0x00},
 })
 
-Method(RT1a)
+Method(RT1a,, Serialized)
 {
 	Name(ts, "RT1a")
 
@@ -2138,7 +2138,7 @@ Method(RT1a)
 
 }
 
-Method(RT1c)
+Method(RT1c,, Serialized)
 {
 	Name(ts, "RT1c")
 

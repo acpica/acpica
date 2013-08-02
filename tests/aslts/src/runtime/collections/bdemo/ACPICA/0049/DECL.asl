@@ -32,7 +32,7 @@
  * SUMMARY: No exception on result of ToDecimalString longer than 210 bytes
  */
 
-Method(mdd9)
+Method(mdd9,, Serialized)
 {
 	// 101-byte long buffer
 	Name(b000, Buffer() {

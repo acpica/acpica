@@ -39,7 +39,7 @@ Name(z153, 153)
  * arg1 - the length of buffer
  * arg2 - the value
  */
-Method(m200, 3)
+Method(m200, 3, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -73,7 +73,7 @@ Method(m200, 3)
  *        everywhere outside the specified region
  * arg6 - the value of ground
  */
-Method(m210, 7)
+Method(m210, 7, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -292,7 +292,7 @@ Method(m209)
  *        Integer - all elements of arg0
  *        Buffer  - for non-zero elements of arg3 only
  */
-Method(m20a, 4)
+Method(m20a, 4, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -343,7 +343,7 @@ Method(m20b, 2)
  * arg0 - number of threads (total)
  * arg1 - number of threads (threads actually in work, not extra idle ones)
  */
-Method(m20d, 2)
+Method(m20d, 2, Serialized)
 {
 	Name(nth0, Buffer(2) {})
 
@@ -359,7 +359,7 @@ Method(m20d, 2)
  * arg0 - number of threads
  * arg1 - Exceptional conditions flags (buffer/Integer)
  */
-Method(m20e, 2)
+Method(m20e, 2, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -397,7 +397,7 @@ Method(m20e, 2)
  *        before and after each operation additionally
  *        to the checking (if any) specified per-operation.
  */
-Method(m20f, 3)
+Method(m20f, 3, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -438,7 +438,7 @@ Method(m20f, 3)
  * arg1 - number of threads (threads actually in work)
  * arg2 - (buffer/Integer) of TimeOutValue
  */
-Method(m214, 3)
+Method(m214, 3, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -482,7 +482,7 @@ Method(m215, 1)
  *
  * arg0 - number of threads
  */
-Method(m211, 1)
+Method(m211, 1, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -591,7 +591,7 @@ Method(m212, 2)
  * arg1 - maximal number of threads according to scenario of test (including Control thread)
  * arg2 - if non-zero, then the number of treads to be actually in work in reduced mode (including Control thread)
  */
-Method(m213, 3)
+Method(m213, 3, Serialized)
 {
 	Name(num, 0)
 

@@ -32,7 +32,7 @@
  * SUMMARY: Dynamic OpRegion _REG method execution problem
  */
 
-Method(m035)
+Method(m035,, Serialized)
 {
 	Method(_REG, 2)
 	{

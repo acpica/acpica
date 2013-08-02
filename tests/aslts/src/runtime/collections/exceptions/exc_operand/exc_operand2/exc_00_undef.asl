@@ -39,7 +39,7 @@ Name(z092, 92)
 // 49 - AE_AML_UNINITIALIZED_LOCAL
 // 50 - AE_AML_UNINITIALIZED_ARG
 // 51 - AE_AML_UNINITIALIZED_ELEMENT
-Method(m4b0, 1)
+Method(m4b0, 1, Serialized)
 {
 	Name(ts, "m4b0")
 
@@ -408,7 +408,7 @@ Method(m4b0, 1)
 	}
 
 	// Uninitialized element of Package
-	Method(m001, 1)
+	Method(m001, 1, Serialized)
 	{
 		Name(p000, Package(1){})
 
@@ -1627,7 +1627,7 @@ Method(m4b0, 1)
 	}
 
 	// Uninitialized element of Package in Return
-	Method(m005)
+	Method(m005,, Serialized)
 	{
 		Name(p000, Package(1){})
 
@@ -1667,7 +1667,7 @@ Method(m4b0, 1)
 	}
 
 	// Uninitialized element of Package in If
-	Method(m008)
+	Method(m008,, Serialized)
 	{
 		Name(p000, Package(1){})
 
@@ -1721,7 +1721,7 @@ Method(m4b0, 1)
 	}
 
 	// Uninitialized element of Package in Elseif
-	Method(m00b, 1)
+	Method(m00b, 1, Serialized)
 	{
 		Name(p000, Package(1){})
 
@@ -1768,7 +1768,7 @@ Method(m4b0, 1)
 
 
 	// Uninitialized element of Package as parameter of a method
-	Method(m00e, 1)
+	Method(m00e, 1, Serialized)
 	{
 		Name(p000, Package(1){})
 

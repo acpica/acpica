@@ -39,7 +39,7 @@ Device(D223) {
 		FU00, 0x1F0}            /* 0x1F0 == length of SSDT */
 }
 
-Method(m10b)
+Method(m10b,, Serialized)
 {
     /* This SSDT must be identical to SSDT1 in the AcpiExec utility */
 
@@ -61,7 +61,7 @@ Method(m10b)
 		}
 	}
 
-	Method(m000, 1) {
+	Method(m000, 1, Serialized) {
 		DataTableRegion (DR00, "SSDT", "", "")
 
 		Field(DR00, AnyAcc, NoLock, Preserve) {
@@ -70,7 +70,7 @@ Method(m10b)
 		CHCK(FU00, SSDT, arg0)
 	}
 
-	Method(m001, 4) {
+	Method(m001, 4, Serialized) {
 		DataTableRegion (DR00, arg0, arg1, arg2)
 
 		Field(DR00, AnyAcc, NoLock, Preserve) {
@@ -83,7 +83,7 @@ Method(m10b)
 	Name(s001, "")
 	Name(s002, "")
 
-	Method(m002, 1) {
+	Method(m002, 1, Serialized) {
 		DataTableRegion (DR00, s000, s001, s002)
 
 		Field(DR00, AnyAcc, NoLock, Preserve) {

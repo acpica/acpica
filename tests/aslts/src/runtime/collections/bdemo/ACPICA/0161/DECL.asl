@@ -148,7 +148,7 @@ Method(md97)
 	}
 }
 
-Method(m075, 6)
+Method(m075, 6, Serialized)
 {
 	Name(b000, Buffer() {0x5D, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18})
 
@@ -213,7 +213,7 @@ Method(mf7f)
 	m076(bf4c, bf4d)
 }
 
-Method(m077)
+Method(m077,, Serialized)
 {
 	CreateBitField(bd03, 8, bf40)
 	CreateByteField(bd03, 1, bf41)

@@ -970,7 +970,7 @@ Method(m0b7, 1)
 
 // Run verify methods
 // NOTE: use here as few control operators as possible
-Method(m0b8)
+Method(m0b8,, Serialized)
 {
 	Name(ts, "m0b8")
 

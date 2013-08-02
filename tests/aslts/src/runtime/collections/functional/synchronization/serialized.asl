@@ -73,7 +73,7 @@ Method(m3b0, 0, Serialized, 0)
  * Proper sequence of calls to Serialized methods with different levels, 0-15,
  * alternating Serialized and not-Serialized
  */
-Method(m3b1)
+Method(m3b1,, Serialized)
 {
 	Name(ts, "m3b1")
 	Name(i000, 0)
@@ -195,7 +195,7 @@ Method(m3b2, 0, Serialized, 0)
  * arg1 - level of second call
  * arg2 - how many calls to do
  */
-Method(m3b3, 3)
+Method(m3b3, 3, Serialized)
 {
 	Name(ts, "m3b3")
 
@@ -318,7 +318,7 @@ Method(m3b3, 3)
 	CH03(ts, z173, 0x00e, 0, 0)
 }
 
-Method(m3b4)
+Method(m3b4,, Serialized)
 {
 	Name(ts, "m3b4")
 
@@ -351,7 +351,7 @@ Method(m3b4)
  * arg0 - level of first call
  * arg1 - level of second call
  */
-Method(m3b5, 2)
+Method(m3b5, 2, Serialized)
 {
 	Name(ts, "m3b5")
 
@@ -450,7 +450,7 @@ Method(m3b5, 2)
 	CH03(ts, z173, 0x013, 0, 0)
 }
 
-Method(m3b6)
+Method(m3b6,, Serialized)
 {
 	Name(ts, "m3b6")
 
@@ -485,7 +485,7 @@ Method(m3b6)
  * arg1 - level of second call
  * arg2 - how many calls to do
  */
-Method(m3b7, 3)
+Method(m3b7, 3, Serialized)
 {
 	Name(ts, "m3b5")
 
@@ -623,7 +623,7 @@ Method(m3b7, 3)
 	CH03(ts, z173, 0x018, 0, 0)
 }
 
-Method(m3b8)
+Method(m3b8,, Serialized)
 {
 	Name(ts, "m3b6")
 
@@ -658,7 +658,7 @@ Method(m3b8)
  * Method is invoked 2 times, then 3 times, then 4 times,...
  * Then do it for next Method.
  */
-Method(m3b9)
+Method(m3b9,, Serialized)
 {
 	Name(ts, "m3b9")
 
@@ -695,7 +695,7 @@ Method(m3b9)
  * Method is invoked 2 times, then 3 times, then 4 times,...
  * Then do it for next Method.
  */
-Method(m3ba)
+Method(m3ba,, Serialized)
 {
 	Name(ts, "m3ba")
 
@@ -749,7 +749,7 @@ Method(m3ba)
  * arg1 - level of second call
  * arg2 - how many calls to do
  */
-Method(m3bb, 3)
+Method(m3bb, 3, Serialized)
 {
 	Name(ts, "m3bb")
 
@@ -1249,7 +1249,7 @@ Method(m3bb, 3)
 	CH03(ts, z173, 0x00e, 0, 0)
 }
 
-Method(m3bc)
+Method(m3bc,, Serialized)
 {
 	Name(ts, "m3bc")
 

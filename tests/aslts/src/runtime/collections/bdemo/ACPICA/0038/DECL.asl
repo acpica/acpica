@@ -32,7 +32,7 @@
  * SUMMARY: LGreater passed with Integer and String works incorrectly in 32-bit mode
  */
 
-Method(mdce)
+Method(mdce,, Serialized)
 {
 	Store(0, Local7)
 

@@ -32,7 +32,7 @@
  * SUMMARY: Logical operators return True equal to One but not Ones
  */
 
-Method(md9a)
+Method(md9a,, Serialized)
 {
 	Name(ON00, 0xffffffffffffffff)
 

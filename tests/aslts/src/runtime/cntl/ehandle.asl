@@ -251,7 +251,7 @@ Method(CH03, 5)
 //
 // Convert 32/64 bit integer to 16-bit Hex value
 //
-Method(ST16, 1)
+Method(ST16, 1, Serialized)
 {
     Name (EBUF, Buffer(ISZC){}) /* 8 or 16 bytes, depending on 32/64 mode */
     Name (RBUF, Buffer(4){})

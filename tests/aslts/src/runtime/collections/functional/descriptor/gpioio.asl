@@ -2795,7 +2795,7 @@ Name (p455, Package() {
     }
 })
 
-Method(RT22)
+Method(RT22,, Serialized)
 {
 	Name(ts, "RT22")
 

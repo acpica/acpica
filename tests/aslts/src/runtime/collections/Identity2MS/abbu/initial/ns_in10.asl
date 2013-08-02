@@ -57,7 +57,7 @@ Name(z164, 164)
  * Package is passed by ArgX to method:
  * - directly
  */
-Method(in10)
+Method(in10,, Serialized)
 {
 	Name(ts, "in10")
 	Name(p000, Package() {0xabcd0000, 0xabcd0001, 0xabcd0002})
@@ -93,7 +93,7 @@ Method(in10)
  * Package is passed by ArgX to method:
  * - by ORef
  */
-Method(in11)
+Method(in11,, Serialized)
 {
 	Name(ts, "in11")
 	Name(p000, Package() {0xabcd0000, 0xabcd0001, 0xabcd0002})
@@ -132,7 +132,7 @@ Method(in11)
  * - directly
  * - by ORef
  */
-Method(in12)
+Method(in12,, Serialized)
 {
 	Name(ts, "in12")
 	Name(p000, Package() {0xabcd0000, 0xabcd0001, 0xabcd0002})
@@ -172,7 +172,7 @@ Method(in12)
  * - do ORef and pass to LocalX
  * - do DerefOf and pass to LocalX
  */
-Method(in13)
+Method(in13,, Serialized)
 {
 	Name(ts, "in13")
 	Name(p000, Package() {0xabcd0000, 0xabcd0001, 0xabcd0002})
@@ -225,7 +225,7 @@ Method(in13)
  *   Named element of Package is simply not implemented by MS,
  *   i000 in Package(){i000} is, on MS, the same as Package(){"i000"}.
  */
-Method(in14)
+Method(in14,, Serialized)
 {
 	Name(ts, "in14")
 	Name(i000, 0xabcd0000)
@@ -294,7 +294,7 @@ Method(in14)
  *   Named element of Package is simply not implemented by MS,
  *   i000 in Package(){i000} is, on MS, the same as Package(){"i000"}.
  */
-Method(in15)
+Method(in15,, Serialized)
 {
 	Name(ts, "in15")
 	Name(i000, 0xabcd0000)
@@ -332,7 +332,7 @@ Method(in15)
  * Buffer
  */
 
-Method(in16)
+Method(in16,, Serialized)
 {
 	Name(ts, "in16")
 	Name(b000, Buffer() {0x10, 0x11, 0x12})
@@ -385,7 +385,7 @@ Method(in16)
  *
  * Recursive call to m001
  */
-Method(in17)
+Method(in17,, Serialized)
 {
 	Name(ts, "in17")
 	Name(i001, 0)
@@ -435,7 +435,7 @@ Method(in17)
 /*
  * Field instead of i000 (in in01)
  */
-Method(in18, 1)
+Method(in18, 1, Serialized)
 {
 	Name(ts, "in18")
 	Name(i001, 0)
@@ -516,7 +516,7 @@ Method(in18, 1)
  *
  * (is this test correct?)
  */
-Method(in19, 1)
+Method(in19, 1, Serialized)
 {
 	Name(ts, "in19")
 	Name(i001, 0)
@@ -598,7 +598,7 @@ Method(in19, 1)
  *
  * (is this test correct?)
  */
-Method(in1a, 1)
+Method(in1a, 1, Serialized)
 {
 	Name(ts, "in1a")
 	Name(i001, 0)
@@ -683,7 +683,7 @@ Method(in1a, 1)
 /*
  * Element of Buffer instead of i000 (in in01)
  */
-Method(in1b, 1)
+Method(in1b, 1, Serialized)
 {
 	Name(ts, "in1b")
 	Name(i001, 0)
@@ -755,7 +755,7 @@ Method(in1b, 1)
  *   added argument to methods and b000 passed without any use of that
  *   parameter inside the methods
  */
-Method(in1c, 1)
+Method(in1c, 1, Serialized)
 {
 	Name(ts, "in1c")
 	Name(i001, 0)
@@ -833,7 +833,7 @@ Method(in1c, 1)
 /*
  * Element of Package instead of i000 (in in01)
  */
-Method(in1d)
+Method(in1d,, Serialized)
 {
 	Name(ts, "in1d")
 	Name(i001, 0)
@@ -898,7 +898,7 @@ Method(in1d)
  *   added argument to methods and b000 passed without any use of that
  *   parameter inside the methods
  */
-Method(in1e)
+Method(in1e,, Serialized)
 {
 	Name(ts, "in1e")
 	Name(i001, 0)

@@ -91,7 +91,7 @@ Name(p359, Package()
 })
 
 // Run-method
-Method(UNI0)
+Method(UNI0,, Serialized)
 {
 	Name(ts, "UNI0")
 

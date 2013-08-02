@@ -34,7 +34,7 @@ Name(id27, 64)
 
 /* Create and write IRef */
 
-Method(mf02, 6)
+Method(mf02, 6, Serialized)
 {
 	Name(i001, 0)
 	Name(i002, 0)
@@ -96,7 +96,7 @@ Method(mf02, 6)
 
 /* Read by means of IRef-to-Integer */
 
-Method(mfec, 4)
+Method(mfec, 4, Serialized)
 {
 	Name(i001, 0)
 	Name(i002, 0)
@@ -134,7 +134,7 @@ Method(mfec, 4)
 
 /* Read by means of IRef-to-Package */
 
-Method(mfed, 5)
+Method(mfed, 5, Serialized)
 {
 	Name(i001, 0)
 	Name(i002, 0)
@@ -172,7 +172,7 @@ Method(mfed, 5)
 	}
 }
 
-Method(mfee)
+Method(mfee,, Serialized)
 {
 		Name(p000, Package(id27) {
 			Package(id27) {
@@ -330,7 +330,7 @@ Method(mfee)
 		 *
 		 * arg0 - the start index inside arg1 where to store created objects.
 		 */
-		Method(mmm0, 1)
+		Method(mmm0, 1, Serialized)
 		{
 			Name(i000, 0)
 
@@ -473,7 +473,7 @@ Method(mfee)
 		 * arg3 - create structure,
 		 * arg4 - read.
 		 */
-		Method(mmm1, 5)
+		Method(mmm1, 5, Serialized)
 		{
 			Name(i000, 0)
 

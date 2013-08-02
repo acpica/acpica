@@ -32,7 +32,7 @@
  * SUMMARY: ASL compiler incorrectly implements Break within Switch
  */
 
-Method(m17c)
+Method(m17c,, Serialized)
 {
 	Name(ERRN, 0x000)
 

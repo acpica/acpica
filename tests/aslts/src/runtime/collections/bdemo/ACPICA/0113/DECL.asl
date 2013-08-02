@@ -73,7 +73,7 @@
 		CH04("", 1, 47, 0, 0x00b, 0, 0) // AE_AML_OPERAND_TYPE
 	}
 
-	Method(me7a)
+	Method(me7a,, Serialized)
 	{
 		Name(p000, Package(){0x00, 0x01, 0x02, 0x03, 0x04})
 		Name(p001, Package(){0x10, 0x11, 0x12, 0x13, 0x14})

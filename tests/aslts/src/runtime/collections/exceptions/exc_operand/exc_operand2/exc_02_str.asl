@@ -42,14 +42,14 @@ Name(s100, "1")
 //  5 - AE_NOT_FOUND (when DerefOf(String))
 //
 // Note: String can be used with DerefOf and Index
-Method(m4b2, 1)
+Method(m4b2, 1, Serialized)
 {
 	Name(ts, "m4b2")
 
 	Name(s000, "2")
 
 	// Local Named Object
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		Name(s000, "3")
 
@@ -205,7 +205,7 @@ Method(m4b2, 1)
 	}
 
 	// An element of Package
-	Method(m004, 1)
+	Method(m004, 1, Serialized)
 	{
 		Name(p000, Package(){"3"})
 
@@ -260,7 +260,7 @@ Method(m4b2, 1)
 	}
 
 	// Result of Method invocation
-	Method(m006, 1)
+	Method(m006, 1, Serialized)
 	{
 		Name(i000, 0) // Label to check m000 invocations
 
@@ -327,7 +327,7 @@ Method(m4b2, 1)
 	}
 
 	// Reference to Object as Result of Method invocation
-	Method(m007, 1)
+	Method(m007, 1, Serialized)
 	{
 		Name(s000, "3")
 

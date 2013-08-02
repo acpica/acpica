@@ -45,7 +45,7 @@
  * Error 1034 - ^ Name already exists in scope (N000)
  */
 
-Method(m15c)
+Method(m15c,, Serialized)
 {
 	Name (VV, 0x1234)
 	Store (32, Local0)

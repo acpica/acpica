@@ -211,7 +211,7 @@ Method(m1a0, 4)
 // arg4 - type of the Object
 // arg5 - the benchmark value of Object for verification
 // arg6 - index of checking (inside the file)
-Method(m1a2, 7)
+Method(m1a2, 7, Serialized)
 {
 	SET0(c081, 0, arg6)
 

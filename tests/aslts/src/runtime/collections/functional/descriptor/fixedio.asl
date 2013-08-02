@@ -60,7 +60,7 @@ Name (p40b, Package() {
 	Buffer () {0x4b, 0x00, 0x00, 0x00, 0x79, 0x00},
 })
 
-Method(RT06)
+Method(RT06,, Serialized)
 {
 	Name(ts, "RT06")
 

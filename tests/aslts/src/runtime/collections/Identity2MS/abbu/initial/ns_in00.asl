@@ -55,7 +55,7 @@ Name(z163, 163)
 /*
  * Simple, 3-level
  */
-Method(in00, 1)
+Method(in00, 1, Serialized)
 {
 	Name(ts, "in00")
 	Name(i000, 0x00000001)
@@ -91,7 +91,7 @@ Method(in00, 1)
  * added writing into i000:
  *    Store(0x00040000, i000)
  */
-Method(in01, 1)
+Method(in01, 1, Serialized)
 {
 	Name(ts, "in01")
 	Name(i000, 0x00000001)
@@ -158,7 +158,7 @@ Method(in01, 1)
  * Recurcive execution of m001:
  *   Add(i000, m001(), Local0)
  */
-Method(in02)
+Method(in02,, Serialized)
 {
 	Name(ts, "in02")
 	Name(i000, 0x00100000)
@@ -192,7 +192,7 @@ Method(in02)
 /*
  * Local instead of i000 (in in01)
  */
-Method(in03, 1)
+Method(in03, 1, Serialized)
 {
 	Name(ts, "in03")
 	Name(i001, 0)
@@ -271,7 +271,7 @@ Method(in03, 1)
  *    m00X are passed with i000
  *    argX inside m00X is rewritten
  */
-Method(in04)
+Method(in04,, Serialized)
 {
 	Name(ts, "in04")
 	Name(i000, 0x00000001)
@@ -418,7 +418,7 @@ Method(in04)
 /*
  * Note: now the checkings are so that in05 succeeds on MS.
  */
-Method(in05)
+Method(in05,, Serialized)
 {
 	Name(ts, "in05")
 
@@ -428,12 +428,12 @@ Method(in05)
 	Name(p000, Package() {0xabcd0001, 0xabcd0002, 0xabcd0003})
 	Event(e000)
 	Mutex(mx00, 0)
-	Method(mmm0) {
+	Method(mmm0,, Serialized) {
 		Name(im00, 0xabcd0004)
 		Name(sm00, "qwertyui")
 		// Return ( "qwertyui" )
 	}
-	Method(mmm1) {
+	Method(mmm1,, Serialized) {
 		Name(im00, 0xabcd0004)
 		Name(sm00, "qwertyui")
 		// Return ( 0xabcd0004 )
@@ -554,7 +554,7 @@ Method(in05)
 	CH03(ts, z163, 0x000, 0, 0)
 }
 
-Method(in06)
+Method(in06,, Serialized)
 {
 	Name(ts, "in06")
 	Name(i000, 0xabcd0000)

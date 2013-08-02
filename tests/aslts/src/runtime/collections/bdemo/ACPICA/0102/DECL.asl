@@ -32,7 +32,7 @@
  * SUMMARY: The specific combination of operators produces one "Outstanding allocation"
  */
 
-	Method(me63)
+	Method(me63,, Serialized)
 	{
 		Method(m001) { return (0x12345678) }
 		Name(p000, Package() {m001})

@@ -34,7 +34,7 @@
  * Check that exception doesnt occur
  */
 
-	Method(mf48)
+	Method(mf48,, Serialized)
 	{
 		CH03("", 0, 0x000, 0, 0)
 		Store("mf48 started", Debug)
@@ -43,7 +43,7 @@
 		CH03("", 0, 0x001, 0, 0)
 	}
 
-	Method(mf49)
+	Method(mf49,, Serialized)
 	{
 		CH03("", 0, 0x002, 0, 0)
 		Store("mf49 started", Debug)

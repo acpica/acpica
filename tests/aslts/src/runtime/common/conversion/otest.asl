@@ -52,7 +52,7 @@ Name(z065, 65)
 //    SyncObject: 0x5cff
 // Total scale of acceptable types:
 //    SyncObject: 0x0200
-Method(m400, 1)
+Method(m400, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -72,7 +72,7 @@ Method(m400, 1)
 }
 
 // Add, check all unavailable non-hex symbols
-Method(m4a2, 1)
+Method(m4a2, 1, Serialized)
 {
 	Name(ts, "m4a2")
 
@@ -111,7 +111,7 @@ Method(m4a2, 1)
 }
 
 // Add, check all available hex symbols
-Method(m4a4, 1)
+Method(m4a4, 1, Serialized)
 {
 	Name(ts, "m4a4")
 
@@ -150,7 +150,7 @@ Method(m4a4, 1)
 }
 
 // Add, checkings in accordance with the Table 1
-Method(m4a0, 1)
+Method(m4a0, 1, Serialized)
 {
 	Name(ts, "m4a0")
 
@@ -278,7 +278,7 @@ if (0) {
 // Total scale of acceptable types:
 //    Addend1: 0x402e
 //    Addend1: 0x402e
-Method(m401, 1)
+Method(m401, 1, Serialized)
 {
 	Name(op, 1)
 
@@ -386,7 +386,7 @@ Method(m401, 1)
 // Total scale of acceptable types:
 //    Source1: 0x402e
 //    Source2: 0x402e
-Method(m402, 1)
+Method(m402, 1, Serialized)
 {
 	Name(op, 2)
 
@@ -488,7 +488,7 @@ Method(m402, 1)
 // Total scale of acceptable types:
 //    Source1: 0x402e
 //    Source2: 0x402e
-Method(m403, 1)
+Method(m403, 1, Serialized)
 {
 	Name(op, 3)
 
@@ -1731,7 +1731,7 @@ Method(m403, 1)
 // Total scale of acceptable types:
 //    Source1: 0x0008
 //    Source2: 0x0008
-Method(m404, 1)
+Method(m404, 1, Serialized)
 {
 	Name(op, 4)
 
@@ -1752,7 +1752,7 @@ Method(m404, 1)
 //    Source: 0x0000
 // Total scale of acceptable types:
 //    Source: 0x5eff
-Method(m405, 1)
+Method(m405, 1, Serialized)
 {
 	Name(op, 5)
 
@@ -1774,7 +1774,7 @@ Method(m405, 1)
 //    Source: 0x0000
 // Total scale of acceptable types:
 //    Source: 0x5eff
-Method(m406, 1)
+Method(m406, 1, Serialized)
 {
 	Name(op, 6)
 
@@ -1796,7 +1796,7 @@ Method(m406, 1)
 //    Minuend: 0x1ed1
 // Total scale of acceptable types:
 //    Minuend: 0x402e
-Method(m407, 1)
+Method(m407, 1, Serialized)
 {
 	Name(op, 7)
 
@@ -1830,7 +1830,7 @@ Method(m407, 1)
 //    Source: 0x5fff
 // Total scale of acceptable types:
 //    Source: 0x0000
-Method(m408, 1)
+Method(m408, 1, Serialized)
 {
 	Name(op, 8)
 
@@ -1851,7 +1851,7 @@ Method(m408, 1)
 // Total scale of acceptable types:
 //    Dividend: 0x402e
 //    Divisor: 0x402e
-Method(m409, 1)
+Method(m409, 1, Serialized)
 {
 	Name(op, 9)
 
@@ -1892,7 +1892,7 @@ Method(m409, 1)
 //    Arg: 0x1ed1
 // Total scale of acceptable types:
 //    Arg: 0x402e
-Method(m410, 1)
+Method(m410, 1, Serialized)
 {
 	Name(op, 10)
 
@@ -1911,7 +1911,7 @@ Method(m410, 1)
 //    Source: 0x1ed1
 // Total scale of acceptable types:
 //    Source: 0x402e
-Method(m411, 1)
+Method(m411, 1, Serialized)
 {
 	Name(op, 11)
 
@@ -1939,7 +1939,7 @@ Method(m411, 1)
 //    Source: 0x1ed1
 // Total scale of acceptable types:
 //    Source: 0x402e
-Method(m412, 1)
+Method(m412, 1, Serialized)
 {
 	Name(op, 12)
 
@@ -1967,7 +1967,7 @@ Method(m412, 1)
 //    BCDValue: 0x1ed1
 // Total scale of acceptable types:
 //    BCDValue: 0x402e
-Method(m413, 1)
+Method(m413, 1, Serialized)
 {
 	Name(op, 13)
 
@@ -1986,7 +1986,7 @@ Method(m413, 1)
 //    Addend: 0x1ed1
 // Total scale of acceptable types:
 //    Addend: 0x402e
-Method(m414, 1)
+Method(m414, 1, Serialized)
 {
 	Name(op, 14)
 
@@ -2021,7 +2021,7 @@ Method(m414, 1)
 // Total scale of acceptable types:
 //    Source: 0x001c
 //    Index: 0x402e
-Method(m415, 1)
+Method(m415, 1, Serialized)
 {
 	Name(op, 15)
 
@@ -2053,7 +2053,7 @@ Method(m415, 1)
 // Total scale of acceptable types:
 //    Source1: 0x402e
 //    Source2: 0x402e
-Method(m416, 1)
+Method(m416, 1, Serialized)
 {
 	Name(op, 16)
 
@@ -2076,7 +2076,7 @@ Method(m416, 1)
 // Total scale of acceptable types:
 //    Source1: 0x402e
 //    Source2: 0x402e
-Method(m417, 1)
+Method(m417, 1, Serialized)
 {
 	Name(op, 17)
 
@@ -2322,7 +2322,7 @@ Method(m417, 1)
 // Total scale of acceptable types:
 //    Source1: 0x402e
 //    Source2: 0x402e
-Method(m418, 1)
+Method(m418, 1, Serialized)
 {
 	Name(op, 18)
 
@@ -2586,7 +2586,7 @@ Method(m418, 1)
 // Total scale of acceptable types:
 //    Source1: 0x402e
 //    Source2: 0x402e
-Method(m419, 1)
+Method(m419, 1, Serialized)
 {
 	Name(op, 19)
 
@@ -2851,7 +2851,7 @@ Method(m419, 1)
 // Total scale of acceptable types:
 //    Source1: 0x402e
 //    Source2: 0x402e
-Method(m420, 1)
+Method(m420, 1, Serialized)
 {
 	Name(op, 20)
 
@@ -3116,7 +3116,7 @@ Method(m420, 1)
 // Total scale of acceptable types:
 //    Source1: 0x402e
 //    Source2: 0x402e
-Method(m421, 1)
+Method(m421, 1, Serialized)
 {
 	Name(op, 21)
 
@@ -3379,7 +3379,7 @@ Method(m421, 1)
 //    Source: 0x1ed1
 // Total scale of acceptable types:
 //    Source: 0x402e
-Method(m422, 1)
+Method(m422, 1, Serialized)
 {
 	Name(op, 22)
 
@@ -3400,7 +3400,7 @@ Method(m422, 1)
 // Total scale of acceptable types:
 //    Source1: 0x402e
 //    Source2: 0x402e
-Method(m423, 1)
+Method(m423, 1, Serialized)
 {
 	Name(op, 23)
 
@@ -3646,7 +3646,7 @@ Method(m423, 1)
 // Total scale of acceptable types:
 //    Source1: 0x402e
 //    Source2: 0x402e
-Method(m424, 1)
+Method(m424, 1, Serialized)
 {
 	Name(op, 24)
 
@@ -3675,7 +3675,7 @@ Method(m424, 1)
 //    MatchObject1:  0x402e
 //    MatchObject2:  0x402e
 //    StartIndex:    0x402e
-Method(m425, 1)
+Method(m425, 1, Serialized)
 {
 	Name(op, 25)
 
@@ -3705,7 +3705,7 @@ Method(m425, 1)
 //    Source: 0x402e
 //    Index:  0x402e
 //    Length: 0x402e
-Method(m426, 1)
+Method(m426, 1, Serialized)
 {
 	Name(op, 26)
 
@@ -3729,7 +3729,7 @@ Method(m426, 1)
 // Total scale of acceptable types:
 //    Dividend: 0x402e
 //    Divisor:  0x402e
-Method(m427, 1)
+Method(m427, 1, Serialized)
 {
 	Name(op, 27)
 
@@ -3752,7 +3752,7 @@ Method(m427, 1)
 // Total scale of acceptable types:
 //    Multiplicand: 0x402e
 //    Multiplier:   0x402e
-Method(m428, 1)
+Method(m428, 1, Serialized)
 {
 	Name(op, 28)
 
@@ -3775,7 +3775,7 @@ Method(m428, 1)
 // Total scale of acceptable types:
 //    Source1: 0x402e
 //    Source2: 0x402e
-Method(m429, 1)
+Method(m429, 1, Serialized)
 {
 	Name(op, 29)
 
@@ -3798,7 +3798,7 @@ Method(m429, 1)
 // Total scale of acceptable types:
 //    Source1: 0x402e
 //    Source2: 0x402e
-Method(m430, 1)
+Method(m430, 1, Serialized)
 {
 	Name(op, 30)
 
@@ -3819,7 +3819,7 @@ Method(m430, 1)
 //    Source: 0x1ed1
 // Total scale of acceptable types:
 //    Source: 0x402e
-Method(m431, 1)
+Method(m431, 1, Serialized)
 {
 	Name(op, 31)
 
@@ -3838,7 +3838,7 @@ Method(m431, 1)
 //    Object: 0x0000
 // Total scale of acceptable types:
 //    Object: 0x5eff
-Method(m432, 1)
+Method(m432, 1, Serialized)
 {
 	Name(op, 32)
 
@@ -3862,7 +3862,7 @@ Method(m432, 1)
 // Total scale of acceptable types:
 //    Source1: 0x402e
 //    Source2: 0x402e
-Method(m433, 1)
+Method(m433, 1, Serialized)
 {
 	Name(op, 33)
 
@@ -3883,7 +3883,7 @@ Method(m433, 1)
 //    Object: 0x0000
 // Total scale of acceptable types:
 //    Object: 0x5eff
-Method(m434, 1)
+Method(m434, 1, Serialized)
 {
 	Name(op, 34)
 
@@ -3905,7 +3905,7 @@ Method(m434, 1)
 //    SyncObject: 0x5cff
 // Total scale of acceptable types:
 //    SyncObject: 0x0200
-Method(m435, 1)
+Method(m435, 1, Serialized)
 {
 	Name(op, 35)
 
@@ -3924,7 +3924,7 @@ Method(m435, 1)
 //    SyncObject: 0x5e7f
 // Total scale of acceptable types:
 //    SyncObject: 0x0080
-Method(m436, 1)
+Method(m436, 1, Serialized)
 {
 	Name(op, 36)
 
@@ -3943,7 +3943,7 @@ Method(m436, 1)
 //    Arg: 0x0000
 // Total scale of acceptable types:
 //    Arg: 0x5eff
-Method(m437, 1)
+Method(m437, 1, Serialized)
 {
 	Name(op, 37)
 
@@ -3967,7 +3967,7 @@ Method(m437, 1)
 // Total scale of acceptable types:
 //    Source:     0x402e
 //    ShiftCount: 0x402e
-Method(m438, 1)
+Method(m438, 1, Serialized)
 {
 	Name(op, 38)
 
@@ -3990,7 +3990,7 @@ Method(m438, 1)
 // Total scale of acceptable types:
 //    Source:     0x402e
 //    ShiftCount: 0x402e
-Method(m439, 1)
+Method(m439, 1, Serialized)
 {
 	Name(op, 39)
 
@@ -4011,7 +4011,7 @@ Method(m439, 1)
 //    SyncObject: 0x5e7f
 // Total scale of acceptable types:
 //    SyncObject: 0x0080
-Method(m440, 1)
+Method(m440, 1, Serialized)
 {
 	Name(op, 40)
 
@@ -4030,7 +4030,7 @@ Method(m440, 1)
 //    ObjectName: 0x5ee3
 // Total scale of acceptable types:
 //    ObjectName: 0x004c
-Method(m441, 1)
+Method(m441, 1, Serialized)
 {
 	Name(op, 41)
 
@@ -4049,7 +4049,7 @@ Method(m441, 1)
 //    MilliSeconds: 0x1ed1
 // Total scale of acceptable types:
 //    MilliSeconds: 0x402e
-Method(m442, 1)
+Method(m442, 1, Serialized)
 {
 	Name(op, 42)
 
@@ -4068,7 +4068,7 @@ Method(m442, 1)
 //    MicroSeconds: 0x1ed1
 // Total scale of acceptable types:
 //    MicroSeconds: 0x402e
-Method(m443, 1)
+Method(m443, 1, Serialized)
 {
 	Name(op, 43)
 
@@ -4087,7 +4087,7 @@ Method(m443, 1)
 //    Source: 0x0000
 // Total scale of acceptable types:
 //    Source: 0x5eff
-Method(m444, 1)
+Method(m444, 1, Serialized)
 {
 	Name(op, 44)
 
@@ -4111,7 +4111,7 @@ Method(m444, 1)
 // Total scale of acceptable types:
 //    Minuend:    0x402e
 //    Subtrahend: 0x402e
-Method(m445, 1)
+Method(m445, 1, Serialized)
 {
 	Name(op, 45)
 
@@ -4132,7 +4132,7 @@ Method(m445, 1)
 //    Value: 0x1ed1
 // Total scale of acceptable types:
 //    Value: 0x402e
-Method(m446, 1)
+Method(m446, 1, Serialized)
 {
 	Name(op, 46)
 
@@ -4151,7 +4151,7 @@ Method(m446, 1)
 //    Data: 0x1ed1
 // Total scale of acceptable types:
 //    Data: 0x402e
-Method(m447, 1)
+Method(m447, 1, Serialized)
 {
 	Name(op, 47)
 
@@ -4170,7 +4170,7 @@ Method(m447, 1)
 //    Data: 0x1ed1
 // Total scale of acceptable types:
 //    Data: 0x402e
-Method(m448, 1)
+Method(m448, 1, Serialized)
 {
 	Name(op, 48)
 
@@ -4196,7 +4196,7 @@ Method(m448, 1)
 //    Data: 0x1ed1
 // Total scale of acceptable types:
 //    Data: 0x402e
-Method(m449, 1)
+Method(m449, 1, Serialized)
 {
 	Name(op, 49)
 
@@ -4222,7 +4222,7 @@ Method(m449, 1)
 //    Data: 0x1ed1
 // Total scale of acceptable types:
 //    Data: 0x402e
-Method(m450, 1)
+Method(m450, 1, Serialized)
 {
 	Name(op, 50)
 
@@ -4250,7 +4250,7 @@ Method(m450, 1)
 // Total scale of acceptable types:
 //    Source: 0x402e
 //    Length: 0x402e
-Method(m451, 1)
+Method(m451, 1, Serialized)
 {
 	Name(op, 51)
 
@@ -4273,7 +4273,7 @@ Method(m451, 1)
 // Total scale of acceptable types:
 //    SyncObject: 0x0080
 //    SyncObject: 0x402e
-Method(m452, 1)
+Method(m452, 1, Serialized)
 {
 	Name(op, 52)
 
@@ -4296,7 +4296,7 @@ Method(m452, 1)
 // Total scale of acceptable types:
 //    Source1: 0x402e
 //    Source2: 0x402e
-Method(m453, 1)
+Method(m453, 1, Serialized)
 {
 	Name(op, 53)
 
@@ -4311,7 +4311,7 @@ Method(m453, 1)
 	}
 }
 
-Method(m460, 1)
+Method(m460, 1, Serialized)
 {
 if (1) {
 	m400(arg0)

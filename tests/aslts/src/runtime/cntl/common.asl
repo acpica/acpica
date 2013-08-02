@@ -889,7 +889,7 @@ Method(SB00, 2) {
 }
 
 // Print out the whole contents, not only 32 bytes as debugger does
-Method(prn0, 1) {
+Method(prn0, 1, Serialized) {
 
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -1054,7 +1054,7 @@ Method(CST0)
  * <cmd: 0 - left, 1 - right>
  * <n shift: {1-7}>
  */
-Method(sft0, 4)
+Method(sft0, 4, Serialized)
 {
 	Name(n000, 0)
 	Name(ncur, 0)
@@ -1121,7 +1121,7 @@ Method(MBS0, 2)
  * <source value of first byte>,
  * <source value of last byte>,
  */
-Method(sft1, 5)
+Method(sft1, 5, Serialized)
 {
 	Name(prev, 0)
 	Name(ms00, 0)
@@ -1278,7 +1278,7 @@ Method(sft1, 5)
  *               in errors reports is lost, should be
  *               resolved in the future.
  */
-Method(m4c0, 4)
+Method(m4c0, 4, Serialized)
 {
 	Name(tmp0, 0)
 	Name(tmp1, 0)
@@ -1316,7 +1316,7 @@ Method(m4c0, 4)
  * arg0 - source string contains desirable symbols
  * srg1 - index inside the source string
  */
-Method(m4a1, 2)
+Method(m4a1, 2, Serialized)
 {
 	Name(s000, " ")
 	Store(DeRefOf(Index(arg0, arg1)), Local0)
@@ -1325,7 +1325,7 @@ Method(m4a1, 2)
 }
 
 // Initialization
-Method(STRT, 1)
+Method(STRT, 1, Serialized)
 {
 	Method(m555)
 	{
@@ -1878,7 +1878,7 @@ Method(UNP0, 3, Serialized)
 }
 
 // Report errors
-Method(RERR)
+Method(RERR,, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -1926,7 +1926,7 @@ Method(RERR)
 }
 
 // Report root Methods run results
-Method(RRM0)
+Method(RRM0,, Serialized, 3)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)

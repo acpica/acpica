@@ -34,7 +34,7 @@
  * Crash. Test remained as is (due to crash as a main symptom).
  */
 
-Method(mdc3)
+Method(mdc3,, Serialized)
 {
 	// Field Unit
 	OperationRegion(r000, SystemMemory, 0x100, 0x100)
@@ -59,7 +59,7 @@ Method(mdc3)
 	return (0)
 }
 
-Method(mdc4)
+Method(mdc4,, Serialized)
 {
 	// Field Unit
 	OperationRegion(r000, SystemMemory, 0x100, 0x100)

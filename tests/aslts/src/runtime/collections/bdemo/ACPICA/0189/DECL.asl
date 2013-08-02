@@ -32,7 +32,7 @@
  * SUMMARY: The 1-byte buffer passed to ConcatenateResTemplate doesn't cause a run-time error
  */
 
-Method(mf7d)
+Method(mf7d,, Serialized)
 {
 	Name(RT00, ResourceTemplate () {IRQNoFlags () {1}})
 

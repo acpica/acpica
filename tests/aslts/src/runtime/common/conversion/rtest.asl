@@ -88,7 +88,7 @@ CreateField(bbff, 1038, 64, bf06)
 CreateField(bbff, 1102, 64, bf16)
 
 // Set all bytes of Buffer bbff to 0xff
-Method(m565)
+Method(m565,, Serialized)
 {
 	Name(lpN0, 160)
 	Name(lpC0, 0)
@@ -103,7 +103,7 @@ Method(m565)
 }
 
 // Acquire (mux, wrd) => Boolean
-Method(m500, 1)
+Method(m500, 1, Serialized)
 {
 	Name(ts, "m500")
 	ts00(ts)
@@ -122,7 +122,7 @@ Method(m500, 1)
 }
 
 // Add (int, int, Result) => Integer
-Method(m501, 1)
+Method(m501, 1, Serialized)
 {
 	Name(ts, "m501")
 	ts00(ts)
@@ -171,7 +171,7 @@ Method(m501, 1)
 }
 
 // And (int, int, Result) => Integer
-Method(m502, 1)
+Method(m502, 1, Serialized)
 {
 	Name(ts, "m502")
 	ts00(ts)
@@ -184,7 +184,7 @@ Method(m503, 1)
 	m564()
 }
 
-Method(m563)
+Method(m563,, Serialized)
 {
 	Name(ts, "m503,s+s")
 
@@ -324,7 +324,7 @@ Method(m563)
 	}
 }
 
-Method(m564)
+Method(m564,, Serialized)
 {
 	Name(ts, "m503,b+b")
 
@@ -700,7 +700,7 @@ Method(m562, 4)
 }
 
 // ConcatenateResTemplate (rtb, rtb, Result) => Buffer
-Method(m504, 1)
+Method(m504, 1, Serialized)
 {
 	Name(op, 4)
 
@@ -714,7 +714,7 @@ Method(m504, 1)
 }
 
 // CondRefOf (any, Result) => Boolean
-Method(m505, 1)
+Method(m505, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -728,7 +728,7 @@ Method(m505, 1)
 }
 
 // CopyObject (any, Destination) => DataRefObject
-Method(m506, 1)
+Method(m506, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -742,7 +742,7 @@ Method(m506, 1)
 }
 
 // Decrement (int) => Integer
-Method(m507, 1)
+Method(m507, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -756,7 +756,7 @@ Method(m507, 1)
 }
 
 // DerefOf ({ref|str}) => Object
-Method(m508, 1)
+Method(m508, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -770,7 +770,7 @@ Method(m508, 1)
 }
 
 // Divide (int, int, Remainder, Result) => Integer
-Method(m509, 1)
+Method(m509, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -784,7 +784,7 @@ Method(m509, 1)
 }
 
 // FindSetLeftBit (int, Result) => Integer
-Method(m511, 1)
+Method(m511, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -798,7 +798,7 @@ Method(m511, 1)
 }
 
 // FindSetRightBit (int, Result) => Integer
-Method(m512, 1)
+Method(m512, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -812,7 +812,7 @@ Method(m512, 1)
 }
 
 // FromBCD (int, Result) => Integer
-Method(m513, 1)
+Method(m513, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -826,7 +826,7 @@ Method(m513, 1)
 }
 
 // Increment (int) => Integer
-Method(m514, 1)
+Method(m514, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -840,7 +840,7 @@ Method(m514, 1)
 }
 
 // Index ({str|buf|pkg}, int, Destination) => ObjectReference
-Method(m515, 1)
+Method(m515, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -854,7 +854,7 @@ Method(m515, 1)
 }
 
 // LAnd (int, int) => Boolean
-Method(m516, 1)
+Method(m516, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -868,7 +868,7 @@ Method(m516, 1)
 }
 
 // LEqual ({int|str|buf}, {int|str|buf}) => Boolean
-Method(m517, 1)
+Method(m517, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -882,7 +882,7 @@ Method(m517, 1)
 }
 
 // LGreater ({int|str|buf}, {int|str|buf}) => Boolean
-Method(m518, 1)
+Method(m518, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -896,7 +896,7 @@ Method(m518, 1)
 }
 
 // LGreaterEqual ({int|str|buf}, {int|str|buf}) => Boolean
-Method(m519, 1)
+Method(m519, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -910,7 +910,7 @@ Method(m519, 1)
 }
 
 // LLess ({int|str|buf}, {int|str|buf}) => Boolean
-Method(m520, 1)
+Method(m520, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -924,7 +924,7 @@ Method(m520, 1)
 }
 
 // LLessEqual ({int|str|buf}, {int|str|buf}) => Boolean
-Method(m521, 1)
+Method(m521, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -938,7 +938,7 @@ Method(m521, 1)
 }
 
 // LNot (int) => Boolean
-Method(m522, 1)
+Method(m522, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -952,7 +952,7 @@ Method(m522, 1)
 }
 
 // LNotEqual ({int|str|buf}, {int|str|buf}) => Boolean
-Method(m523, 1)
+Method(m523, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -966,7 +966,7 @@ Method(m523, 1)
 }
 
 // LOr (int, int) => Boolean
-Method(m524, 1)
+Method(m524, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -980,7 +980,7 @@ Method(m524, 1)
 }
 
 // Match (pkg, byt, int, byt, int, int) => Ones | Integer
-Method(m525, 1)
+Method(m525, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -994,7 +994,7 @@ Method(m525, 1)
 }
 
 // Mid ({str|buf}, int, int, Result) => Buffer or String
-Method(m526, 1)
+Method(m526, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1008,7 +1008,7 @@ Method(m526, 1)
 }
 
 // Mod (int, int, Result) => Integer
-Method(m527, 1)
+Method(m527, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1022,7 +1022,7 @@ Method(m527, 1)
 }
 
 // Multiply (int, int, Result) => Integer
-Method(m528, 1)
+Method(m528, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1036,7 +1036,7 @@ Method(m528, 1)
 }
 
 // NAnd (int, int, Result) => Integer
-Method(m529, 1)
+Method(m529, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1050,7 +1050,7 @@ Method(m529, 1)
 }
 
 // NOr (int, int, Result) => Integer
-Method(m530, 1)
+Method(m530, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1064,7 +1064,7 @@ Method(m530, 1)
 }
 
 // Not (int, Result) => Integer
-Method(m531, 1)
+Method(m531, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1078,7 +1078,7 @@ Method(m531, 1)
 }
 
 // ObjectType (any) => Integer
-Method(m532, 1)
+Method(m532, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1092,7 +1092,7 @@ Method(m532, 1)
 }
 
 // Or (int, int, Result) => Integer
-Method(m533, 1)
+Method(m533, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1106,7 +1106,7 @@ Method(m533, 1)
 }
 
 // RefOf (any) => ObjectReference
-Method(m534, 1)
+Method(m534, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1120,7 +1120,7 @@ Method(m534, 1)
 }
 
 // Return ({any|ref})
-Method(m537, 1)
+Method(m537, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1134,7 +1134,7 @@ Method(m537, 1)
 }
 
 // ShiftLeft (int, int, Result) => Integer
-Method(m538, 1)
+Method(m538, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1148,7 +1148,7 @@ Method(m538, 1)
 }
 
 // ShiftRight (int, int, Result) => Integer
-Method(m539, 1)
+Method(m539, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1162,7 +1162,7 @@ Method(m539, 1)
 }
 
 // SizeOf ({int|str|buf|pkg}) => Integer
-Method(m541, 1)
+Method(m541, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1176,7 +1176,7 @@ Method(m541, 1)
 }
 
 // Store (any, Destination) => DataRefObject
-Method(m544, 1)
+Method(m544, 1, Serialized)
 {
 	Name(ts, "m544")
 
@@ -1226,7 +1226,7 @@ Method(m544, 1)
 }
 
 // Subtract (int, int, Result) => Integer
-Method(m545, 1)
+Method(m545, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1240,7 +1240,7 @@ Method(m545, 1)
 }
 
 // ToBCD (int, Result) => Integer
-Method(m546, 1)
+Method(m546, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1254,7 +1254,7 @@ Method(m546, 1)
 }
 
 // ToBuffer ({int|str|buf}, Result) => Buffer
-Method(m547, 1)
+Method(m547, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1268,7 +1268,7 @@ Method(m547, 1)
 }
 
 // ToDecimalString ({int|str|buf}, Result) => String
-Method(m548, 1)
+Method(m548, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1282,7 +1282,7 @@ Method(m548, 1)
 }
 
 // ToHexString ({int|str|buf}, Result) => String
-Method(m549, 1)
+Method(m549, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1296,7 +1296,7 @@ Method(m549, 1)
 }
 
 // ToInteger ({int|str|buf}, Result) => Integer
-Method(m550, 1)
+Method(m550, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1310,7 +1310,7 @@ Method(m550, 1)
 }
 
 // ToString (buf, int, Result) => String
-Method(m551, 1)
+Method(m551, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1324,7 +1324,7 @@ Method(m551, 1)
 }
 
 // Wait (evt, int) => Boolean
-Method(m552, 1)
+Method(m552, 1, Serialized)
 {
 	Name(op, 0)
 
@@ -1338,7 +1338,7 @@ Method(m552, 1)
 }
 
 // XOr (int, int, Result) => Integer
-Method(m553, 1)
+Method(m553, 1, Serialized)
 {
 	Name(op, 0)
 

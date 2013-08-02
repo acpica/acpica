@@ -39,7 +39,7 @@
 /*
  * Web of references performed by several method invocations
  */
-Method(mfd9)
+Method(mfd9,, Serialized)
 {
 	Name(sz, 32)	// full size of Package applied in algorithm
 	Name(szzz, 64)	// full size of Package
@@ -97,7 +97,7 @@ Method(mfd9)
 
 
 	/* Initializing full Packages with monotone increasing Integers */
-	Method(m000)
+	Method(m000,, Serialized)
 	{
 		Name(qq00, 0)
 		Name(qq01, 0)
@@ -141,7 +141,7 @@ Method(mfd9)
 
 	/* Generate two-directional ring of references */
 
-	Method(m001)
+	Method(m001,, Serialized)
 	{
 		Name(uu00, 0xeeff0000)
 		Name(ii00, 0xabcd0000)
@@ -273,7 +273,7 @@ Method(mfd9)
 	 * Join all other packages
 	 * (two directions for each two points)
 	 */
-	Method(m002)
+	Method(m002,, Serialized)
 	{
 		Name(qq01, 0)
 
@@ -492,7 +492,7 @@ Method(mfd9)
 		mfcc(p007, i11, nm16, i005, 0, 0x121)
 	}
 
-	Method(m007)
+	Method(m007,, Serialized)
 	{
 		Name(qq00, 0)
 
@@ -544,7 +544,7 @@ Method(mfd9)
 		mfcc(p007, i13, nm16, i002, 0, 0x131)
 	}
 
-	Method(m009)
+	Method(m009,, Serialized)
 	{
 		Name(uu00, 0xeeff0000)
 		Name(ii00, 0xabcd0000)

@@ -56,7 +56,7 @@
  * is in progress from inside the test.
  */
 
-Method(md77)
+Method(md77,, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)

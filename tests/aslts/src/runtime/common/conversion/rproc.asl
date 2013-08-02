@@ -38,7 +38,7 @@ Name(z066, 66)
 // arg4 - indication of ComputationalData
 // arg5 - Result
 // arg6 - ComputationalData
-Method(m4c1, 7)
+Method(m4c1, 7, Serialized)
 {
 	Name(tmp0, 0)
 	Name(tmp1, 0)

@@ -33,7 +33,7 @@
 
 // Integer
 
-Method(md3b)
+Method(md3b,, Serialized)
 {
 	Name(i000, 0xe0385bcd)
 	Processor(OOO2, 0, 0xFFFFFFFF, 0) {}
@@ -53,7 +53,7 @@ Method(md3b)
 
 // String
 
-Method(md3c)
+Method(md3c,, Serialized)
 {
 	Name(s000, "String")
 	Processor(OOO2, 0, 0xFFFFFFFF, 0) {}
@@ -75,7 +75,7 @@ Method(md3c)
 
 // Buffer
 
-Method(md3d)
+Method(md3d,, Serialized)
 {
 	Name(b000, Buffer() {1,2,3,4})
 	Processor(OOO2, 0, 0xFFFFFFFF, 0) {}
@@ -96,7 +96,7 @@ Method(md3d)
 
 // Package
 
-Method(md3e)
+Method(md3e,, Serialized)
 {
 	Name(pppp, Package(1){Buffer() {1,2,3,4}})
 	Processor(OOO2, 0, 0xFFFFFFFF, 0) {}
@@ -148,7 +148,7 @@ Method(md3e)
 
 // Integer
 
-Method(md3f)
+Method(md3f,, Serialized)
 {
 	Processor(OOO2, 0, 0xFFFFFFFF, 0) {}
 
@@ -164,7 +164,7 @@ Method(md3f)
 
 // String
 
-Method(md40)
+Method(md40,, Serialized)
 {
 	Processor(OOO2, 0, 0xFFFFFFFF, 0) {}
 
@@ -182,7 +182,7 @@ Method(md40)
 
 // Buffer
 
-Method(md41)
+Method(md41,, Serialized)
 {
 	Processor(OOO2, 0, 0xFFFFFFFF, 0) {}
 
@@ -199,7 +199,7 @@ Method(md41)
 
 // Package
 
-Method(md42)
+Method(md42,, Serialized)
 {
 	Processor(OOO2, 0, 0xFFFFFFFF, 0) {}
 

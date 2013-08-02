@@ -67,7 +67,7 @@ Name(OP11, 0x0f00000)	// type of new (re-write) Integer-IDs
  * arg2 - number of children of pkg-node to be actually processed
  * arg3 - index of elements of pkg-nodes of arg0 to be pointed to by ref
  */
-Method(mfdd, 4)
+Method(mfdd, 4, Serialized)
 {
 	Name(ind0, 0)	// cur index of element of arg1-Package where to store ref
 	Name(ind1, 0)
@@ -133,7 +133,7 @@ Method(mfdd, 4)
  * arg2 - index in arg0-pkg-nodes where to store reference
  * arg3 - reference
  */
-Method(mfde, 4)
+Method(mfde, 4, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -195,7 +195,7 @@ Method(mfde, 4)
  * arg2 - number of children of pkg-node to be actually processed
  * arg3 - start index in arg1 where to store references
  */
-Method(mfdf, 4)
+Method(mfdf, 4, Serialized)
 {
 	Name(ind0, 0)
 	Name(num, 0)
@@ -305,7 +305,7 @@ Method(mfdf, 4)
  * arg4 - the value of Integer-ID
  * arg5 - bit-map of operations
  */
-Method(mfe2, 6)
+Method(mfe2, 6, Serialized)
 {
 	/* Index */
 
@@ -413,7 +413,7 @@ Method(mfe3, 3)
  * arg5 - bit-map of operations
  * arg6 - index of Integer-ID in pkg-nodes
  */
-Method(mfe0, 7)
+Method(mfe0, 7, Serialized)
 {
 	Name(ind0, 0)
 	Name(num, 0)
@@ -521,7 +521,7 @@ Method(mfe0, 7)
  * arg4 - bit-map of operations
  * arg5 - index of Integer-ID in pkg-nodes
  */
-Method(mfe1, 6)
+Method(mfe1, 6, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -789,7 +789,7 @@ Method(mfe5, 1)
  *             ===
  *             685
  */
-Method(mfdc)
+Method(mfdc,, Serialized)
 {
 	Name(pr00, 0)
 

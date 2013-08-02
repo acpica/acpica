@@ -27,7 +27,7 @@
  */
 
 
-Method(md05)
+Method(md05,, Serialized)
 {
 	Event(e000)
 	Mutex(mx00, 0)
@@ -114,7 +114,7 @@ Method(md05)
 	}
 }
 
-Method(md06)
+Method(md06,, Serialized)
 {
 	Event(e000)
 	Mutex(mx00, 0)
@@ -188,7 +188,7 @@ Method(md06)
 	}
 }
 
-Method(md68)
+Method(md68,, Serialized)
 {
 	Name(i000, 0xe0385bcd)
 	Event(OOO2)
@@ -243,7 +243,7 @@ Method(md68)
 	}
 }
 
-Method(md69)
+Method(md69,, Serialized)
 {
 	Name(i000, 0xe0385bcd)
 	Device(OOO2) {

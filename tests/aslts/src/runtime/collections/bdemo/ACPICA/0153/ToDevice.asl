@@ -33,7 +33,7 @@
 
 // Integer
 
-Method(md0f)
+Method(md0f,, Serialized)
 {
 	Name(i000, 0xe0385bcd)
 	Device(OOO2) { Name(i900, 0xabcd0017) }
@@ -53,7 +53,7 @@ Method(md0f)
 
 // String
 
-Method(md10)
+Method(md10,, Serialized)
 {
 	Name(s000, "String")
 	Device(OOO2) { Name(i900, 0xabcd0017) }
@@ -75,7 +75,7 @@ Method(md10)
 
 // Buffer
 
-Method(md11)
+Method(md11,, Serialized)
 {
 	Name(b000, Buffer() {1,2,3,4})
 	Device(OOO2) { Name(i900, 0xabcd0017) }
@@ -96,7 +96,7 @@ Method(md11)
 
 // Package
 
-Method(md12)
+Method(md12,, Serialized)
 {
 	Name(pppp, Package(1){Buffer() {1,2,3,4}})
 	Device(OOO2) { Name(i900, 0xabcd0017) }
@@ -148,7 +148,7 @@ Method(md12)
 
 // Integer
 
-Method(md13)
+Method(md13,, Serialized)
 {
 	Device(OOO2) { Name(i900, 0xabcd0017) }
 
@@ -164,7 +164,7 @@ Method(md13)
 
 // String
 
-Method(md14)
+Method(md14,, Serialized)
 {
 	Device(OOO2) { Name(i900, 0xabcd0017) }
 
@@ -182,7 +182,7 @@ Method(md14)
 
 // Buffer
 
-Method(md15)
+Method(md15,, Serialized)
 {
 	Device(OOO2) { Name(i900, 0xabcd0017) }
 
@@ -199,7 +199,7 @@ Method(md15)
 
 // Package
 
-Method(md16)
+Method(md16,, Serialized)
 {
 	Device(OOO2) { Name(i900, 0xabcd0017) }
 

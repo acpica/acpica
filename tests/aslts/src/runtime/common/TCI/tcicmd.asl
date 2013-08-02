@@ -247,7 +247,7 @@ Method(m3a1, 2)
  * arg0 - Memory Consumption Statistics Package
  * arg1 - opcode of the tittle message
  */
-Method(m3a2, 2)
+Method(m3a2, 2, Serialized)
 {
 	if (LEqual(arg1, 0)) {
 		Store("==== _TCI-end statistics", Debug)
@@ -327,7 +327,7 @@ Method(m3a2, 2)
  * arg1 - Package of _TCI-begin statistics
  * arg2 - Package for _TCI-end-begin difference
  */
-Method(m3a3, 3)
+Method(m3a3, 3, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -383,7 +383,7 @@ Method(m3a3, 3)
  * - restrict checkings (use flag) by the acq0 & rel0,
  *   and add & del.
  */
-Method(m3a4, 7)
+Method(m3a4, 7, Serialized)
 {
 
 	// Flag of printing
@@ -789,7 +789,7 @@ Method(m3a7, 3)
  * Create and initialize the sample Package for the
  * per-object type benchmark Memory Consumption Statistics
  */
-Method(m3a8)
+Method(m3a8,, Serialized)
 {
 	Name(p000, Package() {
 		0,0,0,0,0,0,0,0,0,0,
@@ -804,7 +804,7 @@ Method(m3a8)
  * Create and initialize the sample Package for the
  * per-memory type benchmark Memory Consumption Statistics
  */
-Method(m3a9)
+Method(m3a9,, Serialized)
 {
 	Name(p000, Package() {0,0,0,0,0,0,0})
 
@@ -823,7 +823,7 @@ Method(m3a9)
  *           0 - check for Optimization is tuned off
  *   otherwise - check for Optimization is tuned on
  */
-Method(m3aa)
+Method(m3aa,, Serialized)
 {
 	Name(i000, 0)
 	Name(p000, Package(1) {})
@@ -883,7 +883,7 @@ Method(m3aa)
  *
  * arg0 - number of threads
  */
-Method(m163, 1)
+Method(m163, 1, Serialized)
 {
 	Name(size, 0)
 

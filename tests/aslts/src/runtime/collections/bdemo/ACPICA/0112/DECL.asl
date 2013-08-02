@@ -37,7 +37,7 @@
 		Stall(arg0)
 	}
 
-	Method(me78)
+	Method(me78,, Serialized)
 	{
 		Name(i000, 0xB)
 		Store(i000, Local0)

@@ -376,7 +376,7 @@ Name (p457, Package() {
     }
 })
 
-Method(RT23)
+Method(RT23,, Serialized)
 {
 	Name(ts, "RT23")
 

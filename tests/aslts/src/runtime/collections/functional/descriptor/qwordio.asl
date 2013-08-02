@@ -664,7 +664,7 @@ Name (p417, Package() {
 		0x0f, 0x79, 0x00},
 })
 
-Method(RT0c)
+Method(RT0c,, Serialized)
 {
 	Name(ts, "RT0c")
 

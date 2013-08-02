@@ -34,7 +34,7 @@
  * ROOT CAUSE
  */
 
-	Method(mf28)
+	Method(mf28,, Serialized)
 	{
 		Name(STR0, "STR0")
 		Name(STR1, "STR1")

@@ -75,7 +75,7 @@ Name (p451, Package() {
 	Buffer () {0x55, 0x82, 0x81, 0xD7, 0x11, 0x02, 0x79, 0x00},
 })
 
-Method(RT20)
+Method(RT20,, Serialized)
 {
 	Name(ts, "RT20")
 

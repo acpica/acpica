@@ -32,7 +32,7 @@
  * SUMMARY: The ObjectType operator being passed with the IRef to the Uninitialized element of Package causes crash
  */
 
-	Method(me68)
+	Method(me68,, Serialized)
 	{
 		Store("Start of test", Debug)
 

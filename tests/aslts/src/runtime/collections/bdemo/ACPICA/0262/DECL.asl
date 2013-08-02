@@ -32,7 +32,7 @@
  * SUMMARY: Unexpected AE_STACK_OVERFLOW for a method call expression with nested calls
  */
 
-Method(m027)
+Method(m027,, Serialized)
 {
 	Name(iad1, 0x1)
 	Name(iad2, 0x10)

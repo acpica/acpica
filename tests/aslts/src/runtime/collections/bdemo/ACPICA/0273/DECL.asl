@@ -58,7 +58,7 @@ Name(PPST, "\\PLDT")
 External(\_XT2)
 External(\D273._XT2)
 
-Method(mc73)
+Method(mc73,, Serialized)
 {
 	Name(DDBH, 0)
 

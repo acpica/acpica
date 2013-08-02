@@ -54,7 +54,7 @@ Name(z177, 177)
  *   m300  2, 6,10  12,16,20  24,28,32  34,38,42
  *   m400  3, 4, 5   7, 8, 9  13,14,15  17,18,19  25,26,27  29,30,31  35,36,37  39,40,41
  */
-Method(m0ef)
+Method(m0ef,, Serialized)
 {
 	Name(ts, "m0ef")
 
@@ -104,13 +104,13 @@ Method(m0ef)
 
 	Name(c000, 3)
 
-	Method(m100)
+	Method(m100,, Serialized)
 	{
 		Name(c100, 3)
-		Method(m200)
+		Method(m200,, Serialized)
 		{
 			Name(c200, 3)
-			Method(m300)
+			Method(m300,, Serialized)
 			{
 				Name(c300, 3)
 				Method(m400)
@@ -175,7 +175,7 @@ Method(m0ef)
  * The same hierarchy of recursive calls like m0ef
  * but more checkings added.
  */
-Method(m0fb)
+Method(m0fb,, Serialized)
 {
 	Name(ts, "m0fb")
 
@@ -451,7 +451,7 @@ Method(m0fb)
  * The same hierarchy of recursive calls like m0ef
  * but deeper.
  */
-Method(m0ff, 1)
+Method(m0ff, 1, Serialized)
 {
 	Name(ts, "m0ff")
 
@@ -503,19 +503,19 @@ Method(m0ff, 1)
 
 	Name(c000, 3)
 
-	Method(m100)
+	Method(m100,, Serialized)
 	{
 		Name(c100, 3)
-		Method(m200)
+		Method(m200,, Serialized)
 		{
 			Name(c200, 3)
-			Method(m300)
+			Method(m300,, Serialized)
 			{
 				Name(c300, 3)
-				Method(m400)
+				Method(m400,, Serialized)
 				{
 					Name(c400, 3)
-					Method(m500)
+					Method(m500,, Serialized)
 					{
 						Name(c500, 4)
 						Method(m600)
@@ -612,7 +612,7 @@ Method(m0ff, 1)
  * works well (no exceptions) in case it has none either internal objects
  * (including Methods) or Switches.
  */
-Method(m18a, 1)
+Method(m18a, 1, Serialized)
 {
 	Name(ts, "m18a")
 
@@ -888,7 +888,7 @@ Method(m18a, 1)
 /*
  * The same as m18a the level of Serialized methods is non-zero (7 level all)
  */
-Method(m18b, 1)
+Method(m18b, 1, Serialized)
 {
 	Name(ts, "m18b")
 	Name(i000, 0)
@@ -1179,7 +1179,7 @@ Method(m18b, 1)
  * No internal objects in Serialized method (including Methods and Switches),
  * so no exceptions are expected on recursive calls.
  */
-Method(m18d)
+Method(m18d,, Serialized)
 {
 	Name(ts, "m18d")
 
@@ -1199,7 +1199,7 @@ Method(m18d)
  * Serialized method has internal object (Named Integer),
  * so AE_ALREADY_EXISTS exception is expected on recursive call.
  */
-Method(m18e)
+Method(m18e,, Serialized)
 {
 	Name(ts, "m18e")
 
@@ -1225,7 +1225,7 @@ Method(m18e)
  * Serialized method has internal Switch,
  * so AE_ALREADY_EXISTS exception is expected on recursive call.
  */
-Method(m18f)
+Method(m18f,, Serialized)
 {
 	Name(ts, "m18f")
 
@@ -1255,7 +1255,7 @@ Method(m18f)
  * Serialized method has internal declaration of Method,
  * so AE_ALREADY_EXISTS exception is expected on recursive call.
  */
-Method(m19a)
+Method(m19a,, Serialized)
 {
 	Name(ts, "m19a")
 
@@ -1281,7 +1281,7 @@ Method(m19a)
  * Serialized method has internal declaration of Device,
  * so AE_ALREADY_EXISTS exception is expected on recursive call.
  */
-Method(m19b)
+Method(m19b,, Serialized)
 {
 	Name(ts, "m19b")
 
@@ -1308,7 +1308,7 @@ Method(m19b)
  * Exceptions are expected.
  * Now we have crash there.
  */
-Method(m19c)
+Method(m19c,, Serialized)
 {
 	Name(ts, "m19c")
 
@@ -1424,11 +1424,11 @@ Method(m19c)
 /*
  * Non-Serialized method has full-path declaration
  */
-Method(m19d)
+Method(m19d,, Serialized)
 {
 	Name(ts, "m19d")
 
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		Name(\i2z0, 0xabcd0000)
 
@@ -1471,7 +1471,7 @@ Method(m19d)
 /*
  * Serialized method has full-path declaration
  */
-Method(m19e)
+Method(m19e,, Serialized)
 {
 	Name(ts, "m19e")
 
@@ -1519,11 +1519,11 @@ Method(m19e)
  * Non-Serialized method has full-path declaration,
  * so AE_ALREADY_EXISTS exception is expected on recursive call.
  */
-Method(m19f)
+Method(m19f,, Serialized)
 {
 	Name(ts, "m19f")
 
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		Name(\i2z2, 0xabcd0002)
 
@@ -1541,7 +1541,7 @@ Method(m19f)
  * Serialized method has full-path declaration,
  * so AE_ALREADY_EXISTS exception is expected on recursive call.
  */
-Method(m1b8)
+Method(m1b8,, Serialized)
 {
 	Name(ts, "m1b8")
 
@@ -1568,11 +1568,11 @@ Method(m1b8)
 /*
  * Non-Serialized method has Scope declaration
  */
-Method(m1b9)
+Method(m1b9,, Serialized)
 {
 	Name(ts, "m1b9")
 
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		Scope(\_SB) { Name(i2z4, 0xabcd0004) }
 	}
@@ -1586,7 +1586,7 @@ Method(m1b9)
  * Serialized method has Scope declaration,
  * so AE_ALREADY_EXISTS exception is expected on recursive call.
  */
-Method(m1ba)
+Method(m1ba,, Serialized)
 {
 	Name(ts, "m1ba")
 
@@ -1604,11 +1604,11 @@ Method(m1ba)
  * Non-Serialized method has Scope declaration,
  * so AE_ALREADY_EXISTS exception is expected on recursive call.
  */
-Method(m1bb)
+Method(m1bb,, Serialized)
 {
 	Name(ts, "m1bb")
 
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		Scope(\_SB) { Name(i2z6, 0xabcd0006) }
 
@@ -1626,7 +1626,7 @@ Method(m1bb)
  * Serialized method has Scope declaration,
  * so AE_ALREADY_EXISTS exception is expected on recursive call.
  */
-Method(m1bc)
+Method(m1bc,, Serialized)
 {
 	Name(ts, "m1bc")
 
@@ -1648,11 +1648,11 @@ Method(m1bc)
  * Non-Serialized method declares full-path name on first call,
  * and allows proper access for the second recursive call too.
  */
-Method(m1bd)
+Method(m1bd,, Serialized)
 {
 	Name(ts, "m1bd")
 
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		if (LNot(arg0)) {
 
@@ -1725,7 +1725,7 @@ Method(m1bd)
  * Serialized method declares full-path name on first call,
  * and allows proper access for the second recursive call too.
  */
-Method(m1be)
+Method(m1be,, Serialized)
 {
 	Name(ts, "m1be")
 
@@ -1802,7 +1802,7 @@ Method(m1be)
  * Non-Serialized method provides access to the upper level named object,
  * for the second recursive call too.
  */
-Method(m1de)
+Method(m1de,, Serialized)
 {
 	Name(ts, "m1de")
 	Name(i3z0, 0xabcd0000)
@@ -1854,7 +1854,7 @@ Method(m1de)
  * Serialized method provides access to the upper level named object,
  * for the second recursive call too.
  */
-Method(m1df)
+Method(m1df,, Serialized)
 {
 	Name(ts, "m1df")
 	Name(i3z0, 0xabcd0000)
@@ -1906,11 +1906,11 @@ Method(m1df)
  * Non-Serialized method declares full-path name on first call,
  * and allows proper access for the second recursive call too.
  */
-Method(m1ee)
+Method(m1ee,, Serialized)
 {
 	Name(ts, "m1ee")
 
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		if (LNot(arg0)) {
 			Name(\_SB.i0q8, 0xabcd0008)
@@ -1957,7 +1957,7 @@ Method(m1ee)
  * Serialized method declares full-path name on first call,
  * and allows proper access for the second recursive call too.
  */
-Method(m1ef)
+Method(m1ef,, Serialized)
 {
 	Name(ts, "m1ef")
 
@@ -2011,11 +2011,11 @@ Method(m1ef)
  * Non-Serialized method declares Scope(\_SB) on first call,
  * and allows proper access for the second recursive call too.
  */
-Method(m1bf)
+Method(m1bf,, Serialized)
 {
 	Name(ts, "m1bf")
 
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		if (LNot(arg0)) {
 
@@ -2064,7 +2064,7 @@ Method(m1bf)
  * Serialized method declares Scope(\_SB) on first call,
  * and allows proper access for the second recursive call too.
  */
-Method(m1dd)
+Method(m1dd,, Serialized)
 {
 	Name(ts, "m1dd")
 
@@ -2118,11 +2118,11 @@ Method(m1dd)
  * Non-Serialized method declares Scope(\) on first call,
  * and allows proper access for the second recursive call too.
  */
-Method(m277)
+Method(m277,, Serialized)
 {
 	Name(ts, "m277")
 
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		if (LNot(arg0)) {
 
@@ -2195,7 +2195,7 @@ Method(m277)
  * Serialized method declares Scope(\) on first call,
  * and allows proper access for the second recursive call too.
  */
-Method(m27d)
+Method(m27d,, Serialized)
 {
 	Name(ts, "m27d")
 

@@ -95,7 +95,7 @@ Name(p355, Package()
 	0x9999999999999999,
 })
 
-Method(BCD1)
+Method(BCD1,, Serialized)
 {
 	Name(ts, "BCD1")
 
@@ -109,7 +109,7 @@ Method(BCD1)
 	}
 }
 
-Method(BCD2)
+Method(BCD2,, Serialized)
 {
 	Name(ts, "BCD2")
 

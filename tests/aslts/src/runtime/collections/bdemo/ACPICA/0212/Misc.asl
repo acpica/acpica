@@ -44,7 +44,7 @@
  * - RefOf AML operation
  */
 
-Method(m806)
+Method(m806,, Serialized)
 {
 	Name(p000, Package(64) {})
 	Name(p001, Package(64) {})
@@ -75,7 +75,7 @@ Method(m806)
 	m001()
 }
 
-Method(m807)
+Method(m807,, Serialized)
 {
 	Name(p000, Package(64) {})
 	Name(p001, Package(64) {})
@@ -319,7 +319,7 @@ Method(m807)
 		Store(Index(arg0, 3), arg5)
 	}
 
-	Method(m006)
+	Method(m006,, Serialized)
 	{
 		Name(p000, Package(8) {})
 		Name(p001, Package(8) {})
@@ -350,19 +350,19 @@ Method(m807)
 	m006()
 }
 
-Method(m80f)
+Method(m80f,, Serialized)
 {
 
 	Name(ig00, 0xabcd0001)
 	Name(ir00, 0xabcd0002)
 
-	Method(m000)
+	Method(m000,, Serialized)
 	{
 		Name(i000, 0xabcd0003)
 		CopyObject(RefOf(i000), ir00)
 	}
 
-	Method(m001, 1)
+	Method(m001, 1, Serialized)
 	{
 		Name(iii0, 0xabcd0004)
 		Name(iii1, 0xabcd0005)
@@ -382,7 +382,7 @@ Method(m80f)
 	m001(0xabcd0003)
 }
 
-Method(m810)
+Method(m810,, Serialized)
 {
 	Name(p000, Package(4) {0,1,2,3})
 
@@ -394,7 +394,7 @@ Method(m810)
 	m000()
 }
 
-Method(m811)
+Method(m811,, Serialized)
 {
 	Name(p000, Package(4) {0,1,2,3})
 

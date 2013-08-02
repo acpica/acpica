@@ -34,7 +34,7 @@
 
 Name(z137, 137)
 
-Method(mf6f)
+Method(mf6f,, Serialized)
 {
 	Name(fl00, 0)
 	Name(i000, 0xabcd0000)
@@ -138,7 +138,7 @@ Method(mf6f)
 		Return
 	}
 
-	Method(m007)
+	Method(m007,, Serialized)
 	{
 		Name(i000, 0)
 		Name(num, 0)

@@ -71,7 +71,7 @@ Field(OPRk, ByteAcc, NoLock, Preserve) {
 	fk28, 128,
 }
 
-Method(m770, 1)
+Method(m770, 1, Serialized)
 {
 	Field(OPRk, ByteAcc, NoLock, Preserve) {
 		idx0, 8,
@@ -163,7 +163,7 @@ Method(m770, 1)
 }
 
 // Access to 1-bit IndexFields, ByteAcc
-Method(m771, 1)
+Method(m771, 1, Serialized)
 {
 	Concatenate(arg0, "-m771", arg0)
 
@@ -199,7 +199,7 @@ Method(m771, 1)
 }
 
 // Access to 1-bit IndexFields, WordAcc
-Method(m772, 1)
+Method(m772, 1, Serialized)
 {
 	Concatenate(arg0, "-m772", arg0)
 
@@ -227,7 +227,7 @@ Method(m772, 1)
 }
 
 // Access to 1-bit IndexFields, DWordAcc
-Method(m773, 1)
+Method(m773, 1, Serialized)
 {
 	Concatenate(arg0, "-m773", arg0)
 
@@ -269,7 +269,7 @@ Method(m773, 1)
 }
 
 // Access to 1-bit IndexFields, QWordAcc
-Method(m774, 1)
+Method(m774, 1, Serialized)
 {
 	Concatenate(arg0, "-m774", arg0)
 
@@ -373,7 +373,7 @@ Method(m77e, 7)
 
 // Splitting of IndexFields
 // m775(CallChain)
-Method(m775, 1)
+Method(m775, 1, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 1000, 0x08)
 
@@ -396,7 +396,7 @@ Method(m775, 1)
 // Create IndexFields that spans the same bits
 // and check possible inconsistence, 0-bit offset.
 // m780(CallChain, OpRegion)
-Method(m780, 2)
+Method(m780, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0x100, 0x08)
 
@@ -456,7 +456,7 @@ Method(m780, 2)
 // Create IndexFields that spans the same bits
 // and check possible inconsistence, 1-bit offset.
 // m781(CallChain, OpRegion)
-Method(m781, 2)
+Method(m781, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x08)
 
@@ -516,7 +516,7 @@ Method(m781, 2)
 // Create IndexFields that spans the same bits
 // and check possible inconsistence, 2-bit offset.
 // m782(CallChain, OpRegion)
-Method(m782, 2)
+Method(m782, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x08)
 
@@ -576,7 +576,7 @@ Method(m782, 2)
 // Create IndexFields that spans the same bits
 // and check possible inconsistence, 3-bit offset.
 // m783(CallChain, OpRegion)
-Method(m783, 2)
+Method(m783, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x08)
 
@@ -636,7 +636,7 @@ Method(m783, 2)
 // Create IndexFields that spans the same bits
 // and check possible inconsistence, 4-bit offset.
 // m784(CallChain, OpRegion)
-Method(m784, 2)
+Method(m784, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x08)
 
@@ -696,7 +696,7 @@ Method(m784, 2)
 // Create IndexFields that spans the same bits
 // and check possible inconsistence, 5-bit offset.
 // m785(CallChain, OpRegion)
-Method(m785, 2)
+Method(m785, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x08)
 
@@ -756,7 +756,7 @@ Method(m785, 2)
 // Create IndexFields that spans the same bits
 // and check possible inconsistence, 6-bit offset.
 // m786(CallChain, OpRegion)
-Method(m786, 2)
+Method(m786, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x08)
 
@@ -816,7 +816,7 @@ Method(m786, 2)
 // Create IndexFields that spans the same bits
 // and check possible inconsistence, 7-bit offset.
 // m787(CallChain, OpRegion)
-Method(m787, 2)
+Method(m787, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x08)
 
@@ -876,7 +876,7 @@ Method(m787, 2)
 // Create IndexFields that spans the same bits
 // and check possible inconsistence, 8-bit offset.
 // m788(CallChain, OpRegion)
-Method(m788, 2)
+Method(m788, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x08)
 
@@ -936,7 +936,7 @@ Method(m788, 2)
 // Create IndexFields that spans the same bits
 // and check possible inconsistence, 2046-bit offset.
 // m789(CallChain, OpRegion)
-Method(m789, 2)
+Method(m789, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x08)
 
@@ -10381,7 +10381,7 @@ BreakPoint
 }
 
 // Run-method
-Method(IFC0)
+Method(IFC0,, Serialized)
 {
 	Name(ts, "IFC0")
 

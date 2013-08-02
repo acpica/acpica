@@ -362,7 +362,7 @@ Method(m311, 6)
  * Reset all counters (cnt0) and flags (fl00)
  * corresponding to all Mutexes.
  */
-Method(m330)
+Method(m330,, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -565,7 +565,7 @@ Method(m334, 6)
  * arg4 - expected value of counter
  * arg5 - exceptional conditions flags (buffer/Integer)
  */
-Method(m337, 6)
+Method(m337, 6, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -769,7 +769,7 @@ Method(m33e, 3)
  *              number of hanging threads expected to wake up
  *              after some command of arg1 will be executed.
  */
-Method(m33f, 7)
+Method(m33f, 7, Serialized)
 {
 	Name(nth0, 0) // total
 	Name(nth1, 0) // actually in work
@@ -851,7 +851,7 @@ Method(m33f, 7)
  * arg3 - Levels of mutexes (see m33f)
  * arg4 - Indexes of mutexes (see m33f)
  */
-Method(m340, 5)
+Method(m340, 5, Serialized)
 {
 	Name(has0, 0)
 	Name(has1, 0) // has non-zero exception expectations
@@ -1054,7 +1054,7 @@ Method(m341, 4)
  *   non-zero - element of buffer means the last command
  *              specified for the relevant thread.
  */
-Method(m342, 3)
+Method(m342, 3, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -1105,7 +1105,7 @@ Method(m342, 3)
  *   0        - the relevant thread is non-idle
  *   non-zero - the relevant thread is idle
  */
-Method(m343, 4)
+Method(m343, 4, Serialized)
 {
 	Name(err0, 0)
 	Name(idle, 0)
@@ -1152,7 +1152,7 @@ Method(m343, 4)
  * arg0 - Expected completion statuses (see m33f).
  * arg1 - Expected hang       statuses (see m33f).
  */
-Method(m344, 2)
+Method(m344, 2, Serialized)
 {
 	Name(int0, 0)
 	Name(int1, 0)
@@ -1216,7 +1216,7 @@ Method(m336, 2)
 }
 
 /* Init fl01 */
-Method(m339)
+Method(m339,, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)

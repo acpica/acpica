@@ -40,7 +40,7 @@
 
 // Access to the named Integer object as an element of Package
 
-Method(mf80)
+Method(mf80,, Serialized)
 {
 	Name(i000, 0xaaaa0000)
 	Name(p000, Package() {i000})
@@ -84,7 +84,7 @@ Method(mf80)
 	CH04("", 0, 47, 0, 0x006, 0, 0) // AE_AML_OPERAND_TYPE
 }
 
-Method(mf81)
+Method(mf81,, Serialized)
 {
 	Name(ii00, 0)
 	Name(ii01, 0)
@@ -137,7 +137,7 @@ Method(mf81)
 	CH04("", 0, 47, 0, 0x00d, 0, 0) // AE_AML_OPERAND_TYPE
 }
 
-Method(mf82)
+Method(mf82,, Serialized)
 {
 	Name(ii00, 0)
 	Name(ii01, 0)

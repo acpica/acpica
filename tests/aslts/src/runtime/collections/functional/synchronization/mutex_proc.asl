@@ -46,7 +46,7 @@ Name(im00, 0)
  *
  * arg0 - number of mutexes to Acquire (use not less than 1)
  */
-Method(m36d, 1)
+Method(m36d, 1, Serialized)
 {
     Name(ts, "m36d")
 
@@ -441,7 +441,7 @@ Method(m388, 3, Serialized)
  *        condition on each Acquire. The non-zero value
  *        means the opcode of exception.
  */
-Method(m38b, 4)
+Method(m38b, 4, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -482,7 +482,7 @@ Method(m38b, 4)
  *        condition on each Acquire. The non-zero value
  *        means the opcode of exception.
  */
-Method(m38c, 4)
+Method(m38c, 4, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -529,7 +529,7 @@ Method(m38c, 4)
  * arg5 - repetition number
  * arg6 - opcode of TimeOutValue (see comment to ma00)
  */
-Method(m088, 7)
+Method(m088, 7, Serialized)
 {
 	Name(lpN0, 0) // level
 	Name(lpC0, 0)
@@ -612,7 +612,7 @@ Method(m088, 7)
  *   22 - 0132 (direct + replace the last index, it becomes index 2)
  *   23 - 3102 (inverse + replace the last index, it becomes index 2)
  */
-Method(m089, 7)
+Method(m089, 7, Serialized)
 {
 	Name(lpN0, 0) // level
 	Name(lpC0, 0)

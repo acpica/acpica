@@ -44,7 +44,7 @@ Name(i100, 0xabcd1234)
 // that the product should distinguish Integer Data
 // from a reference.
 //
-Method(m4b1, 1)
+Method(m4b1, 1, Serialized)
 {
 	Name(ts, "m4b1")
 
@@ -53,7 +53,7 @@ Method(m4b1, 1)
 	Event(e000)
 
 	// Local Named Object
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		Name(i000, 0x89abcdef)
 
@@ -209,7 +209,7 @@ Method(m4b1, 1)
 	}
 
 	// An element of Package
-	Method(m004, 1)
+	Method(m004, 1, Serialized)
 	{
 		Name(p000, Package(){0x89abcdef})
 
@@ -264,7 +264,7 @@ Method(m4b1, 1)
 	}
 
 	// Result of Method invocation
-	Method(m006, 1)
+	Method(m006, 1, Serialized)
 	{
 		Name(i000, 0) // Label to check m000 invocations
 
@@ -326,7 +326,7 @@ Method(m4b1, 1)
 	}
 
 	// Reference to Object as Result of Method invocation
-	Method(m007, 1)
+	Method(m007, 1, Serialized)
 	{
 		Name(i000, 0x89abcdef)
 

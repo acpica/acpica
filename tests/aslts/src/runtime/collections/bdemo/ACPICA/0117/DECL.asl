@@ -32,7 +32,7 @@
  * SUMMARY: Modifying the copy of the String obtained by the Store operator modifies the initial String Object also
  */
 
-	Method(me88)
+	Method(me88,, Serialized)
 	{
 		Name(s000, "String")
 

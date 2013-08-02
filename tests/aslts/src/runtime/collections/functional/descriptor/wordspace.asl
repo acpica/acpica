@@ -344,7 +344,7 @@ Name (p431, Package() {
 		0x0f, 0x79, 0x00},
 })
 
-Method(RT16)
+Method(RT16,, Serialized)
 {
 	Name(ts, "RT16")
 

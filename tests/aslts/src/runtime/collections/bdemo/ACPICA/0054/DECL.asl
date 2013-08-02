@@ -37,7 +37,7 @@
  * Buffer type objects are passed immediately.
  */
 
-Method(mddf)
+Method(mddf,, Serialized)
 {
 	Name(b000, Buffer() {0x79, 0x00})
 	Name(b001, Buffer() {0x79, 0x00})
@@ -50,7 +50,7 @@ Method(mddf)
 
 // ConcatenateResTemplate
 
-Method(mde0)
+Method(mde0,, Serialized)
 {
 	Name(b000, Buffer() {0x79, 0x00})
 
@@ -75,7 +75,7 @@ Method(mde1)
 
 // LEqual
 
-Method(mde2)
+Method(mde2,, Serialized)
 {
 	Name(b000, Buffer() {0x79})
 
@@ -100,7 +100,7 @@ Method(mde3)
 
 // LGreater
 
-Method(mde4)
+Method(mde4,, Serialized)
 {
 	Name(b000, Buffer() {0x79})
 
@@ -127,7 +127,7 @@ Method(mde5)
 
 // Concatenate
 
-Method(mde6)
+Method(mde6,, Serialized)
 {
 	Name(b000, Buffer() {0x79})
 
@@ -152,7 +152,7 @@ Method(mde7)
 
 // Add
 
-Method(mde8)
+Method(mde8,, Serialized)
 {
 	Name(b000, Buffer() {0x79})
 

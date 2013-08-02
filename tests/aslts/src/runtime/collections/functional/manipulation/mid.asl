@@ -253,7 +253,7 @@ Name(p368, Package()
 })
 
 // Run-method
-Method(MID0)
+Method(MID0,, Serialized)
 {
 	Name(ts, "MID0")
 

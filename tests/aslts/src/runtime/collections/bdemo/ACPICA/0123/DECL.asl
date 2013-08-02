@@ -32,7 +32,7 @@
  * SUMMARY: No exception when StartIndex in Match operator is equal to or greater than the size of SourcePackage
  */
 
-	Method(mf05)
+	Method(mf05,, Serialized)
 	{
 		Name(p000, Package(2){0, 1})
 

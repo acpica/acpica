@@ -32,7 +32,7 @@
  * SUMMARY: The sequence of evaluating Named object operands passed to method is violated
  */
 
-Method(m022)
+Method(m022,, Serialized)
 {
 	Name(i000, 0x00000001)
 	Name(i001, 0)

@@ -32,7 +32,7 @@
 
 Name(z178, 178)
 
-Method(m0fc, 1)
+Method(m0fc, 1, Serialized)
 {
 	Name(ts, "m0fc")
 
@@ -372,7 +372,7 @@ Method(m0fc, 1)
 	}
 }
 
-Method(m0fe, 1)
+Method(m0fe, 1, Serialized)
 {
 	Name(ts, "m0fe")
 

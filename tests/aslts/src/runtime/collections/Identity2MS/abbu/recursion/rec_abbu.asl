@@ -43,7 +43,7 @@ Processor(pr00, 0, 0x000, 0x008)
 
 Name(i000, 0)
 
-Method(mr00)
+Method(mr00,, Serialized)
 {
 	Name(ts, "mr00")
 
@@ -56,7 +56,7 @@ Method(mr00)
 	Device(d101)
 	{
 		Name(i202, 0xabcd0202)
-		Method(m203)
+		Method(m203,, Serialized)
 		{
 			Name(i300, 0xabcd0300)
 			Name(i301, 0xabcd0301)
@@ -91,7 +91,7 @@ Method(mr01)
 */
 }
 
-Method(mrff)
+Method(mrff,, Serialized)
 {
 	Name(run0, 1)
 

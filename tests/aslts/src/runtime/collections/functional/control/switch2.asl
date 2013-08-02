@@ -51,7 +51,7 @@ Name(TMAX, 36)
 Name(b0sw, Buffer(TMAX) {})
 
 // Put value to all elements of buffer
-Method(m0c1, 1)
+Method(m0c1, 1, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -222,7 +222,7 @@ Method(m0c0)
 }
 
 // Run-method
-Method(SW02)
+Method(SW02,, Serialized)
 {
 	Store("TEST: SW02, Switch, Case, Default operators", Debug)
 
@@ -525,7 +525,7 @@ Method(m0c2)
 }
 
 // Run-method
-Method(SW03)
+Method(SW03,, Serialized)
 {
 	Store("TEST: SW03, Switch, Case, Default operators", Debug)
 
@@ -883,7 +883,7 @@ Method(m0c3)
 }
 
 // Run-method
-Method(SW04)
+Method(SW04,, Serialized)
 {
 	Store("TEST: SW04, Switch, Case, Default operators", Debug)
 
@@ -1256,7 +1256,7 @@ Method(m0c4, 1)
 }
 
 // Run-method
-Method(SW05)
+Method(SW05,, Serialized)
 {
 	Store("TEST: SW05, Switch, Case, Default operators", Debug)
 
@@ -1589,7 +1589,7 @@ Method(m0c5)
 }
 
 // Run-method
-Method(SW06)
+Method(SW06,, Serialized)
 {
 	Store("TEST: SW06, Switch, Case, Default operators", Debug)
 

@@ -508,7 +508,7 @@ Name (p42d, Package() {
 		0x0f, 0x79, 0x00},
 })
 
-Method(RT14)
+Method(RT14,, Serialized)
 {
 	Name(ts, "RT14")
 

@@ -128,7 +128,7 @@ Method(m309, 3)	// ts, indbuf, err
 }
 
 // Check all positions of null character (0-200)
-Method(m30a, 1)
+Method(m30a, 1, Serialized)
 {
 	Name(LENS, Buffer() {200, 199, 129, 128, 127, 9, 8, 7, 1, 0})
 
@@ -195,7 +195,7 @@ Method(m333, 1)
 // Check Buffer->Length effective condition.
 // Don't put null characters. Check the surrounding
 // control buffers are safe.
-Method(m30b, 1)
+Method(m30b, 1, Serialized)
 {
 	Name(Loc8, 0)
 
@@ -251,7 +251,7 @@ Method(m30b, 1)
 
 // Check zero length buffer, and, in passing,
 // dynamically allocated buffers.
-Method(m30c, 1)
+Method(m30c, 1, Serialized)
 {
 	Name(LENS, Buffer() {200, 199, 1, 0})
 
@@ -301,7 +301,7 @@ Method(m30c, 1)
 }
 
 // Run-method
-Method(TOS0)
+Method(TOS0,, Serialized)
 {
 	Name(ts, "TOS0")
 

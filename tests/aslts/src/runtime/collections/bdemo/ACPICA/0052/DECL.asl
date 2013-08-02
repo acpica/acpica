@@ -32,7 +32,7 @@
  * SUMMARY: The EdgeLevel offset of Interrupt macro (_HE) is specified as 25-th bit but actually it is implemented as 24-th bit
  */
 
-Method(mddd)
+Method(mddd,, Serialized)
 {
 	Name(RT00,
 		ResourceTemplate () {

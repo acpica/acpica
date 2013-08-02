@@ -32,7 +32,7 @@
  * SUMMARY: In ConcatenateResTemplate an operand ending only with the first byte of the end tag doesn't cause a run-time error
  */
 
-Method(mf7e)
+Method(mf7e,, Serialized)
 {
 	Name(RT00, ResourceTemplate () {IRQNoFlags () {1}})
 

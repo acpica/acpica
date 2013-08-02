@@ -32,7 +32,7 @@
  * SUMMARY: Alternating access to OpRegions of different Address Spaces issue
  */
 
-Method(m10a)
+Method(m10a,, Serialized)
 {
 	Method(CHCK, 3)
 	{

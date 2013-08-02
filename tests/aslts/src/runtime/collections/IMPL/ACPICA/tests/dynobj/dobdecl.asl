@@ -33,7 +33,7 @@
 Name(z130, 130)
 
 // Check declarations
-Method(m373)
+Method(m373,, Serialized)
 {
 	// The Created Objects benchmark Package
 	Name(pp00, Package(1) {})

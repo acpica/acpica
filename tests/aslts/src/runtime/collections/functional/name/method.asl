@@ -179,7 +179,7 @@ Method(m205, 4)
 }
 
 // Check that Results of the Methods are equal each other
-Method(m209, 4)
+Method(m209, 4, Serialized)
 {
 	Name(MMM0, 0)
 	Name(MMM1, 0)
@@ -224,7 +224,7 @@ Scope(\_SB){
 	Method(m206){}
 }
 
-Method(m207)
+Method(m207,, Serialized)
 {
 	Name(ts, "m207")
 
@@ -614,7 +614,7 @@ Method(m207)
 		m205(ts, 128, mm01(), INT0)
 	}
 
-	Method(m245)
+	Method(m245,, Serialized)
 	{
 		Name(Flag, Ones)
 
@@ -833,7 +833,7 @@ Method(m207)
 	}
 
 	// UnSerialized Method can be invoked recursively
-	Method(m246)
+	Method(m246,, Serialized)
 	{
 		Name(i000, 0)
 
@@ -858,7 +858,7 @@ Method(m207)
 	}
 
 	// Serialized Method can be invoked recursively
-	Method(m247)
+	Method(m247,, Serialized)
 	{
 		Name(i000, 0)
 
@@ -884,7 +884,7 @@ Method(m207)
 
 	// Serialized Method can invoke another Serialized One
 	// if SyncLevel is not lowered
-	Method(m248)
+	Method(m248,, Serialized)
 	{
 		Name(i000, 0)
 
@@ -913,7 +913,7 @@ Method(m207)
 
 	// Serialized Method can acquire an Mutex
 	// if SyncLevel is not lowered
-	Method(m249)
+	Method(m249,, Serialized)
 	{
 		Mutex(MTX0, 15)
 		Name(i000, 0)
@@ -942,7 +942,7 @@ Method(m207)
 
 	// When Serialized Method calls another one then
 	// the last can acquire an Mutex if SyncLevel is not lowered
-	Method(m24a)
+	Method(m24a,, Serialized)
 	{
 		Mutex(MTX1, 15)
 		Name(i000, 0)
@@ -976,7 +976,7 @@ Method(m207)
 
 	// UnSerialized Method acquiring an Mutex can invoke
 	// another Serialized One if SyncLevel is not lowered
-	Method(m24b)
+	Method(m24b,, Serialized)
 	{
 		Mutex(MTX0, 0)
 		Name(i000, 0)
@@ -1011,7 +1011,7 @@ Method(m207)
 	// When UnSerialized Method acquiring an Mutex invokes
 	// another Serialized One then the last can release the
 	// Mutex if Mutex's SyncLevel is not lower than the Method's
-	Method(m24c)
+	Method(m24c,, Serialized)
 	{
 		Mutex(MTX0, 0)
 		Name(i000, 0)

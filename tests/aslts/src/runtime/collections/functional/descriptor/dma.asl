@@ -177,7 +177,7 @@ Name (p405, Package() {
 	Buffer () {0x2a, 0x20, 0x64, 0x79, 0x00},
 })
 
-Method(RT03)
+Method(RT03,, Serialized)
 {
 	Name(ts, "RT03")
 

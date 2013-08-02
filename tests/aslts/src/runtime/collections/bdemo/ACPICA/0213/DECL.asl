@@ -40,7 +40,7 @@
 
 Method(m81b)
 {
-	Method(m000)
+	Method(m000,, Serialized)
 	{
 		Name(s000, "string")
 		Name(p000, Package(){s000})

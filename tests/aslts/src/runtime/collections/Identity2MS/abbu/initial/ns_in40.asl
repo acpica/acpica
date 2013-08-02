@@ -515,7 +515,7 @@ Method(mI07, 7) {
 	Return (arg0)
 }
 
-Method(in40, 7)
+Method(in40, 7, Serialized)
 {
 	Name(ts, "in40")
 
@@ -524,12 +524,12 @@ Method(in40, 7)
 	Name(s001, "abcd0800")
 	Name(b000, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
 	Name(p000, Package() {0xabcd0901, 0xabcd0902, 0xabcd0903})
-	Method(mmm0) {
+	Method(mmm0,, Serialized) {
 		Name(im00, 0xabcd0004)
 		Name(sm00, "qwertyui")
 		// Return ( "qwertyui" )
 	}
-	Method(mmm1) {
+	Method(mmm1,, Serialized) {
 		Name(im00, 0xabcd0004)
 		Name(sm00, "qwertyui")
 		// Return ( 0xabcd0004 )
@@ -1869,18 +1869,18 @@ Method(in40, 7)
 	} // if (chk0)
 }
 
-Method(in41, 7)
+Method(in41, 7, Serialized)
 {
 	Name(ts, "in41")
 
 	Event(e000)
 	Mutex(mx00, 0)
-	Method(mmm0) {
+	Method(mmm0,, Serialized) {
 		Name(im00, 0xabcd0004)
 		Name(sm00, "qwertyui")
 		// Return ( "qwertyui" )
 	}
-	Method(mmm1) {
+	Method(mmm1,, Serialized) {
 		Name(im00, 0xabcd0004)
 		Name(sm00, "qwertyui")
 		// Return ( 0xabcd0004 )

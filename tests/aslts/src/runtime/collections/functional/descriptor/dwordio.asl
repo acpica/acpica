@@ -497,7 +497,7 @@ Name (p419, Package() {
 		0x0f, 0x79, 0x00},
 })
 
-Method(RT0d)
+Method(RT0d,, Serialized)
 {
 	Name(ts, "RT0d")
 

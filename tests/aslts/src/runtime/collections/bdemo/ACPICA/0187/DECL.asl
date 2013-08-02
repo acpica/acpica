@@ -32,7 +32,7 @@
  * SUMMARY: No exception in non-slack mode on attempt to obtain value from Method terminated by the standalone Return
  */
 
-Method(mf70)
+Method(mf70,, Serialized)
 {
 	Name(i000, 0xabcd0000)
 

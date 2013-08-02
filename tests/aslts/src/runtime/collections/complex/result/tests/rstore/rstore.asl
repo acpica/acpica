@@ -34,7 +34,7 @@
 Name(z123, 123)
 
 // Store to Global Named Objects, Constant and LocalX
-Method(m690)
+Method(m690,, Serialized)
 {
 	Name(ts, "m690")
 

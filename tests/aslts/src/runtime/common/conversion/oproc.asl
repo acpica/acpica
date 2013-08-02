@@ -584,7 +584,7 @@ Method(m484, 1, Serialized)
 // arg4 - type of 3-th argument
 // arg5 - type of 4-th argument
 // arg6 - {Ones - flag of exception, otherwise - index of result pair}
-Method(m485, 7)
+Method(m485, 7, Serialized)
 {
 	if (0) {
 		Store("##################################################################", Debug)
@@ -799,7 +799,7 @@ Method(m487, 1, Serialized)
 }
 
 // Initiate exception by inappropreate operand
-Method(m488, 6)
+Method(m488, 6, Serialized)
 {
 	Store(0, Local7)
 
@@ -1009,7 +1009,7 @@ Method(m48c, 2)
 //
 // arg5 - expected 64-bit result
 // arg6 - expected 32-bit result
-Method(m48d, 7)
+Method(m48d, 7, Serialized)
 {
 	Name(ts, "m48d")
 	Name(tmp0, 0)

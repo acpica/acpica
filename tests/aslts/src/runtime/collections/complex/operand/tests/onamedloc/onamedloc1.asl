@@ -33,7 +33,7 @@
 
 Name(z088, 88)
 
-Method(m613)
+Method(m613,, Serialized)
 {
 	Name(ts, "m613")
 
@@ -43,7 +43,7 @@ Method(m613)
 	// Logical operators when the first operand is evaluated as String.
 	// LEqual LGreater LGreaterEqual LLess LLessEqual LNotEqual
 
-	Method(m640, 1)
+	Method(m640, 1, Serialized)
 	{
 		Name(i604, 0xfe7cb391d650a284)
 
@@ -354,7 +354,7 @@ Method(m613)
 		}
 	}
 
-	Method(m320, 1)
+	Method(m320, 1, Serialized)
 	{
 		Name(i603, 0xc179b3fe)
 
@@ -668,7 +668,7 @@ Method(m613)
 	// Integer to String conversion of the Integer second operand of
 	// Concatenate operator when the first operand is evaluated as String
 
-	Method(m641, 1)
+	Method(m641, 1, Serialized)
 	{		
 		Name(i604, 0xfe7cb391d650a284)
 
@@ -761,7 +761,7 @@ Method(m613)
 		}
 	}
 
-	Method(m321, 1)
+	Method(m321, 1, Serialized)
 	{		
 		Name(i603, 0xc179b3fe)
 		Name(i604, 0xfe7cb391d650a284)
@@ -881,7 +881,7 @@ Method(m613)
 	// Logical operators when the first operand is evaluated as Buffer
 	// (LEqual, LGreater, LGreaterEqual, LLess, LLessEqual, LNotEqual)
 
-	Method(m644, 1)
+	Method(m644, 1, Serialized)
 	{		
 		Name(i604, 0xfe7cb391d650a284)
 
@@ -1192,7 +1192,7 @@ Method(m613)
 		}
 	}
 	
-	Method(m324, 1)
+	Method(m324, 1, Serialized)
 	{
 		Name(i603, 0xc179b3fe)
 
@@ -1507,7 +1507,7 @@ Method(m613)
 	// Integer to Buffer conversion of the both Integer operands of
 	// Concatenate operator
 
-	Method(m645, 1)
+	Method(m645, 1, Serialized)
 	{		
 		Name(i604, 0xfe7cb391d650a284)
 
@@ -1530,7 +1530,7 @@ Method(m613)
 		m600(arg0, 1, Local0, bb22)
 	}
 
-	Method(m325, 1)
+	Method(m325, 1, Serialized)
 	{		
 		Name(i603, 0xc179b3fe)
 
@@ -1556,7 +1556,7 @@ Method(m613)
 	// Integer to Buffer conversion of the Integer second operand of
 	// Concatenate operator when the first operand is evaluated as Buffer
 
-	Method(m646, 1)
+	Method(m646, 1, Serialized)
 	{		
 		Name(i604, 0xfe7cb391d650a284)
 
@@ -1649,7 +1649,7 @@ Method(m613)
 		}
 	}
 
-	Method(m326, 1)
+	Method(m326, 1, Serialized)
 	{
 		Name(i603, 0xc179b3fe)
 		Name(i604, 0xfe7cb391d650a284)
@@ -1759,7 +1759,7 @@ Method(m613)
 	// Integer to Buffer conversion of the Integer Source operand of
 	// ToString operator
 
-	Method(m647, 1)
+	Method(m647, 1, Serialized)
 	{
 		Name(i60d, 0x6e7c534136502214)
 		Name(i60e, 0x6e00534136002214)
@@ -1889,7 +1889,7 @@ Method(m613)
 		}
 	}
 	
-	Method(m327, 1)
+	Method(m327, 1, Serialized)
 	{
 		Name(i60c, 0x6179534e)
 		Name(i60f, 0x6e7c534136002214)
@@ -2022,7 +2022,7 @@ Method(m613)
 	// Integer to Buffer conversion of the Integer Source operand of
 	// Mid operator
 
-	Method(m648, 1)
+	Method(m648, 1, Serialized)
 	{
 		Name(i604, 0xfe7cb391d650a284)
 		Name(i60f, 0x6e7c534136002214)
@@ -2116,7 +2116,7 @@ Method(m613)
 		}
 	}
 	
-	Method(m328, 1)
+	Method(m328, 1, Serialized)
 	{
 		Name(i603, 0xc179b3fe)
 		Name(i60f, 0x6e7c534136002214)
@@ -2224,7 +2224,7 @@ Method(m613)
 	// of the 1-parameter Integer arithmetic operators
 	// (Decrement, Increment, FindSetLeftBit, FindSetRightBit, Not)
 
-	Method(m64b, 1)
+	Method(m64b, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s605, "FE7CB391D650A284")
@@ -2271,7 +2271,7 @@ Method(m613)
 		m600(arg0, 9, Local0, 0x01834c6e29af5d7b)
 	}
 
-	Method(m32b, 1)
+	Method(m32b, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s604, "C179B3FE")
@@ -2321,7 +2321,7 @@ Method(m613)
 
 	// String to Integer conversion of the String sole operand
 	// of the LNot Logical Integer operator
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		Name(s600, "0")
 		Name(s601, "0321")
@@ -2346,7 +2346,7 @@ Method(m613)
 	// String to Integer conversion of the String sole operand
 	// of the FromBCD and ToBCD conversion operators
 
-	Method(m64c, 1)
+	Method(m64c, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s604, "C179B3FE")
@@ -2385,7 +2385,7 @@ Method(m613)
 		m600(arg0, 5, Local0, 0x3789012345678901)
 	}
 
-	Method(m32c, 1)
+	Method(m32c, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s604, "C179B3FE")
@@ -2428,7 +2428,7 @@ Method(m613)
 	// ShiftLeft, ShiftRight, Subtract, Xor
 
 	// Add, common 32-bit/64-bit test
-	Method(m001, 1)
+	Method(m001, 1, Serialized)
 	{
 		Name(s601, "0321")
 
@@ -2614,7 +2614,7 @@ Method(m613)
 	}
 
 	// Add, 64-bit
-	Method(m002, 1)
+	Method(m002, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s605, "FE7CB391D650A284")
@@ -2815,7 +2815,7 @@ Method(m613)
 	}
 
 	// Add, 32-bit
-	Method(m003, 1)
+	Method(m003, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s604, "C179B3FE")
@@ -3016,7 +3016,7 @@ Method(m613)
 	}
 
 	// And, common 32-bit/64-bit test
-	Method(m004, 1)
+	Method(m004, 1, Serialized)
 	{
 		Name(s601, "0321")
 
@@ -3202,7 +3202,7 @@ Method(m613)
 	}
 
 	// And, 64-bit
-	Method(m005, 1)
+	Method(m005, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s605, "FE7CB391D650A284")
@@ -3403,7 +3403,7 @@ Method(m613)
 	}
 
 	// And, 32-bit
-	Method(m006, 1)
+	Method(m006, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s604, "C179B3FE")
@@ -3604,7 +3604,7 @@ Method(m613)
 	}
 
 	// Divide, common 32-bit/64-bit test
-	Method(m007, 1)
+	Method(m007, 1, Serialized)
 	{
 		Name(s601, "0321")
 
@@ -3790,7 +3790,7 @@ Method(m613)
 	}
 
 	// Divide, 64-bit
-	Method(m008, 1)
+	Method(m008, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s605, "FE7CB391D650A284")
@@ -3991,7 +3991,7 @@ Method(m613)
 	}
 
 	// Divide, 32-bit
-	Method(m009, 1)
+	Method(m009, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s604, "C179B3FE")
@@ -4192,7 +4192,7 @@ Method(m613)
 	}
 
 	// Mod, common 32-bit/64-bit test
-	Method(m00a, 1)
+	Method(m00a, 1, Serialized)
 	{
 		Name(s601, "0321")
 
@@ -4378,7 +4378,7 @@ Method(m613)
 	}
 
 	// Mod, 64-bit
-	Method(m00b, 1)
+	Method(m00b, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s605, "FE7CB391D650A284")
@@ -4579,7 +4579,7 @@ Method(m613)
 	}
 
 	// Mod, 32-bit
-	Method(m00c, 1)
+	Method(m00c, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s604, "C179B3FE")
@@ -4780,7 +4780,7 @@ Method(m613)
 	}
 
 	// Multiply, common 32-bit/64-bit test
-	Method(m00d, 1)
+	Method(m00d, 1, Serialized)
 	{
 		Name(s601, "0321")
 
@@ -4966,7 +4966,7 @@ Method(m613)
 	}
 
 	// Multiply, 64-bit
-	Method(m00e, 1)
+	Method(m00e, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s605, "FE7CB391D650A284")
@@ -5167,7 +5167,7 @@ Method(m613)
 	}
 
 	// Multiply, 32-bit
-	Method(m00f, 1)
+	Method(m00f, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s604, "C179B3FE")
@@ -5368,7 +5368,7 @@ Method(m613)
 	}
 
 	// NAnd, common 32-bit/64-bit test
-	Method(m010, 1)
+	Method(m010, 1, Serialized)
 	{
 		Name(s601, "0321")
 
@@ -5554,7 +5554,7 @@ Method(m613)
 	}
 
 	// NAnd, 64-bit
-	Method(m011, 1)
+	Method(m011, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s605, "FE7CB391D650A284")
@@ -5755,7 +5755,7 @@ Method(m613)
 	}
 
 	// NAnd, 32-bit
-	Method(m012, 1)
+	Method(m012, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s604, "C179B3FE")
@@ -5956,7 +5956,7 @@ Method(m613)
 	}
 
 	// NOr, common 32-bit/64-bit test
-	Method(m013, 1)
+	Method(m013, 1, Serialized)
 	{
 		Name(s601, "0321")
 
@@ -6142,7 +6142,7 @@ Method(m613)
 	}
 
 	// NOr, 64-bit
-	Method(m014, 1)
+	Method(m014, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s605, "FE7CB391D650A284")
@@ -6343,7 +6343,7 @@ Method(m613)
 	}
 
 	// NOr, 32-bit
-	Method(m015, 1)
+	Method(m015, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s604, "C179B3FE")
@@ -6544,7 +6544,7 @@ Method(m613)
 	}
 
 	// Or, common 32-bit/64-bit test
-	Method(m016, 1)
+	Method(m016, 1, Serialized)
 	{
 		Name(s601, "0321")
 
@@ -6730,7 +6730,7 @@ Method(m613)
 	}
 
 	// Or, 64-bit
-	Method(m017, 1)
+	Method(m017, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s605, "FE7CB391D650A284")
@@ -6931,7 +6931,7 @@ Method(m613)
 	}
 
 	// Or, 32-bit
-	Method(m018, 1)
+	Method(m018, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s604, "C179B3FE")
@@ -7132,7 +7132,7 @@ Method(m613)
 	}
 
 	// ShiftLeft, common 32-bit/64-bit test
-	Method(m019, 1)
+	Method(m019, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s614, "B")
@@ -7319,7 +7319,7 @@ Method(m613)
 	}
 
 	// ShiftLeft, 64-bit
-	Method(m01a, 1)
+	Method(m01a, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s605, "FE7CB391D650A284")
@@ -7521,7 +7521,7 @@ Method(m613)
 	}
 
 	// ShiftLeft, 32-bit
-	Method(m01b, 1)
+	Method(m01b, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s604, "C179B3FE")
@@ -7723,7 +7723,7 @@ Method(m613)
 	}
 
 	// ShiftRight, common 32-bit/64-bit test
-	Method(m01c, 1)
+	Method(m01c, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s614, "B")
@@ -7910,7 +7910,7 @@ Method(m613)
 	}
 
 	// ShiftRight, 64-bit
-	Method(m01d, 1)
+	Method(m01d, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s605, "FE7CB391D650A284")
@@ -8112,7 +8112,7 @@ Method(m613)
 	}
 
 	// ShiftRight, 32-bit
-	Method(m01e, 1)
+	Method(m01e, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s604, "C179B3FE")
@@ -8314,7 +8314,7 @@ Method(m613)
 	}
 
 	// Subtract, common 32-bit/64-bit test
-	Method(m01f, 1)
+	Method(m01f, 1, Serialized)
 	{
 		Name(s601, "0321")
 
@@ -8500,7 +8500,7 @@ Method(m613)
 	}
 
 	// Subtract, 64-bit
-	Method(m020, 1)
+	Method(m020, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s605, "FE7CB391D650A284")
@@ -8701,7 +8701,7 @@ Method(m613)
 	}
 
 	// Subtract, 32-bit
-	Method(m021, 1)
+	Method(m021, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s604, "C179B3FE")
@@ -8902,7 +8902,7 @@ Method(m613)
 	}
 
 	// XOr, common 32-bit/64-bit test
-	Method(m022, 1)
+	Method(m022, 1, Serialized)
 	{
 		Name(s601, "0321")
 
@@ -9088,7 +9088,7 @@ Method(m613)
 	}
 
 	// XOr, 64-bit
-	Method(m023, 1)
+	Method(m023, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s605, "FE7CB391D650A284")
@@ -9289,7 +9289,7 @@ Method(m613)
 	}
 
 	// XOr, 32-bit
-	Method(m024, 1)
+	Method(m024, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s604, "C179B3FE")
@@ -9715,7 +9715,7 @@ Method(m613)
 	// of the 2-parameter Logical Integer operators LAnd and LOr
 
 	// LAnd, common 32-bit/64-bit test
-	Method(m025, 1)
+	Method(m025, 1, Serialized)
 	{
 		Name(s601, "0321")
 
@@ -9813,7 +9813,7 @@ Method(m613)
 	}
 
 	// LAnd, 64-bit
-	Method(m026, 1)
+	Method(m026, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s605, "FE7CB391D650A284")
@@ -9920,7 +9920,7 @@ Method(m613)
 	}
 
 	// LAnd, 32-bit
-	Method(m027, 1)
+	Method(m027, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s604, "C179B3FE")
@@ -10027,7 +10027,7 @@ Method(m613)
 	}
 
 	// Lor, common 32-bit/64-bit test
-	Method(m028, 1)
+	Method(m028, 1, Serialized)
 	{
 		Name(s600, "0")
 
@@ -10125,7 +10125,7 @@ Method(m613)
 	}
 
 	// Lor, 64-bit
-	Method(m029, 1)
+	Method(m029, 1, Serialized)
 	{
 		Name(s600, "0")
 		Name(s605, "FE7CB391D650A284")
@@ -10232,7 +10232,7 @@ Method(m613)
 	}
 
 	// Lor, 32-bit
-	Method(m02a, 1)
+	Method(m02a, 1, Serialized)
 	{
 		Name(s600, "0")
 		Name(s604, "C179B3FE")
@@ -10381,7 +10381,7 @@ Method(m613)
 	// Logical operators when the first operand is evaluated as Integer
 	// (LEqual, LGreater, LGreaterEqual, LLess, LLessEqual, LNotEqual)
 		
-	Method(m64f, 1)
+	Method(m64f, 1, Serialized)
 	{
 		Name(s605, "FE7CB391D650A284")
 
@@ -10770,7 +10770,7 @@ Method(m613)
 		}
 	}
 
-	Method(m32f, 1)
+	Method(m32f, 1, Serialized)
 	{
 		Name(s604, "C179B3FE")
 
@@ -11159,7 +11159,7 @@ Method(m613)
 		}
 	}
 
-	Method(m02b, 1)
+	Method(m02b, 1, Serialized)
 	{
 		Name(s601, "0321")
 
@@ -11551,7 +11551,7 @@ Method(m613)
 	// String to Integer intermediate conversion of the String second
 	// operand of Concatenate operator in case the first one is Integer
 
-	Method(m64g, 1)
+	Method(m64g, 1, Serialized)
 	{		
 		Name(s601, "0321")
 		Name(s605, "FE7CB391D650A284")
@@ -11647,7 +11647,7 @@ Method(m613)
 		}
 	}
 
-	Method(m32g, 1)
+	Method(m32g, 1, Serialized)
 	{		
 		Name(s601, "0321")
 		Name(s604, "C179B3FE")
@@ -11747,7 +11747,7 @@ Method(m613)
 	// operand of the ToString operator
 
 	// Common 32-bit/64-bit test
-	Method(m02c, 1)
+	Method(m02c, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s614, "B")
@@ -11845,7 +11845,7 @@ Method(m613)
 		}
 	}
 
-	Method(m64h, 1)
+	Method(m64h, 1, Serialized)
 	{
 		Name(s605, "FE7CB391D650A284")
 
@@ -11904,7 +11904,7 @@ Method(m613)
 		}
 	}
 
-	Method(m32h, 1)
+	Method(m32h, 1, Serialized)
 	{
 		Name(s604, "C179B3FE")
 
@@ -11965,7 +11965,7 @@ Method(m613)
 
 	// String to Integer conversion of the String Index (second)
 	// operand of the Index operator
-	Method(m02d, 1)
+	Method(m02d, 1, Serialized)
 	{
 		Name(s614, "B")
 
@@ -12168,7 +12168,7 @@ Method(m613)
 	// String to Integer conversion of the String Arg (third)
 	// operand of the Fatal operator
 	// (it can only be checked an exception does not occur)
-	Method(m02e, 1)
+	Method(m02e, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s604, "C179B3FE")
@@ -12188,7 +12188,7 @@ Method(m613)
 	// operands of the Mid operator
 
 	// Common 32-bit/64-bit test
-	Method(m02f, 1)
+	Method(m02f, 1, Serialized)
 	{
 		Name(s614, "B")
 
@@ -12376,7 +12376,7 @@ Method(m613)
 		}
 	}
 
-	Method(m64i, 1)
+	Method(m64i, 1, Serialized)
 	{
 		Name(s605, "FE7CB391D650A284")
 		Name(s614, "B")
@@ -12564,7 +12564,7 @@ Method(m613)
 		}
 	}
 
-	Method(m32i, 1)
+	Method(m32i, 1, Serialized)
 	{
 		Name(s604, "C179B3FE")
 		Name(s614, "B")
@@ -12754,7 +12754,7 @@ Method(m613)
 
 	// String to Integer conversion of the String StartIndex
 	// operand of the Match operator
-	Method(m030, 1)
+	Method(m030, 1, Serialized)
 	{
 		Name(s614, "B")
 
@@ -12817,7 +12817,7 @@ Method(m613)
 
 	// String to Integer conversion of the String sole operand
 	// of the Method execution control operators (Sleep, Stall)
-	Method(m031, 1)
+	Method(m031, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s61b, "63")
@@ -12853,7 +12853,7 @@ Method(m613)
 
 	// String to Integer conversion of the String TimeoutValue
 	// (second) operand of the Acquire operator ???
-	Method(m032, 1)
+	Method(m032, 1, Serialized)
 	{
 		Name(s601, "0321")
 
@@ -12878,7 +12878,7 @@ Method(m613)
 
 	// String to Integer conversion of the String TimeoutValue
 	// (second) operand of the Wait operator
-	Method(m033, 1)
+	Method(m033, 1, Serialized)
 	{
 		Name(s601, "0321")
 
@@ -12901,7 +12901,7 @@ Method(m613)
 	// String to Integer conversion of the String value
 	// of Predicate of the Method execution control statements
 	// (If, ElseIf, While)
-	Method(m034, 1)
+	Method(m034, 1, Serialized)
 	{
 		Name(s600, "0")
 		Name(s601, "0321")
@@ -13028,7 +13028,7 @@ Method(m613)
 	// Logical operators when the first operand is evaluated as Buffer
 	// (LEqual, LGreater, LGreaterEqual, LLess, LLessEqual, LNotEqual)
 
-	Method(m035, 1)
+	Method(m035, 1, Serialized)
 	{		
 		Name(s601, "0321")
 		Name(s60c, "")
@@ -13610,7 +13610,7 @@ Method(m613)
 	// String to Buffer conversion of the String second operand of
 	// Concatenate operator when the first operand is evaluated as Buffer
 
-	Method(m036, 1)
+	Method(m036, 1, Serialized)
 	{		
 		Name(s601, "0321")
 		Name(s60c, "")
@@ -13722,7 +13722,7 @@ Method(m613)
 	// String taken the null character, that is impossible to show
 	// with an immediate String constant).
 
-	Method(m037, 1)
+	Method(m037, 1, Serialized)
 	{
 		Name(s601, "0321")
 		Name(s60c, "")
@@ -13845,7 +13845,7 @@ Method(m613)
 	// of the 1-parameter Integer arithmetic operators
 	// (Decrement, Increment, FindSetLeftBit, FindSetRightBit, Not)
 
-	Method(m64l, 1)
+	Method(m64l, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -13893,7 +13893,7 @@ Method(m613)
 		m600(arg0, 9, Local0, 0x01834c6e29af5d7b)
 	}
 
-	Method(m32l, 1)
+	Method(m32l, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -13943,7 +13943,7 @@ Method(m613)
 
 	// Buffer to Integer conversion of the Buffer sole operand
 	// of the LNot Logical Integer operator
-	Method(m03a, 1)
+	Method(m03a, 1, Serialized)
 	{
 		Name(b600, Buffer(1){0x00})
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
@@ -13967,7 +13967,7 @@ Method(m613)
 	// Buffer to Integer conversion of the Buffer sole operand
 	// of the FromBCD and ToBCD conversion operators
 
-	Method(m64m, 1)
+	Method(m64m, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60f, Buffer() {0x01, 0x89, 0x67, 0x45, 0x23, 0x01, 0x89, 0x37})
@@ -14003,7 +14003,7 @@ Method(m613)
 		m600(arg0, 5, Local0, 0x3789012345678901)
 	}
 
-	Method(m32m, 1)
+	Method(m32m, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b611, Buffer() {0x56, 0x34, 0x12, 0x90})
@@ -14044,7 +14044,7 @@ Method(m613)
 	// ShiftLeft, ShiftRight, Subtract, Xor
 
 	// Add, common 32-bit/64-bit test
-	Method(m03b, 1)
+	Method(m03b, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 
@@ -14230,7 +14230,7 @@ Method(m613)
 	}
 
 	// Add, 64-bit
-	Method(m03c, 1)
+	Method(m03c, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -14431,7 +14431,7 @@ Method(m613)
 	}
 
 	// Add, 32-bit
-	Method(m03d, 1)
+	Method(m03d, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -14632,7 +14632,7 @@ Method(m613)
 	}
 
 	// And, common 32-bit/64-bit test
-	Method(m03e, 1)
+	Method(m03e, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 
@@ -14818,7 +14818,7 @@ Method(m613)
 	}
 
 	// And, 64-bit
-	Method(m03f, 1)
+	Method(m03f, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -15019,7 +15019,7 @@ Method(m613)
 	}
 
 	// And, 32-bit
-	Method(m040, 1)
+	Method(m040, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -15220,7 +15220,7 @@ Method(m613)
 	}
 
 	// Divide, common 32-bit/64-bit test
-	Method(m041, 1)
+	Method(m041, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 
@@ -15406,7 +15406,7 @@ Method(m613)
 	}
 
 	// Divide, 64-bit
-	Method(m042, 1)
+	Method(m042, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -15607,7 +15607,7 @@ Method(m613)
 	}
 
 	// Divide, 32-bit
-	Method(m043, 1)
+	Method(m043, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -15808,7 +15808,7 @@ Method(m613)
 	}
 
 	// Mod, common 32-bit/64-bit test
-	Method(m044, 1)
+	Method(m044, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 
@@ -15994,7 +15994,7 @@ Method(m613)
 	}
 
 	// Mod, 64-bit
-	Method(m045, 1)
+	Method(m045, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -16195,7 +16195,7 @@ Method(m613)
 	}
 
 	// Mod, 32-bit
-	Method(m046, 1)
+	Method(m046, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -16396,7 +16396,7 @@ Method(m613)
 	}
 
 	// Multiply, common 32-bit/64-bit test
-	Method(m047, 1)
+	Method(m047, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 
@@ -16582,7 +16582,7 @@ Method(m613)
 	}
 
 	// Multiply, 64-bit
-	Method(m048, 1)
+	Method(m048, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -16783,7 +16783,7 @@ Method(m613)
 	}
 
 	// Multiply, 32-bit
-	Method(m049, 1)
+	Method(m049, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -16984,7 +16984,7 @@ Method(m613)
 	}
 
 	// NAnd, common 32-bit/64-bit test
-	Method(m04a, 1)
+	Method(m04a, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 
@@ -17170,7 +17170,7 @@ Method(m613)
 	}
 
 	// NAnd, 64-bit
-	Method(m04b, 1)
+	Method(m04b, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -17371,7 +17371,7 @@ Method(m613)
 	}
 
 	// NAnd, 32-bit
-	Method(m04c, 1)
+	Method(m04c, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -17572,7 +17572,7 @@ Method(m613)
 	}
 
 	// NOr, common 32-bit/64-bit test
-	Method(m04d, 1)
+	Method(m04d, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 
@@ -17758,7 +17758,7 @@ Method(m613)
 	}
 
 	// NOr, 64-bit
-	Method(m04e, 1)
+	Method(m04e, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -17959,7 +17959,7 @@ Method(m613)
 	}
 
 	// NOr, 32-bit
-	Method(m04f, 1)
+	Method(m04f, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -18160,7 +18160,7 @@ Method(m613)
 	}
 
 	// Or, common 32-bit/64-bit test
-	Method(m050, 1)
+	Method(m050, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 
@@ -18346,7 +18346,7 @@ Method(m613)
 	}
 
 	// Or, 64-bit
-	Method(m051, 1)
+	Method(m051, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -18547,7 +18547,7 @@ Method(m613)
 	}
 
 	// Or, 32-bit
-	Method(m052, 1)
+	Method(m052, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -18748,7 +18748,7 @@ Method(m613)
 	}
 
 	// ShiftLeft, common 32-bit/64-bit test
-	Method(m053, 1)
+	Method(m053, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60e, Buffer(1){0xb})
@@ -18935,7 +18935,7 @@ Method(m613)
 	}
 
 	// ShiftLeft, 64-bit
-	Method(m054, 1)
+	Method(m054, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -19137,7 +19137,7 @@ Method(m613)
 	}
 
 	// ShiftLeft, 32-bit
-	Method(m055, 1)
+	Method(m055, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -19339,7 +19339,7 @@ Method(m613)
 	}
 
 	// ShiftRight, common 32-bit/64-bit test
-	Method(m056, 1)
+	Method(m056, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60e, Buffer(1){0xb})
@@ -19526,7 +19526,7 @@ Method(m613)
 	}
 
 	// ShiftRight, 64-bit
-	Method(m057, 1)
+	Method(m057, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -19728,7 +19728,7 @@ Method(m613)
 	}
 
 	// ShiftRight, 32-bit
-	Method(m058, 1)
+	Method(m058, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -19930,7 +19930,7 @@ Method(m613)
 	}
 
 	// Subtract, common 32-bit/64-bit test
-	Method(m059, 1)
+	Method(m059, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 
@@ -20116,7 +20116,7 @@ Method(m613)
 	}
 
 	// Subtract, 64-bit
-	Method(m05a, 1)
+	Method(m05a, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -20317,7 +20317,7 @@ Method(m613)
 	}
 
 	// Subtract, 32-bit
-	Method(m05b, 1)
+	Method(m05b, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -20518,7 +20518,7 @@ Method(m613)
 	}
 
 	// XOr, common 32-bit/64-bit test
-	Method(m05c, 1)
+	Method(m05c, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 
@@ -20704,7 +20704,7 @@ Method(m613)
 	}
 
 	// XOr, 64-bit
-	Method(m05d, 1)
+	Method(m05d, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -20905,7 +20905,7 @@ Method(m613)
 	}
 
 	// XOr, 32-bit
-	Method(m05e, 1)
+	Method(m05e, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -21331,7 +21331,7 @@ Method(m613)
 	// of the 2-parameter Logical Integer operators LAnd and LOr
 
 	// LAnd, common 32-bit/64-bit test
-	Method(m05f, 1)
+	Method(m05f, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 
@@ -21429,7 +21429,7 @@ Method(m613)
 	}
 
 	// LAnd, 64-bit
-	Method(m060, 1)
+	Method(m060, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -21536,7 +21536,7 @@ Method(m613)
 	}
 
 	// LAnd, 32-bit
-	Method(m061, 1)
+	Method(m061, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -21643,7 +21643,7 @@ Method(m613)
 	}
 
 	// Lor, common 32-bit/64-bit test
-	Method(m062, 1)
+	Method(m062, 1, Serialized)
 	{
 		Name(b600, Buffer(1){0x00})
 
@@ -21741,7 +21741,7 @@ Method(m613)
 	}
 
 	// Lor, 64-bit
-	Method(m063, 1)
+	Method(m063, 1, Serialized)
 	{
 		Name(b600, Buffer(1){0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -21848,7 +21848,7 @@ Method(m613)
 	}
 
 	// Lor, 32-bit
-	Method(m064, 1)
+	Method(m064, 1, Serialized)
 	{
 		Name(b600, Buffer(1){0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -21997,7 +21997,7 @@ Method(m613)
 	// Logical operators when the first operand is evaluated as Integer
 	// (LEqual, LGreater, LGreaterEqual, LLess, LLessEqual, LNotEqual)
 
-	Method(m64p, 1)
+	Method(m64p, 1, Serialized)
 	{
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
 
@@ -22386,7 +22386,7 @@ Method(m613)
 		}
 	}
 
-	Method(m32p, 1)
+	Method(m32p, 1, Serialized)
 	{
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
 
@@ -22775,7 +22775,7 @@ Method(m613)
 		}
 	}
 
-	Method(m065, 1)
+	Method(m065, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 
@@ -23167,7 +23167,7 @@ Method(m613)
 	// Buffer to Integer intermediate conversion of the Buffer second
 	// operand of Concatenate operator in case the first one is Integer
 
-	Method(m64q, 1)
+	Method(m64q, 1, Serialized)
 	{		
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -23263,7 +23263,7 @@ Method(m613)
 		}
 	}
 
-	Method(m32q, 1)
+	Method(m32q, 1, Serialized)
 	{		
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -23363,7 +23363,7 @@ Method(m613)
 	// operand of the ToString operator
 
 	// Common 32-bit/64-bit test
-	Method(m066, 1)
+	Method(m066, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60e, Buffer(1){0xb})
@@ -23461,7 +23461,7 @@ Method(m613)
 		}
 	}
 
-	Method(m64r, 1)
+	Method(m64r, 1, Serialized)
 	{
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
 
@@ -23520,7 +23520,7 @@ Method(m613)
 		}
 	}
 
-	Method(m32r, 1)
+	Method(m32r, 1, Serialized)
 	{
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
 
@@ -23581,7 +23581,7 @@ Method(m613)
 
 	// Buffer to Integer conversion of the Buffer Index (second)
 	// operand of the Index operator
-	Method(m067, 1)
+	Method(m067, 1, Serialized)
 	{
 		Name(b60e, Buffer(1){0xb})
 
@@ -23784,7 +23784,7 @@ Method(m613)
 	// Buffer to Integer conversion of the String Arg (third)
 	// operand of the Fatal operator
 	// (it can only be checked an exception does not occur)
-	Method(m068, 1)
+	Method(m068, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
@@ -23803,7 +23803,7 @@ Method(m613)
 	// operands of the Mid operator
 
 	// Common 32-bit/64-bit test
-	Method(m069, 1)
+	Method(m069, 1, Serialized)
 	{
 		Name(b60e, Buffer(1){0xb})
 
@@ -23991,7 +23991,7 @@ Method(m613)
 		}
 	}
 
-	Method(m64s, 1)
+	Method(m64s, 1, Serialized)
 	{
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
 		Name(b60e, Buffer(1){0xb})
@@ -24179,7 +24179,7 @@ Method(m613)
 		}
 	}
 
-	Method(m32s, 1)
+	Method(m32s, 1, Serialized)
 	{
 		Name(b60a, Buffer(9){0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE, 0xa5})
 		Name(b60e, Buffer(1){0xb})
@@ -24369,7 +24369,7 @@ Method(m613)
 
 	// Buffer to Integer conversion of the Buffer StartIndex
 	// operand of the Match operator
-	Method(m06a, 1)
+	Method(m06a, 1, Serialized)
 	{
 		Name(b60e, Buffer(1){0xb})
 
@@ -24432,7 +24432,7 @@ Method(m613)
 
 	// Buffer to Integer conversion of the Buffer sole operand
 	// of the Method execution control operators (Sleep, Stall)
-	Method(m06b, 1)
+	Method(m06b, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b613, Buffer(1){0x3f})
@@ -24469,7 +24469,7 @@ Method(m613)
 	// Buffer to Integer conversion of the Buffer TimeoutValue
 	// (second) operand of the Acquire operator
 
-	Method(m06c, 1)
+	Method(m06c, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 
@@ -24494,7 +24494,7 @@ Method(m613)
 
 	// Buffer to Integer conversion of the Buffer TimeoutValue
 	// (second) operand of the Wait operator
-	Method(m06d, 1)
+	Method(m06d, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 
@@ -24517,7 +24517,7 @@ Method(m613)
 	// Buffer to Integer conversion of the Buffer value
 	// of Predicate of the Method execution control statements
 	// (If, ElseIf, While)
-	Method(m06e, 1)
+	Method(m06e, 1, Serialized)
 	{
 		Name(b600, Buffer(1){0x00})
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
@@ -24642,7 +24642,7 @@ Method(m613)
 	// Buffer to String conversion of the Buffer second operand of
 	// Logical operators when the first operand is evaluated as String.
 	// LEqual LGreater LGreaterEqual LLess LLessEqual LNotEqual
-	Method(m06f, 1)
+	Method(m06f, 1, Serialized)
 	{
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60c, Buffer(67){
@@ -25025,7 +25025,7 @@ Method(m613)
 
 	// Buffer to String conversion of the Buffer second operand of
 	// Concatenate operator when the first operand is evaluated as String
-	Method(m070, 1)
+	Method(m070, 1, Serialized)
 	{		
 		Name(b606, Buffer(3){0x21, 0x03, 0x00})
 		Name(b60c, Buffer(67){

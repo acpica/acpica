@@ -408,7 +408,7 @@ Name (p42f, Package() {
 		0x0f, 0x79, 0x00},
 })
 
-Method(RT15)
+Method(RT15,, Serialized)
 {
 	Name(ts, "RT15")
 

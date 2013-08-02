@@ -71,7 +71,7 @@ Name(z168, 168)
  *
  * The ASL Mod operation is not implemented on MS
  */
-Method(in50)
+Method(in50,, Serialized)
 {
 	Name(ts, "in50")
 
@@ -147,7 +147,7 @@ Name(ii47, 0xabcd0047)
  * it is not applied here. All other opcodes enumerated
  * in the table above are applied and verified in this test.
  */
-Method(in51, 7)
+Method(in51, 7, Serialized)
 {
 	Name(ts, "in51")
 

@@ -1004,7 +1004,7 @@ Name (p427, Package() {
 		0x0f, 0x79, 0x00},
 })
 
-Method(RT11)
+Method(RT11,, Serialized)
 {
 	Name(ts, "RT11")
 

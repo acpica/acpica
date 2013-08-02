@@ -32,7 +32,7 @@
  * SUMMARY: Crash when DDBHandle parameter of Load is an Indexed Reference
  */
 
-Method(m028)
+Method(m028,, Serialized)
 {
 	Name(BUF0, Buffer() {
 
@@ -56,7 +56,7 @@ Method(m028)
 
 	External(\AUXZ)
 
-	Method(m000)
+	Method(m000,, Serialized)
 	{
 		Name(PAC0, Package(1){})
 

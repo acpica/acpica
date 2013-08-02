@@ -32,7 +32,7 @@
  * SUMMARY: The jumping over levels in releasing mutexes is not prohibited
  */
 
-Method(m039)
+Method(m039,, Serialized)
 {
 	Mutex(MX07, 7)
 	Mutex(MX08, 8)

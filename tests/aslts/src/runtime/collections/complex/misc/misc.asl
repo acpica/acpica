@@ -84,7 +84,7 @@ Method(m112, 1)
 // Unexpected value returned by ObjectType for Field Unit objects
 
 // The field passed as explicit reference (RefOf)
-Method(m113, 1)
+Method(m113, 1, Serialized)
 {
 	OperationRegion(r000, SystemMemory, 0x100, 0x100)
 	Field (r000, ByteAcc, NoLock, Preserve) {
@@ -99,7 +99,7 @@ Method(m113, 1)
 
 // The BankField corrupts the contents of OperationRegion
 
-Method(m114, 1)
+Method(m114, 1, Serialized)
 {
 	OperationRegion(r000, SystemMemory, 0x100, 0x100)
 	Field (r000, ByteAcc, NoLock, Preserve) {
@@ -185,7 +185,7 @@ Method(m116, 1)
 }
 
 // Now, this cause exception but should not
-Method(m117, 2)
+Method(m117, 2, Serialized)
 {
 	Name(ts, "m117")
 
@@ -215,7 +215,7 @@ Method(m118, 1)
  * as an ASL name (relative to the current scope) and the contents of that
  * object are returned.
  */
-Method(m119, 1)
+Method(m119, 1, Serialized)
 {
 	Name(b000, Buffer(){ 1, 2, 3, 4, 5, 6, 7, 8 })
 
@@ -333,7 +333,7 @@ Method(m11b, 1)
 // Bug 54: All the ASL Operators which deal with at least two Buffer type
 // objects cause unexpected exceptions in cases when both Buffer type objects
 // are passed immediately
-Method(m11c, 1)
+Method(m11c, 1, Serialized)
 {
 	Name(ts, "m11c")
 
@@ -394,7 +394,7 @@ Method(m11d, 1) {
  * "If the string is shorter than the buffer,
  * the remaining buffer bytes are set to zero".
  */
-Method(m11e, 1) {
+Method(m11e, 1, Serialized) {
 	Name(str0, "\x01\x02")
 	Name(buf0, Buffer(){0x03, 0x04, 0x05, 0x06})
 
@@ -424,7 +424,7 @@ Method(m11e, 1) {
 //
 // CANCELED: now it should perform opposite assertion because
 // this bug was canceled.
-Method(m11f, 1) {
+Method(m11f, 1, Serialized) {
 	Name(b000, Buffer(200) {})
 	CreateField(b000, 0,  31, bf00)
 	CreateField(b000, 31, 32, bf01)
@@ -502,7 +502,7 @@ Method(m11f, 1) {
 //
 // CANCELED: now it should perform opposite assertion because
 // this bug was canceled.
-Method(m120, 1) {
+Method(m120, 1, Serialized) {
 	OperationRegion(r000, SystemMemory, 0x100, 0x100)
 	Field(r000, ByteAcc, NoLock, Preserve) {
 		f000, 31,
@@ -581,7 +581,7 @@ Method(m120, 1) {
 //
 // CANCELED: now it should perform opposite assertion because
 // this bug was canceled.
-Method(m121, 1) {
+Method(m121, 1, Serialized) {
 	Name(b000, Buffer(200) {})
 	CreateField(b000, 0,  31, bf00)
 	CreateField(b000, 31, 32, bf01)
@@ -653,7 +653,7 @@ Method(m121, 1) {
 //
 // CANCELED: now it should perform opposite assertion because
 // this bug was canceled.
-Method(m122, 1) {
+Method(m122, 1, Serialized) {
 	OperationRegion(r000, SystemMemory, 0x100, 0x100)
 	Field(r000, ByteAcc, NoLock, Preserve) {
 		f000, 31,
@@ -723,7 +723,7 @@ Method(m122, 1) {
 // Caused crash.
 Method(m123, 1)
 {
-	Method(m000)
+	Method(m000,, Serialized)
 	{
 		// Field Unit
 		OperationRegion(r000, SystemMemory, 0x100, 0x100)
@@ -748,7 +748,7 @@ Method(m123, 1)
 		return (0)
 	}
 
-	Method(m001)
+	Method(m001,, Serialized)
 	{
 		// Field Unit
 		OperationRegion(r000, SystemMemory, 0x100, 0x100)
@@ -829,7 +829,7 @@ Method(m124, 1)
  */
 Method(m125, 1)
 {
-	Method(m001, 1)
+	Method(m001, 1, Serialized)
 	{
 		Name(s000, "String")
 
@@ -845,7 +845,7 @@ Method(m125, 1)
 		}
 	}
 
-	Method(m002, 1)
+	Method(m002, 1, Serialized)
 	{
 		Name(b000, Buffer(){0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5})
 
@@ -861,7 +861,7 @@ Method(m125, 1)
 		}
 	}
 
-	Method(m003, 1)
+	Method(m003, 1, Serialized)
 	{
 		Name(p000, Package(){0xfff0, 0xfff1, 0xfff2, 0xfff3, 0xfff4, 0xfff5})
 
@@ -1057,7 +1057,7 @@ Method(mf87, 1)
 	CH03("mf87", z054, 2, 0, 0)
 }
 
-Method(m15b)
+Method(m15b,, Serialized)
 {
 	Name(ts, "m15b")
 
@@ -1278,7 +1278,7 @@ Method(m15b)
 }
 
 // Run-method
-Method(MSC0)
+Method(MSC0,, Serialized)
 {
 	Name(ts, "MSC0")
 

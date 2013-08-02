@@ -446,7 +446,7 @@ Name(p05e, Package()
 	Ones, Ones, Ones, Ones, Zero, Zero,
 })
 
-Method(LAN0)
+Method(LAN0,, Serialized)
 {
 	Name(ts, "LAN0")
 
@@ -474,7 +474,7 @@ Name(p070, Package()
 	Ones, Zero, Zero, Zero,
 })
 
-Method(LN00)
+Method(LN00,, Serialized)
 {
 	Name(ts, "LN00")
 
@@ -504,7 +504,7 @@ Name(p072, Package()
 	Ones, Ones, Ones, Ones, Ones, Ones,
 })
 
-Method(LOR0)
+Method(LOR0,, Serialized)
 {
 	Name(ts, "LOR0")
 
@@ -555,7 +555,7 @@ Name(p076, Package()
 	Zero, Zero,
 })
 
-Method(LEQ0)
+Method(LEQ0,, Serialized)
 {
 	Name(ts, "LEQ0")
 
@@ -619,7 +619,7 @@ Name(p07a, Package()
 	Ones, Zero,
 })
 
-Method(LGR0)
+Method(LGR0,, Serialized)
 {
 	Name(ts, "LGR0")
 
@@ -683,7 +683,7 @@ Name(p07e, Package()
 	Ones, Zero,
 })
 
-Method(LGE0)
+Method(LGE0,, Serialized)
 {
 	Name(ts, "LGE0")
 
@@ -747,7 +747,7 @@ Name(p082, Package()
 	Zero, Ones,
 })
 
-Method(LL00)
+Method(LL00,, Serialized)
 {
 	Name(ts, "LL00")
 
@@ -811,7 +811,7 @@ Name(p086, Package()
 	Zero, Ones,
 })
 
-Method(LLE0)
+Method(LLE0,, Serialized)
 {
 	Name(ts, "LLE0")
 
@@ -875,7 +875,7 @@ Name(p08a, Package()
 	Ones, Ones,
 })
 
-Method(LNE0)
+Method(LNE0,, Serialized)
 {
 	Name(ts, "LNE0")
 

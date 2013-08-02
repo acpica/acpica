@@ -32,11 +32,11 @@ Name(z178, 178)
  !!!!!!!!!!!!!!!!    It is in progress, just started !!!!!!!!!!!!!!!!
  */
 
-Method(sc00)
+Method(sc00,, Serialized)
 {
 	Name(ts, "sc00")
 
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		Scope(\) { Name(i2z4, 0xabcd0007) }
 	}

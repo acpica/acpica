@@ -32,7 +32,7 @@
  * SUMMARY: CopyObject of Device works incorrectly
  */
 
-Method(m021)
+Method(m021,, Serialized)
 {
 	Name(i000, 0xabcd0000)
 	Name(i001, 0xabcd0001)

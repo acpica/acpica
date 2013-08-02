@@ -76,7 +76,7 @@ Name(z161, 161)
  *
  * fail
  */
-Method(mf00)
+Method(mf00,, Serialized)
 {
 	Name(ts, "mf00")
 	Name(i000, 0xabcd0000)
@@ -99,7 +99,7 @@ Method(mf00)
  *
  * success/fail
  */
-Method(mf01)
+Method(mf01,, Serialized)
 {
 	Name(ts, "mf01")
 	Name(s000, "qwertyuiop")
@@ -125,7 +125,7 @@ Method(mf01)
  *
  * fail
  */
-Method(mf02)
+Method(mf02,, Serialized)
 {
 	Name(ts, "mf02")
 	Name(s000, "qwertyuiop")
@@ -148,7 +148,7 @@ Method(mf02)
  *
  * success
  */
-Method(mf03)
+Method(mf03,, Serialized)
 {
 	Name(ts, "mf03")
 	Name(i000, 0x12340001)
@@ -186,7 +186,7 @@ Method(mf03)
  *
  * fail
  */
-Method(mf04)
+Method(mf04,, Serialized)
 {
 	Name(ts, "mf04")
 	Name(i000, 0xabcd0000)
@@ -230,7 +230,7 @@ Method(mf04)
  *
  * succeeded
  */
-Method(mf05)
+Method(mf05,, Serialized)
 {
 	Name(ts, "mf05")
 
@@ -260,7 +260,7 @@ Method(mf05)
  *
  * succeeded
  */
-Method(mf06)
+Method(mf06,, Serialized)
 {
 	Name(ts, "mf06")
 	Name(i000, 0xabcd0000)
@@ -293,7 +293,7 @@ Method(mf06)
  *
  * succeeded
  */
-Method(mf07)
+Method(mf07,, Serialized)
 {
 	Name(ts, "mf07")
 
@@ -324,7 +324,7 @@ Method(mf07)
  *
  * fail
  */
-Method(mf08)
+Method(mf08,, Serialized)
 {
 	Name(ts, "mf08")
 	Name(pr, 1)
@@ -378,7 +378,7 @@ Method(mf08)
  *
  * fail
  */
-Method(mf09)
+Method(mf09,, Serialized)
 {
 	Name(ts, "mf09")
 	Name(s000, "qqqqqqqqqqqqqq")
@@ -400,7 +400,7 @@ Method(mf09)
  *
  * success
  */
-Method(mf0a)
+Method(mf0a,, Serialized)
 {
 	Name(ts, "mf0a")
 	OperationRegion(r000, SystemMemory, 0x100, 0x100)
@@ -464,7 +464,7 @@ Method(mf0a)
  *
  * succeeded
  */
-Method(mf0b)
+Method(mf0b,, Serialized)
 {
 	Name(ts, "mf0b")
 	OperationRegion(r000, SystemMemory, 0x100, 0x100)
@@ -529,7 +529,7 @@ Method(mf0b)
  *
  * succeeded
  */
-Method(mf0c)
+Method(mf0c,, Serialized)
 {
 	Name(ts, "mf0c")
 	OperationRegion(r000, SystemMemory, 0x100, 0x100)
@@ -594,7 +594,7 @@ Method(mf0c)
  *
  * fail
  */
-Method(mf0d)
+Method(mf0d,, Serialized)
 {
 	Name(ts, "mf0d")
 	Name(b000, Buffer(16) {})
@@ -635,7 +635,7 @@ Method(mf0d)
  *
  * fail
  */
-Method(mf0e)
+Method(mf0e,, Serialized)
 {
 	Name(ts, "mf0e")
 	Name(b000, Buffer(16) {})
@@ -672,7 +672,7 @@ Method(mf0e)
  *
  * fail
  */
-Method(mf0f)
+Method(mf0f,, Serialized)
 {
 	Name(ts, "mf0f")
 	Name(b000, Buffer(16) {})
@@ -736,7 +736,7 @@ Method(mf0f)
  *
  * fail
  */
-Method(mf10)
+Method(mf10,, Serialized)
 {
 	Name(ts, "mf10")
 	Name(b000, Buffer(16) {})
@@ -783,7 +783,7 @@ Method(mf10)
  *
  * fail
  */
-Method(mf11)
+Method(mf11,, Serialized)
 {
 	Name(ts, "mf11")
 	Name(b000, Buffer(4) {0x10, 0x11, 0x12, 0x13})
@@ -801,7 +801,7 @@ Method(mf11)
  *
  * fail
  */
-Method(mf12)
+Method(mf12,, Serialized)
 {
 	Name(ts, "mf12")
 
@@ -939,7 +939,7 @@ Method(mf12)
  *
  * fail
  */
-Method(mf13)
+Method(mf13,, Serialized)
 {
 	Name(ts, "mf13")
 
@@ -1114,7 +1114,7 @@ Method(mf13)
  *
  * fail
  */
-Method(mf14)
+Method(mf14,, Serialized)
 {
 	Name(ts, "mf14")
 	Name(i000, 0)
@@ -1130,7 +1130,7 @@ Method(mf14)
  *
  * fail
  */
-Method(mf15)
+Method(mf15,, Serialized)
 {
 	Name(ts, "mf15")
 
@@ -1156,7 +1156,7 @@ Method(mf15)
  *
  * success
  */
-Method(mf16)
+Method(mf16,, Serialized)
 {
 	Name(ts, "mf16")
 
@@ -1181,12 +1181,12 @@ Method(mf16)
  *
  * success
  */
-Method(mf17)
+Method(mf17,, Serialized)
 {
 	Name(ts, "mf17")
 	Name(p000, Package() {0xabcd0000, 0xabcd0001, 0xabcd0003})
 
-	Method(m000)
+	Method(m000,, Serialized)
 	{
 		Name(pp00, Package() {0xabcd0000, 0xabcd0001, 0xabcd0003})
 
@@ -1207,7 +1207,7 @@ Method(mf17)
  *
  * fail
  */
-Method(mf18)
+Method(mf18,, Serialized)
 {
 	Name(ts, "mf18")
 	Name(s000, "qwertyuiop")
@@ -1230,7 +1230,7 @@ Method(mf18)
  *
  * fail
  */
-Method(mf19)
+Method(mf19,, Serialized)
 {
 	Name(ts, "mf19")
 	Name(b000, Buffer(4) {0x10, 0x11, 0x12, 0x13})
@@ -1253,7 +1253,7 @@ Method(mf19)
  *
  * fail
  */
-Method(mf1a)
+Method(mf1a,, Serialized)
 {
 	Name(ts, "mf1a")
 
@@ -1277,7 +1277,7 @@ Method(mf1a)
  *
  * fail
  */
-Method(mf1b)
+Method(mf1b,, Serialized)
 {
 	Name(ts, "mf1b")
 	Name(s000, "12345678")
@@ -1300,7 +1300,7 @@ Method(mf1b)
  *
  * fail
  */
-Method(mf1c)
+Method(mf1c,, Serialized)
 {
 	Name(ts, "mf1c")
 	Name(b000, Buffer(4) {0x10, 0x11, 0x12, 0x13})
@@ -1323,7 +1323,7 @@ Method(mf1c)
  *
  * success
  */
-Method(mf1d)
+Method(mf1d,, Serialized)
 {
 	Name(ts, "mf1d")
 	OperationRegion(r000, SystemMemory, 0x100, 0x100)
@@ -1346,7 +1346,7 @@ Method(mf1d)
  *
  * success
  */
-Method(mf1e)
+Method(mf1e,, Serialized)
 {
 	Name(ts, "mf1e")
 	OperationRegion(r000, SystemMemory, 0x100, 0x100)
@@ -1375,7 +1375,7 @@ Method(mf1e)
  *
  * success
  */
-Method(mf1f)
+Method(mf1f,, Serialized)
 {
 	Name(ts, "mf1f")
 	OperationRegion(r000, SystemMemory, 0x100, 0x100)
@@ -1400,7 +1400,7 @@ Method(mf1f)
  *
  * success
  */
-Method(mf20)
+Method(mf20,, Serialized)
 {
 	Name(ts, "mf20")
 	OperationRegion(r000, SystemMemory, 0x100, 0x100)
@@ -1423,7 +1423,7 @@ Method(mf20)
  *
  * success
  */
-Method(mf21)
+Method(mf21,, Serialized)
 {
 	Name(ts, "mf21")
 	OperationRegion(r000, SystemMemory, 0x100, 0x100)
@@ -1452,7 +1452,7 @@ Method(mf21)
  *
  * success
  */
-Method(mf22)
+Method(mf22,, Serialized)
 {
 	Name(ts, "mf22")
 	OperationRegion(r003, SystemMemory, 0x180, 0x080)
@@ -1478,7 +1478,7 @@ Method(mf22)
  *
  * success
  */
-Method(mf23)
+Method(mf23,, Serialized)
 {
 	Name(ts, "mf23")
 	OperationRegion(r003, SystemMemory, 0x180, 0x080)
@@ -1507,7 +1507,7 @@ Method(mf23)
  *
  * success
  */
-Method(mf24)
+Method(mf24,, Serialized)
 {
 	Name(ts, "mf24")
 	OperationRegion(r003, SystemMemory, 0x180, 0x080)
@@ -1545,7 +1545,7 @@ Method(mf24)
  *
  * succeed
  */
-Method(mf25)
+Method(mf25,, Serialized)
 {
 	Name(ts, "mf25")
 	Device(d000) { Name(id00, 0xabcd0005) }
@@ -1565,7 +1565,7 @@ Method(mf25)
  *
  * success
  */
-Method(mf27)
+Method(mf27,, Serialized)
 {
 	Name(ts, "mf27")
 	Event(e000)
@@ -1585,7 +1585,7 @@ Method(mf27)
  *
  * success
  */
-Method(mf28)
+Method(mf28,, Serialized)
 {
 	Name(ts, "mf28")
 	Mutex(mx00, 0)
@@ -1605,7 +1605,7 @@ Method(mf28)
  *
  * success
  */
-Method(mf29, 1)
+Method(mf29, 1, Serialized)
 {
 	Name(ts, "mf29")
 	Event(e000)
@@ -1625,7 +1625,7 @@ Method(mf29, 1)
  *
  * success
  */
-Method(mf2a, 1)
+Method(mf2a, 1, Serialized)
 {
 	Name(ts, "mf2a")
 	Mutex(mx00, 0)
@@ -1646,7 +1646,7 @@ Method(mf2a, 1)
  *
  * fail
  */
-Method(mf2b)
+Method(mf2b,, Serialized)
 {
 	Name(ts, "mf2b")
 	Device(d000) { Name(id00, 0xabcd0005) }
@@ -1671,7 +1671,7 @@ Method(mf2b)
  *
  * fail
  */
-Method(mf2c, 1)
+Method(mf2c, 1, Serialized)
 {
 	Name(ts, "mf2c")
 	Device(d000) { Name(id00, 0xabcd0005) }

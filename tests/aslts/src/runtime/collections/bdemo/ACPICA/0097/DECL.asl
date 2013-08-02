@@ -44,7 +44,7 @@
 		Store(Local0, Debug)
 	}
 
-	Method(me4e)
+	Method(me4e,, Serialized)
 	{
 
 		Name(p000, Package(32) {1,2,me4c,3,4})
@@ -57,7 +57,7 @@
 		Store("============= Test me4e finished.", Debug)
 	}
 
-	Method(me4f)
+	Method(me4f,, Serialized)
 	{
 
 		Name(p000, Package(32) {1,2,me4c,3,4})

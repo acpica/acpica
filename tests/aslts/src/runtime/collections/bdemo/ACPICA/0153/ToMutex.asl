@@ -33,7 +33,7 @@
 
 // Integer
 
-Method(md24)
+Method(md24,, Serialized)
 {
 	Name(i000, 0xe0385bcd)
 	Mutex(OOO2, 0)
@@ -53,7 +53,7 @@ Method(md24)
 
 // String
 
-Method(md25)
+Method(md25,, Serialized)
 {
 	Name(s000, "String")
 	Mutex(OOO2, 0)
@@ -75,7 +75,7 @@ Method(md25)
 
 // Buffer
 
-Method(md26)
+Method(md26,, Serialized)
 {
 	Name(b000, Buffer() {1,2,3,4})
 	Mutex(OOO2, 0)
@@ -96,7 +96,7 @@ Method(md26)
 
 // Package
 
-Method(md27)
+Method(md27,, Serialized)
 {
 	Name(pppp, Package(1){Buffer() {1,2,3,4}})
 	Mutex(OOO2, 0)
@@ -148,7 +148,7 @@ Method(md27)
 
 // Integer
 
-Method(md28)
+Method(md28,, Serialized)
 {
 	Mutex(OOO2, 0)
 
@@ -164,7 +164,7 @@ Method(md28)
 
 // String
 
-Method(md29)
+Method(md29,, Serialized)
 {
 	Mutex(OOO2, 0)
 
@@ -182,7 +182,7 @@ Method(md29)
 
 // Buffer
 
-Method(md2a)
+Method(md2a,, Serialized)
 {
 	Mutex(OOO2, 0)
 
@@ -199,7 +199,7 @@ Method(md2a)
 
 // Package
 
-Method(md2b)
+Method(md2b,, Serialized)
 {
 	Mutex(OOO2, 0)
 

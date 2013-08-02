@@ -40,7 +40,7 @@ Method(m4f0) {Return ("m4f0")}
 //
 // 47 - AE_AML_OPERAND_TYPE
 //
-Method(m4b8)
+Method(m4b8,, Serialized)
 {
 	Name(ts, "m4b8")
 
@@ -71,7 +71,7 @@ Method(m4b8)
 	}
 
 	// Local
-	Method(m002, 1)
+	Method(m002, 1, Serialized)
 	{
 		Method(m4f2) {Return ("m4f2")}
 
@@ -789,7 +789,7 @@ Method(m4b8)
 	}
 
 	// Result of Method invocation
-	Method(m004, 1)
+	Method(m004, 1, Serialized)
 	{
 		Name(i000, 0) // Label to check m000 invocations
 
@@ -1162,7 +1162,7 @@ Method(m4b8)
 	}
 
 	// Reference to Object as Result of Method invocation
-	Method(m005, 1)
+	Method(m005, 1, Serialized)
 	{
 		Method(m4f2) {Return ("m4f2")}
 

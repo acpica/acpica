@@ -401,7 +401,7 @@ Method(m71f, 1)
 // Read/Write Quick (SMBQuick)
 // m751(CallChain)
 // CallChain: String
-Method(m751, 1)
+Method(m751, 1, Serialized)
 {
 	Concatenate(arg0, "-m751", arg0)
 
@@ -465,7 +465,7 @@ Method(m751, 1)
 // Read/Write Quick (SMBQuick)
 // m752(CallChain)
 // CallChain: String
-Method(m752, 1)
+Method(m752, 1, Serialized)
 {
 	Concatenate(arg0, "-m752", arg0)
 
@@ -528,7 +528,7 @@ Method(m752, 1)
 // Read/Write Byte (SMBByte)
 // m753(CallChain)
 // CallChain: String
-Method(m753, 1)
+Method(m753, 1, Serialized)
 {
 	Concatenate(arg0, "-m753", arg0)
 
@@ -593,7 +593,7 @@ Method(m753, 1)
 // Read/Write Word (SMBWord)
 // m754(CallChain)
 // CallChain: String
-Method(m754, 1)
+Method(m754, 1, Serialized)
 {
 	Concatenate(arg0, "-m754", arg0)
 
@@ -658,7 +658,7 @@ Method(m754, 1)
 // Read/Write Block (SMBBlock)
 // m755(CallChain)
 // CallChain: String
-Method(m755, 1)
+Method(m755, 1, Serialized)
 {
 	Concatenate(arg0, "-m755", arg0)
 
@@ -730,7 +730,7 @@ Method(m755, 1)
 // Word Process Call (SMBProcessCall)
 // m756(CallChain)
 // CallChain: String
-Method(m756, 1)
+Method(m756, 1, Serialized)
 {
 	Concatenate(arg0, "-m756", arg0)
 
@@ -782,7 +782,7 @@ Method(m756, 1)
 // Block Process Call (SMBBlockProcessCall)
 // m757(CallChain)
 // CallChain: String
-Method(m757, 1)
+Method(m757, 1, Serialized)
 {
 	Concatenate(arg0, "-m757", arg0)
 
@@ -890,7 +890,7 @@ Method(m740, 1)
 // Read/Write Quick (AttribQuick)
 // m758(CallChain)
 // CallChain: String
-Method(m758, 1)
+Method(m758, 1, Serialized)
 {
 	Concatenate(arg0, "-m758", arg0)
 
@@ -961,7 +961,7 @@ Method(m758, 1)
 // Read/Write Quick (AttribQuick)
 // m759(CallChain)
 // CallChain: String
-Method(m759, 1)
+Method(m759, 1, Serialized)
 {
 	Concatenate(arg0, "-m759", arg0)
 
@@ -1031,7 +1031,7 @@ Method(m759, 1)
 // Read/Write Byte (AttribByte)
 // m75a(CallChain)
 // CallChain: String
-Method(m75a, 1)
+Method(m75a, 1, Serialized)
 {
 	Concatenate(arg0, "-m75a", arg0)
 
@@ -1103,7 +1103,7 @@ Method(m75a, 1)
 // Read/Write Word (AttribWord)
 // m75b(CallChain)
 // CallChain: String
-Method(m75b, 1)
+Method(m75b, 1, Serialized)
 {
 	Concatenate(arg0, "-m75b", arg0)
 
@@ -1175,7 +1175,7 @@ Method(m75b, 1)
 // Read/Write Block (AttribBlock)
 // m75c(CallChain)
 // CallChain: String
-Method(m75c, 1)
+Method(m75c, 1, Serialized)
 {
 	Concatenate(arg0, "-m75c", arg0)
 
@@ -1254,7 +1254,7 @@ Method(m75c, 1)
 // Word Process Call (AttribProcessCall)
 // m75d(CallChain)
 // CallChain: String
-Method(m75d, 1)
+Method(m75d, 1, Serialized)
 {
 	Concatenate(arg0, "-m75d", arg0)
 
@@ -1313,7 +1313,7 @@ Method(m75d, 1)
 // Block Process Call (AttribBlockProcessCall)
 // m75e(CallChain)
 // CallChain: String
-Method(m75e, 1)
+Method(m75e, 1, Serialized)
 {
 	Concatenate(arg0, "-m75e", arg0)
 
@@ -1378,7 +1378,7 @@ Method(m75e, 1)
 // Read/Write N Bytes (AttribBytes)
 // m75f(CallChain)
 // CallChain: String
-Method(m75f, 1)
+Method(m75f, 1, Serialized)
 {
 	Concatenate(arg0, "-m75f", arg0)
 
@@ -1445,7 +1445,7 @@ Method(m75f, 1)
 // Raw Read/Write N Bytes (AttribRawBytes)
 // m760(CallChain)
 // CallChain: String
-Method(m760, 1)
+Method(m760, 1, Serialized)
 {
 	Concatenate(arg0, "-m760", arg0)
 
@@ -1512,7 +1512,7 @@ Method(m760, 1)
 // Raw Process Call (AttribRawProcessBytes)
 // m761(CallChain)
 // CallChain: String
-Method(m761, 1)
+Method(m761, 1, Serialized)
 {
 	Concatenate(arg0, "-m761", arg0)
 
@@ -1582,7 +1582,7 @@ Method(m761, 1)
 //
 // Test the use of Connection() operator and simple ByteAcc
 //
-Method(m764, 1)
+Method(m764, 1, Serialized)
 {
 	Concatenate(arg0, "-m764", arg0)
 
@@ -1650,7 +1650,7 @@ Method(m764, 1)
 
 //**** IPMI (ACPI 4.0) - bidirectional buffer ****************************
 
-Method(m768, 1)
+Method(m768, 1, Serialized)
 {
 	Concatenate(arg0, "-m768", arg0)
 
@@ -1712,7 +1712,7 @@ Method(m768, 1)
 
 // Splitting of Fields
 // m742(CallChain)
-Method(m742, 1)
+Method(m742, 1, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, 0x257)
 
@@ -1735,7 +1735,7 @@ Method(m742, 1)
 // Create Region Fields that spans the same bits
 // and check possible inconsistence, 0-bit offset.
 // m720(CallChain, OpRegion)
-Method(m720, 2)
+Method(m720, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x1000)
 
@@ -1790,7 +1790,7 @@ Method(m720, 2)
 // Create Region Fields that spans the same bits
 // and check possible inconsistence, 1-bit offset.
 // m721(CallChain, OpRegion)
-Method(m721, 2)
+Method(m721, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x1000)
 
@@ -1845,7 +1845,7 @@ Method(m721, 2)
 // Create Region Fields that spans the same bits
 // and check possible inconsistence, 2-bit offset.
 // m722(CallChain, OpRegion)
-Method(m722, 2)
+Method(m722, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x1000)
 
@@ -1900,7 +1900,7 @@ Method(m722, 2)
 // Create Region Fields that spans the same bits
 // and check possible inconsistence, 3-bit offset.
 // m723(CallChain, OpRegion)
-Method(m723, 2)
+Method(m723, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x1000)
 
@@ -1955,7 +1955,7 @@ Method(m723, 2)
 // Create Region Fields that spans the same bits
 // and check possible inconsistence, 4-bit offset.
 // m724(CallChain, OpRegion)
-Method(m724, 2)
+Method(m724, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x1000)
 
@@ -2010,7 +2010,7 @@ Method(m724, 2)
 // Create Region Fields that spans the same bits
 // and check possible inconsistence, 5-bit offset.
 // m725(CallChain, OpRegion)
-Method(m725, 2)
+Method(m725, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x1000)
 
@@ -2065,7 +2065,7 @@ Method(m725, 2)
 // Create Region Fields that spans the same bits
 // and check possible inconsistence, 6-bit offset.
 // m726(CallChain, OpRegion)
-Method(m726, 2)
+Method(m726, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x1000)
 
@@ -2120,7 +2120,7 @@ Method(m726, 2)
 // Create Region Fields that spans the same bits
 // and check possible inconsistence, 7-bit offset.
 // m727(CallChain, OpRegion)
-Method(m727, 2)
+Method(m727, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x1000)
 
@@ -2175,7 +2175,7 @@ Method(m727, 2)
 // Create Region Fields that spans the same bits
 // and check possible inconsistence, 8-bit offset.
 // m728(CallChain, OpRegion)
-Method(m728, 2)
+Method(m728, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x1000)
 
@@ -2230,7 +2230,7 @@ Method(m728, 2)
 // Create Region Fields that spans the same bits
 // and check possible inconsistence, 2046-bit offset.
 // m729(CallChain, OpRegion)
-Method(m729, 2)
+Method(m729, 2, Serialized)
 {
 	OperationRegion(OPRm, 0xff, 0, 0x1000)
 
@@ -2332,7 +2332,7 @@ Method(m72a, 3)
 	}
 }
 
-Method(m72f, 4)
+Method(m72f, 4, Serialized)
 {
 	Concatenate(arg0, "-m72f", arg0)
 
@@ -24846,7 +24846,7 @@ Method(m743, 1, Serialized)
 
 // Large Offset
 // m744(CallChain)
-Method(m744, 1)
+Method(m744, 1, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, 0x2000000)
 
@@ -24876,7 +24876,7 @@ Method(m744, 1)
 }
 
 // Run-method
-Method(RFC0)
+Method(RFC0,, Serialized)
 {
 	Name(ts, "RFC0")
 

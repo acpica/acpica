@@ -34,7 +34,7 @@
 
 Method(m024)
 {
-	Method(mm00)
+	Method(mm00,, Serialized)
 	{
 		Name(i001, 0)
 		Name(s000, "q\001ertyuiop")

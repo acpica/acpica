@@ -32,7 +32,7 @@
  * SUMMARY: AcpiExec is unable to emulate access to IndexField Object
  */
 
-Method(m10c)
+Method(m10c,, Serialized)
 {
 	OperationRegion(OPR0, SystemMemory, 0, 256)
 

@@ -32,7 +32,7 @@
  * SUMMARY: Clarify what is the proper behaviour in case of the zero length buffer
  */
 
-Method(m10f, 1)
+Method(m10f, 1, Serialized)
 {
 	Name(b000, Buffer(Arg0) {})
 

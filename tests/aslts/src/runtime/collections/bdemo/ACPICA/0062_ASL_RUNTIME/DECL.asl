@@ -34,7 +34,7 @@
  */
 
 
-Method(mb62)
+Method(mb62,, Serialized)
 {
 
 	Name(s000, // Lines 14 - 91: 78 * 50 + 21 = 3921 bytes

@@ -32,7 +32,7 @@
  * SUMMARY: No exception on Create*Field for out of Buffer range
  */
 
-Method(mdbc)
+Method(mdbc,, Serialized)
 {
 	Name(b000, Buffer(16) {})
 
@@ -45,7 +45,7 @@ Method(mdbc)
 	CreateField(b000, 120, 8, f006)
 }
 
-Method(mdbd)
+Method(mdbd,, Serialized)
 {
 	Name(b000, Buffer(16) {})
 

@@ -35,7 +35,7 @@
 Name(z041, 41)
 
 // Simplest test of SizeOf for all available type objects
-Method(m1ef)
+Method(m1ef,, Serialized)
 {
 	Name(ts, "m1ef")
 

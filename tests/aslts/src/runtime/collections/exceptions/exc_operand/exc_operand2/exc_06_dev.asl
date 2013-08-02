@@ -40,7 +40,7 @@ Device(dev0) {}
 //
 // 47 - AE_AML_OPERAND_TYPE
 //
-Method(m4b6)
+Method(m4b6,, Serialized)
 {
 	Name(ts, "m4b6")
 
@@ -51,7 +51,7 @@ Method(m4b6)
 	Name(i000, 0)
 
 	// Local Named Object
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		Device(dev2) {}
 
@@ -69,7 +69,7 @@ Method(m4b6)
 	}
 
 	// Local
-	Method(m002, 1)
+	Method(m002, 1, Serialized)
 	{
 		Device(dev2) {}
 
@@ -432,7 +432,7 @@ Method(m4b6)
 	}
 
 	// Reference to Object
-	Method(m003, 3)
+	Method(m003, 3, Serialized)
 	{
 		Name(EXC0, 47)	// AE_AML_OPERAND_TYPE
 
@@ -793,7 +793,7 @@ Method(m4b6)
 	}
 
 	// Result of Method invocation
-	Method(m004, 1)
+	Method(m004, 1, Serialized)
 	{
 		Name(i000, 0) // Label to check m000 invocations
 
@@ -1159,7 +1159,7 @@ Method(m4b6)
 	}
 
 	// Reference to Object as Result of Method invocation
-	Method(m005, 1)
+	Method(m005, 1, Serialized)
 	{
 		Device(dev2) {}
 

@@ -35,7 +35,7 @@ Name(z126, 126)
 
 // m693(<store op>, <exc. conditions>,
 //      <Target scale>, <Result scale>, <kind of Source-Target pair>)
-Method(m693, 5)
+Method(m693, 5, Serialized)
 {
 	Name(ts, "m693")
 
@@ -199,7 +199,7 @@ Method(m693, 5)
 	}
 
 	// Output statistics
-	Method(m002, 1)
+	Method(m002, 1, Serialized)
 	{
 		Name(lpN0, 0)
 		Name(lpC0, 0)
@@ -439,7 +439,7 @@ Method(m693, 5)
 	// Check Target Object to have the expected type and value
 	// m006(<msg>, <ref to target>, <target type>, <source type>,
 	//      <op>, <target save type>, <test data package>)
-	Method(m006, 7)
+	Method(m006, 7, Serialized)
 	{
 		Name(MMM2, 0) // The auxiliary Object to invoke Method
 

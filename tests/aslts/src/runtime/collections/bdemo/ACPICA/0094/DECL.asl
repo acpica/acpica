@@ -32,7 +32,7 @@
  * SUMMARY: Invalid result of Index operator passed with the immediate image of String
  */
 
-	Method(me44, 1)
+	Method(me44, 1, Serialized)
 	{
 		Name(s000, "qwrtyuiop")
 

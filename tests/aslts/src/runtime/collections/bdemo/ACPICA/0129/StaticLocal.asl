@@ -30,7 +30,7 @@
  * Absolutely the same as md6c but all the Packages
  * are declared statically as locals of Method.
  */
-Method(md6d)
+Method(md6d,, Serialized)
 {
 
 Name(p500, Package(256) {

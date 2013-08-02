@@ -35,7 +35,7 @@ Name(z155, 155)
  * nevertheless allow access to the elements of original objects.
  */
 
-Method(m100)
+Method(m100,, Serialized)
 {
 	Name(ts, "m100")
 	Name(p000, Package() {0xabcd0000, 0xabcd0001, 0xabcd0002})
@@ -55,7 +55,7 @@ Method(m100)
 	CH03(ts, z155, 0x001, 0, 0)
 }
 
-Method(m101)
+Method(m101,, Serialized)
 {
 	Name(ts, "m101")
 	Name(b000, Buffer() {0x10, 0x11, 0x12})
@@ -75,7 +75,7 @@ Method(m101)
 	CH03(ts, z155, 0x003, 0, 0)
 }
 
-Method(m102)
+Method(m102,, Serialized)
 {
 	Name(ts, "m102")
 	Name(s000, "qqqqqqqqqqqqqq")
@@ -98,7 +98,7 @@ Method(m102)
 /*
  * Element of Package instead of i000 (in m001)
  */
-Method(m103, 1)
+Method(m103, 1, Serialized)
 {
 	Name(ts, "m103")
 	Name(i001, 0)
@@ -170,7 +170,7 @@ Method(m103, 1)
 /*
  * Element of Package instead of i000 (in m002)
  */
-Method(m104)
+Method(m104,, Serialized)
 {
 	Name(ts, "m104")
 	Name(i001, 0)
@@ -207,7 +207,7 @@ Method(m104)
 /*
  * Buffer Field instead of i000 (in m001)
  */
-Method(m105, 1)
+Method(m105, 1, Serialized)
 {
 	Name(ts, "m105")
 	Name(i001, 0)
@@ -286,7 +286,7 @@ Method(m105, 1)
 /*
  * Field instead of i000 (in m001)
  */
-Method(m106, 1)
+Method(m106, 1, Serialized)
 {
 	Name(ts, "m106")
 	Name(i001, 0)
@@ -367,7 +367,7 @@ Method(m106, 1)
  *
  * (is this test correct?)
  */
-Method(m107, 1)
+Method(m107, 1, Serialized)
 {
 	Name(ts, "m107")
 	Name(i001, 0)
@@ -449,7 +449,7 @@ Method(m107, 1)
  *
  * (is this test correct?)
  */
-Method(m108, 1)
+Method(m108, 1, Serialized)
 {
 	Name(ts, "m108")
 	Name(i001, 0)
@@ -529,7 +529,7 @@ Method(m108, 1)
 /*
  * Element of Buffer instead of i000 (in m001)
  */
-Method(m109, 1)
+Method(m109, 1, Serialized)
 {
 	Name(ts, "m109")
 	Name(i001, 0)
@@ -606,7 +606,7 @@ Method(m109, 1)
 /*
  * Element of String instead of i000 (in m001)
  */
-Method(m10a, 1)
+Method(m10a, 1, Serialized)
 {
 	Name(ts, "m10a")
 	Name(i001, 0)

@@ -34,7 +34,7 @@
  * ROOT CAUSE
  */
 
-	Method(mf29)
+	Method(mf29,, Serialized)
 	{
 		Name(b000, Buffer(12){})
 		CreateField(b000,  0, 72, bf00)

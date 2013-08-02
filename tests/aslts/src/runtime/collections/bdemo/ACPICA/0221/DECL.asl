@@ -33,7 +33,7 @@
  *          covering different ranges
  */
 
-Method(m109)
+Method(m109,, Serialized)
 {
 	Method(CHCK, 3)
 	{

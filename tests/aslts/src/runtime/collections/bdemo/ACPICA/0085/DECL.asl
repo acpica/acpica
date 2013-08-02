@@ -34,7 +34,7 @@
 
 	// Uninitialized element of Package
 
-	Method(me37)
+	Method(me37,, Serialized)
 	{
 		// Ref #1
 

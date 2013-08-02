@@ -36,7 +36,7 @@
  * Outstanding: 0xE allocations after execution.
  */
 
-Method(mfcb)
+Method(mfcb,, Serialized)
 {
 	Name(p000, Package(16) {})
 
@@ -103,7 +103,7 @@ Method(mfcb)
 /*
  * LocalX involved
  */
-Method(mfcf)
+Method(mfcf,, Serialized)
 {
 	Name(p000, Package(16) {})
 
@@ -122,7 +122,7 @@ Method(mfcf)
 /*
  * One-directional list of references
  */
-Method(mfd0)
+Method(mfd0,, Serialized)
 {
 	Name(sz, 16)	// full size of Package
 	Name(num, 0)	// half-size of Package
@@ -182,7 +182,7 @@ Method(mfd0)
 /*
  * 0-Ring of references
  */
-Method(mfd1)
+Method(mfd1,, Serialized)
 {
 	Name(sz, 16)	// full size of Package
 	Name(num, 0)	// half-size of Package
@@ -244,7 +244,7 @@ Method(mfd1)
 /*
  * 9-Ring of references
  */
-Method(mfd2)
+Method(mfd2,, Serialized)
 {
 	Name(sz, 16)	// full size of Package
 	Name(num, 0)	// half-size of Package
@@ -308,7 +308,7 @@ Method(mfd2)
 /*
  * Bush of references
  */
-Method(mfd3)
+Method(mfd3,, Serialized)
 {
 	Name(sz, 16)	// full size of Package
 	Name(num, 0)	// half-size of Package
@@ -387,7 +387,7 @@ Method(mfd3)
 /*
  * Two-directional list of references
  */
-Method(mfd4)
+Method(mfd4,, Serialized)
 {
 	Name(sz, 16)	// full size of Package
 	Name(nm2, 0)	// half-size of Package
@@ -475,7 +475,7 @@ Method(mfd4)
 /*
  * Ring of two-directional references
  */
-Method(mfd5)
+Method(mfd5,, Serialized)
 {
 	Name(sz, 16)	// full size of Package
 	Name(nm2, 0)	// half-size of Package
@@ -570,7 +570,7 @@ Method(mfd5)
 /*
  * Web of references
  */
-Method(mfd6)
+Method(mfd6,, Serialized)
 {
 	Name(sz, 32)	// full size of Package
 	Name(prt, 16)	// number of different parts
@@ -838,7 +838,7 @@ Method(mfd6)
 /*
  * Extended Web of references
  */
-Method(mfd7, 7)
+Method(mfd7, 7, Serialized)
 {
 	Name(lpN0, 0)
 	Name(lpC0, 0)
@@ -1228,12 +1228,12 @@ Method(mfd7, 7)
 	}
 }
 
-Method(mfe9)
+Method(mfe9,, Serialized)
 {
 	Name(p000, Package(101) {0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,0x18,0x19,0x1a,0x1b,0x1c,0x1d,0x1e,0x1f})
 	Name(p002, Package(102) {0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27})
 
-	Method(m000)
+	Method(m000,, Serialized)
 	{
 		Name(p001, Package(100) {0,1})
 		Store(Index(p000, 0), Index(p001, 0))
@@ -1252,7 +1252,7 @@ Method(mfe9)
 		Store(Index(p002, 18), Index(p002, 19))
 	}
 
-	Method(m001)
+	Method(m001,, Serialized)
 	{
 		Name(p001, Package(100) {0,1})
 		Store(Index(p000, 1), Index(p001, 1))
@@ -1273,7 +1273,7 @@ Method(mfe9)
 		m000()
 	}
 
-	Method(m002)
+	Method(m002,, Serialized)
 	{
 		Name(p001, Package(100) {0,1})
 		Store(Index(p000, 2), Index(p001, 2))
@@ -1294,7 +1294,7 @@ Method(mfe9)
 		m001()
 	}
 
-	Method(m003)
+	Method(m003,, Serialized)
 	{
 		Name(p001, Package(100) {0,1})
 		Store(Index(p000, 3), Index(p001, 3))
@@ -1315,7 +1315,7 @@ Method(mfe9)
 		m002()
 	}
 
-	Method(m004)
+	Method(m004,, Serialized)
 	{
 		Name(p001, Package(100) {0,1})
 		Store(Index(p000, 4), Index(p001, 4))
@@ -1336,7 +1336,7 @@ Method(mfe9)
 		m003()
 	}
 
-	Method(m005)
+	Method(m005,, Serialized)
 	{
 		Name(p001, Package(100) {0,1})
 		Store(Index(p000, 5), Index(p001, 5))
@@ -1357,7 +1357,7 @@ Method(mfe9)
 		m004()
 	}
 
-	Method(m006)
+	Method(m006,, Serialized)
 	{
 		Name(p001, Package(100) {0,1})
 		Store(Index(p000, 6), Index(p001, 6))
@@ -1378,7 +1378,7 @@ Method(mfe9)
 		m005()
 	}
 
-	Method(m007)
+	Method(m007,, Serialized)
 	{
 		Name(p001, Package(100) {0,1})
 		Store(Index(p000, 7), Index(p001, 7))
@@ -1403,12 +1403,12 @@ Method(mfe9)
 	m007()
 }
 
-Method(mfea)
+Method(mfea,, Serialized)
 {
 	Name(p000, Package(101) {0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,0x18,0x19,0x1a,0x1b,0x1c,0x1d,0x1e,0x1f})
 	Name(p002, Package(102) {0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27})
 
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		Name(p001, Package(100) {0,1})
 		Store(Index(arg0, 0), Index(p001, 0))
@@ -1427,7 +1427,7 @@ Method(mfea)
 		Store(Index(p002, 18), Index(p002, 19))
 	}
 
-	Method(m001, 1)
+	Method(m001, 1, Serialized)
 	{
 		Name(p001, Package(100) {0,1})
 		Store(Index(arg0, 1), Index(p001, 1))
@@ -1448,7 +1448,7 @@ Method(mfea)
 		m000(arg0)
 	}
 
-	Method(m002, 1)
+	Method(m002, 1, Serialized)
 	{
 		Name(p001, Package(100) {0,1})
 		Store(Index(arg0, 2), Index(p001, 2))
@@ -1469,7 +1469,7 @@ Method(mfea)
 		m001(arg0)
 	}
 
-	Method(m003, 1)
+	Method(m003, 1, Serialized)
 	{
 		Name(p001, Package(100) {0,1})
 		Store(Index(arg0, 3), Index(p001, 3))
@@ -1490,7 +1490,7 @@ Method(mfea)
 		m002(arg0)
 	}
 
-	Method(m004, 1)
+	Method(m004, 1, Serialized)
 	{
 		Name(p001, Package(100) {0,1})
 		Store(Index(arg0, 4), Index(p001, 4))
@@ -1511,7 +1511,7 @@ Method(mfea)
 		m003(arg0)
 	}
 
-	Method(m005, 1)
+	Method(m005, 1, Serialized)
 	{
 		Name(p001, Package(100) {0,1})
 		Store(Index(arg0, 5), Index(p001, 5))
@@ -1532,7 +1532,7 @@ Method(mfea)
 		m004(arg0)
 	}
 
-	Method(m006, 1)
+	Method(m006, 1, Serialized)
 	{
 		Name(p001, Package(100) {0,1})
 		Store(Index(arg0, 6), Index(p001, 6))
@@ -1553,7 +1553,7 @@ Method(mfea)
 		m005(arg0)
 	}
 
-	Method(m007, 1)
+	Method(m007, 1, Serialized)
 	{
 		Name(p001, Package(100) {0,1})
 		Store(Index(arg0, 7), Index(p001, 7))
@@ -1578,7 +1578,7 @@ Method(mfea)
 	m007(p000)
 }
 
-Method(mfeb)
+Method(mfeb,, Serialized)
 {
 	Name(cmd0, 0)
 
@@ -1591,7 +1591,7 @@ Method(mfeb)
 	Name(p006, Package(36) {0xc0,0xc1,0xc2,0xc3,0xc4,0xc5,0xc6,0xc7,0xc8,0xc9})
 	Name(p007, Package(37) {0xd0,0xd1,0xd2,0xd3,0xd4,0xd5,0xd6,0xd7,0xd8,0xd9})
 
-	Method(m000, 7)
+	Method(m000, 7, Serialized)
 	{
 		Name(pp00, Package(64) {0xd0,0xd1,0xd2,0xd3,0xd4,0xd5,0xd6,0xd7})
 		Name(pp01, Package(64) {0xd0,0xd1,0xd2,0xd3,0xd4,0xd5,0xd6,0xd7})
@@ -1829,7 +1829,7 @@ Method(mfeb)
 		}
 	}
 
-	Method(m001, 7)
+	Method(m001, 7, Serialized)
 	{
 		Name(pp00, Package(64) {0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17})
 		Name(pp01, Package(64) {0xd0,0xd1,0xd2,0xd3,0xd4,0xd5,0xd6,0xd7})
@@ -1955,7 +1955,7 @@ Method(mfeb)
 		}
 	}
 
-	Method(m002, 7)
+	Method(m002, 7, Serialized)
 	{
 		Name(pp00, Package(64) {0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27})
 
@@ -1963,7 +1963,7 @@ Method(mfeb)
 		Store(pp00, arg0)
 	}
 
-	Method(m003, 7)
+	Method(m003, 7, Serialized)
 	{
 		Name(pp00, Package(64) {0x30,0x31,0x32,0x33,0x34,0x35,0x36,0x37})
 
@@ -1971,7 +1971,7 @@ Method(mfeb)
 		Store(pp00, arg0)
 	}
 
-	Method(m004, 7)
+	Method(m004, 7, Serialized)
 	{
 		Name(pp00, Package(64) {0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47})
 
@@ -1979,7 +1979,7 @@ Method(mfeb)
 		Store(pp00, arg0)
 	}
 
-	Method(m005, 7)
+	Method(m005, 7, Serialized)
 	{
 		Name(pp00, Package(64) {0x50,0x51,0x52,0x53,0x54,0x55,0x56,0x57})
 
@@ -1987,7 +1987,7 @@ Method(mfeb)
 		Store(pp00, arg0)
 	}
 
-	Method(m006, 7)
+	Method(m006, 7, Serialized)
 	{
 		Name(pp00, Package(64) {0x60,0x61,0x62,0x63,0x64,0x65,0x66,0x67})
 
@@ -2002,7 +2002,7 @@ Method(mfeb)
 	m006(p000,p001,p002,p003,p004,p005,p006)
 }
 
-Method(mf01)
+Method(mf01,, Serialized)
 {
 	Name(i000, 0)
 	Name(i001, 1)
@@ -2152,7 +2152,7 @@ Method(mf01)
 		/*
 		 * Store additionally ORef into packages.
 		 */
-		Method(m007, 3)
+		Method(m007, 3, Serialized)
 		{
 			Name(ii00, 0)
 			Name(ii01, 0)

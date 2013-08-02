@@ -62,7 +62,7 @@ and Ctl Thread do mf00()
  * arg1 - ID of current thread
  * arg2 - Index of current thread
  */
-Method(mf01, 3)
+Method(mf01, 3, Serialized)
 {
 	/* Initialization of multithreading interconnection */
 

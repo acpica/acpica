@@ -32,7 +32,7 @@
  * SUMMARY: No exception when the Index argument on Index() operator is out of the Source
  */
 
-	Method(mf06)
+	Method(mf06,, Serialized)
 	{
 		Name(p000, Package(2){0, 1})
 		Name(b000, Buffer(3){2, 3, 4})

@@ -32,7 +32,7 @@
  * SUMMARY: The result of Interrupt Resource Template macro is incorrect when ResourceSource is omitted
  */
 
-Method(m107)
+Method(m107,, Serialized)
 {
 	Name (RT00,	ResourceTemplate () {
 		Interrupt (ResourceConsumer, Edge, ActiveLow, Shared,

@@ -40,7 +40,7 @@ OperationRegion(opr9, SystemMemory, 0x100, 0x100)
 //
 // 47 - AE_AML_OPERAND_TYPE
 //
-Method(m4ba)
+Method(m4ba,, Serialized)
 {
 	Name(ts, "m4ba")
 
@@ -51,7 +51,7 @@ Method(m4ba)
 	Name(i000, 0)
 
 	// Local Named Object
-	Method(m000, 1)
+	Method(m000, 1, Serialized)
 	{
 		OperationRegion(opr2, SystemMemory, 0x100, 0x100)
 
@@ -69,7 +69,7 @@ Method(m4ba)
 	}
 
 	// Local
-	Method(m002, 1)
+	Method(m002, 1, Serialized)
 	{
 		OperationRegion(opr2, SystemMemory, 0x100, 0x100)
 
@@ -788,7 +788,7 @@ Method(m4ba)
 	}
 
 	// Result of Method invocation
-	Method(m004, 1)
+	Method(m004, 1, Serialized)
 	{
 		Name(i000, 0) // Label to check m000 invocations
 
@@ -1154,7 +1154,7 @@ Method(m4ba)
 	}
 
 	// Reference to Object as Result of Method invocation
-	Method(m005, 1)
+	Method(m005, 1, Serialized)
 	{
 		OperationRegion(opr2, SystemMemory, 0x100, 0x100)
 

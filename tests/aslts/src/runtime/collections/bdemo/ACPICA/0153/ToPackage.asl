@@ -33,7 +33,7 @@
 
 // Integer
 
-Method(md2d)
+Method(md2d,, Serialized)
 {
 	Name(i000, 0xe0385bcd)
 	Name(OOO2, Package(1){"Package"})
@@ -53,7 +53,7 @@ Method(md2d)
 
 // String
 
-Method(md2e)
+Method(md2e,, Serialized)
 {
 	Name(s000, "String")
 	Name(OOO2, Package(1){"Package"})
@@ -74,7 +74,7 @@ Method(md2e)
 
 // Buffer
 
-Method(md2f)
+Method(md2f,, Serialized)
 {
 	Name(b000, Buffer() {1,2,3,4})
 	Name(OOO2, Package(1){Buffer() {5,6,7,8}})
@@ -95,7 +95,7 @@ Method(md2f)
 
 // Package
 
-Method(md30)
+Method(md30,, Serialized)
 {
 	Name(pppp, Package(1){Buffer() {1,2,3,4}})
 	Name(OOO2, Package(1){Buffer() {5,6,7,8}})

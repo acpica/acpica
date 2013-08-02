@@ -50,7 +50,7 @@
 
 Name(id28, 0)
 
-Method(mdc7)
+Method(mdc7,, Serialized)
 {
 	CH03("", 0, 0x000, 0, 0)
 	Store(0x12345678, i000)
@@ -58,10 +58,10 @@ Method(mdc7)
 	CH04("", 0, 0xff, 0, 0x001, 0, 0)
 }
 
-Method (m800)
+Method (m800,, Serialized)
 {
 	Name(i000, 0)
-	Method (m000)
+	Method (m000,, Serialized)
 	{
 		Store(i000, Debug)
 		Name(i000, 0xffffffff)
@@ -70,14 +70,14 @@ Method (m800)
 
 Method (m801)
 {
-	Method (m000)
+	Method (m000,, Serialized)
 	{
 		Store(id28, Debug)
 		Name(id28, 0xffffffff)
 	}
 }
 
-Method(m802)
+Method(m802,, Serialized)
 {
 	Name(i000, 0)
 	Store(0xabcd0000, i000)
@@ -97,7 +97,7 @@ Method(m802)
 
 		CH03("", 0, 0x004, 0, 0)
 
-		Method(m000)
+		Method(m000,, Serialized)
 		{
 			Name(i000, 0xabcd0003)
 			if (LNotEqual(i000, 0xabcd0003)) {
@@ -107,7 +107,7 @@ Method(m802)
 
 		CH03("", 0, 0x005, 0, 0)
 
-		Method(m001)
+		Method(m001,, Serialized)
 		{
 			Name(i000, 0xabcd0004)
 			Store(0xabcd0005, i000)
@@ -118,7 +118,7 @@ Method(m802)
 
 		CH03("", 0, 0x006, 0, 0)
 
-		Method(m002)
+		Method(m002,, Serialized)
 		{
 			Store(i000, Debug)
 			Name(i000, 0xabcd0006)
@@ -130,7 +130,7 @@ Method(m802)
 
 		CH03("", 0, 0x007, 0, 0)
 
-		Method (m003)
+		Method (m003,, Serialized)
 		{
 			Store("------------------------------ 000000000", Debug)
 			Store(id28, Debug)
