@@ -915,29 +915,6 @@ AcpiPsGetNextArg (
     case ARGP_TARGET:
     case ARGP_SUPERNAME:
     case ARGP_SIMPLENAME:
-
-        /*
-         * Handle the case for a null target or name.
-         * Note: The parser inserts a Zero node for an optional target
-         * that is not specified in the source ASL.
-         */
-        if (AcpiPsPeekOpcode (ParserState) == 0)
-        {
-            Arg = AcpiPsAllocOp (AML_INT_NAMEPATH_OP);
-            if (!Arg)
-            {
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-
-            Status = AcpiPsGetNextNamepath (WalkState, ParserState, Arg, 0);
-            break;
-        }
-
-        /* Single complex argument, nothing returned */
-
-        WalkState->ArgCount = 1;
-        break;
-
     case ARGP_DATAOBJ:
     case ARGP_TERMARG:
         /*
