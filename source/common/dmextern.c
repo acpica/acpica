@@ -464,18 +464,6 @@ AcpiDmAddToExternalList (
         return;
     }
 
-    /* For certain opcodes, we don't need an external */
-
-    if (Op && Op->Asl.Parent)
-    {
-        if (Op->Asl.Parent->Asl.AmlOpcode == AML_COND_REF_OF_OP)
-        {
-            return;
-        }
-    }
-
-    /* Bit 0x80 of Value used to indicate method resolution status */
-
     if (Type == ACPI_TYPE_METHOD)
     {
         if (Value & 0x80)
@@ -669,7 +657,6 @@ AcpiDmGetExternalsFromFile (
     {
         fprintf (stderr, "Could not open external reference file \"%s\"\n",
             Gbl_ExternalRefFilename);
-        Gbl_ExternalRefFilename = NULL;
         return;
     }
 
@@ -1115,7 +1102,7 @@ AcpiDmEmitExternals (
     {
         AcpiOsPrintf (
             "    /*\n     * External declarations that were imported from\n"
-            "     * input reference file [%s]\n     */\n",
+            "     * the reference file [%s]\n     */\n",
             Gbl_ExternalRefFilename);
 
         NextExternal = AcpiGbl_ExternalList;

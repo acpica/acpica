@@ -883,17 +883,22 @@ AcpiDmXrefDescendingOp (
     Status = AcpiNsLookup (WalkState->ScopeInfo, Path, ACPI_TYPE_ANY,
                 ACPI_IMODE_EXECUTE, ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE,
                 WalkState, &Node);
+    if (ACPI_SUCCESS (Status) && (Node->Flags & ANOBJ_IS_EXTERNAL))
+    {
+        Status = AE_NOT_FOUND;
+    }
+
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_NOT_FOUND)
         {
             AcpiDmAddToExternalList (Op, Path, (UINT8) ObjectType, 0);
 
-#if 0
             /*
              * We could install this into the namespace, but we catch duplicate
              * externals when they are added to the list.
              */
+#if 0
             Status = AcpiNsLookup (WalkState->ScopeInfo, Path, ACPI_TYPE_ANY,
                        ACPI_IMODE_LOAD_PASS1, ACPI_NS_DONT_OPEN_SCOPE,
                        WalkState, &Node);
