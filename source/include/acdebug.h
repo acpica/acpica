@@ -231,6 +231,10 @@ AcpiDbGenerateGpe (
     char                    *GpeArg,
     char                    *BlockArg))
 
+ACPI_HW_DEPENDENT_RETURN_VOID (
+void
+AcpiDbGenerateSci (
+    void))
 
 /*
  * dbconvert - miscellaneous conversion routines

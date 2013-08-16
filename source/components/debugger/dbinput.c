@@ -210,6 +210,7 @@ enum AcpiExDebuggerCommands
     CMD_REFERENCES,
     CMD_RESOURCES,
     CMD_RESULTS,
+    CMD_SCI,
     CMD_SET,
     CMD_SLEEP,
     CMD_STATS,
@@ -281,6 +282,7 @@ static const ACPI_DB_COMMAND_INFO   AcpiGbl_DbCommands[] =
     {"REFERENCES",   1},
     {"RESOURCES",    0},
     {"RESULTS",      0},
+    {"SCI",          0},
     {"SET",          3},
     {"SLEEP",        0},
     {"STATS",        1},
@@ -331,10 +333,7 @@ static const ACPI_DB_COMMAND_HELP   AcpiGbl_DbCommandHelp[] =
     {0, "\nNamespace Access Commands:",        "\n"},
     {1, "  Businfo",                           "Display system bus info\n"},
     {1, "  Disassemble <Method>",              "Disassemble a control method\n"},
-    {1, "  Event <F|G> <Value>",               "Generate AcpiEvent (Fixed/GPE)\n"},
     {1, "  Find <AcpiName> (? is wildcard)",   "Find ACPI name(s) with wildcards\n"},
-    {1, "  Gpe <GpeNum> <GpeBlock>",           "Simulate a GPE\n"},
-    {1, "  Gpes",                              "Display info on all GPEs\n"},
     {1, "  Integrity",                         "Validate namespace integrity\n"},
     {1, "  Methods",                           "Display list of loaded control methods\n"},
     {1, "  Namespace [Object] [Depth]",        "Display loaded namespace tree/subtree\n"},
@@ -346,7 +345,6 @@ static const ACPI_DB_COMMAND_HELP   AcpiGbl_DbCommandHelp[] =
     {1, "  References <Addr>",                 "Find all references to object at addr\n"},
     {1, "  Resources [DeviceName]",            "Display Device resources (no arg = all devices)\n"},
     {1, "  Set N <NamedObject> <Value>",       "Set value for named integer\n"},
-    {1, "  Sleep [SleepState]",                "Simulate sleep/wake sequence(s) (0-5)\n"},
     {1, "  Template <Object>",                 "Format/dump a Buffer/ResourceTemplate\n"},
     {1, "  Terminate",                         "Delete namespace and all internal objects\n"},
     {1, "  Type <Object>",                     "Display object type\n"},
@@ -360,7 +358,7 @@ static const ACPI_DB_COMMAND_HELP   AcpiGbl_DbCommandHelp[] =
     {5, "  Execute <Namepath> [Arguments]",    "Execute control method\n"},
     {1, "     Hex Integer",                    "Integer method argument\n"},
     {1, "     \"Ascii String\"",               "String method argument\n"},
-    {1, "     (Byte List)",                    "Buffer method argument\n"},
+    {1, "     (Hex Byte List)",                "Buffer method argument\n"},
     {1, "     [Package Element List]",         "Package method argument\n"},
     {1, "  Go",                                "Allow method to run to completion\n"},
     {1, "  Information",                       "Display info about the current method\n"},
@@ -374,6 +372,13 @@ static const ACPI_DB_COMMAND_HELP   AcpiGbl_DbCommandHelp[] =
     {1, "  Trace <method name>",               "Trace method execution\n"},
     {1, "  Tree",                              "Display control method calling tree\n"},
     {1, "  <Enter>",                           "Single step next AML opcode (over calls)\n"},
+
+    {0, "\nHardware Related Commands:",         "\n"},
+    {1, "  Event <F|G> <Value>",               "Generate AcpiEvent (Fixed/GPE)\n"},
+    {1, "  Gpe <GpeNum> <GpeBlock>",           "Simulate a GPE\n"},
+    {1, "  Gpes",                              "Display info on all GPEs\n"},
+    {1, "  Sci",                               "Generate an SCI\n"},
+    {1, "  Sleep [SleepState]",                "Simulate sleep/wake sequence(s) (0-5)\n"},
 
     {0, "\nFile I/O Commands:",                "\n"},
     {1, "  Close",                             "Close debug output file\n"},
@@ -1097,6 +1102,11 @@ AcpiDbCommandDispatch (
     case CMD_RESULTS:
 
         AcpiDbDisplayResults ();
+        break;
+
+    case CMD_SCI:
+
+        AcpiDbGenerateSci ();
         break;
 
     case CMD_SET:

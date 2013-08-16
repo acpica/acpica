@@ -507,6 +507,163 @@ ACPI_EXPORT_SYMBOL (AcpiInstallExceptionHandler)
 #if (!ACPI_REDUCED_HARDWARE)
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiInstallSciHandler
+ *
+ * PARAMETERS:  Address             - Address of the handler
+ *              Context             - Value passed to the handler on each SCI
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install a handler for a System Control Interrupt.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiInstallSciHandler (
+    ACPI_SCI_HANDLER        Address,
+    void                    *Context)
+{
+    ACPI_SCI_HANDLER_INFO   *SciHandler;
+    ACPI_CPU_FLAGS          Flags;
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (AcpiInstallSciHandler);
+
+
+    if (!Address)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Ensure handler does not already exist */
+
+    Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
+    SciHandler = AcpiGbl_SciHandlerList;
+    while (SciHandler)
+    {
+        if (Address == SciHandler->Address)
+        {
+            Status = AE_ALREADY_EXISTS;
+            goto UnlockAndExit2;
+        }
+        SciHandler = SciHandler->Next;
+    }
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
+
+    /* Allocate and init handler object */
+
+    SciHandler = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_SCI_HANDLER_INFO));
+    if (!SciHandler)
+    {
+        Status = AE_NO_MEMORY;
+        goto UnlockAndExit;
+    }
+
+    SciHandler->Address = Address;
+    SciHandler->Context = Context;
+
+    /* Install the new handler into the global list with lock */
+
+    Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
+
+    SciHandler->Next = AcpiGbl_SciHandlerList;
+    AcpiGbl_SciHandlerList = SciHandler;
+
+UnlockAndExit2:
+
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
+
+UnlockAndExit:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiRemoveSciHandler
+ *
+ * PARAMETERS:  Address             - Address of the handler
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Remove a handler for a System Control Interrupt.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiRemoveSciHandler (
+    ACPI_SCI_HANDLER        Address)
+{
+    ACPI_SCI_HANDLER_INFO   *PrevSciHandler;
+    ACPI_SCI_HANDLER_INFO   *NextSciHandler;
+    ACPI_CPU_FLAGS          Flags;
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (AcpiRemoveSciHandler);
+
+
+    if (!Address)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Remove the SCI handler with lock */
+
+    Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
+
+    PrevSciHandler = NULL;
+    NextSciHandler = AcpiGbl_SciHandlerList;
+    while (NextSciHandler)
+    {
+        if (NextSciHandler->Address == Address)
+        {
+            /* Unlink and free the SCI handler info block */
+
+            if (PrevSciHandler)
+            {
+                PrevSciHandler->Next = NextSciHandler->Next;
+            }
+            else
+            {
+                AcpiGbl_SciHandlerList = NextSciHandler->Next;
+            }
+
+            AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
+            ACPI_FREE (NextSciHandler);
+            goto UnlockAndExit;
+        }
+
+        PrevSciHandler = NextSciHandler;
+        NextSciHandler = NextSciHandler->Next;
+    }
+
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
+    Status = AE_NOT_EXIST;
+
+
+UnlockAndExit:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiInstallGlobalEventHandler
  *
  * PARAMETERS:  Handler         - Pointer to the global event handler function

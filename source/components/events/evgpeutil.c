@@ -288,7 +288,7 @@ AcpiEvGetGpeDevice (
  *
  * FUNCTION:    AcpiEvGetGpeXruptBlock
  *
- * PARAMETERS:  InterruptNumber      - Interrupt for a GPE block
+ * PARAMETERS:  InterruptNumber             - Interrupt for a GPE block
  *
  * RETURN:      A GPE interrupt block
  *

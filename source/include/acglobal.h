@@ -346,6 +346,7 @@ ACPI_EXTERN ACPI_TABLE_HANDLER          AcpiGbl_TableHandler;
 ACPI_EXTERN void                       *AcpiGbl_TableHandlerContext;
 ACPI_EXTERN ACPI_WALK_STATE            *AcpiGbl_BreakpointWalk;
 ACPI_EXTERN ACPI_INTERFACE_HANDLER      AcpiGbl_InterfaceHandler;
+ACPI_EXTERN ACPI_SCI_HANDLER_INFO      *AcpiGbl_SciHandlerList;
 
 /* Owner ID support */
 

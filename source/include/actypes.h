@@ -1078,6 +1078,11 @@ typedef void
  * Various handlers and callback procedures
  */
 typedef
+UINT32 (*ACPI_SCI_HANDLER) (
+    UINT32                          InterruptNumber,
+    void                            *Context);
+
+typedef
 void (*ACPI_GBL_EVENT_HANDLER) (
     UINT32                          EventType,
     ACPI_HANDLE                     Device,
