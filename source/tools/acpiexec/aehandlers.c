@@ -198,6 +198,11 @@ static UINT32
 AeEventHandler (
     void                    *Context);
 
+static UINT32
+AeSciHandler (
+    UINT32                  InterruptNumber,
+    void                    *Context);
+
 static char                *TableEvents[] =
 {
     "LOAD",
@@ -704,9 +709,9 @@ AeInterfaceHandler (
 #if (!ACPI_REDUCED_HARDWARE)
 /******************************************************************************
  *
- * FUNCTION:    AeEventHandler
+ * FUNCTION:    AeEventHandler, AeSciHandler
  *
- * DESCRIPTION: Handler for Fixed Events
+ * DESCRIPTION: Handler for Fixed Events and SCIs
  *
  *****************************************************************************/
 
@@ -716,6 +721,18 @@ AeEventHandler (
 {
     return (0);
 }
+
+static UINT32
+AeSciHandler (
+    UINT32                  InterruptNumber,
+    void                    *Context)
+{
+
+    AcpiOsPrintf ("[AcpiExec] Received an SCI at handler, interrupt #%u\n",
+        InterruptNumber);
+    return (0);
+}
+
 #endif /* !ACPI_REDUCED_HARDWARE */
 
 
@@ -749,6 +766,51 @@ AeRegionInit (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AeInstallSciHandler
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install handler for SCIs. Exercise the code by doing an
+ *              install/remove/install.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AeInstallSciHandler (
+    void)
+{
+    ACPI_STATUS             Status;
+
+
+    Status = AcpiInstallSciHandler (AeSciHandler, &AeMyContext);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status,
+            "Could not install an SCI handler (1)"));
+    }
+
+    Status = AcpiRemoveSciHandler (AeSciHandler);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status,
+            "Could not remove an SCI handler"));
+    }
+
+    Status = AcpiInstallSciHandler (AeSciHandler, &AeMyContext);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status,
+            "Could not install an SCI handler (2)"));
+    }
+
+    return (Status);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AeInstallDeviceHandlers, AeInstallEcHandler,
  *              AeInstallPciHandler
  *
@@ -757,7 +819,7 @@ AeRegionInit (
  * RETURN:      Status
  *
  * DESCRIPTION: Walk entire namespace, install a handler for every EC
- *              device found.
+ *              and PCI device found.
  *
  ******************************************************************************/
 
@@ -857,6 +919,11 @@ AeInstallLateHandlers (
 #if (!ACPI_REDUCED_HARDWARE)
     if (!AcpiGbl_ReducedHardware)
     {
+        /* Install a user SCI handler */
+
+        Status = AeInstallSciHandler ();
+        AE_CHECK_OK (AeInstallSciHandler, Status);
+
         /* Install some fixed event handlers */
 
         Status = AcpiInstallFixedEventHandler (ACPI_EVENT_GLOBAL, AeEventHandler, NULL);
