@@ -755,10 +755,15 @@ AeRegionInit (
     void                        *HandlerContext,
     void                        **RegionContext)
 {
-    /*
-     * Real simple, set the RegionContext to the RegionHandle
-     */
-    *RegionContext = RegionHandle;
+
+    if (Function == ACPI_REGION_DEACTIVATE)
+    {
+        *RegionContext = NULL;
+    }
+    else
+    {
+        *RegionContext = RegionHandle;
+    }
 
     return (AE_OK);
 }
