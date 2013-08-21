@@ -310,6 +310,10 @@ AcpiDbDumpNamespace (
     char                    *DepthArg);
 
 void
+AcpiDbDumpNamespacePaths (
+    void);
+
+void
 AcpiDbDumpNamespaceByOwner (
     char                    *OwnerArg,
     char                    *DepthArg);

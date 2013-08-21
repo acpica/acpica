@@ -204,6 +204,7 @@ enum AcpiExDebuggerCommands
     CMD_OPEN,
     CMD_OSI,
     CMD_OWNER,
+    CMD_PATHS,
     CMD_PREDEFINED,
     CMD_PREFIX,
     CMD_QUIT,
@@ -276,6 +277,7 @@ static const ACPI_DB_COMMAND_INFO   AcpiGbl_DbCommands[] =
     {"OPEN",         1},
     {"OSI",          0},
     {"OWNER",        1},
+    {"PATHS",        0},
     {"PREDEFINED",   0},
     {"PREFIX",       0},
     {"QUIT",         0},
@@ -340,6 +342,7 @@ static const ACPI_DB_COMMAND_HELP   AcpiGbl_DbCommandHelp[] =
     {1, "  Notify <Object> <Value>",           "Send a notification on Object\n"},
     {1, "  Objects <ObjectType>",              "Display all objects of the given type\n"},
     {1, "  Owner <OwnerId> [Depth]",           "Display loaded namespace by object owner\n"},
+    {1, "  Paths",                             "Display full pathnames of namespace objects\n"},
     {1, "  Predefined",                        "Check all predefined names\n"},
     {1, "  Prefix [<NamePath>]",               "Set or Get current execution prefix\n"},
     {1, "  References <Addr>",                 "Find all references to object at addr\n"},
@@ -1077,6 +1080,11 @@ AcpiDbCommandDispatch (
     case CMD_OWNER:
 
         AcpiDbDumpNamespaceByOwner (AcpiGbl_DbArgs[1], AcpiGbl_DbArgs[2]);
+        break;
+
+    case CMD_PATHS:
+
+        AcpiDbDumpNamespacePaths ();
         break;
 
     case CMD_PREDEFINED:
