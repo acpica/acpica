@@ -1,16 +1,26 @@
 #!/bin/bash
 #
-# Script to find the divergences between these sets of source code:
-#    1) The current ACPICA source from the ACPICA git tree
-#    2) The version of ACPICA that is integrated into Linux
+# NAME:
+#         divergence.sh - find divergences between Linux and ACPICA
 #
-# The goal is to eliminate as many differences as possible between
-# these two sets of code.
+# SYNOPSIS:
+#         divergence.sh [-s] <path>
 #
-# Usage: ./divergence.sh <Path to root of linux source code>
+# DESCRIPTION:
+#         Find the divergences between these sets of source code:
+#          1) The current ACPICA source from the ACPICA git tree
+#          2) The version of ACPICA that is integrated into Linux
+#         The goal is to eliminate as many differences as possible between
+#         these two sets of code.
+#         Parameters:
+#          path     Path of directory to the Linux source tree.
+#         Options:
+#          -s       Single direction
+#                   (indent on Linux rather than both of Linux and ACPICA)
 #
 
-usage () {
+usage()
+{
 	echo "Usage: `basename $0` [-s] <path>"
 	echo "Where:"
 	echo "  -s: indent on (Linux) rather than on (Linux and ACPICA)"
@@ -28,17 +38,13 @@ do
 done
 shift $(($OPTIND - 1))
 
-HARDWARE_NAME=`uname -m`
-BINDIR=not_initialized
-ACPICA_TMP=acpica_tmp
-LINUX_ACPICA=linux-acpica
-ACPICA_LINUXIZED=acpica-linuxized
+SCRIPT=`(cd \`dirname $0\`; pwd)`
+source $SCRIPT/libacpica.sh
 
-# Get the root of the ACPICA source tree
-ACPICA=`readlink -f ../..`
-LINDENT=$ACPICA/generate/linux/patches/lindent.sh
-LINUX=$1
-
+ACPICA_TMP=$CURDIR/acpica-tmp
+LINUX_ACPICA=$CURDIR/linux-acpica
+ACPICA_LINUXIZED=$CURDIR/acpica-linuxized
+LINUX=`fulldir $1`
 
 # Parameter validation
 
@@ -56,135 +62,51 @@ if [ ! -d $1 ] ; then
 	exit 1
 fi
 
-if [ ! -e $LINDENT ] ; then
-	echo "Could not find lindent.sh script"
-	exit 1
-fi
 if [ -z $LINDENT_DIR ] ; then
 	LINDENT_DIR=multiple
 fi
 
-#
-# Determine if we are on a 32-bit or 64-bit OS.
-# Any machine hardware name containing a substring "64" is
-# considered to be a 64-bit platform (such as x86_64).
-#
-get_platform_bitwidth () {
-
-	case "$HARDWARE_NAME" in
-		*64* ) WIDTH=64;;
-		*    ) WIDTH=32;;
-	esac
-
-	BINDIR=bin$WIDTH
-	WIDTHNAME=$WIDTH-bit
-}
-
-#
-# Build the AcpiSrc utility if necessary, in the native
-# width of the platform.
-#
-get_platform_bitwidth
-echo "Ensure the $WIDTHNAME AcpiSrc utility is up-to-date on platform type $HARDWARE_NAME"
-make -C $ACPICA BITS=$WIDTH acpisrc
-ACPISRC=${ACPICA}/generate/unix/$BINDIR/acpisrc
+echo "[divergence.sh] Generating tool (acpisrc)..."
+make_acpisrc $SRCDIR force > /dev/null
 
 #
 # Copy the actual Linux ACPICA files locally (from the Linux tree)
 #
-echo "Creating local Linux ACPICA files subdirectory"
-rm -rf $ACPICA_TMP $LINUX_ACPICA $ACPICA_LINUXIZED
-mkdir $ACPICA_TMP $LINUX_ACPICA
-
-mkdir -p $LINUX_ACPICA/drivers/acpi/acpica
-cp $LINUX/drivers/acpi/acpica/* $LINUX_ACPICA/drivers/acpi/acpica/
-mkdir -p $LINUX_ACPICA/include/acpi/platform
-cp $LINUX/include/acpi/*.h $LINUX_ACPICA/include/acpi/
-cp $LINUX/include/acpi/platform/*.h $LINUX_ACPICA/include/acpi/platform/
-
-#
-# Ensure that the files in the two directories
-# (native ACPICA and Linux ACPICA) match
-#
-
-ALL_FILES=`find $LINUX_ACPICA`
-
-for t in $ALL_FILES ; do
-	if [ -f $t ] ; then
-		d=$ACPICA_TMP`dirname ${t#${LINUX_ACPICA}}`
-		f=`find $ACPICA/source -name \`basename $t\``
-		if [ ! -z $f ] ; then
-			mkdir -p $d
-			cp -f $f $d
-		else
-			rm -f $t
-		fi
-	fi
-done
-
-# Do we need to perform things on private_includes?
-private_includes="accommon.h"
-private_includes="$private_includes acdebug.h acdispat.h"
-private_includes="$private_includes acevents.h"
-private_includes="$private_includes acglobal.h"
-private_includes="$private_includes achware.h"
-private_includes="$private_includes acinterp.h"
-private_includes="$private_includes aclocal.h"
-private_includes="$private_includes acmacros.h"
-private_includes="$private_includes acnamesp.h"
-private_includes="$private_includes acobject.h acopcode.h"
-private_includes="$private_includes acparser.h acpredef.h"
-private_includes="$private_includes acresrc.h"
-private_includes="$private_includes acstruct.h"
-private_includes="$private_includes actables.h"
-private_includes="$private_includes acutils.h"
-private_includes="$private_includes amlcode.h amlresrc.h"
-for inc in $private_includes ; do
-	if [ -f $ACPICA_TMP/include/acpi/$inc ] ; then
-		echo "Warning: private include file $inc is now public.  Please check the linuxize.sh"
-	elif [ ! -f $ACPICA_TMP/drivers/acpi/acpica/$inc ] ; then
-		echo "Warning: private include file $inc does not exist.  Please check the linuxize.sh."
-	fi
-done
+echo "[divergence.sh] Converting format (hierarchy)..."
+copy_linux_hierarchy $LINUX $LINUX_ACPICA
+linuxize_hierarchy_ref $LINUX_ACPICA $SRCDIR $ACPICA_TMP
 
 #
 # Linuxize the ACPICA source
 #
-echo "Linuxizing the ACPICA source code:"
-$ACPISRC -ldqy $ACPICA_TMP $ACPICA_LINUXIZED
-
-#
-# Enable cross platform generation
-#
-dos2unix -q $LINDENT
-find $ACPICA_LINUXIZED | xargs dos2unix -q
-find $LINUX_ACPICA | xargs dos2unix -q
+echo "[divergence.sh] Converting format (acpisrc)..."
+rm -rf $ACPICA_LINUXIZED
+$ACPISRC -ldqy $ACPICA_TMP $ACPICA_LINUXIZED > /dev/null
 
 #
 # Lindent both sets of files
 #
-echo "Building lindented linuxized ACPICA files"
-find $ACPICA_LINUXIZED -name "*.[ch]" | xargs $LINDENT
-find $ACPICA_LINUXIZED -name *~ | xargs rm -f
+echo "[divergence.sh] Converting format (lindent-acpica)..."
+lindent $ACPICA_LINUXIZED
 
 if [ "x$LINDENT_DIR" = "xmultiple" ] ; then
-	echo "Building lindented actual linux ACPICA files"
-	find $LINUX_ACPICA -name "*.[ch]" | xargs $LINDENT
-	find $LINUX_ACPICA -name *~ | xargs rm -f
+	echo "[divergence.sh] Converting format (lindent-linux)..."
+	lindent $LINUX_ACPICA
 fi
 
 #
 # Now we can finally do the big diff
 #
-echo "Creating ACPICA/Linux diff"
+echo "[divergence.sh] Generating divergences ($LINDENT_DIR)..."
 diff -E -b -w -B -rpuN $LINUX_ACPICA $ACPICA_LINUXIZED > divergence-$LINDENT_DIR.diff
 diffstat divergence-$LINDENT_DIR.diff > diffstat-$LINDENT_DIR.txt
-ls -l divergence-$LINDENT_DIR.diff diffstat-$LINDENT_DIR.txt
+echo "=========="
+ls -s1 divergence-$LINDENT_DIR.diff diffstat-$LINDENT_DIR.txt
+echo "=========="
 
 #
 # Cleanup
 #
-rm -r $LINUX_ACPICA
-rm -r $ACPICA_TMP
-rm -r $ACPICA_LINUXIZED
-exit 0
+rm -rf $LINUX_ACPICA
+rm -rf $ACPICA_TMP
+rm -rf $ACPICA_LINUXIZED

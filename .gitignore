@@ -83,6 +83,10 @@ generate/release/size_rel.txt
 generate/lint/LintOut.txt
 
 generate/linux/bin
+generate/linux/bin*
+generate/linux/linux
+generate/linux/linux-*
+generate/linux/acpica-*
 generate/linux/diffstat.txt
 generate/linux/diffstat-single.txt
 generate/linux/divergence.diff

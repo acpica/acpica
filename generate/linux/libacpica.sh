@@ -1,0 +1,255 @@
+#!/bin/sh
+#
+# NAME:
+#         libacpica.sh - ACPICA release script library
+#
+#
+
+if [ -z $SCRIPT ]; then
+	echo "SCRIPT is empty, please invoking libacpica.sh from release scripts."
+	exit 1
+fi
+
+CURDIR=`pwd`
+TOOLDIR=$SCRIPT/bin
+ACPISRC=$TOOLDIR/acpisrc
+
+linux_dirs()
+{
+	dirs="\
+		drivers/acpi/acpica \
+		include/acpi \
+		include/acpi/platform \
+	"
+	echo $dirs
+}
+
+acpica_privs()
+{
+	incs="\
+		accommon.h \
+		acdebug.h acdispat.h \
+		acevents.h \
+		acglobal.h \
+		achware.h \
+		acinterp.h \
+		aclocal.h \
+		acmacros.h \
+		acnamesp.h \
+		acobject.h acopcode.h \
+		acparser.h acpredef.h \
+		acresrc.h \
+		acstruct.h \
+		actables.h \
+		acutils.h \
+		amlcode.h amlresrc.h \
+	"
+	echo $incs
+}
+
+acpica_drivers_paths()
+{
+	paths="\
+		components/dispatcher
+		components/events
+		components/executer
+		components/hardware
+		components/namespace
+		components/parser
+		components/resources
+		components/tables
+		components/utilities
+	"
+	incs=`acpica_privs`
+	for inc in $incs; do
+		paths="$paths include/$inc"
+	done
+	echo $paths
+}
+
+fulldir()
+{
+	( cd $1; pwd )
+}
+
+getdir()
+{
+	lpath=`dirname $1`
+	fulldir $lpath
+}
+
+getfile()
+{
+	d=`getdir $1`
+	f=`basename $1`
+	echo $d/$f
+}
+
+identify_bits()
+{
+	arch=`uname -m`
+	no64=`echo ${arch%64}`
+
+	if [ "x$arch" != "x$no64" ] ; then
+		echo 64
+	else
+		echo 32
+	fi
+}
+
+make_tool()
+{
+	srcdir=$1
+	acpi_tool=$2
+
+	tooldir=$srcdir/generate/unix
+	bits=`identify_bits`
+
+	mkdir -p $TOOLDIR
+	make -C $srcdir $acpi_tool
+
+	if [ ! -f $tooldir/bin$bits/$acpi_tool ]; then
+		bits=
+	fi
+
+	cp $tooldir/bin$bits/$acpi_tool $TOOLDIR
+}
+
+clean_tool()
+{
+	srcdir=$1
+	acpi_tool=$2
+
+	tooldir=$srcdir/generate/unix
+	bits=`identify_bits`
+
+	if [ -f $tooldir/bin$bits/$acpi_tool ]; then
+		rm -f $tooldir/bin$bits/$acpi_tool
+		rm -rf $tooldir/$acpi_tool/obj$bits
+	fi
+	if [ -f $tooldir/bin/$acpi_tool ]; then
+		rm -f $tooldir/bin/$acpi_tool
+		rm -rf $tooldir/$acpi_tool/obj
+	fi
+
+	rm -f $tooldir/bin$bits/$acpi_tool
+}
+
+clean_acpisrc()
+{
+	clean_tool $1 acpisrc
+}
+
+make_acpisrc()
+{
+	if [ "x$2" = "xforce" ]; then
+		clean_tool $1 acpisrc
+	fi
+	make_tool $1 acpisrc
+}
+
+lindent()
+{
+	(
+		cd $1
+		find . -name "*.[ch]" | xargs indent \
+			-npro -kr -i8 -ts8 -sob -l80 -ss -ncs \
+			-T u8 -T u16 -T u32 -T u64 \
+			-T acpi_integer \
+			-T acpi_predefined_data \
+			-T acpi_operand_object \
+			-T acpi_event_status
+		find . -name "*~" | xargs rm -f
+	)
+}
+
+copy_linux_hierarchy()
+{
+	from=$1
+	to=$2
+
+	rm -rf $to
+	dirs=`linux_dirs`
+
+	for dir in $dirs; do
+		echo " Copying ($dir)..."
+		mkdir -p $to/$dir
+		cp $from/$dir/*.[ch] $to/$dir/
+	done
+}
+
+linuxize_hierarchy_ref()
+{
+	linux=$1
+	acpica=$2
+	to=$3
+
+	rm -rf $to
+	mkdir -p $to
+
+	#
+	# Ensure that the files in the two directories
+	# (native ACPICA and Linux ACPICA) match
+	#
+
+	ALL_FILES=`find $linux`
+
+	for t in $ALL_FILES ; do
+		if [ -f $t ] ; then
+			n=${t#${linux}/}
+			d=$to/`dirname $n`
+			f=`find $acpica/source -name \`basename $t\``
+			if [ ! -z $f ] ; then
+				mkdir -p $d
+				cp -f $f $d
+			else
+				echo " Removing ($n)..."
+				rm -f $t
+			fi
+		fi
+	done
+
+	private_includes=`acpica_privs`
+
+	# Do we need to perform things on private_includes?
+	for inc in $private_includes ; do
+		if [ -f $to/include/acpi/$inc ] ; then
+			echo "Warning: private include file $inc is now public.  Please check the linuxize.sh"
+		elif [ ! -f $to/drivers/acpi/acpica/$inc ] ; then
+			echo "Warning: private include file $inc does not exist.  Please check the linuxize.sh."
+		fi
+	done
+}
+
+linuxize_hierarchy_noref()
+{
+	repo_linux=$1
+
+	(
+		cd $repo_linux
+
+		# Making hierarchy
+
+		# Making source files
+		mkdir -p drivers/acpi/acpica
+		paths=`acpica_drivers_paths`
+		for path in $paths; do
+			if [ -d source/$path ]; then
+				echo " Moving directory $path..."
+				mv source/$path/*.[ch] drivers/acpi/acpica/
+			fi
+			if [ -f source/$path ]; then
+				echo " Moving file $path..."
+				mv source/$path drivers/acpi/acpica/
+			fi
+		done
+
+		# Making include files
+		mkdir -p include/acpi
+		mv -f source/include/* include/acpi
+
+		rm -rf source
+	)
+}
+
+SRCDIR=`fulldir $SCRIPT/../..`
