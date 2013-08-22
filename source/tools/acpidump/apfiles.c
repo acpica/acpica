@@ -188,14 +188,27 @@ ApWriteToBinaryFile (
     char                    SsdtInstance [16];
     FILE                    *File;
     size_t                  Actual;
+    UINT32                  TableLength;
 
 
-    /* Construct lower-case filename from the table signature */
+    /* Obtain table length */
 
-    Filename[0] = (char) ACPI_TOLOWER (Table->Signature[0]);
-    Filename[1] = (char) ACPI_TOLOWER (Table->Signature[1]);
-    Filename[2] = (char) ACPI_TOLOWER (Table->Signature[2]);
-    Filename[3] = (char) ACPI_TOLOWER (Table->Signature[3]);
+    TableLength = ApGetTableLength (Table);
+
+    /* Construct lower-case filename from the table local signature */
+
+    if (ACPI_VALIDATE_RSDP_SIG (Table->Signature))
+    {
+        ACPI_MOVE_NAME (Filename, AP_DUMP_SIG_RSDP);
+    }
+    else
+    {
+        ACPI_MOVE_NAME (Filename, Table->Signature);
+    }
+    Filename[0] = (char) ACPI_TOLOWER (Filename[0]);
+    Filename[1] = (char) ACPI_TOLOWER (Filename[1]);
+    Filename[2] = (char) ACPI_TOLOWER (Filename[2]);
+    Filename[3] = (char) ACPI_TOLOWER (Filename[3]);
     Filename[ACPI_NAME_SIZE] = 0;
 
     /* Handle multiple SSDTs - create different filenames for each */
@@ -225,8 +238,8 @@ ApWriteToBinaryFile (
         return (-1);
     }
 
-    Actual = fwrite (Table, 1, Table->Length, File);
-    if (Actual != Table->Length)
+    Actual = fwrite (Table, 1, TableLength, File);
+    if (Actual != TableLength)
     {
         perror ("Error writing binary output file");
         fclose (File);

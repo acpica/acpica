@@ -455,7 +455,11 @@ OslTableInitialize (
 
     /* Attempt to use kenv or sysctl to find RSD PTR record. */
 
-    if (kenv (KENV_GET, SYSTEM_KENV, Buffer, sizeof (Buffer)) > 0)
+    if (Gbl_RsdpBase)
+    {
+        Address = Gbl_RsdpBase;
+    }
+    else if (kenv (KENV_GET, SYSTEM_KENV, Buffer, sizeof (Buffer)) > 0)
     {
         Address = ACPI_STRTOUL (Buffer, NULL, 0);
     }

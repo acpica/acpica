@@ -142,6 +142,7 @@ EXTERN BOOLEAN              INIT_GLOBAL (Gbl_BinaryMode, FALSE);
 EXTERN UINT32               INIT_GLOBAL (Gbl_SsdtCount, 0);
 EXTERN FILE                 INIT_GLOBAL (*Gbl_OutputFile, NULL);
 EXTERN char                 INIT_GLOBAL (*Gbl_OutputFilename, NULL);
+EXTERN UINT64               INIT_GLOBAL (Gbl_RsdpBase, 0);
 
 /* Globals required for use with ACPICA modules */
 
@@ -160,6 +161,10 @@ typedef struct ap_dump_action
     UINT32                  ToBeDone;
 
 } AP_DUMP_ACTION;
+
+/* Local RSDP signature */
+
+#define AP_DUMP_SIG_RSDP            "RSDP"
 
 #define AP_MAX_ACTIONS              32
 
@@ -203,6 +208,10 @@ ApIsValidHeader (
 
 BOOLEAN
 ApIsValidChecksum (
+    ACPI_TABLE_HEADER       *Table);
+
+UINT32
+ApGetTableLength (
     ACPI_TABLE_HEADER       *Table);
 
 
