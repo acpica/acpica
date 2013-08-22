@@ -255,6 +255,7 @@ static ACPI_STATUS
 OslGetLastStatus (
     ACPI_STATUS             DefaultStatus)
 {
+
     switch (errno)
     {
     case EACCES:
@@ -395,6 +396,7 @@ AcpiOsGetTableByName (
         Status = OslGetCustomizedTable (STATIC_TABLE_DIR, Signature,
             Instance, Table, Address);
     }
+
     if (ACPI_FAILURE (Status) && Status == AE_LIMIT)
     {
         if (Gbl_DumpDynamicTables)
@@ -440,6 +442,7 @@ OslAddTableToList (
     {
         return (AE_NO_MEMORY);
     }
+
     ACPI_MOVE_NAME (NewInfo->Signature, Signature);
 
     if (!Gbl_TableListHead)
@@ -462,6 +465,7 @@ OslAddTableToList (
                     NextInstance = Next->Instance + 1;
                 }
             }
+
             if (!Next->Next)
             {
                 break;
@@ -628,6 +632,7 @@ OslLoadRsdp (
     {
         RsdpBase = OslFindRsdpViaEfi ();
     }
+
     if (!RsdpBase)
     {
         RsdpBase = ACPI_HI_RSDP_WINDOW_BASE;
@@ -649,6 +654,7 @@ OslLoadRsdp (
         AcpiOsUnmapMemory (RsdpAddress, RsdpSize);
         return (AE_NOT_FOUND);
     }
+
     Gbl_RsdpAddress = RsdpBase + (ACPI_CAST8 (MappedTable) - RsdpAddress);
 
     ACPI_MEMCPY (&Gbl_Rsdp, MappedTable, sizeof (ACPI_TABLE_RSDP));
@@ -813,7 +819,6 @@ OslTableInitialize (
     }
 
     Gbl_TableListInitialized = TRUE;
-
     return (AE_OK);
 }
 
@@ -864,6 +869,7 @@ OslListBiosTables (
     }
 
     /* Search RSDT/XSDT for the requested table */
+
     for (i = 0; i < NumberOfTables; ++i, TableData += ItemSize)
     {
         if (Gbl_Revision)
@@ -884,7 +890,6 @@ OslListBiosTables (
         }
 
         OslAddTableToList (MappedTable->Signature, 0);
-
         OslUnmapTable (MappedTable);
     }
 
@@ -1191,7 +1196,6 @@ OslMapTable (
      * 1. it is bigger than 24 to include RSDP->Length
      * 2. it is smaller than sizeof (ACPI_TABLE_RSDP)
      */
-
     MappedTable = AcpiOsMapMemory (Address, sizeof (ACPI_TABLE_HEADER));
     if (!MappedTable)
     {
@@ -1279,33 +1283,33 @@ OslTableNameFromFile (
     char                    *Signature,
     UINT32                  *Instance)
 {
-        /* Ignore meaningless files */
 
-        if (strlen (Filename) < ACPI_NAME_SIZE)
-        {
-            return (AE_BAD_SIGNATURE);
-        }
+    /* Ignore meaningless files */
 
-        /* Extract instance number */
+    if (strlen (Filename) < ACPI_NAME_SIZE)
+    {
+        return (AE_BAD_SIGNATURE);
+    }
 
-        if (isdigit ((int) Filename[ACPI_NAME_SIZE]))
-        {
-            sscanf (&Filename[ACPI_NAME_SIZE], "%d", Instance);
-        }
-        else if (strlen (Filename) != ACPI_NAME_SIZE)
-        {
-            return (AE_BAD_SIGNATURE);
-        }
-        else
-        {
-            *Instance = 0;
-        }
+    /* Extract instance number */
 
-        /* Extract signature */
+    if (isdigit ((int) Filename[ACPI_NAME_SIZE]))
+    {
+        sscanf (&Filename[ACPI_NAME_SIZE], "%d", Instance);
+    }
+    else if (strlen (Filename) != ACPI_NAME_SIZE)
+    {
+        return (AE_BAD_SIGNATURE);
+    }
+    else
+    {
+        *Instance = 0;
+    }
 
-        ACPI_MOVE_NAME (Signature, Filename);
+    /* Extract signature */
 
-        return (AE_OK);
+    ACPI_MOVE_NAME (Signature, Filename);
+    return (AE_OK);
 }
 
 
@@ -1404,6 +1408,7 @@ OslReadTableFromFile (
             Status = AE_INVALID_TABLE_LENGTH;
             goto ErrorExit;
         }
+
         Total += Count;
     }
 

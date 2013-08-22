@@ -200,6 +200,7 @@ ApIsValidChecksum (
     {
         Status = AcpiTbVerifyChecksum (Table, Table->Length);
     }
+
     if (ACPI_FAILURE (Status))
     {
         fprintf (stderr, "%4.4s: Warning: wrong checksum\n",

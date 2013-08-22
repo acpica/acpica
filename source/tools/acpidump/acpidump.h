@@ -162,7 +162,7 @@ typedef struct ap_dump_action
 
 } AP_DUMP_ACTION;
 
-/* Local RSDP signature */
+/* Local RSDP signature (Not the same as the actual signature which is "RSD PTR ") */
 
 #define AP_DUMP_SIG_RSDP            "RSDP"
 

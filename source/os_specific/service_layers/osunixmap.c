@@ -127,6 +127,7 @@
 
 #define SYSTEM_MEMORY       "/dev/mem"
 
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiOsGetPageSize
@@ -143,6 +144,7 @@ static ACPI_SIZE
 AcpiOsGetPageSize (
     void)
 {
+
 #ifdef PAGE_SIZE
     return PAGE_SIZE;
 #else
