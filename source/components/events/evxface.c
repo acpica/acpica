@@ -523,6 +523,7 @@ AcpiInstallSciHandler (
     ACPI_SCI_HANDLER        Address,
     void                    *Context)
 {
+    ACPI_SCI_HANDLER_INFO   *NewSciHandler;
     ACPI_SCI_HANDLER_INFO   *SciHandler;
     ACPI_CPU_FLAGS          Flags;
     ACPI_STATUS             Status;
@@ -536,52 +537,57 @@ AcpiInstallSciHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    /* Allocate and init a handler object */
+
+    NewSciHandler = ACPI_ALLOCATE (sizeof (ACPI_SCI_HANDLER_INFO));
+    if (!NewSciHandler)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    NewSciHandler->Address = Address;
+    NewSciHandler->Context = Context;
+
     Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        goto Exit;
     }
 
-    /* Ensure handler does not already exist */
+    /* Lock list during installation */
 
     Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
     SciHandler = AcpiGbl_SciHandlerList;
+
+    /* Ensure handler does not already exist */
+
     while (SciHandler)
     {
         if (Address == SciHandler->Address)
         {
             Status = AE_ALREADY_EXISTS;
-            goto UnlockAndExit2;
+            goto UnlockAndExit;
         }
+
         SciHandler = SciHandler->Next;
     }
-    AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
 
-    /* Allocate and init handler object */
+    /* Install the new handler into the global list (at head) */
 
-    SciHandler = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_SCI_HANDLER_INFO));
-    if (!SciHandler)
-    {
-        Status = AE_NO_MEMORY;
-        goto UnlockAndExit;
-    }
+    NewSciHandler->Next = AcpiGbl_SciHandlerList;
+    AcpiGbl_SciHandlerList = NewSciHandler;
 
-    SciHandler->Address = Address;
-    SciHandler->Context = Context;
-
-    /* Install the new handler into the global list with lock */
-
-    Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
-
-    SciHandler->Next = AcpiGbl_SciHandlerList;
-    AcpiGbl_SciHandlerList = SciHandler;
-
-UnlockAndExit2:
-
-    AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
 
 UnlockAndExit:
+
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
     (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+
+Exit:
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_FREE (NewSciHandler);
+    }
     return_ACPI_STATUS (Status);
 }
 
