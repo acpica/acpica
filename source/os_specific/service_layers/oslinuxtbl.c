@@ -132,6 +132,12 @@ OslTableInitialize (
     void);
 
 static ACPI_STATUS
+OslTableNameFromFile (
+    char                    *Filename,
+    char                    *Signature,
+    UINT32                  *Instance);
+
+static ACPI_STATUS
 OslReadTableFromFile (
     char                    *Filename,
     ACPI_SIZE               FileOffset,
@@ -203,7 +209,7 @@ typedef struct          table_info
 {
     struct table_info       *Next;
     UINT32                  Instance;
-    char                    Signature[4];
+    char                    Signature[ACPI_NAME_SIZE];
 
 } OSL_TABLE_INFO;
 
@@ -793,15 +799,15 @@ OslGetTableViaRoot (
  *****************************************************************************/
 
 static ACPI_STATUS
-OslAddTablesToList(
+OslAddTablesToList (
     char                    *Directory)
 {
     OSL_TABLE_INFO          *NewInfo;
     OSL_TABLE_INFO          *Info;
     void                    *TableDir;
-    char                    TempName[4];
     char                    *Filename;
     UINT32                  i;
+    ACPI_STATUS             Status;
 
 
     /* Open the requested directory */
@@ -830,15 +836,22 @@ OslAddTablesToList(
     while ((Filename = AcpiOsGetNextFilename (TableDir)))
     {
         NewInfo = calloc (1, sizeof (OSL_TABLE_INFO));
-        if (strlen (Filename) > ACPI_NAME_SIZE)
+
+        /* Extract table name and instance number */
+
+        Status = OslTableNameFromFile (Filename,
+            NewInfo->Signature, &NewInfo->Instance);
+
+        /* Ignore meaningless files */
+
+        if (ACPI_FAILURE (Status))
         {
-            sscanf (Filename, "%[^1-9]%d",
-                TempName, &NewInfo->Instance);
+            free (NewInfo);
+            continue;
         }
 
         /* Add new info node to global table list */
 
-        sscanf (Filename, "%4s", NewInfo->Signature);
         Info->Next = NewInfo;
         Info = NewInfo;
         Gbl_TableListHead->Instance++;
@@ -951,6 +964,59 @@ OslUnmapTable (
     {
         AcpiOsUnmapMemory (Table, Table->Length);
     }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    OslTableNameFromFile
+ *
+ * PARAMETERS:  Filename            - File that contains the desired table
+ *              Signature           - Pointer to 4-character buffer to store
+ *                                    extracted table signature.
+ *              Instance            - Pointer to integer to store extracted
+ *                                    table instance number.
+ *
+ * RETURN:      Status; Table name is extracted if AE_OK.
+ *
+ * DESCRIPTION: Extract table signature and instance number from a table file
+ *              name.
+ *
+ *****************************************************************************/
+
+static ACPI_STATUS
+OslTableNameFromFile (
+    char                    *Filename,
+    char                    *Signature,
+    UINT32                  *Instance)
+{
+        /* Ignore meaningless files */
+
+        if (strlen (Filename) < ACPI_NAME_SIZE)
+        {
+            return (AE_BAD_SIGNATURE);
+        }
+
+        /* Extract instance number */
+
+        if (isdigit ((int) Filename[ACPI_NAME_SIZE]))
+        {
+            sscanf (&Filename[ACPI_NAME_SIZE], "%d", Instance);
+        }
+        else if (strlen (Filename) != ACPI_NAME_SIZE)
+        {
+            return (AE_BAD_SIGNATURE);
+        }
+        else
+        {
+            *Instance = 0;
+        }
+
+        /* Extract signature */
+
+        ACPI_MOVE_NAME (Signature, Filename);
+
+        return (AE_OK);
 }
 
 
@@ -1125,7 +1191,7 @@ OslGetCustomizedTable (
 {
     void                    *TableDir;
     UINT32                  CurrentInstance = 0;
-    char                    TempName[4];
+    char                    TempName[ACPI_NAME_SIZE];
     char                    TableFilename[PATH_MAX];
     char                    *Filename;
     ACPI_STATUS             Status;
@@ -1149,15 +1215,28 @@ OslGetCustomizedTable (
         {
             continue;
         }
-        sscanf (Filename, "%[^1-9]%d", TempName, &CurrentInstance);
-        if (CurrentInstance != Instance)
+
+        /* Extract table name and instance number */
+
+        Status = OslTableNameFromFile (Filename, TempName, &CurrentInstance);
+
+        /* Ignore meaningless files */
+
+        if (ACPI_FAILURE (Status) || CurrentInstance != Instance)
         {
             continue;
         }
 
         /* Create the table pathname */
 
-        sprintf (TableFilename, "%s/%s", Pathname, Filename);
+        if (Instance != 0)
+        {
+            sprintf (TableFilename, "%s/%4.4s%d", Pathname, TempName, Instance);
+        }
+        else
+        {
+            sprintf (TableFilename, "%s/%4.4s", Pathname, TempName);
+        }
         break;
     }
 
