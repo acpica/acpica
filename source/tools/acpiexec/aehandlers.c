@@ -200,7 +200,6 @@ AeEventHandler (
 
 static UINT32
 AeSciHandler (
-    UINT32                  InterruptNumber,
     void                    *Context);
 
 static char                *TableEvents[] =
@@ -724,12 +723,10 @@ AeEventHandler (
 
 static UINT32
 AeSciHandler (
-    UINT32                  InterruptNumber,
     void                    *Context)
 {
 
-    AcpiOsPrintf ("[AcpiExec] Received an SCI at handler, interrupt #%u\n",
-        InterruptNumber);
+    AcpiOsPrintf ("[AcpiExec] Received an SCI at handler\n");
     return (0);
 }
 

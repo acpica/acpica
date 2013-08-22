@@ -1084,7 +1084,6 @@ typedef void
  */
 typedef
 UINT32 (*ACPI_SCI_HANDLER) (
-    UINT32                          InterruptNumber,
     void                            *Context);
 
 typedef

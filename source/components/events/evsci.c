@@ -173,7 +173,6 @@ AcpiEvSciDispatch (
         /* Invoke the installed handler (at interrupt level) */
 
         IntStatus |= SciHandler->Address (
-            (UINT32) AcpiGbl_FADT.SciInterrupt,
             SciHandler->Context);
 
         SciHandler = SciHandler->Next;
