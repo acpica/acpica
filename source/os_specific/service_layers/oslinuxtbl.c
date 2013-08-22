@@ -201,22 +201,21 @@ UINT8                   Gbl_DumpDynamicTables = TRUE;
 /* Initialization flags */
 
 UINT8                   Gbl_TableListInitialized = FALSE;
-UINT8                   Gbl_MainTableObtained = FALSE;
 
 /* Local copies of main ACPI tables */
 
 ACPI_TABLE_RSDP         Gbl_Rsdp;
-ACPI_TABLE_FADT         *Gbl_Fadt;
-ACPI_TABLE_RSDT         *Gbl_Rsdt;
-ACPI_TABLE_XSDT         *Gbl_Xsdt;
+ACPI_TABLE_FADT         *Gbl_Fadt = NULL;
+ACPI_TABLE_RSDT         *Gbl_Rsdt = NULL;
+ACPI_TABLE_XSDT         *Gbl_Xsdt = NULL;
 
 /* Fadt address */
 
-ACPI_PHYSICAL_ADDRESS   Gbl_FadtAddress;
+ACPI_PHYSICAL_ADDRESS   Gbl_FadtAddress = 0;
 
 /* Revision of RSD PTR */
 
-UINT8                   Gbl_Revision;
+UINT8                   Gbl_Revision = 0;
 
 OSL_TABLE_INFO          *Gbl_TableListHead = NULL;
 UINT32                  Gbl_TableCount = 0;
@@ -245,6 +244,14 @@ AcpiOsGetTableByAddress (
     ACPI_TABLE_HEADER       *LocalTable;
     ACPI_STATUS             Status;
 
+
+    /* Get main ACPI tables from memory on first invocation of this function */
+
+    Status = OslTableInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
     /* Validate the input physical address to avoid program crash */
 
@@ -320,50 +327,10 @@ AcpiOsGetTableByName (
 
     /* Get main ACPI tables from memory on first invocation of this function */
 
-    if (!Gbl_MainTableObtained)
+    Status = OslTableInitialize ();
+    if (ACPI_FAILURE (Status))
     {
-        Status = OslTableInitialize ();
-        if (ACPI_FAILURE (Status))
-        {
-            return (Status);
-        }
-
-        Gbl_MainTableObtained = TRUE;
-    }
-
-    /*
-     * If one of the main ACPI tables was requested (RSDT/XSDT/FADT),
-     * simply return it immediately.
-     */
-    if (ACPI_COMPARE_NAME (Signature, ACPI_SIG_XSDT))
-    {
-        if (!Gbl_Revision)
-        {
-            return (AE_NOT_FOUND);
-        }
-
-        *Address = Gbl_Rsdp.XsdtPhysicalAddress;
-        *Table = (ACPI_TABLE_HEADER *) Gbl_Xsdt;
-        return (AE_OK);
-    }
-
-    if (ACPI_COMPARE_NAME (Signature, ACPI_SIG_RSDT))
-    {
-        if (!Gbl_Rsdp.RsdtPhysicalAddress)
-        {
-            return (AE_NOT_FOUND);
-        }
-
-        *Address = Gbl_Rsdp.RsdtPhysicalAddress;
-        *Table = (ACPI_TABLE_HEADER *) Gbl_Rsdt;
-        return (AE_OK);
-    }
-
-    if (ACPI_COMPARE_NAME (Signature, ACPI_SIG_FADT))
-    {
-        *Address = Gbl_FadtAddress;
-        *Table = (ACPI_TABLE_HEADER *) Gbl_Fadt;
-        return (AE_OK);
+        return (Status);
     }
 
     /* Not a main ACPI table, attempt to extract it from the RSDT/XSDT */
@@ -498,27 +465,12 @@ AcpiOsGetTableByIndex (
     UINT32                  i;
 
 
-    /* Initialize the table list on first invocation */
+    /* Get main ACPI tables from memory on first invocation of this function */
 
-    if (!Gbl_TableListInitialized)
+    Status = OslTableInitialize ();
+    if (ACPI_FAILURE (Status))
     {
-        /* Add all tables found in the static directory */
-
-        Status = OslListCustomizedTables (STATIC_TABLE_DIR);
-        if (ACPI_FAILURE (Status))
-        {
-            return (Status);
-        }
-
-        /* Add all dynamically loaded tables in the dynamic directory */
-
-        Status = OslListCustomizedTables (DYNAMIC_TABLE_DIR);
-        if (ACPI_FAILURE (Status))
-        {
-            return (Status);
-        }
-
-        Gbl_TableListInitialized = TRUE;
+        return (Status);
     }
 
     /* Validate Index */
@@ -562,13 +514,18 @@ static ACPI_STATUS
 OslTableInitialize (
     void)
 {
-    ACPI_TABLE_HEADER       *MappedTable;
+    ACPI_TABLE_HEADER       *MappedTable = NULL;
     UINT8                   *TableData;
     UINT8                   *RsdpAddress;
     ACPI_PHYSICAL_ADDRESS   RsdpBase;
     ACPI_SIZE               RsdpSize;
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
 
+
+    if (Gbl_TableListInitialized)
+    {
+        return (AE_OK);
+    }
 
     /* Get RSDP from memory */
 
@@ -593,16 +550,23 @@ OslTableInitialize (
 
     ACPI_MEMCPY (&Gbl_Rsdp, MappedTable, sizeof (ACPI_TABLE_RSDP));
     AcpiOsUnmapMemory (RsdpAddress, RsdpSize);
+    MappedTable = NULL;
 
     /* Get XSDT from memory */
 
     if (Gbl_Rsdp.Revision)
     {
+        if (Gbl_Xsdt)
+        {
+            free (Gbl_Xsdt);
+            Gbl_Xsdt = NULL;
+        }
+
         Status = OslMapTable (Gbl_Rsdp.XsdtPhysicalAddress,
             ACPI_SIG_XSDT, &MappedTable);
         if (ACPI_FAILURE (Status))
         {
-            return (Status);
+            goto ErrorExit;
         }
 
         Gbl_Revision = 2;
@@ -612,22 +576,30 @@ OslTableInitialize (
             fprintf (stderr,
                 "XSDT: Could not allocate buffer for table of length %X\n",
                 MappedTable->Length);
-            return (AE_NO_MEMORY);
+            Status = AE_NO_MEMORY;
+            goto ErrorExit;
         }
 
         ACPI_MEMCPY (Gbl_Xsdt, MappedTable, MappedTable->Length);
         OslUnmapTable (MappedTable);
+        MappedTable = NULL;
     }
 
     /* Get RSDT from memory */
 
     if (Gbl_Rsdp.RsdtPhysicalAddress)
     {
+        if (Gbl_Rsdt)
+        {
+            free (Gbl_Rsdt);
+            Gbl_Rsdt = NULL;
+        }
+
         Status = OslMapTable (Gbl_Rsdp.RsdtPhysicalAddress,
             ACPI_SIG_RSDT, &MappedTable);
         if (ACPI_FAILURE (Status))
         {
-            return (Status);
+            goto ErrorExit;
         }
 
         Gbl_Rsdt = calloc (1, MappedTable->Length);
@@ -636,14 +608,22 @@ OslTableInitialize (
             fprintf (stderr,
                 "RSDT: Could not allocate buffer for table of length %X\n",
                 MappedTable->Length);
-            return (AE_NO_MEMORY);
+            Status = AE_NO_MEMORY;
+            goto ErrorExit;
         }
 
         ACPI_MEMCPY (Gbl_Rsdt, MappedTable, MappedTable->Length);
         OslUnmapTable (MappedTable);
+        MappedTable = NULL;
     }
 
     /* Get FADT from memory */
+
+    if (Gbl_Fadt)
+    {
+        free (Gbl_Fadt);
+        Gbl_Fadt = NULL;
+    }
 
     if (Gbl_Revision)
     {
@@ -658,14 +638,14 @@ OslTableInitialize (
 
     if (!Gbl_FadtAddress)
     {
-        fprintf(stderr, "FADT: Table could not be found\n");
+        fprintf (stderr, "FADT: Table could not be found\n");
         return (AE_ERROR);
     }
 
     Status = OslMapTable (Gbl_FadtAddress, ACPI_SIG_FADT, &MappedTable);
     if (ACPI_FAILURE (Status))
     {
-        return (Status);
+        goto ErrorExit;
     }
 
     Gbl_Fadt = calloc (1, MappedTable->Length);
@@ -674,11 +654,37 @@ OslTableInitialize (
         fprintf (stderr,
             "FADT: Could not allocate buffer for table of length %X\n",
             MappedTable->Length);
-        return (AE_NO_MEMORY);
+        Status = AE_NO_MEMORY;
+        goto ErrorExit;
     }
 
     ACPI_MEMCPY (Gbl_Fadt, MappedTable, MappedTable->Length);
     OslUnmapTable (MappedTable);
+    MappedTable = NULL;
+
+    /* Add all tables found in the static directory */
+
+    Status = OslListCustomizedTables (STATIC_TABLE_DIR);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    /* Add all dynamically loaded tables in the dynamic directory */
+
+    Status = OslListCustomizedTables (DYNAMIC_TABLE_DIR);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    Gbl_TableListInitialized = TRUE;
+
+ErrorExit:
+    if (MappedTable)
+    {
+        OslUnmapTable (MappedTable);
+    }
     return (AE_OK);
 }
 
