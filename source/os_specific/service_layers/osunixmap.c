@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: osunixdir - Unix directory access interfaces
+ * Module Name: osunixmap - Unix OSL for file mappings
  *
  *****************************************************************************/
 
@@ -113,180 +113,120 @@
  *
  *****************************************************************************/
 
-#include <acpi.h>
+#include "acpidump.h"
+#include <unistd.h>
+#include <sys/mman.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <dirent.h>
-#include <fnmatch.h>
-#include <ctype.h>
-#include <sys/stat.h>
+#define _COMPONENT          ACPI_OS_SERVICES
+        ACPI_MODULE_NAME    ("osunixmap")
 
-/*
- * Allocated structure returned from OsOpenDirectory
- */
-typedef struct ExternalFindInfo
-{
-    char                        *DirPathname;
-    DIR                         *DirPtr;
-    char                        temp_buffer[256];
-    char                        *WildcardSpec;
-    char                        RequestedFileType;
 
-} EXTERNAL_FIND_INFO;
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
 
+#define SYSTEM_MEMORY       "/dev/mem"
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiOsOpenDirectory
+ * FUNCTION:    AcpiOsGetPageSize
  *
- * PARAMETERS:  DirPathname         - Full pathname to the directory
- *              WildcardSpec        - string of the form "*.c", etc.
+ * PARAMETERS:  None
  *
- * RETURN:      A directory "handle" to be used in subsequent search operations.
- *              NULL returned on failure.
+ * RETURN:      Page size of the platform.
  *
- * DESCRIPTION: Open a directory in preparation for a wildcard search
+ * DESCRIPTION: Obtain page size of the platform.
  *
  ******************************************************************************/
+
+static ACPI_SIZE
+AcpiOsGetPageSize (
+    void)
+{
+#ifdef PAGE_SIZE
+    return PAGE_SIZE;
+#else
+    return sysconf (_SC_PAGESIZE);
+#endif
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsMapMemory
+ *
+ * PARAMETERS:  Where               - Physical address of memory to be mapped
+ *              Length              - How much memory to map
+ *
+ * RETURN:      Pointer to mapped memory. Null on error.
+ *
+ * DESCRIPTION: Map physical memory into local address space.
+ *
+ *****************************************************************************/
 
 void *
-AcpiOsOpenDirectory (
-    char                    *DirPathname,
-    char                    *WildcardSpec,
-    char                    RequestedFileType)
+AcpiOsMapMemory (
+    ACPI_PHYSICAL_ADDRESS   Where,
+    ACPI_SIZE               Length)
 {
-    EXTERNAL_FIND_INFO      *ExternalInfo;
-    DIR                     *dir;
+    UINT8                   *MappedMemory;
+    ACPI_PHYSICAL_ADDRESS   Offset;
+    ACPI_SIZE               PageSize;
+    int                     fd;
 
 
-    /* Allocate the info struct that will be returned to the caller */
-
-    ExternalInfo = calloc (1, sizeof (EXTERNAL_FIND_INFO));
-    if (!ExternalInfo)
+    fd = open (SYSTEM_MEMORY, O_RDONLY | O_BINARY);
+    if (fd < 0)
     {
+        fprintf (stderr, "Cannot open %s\n", SYSTEM_MEMORY);
         return (NULL);
     }
 
-    /* Get the directory stream */
+    /* Align the offset to use mmap */
 
-    dir = opendir (DirPathname);
-    if (!dir)
+    PageSize = AcpiOsGetPageSize ();
+    Offset = Where % PageSize;
+
+    /* Map the table header to get the length of the full table */
+
+    MappedMemory = mmap (NULL, (Length + Offset), PROT_READ, MAP_PRIVATE,
+        fd, (Where - Offset));
+    if (MappedMemory == MAP_FAILED)
     {
-        fprintf (stderr, "Cannot open directory - %s\n", DirPathname);
-        free (ExternalInfo);
+        fprintf (stderr, "Cannot map %s\n", SYSTEM_MEMORY);
+        close (fd);
         return (NULL);
     }
 
-    /* Save the info in the return structure */
-
-    ExternalInfo->WildcardSpec = WildcardSpec;
-    ExternalInfo->RequestedFileType = RequestedFileType;
-    ExternalInfo->DirPathname = DirPathname;
-    ExternalInfo->DirPtr = dir;
-    return (ExternalInfo);
+    close (fd);
+    return (ACPI_CAST8 (MappedMemory + Offset));
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
- * FUNCTION:    AcpiOsGetNextFilename
+ * FUNCTION:    AcpiOsUnmapMemory
  *
- * PARAMETERS:  DirHandle           - Created via AcpiOsOpenDirectory
- *
- * RETURN:      Next filename matched. NULL if no more matches.
- *
- * DESCRIPTION: Get the next file in the directory that matches the wildcard
- *              specification.
- *
- ******************************************************************************/
-
-char *
-AcpiOsGetNextFilename (
-    void                    *DirHandle)
-{
-    EXTERNAL_FIND_INFO      *ExternalInfo = DirHandle;
-    struct dirent           *dir_entry;
-    char                    *temp_str;
-    int                     str_len;
-    struct stat             temp_stat;
-    int                     err;
-
-
-    while ((dir_entry = readdir (ExternalInfo->DirPtr)))
-    {
-        if (!fnmatch (ExternalInfo->WildcardSpec, dir_entry->d_name, 0))
-        {
-            if (dir_entry->d_name[0] == '.')
-            {
-                continue;
-            }
-
-            str_len = strlen (dir_entry->d_name) +
-                        strlen (ExternalInfo->DirPathname) + 2;
-
-            temp_str = calloc (str_len, 1);
-            if (!temp_str)
-            {
-                fprintf (stderr,
-                    "Could not allocate buffer for temporary string\n");
-                return (NULL);
-            }
-
-            strcpy (temp_str, ExternalInfo->DirPathname);
-            strcat (temp_str, "/");
-            strcat (temp_str, dir_entry->d_name);
-
-            err = stat (temp_str, &temp_stat);
-            free (temp_str);
-            if (err == -1)
-            {
-                fprintf (stderr,
-                    "Cannot stat file (should not happen) - %s\n",
-                    temp_str);
-                return (NULL);
-            }
-
-            if ((S_ISDIR (temp_stat.st_mode)
-                && (ExternalInfo->RequestedFileType == REQUEST_DIR_ONLY))
-               ||
-               ((!S_ISDIR (temp_stat.st_mode)
-                && ExternalInfo->RequestedFileType == REQUEST_FILE_ONLY)))
-            {
-                /* copy to a temp buffer because dir_entry struct is on the stack */
-
-                strcpy (ExternalInfo->temp_buffer, dir_entry->d_name);
-                return (ExternalInfo->temp_buffer);
-            }
-        }
-    }
-
-    return (NULL);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiOsCloseDirectory
- *
- * PARAMETERS:  DirHandle           - Created via AcpiOsOpenDirectory
+ * PARAMETERS:  Where               - Logical address of memory to be unmapped
+ *              Length              - How much memory to unmap
  *
  * RETURN:      None.
  *
- * DESCRIPTION: Close the open directory and cleanup.
+ * DESCRIPTION: Delete a previously created mapping. Where and Length must
+ *              correspond to a previous mapping exactly.
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 void
-AcpiOsCloseDirectory (
-    void                    *DirHandle)
+AcpiOsUnmapMemory (
+    void                    *Where,
+    ACPI_SIZE               Length)
 {
-    EXTERNAL_FIND_INFO      *ExternalInfo = DirHandle;
+    ACPI_PHYSICAL_ADDRESS   Offset;
+    ACPI_SIZE               PageSize;
 
 
-    /* Close the directory and free allocations */
-
-    closedir (ExternalInfo->DirPtr);
-    free (DirHandle);
+    PageSize = AcpiOsGetPageSize ();
+    Offset = (ACPI_PHYSICAL_ADDRESS) Where % PageSize;
+    munmap ((UINT8 *) Where - Offset, (Length + Offset));
 }
