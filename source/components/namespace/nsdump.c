@@ -884,7 +884,6 @@ AcpiNsDumpObjectPaths (
     ACPI_OWNER_ID           OwnerId,
     ACPI_HANDLE             StartHandle)
 {
-    ACPI_WALK_INFO          Info;
     ACPI_STATUS             Status;
     UINT32                  MaxLevel = 0;
 
@@ -910,10 +909,6 @@ AcpiNsDumpObjectPaths (
     (void) AcpiNsWalkNamespace (Type, StartHandle, MaxDepth,
                 ACPI_NS_WALK_NO_UNLOCK | ACPI_NS_WALK_TEMP_NODES,
                 AcpiNsGetMaxDepth, NULL, (void *) &MaxLevel, NULL);
-
-    Info.DebugLevel = ACPI_LV_TABLES;
-    Info.OwnerId = OwnerId;
-    Info.DisplayType = DisplayType;
 
     /* Now dump the entire namespace */
 
