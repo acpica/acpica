@@ -172,6 +172,7 @@ ApOpenOutputFile (
  * FUNCTION:    ApWriteToBinaryFile
  *
  * PARAMETERS:  Table               - ACPI table to be written
+ *              Instance            - ACPI table instance no. to be written
  *
  * RETURN:      Status
  *
@@ -182,10 +183,11 @@ ApOpenOutputFile (
 
 int
 ApWriteToBinaryFile (
-    ACPI_TABLE_HEADER       *Table)
+    ACPI_TABLE_HEADER       *Table,
+    UINT32                  Instance)
 {
     char                    Filename[ACPI_NAME_SIZE + 16];
-    char                    SsdtInstance [16];
+    char                    InstanceStr [16];
     FILE                    *File;
     size_t                  Actual;
     UINT32                  TableLength;
@@ -213,11 +215,10 @@ ApWriteToBinaryFile (
 
     /* Handle multiple SSDTs - create different filenames for each */
 
-    if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_SSDT))
+    if (Instance > 0)
     {
-        sprintf (SsdtInstance, "%u", Gbl_SsdtCount);
-        strcat (Filename, SsdtInstance);
-        Gbl_SsdtCount++;
+        sprintf (InstanceStr, "%u", Instance);
+        strcat (Filename, InstanceStr);
     }
 
     strcat (Filename, ACPI_TABLE_FILE_SUFFIX);

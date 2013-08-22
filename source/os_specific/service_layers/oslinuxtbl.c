@@ -330,15 +330,6 @@ AcpiOsGetTableByName (
     ACPI_STATUS             Status;
 
 
-    /* Instance is only valid for SSDTs */
-
-    if (Instance &&
-        !ACPI_COMPARE_NAME (Signature, ACPI_SIG_SSDT) &&
-        !ACPI_COMPARE_NAME (Signature, ACPI_SIG_UEFI))
-    {
-        return (AE_LIMIT);
-    }
-
     /* Get main ACPI tables from memory on first invocation of this function */
 
     Status = OslTableInitialize ();
@@ -463,6 +454,8 @@ OslAddTableToList (
  *
  * PARAMETERS:  Index           - Which table to get
  *              Table           - Where a pointer to the table is returned
+ *              Instance        - Where a pointer to the table instance no. is
+ *                                returned
  *              Address         - Where the table physical address is returned
  *
  * RETURN:      Status; Table buffer and physical address returned if AE_OK.
@@ -478,6 +471,7 @@ ACPI_STATUS
 AcpiOsGetTableByIndex (
     UINT32                  Index,
     ACPI_TABLE_HEADER       **Table,
+    UINT32                  *Instance,
     ACPI_PHYSICAL_ADDRESS   *Address)
 {
     OSL_TABLE_INFO          *Info;
@@ -512,6 +506,11 @@ AcpiOsGetTableByIndex (
 
     Status = AcpiOsGetTableByName (Info->Signature, Info->Instance,
         Table, Address);
+
+    if (ACPI_SUCCESS (Status))
+    {
+        *Instance = Info->Instance;
+    }
     return (Status);
 }
 

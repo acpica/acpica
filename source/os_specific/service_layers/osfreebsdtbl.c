@@ -345,6 +345,8 @@ AcpiOsGetTableByName (
  *
  * PARAMETERS:  Index           - Which table to get
  *              Table           - Where a pointer to the table is returned
+ *              Instance        - Where a pointer to the table instance no. is
+ *                                returned
  *              Address         - Where the table physical address is returned
  *
  * RETURN:      Status; Table buffer and physical address returned if AE_OK.
@@ -360,6 +362,7 @@ ACPI_STATUS
 AcpiOsGetTableByIndex (
     UINT32                  Index,
     ACPI_TABLE_HEADER       **Table,
+    UINT32                  *Instance,
     ACPI_PHYSICAL_ADDRESS   *Address)
 {
     OSL_TABLE_INFO          *Info;
@@ -412,6 +415,11 @@ AcpiOsGetTableByIndex (
     {
         Status = AcpiOsGetTableByName (Info->Signature, Info->Instance,
             Table, Address);
+    }
+
+    if (ACPI_SUCCESS (Status))
+    {
+        *Instance = Info->Instance;
     }
     return (Status);
 }

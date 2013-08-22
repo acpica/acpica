@@ -121,6 +121,7 @@
 static int
 ApDumpTableBuffer (
     ACPI_TABLE_HEADER       *Table,
+    UINT32                  Instance,
     ACPI_PHYSICAL_ADDRESS   Address);
 
 
@@ -252,6 +253,7 @@ ApGetTableLength (
  * FUNCTION:    ApDumpTableBuffer
  *
  * PARAMETERS:  Table               - ACPI table to be dumped
+ *              Instance            - ACPI table instance no. to be dumped
  *              Address             - Physical address of the table
  *
  * RETURN:      None
@@ -264,6 +266,7 @@ ApGetTableLength (
 static int
 ApDumpTableBuffer (
     ACPI_TABLE_HEADER       *Table,
+    UINT32                  Instance,
     ACPI_PHYSICAL_ADDRESS   Address)
 {
     UINT32                  TableLength;
@@ -283,7 +286,7 @@ ApDumpTableBuffer (
 
     if (Gbl_BinaryMode)
     {
-        return (ApWriteToBinaryFile (Table));
+        return (ApWriteToBinaryFile (Table, Instance));
     }
 
     /*
@@ -319,6 +322,7 @@ ApDumpAllTables (
     void)
 {
     ACPI_TABLE_HEADER       *Table;
+    UINT32                  Instance = 0;
     ACPI_PHYSICAL_ADDRESS   Address;
     ACPI_STATUS             Status;
     UINT32                  i;
@@ -328,7 +332,7 @@ ApDumpAllTables (
 
     for (i = 0; i < AP_MAX_ACPI_FILES; i++)
     {
-        Status = AcpiOsGetTableByIndex (i, &Table, &Address);
+        Status = AcpiOsGetTableByIndex (i, &Table, &Instance, &Address);
         if (ACPI_FAILURE (Status))
         {
             /* AE_LIMIT means that no more tables are available */
@@ -351,7 +355,7 @@ ApDumpAllTables (
             }
         }
 
-        if (ApDumpTableBuffer (Table, Address))
+        if (ApDumpTableBuffer (Table, Instance, Address))
         {
             return (-1);
         }
@@ -407,7 +411,7 @@ ApDumpTableByAddress (
         return (-1);
     }
 
-    TableStatus = ApDumpTableBuffer (Table, Address);
+    TableStatus = ApDumpTableBuffer (Table, 0, Address);
     free (Table);
     return (TableStatus);
 }
@@ -486,7 +490,7 @@ ApDumpTableByName (
             return (-1);
         }
 
-        if (ApDumpTableBuffer (Table, Address))
+        if (ApDumpTableBuffer (Table, Instance, Address))
         {
             return (-1);
         }
@@ -545,7 +549,7 @@ ApDumpTableFromFile (
             Pathname, Table->Signature, FileSize, FileSize);
     }
 
-    TableStatus = ApDumpTableBuffer (Table, 0);
+    TableStatus = ApDumpTableBuffer (Table, 0, 0);
     free (Table);
     return (TableStatus);
 }

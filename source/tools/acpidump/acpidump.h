@@ -140,7 +140,6 @@ EXTERN BOOLEAN              INIT_GLOBAL (Gbl_SummaryMode, FALSE);
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_VerboseMode, FALSE);
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_BinaryMode, FALSE);
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_DumpCustomizedTables, FALSE);
-EXTERN UINT32               INIT_GLOBAL (Gbl_SsdtCount, 0);
 EXTERN FILE                 INIT_GLOBAL (*Gbl_OutputFile, NULL);
 EXTERN char                 INIT_GLOBAL (*Gbl_OutputFilename, NULL);
 EXTERN UINT64               INIT_GLOBAL (Gbl_RsdpBase, 0);
@@ -229,7 +228,8 @@ ApOpenOutputFile (
 
 int
 ApWriteToBinaryFile (
-    ACPI_TABLE_HEADER       *Table);
+    ACPI_TABLE_HEADER       *Table,
+    UINT32                  Instance);
 
 ACPI_TABLE_HEADER *
 ApGetTableFromFile (
