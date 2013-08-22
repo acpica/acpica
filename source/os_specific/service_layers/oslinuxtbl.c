@@ -190,6 +190,10 @@ OslGetCustomizedTable (
     ACPI_PHYSICAL_ADDRESS   *Address);
 
 static ACPI_STATUS
+OslListBiosTables (
+    void);
+
+static ACPI_STATUS
 OslGetBiosTable (
     char                    *Signature,
     UINT32                  Instance,
@@ -345,25 +349,31 @@ AcpiOsGetTableByName (
 
     /* Not a main ACPI table, attempt to extract it from the RSDT/XSDT */
 
-    Status = OslGetBiosTable (Signature, Instance, Table, Address);
-    if (ACPI_FAILURE (Status))
+    if (!Gbl_DumpCustomizedTables)
+    {
+        /* Attempt to get the table from the memory */
+
+        Status = OslGetBiosTable (Signature, Instance, Table, Address);
+    }
+    else
     {
         /* Attempt to get the table from the static directory */
 
         Status = OslGetCustomizedTable (STATIC_TABLE_DIR, Signature,
             Instance, Table, Address);
-        if ((Status == AE_LIMIT) && Gbl_DumpDynamicTables)
+    }
+    if (ACPI_FAILURE (Status) && Status == AE_LIMIT)
+    {
+        if (Gbl_DumpDynamicTables)
         {
             /* Attempt to get a dynamic table */
 
             Status = OslGetCustomizedTable (DYNAMIC_TABLE_DIR, Signature,
                 Instance, Table, Address);
         }
-
-        return (Status);
     }
 
-    return (AE_OK);
+    return (Status);
 }
 
 
@@ -694,46 +704,148 @@ OslTableInitialize (
         return (Status);
     }
 
-    /* Add mandatory tables to global table list first */
-
-    Status = OslAddTableToList (AP_DUMP_SIG_RSDP, 0);
-    if (ACPI_FAILURE (Status))
+    if (!Gbl_DumpCustomizedTables)
     {
-        return (Status);
+        /* Add mandatory tables to global table list first */
+
+        Status = OslAddTableToList (AP_DUMP_SIG_RSDP, 0);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        Status = OslAddTableToList (ACPI_SIG_RSDT, 0);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        if (Gbl_Revision == 2)
+        {
+            Status = OslAddTableToList (ACPI_SIG_XSDT, 0);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+        }
+
+        Status = OslAddTableToList (ACPI_SIG_DSDT, 0);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        Status = OslAddTableToList (ACPI_SIG_FACS, 0);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        /* Add all tables found in the memory */
+
+        Status = OslListBiosTables ();
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
     }
-
-    Status = OslAddTableToList (ACPI_SIG_RSDT, 0);
-    if (ACPI_FAILURE (Status))
+    else
     {
-        return (Status);
-    }
+        /* Add all tables found in the static directory */
 
-    if (Gbl_Revision == 2)
-    {
-        Status = OslAddTableToList (ACPI_SIG_XSDT, 0);
+        Status = OslListCustomizedTables (STATIC_TABLE_DIR);
         if (ACPI_FAILURE (Status))
         {
             return (Status);
         }
     }
 
-    /* Add all tables found in the static directory */
-
-    Status = OslListCustomizedTables (STATIC_TABLE_DIR);
-    if (ACPI_FAILURE (Status))
+    if (Gbl_DumpDynamicTables)
     {
-        return (Status);
-    }
+        /* Add all dynamically loaded tables in the dynamic directory */
 
-    /* Add all dynamically loaded tables in the dynamic directory */
-
-    Status = OslListCustomizedTables (DYNAMIC_TABLE_DIR);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
+        Status = OslListCustomizedTables (DYNAMIC_TABLE_DIR);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
     }
 
     Gbl_TableListInitialized = TRUE;
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    OslListBiosTables
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status; Table list is initialized if AE_OK.
+ *
+ * DESCRIPTION: Add ACPI tables to the table list from memory.
+ *
+ * NOTE:        This works on Linux as table customization does not modify the
+ *              addresses stored in RSDP/RSDT/XSDT/FADT.
+ *
+ *****************************************************************************/
+
+static ACPI_STATUS
+OslListBiosTables (
+    void)
+{
+    ACPI_TABLE_HEADER       *MappedTable = NULL;
+    UINT8                   *TableData;
+    UINT8                   NumberOfTables;
+    UINT8                   ItemSize;
+    ACPI_PHYSICAL_ADDRESS   TableAddress = 0;
+    ACPI_STATUS             Status = AE_OK;
+    UINT32                  i;
+
+
+    if (Gbl_Revision)
+    {
+        ItemSize = sizeof (UINT64);
+        TableData = ACPI_CAST8 (Gbl_Xsdt) + sizeof (ACPI_TABLE_HEADER);
+        NumberOfTables =
+            (UINT8) ((Gbl_Xsdt->Header.Length - sizeof (ACPI_TABLE_HEADER))
+            / ItemSize);
+    }
+    else /* Use RSDT if XSDT is not available */
+    {
+        ItemSize = sizeof (UINT32);
+        TableData = ACPI_CAST8 (Gbl_Rsdt) + sizeof (ACPI_TABLE_HEADER);
+        NumberOfTables =
+            (UINT8) ((Gbl_Rsdt->Header.Length - sizeof (ACPI_TABLE_HEADER))
+            / ItemSize);
+    }
+
+    /* Search RSDT/XSDT for the requested table */
+    for (i = 0; i < NumberOfTables; ++i, TableData += ItemSize)
+    {
+        if (Gbl_Revision)
+        {
+            TableAddress =
+                (ACPI_PHYSICAL_ADDRESS) (*ACPI_CAST64 (TableData));
+        }
+        else
+        {
+            TableAddress =
+                (ACPI_PHYSICAL_ADDRESS) (*ACPI_CAST32 (TableData));
+        }
+
+        Status = OslMapTable (TableAddress, NULL, &MappedTable);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        OslAddTableToList (MappedTable->Signature, 0);
+
+        OslUnmapTable (MappedTable);
+    }
 
     return (AE_OK);
 }

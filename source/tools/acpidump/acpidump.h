@@ -139,6 +139,7 @@
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_SummaryMode, FALSE);
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_VerboseMode, FALSE);
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_BinaryMode, FALSE);
+EXTERN BOOLEAN              INIT_GLOBAL (Gbl_DumpCustomizedTables, FALSE);
 EXTERN UINT32               INIT_GLOBAL (Gbl_SsdtCount, 0);
 EXTERN FILE                 INIT_GLOBAL (*Gbl_OutputFile, NULL);
 EXTERN char                 INIT_GLOBAL (*Gbl_OutputFilename, NULL);

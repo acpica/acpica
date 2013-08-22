@@ -164,7 +164,7 @@ UINT32                      CurrentAction = 0;
 
 
 #define AP_UTILITY_NAME             "ACPI Binary Table Dump Utility"
-#define AP_SUPPORTED_OPTIONS        "?a:bf:hn:o:r:svz"
+#define AP_SUPPORTED_OPTIONS        "?a:bcf:hn:o:r:svz"
 
 
 /******************************************************************************
@@ -183,6 +183,7 @@ ApDisplayUsage (
     ACPI_USAGE_HEADER ("acpidump [options]");
 
     ACPI_OPTION ("-b",                      "Dump tables to binary files");
+    ACPI_OPTION ("-c",                      "Dump customized tables");
     ACPI_OPTION ("-h -?",                   "This help message");
     ACPI_OPTION ("-o <File>",               "Redirect output to file");
     ACPI_OPTION ("-r <Address>",            "Dump tables from specified RSDP");
@@ -268,6 +269,11 @@ ApDoOptions (
     case 'b':   /* Dump all input tables to binary files */
 
         Gbl_BinaryMode = TRUE;
+        continue;
+
+    case 'c':   /* Dump customized tables */
+
+        Gbl_DumpCustomizedTables = TRUE;
         continue;
 
     case 'h':
