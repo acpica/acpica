@@ -125,6 +125,16 @@
 #endif
 
 
+/* List of information about obtained ACPI tables */
+
+typedef struct          table_info
+{
+    struct table_info       *Next;
+    UINT32                  Instance;
+    char                    Signature[ACPI_NAME_SIZE];
+
+} OSL_TABLE_INFO;
+
 /* Local prototypes */
 
 static ACPI_STATUS
@@ -136,6 +146,11 @@ OslTableNameFromFile (
     char                    *Filename,
     char                    *Signature,
     UINT32                  *Instance);
+
+static ACPI_STATUS
+OslAddTableToList (
+    char                    *Signature,
+    UINT32                  Instance);
 
 static ACPI_STATUS
 OslReadTableFromFile (
@@ -155,16 +170,16 @@ OslUnmapTable (
     ACPI_TABLE_HEADER       *Table);
 
 static ACPI_STATUS
+OslListCustomizedTables (
+    char                    *Directory);
+
+static ACPI_STATUS
 OslGetCustomizedTable (
     char                    *Pathname,
     char                    *Signature,
     UINT32                  Instance,
     ACPI_TABLE_HEADER       **Table,
     ACPI_PHYSICAL_ADDRESS   *Address);
-
-static ACPI_STATUS
-OslAddTablesToList (
-    char                    *Directory);
 
 static ACPI_STATUS
 OslGetTableViaRoot (
@@ -203,17 +218,8 @@ ACPI_PHYSICAL_ADDRESS   Gbl_FadtAddress;
 
 UINT8                   Gbl_Revision;
 
-/* List of information about obtained ACPI tables */
-
-typedef struct          table_info
-{
-    struct table_info       *Next;
-    UINT32                  Instance;
-    char                    Signature[ACPI_NAME_SIZE];
-
-} OSL_TABLE_INFO;
-
 OSL_TABLE_INFO          *Gbl_TableListHead = NULL;
+UINT32                  Gbl_TableCount = 0;
 
 
 /******************************************************************************
@@ -386,6 +392,86 @@ AcpiOsGetTableByName (
 
 /******************************************************************************
  *
+ * FUNCTION:    OslAddTableToList
+ *
+ * PARAMETERS:  Signature       - Table signature
+ *              Instance        - Table instance
+ *
+ * RETURN:      Status; Successfully added if AE_OK.
+ *              AE_NO_MEMORY: Memory allocation error
+ *
+ * DESCRIPTION: Insert a table structure into OSL table list.
+ *
+ *****************************************************************************/
+
+static ACPI_STATUS
+OslAddTableToList (
+    char                    *Signature,
+    UINT32                  Instance)
+{
+    OSL_TABLE_INFO          *NewInfo;
+    OSL_TABLE_INFO          *Next;
+    UINT32                  NextInstance = 0;
+    BOOLEAN                 Found = FALSE;
+
+
+    NewInfo = calloc (1, sizeof (OSL_TABLE_INFO));
+    if (!NewInfo)
+    {
+        return (AE_NO_MEMORY);
+    }
+    ACPI_MOVE_NAME (NewInfo->Signature, Signature);
+
+    if (!Gbl_TableListHead)
+    {
+        Gbl_TableListHead = NewInfo;
+    }
+    else
+    {
+        Next = Gbl_TableListHead;
+        do
+        {
+            if (ACPI_COMPARE_NAME (Next->Signature, Signature))
+            {
+                if (Next->Instance == Instance)
+                {
+                    Found = TRUE;
+                }
+                if (Next->Instance >= NextInstance)
+                {
+                    NextInstance = Next->Instance + 1;
+                }
+            }
+            if (!Next->Next)
+            {
+                break;
+            }
+            Next = Next->Next;
+        }
+        while (1);
+        Next->Next = NewInfo;
+    }
+
+    if (Found)
+    {
+        if (Instance)
+        {
+            fprintf (stderr,
+                "%4.4s: Warning unmatched table instance %d, expected %d\n",
+                Signature, Instance, NextInstance);
+        }
+        Instance = NextInstance;
+    }
+
+    NewInfo->Instance = Instance;
+    Gbl_TableCount++;
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AcpiOsGetTableByIndex
  *
  * PARAMETERS:  Index           - Which table to get
@@ -416,15 +502,9 @@ AcpiOsGetTableByIndex (
 
     if (!Gbl_TableListInitialized)
     {
-        Gbl_TableListHead = calloc (1, sizeof (OSL_TABLE_INFO));
-
-        /* List head records the length of the list */
-
-        Gbl_TableListHead->Instance = 0;
-
         /* Add all tables found in the static directory */
 
-        Status = OslAddTablesToList (STATIC_TABLE_DIR);
+        Status = OslListCustomizedTables (STATIC_TABLE_DIR);
         if (ACPI_FAILURE (Status))
         {
             return (Status);
@@ -432,7 +512,7 @@ AcpiOsGetTableByIndex (
 
         /* Add all dynamically loaded tables in the dynamic directory */
 
-        OslAddTablesToList (DYNAMIC_TABLE_DIR);
+        Status = OslListCustomizedTables (DYNAMIC_TABLE_DIR);
         if (ACPI_FAILURE (Status))
         {
             return (Status);
@@ -443,7 +523,7 @@ AcpiOsGetTableByIndex (
 
     /* Validate Index */
 
-    if (Index >= Gbl_TableListHead->Instance)
+    if (Index >= Gbl_TableCount)
     {
         return (AE_LIMIT);
     }
@@ -451,7 +531,7 @@ AcpiOsGetTableByIndex (
     /* Point to the table list entry specified by the Index argument */
 
     Info = Gbl_TableListHead;
-    for (i = 0; i <= Index; i++)
+    for (i = 0; i < Index; i++)
     {
         Info = Info->Next;
     }
@@ -788,7 +868,7 @@ OslGetTableViaRoot (
 
 /******************************************************************************
  *
- * FUNCTION:    OslAddTablesToList
+ * FUNCTION:    OslListCustomizedTables
  *
  * PARAMETERS:  Directory           - Directory that contains the tables
  *
@@ -799,15 +879,14 @@ OslGetTableViaRoot (
  *****************************************************************************/
 
 static ACPI_STATUS
-OslAddTablesToList (
+OslListCustomizedTables (
     char                    *Directory)
 {
-    OSL_TABLE_INFO          *NewInfo;
-    OSL_TABLE_INFO          *Info;
     void                    *TableDir;
+    UINT32                  Instance;
+    char                    TempName[ACPI_NAME_SIZE];
     char                    *Filename;
-    UINT32                  i;
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
 
 
     /* Open the requested directory */
@@ -818,47 +897,32 @@ OslAddTablesToList (
         return (AE_ERROR);
     }
 
-    /* Move pointer to the end of the list */
-
-    if (!Gbl_TableListHead)
-    {
-        return (AE_ERROR);
-    }
-
-    Info = Gbl_TableListHead;
-    for (i = 0; i < Gbl_TableListHead->Instance; i++)
-    {
-        Info = Info->Next;
-    }
-
     /* Examine all entries in this directory */
 
     while ((Filename = AcpiOsGetNextFilename (TableDir)))
     {
-        NewInfo = calloc (1, sizeof (OSL_TABLE_INFO));
-
         /* Extract table name and instance number */
 
-        Status = OslTableNameFromFile (Filename,
-            NewInfo->Signature, &NewInfo->Instance);
+        Status = OslTableNameFromFile (Filename, TempName, &Instance);
 
         /* Ignore meaningless files */
 
         if (ACPI_FAILURE (Status))
         {
-            free (NewInfo);
             continue;
         }
 
         /* Add new info node to global table list */
 
-        Info->Next = NewInfo;
-        Info = NewInfo;
-        Gbl_TableListHead->Instance++;
+        Status = OslAddTableToList (TempName, Instance);
+        if (ACPI_FAILURE (Status))
+        {
+            break;
+        }
     }
 
     AcpiOsCloseDirectory (TableDir);
-    return (AE_OK);
+    return (Status);
 }
 
 
