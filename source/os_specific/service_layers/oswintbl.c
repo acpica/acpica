@@ -427,3 +427,50 @@ Cleanup:
     *Address = 0;
     return (AE_OK);
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsMapMemory
+ *
+ * PARAMETERS:  Where               - Physical address of memory to be mapped
+ *              Length              - How much memory to map
+ *
+ * RETURN:      Pointer to mapped memory. Null on error.
+ *
+ * DESCRIPTION: Map physical memory into caller's address space
+ *
+ *****************************************************************************/
+
+void *
+AcpiOsMapMemory (
+    ACPI_PHYSICAL_ADDRESS   Where,
+    ACPI_SIZE               Length)
+{
+
+    return (ACPI_TO_POINTER ((ACPI_SIZE) Where));
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsUnmapMemory
+ *
+ * PARAMETERS:  Where               - Logical address of memory to be unmapped
+ *              Length              - How much memory to unmap
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Delete a previously created mapping. Where and Length must
+ *              correspond to a previous mapping exactly.
+ *
+ *****************************************************************************/
+
+void
+AcpiOsUnmapMemory (
+    void                    *Where,
+    ACPI_SIZE               Length)
+{
+
+    return;
+}

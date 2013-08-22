@@ -324,6 +324,10 @@
 					RelativePath="..\..\source\components\tables\tbprint.c"
 					>
 				</File>
+				<File
+					RelativePath="..\..\source\components\tables\tbxfroot.c"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
