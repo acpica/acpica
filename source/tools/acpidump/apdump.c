@@ -165,6 +165,50 @@ ApIsValidHeader (
 
 /******************************************************************************
  *
+ * FUNCTION:    ApIsValidChecksum
+ *
+ * PARAMETERS:  Table               - Pointer to table to be validated
+ *
+ * RETURN:      TRUE if the checksum appears to be valid. FALSE otherwise
+ *
+ * DESCRIPTION: Check for a valid ACPI table checksum
+ *
+ ******************************************************************************/
+
+BOOLEAN
+ApIsValidChecksum (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_TABLE_RSDP         *Rsdp;
+
+
+    if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_RSDP))
+    {
+        /*
+         * Checksum for RSDP.
+         * Note: Other checksums are computed during the table dump.
+         */
+
+        Rsdp = ACPI_CAST_PTR (ACPI_TABLE_RSDP, Table);
+        Status = AcpiTbValidateRsdp (Rsdp);
+    }
+    else
+    {
+        Status = AcpiTbVerifyChecksum (Table, Table->Length);
+    }
+    if (ACPI_FAILURE (Status))
+    {
+        fprintf (stderr, "%4.4s: Warning: wrong checksum\n",
+            Table->Signature);
+    }
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    ApDumpTableBuffer
  *
  * PARAMETERS:  Table               - ACPI table to be dumped
@@ -188,13 +232,6 @@ ApDumpTableBuffer (
     if (!ApIsValidHeader (Table))
     {
         return (-1);
-    }
-
-     /* Validate the table checksum (except FACS - has no checksum) */
-
-    if (!ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_FACS))
-    {
-        (void) AcpiTbVerifyChecksum (Table, Table->Length);
     }
 
     /* Print only the header if requested */

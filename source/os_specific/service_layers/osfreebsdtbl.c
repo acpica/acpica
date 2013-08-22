@@ -950,18 +950,9 @@ OslMapTable (
         return (AE_BAD_ADDRESS);
     }
 
+    (void) ApIsValidChecksum (MappedTable);
+
     *Table = MappedTable;
-
-    /*
-     * Checksum for RSDP.
-     * Note: Other checksums are computed during the table dump.
-     */
-
-    if (AcpiTbValidateRsdp (ACPI_CAST_PTR (ACPI_TABLE_RSDP, MappedTable)) ==
-        AE_BAD_CHECKSUM)
-    {
-        fprintf (stderr, "Warning: wrong checksum for RSDP\n");
-    }
 
     return (AE_OK);
 }

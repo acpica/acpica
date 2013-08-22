@@ -283,6 +283,17 @@ AcpiTbVerifyChecksum (
     UINT8                   Checksum;
 
 
+    /*
+     * FACS/S3PT:
+     * They are the odd tables, have no standard ACPI header and no checksum
+     */
+
+    if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_S3PT) ||
+        ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_FACS))
+    {
+        return (AE_OK);
+    }
+
     /* Compute the checksum on the table */
 
     Checksum = AcpiTbChecksum (ACPI_CAST_PTR (UINT8, Table), Length);

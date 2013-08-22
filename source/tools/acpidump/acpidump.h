@@ -201,6 +201,10 @@ BOOLEAN
 ApIsValidHeader (
     ACPI_TABLE_HEADER       *Table);
 
+BOOLEAN
+ApIsValidChecksum (
+    ACPI_TABLE_HEADER       *Table);
+
 
 /*
  * apfiles - File I/O utilities
