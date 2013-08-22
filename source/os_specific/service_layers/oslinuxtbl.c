@@ -200,6 +200,10 @@ OslGetBiosTable (
     ACPI_TABLE_HEADER       **Table,
     ACPI_PHYSICAL_ADDRESS   *Address);
 
+static ACPI_STATUS
+OslGetLastStatus (
+    ACPI_STATUS             DefaultStatus);
+
 
 /* File locations */
 
@@ -233,6 +237,44 @@ UINT8                   Gbl_Revision = 0;
 
 OSL_TABLE_INFO          *Gbl_TableListHead = NULL;
 UINT32                  Gbl_TableCount = 0;
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    OslGetLastStatus
+ *
+ * PARAMETERS:  DefaultStatus   - Default error status to return
+ *
+ * RETURN:      Status; Converted from errno.
+ *
+ * DESCRIPTION: Get last errno and conver it to ACPI_STATUS.
+ *
+ *****************************************************************************/
+
+static ACPI_STATUS
+OslGetLastStatus (
+    ACPI_STATUS             DefaultStatus)
+{
+    switch (errno)
+    {
+    case EACCES:
+    case EPERM:
+
+        return (AE_ACCESS);
+
+    case ENOENT:
+
+        return (AE_NOT_FOUND);
+
+    case ENOMEM:
+
+        return (AE_NO_MEMORY);
+
+    default:
+
+        return (DefaultStatus);
+    }
+}
 
 
 /******************************************************************************
@@ -595,7 +637,7 @@ OslLoadRsdp (
     RsdpAddress = AcpiOsMapMemory (RsdpBase, RsdpSize);
     if (!RsdpAddress)
     {
-        return (AE_BAD_ADDRESS);
+        return (OslGetLastStatus (AE_BAD_ADDRESS));
     }
 
     /* Search low memory for the RSDP */
@@ -605,7 +647,7 @@ OslLoadRsdp (
     if (!MappedTable)
     {
         AcpiOsUnmapMemory (RsdpAddress, RsdpSize);
-        return (AE_ERROR);
+        return (AE_NOT_FOUND);
     }
     Gbl_RsdpAddress = RsdpBase + (ACPI_CAST8 (MappedTable) - RsdpAddress);
 
@@ -933,7 +975,7 @@ OslGetBiosTable (
         {
             if (!Gbl_Revision)
             {
-                return (AE_NOT_FOUND);
+                return (AE_BAD_SIGNATURE);
             }
             TableAddress = (ACPI_PHYSICAL_ADDRESS) Gbl_Rsdp.XsdtPhysicalAddress;
         }
@@ -1079,7 +1121,7 @@ OslListCustomizedTables (
     TableDir = AcpiOsOpenDirectory (Directory, "*", REQUEST_FILE_ONLY);
     if (!TableDir)
     {
-        return (AE_ERROR);
+        return (OslGetLastStatus (AE_NOT_FOUND));
     }
 
     /* Examine all entries in this directory */
@@ -1122,6 +1164,7 @@ OslListCustomizedTables (
  *                                    returned
  *
  * RETURN:      Status; Mapped table is returned if AE_OK.
+ *              AE_NOT_FOUND: A valid table was not found at the address
  *
  * DESCRIPTION: Map entire ACPI table into caller's address space.
  *
@@ -1154,7 +1197,7 @@ OslMapTable (
     {
         fprintf (stderr, "Could not map table header at 0x%8.8X%8.8X\n",
             ACPI_FORMAT_UINT64 (Address));
-        return (AE_BAD_ADDRESS);
+        return (OslGetLastStatus (AE_BAD_ADDRESS));
     }
 
     /* If specified, signature must match */
@@ -1163,7 +1206,7 @@ OslMapTable (
         !ACPI_COMPARE_NAME (Signature, MappedTable->Signature))
     {
         AcpiOsUnmapMemory (MappedTable, sizeof (ACPI_TABLE_HEADER));
-        return (AE_NOT_EXIST);
+        return (AE_BAD_SIGNATURE);
     }
 
     /* Map the entire table */
@@ -1180,7 +1223,7 @@ OslMapTable (
     {
         fprintf (stderr, "Could not map table at 0x%8.8X%8.8X length %8.8X\n",
             ACPI_FORMAT_UINT64 (Address), Length);
-        return (AE_NO_MEMORY);
+        return (OslGetLastStatus (AE_INVALID_TABLE_LENGTH));
     }
 
     (void) ApIsValidChecksum (MappedTable);
@@ -1304,7 +1347,7 @@ OslReadTableFromFile (
     if (TableFile == NULL)
     {
         fprintf (stderr, "Could not open table file: %s\n", Filename);
-        return (AE_ERROR);
+        return (OslGetLastStatus (AE_NOT_FOUND));
     }
 
     fseek (TableFile, FileOffset, SEEK_SET);
@@ -1315,7 +1358,7 @@ OslReadTableFromFile (
     if (Count != sizeof (ACPI_TABLE_HEADER))
     {
         fprintf (stderr, "Could not read table header: %s\n", Filename);
-        Status = AE_ERROR;
+        Status = AE_BAD_HEADER;
         goto ErrorExit;
     }
 
@@ -1326,7 +1369,7 @@ OslReadTableFromFile (
     {
         fprintf (stderr, "Incorrect signature: Expecting %4.4s, found %4.4s\n",
             Signature, Header.Signature);
-        Status = AE_NOT_FOUND;
+        Status = AE_BAD_SIGNATURE;
         goto ErrorExit;
     }
 
@@ -1356,9 +1399,9 @@ OslReadTableFromFile (
         Count = fread (LocalTable, 1, TableLength-Total, TableFile);
         if (Count < 0)
         {
-            fprintf (stderr, "%4.4s: Error while reading table content\n",
+            fprintf (stderr, "%4.4s: Could not read table content\n",
                 Header.Signature);
-            Status = AE_NOT_FOUND;
+            Status = AE_INVALID_TABLE_LENGTH;
             goto ErrorExit;
         }
         Total += Count;
@@ -1388,7 +1431,8 @@ ErrorExit:
  *              Address         - Where the table physical address is returned
  *
  * RETURN:      Status; Table buffer is returned if AE_OK.
- *              AE_NOT_FOUND: A valid table was not found at the address
+ *              AE_LIMIT: Instance is beyond valid limit
+ *              AE_NOT_FOUND: A table with the signature was not found
  *
  * DESCRIPTION: Get an OS customized table.
  *
@@ -1415,7 +1459,7 @@ OslGetCustomizedTable (
     TableDir = AcpiOsOpenDirectory (Pathname, "*", REQUEST_FILE_ONLY);
     if (!TableDir)
     {
-        return (AE_ERROR);
+        return (OslGetLastStatus (AE_NOT_FOUND));
     }
 
     /* Attempt to find the table in the directory */
