@@ -429,6 +429,9 @@ Cleanup:
 }
 
 
+/* These are here for acpidump only, so we don't need to link oswinxf */
+
+#ifdef ACPI_DUMP_APP
 /******************************************************************************
  *
  * FUNCTION:    AcpiOsMapMemory
@@ -474,3 +477,4 @@ AcpiOsUnmapMemory (
 
     return;
 }
+#endif
