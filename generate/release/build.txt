@@ -24,7 +24,8 @@ Build Windows debug versions of all software and utilities
 Build Windows nodebug versions of all software and utilities
     (generate/msvc9)
 Build Unix versions of all software and utilities
-    (generate/unix/make)
+    generate/unix/make clean
+    generate/unix/make
 
 Write the release notes
 Generate sizes for the acpica library from generate/release/size.bat
@@ -34,8 +35,8 @@ Generate sizes for the acpica library from generate/release/size.bat
 Sizes appear in the files size_rel.txt and size_dbg.txt
 Integrate code/data and debug/nodebug sizes into the release notes
 Add the release notes to the documents/changes.txt document
-   Note: From Word, use "Save As", then check MS-DOS and "insert line breaks"
-   boxes before saving.
+   Note: From Word, use "Save As", then check the "MS-DOS" and
+   "Insert line breaks" boxes before saving.
 
 Checkin documents/changes.txt
 Checkin the new version number, source/include/acpixf.h
@@ -80,9 +81,10 @@ Version number headers and file pathnames:
 New documents:
     Goto the documents page, click edit.
     Attach new document(s)
-    uncheck the "List" box
+    uncheck the "List" box for each new document
     Update pathnames (and file sizes) in body for each new filename
         (appears at bottom of each attach)
+    Update "Last update" dates
     Click save at bottom
     <Note: this may be fixed so that the filename can stay the same>
     Update news: ContentManagement->CreateContent->News
@@ -96,7 +98,6 @@ Send separate copies of the notes (in plain text) to the following:
     devel@acpica.org
     acpi@linux.intel.com
     CaClients (undisclosed recipients/BCC: list)
-
 
 
 Update ACPICA bugzilla
