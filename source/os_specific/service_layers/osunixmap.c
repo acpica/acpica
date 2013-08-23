@@ -116,6 +116,9 @@
 #include "acpidump.h"
 #include <unistd.h>
 #include <sys/mman.h>
+#ifdef _FreeBSD
+#include <sys/param.h>
+#endif
 
 #define _COMPONENT          ACPI_OS_SERVICES
         ACPI_MODULE_NAME    ("osunixmap")
@@ -123,6 +126,12 @@
 
 #ifndef O_BINARY
 #define O_BINARY 0
+#endif
+
+#ifdef _FreeBSD
+#define MMAP_FLAGS          MAP_SHARED
+#else
+#define MMAP_FLAGS          MAP_PRIVATE
 #endif
 
 #define SYSTEM_MEMORY       "/dev/mem"
@@ -191,7 +200,7 @@ AcpiOsMapMemory (
 
     /* Map the table header to get the length of the full table */
 
-    MappedMemory = mmap (NULL, (Length + Offset), PROT_READ, MAP_PRIVATE,
+    MappedMemory = mmap (NULL, (Length + Offset), PROT_READ, MMAP_FLAGS,
         fd, (Where - Offset));
     if (MappedMemory == MAP_FAILED)
     {
