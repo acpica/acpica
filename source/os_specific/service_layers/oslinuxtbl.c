@@ -452,7 +452,7 @@ OslAddTableToList (
     else
     {
         Next = Gbl_TableListHead;
-        do
+        while (1)
         {
             if (ACPI_COMPARE_NAME (Next->Signature, Signature))
             {
@@ -472,7 +472,6 @@ OslAddTableToList (
             }
             Next = Next->Next;
         }
-        while (1);
         Next->Next = NewInfo;
     }
 
