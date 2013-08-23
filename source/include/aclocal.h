@@ -1358,6 +1358,7 @@ typedef struct acpi_integrity_info
 } ACPI_INTEGRITY_INFO;
 
 
+#define ACPI_DB_DISABLE_OUTPUT          0x00
 #define ACPI_DB_REDIRECTABLE_OUTPUT     0x01
 #define ACPI_DB_CONSOLE_OUTPUT          0x02
 #define ACPI_DB_DUPLICATE_OUTPUT        0x03
