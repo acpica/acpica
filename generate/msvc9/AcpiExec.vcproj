@@ -82,7 +82,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/out:&quot;.\AcpiExecDebug\AcpiExec.exe&quot;"
-				AdditionalDependencies="libcmtd.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="setargv.obj"
 				OutputFile=".\AcpiExecDebug\AcpiExec.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -189,6 +189,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="setargv.obj"
 				OutputFile=".\AcpiExec/AcpiExec.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
