@@ -86,7 +86,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/LTCG"
-				AdditionalDependencies="odbc32.lib odbccp32.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib setargv.obj"
 				OutputFile=".\AslCompiler\AslCompiler.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -189,7 +189,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib setargv.obj"
 				OutputFile=".\AslCompilerDebug\AslCompiler.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -198,6 +198,7 @@
 				ProgramDatabaseFile=".\AslCompilerDebug\AslCompiler.pdb"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
+				ImportLibrary=""
 				TargetMachine="1"
 			/>
 			<Tool
