@@ -226,7 +226,7 @@ AcpiTbPrintTableHeader (
     {
         /* FACS only has signature and length fields */
 
-        ACPI_INFO ((AE_INFO, "%4.4s %p %05X",
+        ACPI_INFO ((AE_INFO, "%4.4s %p %06X",
             Header->Signature, ACPI_CAST_PTR (void, Address),
             Header->Length));
     }
@@ -238,7 +238,7 @@ AcpiTbPrintTableHeader (
             ACPI_CAST_PTR (ACPI_TABLE_RSDP, Header)->OemId, ACPI_OEM_ID_SIZE);
         AcpiTbFixString (LocalHeader.OemId, ACPI_OEM_ID_SIZE);
 
-        ACPI_INFO ((AE_INFO, "RSDP %p %05X (v%.2d %6.6s)",
+        ACPI_INFO ((AE_INFO, "RSDP %p %06X (v%.2d %6.6s)",
             ACPI_CAST_PTR (void, Address),
             (ACPI_CAST_PTR (ACPI_TABLE_RSDP, Header)->Revision > 0) ?
                 ACPI_CAST_PTR (ACPI_TABLE_RSDP, Header)->Length : 20,
@@ -252,7 +252,7 @@ AcpiTbPrintTableHeader (
         AcpiTbCleanupTableHeader (&LocalHeader, Header);
 
         ACPI_INFO ((AE_INFO,
-            "%4.4s %p %05X (v%.2d %6.6s %8.8s %08X %4.4s %08X)",
+            "%4.4s %p %06X (v%.2d %6.6s %8.8s %08X %4.4s %08X)",
             LocalHeader.Signature, ACPI_CAST_PTR (void, Address),
             LocalHeader.Length, LocalHeader.Revision, LocalHeader.OemId,
             LocalHeader.OemTableId, LocalHeader.OemRevision,
