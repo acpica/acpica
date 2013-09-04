@@ -167,6 +167,9 @@ AxConvertLine (
     char                    *InputLine,
     unsigned char           *OutputData);
 
+static int
+AxIsEmptyLine (
+    char                    *Buffer);
 
 typedef struct AxTableInfo
 {
@@ -250,6 +253,41 @@ AxCheckAscii (
             Name[i] = ' ';
         }
     }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AxIsEmptyLine
+ *
+ * PARAMETERS:  Buffer              - Line from input file
+ *
+ * RETURN:      TRUE if line is empty (zero or more blanks only)
+ *
+ * DESCRIPTION: Determine if an input line is empty.
+ *
+ ******************************************************************************/
+
+static int
+AxIsEmptyLine (
+    char                    *Buffer)
+{
+
+    /* Skip all spaces */
+
+    while (*Buffer == ' ')
+    {
+        Buffer++;
+    }
+
+    /* If end-of-line, this line is empty */
+
+    if (*Buffer == '\n')
+    {
+        return (1);
+    }
+
+    return (0);
 }
 
 
@@ -417,8 +455,8 @@ AxCountTableInstances (
     {
         /* Ignore empty lines and lines that start with a space */
 
-        if ((InstanceBuffer[0] == ' ') ||
-            (InstanceBuffer[0] == '\n'))
+        if (AxIsEmptyLine (InstanceBuffer) ||
+            (InstanceBuffer[0] == ' '))
         {
             continue;
         }
@@ -578,8 +616,8 @@ AxExtractTables (
 
             /* Ignore empty lines and lines that start with a space */
 
-            if ((LineBuffer[0] == ' ') ||
-                (LineBuffer[0] == '\n'))
+            if (AxIsEmptyLine (LineBuffer) ||
+                (LineBuffer[0] == ' '))
             {
                 continue;
             }
@@ -646,7 +684,7 @@ AxExtractTables (
 
             /* Empty line or non-data line terminates the data */
 
-            if ((LineBuffer[0] == '\n') ||
+            if (AxIsEmptyLine (LineBuffer) ||
                 (LineBuffer[0] != ' '))
             {
                 fclose (OutputFile);
@@ -751,8 +789,8 @@ AxListTables (
     {
         /* Ignore empty lines and lines that start with a space */
 
-        if ((LineBuffer[0] == ' ') ||
-            (LineBuffer[0] == '\n'))
+        if (AxIsEmptyLine (LineBuffer) ||
+            (LineBuffer[0] == ' '))
         {
             continue;
         }
