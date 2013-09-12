@@ -386,6 +386,17 @@ AslDoOneFile (
     AslInitializeGlobals ();
     PrInitializeGlobals ();
 
+    /*
+     * Extract the directory path. This path is used for possible include
+     * files and the optional AML filename embedded in the input file
+     * DefinitionBlock declaration.
+     */
+    Status = FlSplitInputPathname (Filename, &Gbl_DirectoryPath, NULL);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
     Gbl_Files[ASL_FILE_INPUT].Filename = Filename;
 
     /*
