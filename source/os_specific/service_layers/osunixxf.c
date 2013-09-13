@@ -156,7 +156,115 @@ typedef void* (*PTHREAD_CALLBACK) (void *);
 
 /* Buffer used by AcpiOsVprintf */
 
-#define ACPI_VPRINTF_BUFFER_SIZE        512
+#define ACPI_VPRINTF_BUFFER_SIZE    512
+
+/* Various ASCII constants */
+
+#define _ASCII_NUL                  0
+#define _ASCII_BACKSPACE            0x08
+#define _ASCII_ESCAPE               0x1B
+#define _ASCII_LEFT_BRACKET         0x5B
+#define _ASCII_DEL                  0x7F
+#define _ASCII_UP_ARROW             'A'
+#define _ASCII_DOWN_ARROW           'B'
+#define _ASCII_NEWLINE              '\n'
+
+
+/* Terminal support for AcpiExec only */
+
+#ifdef ACPI_EXEC_APP
+
+#include <termio.h>
+
+extern UINT32               AcpiGbl_NextCmdNum;
+struct termios              OriginalTermAttributes;
+
+static void
+OsEnterLineEditMode (
+    void);
+
+static void
+OsExitLineEditMode (
+    void);
+
+/* Erase a single character on the input command line */
+
+#define ACPI_CLEAR_CHAR()       putchar (0x08); putchar (0x20); putchar (0x08);
+
+/* Erase the entire command line */
+
+#define ACPI_CLEAR_LINE(i)      while (i > 0) {ACPI_CLEAR_CHAR (); i--;}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    OsEnterLineEditMode, OsExitLineEditMode
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Enter/Exit the raw character input mode for the terminal.
+ *
+ * Interactive line-editing support for the AML debugger.
+ *
+ * readline() is not used here because of non-portability. It is not available
+ * on all systems, and if it is, often the package must be manually installed.
+ *
+ * Therefore, we use the POSIX tcgetattr/tcsetattr and do the minimal line
+ * editing that we need in AcpiOsGetLine.
+ *
+ * If the POSIX tcgetattr/tcsetattr interfaces are unavailable, these
+ * calls will also work:
+ *     For OsEnterLineEditMode: system ("stty cbreak -echo")
+ *     For OsExitLineEditMode:  system ("stty cooked echo")
+ *
+ *****************************************************************************/
+
+static void
+OsEnterLineEditMode (
+    void)
+{
+    struct termios          LocalTermAttributes;
+
+
+    /* Get and keep the original attributes */
+
+    if (tcgetattr (STDIN_FILENO, &OriginalTermAttributes))
+    {
+        fprintf (stderr, "Could not get/set terminal attributes!\n");
+        return;
+    }
+
+    /* Set the new attributes to enable raw character input */
+
+    memcpy (&LocalTermAttributes, &OriginalTermAttributes,
+        sizeof (struct termios));
+
+    LocalTermAttributes.c_lflag &= ~(ICANON | ECHO);
+    LocalTermAttributes.c_cc[VMIN] = 1;
+    LocalTermAttributes.c_cc[VTIME] = 0;
+
+    tcsetattr (STDIN_FILENO, TCSANOW, &LocalTermAttributes);
+}
+
+static void
+OsExitLineEditMode (
+    void)
+{
+    /* Set terminal attributes back to the original values */
+
+    tcsetattr (STDIN_FILENO, TCSANOW, &OriginalTermAttributes);
+}
+
+
+#else
+
+/* These functions are not needed for other ACPICA utilities */
+
+#define OsEnterLineEditMode()
+#define OsExitLineEditMode()
+#endif
 
 
 /******************************************************************************
@@ -167,7 +275,7 @@ typedef void* (*PTHREAD_CALLBACK) (void *);
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Init and terminate. Nothing to do.
+ * DESCRIPTION: Initialize and terminate this module.
  *
  *****************************************************************************/
 
@@ -177,15 +285,17 @@ AcpiOsInitialize (
 {
 
     AcpiGbl_OutputFile = stdout;
+
+    OsEnterLineEditMode ();
     return (AE_OK);
 }
-
 
 ACPI_STATUS
 AcpiOsTerminate (
     void)
 {
 
+    OsExitLineEditMode ();
     return (AE_OK);
 }
 
@@ -452,7 +562,9 @@ AcpiOsVprintf (
  *
  * RETURN:      Status and actual bytes read
  *
- * DESCRIPTION: Formatted input with argument list pointer
+ * DESCRIPTION: Formatted input with argument list pointer. NOTE: For the
+ *              AcpiExec utility, terminal is expected to be in a mode that
+ *              supports line-editing (raw, noecho).
  *
  *****************************************************************************/
 
@@ -462,7 +574,174 @@ AcpiOsGetLine (
     UINT32                  BufferLength,
     UINT32                  *BytesRead)
 {
-    int                     Temp;
+#ifdef ACPI_EXEC_APP
+    char                    *NextCommand;
+    UINT32                  MaxCommandIndex = AcpiGbl_NextCmdNum - 1;
+    UINT32                  CurrentCommandIndex = MaxCommandIndex;
+    UINT32                  PreviousCommandIndex = MaxCommandIndex;
+    int                     InputChar;
+    UINT32                  i = 0;
+
+
+    /*
+     * This loop gets one character at a time (except for esc sequences)
+     * until a newline or error is detected.
+     */
+    while (1)
+    {
+        if (i >= BufferLength)
+        {
+            return (AE_BUFFER_OVERFLOW);
+        }
+
+        InputChar = getchar ();
+        switch (InputChar)
+        {
+        default: /* This is the normal character case */
+
+            /* Echo the character and copy it to the line buffer */
+
+            putchar (InputChar);
+            Buffer [i] = (char) InputChar;
+            i++;
+            continue;
+
+        case _ASCII_NEWLINE: /* Normal exit case at end of command line */
+        case _ASCII_NUL:
+
+            /* Return the number of bytes in the command line string */
+
+            if (BytesRead)
+            {
+                *BytesRead = i;
+            }
+
+            /* Echo, terminate string buffer, and exit */
+
+            putchar (InputChar);
+            Buffer [i] = 0;
+            return (AE_OK);
+
+        case EOF:
+
+            return (AE_ERROR);
+
+        case _ASCII_DEL: /* Backspace key */
+
+            if (i) /* if any chars in buffer, erase the last one */
+            {
+                i--;
+                ACPI_CLEAR_CHAR ();
+            }
+            continue;
+
+        case _ASCII_ESCAPE:
+
+            /* Check for escape sequences of the form "ESC[x" */
+
+            InputChar = getchar ();
+            if (InputChar != _ASCII_LEFT_BRACKET)
+            {
+                continue; /* Ignore this ESC, does not have the '[' */
+            }
+
+            /* Currently, only up-arrow and down-arrow escapes supported */
+
+            InputChar = getchar ();
+            switch (InputChar)
+            {
+            default:
+
+                /* Ignore random escape sequences that we don't care about */
+
+                continue;
+
+            case _ASCII_UP_ARROW:
+
+                /* If no commands available or at start of history list, ignore */
+
+                if (!CurrentCommandIndex)
+                {
+                    continue;
+                }
+
+                /* Manage our up/down progress */
+
+                if (CurrentCommandIndex > PreviousCommandIndex)
+                {
+                    CurrentCommandIndex = PreviousCommandIndex;
+                }
+
+                /* Get the historical command from the debugger */
+
+                NextCommand = AcpiDbGetHistoryByIndex (CurrentCommandIndex);
+                if (!NextCommand)
+                {
+                    return (AE_ERROR);
+                }
+
+                /* Make this the active command and echo it */
+
+                ACPI_CLEAR_LINE (i);
+                strcpy (Buffer, NextCommand);
+                i = strlen (Buffer);
+                fprintf (stdout, "%s", Buffer);
+
+                PreviousCommandIndex = CurrentCommandIndex;
+                CurrentCommandIndex--;
+                continue;
+
+            case _ASCII_DOWN_ARROW:
+
+                if (!MaxCommandIndex) /* Any commands available? */
+                {
+                    continue;
+                }
+
+                /* Manage our up/down progress */
+
+                if (CurrentCommandIndex < PreviousCommandIndex)
+                {
+                    CurrentCommandIndex = PreviousCommandIndex;
+                }
+
+                /* If we are the end of the history list, output a clear new line */
+
+                if ((CurrentCommandIndex + 1) > MaxCommandIndex)
+                {
+                    ACPI_CLEAR_LINE (i);
+                    PreviousCommandIndex = CurrentCommandIndex;
+                    continue;
+                }
+
+                PreviousCommandIndex = CurrentCommandIndex;
+                CurrentCommandIndex++;
+
+                 /* Get the historical command from the debugger */
+
+                NextCommand = AcpiDbGetHistoryByIndex (CurrentCommandIndex);
+                if (!NextCommand)
+                {
+                    return (AE_ERROR);
+                }
+
+                /* Make this the active command and echo it */
+
+                ACPI_CLEAR_LINE (i);
+                strcpy (Buffer, NextCommand);
+                i = strlen (Buffer);
+                fprintf (stdout, "%s", Buffer);
+                continue;
+            }
+
+            continue;
+        }
+    }
+
+#else
+    /* Standard AcpiOsGetLine for all utilities except AcpiExec */
+
+    int                     InputChar;
     UINT32                  i;
 
 
@@ -473,17 +752,17 @@ AcpiOsGetLine (
             return (AE_BUFFER_OVERFLOW);
         }
 
-        if ((Temp = getchar ()) == EOF)
+        if ((InputChar = getchar ()) == EOF)
         {
             return (AE_ERROR);
         }
 
-        if (!Temp || Temp == '\n')
+        if (!InputChar || InputChar == _ASCII_NEWLINE)
         {
             break;
         }
 
-        Buffer [i] = (char) Temp;
+        Buffer [i] = (char) InputChar;
     }
 
     /* Null terminate the buffer */
@@ -497,6 +776,8 @@ AcpiOsGetLine (
         *BytesRead = i;
     }
     return (AE_OK);
+
+#endif
 }
 
 
