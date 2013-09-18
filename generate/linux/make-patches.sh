@@ -5,7 +5,7 @@
 #                           ACPICA git repository
 #
 # SYNOPSIS:
-#         make-patches.sh [-c] [-r release] <old_commit> [new_commit]
+#         make-patches.sh [-r release] <old_commit> [new_commit]
 #
 # DESCRIPTION:
 #         Creates the linuxized patch set from old_commit to new_commit in
@@ -15,8 +15,6 @@
 #          new_commit The new commit ID.  If this parameter is not specified,
 #                     the new commit ID is default to HEAD.
 #         Options:
-#          -c         Generate acpisrc per-commit, this is useful if an acpisrc
-#                     modification happened during a release cycle.
 #          -r release Specify a release ID, it will turn out to be the name of
 #                     the patch files.  If this option is not specified, the
 #                     default name of the patch files will be the current month
@@ -27,9 +25,8 @@ RELEASE=`date +%Y%m`
 
 usage()
 {
-	echo "Usage: `basename $0` [-c] [-r release] <old_commit> [new_commit]"
+	echo "Usage: `basename $0` [-r release] <old_commit> [new_commit]"
 	echo "Where:"
-	echo "  -c: generate acpisrc per-commit"
 	echo "  -r: set release ID, default is $RELEASE in YYYYmm date format"
 	echo "  old_commit: the old commit id\n";
 	echo "  new_commit: optional, the new commit id, default to HEAD";
@@ -46,12 +43,11 @@ OLD_RELEASE="HEAD"
 ACPICA_CNT=0
 LINUX_CNT=0
 MAINTAINER="Bob Moore <robert.moore@intel.com>"
-GIT_EXTRACT="$SCRIPT/git-extract.sh"
+GIT_EXTRACT="$SCRIPT/gen-patch.sh"
 
-while getopts "cdr:" opt
+while getopts "dr:" opt
 do
 	case $opt in
-	c) GIT_EXTRACT="$GIT_EXTRACT -c";;
 	d) DRYRUN="yes";;
 	r) RELEASE=$OPTARG;;
 	?) echo "Invalid argument $opt"
