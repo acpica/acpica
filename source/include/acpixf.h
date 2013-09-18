@@ -267,21 +267,6 @@ AcpiDecodePldBuffer (
     ACPI_SIZE               Length,
     ACPI_PLD_INFO           **ReturnBuffer);
 
-/*
- * ACPI Memory management
- */
-void *
-AcpiAllocate (
-    UINT32                  Size);
-
-void *
-AcpiCallocate (
-    UINT32                  Size);
-
-void
-AcpiFree (
-    void                    *Address);
-
 
 /*
  * ACPI table load/unload interfaces

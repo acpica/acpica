@@ -1060,20 +1060,6 @@ AcpiUtInitializeBuffer (
     ACPI_BUFFER             *Buffer,
     ACPI_SIZE               RequiredLength);
 
-void *
-AcpiUtAllocate (
-    ACPI_SIZE               Size,
-    UINT32                  Component,
-    const char              *Module,
-    UINT32                  Line);
-
-void *
-AcpiUtAllocateZeroed (
-    ACPI_SIZE               Size,
-    UINT32                  Component,
-    const char              *Module,
-    UINT32                  Line);
-
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
 void *
 AcpiUtAllocateAndTrack (

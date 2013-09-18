@@ -391,6 +391,34 @@ typedef UINT32                          ACPI_PHYSICAL_ADDRESS;
 #endif
 
 
+/*******************************************************************************
+ *
+ * Configuration
+ *
+ ******************************************************************************/
+
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+/*
+ * Memory allocation tracking (used by AcpiExec to detect memory leaks)
+ */
+#define ACPI_MEM_PARAMETERS             _COMPONENT, _AcpiModuleName, __LINE__
+#define ACPI_ALLOCATE(a)                AcpiUtAllocateAndTrack ((ACPI_SIZE) (a), ACPI_MEM_PARAMETERS)
+#define ACPI_ALLOCATE_ZEROED(a)         AcpiUtAllocateZeroedAndTrack ((ACPI_SIZE) (a), ACPI_MEM_PARAMETERS)
+#define ACPI_FREE(a)                    AcpiUtFreeAndTrack (a, ACPI_MEM_PARAMETERS)
+#define ACPI_MEM_TRACKING(a)            a
+
+#else
+/*
+ * Normal memory allocation directly via the OS services layer
+ */
+#define ACPI_ALLOCATE(a)                AcpiOsAllocate ((ACPI_SIZE) (a))
+#define ACPI_ALLOCATE_ZEROED(a)         AcpiOsAllocateZeroed ((ACPI_SIZE) (a))
+#define ACPI_FREE(a)                    AcpiOsFree (a)
+#define ACPI_MEM_TRACKING(a)
+
+#endif /* ACPI_DBG_TRACK_ALLOCATIONS */
+
+
 /******************************************************************************
  *
  * ACPI Specification constants (Do not change unless the specification changes)

@@ -271,6 +271,10 @@ void *
 AcpiOsAllocate (
     ACPI_SIZE               Size);
 
+void *
+AcpiOsAllocateZeroed (
+    ACPI_SIZE               Size);
+
 void
 AcpiOsFree (
     void *                  Memory);
