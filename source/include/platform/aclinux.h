@@ -257,6 +257,10 @@ static inline void acpi_os_free(void *a)
 	lock ? AE_OK : AE_NO_MEMORY;				\
 })
 
+#ifdef EXPORT_ACPI_INTERFACES
+#include <linux/export.h>
+#endif
+
 #endif /* __KERNEL__ */
 
 #endif /* __ACLINUX_H__ */
