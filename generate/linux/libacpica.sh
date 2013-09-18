@@ -67,6 +67,27 @@ acpica_drivers_paths()
 	echo $paths
 }
 
+acpica_exclude_paths()
+{
+	paths="\
+		include/acpi/acdisasm.h
+		include/acpi/acapps.h
+		include/acpi/platform/accygwin.h
+		include/acpi/platform/acefi.h
+		include/acpi/platform/acfreebsd.h
+		include/acpi/platform/achaiku.h
+		include/acpi/platform/acintel.h
+		include/acpi/platform/acmacosx.h
+		include/acpi/platform/acmsvc.h
+		include/acpi/platform/acnetbsd.h
+		include/acpi/platform/acos2.h
+		include/acpi/platform/acwin.h
+		include/acpi/platform/acwin64.h
+		drivers/acpi/acpica/utclib.c
+	"
+	echo $paths
+}
+
 fulldir()
 {
 	( cd $1; pwd )
@@ -247,6 +268,19 @@ linuxize_hierarchy_noref()
 		# Making include files
 		mkdir -p include/acpi
 		mv -f source/include/* include/acpi
+
+		# Removing non-Linux files
+		paths=`acpica_exclude_paths`
+		for path in $paths; do
+			if [ -d $path ]; then
+				echo " Removing directory $path..."
+				rm -rf $path
+			fi
+			if [ -f $path ]; then
+				echo " Removing file $path..."
+				rm -f $path
+			fi
+		done
 
 		rm -rf source
 	)

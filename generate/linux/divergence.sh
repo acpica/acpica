@@ -98,7 +98,7 @@ fi
 # Now we can finally do the big diff
 #
 echo "[divergence.sh] Generating divergences ($LINDENT_DIR)..."
-diff -E -b -w -B -rpuN $LINUX_ACPICA $ACPICA_LINUXIZED > divergence-$LINDENT_DIR.diff
+diff -E -b -w -B -rpuN linux-acpica acpica-linuxized > divergence-$LINDENT_DIR.diff
 diffstat divergence-$LINDENT_DIR.diff > diffstat-$LINDENT_DIR.txt
 echo "=========="
 ls -s1 divergence-$LINDENT_DIR.diff diffstat-$LINDENT_DIR.txt
