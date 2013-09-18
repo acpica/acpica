@@ -178,7 +178,7 @@ extern UINT8                AcpiGbl_DisableSsdtTableLoad;
     static ACPI_INLINE Prototype {return(AE_OK);}
 
 #define ACPI_HW_DEPENDENT_RETURN_VOID(Prototype) \
-    static ACPI_INLINE Prototype {}
+    static ACPI_INLINE Prototype {return;}
 
 #endif /* !ACPI_REDUCED_HARDWARE */
 
