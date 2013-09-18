@@ -1331,7 +1331,7 @@ typedef struct acpi_db_method_info
     char                            *Name;
     UINT32                          Flags;
     UINT32                          NumLoops;
-    char                            Pathname[128];
+    char                            Pathname[ACPI_DB_LINE_BUFFER_SIZE];
     char                            **Args;
     ACPI_OBJECT_TYPE                *Types;
 

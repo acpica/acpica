@@ -707,7 +707,13 @@ AcpiDbGetLine (
     char                    *This;
 
 
-    ACPI_STRCPY (AcpiGbl_DbParsedBuf, InputBuffer);
+    if (AcpiUtSafeStrcpy (AcpiGbl_DbParsedBuf, sizeof (AcpiGbl_DbParsedBuf),
+        InputBuffer))
+    {
+        AcpiOsPrintf ("Buffer overflow while parsing input line (max %u characters)\n",
+            sizeof (AcpiGbl_DbParsedBuf));
+        return (0);
+    }
 
     This = AcpiGbl_DbParsedBuf;
     for (i = 0; i < ACPI_DEBUGGER_MAX_ARGS; i++)
