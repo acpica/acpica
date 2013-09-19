@@ -174,7 +174,7 @@ lindent()
 	(
 		cd $1
 		find . -name "*.[ch]" | xargs indent \
-			-npro -kr -i8 -ts8 -sob -l80 -ss -ncs \
+			-npro -kr -i8 -ts8 -sob -l80 -ss -ncs -il0 \
 			-T u8 -T u16 -T u32 -T u64 \
 			-T acpi_integer \
 			-T acpi_predefined_data \
