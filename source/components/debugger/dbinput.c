@@ -1218,7 +1218,7 @@ AcpiDbCommandDispatch (
     case CMD_NOT_FOUND:
     default:
 
-        AcpiOsPrintf ("Unknown Command\n");
+        AcpiOsPrintf ("%s: unknown command\n", AcpiGbl_DbArgs[0]);
         return (AE_CTRL_TRUE);
     }
 
