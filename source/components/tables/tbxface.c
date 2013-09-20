@@ -234,7 +234,7 @@ AcpiInitializeTables (
     return_ACPI_STATUS (Status);
 }
 
-ACPI_EXPORT_SYMBOL (AcpiInitializeTables)
+ACPI_EXPORT_SYMBOL_INIT (AcpiInitializeTables)
 
 
 /*******************************************************************************
@@ -277,7 +277,7 @@ AcpiReallocateRootTable (
     return_ACPI_STATUS (Status);
 }
 
-ACPI_EXPORT_SYMBOL (AcpiReallocateRootTable)
+ACPI_EXPORT_SYMBOL_INIT (AcpiReallocateRootTable)
 
 
 /*******************************************************************************

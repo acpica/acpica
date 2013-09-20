@@ -375,9 +375,18 @@ typedef UINT32                          ACPI_PHYSICAL_ADDRESS;
 #endif
 
 /*
- * All ACPICA functions that are available to the rest of the kernel are
- * tagged with this macro which can be defined as appropriate for the host.
+ * All ACPICA external functions that are available to the rest of the kernel
+ * are tagged with thes macros which can be defined as appropriate for the host.
+ *
+ * Notes:
+ * ACPI_EXPORT_SYMBOL_INIT is used for initialization and termination
+ * interfaces that may need special processing.
+ * ACPI_EXPORT_SYMBOL is used for all other public external functions.
  */
+#ifndef ACPI_EXPORT_SYMBOL_INIT
+#define ACPI_EXPORT_SYMBOL_INIT(Symbol)
+#endif
+
 #ifndef ACPI_EXPORT_SYMBOL
 #define ACPI_EXPORT_SYMBOL(Symbol)
 #endif

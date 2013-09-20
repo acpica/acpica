@@ -165,7 +165,7 @@ AcpiLoadTables (
     return_ACPI_STATUS (Status);
 }
 
-ACPI_EXPORT_SYMBOL (AcpiLoadTables)
+ACPI_EXPORT_SYMBOL_INIT (AcpiLoadTables)
 
 
 /*******************************************************************************
