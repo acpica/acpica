@@ -236,7 +236,6 @@ AcpiOsGetLine (
     UINT32                  *BytesRead)
 {
     char                    *NextCommand;
-    char                    *PreviousCommand = NULL;
     UINT32                  MaxCommandIndex = AcpiGbl_NextCmdNum - 1;
     UINT32                  CurrentCommandIndex = MaxCommandIndex;
     UINT32                  PreviousCommandIndex = MaxCommandIndex;
@@ -441,7 +440,6 @@ AcpiOsGetLine (
                 fprintf (stdout, "%s", Buffer);
                 EndOfLine = CursorPosition = strlen (Buffer);
 
-                PreviousCommand = NextCommand;
                 PreviousCommandIndex = CurrentCommandIndex;
                 CurrentCommandIndex--;
                 continue;
