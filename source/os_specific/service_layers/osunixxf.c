@@ -139,6 +139,7 @@
 
 extern FILE                    *AcpiGbl_DebugFile;
 FILE                           *AcpiGbl_OutputFile;
+BOOLEAN                        AcpiGbl_DebugTimeout = FALSE;
 
 
 /* Upcalls to AcpiExec */

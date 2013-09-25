@@ -137,7 +137,6 @@
 
 
 extern FILE                 *AcpiGbl_DebugFile;
-extern BOOLEAN              AcpiGbl_DebugTimeout;
 
 FILE                        *AcpiGbl_OutputFile;
 UINT64                      TimerFrequency;
@@ -180,6 +179,7 @@ ACPI_OS_SEMAPHORE_INFO          AcpiGbl_Semaphores[ACPI_OS_MAX_SEMAPHORES];
 
 #endif /* ACPI_SINGLE_THREADED */
 
+BOOLEAN                         AcpiGbl_DebugTimeout = FALSE;
 
 /******************************************************************************
  *

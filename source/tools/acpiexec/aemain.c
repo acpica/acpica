@@ -131,6 +131,8 @@
  * expand wildcards.
  */
 
+extern BOOLEAN              AcpiGbl_DebugTimeout;
+
 /* Local prototypes */
 
 static int
@@ -158,7 +160,6 @@ AcpiDbRunBatchMode (
 UINT8                       AcpiGbl_RegionFillValue = 0;
 BOOLEAN                     AcpiGbl_IgnoreErrors = FALSE;
 BOOLEAN                     AcpiGbl_DbOpt_NoRegionSupport = FALSE;
-BOOLEAN                     AcpiGbl_DebugTimeout = FALSE;
 UINT8                       AcpiGbl_UseHwReducedFadt = FALSE;
 BOOLEAN                     AcpiGbl_DoInterfaceTests = FALSE;
 static UINT8                AcpiGbl_ExecutionMode = AE_MODE_COMMAND_LOOP;
