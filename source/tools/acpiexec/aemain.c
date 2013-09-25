@@ -462,14 +462,14 @@ main (
     AE_CHECK_OK (AcpiInitializeSubsystem, Status);
     if (ACPI_FAILURE (Status))
     {
-        return (-1);
+        goto ErrorExit;
     }
 
     /* Get the command line options */
 
     if (AeDoOptions (argc, argv))
     {
-        return (-1);
+        goto ErrorExit;
     }
 
     /* The remaining arguments are filenames for ACPI tables */
@@ -493,7 +493,7 @@ main (
         {
             printf ("**** Could not get table from file %s, %s\n",
                 argv[AcpiGbl_Optind], AcpiFormatException (Status));
-            return (-1);
+            goto ErrorExit;
         }
 
         /* Ignore non-AML tables, we can't use them. Except for an FADT */
@@ -526,7 +526,7 @@ main (
     Status = AeBuildLocalTables (TableCount, AeTableListHead);
     if (ACPI_FAILURE (Status))
     {
-        return (-1);
+        goto ErrorExit;
     }
 
     Status = AeInstallTables ();
@@ -592,7 +592,7 @@ EnterDebugger:
 
     if (ACPI_FAILURE (Status) && (AcpiGbl_ExecutionMode > 0))
     {
-        return (-1);
+        goto ErrorExit;
     }
 
     /* Run a batch command or enter the command loop */
@@ -613,10 +613,17 @@ EnterDebugger:
     case AE_MODE_BATCH_SINGLE:
 
         AcpiDbExecute (BatchBuffer, NULL, NULL, EX_NO_SINGLE_STEP);
+        Status = AcpiTerminate ();
         break;
     }
 
     return (0);
+
+
+ErrorExit:
+
+    (void) AcpiOsTerminate ();
+    return (-1);
 }
 
 
