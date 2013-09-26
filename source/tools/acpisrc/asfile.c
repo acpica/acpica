@@ -379,6 +379,7 @@ AsConvertFile (
     ACPI_IDENTIFIER_TABLE   *LineTable;
     ACPI_IDENTIFIER_TABLE   *MacroTable;
     ACPI_TYPED_IDENTIFIER_TABLE *StructTable;
+    ACPI_IDENTIFIER_TABLE   *SpecialMacroTable;
 
 
     switch (FileType)
@@ -391,6 +392,7 @@ AsConvertFile (
         ConditionalTable    = ConversionTable->SourceConditionalTable;
         MacroTable          = ConversionTable->SourceMacroTable;
         StructTable         = ConversionTable->SourceStructTable;
+        SpecialMacroTable   = ConversionTable->SourceSpecialMacroTable;
        break;
 
     case FILE_TYPE_HEADER:
@@ -401,6 +403,7 @@ AsConvertFile (
         ConditionalTable    = ConversionTable->HeaderConditionalTable;
         MacroTable          = ConversionTable->HeaderMacroTable;
         StructTable         = ConversionTable->HeaderStructTable;
+        SpecialMacroTable   = ConversionTable->HeaderSpecialMacroTable;
         break;
 
     default:
@@ -470,6 +473,14 @@ AsConvertFile (
         for (i = 0; StructTable[i].Identifier; i++)
         {
             AsInsertPrefix (FileBuffer, StructTable[i].Identifier, StructTable[i].Type);
+        }
+    }
+
+    if (SpecialMacroTable)
+    {
+        for (i = 0; SpecialMacroTable[i].Identifier; i++)
+        {
+            AsCleanupSpecialMacro (FileBuffer, SpecialMacroTable[i].Identifier);
         }
     }
 

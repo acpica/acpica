@@ -88,6 +88,15 @@ acpica_exclude_paths()
 	echo $paths
 }
 
+acpica_indent_fixing_files()
+{
+	files="\
+		drivers/acpi/acpica/utglobal.c \
+		include/acpi/acpixf.h \
+	"
+	echo $files
+}
+
 fulldir()
 {
 	( cd $1; pwd )
@@ -169,17 +178,50 @@ make_acpisrc()
 	make_tool $1 acpisrc
 }
 
+lindent_single()
+{
+	fixup=no
+
+	fixing_files=`acpica_indent_fixing_files`
+	for f in $fixing_files; do
+		if [ $1 == $f ]; then
+			fixup=yes
+		fi
+	done
+
+	acpi_types="\
+		u8 \
+		u16 \
+		u32 \
+		u64 \
+		acpi_integer \
+		acpi_predefined_data \
+		acpi_operand_object \
+		acpi_event_status \
+	"
+
+	INDENT_FLAGS="-npro -kr -i8 -ts8 -sob -l80 -ss -ncs -il0"
+	for t in $acpi_types; do
+		INDENT_FLAGS="$INDENT_FLAGS -T $t"
+	done
+
+	dos2unix $1 > /dev/null 2>&1
+	indent $INDENT_FLAGS $1
+
+	if [ "x$fixup" == "xyes" ]; then
+		echo " Fixing indentation of file $1..."
+		$ACPISRC -idqy $1 $1 > /dev/null
+	fi
+}
+
 lindent()
 {
 	(
 		cd $1
-		find . -name "*.[ch]" | xargs indent \
-			-npro -kr -i8 -ts8 -sob -l80 -ss -ncs -il0 \
-			-T u8 -T u16 -T u32 -T u64 \
-			-T acpi_integer \
-			-T acpi_predefined_data \
-			-T acpi_operand_object \
-			-T acpi_event_status
+		files=`find . -name "*.[ch]" | cut -c3-`
+		for f in $files; do
+			lindent_single $f
+		done
 		find . -name "*~" | xargs rm -f
 	)
 }

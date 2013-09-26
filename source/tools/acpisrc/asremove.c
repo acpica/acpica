@@ -683,3 +683,72 @@ AsRemoveDebugMacros (
     AsReplaceString ("return_acpi_status",  "return", REPLACE_WHOLE_WORD, Buffer);
     AsReplaceString ("return_VALUE",        "return", REPLACE_WHOLE_WORD, Buffer);
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsCleanupSpecialMacro
+ *
+ * DESCRIPTION: For special macro invocations (invoked without ";" at the end
+ *              of the lines), do the following:
+ *              1. Remove spaces appended by indent at the beginning of lines.
+ *              2. Add an empty line between two special macro invocations.
+ *
+ ******************************************************************************/
+
+void
+AsCleanupSpecialMacro (
+    char                    *Buffer,
+    char                    *Keyword)
+{
+    char                    *SubString;
+    char                    *SubBuffer;
+    char                    *LastNonSpace;
+
+
+    SubBuffer = Buffer;
+    SubString = Buffer;
+
+    while (SubString)
+    {
+        SubString = strstr (SubBuffer, Keyword);
+
+        if (SubString)
+        {
+            /* Find start of the line */
+
+            SubBuffer = SubString;
+            while (*(SubBuffer - 1) == ' ')
+            {
+                SubBuffer--;
+            }
+
+            if (*(SubBuffer - 1) == '\n')
+            {
+                /* Find last non-space character */
+
+                LastNonSpace = SubBuffer - 1;
+                while (isspace ((int) *LastNonSpace))
+                {
+                    LastNonSpace--;
+                }
+
+                if (*LastNonSpace != '\\')
+                {
+                    /* Remove the extra spaces */
+
+                    SubString = AsRemoveData (SubBuffer, SubString);
+
+                    /* Enforce an empty line between the invocations */
+
+                    if (*(SubBuffer - 2) == ')')
+                    {
+                        AsInsertData (SubBuffer, "\n", 1);
+                    }
+                }
+            }
+
+            SubBuffer = SubString + strlen (Keyword);
+        }
+    }
+}

@@ -249,6 +249,7 @@ typedef struct acpi_conversion_table
     ACPI_IDENTIFIER_TABLE       *SourceConditionalTable;
     ACPI_IDENTIFIER_TABLE       *SourceMacroTable;
     ACPI_TYPED_IDENTIFIER_TABLE *SourceStructTable;
+    ACPI_IDENTIFIER_TABLE       *SourceSpecialMacroTable;
     UINT32                      SourceFunctions;
 
     ACPI_STRING_TABLE           *HeaderStringTable;
@@ -256,6 +257,7 @@ typedef struct acpi_conversion_table
     ACPI_IDENTIFIER_TABLE       *HeaderConditionalTable;
     ACPI_IDENTIFIER_TABLE       *HeaderMacroTable;
     ACPI_TYPED_IDENTIFIER_TABLE *HeaderStructTable;
+    ACPI_IDENTIFIER_TABLE       *HeaderSpecialMacroTable;
     UINT32                      HeaderFunctions;
 
 } ACPI_CONVERSION_TABLE;
@@ -268,6 +270,7 @@ extern ACPI_CONVERSION_TABLE       CleanupConversionTable;
 extern ACPI_CONVERSION_TABLE       StatsConversionTable;
 extern ACPI_CONVERSION_TABLE       CustomConversionTable;
 extern ACPI_CONVERSION_TABLE       LicenseConversionTable;
+extern ACPI_CONVERSION_TABLE       IndentConversionTable;
 
 
 /* Prototypes */
@@ -352,6 +355,11 @@ void
 AsRemoveEmptyBlocks (
     char                    *Buffer,
     char                    *Filename);
+
+void
+AsCleanupSpecialMacro (
+    char                    *Buffer,
+    char                    *Keyword);
 
 void
 AsCountSourceLines (
