@@ -1675,7 +1675,8 @@ Device(DTM0) {
 		return (0)
 	}
 
-	// Object of any type can be used as the DDBHandle argument
+	// Object of any type (expect Field Units and Buffer Fields)
+	// can be used as the DDBHandle argument
 	Method(tstg, 1, Serialized)
 	{
 		Name(DDB0, 0)
@@ -1699,8 +1700,19 @@ Device(DTM0) {
 			}
 
 			Load(RFU0, arg2)
-			if (CH03(arg0, z174, 0x0b2, 0, 0)) {
-				return (1)
+			if (LOr(LEqual(arg3, c00d),	// Field Unit
+				LEqual(arg3, c016))) {	// Buffer Field
+
+				// AE_AML_OPERAND_TYPE
+				if (CH04(arg0, 2, 47, z174, 0x0e9, 0, 0)) {
+					return (1)
+				} else {
+					return (0)
+				}
+			} else {
+				if (CH03(arg0, z174, 0x0b2, 0, 0)) {
+					return (1)
+				}
 			}
 			if (y260) {
 				Store(ObjectType(arg2), Local0)
