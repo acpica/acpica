@@ -16,6 +16,8 @@ ACPISRC=$TOOLDIR/acpisrc
 
 linux_dirs()
 {
+	local dirs
+
 	dirs="\
 		drivers/acpi/acpica \
 		include/acpi \
@@ -26,6 +28,8 @@ linux_dirs()
 
 acpica_privs()
 {
+	local incs
+
 	incs="\
 		accommon.h \
 		acdebug.h acdispat.h \
@@ -49,6 +53,8 @@ acpica_privs()
 
 acpica_drivers_paths()
 {
+	local paths incs inc
+
 	paths="\
 		components/dispatcher
 		components/events
@@ -69,6 +75,8 @@ acpica_drivers_paths()
 
 acpica_exclude_paths()
 {
+	local paths
+
 	paths="\
 		include/acpi/acdisasm.h
 		include/acpi/acapps.h
@@ -90,7 +98,11 @@ acpica_exclude_paths()
 
 acpica_indent_fixing_files()
 {
+	local files
+
 	files="\
+		drivers/acpi/acpica/acdebug.h \
+		drivers/acpi/acpica/acevents.h \
 		drivers/acpi/acpica/utglobal.c \
 		include/acpi/acpixf.h \
 	"
@@ -104,12 +116,16 @@ fulldir()
 
 getdir()
 {
+	local lpath
+
 	lpath=`dirname $1`
 	fulldir $lpath
 }
 
 getfile()
 {
+	local d f
+
 	d=`getdir $1`
 	f=`basename $1`
 	echo $d/$f
@@ -117,6 +133,8 @@ getfile()
 
 identify_bits()
 {
+	local arch no64
+
 	arch=`uname -m`
 	no64=`echo ${arch%64}`
 
@@ -129,6 +147,8 @@ identify_bits()
 
 make_tool()
 {
+	local srcdir acpi_tool tooldir bits
+
 	srcdir=$1
 	acpi_tool=$2
 
@@ -147,6 +167,8 @@ make_tool()
 
 clean_tool()
 {
+	local srcdir acpi_tool tooldir bits
+
 	srcdir=$1
 	acpi_tool=$2
 
@@ -180,6 +202,9 @@ make_acpisrc()
 
 lindent_single()
 {
+	local fixup fixing_files acpi_types indent_flags
+	local f t
+
 	fixup=no
 
 	fixing_files=`acpica_indent_fixing_files`
@@ -200,13 +225,13 @@ lindent_single()
 		acpi_event_status \
 	"
 
-	INDENT_FLAGS="-npro -kr -i8 -ts8 -sob -l80 -ss -ncs -il0"
+	indent_flags="-npro -kr -i8 -ts8 -sob -l80 -ss -ncs -il0"
 	for t in $acpi_types; do
-		INDENT_FLAGS="$INDENT_FLAGS -T $t"
+		indent_flags="$indent_flags -T $t"
 	done
 
 	dos2unix $1 > /dev/null 2>&1
-	indent $INDENT_FLAGS $1
+	indent $indent_flags $1
 
 	if [ "x$fixup" == "xyes" ]; then
 		echo " Fixing indentation of file $1..."
@@ -216,6 +241,8 @@ lindent_single()
 
 lindent()
 {
+	local files f
+
 	(
 		cd $1
 		files=`find . -name "*.[ch]" | cut -c3-`
@@ -228,6 +255,8 @@ lindent()
 
 copy_linux_hierarchy()
 {
+	local from to dirs dir
+
 	from=$1
 	to=$2
 
@@ -243,6 +272,11 @@ copy_linux_hierarchy()
 
 linuxize_hierarchy_ref()
 {
+	local linux acpica to
+	local all_files
+	local t n d f
+	local private_includes inc
+
 	linux=$1
 	acpica=$2
 	to=$3
@@ -255,9 +289,9 @@ linuxize_hierarchy_ref()
 	# (native ACPICA and Linux ACPICA) match
 	#
 
-	ALL_FILES=`find $linux`
+	all_files=`find $linux`
 
-	for t in $ALL_FILES ; do
+	for t in $all_files ; do
 		if [ -f $t ] ; then
 			n=${t#${linux}/}
 			d=$to/`dirname $n`
@@ -286,6 +320,8 @@ linuxize_hierarchy_ref()
 
 linuxize_hierarchy_noref()
 {
+	local repo_linux paths path
+
 	repo_linux=$1
 
 	(

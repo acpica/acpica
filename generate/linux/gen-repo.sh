@@ -44,6 +44,8 @@ GR_linux_repo=$CURDIR/linux-$version
 
 linuxize()
 {
+	local repo_acpica repo_linux
+
 	# Be careful with local variable namings
 	repo_acpica=$1
 	repo_linux=$2

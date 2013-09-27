@@ -73,6 +73,9 @@ done
 
 generate_patch()
 {
+	local cid aid lid
+	local COMMIT SUBJECT
+
 	cid=$1
 	aid=$2
 	lid=$3
