@@ -183,13 +183,14 @@
 
 #ifdef __KERNEL__
 #include <acpi/actypes.h>
-/*
- * Overrides for in-kernel ACPICA
- */
-static inline acpi_thread_id acpi_os_get_thread_id(void)
-{
-    return (ACPI_THREAD_ID) (unsigned long) current;
-}
+
+ACPI_STATUS __init AcpiOsInitialize (
+    void);
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsInitialize
+
+ACPI_STATUS __exit AcpiOsTerminate (
+    void);
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsTerminate
 
 /*
  * Memory allocation/deallocation
@@ -205,27 +206,49 @@ static inline acpi_thread_id acpi_os_get_thread_id(void)
  * However, boot has  (system_state != SYSTEM_RUNNING)
  * to quiet __might_sleep() in kmalloc() and resume does not.
  */
-static inline void *acpi_os_allocate(acpi_size size)
+static inline void *
+AcpiOsAllocate (
+    ACPI_SIZE               Size)
 {
-    return kmalloc(size, irqs_disabled() ? GFP_ATOMIC : GFP_KERNEL);
+    return kmalloc (Size, irqs_disabled () ? GFP_ATOMIC : GFP_KERNEL);
 }
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsAllocate
 
-static inline void *acpi_os_allocate_zeroed(acpi_size size)
+static inline void *
+AcpiOsAllocateZeroed (
+    ACPI_SIZE               Size)
 {
-    return kzalloc(size, irqs_disabled() ? GFP_ATOMIC : GFP_KERNEL);
+    return kzalloc (Size, irqs_disabled () ? GFP_ATOMIC : GFP_KERNEL);
 }
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsAllocateZeroed
 
-static inline void *acpi_os_acquire_object(acpi_cache_t * cache)
+static inline void
+AcpiOsFree (
+    void                   *Memory)
 {
-    return kmem_cache_zalloc(cache,
-        irqs_disabled() ? GFP_ATOMIC : GFP_KERNEL);
+    kfree (Memory);
 }
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsFree
 
-static inline void acpi_os_free(void *a)
+static inline void *
+AcpiOsAcquireObject (
+    ACPI_CACHE_T           *Cache)
 {
-    kfree(a);
+    return kmem_cache_zalloc (Cache,
+        irqs_disabled () ? GFP_ATOMIC : GFP_KERNEL);
 }
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsAcquireObject
 
+/*
+ * Overrides for in-kernel ACPICA
+ */
+static inline ACPI_THREAD_ID
+AcpiOsGetThreadId (
+    void)
+{
+    return (ACPI_THREAD_ID) (unsigned long) current;
+}
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsGetThreadId
 
 #ifndef CONFIG_PREEMPT
 /*
@@ -246,16 +269,44 @@ static inline void acpi_os_free(void *a)
  * all locks to the name of the argument of acpi_os_create_lock(), which
  * prevents lockdep from reporting false positives for ACPICA locks.
  */
-#define AcpiOsCreateLock(__handle)				\
-({								\
-	spinlock_t *lock = ACPI_ALLOCATE(sizeof(*lock));	\
-								\
-	if (lock) {						\
-		*(__handle) = lock;				\
-		spin_lock_init(*(__handle));			\
-	}							\
-	lock ? AE_OK : AE_NO_MEMORY;				\
+#define AcpiOsCreateLock(__Handle) \
+({ \
+    spinlock_t *Lock = ACPI_ALLOCATE(sizeof(*Lock)); \
+    if (Lock) { \
+        *(__Handle) = Lock; \
+        spin_lock_init(*(__Handle)); \
+    } \
+    Lock ? AE_OK : AE_NO_MEMORY; \
 })
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsCreateLock
+
+void __iomem *
+AcpiOsMapMemory (
+    ACPI_PHYSICAL_ADDRESS   Where,
+    ACPI_SIZE               Length);
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsMapMemory
+
+void
+AcpiOsUnmapMemory (
+    void __iomem            *LogicalAddress,
+    ACPI_SIZE               Size);
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsUnmapMemory
+
+/* OSL interfaces used by debugger/disassembler */
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsReadable
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsWritable
+
+/* OSL interfaces used by utilities */
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsRedirectOutput
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsGetLine
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsGetTableByName
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsGetTableByIndex
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsGetTableByAddress
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsOpenDirectory
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsGetNextFilename
+#define ACPI_USE_NATIVE_DECLARED_AcpiOsCloseDirectory
+
+/* OSL interfaces added by Linux */
 
 #ifdef EXPORT_ACPI_INTERFACES
 #include <linux/export.h>
