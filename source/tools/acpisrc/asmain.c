@@ -169,6 +169,7 @@ BOOLEAN                 Gbl_WidenDeclarations = FALSE;
 BOOLEAN                 Gbl_IgnoreLoneLineFeeds = FALSE;
 BOOLEAN                 Gbl_HasLoneLineFeeds = FALSE;
 BOOLEAN                 Gbl_Cleanup = FALSE;
+BOOLEAN                 Gbl_IgnoreTranslationEscapes = FALSE;
 
 #define AS_UTILITY_NAME             "ACPI Source Code Conversion Utility"
 #define AS_SUPPORTED_OPTIONS        "cdhilqsuv^y"
@@ -444,6 +445,7 @@ main (
         printf ("Cleaning up macro indentation\n");
         ConversionTable = &IndentConversionTable;
         Gbl_IgnoreLoneLineFeeds = TRUE;
+        Gbl_IgnoreTranslationEscapes = TRUE;
         break;
 
     case 's':

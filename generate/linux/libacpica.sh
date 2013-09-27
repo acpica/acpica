@@ -96,19 +96,6 @@ acpica_exclude_paths()
 	echo $paths
 }
 
-acpica_indent_fixing_files()
-{
-	local files
-
-	files="\
-		drivers/acpi/acpica/acdebug.h \
-		drivers/acpi/acpica/acevents.h \
-		drivers/acpi/acpica/utglobal.c \
-		include/acpi/acpixf.h \
-	"
-	echo $files
-}
-
 fulldir()
 {
 	( cd $1; pwd )
@@ -202,17 +189,7 @@ make_acpisrc()
 
 lindent_single()
 {
-	local fixup fixing_files acpi_types indent_flags
-	local f t
-
-	fixup=no
-
-	fixing_files=`acpica_indent_fixing_files`
-	for f in $fixing_files; do
-		if [ $1 == $f ]; then
-			fixup=yes
-		fi
-	done
+	local acpi_types t indent_flags
 
 	acpi_types="\
 		u8 \
@@ -232,11 +209,6 @@ lindent_single()
 
 	dos2unix $1 > /dev/null 2>&1
 	indent $indent_flags $1
-
-	if [ "x$fixup" == "xyes" ]; then
-		echo " Fixing indentation of file $1..."
-		$ACPISRC -idqy $1 $1 > /dev/null
-	fi
 }
 
 lindent()

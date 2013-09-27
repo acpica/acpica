@@ -245,7 +245,14 @@ AsRemoveConditionalCompile (
          * Check for translation escape string -- means to ignore
          * blocks of code while replacing
          */
-        Comment = strstr (SubString, AS_START_IGNORE);
+        if (Gbl_IgnoreTranslationEscapes)
+        {
+            Comment = NULL;
+        }
+        else
+        {
+            Comment = strstr (SubString, AS_START_IGNORE);
+        }
 
         if ((Comment) &&
             (Comment < SubBuffer))

@@ -56,11 +56,14 @@ linuxize()
 	echo "[gen-repo.sh]  Converting format (hierarchy)..."
 	linuxize_hierarchy_noref $repo_linux
 
-	echo "[gen-repo.sh]  Converting format (acpisrc)..."
+	echo "[gen-repo.sh]  Converting format (acpisrc -l)..."
 	$ACPISRC -ldqy $repo_linux $repo_linux > /dev/null
 
 	echo "[gen-repo.sh]  Converting format (lindent)..."
 	lindent $repo_linux
+
+	echo "[gen-repo.sh]  Fixing indentation (acpisrc -i)..."
+	$ACPISRC -idqy $repo_linux $repo_linux > /dev/null
 }
 
 echo "[gen-repo.sh] Extracting GIT ($SRCDIR)..."
