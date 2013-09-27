@@ -79,7 +79,7 @@ Version number headers and file pathnames:
     Goto "Source", click edit, update version at body top, click save at bottom
 
 New documents:
-    Goto the documents page, click edit.
+    Goto the "Documentation" page, click edit.
     Attach new document(s)
     uncheck the "List" box for each new document
     Update pathnames (and file sizes) in body for each new filename
@@ -87,7 +87,8 @@ New documents:
     Update "Last update" dates
     Click save at bottom
     <Note: this may be fixed so that the filename can stay the same>
-    Update news: ContentManagement->CreateContent->News
+    Update news: Goto ContentManagement->CreateContent->News
+        Add news item in the "Title" section and click save at bottom
 
 
 Email the release notes
