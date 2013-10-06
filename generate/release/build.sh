@@ -258,6 +258,7 @@ generate_source_package ()
     cp Makefile                             $TEMP_DIR
 	cp generate/unix/readme.txt             $TEMP_DIR/generate/unix/readme.txt
 	cp generate/unix/Makefile*              $TEMP_DIR/generate/unix
+	cp generate/unix/makefile*              $TEMP_DIR/generate/unix
 	cp generate/unix/acpibin/Makefile       $TEMP_DIR/generate/unix/acpibin
 	cp generate/unix/acpidump/Makefile      $TEMP_DIR/generate/unix/acpidump
 	cp generate/unix/acpiexec/Makefile      $TEMP_DIR/generate/unix/acpiexec
