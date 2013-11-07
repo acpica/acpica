@@ -79,8 +79,8 @@ build_acpi_tools() {
 	fi
 	if [ "x$REBUILD_TOOLS" = "xyes" ]; then
 		make clean
-		make iasl
-		make acpiexec
+		make iasl ASLTS=TRUE
+		make acpiexec ASLTS=TRUE
 	fi
 
 	if [ -d "bin" ] && [ -f "bin/iasl" ]; then
