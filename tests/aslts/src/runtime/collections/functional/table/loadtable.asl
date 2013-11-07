@@ -1790,7 +1790,13 @@ Device(DTM2) {
 			}
 			LoadTable("OEM1", "", Local1, "\\", "\\DTM2.PLDT", 1)
 			if (SLCK) {
-				CH04(arg0, 0, 61, z176, 0x110, 0, 0) // AE_AML_STRING_LIMIT
+				// ACPI_OEM_TABLE_ID_SIZE should be less than 8.
+				// The size of the "Integer" converted from "Any" is ISZ0*2.
+				if (LLessEqual(ISZ0, 4)) {
+					CH03(arg0, z176, 0x110, 0, 0) // No exception
+				} else {
+					CH04(arg0, 0, 61, z176, 0x110, 0, 0) // AE_AML_STRING_LIMIT
+				}
 			} else {
 				CH04(arg0, 0, 49, z176, 0x110, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
 			}
