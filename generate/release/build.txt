@@ -2,12 +2,28 @@
 Instructions to create a full release of the ACPICA software
 and utilities.
 
-Last update 24 May 2013.
+Last update 07 November 2013.
 
 The build uses MS Visual Studio and Cygwin to accomplish the
 goal of releasing both Windows and Unix versions of the ACPICA code
 and utilities. For Windows, binary versions of the ACPICA utilities
 (including the iASL compiler) are created.
+
+
+Required Tools
+--------------
+
+MS Word
+Word to PDF conversion tool (PDF Create 8)
+
+Microsoft Visual Studio 2008
+Flex for Windows (http://gnuwin32.sourceforge.net/packages/flex.htm)
+Bison for Windows (http://gnuwin32.sourceforge.net/packages/bison.htm)
+PkWare pkzip25 (Available free from multiple sources -- google for current)
+
+Cygwin (http://www.cygwin.com)
+dos2unix converter
+unix2dos converter
 
 
 Build the ACPICA Software
