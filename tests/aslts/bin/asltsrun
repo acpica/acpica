@@ -190,6 +190,13 @@ run_test_case()
 			commandline=ex
 		fi
 
+		echo ""
+		echo "acpiexec options to reproduce:"
+		echo "  $options -b\"$commandline,$method\""
+		echo "ASLTS aml tables to reproduce:"
+		echo "  $amlcodepath"
+		echo ""
+
 		"$acpiexec" $options -b"$commandline,$method" "$amlcodepath"
 		TEST_RET=$?
 	fi
@@ -833,9 +840,10 @@ NUM_DISABLED_BRANCHES=
 # - init log out results of runs
 
 RESET_SETTINGS
-INIT_ALL_AVAILABLE_TESTS
+INIT_ALL_AVAILABLE_CASES
+INIT_ALL_AVAILABLE_MODES
 INIT_SET_OF_TEST_CASES
-INIT_RUN_MODES
+INIT_SET_OF_TEST_MODES
 INIT_LOG_RESULTS
 INIT_MEM_STAT
 
@@ -875,6 +883,7 @@ if [ $ENABLELOG != 0 ]; then
 
 	MULTIPATH="$ASLTSDIR/tmp/RESULTS/$MULTINAME"
 	check_dir "$MULTIPATH"
+	echo "Generating ASLTS log into directory $MULTIPATH"
 
 	COMMONLOGFILE="$MULTIPATH/Summary"
 	echo "# Trace and summary of $MULTINAME bunch of test runs." > "$COMMONLOGFILE"

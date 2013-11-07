@@ -161,6 +161,18 @@ get_mode_id()
 	echo "$BITMODE:$SLMODE"
 }
 
+# check if mode id is valid
+check_mode_id() {
+	local m
+
+	for m in $ALL_AVAILABLE_TEST_MODES; do
+		if [ "x$m" = "x$1" ]; then
+			return 0
+		fi
+	done
+	return 1
+}
+
 # Echo the name of collection
 # arg1 - opcode of collection
 get_collection_name()

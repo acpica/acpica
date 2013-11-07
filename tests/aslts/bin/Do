@@ -309,7 +309,7 @@ make_install_1()
 	cd "$dir"
 
 	echo "Running make install from $dir"
-	make install
+	make install > /dev/null
 	cd "$restore_dir"
 }
 
@@ -338,7 +338,7 @@ do_test_cases_make_install()
 
 		if [ $3 != 0 ]; then
 			cd "$dir"
-			make install
+			make install > /dev/null
 			if [ $? -ne 0 ]; then
 				errors=1
 			fi
@@ -389,7 +389,7 @@ do_collections_make_install()
 
 		if [ $3 != 0 ]; then
 			cd "$dir"
-			make install
+			make install > /dev/null
 			if [ $? -ne 0 ]; then
 				errors=1
 			fi
@@ -575,7 +575,8 @@ PATH=$PATH:$BUG_STATE_DIR
 # Init available tests
 
 RESET_SETTINGS
-INIT_ALL_AVAILABLE_TESTS
+INIT_ALL_AVAILABLE_CASES
+INIT_ALL_AVAILABLE_MODES
 
 # Only report available test cases
 
@@ -599,15 +600,28 @@ if [ $CMD == $ASLCOMPILE ]; then
 
 elif [ $CMD == $RUNTESTS ]; then
 
-	if [ $NPARAM != 1 ]; then
-		bad_param_number $CMD $NPARAM 1
-	fi
-
 	# Check access to AcpiExec utility
 
 	if [ ! -f "$acpiexec" ]; then
 		do_exit 1 "Undefined acpiexec variable! Set it to pathname of AcpiExec utility."
 	fi
+
+	shift 1
+	ASLTSRUN_PARAMS=
+
+	ENABLED_TMODES=
+	while :
+	do
+		check_mode_id $1
+		if [ $? -eq 1 ]; then
+			break
+		fi
+		ENABLED_TMODES="$1 $ENABLED_TMODES"
+		shift 1
+	done
+	export ENABLED_TMODES
+
+	export ENABLED_TCASES="$@"
 
 	asltsrun
 

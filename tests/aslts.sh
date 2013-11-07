@@ -2,14 +2,36 @@
 #
 # aslts - execute ASL test suite
 #
-# optional parameters: <ASLTS directory path> <ACPICA source code path>
-#
 
 # Will build temporary versions of iASL and acpiexec
 postfix=`date +%H%M%S`
 tmp_iasl=/tmp/iasl-$postfix
 tmp_acpiexec=/tmp/acpiexec-$postfix
 
+TEST_CASES=
+TEST_MODES=
+
+usage() {
+
+	echo "Usage:"
+	echo "`basename $0` [-c case] [-m mode] [-t]"
+	echo "Where:"
+	echo "  -c:	specify test cases, can be used multiple times"
+	echo "  -m:	specify test modes, can be used multiple times"
+	echo "  -t:	force rebuilding of ACPICA utilities (acpiexec, iasl)"
+	echo ""
+
+	echo "All available test modes:"
+	echo "  n32	32-bit normal mode"
+	echo "  n64	64-bit normal mode"
+	echo "  s32	32-bit slack mode"
+	echo "  s64	64-bit slack mode"
+	echo ""
+
+	Do 3
+
+	exit 1
+}
 
 # Setup environment and variables.
 # Need a path to ASLTS and iasl,acpiexec generation dir
@@ -52,9 +74,14 @@ build_acpi_tools() {
 	rm -f $tmp_iasl $tmp_acpiexec
 
 	# Build native-width iASL compiler and acpiexec
-	make clean
-	make iasl
-	make acpiexec
+	if [ ! -e bin/iasl -o ! -e bin/acpiexec ]; then
+		REBUILD_TOOLS=yes
+	fi
+	if [ "x$REBUILD_TOOLS" = "xyes" ]; then
+		make clean
+		make iasl
+		make acpiexec
+	fi
 
 	if [ -d "bin" ] && [ -f "bin/iasl" ]; then
 		echo "Installing ACPICA tools"
@@ -85,14 +112,23 @@ run_aslts() {
 	version=`$ASL | grep version | awk '{print $5}'`
 	rm -rf $ASLTSDIR/tmp/aml/$version
 
-	# Compile all ASL test modules
-	Do 0 aslts
+	if [ "x$TEST_CASES" = "x" ]; then
+		# Compile all ASL test modules
+		Do 0 aslts
+	else
+		Do 0 $TEST_CASES
+	fi
 
 	# Execute the test suite
 	echo ""
 	echo "ASL Test Suite Started: `date`"
 	start_time=$(date)
-	Do 1
+
+	if [ "x$TEST_MODES" = "x" ]; then
+		TEST_MODES="n32 n64 s32 s64"
+	fi
+	Do 1 $TEST_MODES $TEST_CASES
+
 	echo ""
 	echo "ASL Test Suite Finished: `date`"
 	echo "                Started: $start_time"
@@ -100,16 +136,47 @@ run_aslts() {
 	rm -f $tmp_iasl $tmp_acpiexec
 }
 
-NPARAM=$#
+SRCDIR=`(cd \`dirname $0\`; cd ..; pwd)`
+setup_environment $SRCDIR/tests/aslts $SRCDIR/generate/unix
 
-# Main - arguments are optional
+# To use common utilities
+source $SRCDIR/tests/aslts/bin/common
+source $SRCDIR/tests/aslts/bin/settings
+RESET_SETTINGS
+INIT_ALL_AVAILABLE_CASES
+INIT_ALL_AVAILABLE_MODES
 
-if [ $NPARAM -eq 2 ]; then
-	setup_environment $1 $2
-else
-	setup_environment aslts ../generate/unix
-fi
-
+while getopts "c:m:t" opt
+do
+	case $opt in
+	c)
+		get_collection_opcode "$OPTARG"
+		if [ $? -eq $COLLS_NUM ]; then
+			echo "Invalid test case: $OPTARG"
+			usage
+		else
+			TEST_CASES="$OPTARG $TEST_CASES"
+		fi
+	;;
+	m)
+		check_mode_id "$OPTARG"
+		if [ $? -eq 1 ]; then
+			echo "Invalid test mode: $OPTARG"
+			usage
+		else
+			TEST_MODES="$OPTARG $TEST_MODES"
+		fi
+	;;
+	t)
+		REBUILD_TOOLS=yes
+	;;
+	?)
+		echo "Invalid argument: $opt"
+		usage
+	;;
+	esac
+done
+shift $(($OPTIND - 1))
 
 build_acpi_tools
 run_aslts

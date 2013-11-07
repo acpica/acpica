@@ -7,7 +7,7 @@
 # Initialize all the AVAILABLE test cases
 # and collections (all which are).
 #
-INIT_ALL_AVAILABLE_TESTS()
+INIT_ALL_AVAILABLE_CASES()
 {
 	# Functional test collection
 
@@ -55,6 +55,16 @@ INIT_ALL_AVAILABLE_TESTS()
 	ALL_AVAILABLE_COLLS="functional complex exceptions bdemo service mt Identity2MS IMPL"
 
 	ALL_AVAILABLE_TEST_CASES="$FUNC_COLL $CPLX_COLL $EXCP_COLL $BDEMO_COLL $MT_COLL $SERV_COLL $IMPL_COLL $MS_IDENT_COLL"
+}
+
+#
+# Initialize all the AVAILABLE test modes
+#
+INIT_ALL_AVAILABLE_MODES()
+{
+	# All test modes
+
+	ALL_AVAILABLE_TEST_MODES="n32 n64 s32 s64"
 }
 
 #
@@ -139,63 +149,88 @@ INIT_SET_OF_TEST_CASES()
 
 	# The test cases to be processed by run and compare utilities:
 
-#	ENABLED_TCASES="$func $compl $excep $bdemo $serv"
-#	ENABLED_TCASES="$func $compl $excep $Identity2MS $bdemo $serv"
-	ENABLED_TCASES="$func $compl $excep $mt $Identity2MS $bdemo $serv"
+	if [ "x$ENABLED_TCASES" = "x" ]; then
 
-#	ENABLED_TCASES="extra extra_aslts"
-#	ENABLED_TCASES="control"
-#	ENABLED_TCASES="bdemo"
-#	ENABLED_TCASES="bdemo bdemof"
-#	ENABLED_TCASES="bdemo misc"
-#	ENABLED_TCASES="arithmetic constant"
-#	ENABLED_TCASES="condbranches"
-#	ENABLED_TCASES="exc"
-#	ENABLED_TCASES="arithmetic constant exc condbranches"
-#	ENABLED_TCASES="arithmetic bfield constant control descriptor logic manipulation name reference region synchronization misc provoke exc bdemo"
-#	ENABLED_TCASES="oarg oconst olocal onamedloc onamedglob opackageel oreftonamed oreftopackageel oreturn"
-#	ENABLED_TCASES="rstore roptional rcopyobject rindecrement rexplicitconv exc_ref exc_operand2 exc_result2"
-#	ENABLED_TCASES="condbranches"
-#	ENABLED_TCASES="arithmetic bfield"
-#	ENABLED_TCASES="descriptor"
-#	ENABLED_TCASES="reference"
-#	ENABLED_TCASES="arithmetic misc logic bdemo"
-#	ENABLED_TCASES="misc control manipulation"
-#	ENABLED_TCASES="exc_ref"
-#	ENABLED_TCASES="rstore"
-#	ENABLED_TCASES="bdemo reference"
-#	ENABLED_TCASES="name"
-#	ENABLED_TCASES="badasl"
-#	ENABLED_TCASES="constant"
-#	ENABLED_TCASES="arithmetic constant exc mt_mutex bdemo"
-#	ENABLED_TCASES="mt_mutex"
-#	ENABLED_TCASES="region"
+#		ENABLED_TCASES="$func $compl $excep $bdemo $serv"
+#		ENABLED_TCASES="$func $compl $excep $Identity2MS $bdemo $serv"
+		ENABLED_TCASES="$func $compl $excep $mt $Identity2MS $bdemo $serv"
+
+#		ENABLED_TCASES="extra extra_aslts"
+#		ENABLED_TCASES="control"
+#		ENABLED_TCASES="bdemo"
+#		ENABLED_TCASES="bdemo bdemof"
+#		ENABLED_TCASES="bdemo misc"
+#		ENABLED_TCASES="arithmetic constant"
+#		ENABLED_TCASES="condbranches"
+#		ENABLED_TCASES="exc"
+#		ENABLED_TCASES="arithmetic constant exc condbranches"
+#		ENABLED_TCASES="arithmetic bfield constant control descriptor logic manipulation name reference region synchronization misc provoke exc bdemo"
+#		ENABLED_TCASES="oarg oconst olocal onamedloc onamedglob opackageel oreftonamed oreftopackageel oreturn"
+#		ENABLED_TCASES="rstore roptional rcopyobject rindecrement rexplicitconv exc_ref exc_operand2 exc_result2"
+#		ENABLED_TCASES="condbranches"
+#		ENABLED_TCASES="arithmetic bfield"
+#		ENABLED_TCASES="descriptor"
+#		ENABLED_TCASES="reference"
+#		ENABLED_TCASES="arithmetic misc logic bdemo"
+#		ENABLED_TCASES="misc control manipulation"
+#		ENABLED_TCASES="exc_ref"
+#		ENABLED_TCASES="rstore"
+#		ENABLED_TCASES="bdemo reference"
+#		ENABLED_TCASES="name"
+#		ENABLED_TCASES="badasl"
+#		ENABLED_TCASES="constant"
+#		ENABLED_TCASES="arithmetic constant exc mt_mutex bdemo"
+#		ENABLED_TCASES="mt_mutex"
+#		ENABLED_TCASES="region"
+
+	fi
 }
 
 #
-# Set up a set of test run modes you want
+# Set up a list of test modes you want
 # to be processed by run and compare utilities.
-# Do that here manually.
 #
-INIT_RUN_MODES()
+INIT_SET_OF_TEST_MODES()
 {
-	# The test run modes to be processed:
+	local m n found
 
-	# 32-bit non-slack (normal):
+	for m in $ALL_AVAILABLE_TEST_MODES
+	do
+		found=0
+		for n in $ENABLED_TMODES
+		do
+			if [ "x$m" = "x$n" ]; then
+				found=1
+			fi
+		done
 
-	ENABLENORM32=1
+		if [ $found -eq 1 ]; then
 
-	# 64-bit non-slack (normal):
+			# 32-bit non-slack (normal):
 
-	ENABLENORM64=1
+			if [ "$m" = "n32" ]; then
+				ENABLENORM32=1
+			fi
 
-	# 32-bit slack:
+			# 64-bit non-slack (normal):
 
-	ENABLESLACK32=1
+			if [ "$m" = "n64" ]; then
+				ENABLENORM64=1
+			fi
 
-	# 64-bit slack:
+			# 32-bit slack:
 
-	ENABLESLACK64=1
+			if [ "$m" = "s32" ]; then
+				ENABLESLACK32=1
+			fi
+
+			# 64-bit slack:
+
+			if [ "$m" = "s64" ]; then
+				ENABLESLACK64=1
+			fi
+		fi
+	done
 }
 
 #

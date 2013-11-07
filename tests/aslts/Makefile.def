@@ -45,7 +45,7 @@ empty_all:	FORCE
 # aslversion is determined dynamically.
 
 ${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%}:
-	$(INST.dir)
+	@$(INST.dir)
 
 # Make-install one particular Test Case for all modes
 
