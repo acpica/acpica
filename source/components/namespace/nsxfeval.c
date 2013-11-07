@@ -221,13 +221,9 @@ AcpiEvaluateObjectTyped (
 
     if (MustFree)
     {
-        /*
-         * Caller used ACPI_ALLOCATE_BUFFER, free the return buffer.
-         * Note: We use AcpiOsFree here because AcpiOsAllocate was used
-         * to allocate the buffer. This purposefully bypasses the internal
-         * allocation tracking mechanism (if it is enabled).
-         */
-        AcpiOsFree (ReturnBuffer->Pointer);
+        /* Caller used ACPI_ALLOCATE_BUFFER, free the return buffer */
+
+        ACPI_FREE_BUFFER (*ReturnBuffer);
         ReturnBuffer->Pointer = NULL;
     }
 

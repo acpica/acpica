@@ -484,7 +484,7 @@ ExecuteOSI (void)
     }
 
     ACPI_INFO ((AE_INFO, "_OSI returned 0x%8.8X", (UINT32) Object->Integer.Value));
-    AcpiOsFree (Object);
+    ACPI_FREE_BUFFER (ReturnValue);
     return;
 }
 
