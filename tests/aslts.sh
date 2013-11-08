@@ -140,8 +140,8 @@ SRCDIR=`(cd \`dirname $0\`; cd ..; pwd)`
 setup_environment $SRCDIR/tests/aslts $SRCDIR/generate/unix
 
 # To use common utilities
-source $SRCDIR/tests/aslts/bin/common
-source $SRCDIR/tests/aslts/bin/settings
+. $SRCDIR/tests/aslts/bin/common
+. $SRCDIR/tests/aslts/bin/settings
 RESET_SETTINGS
 INIT_ALL_AVAILABLE_CASES
 INIT_ALL_AVAILABLE_MODES

@@ -37,7 +37,7 @@ shift $(($OPTIND - 1))
 version=`git log -1 -c $1 --format=%H | cut -c1-8`
 
 SCRIPT=`(cd \`dirname $0\`; pwd)`
-source $SCRIPT/libacpica.sh
+. $SCRIPT/libacpica.sh
 
 GR_acpica_repo=$CURDIR/acpica-$version
 GR_linux_repo=$CURDIR/linux-$version

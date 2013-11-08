@@ -39,7 +39,7 @@ done
 shift $(($OPTIND - 1))
 
 SCRIPT=`(cd \`dirname $0\`; pwd)`
-source $SCRIPT/libacpica.sh
+. $SCRIPT/libacpica.sh
 
 ACPICA_TMP=$CURDIR/acpica-tmp
 LINUX_ACPICA=$CURDIR/linux-acpica
