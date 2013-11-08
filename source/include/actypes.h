@@ -1036,13 +1036,9 @@ typedef struct acpi_buffer
 
 } ACPI_BUFFER;
 
-/*
- * Free a buffer created in an ACPI_BUFFER via ACPI_ALLOCATE_BUFFER.
- * Note: We use AcpiOsFree here because AcpiOsAllocate was used to allocate
- * the buffer. This purposefully bypasses the internal allocation tracking
- * mechanism (if it is enabled).
- */
-#define ACPI_FREE_BUFFER(b)         AcpiOsFree((b).Pointer)
+/* Free a buffer created in an ACPI_BUFFER via ACPI_ALLOCATE_LOCAL_BUFFER */
+
+#define ACPI_FREE_BUFFER(b)         ACPI_FREE(b.Pointer)
 
 
 /*

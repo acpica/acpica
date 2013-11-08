@@ -527,7 +527,7 @@ AeExceptionHandler (
             NewAmlStatus = (ACPI_STATUS)
                 ((ACPI_OBJECT *) ReturnObj.Pointer)->Integer.Value;
 
-            ACPI_FREE_BUFFER (ReturnObj);
+            AcpiOsFree (ReturnObj.Pointer);
         }
     }
     else if (Status != AE_NOT_FOUND)

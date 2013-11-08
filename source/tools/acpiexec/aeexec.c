@@ -427,7 +427,6 @@ ExecuteOSI (
     if (Obj->Type != ACPI_TYPE_INTEGER)
     {
         AcpiOsPrintf ("Invalid return type from _OSI method, %.2X\n", Obj->Type);
-        ACPI_FREE_BUFFER (ReturnValue);
         return (AE_ERROR);
     }
 
@@ -435,14 +434,12 @@ ExecuteOSI (
     {
         AcpiOsPrintf ("Invalid return value from _OSI, expected %.8X found %.8X\n",
             ExpectedResult, (UINT32) Obj->Integer.Value);
-        ACPI_FREE_BUFFER (ReturnValue);
         return (AE_ERROR);
     }
 
     /* Reset the OSI data */
 
     AcpiGbl_OsiData = 0;
-    ACPI_FREE_BUFFER (ReturnValue);
     return (AE_OK);
 }
 
@@ -833,7 +830,7 @@ AeMiscellaneousTests (
         Status = AcpiGetVendorResource (Handle, "_CRS", &Uuid, &ReturnBuf);
         if (ACPI_SUCCESS (Status))
         {
-            ACPI_FREE_BUFFER (ReturnBuf);
+            AcpiOsFree (ReturnBuf.Pointer);
         }
     }
 
