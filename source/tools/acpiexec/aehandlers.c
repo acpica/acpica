@@ -1127,10 +1127,20 @@ AeInstallEarlyHandlers (
         Status = AcpiDetachData (Handle, AeAttachedDataHandler);
         AE_CHECK_OK (AcpiDetachData, Status);
 
-        Status = AcpiAttachData (Handle, AeAttachedDataHandler, Handle);
+        /* Test attach data at the root object */
+
+        Status = AcpiAttachData (ACPI_ROOT_OBJECT, AeAttachedDataHandler,
+            AcpiGbl_RootNode);
+        AE_CHECK_OK (AcpiAttachData, Status);
+
+        Status = AcpiAttachData (ACPI_ROOT_OBJECT, AeAttachedDataHandler2,
+            AcpiGbl_RootNode);
         AE_CHECK_OK (AcpiAttachData, Status);
 
         /* Test support for multiple attaches */
+
+        Status = AcpiAttachData (Handle, AeAttachedDataHandler, Handle);
+        AE_CHECK_OK (AcpiAttachData, Status);
 
         Status = AcpiAttachData (Handle, AeAttachedDataHandler2, Handle);
         AE_CHECK_OK (AcpiAttachData, Status);
