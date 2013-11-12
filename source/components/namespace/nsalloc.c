@@ -193,6 +193,7 @@ AcpiNsDeleteNode (
     ACPI_NAMESPACE_NODE     *Node)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *NextDesc;
 
 
     ACPI_FUNCTION_NAME (NsDeleteNode);
@@ -203,12 +204,13 @@ AcpiNsDeleteNode (
     AcpiNsDetachObject (Node);
 
     /*
-     * Delete an attached data object if present (an object that was created
-     * and attached via AcpiAttachData). Note: After any normal object is
-     * detached above, the only possible remaining object is a data object.
+     * Delete an attached data object list if present (objects that were
+     * attached via AcpiAttachData). Note: After any normal object is
+     * detached above, the only possible remaining object(s) are data
+     * objects, in a linked list.
      */
     ObjDesc = Node->Object;
-    if (ObjDesc &&
+    while (ObjDesc &&
         (ObjDesc->Common.Type == ACPI_TYPE_LOCAL_DATA))
     {
         /* Invoke the attached data deletion handler if present */
@@ -218,7 +220,9 @@ AcpiNsDeleteNode (
             ObjDesc->Data.Handler (Node, ObjDesc->Data.Pointer);
         }
 
+        NextDesc = ObjDesc->Common.NextObject;
         AcpiUtRemoveReference (ObjDesc);
+        ObjDesc = NextDesc;
     }
 
     /* Now we can delete the node */
