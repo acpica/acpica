@@ -225,6 +225,13 @@ AcpiNsDeleteNode (
         ObjDesc = NextDesc;
     }
 
+    /* Special case for the statically allocated root node */
+
+    if (Node == AcpiGbl_RootNode)
+    {
+        return;
+    }
+
     /* Now we can delete the node */
 
     (void) AcpiOsReleaseObject (AcpiGbl_NamespaceCache, Node);
