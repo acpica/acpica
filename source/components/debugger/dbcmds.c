@@ -1114,7 +1114,7 @@ GetCrs:
         }
 
 EndCrs:
-        ACPI_FREE_BUFFER (ReturnBuffer);
+        ACPI_FREE (ReturnBuffer.Pointer);
     }
 
 
