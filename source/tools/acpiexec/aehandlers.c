@@ -170,6 +170,11 @@ AeAttachedDataHandler (
     ACPI_HANDLE             Object,
     void                    *Data);
 
+static void
+AeAttachedDataHandler2 (
+    ACPI_HANDLE             Object,
+    void                    *Data);
+
 static UINT32
 AeInterfaceHandler (
     ACPI_STRING             InterfaceName,
@@ -677,7 +682,29 @@ AeAttachedDataHandler (
     ACPI_NAMESPACE_NODE     *Node = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, Data);
 
 
-    AcpiOsPrintf ("Received an attached data deletion on %4.4s\n",
+    AcpiOsPrintf ("Received an attached data deletion (1) on %4.4s\n",
+        Node->Name.Ascii);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AeAttachedDataHandler2
+ *
+ * DESCRIPTION: Handler for deletion of nodes with attached data (attached via
+ *              AcpiAttachData)
+ *
+ *****************************************************************************/
+
+static void
+AeAttachedDataHandler2 (
+    ACPI_HANDLE             Object,
+    void                    *Data)
+{
+    ACPI_NAMESPACE_NODE     *Node = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, Data);
+
+
+    AcpiOsPrintf ("Received an attached data deletion (2) on %4.4s\n",
         Node->Name.Ascii);
 }
 
@@ -1095,6 +1122,11 @@ AeInstallEarlyHandlers (
         AE_CHECK_OK (AcpiDetachData, Status);
 
         Status = AcpiAttachData (Handle, AeAttachedDataHandler, Handle);
+        AE_CHECK_OK (AcpiAttachData, Status);
+
+        /* Test support for multiple attaches */
+
+        Status = AcpiAttachData (Handle, AeAttachedDataHandler2, Handle);
         AE_CHECK_OK (AcpiAttachData, Status);
     }
     else
