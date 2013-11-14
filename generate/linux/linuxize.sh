@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # NAME:
 #         linuxize.sh - create linuxized ACPICA source

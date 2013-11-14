@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # NAME:
 #         gen-repo.sh - extract linuxized sources from the ACPICA git

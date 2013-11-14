@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # NAME:
 #         libacpica.sh - ACPICA release script library

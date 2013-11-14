@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # NAME:
 #         gen-patch.sh - extract linuxized patches from the ACPICA git

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # NAME:
 #         make-patches.sh - extract a set of linuxized patches from the
