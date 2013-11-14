@@ -10,18 +10,19 @@ tmp_acpiexec=/tmp/acpiexec-$postfix
 
 TEST_CASES=
 TEST_MODES=
+REBUILD_TOOLS=yes
 
 usage() {
 
 	echo "Usage:"
-	echo "`basename $0` [-c case] [-m mode] [-t]"
+	echo "`basename $0` [-c case] [-m mode] [-u]"
 	echo "Where:"
-	echo "  -c:	specify test cases, can be used multiple times"
-	echo "  -m:	specify test modes, can be used multiple times"
-	echo "  -t:	force rebuilding of ACPICA utilities (acpiexec, iasl)"
+	echo "  -c:	Specify individual test cases (can be used multiple times)"
+	echo "  -m:	Specify individual test modes (can be used multiple times)"
+	echo "  -u:	Do not force rebuilding of ACPICA utilities (acpiexec, iasl)"
 	echo ""
 
-	echo "All available test modes:"
+	echo "Available test modes:"
 	echo "  n32	32-bit normal mode"
 	echo "  n64	64-bit normal mode"
 	echo "  s32	32-bit slack mode"
@@ -29,7 +30,6 @@ usage() {
 	echo ""
 
 	Do 3
-
 	exit 1
 }
 
@@ -146,7 +146,7 @@ RESET_SETTINGS
 INIT_ALL_AVAILABLE_CASES
 INIT_ALL_AVAILABLE_MODES
 
-while getopts "c:m:t" opt
+while getopts "c:m:u" opt
 do
 	case $opt in
 	c)
@@ -167,8 +167,8 @@ do
 			TEST_MODES="$OPTARG $TEST_MODES"
 		fi
 	;;
-	t)
-		REBUILD_TOOLS=yes
+	u)
+		REBUILD_TOOLS=no
 	;;
 	?)
 		echo "Invalid argument: $opt"
