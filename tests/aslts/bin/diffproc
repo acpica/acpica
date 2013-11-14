@@ -74,12 +74,12 @@ report_run_time_cmp()
 
 	if [ $ret -eq 2 ] ; then
 		# 2 means arg1 is greater than arg2
-		percent=$[ ($diff01 * 100) / $t1 ]
+		percent=$[ ($diff01 * 10000) / ($t1 * 100 + 1) ]
 		echo "WARNING, TOTAL, time of tests run grown from $2 to $1, (+$diff01str, $percent% of $2)"
 		rval=2
 	elif [ $ret -eq 1 ] ; then
 		# 1 means arg1 is less than arg2
-		percent=$[ ($diff01 * 100) / $t0 ]
+		percent=$[ ($diff01 * 10000) / ($t0 * 100 + 1) ]
 		echo "INFO,    TOTAL, time of tests run reduced from "$2" to "$1", (-$diff01str, $percent% of $2)"
 		rval=1
 	fi

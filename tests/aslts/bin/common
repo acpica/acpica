@@ -608,8 +608,8 @@ convert_string_to_centisecond_units()
 		return 3
 	fi
 
-	sec0=$[ (1$s0 - 100) + (1$m0 - 100) * 60 + (1$h0 - 100) * 3600 ]
-	total0=$[ (1$csec0 - 100) + $sec0 * 100 ]
+	sec0=$[ $s0 + $m0 * 60 + $h0 * 3600 ]
+	total0=$[ $csec0 + $sec0 * 100 ]
 
 	echo "$total0"
 
