@@ -128,6 +128,8 @@
  * tools/applications.
  */
 
+#ifndef ACPI_NO_ERROR_MESSAGES /* Entire module */
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiError
@@ -362,3 +364,5 @@ AcpiBiosWarning (
 }
 
 ACPI_EXPORT_SYMBOL (AcpiBiosWarning)
+
+#endif /* ACPI_NO_ERROR_MESSAGES */

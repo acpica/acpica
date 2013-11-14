@@ -319,6 +319,22 @@ ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_SystemAwakeAndRunning);
 
 
 /*
+ * Error-message prototypes. All interfaces that use these macros will
+ * be configured out of the ACPICA build if the ACPI_NO_ERROR_MESSAGE flag
+ * is defined.
+ */
+#ifndef ACPI_NO_ERROR_MESSAGES
+#define ACPI_MSG_DEPENDENT_RETURN_VOID(Prototype) \
+    Prototype;
+
+#else
+#define ACPI_MSG_DEPENDENT_RETURN_VOID(Prototype) \
+    static ACPI_INLINE Prototype {return;}
+
+#endif /* ACPI_NO_ERROR_MESSAGES */
+
+
+/*
  * Initialization
  */
 ACPI_STATUS
@@ -963,14 +979,16 @@ AcpiGetTimerDuration (
 /*
  * Error/Warning output
  */
+ACPI_MSG_DEPENDENT_RETURN_VOID (
 ACPI_PRINTF_LIKE(3)
 void ACPI_INTERNAL_VAR_XFACE
 AcpiError (
     const char              *ModuleName,
     UINT32                  LineNumber,
     const char              *Format,
-    ...);
+    ...))
 
+ACPI_MSG_DEPENDENT_RETURN_VOID (
 ACPI_PRINTF_LIKE(4)
 void  ACPI_INTERNAL_VAR_XFACE
 AcpiException (
@@ -978,39 +996,43 @@ AcpiException (
     UINT32                  LineNumber,
     ACPI_STATUS             Status,
     const char              *Format,
-    ...);
+    ...))
 
+ACPI_MSG_DEPENDENT_RETURN_VOID (
 ACPI_PRINTF_LIKE(3)
 void ACPI_INTERNAL_VAR_XFACE
 AcpiWarning (
     const char              *ModuleName,
     UINT32                  LineNumber,
     const char              *Format,
-    ...);
+    ...))
 
+ACPI_MSG_DEPENDENT_RETURN_VOID (
 ACPI_PRINTF_LIKE(3)
 void ACPI_INTERNAL_VAR_XFACE
 AcpiInfo (
     const char              *ModuleName,
     UINT32                  LineNumber,
     const char              *Format,
-    ...);
+    ...))
 
+ACPI_MSG_DEPENDENT_RETURN_VOID (
 ACPI_PRINTF_LIKE(3)
 void ACPI_INTERNAL_VAR_XFACE
 AcpiBiosError (
     const char              *ModuleName,
     UINT32                  LineNumber,
     const char              *Format,
-    ...);
+    ...))
 
+ACPI_MSG_DEPENDENT_RETURN_VOID (
 ACPI_PRINTF_LIKE(3)
 void ACPI_INTERNAL_VAR_XFACE
 AcpiBiosWarning (
     const char              *ModuleName,
     UINT32                  LineNumber,
     const char              *Format,
-    ...);
+    ...))
 
 
 /*
