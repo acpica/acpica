@@ -2,7 +2,7 @@
 Instructions to create a full release of the ACPICA software
 and utilities.
 
-Last update 07 November 2013.
+Last update 14 November 2013.
 
 The build uses MS Visual Studio and Cygwin to accomplish the
 goal of releasing both Windows and Unix versions of the ACPICA code
@@ -13,17 +13,38 @@ and utilities. For Windows, binary versions of the ACPICA utilities
 Required Tools
 --------------
 
-MS Word
-Word to PDF conversion tool (PDF Create 8)
+1) Documents: The main ACPICA documents (ACPICA reference, iASL user guide)
+are written in MS word, then converted to PDF format. Both versions of each
+are released on the ACPICA website.
 
-Microsoft Visual Studio 2008
-Flex for Windows (http://gnuwin32.sourceforge.net/packages/flex.htm)
-Bison for Windows (http://gnuwin32.sourceforge.net/packages/bison.htm)
-PkWare pkzip25 (Available free from multiple sources -- google for current)
+    MS Word
+    Word to PDF conversion tool (such as PDF Create 8)
 
-Cygwin (http://www.cygwin.com)
-dos2unix converter
-unix2dos converter
+2) Generation via Microsoft tools: The Windows binaries are built via
+Visual Studio. We must release the Windows binaries since Windows
+does not provide a compiler.
+
+See acpica/generate/msvc9/readme.txt for Windows setup and ACPICA generation
+instructions.
+
+See acpica/source/compiler/readme.txt for flex/bison installation and
+iASL generation instructions.
+
+    Microsoft Visual Studio 2008
+    Flex for Windows (http://gnuwin32.sourceforge.net/packages/flex.htm)
+    Bison for Windows (http://gnuwin32.sourceforge.net/packages/bison.htm)
+    PkWare pkzip25 (Available free from multiple sources)
+        Google "pkzip25.exe" to find the free executable
+
+3) Cygwin for Windows: Cygwin is used to checkout the source code from the git
+tree, generate ACPICA from source, and to build the ACPICA release packages.
+
+    Cygwin is available at (http://www.cygwin.com)
+    git (found in Devel)
+    make (found in Devel)
+    flex (found in Devel)
+    bison (found in Devel)
+    dos2unix and unix2dos converters (found in Text)
 
 
 Build the ACPICA Software
@@ -32,10 +53,11 @@ Build the ACPICA Software
 Cleanup any extraneous files in the local git tree
 
 Complete any updates to the ACPICA documentation (ACPICA ref, iASL ref)
-Create the .PDF versions of the .DOC files
+Create the .PDF versions of the MS Word .DOC files
 Checkin any changed documents
 
-Update the version number (form 0xyyyymmdd) in source/include/acpixf.h
+Update the version number (hex in the format: 0xYYYYMMDD)
+    in the file source/include/acpixf.h
 Build Windows debug versions of all software and utilities
 Build Windows nodebug versions of all software and utilities
     (generate/msvc9)
@@ -49,8 +71,8 @@ Generate sizes for the acpica library from generate/release/size.bat
    It might not work unless the environment variables are set correctly.
    Execute VC/vcvarsall.bat from the command line if necessary.
 Sizes appear in the files size_rel.txt and size_dbg.txt
-Integrate code/data and debug/nodebug sizes into the release notes
-Add the release notes to the documents/changes.txt document
+Integrate code/data and debug/nodebug sizes into the release notes.
+Add the release notes to the documents/changes.txt document via Word.
    Note: From Word, use "Save As", then check the "MS-DOS" and
    "Insert line breaks" boxes before saving.
 
