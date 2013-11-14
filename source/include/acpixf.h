@@ -335,6 +335,22 @@ ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_SystemAwakeAndRunning);
 
 
 /*
+ * Debugging-output prototypes. All interfaces that use these macros will
+ * be configured out of the ACPICA build if the ACPI_DEBUG_OUTPUT flag is
+ * not defined.
+ */
+#ifdef ACPI_DEBUG_OUTPUT
+#define ACPI_DBG_DEPENDENT_RETURN_VOID(Prototype) \
+    Prototype;
+
+#else
+#define ACPI_DBG_DEPENDENT_RETURN_VOID(Prototype) \
+    static ACPI_INLINE Prototype {return;}
+
+#endif /* ACPI_DEBUG_OUTPUT */
+
+
+/*
  * Initialization
  */
 ACPI_STATUS
@@ -1038,8 +1054,7 @@ AcpiBiosWarning (
 /*
  * Debug output
  */
-#ifdef ACPI_DEBUG_OUTPUT
-
+ACPI_DBG_DEPENDENT_RETURN_VOID (
 ACPI_PRINTF_LIKE(6)
 void ACPI_INTERNAL_VAR_XFACE
 AcpiDebugPrint (
@@ -1049,8 +1064,9 @@ AcpiDebugPrint (
     const char              *ModuleName,
     UINT32                  ComponentId,
     const char              *Format,
-    ...);
+    ...))
 
+ACPI_DBG_DEPENDENT_RETURN_VOID (
 ACPI_PRINTF_LIKE(6)
 void ACPI_INTERNAL_VAR_XFACE
 AcpiDebugPrintRaw (
@@ -1060,7 +1076,6 @@ AcpiDebugPrintRaw (
     const char              *ModuleName,
     UINT32                  ComponentId,
     const char              *Format,
-    ...);
-#endif
+    ...))
 
 #endif /* __ACXFACE_H__ */

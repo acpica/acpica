@@ -801,6 +801,7 @@ ACPI_STRING_TABLE           LinuxSpecialStrings[] = {
 
 ACPI_IDENTIFIER_TABLE       LinuxSpecialMacros[] = {
 
+    {"ACPI_DBG_DEPENDENT_RETURN_VOID"},
     {"ACPI_EXPORT_SYMBOL"},
     {"ACPI_EXPORT_SYMBOL_INIT"},
     {"ACPI_HW_DEPENDENT_RETURN_OK"},
