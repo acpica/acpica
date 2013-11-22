@@ -740,11 +740,19 @@ AcpiDmClearExternalFileList (
     void);
 
 void
-AcpiDmAddToExternalList (
+AcpiDmAddOpToExternalList (
     ACPI_PARSE_OBJECT       *Op,
     char                    *Path,
     UINT8                   Type,
-    UINT32                  Value);
+    UINT32                  Value,
+    UINT16                  Flags);
+
+void
+AcpiDmAddNodeToExternalList (
+    ACPI_NAMESPACE_NODE     *Node,
+    UINT8                   Type,
+    UINT32                  Value,
+    UINT16                  Flags);
 
 void
 AcpiDmAddExternalsToNamespace (
