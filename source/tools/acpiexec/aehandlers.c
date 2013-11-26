@@ -532,6 +532,8 @@ AeExceptionHandler (
             NewAmlStatus = (ACPI_STATUS)
                 ((ACPI_OBJECT *) ReturnObj.Pointer)->Integer.Value;
 
+            /* Free a buffer created via ACPI_ALLOCATE_BUFFER */
+
             AcpiOsFree (ReturnObj.Pointer);
         }
     }

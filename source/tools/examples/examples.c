@@ -472,7 +472,7 @@ ExecuteOSI (void)
     {
         AcpiOsPrintf ("Return value from _OSI method too small, %.8X\n",
             ReturnValue.Length);
-        return;
+        goto ErrorExit;
     }
 
     /* Expect an integer return value from execution of _OSI */
@@ -484,7 +484,14 @@ ExecuteOSI (void)
     }
 
     ACPI_INFO ((AE_INFO, "_OSI returned 0x%8.8X", (UINT32) Object->Integer.Value));
-    AcpiOsFree (Object);
+
+
+ErrorExit:
+
+    /* Free a buffer created via ACPI_ALLOCATE_BUFFER */
+
+    AcpiOsFree (ReturnValue.Pointer);
+
     return;
 }
 
