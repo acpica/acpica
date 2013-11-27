@@ -594,9 +594,11 @@ AcpiTbParseRootTable (
     AcpiTbPrintTableHeader (RsdpAddress,
         ACPI_CAST_PTR (ACPI_TABLE_HEADER, Rsdp));
 
-    /* Differentiate between RSDT and XSDT root tables */
+    /* Use XSDT if present and not overridden. Otherwise, use RSDT */
 
-    if ((Rsdp->Revision > 1) && Rsdp->XsdtPhysicalAddress)
+    if ((Rsdp->Revision > 1) &&
+        Rsdp->XsdtPhysicalAddress &&
+        !AcpiGbl_DoNotUseXsdt)
     {
         /*
          * RSDP contains an XSDT (64-bit physical addresses). We must use
@@ -621,8 +623,8 @@ AcpiTbParseRootTable (
     AcpiOsUnmapMemory (Rsdp, sizeof (ACPI_TABLE_RSDP));
 
     /*
-     * If it is present, validate the XSDT for access/size and ensure
-     * that all table entries are at least non-NULL
+     * If it is present and used, validate the XSDT for access/size
+     * and ensure that all table entries are at least non-NULL
      */
     if (TableEntrySize == ACPI_XSDT_ENTRY_SIZE)
     {
