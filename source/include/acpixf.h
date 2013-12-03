@@ -153,6 +153,7 @@ extern UINT8                AcpiGbl_EnableInterpreterSlack;
 extern UINT32               AcpiGbl_TraceFlags;
 extern ACPI_NAME            AcpiGbl_TraceMethodName;
 extern UINT8                AcpiGbl_TruncateIoAddresses;
+extern UINT8                AcpiGbl_Use32BitFadtAddresses;
 extern UINT8                AcpiGbl_UseDefaultRegisterWidths;
 
 
