@@ -1727,6 +1727,85 @@ DtCompileMtmr (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompilePcct
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile PCCT.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompilePcct (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    DT_FIELD                *SubtableStart;
+    ACPI_SUBTABLE_HEADER    *PcctHeader;
+    ACPI_DMTABLE_INFO       *InfoTable;
+
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoPcct,
+                &Subtable, TRUE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    ParentTable = DtPeekSubtable ();
+    DtInsertSubtable (ParentTable, Subtable);
+
+    while (*PFieldList)
+    {
+        SubtableStart = *PFieldList;
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoPcctHdr,
+                    &Subtable, TRUE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+        DtPushSubtable (Subtable);
+
+        PcctHeader = ACPI_CAST_PTR (ACPI_SUBTABLE_HEADER, Subtable->Buffer);
+
+        switch (PcctHeader->Type)
+        {
+        case ACPI_PCCT_TYPE_GENERIC_SUBSPACE:
+
+            InfoTable = AcpiDmTableInfoPcct0;
+            break;
+
+        default:
+
+            DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "PCCT");
+            return (AE_ERROR);
+        }
+
+        Status = DtCompileTable (PFieldList, InfoTable, &Subtable, TRUE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+        DtPopSubtable ();
+    }
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompilePmtt
  *
  * PARAMETERS:  List                - Current field list pointer

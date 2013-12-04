@@ -2022,11 +2022,31 @@ AcpiDmDumpPcct (
         return;
     }
 
-    /* Sub-tables */
+    /* Subtables */
 
     SubTable = ACPI_ADD_PTR (ACPI_PCCT_SUBSPACE, Table, Offset);
     while (Offset < Table->Length)
     {
+        /* Common subtable header */
+
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Length, Offset, SubTable,
+                    SubTable->Header.Length, AcpiDmTableInfoPcctHdr);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        /* ACPI 5.0: Only one type of PCCT subtable is supported */
+
+        if (SubTable->Header.Type != ACPI_PCCT_TYPE_GENERIC_SUBSPACE)
+        {
+            AcpiOsPrintf (
+                "\n**** Unexpected or unknown PCCT subtable type 0x%X\n\n",
+                SubTable->Header.Type);
+            return;
+        }
+
         AcpiOsPrintf ("\n");
         Status = AcpiDmDumpTable (Length, Offset, SubTable,
                     SubTable->Header.Length, AcpiDmTableInfoPcct0);
@@ -2035,7 +2055,7 @@ AcpiDmDumpPcct (
             return;
         }
 
-        /* Point to next sub-table */
+        /* Point to next subtable */
 
         Offset += SubTable->Header.Length;
         SubTable = ACPI_ADD_PTR (ACPI_PCCT_SUBSPACE, SubTable,
