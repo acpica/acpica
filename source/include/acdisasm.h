@@ -141,14 +141,14 @@ typedef const struct acpi_dmtable_info
 
 } ACPI_DMTABLE_INFO;
 
+/* Values for Flags field above */
+
 #define DT_LENGTH                       0x01    /* Field is a subtable length */
 #define DT_FLAG                         0x02    /* Field is a flag value */
 #define DT_NON_ZERO                     0x04    /* Field must be non-zero */
-
-/* TBD: Not used at this time */
-
-#define DT_OPTIONAL                     0x08
-#define DT_COUNT                        0x10
+#define DT_OPTIONAL                     0x08    /* Field is optional */
+#define DT_DESCRIBES_OPTIONAL           0x10    /* Field describes an optional field (length, etc.) */
+#define DT_COUNT                        0x20    /* Currently not used */
 
 /*
  * Values for Opcode above.
@@ -316,6 +316,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDbg2Device[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDbg2Addr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDbg2Size[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDbg2Name[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDbg2OemData[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDbgp[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDmar[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDmarHdr[];

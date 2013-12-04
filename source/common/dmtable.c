@@ -358,7 +358,7 @@ ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_BOOT, AcpiDmTableInfoBoot,    NULL,           NULL,           TemplateBoot,   "Simple Boot Flag Table"},
     {ACPI_SIG_CPEP, NULL,                   AcpiDmDumpCpep, DtCompileCpep,  TemplateCpep,   "Corrected Platform Error Polling table"},
     {ACPI_SIG_CSRT, NULL,                   AcpiDmDumpCsrt, DtCompileCsrt,  TemplateCsrt,   "Core System Resource Table"},
-    {ACPI_SIG_DBG2, NULL,                   AcpiDmDumpDbg2, NULL,           NULL,           "Debug Port table type 2"},
+    {ACPI_SIG_DBG2, AcpiDmTableInfoDbg2,    AcpiDmDumpDbg2, DtCompileDbg2,  TemplateDbg2,   "Debug Port table type 2"},
     {ACPI_SIG_DBGP, AcpiDmTableInfoDbgp,    NULL,           NULL,           TemplateDbgp,   "Debug Port table"},
     {ACPI_SIG_DMAR, NULL,                   AcpiDmDumpDmar, DtCompileDmar,  TemplateDmar,   "DMA Remapping table"},
     {ACPI_SIG_ECDT, AcpiDmTableInfoEcdt,    NULL,           NULL,           TemplateEcdt,   "Embedded Controller Boot Resources Table"},
@@ -722,6 +722,7 @@ AcpiDmDumpTable (
     UINT32                  ByteLength;
     UINT8                   Temp8;
     UINT16                  Temp16;
+    UINT64                  Value;
     ACPI_DMTABLE_DATA       *TableData;
     const char              *Name;
     BOOLEAN                 LastOutputBlankLine = FALSE;
@@ -935,10 +936,19 @@ AcpiDmDumpTable (
              * Dump bytes - high byte first, low byte last.
              * Note: All ACPI tables are little-endian.
              */
+            Value = 0;
             for (Temp8 = (UINT8) ByteLength; Temp8 > 0; Temp8--)
             {
                 AcpiOsPrintf ("%2.2X", Target[Temp8 - 1]);
+                Value |= Target[Temp8 - 1];
+                Value <<= 8;
             }
+
+            if (!Value && (Info->Flags & DT_DESCRIBES_OPTIONAL))
+            {
+                AcpiOsPrintf (" [Optional field not present]");
+            }
+
             AcpiOsPrintf ("\n");
             break;
 

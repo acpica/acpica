@@ -792,12 +792,12 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoDbg2[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDbg2Device[] =
 {
     {ACPI_DMT_UINT8,    ACPI_DBG20_OFFSET (Revision),               "Revision", 0},
-    {ACPI_DMT_UINT16,   ACPI_DBG20_OFFSET (Length),                 "Length", 0},
+    {ACPI_DMT_UINT16,   ACPI_DBG20_OFFSET (Length),                 "Length", DT_LENGTH},
     {ACPI_DMT_UINT8,    ACPI_DBG20_OFFSET (RegisterCount),          "Register Count", 0},
     {ACPI_DMT_UINT16,   ACPI_DBG20_OFFSET (NamepathLength),         "Namepath Length", 0},
     {ACPI_DMT_UINT16,   ACPI_DBG20_OFFSET (NamepathOffset),         "Namepath Offset", 0},
-    {ACPI_DMT_UINT16,   ACPI_DBG20_OFFSET (OemDataLength),          "OEM Data Length", 0},
-    {ACPI_DMT_UINT16,   ACPI_DBG20_OFFSET (OemDataOffset),          "OEM Data Offset", 0},
+    {ACPI_DMT_UINT16,   ACPI_DBG20_OFFSET (OemDataLength),          "OEM Data Length", DT_DESCRIBES_OPTIONAL},
+    {ACPI_DMT_UINT16,   ACPI_DBG20_OFFSET (OemDataOffset),          "OEM Data Offset", DT_DESCRIBES_OPTIONAL},
     {ACPI_DMT_UINT16,   ACPI_DBG20_OFFSET (PortType),               "Port Type", 0},
     {ACPI_DMT_UINT16,   ACPI_DBG20_OFFSET (PortSubtype),            "Port Subtype", 0},
     {ACPI_DMT_UINT16,   ACPI_DBG20_OFFSET (Reserved),               "Reserved", 0},
@@ -823,6 +823,12 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoDbg2Size[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDbg2Name[] =
 {
     {ACPI_DMT_STRING,   0,                                          "Namepath", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoDbg2OemData[] =
+{
+    {ACPI_DMT_BUFFER,   0,                                          "OEM Data", DT_OPTIONAL},
     ACPI_DMT_TERMINATOR
 };
 

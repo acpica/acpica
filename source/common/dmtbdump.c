@@ -881,8 +881,11 @@ AcpiDmDumpDbg2 (
 
         /* Dump the OemData (optional) */
 
-        AcpiDmDumpBuffer (SubTable, SubTable->OemDataOffset, SubTable->OemDataLength,
-            Offset + SubTable->OemDataOffset, "OEM Data");
+        if (SubTable->OemDataOffset)
+        {
+            AcpiDmDumpBuffer (SubTable, SubTable->OemDataOffset, SubTable->OemDataLength,
+                Offset + SubTable->OemDataOffset, "OEM Data");
+        }
 
         /* Point to next sub-table */
 
