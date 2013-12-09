@@ -1,6 +1,8 @@
 /*
  * Generation of ACPICA with MS Visual Studio 2008
  */
+Last update 9 December 2013.
+
 
 The Visual Studio project file (for Visual Studio 2008)
 appears in this directory:
@@ -11,7 +13,7 @@ ACPICA generates with all MS C language extensions disabled, since the
 code is ANSI conformant and is meant to be highly portable.
 
 There are a couple of include files in MS Visual Studio 2008 that
-unfortunately contain non-ANSI // style comments. These will be flagged
+unfortunately contain non-ANSI "//" style comments. These will be flagged
 as warnings since language extensions are disabled.
 
 The VC include files are under one of these directories:
@@ -31,6 +33,10 @@ For each file, add this statement to the start of the file:
 and add this statement to the end of the file:
 
     #pragma warning( default : 4001 )
+
+For stdlib.h, you may also need to disable warning 4001 again before this line, near line 774:
+
+    #pragma warning (disable:6540) // the functions below have declspecs in their declarations in the windows headers, causing PREfast to fire 6540 here
 
 
 Note: you may have to change the permissions on these files in order

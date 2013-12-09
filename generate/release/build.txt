@@ -2,7 +2,7 @@
 Instructions to create a full release of the ACPICA software
 and utilities.
 
-Last update 14 November 2013.
+Last update 9 December 2013.
 
 The build uses MS Visual Studio and Cygwin to accomplish the
 goal of releasing both Windows and Unix versions of the ACPICA code
@@ -20,7 +20,7 @@ are released on the ACPICA website.
     MS Word
     Word to PDF conversion tool (such as PDF Create 8)
 
-2) Generation via Microsoft tools: The Windows binaries are built via
+2) Generation via Windows tools: The Windows binaries are built via
 Visual Studio. We must release the Windows binaries since Windows
 does not provide a compiler.
 
@@ -33,17 +33,24 @@ iASL generation instructions.
     Microsoft Visual Studio 2008
     Flex for Windows (http://gnuwin32.sourceforge.net/packages/flex.htm)
     Bison for Windows (http://gnuwin32.sourceforge.net/packages/bison.htm)
-    PkWare pkzip25 (Available free from multiple sources)
-        Google "pkzip25.exe" to find the free executable
+    PkWare pkzip25 (Available free from multiple sources). Here is a list of
+        mirrors: http://www.filewatcher.com/m/PKZIP25.EXE.339456-0.html
+        Otherwise, Google "pkzip25.exe" to find the free executable.
+        Install pkzip25 to /cygdrive/c/windows/pkzip25.exe
 
 3) Cygwin for Windows: Cygwin is used to checkout the source code from the git
 tree, generate ACPICA from source, and to build the ACPICA release packages.
 
     Cygwin is available at (http://www.cygwin.com)
+
+These Cygwin packages are required for ACPICA generation:
+
     git (found in Devel)
     make (found in Devel)
+    gcc C compiler (found in Devel)
     flex (found in Devel)
     bison (found in Devel)
+    m4 (macro processor required by bison, found in Interpreters)
     dos2unix and unix2dos converters (found in Text)
 
 
@@ -95,37 +102,45 @@ Update ACPICA website
 
 Login to acpica.org (with update permission)
 
-Goto: ContentManagement->CreateContent->Downloads
-
-Add a new download node:
-    Title: Use the new version number (e.g., "Version 20130517")
+Create a new download node for the new ACPICA version:
+    Goto: ContentManagement->CreateContent->Downloads
+    Title: Use the new version number in the correct format (e.g., "Version 20130517")
     Body: Insert the release notes for this version
-    Date: Current date
+    Date: Must be the current date (should match ACPICA version)
     File Attachments: Attach all of the release zip/gz files (currently 6 files)
-        (From the generate/release/current directory)
+        (From the acpica/generate/release/current directory)
     Click "Save" at the bottom of the page
 
-Version number headers and file pathnames:
-    Goto "Documentation", click edit, update version at body top, click save at bottom
-    Goto "Downloads", click edit, update version at body top, click save at bottom
-         Update paths to new file versions, update file sizes (3)
-    Goto "Downloads/Linux Support", click edit, update version at body top, click save at bottom
-    Goto "Downloads/Windows Source Code", click edit, update version at body top, click save at bottom
-         Update paths to new file versions, update file sizes (2)
-    Goto "Downloads/Windows Binary Tools", click edit, update version at body top, click save at bottom
-         Update paths to new file version, update file size (1)
-    Goto "Source", click edit, update version at body top, click save at bottom
+Update version number headers and file pathnames:
+    Goto "Downloads", click edit, update version at body top
+        Update paths to new file versions, update file sizes (3 files)
+        Click "Save" at the bottom of the page
+    Goto "Downloads/Linux Support", click edit, update version at body top
+        Click "Save" at the bottom of the page
+    Goto "Downloads/Windows Source Code", click edit, update version at body top
+        Update paths to new file versions, update file sizes (2 files)
+        Click "Save" at the bottom of the page
+    Goto "Downloads/Windows Binary Tools", click edit, update version at body top
+        Update paths to new file version, update file size (1 file)
+        Click "Save" at the bottom of the page
+    Goto "Source", click edit, update version at body top
+        Click "Save" at the bottom of the page
+    Goto "Documentation", click edit, update version at body top
+        Click "Save" at the bottom of the page
 
-New documents:
+    Note: Hopefully, the version number will be implemented as a global so
+    that it only needs to be changed in one place.
+
+Add any document updates:
     Goto the "Documentation" page, click edit.
     Attach new document(s)
-    uncheck the "List" box for each new document
+    Uncheck the "List" box for each new document
     Update pathnames (and file sizes) in body for each new filename
         (appears at bottom of each attach)
     Update "Last update" dates
     Click save at bottom
-    <Note: this may be fixed so that the filename can stay the same>
-    Update news: Goto ContentManagement->CreateContent->News
+        <Note: this may be fixed so that the filename can stay the same>
+    Update front page news: Goto ContentManagement->CreateContent->News
         Add news item in the "Title" section and click save at bottom
 
 
