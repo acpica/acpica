@@ -753,11 +753,10 @@ Method(mf6e,, Serialized)
           Store(m00b(), i000)
           if (tmp0) {
               CH03("", z138, 0x051, 0, 0)
-              if (y263) {
-                  Store(0xabcd0008, Local0)
-              } else {
-                  Store(Ones, Local0)
-              }
+              // Oct 2013, David Box
+              // Implicit return for logical opertions (LNot, LEqual, ...)
+              // returns logical value of the operation
+              Store(Ones, Local0)
               if (LNotEqual(i000, Local0)) {
                   err("", z138, 0x052, 0, 0, i000, Local0)
               }
@@ -774,11 +773,10 @@ Method(mf6e,, Serialized)
           Store(m00c(), i000)
           if (tmp0) {
               CH03("", z138, 0x055, 0, 0)
-              if (y263) {
-                  Store(0xabcd0008, Local0)
-              } else {
-                  Store(Zero, Local0)
-              }
+              // Oct 2013, David Box
+              // Implicit return for logical opertions (LNot, LEqual, ...)
+              // returns logical value of the operation
+              Store(Zero, Local0)
               if (LNotEqual(i000, Local0)) {
                   err("", z138, 0x056, 0, 0, i000, Local0)
               }
@@ -808,11 +806,10 @@ Method(mf6e,, Serialized)
           Store(m00e(), i000)
           if (tmp0) {
               CH03("", z138, 0x05d, 0, 0)
-              if (y263) {
-                  Store(0xabcd0008, Local0)
-              } else {
-                  Store(Ones, Local0)
-              }
+              // Oct 2013, David Box
+              // Implicit return for logical opertions (LNot, LEqual, ...)
+              // returns logical value of the operation
+              Store(Ones, Local0)
               if (LNotEqual(i000, Local0)) {
                   err("", z138, 0x05e, 0, 0, i000, Local0)
               }
@@ -829,11 +826,10 @@ Method(mf6e,, Serialized)
           Store(m00f(), i000)
           if (tmp0) {
               CH03("", z138, 0x061, 0, 0)
-              if (y263) {
-                  Store(0xabcd0008, Local0)
-              } else {
-                  Store(Zero, Local0)
-              }
+              // Oct 2013, David Box
+              // Implicit return for logical opertions (LNot, LEqual, ...)
+              // returns logical value of the operation
+              Store(Zero, Local0)
               if (LNotEqual(i000, Local0)) {
                   err("", z138, 0x062, 0, 0, i000, Local0)
               }

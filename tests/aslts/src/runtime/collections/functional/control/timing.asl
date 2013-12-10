@@ -33,7 +33,7 @@
  */
 
 Name(z006, 6)
-
+Name(MSLP, 2000)	// Max sleep (ms) defined in acconfig.h, Oct 2013
 
 // Verifying 1-parameter, 0-result operator
 //
@@ -57,6 +57,13 @@ Method(m0c8, 6)
 
 		switch (arg4) {
 			case (0) {
+				if (LLess(MSLP, Local0)) {
+					// Exceeding max allowable sleep time
+					Store("m0c8: Note, argument exceeds max defined time for Sleep.",
+					      Debug);
+					Break
+				}
+
 				Store(Timer, Local1)
 				Sleep(Local0)
 				Store(Timer, Local2)
