@@ -1205,11 +1205,21 @@ OslMapTable (
 
     /* If specified, signature must match */
 
-    if (Signature &&
-        !ACPI_COMPARE_NAME (Signature, MappedTable->Signature))
+    if (Signature)
     {
-        AcpiOsUnmapMemory (MappedTable, sizeof (ACPI_TABLE_HEADER));
-        return (AE_BAD_SIGNATURE);
+        if (ACPI_VALIDATE_RSDP_SIG (Signature))
+        {
+            if (!ACPI_VALIDATE_RSDP_SIG (MappedTable->Signature))
+            {
+                AcpiOsUnmapMemory (MappedTable, sizeof (ACPI_TABLE_HEADER));
+                return (AE_BAD_SIGNATURE);
+            }
+        }
+        else if (!ACPI_COMPARE_NAME (Signature, MappedTable->Signature))
+        {
+            AcpiOsUnmapMemory (MappedTable, sizeof (ACPI_TABLE_HEADER));
+            return (AE_BAD_SIGNATURE);
+        }
     }
 
     /* Map the entire table */
@@ -1366,13 +1376,24 @@ OslReadTableFromFile (
 
     /* If signature is specified, it must match the table */
 
-    if (Signature &&
-        !ACPI_COMPARE_NAME (Signature, Header.Signature))
+    if (Signature)
     {
-        fprintf (stderr, "Incorrect signature: Expecting %4.4s, found %4.4s\n",
-            Signature, Header.Signature);
-        Status = AE_BAD_SIGNATURE;
-        goto Exit;
+        if (ACPI_VALIDATE_RSDP_SIG (Signature))
+        {
+            if (!ACPI_VALIDATE_RSDP_SIG (Header.Signature)) {
+                fprintf (stderr, "Incorrect RSDP signature: found %8.8s\n",
+                    Header.Signature);
+                Status = AE_BAD_SIGNATURE;
+                goto Exit;
+            }
+        }
+        else if (!ACPI_COMPARE_NAME (Signature, Header.Signature))
+        {
+            fprintf (stderr, "Incorrect signature: Expecting %4.4s, found %4.4s\n",
+                Signature, Header.Signature);
+            Status = AE_BAD_SIGNATURE;
+            goto Exit;
+        }
     }
 
     TableLength = ApGetTableLength (&Header);
