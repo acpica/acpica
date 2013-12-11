@@ -426,6 +426,7 @@ main (
         if (Gbl_UseDefaultAmlFilename)
         {
             Gbl_OutputFilenamePrefix = argv[Index2];
+            UtConvertBackslashes (Gbl_OutputFilenamePrefix);
         }
 
         Status = AslDoOneFile (argv[Index2]);

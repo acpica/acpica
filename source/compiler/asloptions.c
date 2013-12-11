@@ -595,6 +595,8 @@ AslDoOptions (
     case 'p':   /* Override default AML output filename */
 
         Gbl_OutputFilenamePrefix = AcpiGbl_Optarg;
+        UtConvertBackslashes (Gbl_OutputFilenamePrefix);
+
         Gbl_UseDefaultAmlFilename = FALSE;
         break;
 

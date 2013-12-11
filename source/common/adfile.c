@@ -271,6 +271,7 @@ FlGenerateFilename (
 {
     char                    *Position;
     char                    *NewFilename;
+    char                    *DirectoryPosition;
 
 
     /*
@@ -283,8 +284,10 @@ FlGenerateFilename (
 
     /* Try to find the last dot in the filename */
 
+    DirectoryPosition = strrchr (NewFilename, '/');
     Position = strrchr (NewFilename, '.');
-    if (Position)
+
+    if (Position && (Position > DirectoryPosition))
     {
         /* Tack on the new suffix */
 
