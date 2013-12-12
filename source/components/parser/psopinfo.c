@@ -148,6 +148,9 @@ const ACPI_OPCODE_INFO *
 AcpiPsGetOpcodeInfo (
     UINT16                  Opcode)
 {
+    const char              *OpcodeName = "Unknown AML opcode";
+
+
     ACPI_FUNCTION_NAME (PsGetOpcodeInfo);
 
 
@@ -169,10 +172,56 @@ AcpiPsGetOpcodeInfo (
         return (&AcpiGbl_AmlOpInfo [AcpiGbl_LongOpIndex [(UINT8) Opcode]]);
     }
 
+#ifdef ACPI_ASL_COMPILER
+#include "asldefine.h"
+
+    switch (Opcode)
+    {
+    case AML_RAW_DATA_BYTE:
+        OpcodeName = "-Raw Data Byte-";
+        break;
+
+    case AML_RAW_DATA_WORD:
+        OpcodeName = "-Raw Data Word-";
+        break;
+
+    case AML_RAW_DATA_DWORD:
+        OpcodeName = "-Raw Data Dword-";
+        break;
+
+    case AML_RAW_DATA_QWORD:
+        OpcodeName = "-Raw Data Qword-";
+        break;
+
+    case AML_RAW_DATA_BUFFER:
+        OpcodeName = "-Raw Data Buffer-";
+        break;
+
+    case AML_RAW_DATA_CHAIN:
+        OpcodeName = "-Raw Data Buffer Chain-";
+        break;
+
+    case AML_PACKAGE_LENGTH:
+        OpcodeName = "-Package Length-";
+        break;
+
+    case AML_UNASSIGNED_OPCODE:
+        OpcodeName = "-Unassigned Opcode-";
+        break;
+
+    case AML_DEFAULT_ARG_OP:
+        OpcodeName = "-Default Arg-";
+        break;
+
+    default:
+        break;
+    }
+#endif
+
     /* Unknown AML opcode */
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-        "Unknown AML opcode [%4.4X]\n", Opcode));
+        "%s [%4.4X]\n", OpcodeName, Opcode));
 
     return (&AcpiGbl_AmlOpInfo [_UNK]);
 }

@@ -890,8 +890,7 @@ AcpiDmXrefDescendingOp (
      * The namespace is also used as a lookup table for references to resource
      * descriptors and the fields within them.
      */
-
-Node = NULL;
+    Node = NULL;
     Status = AcpiNsLookup (WalkState->ScopeInfo, Path, ACPI_TYPE_ANY,
                 ACPI_IMODE_EXECUTE, ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE,
                 WalkState, &Node);
