@@ -148,8 +148,9 @@ const ACPI_OPCODE_INFO *
 AcpiPsGetOpcodeInfo (
     UINT16                  Opcode)
 {
+#ifdef ACPI_DEBUG_OUTPUT
     const char              *OpcodeName = "Unknown AML opcode";
-
+#endif
 
     ACPI_FUNCTION_NAME (PsGetOpcodeInfo);
 
@@ -172,7 +173,7 @@ AcpiPsGetOpcodeInfo (
         return (&AcpiGbl_AmlOpInfo [AcpiGbl_LongOpIndex [(UINT8) Opcode]]);
     }
 
-#ifdef ACPI_ASL_COMPILER
+#if defined ACPI_ASL_COMPILER && defined ACPI_DEBUG_OUTPUT
 #include "asldefine.h"
 
     switch (Opcode)
