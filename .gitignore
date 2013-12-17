@@ -68,6 +68,7 @@ generate/msvc9/AcpiSubsystem64
 generate/unix/bin
 generate/unix/acpibin/obj
 generate/unix/acpidump/obj
+generate/unix/acpiexamples/obj
 generate/unix/acpiexec/obj
 generate/unix/acpihelp/obj
 generate/unix/acpinames/obj
