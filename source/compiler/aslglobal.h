@@ -305,7 +305,6 @@ ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_NumNamespaceObjects, 0)
 ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_ReservedMethods, 0);
 ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_TableSignature, "NO_SIG");
 ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_TableId, "NO_ID");
-ASL_EXTERN FILE                     *AcpiGbl_DebugFile; /* Placeholder for oswinxf only */
 
 
 /* Static structures */

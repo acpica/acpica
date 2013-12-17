@@ -303,8 +303,6 @@ ExInitializeAcpiTables (
  *
  *****************************************************************************/
 
-FILE    *AcpiGbl_DebugFile;
-
 ACPI_PHYSICAL_ADDRESS
 AeLocalGetRootPointer (
     void)

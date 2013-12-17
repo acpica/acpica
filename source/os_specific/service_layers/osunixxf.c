@@ -137,7 +137,6 @@
         ACPI_MODULE_NAME    ("osunixxf")
 
 
-extern FILE                    *AcpiGbl_DebugFile;
 FILE                           *AcpiGbl_OutputFile;
 BOOLEAN                        AcpiGbl_DebugTimeout = FALSE;
 
