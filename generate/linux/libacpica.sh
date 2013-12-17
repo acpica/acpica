@@ -225,6 +225,18 @@ lindent()
 	)
 }
 
+linuxize_format()
+{
+	echo " Converting (acpisrc -l)..."
+	$ACPISRC -ldqy $1 $1 > /dev/null
+
+	echo " Converting (indent)..."
+	lindent $1
+
+	echo " Converting (acpisrc -i)..."
+	$ACPISRC -idqy $1 $1 > /dev/null
+}
+
 copy_linux_hierarchy()
 {
 	local from to dirs dir

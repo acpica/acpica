@@ -41,7 +41,6 @@ shift $(($OPTIND - 1))
 SCRIPT=`(cd \`dirname $0\`; pwd)`
 . $SCRIPT/libacpica.sh
 
-ACPICA_TMP=$CURDIR/acpica-tmp
 LINUX_ACPICA=$CURDIR/linux-acpica
 ACPICA_LINUXIZED=$CURDIR/acpica-linuxized
 LINUX=`fulldir $1`
@@ -72,25 +71,15 @@ make_acpisrc $SRCDIR force > /dev/null
 #
 # Copy the actual Linux ACPICA files locally (from the Linux tree)
 #
-echo "[divergence.sh] Converting format (hierarchy)..."
+echo "[divergence.sh] Converting hierarchy..."
 copy_linux_hierarchy $LINUX $LINUX_ACPICA
-linuxize_hierarchy_ref $LINUX_ACPICA $SRCDIR $ACPICA_TMP
-
-#
-# Linuxize the ACPICA source
-#
-echo "[divergence.sh] Converting format (acpisrc -l)..."
-rm -rf $ACPICA_LINUXIZED
-$ACPISRC -ldqy $ACPICA_TMP $ACPICA_LINUXIZED > /dev/null
+linuxize_hierarchy_ref $LINUX_ACPICA $SRCDIR $ACPICA_LINUXIZED
 
 #
 # Lindent both sets of files
 #
 echo "[divergence.sh] Converting format (lindent-acpica)..."
-lindent $ACPICA_LINUXIZED
-
-echo "[divergence.sh] Converting format (acpisrc -i)..."
-$ACPISRC -idqy $ACPICA_LINUXIZED $ACPICA_LINUXIZED > /dev/null
+linuxize_format $ACPICA_LINUXIZED
 
 if [ "x$LINDENT_DIR" = "xmultiple" ] ; then
 	echo "[divergence.sh] Converting format (lindent-linux)..."
@@ -111,5 +100,4 @@ echo "=========="
 # Cleanup
 #
 rm -rf $LINUX_ACPICA
-rm -rf $ACPICA_TMP
 rm -rf $ACPICA_LINUXIZED
