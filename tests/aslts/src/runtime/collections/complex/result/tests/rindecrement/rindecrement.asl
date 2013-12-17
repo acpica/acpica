@@ -561,10 +561,10 @@ Method(m692, 2, Serialized)
 			Return (1)
 		}
 
-		if (LEqual(arg4, 0)) {			// Increment
-				Increment(Local1)
+		if (LEqual(arg4, 0)) {		// Increment
+			Increment(Local1)
 		} elseif (LEqual(arg4, 1)) {	// Decrement
-				Decrement(Local1)
+			Decrement(Local1)
 		} else {
 			// Unexpected Kind of Op (0 - Increment, 1 - Decrement)
 			err(Concatenate(arg0, terr), z125, 25, 0, 0, arg4, 0)
@@ -572,9 +572,20 @@ Method(m692, 2, Serialized)
 		}
 
 		if (arg5) {
-			// Exception is expected
-			if (LNot(CH06(arg0, 26, 0xff))) {
-				if (STCS) {m000(2, 0x100, arg2, arg3)}
+			if (LAnd(SLCK, LAnd(LEqual(ToInteger(arg3), 0),
+					    LEqual(ToInteger(arg2), 1)))) {
+				// In slack mode, [Uninitialized] object
+				// will be converted to Integer 0, thus no
+				// exception caused by implicit source
+				// conversion.
+				if (CH03(arg0, z125, 26, arg3, arg2)) {
+					if (STCS) {m000(2, 0x100, arg2, arg3)}
+				}
+			} else {
+				// Exception is expected
+				if (LNot(CH06(arg0, 26, 0xff))) {
+					if (STCS) {m000(2, 0x100, arg2, arg3)}
+				}
 			}
 		} elseif (CH03(arg0, z125, 27, arg3, arg2)) {
 			// Processing caused unexpected exception
@@ -621,7 +632,7 @@ Method(m692, 2, Serialized)
 			Return (1)
 		}
 
-		if (LEqual(arg4, 0)) {			// Increment
+		if (LEqual(arg4, 0)) {		// Increment
 			Store(m100(Local1), Local2)
 		} elseif (LEqual(arg4, 1)) {	// Decrement
 			Store(m101(Local1), Local2)
@@ -632,9 +643,20 @@ Method(m692, 2, Serialized)
 		}
 
 		if (arg5) {
-			// Exception is expected
-			if (LNot(CH06(arg0, 30, 0xff))) {
-				if (STCS) {m000(2, 0x100, arg2, arg3)}
+			if (LAnd(SLCK, LAnd(LEqual(ToInteger(arg3), 0),
+					    LEqual(ToInteger(arg2), 1)))) {
+				// In slack mode, [Uninitialized] object
+				// will be converted to Integer 0, thus no
+				// exception caused by implicit source
+				// conversion.
+				if (CH03(arg0, z125, 30, arg3, arg2)) {
+					if (STCS) {m000(2, 0x100, arg2, arg3)}
+				}
+			} else {
+				// Exception is expected
+				if (LNot(CH06(arg0, 30, 0xff))) {
+					if (STCS) {m000(2, 0x100, arg2, arg3)}
+				}
 			}
 		} elseif (CH03(arg0, z125, 31, arg3, arg2)) {
 			// Processing caused unexpected exception
