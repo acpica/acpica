@@ -863,6 +863,20 @@ AcpiInstallGpeBlock (
         goto UnlockAndExit;
     }
 
+    /* Validate the parent device */
+
+    if (Node->Type != ACPI_TYPE_DEVICE)
+    {
+        Status = AE_TYPE;
+        goto UnlockAndExit;
+    }
+
+    if (Node->Object)
+    {
+        Status = AE_ALREADY_EXISTS;
+        goto UnlockAndExit;
+    }
+
     /*
      * For user-installed GPE Block Devices, the GpeBlockBaseNumber
      * is always zero
@@ -953,6 +967,14 @@ AcpiRemoveGpeBlock (
     if (!Node)
     {
         Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
+    }
+
+    /* Validate the parent device */
+
+    if (Node->Type != ACPI_TYPE_DEVICE)
+    {
+        Status = AE_TYPE;
         goto UnlockAndExit;
     }
 
