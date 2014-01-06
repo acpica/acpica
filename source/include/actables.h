@@ -328,6 +328,15 @@ ACPI_STATUS
 AcpiTbParseRootTable (
     ACPI_PHYSICAL_ADDRESS   RsdpAddress);
 
+ACPI_STATUS
+AcpiTbGetTable (
+    ACPI_TABLE_DESC        *TableDesc,
+    ACPI_TABLE_HEADER      **OutTable);
+
+void
+AcpiTbPutTable (
+    ACPI_TABLE_DESC        *TableDesc);
+
 
 /*
  * tbxfload

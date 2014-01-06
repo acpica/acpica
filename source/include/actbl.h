@@ -487,6 +487,7 @@ typedef struct acpi_table_desc
     ACPI_NAME_UNION                 Signature;
     ACPI_OWNER_ID                   OwnerId;
     UINT8                           Flags;
+    UINT16                          ValidationCount;
 
 } ACPI_TABLE_DESC;
 
