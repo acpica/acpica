@@ -271,7 +271,7 @@ AcpiTbCopyDsdt (
     ACPI_MEMCPY (NewTable, TableDesc->Pointer, TableDesc->Length);
     AcpiTbUninstallTable (TableDesc);
     AcpiTbInstallTable (&AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT],
-            ACPI_PTR_TO_PHYSADDR (NewTable), ACPI_TABLE_ORIGIN_ALLOCATED,
+            ACPI_PTR_TO_PHYSADDR (NewTable), ACPI_TABLE_ORIGIN_INTERN_VIRTUAL,
             NewTable);
 
     ACPI_INFO ((AE_INFO,
@@ -584,7 +584,7 @@ AcpiTbParseRootTable (
 
         Status = AcpiTbInstallNonFixedTable (
             AcpiTbGetRootTableEntry (TableEntry, TableEntrySize),
-            ACPI_TABLE_ORIGIN_MAPPED, FALSE, &TableIndex);
+            ACPI_TABLE_ORIGIN_INTERN_PHYSICAL, FALSE, &TableIndex);
 
         if (ACPI_SUCCESS (Status) &&
             ACPI_COMPARE_NAME (&AcpiGbl_RootTableList.Tables[TableIndex].Signature,

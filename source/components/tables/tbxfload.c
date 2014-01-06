@@ -340,7 +340,7 @@ AcpiLoadTable (
     ACPI_INFO ((AE_INFO, "Host-directed Dynamic ACPI Table Load:"));
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
     Status = AcpiTbInstallNonFixedTable (ACPI_PTR_TO_PHYSADDR (Table),
-                ACPI_TABLE_ORIGIN_UNKNOWN, TRUE, &TableIndex);
+                ACPI_TABLE_ORIGIN_EXTERN_VIRTUAL, TRUE, &TableIndex);
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
     if (ACPI_FAILURE (Status))
     {

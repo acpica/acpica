@@ -175,14 +175,13 @@ AcpiTbAcquireTable (
 
     switch (TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK)
     {
-    case ACPI_TABLE_ORIGIN_MAPPED:
+    case ACPI_TABLE_ORIGIN_INTERN_PHYSICAL:
 
         Table = AcpiOsMapMemory (TableDesc->Address, TableDesc->Length);
         break;
 
-    case ACPI_TABLE_ORIGIN_ALLOCATED:
-    case ACPI_TABLE_ORIGIN_UNKNOWN:
-    case ACPI_TABLE_ORIGIN_OVERRIDE:
+    case ACPI_TABLE_ORIGIN_INTERN_VIRTUAL:
+    case ACPI_TABLE_ORIGIN_EXTERN_VIRTUAL:
 
         Table = ACPI_CAST_PTR (ACPI_TABLE_HEADER, TableDesc->Address);
         break;
@@ -231,14 +230,13 @@ AcpiTbReleaseTable (
 {
     switch (TableFlags & ACPI_TABLE_ORIGIN_MASK)
     {
-    case ACPI_TABLE_ORIGIN_MAPPED:
+    case ACPI_TABLE_ORIGIN_INTERN_PHYSICAL:
 
         AcpiOsUnmapMemory (Table, TableLength);
         break;
 
-    case ACPI_TABLE_ORIGIN_ALLOCATED:
-    case ACPI_TABLE_ORIGIN_UNKNOWN:
-    case ACPI_TABLE_ORIGIN_OVERRIDE:
+    case ACPI_TABLE_ORIGIN_INTERN_VIRTUAL:
+    case ACPI_TABLE_ORIGIN_EXTERN_VIRTUAL:
     default:
 
         break;
@@ -450,7 +448,7 @@ AcpiTbAcquireTemporalTable (
 
     switch (Flags & ACPI_TABLE_ORIGIN_MASK)
     {
-    case ACPI_TABLE_ORIGIN_MAPPED:
+    case ACPI_TABLE_ORIGIN_INTERN_PHYSICAL:
 
         /* Try to obtain the length of the table */
 
@@ -463,9 +461,8 @@ AcpiTbAcquireTemporalTable (
         AcpiOsUnmapMemory (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_OK);
 
-    case ACPI_TABLE_ORIGIN_ALLOCATED:
-    case ACPI_TABLE_ORIGIN_UNKNOWN:
-    case ACPI_TABLE_ORIGIN_OVERRIDE:
+    case ACPI_TABLE_ORIGIN_INTERN_VIRTUAL:
+    case ACPI_TABLE_ORIGIN_EXTERN_VIRTUAL:
 
         TableHeader = ACPI_CAST_PTR (ACPI_TABLE_HEADER, Address);
         if (!TableHeader)
@@ -599,7 +596,7 @@ AcpiTbInstallFixedTable (
     /* Fill a table descriptor for validation */
 
     Status = AcpiTbAcquireTemporalTable (&NewTableDesc, Address,
-        ACPI_TABLE_ORIGIN_MAPPED);
+        ACPI_TABLE_ORIGIN_INTERN_PHYSICAL);
     if (ACPI_FAILURE (Status))
     {
         ACPI_ERROR ((AE_INFO, "Could not acquire table length at %p",
@@ -679,7 +676,7 @@ AcpiTbIsEquivalentTable (
  *
  * FUNCTION:    AcpiTbInstallNonFixedTable
  *
- * PARAMETERS:  Address             - Address of the table (might be a logical
+ * PARAMETERS:  Address             - Address of the table (might be a virtual
  *                                    address depending on the TableFlags)
  *              Flags               - Flags for the table
  *              Reload              - Whether reload should be performed
@@ -863,7 +860,7 @@ AcpiTbOverrideTable (
     if (ACPI_SUCCESS (Status) && Table)
     {
         AcpiTbAcquireTemporalTable (&NewTableDesc,
-            ACPI_PTR_TO_PHYSADDR (Table), ACPI_TABLE_ORIGIN_OVERRIDE);
+            ACPI_PTR_TO_PHYSADDR (Table), ACPI_TABLE_ORIGIN_EXTERN_VIRTUAL);
         OverrideType = "Logical";
         goto FinishOverride;
     }
@@ -875,7 +872,7 @@ AcpiTbOverrideTable (
     if (ACPI_SUCCESS (Status) && Address && Length)
     {
         AcpiTbAcquireTemporalTable (&NewTableDesc, Address,
-            ACPI_TABLE_ORIGIN_MAPPED);
+            ACPI_TABLE_ORIGIN_INTERN_PHYSICAL);
         OverrideType = "Physical";
         goto FinishOverride;
     }
@@ -1100,7 +1097,7 @@ AcpiTbUninstallTable (
     AcpiTbInvalidateTable (TableDesc);
 
     if ((TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK) ==
-        ACPI_TABLE_ORIGIN_ALLOCATED)
+        ACPI_TABLE_ORIGIN_INTERN_VIRTUAL)
     {
         ACPI_FREE (ACPI_CAST_PTR (void, TableDesc->Address));
     }
