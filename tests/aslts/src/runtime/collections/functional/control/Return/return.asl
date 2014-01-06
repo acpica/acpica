@@ -1,5 +1,5 @@
 /*
- * Some or all of this work - Copyright (c) 2006 - 2013, Intel Corp.
+ * Some or all of this work - Copyright (c) 2006 - 2014, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -128,7 +128,7 @@ Method(mf72, 1, Serialized)
           m001()
           if (Store(0xaaaa0007, i001)) {
               Increment(i002)
-              Store(Add(0xaaaa0008, 0), Local5) 
+              Store(Add(0xaaaa0008, 0), Local5)
               Store(Subtract(0xaaaa0009, 0), Local5)
               if (LEqual(arg0, 0)) {
                   return (0x55550000)
