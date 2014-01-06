@@ -125,6 +125,27 @@
 #define _COMPONENT          ACPI_TABLES
         ACPI_MODULE_NAME    ("tbinstal")
 
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiTbAcquireTemporalTable (
+    ACPI_TABLE_DESC         *TableDesc,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT8                   Flags);
+
+static void
+AcpiTbReleaseTemporalTable (
+    ACPI_TABLE_DESC         *TableDesc);
+
+static ACPI_STATUS
+AcpiTbAcquireRootTableEntry (
+    UINT32                  *TableIndex);
+
+static BOOLEAN
+AcpiTbIsEquivalentTable (
+    ACPI_TABLE_DESC         *TableDesc,
+    UINT32                  TableIndex);
+
 
 /*******************************************************************************
  *
@@ -233,8 +254,8 @@ AcpiTbReleaseTable (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: This function is called to validate (ensure Pointer is valid)
- *              and verify the table.
+ * DESCRIPTION: This function is called to validate the table, the returned
+ *              table descriptor is in "VALIDATED" state.
  *
  *****************************************************************************/
 
@@ -254,15 +275,11 @@ AcpiTbValidateTable (
     {
         Status = AcpiTbAcquireTable (TableDesc, &TableDesc->Pointer,
                 &TableDesc->Length, &TableDesc->Flags);
-        if (ACPI_FAILURE (Status) || !TableDesc->Pointer)
+        if (!TableDesc->Pointer)
         {
-            return_ACPI_STATUS (AE_NO_MEMORY);
+            Status = AE_NO_MEMORY;
         }
     }
-
-    /* Always calculate checksum, ignore bad checksum if requested */
-
-    Status = AcpiTbVerifyChecksum (TableDesc->Pointer, TableDesc->Length);
 
     return_ACPI_STATUS (Status);
 }
@@ -304,164 +321,509 @@ AcpiTbInvalidateTable (
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
- * FUNCTION:    AcpiTbAddTable
+ * FUNCTION:    AcpiTbVerifyTable
  *
  * PARAMETERS:  TableDesc           - Table descriptor
- *              TableIndex          - Where the table index is returned
+ *              Signature           - Table signature to verify
  *
  * RETURN:      Status
  *
- * DESCRIPTION: This function is called to add an ACPI table. It is used to
- *              dynamically load tables via the Load and LoadTable AML
- *              operators.
+ * DESCRIPTION: This function is called to validate and verify the table, the
+ *              returned table descriptor is in "VALIDATED" state.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiTbVerifyTable (
+    ACPI_TABLE_DESC         *TableDesc,
+    char                    *Signature)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    ACPI_FUNCTION_TRACE (TbVerifyTable);
+
+
+    /* Validate the table */
+
+    Status = AcpiTbValidateTable (TableDesc);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    /* If a particular signature is expected (DSDT/FACS), it must match */
+
+    if (Signature &&
+        !ACPI_COMPARE_NAME (&TableDesc->Signature, Signature))
+    {
+        ACPI_BIOS_ERROR ((AE_INFO,
+            "Invalid signature 0x%X for ACPI table, expected [%s]",
+            TableDesc->Signature.Integer, Signature));
+        Status = AE_BAD_SIGNATURE;
+        goto InvalidateAndExit;
+    }
+
+    /* Verify the checksum */
+
+    Status = AcpiTbVerifyChecksum (TableDesc->Pointer, TableDesc->Length);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, AE_NO_MEMORY,
+            "%4.4s " ACPI_PRINTF_UINT
+            " Attempted table install failed",
+            AcpiUtValidAcpiName (TableDesc->Signature.Ascii) ?
+                TableDesc->Signature.Ascii : "????",
+            ACPI_FORMAT_TO_UINT (TableDesc->Address)));
+        goto InvalidateAndExit;
+    }
+
+    return_ACPI_STATUS (AE_OK);
+
+InvalidateAndExit:
+    AcpiTbInvalidateTable (TableDesc);
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbInstallTable
+ *
+ * PARAMETERS:  TableDesc               - Table descriptor
+ *              Address                 - Physical address of the table
+ *              Flags                   - Allocation flags of the table
+ *              Table                   - Pointer to the table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Install an ACPI table into the global data structure.
  *
  ******************************************************************************/
 
-ACPI_STATUS
-AcpiTbAddTable (
+void
+AcpiTbInstallTable (
     ACPI_TABLE_DESC         *TableDesc,
-    UINT32                  *TableIndex)
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT8                   Flags,
+    ACPI_TABLE_HEADER       *Table)
 {
-    UINT32                  i;
-    ACPI_STATUS             Status = AE_OK;
-    ACPI_TABLE_HEADER       *FinalTable;
-
-
-    ACPI_FUNCTION_TRACE (TbAddTable);
-
-
-    if (!TableDesc->Pointer)
-    {
-        Status = AcpiTbValidateTable (TableDesc);
-        if (ACPI_FAILURE (Status) || !TableDesc->Pointer)
-        {
-            AcpiTbInvalidateTable (TableDesc);
-            return_ACPI_STATUS (Status);
-        }
-    }
-
     /*
-     * Validate the incoming table signature.
-     *
-     * 1) Originally, we checked the table signature for "SSDT" or "PSDT".
-     * 2) We added support for OEMx tables, signature "OEM".
-     * 3) Valid tables were encountered with a null signature, so we just
-     *    gave up on validating the signature, (05/2008).
-     * 4) We encountered non-AML tables such as the MADT, which caused
-     *    interpreter errors and kernel faults. So now, we once again allow
-     *    only "SSDT", "OEMx", and now, also a null signature. (05/2011).
+     * Initialize the table entry. Set the pointer to NULL, since the
+     * table is not fully mapped at this time.
      */
-    if ((TableDesc->Pointer->Signature[0] != 0x00) &&
-       (!ACPI_COMPARE_NAME (TableDesc->Pointer->Signature, ACPI_SIG_SSDT)) &&
-       (ACPI_STRNCMP (TableDesc->Pointer->Signature, "OEM", 3)))
-    {
-        ACPI_BIOS_ERROR ((AE_INFO,
-            "Table has invalid signature [%4.4s] (0x%8.8X), "
-            "must be SSDT or OEMx",
-            AcpiUtValidAcpiName (TableDesc->Pointer->Signature) ?
-                TableDesc->Pointer->Signature : "????",
-            *(UINT32 *) TableDesc->Pointer->Signature));
+    ACPI_MEMSET (TableDesc, 0, sizeof (ACPI_TABLE_DESC));
+    TableDesc->Address = Address;
+    TableDesc->Length = Table->Length;
+    TableDesc->Flags = Flags;
+    ACPI_MOVE_32_TO_32 (TableDesc->Signature.Ascii, Table->Signature);
+}
 
-        return_ACPI_STATUS (AE_BAD_SIGNATURE);
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbAcquireTemporalTable
+ *
+ * PARAMETERS:  TableDesc           - Table descriptor to be acquired
+ *              Address             - Address of the table
+ *              Flags               - Allocation flags of the table
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: This function validates the table header to obtain the length
+ *              of a table and fills the table descriptor to make its state as
+ *              "INSTALLED".  Such table descriptor is only used for verified
+ *              installation.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiTbAcquireTemporalTable (
+    ACPI_TABLE_DESC         *TableDesc,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT8                   Flags)
+{
+    ACPI_TABLE_HEADER       *TableHeader;
+
+
+    switch (Flags & ACPI_TABLE_ORIGIN_MASK)
+    {
+    case ACPI_TABLE_ORIGIN_MAPPED:
+
+        /* Try to obtain the length of the table */
+
+        TableHeader = AcpiOsMapMemory (Address, sizeof (ACPI_TABLE_HEADER));
+        if (!TableHeader)
+        {
+            return (AE_NO_MEMORY);
+        }
+        AcpiTbInstallTable (TableDesc, Address, Flags, TableHeader);
+        AcpiOsUnmapMemory (TableHeader, sizeof (ACPI_TABLE_HEADER));
+        return (AE_OK);
+
+    case ACPI_TABLE_ORIGIN_ALLOCATED:
+    case ACPI_TABLE_ORIGIN_UNKNOWN:
+    case ACPI_TABLE_ORIGIN_OVERRIDE:
+
+        TableHeader = ACPI_CAST_PTR (ACPI_TABLE_HEADER, Address);
+        if (!TableHeader)
+        {
+            return (AE_NO_MEMORY);
+        }
+        AcpiTbInstallTable (TableDesc, Address, Flags, TableHeader);
+        return (AE_OK);
+
+    default:
+
+        break;
     }
 
-    (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
+    /* Table is not valid yet */
 
-    /* Check if table is already registered */
+    return (AE_NO_MEMORY);
+}
 
-    for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; ++i)
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbReleaseTemporalTable
+ *
+ * PARAMETERS:  TableDesc           - Table descriptor to be released
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: The reversal of AcpiTbAcquireTemporalTable().
+ *
+ ******************************************************************************/
+
+static void
+AcpiTbReleaseTemporalTable (
+    ACPI_TABLE_DESC         *TableDesc)
+{
+    /*
+     * Note that the .Address is maintained by the callers of
+     * AcpiTbAcquireTemporalTable(), thus do not invoke AcpiTbUninstallTable()
+     * where .Address will be freed.
+     */
+    AcpiTbInvalidateTable (TableDesc);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbInstallAndOverrideTable
+ *
+ * PARAMETERS:  TableIndex              - Index into root table array
+ *              NewTableDesc            - New table descriptor to install
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Install an ACPI table into the global data structure. The
+ *              table override mechanism is called to allow the host
+ *              OS to replace any table before it is installed in the root
+ *              table array.
+ *
+ ******************************************************************************/
+
+void
+AcpiTbInstallAndOverrideTable (
+    UINT32                  TableIndex,
+    ACPI_TABLE_DESC         *NewTableDesc)
+{
+    if (TableIndex >= AcpiGbl_RootTableList.CurrentTableCount)
     {
-        if (!AcpiGbl_RootTableList.Tables[i].Pointer)
-        {
-            Status = AcpiTbValidateTable (&AcpiGbl_RootTableList.Tables[i]);
-            if (ACPI_FAILURE (Status) ||
-                !AcpiGbl_RootTableList.Tables[i].Pointer)
-            {
-                continue;
-            }
-        }
-
-        /*
-         * Check for a table match on the entire table length,
-         * not just the header.
-         */
-        if (TableDesc->Length != AcpiGbl_RootTableList.Tables[i].Length)
-        {
-            continue;
-        }
-
-        if (ACPI_MEMCMP (TableDesc->Pointer,
-                AcpiGbl_RootTableList.Tables[i].Pointer,
-                AcpiGbl_RootTableList.Tables[i].Length))
-        {
-            continue;
-        }
-
-        /*
-         * Note: the current mechanism does not unregister a table if it is
-         * dynamically unloaded. The related namespace entries are deleted,
-         * but the table remains in the root table list.
-         *
-         * The assumption here is that the number of different tables that
-         * will be loaded is actually small, and there is minimal overhead
-         * in just keeping the table in case it is needed again.
-         *
-         * If this assumption changes in the future (perhaps on large
-         * machines with many table load/unload operations), tables will
-         * need to be unregistered when they are unloaded, and slots in the
-         * root table list should be reused when empty.
-         */
-        *TableIndex = i;
-
-        if (AcpiGbl_RootTableList.Tables[i].Flags & ACPI_TABLE_IS_LOADED)
-        {
-            /* Table is still loaded, this is an error */
-
-            Status = AE_ALREADY_EXISTS;
-            goto Release;
-        }
-        else
-        {
-            /* Table was unloaded, allow it to be reloaded */
-
-            AcpiTbUninstallTable (TableDesc);
-            TableDesc->Pointer = AcpiGbl_RootTableList.Tables[i].Pointer;
-            TableDesc->Address = AcpiGbl_RootTableList.Tables[i].Address;
-            Status = AE_OK;
-            goto PrintHeader;
-        }
+        return;
     }
 
     /*
      * ACPI Table Override:
-     * Allow the host to override dynamically loaded tables.
-     * NOTE: the table is fully mapped at this point, and the mapping will
-     * be deleted by AcpiTbOverrideTable if the table is actually overridden.
+     *
+     * Before we install the table, let the host OS override it with a new
+     * one if desired. Any table within the RSDT/XSDT can be replaced,
+     * including the DSDT which is pointed to by the FADT.
      */
-    FinalTable = AcpiTbOverrideTable (TableDesc->Pointer, TableDesc);
-    if (FinalTable)
-    {
-        /* Ensure table descriptor is in "VALIDATED" state */
+    AcpiTbOverrideTable (NewTableDesc);
 
-        TableDesc->Pointer = FinalTable;
+    AcpiTbInstallTable (&AcpiGbl_RootTableList.Tables[TableIndex],
+        NewTableDesc->Address, NewTableDesc->Flags, NewTableDesc->Pointer);
+
+    AcpiTbPrintTableHeader (NewTableDesc->Address, NewTableDesc->Pointer);
+
+    /* Set the global integer width (based upon revision of the DSDT) */
+
+    if (TableIndex == ACPI_TABLE_INDEX_DSDT)
+    {
+        AcpiUtSetIntegerWidth (NewTableDesc->Pointer->Revision);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbInstallFixedTable
+ *
+ * PARAMETERS:  Address                 - Physical address of DSDT or FACS
+ *              Signature               - Table signature, NULL if no need to
+ *                                        match
+ *              TableIndex              - Index into root table array
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install a fixed ACPI table (DSDT/FACS) into the global data
+ *              structure.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiTbInstallFixedTable (
+    ACPI_PHYSICAL_ADDRESS   Address,
+    char                    *Signature,
+    UINT32                  TableIndex)
+{
+    ACPI_TABLE_DESC         NewTableDesc;
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (TbInstallFixedTable);
+
+
+    if (!Address)
+    {
+        ACPI_ERROR ((AE_INFO, "Null physical address for ACPI table [%s]",
+            Signature));
+        return (AE_NO_MEMORY);
+    }
+
+    /* Fill a table descriptor for validation */
+
+    Status = AcpiTbAcquireTemporalTable (&NewTableDesc, Address,
+        ACPI_TABLE_ORIGIN_MAPPED);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_ERROR ((AE_INFO, "Could not acquire table length at %p",
+            ACPI_CAST_PTR (void, Address)));
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Validate and verify a table before installation */
+
+    Status = AcpiTbVerifyTable (&NewTableDesc, Signature);
+    if (ACPI_FAILURE (Status))
+    {
+        goto ReleaseAndExit;
+    }
+
+    AcpiTbInstallAndOverrideTable (TableIndex, &NewTableDesc);
+
+ReleaseAndExit:
+
+    /* Release the temporal table descriptor */
+
+    AcpiTbReleaseTemporalTable (&NewTableDesc);
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbIsEquivalentTable
+ *
+ * PARAMETERS:  TableDesc           - Table 1 descriptor to be compared
+ *              TableIndex          - Index of table 2 to be compared
+ *
+ * RETURN:      TRUE if 2 tables are equivalent
+ *
+ * DESCRIPTION: This function is called to compare a table with what have
+ *              already been installed in the root table list.
+ *
+ ******************************************************************************/
+
+static BOOLEAN
+AcpiTbIsEquivalentTable (
+    ACPI_TABLE_DESC         *TableDesc,
+    UINT32                  TableIndex)
+{
+    ACPI_STATUS             Status = AE_OK;
+    BOOLEAN                 IsEquivalent;
+    ACPI_TABLE_HEADER       *Table;
+    UINT32                  TableLength;
+    UINT8                   TableFlags;
+
+
+    Status = AcpiTbAcquireTable (&AcpiGbl_RootTableList.Tables[TableIndex],
+                &Table, &TableLength, &TableFlags);
+    if (ACPI_FAILURE (Status))
+    {
+        return (FALSE);
+    }
+
+    /*
+     * Check for a table match on the entire table length,
+     * not just the header.
+     */
+    IsEquivalent = (BOOLEAN)((TableDesc->Length != TableLength ||
+        ACPI_MEMCMP (TableDesc->Pointer, Table, TableLength)) ?
+        FALSE : TRUE);
+
+    /* Release the acquired table */
+
+    AcpiTbReleaseTable (Table, TableLength, TableFlags);
+
+    return (IsEquivalent);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbInstallNonFixedTable
+ *
+ * PARAMETERS:  Address             - Address of the table (might be a logical
+ *                                    address depending on the TableFlags)
+ *              Flags               - Flags for the table
+ *              Reload              - Whether reload should be performed
+ *              TableIndex          - Where the table index is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: This function is called to install an ACPI table that is
+ *              neither DSDT nor FACS.
+ *              When this function is called by "Load" or "LoadTable" opcodes,
+ *              or by AcpiLoadTable() API, the "Reload" parameter is set.
+ *              After sucessfully returning from this function, table is
+ *              "INSTALLED" but not "VALIDATED".
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiTbInstallNonFixedTable (
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT8                   Flags,
+    BOOLEAN                 Reload,
+    UINT32                  *TableIndex)
+{
+    UINT32                  i;
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_TABLE_DESC         NewTableDesc;
+
+
+    ACPI_FUNCTION_TRACE (TbInstallNonFixedTable);
+
+
+    /* Acquire a temporal table descriptor for validation */
+
+    Status = AcpiTbAcquireTemporalTable (&NewTableDesc, Address, Flags);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_ERROR ((AE_INFO, "Could not acquire table length at %p",
+            ACPI_CAST_PTR (void, Address)));
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Validate and verify a table before installation */
+
+    Status = AcpiTbVerifyTable (&NewTableDesc, NULL);
+    if (ACPI_FAILURE (Status))
+    {
+        goto ReleaseAndExit;
+    }
+
+    if (Reload)
+    {
+        /*
+         * Validate the incoming table signature.
+         *
+         * 1) Originally, we checked the table signature for "SSDT" or "PSDT".
+         * 2) We added support for OEMx tables, signature "OEM".
+         * 3) Valid tables were encountered with a null signature, so we just
+         *    gave up on validating the signature, (05/2008).
+         * 4) We encountered non-AML tables such as the MADT, which caused
+         *    interpreter errors and kernel faults. So now, we once again allow
+         *    only "SSDT", "OEMx", and now, also a null signature. (05/2011).
+         */
+        if ((NewTableDesc.Signature.Ascii[0] != 0x00) &&
+           (!ACPI_COMPARE_NAME (&NewTableDesc.Signature, ACPI_SIG_SSDT)) &&
+           (ACPI_STRNCMP (NewTableDesc.Signature.Ascii, "OEM", 3)))
+        {
+            ACPI_BIOS_ERROR ((AE_INFO,
+                "Table has invalid signature [%4.4s] (0x%8.8X), "
+                "must be SSDT or OEMx",
+                AcpiUtValidAcpiName (NewTableDesc.Signature.Ascii) ?
+                    NewTableDesc.Signature.Ascii : "????",
+                NewTableDesc.Signature.Integer));
+
+            Status = AE_BAD_SIGNATURE;
+            goto ReleaseAndExit;
+        }
+
+        /* Check if table is already registered */
+
+        for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; ++i)
+        {
+            /*
+             * Check for a table match on the entire table length,
+             * not just the header.
+             */
+            if (!AcpiTbIsEquivalentTable (&NewTableDesc, i))
+            {
+                continue;
+            }
+
+            /*
+             * Note: the current mechanism does not unregister a table if it is
+             * dynamically unloaded. The related namespace entries are deleted,
+             * but the table remains in the root table list.
+             *
+             * The assumption here is that the number of different tables that
+             * will be loaded is actually small, and there is minimal overhead
+             * in just keeping the table in case it is needed again.
+             *
+             * If this assumption changes in the future (perhaps on large
+             * machines with many table load/unload operations), tables will
+             * need to be unregistered when they are unloaded, and slots in the
+             * root table list should be reused when empty.
+             */
+            if (AcpiGbl_RootTableList.Tables[i].Flags & ACPI_TABLE_IS_LOADED)
+            {
+                /* Table is still loaded, this is an error */
+
+                Status = AE_ALREADY_EXISTS;
+                goto ReleaseAndExit;
+            }
+            else
+            {
+                /*
+                 * Table was unloaded, allow it to be reloaded.
+                 * As we are going to return AE_OK to the caller, we should
+                 * take the responsibility of freeing the input descriptor.
+                 * Refill the input descriptor to ensure
+                 * AcpiTbInstallAndOverrideTable() can be called again to
+                 * indicate the re-installation.
+                 */
+                AcpiTbUninstallTable (&NewTableDesc);
+                *TableIndex = i;
+               (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
+                return_ACPI_STATUS (AE_OK);
+            }
+        }
     }
 
     /* Add the table to the global root table list */
 
-    Status = AcpiTbStoreTable (TableDesc->Address, TableDesc->Pointer,
-                TableDesc->Length, TableDesc->Flags, TableIndex);
+    Status = AcpiTbAcquireRootTableEntry (&i);
     if (ACPI_FAILURE (Status))
     {
-        goto Release;
+        goto ReleaseAndExit;
     }
+    *TableIndex = i;
+    AcpiTbInstallAndOverrideTable (i, &NewTableDesc);
 
-PrintHeader:
-    AcpiTbPrintTableHeader (TableDesc->Address, TableDesc->Pointer);
+ReleaseAndExit:
 
-Release:
-    (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
+    /* Release the temporal table descriptor */
+
+    AcpiTbReleaseTemporalTable (&NewTableDesc);
     return_ACPI_STATUS (Status);
 }
 
@@ -470,99 +832,88 @@ Release:
  *
  * FUNCTION:    AcpiTbOverrideTable
  *
- * PARAMETERS:  TableHeader         - Header for the original table
- *              TableDesc           - Table descriptor initialized for the
- *                                    original table. May or may not be mapped.
+ * PARAMETERS:  OldTableDesc        - Validated table descriptor to be
+ *                                    overridden
  *
- * RETURN:      Pointer to the entire new table. NULL if table not overridden.
- *              If overridden, installs the new table within the input table
- *              descriptor.
+ * RETURN:      None
  *
  * DESCRIPTION: Attempt table override by calling the OSL override functions.
  *              Note: If the table is overridden, then the entire new table
  *              is acquired and returned by this function.
- *              After invocation, the table descriptor is in a state that is
- *              "INSTALLED" but not "VALIDATED", thus the "Pointer" member is
- *              kept NULL.
+ *              Before/after invocation, the table descriptor is in a state
+ *              that is "VALIDATED".
  *
  ******************************************************************************/
 
-ACPI_TABLE_HEADER *
+void
 AcpiTbOverrideTable (
-    ACPI_TABLE_HEADER       *TableHeader,
-    ACPI_TABLE_DESC         *TableDesc)
+    ACPI_TABLE_DESC         *OldTableDesc)
 {
     ACPI_STATUS             Status;
-    ACPI_TABLE_HEADER       *NewTable;
-    UINT32                  NewTableLength;
-    UINT8                   NewFlags;
     char                    *OverrideType;
     ACPI_TABLE_DESC         NewTableDesc;
+    ACPI_TABLE_HEADER       *Table;
+    ACPI_PHYSICAL_ADDRESS   Address;
+    UINT32                  Length;
 
-
-    ACPI_MEMSET (&NewTableDesc, 0, sizeof (ACPI_TABLE_DESC));
 
     /* (1) Attempt logical override (returns a logical address) */
 
-    Status = AcpiOsTableOverride (TableHeader, &NewTableDesc.Pointer);
-    if (ACPI_SUCCESS (Status) && NewTableDesc.Pointer)
+    Status = AcpiOsTableOverride (OldTableDesc->Pointer, &Table);
+    if (ACPI_SUCCESS (Status) && Table)
     {
-        NewTableDesc.Address = ACPI_PTR_TO_PHYSADDR (NewTableDesc.Pointer);
-        NewTableDesc.Length = NewTableDesc.Pointer->Length;
-        NewTableDesc.Flags = ACPI_TABLE_ORIGIN_OVERRIDE;
+        AcpiTbAcquireTemporalTable (&NewTableDesc,
+            ACPI_PTR_TO_PHYSADDR (Table), ACPI_TABLE_ORIGIN_OVERRIDE);
         OverrideType = "Logical";
         goto FinishOverride;
     }
 
     /* (2) Attempt physical override (returns a physical address) */
 
-    Status = AcpiOsPhysicalTableOverride (TableHeader,
-        &NewTableDesc.Address, &NewTableDesc.Length);
-    if (ACPI_SUCCESS (Status) && NewTableDesc.Address && NewTableDesc.Length)
+    Status = AcpiOsPhysicalTableOverride (OldTableDesc->Pointer,
+        &Address, &Length);
+    if (ACPI_SUCCESS (Status) && Address && Length)
     {
+        AcpiTbAcquireTemporalTable (&NewTableDesc, Address,
+            ACPI_TABLE_ORIGIN_MAPPED);
         OverrideType = "Physical";
-        NewTableDesc.Flags = ACPI_TABLE_ORIGIN_MAPPED;
         goto FinishOverride;
     }
 
-    return (NULL); /* There was no override */
+    return; /* There was no override */
 
 
 FinishOverride:
 
-    /*
-     * Acquire the entire new table to indicate overridden.
-     * Note that this is required by the callers of this function.
-     */
-    Status = AcpiTbAcquireTable (&NewTableDesc, &NewTable,
-            &NewTableLength, &NewFlags);
+    /* Validate and verify a table before overriding */
+
+    Status = AcpiTbVerifyTable (&NewTableDesc, NULL);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_EXCEPTION ((AE_INFO, AE_NO_MEMORY,
-            "%4.4s " ACPI_PRINTF_UINT
-            " Attempted table override failed",
-            TableHeader->Signature,
-            ACPI_FORMAT_TO_UINT (TableDesc->Address)));
-        return (NULL);
+        return;
     }
 
     ACPI_INFO ((AE_INFO, "%4.4s " ACPI_PRINTF_UINT
         " %s table override, new table: " ACPI_PRINTF_UINT,
-        TableHeader->Signature,
-        ACPI_FORMAT_TO_UINT (TableDesc->Address),
+        OldTableDesc->Signature.Ascii,
+        ACPI_FORMAT_TO_UINT (OldTableDesc->Address),
         OverrideType, ACPI_FORMAT_TO_UINT (NewTableDesc.Address)));
 
-    /* We can now uninstall the original table (if fully mapped) */
+    /* We can now uninstall the original table */
 
-    AcpiTbUninstallTable (TableDesc);
+    AcpiTbUninstallTable (OldTableDesc);
 
-    /* Install the new table */
+    /*
+     * Replace the original table descriptor and keep its state as
+     * "VALIDATED".
+     */
+    AcpiTbInstallTable (OldTableDesc, NewTableDesc.Address,
+        NewTableDesc.Flags, NewTableDesc.Pointer);
+    AcpiTbValidateTable (OldTableDesc);
 
-    TableDesc->Address = NewTableDesc.Address;
-    TableDesc->Length = NewTableDesc.Length;
-    TableDesc->Flags = NewTableDesc.Flags;
+    /* Release the temporal table descriptor */
 
-    return (NewTable);
+    AcpiTbReleaseTemporalTable (&NewTableDesc);
 }
 
 
@@ -641,6 +992,43 @@ AcpiTbResizeRootTableList (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiTbAcquireRootTableEntry
+ *
+ * PARAMETERS:  TableIndex          - Where table index is returned
+ *
+ * RETURN:      Status and table index.
+ *
+ * DESCRIPTION: Allocate a new ACPI table entry to the global table list
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiTbAcquireRootTableEntry (
+    UINT32                  *TableIndex)
+{
+    ACPI_STATUS             Status;
+
+
+    /* Ensure that there is room for the table in the Root Table List */
+
+    if (AcpiGbl_RootTableList.CurrentTableCount >=
+        AcpiGbl_RootTableList.MaxTableCount)
+    {
+        Status = AcpiTbResizeRootTableList();
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+    }
+
+    *TableIndex = AcpiGbl_RootTableList.CurrentTableCount;
+    AcpiGbl_RootTableList.CurrentTableCount++;
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiTbStoreTable
  *
  * PARAMETERS:  Address             - Table address
@@ -663,35 +1051,21 @@ AcpiTbStoreTable (
     UINT32                  *TableIndex)
 {
     ACPI_STATUS             Status;
-    ACPI_TABLE_DESC         *NewTable;
+    ACPI_TABLE_DESC         *TableDesc;
 
 
-    /* Ensure that there is room for the table in the Root Table List */
-
-    if (AcpiGbl_RootTableList.CurrentTableCount >=
-        AcpiGbl_RootTableList.MaxTableCount)
+    Status = AcpiTbAcquireRootTableEntry (TableIndex);
+    if (ACPI_FAILURE (Status))
     {
-        Status = AcpiTbResizeRootTableList();
-        if (ACPI_FAILURE (Status))
-        {
-            return (Status);
-        }
+        return (Status);
     }
-
-    NewTable = &AcpiGbl_RootTableList.Tables[AcpiGbl_RootTableList.CurrentTableCount];
 
     /* Initialize added table */
 
-    NewTable->Address = Address;
-    NewTable->Pointer = Table;
-    NewTable->Length = Length;
-    NewTable->OwnerId = 0;
-    NewTable->Flags = Flags;
+    TableDesc = &AcpiGbl_RootTableList.Tables[*TableIndex];
+    AcpiTbInstallTable (TableDesc, Address, Flags, Table);
+    TableDesc->Pointer = Table;
 
-    ACPI_MOVE_32_TO_32 (&NewTable->Signature, Table->Signature);
-
-    *TableIndex = AcpiGbl_RootTableList.CurrentTableCount;
-    AcpiGbl_RootTableList.CurrentTableCount++;
     return (AE_OK);
 }
 

@@ -173,10 +173,14 @@ void
 AcpiTbInvalidateTable (
     ACPI_TABLE_DESC         *TableDesc);
 
-ACPI_TABLE_HEADER *
+ACPI_STATUS
+AcpiTbVerifyTable (
+    ACPI_TABLE_DESC         *TableDesc,
+    char                    *Signature);
+
+void
 AcpiTbOverrideTable (
-    ACPI_TABLE_HEADER       *TableHeader,
-    ACPI_TABLE_DESC         *TableDesc);
+    ACPI_TABLE_DESC         *OldTableDesc);
 
 ACPI_STATUS
 AcpiTbAcquireTable (
@@ -192,8 +196,10 @@ AcpiTbReleaseTable (
     UINT8                   TableFlags);
 
 ACPI_STATUS
-AcpiTbAddTable (
-    ACPI_TABLE_DESC         *TableDesc,
+AcpiTbInstallNonFixedTable (
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT8                   Flags,
+    BOOLEAN                 Reload,
     UINT32                  *TableIndex);
 
 ACPI_STATUS
@@ -275,6 +281,18 @@ AcpiTbCopyDsdt (
 
 void
 AcpiTbInstallTable (
+    ACPI_TABLE_DESC         *TableDesc,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT8                   Flags,
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiTbInstallAndOverrideTable (
+    UINT32                  TableIndex,
+    ACPI_TABLE_DESC         *NewTableDesc);
+
+ACPI_STATUS
+AcpiTbInstallFixedTable (
     ACPI_PHYSICAL_ADDRESS   Address,
     char                    *Signature,
     UINT32                  TableIndex);

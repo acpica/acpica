@@ -314,7 +314,6 @@ AcpiLoadTable (
     ACPI_TABLE_HEADER       *Table)
 {
     ACPI_STATUS             Status;
-    ACPI_TABLE_DESC         TableDesc;
     UINT32                  TableIndex;
 
 
@@ -328,14 +327,6 @@ AcpiLoadTable (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Init local table descriptor */
-
-    ACPI_MEMSET (&TableDesc, 0, sizeof (ACPI_TABLE_DESC));
-    TableDesc.Address = ACPI_PTR_TO_PHYSADDR (Table);
-    TableDesc.Pointer = Table;
-    TableDesc.Length = Table->Length;
-    TableDesc.Flags = ACPI_TABLE_ORIGIN_UNKNOWN;
-
     /* Must acquire the interpreter lock during this operation */
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_INTERPRETER);
@@ -347,7 +338,20 @@ AcpiLoadTable (
     /* Install the table and load it into the namespace */
 
     ACPI_INFO ((AE_INFO, "Host-directed Dynamic ACPI Table Load:"));
-    Status = AcpiTbAddTable (&TableDesc, &TableIndex);
+    (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
+    Status = AcpiTbInstallNonFixedTable (ACPI_PTR_TO_PHYSADDR (Table),
+                ACPI_TABLE_ORIGIN_UNKNOWN, TRUE, &TableIndex);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
+    if (ACPI_FAILURE (Status))
+    {
+        goto UnlockAndExit;
+    }
+
+    /*
+     * Note: Now table is "INSTALLED", it must be validated before
+     * using.
+     */
+    Status = AcpiTbValidateTable (&AcpiGbl_RootTableList.Tables[TableIndex]);
     if (ACPI_FAILURE (Status))
     {
         goto UnlockAndExit;
