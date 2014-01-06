@@ -270,6 +270,7 @@ AcpiTbCopyDsdt (
 
     ACPI_MEMCPY (NewTable, TableDesc->Pointer, TableDesc->Length);
     AcpiTbDeleteTable (TableDesc);
+    TableDesc->Address = ACPI_PTR_TO_PHYSADDR (NewTable);
     TableDesc->Pointer = NewTable;
     TableDesc->Flags = ACPI_TABLE_ORIGIN_ALLOCATED;
 

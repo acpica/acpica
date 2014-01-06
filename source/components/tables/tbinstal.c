@@ -152,11 +152,25 @@ AcpiTbVerifyTable (
 
     if (!TableDesc->Pointer)
     {
-        if ((TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK) ==
-            ACPI_TABLE_ORIGIN_MAPPED)
+        switch (TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK)
         {
+        case ACPI_TABLE_ORIGIN_MAPPED:
+
             TableDesc->Pointer = AcpiOsMapMemory (
                 TableDesc->Address, TableDesc->Length);
+            break;
+
+        case ACPI_TABLE_ORIGIN_ALLOCATED:
+        case ACPI_TABLE_ORIGIN_UNKNOWN:
+        case ACPI_TABLE_ORIGIN_OVERRIDE:
+
+            TableDesc->Pointer = ACPI_CAST_PTR (
+                ACPI_TABLE_HEADER, TableDesc->Address);
+            break;
+
+        default:
+
+            break;
         }
 
         if (!TableDesc->Pointer)
@@ -589,6 +603,7 @@ AcpiTbDeleteTable (
     case ACPI_TABLE_ORIGIN_ALLOCATED:
 
         ACPI_FREE (TableDesc->Pointer);
+        TableDesc->Address = ACPI_PTR_TO_PHYSADDR (NULL);
         break;
 
     /* Not mapped or allocated, there is nothing we can do */

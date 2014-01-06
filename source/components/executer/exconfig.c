@@ -553,7 +553,7 @@ AcpiExLoadOp (
             return_ACPI_STATUS (Status);
         }
 
-        TableDesc.Address = ObjDesc->Region.Address;
+        TableDesc.Address = ACPI_PTR_TO_PHYSADDR (TableDesc.Pointer);
         break;
 
     case ACPI_TYPE_BUFFER: /* Buffer or resolved RegionField */
@@ -595,7 +595,7 @@ AcpiExLoadOp (
         }
 
         ACPI_MEMCPY (TableDesc.Pointer, Table, Length);
-        TableDesc.Address = ACPI_TO_INTEGER (TableDesc.Pointer);
+        TableDesc.Address = ACPI_PTR_TO_PHYSADDR (TableDesc.Pointer);
         break;
 
     default:
