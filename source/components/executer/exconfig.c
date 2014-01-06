@@ -624,7 +624,7 @@ AcpiExLoadOp (
     {
         /* Delete allocated table buffer */
 
-        AcpiTbDeleteTable (&TableDesc);
+        ACPI_FREE (TableDesc.Pointer);
         return_ACPI_STATUS (Status);
     }
 

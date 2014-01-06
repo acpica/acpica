@@ -294,12 +294,6 @@ AcpiTbAddTable (
          * need to be unregistered when they are unloaded, and slots in the
          * root table list should be reused when empty.
          */
-
-        /*
-         * Table is already registered.
-         * We can delete the table that was passed as a parameter.
-         */
-        AcpiTbDeleteTable (TableDesc);
         *TableIndex = i;
 
         if (AcpiGbl_RootTableList.Tables[i].Flags & ACPI_TABLE_IS_LOADED)
@@ -313,6 +307,7 @@ AcpiTbAddTable (
         {
             /* Table was unloaded, allow it to be reloaded */
 
+            AcpiTbDeleteTable (TableDesc);
             TableDesc->Pointer = AcpiGbl_RootTableList.Tables[i].Pointer;
             TableDesc->Address = AcpiGbl_RootTableList.Tables[i].Address;
             Status = AE_OK;
