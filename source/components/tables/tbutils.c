@@ -269,7 +269,7 @@ AcpiTbCopyDsdt (
     }
 
     ACPI_MEMCPY (NewTable, TableDesc->Pointer, TableDesc->Length);
-    AcpiTbDeleteTable (TableDesc);
+    AcpiTbUninstallTable (TableDesc);
     TableDesc->Address = ACPI_PTR_TO_PHYSADDR (NewTable);
     TableDesc->Pointer = NewTable;
     TableDesc->Flags = ACPI_TABLE_ORIGIN_ALLOCATED;
@@ -364,7 +364,7 @@ AcpiTbInstallTable (
      * fully mapped later (in verify table). In any case, we must
      * unmap the header that was mapped above.
      */
-    FinalTable = AcpiTbTableOverride (Table, TableDesc);
+    FinalTable = AcpiTbOverrideTable (Table, TableDesc);
     if (!FinalTable)
     {
         FinalTable = Table; /* There was no override */
@@ -389,7 +389,12 @@ AcpiTbInstallTable (
      */
     if (FinalTable != Table)
     {
-        AcpiTbDeleteTable (TableDesc);
+        /*
+         * Table is in "INSTALLED" state, the FinalTable pointer is not
+         * maintained in the root table list.
+         */
+        AcpiTbReleaseTable (FinalTable, TableDesc->Length,
+                    TableDesc->Flags);
     }
 
 

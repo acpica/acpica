@@ -166,13 +166,30 @@ AcpiTbResizeRootTableList (
     void);
 
 ACPI_STATUS
-AcpiTbVerifyTable (
+AcpiTbValidateTable (
+    ACPI_TABLE_DESC         *TableDesc);
+
+void
+AcpiTbInvalidateTable (
     ACPI_TABLE_DESC         *TableDesc);
 
 ACPI_TABLE_HEADER *
-AcpiTbTableOverride (
+AcpiTbOverrideTable (
     ACPI_TABLE_HEADER       *TableHeader,
     ACPI_TABLE_DESC         *TableDesc);
+
+ACPI_STATUS
+AcpiTbAcquireTable (
+    ACPI_TABLE_DESC         *TableDesc,
+    ACPI_TABLE_HEADER       **TablePtr,
+    UINT32                  *TableLength,
+    UINT8                   *TableFlags);
+
+void
+AcpiTbReleaseTable (
+    ACPI_TABLE_HEADER       *Table,
+    UINT32                  TableLength,
+    UINT8                   TableFlags);
 
 ACPI_STATUS
 AcpiTbAddTable (
@@ -188,7 +205,7 @@ AcpiTbStoreTable (
     UINT32                  *TableIndex);
 
 void
-AcpiTbDeleteTable (
+AcpiTbUninstallTable (
     ACPI_TABLE_DESC        *TableDesc);
 
 void

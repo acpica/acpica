@@ -126,54 +126,135 @@
         ACPI_MODULE_NAME    ("tbinstal")
 
 
-/******************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    AcpiTbVerifyTable
+ * FUNCTION:    AcpiTbAcquireTable
  *
- * PARAMETERS:  TableDesc           - table
+ * PARAMETERS:  TableDesc           - Table descriptor
+ *              TablePtr            - Where table is returned
+ *              TableLength         - Where table length is returned
+ *              TableFlags          - Where table allocation flags are returned
  *
  * RETURN:      Status
  *
- * DESCRIPTION: this function is called to verify and map table
+ * DESCRIPTION: Acquire a table.  It can be used for tables not maintained in
+ *              AcpiGbl_RootTableList.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiTbAcquireTable (
+    ACPI_TABLE_DESC         *TableDesc,
+    ACPI_TABLE_HEADER       **TablePtr,
+    UINT32                  *TableLength,
+    UINT8                   *TableFlags)
+{
+    ACPI_TABLE_HEADER       *Table = NULL;
+
+
+    switch (TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK)
+    {
+    case ACPI_TABLE_ORIGIN_MAPPED:
+
+        Table = AcpiOsMapMemory (TableDesc->Address, TableDesc->Length);
+        break;
+
+    case ACPI_TABLE_ORIGIN_ALLOCATED:
+    case ACPI_TABLE_ORIGIN_UNKNOWN:
+    case ACPI_TABLE_ORIGIN_OVERRIDE:
+
+        Table = ACPI_CAST_PTR (ACPI_TABLE_HEADER, TableDesc->Address);
+        break;
+
+    default:
+
+        break;
+    }
+
+    /* Table is not valid yet */
+
+    if (!Table)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    /* Fill the return values */
+
+    *TablePtr = Table;
+    *TableLength = TableDesc->Length;
+    *TableFlags = TableDesc->Flags;
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbReleaseTable
+ *
+ * PARAMETERS:  Table               - Pointer for the table
+ *              TableLength         - Length for the table
+ *              TableFlags          - Allocation flags for the table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Release a table.  The reversal of AcpiTbAcquireTable().
+ *
+ ******************************************************************************/
+
+void
+AcpiTbReleaseTable (
+    ACPI_TABLE_HEADER       *Table,
+    UINT32                  TableLength,
+    UINT8                   TableFlags)
+{
+    switch (TableFlags & ACPI_TABLE_ORIGIN_MASK)
+    {
+    case ACPI_TABLE_ORIGIN_MAPPED:
+
+        AcpiOsUnmapMemory (Table, TableLength);
+        break;
+
+    case ACPI_TABLE_ORIGIN_ALLOCATED:
+    case ACPI_TABLE_ORIGIN_UNKNOWN:
+    case ACPI_TABLE_ORIGIN_OVERRIDE:
+    default:
+
+        break;
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiTbValidateTable
+ *
+ * PARAMETERS:  TableDesc           - Table descriptor
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: This function is called to validate (ensure Pointer is valid)
+ *              and verify the table.
  *
  *****************************************************************************/
 
 ACPI_STATUS
-AcpiTbVerifyTable (
+AcpiTbValidateTable (
     ACPI_TABLE_DESC         *TableDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE (TbVerifyTable);
+    ACPI_FUNCTION_TRACE (TbValidateTable);
 
 
-    /* Map the table if necessary */
+    /* Validate the table if necessary */
 
     if (!TableDesc->Pointer)
     {
-        switch (TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK)
-        {
-        case ACPI_TABLE_ORIGIN_MAPPED:
-
-            TableDesc->Pointer = AcpiOsMapMemory (
-                TableDesc->Address, TableDesc->Length);
-            break;
-
-        case ACPI_TABLE_ORIGIN_ALLOCATED:
-        case ACPI_TABLE_ORIGIN_UNKNOWN:
-        case ACPI_TABLE_ORIGIN_OVERRIDE:
-
-            TableDesc->Pointer = ACPI_CAST_PTR (
-                ACPI_TABLE_HEADER, TableDesc->Address);
-            break;
-
-        default:
-
-            break;
-        }
-
-        if (!TableDesc->Pointer)
+        Status = AcpiTbAcquireTable (TableDesc, &TableDesc->Pointer,
+                &TableDesc->Length, &TableDesc->Flags);
+        if (ACPI_FAILURE (Status) || !TableDesc->Pointer)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
@@ -184,6 +265,42 @@ AcpiTbVerifyTable (
     Status = AcpiTbVerifyChecksum (TableDesc->Pointer, TableDesc->Length);
 
     return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbInvalidateTable
+ *
+ * PARAMETERS:  TableDesc           - Table descriptor
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Invalidate one internal ACPI table, this is reversal of
+ *              AcpiTbValidateTable().
+ *
+ ******************************************************************************/
+
+void
+AcpiTbInvalidateTable (
+    ACPI_TABLE_DESC         *TableDesc)
+{
+
+    ACPI_FUNCTION_TRACE (TbInvalidateTable);
+
+
+    /* Table must be validated */
+
+    if (!TableDesc->Pointer)
+    {
+        return_VOID;
+    }
+
+    AcpiTbReleaseTable (TableDesc->Pointer, TableDesc->Length,
+                TableDesc->Flags);
+    TableDesc->Pointer = NULL;
+
+    return_VOID;
 }
 
 
@@ -209,6 +326,7 @@ AcpiTbAddTable (
 {
     UINT32                  i;
     ACPI_STATUS             Status = AE_OK;
+    ACPI_TABLE_HEADER       *FinalTable;
 
 
     ACPI_FUNCTION_TRACE (TbAddTable);
@@ -216,7 +334,7 @@ AcpiTbAddTable (
 
     if (!TableDesc->Pointer)
     {
-        Status = AcpiTbVerifyTable (TableDesc);
+        Status = AcpiTbValidateTable (TableDesc);
         if (ACPI_FAILURE (Status) || !TableDesc->Pointer)
         {
             return_ACPI_STATUS (Status);
@@ -256,7 +374,7 @@ AcpiTbAddTable (
     {
         if (!AcpiGbl_RootTableList.Tables[i].Pointer)
         {
-            Status = AcpiTbVerifyTable (&AcpiGbl_RootTableList.Tables[i]);
+            Status = AcpiTbValidateTable (&AcpiGbl_RootTableList.Tables[i]);
             if (ACPI_FAILURE (Status) ||
                 !AcpiGbl_RootTableList.Tables[i].Pointer)
             {
@@ -307,7 +425,7 @@ AcpiTbAddTable (
         {
             /* Table was unloaded, allow it to be reloaded */
 
-            AcpiTbDeleteTable (TableDesc);
+            AcpiTbUninstallTable (TableDesc);
             TableDesc->Pointer = AcpiGbl_RootTableList.Tables[i].Pointer;
             TableDesc->Address = AcpiGbl_RootTableList.Tables[i].Address;
             Status = AE_OK;
@@ -319,9 +437,15 @@ AcpiTbAddTable (
      * ACPI Table Override:
      * Allow the host to override dynamically loaded tables.
      * NOTE: the table is fully mapped at this point, and the mapping will
-     * be deleted by TbTableOverride if the table is actually overridden.
+     * be deleted by AcpiTbOverrideTable if the table is actually overridden.
      */
-    (void) AcpiTbTableOverride (TableDesc->Pointer, TableDesc);
+    FinalTable = AcpiTbOverrideTable (TableDesc->Pointer, TableDesc);
+    if (FinalTable)
+    {
+        /* Ensure table descriptor is in "VALIDATED" state */
+
+        TableDesc->Pointer = FinalTable;
+    }
 
     /* Add the table to the global root table list */
 
@@ -343,7 +467,7 @@ Release:
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbTableOverride
+ * FUNCTION:    AcpiTbOverrideTable
  *
  * PARAMETERS:  TableHeader         - Header for the original table
  *              TableDesc           - Table descriptor initialized for the
@@ -355,31 +479,36 @@ Release:
  *
  * DESCRIPTION: Attempt table override by calling the OSL override functions.
  *              Note: If the table is overridden, then the entire new table
- *              is mapped and returned by this function.
+ *              is acquired and returned by this function.
+ *              After invocation, the table descriptor is in a state that is
+ *              "INSTALLED" but not "VALIDATED", thus the "Pointer" member is
+ *              kept NULL.
  *
  ******************************************************************************/
 
 ACPI_TABLE_HEADER *
-AcpiTbTableOverride (
+AcpiTbOverrideTable (
     ACPI_TABLE_HEADER       *TableHeader,
     ACPI_TABLE_DESC         *TableDesc)
 {
     ACPI_STATUS             Status;
-    ACPI_TABLE_HEADER       *NewTable = NULL;
-    ACPI_PHYSICAL_ADDRESS   NewAddress = 0;
-    UINT32                  NewTableLength = 0;
+    ACPI_TABLE_HEADER       *NewTable;
+    UINT32                  NewTableLength;
     UINT8                   NewFlags;
     char                    *OverrideType;
+    ACPI_TABLE_DESC         NewTableDesc;
 
+
+    ACPI_MEMSET (&NewTableDesc, 0, sizeof (ACPI_TABLE_DESC));
 
     /* (1) Attempt logical override (returns a logical address) */
 
-    Status = AcpiOsTableOverride (TableHeader, &NewTable);
-    if (ACPI_SUCCESS (Status) && NewTable)
+    Status = AcpiOsTableOverride (TableHeader, &NewTableDesc.Pointer);
+    if (ACPI_SUCCESS (Status) && NewTableDesc.Pointer)
     {
-        NewAddress = ACPI_PTR_TO_PHYSADDR (NewTable);
-        NewTableLength = NewTable->Length;
-        NewFlags = ACPI_TABLE_ORIGIN_OVERRIDE;
+        NewTableDesc.Address = ACPI_PTR_TO_PHYSADDR (NewTableDesc.Pointer);
+        NewTableDesc.Length = NewTableDesc.Pointer->Length;
+        NewTableDesc.Flags = ACPI_TABLE_ORIGIN_OVERRIDE;
         OverrideType = "Logical";
         goto FinishOverride;
     }
@@ -387,24 +516,11 @@ AcpiTbTableOverride (
     /* (2) Attempt physical override (returns a physical address) */
 
     Status = AcpiOsPhysicalTableOverride (TableHeader,
-        &NewAddress, &NewTableLength);
-    if (ACPI_SUCCESS (Status) && NewAddress && NewTableLength)
+        &NewTableDesc.Address, &NewTableDesc.Length);
+    if (ACPI_SUCCESS (Status) && NewTableDesc.Address && NewTableDesc.Length)
     {
-        /* Map the entire new table */
-
-        NewTable = AcpiOsMapMemory (NewAddress, NewTableLength);
-        if (!NewTable)
-        {
-            ACPI_EXCEPTION ((AE_INFO, AE_NO_MEMORY,
-                "%4.4s " ACPI_PRINTF_UINT
-                " Attempted physical table override failed",
-                TableHeader->Signature,
-                ACPI_FORMAT_TO_UINT (TableDesc->Address)));
-            return (NULL);
-        }
-
         OverrideType = "Physical";
-        NewFlags = ACPI_TABLE_ORIGIN_MAPPED;
+        NewTableDesc.Flags = ACPI_TABLE_ORIGIN_MAPPED;
         goto FinishOverride;
     }
 
@@ -413,22 +529,37 @@ AcpiTbTableOverride (
 
 FinishOverride:
 
+    /*
+     * Acquire the entire new table to indicate overridden.
+     * Note that this is required by the callers of this function.
+     */
+    Status = AcpiTbAcquireTable (&NewTableDesc, &NewTable,
+            &NewTableLength, &NewFlags);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, AE_NO_MEMORY,
+            "%4.4s " ACPI_PRINTF_UINT
+            " Attempted table override failed",
+            TableHeader->Signature,
+            ACPI_FORMAT_TO_UINT (TableDesc->Address)));
+        return (NULL);
+    }
+
     ACPI_INFO ((AE_INFO, "%4.4s " ACPI_PRINTF_UINT
         " %s table override, new table: " ACPI_PRINTF_UINT,
         TableHeader->Signature,
         ACPI_FORMAT_TO_UINT (TableDesc->Address),
-        OverrideType, ACPI_FORMAT_TO_UINT (NewTable)));
+        OverrideType, ACPI_FORMAT_TO_UINT (NewTableDesc.Address)));
 
-    /* We can now unmap/delete the original table (if fully mapped) */
+    /* We can now uninstall the original table (if fully mapped) */
 
-    AcpiTbDeleteTable (TableDesc);
+    AcpiTbUninstallTable (TableDesc);
 
-    /* Setup descriptor for the new table */
+    /* Install the new table */
 
-    TableDesc->Address = NewAddress;
-    TableDesc->Pointer = NewTable;
-    TableDesc->Length = NewTableLength;
-    TableDesc->Flags = NewFlags;
+    TableDesc->Address = NewTableDesc.Address;
+    TableDesc->Length = NewTableDesc.Length;
+    TableDesc->Flags = NewTableDesc.Flags;
 
     return (NewTable);
 }
@@ -566,9 +697,9 @@ AcpiTbStoreTable (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbDeleteTable
+ * FUNCTION:    AcpiTbUninstallTable
  *
- * PARAMETERS:  TableIndex          - Table index
+ * PARAMETERS:  TableDesc           - Table descriptor
  *
  * RETURN:      None
  *
@@ -577,38 +708,31 @@ AcpiTbStoreTable (
  ******************************************************************************/
 
 void
-AcpiTbDeleteTable (
+AcpiTbUninstallTable (
     ACPI_TABLE_DESC         *TableDesc)
 {
 
-    /* Table must be mapped or allocated */
+    ACPI_FUNCTION_TRACE (TbUninstallTable);
 
-    if (!TableDesc->Pointer)
+
+    /* Table must be installed */
+
+    if (!TableDesc->Address)
     {
-        return;
+        return_VOID;
     }
 
-    switch (TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK)
+    AcpiTbInvalidateTable (TableDesc);
+
+    if ((TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK) ==
+        ACPI_TABLE_ORIGIN_ALLOCATED)
     {
-    case ACPI_TABLE_ORIGIN_MAPPED:
-
-        AcpiOsUnmapMemory (TableDesc->Pointer, TableDesc->Length);
-        break;
-
-    case ACPI_TABLE_ORIGIN_ALLOCATED:
-
-        ACPI_FREE (TableDesc->Pointer);
-        TableDesc->Address = ACPI_PTR_TO_PHYSADDR (NULL);
-        break;
-
-    /* Not mapped or allocated, there is nothing we can do */
-
-    default:
-
-        return;
+        ACPI_FREE (ACPI_CAST_PTR (void, TableDesc->Address));
     }
 
-    TableDesc->Pointer = NULL;
+    TableDesc->Address = ACPI_PTR_TO_PHYSADDR (NULL);
+
+    return_VOID;
 }
 
 
@@ -640,7 +764,7 @@ AcpiTbTerminate (
 
     for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; i++)
     {
-        AcpiTbDeleteTable (&AcpiGbl_RootTableList.Tables[i]);
+        AcpiTbUninstallTable (&AcpiGbl_RootTableList.Tables[i]);
     }
 
     /*

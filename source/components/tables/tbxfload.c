@@ -203,7 +203,7 @@ AcpiTbLoadNamespace (
         !ACPI_COMPARE_NAME (
             &(AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT].Signature),
             ACPI_SIG_DSDT) ||
-         ACPI_FAILURE (AcpiTbVerifyTable (
+         ACPI_FAILURE (AcpiTbValidateTable (
             &AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT])))
     {
         Status = AE_NO_ACPI_TABLES;
@@ -214,7 +214,7 @@ AcpiTbLoadNamespace (
      * Save the DSDT pointer for simple access. This is the mapped memory
      * address. We must take care here because the address of the .Tables
      * array can change dynamically as tables are loaded at run-time. Note:
-     * .Pointer field is not validated until after call to AcpiTbVerifyTable.
+     * .Pointer field is not validated until after call to AcpiTbValidateTable.
      */
     AcpiGbl_DSDT = AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT].Pointer;
 
@@ -259,7 +259,7 @@ AcpiTbLoadNamespace (
                     ACPI_SIG_SSDT) &&
              !ACPI_COMPARE_NAME (&(AcpiGbl_RootTableList.Tables[i].Signature),
                     ACPI_SIG_PSDT)) ||
-             ACPI_FAILURE (AcpiTbVerifyTable (
+             ACPI_FAILURE (AcpiTbValidateTable (
                 &AcpiGbl_RootTableList.Tables[i])))
         {
             continue;
