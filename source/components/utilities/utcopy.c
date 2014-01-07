@@ -636,10 +636,10 @@ AcpiUtCopyEsimpleToIsimple (
 
     case ACPI_TYPE_LOCAL_REFERENCE:
 
-        /* TBD: should validate incoming handle */
+        /* An incoming reference is defined to be a namespace node */
 
-        InternalObject->Reference.Class = ACPI_REFCLASS_NAME;
-        InternalObject->Reference.Node = ExternalObject->Reference.Handle;
+        InternalObject->Reference.Class = ACPI_REFCLASS_REFOF;
+        InternalObject->Reference.Object = ExternalObject->Reference.Handle;
         break;
 
     default:
