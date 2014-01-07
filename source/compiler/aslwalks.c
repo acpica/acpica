@@ -677,6 +677,10 @@ AnOtherSemanticAnalysisWalkBegin (
         ArgNode = Op->Asl.Parent;       /* Field definition */
         ArgNode = ArgNode->Asl.Child;   /* First child is the OpRegion Name */
         Node = ArgNode->Asl.Node;       /* OpRegion namespace node */
+        if (!Node)
+        {
+            break;
+        }
 
         ArgNode = Node->Op;             /* OpRegion definition */
         ArgNode = ArgNode->Asl.Child;   /* First child is the OpRegion Name */
