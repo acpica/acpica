@@ -337,6 +337,7 @@ AcpiTbAddTable (
         Status = AcpiTbValidateTable (TableDesc);
         if (ACPI_FAILURE (Status) || !TableDesc->Pointer)
         {
+            AcpiTbInvalidateTable (TableDesc);
             return_ACPI_STATUS (Status);
         }
     }
