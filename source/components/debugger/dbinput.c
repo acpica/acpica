@@ -219,6 +219,7 @@ enum AcpiExDebuggerCommands
     CMD_TABLES,
     CMD_TEMPLATE,
     CMD_TERMINATE,
+    CMD_TEST,
     CMD_THREADS,
     CMD_TRACE,
     CMD_TREE,
@@ -292,6 +293,7 @@ static const ACPI_DB_COMMAND_INFO   AcpiGbl_DbCommands[] =
     {"TABLES",       0},
     {"TEMPLATE",     1},
     {"TERMINATE",    0},
+    {"TEST",        1},
     {"THREADS",      3},
     {"TRACE",        1},
     {"TREE",         0},
@@ -387,6 +389,10 @@ static const ACPI_DB_COMMAND_HELP   AcpiGbl_DbCommandHelp[] =
     {1, "  Close",                             "Close debug output file\n"},
     {1, "  Load <Input Filename>",             "Load ACPI table from a file\n"},
     {1, "  Open <Output Filename>",            "Open a file for debug output\n"},
+
+    {0, "\nDebug Test Commands:",              "\n"},
+    {1, "  Test <TestName>",                   "Invoke a debug test\n"},
+    {1, "     Objects",                        "Read/write/compare all namespace data objects\n"},
     {0, NULL, NULL}
 };
 
@@ -1169,6 +1175,11 @@ AcpiDbCommandDispatch (
          */
 
         /*  AcpiInitialize (NULL);  */
+        break;
+
+    case CMD_TEST:
+
+        AcpiDbExecuteTest (AcpiGbl_DbArgs[1]);
         break;
 
     case CMD_THREADS:

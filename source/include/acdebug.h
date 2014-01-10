@@ -236,6 +236,11 @@ void
 AcpiDbGenerateSci (
     void))
 
+void
+AcpiDbExecuteTest (
+    char                    *TypeArg);
+
+
 /*
  * dbconvert - miscellaneous conversion routines
  */

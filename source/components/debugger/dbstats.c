@@ -473,7 +473,7 @@ AcpiDbDisplayStatistics (
 
     AcpiUtStrupr (TypeArg);
     Temp = AcpiDbMatchArgument (TypeArg, AcpiDbStatTypes);
-    if (Temp == (UINT32) -1)
+    if (Temp == ACPI_TYPE_NOT_FOUND)
     {
         AcpiOsPrintf ("Invalid or unsupported argument\n");
         return (AE_OK);
