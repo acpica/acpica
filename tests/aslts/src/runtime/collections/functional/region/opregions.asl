@@ -1016,6 +1016,82 @@ Method(m706, 1, Serialized)
 	m000(arg0, offs, lens, 45)
 }
 
+// Overlapping Operation Regions algorithm test
+// Test the 3 conditional cases of overlap
+// Test done only in SystemMemory
+Method(m707, 1, Serialized)
+{
+	OperationRegion(RGN0, SystemMemory, 0x100, 0x8)
+	OperationRegion(RGN1, SystemMemory, 0xFB, 0x8)
+	OperationRegion(RGN2, SystemMemory, 0x105, 0x8)
+	OperationRegion(RGN3, SystemMemory, 0xF9, 0x16)
+	OperationRegion(RGN4, SystemMemory, 0xF9, 0x16)
+
+	// Starting Field
+	Field (RGN0, ByteAcc, NoLock, Preserve) {
+		Offset(0x1), FU00, 0x30
+	}
+
+	// Overlap start of RGN0
+	Field (RGN1, ByteAcc, NoLock, Preserve) {
+		Offset(0x2), FU10, 0x30
+	}
+
+	// Overlap end of RGN0
+	Field (RGN2, ByteAcc, NoLock, Preserve) {
+		FU20, 0x30
+	}
+
+	// Overlap both start of RGN1 and end of RGN2
+	Field (RGN3, ByteAcc, NoLock, Preserve) {
+		FU30, 0x30,
+		Offset(0x8), FU31, 0x10,
+		Offset(0xC), FU32, 0x10,
+		Offset(0x10), FU33, 0x30
+	}
+
+	// Single Field spanning RGN3 area
+	Field (RGN4, ByteAcc, NoLock, Preserve) {
+		FU40, 0xB0
+	}
+
+	Name(b000, Buffer(0x6){})
+	Name(b001, Buffer(0x2){})
+
+	// Starting region write
+	m70d(1, b000)
+	Store(b000, FU00)
+
+	// New region overlapping the left
+	m70d(2, b000)
+	Store(b000, FU10)
+
+	// New region overlapping the right
+	m70d(3, b000)
+	Store(b000, FU20)
+
+	// New region overlapping left and right with writes
+	// at various locations
+	m70d(4, b000)
+	Store(b000, FU30)
+
+	m70d(5, b001)
+	Store(b001, FU31)
+
+	m70d(6, b001)
+	Store(b001, FU32)
+
+	m70d(7, b000)
+	Store(b000, FU33)
+
+	Store(FU40, Local0)
+	Store(Buffer(){4,4,4,4,4,4,2,2,5,5,1,1,6,6,3,3,7,7,7,7,7,7}, Local1)
+
+	if (LNotEqual(Local0, Local1)) {
+		err(arg0, z141, 43, 0, 0, Local0, Local1)
+	}
+}
+
 Method(ORC0,, Serialized)
 {
 	Name(ts, "ORC0")
@@ -1064,4 +1140,8 @@ Method(ORC0,, Serialized)
 	// Non-Integer OpRegion arguments
 	SRMT("m706")
 	m706(ts)
+
+	// Overlapping OpRegions algorithm test
+	SRMT("m707")
+	m707(ts)
 }
