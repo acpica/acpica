@@ -113,11 +113,11 @@
  *
  *****************************************************************************/
 
-
 #include "acpi.h"
 #include "accommon.h"
 #include "acdebug.h"
 #include "acnamesp.h"
+#include "acpredef.h"
 
 #ifdef ACPI_DEBUGGER
 
@@ -164,6 +164,16 @@ AcpiDbWriteToObject (
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_OBJECT             *Value);
 
+static void
+AcpiDbEvaluateAllPredefinedNames (
+    char                    *CountArg);
+
+static ACPI_STATUS
+AcpiDbEvaluateOnePredefinedName (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
 
 /*
  * Test subcommands
@@ -171,10 +181,12 @@ AcpiDbWriteToObject (
 static ACPI_DB_ARGUMENT_INFO    AcpiDbTestTypes [] =
 {
     {"OBJECTS"},
+    {"PREDEFINED"},
     {NULL}           /* Must be null terminated */
 };
 
 #define CMD_TEST_OBJECTS        0
+#define CMD_TEST_PREDEFINED     1
 
 
 /*
@@ -263,6 +275,12 @@ AcpiDbExecuteTest (
     case CMD_TEST_OBJECTS:
 
         AcpiDbTestAllObjects ();
+        break;
+
+
+    case CMD_TEST_PREDEFINED:
+
+        AcpiDbEvaluateAllPredefinedNames (NULL);
         break;
 
     default:
@@ -938,6 +956,196 @@ AcpiDbWriteToObject (
     {
         AcpiOsPrintf ("Could not write to object, %s",
             AcpiFormatException (Status));
+    }
+
+    return (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbEvaluateAllPredefinedNames
+ *
+ * PARAMETERS:  CountArg            - Max number of methods to execute
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Namespace batch execution. Execute predefined names in the
+ *              namespace, up to the max count, if specified.
+ *
+ ******************************************************************************/
+
+static void
+AcpiDbEvaluateAllPredefinedNames (
+    char                    *CountArg)
+{
+    ACPI_DB_EXECUTE_WALK    Info;
+
+
+    Info.Count = 0;
+    Info.MaxCount = ACPI_UINT32_MAX;
+
+    if (CountArg)
+    {
+        Info.MaxCount = ACPI_STRTOUL (CountArg, NULL, 0);
+    }
+
+    /* Search all nodes in namespace */
+
+    (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
+                AcpiDbEvaluateOnePredefinedName, NULL, (void *) &Info, NULL);
+
+    AcpiOsPrintf ("Evaluated %u predefined names in the namespace\n", Info.Count);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbEvaluateOnePredefinedName
+ *
+ * PARAMETERS:  Callback from WalkNamespace
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Batch execution module. Currently only executes predefined
+ *              ACPI names.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiDbEvaluateOnePredefinedName (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_NAMESPACE_NODE         *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+    ACPI_DB_EXECUTE_WALK        *Info = (ACPI_DB_EXECUTE_WALK *) Context;
+    char                        *Pathname;
+    const ACPI_PREDEFINED_INFO  *Predefined;
+    ACPI_DEVICE_INFO            *ObjInfo;
+    ACPI_OBJECT_LIST            ParamObjects;
+    ACPI_OBJECT                 Params[ACPI_METHOD_NUM_ARGS];
+    ACPI_OBJECT                 *ThisParam;
+    ACPI_BUFFER                 ReturnObj;
+    ACPI_STATUS                 Status;
+    UINT16                      ArgTypeList;
+    UINT8                       ArgCount;
+    UINT8                       ArgType;
+    UINT32                      i;
+
+
+    /* The name must be a predefined ACPI name */
+
+    Predefined = AcpiUtMatchPredefinedMethod (Node->Name.Ascii);
+    if (!Predefined)
+    {
+        return (AE_OK);
+    }
+
+    if (Node->Type == ACPI_TYPE_LOCAL_SCOPE)
+    {
+        return (AE_OK);
+    }
+
+    Pathname = AcpiNsGetExternalPathname (Node);
+    if (!Pathname)
+    {
+        return (AE_OK);
+    }
+
+    /* Get the object info for number of method parameters */
+
+    Status = AcpiGetObjectInfo (ObjHandle, &ObjInfo);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    ParamObjects.Count = 0;
+    ParamObjects.Pointer = NULL;
+
+    if (ObjInfo->Type == ACPI_TYPE_METHOD)
+    {
+        /* Setup default parameters (with proper types) */
+
+        ArgTypeList = Predefined->Info.ArgumentList;
+        ArgCount = METHOD_GET_ARG_COUNT (ArgTypeList);
+
+        /*
+         * Setup the ACPI-required number of arguments, regardless of what
+         * the actual method defines. If there is a difference, then the
+         * method is wrong and a warning will be issued during execution.
+         */
+        ThisParam = Params;
+        for (i = 0; i < ArgCount; i++)
+        {
+            ArgType = METHOD_GET_NEXT_TYPE (ArgTypeList);
+            ThisParam->Type = ArgType;
+
+            switch (ArgType)
+            {
+            case ACPI_TYPE_INTEGER:
+
+                ThisParam->Integer.Value = 1;
+                break;
+
+            case ACPI_TYPE_STRING:
+
+                ThisParam->String.Pointer = "This is the default argument string";
+                ThisParam->String.Length = ACPI_STRLEN (ThisParam->String.Pointer);
+                break;
+
+            case ACPI_TYPE_BUFFER:
+
+                ThisParam->Buffer.Pointer = (UINT8 *) Params; /* just a garbage buffer */
+                ThisParam->Buffer.Length = 48;
+                break;
+
+             case ACPI_TYPE_PACKAGE:
+
+                ThisParam->Package.Elements = NULL;
+                ThisParam->Package.Count = 0;
+                break;
+
+           default:
+
+                AcpiOsPrintf ("%s: Unsupported argument type: %u\n",
+                    Pathname, ArgType);
+                break;
+            }
+
+            ThisParam++;
+        }
+
+        ParamObjects.Count = ArgCount;
+        ParamObjects.Pointer = Params;
+    }
+
+    ACPI_FREE (ObjInfo);
+    ReturnObj.Pointer = NULL;
+    ReturnObj.Length = ACPI_ALLOCATE_BUFFER;
+
+    /* Do the actual method execution */
+
+    AcpiGbl_MethodExecuting = TRUE;
+
+    Status = AcpiEvaluateObject (Node, NULL, &ParamObjects, &ReturnObj);
+
+    AcpiOsPrintf ("%-32s returned %s\n", Pathname, AcpiFormatException (Status));
+    AcpiGbl_MethodExecuting = FALSE;
+    ACPI_FREE (Pathname);
+
+    /* Ignore status from method execution */
+
+    Status = AE_OK;
+
+    /* Update count, check if we have executed enough methods */
+
+    Info->Count++;
+    if (Info->Count >= Info->MaxCount)
+    {
+        Status = AE_CTRL_TERMINATE;
     }
 
     return (Status);
