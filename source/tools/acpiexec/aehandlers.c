@@ -1224,13 +1224,20 @@ AeRegionHandler (
 
     ACPI_OPERAND_OBJECT     *RegionObject = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, RegionContext);
     UINT8                   *Buffer = ACPI_CAST_PTR (UINT8, Value);
+    UINT8                   *OldBuffer;
+    UINT8                   *NewBuffer;
     ACPI_PHYSICAL_ADDRESS   BaseAddress;
+    ACPI_PHYSICAL_ADDRESS   BaseAddressEnd;
+    ACPI_PHYSICAL_ADDRESS   RegionAddress;
+    ACPI_PHYSICAL_ADDRESS   RegionAddressEnd;
     ACPI_SIZE               Length;
     BOOLEAN                 BufferExists;
+    BOOLEAN                 BufferResize;
     AE_REGION               *RegionElement;
     void                    *BufferValue;
     ACPI_STATUS             Status;
     UINT32                  ByteWidth;
+    UINT32                  RegionLength;
     UINT32                  i;
     UINT8                   SpaceId;
     ACPI_CONNECTION_INFO    *MyContext;
@@ -1513,21 +1520,119 @@ AeRegionHandler (
      * Search through the linked list for this region's buffer
      */
     BufferExists = FALSE;
+    BufferResize = FALSE;
     RegionElement = AeRegions.RegionList;
 
     if (AeRegions.NumberOfRegions)
     {
+        BaseAddressEnd = BaseAddress + Length - 1;
         while (!BufferExists && RegionElement)
         {
-            if (RegionElement->Address == BaseAddress &&
-                RegionElement->Length == Length &&
-                RegionElement->SpaceId == SpaceId)
+            RegionAddress = RegionElement->Address;
+            RegionAddressEnd = RegionElement->Address + RegionElement->Length - 1;
+            RegionLength = RegionElement->Length;
+
+            /*
+             * Overlapping Region Support
+             *
+             * While searching through the region buffer list, determine if an
+             * overlap exists between the requested buffer space and the current
+             * RegionElement space. If there is an overlap then replace the old
+             * buffer with a new buffer of increased size before continuing to
+             * do the read or write
+             */
+            if (RegionElement->SpaceId != SpaceId ||
+                BaseAddressEnd < RegionAddress ||
+                BaseAddress > RegionAddressEnd)
             {
-                BufferExists = TRUE;
+                /*
+                 * Requested buffer is outside of the current RegionElement
+                 * bounds
+                 */
+                RegionElement = RegionElement->NextRegion;
             }
             else
             {
-                RegionElement = RegionElement->NextRegion;
+                /*
+                 * Some amount of buffer space sharing exists. There are 4 cases
+                 * to consider:
+                 *
+                 * 1. Right overlap
+                 * 2. Left overlap
+                 * 3. Left and right overlap
+                 * 4. Fully contained - no resizing required
+                 */
+                BufferExists = TRUE;
+
+                if ((BaseAddress >= RegionAddress) &&
+                    (BaseAddress <= RegionAddressEnd) &&
+                    (BaseAddressEnd > RegionAddressEnd))
+                {
+                    /* Right overlap */
+
+                    RegionElement->Length = BaseAddress -
+                        RegionAddress + Length;
+                    BufferResize = TRUE;
+                }
+
+                else if ((BaseAddressEnd >= RegionAddress) &&
+                         (BaseAddressEnd <= RegionAddressEnd) &&
+                         (BaseAddress < RegionAddress))
+                {
+                    /* Left overlap */
+
+                    RegionElement->Address = BaseAddress;
+                    RegionElement->Length = RegionAddress -
+                        BaseAddress + RegionElement->Length;
+                    BufferResize = TRUE;
+                }
+
+                else if ((BaseAddress < RegionAddress) &&
+                         (BaseAddressEnd > RegionAddressEnd))
+                {
+                    /* Left and right overlap */
+
+                    RegionElement->Address = BaseAddress;
+                    RegionElement->Length = Length;
+                    BufferResize = TRUE;
+                }
+
+                /*
+                 * only remaining case is fully contained for which we don't
+                 * need to do anything
+                 */
+                if (BufferResize)
+                {
+                    NewBuffer = AcpiOsAllocate (RegionElement->Length);
+                    if (!NewBuffer)
+                    {
+                        return (AE_NO_MEMORY);
+                    }
+
+                    OldBuffer = RegionElement->Buffer;
+                    RegionElement->Buffer = NewBuffer;
+                    NewBuffer = NULL;
+
+                    /* Initialize the region with the default fill value */
+
+                    ACPI_MEMSET (RegionElement->Buffer,
+                        AcpiGbl_RegionFillValue, RegionElement->Length);
+
+                    /*
+                     * Get BufferValue to point (within the new buffer) to the
+                     * base address of the old buffer
+                     */
+                    BufferValue = (UINT8 *) RegionElement->Buffer +
+                        (UINT64) RegionAddress -
+                        (UINT64) RegionElement->Address;
+
+                    /*
+                     * Copy the old buffer to its same location within the new
+                     * buffer
+                     */
+                    ACPI_MEMCPY (BufferValue, OldBuffer, RegionLength);
+                    AcpiOsFree (OldBuffer);
+                }
             }
         }
     }
@@ -1537,9 +1642,8 @@ AeRegionHandler (
      */
     if (!BufferExists)
     {
-        /*
-         * Do the memory allocations first
-         */
+        /* Do the memory allocations first */
+
         RegionElement = AcpiOsAllocate (sizeof (AE_REGION));
         if (!RegionElement)
         {
@@ -1564,8 +1668,8 @@ AeRegionHandler (
 
         /*
          * Increment the number of regions and put this one
-         *  at the head of the list as it will probably get accessed
-         *  more often anyway.
+         * at the head of the list as it will probably get accessed
+         * more often anyway.
          */
         AeRegions.NumberOfRegions += 1;
 
@@ -1577,9 +1681,8 @@ AeRegionHandler (
         AeRegions.RegionList = RegionElement;
     }
 
-    /*
-     * Calculate the size of the memory copy
-     */
+    /* Calculate the size of the memory copy */
+
     ByteWidth = (BitWidth / 8);
 
     if (BitWidth % 8)
