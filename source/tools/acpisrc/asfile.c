@@ -406,6 +406,17 @@ AsConvertFile (
         SpecialMacroTable   = ConversionTable->HeaderSpecialMacroTable;
         break;
 
+    case FILE_TYPE_PATCH:
+
+        Functions           = ConversionTable->PatchFunctions;
+        StringTable         = ConversionTable->PatchStringTable;
+        LineTable           = ConversionTable->PatchLineTable;
+        ConditionalTable    = ConversionTable->PatchConditionalTable;
+        MacroTable          = ConversionTable->PatchMacroTable;
+        StructTable         = ConversionTable->PatchStructTable;
+        SpecialMacroTable   = ConversionTable->PatchSpecialMacroTable;
+        break;
+
     default:
 
         printf ("Unknown file type, cannot process\n");

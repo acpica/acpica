@@ -142,6 +142,7 @@
 #define FILE_TYPE_SOURCE                    1
 #define FILE_TYPE_HEADER                    2
 #define FILE_TYPE_DIRECTORY                 3
+#define FILE_TYPE_PATCH                     4
 
 #define CVT_COUNT_TABS                      0x00000001
 #define CVT_COUNT_NON_ANSI_COMMENTS         0x00000002
@@ -260,6 +261,14 @@ typedef struct acpi_conversion_table
     ACPI_TYPED_IDENTIFIER_TABLE *HeaderStructTable;
     ACPI_IDENTIFIER_TABLE       *HeaderSpecialMacroTable;
     UINT32                      HeaderFunctions;
+
+    ACPI_STRING_TABLE           *PatchStringTable;
+    ACPI_IDENTIFIER_TABLE       *PatchLineTable;
+    ACPI_IDENTIFIER_TABLE       *PatchConditionalTable;
+    ACPI_IDENTIFIER_TABLE       *PatchMacroTable;
+    ACPI_TYPED_IDENTIFIER_TABLE *PatchStructTable;
+    ACPI_IDENTIFIER_TABLE       *PatchSpecialMacroTable;
+    UINT32                      PatchFunctions;
 
 } ACPI_CONVERSION_TABLE;
 

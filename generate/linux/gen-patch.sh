@@ -112,6 +112,7 @@ mv -f $GP_acpica_repo/generate/linux/linux-$before $GP_linux_before
 			echo "" >> $GP_linux_patch
 			echo "Signed-off-by: $SIGNED_OFF_BY" >> $GP_linux_patch
 		fi
+		$ACPISRC -ldqy $GP_linux_patch $GP_linux_patch > /dev/null
 		echo "---" >> $GP_linux_patch
 		diffstat $tmpfile >> $GP_linux_patch
 		echo >> $GP_linux_patch

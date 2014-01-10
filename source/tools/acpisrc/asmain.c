@@ -567,9 +567,17 @@ main (
         {
             AsProcessOneFile (ConversionTable, NULL, TargetPath, 0, SourcePath, FILE_TYPE_HEADER);
         }
-        else
+        else if (strstr (SourcePath, ".c"))
         {
             AsProcessOneFile (ConversionTable, NULL, TargetPath, 0, SourcePath, FILE_TYPE_SOURCE);
+        }
+        else if (strstr (SourcePath, ".patch"))
+        {
+            AsProcessOneFile (ConversionTable, NULL, TargetPath, 0, SourcePath, FILE_TYPE_PATCH);
+        }
+        else
+        {
+            printf ("Unknown file type - %s\n", SourcePath);
         }
     }
 
