@@ -329,11 +329,6 @@ EarlyAcpiOsUnmapMemory (
     void __iomem            *Virt,
     ACPI_SIZE               Size);
 
-ACPI_STATUS
-AcpiOsHotplugExecute (
-    ACPI_OSD_EXEC_CALLBACK  Function,
-    void                    *Context);
-
 #endif /* __KERNEL__ */
 
 #endif /* __ACLINUX_H__ */
