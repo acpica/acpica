@@ -221,18 +221,22 @@ static AE_DEBUG_REGIONS     AeRegions;
 BOOLEAN                     AcpiGbl_DisplayRegionAccess = FALSE;
 
 /*
- * We will override some of the default region handlers, especially the
- * SystemMemory handler, which must be implemented locally. Do not override
- * the PCI_Config handler since we would like to exercise the default handler
- * code. These handlers are installed "early" - before any _REG methods
+ * We will override some of the default region handlers, especially
+ * the SystemMemory handler, which must be implemented locally.
+ * These handlers are installed "early" - before any _REG methods
  * are executed - since they are special in the sense that the ACPI spec
  * declares that they must "always be available". Cannot override the
  * DataTable region handler either -- needed for test execution.
+ *
+ * NOTE: The local region handler will simulate access to these address
+ * spaces by creating a memory buffer behind each operation region.
  */
 static ACPI_ADR_SPACE_TYPE  DefaultSpaceIdList[] =
 {
     ACPI_ADR_SPACE_SYSTEM_MEMORY,
-    ACPI_ADR_SPACE_SYSTEM_IO
+    ACPI_ADR_SPACE_SYSTEM_IO,
+    ACPI_ADR_SPACE_PCI_CONFIG,
+    ACPI_ADR_SPACE_EC
 };
 
 /*

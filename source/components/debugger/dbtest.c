@@ -466,7 +466,9 @@ AcpiDbTestOneObject (
 
         RegionObj = ObjDesc->Field.RegionObj;
         if ((RegionObj->Region.SpaceId != ACPI_ADR_SPACE_SYSTEM_MEMORY) &&
-            (RegionObj->Region.SpaceId != ACPI_ADR_SPACE_SYSTEM_IO))
+            (RegionObj->Region.SpaceId != ACPI_ADR_SPACE_SYSTEM_IO) &&
+            (RegionObj->Region.SpaceId != ACPI_ADR_SPACE_PCI_CONFIG) &&
+            (RegionObj->Region.SpaceId != ACPI_ADR_SPACE_EC))
         {
             AcpiOsPrintf ("      %s space is not supported [%4.4s]\n",
                 AcpiUtGetRegionName (RegionObj->Region.SpaceId),
@@ -504,6 +506,20 @@ AcpiDbTestOneObject (
             LocalType);
         break;
     }
+
+    switch (Node->Type)
+    {
+    case ACPI_TYPE_LOCAL_REGION_FIELD:
+
+        RegionObj = ObjDesc->Field.RegionObj;
+        AcpiOsPrintf (" (%s)",
+            AcpiUtGetRegionName (RegionObj->Region.SpaceId));
+        break;
+
+    default:
+        break;
+    }
+
 
     AcpiOsPrintf ("\n");
     return (Status);
@@ -646,6 +662,7 @@ AcpiDbTestBufferType (
     UINT8                   *Buffer;
     ACPI_OBJECT             WriteValue;
     ACPI_STATUS             Status;
+    UINT32                  i;
 
 
     /* Allocate a local buffer */
@@ -664,8 +681,12 @@ AcpiDbTestBufferType (
         goto Exit;
     }
 
-    AcpiOsPrintf (" (%2.2X) %2.2X %2.2X...", Temp1->Buffer.Length,
-        Temp1->Buffer.Pointer[0], Temp1->Buffer.Pointer[1]);
+    AcpiOsPrintf (" (%2.2X)", Temp1->Buffer.Length);
+    for (i = 0; ((i < 4) && (i < ByteLength)); i++)
+    {
+        AcpiOsPrintf (" %2.2X", Temp1->Buffer.Pointer[i]);
+    }
+    AcpiOsPrintf ("...  ");
 
     /* Write a new value */
 
@@ -762,7 +783,7 @@ AcpiDbTestStringType (
         return (Status);
     }
 
-    AcpiOsPrintf (" (%2.2X) %s",
+    AcpiOsPrintf (" (%2.2X) \"%s\"",
         Temp1->String.Length, Temp1->String.Pointer);
 
     /* Write a new value */
