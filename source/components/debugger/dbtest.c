@@ -146,7 +146,7 @@ AcpiDbTestIntegerType (
 static ACPI_STATUS
 AcpiDbTestBufferType (
     ACPI_NAMESPACE_NODE     *Node,
-    UINT32                  ByteLength);
+    UINT32                  BitLength);
 
 static ACPI_STATUS
 AcpiDbTestStringType (
@@ -188,6 +188,7 @@ static ACPI_DB_ARGUMENT_INFO    AcpiDbTestTypes [] =
 #define CMD_TEST_OBJECTS        0
 #define CMD_TEST_PREDEFINED     1
 
+#define BUFFER_FILL_VALUE       0xFF
 
 /*
  * Support for the special debugger read/write control methods.
@@ -276,7 +277,6 @@ AcpiDbExecuteTest (
 
         AcpiDbTestAllObjects ();
         break;
-
 
     case CMD_TEST_PREDEFINED:
 
@@ -396,7 +396,7 @@ AcpiDbTestOneObject (
 
     /*
      * For the supported types, get the actual bit length or
-     * byte length. Map the type to one of Integer/String/Buffer
+     * byte length. Map the type to one of Integer/String/Buffer.
      */
     switch (Node->Type)
     {
@@ -418,6 +418,7 @@ AcpiDbTestOneObject (
 
         LocalType = ACPI_TYPE_BUFFER;
         ByteLength = ObjDesc->Buffer.Length;
+        BitLength = ByteLength * 8;
         break;
 
     case ACPI_TYPE_FIELD_UNIT:
@@ -430,19 +431,23 @@ AcpiDbTestOneObject (
         if (ObjDesc)
         {
             /*
-             * Returned object will be a Buffer it the field length
-             * is larger than the size of an Integer.
+             * Returned object will be a Buffer if the field length
+             * is larger than the size of an Integer (32 or 64 bits
+             * depending on the DSDT version).
              */
             BitLength = ObjDesc->CommonField.BitLength;
+            ByteLength = ACPI_ROUND_BITS_UP_TO_BYTES (BitLength);
             if (BitLength > AcpiGbl_IntegerBitWidth)
             {
                 LocalType = ACPI_TYPE_BUFFER;
-                ByteLength = ACPI_ROUND_BITS_UP_TO_BYTES (BitLength);
             }
         }
         break;
 
     default:
+
+        /* Ignore all other types */
+
         return (AE_OK);
     }
 
@@ -457,19 +462,25 @@ AcpiDbTestOneObject (
     }
 
     /*
-     * Check for unsupported region types. Note: AcpiExec only simulates
-     * access to SystemMemory and SystemIO.
+     * Check for unsupported region types. Note: AcpiExec simulates
+     * access to SystemMemory, SystemIO, PCI_Config, and EC.
      */
     switch (Node->Type)
     {
     case ACPI_TYPE_LOCAL_REGION_FIELD:
 
         RegionObj = ObjDesc->Field.RegionObj;
-        if ((RegionObj->Region.SpaceId != ACPI_ADR_SPACE_SYSTEM_MEMORY) &&
-            (RegionObj->Region.SpaceId != ACPI_ADR_SPACE_SYSTEM_IO) &&
-            (RegionObj->Region.SpaceId != ACPI_ADR_SPACE_PCI_CONFIG) &&
-            (RegionObj->Region.SpaceId != ACPI_ADR_SPACE_EC))
+        switch (RegionObj->Region.SpaceId)
         {
+        case ACPI_ADR_SPACE_SYSTEM_MEMORY:
+        case ACPI_ADR_SPACE_SYSTEM_IO:
+        case ACPI_ADR_SPACE_PCI_CONFIG:
+        case ACPI_ADR_SPACE_EC:
+
+            break;
+
+        default:
+
             AcpiOsPrintf ("      %s space is not supported [%4.4s]\n",
                 AcpiUtGetRegionName (RegionObj->Region.SpaceId),
                 RegionObj->Region.Node->Name.Ascii);
@@ -497,7 +508,7 @@ AcpiDbTestOneObject (
 
     case ACPI_TYPE_BUFFER:
 
-        Status = AcpiDbTestBufferType (Node, ByteLength);
+        Status = AcpiDbTestBufferType (Node, BitLength);
         break;
 
     default:
@@ -519,7 +530,6 @@ AcpiDbTestOneObject (
     default:
         break;
     }
-
 
     AcpiOsPrintf ("\n");
     return (Status);
@@ -558,7 +568,7 @@ AcpiDbTestIntegerType (
 
     if (BitLength > 64)
     {
-        AcpiOsPrintf ("Invalid length for an Integer: %u");
+        AcpiOsPrintf (" Invalid length for an Integer: %u", BitLength);
         return (AE_OK);
     }
 
@@ -570,8 +580,9 @@ AcpiDbTestIntegerType (
         return (Status);
     }
 
-    AcpiOsPrintf (" (%2.2X) %8.8X%8.8X",
-        BitLength, ACPI_FORMAT_UINT64 (Temp1->Integer.Value));
+    AcpiOsPrintf (" (%4.4X/%3.3X) %8.8X%8.8X",
+        BitLength, ACPI_ROUND_BITS_UP_TO_BYTES (BitLength),
+        ACPI_FORMAT_UINT64 (Temp1->Integer.Value));
 
     ValueToWrite = ACPI_UINT64_MAX >> (64 - BitLength);
     if (Temp1->Integer.Value == ValueToWrite)
@@ -641,7 +652,7 @@ Exit:
  * FUNCTION:    AcpiDbTestBufferType
  *
  * PARAMETERS:  Node                - Parent NS node for the object
- *              ByteLength          - Actual length of the object.
+ *              BitLength           - Actual length of the object.
  *
  * RETURN:      Status
  *
@@ -654,7 +665,7 @@ Exit:
 static ACPI_STATUS
 AcpiDbTestBufferType (
     ACPI_NAMESPACE_NODE     *Node,
-    UINT32                  ByteLength)
+    UINT32                  BitLength)
 {
     ACPI_OBJECT             *Temp1 = NULL;
     ACPI_OBJECT             *Temp2 = NULL;
@@ -662,8 +673,17 @@ AcpiDbTestBufferType (
     UINT8                   *Buffer;
     ACPI_OBJECT             WriteValue;
     ACPI_STATUS             Status;
+    UINT32                  ByteLength;
     UINT32                  i;
+    UINT8                   ExtraBits;
 
+
+    ByteLength = ACPI_ROUND_BITS_UP_TO_BYTES (BitLength);
+    if (ByteLength == 0)
+    {
+        AcpiOsPrintf (" Ignoring zero length buffer");
+        return (AE_OK);
+    }
 
     /* Allocate a local buffer */
 
@@ -681,16 +701,30 @@ AcpiDbTestBufferType (
         goto Exit;
     }
 
-    AcpiOsPrintf (" (%2.2X)", Temp1->Buffer.Length);
+    /* Emit a few bytes of the buffer */
+
+    AcpiOsPrintf (" (%4.4X/%3.3X)", BitLength, Temp1->Buffer.Length);
     for (i = 0; ((i < 4) && (i < ByteLength)); i++)
     {
         AcpiOsPrintf (" %2.2X", Temp1->Buffer.Pointer[i]);
     }
     AcpiOsPrintf ("...  ");
 
-    /* Write a new value */
+    /*
+     * Write a new value.
+     *
+     * Handle possible extra bits at the end of the buffer. Can
+     * happen for FieldUnits larger than an integer, but the bit
+     * count is not an integral number of bytes. Zero out the
+     * unused bits.
+     */
+    ACPI_MEMSET (Buffer, BUFFER_FILL_VALUE, ByteLength);
+    ExtraBits = BitLength % 8;
+    if (ExtraBits)
+    {
+        Buffer [ByteLength - 1] = ACPI_MASK_BITS_ABOVE (ExtraBits);
+    }
 
-    ACPI_MEMSET (Buffer, 0xFF, ByteLength);
     WriteValue.Type = ACPI_TYPE_BUFFER;
     WriteValue.Buffer.Length = ByteLength;
     WriteValue.Buffer.Pointer = Buffer;
@@ -783,7 +817,7 @@ AcpiDbTestStringType (
         return (Status);
     }
 
-    AcpiOsPrintf (" (%2.2X) \"%s\"",
+    AcpiOsPrintf (" (%4.4X/%3.3X) \"%s\"", (Temp1->String.Length * 8),
         Temp1->String.Length, Temp1->String.Pointer);
 
     /* Write a new value */
