@@ -2460,6 +2460,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\debugger\dbtest.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\COMPONENTS\DEBUGGER\dbutils.c"
 					>
 					<FileConfiguration
