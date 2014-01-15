@@ -2,12 +2,20 @@
 Instructions to create a full release of the ACPICA software
 and utilities.
 
-Last update 9 December 2013.
+Last update: 15 January 2014.
 
 The build uses MS Visual Studio and Cygwin to accomplish the
 goal of releasing both Windows and Unix versions of the ACPICA code
 and utilities. For Windows, binary versions of the ACPICA utilities
 (including the iASL compiler) are created.
+
+
+Required Accounts
+-----------------
+
+1) An account on github.com with full access rights to the acpica repository.
+2) An account on the acpica bugzilla with write/change access.
+3) An account on the acpica.org website with write/change access.
 
 
 Required Tools
@@ -53,6 +61,16 @@ These Cygwin packages are required for ACPICA generation:
     m4 (macro processor required by bison, found in Interpreters)
     dos2unix and unix2dos converters (found in Text)
 
+4) Windows/Unix line termination issues:
+
+a) Install Cygwin with the default setting of CR/LF line terminators
+b) Ensure that these lines are present in the git configuration file,
+   .gitconfig in your home directory:
+
+[core]
+        autocrlf = true
+
+
 
 Build the ACPICA Software
 -------------------------
@@ -97,14 +115,14 @@ Build the various tar/zip release files:
 
 
 
-Update ACPICA website
----------------------
+Update the ACPICA website
+-------------------------
 
 Login to acpica.org (with update permission)
 
 Create a new download node for the new ACPICA version:
     Goto: ContentManagement->CreateContent->Downloads
-    Title: Use the new version number in the correct format (e.g., "Version 20130517")
+    Title: Use the new version number in the correct format (e.g., "Version 20140114")
     Body: Insert the release notes for this version
     Date: Must be the current date (should match ACPICA version)
     File Attachments: Attach all of the release zip/gz files (currently 6 files)
@@ -131,16 +149,27 @@ Update version number headers and file pathnames:
     Note: Hopefully, the version number will be implemented as a global so
     that it only needs to be changed in one place.
 
-Add any document updates:
+ACPICA document updates:
+    The documentation/changes.txt file must always be updated.
+    Additional ACPICA documentation may require update (in doc/pdf pairs):
+
+        acpica-reference.doc
+        acpica-reference.pdf
+        aslcompiler.doc
+        aslcompiler.pdf
+
     Goto the "Documentation" page, click edit.
-    Attach new document(s)
+    Attach/upload all new versions of the document(s)
     Uncheck the "List" box for each new document
     Update pathnames (and file sizes) in body for each new filename
         (appears at bottom of each attach)
-    Update "Last update" dates
+    Update "Last update" dates as needed
     Click save at bottom
         <Note: this may be fixed so that the filename can stay the same>
-    Update front page news: Goto ContentManagement->CreateContent->News
+
+Update "news" if there are any major changes or major new features:
+    Update front page news:
+        Goto ContentManagement->CreateContent->News
         Add news item in the "Title" section and click save at bottom
 
 
