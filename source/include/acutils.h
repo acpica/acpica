@@ -117,6 +117,8 @@
 #define _ACUTILS_H
 
 
+#pragma pack(push) /* Set default struct packing */
+
 extern const UINT8                      AcpiGbl_ResourceAmlSizes[];
 extern const UINT8                      AcpiGbl_ResourceAmlSerialBusSizes[];
 
@@ -1170,5 +1172,8 @@ AcpiUtMethodError (
     ACPI_NAMESPACE_NODE     *Node,
     const char              *Path,
     ACPI_STATUS             LookupStatus);
+
+
+#pragma pack(pop) /* Restore original struct packing */
 
 #endif /* _ACUTILS_H */

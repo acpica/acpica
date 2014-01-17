@@ -126,6 +126,8 @@
 #include "actbl.h"
 #include "acbuffer.h"
 
+#pragma pack(push) /* Set default struct packing */
+
 /*
  * Globals that are publically available
  */
@@ -902,5 +904,7 @@ AcpiDebugPrintRaw (
     const char              *Format,
     ...);
 #endif
+
+#pragma pack(pop) /* Restore original struct packing */
 
 #endif /* __ACXFACE_H__ */

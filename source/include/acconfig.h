@@ -117,6 +117,8 @@
 #define _ACCONFIG_H
 
 
+#pragma pack(push) /* Set default struct packing */
+
 /******************************************************************************
  *
  * Configuration options
@@ -305,5 +307,7 @@
 #define ACPI_DEBUGGER_COMMAND_PROMPT    '-'
 #define ACPI_DEBUGGER_EXECUTE_PROMPT    '%'
 
+
+#pragma pack(pop) /* Restore original struct packing */
 
 #endif /* _ACCONFIG_H */

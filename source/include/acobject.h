@@ -116,6 +116,8 @@
 #ifndef _ACOBJECT_H
 #define _ACOBJECT_H
 
+#pragma pack(push) /* Set default struct packing */
+
 /* acpisrc:StructDefs -- for acpisrc conversion */
 
 
@@ -653,6 +655,6 @@ typedef union acpi_descriptor
 
 } ACPI_DESCRIPTOR;
 
-#pragma pack()
+#pragma pack(pop) /* Restore original struct packing */
 
 #endif /* _ACOBJECT_H */

@@ -117,6 +117,8 @@
 #define _ACAPPS
 
 
+#pragma pack(push) /* Set default struct packing */
+
 #ifdef _MSC_VER                 /* disable some level-4 warnings */
 #pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
 #endif
@@ -292,5 +294,7 @@ AdWriteTable (
     char                    *TableName,
     char                    *OemTableId);
 #endif
+
+#pragma pack(pop) /* Restore original struct packing */
 
 #endif /* _ACAPPS */

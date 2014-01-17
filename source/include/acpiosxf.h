@@ -122,6 +122,8 @@
 #include "actypes.h"
 
 
+#pragma pack(push) /* Set default struct packing */
+
 /* Types for AcpiOsExecute */
 
 typedef enum
@@ -622,5 +624,7 @@ AcpiOsCloseDirectory (
     void                    *DirHandle);
 #endif
 
+
+#pragma pack(pop) /* Restore original struct packing */
 
 #endif /* __ACPIOSXF_H__ */

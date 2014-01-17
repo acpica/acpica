@@ -117,6 +117,8 @@
 #define __ACTABLES_H__
 
 
+#pragma pack(push) /* Set default struct packing */
+
 ACPI_STATUS
 AcpiAllocateRootTable (
     UINT32                  InitialTableCount);
@@ -265,5 +267,7 @@ AcpiTbInstallTable (
 ACPI_STATUS
 AcpiTbParseRootTable (
     ACPI_PHYSICAL_ADDRESS   RsdpAddress);
+
+#pragma pack(pop) /* Restore original struct packing */
 
 #endif /* __ACTABLES_H__ */
