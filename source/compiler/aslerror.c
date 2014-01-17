@@ -889,7 +889,8 @@ AslError (
 
     /* Check if user wants to ignore this exception */
 
-    if (AslIsExceptionDisabled (Level, MessageId))
+    if (Gbl_AllExceptionsDisabled ||
+        AslIsExceptionDisabled (Level, MessageId))
     {
         return;
     }
