@@ -284,14 +284,29 @@ AcpiNsSimpleRepair (
      * this predefined name. Either one return value is expected, or none,
      * for both methods and other objects.
      *
-     * Exit now if there is no return object. Warning if one was expected.
+     * Try to fix if there was no return object. Warning if failed to fix.
      */
     if (!ReturnObject)
     {
         if (ExpectedBtypes && (!(ExpectedBtypes & ACPI_RTYPE_NONE)))
         {
-            ACPI_WARN_PREDEFINED ((AE_INFO, Info->FullPathname,
-                ACPI_WARN_ALWAYS, "Missing expected return value"));
+            if (PackageIndex != ACPI_NOT_PACKAGE_ELEMENT)
+            {
+                ACPI_WARN_PREDEFINED ((AE_INFO, Info->FullPathname,
+                    ACPI_WARN_ALWAYS, "Found unexpected NULL package element"));
+
+                Status = AcpiNsRepairNullElement (Info, ExpectedBtypes,
+                            PackageIndex, ReturnObjectPtr);
+                if (ACPI_SUCCESS (Status))
+                {
+                    return (AE_OK); /* Repair was successful */
+                }
+            }
+            else
+            {
+                ACPI_WARN_PREDEFINED ((AE_INFO, Info->FullPathname,
+                    ACPI_WARN_ALWAYS, "Missing expected return value"));
+            }
 
             return (AE_AML_NO_RETURN_VALUE);
         }
