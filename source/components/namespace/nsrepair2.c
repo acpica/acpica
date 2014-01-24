@@ -744,6 +744,7 @@ AcpiNsRepair_PRT (
     ACPI_OPERAND_OBJECT     **TopObjectList;
     ACPI_OPERAND_OBJECT     **SubObjectList;
     ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *SubPackage;
     UINT32                  ElementCount;
     UINT32                  Index;
 
@@ -755,7 +756,13 @@ AcpiNsRepair_PRT (
 
     for (Index = 0; Index < ElementCount; Index++)
     {
-        SubObjectList = (*TopObjectList)->Package.Elements;
+        SubPackage = *TopObjectList;
+        SubObjectList = SubPackage->Package.Elements;
+
+        if (SubPackage->Package.Count < 4) /* Minimum required element count */
+        {
+            return (AE_OK);
+        }
 
         /*
          * If the BIOS has erroneously reversed the _PRT SourceName (index 2)
