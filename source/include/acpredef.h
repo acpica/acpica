@@ -123,7 +123,7 @@
  *
  * Return Package types
  *
- * 1) PTYPE1 packages do not contain sub-packages.
+ * 1) PTYPE1 packages do not contain subpackages.
  *
  * ACPI_PTYPE1_FIXED: Fixed-length length, 1 or 2 object types:
  *      object type
@@ -138,8 +138,8 @@
  *      (Used for _PRW)
  *
  *
- * 2) PTYPE2 packages contain a Variable-length number of sub-packages. Each
- *    of the different types describe the contents of each of the sub-packages.
+ * 2) PTYPE2 packages contain a Variable-length number of subpackages. Each
+ *    of the different types describe the contents of each of the subpackages.
  *
  * ACPI_PTYPE2: Each subpackage contains 1 or 2 object types. Zero-length
  *      parent package is allowed:
@@ -628,7 +628,7 @@ const ACPI_PREDEFINED_INFO          AcpiGbl_PredefinedMethods[] =
 
     /*
      * For _HPX, a single package is returned, containing a variable-length number
-     * of sub-packages. Each sub-package contains a PCI record setting.
+     * of subpackages. Each subpackage contains a PCI record setting.
      * There are several different type of record settings, of different
      * lengths, but all elements of all settings are Integers.
      */

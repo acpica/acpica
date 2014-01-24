@@ -550,8 +550,8 @@ AcpiNsRepair_CID (
  * DESCRIPTION: Repair for the _CST object:
  *              1. Sort the list ascending by C state type
  *              2. Ensure type cannot be zero
- *              3. A sub-package count of zero means _CST is meaningless
- *              4. Count must match the number of C state sub-packages
+ *              3. A subpackage count of zero means _CST is meaningless
+ *              4. Count must match the number of C state subpackages
  *
  *****************************************************************************/
 
@@ -825,7 +825,7 @@ AcpiNsRepair_PSS (
 
 
     /*
-     * Entries (sub-packages) in the _PSS Package must be sorted by power
+     * Entries (subpackages) in the _PSS Package must be sorted by power
      * dissipation, in descending order. If it appears that the list is
      * incorrectly sorted, sort it. We sort by CpuFrequency, since this
      * should be proportional to the power.
@@ -918,9 +918,9 @@ AcpiNsRepair_TSS (
  *
  * PARAMETERS:  Info                - Method execution information block
  *              ReturnObject        - Pointer to the top-level returned object
- *              StartIndex          - Index of the first sub-package
- *              ExpectedCount       - Minimum length of each sub-package
- *              SortIndex           - Sub-package entry to sort on
+ *              StartIndex          - Index of the first subpackage
+ *              ExpectedCount       - Minimum length of each subpackage
+ *              SortIndex           - Subpackage entry to sort on
  *              SortDirection       - Ascending or descending
  *              SortKeyName         - Name of the SortIndex field
  *
@@ -961,7 +961,7 @@ AcpiNsCheckSortedList (
     }
 
     /*
-     * NOTE: assumes list of sub-packages contains no NULL elements.
+     * NOTE: assumes list of subpackages contains no NULL elements.
      * Any NULL elements should have been removed by earlier call
      * to AcpiNsRemoveNullElements.
      */
@@ -991,7 +991,7 @@ AcpiNsCheckSortedList (
             return (AE_AML_OPERAND_TYPE);
         }
 
-        /* Each sub-package must have the minimum length */
+        /* Each subpackage must have the minimum length */
 
         if ((*OuterElements)->Package.Count < ExpectedCount)
         {

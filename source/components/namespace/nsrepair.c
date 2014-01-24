@@ -561,7 +561,7 @@ AcpiNsRepairNullElement (
  * RETURN:      None.
  *
  * DESCRIPTION: Remove all NULL package elements from packages that contain
- *              a variable number of sub-packages. For these types of
+ *              a variable number of subpackages. For these types of
  *              packages, NULL elements can be safely removed.
  *
  *****************************************************************************/
@@ -585,7 +585,7 @@ AcpiNsRemoveNullElements (
     /*
      * We can safely remove all NULL elements from these package types:
      * PTYPE1_VAR packages contain a variable number of simple data types.
-     * PTYPE2 packages contain a variable number of sub-packages.
+     * PTYPE2 packages contain a variable number of subpackages.
      */
     switch (PackageType)
     {

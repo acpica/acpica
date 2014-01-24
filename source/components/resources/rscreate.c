@@ -369,7 +369,7 @@ AcpiRsCreatePciRoutingTable (
          */
         UserPrt->Length = (sizeof (ACPI_PCI_ROUTING_TABLE) - 4);
 
-        /* Each sub-package must be of length 4 */
+        /* Each subpackage must be of length 4 */
 
         if ((*TopObjectList)->Package.Count != 4)
         {
@@ -380,7 +380,7 @@ AcpiRsCreatePciRoutingTable (
         }
 
         /*
-         * Dereference the sub-package.
+         * Dereference the subpackage.
          * The SubObjectList will now point to an array of the four IRQ
          * elements: [Address, Pin, Source, SourceIndex]
          */
