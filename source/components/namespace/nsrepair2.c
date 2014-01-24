@@ -754,14 +754,18 @@ AcpiNsRepair_PRT (
     TopObjectList = PackageObject->Package.Elements;
     ElementCount = PackageObject->Package.Count;
 
-    for (Index = 0; Index < ElementCount; Index++)
+    /* Examine each subpackage */
+
+    for (Index = 0; Index < ElementCount; Index++, TopObjectList++)
     {
         SubPackage = *TopObjectList;
         SubObjectList = SubPackage->Package.Elements;
 
-        if (SubPackage->Package.Count < 4) /* Minimum required element count */
+        /* Check for minimum required element count */
+
+        if (SubPackage->Package.Count < 4)
         {
-            return (AE_OK);
+            continue;
         }
 
         /*
@@ -777,14 +781,11 @@ AcpiNsRepair_PRT (
             SubObjectList[2] = ObjDesc;
             Info->ReturnFlags |= ACPI_OBJECT_REPAIRED;
 
-            ACPI_WARN_PREDEFINED ((AE_INFO, Info->FullPathname, Info->NodeFlags,
+            ACPI_WARN_PREDEFINED ((AE_INFO,
+                Info->FullPathname, Info->NodeFlags,
                 "PRT[%X]: Fixed reversed SourceName and SourceIndex",
                 Index));
         }
-
-        /* Point to the next ACPI_OPERAND_OBJECT in the top level package */
-
-        TopObjectList++;
     }
 
     return (AE_OK);
