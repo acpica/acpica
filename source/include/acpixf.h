@@ -145,7 +145,6 @@ extern UINT32               AcpiDbgLayer;
 /* ACPICA runtime options */
 
 extern UINT8                AcpiGbl_AutoSerializeMethods;
-extern UINT8                AcpiGbl_AllMethodsSerialized;
 extern UINT8                AcpiGbl_CopyDsdtLocally;
 extern UINT8                AcpiGbl_CreateOsiMethod;
 extern UINT8                AcpiGbl_DisableAutoRepair;

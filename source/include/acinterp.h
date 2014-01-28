@@ -686,14 +686,6 @@ void
 AcpiExExitInterpreter (
     void);
 
-void
-AcpiExReacquireInterpreter (
-    void);
-
-void
-AcpiExRelinquishInterpreter (
-    void);
-
 BOOLEAN
 AcpiExTruncateFor32bitTable (
     ACPI_OPERAND_OBJECT     *ObjDesc);

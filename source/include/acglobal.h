@@ -170,14 +170,6 @@ UINT8       ACPI_INIT_GLOBAL (AcpiGbl_EnableInterpreterSlack, FALSE);
 UINT8       ACPI_INIT_GLOBAL (AcpiGbl_AutoSerializeMethods, TRUE);
 
 /*
- * Automatically serialize ALL control methods? Default is FALSE, meaning
- * to use the Serialized/NotSerialized method flags on a per method basis.
- * Only change this if the ASL code is poorly written and cannot handle
- * reentrancy even though methods are marked "NotSerialized".
- */
-UINT8       ACPI_INIT_GLOBAL (AcpiGbl_AllMethodsSerialized, FALSE);
-
-/*
  * Create the predefined _OSI method in the namespace? Default is TRUE
  * because ACPI CA is fully compatible with other ACPI implementations.
  * Changing this will revert ACPI CA (and machine ASL) to pre-OSI behavior.

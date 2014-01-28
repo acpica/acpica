@@ -205,7 +205,6 @@ usage (
     ACPI_OPTION ("-ef",                 "Enable display of final memory statistics");
     ACPI_OPTION ("-ei",                 "Enable additional tests for ACPICA interfaces");
     ACPI_OPTION ("-el",                 "Enable loading of additional test tables");
-    ACPI_OPTION ("-em",                 "Enable Interpreter Serialized Mode");
     ACPI_OPTION ("-es",                 "Enable Interpreter Slack Mode");
     ACPI_OPTION ("-et",                 "Enable debug semaphore timeout");
     printf ("\n");
@@ -315,12 +314,6 @@ AeDoOptions (
         case 'l':
 
             AcpiGbl_LoadTestTables = TRUE;
-            break;
-
-        case 'm':
-
-            AcpiGbl_AllMethodsSerialized = TRUE;
-            printf ("Enabling AML Interpreter serialized mode\n");
             break;
 
         case 's':
