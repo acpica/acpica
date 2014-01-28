@@ -247,9 +247,9 @@ AcpiDsDetectNamedOpcodes (
     ACPI_FUNCTION_NAME (AcpiDsDetectNamedOpcodes);
 
 
-    /* We are only interested in opcodes that have an associated name */
+    /* We are only interested in opcodes that create a new name */
 
-    if (!(WalkState->OpInfo->Flags & AML_NAMED))
+    if (!(WalkState->OpInfo->Flags & (AML_NAMED | AML_CREATE | AML_FIELD)))
     {
         return (AE_OK);
     }
@@ -268,7 +268,7 @@ AcpiDsDetectNamedOpcodes (
 
     /* Abort the parse, no need to examine this method any further */
 
-    return_ACPI_STATUS (AE_CTRL_TERMINATE);
+    return (AE_CTRL_TERMINATE);
 }
 
 
