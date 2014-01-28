@@ -161,6 +161,15 @@
 UINT8       ACPI_INIT_GLOBAL (AcpiGbl_EnableInterpreterSlack, FALSE);
 
 /*
+ * Automatically serialize all methods that create named objects? Default
+ * is TRUE, meaning that all NonSerialized methods are scanned once at
+ * table load time to determine those that create named objects. Methods
+ * that create named objects are marked Serialized in order to prevent
+ * possible run-time problems if they are entered by more than one thread.
+ */
+UINT8       ACPI_INIT_GLOBAL (AcpiGbl_AutoSerializeMethods, TRUE);
+
+/*
  * Automatically serialize ALL control methods? Default is FALSE, meaning
  * to use the Serialized/NotSerialized method flags on a per method basis.
  * Only change this if the ASL code is poorly written and cannot handle

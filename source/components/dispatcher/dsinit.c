@@ -223,16 +223,19 @@ AcpiDsInitOneObject (
             break;
         }
 
-        /* Parse/scan method and serialize it if necessary */
-
-        AcpiDsAutoSerializeMethod (Node, ObjDesc);
-        if (ObjDesc->Method.InfoFlags & ACPI_METHOD_SERIALIZED)
+        if (AcpiGbl_AutoSerializeMethods)
         {
-            /* Method was just converted to Serialized */
+            /* Parse/scan method and serialize it if necessary */
 
-            Info->SerialMethodCount++;
-            Info->SerializedMethodCount++;
-            break;
+            AcpiDsAutoSerializeMethod (Node, ObjDesc);
+            if (ObjDesc->Method.InfoFlags & ACPI_METHOD_SERIALIZED)
+            {
+                /* Method was just converted to Serialized */
+
+                Info->SerialMethodCount++;
+                Info->SerializedMethodCount++;
+                break;
+            }
         }
 
         Info->NonSerialMethodCount++;

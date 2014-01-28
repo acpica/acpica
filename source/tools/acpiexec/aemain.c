@@ -198,6 +198,7 @@ usage (
     ACPI_OPTION ("-di",                 "Disable execution of STA/INI methods during init");
     ACPI_OPTION ("-do",                 "Disable Operation Region address simulation");
     ACPI_OPTION ("-dr",                 "Disable repair of method return values");
+    ACPI_OPTION ("-ds",                 "Disable method auto-serialization");
     ACPI_OPTION ("-dt",                 "Disable allocation tracking (performance)");
     printf ("\n");
 
@@ -274,6 +275,11 @@ AeDoOptions (
         case 'r':
 
             AcpiGbl_DisableAutoRepair = TRUE;
+            break;
+
+        case 's':
+
+            AcpiGbl_AutoSerializeMethods = FALSE;
             break;
 
         case 't':
