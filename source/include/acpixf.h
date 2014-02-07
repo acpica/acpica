@@ -256,24 +256,38 @@ ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_DisableSsdtTableInstall, FALSE);
  */
 ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_OsiData, 0);
 
+/*
+ * ACPI 5.0 introduces the concept of a "reduced hardware platform", meaning
+ * that the ACPI hardware is no longer required. A flag in the FADT indicates
+ * a reduced HW machine, and that flag is duplicated here for convenience.
+ */
+ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_ReducedHardware, FALSE);
 
 /*
- * Other miscellaneous public globals
+ * This mechanism is used to trace a specified AML method. The method is
+ * traced each time it is executed.
  */
-extern UINT32               AcpiCurrentGpeCount;
-extern ACPI_TABLE_FADT      AcpiGbl_FADT;
-extern BOOLEAN              AcpiGbl_SystemAwakeAndRunning;
-extern BOOLEAN              AcpiGbl_ReducedHardware;        /* ACPI 5.0 */
+ACPI_INIT_GLOBAL (UINT32,               AcpiGbl_TraceFlags, 0);
+ACPI_INIT_GLOBAL (ACPI_NAME,            AcpiGbl_TraceMethodName, 0);
 
-/* Runtime configuration of debug print levels */
+/*
+ * Runtime configuration of debug output control masks. We want the debug
+ * switches statically initialized so they are already set when the debugger
+ * is entered.
+ */
+#ifdef ACPI_DEBUG_OUTPUT
+ACPI_INIT_GLOBAL (UINT32,               AcpiDbgLevel, ACPI_DEBUG_DEFAULT);
+#else
+ACPI_INIT_GLOBAL (UINT32,               AcpiDbgLevel, ACPI_NORMAL_DEFAULT);
+#endif
+ACPI_INIT_GLOBAL (UINT32,               AcpiDbgLayer, ACPI_COMPONENT_DEFAULT);
 
-extern UINT32               AcpiDbgLevel;
-extern UINT32               AcpiDbgLayer;
-
-/* ACPICA runtime options */
-
-extern UINT32               AcpiGbl_TraceFlags;
-extern ACPI_NAME            AcpiGbl_TraceMethodName;
+/*
+ * Globals that are publically available
+ */
+ACPI_GLOBAL (UINT32,                    AcpiCurrentGpeCount);
+ACPI_GLOBAL (ACPI_TABLE_FADT,           AcpiGbl_FADT);
+ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_SystemAwakeAndRunning);
 
 
 /*
