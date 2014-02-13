@@ -1844,30 +1844,6 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\source\os_specific\service_layers\oswintbl.c"
-					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							DisableLanguageExtensions="false"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							DisableLanguageExtensions="false"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath="..\..\source\os_specific\service_layers\oswinxf.c"
 					>
 					<FileConfiguration
