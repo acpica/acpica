@@ -128,6 +128,36 @@ AeAddToErrorLog (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AslAbort
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Dump the error log and abort the compiler. Used for serious
+ *              I/O errors.
+ *
+ ******************************************************************************/
+
+void
+AslAbort (
+    void)
+{
+
+    AePrintErrorLog (ASL_FILE_STDERR);
+    if (Gbl_DebugFlag)
+    {
+        /* Print error summary to stdout also */
+
+        AePrintErrorLog (ASL_FILE_STDOUT);
+    }
+
+    exit (1);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AeClearErrorLog
  *
  * PARAMETERS:  None
