@@ -592,6 +592,8 @@ Exit:
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiInstallSciHandler)
+
 
 /*******************************************************************************
  *
@@ -667,6 +669,8 @@ UnlockAndExit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiRemoveSciHandler)
 
 
 /*******************************************************************************
