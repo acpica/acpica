@@ -18,6 +18,7 @@ SRCS=	atexec.c atmain.c \
 	../../source/components/hardware/hwtimer.c \
 	../../source/components/hardware/hwvalid.c \
 	../../source/components/hardware/hwxface.c \
+	../../source/common/cmfsize.c \
 	../../source/common/getopt.c \
 	../../source/components/debugger/dbcmds.c \
 	../../source/components/debugger/dbconvert.c \

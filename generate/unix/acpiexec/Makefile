@@ -44,6 +44,7 @@ OBJECTS = \
 	$(OBJDIR)/aehandlers.o\
 	$(OBJDIR)/aemain.o\
 	$(OBJDIR)/aetables.o\
+	$(OBJDIR)/cmfsize.o\
 	$(OBJDIR)/dbcmds.o\
 	$(OBJDIR)/dbconvert.o\
 	$(OBJDIR)/dbdisply.o\

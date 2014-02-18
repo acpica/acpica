@@ -462,7 +462,7 @@ FlCheckForAcpiTable (
 
     /* Header length field must match the file size */
 
-    FileSize = DtGetFileSize (Handle);
+    FileSize = CmGetFileSize (Handle);
     if (Table.Length != FileSize)
     {
         return (AE_ERROR);

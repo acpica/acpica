@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: acapps - common include for ACPI applications/tools
+ * Module Name: cfsize - Common get file size function
  *
  *****************************************************************************/
 
@@ -113,194 +113,71 @@
  *
  *****************************************************************************/
 
-#ifndef _ACAPPS
-#define _ACAPPS
+#include "acpi.h"
+#include "accommon.h"
+#include "acapps.h"
+#include <stdio.h>
+
+#define _COMPONENT          ACPI_TOOLS
+        ACPI_MODULE_NAME    ("cmfsize")
 
 
-#pragma pack(push) /* Set default struct packing */
+/*******************************************************************************
+ *
+ * FUNCTION:    CmGetFileSize
+ *
+ * PARAMETERS:  File                    - Open file descriptor
+ *
+ * RETURN:      File Size. On error, -1 (ACPI_UINT32_MAX)
+ *
+ * DESCRIPTION: Get the size of a file. Uses seek-to-EOF. File must be open.
+ *              Does not disturb the current file pointer. Uses perror for
+ *              error messages.
+ *
+ ******************************************************************************/
 
-#ifdef _MSC_VER                 /* disable some level-4 warnings */
-#pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
-#endif
-
-/* Common info for tool signons */
-
-#define ACPICA_NAME                 "Intel ACPI Component Architecture"
-#define ACPICA_COPYRIGHT            "Copyright (c) 2000 - 2014 Intel Corporation"
-
-#if ACPI_MACHINE_WIDTH == 64
-#define ACPI_WIDTH          "-64"
-
-#elif ACPI_MACHINE_WIDTH == 32
-#define ACPI_WIDTH          "-32"
-
-#else
-#error unknown ACPI_MACHINE_WIDTH
-#define ACPI_WIDTH          "-??"
-
-#endif
-
-/* Macros for signons and file headers */
-
-#define ACPI_COMMON_SIGNON(UtilityName) \
-    "\n%s\n%s version %8.8X%s [%s]\n%s\n\n", \
-    ACPICA_NAME, \
-    UtilityName, ((UINT32) ACPI_CA_VERSION), ACPI_WIDTH, __DATE__, \
-    ACPICA_COPYRIGHT
-
-#define ACPI_COMMON_HEADER(UtilityName, Prefix) \
-    "%s%s\n%s%s version %8.8X%s [%s]\n%s%s\n%s\n", \
-    Prefix, ACPICA_NAME, \
-    Prefix, UtilityName, ((UINT32) ACPI_CA_VERSION), ACPI_WIDTH, __DATE__, \
-    Prefix, ACPICA_COPYRIGHT, \
-    Prefix
-
-/* Macros for usage messages */
-
-#define ACPI_USAGE_HEADER(Usage) \
-    printf ("Usage: %s\nOptions:\n", Usage);
-
-#define ACPI_OPTION(Name, Description) \
-    printf ("  %-18s%s\n", Name, Description);
-
-
-#define FILE_SUFFIX_DISASSEMBLY     "dsl"
-#define ACPI_TABLE_FILE_SUFFIX      ".dat"
-
-
-/*
- * getopt
- */
-int
-AcpiGetopt(
-    int                     argc,
-    char                    **argv,
-    char                    *opts);
-
-int
-AcpiGetoptArgument (
-    int                     argc,
-    char                    **argv);
-
-extern int                  AcpiGbl_Optind;
-extern int                  AcpiGbl_Opterr;
-extern int                  AcpiGbl_SubOptChar;
-extern char                 *AcpiGbl_Optarg;
-
-
-/*
- * cmfsize - Common get file size function
- */
 UINT32
 CmGetFileSize (
-    FILE                    *File);
+    FILE                    *File)
+{
+    long                    FileSize;
+    long                    CurrentOffset;
 
 
-#ifndef ACPI_DUMP_APP
-/*
- * adisasm
- */
-ACPI_STATUS
-AdAmlDisassemble (
-    BOOLEAN                 OutToFile,
-    char                    *Filename,
-    char                    *Prefix,
-    char                    **OutFilename);
+    /* Save the current file pointer, seek to EOF to obtain file size */
 
-void
-AdPrintStatistics (
-    void);
+    CurrentOffset = ftell (File);
+    if (CurrentOffset < 0)
+    {
+        goto OffsetError;
+    }
 
-ACPI_STATUS
-AdFindDsdt(
-    UINT8                   **DsdtPtr,
-    UINT32                  *DsdtLength);
+    if (fseek (File, 0, SEEK_END))
+    {
+        goto SeekError;
+    }
 
-void
-AdDumpTables (
-    void);
+    FileSize = ftell (File);
+    if (FileSize < 0)
+    {
+        goto OffsetError;
+    }
 
-ACPI_STATUS
-AdGetLocalTables (
-    void);
+    /* Restore original file pointer */
 
-ACPI_STATUS
-AdParseTable (
-    ACPI_TABLE_HEADER       *Table,
-    ACPI_OWNER_ID           *OwnerId,
-    BOOLEAN                 LoadTable,
-    BOOLEAN                 External);
+    if (fseek (File, CurrentOffset, SEEK_SET))
+    {
+        goto SeekError;
+    }
 
-ACPI_STATUS
-AdDisplayTables (
-    char                    *Filename,
-    ACPI_TABLE_HEADER       *Table);
-
-ACPI_STATUS
-AdDisplayStatistics (
-    void);
+    return ((UINT32) FileSize);
 
 
-/*
- * adwalk
- */
-void
-AcpiDmCrossReferenceNamespace (
-    ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot,
-    ACPI_OWNER_ID           OwnerId);
+OffsetError:
+    perror ("Could not get file offset");
+    return (ACPI_UINT32_MAX);
 
-void
-AcpiDmDumpTree (
-    ACPI_PARSE_OBJECT       *Origin);
-
-void
-AcpiDmFindOrphanMethods (
-    ACPI_PARSE_OBJECT       *Origin);
-
-void
-AcpiDmFinishNamespaceLoad (
-    ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot,
-    ACPI_OWNER_ID           OwnerId);
-
-void
-AcpiDmConvertResourceIndexes (
-    ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot);
-
-
-/*
- * adfile
- */
-ACPI_STATUS
-AdInitialize (
-    void);
-
-char *
-FlGenerateFilename (
-    char                    *InputFilename,
-    char                    *Suffix);
-
-ACPI_STATUS
-FlSplitInputPathname (
-    char                    *InputPath,
-    char                    **OutDirectoryPath,
-    char                    **OutFilename);
-
-char *
-AdGenerateFilename (
-    char                    *Prefix,
-    char                    *TableId);
-
-void
-AdWriteTable (
-    ACPI_TABLE_HEADER       *Table,
-    UINT32                  Length,
-    char                    *TableName,
-    char                    *OemTableId);
-#endif
-
-#pragma pack(pop) /* Restore original struct packing */
-
-#endif /* _ACAPPS */
+SeekError:
+    perror ("Could not seek file");
+    return (ACPI_UINT32_MAX);
+}

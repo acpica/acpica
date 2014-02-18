@@ -250,6 +250,10 @@
 				Name="Common"
 				>
 				<File
+					RelativePath="..\..\source\common\cmfsize.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\Common\getopt.c"
 					>
 					<FileConfiguration

@@ -214,10 +214,6 @@ ApGetTableLength (
 /*
  * apfiles - File I/O utilities
  */
-UINT32
-ApGetFileSize (
-    FILE                    *File);
-
 int
 ApOpenOutputFile (
     char                    *Pathname);

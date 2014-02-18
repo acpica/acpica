@@ -89,6 +89,7 @@ OBJECTS = \
 	$(OBJDIR)/asluuid.o\
 	$(OBJDIR)/aslwalks.o\
 	$(OBJDIR)/aslxref.o\
+	$(OBJDIR)/cmfsize.o\
 	$(OBJDIR)/dtcompile.o\
 	$(OBJDIR)/dtexpress.o\
 	$(OBJDIR)/dtfield.o\

@@ -38,6 +38,7 @@ OBJECTS = \
 	$(OBJDIR)/anmain.o\
 	$(OBJDIR)/anstubs.o\
 	$(OBJDIR)/antables.o\
+	$(OBJDIR)/cmfsize.o\
 	$(OBJDIR)/dbfileio.o\
 	$(OBJDIR)/dsfield.o\
 	$(OBJDIR)/dsmthdat.o\

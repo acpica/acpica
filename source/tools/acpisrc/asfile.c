@@ -114,6 +114,7 @@
  *****************************************************************************/
 
 #include "acpisrc.h"
+#include "acapps.h"
 
 /* Local prototypes */
 
@@ -786,8 +787,6 @@ AsGetFile (
     FILE                    *File;
     UINT32                  Size;
     char                    *Buffer;
-    int                     Seek1;
-    int                     Seek2;
     size_t                  Actual;
 
 
@@ -802,11 +801,8 @@ AsGetFile (
 
     /* Need file size to allocate a buffer */
 
-    Seek1 = fseek (File, 0L, SEEK_END);
-    Size = ftell (File);
-    Seek2 = fseek (File, 0L, SEEK_SET);
-
-    if (Seek1 || Seek2 || (Size == -1))
+    Size = CmGetFileSize (File);
+    if (Size == ACPI_UINT32_MAX)
     {
         printf ("Could not get file size for %s\n", Filename);
         goto ErrorExit;

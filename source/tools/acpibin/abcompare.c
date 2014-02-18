@@ -114,6 +114,7 @@
  *****************************************************************************/
 
 #include "acpibin.h"
+#include "acapps.h"
 
 
 FILE                        *File1;
@@ -140,10 +141,6 @@ static char *
 AbGetFile (
     char                    *Filename,
     UINT32                  *FileSize);
-
-static UINT32
-AbGetFileSize (
-    FILE                    *File);
 
 static void
 AbPrintHeaderInfo (
@@ -604,42 +601,6 @@ AbCompareAmlFiles (
 
 /******************************************************************************
  *
- * FUNCTION:    AbGetFileSize
- *
- * DESCRIPTION: Get the size of an open file
- *
- ******************************************************************************/
-
-static UINT32
-AbGetFileSize (
-    FILE                    *File)
-{
-    UINT32                  FileSize;
-    long                    Offset;
-
-
-    Offset = ftell (File);
-
-    if (fseek (File, 0, SEEK_END))
-    {
-        return (0);
-    }
-
-    FileSize = (UINT32) ftell (File);
-
-    /* Restore file pointer */
-
-    if (fseek (File, Offset, SEEK_SET))
-    {
-        return (0);
-    }
-
-    return (FileSize);
-}
-
-
-/******************************************************************************
- *
  * FUNCTION:    AbGetFile
  *
  * DESCRIPTION: Open a file and read it entirely into a new buffer
@@ -668,8 +629,8 @@ AbGetFile (
 
     /* Need file size to allocate a buffer */
 
-    Size = AbGetFileSize (File);
-    if (!Size)
+    Size = CmGetFileSize (File);
+    if (Size == ACPI_UINT32_MAX)
     {
         printf ("Could not get file size (seek) for %s\n", Filename);
         goto ErrorExit;
@@ -756,7 +717,7 @@ AbDumpAmlFile (
 
     /* Summary for the output file */
 
-    FileSize = AbGetFileSize (FileOutHandle);
+    FileSize = CmGetFileSize (FileOutHandle);
     printf ("Output file: %s contains %u (0x%X) bytes\n\n",
         File2Path, FileSize, FileSize);
 

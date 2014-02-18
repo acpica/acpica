@@ -1690,6 +1690,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\common\cmfsize.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\common\dmextern.c"
 					>
 					<FileConfiguration

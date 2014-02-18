@@ -117,6 +117,7 @@
 
 #include "aslcompiler.h"
 #include "dtcompiler.h"
+#include "acapps.h"
 
 #define _COMPONENT          DT_COMPILER
         ACPI_MODULE_NAME    ("dtio")
@@ -809,7 +810,11 @@ DtScanFile (
 
     /* Get the file size */
 
-    Gbl_InputByteCount = DtGetFileSize (Handle);
+    Gbl_InputByteCount = CmGetFileSize (Handle);
+    if (Gbl_InputByteCount == ACPI_UINT32_MAX)
+    {
+        AslAbort ();
+    }
 
     Gbl_CurrentLineNumber = 0;
     Gbl_CurrentLineOffset = 0;
@@ -888,7 +893,12 @@ DtOutputBinary (
     /* Walk the entire parse tree, emitting the binary data */
 
     DtWalkTableTree (RootTable, DtWriteBinary, NULL, NULL);
-    Gbl_TableLength = DtGetFileSize (Gbl_Files[ASL_FILE_AML_OUTPUT].Handle);
+
+    Gbl_TableLength = CmGetFileSize (Gbl_Files[ASL_FILE_AML_OUTPUT].Handle);
+    if (Gbl_TableLength == ACPI_UINT32_MAX)
+    {
+        AslAbort ();
+    }
 }
 
 

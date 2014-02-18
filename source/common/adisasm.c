@@ -151,10 +151,6 @@ NsSetupNamespaceListing (
 
 /* Local prototypes */
 
-static UINT32
-AdGetFileSize (
-    FILE                    *File);
-
 static void
 AdCreateTableHeader (
     char                    *Filename,
@@ -225,38 +221,6 @@ AcpiDsMethodDataInitArgs (
 
 static ACPI_TABLE_DESC      LocalTables[1];
 static ACPI_PARSE_OBJECT    *AcpiGbl_ParseOpRoot;
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AdGetFileSize
- *
- * PARAMETERS:  File                - Open file handle
- *
- * RETURN:      File Size
- *
- * DESCRIPTION: Get current file size. Uses seek-to-EOF. File must be open.
- *
- ******************************************************************************/
-
-static UINT32
-AdGetFileSize (
-    FILE                    *File)
-{
-    UINT32                  FileSize;
-    long                    Offset;
-
-
-    Offset = ftell (File);
-
-    fseek (File, 0, SEEK_END);
-    FileSize = (UINT32) ftell (File);
-
-    /* Restore file pointer */
-
-    fseek (File, Offset, SEEK_SET);
-    return (FileSize);
-}
 
 
 /*******************************************************************************
@@ -485,7 +449,7 @@ AdAmlDisassemble (
         fprintf (stderr, "Acpi Data Table [%4.4s] decoded\n",
             Table->Signature);
         fprintf (stderr, "Formatted output:  %s - %u bytes\n",
-            DisasmFilename, AdGetFileSize (File));
+            DisasmFilename, CmGetFileSize (File));
     }
     else
     {
@@ -603,7 +567,7 @@ AdAmlDisassemble (
 
             fprintf (stderr, "Disassembly completed\n");
             fprintf (stderr, "ASL Output:    %s - %u bytes\n",
-                DisasmFilename, AdGetFileSize (File));
+                DisasmFilename, CmGetFileSize (File));
         }
     }
 

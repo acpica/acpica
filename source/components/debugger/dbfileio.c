@@ -214,6 +214,8 @@ AcpiDbOpenDebugFile (
 
 
 #ifdef ACPI_APPLICATION
+#include "acapps.h"
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbCheckTextModeCorruption
@@ -318,9 +320,11 @@ AcpiDbReadTable (
 
     /* Get the file size */
 
-    fseek (fp, 0, SEEK_END);
-    FileSize = (UINT32) ftell (fp);
-    fseek (fp, 0, SEEK_SET);
+    FileSize = CmGetFileSize (fp);
+    if (FileSize == ACPI_UINT32_MAX)
+    {
+        return (AE_ERROR);
+    }
 
     if (FileSize < 4)
     {

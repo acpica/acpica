@@ -2160,6 +2160,10 @@
 				Filter=".c"
 				>
 				<File
+					RelativePath="..\..\source\common\cmfsize.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\COMPONENTS\Disassembler\dmnames.c"
 					>
 					<FileConfiguration
