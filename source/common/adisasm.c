@@ -417,7 +417,7 @@ AdAmlDisassemble (
         /* Create/Open a disassembly output file */
 
         DisasmFilename = FlGenerateFilename (Prefix, FILE_SUFFIX_DISASSEMBLY);
-        if (!OutFilename)
+        if (!DisasmFilename)
         {
             fprintf (stderr, "Could not generate output filename\n");
             Status = AE_ERROR;
@@ -714,8 +714,17 @@ AdCreateTableHeader (
     else
     {
         NewFilename = ACPI_ALLOCATE_ZEROED (9);
-        strncat (NewFilename, Table->Signature, 4);
-        strcat (NewFilename, ".aml");
+        if (NewFilename)
+        {
+            strncat (NewFilename, Table->Signature, 4);
+            strcat (NewFilename, ".aml");
+        }
+    }
+
+    if (!NewFilename)
+    {
+        AcpiOsPrintf (" **** Could not generate AML output filename\n");
+        return;
     }
 
     /* Open the ASL definition block */
