@@ -188,7 +188,7 @@ AcpiDbConvertToNode (
         Node = ACPI_TO_POINTER (Address);
         if (!AcpiOsReadable (Node, sizeof (ACPI_NAMESPACE_NODE)))
         {
-            AcpiOsPrintf ("Address %p is invalid in this address space\n",
+            AcpiOsPrintf ("Address %p is invalid",
                 Node);
             return (NULL);
         }
@@ -197,7 +197,7 @@ AcpiDbConvertToNode (
 
         if (ACPI_GET_DESCRIPTOR_TYPE (Node) != ACPI_DESC_TYPE_NAMED)
         {
-            AcpiOsPrintf ("Address %p is not a valid NS node [%s]\n",
+            AcpiOsPrintf ("Address %p is not a valid namespace node [%s]\n",
                     Node, AcpiUtGetDescriptorName (Node));
             return (NULL);
         }
@@ -211,6 +211,8 @@ AcpiDbConvertToNode (
         Node = AcpiDbLocalNsLookup (InString);
         if (!Node)
         {
+            AcpiOsPrintf ("Could not find [%s] in namespace, defaulting to root node\n",
+                InString);
             Node = AcpiGbl_RootNode;
         }
     }
@@ -512,8 +514,6 @@ AcpiDbUnloadAcpiTable (
     Node = AcpiDbConvertToNode (ObjectName);
     if (!Node)
     {
-        AcpiOsPrintf ("Could not find [%s] in namespace\n",
-            ObjectName);
         return;
     }
 
