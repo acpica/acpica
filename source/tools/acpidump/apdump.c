@@ -327,6 +327,7 @@ ApDumpAllTables (
     ACPI_PHYSICAL_ADDRESS   Address;
     ACPI_STATUS             Status;
     UINT32                  i;
+    int                     TableStatus;
 
 
     /* Get and dump all available ACPI tables */
@@ -356,11 +357,13 @@ ApDumpAllTables (
             }
         }
 
-        if (ApDumpTableBuffer (Table, Instance, Address))
-        {
-            return (-1);
-        }
+        TableStatus = ApDumpTableBuffer (Table, Instance, Address);
         free (Table);
+
+        if (TableStatus)
+        {
+            break;
+        }
     }
 
     /* Something seriously bad happened if the loop terminates here */
@@ -440,6 +443,7 @@ ApDumpTableByName (
     ACPI_TABLE_HEADER       *Table;
     ACPI_PHYSICAL_ADDRESS   Address;
     ACPI_STATUS             Status;
+    int                     TableStatus;
 
 
     if (strlen (Signature) != ACPI_NAME_SIZE)
@@ -487,11 +491,13 @@ ApDumpTableByName (
             return (-1);
         }
 
-        if (ApDumpTableBuffer (Table, Instance, Address))
-        {
-            return (-1);
-        }
+        TableStatus = ApDumpTableBuffer (Table, Instance, Address);
         free (Table);
+
+        if (TableStatus)
+        {
+            break;
+        }
     }
 
     /* Something seriously bad happened if the loop terminates here */
@@ -518,7 +524,7 @@ ApDumpTableFromFile (
 {
     ACPI_TABLE_HEADER       *Table;
     UINT32                  FileSize = 0;
-    int                     TableStatus;
+    int                     TableStatus = -1;
 
 
     /* Get the entire ACPI table from the file */
@@ -536,7 +542,7 @@ ApDumpTableFromFile (
         fprintf (stderr,
             "Table length (0x%X) is too large for input file (0x%X) %s\n",
             Table->Length, FileSize, Pathname);
-        return (-1);
+        goto Exit;
     }
 
     if (Gbl_VerboseMode)
@@ -547,6 +553,8 @@ ApDumpTableFromFile (
     }
 
     TableStatus = ApDumpTableBuffer (Table, 0, 0);
+
+Exit:
     free (Table);
     return (TableStatus);
 }
