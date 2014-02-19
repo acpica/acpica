@@ -492,7 +492,7 @@ AcpiUtPrintString (
     }
 
     AcpiOsPrintf ("\"");
-    for (i = 0; String[i] && (i < MaxLength); i++)
+    for (i = 0; (i < MaxLength) && String[i]; i++)
     {
         /* Escape sequences */
 
