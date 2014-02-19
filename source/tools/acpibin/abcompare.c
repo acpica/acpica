@@ -117,8 +117,6 @@
 #include "acapps.h"
 
 
-FILE                        *File1;
-FILE                        *File2;
 ACPI_TABLE_HEADER           Header1;
 ACPI_TABLE_HEADER           Header2;
 
@@ -214,7 +212,6 @@ AbHexByteToBinary (
 
     *OutBinary = (UINT8) ((Local1 << 4) | Local2);
     return (2);
-
 }
 
 
@@ -259,23 +256,24 @@ AcpiTbSumTable (
     void                    *Buffer,
     UINT32                  Length)
 {
-    const UINT8             *limit;
-    const UINT8             *rover;
-    UINT8                   sum = 0;
+    const UINT8             *Limit;
+    const UINT8             *Rover;
+    UINT8                   Sum = 0;
 
 
     if (Buffer && Length)
     {
         /* Buffer and Length are valid */
 
-        limit = (UINT8 *) Buffer + Length;
+        Limit = (UINT8 *) Buffer + Length;
 
-        for (rover = Buffer; rover < limit; rover++)
+        for (Rover = Buffer; Rover < Limit; Rover++)
         {
-            sum = (UINT8) (sum + *rover);
+            Sum = (UINT8) (Sum + *Rover);
         }
     }
-    return (sum);
+
+    return (Sum);
 }
 
 
@@ -302,10 +300,10 @@ AbPrintHeaderInfo (
     printf ("Length            : %8.8X\n",    Header->Length);
     printf ("Revision          : %2.2X\n",    Header->Revision);
     printf ("Checksum          : %2.2X\n",    Header->Checksum);
-    printf ("OEM ID            : %6.6s\n",    Header->OemId);
-    printf ("OEM Table ID      : %8.8s\n",    Header->OemTableId);
+    printf ("OEM ID            : %.6s\n",     Header->OemId);
+    printf ("OEM Table ID      : %.8s\n",     Header->OemTableId);
     printf ("OEM Revision      : %8.8X\n",    Header->OemRevision);
-    printf ("ASL Compiler ID   : %4.4s\n",    Header->AslCompilerId);
+    printf ("ASL Compiler ID   : %.4s\n",     Header->AslCompilerId);
     printf ("Compiler Revision : %8.8X\n",    Header->AslCompilerRevision);
     printf ("\n");
 }
@@ -322,10 +320,10 @@ AbPrintHeadersInfo (
     printf ("Length             %8.8X : %8.8X\n",    Header->Length, Header2->Length);
     printf ("Revision           %8.2X : %2.2X\n",    Header->Revision, Header2->Revision);
     printf ("Checksum           %8.2X : %2.2X\n",    Header->Checksum, Header2->Checksum);
-    printf ("OEM ID             %8.6s : %6.6s\n",    Header->OemId, Header2->OemId);
-    printf ("OEM Table ID       %8.8s : %8.8s\n",    Header->OemTableId, Header2->OemTableId);
+    printf ("OEM ID             %8.6s : %.6s\n",     Header->OemId, Header2->OemId);
+    printf ("OEM Table ID       %8.8s : %.8s\n",     Header->OemTableId, Header2->OemTableId);
     printf ("OEM Revision       %8.8X : %8.8X\n",    Header->OemRevision, Header2->OemRevision);
-    printf ("ASL Compiler ID    %8.4s : %4.4s\n",    Header->AslCompilerId, Header2->AslCompilerId);
+    printf ("ASL Compiler ID    %8.4s : %.4s\n",     Header->AslCompilerId, Header2->AslCompilerId);
     printf ("Compiler Revision  %8.8X : %8.8X\n",    Header->AslCompilerRevision, Header2->AslCompilerRevision);
     printf ("\n");
 }
@@ -341,22 +339,25 @@ AbPrintHeadersInfo (
 
 void
 AbDisplayHeader (
-    char                    *File1Path)
+    char                    *FilePath)
 {
     UINT32                  Actual;
+    FILE                    *File;
 
 
-    File1 = fopen (File1Path, "rb");
-    if (!File1)
+    File = fopen (FilePath, "rb");
+    if (!File)
     {
-        printf ("Could not open file %s\n", File1Path);
+        printf ("Could not open file %s\n", FilePath);
         return;
     }
 
-    Actual = fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
+    Actual = fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File);
+    fclose (File);
+
     if (Actual != sizeof (ACPI_TABLE_HEADER))
     {
-        printf ("File %s does not contain an ACPI table header\n", File1Path);
+        printf ("File %s does not contain a valid ACPI table header\n", FilePath);
         return;
     }
 
@@ -379,30 +380,31 @@ AbDisplayHeader (
 
 void
 AbComputeChecksum (
-    char                    *File1Path)
+    char                    *FilePath)
 {
     UINT32                  Actual;
     ACPI_TABLE_HEADER       *Table;
     UINT8                   Checksum;
+    FILE                    *File;
 
 
-    File1 = fopen (File1Path, "rb");
-    if (!File1)
+    File = fopen (FilePath, "rb");
+    if (!File)
     {
-        printf ("Could not open file %s\n", File1Path);
+        printf ("Could not open file %s\n", FilePath);
         return;
     }
 
-    Actual = fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
+    Actual = fread (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File);
     if (Actual < sizeof (ACPI_TABLE_HEADER))
     {
-        printf ("File %s does not contain an ACPI table header\n", File1Path);
-        return;
+        printf ("File %s does not contain a valid ACPI table header\n", FilePath);
+        goto Exit1;
     }
 
     if (!AbValidateHeader (&Header1))
     {
-        return;
+        goto Exit1;
     }
 
     if (!Gbl_TerseMode)
@@ -415,18 +417,18 @@ AbComputeChecksum (
     Table = AcpiOsAllocate (Header1.Length);
     if (!Table)
     {
-        printf ("could not allocate\n");
-        return;
+        printf ("Could not allocate buffer for table\n");
+        goto Exit1;
     }
 
     /* Read the entire table, including header */
 
-    fseek (File1, 0, SEEK_SET);
-    Actual = fread (Table, 1, Header1.Length, File1);
+    fseek (File, 0, SEEK_SET);
+    Actual = fread (Table, 1, Header1.Length, File);
     if (Actual != Header1.Length)
     {
-        printf ("could not read table, length %u\n", Header1.Length);
-        return;
+        printf ("Could not read table, length %u\n", Header1.Length);
+        goto Exit2;
     }
 
     /* Compute the checksum for the table */
@@ -438,32 +440,41 @@ AbComputeChecksum (
 
     if (Header1.Checksum == Checksum)
     {
-        printf ("Checksum ok in AML file, not updating\n");
-        return;
+        printf ("Checksum OK in AML file, not updating\n");
+        goto Exit2;
     }
 
     /* Open the target file for writing, to update checksum */
 
-    fclose (File1);
-    File1 = fopen (File1Path, "r+b");
-    if (!File1)
+    fclose (File);
+    File = fopen (FilePath, "r+b");
+    if (!File)
     {
-        printf ("Could not open file %s for writing\n", File1Path);
-        return;
+        printf ("Could not open file %s for writing\n", FilePath);
+        goto Exit2;
     }
 
     /* Set the checksum, write the new header */
 
     Header1.Checksum = Checksum;
 
-    Actual = fwrite (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File1);
+    Actual = fwrite (&Header1, 1, sizeof (ACPI_TABLE_HEADER), File);
     if (Actual != sizeof (ACPI_TABLE_HEADER))
     {
         printf ("Could not write updated table header\n");
-        return;
+        goto Exit2;
     }
 
     printf ("Wrote new checksum\n");
+
+Exit2:
+    AcpiOsFree (Table);
+
+Exit1:
+    if (File)
+    {
+        fclose (File);
+    }
     return;
 }
 
@@ -488,6 +499,9 @@ AbCompareAmlFiles (
     UINT8                   Char2;
     UINT8                   Mismatches = 0;
     BOOLEAN                 HeaderMismatch = FALSE;
+    FILE                    *File1;
+    FILE                    *File2;
+    int                     Status = -1;
 
 
     File1 = fopen (File1Path, "rb");
@@ -501,7 +515,7 @@ AbCompareAmlFiles (
     if (!File2)
     {
         printf ("Could not open file %s\n", File2Path);
-        return (-1);
+        goto Exit1;
     }
 
     /* Read the ACPI header from each file */
@@ -510,20 +524,20 @@ AbCompareAmlFiles (
     if (Actual1 != sizeof (ACPI_TABLE_HEADER))
     {
         printf ("File %s does not contain an ACPI table header\n", File1Path);
-        return (-1);
+        goto Exit2;
     }
 
     Actual2 = fread (&Header2, 1, sizeof (ACPI_TABLE_HEADER), File2);
     if (Actual2 != sizeof (ACPI_TABLE_HEADER))
     {
         printf ("File %s does not contain an ACPI table header\n", File2Path);
-        return (-1);
+        goto Exit2;
     }
 
     if ((!AbValidateHeader (&Header1)) ||
         (!AbValidateHeader (&Header2)))
     {
-        return (-1);
+        goto Exit2;
     }
 
     /* Table signatures must match */
@@ -531,7 +545,7 @@ AbCompareAmlFiles (
     if (*((UINT32 *) Header1.Signature) != *((UINT32 *) Header2.Signature))
     {
         printf ("Table signatures do not match\n");
-        return (-1);
+        goto Exit2;
     }
 
     if (!Gbl_TerseMode)
@@ -563,7 +577,7 @@ AbCompareAmlFiles (
             if (Mismatches > 100)
             {
                 printf ("100 Mismatches: Too many mismatches\n");
-                return (-1);
+                goto Exit2;
             }
         }
 
@@ -595,7 +609,14 @@ AbCompareAmlFiles (
     }
 
     printf ("%u Mismatches found\n", Mismatches);
-    return (0);
+    Status = 0;
+
+Exit2:
+    fclose (File2);
+
+Exit1:
+    fclose (File1);
+    return (Status);
 }
 
 
@@ -680,6 +701,7 @@ AbDumpAmlFile (
     char                    *FileBuffer;
     FILE                    *FileOutHandle;
     UINT32                  FileSize = 0;
+    int                     Status = -1;
 
 
     /* Get the entire AML file, validate header */
@@ -697,12 +719,12 @@ AbDumpAmlFile (
     if (!FileOutHandle)
     {
         printf ("Could not open file %s\n", File2Path);
-        return (-1);
+        goto Exit1;
     }
 
     if (!AbValidateHeader ((ACPI_TABLE_HEADER *) FileBuffer))
     {
-        return (-1);
+        goto Exit2;
     }
 
     /* Convert binary AML to text, using common dump buffer routine */
@@ -721,7 +743,14 @@ AbDumpAmlFile (
     printf ("Output file: %s contains %u (0x%X) bytes\n\n",
         File2Path, FileSize, FileSize);
 
-    return (0);
+    Status = 0;
+
+Exit2:
+    fclose (FileOutHandle);
+
+Exit1:
+    free (FileBuffer);
+    return (Status);
 }
 
 
