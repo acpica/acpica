@@ -990,7 +990,7 @@ UtDoConstant (
 }
 
 
-/* TBD: use version in ACPI CA main code base? */
+/* TBD: use version in ACPICA main code base? */
 
 /*******************************************************************************
  *

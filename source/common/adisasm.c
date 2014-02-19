@@ -242,7 +242,7 @@ AdInitialize (
     ACPI_STATUS             Status;
 
 
-    /* ACPI CA subsystem initialization */
+    /* ACPICA subsystem initialization */
 
     Status = AcpiOsInitialize ();
     if (ACPI_FAILURE (Status))
@@ -604,7 +604,7 @@ Cleanup:
  *
  * RETURN:      None
  *
- * DESCRIPTION: Create the disassembler header, including ACPI CA signon with
+ * DESCRIPTION: Create the disassembler header, including ACPICA signon with
  *              current time and date.
  *
  *****************************************************************************/
@@ -636,7 +636,7 @@ AdDisassemblerHeader (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Create the ASL table header, including ACPI CA signon with
+ * DESCRIPTION: Create the ASL table header, including ACPICA signon with
  *              current time and date.
  *
  *****************************************************************************/
