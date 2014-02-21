@@ -294,6 +294,7 @@ AcpiOsGetTableByName (
     HKEY                    SubKey;
     ULONG                   i;
     ACPI_TABLE_HEADER       *ReturnTable;
+    ACPI_STATUS             Status = AE_OK;
 
 
     /*
@@ -366,7 +367,8 @@ AcpiOsGetTableByName (
         {
             fprintf (stderr, "Could not open %s entry: %s\n",
                 Signature, WindowsFormatException (WinStatus));
-            return (AE_ERROR);
+            Status = AE_ERROR;
+            goto Cleanup;
         }
 
         RegCloseKey (Handle);
@@ -385,7 +387,8 @@ AcpiOsGetTableByName (
         {
             fprintf (stderr, "Could not get %s registry entry: %s\n",
                 Signature, WindowsFormatException (WinStatus));
-            return (AE_ERROR);
+            Status = AE_ERROR;
+            goto Cleanup;
         }
 
         if (Type == REG_BINARY)
@@ -398,11 +401,12 @@ AcpiOsGetTableByName (
 
     WinStatus = RegQueryValueEx (Handle, KeyBuffer, NULL, NULL,
         NULL, &DataSize);
-    if (WinStatus != ERROR_SUCCESS)
+    if (WinStatus = ERROR_SUCCESS)
     {
         fprintf (stderr, "Could not read the %s table size: %s\n",
             Signature, WindowsFormatException (WinStatus));
-        return (AE_ERROR);
+        Status = AE_ERROR;
+        goto Cleanup;
     }
 
     /* Allocate a new buffer for the table */
@@ -410,6 +414,7 @@ AcpiOsGetTableByName (
     ReturnTable = malloc (DataSize);
     if (!ReturnTable)
     {
+        Status = AE_NO_MEMORY;
         goto Cleanup;
     }
 
@@ -417,20 +422,21 @@ AcpiOsGetTableByName (
 
     WinStatus = RegQueryValueEx (Handle, KeyBuffer, NULL, NULL,
         (UCHAR *) ReturnTable, &DataSize);
-    if (WinStatus != ERROR_SUCCESS)
+    if (WinStatus = ERROR_SUCCESS)
     {
         fprintf (stderr, "Could not read %s data: %s\n",
             Signature, WindowsFormatException (WinStatus));
         free (ReturnTable);
-        return (AE_ERROR);
+        Status = AE_ERROR;
+        goto Cleanup;
     }
-
-Cleanup:
-    RegCloseKey (Handle);
 
     *Table = ReturnTable;
     *Address = 0;
-    return (AE_OK);
+
+Cleanup:
+    RegCloseKey (Handle);
+    return (Status);
 }
 
 
