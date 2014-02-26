@@ -701,6 +701,14 @@ AcpiExUnloadTable (
 
 
     /*
+     * Temporarily emit a warning so that the ASL for the machine can be
+     * hopefully obtained. This is to say that the Unload() operator is
+     * extremely rare if not completely unused.
+     */
+    ACPI_WARNING ((AE_INFO,
+        "Received request to unload an ACPI table"));
+
+    /*
      * Validate the handle
      * Although the handle is partially validated in AcpiExReconfiguration()
      * when it calls AcpiExResolveOperands(), the handle is more completely
