@@ -3078,6 +3078,10 @@
 				Filter=".c"
 				>
 				<File
+					RelativePath="..\..\source\common\ahids.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\common\cmfsize.c"
 					>
 				</File>

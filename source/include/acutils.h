@@ -1174,6 +1174,17 @@ AcpiUtMethodError (
     ACPI_STATUS             LookupStatus);
 
 
+/*
+ * Utility functions for ACPI names and IDs
+ */
+const AH_PREDEFINED_NAME *
+AcpiAhMatchPredefinedName (
+    char                    *Nameseg);
+
+const AH_DEVICE_ID *
+AcpiAhMatchHardwareId (
+    char                    *Hid);
+
 #pragma pack(pop) /* Restore original struct packing */
 
 #endif /* _ACUTILS_H */

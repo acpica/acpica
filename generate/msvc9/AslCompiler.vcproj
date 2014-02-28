@@ -1686,6 +1686,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\common\ahids.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\common\ahpredef.c"
 					>
 				</File>

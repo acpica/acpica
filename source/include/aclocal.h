@@ -955,7 +955,8 @@ typedef union acpi_parse_value
 #define ACPI_DASM_MATCHOP               0x06        /* Parent opcode is a Match() operator */
 #define ACPI_DASM_LNOT_PREFIX           0x07        /* Start of a LNotEqual (etc.) pair of opcodes */
 #define ACPI_DASM_LNOT_SUFFIX           0x08        /* End  of a LNotEqual (etc.) pair of opcodes */
-#define ACPI_DASM_IGNORE                0x09        /* Not used at this time */
+#define ACPI_DASM_HID_STRING            0x09        /* String is a _HID or _CID */
+#define ACPI_DASM_IGNORE                0x0A        /* Not used at this time */
 
 /*
  * Generic operation (for example:  If, While, Store)
@@ -1422,6 +1423,13 @@ typedef struct ah_predefined_name
 #endif
 
 } AH_PREDEFINED_NAME;
+
+typedef struct ah_device_id
+{
+    char            *Name;
+    char            *Description;
+
+} AH_DEVICE_ID;
 
 #pragma pack(pop) /* Restore original struct packing */
 

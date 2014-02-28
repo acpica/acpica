@@ -705,11 +705,11 @@ AcpiDmByteList (
     ACPI_PARSE_OBJECT       *Op);
 
 void
-AcpiDmIsEisaId (
+AcpiDmCheckForHardwareId (
     ACPI_PARSE_OBJECT       *Op);
 
 void
-AcpiDmEisaId (
+AcpiDmDecompressEisaId (
     UINT32                  EncodedId);
 
 BOOLEAN

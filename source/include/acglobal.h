@@ -591,6 +591,7 @@ ACPI_INIT_GLOBAL (ACPI_FILE,            AcpiGbl_DebugFile, NULL);
  ****************************************************************************/
 
 extern const AH_PREDEFINED_NAME         AslPredefinedInfo[];
+extern const AH_DEVICE_ID               AslDeviceIds[];
 
 
 #pragma pack(pop) /* Restore original struct packing */

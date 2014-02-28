@@ -144,18 +144,18 @@ AhDisplayUsage (
     ACPI_OPTION ("-v",                      "Display version information");
 
     printf ("\nACPI Names and Symbols:\n");
-    ACPI_OPTION ("-k [NamePrefix]",         "Find/Display ASL non-operator keyword(s)");
-    ACPI_OPTION ("-m [NamePrefix]",         "Find/Display AML opcode name(s)");
-    ACPI_OPTION ("-p [NamePrefix]",         "Find/Display ASL predefined method name(s)");
-    ACPI_OPTION ("-s [NamePrefix]",         "Find/Display ASL operator name(s)");
+    ACPI_OPTION ("-i [Name/Prefix]",        "Find/Display ACPI/PNP Hardware ID(s)");
+    ACPI_OPTION ("-k [Name/Prefix]",        "Find/Display ASL non-operator keyword(s)");
+    ACPI_OPTION ("-m [Name/Prefix]",        "Find/Display AML opcode name(s)");
+    ACPI_OPTION ("-p [Name/Prefix]",        "Find/Display ASL predefined method name(s)");
+    ACPI_OPTION ("-s [Name/Prefix]",        "Find/Display ASL operator name(s)");
 
     printf ("\nACPI Values:\n");
     ACPI_OPTION ("-e [HexValue]",           "Decode ACPICA exception code");
-    ACPI_OPTION ("-i",                      "Display known ACPI Device IDs (_HID)");
     ACPI_OPTION ("-o [HexValue]",           "Decode hex AML opcode");
 
-    printf ("\nNamePrefix/HexValue not specified means \"Display All\"\n");
-    printf ("\nDefault search with NamePrefix and no options:\n");
+    printf ("\nName/Prefix or HexValue not specified means \"Display All\"\n");
+    printf ("\nDefault search with valid Name/Prefix and no options:\n");
     printf ("    Find ASL operator names - if NamePrefix does not start with underscore\n");
     printf ("    Find ASL predefined method names - if NamePrefix starts with underscore\n");
 }
@@ -272,7 +272,7 @@ main (
 
     case AH_DISPLAY_DEVICE_IDS:
 
-        AhDisplayDeviceIds ();
+        AhDisplayDeviceIds (Name);
         break;
 
     case AH_DECODE_EXCEPTION:

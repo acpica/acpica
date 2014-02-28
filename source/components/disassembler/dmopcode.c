@@ -118,6 +118,7 @@
 #include "acparser.h"
 #include "amlcode.h"
 #include "acdisasm.h"
+#include "acinterp.h"
 
 #ifdef ACPI_DISASSEMBLER
 
@@ -255,14 +256,11 @@ AcpiDmPredefinedDescription (
 
     /* Match the name in the info table */
 
-    for (Info = AslPredefinedInfo; Info->Name; Info++)
+    Info = AcpiAhMatchPredefinedName (NameString);
+    if (Info)
     {
-        if (ACPI_COMPARE_NAME (NameString, Info->Name))
-        {
-            AcpiOsPrintf ("  // %4.4s: %s",
-                NameString, ACPI_CAST_PTR (char, Info->Description));
-            return;
-        }
+        AcpiOsPrintf ("  // %4.4s: %s",
+            NameString, ACPI_CAST_PTR (char, Info->Description));
     }
 
 #endif
@@ -339,14 +337,11 @@ AcpiDmFieldPredefinedDescription (
 
     /* Match the name in the info table */
 
-    for (Info = AslPredefinedInfo; Info->Name; Info++)
+    Info = AcpiAhMatchPredefinedName (Tag);
+    if (Info)
     {
-        if (ACPI_COMPARE_NAME (Tag, Info->Name))
-        {
-            AcpiOsPrintf ("  // %4.4s: %s", Tag,
-                ACPI_CAST_PTR (char, Info->Description));
-            return;
-        }
+        AcpiOsPrintf ("  // %4.4s: %s", Tag,
+            ACPI_CAST_PTR (char, Info->Description));
     }
 
 #endif
@@ -599,6 +594,7 @@ AcpiDmDisassembleOneOp (
     ACPI_PARSE_OBJECT       *Child;
     ACPI_STATUS             Status;
     UINT8                   *Aml;
+    const AH_DEVICE_ID      *IdInfo;
 
 
     if (!Op)
@@ -677,7 +673,7 @@ AcpiDmDisassembleOneOp (
 
         if (Op->Common.DisasmOpcode == ACPI_DASM_EISAID)
         {
-            AcpiDmEisaId ((UINT32) Op->Common.Value.Integer);
+            AcpiDmDecompressEisaId ((UINT32) Op->Common.Value.Integer);
         }
         else
         {
@@ -689,7 +685,7 @@ AcpiDmDisassembleOneOp (
 
         if (Op->Common.DisasmOpcode == ACPI_DASM_EISAID)
         {
-            AcpiDmEisaId ((UINT32) Op->Common.Value.Integer);
+            AcpiDmDecompressEisaId ((UINT32) Op->Common.Value.Integer);
         }
         else
         {
@@ -706,6 +702,19 @@ AcpiDmDisassembleOneOp (
     case AML_STRING_OP:
 
         AcpiUtPrintString (Op->Common.Value.String, ACPI_UINT16_MAX);
+
+        /* For _HID/_CID strings, attempt to output a descriptive comment */
+
+        if (Op->Common.DisasmOpcode == ACPI_DASM_HID_STRING)
+        {
+            /* If we know about the ID, emit the description */
+
+            IdInfo = AcpiAhMatchHardwareId (Op->Common.Value.String);
+            if (IdInfo)
+            {
+                AcpiOsPrintf (" /* %s */", IdInfo->Description);
+            }
+        }
         break;
 
     case AML_BUFFER_OP:

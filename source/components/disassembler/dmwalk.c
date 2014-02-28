@@ -640,7 +640,7 @@ AcpiDmDescendingOp (
 
                 /* Check for _HID and related EISAID() */
 
-                AcpiDmIsEisaId (Op);
+                AcpiDmCheckForHardwareId (Op);
                 AcpiOsPrintf (", ");
                 break;
 

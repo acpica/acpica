@@ -176,13 +176,6 @@ typedef struct ah_asl_keyword
 
 } AH_ASL_KEYWORD;
 
-typedef struct ah_device_id
-{
-    char            *Name;
-    char            *Description;
-
-} AH_DEVICE_ID;
-
 
 extern const AH_AML_OPCODE          AmlOpcodeInfo[];
 extern const AH_ASL_OPERATOR        AslOperatorInfo[];
@@ -219,6 +212,6 @@ AhFindAslKeywords (
 
 void
 AhDisplayDeviceIds (
-    void);
+    char                    *Name);
 
 #endif /* __ACPIHELP_H */

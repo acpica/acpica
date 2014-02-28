@@ -46,6 +46,7 @@ OBJECTS = \
 	$(OBJDIR)/adfile.o\
 	$(OBJDIR)/adisasm.o\
 	$(OBJDIR)/adwalk.o\
+	$(OBJDIR)/ahids.o\
 	$(OBJDIR)/ahpredef.o\
 	$(OBJDIR)/aslanalyze.o\
 	$(OBJDIR)/aslbtypes.o\
