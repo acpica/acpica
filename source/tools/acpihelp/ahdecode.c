@@ -855,8 +855,11 @@ void
 AhDisplayDeviceIds (
     char                    *Name)
 {
+    const AH_DEVICE_ID      *Info;
     UINT32                  Length;
-    const AH_DEVICE_ID      *Info = AslDeviceIds;
+    BOOLEAN                 Matched;
+    UINT32                  i;
+    BOOLEAN                 Found = FALSE;
 
 
     /* Null input name indicates "display all" */
@@ -879,16 +882,32 @@ AhDisplayDeviceIds (
         return;
     }
 
-    /* Find the particular input name */
+    /* Find/display all names that match the input name prefix */
 
-    Info = AcpiAhMatchHardwareId (Name);
-    if (!Info)
+    AhStrupr (Name);
+    for (Info = AslDeviceIds; Info->Name; Info++)
     {
-        printf ("%s, Hardware ID not found\n", Name);
-        return;
+        Matched = TRUE;
+        for (i = 0; i < Length; i++)
+        {
+            if (Info->Name[i] != Name[i])
+            {
+                Matched = FALSE;
+                break;
+            }
+        }
+
+        if (Matched)
+        {
+            Found = TRUE;
+            printf ("%8s   %s\n", Info->Name, Info->Description);
+        }
     }
 
-    printf ("%8s   %s\n", Info->Name, Info->Description);
+    if (!Found)
+    {
+        printf ("%s, Hardware ID not found\n", Name);
+    }
 }
 
 
