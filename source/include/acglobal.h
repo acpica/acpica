@@ -117,8 +117,6 @@
 #define __ACGLOBAL_H__
 
 
-#pragma pack(push) /* Set default struct packing */
-
 /*
  * Ensure that the globals are actually defined and initialized only once.
  *
@@ -593,7 +591,5 @@ ACPI_INIT_GLOBAL (ACPI_FILE,            AcpiGbl_DebugFile, NULL);
 extern const AH_PREDEFINED_NAME         AslPredefinedInfo[];
 extern const AH_DEVICE_ID               AslDeviceIds[];
 
-
-#pragma pack(pop) /* Restore original struct packing */
 
 #endif /* __ACGLOBAL_H__ */

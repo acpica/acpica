@@ -117,8 +117,6 @@
 #define __ACEVENTS_H__
 
 
-#pragma pack(push) /* Set default struct packing */
-
 /*
  * evevent
  */
@@ -429,7 +427,5 @@ ACPI_HW_DEPENDENT_RETURN_VOID (
 void
 AcpiEvTerminate (
     void))
-
-#pragma pack(pop) /* Restore original struct packing */
 
 #endif  /* __ACEVENTS_H__  */

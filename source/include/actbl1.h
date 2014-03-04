@@ -117,8 +117,6 @@
 #define __ACTBL1_H__
 
 
-#pragma pack(push) /* Set default struct packing */
-
 /*******************************************************************************
  *
  * Additional ACPI Tables (1)
@@ -1215,6 +1213,8 @@ typedef struct acpi_srat_x2apic_cpu_affinity
 #define ACPI_SRAT_CPU_ENABLED       (1)         /* 00: Use affinity structure */
 
 
-#pragma pack(pop) /* Restore original struct packing */
+/* Reset to default packing */
+
+#pragma pack()
 
 #endif /* __ACTBL1_H__ */

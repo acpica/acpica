@@ -117,8 +117,6 @@
 #define _ACUTILS_H
 
 
-#pragma pack(push) /* Set default struct packing */
-
 extern const UINT8                      AcpiGbl_ResourceAmlSizes[];
 extern const UINT8                      AcpiGbl_ResourceAmlSerialBusSizes[];
 
@@ -1173,7 +1171,6 @@ AcpiUtMethodError (
     const char              *Path,
     ACPI_STATUS             LookupStatus);
 
-
 /*
  * Utility functions for ACPI names and IDs
  */
@@ -1184,7 +1181,5 @@ AcpiAhMatchPredefinedName (
 const AH_DEVICE_ID *
 AcpiAhMatchHardwareId (
     char                    *Hid);
-
-#pragma pack(pop) /* Restore original struct packing */
 
 #endif /* _ACUTILS_H */
