@@ -584,7 +584,7 @@ AcpiTbParseRootTable (
 
         Status = AcpiTbInstallNonFixedTable (
             AcpiTbGetRootTableEntry (TableEntry, TableEntrySize),
-            ACPI_TABLE_ORIGIN_INTERN_PHYSICAL, FALSE, &TableIndex);
+            ACPI_TABLE_ORIGIN_INTERN_PHYSICAL, FALSE, TRUE, &TableIndex);
 
         if (ACPI_SUCCESS (Status) &&
             ACPI_COMPARE_NAME (&AcpiGbl_RootTableList.Tables[TableIndex].Signature,

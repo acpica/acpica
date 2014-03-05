@@ -200,6 +200,7 @@ AcpiTbInstallNonFixedTable (
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT8                   Flags,
     BOOLEAN                 Reload,
+    BOOLEAN                 Override,
     UINT32                  *TableIndex);
 
 ACPI_STATUS
@@ -289,7 +290,8 @@ AcpiTbInstallTable (
 void
 AcpiTbInstallAndOverrideTable (
     UINT32                  TableIndex,
-    ACPI_TABLE_DESC         *NewTableDesc);
+    ACPI_TABLE_DESC         *NewTableDesc,
+    BOOLEAN                 Override);
 
 ACPI_STATUS
 AcpiTbInstallFixedTable (

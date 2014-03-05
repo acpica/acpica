@@ -514,6 +514,7 @@ AcpiTbReleaseTemporalTable (
  *
  * PARAMETERS:  TableIndex              - Index into root table array
  *              NewTableDesc            - New table descriptor to install
+ *              Override                - Whether override should be performed
  *
  * RETURN:      None
  *
@@ -527,7 +528,8 @@ AcpiTbReleaseTemporalTable (
 void
 AcpiTbInstallAndOverrideTable (
     UINT32                  TableIndex,
-    ACPI_TABLE_DESC         *NewTableDesc)
+    ACPI_TABLE_DESC         *NewTableDesc,
+    BOOLEAN                 Override)
 {
     if (TableIndex >= AcpiGbl_RootTableList.CurrentTableCount)
     {
@@ -541,7 +543,10 @@ AcpiTbInstallAndOverrideTable (
      * one if desired. Any table within the RSDT/XSDT can be replaced,
      * including the DSDT which is pointed to by the FADT.
      */
-    AcpiTbOverrideTable (NewTableDesc);
+    if (Override)
+    {
+        AcpiTbOverrideTable (NewTableDesc);
+    }
 
     AcpiTbInstallTable (&AcpiGbl_RootTableList.Tables[TableIndex],
         NewTableDesc->Address, NewTableDesc->Flags, NewTableDesc->Pointer);
@@ -612,7 +617,7 @@ AcpiTbInstallFixedTable (
         goto ReleaseAndExit;
     }
 
-    AcpiTbInstallAndOverrideTable (TableIndex, &NewTableDesc);
+    AcpiTbInstallAndOverrideTable (TableIndex, &NewTableDesc, TRUE);
 
 ReleaseAndExit:
 
@@ -680,6 +685,7 @@ AcpiTbIsEquivalentTable (
  *                                    address depending on the TableFlags)
  *              Flags               - Flags for the table
  *              Reload              - Whether reload should be performed
+ *              Override            - Whether override should be performed
  *              TableIndex          - Where the table index is returned
  *
  * RETURN:      Status
@@ -698,6 +704,7 @@ AcpiTbInstallNonFixedTable (
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT8                   Flags,
     BOOLEAN                 Reload,
+    BOOLEAN                 Override,
     UINT32                  *TableIndex)
 {
     UINT32                  i;
@@ -826,7 +833,7 @@ AcpiTbInstallNonFixedTable (
         goto ReleaseAndExit;
     }
     *TableIndex = i;
-    AcpiTbInstallAndOverrideTable (i, &NewTableDesc);
+    AcpiTbInstallAndOverrideTable (i, &NewTableDesc, Override);
 
 ReleaseAndExit:
 

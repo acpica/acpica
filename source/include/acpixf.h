@@ -274,6 +274,11 @@ AcpiDecodePldBuffer (
  * ACPI table load/unload interfaces
  */
 ACPI_STATUS
+AcpiInstallTable (
+    ACPI_PHYSICAL_ADDRESS   Address,
+    BOOLEAN                 Physical);
+
+ACPI_STATUS
 AcpiLoadTable (
     ACPI_TABLE_HEADER       *Table);
 

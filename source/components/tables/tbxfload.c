@@ -282,6 +282,53 @@ UnlockAndExit:
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiInstallTable
+ *
+ * PARAMETERS:  Address             - Address of the ACPI table to be installed.
+ *              Physical            - Whether the address is a physical table
+ *                                    address or not
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Dynamically install an ACPI table.
+ *              Note: This function should only be invoked after
+ *                    AcpiInitializeTables() and before AcpiLoadTables().
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiInstallTable (
+    ACPI_PHYSICAL_ADDRESS   Address,
+    BOOLEAN                 Physical)
+{
+    ACPI_STATUS             Status;
+    UINT8                   Flags;
+    UINT32                  TableIndex;
+
+
+    ACPI_FUNCTION_TRACE (AcpiInstallTable);
+
+
+    if (Physical)
+    {
+        Flags = ACPI_TABLE_ORIGIN_EXTERN_VIRTUAL;
+    }
+    else
+    {
+        Flags = ACPI_TABLE_ORIGIN_INTERN_PHYSICAL;
+    }
+
+    Status = AcpiTbInstallNonFixedTable (Address, Flags,
+        FALSE, FALSE, &TableIndex);
+
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL_INIT (AcpiInstallTable)
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiLoadTable
  *
  * PARAMETERS:  Table               - Pointer to a buffer containing the ACPI
@@ -328,7 +375,7 @@ AcpiLoadTable (
     ACPI_INFO ((AE_INFO, "Host-directed Dynamic ACPI Table Load:"));
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
     Status = AcpiTbInstallNonFixedTable (ACPI_PTR_TO_PHYSADDR (Table),
-                ACPI_TABLE_ORIGIN_EXTERN_VIRTUAL, TRUE, &TableIndex);
+            ACPI_TABLE_ORIGIN_EXTERN_VIRTUAL, TRUE, FALSE, &TableIndex);
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
     if (ACPI_FAILURE (Status))
     {
