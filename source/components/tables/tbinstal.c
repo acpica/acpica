@@ -718,6 +718,18 @@ AcpiTbInstallNonFixedTable (
         return_ACPI_STATUS (Status);
     }
 
+    /*
+     * Optionally do not load any SSDTs from the RSDT/XSDT. This can
+     * be useful for debugging ACPI problems on some machines.
+     */
+    if (!Reload && AcpiGbl_DisableSsdtTableInstall &&
+        ACPI_COMPARE_NAME (&NewTableDesc.Signature, ACPI_SIG_SSDT))
+    {
+        ACPI_INFO ((AE_INFO, "Ignoring installation of %4.4s at %p",
+            NewTableDesc.Signature.Ascii, ACPI_CAST_PTR (void, Address)));
+        goto ReleaseAndExit;
+    }
+
     /* Validate and verify a table before installation */
 
     Status = AcpiTbVerifyTable (&NewTableDesc, NULL);

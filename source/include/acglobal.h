@@ -234,10 +234,10 @@ ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_TruncateIoAddresses, FALSE);
 ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_DisableAutoRepair, FALSE);
 
 /*
- * Optionally do not load any SSDTs from the RSDT/XSDT during initialization.
+ * Optionally do not install any SSDTs from the RSDT/XSDT during initialization.
  * This can be useful for debugging ACPI problems on some machines.
  */
-ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_DisableSsdtTableLoad, FALSE);
+ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_DisableSsdtTableInstall, FALSE);
 
 /*
  * We keep track of the latest version of Windows that has been requested by
