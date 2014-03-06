@@ -123,7 +123,7 @@ AhDisplayUsage (
     void);
 
 #define AH_UTILITY_NAME             "ACPI Help Utility"
-#define AH_SUPPORTED_OPTIONS        "ehikmopsv"
+#define AH_SUPPORTED_OPTIONS        "aehikmopsv"
 
 
 /******************************************************************************
@@ -139,16 +139,21 @@ AhDisplayUsage (
     void)
 {
 
-    ACPI_USAGE_HEADER ("acpihelp <options> [NamePrefix | HexValue]");
+    ACPI_USAGE_HEADER ("acpihelp <options> [Name/Prefix | HexValue]");
     ACPI_OPTION ("-h",                      "Display help");
     ACPI_OPTION ("-v",                      "Display version information");
 
-    printf ("\nACPI Names and Symbols:\n");
-    ACPI_OPTION ("-i [Name/Prefix]",        "Find/Display ACPI/PNP Hardware ID(s)");
-    ACPI_OPTION ("-k [Name/Prefix]",        "Find/Display ASL non-operator keyword(s)");
+    printf ("\nAML (ACPI Machine Language) Names and Encodings:\n");
+    ACPI_OPTION ("-a [Name/Prefix]",        "Find/Display both ASL operator and AML opcode name(s)");
     ACPI_OPTION ("-m [Name/Prefix]",        "Find/Display AML opcode name(s)");
+
+    printf ("\nASL (ACPI Source Language) Names and Symbols:\n");
+    ACPI_OPTION ("-k [Name/Prefix]",        "Find/Display ASL non-operator keyword(s)");
     ACPI_OPTION ("-p [Name/Prefix]",        "Find/Display ASL predefined method name(s)");
     ACPI_OPTION ("-s [Name/Prefix]",        "Find/Display ASL operator name(s)");
+
+    printf ("\nOther ACPI Names:\n");
+    ACPI_OPTION ("-i [Name/Prefix]",        "Find/Display ACPI/PNP Hardware ID(s)");
 
     printf ("\nACPI Values:\n");
     ACPI_OPTION ("-e [HexValue]",           "Decode ACPICA exception code");
@@ -156,7 +161,7 @@ AhDisplayUsage (
 
     printf ("\nName/Prefix or HexValue not specified means \"Display All\"\n");
     printf ("\nDefault search with valid Name/Prefix and no options:\n");
-    printf ("    Find ASL operator names - if NamePrefix does not start with underscore\n");
+    printf ("    Find ASL/AML operator names - if NamePrefix does not start with underscore\n");
     printf ("    Find ASL predefined method names - if NamePrefix starts with underscore\n");
 }
 
@@ -193,6 +198,11 @@ main (
 
     while ((j = AcpiGetopt (argc, argv, AH_SUPPORTED_OPTIONS)) != EOF) switch (j)
     {
+    case 'a':
+
+        DecodeType = AH_DECODE_ASL_AML;
+        break;
+
     case 'e':
 
         DecodeType = AH_DECODE_EXCEPTION;
@@ -245,6 +255,11 @@ main (
 
     switch (DecodeType)
     {
+    case AH_DECODE_ASL_AML:
+
+        AhFindAslAndAmlOperators (Name);
+        break;
+
     case AH_DECODE_AML:
 
         AhFindAmlOpcode (Name);
@@ -294,7 +309,7 @@ main (
         }
         else
         {
-            AhFindAslOperators (Name);
+            AhFindAslAndAmlOperators (Name);
         }
         break;
     }

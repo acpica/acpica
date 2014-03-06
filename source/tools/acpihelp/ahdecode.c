@@ -624,9 +624,10 @@ AhDisplayAslKeyword (
 }
 
 
+
 /*******************************************************************************
  *
- * FUNCTION:    AhFindAslOperators (entry point for ASL operator search)
+ * FUNCTION:    AhFindAslAndAmlOperators
  *
  * PARAMETERS:  Name                - Name or prefix for an ASL operator.
  *                                    NULL means "find all"
@@ -634,16 +635,46 @@ AhDisplayAslKeyword (
  * RETURN:      None
  *
  * DESCRIPTION: Find all ASL operators that match the input Name or name
- *              prefix.
+ *              prefix. Also displays the AML information if only one entry
+ *              matches.
  *
  ******************************************************************************/
 
 void
+AhFindAslAndAmlOperators (
+    char                    *Name)
+{
+    UINT32                  MatchCount;
+
+
+    MatchCount = AhFindAslOperators (Name);
+    if (MatchCount == 1)
+    {
+        AhFindAmlOpcode (Name);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AhFindAslOperators (entry point for ASL operator search)
+ *
+ * PARAMETERS:  Name                - Name or prefix for an ASL operator.
+ *                                    NULL means "find all"
+ *
+ * RETURN:      Number of operators that matched the name prefix.
+ *
+ * DESCRIPTION: Find all ASL operators that match the input Name or name
+ *              prefix.
+ *
+ ******************************************************************************/
+
+UINT32
 AhFindAslOperators (
     char                    *Name)
 {
     const AH_ASL_OPERATOR   *Operator;
-    BOOLEAN                 Found = FALSE;
+    BOOLEAN                 MatchCount = 0;
 
 
     AhStrupr (Name);
@@ -655,7 +686,7 @@ AhFindAslOperators (
         if (!Name)
         {
             AhDisplayAslOperator (Operator);
-            Found = TRUE;
+            MatchCount++;
             continue;
         }
 
@@ -667,14 +698,16 @@ AhFindAslOperators (
         if (strstr (Gbl_Buffer, Name) == Gbl_Buffer)
         {
             AhDisplayAslOperator (Operator);
-            Found = TRUE;
+            MatchCount++;
         }
     }
 
-    if (!Found)
+    if (!MatchCount)
     {
         printf ("%s, no matching ASL operators\n", Name);
     }
+
+    return (MatchCount);
 }
 
 
