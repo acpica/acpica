@@ -508,6 +508,7 @@ AdAmlDisassemble (
             /* Reparse, rebuild namespace. no need to xref namespace */
 
             AcpiPsDeleteParseTree (AcpiGbl_ParseOpRoot);
+            AcpiGbl_ParseOpRoot = NULL;
             AcpiNsDeleteNamespaceSubtree (AcpiGbl_RootNode);
 
             AcpiGbl_RootNode                    = NULL;

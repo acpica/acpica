@@ -134,6 +134,66 @@ AcpiDmMatchKeyword (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmNotifyDescription
+ *
+ * PARAMETERS:  Op              - Name() parse object
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Emit a description comment for the value associated with a
+ *              Notify() operator.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmNotifyDescription (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ACPI_PARSE_OBJECT       *NextOp;
+    ACPI_NAMESPACE_NODE     *Node;
+    UINT8                   NotifyValue;
+    UINT8                   Type = ACPI_TYPE_ANY;
+
+
+    /* The notify value is the second argument */
+
+    NextOp = Op->Asl.Value.Arg;
+    NextOp = NextOp->Asl.Next;
+
+    switch (NextOp->Common.AmlOpcode)
+    {
+    case AML_ZERO_OP:
+    case AML_ONE_OP:
+
+        NotifyValue = (UINT8) NextOp->Common.AmlOpcode;
+        break;
+
+    case AML_BYTE_OP:
+
+        NotifyValue = (UINT8) NextOp->Asl.Value.Integer;
+        break;
+
+    default:
+        return;
+    }
+
+    /*
+     * Attempt to get the namespace node so we can determine the object type.
+     * Some notify values are dependent on the object type (Device, Thermal,
+     * or Processor).
+     */
+    Node = Op->Asl.Node;
+    if (Node)
+    {
+        Type = Node->Type;
+    }
+
+    AcpiOsPrintf (" // %s", AcpiUtGetNotifyName (NotifyValue, Type));
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmPredefinedDescription
  *
  * PARAMETERS:  Op              - Name() parse object

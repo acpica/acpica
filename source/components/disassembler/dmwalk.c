@@ -914,6 +914,13 @@ AcpiDmAscendingOp (
             AcpiDmFieldPredefinedDescription (Op);
         }
 
+        /* Decode Notify() values */
+
+        if (Op->Common.AmlOpcode == AML_NOTIFY_OP)
+        {
+            AcpiDmNotifyDescription (Op);
+        }
+
         /* Could be a nested operator, check if comma required */
 
         if (!AcpiDmCommaIfListMember (Op))

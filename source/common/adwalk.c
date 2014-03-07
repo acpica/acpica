@@ -832,10 +832,12 @@ AcpiDmXrefDescendingOp (
 
     if ((!(OpInfo->Flags & AML_NAMED)) &&
         (!(OpInfo->Flags & AML_CREATE)) &&
-        (Op->Common.AmlOpcode != AML_INT_NAMEPATH_OP))
+        (Op->Common.AmlOpcode != AML_INT_NAMEPATH_OP) &&
+        (Op->Common.AmlOpcode != AML_NOTIFY_OP))
     {
         goto Exit;
     }
+
 
     /* Get the NamePath from the appropriate place */
 
@@ -872,6 +874,10 @@ AcpiDmXrefDescendingOp (
         {
             Path = NextOp->Common.Value.String;
         }
+    }
+    else if (Op->Common.AmlOpcode == AML_NOTIFY_OP)
+    {
+        Path = Op->Common.Value.Arg->Asl.Value.String;
     }
     else
     {
