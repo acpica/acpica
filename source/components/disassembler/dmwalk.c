@@ -921,6 +921,8 @@ AcpiDmAscendingOp (
             AcpiDmNotifyDescription (Op);
         }
 
+        AcpiDmDisplayTargetPathname (Op);
+
         /* Could be a nested operator, check if comma required */
 
         if (!AcpiDmCommaIfListMember (Op))

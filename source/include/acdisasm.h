@@ -624,6 +624,10 @@ AcpiDmMethodFlags (
     ACPI_PARSE_OBJECT       *Op);
 
 void
+AcpiDmDisplayTargetPathname (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
 AcpiDmNotifyDescription (
     ACPI_PARSE_OBJECT       *Op);
 

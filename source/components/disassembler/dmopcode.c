@@ -119,6 +119,7 @@
 #include "amlcode.h"
 #include "acdisasm.h"
 #include "acinterp.h"
+#include "acnamesp.h"
 
 #ifdef ACPI_DISASSEMBLER
 
@@ -130,6 +131,99 @@
 static void
 AcpiDmMatchKeyword (
     ACPI_PARSE_OBJECT       *Op);
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDisplayTargetPathname
+ *
+ * PARAMETERS:  Op              - Parse object
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: For AML opcodes that have a target operand, display the full
+ *              pathname for the target, in a comment field. Handles Return()
+ *              statements also.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDisplayTargetPathname (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ACPI_PARSE_OBJECT       *NextOp;
+    ACPI_PARSE_OBJECT       *PrevOp = NULL;
+    char                    *Pathname;
+    const ACPI_OPCODE_INFO  *OpInfo;
+
+
+    if (Op->Common.AmlOpcode == AML_RETURN_OP)
+    {
+        PrevOp = Op->Asl.Value.Arg;
+    }
+    else
+    {
+        OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
+        if (!(OpInfo->Flags & AML_HAS_TARGET))
+        {
+            return;
+        }
+
+        /* Target is the last Op in the arg list */
+
+        NextOp = Op->Asl.Value.Arg;
+        while (NextOp)
+        {
+            PrevOp = NextOp;
+            NextOp = PrevOp->Asl.Next;
+        }
+    }
+
+    if (!PrevOp)
+    {
+        return;
+    }
+
+    /* We must have a namepath AML opcode */
+
+    if (PrevOp->Asl.AmlOpcode != AML_INT_NAMEPATH_OP)
+    {
+        return;
+    }
+
+    /* A null string is the "no target specified" case */
+
+    if (!PrevOp->Asl.Value.String)
+    {
+        return;
+    }
+
+    /* No node means "unresolved external reference" */
+
+    if (!PrevOp->Asl.Node)
+    {
+        AcpiOsPrintf (" /* External reference */");
+        return;
+    }
+
+    /* Ignore if path is already from the root */
+
+    if (*PrevOp->Asl.Value.String == '\\')
+    {
+        return;
+    }
+
+    /* Now: we can get the full pathname */
+
+    Pathname = AcpiNsGetExternalPathname (PrevOp->Asl.Node);
+    if (!Pathname)
+    {
+        return;
+    }
+
+    AcpiOsPrintf (" /* %s */", Pathname);
+    ACPI_FREE (Pathname);
+}
 
 
 /*******************************************************************************
