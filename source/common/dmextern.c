@@ -139,7 +139,7 @@
  */
 static const char           *AcpiGbl_DmTypeNames[] =
 {
-    /* 00 */ "",                    /* Type ANY */
+    /* 00 */ ", UnknownObj",        /* Type ANY */
     /* 01 */ ", IntObj",
     /* 02 */ ", StrObj",
     /* 03 */ ", BuffObj",
