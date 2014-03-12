@@ -156,6 +156,16 @@
 #include <ctype.h>
 #include <unistd.h>
 
+/* Define/disable kernel-specific declarators */
+
+#ifndef __init
+#define __init
+#endif
+
+#ifndef __iomem
+#define __iomem
+#endif
+
 /* Host-dependent types and defines for user-space ACPICA */
 
 #define ACPI_FLUSH_CPU_CACHE()
