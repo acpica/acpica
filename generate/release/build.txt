@@ -129,25 +129,21 @@ Create a new download node for the new ACPICA version:
         (From the acpica/generate/release/current directory)
     Click "Save" at the bottom of the page
 
-Update version number headers and file pathnames:
-    Goto "Downloads", click edit, update version at body top
-        Update paths to new file versions, update file sizes (3 files)
-        Click "Save" at the bottom of the page
-    Goto "Downloads/Linux Support", click edit, update version at body top
-        Click "Save" at the bottom of the page
-    Goto "Downloads/Windows Source Code", click edit, update version at body top
-        Update paths to new file versions, update file sizes (2 files)
-        Click "Save" at the bottom of the page
-    Goto "Downloads/Windows Binary Tools", click edit, update version at body top
-        Update paths to new file version, update file size (1 file)
-        Click "Save" at the bottom of the page
-    Goto "Source", click edit, update version at body top
-        Click "Save" at the bottom of the page
-    Goto "Documentation", click edit, update version at body top
+Update the version number token.
+This will update the version number header on all pages where the token is used:
+    Goto https://acpica.org/node/88, click edit, update version at body top
         Click "Save" at the bottom of the page
 
-    Note: Hopefully, the version number will be implemented as a global so
-    that it only needs to be changed in one place.
+Update file pathnames:
+    Goto "Downloads", click edit
+        Update paths to new file versions, update file sizes (3 files)
+        Click "Save" at the bottom of the page
+    Goto "Downloads/Windows Source Code", click edit
+        Update paths to new file versions, update file sizes (2 files)
+        Click "Save" at the bottom of the page
+    Goto "Downloads/Windows Binary Tools", click edit
+        Update paths to new file version, update file size (1 file)
+        Click "Save" at the bottom of the page
 
 ACPICA document updates:
     The documentation/changes.txt file must always be updated.
