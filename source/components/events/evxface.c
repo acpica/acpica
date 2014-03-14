@@ -458,6 +458,8 @@ AcpiRemoveNotifyHandler (
         }
     }
 
+    return_ACPI_STATUS (Status);
+
 
 UnlockAndExit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
