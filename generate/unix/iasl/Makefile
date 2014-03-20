@@ -173,6 +173,7 @@ OBJECTS = \
 	$(OBJDIR)/pstree.o\
 	$(OBJDIR)/psutils.o\
 	$(OBJDIR)/pswalk.o\
+	$(OBJDIR)/tbdata.o\
 	$(OBJDIR)/tbfadt.o\
 	$(OBJDIR)/tbinstal.o\
 	$(OBJDIR)/tbprint.o\

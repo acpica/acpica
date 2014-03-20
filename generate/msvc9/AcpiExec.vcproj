@@ -2015,6 +2015,10 @@
 				Filter=".c"
 				>
 				<File
+					RelativePath="..\..\source\components\tables\tbdata.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\tables\tbfadt.c"
 					>
 					<FileConfiguration

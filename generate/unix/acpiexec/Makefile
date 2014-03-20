@@ -181,6 +181,7 @@ OBJECTS = \
 	$(OBJDIR)/rsserial.o\
 	$(OBJDIR)/rsutils.o\
 	$(OBJDIR)/rsxface.o\
+	$(OBJDIR)/tbdata.o\
 	$(OBJDIR)/tbfadt.o\
 	$(OBJDIR)/tbfind.o\
 	$(OBJDIR)/tbinstal.o\

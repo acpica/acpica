@@ -135,6 +135,40 @@ AcpiTbScanMemoryForRsdp (
 
 
 /*
+ * tbdata - table data structure management
+ */
+ACPI_STATUS
+AcpiTbGetNextRootIndex (
+    UINT32                  *TableIndex);
+
+void
+AcpiTbInitTableDescriptor (
+    ACPI_TABLE_DESC         *TableDesc,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT8                   Flags,
+    ACPI_TABLE_HEADER       *Table);
+
+ACPI_STATUS
+AcpiTbAcquireTempTable (
+    ACPI_TABLE_DESC         *TableDesc,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT8                   Flags);
+
+void
+AcpiTbReleaseTempTable (
+    ACPI_TABLE_DESC         *TableDesc);
+
+BOOLEAN
+AcpiTbIsTableLoaded (
+    UINT32                  TableIndex);
+
+void
+AcpiTbSetTableLoadedFlag (
+    UINT32                  TableIndex,
+    BOOLEAN                 IsLoaded);
+
+
+/*
  * tbfadt - FADT parse/convert/validate
  */
 void
@@ -236,15 +270,6 @@ AcpiTbGetOwnerId (
     UINT32                  TableIndex,
     ACPI_OWNER_ID           *OwnerId);
 
-BOOLEAN
-AcpiTbIsTableLoaded (
-    UINT32                  TableIndex);
-
-void
-AcpiTbSetTableLoadedFlag (
-    UINT32                  TableIndex,
-    BOOLEAN                 IsLoaded);
-
 
 /*
  * tbutils - table manager utilities
@@ -279,13 +304,6 @@ AcpiTbCheckDsdtHeader (
 ACPI_TABLE_HEADER *
 AcpiTbCopyDsdt (
     UINT32                  TableIndex);
-
-void
-AcpiTbInitTableDescriptor (
-    ACPI_TABLE_DESC         *TableDesc,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT8                   Flags,
-    ACPI_TABLE_HEADER       *Table);
 
 void
 AcpiTbInstallTableWithOverride (
