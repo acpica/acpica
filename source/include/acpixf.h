@@ -146,7 +146,7 @@ extern UINT8                AcpiGbl_AutoSerializeMethods;
 extern UINT8                AcpiGbl_CopyDsdtLocally;
 extern UINT8                AcpiGbl_CreateOsiMethod;
 extern UINT8                AcpiGbl_DisableAutoRepair;
-extern UINT8                AcpiGbl_DisableSsdtTableLoad;
+extern UINT8                AcpiGbl_DisableSsdtTableInstall;
 extern UINT8                AcpiGbl_DoNotUseXsdt;
 extern UINT8                AcpiGbl_EnableAmlDebugObject;
 extern UINT8                AcpiGbl_EnableInterpreterSlack;
@@ -273,6 +273,11 @@ AcpiDecodePldBuffer (
 /*
  * ACPI table load/unload interfaces
  */
+ACPI_STATUS
+AcpiInstallTable (
+    ACPI_PHYSICAL_ADDRESS   Address,
+    BOOLEAN                 Physical);
+
 ACPI_STATUS
 AcpiLoadTable (
     ACPI_TABLE_HEADER       *Table);

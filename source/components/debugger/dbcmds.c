@@ -436,24 +436,19 @@ AcpiDbDisplayTableInfo (
 
         switch (TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK)
         {
-        case ACPI_TABLE_ORIGIN_UNKNOWN:
+        case ACPI_TABLE_ORIGIN_EXTERN_VIRTUAL:
 
-            AcpiOsPrintf ("Unknown   ");
+            AcpiOsPrintf ("External virtual  ");
             break;
 
-        case ACPI_TABLE_ORIGIN_MAPPED:
+        case ACPI_TABLE_ORIGIN_INTERN_PHYSICAL:
 
-            AcpiOsPrintf ("Mapped    ");
+            AcpiOsPrintf ("Internal physical ");
             break;
 
-        case ACPI_TABLE_ORIGIN_ALLOCATED:
+        case ACPI_TABLE_ORIGIN_INTERN_VIRTUAL:
 
-            AcpiOsPrintf ("Allocated ");
-            break;
-
-        case ACPI_TABLE_ORIGIN_OVERRIDE:
-
-            AcpiOsPrintf ("Override  ");
+            AcpiOsPrintf ("Internal virtual  ");
             break;
 
         default:
@@ -464,7 +459,7 @@ AcpiDbDisplayTableInfo (
 
         /* Make sure that the table is mapped */
 
-        Status = AcpiTbVerifyTable (TableDesc);
+        Status = AcpiTbValidateTable (TableDesc);
         if (ACPI_FAILURE (Status))
         {
             return;
