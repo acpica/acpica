@@ -140,7 +140,7 @@
  * Some versions of gcc implement strchr() with a buggy macro. So,
  * undef it here. Prevents error messages of this form (usually from the
  * file getopt.c):
- * 
+ *
  * error: logical '&&' with non-zero constant will always evaluate as true
  */
 #ifdef strchr

@@ -432,7 +432,7 @@ ACPI_GLOBAL (UINT32,                    AcpiGbl_MaxConcurrentNodeCount);
 ACPI_GLOBAL (ACPI_SIZE *,               AcpiGbl_EntryStackPointer);
 ACPI_GLOBAL (ACPI_SIZE *,               AcpiGbl_LowestStackPointer);
 ACPI_GLOBAL (UINT32,                    AcpiGbl_DeepestNesting);
-ACPI_INIT_GLOBAL (UINT32,               AcpiGbl_NestingLevel, 0);   
+ACPI_INIT_GLOBAL (UINT32,               AcpiGbl_NestingLevel, 0);
 #endif
 
 

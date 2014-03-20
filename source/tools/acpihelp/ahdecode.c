@@ -624,7 +624,6 @@ AhDisplayAslKeyword (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AhFindAslAndAmlOperators

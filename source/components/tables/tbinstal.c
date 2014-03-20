@@ -158,7 +158,7 @@ AcpiTbIsEquivalentTable (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Acquire a table.  It can be used for tables not maintained in
+ * DESCRIPTION: Acquire a table. It can be used for tables not maintained in
  *              AcpiGbl_RootTableList.
  *
  ******************************************************************************/
@@ -218,7 +218,7 @@ AcpiTbAcquireTable (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Release a table.  The reversal of AcpiTbAcquireTable().
+ * DESCRIPTION: Release a table. The reversal of AcpiTbAcquireTable().
  *
  ******************************************************************************/
 
