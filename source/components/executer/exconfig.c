@@ -602,8 +602,11 @@ AcpiExLoadOp (
 
     ACPI_INFO ((AE_INFO, "Dynamic OEM Table Load:"));
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
-    Status = AcpiTbInstallNonFixedTable (ACPI_PTR_TO_PHYSADDR (Table),
-                ACPI_TABLE_ORIGIN_INTERN_VIRTUAL, TRUE, TRUE, &TableIndex);
+
+    Status = AcpiTbInstallStandardTable (ACPI_PTR_TO_PHYSADDR (Table),
+                ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL, TRUE, TRUE,
+                &TableIndex);
+
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
     if (ACPI_FAILURE (Status))
     {

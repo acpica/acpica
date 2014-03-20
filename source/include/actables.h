@@ -196,7 +196,7 @@ AcpiTbReleaseTable (
     UINT8                   TableFlags);
 
 ACPI_STATUS
-AcpiTbInstallNonFixedTable (
+AcpiTbInstallStandardTable (
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT8                   Flags,
     BOOLEAN                 Reload,
@@ -281,14 +281,14 @@ AcpiTbCopyDsdt (
     UINT32                  TableIndex);
 
 void
-AcpiTbInstallTable (
+AcpiTbInitTableDescriptor (
     ACPI_TABLE_DESC         *TableDesc,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT8                   Flags,
     ACPI_TABLE_HEADER       *Table);
 
 void
-AcpiTbInstallAndOverrideTable (
+AcpiTbInstallTableWithOverride (
     UINT32                  TableIndex,
     ACPI_TABLE_DESC         *NewTableDesc,
     BOOLEAN                 Override);

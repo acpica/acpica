@@ -113,7 +113,6 @@
  *
  *****************************************************************************/
 
-
 #define __TBINSTAL_C__
 
 #include "acpi.h"
@@ -121,24 +120,23 @@
 #include "acnamesp.h"
 #include "actables.h"
 
-
 #define _COMPONENT          ACPI_TABLES
         ACPI_MODULE_NAME    ("tbinstal")
 
 /* Local prototypes */
 
 static ACPI_STATUS
-AcpiTbAcquireTemporalTable (
+AcpiTbAcquireTempTable (
     ACPI_TABLE_DESC         *TableDesc,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT8                   Flags);
 
 static void
-AcpiTbReleaseTemporalTable (
+AcpiTbReleaseTempTable (
     ACPI_TABLE_DESC         *TableDesc);
 
 static ACPI_STATUS
-AcpiTbAcquireRootTableEntry (
+AcpiTbGetRootTableEntry (
     UINT32                  *TableIndex);
 
 static BOOLEAN
@@ -158,8 +156,8 @@ AcpiTbIsEquivalentTable (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Acquire a table. It can be used for tables not maintained in
- *              AcpiGbl_RootTableList.
+ * DESCRIPTION: Acquire an ACPI table. It can be used for tables not
+ *              maintained in the AcpiGbl_RootTableList.
  *
  ******************************************************************************/
 
@@ -175,13 +173,13 @@ AcpiTbAcquireTable (
 
     switch (TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK)
     {
-    case ACPI_TABLE_ORIGIN_INTERN_PHYSICAL:
+    case ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL:
 
         Table = AcpiOsMapMemory (TableDesc->Address, TableDesc->Length);
         break;
 
-    case ACPI_TABLE_ORIGIN_INTERN_VIRTUAL:
-    case ACPI_TABLE_ORIGIN_EXTERN_VIRTUAL:
+    case ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL:
+    case ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL:
 
         Table = ACPI_CAST_PTR (ACPI_TABLE_HEADER, TableDesc->Address);
         break;
@@ -203,7 +201,6 @@ AcpiTbAcquireTable (
     *TablePtr = Table;
     *TableLength = TableDesc->Length;
     *TableFlags = TableDesc->Flags;
-
     return (AE_OK);
 }
 
@@ -218,7 +215,7 @@ AcpiTbAcquireTable (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Release a table. The reversal of AcpiTbAcquireTable().
+ * DESCRIPTION: Release a table. The inverse of AcpiTbAcquireTable().
  *
  ******************************************************************************/
 
@@ -228,15 +225,16 @@ AcpiTbReleaseTable (
     UINT32                  TableLength,
     UINT8                   TableFlags)
 {
+
     switch (TableFlags & ACPI_TABLE_ORIGIN_MASK)
     {
-    case ACPI_TABLE_ORIGIN_INTERN_PHYSICAL:
+    case ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL:
 
         AcpiOsUnmapMemory (Table, TableLength);
         break;
 
-    case ACPI_TABLE_ORIGIN_INTERN_VIRTUAL:
-    case ACPI_TABLE_ORIGIN_EXTERN_VIRTUAL:
+    case ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL:
+    case ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL:
     default:
 
         break;
@@ -272,7 +270,7 @@ AcpiTbValidateTable (
     if (!TableDesc->Pointer)
     {
         Status = AcpiTbAcquireTable (TableDesc, &TableDesc->Pointer,
-                &TableDesc->Length, &TableDesc->Flags);
+                    &TableDesc->Length, &TableDesc->Flags);
         if (!TableDesc->Pointer)
         {
             Status = AE_NO_MEMORY;
@@ -291,7 +289,7 @@ AcpiTbValidateTable (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Invalidate one internal ACPI table, this is reversal of
+ * DESCRIPTION: Invalidate one internal ACPI table, this is the inverse of
  *              AcpiTbValidateTable().
  *
  ******************************************************************************/
@@ -312,7 +310,7 @@ AcpiTbInvalidateTable (
     }
 
     AcpiTbReleaseTable (TableDesc->Pointer, TableDesc->Length,
-                TableDesc->Flags);
+        TableDesc->Flags);
     TableDesc->Pointer = NULL;
 
     return_VOID;
@@ -388,7 +386,7 @@ InvalidateAndExit:
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbInstallTable
+ * FUNCTION:    AcpiTbInitTableDescriptor
  *
  * PARAMETERS:  TableDesc               - Table descriptor
  *              Address                 - Physical address of the table
@@ -397,19 +395,20 @@ InvalidateAndExit:
  *
  * RETURN:      None
  *
- * DESCRIPTION: Install an ACPI table into the global data structure.
+ * DESCRIPTION: Initialize a new table descriptor
  *
  ******************************************************************************/
 
 void
-AcpiTbInstallTable (
+AcpiTbInitTableDescriptor (
     ACPI_TABLE_DESC         *TableDesc,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT8                   Flags,
     ACPI_TABLE_HEADER       *Table)
 {
+
     /*
-     * Initialize the table entry. Set the pointer to NULL, since the
+     * Initialize the table descriptor. Set the pointer to NULL, since the
      * table is not fully mapped at this time.
      */
     ACPI_MEMSET (TableDesc, 0, sizeof (ACPI_TABLE_DESC));
@@ -422,7 +421,7 @@ AcpiTbInstallTable (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbAcquireTemporalTable
+ * FUNCTION:    AcpiTbAcquireTempTable
  *
  * PARAMETERS:  TableDesc           - Table descriptor to be acquired
  *              Address             - Address of the table
@@ -432,13 +431,13 @@ AcpiTbInstallTable (
  *
  * DESCRIPTION: This function validates the table header to obtain the length
  *              of a table and fills the table descriptor to make its state as
- *              "INSTALLED".  Such table descriptor is only used for verified
+ *              "INSTALLED". Such a table descriptor is only used for verified
  *              installation.
  *
  ******************************************************************************/
 
 static ACPI_STATUS
-AcpiTbAcquireTemporalTable (
+AcpiTbAcquireTempTable (
     ACPI_TABLE_DESC         *TableDesc,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT8                   Flags)
@@ -448,28 +447,30 @@ AcpiTbAcquireTemporalTable (
 
     switch (Flags & ACPI_TABLE_ORIGIN_MASK)
     {
-    case ACPI_TABLE_ORIGIN_INTERN_PHYSICAL:
+    case ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL:
 
-        /* Try to obtain the length of the table */
+        /* Get the length of the full table from the header */
 
         TableHeader = AcpiOsMapMemory (Address, sizeof (ACPI_TABLE_HEADER));
         if (!TableHeader)
         {
             return (AE_NO_MEMORY);
         }
-        AcpiTbInstallTable (TableDesc, Address, Flags, TableHeader);
+
+        AcpiTbInitTableDescriptor (TableDesc, Address, Flags, TableHeader);
         AcpiOsUnmapMemory (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_OK);
 
-    case ACPI_TABLE_ORIGIN_INTERN_VIRTUAL:
-    case ACPI_TABLE_ORIGIN_EXTERN_VIRTUAL:
+    case ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL:
+    case ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL:
 
         TableHeader = ACPI_CAST_PTR (ACPI_TABLE_HEADER, Address);
         if (!TableHeader)
         {
             return (AE_NO_MEMORY);
         }
-        AcpiTbInstallTable (TableDesc, Address, Flags, TableHeader);
+
+        AcpiTbInitTableDescriptor (TableDesc, Address, Flags, TableHeader);
         return (AE_OK);
 
     default:
@@ -485,23 +486,24 @@ AcpiTbAcquireTemporalTable (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbReleaseTemporalTable
+ * FUNCTION:    AcpiTbReleaseTempTable
  *
  * PARAMETERS:  TableDesc           - Table descriptor to be released
  *
  * RETURN:      Status
  *
- * DESCRIPTION: The reversal of AcpiTbAcquireTemporalTable().
+ * DESCRIPTION: The inverse of AcpiTbAcquireTempTable().
  *
  ******************************************************************************/
 
 static void
-AcpiTbReleaseTemporalTable (
+AcpiTbReleaseTempTable (
     ACPI_TABLE_DESC         *TableDesc)
 {
+
     /*
      * Note that the .Address is maintained by the callers of
-     * AcpiTbAcquireTemporalTable(), thus do not invoke AcpiTbUninstallTable()
+     * AcpiTbAcquireTempTable(), thus do not invoke AcpiTbUninstallTable()
      * where .Address will be freed.
      */
     AcpiTbInvalidateTable (TableDesc);
@@ -510,7 +512,7 @@ AcpiTbReleaseTemporalTable (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbInstallAndOverrideTable
+ * FUNCTION:    AcpiTbInstallTableWithOverride
  *
  * PARAMETERS:  TableIndex              - Index into root table array
  *              NewTableDesc            - New table descriptor to install
@@ -526,11 +528,12 @@ AcpiTbReleaseTemporalTable (
  ******************************************************************************/
 
 void
-AcpiTbInstallAndOverrideTable (
+AcpiTbInstallTableWithOverride (
     UINT32                  TableIndex,
     ACPI_TABLE_DESC         *NewTableDesc,
     BOOLEAN                 Override)
 {
+
     if (TableIndex >= AcpiGbl_RootTableList.CurrentTableCount)
     {
         return;
@@ -548,7 +551,7 @@ AcpiTbInstallAndOverrideTable (
         AcpiTbOverrideTable (NewTableDesc);
     }
 
-    AcpiTbInstallTable (&AcpiGbl_RootTableList.Tables[TableIndex],
+    AcpiTbInitTableDescriptor (&AcpiGbl_RootTableList.Tables[TableIndex],
         NewTableDesc->Address, NewTableDesc->Flags, NewTableDesc->Pointer);
 
     AcpiTbPrintTableHeader (NewTableDesc->Address, NewTableDesc->Pointer);
@@ -600,8 +603,8 @@ AcpiTbInstallFixedTable (
 
     /* Fill a table descriptor for validation */
 
-    Status = AcpiTbAcquireTemporalTable (&NewTableDesc, Address,
-        ACPI_TABLE_ORIGIN_INTERN_PHYSICAL);
+    Status = AcpiTbAcquireTempTable (&NewTableDesc, Address,
+                ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL);
     if (ACPI_FAILURE (Status))
     {
         ACPI_ERROR ((AE_INFO, "Could not acquire table length at %p",
@@ -617,13 +620,13 @@ AcpiTbInstallFixedTable (
         goto ReleaseAndExit;
     }
 
-    AcpiTbInstallAndOverrideTable (TableIndex, &NewTableDesc, TRUE);
+    AcpiTbInstallTableWithOverride (TableIndex, &NewTableDesc, TRUE);
 
 ReleaseAndExit:
 
-    /* Release the temporal table descriptor */
+    /* Release the temporary table descriptor */
 
-    AcpiTbReleaseTemporalTable (&NewTableDesc);
+    AcpiTbReleaseTempTable (&NewTableDesc);
     return_ACPI_STATUS (Status);
 }
 
@@ -672,14 +675,13 @@ AcpiTbIsEquivalentTable (
     /* Release the acquired table */
 
     AcpiTbReleaseTable (Table, TableLength, TableFlags);
-
     return (IsEquivalent);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbInstallNonFixedTable
+ * FUNCTION:    AcpiTbInstallStandardTable
  *
  * PARAMETERS:  Address             - Address of the table (might be a virtual
  *                                    address depending on the TableFlags)
@@ -691,7 +693,7 @@ AcpiTbIsEquivalentTable (
  * RETURN:      Status
  *
  * DESCRIPTION: This function is called to install an ACPI table that is
- *              neither DSDT nor FACS.
+ *              neither DSDT nor FACS (a "standard" table.)
  *              When this function is called by "Load" or "LoadTable" opcodes,
  *              or by AcpiLoadTable() API, the "Reload" parameter is set.
  *              After sucessfully returning from this function, table is
@@ -700,7 +702,7 @@ AcpiTbIsEquivalentTable (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiTbInstallNonFixedTable (
+AcpiTbInstallStandardTable (
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT8                   Flags,
     BOOLEAN                 Reload,
@@ -712,12 +714,12 @@ AcpiTbInstallNonFixedTable (
     ACPI_TABLE_DESC         NewTableDesc;
 
 
-    ACPI_FUNCTION_TRACE (TbInstallNonFixedTable);
+    ACPI_FUNCTION_TRACE (TbInstallStandardTable);
 
 
-    /* Acquire a temporal table descriptor for validation */
+    /* Acquire a temporary table descriptor for validation */
 
-    Status = AcpiTbAcquireTemporalTable (&NewTableDesc, Address, Flags);
+    Status = AcpiTbAcquireTempTable (&NewTableDesc, Address, Flags);
     if (ACPI_FAILURE (Status))
     {
         ACPI_ERROR ((AE_INFO, "Could not acquire table length at %p",
@@ -729,7 +731,8 @@ AcpiTbInstallNonFixedTable (
      * Optionally do not load any SSDTs from the RSDT/XSDT. This can
      * be useful for debugging ACPI problems on some machines.
      */
-    if (!Reload && AcpiGbl_DisableSsdtTableInstall &&
+    if (!Reload &&
+        AcpiGbl_DisableSsdtTableInstall &&
         ACPI_COMPARE_NAME (&NewTableDesc.Signature, ACPI_SIG_SSDT))
     {
         ACPI_INFO ((AE_INFO, "Ignoring installation of %4.4s at %p",
@@ -814,7 +817,7 @@ AcpiTbInstallNonFixedTable (
                  * As we are going to return AE_OK to the caller, we should
                  * take the responsibility of freeing the input descriptor.
                  * Refill the input descriptor to ensure
-                 * AcpiTbInstallAndOverrideTable() can be called again to
+                 * AcpiTbInstallTableWithOverride() can be called again to
                  * indicate the re-installation.
                  */
                 AcpiTbUninstallTable (&NewTableDesc);
@@ -827,19 +830,20 @@ AcpiTbInstallNonFixedTable (
 
     /* Add the table to the global root table list */
 
-    Status = AcpiTbAcquireRootTableEntry (&i);
+    Status = AcpiTbGetRootTableEntry (&i);
     if (ACPI_FAILURE (Status))
     {
         goto ReleaseAndExit;
     }
+
     *TableIndex = i;
-    AcpiTbInstallAndOverrideTable (i, &NewTableDesc, Override);
+    AcpiTbInstallTableWithOverride (i, &NewTableDesc, Override);
 
 ReleaseAndExit:
 
-    /* Release the temporal table descriptor */
+    /* Release the temporary table descriptor */
 
-    AcpiTbReleaseTemporalTable (&NewTableDesc);
+    AcpiTbReleaseTempTable (&NewTableDesc);
     return_ACPI_STATUS (Status);
 }
 
@@ -878,8 +882,8 @@ AcpiTbOverrideTable (
     Status = AcpiOsTableOverride (OldTableDesc->Pointer, &Table);
     if (ACPI_SUCCESS (Status) && Table)
     {
-        AcpiTbAcquireTemporalTable (&NewTableDesc,
-            ACPI_PTR_TO_PHYSADDR (Table), ACPI_TABLE_ORIGIN_EXTERN_VIRTUAL);
+        AcpiTbAcquireTempTable (&NewTableDesc, ACPI_PTR_TO_PHYSADDR (Table),
+            ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL);
         OverrideType = "Logical";
         goto FinishOverride;
     }
@@ -890,8 +894,8 @@ AcpiTbOverrideTable (
         &Address, &Length);
     if (ACPI_SUCCESS (Status) && Address && Length)
     {
-        AcpiTbAcquireTemporalTable (&NewTableDesc, Address,
-            ACPI_TABLE_ORIGIN_INTERN_PHYSICAL);
+        AcpiTbAcquireTempTable (&NewTableDesc, Address,
+            ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL);
         OverrideType = "Physical";
         goto FinishOverride;
     }
@@ -923,13 +927,13 @@ FinishOverride:
      * Replace the original table descriptor and keep its state as
      * "VALIDATED".
      */
-    AcpiTbInstallTable (OldTableDesc, NewTableDesc.Address,
+    AcpiTbInitTableDescriptor (OldTableDesc, NewTableDesc.Address,
         NewTableDesc.Flags, NewTableDesc.Pointer);
     AcpiTbValidateTable (OldTableDesc);
 
-    /* Release the temporal table descriptor */
+    /* Release the temporary table descriptor */
 
-    AcpiTbReleaseTemporalTable (&NewTableDesc);
+    AcpiTbReleaseTempTable (&NewTableDesc);
 }
 
 
@@ -1008,7 +1012,7 @@ AcpiTbResizeRootTableList (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbAcquireRootTableEntry
+ * FUNCTION:    AcpiTbGetRootTableEntry
  *
  * PARAMETERS:  TableIndex          - Where table index is returned
  *
@@ -1019,7 +1023,7 @@ AcpiTbResizeRootTableList (
  ******************************************************************************/
 
 static ACPI_STATUS
-AcpiTbAcquireRootTableEntry (
+AcpiTbGetRootTableEntry (
     UINT32                  *TableIndex)
 {
     ACPI_STATUS             Status;
@@ -1050,7 +1054,8 @@ AcpiTbAcquireRootTableEntry (
  * PARAMETERS:  Address             - Table address
  *              Table               - Table header
  *              Length              - Table length
- *              Flags               - flags
+ *              Flags               - Install flags
+ *              TableIndex          - Where the table index is returned
  *
  * RETURN:      Status and table index.
  *
@@ -1070,7 +1075,7 @@ AcpiTbStoreTable (
     ACPI_TABLE_DESC         *TableDesc;
 
 
-    Status = AcpiTbAcquireRootTableEntry (TableIndex);
+    Status = AcpiTbGetRootTableEntry (TableIndex);
     if (ACPI_FAILURE (Status))
     {
         return (Status);
@@ -1079,9 +1084,8 @@ AcpiTbStoreTable (
     /* Initialize added table */
 
     TableDesc = &AcpiGbl_RootTableList.Tables[*TableIndex];
-    AcpiTbInstallTable (TableDesc, Address, Flags, Table);
+    AcpiTbInitTableDescriptor (TableDesc, Address, Flags, Table);
     TableDesc->Pointer = Table;
-
     return (AE_OK);
 }
 
@@ -1116,13 +1120,12 @@ AcpiTbUninstallTable (
     AcpiTbInvalidateTable (TableDesc);
 
     if ((TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK) ==
-        ACPI_TABLE_ORIGIN_INTERN_VIRTUAL)
+        ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL)
     {
         ACPI_FREE (ACPI_CAST_PTR (void, TableDesc->Address));
     }
 
     TableDesc->Address = ACPI_PTR_TO_PHYSADDR (NULL);
-
     return_VOID;
 }
 
@@ -1172,8 +1175,8 @@ AcpiTbTerminate (
     AcpiGbl_RootTableList.CurrentTableCount = 0;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "ACPI Tables freed\n"));
-    (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
 
+    (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
     return_VOID;
 }
 
@@ -1268,8 +1271,8 @@ AcpiTbAllocateOwnerId (
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
     if (TableIndex < AcpiGbl_RootTableList.CurrentTableCount)
     {
-        Status = AcpiUtAllocateOwnerId
-                    (&(AcpiGbl_RootTableList.Tables[TableIndex].OwnerId));
+        Status = AcpiUtAllocateOwnerId (
+                    &(AcpiGbl_RootTableList.Tables[TableIndex].OwnerId));
     }
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
@@ -1352,7 +1355,7 @@ AcpiTbGetOwnerId (
  *
  * FUNCTION:    AcpiTbIsTableLoaded
  *
- * PARAMETERS:  TableIndex          - Table index
+ * PARAMETERS:  TableIndex          - Index into the root table
  *
  * RETURN:      Table Loaded Flag
  *

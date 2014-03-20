@@ -436,17 +436,17 @@ AcpiDbDisplayTableInfo (
 
         switch (TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK)
         {
-        case ACPI_TABLE_ORIGIN_EXTERN_VIRTUAL:
+        case ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL:
 
             AcpiOsPrintf ("External virtual  ");
             break;
 
-        case ACPI_TABLE_ORIGIN_INTERN_PHYSICAL:
+        case ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL:
 
             AcpiOsPrintf ("Internal physical ");
             break;
 
-        case ACPI_TABLE_ORIGIN_INTERN_VIRTUAL:
+        case ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL:
 
             AcpiOsPrintf ("Internal virtual  ");
             break;

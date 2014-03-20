@@ -497,7 +497,7 @@ AeLocalLoadTable (
 
     /* Install the new table into the local data structures */
 
-    Status = AcpiTbInstallTable (&TableInfo);
+    Status = AcpiTbInitTableDescriptor (&TableInfo);
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_ALREADY_EXISTS)

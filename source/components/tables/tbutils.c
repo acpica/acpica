@@ -270,9 +270,11 @@ AcpiTbCopyDsdt (
 
     ACPI_MEMCPY (NewTable, TableDesc->Pointer, TableDesc->Length);
     AcpiTbUninstallTable (TableDesc);
-    AcpiTbInstallTable (&AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT],
-            ACPI_PTR_TO_PHYSADDR (NewTable), ACPI_TABLE_ORIGIN_INTERN_VIRTUAL,
-            NewTable);
+
+    AcpiTbInitTableDescriptor (
+        &AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT],
+        ACPI_PTR_TO_PHYSADDR (NewTable), ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL,
+        NewTable);
 
     ACPI_INFO ((AE_INFO,
         "Forced DSDT copy: length 0x%05X copied locally, original unmapped",
@@ -582,9 +584,9 @@ AcpiTbParseRootTable (
     {
         /* Get the table physical address (32-bit for RSDT, 64-bit for XSDT) */
 
-        Status = AcpiTbInstallNonFixedTable (
+        Status = AcpiTbInstallStandardTable (
             AcpiTbGetRootTableEntry (TableEntry, TableEntrySize),
-            ACPI_TABLE_ORIGIN_INTERN_PHYSICAL, FALSE, TRUE, &TableIndex);
+            ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL, FALSE, TRUE, &TableIndex);
 
         if (ACPI_SUCCESS (Status) &&
             ACPI_COMPARE_NAME (&AcpiGbl_RootTableList.Tables[TableIndex].Signature,

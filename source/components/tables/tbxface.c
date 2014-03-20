@@ -334,7 +334,7 @@ AcpiGetTableHeader (
         {
             if ((AcpiGbl_RootTableList.Tables[i].Flags &
                     ACPI_TABLE_ORIGIN_MASK) ==
-                ACPI_TABLE_ORIGIN_INTERN_PHYSICAL)
+                ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL)
             {
                 Header = AcpiOsMapMemory (
                             AcpiGbl_RootTableList.Tables[i].Address,
