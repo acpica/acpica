@@ -4188,7 +4188,7 @@ AtInitTest0058(void)
         printf ("Test Error: AtInitTest0058 skipped due to too small"
             "ACPI_MAX_OBJECT_CACHE_DEPTH constant (%d)\n",
             ACPI_MAX_OBJECT_CACHE_DEPTH);
-        return (Status);
+        return (AE_LIMIT);
     }
 
     if (ACPI_FAILURE(Status = AtAMLcodeFileNameSet("init0058.aml")))
