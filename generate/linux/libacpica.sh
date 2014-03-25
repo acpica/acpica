@@ -22,6 +22,9 @@ linux_dirs()
 		drivers/acpi/acpica \
 		include/acpi \
 		include/acpi/platform \
+		tools/power/acpi/common \
+		tools/power/acpi/os_specific/service_layers \
+		tools/power/acpi/tools/acpidump \
 	"
 	echo $dirs
 }
@@ -31,6 +34,7 @@ acpica_privs()
 	local incs
 
 	incs="\
+		acapps.h \
 		accommon.h \
 		acdebug.h acdispat.h \
 		acevents.h \
@@ -56,15 +60,15 @@ acpica_drivers_paths()
 	local paths incs inc
 
 	paths="\
-		components/dispatcher
-		components/events
-		components/executer
-		components/hardware
-		components/namespace
-		components/parser
-		components/resources
-		components/tables
-		components/utilities
+		components/dispatcher \
+		components/events \
+		components/executer \
+		components/hardware \
+		components/namespace \
+		components/parser \
+		components/resources \
+		components/tables \
+		components/utilities \
 	"
 	incs=`acpica_privs`
 	for inc in $incs; do
@@ -73,25 +77,38 @@ acpica_drivers_paths()
 	echo $paths
 }
 
+acpica_tools_paths()
+{
+	local paths incs inc
+
+	paths="\
+		common/getopt.c \
+		os_specific/service_layers/oslinuxtbl.c \
+		os_specific/service_layers/osunixdir.c \
+		os_specific/service_layers/osunixmap.c \
+		tools/acpidump \
+	"
+	echo $paths
+}
+
 acpica_exclude_paths()
 {
 	local paths
 
 	paths="\
-		include/acpi/acdisasm.h
-		include/acpi/acapps.h
-		include/acpi/platform/accygwin.h
-		include/acpi/platform/acefi.h
-		include/acpi/platform/acfreebsd.h
-		include/acpi/platform/achaiku.h
-		include/acpi/platform/acintel.h
-		include/acpi/platform/acmacosx.h
-		include/acpi/platform/acmsvc.h
-		include/acpi/platform/acnetbsd.h
-		include/acpi/platform/acos2.h
-		include/acpi/platform/acwin.h
-		include/acpi/platform/acwin64.h
-		drivers/acpi/acpica/utclib.c
+		include/acpi/acdisasm.h \
+		include/acpi/platform/accygwin.h \
+		include/acpi/platform/acefi.h \
+		include/acpi/platform/acfreebsd.h \
+		include/acpi/platform/achaiku.h \
+		include/acpi/platform/acintel.h \
+		include/acpi/platform/acmacosx.h \
+		include/acpi/platform/acmsvc.h \
+		include/acpi/platform/acnetbsd.h \
+		include/acpi/platform/acos2.h \
+		include/acpi/platform/acwin.h \
+		include/acpi/platform/acwin64.h \
+		drivers/acpi/acpica/utclib.c \
 	"
 	echo $paths
 }
@@ -330,6 +347,21 @@ linuxize_hierarchy_noref()
 		# Making include files
 		mkdir -p include/acpi
 		mv -f source/include/* include/acpi
+
+		# Making tools/power/acpi files
+		paths=`acpica_tools_paths`
+		for path in $paths; do
+			if [ -d source/$path ]; then
+				echo " Moving directory $path..."
+				mkdir -p tools/power/acpi/$path
+				mv source/$path/*.[ch] tools/power/acpi/$path/
+			fi
+			if [ -f source/$path ]; then
+				echo " Moving file $path..."
+				mkdir -p `dirname tools/power/acpi/$path`
+				mv source/$path tools/power/acpi/$path
+			fi
+		done
 
 		# Removing non-Linux files
 		paths=`acpica_exclude_paths`

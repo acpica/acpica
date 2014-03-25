@@ -127,9 +127,9 @@
 
 /* List of information about obtained ACPI tables */
 
-typedef struct          table_info
+typedef struct osl_table_info
 {
-    struct table_info       *Next;
+    struct osl_table_info   *Next;
     UINT32                  Instance;
     char                    Signature[ACPI_NAME_SIZE];
 
