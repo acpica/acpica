@@ -429,6 +429,7 @@ AdAmlDisassemble (
         {
             fprintf (stderr, "Could not open output file %s\n", DisasmFilename);
             Status = AE_ERROR;
+            ACPI_FREE (DisasmFilename);
             goto Cleanup;
         }
 
