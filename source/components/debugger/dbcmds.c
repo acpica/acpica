@@ -158,6 +158,8 @@ AcpiDbDoOneSleepState (
     UINT8                   SleepState);
 
 
+static char                 *AcpiDbTraceMethodName = NULL;
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbConvertToNode
@@ -1297,5 +1299,75 @@ AcpiDbGenerateSci (
 }
 
 #endif /* !ACPI_REDUCED_HARDWARE */
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbTrace
+ *
+ * PARAMETERS:  EnableArg           - ENABLE/AML to enable tracer
+ *                                    DISABLE to disable tracer
+ *              MethodArg           - Method to trace
+ *              OnceArg             - Whether trace once
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Control method tracing facility
+ *
+ ******************************************************************************/
+
+void
+AcpiDbTrace (
+    char                    *EnableArg,
+    char                    *MethodArg,
+    char                    *OnceArg)
+{
+    UINT32                  DebugLevel = 0;
+    UINT32                  DebugLayer = 0;
+    UINT32                  Flags = 0;
+
+
+    if (EnableArg)
+    {
+        AcpiUtStrupr (EnableArg);
+    }
+    if (OnceArg)
+    {
+        AcpiUtStrupr (OnceArg);
+    }
+    if (MethodArg)
+    {
+        if (AcpiDbTraceMethodName)
+        {
+            ACPI_FREE (AcpiDbTraceMethodName);
+            AcpiDbTraceMethodName = NULL;
+        }
+        AcpiDbTraceMethodName = ACPI_ALLOCATE (strlen (MethodArg) + 1);
+        if (!AcpiDbTraceMethodName)
+        {
+            AcpiOsPrintf ("Failed to allocate method name (%s)\n", MethodArg);
+            return;
+        }
+        strcpy (AcpiDbTraceMethodName, MethodArg);
+    }
+    if (!strcmp (EnableArg, "ENABLE") ||
+        !strcmp (EnableArg, "AML"))
+    {
+        if (!strcmp (EnableArg, "AML"))
+        {
+            DebugLevel = ACPI_LV_TRACE_POINT;
+            DebugLayer = ACPI_EXECUTER;
+        }
+
+        Flags = ACPI_TRACE_ENABLED;
+        if (OnceArg && !strcmp (OnceArg, "ONCE"))
+        {
+            Flags |= ACPI_TRACE_ONESHOT;
+        }
+    }
+
+    (void) AcpiDebugTrace (AcpiDbTraceMethodName,
+                DebugLevel, DebugLayer, Flags);
+}
 
 #endif /* ACPI_DEBUGGER */

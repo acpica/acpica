@@ -233,9 +233,7 @@ AcpiPsCompleteThisOp (
         return_ACPI_STATUS (AE_OK);  /* OK for now */
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
-                "End opcode: %s[0x%p].\n",
-                Op->Common.AmlOpName, Op->Common.Aml));
+    AcpiExStopTraceOpcode (Op, WalkState);
 
     /* Delete this op and the subtree below it if asked to */
 

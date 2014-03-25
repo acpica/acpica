@@ -47,6 +47,7 @@ OBJECTS = \
 	$(OBJDIR)/dswscope.o\
 	$(OBJDIR)/dswstate.o\
 	$(OBJDIR)/excreate.o\
+	$(OBJDIR)/exdebug.o\
 	$(OBJDIR)/exdump.o\
 	$(OBJDIR)/exmutex.o\
 	$(OBJDIR)/exnames.o\

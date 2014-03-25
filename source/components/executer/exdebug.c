@@ -115,11 +115,16 @@
 
 #include "acpi.h"
 #include "accommon.h"
+#include "acnamesp.h"
 #include "acinterp.h"
+#include "acparser.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
         ACPI_MODULE_NAME    ("exdebug")
+
+
+static ACPI_OPERAND_OBJECT  *AcpiGbl_TraceMethodObject = NULL;
 
 
 #ifndef ACPI_NO_ERROR_MESSAGES
@@ -386,3 +391,310 @@ AcpiExDoDebugObject (
     return_VOID;
 }
 #endif
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExInterpreterTraceEnabled
+ *
+ * PARAMETERS:  Name                - Whether method name should be matched,
+ *                                    this should be checked before starting
+ *                                    the tracer
+ *
+ * RETURN:      TRUE if interpreter trace is enabled.
+ *
+ * DESCRIPTION: Check whether interpreter trace is enabled
+ *
+ ******************************************************************************/
+
+static BOOLEAN
+AcpiExInterpreterTraceEnabled (
+    char                    *Name)
+{
+
+    /* Check if tracing is enabled */
+
+    if (!(AcpiGbl_TraceFlags & ACPI_TRACE_ENABLED))
+    {
+        return (FALSE);
+    }
+
+    /*
+     * Check if tracing is filtered:
+     *
+     * 1. If the tracer is started, AcpiGbl_TraceMethodObject should have
+     *    been filled by the trace starter
+     * 2. If the tracer is not started, AcpiGbl_TraceMethodName should be
+     *    matched if it is specified
+     * 3. If the tracer is oneshot style, AcpiGbl_TraceMethodName should
+     *    not be cleared by the trace stopper during the first match
+     */
+    if (AcpiGbl_TraceMethodObject)
+    {
+        return (TRUE);
+    }
+    if (Name &&
+        (AcpiGbl_TraceMethodName &&
+         strcmp (AcpiGbl_TraceMethodName, Name)))
+    {
+        return (FALSE);
+    }
+    if ((AcpiGbl_TraceFlags & ACPI_TRACE_ONESHOT) &&
+        !AcpiGbl_TraceMethodName)
+    {
+        return (FALSE);
+    }
+
+    return (TRUE);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExStartTraceMethod
+ *
+ * PARAMETERS:  MethodNode          - Node of the method
+ *              ObjDesc             - The method object
+ *              WalkState           - current state, NULL if not yet executing
+ *                                    a method.
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Start control method execution trace
+ *
+ ******************************************************************************/
+
+void
+AcpiExStartTraceMethod (
+    ACPI_NAMESPACE_NODE     *MethodNode,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_STATUS             Status;
+    char                    *Pathname = NULL;
+    BOOLEAN                 Enabled = FALSE;
+
+
+    ACPI_FUNCTION_NAME (ExStartTraceMethod);
+
+
+    if (MethodNode)
+    {
+        Pathname = AcpiNsGetNormalizedPathname (MethodNode, TRUE);
+    }
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        goto Exit;
+    }
+
+    Enabled = AcpiExInterpreterTraceEnabled (Pathname);
+    if (Enabled && !AcpiGbl_TraceMethodObject)
+    {
+        AcpiGbl_TraceMethodObject = ObjDesc;
+        AcpiGbl_OriginalDbgLevel = AcpiDbgLevel;
+        AcpiGbl_OriginalDbgLayer = AcpiDbgLayer;
+        AcpiDbgLevel = ACPI_TRACE_LEVEL_ALL;
+        AcpiDbgLayer = ACPI_TRACE_LAYER_ALL;
+
+        if (AcpiGbl_TraceDbgLevel)
+        {
+            AcpiDbgLevel = AcpiGbl_TraceDbgLevel;
+        }
+        if (AcpiGbl_TraceDbgLayer)
+        {
+            AcpiDbgLayer = AcpiGbl_TraceDbgLayer;
+        }
+    }
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+
+Exit:
+    if (Enabled)
+    {
+        if (Pathname)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
+                "Begin method [0x%p:%s] execution.\n",
+                ObjDesc->Method.AmlStart, Pathname));
+        }
+        else
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
+                "Begin method [0x%p] execution.\n",
+                ObjDesc->Method.AmlStart));
+        }
+    }
+    if (Pathname)
+    {
+        ACPI_FREE (Pathname);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExStopTraceMethod
+ *
+ * PARAMETERS:  MethodNode          - Node of the method
+ *              ObjDesc             - The method object
+ *              WalkState           - current state, NULL if not yet executing
+ *                                    a method.
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Stop control method execution trace
+ *
+ ******************************************************************************/
+
+void
+AcpiExStopTraceMethod (
+    ACPI_NAMESPACE_NODE     *MethodNode,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_STATUS             Status;
+    char                    *Pathname = NULL;
+    BOOLEAN                 Enabled;
+
+
+    ACPI_FUNCTION_NAME (ExStopTraceMethod);
+
+
+    if (MethodNode)
+    {
+        Pathname = AcpiNsGetNormalizedPathname (MethodNode, TRUE);
+    }
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        goto ExitPath;
+    }
+
+    Enabled = AcpiExInterpreterTraceEnabled (NULL);
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+
+    if (Enabled)
+    {
+        if (Pathname)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
+                "End method [0x%p:%s] execution.\n",
+                ObjDesc->Method.AmlStart, Pathname));
+        }
+        else
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
+                "End method [0x%p] execution.\n",
+                ObjDesc->Method.AmlStart));
+        }
+    }
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        goto ExitPath;
+    }
+
+    /* Check whether the tracer should be stopped */
+
+    if (AcpiGbl_TraceMethodObject == ObjDesc)
+    {
+        /* Disable further tracing if type is one-shot */
+
+        if (AcpiGbl_TraceFlags & ACPI_TRACE_ONESHOT)
+        {
+            AcpiGbl_TraceMethodName = NULL;
+        }
+
+        AcpiDbgLevel = AcpiGbl_OriginalDbgLevel;
+        AcpiDbgLayer = AcpiGbl_OriginalDbgLayer;
+        AcpiGbl_TraceMethodObject = NULL;
+    }
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+
+ExitPath:
+    if (Pathname)
+    {
+        ACPI_FREE (Pathname);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExStartTraceOpcode
+ *
+ * PARAMETERS:  Op                  - The parser opcode object
+ *              WalkState           - current state, NULL if not yet executing
+ *                                    a method.
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Start opcode execution trace
+ *
+ ******************************************************************************/
+
+void
+AcpiExStartTraceOpcode (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_WALK_STATE         *WalkState)
+{
+
+    ACPI_FUNCTION_NAME (ExStartTraceOpcode);
+
+
+    if (AcpiExInterpreterTraceEnabled (NULL))
+    {
+        if (WalkState->OpInfo)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
+                    "Begin opcode: %s[0x%p] Class=0x%02x, Type=0x%02x, Flags=0x%04x.\n",
+                    Op->Common.AmlOpName, Op->Common.Aml,
+                    WalkState->OpInfo->Class,
+                    WalkState->OpInfo->Type,
+                    WalkState->OpInfo->Flags));
+        }
+        else
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
+                    "Begin opcode: %s[0x%p].\n",
+                    Op->Common.AmlOpName, Op->Common.Aml));
+        }
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExStopTraceOpcode
+ *
+ * PARAMETERS:  Op                  - The parser opcode object
+ *              WalkState           - current state, NULL if not yet executing
+ *                                    a method.
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Stop opcode execution trace
+ *
+ ******************************************************************************/
+
+void
+AcpiExStopTraceOpcode (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_WALK_STATE         *WalkState)
+{
+
+    ACPI_FUNCTION_NAME (ExStopTraceOpcode);
+
+
+    if (AcpiExInterpreterTraceEnabled (NULL))
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
+                "End opcode: %s[0x%p].\n",
+                Op->Common.AmlOpName, Op->Common.Aml));
+    }
+}

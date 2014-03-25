@@ -370,7 +370,10 @@ static const ACPI_DB_COMMAND_HELP   AcpiGbl_DbCommandHelp[] =
     {1, "  Set <A|L> <#> <Value>",             "Set method data (Arguments/Locals)\n"},
     {1, "  Stop",                              "Terminate control method\n"},
     {1, "  Thread <Threads><Loops><NamePath>", "Spawn threads to execute method(s)\n"},
-    {1, "  Trace <method name>",               "Trace method execution\n"},
+    {4, "  Trace <State> [<Method>] [Once]",   "Trace method execution\n"},
+    {1, "     Enable",                         "Enable all messages\n"},
+    {1, "     Disable",                        "Disable traer\n"},
+    {1, "     AML",                            "Enable AML execution messages\n"},
     {1, "  Tree",                              "Display control method calling tree\n"},
     {1, "  <Enter>",                           "Single step next AML opcode (over calls)\n"},
 
@@ -1182,7 +1185,7 @@ AcpiDbCommandDispatch (
 
     case CMD_TRACE:
 
-        (void) AcpiDebugTrace (AcpiGbl_DbArgs[1],0,0,1);
+        AcpiDbTrace (AcpiGbl_DbArgs[1], AcpiGbl_DbArgs[2], AcpiGbl_DbArgs[3]);
         break;
 
     case CMD_TREE:

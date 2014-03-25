@@ -237,15 +237,6 @@ AcpiEvInitializeRegion (
     return (AE_OK);
 }
 
-void
-AcpiExDoDebugObject (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    UINT32                  Level,
-    UINT32                  Index)
-{
-    return;
-}
-
 ACPI_STATUS
 AcpiExReadDataFromField (
     ACPI_WALK_STATE         *WalkState,

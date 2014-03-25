@@ -259,6 +259,20 @@
 #define ACPI_DEBUG_ALL              (ACPI_LV_AML_DISASSEMBLE | ACPI_LV_ALL_EXCEPTIONS | ACPI_LV_ALL)
 
 
+/*
+ * Global trace flags
+ */
+#define ACPI_TRACE_ENABLED          ((UINT32) 2)
+#define ACPI_TRACE_ONESHOT          ((UINT32) 1)
+
+/* Defaults for trace debugging level/layer */
+
+#define ACPI_TRACE_LEVEL_ALL        ACPI_LV_ALL
+#define ACPI_TRACE_LAYER_ALL        0x000001FF
+#define ACPI_TRACE_LEVEL_DEFAULT    ACPI_LV_TRACE_POINT
+#define ACPI_TRACE_LAYER_DEFAULT    ACPI_EXECUTER
+
+
 #if defined (ACPI_DEBUG_OUTPUT) || !defined (ACPI_NO_ERROR_MESSAGES)
 /*
  * The module name is used primarily for error and debug messages.

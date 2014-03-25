@@ -118,6 +118,7 @@
 #include "acdispat.h"
 #include "acnamesp.h"
 #include "acdisasm.h"
+#include "acinterp.h"
 
 
 #define _COMPONENT          ACPI_DISPATCHER
@@ -210,7 +211,6 @@ AcpiDsDumpMethodStack (
     ACPI_WALK_STATE         *NextWalkState;
     ACPI_NAMESPACE_NODE     *PreviousMethod = NULL;
     ACPI_OPERAND_OBJECT     *MethodDesc;
-    char                    *Pathname = NULL;
 
 
     ACPI_FUNCTION_TRACE (DsDumpMethodStack);
@@ -260,25 +260,11 @@ AcpiDsDumpMethodStack (
     while (NextWalkState)
     {
         MethodDesc = NextWalkState->MethodDesc;
-        if (MethodDesc && MethodDesc->Method.Node)
+        if (MethodDesc)
         {
-            Pathname = AcpiNsGetNormalizedPathname (
-                        (ACPI_NAMESPACE_NODE *) MethodDesc->Method.Node,
-                        TRUE);
-        }
-        if (Pathname)
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
-                    "End method [0x%p:%s] execution.\n",
-                    MethodDesc->Method.AmlStart, Pathname));
-            ACPI_FREE (Pathname);
-            Pathname = NULL;
-        }
-        else
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
-                    "End method [0x%p] execution.\n",
-                    MethodDesc->Method.AmlStart));
+            AcpiExStopTraceMethod (
+                    (ACPI_NAMESPACE_NODE *) MethodDesc->Method.Node,
+                    MethodDesc, WalkState);
         }
 
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,

@@ -325,7 +325,9 @@ ACPI_INIT_GLOBAL (BOOLEAN,          AcpiGbl_ReducedHardware, FALSE);
  * traced each time it is executed.
  */
 ACPI_INIT_GLOBAL (UINT32,           AcpiGbl_TraceFlags, 0);
-ACPI_INIT_GLOBAL (ACPI_NAME,        AcpiGbl_TraceMethodName, 0);
+ACPI_INIT_GLOBAL (const char *,     AcpiGbl_TraceMethodName, NULL);
+ACPI_INIT_GLOBAL (UINT32,           AcpiGbl_TraceDbgLevel, ACPI_TRACE_LEVEL_DEFAULT);
+ACPI_INIT_GLOBAL (UINT32,           AcpiGbl_TraceDbgLayer, ACPI_TRACE_LAYER_DEFAULT);
 
 /*
  * Runtime configuration of debug output control masks. We want the debug
@@ -682,7 +684,7 @@ AcpiGetData (
 ACPI_EXTERNAL_RETURN_STATUS (
 ACPI_STATUS
 AcpiDebugTrace (
-    char                    *Name,
+    const char              *Name,
     UINT32                  DebugLevel,
     UINT32                  DebugLayer,
     UINT32                  Flags))
