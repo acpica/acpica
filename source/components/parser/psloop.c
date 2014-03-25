@@ -579,6 +579,22 @@ AcpiPsParseLoop (
                      (UINT32) Op->Common.AmlOpcode, WalkState->OpInfo->Name,
                      Op, Op->Common.Aml));
             }
+
+            if (WalkState->OpInfo)
+            {
+                ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
+                        "Begin opcode: %s[0x%p] Class=0x%02x, Type=0x%02x, Flags=0x%04x.\n",
+                        Op->Common.AmlOpName, Op->Common.Aml,
+                        WalkState->OpInfo->Class,
+                        WalkState->OpInfo->Type,
+                        WalkState->OpInfo->Flags));
+            }
+            else
+            {
+                ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
+                        "Begin opcode: %s[0x%p].\n",
+                        Op->Common.AmlOpName, Op->Common.Aml));
+            }
         }
 
 

@@ -209,6 +209,8 @@ AcpiDsDumpMethodStack (
     ACPI_THREAD_STATE       *Thread;
     ACPI_WALK_STATE         *NextWalkState;
     ACPI_NAMESPACE_NODE     *PreviousMethod = NULL;
+    ACPI_OPERAND_OBJECT     *MethodDesc;
+    char                    *Pathname = NULL;
 
 
     ACPI_FUNCTION_TRACE (DsDumpMethodStack);
@@ -257,6 +259,28 @@ AcpiDsDumpMethodStack (
 
     while (NextWalkState)
     {
+        MethodDesc = NextWalkState->MethodDesc;
+        if (MethodDesc && MethodDesc->Method.Node)
+        {
+            Pathname = AcpiNsGetNormalizedPathname (
+                        (ACPI_NAMESPACE_NODE *) MethodDesc->Method.Node,
+                        TRUE);
+        }
+        if (Pathname)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
+                    "End method [0x%p:%s] execution.\n",
+                    MethodDesc->Method.AmlStart, Pathname));
+            ACPI_FREE (Pathname);
+            Pathname = NULL;
+        }
+        else
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
+                    "End method [0x%p] execution.\n",
+                    MethodDesc->Method.AmlStart));
+        }
+
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
             "    Method [%4.4s] executing: ",
             AcpiUtGetNodeName (NextWalkState->MethodNode)));

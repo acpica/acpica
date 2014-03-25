@@ -419,6 +419,7 @@ AcpiDsBeginMethodExecution (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
+    char                    *Pathname = NULL;
 
 
     ACPI_FUNCTION_TRACE_PTR (DsBeginMethodExecution, MethodNode);
@@ -427,6 +428,21 @@ AcpiDsBeginMethodExecution (
     if (!MethodNode)
     {
         return_ACPI_STATUS (AE_NULL_ENTRY);
+    }
+
+    Pathname = AcpiNsGetNormalizedPathname (MethodNode, TRUE);
+    if (Pathname)
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
+                "Begin method [0x%p:%s] execution.\n",
+                ObjDesc->Method.AmlStart, Pathname));
+        ACPI_FREE (Pathname);
+    }
+    else
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
+                "Begin method [0x%p] execution.\n",
+                ObjDesc->Method.AmlStart));
     }
 
     /* Prevent wraparound of thread count */
@@ -812,6 +828,8 @@ AcpiDsTerminateControlMethod (
     ACPI_OPERAND_OBJECT     *MethodDesc,
     ACPI_WALK_STATE         *WalkState)
 {
+    char                    *Pathname = NULL;
+
 
     ACPI_FUNCTION_TRACE_PTR (DsTerminateControlMethod, WalkState);
 
@@ -948,6 +966,26 @@ AcpiDsTerminateControlMethod (
         {
             AcpiUtReleaseOwnerId (&MethodDesc->Method.OwnerId);
         }
+    }
+
+    if (MethodDesc->Method.Node)
+    {
+        Pathname = AcpiNsGetNormalizedPathname (
+                    (ACPI_NAMESPACE_NODE *) MethodDesc->Method.Node,
+                    TRUE);
+    }
+    if (Pathname)
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
+                "End method [0x%p:%s] execution.\n",
+                MethodDesc->Method.AmlStart, Pathname));
+        ACPI_FREE (Pathname);
+    }
+    else
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
+                "End method [0x%p] execution.\n",
+                MethodDesc->Method.AmlStart));
     }
 
     return_VOID;
