@@ -126,6 +126,14 @@
 
 static ACPI_OPERAND_OBJECT  *AcpiGbl_TraceMethodObject = NULL;
 
+/* Local prototypes */
+
+#ifdef ACPI_DEBUG_OUTPUT
+static const char *
+AcpiExGetTraceEventName (
+    ACPI_TRACE_EVENT_TYPE   Type);
+#endif
+
 
 #ifndef ACPI_NO_ERROR_MESSAGES
 /*******************************************************************************
@@ -451,6 +459,90 @@ AcpiExInterpreterTraceEnabled (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiExGetTraceEventName
+ *
+ * PARAMETERS:  Type            - Trace event type
+ *
+ * RETURN:      Trace event name.
+ *
+ * DESCRIPTION: Used to obtain the full trace event name.
+ *
+ ******************************************************************************/
+
+#ifdef ACPI_DEBUG_OUTPUT
+
+static const char *
+AcpiExGetTraceEventName (
+    ACPI_TRACE_EVENT_TYPE   Type)
+{
+    switch (Type)
+    {
+    case ACPI_TRACE_AML_METHOD:
+
+        return "Method";
+
+    case ACPI_TRACE_AML_OPCODE:
+
+        return "Opcode";
+
+    case ACPI_TRACE_AML_REGION:
+
+        return "Region";
+
+    default:
+
+        return "";
+    }
+}
+
+#endif
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExTracePoint
+ *
+ * PARAMETERS:  Type                - Trace event type
+ *              Begin               - TRUE if before execution
+ *              Aml                 - Executed AML address
+ *              Pathname            - Object path
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Internal interpreter execution trace.
+ *
+ ******************************************************************************/
+
+void
+AcpiExTracePoint (
+    ACPI_TRACE_EVENT_TYPE   Type,
+    BOOLEAN                 Begin,
+    UINT8                   *Aml,
+    char                    *Pathname)
+{
+
+    ACPI_FUNCTION_NAME (ExTracePoint);
+
+
+    if (Pathname)
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
+                "%s %s [0x%p:%s] execution.\n",
+                AcpiExGetTraceEventName (Type), Begin ? "Begin" : "End",
+                Aml, Pathname));
+    }
+    else
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
+                "%s %s [0x%p] execution.\n",
+                AcpiExGetTraceEventName (Type), Begin ? "Begin" : "End",
+                Aml));
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiExStartTraceMethod
  *
  * PARAMETERS:  MethodNode          - Node of the method
@@ -512,17 +604,10 @@ AcpiExStartTraceMethod (
 Exit:
     if (Enabled)
     {
+        ACPI_TRACE_POINT (ACPI_TRACE_AML_METHOD, TRUE,
+                ObjDesc ? ObjDesc->Method.AmlStart : NULL, Pathname);
         if (Pathname)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
-                "Begin method [0x%p:%s] execution.\n",
-                ObjDesc->Method.AmlStart, Pathname));
-        }
-        else
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
-                "Begin method [0x%p] execution.\n",
-                ObjDesc->Method.AmlStart));
         }
     }
     if (Pathname)
@@ -578,17 +663,10 @@ AcpiExStopTraceMethod (
 
     if (Enabled)
     {
+        ACPI_TRACE_POINT (ACPI_TRACE_AML_METHOD, FALSE,
+                ObjDesc ? ObjDesc->Method.AmlStart : NULL, Pathname);
         if (Pathname)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
-                "End method [0x%p:%s] execution.\n",
-                ObjDesc->Method.AmlStart, Pathname));
-        }
-        else
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
-                "End method [0x%p] execution.\n",
-                ObjDesc->Method.AmlStart));
         }
     }
 
@@ -649,21 +727,8 @@ AcpiExStartTraceOpcode (
 
     if (AcpiExInterpreterTraceEnabled (NULL))
     {
-        if (WalkState->OpInfo)
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
-                    "Begin opcode: %s[0x%p] Class=0x%02x, Type=0x%02x, Flags=0x%04x.\n",
-                    Op->Common.AmlOpName, Op->Common.Aml,
-                    WalkState->OpInfo->Class,
-                    WalkState->OpInfo->Type,
-                    WalkState->OpInfo->Flags));
-        }
-        else
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
-                    "Begin opcode: %s[0x%p].\n",
-                    Op->Common.AmlOpName, Op->Common.Aml));
-        }
+        ACPI_TRACE_POINT (ACPI_TRACE_AML_OPCODE, TRUE,
+                Op->Common.Aml, Op->Common.AmlOpName);
     }
 }
 
@@ -693,8 +758,7 @@ AcpiExStopTraceOpcode (
 
     if (AcpiExInterpreterTraceEnabled (NULL))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
-                "End opcode: %s[0x%p].\n",
-                Op->Common.AmlOpName, Op->Common.Aml));
+        ACPI_TRACE_POINT (ACPI_TRACE_AML_OPCODE, FALSE,
+                Op->Common.Aml, Op->Common.AmlOpName);
     }
 }

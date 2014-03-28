@@ -237,6 +237,13 @@ AcpiExStopTraceOpcode (
     ACPI_PARSE_OBJECT       *Op,
     ACPI_WALK_STATE         *WalkState);
 
+void
+AcpiExTracePoint (
+    ACPI_TRACE_EVENT_TYPE   Type,
+    BOOLEAN                 Begin,
+    UINT8                   *Aml,
+    char                    *Pathname);
+
 
 /*
  * exfield - ACPI AML (p-code) execution - field manipulation

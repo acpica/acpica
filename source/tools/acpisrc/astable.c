@@ -490,6 +490,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_TAG_INFO",                       SRC_TYPE_STRUCT},
     {"ACPI_THREAD_ID",                      SRC_TYPE_SIMPLE},
     {"ACPI_THREAD_STATE",                   SRC_TYPE_STRUCT},
+    {"ACPI_TRACE_EVENT_TYPE",               SRC_TYPE_SIMPLE},
     {"ACPI_TYPED_IDENTIFIER_TABLE",         SRC_TYPE_STRUCT},
     {"ACPI_UINTPTR_T",                      SRC_TYPE_SIMPLE},
     {"ACPI_UPDATE_STATE",                   SRC_TYPE_STRUCT},
