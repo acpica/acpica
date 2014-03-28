@@ -411,7 +411,7 @@ AcpiDbDisplayTableInfo (
 
     /* Header */
 
-    AcpiOsPrintf ("Idx ID Status    Type            Sig  Address  Len   Header\n");
+    AcpiOsPrintf ("Idx ID    Status Type              TableHeader (Sig, Address, Length)\n");
 
     /* Walk the entire root table list */
 
@@ -438,22 +438,22 @@ AcpiDbDisplayTableInfo (
         {
         case ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL:
 
-            AcpiOsPrintf ("External virtual  ");
+            AcpiOsPrintf ("External/virtual  ");
             break;
 
         case ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL:
 
-            AcpiOsPrintf ("Internal physical ");
+            AcpiOsPrintf ("Internal/physical ");
             break;
 
         case ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL:
 
-            AcpiOsPrintf ("Internal virtual  ");
+            AcpiOsPrintf ("Internal/virtual  ");
             break;
 
         default:
 
-            AcpiOsPrintf ("INVALID   ");
+            AcpiOsPrintf ("INVALID TYPE      ");
             break;
         }
 
