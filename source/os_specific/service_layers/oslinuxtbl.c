@@ -1340,7 +1340,6 @@ OslReadTableFromFile (
     ACPI_TABLE_HEADER       *LocalTable = NULL;
     UINT32                  TableLength;
     INT32                   Count;
-    UINT32                  Total = 0;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -1397,18 +1396,13 @@ OslReadTableFromFile (
 
     fseek (TableFile, FileOffset, SEEK_SET);
 
-    while (!feof (TableFile) && Total < TableLength)
+    Count = fread (LocalTable, 1, TableLength, TableFile);
+    if (Count != TableLength)
     {
-        Count = fread (LocalTable, 1, TableLength-Total, TableFile);
-        if (Count < 0)
-        {
-            fprintf (stderr, "%4.4s: Could not read table content\n",
-                Header.Signature);
-            Status = AE_INVALID_TABLE_LENGTH;
-            goto Exit;
-        }
-
-        Total += Count;
+        fprintf (stderr, "%4.4s: Could not read table content\n",
+            Header.Signature);
+        Status = AE_INVALID_TABLE_LENGTH;
+        goto Exit;
     }
 
     /* Validate checksum */

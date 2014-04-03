@@ -356,7 +356,6 @@ ACPI_GLOBAL (ACPI_EXCEPTION_HANDLER,    AcpiGbl_ExceptionHandler);
 ACPI_GLOBAL (ACPI_INIT_HANDLER,         AcpiGbl_InitHandler);
 ACPI_GLOBAL (ACPI_TABLE_HANDLER,        AcpiGbl_TableHandler);
 ACPI_GLOBAL (void *,                    AcpiGbl_TableHandlerContext);
-ACPI_GLOBAL (ACPI_WALK_STATE *,         AcpiGbl_BreakpointWalk);
 ACPI_GLOBAL (ACPI_INTERFACE_HANDLER,    AcpiGbl_InterfaceHandler);
 ACPI_GLOBAL (ACPI_SCI_HANDLER_INFO *,   AcpiGbl_SciHandlerList);
 
@@ -373,7 +372,6 @@ ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_RegMethodsExecuted);
 /* Misc */
 
 ACPI_GLOBAL (UINT32,                    AcpiGbl_OriginalMode);
-ACPI_GLOBAL (UINT32,                    AcpiGbl_RsdpOriginalLocation);
 ACPI_GLOBAL (UINT32,                    AcpiGbl_NsLookupCount);
 ACPI_GLOBAL (UINT32,                    AcpiGbl_PsFindCount);
 ACPI_GLOBAL (UINT16,                    AcpiGbl_Pm1EnableRegisterSave);
@@ -560,11 +558,6 @@ ACPI_GLOBAL (UINT16,                    AcpiGbl_ObjTypeCountMisc);
 ACPI_GLOBAL (UINT16,                    AcpiGbl_NodeTypeCountMisc);
 ACPI_GLOBAL (UINT32,                    AcpiGbl_NumNodes);
 ACPI_GLOBAL (UINT32,                    AcpiGbl_NumObjects);
-
-ACPI_GLOBAL (UINT32,                    AcpiGbl_SizeOfParseTree);
-ACPI_GLOBAL (UINT32,                    AcpiGbl_SizeOfMethodTrees);
-ACPI_GLOBAL (UINT32,                    AcpiGbl_SizeOfNodeEntries);
-ACPI_GLOBAL (UINT32,                    AcpiGbl_SizeOfAcpiObjects);
 
 #endif /* ACPI_DEBUGGER */
 
