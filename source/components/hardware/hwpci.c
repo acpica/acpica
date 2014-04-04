@@ -233,11 +233,12 @@ AcpiHwDerivePciId (
         /* Walk the list, updating the PCI device/function/bus numbers */
 
         Status = AcpiHwProcessPciList (PciId, ListHead);
+
+        /* Delete the list */
+
+        AcpiHwDeletePciList (ListHead);
     }
 
-    /* Always delete the list */
-
-    AcpiHwDeletePciList (ListHead);
     return_ACPI_STATUS (Status);
 }
 
@@ -285,6 +286,9 @@ AcpiHwBuildPciList (
         Status = AcpiGetParent (CurrentDevice, &ParentDevice);
         if (ACPI_FAILURE (Status))
         {
+            /* Must delete the list before exit */
+
+            AcpiHwDeletePciList (*ReturnListHead);
             return (Status);
         }
 
@@ -299,6 +303,9 @@ AcpiHwBuildPciList (
         ListElement = ACPI_ALLOCATE (sizeof (ACPI_PCI_DEVICE));
         if (!ListElement)
         {
+            /* Must delete the list before exit */
+
+            AcpiHwDeletePciList (*ReturnListHead);
             return (AE_NO_MEMORY);
         }
 
