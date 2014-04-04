@@ -526,7 +526,7 @@ DtCompileCsrt (
     UINT32                  GroupLength;
 
 
-    /* Sub-tables (Resource Groups) */
+    /* Subtables (Resource Groups) */
 
     while (*PFieldList)
     {
