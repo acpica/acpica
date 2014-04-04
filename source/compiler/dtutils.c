@@ -605,6 +605,7 @@ DtGetFieldLength (
     case ACPI_DMT_NAME4:
     case ACPI_DMT_SLIC:
     case ACPI_DMT_SIG:
+    case ACPI_DMT_LPIT:
 
         ByteLength = 4;
         break;

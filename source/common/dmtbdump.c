@@ -1543,6 +1543,85 @@ NextSubTable:
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpLpit
+ *
+ * PARAMETERS:  Table               - A LPIT table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a LPIT. This table type consists
+ *              of an open-ended number of subtables. Note: There are no
+ *              entries in the main table. An LPIT consists of the table
+ *              header and then subtables only.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpLpit (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_LPIT_HEADER        *SubTable;
+    UINT32                  Length = Table->Length;
+    UINT32                  Offset = sizeof (ACPI_TABLE_LPIT);
+    ACPI_DMTABLE_INFO       *InfoTable;
+    UINT32                  SubTableLength;
+
+
+    /* Subtables */
+
+    SubTable = ACPI_ADD_PTR (ACPI_LPIT_HEADER, Table, Offset);
+    while (Offset < Table->Length)
+    {
+        /* Common sub-table header */
+
+        Status = AcpiDmDumpTable (Length, Offset, SubTable,
+                    sizeof (ACPI_LPIT_HEADER), AcpiDmTableInfoLpitHdr);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        switch (SubTable->Type)
+        {
+        case ACPI_LPIT_TYPE_NATIVE_CSTATE:
+
+            InfoTable = AcpiDmTableInfoLpit0;
+            SubTableLength = sizeof (ACPI_LPIT_NATIVE);
+            break;
+
+        case ACPI_LPIT_TYPE_SIMPLE_IO:
+
+            InfoTable = AcpiDmTableInfoLpit1;
+            SubTableLength = sizeof (ACPI_LPIT_IO);
+            break;
+
+        default:
+
+            /* Cannot continue on unknown type - no length */
+
+            AcpiOsPrintf ("\n**** Unknown LPIT sub-table type 0x%X\n", SubTable->Type);
+            return;
+        }
+
+        Status = AcpiDmDumpTable (Length, Offset, SubTable,
+                    SubTableLength, InfoTable);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+        AcpiOsPrintf ("\n");
+
+        /* Point to next sub-table */
+
+        Offset += SubTableLength;
+        SubTable = ACPI_ADD_PTR (ACPI_LPIT_HEADER, SubTable, SubTableLength);
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpMadt
  *
  * PARAMETERS:  Table               - A MADT table
