@@ -347,6 +347,11 @@ void
 ApCheckRegMethod (
     ACPI_PARSE_OBJECT       *Op);
 
+BOOLEAN
+ApFindNameInScope (
+    char                    *Name,
+    ACPI_PARSE_OBJECT       *Op);
+
 
 /*
  * aslerror - error handling/reporting

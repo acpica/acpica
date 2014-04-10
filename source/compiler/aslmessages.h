@@ -308,6 +308,7 @@ typedef enum
     ASL_MSG_WRITE,
     ASL_MSG_RANGE,
     ASL_MSG_BUFFER_ALLOCATION,
+    ASL_MSG_MISSING_DEPENDENCY,
 
     /* These messages are used by the Preprocessor only */
 
@@ -371,7 +372,7 @@ char                        *AslMessages [] =
 /*    ASL_MSG_CORE_EXCEPTION */             "From ACPICA Subsystem",
 /*    ASL_MSG_DEBUG_FILE_OPEN */            "Could not open debug file",
 /*    ASL_MSG_DEBUG_FILENAME */             "Could not create debug filename",
-/*    ASL_MSG_DEPENDENT_NESTING */          "Dependent function macros cannot be nested",\
+/*    ASL_MSG_DEPENDENT_NESTING */          "Dependent function macros cannot be nested",
 /*    ASL_MSG_DMA_CHANNEL */                "Invalid DMA channel (must be 0-7)",
 /*    ASL_MSG_DMA_LIST */                   "Too many DMA channels (8 max)",
 /*    ASL_MSG_DUPLICATE_CASE */             "Case value already specified",
@@ -493,6 +494,7 @@ char                        *AslMessages [] =
 /*    ASL_MSG_WRITE */                      "Could not write file",
 /*    ASL_MSG_RANGE */                      "Constant out of range",
 /*    ASL_MSG_BUFFER_ALLOCATION */          "Could not allocate line buffer",
+/*    ASL_MSG_MISSING_DEPENDENCY */         "Missing dependency",
 
 /* Preprocessor */
 
