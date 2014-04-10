@@ -127,8 +127,6 @@
 #error ACPI_MACHINE_WIDTH not defined
 #endif
 
-/*! [Begin] no source code translation */
-
 /*
  * Data type ranges
  * Note: These macros are designed to be compiler independent as well as
@@ -196,13 +194,15 @@
  *
  ******************************************************************************/
 
+#ifndef ACPI_USE_SYSTEM_INTTYPES
+
 typedef unsigned char                   BOOLEAN;
 typedef unsigned char                   UINT8;
 typedef unsigned short                  UINT16;
 typedef COMPILER_DEPENDENT_UINT64       UINT64;
 typedef COMPILER_DEPENDENT_INT64        INT64;
 
-/*! [End] no source code translation !*/
+#endif /* ACPI_USE_SYSTEM_INTTYPES */
 
 /*
  * Value returned by AcpiOsGetThreadId. There is no standard "thread_id"
@@ -223,12 +223,12 @@ typedef COMPILER_DEPENDENT_INT64        INT64;
 
 #if ACPI_MACHINE_WIDTH == 64
 
-/*! [Begin] no source code translation (keep the typedefs as-is) */
+#ifndef ACPI_USE_SYSTEM_INTTYPES
 
 typedef unsigned int                    UINT32;
 typedef int                             INT32;
 
-/*! [End] no source code translation !*/
+#endif /* ACPI_USE_SYSTEM_INTTYPES */
 
 
 typedef INT64                           ACPI_NATIVE_INT;
@@ -262,12 +262,12 @@ typedef UINT64                          ACPI_PHYSICAL_ADDRESS;
 
 #elif ACPI_MACHINE_WIDTH == 32
 
-/*! [Begin] no source code translation (keep the typedefs as-is) */
+#ifndef ACPI_USE_SYSTEM_INTTYPES
 
 typedef unsigned int                    UINT32;
 typedef int                             INT32;
 
-/*! [End] no source code translation !*/
+#endif /* ACPI_USE_SYSTEM_INTTYPES */
 
 
 typedef INT32                           ACPI_NATIVE_INT;
