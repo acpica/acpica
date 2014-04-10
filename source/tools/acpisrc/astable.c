@@ -718,6 +718,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"AH_AML_OPCODE",                       SRC_TYPE_STRUCT},
     {"AH_ASL_OPERATOR",                     SRC_TYPE_STRUCT},
     {"AH_ASL_KEYWORD",                      SRC_TYPE_STRUCT},
+    {"AH_DEVICE_ID",                        SRC_TYPE_STRUCT},
     {"AH_PREDEFINED_NAME",                  SRC_TYPE_STRUCT},
 
     /* AcpiXtract utility */
