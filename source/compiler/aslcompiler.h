@@ -363,7 +363,7 @@ AslAbort (
 void
 AslError (
     UINT8                   Level,
-    UINT8                   MessageId,
+    UINT16                  MessageId,
     ACPI_PARSE_OBJECT       *Op,
     char                    *ExtraMessage);
 
@@ -374,7 +374,7 @@ AslDisableException (
 BOOLEAN
 AslIsExceptionDisabled (
     UINT8                   Level,
-    UINT8                   MessageId);
+    UINT16                  MessageId);
 
 void
 AslCoreSubsystemError (
@@ -390,7 +390,7 @@ AslCompilererror(
 void
 AslCommonError (
     UINT8                   Level,
-    UINT8                   MessageId,
+    UINT16                  MessageId,
     UINT32                  CurrentLineNumber,
     UINT32                  LogicalLineNumber,
     UINT32                  LogicalByteOffset,
@@ -401,7 +401,7 @@ AslCommonError (
 void
 AslCommonError2 (
     UINT8                   Level,
-    UINT8                   MessageId,
+    UINT16                  MessageId,
     UINT32                  LineNumber,
     UINT32                  Column,
     char                    *SourceLine,
@@ -514,6 +514,22 @@ OpcAmlConstantWalk (
     UINT32                  Level,
     void                    *Context);
 
+
+/*
+ * aslmessages - exception strings
+ */
+const char *
+AeDecodeMessageId (
+    UINT16                  MessageId);
+
+const char *
+AeDecodeExceptionLevel (
+    UINT8                   Level);
+
+UINT16
+AeBuildFullExceptionCode (
+    UINT8                   Level,
+    UINT16                  MessageId);
 
 /*
  * asloffset - generate C offset file for BIOS support

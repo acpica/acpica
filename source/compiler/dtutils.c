@@ -149,7 +149,7 @@ DtSum (
 void
 DtError (
     UINT8                   Level,
-    UINT8                   MessageId,
+    UINT16                  MessageId,
     DT_FIELD                *FieldObject,
     char                    *ExtraMessage)
 {
@@ -196,7 +196,7 @@ DtError (
 void
 DtNameError (
     UINT8                   Level,
-    UINT8                   MessageId,
+    UINT16                  MessageId,
     DT_FIELD                *FieldObject,
     char                    *ExtraMessage)
 {
@@ -249,7 +249,7 @@ DtNameError (
 
 void
 DtFatal (
-    UINT8                   MessageId,
+    UINT16                  MessageId,
     DT_FIELD                *FieldObject,
     char                    *ExtraMessage)
 {

@@ -221,7 +221,7 @@ PrGetNextToken (
 void
 PrError (
     UINT8                   Level,
-    UINT8                   MessageId,
+    UINT16                  MessageId,
     UINT32                  Column)
 {
 #if 0
