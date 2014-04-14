@@ -167,7 +167,8 @@ AcpiTbCompareTables (
      * Check for a table match on the entire table length,
      * not just the header.
      */
-    IsIdentical = (BOOLEAN)((TableDesc->Length != TableLength ||
+    IsIdentical = (BOOLEAN)((
+        ACPI_DECODE32 (&TableDesc->Length) != TableLength ||
         ACPI_MEMCMP (TableDesc->Pointer, Table, TableLength)) ?
         FALSE : TRUE);
 
@@ -228,7 +229,7 @@ AcpiTbInstallTableWithOverride (
 
     if (TableIndex == ACPI_TABLE_INDEX_DSDT)
     {
-        AcpiUtSetIntegerWidth (NewTableDesc->Pointer->Revision);
+        AcpiUtSetIntegerWidth (ACPI_DECODE8 (&NewTableDesc->Pointer->Revision));
     }
 }
 

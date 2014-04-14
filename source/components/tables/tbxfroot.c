@@ -163,7 +163,7 @@ AcpiTbValidateRsdp (
 
     /* Check extended checksum if table version >= 2 */
 
-    if ((Rsdp->Revision >= 2) &&
+    if ((ACPI_DECODE8 (&Rsdp->Revision) >= 2) &&
         (AcpiTbChecksum ((UINT8 *) Rsdp, ACPI_RSDP_XCHECKSUM_LENGTH) != 0))
     {
         return (AE_BAD_CHECKSUM);

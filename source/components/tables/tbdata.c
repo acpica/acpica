@@ -153,7 +153,7 @@ AcpiTbInitTableDescriptor (
      */
     ACPI_MEMSET (TableDesc, 0, sizeof (ACPI_TABLE_DESC));
     TableDesc->Address = Address;
-    TableDesc->Length = Table->Length;
+    TableDesc->Length = ACPI_DECODE32 (&Table->Length);
     TableDesc->Flags = Flags;
     ACPI_MOVE_32_TO_32 (TableDesc->Signature.Ascii, Table->Signature);
 }

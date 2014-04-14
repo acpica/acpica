@@ -230,7 +230,7 @@ AcpiTbPrintTableHeader (
 
         ACPI_INFO ((AE_INFO, "%-4.4s " ACPI_PRINTF_UINT " %06X",
             Header->Signature, ACPI_FORMAT_TO_UINT (Address),
-            Header->Length));
+            ACPI_DECODE32 (&Header->Length)));
     }
     else if (ACPI_VALIDATE_RSDP_SIG (Header->Signature))
     {
@@ -242,9 +242,9 @@ AcpiTbPrintTableHeader (
 
         ACPI_INFO ((AE_INFO, "RSDP " ACPI_PRINTF_UINT " %06X (v%.2d %-6.6s)",
             ACPI_FORMAT_TO_UINT (Address),
-            (ACPI_CAST_PTR (ACPI_TABLE_RSDP, Header)->Revision > 0) ?
-                ACPI_CAST_PTR (ACPI_TABLE_RSDP, Header)->Length : 20,
-            ACPI_CAST_PTR (ACPI_TABLE_RSDP, Header)->Revision,
+            (ACPI_DECODE8 (&ACPI_CAST_PTR (ACPI_TABLE_RSDP, Header)->Revision) > 0) ?
+                ACPI_DECODE32 (&ACPI_CAST_PTR (ACPI_TABLE_RSDP, Header)->Length) : 20,
+            ACPI_DECODE8 (&ACPI_CAST_PTR (ACPI_TABLE_RSDP, Header)->Revision),
             LocalHeader.OemId));
     }
     else
@@ -257,9 +257,13 @@ AcpiTbPrintTableHeader (
             "%-4.4s " ACPI_PRINTF_UINT
             " %06X (v%.2d %-6.6s %-8.8s %08X %-4.4s %08X)",
             LocalHeader.Signature, ACPI_FORMAT_TO_UINT (Address),
-            LocalHeader.Length, LocalHeader.Revision, LocalHeader.OemId,
-            LocalHeader.OemTableId, LocalHeader.OemRevision,
-            LocalHeader.AslCompilerId, LocalHeader.AslCompilerRevision));
+            ACPI_DECODE32 (&LocalHeader.Length),
+            ACPI_DECODE8 (&LocalHeader.Revision),
+            LocalHeader.OemId,
+            LocalHeader.OemTableId,
+            ACPI_DECODE32 (&LocalHeader.OemRevision),
+            LocalHeader.AslCompilerId,
+            ACPI_DECODE32 (&LocalHeader.AslCompilerRevision)));
     }
 }
 
@@ -308,8 +312,8 @@ AcpiTbVerifyChecksum (
         ACPI_BIOS_WARNING ((AE_INFO,
             "Incorrect checksum in table [%4.4s] - 0x%2.2X, "
             "should be 0x%2.2X",
-            Table->Signature, Table->Checksum,
-            (UINT8) (Table->Checksum - Checksum)));
+            Table->Signature, ACPI_DECODE8 (&Table->Checksum),
+            (UINT8) (ACPI_DECODE8 (&Table->Checksum) - Checksum)));
 
 #if (ACPI_CHECKSUM_ABORT)
         return (AE_BAD_CHECKSUM);
@@ -344,7 +348,7 @@ AcpiTbChecksum (
 
     while (Buffer < End)
     {
-        Sum = (UINT8) (Sum + *(Buffer++));
+        Sum = (UINT8) (Sum + ACPI_DECODE8 (Buffer++));
     }
 
     return (Sum);
