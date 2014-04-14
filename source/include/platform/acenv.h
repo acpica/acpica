@@ -364,6 +364,10 @@
 #define ACPI_INTERNAL_VAR_XFACE
 #endif
 
+#ifndef ULL
+#define ULL(num)    num##ULL
+#endif
+
 /*
  * Debugger threading model
  * Use single threaded if the entire subsystem is contained in an application

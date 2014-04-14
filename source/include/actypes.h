@@ -440,6 +440,153 @@ typedef UINT32                          ACPI_PHYSICAL_ADDRESS;
 #endif /* ACPI_NO_MEM_ALLOCATIONS */
 
 
+/*
+ * Unalignment support
+ */
+#ifndef ACPI_MISALIGNMENT_NOT_SUPPORTED
+
+#if defined (__BYTE_ORDER) ? __BYTE_ORDER == __BIG_ENDIAN : defined (__BIG_ENDIAN)
+
+#ifndef ACPI_GET16
+#define ACPI_GET16(ptr) ((UINT16) (                                             \
+    ((UINT16) (*(((UINT8 *) (ptr)) + 1))) |                                     \
+    ((UINT16) (*(((UINT8 *) (ptr)) + 0)) << 8)))
+#endif
+#ifndef ACPI_GET32
+#define ACPI_GET32(ptr) ((UINT32) (                                             \
+    ((UINT32) ACPI_GET16((((UINT16 *) (ptr)) + 1)) <<  0) |                     \
+    ((UINT32) ACPI_GET16((((UINT16 *) (ptr)) + 0)) << 16)))
+#endif
+#ifndef ACPI_GET64
+#define ACPI_GET64(ptr) ((UINT64) (                                             \
+    ((UINT64) ACPI_GET32((((UINT32 *) (ptr)) + 1)) <<  0) |                     \
+    ((UINT64) ACPI_GET32((((UINT32 *) (ptr)) + 0)) << 32)))
+#endif
+#ifndef ACPI_PUT16
+#define ACPI_PUT16(ptr, val)                                                    \
+    (*((UINT8 *) (ptr) + 1) = (UINT8) ((UINT16) (val)),                         \
+     *((UINT8 *) (ptr) + 0) = (UINT8) ((UINT16) (val) >> 8))
+#endif
+#ifndef ACPI_PUT32
+#define ACPI_PUT32(ptr, val)                                                    \
+    (ACPI_PUT16(((UINT16 *) (ptr)) + 1, (UINT16) ((UINT32) (val))),             \
+     ACPI_PUT16(((UINT16 *) (ptr)) + 0, (UINT16) ((UINT32) (val) >> 16)))
+#endif
+#ifndef ACPI_PUT64
+#define ACPI_PUT64(ptr, val)                                                    \
+    (ACPI_PUT32(((UINT32 *) (ptr)) + 1, (UINT32) ((UINT64) (val))),             \
+     ACPI_PUT32(((UINT32 *) (ptr)) + 0, (UINT32) ((UINT64) (val) >> 32)))
+#endif
+
+#else /* __BIG_ENDIAN */
+
+#ifndef ACPI_GET16
+#define ACPI_GET16(ptr) ((UINT16) (                                             \
+    ((UINT16) (*(((UINT8 *) (ptr)) + 0))) |                                     \
+    ((UINT16) (*(((UINT8 *) (ptr)) + 1)) << 8)))
+#endif
+#ifndef ACPI_GET32
+#define ACPI_GET32(ptr) ((UINT32) (                                             \
+    ((UINT32) ACPI_GET16((((UINT16 *) (ptr)) + 0)) <<  0) |                     \
+    ((UINT32) ACPI_GET16((((UINT16 *) (ptr)) + 1)) << 16)))
+#endif
+#ifndef ACPI_GET64
+#define ACPI_GET64(ptr) ((UINT64) (                                             \
+    ((UINT64) ACPI_GET32((((UINT32 *) (ptr)) + 0)) <<  0) |                     \
+    ((UINT64) ACPI_GET32((((UINT32 *) (ptr)) + 1)) << 32)))
+#endif
+#ifndef ACPI_PUT16
+#define ACPI_PUT16(ptr, val)                                                    \
+    (*((UINT8 *) (ptr) + 0) = (UINT8) ((UINT16) (val)),                         \
+     *((UINT8 *) (ptr) + 1) = (UINT8) ((UINT16) (val) >> 8))
+#endif
+#ifndef ACPI_PUT32
+#define ACPI_PUT32(ptr, val)							\
+    (ACPI_PUT16(((UINT16 *) (ptr)) + 0, (UINT16) ((UINT32) (val))),             \
+     ACPI_PUT16(((UINT16 *) (ptr)) + 1, (UINT16) ((UINT32) (val) >> 16)))
+#endif
+#ifndef ACPI_PUT64
+#define ACPI_PUT64(ptr, val)                                                    \
+    (ACPI_PUT32(((UINT32 *) (ptr)) + 0, (UINT32) ((UINT64) (val))),             \
+     ACPI_PUT32(((UINT32 *) (ptr)) + 1, (UINT32) ((UINT64) (val) >> 32)))
+#endif
+
+#endif /* __BIG_ENDIAN */
+
+#else /* ACPI_MISALIGNMENT_NOT_SUPPORTED */
+
+#ifndef ACPI_GET16
+#define ACPI_GET16(ptr)         (*(UINT16 *) (ptr))
+#endif
+#ifndef ACPI_GET32
+#define ACPI_GET32(ptr)         (*(UINT32 *) (ptr))
+#endif
+#ifndef ACPI_GET64
+#define ACPI_GET64(ptr)         (*(UINT64 *) (ptr))
+#endif
+#ifndef ACPI_PUT16
+#define ACPI_PUT16(ptr, val)    (*(UINT16 *) (ptr) = (UINT16) (val))
+#endif
+#ifndef ACPI_PUT32
+#define ACPI_PUT32(ptr, val)    (*(UINT32 *) (ptr) = (UINT32) (val))
+#endif
+#ifndef ACPI_PUT64
+#define ACPI_PUT64(ptr, val)    (*(UINT64 *) (ptr) = (UINT64) (val))
+#endif
+
+#endif /* ACPI_MISALIGNMENT_NOT_SUPPORTED */
+
+/*
+ * Endianness support
+ */
+#ifndef ACPI_SWAB16
+#define ACPI_SWAB16(x) ((UINT16) (                                      \
+    (((UINT16) (x) & (UINT16) 0x00ffU) << 8) |                          \
+    (((UINT16) (x) & (UINT16) 0xff00U) >> 8)))
+#endif
+#ifndef ACPI_SWAB32
+#define ACPI_SWAB32(x) ((UINT32) (                                      \
+    (((UINT32) (x) & (UINT32) 0x000000ffUL) << 24) |                    \
+    (((UINT32) (x) & (UINT32) 0x0000ff00UL) <<  8) |                    \
+    (((UINT32) (x) & (UINT32) 0x00ff0000UL) >>  8) |                    \
+    (((UINT32) (x) & (UINT32) 0xff000000UL) >> 24)))
+#endif
+#ifndef ACPI_SWAB64
+#define ACPI_SWAB64(x) ((UINT64) (                                      \
+    (((UINT64) (x) & (UINT64) ULL(0x00000000000000ff)) << 56) |         \
+    (((UINT64) (x) & (UINT64) ULL(0x000000000000ff00)) << 40) |         \
+    (((UINT64) (x) & (UINT64) ULL(0x0000000000ff0000)) << 24) |         \
+    (((UINT64) (x) & (UINT64) ULL(0x00000000ff000000)) <<  8) |         \
+    (((UINT64) (x) & (UINT64) ULL(0x000000ff00000000)) >>  8) |         \
+    (((UINT64) (x) & (UINT64) ULL(0x0000ff0000000000)) >> 24) |         \
+    (((UINT64) (x) & (UINT64) ULL(0x00ff000000000000)) >> 40) |         \
+    (((UINT64) (x) & (UINT64) ULL(0xff00000000000000)) >> 56)))
+#endif
+
+#define ACPI_DECODE8(ptr)       (*(UINT8 *) (ptr))
+#define ACPI_ENCODE8(ptr, val)  (*(UINT8 *) (ptr) = (UINT8) (val))
+
+#if defined (__BYTE_ORDER) ? __BYTE_ORDER == __BIG_ENDIAN : defined (__BIG_ENDIAN)
+
+#define ACPI_DECODE16(ptr)      ACPI_SWAB16 (ACPI_GET16 (ptr))
+#define ACPI_DECODE32(ptr)      ACPI_SWAB32 (ACPI_GET32 (ptr))
+#define ACPI_DECODE64(ptr)      ACPI_SWAB64 (ACPI_GET64 (ptr))
+#define ACPI_ENCODE16(ptr, val) ACPI_PUT16 (ptr, ACPI_SWAB16 (val))
+#define ACPI_ENCODE32(ptr, val) ACPI_PUT32 (ptr, ACPI_SWAB32 (val))
+#define ACPI_ENCODE64(ptr, val) ACPI_PUT64 (ptr, ACPI_SWAB64 (val))
+
+#else /* __BIG_ENDIAN */
+
+#define ACPI_DECODE16(ptr)      ACPI_GET16 (ptr)
+#define ACPI_DECODE32(ptr)      ACPI_GET32 (ptr)
+#define ACPI_DECODE64(ptr)      ACPI_GET64 (ptr)
+#define ACPI_ENCODE16(ptr, val) ACPI_PUT16 (ptr, val)
+#define ACPI_ENCODE32(ptr, val)	ACPI_PUT32 (ptr, val)
+#define ACPI_ENCODE64(ptr, val)	ACPI_PUT64 (ptr, val)
+
+#endif /* __BIG_ENDIAN */
+
+
 /******************************************************************************
  *
  * ACPI Specification constants (Do not change unless the specification changes)

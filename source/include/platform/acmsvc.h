@@ -236,4 +236,6 @@
         _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG))
 #endif
 
+#define ULL(num)    num##UI64
+
 #endif /* __ACMSVC_H__ */
