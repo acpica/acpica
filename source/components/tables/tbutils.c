@@ -587,8 +587,16 @@ AcpiTbParseRootTable (
     {
         /* Get the table physical address (32-bit for RSDT, 64-bit for XSDT) */
 
-        Status = AcpiTbInstallStandardTable (
-            AcpiTbGetRootTableEntry (TableEntry, TableEntrySize),
+        Address = AcpiTbGetRootTableEntry (TableEntry, TableEntrySize);
+
+        /* Skip NULL entries in RSDT/XSDT */
+
+        if (!Address)
+        {
+            goto NextTable;
+        }
+
+        Status = AcpiTbInstallStandardTable (Address,
             ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL, FALSE, TRUE, &TableIndex);
 
         if (ACPI_SUCCESS (Status) &&
@@ -597,6 +605,8 @@ AcpiTbParseRootTable (
         {
             AcpiTbParseFadt (TableIndex);
         }
+
+NextTable:
 
         TableEntry += TableEntrySize;
     }

@@ -910,6 +910,13 @@ OslListBiosTables (
                 (ACPI_PHYSICAL_ADDRESS) (*ACPI_CAST32 (TableData));
         }
 
+        /* Skip NULL entries in RSDT/XSDT */
+
+        if (!TableAddress)
+        {
+            continue;
+        }
+
         Status = OslMapTable (TableAddress, NULL, &MappedTable);
         if (ACPI_FAILURE (Status))
         {
@@ -1063,6 +1070,13 @@ OslGetBiosTable (
             {
                 TableAddress =
                     (ACPI_PHYSICAL_ADDRESS) (*ACPI_CAST32 (TableData));
+            }
+
+            /* Skip NULL entries in RSDT/XSDT */
+
+            if (!TableAddress)
+            {
+                continue;
             }
 
             Status = OslMapTable (TableAddress, NULL, &MappedTable);
