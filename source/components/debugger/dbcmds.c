@@ -1259,14 +1259,25 @@ AcpiDbGenerateGpe (
     char                    *GpeArg,
     char                    *BlockArg)
 {
-    UINT32                  BlockNumber;
+    UINT32                  BlockNumber = 0;
     UINT32                  GpeNumber;
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
 
 
-    GpeNumber   = ACPI_STRTOUL (GpeArg, NULL, 0);
-    BlockNumber = ACPI_STRTOUL (BlockArg, NULL, 0);
+    GpeNumber = ACPI_STRTOUL (GpeArg, NULL, 0);
 
+    /*
+     * If no block arg, or block arg == 0 or 1, use the FADT-defined
+     * GPE blocks.
+     */
+    if (BlockArg)
+    {
+        BlockNumber = ACPI_STRTOUL (BlockArg, NULL, 0);
+        if (BlockNumber == 1)
+        {
+            BlockNumber = 0;
+        }
+    }
 
     GpeEventInfo = AcpiEvGetGpeEventInfo (ACPI_TO_POINTER (BlockNumber),
         GpeNumber);
