@@ -459,6 +459,7 @@ AcpiTbParseRootTable (
     UINT32                  TableCount;
     ACPI_TABLE_HEADER       *Table;
     ACPI_PHYSICAL_ADDRESS   Address;
+    ACPI_PHYSICAL_ADDRESS   RsdtAddress;
     UINT32                  Length;
     UINT8                   *TableEntry;
     ACPI_STATUS             Status;
@@ -491,6 +492,7 @@ AcpiTbParseRootTable (
          * as per the ACPI specification.
          */
         Address = (ACPI_PHYSICAL_ADDRESS) Rsdp->XsdtPhysicalAddress;
+        RsdtAddress = (ACPI_PHYSICAL_ADDRESS) Rsdp->RsdtPhysicalAddress;
         TableEntrySize = ACPI_XSDT_ENTRY_SIZE;
     }
     else
@@ -498,6 +500,7 @@ AcpiTbParseRootTable (
         /* Root table is an RSDT (32-bit physical addresses) */
 
         Address = (ACPI_PHYSICAL_ADDRESS) Rsdp->RsdtPhysicalAddress;
+        RsdtAddress = Address;
         TableEntrySize = ACPI_RSDT_ENTRY_SIZE;
     }
 
@@ -521,7 +524,7 @@ AcpiTbParseRootTable (
 
             /* Fall back to the RSDT */
 
-            Address = (ACPI_PHYSICAL_ADDRESS) Rsdp->RsdtPhysicalAddress;
+            Address = RsdtAddress;
             TableEntrySize = ACPI_RSDT_ENTRY_SIZE;
         }
     }
