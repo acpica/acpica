@@ -665,6 +665,34 @@ OslLoadRsdp (
 
 /******************************************************************************
  *
+ * FUNCTION:    OslCanUseXsdt
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      TRUE if XSDT is allowed to be used.
+ *
+ * DESCRIPTION: This function collects logic that can be used to determine if
+ *              XSDT should be used instead of RSDT.
+ *
+ *****************************************************************************/
+
+static BOOLEAN
+OslCanUseXsdt (
+    void)
+{
+    if (Gbl_Revision && !AcpiGbl_DoNotUseXsdt)
+    {
+        return (TRUE);
+    }
+    else
+    {
+        return (FALSE);
+    }
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    OslTableInitialize
  *
  * PARAMETERS:  None
@@ -700,7 +728,7 @@ OslTableInitialize (
 
     /* Get XSDT from memory */
 
-    if (Gbl_Rsdp.Revision)
+    if (Gbl_Rsdp.Revision && !Gbl_DoNotDumpXsdt)
     {
         if (Gbl_Xsdt)
         {
@@ -850,7 +878,7 @@ OslListBiosTables (
     UINT32                  i;
 
 
-    if (Gbl_Revision)
+    if (OslCanUseXsdt ())
     {
         ItemSize = sizeof (UINT64);
         TableData = ACPI_CAST8 (Gbl_Xsdt) + sizeof (ACPI_TABLE_HEADER);
@@ -871,7 +899,7 @@ OslListBiosTables (
 
     for (i = 0; i < NumberOfTables; ++i, TableData += ItemSize)
     {
-        if (Gbl_Revision)
+        if (OslCanUseXsdt ())
         {
             TableAddress =
                 (ACPI_PHYSICAL_ADDRESS) (*ACPI_CAST64 (TableData));
@@ -880,6 +908,13 @@ OslListBiosTables (
         {
             TableAddress =
                 (ACPI_PHYSICAL_ADDRESS) (*ACPI_CAST32 (TableData));
+        }
+
+        /* Skip NULL entries in RSDT/XSDT */
+
+        if (!TableAddress)
+        {
+            continue;
         }
 
         Status = OslMapTable (TableAddress, NULL, &MappedTable);
@@ -1005,7 +1040,7 @@ OslGetBiosTable (
     }
     else /* Case for a normal ACPI table */
     {
-        if (Gbl_Revision)
+        if (OslCanUseXsdt ())
         {
             ItemSize = sizeof (UINT64);
             TableData = ACPI_CAST8 (Gbl_Xsdt) + sizeof (ACPI_TABLE_HEADER);
@@ -1026,7 +1061,7 @@ OslGetBiosTable (
 
         for (i = 0; i < NumberOfTables; ++i, TableData += ItemSize)
         {
-            if (Gbl_Revision)
+            if (OslCanUseXsdt ())
             {
                 TableAddress =
                     (ACPI_PHYSICAL_ADDRESS) (*ACPI_CAST64 (TableData));
@@ -1035,6 +1070,13 @@ OslGetBiosTable (
             {
                 TableAddress =
                     (ACPI_PHYSICAL_ADDRESS) (*ACPI_CAST32 (TableData));
+            }
+
+            /* Skip NULL entries in RSDT/XSDT */
+
+            if (!TableAddress)
+            {
+                continue;
             }
 
             Status = OslMapTable (TableAddress, NULL, &MappedTable);
