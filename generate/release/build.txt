@@ -61,6 +61,12 @@ These Cygwin packages are required for ACPICA generation:
     m4 (macro processor required by bison, found in Interpreters)
     dos2unix and unix2dos converters (found in Text)
 
+Additionally, to write to the git tree, these are needed:
+
+    openSSH (found in Net)
+    corkscrew (found in Net)
+
+
 4) Windows/Unix line termination issues:
 
 a) Install Cygwin with the default setting of CR/LF line terminators
@@ -70,6 +76,14 @@ b) Ensure that these lines are present in the git configuration file,
 [core]
         autocrlf = true
 
+
+git and ssh stuff
+-----------------
+
+To write to the git tree, you'll need to setup an ssh connection to github.
+ssh clone path is:
+
+    git clone ssh://git@ssh.github.com/acpica/acpica.git
 
 
 Build the ACPICA Software
