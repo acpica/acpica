@@ -113,7 +113,6 @@
  *
  *****************************************************************************/
 
-
 #ifndef __ACXFACE_H__
 #define __ACXFACE_H__
 
@@ -126,11 +125,18 @@
 #include "actbl.h"
 #include "acbuffer.h"
 
-/*
- * Ensure that the globals are actually defined and initialized only once.
+
+/*****************************************************************************
  *
- * The use of these macros allows a single list of globals (here) in order
- * to simplify maintenance of the code.
+ * Macros used for ACPICA globals and configuration
+ *
+ ****************************************************************************/
+
+/*
+ * Ensure that global variables are defined and initialized only once.
+ *
+ * The use of these macros allows for a single list of globals (here)
+ * in order to simplify maintenance of the code.
  */
 #ifdef DEFINE_ACPI_GLOBALS
 #define ACPI_GLOBAL(type,name) \
@@ -152,8 +158,11 @@
 #endif
 #endif
 
-/* ACPICA prototypes */
-
+/*
+ * These macros configure the various ACPICA interfaces. They are
+ * useful for generating stub inline functions for features that are
+ * configured out of the current kernel or ACPICA application.
+ */
 #ifndef ACPI_EXTERNAL_RETURN_STATUS
 #define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
     Prototype;
@@ -180,16 +189,14 @@
 #endif
 
 
-/* Public globals, available from outside ACPICA subsystem */
-
 /*****************************************************************************
  *
- * Runtime configuration (static defaults that can be overriden at runtime)
+ * Public globals and runtime configuration options
  *
  ****************************************************************************/
 
 /*
- * Enable "slack" in the AML interpreter?  Default is FALSE, and the
+ * Enable "slack mode" of the AML interpreter?  Default is FALSE, and the
  * interpreter strictly follows the ACPI specification. Setting to TRUE
  * allows the interpreter to ignore certain errors and/or bad AML constructs.
  *
@@ -202,7 +209,7 @@
  * 5) Allow unresolved references (invalid target name) in package objects
  * 6) Enable warning messages for behavior that is not ACPI spec compliant
  */
-ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_EnableInterpreterSlack, FALSE);
+ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_EnableInterpreterSlack, FALSE);
 
 /*
  * Automatically serialize all methods that create named objects? Default
@@ -211,25 +218,25 @@ ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_EnableInterpreterSlack, FALSE);
  * that create named objects are marked Serialized in order to prevent
  * possible run-time problems if they are entered by more than one thread.
  */
-ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_AutoSerializeMethods, TRUE);
+ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_AutoSerializeMethods, TRUE);
 
 /*
  * Create the predefined _OSI method in the namespace? Default is TRUE
  * because ACPICA is fully compatible with other ACPI implementations.
  * Changing this will revert ACPICA (and machine ASL) to pre-OSI behavior.
  */
-ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_CreateOsiMethod, TRUE);
+ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_CreateOsiMethod, TRUE);
 
 /*
  * Optionally use default values for the ACPI register widths. Set this to
  * TRUE to use the defaults, if an FADT contains incorrect widths/lengths.
  */
-ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_UseDefaultRegisterWidths, TRUE);
+ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_UseDefaultRegisterWidths, TRUE);
 
 /*
  * Optionally enable output from the AML Debug Object.
  */
-ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_EnableAmlDebugObject, FALSE);
+ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_EnableAmlDebugObject, FALSE);
 
 /*
  * Optionally copy the entire DSDT to local memory (instead of simply
@@ -237,7 +244,7 @@ ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_EnableAmlDebugObject, FALSE);
  * DSDT, creating the need for this option. Default is FALSE, do not copy
  * the DSDT.
  */
-ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_CopyDsdtLocally, FALSE);
+ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_CopyDsdtLocally, FALSE);
 
 /*
  * Optionally ignore an XSDT if present and use the RSDT instead.
@@ -245,7 +252,7 @@ ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_CopyDsdtLocally, FALSE);
  * of the RSDT, the XSDT has been found to be corrupt or ill-formed on
  * some machines. Default behavior is to use the XSDT if present.
  */
-ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_DoNotUseXsdt, FALSE);
+ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_DoNotUseXsdt, FALSE);
 
 /*
  * Optionally use 32-bit FADT addresses if and when there is a conflict
@@ -255,7 +262,7 @@ ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_DoNotUseXsdt, FALSE);
  * some machines have been found to have a corrupted non-zero 64-bit
  * address. Default is FALSE, do not favor the 32-bit addresses.
  */
-ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_Use32BitFadtAddresses, FALSE);
+ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_Use32BitFadtAddresses, FALSE);
 
 /*
  * Optionally truncate I/O addresses to 16 bits. Provides compatibility
@@ -263,39 +270,39 @@ ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_Use32BitFadtAddresses, FALSE);
  * this value is set to TRUE if any Windows OSI strings have been
  * requested by the BIOS.
  */
-ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_TruncateIoAddresses, FALSE);
+ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_TruncateIoAddresses, FALSE);
 
 /*
  * Disable runtime checking and repair of values returned by control methods.
  * Use only if the repair is causing a problem on a particular machine.
  */
-ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_DisableAutoRepair, FALSE);
+ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_DisableAutoRepair, FALSE);
 
 /*
  * Optionally do not install any SSDTs from the RSDT/XSDT during initialization.
  * This can be useful for debugging ACPI problems on some machines.
  */
-ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_DisableSsdtTableInstall, FALSE);
+ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_DisableSsdtTableInstall, FALSE);
 
 /*
  * We keep track of the latest version of Windows that has been requested by
  * the BIOS. ACPI 5.0.
  */
-ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_OsiData, 0);
+ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_OsiData, 0);
 
 /*
  * ACPI 5.0 introduces the concept of a "reduced hardware platform", meaning
  * that the ACPI hardware is no longer required. A flag in the FADT indicates
  * a reduced HW machine, and that flag is duplicated here for convenience.
  */
-ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_ReducedHardware, FALSE);
+ACPI_INIT_GLOBAL (BOOLEAN,          AcpiGbl_ReducedHardware, FALSE);
 
 /*
  * This mechanism is used to trace a specified AML method. The method is
  * traced each time it is executed.
  */
-ACPI_INIT_GLOBAL (UINT32,               AcpiGbl_TraceFlags, 0);
-ACPI_INIT_GLOBAL (ACPI_NAME,            AcpiGbl_TraceMethodName, 0);
+ACPI_INIT_GLOBAL (UINT32,           AcpiGbl_TraceFlags, 0);
+ACPI_INIT_GLOBAL (ACPI_NAME,        AcpiGbl_TraceMethodName, 0);
 
 /*
  * Runtime configuration of debug output control masks. We want the debug
@@ -303,24 +310,42 @@ ACPI_INIT_GLOBAL (ACPI_NAME,            AcpiGbl_TraceMethodName, 0);
  * is entered.
  */
 #ifdef ACPI_DEBUG_OUTPUT
-ACPI_INIT_GLOBAL (UINT32,               AcpiDbgLevel, ACPI_DEBUG_DEFAULT);
+ACPI_INIT_GLOBAL (UINT32,           AcpiDbgLevel, ACPI_DEBUG_DEFAULT);
 #else
-ACPI_INIT_GLOBAL (UINT32,               AcpiDbgLevel, ACPI_NORMAL_DEFAULT);
+ACPI_INIT_GLOBAL (UINT32,           AcpiDbgLevel, ACPI_NORMAL_DEFAULT);
 #endif
-ACPI_INIT_GLOBAL (UINT32,               AcpiDbgLayer, ACPI_COMPONENT_DEFAULT);
+ACPI_INIT_GLOBAL (UINT32,           AcpiDbgLayer, ACPI_COMPONENT_DEFAULT);
 
 /*
- * Globals that are publically available
+ * Other miscellaneous globals
  */
-ACPI_GLOBAL (UINT32,                    AcpiCurrentGpeCount);
-ACPI_GLOBAL (ACPI_TABLE_FADT,           AcpiGbl_FADT);
-ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_SystemAwakeAndRunning);
+ACPI_GLOBAL (ACPI_TABLE_FADT,       AcpiGbl_FADT);
+ACPI_GLOBAL (UINT32,                AcpiCurrentGpeCount);
+ACPI_GLOBAL (BOOLEAN,               AcpiGbl_SystemAwakeAndRunning);
 
+
+/*****************************************************************************
+ *
+ * ACPICA public interface configuration.
+ *
+ * Interfaces that are configured out of the ACPICA build are replaced
+ * by inlined stubs by default.
+ *
+ ****************************************************************************/
 
 /*
- * Hardware-reduced prototypes. All interfaces that use these macros will
- * be configured out of the ACPICA build if the ACPI_REDUCED_HARDWARE flag
+ * Hardware-reduced prototypes (default: Not hardware reduced).
+ *
+ * All ACPICA hardware-related interfaces that use these macros will be
+ * configured out of the ACPICA build if the ACPI_REDUCED_HARDWARE flag
  * is set to TRUE.
+ *
+ * Note: This static build option for reduced hardware is intended to
+ * reduce ACPICA code size if desired or necessary. However, even if this
+ * option is not specified, the runtime behavior of ACPICA is dependent
+ * on the actual FADT reduced hardware flag (HW_REDUCED_ACPI). If set,
+ * the flag will enable similar behavior -- ACPICA will not attempt
+ * to access any ACPI-relate hardware (SCI, GPEs, Fixed Events, etc.)
  */
 #if (!ACPI_REDUCED_HARDWARE)
 #define ACPI_HW_DEPENDENT_RETURN_STATUS(Prototype) \
@@ -346,9 +371,11 @@ ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_SystemAwakeAndRunning);
 
 
 /*
- * Error-message prototypes. All interfaces that use these macros will
- * be configured out of the ACPICA build if the ACPI_NO_ERROR_MESSAGE flag
- * is defined.
+ * Error message prototypes (default: error messages enabled).
+ *
+ * All interfaces related to error and warning messages
+ * will be configured out of the ACPICA build if the
+ * ACPI_NO_ERROR_MESSAGE flag is defined.
  */
 #ifndef ACPI_NO_ERROR_MESSAGES
 #define ACPI_MSG_DEPENDENT_RETURN_VOID(Prototype) \
@@ -362,9 +389,11 @@ ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_SystemAwakeAndRunning);
 
 
 /*
- * Debugging-output prototypes. All interfaces that use these macros will
- * be configured out of the ACPICA build if the ACPI_DEBUG_OUTPUT flag is
- * not defined.
+ * Debugging output prototypes (default: no debug output).
+ *
+ * All interfaces related to debug output messages
+ * will be configured out of the ACPICA build unless the
+ * ACPI_DEBUG_OUTPUT flag is defined.
  */
 #ifdef ACPI_DEBUG_OUTPUT
 #define ACPI_DBG_DEPENDENT_RETURN_VOID(Prototype) \
@@ -376,6 +405,12 @@ ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_SystemAwakeAndRunning);
 
 #endif /* ACPI_DEBUG_OUTPUT */
 
+
+/*****************************************************************************
+ *
+ * ACPICA public interface prototypes
+ *
+ ****************************************************************************/
 
 /*
  * Initialization
