@@ -979,6 +979,11 @@ OslGetBiosTable (
         ACPI_COMPARE_NAME (Signature, ACPI_SIG_DSDT) ||
         ACPI_COMPARE_NAME (Signature, ACPI_SIG_FACS))
     {
+        if (Instance > 0)
+        {
+            return (AE_LIMIT);
+        }
+
         /*
          * Get the appropriate address, either 32-bit or 64-bit. Be very
          * careful about the FADT length and validate table addresses.
