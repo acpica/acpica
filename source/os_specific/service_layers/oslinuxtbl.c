@@ -170,6 +170,11 @@ OslUnmapTable (
     ACPI_TABLE_HEADER       *Table);
 
 static ACPI_PHYSICAL_ADDRESS
+OslFindRsdpViaEfiByKeyword (
+    FILE                    *File,
+    const char              *Keyword);
+
+static ACPI_PHYSICAL_ADDRESS
 OslFindRsdpViaEfi (
     void);
 
@@ -562,6 +567,44 @@ AcpiOsGetTableByIndex (
 
 /******************************************************************************
  *
+ * FUNCTION:    OslFindRsdpViaEfiByKeyword
+ *
+ * PARAMETERS:  Keyword         - Character string indicating ACPI GUID version
+ *                                in the EFI table
+ *
+ * RETURN:      RSDP address if found
+ *
+ * DESCRIPTION: Find RSDP address via EFI using keyword indicating the ACPI
+ *              GUID version.
+ *
+ *****************************************************************************/
+
+static ACPI_PHYSICAL_ADDRESS
+OslFindRsdpViaEfiByKeyword (
+    FILE                    *File,
+    const char              *Keyword)
+{
+    char                    Buffer[80];
+    unsigned long long      Address = 0;
+    char                    Format[32];
+
+
+    snprintf (Format, 32, "%s=%s", Keyword, "%llx");
+    fseek (File, 0, SEEK_SET);
+    while (fgets (Buffer, 80, File))
+    {
+        if (sscanf (Buffer, Format, &Address) == 1)
+        {
+            break;
+        }
+    }
+
+    return ((ACPI_PHYSICAL_ADDRESS) (Address));
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    OslFindRsdpViaEfi
  *
  * PARAMETERS:  None
@@ -577,24 +620,21 @@ OslFindRsdpViaEfi (
     void)
 {
     FILE                    *File;
-    char                    Buffer[80];
-    unsigned long           Address = 0;
+    ACPI_PHYSICAL_ADDRESS   Address = 0;
 
 
     File = fopen (EFI_SYSTAB, "r");
     if (File)
     {
-        while (fgets (Buffer, 80, File))
+        Address = OslFindRsdpViaEfiByKeyword (File, "ACPI20");
+        if (!Address)
         {
-            if (sscanf (Buffer, "ACPI20=0x%lx", &Address) == 1)
-            {
-                break;
-            }
+            Address = OslFindRsdpViaEfiByKeyword (File, "ACPI");
         }
         fclose (File);
     }
 
-    return ((ACPI_PHYSICAL_ADDRESS) (Address));
+    return (Address);
 }
 
 
