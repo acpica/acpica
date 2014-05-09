@@ -39,6 +39,7 @@ OBJECTS = \
 	$(OBJDIR)/tbxfroot.o\
 	$(OBJDIR)/utbuffer.o\
 	$(OBJDIR)/utexcep.o\
+	$(OBJDIR)/utglobal.o\
 	$(OBJDIR)/utmath.o\
 	$(OBJDIR)/utstring.o\
 	$(OBJDIR)/utxferror.o
