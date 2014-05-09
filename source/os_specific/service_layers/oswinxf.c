@@ -698,6 +698,33 @@ AcpiOsAllocate (
 }
 
 
+#ifdef USE_NATIVE_ALLOCATE_ZEROED
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsAllocateZeroed
+ *
+ * PARAMETERS:  Size                - Amount to allocate, in bytes
+ *
+ * RETURN:      Pointer to the new allocation. Null on error.
+ *
+ * DESCRIPTION: Allocate and zero memory. Algorithm is dependent on the OS.
+ *
+ *****************************************************************************/
+
+void *
+AcpiOsAllocateZeroed (
+    ACPI_SIZE               Size)
+{
+    void                    *Mem;
+
+
+    Mem = (void *) calloc (1, (size_t) Size);
+
+    return (Mem);
+}
+#endif
+
+
 /******************************************************************************
  *
  * FUNCTION:    AcpiOsFree
