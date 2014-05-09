@@ -168,7 +168,6 @@ extern const char                       *AcpiGbl_PtDecode[];
 #ifdef ACPI_ASL_COMPILER
 
 #include <stdio.h>
-extern FILE                 *AcpiGbl_OutputFile;
 
 #define ACPI_MSG_REDIRECT_BEGIN \
     FILE                    *OutputFile = AcpiGbl_OutputFile; \

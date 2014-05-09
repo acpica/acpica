@@ -302,7 +302,6 @@ AcpiUtInitGlobals (
     AcpiGbl_TraceDbgLevel               = 0;
     AcpiGbl_TraceDbgLayer               = 0;
     AcpiGbl_DebuggerConfiguration       = DEBUGGER_THREADING;
-    AcpiGbl_DbOutputFlags               = ACPI_DB_CONSOLE_OUTPUT;
     AcpiGbl_OsiMutex                    = NULL;
     AcpiGbl_RegMethodsExecuted          = FALSE;
 

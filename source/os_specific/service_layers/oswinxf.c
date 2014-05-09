@@ -136,7 +136,6 @@
         ACPI_MODULE_NAME    ("oswinxf")
 
 
-FILE                        *AcpiGbl_OutputFile;
 UINT64                      TimerFrequency;
 char                        TableName[ACPI_NAME_SIZE + 1];
 
