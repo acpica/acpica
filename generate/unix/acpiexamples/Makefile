@@ -21,7 +21,9 @@ PROG = $(OBJDIR)/acpiexamples
 vpath %.c \
     $(ACPIEXAMPLES)\
     $(ACPICA_DISPATCHER)\
+    $(ACPICA_EVENTS)\
     $(ACPICA_EXECUTER)\
+    $(ACPICA_HARDWARE)\
     $(ACPICA_NAMESPACE)\
     $(ACPICA_PARSER)\
     $(ACPICA_TABLES)\
@@ -50,6 +52,12 @@ OBJECTS = \
 	$(OBJDIR)/dswload2.o\
 	$(OBJDIR)/dswscope.o\
 	$(OBJDIR)/dswstate.o\
+	$(OBJDIR)/evhandler.o\
+	$(OBJDIR)/evmisc.o\
+	$(OBJDIR)/evregion.o\
+	$(OBJDIR)/evrgnini.o\
+	$(OBJDIR)/evxface.o\
+	$(OBJDIR)/evxfregn.o\
 	$(OBJDIR)/exconfig.o\
 	$(OBJDIR)/exconvrt.o\
 	$(OBJDIR)/excreate.o\
@@ -74,8 +82,10 @@ OBJECTS = \
 	$(OBJDIR)/exstorob.o\
 	$(OBJDIR)/exsystem.o\
 	$(OBJDIR)/exutils.o\
+	$(OBJDIR)/hwpci.o\
 	$(OBJDIR)/nsaccess.o\
 	$(OBJDIR)/nsalloc.o\
+	$(OBJDIR)/nsarguments.o\
 	$(OBJDIR)/nsconvert.o\
 	$(OBJDIR)/nsdump.o\
 	$(OBJDIR)/nseval.o\
@@ -84,6 +94,10 @@ OBJECTS = \
 	$(OBJDIR)/nsnames.o\
 	$(OBJDIR)/nsobject.o\
 	$(OBJDIR)/nsparse.o\
+	$(OBJDIR)/nspredef.o\
+	$(OBJDIR)/nsprepkg.o\
+	$(OBJDIR)/nsrepair.o\
+	$(OBJDIR)/nsrepair2.o\
 	$(OBJDIR)/nssearch.o\
 	$(OBJDIR)/nsutils.o\
 	$(OBJDIR)/nswalk.o\
@@ -120,8 +134,11 @@ OBJECTS = \
 	$(OBJDIR)/utdecode.o\
 	$(OBJDIR)/utdelete.o\
 	$(OBJDIR)/uterror.o\
+	$(OBJDIR)/uteval.o\
 	$(OBJDIR)/utexcep.o\
 	$(OBJDIR)/utglobal.o\
+	$(OBJDIR)/utids.o\
+	$(OBJDIR)/utinit.o\
 	$(OBJDIR)/utlock.o\
 	$(OBJDIR)/utmath.o\
 	$(OBJDIR)/utmisc.o\
@@ -129,6 +146,8 @@ OBJECTS = \
 	$(OBJDIR)/utobject.o\
 	$(OBJDIR)/utosi.o\
 	$(OBJDIR)/utownerid.o\
+	$(OBJDIR)/utpredef.o\
+	$(OBJDIR)/utresrc.o\
 	$(OBJDIR)/utstate.o\
 	$(OBJDIR)/utstring.o\
 	$(OBJDIR)/utxface.o\

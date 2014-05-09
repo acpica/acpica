@@ -158,6 +158,22 @@ NotifyHandler (
     UINT32                  Value,
     void                    *Context);
 
+static ACPI_STATUS
+RegionHandler (
+    UINT32                  Function,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  BitWidth,
+    UINT64                  *Value,
+    void                    *HandlerContext,
+    void                    *RegionContext);
+
+static ACPI_STATUS
+RegionInit (
+    ACPI_HANDLE             RegionHandle,
+    UINT32                  Function,
+    void                    *HandlerContext,
+    void                    **RegionContext);
+
 static void
 ExecuteMAIN (void);
 
@@ -408,6 +424,43 @@ NotifyHandler (
 
 
 static ACPI_STATUS
+RegionInit (
+    ACPI_HANDLE                 RegionHandle,
+    UINT32                      Function,
+    void                        *HandlerContext,
+    void                        **RegionContext)
+{
+
+    if (Function == ACPI_REGION_DEACTIVATE)
+    {
+        *RegionContext = NULL;
+    }
+    else
+    {
+        *RegionContext = RegionHandle;
+    }
+
+    return (AE_OK);
+}
+
+
+static ACPI_STATUS
+RegionHandler (
+    UINT32                      Function,
+    ACPI_PHYSICAL_ADDRESS       Address,
+    UINT32                      BitWidth,
+    UINT64                      *Value,
+    void                        *HandlerContext,
+    void                        *RegionContext)
+{
+
+    ACPI_INFO ((AE_INFO, "Received a region access"));
+
+    return (AE_OK);
+}
+
+
+static ACPI_STATUS
 InstallHandlers (void)
 {
     ACPI_STATUS             Status;
@@ -420,6 +473,14 @@ InstallHandlers (void)
     if (ACPI_FAILURE (Status))
     {
         ACPI_EXCEPTION ((AE_INFO, Status, "While installing Notify handler"));
+        return (Status);
+    }
+
+    Status = AcpiInstallAddressSpaceHandler (ACPI_ROOT_OBJECT, ACPI_ADR_SPACE_SYSTEM_MEMORY,
+        RegionHandler, RegionInit, NULL);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status, "While installing an OpRegion handler"));
         return (Status);
     }
 
