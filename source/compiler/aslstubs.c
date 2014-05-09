@@ -129,13 +129,6 @@
  * Things like Events, Global Lock, etc. are not used
  * by the compiler, so they are stubbed out here.
  */
-ACPI_PHYSICAL_ADDRESS
-AeLocalGetRootPointer (
-    void)
-{
-    return (0);
-}
-
 void
 AcpiNsExecModuleCodeList (
     void)

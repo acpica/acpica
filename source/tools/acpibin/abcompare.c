@@ -149,10 +149,6 @@ AbPrintHeadersInfo (
     ACPI_TABLE_HEADER       *Header,
     ACPI_TABLE_HEADER       *Header2);
 
-ACPI_PHYSICAL_ADDRESS
-AeLocalGetRootPointer (
-    void);
-
 
 /******************************************************************************
  *
@@ -701,9 +697,3 @@ Exit1:
  *
  ******************************************************************************/
 
-ACPI_PHYSICAL_ADDRESS
-AeLocalGetRootPointer (
-    void)
-{
-    return (AE_OK);
-}

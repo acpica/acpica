@@ -145,10 +145,6 @@ char                        TableName[ACPI_NAME_SIZE + 1];
 
 /* Upcalls to AcpiExec application */
 
-ACPI_PHYSICAL_ADDRESS
-AeLocalGetRootPointer (
-    void);
-
 void
 AeTableOverride (
     ACPI_TABLE_HEADER       *ExistingTable,
@@ -240,6 +236,7 @@ AcpiOsInitialize (
 }
 
 
+#ifndef ACPI_USE_NATIVE_RSDP_POINTER
 /******************************************************************************
  *
  * FUNCTION:    AcpiOsGetRootPointer
@@ -257,8 +254,9 @@ AcpiOsGetRootPointer (
     void)
 {
 
-    return (AeLocalGetRootPointer ());
+    return (0);
 }
+#endif
 
 
 /******************************************************************************

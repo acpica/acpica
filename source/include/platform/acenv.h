@@ -187,6 +187,14 @@
 #define ACPI_NO_ERROR_MESSAGES
 #endif
 
+/* AcpiExec/AcpiNames/Example configuration. Native RSDP used. */
+
+#if (defined ACPI_EXEC_APP)     || \
+    (defined ACPI_EXAMPLE_APP)  || \
+    (defined ACPI_NAMES_APP)
+#define ACPI_USE_NATIVE_RSDP_POINTER
+#endif
+
 /* Linkable ACPICA library */
 
 #ifdef ACPI_LIBRARY

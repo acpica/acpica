@@ -143,10 +143,6 @@ BOOLEAN                        AcpiGbl_DebugTimeout = FALSE;
 
 /* Upcalls to AcpiExec */
 
-ACPI_PHYSICAL_ADDRESS
-AeLocalGetRootPointer (
-    void);
-
 void
 AeTableOverride (
     ACPI_TABLE_HEADER       *ExistingTable,
@@ -303,6 +299,7 @@ AcpiOsTerminate (
 }
 
 
+#ifndef ACPI_USE_NATIVE_RSDP_POINTER
 /******************************************************************************
  *
  * FUNCTION:    AcpiOsGetRootPointer
@@ -320,8 +317,9 @@ AcpiOsGetRootPointer (
     void)
 {
 
-    return (AeLocalGetRootPointer ());
+    return (0);
 }
+#endif
 
 
 /******************************************************************************

@@ -422,10 +422,6 @@ void
 AeClearErrorLog (
     void);
 
-ACPI_PHYSICAL_ADDRESS
-AeLocalGetRootPointer (
-    void);
-
 
 /*
  * asllisting - generate all "listing" type files

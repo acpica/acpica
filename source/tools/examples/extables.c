@@ -121,10 +121,6 @@
 #define _COMPONENT          ACPI_EXAMPLE
         ACPI_MODULE_NAME    ("extables")
 
-ACPI_PHYSICAL_ADDRESS
-AeLocalGetRootPointer (
-    void);
-
 
 /******************************************************************************
  *
@@ -304,7 +300,7 @@ ExInitializeAcpiTables (
  *****************************************************************************/
 
 ACPI_PHYSICAL_ADDRESS
-AeLocalGetRootPointer (
+AcpiOsGetRootPointer (
     void)
 {
 
