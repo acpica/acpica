@@ -501,21 +501,3 @@ AcpiDbTerminate (
     void)
 {
 }
-
-/* OSL interfaces */
-
-ACPI_THREAD_ID
-AcpiOsGetThreadId (
-    void)
-{
-    return (0xFFFF);
-}
-
-ACPI_STATUS
-AcpiOsExecute (
-    ACPI_EXECUTE_TYPE       Type,
-    ACPI_OSD_EXEC_CALLBACK  Function,
-    void                    *Context)
-{
-    return (AE_SUPPORT);
-}
