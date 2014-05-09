@@ -624,6 +624,7 @@ AcpiOsGetLine (
 }
 
 
+#ifndef ACPI_USE_NATIVE_MEMORY_MAPPING
 /******************************************************************************
  *
  * FUNCTION:    AcpiOsMapMemory
@@ -669,6 +670,7 @@ AcpiOsUnmapMemory (
 
     return;
 }
+#endif
 
 
 /******************************************************************************

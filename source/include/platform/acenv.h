@@ -195,6 +195,12 @@
 #define ACPI_USE_NATIVE_RSDP_POINTER
 #endif
 
+/* AcpiDump configuration. Native mapping used if provied by OSPMs */
+
+#ifdef ACPI_DUMP_APP
+#define ACPI_USE_NATIVE_MEMORY_MAPPING
+#endif
+
 /* Linkable ACPICA library */
 
 #ifdef ACPI_LIBRARY
