@@ -177,7 +177,7 @@ NsDumpEntireNamespace (
 
     /* Open the binary AML file and read the entire table */
 
-    Status = AcpiDbReadTableFromFile (AmlFilename, &Table);
+    Status = AcpiUtReadTableFromFile (AmlFilename, &Table);
     if (ACPI_FAILURE (Status))
     {
         printf ("**** Could not get input table %s, %s\n", AmlFilename,
@@ -323,7 +323,7 @@ main (
 
     /* Init globals and ACPICA */
 
-    AcpiDbgLevel = ACPI_NORMAL_DEFAULT | ACPI_LV_TABLES;
+    AcpiDbgLevel = ACPI_LV_TABLES;
     AcpiDbgLayer = 0xFFFFFFFF;
 
     Status = AcpiInitializeSubsystem ();

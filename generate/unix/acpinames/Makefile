@@ -21,7 +21,6 @@ PROG = $(OBJDIR)/acpinames
 #
 vpath %.c \
     $(ACPINAMES)\
-    $(ACPICA_DEBUGGER)\
     $(ACPICA_DISPATCHER)\
     $(ACPICA_EXECUTER)\
     $(ACPICA_NAMESPACE)\
@@ -39,7 +38,6 @@ OBJECTS = \
 	$(OBJDIR)/anstubs.o\
 	$(OBJDIR)/antables.o\
 	$(OBJDIR)/cmfsize.o\
-	$(OBJDIR)/dbfileio.o\
 	$(OBJDIR)/dsfield.o\
 	$(OBJDIR)/dsmthdat.o\
 	$(OBJDIR)/dsobject.o\
@@ -49,6 +47,7 @@ OBJECTS = \
 	$(OBJDIR)/dswscope.o\
 	$(OBJDIR)/dswstate.o\
 	$(OBJDIR)/excreate.o\
+	$(OBJDIR)/exdump.o\
 	$(OBJDIR)/exnames.o\
 	$(OBJDIR)/exresnte.o\
 	$(OBJDIR)/exresolv.o\
@@ -91,12 +90,14 @@ OBJECTS = \
 	$(OBJDIR)/tbxfroot.o\
 	$(OBJDIR)/utaddress.o\
 	$(OBJDIR)/utalloc.o\
+	$(OBJDIR)/utbuffer.o\
 	$(OBJDIR)/utcache.o\
 	$(OBJDIR)/utdebug.o\
 	$(OBJDIR)/utdecode.o\
 	$(OBJDIR)/utdelete.o\
 	$(OBJDIR)/uterror.o\
 	$(OBJDIR)/utexcep.o\
+	$(OBJDIR)/utfileio.o\
 	$(OBJDIR)/utglobal.o\
 	$(OBJDIR)/utlock.o\
 	$(OBJDIR)/utmath.o\

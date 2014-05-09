@@ -20,7 +20,6 @@ PROG = $(OBJDIR)/acpiexamples
 #
 vpath %.c \
     $(ACPIEXAMPLES)\
-    $(ACPICA_DEBUGGER)\
     $(ACPICA_DISPATCHER)\
     $(ACPICA_EXECUTER)\
     $(ACPICA_NAMESPACE)\

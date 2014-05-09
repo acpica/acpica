@@ -160,20 +160,14 @@
 #define ACPI_DBG_TRACK_ALLOCATIONS
 #endif
 
-/* AcpiNames configuration. Single threaded with debugger output enabled. */
-
-#ifdef ACPI_NAMES_APP
-#define ACPI_DEBUGGER
-#define ACPI_APPLICATION
-#define ACPI_SINGLE_THREADED
-#endif
-
 /*
- * AcpiBin/AcpiDump/AcpiSrc/AcpiXtract/Example configuration. All single
- * threaded, with no debug output.
+ * AcpiBin/AcpiDump/AcpiHelp/AcpiNames/AcpiSrc/AcpiXtract/Example configuration.
+ * All single threaded.
  */
 #if (defined ACPI_BIN_APP)      || \
     (defined ACPI_DUMP_APP)     || \
+    (defined ACPI_HELP_APP)     || \
+    (defined ACPI_NAMES_APP)    || \
     (defined ACPI_SRC_APP)      || \
     (defined ACPI_XTRACT_APP)   || \
     (defined ACPI_EXAMPLE_APP)
@@ -181,10 +175,16 @@
 #define ACPI_SINGLE_THREADED
 #endif
 
+/* AcpiHelp configuration. Error messages disabled. */
+
 #ifdef ACPI_HELP_APP
-#define ACPI_APPLICATION
-#define ACPI_SINGLE_THREADED
 #define ACPI_NO_ERROR_MESSAGES
+#endif
+
+/* AcpiNames configuration. Debug output enabled. */
+
+#ifdef ACPI_NAMES_APP
+#define ACPI_DEBUG_OUTPUT
 #endif
 
 /* AcpiExec/AcpiNames/Example configuration. Native RSDP used. */

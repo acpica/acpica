@@ -623,6 +623,17 @@ AcpiUtExecutePowerMethods (
 
 
 /*
+ * utfileio - file operations
+ */
+#ifdef ACPI_APPLICATION
+ACPI_STATUS
+AcpiUtReadTableFromFile (
+    char                    *Filename,
+    ACPI_TABLE_HEADER       **Table);
+#endif
+
+
+/*
  * utids - device ID support
  */
 ACPI_STATUS

@@ -494,7 +494,7 @@ main (
     {
         /* Get one entire table */
 
-        Status = AcpiDbReadTableFromFile (argv[AcpiGbl_Optind], &Table);
+        Status = AcpiUtReadTableFromFile (argv[AcpiGbl_Optind], &Table);
         if (ACPI_FAILURE (Status))
         {
             printf ("**** Could not get table from file %s, %s\n",
