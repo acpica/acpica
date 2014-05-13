@@ -149,7 +149,6 @@ static ACPI_SLEEP_FUNCTIONS         AcpiSleepDispatch[] =
 /*
  * These functions are removed for the ACPI_REDUCED_HARDWARE case:
  *      AcpiSetFirmwareWakingVector
- *      AcpiSetFirmwareWakingVector64
  *      AcpiEnterSleepStateS4bios
  */
 
@@ -159,17 +158,20 @@ static ACPI_SLEEP_FUNCTIONS         AcpiSleepDispatch[] =
  * FUNCTION:    AcpiSetFirmwareWakingVector
  *
  * PARAMETERS:  PhysicalAddress     - 32-bit physical address of ACPI real mode
- *                                    entry point.
+ *                                    entry point
+ *              PhysicalAddress64   - 64-bit physical address of ACPI protected
+ *                                    entry point
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Sets the 32-bit FirmwareWakingVector field of the FACS
+ * DESCRIPTION: Sets the FirmwareWakingVector fields of the FACS
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiSetFirmwareWakingVector (
-    UINT32                  PhysicalAddress)
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress64)
 {
     ACPI_FUNCTION_TRACE (AcpiSetFirmwareWakingVector);
 
@@ -184,60 +186,28 @@ AcpiSetFirmwareWakingVector (
 
     /* Set the 32-bit vector */
 
-    AcpiGbl_FACS->FirmwareWakingVector = PhysicalAddress;
+    AcpiGbl_FACS->FirmwareWakingVector = (UINT32) PhysicalAddress;
 
-    /* Clear the 64-bit vector if it exists */
-
-    if ((AcpiGbl_FACS->Length > 32) && (AcpiGbl_FACS->Version >= 1))
+    if (AcpiGbl_FACS->Length > 32)
     {
-        AcpiGbl_FACS->XFirmwareWakingVector = 0;
+        if (AcpiGbl_FACS->Version >= 1)
+        {
+            /* Set the 64-bit vector */
+
+            AcpiGbl_FACS->XFirmwareWakingVector = PhysicalAddress64;
+        }
+        else
+        {
+            /* Clear the 64-bit vector if it exists */
+
+            AcpiGbl_FACS->XFirmwareWakingVector = 0;
+        }
     }
 
     return_ACPI_STATUS (AE_OK);
 }
 
 ACPI_EXPORT_SYMBOL (AcpiSetFirmwareWakingVector)
-
-
-#if ACPI_MACHINE_WIDTH == 64
-/*******************************************************************************
- *
- * FUNCTION:    AcpiSetFirmwareWakingVector64
- *
- * PARAMETERS:  PhysicalAddress     - 64-bit physical address of ACPI protected
- *                                    mode entry point.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Sets the 64-bit X_FirmwareWakingVector field of the FACS, if
- *              it exists in the table. This function is intended for use with
- *              64-bit host operating systems.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiSetFirmwareWakingVector64 (
-    UINT64                  PhysicalAddress)
-{
-    ACPI_FUNCTION_TRACE (AcpiSetFirmwareWakingVector64);
-
-
-    /* Determine if the 64-bit vector actually exists */
-
-    if ((AcpiGbl_FACS->Length <= 32) || (AcpiGbl_FACS->Version < 1))
-    {
-        return_ACPI_STATUS (AE_NOT_EXIST);
-    }
-
-    /* Clear 32-bit vector, set the 64-bit X_ vector */
-
-    AcpiGbl_FACS->FirmwareWakingVector = 0;
-    AcpiGbl_FACS->XFirmwareWakingVector = PhysicalAddress;
-    return_ACPI_STATUS (AE_OK);
-}
-
-ACPI_EXPORT_SYMBOL (AcpiSetFirmwareWakingVector64)
-#endif
 
 
 /*******************************************************************************
