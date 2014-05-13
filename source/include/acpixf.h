@@ -265,6 +265,15 @@ ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_DoNotUseXsdt, FALSE);
 ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_Use32BitFadtAddresses, TRUE);
 
 /*
+ * Optionally use 32-bit FACS table addresses.
+ * It is reported that some platforms fail to resume from system suspending
+ * if 64-bit FACS table address is selected:
+ * https://bugzilla.kernel.org/show_bug.cgi?id=74021
+ * Default is TRUE, favor the 32-bit addresses.
+ */
+ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_Use32BitFacsAddresses, TRUE);
+
+/*
  * Optionally truncate I/O addresses to 16 bits. Provides compatibility
  * with other ACPI implementations. NOTE: During ACPICA initialization,
  * this value is set to TRUE if any Windows OSI strings have been

@@ -255,7 +255,8 @@ AcpiTbLoadNamespace (
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
     for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; ++i)
     {
-        if ((!ACPI_COMPARE_NAME (&(AcpiGbl_RootTableList.Tables[i].Signature),
+        if (!AcpiGbl_RootTableList.Tables[i].Address ||
+            (!ACPI_COMPARE_NAME (&(AcpiGbl_RootTableList.Tables[i].Signature),
                     ACPI_SIG_SSDT) &&
              !ACPI_COMPARE_NAME (&(AcpiGbl_RootTableList.Tables[i].Signature),
                     ACPI_SIG_PSDT)) ||
