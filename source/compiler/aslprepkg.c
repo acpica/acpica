@@ -361,39 +361,6 @@ ApCheckPackage (
             Package, 1, Count);
         break;
 
-    case ACPI_PTYPE2_UUID_PAIR:
-
-        /* Variable list of UUID Buffer/Package pairs */
-
-        /* The length of the package must be even */
-        if (Count % 2 != 0)
-        {
-            sprintf (MsgBuffer, "%4.4s: Package length, %d, is odd.",
-                Predefined->Info.Name, Count);
-
-            AslError (ASL_ERROR, ASL_MSG_RESERVED_PACKAGE_LENGTH,
-                ParentOp->Asl.Child, MsgBuffer);
-        }
-
-        /* Validate the alternating types */
-        for (i = 0; i < Count; ++i)
-        {
-            if (i % 2 == 0)
-            {
-                ApCheckObjectType (Predefined->Info.Name, Op,
-                    Package->RetInfo.ObjectType1, i);
-            }
-            else
-            {
-                ApCheckObjectType (Predefined->Info.Name, Op,
-                    Package->RetInfo.ObjectType2, i);
-            }
-
-            Op = Op->Asl.Next;
-        }
-
-        break;
-
     case ACPI_PTYPE2:
     case ACPI_PTYPE2_FIXED:
     case ACPI_PTYPE2_MIN:
