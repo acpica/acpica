@@ -149,9 +149,6 @@ ACPI_STATUS
 AcpiTbInitializeFacs (
     void)
 {
-    ACPI_TABLE_FACS         *Facs32;
-    ACPI_TABLE_FACS         *Facs64;
-
 
     /* If Hardware Reduced flag is set, there is no FACS */
 
@@ -162,21 +159,21 @@ AcpiTbInitializeFacs (
     }
 
     (void) AcpiGetTableByIndex (ACPI_TABLE_INDEX_FACS,
-                ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &Facs32));
+                ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &AcpiGbl_Facs32));
     (void) AcpiGetTableByIndex (ACPI_TABLE_INDEX_X_FACS,
-                ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &Facs64));
-    if (!Facs32 && !Facs64)
+                ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &AcpiGbl_Facs64));
+    if (!AcpiGbl_Facs32 && !AcpiGbl_Facs64)
     {
         return (AE_NO_MEMORY);
     }
 
     if (AcpiGbl_Use32BitFacsAddresses)
     {
-        AcpiGbl_FACS = Facs32 ? Facs32 : Facs64;
+        AcpiGbl_FACS = AcpiGbl_Facs32 ? AcpiGbl_Facs32 : AcpiGbl_Facs64;
     }
     else
     {
-        AcpiGbl_FACS = Facs64 ? Facs64 : Facs32;
+        AcpiGbl_FACS = AcpiGbl_Facs64 ? AcpiGbl_Facs64 : AcpiGbl_Facs32;
     }
 
     return (AE_OK);

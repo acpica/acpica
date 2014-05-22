@@ -124,6 +124,12 @@
 /* Local prototypes */
 
 static ACPI_STATUS
+AcpiHwSetFirmwareWakingVector (
+    ACPI_TABLE_FACS         *Facs,
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress64);
+
+static ACPI_STATUS
 AcpiHwSleepDispatch (
     UINT8                   SleepState,
     UINT32                  FunctionId);
@@ -155,6 +161,63 @@ static ACPI_SLEEP_FUNCTIONS         AcpiSleepDispatch[] =
 #if (!ACPI_REDUCED_HARDWARE)
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiHwSetFirmwareWakingVector
+ *
+ * PARAMETERS:  Facs                - Pointer to FACS table
+ *              PhysicalAddress     - 32-bit physical address of ACPI real mode
+ *                                    entry point
+ *              PhysicalAddress64   - 64-bit physical address of ACPI protected
+ *                                    entry point
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Sets the FirmwareWakingVector fields of the FACS
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiHwSetFirmwareWakingVector (
+    ACPI_TABLE_FACS         *Facs,
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress64)
+{
+    ACPI_FUNCTION_TRACE (AcpiHwSetFirmwareWakingVector);
+
+
+    /*
+     * According to the ACPI specification 2.0c and later, the 64-bit
+     * waking vector should be cleared and the 32-bit waking vector should
+     * be used, unless we want the wake-up code to be called by the BIOS in
+     * Protected Mode. Some systems (for example HP dv5-1004nr) are known
+     * to fail to resume if the 64-bit vector is used.
+     */
+
+    /* Set the 32-bit vector */
+
+    Facs->FirmwareWakingVector = (UINT32) PhysicalAddress;
+
+    if (Facs->Length > 32)
+    {
+        if (Facs->Version >= 1)
+        {
+            /* Set the 64-bit vector */
+
+            Facs->XFirmwareWakingVector = PhysicalAddress64;
+        }
+        else
+        {
+            /* Clear the 64-bit vector if it exists */
+
+            Facs->XFirmwareWakingVector = 0;
+        }
+    }
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiSetFirmwareWakingVector
  *
  * PARAMETERS:  PhysicalAddress     - 32-bit physical address of ACPI real mode
@@ -173,35 +236,25 @@ AcpiSetFirmwareWakingVector (
     ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
     ACPI_PHYSICAL_ADDRESS   PhysicalAddress64)
 {
+
     ACPI_FUNCTION_TRACE (AcpiSetFirmwareWakingVector);
 
+    /* If Hardware Reduced flag is set, there is no FACS */
 
-    /*
-     * According to the ACPI specification 2.0c and later, the 64-bit
-     * waking vector should be cleared and the 32-bit waking vector should
-     * be used, unless we want the wake-up code to be called by the BIOS in
-     * Protected Mode. Some systems (for example HP dv5-1004nr) are known
-     * to fail to resume if the 64-bit vector is used.
-     */
-
-    /* Set the 32-bit vector */
-
-    AcpiGbl_FACS->FirmwareWakingVector = (UINT32) PhysicalAddress;
-
-    if (AcpiGbl_FACS->Length > 32)
+    if (AcpiGbl_ReducedHardware)
     {
-        if (AcpiGbl_FACS->Version >= 1)
-        {
-            /* Set the 64-bit vector */
+        return (AE_OK);
+    }
 
-            AcpiGbl_FACS->XFirmwareWakingVector = PhysicalAddress64;
-        }
-        else
-        {
-            /* Clear the 64-bit vector if it exists */
-
-            AcpiGbl_FACS->XFirmwareWakingVector = 0;
-        }
+    if (AcpiGbl_Facs32)
+    {
+        (void) AcpiHwSetFirmwareWakingVector (AcpiGbl_Facs32,
+                    PhysicalAddress, PhysicalAddress64);
+    }
+    if (AcpiGbl_Facs64)
+    {
+        (void) AcpiHwSetFirmwareWakingVector (AcpiGbl_Facs64,
+                    PhysicalAddress, PhysicalAddress64);
     }
 
     return_ACPI_STATUS (AE_OK);
