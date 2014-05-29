@@ -132,71 +132,6 @@
 
 /* Utilities */
 
-void
-AcpiUtSubsystemShutdown (
-    void)
-{
-}
-
-ACPI_STATUS
-AcpiUtExecute_STA (
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    UINT32                  *StatusFlags)
-{
-    return (AE_NOT_IMPLEMENTED);
-}
-
-ACPI_STATUS
-AcpiUtExecute_HID (
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_PNP_DEVICE_ID      **ReturnId)
-{
-    return (AE_NOT_IMPLEMENTED);
-}
-
-ACPI_STATUS
-AcpiUtExecute_CID (
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_PNP_DEVICE_ID_LIST **ReturnCidList)
-{
-    return (AE_NOT_IMPLEMENTED);
-}
-
-ACPI_STATUS
-AcpiUtExecute_UID (
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_PNP_DEVICE_ID      **ReturnId)
-{
-    return (AE_NOT_IMPLEMENTED);
-}
-
-ACPI_STATUS
-AcpiUtExecute_SUB (
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_PNP_DEVICE_ID      **ReturnId)
-{
-    return (AE_NOT_IMPLEMENTED);
-}
-
-ACPI_STATUS
-AcpiUtExecutePowerMethods (
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    const char              **MethodNames,
-    UINT8                   MethodCount,
-    UINT8                   *OutValues)
-{
-    return (AE_NOT_IMPLEMENTED);
-}
-
-ACPI_STATUS
-AcpiUtEvaluateNumericObject (
-    char                    *ObjectName,
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    UINT64                  *Value)
-{
-    return (AE_NOT_IMPLEMENTED);
-}
-
 ACPI_STATUS
 AcpiUtCopyIobjectToEobject (
     ACPI_OPERAND_OBJECT     *Obj,
@@ -223,31 +158,7 @@ AcpiUtCopyIobjectToIobject (
 }
 
 
-/* Hardware manager */
-
-UINT32
-AcpiHwGetMode (
-    void)
-{
-    return (0);
-}
-
-
 /* Event manager */
-
-ACPI_STATUS
-AcpiEvInstallXruptHandlers (
-    void)
-{
-    return (AE_OK);
-}
-
-ACPI_STATUS
-AcpiEvInitializeEvents (
-    void)
-{
-    return (AE_OK);
-}
 
 ACPI_STATUS
 AcpiEvInstallRegionHandlers (
@@ -271,36 +182,8 @@ AcpiEvInitializeRegion (
     return (AE_OK);
 }
 
-#if (!ACPI_REDUCED_HARDWARE)
-ACPI_STATUS
-AcpiEvDeleteGpeBlock (
-    ACPI_GPE_BLOCK_INFO     *GpeBlock)
-{
-    return (AE_OK);
-}
-
-ACPI_STATUS
-AcpiEnable (
-    void)
-{
-    return (AE_OK);
-}
-#endif /* !ACPI_REDUCED_HARDWARE */
-
 
 /* AML Interpreter */
-
-void
-AcpiExUnlinkMutex (
-    ACPI_OPERAND_OBJECT     *ObjDesc)
-{
-}
-
-void
-AcpiExReleaseAllMutexes (
-    ACPI_THREAD_STATE       *Thread)
-{
-}
 
 ACPI_STATUS
 AcpiExReadDataFromField (
@@ -323,22 +206,6 @@ AcpiExWriteDataToField (
 ACPI_STATUS
 AcpiExPrepFieldValue (
     ACPI_CREATE_FIELD_INFO  *Info)
-{
-    return (AE_OK);
-}
-
-ACPI_STATUS
-AcpiExAcquireMutexObject (
-    UINT16                  Timeout,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_THREAD_ID          ThreadId)
-{
-    return (AE_OK);
-}
-
-ACPI_STATUS
-AcpiExReleaseMutexObject (
-    ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     return (AE_OK);
 }
@@ -477,27 +344,4 @@ AcpiDsExecEndOp (
     ACPI_WALK_STATE         *State)
 {
     return (AE_NOT_IMPLEMENTED);
-}
-
-
-/* AML Debugger */
-
-void
-AcpiDbDisplayArgumentObject (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_WALK_STATE         *WalkState)
-{
-}
-
-ACPI_STATUS
-AcpiDbInitialize (
-    void)
-{
-    return (AE_OK);
-}
-
-void
-AcpiDbTerminate (
-    void)
-{
 }
