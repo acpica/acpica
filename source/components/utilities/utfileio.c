@@ -245,7 +245,7 @@ AcpiUtReadTable (
     ACPI_STATUS             Status;
     UINT32                  FileSize;
     BOOLEAN                 StandardHeader = TRUE;
-
+    INT32                   Count;
 
     /* Get the file size */
 
@@ -262,31 +262,24 @@ AcpiUtReadTable (
 
     /* Read the signature */
 
-    if (fread (&TableHeader, 1, 4, fp) != 4)
+    fseek (fp, 0, SEEK_SET);
+
+    Count = fread (&TableHeader, 1, sizeof (ACPI_TABLE_HEADER), fp);
+    if (Count != sizeof (ACPI_TABLE_HEADER))
     {
-        AcpiOsPrintf ("Could not read the table signature\n");
+        AcpiOsPrintf ("Could not read the table header\n");
         return (AE_BAD_HEADER);
     }
 
-    fseek (fp, 0, SEEK_SET);
-
     /* The RSDP table does not have standard ACPI header */
 
-    if (ACPI_COMPARE_NAME (TableHeader.Signature, "RSD "))
+    if (ACPI_VALIDATE_RSDP_SIG (TableHeader.Signature))
     {
         *TableLength = FileSize;
         StandardHeader = FALSE;
     }
     else
     {
-        /* Read the table header */
-
-        if (fread (&TableHeader, 1, sizeof (ACPI_TABLE_HEADER), fp) !=
-                sizeof (ACPI_TABLE_HEADER))
-        {
-            AcpiOsPrintf ("Could not read the table header\n");
-            return (AE_BAD_HEADER);
-        }
 
 #if 0
         /* Validate the table header/length */
