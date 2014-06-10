@@ -203,12 +203,15 @@ AcpiEvEnableGpe (
     ACPI_FUNCTION_TRACE (EvEnableGpe);
 
 
-    /* Clear the GPE (of stale events) */
-
-    Status = AcpiHwClearGpe (GpeEventInfo);
-    if (ACPI_FAILURE (Status))
+    if (!(GpeEventInfo->Flags & ACPI_GPE_NO_AUTO_CLEAR))
     {
-        return_ACPI_STATUS (Status);
+        /* Clear the GPE (of stale events) */
+
+        Status = AcpiHwClearGpe (GpeEventInfo);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     /* Enable the requested GPE */
@@ -778,7 +781,8 @@ AcpiEvFinishGpe (
     ACPI_STATUS             Status;
 
 
-    if ((GpeEventInfo->Flags & ACPI_GPE_XRUPT_TYPE_MASK) ==
+    if (!(GpeEventInfo->Flags & ACPI_GPE_NO_AUTO_CLEAR) &&
+        (GpeEventInfo->Flags & ACPI_GPE_XRUPT_TYPE_MASK) ==
             ACPI_GPE_LEVEL_TRIGGERED)
     {
         /*
@@ -876,7 +880,8 @@ AcpiEvGpeDispatch (
      * If edge-triggered, clear the GPE status bit now. Note that
      * level-triggered events are cleared after the GPE is serviced.
      */
-    if ((GpeEventInfo->Flags & ACPI_GPE_XRUPT_TYPE_MASK) ==
+    if (!(GpeEventInfo->Flags & ACPI_GPE_NO_AUTO_CLEAR) &&
+        (GpeEventInfo->Flags & ACPI_GPE_XRUPT_TYPE_MASK) ==
             ACPI_GPE_EDGE_TRIGGERED)
     {
         Status = AcpiHwClearGpe (GpeEventInfo);

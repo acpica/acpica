@@ -816,15 +816,16 @@ typedef UINT32                          ACPI_EVENT_STATUS;
 
 /*
  * GPE info flags - Per GPE
- * +-------+-+-+-+---+
- * |  7:5  |4|3|2|1:0|
- * +-------+-+-+-+---+
- *     |    | | |  |
- *     |    | | |  +-- Type of dispatch:to method, handler, notify, or none
- *     |    | | +----- Interrupt type: edge or level triggered
- *     |    | +------- Is a Wake GPE
- *     |    +--------- Do not disable GPE automatically
- *     +-------------- <Reserved>
+ * +-------+-+-+-+-+---+
+ * |  7:6  |5|4|3|2|1:0|
+ * +-------+-+-+-+-+---+
+ *     |    | | | |  |
+ *     |    | | | |  +-- Type of dispatch:to method, handler, notify, or none
+ *     |    | | | +----- Interrupt type: edge or level triggered
+ *     |    | | +------- Is a Wake GPE
+ *     |    | +--------- Do not disable GPE automatically
+ *     |    +----------- Do not clear GPE automatically
+ *     +---------------- <Reserved>
  */
 #define ACPI_GPE_DISPATCH_NONE          (UINT8) 0x00
 #define ACPI_GPE_DISPATCH_METHOD        (UINT8) 0x01
@@ -839,7 +840,8 @@ typedef UINT32                          ACPI_EVENT_STATUS;
 #define ACPI_GPE_CAN_WAKE               (UINT8) 0x08
 
 #define ACPI_GPE_NO_AUTO_DISABLE        (UINT8) 0x10
-#define ACPI_GPE_XRUPT_FLAG_MASK        (UINT8) 0x10
+#define ACPI_GPE_NO_AUTO_CLEAR          (UINT8) 0x20
+#define ACPI_GPE_XRUPT_FLAG_MASK        (UINT8) 0x30
 
 /*
  * Flags for GPE and Lock interfaces
