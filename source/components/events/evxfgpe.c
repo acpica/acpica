@@ -194,6 +194,15 @@ ACPI_EXPORT_SYMBOL (AcpiUpdateAllGpes)
  *
  * DESCRIPTION: Add a reference to a GPE. On the first reference, the GPE is
  *              hardware-enabled.
+ *              This API can be used for the shared IRQ enabling. It ensures
+ *              either driver that is driving the silicon logic who shares this
+ *              IRQ can enable this IRQ.
+ *              This API can also be used for the request based IRQ enabling.
+ *              It ensures that the IRQ is disabled unless there is an upper
+ *              layer request submitted.
+ *              When this API is used for the request based GPE handling,
+ *              normally the GPE handler should be installed with
+ *              ACPI_GPE_NO_AUTO_CLEAR set.
  *
  ******************************************************************************/
 
@@ -250,6 +259,10 @@ ACPI_EXPORT_SYMBOL (AcpiEnableGpe)
  * DESCRIPTION: Remove a reference to a GPE. When the last reference is
  *              removed, only then is the GPE disabled (for runtime GPEs), or
  *              the GPE mask bit disabled (for wake GPEs)
+ *              This API can be used for the shared IRQ disabling and the
+ *              request based IRQ disabling as a reversal of AcpiEnableGpe().
+ *              See the detailed information in the description of
+ *              AcpiEnableGpe().
  *
  ******************************************************************************/
 
@@ -294,12 +307,25 @@ ACPI_EXPORT_SYMBOL (AcpiDisableGpe)
  * RETURN:      Status
  *
  * DESCRIPTION: Enable or disable an individual GPE. This function bypasses
- *              the reference count mechanism used in the AcpiEnableGpe and
- *              AcpiDisableGpe interfaces -- and should be used with care.
- *
- * Note: Typically used to disable a runtime GPE for short period of time,
- * then re-enable it, without disturbing the existing reference counts. This
- * is useful, for example, in the Embedded Controller (EC) driver.
+ *              the reference count mechanism used in the AcpiEnableGpe() and
+ *              AcpiDisableGpe() interfaces.
+ *              This API is typically used to switch the IRQ handling into the
+ *              polling mode when there are outstanding requests submitted. So
+ *              this API should be invoked twice between a pair of
+ *              AcpiEnableGpe() and AcpiDisableGpe() invocations. The first
+ *              invocation of AcpiSetGpe(ACPI_GPE_DISABLE) is invoked to enter
+ *              the polling mode and the second invocation of
+ *              AcpiSetGpe(ACPI_GPE_ENABLE) is invoked to leave the polling
+ *              mode.
+ *              Driver can switch to the polling mode when there is an IRQ
+ *              storming indicated or the IRQ need to be polled in a non-IRQ
+ *              context to meet high throughput or realtime requirements.
+ *              When this API is used, normally the GPE handler should be
+ *              installed with ACPI_NO_AUTO_DISABLE set.
+ * Note: If a GPE is shared by 2 silicon components, then both the drivers
+ *       should support IRQ polling mode or disabling the GPE for long period
+ *       for one driver may break the other. So use it with care since all
+ *       firmware _Lxx/_Exx handlers currently rely the IRQ interrupt mode.
  *
  ******************************************************************************/
 
@@ -334,7 +360,7 @@ AcpiSetGpe (
     {
     case ACPI_GPE_ENABLE:
 
-        Status = AcpiEvEnableGpe (GpeEventInfo);
+        Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_ENABLE);
         break;
 
     case ACPI_GPE_DISABLE:
