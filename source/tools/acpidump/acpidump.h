@@ -120,7 +120,6 @@
 #ifdef _DECLARE_GLOBALS
 #define EXTERN
 #define INIT_GLOBAL(a,b)        a=b
-#define DEFINE_ACPI_GLOBALS     1
 #else
 #define EXTERN                  extern
 #define INIT_GLOBAL(a,b)        a
