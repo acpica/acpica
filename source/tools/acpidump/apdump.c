@@ -358,7 +358,7 @@ ApDumpAllTables (
         }
 
         TableStatus = ApDumpTableBuffer (Table, Instance, Address);
-        free (Table);
+        ACPI_FREE (Table);
 
         if (TableStatus)
         {
@@ -416,7 +416,7 @@ ApDumpTableByAddress (
     }
 
     TableStatus = ApDumpTableBuffer (Table, 0, Address);
-    free (Table);
+    ACPI_FREE (Table);
     return (TableStatus);
 }
 
@@ -446,7 +446,7 @@ ApDumpTableByName (
     int                     TableStatus;
 
 
-    if (strlen (Signature) != ACPI_NAME_SIZE)
+    if (ACPI_STRLEN (Signature) != ACPI_NAME_SIZE)
     {
         fprintf (stderr,
             "Invalid table signature [%s]: must be exactly 4 characters\n",
@@ -456,18 +456,18 @@ ApDumpTableByName (
 
     /* Table signatures are expected to be uppercase */
 
-    strcpy (LocalSignature, Signature);
+    ACPI_STRCPY (LocalSignature, Signature);
     AcpiUtStrupr (LocalSignature);
 
     /* To be friendly, handle tables whose signatures do not match the name */
 
     if (ACPI_COMPARE_NAME (LocalSignature, "FADT"))
     {
-        strcpy (LocalSignature, ACPI_SIG_FADT);
+        ACPI_STRCPY (LocalSignature, ACPI_SIG_FADT);
     }
     else if (ACPI_COMPARE_NAME (LocalSignature, "MADT"))
     {
-        strcpy (LocalSignature, ACPI_SIG_MADT);
+        ACPI_STRCPY (LocalSignature, ACPI_SIG_MADT);
     }
 
     /* Dump all instances of this signature (to handle multiple SSDTs) */
@@ -492,7 +492,7 @@ ApDumpTableByName (
         }
 
         TableStatus = ApDumpTableBuffer (Table, Instance, Address);
-        free (Table);
+        ACPI_FREE (Table);
 
         if (TableStatus)
         {
@@ -555,6 +555,6 @@ ApDumpTableFromFile (
     TableStatus = ApDumpTableBuffer (Table, 0, 0);
 
 Exit:
-    free (Table);
+    ACPI_FREE (Table);
     return (TableStatus);
 }

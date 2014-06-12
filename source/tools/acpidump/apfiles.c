@@ -217,11 +217,11 @@ ApWriteToBinaryFile (
 
     if (Instance > 0)
     {
-        sprintf (InstanceStr, "%u", Instance);
-        strcat (Filename, InstanceStr);
+        AcpiUtSnprintf (InstanceStr, sizeof (InstanceStr), "%u", Instance);
+        ACPI_STRCAT (Filename, InstanceStr);
     }
 
-    strcat (Filename, ACPI_TABLE_FILE_SUFFIX);
+    ACPI_STRCAT (Filename, ACPI_TABLE_FILE_SUFFIX);
 
     if (Gbl_VerboseMode)
     {
@@ -297,7 +297,7 @@ ApGetTableFromFile (
 
     /* Allocate a buffer for the entire file */
 
-    Buffer = calloc (1, FileSize);
+    Buffer = ACPI_ALLOCATE_ZEROED (FileSize);
     if (!Buffer)
     {
         fprintf (stderr,
@@ -312,7 +312,7 @@ ApGetTableFromFile (
     {
         fprintf (stderr,
             "Could not read input file: %s\n", Pathname);
-        free (Buffer);
+        ACPI_FREE (Buffer);
         Buffer = NULL;
         goto Cleanup;
     }
