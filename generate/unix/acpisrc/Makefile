@@ -19,6 +19,7 @@ PROG = $(OBJDIR)/acpisrc
 #
 vpath %.c \
     $(ACPISRC)\
+    $(ACPICA_UTILITIES)\
     $(ACPICA_COMMON)\
     $(ACPICA_OSL)
 
@@ -35,7 +36,9 @@ OBJECTS = \
     $(OBJDIR)/asutils.o\
 	$(OBJDIR)/cmfsize.o\
     $(OBJDIR)/getopt.o \
-    $(OBJDIR)/osunixdir.o
+    $(OBJDIR)/osunixdir.o\
+    $(OBJDIR)/osunixxf.o\
+    $(OBJDIR)/utglobal.o
 
 #
 # Compile flags specific to acpisrc

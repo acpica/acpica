@@ -21,7 +21,8 @@ PROG = $(OBJDIR)/acpihelp
 vpath %.c \
     $(ACPIHELP)\
     $(ACPICA_COMMON)\
-    $(ACPICA_UTILITIES)
+    $(ACPICA_UTILITIES)\
+    $(ACPICA_OSL)
 
 HEADERS = \
     $(wildcard $(ACPIHELP)/*.h)
@@ -35,7 +36,9 @@ OBJECTS = \
 	$(OBJDIR)/ahpredef.o\
 	$(OBJDIR)/ahmain.o\
 	$(OBJDIR)/getopt.o\
+	$(OBJDIR)/osunixxf.o\
 	$(OBJDIR)/utexcep.o\
+	$(OBJDIR)/utglobal.o\
 	$(OBJDIR)/utpredef.o
 
 #
