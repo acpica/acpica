@@ -34,11 +34,17 @@ OBJECTS = \
     $(OBJDIR)/asremove.o\
     $(OBJDIR)/astable.o\
     $(OBJDIR)/asutils.o\
-	$(OBJDIR)/cmfsize.o\
+    $(OBJDIR)/cmfsize.o\
     $(OBJDIR)/getopt.o \
+    $(OBJDIR)/oslibcfs.o\
     $(OBJDIR)/osunixdir.o\
     $(OBJDIR)/osunixxf.o\
-    $(OBJDIR)/utglobal.o
+    $(OBJDIR)/utdebug.o\
+    $(OBJDIR)/utexcep.o\
+    $(OBJDIR)/utglobal.o\
+    $(OBJDIR)/utmath.o\
+    $(OBJDIR)/utprint.o\
+    $(OBJDIR)/utxferror.o
 
 #
 # Compile flags specific to acpisrc

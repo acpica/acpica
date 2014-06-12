@@ -194,7 +194,7 @@ extern char                 *AcpiGbl_Optarg;
  */
 UINT32
 CmGetFileSize (
-    FILE                    *File);
+    ACPI_FILE               File);
 
 
 #ifndef ACPI_DUMP_APP
