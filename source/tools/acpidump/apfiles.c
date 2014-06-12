@@ -135,7 +135,7 @@ ApOpenOutputFile (
     char                    *Pathname)
 {
     struct stat             StatInfo;
-    FILE                    *File;
+    ACPI_FILE               File;
 
 
     /* If file exists, prompt for overwrite */
@@ -152,10 +152,10 @@ ApOpenOutputFile (
 
     /* Point stdout to the file */
 
-    File = freopen (Pathname, "w", stdout);
+    File = AcpiOsOpenFile (Pathname, ACPI_FILE_WRITING);
     if (!File)
     {
-        perror ("Could not open output file");
+        AcpiLogError ("Could not open output file: %s\n", Pathname);
         return (-1);
     }
 

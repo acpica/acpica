@@ -558,6 +558,16 @@ AcpiUtDumpBuffer (
     UINT32                  Display,
     UINT32                  Offset);
 
+#ifdef ACPI_APPLICATION
+void
+AcpiUtDumpBufferToFile (
+    ACPI_FILE               File,
+    UINT8                   *Buffer,
+    UINT32                  Count,
+    UINT32                  Display,
+    UINT32                  BaseOffset);
+#endif
+
 void
 AcpiUtReportError (
     char                    *ModuleName,

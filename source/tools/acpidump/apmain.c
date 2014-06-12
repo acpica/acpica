@@ -405,6 +405,7 @@ main (
 
     ACPI_DEBUG_INITIALIZE (); /* For debug version only */
     AcpiOsInitialize ();
+    Gbl_OutputFile = ACPI_FILE_OUT;
 
     /* Process command line options */
 
@@ -458,7 +459,7 @@ main (
         }
     }
 
-    if (Gbl_OutputFile)
+    if (Gbl_OutputFilename)
     {
         if (Gbl_VerboseMode)
         {
