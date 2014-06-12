@@ -148,7 +148,7 @@ ApIsValidHeader (
 
         if (!AcpiUtValidAcpiName (Table->Signature))
         {
-            fprintf (stderr, "Table signature (0x%8.8X) is invalid\n",
+            AcpiLogError ("Table signature (0x%8.8X) is invalid\n",
                 *(UINT32 *) Table->Signature);
             return (FALSE);
         }
@@ -157,7 +157,7 @@ ApIsValidHeader (
 
         if (Table->Length < sizeof (ACPI_TABLE_HEADER))
         {
-            fprintf (stderr, "Table length (0x%8.8X) is invalid\n",
+            AcpiLogError ("Table length (0x%8.8X) is invalid\n",
                 Table->Length);
             return (FALSE);
         }
@@ -203,7 +203,7 @@ ApIsValidChecksum (
 
     if (ACPI_FAILURE (Status))
     {
-        fprintf (stderr, "%4.4s: Warning: wrong checksum in table\n",
+        AcpiLogError ("%4.4s: Warning: wrong checksum in table\n",
             Table->Signature);
     }
 
@@ -295,12 +295,12 @@ ApDumpTableBuffer (
      * Note: simplest to just always emit a 64-bit address. AcpiXtract
      * utility can handle this.
      */
-    printf ("%4.4s @ 0x%8.8X%8.8X\n", Table->Signature,
+    AcpiOsPrintf ("%4.4s @ 0x%8.8X%8.8X\n", Table->Signature,
         ACPI_FORMAT_UINT64 (Address));
 
     AcpiUtDumpBuffer (ACPI_CAST_PTR (UINT8, Table), TableLength,
         DB_BYTE_DISPLAY, 0);
-    printf ("\n");
+    AcpiOsPrintf ("\n");
     return (0);
 }
 
@@ -345,13 +345,13 @@ ApDumpAllTables (
             }
             else if (i == 0)
             {
-                fprintf (stderr, "Could not get ACPI tables, %s\n",
+                AcpiLogError ("Could not get ACPI tables, %s\n",
                     AcpiFormatException (Status));
                 return (-1);
             }
             else
             {
-                fprintf (stderr, "Could not get ACPI table at index %u, %s\n",
+                AcpiLogError ("Could not get ACPI table at index %u, %s\n",
                     i, AcpiFormatException (Status));
                 continue;
             }
@@ -400,7 +400,7 @@ ApDumpTableByAddress (
     Status = AcpiUtStrtoul64 (AsciiAddress, 0, &LongAddress);
     if (ACPI_FAILURE (Status))
     {
-        fprintf (stderr, "%s: Could not convert to a physical address\n",
+        AcpiLogError ("%s: Could not convert to a physical address\n",
             AsciiAddress);
         return (-1);
     }
@@ -409,7 +409,7 @@ ApDumpTableByAddress (
     Status = AcpiOsGetTableByAddress (Address, &Table);
     if (ACPI_FAILURE (Status))
     {
-        fprintf (stderr, "Could not get table at 0x%8.8X%8.8X, %s\n",
+        AcpiLogError ("Could not get table at 0x%8.8X%8.8X, %s\n",
             ACPI_FORMAT_UINT64 (Address),
             AcpiFormatException (Status));
         return (-1);
@@ -448,7 +448,7 @@ ApDumpTableByName (
 
     if (ACPI_STRLEN (Signature) != ACPI_NAME_SIZE)
     {
-        fprintf (stderr,
+        AcpiLogError (
             "Invalid table signature [%s]: must be exactly 4 characters\n",
             Signature);
         return (-1);
@@ -485,7 +485,7 @@ ApDumpTableByName (
                 return (0);
             }
 
-            fprintf (stderr,
+            AcpiLogError (
                 "Could not get ACPI table with signature [%s], %s\n",
                 LocalSignature, AcpiFormatException (Status));
             return (-1);
@@ -539,7 +539,7 @@ ApDumpTableFromFile (
 
     if (Table->Length > FileSize)
     {
-        fprintf (stderr,
+        AcpiLogError (
             "Table length (0x%X) is too large for input file (0x%X) %s\n",
             Table->Length, FileSize, Pathname);
         goto Exit;
@@ -547,7 +547,7 @@ ApDumpTableFromFile (
 
     if (Gbl_VerboseMode)
     {
-        fprintf (stderr,
+        AcpiLogError (
             "Input file:  %s contains table [%4.4s], 0x%X (%u) bytes\n",
             Pathname, Table->Signature, FileSize, FileSize);
     }

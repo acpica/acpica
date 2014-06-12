@@ -233,7 +233,7 @@ ApInsertAction (
     CurrentAction++;
     if (CurrentAction > AP_MAX_ACTIONS)
     {
-        fprintf (stderr, "Too many table options (max %u)\n", AP_MAX_ACTIONS);
+        AcpiLogError ("Too many table options (max %u)\n", AP_MAX_ACTIONS);
         return (-1);
     }
 
@@ -299,7 +299,7 @@ ApDoOptions (
         Status = AcpiUtStrtoul64 (AcpiGbl_Optarg, 0, &Gbl_RsdpBase);
         if (ACPI_FAILURE (Status))
         {
-            fprintf (stderr, "%s: Could not convert to a physical address\n",
+            AcpiLogError ("%s: Could not convert to a physical address\n",
                 AcpiGbl_Optarg);
             return (-1);
         }
@@ -324,13 +324,13 @@ ApDoOptions (
 
     case 'v':   /* Revision/version */
 
-        printf (ACPI_COMMON_SIGNON (AP_UTILITY_NAME));
+        AcpiOsPrintf (ACPI_COMMON_SIGNON (AP_UTILITY_NAME));
         return (1);
 
     case 'z':   /* Verbose mode */
 
         Gbl_VerboseMode = TRUE;
-        fprintf (stderr, ACPI_COMMON_SIGNON (AP_UTILITY_NAME));
+        AcpiLogError (ACPI_COMMON_SIGNON (AP_UTILITY_NAME));
         continue;
 
     /*
@@ -447,7 +447,7 @@ main (
 
         default:
 
-            fprintf (stderr, "Internal error, invalid action: 0x%X\n",
+            AcpiLogError ("Internal error, invalid action: 0x%X\n",
                 Action->ToBeDone);
             return (-1);
         }
@@ -465,11 +465,11 @@ main (
             /* Summary for the output file */
 
             FileSize = CmGetFileSize (Gbl_OutputFile);
-            fprintf (stderr, "Output file %s contains 0x%X (%u) bytes\n\n",
+            AcpiLogError ("Output file %s contains 0x%X (%u) bytes\n\n",
                 Gbl_OutputFilename, FileSize, FileSize);
         }
 
-        fclose (Gbl_OutputFile);
+        AcpiOsCloseFile (Gbl_OutputFile);
     }
 
     return (Status);
