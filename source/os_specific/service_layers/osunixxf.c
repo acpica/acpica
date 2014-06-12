@@ -137,7 +137,6 @@
         ACPI_MODULE_NAME    ("osunixxf")
 
 
-FILE                           *AcpiGbl_OutputFile;
 BOOLEAN                        AcpiGbl_DebugTimeout = FALSE;
 
 
@@ -1566,7 +1565,10 @@ AcpiOsExecute (
     ACPI_OSD_EXEC_CALLBACK  Function,
     void                    *Context)
 {
-    return (AE_SUPPORT);
+
+    Function (Context);
+
+    return (AE_OK);
 }
 
 #endif /* ACPI_SINGLE_THREADED */

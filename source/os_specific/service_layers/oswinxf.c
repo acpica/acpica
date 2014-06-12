@@ -136,7 +136,6 @@
         ACPI_MODULE_NAME    ("oswinxf")
 
 
-FILE                        *AcpiGbl_OutputFile;
 UINT64                      TimerFrequency;
 char                        TableName[ACPI_NAME_SIZE + 1];
 
@@ -1599,7 +1598,10 @@ AcpiOsExecute (
     ACPI_OSD_EXEC_CALLBACK  Function,
     void                    *Context)
 {
-    return (AE_SUPPORT);
+
+    Function (Context);
+
+    return (AE_OK);
 }
 
 #endif /* ACPI_SINGLE_THREADED */

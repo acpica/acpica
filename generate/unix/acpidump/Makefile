@@ -35,10 +35,12 @@ OBJECTS = \
 	$(OBJDIR)/getopt.o\
 	$(OBJDIR)/osunixdir.o\
 	$(OBJDIR)/osunixmap.o\
+	$(OBJDIR)/osunixxf.o\
 	$(OBJDIR)/tbprint.o\
 	$(OBJDIR)/tbxfroot.o\
 	$(OBJDIR)/utbuffer.o\
 	$(OBJDIR)/utexcep.o\
+	$(OBJDIR)/utglobal.o\
 	$(OBJDIR)/utmath.o\
 	$(OBJDIR)/utstring.o\
 	$(OBJDIR)/utxferror.o

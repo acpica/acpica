@@ -390,6 +390,7 @@ main (
 
 
     ACPI_DEBUG_INITIALIZE (); /* For debug version only */
+    AcpiOsInitialize ();
 
     /* Process command line options */
 

@@ -373,7 +373,7 @@ ACPI_GLOBAL (UINT32,                    AcpiGbl_TraceDbgLayer);
  *
  ****************************************************************************/
 
-ACPI_GLOBAL (UINT8,                     AcpiGbl_DbOutputFlags);
+ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_DbOutputFlags, ACPI_DB_CONSOLE_OUTPUT);
 
 #ifdef ACPI_DISASSEMBLER
 
@@ -439,6 +439,7 @@ ACPI_GLOBAL (UINT32,                    AcpiGbl_NumObjects);
 #ifdef ACPI_APPLICATION
 
 ACPI_INIT_GLOBAL (ACPI_FILE,            AcpiGbl_DebugFile, NULL);
+ACPI_INIT_GLOBAL (ACPI_FILE,            AcpiGbl_OutputFile, NULL);
 
 #endif /* ACPI_APPLICATION */
 

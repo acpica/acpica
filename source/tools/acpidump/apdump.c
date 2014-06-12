@@ -558,32 +558,3 @@ Exit:
     free (Table);
     return (TableStatus);
 }
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOs* print functions
- *
- * DESCRIPTION: Used for linkage with ACPICA modules
- *
- ******************************************************************************/
-
-void ACPI_INTERNAL_VAR_XFACE
-AcpiOsPrintf (
-    const char              *Fmt,
-    ...)
-{
-    va_list                 Args;
-
-    va_start (Args, Fmt);
-    vfprintf (stdout, Fmt, Args);
-    va_end (Args);
-}
-
-void
-AcpiOsVprintf (
-    const char              *Fmt,
-    va_list                 Args)
-{
-    vfprintf (stdout, Fmt, Args);
-}

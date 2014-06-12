@@ -48,9 +48,11 @@ OBJECTS = \
 	$(OBJDIR)/dswstate.o\
 	$(OBJDIR)/excreate.o\
 	$(OBJDIR)/exdump.o\
+	$(OBJDIR)/exmutex.o\
 	$(OBJDIR)/exnames.o\
 	$(OBJDIR)/exresnte.o\
 	$(OBJDIR)/exresolv.o\
+	$(OBJDIR)/exsystem.o\
 	$(OBJDIR)/exutils.o\
 	$(OBJDIR)/getopt.o\
 	$(OBJDIR)/nsaccess.o\
@@ -96,9 +98,12 @@ OBJECTS = \
 	$(OBJDIR)/utdecode.o\
 	$(OBJDIR)/utdelete.o\
 	$(OBJDIR)/uterror.o\
+	$(OBJDIR)/uteval.o\
 	$(OBJDIR)/utexcep.o\
 	$(OBJDIR)/utfileio.o\
 	$(OBJDIR)/utglobal.o\
+	$(OBJDIR)/utids.o\
+	$(OBJDIR)/utinit.o\
 	$(OBJDIR)/utlock.o\
 	$(OBJDIR)/utmath.o\
 	$(OBJDIR)/utmisc.o\
