@@ -87,6 +87,7 @@ acpica_tools_paths()
 		os_specific/service_layers/oslinuxtbl.c \
 		os_specific/service_layers/osunixdir.c \
 		os_specific/service_layers/osunixmap.c \
+		os_specific/service_layers/osunixxf.c \
 		tools/acpidump \
 	"
 	echo $paths
