@@ -158,6 +158,11 @@ AcpiEfiFlushFile (
     BOOLEAN                 FlushAll);
 
 
+/* Local variables */
+
+static EFI_FILE_HANDLE      AcpiGbl_EfiCurrentVolume = NULL;
+
+
 /******************************************************************************
  *
  * FUNCTION:    AcpiEfiGetRsdpViaGuid
@@ -444,10 +449,74 @@ AcpiOsOpenFile (
     const char              *Path,
     UINT8                   Modes)
 {
-    ACPI_FILE               File = NULL;
+    EFI_STATUS              EfiStatus = EFI_SUCCESS;
+    UINT64                  OpenModes;
+    EFI_FILE_HANDLE         EfiFile = NULL;
+    CHAR16                  *Path16 = NULL;
+    CHAR16                  *Pos16;
+    const char              *Pos;
+    INTN                    Count, i;
 
 
-    return (File);
+    if (!Path)
+    {
+        return (NULL);
+    }
+
+    /* Convert modes */
+
+    OpenModes = EFI_FILE_MODE_READ;
+    if (Modes & ACPI_FILE_WRITING)
+    {
+        OpenModes |= (EFI_FILE_MODE_WRITE | EFI_FILE_MODE_CREATE);
+    }
+
+    /* Allocate path buffer */
+
+    Count = ACPI_STRLEN (Path);
+    Path16 = ACPI_ALLOCATE_ZEROED ((Count + 1) * sizeof (CHAR16));
+    if (!Path16)
+    {
+        EfiStatus = EFI_BAD_BUFFER_SIZE;
+        goto ErrorExit;
+    }
+    Pos = Path;
+    Pos16 = Path16;
+    while (*Pos == '/' || *Pos == '\\')
+    {
+        Pos++;
+        Count--;
+    }
+    for (i = 0; i < Count; i++)
+    {
+        if (*Pos == '/')
+        {
+            *Pos16++ = '\\';
+            Pos++;
+        }
+        else
+        {
+            *Pos16++ = *Pos++;
+        }
+    }
+    *Pos16 = '\0';
+
+    EfiStatus = uefi_call_wrapper (AcpiGbl_EfiCurrentVolume->Open, 5,
+        AcpiGbl_EfiCurrentVolume, &EfiFile, Path16, OpenModes, 0);
+    if (EFI_ERROR (EfiStatus))
+    {
+        AcpiLogError ("EFI_FILE_HANDLE->Open() failure.\n");
+        goto ErrorExit;
+    }
+
+ErrorExit:
+
+    if (Path16)
+    {
+        ACPI_FREE (Path16);
+    }
+
+    return ((ACPI_FILE) EfiFile);
 }
 
 
@@ -467,6 +536,18 @@ void
 AcpiOsCloseFile (
     ACPI_FILE               File)
 {
+    EFI_FILE_HANDLE         EfiFile;
+
+
+    if (File == ACPI_FILE_OUT ||
+        File == ACPI_FILE_ERR)
+    {
+        return;
+    }
+    EfiFile = (EFI_FILE_HANDLE) File;
+    (void) uefi_call_wrapper (AcpiGbl_EfiCurrentVolume->Close, 1, EfiFile);
+
+    return;
 }
 
 
@@ -493,7 +574,35 @@ AcpiOsReadFile (
     ACPI_SIZE               Count)
 {
     int                     Length = -1;
+    EFI_FILE_HANDLE         EfiFile;
+    UINTN                   ReadSize;
+    EFI_STATUS              EfiStatus;
 
+
+    if (File == ACPI_FILE_OUT ||
+        File == ACPI_FILE_ERR)
+    {
+    }
+    else
+    {
+        EfiFile = (EFI_FILE_HANDLE) File;
+        if (!EfiFile)
+        {
+            goto ErrorExit;
+        }
+        ReadSize = Size * Count;
+
+        EfiStatus = uefi_call_wrapper (AcpiGbl_EfiCurrentVolume->Read, 3,
+            EfiFile, &ReadSize, Buffer);
+        if (EFI_ERROR (EfiStatus))
+        {
+            AcpiLogError ("EFI_FILE_HANDLE->Read() failure.\n");
+            goto ErrorExit;
+        }
+        Length = ReadSize;
+    }
+
+ErrorExit:
 
     return (Length);
 }
@@ -563,6 +672,9 @@ AcpiOsWriteFile (
     CHAR16                  *End;
     CHAR16                  *Pos;
     int                     i, j;
+    EFI_FILE_HANDLE         EfiFile;
+    UINTN                   WriteSize;
+    EFI_STATUS              EfiStatus;
 
 
     if (File == ACPI_FILE_OUT ||
@@ -591,6 +703,26 @@ AcpiOsWriteFile (
         }
         Pos = AcpiEfiFlushFile (File, String, End, Pos, TRUE);
     }
+    else
+    {
+        EfiFile = (EFI_FILE_HANDLE) File;
+        if (!EfiFile)
+        {
+            goto ErrorExit;
+        }
+        WriteSize = Size * Count;
+
+        EfiStatus = uefi_call_wrapper (AcpiGbl_EfiCurrentVolume->Write, 3,
+            EfiFile, &WriteSize, Buffer);
+        if (EFI_ERROR (EfiStatus))
+        {
+            AcpiLogError ("EFI_FILE_HANDLE->Write() failure.\n");
+            goto ErrorExit;
+        }
+        Length = WriteSize;
+    }
+
+ErrorExit:
 
     return (Length);
 }
@@ -967,6 +1099,7 @@ efi_main (
     int                     argc;
     char                    **argv = NULL;
     char                    *OptBuffer = NULL;
+    EFI_FILE_IO_INTERFACE   *Volume = NULL;
 
 
     /* Initialize EFI library */
@@ -980,6 +1113,20 @@ efi_main (
     if (EFI_ERROR (EfiStatus))
     {
         AcpiLogError ("EFI_BOOT_SERVICES->HandleProtocol(LoadedImageProtocol) failure.\n");
+        return (EfiStatus);
+    }
+    EfiStatus = uefi_call_wrapper (BS->HandleProtocol, 3,
+        Info->DeviceHandle, &FileSystemProtocol, (void **) &Volume);
+    if (EFI_ERROR (EfiStatus))
+    {
+        AcpiLogError ("EFI_BOOT_SERVICES->HandleProtocol(FileSystemProtocol) failure.\n");
+        return (EfiStatus);
+    }
+    EfiStatus = uefi_call_wrapper (Volume->OpenVolume, 2,
+        Volume, &AcpiGbl_EfiCurrentVolume);
+    if (EFI_ERROR (EfiStatus))
+    {
+        AcpiLogError ("EFI_FILE_IO_INTERFACE->OpenVolume() failure.\n");
         return (EfiStatus);
     }
 
