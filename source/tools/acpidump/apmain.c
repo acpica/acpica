@@ -151,7 +151,7 @@ ApDoOptions (
     int                     argc,
     char                    **argv);
 
-static void
+static int
 ApInsertAction (
     char                    *Argument,
     UINT32                  ToBeDone);
@@ -213,13 +213,13 @@ ApDisplayUsage (
  * PARAMETERS:  Argument            - Pointer to the argument for this action
  *              ToBeDone            - What to do to process this action
  *
- * RETURN:      None. Exits program if action table becomes full.
+ * RETURN:      Status
  *
  * DESCRIPTION: Add an action item to the action table
  *
  ******************************************************************************/
 
-static void
+static int
 ApInsertAction (
     char                    *Argument,
     UINT32                  ToBeDone)
@@ -234,8 +234,10 @@ ApInsertAction (
     if (CurrentAction > AP_MAX_ACTIONS)
     {
         fprintf (stderr, "Too many table options (max %u)\n", AP_MAX_ACTIONS);
-        exit (-1);
+        return (-1);
     }
+
+    return (0);
 }
 
 
@@ -282,13 +284,13 @@ ApDoOptions (
     case '?':
 
         ApDisplayUsage ();
-        exit (0);
+        return (1);
 
     case 'o':   /* Redirect output to a single file */
 
         if (ApOpenOutputFile (AcpiGbl_Optarg))
         {
-            exit (-1);
+            return (-1);
         }
         continue;
 
@@ -299,7 +301,7 @@ ApDoOptions (
         {
             fprintf (stderr, "%s: Could not convert to a physical address\n",
                 AcpiGbl_Optarg);
-            exit (-1);
+            return (-1);
         }
         continue;
 
@@ -323,7 +325,7 @@ ApDoOptions (
     case 'v':   /* Revision/version */
 
         printf (ACPI_COMMON_SIGNON (AP_UTILITY_NAME));
-        exit (0);
+        return (1);
 
     case 'z':   /* Verbose mode */
 
@@ -336,30 +338,42 @@ ApDoOptions (
      */
     case 'a':   /* Get table by physical address */
 
-        ApInsertAction (AcpiGbl_Optarg, AP_DUMP_TABLE_BY_ADDRESS);
+        if (ApInsertAction (AcpiGbl_Optarg, AP_DUMP_TABLE_BY_ADDRESS))
+        {
+            return (-1);
+        }
         break;
 
     case 'f':   /* Get table from a file */
 
-        ApInsertAction (AcpiGbl_Optarg, AP_DUMP_TABLE_BY_FILE);
+        if (ApInsertAction (AcpiGbl_Optarg, AP_DUMP_TABLE_BY_FILE))
+        {
+            return (-1);
+        }
         break;
 
     case 'n':   /* Get table by input name (signature) */
 
-        ApInsertAction (AcpiGbl_Optarg, AP_DUMP_TABLE_BY_NAME);
+        if (ApInsertAction (AcpiGbl_Optarg, AP_DUMP_TABLE_BY_NAME))
+        {
+            return (-1);
+        }
         break;
 
     default:
 
         ApDisplayUsage ();
-        exit (-1);
+        return (-1);
     }
 
     /* If there are no actions, this means "get/dump all tables" */
 
     if (CurrentAction == 0)
     {
-        ApInsertAction (NULL, AP_DUMP_ALL_TABLES);
+        if (ApInsertAction (NULL, AP_DUMP_ALL_TABLES))
+        {
+            return (-1);
+        }
     }
 
     return (0);
@@ -394,9 +408,14 @@ main (
 
     /* Process command line options */
 
-    if (ApDoOptions (argc, argv))
+    Status = ApDoOptions (argc, argv);
+    if (Status > 0)
     {
-        return (-1);
+        return (0);
+    }
+    if (Status < 0)
+    {
+        return (Status);
     }
 
     /* Get/dump ACPI table(s) as requested */
