@@ -441,6 +441,11 @@ ACPI_GLOBAL (UINT32,                    AcpiGbl_NumObjects);
 ACPI_INIT_GLOBAL (ACPI_FILE,            AcpiGbl_DebugFile, NULL);
 ACPI_INIT_GLOBAL (ACPI_FILE,            AcpiGbl_OutputFile, NULL);
 
+/* Print buffer */
+
+ACPI_GLOBAL (ACPI_SPINLOCK,             AcpiGbl_PrintLock);     /* For print buffer */
+ACPI_GLOBAL (char,                      AcpiGbl_PrintBuffer[1024]);
+
 #endif /* ACPI_APPLICATION */
 
 

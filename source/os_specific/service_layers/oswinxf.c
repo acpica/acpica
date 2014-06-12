@@ -210,6 +210,7 @@ ACPI_STATUS
 AcpiOsInitialize (
     void)
 {
+    ACPI_STATUS             Status;
     LARGE_INTEGER           LocalTimerFrequency;
 
 
@@ -229,6 +230,12 @@ AcpiOsInitialize (
         /* Frequency is in ticks per second */
 
         TimerFrequency = LocalTimerFrequency.QuadPart;
+    }
+
+    Status = AcpiOsCreateLock (&AcpiGbl_PrintLock);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
     }
 
     return (AE_OK);

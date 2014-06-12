@@ -281,10 +281,19 @@ ACPI_STATUS
 AcpiOsInitialize (
     void)
 {
+    ACPI_STATUS            Status;
+
 
     AcpiGbl_OutputFile = stdout;
 
     OsEnterLineEditMode ();
+
+    Status = AcpiOsCreateLock (&AcpiGbl_PrintLock);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
     return (AE_OK);
 }
 
