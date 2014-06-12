@@ -201,9 +201,10 @@
 #define ACPI_USE_NATIVE_MEMORY_MAPPING
 #endif
 
-/* Example configuration. Hardware disabled */
+/* AcpiNames/Example configuration. Hardware disabled */
 
-#if (defined ACPI_EXAMPLE_APP)
+#if (defined ACPI_EXAMPLE_APP)  || \
+    (defined ACPI_NAMES_APP)
 #define ACPI_REDUCED_HARDWARE 1
 #endif
 
