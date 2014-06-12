@@ -238,7 +238,7 @@ AeDoOptions (
     int                     j;
 
 
-    while ((j = AcpiGetopt (argc, argv, AE_SUPPORTED_OPTIONS)) != EOF) switch (j)
+    while ((j = AcpiGetopt (argc, argv, AE_SUPPORTED_OPTIONS)) != ACPI_OPT_END) switch (j)
     {
     case 'b':
 

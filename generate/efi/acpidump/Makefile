@@ -4,28 +4,27 @@
 
 #
 # Note: This makefile is intended to be used from within the native
-# ACPICA directory structure, from under generate/unix. It specifically
-# places all object files in a generate/unix subdirectory, not within
+# ACPICA directory structure, from under generate/efi. It specifically
+# places all object files in a generate/efi subdirectory, not within
 # the various ACPICA source directories. This prevents collisions
 # between different compilations of the same source file with different
 # compile options, and prevents pollution of the source code.
 #
 include ../Makefile.config
-FINAL_PROG = ../$(BINDIR)/acpidump
 PROG = $(OBJDIR)/acpidump
 
 #
 # Search paths for source files
 #
 vpath %.c \
-    $(ACPIDUMP)\
-    $(ACPICA_TABLES)\
-    $(ACPICA_UTILITIES)\
-    $(ACPICA_COMMON)\
-    $(ACPICA_OSL)
+	$(ACPIDUMP)\
+	$(ACPICA_TABLES)\
+	$(ACPICA_UTILITIES)\
+	$(ACPICA_COMMON)\
+	$(ACPICA_OSL)
 
 HEADERS = \
-    $(wildcard $(ACPIDUMP)/*.h)
+	$(wildcard $(ACPIDUMP)/*.h)
 
 OBJECTS = \
 	$(OBJDIR)/apdump.o\
@@ -33,14 +32,13 @@ OBJECTS = \
 	$(OBJDIR)/apmain.o\
 	$(OBJDIR)/cmfsize.o\
 	$(OBJDIR)/getopt.o\
-	$(OBJDIR)/oslibcfs.o\
-	$(OBJDIR)/osunixdir.o\
-	$(OBJDIR)/osunixmap.o\
-	$(OBJDIR)/osunixxf.o\
+	$(OBJDIR)/osefitbl.o\
+	$(OBJDIR)/osefixf.o\
 	$(OBJDIR)/tbprint.o\
 	$(OBJDIR)/tbxfroot.o\
 	$(OBJDIR)/utbuffer.o\
 	$(OBJDIR)/utdebug.o\
+	$(OBJDIR)/utclib.o\
 	$(OBJDIR)/utexcep.o\
 	$(OBJDIR)/utglobal.o\
 	$(OBJDIR)/utmath.o\
@@ -49,22 +47,11 @@ OBJECTS = \
 	$(OBJDIR)/utxferror.o
 
 #
-# Per-host interfaces
-#
-ifeq ($(HOST), _FreeBSD)
-OBJECTS += \
-	$(OBJDIR)/osfreebsdtbl.o
-else
-OBJECTS += \
-	$(OBJDIR)/oslinuxtbl.o
-endif
-
-#
 # Flags specific to acpidump
 #
 CFLAGS += \
-    -DACPI_DUMP_APP\
-    -I$(ACPIDUMP)
+	-DACPI_DUMP_APP\
+	-I$(ACPIDUMP)
 
 #
 # Common Rules

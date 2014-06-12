@@ -168,7 +168,6 @@ extern const char                       *AcpiGbl_PtDecode[];
 #ifdef ACPI_ASL_COMPILER
 
 #include <stdio.h>
-extern FILE                 *AcpiGbl_OutputFile;
 
 #define ACPI_MSG_REDIRECT_BEGIN \
     FILE                    *OutputFile = AcpiGbl_OutputFile; \
@@ -323,6 +322,11 @@ AcpiUtSubsystemShutdown (
 ACPI_SIZE
 AcpiUtStrlen (
     const char              *String);
+
+char *
+AcpiUtStrchr (
+    const char              *String,
+    int                     ch);
 
 char *
 AcpiUtStrcpy (
@@ -553,6 +557,16 @@ AcpiUtDumpBuffer (
     UINT32                  Count,
     UINT32                  Display,
     UINT32                  Offset);
+
+#ifdef ACPI_APPLICATION
+void
+AcpiUtDumpBufferToFile (
+    ACPI_FILE               File,
+    UINT8                   *Buffer,
+    UINT32                  Count,
+    UINT32                  Display,
+    UINT32                  BaseOffset);
+#endif
 
 void
 AcpiUtReportError (
@@ -1192,5 +1206,46 @@ AcpiAhMatchPredefinedName (
 const AH_DEVICE_ID *
 AcpiAhMatchHardwareId (
     char                    *Hid);
+
+/*
+ * utprint - printf/vprintf output functions
+ */
+const char *
+AcpiUtScanNumber (
+    const char              *String,
+    UINT64                  *NumberPtr);
+
+const char *
+AcpiUtPrintNumber (
+    char                    *String,
+    UINT64                  Number);
+
+int
+AcpiUtVsnprintf (
+    char                    *String,
+    ACPI_SIZE               Size,
+    const char              *Format,
+    va_list                 Args);
+
+int
+AcpiUtSnprintf (
+    char                    *String,
+    ACPI_SIZE               Size,
+    const char              *Format,
+    ...);
+
+#ifdef ACPI_APPLICATION
+int
+AcpiUtFileVprintf (
+    ACPI_FILE               File,
+    const char              *Format,
+    va_list                 Args);
+
+int
+AcpiUtFilePrintf (
+    ACPI_FILE               File,
+    const char              *Format,
+    ...);
+#endif
 
 #endif /* _ACUTILS_H */

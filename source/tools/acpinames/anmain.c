@@ -331,7 +331,7 @@ main (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, AN_SUPPORTED_OPTIONS)) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, AN_SUPPORTED_OPTIONS)) != ACPI_OPT_END) switch(j)
     {
     case 'v': /* -v: (Version): signon already emitted, just exit */
 

@@ -120,7 +120,6 @@
 #ifdef _DECLARE_GLOBALS
 #define EXTERN
 #define INIT_GLOBAL(a,b)        a=b
-#define DEFINE_ACPI_GLOBALS     1
 #else
 #define EXTERN                  extern
 #define INIT_GLOBAL(a,b)        a
@@ -143,7 +142,7 @@ EXTERN BOOLEAN              INIT_GLOBAL (Gbl_VerboseMode, FALSE);
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_BinaryMode, FALSE);
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_DumpCustomizedTables, FALSE);
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_DoNotDumpXsdt, FALSE);
-EXTERN FILE                 INIT_GLOBAL (*Gbl_OutputFile, NULL);
+EXTERN ACPI_FILE            INIT_GLOBAL (Gbl_OutputFile, NULL);
 EXTERN char                 INIT_GLOBAL (*Gbl_OutputFilename, NULL);
 EXTERN UINT64               INIT_GLOBAL (Gbl_RsdpBase, 0);
 

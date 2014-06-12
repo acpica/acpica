@@ -137,7 +137,6 @@
         ACPI_MODULE_NAME    ("osunixxf")
 
 
-FILE                           *AcpiGbl_OutputFile;
 BOOLEAN                        AcpiGbl_DebugTimeout = FALSE;
 
 
@@ -282,10 +281,19 @@ ACPI_STATUS
 AcpiOsInitialize (
     void)
 {
+    ACPI_STATUS            Status;
+
 
     AcpiGbl_OutputFile = stdout;
 
     OsEnterLineEditMode ();
+
+    Status = AcpiOsCreateLock (&AcpiGbl_PrintLock);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
     return (AE_OK);
 }
 
@@ -1566,7 +1574,10 @@ AcpiOsExecute (
     ACPI_OSD_EXEC_CALLBACK  Function,
     void                    *Context)
 {
-    return (AE_SUPPORT);
+
+    Function (Context);
+
+    return (AE_OK);
 }
 
 #endif /* ACPI_SINGLE_THREADED */

@@ -136,7 +136,6 @@
         ACPI_MODULE_NAME    ("oswinxf")
 
 
-FILE                        *AcpiGbl_OutputFile;
 UINT64                      TimerFrequency;
 char                        TableName[ACPI_NAME_SIZE + 1];
 
@@ -211,6 +210,7 @@ ACPI_STATUS
 AcpiOsInitialize (
     void)
 {
+    ACPI_STATUS             Status;
     LARGE_INTEGER           LocalTimerFrequency;
 
 
@@ -230,6 +230,12 @@ AcpiOsInitialize (
         /* Frequency is in ticks per second */
 
         TimerFrequency = LocalTimerFrequency.QuadPart;
+    }
+
+    Status = AcpiOsCreateLock (&AcpiGbl_PrintLock);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
     }
 
     return (AE_OK);
@@ -1599,7 +1605,10 @@ AcpiOsExecute (
     ACPI_OSD_EXEC_CALLBACK  Function,
     void                    *Context)
 {
-    return (AE_SUPPORT);
+
+    Function (Context);
+
+    return (AE_OK);
 }
 
 #endif /* ACPI_SINGLE_THREADED */
