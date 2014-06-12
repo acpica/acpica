@@ -205,7 +205,7 @@ main (
 
     /* Command line options */
 
-    while ((j = AcpiGetopt (argc, argv, AX_SUPPORTED_OPTIONS)) != EOF) switch (j)
+    while ((j = AcpiGetopt (argc, argv, AX_SUPPORTED_OPTIONS)) != ACPI_OPT_END) switch (j)
     {
     case 'a':
 

@@ -324,6 +324,11 @@ AcpiUtStrlen (
     const char              *String);
 
 char *
+AcpiUtStrchr (
+    const char              *String,
+    int                     ch);
+
+char *
 AcpiUtStrcpy (
     char                    *DstString,
     const char              *SrcString);

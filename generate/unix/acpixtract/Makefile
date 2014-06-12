@@ -30,8 +30,14 @@ OBJECTS = \
     $(OBJDIR)/acpixtract.o\
     $(OBJDIR)/axmain.o\
     $(OBJDIR)/getopt.o\
+    $(OBJDIR)/oslibcfs.o\
     $(OBJDIR)/osunixxf.o\
-    $(OBJDIR)/utglobal.o
+    $(OBJDIR)/utdebug.o\
+    $(OBJDIR)/utexcep.o\
+    $(OBJDIR)/utglobal.o\
+    $(OBJDIR)/utmath.o\
+    $(OBJDIR)/utprint.o\
+    $(OBJDIR)/utxferror.o
 
 #
 # Flags specific to acpixtract

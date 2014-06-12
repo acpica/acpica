@@ -36,10 +36,14 @@ OBJECTS = \
 	$(OBJDIR)/ahpredef.o\
 	$(OBJDIR)/ahmain.o\
 	$(OBJDIR)/getopt.o\
+	$(OBJDIR)/oslibcfs.o\
 	$(OBJDIR)/osunixxf.o\
+	$(OBJDIR)/utdebug.o\
 	$(OBJDIR)/utexcep.o\
 	$(OBJDIR)/utglobal.o\
-	$(OBJDIR)/utpredef.o
+	$(OBJDIR)/utmath.o\
+	$(OBJDIR)/utpredef.o\
+	$(OBJDIR)/utprint.o
 
 #
 # Flags specific to acpihelp
