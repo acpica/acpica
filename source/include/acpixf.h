@@ -415,6 +415,24 @@ ACPI_GLOBAL (BOOLEAN,               AcpiGbl_SystemAwakeAndRunning);
 #endif /* ACPI_DEBUG_OUTPUT */
 
 
+/*
+ * Application prototypes
+ *
+ * All interfaces used by application will be configured
+ * out of the ACPICA build unless the ACPI_APPLICATION
+ * flag is defined.
+ */
+#ifdef ACPI_APPLICATION
+#define ACPI_APP_DEPENDENT_RETURN_VOID(Prototype) \
+    Prototype;
+
+#else
+#define ACPI_APP_DEPENDENT_RETURN_VOID(Prototype) \
+    static ACPI_INLINE Prototype {return;}
+
+#endif /* ACPI_APPLICATION */
+
+
 /*****************************************************************************
  *
  * ACPICA public interface prototypes
@@ -1214,6 +1232,13 @@ AcpiDebugPrintRaw (
     const char              *FunctionName,
     const char              *ModuleName,
     UINT32                  ComponentId,
+    const char              *Format,
+    ...))
+
+ACPI_APP_DEPENDENT_RETURN_VOID (
+ACPI_PRINTF_LIKE(1)
+void ACPI_INTERNAL_VAR_XFACE
+AcpiLogError (
     const char              *Format,
     ...))
 

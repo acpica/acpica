@@ -69,6 +69,7 @@ OBJECTS = \
 	$(OBJDIR)/nsxfeval.o\
 	$(OBJDIR)/nsxfname.o\
 	$(OBJDIR)/nsxfobj.o\
+	$(OBJDIR)/oslibcfs.o\
 	$(OBJDIR)/osunixxf.o\
 	$(OBJDIR)/psargs.o\
 	$(OBJDIR)/psloop.o\
@@ -111,6 +112,7 @@ OBJECTS = \
 	$(OBJDIR)/utobject.o\
 	$(OBJDIR)/utosi.o\
 	$(OBJDIR)/utownerid.o\
+	$(OBJDIR)/utprint.o\
 	$(OBJDIR)/utstate.o\
 	$(OBJDIR)/utstring.o\
 	$(OBJDIR)/utxface.o\
