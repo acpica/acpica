@@ -473,7 +473,8 @@ AcpiGetEventStatus (
 
     if (InByte)
     {
-        LocalEventStatus |= ACPI_EVENT_FLAG_ENABLED;
+        LocalEventStatus |=
+            (ACPI_EVENT_FLAG_ENABLED | ACPI_EVENT_FLAG_ENABLE_SET);
     }
 
     /* Fixed event currently active? */
@@ -487,7 +488,7 @@ AcpiGetEventStatus (
 
     if (InByte)
     {
-        LocalEventStatus |= ACPI_EVENT_FLAG_SET;
+        LocalEventStatus |= ACPI_EVENT_FLAG_STATUS_SET;
     }
 
     (*EventStatus) = LocalEventStatus;
