@@ -188,6 +188,11 @@ AcpiEvEnableGpe (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 ACPI_STATUS
+AcpiEvMaskGpe (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    BOOLEAN                 IsMasked);
+
+ACPI_STATUS
 AcpiEvAddGpeReference (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
