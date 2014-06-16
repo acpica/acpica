@@ -1103,6 +1103,17 @@ AcpiRemoveGpeHandler (
     Handler = GpeEventInfo->Dispatch.Handler;
     GpeEventInfo->Dispatch.Handler = NULL;
 
+    /*
+     * Disallow forced enabling/disabling when the GPE cannot be
+     * dispatched again.
+     */
+    if ((GpeEventInfo->Flags & ACPI_GPE_FORCE_FLAG_MASK) &&
+        ((Handler->OriginalFlags & ACPI_GPE_DISPATCH_MASK) ==
+            ACPI_GPE_DISPATCH_NONE))
+    {
+        AcpiEvForceGpe (GpeEventInfo, ACPI_GPE_RESET_FORCE_FLAGS);
+    }
+
     /* Restore Method node (if any), set dispatch flags */
 
     GpeEventInfo->Dispatch.MethodNode = Handler->MethodNode;
