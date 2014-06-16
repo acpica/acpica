@@ -238,6 +238,7 @@ UINT32
 AcpiEvGpeDispatch (
     ACPI_NAMESPACE_NODE     *GpeDevice,
     ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    ACPI_GPE_HANDLER_INFO   *GpeHandlerInfo,
     UINT32                  GpeNumber);
 
 

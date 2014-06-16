@@ -975,6 +975,7 @@ AcpiInstallGpeHandler (
     Handler->MethodNode = GpeEventInfo->Dispatch.MethodNode;
     Handler->OriginalFlags = (UINT8) (GpeEventInfo->Flags &
         (ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_DISPATCH_MASK));
+    Handler->ReferenceCount = 0;
 
     /*
      * If the GPE is associated with a method, it may have been enabled
@@ -1095,6 +1096,7 @@ AcpiRemoveGpeHandler (
     /* Remove the handler */
 
     Handler = GpeEventInfo->Dispatch.Handler;
+    GpeEventInfo->Dispatch.Handler = NULL;
 
     /* Restore Method node (if any), set dispatch flags */
 
@@ -1114,6 +1116,19 @@ AcpiRemoveGpeHandler (
     {
         (void) AcpiEvAddGpeReference (GpeEventInfo);
     }
+
+#ifndef ACPI_SINGLE_THREADED
+
+    /* Make sure all GPE handlers are completed */
+
+    while (Handler->ReferenceCount != 0)
+    {
+        AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
+        AcpiOsSleep ((UINT64) 10);
+        Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
+    }
+
+#endif
 
     AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
     (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);

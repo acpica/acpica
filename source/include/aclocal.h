@@ -544,6 +544,7 @@ typedef struct acpi_gpe_handler_info
     ACPI_NAMESPACE_NODE             *MethodNode;    /* Method node for this GPE level (saved) */
     UINT8                           OriginalFlags;  /* Original (pre-handler) GPE info */
     BOOLEAN                         OriginallyEnabled; /* True if GPE was originally enabled */
+    UINT16                          ReferenceCount; /* For deletion management */
 
 } ACPI_GPE_HANDLER_INFO;
 
