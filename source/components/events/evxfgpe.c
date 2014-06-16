@@ -223,7 +223,7 @@ AcpiEnableGpe (
         if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) !=
             ACPI_GPE_DISPATCH_NONE)
         {
-            Status = AcpiEvAddGpeReference (GpeEventInfo);
+            Status = AcpiEvAddGpeReference (GpeEventInfo, TRUE);
         }
         else
         {
@@ -236,6 +236,60 @@ AcpiEnableGpe (
 }
 
 ACPI_EXPORT_SYMBOL (AcpiEnableGpe)
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEnableGpeRaw
+ *
+ * PARAMETERS:  GpeDevice           - Parent GPE Device. NULL for GPE0/GPE1
+ *              GpeNumber           - GPE level within the GPE block
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Add a reference to a GPE. On the first reference, the GPE is
+ *              hardware-enabled.
+ *              The AcpiEnableGpe() is used for the first-time GPE enabling
+ *              where the stale events are discarded. While this API is meant
+ *              to be used by the "raw GPE handler mode" scenarios where the
+ *              events should be cleared by the GPE drivers.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEnableGpeRaw (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber)
+{
+    ACPI_STATUS             Status = AE_BAD_PARAMETER;
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo;
+    ACPI_CPU_FLAGS          Flags;
+
+
+    ACPI_FUNCTION_TRACE (AcpiEnableGpeRaw);
+
+
+    Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
+
+    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeDevice, GpeNumber);
+    if (GpeEventInfo)
+    {
+        if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) !=
+            ACPI_GPE_DISPATCH_NONE)
+        {
+            Status = AcpiEvAddGpeReference (GpeEventInfo, FALSE);
+        }
+        else
+        {
+            Status = AE_NO_HANDLER;
+        }
+    }
+
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiEnableGpeRaw)
 
 
 /*******************************************************************************

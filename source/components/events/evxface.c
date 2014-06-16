@@ -901,7 +901,9 @@ ACPI_EXPORT_SYMBOL (AcpiRemoveFixedEventHandler)
  *                                defined GPEs)
  *              GpeNumber       - The GPE number within the GPE block
  *              Type            - Whether this GPE should be treated as an
- *                                edge- or level-triggered interrupt.
+ *                                edge- or level-triggered interrupt, and
+ *                                whether this GPE should be handled using
+ *                                the raw GPE handler mode.
  *              Address         - Address of the handler
  *              Context         - Value passed to the handler on each GPE
  *
@@ -930,7 +932,8 @@ AcpiInstallGpeHandler (
 
     /* Parameter validation */
 
-    if ((!Address) || (Type & ~ACPI_GPE_XRUPT_TYPE_MASK))
+    if ((!Address) ||
+        (Type & ~(ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_RAW_HANDLER)))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -990,7 +993,8 @@ AcpiInstallGpeHandler (
 
         /* Sanity check of original type against new type */
 
-        if (Type != (UINT32) (GpeEventInfo->Flags & ACPI_GPE_XRUPT_TYPE_MASK))
+        if ((Type & ACPI_GPE_XRUPT_TYPE_MASK) !=
+            (UINT32) (GpeEventInfo->Flags & ACPI_GPE_XRUPT_TYPE_MASK))
         {
             ACPI_WARNING ((AE_INFO, "GPE type mismatch (level/edge)"));
         }
@@ -1092,6 +1096,14 @@ AcpiRemoveGpeHandler (
         goto UnlockAndExit;
     }
 
+    /* Clearing software "status" indication for re-enabling */
+
+    if (GpeEventInfo->Flags & ACPI_GPE_RAW_HANDLER)
+    {
+        AcpiEvClearGpeStatus (GpeEventInfo);
+        GpeEventInfo->Flags &= ~ACPI_GPE_RAW_HANDLER;
+    }
+
     /* Remove the handler */
 
     Handler = GpeEventInfo->Dispatch.Handler;
@@ -1112,7 +1124,9 @@ AcpiRemoveGpeHandler (
          (Handler->OriginalFlags & ACPI_GPE_DISPATCH_NOTIFY)) &&
         Handler->OriginallyEnabled)
     {
-        (void) AcpiEvAddGpeReference (GpeEventInfo);
+        /* Clearing hardware "status" indication for re-enabling */
+
+        (void) AcpiEvAddGpeReference (GpeEventInfo, TRUE);
     }
 
     AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);

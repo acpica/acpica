@@ -818,14 +818,15 @@ typedef UINT32                          ACPI_EVENT_STATUS;
 
 /*
  * GPE info flags - Per GPE
- * +-------+-+-+---+
- * |  7:4  |3|2|1:0|
- * +-------+-+-+---+
- *     |    | |  |
- *     |    | |  +-- Type of dispatch:to method, handler, notify, or none
- *     |    | +----- Interrupt type: edge or level triggered
- *     |    +------- Is a Wake GPE
- *     +------------ <Reserved>
+ * +-------+-+-+-+---+
+ * |  7:5  |4|3|2|1:0|
+ * +-------+-+-+-+---+
+ *     |    | | |  |
+ *     |    | | |  +-- Type of dispatch:to method, handler, notify, or none
+ *     |    | | +----- Interrupt type: edge or level triggered
+ *     |    | +------- Allow driver to full control GPE handling
+ *     |    +--------- Is a Wake GPE
+ *     +-------------- <Reserved>
  */
 #define ACPI_GPE_DISPATCH_NONE          (UINT8) 0x00
 #define ACPI_GPE_DISPATCH_METHOD        (UINT8) 0x01
@@ -833,11 +834,18 @@ typedef UINT32                          ACPI_EVENT_STATUS;
 #define ACPI_GPE_DISPATCH_NOTIFY        (UINT8) 0x03
 #define ACPI_GPE_DISPATCH_MASK          (UINT8) 0x03
 
+/*
+ * Flags used to install a GPE handler
+ */
 #define ACPI_GPE_LEVEL_TRIGGERED        (UINT8) 0x04
 #define ACPI_GPE_EDGE_TRIGGERED         (UINT8) 0x00
 #define ACPI_GPE_XRUPT_TYPE_MASK        (UINT8) 0x04
+#define ACPI_GPE_RAW_HANDLER            (UINT8) 0x08
 
-#define ACPI_GPE_CAN_WAKE               (UINT8) 0x08
+/*
+ * Flag set by wakeup GPE setup APIs
+ */
+#define ACPI_GPE_CAN_WAKE               (UINT8) 0x10
 
 /*
  * Flags for GPE and Lock interfaces

@@ -898,6 +898,12 @@ AcpiEnableGpe (
 
 ACPI_HW_DEPENDENT_RETURN_STATUS (
 ACPI_STATUS
+AcpiEnableGpeRaw (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber))
+
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
 AcpiDisableGpe (
     ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber))

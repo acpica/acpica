@@ -592,6 +592,7 @@ typedef struct acpi_gpe_register_info
     UINT16                          BaseGpeNumber;  /* Base GPE number for this register */
     UINT8                           EnableForWake;  /* GPEs to keep enabled when sleeping */
     UINT8                           EnableForRun;   /* GPEs to keep enabled when running */
+    UINT8                           RawStatusByte;  /* Track of status reg for raw handlers */
 
 } ACPI_GPE_REGISTER_INFO;
 
