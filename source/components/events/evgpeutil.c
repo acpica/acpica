@@ -434,7 +434,7 @@ AcpiEvDeleteGpeHandlers (
             GpeEventInfo = &GpeBlock->EventInfo[((ACPI_SIZE) i *
                 ACPI_GPE_REGISTER_WIDTH) + j];
 
-            if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
+            if (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) ==
                     ACPI_GPE_DISPATCH_HANDLER)
             {
                 /* Delete an installed handler block */
@@ -443,7 +443,7 @@ AcpiEvDeleteGpeHandlers (
                 GpeEventInfo->Dispatch.Handler = NULL;
                 GpeEventInfo->Flags &= ~ACPI_GPE_DISPATCH_MASK;
             }
-            else if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
+            else if (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) ==
                     ACPI_GPE_DISPATCH_NOTIFY)
             {
                 /* Delete the implicit notification device list */

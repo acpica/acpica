@@ -324,7 +324,7 @@ AcpiHwGetGpeStatus (
 
     /* GPE currently handled? */
 
-    if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) !=
+    if (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) !=
             ACPI_GPE_DISPATCH_NONE)
     {
         LocalEventStatus |= ACPI_EVENT_FLAG_HAS_HANDLER;

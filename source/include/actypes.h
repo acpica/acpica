@@ -836,6 +836,7 @@ typedef UINT32                          ACPI_EVENT_STATUS;
 #define ACPI_GPE_DISPATCH_HANDLER       (UINT8) 0x02
 #define ACPI_GPE_DISPATCH_NOTIFY        (UINT8) 0x03
 #define ACPI_GPE_DISPATCH_MASK          (UINT8) 0x03
+#define ACPI_GPE_DISPATCH_TYPE(flags)   ((UINT8) ((flags) & ACPI_GPE_DISPATCH_MASK))
 
 #define ACPI_GPE_LEVEL_TRIGGERED        (UINT8) 0x04
 #define ACPI_GPE_EDGE_TRIGGERED         (UINT8) 0x00

@@ -219,7 +219,7 @@ AcpiEnableGpe (
     GpeEventInfo = AcpiEvGetGpeEventInfo (GpeDevice, GpeNumber);
     if (GpeEventInfo)
     {
-        if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) !=
+        if (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) !=
             ACPI_GPE_DISPATCH_NONE)
         {
             Status = AcpiEvAddGpeReference (GpeEventInfo);
@@ -511,7 +511,7 @@ AcpiSetupGpeForWake (
      * known as an "implicit notify". Note: The GPE is assumed to be
      * level-triggered (for windows compatibility).
      */
-    if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
+    if (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) ==
             ACPI_GPE_DISPATCH_NONE)
     {
         /*
@@ -526,7 +526,7 @@ AcpiSetupGpeForWake (
      * If we already have an implicit notify on this GPE, add
      * this device to the notify list.
      */
-    if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
+    if (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) ==
             ACPI_GPE_DISPATCH_NOTIFY)
     {
         /* Ensure that the device is not already in the list */

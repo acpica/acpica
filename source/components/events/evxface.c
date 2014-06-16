@@ -962,7 +962,7 @@ AcpiInstallGpeHandler (
 
     /* Make sure that there isn't a handler there already */
 
-    if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
+    if (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) ==
             ACPI_GPE_DISPATCH_HANDLER)
     {
         Status = AE_ALREADY_EXISTS;
@@ -980,8 +980,10 @@ AcpiInstallGpeHandler (
      * automatically during initialization, in which case it has to be
      * disabled now to avoid spurious execution of the handler.
      */
-    if (((Handler->OriginalFlags & ACPI_GPE_DISPATCH_METHOD) ||
-         (Handler->OriginalFlags & ACPI_GPE_DISPATCH_NOTIFY)) &&
+    if (((ACPI_GPE_DISPATCH_TYPE (Handler->OriginalFlags) ==
+            ACPI_GPE_DISPATCH_METHOD) ||
+         (ACPI_GPE_DISPATCH_TYPE (Handler->OriginalFlags) ==
+            ACPI_GPE_DISPATCH_NOTIFY)) &&
         GpeEventInfo->RuntimeCount)
     {
         Handler->OriginallyEnabled = TRUE;
@@ -1076,7 +1078,7 @@ AcpiRemoveGpeHandler (
 
     /* Make sure that a handler is indeed installed */
 
-    if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) !=
+    if (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) !=
             ACPI_GPE_DISPATCH_HANDLER)
     {
         Status = AE_NOT_EXIST;
@@ -1108,8 +1110,10 @@ AcpiRemoveGpeHandler (
      * enabled, it should be enabled at this point to restore the
      * post-initialization configuration.
      */
-    if (((Handler->OriginalFlags & ACPI_GPE_DISPATCH_METHOD) ||
-         (Handler->OriginalFlags & ACPI_GPE_DISPATCH_NOTIFY)) &&
+    if (((ACPI_GPE_DISPATCH_TYPE (Handler->OriginalFlags) ==
+            ACPI_GPE_DISPATCH_METHOD) ||
+         (ACPI_GPE_DISPATCH_TYPE (Handler->OriginalFlags) ==
+            ACPI_GPE_DISPATCH_NOTIFY)) &&
         Handler->OriginallyEnabled)
     {
         (void) AcpiEvAddGpeReference (GpeEventInfo);

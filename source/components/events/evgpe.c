@@ -614,7 +614,7 @@ AcpiEvAsynchExecuteGpeMethod (
 
     /* Do the correct dispatch - normal method or implicit notify */
 
-    switch (GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK)
+    switch (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags))
     {
     case ACPI_GPE_DISPATCH_NOTIFY:
         /*
@@ -834,7 +834,7 @@ AcpiEvGpeDispatch (
      * If there is neither a handler nor a method, leave the GPE
      * disabled.
      */
-    switch (GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK)
+    switch (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags))
     {
     case ACPI_GPE_DISPATCH_HANDLER:
 
