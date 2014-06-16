@@ -263,6 +263,119 @@ AcpiEvEnableGpe (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiEvForceGpe
+ *
+ * PARAMETERS:  GpeEventInfo            - GPE to force enabling/disabling
+ *              Action                  - ACPI_GPE_ENABLE, ACPI_GPE_DISABLE or
+ *                                        ACPI_GPE_RESET_FORCE_FLAGS
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Unconditionally enable or disable an individual GPE.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEvForceGpe (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    UINT8                   Action)
+{
+    ACPI_STATUS             Status;
+    ACPI_EVENT_STATUS       EventStatus;
+
+
+    ACPI_FUNCTION_TRACE (AcpiEvGpe);
+
+
+    /* Do not allow unless the GPE can be dispatched */
+
+    if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
+        ACPI_GPE_DISPATCH_NONE)
+    {
+        return_ACPI_STATUS (AE_NO_HANDLER);
+    }
+
+    /* Perform the action */
+
+    switch (Action)
+    {
+    case ACPI_GPE_ENABLE:
+    case ACPI_GPE_DISABLE:
+
+        if (!(GpeEventInfo->Flags & ACPI_GPE_FORCE_FLAG_MASK))
+        {
+            Status = AcpiHwGetGpeStatus (GpeEventInfo, &EventStatus);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+            if (EventStatus & ACPI_EVENT_FLAG_ENABLE_SET)
+            {
+                GpeEventInfo->ExpectEnabled = TRUE;
+            }
+            else
+            {
+                GpeEventInfo->ExpectEnabled = FALSE;
+            }
+        }
+
+        /* Reset flags so that AcpiHwLowSetGpe() can take effective */
+
+        GpeEventInfo->Flags &= ~ACPI_GPE_FORCE_FLAG_MASK;
+        if (Action == ACPI_GPE_ENABLE)
+        {
+            /*
+             * Peform ACK and ENABLE to discard stale events, this action
+             * might be required by some quirks.
+             */
+            (void) AcpiHwClearGpe (GpeEventInfo);
+            (void) AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_ENABLE);
+            GpeEventInfo->Flags |= ACPI_GPE_FORCE_ENABLE;
+        }
+        else
+        {
+            (void) AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_DISABLE);
+            GpeEventInfo->Flags |= ACPI_GPE_FORCE_DISABLE;
+        }
+        break;
+
+    case ACPI_GPE_RESET_FORCE_FLAGS:
+
+        if (!(GpeEventInfo->Flags & ACPI_GPE_FORCE_FLAG_MASK))
+        {
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+        }
+
+        /* Reset flags so that AcpiHwLowSetGpe() can take effective */
+
+        GpeEventInfo->Flags &= ~ACPI_GPE_FORCE_FLAG_MASK;
+        if (GpeEventInfo->ExpectEnabled)
+        {
+            /*
+             * Peform ACK and ENABLE to discard stale events, this action
+             * might be required by some quirks.
+             */
+            (void) AcpiHwClearGpe (GpeEventInfo);
+            (void) AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_ENABLE);
+        }
+        else
+        {
+            (void) AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_DISABLE);
+        }
+        GpeEventInfo->ExpectEnabled = FALSE;
+        break;
+
+    default:
+
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiEvAddGpeReference
  *
  * PARAMETERS:  GpeEventInfo            - Add a reference to this GPE

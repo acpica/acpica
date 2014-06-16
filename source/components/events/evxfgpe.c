@@ -384,6 +384,62 @@ ACPI_EXPORT_SYMBOL (AcpiSetGpe)
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiForceGpe
+ *
+ * PARAMETERS:  GpeDevice           - Parent GPE Device. NULL for GPE0/GPE1
+ *              GpeNumber           - GPE level within the GPE block
+ *              Action              - ACPI_GPE_ENABLE, ACPI_GPE_DISABLE or
+ *                                    ACPI_GPE_RESET_FORCE_FLAGS
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Unconditionally enable or disable an individual GPE. After
+ *              invoking this function with ACPI_GPE_ENABLE/ACPI_GPE_DISABLE,
+ *              all GPE enabling/disabling operations will be bypassed until
+ *              invoking this function again with ACPI_GPE_RESET_FORCE_FLAGS.
+ *              This API is typically used by the system manager to switch the
+ *              GPE enabling status out side of the drivers' control, thus this
+ *              is normally used for the debugging purposes.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiForceGpe (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber,
+    UINT8                   Action)
+{
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo;
+    ACPI_STATUS             Status;
+    ACPI_CPU_FLAGS          Flags;
+
+
+    ACPI_FUNCTION_TRACE (AcpiForceGpe);
+
+
+    Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
+
+    /* Ensure that we have a valid GPE number */
+
+    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeDevice, GpeNumber);
+    if (!GpeEventInfo)
+    {
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
+    }
+
+    Status = AcpiEvForceGpe (GpeEventInfo, Action);
+
+UnlockAndExit:
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiForceGpe)
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiMarkGpeForWake
  *
  * PARAMETERS:  GpeDevice           - Parent GPE Device. NULL for GPE0/GPE1

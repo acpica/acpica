@@ -192,6 +192,11 @@ AcpiEvEnableGpe (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 ACPI_STATUS
+AcpiEvForceGpe (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    UINT8                   Action);
+
+ACPI_STATUS
 AcpiEvAddGpeReference (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
