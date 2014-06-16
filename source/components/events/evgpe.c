@@ -203,18 +203,6 @@ AcpiEvEnableGpe (
     ACPI_FUNCTION_TRACE (EvEnableGpe);
 
 
-    /*
-     * We will only allow a GPE to be enabled if it has either an associated
-     * method (_Lxx/_Exx) or a handler, or is using the implicit notify
-     * feature. Otherwise, the GPE will be immediately disabled by
-     * AcpiEvGpeDispatch the first time it fires.
-     */
-    if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
-        ACPI_GPE_DISPATCH_NONE)
-    {
-        return_ACPI_STATUS (AE_NO_HANDLER);
-    }
-
     /* Clear the GPE (of stale events) */
 
     Status = AcpiHwClearGpe (GpeEventInfo);
