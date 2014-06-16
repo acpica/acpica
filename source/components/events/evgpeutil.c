@@ -434,8 +434,10 @@ AcpiEvDeleteGpeHandlers (
             GpeEventInfo = &GpeBlock->EventInfo[((ACPI_SIZE) i *
                 ACPI_GPE_REGISTER_WIDTH) + j];
 
-            if (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) ==
-                    ACPI_GPE_DISPATCH_HANDLER)
+            if ((ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) ==
+                    ACPI_GPE_DISPATCH_HANDLER) ||
+                (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) ==
+                    ACPI_GPE_DISPATCH_RAW_HANDLER))
             {
                 /* Delete an installed handler block */
 

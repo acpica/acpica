@@ -592,6 +592,7 @@ AcpiEvInitializeGpeBlock (
              */
             if ((ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) == ACPI_GPE_DISPATCH_NONE) ||
                 (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) == ACPI_GPE_DISPATCH_HANDLER) ||
+                (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) == ACPI_GPE_DISPATCH_RAW_HANDLER) ||
                 (GpeEventInfo->Flags & ACPI_GPE_CAN_WAKE))
             {
                 continue;

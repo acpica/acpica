@@ -447,6 +447,7 @@ AcpiEvGpeDetect (
     ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
     UINT32                  GpeNumber;
+    ACPI_GPE_HANDLER_INFO   *GpeHandlerInfo;
     UINT32                  IntStatus = ACPI_INTERRUPT_NOT_HANDLED;
     UINT8                   EnabledStatusByte;
     UINT32                  StatusReg;
@@ -563,12 +564,39 @@ AcpiEvGpeDetect (
                             AcpiGbl_GlobalEventHandlerContext);
                     }
 
-                    /*
-                     * Found an active GPE. Dispatch the event to a handler
-                     * or method.
-                     */
-                    IntStatus |= AcpiEvGpeDispatch (GpeDevice,
-                        GpeEventInfo, GpeNumber);
+                    /* Found an active GPE */
+
+                    if (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) ==
+                        ACPI_GPE_DISPATCH_RAW_HANDLER)
+                    {
+                        /* Dispatch the event to a raw handler */
+
+                        GpeHandlerInfo = GpeEventInfo->Dispatch.Handler;
+
+                        /*
+                         * There is no protection around the namespace node
+                         * and the GPE handler to ensure a safe destruction
+                         * because:
+                         * 1. The namespace node is expected to always
+                         *    exist after loading a table.
+                         * 2. The GPE handler is expected to be flushed by
+                         *    AcpiOsWaitEventsComplete() before the
+                         *    destruction.
+                         */
+                        AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
+                        IntStatus |= GpeHandlerInfo->Address (
+                            GpeDevice, GpeNumber, GpeHandlerInfo->Context);
+                        Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
+                    }
+                    else
+                    {
+                        /*
+                         * Dispatch the event to a standard handler or
+                         * method.
+                         */
+                        IntStatus |= AcpiEvGpeDispatch (GpeDevice,
+                            GpeEventInfo, GpeNumber);
+                    }
                 }
             }
         }

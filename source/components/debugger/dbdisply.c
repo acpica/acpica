@@ -1034,6 +1034,11 @@ AcpiDbDisplayGpes (
                         AcpiOsPrintf ("Implicit Notify on %u devices", Count);
                         break;
 
+                    case ACPI_GPE_DISPATCH_RAW_HANDLER:
+
+                        AcpiOsPrintf ("RawHandler");
+                        break;
+
                     default:
 
                         AcpiOsPrintf ("UNKNOWN: %X",

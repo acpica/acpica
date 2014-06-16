@@ -776,6 +776,15 @@ AcpiInstallGpeHandler (
 
 ACPI_HW_DEPENDENT_RETURN_STATUS (
 ACPI_STATUS
+AcpiInstallGpeRawHandler (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber,
+    UINT32                  Type,
+    ACPI_GPE_HANDLER        Address,
+    void                    *Context))
+
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
 AcpiRemoveGpeHandler (
     ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,

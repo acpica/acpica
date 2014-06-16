@@ -491,8 +491,10 @@ AcpiEvMatchGpeMethod (
         return_ACPI_STATUS (AE_OK);
     }
 
-    if (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) ==
-            ACPI_GPE_DISPATCH_HANDLER)
+    if ((ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) ==
+            ACPI_GPE_DISPATCH_HANDLER) ||
+        (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) ==
+            ACPI_GPE_DISPATCH_RAW_HANDLER))
     {
         /* If there is already a handler, ignore this GPE method */
 
