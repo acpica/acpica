@@ -1133,10 +1133,6 @@ AcpiRemoveGpeHandler (
     AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
     (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
 
-    /* Make sure all deferred GPE tasks are completed */
-
-    AcpiOsWaitEventsComplete ();
-
     /* Now we can free the handler object */
 
     ACPI_FREE (Handler);
