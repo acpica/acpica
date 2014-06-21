@@ -191,27 +191,28 @@ AcpiUtDumpBuffer (
             case DB_BYTE_DISPLAY:
             default:    /* Default is BYTE display */
 
-                AcpiOsPrintf ("%02X ", Buffer[(ACPI_SIZE) i + j]);
+                BufChar = ACPI_DECODE8 (&Buffer[(ACPI_SIZE) i + j]);
+                AcpiOsPrintf ("%02X ", BufChar);
                 break;
 
             case DB_WORD_DISPLAY:
 
-                ACPI_MOVE_16_TO_32 (&Temp32, &Buffer[(ACPI_SIZE) i + j]);
+                Temp32 = ACPI_DECODE16 (&Buffer[(ACPI_SIZE) i + j]);
                 AcpiOsPrintf ("%04X ", Temp32);
                 break;
 
             case DB_DWORD_DISPLAY:
 
-                ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[(ACPI_SIZE) i + j]);
+                Temp32 = ACPI_DECODE32 (&Buffer[(ACPI_SIZE) i + j]);
                 AcpiOsPrintf ("%08X ", Temp32);
                 break;
 
             case DB_QWORD_DISPLAY:
 
-                ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[(ACPI_SIZE) i + j]);
+                Temp32 = ACPI_DECODE32 (&Buffer[(ACPI_SIZE) i + j]);
                 AcpiOsPrintf ("%08X", Temp32);
 
-                ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[(ACPI_SIZE) i + j + 4]);
+                Temp32 = ACPI_DECODE32 (&Buffer[(ACPI_SIZE) i + j + 4]);
                 AcpiOsPrintf ("%08X ", Temp32);
                 break;
             }
@@ -232,7 +233,7 @@ AcpiUtDumpBuffer (
                 return;
             }
 
-            BufChar = Buffer[(ACPI_SIZE) i + j];
+            BufChar = ACPI_DECODE8 (&Buffer[(ACPI_SIZE) i + j]);
             if (ACPI_IS_PRINT (BufChar))
             {
                 AcpiOsPrintf ("%c", BufChar);
@@ -364,27 +365,28 @@ AcpiUtDumpBufferToFile (
             case DB_BYTE_DISPLAY:
             default:    /* Default is BYTE display */
 
-                AcpiUtFilePrintf (File, "%02X ", Buffer[(ACPI_SIZE) i + j]);
+                BufChar = ACPI_DECODE8 (&Buffer[(ACPI_SIZE) i + j]);
+                AcpiUtFilePrintf (File, "%02X ", BufChar);
                 break;
 
             case DB_WORD_DISPLAY:
 
-                ACPI_MOVE_16_TO_32 (&Temp32, &Buffer[(ACPI_SIZE) i + j]);
+                Temp32 = ACPI_DECODE16 (&Buffer[(ACPI_SIZE) i + j]);
                 AcpiUtFilePrintf (File, "%04X ", Temp32);
                 break;
 
             case DB_DWORD_DISPLAY:
 
-                ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[(ACPI_SIZE) i + j]);
+                Temp32 = ACPI_DECODE32 (&Buffer[(ACPI_SIZE) i + j]);
                 AcpiUtFilePrintf (File, "%08X ", Temp32);
                 break;
 
             case DB_QWORD_DISPLAY:
 
-                ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[(ACPI_SIZE) i + j]);
+                Temp32 = ACPI_DECODE32 (&Buffer[(ACPI_SIZE) i + j]);
                 AcpiUtFilePrintf (File, "%08X", Temp32);
 
-                ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[(ACPI_SIZE) i + j + 4]);
+                Temp32 = ACPI_DECODE32 (&Buffer[(ACPI_SIZE) i + j + 4]);
                 AcpiUtFilePrintf (File, "%08X ", Temp32);
                 break;
             }
@@ -405,7 +407,7 @@ AcpiUtDumpBufferToFile (
                 return;
             }
 
-            BufChar = Buffer[(ACPI_SIZE) i + j];
+            BufChar = ACPI_DECODE8 (&Buffer[(ACPI_SIZE) i + j]);
             if (ACPI_IS_PRINT (BufChar))
             {
                 AcpiUtFilePrintf (File, "%c", BufChar);

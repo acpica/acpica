@@ -691,20 +691,20 @@ AcpiDecodePldBuffer (
 
     /* First 32-bit DWord */
 
-    ACPI_MOVE_32_TO_32 (&Dword, &Buffer[0]);
+    Dword = ACPI_DECODE32 (&Buffer[0]);
     PldInfo->Revision =             ACPI_PLD_GET_REVISION (&Dword);
     PldInfo->IgnoreColor =          ACPI_PLD_GET_IGNORE_COLOR (&Dword);
     PldInfo->Color =                ACPI_PLD_GET_COLOR (&Dword);
 
     /* Second 32-bit DWord */
 
-    ACPI_MOVE_32_TO_32 (&Dword, &Buffer[1]);
+    Dword = ACPI_DECODE32 (&Buffer[1]);
     PldInfo->Width =                ACPI_PLD_GET_WIDTH (&Dword);
     PldInfo->Height =               ACPI_PLD_GET_HEIGHT(&Dword);
 
     /* Third 32-bit DWord */
 
-    ACPI_MOVE_32_TO_32 (&Dword, &Buffer[2]);
+    Dword = ACPI_DECODE32 (&Buffer[2]);
     PldInfo->UserVisible =          ACPI_PLD_GET_USER_VISIBLE (&Dword);
     PldInfo->Dock =                 ACPI_PLD_GET_DOCK (&Dword);
     PldInfo->Lid =                  ACPI_PLD_GET_LID (&Dword);
@@ -719,7 +719,7 @@ AcpiDecodePldBuffer (
 
     /* Fourth 32-bit DWord */
 
-    ACPI_MOVE_32_TO_32 (&Dword, &Buffer[3]);
+    Dword = ACPI_DECODE32 (&Buffer[3]);
     PldInfo->Ejectable =            ACPI_PLD_GET_EJECTABLE (&Dword);
     PldInfo->OspmEjectRequired =    ACPI_PLD_GET_OSPM_EJECT (&Dword);
     PldInfo->CabinetNumber =        ACPI_PLD_GET_CABINET (&Dword);
@@ -732,7 +732,7 @@ AcpiDecodePldBuffer (
     {
         /* Fifth 32-bit DWord (Revision 2 of _PLD) */
 
-        ACPI_MOVE_32_TO_32 (&Dword, &Buffer[4]);
+        Dword = ACPI_DECODE32 (&Buffer[4]);
         PldInfo->VerticalOffset =       ACPI_PLD_GET_VERT_OFFSET (&Dword);
         PldInfo->HorizontalOffset =     ACPI_PLD_GET_HORIZ_OFFSET (&Dword);
     }
