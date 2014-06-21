@@ -666,7 +666,7 @@ AcpiUtValidateResource (
     /*
      * 1) Validate the ResourceType field (Byte 0)
      */
-    ResourceType = ACPI_GET8 (Aml);
+    ResourceType = ACPI_DECODE8 (Aml);
 
     /*
      * Byte 0 contains the descriptor name (Resource Type)
@@ -831,17 +831,17 @@ AcpiUtGetResourceType (
      * Byte 0 contains the descriptor name (Resource Type)
      * Examine the large/small bit in the resource header
      */
-    if (ACPI_GET8 (Aml) & ACPI_RESOURCE_NAME_LARGE)
+    if (ACPI_DECODE8 (Aml) & ACPI_RESOURCE_NAME_LARGE)
     {
         /* Large Resource Type -- bits 6:0 contain the name */
 
-        return (ACPI_GET8 (Aml));
+        return (ACPI_DECODE8 (Aml));
     }
     else
     {
         /* Small Resource Type -- bits 6:3 contain the name */
 
-        return ((UINT8) (ACPI_GET8 (Aml) & ACPI_RESOURCE_NAME_SMALL_MASK));
+        return ((UINT8) (ACPI_DECODE8 (Aml) & ACPI_RESOURCE_NAME_SMALL_MASK));
     }
 }
 
@@ -874,18 +874,18 @@ AcpiUtGetResourceLength (
      * Byte 0 contains the descriptor name (Resource Type)
      * Examine the large/small bit in the resource header
      */
-    if (ACPI_GET8 (Aml) & ACPI_RESOURCE_NAME_LARGE)
+    if (ACPI_DECODE8 (Aml) & ACPI_RESOURCE_NAME_LARGE)
     {
         /* Large Resource type -- bytes 1-2 contain the 16-bit length */
 
-        ACPI_MOVE_16_TO_16 (&ResourceLength, ACPI_ADD_PTR (UINT8, Aml, 1));
+        ResourceLength = ACPI_DECODE16 (ACPI_ADD_PTR (UINT8, Aml, 1));
 
     }
     else
     {
         /* Small Resource type -- bits 2:0 of byte 0 contain the length */
 
-        ResourceLength = (UINT16) (ACPI_GET8 (Aml) &
+        ResourceLength = (UINT16) (ACPI_DECODE8 (Aml) &
                                     ACPI_RESOURCE_NAME_SMALL_LENGTH_MASK);
     }
 
@@ -914,7 +914,7 @@ AcpiUtGetResourceHeaderLength (
 
     /* Examine the large/small bit in the resource header */
 
-    if (ACPI_GET8 (Aml) & ACPI_RESOURCE_NAME_LARGE)
+    if (ACPI_DECODE8 (Aml) & ACPI_RESOURCE_NAME_LARGE)
     {
         return (sizeof (AML_RESOURCE_LARGE_HEADER));
     }
