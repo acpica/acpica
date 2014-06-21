@@ -185,14 +185,14 @@ AcpiPsPeekOpcode (
 
 
     Aml = ParserState->Aml;
-    Opcode = (UINT16) ACPI_GET8 (Aml);
+    Opcode = (UINT16) ACPI_DECODE8 (Aml);
 
     if (Opcode == AML_EXTENDED_OP_PREFIX)
     {
         /* Extended opcode, get the second opcode byte */
 
         Aml++;
-        Opcode = (UINT16) ((Opcode << 8) | ACPI_GET8 (Aml));
+        Opcode = (UINT16) ((Opcode << 8) | ACPI_DECODE8 (Aml));
     }
 
     return (Opcode);
