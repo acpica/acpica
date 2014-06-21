@@ -136,6 +136,19 @@
 #define ACPI_SET64(ptr, val)            (*ACPI_CAST64 (ptr) = (UINT64) (val))
 
 /*
+ * Extract data from an IO address. No need to handle alignment
+ * issues on such data accesses.
+ */
+#define ACPI_READ8(ptr)                 (*ACPI_CAST8 (ptr))
+#define ACPI_READ16(ptr)                (*ACPI_CAST16 (ptr))
+#define ACPI_READ32(ptr)                (*ACPI_CAST32 (ptr))
+#define ACPI_READ64(ptr)                (*ACPI_CAST64 (ptr))
+#define ACPI_WRITE8(ptr, val)           (*ACPI_CAST8 (ptr) = (UINT8) (val))
+#define ACPI_WRITE16(ptr, val)          (*ACPI_CAST16 (ptr) = (UINT16) (val))
+#define ACPI_WRITE32(ptr, val)          (*ACPI_CAST32 (ptr) = (UINT32) (val))
+#define ACPI_WRITE64(ptr, val)          (*ACPI_CAST64 (ptr) = (UINT64) (val))
+
+/*
  * printf() format helpers. These macros are workarounds for the difficulties
  * with emitting 64-bit integers and 64-bit pointers with the same code
  * for both 32-bit and 64-bit hosts.

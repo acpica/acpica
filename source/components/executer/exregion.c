@@ -309,22 +309,22 @@ AcpiExSystemMemorySpaceHandler (
         {
         case 8:
 
-            *Value = (UINT64) ACPI_GET8 (LogicalAddrPtr);
+            *Value = (UINT64) ACPI_READ8 (LogicalAddrPtr);
             break;
 
         case 16:
 
-            *Value = (UINT64) ACPI_GET16 (LogicalAddrPtr);
+            *Value = (UINT64) ACPI_READ16 (LogicalAddrPtr);
             break;
 
         case 32:
 
-            *Value = (UINT64) ACPI_GET32 (LogicalAddrPtr);
+            *Value = (UINT64) ACPI_READ32 (LogicalAddrPtr);
             break;
 
         case 64:
 
-            *Value = (UINT64) ACPI_GET64 (LogicalAddrPtr);
+            *Value = (UINT64) ACPI_READ64 (LogicalAddrPtr);
             break;
 
         default:
@@ -341,22 +341,22 @@ AcpiExSystemMemorySpaceHandler (
         {
         case 8:
 
-            ACPI_SET8 (LogicalAddrPtr, *Value);
+            ACPI_WRITE8 (LogicalAddrPtr, *Value);
             break;
 
         case 16:
 
-            ACPI_SET16 (LogicalAddrPtr, *Value);
+            ACPI_WRITE16 (LogicalAddrPtr, *Value);
             break;
 
         case 32:
 
-            ACPI_SET32 (LogicalAddrPtr, *Value);
+            ACPI_WRITE32 (LogicalAddrPtr, *Value);
             break;
 
         case 64:
 
-            ACPI_SET64 (LogicalAddrPtr, *Value);
+            ACPI_WRITE64 (LogicalAddrPtr, *Value);
             break;
 
         default:
