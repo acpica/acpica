@@ -233,6 +233,10 @@
 				Name="Common"
 				>
 				<File
+					RelativePath="..\..\source\os_specific\service_layers\oslibcfs.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\os_specific\service_layers\oswinxf.c"
 					>
 					<FileConfiguration
@@ -305,11 +309,23 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\uteval.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utexcep.c"
 					>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utglobal.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utids.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utinit.c"
 					>
 				</File>
 				<File
@@ -338,6 +354,18 @@
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utownerid.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utpredef.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utprint.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utresrc.c"
 					>
 				</File>
 				<File
@@ -413,6 +441,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\namespace\nsarguments.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\namespace\nsconvert.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\namespace\nsdump.c"
 					>
 				</File>
@@ -438,6 +474,22 @@
 				</File>
 				<File
 					RelativePath="..\..\source\components\namespace\nsparse.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\namespace\nspredef.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\namespace\nsprepkg.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\namespace\nsrepair.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\namespace\nsrepair2.c"
 					>
 				</File>
 				<File
@@ -670,6 +722,42 @@
 				</File>
 				<File
 					RelativePath="..\..\source\components\dispatcher\dswstate.c"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Hardware"
+				>
+				<File
+					RelativePath="..\..\source\components\hardware\hwpci.c"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Events"
+				>
+				<File
+					RelativePath="..\..\source\components\events\evhandler.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\events\evmisc.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\events\evregion.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\events\evrgnini.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\events\evxface.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\events\evxfregn.c"
 					>
 				</File>
 			</Filter>

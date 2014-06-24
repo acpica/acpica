@@ -276,7 +276,31 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\os_specific\service_layers\oslibcfs.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\os_specific\service_layers\oswintbl.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							DisableLanguageExtensions="false"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							DisableLanguageExtensions="false"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\os_specific\service_layers\oswinxf.c"
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
@@ -305,11 +329,23 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\utdebug.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utexcep.c"
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\utglobal.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utmath.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utprint.c"
 					>
 				</File>
 				<File

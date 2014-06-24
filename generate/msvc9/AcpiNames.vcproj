@@ -324,6 +324,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\os_specific\service_layers\oslibcfs.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\os_specific\service_layers\oswinxf.c"
 					>
 					<FileConfiguration
@@ -378,6 +382,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\utbuffer.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utcache.c"
 					>
 					<FileConfiguration
@@ -398,6 +406,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utdebug.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utdecode.c"
@@ -448,7 +460,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\uteval.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utexcep.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utfileio.c"
 					>
 				</File>
 				<File
@@ -472,6 +492,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utids.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utinit.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utlock.c"
@@ -609,6 +637,10 @@
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utownerid.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utprint.c"
 					>
 				</File>
 				<File
@@ -1588,6 +1620,14 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\executer\exdump.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\executer\exmutex.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\executer\exnames.c"
 					>
 					<FileConfiguration
@@ -1652,6 +1692,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\executer\exsystem.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exutils.c"

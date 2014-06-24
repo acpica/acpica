@@ -427,6 +427,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\utfileio.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utglobal.c"
 					>
 					<FileConfiguration
@@ -632,6 +636,10 @@
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utpredef.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utprint.c"
 					>
 				</File>
 				<File
@@ -3110,6 +3118,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\os_specific\service_layers\oslibcfs.c"
+					>
 				</File>
 			</Filter>
 			<Filter

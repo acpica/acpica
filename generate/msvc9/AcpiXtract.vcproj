@@ -251,19 +251,71 @@
 				RelativePath="..\..\source\tools\acpixtract\axmain.c"
 				>
 			</File>
+			<Filter
+				Name="Utilities"
+				>
+				<File
+					RelativePath="..\..\source\components\utilities\utdebug.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utexcep.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utglobal.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utmath.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utprint.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utxferror.c"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Common"
+				>
+				<File
+					RelativePath="..\..\source\common\getopt.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\os_specific\service_layers\oslibcfs.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\os_specific\service_layers\oswinxf.c"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							DisableLanguageExtensions="false"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							DisableLanguageExtensions="false"
+						/>
+					</FileConfiguration>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl"
 			>
-		</Filter>
-		<Filter
-			Name="Common"
-			>
-			<File
-				RelativePath="..\..\source\common\getopt.c"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>
