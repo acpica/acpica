@@ -313,21 +313,25 @@ main (
 
 
     ACPI_DEBUG_INITIALIZE (); /* For debug version only */
-    printf (ACPI_COMMON_SIGNON (AN_UTILITY_NAME));
 
-    if (argc < 2)
-    {
-        usage ();
-        return (0);
-    }
-
-    /* Init globals and ACPICA */
+    /* Init debug globals and ACPICA */
 
     AcpiDbgLevel = ACPI_LV_TABLES;
     AcpiDbgLayer = 0xFFFFFFFF;
 
     Status = AcpiInitializeSubsystem ();
     AE_CHECK_OK (AcpiInitializeSubsystem, Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return (-1);
+    }
+
+    printf (ACPI_COMMON_SIGNON (AN_UTILITY_NAME));
+    if (argc < 2)
+    {
+        usage ();
+        return (0);
+    }
 
     /* Get the command line options */
 

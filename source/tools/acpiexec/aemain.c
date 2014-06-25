@@ -447,28 +447,27 @@ main (
 
 
     ACPI_DEBUG_INITIALIZE (); /* For debug version only */
-
-    printf (ACPI_COMMON_SIGNON (ACPIEXEC_NAME));
-    if (argc < 2)
-    {
-        usage ();
-        return (0);
-    }
-
     signal (SIGINT, AeCtrlCHandler);
 
-    /* Init globals */
+    /* Init debug globals */
 
     AcpiDbgLevel = ACPI_NORMAL_DEFAULT;
     AcpiDbgLayer = 0xFFFFFFFF;
 
-    /* Init ACPI and start debugger thread */
+    /* Init ACPICA and start debugger thread */
 
     Status = AcpiInitializeSubsystem ();
     AE_CHECK_OK (AcpiInitializeSubsystem, Status);
     if (ACPI_FAILURE (Status))
     {
         goto ErrorExit;
+    }
+
+    printf (ACPI_COMMON_SIGNON (ACPIEXEC_NAME));
+    if (argc < 2)
+    {
+        usage ();
+        return (0);
     }
 
     /* Get the command line options */
