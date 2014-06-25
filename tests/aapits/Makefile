@@ -15,11 +15,12 @@ SRCS=	atexec.c atmain.c \
 	atosxfctrl.c \
 	atosxfwrap.c \
 	osunixxf.c \
+	../../source/common/ahids.c \
+	../../source/common/cmfsize.c \
+	../../source/common/getopt.c \
 	../../source/components/hardware/hwtimer.c \
 	../../source/components/hardware/hwvalid.c \
 	../../source/components/hardware/hwxface.c \
-	../../source/common/cmfsize.c \
-	../../source/common/getopt.c \
 	../../source/components/debugger/dbcmds.c \
 	../../source/components/debugger/dbconvert.c \
 	../../source/components/debugger/dbdisply.c \
@@ -151,6 +152,7 @@ SRCS=	atexec.c atmain.c \
 	../../source/components/resources/rsutils.c \
 	../../source/components/resources/rsxface.c \
 	../../source/components/resources/rsinfo.c \
+	../../source/components/tables/tbdata.c \
 	../../source/components/tables/tbfadt.c \
 	../../source/components/tables/tbfind.c \
 	../../source/components/tables/tbinstal.c \
@@ -170,6 +172,7 @@ SRCS=	atexec.c atmain.c \
 	../../source/components/utilities/uterror.c \
 	../../source/components/utilities/uteval.c \
 	../../source/components/utilities/utexcep.c \
+	../../source/components/utilities/utfileio.c \
 	../../source/components/utilities/utglobal.c \
 	../../source/components/utilities/utids.c \
 	../../source/components/utilities/utinit.c \
@@ -181,17 +184,19 @@ SRCS=	atexec.c atmain.c \
 	../../source/components/utilities/utosi.c \
 	../../source/components/utilities/utownerid.c \
 	../../source/components/utilities/utpredef.c \
+	../../source/components/utilities/utprint.c \
 	../../source/components/utilities/utresrc.c \
 	../../source/components/utilities/utstate.c \
 	../../source/components/utilities/utstring.c \
 	../../source/components/utilities/uttrack.c \
 	../../source/components/utilities/utxface.c \
 	../../source/components/utilities/utxferror.c \
-	../../source/components/utilities/utxfinit.c
-#	../../source/components/osunixxf.c
+	../../source/components/utilities/utxfinit.c \
+	../../source/os_specific/service_layers/oslibcfs.c
+#	../../source/os_specific/service_layers/osunixxf.c
 
 
-CFLAGS+= -Wall -g -D_LINUX -DNDEBUG -D_CONSOLE -DACPI_EXEC_APP -D_MULTI_THREADED -Wstrict-prototypes -I../../source/include 
+CFLAGS+= -Wall -g -D_LINUX -DNDEBUG -D_CONSOLE -DACPI_APITS -DACPI_EXEC_APP -D_MULTI_THREADED -Wstrict-prototypes -I../../source/include
 
 
 acpiexec : $(patsubst %.c,%.o, $(SRCS))
