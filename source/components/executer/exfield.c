@@ -136,7 +136,7 @@ AcpiExGetSerialAccessLength (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiGetSerialAccessBytes
+ * FUNCTION:    AcpiExGetSerialAccessLength
  *
  * PARAMETERS:  AccessorType    - The type of the protocol indicated by region
  *                                field access attributes
@@ -187,7 +187,7 @@ AcpiExGetSerialAccessLength (
     case AML_FIELD_ATTRIB_BLOCK_CALL:
     default:
 
-        Length = ACPI_GSBUS_BUFFER_SIZE;
+        Length = ACPI_GSBUS_BUFFER_SIZE - 2;
         break;
     }
 
