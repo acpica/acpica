@@ -623,6 +623,9 @@ AcpiOsCloseDirectory (
 #endif
 
 
+/*
+ * File I/O and related support
+ */
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenFile
 ACPI_FILE
 AcpiOsOpenFile (
@@ -654,13 +657,13 @@ AcpiOsWriteFile (
     ACPI_SIZE               Count);
 #endif
 
-#ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGeFileOffset
+#ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetFileOffset
 long
 AcpiOsGetFileOffset (
     ACPI_FILE               File);
 #endif
 
-#ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsSeFileOffset
+#ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsSetFileOffset
 ACPI_STATUS
 AcpiOsSetFileOffset (
     ACPI_FILE               File,
