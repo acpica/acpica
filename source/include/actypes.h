@@ -596,7 +596,7 @@ typedef UINT64                          ACPI_INTEGER;
 
 #define ACPI_TO_POINTER(i)              ACPI_ADD_PTR (void, (void *) NULL,(ACPI_SIZE) i)
 #define ACPI_TO_INTEGER(p)              ACPI_PTR_DIFF (p, (void *) NULL)
-#define ACPI_OFFSET(d, f)               (ACPI_SIZE) ACPI_PTR_DIFF (&(((d *)0)->f), (void *) NULL)
+#define ACPI_OFFSET(d, f)               ACPI_PTR_DIFF (&(((d *) 0)->f), (void *) NULL)
 #define ACPI_PHYSADDR_TO_PTR(i)         ACPI_TO_POINTER(i)
 #define ACPI_PTR_TO_PHYSADDR(i)         ACPI_TO_INTEGER(i)
 
