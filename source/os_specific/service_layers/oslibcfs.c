@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: oslibcfs - C library OSL for file IO
+ * Module Name: oslibcfs - C library OSL for file I/O
  *
  *****************************************************************************/
 
@@ -141,8 +141,9 @@ AcpiOsOpenFile (
     UINT8                   Modes)
 {
     ACPI_FILE               File;
-    char                    ModesStr[4];
     UINT32                  i = 0;
+    char                    ModesStr[4];
+
 
     if (Modes & ACPI_FILE_READING)
     {
@@ -156,6 +157,7 @@ AcpiOsOpenFile (
     {
         ModesStr[i++] = 'b';
     }
+
     ModesStr[i++] = '\0';
 
     File = fopen (Path, ModesStr);
@@ -172,11 +174,11 @@ AcpiOsOpenFile (
  *
  * FUNCTION:    AcpiOsCloseFile
  *
- * PARAMETERS:  File                - File descriptor
+ * PARAMETERS:  File                - An open file descriptor
  *
  * RETURN:      None.
  *
- * DESCRIPTION: Close a file.
+ * DESCRIPTION: Close a file opened via AcpiOsOpenFile.
  *
  ******************************************************************************/
 
@@ -192,14 +194,14 @@ AcpiOsCloseFile (
  *
  * FUNCTION:    AcpiOsReadFile
  *
- * PARAMETERS:  File                - File descriptor
+ * PARAMETERS:  File                - An open file descriptor
  *              Buffer              - Data buffer
  *              Size                - Data block size
  *              Count               - Number of data blocks
  *
- * RETURN:      Size of successfully read buffer.
+ * RETURN:      Number of bytes actually read.
  *
- * DESCRIPTION: Read a file.
+ * DESCRIPTION: Read from a file.
  *
  ******************************************************************************/
 
@@ -211,6 +213,7 @@ AcpiOsReadFile (
     ACPI_SIZE               Count)
 {
     int                     Length;
+
 
     Length = fread (Buffer, Size, Count, File);
     if (Length < 0)
@@ -226,14 +229,14 @@ AcpiOsReadFile (
  *
  * FUNCTION:    AcpiOsWriteFile
  *
- * PARAMETERS:  File                - File descriptor
+ * PARAMETERS:  File                - An open file descriptor
  *              Buffer              - Data buffer
  *              Size                - Data block size
  *              Count               - Number of data blocks
  *
- * RETURN:      Size of successfully written buffer.
+ * RETURN:      Number of bytes actually written.
  *
- * DESCRIPTION: Write a file.
+ * DESCRIPTION: Write to a file.
  *
  ******************************************************************************/
 
@@ -245,6 +248,7 @@ AcpiOsWriteFile (
     ACPI_SIZE               Count)
 {
     int                     Length;
+
 
     Length = fwrite (Buffer, Size, Count, File);
     if (Length < 0)
@@ -260,9 +264,9 @@ AcpiOsWriteFile (
  *
  * FUNCTION:    AcpiOsGetFileOffset
  *
- * PARAMETERS:  File                - File descriptor
+ * PARAMETERS:  File                - An open file descriptor
  *
- * RETURN:      Size of current position.
+ * RETURN:      Current file pointer position.
  *
  * DESCRIPTION: Get current file offset.
  *
@@ -274,8 +278,8 @@ AcpiOsGetFileOffset (
 {
     long                    Offset;
 
-    Offset = ftell (File);
 
+    Offset = ftell (File);
     return (Offset);
 }
 
@@ -284,8 +288,8 @@ AcpiOsGetFileOffset (
  *
  * FUNCTION:    AcpiOsSetFileOffset
  *
- * PARAMETERS:  File                - File descriptor
- *              Offset              - File offset
+ * PARAMETERS:  File                - An open file descriptor
+ *              Offset              - New file offset
  *              From                - From begin/end of file
  *
  * RETURN:      Status
