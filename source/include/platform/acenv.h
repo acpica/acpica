@@ -418,6 +418,8 @@
 
 /* We will be linking to the standard Clib functions */
 
+#define ACPI_STRPBRK(s,d)       strpbrk((s), (d))
+#define ACPI_STRTOK(s,d)        strtok((s), (d))
 #define ACPI_STRSTR(s1,s2)      strstr((s1), (s2))
 #define ACPI_STRCHR(s1,c)       strchr((s1), (c))
 #define ACPI_STRLEN(s)          (ACPI_SIZE) strlen((s))
@@ -485,6 +487,8 @@ typedef char *va_list;
 
 /* Use the local (ACPICA) definitions of the clib functions */
 
+#define ACPI_STRPBRK(s,d)       AcpiUtStrpbrk ((s), (d))
+#define ACPI_STRTOK(s,d)        AcpiUtStrtok ((s), (d))
 #define ACPI_STRSTR(s1,s2)      AcpiUtStrstr ((s1), (s2))
 #define ACPI_STRCHR(s1,c)       AcpiUtStrchr ((s1), (c))
 #define ACPI_STRLEN(s)          (ACPI_SIZE) AcpiUtStrlen ((s))
