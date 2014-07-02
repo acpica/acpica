@@ -174,11 +174,17 @@ AhDisplayUsage (
  * DESCRIPTION: C main function for AcpiHelp utility.
  *
  ******************************************************************************/
-
+#ifndef _GNU_EFI
 int ACPI_SYSTEM_XFACE
 main (
     int                     argc,
     char                    *argv[])
+#else
+int ACPI_SYSTEM_XFACE
+acpi_main (
+    int                     argc,
+    char                    *argv[])
+#endif
 {
     char                    *Name;
     UINT32                  DecodeType;
