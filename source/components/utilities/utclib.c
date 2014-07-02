@@ -321,6 +321,93 @@ AcpiUtStrlen (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiUtStrpbrk (strpbrk)
+ *
+ * PARAMETERS:  String              - Null terminated string
+ *              Delimiters          - Delimiters to match
+ *
+ * RETURN:      The first occurance in the string of any of the bytes in the
+ *              delimiters
+ *
+ * DESCRIPTION: Search a string for any of a set of the delimiters
+ *
+ ******************************************************************************/
+
+char *
+AcpiUtStrpbrk (
+    const char              *String,
+    const char              *Delimiters)
+{
+    const char              *Delimiter;
+
+
+    for ( ; *String != '\0'; ++String)
+    {
+        for (Delimiter = Delimiters; *Delimiter != '\0'; Delimiter++)
+        {
+            if (*String == *Delimiter)
+            {
+                return (ACPI_CAST_PTR (char, String));
+            }
+        }
+    }
+
+    return (NULL);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtStrtok (strtok)
+ *
+ * PARAMETERS:  String              - Null terminated string
+ *              Delimiters          - Delimiters to match
+ *
+ * RETURN:      Pointer to the next token
+ *
+ * DESCRIPTION: Split string into tokens
+ *
+ ******************************************************************************/
+
+char*
+AcpiUtStrtok (
+    char                    *String,
+    const char              *Delimiters)
+{
+    char                    *Begin = String;
+    static char             *SavedPtr;
+
+
+    if (Begin == NULL)
+    {
+        if (SavedPtr == NULL)
+        {
+            return (NULL);
+        }
+        Begin = SavedPtr;
+    }
+
+    SavedPtr = AcpiUtStrpbrk (Begin, Delimiters);
+    while (SavedPtr == Begin)
+    {
+        *Begin++ = '\0';
+        SavedPtr = AcpiUtStrpbrk (Begin, Delimiters);
+    }
+
+    if (SavedPtr)
+    {
+        *SavedPtr++ = '\0';
+        return (Begin);
+    }
+    else
+    {
+        return (NULL);
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiUtStrcpy (strcpy)
  *
  * PARAMETERS:  DstString       - Target of the copy

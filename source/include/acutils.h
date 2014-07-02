@@ -333,6 +333,16 @@ AcpiUtStrchr (
     int                     ch);
 
 char *
+AcpiUtStrpbrk (
+    const char              *String,
+    const char              *Delimiters);
+
+char *
+AcpiUtStrtok (
+    char                    *String,
+    const char              *Delimiters);
+
+char *
 AcpiUtStrcpy (
     char                    *DstString,
     const char              *SrcString);
