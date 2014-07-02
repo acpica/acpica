@@ -383,10 +383,10 @@ AcpiUtDisplayPredefinedMethod (
 
     if (MultiLine)
     {
-        printf ("      ");
+        AcpiOsPrintf ("      ");
     }
 
-    printf ("%4.4s    Requires %s%u argument%s",
+    AcpiOsPrintf ("%4.4s    Requires %s%u argument%s",
         ThisName->Info.Name,
         (ThisName->Info.ArgumentList & ARG_COUNT_IS_MINIMUM) ?
             "(at least) " : "",
@@ -396,12 +396,12 @@ AcpiUtDisplayPredefinedMethod (
 
     if (ArgCount > 0)
     {
-        printf (" (%s)", Buffer);
+        AcpiOsPrintf (" (%s)", Buffer);
     }
 
     if (MultiLine)
     {
-        printf ("\n    ");
+        AcpiOsPrintf ("\n    ");
     }
 
     /* Get the return value type(s) allowed */
@@ -409,11 +409,11 @@ AcpiUtDisplayPredefinedMethod (
     if (ThisName->Info.ExpectedBtypes)
     {
         AcpiUtGetExpectedReturnTypes (Buffer, ThisName->Info.ExpectedBtypes);
-        printf ("  Return value types: %s\n", Buffer);
+        AcpiOsPrintf ("  Return value types: %s\n", Buffer);
     }
     else
     {
-        printf ("  No return value\n");
+        AcpiOsPrintf ("  No return value\n");
     }
 }
 
@@ -452,7 +452,7 @@ AcpiUtGetArgumentTypes (
     ArgCount = METHOD_GET_ARG_COUNT (ArgumentTypes);
     if (ArgCount > METHOD_PREDEF_ARGS_MAX)
     {
-        printf ("**** Invalid argument count (%u) "
+        AcpiOsPrintf ("**** Invalid argument count (%u) "
             "in predefined info structure\n", ArgCount);
         return (ArgCount);
     }
@@ -465,12 +465,12 @@ AcpiUtGetArgumentTypes (
 
         if (!ThisArgumentType || (ThisArgumentType > METHOD_MAX_ARG_TYPE))
         {
-            printf ("**** Invalid argument type (%u) "
+            AcpiOsPrintf ("**** Invalid argument type (%u) "
                 "in predefined info structure\n", ThisArgumentType);
             return (ArgCount);
         }
 
-        strcat (Buffer, UtExternalTypeNames[ThisArgumentType] + SubIndex);
+        ACPI_STRCAT (Buffer, UtExternalTypeNames[ThisArgumentType] + SubIndex);
         SubIndex = 0;
     }
 
@@ -509,7 +509,7 @@ AcpiUtGetResourceBitWidth (
     {
         if (Types & 1)
         {
-            strcat (Buffer, &(UtResourceTypeNames[i][SubIndex]));
+            ACPI_STRCAT (Buffer, &(UtResourceTypeNames[i][SubIndex]));
             SubIndex = 0;
             Found++;
         }
