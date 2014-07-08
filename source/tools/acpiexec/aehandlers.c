@@ -1413,8 +1413,7 @@ AeRegionHandler (
             case AML_FIELD_ATTRIB_RAW_BYTES:
             case AML_FIELD_ATTRIB_RAW_PROCESS:
 
-                /* (-2) for status/length */
-                Length = MyContext->AccessLength - 2;
+                Length = MyContext->AccessLength;
                 break;
 
             default:
@@ -1448,8 +1447,7 @@ AeRegionHandler (
             case AML_FIELD_ATTRIB_RAW_BYTES:
             case AML_FIELD_ATTRIB_RAW_PROCESS:
 
-                /* (-2) for status/length */
-                Length = MyContext->AccessLength - 2;
+                Length = MyContext->AccessLength;
                 break;
 
             default:

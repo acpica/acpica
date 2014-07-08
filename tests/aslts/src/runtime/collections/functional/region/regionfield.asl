@@ -454,12 +454,10 @@ Method(m751, 1, Serialized)
 	if (LNotEqual(OB10, 0x7A)) {
 		err(arg0, z143, 28, 0, 0, OB10, 0x7A)
 	}
-	if (LNotEqual(LEN0, 0x01)) {
-		err(arg0, z143, 32, 0, 0, LEN0, 0x01)
+	if (LNotEqual(LEN0, 0x00)) {		// Length is zero for Quick operations
+		err(arg0, z143, 32, 0, 0, LEN0, 0x00)
 	}
-	if (LNotEqual(DAT0, 0xA0)) {
-		err(arg0, z143, 36, 0, 0, DAT0, 0xA0)
-	}
+	/* Note: Since LEN0 should be zero there's no need to check DAT0 */
 }
 
 // Read/Write Quick (SMBQuick)
@@ -950,12 +948,10 @@ Method(m758, 1, Serialized)
 	if (LNotEqual(OB10, 0x7A)) {
 		err(arg0, z143, 256, 0, 0, OB10, 0x7A)
 	}
-	if (LNotEqual(LEN0, 0x01)) {
-		err(arg0, z143, 260, 0, 0, LEN0, 0x01)
+	if (LNotEqual(LEN0, 0x00)) {	// Length is zero for Quick operations
+		err(arg0, z143, 260, 0, 0, LEN0, 0x00)
 	}
-	if (LNotEqual(DAT0, 0xA0)) {
-		err(arg0, z143, 264, 0, 0, DAT0, 0xA0)
-	}
+	/* Note: Since LEN0 should be zero there's no need to check DAT0 */
 }
 
 // Read/Write Quick (AttribQuick)
@@ -1385,7 +1381,11 @@ Method(m75f, 1, Serialized)
 	OperationRegion(GSBD, GenericSerialBus, 0xB400, 0x100)
 
 	Field(GSBD, BufferAcc, NoLock, Preserve) {
-        AccessAs (BufferAcc, AttribBytes (34)),
+	/*
+	 * Note: AccessLength for AttribBytes here must at least 2 less than the
+	 * transfer buffer to account for the status and length bytes
+	 */
+        AccessAs (BufferAcc, AttribBytes (32)),
 
         // A Connection is required
         Connection (
@@ -1452,7 +1452,11 @@ Method(m760, 1, Serialized)
 	OperationRegion(GSBD, GenericSerialBus, 0xB400, 0x100)
 
 	Field(GSBD, BufferAcc, NoLock, Preserve) {
-        AccessAs (BufferAcc, AttribRawBytes (34)),
+	/*
+	 * Note: AccessLength for AttribBytes here must at least 2 less than the
+	 * transfer buffer to account for the status and length bytes
+	 */
+        AccessAs (BufferAcc, AttribRawBytes (32)),
 
         // A Connection is required
         Connection (
@@ -1519,7 +1523,11 @@ Method(m761, 1, Serialized)
 	OperationRegion(GSBD, GenericSerialBus, 0xB400, 0x100)
 
 	Field(GSBD, BufferAcc, NoLock, Preserve) {
-        AccessAs (BufferAcc, AttribRawProcessBytes (34)),
+	/*
+	 * Note: AccessLength for AttribBytes here must at least 2 less than the
+	 * transfer buffer to account for the status and length bytes
+	 */
+        AccessAs (BufferAcc, AttribRawProcessBytes (32)),
 
         // A Connection is required
         Connection (
