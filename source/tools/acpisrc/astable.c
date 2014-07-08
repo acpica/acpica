@@ -623,6 +623,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_DBG2_DEVICE",                    SRC_TYPE_STRUCT},
     {"ACPI_DMAR_HEADER",                    SRC_TYPE_STRUCT},
     {"ACPI_DMAR_DEVICE_SCOPE",              SRC_TYPE_STRUCT},
+    {"ACPI_DMAR_ANDD",                      SRC_TYPE_STRUCT},
     {"ACPI_DMAR_ATSR",                      SRC_TYPE_STRUCT},
     {"ACPI_DMAR_RHSA",                      SRC_TYPE_STRUCT},
     {"ACPI_DMAR_HARDWARE_UNIT",             SRC_TYPE_STRUCT},
