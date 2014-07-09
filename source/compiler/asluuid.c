@@ -140,16 +140,6 @@ static UINT8    Gbl_MapToUuidOffset[16] =
     6,4,2,0,11,9,16,14,19,21,24,26,28,30,32,34
 };
 
-#define UUID_BUFFER_LENGTH          16
-#define UUID_STRING_LENGTH          36
-
-/* Positions for required hyphens (dashes) in UUID strings */
-
-#define UUID_HYPHEN1_OFFSET         8
-#define UUID_HYPHEN2_OFFSET         13
-#define UUID_HYPHEN3_OFFSET         18
-#define UUID_HYPHEN4_OFFSET         23
-
 
 /*******************************************************************************
  *

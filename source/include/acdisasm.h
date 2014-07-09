@@ -727,6 +727,10 @@ AcpiDmDecompressEisaId (
     UINT32                  EncodedId);
 
 BOOLEAN
+AcpiDmIsUuidBuffer (
+    ACPI_PARSE_OBJECT       *Op);
+
+BOOLEAN
 AcpiDmIsUnicodeBuffer (
     ACPI_PARSE_OBJECT       *Op);
 
