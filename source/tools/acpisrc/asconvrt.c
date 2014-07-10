@@ -399,7 +399,7 @@ AsCheckForBraces (
 
                 if (!Gbl_QuietMode)
                 {
-                    printf ("Missing braces for <if>, line %u: %s\n", TotalLines, Filename);
+                    printf ("Missing braces for <else if>, line %u: %s\n", TotalLines, Filename);
                 }
             }
         }
