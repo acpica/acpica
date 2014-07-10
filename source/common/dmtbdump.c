@@ -2282,8 +2282,7 @@ AcpiDmDumpPmtt (
             if (DomainCount)
             {
                 AcpiOsPrintf (
-                    "\n**** DomainCount exceeds subtable length\n\n",
-                    MemSubTable->Type);
+                    "\n**** DomainCount exceeds subtable length\n\n");
             }
 
             /* Walk the physical component (DIMM) subtables */

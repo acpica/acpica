@@ -304,8 +304,7 @@ AcpiUtReadTable (
             Status = FlCheckForAscii (fp, NULL, FALSE);
             if (ACPI_SUCCESS (Status))
             {
-                AcpiOsPrintf ("File appears to be ASCII only, must be binary\n",
-                    TableHeader.Length, FileSize);
+                AcpiOsPrintf ("File appears to be ASCII only, must be binary\n");
             }
 #endif
             return (AE_BAD_HEADER);
