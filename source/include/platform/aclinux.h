@@ -201,8 +201,6 @@
 #define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
 #define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
 #define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
 
 /*
  * OSL interfaces used by debugger/disassembler
@@ -234,10 +232,6 @@
 
 #ifndef __init
 #define __init
-#endif
-
-#ifndef __iomem
-#define __iomem
 #endif
 
 /* Host-dependent types and defines for user-space ACPICA */

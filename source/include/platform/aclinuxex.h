@@ -186,16 +186,6 @@ AcpiOsGetThreadId (
         Lock ? AE_OK : AE_NO_MEMORY; \
     })
 
-void __iomem *
-AcpiOsMapMemory (
-    ACPI_PHYSICAL_ADDRESS   Where,
-    ACPI_SIZE               Length);
-
-void
-AcpiOsUnmapMemory (
-    void __iomem            *LogicalAddress,
-    ACPI_SIZE               Size);
-
 /*
  * OSL interfaces added by Linux
  */
