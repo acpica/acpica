@@ -573,6 +573,7 @@ AcpiUtVsnprintf (
 
         /* Process width */
 
+        Width = -1;
         if (ACPI_IS_DIGIT (*Format))
         {
             Format = AcpiUtScanNumber (Format, &Number);
@@ -591,6 +592,7 @@ AcpiUtVsnprintf (
 
         /* Process precision */
 
+        Precision = -1;
         if (*Format == '.')
         {
             ++Format;
@@ -612,6 +614,7 @@ AcpiUtVsnprintf (
 
         /* Process qualifier */
 
+        Qualifier = -1;
         if (*Format == 'h' || *Format == 'l' || *Format == 'L')
         {
             Qualifier = *Format;
