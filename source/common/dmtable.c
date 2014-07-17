@@ -159,7 +159,19 @@ static const char           *AcpiDmDmarSubnames[] =
     "Reserved Memory Region",
     "Root Port ATS Capability",
     "Remapping Hardware Static Affinity",
+    "ACPI Namespace Device Declaration",
     "Unknown SubTable Type"         /* Reserved */
+};
+
+static const char           *AcpiDmDmarScope[] =
+{
+    "Reserved value",
+    "PCI Endpoint Device",
+    "PCI Bridge Device",
+    "IOAPIC Device",
+    "Message-capable HPET Device",
+    "Namespace Device",
+    "Unknown Scope Type"            /* Reserved */
 };
 
 static const char           *AcpiDmEinjActions[] =
@@ -788,6 +800,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_EINJINST:
         case ACPI_DMT_ERSTACT:
         case ACPI_DMT_ERSTINST:
+        case ACPI_DMT_DMAR_SCOPE:
 
             ByteLength = 1;
             break;
@@ -1117,6 +1130,19 @@ AcpiDmDumpTable (
             }
 
             AcpiOsPrintf (UINT16_FORMAT, ACPI_GET16 (Target), AcpiDmDmarSubnames[Temp16]);
+            break;
+
+        case ACPI_DMT_DMAR_SCOPE:
+
+            /* DMAR device scope types */
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_DMAR_SCOPE_TYPE_RESERVED)
+            {
+                Temp8 = ACPI_DMAR_SCOPE_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf (UINT8_FORMAT, *Target, AcpiDmDmarScope[Temp8]);
             break;
 
         case ACPI_DMT_EINJACT:

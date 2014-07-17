@@ -808,14 +808,19 @@ DtCompileDmar (
             InfoTable = AcpiDmTableInfoDmar1;
             break;
 
-        case ACPI_DMAR_TYPE_ATSR:
+        case ACPI_DMAR_TYPE_ROOT_ATS:
 
             InfoTable = AcpiDmTableInfoDmar2;
             break;
 
-        case ACPI_DMAR_HARDWARE_AFFINITY:
+        case ACPI_DMAR_TYPE_HARDWARE_AFFINITY:
 
             InfoTable = AcpiDmTableInfoDmar3;
+            break;
+
+        case ACPI_DMAR_TYPE_NAMESPACE:
+
+            InfoTable = AcpiDmTableInfoDmar4;
             break;
 
         default:
@@ -834,10 +839,20 @@ DtCompileDmar (
 
         ParentTable = DtPeekSubtable ();
         DtInsertSubtable (ParentTable, Subtable);
+
+        /*
+         * Optional Device Scope subtables
+         */
+        if ((DmarHeader->Type == ACPI_DMAR_TYPE_HARDWARE_AFFINITY) ||
+            (DmarHeader->Type == ACPI_DMAR_TYPE_NAMESPACE))
+        {
+            /* These types do not support device scopes */
+
+            DtPopSubtable ();
+            continue;
+        }
+
         DtPushSubtable (Subtable);
-
-        /* Optional Device Scope subtables */
-
         DeviceScopeLength = DmarHeader->Length - Subtable->Length -
             ParentTable->Length;
         while (DeviceScopeLength)

@@ -584,6 +584,7 @@ DtGetFieldLength (
     case ACPI_DMT_EINJINST:
     case ACPI_DMT_ERSTACT:
     case ACPI_DMT_ERSTINST:
+    case ACPI_DMT_DMAR_SCOPE:
 
         ByteLength = 1;
         break;

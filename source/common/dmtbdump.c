@@ -963,16 +963,22 @@ AcpiDmDumpDmar (
             ScopeOffset = sizeof (ACPI_DMAR_RESERVED_MEMORY);
             break;
 
-        case ACPI_DMAR_TYPE_ATSR:
+        case ACPI_DMAR_TYPE_ROOT_ATS:
 
             InfoTable = AcpiDmTableInfoDmar2;
             ScopeOffset = sizeof (ACPI_DMAR_ATSR);
             break;
 
-        case ACPI_DMAR_HARDWARE_AFFINITY:
+        case ACPI_DMAR_TYPE_HARDWARE_AFFINITY:
 
             InfoTable = AcpiDmTableInfoDmar3;
             ScopeOffset = sizeof (ACPI_DMAR_RHSA);
+            break;
+
+        case ACPI_DMAR_TYPE_NAMESPACE:
+
+            InfoTable = AcpiDmTableInfoDmar4;
+            ScopeOffset = sizeof (ACPI_DMAR_ANDD);
             break;
 
         default:
@@ -988,7 +994,16 @@ AcpiDmDumpDmar (
             return;
         }
 
-        /* Dump the device scope entries (if any) */
+        /*
+         * Dump the optional device scope entries
+         */
+        if ((SubTable->Type == ACPI_DMAR_TYPE_HARDWARE_AFFINITY) ||
+            (SubTable->Type == ACPI_DMAR_TYPE_NAMESPACE))
+        {
+            /* These types do not support device scopes */
+
+            goto NextSubtable;
+        }
 
         ScopeTable = ACPI_ADD_PTR (ACPI_DMAR_DEVICE_SCOPE, SubTable, ScopeOffset);
         while (ScopeOffset < SubTable->Length)
@@ -1028,6 +1043,7 @@ AcpiDmDumpDmar (
                 ScopeTable, ScopeTable->Length);
         }
 
+NextSubtable:
         /* Point to next subtable */
 
         Offset += SubTable->Length;
