@@ -401,7 +401,7 @@ AcpiOsGetTableByName (
 
     WinStatus = RegQueryValueEx (Handle, KeyBuffer, NULL, NULL,
         NULL, &DataSize);
-    if (WinStatus = ERROR_SUCCESS)
+    if (WinStatus != ERROR_SUCCESS)
     {
         fprintf (stderr, "Could not read the %s table size: %s\n",
             Signature, WindowsFormatException (WinStatus));
@@ -422,7 +422,7 @@ AcpiOsGetTableByName (
 
     WinStatus = RegQueryValueEx (Handle, KeyBuffer, NULL, NULL,
         (UCHAR *) ReturnTable, &DataSize);
-    if (WinStatus = ERROR_SUCCESS)
+    if (WinStatus != ERROR_SUCCESS)
     {
         fprintf (stderr, "Could not read %s data: %s\n",
             Signature, WindowsFormatException (WinStatus));
