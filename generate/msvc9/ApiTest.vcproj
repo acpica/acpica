@@ -453,6 +453,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\uthex.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utids.c"
 					>
 					<FileConfiguration
@@ -711,6 +715,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utuuid.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utxface.c"
@@ -3091,6 +3099,10 @@
 				>
 				<File
 					RelativePath="..\..\source\common\ahids.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\common\ahuuids.c"
 					>
 				</File>
 				<File

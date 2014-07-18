@@ -272,6 +272,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\common\ahuuids.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\common\getopt.c"
 					>
 					<FileConfiguration
@@ -334,6 +338,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\uthex.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utmath.c"
 					>
 				</File>
@@ -343,6 +351,10 @@
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utprint.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utuuid.c"
 					>
 				</File>
 			</Filter>

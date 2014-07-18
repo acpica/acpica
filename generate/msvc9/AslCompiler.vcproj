@@ -414,6 +414,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\uthex.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utinit.c"
 					>
 					<FileConfiguration
@@ -603,6 +607,10 @@
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utstring.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utuuid.c"
 					>
 				</File>
 				<File
@@ -3390,6 +3398,10 @@
 				</File>
 				<File
 					RelativePath="..\..\source\common\ahpredef.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\common\ahuuids.c"
 					>
 				</File>
 				<File

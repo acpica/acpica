@@ -494,6 +494,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\uthex.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utids.c"
 					>
 				</File>
