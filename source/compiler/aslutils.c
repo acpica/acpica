@@ -315,37 +315,6 @@ UtEndEvent (
 
 /*******************************************************************************
  *
- * FUNCTION:    UtHexCharToValue
- *
- * PARAMETERS:  HexChar             - Hex character in Ascii
- *
- * RETURN:      The binary value of the hex character
- *
- * DESCRIPTION: Perform ascii-to-hex translation
- *
- ******************************************************************************/
-
-UINT8
-UtHexCharToValue (
-    int                     HexChar)
-{
-
-    if (HexChar <= 0x39)
-    {
-        return ((UINT8) (HexChar - 0x30));
-    }
-
-    if (HexChar <= 0x46)
-    {
-        return ((UINT8) (HexChar - 0x37));
-    }
-
-    return ((UINT8) (HexChar - 0x57));
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    UtConvertByteToHex
  *
  * PARAMETERS:  RawByte             - Binary data
@@ -368,8 +337,8 @@ UtConvertByteToHex (
     Buffer[0] = '0';
     Buffer[1] = 'x';
 
-    Buffer[2] = (UINT8) AslHexLookup[(RawByte >> 4) & 0xF];
-    Buffer[3] = (UINT8) AslHexLookup[RawByte & 0xF];
+    Buffer[2] = (UINT8) AcpiUtHexToAsciiChar (RawByte, 4);
+    Buffer[3] = (UINT8) AcpiUtHexToAsciiChar (RawByte, 0);
 }
 
 
@@ -384,7 +353,7 @@ UtConvertByteToHex (
  * RETURN:      Ascii hex byte is stored in Buffer.
  *
  * DESCRIPTION: Perform hex-to-ascii translation. The return data is prefixed
- *              with "0x"
+ *              with '0', and a trailing 'h' is added.
  *
  ******************************************************************************/
 
@@ -395,8 +364,8 @@ UtConvertByteToAsmHex (
 {
 
     Buffer[0] = '0';
-    Buffer[1] = (UINT8) AslHexLookup[(RawByte >> 4) & 0xF];
-    Buffer[2] = (UINT8) AslHexLookup[RawByte & 0xF];
+    Buffer[1] = (UINT8) AcpiUtHexToAsciiChar (RawByte, 4);
+    Buffer[2] = (UINT8) AcpiUtHexToAsciiChar (RawByte, 0);
     Buffer[3] = 'h';
 }
 

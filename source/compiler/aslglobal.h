@@ -135,11 +135,6 @@
 
 #ifdef _DECLARE_GLOBALS
 UINT32                              Gbl_ExceptionCount[ASL_NUM_REPORT_LEVELS] = {0,0,0,0,0,0};
-char                                AslHexLookup[] =
-{
-    '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
-};
-
 
 /* Table below must match ASL_FILE_TYPES in asltypes.h */
 
@@ -164,7 +159,6 @@ ASL_FILE_INFO                       Gbl_Files [ASL_NUM_FILES] =
 
 #else
 extern UINT32                       Gbl_ExceptionCount[ASL_NUM_REPORT_LEVELS];
-extern char                         AslHexLookup[];
 extern ASL_FILE_INFO                Gbl_Files [ASL_NUM_FILES];
 #endif
 

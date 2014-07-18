@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: ahmain - Main module for the acpi help utility
+ * Module Name: ahuuids - Table of known ACPI-related UUIDs
  *
  *****************************************************************************/
 
@@ -113,255 +113,89 @@
  *
  *****************************************************************************/
 
-#include "acpihelp.h"
+#include "acpi.h"
+#include "accommon.h"
 
+#define _COMPONENT          ACPI_UTILITIES
+        ACPI_MODULE_NAME    ("ahuuids")
 
-/* Local prototypes */
-
-static void
-AhDisplayUsage (
-    void);
-
-#define AH_UTILITY_NAME             "ACPI Help Utility"
-#define AH_SUPPORTED_OPTIONS        "aehikmopsuv"
-
-
-/******************************************************************************
- *
- * FUNCTION:    AhDisplayUsage
- *
- * DESCRIPTION: Usage message
- *
- ******************************************************************************/
-
-static void
-AhDisplayUsage (
-    void)
+/*
+ * Table of "known" (ACPI-related) UUIDs
+ */
+const AH_UUID  AcpiUuids[] =
 {
+    {"PCI Host Bridge Device",
+        "33db4d5b-1ff7-401c-9657-7441c03dd766"},
 
-    ACPI_USAGE_HEADER ("acpihelp <options> [Name/Prefix | HexValue]");
-    ACPI_OPTION ("-h",                      "Display help");
-    ACPI_OPTION ("-v",                      "Display version information");
+    {"Platform-wide Capabilities",
+        "0811b06e-4a27-44f9-8d60-3cbbc22e7b48"},
 
-    ACPI_USAGE_TEXT ("\nAML (ACPI Machine Language) Names and Encodings:\n");
-    ACPI_OPTION ("-a [Name/Prefix]",        "Find/Display both ASL operator and AML opcode name(s)");
-    ACPI_OPTION ("-m [Name/Prefix]",        "Find/Display AML opcode name(s)");
+    {"Dynamic Enumeration",
+        "d8c1a3a6-be9b-4c9b-91bf-c3cb81fc5daf"},
 
-    ACPI_USAGE_TEXT ("\nASL (ACPI Source Language) Names and Symbols:\n");
-    ACPI_OPTION ("-k [Name/Prefix]",        "Find/Display ASL non-operator keyword(s)");
-    ACPI_OPTION ("-p [Name/Prefix]",        "Find/Display ASL predefined method name(s)");
-    ACPI_OPTION ("-s [Name/Prefix]",        "Find/Display ASL operator name(s)");
+    {"GPIO Controller",
+        "4f248f40-d5e2-499f-834c-27758ea1cd3f"},
 
-    ACPI_USAGE_TEXT ("\nOther ACPI Names:\n");
-    ACPI_OPTION ("-i [Name/Prefix]",        "Find/Display ACPI/PNP Hardware ID(s)");
-    ACPI_OPTION ("-u",                      "Display ACPI-related UUIDs");
+    {"Battery Thermal Limit",
+        "4c2067e3-887d-475c-9720-4af1d3ed602e"},
 
-    ACPI_USAGE_TEXT ("\nACPI Values:\n");
-    ACPI_OPTION ("-e [HexValue]",           "Decode ACPICA exception code");
-    ACPI_OPTION ("-o [HexValue]",           "Decode hex AML opcode");
+    {"Thermal Extensions",
+        "14d399cd-7a27-4b18-8fb4-7cb7b9f4e500"},
 
-    ACPI_USAGE_TEXT ("\nName/Prefix or HexValue not specified means \"Display All\"\n");
-    ACPI_USAGE_TEXT ("\nDefault search with valid Name/Prefix and no options:\n");
-    ACPI_USAGE_TEXT ("    Find ASL/AML operator names - if NamePrefix does not start with underscore\n");
-    ACPI_USAGE_TEXT ("    Find ASL predefined method names - if NamePrefix starts with underscore\n");
-}
+    {"USB Controller",
+        "ce2ee385-00e6-48cb-9f05-2edb927c4899"},
 
+    {"HID I2C Device",
+        "3cdff6f7-4267-4555-ad05-b30a3d8938de"},
 
-/******************************************************************************
- *
- * FUNCTION:    main
- *
- * DESCRIPTION: C main function for AcpiHelp utility.
- *
- ******************************************************************************/
+    {"Power Button Device",
+        "dfbcf3c5-e7a5-44e6-9c1f-29c76f6e059c"},
 
-int ACPI_SYSTEM_XFACE
-main (
-    int                     argc,
-    char                    *argv[])
-{
-    char                    *Name;
-    UINT32                  DecodeType;
-    int                     j;
+    {"Device Labeling Interface",
+        "e5c937d0-3553-4d7a-9117-ea4d19c3434d"},
 
+    {"SATA Controller",
+        "e4db149b-fcfe-425b-a6d8-92357d78fc7f"},
 
-    AcpiOsInitialize ();
-    ACPI_DEBUG_INITIALIZE (); /* For debug version only */
-    printf (ACPI_COMMON_SIGNON (AH_UTILITY_NAME));
-    DecodeType = AH_DECODE_DEFAULT;
+    {"Physical Presence Interface",
+        "3dddfaa6-361b-4eb4-a424-8d10089d1653"},
 
-    if (argc < 2)
-    {
-        AhDisplayUsage ();
-        return (0);
-    }
-
-    /* Command line options */
-
-    while ((j = AcpiGetopt (argc, argv, AH_SUPPORTED_OPTIONS)) != ACPI_OPT_END) switch (j)
-    {
-    case 'a':
-
-        DecodeType = AH_DECODE_ASL_AML;
-        break;
-
-    case 'e':
-
-        DecodeType = AH_DECODE_EXCEPTION;
-        break;
-
-    case 'i':
-
-        DecodeType = AH_DISPLAY_DEVICE_IDS;
-        break;
-
-    case 'k':
-
-        DecodeType = AH_DECODE_ASL_KEYWORD;
-        break;
-
-    case 'm':
-
-        DecodeType = AH_DECODE_AML;
-        break;
-
-    case 'o':
-
-        DecodeType = AH_DECODE_AML_OPCODE;
-        break;
-
-    case 'p':
-
-        DecodeType = AH_DECODE_PREDEFINED_NAME;
-        break;
-
-    case 's':
-
-        DecodeType = AH_DECODE_ASL;
-        break;
-
-    case 'u':
-
-        DecodeType = AH_DISPLAY_UUIDS;
-        break;
-
-    case 'v': /* -v: (Version): signon already emitted, just exit */
-
-        return (0);
-
-    case 'h':
-    default:
-
-        AhDisplayUsage ();
-        return (-1);
-    }
-
-    /* Missing (null) name means "display all" */
-
-    Name = argv[AcpiGbl_Optind];
-
-    switch (DecodeType)
-    {
-    case AH_DECODE_ASL_AML:
-
-        AhFindAslAndAmlOperators (Name);
-        break;
-
-    case AH_DECODE_AML:
-
-        AhFindAmlOpcode (Name);
-        break;
-
-    case AH_DECODE_AML_OPCODE:
-
-        AhDecodeAmlOpcode (Name);
-        break;
-
-    case AH_DECODE_PREDEFINED_NAME:
-
-        AhFindPredefinedNames (Name);
-        break;
-
-    case AH_DECODE_ASL:
-
-        AhFindAslOperators (Name);
-        break;
-
-    case AH_DECODE_ASL_KEYWORD:
-
-        AhFindAslKeywords (Name);
-        break;
-
-    case AH_DISPLAY_DEVICE_IDS:
-
-        AhDisplayDeviceIds (Name);
-        break;
-
-    case AH_DECODE_EXCEPTION:
-
-        AhDecodeException (Name);
-        break;
-
-    case AH_DISPLAY_UUIDS:
-
-        AhDisplayUuids ();
-        break;
-
-    default:
-
-        if (!Name)
-        {
-            AhFindAslOperators (Name);
-            break;
-        }
-
-        if (*Name == '_')
-        {
-            AhFindPredefinedNames (Name);
-        }
-        else
-        {
-            AhFindAslAndAmlOperators (Name);
-        }
-        break;
-    }
-
-    return (0);
-}
+    {NULL}
+};
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AhStrupr (strupr)
+ * FUNCTION:    AcpiAhMatchUuid
  *
- * PARAMETERS:  SrcString           - The source string to convert
+ * PARAMETERS:  Data                - Data buffer containing a UUID
  *
- * RETURN:      None
+ * RETURN:      ASCII description string for the UUID if it is found.
  *
- * DESCRIPTION: Convert string to uppercase
- *
- * NOTE: This is not a POSIX function, so it appears here, not in utclib.c
+ * DESCRIPTION: Returns a description string for "known" UUIDs, which are
+ *              are UUIDs that are related to ACPI in some way.
  *
  ******************************************************************************/
 
-void
-AhStrupr (
-    char                    *SrcString)
+const char *
+AcpiAhMatchUuid (
+    UINT8                   *Data)
 {
-    char                    *String;
+    const AH_UUID           *Info;
+    UINT8                   UuidBuffer[UUID_BUFFER_LENGTH];
 
 
-    if (!SrcString)
+    /* Walk the table of known ACPI-related UUIDs */
+
+    for (Info = AcpiUuids; Info->Description; Info++)
     {
-        return;
+        AcpiUtConvertStringToUuid (Info->String, UuidBuffer);
+
+        if (!ACPI_MEMCMP (Data, UuidBuffer, UUID_BUFFER_LENGTH))
+        {
+            return (Info->Description);
+        }
     }
 
-    /* Walk entire string, uppercasing the letters */
-
-    for (String = SrcString; *String; String++)
-    {
-        *String = (char) toupper ((int) *String);
-    }
-
-    return;
+    return (NULL);
 }

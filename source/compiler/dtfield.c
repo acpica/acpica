@@ -331,7 +331,7 @@ DtCompileUuid (
     }
     else
     {
-        Status = AuConvertStringToUuid (InString, (char *) Buffer);
+        AcpiUtConvertStringToUuid (InString, Buffer);
     }
 
     return (Status);

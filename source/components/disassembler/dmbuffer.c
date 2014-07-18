@@ -147,90 +147,6 @@ AcpiDmPldBuffer (
     UINT8                   *ByteData,
     UINT32                  ByteCount);
 
-static char *
-AcpiDmMatchUuid (
-    UINT8                   *Data);
-
-/* Table of "known" (ACPI-specific) UUIDs */
-
-typedef struct ah_uuid
-{
-    char                    *Description;
-    UINT8                   Value[UUID_BUFFER_LENGTH];
-
-} AH_UUID;
-
-static const AH_UUID  AslUuids[] =
-{
-    /* 33db4d5b-1ff7-401c-9657-7441c03dd766 */
-
-    {"PCI Host Bridge Device",
-        {0x5B,0x4D,0xDB,0x33,0xF7,0x1F,0x1C,0x40,
-         0x96,0x57,0x74,0x41,0xC0,0x3D,0xD7,0x66}},
-
-    /* 0811b06e-4a27-44f9-8d60-3cbbc22e7b48 */
-
-    {"Platform-wide Capabilities",
-        {0x6E,0xB0,0x11,0x08,0x27,0x4A,0xF9,0x44,
-         0x8D,0x60,0x3C,0xBB,0xC2,0x2E,0x7B,0x48}},
-
-    /* d8c1a3a6-be9b-4c9b-91bf-c3cb81fc5daf */
-
-    {"Dynamic Enumeration",
-        {0xA6,0xA3,0xC1,0xD8,0x9B,0xBE,0x9B,0x4C,
-         0x91,0xBF,0xC3,0xCB,0x81,0xFC,0x5D,0xAF}},
-
-    /* 4f248f40-d5e2-499f-834c-27758ea1cd3f */
-
-    {"GPIO Controller",
-        {0x40,0x8F,0x24,0x4F,0xE2,0xD5,0x9F,0x49,
-         0x83,0x4C,0x27,0x75,0x8E,0xA1,0xCD,0x3F}},
-
-    /* 4c2067e3-887d-475c-9720-4af1d3ed602e */
-
-    {"Battery Thermal Limit",
-        {0xE3,0x67,0x20,0x4C,0x7D,0x88,0x5C,0x47,
-         0x97,0x20,0x4A,0xF1,0xD3,0xED,0x60,0x2E}},
-
-    /* 14d399cd-7a27-4b18-8fb4-7cb7b9f4e500 */
-
-    {"Thermal Extensions",
-        {0xCD,0x99,0xD3,0x14,0x27,0x7A,0x18,0x4B,
-         0x8F,0xB4,0x7C,0xB7,0xB9,0xF4,0xE5,0x00}},
-
-    /* ce2ee385-00e6-48cb-9f05-2edb927c4899 */
-
-    {"USB Controller",
-        {0x85,0xE3,0x2E,0xCE,0xE6,0x00,0xCB,0x48,
-         0x9F,0x05,0x2E,0xDB,0x92,0x7C,0x48,0x99}},
-
-    /* 3cdff6f7-4267-4555-ad05-b30a3d8938de */
-
-    {"HID I2C Device",
-        {0xF7,0xF6,0xDF,0x3C,0x67,0x42,0x55,0x45,
-         0xAD,0x05,0xB3,0x0A,0x3D,0x89,0x38,0xDE}},
-
-    /* dfbcf3c5-e7a5-44e6-9c1f-29c76f6e059c */
-
-    {"Power Button Device",
-        {0xC5,0xF3,0xBC,0xDF,0xA5,0xE7,0xE6,0x44,
-         0x9C,0x1F,0x29,0xC7,0x6F,0x6E,0x05,0x9C}},
-
-    /* e5c937d0-3553-4d7a-9117-ea4d19c3434d */
-
-    {"Ignore PCI Device Boot Configuration",
-        {0xD0,0x37,0xC9,0xE5,0x53,0x35,0x7A,0x4D,
-         0x91,0x17,0xEA,0x4D,0x19,0xC3,0x43,0x4D}},
-
-    /* e4db149b-fcfe-425b-a6d8-92357d78fc7f */
-
-    {"SATA Controller",
-        {0x9B,0x14,0xDB,0xE4,0xFE,0xFC,0x5B,0x42,
-         0xA6,0xD8,0x92,0x35,0x7D,0x78,0xFC,0x7F}},
-
-    {NULL}
-};
-
 
 #define ACPI_BUFFER_BYTES_PER_LINE      8
 
@@ -507,7 +423,7 @@ AcpiDmUuid (
     ACPI_PARSE_OBJECT       *Op)
 {
     UINT8                   *Data;
-    char                    *Description;
+    const char              *Description;
 
 
     Data = ACPI_CAST_PTR (UINT8, Op->Named.Data);
@@ -528,43 +444,11 @@ AcpiDmUuid (
 
     /* Dump the UUID description string if available */
 
-    Description = AcpiDmMatchUuid (Data);
+    Description = AcpiAhMatchUuid (Data);
     if (Description)
     {
         AcpiOsPrintf (" /* %s */", Description);
     }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDmMatchUuid
- *
- * PARAMETERS:  Data                - Data buffer containing a UUID
- *
- * RETURN:      ASCII description string for the UUID if it is found.
- *
- * DESCRIPTION: Returns a description string for "known" UUIDs, which are
- *              are defined here to be UUIDs that are defined by ACPI.
- *
- ******************************************************************************/
-
-static char *
-AcpiDmMatchUuid (
-    UINT8                   *Data)
-{
-    const AH_UUID           *Info;
-
-
-    for (Info = AslUuids; Info->Description; Info++)
-    {
-        if (!ACPI_MEMCMP (Data, Info->Value, UUID_BUFFER_LENGTH))
-        {
-            return (Info->Description);
-        }
-    }
-
-    return (NULL);
 }
 
 

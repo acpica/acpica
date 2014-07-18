@@ -695,10 +695,10 @@ OpcDoEisaId (
             (UINT32) ((UINT8) (InString[1] - 0x40)) << 21 |
             (UINT32) ((UINT8) (InString[2] - 0x40)) << 16 |
 
-            (UtHexCharToValue (InString[3])) << 12 |
-            (UtHexCharToValue (InString[4])) << 8  |
-            (UtHexCharToValue (InString[5])) << 4  |
-             UtHexCharToValue (InString[6]);
+            (AcpiUtAsciiCharToHex (InString[3])) << 12 |
+            (AcpiUtAsciiCharToHex (InString[4])) << 8  |
+            (AcpiUtAsciiCharToHex (InString[5])) << 4  |
+             AcpiUtAsciiCharToHex (InString[6]);
 
         /* Swap to little-endian to get final ID (see function header) */
 
@@ -738,7 +738,7 @@ OpcDoUuId (
     ACPI_PARSE_OBJECT       *Op)
 {
     char                    *InString;
-    char                    *Buffer;
+    UINT8                   *Buffer;
     ACPI_STATUS             Status = AE_OK;
     ACPI_PARSE_OBJECT       *NewOp;
 
@@ -753,7 +753,7 @@ OpcDoUuId (
     }
     else
     {
-        (void) AuConvertStringToUuid (InString, Buffer);
+        AcpiUtConvertStringToUuid (InString, Buffer);
     }
 
     /* Change Op to a Buffer */

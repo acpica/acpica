@@ -1431,4 +1431,11 @@ typedef struct ah_device_id
 
 } AH_DEVICE_ID;
 
+typedef struct ah_uuid
+{
+    char            *Description;
+    char            *String;
+
+} AH_UUID;
+
 #endif /* __ACLOCAL_H__ */
