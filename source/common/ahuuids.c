@@ -160,7 +160,7 @@ const AH_UUID  AcpiUuids[] =
     {"Physical Presence Interface",
         "3dddfaa6-361b-4eb4-a424-8d10089d1653"},
 
-    {NULL}
+    {NULL, NULL}
 };
 
 
