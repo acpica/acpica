@@ -213,12 +213,23 @@ AcpiEnableGpe (
 
     Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
 
-    /* Ensure that we have a valid GPE number */
-
+    /*
+     * Ensure that we have a valid GPE number and that there is some way
+     * of handling the GPE (handler or a GPE method). In other words, we
+     * won't allow a valid GPE to be enabled if there is no way to handle it.
+     */
     GpeEventInfo = AcpiEvGetGpeEventInfo (GpeDevice, GpeNumber);
     if (GpeEventInfo)
     {
-        Status = AcpiEvAddGpeReference (GpeEventInfo);
+        if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) !=
+            ACPI_GPE_DISPATCH_NONE)
+        {
+            Status = AcpiEvAddGpeReference (GpeEventInfo);
+        }
+        else
+        {
+            Status = AE_NO_HANDLER;
+        }
     }
 
     AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
