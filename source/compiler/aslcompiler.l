@@ -182,10 +182,10 @@ NamePathTail                [.]{NameSeg}
 [ \t]                       { count (0); }
 
 
-"/*"                        { if (!AslDoComment ()) yyterminate (); }
-"//"                        { if (!AslDoCommentType2 ()) yyterminate (); }
+"/*"                        { if (!AslDoComment ()) {yyterminate ();} }
+"//"                        { if (!AslDoCommentType2 ()) {yyterminate ();} }
 
-"\""                        { if (AslDoStringLiteral ()) return (PARSEOP_STRING_LITERAL); else yyterminate (); }
+"\""                        { if (AslDoStringLiteral ()) {return (PARSEOP_STRING_LITERAL);} else {yyterminate ();} }
 ";"                         { count (0); return(';'); }
 
 
@@ -711,9 +711,9 @@ NamePathTail                [.]{NameSeg}
                                 AslCompilererror (MsgBuffer);}
 
 <<EOF>>                     { if (AslPopInputFileStack ())
-                                yyterminate();
+                                {yyterminate();}
                               else
-                                return (PARSEOP_INCLUDE_END);};
+                                {return (PARSEOP_INCLUDE_END);} };
 
 %%
 
