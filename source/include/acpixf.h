@@ -923,6 +923,12 @@ AcpiFinishGpe (
 
 ACPI_HW_DEPENDENT_RETURN_STATUS (
 ACPI_STATUS
+AcpiMarkGpeForWake (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber))
+
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
 AcpiSetupGpeForWake (
     ACPI_HANDLE             ParentDevice,
     ACPI_HANDLE             GpeDevice,
