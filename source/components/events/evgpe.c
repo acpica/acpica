@@ -792,12 +792,15 @@ AcpiEvFinishGpe (
         }
     }
 
-    /*
-     * Enable this GPE, conditionally. This means that the GPE will
-     * only be physically enabled if the EnableForRun bit is set
-     * in the EventInfo.
-     */
-    (void) AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_CONDITIONAL_ENABLE);
+    if (!(GpeEventInfo->Flags & ACPI_GPE_NO_AUTO_DISABLE))
+    {
+        /*
+         * Enable this GPE, conditionally. This means that the GPE
+         * will only be physically enabled if the EnableForRun bit is
+         * set in the EventInfo.
+         */
+        (void) AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_CONDITIONAL_ENABLE);
+    }
     return (AE_OK);
 }
 
@@ -857,13 +860,16 @@ AcpiEvGpeDispatch (
      * GPE and leave it disabled permanently to prevent further such
      * pointless events from firing.
      */
-    Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_DISABLE);
-    if (ACPI_FAILURE (Status))
+    if (!(GpeEventInfo->Flags & ACPI_GPE_NO_AUTO_DISABLE))
     {
-        ACPI_EXCEPTION ((AE_INFO, Status,
-            "Unable to disable GPE %02X", GpeNumber));
-        AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
-        return_UINT32 (ACPI_INTERRUPT_NOT_HANDLED);
+        Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_DISABLE);
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_EXCEPTION ((AE_INFO, Status,
+                "Unable to disable GPE %02X", GpeNumber));
+            AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
+            return_UINT32 (ACPI_INTERRUPT_NOT_HANDLED);
+        }
     }
 
     /*

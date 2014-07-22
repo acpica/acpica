@@ -902,6 +902,7 @@ ACPI_EXPORT_SYMBOL (AcpiRemoveFixedEventHandler)
  *              GpeNumber       - The GPE number within the GPE block
  *              Type            - Whether this GPE should be treated as an
  *                                edge- or level-triggered interrupt.
+ *                                GPE flags can also be included.
  *              Address         - Address of the handler
  *              Context         - Value passed to the handler on each GPE
  *
@@ -930,7 +931,8 @@ AcpiInstallGpeHandler (
 
     /* Parameter validation */
 
-    if ((!Address) || (Type & ~ACPI_GPE_XRUPT_TYPE_MASK))
+    if ((!Address) ||
+        (Type & ~(ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_XRUPT_FLAG_MASK)))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -974,7 +976,8 @@ AcpiInstallGpeHandler (
     Handler->Context = Context;
     Handler->MethodNode = GpeEventInfo->Dispatch.MethodNode;
     Handler->OriginalFlags = (UINT8) (GpeEventInfo->Flags &
-        (ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_DISPATCH_MASK));
+        (ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_XRUPT_FLAG_MASK |
+         ACPI_GPE_DISPATCH_MASK));
     Handler->ReferenceCount = 0;
 
     /*
@@ -991,7 +994,8 @@ AcpiInstallGpeHandler (
 
         /* Sanity check of original type against new type */
 
-        if (Type != (UINT32) (GpeEventInfo->Flags & ACPI_GPE_XRUPT_TYPE_MASK))
+        if ((Type & ACPI_GPE_XRUPT_TYPE_MASK) !=
+            (UINT32) (GpeEventInfo->Flags & ACPI_GPE_XRUPT_TYPE_MASK))
         {
             ACPI_WARNING ((AE_INFO, "GPE type mismatch (level/edge)"));
         }
@@ -1003,7 +1007,8 @@ AcpiInstallGpeHandler (
 
     /* Setup up dispatch flags to indicate handler (vs. method/notify) */
 
-    GpeEventInfo->Flags &= ~(ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_DISPATCH_MASK);
+    GpeEventInfo->Flags &= ~(ACPI_GPE_XRUPT_TYPE_MASK |
+        ACPI_GPE_XRUPT_FLAG_MASK | ACPI_GPE_DISPATCH_MASK);
     GpeEventInfo->Flags |= (UINT8) (Type | ACPI_GPE_DISPATCH_HANDLER);
 
     AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
@@ -1102,7 +1107,8 @@ AcpiRemoveGpeHandler (
 
     GpeEventInfo->Dispatch.MethodNode = Handler->MethodNode;
     GpeEventInfo->Flags &=
-        ~(ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_DISPATCH_MASK);
+        ~(ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_XRUPT_FLAG_MASK |
+          ACPI_GPE_DISPATCH_MASK);
     GpeEventInfo->Flags |= Handler->OriginalFlags;
 
     /*
