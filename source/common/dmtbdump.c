@@ -1750,6 +1750,16 @@ AcpiDmDumpMadt (
             InfoTable = AcpiDmTableInfoMadt12;
             break;
 
+        case ACPI_MADT_TYPE_GENERIC_MSI_FRAME:
+
+            InfoTable = AcpiDmTableInfoMadt13;
+            break;
+
+        case ACPI_MADT_TYPE_GENERIC_REDISTRIBUTOR:
+
+            InfoTable = AcpiDmTableInfoMadt14;
+            break;
+
         default:
 
             AcpiOsPrintf ("\n**** Unknown MADT subtable type 0x%X\n\n", SubTable->Type);

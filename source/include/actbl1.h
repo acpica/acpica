@@ -834,20 +834,22 @@ typedef struct acpi_table_madt
 
 enum AcpiMadtType
 {
-    ACPI_MADT_TYPE_LOCAL_APIC           = 0,
-    ACPI_MADT_TYPE_IO_APIC              = 1,
-    ACPI_MADT_TYPE_INTERRUPT_OVERRIDE   = 2,
-    ACPI_MADT_TYPE_NMI_SOURCE           = 3,
-    ACPI_MADT_TYPE_LOCAL_APIC_NMI       = 4,
-    ACPI_MADT_TYPE_LOCAL_APIC_OVERRIDE  = 5,
-    ACPI_MADT_TYPE_IO_SAPIC             = 6,
-    ACPI_MADT_TYPE_LOCAL_SAPIC          = 7,
-    ACPI_MADT_TYPE_INTERRUPT_SOURCE     = 8,
-    ACPI_MADT_TYPE_LOCAL_X2APIC         = 9,
-    ACPI_MADT_TYPE_LOCAL_X2APIC_NMI     = 10,
-    ACPI_MADT_TYPE_GENERIC_INTERRUPT    = 11,
-    ACPI_MADT_TYPE_GENERIC_DISTRIBUTOR  = 12,
-    ACPI_MADT_TYPE_RESERVED             = 13    /* 13 and greater are reserved */
+    ACPI_MADT_TYPE_LOCAL_APIC               = 0,
+    ACPI_MADT_TYPE_IO_APIC                  = 1,
+    ACPI_MADT_TYPE_INTERRUPT_OVERRIDE       = 2,
+    ACPI_MADT_TYPE_NMI_SOURCE               = 3,
+    ACPI_MADT_TYPE_LOCAL_APIC_NMI           = 4,
+    ACPI_MADT_TYPE_LOCAL_APIC_OVERRIDE      = 5,
+    ACPI_MADT_TYPE_IO_SAPIC                 = 6,
+    ACPI_MADT_TYPE_LOCAL_SAPIC              = 7,
+    ACPI_MADT_TYPE_INTERRUPT_SOURCE         = 8,
+    ACPI_MADT_TYPE_LOCAL_X2APIC             = 9,
+    ACPI_MADT_TYPE_LOCAL_X2APIC_NMI         = 10,
+    ACPI_MADT_TYPE_GENERIC_INTERRUPT        = 11,
+    ACPI_MADT_TYPE_GENERIC_DISTRIBUTOR      = 12,
+    ACPI_MADT_TYPE_GENERIC_MSI_FRAME        = 13,
+    ACPI_MADT_TYPE_GENERIC_REDISTRIBUTOR    = 14,
+    ACPI_MADT_TYPE_RESERVED                 = 15    /* 15 and greater are reserved */
 };
 
 
@@ -1008,15 +1010,26 @@ typedef struct acpi_madt_generic_interrupt
 {
     ACPI_SUBTABLE_HEADER    Header;
     UINT16                  Reserved;           /* Reserved - must be zero */
-    UINT32                  GicId;
+    UINT32                  CpuInterfaceNumber;
     UINT32                  Uid;
     UINT32                  Flags;
     UINT32                  ParkingVersion;
     UINT32                  PerformanceInterrupt;
     UINT64                  ParkedAddress;
     UINT64                  BaseAddress;
+    UINT64                  GicvBaseAddress;
+    UINT64                  GichBaseAddress;
+    UINT32                  VgicInterrupt;
+    UINT64                  GicrBaseAddress;
+    UINT64                  ArmMpidr;
 
 } ACPI_MADT_GENERIC_INTERRUPT;
+
+/* Masks for Flags field above */
+
+/* ACPI_MADT_ENABLED                    (1)      Processor is usable if set */
+#define ACPI_MADT_PERFORMANCE_IRQ_MODE  (1<<1)  /* 01: Performance Interrupt Mode */
+#define ACPI_MADT_VGIC_IRQ_MODE         (1<<2)  /* 02: VGIC Maintenance Interrupt mode */
 
 
 /* 12: Generic Distributor (ACPI 5.0) */
@@ -1033,11 +1046,42 @@ typedef struct acpi_madt_generic_distributor
 } ACPI_MADT_GENERIC_DISTRIBUTOR;
 
 
+/* 13: Generic MSI Frame (ACPI 5.1) */
+
+typedef struct acpi_madt_generic_msi_frame
+{
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT16                  Reserved;           /* Reserved - must be zero */
+    UINT32                  MsiFrameId;
+    UINT64                  BaseAddress;
+    UINT32                  Flags;
+    UINT16                  SpiCount;
+    UINT16                  SpiBase;
+
+} ACPI_MADT_GENERIC_MSI_FRAME;
+
+/* Masks for Flags field above */
+
+#define ACPI_MADT_OVERRIDE_SPI_VALUES   (1)
+
+
+/* 14: Generic Redistributor (ACPI 5.1) */
+
+typedef struct acpi_madt_generic_redistributor
+{
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT16                  Reserved;           /* reserved - must be zero */
+    UINT64                  BaseAddress;
+    UINT32                  Length;
+
+} ACPI_MADT_GENERIC_REDISTRIBUTOR;
+
+
 /*
  * Common flags fields for MADT subtables
  */
 
-/* MADT Local APIC flags (LapicFlags) and GIC flags */
+/* MADT Local APIC flags */
 
 #define ACPI_MADT_ENABLED           (1)         /* 00: Processor is usable if set */
 

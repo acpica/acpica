@@ -273,20 +273,22 @@ static const char           *AcpiDmHestNotifySubnames[] =
 
 static const char           *AcpiDmMadtSubnames[] =
 {
-    "Processor Local APIC",         /* ACPI_MADT_TYPE_LOCAL_APIC */
-    "I/O APIC",                     /* ACPI_MADT_TYPE_IO_APIC */
-    "Interrupt Source Override",    /* ACPI_MADT_TYPE_INTERRUPT_OVERRIDE */
-    "NMI Source",                   /* ACPI_MADT_TYPE_NMI_SOURCE */
-    "Local APIC NMI",               /* ACPI_MADT_TYPE_LOCAL_APIC_NMI */
-    "Local APIC Address Override",  /* ACPI_MADT_TYPE_LOCAL_APIC_OVERRIDE */
-    "I/O SAPIC",                    /* ACPI_MADT_TYPE_IO_SAPIC */
-    "Local SAPIC",                  /* ACPI_MADT_TYPE_LOCAL_SAPIC */
-    "Platform Interrupt Sources",   /* ACPI_MADT_TYPE_INTERRUPT_SOURCE */
-    "Processor Local x2APIC",       /* ACPI_MADT_TYPE_LOCAL_X2APIC */
-    "Local x2APIC NMI",             /* ACPI_MADT_TYPE_LOCAL_X2APIC_NMI */
-    "Generic Interrupt Controller", /* ACPI_MADT_GENERIC_INTERRUPT */
-    "Generic Interrupt Distributor",/* ACPI_MADT_GENERIC_DISTRIBUTOR */
-    "Unknown SubTable Type"         /* Reserved */
+    "Processor Local APIC",             /* ACPI_MADT_TYPE_LOCAL_APIC */
+    "I/O APIC",                         /* ACPI_MADT_TYPE_IO_APIC */
+    "Interrupt Source Override",        /* ACPI_MADT_TYPE_INTERRUPT_OVERRIDE */
+    "NMI Source",                       /* ACPI_MADT_TYPE_NMI_SOURCE */
+    "Local APIC NMI",                   /* ACPI_MADT_TYPE_LOCAL_APIC_NMI */
+    "Local APIC Address Override",      /* ACPI_MADT_TYPE_LOCAL_APIC_OVERRIDE */
+    "I/O SAPIC",                        /* ACPI_MADT_TYPE_IO_SAPIC */
+    "Local SAPIC",                      /* ACPI_MADT_TYPE_LOCAL_SAPIC */
+    "Platform Interrupt Sources",       /* ACPI_MADT_TYPE_INTERRUPT_SOURCE */
+    "Processor Local x2APIC",           /* ACPI_MADT_TYPE_LOCAL_X2APIC */
+    "Local x2APIC NMI",                 /* ACPI_MADT_TYPE_LOCAL_X2APIC_NMI */
+    "Generic Interrupt Controller",     /* ACPI_MADT_GENERIC_INTERRUPT */
+    "Generic Interrupt Distributor",    /* ACPI_MADT_GENERIC_DISTRIBUTOR */
+    "Generic MSI Frame",                /* ACPI_MADT_GENERIC_MSI_FRAME */
+    "Generic Interrupt Redistributor",  /* ACPI_MADT_GENERIC_REDISTRIBUTOR */
+    "Unknown SubTable Type"             /* Reserved */
 };
 
 static const char           *AcpiDmPcctSubnames[] =
