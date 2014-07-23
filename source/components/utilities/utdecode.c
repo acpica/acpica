@@ -581,7 +581,8 @@ static const char           *AcpiGbl_GenericNotify[ACPI_NOTIFY_MAX + 1] =
     /* 09 */ "Device PLD Check",
     /* 0A */ "Reserved",
     /* 0B */ "System Locality Update",
-    /* 0C */ "Shutdown Request"
+    /* 0C */ "Shutdown Request",
+    /* 0D */ "System Resource Affinity Update"
 };
 
 static const char           *AcpiGbl_DeviceNotify[4] =
@@ -615,7 +616,7 @@ AcpiUtGetNotifyName (
     ACPI_OBJECT_TYPE        Type)
 {
 
-    /* 00 - 0C are common to all object types */
+    /* 00 - 0D are common to all object types */
 
     if (NotifyValue <= ACPI_NOTIFY_MAX)
     {
