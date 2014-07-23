@@ -301,6 +301,7 @@ static const char           *AcpiDmMadtSubnames[] =
 static const char           *AcpiDmPcctSubnames[] =
 {
     "Generic Communications Subspace",  /* ACPI_PCCT_TYPE_GENERIC_SUBSPACE */
+    "HW-Reduced Communications Subspace",
     "Unknown SubTable Type"             /* Reserved */
 };
 

@@ -2232,6 +2232,7 @@ AcpiDmDumpPcct (
 {
     ACPI_STATUS             Status;
     ACPI_PCCT_SUBSPACE      *SubTable;
+    ACPI_DMTABLE_INFO       *InfoTable;
     UINT32                  Length = Table->Length;
     UINT32                  Offset = sizeof (ACPI_TABLE_PCCT);
 
@@ -2259,10 +2260,20 @@ AcpiDmDumpPcct (
             return;
         }
 
-        /* ACPI 5.0: Only one type of PCCT subtable is supported */
-
-        if (SubTable->Header.Type != ACPI_PCCT_TYPE_GENERIC_SUBSPACE)
+        switch (SubTable->Header.Type)
         {
+        case ACPI_PCCT_TYPE_GENERIC_SUBSPACE:
+
+            InfoTable = AcpiDmTableInfoPcct0;
+            break;
+
+        case ACPI_PCCT_TYPE_HW_REDUCED_SUBSPACE:
+
+            InfoTable = AcpiDmTableInfoPcct1;
+            break;
+
+        default:
+
             AcpiOsPrintf (
                 "\n**** Unexpected or unknown PCCT subtable type 0x%X\n\n",
                 SubTable->Header.Type);
@@ -2271,7 +2282,7 @@ AcpiDmDumpPcct (
 
         AcpiOsPrintf ("\n");
         Status = AcpiDmDumpTable (Length, Offset, SubTable,
-                    SubTable->Header.Length, AcpiDmTableInfoPcct0);
+                    SubTable->Header.Length, InfoTable);
         if (ACPI_FAILURE (Status))
         {
             return;

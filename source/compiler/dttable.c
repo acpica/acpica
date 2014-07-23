@@ -2008,6 +2008,11 @@ DtCompilePcct (
             InfoTable = AcpiDmTableInfoPcct0;
             break;
 
+        case ACPI_PCCT_TYPE_HW_REDUCED_SUBSPACE:
+
+            InfoTable = AcpiDmTableInfoPcct1;
+            break;
+
         default:
 
             DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "PCCT");
