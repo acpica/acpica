@@ -492,6 +492,10 @@ DtCompileFpdt (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileGtdt (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompileHest (
     void                    **PFieldList);
 

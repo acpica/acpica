@@ -1025,6 +1025,125 @@ DtCompileFadt (
     return (AE_OK);
 }
 
+/******************************************************************************
+ *
+ * FUNCTION:    DtCompileGtdt
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile GTDT.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileGtdt (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    DT_FIELD                *SubtableStart;
+    ACPI_SUBTABLE_HEADER    *GtdtHeader;
+    ACPI_DMTABLE_INFO       *InfoTable;
+    UINT32                  GtCount;
+
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoGtdt,
+                &Subtable, TRUE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    ParentTable = DtPeekSubtable ();
+    DtInsertSubtable (ParentTable, Subtable);
+
+    while (*PFieldList)
+    {
+        SubtableStart = *PFieldList;
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoGtdtHdr,
+                    &Subtable, TRUE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+        DtPushSubtable (Subtable);
+
+        GtdtHeader = ACPI_CAST_PTR (ACPI_SUBTABLE_HEADER, Subtable->Buffer);
+
+        switch (GtdtHeader->Type)
+        {
+        case ACPI_GTDT_TYPE_TIMER_BLOCK:
+
+            InfoTable = AcpiDmTableInfoGtdt0;
+            break;
+
+        case ACPI_GTDT_TYPE_WATCHDOG:
+
+            InfoTable = AcpiDmTableInfoGtdt1;
+            break;
+
+        default:
+
+            DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "GTDT");
+            return (AE_ERROR);
+        }
+
+        Status = DtCompileTable (PFieldList, InfoTable, &Subtable, TRUE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+
+        /*
+         * Additional GT block subtable data
+         */
+
+        switch (GtdtHeader->Type)
+        {
+        case ACPI_GTDT_TYPE_TIMER_BLOCK:
+
+            DtPushSubtable (Subtable);
+            ParentTable = DtPeekSubtable ();
+
+            GtCount = (ACPI_CAST_PTR (ACPI_GTDT_TIMER_BLOCK,
+                Subtable->Buffer - sizeof(ACPI_GTDT_HEADER)))->TimerCount;
+            while (GtCount)
+            {
+                Status = DtCompileTable (PFieldList, AcpiDmTableInfoGtdt0a,
+                            &Subtable, TRUE);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+
+
+                DtInsertSubtable (ParentTable, Subtable);
+                GtCount--;
+            }
+            DtPopSubtable ();
+            break;
+
+        default:
+
+            break;
+        }
+
+        DtPopSubtable ();
+    }
+
+    return (AE_OK);
+}
+
 
 /******************************************************************************
  *

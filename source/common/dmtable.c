@@ -244,6 +244,13 @@ static const char           *AcpiDmErstInstructions[] =
     "Unknown Instruction"
 };
 
+static const char           *AcpiDmGtdtSubnames[] =
+{
+    "Generic Timer Block",
+    "Generic Watchdog Timer",
+    "Unknown SubTable Type"         /* Reserved */
+};
+
 static const char           *AcpiDmHestSubnames[] =
 {
     "IA-32 Machine Check Exception",
@@ -392,7 +399,7 @@ ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_ERST, NULL,                   AcpiDmDumpErst, DtCompileErst,  TemplateErst,   "Error Record Serialization Table"},
     {ACPI_SIG_FADT, NULL,                   AcpiDmDumpFadt, DtCompileFadt,  TemplateFadt,   "Fixed ACPI Description Table (FADT)"},
     {ACPI_SIG_FPDT, NULL,                   AcpiDmDumpFpdt, DtCompileFpdt,  TemplateFpdt,   "Firmware Performance Data Table"},
-    {ACPI_SIG_GTDT, AcpiDmTableInfoGtdt,    NULL,           NULL,           TemplateGtdt,   "Generic Timer Description Table"},
+    {ACPI_SIG_GTDT, NULL,                   AcpiDmDumpGtdt, DtCompileGtdt,  TemplateGtdt,   "Generic Timer Description Table"},
     {ACPI_SIG_HEST, NULL,                   AcpiDmDumpHest, DtCompileHest,  TemplateHest,   "Hardware Error Source Table"},
     {ACPI_SIG_HPET, AcpiDmTableInfoHpet,    NULL,           NULL,           TemplateHpet,   "High Precision Event Timer table"},
     {ACPI_SIG_IVRS, NULL,                   AcpiDmDumpIvrs, DtCompileIvrs,  TemplateIvrs,   "I/O Virtualization Reporting Structure"},
@@ -791,6 +798,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_SPACEID:
         case ACPI_DMT_ACCWIDTH:
         case ACPI_DMT_IVRS:
+        case ACPI_DMT_GTDT:
         case ACPI_DMT_MADT:
         case ACPI_DMT_PCCT:
         case ACPI_DMT_PMTT:
@@ -1197,6 +1205,19 @@ AcpiDmDumpTable (
             }
 
             AcpiOsPrintf (UINT8_FORMAT, *Target, AcpiDmErstInstructions[Temp8]);
+            break;
+
+        case ACPI_DMT_GTDT:
+
+            /* GTDT subtable types */
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_GTDT_TYPE_RESERVED)
+            {
+                Temp8 = ACPI_GTDT_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf (UINT8_FORMAT, *Target, AcpiDmGtdtSubnames[Temp8]);
             break;
 
         case ACPI_DMT_HEST:

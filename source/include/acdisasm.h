@@ -215,6 +215,7 @@ typedef enum
     ACPI_DMT_ERSTACT,
     ACPI_DMT_ERSTINST,
     ACPI_DMT_FADTPM,
+    ACPI_DMT_GTDT,
     ACPI_DMT_HEST,
     ACPI_DMT_HESTNTFY,
     ACPI_DMT_HESTNTYP,
@@ -346,6 +347,10 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFpdt0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFpdt1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGas[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGtdt[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGtdtHdr[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGtdt0[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGtdt0a[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGtdt1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHeader[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHest[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHest0[];
@@ -518,6 +523,10 @@ AcpiDmDumpFadt (
 
 void
 AcpiDmDumpFpdt (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpGtdt (
     ACPI_TABLE_HEADER       *Table);
 
 void
