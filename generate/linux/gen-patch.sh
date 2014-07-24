@@ -5,43 +5,56 @@
 #                        repository
 #
 # SYNOPSIS:
-#         gen-patch.sh [-f from] [-i index] [-s sign] <commit>
+#         gen-patch.sh [-f from] [-i index] [-l link] [-m maintainer] [-u] [commit]
 #
 # DESCRIPTION:
 #         Extract linuxized patches from the git repository.
 #         Options:
-#          -f from  Specify name <email> for From field.
 #          -i index Specify patch index.
-#          -s sign  Specify name <email> for Signed-off-by field.
+#          -l: Specify a URL prefix that can be used to link the commit.
+#          -m: Specify maintainer name <email> for Signed-off-by field.
+#          -u: Specify whether the commit is in an upstream repository.
+#          commit: GIT commit (default to HEAD).
 #
 
 usage() {
-	echo "Usage: `basename $0` [-f from] [-i index] [-s sign] <commit>"
+	echo "Usage: `basename $0` [-f from] [-i index] [-l link] [-m maintainer] [-u] <commit>"
 	echo "Where:"
-	echo "     -f: Specify name <email> for From field (default to author)."
 	echo "     -i: Specify patch index (default to 0)."
-	echo "     -s: Specify name <email> for Signed-off-by field."
+	echo "     -l: Specify a URL prefix that can be used to link the commit."
+	echo "     -m: Specify maintainer name <email> for Signed-off-by field."
+	echo "     -u: Specify whether the commit is in an upstream repository."
 	echo " commit: GIT commit (default to HEAD)."
 	exit 1
 }
 
-FROM_EMAIL="%aN <%aE>"
+COMMITTER="`git config user.name` <`git config user.email`>"
 INDEX=0
+UPSTREAM=no
 
-while getopts "f:i:s:" opt
+while getopts "i:l:m:u" opt
 do
 	case $opt in
-	s) SIGNED_OFF_BY=$OPTARG;;
-	f) FROM_EMAIL=$OPTARG;;
 	i) INDEX=$OPTARG;;
+	l) LINK=$OPTARG;;
+	m) MAINTAINER=$OPTARG;;
+	u) UPSTREAM=yes
+	   if [ "x${LINK}" = "x" ]; then
+		LINK=https://github.com/acpica/acpica/commit/
+	   fi;;
 	?) echo "Invalid argument $opt"
 	   usage;;
 	esac
 done
 shift $(($OPTIND - 1))
 
-after=`git log -1 -c $1 --format=%H | cut -c1-8`
-before=`git log -1 -c $1^1 --format=%H | cut -c1-8`
+COMMIT=$1
+if [ "x${COMMIT}" = "x" ]; then
+	COMMIT=HEAD
+fi
+
+after=`git log -1 -c ${COMMIT} --format=%H | cut -c1-8`
+before=`git log -1 -c ${COMMIT}^1 --format=%H | cut -c1-8`
 
 SCRIPT=`(cd \`dirname $0\`; pwd)`
 . $SCRIPT/libacpica.sh
@@ -52,14 +65,118 @@ GP_linux_after=$CURDIR/linux.after
 GP_acpica_patch=$CURDIR/acpica-$after.patch
 GP_linux_patch=$CURDIR/linux-$after.patch
 
-FORMAT="From %H Mon Sep 17 00:00:00 2001%nFrom: $FROM_EMAIL%nData: %aD%nSubject: [PATCH $INDEX] ACPICA: %s%n%n%b"
-
 echo "[gen-patch.sh] Extracting GIT ($SRCDIR)..."
 # Cleanup
 rm -rf $GP_linux_before
 rm -rf $GP_linux_after
 rm -rf $GP_acpica_repo
 git clone $SRCDIR $GP_acpica_repo > /dev/null || exit 2
+
+# Preset environments: LINK
+# Arg 1: commit ID
+generate_refs()
+{
+	if [ "x${LINK}" != "x" ]; then
+		echo "Link: ${LINK}$1"
+	fi
+}
+
+# Preset environments: AUTHOR, MAINTAINER, COMMITTER
+# Arg 1: commit ID
+generate_sobs()
+{
+	split_desc $1 1
+	echo "Signed-off-by: ${AUTHOR}"
+	if [ "x${MAINTAINER}" != "x" ]; then
+		echo "Signed-off-by: ${MAINTAINER}"
+	fi
+	echo "Signed-off-by: ${COMMITTER}"
+}
+
+# Preset environments: UPSTREAM, INDEX, COMMITTER
+# Arg 1: commit ID
+generate_acpica_desc()
+{
+	AUTHOR_NAME=`git log -c $1 -1 --format="%aN"`
+	AUTHOR_EMAIL=`git log -c $1 -1 --format="%aE"`
+	if [ "x${AUTHOR_NAME}" = "xRobert Moore" ]; then
+		AUTHOR_NAME="Bob Moore"
+	fi
+	if [ "x${AUTHOR_EMAIL}" = "xRobert.Moore@intel.com" ]; then
+		AUTHOR_EMAIL="robert.moore@intel.com"
+	fi
+	AUTHOR="${AUTHOR_NAME} <${AUTHOR_EMAIL}>"
+	FORMAT="From %H Mon Sep 17 00:00:00 2001%nFrom: $COMMITTER%nData: %aD%nFrom: $AUTHOR%nSubject: [PATCH $INDEX] ACPICA: %s%n%n%b"
+	if [ "x$UPSTREAM" = "xyes" ]; then
+		FORMAT="From %H Mon Sep 17 00:00:00 2001%nFrom: $COMMITTER%nData: %aD%nFrom: $AUTHOR%nSubject: [PATCH $INDEX] ACPICA: %s%n%nACPICA commit %H%n%n%b"
+	fi
+	GIT_LOG_FORMAT=`echo $FORMAT`
+	eval "git log -c $1 -1 --format=\"$GIT_LOG_FORMAT\""
+}
+
+# Arg 1: patch description file
+# Arg 2: 1=dump SOB block, 0=dump other text
+split_desc()
+{
+	tac $1 | DOSOB=$2 awk '
+	BEGIN { SOB=1 }
+	{
+		if (SOB==1) {
+			if (match($0, /^Signed-off-by:.*/)) {
+				if (ENVIRON["DOSOB"]==1)
+					print $0
+			} else if (match($0, /^Acked-by:.*/)) {
+				if (ENVIRON["DOSOB"]==1)
+					print $0
+			} else if (match($0, /^Reviewed-by:.*/)) {
+				if (ENVIRON["DOSOB"]==1)
+					print $0
+			} else if (match($0, /^Reported-by:.*/)) {
+				if (ENVIRON["DOSOB"]==1)
+					print $0
+			} else if (match($0, /^Tested-by:.*/)) {
+				if (ENVIRON["DOSOB"]==1)
+					print $0
+			} else if (match($0, /^Reported-and-tested-by:.*/)) {
+				if (ENVIRON["DOSOB"]==1)
+					print $0
+			} else if (match($0, /^Link:.*/)) {
+				if (ENVIRON["DOSOB"]==1)
+				print $0
+			} else if (match($0, /^Reference:.*/)) {
+				if (ENVIRON["DOSOB"]==1)
+					print $0
+			} else if (match($0, /^$/)) {
+			} else {
+				SOB=0
+				if (ENVIRON["DOSOB"]==0)
+					print $0
+			}
+		} else {
+			if (ENVIRON["DOSOB"]==0)
+				print $0
+		}
+	}
+	' | tac
+}
+
+# Preset environments: LINK, AUTHOR, MAINTAINER, COMMITTER
+# Arg 1: commit ID
+# Arg 2: patch description file
+generate_linux_desc()
+{
+	split_desc $2 0
+	echo ""
+	generate_refs $1
+	generate_sobs $2 | awk '
+	{
+		if (printed[$0]==0) {
+			print $0
+			printed[$0]=1;
+		}
+	}
+	'
+}
 
 echo "[gen-patch.sh] Creating ACPICA repository ($after)..."
 (
@@ -102,25 +219,23 @@ mv -f $GP_acpica_repo/generate/linux/linux-$before $GP_linux_before
 (
 	echo "[gen-patch.sh] Creating Linux patch (linux-$after.patch)..."
 	cd $CURDIR
-	tmpfile=`tempfile`
-	diff -Nurp linux.before linux.after >> $tmpfile
+	tmpdiff=`tempfile`
+	tmpdesc=`tempfile`
+	diff -Nurp linux.before linux.after >> $tmpdiff
 
 	if [ $? -ne 0 ]; then
-		GIT_LOG_FORMAT=`echo $FORMAT`
-		eval "git log -c $after -1 --format=\"$GIT_LOG_FORMAT\" > $GP_linux_patch"
-		if [ "x$SIGNED_OFF_BY" != "x" ]; then
-			echo "" >> $GP_linux_patch
-			echo "Signed-off-by: $SIGNED_OFF_BY" >> $GP_linux_patch
-		fi
+		generate_acpica_desc $after > $tmpdesc
+		generate_linux_desc $after $tmpdesc > $GP_linux_patch
 		$ACPISRC -ldqy $GP_linux_patch $GP_linux_patch > /dev/null
 		echo "---" >> $GP_linux_patch
-		diffstat $tmpfile >> $GP_linux_patch
+		diffstat $tmpdiff >> $GP_linux_patch
 		echo >> $GP_linux_patch
-		cat $tmpfile >> $GP_linux_patch
+		cat $tmpdiff >> $GP_linux_patch
 	else
 		echo "Warning: Linux version is empty, skipping $after..."
 	fi
-	rm -f $tmpfile
+	rm -f $tmpdiff
+	rm -f $tmpdesc
 )
 
 # Cleanup temporary directories
