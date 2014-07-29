@@ -160,6 +160,9 @@ const AH_UUID  AcpiUuids[] =
     {"Physical Presence Interface",
         "3dddfaa6-361b-4eb4-a424-8d10089d1653"},
 
+    {"Device Properties for _DSD",
+        "daffd814-6eba-4d8c-8a91-bc9bbf4aa301"},
+
     {NULL, NULL}
 };
 
