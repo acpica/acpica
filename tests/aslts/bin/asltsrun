@@ -462,7 +462,7 @@ do_summary_of_test_case()
 		elif [[ "$line" == "Outstanding allocations"* ]]; then
 			outstand1=`echo "$s3" | awk -F"(" '{print $1}'`
 		elif [[ "$line" == *"The total number of exceptions handled"* ]]; then
-			exceptionsnum=`echo "$line" | awk -F" " '{print $7}'`
+			exceptionsnum=`echo "$line" | sed 's/^\[.*\]//g' | awk -F" " '{print $7}'`
 			x=`echo $exceptionsnum | sed 's/"//g'`
 			exceptionsnum=$[ 0 + $x ]
 		elif [[ "$s3" == Large ]]; then
