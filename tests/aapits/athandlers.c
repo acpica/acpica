@@ -2251,6 +2251,7 @@ AtHndlrTest0026(void)
     }
     return (AE_OK);
 
+#ifdef _UNREACHABLE_CODE
     /*
      * AcpiOsAllocate returns NULL one time on the specified call
      */
@@ -2266,6 +2267,7 @@ AtHndlrTest0026(void)
     }
 
     return (AE_OK);
+#endif
 }
 
 
