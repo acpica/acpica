@@ -1606,6 +1606,8 @@ AtReadTableFromFile (
     ACPI_TABLE_HEADER       TableHeader;
     UINT32                  Actual;
     UINT32                  FileSize;
+    ACPI_STATUS             Status = AE_OK;
+
 
     printf ("Reading Acpi table from file %s\n", Filename);
 
@@ -1628,14 +1630,16 @@ AtReadTableFromFile (
             sizeof (ACPI_TABLE_HEADER))
     {
         printf ("Could not read the table header\n");
-        return (AE_BAD_HEADER);
+        Status = AE_BAD_HEADER;
+        goto CleanupAndExit;
     }
 
     if (TableHeader.Length < sizeof (ACPI_TABLE_HEADER))
     {
         printf ("Error: TableHeader.Length (%d) < sizeof (ACPI_TABLE_HEADER) (%d)\n",
-            TableHeader.Length, (UINT32)sizeof (ACPI_TABLE_HEADER));
-        return (AE_BAD_HEADER);
+            TableHeader.Length, (UINT32) sizeof (ACPI_TABLE_HEADER));
+        Status = AE_BAD_HEADER;
+        goto CleanupAndExit;
     }
 
     /* Allocate a buffer for the table */
@@ -1646,7 +1650,8 @@ AtReadTableFromFile (
         printf (
             "Could not allocate memory for ACPI table %4.4s (size=0x%X)\n",
             TableHeader.Signature, TableHeader.Length);
-        return (AE_NO_MEMORY);
+        Status = AE_NO_MEMORY;
+        goto CleanupAndExit;
     }
 
     /* Get the entire table */
@@ -1655,18 +1660,20 @@ AtReadTableFromFile (
     {
         FileSize = TableHeader.Length;
     }
+
     fseek (fp, 0, SEEK_SET);
     Actual = fread (*Table, 1, (size_t) FileSize, fp);
-    if (Actual == FileSize)
+    if (Actual != FileSize)
     {
-        return (AE_OK);
+        printf ("Error - could not read the table file\n");
+        free (*Table);
+        *Table = NULL;
+        Status = AE_ERROR;
     }
 
-    printf ("Error - could not read the table file\n");
-    free (*Table);
-    *Table = NULL;
-
-    return (AE_ERROR);
+CleanupAndExit:
+    fclose (fp);
+    return (Status);
 }
 
 
