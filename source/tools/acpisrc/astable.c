@@ -539,6 +539,8 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"AML_RESOURCE_UART_SERIALBUS",         SRC_TYPE_STRUCT},
     {"AML_RESOURCE_VENDOR_LARGE",           SRC_TYPE_STRUCT},
     {"AML_RESOURCE_VENDOR_SMALL",           SRC_TYPE_STRUCT},
+    {"AS_BRACE_INFO",                       SRC_TYPE_STRUCT},
+    {"AS_SCAN_CALLBACK",                    SRC_TYPE_SIMPLE},
 
     {"APIC_HEADER",                         SRC_TYPE_STRUCT},
     {"AE_DEBUG_REGIONS",                    SRC_TYPE_STRUCT},
