@@ -182,12 +182,47 @@ MtMethodAnalysisWalkBegin (
 
         /* Special handling for _DSD, must have a _HID also */
 
-        if (!ACPI_STRCMP (METHOD_NAME__DSD, Op->Asl.NameSeg))
+        if (ACPI_COMPARE_NAME (METHOD_NAME__DSD, Op->Asl.NameSeg))
         {
             if (!ApFindNameInScope (METHOD_NAME__HID, Op))
             {
                 AslError (ASL_WARNING, ASL_MSG_MISSING_DEPENDENCY, Op,
                     "_DSD requires _HID in same scope");
+            }
+        }
+
+        /*
+         * Special handling for _PSx methods. Dependency rules (same scope):
+         *
+         * 1) _PS0 - One of these must exist: _PS1, _PS2, _PS3
+         * 2) _PS1/_PS2/_PS3: A _PS0 must exist
+         */
+        else if (ACPI_COMPARE_NAME (METHOD_NAME__PS0, Op->Asl.NameSeg))
+        {
+            /* For _PS0, one of _PS1/_PS2/_PS3 must exist */
+
+            if ((!ApFindNameInScope (METHOD_NAME__PS1, Op)) &&
+                (!ApFindNameInScope (METHOD_NAME__PS2, Op)) &&
+                (!ApFindNameInScope (METHOD_NAME__PS3, Op)))
+            {
+                AslError (ASL_WARNING, ASL_MSG_MISSING_DEPENDENCY, Op,
+                    "_PS0 requires one of _PS1/_PS2/_PS3 in same scope");
+            }
+        }
+        else if (
+            ACPI_COMPARE_NAME (METHOD_NAME__PS1, Op->Asl.NameSeg) ||
+            ACPI_COMPARE_NAME (METHOD_NAME__PS2, Op->Asl.NameSeg) ||
+            ACPI_COMPARE_NAME (METHOD_NAME__PS3, Op->Asl.NameSeg))
+        {
+            /* For _PS1/_PS2/_PS3, a _PS0 must exist */
+
+            if (!ApFindNameInScope (METHOD_NAME__PS0, Op))
+            {
+                sprintf (MsgBuffer,
+                    "%4.4s requires _PS0 in same scope", Op->Asl.NameSeg);
+
+                AslError (ASL_WARNING, ASL_MSG_MISSING_DEPENDENCY, Op,
+                    MsgBuffer);
             }
         }
 
