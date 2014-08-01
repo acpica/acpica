@@ -173,7 +173,7 @@ AcpiExDoDebugObject (
      * debug output. Only need the lower 26 bits. This allows for 67
      * million microseconds or 67 seconds before rollover.
      */
-    Timer = (UINT32) (AcpiOsGetTimer () / 10); /* (100 nanoseconds to microseconds) */
+    Timer = ((UINT32) AcpiOsGetTimer () / 10); /* (100 nanoseconds to microseconds) */
     Timer &= 0x03FFFFFF;
 
     /*
