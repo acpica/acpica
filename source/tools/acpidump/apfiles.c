@@ -241,7 +241,7 @@ ApWriteToBinaryFile (
 
     if (Instance > 0)
     {
-        AcpiUtSnprintf (InstanceStr, sizeof (InstanceStr), "%u", Instance);
+        ACPI_SNPRINTF (InstanceStr, sizeof (InstanceStr), "%u", Instance);
         ACPI_STRCAT (Filename, InstanceStr);
     }
 
