@@ -147,7 +147,7 @@ AcpiDbCloseDebugFile (
 
     if (AcpiGbl_DebugFile)
     {
-       fclose (AcpiGbl_DebugFile);
+       AcpiOsCloseFile (AcpiGbl_DebugFile);
        AcpiGbl_DebugFile = NULL;
        AcpiGbl_DbOutputToFile = FALSE;
        AcpiOsPrintf ("Debug output file %s closed\n", AcpiGbl_DbDebugFilename);
@@ -176,7 +176,8 @@ AcpiDbOpenDebugFile (
 #ifdef ACPI_APPLICATION
 
     AcpiDbCloseDebugFile ();
-    AcpiGbl_DebugFile = fopen (Name, "w+");
+    AcpiGbl_DebugFile = AcpiOsOpenFile (Name,
+            ACPI_FILE_WRITING | ACPI_FILE_APPENDING);
     if (!AcpiGbl_DebugFile)
     {
         AcpiOsPrintf ("Could not open debug file %s\n", Name);
@@ -329,7 +330,7 @@ AcpiDbGetTableFromFile (
 
         AcpiTbPrintTableHeader (0, Table);
 
-        fprintf (stderr,
+        AcpiLogError (
             "Acpi table [%4.4s] successfully installed and loaded\n",
             Table->Signature);
     }
