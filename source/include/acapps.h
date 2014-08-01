@@ -156,13 +156,13 @@
 /* Macros for usage messages */
 
 #define ACPI_USAGE_HEADER(Usage) \
-    AcpiOsPrintf ("Usage: %s\nOptions:\n", Usage);
+    ACPI_PRINTF ("Usage: %s\nOptions:\n", Usage);
 
 #define ACPI_USAGE_TEXT(Description) \
-    AcpiOsPrintf (Description);
+    ACPI_PRINTF (Description);
 
 #define ACPI_OPTION(Name, Description) \
-    AcpiOsPrintf ("  %-18s%s\n", Name, Description);
+    ACPI_PRINTF ("  %-18s%s\n", Name, Description);
 
 
 #define FILE_SUFFIX_DISASSEMBLY     "dsl"
