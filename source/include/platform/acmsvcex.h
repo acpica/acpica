@@ -123,4 +123,6 @@
 #include <crtdbg.h>
 #endif
 
+#include <stdio.h>
+
 #endif /* __ACMSVCEX_H__ */

@@ -276,6 +276,20 @@ AcpiUtCheckAndRepairAscii (
     char                    *RepairedName,
     UINT32                  Count);
 
+#ifdef ACPI_APPLICATION
+int
+AcpiUtFileVprintf (
+    FILE                    *File,
+    const char              *Format,
+    va_list                 Args);
+
+int
+AcpiUtFilePrintf (
+    FILE                    *File,
+    const char              *Format,
+    ...);
+#endif
+
 
 /*
  * utnonansi - Non-ANSI C library functions
@@ -1137,48 +1151,6 @@ AcpiAhMatchHardwareId (
 const char *
 AcpiAhMatchUuid (
     UINT8                   *Data);
-
-
-/*
- * utprint - printf/vprintf output functions
- */
-const char *
-AcpiUtScanNumber (
-    const char              *String,
-    UINT64                  *NumberPtr);
-
-const char *
-AcpiUtPrintNumber (
-    char                    *String,
-    UINT64                  Number);
-
-int
-AcpiUtVsnprintf (
-    char                    *String,
-    ACPI_SIZE               Size,
-    const char              *Format,
-    va_list                 Args);
-
-int
-AcpiUtSnprintf (
-    char                    *String,
-    ACPI_SIZE               Size,
-    const char              *Format,
-    ...);
-
-#ifdef ACPI_APPLICATION
-int
-AcpiUtFileVprintf (
-    ACPI_FILE               File,
-    const char              *Format,
-    va_list                 Args);
-
-int
-AcpiUtFilePrintf (
-    ACPI_FILE               File,
-    const char              *Format,
-    ...);
-#endif
 
 
 /*

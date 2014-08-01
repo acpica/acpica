@@ -120,6 +120,8 @@
         ACPI_MODULE_NAME    ("utprint")
 
 
+#ifndef ACPI_USE_SYSTEM_CLIBRARY
+
 #define ACPI_FORMAT_SIGN            0x01
 #define ACPI_FORMAT_SIGN_PLUS       0x02
 #define ACPI_FORMAT_SIGN_PLUS_SPACE 0x04
@@ -488,7 +490,7 @@ AcpiUtFormatNumber (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtVsnprintf
+ * FUNCTION:    vsnprintf
  *
  * PARAMETERS:  String              - String with boundary
  *              Size                - Boundary of the string
@@ -502,7 +504,7 @@ AcpiUtFormatNumber (
  ******************************************************************************/
 
 int
-AcpiUtVsnprintf (
+vsnprintf (
     char                    *String,
     ACPI_SIZE               Size,
     const char              *Format,
@@ -785,7 +787,7 @@ AcpiUtVsnprintf (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtSnprintf
+ * FUNCTION:    snprintf
  *
  * PARAMETERS:  String              - String with boundary
  *              Size                - Boundary of the string
@@ -798,7 +800,7 @@ AcpiUtVsnprintf (
  ******************************************************************************/
 
 int
-AcpiUtSnprintf (
+snprintf (
     char                    *String,
     ACPI_SIZE               Size,
     const char              *Format,
@@ -809,11 +811,107 @@ AcpiUtSnprintf (
 
 
     va_start (Args, Format);
-    Length = AcpiUtVsnprintf (String, Size, Format, Args);
+    Length = vsnprintf (String, Size, Format, Args);
     va_end (Args);
 
     return (Length);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    sprintf
+ *
+ * PARAMETERS:  String              - String with boundary
+ *              Format, ...         - Standard printf format
+ *
+ * RETURN:      Number of bytes actually written.
+ *
+ * DESCRIPTION: Formatted output to a string.
+ *
+ ******************************************************************************/
+
+int
+sprintf (
+    char                    *String,
+    const char              *Format,
+    ...)
+{
+    va_list                 Args;
+    int                     Length;
+
+
+    va_start (Args, Format);
+    Length = vsnprintf (String, ACPI_UINT32_MAX, Format, Args);
+    va_end (Args);
+
+    return (Length);
+}
+
+
+#ifdef ACPI_APPLICATION
+/*******************************************************************************
+ *
+ * FUNCTION:    vprintf
+ *
+ * PARAMETERS:  Format              - Standard printf format
+ *              Args                - Argument list
+ *
+ * RETURN:      Number of bytes actually written.
+ *
+ * DESCRIPTION: Formatted output to stdout using argument list pointer.
+ *
+ ******************************************************************************/
+
+int
+vprintf (
+    const char              *Format,
+    va_list                 Args)
+{
+    ACPI_CPU_FLAGS          Flags;
+    int                     Length;
+
+
+    Flags = AcpiOsAcquireLock (AcpiGbl_PrintLock);
+    Length = vsnprintf (AcpiGbl_PrintBuffer,
+                sizeof (AcpiGbl_PrintBuffer), Format, Args);
+
+    (void) AcpiOsWriteFile (ACPI_FILE_OUT, AcpiGbl_PrintBuffer, Length, 1);
+    AcpiOsReleaseLock (AcpiGbl_PrintLock, Flags);
+
+    return (Length);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    printf
+ *
+ * PARAMETERS:  Format, ...         - Standard printf format
+ *
+ * RETURN:      Number of bytes actually written.
+ *
+ * DESCRIPTION: Formatted output to stdout.
+ *
+ ******************************************************************************/
+
+int
+printf (
+    const char              *Format,
+    ...)
+{
+    va_list                 Args;
+    int                     Length;
+
+
+    va_start (Args, Format);
+    Length = vprintf (Format, Args);
+    va_end (Args);
+
+    return (Length);
+}
+#endif
+#endif
 
 
 #ifdef ACPI_APPLICATION
@@ -842,7 +940,13 @@ AcpiUtFileVprintf (
 
 
     Flags = AcpiOsAcquireLock (AcpiGbl_PrintLock);
-    Length = AcpiUtVsnprintf (AcpiGbl_PrintBuffer,
+
+    if (File == NULL)
+    {
+        File = ACPI_FILE_OUT;
+    }
+
+    Length = vsnprintf (AcpiGbl_PrintBuffer,
         sizeof (AcpiGbl_PrintBuffer), Format, Args);
 
     (void) AcpiOsWriteFile (File, AcpiGbl_PrintBuffer, Length, 1);

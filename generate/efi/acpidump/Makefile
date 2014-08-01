@@ -38,8 +38,8 @@ OBJECTS = \
 	$(OBJDIR)/tbxfroot.o\
 	$(OBJDIR)/utascii.o\
 	$(OBJDIR)/utbuffer.o\
-	$(OBJDIR)/utdebug.o\
 	$(OBJDIR)/utclib.o\
+	$(OBJDIR)/utdebug.o\
 	$(OBJDIR)/utexcep.o\
 	$(OBJDIR)/utglobal.o\
 	$(OBJDIR)/utmath.o\

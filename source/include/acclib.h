@@ -236,4 +236,49 @@ int
 toupper (
     int                     c);
 
+/*
+ * utprint - printf/vprintf output functions
+ */
+const char *
+AcpiUtScanNumber (
+    const char              *String,
+    UINT64                  *NumberPtr);
+
+const char *
+AcpiUtPrintNumber (
+    char                    *String,
+    UINT64                  Number);
+
+int
+vsnprintf (
+    char                    *String,
+    ACPI_SIZE               Size,
+    const char              *Format,
+    va_list                 Args);
+
+int
+snprintf (
+    char                    *String,
+    ACPI_SIZE               Size,
+    const char              *Format,
+    ...);
+
+int
+sprintf (
+    char                    *String,
+    const char              *Format,
+    ...);
+
+#ifdef ACPI_APPLICATION
+int
+vprintf (
+    const char              *Format,
+    va_list                 Args);
+
+int
+printf (
+    const char              *Format,
+    ...);
+#endif
+
 #endif /* _ACCLIB_H */

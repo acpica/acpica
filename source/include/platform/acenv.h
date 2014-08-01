@@ -435,6 +435,20 @@
  *
  *****************************************************************************/
 
+typedef signed char                     int8_t;
+typedef short int                       int16_t;
+typedef int                             int32_t;
+typedef unsigned char                   uint8_t;
+typedef unsigned short int              uint16_t;
+typedef unsigned int                    uint32_t;
+#if ACPI_MACHINE_WIDTH == 64
+typedef long int                        int64_t;
+typedef unsigned long int               uint64_t;
+#else
+typedef long long int                   int64_t;
+typedef unsigned long long int          uint64_t;
+#endif
+
 /*
  * Use local definitions of C library macros and functions. These function
  * implementations may not be as efficient as an inline or assembly code
@@ -466,9 +480,7 @@ typedef char *va_list;
 
 #endif /* ACPI_USE_SYSTEM_CLIBRARY */
 
-#ifndef ACPI_FILE
 #ifdef ACPI_APPLICATION
-#include <stdio.h>
 #define ACPI_FILE              FILE *
 #define ACPI_FILE_OUT          stdout
 #define ACPI_FILE_ERR          stderr
@@ -477,6 +489,5 @@ typedef char *va_list;
 #define ACPI_FILE_OUT          NULL
 #define ACPI_FILE_ERR          NULL
 #endif /* ACPI_APPLICATION */
-#endif /* ACPI_FILE */
 
 #endif /* __ACENV_H__ */
