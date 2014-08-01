@@ -439,6 +439,13 @@
 #define ACPI_IS_UPPER(i)        isupper((int) (i))
 #define ACPI_IS_PRINT(i)        isprint((int) (i))
 #define ACPI_IS_ALPHA(i)        isalpha((int) (i))
+#define ACPI_VFPRINTF           vfprintf
+#define ACPI_FPRINTF            fprintf
+#define ACPI_VPRINTF            vprintf
+#define ACPI_PRINTF             printf
+#define ACPI_VSNPRINTF          vsnprintf
+#define ACPI_SNPRINTF           snprintf
+#define ACPI_SPRINTF            sprintf
 
 #else
 
@@ -492,6 +499,13 @@ typedef char *va_list;
 #define ACPI_MEMSET(d,v,n)      (void) AcpiUtMemset ((d), (v), (ACPI_SIZE)(n))
 #define ACPI_TOUPPER(c)         AcpiUtToUpper ((int) (c))
 #define ACPI_TOLOWER(c)         AcpiUtToLower ((int) (c))
+#define ACPI_VFPRINTF           AcpiUtFileVprintf
+#define ACPI_FPRINTF            AcpiUtFilePrintf
+#define ACPI_VPRINTF            AcpiUtPrintf
+#define ACPI_PRINTF             AcpiUtPrintf
+#define ACPI_VSNPRINTF          AcpiUtVsnprintf
+#define ACPI_SNPRINTF           AcpiUtSnprintf
+#define ACPI_SPRINTF            AcpiUtSprintf
 
 #endif /* ACPI_USE_SYSTEM_CLIBRARY */
 

@@ -820,7 +820,7 @@ AcpiOsVprintf (
     va_list                 Args)
 {
 
-    (void) AcpiUtFileVprintf (ACPI_FILE_OUT, Format, Args);
+    (void) ACPI_VFPRINTF (ACPI_FILE_OUT, Format, Args);
 }
 
 
