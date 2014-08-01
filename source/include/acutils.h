@@ -389,6 +389,12 @@ AcpiUtMemcpy (
     ACPI_SIZE               Count);
 
 void *
+AcpiUtMemmove (
+    void                    *Dest,
+    const void              *Src,
+    ACPI_SIZE               Count);
+
+void *
 AcpiUtMemset (
     void                    *Dest,
     UINT8                   Value,
