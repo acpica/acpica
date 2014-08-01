@@ -50,6 +50,7 @@ OBJECTS = \
 	$(OBJDIR)/ahpredef.o\
 	$(OBJDIR)/ahuuids.o\
 	$(OBJDIR)/aslanalyze.o\
+	$(OBJDIR)/aslascii.o\
 	$(OBJDIR)/aslbtypes.o\
 	$(OBJDIR)/aslcodegen.o\
 	$(OBJDIR)/aslcompile.o\

@@ -139,484 +139,8 @@ CmFlushSourceCode (
     void);
 
 static void
-FlConsumeAnsiComment (
-    FILE                    *Handle,
-    ASL_FILE_STATUS         *Status);
-
-static void
-FlConsumeNewComment (
-    FILE                    *Handle,
-    ASL_FILE_STATUS         *Status);
-
-static void
 CmDumpAllEvents (
     void);
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AslCompilerSignon
- *
- * PARAMETERS:  FileId      - ID of the output file
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display compiler signon
- *
- ******************************************************************************/
-
-void
-AslCompilerSignon (
-    UINT32                  FileId)
-{
-    char                    *Prefix = "";
-    char                    *UtilityName;
-
-
-    /* Set line prefix depending on the destination file type */
-
-    switch (FileId)
-    {
-    case ASL_FILE_ASM_SOURCE_OUTPUT:
-    case ASL_FILE_ASM_INCLUDE_OUTPUT:
-
-        Prefix = "; ";
-        break;
-
-    case ASL_FILE_HEX_OUTPUT:
-
-        if (Gbl_HexOutputFlag == HEX_OUTPUT_ASM)
-        {
-            Prefix = "; ";
-        }
-        else if ((Gbl_HexOutputFlag == HEX_OUTPUT_C) ||
-                 (Gbl_HexOutputFlag == HEX_OUTPUT_ASL))
-        {
-            FlPrintFile (ASL_FILE_HEX_OUTPUT, "/*\n");
-            Prefix = " * ";
-        }
-        break;
-
-    case ASL_FILE_C_SOURCE_OUTPUT:
-    case ASL_FILE_C_OFFSET_OUTPUT:
-    case ASL_FILE_C_INCLUDE_OUTPUT:
-
-        Prefix = " * ";
-        break;
-
-    default:
-
-        /* No other output types supported */
-
-        break;
-    }
-
-    /* Running compiler or disassembler? */
-
-    if (Gbl_DisasmFlag)
-    {
-        UtilityName = AML_DISASSEMBLER_NAME;
-    }
-    else
-    {
-        UtilityName = ASL_COMPILER_NAME;
-    }
-
-    /* Compiler signon with copyright */
-
-    FlPrintFile (FileId, "%s\n", Prefix);
-    FlPrintFile (FileId, ACPI_COMMON_HEADER (UtilityName, Prefix));
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AslCompilerFileHeader
- *
- * PARAMETERS:  FileId      - ID of the output file
- *
- * RETURN:      None
- *
- * DESCRIPTION: Header used at the beginning of output files
- *
- ******************************************************************************/
-
-void
-AslCompilerFileHeader (
-    UINT32                  FileId)
-{
-    struct tm               *NewTime;
-    time_t                  Aclock;
-    char                    *Prefix = "";
-
-
-    /* Set line prefix depending on the destination file type */
-
-    switch (FileId)
-    {
-    case ASL_FILE_ASM_SOURCE_OUTPUT:
-    case ASL_FILE_ASM_INCLUDE_OUTPUT:
-
-        Prefix = "; ";
-        break;
-
-    case ASL_FILE_HEX_OUTPUT:
-
-        if (Gbl_HexOutputFlag == HEX_OUTPUT_ASM)
-        {
-            Prefix = "; ";
-        }
-        else if ((Gbl_HexOutputFlag == HEX_OUTPUT_C) ||
-                 (Gbl_HexOutputFlag == HEX_OUTPUT_ASL))
-        {
-            Prefix = " * ";
-        }
-        break;
-
-    case ASL_FILE_C_SOURCE_OUTPUT:
-    case ASL_FILE_C_OFFSET_OUTPUT:
-    case ASL_FILE_C_INCLUDE_OUTPUT:
-
-        Prefix = " * ";
-        break;
-
-    default:
-
-        /* No other output types supported */
-
-        break;
-    }
-
-    /* Compilation header with timestamp */
-
-    (void) time (&Aclock);
-    NewTime = localtime (&Aclock);
-
-    FlPrintFile (FileId,
-        "%sCompilation of \"%s\" - %s%s\n",
-        Prefix, Gbl_Files[ASL_FILE_INPUT].Filename, asctime (NewTime),
-        Prefix);
-
-    switch (FileId)
-    {
-    case ASL_FILE_C_SOURCE_OUTPUT:
-    case ASL_FILE_C_OFFSET_OUTPUT:
-    case ASL_FILE_C_INCLUDE_OUTPUT:
-
-        FlPrintFile (FileId, " */\n");
-        break;
-
-    default:
-
-        /* Nothing to do for other output types */
-
-        break;
-    }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    CmFlushSourceCode
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Read in any remaining source code after the parse tree
- *              has been constructed.
- *
- ******************************************************************************/
-
-static void
-CmFlushSourceCode (
-    void)
-{
-    char                    Buffer;
-
-
-    while (FlReadFile (ASL_FILE_INPUT, &Buffer, 1) != AE_ERROR)
-    {
-        AslInsertLineBuffer ((int) Buffer);
-    }
-
-    AslResetCurrentLineBuffer ();
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    FlConsume*
- *
- * PARAMETERS:  Handle              - Open input file
- *              Status              - File current status struct
- *
- * RETURN:      Number of lines consumed
- *
- * DESCRIPTION: Step over both types of comment during check for ascii chars
- *
- ******************************************************************************/
-
-static void
-FlConsumeAnsiComment (
-    FILE                    *Handle,
-    ASL_FILE_STATUS         *Status)
-{
-    UINT8                   Byte;
-    BOOLEAN                 ClosingComment = FALSE;
-
-
-    while (fread (&Byte, 1, 1, Handle) == 1)
-    {
-        /* Scan until comment close is found */
-
-        if (ClosingComment)
-        {
-            if (Byte == '/')
-            {
-                return;
-            }
-
-            if (Byte != '*')
-            {
-                /* Reset */
-
-                ClosingComment = FALSE;
-            }
-        }
-        else if (Byte == '*')
-        {
-            ClosingComment = TRUE;
-        }
-
-        /* Maintain line count */
-
-        if (Byte == 0x0A)
-        {
-            Status->Line++;
-        }
-
-        Status->Offset++;
-    }
-}
-
-
-static void
-FlConsumeNewComment (
-    FILE                    *Handle,
-    ASL_FILE_STATUS         *Status)
-{
-    UINT8                   Byte;
-
-
-    while (fread (&Byte, 1, 1, Handle) == 1)
-    {
-        Status->Offset++;
-
-        /* Comment ends at newline */
-
-        if (Byte == 0x0A)
-        {
-            Status->Line++;
-            return;
-        }
-    }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    FlCheckForAcpiTable
- *
- * PARAMETERS:  Handle              - Open input file
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Determine if a file seems to be a binary ACPI table, via the
- *              following checks on what would be the table header:
- *              0) File must be at least as long as an ACPI_TABLE_HEADER
- *              1) The header length field must match the file size
- *              2) Signature, OemId, OemTableId, AslCompilerId must be ASCII
- *
- ******************************************************************************/
-
-ACPI_STATUS
-FlCheckForAcpiTable (
-    FILE                    *Handle)
-{
-    ACPI_TABLE_HEADER       Table;
-    UINT32                  FileSize;
-    size_t                  Actual;
-    UINT32                  i;
-
-
-    /* Read a potential table header */
-
-    Actual = fread (&Table, 1, sizeof (ACPI_TABLE_HEADER), Handle);
-    fseek (Handle, 0, SEEK_SET);
-
-    if (Actual < sizeof (ACPI_TABLE_HEADER))
-    {
-        return (AE_ERROR);
-    }
-
-    /* Header length field must match the file size */
-
-    FileSize = CmGetFileSize (Handle);
-    if (Table.Length != FileSize)
-    {
-        return (AE_ERROR);
-    }
-
-    /*
-     * These fields must be ASCII:
-     * Signature, OemId, OemTableId, AslCompilerId.
-     * We allow a NULL terminator in OemId and OemTableId.
-     */
-    for (i = 0; i < ACPI_NAME_SIZE; i++)
-    {
-        if (!ACPI_IS_ASCII ((UINT8) Table.Signature[i]))
-        {
-            return (AE_ERROR);
-        }
-
-        if (!ACPI_IS_ASCII ((UINT8) Table.AslCompilerId[i]))
-        {
-            return (AE_ERROR);
-        }
-    }
-
-    for (i = 0; (i < ACPI_OEM_ID_SIZE) && (Table.OemId[i]); i++)
-    {
-        if (!ACPI_IS_ASCII ((UINT8) Table.OemId[i]))
-        {
-            return (AE_ERROR);
-        }
-    }
-
-    for (i = 0; (i < ACPI_OEM_TABLE_ID_SIZE) && (Table.OemTableId[i]); i++)
-    {
-        if (!ACPI_IS_ASCII ((UINT8) Table.OemTableId[i]))
-        {
-            return (AE_ERROR);
-        }
-    }
-
-    printf ("Binary file appears to be a valid ACPI table, disassembling\n");
-    return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    FlCheckForAscii
- *
- * PARAMETERS:  Handle              - Open input file
- *              Filename            - Input filename
- *              DisplayErrors       - TRUE if error messages desired
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Verify that the input file is entirely ASCII. Ignores characters
- *              within comments. Note: does not handle nested comments and does
- *              not handle comment delimiters within string literals. However,
- *              on the rare chance this happens and an invalid character is
- *              missed, the parser will catch the error by failing in some
- *              spectactular manner.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-FlCheckForAscii (
-    FILE                    *Handle,
-    char                    *Filename,
-    BOOLEAN                 DisplayErrors)
-{
-    UINT8                   Byte;
-    ACPI_SIZE               BadBytes = 0;
-    BOOLEAN                 OpeningComment = FALSE;
-    ASL_FILE_STATUS         Status;
-
-
-    Status.Line = 1;
-    Status.Offset = 0;
-
-    /* Read the entire file */
-
-    while (fread (&Byte, 1, 1, Handle) == 1)
-    {
-        /* Ignore comment fields (allow non-ascii within) */
-
-        if (OpeningComment)
-        {
-            /* Check for second comment open delimiter */
-
-            if (Byte == '*')
-            {
-                FlConsumeAnsiComment (Handle, &Status);
-            }
-
-            if (Byte == '/')
-            {
-                FlConsumeNewComment (Handle, &Status);
-            }
-
-            /* Reset */
-
-            OpeningComment = FALSE;
-        }
-        else if (Byte == '/')
-        {
-            OpeningComment = TRUE;
-        }
-
-        /* Check for an ASCII character */
-
-        if (!ACPI_IS_ASCII (Byte))
-        {
-            if ((BadBytes < 10) && (DisplayErrors))
-            {
-                AcpiOsPrintf (
-                    "Non-ASCII character [0x%2.2X] found in line %u, file offset 0x%.2X\n",
-                    Byte, Status.Line, Status.Offset);
-            }
-
-            BadBytes++;
-        }
-
-        /* Update line counter */
-
-        else if (Byte == 0x0A)
-        {
-            Status.Line++;
-        }
-
-        Status.Offset++;
-    }
-
-    /* Seek back to the beginning of the source file */
-
-    fseek (Handle, 0, SEEK_SET);
-
-    /* Were there any non-ASCII characters in the file? */
-
-    if (BadBytes)
-    {
-        if (DisplayErrors)
-        {
-            AcpiOsPrintf (
-                "%u non-ASCII characters found in input source text, could be a binary file\n",
-                BadBytes);
-            AslError (ASL_ERROR, ASL_MSG_NON_ASCII, NULL, Filename);
-        }
-
-        return (AE_BAD_CHARACTER);
-    }
-
-    /* File is OK (100% ASCII) */
-
-    return (AE_OK);
-}
 
 
 /*******************************************************************************
@@ -869,6 +393,197 @@ ErrorExit:
     UtEndEvent (FullCompile);
     CmCleanupAndExit ();
     return (-1);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AslCompilerSignon
+ *
+ * PARAMETERS:  FileId      - ID of the output file
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display compiler signon
+ *
+ ******************************************************************************/
+
+void
+AslCompilerSignon (
+    UINT32                  FileId)
+{
+    char                    *Prefix = "";
+    char                    *UtilityName;
+
+
+    /* Set line prefix depending on the destination file type */
+
+    switch (FileId)
+    {
+    case ASL_FILE_ASM_SOURCE_OUTPUT:
+    case ASL_FILE_ASM_INCLUDE_OUTPUT:
+
+        Prefix = "; ";
+        break;
+
+    case ASL_FILE_HEX_OUTPUT:
+
+        if (Gbl_HexOutputFlag == HEX_OUTPUT_ASM)
+        {
+            Prefix = "; ";
+        }
+        else if ((Gbl_HexOutputFlag == HEX_OUTPUT_C) ||
+                 (Gbl_HexOutputFlag == HEX_OUTPUT_ASL))
+        {
+            FlPrintFile (ASL_FILE_HEX_OUTPUT, "/*\n");
+            Prefix = " * ";
+        }
+        break;
+
+    case ASL_FILE_C_SOURCE_OUTPUT:
+    case ASL_FILE_C_OFFSET_OUTPUT:
+    case ASL_FILE_C_INCLUDE_OUTPUT:
+
+        Prefix = " * ";
+        break;
+
+    default:
+
+        /* No other output types supported */
+
+        break;
+    }
+
+    /* Running compiler or disassembler? */
+
+    if (Gbl_DisasmFlag)
+    {
+        UtilityName = AML_DISASSEMBLER_NAME;
+    }
+    else
+    {
+        UtilityName = ASL_COMPILER_NAME;
+    }
+
+    /* Compiler signon with copyright */
+
+    FlPrintFile (FileId, "%s\n", Prefix);
+    FlPrintFile (FileId, ACPI_COMMON_HEADER (UtilityName, Prefix));
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AslCompilerFileHeader
+ *
+ * PARAMETERS:  FileId      - ID of the output file
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Header used at the beginning of output files
+ *
+ ******************************************************************************/
+
+void
+AslCompilerFileHeader (
+    UINT32                  FileId)
+{
+    struct tm               *NewTime;
+    time_t                  Aclock;
+    char                    *Prefix = "";
+
+
+    /* Set line prefix depending on the destination file type */
+
+    switch (FileId)
+    {
+    case ASL_FILE_ASM_SOURCE_OUTPUT:
+    case ASL_FILE_ASM_INCLUDE_OUTPUT:
+
+        Prefix = "; ";
+        break;
+
+    case ASL_FILE_HEX_OUTPUT:
+
+        if (Gbl_HexOutputFlag == HEX_OUTPUT_ASM)
+        {
+            Prefix = "; ";
+        }
+        else if ((Gbl_HexOutputFlag == HEX_OUTPUT_C) ||
+                 (Gbl_HexOutputFlag == HEX_OUTPUT_ASL))
+        {
+            Prefix = " * ";
+        }
+        break;
+
+    case ASL_FILE_C_SOURCE_OUTPUT:
+    case ASL_FILE_C_OFFSET_OUTPUT:
+    case ASL_FILE_C_INCLUDE_OUTPUT:
+
+        Prefix = " * ";
+        break;
+
+    default:
+
+        /* No other output types supported */
+
+        break;
+    }
+
+    /* Compilation header with timestamp */
+
+    (void) time (&Aclock);
+    NewTime = localtime (&Aclock);
+
+    FlPrintFile (FileId,
+        "%sCompilation of \"%s\" - %s%s\n",
+        Prefix, Gbl_Files[ASL_FILE_INPUT].Filename, asctime (NewTime),
+        Prefix);
+
+    switch (FileId)
+    {
+    case ASL_FILE_C_SOURCE_OUTPUT:
+    case ASL_FILE_C_OFFSET_OUTPUT:
+    case ASL_FILE_C_INCLUDE_OUTPUT:
+
+        FlPrintFile (FileId, " */\n");
+        break;
+
+    default:
+
+        /* Nothing to do for other output types */
+
+        break;
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CmFlushSourceCode
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Read in any remaining source code after the parse tree
+ *              has been constructed.
+ *
+ ******************************************************************************/
+
+static void
+CmFlushSourceCode (
+    void)
+{
+    char                    Buffer;
+
+
+    while (FlReadFile (ASL_FILE_INPUT, &Buffer, 1) != AE_ERROR)
+    {
+        AslInsertLineBuffer ((int) Buffer);
+    }
+
+    AslResetCurrentLineBuffer ();
 }
 
 

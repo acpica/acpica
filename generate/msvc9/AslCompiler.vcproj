@@ -909,6 +909,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\compiler\aslascii.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\compiler\aslbtypes.c"
 					>
 					<FileConfiguration
