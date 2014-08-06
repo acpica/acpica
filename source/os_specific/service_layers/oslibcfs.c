@@ -192,6 +192,66 @@ AcpiOsCloseFile (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiOsGetFileCharacter
+ *
+ * PARAMETERS:  File                - File descriptor
+ *
+ * RETURN:      The character read or EOF on the end of the file or error
+ *
+ * DESCRIPTION: Read a character from the file.
+ *
+ ******************************************************************************/
+
+int
+AcpiOsGetFileCharacter (
+    ACPI_FILE               File)
+{
+    int                     Ret;
+
+
+    Ret = fgetc (File);
+    if (Ret < 0 && ferror (File))
+    {
+        perror ("Error reading file");
+    }
+
+    return (Ret);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsPutFileCharacter
+ *
+ * PARAMETERS:  File                - File descriptor
+ *              c                   - Character byte
+ *
+ * RETURN:      The character written or EOF on the end of the file or error
+ *
+ * DESCRIPTION: Write a character to the file.
+ *
+ ******************************************************************************/
+
+int
+AcpiOsPutFileCharacter (
+    ACPI_FILE               File,
+    const char              c)
+{
+    int                     Ret;
+
+
+    Ret = fputc (c, File);
+    if (Ret < 0 && ferror (File))
+    {
+        perror ("Error writing file");
+    }
+
+    return (Ret);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiOsReadFile
  *
  * PARAMETERS:  File                - An open file descriptor
