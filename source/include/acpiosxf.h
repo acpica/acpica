@@ -639,6 +639,19 @@ AcpiOsCloseFile (
     ACPI_FILE               File);
 #endif
 
+#ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetFileCharacter
+int
+AcpiOsGetFileCharacter (
+    ACPI_FILE               File);
+#endif
+
+#ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsPutFileCharacter
+int
+AcpiOsPutFileCharacter (
+    ACPI_FILE               File,
+    char                    c);
+#endif
+
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadFile
 int
 AcpiOsReadFile (

@@ -555,6 +555,76 @@ AcpiOsCloseFile (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiOsGetFileCharacter
+ *
+ * PARAMETERS:  File                - File descriptor
+ *
+ * RETURN:      The character read or EOF on the end of the file or error
+ *
+ * DESCRIPTION: Read a character from the file.
+ *
+ ******************************************************************************/
+
+int
+AcpiOsGetFileCharacter (
+    ACPI_FILE               File)
+{
+    UINT8                   Byte;
+    int                     Length;
+
+
+    Length = AcpiOsReadFile (File, ACPI_CAST_PTR (void, &Byte), 1, 1);
+    if (Length == 0)
+    {
+        Length = EOF;
+    }
+    else if (Length == 1)
+    {
+        Length = (int) Byte;
+    }
+
+    return (Length);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsPutFileCharacter
+ *
+ * PARAMETERS:  File                - File descriptor
+ *              c                   - Character byte
+ *
+ * RETURN:      The character written or EOF on the end of the file or error
+ *
+ * DESCRIPTION: Write a character to the file.
+ *
+ ******************************************************************************/
+
+int
+AcpiOsPutFileCharacter (
+    ACPI_FILE               File,
+    char                    c)
+{
+    UINT8                   Byte = (UINT8) c;
+    int                     Length;
+
+
+    Length = AcpiOsWriteFile (File, ACPI_CAST_PTR (void, &Byte), 1, 1);
+    if (Length == 0)
+    {
+        Length = EOF;
+    }
+    else if (Length == 1)
+    {
+        Length = (int) Byte;
+    }
+
+    return (Length);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiOsReadFile
  *
  * PARAMETERS:  File                - File descriptor

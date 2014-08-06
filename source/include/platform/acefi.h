@@ -171,6 +171,7 @@
 #define ACPI_FILE           SIMPLE_TEXT_OUTPUT_INTERFACE *
 #define ACPI_FILE_OUT       ST->ConOut
 #define ACPI_FILE_ERR       ST->ConOut
+#define ACPI_FILE_IN        NULL
 
 /*
  * Math helpers
