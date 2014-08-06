@@ -510,6 +510,10 @@ AcpiOsOpenFile (
         AcpiLogError ("EFI_FILE_HANDLE->Open() failure.\n");
         goto ErrorExit;
     }
+    if (Modes & ACPI_FILE_APPENDING)
+    {
+        AcpiOsSetFileOffset ((ACPI_FILE) EfiFile, 0, ACPI_FILE_END);
+    }
 
 ErrorExit:
 
