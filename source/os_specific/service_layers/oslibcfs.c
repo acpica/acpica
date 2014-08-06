@@ -142,7 +142,7 @@ AcpiOsOpenFile (
 {
     ACPI_FILE               File;
     UINT32                  i = 0;
-    char                    ModesStr[4];
+    char                    ModesStr[5];
 
 
     if (Modes & ACPI_FILE_READING)
@@ -156,6 +156,14 @@ AcpiOsOpenFile (
     if (Modes & ACPI_FILE_BINARY)
     {
         ModesStr[i++] = 'b';
+    }
+    else if (Modes & ACPI_FILE_TEXT)
+    {
+        ModesStr[i++] = 't';
+    }
+    if (Modes & ACPI_FILE_APPENDING)
+    {
+        ModesStr[i++] = '+';
     }
 
     ModesStr[i++] = '\0';
