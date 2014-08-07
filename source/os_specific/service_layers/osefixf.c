@@ -121,6 +121,13 @@
         ACPI_MODULE_NAME    ("osefixf")
 
 
+/* Upcalls to AcpiExec */
+
+void
+AeTableOverride (
+    ACPI_TABLE_HEADER       *ExistingTable,
+    ACPI_TABLE_HEADER       **NewTable);
+
 /* Local definitions */
 
 #define ACPI_EFI_PRINT_LENGTH   256
@@ -145,11 +152,6 @@ AcpiEfiArgify (
     int                     *ArgcPtr,
     char                    ***ArgvPtr);
 
-static BOOLEAN
-AcpiEfiCompareGuid (
-    EFI_GUID                *Guid1,
-    EFI_GUID                *Guid2);
-
 static ACPI_STATUS
 AcpiEfiConvertArgcv (
     CHAR16                  *LoadOpt,
@@ -163,10 +165,6 @@ AcpiEfiGetFileInfo (
     ACPI_FILE               File,
     EFI_FILE_INFO           **InfoPtr);
 
-static ACPI_PHYSICAL_ADDRESS
-AcpiEfiGetRsdpViaGuid (
-    EFI_GUID                *Guid);
-
 static CHAR16 *
 AcpiEfiFlushFile (
     ACPI_FILE               File,
@@ -175,10 +173,26 @@ AcpiEfiFlushFile (
     CHAR16                  *Pos,
     BOOLEAN                 FlushAll);
 
+#ifndef ACPI_USE_NATIVE_RSDP_POINTER
+
+static BOOLEAN
+AcpiEfiCompareGuid (
+    EFI_GUID                *Guid1,
+    EFI_GUID                *Guid2);
+
+static ACPI_PHYSICAL_ADDRESS
+AcpiEfiGetRsdpViaGuid (
+    EFI_GUID                *Guid);
+
+#endif
+
 
 /* Local variables */
 
 static EFI_FILE_HANDLE      AcpiGbl_EfiCurrentVolume = NULL;
+
+
+#ifndef ACPI_USE_NATIVE_RSDP_POINTER
 
 
 /******************************************************************************
@@ -278,6 +292,74 @@ AcpiOsGetRootPointer (
     }
 
     return (Address);
+}
+
+#endif
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsTableOverride
+ *
+ * PARAMETERS:  ExistingTable       - Header of current table (probably
+ *                                    firmware)
+ *              NewTable            - Where an entire new table is returned.
+ *
+ * RETURN:      Status, pointer to new table. Null pointer returned if no
+ *              table is available to override
+ *
+ * DESCRIPTION: Return a different version of a table if one is available
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsTableOverride (
+    ACPI_TABLE_HEADER       *ExistingTable,
+    ACPI_TABLE_HEADER       **NewTable)
+{
+
+    if (!ExistingTable || !NewTable)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    *NewTable = NULL;
+
+#ifdef ACPI_EXEC_APP
+
+    AeTableOverride (ExistingTable, NewTable);
+    return (AE_OK);
+#else
+
+    return (AE_NO_ACPI_TABLES);
+#endif
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsPhysicalTableOverride
+ *
+ * PARAMETERS:  ExistingTable       - Header of current table (probably firmware)
+ *              NewAddress          - Where new table address is returned
+ *                                    (Physical address)
+ *              NewTableLength      - Where new table length is returned
+ *
+ * RETURN:      Status, address/length of new table. Null pointer returned
+ *              if no table is available to override.
+ *
+ * DESCRIPTION: Returns AE_SUPPORT, function not used in user space.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsPhysicalTableOverride (
+    ACPI_TABLE_HEADER       *ExistingTable,
+    ACPI_PHYSICAL_ADDRESS   *NewAddress,
+    UINT32                  *NewTableLength)
+{
+
+    return (AE_SUPPORT);
 }
 
 
