@@ -308,6 +308,8 @@ typedef enum
     ASL_MSG_RANGE,
     ASL_MSG_BUFFER_ALLOCATION,
     ASL_MSG_MISSING_DEPENDENCY,
+    ASL_MSG_ILLEGAL_FORWARD_REF,
+    ASL_MSG_ILLEGAL_METHOD_REF,
 
     /* These messages are used by the Data Table compiler only */
 
