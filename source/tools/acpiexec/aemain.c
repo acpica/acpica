@@ -266,14 +266,14 @@ AeDoOptions (
     {
     case 'b':
 
-        if (strlen (AcpiGbl_Optarg) > (AE_BUFFER_SIZE -1))
+        if (ACPI_STRLEN (AcpiGbl_Optarg) > (AE_BUFFER_SIZE -1))
         {
             ACPI_PRINTF ("**** The length of command line (%u) exceeded maximum (%u)\n",
-                (UINT32) strlen (AcpiGbl_Optarg), (AE_BUFFER_SIZE -1));
+                (UINT32) ACPI_STRLEN (AcpiGbl_Optarg), (AE_BUFFER_SIZE -1));
             return (-1);
         }
         AcpiGbl_ExecutionMode = AE_MODE_BATCH_MULTIPLE;
-        strcpy (BatchBuffer, AcpiGbl_Optarg);
+        ACPI_STRCPY (BatchBuffer, AcpiGbl_Optarg);
         break;
 
     case 'd':
@@ -371,7 +371,7 @@ AeDoOptions (
                 return (-1);
             }
 
-            AcpiGbl_RegionFillValue = (UINT8) strtoul (AcpiGbl_Optarg, NULL, 0);
+            AcpiGbl_RegionFillValue = (UINT8) ACPI_STRTOUL (AcpiGbl_Optarg, NULL, 0);
             break;
 
         case 'i':   /* -fi: specify initialization file */
@@ -412,12 +412,12 @@ AeDoOptions (
         {
         case '^':
 
-            strcpy (BatchBuffer, "MAIN");
+            ACPI_STRCPY (BatchBuffer, "MAIN");
             break;
 
         default:
 
-            strcpy (BatchBuffer, AcpiGbl_Optarg);
+            ACPI_STRCPY (BatchBuffer, AcpiGbl_Optarg);
             break;
         }
         break;
@@ -461,7 +461,7 @@ AeDoOptions (
 
     case 'x':
 
-        AcpiDbgLevel = strtoul (AcpiGbl_Optarg, NULL, 0);
+        AcpiDbgLevel = ACPI_STRTOUL (AcpiGbl_Optarg, NULL, 0);
         AcpiGbl_DbConsoleDebugLevel = AcpiDbgLevel;
         ACPI_PRINTF ("Debug Level: 0x%8.8X\n", AcpiDbgLevel);
         break;
