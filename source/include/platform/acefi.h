@@ -168,10 +168,20 @@
 #undef ACPI_USE_NATIVE_DIVIDE
 #define ACPI_USE_SYSTEM_INTTYPES
 
-#define ACPI_FILE           SIMPLE_TEXT_OUTPUT_INTERFACE *
-#define ACPI_FILE_OUT       ST->ConOut
-#define ACPI_FILE_ERR       ST->ConOut
-#define ACPI_FILE_IN        NULL
+typedef union acpi_efi_file {
+    EFI_FILE File;
+    SIMPLE_TEXT_OUTPUT_INTERFACE ConOut;
+    SIMPLE_INPUT_INTERFACE ConIn;
+} ACPI_EFI_FILE;
+
+#define ACPI_FILE           ACPI_EFI_FILE *
+#define ACPI_FILE_OUT       ((ACPI_FILE) (ST)->ConOut)
+#define ACPI_FILE_ERR       ((ACPI_FILE) (ST)->ConOut)
+#define ACPI_FILE_IN        ((ACPI_FILE) (ST)->ConIn)
+
+#ifndef EINVAL
+#define EINVAL              22
+#endif
 
 /*
  * Math helpers

@@ -125,6 +125,17 @@
 
 #define ACPI_EFI_PRINT_LENGTH   256
 
+#define ACPI_EFI_KEY_ESC        0x0000
+#define ACPI_EFI_KEY_BACKSPACE  0x0008
+#define ACPI_EFI_KEY_ENTER      0x000D
+#define ACPI_EFI_KEY_CTRL_C     0x0003
+
+#define ACPI_EFI_ASCII_NULL     0x00
+#define ACPI_EFI_ASCII_DEL      0x7F
+#define ACPI_EFI_ASCII_ESC      0x1B
+#define ACPI_EFI_ASCII_CR       '\r'
+#define ACPI_EFI_ASCII_NL       '\n'
+
 
 /* Local prototypes */
 
@@ -458,6 +469,7 @@ AcpiOsOpenFile (
     CHAR16                  *Pos16;
     const char              *Pos;
     INTN                    Count, i;
+    ACPI_FILE               File = NULL;
 
 
     if (!Path)
@@ -510,9 +522,10 @@ AcpiOsOpenFile (
         AcpiLogError ("EFI_FILE_HANDLE->Open() failure.\n");
         goto ErrorExit;
     }
+    File = (ACPI_FILE) EfiFile;
     if (Modes & ACPI_FILE_APPENDING)
     {
-        AcpiOsSetFileOffset ((ACPI_FILE) EfiFile, 0, ACPI_FILE_END);
+        AcpiOsSetFileOffset (File, 0, ACPI_FILE_END);
     }
 
 ErrorExit:
@@ -522,7 +535,7 @@ ErrorExit:
         ACPI_FREE (Path16);
     }
 
-    return ((ACPI_FILE) EfiFile);
+    return (File);
 }
 
 
@@ -545,7 +558,7 @@ AcpiOsCloseFile (
     EFI_FILE_HANDLE         EfiFile;
 
 
-    if (File == ACPI_FILE_OUT ||
+    if (File == ACPI_FILE_IN || File == ACPI_FILE_OUT ||
         File == ACPI_FILE_ERR)
     {
         return;
@@ -649,15 +662,83 @@ AcpiOsReadFile (
     ACPI_SIZE               Size,
     ACPI_SIZE               Count)
 {
-    int                     Length = -1;
+    int                     Length = -EINVAL;
     EFI_FILE_HANDLE         EfiFile;
+    SIMPLE_INPUT_INTERFACE  *In;
     UINTN                   ReadSize;
     EFI_STATUS              EfiStatus;
+    EFI_INPUT_KEY           Key;
+    ACPI_SIZE               Pos = 0;
 
 
-    if (File == ACPI_FILE_OUT ||
-        File == ACPI_FILE_ERR)
+    if (!Buffer)
     {
+        goto ErrorExit;
+    }
+
+    ReadSize = Size * Count;
+
+    if (File == ACPI_FILE_OUT || File == ACPI_FILE_ERR)
+    {
+        /* Do not support read operations on output console */
+    }
+    else if (File == ACPI_FILE_IN)
+    {
+        In = ACPI_CAST_PTR (SIMPLE_INPUT_INTERFACE, File);
+
+        while (Pos < ReadSize)
+        {
+WaitKey:
+            EfiStatus = uefi_call_wrapper (In->ReadKeyStroke, 2, In, &Key);
+            if (EFI_ERROR (EfiStatus))
+            {
+                if (EfiStatus == EFI_NOT_READY)
+                {
+                    goto WaitKey;
+                }
+                AcpiLogError ("SIMPLE_INPUT_INTERFACE->ReadKeyStroke() failure.\n");
+                goto ErrorExit;
+            }
+
+            switch (Key.UnicodeChar)
+            {
+            case ACPI_EFI_KEY_CTRL_C:
+
+                break;
+
+            case ACPI_EFI_KEY_ENTER:
+
+                *(ACPI_ADD_PTR (UINT8, Buffer, Pos)) = (UINT8) ACPI_EFI_ASCII_CR;
+                if (Pos < ReadSize - 1)
+                {
+                    /* Drop CR in case we don't have sufficient buffer */
+
+                    Pos++;
+                }
+                *(ACPI_ADD_PTR (UINT8, Buffer, Pos)) = (UINT8) ACPI_EFI_ASCII_NL;
+                Pos++;
+                break;
+
+            case ACPI_EFI_KEY_BACKSPACE:
+
+                *(ACPI_ADD_PTR (UINT8, Buffer, Pos)) = (UINT8) ACPI_EFI_ASCII_DEL;
+                Pos++;
+                break;
+
+            case ACPI_EFI_KEY_ESC:
+
+                *(ACPI_ADD_PTR (UINT8, Buffer, Pos)) = (UINT8) ACPI_EFI_ASCII_ESC;
+                Pos++;
+                break;
+
+            default:
+
+                *(ACPI_ADD_PTR (UINT8, Buffer, Pos)) = (UINT8) Key.UnicodeChar;
+                Pos++;
+                break;
+            }
+        }
+        Length = Pos;
     }
     else
     {
@@ -666,7 +747,6 @@ AcpiOsReadFile (
         {
             goto ErrorExit;
         }
-        ReadSize = Size * Count;
 
         EfiStatus = uefi_call_wrapper (AcpiGbl_EfiCurrentVolume->Read, 3,
             EfiFile, &ReadSize, Buffer);
@@ -708,12 +788,19 @@ AcpiEfiFlushFile (
     CHAR16                  *Pos,
     BOOLEAN                 FlushAll)
 {
+    SIMPLE_TEXT_OUTPUT_INTERFACE *Out;
 
-    if (FlushAll || Pos >= (End - 1))
+
+    if (File == ACPI_FILE_OUT || File == ACPI_FILE_ERR)
     {
-        *Pos = 0;
-        uefi_call_wrapper (File->OutputString, 2, File, Begin);
-        Pos = Begin;
+        Out = ACPI_CAST_PTR (SIMPLE_TEXT_OUTPUT_INTERFACE, File);
+
+        if (FlushAll || Pos >= (End - 1))
+        {
+            *Pos = 0;
+            uefi_call_wrapper (Out->OutputString, 2, Out, Begin);
+            Pos = Begin;
+        }
     }
 
     return (Pos);
@@ -742,7 +829,7 @@ AcpiOsWriteFile (
     ACPI_SIZE               Size,
     ACPI_SIZE               Count)
 {
-    int                     Length = -1;
+    int                     Length = -EINVAL;
     CHAR16                  String[ACPI_EFI_PRINT_LENGTH];
     const char              *Ascii;
     CHAR16                  *End;
@@ -753,8 +840,11 @@ AcpiOsWriteFile (
     EFI_STATUS              EfiStatus;
 
 
-    if (File == ACPI_FILE_OUT ||
-        File == ACPI_FILE_ERR)
+    if (File == ACPI_FILE_IN)
+    {
+        /* Do not support write operations on input console */
+    }
+    else if (File == ACPI_FILE_OUT || File == ACPI_FILE_ERR)
     {
         Pos = String;
         End = String + ACPI_EFI_PRINT_LENGTH - 1;
@@ -1181,6 +1271,10 @@ efi_main (
     /* Initialize EFI library */
 
     InitializeLib (Image, SystemTab);
+
+    /* Disable the platform watchdog timer if we go interactive */
+
+    uefi_call_wrapper(BS->SetWatchdogTimer, 4, 0, 0x0, 0, NULL);
 
     /* Retrieve image information */
 
