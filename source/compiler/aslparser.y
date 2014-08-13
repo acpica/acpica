@@ -115,9 +115,6 @@
  *****************************************************************************/
 
 #include "aslcompiler.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "acpi.h"
 #include "accommon.h"
 
@@ -142,6 +139,8 @@ void *                      AslLocalAllocate (unsigned int Size);
 /* Bison/yacc configuration */
 
 #define static
+#undef malloc
+#define malloc              AslLocalAllocate
 #undef alloca
 #define alloca              AslLocalAllocate
 #define yytname             AslCompilername

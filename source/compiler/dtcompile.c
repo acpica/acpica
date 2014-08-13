@@ -370,7 +370,7 @@ DtCompileDataTable (
         return (AE_ERROR);
     }
 
-    Gbl_Signature = UtLocalCalloc (ACPI_STRLEN (Signature) + 1);
+    Gbl_Signature = UtStringCacheCalloc (ACPI_STRLEN (Signature) + 1);
     strcpy (Gbl_Signature, Signature);
 
     /*

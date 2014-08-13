@@ -626,7 +626,7 @@ UtCheckIntegerRange (
 
 /*******************************************************************************
  *
- * FUNCTION:    UtGetStringBuffer
+ * FUNCTION:    UtStringCacheCalloc
  *
  * PARAMETERS:  Length              - Size of buffer requested
  *
@@ -639,22 +639,34 @@ UtCheckIntegerRange (
  ******************************************************************************/
 
 char *
-UtGetStringBuffer (
+UtStringCacheCalloc (
     UINT32                  Length)
 {
     char                    *Buffer;
+    ASL_CACHE_INFO          *Cache;
 
 
     if ((Gbl_StringCacheNext + Length) >= Gbl_StringCacheLast)
     {
-        Gbl_StringCacheNext = UtLocalCalloc (ASL_STRING_CACHE_SIZE + Length);
-        Gbl_StringCacheLast = Gbl_StringCacheNext + ASL_STRING_CACHE_SIZE +
-                                Length;
+        /* Allocate a new buffer */
+
+        Cache = UtLocalCalloc (ASL_STRING_CACHE_SIZE +
+            sizeof (Cache->Next) + Length);
+
+        /* Link new cache buffer to head of list */
+
+        Cache->Next = Gbl_StringCacheList;
+        Gbl_StringCacheList = Cache;
+
+        /* Setup cache management pointers */
+
+        Gbl_StringCacheNext = Cache->Buffer;
+        Gbl_StringCacheLast = Gbl_StringCacheNext +
+            (ASL_STRING_CACHE_SIZE + Length);
     }
 
     Buffer = Gbl_StringCacheNext;
     Gbl_StringCacheNext += Length;
-
     return (Buffer);
 }
 
@@ -732,6 +744,30 @@ ErrorExit:
 }
 
 
+/******************************************************************************
+ *
+ * FUNCTION:    UtFreeLineBuffers
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Free all line buffers
+ *
+ *****************************************************************************/
+
+void
+UtFreeLineBuffers (
+    void)
+{
+
+    free (Gbl_CurrentLineBuffer);
+    free (Gbl_MainTokenBuffer);
+    free (Gbl_MacroTokenBuffer);
+    free (Gbl_ExpressionTokenBuffer);
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    UtInternalizeName
@@ -764,9 +800,9 @@ UtInternalizeName (
     Info.ExternalName = ExternalName;
     AcpiNsGetInternalNameLength (&Info);
 
-    /* We need a segment to store the internal  name */
+    /* We need a segment to store the internal name */
 
-    Info.InternalName = UtGetStringBuffer (Info.Length);
+    Info.InternalName = UtStringCacheCalloc (Info.Length);
     if (!Info.InternalName)
     {
         return (AE_NO_MEMORY);

@@ -548,6 +548,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"AE_TABLE_DESC",                       SRC_TYPE_STRUCT},
     {"ASL_ANALYSIS_WALK_INFO",              SRC_TYPE_STRUCT},
     {"ASL_ERROR_MSG",                       SRC_TYPE_STRUCT},
+    {"ASL_ERROR_MSG",                       SRC_TYPE_STRUCT},
     {"ASL_EVENT_INFO",                      SRC_TYPE_STRUCT},
     {"ASL_FILE_INFO",                       SRC_TYPE_STRUCT},
     {"ASL_FILE_STATUS",                     SRC_TYPE_STRUCT},

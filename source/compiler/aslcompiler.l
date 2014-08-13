@@ -185,7 +185,8 @@ NamePathTail                [.]{NameSeg}
 "/*"                        { if (!AslDoComment ()) {yyterminate ();} }
 "//"                        { if (!AslDoCommentType2 ()) {yyterminate ();} }
 
-"\""                        { if (AslDoStringLiteral ()) {return (PARSEOP_STRING_LITERAL);} else {yyterminate ();} }
+"\""                        { if (AslDoStringLiteral ()) {return (PARSEOP_STRING_LITERAL);}
+                              else {yyterminate ();} }
 ";"                         { count (0); return(';'); }
 
 
@@ -679,7 +680,7 @@ NamePathTail                [.]{NameSeg}
 
 {NameSeg}                   { char *s;
                                 count (0);
-                                s=malloc (ACPI_NAME_SIZE + 1);
+                                s=UtStringCacheCalloc (ACPI_NAME_SIZE + 1);
                                 if (strcmp (AslCompilertext, "\\"))
                                 {
                                     strcpy (s, "____");
@@ -692,10 +693,9 @@ NamePathTail                [.]{NameSeg}
 
 {NameString}                { char *s;
                                 count (0);
-                                s=malloc (strlen (AslCompilertext)+1);
+                                s=UtStringCacheCalloc (strlen (AslCompilertext)+1);
                                 AcpiUtStrupr (AslCompilertext);
                                 strcpy (s, AslCompilertext);
-                                s[strlen (AslCompilertext)] = 0;
                                 AslCompilerlval.s = s;
                                 DbgPrint (ASL_PARSE_OUTPUT, "NameString: %s\n", s);
                                 return (PARSEOP_NAMESTRING); }

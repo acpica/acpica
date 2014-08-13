@@ -945,7 +945,8 @@ DtFreeFieldList (
 
         if (!(Field->Flags & DT_FIELD_NOT_ALLOCATED))
         {
-            ACPI_FREE (Field->Name);
+            /* No need to free the name, it is in the string cache */
+
             ACPI_FREE (Field->Value);
         }
 

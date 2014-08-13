@@ -113,7 +113,6 @@
  *
  *****************************************************************************/
 
-
 #ifndef __ASLTYPES_H
 #define __ASLTYPES_H
 
@@ -245,6 +244,16 @@ typedef enum
 
 #define ASL_MAX_FILE_TYPE       14
 #define ASL_NUM_FILES           (ASL_MAX_FILE_TYPE + 1)
+
+
+/* Cache block structure for ParseOps and Strings */
+
+typedef struct asl_cache_info
+{
+    void                            *Next;
+    char                            Buffer[1];
+
+} ASL_CACHE_INFO;
 
 
 typedef struct asl_include_dir

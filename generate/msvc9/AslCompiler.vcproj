@@ -2435,7 +2435,7 @@
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="M4 Macro Preprocessor  ($(InputPath)) $(InputDir)"
-							CommandLine="m4 -P -I../../source/compiler ../../source/compiler/$(InputName).y &gt; ./AslCompiler/AslCompiler.y"
+							CommandLine="c:\GnuWin32\bin\m4 -P -I../../source/compiler ../../source/compiler/$(InputName).y &gt; ./AslCompiler/AslCompiler.y&#x0D;&#x0A;"
 							AdditionalDependencies="$(InputDir)aslrules.y"
 							Outputs=" ./AslCompiler/AslCompiler.y"
 						/>
@@ -2446,7 +2446,7 @@
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="M4 Macro Preprocessor  ($(InputPath))"
-							CommandLine="m4 -P -I../../source/compiler ../../source/compiler/$(InputName).y &gt; ./AslCompilerDebug/AslCompilerDebug.y"
+							CommandLine="c:\GnuWin32\bin\m4 -P -I../../source/compiler ../../source/compiler/$(InputName).y &gt; ./AslCompilerDebug/AslCompilerDebug.y&#x0D;&#x0A;"
 							Outputs=" ./AslCompilerDebug/AslCompilerDebug.y"
 						/>
 					</FileConfiguration>
@@ -3575,7 +3575,7 @@
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="Bison - Main compiler parser generation ($(InputPath))"
-							CommandLine="c:\GnuWin32\bin\bison -pAslCompiler -t -d -v --warnings=yacc -oAslCompiler/$(InputName).y.c ./AslCompiler/aslcompiler.y"
+							CommandLine="c:\GnuWin32\bin\bison -pAslCompiler -t -d -v --warnings=yacc -oAslCompiler/$(InputName).y.c ./AslCompiler/aslcompiler.y&#x0D;&#x0A;"
 							Outputs="./AslCompiler/$(InputName).y.c;./AslCompiler/$(InputName).y.h"
 						/>
 					</FileConfiguration>
@@ -3657,7 +3657,7 @@
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="Bison - Main compiler parser generation ($(InputPath))"
-							CommandLine="c:\GnuWin32\bin\bison -pAslCompiler -t -d -v --warnings=yacc -oAslCompilerDebug/AslCompilerDebug.y.c  ./AslCompilerDebug/AslCompilerDebug.y"
+							CommandLine="c:\GnuWin32\bin\bison -pAslCompiler -t -d -v --warnings=yacc -oAslCompilerDebug/AslCompilerDebug.y.c  ./AslCompilerDebug/AslCompilerDebug.y&#x0D;&#x0A;"
 							Outputs="AslCompilerDebug\AslCompilerDebug.y.c;AslCompilerDebug\AslCompilerDebug.y.h"
 						/>
 					</FileConfiguration>

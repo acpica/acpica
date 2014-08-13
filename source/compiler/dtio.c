@@ -1110,6 +1110,29 @@ DtDumpSubtableList (
 }
 
 
+#ifdef __UNDER_DEVELOPMENT
+static void
+DtDeleteSubtable (
+    DT_SUBTABLE             *Subtable,
+    void                    *Context,
+    void                    *ReturnValue)
+{
+
+
+    ACPI_FREE (Subtable);
+}
+
+void
+DtDeleteSubtableTree (
+    void)
+{
+
+    DtWalkTableTree (Gbl_RootTable, DtDeleteSubtable, NULL, NULL);
+
+}
+#endif
+
+
 /******************************************************************************
  *
  * FUNCTION:    DtWriteFieldToListing

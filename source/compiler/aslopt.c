@@ -240,7 +240,7 @@ OptSearchToRoot (
 
     /* We must allocate a new string for the name (TargetPath gets deleted) */
 
-    *NewPath = ACPI_ALLOCATE_ZEROED (ACPI_NAME_SIZE + 1);
+    *NewPath = UtStringCacheCalloc (ACPI_NAME_SIZE + 1);
     ACPI_STRCPY (*NewPath, Path);
 
     if (ACPI_STRNCMP (*NewPath, "_T_", 3))
