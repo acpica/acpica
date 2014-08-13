@@ -158,6 +158,11 @@ AcpiEfiConvertArgcv (
     char                    ***ArgvPtr,
     char                    **BufferPtr);
 
+static ACPI_STATUS
+AcpiEfiGetFileInfo (
+    ACPI_FILE               File,
+    EFI_FILE_INFO           **InfoPtr);
+
 static ACPI_PHYSICAL_ADDRESS
 AcpiEfiGetRsdpViaGuid (
     EFI_GUID                *Guid);
@@ -896,11 +901,65 @@ ErrorExit:
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiEfiGetFileInfo
+ *
+ * PARAMETERS:  File                - File descriptor
+ *              InfoPtr             - Pointer to contain file information
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Get file information.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiEfiGetFileInfo (
+    ACPI_FILE               File,
+    EFI_FILE_INFO           **InfoPtr)
+{
+    EFI_STATUS              EfiStatus = EFI_BUFFER_TOO_SMALL;
+    EFI_FILE_INFO           *Buffer = NULL;
+    UINTN                   BufferSize = SIZE_OF_EFI_FILE_INFO + 200;
+    EFI_FILE_HANDLE         EfiFile;
+
+
+    if (!InfoPtr)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    while (EfiStatus == EFI_BUFFER_TOO_SMALL)
+    {
+        EfiFile = ACPI_CAST_PTR (EFI_FILE, File);
+        Buffer = AcpiOsAllocate (BufferSize);
+        if (!Buffer)
+        {
+            return (AE_NO_MEMORY);
+        }
+        EfiStatus = uefi_call_wrapper (EfiFile->GetInfo, 4, EfiFile,
+            &GenericFileInfo, &BufferSize, Buffer);
+        if (EFI_ERROR (EfiStatus))
+        {
+            AcpiOsFree (Buffer);
+            if (EfiStatus != EFI_BUFFER_TOO_SMALL)
+            {
+                return (AE_ERROR);
+            }
+        }
+    }
+
+    *InfoPtr = Buffer;
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiOsGetFileOffset
  *
  * PARAMETERS:  File                - File descriptor
  *
- * RETURN:      Size of current position
+ * RETURN:      current position
  *
  * DESCRIPTION: Get current file offset.
  *
@@ -911,8 +970,33 @@ AcpiOsGetFileOffset (
     ACPI_FILE               File)
 {
     long                    Offset = -1;
+    UINT64                  Current;
+    EFI_STATUS              EfiStatus;
+    EFI_FILE_HANDLE         EfiFile;
 
 
+    if (File == ACPI_FILE_IN || File == ACPI_FILE_OUT ||
+        File == ACPI_FILE_ERR)
+    {
+        Offset = 0;
+    }
+    else
+    {
+        EfiFile = ACPI_CAST_PTR (EFI_FILE, File);
+
+        EfiStatus = uefi_call_wrapper (EfiFile->GetPosition, 2,
+            EfiFile, &Current);
+        if (EFI_ERROR (EfiStatus))
+        {
+            goto ErrorExit;
+        }
+        else
+        {
+            Offset = (long) Current;
+        }
+    }
+
+ErrorExit:
     return (Offset);
 }
 
@@ -937,8 +1021,58 @@ AcpiOsSetFileOffset (
     long                    Offset,
     UINT8                   From)
 {
+    EFI_FILE_INFO           *Info;
+    ACPI_STATUS             Status;
+    ACPI_SIZE               Size;
+    UINT64                  Current;
+    EFI_STATUS              EfiStatus;
+    EFI_FILE_HANDLE         EfiFile;
 
-    return (AE_SUPPORT);
+
+    if (File == ACPI_FILE_IN || File == ACPI_FILE_OUT ||
+        File == ACPI_FILE_ERR)
+    {
+        return (AE_OK);
+    }
+    else
+    {
+        EfiFile = ACPI_CAST_PTR (EFI_FILE, File);
+        Status = AcpiEfiGetFileInfo (File, &Info);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+        Size = Info->FileSize;
+        AcpiOsFree (Info);
+
+        if (From == ACPI_FILE_CURRENT_POSITION)
+        {
+            EfiStatus = uefi_call_wrapper (EfiFile->GetPosition, 2,
+                EfiFile, &Current);
+            if (EFI_ERROR (EfiStatus))
+            {
+                return (AE_LIMIT);
+            }
+            Current += Offset;
+        }
+        else if (From == ACPI_FILE_END)
+        {
+            Current = Size - Offset;
+        }
+        else
+        {
+            Current = Offset;
+        }
+
+        EfiStatus = uefi_call_wrapper (EfiFile->SetPosition, 2,
+            EfiFile, Current);
+        if (EFI_ERROR (EfiStatus))
+        {
+            return (AE_LIMIT);
+        }
+    }
+
+    return (AE_OK);
 }
 
 

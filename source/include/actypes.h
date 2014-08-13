@@ -1450,7 +1450,8 @@ typedef struct acpi_memory_list
 #define ACPI_FILE_BINARY                0x08
 #define ACPI_FILE_TEXT                  0x10
 
-#define ACPI_FILE_BEGIN                 0x01
+#define ACPI_FILE_BEGIN                 0x00
+#define ACPI_FILE_CURRENT_POSITION      0x01
 #define ACPI_FILE_END                   0x02
 
 #ifndef EOF
