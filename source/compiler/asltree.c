@@ -158,8 +158,8 @@ TrGetNextNode (
     {
         /* Allocate a new buffer */
 
-        Cache = UtLocalCalloc (
-            sizeof (ACPI_PARSE_OBJECT) * ASL_PARSEOP_CACHE_SIZE);
+        Cache = UtLocalCalloc (sizeof (Cache->Next) +
+            (sizeof (ACPI_PARSE_OBJECT) * ASL_PARSEOP_CACHE_SIZE));
 
         /* Link new cache buffer to head of list */
 
@@ -172,6 +172,7 @@ TrGetNextNode (
         Gbl_ParseOpCacheLast = Gbl_ParseOpCacheNext + ASL_PARSEOP_CACHE_SIZE;
     }
 
+    Gbl_ParseOpCount++;
     return (Gbl_ParseOpCacheNext++);
 }
 

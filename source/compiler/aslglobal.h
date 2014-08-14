@@ -283,9 +283,13 @@ ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (TotalFolds, 0);
 
 /* Local caches */
 
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_ParseOpCount, 0);
 ASL_EXTERN ASL_CACHE_INFO           ASL_INIT_GLOBAL (*Gbl_ParseOpCacheList, NULL);
 ASL_EXTERN ACPI_PARSE_OBJECT        ASL_INIT_GLOBAL (*Gbl_ParseOpCacheNext, NULL);
 ASL_EXTERN ACPI_PARSE_OBJECT        ASL_INIT_GLOBAL (*Gbl_ParseOpCacheLast, NULL);
+
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_StringCount, 0);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_StringSize, 0);
 ASL_EXTERN ASL_CACHE_INFO           ASL_INIT_GLOBAL (*Gbl_StringCacheList, NULL);
 ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_StringCacheNext, NULL);
 ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_StringCacheLast, NULL);

@@ -646,12 +646,18 @@ UtStringCacheCalloc (
     ASL_CACHE_INFO          *Cache;
 
 
+    if (Length > ASL_STRING_CACHE_SIZE)
+    {
+        Buffer = UtLocalCalloc (Length);
+        return (Buffer);
+    }
+
     if ((Gbl_StringCacheNext + Length) >= Gbl_StringCacheLast)
     {
         /* Allocate a new buffer */
 
-        Cache = UtLocalCalloc (ASL_STRING_CACHE_SIZE +
-            sizeof (Cache->Next) + Length);
+        Cache = UtLocalCalloc (sizeof (Cache->Next) +
+            ASL_STRING_CACHE_SIZE);
 
         /* Link new cache buffer to head of list */
 
@@ -661,9 +667,11 @@ UtStringCacheCalloc (
         /* Setup cache management pointers */
 
         Gbl_StringCacheNext = Cache->Buffer;
-        Gbl_StringCacheLast = Gbl_StringCacheNext +
-            (ASL_STRING_CACHE_SIZE + Length);
+        Gbl_StringCacheLast = Gbl_StringCacheNext + ASL_STRING_CACHE_SIZE;
     }
+
+    Gbl_StringCount++;
+    Gbl_StringSize += Length;
 
     Buffer = Gbl_StringCacheNext;
     Gbl_StringCacheNext += Length;
@@ -699,7 +707,8 @@ UtExpandLineBuffers (
     NewSize = Gbl_LineBufferSize * 2;
     if (Gbl_CurrentLineBuffer)
     {
-        DbgPrint (ASL_DEBUG_OUTPUT,"Increasing line buffer size from %u to %u\n",
+        DbgPrint (ASL_DEBUG_OUTPUT,
+            "Increasing line buffer size from %u to %u\n",
             Gbl_LineBufferSize, NewSize);
     }
 
