@@ -637,6 +637,7 @@ void
 AsTrimWhitespace (
     char                    *Buffer)
 {
+    char                    *SubBuffer;
     int                     ReplaceCount = 1;
 
 
@@ -644,6 +645,39 @@ AsTrimWhitespace (
     {
         ReplaceCount = AsReplaceString ("\n\n\n\n", "\n\n\n",
             REPLACE_SUBSTRINGS, Buffer);
+    }
+
+    /*
+     * Check for exactly one blank line after the copyright header
+     */
+
+    /* Find the header */
+
+    SubBuffer = strstr (Buffer, HeaderBegin);
+    if (!SubBuffer)
+    {
+        return;
+    }
+
+    /* Find the end of the header */
+
+    SubBuffer = strstr (SubBuffer, "*/");
+    SubBuffer = AsSkipPastChar (SubBuffer, '\n');
+
+    /* Replace a double blank line with a single */
+
+    if (!strncmp (SubBuffer, "\n\n", 2))
+    {
+        SubBuffer = AsReplaceData (SubBuffer, 2, "\n", 1);
+        AcpiOsPrintf ("Found multiple blank lines after copyright\n");
+    }
+
+    /* If no blank line after header, insert one */
+
+    else if (*SubBuffer != '\n')
+    {
+        AsInsertData (SubBuffer, "\n", 1);
+        AcpiOsPrintf ("Inserted blank line after copyright\n");
     }
 }
 
