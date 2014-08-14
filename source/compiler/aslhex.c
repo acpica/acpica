@@ -113,7 +113,6 @@
  *
  *****************************************************************************/
 
-
 #include "aslcompiler.h"
 
 #define _COMPONENT          ACPI_COMPILER
