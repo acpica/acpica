@@ -179,24 +179,13 @@ MtMethodAnalysisWalkBegin (
 
         WalkInfo->MethodStack = MethodInfo;
 
-        /* Special handling for _DSD, must have a _HID also */
-
-        if (ACPI_COMPARE_NAME (METHOD_NAME__DSD, Op->Asl.NameSeg))
-        {
-            if (!ApFindNameInScope (METHOD_NAME__HID, Op))
-            {
-                AslError (ASL_WARNING, ASL_MSG_MISSING_DEPENDENCY, Op,
-                    "_DSD requires _HID in same scope");
-            }
-        }
-
         /*
          * Special handling for _PSx methods. Dependency rules (same scope):
          *
          * 1) _PS0 - One of these must exist: _PS1, _PS2, _PS3
          * 2) _PS1/_PS2/_PS3: A _PS0 must exist
          */
-        else if (ACPI_COMPARE_NAME (METHOD_NAME__PS0, Op->Asl.NameSeg))
+        if (ACPI_COMPARE_NAME (METHOD_NAME__PS0, Op->Asl.NameSeg))
         {
             /* For _PS0, one of _PS1/_PS2/_PS3 must exist */
 
@@ -476,6 +465,17 @@ MtMethodAnalysisWalkBegin (
         break;
 
     case PARSEOP_DEVICE:
+
+        Next = Op->Asl.Child;
+
+        if (!ApFindNameInScope (METHOD_NAME__HID, Next) &&
+            !ApFindNameInScope (METHOD_NAME__ADR, Next))
+        {
+            AslError (ASL_WARNING, ASL_MSG_MISSING_DEPENDENCY, Op,
+                "Device object requires a _HID or _ADR in same scope");
+        }
+        break;
+
     case PARSEOP_EVENT:
     case PARSEOP_MUTEX:
     case PARSEOP_OPERATIONREGION:
@@ -527,15 +527,6 @@ MtMethodAnalysisWalkBegin (
             else
             {
                 AnCheckId (Next, ASL_TYPE_CID);
-            }
-        }
-
-        else if (!ACPI_STRCMP (METHOD_NAME__DSD, Op->Asl.NameSeg))
-        {
-            if (!ApFindNameInScope (METHOD_NAME__HID, Op))
-            {
-                AslError (ASL_WARNING, ASL_MSG_MISSING_DEPENDENCY, Op,
-                    "_DSD requires _HID in same scope");
             }
         }
 

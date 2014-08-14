@@ -448,7 +448,6 @@ TrDoDefinitionBlock (
  *
  * RETURN:      None
  *
- *
  * DESCRIPTION: Translate ASL SWITCH statement to if/else pairs. There is
  *              no actual AML opcode for SWITCH -- it must be simulated.
  *
