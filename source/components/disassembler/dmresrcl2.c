@@ -345,7 +345,7 @@ AcpiDmGpioIntDescriptor (
     AcpiDmIndent (Level);
     AcpiOsPrintf ("GpioInt (%s, %s, %s, ",
         AcpiGbl_HeDecode [ACPI_GET_1BIT_FLAG (Resource->Gpio.IntFlags)],
-        AcpiGbl_LlDecode [ACPI_EXTRACT_1BIT_FLAG (Resource->Gpio.IntFlags, 1)],
+        AcpiGbl_LlDecode [ACPI_EXTRACT_2BIT_FLAG (Resource->Gpio.IntFlags, 1)],
         AcpiGbl_ShrDecode [ACPI_EXTRACT_2BIT_FLAG (Resource->Gpio.IntFlags, 3)]);
 
     /* PinConfig, DebounceTimeout */
