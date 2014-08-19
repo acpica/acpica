@@ -195,7 +195,7 @@ main (
 
     ACPI_DEBUG_INITIALIZE (); /* For debug version only */
     AcpiOsInitialize ();
-    printf (ACPI_COMMON_SIGNON (AX_UTILITY_NAME));
+    ACPI_PRINTF (ACPI_COMMON_SIGNON (AX_UTILITY_NAME));
 
     if (argc < 2)
     {
@@ -238,7 +238,7 @@ main (
     Filename = argv[AcpiGbl_Optind];
     if (!Filename)
     {
-        printf ("Missing required input filename\n");
+        ACPI_PRINTF ("Missing required input filename\n");
         return (-1);
     }
 
