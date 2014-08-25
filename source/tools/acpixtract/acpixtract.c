@@ -333,20 +333,18 @@ AxConvertLine (
     char                    *InputLine,
     unsigned char           *OutputData)
 {
-    char                    *End;
-    int                     BytesConverted;
-    int                     Converted[16];
-    int                     i;
+    const char              *Next;
+    int                     BytesConverted = 0;
 
 
-    /* Terminate the input line at the end of the actual data (for sscanf) */
+    /* Seek to the beginning of the hex array */
 
-    End = ACPI_STRSTR (InputLine + 2, "  ");
-    if (!End)
+    Next = ACPI_STRSTR (InputLine, ": ");
+    if (!Next)
     {
         return (0); /* Don't understand the format */
     }
-    *End = 0;
+    Next += 1;
 
     /*
      * Convert one line of table data, of the form:
@@ -355,18 +353,14 @@ AxConvertLine (
      * Example:
      * 02C0: 5F 53 42 5F 4C 4E 4B 44 00 12 13 04 0C FF FF 08  _SB_LNKD........
      */
-    BytesConverted = sscanf (InputLine,
-        "%*s %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x",
-        &Converted[0],  &Converted[1],  &Converted[2],  &Converted[3],
-        &Converted[4],  &Converted[5],  &Converted[6],  &Converted[7],
-        &Converted[8],  &Converted[9],  &Converted[10], &Converted[11],
-        &Converted[12], &Converted[13], &Converted[14], &Converted[15]);
-
-    /* Pack converted data into a byte array */
-
-    for (i = 0; i < BytesConverted; i++)
+    while (Next &&
+           ACPI_IS_XDIGIT (Next[1]) && ACPI_IS_XDIGIT (Next[2]) &&
+           (ACPI_IS_SPACE (Next[3]) || Next[3] == '\0'))
     {
-        OutputData[i] = (unsigned char) Converted[i];
+        OutputData[BytesConverted++] =
+            (unsigned char) (AcpiUtAsciiCharToHex (Next[1]) * 16 +
+                             AcpiUtAsciiCharToHex (Next[2]));
+        Next = ACPI_STRPBRK (Next + 1, " ");
     }
 
     return ((size_t) BytesConverted);

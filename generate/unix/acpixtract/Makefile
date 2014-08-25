@@ -35,6 +35,7 @@ OBJECTS = \
     $(OBJDIR)/utdebug.o\
     $(OBJDIR)/utexcep.o\
     $(OBJDIR)/utglobal.o\
+    $(OBJDIR)/uthex.o\
     $(OBJDIR)/utmath.o\
     $(OBJDIR)/utprint.o\
     $(OBJDIR)/utxferror.o
