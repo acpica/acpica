@@ -137,7 +137,7 @@ static void
 AxNormalizeSignature (
     char                    *Signature);
 
-static unsigned int
+static int
 AxGetNextInstance (
     char                    *InputPathname,
     char                    *Signature);
@@ -481,7 +481,7 @@ AxCountTableInstances (
  *              Signature           - Requested ACPI signature
  *
  * RETURN:      The next instance number for this signature. Zero if this
- *              is the first instance of this signature.
+ *              is the first instance of this signature. -1 on error.
  *
  * DESCRIPTION: Get the next instance number of the specified table. If this
  *              is the first instance of the table, create a new instance
@@ -490,7 +490,7 @@ AxCountTableInstances (
  *
  ******************************************************************************/
 
-static unsigned int
+static int
 AxGetNextInstance (
     char                    *InputPathname,
     char                    *Signature)
@@ -517,7 +517,7 @@ AxGetNextInstance (
         if (!Info)
         {
             ACPI_PRINTF ("Could not allocate memory\n");
-            exit (0);
+            return -1;
         }
 
         Info->Signature = *(UINT32 *) Signature;
@@ -565,7 +565,7 @@ AxExtractTables (
     unsigned int            State = AX_STATE_FIND_HEADER;
     unsigned int            FoundTable = 0;
     unsigned int            Instances = 0;
-    unsigned int            ThisInstance;
+    int                     ThisInstance;
     char                    ThisSignature[4];
     int                     Status = 0;
 
@@ -657,7 +657,13 @@ AxExtractTables (
 
             /* Build an output filename and create/open the output file */
 
-            if (ThisInstance > 0)
+            if (ThisInstance < 0)
+            {
+                ACPI_PRINTF ("Could not get instance of %4.4s\n", ThisSignature);
+                Status = -1;
+                goto CleanupAndExit;
+            }
+            else if (ThisInstance > 0)
             {
                 ACPI_SPRINTF (Filename, "%4.4s%u.dat", ThisSignature, ThisInstance);
             }
