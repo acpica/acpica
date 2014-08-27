@@ -260,6 +260,37 @@ AcpiOsPutFileCharacter (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiOsGetFileString
+ *
+ * PARAMETERS:  File                - File descriptor
+ *
+ * RETURN:      The string read
+ *
+ * DESCRIPTION: Read a string from the file.
+ *
+ ******************************************************************************/
+
+char *
+AcpiOsGetFileString (
+    char                    *s,
+    ACPI_SIZE               Size,
+    ACPI_FILE               File)
+{
+    char                    *Ret;
+
+
+    Ret = fgets (s, Size, File);
+    if (Ret == NULL && ferror (File))
+    {
+        perror ("Error reading file");
+    }
+
+    return (Ret);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiOsReadFile
  *
  * PARAMETERS:  File                - An open file descriptor
