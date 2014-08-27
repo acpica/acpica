@@ -647,6 +647,65 @@ AcpiOsPutFileCharacter (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiOsGetFileString
+ *
+ * PARAMETERS:  File                - File descriptor
+ *
+ * RETURN:      The string read
+ *
+ * DESCRIPTION: Read a string from the file.
+ *
+ ******************************************************************************/
+
+char *
+AcpiOsGetFileString (
+    char                    *s,
+    ACPI_SIZE               Size,
+    ACPI_FILE               File)
+{
+    ACPI_SIZE               ReadBytes = 0;
+    int                     Ret;
+
+
+    if (Size <= 1)
+    {
+        AcpiLogError ("Invalid AcpiOsGetFileString() buffer size: %u.\n",
+                (UINT32) Size);
+        return (NULL);
+    }
+    while (ReadBytes < (Size - 1))
+    {
+        Ret = AcpiOsGetFileCharacter (File);
+        if (Ret == EOF)
+        {
+            if (ReadBytes == 0)
+            {
+                return (NULL);
+            }
+            break;
+        }
+        else if (Ret < 0)
+        {
+            return (NULL);
+        }
+        else if (Ret == '\n')
+        {
+            s[ReadBytes++] = (char) Ret;
+            break;
+        }
+        else
+        {
+            s[ReadBytes++] = (char) Ret;
+        }
+    }
+
+    s[ReadBytes] = '\0';
+    return (s);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiOsReadFile
  *
  * PARAMETERS:  File                - File descriptor

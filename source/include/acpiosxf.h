@@ -652,6 +652,14 @@ AcpiOsPutFileCharacter (
     char                    c);
 #endif
 
+#ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetFileString
+char *
+AcpiOsGetFileString (
+    char                    *s,
+    ACPI_SIZE               Size,
+    ACPI_FILE               File);
+#endif
+
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadFile
 int
 AcpiOsReadFile (
