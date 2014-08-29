@@ -902,6 +902,7 @@ ACPI_EXPORT_SYMBOL (AcpiRemoveFixedEventHandler)
  *              GpeNumber       - The GPE number within the GPE block
  *              Type            - Whether this GPE should be treated as an
  *                                edge- or level-triggered interrupt.
+ *                                GPE flags can also be included.
  *              Address         - Address of the handler
  *              Context         - Value passed to the handler on each GPE
  *
@@ -930,7 +931,8 @@ AcpiInstallGpeHandler (
 
     /* Parameter validation */
 
-    if ((!Address) || (Type & ~ACPI_GPE_XRUPT_TYPE_MASK))
+    if ((!Address) ||
+        (Type & ~(ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_XRUPT_FLAG_MASK)))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -974,7 +976,9 @@ AcpiInstallGpeHandler (
     Handler->Context = Context;
     Handler->MethodNode = GpeEventInfo->Dispatch.MethodNode;
     Handler->OriginalFlags = (UINT8) (GpeEventInfo->Flags &
-        (ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_DISPATCH_MASK));
+        (ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_XRUPT_FLAG_MASK |
+         ACPI_GPE_DISPATCH_MASK));
+    Handler->ReferenceCount = 0;
 
     /*
      * If the GPE is associated with a method, it may have been enabled
@@ -990,7 +994,8 @@ AcpiInstallGpeHandler (
 
         /* Sanity check of original type against new type */
 
-        if (Type != (UINT32) (GpeEventInfo->Flags & ACPI_GPE_XRUPT_TYPE_MASK))
+        if ((Type & ACPI_GPE_XRUPT_TYPE_MASK) !=
+            (UINT32) (GpeEventInfo->Flags & ACPI_GPE_XRUPT_TYPE_MASK))
         {
             ACPI_WARNING ((AE_INFO, "GPE type mismatch (level/edge)"));
         }
@@ -1002,7 +1007,8 @@ AcpiInstallGpeHandler (
 
     /* Setup up dispatch flags to indicate handler (vs. method/notify) */
 
-    GpeEventInfo->Flags &= ~(ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_DISPATCH_MASK);
+    GpeEventInfo->Flags &= ~(ACPI_GPE_XRUPT_TYPE_MASK |
+        ACPI_GPE_XRUPT_FLAG_MASK | ACPI_GPE_DISPATCH_MASK);
     GpeEventInfo->Flags |= (UINT8) (Type | ACPI_GPE_DISPATCH_HANDLER);
 
     AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
@@ -1095,12 +1101,25 @@ AcpiRemoveGpeHandler (
     /* Remove the handler */
 
     Handler = GpeEventInfo->Dispatch.Handler;
+    GpeEventInfo->Dispatch.Handler = NULL;
+
+    /*
+     * Disallow forced enabling/disabling when the GPE cannot be
+     * dispatched again.
+     */
+    if ((GpeEventInfo->Flags & ACPI_GPE_FORCE_FLAG_MASK) &&
+        ((Handler->OriginalFlags & ACPI_GPE_DISPATCH_MASK) ==
+            ACPI_GPE_DISPATCH_NONE))
+    {
+        AcpiEvForceGpe (GpeEventInfo, ACPI_GPE_RESET_FORCE_FLAGS);
+    }
 
     /* Restore Method node (if any), set dispatch flags */
 
     GpeEventInfo->Dispatch.MethodNode = Handler->MethodNode;
     GpeEventInfo->Flags &=
-        ~(ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_DISPATCH_MASK);
+        ~(ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_XRUPT_FLAG_MASK |
+          ACPI_GPE_DISPATCH_MASK);
     GpeEventInfo->Flags |= Handler->OriginalFlags;
 
     /*
@@ -1108,18 +1127,28 @@ AcpiRemoveGpeHandler (
      * enabled, it should be enabled at this point to restore the
      * post-initialization configuration.
      */
-    if ((Handler->OriginalFlags & ACPI_GPE_DISPATCH_METHOD) &&
+    if (((Handler->OriginalFlags & ACPI_GPE_DISPATCH_METHOD) ||
+         (Handler->OriginalFlags & ACPI_GPE_DISPATCH_NOTIFY)) &&
         Handler->OriginallyEnabled)
     {
         (void) AcpiEvAddGpeReference (GpeEventInfo);
     }
 
+#ifndef ACPI_SINGLE_THREADED
+
+    /* Make sure all GPE handlers are completed */
+
+    while (Handler->ReferenceCount != 0)
+    {
+        AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
+        AcpiOsSleep ((UINT64) 10);
+        Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
+    }
+
+#endif
+
     AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
     (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
-
-    /* Make sure all deferred GPE tasks are completed */
-
-    AcpiOsWaitEventsComplete ();
 
     /* Now we can free the handler object */
 

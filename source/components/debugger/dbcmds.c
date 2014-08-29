@@ -1286,7 +1286,8 @@ AcpiDbGenerateGpe (
         return;
     }
 
-    (void) AcpiEvGpeDispatch (NULL, GpeEventInfo, GpeNumber);
+    (void) AcpiEvGpeDispatch (NULL, GpeEventInfo,
+        GpeEventInfo->Dispatch.Handler, GpeNumber);
 }
 
 void

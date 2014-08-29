@@ -188,6 +188,11 @@ AcpiEvEnableGpe (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 ACPI_STATUS
+AcpiEvForceGpe (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    UINT8                   Action);
+
+ACPI_STATUS
 AcpiEvAddGpeReference (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
@@ -238,6 +243,7 @@ UINT32
 AcpiEvGpeDispatch (
     ACPI_NAMESPACE_NODE     *GpeDevice,
     ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    ACPI_GPE_HANDLER_INFO   *GpeHandlerInfo,
     UINT32                  GpeNumber);
 
 

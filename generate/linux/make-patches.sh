@@ -88,9 +88,9 @@ generate_patch()
 		cd $SCRIPT
 
 		if [ "x$DRYRUN" = "xyes" ]; then
-			echo $GIT_EXTRACT -i $lid -s \'$MAINTAINER\' -f \'$MAINTAINER\' $COMMIT
+			echo $GIT_EXTRACT -i $lid -m \'$MAINTAINER\' $COMMIT
 		else
-			eval $GIT_EXTRACT -i $lid -s \'$MAINTAINER\' -f \'$MAINTAINER\' $COMMIT
+			eval $GIT_EXTRACT -i $lid -m \'$MAINTAINER\' $COMMIT
 			echo "[make-patches.sh]  Copying ACPICA patch ($RELEASE-$aid.patch)..."
 			mv acpica-$COMMIT.patch $ACPICA_DIR/$RELEASE-$aid.patch
 			echo $RELEASE-$aid.patch >> $ACPICA_DIR/series
