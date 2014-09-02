@@ -141,6 +141,7 @@ extern UINT8                AcpiGbl_UseHwReducedFadt;
 extern BOOLEAN              AcpiGbl_DisplayRegionAccess;
 extern BOOLEAN              AcpiGbl_DoInterfaceTests;
 extern BOOLEAN              AcpiGbl_LoadTestTables;
+extern ACPI_CONNECTION_INFO AeMyContext;
 
 /* Check for unexpected exceptions */
 
@@ -267,5 +268,20 @@ AeGlobalEventHandler (
     ACPI_HANDLE             GpeDevice,
     UINT32                  EventNumber,
     void                    *Context);
+
+/* aeregion */
+
+ACPI_STATUS
+AeInstallDeviceHandlers (
+    void);
+
+void
+AeInstallRegionHandlers (
+    void);
+
+void
+AeOverrideRegionHandlers (
+    void);
+
 
 #endif /* _AECOMMON */
