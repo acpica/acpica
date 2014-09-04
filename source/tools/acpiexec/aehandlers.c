@@ -992,5 +992,5 @@ AeInstallEarlyHandlers (
      */
     AeRegions.NumberOfRegions = 0;
     AeRegions.RegionList = NULL;
-    return (Status);
+    return (AE_OK);
 }
