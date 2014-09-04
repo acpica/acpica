@@ -685,6 +685,22 @@ AeRegionHandler (
         }
         return (AE_OK);
 
+    /*
+     * GPIO has some special semantics:
+     * 1) Address is the pin number index into the Connection() pin list
+     * 2) BitWidth is the actual number of bits (pins) defined by the field
+     */
+    case ACPI_ADR_SPACE_GPIO: /* ACPI 5.0 */
+
+        if (AcpiGbl_DisplayRegionAccess)
+        {
+            AcpiOsPrintf ("AcpiExec: GPIO "
+                "%s: Addr %.4X Width %X Conn %p\n",
+                (Function & ACPI_IO_MASK) ? "Write" : "Read ",
+                (UINT32) Address, BitWidth, MyContext->Connection);
+        }
+        return (AE_OK);
+
     default:
         break;
     }

@@ -363,6 +363,7 @@ typedef struct acpi_create_field_info
     UINT32                          FieldBitPosition;
     UINT32                          FieldBitLength;
     UINT16                          ResourceLength;
+    UINT16                          PinNumberIndex;
     UINT8                           FieldFlags;
     UINT8                           Attribute;
     UINT8                           FieldType;
