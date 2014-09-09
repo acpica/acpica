@@ -240,7 +240,7 @@ ApGetTableLength (
     if (ACPI_VALIDATE_RSDP_SIG (Table->Signature))
     {
         Rsdp = ACPI_CAST_PTR (ACPI_TABLE_RSDP, Table);
-        return (Rsdp->Length);
+        return (AcpiTbGetRsdpLength (Rsdp));
     }
 
     /* Normal ACPI table */
