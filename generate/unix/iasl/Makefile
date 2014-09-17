@@ -228,6 +228,7 @@ MISC = \
 
 ASL_PARSER = \
 	$(ASL_COMPILER)/aslparser.y\
+	$(ASL_COMPILER)/aslsupport.y\
 	$(ASL_COMPILER)/asltokens.y\
 	$(ASL_COMPILER)/asltypes.y\
 	$(ASL_COMPILER)/aslrules.y
@@ -254,7 +255,7 @@ include ../Makefile.rules
 #
 # Macro processing for iASL .y files
 #
-$(OBJDIR)/aslcompiler.y :       $(ASL_PARSER)
+$(OBJDIR)/aslcompiler.y :      $(ASL_PARSER)
 	$(MACROPROC) $(MFLAGS) $(ASL_COMPILER)/aslparser.y > $(OBJDIR)/aslcompiler.y
 
 #

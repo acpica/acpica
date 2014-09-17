@@ -2436,7 +2436,7 @@
 							Name="VCCustomBuildTool"
 							Description="M4 Macro Preprocessor  ($(InputPath)) $(InputDir)"
 							CommandLine="c:\GnuWin32\bin\m4 -P -I../../source/compiler ../../source/compiler/$(InputName).y &gt; ./AslCompiler/AslCompiler.y&#x0D;&#x0A;"
-							AdditionalDependencies="$(InputDir)aslrules.y"
+							AdditionalDependencies="$(InputDir)aslrules.y;$(InputDir)aslsupport.y;$(InputDir)asltokens.y;$(InputDir)asltypes.y"
 							Outputs=" ./AslCompiler/AslCompiler.y"
 						/>
 					</FileConfiguration>
@@ -2447,6 +2447,7 @@
 							Name="VCCustomBuildTool"
 							Description="M4 Macro Preprocessor  ($(InputPath))"
 							CommandLine="c:\GnuWin32\bin\m4 -P -I../../source/compiler ../../source/compiler/$(InputName).y &gt; ./AslCompilerDebug/AslCompilerDebug.y&#x0D;&#x0A;"
+							AdditionalDependencies="$(InputDir)aslrules.y;$(InputDir)aslsupport.y;$(InputDir)asltokens.y;$(InputDir)asltypes.y"
 							Outputs=" ./AslCompilerDebug/AslCompilerDebug.y"
 						/>
 					</FileConfiguration>
