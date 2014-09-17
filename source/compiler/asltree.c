@@ -602,7 +602,6 @@ TrCreateConstantLeafNode (
         /* Get the simple filename from the full path */
 
         FlSplitInputPathname (Op->Asl.Filename, &Path, &Filename);
-        ACPI_FREE (Path);
         Op->Asl.Value.String = Filename;
         break;
 
