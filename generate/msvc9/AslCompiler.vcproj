@@ -2905,6 +2905,18 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\compiler\aslmapenter.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\compiler\aslmapoutput.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\compiler\aslmaputils.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\compiler\aslmessages.c"
 					>
 				</File>

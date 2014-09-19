@@ -66,6 +66,9 @@ OBJECTS = \
 	$(OBJDIR)/asllookup.o\
 	$(OBJDIR)/aslmain.o\
 	$(OBJDIR)/aslmap.o\
+	$(OBJDIR)/aslmapenter.o\
+	$(OBJDIR)/aslmapoutput.o\
+	$(OBJDIR)/aslmaputils.o\
 	$(OBJDIR)/aslmessages.o\
 	$(OBJDIR)/aslmethod.o\
 	$(OBJDIR)/aslnamesp.o\

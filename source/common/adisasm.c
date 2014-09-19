@@ -200,7 +200,7 @@ AcpiDsMethodDataInitArgs (
 
 
 static ACPI_TABLE_DESC      LocalTables[1];
-static ACPI_PARSE_OBJECT    *AcpiGbl_ParseOpRoot;
+ACPI_PARSE_OBJECT    *AcpiGbl_ParseOpRoot;
 
 
 /*******************************************************************************
@@ -561,6 +561,14 @@ AdAmlDisassemble (
             fprintf (stderr, "Disassembly completed\n");
             fprintf (stderr, "ASL Output:    %s - %u bytes\n",
                 DisasmFilename, CmGetFileSize (File));
+
+            if (Gbl_MapfileFlag)
+            {
+                fprintf (stderr, "%14s %s - %u bytes\n",
+                    Gbl_Files[ASL_FILE_MAP_OUTPUT].ShortDescription,
+                    Gbl_Files[ASL_FILE_MAP_OUTPUT].Filename,
+                    FlGetFileSize (ASL_FILE_MAP_OUTPUT));
+            }
         }
     }
 
@@ -760,6 +768,7 @@ AdDisplayTables (
     }
 
     AcpiDmDisassemble (NULL, AcpiGbl_ParseOpRoot, ACPI_UINT32_MAX);
+    MpEmitMappingInfo ();
 
     if (AcpiGbl_DbOpt_verbose)
     {

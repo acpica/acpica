@@ -1085,6 +1085,14 @@ XfNamespaceLocateBegin (
         }
     }
 
+    /* 5) Check for a connection object */
+#if 0
+    else if (Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_CONNECTION)
+    {
+        return_ACPI_STATUS (Status);
+    }
+#endif
+
     Op->Asl.Node = Node;
     return_ACPI_STATUS (Status);
 }

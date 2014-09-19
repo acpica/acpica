@@ -124,6 +124,7 @@
 #include "acdebug.h"
 #include "actables.h"
 #include "acinterp.h"
+#include "amlresrc.h"
 #include "acapps.h"
 #include "acpixf.h"
 

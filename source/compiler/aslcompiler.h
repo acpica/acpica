@@ -880,6 +880,13 @@ ACPI_STATUS
 FlOpenMiscOutputFiles (
     char                    *InputFilename);
 
+/*
+ * aslhwmap - hardware map summary
+ */
+void
+MpEmitMappingInfo (
+    void);
+
 
 /*
  * asload - load namespace in prep for cross reference
@@ -1117,8 +1124,7 @@ RsCheckListForDuplicates (
 
 ASL_RESOURCE_NODE *
 RsDoOneResourceDescriptor (
-    ACPI_PARSE_OBJECT       *DescriptorTypeOp,
-    UINT32                  CurrentByteOffset,
+    ASL_RESOURCE_INFO       *Info,
     UINT8                   *State);
 
 /* Values for State above */
@@ -1142,43 +1148,35 @@ RsDoResourceTemplate (
  */
 ASL_RESOURCE_NODE *
 RsDoEndTagDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoEndDependentDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoMemory24Descriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoMemory32Descriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoMemory32FixedDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoStartDependentDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoStartDependentNoPriDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoVendorSmallDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 
 /*
@@ -1186,33 +1184,27 @@ RsDoVendorSmallDescriptor (
  */
 ASL_RESOURCE_NODE *
 RsDoDmaDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoFixedDmaDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoFixedIoDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoIoDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoIrqDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoIrqNoFlagsDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 
 /*
@@ -1220,61 +1212,50 @@ RsDoIrqNoFlagsDescriptor (
  */
 ASL_RESOURCE_NODE *
 RsDoInterruptDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoVendorLargeDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoGeneralRegisterDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoGpioIntDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoGpioIoDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoI2cSerialBusDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoSpiSerialBusDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoUartSerialBusDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 /*
  * aslrestype2d - DWord address descriptors
  */
 ASL_RESOURCE_NODE *
 RsDoDwordIoDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoDwordMemoryDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoDwordSpaceDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 
 /*
@@ -1282,18 +1263,15 @@ RsDoDwordSpaceDescriptor (
  */
 ASL_RESOURCE_NODE *
 RsDoExtendedIoDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoExtendedMemoryDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoExtendedSpaceDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 
 /*
@@ -1301,18 +1279,15 @@ RsDoExtendedSpaceDescriptor (
  */
 ASL_RESOURCE_NODE *
 RsDoQwordIoDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoQwordMemoryDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoQwordSpaceDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 
 /*
@@ -1320,18 +1295,16 @@ RsDoQwordSpaceDescriptor (
  */
 ASL_RESOURCE_NODE *
 RsDoWordIoDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoWordSpaceDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
 
 ASL_RESOURCE_NODE *
 RsDoWordBusNumberDescriptor (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  CurrentByteOffset);
+    ASL_RESOURCE_INFO       *Info);
+
 
 /*
  * Entry to data table compiler subsystem

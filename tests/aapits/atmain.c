@@ -292,6 +292,27 @@ static char             TestName[33];
 
 extern FILE             *AcpiGbl_OutputFile;
 
+/* Stubs for the disassembler */
+
+void
+MpSaveGpioInfo (
+    ACPI_PARSE_OBJECT       *Op,
+    AML_RESOURCE            *Resource,
+    UINT32                  PinCount,
+    UINT16                  *PinList,
+    char                    *DeviceName)
+{
+}
+
+void
+MpSaveSerialInfo (
+    ACPI_PARSE_OBJECT       *Op,
+    AML_RESOURCE            *Resource,
+    char                    *DeviceName)
+{
+}
+
+
 int
 ExecuteTest (
     UINT32                  test_case,

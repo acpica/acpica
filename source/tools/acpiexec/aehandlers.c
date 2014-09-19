@@ -196,7 +196,6 @@ static UINT32               SigintCount = 0;
 static AE_DEBUG_REGIONS     AeRegions;
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AeCtrlCHandler
