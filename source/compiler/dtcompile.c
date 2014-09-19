@@ -510,6 +510,7 @@ DtCompileTable (
     UINT8                   *Buffer;
     UINT8                   *FlagBuffer = NULL;
     UINT32                  CurrentFlagByteOffset = 0;
+    char                    *String;
     ACPI_STATUS             Status;
 
 
@@ -537,7 +538,8 @@ DtCompileTable (
 
     if (Length > 0)
     {
-        Subtable->Buffer = ACPI_CAST_PTR (UINT8, UtStringCacheCalloc (Length));
+        String = UtStringCacheCalloc (Length);
+        Subtable->Buffer = ACPI_CAST_PTR (UINT8, String);
     }
     Subtable->Length = Length;
     Subtable->TotalLength = Length;
