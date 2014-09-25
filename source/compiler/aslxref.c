@@ -157,6 +157,7 @@ XfCheckFieldRange (
     UINT32                  FieldBitLength,
     UINT32                  AccessBitWidth);
 
+#ifdef __UNDER_DEVELOPMENT
 static ACPI_PARSE_OBJECT *
 XfGetParentMethod (
     ACPI_PARSE_OBJECT       *Op);
@@ -166,7 +167,6 @@ XfCheckIllegalReference (
     ACPI_PARSE_OBJECT       *Op,
     ACPI_NAMESPACE_NODE     *Node);
 
-#ifdef __UNDER_DEVELOPMENT
 static BOOLEAN
 XfIsObjectParental (
     ACPI_PARSE_OBJECT       *MethodOp1,
@@ -390,7 +390,6 @@ XfIsObjectParental (
 
     return (FALSE);
 }
-#endif
 
 
 /*******************************************************************************
@@ -444,6 +443,7 @@ XfGetParentMethod (
     return (NULL);
 }
 
+
 /*******************************************************************************
  *
  * FUNCTION:    XfCheckIllegalReference
@@ -494,7 +494,6 @@ XfCheckIllegalReference (
         return;
     }
 
-#ifdef __UNDER_DEVELOPMENT
     /* Objects not in the same method? */
 
     if (MethodOp1 != MethodOp2)
@@ -523,23 +522,9 @@ XfCheckIllegalReference (
         AslError (ASL_ERROR, ASL_MSG_ILLEGAL_FORWARD_REF, Op,
             Op->Asl.ExternalName);
     }
-#endif
 
-    if (MethodOp1 == MethodOp2)
-    {
-        /*
-         * 2) Both reference and target are in the same method. Check if this is
-         * an (illegal) forward reference by examining the exact source code
-         * location of each (the referenced object and the object declaration).
-         * This is a bit nasty, yet effective.
-         */
-        if (Op->Asl.LogicalByteOffset < TargetOp->Asl.LogicalByteOffset)
-        {
-            AslError (ASL_ERROR, ASL_MSG_ILLEGAL_FORWARD_REF, Op,
-                Op->Asl.ExternalName);
-        }
-    }
 }
+#endif
 
 
 /*******************************************************************************
@@ -752,9 +737,12 @@ XfNamespaceLocateBegin (
 
         Node->Flags |= ANOBJ_IS_REFERENCED;
 
+#ifdef __UNDER_DEVELOPMENT
+
         /* Check for an illegal reference */
 
         XfCheckIllegalReference (Op, Node);
+#endif
     }
 
     /* Attempt to optimize the NamePath */
