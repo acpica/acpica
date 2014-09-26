@@ -209,6 +209,15 @@ OsEnterLineEditMode (
     struct termios          LocalTermAttributes;
 
 
+    TermAttributesWereSet = 0;
+
+    /* STDIN must be a terminal */
+
+    if (!isatty (STDIN_FILENO))
+    {
+        return;
+    }
+
     /* Get and keep the original attributes */
 
     if (tcgetattr (STDIN_FILENO, &OriginalTermAttributes))
