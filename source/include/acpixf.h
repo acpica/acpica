@@ -118,7 +118,7 @@
 
 /* Current ACPICA subsystem version in YYYYMMDD format */
 
-#define ACPI_CA_VERSION                 0x20140828
+#define ACPI_CA_VERSION                 0x20140926
 
 #include "acconfig.h"
 #include "actypes.h"
