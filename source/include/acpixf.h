@@ -960,6 +960,11 @@ AcpiEnableAllRuntimeGpes (
 
 ACPI_HW_DEPENDENT_RETURN_STATUS (
 ACPI_STATUS
+AcpiEnableAllWakeupGpes (
+    void))
+
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
 AcpiGetGpeDevice (
     UINT32                  GpeIndex,
     ACPI_HANDLE             *GpeDevice))
