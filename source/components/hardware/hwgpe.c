@@ -520,13 +520,10 @@ AcpiHwEnableWakeupGpeBlock (
 
     for (i = 0; i < GpeBlock->RegisterCount; i++)
     {
-        if (!GpeBlock->RegisterInfo[i].EnableForWake)
-        {
-            continue;
-        }
-
-        /* Enable all "wake" GPEs in this register */
-
+        /*
+         * Enable all "wake" GPEs in this register and disable the
+         * remaining ones.
+         */
         Status = AcpiHwWrite (GpeBlock->RegisterInfo[i].EnableForWake,
                     &GpeBlock->RegisterInfo[i].EnableAddress);
         if (ACPI_FAILURE (Status))
