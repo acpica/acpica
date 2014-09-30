@@ -511,6 +511,7 @@ DtCompileTable (
     UINT8                   *FlagBuffer = NULL;
     char                    *String;
     UINT32                  CurrentFlagByteOffset = 0;
+    char                    *String;
     ACPI_STATUS             Status;
 
 
