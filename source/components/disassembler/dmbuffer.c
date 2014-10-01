@@ -151,6 +151,51 @@ AcpiDmPldBuffer (
 #define ACPI_BUFFER_BYTES_PER_LINE      8
 
 
+/* Strings for ToPld */
+
+static char *DmPanelList[] =
+{
+    "TOP",
+    "BOTTOM",
+    "LEFT",
+    "RIGHT",
+    "FRONT",
+    "BACK",
+    "UNKNOWN",
+    NULL
+};
+
+static char *DmVerticalPositionList[] =
+{
+    "UPPER",
+    "CENTER",
+    "LOWER",
+    NULL
+};
+
+static char *DmHorizontalPositionList[] =
+{
+    "LEFT",
+    "CENTER",
+    "RIGHT",
+    NULL
+};
+
+static char *DmShapeList[] =
+{
+    "ROUND",
+    "OVAL",
+    "SQUARE",
+    "VERTICALRECTANGLE",
+    "HORIZONTALRECTANGLE",
+    "VERTICALTRAPEZOID",
+    "HORIZONTALTRAPEZOID",
+    "UNKNOWN",
+    "CHAMFERED",
+    NULL
+};
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDmDisasmByteList
@@ -304,8 +349,9 @@ AcpiDmByteList (
         break;
 
     case ACPI_DASM_PLD_METHOD:
-
+#if 0
         AcpiDmDisasmByteList (Info->Level, ByteData, ByteCount);
+#endif
         AcpiDmPldBuffer (Info->Level, ByteData, ByteCount);
         break;
 
@@ -606,8 +652,13 @@ AcpiDmIsPldBuffer (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_NAMESPACE_NODE     *Node;
+    ACPI_PARSE_OBJECT       *SizeOp;
     ACPI_PARSE_OBJECT       *ParentOp;
 
+
+    /* Buffer size is the buffer argument */
+
+    SizeOp = Op->Common.Value.Arg;
 
     ParentOp = Op->Common.Parent;
     if (!ParentOp)
@@ -623,6 +674,9 @@ AcpiDmIsPldBuffer (
 
         if (ACPI_COMPARE_NAME (Node->Name.Ascii, METHOD_NAME__PLD))
         {
+            /* Ignore the Size argument in the disassembly of this buffer op */
+
+            SizeOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
             return (TRUE);
         }
 
@@ -645,12 +699,60 @@ AcpiDmIsPldBuffer (
 
             if (ACPI_COMPARE_NAME (Node->Name.Ascii, METHOD_NAME__PLD))
             {
+                /* Ignore the Size argument in the disassembly of this buffer op */
+
+                SizeOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
                 return (TRUE);
             }
         }
     }
 
     return (FALSE);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmFindNameByIndex
+ *
+ * PARAMETERS:  Index               - Index of array to check
+ *              List                - Array to reference
+ *
+ * RETURN:      String from List or empty string
+ *
+ * DESCRIPTION: Finds and returns the char string located at the given index
+ *              position in List.
+ *
+ ******************************************************************************/
+
+static char *
+AcpiDmFindNameByIndex (
+    UINT64                  Index,
+    char                    **List)
+{
+    char                     *Str;
+    UINT32                   i;
+
+
+    /* Bounds check */
+
+    Str = List[0];
+    i = 0;
+
+    while(Str)
+    {
+        i++;
+        Str = List[i];
+    }
+
+    if (Index >= i)
+    {
+        /* TBD: Add error msg */
+
+        return ("");
+    }
+
+    return (List[Index]);
 }
 
 
@@ -668,9 +770,12 @@ AcpiDmIsPldBuffer (
  *
  ******************************************************************************/
 
-#define ACPI_PLD_OUTPUT08     "%*.s/* %18s : %-6.2X */\n", ACPI_MUL_4 (Level), " "
-#define ACPI_PLD_OUTPUT16   "%*.s/* %18s : %-6.4X */\n", ACPI_MUL_4 (Level), " "
-#define ACPI_PLD_OUTPUT24   "%*.s/* %18s : %-6.6X */\n", ACPI_MUL_4 (Level), " "
+#define ACPI_PLD_OUTPUT08   "%*.s%-18s = 0x%X,\n", ACPI_MUL_4 (Level), " "
+#define ACPI_PLD_OUTPUT08P  "%*.s%-18s = 0x%X)\n", ACPI_MUL_4 (Level), " "
+#define ACPI_PLD_OUTPUT16   "%*.s%-18s = 0x%X,\n", ACPI_MUL_4 (Level), " "
+#define ACPI_PLD_OUTPUT16P  "%*.s%-18s = 0x%X)\n", ACPI_MUL_4 (Level), " "
+#define ACPI_PLD_OUTPUT24   "%*.s%-18s = 0x%X,\n", ACPI_MUL_4 (Level), " "
+#define ACPI_PLD_OUTPUTSTR  "%*.s%-18s = \"%s\",\n", ACPI_MUL_4 (Level), " "
 
 static void
 AcpiDmPldBuffer (
@@ -697,26 +802,34 @@ AcpiDmPldBuffer (
         return;
     }
 
+    AcpiOsPrintf ("\n");
+
     /* First 32-bit dword */
 
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Revision", PldInfo->Revision);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLDRevision", PldInfo->Revision);
     AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "IgnoreColor", PldInfo->IgnoreColor);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT24,"Color", PldInfo->Color);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Red", PldInfo->Red);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Green", PldInfo->Green);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Blue", PldInfo->Blue);
 
     /* Second 32-bit dword */
 
-    AcpiOsPrintf (ACPI_PLD_OUTPUT16,"Width", PldInfo->Width);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT16,"Height", PldInfo->Height);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT16,  "Width", PldInfo->Width);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT16,  "Height", PldInfo->Height);
 
     /* Third 32-bit dword */
 
     AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "UserVisible", PldInfo->UserVisible);
     AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Dock", PldInfo->Dock);
     AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Lid", PldInfo->Lid);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Panel", PldInfo->Panel);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "VerticalPosition", PldInfo->VerticalPosition);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "HorizontalPosition", PldInfo->HorizontalPosition);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Shape", PldInfo->Shape);
+    AcpiOsPrintf (ACPI_PLD_OUTPUTSTR, "Panel",
+        AcpiDmFindNameByIndex(PldInfo->Panel, DmPanelList));
+    AcpiOsPrintf (ACPI_PLD_OUTPUTSTR, "VerticalPosition",
+        AcpiDmFindNameByIndex(PldInfo->VerticalPosition, DmVerticalPositionList));
+    AcpiOsPrintf (ACPI_PLD_OUTPUTSTR, "HorizontalPosition",
+        AcpiDmFindNameByIndex(PldInfo->HorizontalPosition, DmHorizontalPositionList));
+    AcpiOsPrintf (ACPI_PLD_OUTPUTSTR, "Shape",
+        AcpiDmFindNameByIndex(PldInfo->Shape, DmShapeList));
     AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "GroupOrientation", PldInfo->GroupOrientation);
     AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "GroupToken", PldInfo->GroupToken);
     AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "GroupPosition", PldInfo->GroupPosition);
@@ -725,19 +838,27 @@ AcpiDmPldBuffer (
     /* Fourth 32-bit dword */
 
     AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Ejectable", PldInfo->Ejectable);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "OspmEjectRequired", PldInfo->OspmEjectRequired);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "EjectRequired", PldInfo->OspmEjectRequired);
     AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "CabinetNumber", PldInfo->CabinetNumber);
     AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "CardCageNumber", PldInfo->CardCageNumber);
     AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Reference", PldInfo->Reference);
     AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Rotation", PldInfo->Rotation);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Order", PldInfo->Order);
+
+    if (ByteCount < ACPI_PLD_REV1_BUFFER_SIZE)
+    {
+        AcpiOsPrintf (ACPI_PLD_OUTPUT08P, "Order", PldInfo->Order);
+    }
+    else
+    {
+        AcpiOsPrintf (ACPI_PLD_OUTPUT08, "Order", PldInfo->Order);
+    }
 
     /* Fifth 32-bit dword */
 
     if (ByteCount >= ACPI_PLD_REV1_BUFFER_SIZE)
     {
-        AcpiOsPrintf (ACPI_PLD_OUTPUT16,"VerticalOffset", PldInfo->VerticalOffset);
-        AcpiOsPrintf (ACPI_PLD_OUTPUT16,"HorizontalOffset", PldInfo->HorizontalOffset);
+        AcpiOsPrintf (ACPI_PLD_OUTPUT16, "VerticalOffset", PldInfo->VerticalOffset);
+        AcpiOsPrintf (ACPI_PLD_OUTPUT16P, "HorizontalOffset", PldInfo->HorizontalOffset);
     }
 
     ACPI_FREE (PldInfo);

@@ -917,7 +917,7 @@ AcpiDmDisassembleOneOp (
         else if (AcpiDmIsPldBuffer (Op))
         {
             Op->Common.DisasmOpcode = ACPI_DASM_PLD_METHOD;
-            AcpiOsPrintf ("Buffer");
+            AcpiOsPrintf ("ToPLD (");
         }
         else
         {

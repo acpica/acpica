@@ -459,6 +459,7 @@ Type4Opcode
 Type5Opcode
     : ResourceTemplateTerm          {}
     | UnicodeTerm                   {}
+    | ToPLDTerm                     {}
     | ToUUIDTerm                    {}
     ;
 
@@ -1439,6 +1440,56 @@ ToIntegerTerm
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
     | PARSEOP_TOINTEGER '('
+        error ')'                   {$$ = AslDoError(); yyclearin;}
+    ;
+
+PldKeyword
+    : PARSEOP_PLD_REVISION          {$$ = TrCreateLeafNode (PARSEOP_PLD_REVISION);}
+    | PARSEOP_PLD_IGNORECOLOR       {$$ = TrCreateLeafNode (PARSEOP_PLD_IGNORECOLOR);}
+    | PARSEOP_PLD_RED               {$$ = TrCreateLeafNode (PARSEOP_PLD_RED);}
+    | PARSEOP_PLD_GREEN             {$$ = TrCreateLeafNode (PARSEOP_PLD_GREEN);}
+    | PARSEOP_PLD_BLUE              {$$ = TrCreateLeafNode (PARSEOP_PLD_BLUE);}
+    | PARSEOP_PLD_WIDTH             {$$ = TrCreateLeafNode (PARSEOP_PLD_WIDTH);}
+    | PARSEOP_PLD_HEIGHT            {$$ = TrCreateLeafNode (PARSEOP_PLD_HEIGHT);}
+    | PARSEOP_PLD_USERVISIBLE       {$$ = TrCreateLeafNode (PARSEOP_PLD_USERVISIBLE);}
+    | PARSEOP_PLD_DOCK              {$$ = TrCreateLeafNode (PARSEOP_PLD_DOCK);}
+    | PARSEOP_PLD_LID               {$$ = TrCreateLeafNode (PARSEOP_PLD_LID);}
+    | PARSEOP_PLD_PANEL             {$$ = TrCreateLeafNode (PARSEOP_PLD_PANEL);}
+    | PARSEOP_PLD_VERTICALPOSITION  {$$ = TrCreateLeafNode (PARSEOP_PLD_VERTICALPOSITION);}
+    | PARSEOP_PLD_HORIZONTALPOSITION {$$ = TrCreateLeafNode (PARSEOP_PLD_HORIZONTALPOSITION);}
+    | PARSEOP_PLD_SHAPE             {$$ = TrCreateLeafNode (PARSEOP_PLD_SHAPE);}
+    | PARSEOP_PLD_GROUPORIENTATION  {$$ = TrCreateLeafNode (PARSEOP_PLD_GROUPORIENTATION);}
+    | PARSEOP_PLD_GROUPTOKEN        {$$ = TrCreateLeafNode (PARSEOP_PLD_GROUPTOKEN);}
+    | PARSEOP_PLD_GROUPPOSITION     {$$ = TrCreateLeafNode (PARSEOP_PLD_GROUPPOSITION);}
+    | PARSEOP_PLD_BAY               {$$ = TrCreateLeafNode (PARSEOP_PLD_BAY);}
+    | PARSEOP_PLD_EJECTABLE         {$$ = TrCreateLeafNode (PARSEOP_PLD_EJECTABLE);}
+    | PARSEOP_PLD_EJECTREQUIRED     {$$ = TrCreateLeafNode (PARSEOP_PLD_EJECTREQUIRED);}
+    | PARSEOP_PLD_CABINETNUMBER     {$$ = TrCreateLeafNode (PARSEOP_PLD_CABINETNUMBER);}
+    | PARSEOP_PLD_CARDCAGENUMBER    {$$ = TrCreateLeafNode (PARSEOP_PLD_CARDCAGENUMBER);}
+    | PARSEOP_PLD_REFERENCE         {$$ = TrCreateLeafNode (PARSEOP_PLD_REFERENCE);}
+    | PARSEOP_PLD_ROTATION          {$$ = TrCreateLeafNode (PARSEOP_PLD_ROTATION);}
+    | PARSEOP_PLD_ORDER             {$$ = TrCreateLeafNode (PARSEOP_PLD_ORDER);}
+    | PARSEOP_PLD_RESERVED          {$$ = TrCreateLeafNode (PARSEOP_PLD_RESERVED);}
+    | PARSEOP_PLD_VERTICALOFFSET    {$$ = TrCreateLeafNode (PARSEOP_PLD_VERTICALOFFSET);}
+    | PARSEOP_PLD_HORIZONTALOFFSET  {$$ = TrCreateLeafNode (PARSEOP_PLD_HORIZONTALOFFSET);}
+    ;
+
+PldKeywordList
+    :                               {$$ = NULL;}
+    | PldKeyword '=' Integer        {$$ = TrLinkChildren ($1,1,$3);}
+    | PldKeyword '=' String         {$$ = TrLinkChildren ($1,1,$3);}
+    | PldKeywordList ','            /* Allows a trailing comma at list end */
+    | PldKeywordList ','
+        PldKeyword '=' Integer      {$$ = TrLinkPeerNode ($1,TrLinkChildren ($3,1,$5));}
+    | PldKeywordList ','
+        PldKeyword '=' String       {$$ = TrLinkPeerNode ($1,TrLinkChildren ($3,1,$5));}
+    ;
+
+ToPLDTerm
+    : PARSEOP_TOPLD '('             {$<n>$ = TrCreateLeafNode (PARSEOP_TOPLD);}
+        PldKeywordList
+        ')'                         {$$ = TrLinkChildren ($<n>3,1,$4);}
+    | PARSEOP_TOPLD '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
 

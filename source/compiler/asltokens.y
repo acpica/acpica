@@ -448,6 +448,38 @@ NoEcho('
 %token <i> PARSEOP_XOR
 %token <i> PARSEOP_ZERO
 
+/* ToPld macro */
+
+%token <i> PARSEOP_TOPLD
+%token <i> PARSEOP_PLD_REVISION
+%token <i> PARSEOP_PLD_IGNORECOLOR
+%token <i> PARSEOP_PLD_RED
+%token <i> PARSEOP_PLD_GREEN
+%token <i> PARSEOP_PLD_BLUE
+%token <i> PARSEOP_PLD_WIDTH
+%token <i> PARSEOP_PLD_HEIGHT
+%token <i> PARSEOP_PLD_USERVISIBLE
+%token <i> PARSEOP_PLD_DOCK
+%token <i> PARSEOP_PLD_LID
+%token <i> PARSEOP_PLD_PANEL
+%token <i> PARSEOP_PLD_VERTICALPOSITION
+%token <i> PARSEOP_PLD_HORIZONTALPOSITION
+%token <i> PARSEOP_PLD_SHAPE
+%token <i> PARSEOP_PLD_GROUPORIENTATION
+%token <i> PARSEOP_PLD_GROUPTOKEN
+%token <i> PARSEOP_PLD_GROUPPOSITION
+%token <i> PARSEOP_PLD_BAY
+%token <i> PARSEOP_PLD_EJECTABLE
+%token <i> PARSEOP_PLD_EJECTREQUIRED
+%token <i> PARSEOP_PLD_CABINETNUMBER
+%token <i> PARSEOP_PLD_CARDCAGENUMBER
+%token <i> PARSEOP_PLD_REFERENCE
+%token <i> PARSEOP_PLD_ROTATION
+%token <i> PARSEOP_PLD_ORDER
+%token <i> PARSEOP_PLD_RESERVED
+%token <i> PARSEOP_PLD_VERTICALOFFSET
+%token <i> PARSEOP_PLD_HORIZONTALOFFSET
+
 /*
  * Special functions. These should probably stay at the end of this
  * table.

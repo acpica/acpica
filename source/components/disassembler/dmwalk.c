@@ -357,7 +357,8 @@ AcpiDmBlockType (
     case AML_BUFFER_OP:
 
         if ((Op->Common.DisasmOpcode == ACPI_DASM_UNICODE) ||
-            (Op->Common.DisasmOpcode == ACPI_DASM_UUID))
+            (Op->Common.DisasmOpcode == ACPI_DASM_UUID) ||
+            (Op->Common.DisasmOpcode == ACPI_DASM_PLD_METHOD))
         {
             return (BLOCK_NONE);
         }

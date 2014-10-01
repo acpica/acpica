@@ -188,6 +188,7 @@ NamePathTail                [.]{NameSeg}
 "\""                        { if (AslDoStringLiteral ()) {return (PARSEOP_STRING_LITERAL);}
                               else {yyterminate ();} }
 ";"                         { count (0); return(';'); }
+"="                         { count (0); return('='); }
 
 
 0[xX]{HexDigitChar}+ |
@@ -663,6 +664,39 @@ NamePathTail                [.]{NameSeg}
 "Transfer8"                 { count (0); return (PARSEOP_XFERTYPE_8); }
 "Transfer8_16"              { count (0); return (PARSEOP_XFERTYPE_8_16); }
 "Transfer16"                { count (0); return (PARSEOP_XFERTYPE_16); }
+
+    /* ToPld macro */
+
+"ToPLD"                     { count (0); return (PARSEOP_TOPLD); }
+
+"PLDRevision"               { count (0); return (PARSEOP_PLD_REVISION); }
+"IgnoreColor"               { count (0); return (PARSEOP_PLD_IGNORECOLOR); }
+"Red"                       { count (0); return (PARSEOP_PLD_RED); }
+"Green"                     { count (0); return (PARSEOP_PLD_GREEN); }
+"Blue"                      { count (0); return (PARSEOP_PLD_BLUE); }
+"Width"                     { count (0); return (PARSEOP_PLD_WIDTH); }
+"Height"                    { count (0); return (PARSEOP_PLD_HEIGHT); }
+"UserVisible"               { count (0); return (PARSEOP_PLD_USERVISIBLE); }
+"Dock"                      { count (0); return (PARSEOP_PLD_DOCK); }
+"Lid"                       { count (0); return (PARSEOP_PLD_LID); }
+"Panel"                     { count (0); return (PARSEOP_PLD_PANEL); }
+"VerticalPosition"          { count (0); return (PARSEOP_PLD_VERTICALPOSITION); }
+"HorizontalPosition"        { count (0); return (PARSEOP_PLD_HORIZONTALPOSITION); }
+"Shape"                     { count (0); return (PARSEOP_PLD_SHAPE); }
+"GroupOrientation"          { count (0); return (PARSEOP_PLD_GROUPORIENTATION); }
+"GroupToken"                { count (0); return (PARSEOP_PLD_GROUPTOKEN); }
+"GroupPosition"             { count (0); return (PARSEOP_PLD_GROUPPOSITION); }
+"Bay"                       { count (0); return (PARSEOP_PLD_BAY); }
+"Ejectable"                 { count (0); return (PARSEOP_PLD_EJECTABLE); }
+"EjectRequired"             { count (0); return (PARSEOP_PLD_EJECTREQUIRED); }
+"CabinetNumber"             { count (0); return (PARSEOP_PLD_CABINETNUMBER); }
+"CardCageNumber"            { count (0); return (PARSEOP_PLD_CARDCAGENUMBER); }
+"Reference"                 { count (0); return (PARSEOP_PLD_REFERENCE); }
+"Rotation"                  { count (0); return (PARSEOP_PLD_ROTATION); }
+"Order"                     { count (0); return (PARSEOP_PLD_ORDER); }
+"Reserved"                  { count (0); return (PARSEOP_PLD_RESERVED); }
+"VerticalOffset"            { count (0); return (PARSEOP_PLD_VERTICALOFFSET); }
+"HorizontalOffset"          { count (0); return (PARSEOP_PLD_HORIZONTALOFFSET); }
 
     /* Predefined compiler names */
 

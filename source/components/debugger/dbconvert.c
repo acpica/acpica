@@ -433,7 +433,9 @@ AcpiDbEncodePldBuffer (
     Dword = 0;
     ACPI_PLD_SET_REVISION       (&Dword, PldInfo->Revision);
     ACPI_PLD_SET_IGNORE_COLOR   (&Dword, PldInfo->IgnoreColor);
-    ACPI_PLD_SET_COLOR          (&Dword, PldInfo->Color);
+    ACPI_PLD_SET_RED            (&Dword, PldInfo->Red);
+    ACPI_PLD_SET_GREEN          (&Dword, PldInfo->Green);
+    ACPI_PLD_SET_BLUE           (&Dword, PldInfo->Blue);
     ACPI_MOVE_32_TO_32 (&Buffer[0], &Dword);
 
     /* Second 32 bits */
@@ -552,9 +554,11 @@ AcpiDbDumpPldBuffer (
 
     /* First 32-bit dword */
 
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Revision", PldInfo->Revision);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLDRevision", PldInfo->Revision);
     AcpiOsPrintf (ACPI_PLD_OUTPUT, "IgnoreColor", PldInfo->IgnoreColor);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Color", PldInfo->Color);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Red", PldInfo->Red);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Green", PldInfo->Green);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Blue", PldInfo->Blue);
 
     /* Second 32-bit dword */
 
@@ -578,7 +582,7 @@ AcpiDbDumpPldBuffer (
     /* Fourth 32-bit dword */
 
     AcpiOsPrintf (ACPI_PLD_OUTPUT, "Ejectable", PldInfo->Ejectable);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "OspmEjectRequired", PldInfo->OspmEjectRequired);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "EjectRequired", PldInfo->OspmEjectRequired);
     AcpiOsPrintf (ACPI_PLD_OUTPUT, "CabinetNumber", PldInfo->CabinetNumber);
     AcpiOsPrintf (ACPI_PLD_OUTPUT, "CardCageNumber", PldInfo->CardCageNumber);
     AcpiOsPrintf (ACPI_PLD_OUTPUT, "Reference", PldInfo->Reference);
