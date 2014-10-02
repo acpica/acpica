@@ -454,3 +454,9 @@ NoEcho('
 %type <n> OptionalWordConst
 %type <n> OptionalWordConstExpr
 %type <n> OptionalXferSize
+
+/*
+ * C-style expression parser
+ */
+%type <n> Expression
+%type <n> EqualsTerm

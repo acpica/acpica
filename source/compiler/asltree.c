@@ -520,6 +520,124 @@ TrSetEndLineNumber (
 
 /*******************************************************************************
  *
+ * FUNCTION:    TrCreateAssignmentNode
+ *
+ * PARAMETERS:  Target              - Assignment target
+ *              Source              - Assignment source
+ *
+ * RETURN:      Pointer to the new node. Aborts on allocation failure
+ *
+ * DESCRIPTION: Implements the C-style '=' operator. It changes the parse
+ *              tree if possible to utilize the last argument of the math
+ *              operators which is a target operand -- thus saving invocation
+ *              of and additional Store() operator. An optimization.
+ *
+ ******************************************************************************/
+
+ACPI_PARSE_OBJECT *
+TrCreateAssignmentNode (
+    ACPI_PARSE_OBJECT       *Target,
+    ACPI_PARSE_OBJECT       *Source)
+{
+    ACPI_PARSE_OBJECT       *TargetOp;
+    ACPI_PARSE_OBJECT       *SourceOp1;
+    ACPI_PARSE_OBJECT       *SourceOp2;
+    ACPI_PARSE_OBJECT       *Operator;
+
+
+    DbgPrint (ASL_PARSE_OUTPUT,
+        "\nTrCreateAssignmentNode  Line [%u to %u] Source %s Target %s\n",
+        Source->Asl.LineNumber, Source->Asl.EndLine,
+        UtGetOpName (Source->Asl.ParseOpcode),
+        UtGetOpName (Target->Asl.ParseOpcode));
+
+    TrSetNodeFlags (Target, NODE_IS_TARGET);
+
+    switch (Source->Asl.ParseOpcode)
+    {
+    /*
+     * Only these operators can be optimized because they have
+     * a target operand
+     */
+    case PARSEOP_ADD:
+    case PARSEOP_AND:
+    case PARSEOP_DIVIDE:
+    case PARSEOP_MOD:
+    case PARSEOP_MULTIPLY:
+    case PARSEOP_NOT:
+    case PARSEOP_OR:
+    case PARSEOP_SHIFTLEFT:
+    case PARSEOP_SHIFTRIGHT:
+    case PARSEOP_SUBTRACT:
+    case PARSEOP_XOR:
+
+        break;
+
+    /* Otherwise, just create a normal Store operator */
+
+    default:
+
+        goto CannotOptimize;
+    }
+
+    /*
+     * Transform the parse tree such that the target is moved to the
+     * last operand of the operator
+     */
+    SourceOp1 = Source->Asl.Child;
+    SourceOp2 = SourceOp1->Asl.Next;
+
+    /* NOT only has one operand, but has a target */
+
+    if (Source->Asl.ParseOpcode == PARSEOP_NOT)
+    {
+        SourceOp2 = SourceOp1;
+    }
+
+    /* DIVIDE has an extra target operand (remainder) */
+
+    if (Source->Asl.ParseOpcode == PARSEOP_DIVIDE)
+    {
+        SourceOp2 = SourceOp2->Asl.Next;
+    }
+
+    TargetOp = SourceOp2->Asl.Next;
+
+    /*
+     * Can't perform this optimization if there already is a target
+     * for the operator (ZERO is a "no target" placeholder).
+     */
+    if (TargetOp->Asl.ParseOpcode != PARSEOP_ZERO)
+    {
+        goto CannotOptimize;
+    }
+
+    /* Link in the target as the final operand */
+
+    SourceOp2->Asl.Next = Target;
+    Target->Asl.Parent = Source;
+
+    return (Source);
+
+
+CannotOptimize:
+
+    Operator = TrAllocateNode (PARSEOP_STORE);
+    TrLinkChildren (Operator, 2, Source, Target);
+
+    /* Set the appropriate line numbers for the new node */
+
+    Operator->Asl.LineNumber        = Target->Asl.LineNumber;
+    Operator->Asl.LogicalLineNumber = Target->Asl.LogicalLineNumber;
+    Operator->Asl.LogicalByteOffset = Target->Asl.LogicalByteOffset;
+    Operator->Asl.Column            = Target->Asl.Column;
+
+    return (Operator);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    TrCreateLeafNode
  *
  * PARAMETERS:  ParseOpcode         - New opcode to be assigned to the node
@@ -629,6 +747,33 @@ TrCreateConstantLeafNode (
         "\nCreateConstantLeafNode  Ln/Col %u/%u NewNode %p  Op %s  Value %8.8X%8.8X  ",
         Op->Asl.LineNumber, Op->Asl.Column, Op, UtGetOpName (ParseOpcode),
         ACPI_FORMAT_UINT64 (Op->Asl.Value.Integer));
+    return (Op);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    TrCopyNode
+ *
+ * PARAMETERS:  OriginalOp          - Op to be copied
+ *
+ * RETURN:      Pointer to the new node. Aborts on allocation failure
+ *
+ * DESCRIPTION: Copy an existing node. Used in C-style expressions where
+ *              the target is the same as one of the operands. A new node
+ *              must be created from the original so that the parse tree
+ *              can be linked properly.
+ *
+ ******************************************************************************/
+
+ACPI_PARSE_OBJECT *
+TrCopyNode (
+    ACPI_PARSE_OBJECT       *OriginalOp)
+{
+    ACPI_PARSE_OBJECT       *Op;
+
+
+    Op = TrAllocateNode (OriginalOp->Asl.ParseOpcode);
     return (Op);
 }
 

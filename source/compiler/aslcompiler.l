@@ -188,9 +188,50 @@ NamePathTail                [.]{NameSeg}
 "\""                        { if (AslDoStringLiteral ()) {return (PARSEOP_STRING_LITERAL);}
                               else {yyterminate ();} }
 ";"                         { count (0); return(';'); }
-"="                         { count (0); return('='); }
+
+    /* ASL Extension: Standard C operators */
+
+"~"                         { count (3); return (PARSEOP_EXP_NOT); }
+"!"                         { count (3); return (PARSEOP_EXP_LOGICAL_NOT); }
+"*"                         { count (3); return (PARSEOP_EXP_MULTIPLY); }
+"/"                         { count (3); return (PARSEOP_EXP_DIVIDE); }
+"%"                         { count (3); return (PARSEOP_EXP_MODULO); }
+"+"                         { count (3); return (PARSEOP_EXP_ADD); }
+"-"                         { count (3); return (PARSEOP_EXP_SUBTRACT); }
+">>"                        { count (3); return (PARSEOP_EXP_SHIFT_RIGHT); }
+"<<"                        { count (3); return (PARSEOP_EXP_SHIFT_LEFT); }
+"<"                         { count (3); return (PARSEOP_EXP_LESS); }
+">"                         { count (3); return (PARSEOP_EXP_GREATER); }
+"&"                         { count (3); return (PARSEOP_EXP_AND); }
+"<="                        { count (3); return (PARSEOP_EXP_LESS_EQUAL); }
+">="                        { count (3); return (PARSEOP_EXP_GREATER_EQUAL); }
+"=="                        { count (3); return (PARSEOP_EXP_EQUAL); }
+"!="                        { count (3); return (PARSEOP_EXP_NOT_EQUAL); }
+"^"                         { count (3); return (PARSEOP_EXP_XOR); }
+"|"                         { count (3); return (PARSEOP_EXP_OR); }
+"&&"                        { count (3); return (PARSEOP_EXP_LOGICAL_AND); }
+"||"                        { count (3); return (PARSEOP_EXP_LOGICAL_OR); }
+"++"                        { count (3); return (PARSEOP_EXP_INCREMENT); }
+"--"                        { count (3); return (PARSEOP_EXP_DECREMENT); }
+
+    /* ASL Extension: Standard C assignment operators */
+
+"="                         { count (3); return (PARSEOP_EXP_EQUALS); }
+"+="                        { count (3); return (PARSEOP_EXP_ADD_EQ); }
+"-="                        { count (3); return (PARSEOP_EXP_SUB_EQ); }
+"*="                        { count (3); return (PARSEOP_EXP_MUL_EQ); }
+"/="                        { count (3); return (PARSEOP_EXP_DIV_EQ); }
+"%="                        { count (3); return (PARSEOP_EXP_MOD_EQ); }
+"<<="                       { count (3); return (PARSEOP_EXP_SHL_EQ); }
+">>="                       { count (3); return (PARSEOP_EXP_SHR_EQ); }
+"&="                        { count (3); return (PARSEOP_EXP_AND_EQ); }
+"^="                        { count (3); return (PARSEOP_EXP_XOR_EQ); }
+"|="                        { count (3); return (PARSEOP_EXP_OR_EQ); }
 
 
+    /*
+     * Begin standard ASL grammar
+     */
 0[xX]{HexDigitChar}+ |
 {DigitChar}+                { AslCompilerlval.i = UtDoConstant ((char *) AslCompilertext);
                                 count (1); return (PARSEOP_INTEGER); }
@@ -733,10 +774,6 @@ NamePathTail                [.]{NameSeg}
                                 AslCompilerlval.s = s;
                                 DbgPrint (ASL_PARSE_OUTPUT, "NameString: %s\n", s);
                                 return (PARSEOP_NAMESTRING); }
-
-"*" |
-"/"                         { count (1);
-                                AslCompilererror ("Parse error, expecting ASL keyword or name");}
 
 .                           { count (1);
                                 sprintf (MsgBuffer,

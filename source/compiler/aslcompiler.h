@@ -756,6 +756,15 @@ TrCreateLeafNode (
     UINT32                  ParseOpcode);
 
 ACPI_PARSE_OBJECT *
+TrCreateAssignmentNode (
+    ACPI_PARSE_OBJECT       *Target,
+    ACPI_PARSE_OBJECT       *Source);
+
+ACPI_PARSE_OBJECT *
+TrCopyNode (
+    ACPI_PARSE_OBJECT       *OriginalOp);
+
+ACPI_PARSE_OBJECT *
 TrCreateValuedLeafNode (
     UINT32                  ParseOpcode,
     UINT64                  Value);

@@ -481,6 +481,54 @@ NoEcho('
 %token <i> PARSEOP_PLD_HORIZONTALOFFSET
 
 /*
+ * C-style expression parser. These must appear after all of the
+ * standard ASL operators and keywords.
+ *
+ * Note: The order of these tokens implements the precedence rules
+ * (low precedence to high). See aslrules.y for an exhaustive list.
+ */
+%right <i> PARSEOP_EXP_EQUALS
+           PARSEOP_EXP_ADD_EQ
+           PARSEOP_EXP_SUB_EQ
+           PARSEOP_EXP_MUL_EQ
+           PARSEOP_EXP_DIV_EQ
+           PARSEOP_EXP_MOD_EQ
+           PARSEOP_EXP_SHL_EQ
+           PARSEOP_EXP_SHR_EQ
+           PARSEOP_EXP_AND_EQ
+           PARSEOP_EXP_XOR_EQ
+           PARSEOP_EXP_OR_EQ
+
+%left <i>  PARSEOP_EXP_LOGICAL_OR
+%left <i>  PARSEOP_EXP_LOGICAL_AND
+%left <i>  PARSEOP_EXP_OR
+%left <i>  PARSEOP_EXP_XOR
+%left <i>  PARSEOP_EXP_AND
+%left <i>  PARSEOP_EXP_EQUAL
+           PARSEOP_EXP_NOT_EQUAL
+%left <i>  PARSEOP_EXP_GREATER
+           PARSEOP_EXP_LESS
+           PARSEOP_EXP_GREATER_EQUAL
+           PARSEOP_EXP_LESS_EQUAL
+%left <i>  PARSEOP_EXP_SHIFT_RIGHT
+           PARSEOP_EXP_SHIFT_LEFT
+%left <i>  PARSEOP_EXP_ADD
+           PARSEOP_EXP_SUBTRACT
+%left <i>  PARSEOP_EXP_MULTIPLY
+           PARSEOP_EXP_DIVIDE
+           PARSEOP_EXP_MODULO
+
+%right <i> PARSEOP_EXP_NOT
+           PARSEOP_EXP_LOGICAL_NOT
+
+%left <i>  PARSEOP_EXP_INCREMENT
+           PARSEOP_EXP_DECREMENT
+
+/* Specific parentheses tokens are not used at this time */
+           /* PARSEOP_EXP_PAREN_OPEN */
+           /* PARSEOP_EXP_PAREN_CLOSE */
+
+/*
  * Special functions. These should probably stay at the end of this
  * table.
  */
