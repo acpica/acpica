@@ -956,7 +956,7 @@ OpcDoPld (
 {
     UINT8                   *Buffer;
     ACPI_PARSE_OBJECT       *Node;
-    ACPI_PLD_INFO           PldInfo = {0};
+    ACPI_PLD_INFO           PldInfo;
     ACPI_PARSE_OBJECT       *NewOp;
 
 
@@ -978,6 +978,8 @@ OpcDoPld (
         AslError(ASL_ERROR, ASL_MSG_BUFFER_ALLOCATION, Op, NULL);
         return;
     }
+
+    ACPI_MEMSET (&PldInfo, 0, sizeof (ACPI_PLD_INFO));
 
     Node = Op->Asl.Child;
     while (Node)
