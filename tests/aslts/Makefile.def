@@ -72,7 +72,11 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 				"$(ASL)" $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$j.asl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
 				ret=$$?; \
 				echo "" >> $(COMPILER_LOG); \
-				if [ $$ret != 0 ]; then rval=1; echo "**** Unexpected iASL failure!"; exit 1; fi; \
+				if [ $$ret != 0 ]; then \
+					rval=1; \
+					>&2 echo "**** Unexpected iASL failure in $$dd/$$j.asl!"; \
+					exit 1; \
+				fi; \
 			done; \
 			if [ $$ret != 0 ]; then break; fi; \
 			for j in ${AMLMOD}; do \

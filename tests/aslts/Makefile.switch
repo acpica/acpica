@@ -5,14 +5,23 @@ ${MDIRS}: FORCE
 	@cd $@; pwd; make
 
 install:	FORCE
-		@for d in ${MDIRS}; do \
+		@r=0; set -e; for d in ${MDIRS}; do \
 			(cd $$d; \
 			if [ $$? -ne 0 ]; then \
 				echo "Bad element of MDIRS: <$$d>"; \
 			else \
-				pwd; make install; \
+				pwd; \
+				if ($(MAKE) install); then \
+					:; \
+				else \
+					r=1; \
+					false; \
+				fi; \
 			fi); \
-		echo "---- Completed test package [$$d]"; \
+		if [ $$r -ne 0 ]; then \
+			exit $r; \
+		fi; \
+		>&2 echo "---- Completed test package [$$d]"; \
 		done
 
 clean:	FORCE

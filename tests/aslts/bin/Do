@@ -310,6 +310,9 @@ make_install_1()
 
 	echo "Running make install from $dir"
 	make install > /dev/null
+	if [ $? -ne 0 ]; then
+		do_exit 1 "make install error"
+	fi
 	cd "$restore_dir"
 }
 
