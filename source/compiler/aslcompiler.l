@@ -710,34 +710,34 @@ NamePathTail                [.]{NameSeg}
 
 "ToPLD"                     { count (0); return (PARSEOP_TOPLD); }
 
-"PLDRevision"               { count (0); return (PARSEOP_PLD_REVISION); }
-"IgnoreColor"               { count (0); return (PARSEOP_PLD_IGNORECOLOR); }
-"Red"                       { count (0); return (PARSEOP_PLD_RED); }
-"Green"                     { count (0); return (PARSEOP_PLD_GREEN); }
-"Blue"                      { count (0); return (PARSEOP_PLD_BLUE); }
-"Width"                     { count (0); return (PARSEOP_PLD_WIDTH); }
-"Height"                    { count (0); return (PARSEOP_PLD_HEIGHT); }
-"UserVisible"               { count (0); return (PARSEOP_PLD_USERVISIBLE); }
-"Dock"                      { count (0); return (PARSEOP_PLD_DOCK); }
-"Lid"                       { count (0); return (PARSEOP_PLD_LID); }
-"Panel"                     { count (0); return (PARSEOP_PLD_PANEL); }
-"VerticalPosition"          { count (0); return (PARSEOP_PLD_VERTICALPOSITION); }
-"HorizontalPosition"        { count (0); return (PARSEOP_PLD_HORIZONTALPOSITION); }
-"Shape"                     { count (0); return (PARSEOP_PLD_SHAPE); }
-"GroupOrientation"          { count (0); return (PARSEOP_PLD_GROUPORIENTATION); }
-"GroupToken"                { count (0); return (PARSEOP_PLD_GROUPTOKEN); }
-"GroupPosition"             { count (0); return (PARSEOP_PLD_GROUPPOSITION); }
-"Bay"                       { count (0); return (PARSEOP_PLD_BAY); }
-"Ejectable"                 { count (0); return (PARSEOP_PLD_EJECTABLE); }
-"EjectRequired"             { count (0); return (PARSEOP_PLD_EJECTREQUIRED); }
-"CabinetNumber"             { count (0); return (PARSEOP_PLD_CABINETNUMBER); }
-"CardCageNumber"            { count (0); return (PARSEOP_PLD_CARDCAGENUMBER); }
-"Reference"                 { count (0); return (PARSEOP_PLD_REFERENCE); }
-"Rotation"                  { count (0); return (PARSEOP_PLD_ROTATION); }
-"Order"                     { count (0); return (PARSEOP_PLD_ORDER); }
-"Reserved"                  { count (0); return (PARSEOP_PLD_RESERVED); }
-"VerticalOffset"            { count (0); return (PARSEOP_PLD_VERTICALOFFSET); }
-"HorizontalOffset"          { count (0); return (PARSEOP_PLD_HORIZONTALOFFSET); }
+"PLD_Revision"              { count (0); return (PARSEOP_PLD_REVISION); }
+"PLD_IgnoreColor"           { count (0); return (PARSEOP_PLD_IGNORECOLOR); }
+"PLD_Red"                   { count (0); return (PARSEOP_PLD_RED); }
+"PLD_Green"                 { count (0); return (PARSEOP_PLD_GREEN); }
+"PLD_Blue"                  { count (0); return (PARSEOP_PLD_BLUE); }
+"PLD_Width"                 { count (0); return (PARSEOP_PLD_WIDTH); }
+"PLD_Height"                { count (0); return (PARSEOP_PLD_HEIGHT); }
+"PLD_UserVisible"           { count (0); return (PARSEOP_PLD_USERVISIBLE); }
+"PLD_Dock"                  { count (0); return (PARSEOP_PLD_DOCK); }
+"PLD_Lid"                   { count (0); return (PARSEOP_PLD_LID); }
+"PLD_Panel"                 { count (0); return (PARSEOP_PLD_PANEL); }
+"PLD_VerticalPosition"      { count (0); return (PARSEOP_PLD_VERTICALPOSITION); }
+"PLD_HorizontalPosition"    { count (0); return (PARSEOP_PLD_HORIZONTALPOSITION); }
+"PLD_Shape"                 { count (0); return (PARSEOP_PLD_SHAPE); }
+"PLD_GroupOrientation"      { count (0); return (PARSEOP_PLD_GROUPORIENTATION); }
+"PLD_GroupToken"            { count (0); return (PARSEOP_PLD_GROUPTOKEN); }
+"PLD_GroupPosition"         { count (0); return (PARSEOP_PLD_GROUPPOSITION); }
+"PLD_Bay"                   { count (0); return (PARSEOP_PLD_BAY); }
+"PLD_Ejectable"             { count (0); return (PARSEOP_PLD_EJECTABLE); }
+"PLD_EjectRequired"         { count (0); return (PARSEOP_PLD_EJECTREQUIRED); }
+"PLD_CabinetNumber"         { count (0); return (PARSEOP_PLD_CABINETNUMBER); }
+"PLD_CardCageNumber"        { count (0); return (PARSEOP_PLD_CARDCAGENUMBER); }
+"PLD_Reference"             { count (0); return (PARSEOP_PLD_REFERENCE); }
+"PLD_Rotation"              { count (0); return (PARSEOP_PLD_ROTATION); }
+"PLD_Order"                 { count (0); return (PARSEOP_PLD_ORDER); }
+"PLD_Reserved"              { count (0); return (PARSEOP_PLD_RESERVED); }
+"PLD_VerticalOffset"        { count (0); return (PARSEOP_PLD_VERTICALOFFSET); }
+"PLD_HorizontalOffset"      { count (0); return (PARSEOP_PLD_HORIZONTALOFFSET); }
 
     /* Predefined compiler names */
 
