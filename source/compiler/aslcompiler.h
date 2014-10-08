@@ -615,6 +615,15 @@ OptOptimizeNamePath (
 
 
 /*
+ * aslprune - parse tree pruner
+ */
+void
+AslPruneParseTree (
+    UINT32                  PruneDepth,
+    UINT32                  Type);
+
+
+/*
  * aslcodegen - code generation
  */
 void

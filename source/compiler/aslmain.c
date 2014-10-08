@@ -265,7 +265,10 @@ Usage (
     ACPI_OPTION ("-vt",             "Dump binary table data in hex format within output file");
 
     printf ("\nDebug Options:\n");
-    ACPI_OPTION ("-bf -bt",         "Create debug file (full or parse tree only) (*.txt)");
+    ACPI_OPTION ("-bf",             "Create debug file (full output) (*.txt)");
+    ACPI_OPTION ("-bs",             "Create debug file (parse tree only) (*.txt)");
+    ACPI_OPTION ("-bp <depth>",     "Prune ASL parse tree");
+    ACPI_OPTION ("-bt <type>",      "Object type to be pruned from the parse tree");
     ACPI_OPTION ("-f",              "Ignore errors, force creation of AML output file(s)");
     ACPI_OPTION ("-m <size>",       "Set internal line buffer size (in Kbytes)");
     ACPI_OPTION ("-n",              "Parse only, no output generation");

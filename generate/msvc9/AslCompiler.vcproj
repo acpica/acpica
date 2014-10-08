@@ -3029,6 +3029,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\compiler\aslprune.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\compiler\aslresource.c"
 					>
 					<FileConfiguration
