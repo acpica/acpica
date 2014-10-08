@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: aecommon - common include for the AcpiExec utility
+ * Module Name: aeinitfile - Support for optional initialization file
  *
  *****************************************************************************/
 
@@ -113,187 +113,186 @@
  *
  *****************************************************************************/
 
-#ifndef _AECOMMON
-#define _AECOMMON
+#include "aecommon.h"
+#include "acdispat.h"
 
-#ifdef _MSC_VER                 /* disable some level-4 warnings */
-#pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
-#endif
-
-#include "acpi.h"
-#include "accommon.h"
-#include "acparser.h"
-#include "amlcode.h"
-#include "acnamesp.h"
-#include "acdebug.h"
-#include "actables.h"
-#include "acinterp.h"
-#include "amlresrc.h"
-#include "acapps.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <signal.h>
-
-extern BOOLEAN              AcpiGbl_IgnoreErrors;
-extern UINT8                AcpiGbl_RegionFillValue;
-extern UINT8                AcpiGbl_UseHwReducedFadt;
-extern BOOLEAN              AcpiGbl_DisplayRegionAccess;
-extern BOOLEAN              AcpiGbl_DoInterfaceTests;
-extern BOOLEAN              AcpiGbl_LoadTestTables;
-extern FILE                 *AcpiGbl_NamespaceInitFile;
-extern ACPI_CONNECTION_INFO AeMyContext;
-
-/* Check for unexpected exceptions */
-
-#define AE_CHECK_STATUS(Name, Status, Expected) \
-    if (Status != Expected) \
-    { \
-        AcpiOsPrintf ("Unexpected %s from %s (%s-%d)\n", \
-            AcpiFormatException (Status), #Name, _AcpiModuleName, __LINE__); \
-    }
-
-/* Check for unexpected non-AE_OK errors */
-
-#define AE_CHECK_OK(Name, Status)   AE_CHECK_STATUS (Name, Status, AE_OK);
-
-typedef struct ae_table_desc
-{
-    ACPI_TABLE_HEADER       *Table;
-    struct ae_table_desc    *Next;
-
-} AE_TABLE_DESC;
-
-/*
- * Debug Regions
- */
-typedef struct ae_region
-{
-    ACPI_PHYSICAL_ADDRESS   Address;
-    UINT32                  Length;
-    void                    *Buffer;
-    void                    *NextRegion;
-    UINT8                   SpaceId;
-
-} AE_REGION;
-
-typedef struct ae_debug_regions
-{
-    UINT32                  NumberOfRegions;
-    AE_REGION               *RegionList;
-
-} AE_DEBUG_REGIONS;
+#define _COMPONENT          ACPI_TOOLS
+        ACPI_MODULE_NAME    ("aeinitfile")
 
 
-#define TEST_OUTPUT_LEVEL(lvl)          if ((lvl) & OutputLevel)
+/* Local prototypes */
 
-#define OSD_PRINT(lvl,fp)               TEST_OUTPUT_LEVEL(lvl) {\
-                                            AcpiOsPrintf PARAM_LIST(fp);}
-
-void ACPI_SYSTEM_XFACE
-AeCtrlCHandler (
-    int                     Sig);
-
-ACPI_STATUS
-AeBuildLocalTables (
-    UINT32                  TableCount,
-    AE_TABLE_DESC           *TableList);
-
-ACPI_STATUS
-AeInstallTables (
-    void);
-
-void
-AeDumpNamespace (
-    void);
-
-void
-AeDumpObject (
-    char                    *MethodName,
-    ACPI_BUFFER             *ReturnObj);
-
-void
-AeDumpBuffer (
-    UINT32                  Address);
-
-void
-AeExecute (
-    char                    *Name);
-
-void
-AeSetScope (
-    char                    *Name);
-
-void
-AeCloseDebugFile (
-    void);
-
-void
-AeOpenDebugFile (
-    char                    *Name);
-
-ACPI_STATUS
-AeDisplayAllMethods (
-    UINT32                  DisplayCount);
-
-ACPI_STATUS
-AeInstallEarlyHandlers (
-    void);
-
-ACPI_STATUS
-AeInstallLateHandlers (
-    void);
-
-void
-AeMiscellaneousTests (
-    void);
-
-ACPI_STATUS
-AeRegionHandler (
-    UINT32                  Function,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  BitWidth,
-    UINT64                  *Value,
-    void                    *HandlerContext,
-    void                    *RegionContext);
-
-UINT32
-AeGpeHandler (
-    ACPI_HANDLE             GpeDevice,
-    UINT32                  GpeNumber,
-    void                    *Context);
-
-void
-AeGlobalEventHandler (
-    UINT32                  Type,
-    ACPI_HANDLE             GpeDevice,
-    UINT32                  EventNumber,
-    void                    *Context);
-
-/* aeregion */
-
-ACPI_STATUS
-AeInstallDeviceHandlers (
-    void);
-
-void
-AeInstallRegionHandlers (
-    void);
-
-void
-AeOverrideRegionHandlers (
-    void);
+static void
+AeDoOneOverride (
+    char                    *Pathname,
+    char                    *ValueString,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_WALK_STATE         *WalkState);
 
 
-/* aeinitfile */
+#define AE_FILE_BUFFER_SIZE  512
+
+static char                 NameBuffer[AE_FILE_BUFFER_SIZE];
+static char                 ValueBuffer[AE_FILE_BUFFER_SIZE];
+static FILE                 *InitFile;
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AeOpenInitializationFile
+ *
+ * PARAMETERS:  Filename            - Path to the init file
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Open the initialization file for the -fi option
+ *
+ *****************************************************************************/
 
 int
 AeOpenInitializationFile (
-    char                    *Filename);
+    char                    *Filename)
+{
+
+    InitFile = fopen (Filename, "r");
+    if (!InitFile)
+    {
+        perror ("Could not open initialization file");
+        return (-1);
+    }
+
+    AcpiOsPrintf ("Opened initialization file [%s]\n", Filename);
+    return (0);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AeDoObjectOverrides
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Read the initialization file and perform all overrides
+ *
+ * NOTE:        The format of the file is multiple lines, each of format:
+ *                  <ACPI-pathname> <Integer Value>
+ *
+ *****************************************************************************/
 
 void
 AeDoObjectOverrides (
-    void);
+    void)
+{
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_WALK_STATE         *WalkState;
+    int                     i;
 
-#endif /* _AECOMMON */
+
+    if (!InitFile)
+    {
+        return;
+    }
+
+    /* Create needed objects to be reused for each init entry */
+
+    ObjDesc = AcpiUtCreateIntegerObject (0);
+    WalkState = AcpiDsCreateWalkState (0, NULL, NULL, NULL);
+
+    NameBuffer[0] = '\\';
+
+     /* Read the entire file line-by-line */
+
+    while (fscanf (InitFile, "%s %s\n",
+        ACPI_CAST_PTR (char, &NameBuffer[1]),
+        ACPI_CAST_PTR (char, &ValueBuffer)) == 2)
+    {
+        /* Add a root prefix if not present in the string */
+
+        i = 0;
+        if (NameBuffer[1] == '\\')
+        {
+            i = 1;
+        }
+
+        AeDoOneOverride (&NameBuffer[i], ValueBuffer, ObjDesc, WalkState);
+    }
+
+    /* Cleanup */
+
+    fclose (InitFile);
+    AcpiDsDeleteWalkState (WalkState);
+    AcpiUtRemoveReference (ObjDesc);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AeDoOneOverride
+ *
+ * PARAMETERS:  Pathname            - AML namepath
+ *              ValueString         - New integer value to be stored
+ *              ObjDesc             - Descriptor with integer override value
+ *              WalkState           - Used for the Store operation
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Perform an overrided for a single namespace object
+ *
+ *****************************************************************************/
+
+static void
+AeDoOneOverride (
+    char                    *Pathname,
+    char                    *ValueString,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_HANDLE             Handle;
+    ACPI_STATUS             Status;
+    UINT64                  Value;
+
+
+    AcpiOsPrintf ("Value Override: %s, ", Pathname);
+
+    /*
+     * Get the namespace node associated with the override
+     * pathname from the init file.
+     */
+    Status = AcpiGetHandle (NULL, Pathname, &Handle);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("%s\n", AcpiFormatException (Status));
+        return;
+    }
+
+    /* Extract the 64-bit integer */
+
+    Status = AcpiUtStrtoul64 (ValueString, 0, &Value);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("%s\n", AcpiFormatException (Status));
+        return;
+    }
+
+    ObjDesc->Integer.Value = Value;
+
+    /*
+     * At the point this function is called, the namespace is fully
+     * built and initialized. We can simply store the new object to
+     * the target node.
+     */
+    AcpiExEnterInterpreter ();
+    Status = AcpiExStore (ObjDesc, Handle, WalkState);
+    AcpiExExitInterpreter ();
+
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("%s\n", AcpiFormatException (Status));
+        return;
+    }
+
+    AcpiOsPrintf ("New value: 0x%8.8X%8.8X\n",
+        ACPI_FORMAT_UINT64 (Value));
+}

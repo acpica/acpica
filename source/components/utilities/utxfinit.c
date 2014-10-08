@@ -126,6 +126,11 @@
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utxfinit")
 
+/* For AcpiExec only */
+void
+AeDoObjectOverrides (
+    void);
+
 
 /*******************************************************************************
  *
@@ -380,6 +385,14 @@ AcpiInitializeObjects (
             return_ACPI_STATUS (Status);
         }
     }
+
+#ifdef ACPI_EXEC_APP
+    /*
+     * This call implements the "initialization file" option for AcpiExec.
+     * This is the precise point that we want to perform the overrides.
+     */
+    AeDoObjectOverrides ();
+#endif
 
     /*
      * Execute any module-level code that was detected during the table load

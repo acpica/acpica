@@ -1722,6 +1722,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\tools\acpiexec\aeinitfile.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\Tools\AcpiExec\aemain.c"
 					>
 					<FileConfiguration
