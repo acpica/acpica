@@ -2445,8 +2445,8 @@
 						>
 						<Tool
 							Name="VCCustomBuildTool"
-							Description="M4 Macro Preprocessor  ($(InputPath))"
-							CommandLine="c:\GnuWin32\bin\m4 -P -I../../source/compiler ../../source/compiler/$(InputName).y &gt; ./AslCompilerDebug/AslCompilerDebug.y&#x0D;&#x0A;"
+							Description="M4 Macro Preprocessor  ($(InputPath)) &gt; AslCompilerDebug/AslCompilerDebug.y"
+							CommandLine="c:\GnuWin32\bin\m4 -P -I../../source/compiler $(InputPath) &gt; ./AslCompilerDebug/AslCompilerDebug.y&#x0D;&#x0A;"
 							AdditionalDependencies="$(InputDir)aslrules.y;$(InputDir)aslsupport.y;$(InputDir)asltokens.y;$(InputDir)asltypes.y"
 							Outputs=" ./AslCompilerDebug/AslCompilerDebug.y"
 						/>
@@ -3599,6 +3599,8 @@
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="Bison - Main compiler parser generation ($(InputPath))"
+							CommandLine=""
+							Outputs=""
 						/>
 					</FileConfiguration>
 				</File>
@@ -3669,8 +3671,8 @@
 						>
 						<Tool
 							Name="VCCustomBuildTool"
-							Description="Bison - Main compiler parser generation ($(InputPath))"
-							CommandLine="c:\GnuWin32\bin\bison -pAslCompiler -t -d -v --warnings=yacc -oAslCompilerDebug/AslCompilerDebug.y.c  ./AslCompilerDebug/AslCompilerDebug.y&#x0D;&#x0A;"
+							Description="Bison - Main compiler parser generation ($(InputPath)) DEBUG"
+							CommandLine="c:\GnuWin32\bin\bison -pAslCompiler -t -d -v --warnings=yacc -oAslCompilerDebug/AslCompilerDebug.y.c  AslCompilerDebug/AslCompilerDebug.y&#x0D;&#x0A;copy /Y AslCompilerDebug\AslCompilerDebug.y.h AslCompilerDebug\AslCompiler.y.h&#x0D;&#x0A;"
 							Outputs="AslCompilerDebug\AslCompilerDebug.y.c;AslCompilerDebug\AslCompilerDebug.y.h"
 						/>
 					</FileConfiguration>
