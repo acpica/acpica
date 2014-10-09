@@ -113,8 +113,6 @@
  *
  *****************************************************************************/
 
-#define __EXREGION_C__
-
 #include "acpi.h"
 #include "accommon.h"
 #include "acinterp.h"

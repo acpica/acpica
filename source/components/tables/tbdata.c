@@ -113,8 +113,6 @@
  *
  *****************************************************************************/
 
-#define __TBDATA_C__
-
 #include "acpi.h"
 #include "accommon.h"
 #include "acnamesp.h"

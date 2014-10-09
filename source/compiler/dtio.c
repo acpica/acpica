@@ -113,8 +113,6 @@
  *
  *****************************************************************************/
 
-#define __DTIO_C__
-
 #include "aslcompiler.h"
 #include "dtcompiler.h"
 #include "acapps.h"

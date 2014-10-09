@@ -113,7 +113,6 @@
  *
  *****************************************************************************/
 
-#define __EXAMPLES_C__
 #include "examples.h"
 
 #define _COMPONENT          ACPI_EXAMPLE
