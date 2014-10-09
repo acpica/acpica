@@ -131,6 +131,16 @@
         ACPI_MODULE_NAME    ("atmain")
 
 
+/* Stub that is required since ACPI_EXEC_APP is set for this test */
+
+void
+AeDoObjectOverrides (
+    void)
+{
+}
+
+
+
 typedef struct at_test_case_descriptor
 {
     AT_TEST                 **Tests;
