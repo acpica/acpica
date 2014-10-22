@@ -806,59 +806,59 @@ AcpiDmPldBuffer (
 
     /* First 32-bit dword */
 
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLDRevision", PldInfo->Revision);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "IgnoreColor", PldInfo->IgnoreColor);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Red", PldInfo->Red);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Green", PldInfo->Green);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Blue", PldInfo->Blue);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLD_Revision", PldInfo->Revision);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLD_IgnoreColor", PldInfo->IgnoreColor);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLD_Red", PldInfo->Red);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLD_Green", PldInfo->Green);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLD_Blue", PldInfo->Blue);
 
     /* Second 32-bit dword */
 
-    AcpiOsPrintf (ACPI_PLD_OUTPUT16,  "Width", PldInfo->Width);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT16,  "Height", PldInfo->Height);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT16,  "PLD_Width", PldInfo->Width);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT16,  "PLD_Height", PldInfo->Height);
 
     /* Third 32-bit dword */
 
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "UserVisible", PldInfo->UserVisible);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Dock", PldInfo->Dock);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Lid", PldInfo->Lid);
-    AcpiOsPrintf (ACPI_PLD_OUTPUTSTR, "Panel",
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLD_UserVisible", PldInfo->UserVisible);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLD_Dock", PldInfo->Dock);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLD_Lid", PldInfo->Lid);
+    AcpiOsPrintf (ACPI_PLD_OUTPUTSTR, "PLD_Panel",
         AcpiDmFindNameByIndex(PldInfo->Panel, DmPanelList));
-    AcpiOsPrintf (ACPI_PLD_OUTPUTSTR, "VerticalPosition",
+    AcpiOsPrintf (ACPI_PLD_OUTPUTSTR, "PLD_VerticalPosition",
         AcpiDmFindNameByIndex(PldInfo->VerticalPosition, DmVerticalPositionList));
-    AcpiOsPrintf (ACPI_PLD_OUTPUTSTR, "HorizontalPosition",
+    AcpiOsPrintf (ACPI_PLD_OUTPUTSTR, "PLD_HorizontalPosition",
         AcpiDmFindNameByIndex(PldInfo->HorizontalPosition, DmHorizontalPositionList));
-    AcpiOsPrintf (ACPI_PLD_OUTPUTSTR, "Shape",
+    AcpiOsPrintf (ACPI_PLD_OUTPUTSTR, "PLD_Shape",
         AcpiDmFindNameByIndex(PldInfo->Shape, DmShapeList));
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "GroupOrientation", PldInfo->GroupOrientation);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "GroupToken", PldInfo->GroupToken);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "GroupPosition", PldInfo->GroupPosition);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Bay", PldInfo->Bay);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLD_GroupOrientation", PldInfo->GroupOrientation);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLD_GroupToken", PldInfo->GroupToken);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLD_GroupPosition", PldInfo->GroupPosition);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLD_Bay", PldInfo->Bay);
 
     /* Fourth 32-bit dword */
 
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Ejectable", PldInfo->Ejectable);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "EjectRequired", PldInfo->OspmEjectRequired);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "CabinetNumber", PldInfo->CabinetNumber);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "CardCageNumber", PldInfo->CardCageNumber);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Reference", PldInfo->Reference);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "Rotation", PldInfo->Rotation);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLD_Ejectable", PldInfo->Ejectable);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLD_EjectRequired", PldInfo->OspmEjectRequired);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLD_CabinetNumber", PldInfo->CabinetNumber);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLD_CardCageNumber", PldInfo->CardCageNumber);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLD_Reference", PldInfo->Reference);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT08,  "PLD_Rotation", PldInfo->Rotation);
 
     if (ByteCount < ACPI_PLD_REV1_BUFFER_SIZE)
     {
-        AcpiOsPrintf (ACPI_PLD_OUTPUT08P, "Order", PldInfo->Order);
+        AcpiOsPrintf (ACPI_PLD_OUTPUT08P, "PLD_Order", PldInfo->Order);
     }
     else
     {
-        AcpiOsPrintf (ACPI_PLD_OUTPUT08, "Order", PldInfo->Order);
+        AcpiOsPrintf (ACPI_PLD_OUTPUT08, "PLD_Order", PldInfo->Order);
     }
 
     /* Fifth 32-bit dword */
 
     if (ByteCount >= ACPI_PLD_REV1_BUFFER_SIZE)
     {
-        AcpiOsPrintf (ACPI_PLD_OUTPUT16, "VerticalOffset", PldInfo->VerticalOffset);
-        AcpiOsPrintf (ACPI_PLD_OUTPUT16P, "HorizontalOffset", PldInfo->HorizontalOffset);
+        AcpiOsPrintf (ACPI_PLD_OUTPUT16, "PLD_VerticalOffset", PldInfo->VerticalOffset);
+        AcpiOsPrintf (ACPI_PLD_OUTPUT16P, "PLD_HorizontalOffset", PldInfo->HorizontalOffset);
     }
 
     ACPI_FREE (PldInfo);

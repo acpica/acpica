@@ -554,47 +554,47 @@ AcpiDbDumpPldBuffer (
 
     /* First 32-bit dword */
 
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLDRevision", PldInfo->Revision);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "IgnoreColor", PldInfo->IgnoreColor);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Red", PldInfo->Red);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Green", PldInfo->Green);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Blue", PldInfo->Blue);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_Revision", PldInfo->Revision);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_IgnoreColor", PldInfo->IgnoreColor);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_Red", PldInfo->Red);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_Green", PldInfo->Green);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_Blue", PldInfo->Blue);
 
     /* Second 32-bit dword */
 
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Width", PldInfo->Width);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Height", PldInfo->Height);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_Width", PldInfo->Width);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_Height", PldInfo->Height);
 
     /* Third 32-bit dword */
 
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "UserVisible", PldInfo->UserVisible);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Dock", PldInfo->Dock);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Lid", PldInfo->Lid);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Panel", PldInfo->Panel);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "VerticalPosition", PldInfo->VerticalPosition);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "HorizontalPosition", PldInfo->HorizontalPosition);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Shape", PldInfo->Shape);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "GroupOrientation", PldInfo->GroupOrientation);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "GroupToken", PldInfo->GroupToken);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "GroupPosition", PldInfo->GroupPosition);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Bay", PldInfo->Bay);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_UserVisible", PldInfo->UserVisible);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_Dock", PldInfo->Dock);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_Lid", PldInfo->Lid);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_Panel", PldInfo->Panel);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_VerticalPosition", PldInfo->VerticalPosition);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_HorizontalPosition", PldInfo->HorizontalPosition);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_Shape", PldInfo->Shape);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_GroupOrientation", PldInfo->GroupOrientation);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_GroupToken", PldInfo->GroupToken);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_GroupPosition", PldInfo->GroupPosition);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_Bay", PldInfo->Bay);
 
     /* Fourth 32-bit dword */
 
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Ejectable", PldInfo->Ejectable);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "EjectRequired", PldInfo->OspmEjectRequired);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "CabinetNumber", PldInfo->CabinetNumber);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "CardCageNumber", PldInfo->CardCageNumber);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Reference", PldInfo->Reference);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Rotation", PldInfo->Rotation);
-    AcpiOsPrintf (ACPI_PLD_OUTPUT, "Order", PldInfo->Order);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_Ejectable", PldInfo->Ejectable);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_EjectRequired", PldInfo->OspmEjectRequired);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_CabinetNumber", PldInfo->CabinetNumber);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_CardCageNumber", PldInfo->CardCageNumber);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_Reference", PldInfo->Reference);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_Rotation", PldInfo->Rotation);
+    AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_Order", PldInfo->Order);
 
     /* Fifth 32-bit dword */
 
     if (BufferDesc->Buffer.Length > 16)
     {
-        AcpiOsPrintf (ACPI_PLD_OUTPUT, "VerticalOffset", PldInfo->VerticalOffset);
-        AcpiOsPrintf (ACPI_PLD_OUTPUT, "HorizontalOffset", PldInfo->HorizontalOffset);
+        AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_VerticalOffset", PldInfo->VerticalOffset);
+        AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_HorizontalOffset", PldInfo->HorizontalOffset);
     }
 
     ACPI_FREE (PldInfo);
