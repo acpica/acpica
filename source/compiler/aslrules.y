@@ -262,7 +262,7 @@ EqualsTerm
 
     /* All assignment-type operations */
 
-    : TermArg PARSEOP_EXP_EQUALS
+    : SuperName PARSEOP_EXP_EQUALS
         TermArg                         {$$ = TrCreateAssignmentNode ($1, $3);}
 
     | TermArg PARSEOP_EXP_ADD_EQ        {$<n>$ = TrCreateLeafNode (PARSEOP_ADD);}
