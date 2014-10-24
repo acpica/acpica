@@ -615,6 +615,18 @@ OptOptimizeNamePath (
 
 
 /*
+ * aslprintf - Printf/Fprintf macros
+ */
+void
+OpcDoPrintf (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+OpcDoFprintf (
+    ACPI_PARSE_OBJECT       *Op);
+
+
+/*
  * aslprune - parse tree pruner
  */
 void

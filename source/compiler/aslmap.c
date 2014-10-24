@@ -548,6 +548,8 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* RESERVED */                  OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* VERTICALOFFSET */            OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
 /* HORIZONTALOFFSET */          OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),
+/* PRINTF */                    OP_TABLE_ENTRY (AML_STORE_OP,               0,                              0,                  ACPI_BTYPE_DATA_REFERENCE),
+/* FPRINTF */                   OP_TABLE_ENTRY (AML_STORE_OP,               0,                              0,                  ACPI_BTYPE_DATA_REFERENCE),
 /*! [End] no source code translation !*/
 
 };

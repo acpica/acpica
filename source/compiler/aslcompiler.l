@@ -739,6 +739,11 @@ NamePathTail                [.]{NameSeg}
 "PLD_VerticalOffset"        { count (0); return (PARSEOP_PLD_VERTICALOFFSET); }
 "PLD_HorizontalOffset"      { count (0); return (PARSEOP_PLD_HORIZONTALOFFSET); }
 
+
+    /* printf debug macros */
+"printf"                    { count (0); return (PARSEOP_PRINTF); }
+"fprintf"                   { count (0); return (PARSEOP_FPRINTF); }
+
     /* Predefined compiler names */
 
 "__DATE__"                  { count (0); return (PARSEOP___DATE__); }

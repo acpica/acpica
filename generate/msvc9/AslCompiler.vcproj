@@ -3013,6 +3013,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\compiler\aslprintf.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\compiler\aslprune.c"
 					>
 				</File>

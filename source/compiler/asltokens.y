@@ -524,6 +524,8 @@ NoEcho('
 %left <i>  PARSEOP_EXP_INCREMENT
            PARSEOP_EXP_DECREMENT
 
+%token <i> PARSEOP_PRINTF
+%token <i> PARSEOP_FPRINTF
 /* Specific parentheses tokens are not used at this time */
            /* PARSEOP_EXP_PAREN_OPEN */
            /* PARSEOP_EXP_PAREN_CLOSE */

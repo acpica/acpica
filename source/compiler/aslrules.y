@@ -580,6 +580,8 @@ Type2BufferOpcode                   /* "Type5" Opcodes */
 
 Type2BufferOrStringOpcode
     : ConcatTerm                    {}
+    | PrintfTerm                    {}
+    | FprintfTerm                   {}
     | MidTerm                       {}
     ;
 
@@ -1640,6 +1642,32 @@ ToPLDTerm
         PldKeywordList
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4);}
     | PARSEOP_TOPLD '('
+        error ')'                   {$$ = AslDoError(); yyclearin;}
+    ;
+
+PrintfArgList
+    :                               {$$ = NULL;}
+    | TermArg                       {$$ = $1;}
+    | PrintfArgList ','
+       TermArg                      {$$ = TrLinkPeerNode ($1, $3);}
+    ;
+
+PrintfTerm
+    : PARSEOP_PRINTF '('            {$<n>$ = TrCreateLeafNode (PARSEOP_PRINTF);}
+        StringData
+        PrintfArgList
+        ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5);}
+    | PARSEOP_PRINTF '('
+        error ')'                   {$$ = AslDoError(); yyclearin;}
+    ;
+
+FprintfTerm
+    : PARSEOP_FPRINTF '('            {$<n>$ = TrCreateLeafNode (PARSEOP_FPRINTF);}
+        TermArg ','
+        StringData
+        PrintfArgList
+        ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$6,$7);}
+    | PARSEOP_FPRINTF '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
 

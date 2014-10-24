@@ -1596,6 +1596,16 @@ OpcGenerateAmlOpcode (
         OpcDoEisaId (Op);
         break;
 
+    case PARSEOP_PRINTF:
+
+        OpcDoPrintf (Op);
+        break;
+
+    case PARSEOP_FPRINTF:
+
+        OpcDoFprintf (Op);
+        break;
+
     case PARSEOP_TOPLD:
 
         OpcDoPld (Op);

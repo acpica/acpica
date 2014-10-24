@@ -362,6 +362,9 @@ NoEcho('
 %type <n> ToPLDTerm
 %type <n> ToUUIDTerm
 %type <n> UnicodeTerm
+%type <n> PrintfArgList
+%type <n> PrintfTerm
+%type <n> FprintfTerm
 
 /* Resource Descriptors */
 
