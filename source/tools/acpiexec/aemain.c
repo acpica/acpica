@@ -541,6 +541,7 @@ main (
     }
 
     AcpiGbl_DbOpt_tables = TRUE;
+    AcpiGbl_CstyleDisassembly = FALSE; /* Not supported for AcpiExec */
     TableCount = 0;
 
     /* Get each of the ACPI table files on the command line */

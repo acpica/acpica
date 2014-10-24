@@ -774,6 +774,7 @@ TrCopyNode (
 
 
     Op = TrAllocateNode (OriginalOp->Asl.ParseOpcode);
+    Op->Asl.Value.String = OriginalOp->Asl.Value.String;
     return (Op);
 }
 

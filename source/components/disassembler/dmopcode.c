@@ -126,6 +126,7 @@
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dmopcode")
 
+
 /* Local prototypes */
 
 static void
@@ -639,7 +640,6 @@ AcpiDmRegionFlags (
     ACPI_PARSE_OBJECT       *Op)
 {
 
-
     /* The next Op contains the SpaceId */
 
     Op = AcpiPsGetDepthNext (NULL, Op);
@@ -709,7 +709,6 @@ AcpiDmMatchKeyword (
     ACPI_PARSE_OBJECT       *Op)
 {
 
-
     if (((UINT32) Op->Common.Value.Integer) > ACPI_MAX_MATCH_OPCODE)
     {
         AcpiOsPrintf ("/* Unknown Match Keyword encoding */");
@@ -766,27 +765,27 @@ AcpiDmDisassembleOneOp (
 
     case ACPI_DASM_LNOT_SUFFIX:
 
-        switch (Op->Common.AmlOpcode)
+        if (!AcpiGbl_CstyleDisassembly)
         {
-        case AML_LEQUAL_OP:
+            switch (Op->Common.AmlOpcode)
+            {
+            case AML_LEQUAL_OP:
+                AcpiOsPrintf ("LNotEqual");
+                break;
 
-            AcpiOsPrintf ("LNotEqual");
-            break;
+            case AML_LGREATER_OP:
+                AcpiOsPrintf ("LLessEqual");
+                break;
 
-        case AML_LGREATER_OP:
+            case AML_LLESS_OP:
+                AcpiOsPrintf ("LGreaterEqual");
+                break;
 
-            AcpiOsPrintf ("LLessEqual");
-            break;
-
-        case AML_LLESS_OP:
-
-            AcpiOsPrintf ("LGreaterEqual");
-            break;
-
-        default:
-
-            break;
+            default:
+                break;
+            }
         }
+
         Op->Common.DisasmOpcode = 0;
         Op->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
         return;
@@ -794,7 +793,6 @@ AcpiDmDisassembleOneOp (
     default:
         break;
     }
-
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
 

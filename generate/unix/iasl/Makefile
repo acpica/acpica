@@ -98,16 +98,9 @@ OBJECTS = \
 	$(OBJDIR)/aslwalks.o\
 	$(OBJDIR)/aslxref.o\
 	$(OBJDIR)/cmfsize.o\
-	$(OBJDIR)/dtcompile.o\
-	$(OBJDIR)/dtexpress.o\
-	$(OBJDIR)/dtfield.o\
-	$(OBJDIR)/dtio.o\
-	$(OBJDIR)/dtsubtable.o\
-	$(OBJDIR)/dttable.o\
-	$(OBJDIR)/dttemplate.o\
-	$(OBJDIR)/dtutils.o\
 	$(OBJDIR)/dbfileio.o\
 	$(OBJDIR)/dmbuffer.o\
+	$(OBJDIR)/dmcstyle.o\
 	$(OBJDIR)/dmdeferred.o\
 	$(OBJDIR)/dmextern.o\
 	$(OBJDIR)/dmnames.o\
@@ -134,6 +127,14 @@ OBJECTS = \
 	$(OBJDIR)/dswload2.o\
 	$(OBJDIR)/dswscope.o\
 	$(OBJDIR)/dswstate.o\
+	$(OBJDIR)/dtcompile.o\
+	$(OBJDIR)/dtexpress.o\
+	$(OBJDIR)/dtfield.o\
+	$(OBJDIR)/dtio.o\
+	$(OBJDIR)/dtsubtable.o\
+	$(OBJDIR)/dttable.o\
+	$(OBJDIR)/dttemplate.o\
+	$(OBJDIR)/dtutils.o\
 	$(OBJDIR)/exconvrt.o\
 	$(OBJDIR)/excreate.o\
 	$(OBJDIR)/exdump.o\

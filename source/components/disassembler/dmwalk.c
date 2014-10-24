@@ -557,6 +557,13 @@ AcpiDmDescendingOp (
         AcpiDmIndent (Info->LastLevel + 1);
     }
 
+    /* If ASL+ is enabled, check for a C-style operator */
+
+    if (AcpiDmCheckForSymbolicOpcode (Op, Info))
+    {
+        return (AE_OK);
+    }
+
     /* Print the opcode name */
 
     AcpiDmDisassembleOneOp (NULL, Info, Op);
@@ -636,7 +643,6 @@ AcpiDmDescendingOp (
                 AcpiDmPredefinedDescription (Op);
                 break;
 
-
             case AML_NAME_OP:
 
                 /* Check for _HID and related EISAID() */
@@ -645,12 +651,10 @@ AcpiDmDescendingOp (
                 AcpiOsPrintf (", ");
                 break;
 
-
             case AML_REGION_OP:
 
                 AcpiDmRegionFlags (Op);
                 break;
-
 
             case AML_POWER_RES_OP:
 
@@ -663,7 +667,6 @@ AcpiDmDescendingOp (
                 NextOp = NextOp->Common.Next;
                 NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMLIST;
                 return (AE_OK);
-
 
             case AML_PROCESSOR_OP:
 
@@ -680,19 +683,16 @@ AcpiDmDescendingOp (
                 NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMLIST;
                 return (AE_OK);
 
-
             case AML_MUTEX_OP:
             case AML_DATA_REGION_OP:
 
                 AcpiOsPrintf (", ");
                 return (AE_OK);
 
-
             case AML_EVENT_OP:
             case AML_ALIAS_OP:
 
                 return (AE_OK);
-
 
             case AML_SCOPE_OP:
             case AML_DEVICE_OP:
@@ -700,7 +700,6 @@ AcpiDmDescendingOp (
 
                 AcpiOsPrintf (")");
                 break;
-
 
             default:
 
@@ -898,9 +897,9 @@ AcpiDmAscendingOp (
     {
     case BLOCK_PAREN:
 
-        /* Completed an op that has arguments, add closing paren */
+        /* Completed an op that has arguments, add closing paren if needed */
 
-        AcpiOsPrintf (")");
+        AcpiDmCloseOperator (Op);
 
         if (Op->Common.AmlOpcode == AML_NAME_OP)
         {
@@ -1072,8 +1071,21 @@ AcpiDmAscendingOp (
     {
         Info->Level++;
     }
+
+    /*
+     * For ASL+, check for and emit a C-style symbol. If valid, the
+     * symbol string has been deferred until after the first operand
+     */
+    if (AcpiGbl_CstyleDisassembly)
+    {
+        if (Op->Asl.OperatorSymbol)
+        {
+            AcpiOsPrintf ("%s", Op->Asl.OperatorSymbol);
+            Op->Asl.OperatorSymbol = NULL;
+        }
+    }
+
     return (AE_OK);
 }
-
 
 #endif  /* ACPI_DISASSEMBLER */

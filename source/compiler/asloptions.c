@@ -346,6 +346,12 @@ AslDoOptions (
 
             break;
 
+        case 'l':   /* Use legacy ASL code (not ASL+) for disassembly */
+
+            Gbl_DoCompile = FALSE;
+            AcpiGbl_CstyleDisassembly = FALSE;
+            break;
+
         default:
 
             printf ("Unknown option: -d%s\n", AcpiGbl_Optarg);
