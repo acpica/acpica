@@ -207,12 +207,12 @@ NamePathTail                [.]{NameSeg}
 ">="                        { count (3); return (PARSEOP_EXP_GREATER_EQUAL); }
 "=="                        { count (3); return (PARSEOP_EXP_EQUAL); }
 "!="                        { count (3); return (PARSEOP_EXP_NOT_EQUAL); }
-"^"                         { count (3); return (PARSEOP_EXP_XOR); }
 "|"                         { count (3); return (PARSEOP_EXP_OR); }
 "&&"                        { count (3); return (PARSEOP_EXP_LOGICAL_AND); }
 "||"                        { count (3); return (PARSEOP_EXP_LOGICAL_OR); }
 "++"                        { count (3); return (PARSEOP_EXP_INCREMENT); }
 "--"                        { count (3); return (PARSEOP_EXP_DECREMENT); }
+"^ "                        { count (3); return (PARSEOP_EXP_XOR); }
 
     /* ASL Extension: Standard C assignment operators */
 

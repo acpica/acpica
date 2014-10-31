@@ -255,7 +255,7 @@ Expression
 
       /* Parentheses */
 
-    | '(' Expression ')'                { $$ = $2;}
+    | '(' TermArg ')'                   { $$ = $2;}
     ;
 
 EqualsTerm
