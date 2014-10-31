@@ -158,6 +158,7 @@ OpcDoPrintf (
     DestOp = TrAllocateNode (PARSEOP_DEBUG);
     DestOp->Asl.AmlOpcode = AML_DEBUG_OP;
     DestOp->Asl.Parent = Op;
+    DestOp->Asl.LogicalLineNumber = Op->Asl.LogicalLineNumber;
 
     OpcParsePrintf (Op, DestOp);
 }
@@ -263,6 +264,8 @@ OpcParsePrintf (
             NewOp->Asl.Value.String = NewString;
             NewOp->Asl.AmlOpcode = AML_STRING_OP;
             NewOp->Asl.AcpiBtype = ACPI_BTYPE_STRING;
+            NewOp->Asl.LogicalLineNumber = Op->Asl.LogicalLineNumber;
+
             OpcCreateConcatenateNode(Op, NewOp);
 
             StringLength = 0;
@@ -322,6 +325,8 @@ OpcParsePrintf (
                 NewOp->Asl.Value.String = "";
                 NewOp->Asl.AmlOpcode = AML_STRING_OP;
                 NewOp->Asl.AcpiBtype = ACPI_BTYPE_STRING;
+                NewOp->Asl.LogicalLineNumber = Op->Asl.LogicalLineNumber;
+
                 OpcCreateConcatenateNode(Op, NewOp);
             }
 
@@ -348,6 +353,8 @@ OpcParsePrintf (
         NewOp->Asl.Value.String = NewString;
         NewOp->Asl.AcpiBtype = ACPI_BTYPE_STRING;
         NewOp->Asl.AmlOpcode = AML_STRING_OP;
+        NewOp->Asl.LogicalLineNumber = Op->Asl.LogicalLineNumber;
+
         OpcCreateConcatenateNode(Op, NewOp);
     }
 
@@ -421,6 +428,7 @@ OpcCreateConcatenateNode (
     NewConcatOp = TrAllocateNode (PARSEOP_CONCATENATE);
     NewConcatOp->Asl.AmlOpcode = AML_CONCAT_OP;
     NewConcatOp->Asl.AcpiBtype = 0x7;
+    NewConcatOp->Asl.LogicalLineNumber = Op->Asl.LogicalLineNumber;
 
     /* First arg is child of Op*/
 
