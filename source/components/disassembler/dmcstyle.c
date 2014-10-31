@@ -427,9 +427,45 @@ AcpiDmCheckForSymbolicOpcode (
             return (TRUE);
         }
 
+        /*
+         * If we are within a C-style expression, emit an extra open
+         * paren. Implemented by examining the parent op.
+         */
+        switch (Op->Common.Parent->Common.AmlOpcode)
+        {
+        case AML_ADD_OP:
+        case AML_SUBTRACT_OP:
+        case AML_MULTIPLY_OP:
+        case AML_DIVIDE_OP:
+        case AML_MOD_OP:
+        case AML_SHIFT_LEFT_OP:
+        case AML_SHIFT_RIGHT_OP:
+        case AML_BIT_AND_OP:
+        case AML_BIT_OR_OP:
+        case AML_BIT_XOR_OP:
+        case AML_LAND_OP:
+        case AML_LEQUAL_OP:
+        case AML_LGREATER_OP:
+        case AML_LLESS_OP:
+        case AML_LOR_OP:
+
+            Op->Common.DisasmFlags |= ACPI_PARSEOP_ASSIGNMENT;
+            AcpiOsPrintf ("(");
+            break;
+
+        default:
+            break;
+        }
+
         /* Normal output for ASL/AML operators with a target operand */
 
         Target->Common.OperatorSymbol = " = (";
+        return (TRUE);
+
+    /* Binary operators, no parens */
+
+    case AML_DECREMENT_OP:
+    case AML_INCREMENT_OP:
         return (TRUE);
 
 #ifdef INDEX_SUPPORT
@@ -529,6 +565,8 @@ AcpiDmCloseOperator (
         return;
     }
 
+    /* Check if we need to add an additional closing paren */
+
     switch (Op->Common.AmlOpcode)
     {
     case AML_ADD_OP:
@@ -546,8 +584,6 @@ AcpiDmCloseOperator (
     case AML_LGREATER_OP:
     case AML_LLESS_OP:
     case AML_LOR_OP:
-    case AML_DECREMENT_OP:
-    case AML_INCREMENT_OP:
 
         /* Emit paren only if this is not a compound assignment */
 
@@ -555,14 +591,23 @@ AcpiDmCloseOperator (
         {
             return;
         }
+
+        /* Emit extra close paren for assignment within an expression */
+
+        if (Op->Common.DisasmFlags & ACPI_PARSEOP_ASSIGNMENT)
+        {
+            AcpiOsPrintf (")");
+        }
         break;
 
-    /* No need for parens for these */
 
+    /* No need for parens for these */
 
 #ifdef INDEX_SUPPORT
     case AML_INDEX_OP:
 #endif
+    case AML_DECREMENT_OP:
+    case AML_INCREMENT_OP:
     case AML_LNOT_OP:
     case AML_BIT_NOT_OP:
     case AML_STORE_OP:
