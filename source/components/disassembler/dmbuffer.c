@@ -552,11 +552,12 @@ AcpiDmIsUnicodeBuffer (
         return (FALSE);
     }
 
-    /* For each word, 1st byte must be ascii (0-0x7F), 2nd byte must be zero */
+    /* For each word, 1st byte must be ascii (1-0x7F), 2nd byte must be zero */
 
     for (i = 0; i < (ByteCount - 2); i += 2)
     {
-        if ((ByteData[i] > 0x7F) ||
+        if ((ByteData[i] == 0) ||
+            (ByteData[i] > 0x7F) ||
             (ByteData[(ACPI_SIZE) i + 1] != 0))
         {
             return (FALSE);
