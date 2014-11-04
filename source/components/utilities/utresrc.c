@@ -370,7 +370,7 @@ const char                      *AcpiGbl_BpbDecode[] =
 
 const char                      *AcpiGbl_SbDecode[] =
 {
-    "StopBitsNone",
+    "StopBitsZero",
     "StopBitsOne",
     "StopBitsOnePlusHalf",
     "StopBitsTwo"
