@@ -144,7 +144,8 @@ AcpiDmIsValidTarget (
 static BOOLEAN
 AcpiDmIsTargetAnOperand (
     ACPI_PARSE_OBJECT       *Target,
-    ACPI_PARSE_OBJECT       *Operand);
+    ACPI_PARSE_OBJECT       *Operand,
+    BOOLEAN                 TopLevel);
 
 
 /*******************************************************************************
@@ -414,8 +415,8 @@ AcpiDmCheckForSymbolicOpcode (
          * Determine if either operand is the same as the target
          * and display compound assignment operator and other operand.
          */
-        if ((AcpiDmIsTargetAnOperand (Target, Child1)) ||
-            (AcpiDmIsTargetAnOperand (Target, Child2)))
+        if ((AcpiDmIsTargetAnOperand (Target, Child1, TRUE)) ||
+            (AcpiDmIsTargetAnOperand (Target, Child2, TRUE)))
         {
             Target->Common.OperatorSymbol =
                 AcpiDmGetCompoundSymbol (Op->Common.AmlOpcode);
@@ -783,27 +784,62 @@ AcpiDmIsValidTarget (
 static BOOLEAN
 AcpiDmIsTargetAnOperand (
     ACPI_PARSE_OBJECT       *Target,
-    ACPI_PARSE_OBJECT       *Operand)
+    ACPI_PARSE_OBJECT       *Operand,
+    BOOLEAN                 TopLevel)
 {
+    const ACPI_OPCODE_INFO  *OpInfo;
+    BOOLEAN                 Same;
+
 
     /*
-     * For Namepaths we simply compare the namespace nodes when
-     * they are not NULL. For Args and Locals we compare the AML
-     * opcodes when the namspace node is NULL.
+     * Opcodes must match. Note: ignoring the difference between nameseg
+     * and namepath for now. May be needed later.
      */
-    if ((!Target->Common.Node &&
-         (Target->Common.AmlOpcode == Operand->Common.AmlOpcode)) ||
-
-        (Target->Common.Node &&
-        (Target->Common.Node == Operand->Common.Node)))
+    if (Target->Common.AmlOpcode != Operand->Common.AmlOpcode)
     {
-        /* Supress the duplicate operand */
-
-        Operand->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
-        return (TRUE);
+        return (FALSE);
     }
 
-    return (FALSE);
+    /* Nodes should match, even if they are NULL */
+
+    if (Target->Common.Node != Operand->Common.Node)
+    {
+        return (FALSE);
+    }
+
+    /* Determine if a child exists */
+
+    OpInfo = AcpiPsGetOpcodeInfo (Operand->Common.AmlOpcode);
+    if (OpInfo->Flags & AML_HAS_ARGS)
+    {
+        Same = AcpiDmIsTargetAnOperand (Target->Common.Value.Arg,
+            Operand->Common.Value.Arg, FALSE);
+        if (!Same)
+        {
+            return (FALSE);
+        }
+    }
+
+    /* Check the next peer, as long as we are not at the top level */
+
+    if ((!TopLevel) &&
+         Target->Common.Next)
+    {
+        Same = AcpiDmIsTargetAnOperand (Target->Common.Next,
+            Operand->Common.Next, FALSE);
+        if (!Same)
+        {
+            return (FALSE);
+        }
+    }
+
+    /* Supress the duplicate operand at the top-level */
+
+    if (TopLevel)
+    {
+        Operand->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
+    }
+    return (TRUE);
 }
 
 #endif
