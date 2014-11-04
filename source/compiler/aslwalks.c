@@ -366,6 +366,13 @@ AnOperandTypecheckWalkEnd (
         {
             RequiredBtypes = AnMapArgTypeToBtype (ArgType);
 
+            if (!ArgOp)
+            {
+                AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Op,
+                    "Null ArgOp in argument loop");
+                AslAbort ();
+            }
+
             ThisNodeBtype = AnGetBtype (ArgOp);
             if (ThisNodeBtype == ACPI_UINT32_MAX)
             {
