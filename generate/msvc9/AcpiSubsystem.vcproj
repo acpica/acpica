@@ -2082,6 +2082,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\disassembler\dmcstyle.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\disassembler\dmdeferred.c"
 					>
 				</File>
