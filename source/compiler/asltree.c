@@ -753,28 +753,75 @@ TrCreateConstantLeafNode (
 
 /*******************************************************************************
  *
- * FUNCTION:    TrCopyNode
+ * FUNCTION:    TrCreateTargetOperand
  *
  * PARAMETERS:  OriginalOp          - Op to be copied
  *
  * RETURN:      Pointer to the new node. Aborts on allocation failure
  *
- * DESCRIPTION: Copy an existing node. Used in C-style expressions where
- *              the target is the same as one of the operands. A new node
- *              must be created from the original so that the parse tree
- *              can be linked properly.
+ * DESCRIPTION: Copy an existing node (and subtree). Used in ASL+ (C-style)
+ *              expressions where the target is the same as one of the
+ *              operands. A new node and subtree must be created from the
+ *              original so that the parse tree can be linked properly.
+ *
+ * NOTE:        This code is specific to target operands that are the last
+ *              operand in an ASL/AML operator. Meaning that the top-level
+ *              parse Op in a possible subtree has a NULL Next pointer.
+ *              This simplifies the recursion.
+ *
+ *              Subtree example:
+ *                  DeRefOf (Local1) += 32
+ *
+ *              This gets converted to:
+ *                  Add (DeRefOf (Local1), 32, DeRefOf (Local1))
+ *
+ *              Each DeRefOf has a single child, Local1. Even more complex
+ *              subtrees can be created via the Index and DeRefOf operators.
  *
  ******************************************************************************/
 
 ACPI_PARSE_OBJECT *
-TrCopyNode (
-    ACPI_PARSE_OBJECT       *OriginalOp)
+TrCreateTargetOperand (
+    ACPI_PARSE_OBJECT       *OriginalOp,
+    ACPI_PARSE_OBJECT       *ParentOp)
 {
     ACPI_PARSE_OBJECT       *Op;
 
 
-    Op = TrAllocateNode (OriginalOp->Asl.ParseOpcode);
-    Op->Asl.Value.String = OriginalOp->Asl.Value.String;
+    if (!OriginalOp)
+    {
+        return (NULL);
+    }
+
+    Op = TrGetNextNode ();
+
+    /* Copy the pertinent values (omit link pointer fields) */
+
+    Op->Asl.Value               = OriginalOp->Asl.Value;
+    Op->Asl.Filename            = OriginalOp->Asl.Filename;
+    Op->Asl.LineNumber          = OriginalOp->Asl.LineNumber;
+    Op->Asl.LogicalLineNumber   = OriginalOp->Asl.LogicalLineNumber;
+    Op->Asl.LogicalByteOffset   = OriginalOp->Asl.LogicalByteOffset;
+    Op->Asl.Column              = OriginalOp->Asl.Column;
+    Op->Asl.Flags               = OriginalOp->Asl.Flags;
+    Op->Asl.CompileFlags        = OriginalOp->Asl.CompileFlags;
+    Op->Asl.AmlOpcode           = OriginalOp->Asl.AmlOpcode;
+    Op->Asl.ParseOpcode         = OriginalOp->Asl.ParseOpcode;
+    Op->Asl.Parent              = ParentOp;
+    UtSetParseOpName (Op);
+
+    /* Copy a possible subtree below this node */
+
+    if (OriginalOp->Asl.Child)
+    {
+        Op->Asl.Child = TrCreateTargetOperand (OriginalOp->Asl.Child, Op);
+    }
+
+    if (OriginalOp->Asl.Next) /* Null for top-level node */
+    {
+        Op->Asl.Next = TrCreateTargetOperand (OriginalOp->Asl.Next, ParentOp);
+    }
+
     return (Op);
 }
 

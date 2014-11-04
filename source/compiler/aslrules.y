@@ -267,43 +267,43 @@ EqualsTerm
 
     | TermArg PARSEOP_EXP_ADD_EQ        {$<n>$ = TrCreateLeafNode (PARSEOP_ADD);}
         TermArg                         {$$ = TrLinkChildren ($<n>3,3,$1,$4,
-                                            TrSetNodeFlags (TrCopyNode ($1), NODE_IS_TARGET));}
+                                            TrSetNodeFlags (TrCreateTargetOperand ($1, NULL), NODE_IS_TARGET));}
 
     | TermArg PARSEOP_EXP_DIV_EQ        {$<n>$ = TrCreateLeafNode (PARSEOP_DIVIDE);}
         TermArg                         {$$ = TrLinkChildren ($<n>3,4,$1,$4,TrCreateLeafNode (PARSEOP_ZERO),
-                                            TrSetNodeFlags (TrCopyNode ($1), NODE_IS_TARGET));}
+                                            TrSetNodeFlags (TrCreateTargetOperand ($1, NULL), NODE_IS_TARGET));}
 
     | TermArg PARSEOP_EXP_MOD_EQ        {$<n>$ = TrCreateLeafNode (PARSEOP_MOD);}
         TermArg                         {$$ = TrLinkChildren ($<n>3,3,$1,$4,
-                                            TrSetNodeFlags (TrCopyNode ($1), NODE_IS_TARGET));}
+                                            TrSetNodeFlags (TrCreateTargetOperand ($1, NULL), NODE_IS_TARGET));}
 
     | TermArg PARSEOP_EXP_MUL_EQ        {$<n>$ = TrCreateLeafNode (PARSEOP_MULTIPLY);}
         TermArg                         {$$ = TrLinkChildren ($<n>3,3,$1,$4,
-                                            TrSetNodeFlags (TrCopyNode ($1), NODE_IS_TARGET));}
+                                            TrSetNodeFlags (TrCreateTargetOperand ($1, NULL), NODE_IS_TARGET));}
 
     | TermArg PARSEOP_EXP_SHL_EQ        {$<n>$ = TrCreateLeafNode (PARSEOP_SHIFTLEFT);}
         TermArg                         {$$ = TrLinkChildren ($<n>3,3,$1,$4,
-                                            TrSetNodeFlags (TrCopyNode ($1), NODE_IS_TARGET));}
+                                            TrSetNodeFlags (TrCreateTargetOperand ($1, NULL), NODE_IS_TARGET));}
 
     | TermArg PARSEOP_EXP_SHR_EQ        {$<n>$ = TrCreateLeafNode (PARSEOP_SHIFTRIGHT);}
         TermArg                         {$$ = TrLinkChildren ($<n>3,3,$1,$4,
-                                            TrSetNodeFlags (TrCopyNode ($1), NODE_IS_TARGET));}
+                                            TrSetNodeFlags (TrCreateTargetOperand ($1, NULL), NODE_IS_TARGET));}
 
     | TermArg PARSEOP_EXP_SUB_EQ        {$<n>$ = TrCreateLeafNode (PARSEOP_SUBTRACT);}
         TermArg                         {$$ = TrLinkChildren ($<n>3,3,$1,$4,
-                                            TrSetNodeFlags (TrCopyNode ($1), NODE_IS_TARGET));}
+                                            TrSetNodeFlags (TrCreateTargetOperand ($1, NULL), NODE_IS_TARGET));}
 
     | TermArg PARSEOP_EXP_AND_EQ        {$<n>$ = TrCreateLeafNode (PARSEOP_AND);}
         TermArg                         {$$ = TrLinkChildren ($<n>3,3,$1,$4,
-                                            TrSetNodeFlags (TrCopyNode ($1), NODE_IS_TARGET));}
+                                            TrSetNodeFlags (TrCreateTargetOperand ($1, NULL), NODE_IS_TARGET));}
 
     | TermArg PARSEOP_EXP_OR_EQ         {$<n>$ = TrCreateLeafNode (PARSEOP_OR);}
         TermArg                         {$$ = TrLinkChildren ($<n>3,3,$1,$4,
-                                            TrSetNodeFlags (TrCopyNode ($1), NODE_IS_TARGET));}
+                                            TrSetNodeFlags (TrCreateTargetOperand ($1, NULL), NODE_IS_TARGET));}
 
     | TermArg PARSEOP_EXP_XOR_EQ        {$<n>$ = TrCreateLeafNode (PARSEOP_XOR);}
         TermArg                         {$$ = TrLinkChildren ($<n>3,3,$1,$4,
-                                            TrSetNodeFlags (TrCopyNode ($1), NODE_IS_TARGET));}
+                                            TrSetNodeFlags (TrCreateTargetOperand ($1, NULL), NODE_IS_TARGET));}
     ;
 
 

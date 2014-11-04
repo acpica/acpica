@@ -782,8 +782,9 @@ TrCreateAssignmentNode (
     ACPI_PARSE_OBJECT       *Source);
 
 ACPI_PARSE_OBJECT *
-TrCopyNode (
-    ACPI_PARSE_OBJECT       *OriginalOp);
+TrCreateTargetOperand (
+    ACPI_PARSE_OBJECT       *OriginalOp,
+    ACPI_PARSE_OBJECT       *ParentOp);
 
 ACPI_PARSE_OBJECT *
 TrCreateValuedLeafNode (
