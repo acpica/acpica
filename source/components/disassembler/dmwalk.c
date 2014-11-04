@@ -374,6 +374,17 @@ AcpiDmBlockType (
 
         return (BLOCK_PAREN);
 
+    case AML_INT_METHODCALL_OP:
+
+        if (Op->Common.Parent &&
+            ((Op->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP) ||
+             (Op->Common.Parent->Common.AmlOpcode == AML_VAR_PACKAGE_OP)))
+        {
+            /* This is a reference to a method, not an invocation */
+
+            return (BLOCK_NONE);
+        }
+
     default:
 
         OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
