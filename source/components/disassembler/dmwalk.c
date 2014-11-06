@@ -561,7 +561,7 @@ AcpiDmDescendingOp (
      * keep track of the current column.
      */
     Info->Count++;
-    if (Info->Count /* +Info->LastLevel */ > 10)
+    if (Info->Count /* +Info->LastLevel */ > 12)
     {
         Info->Count = 0;
         AcpiOsPrintf ("\n");
