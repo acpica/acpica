@@ -330,7 +330,7 @@ AcpiPsGetNextNamepath (
 {
     ACPI_STATUS             Status;
     char                    *Path;
-    ACPI_PARSE_OBJECT       *Op;
+    ACPI_PARSE_OBJECT       *NameOp;
     ACPI_OPERAND_OBJECT     *MethodDesc;
     ACPI_NAMESPACE_NODE     *Node;
     UINT8                   *Start = ParserState->Aml;
@@ -370,26 +370,6 @@ AcpiPsGetNextNamepath (
         PossibleMethodCall &&
         (Node->Type == ACPI_TYPE_METHOD))
     {
-        /* Examine parent opcode if present */
-
-        Op = WalkState->Op->Asl.Parent;
-        if (Op)
-        {
-            /*
-             * These opcodes do not allow a method invocation as an
-             * operand, but they do allow the specification of a
-             * control method name. So, we just return the name.
-             */
-            if ((Op->Asl.AmlOpcode == AML_TYPE_OP) ||
-                (Op->Asl.AmlOpcode == AML_COND_REF_OF_OP) ||
-                (Op->Asl.AmlOpcode == AML_PACKAGE_OP) ||
-                (Op->Asl.AmlOpcode == AML_VAR_PACKAGE_OP))
-            {
-                Arg->Common.Value.Name = Path;
-                return_ACPI_STATUS (AE_OK);
-            }
-        }
-
         if (WalkState->Opcode == AML_UNLOAD_OP)
         {
             /*
@@ -408,8 +388,8 @@ AcpiPsGetNextNamepath (
         ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
             "Control Method - %p Desc %p Path=%p\n", Node, MethodDesc, Path));
 
-        Op = AcpiPsAllocOp (AML_INT_NAMEPATH_OP);
-        if (!Op)
+        NameOp = AcpiPsAllocOp (AML_INT_NAMEPATH_OP);
+        if (!NameOp)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
@@ -417,12 +397,12 @@ AcpiPsGetNextNamepath (
         /* Change Arg into a METHOD CALL and attach name to it */
 
         AcpiPsInitOp (Arg, AML_INT_METHODCALL_OP);
-        Op->Common.Value.Name = Path;
+        NameOp->Common.Value.Name = Path;
 
         /* Point METHODCALL/NAME to the METHOD Node */
 
-        Op->Common.Node = Node;
-        AcpiPsAppendArg (Arg, Op);
+        NameOp->Common.Node = Node;
+        AcpiPsAppendArg (Arg, NameOp);
 
         if (!MethodDesc)
         {
@@ -858,6 +838,7 @@ AcpiPsGetNextArg (
     ACPI_PARSE_OBJECT       *Arg = NULL;
     ACPI_PARSE_OBJECT       *Prev = NULL;
     ACPI_PARSE_OBJECT       *Field;
+    UINT32                  Subop;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -948,12 +929,12 @@ AcpiPsGetNextArg (
     case ARGP_TARGET:
     case ARGP_SUPERNAME:
     case ARGP_SIMPLENAME:
-        /*
-         * This code handles the case where a ZERO_OP opcode has been
-         * inserted as a placeholder by the ASL compiler. (When an
-         * optional target operand has been left unspecified.)
-         */
-        if (AcpiPsPeekOpcode (ParserState) == AML_ZERO_OP)
+
+        Subop = AcpiPsPeekOpcode (ParserState);
+        if (Subop == 0                  ||
+            AcpiPsIsLeadingChar (Subop) ||
+            ACPI_IS_ROOT_PREFIX (Subop) ||
+            ACPI_IS_PARENT_PREFIX (Subop))
         {
             /* NullName or NameString */
 
@@ -963,7 +944,26 @@ AcpiPsGetNextArg (
                 return_ACPI_STATUS (AE_NO_MEMORY);
             }
 
-            Status = AcpiPsGetNextNamepath (WalkState, ParserState, Arg, 0);
+            /* To support SuperName arg of Unload */
+
+            if (WalkState->Opcode == AML_UNLOAD_OP)
+            {
+                Status = AcpiPsGetNextNamepath (WalkState, ParserState, Arg, 1);
+
+                /*
+                 * If the SuperName arg of Unload is a method call,
+                 * we have restored the AML pointer, just free this Arg
+                 */
+                if (Arg->Common.AmlOpcode == AML_INT_METHODCALL_OP)
+                {
+                    AcpiPsFreeOp (Arg);
+                    Arg = NULL;
+                }
+            }
+            else
+            {
+                Status = AcpiPsGetNextNamepath (WalkState, ParserState, Arg, 0);
+            }
         }
         else
         {
