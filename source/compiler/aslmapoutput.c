@@ -188,7 +188,7 @@ const char                  *PolarityDecode[] =
  * RETURN:      None
  *
  * DESCRIPTION: External interface.
- *              Create and open the mapfile and emit all of the collected
+ *              Map file has already been opened. Emit all of the collected
  *              hardware mapping information. Includes: GPIO information,
  *              Serial information, and a dump of the entire ACPI device tree.
  *
@@ -198,8 +198,6 @@ void
 MpEmitMappingInfo (
     void)
 {
-    char                    *NewFilename;
-
 
     /* Mapfile option enabled? */
 
@@ -207,22 +205,6 @@ MpEmitMappingInfo (
     {
         return;
     }
-
-    /* Create/Open a map file */
-
-    NewFilename = FlGenerateFilename (Gbl_OutputFilenamePrefix,
-        FILE_SUFFIX_MAP);
-    if (!NewFilename)
-    {
-        AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME,
-            0, 0, 0, 0, NULL, NULL);
-    }
-
-    /* Open the hex file, text mode (closed at compiler exit) */
-
-    FlOpenFile (ASL_FILE_MAP_OUTPUT, NewFilename, "w+t");
-    AslCompilerSignon (ASL_FILE_MAP_OUTPUT);
-    AslCompilerFileHeader (ASL_FILE_MAP_OUTPUT);
 
     if (!Gbl_GpioList)
     {
