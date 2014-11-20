@@ -187,60 +187,6 @@ UnlockAndExit:
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiEvValidGpeEvent
- *
- * PARAMETERS:  GpeEventInfo                - Info for this GPE
- *
- * RETURN:      TRUE if the GpeEvent is valid
- *
- * DESCRIPTION: Validate a GPE event. DO NOT CALL FROM INTERRUPT LEVEL.
- *              Should be called only when the GPE lists are semaphore locked
- *              and not subject to change.
- *
- ******************************************************************************/
-
-BOOLEAN
-AcpiEvValidGpeEvent (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo)
-{
-    ACPI_GPE_XRUPT_INFO     *GpeXruptBlock;
-    ACPI_GPE_BLOCK_INFO     *GpeBlock;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /* No need for spin lock since we are not changing any list elements */
-
-    /* Walk the GPE interrupt levels */
-
-    GpeXruptBlock = AcpiGbl_GpeXruptListHead;
-    while (GpeXruptBlock)
-    {
-        GpeBlock = GpeXruptBlock->GpeBlockListHead;
-
-        /* Walk the GPE blocks on this interrupt level */
-
-        while (GpeBlock)
-        {
-            if ((&GpeBlock->EventInfo[0] <= GpeEventInfo) &&
-                (&GpeBlock->EventInfo[GpeBlock->GpeCount] > GpeEventInfo))
-            {
-                return (TRUE);
-            }
-
-            GpeBlock = GpeBlock->Next;
-        }
-
-        GpeXruptBlock = GpeXruptBlock->Next;
-    }
-
-    return (FALSE);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiEvGetGpeDevice
  *
  * PARAMETERS:  GPE_WALK_CALLBACK

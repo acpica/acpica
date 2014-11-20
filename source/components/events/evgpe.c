@@ -588,7 +588,6 @@ AcpiEvAsynchExecuteGpeMethod (
 {
     ACPI_GPE_EVENT_INFO     *GpeEventInfo = Context;
     ACPI_STATUS             Status;
-    ACPI_GPE_EVENT_INFO     *LocalGpeEventInfo;
     ACPI_EVALUATE_INFO      *Info;
     ACPI_GPE_NOTIFY_INFO    *Notify;
 
@@ -596,49 +595,9 @@ AcpiEvAsynchExecuteGpeMethod (
     ACPI_FUNCTION_TRACE (EvAsynchExecuteGpeMethod);
 
 
-    /* Allocate a local GPE block */
-
-    LocalGpeEventInfo = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_GPE_EVENT_INFO));
-    if (!LocalGpeEventInfo)
-    {
-        ACPI_EXCEPTION ((AE_INFO, AE_NO_MEMORY,
-            "while handling a GPE"));
-        return_VOID;
-    }
-
-    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_FREE (LocalGpeEventInfo);
-        return_VOID;
-    }
-
-    /* Must revalidate the GpeNumber/GpeBlock */
-
-    if (!AcpiEvValidGpeEvent (GpeEventInfo))
-    {
-        Status = AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
-        ACPI_FREE (LocalGpeEventInfo);
-        return_VOID;
-    }
-
-    /*
-     * Take a snapshot of the GPE info for this level - we copy the info to
-     * prevent a race condition with RemoveHandler/RemoveBlock.
-     */
-    ACPI_MEMCPY (LocalGpeEventInfo, GpeEventInfo,
-        sizeof (ACPI_GPE_EVENT_INFO));
-
-    Status = AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_FREE (LocalGpeEventInfo);
-        return_VOID;
-    }
-
     /* Do the correct dispatch - normal method or implicit notify */
 
-    switch (LocalGpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK)
+    switch (GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK)
     {
     case ACPI_GPE_DISPATCH_NOTIFY:
         /*
@@ -652,7 +611,7 @@ AcpiEvAsynchExecuteGpeMethod (
          * June 2012: Expand implicit notify mechanism to support
          * notifies on multiple device objects.
          */
-        Notify = LocalGpeEventInfo->Dispatch.NotifyList;
+        Notify = GpeEventInfo->Dispatch.NotifyList;
         while (ACPI_SUCCESS (Status) && Notify)
         {
             Status = AcpiEvQueueNotifyRequest (Notify->DeviceNode,
@@ -677,7 +636,7 @@ AcpiEvAsynchExecuteGpeMethod (
              * Invoke the GPE Method (_Lxx, _Exx) i.e., evaluate the
              * _Lxx/_Exx control method that corresponds to this GPE
              */
-            Info->PrefixNode = LocalGpeEventInfo->Dispatch.MethodNode;
+            Info->PrefixNode = GpeEventInfo->Dispatch.MethodNode;
             Info->Flags = ACPI_IGNORE_RETURN_VALUE;
 
             Status = AcpiNsEvaluate (Info);
@@ -688,23 +647,26 @@ AcpiEvAsynchExecuteGpeMethod (
         {
             ACPI_EXCEPTION ((AE_INFO, Status,
                 "while evaluating GPE method [%4.4s]",
-                AcpiUtGetNodeName (LocalGpeEventInfo->Dispatch.MethodNode)));
+                AcpiUtGetNodeName (GpeEventInfo->Dispatch.MethodNode)));
         }
         break;
 
     default:
 
-        return_VOID; /* Should never happen */
+        goto ErrorExit; /* Should never happen */
     }
 
     /* Defer enabling of GPE until all notify handlers are done */
 
     Status = AcpiOsExecute (OSL_NOTIFY_HANDLER,
-                AcpiEvAsynchEnableGpe, LocalGpeEventInfo);
-    if (ACPI_FAILURE (Status))
+                AcpiEvAsynchEnableGpe, GpeEventInfo);
+    if (ACPI_SUCCESS (Status))
     {
-        ACPI_FREE (LocalGpeEventInfo);
+        return_VOID;
     }
+
+ErrorExit:
+    AcpiEvAsynchEnableGpe (GpeEventInfo);
     return_VOID;
 }
 
@@ -735,7 +697,6 @@ AcpiEvAsynchEnableGpe (
     (void) AcpiEvFinishGpe (GpeEventInfo);
     AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
 
-    ACPI_FREE (GpeEventInfo);
     return;
 }
 
