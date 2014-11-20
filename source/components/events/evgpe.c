@@ -740,9 +740,12 @@ AcpiEvAsynchEnableGpe (
     void                    *Context)
 {
     ACPI_GPE_EVENT_INFO     *GpeEventInfo = Context;
+    ACPI_CPU_FLAGS          Flags;
 
 
+    Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
     (void) AcpiEvFinishGpe (GpeEventInfo);
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
 
     ACPI_FREE (GpeEventInfo);
     return;
