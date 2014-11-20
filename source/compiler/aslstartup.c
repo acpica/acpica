@@ -160,6 +160,7 @@ AslInitializeGlobals (
 
     /* Init compiler globals */
 
+    Gbl_SyntaxError = 0;
     Gbl_CurrentColumn = 0;
     Gbl_CurrentLineNumber = 1;
     Gbl_LogicalLineNumber = 1;

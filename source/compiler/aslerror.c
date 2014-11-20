@@ -990,6 +990,8 @@ AslCompilererror (
     const char              *CompilerMessage)
 {
 
+    Gbl_SyntaxError++;
+
     AslCommonError (ASL_ERROR, ASL_MSG_SYNTAX, Gbl_CurrentLineNumber,
         Gbl_LogicalLineNumber, Gbl_CurrentLineOffset,
         Gbl_CurrentColumn, Gbl_Files[ASL_FILE_INPUT].Filename,
