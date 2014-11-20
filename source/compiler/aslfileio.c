@@ -140,8 +140,8 @@ FlFileError (
     UINT8                   ErrorId)
 {
 
-    sprintf (MsgBuffer, "\"%s\" (%s)", Gbl_Files[FileId].Filename,
-        strerror (errno));
+    sprintf (MsgBuffer, "\"%s\" (%s) - %s", Gbl_Files[FileId].Filename,
+        Gbl_Files[FileId].Description, strerror (errno));
     AslCommonError (ASL_ERROR, ErrorId, 0, 0, 0, 0, NULL, MsgBuffer);
 }
 
