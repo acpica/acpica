@@ -170,6 +170,9 @@ FlOpenFile (
     FILE                    *File;
 
 
+    Gbl_Files[FileId].Filename = Filename;
+    Gbl_Files[FileId].Handle = NULL;
+
     File = fopen (Filename, Mode);
     if (!File)
     {
@@ -177,8 +180,7 @@ FlOpenFile (
         AslAbort ();
     }
 
-    Gbl_Files[FileId].Filename = Filename;
-    Gbl_Files[FileId].Handle   = File;
+    Gbl_Files[FileId].Handle = File;
 }
 
 
