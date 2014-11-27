@@ -1094,6 +1094,7 @@ AcpiRemoveGpeHandler (
     /* Remove the handler */
 
     Handler = GpeEventInfo->Dispatch.Handler;
+    GpeEventInfo->Dispatch.Handler = NULL;
 
     /* Restore Method node (if any), set dispatch flags */
 
