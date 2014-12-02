@@ -225,7 +225,7 @@ AcpiEvEnableGpe (
 
     /* Enable the requested GPE */
 
-    Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_ENABLE);
+    Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_ENABLE_SAVE);
     return_ACPI_STATUS (Status);
 }
 
@@ -315,7 +315,7 @@ AcpiEvRemoveGpeReference (
         Status = AcpiEvUpdateGpeEnableMask (GpeEventInfo);
         if (ACPI_SUCCESS (Status))
         {
-            Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_DISABLE);
+            Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_DISABLE_SAVE);
         }
 
         if (ACPI_FAILURE (Status))
@@ -785,7 +785,7 @@ AcpiEvFinishGpe (
 
     /*
      * Enable this GPE, conditionally. This means that the GPE will
-     * only be physically enabled if the EnableForRun bit is set
+     * only be physically enabled if the EnableMask bit is set
      * in the EventInfo.
      */
     (void) AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_CONDITIONAL_ENABLE);
