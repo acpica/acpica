@@ -443,7 +443,10 @@ AcpiEvGpeDetect (
 {
     ACPI_STATUS             Status;
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
+    ACPI_NAMESPACE_NODE     *GpeDevice;
     ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo;
+    UINT32                  GpeNumber;
     UINT32                  IntStatus = ACPI_INTERRUPT_NOT_HANDLED;
     UINT8                   EnabledStatusByte;
     UINT32                  StatusReg;
@@ -474,6 +477,8 @@ AcpiEvGpeDetect (
     GpeBlock = GpeXruptList->GpeBlockListHead;
     while (GpeBlock)
     {
+        GpeDevice = GpeBlock->Node;
+
         /*
          * Read all of the 8-bit GPE status and enable registers in this GPE
          * block, saving all of them. Find all currently active GP events.
@@ -542,16 +547,28 @@ AcpiEvGpeDetect (
             {
                 /* Examine one GPE bit */
 
+                GpeEventInfo = &GpeBlock->EventInfo[((ACPI_SIZE) i *
+                    ACPI_GPE_REGISTER_WIDTH) + j];
+                GpeNumber = j + GpeRegisterInfo->BaseGpeNumber;
+
                 if (EnabledStatusByte & (1 << j))
                 {
+                    /* Invoke global event handler if present */
+
+                    AcpiGpeCount++;
+                    if (AcpiGbl_GlobalEventHandler)
+                    {
+                        AcpiGbl_GlobalEventHandler (ACPI_EVENT_TYPE_GPE,
+                            GpeDevice, GpeNumber,
+                            AcpiGbl_GlobalEventHandlerContext);
+                    }
+
                     /*
                      * Found an active GPE. Dispatch the event to a handler
                      * or method.
                      */
-                    IntStatus |= AcpiEvGpeDispatch (GpeBlock->Node,
-                        &GpeBlock->EventInfo[((ACPI_SIZE) i *
-                            ACPI_GPE_REGISTER_WIDTH) + j],
-                        j + GpeRegisterInfo->BaseGpeNumber);
+                    IntStatus |= AcpiEvGpeDispatch (GpeDevice,
+                        GpeEventInfo, GpeNumber);
                 }
             }
         }
@@ -774,15 +791,6 @@ AcpiEvGpeDispatch (
 
     ACPI_FUNCTION_TRACE (EvGpeDispatch);
 
-
-    /* Invoke global event handler if present */
-
-    AcpiGpeCount++;
-    if (AcpiGbl_GlobalEventHandler)
-    {
-        AcpiGbl_GlobalEventHandler (ACPI_EVENT_TYPE_GPE, GpeDevice,
-             GpeNumber, AcpiGbl_GlobalEventHandlerContext);
-    }
 
     /*
      * Always disable the GPE so that it does not keep firing before
