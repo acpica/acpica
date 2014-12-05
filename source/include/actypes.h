@@ -792,40 +792,49 @@ typedef UINT32                          ACPI_EVENT_TYPE;
  * The encoding of ACPI_EVENT_STATUS is illustrated below.
  * Note that a set bit (1) indicates the property is TRUE
  * (e.g. if bit 0 is set then the event is enabled).
- * +-------------+-+-+-+-+
- * |   Bits 31:4 |3|2|1|0|
- * +-------------+-+-+-+-+
- *          |     | | | |
- *          |     | | | +- Enabled?
- *          |     | | +--- Enabled for wake?
- *          |     | +----- Set?
- *          |     +------- Has a handler?
- *          +------------- <Reserved>
+ * +-------------+-+-+-+-+-+-+
+ * |   Bits 31:6 |5|4|3|2|1|0|
+ * +-------------+-+-+-+-+-+-+
+ *          |     | | | | | |
+ *          |     | | | | | +- Enabled?
+ *          |     | | | | +--- Enabled for wake?
+ *          |     | | | +----- Status bit set?
+ *          |     | | +------- Enable bit set?
+ *          |     | +--------- Has a handler?
+ *          |     +----------- Enabling/disabling forced?
+ *          +----------------- <Reserved>
  */
 typedef UINT32                          ACPI_EVENT_STATUS;
 
 #define ACPI_EVENT_FLAG_DISABLED        (ACPI_EVENT_STATUS) 0x00
 #define ACPI_EVENT_FLAG_ENABLED         (ACPI_EVENT_STATUS) 0x01
 #define ACPI_EVENT_FLAG_WAKE_ENABLED    (ACPI_EVENT_STATUS) 0x02
-#define ACPI_EVENT_FLAG_SET             (ACPI_EVENT_STATUS) 0x04
-#define ACPI_EVENT_FLAG_HAS_HANDLER     (ACPI_EVENT_STATUS) 0x08
+#define ACPI_EVENT_FLAG_STATUS_SET      (ACPI_EVENT_STATUS) 0x04
+#define ACPI_EVENT_FLAG_ENABLE_SET      (ACPI_EVENT_STATUS) 0x08
+#define ACPI_EVENT_FLAG_HAS_HANDLER     (ACPI_EVENT_STATUS) 0x10
+#define ACPI_EVENT_FLAG_FORCE           (ACPI_EVENT_STATUS) 0x20
+#define ACPI_EVENT_FLAG_SET             ACPI_EVENT_FLAG_STATUS_SET
 
 /* Actions for AcpiSetGpe, AcpiGpeWakeup, AcpiHwLowSetGpe */
 
 #define ACPI_GPE_ENABLE                 0
 #define ACPI_GPE_DISABLE                1
 #define ACPI_GPE_CONDITIONAL_ENABLE     2
+#define ACPI_GPE_RESET_FORCE_FLAGS      3
 
 /*
  * GPE info flags - Per GPE
- * +-------+-+-+---+
- * |  7:4  |3|2|1:0|
- * +-------+-+-+---+
- *     |    | |  |
- *     |    | |  +-- Type of dispatch:to method, handler, notify, or none
- *     |    | +----- Interrupt type: edge or level triggered
- *     |    +------- Is a Wake GPE
- *     +------------ <Reserved>
+ * +-+-+-+-+-+-+---+
+ * |7|6|5|4|3|2|1:0|
+ * +-+-+-+-+-+-+---+
+ *  | | | | | |  |
+ *  | | | | | |  +-- Type of dispatch:to method, handler, notify, or none
+ *  | | | | | +----- Interrupt type: edge or level triggered
+ *  | | | | +------- Allow driver to full control GPE handling
+ *  | | | +--------- Is a Wake GPE
+ *  | | +----------- Force GPE enabling
+ *  | +------------- Force GPE disabling
+ *  +--------------- <Reserved>
  */
 #define ACPI_GPE_DISPATCH_NONE          (UINT8) 0x00
 #define ACPI_GPE_DISPATCH_METHOD        (UINT8) 0x01
@@ -833,11 +842,25 @@ typedef UINT32                          ACPI_EVENT_STATUS;
 #define ACPI_GPE_DISPATCH_NOTIFY        (UINT8) 0x03
 #define ACPI_GPE_DISPATCH_MASK          (UINT8) 0x03
 
+/*
+ * Flags used to install a GPE handler
+ */
 #define ACPI_GPE_LEVEL_TRIGGERED        (UINT8) 0x04
 #define ACPI_GPE_EDGE_TRIGGERED         (UINT8) 0x00
 #define ACPI_GPE_XRUPT_TYPE_MASK        (UINT8) 0x04
+#define ACPI_GPE_RAW_HANDLER            (UINT8) 0x08
 
-#define ACPI_GPE_CAN_WAKE               (UINT8) 0x08
+/*
+ * Flag set by wakeup GPE setup APIs
+ */
+#define ACPI_GPE_CAN_WAKE               (UINT8) 0x10
+
+/*
+ * Flags used by GPE management API
+ */
+#define ACPI_GPE_FORCE_ENABLE           (UINT8) 0x20
+#define ACPI_GPE_FORCE_DISABLE          (UINT8) 0x40
+#define ACPI_GPE_FORCE_FLAG_MASK        (UINT8) 0x60
 
 /*
  * Flags for GPE and Lock interfaces

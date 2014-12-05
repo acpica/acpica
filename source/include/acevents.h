@@ -180,6 +180,10 @@ AcpiEvGpeDetect (
     ACPI_GPE_XRUPT_INFO     *GpeXruptList);
 
 ACPI_STATUS
+AcpiEvClearGpeStatus (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
+
+ACPI_STATUS
 AcpiEvUpdateGpeEnableMask (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
@@ -188,8 +192,14 @@ AcpiEvEnableGpe (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 ACPI_STATUS
+AcpiEvForceGpe (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    UINT8                   Action);
+
+ACPI_STATUS
 AcpiEvAddGpeReference (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    BOOLEAN                 ClearStaleEvents);
 
 ACPI_STATUS
 AcpiEvRemoveGpeReference (

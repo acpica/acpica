@@ -229,9 +229,26 @@ AcpiHwLowSetGpe (
         return (AE_BAD_PARAMETER);
     }
 
-    /* Write the updated enable mask */
+    /* Check if the system manager has forced a GPE enabling/disabling */
 
-    Status = AcpiHwWrite (EnableMask, &GpeRegisterInfo->EnableAddress);
+    if (GpeEventInfo->Flags & ACPI_GPE_FORCE_FLAG_MASK)
+    {
+        if (EnableMask & RegisterBit)
+        {
+            GpeEventInfo->ExpectEnabled = TRUE;
+        }
+        else
+        {
+            GpeEventInfo->ExpectEnabled = FALSE;
+        }
+        return (AE_OK);
+    }
+    else
+    {
+        /* Write the updated enable mask */
+
+        Status = AcpiHwWrite (EnableMask, &GpeRegisterInfo->EnableAddress);
+    }
     return (Status);
 }
 
@@ -321,6 +338,13 @@ AcpiHwGetGpeStatus (
         LocalEventStatus |= ACPI_EVENT_FLAG_HAS_HANDLER;
     }
 
+    /* GPE currently forced? (enabled/disabled by the system manager?) */
+
+    if (GpeEventInfo->Flags & ACPI_GPE_FORCE_FLAG_MASK)
+    {
+        LocalEventStatus |= ACPI_EVENT_FLAG_FORCE;
+    }
+
     /* Get the info block for the entire GPE register */
 
     GpeRegisterInfo = GpeEventInfo->RegisterInfo;
@@ -343,6 +367,19 @@ AcpiHwGetGpeStatus (
         LocalEventStatus |= ACPI_EVENT_FLAG_WAKE_ENABLED;
     }
 
+    /* GPE currently enabled (enable bit == 1)? */
+
+    Status = AcpiHwRead (&InByte, &GpeRegisterInfo->EnableAddress);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    if (RegisterBit & InByte)
+    {
+        LocalEventStatus |= ACPI_EVENT_FLAG_ENABLE_SET;
+    }
+
     /* GPE currently active (status bit == 1)? */
 
     Status = AcpiHwRead (&InByte, &GpeRegisterInfo->StatusAddress);
@@ -353,7 +390,7 @@ AcpiHwGetGpeStatus (
 
     if (RegisterBit & InByte)
     {
-        LocalEventStatus |= ACPI_EVENT_FLAG_SET;
+        LocalEventStatus |= ACPI_EVENT_FLAG_STATUS_SET;
     }
 
     /* Set return value */

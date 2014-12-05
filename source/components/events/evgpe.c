@@ -136,6 +136,46 @@ AcpiEvAsynchEnableGpe (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiEvClearGpeStatus
+ *
+ * PARAMETERS:  GpeEventInfo            - GPE to update
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Update GPE register status mask to clear the saved raw GPE
+ *              status indication.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEvClearGpeStatus (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo)
+{
+    ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
+    UINT32                  RegisterBit;
+
+
+    ACPI_FUNCTION_TRACE (EvClearGpeStatus);
+
+
+    GpeRegisterInfo = GpeEventInfo->RegisterInfo;
+    if (!GpeRegisterInfo)
+    {
+        return_ACPI_STATUS (AE_NOT_EXIST);
+    }
+
+    RegisterBit = AcpiHwGetGpeRegisterBit (GpeEventInfo);
+
+    /* Clear the status bit */
+
+    ACPI_CLEAR_BIT (GpeRegisterInfo->RawStatusByte, RegisterBit);
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiEvUpdateGpeEnableMask
  *
  * PARAMETERS:  GpeEventInfo            - GPE to update
@@ -203,18 +243,6 @@ AcpiEvEnableGpe (
     ACPI_FUNCTION_TRACE (EvEnableGpe);
 
 
-    /*
-     * We will only allow a GPE to be enabled if it has either an associated
-     * method (_Lxx/_Exx) or a handler, or is using the implicit notify
-     * feature. Otherwise, the GPE will be immediately disabled by
-     * AcpiEvGpeDispatch the first time it fires.
-     */
-    if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
-        ACPI_GPE_DISPATCH_NONE)
-    {
-        return_ACPI_STATUS (AE_NO_HANDLER);
-    }
-
     /* Clear the GPE (of stale events) */
 
     Status = AcpiHwClearGpe (GpeEventInfo);
@@ -232,9 +260,113 @@ AcpiEvEnableGpe (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiEvForceGpe
+ *
+ * PARAMETERS:  GpeEventInfo            - GPE to force enabling/disabling
+ *              Action                  - ACPI_GPE_ENABLE, ACPI_GPE_DISABLE or
+ *                                        ACPI_GPE_RESET_FORCE_FLAGS
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Unconditionally enable or disable an individual GPE.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEvForceGpe (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    UINT8                   Action)
+{
+    ACPI_STATUS             Status;
+    ACPI_EVENT_STATUS       EventStatus;
+
+
+    ACPI_FUNCTION_TRACE (EvForceGpe);
+
+
+    /* Do not allow unless the GPE can be dispatched */
+
+    if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
+        ACPI_GPE_DISPATCH_NONE)
+    {
+        return_ACPI_STATUS (AE_NO_HANDLER);
+    }
+
+    /* Perform the action */
+
+    switch (Action)
+    {
+    case ACPI_GPE_ENABLE:
+    case ACPI_GPE_DISABLE:
+
+        if (!(GpeEventInfo->Flags & ACPI_GPE_FORCE_FLAG_MASK))
+        {
+            Status = AcpiHwGetGpeStatus (GpeEventInfo, &EventStatus);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+            if (EventStatus & ACPI_EVENT_FLAG_ENABLE_SET)
+            {
+                GpeEventInfo->ExpectEnabled = TRUE;
+            }
+            else
+            {
+                GpeEventInfo->ExpectEnabled = FALSE;
+            }
+        }
+
+        /* Reset flags so that AcpiHwLowSetGpe() can take effective */
+
+        GpeEventInfo->Flags &= ~ACPI_GPE_FORCE_FLAG_MASK;
+        if (Action == ACPI_GPE_ENABLE)
+        {
+            (void) AcpiEvEnableGpe (GpeEventInfo);
+            GpeEventInfo->Flags |= ACPI_GPE_FORCE_ENABLE;
+        }
+        else
+        {
+            (void) AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_DISABLE);
+            GpeEventInfo->Flags |= ACPI_GPE_FORCE_DISABLE;
+        }
+        break;
+
+    case ACPI_GPE_RESET_FORCE_FLAGS:
+
+        if (!(GpeEventInfo->Flags & ACPI_GPE_FORCE_FLAG_MASK))
+        {
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+        }
+
+        /* Reset flags so that AcpiHwLowSetGpe() can take effective */
+
+        GpeEventInfo->Flags &= ~ACPI_GPE_FORCE_FLAG_MASK;
+        if (GpeEventInfo->ExpectEnabled)
+        {
+            (void) AcpiEvEnableGpe (GpeEventInfo);
+        }
+        else
+        {
+            (void) AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_DISABLE);
+        }
+        GpeEventInfo->ExpectEnabled = FALSE;
+        break;
+
+    default:
+
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiEvAddGpeReference
  *
  * PARAMETERS:  GpeEventInfo            - Add a reference to this GPE
+ *              ClearStaleEvents        - Whether stale events should be cleared
  *
  * RETURN:      Status
  *
@@ -245,7 +377,8 @@ AcpiEvEnableGpe (
 
 ACPI_STATUS
 AcpiEvAddGpeReference (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo)
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    BOOLEAN                 ClearStaleEvents)
 {
     ACPI_STATUS             Status = AE_OK;
 
@@ -266,7 +399,14 @@ AcpiEvAddGpeReference (
         Status = AcpiEvUpdateGpeEnableMask (GpeEventInfo);
         if (ACPI_SUCCESS (Status))
         {
-            Status = AcpiEvEnableGpe (GpeEventInfo);
+            if (ClearStaleEvents)
+            {
+                Status = AcpiEvEnableGpe (GpeEventInfo);
+            }
+            else
+            {
+                Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_ENABLE);
+            }
         }
 
         if (ACPI_FAILURE (Status))
@@ -456,6 +596,10 @@ AcpiEvGpeDetect (
     ACPI_STATUS             Status;
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
     ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo;
+    ACPI_GPE_HANDLER_INFO   *GpeHandlerInfo;
+    ACPI_NAMESPACE_NODE     *GpeDevice;
+    UINT32                  GpeNumber;
     UINT32                  IntStatus = ACPI_INTERRUPT_NOT_HANDLED;
     UINT8                   EnabledStatusByte;
     UINT32                  StatusReg;
@@ -552,18 +696,110 @@ AcpiEvGpeDetect (
 
             for (j = 0; j < ACPI_GPE_REGISTER_WIDTH; j++)
             {
+                GpeEventInfo = &GpeBlock->EventInfo[((ACPI_SIZE) i *
+                    ACPI_GPE_REGISTER_WIDTH) + j];
+
                 /* Examine one GPE bit */
 
                 if (EnabledStatusByte & (1 << j))
                 {
+                    /* Found an active GPE */
+
+                    AcpiGpeCount++;
+
+                    /* Invoke global event handler if present */
+
+                    if (AcpiGbl_GlobalEventHandler)
+                    {
+                        AcpiGbl_GlobalEventHandler (ACPI_EVENT_TYPE_GPE,
+                            GpeBlock->Node,
+                            j+ GpeRegisterInfo->BaseGpeNumber,
+                            AcpiGbl_GlobalEventHandlerContext);
+                    }
+
+                    if (GpeEventInfo->Flags & ACPI_GPE_RAW_HANDLER)
+                    {
+                        /* Prepare handling for a raw handler */
+
+                        GpeRegisterInfo->RawStatusByte |= (1 << j);
+                    }
+                    else
+                    {
+                        /*
+                         * Dispatch the event to a standard handler or
+                         * method.
+                         */
+                        IntStatus |= AcpiEvGpeDispatch (GpeBlock->Node,
+                            GpeEventInfo,
+                            j + GpeRegisterInfo->BaseGpeNumber);
+                    }
+                }
+            }
+        }
+
+        GpeBlock = GpeBlock->Next;
+    }
+
+    /* Examine all GPE blocks attached to this interrupt level */
+
+    GpeBlock = GpeXruptList->GpeBlockListHead;
+    while (GpeBlock)
+    {
+        /* Find all currently active events for raw GPE handlers */
+
+        for (i = 0; i < GpeBlock->RegisterCount; i++)
+        {
+            /* Get the next saved status/enable pair */
+
+            GpeRegisterInfo = &GpeBlock->RegisterInfo[i];
+
+            if (GpeRegisterInfo->RawStatusByte)
+            {
+                for (j = 0; j < ACPI_GPE_REGISTER_WIDTH; j++)
+                {
+                    GpeEventInfo = &GpeBlock->EventInfo[((ACPI_SIZE) i *
+                        ACPI_GPE_REGISTER_WIDTH) + j];
+
                     /*
-                     * Found an active GPE. Dispatch the event to a handler
-                     * or method.
+                     * Examine one GPE bit for a raw handler. And if an
+                     * active GPE is found, dispatch the event to a raw
+                     * handler. The raw handler is invoked without GPE lock
+                     * held because:
+                     * 1. Whether the GPE should be
+                     *    enabled/disabled/cleared is actually determined
+                     *    by the GPE driver, thus the GPE operations should
+                     *    be performed with the GPE driver's specific lock
+                     *    held.
+                     * 2. Since the GPE APIs need to be invoked with the
+                     *    GPE driver's specific lock held, we need to
+                     *    unlock here to avoid recurisive locking or
+                     *    reversed ordered locking.
                      */
-                    IntStatus |= AcpiEvGpeDispatch (GpeBlock->Node,
-                        &GpeBlock->EventInfo[((ACPI_SIZE) i *
-                            ACPI_GPE_REGISTER_WIDTH) + j],
-                        j + GpeRegisterInfo->BaseGpeNumber);
+                    if (GpeRegisterInfo->RawStatusByte & (1 << j))
+                    {
+                        /* Clear the raw status bit */
+
+                        GpeRegisterInfo->RawStatusByte &= ~(1 << j);
+
+                        GpeDevice = GpeBlock->Node;
+                        GpeHandlerInfo = GpeEventInfo->Dispatch.Handler;
+                        GpeNumber = j + GpeRegisterInfo->BaseGpeNumber;
+
+                        /*
+                         * There is no protection around the namespace node
+                         * and the GPE handler to ensure a safe destruction
+                         * because:
+                         * 1. The namespace node is expected to always
+                         *    exist after loading a table.
+                         * 2. The GPE handler is expected to be flushed by
+                         *    AcpiOsWaitEventsComplete() before the
+                         *    destruction.
+                         */
+                        AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
+                        IntStatus |= GpeHandlerInfo->Address (
+                            GpeDevice, GpeNumber, GpeHandlerInfo->Context);
+                        Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
+                    }
                 }
             }
         }
@@ -822,15 +1058,6 @@ AcpiEvGpeDispatch (
 
     ACPI_FUNCTION_TRACE (EvGpeDispatch);
 
-
-    /* Invoke global event handler if present */
-
-    AcpiGpeCount++;
-    if (AcpiGbl_GlobalEventHandler)
-    {
-        AcpiGbl_GlobalEventHandler (ACPI_EVENT_TYPE_GPE, GpeDevice,
-             GpeNumber, AcpiGbl_GlobalEventHandlerContext);
-    }
 
     /*
      * Always disable the GPE so that it does not keep firing before

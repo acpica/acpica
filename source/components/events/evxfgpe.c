@@ -222,7 +222,7 @@ AcpiEnableGpe (
         if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) !=
             ACPI_GPE_DISPATCH_NONE)
         {
-            Status = AcpiEvAddGpeReference (GpeEventInfo);
+            Status = AcpiEvAddGpeReference (GpeEventInfo, TRUE);
         }
         else
         {
@@ -235,6 +235,60 @@ AcpiEnableGpe (
 }
 
 ACPI_EXPORT_SYMBOL (AcpiEnableGpe)
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEnableGpeRaw
+ *
+ * PARAMETERS:  GpeDevice           - Parent GPE Device. NULL for GPE0/GPE1
+ *              GpeNumber           - GPE level within the GPE block
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Add a reference to a GPE. On the first reference, the GPE is
+ *              hardware-enabled.
+ *              The AcpiEnableGpe() is used for the first-time GPE enabling
+ *              where the stale events are discarded. While this API is meant
+ *              to be used by the "raw GPE handler mode" scenarios where the
+ *              events should be cleared by the GPE drivers.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEnableGpeRaw (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber)
+{
+    ACPI_STATUS             Status = AE_BAD_PARAMETER;
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo;
+    ACPI_CPU_FLAGS          Flags;
+
+
+    ACPI_FUNCTION_TRACE (AcpiEnableGpeRaw);
+
+
+    Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
+
+    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeDevice, GpeNumber);
+    if (GpeEventInfo)
+    {
+        if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) !=
+            ACPI_GPE_DISPATCH_NONE)
+        {
+            Status = AcpiEvAddGpeReference (GpeEventInfo, FALSE);
+        }
+        else
+        {
+            Status = AE_NO_HANDLER;
+        }
+    }
+
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiEnableGpeRaw)
 
 
 /*******************************************************************************
@@ -293,12 +347,21 @@ ACPI_EXPORT_SYMBOL (AcpiDisableGpe)
  * RETURN:      Status
  *
  * DESCRIPTION: Enable or disable an individual GPE. This function bypasses
- *              the reference count mechanism used in the AcpiEnableGpe and
- *              AcpiDisableGpe interfaces -- and should be used with care.
+ *              the reference count mechanism used in the AcpiEnableGpe(),
+ *              AcpiEnableGpeRaw() and AcpiDisableGpe() interfaces.
+ *              This API is typically used by the GPE raw handler mode driver
+ *              to switch between the polling mode and the interrupt mode after
+ *              the driver has enabled the GPE.
+ *              The APIs should be invoked in this order:
+ *               AcpiEnableGpeRaw()           <- Ensure the reference count > 0
+ *               AcpiSetGpe(ACPI_GPE_DISABLE) <- Enter polling mode
+ *               AcpiSetGpe(ACPI_GPE_ENABLE)  <- Leave polling mode
+ *               AcpiDisableGpe()             <- Decrease the reference count
  *
- * Note: Typically used to disable a runtime GPE for short period of time,
- * then re-enable it, without disturbing the existing reference counts. This
- * is useful, for example, in the Embedded Controller (EC) driver.
+ * Note: If a GPE is shared by 2 silicon components, then both the drivers
+ *       should support GPE polling mode or disabling the GPE for long period
+ *       for one driver may break the other. So use it with care since all
+ *       firmware _Lxx/_Exx handlers currently rely on the GPE interrupt mode.
  *
  ******************************************************************************/
 
@@ -333,7 +396,7 @@ AcpiSetGpe (
     {
     case ACPI_GPE_ENABLE:
 
-        Status = AcpiEvEnableGpe (GpeEventInfo);
+        Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_ENABLE);
         break;
 
     case ACPI_GPE_DISABLE:
@@ -353,6 +416,62 @@ UnlockAndExit:
 }
 
 ACPI_EXPORT_SYMBOL (AcpiSetGpe)
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiForceGpe
+ *
+ * PARAMETERS:  GpeDevice           - Parent GPE Device. NULL for GPE0/GPE1
+ *              GpeNumber           - GPE level within the GPE block
+ *              Action              - ACPI_GPE_ENABLE, ACPI_GPE_DISABLE or
+ *                                    ACPI_GPE_RESET_FORCE_FLAGS
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Unconditionally enable or disable an individual GPE. After
+ *              invoking this function with ACPI_GPE_ENABLE/ACPI_GPE_DISABLE,
+ *              all GPE enabling/disabling operations will be bypassed until
+ *              invoking this function again with ACPI_GPE_RESET_FORCE_FLAGS.
+ *              This API is typically used by the system manager to switch the
+ *              GPE enabling status out side of the drivers' control, thus this
+ *              is normally used for the debugging purposes.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiForceGpe (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber,
+    UINT8                   Action)
+{
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo;
+    ACPI_STATUS             Status;
+    ACPI_CPU_FLAGS          Flags;
+
+
+    ACPI_FUNCTION_TRACE (AcpiForceGpe);
+
+
+    Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
+
+    /* Ensure that we have a valid GPE number */
+
+    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeDevice, GpeNumber);
+    if (!GpeEventInfo)
+    {
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
+    }
+
+    Status = AcpiEvForceGpe (GpeEventInfo, Action);
+
+UnlockAndExit:
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiForceGpe)
 
 
 /*******************************************************************************
