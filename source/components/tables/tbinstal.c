@@ -440,7 +440,6 @@ AcpiTbInstallStandardTable (
                  */
                 AcpiTbUninstallTable (&NewTableDesc);
                 *TableIndex = i;
-               (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
                 return_ACPI_STATUS (AE_OK);
             }
         }
