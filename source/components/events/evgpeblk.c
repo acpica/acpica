@@ -590,8 +590,9 @@ AcpiEvInitializeGpeBlock (
              * Ignore GPEs that have no corresponding _Lxx/_Exx method
              * and GPEs that are used to wake the system
              */
-            if (((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) == ACPI_GPE_DISPATCH_NONE) ||
-                ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) == ACPI_GPE_DISPATCH_HANDLER) ||
+            if ((ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) == ACPI_GPE_DISPATCH_NONE) ||
+                (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) == ACPI_GPE_DISPATCH_HANDLER) ||
+                (ACPI_GPE_DISPATCH_TYPE (GpeEventInfo->Flags) == ACPI_GPE_DISPATCH_RAW_HANDLER) ||
                 (GpeEventInfo->Flags & ACPI_GPE_CAN_WAKE))
             {
                 continue;

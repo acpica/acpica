@@ -269,10 +269,6 @@ AcpiEvWalkGpeList (
     ACPI_GPE_CALLBACK       GpeWalkCallback,
     void                    *Context);
 
-BOOLEAN
-AcpiEvValidGpeEvent (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
-
 ACPI_STATUS
 AcpiEvGetGpeDevice (
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,

@@ -5,7 +5,7 @@
 #                           ACPICA git repository
 #
 # SYNOPSIS:
-#         make-patches.sh [-r release] <old_commit> [new_commit]
+#         make-patches.sh [-r release] [-u] <old_commit> [new_commit]
 #
 # DESCRIPTION:
 #         Creates the linuxized patch set from old_commit to new_commit in
@@ -19,15 +19,17 @@
 #                     the patch files.  If this option is not specified, the
 #                     default name of the patch files will be the current month
 #                     in YYYYmm date format.
+#          -u         Generate upstream commit IDs in the linuxized patches.
 #
 
 RELEASE=`date +%Y%m`
 
 usage()
 {
-	echo "Usage: `basename $0` [-r release] <old_commit> [new_commit]"
+	echo "Usage: `basename $0` [-r release] [-u] <old_commit> [new_commit]"
 	echo "Where:"
 	echo "  -r: set release ID, default is $RELEASE in YYYYmm date format"
+	echo "  -u: generate upstream commit IDs"
 	echo "  old_commit: the old commit id\n";
 	echo "  new_commit: optional, the new commit id, default to HEAD";
 	exit 0
@@ -45,11 +47,12 @@ LINUX_CNT=0
 MAINTAINER="Bob Moore <robert.moore@intel.com>"
 GIT_EXTRACT="$SCRIPT/gen-patch.sh"
 
-while getopts "dr:" opt
+while getopts "dr:u" opt
 do
 	case $opt in
 	d) DRYRUN="yes";;
 	r) RELEASE=$OPTARG;;
+	u) GIT_EXTRACT="${GIT_EXTRACT} -u -m '${MAINTAINER}'";;
 	?) echo "Invalid argument $opt"
 	   usage;;
 	esac
@@ -88,9 +91,9 @@ generate_patch()
 		cd $SCRIPT
 
 		if [ "x$DRYRUN" = "xyes" ]; then
-			echo $GIT_EXTRACT -i $lid -s \'$MAINTAINER\' -f \'$MAINTAINER\' $COMMIT
+			echo $GIT_EXTRACT -i $lid $COMMIT
 		else
-			eval $GIT_EXTRACT -i $lid -s \'$MAINTAINER\' -f \'$MAINTAINER\' $COMMIT
+			eval $GIT_EXTRACT -i $lid $COMMIT
 			echo "[make-patches.sh]  Copying ACPICA patch ($RELEASE-$aid.patch)..."
 			mv acpica-$COMMIT.patch $ACPICA_DIR/$RELEASE-$aid.patch
 			echo $RELEASE-$aid.patch >> $ACPICA_DIR/series
