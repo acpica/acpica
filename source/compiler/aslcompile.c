@@ -267,16 +267,8 @@ CmDoCompile (
     Event = UtBeginEvent ("Constant folding via AML interpreter");
     DbgPrint (ASL_DEBUG_OUTPUT,
         "\nInterpreting compile-time constant expressions\n\n");
-
-    if (Gbl_FoldConstants)
-    {
-        TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD,
-            OpcAmlConstantWalk, NULL, NULL);
-    }
-    else
-    {
-        DbgPrint (ASL_PARSE_OUTPUT, "    Optional folding disabled\n");
-    }
+    TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD,
+        OpcAmlConstantWalk, NULL, NULL);
     UtEndEvent (Event);
 
     /* Update AML opcodes if necessary, after constant folding */

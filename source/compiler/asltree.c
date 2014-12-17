@@ -127,6 +127,10 @@ static ACPI_PARSE_OBJECT *
 TrGetNextNode (
     void);
 
+static char *
+TrGetNodeFlagName (
+    UINT32                  Flags);
+
 
 /*******************************************************************************
  *
@@ -255,7 +259,7 @@ TrUpdateNode (
     }
 
     DbgPrint (ASL_PARSE_OUTPUT,
-        "\nUpdateNode: Old - %s, New - %s\n",
+        "\nUpdateNode: Old - %s, New - %s\n\n",
         UtGetOpName (Op->Asl.ParseOpcode),
         UtGetOpName (ParseOpcode));
 
@@ -329,140 +333,90 @@ TrUpdateNode (
 
 /*******************************************************************************
  *
- * FUNCTION:    TrPrintNodeCompileFlags
+ * FUNCTION:    TrGetNodeFlagName
  *
  * PARAMETERS:  Flags               - Flags word to be decoded
  *
- * RETURN:      None
+ * RETURN:      Name string. Always returns a valid string pointer.
  *
- * DESCRIPTION: Decode a flags word to text. Displays all flags that are set.
+ * DESCRIPTION: Decode a flags word
  *
  ******************************************************************************/
 
-void
-TrPrintNodeCompileFlags (
+static char *
+TrGetNodeFlagName (
     UINT32                  Flags)
 {
-    UINT32                  i;
-    UINT32                  FlagBit = 1;
-    char                    *FlagName = NULL;
 
-
-    for (i = 0; i < 32; i++)
+    switch (Flags)
     {
-        switch (Flags & FlagBit)
-        {
-        case NODE_VISITED:
+    case NODE_VISITED:
 
-            FlagName = "NODE_VISITED";
-            break;
+        return ("NODE_VISITED");
 
-        case NODE_AML_PACKAGE:
+    case NODE_AML_PACKAGE:
 
-            FlagName = "NODE_AML_PACKAGE";
-            break;
+        return ("NODE_AML_PACKAGE");
 
-        case NODE_IS_TARGET:
+    case NODE_IS_TARGET:
 
-            FlagName = "NODE_IS_TARGET";
-            break;
+        return ("NODE_IS_TARGET");
 
-        case NODE_IS_RESOURCE_DESC:
+    case NODE_IS_RESOURCE_DESC:
 
-            FlagName = "NODE_IS_RESOURCE_DESC";
-            break;
+        return ("NODE_IS_RESOURCE_DESC");
 
-        case NODE_IS_RESOURCE_FIELD:
+    case NODE_IS_RESOURCE_FIELD:
 
-            FlagName = "NODE_IS_RESOURCE_FIELD";
-            break;
+        return ("NODE_IS_RESOURCE_FIELD");
 
-        case NODE_HAS_NO_EXIT:
+    case NODE_HAS_NO_EXIT:
 
-            FlagName = "NODE_HAS_NO_EXIT";
-            break;
+        return ("NODE_HAS_NO_EXIT");
 
-        case NODE_IF_HAS_NO_EXIT:
+    case NODE_IF_HAS_NO_EXIT:
 
-            FlagName = "NODE_IF_HAS_NO_EXIT";
-            break;
+        return ("NODE_IF_HAS_NO_EXIT");
 
-        case NODE_NAME_INTERNALIZED:
+    case NODE_NAME_INTERNALIZED:
 
-            FlagName = "NODE_NAME_INTERNALIZED";
-            break;
+        return ("NODE_NAME_INTERNALIZED");
 
-        case NODE_METHOD_NO_RETVAL:
+    case NODE_METHOD_NO_RETVAL:
 
-            FlagName = "NODE_METHOD_NO_RETVAL";
-            break;
+        return ("NODE_METHOD_NO_RETVAL");
 
-        case NODE_METHOD_SOME_NO_RETVAL:
+    case NODE_METHOD_SOME_NO_RETVAL:
 
-            FlagName = "NODE_METHOD_SOME_NO_RETVAL";
-            break;
+        return ("NODE_METHOD_SOME_NO_RETVAL");
 
-        case NODE_RESULT_NOT_USED:
+    case NODE_RESULT_NOT_USED:
 
-            FlagName = "NODE_RESULT_NOT_USED";
-            break;
+        return ("NODE_RESULT_NOT_USED");
 
-        case NODE_METHOD_TYPED:
+    case NODE_METHOD_TYPED:
 
-            FlagName = "NODE_METHOD_TYPED";
-            break;
+        return ("NODE_METHOD_TYPED");
 
-        case NODE_COMPILE_TIME_CONST:
+    case NODE_COMPILE_TIME_CONST:
 
-            FlagName = "NODE_COMPILE_TIME_CONST";
-            break;
+        return ("NODE_COMPILE_TIME_CONST");
 
-        case NODE_IS_TERM_ARG:
+    case NODE_IS_TERM_ARG:
 
-            FlagName = "NODE_IS_TERM_ARG";
-            break;
+        return ("NODE_IS_TERM_ARG");
 
-        case NODE_WAS_ONES_OP:
+    case NODE_WAS_ONES_OP:
 
-            FlagName = "NODE_WAS_ONES_OP";
-            break;
+        return ("NODE_WAS_ONES_OP");
 
-        case NODE_IS_NAME_DECLARATION:
+    case NODE_IS_NAME_DECLARATION:
 
-            FlagName = "NODE_IS_NAME_DECLARATION";
-            break;
+        return ("NODE_IS_NAME_DECLARATION");
 
-        case NODE_COMPILER_EMITTED:
+    default:
 
-            FlagName = "NODE_COMPILER_EMITTED";
-            break;
-
-        case NODE_IS_DUPLICATE:
-
-            FlagName = "NODE_IS_DUPLICATE";
-            break;
-
-        case NODE_IS_RESOURCE_DATA:
-
-            FlagName = "NODE_IS_RESOURCE_DATA";
-            break;
-
-        case NODE_IS_NULL_RETURN:
-
-            FlagName = "NODE_IS_NULL_RETURN";
-            break;
-
-        default:
-            break;
-        }
-
-        if (FlagName)
-        {
-            DbgPrint (ASL_PARSE_OUTPUT, " %s", FlagName);
-            FlagName = NULL;
-        }
-
-        FlagBit <<= 1;
+        return ("Multiple Flags (or unknown flag) set");
     }
 }
 
@@ -486,16 +440,14 @@ TrSetNodeFlags (
     UINT32                  Flags)
 {
 
+    DbgPrint (ASL_PARSE_OUTPUT,
+        "\nSetNodeFlags: Op %p, %8.8X %s\n\n", Op, Flags,
+        TrGetNodeFlagName (Flags));
+
     if (!Op)
     {
         return (NULL);
     }
-
-    DbgPrint (ASL_PARSE_OUTPUT,
-        "\nSetNodeFlags: %s Op %p, %8.8X", Op->Asl.ParseOpName, Op, Flags);
-
-    TrPrintNodeCompileFlags (Flags);
-    DbgPrint (ASL_PARSE_OUTPUT, "\n\n");
 
     Op->Asl.CompileFlags |= Flags;
     return (Op);
@@ -708,40 +660,7 @@ TrCreateLeafNode (
 
     DbgPrint (ASL_PARSE_OUTPUT,
         "\nCreateLeafNode  Ln/Col %u/%u NewNode %p  Op %s\n\n",
-        Op->Asl.LineNumber, Op->Asl.Column, Op, UtGetOpName (ParseOpcode));
-
-    return (Op);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    TrCreateNullTarget
- *
- * PARAMETERS:  None
- *
- * RETURN:      Pointer to the new node. Aborts on allocation failure
- *
- * DESCRIPTION: Create a "null" target node. This is defined by the ACPI
- *              specification to be a zero AML opcode, and indicates that
- *              no target has been specified for the parent operation
- *
- ******************************************************************************/
-
-ACPI_PARSE_OBJECT *
-TrCreateNullTarget (
-    void)
-{
-    ACPI_PARSE_OBJECT       *Op;
-
-
-    Op = TrAllocateNode (PARSEOP_ZERO);
-    Op->Asl.CompileFlags |= (NODE_IS_TARGET | NODE_COMPILE_TIME_CONST);
-
-    DbgPrint (ASL_PARSE_OUTPUT,
-        "\nCreateNullTarget  Ln/Col %u/%u NewNode %p  Op %s\n",
-        Op->Asl.LineNumber, Op->Asl.Column, Op,
-        UtGetOpName (Op->Asl.ParseOpcode));
+        Op->Asl.LineNumber, Op->Asl.Column, Op, UtGetOpName(ParseOpcode));
 
     return (Op);
 }
@@ -825,7 +744,7 @@ TrCreateConstantLeafNode (
     }
 
     DbgPrint (ASL_PARSE_OUTPUT,
-        "\nCreateConstantLeafNode  Ln/Col %u/%u NewNode %p  Op %s  Value %8.8X%8.8X  \n",
+        "\nCreateConstantLeafNode  Ln/Col %u/%u NewNode %p  Op %s  Value %8.8X%8.8X  ",
         Op->Asl.LineNumber, Op->Asl.Column, Op, UtGetOpName (ParseOpcode),
         ACPI_FORMAT_UINT64 (Op->Asl.Value.Integer));
     return (Op);
@@ -966,8 +885,7 @@ TrCreateValuedLeafNode (
 
     case PARSEOP_INTEGER:
 
-        DbgPrint (ASL_PARSE_OUTPUT, "INTEGER->%8.8X%8.8X",
-            ACPI_FORMAT_UINT64 (Value));
+        DbgPrint (ASL_PARSE_OUTPUT, "INTEGER");
         break;
 
     default:
@@ -1102,7 +1020,7 @@ TrCreateNode (
     }
     va_end(ap);
 
-    DbgPrint (ASL_PARSE_OUTPUT, "\n");
+    DbgPrint (ASL_PARSE_OUTPUT, "\n\n");
     return (Op);
 }
 
@@ -1258,7 +1176,7 @@ TrLinkPeerNode (
 
 
     DbgPrint (ASL_PARSE_OUTPUT,
-        "\nLinkPeerNode: 1=%p (%s), 2=%p (%s)\n",
+        "\nLinkPeerNode: 1=%p (%s), 2=%p (%s)\n\n",
         Op1, Op1 ? UtGetOpName(Op1->Asl.ParseOpcode) : NULL,
         Op2, Op2 ? UtGetOpName(Op2->Asl.ParseOpcode) : NULL);
 
@@ -1284,7 +1202,7 @@ TrLinkPeerNode (
     if (Op1 == Op2)
     {
         DbgPrint (ASL_DEBUG_OUTPUT,
-            "\n************* Internal error, linking node to itself %p\n",
+            "\n\n************* Internal error, linking node to itself %p\n\n\n",
             Op1);
         AslError (ASL_WARNING, ASL_MSG_COMPILER_INTERNAL, Op1,
             "Linking node to itself");
@@ -1368,7 +1286,7 @@ TrLinkPeerNodes (
     }
     va_end (ap);
 
-    DbgPrint (ASL_PARSE_OUTPUT,"\n");
+    DbgPrint (ASL_PARSE_OUTPUT,"\n\n");
     return (Start);
 }
 
@@ -1395,7 +1313,7 @@ TrLinkChildNode (
 
 
     DbgPrint (ASL_PARSE_OUTPUT,
-        "\nLinkChildNode: Parent=%p (%s), Child=%p (%s)\n",
+        "\nLinkChildNode: Parent=%p (%s), Child=%p (%s)\n\n",
         Op1, Op1 ? UtGetOpName(Op1->Asl.ParseOpcode): NULL,
         Op2, Op2 ? UtGetOpName(Op2->Asl.ParseOpcode): NULL);
 
