@@ -429,8 +429,12 @@ AdAmlDisassemble (
         AcpiDmDumpDataTable (Table);
         fprintf (stderr, "Acpi Data Table [%4.4s] decoded\n",
             Table->Signature);
-        fprintf (stderr, "Formatted output:  %s - %u bytes\n",
-            DisasmFilename, CmGetFileSize (File));
+
+        if (File)
+        {
+            fprintf (stderr, "Formatted output:  %s - %u bytes\n",
+                DisasmFilename, CmGetFileSize (File));
+        }
     }
     else
     {
@@ -448,8 +452,11 @@ AdAmlDisassemble (
         {
             AcpiOsPrintf ("/**** Before second load\n");
 
-            NsSetupNamespaceListing (File);
-            NsDisplayNamespace ();
+            if (File)
+            {
+                NsSetupNamespaceListing (File);
+                NsDisplayNamespace ();
+            }
             AcpiOsPrintf ("*****/\n");
         }
 
@@ -529,8 +536,11 @@ AdAmlDisassemble (
             if (AslCompilerdebug)
             {
                 AcpiOsPrintf ("/**** After second load and resource conversion\n");
-                NsSetupNamespaceListing (File);
-                NsDisplayNamespace ();
+                if (File)
+                {
+                    NsSetupNamespaceListing (File);
+                    NsDisplayNamespace ();
+                }
                 AcpiOsPrintf ("*****/\n");
 
                 AcpiDmDumpTree (AcpiGbl_ParseOpRoot);
@@ -559,8 +569,11 @@ AdAmlDisassemble (
             AcpiDmDumpDataTable (Table);
 
             fprintf (stderr, "Disassembly completed\n");
-            fprintf (stderr, "ASL Output:    %s - %u bytes\n",
-                DisasmFilename, CmGetFileSize (File));
+            if (File)
+            {
+                fprintf (stderr, "ASL Output:    %s - %u bytes\n",
+                    DisasmFilename, CmGetFileSize (File));
+            }
 
             if (Gbl_MapfileFlag)
             {
@@ -579,7 +592,7 @@ Cleanup:
         ACPI_FREE (Table);
     }
 
-    if (OutToFile && File)
+    if (File)
     {
         if (AslCompilerdebug) /* Display final namespace, with transforms */
         {
