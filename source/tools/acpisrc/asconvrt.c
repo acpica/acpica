@@ -668,7 +668,7 @@ AsTrimWhitespace (
 
     if (!strncmp (SubBuffer, "\n\n", 2))
     {
-        SubBuffer = AsReplaceData (SubBuffer, 2, "\n", 1);
+        AsReplaceData (SubBuffer, 2, "\n", 1);
         AcpiOsPrintf ("Found multiple blank lines after copyright\n");
     }
 
