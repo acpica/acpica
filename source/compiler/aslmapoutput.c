@@ -684,9 +684,6 @@ MpNamespaceXrefBegin (
 
     if (Op->Asl.Node == Info->TargetNode)
     {
-        DevicePathname = AcpiNsGetExternalPathname (
-            Info->TargetNode);
-
         while (ParentOp && (!ParentOp->Asl.Node))
         {
             ParentOp = ParentOp->Asl.Parent;
@@ -708,6 +705,8 @@ MpNamespaceXrefBegin (
                 DevicePathname, HidString);
 
             Info->References++;
+
+            ACPI_FREE (DevicePathname);
         }
     }
 
