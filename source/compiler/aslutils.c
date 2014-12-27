@@ -656,8 +656,8 @@ UtStringCacheCalloc (
 
             /* Link new cache buffer just following head of list */
 
-            Cache->Next = Gbl_StringCacheList->next;
-            Gbl_StringCacheList->next = Cache;
+            Cache->Next = Gbl_StringCacheList->Next;
+            Gbl_StringCacheList->Next = Cache;
 
             /* Leave cache management pointers alone as they pertain to head */
 
