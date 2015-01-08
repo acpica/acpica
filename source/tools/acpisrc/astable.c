@@ -244,6 +244,9 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
 
 ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
 
+    {"ACPI_ADDRESS16_ATTRIBUTE",            SRC_TYPE_STRUCT},
+    {"ACPI_ADDRESS32_ATTRIBUTE",            SRC_TYPE_STRUCT},
+    {"ACPI_ADDRESS64_ATTRIBUTE",            SRC_TYPE_STRUCT},
     {"ACPI_ADDRESS_RANGE",                  SRC_TYPE_STRUCT},
     {"ACPI_ADR_SPACE_HANDLER",              SRC_TYPE_SIMPLE},
     {"ACPI_ADR_SPACE_SETUP",                SRC_TYPE_SIMPLE},
