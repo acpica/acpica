@@ -113,7 +113,6 @@
  *
  *****************************************************************************/
 
-
 /*
  * These interfaces are required in order to link to the ACPI subsystem
  * parser. They are called during the execution of the parser, and all
