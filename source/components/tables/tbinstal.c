@@ -273,8 +273,8 @@ AcpiTbInstallFixedTable (
                 ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_ERROR ((AE_INFO, "Could not acquire table length at %p",
-            ACPI_PHYSADDR_TO_PTR (Address)));
+        ACPI_ERROR ((AE_INFO, "Could not acquire table length at %8.8X%8.8X",
+            ACPI_FORMAT_UINT64 (Address)));
         return_ACPI_STATUS (Status);
     }
 
@@ -340,8 +340,8 @@ AcpiTbInstallStandardTable (
     Status = AcpiTbAcquireTempTable (&NewTableDesc, Address, Flags);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_ERROR ((AE_INFO, "Could not acquire table length at %p",
-            ACPI_PHYSADDR_TO_PTR (Address)));
+        ACPI_ERROR ((AE_INFO, "Could not acquire table length at %8.8X%8.8X",
+            ACPI_FORMAT_UINT64 (Address)));
         return_ACPI_STATUS (Status);
     }
 
@@ -353,8 +353,8 @@ AcpiTbInstallStandardTable (
         AcpiGbl_DisableSsdtTableInstall &&
         ACPI_COMPARE_NAME (&NewTableDesc.Signature, ACPI_SIG_SSDT))
     {
-        ACPI_INFO ((AE_INFO, "Ignoring installation of %4.4s at %p",
-            NewTableDesc.Signature.Ascii, ACPI_PHYSADDR_TO_PTR (Address)));
+        ACPI_INFO ((AE_INFO, "Ignoring installation of %4.4s at %8.8X%8.8X",
+            NewTableDesc.Signature.Ascii, ACPI_FORMAT_UINT64 (Address)));
         goto ReleaseAndExit;
     }
 

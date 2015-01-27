@@ -386,9 +386,9 @@ AcpiNsDumpOneObject (
         {
         case ACPI_TYPE_PROCESSOR:
 
-            AcpiOsPrintf ("ID %02X Len %02X Addr %p\n",
+            AcpiOsPrintf ("ID %02X Len %02X Addr %8.8X%8.8X\n",
                 ObjDesc->Processor.ProcId, ObjDesc->Processor.Length,
-                ACPI_CAST_PTR (void, ObjDesc->Processor.Address));
+                ACPI_FORMAT_UINT64 (ObjDesc->Processor.Address));
             break;
 
         case ACPI_TYPE_DEVICE:
