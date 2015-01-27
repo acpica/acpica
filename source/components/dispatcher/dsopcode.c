@@ -651,7 +651,7 @@ AcpiDsEvalTableRegionOperands (
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
-    ObjDesc->Region.Address = (ACPI_PHYSICAL_ADDRESS) ACPI_TO_INTEGER (Table);
+    ObjDesc->Region.Address = ACPI_PTR_TO_PHYSADDR (Table);
     ObjDesc->Region.Length = Table->Length;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "RgnObj %p Addr %8.8X%8.8X Len %X\n",

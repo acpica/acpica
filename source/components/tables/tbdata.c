@@ -193,7 +193,8 @@ AcpiTbAcquireTable (
     case ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL:
     case ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL:
 
-        Table = ACPI_CAST_PTR (ACPI_TABLE_HEADER, TableDesc->Address);
+        Table = ACPI_CAST_PTR (ACPI_TABLE_HEADER,
+                    ACPI_PHYSADDR_TO_PTR (TableDesc->Address));
         break;
 
     default:
@@ -299,7 +300,8 @@ AcpiTbAcquireTempTable (
     case ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL:
     case ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL:
 
-        TableHeader = ACPI_CAST_PTR (ACPI_TABLE_HEADER, Address);
+        TableHeader = ACPI_CAST_PTR (ACPI_TABLE_HEADER,
+                        ACPI_PHYSADDR_TO_PTR (Address));
         if (!TableHeader)
         {
             return (AE_NO_MEMORY);

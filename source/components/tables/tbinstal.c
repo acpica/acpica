@@ -274,7 +274,7 @@ AcpiTbInstallFixedTable (
     if (ACPI_FAILURE (Status))
     {
         ACPI_ERROR ((AE_INFO, "Could not acquire table length at %p",
-            ACPI_CAST_PTR (void, Address)));
+            ACPI_PHYSADDR_TO_PTR (Address)));
         return_ACPI_STATUS (Status);
     }
 
@@ -341,7 +341,7 @@ AcpiTbInstallStandardTable (
     if (ACPI_FAILURE (Status))
     {
         ACPI_ERROR ((AE_INFO, "Could not acquire table length at %p",
-            ACPI_CAST_PTR (void, Address)));
+            ACPI_PHYSADDR_TO_PTR (Address)));
         return_ACPI_STATUS (Status);
     }
 
@@ -354,7 +354,7 @@ AcpiTbInstallStandardTable (
         ACPI_COMPARE_NAME (&NewTableDesc.Signature, ACPI_SIG_SSDT))
     {
         ACPI_INFO ((AE_INFO, "Ignoring installation of %4.4s at %p",
-            NewTableDesc.Signature.Ascii, ACPI_CAST_PTR (void, Address)));
+            NewTableDesc.Signature.Ascii, ACPI_PHYSADDR_TO_PTR (Address)));
         goto ReleaseAndExit;
     }
 
@@ -630,7 +630,7 @@ AcpiTbUninstallTable (
     if ((TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK) ==
         ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL)
     {
-        ACPI_FREE (ACPI_CAST_PTR (void, TableDesc->Address));
+        ACPI_FREE (ACPI_PHYSADDR_TO_PTR (TableDesc->Address));
     }
 
     TableDesc->Address = ACPI_PTR_TO_PHYSADDR (NULL);

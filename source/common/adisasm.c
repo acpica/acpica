@@ -943,7 +943,7 @@ AdParseTable (
 
     if (LoadTable)
     {
-        Status = AcpiTbStoreTable ((ACPI_PHYSICAL_ADDRESS) Table, Table,
+        Status = AcpiTbStoreTable (ACPI_PTR_TO_PHYSADDR (Table), Table,
                     Table->Length, ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL,
                     &TableIndex);
         if (ACPI_FAILURE (Status))

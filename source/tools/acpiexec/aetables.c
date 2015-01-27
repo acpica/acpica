@@ -630,5 +630,5 @@ AcpiOsGetRootPointer (
     void)
 {
 
-    return ((ACPI_PHYSICAL_ADDRESS) &LocalRSDP);
+    return (ACPI_PTR_TO_PHYSADDR (&LocalRSDP));
 }
