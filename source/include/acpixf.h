@@ -575,7 +575,7 @@ AcpiReallocateRootTable (
 ACPI_EXTERNAL_RETURN_STATUS (
 ACPI_STATUS
 AcpiFindRootPointer (
-    ACPI_SIZE               *RsdpAddress))
+    ACPI_PHYSICAL_ADDRESS   *RsdpAddress))
 
 ACPI_EXTERNAL_RETURN_STATUS (
 ACPI_STATUS
