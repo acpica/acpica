@@ -511,11 +511,11 @@ AcpiTbVerifyTempTable (
         if (ACPI_FAILURE (Status))
         {
             ACPI_EXCEPTION ((AE_INFO, AE_NO_MEMORY,
-                "%4.4s " ACPI_PRINTF_UINT
+                "%4.4s 0x%8.8X%8.8X"
                 " Attempted table install failed",
                 AcpiUtValidAcpiName (TableDesc->Signature.Ascii) ?
                     TableDesc->Signature.Ascii : "????",
-                ACPI_FORMAT_TO_UINT (TableDesc->Address)));
+                ACPI_FORMAT_UINT64 (TableDesc->Address)));
             goto InvalidateAndExit;
         }
     }
