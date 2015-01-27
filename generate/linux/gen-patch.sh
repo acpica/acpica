@@ -106,9 +106,9 @@ generate_acpica_desc()
 		AUTHOR_EMAIL="robert.moore@intel.com"
 	fi
 	AUTHOR="${AUTHOR_NAME} <${AUTHOR_EMAIL}>"
-	FORMAT="From %H Mon Sep 17 00:00:00 2001%nFrom: $COMMITTER%nData: %aD%nFrom: $AUTHOR%nSubject: [PATCH $INDEX] ACPICA: %s%n%n%b"
+	FORMAT="From %H Mon Sep 17 00:00:00 2001%nFrom: $COMMITTER%nDate: %aD%nFrom: $AUTHOR%nSubject: [PATCH $INDEX] ACPICA: %s%n%n%b"
 	if [ "x$UPSTREAM" = "xyes" ]; then
-		FORMAT="From %H Mon Sep 17 00:00:00 2001%nFrom: $COMMITTER%nData: %aD%nFrom: $AUTHOR%nSubject: [PATCH $INDEX] ACPICA: %s%n%nACPICA commit %H%n%n%b"
+		FORMAT="From %H Mon Sep 17 00:00:00 2001%nFrom: $COMMITTER%nDate: %aD%nFrom: $AUTHOR%nSubject: [PATCH $INDEX] ACPICA: %s%n%nACPICA commit %H%n%n%b"
 	fi
 	GIT_LOG_FORMAT=`echo $FORMAT`
 	eval "git log -c $1 -1 --format=\"$GIT_LOG_FORMAT\""
@@ -123,6 +123,12 @@ split_desc()
 	{
 		if (SOB==1) {
 			if (match($0, /^Signed-off-by:.*/)) {
+				if (ENVIRON["DOSOB"]==1)
+					print $0
+			} else if (match($0, /^Fixed-by:.*/)) {
+				if (ENVIRON["DOSOB"]==1)
+					print $0
+			} else if (match($0, /^Original-by:.*/)) {
 				if (ENVIRON["DOSOB"]==1)
 					print $0
 			} else if (match($0, /^Acked-by:.*/)) {
@@ -142,7 +148,7 @@ split_desc()
 					print $0
 			} else if (match($0, /^Link:.*/)) {
 				if (ENVIRON["DOSOB"]==1)
-				print $0
+					print $0
 			} else if (match($0, /^Reference:.*/)) {
 				if (ENVIRON["DOSOB"]==1)
 					print $0
