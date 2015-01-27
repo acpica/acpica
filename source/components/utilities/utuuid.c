@@ -120,6 +120,7 @@
         ACPI_MODULE_NAME    ("utuuid")
 
 
+#if (defined ACPI_ASL_COMPILER || defined ACPI_EXEC_APP || defined ACPI_HELP_APP)
 /*
  * UUID support functions.
  *
@@ -171,3 +172,4 @@ AcpiUtConvertStringToUuid (
             AcpiUtAsciiCharToHex (InString[AcpiGbl_MapToUuidOffset[i] + 1]);
     }
 }
+#endif
