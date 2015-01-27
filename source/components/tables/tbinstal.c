@@ -447,7 +447,7 @@ AcpiTbInstallStandardTable (
 
     /* Add the table to the global root table list */
 
-    Status = AcpiTbGetNextRootIndex (&i);
+    Status = AcpiTbGetNextTableDescriptor (&i, NULL);
     if (ACPI_FAILURE (Status))
     {
         goto ReleaseAndExit;
@@ -551,49 +551,6 @@ FinishOverride:
     /* Release the temporary table descriptor */
 
     AcpiTbReleaseTempTable (&NewTableDesc);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiTbStoreTable
- *
- * PARAMETERS:  Address             - Table address
- *              Table               - Table header
- *              Length              - Table length
- *              Flags               - Install flags
- *              TableIndex          - Where the table index is returned
- *
- * RETURN:      Status and table index.
- *
- * DESCRIPTION: Add an ACPI table to the global table list
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiTbStoreTable (
-    ACPI_PHYSICAL_ADDRESS   Address,
-    ACPI_TABLE_HEADER       *Table,
-    UINT32                  Length,
-    UINT8                   Flags,
-    UINT32                  *TableIndex)
-{
-    ACPI_STATUS             Status;
-    ACPI_TABLE_DESC         *TableDesc;
-
-
-    Status = AcpiTbGetNextRootIndex (TableIndex);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
-    /* Initialize added table */
-
-    TableDesc = &AcpiGbl_RootTableList.Tables[*TableIndex];
-    AcpiTbInitTableDescriptor (TableDesc, Address, Flags, Table);
-    TableDesc->Pointer = Table;
-    return (AE_OK);
 }
 
 

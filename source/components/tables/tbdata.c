@@ -603,21 +603,24 @@ AcpiTbResizeRootTableList (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbGetNextRootIndex
+ * FUNCTION:    AcpiTbGetNextTableDescriptor
  *
  * PARAMETERS:  TableIndex          - Where table index is returned
+ *              TableDesc           - Where table descriptor is returned
  *
- * RETURN:      Status and table index.
+ * RETURN:      Status and table index/descriptor.
  *
  * DESCRIPTION: Allocate a new ACPI table entry to the global table list
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiTbGetNextRootIndex (
-    UINT32                  *TableIndex)
+AcpiTbGetNextTableDescriptor (
+    UINT32                  *TableIndex,
+    ACPI_TABLE_DESC         **TableDesc)
 {
     ACPI_STATUS             Status;
+    UINT32                  i;
 
 
     /* Ensure that there is room for the table in the Root Table List */
@@ -632,8 +635,18 @@ AcpiTbGetNextRootIndex (
         }
     }
 
-    *TableIndex = AcpiGbl_RootTableList.CurrentTableCount;
+    i = AcpiGbl_RootTableList.CurrentTableCount;
     AcpiGbl_RootTableList.CurrentTableCount++;
+
+    if (TableIndex)
+    {
+        *TableIndex = i;
+    }
+    if (TableDesc)
+    {
+        *TableDesc = &AcpiGbl_RootTableList.Tables[i];
+    }
+
     return (AE_OK);
 }
 
