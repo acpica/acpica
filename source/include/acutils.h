@@ -854,13 +854,6 @@ AcpiUtCreateUpdateStateAndPush (
     UINT16                  Action,
     ACPI_GENERIC_STATE      **StateList);
 
-ACPI_STATUS
-AcpiUtCreatePkgStateAndPush (
-    void                    *InternalObject,
-    void                    *ExternalObject,
-    UINT16                  Index,
-    ACPI_GENERIC_STATE      **StateList);
-
 ACPI_GENERIC_STATE *
 AcpiUtCreateControlState (
     void);
