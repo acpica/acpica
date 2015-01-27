@@ -427,6 +427,7 @@ AcpiRsSetResourceLength (
 /*
  * rsdump
  */
+#ifdef ACPI_EXEC_APP
 void
 AcpiRsDumpResourceList (
     ACPI_RESOURCE           *Resource);
@@ -434,6 +435,7 @@ AcpiRsDumpResourceList (
 void
 AcpiRsDumpIrqList (
     UINT8                   *RouteTable);
+#endif
 
 
 /*
