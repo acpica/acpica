@@ -257,4 +257,6 @@ _CrtSetBreakAlloc (937);
 
 #endif
 
+#define ULL(num)    num##UI64
+
 #endif /* __ACMSVC_H__ */

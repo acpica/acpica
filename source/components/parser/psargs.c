@@ -165,7 +165,7 @@ AcpiPsGetNextPackageLength (
      * Byte 0 bits [6:7] contain the number of additional bytes
      * used to encode the package length, either 0,1,2, or 3
      */
-    ByteCount = (Aml[0] >> 6);
+    ByteCount = (ACPI_DECODE8 (Aml) >> 6);
     ParserState->Aml += ((ACPI_SIZE) ByteCount + 1);
 
     /* Get bytes 3, 2, 1 as needed */
@@ -179,7 +179,7 @@ AcpiPsGetNextPackageLength (
          *      Byte1->[04:11]
          *      Byte0->[00:03]
          */
-        PackageLength |= (Aml[ByteCount] << ((ByteCount << 3) - 4));
+        PackageLength |= (ACPI_DECODE8 (Aml + ByteCount) << ((ByteCount << 3) - 4));
 
         ByteZeroMask = 0x0F; /* Use bits [0:3] of byte 0 */
         ByteCount--;
@@ -187,7 +187,7 @@ AcpiPsGetNextPackageLength (
 
     /* Byte 0 is a special case, either bits [0:3] or [0:5] are used */
 
-    PackageLength |= (Aml[0] & ByteZeroMask);
+    PackageLength |= (ACPI_DECODE8 (Aml) & ByteZeroMask);
     return_UINT32 (PackageLength);
 }
 
@@ -513,7 +513,7 @@ AcpiPsGetNextSimpleArg (
         /* Get 1 byte from the AML stream */
 
         Opcode = AML_BYTE_OP;
-        Arg->Common.Value.Integer = (UINT64) *Aml;
+        Arg->Common.Value.Integer = (UINT64) ACPI_DECODE8 (Aml);
         Length = 1;
         break;
 
@@ -522,7 +522,7 @@ AcpiPsGetNextSimpleArg (
         /* Get 2 bytes from the AML stream */
 
         Opcode = AML_WORD_OP;
-        ACPI_MOVE_16_TO_64 (&Arg->Common.Value.Integer, Aml);
+        Arg->Common.Value.Integer = (UINT64) ACPI_DECODE16 (Aml);
         Length = 2;
         break;
 
@@ -531,7 +531,7 @@ AcpiPsGetNextSimpleArg (
         /* Get 4 bytes from the AML stream */
 
         Opcode = AML_DWORD_OP;
-        ACPI_MOVE_32_TO_64 (&Arg->Common.Value.Integer, Aml);
+        Arg->Common.Value.Integer = (UINT64) ACPI_DECODE32 (Aml);
         Length = 4;
         break;
 
@@ -540,7 +540,7 @@ AcpiPsGetNextSimpleArg (
         /* Get 8 bytes from the AML stream */
 
         Opcode = AML_QWORD_OP;
-        ACPI_MOVE_64_TO_64 (&Arg->Common.Value.Integer, Aml);
+        Arg->Common.Value.Integer = ACPI_DECODE64 (Aml);
         Length = 8;
         break;
 
@@ -617,7 +617,7 @@ AcpiPsGetNextField (
 
     /* Determine field type */
 
-    switch (ACPI_GET8 (ParserState->Aml))
+    switch (ACPI_DECODE8 (ParserState->Aml))
     {
     case AML_FIELD_OFFSET_OP:
 
@@ -696,9 +696,9 @@ AcpiPsGetNextField (
 
         /* Get the two bytes (Type/Attribute) */
 
-        AccessType = ACPI_GET8 (ParserState->Aml);
+        AccessType = ACPI_DECODE8 (ParserState->Aml);
         ParserState->Aml++;
-        AccessAttribute = ACPI_GET8 (ParserState->Aml);
+        AccessAttribute = ACPI_DECODE8 (ParserState->Aml);
         ParserState->Aml++;
 
         Field->Common.Value.Integer = (UINT8) AccessType;
@@ -708,7 +708,7 @@ AcpiPsGetNextField (
 
         if (Opcode == AML_INT_EXTACCESSFIELD_OP)
         {
-            AccessLength = ACPI_GET8 (ParserState->Aml);
+            AccessLength = ACPI_DECODE8 (ParserState->Aml);
             ParserState->Aml++;
 
             Field->Common.Value.Integer |= (UINT32) (AccessLength << 16);
@@ -722,7 +722,7 @@ AcpiPsGetNextField (
          * Argument for Connection operator can be either a Buffer
          * (resource descriptor), or a NameString.
          */
-        if (ACPI_GET8 (ParserState->Aml) == AML_BUFFER_OP)
+        if (ACPI_DECODE8 (ParserState->Aml) == AML_BUFFER_OP)
         {
             ParserState->Aml++;
 
@@ -743,26 +743,26 @@ AcpiPsGetNextField (
 
                 /* Get the actual buffer length argument */
 
-                Opcode = ACPI_GET8 (ParserState->Aml);
+                Opcode = ACPI_DECODE8 (ParserState->Aml);
                 ParserState->Aml++;
 
                 switch (Opcode)
                 {
                 case AML_BYTE_OP:       /* AML_BYTEDATA_ARG */
 
-                    BufferLength = ACPI_GET8 (ParserState->Aml);
+                    BufferLength = ACPI_DECODE8 (ParserState->Aml);
                     ParserState->Aml += 1;
                     break;
 
                 case AML_WORD_OP:       /* AML_WORDDATA_ARG */
 
-                    BufferLength = ACPI_GET16 (ParserState->Aml);
+                    BufferLength = ACPI_DECODE16 (ParserState->Aml);
                     ParserState->Aml += 2;
                     break;
 
                 case AML_DWORD_OP:      /* AML_DWORDATA_ARG */
 
-                    BufferLength = ACPI_GET32 (ParserState->Aml);
+                    BufferLength = ACPI_DECODE32 (ParserState->Aml);
                     ParserState->Aml += 4;
                     break;
 
