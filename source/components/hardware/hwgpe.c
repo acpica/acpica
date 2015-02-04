@@ -239,7 +239,7 @@ AcpiHwLowSetGpe (
     Status = AcpiHwWrite (EnableMask, &GpeRegisterInfo->EnableAddress);
     if (ACPI_SUCCESS (Status) && (Action & ACPI_GPE_SAVE_MASK))
     {
-        GpeRegisterInfo->EnableMask = EnableMask;
+        GpeRegisterInfo->EnableMask = (UINT8) EnableMask;
     }
     return (Status);
 }
