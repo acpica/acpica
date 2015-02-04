@@ -632,7 +632,7 @@ AcpiEvAsynchExecuteGpeMethod (
     void                    *Context)
 {
     ACPI_GPE_EVENT_INFO     *GpeEventInfo = Context;
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
     ACPI_EVALUATE_INFO      *Info;
     ACPI_GPE_NOTIFY_INFO    *Notify;
 
