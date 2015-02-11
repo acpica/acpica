@@ -136,6 +136,11 @@ AdCreateTableHeader (
     char                    *Filename,
     ACPI_TABLE_HEADER       *Table);
 
+static ACPI_STATUS
+AdStoreTable (
+    ACPI_TABLE_HEADER       *Table,
+    UINT32                  *TableIndex);
+
 /* Stubs for ASL compiler */
 
 #ifndef ACPI_ASL_COMPILER
@@ -812,6 +817,43 @@ AdDisplayTables (
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AdStoreTable
+ *
+ * PARAMETERS:  Table               - Table header
+ *              TableIndex          - Where the table index is returned
+ *
+ * RETURN:      Status and table index.
+ *
+ * DESCRIPTION: Add an ACPI table to the global table list
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AdStoreTable (
+    ACPI_TABLE_HEADER       *Table,
+    UINT32                  *TableIndex)
+{
+    ACPI_STATUS             Status;
+    ACPI_TABLE_DESC         *TableDesc;
+
+
+    Status = AcpiTbGetNextTableDescriptor (TableIndex, &TableDesc);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    /* Initialize added table */
+
+    AcpiTbInitTableDescriptor (TableDesc, ACPI_PTR_TO_PHYSADDR (Table),
+        ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL, Table);
+    AcpiTbValidateTable (TableDesc);
+    return (AE_OK);
+}
+
+
 /******************************************************************************
  *
  * FUNCTION:    AdGetLocalTables
@@ -849,8 +891,7 @@ AdGetLocalTables (
 
     /* Store DSDT in the Table Manager */
 
-    Status = AcpiTbStoreTable (0, NewTable, NewTable->Length,
-                0, &TableIndex);
+    Status = AdStoreTable (NewTable, &TableIndex);
     if (ACPI_FAILURE (Status))
     {
         fprintf (stderr, "Could not store DSDT\n");
@@ -943,9 +984,7 @@ AdParseTable (
 
     if (LoadTable)
     {
-        Status = AcpiTbStoreTable ((ACPI_PHYSICAL_ADDRESS) Table, Table,
-                    Table->Length, ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL,
-                    &TableIndex);
+        Status = AdStoreTable (Table, &TableIndex);
         if (ACPI_FAILURE (Status))
         {
             return (Status);

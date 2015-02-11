@@ -469,6 +469,7 @@ AcpiRsDumpAddressCommon (
 }
 
 
+#ifdef ACPI_EXEC_APP
 /*******************************************************************************
  *
  * FUNCTION:    AcpiRsDumpResourceList
@@ -592,6 +593,7 @@ AcpiRsDumpIrqList (
                         PrtElement, PrtElement->Length);
     }
 }
+#endif
 
 
 /*******************************************************************************

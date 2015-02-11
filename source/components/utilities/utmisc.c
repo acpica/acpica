@@ -156,6 +156,7 @@ AcpiUtIsPciRootBridge (
 }
 
 
+#if (defined ACPI_ASL_COMPILER || defined ACPI_EXEC_APP)
 /*******************************************************************************
  *
  * FUNCTION:    AcpiUtIsAmlTable
@@ -186,6 +187,7 @@ AcpiUtIsAmlTable (
 
     return (FALSE);
 }
+#endif
 
 
 /*******************************************************************************
