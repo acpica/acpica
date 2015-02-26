@@ -1432,7 +1432,7 @@ AeRegionHandler (
     /*
      * Get BufferValue to point to the "address" in the buffer
      */
-    BufferValue = ((UINT8 *) BufferAddress +
+    BufferValue = (ACPI_CAST_PTR (UINT8, ACPI_PHYSADDR_TO_PTR (BufferAddress)) +
                     ((ACPI_INTEGER) Address - (ACPI_INTEGER) BaseAddress));
 
     /*

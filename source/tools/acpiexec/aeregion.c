@@ -759,8 +759,8 @@ AeRegionHandler (
                 {
                     /* Right overlap */
 
-                    RegionElement->Length = BaseAddress -
-                        RegionAddress + Length;
+                    RegionElement->Length = (UINT32) (BaseAddress -
+                        RegionAddress + Length);
                     BufferResize = TRUE;
                 }
 
@@ -771,8 +771,8 @@ AeRegionHandler (
                     /* Left overlap */
 
                     RegionElement->Address = BaseAddress;
-                    RegionElement->Length = RegionAddress -
-                        BaseAddress + RegionElement->Length;
+                    RegionElement->Length = (UINT32) (RegionAddress -
+                        BaseAddress + RegionElement->Length);
                     BufferResize = TRUE;
                 }
 

@@ -1095,7 +1095,7 @@ AtHardwTest0010(void)
         return (Status);
     }
 
-    Status = AcpiSetFirmwareWakingVector(PhysicalAddress);
+    Status = AcpiSetFirmwareWakingVector ((UINT32) PhysicalAddress);
     if (ACPI_FAILURE(Status))
     {
         AapiErrors++;
@@ -1143,7 +1143,7 @@ AtHardwTest0011(void)
         return (Status);
     }
 
-    Status = AcpiSetFirmwareWakingVector(PhysicalAddress);
+    Status = AcpiSetFirmwareWakingVector((UINT32) PhysicalAddress);
     if (Status != AE_NO_ACPI_TABLES)
     {
         AapiErrors++;

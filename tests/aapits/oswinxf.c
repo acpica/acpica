@@ -762,7 +762,7 @@ AcpiOsActualMapMemory (
     ACPI_PHYSICAL_ADDRESS   Where,
     ACPI_SIZE               Length)
 {
-    return ((void *)Where);
+    return (ACPI_TO_POINTER (Where));
 }
 
 

@@ -247,8 +247,8 @@ AcpiExSystemMemorySpaceHandler (
          * one page, which is similar to the original code that used a 4k
          * maximum window.
          */
-        PageBoundaryMapLength =
-            ACPI_ROUND_UP (Address, ACPI_DEFAULT_PAGE_SIZE) - Address;
+        PageBoundaryMapLength = (ACPI_SIZE)
+            (ACPI_ROUND_UP (Address, ACPI_DEFAULT_PAGE_SIZE) - Address);
         if (PageBoundaryMapLength == 0)
         {
             PageBoundaryMapLength = ACPI_DEFAULT_PAGE_SIZE;
