@@ -288,7 +288,7 @@ AeDoOptions (
 
         case 'i':
 
-            AcpiGbl_DbOpt_ini_methods = FALSE;
+            AcpiGbl_DbOpt_NoIniMethods = TRUE;
             break;
 
         case 'o':
@@ -395,7 +395,6 @@ AeDoOptions (
 
     case 'g':
 
-        AcpiGbl_DbOpt_tables = TRUE;
         AcpiGbl_DbFilename = NULL;
         break;
 
@@ -424,8 +423,7 @@ AeDoOptions (
 
     case 'o':
 
-        AcpiGbl_DbOpt_disasm = TRUE;
-        AcpiGbl_DbOpt_stats = TRUE;
+        AcpiGbl_DbOpt_Disasm = TRUE;
         break;
 
     case 'r':
@@ -540,7 +538,6 @@ main (
         goto EnterDebugger;
     }
 
-    AcpiGbl_DbOpt_tables = TRUE;
     AcpiGbl_CstyleDisassembly = FALSE; /* Not supported for AcpiExec */
     TableCount = 0;
 
@@ -614,7 +611,7 @@ main (
     /* Setup initialization flags for ACPICA */
 
     InitFlags = (ACPI_NO_HANDLER_INIT | ACPI_NO_ACPI_ENABLE);
-    if (!AcpiGbl_DbOpt_ini_methods)
+    if (AcpiGbl_DbOpt_NoIniMethods)
     {
         InitFlags |= (ACPI_NO_DEVICE_INIT | ACPI_NO_OBJECT_INIT);
     }
