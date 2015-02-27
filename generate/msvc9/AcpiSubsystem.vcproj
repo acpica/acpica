@@ -309,6 +309,7 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Release|Win32"
+						ExcludedFromBuild="true"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -389,10 +390,6 @@
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utexcep.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\components\utilities\utfileio.c"
 					>
 				</File>
 				<File
@@ -1726,6 +1723,14 @@
 				<File
 					RelativePath="..\..\source\components\resources\rsdumpinfo.c"
 					>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\resources\rsinfo.c"
