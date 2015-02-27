@@ -425,9 +425,9 @@ AcpiRsSetResourceLength (
 
 
 /*
- * rsdump
+ * rsdump - Debugger support
  */
-#ifdef ACPI_EXEC_APP
+#ifdef ACPI_DEBUGGER
 void
 AcpiRsDumpResourceList (
     ACPI_RESOURCE           *Resource);
