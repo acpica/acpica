@@ -390,7 +390,7 @@ ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_CstyleDisassembly, TRUE);
 ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_ForceAmlDisassembly, FALSE);
 ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_DmOpt_Listing);
 
-ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_DbOpt_Disasm);
+ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_DmOpt_Disasm);
 ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_DbOpt_Verbose);
 ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_NumExternalMethods);
 ACPI_GLOBAL (UINT32,                    AcpiGbl_ResolvedExternalMethods);

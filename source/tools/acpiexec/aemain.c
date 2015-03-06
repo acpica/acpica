@@ -168,7 +168,7 @@ static char                 BatchBuffer[AE_BUFFER_SIZE];    /* Batch command buf
 static AE_TABLE_DESC        *AeTableListHead = NULL;
 
 #define ACPIEXEC_NAME               "AML Execution/Debug Utility"
-#define AE_SUPPORTED_OPTIONS        "?b:d:e:f^ghi:lm^orv^:x:"
+#define AE_SUPPORTED_OPTIONS        "?b:d:e:f^ghi:lm^rv^:x:"
 
 
 /* Stubs for the disassembler */
@@ -444,11 +444,6 @@ AeDoOptions (
             strcpy (BatchBuffer, AcpiGbl_Optarg);
             break;
         }
-        break;
-
-    case 'o':
-
-        AcpiGbl_DbOpt_Disasm = TRUE;
         break;
 
     case 'r':

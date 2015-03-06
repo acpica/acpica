@@ -388,7 +388,7 @@ AdAmlDisassemble (
             return (Status);
         }
 
-        if (!AcpiGbl_DbOpt_Disasm)
+        if (!AcpiGbl_DmOpt_Disasm)
         {
             return (AE_OK);
         }
@@ -577,7 +577,7 @@ AdAmlDisassemble (
 
         /* Optional displays */
 
-        if (AcpiGbl_DbOpt_Disasm)
+        if (AcpiGbl_DmOpt_Disasm)
         {
             /* This is the real disassembly */
 
