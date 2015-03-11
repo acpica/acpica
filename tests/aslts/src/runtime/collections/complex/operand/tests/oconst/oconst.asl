@@ -2774,7 +2774,8 @@ Method(m610,, Serialized)
 		ToBCD("0321", Local0)
 		m600(arg0, 4, Local0, 0x801)
 
-		ToBCD("D76162EE9EC35", Local0)
+		Store("D76162EE9EC35", Local1)
+		ToBCD(Local1, Local0)
 		m600(arg0, 5, Local0, 0x3789012345678901)
 	}
 

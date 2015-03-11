@@ -50,11 +50,13 @@
 		CH03("", 0, 0x005, 0, 0)
 
 		CH03("", 0, 0x006, 0, 0)
-		ToInteger("", Local0)
+		Store("", Local1)
+		ToInteger(Local1, Local0)
 		CH04("", 0, 36, 0, 0x007, 0, 0) // AE_BAD_DECIMAL_CONSTANT
 
 		CH03("", 0, 0x008, 0, 0)
-		ToInteger("                 ", Local0)
+		Store("                 ", Local1)
+		ToInteger(Local1, Local0)
 		CH04("", 0, 36, 0, 0x009, 0, 0) // AE_BAD_DECIMAL_CONSTANT
 
 		CH03("", 0, 0x00a, 0, 0)
@@ -72,10 +74,12 @@
 		CH03("", 0, 0x00f, 0, 0)
 
 		CH03("", 0, 0x010, 0, 0)
-		ToInteger("q", Local0)
+		Store("q", Local1)
+		ToInteger(Local1, Local0)
 		CH04("", 0, 36, 0, 0x011, 0, 0) // AE_BAD_DECIMAL_CONSTANT
 
 		CH03("", 0, 0x012, 0, 0)
-		ToInteger("q                 ", Local0)
+		Store("q                 ", Local1)
+		ToInteger(Local1, Local0)
 		CH04("", 0, 36, 0, 0x013, 0, 0) // AE_BAD_DECIMAL_CONSTANT
 	}

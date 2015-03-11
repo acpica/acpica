@@ -1030,7 +1030,8 @@ Method(mf86, 1)
 {
 	CH03("mf86", z054, 74, 0, 0)
 
-	ToInteger("0x0x12345678", Local0)
+	Store("0x0x12345678", Local1)
+	ToInteger(Local1, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err(arg0, z054, 75, 0, 0, Local0, 0)
 	}

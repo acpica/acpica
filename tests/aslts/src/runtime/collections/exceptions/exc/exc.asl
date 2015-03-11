@@ -513,7 +513,8 @@ Method(m14e,, Serialized)
 	CH03(ts, z058, 61, 0, 0)
 
 	if (LEqual(F64, 1)) {
-		ToBCD(9999999999999999, Local5)
+		Store(9999999999999999, Local4)
+		ToBCD(Local4, Local5)
 	} else {
 		ToBCD(99999999, Local5)
 	}
@@ -521,9 +522,11 @@ Method(m14e,, Serialized)
 	CH03(ts, z058, 62, 0, 0)
 
 	if (LEqual(F64, 1)) {
-		ToBCD(10000000000000000, Local5)
+		Store(10000000000000000, Local4)
+		ToBCD(Local4, Local5)
 	} else {
-		ToBCD(100000000, Local5)
+		Store(100000000, Local4)
+		ToBCD(Local4, Local5)
 	}
 
 	CH04(ts, 0, 52, z058, 63, 0, 0)	// AE_AML_NUMERIC_OVERFLOW
@@ -841,12 +844,14 @@ Method(m156,, Serialized)
 	CH03(ts, z058, 109, 0, 0)
 
 	// ToInteger, empty String
-	ToInteger("", Local5)
+	Store("", Local4)
+	ToInteger(Local4, Local5)
 
 	CH04(ts, 0, 36, z058, 110, 0, 0)	// AE_BAD_DECIMAL_CONSTANT
 
 	// ToInteger, String filled with blanks
-	ToInteger("                 ", Local5)
+	Store("                 ", Local4)
+	ToInteger(Local4, Local5)
 
 //	CH04(ts, 0, 34, z058, 111, 0, 0)	// AE_BAD_HEX_CONSTANT
 	CH04(ts, 0, 36, z058, 111, 0, 0)	// AE_BAD_DECIMAL_CONSTANT
