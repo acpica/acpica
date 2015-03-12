@@ -142,7 +142,7 @@ AcpiOsOpenFile (
 {
     ACPI_FILE               File;
     UINT32                  i = 0;
-    char                    ModesStr[4];
+    char                    ModesStr[5];
 
 
     if (Modes & ACPI_FILE_READING)
@@ -156,6 +156,14 @@ AcpiOsOpenFile (
     if (Modes & ACPI_FILE_BINARY)
     {
         ModesStr[i++] = 'b';
+    }
+    else if (Modes & ACPI_FILE_TEXT)
+    {
+        ModesStr[i++] = 't';
+    }
+    if (Modes & ACPI_FILE_APPENDING)
+    {
+        ModesStr[i++] = '+';
     }
 
     ModesStr[i++] = '\0';
@@ -187,6 +195,97 @@ AcpiOsCloseFile (
     ACPI_FILE               File)
 {
     fclose (File);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsGetFileCharacter
+ *
+ * PARAMETERS:  File                - File descriptor
+ *
+ * RETURN:      The character read or EOF on the end of the file or error
+ *
+ * DESCRIPTION: Read a character from the file.
+ *
+ ******************************************************************************/
+
+int
+AcpiOsGetFileCharacter (
+    ACPI_FILE               File)
+{
+    int                     Ret;
+
+
+    Ret = fgetc (File);
+    if (Ret < 0 && ferror (File))
+    {
+        perror ("Error reading file");
+    }
+
+    return (Ret);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsPutFileCharacter
+ *
+ * PARAMETERS:  File                - File descriptor
+ *              c                   - Character byte
+ *
+ * RETURN:      The character written or EOF on the end of the file or error
+ *
+ * DESCRIPTION: Write a character to the file.
+ *
+ ******************************************************************************/
+
+int
+AcpiOsPutFileCharacter (
+    ACPI_FILE               File,
+    const char              c)
+{
+    int                     Ret;
+
+
+    Ret = fputc (c, File);
+    if (Ret < 0 && ferror (File))
+    {
+        perror ("Error writing file");
+    }
+
+    return (Ret);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsGetFileString
+ *
+ * PARAMETERS:  File                - File descriptor
+ *
+ * RETURN:      The string read
+ *
+ * DESCRIPTION: Read a string from the file.
+ *
+ ******************************************************************************/
+
+char *
+AcpiOsGetFileString (
+    char                    *s,
+    ACPI_SIZE               Size,
+    ACPI_FILE               File)
+{
+    char                    *Ret;
+
+
+    Ret = fgets (s, Size, File);
+    if (Ret == NULL && ferror (File))
+    {
+        perror ("Error reading file");
+    }
+
+    return (Ret);
 }
 
 

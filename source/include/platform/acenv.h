@@ -174,6 +174,7 @@
     (defined ACPI_EXAMPLE_APP)
 #define ACPI_APPLICATION
 #define ACPI_SINGLE_THREADED
+#define USE_NATIVE_ALLOCATE_ZEROED
 #endif
 
 /* AcpiHelp configuration. Error messages disabled. */
@@ -200,7 +201,6 @@
 
 #ifdef ACPI_DUMP_APP
 #define ACPI_USE_NATIVE_MEMORY_MAPPING
-#define USE_NATIVE_ALLOCATE_ZEROED
 #endif
 
 /* AcpiNames/Example configuration. Hardware disabled */
@@ -418,6 +418,8 @@
 
 /* We will be linking to the standard Clib functions */
 
+#define ACPI_STRPBRK(s,d)       strpbrk((s), (d))
+#define ACPI_STRTOK(s,d)        strtok((s), (d))
 #define ACPI_STRSTR(s1,s2)      strstr((s1), (s2))
 #define ACPI_STRCHR(s1,c)       strchr((s1), (c))
 #define ACPI_STRLEN(s)          (ACPI_SIZE) strlen((s))
@@ -430,6 +432,7 @@
 #define ACPI_STRTOUL(d,s,n)     strtoul((d), (s), (ACPI_SIZE)(n))
 #define ACPI_MEMCMP(s1,s2,n)    memcmp((const char *)(s1), (const char *)(s2), (ACPI_SIZE)(n))
 #define ACPI_MEMCPY(d,s,n)      (void) memcpy((d), (s), (ACPI_SIZE)(n))
+#define ACPI_MEMMOVE(d,s,n)     (void) memmove((d), (s), (ACPI_SIZE)(n))
 #define ACPI_MEMSET(d,s,n)      (void) memset((d), (s), (ACPI_SIZE)(n))
 #define ACPI_TOUPPER(i)         toupper((int) (i))
 #define ACPI_TOLOWER(i)         tolower((int) (i))
@@ -439,6 +442,13 @@
 #define ACPI_IS_UPPER(i)        isupper((int) (i))
 #define ACPI_IS_PRINT(i)        isprint((int) (i))
 #define ACPI_IS_ALPHA(i)        isalpha((int) (i))
+#define ACPI_VFPRINTF           vfprintf
+#define ACPI_FPRINTF            fprintf
+#define ACPI_VPRINTF            vprintf
+#define ACPI_PRINTF             printf
+#define ACPI_VSNPRINTF          vsnprintf
+#define ACPI_SNPRINTF           snprintf
+#define ACPI_SPRINTF            sprintf
 
 #else
 
@@ -477,6 +487,8 @@ typedef char *va_list;
 
 /* Use the local (ACPICA) definitions of the clib functions */
 
+#define ACPI_STRPBRK(s,d)       AcpiUtStrpbrk ((s), (d))
+#define ACPI_STRTOK(s,d)        AcpiUtStrtok ((s), (d))
 #define ACPI_STRSTR(s1,s2)      AcpiUtStrstr ((s1), (s2))
 #define ACPI_STRCHR(s1,c)       AcpiUtStrchr ((s1), (c))
 #define ACPI_STRLEN(s)          (ACPI_SIZE) AcpiUtStrlen ((s))
@@ -489,9 +501,17 @@ typedef char *va_list;
 #define ACPI_STRTOUL(d,s,n)     AcpiUtStrtoul ((d), (s), (ACPI_SIZE)(n))
 #define ACPI_MEMCMP(s1,s2,n)    AcpiUtMemcmp((const char *)(s1), (const char *)(s2), (ACPI_SIZE)(n))
 #define ACPI_MEMCPY(d,s,n)      (void) AcpiUtMemcpy ((d), (s), (ACPI_SIZE)(n))
+#define ACPI_MEMMOVE(d,s,n)     (void) AcpiUtMemmove ((d), (s), (ACPI_SIZE)(n))
 #define ACPI_MEMSET(d,v,n)      (void) AcpiUtMemset ((d), (v), (ACPI_SIZE)(n))
 #define ACPI_TOUPPER(c)         AcpiUtToUpper ((int) (c))
 #define ACPI_TOLOWER(c)         AcpiUtToLower ((int) (c))
+#define ACPI_VFPRINTF           AcpiUtFileVprintf
+#define ACPI_FPRINTF            AcpiUtFilePrintf
+#define ACPI_VPRINTF            AcpiUtPrintf
+#define ACPI_PRINTF             AcpiUtPrintf
+#define ACPI_VSNPRINTF          AcpiUtVsnprintf
+#define ACPI_SNPRINTF           AcpiUtSnprintf
+#define ACPI_SPRINTF            AcpiUtSprintf
 
 #endif /* ACPI_USE_SYSTEM_CLIBRARY */
 
@@ -501,10 +521,12 @@ typedef char *va_list;
 #define ACPI_FILE              FILE *
 #define ACPI_FILE_OUT          stdout
 #define ACPI_FILE_ERR          stderr
+#define ACPI_FILE_IN           stdin
 #else
 #define ACPI_FILE              void *
 #define ACPI_FILE_OUT          NULL
 #define ACPI_FILE_ERR          NULL
+#define ACPI_FILE_IN           NULL
 #endif /* ACPI_APPLICATION */
 #endif /* ACPI_FILE */
 
