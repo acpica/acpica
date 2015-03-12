@@ -587,10 +587,20 @@ AcpiDmDumpDataTable (
             }
             else
             {
-                AcpiOsPrintf ("\n**** Unknown ACPI table type [%4.4s]\n\n",
+                AcpiOsPrintf ("\n**** Unknown ACPI table signature [%4.4s]\n\n",
                     Table->Signature);
-                fprintf (stderr, "Unknown ACPI table signature [%4.4s], decoding header only\n",
+
+                fprintf (stderr, "Unknown ACPI table signature [%4.4s], ",
                     Table->Signature);
+
+                if (!AcpiGbl_ForceAmlDisassembly)
+                {
+                    fprintf (stderr, "decoding ACPI table header only\n");
+                }
+                else
+                {
+                    fprintf (stderr, "assuming table contains valid AML code\n");
+                }
             }
         }
         else if (TableData->TableHandler)

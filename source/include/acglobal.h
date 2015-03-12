@@ -382,6 +382,7 @@ ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_DbOutputFlags, ACPI_DB_CONSOLE_O
 ACPI_INIT_GLOBAL (UINT8,                AcpiGbl_NoResourceDisassembly, FALSE);
 ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_IgnoreNoopOperator, FALSE);
 ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_CstyleDisassembly, TRUE);
+ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_ForceAmlDisassembly, FALSE);
 
 ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_DbOpt_Disasm);
 ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_DbOpt_Verbose);

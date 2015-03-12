@@ -423,7 +423,9 @@ AdAmlDisassemble (
 
     *OutFilename = DisasmFilename;
 
-    if (!AcpiUtIsAmlTable (Table))
+    /* ForceAmlDisassembly means to assume the table contains valid AML */
+
+    if (!AcpiGbl_ForceAmlDisassembly && !AcpiUtIsAmlTable (Table))
     {
         AdDisassemblerHeader (Filename);
         AcpiOsPrintf (" * ACPI Data Table [%4.4s]\n *\n",
@@ -592,7 +594,7 @@ AdAmlDisassemble (
 
 Cleanup:
 
-    if (Table && !AcpiUtIsAmlTable (Table))
+    if (Table && !AcpiGbl_ForceAmlDisassembly &&!AcpiUtIsAmlTable (Table))
     {
         ACPI_FREE (Table);
     }

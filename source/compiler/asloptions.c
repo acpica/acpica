@@ -346,6 +346,11 @@ AslDoOptions (
 
             break;
 
+        case 'f':
+
+            AcpiGbl_ForceAmlDisassembly = TRUE;
+            break;
+
         case 'l':   /* Use legacy ASL code (not ASL+) for disassembly */
 
             Gbl_DoCompile = FALSE;
