@@ -888,7 +888,7 @@ if [ $ENABLELOG != 0 ]; then
 	COMMONLOGFILE="$MULTIPATH/Summary"
 	echo "# Trace and summary of $MULTINAME bunch of test runs." > "$COMMONLOGFILE"
 	multi_log ""
-	multi_log "ASLTS_SYSTEM `uname -s` `uname -r` `uname -v` `uname -m` `uname -p` `uname -i` `uname -o`"
+	multi_log "ASLTS_SYSTEM `uname -a`"
 	multi_log ""
 fi
 
@@ -990,5 +990,3 @@ if [ $HAVE_LARGE_REF_CNT == yes ]; then
 fi
 
 exit $UTILSTATUS
-
-
