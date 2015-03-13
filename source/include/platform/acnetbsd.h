@@ -176,6 +176,7 @@
 
 #define __cli()
 #define __sti()
+#define __cdecl
 
 #endif /* defined(_KERNEL) || defined(_STANDALONE) */
 
