@@ -177,9 +177,6 @@
 #define __cli()
 #define __sti()
 
-/* XXX */
-#define __inline inline
-
 #endif /* defined(_KERNEL) || defined(_STANDALONE) */
 
 /* Always use NetBSD code over our local versions */
