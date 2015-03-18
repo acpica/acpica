@@ -947,7 +947,7 @@ typedef union acpi_parse_value
     UINT8                           DescriptorType; /* To differentiate various internal objs */\
     UINT8                           Flags;          /* Type of Op */\
     UINT16                          AmlOpcode;      /* AML opcode */\
-    UINT32                          AmlOffset;      /* Offset of declaration in AML */\
+    UINT8                           *Aml;           /* Address of declaration in AML */\
     union acpi_parse_object         *Next;          /* Next op */\
     ACPI_NAMESPACE_NODE             *Node;          /* For use by interpreter */\
     ACPI_PARSE_VALUE                Value;          /* Value or args associated with the opcode */\

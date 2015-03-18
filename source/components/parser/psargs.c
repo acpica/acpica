@@ -596,7 +596,7 @@ static ACPI_PARSE_OBJECT *
 AcpiPsGetNextField (
     ACPI_PARSE_STATE        *ParserState)
 {
-    UINT32                  AmlOffset;
+    UINT8                   *Aml;
     ACPI_PARSE_OBJECT       *Field;
     ACPI_PARSE_OBJECT       *Arg = NULL;
     UINT16                  Opcode;
@@ -612,8 +612,7 @@ AcpiPsGetNextField (
     ACPI_FUNCTION_TRACE (PsGetNextField);
 
 
-    AmlOffset = (UINT32) ACPI_PTR_DIFF (
-        ParserState->Aml, ParserState->AmlStart);
+    Aml = ParserState->Aml;
 
     /* Determine field type */
 
@@ -657,7 +656,7 @@ AcpiPsGetNextField (
         return_PTR (NULL);
     }
 
-    Field->Common.AmlOffset = AmlOffset;
+    Field->Common.Aml = Aml;
 
     /* Decode the field type */
 

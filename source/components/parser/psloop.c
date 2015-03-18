@@ -217,8 +217,7 @@ AcpiPsGetArguments (
 
             if (Arg)
             {
-                Arg->Common.AmlOffset = (UINT32) ACPI_PTR_DIFF (
-                    WalkState->Aml, WalkState->ParserState.AmlStart);
+                Arg->Common.Aml = WalkState->Aml;
                 AcpiPsAppendArg (Op, Arg);
             }
 
@@ -574,15 +573,14 @@ AcpiPsParseLoop (
                 continue;
             }
 
-            Op->Common.AmlOffset = (UINT32) ACPI_PTR_DIFF (
-                    WalkState->Aml, WalkState->ParserState.AmlStart);
+            Op->Common.Aml = WalkState->Aml;
 
             if (WalkState->OpInfo)
             {
                 ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
-                    "Opcode %4.4X [%s] Op %p Aml %p AmlOffset %5.5X\n",
+                    "Opcode %4.4X [%s] Op %p Aml %p\n",
                      (UINT32) Op->Common.AmlOpcode, WalkState->OpInfo->Name,
-                     Op, ParserState->Aml, Op->Common.AmlOffset));
+                     Op, Op->Common.Aml));
             }
         }
 
