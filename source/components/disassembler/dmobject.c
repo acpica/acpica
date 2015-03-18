@@ -137,7 +137,6 @@ AcpiDmDecodeNode (
  *
  * PARAMETERS:  Status          - Method execution status
  *              WalkState       - Current state of the parse tree walk
- *              Op              - Executing parse op
  *
  * RETURN:      None
  *
@@ -150,13 +149,9 @@ AcpiDmDecodeNode (
 void
 AcpiDmDumpMethodInfo (
     ACPI_STATUS             Status,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op)
+    ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_PARSE_OBJECT       *Next;
     ACPI_THREAD_STATE       *Thread;
-    ACPI_WALK_STATE         *NextWalkState;
-    ACPI_NAMESPACE_NODE     *PreviousMethod = NULL;
 
 
     /* Ignore control codes, they are not errors */
@@ -183,55 +178,6 @@ AcpiDmDumpMethodInfo (
     if (!Thread)
     {
         return;
-    }
-
-    /* Display exception and method name */
-
-    AcpiOsPrintf ("\n**** Exception %s during execution of method ",
-        AcpiFormatException (Status));
-    AcpiNsPrintNodePathname (WalkState->MethodNode, NULL);
-
-    /* Display stack of executing methods */
-
-    AcpiOsPrintf ("\n\nMethod Execution Stack:\n");
-    NextWalkState = Thread->WalkStateList;
-
-    /* Walk list of linked walk states */
-
-    while (NextWalkState)
-    {
-        AcpiOsPrintf ("    Method [%4.4s] executing: ",
-                AcpiUtGetNodeName (NextWalkState->MethodNode));
-
-        /* First method is the currently executing method */
-
-        if (NextWalkState == WalkState)
-        {
-            if (Op)
-            {
-                /* Display currently executing ASL statement */
-
-                Next = Op->Common.Next;
-                Op->Common.Next = NULL;
-
-                AcpiDmDisassemble (NextWalkState, Op, ACPI_UINT32_MAX);
-                Op->Common.Next = Next;
-            }
-        }
-        else
-        {
-            /*
-             * This method has called another method
-             * NOTE: the method call parse subtree is already deleted at this
-             * point, so we cannot disassemble the method invocation.
-             */
-            AcpiOsPrintf ("Call to method ");
-            AcpiNsPrintNodePathname (PreviousMethod, NULL);
-        }
-
-        PreviousMethod = NextWalkState->MethodNode;
-        NextWalkState = NextWalkState->Next;
-        AcpiOsPrintf ("\n");
     }
 
     /* Display the method locals and arguments */

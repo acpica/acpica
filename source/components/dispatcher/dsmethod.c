@@ -334,14 +334,16 @@ AcpiDsMethodError (
 
     AcpiDsClearImplicitReturn (WalkState);
 
-#ifdef ACPI_DISASSEMBLER
     if (ACPI_FAILURE (Status))
     {
+        AcpiDsDumpMethodStack (Status, WalkState, WalkState->Op);
+
         /* Display method locals/args if disassembler is present */
 
-        AcpiDmDumpMethodInfo (Status, WalkState, WalkState->Op);
-    }
+#ifdef ACPI_DISASSEMBLER
+        AcpiDmDumpMethodInfo (Status, WalkState);
 #endif
+    }
 
     return (Status);
 }

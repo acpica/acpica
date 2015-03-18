@@ -40,6 +40,7 @@ OBJECTS = \
 	$(OBJDIR)/extables.o\
 	$(OBJDIR)/dsargs.o\
 	$(OBJDIR)/dscontrol.o\
+	$(OBJDIR)/dsdebug.o\
 	$(OBJDIR)/dsfield.o\
 	$(OBJDIR)/dsinit.o\
 	$(OBJDIR)/dsmethod.o\
