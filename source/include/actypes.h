@@ -1097,7 +1097,8 @@ typedef struct acpi_buffer
  */
 #define ACPI_FULL_PATHNAME              0
 #define ACPI_SINGLE_NAME                1
-#define ACPI_NAME_TYPE_MAX              1
+#define ACPI_FULL_PATHNAME_NO_TRAILING  2
+#define ACPI_NAME_TYPE_MAX              2
 
 
 /*
