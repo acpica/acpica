@@ -388,7 +388,7 @@ AcpiPsGetNextNamepath (
         ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
             "Control Method - %p Desc %p Path=%p\n", Node, MethodDesc, Path));
 
-        NameOp = AcpiPsAllocOp (AML_INT_NAMEPATH_OP);
+        NameOp = AcpiPsAllocOp (AML_INT_NAMEPATH_OP, Start);
         if (!NameOp)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
@@ -650,13 +650,11 @@ AcpiPsGetNextField (
 
     /* Allocate a new field op */
 
-    Field = AcpiPsAllocOp (Opcode);
+    Field = AcpiPsAllocOp (Opcode, Aml);
     if (!Field)
     {
         return_PTR (NULL);
     }
-
-    Field->Common.Aml = Aml;
 
     /* Decode the field type */
 
@@ -721,6 +719,7 @@ AcpiPsGetNextField (
          * Argument for Connection operator can be either a Buffer
          * (resource descriptor), or a NameString.
          */
+        Aml = ParserState->Aml;
         if (ACPI_GET8 (ParserState->Aml) == AML_BUFFER_OP)
         {
             ParserState->Aml++;
@@ -733,7 +732,7 @@ AcpiPsGetNextField (
             {
                 /* Non-empty list */
 
-                Arg = AcpiPsAllocOp (AML_INT_BYTELIST_OP);
+                Arg = AcpiPsAllocOp (AML_INT_BYTELIST_OP, Aml);
                 if (!Arg)
                 {
                     AcpiPsFreeOp (Field);
@@ -783,7 +782,7 @@ AcpiPsGetNextField (
         }
         else
         {
-            Arg = AcpiPsAllocOp (AML_INT_NAMEPATH_OP);
+            Arg = AcpiPsAllocOp (AML_INT_NAMEPATH_OP, Aml);
             if (!Arg)
             {
                 AcpiPsFreeOp (Field);
@@ -855,7 +854,7 @@ AcpiPsGetNextArg (
 
         /* Constants, strings, and namestrings are all the same size */
 
-        Arg = AcpiPsAllocOp (AML_BYTE_OP);
+        Arg = AcpiPsAllocOp (AML_BYTE_OP, ParserState->Aml);
         if (!Arg)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
@@ -907,7 +906,8 @@ AcpiPsGetNextArg (
         {
             /* Non-empty list */
 
-            Arg = AcpiPsAllocOp (AML_INT_BYTELIST_OP);
+            Arg = AcpiPsAllocOp (AML_INT_BYTELIST_OP,
+                    ParserState->Aml);
             if (!Arg)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
@@ -937,7 +937,7 @@ AcpiPsGetNextArg (
         {
             /* NullName or NameString */
 
-            Arg = AcpiPsAllocOp (AML_INT_NAMEPATH_OP);
+            Arg = AcpiPsAllocOp (AML_INT_NAMEPATH_OP, ParserState->Aml);
             if (!Arg)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);

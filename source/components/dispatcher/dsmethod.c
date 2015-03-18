@@ -181,7 +181,7 @@ AcpiDsAutoSerializeMethod (
 
     /* Create/Init a root op for the method parse tree */
 
-    Op = AcpiPsAllocOp (AML_METHOD_OP);
+    Op = AcpiPsAllocOp (AML_METHOD_OP, ObjDesc->Method.AmlStart);
     if (!Op)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);

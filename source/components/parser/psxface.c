@@ -369,7 +369,7 @@ AcpiPsExecuteMethod (
 
     /* Create and init a Root Node */
 
-    Op = AcpiPsCreateScopeOp ();
+    Op = AcpiPsCreateScopeOp (Info->ObjDesc->Method.AmlStart);
     if (!Op)
     {
         Status = AE_NO_MEMORY;

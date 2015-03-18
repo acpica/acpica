@@ -389,7 +389,7 @@ AcpiPsCreateOp (
     /* Create Op structure and append to parent's argument list */
 
     WalkState->OpInfo = AcpiPsGetOpcodeInfo (WalkState->Opcode);
-    Op = AcpiPsAllocOp (WalkState->Opcode);
+    Op = AcpiPsAllocOp (WalkState->Opcode, AmlOpStart);
     if (!Op)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);

@@ -425,7 +425,7 @@ AcpiDbDisassembleMethod (
 
     ObjDesc = Method->Object;
 
-    Op = AcpiPsCreateScopeOp ();
+    Op = AcpiPsCreateScopeOp (ObjDesc->Method.AmlStart);
     if (!Op)
     {
         return (AE_NO_MEMORY);

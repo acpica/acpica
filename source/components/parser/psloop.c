@@ -217,7 +217,6 @@ AcpiPsGetArguments (
 
             if (Arg)
             {
-                Arg->Common.Aml = WalkState->Aml;
                 AcpiPsAppendArg (Op, Arg);
             }
 
@@ -572,8 +571,6 @@ AcpiPsParseLoop (
 
                 continue;
             }
-
-            Op->Common.Aml = WalkState->Aml;
 
             if (WalkState->OpInfo)
             {
