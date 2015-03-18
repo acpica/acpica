@@ -296,6 +296,9 @@ AcpiDsMethodError (
     ACPI_STATUS             Status,
     ACPI_WALK_STATE         *WalkState)
 {
+    UINT32                  AmlOffset;
+
+
     ACPI_FUNCTION_ENTRY ();
 
 
@@ -319,10 +322,13 @@ AcpiDsMethodError (
          * Handler can map the exception code to anything it wants, including
          * AE_OK, in which case the executing method will not be aborted.
          */
+        AmlOffset = (UINT32) ACPI_PTR_DIFF (WalkState->Aml,
+                        WalkState->ParserState.AmlStart);
+
         Status = AcpiGbl_ExceptionHandler (Status,
                     WalkState->MethodNode ?
                         WalkState->MethodNode->Name.Integer : 0,
-                    WalkState->Opcode, WalkState->AmlOffset, NULL);
+                    WalkState->Opcode, AmlOffset, NULL);
         AcpiExEnterInterpreter ();
     }
 

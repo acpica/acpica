@@ -206,8 +206,7 @@ AcpiPsGetArguments (
          */
         while (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) && !WalkState->ArgCount)
         {
-            WalkState->AmlOffset = (UINT32) ACPI_PTR_DIFF (WalkState->ParserState.Aml,
-                WalkState->ParserState.AmlStart);
+            WalkState->Aml = WalkState->ParserState.Aml;
 
             Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
                         GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
@@ -218,7 +217,8 @@ AcpiPsGetArguments (
 
             if (Arg)
             {
-                Arg->Common.AmlOffset = WalkState->AmlOffset;
+                Arg->Common.AmlOffset = (UINT32) ACPI_PTR_DIFF (
+                    WalkState->Aml, WalkState->ParserState.AmlStart);
                 AcpiPsAppendArg (Op, Arg);
             }
 
@@ -574,7 +574,8 @@ AcpiPsParseLoop (
                 continue;
             }
 
-            Op->Common.AmlOffset = WalkState->AmlOffset;
+            Op->Common.AmlOffset = (UINT32) ACPI_PTR_DIFF (
+                    WalkState->Aml, WalkState->ParserState.AmlStart);
 
             if (WalkState->OpInfo)
             {
