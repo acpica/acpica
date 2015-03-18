@@ -725,7 +725,8 @@ AcpiExStartTraceOpcode (
     ACPI_FUNCTION_NAME (ExStartTraceOpcode);
 
 
-    if (AcpiExInterpreterTraceEnabled (NULL))
+    if (AcpiExInterpreterTraceEnabled (NULL) &&
+        (AcpiGbl_TraceFlags & ACPI_TRACE_OPCODE))
     {
         ACPI_TRACE_POINT (ACPI_TRACE_AML_OPCODE, TRUE,
                 Op->Common.Aml, Op->Common.AmlOpName);
@@ -756,7 +757,8 @@ AcpiExStopTraceOpcode (
     ACPI_FUNCTION_NAME (ExStopTraceOpcode);
 
 
-    if (AcpiExInterpreterTraceEnabled (NULL))
+    if (AcpiExInterpreterTraceEnabled (NULL) &&
+        (AcpiGbl_TraceFlags & ACPI_TRACE_OPCODE))
     {
         ACPI_TRACE_POINT (ACPI_TRACE_AML_OPCODE, FALSE,
                 Op->Common.Aml, Op->Common.AmlOpName);

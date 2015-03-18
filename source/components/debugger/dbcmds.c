@@ -1351,15 +1351,21 @@ AcpiDbTrace (
         strcpy (AcpiDbTraceMethodName, MethodArg);
     }
     if (!strcmp (EnableArg, "ENABLE") ||
-        !strcmp (EnableArg, "AML"))
+        !strcmp (EnableArg, "METHOD") ||
+        !strcmp (EnableArg, "OPCODE"))
     {
-        if (!strcmp (EnableArg, "AML"))
+        if (!strcmp (EnableArg, "METHOD") ||
+            !strcmp (EnableArg, "OPCODE"))
         {
             DebugLevel = ACPI_LV_TRACE_POINT;
             DebugLayer = ACPI_EXECUTER;
         }
 
         Flags = ACPI_TRACE_ENABLED;
+        if (!strcmp (EnableArg, "OPCODE"))
+        {
+            Flags |= ACPI_TRACE_OPCODE;
+        }
         if (OnceArg && !strcmp (OnceArg, "ONCE"))
         {
             Flags |= ACPI_TRACE_ONESHOT;

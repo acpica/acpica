@@ -373,7 +373,8 @@ static const ACPI_DB_COMMAND_HELP   AcpiGbl_DbCommandHelp[] =
     {4, "  Trace <State> [<Method>] [Once]",   "Trace method execution\n"},
     {1, "     Enable",                         "Enable all messages\n"},
     {1, "     Disable",                        "Disable traer\n"},
-    {1, "     AML",                            "Enable AML execution messages\n"},
+    {1, "     Method",                         "Enable method execution messages\n"},
+    {1, "     Opcode",                         "Enable opcode execution messages\n"},
     {1, "  Tree",                              "Display control method calling tree\n"},
     {1, "  <Enter>",                           "Single step next AML opcode (over calls)\n"},
 

@@ -262,8 +262,9 @@
 /*
  * Global trace flags
  */
-#define ACPI_TRACE_ENABLED          ((UINT32) 2)
-#define ACPI_TRACE_ONESHOT          ((UINT32) 1)
+#define ACPI_TRACE_ENABLED          ((UINT32) 4)
+#define ACPI_TRACE_ONESHOT          ((UINT32) 2)
+#define ACPI_TRACE_OPCODE           ((UINT32) 1)
 
 /* Defaults for trace debugging level/layer */
 
