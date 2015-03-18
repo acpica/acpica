@@ -573,14 +573,6 @@ AcpiPsParseLoop (
                 continue;
             }
 
-            if (WalkState->OpInfo)
-            {
-                ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
-                    "Opcode %4.4X [%s] Op %p Aml %p\n",
-                     (UINT32) Op->Common.AmlOpcode, WalkState->OpInfo->Name,
-                     Op, Op->Common.Aml));
-            }
-
             AcpiExStartTraceOpcode (Op, WalkState);
         }
 
