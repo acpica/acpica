@@ -137,6 +137,7 @@
 #define AML_PACKAGE_OP              (UINT16) 0x12
 #define AML_VAR_PACKAGE_OP          (UINT16) 0x13     /* ACPI 2.0 */
 #define AML_METHOD_OP               (UINT16) 0x14
+#define AML_EXTERNAL_OP             (UINT16) 0x15     /* ACPI 6.0 */
 #define AML_DUAL_NAME_PREFIX        (UINT16) 0x2e
 #define AML_MULTI_NAME_PREFIX_OP    (UINT16) 0x2f
 #define AML_NAME_CHAR_SUBSEQ        (UINT16) 0x30
