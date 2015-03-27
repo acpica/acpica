@@ -16,6 +16,7 @@ SRCS=	atexec.c atmain.c \
 	atosxfwrap.c \
 	osunixxf.c \
 	../../source/common/ahids.c \
+	../../source/common/ahuuids.c \
 	../../source/common/cmfsize.c \
 	../../source/common/getopt.c \
 	../../source/components/hardware/hwtimer.c \
@@ -35,6 +36,7 @@ SRCS=	atexec.c atmain.c \
 	../../source/components/debugger/dbutils.c \
 	../../source/components/debugger/dbxface.c \
 	../../source/components/disassembler/dmbuffer.c \
+	../../source/components/disassembler/dmcstyle.c \
 	../../source/components/disassembler/dmdeferred.c \
 	../../source/components/disassembler/dmnames.c \
 	../../source/components/disassembler/dmobject.c \
@@ -174,6 +176,7 @@ SRCS=	atexec.c atmain.c \
 	../../source/components/utilities/utexcep.c \
 	../../source/components/utilities/utfileio.c \
 	../../source/components/utilities/utglobal.c \
+	../../source/components/utilities/uthex.c \
 	../../source/components/utilities/utids.c \
 	../../source/components/utilities/utinit.c \
 	../../source/components/utilities/utlock.c \
@@ -189,21 +192,41 @@ SRCS=	atexec.c atmain.c \
 	../../source/components/utilities/utstate.c \
 	../../source/components/utilities/utstring.c \
 	../../source/components/utilities/uttrack.c \
+	../../source/components/utilities/utuuid.c \
 	../../source/components/utilities/utxface.c \
 	../../source/components/utilities/utxferror.c \
 	../../source/components/utilities/utxfinit.c \
 	../../source/os_specific/service_layers/oslibcfs.c
 #	../../source/os_specific/service_layers/osunixxf.c
 
+UNAME_S := $(shell uname -s)
 
-CFLAGS+= -Wall -g -D_LINUX -DNDEBUG -D_CONSOLE -DACPI_APITS -DACPI_EXEC_APP -D_MULTI_THREADED -Wstrict-prototypes -I../../source/include
+#
+# Host detection and configuration
+#
+ifeq ($(UNAME_S), Darwin)  # Mac OS X
+HOST =       _APPLE
+endif
+
+ifeq ($(UNAME_S), FreeBSD)
+HOST =       _FreeBSD
+endif
+
+ifeq ($(UNAME_S), Linux)
+HOST =      _Linux
+endif
+
+ifeq ($(UNAME_S), NetBSD)
+HOST =       _NetBSD
+endif
+
+CFLAGS+= -Wall -g -D$(HOST) -DNDEBUG -D_CONSOLE -DACPI_APITS -DACPI_EXEC_APP -D_MULTI_THREADED -Wstrict-prototypes -I../../source/include
 
 
-acpiexec : $(patsubst %.c,%.o, $(SRCS))
-	$(CC) $(LDFLAGS) $(patsubst %.c,%.o, $(SRCS)) -o $(PROG)
+$(PROG) : $(patsubst %.c,%.o, $(SRCS))
+	$(CC) $(CFLAGS) $(LDFLAGS) $(patsubst %.c,%.o, $(SRCS)) -o $(PROG)
 
 CLEANFILES= $(PROG)
 
 clean : 
 	rm -f $(CLEANFILES) $(patsubst %.c,%.o, $(SRCS))
-
