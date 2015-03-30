@@ -1299,6 +1299,10 @@ UINT32 (*ACPI_INTERFACE_HANDLER) (
 
 #define ACPI_UUID_LENGTH                16
 
+/* Length of 3-byte PCI class code values when converted back to a string */
+
+#define ACPI_PCICLS_STRING_SIZE         7   /* Includes null terminator */
+
 
 /* Structures used for device/processor HID, UID, CID, and SUB */
 
@@ -1327,7 +1331,7 @@ typedef struct acpi_device_info
     UINT32                          Name;               /* ACPI object Name */
     ACPI_OBJECT_TYPE                Type;               /* ACPI object Type */
     UINT8                           ParamCount;         /* If a method, required parameter count */
-    UINT8                           Valid;              /* Indicates which optional fields are valid */
+    UINT16                          Valid;              /* Indicates which optional fields are valid */
     UINT8                           Flags;              /* Miscellaneous info */
     UINT8                           HighestDstates[4];  /* _SxD values: 0xFF indicates not valid */
     UINT8                           LowestDstates[5];   /* _SxW values: 0xFF indicates not valid */
@@ -1336,6 +1340,7 @@ typedef struct acpi_device_info
     ACPI_PNP_DEVICE_ID              HardwareId;         /* _HID value */
     ACPI_PNP_DEVICE_ID              UniqueId;           /* _UID value */
     ACPI_PNP_DEVICE_ID              SubsystemId;        /* _SUB value */
+    ACPI_PNP_DEVICE_ID              ClassCode;          /* _CLS value */
     ACPI_PNP_DEVICE_ID_LIST         CompatibleIdList;   /* _CID list <must be last> */
 
 } ACPI_DEVICE_INFO;
@@ -1346,14 +1351,15 @@ typedef struct acpi_device_info
 
 /* Flags for Valid field above (AcpiGetObjectInfo) */
 
-#define ACPI_VALID_STA                  0x01
-#define ACPI_VALID_ADR                  0x02
-#define ACPI_VALID_HID                  0x04
-#define ACPI_VALID_UID                  0x08
-#define ACPI_VALID_SUB                  0x10
-#define ACPI_VALID_CID                  0x20
-#define ACPI_VALID_SXDS                 0x40
-#define ACPI_VALID_SXWS                 0x80
+#define ACPI_VALID_STA                  0x0001
+#define ACPI_VALID_ADR                  0x0002
+#define ACPI_VALID_HID                  0x0004
+#define ACPI_VALID_UID                  0x0008
+#define ACPI_VALID_SUB                  0x0010
+#define ACPI_VALID_CID                  0x0020
+#define ACPI_VALID_CLS                  0x0040
+#define ACPI_VALID_SXDS                 0x0100
+#define ACPI_VALID_SXWS                 0x0200
 
 /* Flags for _STA return value (CurrentStatus above) */
 
