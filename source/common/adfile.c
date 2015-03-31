@@ -367,7 +367,10 @@ FlSplitInputPathname (
     char                    *Filename;
 
 
-    *OutDirectoryPath = NULL;
+    if (OutDirectoryPath)
+    {
+        *OutDirectoryPath = NULL;
+    }
 
     if (!InputPath)
     {
@@ -412,7 +415,10 @@ FlSplitInputPathname (
         return (AE_NO_MEMORY);
     }
 
-    *OutDirectoryPath = DirectoryPath;
+    if (OutDirectoryPath)
+    {
+        *OutDirectoryPath = DirectoryPath;
+    }
 
     if (OutFilename)
     {

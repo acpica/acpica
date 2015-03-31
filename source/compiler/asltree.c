@@ -773,7 +773,6 @@ TrCreateConstantLeafNode (
     time_t                  CurrentTime;
     char                    *StaticTimeString;
     char                    *TimeString;
-    char                    *Path;
     char                    *Filename;
 
 
@@ -800,7 +799,7 @@ TrCreateConstantLeafNode (
 
         /* Get the simple filename from the full path */
 
-        FlSplitInputPathname (Op->Asl.Filename, &Path, &Filename);
+        FlSplitInputPathname (Op->Asl.Filename, NULL, &Filename);
         Op->Asl.Value.String = Filename;
         break;
 
