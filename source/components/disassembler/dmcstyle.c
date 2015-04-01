@@ -186,12 +186,20 @@ AcpiDmCheckForSymbolicOpcode (
     Child1 = AcpiPsGetArg (Op, 0);
     if (!Child1)
     {
+        /* Parse tree may be confused or corrupted */
+
         return (FALSE);
     }
 
     /* Get the second operand */
 
     Child2 = Child1->Common.Next;
+    if (!Child2)
+    {
+        /* Parse tree may be confused or corrupted */
+
+        return (FALSE);
+    }
 
     /* Setup the operator string for this opcode */
 
@@ -371,8 +379,16 @@ AcpiDmCheckForSymbolicOpcode (
         /* Target is 3rd operand */
 
         Target = Child2->Common.Next;
+
         if (Op->Common.AmlOpcode == AML_DIVIDE_OP)
         {
+            if (!Target)
+            {
+                /* Parse tree may be confused or corrupted */
+
+                return (FALSE);
+            }
+
             /*
              * Divide has an extra target operand (Remainder).
              * If this extra target is specified, it cannot be converted
@@ -475,6 +491,13 @@ AcpiDmCheckForSymbolicOpcode (
         /* Target is optional, 3rd operand */
 
         Target = Child2->Common.Next;
+        if (!Target)
+        {
+            /* Parse tree may be confused or corrupted */
+
+            return (FALSE);
+        }
+
         if (AcpiDmIsValidTarget (Target))
         {
             AcpiDmPromoteTarget (Op, Target);
@@ -495,6 +518,13 @@ AcpiDmCheckForSymbolicOpcode (
          * source so that the target is processed first.
          */
         Target = Child1->Common.Next;
+        if (!Target)
+        {
+            /* Parse tree may be confused or corrupted */
+
+            return (FALSE);
+        }
+
         AcpiDmPromoteTarget (Op, Target);
 
         if (!Target->Common.OperatorSymbol)
