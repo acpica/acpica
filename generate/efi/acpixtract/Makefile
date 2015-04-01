@@ -30,8 +30,8 @@ OBJECTS = \
     $(OBJDIR)/acpixtract.o\
     $(OBJDIR)/axmain.o\
     $(OBJDIR)/getopt.o\
-    $(OBJDIR)/oslibcfs.o\
-    $(OBJDIR)/osunixxf.o\
+    $(OBJDIR)/osefixf.o\
+    $(OBJDIR)/utclib.o\
     $(OBJDIR)/utdebug.o\
     $(OBJDIR)/utexcep.o\
     $(OBJDIR)/utglobal.o\

@@ -139,7 +139,7 @@ AcpiUtCheckTextModeCorruption (
 
 static ACPI_STATUS
 AcpiUtReadTable (
-    FILE                    *fp,
+    ACPI_FILE               fp,
     ACPI_TABLE_HEADER       **Table,
     UINT32                  *TableLength);
 
@@ -235,7 +235,7 @@ AcpiUtCheckTextModeCorruption (
 
 static ACPI_STATUS
 AcpiUtReadTable (
-    FILE                    *fp,
+    ACPI_FILE               fp,
     ACPI_TABLE_HEADER       **Table,
     UINT32                  *TableLength)
 {
@@ -261,9 +261,9 @@ AcpiUtReadTable (
 
     /* Read the signature */
 
-    fseek (fp, 0, SEEK_SET);
+    AcpiOsSetFileOffset (fp, 0, ACPI_FILE_BEGIN);
 
-    Count = fread (&TableHeader, 1, sizeof (ACPI_TABLE_HEADER), fp);
+    Count = AcpiOsReadFile (fp, &TableHeader, 1, sizeof (ACPI_TABLE_HEADER));
     if (Count != sizeof (ACPI_TABLE_HEADER))
     {
         AcpiOsPrintf ("Could not read the table header\n");
@@ -339,8 +339,8 @@ AcpiUtReadTable (
 
     /* Get the rest of the table */
 
-    fseek (fp, 0, SEEK_SET);
-    Actual = fread (*Table, 1, (size_t) FileSize, fp);
+    AcpiOsSetFileOffset (fp, 0, ACPI_FILE_BEGIN);
+    Actual = AcpiOsReadFile (fp, *Table, 1, (size_t) FileSize);
     if (Actual == FileSize)
     {
         if (StandardHeader)
@@ -393,7 +393,7 @@ AcpiUtReadTableFromFile (
     char                    *Filename,
     ACPI_TABLE_HEADER       **Table)
 {
-    FILE                    *File;
+    ACPI_FILE               File;
     UINT32                  FileSize;
     UINT32                  TableLength;
     ACPI_STATUS             Status = AE_ERROR;
@@ -401,10 +401,10 @@ AcpiUtReadTableFromFile (
 
     /* Open the file, get current size */
 
-    File = fopen (Filename, "rb");
+    File = AcpiOsOpenFile (Filename, ACPI_FILE_READING | ACPI_FILE_BINARY);
     if (!File)
     {
-        perror ("Could not open input file");
+        AcpiLogError ("Could not open input file");
         return (Status);
     }
 
@@ -416,7 +416,7 @@ AcpiUtReadTableFromFile (
 
     /* Get the entire file */
 
-    fprintf (stderr, "Loading Acpi table from file %10s - Length %.8u (%06X)\n",
+    AcpiLogError ("Loading Acpi table from file %10s - Length %.8u (%06X)\n",
         Filename, FileSize, FileSize);
 
     Status = AcpiUtReadTable (File, Table, &TableLength);
@@ -426,7 +426,7 @@ AcpiUtReadTableFromFile (
     }
 
 Exit:
-    fclose(File);
+    AcpiOsCloseFile(File);
     return (Status);
 }
 

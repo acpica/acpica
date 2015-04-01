@@ -311,7 +311,7 @@ AeBuildLocalTables (
         {
             if (DsdtAddress)
             {
-                printf ("Already found a DSDT, only one allowed\n");
+                ACPI_PRINTF ("Already found a DSDT, only one allowed\n");
                 return (AE_ALREADY_EXISTS);
             }
 

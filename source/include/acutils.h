@@ -333,6 +333,16 @@ AcpiUtStrchr (
     int                     ch);
 
 char *
+AcpiUtStrpbrk (
+    const char              *String,
+    const char              *Delimiters);
+
+char *
+AcpiUtStrtok (
+    char                    *String,
+    const char              *Delimiters);
+
+char *
 AcpiUtStrcpy (
     char                    *DstString,
     const char              *SrcString);
@@ -384,6 +394,12 @@ AcpiUtStrstr (
 
 void *
 AcpiUtMemcpy (
+    void                    *Dest,
+    const void              *Src,
+    ACPI_SIZE               Count);
+
+void *
+AcpiUtMemmove (
     void                    *Dest,
     const void              *Src,
     ACPI_SIZE               Count);
@@ -1219,6 +1235,8 @@ AcpiAhMatchUuid (
 /*
  * utprint - printf/vprintf output functions
  */
+#ifndef ACPI_USE_SYSTEM_CLIBRARY
+
 const char *
 AcpiUtScanNumber (
     const char              *String,
@@ -1243,6 +1261,12 @@ AcpiUtSnprintf (
     const char              *Format,
     ...);
 
+int
+AcpiUtSprintf (
+    char                    *String,
+    const char              *Format,
+    ...);
+
 #ifdef ACPI_APPLICATION
 int
 AcpiUtFileVprintf (
@@ -1255,6 +1279,18 @@ AcpiUtFilePrintf (
     ACPI_FILE               File,
     const char              *Format,
     ...);
+
+int
+AcpiUtVprintf (
+    const char              *Format,
+    va_list                 Args);
+
+int
+AcpiUtPrintf (
+    const char              *Format,
+    ...);
+#endif
+
 #endif
 
 /*

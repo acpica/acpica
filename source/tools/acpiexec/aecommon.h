@@ -191,9 +191,11 @@ typedef struct ae_debug_regions
 #define OSD_PRINT(lvl,fp)               TEST_OUTPUT_LEVEL(lvl) {\
                                             AcpiOsPrintf PARAM_LIST(fp);}
 
+#ifndef _GNU_EFI
 void ACPI_SYSTEM_XFACE
 AeCtrlCHandler (
     int                     Sig);
+#endif
 
 ACPI_STATUS
 AeBuildLocalTables (
