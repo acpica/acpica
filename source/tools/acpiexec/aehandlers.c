@@ -192,9 +192,11 @@ static char                *TableEvents[] =
 #endif /* !ACPI_REDUCED_HARDWARE */
 
 
-static UINT32               SigintCount = 0;
 static AE_DEBUG_REGIONS     AeRegions;
 
+
+#ifndef _GNU_EFI
+static UINT32               SigintCount = 0;
 
 /******************************************************************************
  *
@@ -232,6 +234,7 @@ AeCtrlCHandler (
     (void) AcpiOsTerminate ();
     exit (0);
 }
+#endif
 
 
 /******************************************************************************
@@ -287,7 +290,7 @@ AeCommonNotifyHandler (
 #if 0
     case 0:
 
-        printf ("[AcpiExec] Method Error 0x%X: Results not equal\n", Value);
+        ACPI_PRINTF ("[AcpiExec] Method Error 0x%X: Results not equal\n", Value);
         if (AcpiGbl_DebugFile)
         {
             AcpiOsPrintf ("[AcpiExec] Method Error: Results not equal\n");
@@ -296,7 +299,7 @@ AeCommonNotifyHandler (
 
     case 1:
 
-        printf ("[AcpiExec] Method Error: Incorrect numeric result\n");
+        ACPI_PRINTF ("[AcpiExec] Method Error: Incorrect numeric result\n");
         if (AcpiGbl_DebugFile)
         {
             AcpiOsPrintf ("[AcpiExec] Method Error: Incorrect numeric result\n");
@@ -305,7 +308,7 @@ AeCommonNotifyHandler (
 
     case 2:
 
-        printf ("[AcpiExec] Method Error: An operand was overwritten\n");
+        ACPI_PRINTF ("[AcpiExec] Method Error: An operand was overwritten\n");
         if (AcpiGbl_DebugFile)
         {
             AcpiOsPrintf ("[AcpiExec] Method Error: An operand was overwritten\n");
@@ -316,7 +319,7 @@ AeCommonNotifyHandler (
 
     default:
 
-        printf ("[AcpiExec] Handler %u: Received a %s Notify on [%4.4s] %p Value 0x%2.2X (%s)\n",
+        ACPI_PRINTF ("[AcpiExec] Handler %u: Received a %s Notify on [%4.4s] %p Value 0x%2.2X (%s)\n",
             HandlerId, Type, AcpiUtGetNodeName (Device), Device, Value,
             AcpiUtGetNotifyName (Value, ACPI_TYPE_ANY));
         if (AcpiGbl_DebugFile)
@@ -352,7 +355,7 @@ AeSystemNotifyHandler (
     void                        *Context)
 {
 
-    printf ("[AcpiExec] Global:    Received a System Notify on [%4.4s] %p Value 0x%2.2X (%s)\n",
+    ACPI_PRINTF ("[AcpiExec] Global:    Received a System Notify on [%4.4s] %p Value 0x%2.2X (%s)\n",
         AcpiUtGetNodeName (Device), Device, Value,
         AcpiUtGetNotifyName (Value, ACPI_TYPE_ANY));
     if (AcpiGbl_DebugFile)
@@ -385,7 +388,7 @@ AeDeviceNotifyHandler (
     void                        *Context)
 {
 
-    printf ("[AcpiExec] Global:    Received a Device Notify on [%4.4s] %p Value 0x%2.2X (%s)\n",
+    ACPI_PRINTF ("[AcpiExec] Global:    Received a Device Notify on [%4.4s] %p Value 0x%2.2X (%s)\n",
         AcpiUtGetNodeName (Device), Device, Value,
         AcpiUtGetNotifyName (Value, ACPI_TYPE_ANY));
     if (AcpiGbl_DebugFile)
@@ -532,7 +535,7 @@ AeTableHandler (
     Status = AcpiUpdateAllGpes ();
     AE_CHECK_OK (AcpiUpdateAllGpes, Status);
 
-    printf ("[AcpiExec] Table Event %s, [%4.4s] %p\n",
+    ACPI_PRINTF ("[AcpiExec] Table Event %s, [%4.4s] %p\n",
         TableEvents[Event], ((ACPI_TABLE_HEADER *) Table)->Signature, Table);
 #endif /* !ACPI_REDUCED_HARDWARE */
 
@@ -832,21 +835,21 @@ AeInstallEarlyHandlers (
     Status = AcpiInstallInterfaceHandler (AeInterfaceHandler);
     if (ACPI_FAILURE (Status))
     {
-        printf ("Could not install interface handler, %s\n",
+        ACPI_PRINTF ("Could not install interface handler, %s\n",
             AcpiFormatException (Status));
     }
 
     Status = AcpiInstallTableHandler (AeTableHandler, NULL);
     if (ACPI_FAILURE (Status))
     {
-        printf ("Could not install table handler, %s\n",
+        ACPI_PRINTF ("Could not install table handler, %s\n",
             AcpiFormatException (Status));
     }
 
     Status = AcpiInstallExceptionHandler (AeExceptionHandler);
     if (ACPI_FAILURE (Status))
     {
-        printf ("Could not install exception handler, %s\n",
+        ACPI_PRINTF ("Could not install exception handler, %s\n",
             AcpiFormatException (Status));
     }
 
@@ -856,7 +859,7 @@ AeInstallEarlyHandlers (
         AeSystemNotifyHandler, NULL);
     if (ACPI_FAILURE (Status))
     {
-        printf ("Could not install a global system notify handler, %s\n",
+        ACPI_PRINTF ("Could not install a global system notify handler, %s\n",
             AcpiFormatException (Status));
     }
 
@@ -864,7 +867,7 @@ AeInstallEarlyHandlers (
         AeDeviceNotifyHandler, NULL);
     if (ACPI_FAILURE (Status))
     {
-        printf ("Could not install a global notify handler, %s\n",
+        ACPI_PRINTF ("Could not install a global notify handler, %s\n",
             AcpiFormatException (Status));
     }
 
@@ -875,7 +878,7 @@ AeInstallEarlyHandlers (
             AeNotifyHandler1, NULL);
         if (ACPI_FAILURE (Status))
         {
-            printf ("Could not install a notify handler, %s\n",
+            ACPI_PRINTF ("Could not install a notify handler, %s\n",
                 AcpiFormatException (Status));
         }
 
@@ -883,7 +886,7 @@ AeInstallEarlyHandlers (
             AeNotifyHandler1);
         if (ACPI_FAILURE (Status))
         {
-            printf ("Could not remove a notify handler, %s\n",
+            ACPI_PRINTF ("Could not remove a notify handler, %s\n",
                 AcpiFormatException (Status));
         }
 
@@ -900,7 +903,7 @@ AeInstallEarlyHandlers (
             AeNotifyHandler1, NULL);
         if (ACPI_FAILURE (Status))
         {
-            printf ("Could not install a notify handler, %s\n",
+            ACPI_PRINTF ("Could not install a notify handler, %s\n",
                 AcpiFormatException (Status));
         }
 #endif
@@ -944,7 +947,7 @@ AeInstallEarlyHandlers (
     }
     else
     {
-        printf ("No _SB_ found, %s\n", AcpiFormatException (Status));
+        ACPI_PRINTF ("No _SB_ found, %s\n", AcpiFormatException (Status));
     }
 
 

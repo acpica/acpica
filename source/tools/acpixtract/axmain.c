@@ -183,10 +183,17 @@ DisplayUsage (
  *
  ******************************************************************************/
 
-int
+#ifndef _GNU_EFI
+int ACPI_SYSTEM_XFACE
 main (
     int                     argc,
     char                    *argv[])
+#else
+int ACPI_SYSTEM_XFACE
+acpi_main (
+    int                     argc,
+    char                    *argv[])
+#endif
 {
     char                    *Filename;
     int                     Status;
@@ -195,7 +202,7 @@ main (
 
     ACPI_DEBUG_INITIALIZE (); /* For debug version only */
     AcpiOsInitialize ();
-    printf (ACPI_COMMON_SIGNON (AX_UTILITY_NAME));
+    ACPI_PRINTF (ACPI_COMMON_SIGNON (AX_UTILITY_NAME));
 
     if (argc < 2)
     {
@@ -238,7 +245,7 @@ main (
     Filename = argv[AcpiGbl_Optind];
     if (!Filename)
     {
-        printf ("Missing required input filename\n");
+        ACPI_PRINTF ("Missing required input filename\n");
         return (-1);
     }
 

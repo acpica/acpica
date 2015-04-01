@@ -164,6 +164,61 @@ AcpiUtMemcmp (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiUtMemmove (memmove)
+ *
+ * PARAMETERS:  Dest        - Target of the copy
+ *              Src         - Source buffer to copy
+ *              Count       - Number of bytes to copy
+ *
+ * RETURN:      Dest
+ *
+ * DESCRIPTION: Copy arbitrary bytes of memory with respect to the overlapping
+ *
+ ******************************************************************************/
+
+void *
+AcpiUtMemmove (
+    void                    *Dest,
+    const void              *Src,
+    ACPI_SIZE               Count)
+{
+    char                    *New = (char *) Dest;
+    char                    *Old = (char *) Src;
+
+
+    if (Old > New)
+    {
+        /* Copy from the beginning */
+
+        while (Count)
+        {
+            *New = *Old;
+            New++;
+            Old++;
+            Count--;
+        }
+    }
+    else if (Old < New)
+    {
+        /* Copy from the end */
+
+        New = New + Count - 1;
+        Old = Old + Count - 1;
+        while (Count)
+        {
+            *New = *Old;
+            New--;
+            Old--;
+            Count--;
+        }
+    }
+
+    return (Dest);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiUtMemcpy (memcpy)
  *
  * PARAMETERS:  Dest        - Target of the copy
@@ -261,6 +316,93 @@ AcpiUtStrlen (
     }
 
     return (Length);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtStrpbrk (strpbrk)
+ *
+ * PARAMETERS:  String              - Null terminated string
+ *              Delimiters          - Delimiters to match
+ *
+ * RETURN:      The first occurance in the string of any of the bytes in the
+ *              delimiters
+ *
+ * DESCRIPTION: Search a string for any of a set of the delimiters
+ *
+ ******************************************************************************/
+
+char *
+AcpiUtStrpbrk (
+    const char              *String,
+    const char              *Delimiters)
+{
+    const char              *Delimiter;
+
+
+    for ( ; *String != '\0'; ++String)
+    {
+        for (Delimiter = Delimiters; *Delimiter != '\0'; Delimiter++)
+        {
+            if (*String == *Delimiter)
+            {
+                return (ACPI_CAST_PTR (char, String));
+            }
+        }
+    }
+
+    return (NULL);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtStrtok (strtok)
+ *
+ * PARAMETERS:  String              - Null terminated string
+ *              Delimiters          - Delimiters to match
+ *
+ * RETURN:      Pointer to the next token
+ *
+ * DESCRIPTION: Split string into tokens
+ *
+ ******************************************************************************/
+
+char*
+AcpiUtStrtok (
+    char                    *String,
+    const char              *Delimiters)
+{
+    char                    *Begin = String;
+    static char             *SavedPtr;
+
+
+    if (Begin == NULL)
+    {
+        if (SavedPtr == NULL)
+        {
+            return (NULL);
+        }
+        Begin = SavedPtr;
+    }
+
+    SavedPtr = AcpiUtStrpbrk (Begin, Delimiters);
+    while (SavedPtr == Begin)
+    {
+        *Begin++ = '\0';
+        SavedPtr = AcpiUtStrpbrk (Begin, Delimiters);
+    }
+
+    if (SavedPtr)
+    {
+        *SavedPtr++ = '\0';
+        return (Begin);
+    }
+    else
+    {
+        return (NULL);
+    }
 }
 
 
@@ -547,28 +689,25 @@ AcpiUtStrstr (
     char                    *String1,
     char                    *String2)
 {
-    char                    *String;
+    UINT32                  Length;
 
 
-    if (AcpiUtStrlen (String2) > AcpiUtStrlen (String1))
+    Length = AcpiUtStrlen (String2);
+    if (!Length)
     {
-        return (NULL);
+        return (String1);
     }
 
-    /* Walk entire string, comparing the letters */
-
-    for (String = String1; *String2; )
+    while (AcpiUtStrlen (String1) >= Length)
     {
-        if (*String2 != *String)
+        if (AcpiUtMemcmp (String1, String2, Length) == 0)
         {
-            return (NULL);
+            return (String1);
         }
-
-        String2++;
-        String++;
+        String1++;
     }
 
-    return (String1);
+    return (NULL);
 }
 
 

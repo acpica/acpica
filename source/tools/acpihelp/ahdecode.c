@@ -121,10 +121,10 @@
 
 
 #define AH_DISPLAY_EXCEPTION(Status, Name) \
-    printf ("%.4X: %s\n", Status, Name)
+    AcpiOsPrintf ("%.4X: %s\n", Status, Name)
 
 #define AH_DISPLAY_EXCEPTION_TEXT(Status, Exception) \
-    printf ("%.4X: %-28s (%s)\n", Status, Exception->Name, Exception->Description)
+    AcpiOsPrintf ("%.4X: %-28s (%s)\n", Status, Exception->Name, Exception->Description)
 
 #define BUFFER_LENGTH           128
 #define LINE_BUFFER_LENGTH      512
@@ -210,19 +210,19 @@ AhFindPredefinedNames (
     }
 
     Name[0] = '_';
-    strncpy (&Name[1], NamePrefix, 7);
+    ACPI_STRNCPY (&Name[1], NamePrefix, 7);
 
-    Length = strlen (Name);
+    Length = ACPI_STRLEN (Name);
     if (Length > 4)
     {
-        printf ("%.8s: Predefined name must be 4 characters maximum\n", Name);
+        AcpiOsPrintf ("%.8s: Predefined name must be 4 characters maximum\n", Name);
         return;
     }
 
     Found = AhDisplayPredefinedName (Name, Length);
     if (!Found)
     {
-        printf ("%s, no matching predefined names\n", Name);
+        AcpiOsPrintf ("%s, no matching predefined names\n", Name);
     }
 }
 
@@ -258,8 +258,8 @@ AhDisplayPredefinedName (
         if (!Name)
         {
             Found = TRUE;
-            printf ("%s: <%s>\n", Info->Name, Info->Description);
-            printf ("%*s%s\n", 6, " ", Info->Action);
+            AcpiOsPrintf ("%s: <%s>\n", Info->Name, Info->Description);
+            AcpiOsPrintf ("%*s%s\n", 6, " ", Info->Action);
 
             AhDisplayPredefinedInfo (Info->Name);
             continue;
@@ -278,8 +278,8 @@ AhDisplayPredefinedName (
         if (Matched)
         {
             Found = TRUE;
-            printf ("%s: <%s>\n", Info->Name, Info->Description);
-            printf ("%*s%s\n", 6, " ", Info->Action);
+            AcpiOsPrintf ("%s: <%s>\n", Info->Name, Info->Description);
+            AcpiOsPrintf ("%*s%s\n", 6, " ", Info->Action);
 
             AhDisplayPredefinedInfo (Info->Name);
         }
@@ -354,7 +354,7 @@ AhDisplayResourceName (
     NumTypes = AcpiUtGetResourceBitWidth (Gbl_Buffer,
         ThisName->Info.ArgumentList);
 
-    printf ("      %4.4s resource descriptor field is %s bits wide%s\n",
+    AcpiOsPrintf ("      %4.4s resource descriptor field is %s bits wide%s\n",
         ThisName->Info.Name,
         Gbl_Buffer,
         (NumTypes > 1) ? " (depending on descriptor type)" : "");
@@ -403,10 +403,10 @@ AhFindAmlOpcode (
 
         /* Upper case the opcode name before substring compare */
 
-        strcpy (Gbl_Buffer, Op->OpcodeName);
+        ACPI_STRCPY (Gbl_Buffer, Op->OpcodeName);
         AhStrupr (Gbl_Buffer);
 
-        if (strstr (Gbl_Buffer, Name) == Gbl_Buffer)
+        if (ACPI_STRSTR (Gbl_Buffer, Name) == Gbl_Buffer)
         {
             AhDisplayAmlOpcode (Op);
             Found = TRUE;
@@ -415,7 +415,7 @@ AhFindAmlOpcode (
 
     if (!Found)
     {
-        printf ("%s, no matching AML operators\n", Name);
+        AcpiOsPrintf ("%s, no matching AML operators\n", Name);
     }
 }
 
@@ -450,7 +450,7 @@ AhDecodeAmlOpcode (
     Opcode = ACPI_STRTOUL (OpcodeString, NULL, 16);
     if (Opcode > ACPI_UINT16_MAX)
     {
-        printf ("Invalid opcode (more than 16 bits)\n");
+        AcpiOsPrintf ("Invalid opcode (more than 16 bits)\n");
         return;
     }
 
@@ -459,7 +459,7 @@ AhDecodeAmlOpcode (
     Prefix = (Opcode & 0x0000FF00) >> 8;
     if (Prefix && (Prefix != 0x5B))
     {
-        printf ("Invalid opcode (invalid extension prefix 0x%X)\n",
+        AcpiOsPrintf ("Invalid opcode (invalid extension prefix 0x%X)\n",
             Prefix);
         return;
     }
@@ -496,23 +496,23 @@ AhDisplayAmlOpcode (
 
     if (!Op->OpcodeName)
     {
-        printf ("%18s: Opcode=%-9s\n", "Reserved opcode", Op->OpcodeString);
+        AcpiOsPrintf ("%18s: Opcode=%-9s\n", "Reserved opcode", Op->OpcodeString);
         return;
     }
 
     /* Opcode name and value(s) */
 
-    printf ("%18s: Opcode=%-9s Type (%s)",
+    AcpiOsPrintf ("%18s: Opcode=%-9s Type (%s)",
         Op->OpcodeName, Op->OpcodeString, Op->Type);
 
     /* Optional fixed/static arguments */
 
     if (Op->FixedArguments)
     {
-        printf (" FixedArgs (");
-        AhPrintOneField (37, 36 + 7 + strlen (Op->Type) + 12,
+        AcpiOsPrintf (" FixedArgs (");
+        AhPrintOneField (37, 36 + 7 + ACPI_STRLEN (Op->Type) + 12,
             AH_MAX_AML_LINE_LENGTH, Op->FixedArguments);
-        printf (")");
+        AcpiOsPrintf (")");
     }
 
     /* Optional variable-length argument list */
@@ -521,20 +521,20 @@ AhDisplayAmlOpcode (
     {
         if (Op->FixedArguments)
         {
-            printf ("\n%*s", 36, " ");
+            AcpiOsPrintf ("\n%*s", 36, " ");
         }
-        printf (" VariableArgs (");
+        AcpiOsPrintf (" VariableArgs (");
         AhPrintOneField (37, 15, AH_MAX_AML_LINE_LENGTH, Op->VariableArguments);
-        printf (")");
+        AcpiOsPrintf (")");
     }
-    printf ("\n");
+    AcpiOsPrintf ("\n");
 
     /* Grammar specification */
 
     if (Op->Grammar)
     {
         AhPrintOneField (37, 0, AH_MAX_AML_LINE_LENGTH, Op->Grammar);
-        printf ("\n");
+        AcpiOsPrintf ("\n");
     }
 }
 
@@ -574,10 +574,10 @@ AhFindAslKeywords (
 
         /* Upper case the operator name before substring compare */
 
-        strcpy (Gbl_Buffer, Keyword->Name);
+        ACPI_STRCPY (Gbl_Buffer, Keyword->Name);
         AhStrupr (Gbl_Buffer);
 
-        if (strstr (Gbl_Buffer, Name) == Gbl_Buffer)
+        if (ACPI_STRSTR (Gbl_Buffer, Name) == Gbl_Buffer)
         {
             AhDisplayAslKeyword (Keyword);
             Found = TRUE;
@@ -586,7 +586,7 @@ AhFindAslKeywords (
 
     if (!Found)
     {
-        printf ("%s, no matching ASL keywords\n", Name);
+        AcpiOsPrintf ("%s, no matching ASL keywords\n", Name);
     }
 }
 
@@ -611,7 +611,7 @@ AhDisplayAslKeyword (
 
     /* ASL keyword name and description */
 
-    printf ("%22s: %s\n", Op->Name, Op->Description);
+    AcpiOsPrintf ("%22s: %s\n", Op->Name, Op->Description);
     if (!Op->KeywordList)
     {
         return;
@@ -620,7 +620,7 @@ AhDisplayAslKeyword (
     /* List of actual keywords */
 
     AhPrintOneField (24, 0, AH_MAX_ASL_LINE_LENGTH, Op->KeywordList);
-    printf ("\n");
+    AcpiOsPrintf ("\n");
 }
 
 
@@ -691,10 +691,10 @@ AhFindAslOperators (
 
         /* Upper case the operator name before substring compare */
 
-        strcpy (Gbl_Buffer, Operator->Name);
+        ACPI_STRCPY (Gbl_Buffer, Operator->Name);
         AhStrupr (Gbl_Buffer);
 
-        if (strstr (Gbl_Buffer, Name) == Gbl_Buffer)
+        if (ACPI_STRSTR (Gbl_Buffer, Name) == Gbl_Buffer)
         {
             AhDisplayAslOperator (Operator);
             MatchCount++;
@@ -703,7 +703,7 @@ AhFindAslOperators (
 
     if (!MatchCount)
     {
-        printf ("%s, no matching ASL operators\n", Name);
+        AcpiOsPrintf ("%s, no matching ASL operators\n", Name);
     }
 
     return (MatchCount);
@@ -730,7 +730,7 @@ AhDisplayAslOperator (
 
     /* ASL operator name and description */
 
-    printf ("%16s: %s\n", Op->Name, Op->Description);
+    AcpiOsPrintf ("%16s: %s\n", Op->Name, Op->Description);
     if (!Op->Syntax)
     {
         return;
@@ -739,10 +739,10 @@ AhDisplayAslOperator (
     /* Syntax for the operator */
 
     AhPrintOneField (18, 0, AH_MAX_ASL_LINE_LENGTH, Op->Syntax);
-    printf ("\n");
+    AcpiOsPrintf ("\n");
 
     AhDisplayOperatorKeywords (Op);
-    printf ("\n");
+    AcpiOsPrintf ("\n");
 }
 
 
@@ -777,15 +777,15 @@ AhDisplayOperatorKeywords (
      * Find all parameters that have the word "keyword" within, and then
      * display the info about that keyword
      */
-    strcpy (Gbl_LineBuffer, Op->Syntax);
-    Token = strtok (Gbl_LineBuffer, Separators);
+    ACPI_STRCPY (Gbl_LineBuffer, Op->Syntax);
+    Token = ACPI_STRTOK (Gbl_LineBuffer, Separators);
     while (Token)
     {
-        if (strstr (Token, "Keyword"))
+        if (ACPI_STRSTR (Token, "Keyword"))
         {
             if (FirstKeyword)
             {
-                printf ("\n");
+                AcpiOsPrintf ("\n");
                 FirstKeyword = FALSE;
             }
 
@@ -794,7 +794,7 @@ AhDisplayOperatorKeywords (
             AhFindAslKeywords (Token);
         }
 
-        Token = strtok (NULL, Separators);
+        Token = ACPI_STRTOK (NULL, Separators);
     }
 }
 
@@ -833,12 +833,12 @@ AhPrintOneField (
 
     if (Position == 0)
     {
-        printf ("%*s", (int) Indent, " ");
+        AcpiOsPrintf ("%*s", (int) Indent, " ");
         Position = Indent;
     }
 
-    Last = This + strlen (This);
-    while ((Next = strpbrk (This, " ")))
+    Last = This + ACPI_STRLEN (This);
+    while ((Next = ACPI_STRPBRK (This, " ")))
     {
         TokenLength = Next - This;
         Position += TokenLength;
@@ -847,11 +847,11 @@ AhPrintOneField (
 
         if (Position > MaxPosition)
         {
-            printf ("\n%*s", (int) Indent, " ");
+            AcpiOsPrintf ("\n%*s", (int) Indent, " ");
             Position = TokenLength;
         }
 
-        printf ("%.*s ", (int) TokenLength, This);
+        AcpiOsPrintf ("%.*s ", (int) TokenLength, This);
         This = Next + 1;
     }
 
@@ -863,9 +863,9 @@ AhPrintOneField (
         Position += TokenLength;
         if (Position > MaxPosition)
         {
-            printf ("\n%*s", (int) Indent, " ");
+            AcpiOsPrintf ("\n%*s", (int) Indent, " ");
         }
-        printf ("%s", This);
+        AcpiOsPrintf ("%s", This);
     }
 }
 
@@ -898,19 +898,19 @@ AhDisplayDeviceIds (
 
     if (!Name)
     {
-        printf ("ACPI and PNP Device/Hardware IDs:\n\n");
+        AcpiOsPrintf ("ACPI and PNP Device/Hardware IDs:\n\n");
         for (Info = AslDeviceIds; Info->Name; Info++)
         {
-            printf ("%8s   %s\n", Info->Name, Info->Description);
+            AcpiOsPrintf ("%8s:   %s\n", Info->Name, Info->Description);
         }
 
         return;
     }
 
-    Length = strlen (Name);
+    Length = ACPI_STRLEN (Name);
     if (Length > 8)
     {
-        printf ("%.8s: Hardware ID must be 8 characters maximum\n", Name);
+        AcpiOsPrintf ("%.8s: Hardware ID must be 8 characters maximum\n", Name);
         return;
     }
 
@@ -932,13 +932,13 @@ AhDisplayDeviceIds (
         if (Matched)
         {
             Found = TRUE;
-            printf ("%8s   %s\n", Info->Name, Info->Description);
+            AcpiOsPrintf ("%8s   %s\n", Info->Name, Info->Description);
         }
     }
 
     if (!Found)
     {
-        printf ("%s, Hardware ID not found\n", Name);
+        AcpiOsPrintf ("%s, Hardware ID not found\n", Name);
     }
 }
 
@@ -999,7 +999,7 @@ AhDecodeException (
      */
     if (!HexString)
     {
-        printf ("All defined ACPICA exception codes:\n\n");
+        AcpiOsPrintf ("All defined ACPICA exception codes:\n\n");
         AH_DISPLAY_EXCEPTION (0, "AE_OK                        (No error occurred)");
 
         /* Display codes in each block of exception types */
@@ -1026,7 +1026,7 @@ AhDecodeException (
     Status = ACPI_STRTOUL (HexString, NULL, 16);
     if (!Status)
     {
-        printf ("%s: Invalid hexadecimal exception code value\n", HexString);
+        AcpiOsPrintf ("%s: Invalid hexadecimal exception code value\n", HexString);
         return;
     }
 

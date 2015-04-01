@@ -137,14 +137,14 @@ static void
 AxNormalizeSignature (
     char                    *Signature);
 
-static unsigned int
+static int
 AxGetNextInstance (
     char                    *InputPathname,
     char                    *Signature);
 
 static size_t
 AxGetTableHeader (
-    FILE                    *InputFile,
+    ACPI_FILE               InputFile,
     unsigned char           *OutputData);
 
 static unsigned int
@@ -218,7 +218,7 @@ AxStrlwr (
 
     while (*String)
     {
-        *String = (char) tolower ((int) *String);
+        *String = (char) ACPI_TOLOWER ((int) *String);
         String++;
     }
 }
@@ -248,7 +248,7 @@ AxCheckAscii (
 
     for (i = 0; i < Count; i++)
     {
-        if (!Name[i] || !isprint ((int) Name[i]))
+        if (!Name[i] || !ACPI_IS_PRINT ((int) Name[i]))
         {
             Name[i] = ' ';
         }
@@ -308,7 +308,7 @@ AxNormalizeSignature (
     char                    *Signature)
 {
 
-    if (!strncmp (Signature, "RSD ", 4))
+    if (!ACPI_STRNCMP (Signature, "RSD ", 4))
     {
         Signature[3] = 'P';
     }
@@ -333,20 +333,18 @@ AxConvertLine (
     char                    *InputLine,
     unsigned char           *OutputData)
 {
-    char                    *End;
-    int                     BytesConverted;
-    int                     Converted[16];
-    int                     i;
+    const char              *Next;
+    int                     BytesConverted = 0;
 
 
-    /* Terminate the input line at the end of the actual data (for sscanf) */
+    /* Seek to the beginning of the hex array */
 
-    End = strstr (InputLine + 2, "  ");
-    if (!End)
+    Next = ACPI_STRSTR (InputLine, ": ");
+    if (!Next)
     {
         return (0); /* Don't understand the format */
     }
-    *End = 0;
+    Next += 1;
 
     /*
      * Convert one line of table data, of the form:
@@ -355,18 +353,14 @@ AxConvertLine (
      * Example:
      * 02C0: 5F 53 42 5F 4C 4E 4B 44 00 12 13 04 0C FF FF 08  _SB_LNKD........
      */
-    BytesConverted = sscanf (InputLine,
-        "%*s %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x",
-        &Converted[0],  &Converted[1],  &Converted[2],  &Converted[3],
-        &Converted[4],  &Converted[5],  &Converted[6],  &Converted[7],
-        &Converted[8],  &Converted[9],  &Converted[10], &Converted[11],
-        &Converted[12], &Converted[13], &Converted[14], &Converted[15]);
-
-    /* Pack converted data into a byte array */
-
-    for (i = 0; i < BytesConverted; i++)
+    while (Next &&
+           ACPI_IS_XDIGIT (Next[1]) && ACPI_IS_XDIGIT (Next[2]) &&
+           (ACPI_IS_SPACE (Next[3]) || Next[3] == '\0'))
     {
-        OutputData[i] = (unsigned char) Converted[i];
+        OutputData[BytesConverted++] =
+            (unsigned char) (AcpiUtAsciiCharToHex (Next[1]) * 16 +
+                             AcpiUtAsciiCharToHex (Next[2]));
+        Next = ACPI_STRPBRK (Next + 1, " ");
     }
 
     return ((size_t) BytesConverted);
@@ -388,7 +382,7 @@ AxConvertLine (
 
 static size_t
 AxGetTableHeader (
-    FILE                    *InputFile,
+    ACPI_FILE               InputFile,
     unsigned char           *OutputData)
 {
     size_t                  BytesConverted;
@@ -400,7 +394,7 @@ AxGetTableHeader (
 
     for (i = 0; i < 3; i++)
     {
-        if (!fgets (HeaderBuffer, AX_LINE_BUFFER_SIZE, InputFile))
+        if (!AcpiOsGetFileString (HeaderBuffer, AX_LINE_BUFFER_SIZE, InputFile))
         {
             return (TotalConverted);
         }
@@ -438,20 +432,20 @@ AxCountTableInstances (
     char                    *InputPathname,
     char                    *Signature)
 {
-    FILE                    *InputFile;
+    ACPI_FILE               InputFile;
     unsigned int            Instances = 0;
 
 
-    InputFile = fopen (InputPathname, "rt");
+    InputFile = AcpiOsOpenFile (InputPathname, ACPI_FILE_READING | ACPI_FILE_TEXT);
     if (!InputFile)
     {
-        printf ("Could not open file %s\n", InputPathname);
+        ACPI_PRINTF ("Could not open file %s\n", InputPathname);
         return (0);
     }
 
     /* Count the number of instances of this signature */
 
-    while (fgets (InstanceBuffer, AX_LINE_BUFFER_SIZE, InputFile))
+    while (AcpiOsGetFileString (InstanceBuffer, AX_LINE_BUFFER_SIZE, InputFile))
     {
         /* Ignore empty lines and lines that start with a space */
 
@@ -468,7 +462,7 @@ AxCountTableInstances (
         }
     }
 
-    fclose (InputFile);
+    AcpiOsCloseFile (InputFile);
     return (Instances);
 }
 
@@ -481,7 +475,7 @@ AxCountTableInstances (
  *              Signature           - Requested ACPI signature
  *
  * RETURN:      The next instance number for this signature. Zero if this
- *              is the first instance of this signature.
+ *              is the first instance of this signature. -1 on error.
  *
  * DESCRIPTION: Get the next instance number of the specified table. If this
  *              is the first instance of the table, create a new instance
@@ -490,7 +484,7 @@ AxCountTableInstances (
  *
  ******************************************************************************/
 
-static unsigned int
+static int
 AxGetNextInstance (
     char                    *InputPathname,
     char                    *Signature)
@@ -513,11 +507,11 @@ AxGetNextInstance (
     {
         /* Signature not found, create new table info block */
 
-        Info = malloc (sizeof (AX_TABLE_INFO));
+        Info = ACPI_ALLOCATE (sizeof (AX_TABLE_INFO));
         if (!Info)
         {
-            printf ("Could not allocate memory\n");
-            exit (0);
+            ACPI_PRINTF ("Could not allocate memory\n");
+            return -1;
         }
 
         Info->Signature = *(UINT32 *) Signature;
@@ -557,25 +551,25 @@ AxExtractTables (
     char                    *Signature,
     unsigned int            MinimumInstances)
 {
-    FILE                    *InputFile;
-    FILE                    *OutputFile = NULL;
+    ACPI_FILE               InputFile;
+    ACPI_FILE               OutputFile = NULL;
     size_t                  BytesWritten;
     size_t                  TotalBytesWritten = 0;
     size_t                  BytesConverted;
     unsigned int            State = AX_STATE_FIND_HEADER;
     unsigned int            FoundTable = 0;
     unsigned int            Instances = 0;
-    unsigned int            ThisInstance;
+    int                     ThisInstance;
     char                    ThisSignature[4];
     int                     Status = 0;
 
 
     /* Open input in text mode, output is in binary mode */
 
-    InputFile = fopen (InputPathname, "rt");
+    InputFile = AcpiOsOpenFile (InputPathname, ACPI_FILE_READING | ACPI_FILE_TEXT);
     if (!InputFile)
     {
-        printf ("Could not open file %s\n", InputPathname);
+        ACPI_PRINTF ("Could not open file %s\n", InputPathname);
         return (-1);
     }
 
@@ -588,7 +582,7 @@ AxExtractTables (
         Instances = AxCountTableInstances (InputPathname, Signature);
         if (Instances < MinimumInstances)
         {
-            printf ("Table %s was not found in %s\n", Signature, InputPathname);
+            ACPI_PRINTF ("Table %s was not found in %s\n", Signature, InputPathname);
             Status = -1;
             goto CleanupAndExit;
         }
@@ -601,7 +595,7 @@ AxExtractTables (
 
     /* Convert all instances of the table to binary */
 
-    while (fgets (LineBuffer, AX_LINE_BUFFER_SIZE, InputFile))
+    while (AcpiOsGetFileString (LineBuffer, AX_LINE_BUFFER_SIZE, InputFile))
     {
         switch (State)
         {
@@ -609,7 +603,7 @@ AxExtractTables (
 
             /* Ignore lines that are too short to be header lines */
 
-            if (strlen (LineBuffer) < AX_MIN_TABLE_NAME_LENGTH)
+            if (ACPI_STRLEN (LineBuffer) < AX_MIN_TABLE_NAME_LENGTH)
             {
                 continue;
             }
@@ -631,7 +625,7 @@ AxExtractTables (
              * RSD PTR @ 0xf6cd0
              * SSDT @ (nil)
              */
-            if (!strstr (LineBuffer, " @ "))
+            if (!ACPI_STRSTR (LineBuffer, " @ "))
             {
                 continue;
             }
@@ -657,20 +651,26 @@ AxExtractTables (
 
             /* Build an output filename and create/open the output file */
 
-            if (ThisInstance > 0)
+            if (ThisInstance < 0)
             {
-                sprintf (Filename, "%4.4s%u.dat", ThisSignature, ThisInstance);
+                ACPI_PRINTF ("Could not get instance of %4.4s\n", ThisSignature);
+                Status = -1;
+                goto CleanupAndExit;
+            }
+            else if (ThisInstance > 0)
+            {
+                ACPI_SPRINTF (Filename, "%4.4s%u.dat", ThisSignature, ThisInstance);
             }
             else
             {
-                sprintf (Filename, "%4.4s.dat", ThisSignature);
+                ACPI_SPRINTF (Filename, "%4.4s.dat", ThisSignature);
             }
 
             AxStrlwr (Filename);
-            OutputFile = fopen (Filename, "w+b");
+            OutputFile = AcpiOsOpenFile (Filename, ACPI_FILE_WRITING | ACPI_FILE_APPENDING | ACPI_FILE_BINARY);
             if (!OutputFile)
             {
-                printf ("Could not open file %s\n", Filename);
+                ACPI_PRINTF ("Could not open file %s\n", Filename);
                 Status = -1;
                 goto CleanupAndExit;
             }
@@ -687,11 +687,11 @@ AxExtractTables (
             if (AxIsEmptyLine (LineBuffer) ||
                 (LineBuffer[0] != ' '))
             {
-                fclose (OutputFile);
+                AcpiOsCloseFile (OutputFile);
                 OutputFile = NULL;
                 State = AX_STATE_FIND_HEADER;
 
-                printf ("Acpi table [%4.4s] - %u bytes written to %s\n",
+                ACPI_PRINTF ("Acpi table [%4.4s] - %u bytes written to %s\n",
                     ThisSignature, (unsigned int) TotalBytesWritten, Filename);
                 continue;
             }
@@ -702,11 +702,11 @@ AxExtractTables (
 
             /* Write the binary data */
 
-            BytesWritten = fwrite (Data, 1, BytesConverted, OutputFile);
+            BytesWritten = AcpiOsWriteFile (OutputFile, Data, 1, BytesConverted);
             if (BytesWritten != BytesConverted)
             {
-                printf ("Error when writing file %s\n", Filename);
-                fclose (OutputFile);
+                ACPI_PRINTF ("Error when writing file %s\n", Filename);
+                AcpiOsCloseFile (OutputFile);
                 OutputFile = NULL;
                 Status = -1;
                 goto CleanupAndExit;
@@ -724,7 +724,7 @@ AxExtractTables (
 
     if (!FoundTable)
     {
-        printf ("Table %s was not found in %s\n", Signature, InputPathname);
+        ACPI_PRINTF ("Table %s was not found in %s\n", Signature, InputPathname);
     }
 
 
@@ -732,17 +732,17 @@ CleanupAndExit:
 
     if (OutputFile)
     {
-        fclose (OutputFile);
+        AcpiOsCloseFile (OutputFile);
         if (State == AX_STATE_EXTRACT_DATA)
         {
             /* Received an EOF while extracting data */
 
-            printf ("Acpi table [%4.4s] - %u bytes written to %s\n",
+            ACPI_PRINTF ("Acpi table [%4.4s] - %u bytes written to %s\n",
                 ThisSignature, (unsigned int) TotalBytesWritten, Filename);
         }
     }
 
-    fclose (InputFile);
+    AcpiOsCloseFile (InputFile);
     return (Status);
 }
 
@@ -764,7 +764,7 @@ int
 AxListTables (
     char                    *InputPathname)
 {
-    FILE                    *InputFile;
+    ACPI_FILE               InputFile;
     size_t                  HeaderSize;
     unsigned char           Header[48];
     int                     TableCount = 0;
@@ -773,19 +773,19 @@ AxListTables (
 
     /* Open input in text mode, output is in binary mode */
 
-    InputFile = fopen (InputPathname, "rt");
+    InputFile = AcpiOsOpenFile (InputPathname, ACPI_FILE_READING | ACPI_FILE_TEXT);
     if (!InputFile)
     {
-        printf ("Could not open file %s\n", InputPathname);
+        ACPI_PRINTF ("Could not open file %s\n", InputPathname);
         return (-1);
     }
 
     /* Dump the headers for all tables found in the input file */
 
-    printf ("\nSignature  Length      Revision   OemId    OemTableId"
+    ACPI_PRINTF ("\nSignature  Length      Revision   OemId    OemTableId"
             "   OemRevision CompilerId CompilerRevision\n\n");
 
-    while (fgets (LineBuffer, AX_LINE_BUFFER_SIZE, InputFile))
+    while (AcpiOsGetFileString (LineBuffer, AX_LINE_BUFFER_SIZE, InputFile))
     {
         /* Ignore empty lines and lines that start with a space */
 
@@ -805,10 +805,10 @@ AxListTables (
 
         /* RSDP has an oddball signature and header */
 
-        if (!strncmp (TableHeader->Signature, "RSD PTR ", 8))
+        if (!ACPI_STRNCMP (TableHeader->Signature, "RSD PTR ", 8))
         {
             AxCheckAscii ((char *) &Header[9], 6);
-            printf ("%7.4s                          \"%6.6s\"\n", "RSDP", &Header[9]);
+            ACPI_PRINTF ("%7.4s                          \"%6.6s\"\n", "RSDP", &Header[9]);
             TableCount++;
             continue;
         }
@@ -823,13 +823,13 @@ AxListTables (
         /* Signature and Table length */
 
         TableCount++;
-        printf ("%7.4s   0x%8.8X", TableHeader->Signature, TableHeader->Length);
+        ACPI_PRINTF ("%7.4s   0x%8.8X", TableHeader->Signature, TableHeader->Length);
 
         /* FACS has only signature and length */
 
         if (ACPI_COMPARE_NAME (TableHeader->Signature, "FACS"))
         {
-            printf ("\n");
+            ACPI_PRINTF ("\n");
             continue;
         }
 
@@ -839,13 +839,13 @@ AxListTables (
         AxCheckAscii (TableHeader->OemTableId, 8);
         AxCheckAscii (TableHeader->AslCompilerId, 4);
 
-        printf ("     0x%2.2X    \"%6.6s\"  \"%8.8s\"   0x%8.8X    \"%4.4s\"     0x%8.8X\n",
+        ACPI_PRINTF ("     0x%2.2X    \"%6.6s\"  \"%8.8s\"   0x%8.8X    \"%4.4s\"     0x%8.8X\n",
             TableHeader->Revision, TableHeader->OemId,
             TableHeader->OemTableId, TableHeader->OemRevision,
             TableHeader->AslCompilerId, TableHeader->AslCompilerRevision);
     }
 
-    printf ("\nFound %u ACPI tables\n", TableCount);
-    fclose (InputFile);
+    ACPI_PRINTF ("\nFound %u ACPI tables\n", TableCount);
+    AcpiOsCloseFile (InputFile);
     return (0);
 }
