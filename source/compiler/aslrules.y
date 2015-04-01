@@ -403,7 +403,7 @@ NameSpaceModifier
     | ScopeTerm                     {}
     ;
 
-UserTerm
+MethodInvocationTerm
     : NameString '('                {TrUpdateNode (PARSEOP_METHODCALL, $1);}
         ArgList ')'                 {$$ = TrLinkChildNode ($1,$4);}
     ;
@@ -523,7 +523,7 @@ Type2Opcode
     | EqualsTerm                    {}
     | TimerTerm                     {}
     | WaitTerm                      {}
-    | UserTerm                      {}
+    | MethodInvocationTerm          {}
     ;
 
 /*
@@ -614,7 +614,7 @@ Type6Opcode
     : RefOfTerm                     {}
     | DerefOfTerm                   {}
     | IndexTerm                     {}
-    | UserTerm                      {}
+    | MethodInvocationTerm          {}
     ;
 
 IncludeTerm
@@ -1991,7 +1991,7 @@ SuperName
     | DebugTerm                     {}
     | Type6Opcode                   {}
 
-/* For ObjectType: SuperName except for UserTerm (method invocation) */
+/* For ObjectType: SuperName except for MethodInvocationTerm */
 
 ObjectTypeName
     : NameString                    {}
@@ -2002,7 +2002,7 @@ ObjectTypeName
     | DerefOfTerm                   {}
     | IndexTerm                     {}
 
-/*    | UserTerm                      {} */  /* Caused reduce/reduce with Type6Opcode->UserTerm */
+/*    | MethodInvocationTerm          {} */  /* Caused reduce/reduce with Type6Opcode->MethodInvocationTerm */
     ;
 
 ArgTerm
