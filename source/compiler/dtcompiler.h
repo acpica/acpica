@@ -157,15 +157,16 @@
  */
 typedef struct dt_field
 {
-    char                    *Name;      /* Field name (from name : value) */
-    char                    *Value;     /* Field value (from name : value) */
-    struct dt_field         *Next;      /* Next field */
-    struct dt_field         *NextLabel; /* If field is a label, next label */
-    UINT32                  Line;       /* Line number for this field */
-    UINT32                  ByteOffset; /* Offset in source file for field */
-    UINT32                  NameColumn; /* Start column for field name */
-    UINT32                  Column;     /* Start column for field value */
-    UINT32                  TableOffset;/* Binary offset within ACPI table */
+    char                    *Name;       /* Field name (from name : value) */
+    char                    *Value;      /* Field value (from name : value) */
+    UINT32                  StringLength;/* Length of Value */
+    struct dt_field         *Next;       /* Next field */
+    struct dt_field         *NextLabel;  /* If field is a label, next label */
+    UINT32                  Line;        /* Line number for this field */
+    UINT32                  ByteOffset;  /* Offset in source file for field */
+    UINT32                  NameColumn;  /* Start column for field name */
+    UINT32                  Column;      /* Start column for field value */
+    UINT32                  TableOffset; /* Binary offset within ACPI table */
     UINT8                   Flags;
 
 } DT_FIELD;

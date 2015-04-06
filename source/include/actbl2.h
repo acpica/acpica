@@ -1185,10 +1185,10 @@ typedef struct acpi_mtmr_entry
 /*******************************************************************************
  *
  * SLIC - Software Licensing Description Table
- *        Version 1
  *
- * Conforms to "OEM Activation 2.0 for Windows Vista Operating Systems",
- * Copyright 2006
+ * Conforms to "Microsoft Software Licensing Tables (SLIC and MSDM)",
+ * November 29, 2011
+ * Copyright 2011 Microsoft
  *
  ******************************************************************************/
 
@@ -1199,62 +1199,6 @@ typedef struct acpi_table_slic
     ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 
 } ACPI_TABLE_SLIC;
-
-
-/* Common SLIC subtable header */
-
-typedef struct acpi_slic_header
-{
-    UINT32                  Type;
-    UINT32                  Length;
-
-} ACPI_SLIC_HEADER;
-
-/* Values for Type field above */
-
-enum AcpiSlicType
-{
-    ACPI_SLIC_TYPE_PUBLIC_KEY           = 0,
-    ACPI_SLIC_TYPE_WINDOWS_MARKER       = 1,
-    ACPI_SLIC_TYPE_RESERVED             = 2    /* 2 and greater are reserved */
-};
-
-
-/*
- * SLIC Subtables, correspond to Type in ACPI_SLIC_HEADER
- */
-
-/* 0: Public Key Structure */
-
-typedef struct acpi_slic_key
-{
-    ACPI_SLIC_HEADER        Header;
-    UINT8                   KeyType;
-    UINT8                   Version;
-    UINT16                  Reserved;
-    UINT32                  Algorithm;
-    char                    Magic[4];
-    UINT32                  BitLength;
-    UINT32                  Exponent;
-    UINT8                   Modulus[128];
-
-} ACPI_SLIC_KEY;
-
-
-/* 1: Windows Marker Structure */
-
-typedef struct acpi_slic_marker
-{
-    ACPI_SLIC_HEADER        Header;
-    UINT32                  Version;
-    char                    OemId[ACPI_OEM_ID_SIZE];            /* ASCII OEM identification */
-    char                    OemTableId[ACPI_OEM_TABLE_ID_SIZE]; /* ASCII OEM table identification */
-    char                    WindowsFlag[8];
-    UINT32                  SlicVersion;
-    UINT8                   Reserved[16];
-    UINT8                   Signature[128];
-
-} ACPI_SLIC_MARKER;
 
 
 /*******************************************************************************

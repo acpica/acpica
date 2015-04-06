@@ -313,13 +313,6 @@ static const char           *AcpiDmPmttSubnames[] =
     "Unknown SubTable Type"         /* Reserved */
 };
 
-static const char           *AcpiDmSlicSubnames[] =
-{
-    "Public Key Structure",
-    "Windows Marker Structure",
-    "Unknown SubTable Type"         /* Reserved */
-};
-
 static const char           *AcpiDmSratSubnames[] =
 {
     "Processor Local APIC/SAPIC Affinity",
@@ -797,7 +790,7 @@ AcpiDmDumpTable (
         if ((CurrentOffset >= TableLength) ||
             (SubtableLength && (Info->Offset >= SubtableLength)))
         {
-            AcpiOsPrintf ("**** ACPI table terminates in the middle of a data structure!\n");
+            AcpiOsPrintf ("**** ACPI table terminates in the middle of a data structure! (dump table)\n");
             return (AE_BAD_DATA);
         }
 
@@ -842,7 +835,6 @@ AcpiDmDumpTable (
         case ACPI_DMT_UINT32:
         case ACPI_DMT_NAME4:
         case ACPI_DMT_SIG:
-        case ACPI_DMT_SLIC:
         case ACPI_DMT_LPIT:
 
             ByteLength = 4;
@@ -885,6 +877,12 @@ AcpiDmDumpTable (
         case ACPI_DMT_BUF128:
 
             ByteLength = 128;
+            break;
+
+        case ACPI_DMT_BUFFER:
+        case ACPI_DMT_RAW_BUFFER:
+
+            ByteLength = SubtableLength;
             break;
 
         case ACPI_DMT_STRING:
@@ -1306,17 +1304,15 @@ AcpiDmDumpTable (
             AcpiOsPrintf (UINT8_FORMAT, *Target, AcpiDmPmttSubnames[Temp8]);
             break;
 
-        case ACPI_DMT_SLIC:
+        case ACPI_DMT_RAW_BUFFER:
+            /*
+             * Currently only used for SLIC table
+             */
+            AcpiOsPrintf ("/* Proprietary data structure */ ");
+            AcpiDmDumpBuffer (Table, sizeof (ACPI_TABLE_HEADER),
+                ByteLength, sizeof (ACPI_TABLE_HEADER), "Licensing Data", TRUE);
 
-            /* SLIC subtable types */
-
-            Temp8 = *Target;
-            if (Temp8 > ACPI_SLIC_TYPE_RESERVED)
-            {
-                Temp8 = ACPI_SLIC_TYPE_RESERVED;
-            }
-
-            AcpiOsPrintf (UINT32_FORMAT, *Target, AcpiDmSlicSubnames[Temp8]);
+            AcpiOsPrintf ("\n");
             break;
 
         case ACPI_DMT_SRAT:
