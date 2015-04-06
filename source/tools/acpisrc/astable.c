@@ -596,6 +596,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_TABLE_MCHI",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_MPST",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_MSCT",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_MSDM",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_PCCT",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_RSDP",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_RSDT",                     SRC_TYPE_STRUCT},

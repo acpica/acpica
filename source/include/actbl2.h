@@ -147,6 +147,7 @@
 #define ACPI_SIG_LPIT           "LPIT"      /* Low Power Idle Table */
 #define ACPI_SIG_MCFG           "MCFG"      /* PCI Memory Mapped Configuration table */
 #define ACPI_SIG_MCHI           "MCHI"      /* Management Controller Host Interface table */
+#define ACPI_SIG_MSDM           "MSDM"      /* Microsoft Data Management Table */
 #define ACPI_SIG_MTMR           "MTMR"      /* MID Timer table */
 #define ACPI_SIG_SLIC           "SLIC"      /* Software Licensing Description Table */
 #define ACPI_SIG_SPCR           "SPCR"      /* Serial Port Console Redirection table */
@@ -1156,6 +1157,24 @@ typedef struct acpi_table_mchi
 
 /*******************************************************************************
  *
+ * MSDM - Microsoft Data Management table
+ *
+ * Conforms to "Microsoft Software Licensing Tables (SLIC and MSDM)",
+ * November 29, 2011. Copyright 2011 Microsoft
+ *
+ ******************************************************************************/
+
+/* Basic MSDM table is only the common ACPI header */
+
+typedef struct acpi_table_msdm
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+
+} ACPI_TABLE_MSDM;
+
+
+/*******************************************************************************
+ *
  * MTMR - MID Timer Table
  *        Version 1
  *
@@ -1187,8 +1206,7 @@ typedef struct acpi_mtmr_entry
  * SLIC - Software Licensing Description Table
  *
  * Conforms to "Microsoft Software Licensing Tables (SLIC and MSDM)",
- * November 29, 2011
- * Copyright 2011 Microsoft
+ * November 29, 2011. Copyright 2011 Microsoft
  *
  ******************************************************************************/
 
