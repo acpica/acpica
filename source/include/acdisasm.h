@@ -1076,6 +1076,10 @@ AcpiDmCloseOperator (
  */
 void
 AdDisassemblerHeader (
-    char                    *Filename);
+    char                    *Filename,
+    UINT8                   TableType);
+
+#define ACPI_IS_AML_TABLE   0
+#define ACPI_IS_DATA_TABLE  1
 
 #endif  /* __ACDISASM_H__ */
