@@ -281,7 +281,7 @@ const AH_PREDEFINED_NAME    AslPredefinedInfo[] =
     AH_PREDEF ("_PMD",    "Power Metered Devices", "Returns a list of devices that are measured by the power meter device"),
     AH_PREDEF ("_PMM",    "Power Meter Measurement", "Returns the current value of the Power Meter"),
     AH_PREDEF ("_POL",    "Polarity", "Interrupt polarity, Resource Descriptor field"),
-    AH_PREDEF ("_PPC",    "Performance Present Capabilites", "Returns a list of the performance states currently supported by the platform"),
+    AH_PREDEF ("_PPC",    "Performance Present Capabilities", "Returns a list of the performance states currently supported by the platform"),
     AH_PREDEF ("_PPE",    "Polling for Platform Error", "Returns the polling interval to retrieve Corrected Platform Error information"),
     AH_PREDEF ("_PPI",    "Pin Configuration", "Resource Descriptor field"),
     AH_PREDEF ("_PR",     "Processor", "Predefined scope for processor objects"),
