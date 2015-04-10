@@ -403,7 +403,7 @@ AeDecodeMessageId (
 
         if (Index >= ACPI_ARRAY_LENGTH (AslPreprocessorMsgs))
         {
-            return ("[Unknown Preprocesor exception ID]");
+            return ("[Unknown Preprocessor exception ID]");
         }
     }
 
