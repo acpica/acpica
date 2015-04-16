@@ -655,6 +655,7 @@ extern const unsigned char  TemplateWaet[];
 extern const unsigned char  TemplateWdat[];
 extern const unsigned char  TemplateWddt[];
 extern const unsigned char  TemplateWdrt[];
+extern const unsigned char  TemplateXenv[];
 extern const unsigned char  TemplateXsdt[];
 
 #endif
