@@ -389,6 +389,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_PACKAGE_INFO",                   SRC_TYPE_STRUCT},
     {"ACPI_PACKAGE_INFO2",                  SRC_TYPE_STRUCT},
     {"ACPI_PACKAGE_INFO3",                  SRC_TYPE_STRUCT},
+    {"ACPI_PACKAGE_INFO4",                  SRC_TYPE_STRUCT},
     {"ACPI_PARSE_DOWNWARDS",                SRC_TYPE_SIMPLE},
     {"ACPI_PARSE_OBJ_ASL",                  SRC_TYPE_STRUCT},
     {"ACPI_PARSE_OBJ_COMMON",               SRC_TYPE_STRUCT},

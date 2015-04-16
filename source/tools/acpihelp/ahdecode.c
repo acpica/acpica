@@ -197,7 +197,7 @@ AhFindPredefinedNames (
 
     if (!NamePrefix)
     {
-        Found = AhDisplayPredefinedName (Name, 0);
+        Found = AhDisplayPredefinedName (NULL, 0);
         return;
     }
 
@@ -248,7 +248,7 @@ AhDisplayPredefinedName (
     const AH_PREDEFINED_NAME    *Info;
     BOOLEAN                     Found = FALSE;
     BOOLEAN                     Matched;
-    UINT32                      i;
+    UINT32                      i = 0;
 
 
     /* Find/display all names that match the input name prefix */
@@ -262,6 +262,7 @@ AhDisplayPredefinedName (
             printf ("%*s%s\n", 6, " ", Info->Action);
 
             AhDisplayPredefinedInfo (Info->Name);
+            i++;
             continue;
         }
 
@@ -285,6 +286,10 @@ AhDisplayPredefinedName (
         }
     }
 
+    if (!Name)
+    {
+        printf ("\nFound %d Predefined ACPI Names\n", i);
+    }
     return (Found);
 }
 
