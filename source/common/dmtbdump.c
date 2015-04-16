@@ -2792,6 +2792,56 @@ NextSubTable:
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpStao
+ *
+ * PARAMETERS:  Table               - A STAO table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a STAO. This is a variable-length
+ *              table that contains an open-ended number of ASCII strings
+ *              at the end of the table.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpStao (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    char                    *Namepath;
+    UINT32                  Length = Table->Length;
+    UINT32                  StringLength;
+    UINT32                  Offset = sizeof (ACPI_TABLE_STAO);
+
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoStao);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    /* The rest of the table consists of Namepath strings */
+
+    while (Offset < Table->Length)
+    {
+        Namepath = ACPI_ADD_PTR (char, Table, Offset);
+        StringLength = ACPI_STRLEN (Namepath) + 1;
+
+        AcpiDmLineHeader (Offset, StringLength, "Namestring");
+        AcpiOsPrintf ("\"%s\"\n", Namepath);
+
+        /* Point to next namepath */
+
+        Offset += StringLength;
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpVrtc
  *
  * PARAMETERS:  Table               - A VRTC table

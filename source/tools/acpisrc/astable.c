@@ -608,6 +608,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_TABLE_SPCR",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_SPMI",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_SRAT",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_STAO",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_TCPA",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_TPM2",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_UEFI",                     SRC_TYPE_STRUCT},

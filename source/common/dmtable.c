@@ -416,6 +416,7 @@ ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_SPCR, AcpiDmTableInfoSpcr,    NULL,           NULL,           TemplateSpcr,   "Serial Port Console Redirection table"},
     {ACPI_SIG_SPMI, AcpiDmTableInfoSpmi,    NULL,           NULL,           TemplateSpmi,   "Server Platform Management Interface table"},
     {ACPI_SIG_SRAT, NULL,                   AcpiDmDumpSrat, DtCompileSrat,  TemplateSrat,   "System Resource Affinity Table"},
+    {ACPI_SIG_STAO, NULL,                   AcpiDmDumpStao, DtCompileStao,  TemplateStao,   "Status Override table"},
     {ACPI_SIG_TCPA, AcpiDmTableInfoTcpa,    NULL,           NULL,           TemplateTcpa,   "Trusted Computing Platform Alliance table"},
     {ACPI_SIG_TPM2, AcpiDmTableInfoTpm2,    NULL,           NULL,           TemplateTpm2,   "Trusted Platform Module hardware interface table"},
     {ACPI_SIG_UEFI, AcpiDmTableInfoUefi,    NULL,           DtCompileUefi,  TemplateUefi,   "UEFI Boot Optimization Table"},
@@ -630,7 +631,6 @@ AcpiDmDumpDataTable (
  * PARAMETERS:  Offset              - Current byte offset, from table start
  *              ByteLength          - Length of the field in bytes, 0 for flags
  *              Name                - Name of this field
- *              Value               - Optional value, displayed on left of ':'
  *
  * RETURN:      None
  *

@@ -182,6 +182,7 @@
 #define ACPI_SPCR_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_SPCR,f)
 #define ACPI_SPMI_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_SPMI,f)
 #define ACPI_SRAT_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_SRAT,f)
+#define ACPI_STAO_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_STAO,f)
 #define ACPI_TCPA_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_TCPA,f)
 #define ACPI_TPM2_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_TPM2,f)
 #define ACPI_UEFI_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_UEFI,f)
@@ -2276,6 +2277,25 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoSrat3[] =
     {ACPI_DMT_UINT32,   ACPI_SRAT3_OFFSET (Flags),                  "Flags (decoded below)", DT_FLAG},
     {ACPI_DMT_FLAG0,    ACPI_SRAT3_FLAG_OFFSET (Flags,0),           "Enabled", 0},
     {ACPI_DMT_UINT32,   ACPI_SRAT3_OFFSET (ClockDomain),            "Clock Domain", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
+ * STAO - Status Override Table (_STA override) - ACPI 6.0
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoStao[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_STAO_OFFSET (IgnoreUart),              "Ignore UART", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoStaoStr[] =
+{
+    {ACPI_DMT_STRING,   0,                                          "Namepath", 0},
     ACPI_DMT_TERMINATOR
 };
 

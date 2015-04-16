@@ -2485,6 +2485,59 @@ DtCompileSrat (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileStao
+ *
+ * PARAMETERS:  PFieldList          - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile STAO.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileStao (
+    void                    **List)
+{
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    ACPI_STATUS             Status;
+
+
+    /* Compile the main table */
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoStao,
+                &Subtable, TRUE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    ParentTable = DtPeekSubtable ();
+    DtInsertSubtable (ParentTable, Subtable);
+
+    /* Compile each ASCII namestring as a subtable */
+
+    while (*PFieldList)
+    {
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoStaoStr,
+                    &Subtable, TRUE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+    }
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtGetGenericTableInfo
  *
  * PARAMETERS:  Name                - Generic type name
@@ -2651,6 +2704,7 @@ DtCompileXsdt (
     DT_SUBTABLE             *ParentTable;
     DT_FIELD                *FieldList = *(DT_FIELD **) List;
     UINT64                  Address;
+
 
     ParentTable = DtPeekSubtable ();
 

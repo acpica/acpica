@@ -581,6 +581,10 @@ DtCompileSrat (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileStao (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompileUefi (
     void                    **PFieldList);
 
@@ -642,6 +646,7 @@ extern const unsigned char  TemplateSlit[];
 extern const unsigned char  TemplateSpcr[];
 extern const unsigned char  TemplateSpmi[];
 extern const unsigned char  TemplateSrat[];
+extern const unsigned char  TemplateStao[];
 extern const unsigned char  TemplateTcpa[];
 extern const unsigned char  TemplateTpm2[];
 extern const unsigned char  TemplateUefi[];
