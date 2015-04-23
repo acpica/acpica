@@ -597,6 +597,10 @@ DtCompileWdat (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileWpbt (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompileXsdt (
     void                    **PFieldList);
 
@@ -655,6 +659,7 @@ extern const unsigned char  TemplateWaet[];
 extern const unsigned char  TemplateWdat[];
 extern const unsigned char  TemplateWddt[];
 extern const unsigned char  TemplateWdrt[];
+extern const unsigned char  TemplateWpbt[];
 extern const unsigned char  TemplateXenv[];
 extern const unsigned char  TemplateXsdt[];
 

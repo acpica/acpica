@@ -203,6 +203,74 @@ AcpiDmDumpBuffer (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpUnicode
+ *
+ * PARAMETERS:  Table               - ACPI Table or subtable
+ *              BufferOffset        - Offset of buffer from Table above
+ *              ByteLength          - Length of the buffer
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Validate and dump the contents of a buffer that contains
+ *              unicode data. The output is a standard ASCII string. If it
+ *              appears that the data is not unicode, the buffer is dumped
+ *              as hex characters.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpUnicode (
+    void                    *Table,
+    UINT32                  BufferOffset,
+    UINT32                  ByteLength)
+{
+    UINT8                   *Buffer;
+    UINT32                  Length;
+    UINT32                  i;
+
+
+    Buffer = ((UINT8 *) Table) + BufferOffset;
+    Length = ByteLength - 2; /* Last two bytes are the null terminator */
+
+    /* Ensure all low bytes are entirely printable ASCII */
+
+    for (i = 0; i < Length; i += 2)
+    {
+        if (!ACPI_IS_PRINT (Buffer[i]))
+        {
+            goto DumpRawBuffer;
+        }
+    }
+
+    /* Ensure all high bytes are zero */
+
+    for (i = 1; i < Length; i += 2)
+    {
+        if (Buffer[i])
+        {
+            goto DumpRawBuffer;
+        }
+    }
+
+    /* Dump the buffer as a normal string */
+
+    AcpiOsPrintf ("\"");
+    for (i = 0; i < Length; i += 2)
+    {
+        AcpiOsPrintf ("%c", Buffer[i]);
+    }
+    AcpiOsPrintf ("\"\n");
+    return;
+
+DumpRawBuffer:
+    AcpiDmDumpBuffer (Table, BufferOffset, ByteLength,
+        BufferOffset, NULL, TRUE);
+    AcpiOsPrintf ("\n");
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpRsdp
  *
  * PARAMETERS:  Table               - A RSDP
@@ -2940,5 +3008,51 @@ AcpiDmDumpWdat (
 
         Offset += sizeof (ACPI_WDAT_ENTRY);
         SubTable = ACPI_ADD_PTR (ACPI_WDAT_ENTRY, SubTable, sizeof (ACPI_WDAT_ENTRY));
+    }
+}
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDumpWpbt
+ *
+ * PARAMETERS:  Table               - A WPBT table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a WPBT. This table type consists
+ *              of an open-ended arguments buffer at the end of the table.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpWpbt (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_TABLE_WPBT         *SubTable;
+    UINT32                  Length = Table->Length;
+    UINT16                  ArgumentsLength;
+
+
+    /* Dump the main table */
+
+    Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoWpbt);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    /* Extract the arguments buffer length from the main table */
+
+    SubTable = ACPI_CAST_PTR (ACPI_TABLE_WPBT, Table);
+    ArgumentsLength = SubTable->ArgumentsLength;
+
+    /* Dump the arguments buffer */
+
+    AcpiDmDumpTable (Table->Length, 0, Table, ArgumentsLength,
+        AcpiDmTableInfoWpbt0);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
     }
 }

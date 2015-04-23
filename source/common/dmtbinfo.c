@@ -190,6 +190,7 @@
 #define ACPI_WDAT_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_WDAT,f)
 #define ACPI_WDDT_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_WDDT,f)
 #define ACPI_WDRT_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_WDRT,f)
+#define ACPI_WPBT_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_WPBT,f)
 #define ACPI_XENV_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_XENV,f)
 
 /* Subtables */
@@ -2481,6 +2482,33 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoWdrt[] =
     ACPI_DMT_TERMINATOR
 };
 
+
+/*******************************************************************************
+ *
+ * WPBT - Windows Platform Environment Table (ACPI 6.0)
+ *        Version 1
+ *
+ * Conforms to "Windows Platform Binary Table (WPBT)" 29 November 2011
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoWpbt[] =
+{
+    {ACPI_DMT_UINT32,      ACPI_WPBT_OFFSET (HandoffSize),          "Handoff Size", 0},
+    {ACPI_DMT_UINT64,      ACPI_WPBT_OFFSET (HandoffAddress),       "Handoff Address", 0},
+    {ACPI_DMT_UINT8,       ACPI_WPBT_OFFSET (Layout),               "Layout", 0},
+    {ACPI_DMT_UINT8,       ACPI_WPBT_OFFSET (Type),                 "Type", 0},
+    {ACPI_DMT_UINT16,      ACPI_WPBT_OFFSET (ArgumentsLength),      "Arguments Length", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoWpbt0[] =
+{
+    {ACPI_DMT_UNICODE,     sizeof (ACPI_TABLE_WPBT),                "Command-line Arguments", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
 /*******************************************************************************
  *
  * XENV -  Xen Environment table (ACPI 6.0)
@@ -2495,7 +2523,6 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoXenv[] =
     {ACPI_DMT_UINT8,    ACPI_XENV_OFFSET (EventFlags),              "Event Flags", 0},
     ACPI_DMT_TERMINATOR
 };
-
 
 
 /*! [Begin] no source code translation */

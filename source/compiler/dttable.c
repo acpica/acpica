@@ -2686,6 +2686,63 @@ DtCompileWdat (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileWpbt
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile WPBT.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileWpbt (
+    void                    **List)
+{
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    ACPI_TABLE_WPBT         *Table;
+    ACPI_STATUS             Status;
+    UINT16                  Length;
+
+
+    /* Compile the main table */
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoWpbt,
+                &Subtable, TRUE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    ParentTable = DtPeekSubtable ();
+    DtInsertSubtable (ParentTable, Subtable);
+
+    /* Compile the argument list subtable */
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoWpbt0,
+                &Subtable, TRUE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    /* Extract the length of the Arguments buffer, insert into main table */
+
+    Length = (UINT16) Subtable->TotalLength;
+    Table = ACPI_CAST_PTR (ACPI_TABLE_WPBT, ParentTable->Buffer);
+    Table->ArgumentsLength = Length;
+
+    ParentTable = DtPeekSubtable ();
+    DtInsertSubtable (ParentTable, Subtable);
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileXsdt
  *
  * PARAMETERS:  List                - Current field list pointer

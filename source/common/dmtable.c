@@ -425,6 +425,7 @@ ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_WDAT, NULL,                   AcpiDmDumpWdat, DtCompileWdat,  TemplateWdat,   "Watchdog Action Table"},
     {ACPI_SIG_WDDT, AcpiDmTableInfoWddt,    NULL,           NULL,           TemplateWddt,   "Watchdog Description Table"},
     {ACPI_SIG_WDRT, AcpiDmTableInfoWdrt,    NULL,           NULL,           TemplateWdrt,   "Watchdog Resource Table"},
+    {ACPI_SIG_WPBT, NULL,                   AcpiDmDumpWpbt, DtCompileWpbt,  TemplateWpbt,   "Windows Platform Binary Table"},
     {ACPI_SIG_XENV, AcpiDmTableInfoXenv,    NULL,           NULL,           TemplateXenv,   "Xen Environment table"},
     {ACPI_SIG_XSDT, NULL,                   AcpiDmDumpXsdt, DtCompileXsdt,  TemplateXsdt,   "Extended System Description Table"},
     {NULL,          NULL,                   NULL,           NULL,           NULL,           NULL}
@@ -883,6 +884,7 @@ AcpiDmDumpTable (
             ByteLength = 128;
             break;
 
+        case ACPI_DMT_UNICODE:
         case ACPI_DMT_BUFFER:
         case ACPI_DMT_RAW_BUFFER:
 
@@ -1324,15 +1326,27 @@ AcpiDmDumpTable (
                 AcpiDmPmttSubnames[Temp8]);
             break;
 
-        case ACPI_DMT_RAW_BUFFER:
-            /*
-             * Currently only used for SLIC table
-             */
-            AcpiOsPrintf ("/* Proprietary data structure */ ");
+        case ACPI_DMT_UNICODE:
 
-            AcpiDmDumpBuffer (Table, sizeof (ACPI_TABLE_HEADER),
-                ByteLength, sizeof (ACPI_TABLE_HEADER),
-                "Licensing Data", TRUE);
+            if (ByteLength == 0)
+            {
+                AcpiOsPrintf ("/* Zero-length Data */\n");
+                break;
+            }
+
+            AcpiDmDumpUnicode (Table, CurrentOffset, ByteLength);
+            break;
+
+        case ACPI_DMT_RAW_BUFFER:
+
+            if (ByteLength == 0)
+            {
+                AcpiOsPrintf ("/* Zero-length Data */\n");
+                break;
+            }
+
+            AcpiDmDumpBuffer (Table, CurrentOffset, ByteLength,
+                CurrentOffset, NULL, TRUE);
             AcpiOsPrintf ("\n");
             break;
 

@@ -454,13 +454,6 @@ PrPreprocessInputFile (
             Token = PrGetNextToken (NULL, PR_TOKEN_SEPARATORS, &Next);
         }
 
-#if 0
-/* Line prefix */
-        FlPrintFile (ASL_FILE_PREPROCESSOR, "/* %14s  %.5u  i:%.5u */ ",
-            Gbl_Files[ASL_FILE_INPUT].Filename,
-            Gbl_CurrentLineNumber, Gbl_PreprocessorLineNumber);
-#endif
-
         /*
          * Emit a #line directive if necessary, to keep the line numbers in
          * the (.i) file synchronized with the original source code file, so
