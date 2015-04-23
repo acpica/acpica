@@ -1571,11 +1571,6 @@ DtCompileLpit (
             InfoTable = AcpiDmTableInfoLpit0;
             break;
 
-        case ACPI_LPIT_TYPE_SIMPLE_IO:
-
-            InfoTable = AcpiDmTableInfoLpit1;
-            break;
-
         default:
 
             DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "LPIT");

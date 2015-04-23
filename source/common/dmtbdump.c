@@ -1801,12 +1801,6 @@ AcpiDmDumpLpit (
             SubTableLength = sizeof (ACPI_LPIT_NATIVE);
             break;
 
-        case ACPI_LPIT_TYPE_SIMPLE_IO:
-
-            InfoTable = AcpiDmTableInfoLpit1;
-            SubTableLength = sizeof (ACPI_LPIT_IO);
-            break;
-
         default:
 
             /* Cannot continue on unknown type - no length */

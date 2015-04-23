@@ -332,7 +332,6 @@ static const char           *AcpiDmIvrsSubnames[] =
 static const char           *AcpiDmLpitSubnames[] =
 {
     "Native C-state Idle Structure",
-    "Simple I/O Idle Structure",
     "Unknown SubTable Type"         /* Reserved */
 };
 
