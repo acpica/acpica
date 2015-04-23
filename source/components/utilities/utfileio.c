@@ -300,11 +300,8 @@ AcpiUtReadTable (
                 TableHeader.Length, FileSize);
 
 #ifdef ACPI_ASL_COMPILER
-            Status = FlCheckForAscii (fp, NULL, FALSE);
-            if (ACPI_SUCCESS (Status))
-            {
-                AcpiOsPrintf ("File appears to be ASCII only, must be binary\n");
-            }
+            AcpiOsPrintf ("File is corrupt or is ASCII text -- "
+                "it must be a binary file\n");
 #endif
             return (AE_BAD_HEADER);
         }

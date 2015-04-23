@@ -244,7 +244,6 @@ FlCheckForAcpiTable (
 
 ACPI_STATUS
 FlCheckForAscii (
-    FILE                    *Handle,
     char                    *Filename,
     BOOLEAN                 DisplayErrors);
 
