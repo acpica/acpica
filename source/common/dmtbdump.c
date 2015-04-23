@@ -453,6 +453,13 @@ AcpiDmDumpFadt (
         {
             AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoFadt5);
         }
+
+        /* Check for FADT revision 6 fields and up (ACPI 6.0+) */
+
+        if (Table->Length > ACPI_FADT_V3_SIZE)
+        {
+            AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoFadt6);
+        }
     }
 
     /* Validate various fields in the FADT, including length */

@@ -344,6 +344,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFadt1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFadt2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFadt3[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFadt5[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFadt6[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFpdt[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFpdtHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFpdt0[];

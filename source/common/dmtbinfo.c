@@ -565,6 +565,14 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt5[] =
     ACPI_DMT_TERMINATOR
 };
 
+/* ACPI 6.0 Extensions (FADT version 6) */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt6[] =
+{
+    {ACPI_DMT_UINT64,   ACPI_FADT_OFFSET (HypervisorId),            "Hypervisor ID", 0},
+    ACPI_DMT_TERMINATOR
+};
+
 
 /*
  * Remaining tables are not consumed directly by the ACPICA subsystem
