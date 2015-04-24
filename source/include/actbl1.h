@@ -849,7 +849,8 @@ enum AcpiMadtType
     ACPI_MADT_TYPE_GENERIC_DISTRIBUTOR      = 12,
     ACPI_MADT_TYPE_GENERIC_MSI_FRAME        = 13,
     ACPI_MADT_TYPE_GENERIC_REDISTRIBUTOR    = 14,
-    ACPI_MADT_TYPE_RESERVED                 = 15    /* 15 and greater are reserved */
+    ACPI_MADT_TYPE_GENERIC_TRANSLATOR       = 15,
+    ACPI_MADT_TYPE_RESERVED                 = 16    /* 16 and greater are reserved */
 };
 
 
@@ -1004,7 +1005,7 @@ typedef struct acpi_madt_local_x2apic_nmi
 } ACPI_MADT_LOCAL_X2APIC_NMI;
 
 
-/* 11: Generic Interrupt (ACPI 5.0) */
+/* 11: Generic Interrupt (ACPI 5.0 + ACPI 6.0 changes) */
 
 typedef struct acpi_madt_generic_interrupt
 {
@@ -1022,6 +1023,8 @@ typedef struct acpi_madt_generic_interrupt
     UINT32                  VgicInterrupt;
     UINT64                  GicrBaseAddress;
     UINT64                  ArmMpidr;
+    UINT8                   EfficiencyClass;
+    UINT8                   Reserved2[3];
 
 } ACPI_MADT_GENERIC_INTERRUPT;
 
@@ -1032,7 +1035,7 @@ typedef struct acpi_madt_generic_interrupt
 #define ACPI_MADT_VGIC_IRQ_MODE         (1<<2)  /* 02: VGIC Maintenance Interrupt mode */
 
 
-/* 12: Generic Distributor (ACPI 5.0) */
+/* 12: Generic Distributor (ACPI 5.0 + ACPI 6.0 changes) */
 
 typedef struct acpi_madt_generic_distributor
 {
@@ -1041,7 +1044,8 @@ typedef struct acpi_madt_generic_distributor
     UINT32                  GicId;
     UINT64                  BaseAddress;
     UINT32                  GlobalIrqBase;
-    UINT32                  Reserved2;          /* Reserved - must be zero */
+    UINT8                   Version;
+    UINT8                   Reserved2[3];          /* Reserved - must be zero */
 
 } ACPI_MADT_GENERIC_DISTRIBUTOR;
 
@@ -1075,6 +1079,19 @@ typedef struct acpi_madt_generic_redistributor
     UINT32                  Length;
 
 } ACPI_MADT_GENERIC_REDISTRIBUTOR;
+
+
+/* 15: Generic Translator (ACPI 6.0) */
+
+typedef struct acpi_madt_generic_translator
+{
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT16                  Reserved;           /* reserved - must be zero */
+    UINT32                  TranslationId;
+    UINT64                  BaseAddress;
+    UINT32                  Reserved2;
+
+} ACPI_MADT_GENERIC_TRANSLATOR;
 
 
 /*

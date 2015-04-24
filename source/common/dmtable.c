@@ -295,6 +295,7 @@ static const char           *AcpiDmMadtSubnames[] =
     "Generic Interrupt Distributor",    /* ACPI_MADT_GENERIC_DISTRIBUTOR */
     "Generic MSI Frame",                /* ACPI_MADT_GENERIC_MSI_FRAME */
     "Generic Interrupt Redistributor",  /* ACPI_MADT_GENERIC_REDISTRIBUTOR */
+    "Generic Interrupt Translator",     /* ACPI_MADT_GENERIC_TRANSLATOR */
     "Unknown SubTable Type"             /* Reserved */
 };
 

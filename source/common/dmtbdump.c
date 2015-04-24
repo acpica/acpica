@@ -1949,6 +1949,11 @@ AcpiDmDumpMadt (
             InfoTable = AcpiDmTableInfoMadt14;
             break;
 
+        case ACPI_MADT_TYPE_GENERIC_TRANSLATOR:
+
+            InfoTable = AcpiDmTableInfoMadt15;
+            break;
+
         default:
 
             AcpiOsPrintf ("\n**** Unknown MADT subtable type 0x%X\n\n", SubTable->Type);
