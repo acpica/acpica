@@ -788,13 +788,24 @@ AcpiDmDumpTable (
         Target = ACPI_ADD_PTR (UINT8, Table, Info->Offset);
         CurrentOffset = TableOffset + Info->Offset;
 
-        /* Check for beyond EOT or beyond subtable end */
+        /* Check for beyond subtable end or (worse) beyond EOT */
 
-        if ((CurrentOffset >= TableLength) ||
-            (SubtableLength && (Info->Offset >= SubtableLength)))
+        if (SubtableLength && (Info->Offset >= SubtableLength))
         {
             AcpiOsPrintf (
-                "**** ACPI table terminates in the middle of a data structure! (dump table)\n");
+                "/**** ACPI subtable terminates early - "
+                "may be older version (dump table) */\n");
+
+            /* Move on to next subtable */
+
+            return (AE_OK);
+        }
+
+        if (CurrentOffset >= TableLength)
+        {
+            AcpiOsPrintf (
+                "/**** ACPI table terminates "
+                "in the middle of a data structure! (dump table) */\n");
             return (AE_BAD_DATA);
         }
 
@@ -921,10 +932,24 @@ AcpiDmDumpTable (
             break;
         }
 
+        /* Check if we are beyond a subtable, or (worse) beyond EOT */
+
         if (CurrentOffset + ByteLength > TableLength)
         {
+            if (SubtableLength)
+            {
+                AcpiOsPrintf (
+                    "/**** ACPI subtable terminates early - "
+                    "may be older version (dump table) */\n");
+
+                /* Move on to next subtable */
+
+                return (AE_OK);
+            }
+
             AcpiOsPrintf (
-                "**** ACPI table terminates in the middle of a data structure!\n");
+                "/**** ACPI table terminates "
+                "in the middle of a data structure! */\n");
             return (AE_BAD_DATA);
         }
 
