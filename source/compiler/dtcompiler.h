@@ -610,7 +610,9 @@ DtCompileXsdt (
 
 ACPI_STATUS
 DtCompileGeneric (
-    void                    **PFieldList);
+    void                    **PFieldList,
+    char                    *TermFieldName,
+    UINT32                  *PFieldLength);
 
 ACPI_DMTABLE_INFO *
 DtGetGenericTableInfo (

@@ -430,7 +430,7 @@ DtCompileDataTable (
     TableData = AcpiDmGetTableData (Signature);
     if (!TableData || Gbl_CompileGeneric)
     {
-        DtCompileGeneric ((void **) FieldList);
+        DtCompileGeneric ((void **) FieldList, NULL, NULL);
         goto FinishHeader;
     }
 

@@ -2921,7 +2921,7 @@ DtCompileUefi (
      * operators may be used.
      */
 
-    DtCompileGeneric ((void **) PFieldList);
+    DtCompileGeneric ((void **) PFieldList, NULL, NULL);
 
     return (AE_OK);
 }
@@ -3076,6 +3076,8 @@ DtCompileXsdt (
  * FUNCTION:    DtCompileGeneric
  *
  * PARAMETERS:  List                - Current field list pointer
+ *              Name                - Field name to end generic compiling
+ *              Length              - Compiled table length to return
  *
  * RETURN:      Status
  *
@@ -3085,7 +3087,9 @@ DtCompileXsdt (
 
 ACPI_STATUS
 DtCompileGeneric (
-    void                    **List)
+    void                    **List,
+    char                    *Name,
+    UINT32                  *Length)
 {
     ACPI_STATUS             Status;
     DT_SUBTABLE             *Subtable;
@@ -3108,8 +3112,16 @@ DtCompileGeneric (
 
     /* Now we can actually compile the parse tree */
 
+    if (*Length)
+    {
+        *Length = 0;
+    }
     while (*PFieldList)
     {
+        if (Name && !ACPI_STRCMP ((*PFieldList)->Name, Name))
+        {
+            break;
+        }
         Info = DtGetGenericTableInfo ((*PFieldList)->Name);
         if (!Info)
         {
@@ -3127,6 +3139,10 @@ DtCompileGeneric (
         if (ACPI_SUCCESS (Status))
         {
             DtInsertSubtable (ParentTable, Subtable);
+            if (Length)
+            {
+                *Length += Subtable->Length;
+            }
         }
         else
         {
