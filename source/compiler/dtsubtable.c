@@ -393,6 +393,11 @@ DtGetSubtableLength (
             Step = 9;
             break;
 
+        case ACPI_DMT_IORTMEM:
+
+            Step = 10;
+            break;
+
         default:
 
             Step = 1;
