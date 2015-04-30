@@ -142,7 +142,6 @@ AcpiDmValidateFadtLength (
  *              AbsoluteOffset      - Offset of buffer in the main ACPI table
  *              Header              - Name of the buffer field (printed on the
  *                                    first line only.)
- *              MultiLine           - TRUE if a large, multi-line buffer
  *
  * RETURN:      None
  *
@@ -157,8 +156,7 @@ AcpiDmDumpBuffer (
     UINT32                  BufferOffset,
     UINT32                  Length,
     UINT32                  AbsoluteOffset,
-    char                    *Header,
-    BOOLEAN                 MultiLine)
+    char                    *Header)
 {
     UINT8                   *Buffer;
     UINT32                  i;
@@ -176,18 +174,11 @@ AcpiDmDumpBuffer (
     {
         if (!(i % 16))
         {
-            if (MultiLine)
-            {
-                /* Insert a backslash - line continuation character */
+            /* Insert a backslash - line continuation character */
 
-                AcpiOsPrintf ("\\\n    ");
-            }
-            else
+            if (Length > 16)
             {
-                AcpiOsPrintf ("\n");
-                AcpiDmLineHeader (AbsoluteOffset,
-                    ((Length - i) > 16) ? 16 : (Length - i), Header);
-                Header = NULL;
+                AcpiOsPrintf ("\\\n    ");
             }
         }
 
@@ -264,7 +255,7 @@ AcpiDmDumpUnicode (
 
 DumpRawBuffer:
     AcpiDmDumpBuffer (Table, BufferOffset, ByteLength,
-        BufferOffset, NULL, TRUE);
+        BufferOffset, NULL);
     AcpiOsPrintf ("\n");
 }
 
@@ -840,10 +831,17 @@ AcpiDmDumpCsrt (
             /* Resource-specific info buffer */
 
             InfoLength = SubSubTable->Length - SubSubOffset;
-
-            AcpiDmDumpBuffer (SubSubTable, SubSubOffset, InfoLength,
-                Offset + SubOffset + SubSubOffset, "ResourceInfo", FALSE);
-            SubSubOffset += InfoLength;
+            if (InfoLength)
+            {
+                Status = AcpiDmDumpTable (Length,
+                            Offset + SubOffset + SubSubOffset, Table,
+                            InfoLength, AcpiDmTableInfoCsrt2a);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+                SubSubOffset += InfoLength;
+            }
 
             /* Point to next sub-subtable */
 
@@ -961,8 +959,13 @@ AcpiDmDumpDbg2 (
 
         if (SubTable->OemDataOffset)
         {
-            AcpiDmDumpBuffer (SubTable, SubTable->OemDataOffset, SubTable->OemDataLength,
-                Offset + SubTable->OemDataOffset, "OEM Data", FALSE);
+            Status = AcpiDmDumpTable (Length, Offset + SubTable->OemDataOffset,
+                        Table, SubTable->OemDataLength,
+                        AcpiDmTableInfoDbg2OemData);
+            if (ACPI_FAILURE (Status))
+            {
+                return;
+            }
         }
 
         /* Point to next subtable */

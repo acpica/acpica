@@ -520,6 +520,7 @@ DtCompileCsrt (
 
     /* Subtables (Resource Groups) */
 
+    ParentTable = DtPeekSubtable ();
     while (*PFieldList)
     {
         /* Resource group subtable */
@@ -543,9 +544,9 @@ DtCompileCsrt (
         DescriptorCount = (GroupLength  /
             sizeof (ACPI_CSRT_DESCRIPTOR));
 
-        ParentTable = DtPeekSubtable ();
         DtInsertSubtable (ParentTable, Subtable);
         DtPushSubtable (Subtable);
+        ParentTable = DtPeekSubtable ();
 
         /* Shared info subtable (One per resource group) */
 
@@ -556,26 +557,44 @@ DtCompileCsrt (
             return (Status);
         }
 
-        ParentTable = DtPeekSubtable ();
         DtInsertSubtable (ParentTable, Subtable);
 
         /* Sub-Subtables (Resource Descriptors) */
 
         while (*PFieldList && DescriptorCount)
         {
+
             Status = DtCompileTable (PFieldList, AcpiDmTableInfoCsrt2,
                         &Subtable, TRUE);
             if (ACPI_FAILURE (Status))
             {
                 return (Status);
             }
-
-            ParentTable = DtPeekSubtable ();
             DtInsertSubtable (ParentTable, Subtable);
+
+            DtPushSubtable (Subtable);
+            ParentTable = DtPeekSubtable ();
+            if (*PFieldList)
+            {
+                Status = DtCompileTable (PFieldList, AcpiDmTableInfoCsrt2a,
+                            &Subtable, TRUE);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+                if (Subtable)
+                {
+                    DtInsertSubtable (ParentTable, Subtable);
+                }
+            }
+            DtPopSubtable ();
+            ParentTable = DtPeekSubtable ();
+
             DescriptorCount--;
         }
 
         DtPopSubtable ();
+        ParentTable = DtPeekSubtable ();
     }
 
     return (Status);

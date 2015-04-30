@@ -318,6 +318,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCpep0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCsrt0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCsrt1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCsrt2[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCsrt2a[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDbg2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDbg2Device[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDbg2Addr[];
@@ -505,8 +506,7 @@ AcpiDmDumpBuffer (
     UINT32                  BufferOffset,
     UINT32                  Length,
     UINT32                  AbsoluteOffset,
-    char                    *Header,
-    BOOLEAN                 MultiLine);
+    char                    *Header);
 
 void
 AcpiDmDumpUnicode (

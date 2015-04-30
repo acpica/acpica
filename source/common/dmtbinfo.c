@@ -763,7 +763,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoCpep0[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoCsrt0[] =
 {
-    {ACPI_DMT_UINT32,   ACPI_CSRT0_OFFSET (Length),                 "Length", 0},
+    {ACPI_DMT_UINT32,   ACPI_CSRT0_OFFSET (Length),                 "Length", DT_LENGTH},
     {ACPI_DMT_UINT32,   ACPI_CSRT0_OFFSET (VendorId),               "Vendor ID", 0},
     {ACPI_DMT_UINT32,   ACPI_CSRT0_OFFSET (SubvendorId),            "Subvendor ID", 0},
     {ACPI_DMT_UINT16,   ACPI_CSRT0_OFFSET (DeviceId),               "Device ID", 0},
@@ -798,10 +798,16 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoCsrt1[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoCsrt2[] =
 {
-    {ACPI_DMT_UINT32,   ACPI_CSRT2_OFFSET (Length),                 "Length", 0},
+    {ACPI_DMT_UINT32,   ACPI_CSRT2_OFFSET (Length),                 "Length", DT_LENGTH},
     {ACPI_DMT_UINT16,   ACPI_CSRT2_OFFSET (Type),                   "Type", 0},
     {ACPI_DMT_UINT16,   ACPI_CSRT2_OFFSET (Subtype),                "Subtype", 0},
     {ACPI_DMT_UINT32,   ACPI_CSRT2_OFFSET (Uid),                    "UID", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoCsrt2a[] =
+{
+    {ACPI_DMT_RAW_BUFFER, 0,                                        "ResourceInfo", DT_OPTIONAL},
     ACPI_DMT_TERMINATOR
 };
 
@@ -860,7 +866,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoDbg2Name[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDbg2OemData[] =
 {
-    {ACPI_DMT_BUFFER,   0,                                          "OEM Data", DT_OPTIONAL},
+    {ACPI_DMT_RAW_BUFFER, 0,                                        "OEM Data", DT_OPTIONAL},
     ACPI_DMT_TERMINATOR
 };
 

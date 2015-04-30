@@ -1371,8 +1371,7 @@ AcpiDmDumpTable (
             }
 
             AcpiDmDumpBuffer (Table, CurrentOffset, ByteLength,
-                CurrentOffset, NULL, TRUE);
-            AcpiOsPrintf ("\n");
+                CurrentOffset, NULL);
             break;
 
         case ACPI_DMT_SRAT:
