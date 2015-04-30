@@ -928,6 +928,15 @@ AcpiDmDumpTable (
             ByteLength = sizeof (ACPI_HEST_NOTIFY);
             break;
 
+        case ACPI_DMT_IORTMEM:
+
+            if (!LastOutputBlankLine)
+            {
+                LastOutputBlankLine = FALSE;
+            }
+            ByteLength = sizeof (ACPI_IORT_MEM_ACCESS_PROPS);
+            break;
+
         default:
 
             ByteLength = 0;
@@ -1308,6 +1317,16 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf (UINT8_FORMAT, *Target,
                 AcpiDmHestNotifySubnames[Temp8]);
+            break;
+
+        case ACPI_DMT_IORTMEM:
+
+            AcpiOsPrintf (STRING_FORMAT,
+                "IORT Memory Access Properties");
+
+            AcpiDmDumpTable (TableLength, CurrentOffset, Target,
+                sizeof (ACPI_IORT_MEM_ACCESS_PROPS), AcpiDmTableInfoIortAcc);
+            LastOutputBlankLine = TRUE;
             break;
 
         case ACPI_DMT_MADT:

@@ -236,6 +236,7 @@
 #define ACPI_IORT1_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_NAMED_COMPONENT_NODE,f)
 #define ACPI_IORT2_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_PCI_ROOT_COMPLEX,f)
 #define ACPI_IORT3_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_SMMU_V1_V2,f)
+#define ACPI_IORTA_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_MEM_ACCESS_PROPS,f)
 #define ACPI_IORTH_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_NODE,f)
 #define ACPI_IORTM_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_ID_MAPPING,f)
 #define ACPI_IVRSH_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IVRS_HEADER,f)
@@ -309,6 +310,7 @@
 #define ACPI_GTDT0a_FLAG_OFFSET(f,o)    ACPI_FLAG_OFFSET (ACPI_GTDT_TIMER_ENTRY,f,o)
 #define ACPI_GTDT1_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_GTDT_WATCHDOG,f,o)
 #define ACPI_IORT3_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_IORT_SMMU_V1_V2,f,o)
+#define ACPI_IORTA_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_IORT_MEM_ACCESS_PROPS,f,o)
 #define ACPI_IORTM_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_IORT_ID_MAPPING,f,o)
 #define ACPI_LPITH_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_LPIT_HEADER,f,o)
 #define ACPI_MADT_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_MADT,f,o)
@@ -1444,6 +1446,21 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIortMap[] =
     ACPI_DMT_TERMINATOR
 };
 
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIortAcc[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_IORTA_OFFSET (CacheCoherentAttribute),     "CCA", 0},
+    {ACPI_DMT_UINT8,    ACPI_IORTA_OFFSET (AllocationHints),            "AH (decoded below)", 0},
+    {ACPI_DMT_FLAG0,    ACPI_IORTA_FLAG_OFFSET (AllocationHints, 0),    "TR", 0},
+    {ACPI_DMT_FLAG1,    ACPI_IORTA_FLAG_OFFSET (AllocationHints, 0),    "WA", 0},
+    {ACPI_DMT_FLAG2,    ACPI_IORTA_FLAG_OFFSET (AllocationHints, 0),    "RA", 0},
+    {ACPI_DMT_FLAG3,    ACPI_IORTA_FLAG_OFFSET (AllocationHints, 0),    "AHO", 0},
+    {ACPI_DMT_UINT16,   ACPI_IORTA_OFFSET (Reserved),                   "Reserved", 0},
+    {ACPI_DMT_UINT8,    ACPI_IORTA_OFFSET (MemoryAccessFlags),          "MAF (decoded below)", 0},
+    {ACPI_DMT_FLAG0,    ACPI_IORTA_FLAG_OFFSET (MemoryAccessFlags, 0),  "CPM", 0},
+    {ACPI_DMT_FLAG1,    ACPI_IORTA_FLAG_OFFSET (MemoryAccessFlags, 0),  "DACS", 0},
+    ACPI_DMT_TERMINATOR
+};
+
 /* IORT subtables */
 
 /* 0x00: ITS Group */
@@ -1465,7 +1482,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIort0a[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoIort1[] =
 {
     {ACPI_DMT_UINT32,   ACPI_IORT1_OFFSET (NodeFlags),              "Node flags", 0},
-    {ACPI_DMT_UINT64,   ACPI_IORT1_OFFSET (MemoryAccessProperties), "Memory access properties", 0},
+    {ACPI_DMT_IORTMEM,  ACPI_IORT1_OFFSET (MemoryAccessProperties), "Memory access properties", 0},
     {ACPI_DMT_UINT8,    ACPI_IORT1_OFFSET (MemoryAddressSizeLimit), "Memory address size limit", 0},
     {ACPI_DMT_STRING,   ACPI_IORT1_OFFSET (DeviceObjectName[0]),    "Device object name", 0},
     ACPI_DMT_TERMINATOR
@@ -1481,7 +1498,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoIort1a[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoIort2[] =
 {
-    {ACPI_DMT_UINT64,   ACPI_IORT2_OFFSET (MemoryAccessProperties), "Memory access properties", 0},
+    {ACPI_DMT_IORTMEM,  ACPI_IORT2_OFFSET (MemoryAccessProperties), "Memory access properties", 0},
     {ACPI_DMT_UINT32,   ACPI_IORT2_OFFSET (AtsAttribute),           "ATS Attribute", 0},
     {ACPI_DMT_UINT32,   ACPI_IORT2_OFFSET (PciSegmentNumber),       "PCI Segment number", 0},
     ACPI_DMT_TERMINATOR

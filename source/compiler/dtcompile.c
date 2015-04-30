@@ -627,15 +627,29 @@ DtCompileTable (
              */
             *Field = LocalField;
 
-            if (Info->Opcode == ACPI_DMT_GAS)
+            switch (Info->Opcode)
             {
+            case ACPI_DMT_GAS:
+
                 Status = DtCompileTable (Field, AcpiDmTableInfoGas,
                     &InlineSubtable, TRUE);
-            }
-            else
-            {
+                break;
+
+            case ACPI_DMT_HESTNTFY:
+
                 Status = DtCompileTable (Field, AcpiDmTableInfoHestNotify,
                     &InlineSubtable, TRUE);
+                break;
+
+            case ACPI_DMT_IORTMEM:
+
+                Status = DtCompileTable (Field, AcpiDmTableInfoIortAcc,
+                    &InlineSubtable, TRUE);
+                break;
+
+            default:
+
+                break;
             }
 
             if (ACPI_FAILURE (Status))

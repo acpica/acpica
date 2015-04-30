@@ -220,6 +220,7 @@ typedef enum
     ACPI_DMT_HEST,
     ACPI_DMT_HESTNTFY,
     ACPI_DMT_HESTNTYP,
+    ACPI_DMT_IORTMEM,
     ACPI_DMT_IVRS,
     ACPI_DMT_LPIT,
     ACPI_DMT_MADT,
@@ -381,6 +382,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIort3[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIort3a[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIort3b[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIort3c[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIortAcc[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIortHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIortMap[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIortPad[];

@@ -674,6 +674,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_IBFT_TARGET",                    SRC_TYPE_STRUCT},
     {"ACPI_IORT_ID_MAPPING",                SRC_TYPE_STRUCT},
     {"ACPI_IORT_ITS_GROUP",                 SRC_TYPE_STRUCT},
+    {"ACPI_IORT_MEM_ACCESS_PROPS",          SRC_TYPE_STRUCT},
     {"ACPI_IORT_NAMED_COMPONENT_NODE",      SRC_TYPE_STRUCT},
     {"ACPI_IORT_NODE",                      SRC_TYPE_STRUCT},
     {"ACPI_IORT_PCI_ROOT_COMPLEX",          SRC_TYPE_STRUCT},

@@ -884,6 +884,33 @@ typedef struct acpi_iort_id_mapping
 #define ACPI_IORT_ID_SINGLE_MAPPING (1)
 
 
+typedef struct acpi_iort_mem_access_props
+{
+    UINT32      CacheCoherentAttribute;         /* CCA */
+    UINT8       AllocationHints;                /* AH */
+    UINT16      Reserved;
+    UINT8       MemoryAccessFlags;              /* MAF */
+
+} ACPI_IORT_MEM_ACCESS_PROPS;
+
+/* Values for CacheCoherentAttribute field above */
+
+#define ACPI_IORT_NODE_COHERENT     0x00000001  /* The device node is fully coherent */
+#define ACPI_IORT_NODE_NOT_COHERENT 0x00000000  /* The device node is not coherent */
+
+/* Masks for AllocationHints field above */
+
+#define ACPI_IORT_AH_TR                         (1)
+#define ACPI_IORT_AH_WA                         (1<<1)
+#define ACPI_IORT_AH_RA                         (1<<2)
+#define ACPI_IORT_AH_AHO                        (1<<3)
+
+/* Masks for MemoryAccessFlags field above */
+
+#define ACPI_IORT_MAF_CPM                       (1)
+#define ACPI_IORT_MAF_DACS                      (1<<1)
+
+
 /*
  * IORT node specific subtables
  */
