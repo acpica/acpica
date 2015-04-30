@@ -1523,8 +1523,11 @@ DtCompileIort (
             DtInsertSubtable (ParentTable, Subtable);
             NodeLength += Subtable->Length;
 
-            /* Padding - Variable-length data */
-
+            /*
+             * Padding - Variable-length data
+             * Optionally allows the offset of the ID mappings to be used
+             * for filling this field.
+             */
             Status = DtCompileTable (PFieldList, AcpiDmTableInfoIort1a,
                             &Subtable, TRUE);
             if (ACPI_FAILURE (Status))
@@ -1535,6 +1538,25 @@ DtCompileIort (
             {
                 DtInsertSubtable (ParentTable, Subtable);
                 NodeLength += Subtable->Length;
+            }
+            else
+            {
+                if (NodeLength > IortNode->OffsetToIdMappings)
+                {
+                    return (AE_BAD_DATA);
+                }
+                if (NodeLength < IortNode->OffsetToIdMappings)
+                {
+                    Status = DtCompilePadding (
+                                    IortNode->OffsetToIdMappings - NodeLength,
+                                    &Subtable);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return (Status);
+                    }
+                    DtInsertSubtable (ParentTable, Subtable);
+                    NodeLength = IortNode->OffsetToIdMappings;
+                }
             }
             break;
 

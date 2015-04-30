@@ -702,3 +702,43 @@ Error:
     ACPI_FREE (Subtable);
     return (Status);
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    DtCompilePadding
+ *
+ * PARAMETERS:  Length              - Padding field size
+ *              RetSubtable         - Compile result of table
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile a subtable for padding purpose
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompilePadding (
+    UINT32                  Length,
+    DT_SUBTABLE             **RetSubtable)
+{
+    DT_SUBTABLE             *Subtable;
+    UINT8                   *Buffer;
+    char                    *String;
+
+
+    Subtable = UtSubtableCacheCalloc ();
+
+    if (Length > 0)
+    {
+        String = UtStringCacheCalloc (Length);
+        Subtable->Buffer = ACPI_CAST_PTR (UINT8, String);
+    }
+
+    Subtable->Length = Length;
+    Subtable->TotalLength = Length;
+    Buffer = Subtable->Buffer;
+
+    *RetSubtable = Subtable;
+    return (AE_OK);
+}

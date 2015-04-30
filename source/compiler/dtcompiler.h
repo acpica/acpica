@@ -242,6 +242,11 @@ DtCompileTable (
     DT_SUBTABLE             **RetSubtable,
     BOOLEAN                 Required);
 
+ACPI_STATUS
+DtCompilePadding (
+    UINT32                  Length,
+    DT_SUBTABLE             **RetSubtable);
+
 
 /* dtio - binary and text input/output */
 
