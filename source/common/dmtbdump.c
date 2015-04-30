@@ -990,7 +990,6 @@ AcpiDmDumpDbg2 (
  *
  ******************************************************************************/
 
-
 void
 AcpiDmDumpDmar (
     ACPI_TABLE_HEADER       *Table)
@@ -1129,6 +1128,117 @@ NextSubtable:
 
         Offset += SubTable->Length;
         SubTable = ACPI_ADD_PTR (ACPI_DMAR_HEADER, SubTable, SubTable->Length);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDumpDrtm
+ *
+ * PARAMETERS:  Table               - A DRTM table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a DRTM.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpDrtm (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    UINT32                  Offset;
+    ACPI_TABLE_DRTM         *Drtm;
+    ACPI_DRTM_VTABLE_LIST   *DrtmVtl;
+    ACPI_DRTM_RESOURCE_LIST *DrtmRl;
+    ACPI_DRTM_DPS_ID        *DrtmDps;
+    UINT32                  Count;
+
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0,
+                AcpiDmTableInfoDrtm);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+    Drtm = ACPI_CAST_PTR (ACPI_TABLE_DRTM, Table);
+    Offset = sizeof (ACPI_TABLE_DRTM);
+
+    /* Sub-tables */
+
+    /* Dump VTL length */
+
+    DrtmVtl = ACPI_ADD_PTR (ACPI_DRTM_VTABLE_LIST, Table, Offset);
+    AcpiOsPrintf ("\n");
+    Status = AcpiDmDumpTable (Table->Length, Offset,
+                DrtmVtl, ACPI_OFFSET (ACPI_DRTM_VTABLE_LIST, ValidatedTables),
+                AcpiDmTableInfoDrtm0);
+    if (ACPI_FAILURE (Status))
+    {
+            return;
+    }
+    Offset += ACPI_OFFSET (ACPI_DRTM_VTABLE_LIST, ValidatedTables);
+
+    /* Dump VTL */
+
+    Count = 0;
+    while (Offset < Table->Length && DrtmVtl->ValidatedTableCount > Count)
+    {
+        Status = AcpiDmDumpTable (Table->Length, Offset,
+                    ACPI_ADD_PTR (void, Table, Offset), sizeof (UINT64),
+                    AcpiDmTableInfoDrtm0a);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+        Offset += sizeof (UINT64);
+        Count++;
+    }
+
+    /* Dump RL length */
+
+    DrtmRl = ACPI_ADD_PTR (ACPI_DRTM_RESOURCE_LIST, Table, Offset);
+    AcpiOsPrintf ("\n");
+    Status = AcpiDmDumpTable (Table->Length, Offset,
+                DrtmRl, ACPI_OFFSET (ACPI_DRTM_RESOURCE_LIST, Resources),
+                AcpiDmTableInfoDrtm1);
+    if (ACPI_FAILURE (Status))
+    {
+            return;
+    }
+    Offset += ACPI_OFFSET (ACPI_DRTM_RESOURCE_LIST, Resources);
+
+    /* Dump RL */
+
+    Count = 0;
+    while (Offset < Table->Length && DrtmRl->ResourceCount > Count)
+    {
+        Status = AcpiDmDumpTable (Table->Length, Offset,
+                    ACPI_ADD_PTR (void, Table, Offset),
+                    sizeof (ACPI_DRTM_RESOURCE),
+                    AcpiDmTableInfoDrtm1a);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+        Offset += sizeof (ACPI_DRTM_RESOURCE);
+        Count++;
+    }
+
+    /* Dump DPS */
+
+    DrtmDps = ACPI_ADD_PTR (ACPI_DRTM_DPS_ID, Table, Offset);
+    AcpiOsPrintf ("\n");
+    Status = AcpiDmDumpTable (Table->Length, Offset,
+                DrtmDps, sizeof (ACPI_DRTM_DPS_ID),
+                AcpiDmTableInfoDrtm2);
+    if (ACPI_FAILURE (Status))
+    {
+            return;
     }
 }
 

@@ -506,6 +506,10 @@ DtCompileDmar (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileDrtm (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompileEinj (
     void                    **PFieldList);
 
@@ -634,6 +638,7 @@ extern const unsigned char  TemplateCsrt[];
 extern const unsigned char  TemplateDbg2[];
 extern const unsigned char  TemplateDbgp[];
 extern const unsigned char  TemplateDmar[];
+extern const unsigned char  TemplateDrtm[];
 extern const unsigned char  TemplateEcdt[];
 extern const unsigned char  TemplateEinj[];
 extern const unsigned char  TemplateErst[];

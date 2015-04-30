@@ -389,6 +389,7 @@ ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_DBG2, AcpiDmTableInfoDbg2,    AcpiDmDumpDbg2, DtCompileDbg2,  TemplateDbg2,   "Debug Port table type 2"},
     {ACPI_SIG_DBGP, AcpiDmTableInfoDbgp,    NULL,           NULL,           TemplateDbgp,   "Debug Port table"},
     {ACPI_SIG_DMAR, NULL,                   AcpiDmDumpDmar, DtCompileDmar,  TemplateDmar,   "DMA Remapping table"},
+    {ACPI_SIG_DRTM, NULL,                   AcpiDmDumpDrtm, DtCompileDrtm,  TemplateDrtm,   "Dynamic Root of Trust for Measurement table"},
     {ACPI_SIG_ECDT, AcpiDmTableInfoEcdt,    NULL,           NULL,           TemplateEcdt,   "Embedded Controller Boot Resources Table"},
     {ACPI_SIG_EINJ, NULL,                   AcpiDmDumpEinj, DtCompileEinj,  TemplateEinj,   "Error Injection table"},
     {ACPI_SIG_ERST, NULL,                   AcpiDmDumpErst, DtCompileErst,  TemplateErst,   "Error Record Serialization Table"},

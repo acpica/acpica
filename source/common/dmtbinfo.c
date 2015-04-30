@@ -214,6 +214,10 @@
 #define ACPI_DMAR2_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_DMAR_ATSR,f)
 #define ACPI_DMAR3_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_DMAR_RHSA,f)
 #define ACPI_DMAR4_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_DMAR_ANDD,f)
+#define ACPI_DRTM0_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_DRTM_VTABLE_LIST,f)
+#define ACPI_DRTM1_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_DRTM_RESOURCE_LIST,f)
+#define ACPI_DRTM1a_OFFSET(f)           (UINT16) ACPI_OFFSET (ACPI_DRTM_RESOURCE,f)
+#define ACPI_DRTM2_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_DRTM_DPS_ID,f)
 #define ACPI_EINJ0_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_WHEA_HEADER,f)
 #define ACPI_ERST0_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_WHEA_HEADER,f)
 #define ACPI_FPDTH_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_FPDT_HEADER,f)
@@ -299,6 +303,8 @@
 
 /* Flags */
 
+#define ACPI_DRTM_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_DRTM,f,o)
+#define ACPI_DRTM1a_FLAG_OFFSET(f,o)    ACPI_FLAG_OFFSET (ACPI_DRTM_RESOURCE,f,o)
 #define ACPI_FADT_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_FADT,f,o)
 #define ACPI_FACS_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_FACS,f,o)
 #define ACPI_HPET_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_HPET,f,o)
@@ -995,7 +1001,54 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoDmar4[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDrtm[] =
 {
+    {ACPI_DMT_UINT64,   ACPI_DRTM_OFFSET (EntryBaseAddress),        "DL Entry Base", 0},
+    {ACPI_DMT_UINT64,   ACPI_DRTM_OFFSET (EntryLength),             "DL Entry Length", 0},
+    {ACPI_DMT_UINT32,   ACPI_DRTM_OFFSET (EntryAddress32),          "DL Entry32", 0},
+    {ACPI_DMT_UINT64,   ACPI_DRTM_OFFSET (EntryAddress64),          "DL Entry64", 0},
+    {ACPI_DMT_UINT64,   ACPI_DRTM_OFFSET (ExitAddress),             "DLME Exit", 0},
+    {ACPI_DMT_UINT64,   ACPI_DRTM_OFFSET (LogAreaAddress),          "Log Area Start", 0},
+    {ACPI_DMT_UINT32,   ACPI_DRTM_OFFSET (LogAreaLength),           "Log Area Length", 0},
+    {ACPI_DMT_UINT64,   ACPI_DRTM_OFFSET (ArchDependentAddress),    "Architecture Dependent", 0},
+    {ACPI_DMT_UINT32,   ACPI_DRTM_OFFSET (Flags),                   "Flags", 0},
+    {ACPI_DMT_FLAG0,    ACPI_DRTM_FLAG_OFFSET (Flags, 0),           "NameSpaceInTCB", 0},
+    {ACPI_DMT_FLAG1,    ACPI_DRTM_FLAG_OFFSET (Flags, 0),           "GapCodeOnS3Resume", 0},
+    {ACPI_DMT_FLAG2,    ACPI_DRTM_FLAG_OFFSET (Flags, 0),           "GapCodeOnDLME_Exit", 0},
+    {ACPI_DMT_FLAG3,    ACPI_DRTM_FLAG_OFFSET (Flags, 0),           "PCR_AuthoritiesChanged", 0},
+    ACPI_DMT_TERMINATOR
+};
 
+ACPI_DMTABLE_INFO           AcpiDmTableInfoDrtm0[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_DRTM0_OFFSET (ValidatedTableCount),    "Validated Table Count", DT_COUNT},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoDrtm0a[] =
+{
+    {ACPI_DMT_UINT64,   0,                                          "Validated Table Address", DT_OPTIONAL},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoDrtm1[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_DRTM1_OFFSET (ResourceCount),          "Resource Count", DT_COUNT},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoDrtm1a[] =
+{
+    {ACPI_DMT_UINT56,   ACPI_DRTM1a_OFFSET (Size[0]),               "Size", DT_OPTIONAL},
+    {ACPI_DMT_UINT8,    ACPI_DRTM1a_OFFSET (Type),                  "Type", 0},
+    {ACPI_DMT_FLAG0,    ACPI_DRTM1a_FLAG_OFFSET (Type, 0),          "Indicated Resource Type", 0},
+    {ACPI_DMT_FLAG7,    ACPI_DRTM1a_FLAG_OFFSET (Type, 0),          "Protections", 0},
+    {ACPI_DMT_UINT64,   ACPI_DRTM1a_OFFSET (Address),               "Address", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoDrtm2[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_DRTM2_OFFSET (DpsIdLength),            "DLME Platform Id Length", DT_COUNT},
+    {ACPI_DMT_BUF16,    ACPI_DRTM2_OFFSET (DpsId),                  "DLME Platform Id", DT_COUNT},
     ACPI_DMT_TERMINATOR
 };
 

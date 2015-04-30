@@ -197,6 +197,8 @@ typedef struct acpi_table_bgrt
 /*******************************************************************************
  *
  * DRTM - Dynamic Root of Trust for Measurement table
+ * Conforms to "TCG D-RTM Architecture" June 17 2013, Version 1.0.0
+ * Table version 1
  *
  ******************************************************************************/
 
@@ -215,29 +217,50 @@ typedef struct acpi_table_drtm
 
 } ACPI_TABLE_DRTM;
 
-/* 1) Validated Tables List */
+/* Flag Definitions for above */
 
-typedef struct acpi_drtm_vtl_list
+#define ACPI_DRTM_ACCESS_ALLOWED            (1)
+#define ACPI_DRTM_ENABLE_GAP_CODE           (1<<1)
+#define ACPI_DRTM_INCOMPLETE_MEASUREMENTS   (1<<2)
+#define ACPI_DRTM_AUTHORITY_ORDER           (1<<3)
+
+
+/* 1) Validated Tables List (64-bit addresses) */
+
+typedef struct acpi_drtm_vtable_list
 {
-    UINT32                  ValidatedTableListCount;
+    UINT32                  ValidatedTableCount;
+    UINT64                  ValidatedTables[1];
 
-} ACPI_DRTM_VTL_LIST;
+} ACPI_DRTM_VTABLE_LIST;
 
-/* 2) Resources List */
+/* 2) Resources List (of Resource Descriptors) */
+
+/* Resource Descriptor */
+
+typedef struct acpi_drtm_resource
+{
+    UINT8                   Size[7];
+    UINT8                   Type;
+    UINT64                  Address;
+
+} ACPI_DRTM_RESOURCE;
 
 typedef struct acpi_drtm_resource_list
 {
-    UINT32                  ResourceListCount;
+    UINT32                  ResourceCount;
+    ACPI_DRTM_RESOURCE      Resources[1];
 
 } ACPI_DRTM_RESOURCE_LIST;
 
 /* 3) Platform-specific Identifiers List */
 
-typedef struct acpi_drtm_id_list
+typedef struct acpi_drtm_dps_id
 {
-    UINT32                  IdListCount;
+    UINT32                  DpsIdLength;
+    UINT8                   DpsId[16];
 
-} ACPI_DRTM_ID_LIST;
+} ACPI_DRTM_DPS_ID;
 
 
 /*******************************************************************************

@@ -913,6 +913,133 @@ DtCompileDmar (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileDrtm
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile DRTM.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileDrtm (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    UINT32                  Count;
+    ACPI_TABLE_DRTM         *Drtm;
+    ACPI_DRTM_VTABLE_LIST   *DrtmVtl;
+    ACPI_DRTM_RESOURCE_LIST *DrtmRl;
+    ACPI_DRTM_DPS_ID        *DrtmDps;
+
+
+    ParentTable = DtPeekSubtable ();
+
+    /* Compile DRTM header */
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoDrtm,
+                &Subtable, TRUE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+    DtInsertSubtable (ParentTable, Subtable);
+
+    /*
+     * Using ACPI_SUB_PTR, We needn't define a seperate structure. Care
+     * should be taken to avoid accessing ACPI_TABLE_HADER fields.
+     */
+    Drtm = ACPI_SUB_PTR (ACPI_TABLE_DRTM,
+                    Subtable->Buffer, sizeof (ACPI_TABLE_HEADER));
+
+    /* Compile VTL */
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoDrtm0,
+                &Subtable, TRUE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+    DtInsertSubtable (ParentTable, Subtable);
+    DrtmVtl = ACPI_CAST_PTR (ACPI_DRTM_VTABLE_LIST, Subtable->Buffer);
+
+    DtPushSubtable (Subtable);
+    ParentTable = DtPeekSubtable ();
+    Count = 0;
+    while (*PFieldList)
+    {
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoDrtm0a,
+                    &Subtable, TRUE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+        if (!Subtable)
+        {
+            break;
+        }
+        DtInsertSubtable (ParentTable, Subtable);
+        Count++;
+    }
+    DrtmVtl->ValidatedTableCount = Count;
+    DtPopSubtable ();
+    ParentTable = DtPeekSubtable ();
+
+    /* Compile RL */
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoDrtm1,
+                &Subtable, TRUE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+    DtInsertSubtable (ParentTable, Subtable);
+    DrtmRl = ACPI_CAST_PTR (ACPI_DRTM_RESOURCE_LIST, Subtable->Buffer);
+
+    DtPushSubtable (Subtable);
+    ParentTable = DtPeekSubtable ();
+    Count = 0;
+    while (*PFieldList)
+    {
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoDrtm1a,
+                    &Subtable, TRUE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+        if (!Subtable)
+        {
+            break;
+        }
+        DtInsertSubtable (ParentTable, Subtable);
+        Count++;
+    }
+    DrtmRl->ResourceCount = Count;
+    DtPopSubtable ();
+    ParentTable = DtPeekSubtable ();
+
+    /* Compile DPS */
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoDrtm2,
+                &Subtable, TRUE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+    DtInsertSubtable (ParentTable, Subtable);
+    DrtmDps = ACPI_CAST_PTR (ACPI_DRTM_DPS_ID, Subtable->Buffer);
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileEinj
  *
  * PARAMETERS:  List                - Current field list pointer

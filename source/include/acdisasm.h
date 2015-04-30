@@ -336,6 +336,11 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDmar2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDmar3[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDmar4[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDrtm[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDrtm0[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDrtm0a[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDrtm1[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDrtm1a[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDrtm2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoEcdt[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoEinj[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoEinj0[];
@@ -547,6 +552,10 @@ AcpiDmDumpDbg2 (
 
 void
 AcpiDmDumpDmar (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpDrtm (
     ACPI_TABLE_HEADER       *Table);
 
 void
