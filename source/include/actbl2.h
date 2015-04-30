@@ -143,6 +143,7 @@
 #define ACPI_SIG_DMAR           "DMAR"      /* DMA Remapping table */
 #define ACPI_SIG_HPET           "HPET"      /* High Precision Event Timer table */
 #define ACPI_SIG_IBFT           "IBFT"      /* iSCSI Boot Firmware Table */
+#define ACPI_SIG_IORT           "IORT"      /* IO Remapping Table */
 #define ACPI_SIG_IVRS           "IVRS"      /* I/O Virtualization Reporting Structure */
 #define ACPI_SIG_LPIT           "LPIT"      /* Low Power Idle Table */
 #define ACPI_SIG_MCFG           "MCFG"      /* PCI Memory Mapped Configuration table */
@@ -820,6 +821,131 @@ typedef struct acpi_ibft_target
     UINT16                  ReverseChapSecretOffset;
 
 } ACPI_IBFT_TARGET;
+
+
+/*******************************************************************************
+ *
+ * IORT - IO Remapping Table
+ *
+ * Conforms to "IO Remapping Table System Software on ARM Platforms",
+ * Document number: ARM DEN 0049A, 2015
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_iort
+{
+    ACPI_TABLE_HEADER       Header;
+    UINT32                  NumberOfNodes;
+    UINT32                  OffsetToNodes;
+    UINT32                  Reserved;
+
+} ACPI_TABLE_IORT;
+
+
+/*
+ * IORT subtables
+ */
+
+typedef struct acpi_iort_node
+{
+    UINT8       Type;
+    UINT16      Length;
+    UINT8       Revision;
+    UINT32      Reserved;
+    UINT32      NumberOfIdMappings;
+    UINT32      OffsetToIdMappings;
+    char        NodeSpecificData[1];
+
+} ACPI_IORT_NODE;
+
+/* Values for subtable Type above */
+
+enum AcpiIortNodeType
+{
+    ACPI_IORT_NODE_ITS_GROUP            = 0x00,
+    ACPI_IORT_NODE_NAMED_COMPONENT_NODE = 0x01,
+    ACPI_IORT_NODE_PCI_ROOT_COMPLEX     = 0x02,
+    ACPI_IORT_NODE_SMMU_V1_V2           = 0x03
+};
+
+
+typedef struct acpi_iort_id_mapping
+{
+    UINT32      InputBase;                      /* Lowest value in input range */
+    UINT32      NumberOfIds;                    /* Number of IDs */
+    UINT32      OutputBase;                     /* Lowest value in output range */
+    UINT32      OutputReference;                /* A reference to the output node */
+    UINT32      Flags;
+
+} ACPI_IORT_ID_MAPPING;
+
+/* Masks for Flags field above for IORT subtable */
+
+#define ACPI_IORT_ID_SINGLE_MAPPING (1)
+
+
+/*
+ * IORT node specific subtables
+ */
+
+typedef struct acpi_iort_its_group
+{
+    UINT32      ItsNumber;
+    UINT32      GicItsIdentifiers[1];           /* GIC ITS identifier arrary */
+
+} ACPI_IORT_ITS_GROUP;
+
+
+typedef struct acpi_iort_named_component_node
+{
+    UINT32      NodeFlags;
+    UINT64      MemoryAccessProperties;         /* Memory access properties */
+    UINT8       MemoryAddressSizeLimit;         /* Memory address size limit */
+    char        DeviceObjectName[1];            /* Path of namespace object */
+
+} ACPI_IORT_NAMED_COMPONENT_NODE;
+
+
+typedef struct acpi_iort_pci_root_complex
+{
+    UINT64      MemoryAccessProperties;         /* Memory access properties */
+    UINT32      AtsAttribute;
+    UINT32      PciSegmentNumber;
+
+} ACPI_IORT_PCI_ROOT_COMPLEX;
+
+/* Values for AtsAttribute field above */
+
+#define ACPI_IORT_ATS_SUPPORTED     0x00000001  /* The root complex supports ATS */
+#define ACPI_IORT_ATS_UNSUPPORTED   0x00000000  /* The root complex doesn't support ATS */
+
+
+typedef struct acpi_iort_smmu_v1_v2
+{
+    UINT64       BaseAddress;                   /* SMMU base address */
+    UINT64       Span;                          /* Length of memory range */
+    UINT32       Model;
+    UINT32       Flags;
+    UINT32       OffsetToGlobalInterrupts;
+    UINT32       NumberOfContextInterrupts;
+    UINT32       OffsetToContextInterrupts;
+    UINT32       NumberOfPmuInterrupts;
+    UINT32       OffsetToPmuInterrupts;
+    UINT64       InterruptArray[1];             /* Interrupt array */
+
+} ACPI_IORT_SMMU_V1_V2;
+
+/* Values for Model field above */
+
+#define ACPI_IORT_SMMU_V1               0x00000000  /* Generic SMMUv1 */
+#define ACPI_IORT_SMMU_V2               0x00000001  /* Generic SMMUv2 */
+#define ACPI_IORT_SMMU_CORELINK_MMU400  0x00000002  /* ARM Corelink MMU-400 */
+#define ACPI_IORT_SMMU_CORELINK_MMU500  0x00000003  /* ARM Corelink MMU-500 */
+
+/* Masks for Flags field above */
+
+#define ACPI_IORT_SMMU_DVM_SUPPORTED            (1)
+#define ACPI_IORT_SMMU_COHERENT_PAGE_TABLE_WALK (1<<1)
 
 
 /*******************************************************************************

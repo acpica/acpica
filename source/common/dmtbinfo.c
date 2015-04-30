@@ -168,6 +168,7 @@
 #define ACPI_GTDT_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_GTDT,f)
 #define ACPI_HEST_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_HEST,f)
 #define ACPI_HPET_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_HPET,f)
+#define ACPI_IORT_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_IORT,f)
 #define ACPI_IVRS_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_IVRS,f)
 #define ACPI_MADT_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_MADT,f)
 #define ACPI_MCFG_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_MCFG,f)
@@ -231,6 +232,12 @@
 #define ACPI_HEST9_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_HEST_GENERIC,f)
 #define ACPI_HESTN_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_HEST_NOTIFY,f)
 #define ACPI_HESTB_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_HEST_IA_ERROR_BANK,f)
+#define ACPI_IORT0_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_ITS_GROUP,f)
+#define ACPI_IORT1_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_NAMED_COMPONENT_NODE,f)
+#define ACPI_IORT2_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_PCI_ROOT_COMPLEX,f)
+#define ACPI_IORT3_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_SMMU_V1_V2,f)
+#define ACPI_IORTH_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_NODE,f)
+#define ACPI_IORTM_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_ID_MAPPING,f)
 #define ACPI_IVRSH_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IVRS_HEADER,f)
 #define ACPI_IVRS0_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IVRS_HARDWARE,f)
 #define ACPI_IVRS1_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IVRS_MEMORY,f)
@@ -301,6 +308,8 @@
 #define ACPI_GTDT_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_GTDT,f,o)
 #define ACPI_GTDT0a_FLAG_OFFSET(f,o)    ACPI_FLAG_OFFSET (ACPI_GTDT_TIMER_ENTRY,f,o)
 #define ACPI_GTDT1_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_GTDT_WATCHDOG,f,o)
+#define ACPI_IORT3_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_IORT_SMMU_V1_V2,f,o)
+#define ACPI_IORTM_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_IORT_ID_MAPPING,f,o)
 #define ACPI_LPITH_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_LPIT_HEADER,f,o)
 #define ACPI_MADT_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_MADT,f,o)
 #define ACPI_MADT0_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_MADT_LOCAL_APIC,f,o)
@@ -1385,6 +1394,133 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoHpet[] =
     {ACPI_DMT_UINT8,    ACPI_HPET_OFFSET (Flags),                   "Flags (decoded below)", DT_FLAG},
     {ACPI_DMT_FLAG0,    ACPI_HPET_FLAG_OFFSET (Flags,0),            "4K Page Protect", 0},
     {ACPI_DMT_FLAG1,    ACPI_HPET_FLAG_OFFSET (Flags,0),            "64K Page Protect", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
+ * IORT - IO Remapping Table
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIort[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_IORT_OFFSET (NumberOfNodes),           "Number of IORT Nodes", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORT_OFFSET (OffsetToNodes),           "Offset to IORT Nodes", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORT_OFFSET (Reserved),                "Reserved", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* Optional padding field */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIortPad[] =
+{
+    {ACPI_DMT_RAW_BUFFER, 0,                                        "Optional Padding", DT_OPTIONAL},
+    ACPI_DMT_TERMINATOR
+};
+
+/* Common Subtable header (one per Subtable) */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIortHdr[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_IORTH_OFFSET (Type),                   "Type", 0},
+    {ACPI_DMT_UINT16,   ACPI_IORTH_OFFSET (Length),                 "Length", DT_LENGTH},
+    {ACPI_DMT_UINT8,    ACPI_IORTH_OFFSET (Revision),               "Revision", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORTH_OFFSET (Reserved),               "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORTH_OFFSET (NumberOfIdMappings),     "Number of ID mappings", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORTH_OFFSET (OffsetToIdMappings),     "Offset to ID mappings", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIortMap[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_IORTM_OFFSET (InputBase),              "Input base", DT_OPTIONAL},
+    {ACPI_DMT_UINT32,   ACPI_IORTM_OFFSET (NumberOfIds),            "Number of IDs", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORTM_OFFSET (OutputBase),             "Output base", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORTM_OFFSET (NumberOfIds),            "Output Reference", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORTM_OFFSET (Flags),                  "Flags (decoded below)", 0},
+    {ACPI_DMT_FLAG0,    ACPI_IORTM_FLAG_OFFSET (Flags, 0),          "Single mapping", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* IORT subtables */
+
+/* 0x00: ITS Group */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIort0[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_IORT0_OFFSET (ItsNumber),              "Number of ITSs", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIort0a[] =
+{
+    {ACPI_DMT_UINT32,   0,                                          "GIC ITS Identifier", DT_OPTIONAL},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 0x01: Named Component */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIort1[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_IORT1_OFFSET (NodeFlags),              "Node flags", 0},
+    {ACPI_DMT_UINT64,   ACPI_IORT1_OFFSET (MemoryAccessProperties), "Memory access properties", 0},
+    {ACPI_DMT_UINT8,    ACPI_IORT1_OFFSET (MemoryAddressSizeLimit), "Memory address size limit", 0},
+    {ACPI_DMT_STRING,   ACPI_IORT1_OFFSET (DeviceObjectName[0]),    "Device object name", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIort1a[] =
+{
+    {ACPI_DMT_RAW_BUFFER, 0,                                        "Padding", DT_OPTIONAL},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 0x02: PCI Root Complex */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIort2[] =
+{
+    {ACPI_DMT_UINT64,   ACPI_IORT2_OFFSET (MemoryAccessProperties), "Memory access properties", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORT2_OFFSET (AtsAttribute),           "ATS Attribute", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORT2_OFFSET (PciSegmentNumber),       "PCI Segment number", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 0x03: SMMUv1/2 */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIort3[] =
+{
+    {ACPI_DMT_UINT64,   ACPI_IORT3_OFFSET (BaseAddress),                "Base address", 0},
+    {ACPI_DMT_UINT64,   ACPI_IORT3_OFFSET (Span),                       "Span", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORT3_OFFSET (Model),                      "Model", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORT3_OFFSET (Flags),                      "Flags (decoded below)", 0},
+    {ACPI_DMT_FLAG0,    ACPI_IORT3_FLAG_OFFSET (Flags, 0),              "DVM Supported", 0},
+    {ACPI_DMT_FLAG1,    ACPI_IORT3_FLAG_OFFSET (Flags, 0),              "Coherent Page Table Walk", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORT3_OFFSET (OffsetToGlobalInterrupts),   "Offset to Global Interrupts", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORT3_OFFSET (NumberOfContextInterrupts),  "Number of Context Interrupts", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORT3_OFFSET (OffsetToContextInterrupts),  "Offset to Context Interrupts", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORT3_OFFSET (NumberOfPmuInterrupts),      "Number of PMU Interrupts", 0},
+    {ACPI_DMT_UINT32,   ACPI_IORT3_OFFSET (OffsetToPmuInterrupts),      "Offset to PMU Interrupts", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIort3a[] =
+{
+    {ACPI_DMT_UINT64,   0,                                          "SMMU_NSgIrpt interrupt", 0},
+    {ACPI_DMT_UINT64,   0,                                          "SMMU_NSgCfgIrpt interrupt", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIort3b[] =
+{
+    {ACPI_DMT_UINT64,   0,                                          "Context interrupt", DT_OPTIONAL},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoIort3c[] =
+{
+    {ACPI_DMT_UINT64,   0,                                          "PMU interrupt", DT_OPTIONAL},
     ACPI_DMT_TERMINATOR
 };
 

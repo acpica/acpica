@@ -1382,6 +1382,274 @@ DtCompileHest (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileIort
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile IORT.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileIort (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    DT_FIELD                *SubtableStart;
+    ACPI_TABLE_IORT         *Iort;
+    ACPI_IORT_NODE          *IortNode;
+    ACPI_IORT_ITS_GROUP     *IortItsGroup;
+    ACPI_IORT_SMMU_V1_V2    *IortSmmu;
+    UINT32                  NodeNumber;
+    UINT16                  NodeLength;
+    UINT32                  IdMappingNumber;
+    UINT32                  ItsNumber;
+    UINT32                  ContextIrptNumber;
+    UINT32                  PmuIrptNumber;
+
+
+    ParentTable = DtPeekSubtable ();
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoIort,
+                &Subtable, TRUE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+    DtInsertSubtable (ParentTable, Subtable);
+
+    /*
+     * Using ACPI_SUB_PTR, We needn't define a seperate structure. Care
+     * should be taken to avoid accessing ACPI_TABLE_HADER fields.
+     */
+    Iort = ACPI_SUB_PTR (ACPI_TABLE_IORT,
+                    Subtable->Buffer, sizeof (ACPI_TABLE_HEADER));
+
+    /*
+     * OptionalPadding - Variable-length data
+     * (Optional, size = OffsetToNodes - sizeof (ACPI_TABLE_IORT))
+     */
+    Iort->OffsetToNodes = sizeof (ACPI_TABLE_IORT);
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoIortPad,
+                    &Subtable, TRUE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+    if (Subtable)
+    {
+        DtInsertSubtable (ParentTable, Subtable);
+        Iort->OffsetToNodes += Subtable->Length;
+    }
+
+    NodeNumber = 0;
+    while (*PFieldList)
+    {
+        SubtableStart = *PFieldList;
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoIortHdr,
+                    &Subtable, TRUE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+        DtInsertSubtable (ParentTable, Subtable);
+        IortNode = ACPI_CAST_PTR (ACPI_IORT_NODE, Subtable->Buffer);
+        NodeLength = ACPI_OFFSET (ACPI_IORT_NODE, NodeSpecificData);
+
+        DtPushSubtable (Subtable);
+        ParentTable = DtPeekSubtable ();
+
+        switch (IortNode->Type)
+        {
+        case ACPI_IORT_NODE_ITS_GROUP:
+
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoIort0,
+                        &Subtable, TRUE);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+            DtInsertSubtable (ParentTable, Subtable);
+            IortItsGroup = ACPI_CAST_PTR (ACPI_IORT_ITS_GROUP, Subtable->Buffer);
+            NodeLength += Subtable->Length;
+
+            ItsNumber = 0;
+            while (*PFieldList)
+            {
+                Status = DtCompileTable (PFieldList, AcpiDmTableInfoIort0a,
+                            &Subtable, TRUE);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+                if (!Subtable)
+                {
+                    break;
+                }
+                DtInsertSubtable (ParentTable, Subtable);
+                NodeLength += Subtable->Length;
+                ItsNumber++;
+            }
+
+            IortItsGroup->ItsNumber = ItsNumber;
+            break;
+
+        case ACPI_IORT_NODE_NAMED_COMPONENT_NODE:
+
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoIort1,
+                        &Subtable, TRUE);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+            DtInsertSubtable (ParentTable, Subtable);
+            NodeLength += Subtable->Length;
+
+            /* Padding - Variable-length data */
+
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoIort1a,
+                            &Subtable, TRUE);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+            if (Subtable)
+            {
+                DtInsertSubtable (ParentTable, Subtable);
+                NodeLength += Subtable->Length;
+            }
+            break;
+
+        case ACPI_IORT_NODE_PCI_ROOT_COMPLEX:
+
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoIort2,
+                        &Subtable, TRUE);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+            DtInsertSubtable (ParentTable, Subtable);
+            NodeLength += Subtable->Length;
+            break;
+
+        case ACPI_IORT_NODE_SMMU_V1_V2:
+
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoIort3,
+                        &Subtable, TRUE);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+            DtInsertSubtable (ParentTable, Subtable);
+            IortSmmu = ACPI_CAST_PTR (ACPI_IORT_SMMU_V1_V2, Subtable->Buffer);
+            NodeLength += Subtable->Length;
+
+            /* Compile global interrupt array */
+
+            IortSmmu->OffsetToGlobalInterrupts = NodeLength;
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoIort3a,
+                        &Subtable, TRUE);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+            DtInsertSubtable (ParentTable, Subtable);
+            NodeLength += Subtable->Length;
+
+            /* Compile context interrupt array */
+
+            ContextIrptNumber = 0;
+            IortSmmu->OffsetToContextInterrupts = NodeLength;
+            while (*PFieldList)
+            {
+                Status = DtCompileTable (PFieldList, AcpiDmTableInfoIort3b,
+                            &Subtable, TRUE);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+                if (!Subtable)
+                {
+                    break;
+                }
+                DtInsertSubtable (ParentTable, Subtable);
+                NodeLength += Subtable->Length;
+                ContextIrptNumber++;
+            }
+            IortSmmu->NumberOfContextInterrupts = ContextIrptNumber;
+
+            /* Compile PMU interrupt array */
+
+            PmuIrptNumber = 0;
+            IortSmmu->OffsetToPmuInterrupts = NodeLength;
+            while (*PFieldList)
+            {
+                Status = DtCompileTable (PFieldList, AcpiDmTableInfoIort3c,
+                            &Subtable, TRUE);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+                if (!Subtable)
+                {
+                    break;
+                }
+                DtInsertSubtable (ParentTable, Subtable);
+                NodeLength += Subtable->Length;
+                PmuIrptNumber++;
+            }
+            IortSmmu->NumberOfPmuInterrupts = PmuIrptNumber;
+            break;
+
+        default:
+
+            DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "IORT");
+            return (AE_ERROR);
+        }
+
+        /* Compile Array of ID mappings */
+
+        IortNode->OffsetToIdMappings = NodeLength;
+        IdMappingNumber = 0;
+        while (*PFieldList)
+        {
+            Status = DtCompileTable (PFieldList, AcpiDmTableInfoIortMap,
+                        &Subtable, TRUE);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+            if (!Subtable)
+            {
+                break;
+            }
+            DtInsertSubtable (ParentTable, Subtable);
+            NodeLength += sizeof (ACPI_IORT_ID_MAPPING);
+            IdMappingNumber++;
+        }
+        IortNode->NumberOfIdMappings = IdMappingNumber;
+
+        /*
+         * Node length can be determined by DT_LENGTH option
+         * IortNode->Length = NodeLength;
+         */
+        DtPopSubtable ();
+        ParentTable = DtPeekSubtable ();
+        NodeNumber++;
+    }
+    Iort->NumberOfNodes = NodeNumber;
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileIvrs
  *
  * PARAMETERS:  List                - Current field list pointer
