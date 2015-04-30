@@ -137,12 +137,6 @@ static ACPI_DMTABLE_INFO           TableInfoDmarPciPath[] =
 };
 
 
-/* TBD: move to acmacros.h */
-
-#define ACPI_SUB_PTR(t, a, b) \
-    ACPI_CAST_PTR (t, (ACPI_CAST_PTR (UINT8, (a)) - (ACPI_SIZE)(b)))
-
-
 /* Local prototypes */
 
 static ACPI_STATUS
