@@ -1411,6 +1411,7 @@ DtCompileIort (
     UINT32                  ItsNumber;
     UINT32                  ContextIrptNumber;
     UINT32                  PmuIrptNumber;
+    UINT32                  PaddingLength;
 
 
     ParentTable = DtPeekSubtable ();
@@ -1433,6 +1434,8 @@ DtCompileIort (
     /*
      * OptionalPadding - Variable-length data
      * (Optional, size = OffsetToNodes - sizeof (ACPI_TABLE_IORT))
+     * Optionally allows the generic data types to be used for filling
+     * this field.
      */
     Iort->OffsetToNodes = sizeof (ACPI_TABLE_IORT);
     Status = DtCompileTable (PFieldList, AcpiDmTableInfoIortPad,
@@ -1445,6 +1448,16 @@ DtCompileIort (
     {
         DtInsertSubtable (ParentTable, Subtable);
         Iort->OffsetToNodes += Subtable->Length;
+    }
+    else
+    {
+        Status = DtCompileGeneric (ACPI_CAST_PTR (void *, PFieldList),
+                    AcpiDmTableInfoIortHdr[0].Name, &PaddingLength);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+        Iort->OffsetToNodes += PaddingLength;
     }
 
     NodeNumber = 0;
