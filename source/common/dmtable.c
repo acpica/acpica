@@ -389,6 +389,7 @@ ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_DBG2, AcpiDmTableInfoDbg2,    AcpiDmDumpDbg2, DtCompileDbg2,  TemplateDbg2,   "Debug Port table type 2"},
     {ACPI_SIG_DBGP, AcpiDmTableInfoDbgp,    NULL,           NULL,           TemplateDbgp,   "Debug Port table"},
     {ACPI_SIG_DMAR, NULL,                   AcpiDmDumpDmar, DtCompileDmar,  TemplateDmar,   "DMA Remapping table"},
+    {ACPI_SIG_DRTM, NULL,                   AcpiDmDumpDrtm, DtCompileDrtm,  TemplateDrtm,   "Dynamic Root of Trust for Measurement table"},
     {ACPI_SIG_ECDT, AcpiDmTableInfoEcdt,    NULL,           NULL,           TemplateEcdt,   "Embedded Controller Boot Resources Table"},
     {ACPI_SIG_EINJ, NULL,                   AcpiDmDumpEinj, DtCompileEinj,  TemplateEinj,   "Error Injection table"},
     {ACPI_SIG_ERST, NULL,                   AcpiDmDumpErst, DtCompileErst,  TemplateErst,   "Error Record Serialization Table"},
@@ -397,6 +398,7 @@ ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_GTDT, NULL,                   AcpiDmDumpGtdt, DtCompileGtdt,  TemplateGtdt,   "Generic Timer Description Table"},
     {ACPI_SIG_HEST, NULL,                   AcpiDmDumpHest, DtCompileHest,  TemplateHest,   "Hardware Error Source Table"},
     {ACPI_SIG_HPET, AcpiDmTableInfoHpet,    NULL,           NULL,           TemplateHpet,   "High Precision Event Timer table"},
+    {ACPI_SIG_IORT, NULL,                   AcpiDmDumpIort, DtCompileIort,  TemplateIort,   "IO Remapping Table"},
     {ACPI_SIG_IVRS, NULL,                   AcpiDmDumpIvrs, DtCompileIvrs,  TemplateIvrs,   "I/O Virtualization Reporting Structure"},
     {ACPI_SIG_LPIT, NULL,                   AcpiDmDumpLpit, DtCompileLpit,  TemplateLpit,   "Low Power Idle Table"},
     {ACPI_SIG_MADT, NULL,                   AcpiDmDumpMadt, DtCompileMadt,  TemplateMadt,   "Multiple APIC Description Table (MADT)"},
@@ -927,6 +929,15 @@ AcpiDmDumpTable (
             ByteLength = sizeof (ACPI_HEST_NOTIFY);
             break;
 
+        case ACPI_DMT_IORTMEM:
+
+            if (!LastOutputBlankLine)
+            {
+                LastOutputBlankLine = FALSE;
+            }
+            ByteLength = sizeof (ACPI_IORT_MEMORY_ACCESS);
+            break;
+
         default:
 
             ByteLength = 0;
@@ -1309,6 +1320,16 @@ AcpiDmDumpTable (
                 AcpiDmHestNotifySubnames[Temp8]);
             break;
 
+        case ACPI_DMT_IORTMEM:
+
+            AcpiOsPrintf (STRING_FORMAT,
+                "IORT Memory Access Properties");
+
+            AcpiDmDumpTable (TableLength, CurrentOffset, Target,
+                sizeof (ACPI_IORT_MEMORY_ACCESS), AcpiDmTableInfoIortAcc);
+            LastOutputBlankLine = TRUE;
+            break;
+
         case ACPI_DMT_MADT:
 
             /* MADT subtable types */
@@ -1371,8 +1392,7 @@ AcpiDmDumpTable (
             }
 
             AcpiDmDumpBuffer (Table, CurrentOffset, ByteLength,
-                CurrentOffset, NULL, TRUE);
-            AcpiOsPrintf ("\n");
+                CurrentOffset, NULL);
             break;
 
         case ACPI_DMT_SRAT:

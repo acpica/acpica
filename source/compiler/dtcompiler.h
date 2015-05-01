@@ -242,6 +242,11 @@ DtCompileTable (
     DT_SUBTABLE             **RetSubtable,
     BOOLEAN                 Required);
 
+ACPI_STATUS
+DtCompilePadding (
+    UINT32                  Length,
+    DT_SUBTABLE             **RetSubtable);
+
 
 /* dtio - binary and text input/output */
 
@@ -501,6 +506,10 @@ DtCompileDmar (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileDrtm (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompileEinj (
     void                    **PFieldList);
 
@@ -522,6 +531,10 @@ DtCompileGtdt (
 
 ACPI_STATUS
 DtCompileHest (
+    void                    **PFieldList);
+
+ACPI_STATUS
+DtCompileIort (
     void                    **PFieldList);
 
 ACPI_STATUS
@@ -606,7 +619,9 @@ DtCompileXsdt (
 
 ACPI_STATUS
 DtCompileGeneric (
-    void                    **PFieldList);
+    void                    **PFieldList,
+    char                    *TermFieldName,
+    UINT32                  *PFieldLength);
 
 ACPI_DMTABLE_INFO *
 DtGetGenericTableInfo (
@@ -623,6 +638,7 @@ extern const unsigned char  TemplateCsrt[];
 extern const unsigned char  TemplateDbg2[];
 extern const unsigned char  TemplateDbgp[];
 extern const unsigned char  TemplateDmar[];
+extern const unsigned char  TemplateDrtm[];
 extern const unsigned char  TemplateEcdt[];
 extern const unsigned char  TemplateEinj[];
 extern const unsigned char  TemplateErst[];
@@ -631,6 +647,7 @@ extern const unsigned char  TemplateFpdt[];
 extern const unsigned char  TemplateGtdt[];
 extern const unsigned char  TemplateHest[];
 extern const unsigned char  TemplateHpet[];
+extern const unsigned char  TemplateIort[];
 extern const unsigned char  TemplateIvrs[];
 extern const unsigned char  TemplateLpit[];
 extern const unsigned char  TemplateMadt[];
