@@ -508,7 +508,7 @@ DtCompileTable (
     DT_FIELD                *LocalField;
     UINT32                  Length;
     DT_SUBTABLE             *Subtable;
-    DT_SUBTABLE             *InlineSubtable;
+    DT_SUBTABLE             *InlineSubtable = NULL;
     UINT32                  FieldLength = 0;
     UINT8                   FieldType;
     UINT8                   *Buffer;
