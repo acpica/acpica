@@ -239,6 +239,8 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     {"INT16",                   "s16",              REPLACE_WHOLE_WORD},
     {"INT8",                    "s8",               REPLACE_WHOLE_WORD},
 
+    {"__FUNCTION__",            "__func__",         REPLACE_WHOLE_WORD},
+
     {NULL,                      NULL,               0}
 };
 
