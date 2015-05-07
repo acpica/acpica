@@ -111,6 +111,8 @@ acpica_exclude_paths()
 		include/acpi/platform/acos2.h \
 		include/acpi/platform/acwin.h \
 		include/acpi/platform/acwin64.h \
+		include/acpi/platform/acdragonfly.h \
+		include/acpi/platform/acdragonflyex.h \
 		drivers/acpi/acpica/utclib.c \
 	"
 	echo $paths
