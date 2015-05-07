@@ -447,7 +447,8 @@ AcpiDbLoadAcpiTable (
 ACPI_STATUS
 AcpiDbGetTableFromFile (
     char                    *Filename,
-    ACPI_TABLE_HEADER       **Table);
+    ACPI_TABLE_HEADER       **Table,
+    BOOLEAN                 MustBeAmlTable);
 
 
 /*

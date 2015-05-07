@@ -413,7 +413,7 @@ AcpiUtReadTableFromFile (
 
     /* Get the entire file */
 
-    fprintf (stderr, "Loading Acpi table from file %10s - Length %.8u (%06X)\n",
+    fprintf (stderr, "Reading ACPI table from file %10s - Length %.8u (0x%06X)\n",
         Filename, FileSize, FileSize);
 
     Status = AcpiUtReadTable (File, Table, &TableLength);
