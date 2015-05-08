@@ -342,7 +342,8 @@ const char                      *AslPreprocessorMsgs [] =
 /*    ASL_MSG_TOO_MANY_ARGUMENTS */         "Too many macro arguments",
 /*    ASL_MSG_UNKNOWN_DIRECTIVE */          "Unknown directive",
 /*    ASL_MSG_UNKNOWN_PRAGMA */             "Unknown pragma",
-/*    ASL_MSG_WARNING_DIRECTIVE */          "#warning"
+/*    ASL_MSG_WARNING_DIRECTIVE */          "#warning",
+/*    ASL_MSG_INCLUDE_FILE */               "Found a # preprocessor directive in ASL Include() file"
 };
 
 
