@@ -195,6 +195,7 @@ AcpiDsAutoSerializeMethod (
     WalkState = AcpiDsCreateWalkState (Node->OwnerId, NULL, NULL, NULL);
     if (!WalkState)
     {
+        AcpiPsFreeOp (Op);
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
@@ -203,6 +204,7 @@ AcpiDsAutoSerializeMethod (
     if (ACPI_FAILURE (Status))
     {
         AcpiDsDeleteWalkState (WalkState);
+        AcpiPsFreeOp (Op);
         return_ACPI_STATUS (Status);
     }
 
@@ -211,10 +213,6 @@ AcpiDsAutoSerializeMethod (
     /* Parse the method, scan for creation of named objects */
 
     Status = AcpiPsParseAml (WalkState);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     AcpiPsDeleteParseTree (Op);
     return_ACPI_STATUS (Status);

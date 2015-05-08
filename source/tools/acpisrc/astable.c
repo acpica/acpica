@@ -239,6 +239,8 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     {"INT16",                   "s16",              REPLACE_WHOLE_WORD},
     {"INT8",                    "s8",               REPLACE_WHOLE_WORD},
 
+    {"__FUNCTION__",            "__func__",         REPLACE_WHOLE_WORD},
+
     {NULL,                      NULL,               0}
 };
 
@@ -643,6 +645,10 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_DMAR_RHSA",                      SRC_TYPE_STRUCT},
     {"ACPI_DMAR_HARDWARE_UNIT",             SRC_TYPE_STRUCT},
     {"ACPI_DMAR_RESERVED_MEMORY",           SRC_TYPE_STRUCT},
+    {"ACPI_DRTM_DPS_ID",                    SRC_TYPE_STRUCT},
+    {"ACPI_DRTM_RESOURCE",                  SRC_TYPE_STRUCT},
+    {"ACPI_DRTM_RESOURCE_LIST",             SRC_TYPE_STRUCT},
+    {"ACPI_DRTM_VTABLE_LIST",               SRC_TYPE_STRUCT},
     {"ACPI_EINJ_ENTRY",                     SRC_TYPE_STRUCT},
     {"ACPI_EINJ_TRIGGER",                   SRC_TYPE_STRUCT},
     {"ACPI_ERST_ENTRY",                     SRC_TYPE_STRUCT},
