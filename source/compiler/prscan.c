@@ -157,27 +157,41 @@ PrDbgPrint (
     char                    *Action,
     char                    *DirectiveName);
 
+static void
+PrDoIncludeBuffer (
+    char                    *Pathname,
+    char                    *BufferName);
+
+static void
+PrDoIncludeFile (
+    char                    *Pathname);
+
 
 /*
  * Supported preprocessor directives
+ * Each entry is of the form "Name, ArgumentCount"
  */
 static const PR_DIRECTIVE_INFO      Gbl_DirectiveInfo[] =
 {
-    {"define",  1},
-    {"elif",    0}, /* Converted to #else..#if internally */
-    {"else",    0},
-    {"endif",   0},
-    {"error",   1},
-    {"if",      1},
-    {"ifdef",   1},
-    {"ifndef",  1},
-    {"include", 0}, /* Argument is not standard format, so 0 */
-    {"line",    1},
-    {"pragma",  1},
-    {"undef",   1},
-    {"warning", 1},
-    {NULL,      0}
+    {"define",          1},
+    {"elif",            0}, /* Converted to #else..#if internally */
+    {"else",            0},
+    {"endif",           0},
+    {"error",           1},
+    {"if",              1},
+    {"ifdef",           1},
+    {"ifndef",          1},
+    {"include",         0}, /* Argument is not standard format, so just use 0 here */
+    {"includebuffer",   0}, /* Argument is not standard format, so just use 0 here */
+    {"line",            1},
+    {"loadbuffer",      0},
+    {"pragma",          1},
+    {"undef",           1},
+    {"warning",         1},
+    {NULL,              0}
 };
+
+/* This table must match ordering of above table exactly */
 
 enum Gbl_DirectiveIndexes
 {
@@ -190,6 +204,7 @@ enum Gbl_DirectiveIndexes
     PR_DIRECTIVE_IFDEF,
     PR_DIRECTIVE_IFNDEF,
     PR_DIRECTIVE_INCLUDE,
+    PR_DIRECTIVE_INCLUDEBUFFER,
     PR_DIRECTIVE_LINE,
     PR_DIRECTIVE_PRAGMA,
     PR_DIRECTIVE_UNDEF,
@@ -498,7 +513,7 @@ PrDoDirective (
     char                    **Next)
 {
     char                    *Token = Gbl_MainTokenBuffer;
-    char                    *Token2;
+    char                    *Token2 = NULL;
     char                    *End;
     UINT64                  Value;
     ACPI_SIZE               TokenOffset;
@@ -517,7 +532,7 @@ PrDoDirective (
         PrError (ASL_ERROR, ASL_MSG_UNKNOWN_DIRECTIVE,
             THIS_TOKEN_OFFSET (DirectiveToken));
 
-        DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
+        DbgPrint (ASL_PARSE_OUTPUT, PR_PREFIX_ID
             "#%s: Unknown directive\n",
             Gbl_CurrentLineNumber, DirectiveToken);
         return;
@@ -604,10 +619,19 @@ PrDoDirective (
 
     /* Most directives have at least one argument */
 
-    if (Gbl_DirectiveInfo[Directive].ArgCount == 1)
+    if (Gbl_DirectiveInfo[Directive].ArgCount >= 1)
     {
         Token = PrGetNextToken (NULL, PR_TOKEN_SEPARATORS, Next);
         if (!Token)
+        {
+            goto SyntaxError;
+        }
+    }
+
+    if (Gbl_DirectiveInfo[Directive].ArgCount >= 2)
+    {
+        Token2 = PrGetNextToken (NULL, PR_TOKEN_SEPARATORS, Next);
+        if (!Token2)
         {
             goto SyntaxError;
         }
@@ -664,7 +688,7 @@ PrDoDirective (
             Gbl_IgnoringThisCodeBlock = TRUE;
         }
 
-        DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
+        DbgPrint (ASL_PARSE_OUTPUT, PR_PREFIX_ID
             "Resolved #if: %8.8X%8.8X %s\n",
             Gbl_CurrentLineNumber, ACPI_FORMAT_UINT64 (Value),
             Gbl_IgnoringThisCodeBlock ? "<Skipping Block>" : "<Executing Block>");
@@ -737,7 +761,7 @@ PrDoDirective (
                 Token2 = "";
             }
 #endif
-            DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
+            DbgPrint (ASL_PARSE_OUTPUT, PR_PREFIX_ID
                 "New #define: %s->%s\n",
                 Gbl_CurrentLineNumber, Token, Token2);
 
@@ -765,11 +789,32 @@ PrDoDirective (
             goto SyntaxError;
         }
 
-        DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
+        DbgPrint (ASL_PARSE_OUTPUT, PR_PREFIX_ID
             "Start #include file \"%s\"\n", Gbl_CurrentLineNumber,
             Token, Gbl_CurrentLineNumber);
 
-        PrOpenIncludeFile (Token);
+        PrDoIncludeFile (Token);
+        break;
+
+    case PR_DIRECTIVE_INCLUDEBUFFER:
+
+        Token = PrGetNextToken (NULL, " \"<>", Next);
+        if (!Token)
+        {
+            goto SyntaxError;
+        }
+
+        Token2 = PrGetNextToken (NULL, PR_TOKEN_SEPARATORS, Next);
+        if (!Token2)
+        {
+            goto SyntaxError;
+        }
+
+        DbgPrint (ASL_PARSE_OUTPUT, PR_PREFIX_ID
+            "Start #includebuffer input from file \"%s\", buffer name %s\n",
+            Gbl_CurrentLineNumber, Token, Token2);
+
+        PrDoIncludeBuffer (Token, Token2);
         break;
 
     case PR_DIRECTIVE_LINE:
@@ -783,7 +828,7 @@ PrDoDirective (
             return;
         }
 
-        DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
+        DbgPrint (ASL_PARSE_OUTPUT, PR_PREFIX_ID
             "User #line invocation %s\n", Gbl_CurrentLineNumber,
             Token);
 
@@ -833,7 +878,7 @@ PrDoDirective (
 
     case PR_DIRECTIVE_UNDEF:
 
-        DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
+        DbgPrint (ASL_PARSE_OUTPUT, PR_PREFIX_ID
             "#undef: %s\n", Gbl_CurrentLineNumber, Token);
 
         PrRemoveDefine (Token);
@@ -848,7 +893,7 @@ PrDoDirective (
     default:
 
         /* Should never get here */
-        DbgPrint (ASL_DEBUG_OUTPUT, PR_PREFIX_ID
+        DbgPrint (ASL_PARSE_OUTPUT, PR_PREFIX_ID
             "Unrecognized directive: %u\n",
             Gbl_CurrentLineNumber, Directive);
         break;
@@ -1019,9 +1064,93 @@ PrDbgPrint (
 {
 
     DbgPrint (ASL_DEBUG_OUTPUT, "Pr(%.4u) - [%u %s] "
-        "%*s %s #%s, Depth %u\n",
+        "%*s %s #%s, IfDepth %u\n",
         Gbl_CurrentLineNumber, Gbl_IfDepth,
         Gbl_IgnoringThisCodeBlock ? "I" : "E",
         Gbl_IfDepth * 4, " ",
         Action, DirectiveName, Gbl_IfDepth);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    PrDoIncludeFile
+ *
+ * PARAMETERS:  Pathname                - Name of the input file
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Open an include file, from #include.
+ *
+ ******************************************************************************/
+
+static void
+PrDoIncludeFile (
+    char                    *Pathname)
+{
+    FILE                    *IncludeFile;
+    char                    *FullPathname;
+
+
+    IncludeFile = PrOpenIncludeFile (Pathname, "r", &FullPathname);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    PrDoIncludeBuffer
+ *
+ * PARAMETERS:  Pathname                - Name of the input binary file
+ *              BufferName              - ACPI namepath of the buffer
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Create an ACPI buffer object from a binary file. The contents
+ *              of the file are emitted into the buffer object as ascii
+ *              hex data. From #includebuffer.
+ *
+ ******************************************************************************/
+
+static void
+PrDoIncludeBuffer (
+    char                    *Pathname,
+    char                    *BufferName)
+{
+    char                    *FullPathname;
+    FILE                    *BinaryBufferFile;
+    UINT32                  i = 0;
+    UINT8                   c;
+
+
+    BinaryBufferFile = PrOpenIncludeFile (Pathname, "rb", &FullPathname);
+    if (!BinaryBufferFile)
+    {
+        return;
+    }
+
+    /* Emit "Name (XXXX, Buffer() {" header */
+
+    FlPrintFile (ASL_FILE_PREPROCESSOR, "Name (%s, Buffer()\n{", BufferName);
+
+    /* Dump the entire file in ascii hex format */
+
+    while (fread (&c, 1, 1, BinaryBufferFile))
+    {
+        if (!(i % 8))
+        {
+            FlPrintFile (ASL_FILE_PREPROCESSOR, "\n   ", c);
+        }
+
+        FlPrintFile (ASL_FILE_PREPROCESSOR, " 0x%2.2X,", c);
+        i++;
+    }
+
+    DbgPrint (ASL_PARSE_OUTPUT, PR_PREFIX_ID
+        "#includebuffer: read %u bytes from %s\n",
+        Gbl_CurrentLineNumber, i, FullPathname);
+
+    /* Close the Name() operator */
+
+    FlPrintFile (ASL_FILE_PREPROCESSOR, "\n})\n", BufferName);
+    fclose (BinaryBufferFile);
 }

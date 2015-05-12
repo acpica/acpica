@@ -310,9 +310,11 @@ PrReplaceData (
  *
  ******************************************************************************/
 
-void
+FILE *
 PrOpenIncludeFile (
-    char                    *Filename)
+    char                    *Filename,
+    char                    *OpenMode,
+    char                    **FullPathname)
 {
     FILE                    *IncludeFile;
     ASL_INCLUDE_DIR         *NextDir;
@@ -329,12 +331,13 @@ PrOpenIncludeFile (
         (Filename[0] == '\\') ||
         (Filename[1] == ':'))
     {
-        IncludeFile = PrOpenIncludeWithPrefix ("", Filename);
+        IncludeFile = PrOpenIncludeWithPrefix (
+            "", Filename, OpenMode, FullPathname);
         if (!IncludeFile)
         {
             goto ErrorExit;
         }
-        return;
+        return (IncludeFile);
     }
 
     /*
@@ -345,10 +348,11 @@ PrOpenIncludeFile (
      *
      * Construct the file pathname from the global directory name.
      */
-    IncludeFile = PrOpenIncludeWithPrefix (Gbl_DirectoryPath, Filename);
+    IncludeFile = PrOpenIncludeWithPrefix (
+        Gbl_DirectoryPath, Filename, OpenMode, FullPathname);
     if (IncludeFile)
     {
-        return;
+        return (IncludeFile);
     }
 
     /*
@@ -358,10 +362,11 @@ PrOpenIncludeFile (
     NextDir = Gbl_IncludeDirList;
     while (NextDir)
     {
-        IncludeFile = PrOpenIncludeWithPrefix (NextDir->Dir, Filename);
+        IncludeFile = PrOpenIncludeWithPrefix (
+            NextDir->Dir, Filename, OpenMode, FullPathname);
         if (IncludeFile)
         {
-            return;
+            return (IncludeFile);
         }
 
         NextDir = NextDir->Next;
@@ -372,6 +377,7 @@ PrOpenIncludeFile (
 ErrorExit:
     sprintf (Gbl_MainTokenBuffer, "%s, %s", Filename, strerror (errno));
     PrError (ASL_ERROR, ASL_MSG_INCLUDE_FILE_OPEN, 0);
+    return (NULL);
 }
 
 
@@ -392,7 +398,9 @@ ErrorExit:
 FILE *
 PrOpenIncludeWithPrefix (
     char                    *PrefixDir,
-    char                    *Filename)
+    char                    *Filename,
+    char                    *OpenMode,
+    char                    **FullPathname)
 {
     FILE                    *IncludeFile;
     char                    *Pathname;
@@ -408,7 +416,7 @@ PrOpenIncludeWithPrefix (
 
     /* Attempt to open the file, push if successful */
 
-    IncludeFile = fopen (Pathname, "r");
+    IncludeFile = fopen (Pathname, OpenMode);
     if (!IncludeFile)
     {
         fprintf (stderr, "Could not open include file %s\n", Pathname);
@@ -418,6 +426,7 @@ PrOpenIncludeWithPrefix (
     /* Push the include file on the open input file stack */
 
     PrPushInputFileStack (IncludeFile, Pathname);
+    *FullPathname = Pathname;
     return (IncludeFile);
 }
 
