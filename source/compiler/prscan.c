@@ -1088,11 +1088,10 @@ static void
 PrDoIncludeFile (
     char                    *Pathname)
 {
-    FILE                    *IncludeFile;
     char                    *FullPathname;
 
 
-    IncludeFile = PrOpenIncludeFile (Pathname, "r", &FullPathname);
+    (void) PrOpenIncludeFile (Pathname, "r", &FullPathname);
 }
 
 
