@@ -171,6 +171,23 @@ AhPrintOneField (
     const char              *Field);
 
 
+
+void
+AhDisplayDirectives (
+    void)
+{
+    const AH_DIRECTIVE_INFO *Info;
+
+
+    printf ("iASL Preprocessor directives:\n\n");
+
+    for (Info = PreprocessorDirectives; Info->Name; Info++)
+    {
+        printf ("%16s : %s\n", Info->Name, Info->Operands);
+    }
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AhFindPredefinedNames (entry point for predefined name search)

@@ -123,7 +123,7 @@ AhDisplayUsage (
     void);
 
 #define AH_UTILITY_NAME             "ACPI Help Utility"
-#define AH_SUPPORTED_OPTIONS        "aehikmopsuv"
+#define AH_SUPPORTED_OPTIONS        "adehikmopsuv"
 
 
 /******************************************************************************
@@ -147,6 +147,10 @@ AhDisplayUsage (
     ACPI_OPTION ("-a [Name/Prefix]",        "Find/Display both ASL operator and AML opcode name(s)");
     ACPI_OPTION ("-m [Name/Prefix]",        "Find/Display AML opcode name(s)");
 
+    ACPI_USAGE_TEXT ("\nACPI Values:\n");
+    ACPI_OPTION ("-e [HexValue]",           "Decode ACPICA exception code");
+    ACPI_OPTION ("-o [HexValue]",           "Decode hex AML opcode");
+
     ACPI_USAGE_TEXT ("\nASL (ACPI Source Language) Names and Symbols:\n");
     ACPI_OPTION ("-k [Name/Prefix]",        "Find/Display ASL non-operator keyword(s)");
     ACPI_OPTION ("-p [Name/Prefix]",        "Find/Display ASL predefined method name(s)");
@@ -154,11 +158,8 @@ AhDisplayUsage (
 
     ACPI_USAGE_TEXT ("\nOther ACPI Names:\n");
     ACPI_OPTION ("-i [Name/Prefix]",        "Find/Display ACPI/PNP Hardware ID(s)");
+    ACPI_OPTION ("-d",                      "Display iASL Preprocessor directives");
     ACPI_OPTION ("-u",                      "Display ACPI-related UUIDs");
-
-    ACPI_USAGE_TEXT ("\nACPI Values:\n");
-    ACPI_OPTION ("-e [HexValue]",           "Decode ACPICA exception code");
-    ACPI_OPTION ("-o [HexValue]",           "Decode hex AML opcode");
 
     ACPI_USAGE_TEXT ("\nName/Prefix or HexValue not specified means \"Display All\"\n");
     ACPI_USAGE_TEXT ("\nDefault search with valid Name/Prefix and no options:\n");
@@ -205,6 +206,11 @@ main (
         DecodeType = AH_DECODE_ASL_AML;
         break;
 
+    case 'd':
+
+        DecodeType = AH_DISPLAY_DIRECTIVES;
+        break;
+
     case 'e':
 
         DecodeType = AH_DECODE_EXCEPTION;
@@ -238,6 +244,11 @@ main (
     case 's':
 
         DecodeType = AH_DECODE_ASL;
+        break;
+
+    case 't':
+
+        DecodeType = AH_DISPLAY_TABLES;
         break;
 
     case 'u':
@@ -307,7 +318,19 @@ main (
         AhDisplayUuids ();
         break;
 
-    default:
+#ifdef FUTURE_DEVELOPMENT
+    case AH_DISPLAY_TABLES:
+
+        AhDisplayTables ()
+        break;
+#endif
+
+    case AH_DISPLAY_DIRECTIVES:
+
+        AhDisplayDirectives ();
+        break;
+
+   default:
 
         if (!Name)
         {
