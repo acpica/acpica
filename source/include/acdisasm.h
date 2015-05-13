@@ -251,7 +251,6 @@ typedef struct acpi_dmtable_data
     ACPI_DMTABLE_HANDLER    TableHandler;
     ACPI_CMTABLE_HANDLER    CmTableHandler;
     const unsigned char     *Template;
-    char                    *Name;
 
 } ACPI_DMTABLE_DATA;
 
@@ -475,11 +474,11 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoXenv[];
 
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGeneric[][2];
 
-
 /*
- * dmtable
+ * dmtable and ahtable
  */
-extern ACPI_DMTABLE_DATA        AcpiDmTableData[];
+extern const ACPI_DMTABLE_DATA  AcpiDmTableData[];
+extern const AH_TABLE           AcpiSupportedTables[];
 
 UINT8
 AcpiDmGenerateChecksum (
@@ -487,7 +486,7 @@ AcpiDmGenerateChecksum (
     UINT32                  Length,
     UINT8                   OriginalChecksum);
 
-ACPI_DMTABLE_DATA *
+const ACPI_DMTABLE_DATA *
 AcpiDmGetTableData (
     char                    *Signature);
 

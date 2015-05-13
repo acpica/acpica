@@ -1455,4 +1455,11 @@ typedef struct ah_uuid
 
 } AH_UUID;
 
+typedef struct ah_table
+{
+    char                    *Signature;
+    char                    *Description;
+
+} AH_TABLE;
+
 #endif /* __ACLOCAL_H__ */

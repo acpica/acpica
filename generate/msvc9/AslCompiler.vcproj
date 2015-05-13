@@ -2176,6 +2176,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\common\ahtable.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\common\ahuuids.c"
 					>
 				</File>

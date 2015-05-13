@@ -1358,7 +1358,7 @@ AcpiDmUnresolvedWarning (
                 "     * compile because the disassembler did not know how many arguments\n"
                 "     * to assign to these methods. To specify the tables needed to resolve\n"
                 "     * external control method references, the -e option can be used to\n"
-                "     * specify the filenames.  Note: SSDTs can be dynamically loaded at\n"
+                "     * specify the filenames. Note: SSDTs can be dynamically loaded at\n"
                 "     * runtime and may or may not be available via the host OS.\n"
                 "     * Example iASL invocations:\n"
                 "     *     iasl -e ssdt1.aml ssdt2.aml ssdt3.aml -d dsdt.aml\n"

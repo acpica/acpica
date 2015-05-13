@@ -355,7 +355,7 @@ static ACPI_STATUS
 DtCompileDataTable (
     DT_FIELD                **FieldList)
 {
-    ACPI_DMTABLE_DATA       *TableData;
+    const ACPI_DMTABLE_DATA *TableData;
     DT_SUBTABLE             *Subtable;
     char                    *Signature;
     ACPI_TABLE_HEADER       *AcpiTableHeader;

@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: acpihelp.h - Include file for AcpiHelp utility
+ * Module Name: ahtable - Table of known ACPI tables with descriptions
  *
  *****************************************************************************/
 
@@ -113,142 +113,109 @@
  *
  *****************************************************************************/
 
-#ifndef __ACPIHELP_H
-#define __ACPIHELP_H
-
-
 #include "acpi.h"
 #include "accommon.h"
-#include "acapps.h"
-
-#include <stdio.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <ctype.h>
-#include <string.h>
-#ifdef WIN32
-#include <io.h>
-#include <direct.h>
-#endif
-#include <errno.h>
 
 
-typedef enum
-{
-    AH_DECODE_DEFAULT           = 0,
-    AH_DECODE_ASL,
-    AH_DECODE_ASL_KEYWORD,
-    AH_DECODE_PREDEFINED_NAME,
-    AH_DECODE_AML,
-    AH_DECODE_AML_OPCODE,
-    AH_DISPLAY_DEVICE_IDS,
-    AH_DECODE_EXCEPTION,
-    AH_DECODE_ASL_AML,
-    AH_DISPLAY_UUIDS,
-    AH_DISPLAY_TABLES,
-    AH_DISPLAY_DIRECTIVES
-
-} AH_OPTION_TYPES;
-
-#define     AH_MAX_ASL_LINE_LENGTH      70
-#define     AH_MAX_AML_LINE_LENGTH      100
-
-
-typedef struct ah_aml_opcode
-{
-    UINT16          OpcodeRangeStart;
-    UINT16          OpcodeRangeEnd;
-    char            *OpcodeString;
-    char            *OpcodeName;
-    char            *Type;
-    char            *FixedArguments;
-    char            *VariableArguments;
-    char            *Grammar;
-
-} AH_AML_OPCODE;
-
-typedef struct ah_asl_operator
-{
-    char            *Name;
-    char            *Syntax;
-    char            *Description;
-
-} AH_ASL_OPERATOR;
-
-typedef struct ah_asl_keyword
-{
-    char            *Name;
-    char            *Description;
-    char            *KeywordList;
-
-} AH_ASL_KEYWORD;
-
-typedef struct ah_directive_info
-{
-    char            *Name;
-    char            *Operands;
-
-} AH_DIRECTIVE_INFO;
-
-extern const AH_AML_OPCODE          AmlOpcodeInfo[];
-extern const AH_ASL_OPERATOR        AslOperatorInfo[];
-extern const AH_ASL_KEYWORD         AslKeywordInfo[];
-extern const AH_UUID                AcpiUuids[];
-extern const AH_DIRECTIVE_INFO      PreprocessorDirectives[];
-extern const AH_TABLE               AcpiSupportedTables[];
-extern BOOLEAN                      AhDisplayAll;
-
-void
-AhStrupr (
-    char                    *SrcString);
-
-void
-AhFindAmlOpcode (
-    char                    *Name);
-
-void
-AhDecodeAmlOpcode (
-    char                    *Name);
-
-void
-AhDecodeException (
-    char                    *Name);
-
-void
-AhFindPredefinedNames (
-    char                    *Name);
-
-void
-AhFindAslAndAmlOperators (
-    char                    *Name);
-
-UINT32
-AhFindAslOperators (
-    char                    *Name);
-
-void
-AhFindAslKeywords (
-    char                    *Name);
-
-void
-AhDisplayDeviceIds (
-    char                    *Name);
-
-void
-AhDisplayTables (
-    void);
+/* Local prototypes */
 
 const AH_TABLE *
 AcpiAhGetTableInfo (
     char                    *Signature);
 
-void
-AhDisplayUuids (
-    void);
+extern const AH_TABLE      AcpiSupportedTables[];
 
-void
-AhDisplayDirectives (
-    void);
 
-#endif /* __ACPIHELP_H */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiAhGetTableInfo
+ *
+ * PARAMETERS:  Signature           - ACPI signature (4 chars) to match
+ *
+ * RETURN:      Pointer to a valid AH_TABLE. Null if no match found.
+ *
+ * DESCRIPTION: Find a match in the "help" table of supported ACPI tables
+ *
+ ******************************************************************************/
+
+const AH_TABLE *
+AcpiAhGetTableInfo (
+    char                    *Signature)
+{
+    const AH_TABLE      *Info;
+
+
+    for (Info = AcpiSupportedTables; Info->Signature; Info++)
+    {
+        if (ACPI_COMPARE_NAME (Signature, Info->Signature))
+        {
+            return (Info);
+        }
+    }
+
+    return (NULL);
+}
+
+
+/*
+ * Note: Any tables added here should be duplicated within AcpiDmTableData
+ * in the file common/dmtable.c
+ */
+const AH_TABLE      AcpiSupportedTables[] =
+{
+    {ACPI_SIG_ASF,  "Alert Standard Format table"},
+    {ACPI_SIG_BERT, "Boot Error Record Table"},
+    {ACPI_SIG_BGRT, "Boot Graphics Resource Table"},
+    {ACPI_SIG_BOOT, "Simple Boot Flag Table"},
+    {ACPI_SIG_CPEP, "Corrected Platform Error Polling table"},
+    {ACPI_SIG_CSRT, "Core System Resource Table"},
+    {ACPI_SIG_DBG2, "Debug Port table type 2"},
+    {ACPI_SIG_DBGP, "Debug Port table"},
+    {ACPI_SIG_DMAR, "DMA Remapping table"},
+    {ACPI_SIG_DRTM, "Dynamic Root of Trust for Measurement table"},
+    {ACPI_SIG_DSDT, "Differentiated System Description Table (AML table)"},
+    {ACPI_SIG_ECDT, "Embedded Controller Boot Resources Table"},
+    {ACPI_SIG_EINJ, "Error Injection table"},
+    {ACPI_SIG_ERST, "Error Record Serialization Table"},
+    {ACPI_SIG_FACS, "Firmware ACPI Control Structure"},
+    {ACPI_SIG_FADT, "Fixed ACPI Description Table (FADT)"},
+    {ACPI_SIG_FPDT, "Firmware Performance Data Table"},
+    {ACPI_SIG_GTDT, "Generic Timer Description Table"},
+    {ACPI_SIG_HEST, "Hardware Error Source Table"},
+    {ACPI_SIG_HPET, "High Precision Event Timer table"},
+    {ACPI_SIG_IORT, "IO Remapping Table"},
+    {ACPI_SIG_IVRS, "I/O Virtualization Reporting Structure"},
+    {ACPI_SIG_LPIT, "Low Power Idle Table"},
+    {ACPI_SIG_MADT, "Multiple APIC Description Table (MADT)"},
+    {ACPI_SIG_MCFG, "Memory Mapped Configuration table"},
+    {ACPI_SIG_MCHI, "Management Controller Host Interface table"},
+    {ACPI_SIG_MPST, "Memory Power State Table"},
+    {ACPI_SIG_MSCT, "Maximum System Characteristics Table"},
+    {ACPI_SIG_MSDM, "Microsoft Data Management table"},
+    {ACPI_SIG_MTMR, "MID Timer Table"},
+    {ACPI_SIG_PCCT, "Platform Communications Channel Table"},
+    {ACPI_SIG_PMTT, "Platform Memory Topology Table"},
+    {ACPI_RSDP_NAME,"Root System Description Pointer"},
+    {ACPI_SIG_RSDT, "Root System Description Table"},
+    {ACPI_SIG_S3PT, "S3 Performance Table"},
+    {ACPI_SIG_SBST, "Smart Battery Specification Table"},
+    {ACPI_SIG_SLIC, "Software Licensing Description Table"},
+    {ACPI_SIG_SLIT, "System Locality Information Table"},
+    {ACPI_SIG_SPCR, "Serial Port Console Redirection table"},
+    {ACPI_SIG_SPMI, "Server Platform Management Interface table"},
+    {ACPI_SIG_SRAT, "System Resource Affinity Table"},
+    {ACPI_SIG_SSDT, "Secondary System Description Table (AML table)"},
+    {ACPI_SIG_STAO, "Status Override table"},
+    {ACPI_SIG_TCPA, "Trusted Computing Platform Alliance table"},
+    {ACPI_SIG_TPM2, "Trusted Platform Module hardware interface table"},
+    {ACPI_SIG_UEFI, "UEFI Boot Optimization Table"},
+    {ACPI_SIG_VRTC, "Virtual Real-Time Clock Table"},
+    {ACPI_SIG_WAET, "Windows ACPI Emulated Devices Table"},
+    {ACPI_SIG_WDAT, "Watchdog Action Table"},
+    {ACPI_SIG_WDDT, "Watchdog Description Table"},
+    {ACPI_SIG_WDRT, "Watchdog Resource Table"},
+    {ACPI_SIG_WPBT, "Windows Platform Binary Table"},
+    {ACPI_SIG_XENV, "Xen Environment table"},
+    {ACPI_SIG_XSDT, "Extended System Description Table"},
+    {NULL,          NULL}
+};

@@ -123,7 +123,7 @@ AhDisplayUsage (
     void);
 
 #define AH_UTILITY_NAME             "ACPI Help Utility"
-#define AH_SUPPORTED_OPTIONS        "adehikmopsuv"
+#define AH_SUPPORTED_OPTIONS        "adehikmopstuv"
 
 
 /******************************************************************************
@@ -159,6 +159,7 @@ AhDisplayUsage (
     ACPI_USAGE_TEXT ("\nOther ACPI Names:\n");
     ACPI_OPTION ("-i [Name/Prefix]",        "Find/Display ACPI/PNP Hardware ID(s)");
     ACPI_OPTION ("-d",                      "Display iASL Preprocessor directives");
+    ACPI_OPTION ("-t",                      "Display supported ACPI tables");
     ACPI_OPTION ("-u",                      "Display ACPI-related UUIDs");
 
     ACPI_USAGE_TEXT ("\nName/Prefix or HexValue not specified means \"Display All\"\n");
@@ -318,12 +319,10 @@ main (
         AhDisplayUuids ();
         break;
 
-#ifdef FUTURE_DEVELOPMENT
     case AH_DISPLAY_TABLES:
 
-        AhDisplayTables ()
+        AhDisplayTables ();
         break;
-#endif
 
     case AH_DISPLAY_DIRECTIVES:
 

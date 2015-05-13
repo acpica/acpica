@@ -132,6 +132,7 @@
 static char         Gbl_Buffer[BUFFER_LENGTH];
 static char         Gbl_LineBuffer[LINE_BUFFER_LENGTH];
 
+
 /* Local prototypes */
 
 static BOOLEAN
@@ -169,7 +170,6 @@ AhPrintOneField (
     UINT32                  CurrentPosition,
     UINT32                  MaxPosition,
     const char              *Field);
-
 
 
 void
@@ -990,6 +990,38 @@ AhDisplayUuids (
     {
         printf ("%32s : %s\n", Info->Description, Info->String);
     }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AhDisplayTables
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display all known ACPI tables
+ *
+ ******************************************************************************/
+
+void
+AhDisplayTables (
+    void)
+{
+    const AH_TABLE          *Info;
+    UINT32                  i = 0;
+
+
+    printf ("Known ACPI tables:\n");
+
+    for (Info = AcpiSupportedTables; Info->Signature; Info++)
+    {
+        printf ("%8s : %s\n", Info->Signature, Info->Description);
+        i++;
+    }
+
+    printf ("\nTotal %u ACPI tables\n\n", i);
 }
 
 

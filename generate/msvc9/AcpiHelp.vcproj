@@ -258,6 +258,10 @@
 					RelativePath="..\..\source\tools\acpihelp\ahmain.c"
 					>
 				</File>
+				<File
+					RelativePath="..\..\source\common\ahtable.c"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Common"
