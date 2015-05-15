@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: uthex -- Hex/ASCII support functions
+ * Name: acuuid.h - ACPI-related UUID/GUID definitions
  *
  *****************************************************************************/
 
@@ -113,71 +113,24 @@
  *
  *****************************************************************************/
 
-#include "acpi.h"
-#include "accommon.h"
+#ifndef __ACUUID_H__
+#define __ACUUID_H__
 
-#define _COMPONENT          ACPI_COMPILER
-        ACPI_MODULE_NAME    ("uthex")
-
-
-/* Hex to ASCII conversion table */
-
-static char                 AcpiGbl_HexToAscii[] =
-{
-    '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
-};
-
-
-/*******************************************************************************
+/*
+ * Note1: UUIDs and GUIDs are defined to be identical in ACPI.
  *
- * FUNCTION:    AcpiUtHexToAsciiChar
- *
- * PARAMETERS:  Integer             - Contains the hex digit
- *              Position            - bit position of the digit within the
- *                                    integer (multiple of 4)
- *
- * RETURN:      The converted Ascii character
- *
- * DESCRIPTION: Convert a hex digit to an Ascii character
- *
- ******************************************************************************/
+ * Note2: This file is standalone and should remain that way.
+ */
 
-char
-AcpiUtHexToAsciiChar (
-    UINT64                  Integer,
-    UINT32                  Position)
-{
+/* NFIT/NVDIMM */
 
-    return (AcpiGbl_HexToAscii[(Integer >> Position) & 0xF]);
-}
+#define UUID_VOLATILE_MEMORY            "4F940573-DAFD-E344-B16C-3F22D252E5D0"
+#define UUID_PERSISTENT_MEMORY          "79D3F066-F3B4-7440-AC43-0D3318B78CDB"
+#define UUID_CONTROL_REGION             "F601F792-B413-5D40-910B-299367E8234C"
+#define UUID_DATA_REGION                "3005AF91-865D-0E47-A6B0-0A2DB9408249"
+#define UUID_VOLATILE_VIRTUAL_DISK      "5A53AB77-FC45-4B62-5560-F7B281D1F96E"
+#define UUID_VOLATILE_VIRTUAL_CD        "30BD5A3D-7541-CE87-6D64-D2ADE523C4BB"
+#define UUID_PERSISTENT_VIRTUAL_DISK    "C902EA5C-074D-69D3-269F-4496FBE096F9"
+#define UUID_PERSISTENT_VIRTUAL_CD      "88810108-CD42-48BB-100F-5387D53DED3D"
 
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiUtAsciiCharToHex
- *
- * PARAMETERS:  HexChar                 - Hex character in Ascii
- *
- * RETURN:      The binary value of the ascii/hex character
- *
- * DESCRIPTION: Perform ascii-to-hex translation
- *
- ******************************************************************************/
-
-UINT8
-AcpiUtAsciiCharToHex (
-    int                     HexChar)
-{
-
-    if (HexChar <= 0x39)
-    {
-        return ((UINT8) (HexChar - 0x30));
-    }
-
-    if (HexChar <= 0x46)
-    {
-        return ((UINT8) (HexChar - 0x37));
-    }
-
-    return ((UINT8) (HexChar - 0x57));
-}
+#endif /* __AUUID_H__ */

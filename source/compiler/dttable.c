@@ -2407,6 +2407,201 @@ DtCompileMtmr (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileNfit
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile NFIT.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileNfit (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    DT_FIELD                *SubtableStart;
+    ACPI_NFIT_HEADER        *NfitHeader;
+    ACPI_DMTABLE_INFO       *InfoTable;
+    UINT32                  Count;
+    ACPI_NFIT_INTERLEAVE    *Interleave = NULL;
+    ACPI_NFIT_FLUSH_ADDRESS *Hint = NULL;
+
+    /* Main table */
+
+    Status = DtCompileTable (PFieldList, AcpiDmTableInfoNfit,
+                &Subtable, TRUE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    ParentTable = DtPeekSubtable ();
+    DtInsertSubtable (ParentTable, Subtable);
+    DtPushSubtable (Subtable);
+
+    /* Subtables */
+
+    while (*PFieldList)
+    {
+        SubtableStart = *PFieldList;
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoNfitHdr,
+                    &Subtable, TRUE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+        DtPushSubtable (Subtable);
+
+        NfitHeader = ACPI_CAST_PTR (ACPI_NFIT_HEADER, Subtable->Buffer);
+
+        switch (NfitHeader->Type)
+        {
+        case ACPI_NFIT_TYPE_SYSTEM_ADDRESS:
+
+            InfoTable = AcpiDmTableInfoNfit0;
+            break;
+
+        case ACPI_NFIT_TYPE_MEMORY_MAP:
+
+            InfoTable = AcpiDmTableInfoNfit1;
+            break;
+
+        case ACPI_NFIT_TYPE_INTERLEAVE:
+
+            Interleave = ACPI_CAST_PTR (ACPI_NFIT_INTERLEAVE, Subtable->Buffer);
+            InfoTable = AcpiDmTableInfoNfit2;
+            break;
+
+        case ACPI_NFIT_TYPE_SMBIOS:
+
+            InfoTable = AcpiDmTableInfoNfit3;
+            break;
+
+        case ACPI_NFIT_TYPE_CONTROL_REGION:
+
+            InfoTable = AcpiDmTableInfoNfit4;
+            break;
+
+        case ACPI_NFIT_TYPE_DATA_REGION:
+
+            InfoTable = AcpiDmTableInfoNfit5;
+            break;
+
+        case ACPI_NFIT_TYPE_FLUSH_ADDRESS:
+
+            Hint = ACPI_CAST_PTR (ACPI_NFIT_FLUSH_ADDRESS, Subtable->Buffer);
+            InfoTable = AcpiDmTableInfoNfit6;
+            break;
+
+        default:
+
+            DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "NFIT");
+            return (AE_ERROR);
+        }
+
+        Status = DtCompileTable (PFieldList, InfoTable, &Subtable, TRUE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        ParentTable = DtPeekSubtable ();
+        DtInsertSubtable (ParentTable, Subtable);
+        DtPopSubtable ();
+
+        switch (NfitHeader->Type)
+        {
+        case ACPI_NFIT_TYPE_INTERLEAVE:
+
+            Count = 0;
+            DtPushSubtable (Subtable);
+            while (*PFieldList)
+            {
+                Status = DtCompileTable (PFieldList, AcpiDmTableInfoNfit2a,
+                            &Subtable, FALSE);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+                if (!Subtable)
+                {
+                    DtPopSubtable ();
+                    break;
+                }
+
+                ParentTable = DtPeekSubtable ();
+                DtInsertSubtable (ParentTable, Subtable);
+                Count++;
+            }
+
+            Interleave->LineCount = Count;
+            DtPopSubtable ();
+            break;
+
+        case ACPI_NFIT_TYPE_SMBIOS:
+
+            if (*PFieldList)
+            {
+                Status = DtCompileTable (PFieldList, AcpiDmTableInfoNfit3a,
+                            &Subtable, TRUE);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+                if (Subtable)
+                {
+                    DtInsertSubtable (ParentTable, Subtable);
+                }
+            }
+            break;
+
+        case ACPI_NFIT_TYPE_FLUSH_ADDRESS:
+
+            Count = 0;
+            DtPushSubtable (Subtable);
+            while (*PFieldList)
+            {
+                Status = DtCompileTable (PFieldList, AcpiDmTableInfoNfit6a,
+                            &Subtable, FALSE);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+                if (!Subtable)
+                {
+                    DtPopSubtable ();
+                    break;
+                }
+
+                ParentTable = DtPeekSubtable ();
+                DtInsertSubtable (ParentTable, Subtable);
+                Count++;
+            }
+
+            Hint->HintCount = (UINT16) Count;
+            DtPopSubtable ();
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompilePcct
  *
  * PARAMETERS:  List                - Current field list pointer
@@ -2430,6 +2625,8 @@ DtCompilePcct (
     ACPI_DMTABLE_INFO       *InfoTable;
 
 
+    /* Main table */
+
     Status = DtCompileTable (PFieldList, AcpiDmTableInfoPcct,
                 &Subtable, TRUE);
     if (ACPI_FAILURE (Status))
@@ -2439,6 +2636,8 @@ DtCompilePcct (
 
     ParentTable = DtPeekSubtable ();
     DtInsertSubtable (ParentTable, Subtable);
+
+    /* Subtables */
 
     while (*PFieldList)
     {

@@ -155,7 +155,7 @@ static const char           *AcpiDmAsfSubnames[] =
     "ASF Remote Control",
     "ASF RMCP Boot Options",
     "ASF Address",
-    "Unknown SubTable Type"         /* Reserved */
+    "Unknown Subtable Type"         /* Reserved */
 };
 
 static const char           *AcpiDmDmarSubnames[] =
@@ -165,7 +165,7 @@ static const char           *AcpiDmDmarSubnames[] =
     "Root Port ATS Capability",
     "Remapping Hardware Static Affinity",
     "ACPI Namespace Device Declaration",
-    "Unknown SubTable Type"         /* Reserved */
+    "Unknown Subtable Type"         /* Reserved */
 };
 
 static const char           *AcpiDmDmarScope[] =
@@ -253,7 +253,7 @@ static const char           *AcpiDmGtdtSubnames[] =
 {
     "Generic Timer Block",
     "Generic Watchdog Timer",
-    "Unknown SubTable Type"         /* Reserved */
+    "Unknown Subtable Type"         /* Reserved */
 };
 
 static const char           *AcpiDmHestSubnames[] =
@@ -268,7 +268,7 @@ static const char           *AcpiDmHestSubnames[] =
     "PCI Express AER (AER Endpoint)",
     "PCI Express/PCI-X Bridge AER",
     "Generic Hardware Error Source",
-    "Unknown SubTable Type"         /* Reserved */
+    "Unknown Subtable Type"         /* Reserved */
 };
 
 static const char           *AcpiDmHestNotifySubnames[] =
@@ -301,14 +301,26 @@ static const char           *AcpiDmMadtSubnames[] =
     "Generic MSI Frame",                /* ACPI_MADT_GENERIC_MSI_FRAME */
     "Generic Interrupt Redistributor",  /* ACPI_MADT_GENERIC_REDISTRIBUTOR */
     "Generic Interrupt Translator",     /* ACPI_MADT_GENERIC_TRANSLATOR */
-    "Unknown SubTable Type"             /* Reserved */
+    "Unknown Subtable Type"             /* Reserved */
+};
+
+static const char           *AcpiDmNfitSubnames[] =
+{
+    "System Physical Address Range",    /* ACPI_NFIT_TYPE_SYSTEM_ADDRESS */
+    "Memory Range Map",                 /* ACPI_NFIT_TYPE_MEMORY_MAP */
+    "Interleave Info",                  /* ACPI_NFIT_TYPE_INTERLEAVE */
+    "SMBIOS Information",               /* ACPI_NFIT_TYPE_SMBIOS */
+    "NVDIMM Control Region",            /* ACPI_NFIT_TYPE_CONTROL_REGION */
+    "NVDIMM Block Data Window Region",  /* ACPI_NFIT_TYPE_DATA_REGION */
+    "Flush Hint Address",               /* ACPI_NFIT_TYPE_FLUSH_ADDRESS */
+    "Unknown Subtable Type"             /* Reserved */
 };
 
 static const char           *AcpiDmPcctSubnames[] =
 {
     "Generic Communications Subspace",  /* ACPI_PCCT_TYPE_GENERIC_SUBSPACE */
-    "HW-Reduced Communications Subspace",
-    "Unknown SubTable Type"             /* Reserved */
+    "HW-Reduced Comm Subspace",         /* ACPI_PCCT_TYPE_HW_REDUCED_SUBSPACE */
+    "Unknown Subtable Type"             /* Reserved */
 };
 
 static const char           *AcpiDmPmttSubnames[] =
@@ -316,7 +328,7 @@ static const char           *AcpiDmPmttSubnames[] =
     "Socket",                       /* ACPI_PMTT_TYPE_SOCKET */
     "Memory Controller",            /* ACPI_PMTT_TYPE_CONTROLLER */
     "Physical Component (DIMM)",    /* ACPI_PMTT_TYPE_DIMM  */
-    "Unknown SubTable Type"         /* Reserved */
+    "Unknown Subtable Type"         /* Reserved */
 };
 
 static const char           *AcpiDmSratSubnames[] =
@@ -325,20 +337,20 @@ static const char           *AcpiDmSratSubnames[] =
     "Memory Affinity",
     "Processor Local x2APIC Affinity",
     "GICC Affinity",
-    "Unknown SubTable Type"         /* Reserved */
+    "Unknown Subtable Type"         /* Reserved */
 };
 
 static const char           *AcpiDmIvrsSubnames[] =
 {
     "Hardware Definition Block",
     "Memory Definition Block",
-    "Unknown SubTable Type"         /* Reserved */
+    "Unknown Subtable Type"         /* Reserved */
 };
 
 static const char           *AcpiDmLpitSubnames[] =
 {
     "Native C-state Idle Structure",
-    "Unknown SubTable Type"         /* Reserved */
+    "Unknown Subtable Type"         /* Reserved */
 };
 
 #define ACPI_FADT_PM_RESERVED       9
@@ -416,6 +428,7 @@ const ACPI_DMTABLE_DATA     AcpiDmTableData[] =
     {ACPI_SIG_MSCT, NULL,                   AcpiDmDumpMsct, DtCompileMsct,  TemplateMsct},
     {ACPI_SIG_MSDM, NULL,                   AcpiDmDumpSlic, DtCompileSlic,  TemplateMsdm},
     {ACPI_SIG_MTMR, NULL,                   AcpiDmDumpMtmr, DtCompileMtmr,  TemplateMtmr},
+    {ACPI_SIG_NFIT, AcpiDmTableInfoNfit,    AcpiDmDumpNfit, DtCompileNfit,  TemplateNfit},
     {ACPI_SIG_PCCT, AcpiDmTableInfoPcct,    AcpiDmDumpPcct, DtCompilePcct,  TemplatePcct},
     {ACPI_SIG_PMTT, NULL,                   AcpiDmDumpPmtt, DtCompilePmtt,  TemplatePmtt},
     {ACPI_SIG_RSDT, NULL,                   AcpiDmDumpRsdt, DtCompileRsdt,  TemplateRsdt},
@@ -849,6 +862,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_UINT16:
         case ACPI_DMT_DMAR:
         case ACPI_DMT_HEST:
+        case ACPI_DMT_NFIT:
 
             ByteLength = 2;
             break;
@@ -1350,6 +1364,20 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf (UINT8_FORMAT, *Target,
                 AcpiDmMadtSubnames[Temp8]);
+            break;
+
+        case ACPI_DMT_NFIT:
+
+            /* NFIT subtable types */
+
+            Temp16 = ACPI_GET16 (Target);
+            if (Temp16 > ACPI_NFIT_TYPE_RESERVED)
+            {
+                Temp16 = ACPI_NFIT_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf (UINT16_FORMAT, ACPI_GET16 (Target),
+                AcpiDmNfitSubnames[Temp16]);
             break;
 
         case ACPI_DMT_PCCT:

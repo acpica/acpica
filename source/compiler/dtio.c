@@ -1050,8 +1050,8 @@ DtDumpSubtableInfo (
 {
 
     DbgPrint (ASL_DEBUG_OUTPUT,
-        "[%.04X] %.08X %.08X %.08X %.08X %.08X %p %p %p\n",
-        Subtable->Depth, Subtable->Length, Subtable->TotalLength,
+        "[%.04X] %24s %.08X %.08X %.08X %.08X %.08X %p %p %p\n",
+        Subtable->Depth, Subtable->Name, Subtable->Length, Subtable->TotalLength,
         Subtable->SizeOfLengthField, Subtable->Flags, Subtable,
         Subtable->Parent, Subtable->Child, Subtable->Peer);
 }
@@ -1064,8 +1064,8 @@ DtDumpSubtableTree (
 {
 
     DbgPrint (ASL_DEBUG_OUTPUT,
-        "[%.04X] %*s%08X (%.02X) - (%.02X)\n",
-        Subtable->Depth, (4 * Subtable->Depth), " ",
+        "[%.04X] %24s %*s%08X (%.02X) - (%.02X)\n",
+        Subtable->Depth, Subtable->Name, (4 * Subtable->Depth), " ",
         Subtable, Subtable->Length, Subtable->TotalLength);
 }
 
@@ -1096,12 +1096,12 @@ DtDumpSubtableList (
 
     DbgPrint (ASL_DEBUG_OUTPUT,
         "Subtable Info:\n"
-        "Depth  Length   TotalLen LenSize  Flags    "
+        "Depth                      Name Length   TotalLen LenSize  Flags    "
         "This     Parent   Child    Peer\n\n");
     DtWalkTableTree (Gbl_RootTable, DtDumpSubtableInfo, NULL, NULL);
 
     DbgPrint (ASL_DEBUG_OUTPUT,
-        "\nSubtable Tree: (Depth, Subtable, Length, TotalLength)\n\n");
+        "\nSubtable Tree: (Depth, Name, Subtable, Length, TotalLength)\n\n");
     DtWalkTableTree (Gbl_RootTable, DtDumpSubtableTree, NULL, NULL);
 
     DbgPrint (ASL_DEBUG_OUTPUT, "\n");

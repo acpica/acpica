@@ -551,6 +551,7 @@ DtCompileTable (
     Buffer = Subtable->Buffer;
 
     LocalField = *Field;
+    Subtable->Name = LocalField->Name;
 
     /*
      * Main loop walks the info table for this ACPI table or subtable
@@ -689,7 +690,6 @@ DtCompileTable (
                 Subtable->LengthField = Buffer;
                 Subtable->SizeOfLengthField = FieldLength;
             }
-
             break;
         }
 

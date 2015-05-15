@@ -2632,6 +2632,180 @@ AcpiDmDumpMtmr (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpNfit
+ *
+ * PARAMETERS:  Table               - A NFIT table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of an NFIT.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpNfit (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    UINT32                  Offset = sizeof (ACPI_TABLE_NFIT);
+    UINT32                  FieldOffset = 0;
+    UINT32                  Length;
+    ACPI_NFIT_HEADER        *SubTable;
+    ACPI_DMTABLE_INFO       *InfoTable;
+    ACPI_NFIT_INTERLEAVE    *Interleave = NULL;
+    ACPI_NFIT_SMBIOS        *SmbiosInfo = NULL;
+    ACPI_NFIT_FLUSH_ADDRESS *Hint = NULL;
+    UINT32                  i;
+
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoNfit);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    /* Subtables */
+
+    SubTable = ACPI_ADD_PTR (ACPI_NFIT_HEADER, Table, Offset);
+    while (Offset < Table->Length)
+    {
+        /* NFIT subtable header */
+
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Table->Length, Offset, SubTable,
+                    SubTable->Length, AcpiDmTableInfoNfitHdr);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        switch (SubTable->Type)
+        {
+        case ACPI_NFIT_TYPE_SYSTEM_ADDRESS:
+
+            InfoTable = AcpiDmTableInfoNfit0;
+            break;
+
+        case ACPI_NFIT_TYPE_MEMORY_MAP:
+
+            InfoTable = AcpiDmTableInfoNfit1;
+            break;
+
+        case ACPI_NFIT_TYPE_INTERLEAVE:
+
+            /* Has a variable number of 32-bit values at the end */
+
+            InfoTable = AcpiDmTableInfoNfit2;
+            Interleave = ACPI_CAST_PTR (ACPI_NFIT_INTERLEAVE, SubTable);
+            FieldOffset = sizeof (ACPI_NFIT_INTERLEAVE);
+            break;
+
+        case ACPI_NFIT_TYPE_SMBIOS:
+
+            SmbiosInfo = ACPI_CAST_PTR (ACPI_NFIT_SMBIOS, SubTable);
+            InfoTable = AcpiDmTableInfoNfit3;
+            break;
+
+        case ACPI_NFIT_TYPE_CONTROL_REGION:
+
+            InfoTable = AcpiDmTableInfoNfit4;
+            break;
+
+        case ACPI_NFIT_TYPE_DATA_REGION:
+
+            InfoTable = AcpiDmTableInfoNfit5;
+            break;
+
+        case ACPI_NFIT_TYPE_FLUSH_ADDRESS:
+
+            /* Has a variable number of 64-bit addresses at the end */
+
+            InfoTable = AcpiDmTableInfoNfit6;
+            Hint = ACPI_CAST_PTR (ACPI_NFIT_FLUSH_ADDRESS, SubTable);
+            FieldOffset = sizeof (ACPI_NFIT_FLUSH_ADDRESS) - sizeof (UINT64);
+            break;
+
+        default:
+            AcpiOsPrintf ("\n**** Unknown NFIT subtable type 0x%X\n", SubTable->Type);
+
+            /* Attempt to continue */
+
+            if (!SubTable->Length)
+            {
+                AcpiOsPrintf ("Invalid zero length subtable\n");
+                return;
+            }
+            goto NextSubTable;
+        }
+
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Table->Length, Offset, SubTable,
+                    SubTable->Length, InfoTable);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        /* Per-subtable variable-length fields */
+
+        switch (SubTable->Type)
+        {
+        case ACPI_NFIT_TYPE_INTERLEAVE:
+
+            for (i = 0; i < Interleave->LineCount; i++)
+            {
+                Status = AcpiDmDumpTable (Table->Length, Offset + FieldOffset,
+                            &Interleave->LineOffset[i],
+                            sizeof (UINT32), AcpiDmTableInfoNfit2a);
+                FieldOffset += sizeof (UINT32);
+            }
+            break;
+
+        case ACPI_NFIT_TYPE_SMBIOS:
+
+            Length = SubTable->Length - sizeof (ACPI_NFIT_SMBIOS) + sizeof (UINT8);
+            if (Length)
+            {
+                Status = AcpiDmDumpTable (Table->Length,
+                            sizeof (ACPI_NFIT_SMBIOS) - sizeof (UINT8),
+                            SmbiosInfo,
+                            Length, AcpiDmTableInfoNfit3a);
+                if (ACPI_FAILURE (Status))
+                {
+                    return;
+                }
+            }
+
+            break;
+
+        case ACPI_NFIT_TYPE_FLUSH_ADDRESS:
+
+            for (i = 0; i < Hint->HintCount; i++)
+            {
+                Status = AcpiDmDumpTable (Table->Length, Offset + FieldOffset,
+                            &Hint->HintAddress[i],
+                            sizeof (UINT64), AcpiDmTableInfoNfit6a);
+                FieldOffset += sizeof (UINT64);
+            }
+            break;
+
+        default:
+            break;
+        }
+
+NextSubTable:
+        /* Point to next subtable */
+
+        Offset += SubTable->Length;
+        SubTable = ACPI_ADD_PTR (ACPI_NFIT_HEADER, SubTable, SubTable->Length);
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpPcct
  *
  * PARAMETERS:  Table               - A PCCT table

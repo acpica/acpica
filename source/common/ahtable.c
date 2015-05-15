@@ -193,6 +193,7 @@ const AH_TABLE      AcpiSupportedTables[] =
     {ACPI_SIG_MSCT, "Maximum System Characteristics Table"},
     {ACPI_SIG_MSDM, "Microsoft Data Management table"},
     {ACPI_SIG_MTMR, "MID Timer Table"},
+    {ACPI_SIG_NFIT, "NVDIMM Firmware Interface Table"},
     {ACPI_SIG_PCCT, "Platform Communications Channel Table"},
     {ACPI_SIG_PMTT, "Platform Memory Topology Table"},
     {ACPI_RSDP_NAME,"Root System Description Pointer"},

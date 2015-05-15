@@ -145,6 +145,7 @@
 #define ACPI_SIG_SBST           "SBST"      /* Smart Battery Specification Table */
 #define ACPI_SIG_SLIT           "SLIT"      /* System Locality Distance Information Table */
 #define ACPI_SIG_SRAT           "SRAT"      /* System Resource Affinity Table */
+#define ACPI_SIG_NFIT           "NFIT"      /* NVDIMM Firmware Interface Table */
 
 
 /*
@@ -1154,6 +1155,186 @@ typedef struct acpi_msct_proximity
 
 /*******************************************************************************
  *
+ * NFIT - NVDIMM Interface Table (ACPI 6.0)
+ *        Version 1
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_nfit
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT32                  Reserved;           /* Reserved, must be zero */
+
+} ACPI_TABLE_NFIT;
+
+/* Subtable header for NFIT */
+
+typedef struct acpi_nfit_header
+{
+    UINT16                   Type;
+    UINT16                   Length;
+
+} ACPI_NFIT_HEADER;
+
+
+/* Values for subtable type in ACPI_NFIT_HEADER */
+
+enum AcpiNfitType
+{
+    ACPI_NFIT_TYPE_SYSTEM_ADDRESS       = 0,
+    ACPI_NFIT_TYPE_MEMORY_MAP           = 1,
+    ACPI_NFIT_TYPE_INTERLEAVE           = 2,
+    ACPI_NFIT_TYPE_SMBIOS               = 3,
+    ACPI_NFIT_TYPE_CONTROL_REGION       = 4,
+    ACPI_NFIT_TYPE_DATA_REGION          = 5,
+    ACPI_NFIT_TYPE_FLUSH_ADDRESS        = 6,
+    ACPI_NFIT_TYPE_RESERVED             = 7     /* 7 and greater are reserved */
+};
+
+/*
+ * NFIT Subtables
+ */
+
+/* 0: System Physical Address Range Structure */
+
+typedef struct acpi_nfit_system_address
+{
+    ACPI_NFIT_HEADER        Header;
+    UINT16                  RangeIndex;
+    UINT16                  Flags;
+    UINT32                  Reserved;           /* Reseved, must be zero */
+    UINT32                  ProximityDomain;
+    UINT8                   RangeGuid[16];
+    UINT64                  Address;
+    UINT64                  Length;
+    UINT64                  MemoryMapping;
+
+} ACPI_NFIT_SYSTEM_ADDRESS;
+
+/* Flags */
+
+#define ACPI_NFIT_ADD_ONLINE_ONLY       (1)     /* 00: Add/Online Operation Only */
+#define ACPI_NFIT_PROXIMITY_VALID       (1<<1)  /* 01: Proximity Domain Valid */
+
+/* Range Type GUIDs appear in the include/acuuid.h file */
+
+
+/* 1: Memory Device to System Address Range Map Structure */
+
+typedef struct acpi_nfit_memory_map
+{
+    ACPI_NFIT_HEADER        Header;
+    UINT32                  DeviceHandle;
+    UINT16                  PhysicalId;
+    UINT16                  RegionId;
+    UINT16                  RangeIndex;
+    UINT16                  RegionIndex;
+    UINT64                  RegionSize;
+    UINT64                  RegionOffset;
+    UINT64                  Address;
+    UINT16                  InterleaveIndex;
+    UINT16                  InterleaveWays;
+    UINT16                  Flags;
+    UINT16                  Reserved;           /* Reserved, must be zero */
+
+} ACPI_NFIT_MEMORY_MAP;
+
+/* Flags */
+
+#define ACPI_NFIT_MEM_SAVE_FAILED       (1)     /* 00: Last SAVE to Memory Device failed */
+#define ACPI_NFIT_MEM_RESTORE_FAILED    (1<<1)  /* 01: Last RESTORE from Memory Device failed */
+#define ACPI_NFIT_MEM_FLUSH_FAILED      (1<<2)  /* 02: Platform flush failed */
+#define ACPI_NFIT_MEM_ARMED             (1<<3)  /* 03: Memory Device observed to be not armed */
+#define ACPI_NFIT_MEM_HEALTH_OBSERVED   (1<<4)  /* 04: Memory Device observed SMART/health events */
+#define ACPI_NFIT_MEM_HEALTH_ENABLED    (1<<5)  /* 05: SMART/health events enabled */
+
+
+/* 2: Interleave Structure */
+
+typedef struct acpi_nfit_interleave
+{
+    ACPI_NFIT_HEADER        Header;
+    UINT16                  InterleaveIndex;
+    UINT16                  Reserved;           /* Reserved, must be zero */
+    UINT32                  LineCount;
+    UINT32                  LineSize;
+    UINT32                  LineOffset[1];      /* Variable length */
+
+} ACPI_NFIT_INTERLEAVE;
+
+
+/* 3: SMBIOS Management Information Structure */
+
+typedef struct acpi_nfit_smbios
+{
+    ACPI_NFIT_HEADER        Header;
+    UINT32                  Reserved;           /* Reserved, must be zero */
+    UINT8                   Data[1];            /* Variable length */
+
+} ACPI_NFIT_SMBIOS;
+
+
+/* 4: NVDIMM Control Region Structure */
+
+typedef struct acpi_nfit_control_region
+{
+    ACPI_NFIT_HEADER        Header;
+    UINT16                  RegionIndex;
+    UINT16                  VendorId;
+    UINT16                  DeviceId;
+    UINT16                  RevisionId;
+    UINT16                  SubsystemVendorId;
+    UINT16                  SubsystemDeviceId;
+    UINT16                  SubsystemRevisionId;
+    UINT8                   Reserved[6];        /* Reserved, must be zero */
+    UINT32                  SerialNumber;
+    UINT16                  Code;
+    UINT16                  Windows;
+    UINT64                  WindowSize;
+    UINT64                  CommandOffset;
+    UINT64                  CommandSize;
+    UINT64                  StatusOffset;
+    UINT64                  StatusSize;
+    UINT16                  Flags;
+    UINT8                   Reserved1[6];       /* Reserved, must be zero */
+
+} ACPI_NFIT_CONTROL_REGION;
+
+/* Flags */
+
+#define ACPI_NFIT_CONTROL_BUFFERED      (1)     /* Block Data Windows implementation is buffered */
+
+
+/* 5: NVDIMM Block Data Window Region Structure */
+
+typedef struct acpi_nfit_data_region
+{
+    ACPI_NFIT_HEADER        Header;
+    UINT16                  RegionIndex;
+    UINT16                  Windows;
+    UINT64                  Offset;
+    UINT64                  Size;
+    UINT64                  Capacity;
+    UINT64                  StartAddress;
+
+} ACPI_NFIT_DATA_REGION;
+
+
+/* 6: Flush Hint Address Structure */
+
+typedef struct acpi_nfit_flush_address
+{
+    ACPI_NFIT_HEADER        Header;
+    UINT32                  DeviceHandle;
+    UINT16                  HintCount;
+    UINT8                   Reserved[6];        /* Reserved, must be zero */
+    UINT64                  HintAddress[1];     /* Variable length */
+
+} ACPI_NFIT_FLUSH_ADDRESS;
+
+
+/*******************************************************************************
+ *
  * SBST - Smart Battery Specification Table
  *        Version 1
  *
@@ -1290,6 +1471,7 @@ typedef struct acpi_srat_gicc_affinity
 /* Flags for ACPI_SRAT_GICC_AFFINITY */
 
 #define ACPI_SRAT_GICC_ENABLED     (1)         /* 00: Use affinity structure */
+
 
 /* Reset to default packing */
 
