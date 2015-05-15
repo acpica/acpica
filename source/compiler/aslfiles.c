@@ -394,6 +394,7 @@ FlOpenIncludeWithPrefix (
         return (NULL);
     }
 
+#ifdef _MUST_HANDLE_COMMENTS
     /*
      * Check entire include file for any # preprocessor directives.
      * This is because there may be some confusion between the #include
@@ -407,6 +408,7 @@ FlOpenIncludeWithPrefix (
                 Op, "use #include instead");
         }
     }
+#endif
 
     /* Must seek back to the start of the file */
 
