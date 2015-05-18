@@ -371,6 +371,10 @@
 				RelativePath="..\..\source\tools\acpihelp\acpihelp.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\source\include\acuuid.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
