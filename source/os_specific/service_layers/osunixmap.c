@@ -128,7 +128,7 @@
 #define O_BINARY 0
 #endif
 
-#ifdef _FreeBSD
+#if defined(_DragonFly) || defined(_FreeBSD)
 #define MMAP_FLAGS          MAP_SHARED
 #else
 #define MMAP_FLAGS          MAP_PRIVATE
