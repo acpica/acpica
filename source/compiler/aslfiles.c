@@ -115,6 +115,7 @@
 
 #include "aslcompiler.h"
 #include "acapps.h"
+#include "dtcompiler.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslfiles")
@@ -394,13 +395,17 @@ FlOpenIncludeWithPrefix (
         return (NULL);
     }
 
-#ifdef _MUST_HANDLE_COMMENTS
     /*
-     * Check entire include file for any # preprocessor directives.
+     * Check the entire include file for any # preprocessor directives.
      * This is because there may be some confusion between the #include
-     * preprocessor directive and the ASL Include statement.
+     * preprocessor directive and the ASL Include statement. A file included
+     * by the ASL include cannot contain preprocessor directives because
+     * the preprocessor has already run by the time the ASL include is
+     * recognized (by the compiler, not the preprocessor.)
+     *
+     * Note: DtGetNextLine strips/ignores comments.
      */
-    while (fgets (Gbl_CurrentLineBuffer, Gbl_LineBufferSize, IncludeFile))
+    while (DtGetNextLine (IncludeFile) != ASL_EOF)
     {
         if (Gbl_CurrentLineBuffer[0] == '#')
         {
@@ -408,7 +413,6 @@ FlOpenIncludeWithPrefix (
                 Op, "use #include instead");
         }
     }
-#endif
 
     /* Must seek back to the start of the file */
 
