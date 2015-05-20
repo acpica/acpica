@@ -519,11 +519,14 @@ UtDisplaySummary (
 
         if ((Gbl_ExceptionCount[ASL_ERROR] == 0) || (Gbl_IgnoreErrors))
         {
-            FlPrintFile (FileId,
-                "%-14s %s - %u bytes, %u named objects, %u executable opcodes\n",
-                "AML Output:",
-                Gbl_Files[ASL_FILE_AML_OUTPUT].Filename, Gbl_TableLength,
-                TotalNamedObjects, TotalExecutableOpcodes);
+            if (Gbl_Files[ASL_FILE_AML_OUTPUT].Handle)
+            {
+                FlPrintFile (FileId,
+                    "%-14s %s - %u bytes, %u named objects, %u executable opcodes\n",
+                    "AML Output:",
+                    Gbl_Files[ASL_FILE_AML_OUTPUT].Filename, Gbl_TableLength,
+                    TotalNamedObjects, TotalExecutableOpcodes);
+            }
         }
     }
 
@@ -543,9 +546,9 @@ UtDisplaySummary (
             continue;
         }
 
-        /* .I is a temp file unless specifically requested */
+        /* .TMP is the preprocessor temp file */
 
-        if ((i == ASL_FILE_PREPROCESSOR) && (!Gbl_PreprocessorOutputFlag))
+        if ((i == ASL_FILE_PREPROCESSOR)  && (!Gbl_KeepPreprocessorTempFile))
         {
             continue;
         }

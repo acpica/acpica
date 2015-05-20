@@ -229,6 +229,7 @@ typedef enum
     ASL_FILE_AML_OUTPUT,        /* Don't move these first 4 file types */
     ASL_FILE_SOURCE_OUTPUT,
     ASL_FILE_PREPROCESSOR,
+    ASL_FILE_PREPROCESSOR_USER,
     ASL_FILE_LISTING_OUTPUT,
     ASL_FILE_HEX_OUTPUT,
     ASL_FILE_NAMESPACE_OUTPUT,
@@ -243,7 +244,7 @@ typedef enum
 } ASL_FILE_TYPES;
 
 
-#define ASL_MAX_FILE_TYPE       15
+#define ASL_MAX_FILE_TYPE       16
 #define ASL_NUM_FILES           (ASL_MAX_FILE_TYPE + 1)
 
 

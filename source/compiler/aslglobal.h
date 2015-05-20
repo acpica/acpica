@@ -145,6 +145,7 @@ ASL_FILE_INFO                       Gbl_Files [ASL_NUM_FILES] =
     {NULL, NULL, "Binary Output:", "AML Output"},
     {NULL, NULL, "Source Output:", "Source Output"},
     {NULL, NULL, "Preprocessor: ", "Preprocessor Output"},
+    {NULL, NULL, "Preprocessor: ", "Preprocessor Temp File"},
     {NULL, NULL, "Listing File: ", "Listing Output"},
     {NULL, NULL, "Hex Dump:     ", "Hex Table Output"},
     {NULL, NULL, "Namespace:    ", "Namespace Output"},
@@ -218,6 +219,7 @@ ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_UseDefaultAmlFilename, 
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_MapfileFlag, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_NsOutputFlag, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_PreprocessorOutputFlag, FALSE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_KeepPreprocessorTempFile, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DebugFlag, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_AsmOutputFlag, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_C_OutputFlag, FALSE);

@@ -805,10 +805,9 @@ CmCleanupAndExit (
         FlDeleteFile (ASL_FILE_AML_OUTPUT);
     }
 
-    /* Delete the preprocessor output file (.i) unless -li flag is set */
+    /* Delete the preprocessor temp file unless full debug was specified */
 
-    if (!Gbl_PreprocessorOutputFlag &&
-        Gbl_PreprocessFlag)
+    if (Gbl_PreprocessFlag && !Gbl_KeepPreprocessorTempFile)
     {
         FlDeleteFile (ASL_FILE_PREPROCESSOR);
     }

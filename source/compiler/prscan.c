@@ -343,7 +343,7 @@ PrDoPreprocess (
 
     } while (MoreInputFiles);
 
-    /* Point compiler input to the new preprocessor output file (.i) */
+    /* Point compiler input to the new preprocessor output file (.tmp) */
 
     FlCloseFile (ASL_FILE_INPUT);
     Gbl_Files[ASL_FILE_INPUT].Handle = Gbl_Files[ASL_FILE_PREPROCESSOR].Handle;
@@ -369,7 +369,8 @@ PrDoPreprocess (
  * DESCRIPTION: Preprocess one entire file, line-by-line.
  *
  * Input:  Raw user ASL from ASL_FILE_INPUT
- * Output: Preprocessed file written to ASL_FILE_PREPROCESSOR
+ * Output: Preprocessed file written to ASL_FILE_PREPROCESSOR and
+ *         (optionally) ASL_FILE_PREPROCESSOR_USER
  *
  ******************************************************************************/
 
@@ -486,7 +487,7 @@ PrPreprocessInputFile (
 
         /*
          * Now we can write the possibly modified source line to the
-         * preprocessor (.i) file
+         * preprocessor file(s).
          */
         FlWriteFile (ASL_FILE_PREPROCESSOR, Gbl_CurrentLineBuffer,
             strlen (Gbl_CurrentLineBuffer));

@@ -697,7 +697,7 @@ FlOpenMiscOutputFiles (
         AslCompilerFileHeader (ASL_FILE_LISTING_OUTPUT);
     }
 
-    /* Create the preprocessor output file if preprocessor enabled */
+    /* Create the preprocessor output temp file if preprocessor enabled */
 
     if (Gbl_PreprocessFlag)
     {
@@ -710,6 +710,23 @@ FlOpenMiscOutputFiles (
         }
 
         FlOpenFile (ASL_FILE_PREPROCESSOR, Filename, "w+t");
+    }
+
+    /*
+     * Create the "user" preprocessor output file if -li flag set.
+     * Note, this file contains no embedded #line directives.
+     */
+    if (Gbl_PreprocessorOutputFlag)
+    {
+        Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_PREPROC_USER);
+        if (!Filename)
+        {
+            AslCommonError (ASL_ERROR, ASL_MSG_PREPROCESSOR_FILENAME,
+                0, 0, 0, 0, NULL, NULL);
+            return (AE_ERROR);
+        }
+
+        FlOpenFile (ASL_FILE_PREPROCESSOR_USER, Filename, "w+t");
     }
 
     /* All done for data table compiler */

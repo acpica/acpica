@@ -266,6 +266,7 @@ AslDoOptions (
             DtParserdebug = 1;
             PrParserdebug = 1;
             Gbl_DebugFlag = TRUE;
+            Gbl_KeepPreprocessorTempFile = TRUE;
             break;
 
         case 'p':   /* Prune ASL parse tree */
