@@ -120,6 +120,13 @@
 #define _COMPONENT          ASL_PREPROCESSOR
         ACPI_MODULE_NAME    ("prparser")
 
+void *                      AslLocalAllocate (unsigned int Size);
+
+/* Bison/yacc configuration */
+
+#undef alloca
+#define alloca              AslLocalAllocate
+
 int                         PrParserlex (void);
 int                         PrParserparse (void);
 void                        PrParsererror (char const *msg);

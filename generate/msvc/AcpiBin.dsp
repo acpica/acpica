@@ -37,13 +37,13 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "/acpica/generate/msvc/AcpiBin"
-# PROP Intermediate_Dir "/acpica/generate/msvc/AcpiBin"
+# PROP Output_Dir "AcpiBin"
+# PROP Intermediate_Dir "AcpiBin"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /Gr /W4 /O2 /I "..\..\source\include" /D "NDEBUG" /D "ACPI_BIN_APP" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /FR /FD /c
-# SUBTRACT CPP /YX
+# ADD CPP /nologo /W3 /Gi /Ob1 /Gf /I "..\..\source\include" /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_CONSOLE" /D "__STDC__" /D "ACPI_BIN_APP" /FD /c
+# SUBTRACT CPP /Fr /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -51,12 +51,14 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /nodefaultlib:"advapi32.lib"
+# ADD LINK32 kernel32.lib /nologo /subsystem:console /machine:I386 /nodefaultlib:"advapi32.lib"
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
-PostBuild_Desc=Copy AcpiBin.exe to libraries
-PostBuild_Cmds=copy acpibin\acpibin.exe ..\..\libraries	dir ..\..\libraries\acpibin.exe
+PreLink_Desc=Checking existence of acpica/libraries directory
+PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
+PostBuild_Desc=Copying acpibin to libraries...
+PostBuild_Cmds=copy acpibin\acpibin.exe ..\..\libraries\acpibin.exe
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "AcpiBin - Win32 Debug"
@@ -68,12 +70,13 @@ PostBuild_Cmds=copy acpibin\acpibin.exe ..\..\libraries	dir ..\..\libraries\acpi
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "/acpica/generate/msvc/AcpiBinDebug"
-# PROP Intermediate_Dir "/acpica/generate/msvc/AcpiBinDebug"
+# PROP Output_Dir "AcpiBinDebug"
+# PROP Intermediate_Dir "AcpiBinDebug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /Gr /W4 /Zi /Od /Gf /I "..\..\source\include" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_BIN_APP" /FR /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /Gi /Zi /Od /Ob1 /Gf /I "..\..\source\include" /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_CONSOLE" /D "__STDC__" /D "ACPI_BIN_APP" /FD /GZ /c
+# SUBTRACT CPP /Fr
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -81,12 +84,14 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiBinDebug/AcpiBin.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /map /debug /machine:I386 /pdbtype:sept /out:"/acpica/generate/msvc/AcpiBinDebug/AcpiBin.exe"
+# ADD LINK32 kernel32.lib /nologo /subsystem:console /incremental:no /map /debug /machine:I386 /pdbtype:sept
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
-PostBuild_Desc=Copy AcpiBinDebug.exe to libraries
-PostBuild_Cmds=copy acpibindebug\acpibin.exe ..\..\libraries\AcpiBinDebug.exe	dir ..\..\libraries\acpibindebug.exe
+PreLink_Desc=Checking existence of acpica/libraries directory
+PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
+PostBuild_Desc=Copying acpibin to libraries...
+PostBuild_Cmds=copy acpibindebug\acpibin.exe ..\..\libraries\acpibin_dbg.exe
 # End Special Build Tool
 
 !ENDIF 
@@ -115,7 +120,15 @@ SOURCE=..\..\source\tools\AcpiBin\abmain.c
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\source\common\cmfsize.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\Common\getopt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\os_specific\service_layers\oslibcfs.c
 # End Source File
 # Begin Source File
 
@@ -131,11 +144,23 @@ SOURCE=..\..\source\components\utilities\utalloc.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utbuffer.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utcache.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utdebug.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utdecode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utexcep.c
 # End Source File
 # Begin Source File
 
@@ -159,7 +184,15 @@ SOURCE=..\..\source\components\utilities\utmutex.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utprint.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utstate.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utstring.c
 # End Source File
 # Begin Source File
 

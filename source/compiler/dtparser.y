@@ -120,6 +120,13 @@
 #define _COMPONENT          DT_COMPILER
         ACPI_MODULE_NAME    ("dtparser")
 
+void *                      AslLocalAllocate (unsigned int Size);
+
+/* Bison/yacc configuration */
+
+#undef alloca
+#define alloca              AslLocalAllocate
+
 int                         DtParserlex (void);
 int                         DtParserparse (void);
 void                        DtParsererror (char const *msg);
