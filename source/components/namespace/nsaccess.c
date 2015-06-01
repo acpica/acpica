@@ -391,7 +391,9 @@ AcpiNsLookup (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    LocalFlags = Flags & ~(ACPI_NS_ERROR_IF_FOUND | ACPI_NS_SEARCH_PARENT);
+    LocalFlags = Flags &
+        ~(ACPI_NS_ERROR_IF_FOUND | ACPI_NS_OVERRIDE_IF_FOUND |
+          ACPI_NS_SEARCH_PARENT);
     *ReturnNode = ACPI_ENTRY_NOT_FOUND;
     AcpiGbl_NsLookupCount++;
 
@@ -642,6 +644,13 @@ AcpiNsLookup (
             if (Flags & ACPI_NS_ERROR_IF_FOUND)
             {
                 LocalFlags |= ACPI_NS_ERROR_IF_FOUND;
+            }
+
+            /* Set override flag according to caller */
+
+            if (Flags & ACPI_NS_OVERRIDE_IF_FOUND)
+            {
+                LocalFlags |= ACPI_NS_OVERRIDE_IF_FOUND;
             }
         }
 

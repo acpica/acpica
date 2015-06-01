@@ -410,10 +410,28 @@ AcpiNsSearchAndEnter (
          * If we found it AND the request specifies that a find is an error,
          * return the error
          */
-        if ((Status == AE_OK) &&
-            (Flags & ACPI_NS_ERROR_IF_FOUND))
+        if (Status == AE_OK)
         {
-            Status = AE_ALREADY_EXISTS;
+            /* The node was found in the namespace */
+
+            /*
+             * If the namespace override feature is enabled for this node,
+             * delete any existing node. This can only happen during the
+             * boot stage, thus it is safe to remove the node here.
+             */
+            if (Flags & ACPI_NS_OVERRIDE_IF_FOUND)
+            {
+                AcpiNsDeleteChildren (*ReturnNode);
+                AcpiNsRemoveNode (*ReturnNode);
+                *ReturnNode = ACPI_ENTRY_NOT_FOUND;
+            }
+
+            /* Return an error if we don't expect to find the object */
+
+            else if (Flags & ACPI_NS_ERROR_IF_FOUND)
+            {
+                Status = AE_ALREADY_EXISTS;
+            }
         }
 
 #ifdef ACPI_ASL_COMPILER
