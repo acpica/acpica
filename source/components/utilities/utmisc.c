@@ -180,7 +180,8 @@ AcpiUtIsAmlTable (
 
     if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_DSDT) ||
         ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_PSDT) ||
-        ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_SSDT))
+        ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_SSDT) ||
+        ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_OSDT))
     {
         return (TRUE);
     }
