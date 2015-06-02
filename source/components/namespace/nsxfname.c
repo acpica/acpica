@@ -362,7 +362,7 @@ AcpiNsCopyDeviceId (
  *              control methods (Such as in the case of a device.)
  *
  * For Device and Processor objects, run the Device _HID, _UID, _CID, _SUB,
- * _STA, _ADR, _SxW, and _SxD methods.
+ * _CLS, _STA, _ADR, _SxW, and _SxD methods.
  *
  * Note: Allocates the return buffer, must be freed by the caller.
  *
@@ -379,11 +379,12 @@ AcpiGetObjectInfo (
     ACPI_PNP_DEVICE_ID      *Hid = NULL;
     ACPI_PNP_DEVICE_ID      *Uid = NULL;
     ACPI_PNP_DEVICE_ID      *Sub = NULL;
+    ACPI_PNP_DEVICE_ID      *Cls = NULL;
     char                    *NextIdString;
     ACPI_OBJECT_TYPE        Type;
     ACPI_NAME               Name;
     UINT8                   ParamCount= 0;
-    UINT8                   Valid = 0;
+    UINT16                  Valid = 0;
     UINT32                  InfoSize;
     UINT32                  i;
     ACPI_STATUS             Status;
@@ -431,7 +432,7 @@ AcpiGetObjectInfo (
     {
         /*
          * Get extra info for ACPI Device/Processor objects only:
-         * Run the Device _HID, _UID, _SUB, and _CID methods.
+         * Run the Device _HID, _UID, _SUB, _CID, and _CLS methods.
          *
          * Note: none of these methods are required, so they may or may
          * not be present for this device. The Info->Valid bitfield is used
@@ -474,6 +475,15 @@ AcpiGetObjectInfo (
 
             InfoSize += (CidList->ListSize - sizeof (ACPI_PNP_DEVICE_ID_LIST));
             Valid |= ACPI_VALID_CID;
+        }
+
+        /* Execute the Device._CLS method */
+
+        Status = AcpiUtExecute_CLS (Node, &Cls);
+        if (ACPI_SUCCESS (Status))
+        {
+            InfoSize += Cls->Length;
+            Valid |= ACPI_VALID_CLS;
         }
     }
 
@@ -606,6 +616,12 @@ AcpiGetObjectInfo (
         }
     }
 
+    if (Cls)
+    {
+        NextIdString = AcpiNsCopyDeviceId (&Info->ClassCode,
+            Cls, NextIdString);
+    }
+
     /* Copy the fixed-length data */
 
     Info->InfoSize = InfoSize;
@@ -634,6 +650,10 @@ Cleanup:
     if (CidList)
     {
         ACPI_FREE (CidList);
+    }
+    if (Cls)
+    {
+        ACPI_FREE (Cls);
     }
     return (Status);
 }

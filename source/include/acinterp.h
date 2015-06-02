@@ -710,6 +710,11 @@ AcpiExIntegerToString (
     char                    *Dest,
     UINT64                  Value);
 
+void
+AcpiExPciClsToString (
+    char                    *Dest,
+    UINT8                   ClassCode[3]);
+
 BOOLEAN
 AcpiIsValidSpaceId (
     UINT8                   SpaceId);
