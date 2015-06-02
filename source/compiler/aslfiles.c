@@ -157,7 +157,6 @@ FlSetLineNumber (
          LineNumber, Gbl_LogicalLineNumber);
 
     Gbl_CurrentLineNumber = LineNumber;
-    Gbl_LogicalLineNumber = LineNumber;
 }
 
 
@@ -376,6 +375,7 @@ FlOpenIncludeWithPrefix (
 {
     FILE                    *IncludeFile;
     char                    *Pathname;
+    UINT32                  OriginalLineNumber;
 
 
     /* Build the full pathname to the file */
@@ -404,7 +404,10 @@ FlOpenIncludeWithPrefix (
      * recognized (by the compiler, not the preprocessor.)
      *
      * Note: DtGetNextLine strips/ignores comments.
+     * Save current line number since DtGetNextLine modifies it.
      */
+    Gbl_CurrentLineNumber--;
+    OriginalLineNumber = Gbl_CurrentLineNumber;
     while (DtGetNextLine (IncludeFile) != ASL_EOF)
     {
         if (Gbl_CurrentLineBuffer[0] == '#')
@@ -413,6 +416,7 @@ FlOpenIncludeWithPrefix (
                 Op, "use #include instead");
         }
     }
+    Gbl_CurrentLineNumber = OriginalLineNumber;
 
     /* Must seek back to the start of the file */
 

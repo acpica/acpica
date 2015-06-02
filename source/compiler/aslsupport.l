@@ -185,6 +185,7 @@ AslDoLineDirective (
     char                    *Filename;
     UINT32                  i;
 
+   Gbl_HasIncludeFiles = TRUE;
 
     /* Eat the entire line that contains the #line directive */
 

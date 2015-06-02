@@ -513,7 +513,7 @@ UtDisplaySummary (
             "%-14s %s - %u lines, %u bytes, %u keywords\n",
             "ASL Input:",
             Gbl_Files[ASL_FILE_INPUT].Filename, Gbl_CurrentLineNumber,
-            Gbl_InputByteCount, TotalKeywords);
+            Gbl_OriginalInputFileSize, TotalKeywords);
 
         /* AML summary */
 
@@ -546,7 +546,7 @@ UtDisplaySummary (
             continue;
         }
 
-        /* .TMP is the preprocessor temp file */
+        /* .PRE is the preprocessor intermediate file */
 
         if ((i == ASL_FILE_PREPROCESSOR)  && (!Gbl_KeepPreprocessorTempFile))
         {
