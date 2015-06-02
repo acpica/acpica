@@ -430,6 +430,8 @@ DtCompileDataTable (
     TableData = AcpiDmGetTableData (Signature);
     if (!TableData || Gbl_CompileGeneric)
     {
+        /* Unknown table signature and/or force generic compile */
+
         DtCompileGeneric ((void **) FieldList, NULL, NULL);
         goto FinishHeader;
     }
