@@ -542,8 +542,12 @@ AcpiDmCheckForSymbolicOpcode (
          * source so that the target is processed first.
          */
         Target = Child1->Common.Next;
-        AcpiDmPromoteTarget (Op, Target);
+        if (!Target)
+        {
+            return (FALSE);
+        }
 
+        AcpiDmPromoteTarget (Op, Target);
         if (!Target->Common.OperatorSymbol)
         {
             Target->Common.OperatorSymbol = " = ";
@@ -793,7 +797,8 @@ AcpiDmPromoteTarget (
  *
  * DESCRIPTION: Determine if a Target Op is a placeholder Op or a real Target.
  *              In other words, determine if the optional target is used or
- *              not.
+ *              not. Note: If Target is NULL, something is seriously wrong,
+ *              probably with the parse tree.
  *
  ******************************************************************************/
 
@@ -801,6 +806,11 @@ static BOOLEAN
 AcpiDmIsValidTarget (
     ACPI_PARSE_OBJECT       *Target)
 {
+
+    if (!Target)
+    {
+        return (FALSE);
+    }
 
     if ((Target->Common.AmlOpcode == AML_INT_NAMEPATH_OP) &&
         (Target->Common.Value.Arg == NULL))
