@@ -257,7 +257,9 @@ AcpiTbLoadNamespace (
         if ((!ACPI_COMPARE_NAME (&(AcpiGbl_RootTableList.Tables[i].Signature),
                     ACPI_SIG_SSDT) &&
              !ACPI_COMPARE_NAME (&(AcpiGbl_RootTableList.Tables[i].Signature),
-                    ACPI_SIG_PSDT)) ||
+                    ACPI_SIG_PSDT) &&
+             !ACPI_COMPARE_NAME (&(AcpiGbl_RootTableList.Tables[i].Signature),
+                    ACPI_SIG_OSDT)) ||
              ACPI_FAILURE (AcpiTbValidateTable (
                 &AcpiGbl_RootTableList.Tables[i])))
         {
