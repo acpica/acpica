@@ -147,8 +147,6 @@ ACPI_STATUS
 AcpiTbInitializeFacs (
     void)
 {
-    ACPI_STATUS             Status;
-
 
     /* If there is no FACS, just continue. There was already an error msg */
 
@@ -165,9 +163,25 @@ AcpiTbInitializeFacs (
         return (AE_OK);
     }
 
-    Status = AcpiGetTableByIndex (ACPI_TABLE_INDEX_FACS,
-                ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &AcpiGbl_FACS));
-    return (Status);
+    (void) AcpiGetTableByIndex (ACPI_TABLE_INDEX_FACS,
+                ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &AcpiGbl_Facs32));
+    (void) AcpiGetTableByIndex (ACPI_TABLE_INDEX_X_FACS,
+                ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &AcpiGbl_Facs64));
+    if (!AcpiGbl_Facs32 && !AcpiGbl_Facs64)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    if (AcpiGbl_Use32BitFacsAddresses)
+    {
+        AcpiGbl_FACS = AcpiGbl_Facs32 ? AcpiGbl_Facs32 : AcpiGbl_Facs64;
+    }
+    else
+    {
+        AcpiGbl_FACS = AcpiGbl_Facs64 ? AcpiGbl_Facs64 : AcpiGbl_Facs32;
+    }
+
+    return (AE_OK);
 }
 #endif /* !ACPI_REDUCED_HARDWARE */
 
@@ -190,7 +204,7 @@ AcpiTbTablesLoaded (
     void)
 {
 
-    if (AcpiGbl_RootTableList.CurrentTableCount >= 3)
+    if (AcpiGbl_RootTableList.CurrentTableCount >= 4)
     {
         return (TRUE);
     }
@@ -468,11 +482,11 @@ AcpiTbParseRootTable (
     TableEntry = ACPI_ADD_PTR (UINT8, Table, sizeof (ACPI_TABLE_HEADER));
 
     /*
-     * First two entries in the table array are reserved for the DSDT
-     * and FACS, which are not actually present in the RSDT/XSDT - they
-     * come from the FADT
+     * First three entries in the table array are reserved for the DSDT
+     * and 32bit/64bit FACS, which are not actually present in the
+     * RSDT/XSDT - they come from the FADT
      */
-    AcpiGbl_RootTableList.CurrentTableCount = 2;
+    AcpiGbl_RootTableList.CurrentTableCount = 3;
 
     /* Initialize the root table array from the RSDT/XSDT */
 
