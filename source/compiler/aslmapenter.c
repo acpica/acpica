@@ -311,7 +311,7 @@ MpCreateGpioInfo (
     /* Sort on source DeviceName first */
 
     while (NextGpio &&
-            (ACPI_STRCMP (DeviceName, NextGpio->DeviceName) > 0))
+            (strcmp (DeviceName, NextGpio->DeviceName) > 0))
     {
         PrevGpio = NextGpio;
         NextGpio = NextGpio->Next;
@@ -321,7 +321,7 @@ MpCreateGpioInfo (
 
     while (NextGpio &&
             (NextGpio->PinNumber < PinNumber) &&
-            !ACPI_STRCMP (DeviceName, NextGpio->DeviceName))
+            !strcmp (DeviceName, NextGpio->DeviceName))
     {
         PrevGpio = NextGpio;
         NextGpio = NextGpio->Next;
@@ -388,7 +388,7 @@ MpCreateSerialInfo (
     /* Sort on source DeviceName */
 
     while (NextSerial &&
-        (ACPI_STRCMP (DeviceName, NextSerial->DeviceName) > 0))
+        (strcmp (DeviceName, NextSerial->DeviceName) > 0))
     {
         PrevSerial = NextSerial;
         NextSerial = NextSerial->Next;
@@ -398,7 +398,7 @@ MpCreateSerialInfo (
 
     while (NextSerial &&
         (NextSerial->Address < Address) &&
-        !ACPI_STRCMP (DeviceName, NextSerial->DeviceName))
+        !strcmp (DeviceName, NextSerial->DeviceName))
     {
         PrevSerial = NextSerial;
         NextSerial = NextSerial->Next;

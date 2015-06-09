@@ -305,7 +305,7 @@ AtBuildLocalDSDT (
      * Examine the incoming user table. At this point, it has been verified
      * to be either a DSDT, SSDT, or a PSDT, but they must be handled differently
      */
-    if (UserTable && !ACPI_STRNCMP ((char *) UserTable->Signature, ACPI_SIG_DSDT, 4))
+    if (UserTable && !strncmp ((char *) UserTable->Signature, ACPI_SIG_DSDT, 4))
     {
         /* User DSDT is installed directly into the FADT */
 
@@ -318,8 +318,8 @@ AtBuildLocalDSDT (
          * or it is an SSDT or PSDT
          */
 
-        ACPI_MEMSET (&LocalDSDT, 0, sizeof (ACPI_TABLE_HEADER));
-        ACPI_STRNCPY (LocalDSDT.Signature, ACPI_SIG_DSDT, 4);
+        memset (&LocalDSDT, 0, sizeof (ACPI_TABLE_HEADER));
+        strncpy (LocalDSDT.Signature, ACPI_SIG_DSDT, 4);
         LocalDSDT.Revision = 1;
         LocalDSDT.Length = sizeof (ACPI_TABLE_HEADER);
         LocalDSDT.Checksum = (UINT8)(0 - AcpiTbChecksum
@@ -329,7 +329,7 @@ AtBuildLocalDSDT (
 
     if (BldTask.ErrScale & BAD_SIGNATURE_DSDT)
     {
-        ACPI_STRNCPY ((*Actual_DSDT)->Signature, "BADS", 4);
+        strncpy ((*Actual_DSDT)->Signature, "BADS", 4);
     }
     if (BldTask.ErrScale & BAD_CHECKSUM_DSDT)
     {
@@ -360,12 +360,12 @@ AtBuildLocalFACS1 (
     ACPI_TABLE_FACS    *LocalFACS,
     BLD_TABLES_TASK         BldTask)
 {
-    ACPI_MEMSET (LocalFACS, 0, sizeof (ACPI_TABLE_FACS));
+    memset (LocalFACS, 0, sizeof (ACPI_TABLE_FACS));
 
-    ACPI_STRNCPY (LocalFACS->Signature, ACPI_SIG_FACS, 4);
+    strncpy (LocalFACS->Signature, ACPI_SIG_FACS, 4);
     if (BldTask.ErrScale & BAD_SIGNATURE_FACS)
     {
-        ACPI_STRNCPY (LocalFACS->Signature, "BADS", 4);
+        strncpy (LocalFACS->Signature, "BADS", 4);
     }
 
     LocalFACS->Length = sizeof (ACPI_TABLE_FACS);
@@ -429,12 +429,12 @@ AtBuildLocalFADT1 (
         AtBuildLocalDSDT(UserTable, BldTask, ActualDSDT);
     }
 
-    ACPI_MEMSET (LocalFADT, 0, sizeof (ACPI_TABLE_FADT));
-    ACPI_STRNCPY (LocalFADT->Header.Signature, ACPI_SIG_FADT, 4);
+    memset (LocalFADT, 0, sizeof (ACPI_TABLE_FADT));
+    strncpy (LocalFADT->Header.Signature, ACPI_SIG_FADT, 4);
 
     if (BldTask.ErrScale & BAD_SIGNATURE_FADT)
     {
-        ACPI_STRNCPY (LocalFADT->Header.Signature, "BADS", 4);
+        strncpy (LocalFADT->Header.Signature, "BADS", 4);
     }
 
     if (BldTask.ErrScale & NULL_ADDRESS_FACS)
@@ -549,12 +549,12 @@ AtBuildLocalFADT2 (
         AtBuildLocalDSDT(UserTable, BldTask, ActualDSDT);
     }
 
-    ACPI_MEMSET (LocalFADT, 0, sizeof (ACPI_TABLE_FADT));
-    ACPI_STRNCPY (LocalFADT->Header.Signature, ACPI_SIG_FADT, 4);
+    memset (LocalFADT, 0, sizeof (ACPI_TABLE_FADT));
+    strncpy (LocalFADT->Header.Signature, ACPI_SIG_FADT, 4);
 
     if (BldTask.ErrScale & BAD_SIGNATURE_FADT)
     {
-        ACPI_STRNCPY (LocalFADT->Header.Signature, "BADS", 4);
+        strncpy (LocalFADT->Header.Signature, "BADS", 4);
     }
 
     if (BldTask.ErrScale & NULL_ADDRESS_FACS)
@@ -667,12 +667,12 @@ AtBuildLocalRSDT (
         BldTask.NoTableScale |= BLD_NO_FADT;
     }
 
-    ACPI_MEMSET (LocalRSDT, 0, RSDT_SIZE);
+    memset (LocalRSDT, 0, RSDT_SIZE);
 
-    ACPI_STRNCPY (LocalRSDT->Header.Signature, ACPI_SIG_RSDT, 4);
+    strncpy (LocalRSDT->Header.Signature, ACPI_SIG_RSDT, 4);
     if (BldTask.ErrScale & BAD_SIGNATURE_RSDT)
     {
-        ACPI_STRNCPY (LocalRSDT->Header.Signature, "BADS", 4);
+        strncpy (LocalRSDT->Header.Signature, "BADS", 4);
     }
 
     if (!(BldTask.NoTableScale & BLD_NO_FADT))
@@ -684,8 +684,8 @@ AtBuildLocalRSDT (
     }
 
     if (Actual_DSDT &&
-        (!ACPI_STRNCMP ((char *) Actual_DSDT->Signature, ACPI_SIG_SSDT, 4) ||
-         !ACPI_STRNCMP ((char *) Actual_DSDT->Signature, ACPI_SIG_PSDT, 4)))
+        (!strncmp ((char *) Actual_DSDT->Signature, ACPI_SIG_SSDT, 4) ||
+         !strncmp ((char *) Actual_DSDT->Signature, ACPI_SIG_PSDT, 4)))
     {
         LocalRSDT->TableOffsetEntry[i++] = ACPI_PTR_TO_PHYSADDR (UserTable);
     }
@@ -697,8 +697,8 @@ AtBuildLocalRSDT (
          * we make sure that the CA core ignores it
          */
 
-        ACPI_MEMSET (&LocalBADTABLE, 0, sizeof (ACPI_TABLE_HEADER));
-        ACPI_STRNCPY (LocalBADTABLE.Signature, "BAD!", 4);
+        memset (&LocalBADTABLE, 0, sizeof (ACPI_TABLE_HEADER));
+        strncpy (LocalBADTABLE.Signature, "BAD!", 4);
 
         LocalBADTABLE.Revision = 1;
         LocalBADTABLE.Length = sizeof (ACPI_TABLE_HEADER);
@@ -731,8 +731,8 @@ AtBuildLocalRSDT (
 
     if (!(BldTask.NoTableScale & BLD_NO_TEST))
     {
-        ACPI_MEMSET (&LocalTEST, 0, sizeof (ACPI_TABLE_HEADER));
-        ACPI_STRNCPY (LocalTEST.Signature, "TEST", 4);
+        memset (&LocalTEST, 0, sizeof (ACPI_TABLE_HEADER));
+        strncpy (LocalTEST.Signature, "TEST", 4);
 
         LocalTEST.Revision = 1;
         LocalTEST.Length = sizeof (ACPI_TABLE_HEADER);
@@ -787,12 +787,12 @@ AtBuildLocalXSDT (
         BldTask.NoTableScale |= BLD_NO_FADT;
     }
 
-    ACPI_MEMSET (LocalXSDT, 0, RSDT_SIZE);
+    memset (LocalXSDT, 0, RSDT_SIZE);
 
-    ACPI_STRNCPY (LocalXSDT->Header.Signature, ACPI_SIG_XSDT, 4);
+    strncpy (LocalXSDT->Header.Signature, ACPI_SIG_XSDT, 4);
     if (BldTask.ErrScale & BAD_SIGNATURE_RSDT)
     {
-        ACPI_STRNCPY (LocalXSDT->Header.Signature, "BADS", 4);
+        strncpy (LocalXSDT->Header.Signature, "BADS", 4);
     }
 
     if (!(BldTask.NoTableScale & BLD_NO_BADT))
@@ -802,8 +802,8 @@ AtBuildLocalXSDT (
          * we make sure that the CA core ignores it
          */
 
-        ACPI_MEMSET (&LocalBADTABLE, 0, sizeof (ACPI_TABLE_HEADER));
-        ACPI_STRNCPY (LocalBADTABLE.Signature, "BAD!", 4);
+        memset (&LocalBADTABLE, 0, sizeof (ACPI_TABLE_HEADER));
+        strncpy (LocalBADTABLE.Signature, "BAD!", 4);
 
         LocalBADTABLE.Revision = 1;
         LocalBADTABLE.Length = sizeof (ACPI_TABLE_HEADER);
@@ -819,8 +819,8 @@ AtBuildLocalXSDT (
     }
 
     if (Actual_DSDT &&
-        (!ACPI_STRNCMP ((char *) Actual_DSDT->Signature, ACPI_SIG_SSDT, 4) ||
-         !ACPI_STRNCMP ((char *) Actual_DSDT->Signature, ACPI_SIG_PSDT, 4)))
+        (!strncmp ((char *) Actual_DSDT->Signature, ACPI_SIG_SSDT, 4) ||
+         !strncmp ((char *) Actual_DSDT->Signature, ACPI_SIG_PSDT, 4)))
     {
         LocalXSDT->TableOffsetEntry[i++] = ACPI_PTR_TO_PHYSADDR (UserTable);
     }
@@ -850,8 +850,8 @@ AtBuildLocalXSDT (
 
     if (!(BldTask.NoTableScale & BLD_NO_TEST))
     {
-        ACPI_MEMSET (&LocalTEST, 0, sizeof (ACPI_TABLE_HEADER));
-        ACPI_STRNCPY (LocalTEST.Signature, "TEST", 4);
+        memset (&LocalTEST, 0, sizeof (ACPI_TABLE_HEADER));
+        strncpy (LocalTEST.Signature, "TEST", 4);
 
         LocalTEST.Revision = 1;
         LocalTEST.Length = sizeof (ACPI_TABLE_HEADER);
@@ -916,11 +916,11 @@ AtBuildLocalTables (
 
     /* Build an RSDP */
 
-    ACPI_MEMSET (&LocalRSDP, 0, sizeof (ACPI_TABLE_RSDP));
-    ACPI_STRNCPY (LocalRSDP.Signature, ACPI_SIG_RSDP, 8);
+    memset (&LocalRSDP, 0, sizeof (ACPI_TABLE_RSDP));
+    strncpy (LocalRSDP.Signature, ACPI_SIG_RSDP, 8);
     if (BldTask.ErrScale & BAD_SIGNATURE_RSDP)
     {
-        ACPI_STRNCPY (LocalRSDP.Signature, "BAD SIGN", 8);
+        strncpy (LocalRSDP.Signature, "BAD SIGN", 8);
     }
 #if ACPI_MACHINE_WIDTH == 64
     LocalRSDP.Revision = 2;
@@ -1222,7 +1222,7 @@ AeGetRegionBufferAddress (
             return (RetAddress);
         }
 
-        ACPI_MEMSET (RegionElement->Buffer, 0, Length);
+        memset (RegionElement->Buffer, 0, Length);
         RegionElement->Address = BaseAddress;
         RegionElement->Length = Length;
         RegionElement->NextRegion = NULL;
@@ -1444,14 +1444,14 @@ AeRegionHandler (
         /*
          * Set the pointer Value to whatever is in the buffer
          */
-        ACPI_MEMCPY (Value, BufferValue, ByteWidth);
+        memcpy (Value, BufferValue, ByteWidth);
         break;
 
     case ACPI_WRITE:
         /*
          * Write the contents of Value to the buffer
          */
-        ACPI_MEMCPY (BufferValue, Value, ByteWidth);
+        memcpy (BufferValue, Value, ByteWidth);
         break;
 
     default:

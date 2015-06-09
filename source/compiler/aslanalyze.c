@@ -139,8 +139,8 @@ AnIsInternalMethod (
     ACPI_PARSE_OBJECT       *Op)
 {
 
-    if ((!ACPI_STRCMP (Op->Asl.ExternalName, "\\_OSI")) ||
-        (!ACPI_STRCMP (Op->Asl.ExternalName, "_OSI")))
+    if ((!strcmp (Op->Asl.ExternalName, "\\_OSI")) ||
+        (!strcmp (Op->Asl.ExternalName, "_OSI")))
     {
         return (TRUE);
     }
@@ -166,8 +166,8 @@ AnGetInternalMethodReturnType (
     ACPI_PARSE_OBJECT       *Op)
 {
 
-    if ((!ACPI_STRCMP (Op->Asl.ExternalName, "\\_OSI")) ||
-        (!ACPI_STRCMP (Op->Asl.ExternalName, "_OSI")))
+    if ((!strcmp (Op->Asl.ExternalName, "\\_OSI")) ||
+        (!strcmp (Op->Asl.ExternalName, "_OSI")))
     {
         return (ACPI_BTYPE_STRING);
     }
@@ -534,7 +534,7 @@ ApCheckForGpeNameConflict (
 
     /* Verify 3rd/4th chars are a valid hex value */
 
-    GpeNumber = ACPI_STRTOUL (&Name[2], NULL, 16);
+    GpeNumber = strtoul (&Name[2], NULL, 16);
     if (GpeNumber == ACPI_UINT32_MAX)
     {
         return;

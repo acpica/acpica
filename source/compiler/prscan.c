@@ -957,7 +957,7 @@ PrGetNextLine (
 
     /* Always clear the global line buffer */
 
-    ACPI_MEMSET (Gbl_CurrentLineBuffer, 0, Gbl_LineBufferSize);
+    memset (Gbl_CurrentLineBuffer, 0, Gbl_LineBufferSize);
     for (i = 0; ;)
     {
         /*

@@ -168,7 +168,7 @@ AcpiDbMatchArgument (
 
     for (i = 0; Arguments[i].Name; i++)
     {
-        if (ACPI_STRSTR (Arguments[i].Name, UserArgument) == Arguments[i].Name)
+        if (strstr (Arguments[i].Name, UserArgument) == Arguments[i].Name)
         {
             return (i);
         }
@@ -447,7 +447,7 @@ AcpiDbUint32ToHexString (
 
     if (Value == 0)
     {
-        ACPI_STRCPY (Buffer, "0");
+        strcpy (Buffer, "0");
         return;
     }
 

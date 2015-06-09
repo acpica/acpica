@@ -633,11 +633,11 @@ AslCommonError2 (
 
         /* Keep a copy of the extra message */
 
-        ACPI_STRCPY (MessageBuffer, ExtraMessage);
+        strcpy (MessageBuffer, ExtraMessage);
     }
 
     LineBuffer = UtLocalCalloc (strlen (SourceLine) + 1);
-    ACPI_STRCPY (LineBuffer, SourceLine);
+    strcpy (LineBuffer, SourceLine);
 
     /* Initialize the error node */
 
@@ -719,7 +719,7 @@ AslCommonError (
 
         /* Keep a copy of the extra message */
 
-        ACPI_STRCPY (MessageBuffer, ExtraMessage);
+        strcpy (MessageBuffer, ExtraMessage);
     }
 
     /* Initialize the error node */

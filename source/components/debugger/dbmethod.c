@@ -161,7 +161,7 @@ AcpiDbSetMethodBreakpoint (
 
     /* Get and verify the breakpoint address */
 
-    Address = ACPI_STRTOUL (Location, NULL, 16);
+    Address = strtoul (Location, NULL, 16);
     if (Address <= Op->Common.AmlOffset)
     {
         AcpiOsPrintf ("Breakpoint %X is beyond current address %X\n",
@@ -246,7 +246,7 @@ AcpiDbSetMethodData (
         return;
     }
 
-    Value = ACPI_STRTOUL (ValueArg, NULL, 16);
+    Value = strtoul (ValueArg, NULL, 16);
 
     if (Type == 'N')
     {
@@ -268,7 +268,7 @@ AcpiDbSetMethodData (
 
     /* Get the index and value */
 
-    Index = ACPI_STRTOUL (IndexArg, NULL, 16);
+    Index = strtoul (IndexArg, NULL, 16);
 
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
     if (!WalkState)
@@ -376,7 +376,7 @@ AcpiDbDisassembleAml (
 
     if (Statements)
     {
-        NumStatements = ACPI_STRTOUL (Statements, NULL, 0);
+        NumStatements = strtoul (Statements, NULL, 0);
     }
 
     AcpiDmDisassemble (NULL, Op, NumStatements);

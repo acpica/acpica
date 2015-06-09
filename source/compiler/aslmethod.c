@@ -502,7 +502,7 @@ MtMethodAnalysisWalkBegin (
 
         /* Special typechecking for _HID */
 
-        if (!ACPI_STRCMP (METHOD_NAME__HID, Op->Asl.NameSeg))
+        if (!strcmp (METHOD_NAME__HID, Op->Asl.NameSeg))
         {
             Next = Op->Asl.Child->Asl.Next;
             AnCheckId (Next, ASL_TYPE_HID);
@@ -510,7 +510,7 @@ MtMethodAnalysisWalkBegin (
 
         /* Special typechecking for _CID */
 
-        else if (!ACPI_STRCMP (METHOD_NAME__CID, Op->Asl.NameSeg))
+        else if (!strcmp (METHOD_NAME__CID, Op->Asl.NameSeg))
         {
             Next = Op->Asl.Child->Asl.Next;
 

@@ -144,7 +144,7 @@ AsStrlwr (
     {
         for (String = SrcString; *String; String++)
         {
-            *String = (char) ACPI_TOLOWER (*String);
+            *String = (char) tolower (*String);
         }
     }
 }

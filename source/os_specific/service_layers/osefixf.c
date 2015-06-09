@@ -403,7 +403,7 @@ AcpiOsAllocateZeroed (
     Mem = AcpiOsAllocate (Size);
     if (Mem)
     {
-        ACPI_MEMSET (Mem, 0, Size);
+        memset (Mem, 0, Size);
     }
 
     return (Mem);
@@ -475,7 +475,7 @@ AcpiOsOpenFile (
 
     /* Allocate path buffer */
 
-    Count = ACPI_STRLEN (Path);
+    Count = strlen (Path);
     Path16 = ACPI_ALLOCATE_ZEROED ((Count + 1) * sizeof (CHAR16));
     if (!Path16)
     {
@@ -888,14 +888,14 @@ AcpiEfiArgify (
 
     while (*String != '\0')
     {
-        while (ACPI_IS_SPACE (*String))
+        while (isspace (*String))
         {
             *String++ = '\0';
         }
         Arg = CopyBuffer;
         while (*String != '\0')
         {
-            if (ACPI_IS_SPACE (*String) &&
+            if (isspace (*String) &&
                 !IsSingleQuote && !IsDoubleQuote && !IsEscape)
             {
                 *Arg++ = '\0';

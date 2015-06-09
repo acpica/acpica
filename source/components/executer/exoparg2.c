@@ -440,7 +440,7 @@ AcpiExOpcode_2A_1T_1R (
          * Copy the raw buffer data with no transform.
          * (NULL terminated already)
          */
-        ACPI_MEMCPY (ReturnDesc->String.Pointer,
+        memcpy (ReturnDesc->String.Pointer,
             Operand[0]->Buffer.Pointer, Length);
         break;
 

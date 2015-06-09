@@ -313,7 +313,7 @@ DtStrtoul64 (
 
     while (*ThisChar)
     {
-        if (ACPI_IS_DIGIT (*ThisChar))
+        if (isdigit (*ThisChar))
         {
             /* Convert ASCII 0-9 to Decimal value */
 
@@ -321,8 +321,8 @@ DtStrtoul64 (
         }
         else /* Letter */
         {
-            ThisDigit = (UINT32) ACPI_TOUPPER (*ThisChar);
-            if (!ACPI_IS_XDIGIT ((char) ThisDigit))
+            ThisDigit = (UINT32) toupper (*ThisChar);
+            if (!isxdigit ((char) ThisDigit))
             {
                 /* Not A-F */
 
@@ -640,7 +640,7 @@ DtGetFieldLength (
         Value = DtGetFieldValue (Field);
         if (Value)
         {
-            ByteLength = ACPI_STRLEN (Value) + 1;
+            ByteLength = strlen (Value) + 1;
         }
         else
         {   /* At this point, this is a fatal error */
@@ -705,7 +705,7 @@ DtGetFieldLength (
 
         /* TBD: error if Value is NULL? (as below?) */
 
-        ByteLength = (ACPI_STRLEN (Value) + 1) * sizeof(UINT16);
+        ByteLength = (strlen (Value) + 1) * sizeof(UINT16);
         break;
 
     default:

@@ -183,7 +183,7 @@ AcpiNsRootInitialize (
     {
         /* _OSI is optional for now, will be permanent later */
 
-        if (!ACPI_STRCMP (InitVal->Name, "_OSI") && !AcpiGbl_CreateOsiMethod)
+        if (!strcmp (InitVal->Name, "_OSI") && !AcpiGbl_CreateOsiMethod)
         {
             continue;
         }
@@ -263,7 +263,7 @@ AcpiNsRootInitialize (
 
                 /* Build an object around the static string */
 
-                ObjDesc->String.Length = (UINT32) ACPI_STRLEN (Val);
+                ObjDesc->String.Length = (UINT32) strlen (Val);
                 ObjDesc->String.Pointer = Val;
                 ObjDesc->Common.Flags |= AOPOBJ_STATIC_POINTER;
                 break;
@@ -284,7 +284,7 @@ AcpiNsRootInitialize (
 
                 /* Special case for ACPI Global Lock */
 
-                if (ACPI_STRCMP (InitVal->Name, "_GL_") == 0)
+                if (strcmp (InitVal->Name, "_GL_") == 0)
                 {
                     AcpiGbl_GlobalLockMutex = ObjDesc;
 

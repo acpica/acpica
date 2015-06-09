@@ -141,7 +141,7 @@ AuValidateUuid (
     UINT32                  i;
 
 
-    if (!InString || (ACPI_STRLEN (InString) != UUID_STRING_LENGTH))
+    if (!InString || (strlen (InString) != UUID_STRING_LENGTH))
     {
         return (AE_BAD_PARAMETER);
     }

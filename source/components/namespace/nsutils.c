@@ -419,7 +419,7 @@ AcpiNsBuildInternalName (
             {
                 /* Convert the character to uppercase and save it */
 
-                Result[i] = (char) ACPI_TOUPPER ((int) *ExternalName);
+                Result[i] = (char) toupper ((int) *ExternalName);
                 ExternalName++;
             }
         }

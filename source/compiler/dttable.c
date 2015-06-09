@@ -1896,7 +1896,7 @@ DtCompileIvrs (
         if (IvrsHeader->Type == ACPI_IVRS_TYPE_HARDWARE)
         {
             while (*PFieldList &&
-                    !ACPI_STRCMP ((*PFieldList)->Name, "Entry Type"))
+                    !strcmp ((*PFieldList)->Name, "Entry Type"))
             {
                 SubtableStart = *PFieldList;
                 DtCompileInteger (&EntryType, *PFieldList, 1, 0);
@@ -3481,7 +3481,7 @@ DtCompileGeneric (
     }
     while (*PFieldList)
     {
-        if (Name && !ACPI_STRCMP ((*PFieldList)->Name, Name))
+        if (Name && !strcmp ((*PFieldList)->Name, Name))
         {
             break;
         }

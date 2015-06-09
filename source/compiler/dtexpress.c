@@ -485,7 +485,7 @@ DtLookupLabel (
     LabelField = Gbl_LabelList;
     while (LabelField)
     {
-        if (!ACPI_STRCMP (Name, LabelField->Value))
+        if (!strcmp (Name, LabelField->Value))
         {
             return (LabelField);
         }

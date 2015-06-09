@@ -200,8 +200,8 @@ DtCreateTemplates (
     }
 
     AcpiUtStrupr (Signature);
-    if (!ACPI_STRCMP (Signature, "ALL") ||
-        !ACPI_STRCMP (Signature, "*"))
+    if (!strcmp (Signature, "ALL") ||
+        !strcmp (Signature, "*"))
     {
         /* Create all available/known templates */
 

@@ -193,7 +193,7 @@ AcpiUtExecute_HID (
     }
     else
     {
-        ACPI_STRCPY (Hid->String, ObjDesc->String.Pointer);
+        strcpy (Hid->String, ObjDesc->String.Pointer);
     }
 
     Hid->Length = Length;
@@ -266,7 +266,7 @@ AcpiUtExecute_SUB (
 
     /* Simply copy existing string */
 
-    ACPI_STRCPY (Sub->String, ObjDesc->String.Pointer);
+    strcpy (Sub->String, ObjDesc->String.Pointer);
     Sub->Length = Length;
     *ReturnId = Sub;
 
@@ -351,7 +351,7 @@ AcpiUtExecute_UID (
     }
     else
     {
-        ACPI_STRCPY (Uid->String, ObjDesc->String.Pointer);
+        strcpy (Uid->String, ObjDesc->String.Pointer);
     }
 
     Uid->Length = Length;
@@ -498,7 +498,7 @@ AcpiUtExecute_CID (
         {
             /* Copy the String CID from the returned object */
 
-            ACPI_STRCPY (NextIdString, CidObjects[i]->String.Pointer);
+            strcpy (NextIdString, CidObjects[i]->String.Pointer);
             Length = CidObjects[i]->String.Length + 1;
         }
 

@@ -236,7 +236,7 @@ AcpiTbLoadNamespace (
      * Save the original DSDT header for detection of table corruption
      * and/or replacement of the DSDT from outside the OS.
      */
-    ACPI_MEMCPY (&AcpiGbl_OriginalDsdtHeader, AcpiGbl_DSDT,
+    memcpy (&AcpiGbl_OriginalDsdtHeader, AcpiGbl_DSDT,
         sizeof (ACPI_TABLE_HEADER));
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);

@@ -588,7 +588,7 @@ AcpiExLoadOp (
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        ACPI_MEMCPY (Table, TableHeader, Length);
+        memcpy (Table, TableHeader, Length);
         break;
 
     default:

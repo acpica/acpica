@@ -198,7 +198,7 @@ AcpiGetHandle (
 
         /* Special case for root-only, since we can't search for it */
 
-        if (!ACPI_STRCMP (Pathname, ACPI_NS_ROOT_PATH))
+        if (!strcmp (Pathname, ACPI_NS_ROOT_PATH))
         {
             *RetHandle = ACPI_CAST_PTR (ACPI_HANDLE, AcpiGbl_RootNode);
             return (AE_OK);
@@ -343,7 +343,7 @@ AcpiNsCopyDeviceId (
 
     /* Copy actual string and return a pointer to the next string area */
 
-    ACPI_MEMCPY (StringArea, Source->String, Source->Length);
+    memcpy (StringArea, Source->String, Source->Length);
     return (StringArea + Source->Length);
 }
 
@@ -776,7 +776,7 @@ AcpiInstallMethod (
 
     /* Copy the method AML to the local buffer */
 
-    ACPI_MEMCPY (AmlBuffer, AmlStart, AmlLength);
+    memcpy (AmlBuffer, AmlStart, AmlLength);
 
     /* Initialize the method object with the new method's information */
 

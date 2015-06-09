@@ -646,7 +646,7 @@ TrInstallReducedConstant (
 
         Op->Asl.ParseOpcode = PARSEOP_STRING_LITERAL;
         Op->Common.AmlOpcode = AML_STRING_OP;
-        Op->Asl.AmlLength = ACPI_STRLEN (ObjDesc->String.Pointer) + 1;
+        Op->Asl.AmlLength = strlen (ObjDesc->String.Pointer) + 1;
         Op->Common.Value.String = ObjDesc->String.Pointer;
 
         DbgPrint (ASL_PARSE_OUTPUT,

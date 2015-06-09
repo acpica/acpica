@@ -708,7 +708,7 @@ OpcDoEisaId (
      * The EISAID string must be exactly 7 characters and of the form
      * "UUUXXXX" -- 3 uppercase letters and 4 hex digits (e.g., "PNP0001")
      */
-    if (ACPI_STRLEN (InString) != 7)
+    if (strlen (InString) != 7)
     {
         Status = AE_BAD_PARAMETER;
     }
@@ -927,7 +927,7 @@ OpcFindName (
 
     for (i = 0, Str = List[0]; Str; i++, Str = List[i])
     {
-        if (!(ACPI_STRNCMP (Str, Name, ACPI_STRLEN (Name))))
+        if (!(strncmp (Str, Name, strlen (Name))))
         {
             *Index = i;
             return (TRUE);
@@ -979,7 +979,7 @@ OpcDoPld (
         return;
     }
 
-    ACPI_MEMSET (&PldInfo, 0, sizeof (ACPI_PLD_INFO));
+    memset (&PldInfo, 0, sizeof (ACPI_PLD_INFO));
 
     Node = Op->Asl.Child;
     while (Node)

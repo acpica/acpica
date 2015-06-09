@@ -433,7 +433,7 @@ AcpiDbMatchCommandHelp (
 
     while ((*Command) && (*Invocation) && (*Invocation != ' '))
     {
-        if (ACPI_TOLOWER (*Command) != ACPI_TOLOWER (*Invocation))
+        if (tolower (*Command) != tolower (*Invocation))
         {
             return (FALSE);
         }
@@ -774,7 +774,7 @@ AcpiDbMatchCommand (
 
     for (i = CMD_FIRST_VALID; AcpiGbl_DbCommands[i].Name; i++)
     {
-        if (ACPI_STRSTR (AcpiGbl_DbCommands[i].Name, UserCommand) ==
+        if (strstr (AcpiGbl_DbCommands[i].Name, UserCommand) ==
                          AcpiGbl_DbCommands[i].Name)
         {
             return (i);
@@ -1018,7 +1018,7 @@ AcpiDbCommandDispatch (
         else if (ParamCount == 2)
         {
             Temp = AcpiGbl_DbConsoleDebugLevel;
-            AcpiGbl_DbConsoleDebugLevel = ACPI_STRTOUL (AcpiGbl_DbArgs[1],
+            AcpiGbl_DbConsoleDebugLevel = strtoul (AcpiGbl_DbArgs[1],
                                             NULL, 16);
             AcpiOsPrintf (
                 "Debug Level for console output was %8.8lX, now %8.8lX\n",
@@ -1027,7 +1027,7 @@ AcpiDbCommandDispatch (
         else
         {
             Temp = AcpiGbl_DbDebugLevel;
-            AcpiGbl_DbDebugLevel = ACPI_STRTOUL (AcpiGbl_DbArgs[1], NULL, 16);
+            AcpiGbl_DbDebugLevel = strtoul (AcpiGbl_DbArgs[1], NULL, 16);
             AcpiOsPrintf (
                 "Debug Level for file output was %8.8lX, now %8.8lX\n",
                 Temp, AcpiGbl_DbDebugLevel);
@@ -1066,7 +1066,7 @@ AcpiDbCommandDispatch (
 
     case CMD_NOTIFY:
 
-        Temp = ACPI_STRTOUL (AcpiGbl_DbArgs[2], NULL, 0);
+        Temp = strtoul (AcpiGbl_DbArgs[2], NULL, 0);
         AcpiDbSendNotify (AcpiGbl_DbArgs[1], Temp);
         break;
 

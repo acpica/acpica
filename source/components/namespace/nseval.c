@@ -536,7 +536,7 @@ AcpiNsExecModuleCode (
 
     /* Initialize the evaluation information block */
 
-    ACPI_MEMSET (Info, 0, sizeof (ACPI_EVALUATE_INFO));
+    memset (Info, 0, sizeof (ACPI_EVALUATE_INFO));
     Info->PrefixNode = ParentNode;
 
     /*

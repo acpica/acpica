@@ -347,7 +347,7 @@ FlPrintFile (
          * Duplicate the output to the user preprocessor (.i) file,
          * except: no #line directives.
          */
-        if (!ACPI_STRNCMP (Format, "#line", 5))
+        if (!strncmp (Format, "#line", 5))
         {
             return;
         }

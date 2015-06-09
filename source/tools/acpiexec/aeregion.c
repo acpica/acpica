@@ -804,7 +804,7 @@ AeRegionHandler (
 
                     /* Initialize the region with the default fill value */
 
-                    ACPI_MEMSET (RegionElement->Buffer,
+                    memset (RegionElement->Buffer,
                         AcpiGbl_RegionFillValue, RegionElement->Length);
 
                     /*
@@ -819,7 +819,7 @@ AeRegionHandler (
                      * Copy the old buffer to its same location within the new
                      * buffer
                      */
-                    ACPI_MEMCPY (BufferValue, OldBuffer, RegionLength);
+                    memcpy (BufferValue, OldBuffer, RegionLength);
                     AcpiOsFree (OldBuffer);
                 }
             }
@@ -848,7 +848,7 @@ AeRegionHandler (
 
         /* Initialize the region with the default fill value */
 
-        ACPI_MEMSET (RegionElement->Buffer, AcpiGbl_RegionFillValue, Length);
+        memset (RegionElement->Buffer, AcpiGbl_RegionFillValue, Length);
 
         RegionElement->Address      = BaseAddress;
         RegionElement->Length       = Length;
@@ -915,14 +915,14 @@ DoFunction:
         /*
          * Set the pointer Value to whatever is in the buffer
          */
-        ACPI_MEMCPY (Value, BufferValue, ByteWidth);
+        memcpy (Value, BufferValue, ByteWidth);
         break;
 
     case ACPI_WRITE:
         /*
          * Write the contents of Value to the buffer
          */
-        ACPI_MEMCPY (BufferValue, Value, ByteWidth);
+        memcpy (BufferValue, Value, ByteWidth);
         break;
 
     default:

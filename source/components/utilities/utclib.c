@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: cmclib - Local implementation of C library functions
+ * Module Name: utclib - ACPICA implementations of C library functions
  *
  *****************************************************************************/
 
@@ -113,20 +113,59 @@
  *
  *****************************************************************************/
 
+#define ACPI_CLIBRARY
 #include "acpi.h"
 #include "accommon.h"
 
 /*
- * These implementations of standard C Library routines can optionally be
- * used if a C library is not available. In general, they are less efficient
- * than an inline or assembly implementation
+ * This module contains implementations of the standard C library functions
+ * that are required by the ACPICA code at both application level and kernel
+ * level.
+ *
+ * The module is an optional feature that can be used if a local/system
+ * C library is not available. Some operating system kernels may not have
+ * an internal C library.
+ *
+ * In general, these functions are less efficient than an inline or assembly
+ * code implementation.
+ *
+ * These C functions and the associated prototypes are enabled by default
+ * unless the ACPI_USE_SYSTEM_CLIBRARY symbol is defined. This is usually
+ * automatically defined for the ACPICA applications such as iASL and
+ * AcpiExec, so that these user-level applications use the local C library
+ * instead of the functions in this module.
  */
 
+
+/*******************************************************************************
+ *
+ * Functions implemented in this module:
+ *
+ * FUNCTION:    memcmp
+ * FUNCTION:    memcpy
+ * FUNCTION:    memset
+ * FUNCTION:    strlen
+ * FUNCTION:    strcpy
+ * FUNCTION:    strncpy
+ * FUNCTION:    strcmp
+ * FUNCTION:    strchr
+ * FUNCTION:    strncmp
+ * FUNCTION:    strcat
+ * FUNCTION:    strncat
+ * FUNCTION:    strstr
+ * FUNCTION:    strtoul
+ * FUNCTION:    toupper
+ * FUNCTION:    tolower
+ * FUNCTION:    is* functions
+ *
+ ******************************************************************************/
+
+
 #define _COMPONENT          ACPI_UTILITIES
-        ACPI_MODULE_NAME    ("cmclib")
+        ACPI_MODULE_NAME    ("utclib")
 
 
-#ifndef ACPI_USE_SYSTEM_CLIBRARY
+#ifndef ACPI_USE_SYSTEM_CLIBRARY    /* Entire module */
 
 #define NEGATIVE    1
 #define POSITIVE    0
@@ -134,7 +173,7 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtMemcmp (memcmp)
+ * FUNCTION:    memcmp
  *
  * PARAMETERS:  Buffer1         - First Buffer
  *              Buffer2         - Second Buffer
@@ -147,11 +186,14 @@
  ******************************************************************************/
 
 int
-AcpiUtMemcmp (
-    const char              *Buffer1,
-    const char              *Buffer2,
+memcmp (
+    void                    *VBuffer1,
+    void                    *VBuffer2,
     ACPI_SIZE               Count)
 {
+    char                    *Buffer1 = (char *) VBuffer1;
+    char                    *Buffer2 = (char *) VBuffer2;
+
 
     for ( ; Count-- && (*Buffer1 == *Buffer2); Buffer1++, Buffer2++)
     {
@@ -164,7 +206,7 @@ AcpiUtMemcmp (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtMemcpy (memcpy)
+ * FUNCTION:    memcpy
  *
  * PARAMETERS:  Dest        - Target of the copy
  *              Src         - Source buffer to copy
@@ -177,7 +219,7 @@ AcpiUtMemcmp (
  ******************************************************************************/
 
 void *
-AcpiUtMemcpy (
+memcpy (
     void                    *Dest,
     const void              *Src,
     ACPI_SIZE               Count)
@@ -200,7 +242,7 @@ AcpiUtMemcpy (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtMemset (memset)
+ * FUNCTION:    memset
  *
  * PARAMETERS:  Dest        - Buffer to set
  *              Value       - Value to set each byte of memory
@@ -213,7 +255,7 @@ AcpiUtMemcpy (
  ******************************************************************************/
 
 void *
-AcpiUtMemset (
+memset (
     void                    *Dest,
     UINT8                   Value,
     ACPI_SIZE               Count)
@@ -234,7 +276,7 @@ AcpiUtMemset (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtStrlen (strlen)
+ * FUNCTION:    strlen
  *
  * PARAMETERS:  String              - Null terminated string
  *
@@ -246,7 +288,7 @@ AcpiUtMemset (
 
 
 ACPI_SIZE
-AcpiUtStrlen (
+strlen (
     const char              *String)
 {
     UINT32                  Length = 0;
@@ -266,7 +308,7 @@ AcpiUtStrlen (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtStrcpy (strcpy)
+ * FUNCTION:    strcpy
  *
  * PARAMETERS:  DstString       - Target of the copy
  *              SrcString       - The source string to copy
@@ -278,7 +320,7 @@ AcpiUtStrlen (
  ******************************************************************************/
 
 char *
-AcpiUtStrcpy (
+strcpy (
     char                    *DstString,
     const char              *SrcString)
 {
@@ -304,7 +346,7 @@ AcpiUtStrcpy (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtStrncpy (strncpy)
+ * FUNCTION:    strncpy
  *
  * PARAMETERS:  DstString       - Target of the copy
  *              SrcString       - The source string to copy
@@ -317,7 +359,7 @@ AcpiUtStrcpy (
  ******************************************************************************/
 
 char *
-AcpiUtStrncpy (
+strncpy (
     char                    *DstString,
     const char              *SrcString,
     ACPI_SIZE               Count)
@@ -347,7 +389,7 @@ AcpiUtStrncpy (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtStrcmp (strcmp)
+ * FUNCTION:    strcmp
  *
  * PARAMETERS:  String1         - First string
  *              String2         - Second string
@@ -359,7 +401,7 @@ AcpiUtStrncpy (
  ******************************************************************************/
 
 int
-AcpiUtStrcmp (
+strcmp (
     const char              *String1,
     const char              *String2)
 {
@@ -379,7 +421,7 @@ AcpiUtStrcmp (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtStrchr (strchr)
+ * FUNCTION:    strchr
  *
  * PARAMETERS:  String          - Search string
  *              ch              - character to search for
@@ -391,7 +433,7 @@ AcpiUtStrcmp (
  ******************************************************************************/
 
 char *
-AcpiUtStrchr (
+strchr (
     const char              *String,
     int                     ch)
 {
@@ -411,7 +453,7 @@ AcpiUtStrchr (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtStrncmp (strncmp)
+ * FUNCTION:    strncmp
  *
  * PARAMETERS:  String1         - First string
  *              String2         - Second string
@@ -424,7 +466,7 @@ AcpiUtStrchr (
  ******************************************************************************/
 
 int
-AcpiUtStrncmp (
+strncmp (
     const char              *String1,
     const char              *String2,
     ACPI_SIZE               Count)
@@ -446,7 +488,7 @@ AcpiUtStrncmp (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtStrcat (Strcat)
+ * FUNCTION:    strcat
  *
  * PARAMETERS:  DstString       - Target of the copy
  *              SrcString       - The source string to copy
@@ -458,7 +500,7 @@ AcpiUtStrncmp (
  ******************************************************************************/
 
 char *
-AcpiUtStrcat (
+strcat (
     char                    *DstString,
     const char              *SrcString)
 {
@@ -481,7 +523,7 @@ AcpiUtStrcat (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtStrncat (strncat)
+ * FUNCTION:    strncat
  *
  * PARAMETERS:  DstString       - Target of the copy
  *              SrcString       - The source string to copy
@@ -495,7 +537,7 @@ AcpiUtStrcat (
  ******************************************************************************/
 
 char *
-AcpiUtStrncat (
+strncat (
     char                    *DstString,
     const char              *SrcString,
     ACPI_SIZE               Count)
@@ -529,7 +571,7 @@ AcpiUtStrncat (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtStrstr (strstr)
+ * FUNCTION:    strstr
  *
  * PARAMETERS:  String1         - Target string
  *              String2         - Substring to search for
@@ -543,22 +585,22 @@ AcpiUtStrncat (
  ******************************************************************************/
 
 char *
-AcpiUtStrstr (
+strstr (
     char                    *String1,
     char                    *String2)
 {
     UINT32                  Length;
 
 
-    Length = AcpiUtStrlen (String2);
+    Length = strlen (String2);
     if (!Length)
     {
         return (String1);
     }
 
-    while (AcpiUtStrlen (String1) >= Length)
+    while (strlen (String1) >= Length)
     {
-        if (AcpiUtMemcmp (String1, String2, Length) == 0)
+        if (memcmp (String1, String2, Length) == 0)
         {
             return (String1);
         }
@@ -571,7 +613,7 @@ AcpiUtStrstr (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtStrtoul (strtoul)
+ * FUNCTION:    strtoul
  *
  * PARAMETERS:  String          - Null terminated string
  *              Terminater      - Where a pointer to the terminating byte is
@@ -581,12 +623,12 @@ AcpiUtStrstr (
  * RETURN:      Converted value
  *
  * DESCRIPTION: Convert a string into a 32-bit unsigned value.
- *              Note: use AcpiUtStrtoul64 for 64-bit integers.
+ *              Note: use strtoul64 for 64-bit integers.
  *
  ******************************************************************************/
 
 UINT32
-AcpiUtStrtoul (
+strtoul (
     const char              *String,
     char                    **Terminator,
     UINT32                  Base)
@@ -605,7 +647,7 @@ AcpiUtStrtoul (
      * skip over any white space in the buffer:
      */
     StringStart = String;
-    while (ACPI_IS_SPACE (*String) || *String == '\t')
+    while (isspace (*String) || *String == '\t')
     {
         ++String;
     }
@@ -637,7 +679,7 @@ AcpiUtStrtoul (
     {
         if (*String == '0')
         {
-            if (AcpiUtToLower (*(++String)) == 'x')
+            if (tolower (*(++String)) == 'x')
             {
                 Base = 16;
                 ++String;
@@ -672,7 +714,7 @@ AcpiUtStrtoul (
 
     if (Base == 16 &&
         *String == '0' &&
-        AcpiUtToLower (*(++String)) == 'x')
+        tolower (*(++String)) == 'x')
     {
         String++;
     }
@@ -682,14 +724,14 @@ AcpiUtStrtoul (
      */
     while (*String)
     {
-        if (ACPI_IS_DIGIT (*String))
+        if (isdigit (*String))
         {
             index = (UINT32) ((UINT8) *String - '0');
         }
         else
         {
-            index = (UINT32) AcpiUtToUpper (*String);
-            if (ACPI_IS_UPPER (index))
+            index = (UINT32) toupper (*String);
+            if (isupper (index))
             {
                 index = index - 'A' + 10;
             }
@@ -760,7 +802,7 @@ done:
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtToUpper (TOUPPER)
+ * FUNCTION:    toupper
  *
  * PARAMETERS:  c           - Character to convert
  *
@@ -771,17 +813,17 @@ done:
  ******************************************************************************/
 
 int
-AcpiUtToUpper (
+toupper (
     int                     c)
 {
 
-    return (ACPI_IS_LOWER(c) ? ((c)-0x20) : (c));
+    return (islower(c) ? ((c)-0x20) : (c));
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtToLower (TOLOWER)
+ * FUNCTION:    tolower
  *
  * PARAMETERS:  c           - Character to convert
  *
@@ -792,11 +834,11 @@ AcpiUtToUpper (
  ******************************************************************************/
 
 int
-AcpiUtToLower (
+tolower (
     int                     c)
 {
 
-    return (ACPI_IS_UPPER(c) ? ((c)+0x20) : (c));
+    return (isupper(c) ? ((c)+0x20) : (c));
 }
 
 

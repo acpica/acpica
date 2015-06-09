@@ -718,7 +718,7 @@ AcpiDbTestBufferType (
      * count is not an integral number of bytes. Zero out the
      * unused bits.
      */
-    ACPI_MEMSET (Buffer, BUFFER_FILL_VALUE, ByteLength);
+    memset (Buffer, BUFFER_FILL_VALUE, ByteLength);
     ExtraBits = BitLength % 8;
     if (ExtraBits)
     {
@@ -743,7 +743,7 @@ AcpiDbTestBufferType (
         goto Exit;
     }
 
-    if (ACPI_MEMCMP (Temp2->Buffer.Pointer, Buffer, ByteLength))
+    if (memcmp (Temp2->Buffer.Pointer, Buffer, ByteLength))
     {
         AcpiOsPrintf (" MISMATCH 2: New buffer value");
     }
@@ -767,7 +767,7 @@ AcpiDbTestBufferType (
         goto Exit;
     }
 
-    if (ACPI_MEMCMP (Temp1->Buffer.Pointer, Temp3->Buffer.Pointer, ByteLength))
+    if (memcmp (Temp1->Buffer.Pointer, Temp3->Buffer.Pointer, ByteLength))
     {
         AcpiOsPrintf (" MISMATCH 3: While restoring original buffer");
     }
@@ -823,7 +823,7 @@ AcpiDbTestStringType (
     /* Write a new value */
 
     WriteValue.Type = ACPI_TYPE_STRING;
-    WriteValue.String.Length = ACPI_STRLEN (ValueToWrite);
+    WriteValue.String.Length = strlen (ValueToWrite);
     WriteValue.String.Pointer = ValueToWrite;
 
     Status = AcpiDbWriteToObject (Node, &WriteValue);
@@ -840,7 +840,7 @@ AcpiDbTestStringType (
         goto Exit;
     }
 
-    if (ACPI_STRCMP (Temp2->String.Pointer, ValueToWrite))
+    if (strcmp (Temp2->String.Pointer, ValueToWrite))
     {
         AcpiOsPrintf (" MISMATCH 2: %s, expecting %s",
             Temp2->String.Pointer, ValueToWrite);
@@ -848,7 +848,7 @@ AcpiDbTestStringType (
 
     /* Write back the original value */
 
-    WriteValue.String.Length = ACPI_STRLEN (Temp1->String.Pointer);
+    WriteValue.String.Length = strlen (Temp1->String.Pointer);
     WriteValue.String.Pointer = Temp1->String.Pointer;
 
     Status = AcpiDbWriteToObject (Node, &WriteValue);
@@ -865,7 +865,7 @@ AcpiDbTestStringType (
         goto Exit;
     }
 
-    if (ACPI_STRCMP (Temp1->String.Pointer, Temp3->String.Pointer))
+    if (strcmp (Temp1->String.Pointer, Temp3->String.Pointer))
     {
         AcpiOsPrintf (" MISMATCH 3: %s, expecting %s",
             Temp3->String.Pointer, Temp1->String.Pointer);
@@ -998,7 +998,7 @@ AcpiDbWriteToObject (
 
     /* Copy the incoming user parameter */
 
-    ACPI_MEMCPY (&Params[1], Value, sizeof (ACPI_OBJECT));
+    memcpy (&Params[1], Value, sizeof (ACPI_OBJECT));
 
     ParamObjects.Count = 2;
     ParamObjects.Pointer = Params;
@@ -1042,7 +1042,7 @@ AcpiDbEvaluateAllPredefinedNames (
 
     if (CountArg)
     {
-        Info.MaxCount = ACPI_STRTOUL (CountArg, NULL, 0);
+        Info.MaxCount = strtoul (CountArg, NULL, 0);
     }
 
     /* Search all nodes in namespace */
@@ -1149,7 +1149,7 @@ AcpiDbEvaluateOnePredefinedName (
             case ACPI_TYPE_STRING:
 
                 ThisParam->String.Pointer = "This is the default argument string";
-                ThisParam->String.Length = ACPI_STRLEN (ThisParam->String.Pointer);
+                ThisParam->String.Length = strlen (ThisParam->String.Pointer);
                 break;
 
             case ACPI_TYPE_BUFFER:
