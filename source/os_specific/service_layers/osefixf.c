@@ -163,6 +163,10 @@ AcpiEfiFlushFile (
 /* Local variables */
 
 static EFI_FILE_HANDLE      AcpiGbl_EfiCurrentVolume = NULL;
+EFI_GUID                    AcpiGbl_LoadedImageProtocol = LOADED_IMAGE_PROTOCOL;
+EFI_GUID                    AcpiGbl_TextInProtocol = SIMPLE_TEXT_INPUT_PROTOCOL;
+EFI_GUID                    AcpiGbl_TextOutProtocol = SIMPLE_TEXT_OUTPUT_PROTOCOL;
+EFI_GUID                    AcpiGbl_FileSystemProtocol = SIMPLE_FILE_SYSTEM_PROTOCOL;
 
 
 /******************************************************************************
@@ -1104,21 +1108,23 @@ efi_main (
     EFI_FILE_IO_INTERFACE   *Volume = NULL;
 
 
-    /* Initialize EFI library */
+    /* Initialize global variables */
 
-    InitializeLib (Image, SystemTab);
+    ST = SystemTab;
+    BS = SystemTab->BootServices;
 
     /* Retrieve image information */
 
     EfiStatus = uefi_call_wrapper (BS->HandleProtocol, 3,
-        Image, &LoadedImageProtocol, ACPI_CAST_PTR (VOID, &Info));
+        Image, &AcpiGbl_LoadedImageProtocol, ACPI_CAST_PTR (VOID, &Info));
     if (EFI_ERROR (EfiStatus))
     {
         AcpiLogError ("EFI_BOOT_SERVICES->HandleProtocol(LoadedImageProtocol) failure.\n");
         return (EfiStatus);
     }
+
     EfiStatus = uefi_call_wrapper (BS->HandleProtocol, 3,
-        Info->DeviceHandle, &FileSystemProtocol, (void **) &Volume);
+        Info->DeviceHandle, &AcpiGbl_FileSystemProtocol, (void **) &Volume);
     if (EFI_ERROR (EfiStatus))
     {
         AcpiLogError ("EFI_BOOT_SERVICES->HandleProtocol(FileSystemProtocol) failure.\n");
