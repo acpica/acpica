@@ -55,7 +55,7 @@ Method(CST1,, Serialized)
 		}
 	}
 
-	if (LLess(Revision, 0x20050114)){
+	if (LLess(Revision, 0x20140114)){
 		err(ts, z002, 4, 0, 0, Revision, 0x20050114)
 	}
 
@@ -63,7 +63,14 @@ Method(CST1,, Serialized)
 		err(ts, z002, 5, 0, 0, Revision, 0x20500000)
 	}
 
-	if (LNotEqual(\_REV, 5)){
-		err(ts, z002, 6, 0, 0, \_REV, 5)
+    /*
+     * June, 2015:
+     * The _REV object is in the process of being deprecated, because
+     * other ACPI implementations permanently return 2. Thus, it
+     * has little or no value. Return 2 for compatibility with
+     * other ACPI implementations.
+     */
+	if (LNotEqual(\_REV, 2)){
+		err(ts, z002, 6, 0, 0, \_REV, 2)
 	}
 }
