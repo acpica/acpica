@@ -28,7 +28,7 @@ usage()
 {
 	echo "Usage: `basename $0` [-r release] [-u] <old_commit> [new_commit]"
 	echo "Where:"
-	echo "  -r: set release ID, default is $RELEASE in YYYYmm date format"
+	echo "  -r: set release ID, default is $RELEASE in YYYYmm- date format"
 	echo "  -u: generate upstream commit IDs"
 	echo "  old_commit: the old commit id\n";
 	echo "  new_commit: optional, the new commit id, default to HEAD";
@@ -46,6 +46,7 @@ ACPICA_CNT=0
 LINUX_CNT=0
 MAINTAINER="Bob Moore <robert.moore@intel.com>"
 GIT_EXTRACT="$SCRIPT/gen-patch.sh"
+RELEASE="${RELEASE}-"
 
 while getopts "dr:u" opt
 do
@@ -94,17 +95,17 @@ generate_patch()
 			echo $GIT_EXTRACT -i $lid $COMMIT
 		else
 			eval $GIT_EXTRACT -i $lid $COMMIT
-			echo "[make-patches.sh]  Copying ACPICA patch ($RELEASE-$aid.patch)..."
-			mv acpica-$COMMIT.patch $ACPICA_DIR/$RELEASE-$aid.patch
-			echo $RELEASE-$aid.patch >> $ACPICA_DIR/series
+			echo "[make-patches.sh]  Copying ACPICA patch ($RELEASE$aid.patch)..."
+			mv acpica-$COMMIT.patch $ACPICA_DIR/$RELEASE$aid.patch
+			echo $RELEASE$aid.patch >> $ACPICA_DIR/series
 		fi
 
 
 		if [ -f linux-$COMMIT.patch ]; then
 			if [ "x$DRYRUN" != "xyes" ]; then
-				echo "[make-patches.sh] Copying Linux patch ($RELEASE-$lid.patch)..."
-				mv linux-$COMMIT.patch $LINUX_DIR/$RELEASE-$lid.patch
-				echo $RELEASE-$lid.patch >> $LINUX_DIR/series
+				echo "[make-patches.sh] Copying Linux patch ($RELEASE$lid.patch)..."
+				mv linux-$COMMIT.patch $LINUX_DIR/$RELEASE$lid.patch
+				echo $RELEASE$lid.patch >> $LINUX_DIR/series
 			fi
 		fi
 	)
@@ -122,7 +123,7 @@ make_acpisrc $SRCDIR force > /dev/null
 for c in $COMMITS; do
 	generate_patch $c $ACPICA_IDX $LINUX_IDX
 
-	LINUX_TO=$LINUX_DIR/$RELEASE-$LINUX_IDX.patch
+	LINUX_TO=$LINUX_DIR/$RELEASE$LINUX_IDX.patch
 	if [ -f $LINUX_TO ]; then
 		echo "[make-patches.sh] Generated $LINUX_TO."
 		LINUX_IDX=`expr $LINUX_IDX + 1`
