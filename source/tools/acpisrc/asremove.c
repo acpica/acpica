@@ -371,6 +371,7 @@ AsRemoveConditionalCompile (
 }
 
 
+#ifdef _OBSOLETE_FUNCTIONS
 /******************************************************************************
  *
  * FUNCTION:    AsRemoveMacro
@@ -379,6 +380,11 @@ AsRemoveConditionalCompile (
  *              skip comments.
  *
  ******************************************************************************/
+
+NOTE: This function is no longer used and is commented out for now.
+
+Also, it appears to have one or more bugs in it. It can incorrectly remove
+lines of code, producing some garbage.
 
 void
 AsRemoveMacro (
@@ -440,7 +446,7 @@ AsRemoveMacro (
         }
     }
 }
-
+#endif
 
 /******************************************************************************
  *
