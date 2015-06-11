@@ -185,11 +185,6 @@ typedef int32_t INTN;
 
 
 #ifdef USE_EFI_FUNCTION_WRAPPER
-/*
-  Credits for macro-magic:
-    https://groups.google.com/forum/?fromgroups#!topic/comp.std.c/d-6Mj5Lko_s
-    http://efesx.com/2010/08/31/overloading-macros/
-*/
 #define __VA_NARG__(...)                        \
   __VA_NARG_(_0, ## __VA_ARGS__, __RSEQ_N())
 #define __VA_NARG_(...)                         \
@@ -332,19 +327,17 @@ UINT64 efi_call10(void *func, UINT64 arg1, UINT64 arg2, UINT64 arg3,
 
 #endif
 
-typedef struct _SIMPLE_TEXT_OUTPUT_INTERFACE SIMPLE_TEXT_OUTPUT_INTERFACE;
-typedef struct _SIMPLE_INPUT_INTERFACE SIMPLE_INPUT_INTERFACE;
-typedef struct _EFI_FILE_IO_INTERFACE EFI_FILE_IO_INTERFACE;
-typedef struct _EFI_FILE_HANDLE EFI_FILE;
-typedef struct _EFI_FILE_HANDLE *EFI_FILE_HANDLE;
-typedef struct _EFI_RUNTIME_SERVICES EFI_RUNTIME_SERVICES;
-typedef struct _EFI_BOOT_SERVICES EFI_BOOT_SERVICES;
-typedef struct _EFI_SYSTEM_TABLE EFI_SYSTEM_TABLE;
+struct _SIMPLE_TEXT_OUTPUT_INTERFACE;
+struct _SIMPLE_INPUT_INTERFACE;
+struct _EFI_FILE_IO_INTERFACE;
+struct _EFI_FILE_HANDLE;
+struct _EFI_BOOT_SERVICES;
+struct _EFI_SYSTEM_TABLE;
 
-extern EFI_SYSTEM_TABLE         *ST;
-extern EFI_BOOT_SERVICES        *BS;
+extern struct _EFI_SYSTEM_TABLE         *ST;
+extern struct _EFI_BOOT_SERVICES        *BS;
 
-#define ACPI_FILE           SIMPLE_TEXT_OUTPUT_INTERFACE *
+#define ACPI_FILE           struct _SIMPLE_TEXT_OUTPUT_INTERFACE *
 #define ACPI_FILE_OUT       ST->ConOut
 #define ACPI_FILE_ERR       ST->ConOut
 
