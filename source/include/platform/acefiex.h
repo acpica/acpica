@@ -236,58 +236,58 @@ EFI_STATUS
 typedef
 EFI_STATUS
 (EFIAPI *EFI_TEXT_RESET) (
-    SIMPLE_TEXT_OUTPUT_INTERFACE    *This,
-    BOOLEAN                         ExtendedVerification);
+    struct _SIMPLE_TEXT_OUTPUT_INTERFACE    *This,
+    BOOLEAN                                 ExtendedVerification);
 
 typedef
 EFI_STATUS
 (EFIAPI *EFI_TEXT_OUTPUT_STRING) (
-    SIMPLE_TEXT_OUTPUT_INTERFACE    *This,
-    CHAR16                          *String);
+    struct _SIMPLE_TEXT_OUTPUT_INTERFACE    *This,
+    CHAR16                                  *String);
 
 typedef
 EFI_STATUS
 (EFIAPI *EFI_TEXT_TEST_STRING) (
-    SIMPLE_TEXT_OUTPUT_INTERFACE    *This,
-    CHAR16                          *String);
+    struct _SIMPLE_TEXT_OUTPUT_INTERFACE    *This,
+    CHAR16                                  *String);
 
 typedef
 EFI_STATUS
 (EFIAPI *EFI_TEXT_QUERY_MODE) (
-    SIMPLE_TEXT_OUTPUT_INTERFACE    *This,
-    UINTN                           ModeNumber,
-    UINTN                           *Columns,
-    UINTN                           *Rows);
+    struct _SIMPLE_TEXT_OUTPUT_INTERFACE    *This,
+    UINTN                                   ModeNumber,
+    UINTN                                   *Columns,
+    UINTN                                   *Rows);
 
 typedef
 EFI_STATUS
 (EFIAPI *EFI_TEXT_SET_MODE) (
-    SIMPLE_TEXT_OUTPUT_INTERFACE    *This,
-    UINTN                           ModeNumber);
+    struct _SIMPLE_TEXT_OUTPUT_INTERFACE    *This,
+    UINTN                                   ModeNumber);
 
 typedef
 EFI_STATUS
 (EFIAPI *EFI_TEXT_SET_ATTRIBUTE) (
-    SIMPLE_TEXT_OUTPUT_INTERFACE    *This,
-    UINTN                           Attribute);
+    struct _SIMPLE_TEXT_OUTPUT_INTERFACE    *This,
+    UINTN                                   Attribute);
 
 typedef
 EFI_STATUS
 (EFIAPI *EFI_TEXT_CLEAR_SCREEN) (
-    SIMPLE_TEXT_OUTPUT_INTERFACE    *This);
+    struct _SIMPLE_TEXT_OUTPUT_INTERFACE    *This);
 
 typedef
 EFI_STATUS
 (EFIAPI *EFI_TEXT_SET_CURSOR_POSITION) (
-    SIMPLE_TEXT_OUTPUT_INTERFACE    *This,
-    UINTN                           Column,
-    UINTN                           Row);
+    struct _SIMPLE_TEXT_OUTPUT_INTERFACE    *This,
+    UINTN                                   Column,
+    UINTN                                   Row);
 
 typedef
 EFI_STATUS
 (EFIAPI *EFI_TEXT_ENABLE_CURSOR) (
-    SIMPLE_TEXT_OUTPUT_INTERFACE    *This,
-    BOOLEAN                         Enable);
+    struct _SIMPLE_TEXT_OUTPUT_INTERFACE    *This,
+    BOOLEAN                                 Enable);
 
 typedef struct {
     INT32                           MaxMode;
@@ -338,14 +338,14 @@ typedef struct {
 typedef
 EFI_STATUS
 (EFIAPI *EFI_INPUT_RESET) (
-    SIMPLE_INPUT_INTERFACE              *This,
-    BOOLEAN                             ExtendedVerification);
+    struct _SIMPLE_INPUT_INTERFACE              *This,
+    BOOLEAN                                     ExtendedVerification);
 
 typedef
 EFI_STATUS
 (EFIAPI *EFI_INPUT_READ_KEY) (
-    SIMPLE_INPUT_INTERFACE              *This,
-    EFI_INPUT_KEY                       *Key);
+    struct _SIMPLE_INPUT_INTERFACE              *This,
+    EFI_INPUT_KEY                               *Key);
 
 typedef struct _SIMPLE_INPUT_INTERFACE {
     EFI_INPUT_RESET                     Reset;
@@ -363,8 +363,8 @@ typedef struct _SIMPLE_INPUT_INTERFACE {
 typedef
 EFI_STATUS
 (EFIAPI *EFI_VOLUME_OPEN) (
-    EFI_FILE_IO_INTERFACE               *This,
-    EFI_FILE_HANDLE                     *Root);
+    struct _EFI_FILE_IO_INTERFACE               *This,
+    struct _EFI_FILE_HANDLE                     **Root);
 
 #define EFI_FILE_IO_INTERFACE_REVISION   0x00010000
 
@@ -376,11 +376,11 @@ typedef struct _EFI_FILE_IO_INTERFACE {
 typedef
 EFI_STATUS
 (EFIAPI *EFI_FILE_OPEN) (
-    EFI_FILE_HANDLE                     File,
-    EFI_FILE_HANDLE                     *NewHandle,
-    CHAR16                              *FileName,
-    UINT64                              OpenMode,
-    UINT64                              Attributes);
+    struct _EFI_FILE_HANDLE                     *File,
+    struct _EFI_FILE_HANDLE                     **NewHandle,
+    CHAR16                                      *FileName,
+    UINT64                                      OpenMode,
+    UINT64                                      Attributes);
 
 /* Values for OpenMode used above */
 
@@ -401,59 +401,59 @@ EFI_STATUS
 typedef
 EFI_STATUS
 (EFIAPI *EFI_FILE_CLOSE) (
-    EFI_FILE_HANDLE                     File);
+    struct _EFI_FILE_HANDLE                     *File);
 
 typedef
 EFI_STATUS
 (EFIAPI *EFI_FILE_DELETE) (
-    EFI_FILE_HANDLE                     File);
+    struct _EFI_FILE_HANDLE                     *File);
 
 typedef
 EFI_STATUS
 (EFIAPI *EFI_FILE_READ) (
-    EFI_FILE_HANDLE                     File,
-    UINTN                               *BufferSize,
-    VOID                                *Buffer);
+    struct _EFI_FILE_HANDLE                     *File,
+    UINTN                                       *BufferSize,
+    VOID                                        *Buffer);
 
 typedef
 EFI_STATUS
 (EFIAPI *EFI_FILE_WRITE) (
-    EFI_FILE_HANDLE                     File,
-    UINTN                               *BufferSize,
-    VOID                                *Buffer);
+    struct _EFI_FILE_HANDLE                     *File,
+    UINTN                                       *BufferSize,
+    VOID                                        *Buffer);
 
 typedef
 EFI_STATUS
 (EFIAPI *EFI_FILE_SET_POSITION) (
-    EFI_FILE_HANDLE                     File,
-    UINT64                              Position);
+    struct _EFI_FILE_HANDLE                     *File,
+    UINT64                                      Position);
 
 typedef
 EFI_STATUS
 (EFIAPI *EFI_FILE_GET_POSITION) (
-    EFI_FILE_HANDLE                     File,
-    UINT64                              *Position);
+    struct _EFI_FILE_HANDLE                     *File,
+    UINT64                                      *Position);
 
 typedef
 EFI_STATUS
 (EFIAPI *EFI_FILE_GET_INFO) (
-    EFI_FILE_HANDLE                     File,
-    EFI_GUID                            *InformationType,
-    UINTN                               *BufferSize,
-    VOID                                *Buffer);
+    struct _EFI_FILE_HANDLE                     *File,
+    EFI_GUID                                    *InformationType,
+    UINTN                                       *BufferSize,
+    VOID                                        *Buffer);
 
 typedef
 EFI_STATUS
 (EFIAPI *EFI_FILE_SET_INFO) (
-    EFI_FILE_HANDLE                     File,
-    EFI_GUID                            *InformationType,
-    UINTN                               BufferSize,
-    VOID                                *Buffer);
+    struct _EFI_FILE_HANDLE                     *File,
+    EFI_GUID                                    *InformationType,
+    UINTN                                       BufferSize,
+    VOID                                        *Buffer);
 
 typedef
 EFI_STATUS
 (EFIAPI *EFI_FILE_FLUSH) (
-    EFI_FILE_HANDLE                     File);
+    struct _EFI_FILE_HANDLE                     *File);
 
 
 #define EFI_FILE_HANDLE_REVISION         0x00010000
@@ -482,8 +482,8 @@ typedef struct _EFI_FILE_HANDLE {
 typedef
 EFI_STATUS
 (EFIAPI *EFI_IMAGE_ENTRY_POINT) (
-    EFI_HANDLE                      ImageHandle,
-    EFI_SYSTEM_TABLE                *SystemTable);
+    EFI_HANDLE                              ImageHandle,
+    struct _EFI_SYSTEM_TABLE                *SystemTable);
 
 typedef
 EFI_STATUS
@@ -877,7 +877,11 @@ typedef struct _EFI_SYSTEM_TABLE {
     EFI_HANDLE                      StandardErrorHandle;
     SIMPLE_TEXT_OUTPUT_INTERFACE    *StdErr;
 
+#if 0
     EFI_RUNTIME_SERVICES            *RuntimeServices;
+#else
+    EFI_HANDLE                      *RuntimeServices;
+#endif
     EFI_BOOT_SERVICES               *BootServices;
 
     UINTN                           NumberOfTableEntries;

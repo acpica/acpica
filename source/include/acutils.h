@@ -417,7 +417,7 @@ memcpy (
 void *
 memset (
     void                    *Dest,
-    UINT8                   Value,
+    int                     Value,
     ACPI_SIZE               Count);
 
 int
