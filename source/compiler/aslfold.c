@@ -452,10 +452,12 @@ TrSimpleConstantReduction (
         return (Status);
     }
 
+    /* Disconnect any existing children, install new constant */
+
+    Op->Asl.Child = NULL;
     TrInstallReducedConstant (Op, ObjDesc);
 
     UtSetParseOpName (Op);
-    Op->Asl.Child = NULL;
     return (AE_OK);
 }
 
@@ -619,7 +621,8 @@ TrInstallReducedConstant (
     ACPI_PARSE_OBJECT       *Op,
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
-    ACPI_PARSE_OBJECT       *RootOp;
+    ACPI_PARSE_OBJECT       *LengthOp;
+    ACPI_PARSE_OBJECT       *DataOp;
 
 
     TotalFolds++;
@@ -652,11 +655,16 @@ TrInstallReducedConstant (
         DbgPrint (ASL_PARSE_OUTPUT,
             "Constant expression reduced to (STRING) %s\n\n",
             Op->Common.Value.String);
-
         break;
 
     case ACPI_TYPE_BUFFER:
-
+        /*
+         * Create a new parse subtree of the form:
+         *
+         * BUFFER (Buffer AML opcode)
+         *    INTEGER (Buffer length in bytes)
+         *    RAW_DATA (Buffer byte data)
+         */
         Op->Asl.ParseOpcode = PARSEOP_BUFFER;
         Op->Common.AmlOpcode = AML_BUFFER_OP;
         Op->Asl.CompileFlags = NODE_AML_PACKAGE;
@@ -664,28 +672,24 @@ TrInstallReducedConstant (
 
         /* Child node is the buffer length */
 
-        RootOp = TrAllocateNode (PARSEOP_INTEGER);
+        LengthOp = TrAllocateNode (PARSEOP_INTEGER);
 
-        RootOp->Asl.AmlOpcode = AML_DWORD_OP;
-        RootOp->Asl.Value.Integer = ObjDesc->Buffer.Length;
-        RootOp->Asl.Parent = Op;
+        LengthOp->Asl.AmlOpcode = AML_DWORD_OP;
+        LengthOp->Asl.Value.Integer = ObjDesc->Buffer.Length;
+        LengthOp->Asl.Parent = Op;
+        (void) OpcSetOptimalIntegerSize (LengthOp);
 
-        (void) OpcSetOptimalIntegerSize (RootOp);
+        Op->Asl.Child = LengthOp;
 
-        Op->Asl.Child = RootOp;
-        Op = RootOp;
-        UtSetParseOpName (Op);
+        /* Next child is the raw buffer data */
 
-        /* Peer to the child is the raw buffer data */
+        DataOp = TrAllocateNode (PARSEOP_RAW_DATA);
+        DataOp->Asl.AmlOpcode = AML_RAW_DATA_BUFFER;
+        DataOp->Asl.AmlLength = ObjDesc->Buffer.Length;
+        DataOp->Asl.Value.String = (char *) ObjDesc->Buffer.Pointer;
+        DataOp->Asl.Parent = Op;
 
-        RootOp = TrAllocateNode (PARSEOP_RAW_DATA);
-        RootOp->Asl.AmlOpcode = AML_RAW_DATA_BUFFER;
-        RootOp->Asl.AmlLength = ObjDesc->Buffer.Length;
-        RootOp->Asl.Value.String = (char *) ObjDesc->Buffer.Pointer;
-        RootOp->Asl.Parent = Op->Asl.Parent;
-
-        Op->Asl.Next = RootOp;
-        Op = RootOp;
+        LengthOp->Asl.Next = DataOp;
 
         DbgPrint (ASL_PARSE_OUTPUT,
             "Constant expression reduced to (BUFFER) length %X\n\n",
