@@ -1052,7 +1052,7 @@ typedef struct acpi_madt_generic_distributor
 
 /* Values for Version field above */
 
-enum acpi_madt_gic_version
+enum AcpiMadtGicVersion
 {
     ACPI_MADT_GIC_VERSION_NONE          = 0,
     ACPI_MADT_GIC_VERSION_V1            = 1,
