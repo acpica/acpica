@@ -1519,21 +1519,13 @@ typedef struct acpi_table_tpm2
 
 } ACPI_TABLE_TPM2;
 
-/* Control area structure (not part of table, pointed to by ControlAddress) */
+/* Values for StartMethod above */
 
-typedef struct acpi_tpm2_control
-{
-    UINT32                  Reserved;
-    UINT32                  Error;
-    UINT32                  Cancel;
-    UINT32                  Start;
-    UINT64                  InterruptControl;
-    UINT32                  CommandSize;
-    UINT64                  CommandAddress;
-    UINT32                  ResponseSize;
-    UINT64                  ResponseAddress;
-
-} ACPI_TPM2_CONTROL;
+#define ACPI_TPM2_NOT_ALLOWED                       0
+#define ACPI_TPM2_START_METHOD                      2
+#define ACPI_TPM2_MEMORY_MAPPED                     6
+#define ACPI_TPM2_COMMAND_BUFFER                    7
+#define ACPI_TPM2_COMMAND_BUFFER_WITH_START_METHOD  8
 
 
 /*******************************************************************************
