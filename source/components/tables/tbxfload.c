@@ -313,11 +313,11 @@ AcpiInstallTable (
 
     if (Physical)
     {
-        Flags = ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL;
+        Flags = ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL;
     }
     else
     {
-        Flags = ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL;
+        Flags = ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL;
     }
 
     Status = AcpiTbInstallStandardTable (Address, Flags,
