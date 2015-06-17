@@ -308,6 +308,8 @@ OpcAmlCheckForConstant (
      */
     if (WalkState->Opcode == AML_BUFFER_OP)
     {
+        DbgPrint (ASL_PARSE_OUTPUT,
+            "\nBuffer+Buffer->Buffer constant reduction is not supported yet");
         Status = AE_TYPE;
         goto CleanupAndExit;
     }
