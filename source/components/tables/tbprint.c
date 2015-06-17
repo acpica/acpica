@@ -156,7 +156,7 @@ AcpiTbFixString (
 
     while (Length && *String)
     {
-        if (!isprint (*String))
+        if (!isprint ((int) *String))
         {
             *String = '?';
         }

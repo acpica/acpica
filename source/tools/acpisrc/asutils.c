@@ -144,7 +144,7 @@ AsStrlwr (
     {
         for (String = SrcString; *String; String++)
         {
-            *String = (char) tolower (*String);
+            *String = (char) tolower ((int) *String);
         }
     }
 }

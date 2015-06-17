@@ -313,7 +313,7 @@ DtStrtoul64 (
 
     while (*ThisChar)
     {
-        if (isdigit (*ThisChar))
+        if (isdigit ((int) *ThisChar))
         {
             /* Convert ASCII 0-9 to Decimal value */
 
@@ -321,8 +321,8 @@ DtStrtoul64 (
         }
         else /* Letter */
         {
-            ThisDigit = (UINT32) toupper (*ThisChar);
-            if (!isxdigit ((char) ThisDigit))
+            ThisDigit = (UINT32) toupper ((int) *ThisChar);
+            if (!isxdigit ((int) ThisDigit))
             {
                 /* Not A-F */
 
