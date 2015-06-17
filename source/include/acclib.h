@@ -1,6 +1,7 @@
 /******************************************************************************
  *
- * Name: accommon.h - Common include files for generation of ACPICA source
+ * Name: acclib.h -- C library support. Prototypes for the (optional) local
+ *                   implementations of required C library functions.
  *
  *****************************************************************************/
 
@@ -113,25 +114,132 @@
  *
  *****************************************************************************/
 
-#ifndef __ACCOMMON_H__
-#define __ACCOMMON_H__
+#ifndef _ACCLIB_H
+#define _ACCLIB_H
+
+
+#define ACPI_IS_ASCII(c)  ((c) < 0x80)
 
 /*
- * Common set of includes for all ACPICA source files.
- * We put them here because we don't want to duplicate them
- * in the the source code again and again.
- *
- * Note: The order of these include files is important.
+ * Prototypes and macros for local implementations of C library functions
  */
-#include "acconfig.h"           /* Global configuration constants */
-#include "acmacros.h"           /* C macros */
-#include "aclocal.h"            /* Internal data types */
-#include "acobject.h"           /* ACPI internal object */
-#include "acstruct.h"           /* Common structures */
-#include "acglobal.h"           /* All global variables */
-#include "achware.h"            /* Hardware defines and interfaces */
-#include "acutils.h"            /* Utility interfaces */
-#include "acclib.h"             /* C library interfaces */
+#ifndef ACPI_USE_SYSTEM_CLIBRARY
 
 
-#endif /* __ACCOMMON_H__ */
+/* is* functions. The AcpiGbl_Ctypes array is defined in utclib.c */
+
+extern const UINT8 AcpiGbl_Ctypes[];
+
+#define _ACPI_XA     0x00    /* extra alphabetic - not supported */
+#define _ACPI_XS     0x40    /* extra space */
+#define _ACPI_BB     0x00    /* BEL, BS, etc. - not supported */
+#define _ACPI_CN     0x20    /* CR, FF, HT, NL, VT */
+#define _ACPI_DI     0x04    /* '0'-'9' */
+#define _ACPI_LO     0x02    /* 'a'-'z' */
+#define _ACPI_PU     0x10    /* punctuation */
+#define _ACPI_SP     0x08    /* space, tab, CR, LF, VT, FF */
+#define _ACPI_UP     0x01    /* 'A'-'Z' */
+#define _ACPI_XD     0x80    /* '0'-'9', 'A'-'F', 'a'-'f' */
+
+#define isdigit(c)  (AcpiGbl_Ctypes[(unsigned char)(c)] & (_ACPI_DI))
+#define isspace(c)  (AcpiGbl_Ctypes[(unsigned char)(c)] & (_ACPI_SP))
+#define isxdigit(c) (AcpiGbl_Ctypes[(unsigned char)(c)] & (_ACPI_XD))
+#define isupper(c)  (AcpiGbl_Ctypes[(unsigned char)(c)] & (_ACPI_UP))
+#define islower(c)  (AcpiGbl_Ctypes[(unsigned char)(c)] & (_ACPI_LO))
+#define isprint(c)  (AcpiGbl_Ctypes[(unsigned char)(c)] & (_ACPI_LO | _ACPI_UP | _ACPI_DI | _ACPI_XS | _ACPI_PU))
+#define isalpha(c)  (AcpiGbl_Ctypes[(unsigned char)(c)] & (_ACPI_LO | _ACPI_UP))
+
+
+/* Strings */
+
+char *
+strcat (
+    char                    *DstString,
+    const char              *SrcString);
+
+char *
+strchr (
+    const char              *String,
+    int                     ch);
+
+char *
+strcpy (
+    char                    *DstString,
+    const char              *SrcString);
+
+int
+strcmp (
+    const char              *String1,
+    const char              *String2);
+
+ACPI_SIZE
+strlen (
+    const char              *String);
+
+char *
+strncat (
+    char                    *DstString,
+    const char              *SrcString,
+    ACPI_SIZE               Count);
+
+int
+strncmp (
+    const char              *String1,
+    const char              *String2,
+    ACPI_SIZE               Count);
+
+char *
+strncpy (
+    char                    *DstString,
+    const char              *SrcString,
+    ACPI_SIZE               Count);
+
+char *
+strstr (
+    char                    *String1,
+    char                    *String2);
+
+
+/* Conversion */
+
+UINT32
+strtoul (
+    const char              *String,
+    char                    **Terminator,
+    UINT32                  Base);
+
+
+/* Memory */
+
+int
+memcmp (
+    void                    *Buffer1,
+    void                    *Buffer2,
+    ACPI_SIZE               Count);
+
+void *
+memcpy (
+    void                    *Dest,
+    const void              *Src,
+    ACPI_SIZE               Count);
+
+void *
+memset (
+    void                    *Dest,
+    int                     Value,
+    ACPI_SIZE               Count);
+
+
+/* upper/lower case */
+
+int
+tolower (
+    int                     c);
+
+int
+toupper (
+    int                     c);
+
+#endif /* !ACPI_USE_SYSTEM_CLIBRARY */
+
+#endif /* _ACCLIB_H */

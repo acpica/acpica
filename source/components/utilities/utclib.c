@@ -136,7 +136,6 @@
  * instead of the functions in this module.
  */
 
-
 /*******************************************************************************
  *
  * Functions implemented in this module:
@@ -159,7 +158,6 @@
  * FUNCTION:    is* functions
  *
  ******************************************************************************/
-
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utclib")
@@ -844,13 +842,13 @@ tolower (
 
 /*******************************************************************************
  *
- * FUNCTION:    is* functions
+ * FUNCTION:    is* function array
  *
  * DESCRIPTION: is* functions use the ctype table below
  *
  ******************************************************************************/
 
-const UINT8 _acpi_ctype[257] = {
+const UINT8 AcpiGbl_Ctypes[257] = {
     _ACPI_CN,            /* 0x00     0 NUL */
     _ACPI_CN,            /* 0x01     1 SOH */
     _ACPI_CN,            /* 0x02     2 STX */
