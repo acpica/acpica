@@ -148,13 +148,6 @@ AcpiTbInitializeFacs (
     void)
 {
 
-    /* If there is no FACS, just continue. There was already an error msg */
-
-    if (!AcpiGbl_FACS)
-    {
-        return (AE_OK);
-    }
-
     /* If Hardware Reduced flag is set, there is no FACS */
 
     if (AcpiGbl_ReducedHardware)
