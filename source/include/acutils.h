@@ -318,6 +318,8 @@ AcpiUtSubsystemShutdown (
     void);
 
 
+#define ACPI_IS_ASCII(c)  ((c) < 0x80)
+
 /*
  * utcopy - Object construction and conversion interfaces
  */

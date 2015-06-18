@@ -99,9 +99,11 @@ acpica_exclude_paths()
 	local paths
 
 	paths="\
+		include/acpi/acclib.h \
 		include/acpi/acdisasm.h \
 		include/acpi/platform/accygwin.h \
 		include/acpi/platform/acefi.h \
+		include/acpi/platform/acefiex.h \
 		include/acpi/platform/acfreebsd.h \
 		include/acpi/platform/achaiku.h \
 		include/acpi/platform/acintel.h \
