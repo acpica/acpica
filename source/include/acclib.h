@@ -118,13 +118,9 @@
 #define _ACCLIB_H
 
 
-#define ACPI_IS_ASCII(c)  ((c) < 0x80)
-
 /*
  * Prototypes and macros for local implementations of C library functions
  */
-#ifndef ACPI_USE_SYSTEM_CLIBRARY
-
 
 /* is* functions. The AcpiGbl_Ctypes array is defined in utclib.c */
 
@@ -239,7 +235,5 @@ tolower (
 int
 toupper (
     int                     c);
-
-#endif /* !ACPI_USE_SYSTEM_CLIBRARY */
 
 #endif /* _ACCLIB_H */
