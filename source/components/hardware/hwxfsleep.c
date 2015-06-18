@@ -245,7 +245,7 @@ AcpiSetFirmwareWakingVector (
 
     if (AcpiGbl_ReducedHardware)
     {
-        return (AE_OK);
+        return_ACPI_STATUS (AE_OK);
     }
 
     if (AcpiGbl_Facs32)
