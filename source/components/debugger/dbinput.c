@@ -821,14 +821,21 @@ AcpiDbCommandDispatch (
         return (AE_CTRL_TERMINATE);
     }
 
-
-    /* Add all commands that come here to the history buffer */
-
-    AcpiDbAddToHistory (InputBuffer);
+    /* Find command and add to the history buffer */
 
     ParamCount = AcpiDbGetLine (InputBuffer);
     CommandIndex = AcpiDbMatchCommand (AcpiGbl_DbArgs[0]);
     Temp = 0;
+
+    /*
+     * We don't want to add the !! command to the history buffer. It
+     * would cause an infinite loop because it would always be the
+     * previous command.
+     */
+    if (CommandIndex != CMD_HISTORY_LAST)
+    {
+        AcpiDbAddToHistory (InputBuffer);
+    }
 
     /* Verify that we have the minimum number of params */
 
