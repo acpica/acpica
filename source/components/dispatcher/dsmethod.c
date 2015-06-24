@@ -682,10 +682,7 @@ Cleanup:
     /* On error, we must terminate the method properly */
 
     AcpiDsTerminateControlMethod (ObjDesc, NextWalkState);
-    if (NextWalkState)
-    {
-        AcpiDsDeleteWalkState (NextWalkState);
-    }
+    AcpiDsDeleteWalkState (NextWalkState);
 
     return_ACPI_STATUS (Status);
 }
