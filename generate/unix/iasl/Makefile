@@ -139,7 +139,6 @@ OBJECTS = \
 	$(OBJDIR)/dtutils.o\
 	$(OBJDIR)/exconvrt.o\
 	$(OBJDIR)/excreate.o\
-	$(OBJDIR)/exdebug.o\
 	$(OBJDIR)/exdump.o\
 	$(OBJDIR)/exmisc.o\
 	$(OBJDIR)/exmutex.o\

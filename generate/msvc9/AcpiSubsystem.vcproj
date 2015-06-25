@@ -3101,6 +3101,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\dispatcher\dsdebug.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\dispatcher\dsfield.c"
 					>
 					<FileConfiguration
