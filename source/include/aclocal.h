@@ -265,8 +265,12 @@ typedef struct acpi_namespace_node
      */
 #ifdef ACPI_LARGE_NAMESPACE_NODE
     union acpi_parse_object         *Op;
+    void                            *MethodLocals;
+    void                            *MethodArgs;
     UINT32                          Value;
     UINT32                          Length;
+    UINT8                           ArgCount;
+
 #endif
 
 } ACPI_NAMESPACE_NODE;
