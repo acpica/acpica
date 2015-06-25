@@ -482,6 +482,7 @@ AcpiDmDescendingOp (
     const ACPI_OPCODE_INFO  *OpInfo;
     UINT32                  Name;
     ACPI_PARSE_OBJECT       *NextOp;
+    UINT32                  AmlOffset;
 
 
     if (Op->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)
@@ -499,10 +500,12 @@ AcpiDmDescendingOp (
 
         if (Info->WalkState)
         {
+            AmlOffset = (UINT32) ACPI_PTR_DIFF (Op->Common.Aml,
+                            Info->WalkState->ParserState.AmlStart);
             VERBOSE_PRINT ((DB_FULL_OP_INFO,
                 (Info->WalkState->MethodNode ?
                     Info->WalkState->MethodNode->Name.Ascii : "   "),
-                Op->Common.AmlOffset, (UINT32) Op->Common.AmlOpcode));
+                AmlOffset, (UINT32) Op->Common.AmlOpcode));
         }
 
         if (Op->Common.AmlOpcode == AML_SCOPE_OP)

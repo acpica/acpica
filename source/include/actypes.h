@@ -1094,7 +1094,8 @@ typedef struct acpi_buffer
  */
 #define ACPI_FULL_PATHNAME              0
 #define ACPI_SINGLE_NAME                1
-#define ACPI_NAME_TYPE_MAX              1
+#define ACPI_FULL_PATHNAME_NO_TRAILING  2
+#define ACPI_NAME_TYPE_MAX              2
 
 
 /*
@@ -1415,6 +1416,17 @@ typedef struct acpi_memory_list
 #endif
 
 } ACPI_MEMORY_LIST;
+
+
+/* Definitions of trace event types */
+
+typedef enum
+{
+    ACPI_TRACE_AML_METHOD,
+    ACPI_TRACE_AML_OPCODE,
+    ACPI_TRACE_AML_REGION
+
+} ACPI_TRACE_EVENT_TYPE;
 
 
 /* Definitions of _OSI support */

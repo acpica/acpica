@@ -490,7 +490,7 @@ AcpiUtDisplayInitPathname (
     /* Get the full pathname to the node */
 
     Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
-    Status = AcpiNsHandleToPathname (ObjHandle, &Buffer);
+    Status = AcpiNsHandleToPathname (ObjHandle, &Buffer, FALSE);
     if (ACPI_FAILURE (Status))
     {
         return;

@@ -151,6 +151,7 @@ AcpiDbSetMethodBreakpoint (
     ACPI_PARSE_OBJECT       *Op)
 {
     UINT32                  Address;
+    UINT32                  AmlOffset;
 
 
     if (!Op)
@@ -162,10 +163,12 @@ AcpiDbSetMethodBreakpoint (
     /* Get and verify the breakpoint address */
 
     Address = strtoul (Location, NULL, 16);
-    if (Address <= Op->Common.AmlOffset)
+    AmlOffset = (UINT32) ACPI_PTR_DIFF (Op->Common.Aml,
+                    WalkState->ParserState.AmlStart);
+    if (Address <= AmlOffset)
     {
         AcpiOsPrintf ("Breakpoint %X is beyond current address %X\n",
-            Address, Op->Common.AmlOffset);
+            Address, AmlOffset);
     }
 
     /* Save breakpoint in current walk */
@@ -422,7 +425,7 @@ AcpiDbDisassembleMethod (
 
     ObjDesc = Method->Object;
 
-    Op = AcpiPsCreateScopeOp ();
+    Op = AcpiPsCreateScopeOp (ObjDesc->Method.AmlStart);
     if (!Op)
     {
         return (AE_NO_MEMORY);

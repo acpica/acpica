@@ -790,8 +790,7 @@ AcpiDmDisplayLocals (
 void
 AcpiDmDumpMethodInfo (
     ACPI_STATUS             Status,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op);
+    ACPI_WALK_STATE         *WalkState);
 
 
 /*

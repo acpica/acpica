@@ -123,6 +123,7 @@
 
 #include "acpi.h"
 #include "accommon.h"
+#include "acinterp.h"
 #include "acparser.h"
 #include "acdispat.h"
 #include "amlcode.h"
@@ -206,8 +207,7 @@ AcpiPsGetArguments (
          */
         while (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) && !WalkState->ArgCount)
         {
-            WalkState->AmlOffset = (UINT32) ACPI_PTR_DIFF (WalkState->ParserState.Aml,
-                WalkState->ParserState.AmlStart);
+            WalkState->Aml = WalkState->ParserState.Aml;
 
             Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
                         GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
@@ -218,7 +218,6 @@ AcpiPsGetArguments (
 
             if (Arg)
             {
-                Arg->Common.AmlOffset = WalkState->AmlOffset;
                 AcpiPsAppendArg (Op, Arg);
             }
 
@@ -574,15 +573,7 @@ AcpiPsParseLoop (
                 continue;
             }
 
-            Op->Common.AmlOffset = WalkState->AmlOffset;
-
-            if (WalkState->OpInfo)
-            {
-                ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
-                    "Opcode %4.4X [%s] Op %p Aml %p AmlOffset %5.5X\n",
-                     (UINT32) Op->Common.AmlOpcode, WalkState->OpInfo->Name,
-                     Op, ParserState->Aml, Op->Common.AmlOffset));
-            }
+            AcpiExStartTraceOpcode (Op, WalkState);
         }
 
 

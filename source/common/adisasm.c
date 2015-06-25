@@ -964,7 +964,7 @@ AdParseTable (
 
     /* Create the root object */
 
-    AcpiGbl_ParseOpRoot = AcpiPsCreateScopeOp ();
+    AcpiGbl_ParseOpRoot = AcpiPsCreateScopeOp (AmlStart);
     if (!AcpiGbl_ParseOpRoot)
     {
         return (AE_NO_MEMORY);

@@ -209,6 +209,12 @@ AcpiDbSleep (
     char                    *ObjectArg);
 
 void
+AcpiDbTrace (
+    char                    *EnableArg,
+    char                    *MethodArg,
+    char                    *OnceArg);
+
+void
 AcpiDbDisplayLocks (
     void);
 

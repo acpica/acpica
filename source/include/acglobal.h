@@ -365,8 +365,6 @@ ACPI_GLOBAL (UINT32,                    AcpiFixedEventCount[ACPI_NUM_FIXED_EVENT
 
 ACPI_GLOBAL (UINT32,                    AcpiGbl_OriginalDbgLevel);
 ACPI_GLOBAL (UINT32,                    AcpiGbl_OriginalDbgLayer);
-ACPI_GLOBAL (UINT32,                    AcpiGbl_TraceDbgLevel);
-ACPI_GLOBAL (UINT32,                    AcpiGbl_TraceDbgLayer);
 
 
 /*****************************************************************************
