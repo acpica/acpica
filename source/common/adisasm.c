@@ -868,8 +868,8 @@ AdStoreTable (
 
     AcpiTbInitTableDescriptor (TableDesc, ACPI_PTR_TO_PHYSADDR (Table),
         ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL, Table);
-    AcpiTbValidateTable (TableDesc);
-    return (AE_OK);
+    Status = AcpiTbValidateTable (TableDesc);
+    return (Status);
 }
 
 
