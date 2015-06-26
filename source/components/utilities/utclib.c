@@ -165,9 +165,6 @@
 
 #ifndef ACPI_USE_SYSTEM_CLIBRARY    /* Entire module */
 
-#define NEGATIVE    1
-#define POSITIVE    0
-
 
 /*******************************************************************************
  *
@@ -656,17 +653,17 @@ strtoul (
      */
     if (*String == '-')
     {
-        sign = NEGATIVE;
+        sign = ACPI_SIGN_NEGATIVE;
         ++String;
     }
     else if (*String == '+')
     {
         ++String;
-        sign = POSITIVE;
+        sign = ACPI_SIGN_POSITIVE;
     }
     else
     {
-        sign = POSITIVE;
+        sign = ACPI_SIGN_POSITIVE;
     }
 
     /*
@@ -789,7 +786,7 @@ done:
     /*
      * If a minus sign was present, then "the conversion is negated":
      */
-    if (sign == NEGATIVE)
+    if (sign == ACPI_SIGN_NEGATIVE)
     {
         ReturnValue = (ACPI_UINT32_MAX - ReturnValue) + 1;
     }

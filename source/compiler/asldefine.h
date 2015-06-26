@@ -227,12 +227,6 @@
 #define ACPI_COMPILER_RESERVED_NAME     (ACPI_UINT32_MAX - 3)
 
 
-/* String to Integer conversion */
-
-#define NEGATIVE                    1
-#define POSITIVE                    0
-
-
 /* Helper macros for resource tag creation */
 
 #define RsCreateMultiBitField \
