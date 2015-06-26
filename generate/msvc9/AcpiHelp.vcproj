@@ -350,6 +350,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\utnonansi.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utpredef.c"
 					>
 				</File>

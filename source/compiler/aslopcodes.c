@@ -863,43 +863,6 @@ OpcEncodePldBuffer (
 
 /*******************************************************************************
  *
- * FUNCTION:    OpcStrupr (strupr)
- *
- * PARAMETERS:  SrcString           - The source string to convert
- *
- * RETURN:      None
- *
- * DESCRIPTION: Convert string to uppercase
- *
- * NOTE: This is not a POSIX function, so it appears here, not in utclib.c
- *
- ******************************************************************************/
-
-static void
-OpcStrupr (
-    char                    *SrcString)
-{
-    char                    *String;
-
-
-    if (!SrcString)
-    {
-        return;
-    }
-
-    /* Walk entire string, uppercasing the letters */
-
-    for (String = SrcString; *String; String++)
-    {
-        *String = (char) toupper ((int) *String);
-    }
-
-    return;
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    OpcFindName
  *
  * PARAMETERS:  List                - Array of char strings to be searched
@@ -923,7 +886,7 @@ OpcFindName (
     UINT32                   i;
 
 
-    OpcStrupr (Name);
+    AcpiUtStrupr (Name);
 
     for (i = 0, Str = List[0]; Str; i++, Str = List[i])
     {

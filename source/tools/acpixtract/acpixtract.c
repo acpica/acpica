@@ -125,10 +125,6 @@
 /* Local prototypes */
 
 static void
-AxStrlwr (
-    char                    *String);
-
-static void
 AxCheckAscii (
     char                    *Name,
     int                     Count);
@@ -197,31 +193,6 @@ static unsigned char        Data[16];
 static char                 LineBuffer[AX_LINE_BUFFER_SIZE];
 static char                 HeaderBuffer[AX_LINE_BUFFER_SIZE];
 static char                 InstanceBuffer[AX_LINE_BUFFER_SIZE];
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AxStrlwr
- *
- * PARAMETERS:  String              - Ascii string
- *
- * RETURN:      None
- *
- * DESCRIPTION: String lowercase function.
- *
- ******************************************************************************/
-
-static void
-AxStrlwr (
-    char                    *String)
-{
-
-    while (*String)
-    {
-        *String = (char) tolower ((int) *String);
-        String++;
-    }
-}
 
 
 /*******************************************************************************
@@ -666,7 +637,7 @@ AxExtractTables (
                 sprintf (Filename, "%4.4s.dat", ThisSignature);
             }
 
-            AxStrlwr (Filename);
+            AcpiUtStrlwr (Filename);
             OutputFile = fopen (Filename, "w+b");
             if (!OutputFile)
             {

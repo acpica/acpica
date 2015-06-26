@@ -528,6 +528,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\utnonansi.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utobject.c"
 					>
 					<FileConfiguration

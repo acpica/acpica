@@ -200,10 +200,6 @@ extern const AH_TABLE               AcpiSupportedTables[];
 extern BOOLEAN                      AhDisplayAll;
 
 void
-AhStrupr (
-    char                    *SrcString);
-
-void
 AhFindAmlOpcode (
     char                    *Name);
 

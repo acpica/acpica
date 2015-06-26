@@ -129,7 +129,6 @@
 #define stat            _stat
 #define fstat           _fstat
 #define mkdir           _mkdir
-#define strlwr          _strlwr
 #define O_RDONLY        _O_RDONLY
 #define O_BINARY        _O_BINARY
 #define O_CREAT         _O_CREAT

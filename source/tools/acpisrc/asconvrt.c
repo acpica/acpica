@@ -1559,7 +1559,7 @@ AsInsertPrefix (
     }
 
     strcpy (LowerKeyword, Keyword);
-    AsStrlwr (LowerKeyword);
+    AcpiUtStrlwr (LowerKeyword);
 
     SubBuffer = Buffer;
     SubString = Buffer;

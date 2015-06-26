@@ -219,6 +219,7 @@ OBJECTS = \
 	$(OBJDIR)/utobject.o\
 	$(OBJDIR)/utosi.o\
 	$(OBJDIR)/utownerid.o\
+	$(OBJDIR)/utnonansi.o\
 	$(OBJDIR)/utpredef.o\
 	$(OBJDIR)/utprint.o\
 	$(OBJDIR)/utresrc.o\
