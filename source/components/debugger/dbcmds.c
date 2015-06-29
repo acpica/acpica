@@ -1354,9 +1354,17 @@ AcpiDbTrace (
         !strcmp (EnableArg, "METHOD") ||
         !strcmp (EnableArg, "OPCODE"))
     {
-        if (!strcmp (EnableArg, "METHOD") ||
-            !strcmp (EnableArg, "OPCODE"))
+        if (!strcmp (EnableArg, "ENABLE"))
         {
+            /* Inherit current console settings */
+
+            DebugLevel = AcpiGbl_DbConsoleDebugLevel;
+            DebugLayer = AcpiDbgLayer;
+        }
+        else
+        {
+            /* Restrict console output to trace points only */
+
             DebugLevel = ACPI_LV_TRACE_POINT;
             DebugLayer = ACPI_EXECUTER;
         }
