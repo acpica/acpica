@@ -184,6 +184,10 @@ SOURCE=..\..\source\components\utilities\utmutex.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utnonansi.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utobject.c
 # End Source File
 # Begin Source File
@@ -489,6 +493,10 @@ SOURCE=..\..\source\common\ahids.c
 # Begin Source File
 
 SOURCE=..\..\source\common\ahpredef.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\ahtable.c
 # End Source File
 # Begin Source File
 

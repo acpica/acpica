@@ -180,6 +180,10 @@ SOURCE=..\..\source\components\utilities\utmath.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utnonansi.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utprint.c
 # End Source File
 # Begin Source File

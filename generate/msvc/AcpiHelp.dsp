@@ -144,6 +144,10 @@ SOURCE=..\..\source\common\ahpredef.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\common\ahtable.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\common\ahuuids.c
 # End Source File
 # Begin Source File
@@ -181,6 +185,10 @@ SOURCE=..\..\source\components\utilities\uthex.c
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utmath.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utnonansi.c
 # End Source File
 # Begin Source File
 
