@@ -370,7 +370,7 @@ static const ACPI_DB_COMMAND_HELP   AcpiGbl_DbCommandHelp[] =
     {1, "  Set <A|L> <#> <Value>",             "Set method data (Arguments/Locals)\n"},
     {1, "  Stop",                              "Terminate control method\n"},
     {1, "  Thread <Threads><Loops><NamePath>", "Spawn threads to execute method(s)\n"},
-    {4, "  Trace <State> [<Method>] [Once]",   "Trace method execution\n"},
+    {5, "  Trace <State> [<Method>] [Once]",   "Trace method execution\n"},
     {1, "     Enable",                         "Enable all messages\n"},
     {1, "     Disable",                        "Disable traer\n"},
     {1, "     Method",                         "Enable method execution messages\n"},
