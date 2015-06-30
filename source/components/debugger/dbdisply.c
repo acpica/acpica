@@ -408,7 +408,7 @@ AcpiDbDecodeAndDisplayObject (
 DumpNode:
     /* Now dump the NS node */
 
-    Status = AcpiGetName (Node, ACPI_FULL_PATHNAME, &RetBuf);
+    Status = AcpiGetName (Node, ACPI_FULL_PATHNAME_NO_TRAILING, &RetBuf);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could not convert name to pathname\n");
@@ -923,7 +923,7 @@ AcpiDbDisplayGpes (
         while (GpeBlock)
         {
             Status = AcpiGetName (GpeBlock->Node,
-                ACPI_FULL_PATHNAME, &RetBuf);
+                ACPI_FULL_PATHNAME_NO_TRAILING, &RetBuf);
             if (ACPI_FAILURE (Status))
             {
                 AcpiOsPrintf ("Could not convert name to pathname\n");
