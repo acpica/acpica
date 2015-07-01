@@ -935,13 +935,6 @@ OpcDoPld (
         return;
     }
 
-    Buffer = UtLocalCalloc (ACPI_PLD_BUFFER_SIZE);
-    if (!Buffer)
-    {
-        AslError(ASL_ERROR, ASL_MSG_BUFFER_ALLOCATION, Op, NULL);
-        return;
-    }
-
     memset (&PldInfo, 0, sizeof (ACPI_PLD_INFO));
 
     Node = Op->Asl.Child;
