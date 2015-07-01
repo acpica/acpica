@@ -1153,9 +1153,21 @@ AcpiLeaveSleepState (
 
 ACPI_HW_DEPENDENT_RETURN_STATUS (
 ACPI_STATUS
-AcpiSetFirmwareWakingVector (
+AcpiSetFirmwareWakingVectors (
     ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
     ACPI_PHYSICAL_ADDRESS   PhysicalAddress64))
+
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiSetFirmwareWakingVector (
+    UINT32                  PhysicalAddress))
+
+#if ACPI_MACHINE_WIDTH == 64
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
+AcpiSetFirmwareWakingVector64 (
+    UINT64                  PhysicalAddress))
+#endif
 
 
 /*
