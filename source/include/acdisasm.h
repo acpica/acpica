@@ -471,7 +471,9 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSrat2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSrat3[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoStao[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoStaoStr[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTcpa[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTcpaHdr[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTcpaClient[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTcpaServer[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTpm2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoUefi[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoVrtc[];
@@ -664,6 +666,10 @@ AcpiDmDumpSrat (
 
 void
 AcpiDmDumpStao (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpTcpa (
     ACPI_TABLE_HEADER       *Table);
 
 void

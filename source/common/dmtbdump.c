@@ -3487,6 +3487,77 @@ AcpiDmDumpStao (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpTcpa
+ *
+ * PARAMETERS:  Table               - A TCPA table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a TCPA.
+ *
+ * NOTE:        There are two versions of the table with the same signature:
+ *              the client version and the server version. The common
+ *              PlatformClass field is used to differentiate the two types of
+ *              tables.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpTcpa (
+    ACPI_TABLE_HEADER       *Table)
+{
+    UINT32                  Offset = sizeof (ACPI_TABLE_TCPA_HDR);
+    ACPI_TABLE_TCPA_HDR     *CommonHeader = ACPI_CAST_PTR (
+                                ACPI_TABLE_TCPA_HDR, Table);
+    ACPI_TABLE_TCPA_HDR     *SubTable = ACPI_ADD_PTR (
+                                ACPI_TABLE_TCPA_HDR, Table, Offset);
+    ACPI_STATUS             Status;
+
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Table->Length, 0, Table,
+        0, AcpiDmTableInfoTcpaHdr);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    /*
+     * Examine the PlatformClass field to determine the table type.
+     * Either a client or server table. Only one.
+     */
+    switch (CommonHeader->PlatformClass)
+    {
+    case ACPI_TCPA_CLIENT_TABLE:
+
+        Status = AcpiDmDumpTable (Table->Length, Offset, SubTable,
+            Table->Length - Offset, AcpiDmTableInfoTcpaClient);
+        break;
+
+    case ACPI_TCPA_SERVER_TABLE:
+
+        Status = AcpiDmDumpTable (Table->Length, Offset, SubTable,
+            Table->Length - Offset, AcpiDmTableInfoTcpaServer);
+        break;
+
+    default:
+
+        AcpiOsPrintf ("\n**** Unknown TCPA Platform Class 0x%X\n",
+            CommonHeader->PlatformClass);
+        Status = AE_ERROR;
+        break;
+    }
+
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("\n**** Cannot disassemble TCPA table\n");
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpVrtc
  *
  * PARAMETERS:  Table               - A VRTC table
