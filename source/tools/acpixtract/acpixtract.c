@@ -738,7 +738,7 @@ AxListTables (
     FILE                    *InputFile;
     size_t                  HeaderSize;
     unsigned char           Header[48];
-    int                     TableCount = 0;
+    unsigned int            TableCount = 0;
     ACPI_TABLE_HEADER       *TableHeader = (ACPI_TABLE_HEADER *) (void *) Header;
 
 
