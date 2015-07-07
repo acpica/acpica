@@ -187,7 +187,7 @@ typedef struct ah_asl_keyword
 typedef struct ah_directive_info
 {
     char            *Name;
-    char            *Operands;
+    char            *Description;
 
 } AH_DIRECTIVE_INFO;
 

@@ -172,6 +172,18 @@ AhPrintOneField (
     const char              *Field);
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AhDisplayDirectives
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display all iASL preprocessor directives.
+ *
+ ******************************************************************************/
+
 void
 AhDisplayDirectives (
     void)
@@ -179,11 +191,11 @@ AhDisplayDirectives (
     const AH_DIRECTIVE_INFO *Info;
 
 
-    printf ("iASL Preprocessor directives:\n\n");
+    printf ("iASL Preprocessor Directives\n\n");
 
     for (Info = PreprocessorDirectives; Info->Name; Info++)
     {
-        printf ("%16s : %s\n", Info->Name, Info->Operands);
+        printf ("  %-36s : %s\n", Info->Name, Info->Description);
     }
 }
 
