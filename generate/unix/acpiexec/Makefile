@@ -58,6 +58,7 @@ OBJECTS = \
 	$(OBJDIR)/dbinput.o\
 	$(OBJDIR)/dbmethod.o\
 	$(OBJDIR)/dbnames.o\
+	$(OBJDIR)/dbobject.o\
 	$(OBJDIR)/dbstats.o\
 	$(OBJDIR)/dbtest.o\
 	$(OBJDIR)/dbutils.o\
@@ -66,7 +67,6 @@ OBJECTS = \
 	$(OBJDIR)/dmcstyle.o\
 	$(OBJDIR)/dmdeferred.o\
 	$(OBJDIR)/dmnames.o\
-	$(OBJDIR)/dmobject.o\
 	$(OBJDIR)/dmopcode.o\
 	$(OBJDIR)/dmresrc.o\
 	$(OBJDIR)/dmresrcl.o\

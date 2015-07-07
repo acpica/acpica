@@ -117,7 +117,9 @@
 #include "accommon.h"
 #include "amlcode.h"
 #include "acdebug.h"
+#ifdef ACPI_DISASSEMBLER
 #include "acdisasm.h"
+#endif
 
 
 #ifdef ACPI_DEBUGGER
@@ -384,7 +386,9 @@ AcpiDbSingleStep (
 
         /* Now we can display it */
 
+#ifdef ACPI_DISASSEMBLER
         AcpiDmDisassemble (WalkState, DisplayOp, ACPI_UINT32_MAX);
+#endif
 
         if ((Op->Common.AmlOpcode == AML_IF_OP) ||
             (Op->Common.AmlOpcode == AML_WHILE_OP))
