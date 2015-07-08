@@ -248,7 +248,7 @@ const AH_DIRECTIVE_INFO      PreprocessorDirectives[] =
 
     {"",   ""},
     {"#error \"String\"",                   "Emit error message and abort compilation"},
-    {"#warning",                            "Emit an iASL warning at this location in the ASL source"},
+    {"#warning \"String\"",                 "Emit an iASL warning at this location in the ASL source"},
 
     {"",  ""},
     {"#pragma disable (Error number)",      "Disable an iASL error or warning number"},

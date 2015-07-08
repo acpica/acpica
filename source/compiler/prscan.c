@@ -192,7 +192,6 @@ static const PR_DIRECTIVE_INFO      Gbl_DirectiveInfo[] =
     {"include",         0}, /* Argument is not standard format, so just use 0 here */
     {"includebuffer",   0}, /* Argument is not standard format, so just use 0 here */
     {"line",            1},
-    {"loadbuffer",      0},
     {"pragma",          1},
     {"undef",           1},
     {"warning",         1},
@@ -216,7 +215,7 @@ enum Gbl_DirectiveIndexes
     PR_DIRECTIVE_LINE,
     PR_DIRECTIVE_PRAGMA,
     PR_DIRECTIVE_UNDEF,
-    PR_DIRECTIVE_WARNING,
+    PR_DIRECTIVE_WARNING
 };
 
 #define ASL_DIRECTIVE_NOT_FOUND     -1
@@ -907,6 +906,9 @@ PrDoDirective (
 
         PrError (ASL_WARNING, ASL_MSG_WARNING_DIRECTIVE,
             THIS_TOKEN_OFFSET (Token));
+
+        Gbl_SourceLine = 0;
+        Gbl_NextError = Gbl_ErrorLog;
         break;
 
     default:
