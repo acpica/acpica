@@ -400,7 +400,7 @@ PrPreprocessInputFile (
 
     PrGetNextLineInit ();
 
-    /* Scan line-by-line. Comments and blank lines are skipped by this function */
+    /* Scan source line-by-line and process directives. Then write the .i file */
 
     while ((Status = PrGetNextLine (Gbl_Files[ASL_FILE_INPUT].Handle)) != ASL_EOF)
     {
@@ -935,7 +935,9 @@ SyntaxError:
  ******************************************************************************/
 
 #define PR_NORMAL_TEXT          0
-#define PR_WITHIN_COMMENT       1
+#define PR_MULTI_LINE_COMMENT   1
+#define PR_SINGLE_LINE_COMMENT  2
+#define PR_QUOTED_STRING        3
 
 static UINT8                    AcpiGbl_LineScanState = PR_NORMAL_TEXT;
 
@@ -976,22 +978,55 @@ PrGetNextLine (
             return (ASL_EOF);
         }
 
-        /* We need to worry about multi-line slash-asterisk comments */
+        /* Update state machine as necessary */
 
-        /* Check for comment open */
-
-        if ((AcpiGbl_LineScanState == PR_NORMAL_TEXT) &&
-            (PreviousChar == '/') && (c == '*'))
+        switch (AcpiGbl_LineScanState)
         {
-            AcpiGbl_LineScanState = PR_WITHIN_COMMENT;
-        }
+        case PR_NORMAL_TEXT:
 
-        /* Check for comment close */
+            /* Check for multi-line comment start */
 
-        if ((AcpiGbl_LineScanState == PR_WITHIN_COMMENT) &&
-            (PreviousChar == '*') && (c == '/'))
-        {
-            AcpiGbl_LineScanState = PR_NORMAL_TEXT;
+            if ((PreviousChar == '/') && (c == '*'))
+            {
+                AcpiGbl_LineScanState = PR_MULTI_LINE_COMMENT;
+            }
+
+            /* Check for single-line comment start */
+
+            else if ((PreviousChar == '/') && (c == '/'))
+            {
+                AcpiGbl_LineScanState = PR_SINGLE_LINE_COMMENT;
+            }
+
+            /* Check for quoted string start */
+
+            else if (PreviousChar == '"')
+            {
+                AcpiGbl_LineScanState = PR_QUOTED_STRING;
+            }
+            break;
+
+        case PR_QUOTED_STRING:
+
+            if (PreviousChar == '"')
+            {
+                AcpiGbl_LineScanState = PR_NORMAL_TEXT;
+            }
+            break;
+
+        case PR_MULTI_LINE_COMMENT:
+
+            /* Check for multi-line comment end */
+
+            if ((PreviousChar == '*') && (c == '/'))
+            {
+                AcpiGbl_LineScanState = PR_NORMAL_TEXT;
+            }
+            break;
+
+        case PR_SINGLE_LINE_COMMENT: /* Just ignore text until EOL */
+        default:
+            break;
         }
 
         /* Always copy the character into line buffer */
@@ -1005,10 +1040,21 @@ PrGetNextLine (
         {
             /* Handle multi-line comments */
 
-            if (AcpiGbl_LineScanState == PR_WITHIN_COMMENT)
+            if (AcpiGbl_LineScanState == PR_MULTI_LINE_COMMENT)
             {
                 return (ASL_WITHIN_COMMENT);
             }
+
+            /* End of single-line comment */
+
+            if (AcpiGbl_LineScanState == PR_SINGLE_LINE_COMMENT)
+            {
+                AcpiGbl_LineScanState = PR_NORMAL_TEXT;
+                return (AE_OK);
+            }
+
+            /* Blank line */
+
             if (i == 1)
             {
                 return (ASL_BLANK_LINE);
