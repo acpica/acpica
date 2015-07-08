@@ -551,6 +551,16 @@ PrDoDirective (
     }
 
     /*
+     * Emit a line directive into the preprocessor file (.pre) after
+     * every matched directive. This is passed through to the compiler
+     * so that error/warning messages are kept in sync with the
+     * original source file.
+     */
+    FlPrintFile (ASL_FILE_PREPROCESSOR, "#line %u \"%s\" // #%s\n",
+        Gbl_CurrentLineNumber, Gbl_Files[ASL_FILE_INPUT].Filename,
+        Gbl_DirectiveInfo[Directive].Name);
+
+    /*
      * If we are currently ignoring this block and we encounter a #else or
      * #elif, we must ignore their blocks also if the parent block is also
      * being ignored.
