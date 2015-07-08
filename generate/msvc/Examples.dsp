@@ -137,6 +137,10 @@ SOURCE=..\..\source\components\dispatcher\dscontrol.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\dispatcher\dsdebug.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\dispatcher\dsfield.c
 # End Source File
 # Begin Source File
@@ -542,6 +546,10 @@ SOURCE=..\..\source\components\utilities\utmisc.c
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utmutex.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utnonansi.c
 # End Source File
 # Begin Source File
 
