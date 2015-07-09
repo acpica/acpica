@@ -192,7 +192,7 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
+			Name="Source"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<Filter
@@ -3586,7 +3586,7 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Header Files"
+			Name="Standard Headers"
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
@@ -3750,10 +3750,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath="AcpiSubsystem.plg"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

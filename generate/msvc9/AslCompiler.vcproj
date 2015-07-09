@@ -232,7 +232,7 @@
 	</References>
 	<Files>
 		<Filter
-			Name="ACPICA Source Files"
+			Name="ACPICA Source"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<Filter
@@ -2376,7 +2376,7 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Header Files"
+			Name="Local Headers"
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
@@ -2413,7 +2413,7 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="iASL Source Files"
+			Name="Compiler Source"
 			>
 			<Filter
 				Name="Compiler Parsers"
@@ -2592,7 +2592,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Compiler"
+				Name="ASL Compiler"
 				>
 				<File
 					RelativePath="..\..\source\compiler\aslanalyze.c"
@@ -3368,7 +3368,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="DataCompiler"
+				Name="Data Table Compiler"
 				>
 				<File
 					RelativePath="..\..\source\compiler\dtcompile.c"
@@ -3551,7 +3551,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Intermediate"
+				Name="Intermediate Output"
 				Filter="*.c, *.h"
 				>
 				<File

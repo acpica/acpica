@@ -227,11 +227,11 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
+			Name="Source"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<Filter
-				Name="AcpiDump"
+				Name="Local"
 				>
 				<File
 					RelativePath="..\..\source\tools\acpidump\apdump.c"
@@ -375,7 +375,7 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Header Files"
+			Name="Local Headers"
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File

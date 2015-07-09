@@ -227,7 +227,7 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
+			Name="Source"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<Filter
@@ -3657,7 +3657,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="ApiTest"
+				Name="Local"
 				>
 				<File
 					RelativePath="..\..\tests\aapits\atexec.c"
@@ -3970,7 +3970,7 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Header Files"
+			Name="Local Headers"
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File

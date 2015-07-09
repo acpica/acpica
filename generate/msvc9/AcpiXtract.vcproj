@@ -223,34 +223,9 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
+			Name="Source"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
-			<File
-				RelativePath="..\..\source\tools\AcpiXtract\acpixtract.c"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-						BrowseInformation="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\source\tools\acpixtract\axmain.c"
-				>
-			</File>
 			<Filter
 				Name="Utilities"
 				>
@@ -315,9 +290,38 @@
 					</FileConfiguration>
 				</File>
 			</Filter>
+			<Filter
+				Name="Local"
+				>
+				<File
+					RelativePath="..\..\source\tools\AcpiXtract\acpixtract.c"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+							BrowseInformation="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\tools\acpixtract\axmain.c"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
-			Name="Header Files"
+			Name="Standard Headers"
 			Filter="h;hpp;hxx;hm;inl"
 			>
 		</Filter>

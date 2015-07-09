@@ -222,11 +222,11 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
+			Name="Source"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<Filter
-				Name="AcpiHelp"
+				Name="Local"
 				Filter=".c"
 				>
 				<File
@@ -258,10 +258,6 @@
 					RelativePath="..\..\source\tools\acpihelp\ahmain.c"
 					>
 				</File>
-				<File
-					RelativePath="..\..\source\common\ahtable.c"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Common"
@@ -273,6 +269,10 @@
 				</File>
 				<File
 					RelativePath="..\..\source\common\ahpredef.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\common\ahtable.c"
 					>
 				</File>
 				<File
@@ -368,13 +368,17 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Header Files"
+			Name="Local Headers"
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
 				RelativePath="..\..\source\tools\acpihelp\acpihelp.h"
 				>
 			</File>
+		</Filter>
+		<Filter
+			Name="Standard Headers"
+			>
 			<File
 				RelativePath="..\..\source\include\acuuid.h"
 				>
