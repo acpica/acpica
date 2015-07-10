@@ -120,6 +120,7 @@
 #include "acdisasm.h"
 #include "acinterp.h"
 #include "acnamesp.h"
+#include "acdebug.h"
 
 #ifdef ACPI_DISASSEMBLER
 
@@ -1039,7 +1040,7 @@ AcpiDmDisassembleOneOp (
             (WalkState->Results) &&
             (WalkState->ResultCount))
         {
-            AcpiDmDecodeInternalObject (
+            AcpiDbDecodeInternalObject (
                 WalkState->Results->Results.ObjDesc [
                     (WalkState->ResultCount - 1) %
                         ACPI_RESULTS_FRAME_OBJ_NUM]);

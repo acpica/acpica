@@ -503,6 +503,32 @@ AcpiDbGetNextToken (
 
 
 /*
+ * dbobject
+ */
+void
+AcpiDbDecodeInternalObject (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
+
+void
+AcpiDbDisplayInternalObject (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_WALK_STATE         *WalkState);
+
+void
+AcpiDbDecodeArguments (
+    ACPI_WALK_STATE         *WalkState);
+
+void
+AcpiDbDecodeLocals (
+    ACPI_WALK_STATE         *WalkState);
+
+void
+AcpiDbDumpMethodInfo (
+    ACPI_STATUS             Status,
+    ACPI_WALK_STATE         *WalkState);
+
+
+/*
  * dbstats - Generation and display of ACPI table statistics
  */
 void
