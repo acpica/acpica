@@ -606,9 +606,6 @@ Exit:
     {
         ACPI_TRACE_POINT (ACPI_TRACE_AML_METHOD, TRUE,
                 ObjDesc ? ObjDesc->Method.AmlStart : NULL, Pathname);
-        if (Pathname)
-        {
-        }
     }
     if (Pathname)
     {
@@ -665,9 +662,6 @@ AcpiExStopTraceMethod (
     {
         ACPI_TRACE_POINT (ACPI_TRACE_AML_METHOD, FALSE,
                 ObjDesc ? ObjDesc->Method.AmlStart : NULL, Pathname);
-        if (Pathname)
-        {
-        }
     }
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
