@@ -2121,28 +2121,6 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\SOURCE\COMPONENTS\disassembler\dmobject.c"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath="..\..\source\COMPONENTS\Disassembler\dmopcode.c"
 					>
 					<FileConfiguration
@@ -2461,6 +2439,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\debugger\dbobject.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\COMPONENTS\DEBUGGER\dbstats.c"

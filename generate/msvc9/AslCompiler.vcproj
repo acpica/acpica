@@ -965,28 +965,6 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\SOURCE\COMPONENTS\disassembler\dmobject.c"
-					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath="..\..\source\COMPONENTS\disassembler\dmopcode.c"
 					>
 					<FileConfiguration
