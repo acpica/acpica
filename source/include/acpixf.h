@@ -1280,4 +1280,12 @@ AcpiLogError (
     const char              *Format,
     ...))
 
+ACPI_STATUS
+AcpiInitializeDebugger (
+    void);
+
+void
+AcpiTerminateDebugger (
+    void);
+
 #endif /* __ACXFACE_H__ */

@@ -171,14 +171,6 @@ AcpiTerminate (
 
     AcpiUtMutexTerminate ();
 
-
-#ifdef ACPI_DEBUGGER
-
-    /* Shut down the debugger */
-
-    AcpiDbTerminate ();
-#endif
-
     /* Now we can shutdown the OS-dependent layer */
 
     Status = AcpiOsTerminate ();

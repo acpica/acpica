@@ -161,14 +161,6 @@ typedef struct acpi_db_execute_walk
  * dbxface - external debugger interfaces
  */
 ACPI_STATUS
-AcpiDbInitialize (
-    void);
-
-void
-AcpiDbTerminate (
-    void);
-
-ACPI_STATUS
 AcpiDbSingleStep (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op,

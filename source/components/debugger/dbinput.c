@@ -1399,6 +1399,10 @@ AcpiDbUserCommands (
         }
     }
 
+    /* Shut down the debugger */
+
+    AcpiTerminateDebugger ();
+
     /*
      * Only this thread (the original thread) should actually terminate the
      * subsystem, because all the semaphores are deleted during termination

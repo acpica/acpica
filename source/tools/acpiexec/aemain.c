@@ -546,6 +546,15 @@ main (
     AcpiGbl_MaxLoopIterations = 400;
 
 
+    /* Initialize the AML debugger */
+
+    Status = AcpiInitializeDebugger ();
+    AE_CHECK_OK (AcpiInitializeDebugger, Status);
+    if (ACPI_FAILURE (Status))
+    {
+        goto ErrorExit;
+    }
+
     printf (ACPI_COMMON_SIGNON (ACPIEXEC_NAME));
     if (argc < 2)
     {
@@ -715,6 +724,10 @@ EnterDebugger:
     case AE_MODE_BATCH_SINGLE:
 
         AcpiDbExecute (BatchBuffer, NULL, NULL, EX_NO_SINGLE_STEP);
+
+        /* Shut down the debugger */
+
+        AcpiTerminateDebugger ();
         Status = AcpiTerminate ();
         break;
     }
@@ -779,6 +792,9 @@ AcpiDbRunBatchMode (
         }
     }
 
+    /* Shut down the debugger */
+
+    AcpiTerminateDebugger ();
     Status = AcpiTerminate ();
     return (Status);
 }

@@ -473,7 +473,7 @@ AcpiDbSingleStep (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDbInitialize
+ * FUNCTION:    AcpiInitializeDebugger
  *
  * PARAMETERS:  None
  *
@@ -484,13 +484,13 @@ AcpiDbSingleStep (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiDbInitialize (
+AcpiInitializeDebugger (
     void)
 {
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE (DbInitialize);
+    ACPI_FUNCTION_TRACE (AcpiInitializeDebugger);
 
 
     /* Init globals */
@@ -558,10 +558,12 @@ AcpiDbInitialize (
     return_ACPI_STATUS (AE_OK);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiInitializeDebugger)
+
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDbTerminate
+ * FUNCTION:    AcpiTerminateDebugger
  *
  * PARAMETERS:  None
  *
@@ -572,7 +574,7 @@ AcpiDbInitialize (
  ******************************************************************************/
 
 void
-AcpiDbTerminate (
+AcpiTerminateDebugger (
     void)
 {
 
@@ -586,6 +588,8 @@ AcpiDbTerminate (
 
     AcpiGbl_DbOutputFlags = ACPI_DB_DISABLE_OUTPUT;
 }
+
+ACPI_EXPORT_SYMBOL (AcpiTerminateDebugger)
 
 
 #ifdef ACPI_OBSOLETE_FUNCTIONS
