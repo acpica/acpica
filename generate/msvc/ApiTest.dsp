@@ -645,6 +645,10 @@ SOURCE=..\..\source\components\debugger\dbnames.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\debugger\dbobject.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbstats.c
 # End Source File
 # Begin Source File
@@ -866,10 +870,6 @@ SOURCE=..\..\source\components\disassembler\dmdeferred.c
 # Begin Source File
 
 SOURCE=..\..\source\COMPONENTS\Disassembler\dmnames.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\SOURCE\COMPONENTS\disassembler\dmobject.c
 # End Source File
 # Begin Source File
 
