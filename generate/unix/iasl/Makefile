@@ -37,12 +37,12 @@ HEADERS = \
     $(OBJDIR)/prparser.y.h
 
 OBJECTS = \
+	$(OBJDIR)/aslcompiler.o\
 	$(OBJDIR)/aslcompilerlex.o\
-	$(OBJDIR)/aslcompilerparse.o\
+	$(OBJDIR)/dtparser.o\
 	$(OBJDIR)/dtparserlex.o\
-	$(OBJDIR)/dtparserparse.o\
+	$(OBJDIR)/prparser.o\
 	$(OBJDIR)/prparserlex.o\
-	$(OBJDIR)/prparserparse.o\
 	$(OBJDIR)/adfile.o\
 	$(OBJDIR)/adisasm.o\
 	$(OBJDIR)/adwalk.o\
@@ -221,13 +221,13 @@ OBJECTS = \
 	$(OBJDIR)/utxferror.o
 
 INTERMEDIATES = \
+	$(OBJDIR)/aslcompiler.c\
 	$(OBJDIR)/aslcompiler.y\
 	$(OBJDIR)/aslcompilerlex.c\
-	$(OBJDIR)/aslcompilerparse.c\
+	$(OBJDIR)/dtparser.c\
 	$(OBJDIR)/dtparserlex.c\
-	$(OBJDIR)/dtparserparse.c\
-	$(OBJDIR)/prparserlex.c\
-	$(OBJDIR)/prparserparse.c
+	$(OBJDIR)/prparser.c\
+	$(OBJDIR)/prparserlex.c
 
 MISC = \
 	$(OBJDIR)/aslcompiler.y.h\
@@ -264,7 +264,7 @@ include ../Makefile.rules
 # Macro processing for iASL .y files
 #
 $(OBJDIR)/aslcompiler.y :      $(ASL_PARSER)
-	$(MACROPROC) $(MFLAGS) $(ASL_COMPILER)/aslparser.y > $(OBJDIR)/aslcompiler.y
+	$(MACROPROC) $(MFLAGS) $(ASL_COMPILER)/aslparser.y > $@
 
 #
 # Parser and Lexer - intermediate C files
@@ -275,7 +275,7 @@ $(OBJDIR)/aslcompilerlex.c :   $(ASL_LEXER)
 $(OBJDIR)/aslcompiler.y.h :    $(OBJDIR)/aslcompiler.y
 	$(YACC) $(YFLAGS) -pAslCompiler -o/dev/null --defines=$@ $<
 
-$(OBJDIR)/aslcompilerparse.c : $(OBJDIR)/aslcompiler.y
+$(OBJDIR)/aslcompiler.c :      $(OBJDIR)/aslcompiler.y
 	$(YACC) $(YFLAGS) -pAslCompiler -o$@ --defines=/dev/null $<
 
 $(OBJDIR)/dtparserlex.c :      $(ASL_COMPILER)/dtparser.l $(OBJDIR)/dtparser.y.h
@@ -284,7 +284,7 @@ $(OBJDIR)/dtparserlex.c :      $(ASL_COMPILER)/dtparser.l $(OBJDIR)/dtparser.y.h
 $(OBJDIR)/dtparser.y.h :       $(ASL_COMPILER)/dtparser.y
 	$(YACC) $(YFLAGS) -pDtParser -o/dev/null --defines=$@ $<
 
-$(OBJDIR)/dtparserparse.c :    $(ASL_COMPILER)/dtparser.y
+$(OBJDIR)/dtparser.c :         $(ASL_COMPILER)/dtparser.y
 	$(YACC) $(YFLAGS) -pDtParser -o$@ --defines=/dev/null $<
 
 $(OBJDIR)/prparserlex.c :      $(ASL_COMPILER)/prparser.l $(OBJDIR)/prparser.y.h
@@ -293,7 +293,7 @@ $(OBJDIR)/prparserlex.c :      $(ASL_COMPILER)/prparser.l $(OBJDIR)/prparser.y.h
 $(OBJDIR)/prparser.y.h :       $(ASL_COMPILER)/prparser.y
 	$(YACC) $(YFLAGS) -pPrParser -o/dev/null --defines=$@ $<
 
-$(OBJDIR)/prparserparse.c :    $(ASL_COMPILER)/prparser.y
+$(OBJDIR)/prparser.c :         $(ASL_COMPILER)/prparser.y
 	$(YACC) $(YFLAGS) -pPrParser -o$@ --defines=/dev/null $<
 
 
@@ -306,17 +306,17 @@ $(OBJDIR)/prparserparse.c :    $(ASL_COMPILER)/prparser.y
 $(OBJDIR)/aslcompilerlex.o :   $(OBJDIR)/aslcompilerlex.c
 	$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
 
-$(OBJDIR)/aslcompilerparse.o : $(OBJDIR)/aslcompilerparse.c
+$(OBJDIR)/aslcompiler.o :      $(OBJDIR)/aslcompiler.c
 	$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
 
 $(OBJDIR)/dtparserlex.o :      $(OBJDIR)/dtparserlex.c
 	$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
 
-$(OBJDIR)/dtparserparse.o :    $(OBJDIR)/dtparserparse.c
+$(OBJDIR)/dtparser.o :         $(OBJDIR)/dtparser.c
 	$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
 
 $(OBJDIR)/prparserlex.o :      $(OBJDIR)/prparserlex.c
 	$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
 
-$(OBJDIR)/prparserparse.o :    $(OBJDIR)/prparserparse.c
+$(OBJDIR)/prparser.o :         $(OBJDIR)/prparser.c
 	$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
