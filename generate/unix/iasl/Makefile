@@ -106,7 +106,6 @@ OBJECTS = \
 	$(OBJDIR)/dmdeferred.o\
 	$(OBJDIR)/dmextern.o\
 	$(OBJDIR)/dmnames.o\
-	$(OBJDIR)/dmobject.o\
 	$(OBJDIR)/dmopcode.o\
 	$(OBJDIR)/dmresrc.o\
 	$(OBJDIR)/dmresrcl.o\
