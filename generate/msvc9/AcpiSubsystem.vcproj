@@ -393,6 +393,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\utfileio.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utglobal.c"
 					>
 					<FileConfiguration
@@ -413,6 +417,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\uthex.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utids.c"
@@ -654,6 +662,14 @@
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utstring.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\uttrack.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utuuid.c"
 					>
 				</File>
 				<File
