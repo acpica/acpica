@@ -264,12 +264,12 @@ include ../Makefile.rules
 # Function to safely execute yacc
 #
 safe_yacc = \
-	_f=`echo $(1) | tr '[:upper:]' '[:lower:]'`;\
-	_t=`basename $(3)`;\
-	_d=`mktemp -d $(OBJDIR)/$$_f.XXXXXX`;\
-	$(YACC) $(YFLAGS) -p$(1) -o$$_d/$$_f.c -d $(2);\
+	_d=`mktemp -d $(OBJDIR)/$$_f.XXXXXX` &&\
+	_f=`echo $(1) | tr '[:upper:]' '[:lower:]'` &&\
+	_t=`basename $(3)` &&\
+	$(YACC) $(YFLAGS) -p$(1) -o$$_d/$$_f.c -d $(2) &&\
 	mv $$_d/$$_f.$${_t\#\#*.} $(3);\
-	rm -fr $$_d
+	test -d $$_d && rm -fr $$_d
 
 #
 # Macro processing for iASL .y files
