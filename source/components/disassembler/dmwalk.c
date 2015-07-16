@@ -487,6 +487,21 @@ AcpiDmDescendingOp (
     UINT32                  AmlOffset;
 
 
+    if (AcpiGbl_DbOpt_Verbose && AcpiGbl_PreviousOp)
+    {
+        /* Dump the entire statement in AML byte code */
+
+        if (Op->Common.Aml > AcpiGbl_PreviousOp->Common.Aml)
+        {
+            AcpiOsPrintf ("\n");
+            AcpiUtDumpBuffer (AcpiGbl_PreviousOp->Common.Aml,
+                (Op->Common.Aml - AcpiGbl_PreviousOp->Common.Aml),
+                DB_BYTE_DISPLAY, 0);
+            AcpiDmIndent (Level);
+        }
+    }
+    AcpiGbl_PreviousOp = Op;
+
     if (Op->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)
     {
         /* Ignore this op -- it was handled elsewhere */

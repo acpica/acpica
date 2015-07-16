@@ -259,6 +259,7 @@ AdInitialize (
     AcpiGbl_RootTableList.CurrentTableCount = 0;
     AcpiGbl_RootTableList.Tables = LocalTables;
 
+    AcpiGbl_PreviousOp = NULL;
     return (Status);
 }
 
