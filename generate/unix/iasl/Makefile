@@ -283,19 +283,19 @@ $(OBJDIR)/aslcompiler.y :      $(ASL_PARSER)
 $(OBJDIR)/aslcompilerlex.c :   $(ASL_LEXER)
 	$(LEX) $(LFLAGS) -PAslCompiler -o$@ $(ASL_COMPILER)/aslcompiler.l
 
-$(OBJDIR)/aslcompiler.y.h $(OBJDIR)/aslcompiler.c :	$(OBJDIR)/aslcompiler.y
+$(OBJDIR)/aslcompiler.c $(OBJDIR)/aslcompiler.y.h :	$(OBJDIR)/aslcompiler.y
 	$(call safe_yacc,AslCompiler,$<,$@)
 
 $(OBJDIR)/dtparserlex.c :      $(ASL_COMPILER)/dtparser.l $(OBJDIR)/dtparser.y.h
 	$(LEX) $(LFLAGS) -PDtParser -o$@ $<
 
-$(OBJDIR)/dtparser.y.h $(OBJDIR)/dtparser.c :   $(ASL_COMPILER)/dtparser.y
+$(OBJDIR)/dtparser.c $(OBJDIR)/dtparser.y.h :	$(ASL_COMPILER)/dtparser.y
 	$(call safe_yacc,DtParser,$<,$@)
 
 $(OBJDIR)/prparserlex.c :      $(ASL_COMPILER)/prparser.l $(OBJDIR)/prparser.y.h
 	$(LEX) $(LFLAGS) -PPrParser -o$@ $<
 
-$(OBJDIR)/prparser.y.h $(OBJDIR)/prparser.c :	$(ASL_COMPILER)/prparser.y
+$(OBJDIR)/prparser.c $(OBJDIR)/prparser.y.h :	$(ASL_COMPILER)/prparser.y
 	$(call safe_yacc,PrParser,$<,$@)
 
 #
