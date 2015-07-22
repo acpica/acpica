@@ -187,6 +187,8 @@ AcpiTbLoadNamespace (
     ACPI_STATUS             Status;
     UINT32                  i;
     ACPI_TABLE_HEADER       *NewDsdt;
+    UINT32                  TablesLoaded = 0;
+    UINT32                  TablesFailed = 0;
 
 
     ACPI_FUNCTION_TRACE (TbLoadNamespace);
@@ -246,7 +248,12 @@ AcpiTbLoadNamespace (
     Status = AcpiNsLoadTable (ACPI_TABLE_INDEX_DSDT, AcpiGbl_RootNode);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        ACPI_EXCEPTION ((AE_INFO, Status, "[DSDT] table load failed"));
+        TablesFailed++;
+    }
+    else
+    {
+        TablesLoaded++;
     }
 
     /* Load any SSDT or PSDT tables. Note: Loop leaves tables locked */
@@ -270,11 +277,33 @@ AcpiTbLoadNamespace (
         /* Ignore errors while loading tables, get as many as possible */
 
         (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
-        (void) AcpiNsLoadTable (i, AcpiGbl_RootNode);
+        Status =  AcpiNsLoadTable (i, AcpiGbl_RootNode);
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_EXCEPTION ((AE_INFO, Status, "[%4.4s] table load failed",
+                &AcpiGbl_RootTableList.Tables[i].Signature.Ascii[0]));
+            TablesFailed++;
+        }
+        else
+        {
+            TablesLoaded++;
+        }
+
         (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
     }
 
-    ACPI_INFO ((AE_INFO, "All ACPI Tables successfully acquired"));
+    if (!TablesFailed)
+    {
+        ACPI_INFO ((AE_INFO,
+            "All (%u) ACPI AML tables successfully loaded",
+            TablesLoaded));
+    }
+    else
+    {
+        ACPI_ERROR ((AE_INFO,
+            "%u ACPI AML tables loaded, %u failed",
+            TablesLoaded, TablesFailed));
+    }
 
 UnlockAndExit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);

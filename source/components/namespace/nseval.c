@@ -357,6 +357,7 @@ AcpiNsEvaluate (
 
         if (ACPI_FAILURE (Status))
         {
+            Info->ReturnObject = NULL;
             goto Cleanup;
         }
 
