@@ -552,7 +552,7 @@ AcpiDbInitialize (
         }
     }
 
-    if (!AcpiGbl_DbOpt_Verbose)
+    if (!AcpiGbl_DmOpt_Listing)
     {
         AcpiGbl_DbOpt_Disasm = TRUE;
     }

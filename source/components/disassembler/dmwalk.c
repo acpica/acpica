@@ -487,7 +487,9 @@ AcpiDmDescendingOp (
     UINT32                  AmlOffset;
 
 
-    if (AcpiGbl_DbOpt_Verbose && AcpiGbl_PreviousOp)
+    /* Listing support to dump the AML code after the ASL statement */
+
+    if (AcpiGbl_DmOpt_Listing && AcpiGbl_PreviousOp)
     {
         /* Dump the entire statement in AML byte code */
 

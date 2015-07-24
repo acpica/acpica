@@ -360,7 +360,7 @@ AslDoOptions (
 
         case 'v':
 
-            AcpiGbl_DbOpt_Verbose = TRUE;
+            AcpiGbl_DmOpt_Listing = TRUE;
             break;
 
         default:

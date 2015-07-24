@@ -384,6 +384,7 @@ ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_IgnoreNoopOperator, FALSE);
 ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_CstyleDisassembly, TRUE);
 ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_ForceAmlDisassembly, FALSE);
 ACPI_INIT_GLOBAL (ACPI_PARSE_OBJECT *,  AcpiGbl_PreviousOp, NULL);
+ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_DmOpt_Listing);
 
 ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_DbOpt_Disasm);
 ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_DbOpt_Verbose);
