@@ -486,6 +486,8 @@ AcpiDmValidateName (
     char                    *Name,
     ACPI_PARSE_OBJECT       *Op)
 {
+    ACPI_PARSE_OBJECT       *TargetOp;
+
 
     if ((!Name) ||
         (!Op->Common.Parent))
@@ -498,9 +500,6 @@ AcpiDmValidateName (
         AcpiOsPrintf (
             " /**** Name not found or not accessible from this scope ****/ ");
     }
-
-    ACPI_PARSE_OBJECT       *TargetOp;
-
 
     if ((!Name) ||
         (!Op->Common.Parent))
