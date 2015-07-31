@@ -295,13 +295,13 @@ AcpiTbLoadNamespace (
     if (!TablesFailed)
     {
         ACPI_INFO ((AE_INFO,
-            "All (%u) ACPI AML tables successfully loaded",
+            "%u ACPI AML tables successfully acquired and loaded",
             TablesLoaded));
     }
     else
     {
         ACPI_ERROR ((AE_INFO,
-            "%u ACPI AML tables loaded, %u failed",
+            "%u ACPI AML tables successfully acquired and loaded, %u failed",
             TablesLoaded, TablesFailed));
     }
 
