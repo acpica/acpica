@@ -205,7 +205,7 @@ AcpiDsMethodDataInitArgs (
 
 
 static ACPI_TABLE_DESC      LocalTables[1];
-ACPI_PARSE_OBJECT    *AcpiGbl_ParseOpRoot;
+static ACPI_PARSE_OBJECT    *AcpiGbl_ParseOpRoot;
 
 
 /*******************************************************************************
@@ -259,7 +259,6 @@ AdInitialize (
     AcpiGbl_RootTableList.CurrentTableCount = 0;
     AcpiGbl_RootTableList.Tables = LocalTables;
 
-    AcpiGbl_PreviousOp = NULL;
     return (Status);
 }
 

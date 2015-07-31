@@ -552,11 +552,6 @@ AcpiDbInitialize (
         }
     }
 
-    if (!AcpiGbl_DmOpt_Listing)
-    {
-        AcpiGbl_DbOpt_Disasm = TRUE;
-    }
-
     return_ACPI_STATUS (AE_OK);
 }
 
