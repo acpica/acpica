@@ -554,6 +554,7 @@ AeInstallTables (
     ACPI_STATUS             Status;
     ACPI_TABLE_HEADER       Header;
     ACPI_TABLE_HEADER       *Table;
+    UINT32                  i;
 
 
     Status = AcpiInitializeTables (Tables, ACPI_MAX_INIT_TABLES, TRUE);
@@ -606,6 +607,18 @@ AeInstallTables (
 
         Status = AcpiGetTable (ACPI_SIG_UEFI, 3, &Table);
         AE_CHECK_STATUS (AcpiGetTable, Status, AE_NOT_FOUND);
+    }
+
+    /* Check that we can get all of the ACPI tables */
+
+    for (i = 0; ; i++)
+    {
+        Status = AcpiGetTableByIndex (i, &Table);
+        if ((Status == AE_BAD_PARAMETER) || !Table)
+        {
+            break;
+        }
+        AE_CHECK_OK (AcpiGetTableByIndex, Status);
     }
 
     return (AE_OK);
