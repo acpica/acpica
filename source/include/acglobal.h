@@ -137,8 +137,6 @@ ACPI_INIT_GLOBAL (UINT32,               AcpiGbl_XFacsIndex, ACPI_INVALID_TABLE_I
 
 #if (!ACPI_REDUCED_HARDWARE)
 ACPI_GLOBAL (ACPI_TABLE_FACS *,         AcpiGbl_FACS);
-ACPI_GLOBAL (ACPI_TABLE_FACS *,         AcpiGbl_Facs32);
-ACPI_GLOBAL (ACPI_TABLE_FACS *,         AcpiGbl_Facs64);
 
 #endif /* !ACPI_REDUCED_HARDWARE */
 

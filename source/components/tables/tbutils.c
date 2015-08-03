@@ -147,6 +147,8 @@ ACPI_STATUS
 AcpiTbInitializeFacs (
     void)
 {
+    ACPI_TABLE_FACS         *Facs;
+
 
     /* If Hardware Reduced flag is set, there is no FACS */
 
@@ -159,14 +161,14 @@ AcpiTbInitializeFacs (
              (!AcpiGbl_FADT.Facs || !AcpiGbl_Use32BitFacsAddresses))
     {
         (void) AcpiGetTableByIndex (AcpiGbl_XFacsIndex,
-                    ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &AcpiGbl_Facs32));
-        AcpiGbl_FACS = AcpiGbl_Facs32;
+                    ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &Facs));
+        AcpiGbl_FACS = Facs;
     }
     else if (AcpiGbl_FADT.Facs)
     {
         (void) AcpiGetTableByIndex (AcpiGbl_FacsIndex,
-                    ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &AcpiGbl_Facs64));
-        AcpiGbl_FACS = AcpiGbl_Facs64;
+                    ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &Facs));
+        AcpiGbl_FACS = Facs;
     }
 
     /* If there is no FACS, just continue. There was already an error msg */
