@@ -155,19 +155,18 @@ AcpiTbInitializeFacs (
         AcpiGbl_FACS = NULL;
         return (AE_OK);
     }
-
-    (void) AcpiGetTableByIndex (ACPI_TABLE_INDEX_FACS,
-                ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &AcpiGbl_Facs32));
-    (void) AcpiGetTableByIndex (ACPI_TABLE_INDEX_X_FACS,
-                ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &AcpiGbl_Facs64));
-
-    if (AcpiGbl_Facs64 && (!AcpiGbl_Facs32 || !AcpiGbl_Use32BitFacsAddresses))
+    else if (AcpiGbl_FADT.XFacs &&
+             (!AcpiGbl_FADT.Facs || !AcpiGbl_Use32BitFacsAddresses))
     {
-        AcpiGbl_FACS = AcpiGbl_Facs64;
-    }
-    else if (AcpiGbl_Facs32)
-    {
+        (void) AcpiGetTableByIndex (AcpiGbl_XFacsIndex,
+                    ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &AcpiGbl_Facs32));
         AcpiGbl_FACS = AcpiGbl_Facs32;
+    }
+    else if (AcpiGbl_FADT.Facs)
+    {
+        (void) AcpiGetTableByIndex (AcpiGbl_FacsIndex,
+                    ACPI_CAST_INDIRECT_PTR (ACPI_TABLE_HEADER, &AcpiGbl_Facs64));
+        AcpiGbl_FACS = AcpiGbl_Facs64;
     }
 
     /* If there is no FACS, just continue. There was already an error msg */
@@ -278,7 +277,7 @@ AcpiTbCopyDsdt (
     AcpiTbUninstallTable (TableDesc);
 
     AcpiTbInitTableDescriptor (
-        &AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT],
+        &AcpiGbl_RootTableList.Tables[AcpiGbl_DsdtIndex],
         ACPI_PTR_TO_PHYSADDR (NewTable), ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL,
         NewTable);
 
@@ -471,13 +470,6 @@ AcpiTbParseRootTable (
     TableCount = (UINT32) ((Table->Length - sizeof (ACPI_TABLE_HEADER)) /
         TableEntrySize);
     TableEntry = ACPI_ADD_PTR (UINT8, Table, sizeof (ACPI_TABLE_HEADER));
-
-    /*
-     * First three entries in the table array are reserved for the DSDT
-     * and 32bit/64bit FACS, which are not actually present in the
-     * RSDT/XSDT - they come from the FADT
-     */
-    AcpiGbl_RootTableList.CurrentTableCount = 3;
 
     /* Initialize the root table array from the RSDT/XSDT */
 
