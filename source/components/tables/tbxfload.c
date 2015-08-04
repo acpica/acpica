@@ -202,10 +202,10 @@ AcpiTbLoadNamespace (
      */
     if (!AcpiGbl_RootTableList.CurrentTableCount ||
         !ACPI_COMPARE_NAME (
-            &(AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT].Signature),
+            &(AcpiGbl_RootTableList.Tables[AcpiGbl_DsdtIndex].Signature),
             ACPI_SIG_DSDT) ||
          ACPI_FAILURE (AcpiTbValidateTable (
-            &AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT])))
+            &AcpiGbl_RootTableList.Tables[AcpiGbl_DsdtIndex])))
     {
         Status = AE_NO_ACPI_TABLES;
         goto UnlockAndExit;
@@ -217,7 +217,7 @@ AcpiTbLoadNamespace (
      * array can change dynamically as tables are loaded at run-time. Note:
      * .Pointer field is not validated until after call to AcpiTbValidateTable.
      */
-    AcpiGbl_DSDT = AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT].Pointer;
+    AcpiGbl_DSDT = AcpiGbl_RootTableList.Tables[AcpiGbl_DsdtIndex].Pointer;
 
     /*
      * Optionally copy the entire DSDT to local memory (instead of simply
@@ -227,7 +227,7 @@ AcpiTbLoadNamespace (
      */
     if (AcpiGbl_CopyDsdtLocally)
     {
-        NewDsdt = AcpiTbCopyDsdt (ACPI_TABLE_INDEX_DSDT);
+        NewDsdt = AcpiTbCopyDsdt (AcpiGbl_DsdtIndex);
         if (NewDsdt)
         {
             AcpiGbl_DSDT = NewDsdt;
@@ -245,7 +245,7 @@ AcpiTbLoadNamespace (
 
     /* Load and parse tables */
 
-    Status = AcpiNsLoadTable (ACPI_TABLE_INDEX_DSDT, AcpiGbl_RootNode);
+    Status = AcpiNsLoadTable (AcpiGbl_DsdtIndex, AcpiGbl_RootNode);
     if (ACPI_FAILURE (Status))
     {
         ACPI_EXCEPTION ((AE_INFO, Status, "[DSDT] table load failed"));

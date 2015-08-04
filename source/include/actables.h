@@ -308,15 +308,15 @@ AcpiTbCopyDsdt (
 
 void
 AcpiTbInstallTableWithOverride (
-    UINT32                  TableIndex,
     ACPI_TABLE_DESC         *NewTableDesc,
-    BOOLEAN                 Override);
+    BOOLEAN                 Override,
+    UINT32                  *TableIndex);
 
 ACPI_STATUS
 AcpiTbInstallFixedTable (
     ACPI_PHYSICAL_ADDRESS   Address,
     char                    *Signature,
-    UINT32                  TableIndex);
+    UINT32                  *TableIndex);
 
 ACPI_STATUS
 AcpiTbParseRootTable (
