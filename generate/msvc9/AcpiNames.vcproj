@@ -78,6 +78,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="setargv.obj"
 				OutputFile=".\AcpiNamesDebug\AcpiNames.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -181,6 +182,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="setargv.obj"
 				OutputFile=".\AcpiNames\AcpiNames.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -1375,6 +1377,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\components\dispatcher\dsinit.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\dispatcher\dsmthdat.c"
 					>
 					<FileConfiguration
@@ -1583,6 +1589,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\executer\exprep.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exresnte.c"

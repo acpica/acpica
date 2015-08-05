@@ -327,7 +327,7 @@ AcpiDsInitializeObjects (
         return_ACPI_STATUS (Status);
     }
 
-    /* DSDT is always the first table */
+    /* DSDT is always the first AML table */
 
     if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_DSDT))
     {

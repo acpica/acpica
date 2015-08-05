@@ -119,13 +119,31 @@
         ACPI_MODULE_NAME    ("anmain")
 
 
-extern ACPI_TABLE_DESC  Tables[];
+/* Local prototypes */
 
+static int
+NsDumpEntireNamespace (
+    UINT32                  TableCount);
+
+
+/*
+ * Main routine for the ACPI user-space namespace utility.
+ *
+ * Portability note: The utility depends upon the host for command-line
+ * wildcard support - it is not implemented locally. For example:
+ *
+ * Linux/Unix systems: Shell expands wildcards automatically.
+ *
+ * Windows: The setargv.obj module must be linked in to automatically
+ * expand wildcards.
+ */
+extern ACPI_TABLE_DESC  Tables[];
 static AE_TABLE_DESC    *AeTableListHead = NULL;
+BOOLEAN                 AcpiGbl_NsLoadOnly = FALSE;
 
 
 #define AN_UTILITY_NAME             "ACPI Namespace Dump Utility"
-#define AN_SUPPORTED_OPTIONS        "?hv"
+#define AN_SUPPORTED_OPTIONS        "?hlvx:"
 
 
 /******************************************************************************
@@ -147,7 +165,9 @@ usage (
 
     ACPI_USAGE_HEADER ("AcpiNames [options] AMLfile");
     ACPI_OPTION ("-?",                  "Display this message");
+    ACPI_OPTION ("-l",                  "Load namespace only, no display");
     ACPI_OPTION ("-v",                  "Display version information");
+    ACPI_OPTION ("-x <DebugLevel>",     "Debug output level");
 }
 
 
@@ -166,44 +186,11 @@ usage (
 
 static int
 NsDumpEntireNamespace (
-    char                    *AmlFilename)
+    UINT32                  TableCount)
 {
     ACPI_STATUS             Status;
-    ACPI_TABLE_HEADER       *Table = NULL;
-    UINT32                  TableCount = 0;
-    AE_TABLE_DESC           *TableDesc;
     ACPI_HANDLE             Handle;
 
-
-    /* Open the binary AML file and read the entire table */
-
-    Status = AcpiUtReadTableFromFile (AmlFilename, &Table);
-    if (ACPI_FAILURE (Status))
-    {
-        printf ("**** Could not get input table %s, %s\n", AmlFilename,
-            AcpiFormatException (Status));
-        return (-1);
-    }
-
-    /* Table must be a DSDT. SSDTs are not currently supported */
-
-    if (!ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_DSDT))
-    {
-        printf ("**** Input table signature is [%4.4s], must be [DSDT]\n",
-            Table->Signature);
-        return (-1);
-    }
-
-    /*
-     * Allocate and link a table descriptor (allows for future expansion to
-     * multiple input files)
-     */
-    TableDesc = AcpiOsAllocate (sizeof (AE_TABLE_DESC));
-    TableDesc->Table = Table;
-    TableDesc->Next = AeTableListHead;
-    AeTableListHead = TableDesc;
-
-    TableCount++;
 
     /*
      * Build a local XSDT with all tables. Normally, here is where the
@@ -243,6 +230,12 @@ NsDumpEntireNamespace (
         printf ("**** Could not load ACPI tables, %s\n",
             AcpiFormatException (Status));
         return (-1);
+    }
+
+    if (AcpiGbl_NsLoadOnly)
+    {
+        printf ("**** Namespace successfully loaded\n");
+        return (0);
     }
 
     /*
@@ -308,7 +301,10 @@ main (
     int                     argc,
     char                    **argv)
 {
+    AE_TABLE_DESC           *TableDesc;
+    ACPI_TABLE_HEADER       *Table = NULL;
     ACPI_STATUS             Status;
+    UINT32                  TableCount;
     int                     j;
 
 
@@ -337,9 +333,20 @@ main (
 
     while ((j = AcpiGetopt (argc, argv, AN_SUPPORTED_OPTIONS)) != ACPI_OPT_END) switch(j)
     {
+    case 'l':
+
+        AcpiGbl_NsLoadOnly = TRUE;
+        break;
+
     case 'v': /* -v: (Version): signon already emitted, just exit */
 
         return (0);
+
+    case 'x':
+
+        AcpiDbgLevel = strtoul (AcpiGbl_Optarg, NULL, 0);
+        printf ("Debug Level: 0x%8.8X\n", AcpiDbgLevel);
+        break;
 
     case '?':
     case 'h':
@@ -349,9 +356,52 @@ main (
         return (0);
     }
 
+    TableCount = 0;
+
+    /* Get each of the ACPI table files on the command line */
+
+    while (argv[AcpiGbl_Optind])
+    {
+        /* Get one entire table */
+
+        Status = AcpiUtReadTableFromFile (argv[AcpiGbl_Optind], &Table);
+        if (ACPI_FAILURE (Status))
+        {
+            fprintf (stderr, "**** Could not get table from file %s, %s\n",
+                argv[AcpiGbl_Optind], AcpiFormatException (Status));
+            return (-1);
+        }
+
+        /* Ignore non-AML tables, we can't use them. Except for an FADT */
+
+        if (!ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_FADT) &&
+            !AcpiUtIsAmlTable (Table))
+        {
+            fprintf (stderr, "    %s: [%4.4s] is not an AML table - ignoring\n",
+                 argv[AcpiGbl_Optind], Table->Signature);
+
+            AcpiOsFree (Table);
+        }
+        else
+        {
+            /* Allocate and link a table descriptor */
+
+            TableDesc = AcpiOsAllocate (sizeof (AE_TABLE_DESC));
+            TableDesc->Table = Table;
+            TableDesc->Next = AeTableListHead;
+            AeTableListHead = TableDesc;
+
+            TableCount++;
+        }
+
+        AcpiGbl_Optind++;
+    }
+
+    printf ("\n");
+
     /*
      * The next argument is the filename for the DSDT or SSDT.
      * Open the file, build namespace and dump it.
      */
-    return (NsDumpEntireNamespace (argv[AcpiGbl_Optind]));
+    return (NsDumpEntireNamespace (TableCount));
 }
