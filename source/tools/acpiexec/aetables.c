@@ -227,7 +227,13 @@ AeInitializeTableHeader (
     strncpy (Header->OemId, "Intel", ACPI_OEM_ID_SIZE);
     strncpy (Header->OemTableId, "AcpiExec", ACPI_OEM_TABLE_ID_SIZE);
     strncpy (Header->AslCompilerId, "INTL", ACPI_NAME_SIZE);
-    Header->AslCompilerRevision = 0x20131218;
+    Header->AslCompilerRevision = ACPI_CA_VERSION;
+
+    /* Set the checksum, must set to zero first */
+
+    Header->Checksum = 0;
+    Header->Checksum = (UINT8) -AcpiTbChecksum (
+        (void *) Header, Header->Length);
 }
 
 
@@ -288,8 +294,6 @@ AeBuildLocalTables (
     }
 
     memset (LocalXSDT, 0, XsdtSize);
-    AeInitializeTableHeader ((void *) LocalXSDT, ACPI_SIG_XSDT, XsdtSize);
-
     LocalXSDT->TableOffsetEntry[0] = ACPI_PTR_TO_PHYSADDR (&LocalFADT);
     NextIndex = 1;
 
@@ -379,9 +383,7 @@ AeBuildLocalTables (
 
     /* Set checksums for both XSDT and RSDP */
 
-    LocalXSDT->Header.Checksum = 0;
-    LocalXSDT->Header.Checksum = (UINT8) -AcpiTbChecksum (
-        (void *) LocalXSDT, LocalXSDT->Header.Length);
+    AeInitializeTableHeader ((void *) LocalXSDT, ACPI_SIG_XSDT, XsdtSize);
 
     LocalRSDP.Checksum = 0;
     LocalRSDP.Checksum = (UINT8) -AcpiTbChecksum (
@@ -406,8 +408,8 @@ AeBuildLocalTables (
     if (ExternalFadt)
     {
         /*
-         * Use the external FADT, but we must update the DSDT/FACS addresses
-         * as well as the checksum
+         * Use the external FADT, but we must update the DSDT/FACS
+         * addresses as well as the checksum
          */
         ExternalFadt->Dsdt = (UINT32) DsdtAddress;
         if (!AcpiGbl_ReducedHardware)
@@ -415,19 +417,24 @@ AeBuildLocalTables (
             ExternalFadt->Facs = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
         }
 
-        /* Is there room in the FADT for the XDsdst and XFacs 64-bit pointers? */
-
-        if (ExternalFadt->Header.Length > ACPI_PTR_DIFF (&ExternalFadt->XDsdt, ExternalFadt))
+        /*
+         * If there room in the FADT for the XDsdt and XFacs 64-bit
+         * pointers, use them.
+         */
+        if (ExternalFadt->Header.Length > ACPI_PTR_DIFF (
+            &ExternalFadt->XDsdt, ExternalFadt))
         {
-            ExternalFadt->XDsdt = DsdtAddress;
+            ExternalFadt->Dsdt = 0;
+            ExternalFadt->Facs = 0;
 
+            ExternalFadt->XDsdt = DsdtAddress;
             if (!AcpiGbl_ReducedHardware)
             {
                 ExternalFadt->XFacs = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
             }
         }
 
-        /* Complete the FADT with the checksum */
+        /* Complete the external FADT with the checksum */
 
         ExternalFadt->Header.Checksum = 0;
         ExternalFadt->Header.Checksum = (UINT8) -AcpiTbChecksum (
@@ -436,12 +443,8 @@ AeBuildLocalTables (
     else if (AcpiGbl_UseHwReducedFadt)
     {
         memcpy (&LocalFADT, HwReducedFadtCode, ACPI_FADT_V5_SIZE);
-        LocalFADT.Dsdt = (UINT32) DsdtAddress;
+        LocalFADT.Dsdt = 0;
         LocalFADT.XDsdt = DsdtAddress;
-
-        LocalFADT.Header.Checksum = 0;
-        LocalFADT.Header.Checksum = (UINT8) -AcpiTbChecksum (
-            (void *) &LocalFADT, LocalFADT.Header.Length);
     }
     else
     {
@@ -449,7 +452,6 @@ AeBuildLocalTables (
          * Build a local FADT so we can test the hardware/event init
          */
         LocalFADT.Header.Revision = 5;
-        AeInitializeTableHeader ((void *) &LocalFADT, ACPI_SIG_FADT, sizeof (ACPI_TABLE_FADT));
 
         /* Setup FADT header and DSDT/FACS addresses */
 
@@ -485,14 +487,12 @@ AeBuildLocalTables (
 
         LocalFADT.XPm1bEventBlock.SpaceId = ACPI_ADR_SPACE_SYSTEM_IO;
         LocalFADT.XPm1bEventBlock.Address = LocalFADT.Pm1bEventBlock;
-        LocalFADT.XPm1bEventBlock.BitWidth = (UINT8) ACPI_MUL_8 (LocalFADT.Pm1EventLength);
-
-        /* Complete the FADT with the checksum */
-
-        LocalFADT.Header.Checksum = 0;
-        LocalFADT.Header.Checksum = (UINT8) -AcpiTbChecksum (
-            (void *) &LocalFADT, LocalFADT.Header.Length);
+        LocalFADT.XPm1bEventBlock.BitWidth = (UINT8)
+            ACPI_MUL_8 (LocalFADT.Pm1EventLength);
     }
+
+    AeInitializeTableHeader ((void *) &LocalFADT,
+        ACPI_SIG_FADT, sizeof (ACPI_TABLE_FADT));
 
     /* Build a FACS */
 
@@ -515,6 +515,8 @@ AeBuildLocalTables (
 
         LocalTEST.Revision = 1;
         LocalTEST.Length = sizeof (ACPI_TABLE_HEADER);
+
+        LocalTEST.Checksum = 0;
         LocalTEST.Checksum = (UINT8) -AcpiTbChecksum (
             (void *) &LocalTEST, LocalTEST.Length);
 
@@ -527,6 +529,8 @@ AeBuildLocalTables (
 
         LocalBADTABLE.Revision = 1;
         LocalBADTABLE.Length = sizeof (ACPI_TABLE_HEADER);
+
+        LocalBADTABLE.Checksum = 0;
         LocalBADTABLE.Checksum = (UINT8) -AcpiTbChecksum (
             (void *) &LocalBADTABLE, LocalBADTABLE.Length);
     }

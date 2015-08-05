@@ -125,7 +125,6 @@ static int
 NsDumpEntireNamespace (
     UINT32                  TableCount);
 
-
 /*
  * Main routine for the ACPI user-space namespace utility.
  *
