@@ -162,12 +162,13 @@ BOOLEAN                     AcpiGbl_DbOpt_NoRegionSupport = FALSE;
 UINT8                       AcpiGbl_UseHwReducedFadt = FALSE;
 BOOLEAN                     AcpiGbl_DoInterfaceTests = FALSE;
 BOOLEAN                     AcpiGbl_LoadTestTables = FALSE;
+BOOLEAN                     AcpiGbl_AeLoadOnly = FALSE;
 static UINT8                AcpiGbl_ExecutionMode = AE_MODE_COMMAND_LOOP;
 static char                 BatchBuffer[AE_BUFFER_SIZE];    /* Batch command buffer */
 static AE_TABLE_DESC        *AeTableListHead = NULL;
 
 #define ACPIEXEC_NAME               "AML Execution/Debug Utility"
-#define AE_SUPPORTED_OPTIONS        "?b:d:e:f^ghm^orv^:x:"
+#define AE_SUPPORTED_OPTIONS        "?b:d:e:f^ghlm^orv^:x:"
 
 
 /* Stubs for the disassembler */
@@ -232,6 +233,7 @@ usage (
 
     ACPI_OPTION ("-fv <Value>",         "Operation Region initialization fill value");
     ACPI_OPTION ("-fi <file>",          "Specify namespace initialization file");
+    ACPI_OPTION ("-l",                  "Load tables and namespace only");
     ACPI_OPTION ("-r",                  "Use hardware-reduced FADT V5");
     ACPI_OPTION ("-v",                  "Display version information");
     ACPI_OPTION ("-vi",                 "Verbose initialization output");
@@ -404,6 +406,11 @@ AeDoOptions (
         usage();
         return (0);
 
+    case 'l':
+
+        AcpiGbl_AeLoadOnly = TRUE;
+        break;
+
     case 'm':
 
         AcpiGbl_ExecutionMode = AE_MODE_BATCH_SINGLE;
@@ -550,7 +557,7 @@ main (
         Status = AcpiUtReadTableFromFile (argv[AcpiGbl_Optind], &Table);
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not get table from file %s, %s\n",
+            fprintf (stderr, "**** Could not get table from file %s, %s\n",
                 argv[AcpiGbl_Optind], AcpiFormatException (Status));
             goto ErrorExit;
         }
@@ -560,9 +567,9 @@ main (
         if (!ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_FADT) &&
             !AcpiUtIsAmlTable (Table))
         {
-            ACPI_INFO ((AE_INFO,
-                "Table [%4.4s] is not an AML table, ignoring",
-                Table->Signature));
+            fprintf (stderr, "    %s: [%4.4s] is not an AML table - ignoring\n",
+                 argv[AcpiGbl_Optind], Table->Signature);
+
             AcpiOsFree (Table);
         }
         else
@@ -596,6 +603,15 @@ main (
         printf ("**** Could not load ACPI tables, %s\n",
             AcpiFormatException (Status));
         goto EnterDebugger;
+    }
+
+    /*
+     * Exit now for the "load namespace only" option. No control methods
+     * will be executed.
+     */
+    if (AcpiGbl_AeLoadOnly)
+    {
+        goto ErrorExit;
     }
 
     /*
