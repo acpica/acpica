@@ -114,6 +114,7 @@
  *****************************************************************************/
 
 #include "acpinames.h"
+#include "actables.h"
 
 #define _COMPONENT          ACPI_TOOLS
         ACPI_MODULE_NAME    ("anmain")
@@ -136,7 +137,6 @@ NsDumpEntireNamespace (
  * Windows: The setargv.obj module must be linked in to automatically
  * expand wildcards.
  */
-extern ACPI_TABLE_DESC  Tables[];
 static AE_TABLE_DESC    *AeTableListHead = NULL;
 BOOLEAN                 AcpiGbl_NsLoadOnly = FALSE;
 
@@ -203,7 +203,7 @@ NsDumpEntireNamespace (
 
     /* Initialize table manager, get XSDT */
 
-    Status = AcpiInitializeTables (Tables, ACPI_MAX_INIT_TABLES, TRUE);
+    Status = AcpiInitializeTables (NULL, ACPI_MAX_INIT_TABLES, TRUE);
     if (ACPI_FAILURE (Status))
     {
         printf ("**** Could not initialize ACPI table manager, %s\n",
@@ -211,22 +211,19 @@ NsDumpEntireNamespace (
         return (-1);
     }
 
-    /* Reallocate root table to dynamic memory */
+    /* Load the ACPI namespace */
 
-    Status = AcpiReallocateRootTable ();
-    if (ACPI_FAILURE (Status))
+    Status = AcpiTbLoadNamespace ();
+    if (Status == AE_CTRL_TERMINATE)
     {
-        printf ("**** Could not reallocate root table, %s\n",
-            AcpiFormatException (Status));
+        /* At least one table load failed -- terminate with error */
+
         return (-1);
     }
 
-    /* Load the ACPI namespace */
-
-    Status = AcpiLoadTables ();
     if (ACPI_FAILURE (Status))
     {
-        printf ("**** Could not load ACPI tables, %s\n",
+        printf ("**** While creating namespace, %s\n",
             AcpiFormatException (Status));
         return (-1);
     }
@@ -311,7 +308,7 @@ main (
 
     /* Init debug globals and ACPICA */
 
-    AcpiDbgLevel = ACPI_LV_TABLES;
+    AcpiDbgLevel = ACPI_NORMAL_DEFAULT;
     AcpiDbgLayer = 0xFFFFFFFF;
 
     Status = AcpiInitializeSubsystem ();

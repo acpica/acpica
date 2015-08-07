@@ -123,12 +123,6 @@
 #define _COMPONENT          ACPI_TABLES
         ACPI_MODULE_NAME    ("tbxfload")
 
-/* Local prototypes */
-
-static ACPI_STATUS
-AcpiTbLoadNamespace (
-    void);
-
 
 /*******************************************************************************
  *
@@ -155,6 +149,14 @@ AcpiLoadTables (
     /* Load the namespace from the tables */
 
     Status = AcpiTbLoadNamespace ();
+
+    /* Don't let single failures abort the load */
+
+    if (Status == AE_CTRL_TERMINATE)
+    {
+        Status = AE_OK;
+    }
+
     if (ACPI_FAILURE (Status))
     {
         ACPI_EXCEPTION ((AE_INFO, Status,
@@ -180,7 +182,7 @@ ACPI_EXPORT_SYMBOL_INIT (AcpiLoadTables)
  *
  ******************************************************************************/
 
-static ACPI_STATUS
+ACPI_STATUS
 AcpiTbLoadNamespace (
     void)
 {
@@ -303,6 +305,10 @@ AcpiTbLoadNamespace (
         ACPI_ERROR ((AE_INFO,
             "%u ACPI AML tables successfully acquired and loaded, %u failed",
             TablesLoaded, TablesFailed));
+
+        /* Indicate at least one failure */
+
+        Status = AE_CTRL_TERMINATE;
     }
 
 UnlockAndExit:

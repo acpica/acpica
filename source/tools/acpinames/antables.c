@@ -148,8 +148,6 @@ static ACPI_TABLE_XSDT          *LocalXSDT;
 #define BASE_XSDT_SIZE          (sizeof (ACPI_TABLE_XSDT) + \
                                     ((BASE_XSDT_TABLES -1) * sizeof (UINT64)))
 
-ACPI_TABLE_DESC                 Tables[ACPI_MAX_INIT_TABLES];
-
 
 /******************************************************************************
  *

@@ -159,7 +159,6 @@ static ACPI_TABLE_XSDT          *LocalXSDT;
 #define BASE_XSDT_SIZE          ((BASE_XSDT_TABLES) * sizeof (UINT64))
 
 #define ACPI_MAX_INIT_TABLES    (32)
-static ACPI_TABLE_DESC          Tables[ACPI_MAX_INIT_TABLES];
 
 
 /******************************************************************************
@@ -561,11 +560,8 @@ AeInstallTables (
     UINT32                  i;
 
 
-    Status = AcpiInitializeTables (Tables, ACPI_MAX_INIT_TABLES, TRUE);
+    Status = AcpiInitializeTables (NULL, ACPI_MAX_INIT_TABLES, TRUE);
     AE_CHECK_OK (AcpiInitializeTables, Status);
-
-    Status = AcpiReallocateRootTable ();
-    AE_CHECK_OK (AcpiReallocateRootTable, Status);
 
     Status = AcpiLoadTables ();
     AE_CHECK_OK (AcpiLoadTables, Status);

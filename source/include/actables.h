@@ -326,4 +326,12 @@ BOOLEAN
 AcpiIsValidSignature (
     char                    *Signature);
 
+
+/*
+ * tbxfload
+ */
+ACPI_STATUS
+AcpiTbLoadNamespace (
+    void);
+
 #endif /* __ACTABLES_H__ */
