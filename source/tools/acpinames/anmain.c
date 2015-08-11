@@ -308,7 +308,7 @@ main (
 
     /* Init debug globals and ACPICA */
 
-    AcpiDbgLevel = ACPI_NORMAL_DEFAULT;
+    AcpiDbgLevel = ACPI_NORMAL_DEFAULT | ACPI_LV_TABLES;
     AcpiDbgLayer = 0xFFFFFFFF;
 
     Status = AcpiInitializeSubsystem ();
