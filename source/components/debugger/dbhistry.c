@@ -174,6 +174,7 @@ AcpiDbAddToHistory (
     {
         BufferLen = (UINT16) strlen (
             AcpiGbl_HistoryBuffer[AcpiGbl_NextHistoryIndex].Command);
+
         if (CmdLen > BufferLen)
         {
             AcpiOsFree (AcpiGbl_HistoryBuffer[AcpiGbl_NextHistoryIndex].

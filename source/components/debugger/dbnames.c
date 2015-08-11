@@ -235,8 +235,8 @@ AcpiDbSetScope (
     {
         /* Validate new scope from the root */
 
-        Status = AcpiNsGetNode (AcpiGbl_RootNode, Name, ACPI_NS_NO_UPSEARCH,
-                    &Node);
+        Status = AcpiNsGetNode (AcpiGbl_RootNode, Name,
+            ACPI_NS_NO_UPSEARCH, &Node);
         if (ACPI_FAILURE (Status))
         {
             goto ErrorExit;
@@ -248,8 +248,8 @@ AcpiDbSetScope (
     {
         /* Validate new scope relative to old scope */
 
-        Status = AcpiNsGetNode (AcpiGbl_DbScopeNode, Name, ACPI_NS_NO_UPSEARCH,
-                    &Node);
+        Status = AcpiNsGetNode (AcpiGbl_DbScopeNode, Name,
+            ACPI_NS_NO_UPSEARCH, &Node);
         if (ACPI_FAILURE (Status))
         {
             goto ErrorExit;
@@ -259,14 +259,14 @@ AcpiDbSetScope (
     /* Build the final pathname */
 
     if (AcpiUtSafeStrcat (AcpiGbl_DbScopeBuf, sizeof (AcpiGbl_DbScopeBuf),
-        Name))
+            Name))
     {
         Status = AE_BUFFER_OVERFLOW;
         goto ErrorExit;
     }
 
     if (AcpiUtSafeStrcat (AcpiGbl_DbScopeBuf, sizeof (AcpiGbl_DbScopeBuf),
-        "\\"))
+            "\\"))
     {
         Status = AE_BUFFER_OVERFLOW;
         goto ErrorExit;
@@ -406,8 +406,8 @@ AcpiDbDumpNamespaceByOwner (
     /* Display the subtree */
 
     AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
-    AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_SUMMARY, MaxDepth, OwnerId,
-        SubtreeEntry);
+    AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_SUMMARY, MaxDepth,
+        OwnerId, SubtreeEntry);
     AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
 }
 
@@ -446,7 +446,8 @@ AcpiDbWalkAndMatchName (
         /* Wildcard support */
 
         if ((RequestedName[i] != '?') &&
-            (RequestedName[i] != ((ACPI_NAMESPACE_NODE *) ObjHandle)->Name.Ascii[i]))
+            (RequestedName[i] != ((ACPI_NAMESPACE_NODE *)
+                ObjHandle)->Name.Ascii[i]))
         {
             /* No match, just exit */
 
@@ -460,7 +461,8 @@ AcpiDbWalkAndMatchName (
     Status = AcpiNsHandleToPathname (ObjHandle, &Buffer, FALSE);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Could Not get pathname for object %p\n", ObjHandle);
+        AcpiOsPrintf ("Could Not get pathname for object %p\n",
+            ObjHandle);
     }
     else
     {
@@ -516,8 +518,8 @@ AcpiDbFindNameInNamespace (
 
     /* Walk the namespace from the root */
 
-    (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-                        AcpiDbWalkAndMatchName, NULL, AcpiName, NULL);
+    (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
+        ACPI_UINT32_MAX, AcpiDbWalkAndMatchName, NULL, AcpiName, NULL);
 
     AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
     return (AE_OK);
@@ -618,8 +620,8 @@ AcpiDbCheckPredefinedNames (
 
     /* Search all nodes in namespace */
 
-    (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-                AcpiDbWalkForPredefinedNames, NULL, (void *) &Count, NULL);
+    (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
+        ACPI_UINT32_MAX, AcpiDbWalkForPredefinedNames, NULL, (void *) &Count, NULL);
 
     AcpiOsPrintf ("Found %u predefined names in the namespace\n", Count);
 }
@@ -717,7 +719,7 @@ AcpiDbDisplayObjects (
     /* Walk the namespace from the root */
 
     (void) AcpiWalkNamespace (Type, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-                AcpiDbWalkForSpecificObjects, NULL, (void *) &Info, NULL);
+        AcpiDbWalkForSpecificObjects, NULL, (void *) &Info, NULL);
 
     AcpiOsPrintf (
         "\nFound %u objects of type [%s] in the current ACPI Namespace\n",
@@ -761,9 +763,11 @@ AcpiDbIntegrityWalk (
     {
         if (ACPI_GET_DESCRIPTOR_TYPE (Node) != ACPI_DESC_TYPE_NAMED)
         {
-            AcpiOsPrintf ("Invalid Descriptor Type for Node %p [%s] - is %2.2X should be %2.2X\n",
-                Node, AcpiUtGetDescriptorName (Node), ACPI_GET_DESCRIPTOR_TYPE (Node),
-                ACPI_DESC_TYPE_NAMED);
+            AcpiOsPrintf (
+                "Invalid Descriptor Type for Node %p [%s] - "
+                "is %2.2X should be %2.2X\n",
+                Node, AcpiUtGetDescriptorName (Node),
+                ACPI_GET_DESCRIPTOR_TYPE (Node), ACPI_DESC_TYPE_NAMED);
             return (AE_OK);
         }
 
@@ -826,8 +830,8 @@ AcpiDbCheckIntegrity (
 
     /* Search all nodes in namespace */
 
-    (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-                    AcpiDbIntegrityWalk, NULL, (void *) &Info, NULL);
+    (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
+        ACPI_UINT32_MAX, AcpiDbIntegrityWalk, NULL, (void *) &Info, NULL);
 
     AcpiOsPrintf ("Verified %u namespace nodes with %u Objects\n",
         Info.Nodes, Info.Objects);
@@ -907,8 +911,9 @@ AcpiDbFindReferences (
 
     /* Search all nodes in namespace */
 
-    (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-                    AcpiDbWalkForReferences, NULL, (void *) ObjDesc, NULL);
+    (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
+        ACPI_UINT32_MAX, AcpiDbWalkForReferences, NULL,
+        (void *) ObjDesc, NULL);
 }
 
 
@@ -961,7 +966,8 @@ AcpiDbBusWalk (
     Status = AcpiNsHandleToPathname (ObjHandle, &Buffer, FALSE);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Could Not get pathname for object %p\n", ObjHandle);
+        AcpiOsPrintf ("Could Not get pathname for object %p\n",
+            ObjHandle);
         return (AE_OK);
     }
 
@@ -990,7 +996,8 @@ AcpiDbBusWalk (
 
     if (Info->Valid & ACPI_VALID_ADR)
     {
-        AcpiOsPrintf ("_ADR: %8.8X%8.8X\n", ACPI_FORMAT_UINT64 (Info->Address));
+        AcpiOsPrintf ("_ADR: %8.8X%8.8X\n",
+            ACPI_FORMAT_UINT64 (Info->Address));
     }
     else
     {
@@ -1051,8 +1058,8 @@ AcpiDbGetBusInfo (
 {
     /* Search all nodes in namespace */
 
-    (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-                    AcpiDbBusWalk, NULL, NULL, NULL);
+    (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
+        ACPI_UINT32_MAX, AcpiDbBusWalk, NULL, NULL, NULL);
 }
 
 #endif /* ACPI_DEBUGGER */

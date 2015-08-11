@@ -127,6 +127,7 @@
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbobject")
 
+
 /* Local prototypes */
 
 static void

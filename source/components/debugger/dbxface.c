@@ -214,7 +214,8 @@ AcpiDbStartCommand (
                 ACPI_DB_LINE_BUFFER_SIZE, NULL);
             if (ACPI_FAILURE (Status))
             {
-                ACPI_EXCEPTION ((AE_INFO, Status, "While parsing command line"));
+                ACPI_EXCEPTION ((AE_INFO, Status,
+                    "While parsing command line"));
                 return (Status);
             }
         }
@@ -268,7 +269,7 @@ AcpiDbSingleStep (
     }
 
     AmlOffset = (UINT32) ACPI_PTR_DIFF (Op->Common.Aml,
-                    WalkState->ParserState.AmlStart);
+        WalkState->ParserState.AmlStart);
 
     /* Check for single-step breakpoint */
 
@@ -544,10 +545,12 @@ AcpiDbInitialize (
 
         /* Create the debug execution thread to execute commands */
 
-        Status = AcpiOsExecute (OSL_DEBUGGER_THREAD, AcpiDbExecuteThread, NULL);
+        Status = AcpiOsExecute (OSL_DEBUGGER_THREAD,
+            AcpiDbExecuteThread, NULL);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_EXCEPTION ((AE_INFO, Status, "Could not start debugger thread"));
+            ACPI_EXCEPTION ((AE_INFO, Status,
+                "Could not start debugger thread"));
             return_ACPI_STATUS (Status);
         }
     }

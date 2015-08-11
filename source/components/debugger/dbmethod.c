@@ -301,12 +301,13 @@ AcpiDbSetMethodData (
 
         if (Index > ACPI_METHOD_MAX_ARG)
         {
-            AcpiOsPrintf ("Arg%u - Invalid argument name\n", Index);
+            AcpiOsPrintf ("Arg%u - Invalid argument name\n",
+                Index);
             goto Cleanup;
         }
 
-        Status = AcpiDsStoreObjectToLocal (ACPI_REFCLASS_ARG, Index, ObjDesc,
-                    WalkState);
+        Status = AcpiDsStoreObjectToLocal (ACPI_REFCLASS_ARG,
+            Index, ObjDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
@@ -324,12 +325,13 @@ AcpiDbSetMethodData (
 
         if (Index > ACPI_METHOD_MAX_LOCAL)
         {
-            AcpiOsPrintf ("Local%u - Invalid local variable name\n", Index);
+            AcpiOsPrintf ("Local%u - Invalid local variable name\n",
+                Index);
             goto Cleanup;
         }
 
-        Status = AcpiDsStoreObjectToLocal (ACPI_REFCLASS_LOCAL, Index, ObjDesc,
-                    WalkState);
+        Status = AcpiDsStoreObjectToLocal (ACPI_REFCLASS_LOCAL,
+            Index, ObjDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;

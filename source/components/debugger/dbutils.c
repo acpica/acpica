@@ -124,6 +124,7 @@
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbutils")
 
+
 /* Local prototypes */
 
 #ifdef ACPI_OBSOLETE_FUNCTIONS
@@ -136,7 +137,7 @@ AcpiDbDumpBuffer (
     UINT32                  Address);
 #endif
 
-static char                 *Converter = "0123456789ABCDEF";
+static char                 *Gbl_HexToAscii = "0123456789ABCDEF";
 
 
 /*******************************************************************************
@@ -199,7 +200,8 @@ AcpiDbSetOutputDestination (
 
     AcpiGbl_DbOutputFlags = (UINT8) OutputFlags;
 
-    if ((OutputFlags & ACPI_DB_REDIRECTABLE_OUTPUT) && AcpiGbl_DbOutputToFile)
+    if ((OutputFlags & ACPI_DB_REDIRECTABLE_OUTPUT) &&
+        AcpiGbl_DbOutputToFile)
     {
         AcpiDbgLevel = AcpiGbl_DbDebugLevel;
     }
@@ -252,7 +254,7 @@ AcpiDbDumpExternalObject (
     case ACPI_TYPE_INTEGER:
 
         AcpiOsPrintf ("[Integer] = %8.8X%8.8X\n",
-                    ACPI_FORMAT_UINT64 (ObjDesc->Integer.Value));
+            ACPI_FORMAT_UINT64 (ObjDesc->Integer.Value));
         break;
 
     case ACPI_TYPE_STRING:
@@ -271,8 +273,9 @@ AcpiDbDumpExternalObject (
             {
                 AcpiOsPrintf ("\n");
             }
-            AcpiUtDebugDumpBuffer (ACPI_CAST_PTR (UINT8, ObjDesc->Buffer.Pointer),
-                    ObjDesc->Buffer.Length, DB_BYTE_DISPLAY, _COMPONENT);
+            AcpiUtDebugDumpBuffer (
+                ACPI_CAST_PTR (UINT8, ObjDesc->Buffer.Pointer),
+                ObjDesc->Buffer.Length, DB_BYTE_DISPLAY, _COMPONENT);
         }
         else
         {
@@ -283,11 +286,12 @@ AcpiDbDumpExternalObject (
     case ACPI_TYPE_PACKAGE:
 
         AcpiOsPrintf ("[Package] Contains %u Elements:\n",
-                ObjDesc->Package.Count);
+            ObjDesc->Package.Count);
 
         for (i = 0; i < ObjDesc->Package.Count; i++)
         {
-            AcpiDbDumpExternalObject (&ObjDesc->Package.Elements[i], Level+1);
+            AcpiDbDumpExternalObject (
+                &ObjDesc->Package.Elements[i], Level+1);
         }
         break;
 
@@ -407,12 +411,13 @@ AcpiDbLocalNsLookup (
      * Lookup the name.
      * (Uses root node as the search starting point)
      */
-    Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
-                    ACPI_NS_NO_UPSEARCH | ACPI_NS_DONT_OPEN_SCOPE, NULL, &Node);
+    Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY,
+        ACPI_IMODE_EXECUTE, ACPI_NS_NO_UPSEARCH | ACPI_NS_DONT_OPEN_SCOPE,
+        NULL, &Node);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could not locate name: %s, %s\n",
-                Name, AcpiFormatException (Status));
+            Name, AcpiFormatException (Status));
     }
 
     ACPI_FREE (InternalPath);
@@ -454,7 +459,7 @@ AcpiDbUint32ToHexString (
 
     for (i = 7; i >= 0; i--)
     {
-        Buffer[i] = Converter [Value & 0x0F];
+        Buffer[i] = Gbl_HexToAscii [Value & 0x0F];
         Value = Value >> 4;
     }
 }
@@ -576,7 +581,7 @@ AcpiDbDumpBuffer (
 
     AcpiDbgLevel |= ACPI_LV_TABLES;
     AcpiUtDebugDumpBuffer (ACPI_TO_POINTER (Address), 64, DB_BYTE_DISPLAY,
-            ACPI_UINT32_MAX);
+        ACPI_UINT32_MAX);
 }
 #endif
 
