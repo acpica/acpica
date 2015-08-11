@@ -337,9 +337,9 @@ AcpiDsInitializeObjects (
     /* Summary of objects initialized */
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
-        "Table [%4.4s] (id %4.4X) - %4u Objects with %3u Devices, "
-        "%3u Regions, %3u Methods (%u/%u/%u Serial/Non/Cvt)\n",
-        Table->Signature, OwnerId, Info.ObjectCount, Info.DeviceCount,
+        "Table [%4.4s:%8.8s] (id %.2X) - %4u Objects with %3u Devices, "
+        "%3u Regions, %4u Methods (%u/%u/%u Serial/Non/Cvt)\n",
+        Table->Signature, Table->OemTableId, OwnerId, Info.ObjectCount, Info.DeviceCount,
         Info.OpRegionCount, Info.MethodCount, Info.SerialMethodCount,
         Info.NonSerialMethodCount, Info.SerializedMethodCount));
 

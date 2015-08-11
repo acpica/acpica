@@ -412,7 +412,8 @@ AcpiDbDisplayTableInfo (
 
     /* Header */
 
-    AcpiOsPrintf ("Idx ID    Status Type              TableHeader (Sig, Address, Length)\n");
+    AcpiOsPrintf ("Idx ID    Status Type                    "
+        "TableHeader (Sig, Address, Length, Misc)\n");
 
     /* Walk the entire root table list */
 

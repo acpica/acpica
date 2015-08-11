@@ -189,6 +189,7 @@ AcpiTbLoadNamespace (
     ACPI_STATUS             Status;
     UINT32                  i;
     ACPI_TABLE_HEADER       *NewDsdt;
+    ACPI_TABLE_DESC         *Table;
     UINT32                  TablesLoaded = 0;
     UINT32                  TablesFailed = 0;
 
@@ -202,12 +203,11 @@ AcpiTbLoadNamespace (
      * Load the namespace. The DSDT is required, but any SSDT and
      * PSDT tables are optional. Verify the DSDT.
      */
+    Table = &AcpiGbl_RootTableList.Tables[AcpiGbl_DsdtIndex];
+
     if (!AcpiGbl_RootTableList.CurrentTableCount ||
-        !ACPI_COMPARE_NAME (
-            &(AcpiGbl_RootTableList.Tables[AcpiGbl_DsdtIndex].Signature),
-            ACPI_SIG_DSDT) ||
-         ACPI_FAILURE (AcpiTbValidateTable (
-            &AcpiGbl_RootTableList.Tables[AcpiGbl_DsdtIndex])))
+        !ACPI_COMPARE_NAME (Table->Signature.Ascii, ACPI_SIG_DSDT) ||
+         ACPI_FAILURE (AcpiTbValidateTable (Table)))
     {
         Status = AE_NO_ACPI_TABLES;
         goto UnlockAndExit;
@@ -219,7 +219,7 @@ AcpiTbLoadNamespace (
      * array can change dynamically as tables are loaded at run-time. Note:
      * .Pointer field is not validated until after call to AcpiTbValidateTable.
      */
-    AcpiGbl_DSDT = AcpiGbl_RootTableList.Tables[AcpiGbl_DsdtIndex].Pointer;
+    AcpiGbl_DSDT = Table->Pointer;
 
     /*
      * Optionally copy the entire DSDT to local memory (instead of simply
@@ -263,15 +263,13 @@ AcpiTbLoadNamespace (
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
     for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; ++i)
     {
+        Table = &AcpiGbl_RootTableList.Tables[i];
+
         if (!AcpiGbl_RootTableList.Tables[i].Address ||
-            (!ACPI_COMPARE_NAME (&(AcpiGbl_RootTableList.Tables[i].Signature),
-                    ACPI_SIG_SSDT) &&
-             !ACPI_COMPARE_NAME (&(AcpiGbl_RootTableList.Tables[i].Signature),
-                    ACPI_SIG_PSDT) &&
-             !ACPI_COMPARE_NAME (&(AcpiGbl_RootTableList.Tables[i].Signature),
-                    ACPI_SIG_OSDT)) ||
-             ACPI_FAILURE (AcpiTbValidateTable (
-                &AcpiGbl_RootTableList.Tables[i])))
+            (!ACPI_COMPARE_NAME (Table->Signature.Ascii, ACPI_SIG_SSDT) &&
+             !ACPI_COMPARE_NAME (Table->Signature.Ascii, ACPI_SIG_PSDT) &&
+             !ACPI_COMPARE_NAME (Table->Signature.Ascii, ACPI_SIG_OSDT)) ||
+             ACPI_FAILURE (AcpiTbValidateTable (Table)))
         {
             continue;
         }
@@ -282,9 +280,13 @@ AcpiTbLoadNamespace (
         Status =  AcpiNsLoadTable (i, AcpiGbl_RootNode);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_EXCEPTION ((AE_INFO, Status, "[%4.4s] table load failed",
-                &AcpiGbl_RootTableList.Tables[i].Signature.Ascii[0]));
+            ACPI_EXCEPTION ((AE_INFO, Status, "(%4.4s:%8.8s) while loading table",
+                Table->Signature.Ascii, Table->Pointer->OemTableId));
             TablesFailed++;
+
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
+                "Table [%4.4s:%8.8s] (id FF) - Table namespace load failed\n\n",
+                Table->Signature.Ascii, Table->Pointer->OemTableId));
         }
         else
         {
@@ -303,8 +305,8 @@ AcpiTbLoadNamespace (
     else
     {
         ACPI_ERROR ((AE_INFO,
-            "%u ACPI AML tables successfully acquired and loaded, %u failed",
-            TablesLoaded, TablesFailed));
+            "%u table load failures, %u successful",
+            TablesFailed, TablesLoaded));
 
         /* Indicate at least one failure */
 
