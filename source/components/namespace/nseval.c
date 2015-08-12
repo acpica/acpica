@@ -563,7 +563,8 @@ AcpiNsExecModuleCode (
 
     Status = AcpiNsEvaluate (Info);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "Executed module-level code at %p\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INIT_NAMES,
+        "Executed module-level code at %p\n",
         MethodObj->Method.AmlStart));
 
     /* Delete a possible implicit return value (in slack mode) */

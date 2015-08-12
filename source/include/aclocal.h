@@ -535,6 +535,16 @@ typedef struct acpi_simple_repair_info
 #define ACPI_NUM_RTYPES                 5   /* Number of actual object types */
 
 
+/* Info for running the _REG methods */
+
+typedef struct acpi_reg_walk_info
+{
+    ACPI_ADR_SPACE_TYPE     SpaceId;
+    UINT32                  RegRunCount;
+
+} ACPI_REG_WALK_INFO;
+
+
 /*****************************************************************************
  *
  * Event typedefs and structs
