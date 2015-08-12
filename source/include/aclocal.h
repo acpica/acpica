@@ -1399,6 +1399,13 @@ typedef struct acpi_integrity_info
 #define ACPI_DB_DUPLICATE_OUTPUT        0x03
 
 
+typedef struct acpi_object_info
+{
+    UINT32                  Types[ACPI_TOTAL_TYPES];
+
+} ACPI_OBJECT_INFO;
+
+
 /*****************************************************************************
  *
  * Debug

@@ -150,6 +150,13 @@ AcpiDbWalkForSpecificObjects (
     void                    **ReturnValue);
 
 static ACPI_STATUS
+AcpiDbWalkForObjectCounts (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
+
+static ACPI_STATUS
 AcpiDbIntegrityWalk (
     ACPI_HANDLE             ObjHandle,
     UINT32                  NestingLevel,
@@ -197,7 +204,13 @@ static ACPI_DB_ARGUMENT_INFO    AcpiDbObjectTypes [] =
     {"BANKFIELDS"},
     {"INDEXFIELDS"},
     {"REFERENCES"},
-    {"ALIAS"},
+    {"ALIASES"},
+    {"METHODALIASES"},
+    {"NOTIFY"},
+    {"ADDRESSHANDLER"},
+    {"RESOURCE"},
+    {"RESOURCEFIELD"},
+    {"SCOPES"},
     {NULL}           /* Must be null terminated */
 };
 
@@ -629,6 +642,43 @@ AcpiDbCheckPredefinedNames (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDbWalkForObjectCounts
+ *
+ * PARAMETERS:  Callback from WalkNamespace
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Display short info about objects in the namespace
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiDbWalkForObjectCounts (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_OBJECT_INFO        *Info = (ACPI_OBJECT_INFO *) Context;
+    ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+
+
+    if (Node->Type > ACPI_TYPE_NS_NODE_MAX)
+    {
+        AcpiOsPrintf ("[%4.4s]: Unknown object type %X\n",
+            Node->Name.Ascii, Node->Type);
+    }
+    else
+    {
+        Info->Types[Node->Type]++;
+    }
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDbWalkForSpecificObjects
  *
  * PARAMETERS:  Callback from WalkNamespace
@@ -693,7 +743,39 @@ AcpiDbDisplayObjects (
 {
     ACPI_WALK_INFO          Info;
     ACPI_OBJECT_TYPE        Type;
+    ACPI_OBJECT_INFO        *ObjectInfo;
+    UINT32                  i;
+    UINT32                  TotalObjects = 0;
 
+
+    /* No argument means display summary/count of all object types */
+
+    if (!ObjTypeArg)
+    {
+        ObjectInfo = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_OBJECT_INFO));
+
+        /* Walk the namespace from the root */
+
+        (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
+            ACPI_UINT32_MAX, AcpiDbWalkForObjectCounts, NULL,
+            (void *) ObjectInfo, NULL);
+
+        AcpiOsPrintf ("\nSummary of namespace objects:\n\n");
+
+        for (i = 0; i < ACPI_TOTAL_TYPES; i++)
+        {
+            AcpiOsPrintf ("%8u   %s\n", ObjectInfo->Types[i],
+                AcpiUtGetTypeName (i));
+
+            TotalObjects += ObjectInfo->Types[i];
+        }
+
+        AcpiOsPrintf ("\n%8u   Total namespace objects\n\n",
+            TotalObjects);
+
+        ACPI_FREE (ObjectInfo);
+        return (AE_OK);
+    }
 
     /* Get the object type */
 

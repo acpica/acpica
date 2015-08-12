@@ -368,6 +368,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_OBJECT_HANDLER",                 SRC_TYPE_SIMPLE},
     {"ACPI_OBJECT_INDEX_FIELD",             SRC_TYPE_STRUCT},
     {"ACPI_OBJECT_INTEGER",                 SRC_TYPE_STRUCT},
+    {"ACPI_OBJECT_INFO",                    SRC_TYPE_STRUCT},
     {"ACPI_OBJECT_LIST",                    SRC_TYPE_STRUCT},
     {"ACPI_OBJECT_METHOD",                  SRC_TYPE_STRUCT},
     {"ACPI_OBJECT_MUTEX",                   SRC_TYPE_STRUCT},
