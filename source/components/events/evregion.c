@@ -740,7 +740,7 @@ AcpiEvExecuteRegMethods (
     Info.SpaceId = SpaceId;
     Info.RegRunCount = 0;
 
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_NAMES,
         "    Running _REG methods for SpaceId %s\n",
         AcpiUtGetRegionName (Info.SpaceId)));
 
@@ -760,7 +760,7 @@ AcpiEvExecuteRegMethods (
         AcpiEvOrphanEcRegMethod (Node);
     }
 
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_NAMES,
         "    Executed %u _REG methods for SpaceId %s\n",
         Info.RegRunCount, AcpiUtGetRegionName (Info.SpaceId)));
 
