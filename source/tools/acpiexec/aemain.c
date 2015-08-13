@@ -168,7 +168,7 @@ static char                 BatchBuffer[AE_BUFFER_SIZE];    /* Batch command buf
 static AE_TABLE_DESC        *AeTableListHead = NULL;
 
 #define ACPIEXEC_NAME               "AML Execution/Debug Utility"
-#define AE_SUPPORTED_OPTIONS        "?b:d:e:f^ghlm^orv^:x:"
+#define AE_SUPPORTED_OPTIONS        "?b:d:e:f^ghi:lm^orv^:x:"
 
 
 /* Stubs for the disassembler */
@@ -231,8 +231,11 @@ usage (
     ACPI_OPTION ("-et",                 "Enable debug semaphore timeout");
     printf ("\n");
 
+    ACPI_OPTION ("-fi <File>",          "Specify namespace initialization file");
     ACPI_OPTION ("-fv <Value>",         "Operation Region initialization fill value");
-    ACPI_OPTION ("-fi <file>",          "Specify namespace initialization file");
+    printf ("\n");
+
+    ACPI_OPTION ("-i <Count>",          "Maximum iterations for AML while loops");
     ACPI_OPTION ("-l",                  "Load tables and namespace only");
     ACPI_OPTION ("-r",                  "Use hardware-reduced FADT V5");
     ACPI_OPTION ("-v",                  "Display version information");
@@ -263,6 +266,7 @@ AeDoOptions (
     char                    **argv)
 {
     int                     j;
+    UINT32                  Temp;
 
 
     while ((j = AcpiGetopt (argc, argv, AE_SUPPORTED_OPTIONS)) != ACPI_OPT_END) switch (j)
@@ -406,6 +410,20 @@ AeDoOptions (
         usage();
         return (0);
 
+    case 'i':
+
+        Temp = strtoul (AcpiGbl_Optarg, NULL, 0);
+        if (!Temp || (Temp > ACPI_UINT16_MAX))
+        {
+            printf ("%s: Invalid max loops value\n", AcpiGbl_Optarg);
+            return (1);
+        }
+
+        AcpiGbl_MaxLoopIterations = (UINT16) Temp;
+        printf ("Max Loop Iterations is %u (0x%X)\n",
+            AcpiGbl_MaxLoopIterations, AcpiGbl_MaxLoopIterations);
+        break;
+
     case 'l':
 
         AcpiGbl_AeLoadOnly = TRUE;
@@ -522,6 +540,11 @@ main (
     {
         goto ErrorExit;
     }
+
+    /* ACPICA runtime configuration */
+
+    AcpiGbl_MaxLoopIterations = 400;
+
 
     printf (ACPI_COMMON_SIGNON (ACPIEXEC_NAME));
     if (argc < 2)
