@@ -1337,7 +1337,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1346,7 +1346,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 				</File>

@@ -48,7 +48,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="false"
 				AdditionalIncludeDirectories="..\..\source\include"
-				PreprocessorDefinitions="ACPI_EXEC_APP;_DEBUG;WIN32;_CONSOLE"
+				PreprocessorDefinitions="ACPI_EXEC_APP;ACPI_DISASSEMBLER;ACPI_DEBUGGER;_DEBUG;WIN32;_CONSOLE"
 				StringPooling="true"
 				ExceptionHandling="0"
 				BasicRuntimeChecks="3"
@@ -158,7 +158,7 @@
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="..\..\source\include"
-				PreprocessorDefinitions="ACPI_EXEC_APP;NDEBUG;WIN32;_CONSOLE"
+				PreprocessorDefinitions="ACPI_EXEC_APP;ACPI_DISASSEMBLER;ACPI_DEBUGGER  1;NDEBUG;WIN32;_CONSOLE"
 				StringPooling="true"
 				ExceptionHandling="0"
 				BasicRuntimeChecks="3"
@@ -1794,7 +1794,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1803,13 +1803,29 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\debugger\dbconvert.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\COMPONENTS\DEBUGGER\dbdisply.c"
@@ -1820,7 +1836,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1829,7 +1845,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1842,7 +1858,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1851,7 +1867,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 							AssemblerOutput="0"
 							AssemblerListingLocation=".\AcpiExec\"
 						/>
@@ -1866,7 +1882,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1875,7 +1891,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1888,7 +1904,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1897,7 +1913,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1910,7 +1926,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1919,7 +1935,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1932,7 +1948,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1941,7 +1957,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1954,7 +1970,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1963,13 +1979,29 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\debugger\dbobject.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\COMPONENTS\DEBUGGER\dbstats.c"
@@ -1980,7 +2012,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1989,13 +2021,29 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\debugger\dbtest.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\COMPONENTS\DEBUGGER\dbutils.c"
@@ -2006,7 +2054,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2015,7 +2063,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2028,7 +2076,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2037,7 +2085,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 				</File>

@@ -55,7 +55,7 @@
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="$(OutDir)..\,..\..\source\Include,$(OutDir),..\..\source\compiler"
-				PreprocessorDefinitions="ACPI_ASL_COMPILER;NDEBUG;WIN32;_WINDOWS;YY_NEVER_INTERACTIVE"
+				PreprocessorDefinitions="ACPI_ASL_COMPILER;ACPI_DISASSEMBLER;NDEBUG;WIN32;_WINDOWS;YY_NEVER_INTERACTIVE"
 				StringPooling="true"
 				ExceptionHandling="0"
 				RuntimeLibrary="0"
@@ -158,7 +158,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories="$(OutDir)..\,..\..\source\Include,$(OutDir),..\..\source\compiler"
-				PreprocessorDefinitions="ACPI_ASL_COMPILER;_DEBUG;WIN32;_WINDOWS;YY_NEVER_INTERACTIVE"
+				PreprocessorDefinitions="ACPI_ASL_COMPILER;ACPI_DISASSEMBLER;_DEBUG;WIN32;_WINDOWS;YY_NEVER_INTERACTIVE"
 				StringPooling="true"
 				ExceptionHandling="0"
 				BasicRuntimeChecks="0"
@@ -890,28 +890,6 @@
 			<Filter
 				Name="Disassembler"
 				>
-				<File
-					RelativePath="..\..\source\COMPONENTS\DEBUGGER\dbfileio.c"
-					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-				</File>
 				<File
 					RelativePath="..\..\source\COMPONENTS\disassembler\dmbuffer.c"
 					>
@@ -2348,6 +2326,32 @@
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
 							DisableLanguageExtensions="false"
+						/>
+					</FileConfiguration>
+				</File>
+			</Filter>
+			<Filter
+				Name="Debugger"
+				>
+				<File
+					RelativePath="..\..\source\COMPONENTS\DEBUGGER\dbfileio.c"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions="ACPI_DEBUGGER 1"
 						/>
 					</FileConfiguration>
 				</File>
