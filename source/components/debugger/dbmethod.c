@@ -472,7 +472,7 @@ AcpiDbDisassembleMethod (
 
     Status = AcpiPsParseAml (WalkState);
 
-#ifdef ACPI_DISASSEMBER
+#ifdef ACPI_DISASSEMBLER
     (void) AcpiDmParseDeferredOps (Op);
 
     /* Now we can disassemble the method */
