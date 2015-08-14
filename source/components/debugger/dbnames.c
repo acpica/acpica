@@ -471,7 +471,7 @@ AcpiDbWalkAndMatchName (
     /* Get the full pathname to this object */
 
     Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
-    Status = AcpiNsHandleToPathname (ObjHandle, &Buffer, FALSE);
+    Status = AcpiNsHandleToPathname (ObjHandle, &Buffer, TRUE);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could Not get pathname for object %p\n",
@@ -706,7 +706,7 @@ AcpiDbWalkForSpecificObjects (
     /* Get and display the full pathname to this object */
 
     Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
-    Status = AcpiNsHandleToPathname (ObjHandle, &Buffer, FALSE);
+    Status = AcpiNsHandleToPathname (ObjHandle, &Buffer, TRUE);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could Not get pathname for object %p\n", ObjHandle);
@@ -1045,7 +1045,7 @@ AcpiDbBusWalk (
     /* Get the full path to this device object */
 
     Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
-    Status = AcpiNsHandleToPathname (ObjHandle, &Buffer, FALSE);
+    Status = AcpiNsHandleToPathname (ObjHandle, &Buffer, TRUE);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could Not get pathname for object %p\n",

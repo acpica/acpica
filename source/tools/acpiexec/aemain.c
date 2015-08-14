@@ -168,7 +168,7 @@ static char                 BatchBuffer[AE_BUFFER_SIZE];    /* Batch command buf
 static AE_TABLE_DESC        *AeTableListHead = NULL;
 
 #define ACPIEXEC_NAME               "AML Execution/Debug Utility"
-#define AE_SUPPORTED_OPTIONS        "?b:d:e:f^ghi:lm^orv^:x:"
+#define AE_SUPPORTED_OPTIONS        "?b:d:e:f^ghi:lm^rv^:x:"
 
 
 /* Stubs for the disassembler */
@@ -446,11 +446,6 @@ AeDoOptions (
         }
         break;
 
-    case 'o':
-
-        AcpiGbl_DbOpt_Disasm = TRUE;
-        break;
-
     case 'r':
 
         AcpiGbl_UseHwReducedFadt = TRUE;
@@ -545,6 +540,15 @@ main (
 
     AcpiGbl_MaxLoopIterations = 400;
 
+
+    /* Initialize the AML debugger */
+
+    Status = AcpiInitializeDebugger ();
+    AE_CHECK_OK (AcpiInitializeDebugger, Status);
+    if (ACPI_FAILURE (Status))
+    {
+        goto ErrorExit;
+    }
 
     printf (ACPI_COMMON_SIGNON (ACPIEXEC_NAME));
     if (argc < 2)
@@ -715,6 +719,10 @@ EnterDebugger:
     case AE_MODE_BATCH_SINGLE:
 
         AcpiDbExecute (BatchBuffer, NULL, NULL, EX_NO_SINGLE_STEP);
+
+        /* Shut down the debugger */
+
+        AcpiTerminateDebugger ();
         Status = AcpiTerminate ();
         break;
     }
@@ -779,6 +787,9 @@ AcpiDbRunBatchMode (
         }
     }
 
+    /* Shut down the debugger */
+
+    AcpiTerminateDebugger ();
     Status = AcpiTerminate ();
     return (Status);
 }

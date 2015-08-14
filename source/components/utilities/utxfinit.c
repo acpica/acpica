@@ -204,17 +204,6 @@ AcpiInitializeSubsystem (
         return_ACPI_STATUS (Status);
     }
 
-    /* If configured, initialize the AML debugger */
-
-#ifdef ACPI_DEBUGGER
-    Status = AcpiDbInitialize ();
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_EXCEPTION ((AE_INFO, Status, "During Debugger initialization"));
-        return_ACPI_STATUS (Status);
-    }
-#endif
-
     return_ACPI_STATUS (AE_OK);
 }
 

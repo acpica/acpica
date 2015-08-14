@@ -472,14 +472,14 @@ AcpiDbDisassembleMethod (
 
     Status = AcpiPsParseAml (WalkState);
 
-#ifdef ACPI_DISASSEMBER
+#ifdef ACPI_DISASSEMBLER
     (void) AcpiDmParseDeferredOps (Op);
 
     /* Now we can disassemble the method */
 
-    AcpiGbl_DbOpt_Verbose = FALSE;
+    AcpiGbl_DmOpt_Verbose = FALSE;
     AcpiDmDisassemble (NULL, Op, 0);
-    AcpiGbl_DbOpt_Verbose = TRUE;
+    AcpiGbl_DmOpt_Verbose = TRUE;
 #endif
 
     AcpiPsDeleteParseTree (Op);
