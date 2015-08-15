@@ -117,12 +117,7 @@
 #include "accommon.h"
 #include "acnamesp.h"
 #include "acdebug.h"
-#ifdef ACPI_DISASSEMBLER
-#include "acdisasm.h"
-#endif
 
-
-#ifdef ACPI_DEBUGGER
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbobject")
@@ -602,5 +597,3 @@ AcpiDbDecodeArguments (
         AcpiDbDisplayInternalObject (ObjDesc, WalkState);
     }
 }
-
-#endif

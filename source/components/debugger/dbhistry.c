@@ -117,7 +117,6 @@
 #include "accommon.h"
 #include "acdebug.h"
 
-#ifdef ACPI_DEBUGGER
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbhistry")
@@ -342,5 +341,3 @@ AcpiDbGetHistoryByIndex (
     AcpiOsPrintf ("Invalid history number: %u\n", HistoryIndex);
     return (NULL);
 }
-
-#endif /* ACPI_DEBUGGER */

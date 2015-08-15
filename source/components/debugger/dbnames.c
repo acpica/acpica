@@ -120,8 +120,6 @@
 #include "acpredef.h"
 
 
-#ifdef ACPI_DEBUGGER
-
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbnames")
 
@@ -1143,5 +1141,3 @@ AcpiDbGetBusInfo (
     (void) AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
         ACPI_UINT32_MAX, AcpiDbBusWalk, NULL, NULL, NULL);
 }
-
-#endif /* ACPI_DEBUGGER */

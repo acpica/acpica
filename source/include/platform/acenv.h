@@ -215,6 +215,7 @@
 
 #ifdef ACPI_LIBRARY
 #define ACPI_USE_LOCAL_CACHE
+#define ACPI_FULL_DEBUG
 #endif
 
 /* Common for all ACPICA applications */

@@ -117,7 +117,6 @@
 #include "accommon.h"
 #include "acdebug.h"
 
-#ifdef ACPI_DEBUGGER
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbconvert")
@@ -600,5 +599,3 @@ AcpiDbDumpPldBuffer (
     ACPI_FREE (PldInfo);
     ACPI_FREE (NewBuffer);
 }
-
-#endif /* ACPI_DEBUGGER */

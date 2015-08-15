@@ -121,7 +121,6 @@
 #include "acresrc.h"
 #include "actables.h"
 
-#ifdef ACPI_DEBUGGER
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbcmds")
@@ -1421,5 +1420,3 @@ AcpiDbTrace (
     (void) AcpiDebugTrace (AcpiDbTraceMethodName,
         DebugLevel, DebugLayer, Flags);
 }
-
-#endif /* ACPI_DEBUGGER */
