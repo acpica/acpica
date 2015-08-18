@@ -123,8 +123,6 @@
 #include "acdebug.h"
 
 
-#ifdef ACPI_DEBUGGER
-
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbdisply")
 
@@ -1273,5 +1271,3 @@ AcpiDbDisplayNonRootHandlers (
     ACPI_FREE (Pathname);
     return (AE_OK);
 }
-
-#endif /* ACPI_DEBUGGER */

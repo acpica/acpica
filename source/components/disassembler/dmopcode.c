@@ -117,12 +117,10 @@
 #include "accommon.h"
 #include "acparser.h"
 #include "amlcode.h"
-#include "acdisasm.h"
 #include "acinterp.h"
 #include "acnamesp.h"
 #include "acdebug.h"
 
-#ifdef ACPI_DISASSEMBLER
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dmopcode")
@@ -1050,5 +1048,3 @@ AcpiDmDisassembleOneOp (
         break;
     }
 }
-
-#endif  /* ACPI_DISASSEMBLER */

@@ -117,12 +117,7 @@
 #include "accommon.h"
 #include "amlcode.h"
 #include "acdebug.h"
-#ifdef ACPI_DISASSEMBLER
-#include "acdisasm.h"
-#endif
 
-
-#ifdef ACPI_DEBUGGER
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbxface")
@@ -618,5 +613,3 @@ AcpiDbMethodEnd (
     AcpiDbStartCommand (WalkState, NULL);
 }
 #endif
-
-#endif /* ACPI_DEBUGGER */

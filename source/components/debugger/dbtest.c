@@ -119,7 +119,6 @@
 #include "acnamesp.h"
 #include "acpredef.h"
 
-#ifdef ACPI_DEBUGGER
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbtest")
@@ -1212,5 +1211,3 @@ AcpiDbEvaluateOnePredefinedName (
 
     return (Status);
 }
-
-#endif /* ACPI_DEBUGGER */
