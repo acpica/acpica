@@ -194,6 +194,7 @@ m4_include(asltypes.y)
 /* Production rules */
 
 m4_include(aslrules.y)
+m4_include(aslcstyle.y)
 %%
 
 /*! [End] no source code translation !*/
