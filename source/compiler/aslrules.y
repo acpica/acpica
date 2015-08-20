@@ -253,9 +253,24 @@ Expression
     | TermArg PARSEOP_EXP_LOGICAL_OR    {$<n>$ = TrCreateLeafNode (PARSEOP_LOR);}
         TermArg                         {$$ = TrLinkChildren ($<n>3,2,$1,$4);}
 
-      /* Parentheses */
+        /* Parentheses */
 
     | '(' TermArg ')'                   { $$ = $2;}
+
+        /* Index term -- "= BUF1[5]" on right-hand side of an equals (source) */
+
+    | SuperName PARSEOP_EXP_INDEX_LEFT TermArg PARSEOP_EXP_INDEX_RIGHT
+                                        {$$ = TrCreateLeafNode (PARSEOP_INDEX);
+                                        TrLinkChildren ($$,3,$1,$3,TrCreateNullTarget ());}
+    ;
+
+        /* Index term -- "BUF1[5] = " on left-hand side of an equals (target) */
+
+IndexExpTerm
+
+    : SuperName PARSEOP_EXP_INDEX_LEFT TermArg PARSEOP_EXP_INDEX_RIGHT
+                                        {$$ = TrCreateLeafNode (PARSEOP_INDEX);
+                                        TrLinkChildren ($$,3,$1,$3,TrCreateNullTarget ());}
     ;
 
 EqualsTerm
@@ -614,6 +629,7 @@ Type6Opcode
     : RefOfTerm                     {}
     | DerefOfTerm                   {}
     | IndexTerm                     {}
+    | IndexExpTerm                  {}
     | MethodInvocationTerm          {}
     ;
 

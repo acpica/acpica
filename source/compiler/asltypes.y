@@ -463,3 +463,4 @@ NoEcho('
  */
 %type <n> Expression
 %type <n> EqualsTerm
+%type <n> IndexExpTerm
