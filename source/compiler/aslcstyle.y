@@ -1,7 +1,7 @@
 NoEcho('
 /******************************************************************************
  *
- * Module Name: aslrules.y - Bison/Yacc production rules
+ * Module Name: aslcstyle.y - Production rules for symbolic operators
  *
  *****************************************************************************/
 

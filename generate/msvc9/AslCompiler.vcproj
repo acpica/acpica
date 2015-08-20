@@ -2431,6 +2431,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\compiler\aslresources.y"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\compiler\aslrules.y"
 					>
 				</File>

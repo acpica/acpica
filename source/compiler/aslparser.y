@@ -195,6 +195,7 @@ m4_include(asltypes.y)
 
 m4_include(aslrules.y)
 m4_include(aslcstyle.y)
+m4_include(aslresources.y)
 %%
 
 /*! [End] no source code translation !*/
