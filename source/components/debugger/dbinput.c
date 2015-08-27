@@ -1301,7 +1301,8 @@ AcpiDbExecuteThread (
         AcpiGbl_MethodExecuting = FALSE;
         AcpiGbl_StepToNextCall = FALSE;
 
-        MStatus = AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
+        MStatus = AcpiOsAcquireMutex (AcpiGbl_DbCommandReady,
+            ACPI_WAIT_FOREVER);
         if (ACPI_FAILURE (MStatus))
         {
             return;
@@ -1309,11 +1310,7 @@ AcpiDbExecuteThread (
 
         Status = AcpiDbCommandDispatch (AcpiGbl_DbLineBuf, NULL, NULL);
 
-        MStatus = AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
-        if (ACPI_FAILURE (MStatus))
-        {
-            return;
-        }
+        AcpiOsReleaseMutex (AcpiGbl_DbCommandComplete);
     }
 }
 
@@ -1404,13 +1401,14 @@ AcpiDbUserCommands (
              * Signal the debug thread that we have a command to execute,
              * and wait for the command to complete.
              */
-            Status = AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_READY);
+            AcpiOsReleaseMutex (AcpiGbl_DbCommandReady);
             if (ACPI_FAILURE (Status))
             {
                 return (Status);
             }
 
-            Status = AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
+            Status = AcpiOsAcquireMutex (AcpiGbl_DbCommandComplete,
+                ACPI_WAIT_FOREVER);
             if (ACPI_FAILURE (Status))
             {
                 return (Status);
