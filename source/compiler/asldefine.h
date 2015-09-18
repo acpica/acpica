@@ -178,7 +178,7 @@
 
 /* filename suffixes for output files */
 
-#define FILE_SUFFIX_PREPROC_USER    "i  "
+#define FILE_SUFFIX_PREPROC_USER    "i"
 #define FILE_SUFFIX_PREPROCESSOR    "pre"
 #define FILE_SUFFIX_AML_CODE        "aml"
 #define FILE_SUFFIX_MAP             "map"
