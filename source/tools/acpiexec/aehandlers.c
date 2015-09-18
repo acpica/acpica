@@ -490,7 +490,7 @@ AeExceptionHandler (
 
     if (NewAmlStatus != AmlStatus)
     {
-        AcpiOsPrintf ("[AcpiExec] Exception override, new status %s\n",
+        AcpiOsPrintf ("[AcpiExec] Exception override, new status %s\n\n",
             AcpiFormatException (NewAmlStatus));
     }
 

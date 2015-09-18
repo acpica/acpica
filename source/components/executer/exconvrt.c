@@ -745,6 +745,7 @@ AcpiExConvertToTargetType (
         break;
 
     case ARGI_TARGETREF:
+    case ARGI_STORE_TARGET:
 
         switch (DestinationType)
         {
