@@ -25,7 +25,7 @@
 SETOF_INDEXES= 0 1 2 3
 SETOF_AMLDIRS= nopt/32 nopt/64 opt/32 opt/64
 SETOF_ASLFAGS= "-oa -r 1" "-oa -r 2" "-r 1" "-r 2"
-COMMON_ASL_FLAGS= "-cr -vs"
+COMMON_ASL_FLAGS= "-cr -vs -l -sc -sa -ic -ta -ts -so -lm -ln -ls -li"
 
 COMPILER_LOG="$(TOP)/tmp/aml/$(aslversion)/compile.txt"
 COMPILER_ERROR_LOG="$(TOP)/tmp/aml/$(aslversion)/error.txt"
@@ -72,6 +72,16 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 				"$(ASL)" $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$j.asl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
 				ret=$$?; \
 				echo "" >> $(COMPILER_LOG); \
+				rm $$j.asm; \
+				rm $$j.c; \
+				rm $$j.h; \
+				rm $$j.i; \
+				rm $$j.hex; \
+				rm $$j.lst; \
+				rm $$j.map; \
+				rm $$j.nsp; \
+				rm $$j.offset.h; \
+				rm $$j.src; \
 				if [ $$ret != 0 ]; then \
 					rval=1; \
 					>&2 echo "**** Unexpected iASL failure in $$dd/$$j.asl!"; \
