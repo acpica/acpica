@@ -530,8 +530,8 @@ AnOperandTypecheckWalkEnd (
                 case PARSEOP_ARG5:
                 case PARSEOP_ARG6:
 
-                    /* Hard to analyze argument types, sow we won't */
-                    /* For now, just treat any arg as a typematch */
+                    /* Hard to analyze argument types, so we won't */
+                    /* for now. Just treat any arg as a typematch */
 
                     /* ThisNodeBtype = RequiredBtypes; */
                     break;
@@ -881,17 +881,32 @@ AnAnalyzeStoreOperator (
      */
     switch (SourceOperandOp->Asl.ParseOpcode)
     {
-    case PARSEOP_DEBUG:
-    case PARSEOP_DEREFOF:
-    case PARSEOP_REFOF:
-    case PARSEOP_INDEX:
-
     /* For these, type of the returned value is unknown at compile time */
 
+    case PARSEOP_DEREFOF:
     case PARSEOP_METHODCALL:
     case PARSEOP_STORE:
     case PARSEOP_COPYOBJECT:
 
+        return;
+
+    case PARSEOP_INDEX:
+    case PARSEOP_REFOF:
+        /*
+         * These opcodes always return an object reference, and thus
+         * the result can only be stored to a Local, Arg, or Debug.
+         */
+        if (TargetOperandOp->Asl.AmlOpcode == AML_DEBUG_OP)
+        {
+            return;
+        }
+
+        if ((TargetOperandOp->Asl.AmlOpcode < AML_LOCAL0) ||
+            (TargetOperandOp->Asl.AmlOpcode > AML_ARG6))
+        {
+            AslError (ASL_ERROR, ASL_MSG_INVALID_TYPE, TargetOperandOp,
+                "Source [Reference], Target must be [Local/Arg/Debug]");
+        }
         return;
 
     default:
@@ -944,6 +959,16 @@ AnAnalyzeStoreOperator (
     if (TargetNode &&
         (TargetNode->Flags & ANOBJ_IS_EXTERNAL) &&
         (TargetNode->Type == ACPI_TYPE_ANY))
+    {
+        return;
+    }
+
+    /*
+     * A NULL node with a namepath AML opcode indicates non-existent
+     * name. Just return, the error message is generated elsewhere.
+     */
+    if ((!SourceNode && (SourceOperandOp->Asl.AmlOpcode == AML_INT_NAMEPATH_OP)) ||
+        (!TargetNode && (TargetOperandOp->Asl.AmlOpcode == AML_INT_NAMEPATH_OP)))
     {
         return;
     }
