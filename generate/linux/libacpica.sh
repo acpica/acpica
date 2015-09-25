@@ -60,6 +60,7 @@ acpica_drivers_paths()
 	local paths incs inc
 
 	paths="\
+		components/debugger \
 		components/dispatcher \
 		components/events \
 		components/executer \

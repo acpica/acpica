@@ -195,6 +195,7 @@ enum AcpiExDebuggerCommands
     CMD_OSI,
     CMD_OWNER,
     CMD_PATHS,
+    CMD_PREDEFINED,
     CMD_PREFIX,
     CMD_QUIT,
     CMD_REFERENCES,
@@ -224,7 +225,6 @@ enum AcpiExDebuggerCommands
     CMD_TERMINATE,
     CMD_THREADS,
 
-    CMD_PREDEFINED,
     CMD_TEST,
 #endif
 };
@@ -273,6 +273,7 @@ static const ACPI_DB_COMMAND_INFO   AcpiGbl_DbCommands[] =
     {"OSI",          0},
     {"OWNER",        1},
     {"PATHS",        0},
+    {"PREDEFINED",   0},
     {"PREFIX",       0},
     {"QUIT",         0},
     {"REFERENCES",   1},
@@ -302,7 +303,6 @@ static const ACPI_DB_COMMAND_INFO   AcpiGbl_DbCommands[] =
     {"TERMINATE",    0},
     {"THREADS",      3},
 
-    {"PREDEFINED",   0},
     {"TEST",         1},
 #endif
     {NULL,           0}
@@ -834,7 +834,7 @@ AcpiDbCommandDispatch (
 
     /* If AcpiTerminate has been called, terminate this thread */
 
-    if (AcpiGbl_DbTerminateThreads)
+    if (AcpiGbl_DbTerminateLoop)
     {
         return (AE_CTRL_TERMINATE);
     }
@@ -1212,6 +1212,7 @@ AcpiDbCommandDispatch (
          * re-creating the semaphores!
          */
 
+        AcpiGbl_DbTerminateLoop = TRUE;
         /*  AcpiInitialize (NULL);  */
         break;
 
@@ -1256,7 +1257,7 @@ AcpiDbCommandDispatch (
 #ifdef ACPI_APPLICATION
         AcpiDbCloseDebugFile ();
 #endif
-        AcpiGbl_DbTerminateThreads = TRUE;
+        AcpiGbl_DbTerminateLoop = TRUE;
         return (AE_CTRL_TERMINATE);
 
     case CMD_NOT_FOUND:
@@ -1296,7 +1297,7 @@ AcpiDbExecuteThread (
     ACPI_STATUS             MStatus;
 
 
-    while (Status != AE_CTRL_TERMINATE)
+    while (Status != AE_CTRL_TERMINATE && !AcpiGbl_DbTerminateLoop)
     {
         AcpiGbl_MethodExecuting = FALSE;
         AcpiGbl_StepToNextCall = FALSE;
@@ -1312,6 +1313,7 @@ AcpiDbExecuteThread (
 
         AcpiOsReleaseMutex (AcpiGbl_DbCommandComplete);
     }
+    AcpiGbl_DbThreadsTerminated = TRUE;
 }
 
 
@@ -1366,7 +1368,7 @@ AcpiDbUserCommands (
 
     /* TBD: [Restructure] Need a separate command line buffer for step mode */
 
-    while (!AcpiGbl_DbTerminateThreads)
+    while (!AcpiGbl_DbTerminateLoop)
     {
         /* Force output to console until a command is entered */
 
@@ -1422,14 +1424,5 @@ AcpiDbUserCommands (
         }
     }
 
-    /* Shut down the debugger */
-
-    AcpiTerminateDebugger ();
-
-    /*
-     * Only this thread (the original thread) should actually terminate the
-     * subsystem, because all the semaphores are deleted during termination
-     */
-    Status = AcpiTerminate ();
     return (Status);
 }
