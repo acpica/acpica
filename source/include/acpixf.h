@@ -1288,4 +1288,8 @@ void
 AcpiTerminateDebugger (
     void);
 
+void
+AcpiSetDebuggerThreadId (
+    ACPI_THREAD_ID          ThreadId);
+
 #endif /* __ACXFACE_H__ */
