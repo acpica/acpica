@@ -195,6 +195,7 @@ enum AcpiExDebuggerCommands
     CMD_OSI,
     CMD_OWNER,
     CMD_PATHS,
+    CMD_PREDEFINED,
     CMD_PREFIX,
     CMD_QUIT,
     CMD_REFERENCES,
@@ -224,7 +225,6 @@ enum AcpiExDebuggerCommands
     CMD_TERMINATE,
     CMD_THREADS,
 
-    CMD_PREDEFINED,
     CMD_TEST,
 #endif
 };
@@ -273,6 +273,7 @@ static const ACPI_DB_COMMAND_INFO   AcpiGbl_DbCommands[] =
     {"OSI",          0},
     {"OWNER",        1},
     {"PATHS",        0},
+    {"PREDEFINED",   0},
     {"PREFIX",       0},
     {"QUIT",         0},
     {"REFERENCES",   1},
@@ -302,7 +303,6 @@ static const ACPI_DB_COMMAND_INFO   AcpiGbl_DbCommands[] =
     {"TERMINATE",    0},
     {"THREADS",      3},
 
-    {"PREDEFINED",   0},
     {"TEST",         1},
 #endif
     {NULL,           0}
