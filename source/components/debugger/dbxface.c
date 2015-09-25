@@ -511,6 +511,10 @@ AcpiInitializeDebugger (
     AcpiGbl_DbScopeBuf [1] =  0;
     AcpiGbl_DbScopeNode = AcpiGbl_RootNode;
 
+    /* Initialize user commands loop */
+
+    AcpiGbl_DbTerminateLoop = FALSE;
+
     /*
      * If configured for multi-thread support, the debug executor runs in
      * a separate thread so that the front end can be in another address
@@ -538,12 +542,14 @@ AcpiInitializeDebugger (
 
         /* Create the debug execution thread to execute commands */
 
+        AcpiGbl_DbThreadsTerminated = FALSE;
         Status = AcpiOsExecute (OSL_DEBUGGER_THREAD,
             AcpiDbExecuteThread, NULL);
         if (ACPI_FAILURE (Status))
         {
             ACPI_EXCEPTION ((AE_INFO, Status,
                 "Could not start debugger thread"));
+            AcpiGbl_DbThreadsTerminated = TRUE;
             return_ACPI_STATUS (Status);
         }
     }
@@ -570,6 +576,20 @@ void
 AcpiTerminateDebugger (
     void)
 {
+
+    /* Terminate the AML Debugger */
+
+    AcpiGbl_DbTerminateLoop = TRUE;
+
+    if (AcpiGbl_DebuggerConfiguration & DEBUGGER_MULTI_THREADED)
+    {
+        /* Wait the AML Debugger threads */
+
+        while (!AcpiGbl_DbThreadsTerminated)
+        {
+            AcpiOsSleep (100);
+        }
+    }
 
     if (AcpiGbl_DbBuffer)
     {
