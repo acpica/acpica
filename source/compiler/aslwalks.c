@@ -703,7 +703,10 @@ AnOtherSemanticAnalysisWalkBegin (
     {
     case PARSEOP_STORE:
 
-        AnAnalyzeStoreOperator (Op);
+        if (Gbl_DoTypechecking)
+        {
+            AnAnalyzeStoreOperator (Op);
+        }
         break;
 
 

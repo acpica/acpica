@@ -578,6 +578,13 @@ AslDoOptions (
             Gbl_ReferenceOptimizationFlag = FALSE;
             break;
 
+        case 'c':
+
+            /* Display compile time(s) */
+
+            Gbl_CompileTimesFlag = TRUE;
+            break;
+
         case 'f':
 
             /* Disable folding on "normal" expressions */
@@ -601,9 +608,9 @@ AslDoOptions (
 
         case 't':
 
-            /* Display compile time(s) */
+            /* Disable heavy typechecking */
 
-            Gbl_CompileTimesFlag = TRUE;
+            Gbl_DoTypechecking = FALSE;
             break;
 
         default:
