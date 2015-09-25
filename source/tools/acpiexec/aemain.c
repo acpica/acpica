@@ -408,7 +408,7 @@ AeDoOptions (
     case '?':
 
         usage();
-        return (0);
+        return (1);
 
     case 'i':
 
@@ -416,7 +416,7 @@ AeDoOptions (
         if (!Temp || (Temp > ACPI_UINT16_MAX))
         {
             printf ("%s: Invalid max loops value\n", AcpiGbl_Optarg);
-            return (1);
+            return (-1);
         }
 
         AcpiGbl_MaxLoopIterations = (UINT16) Temp;
@@ -459,7 +459,7 @@ AeDoOptions (
         case '^':  /* -v: (Version): signon already emitted, just exit */
 
             (void) AcpiOsTerminate ();
-            exit (0);
+            return (1);
 
         case 'i':
 
@@ -517,6 +517,7 @@ main (
     ACPI_TABLE_HEADER       *Table = NULL;
     UINT32                  TableCount;
     AE_TABLE_DESC           *TableDesc;
+    int                     ExitCode = 0;
 
 
     ACPI_DEBUG_INITIALIZE (); /* For debug version only */
@@ -560,8 +561,13 @@ main (
 
     /* Get the command line options */
 
-    if (AeDoOptions (argc, argv))
+    ExitCode = AeDoOptions (argc, argv);
+    if (ExitCode)
     {
+        if (ExitCode > 0)
+        {
+            ExitCode = 0;
+        }
         goto ErrorExit;
     }
 
@@ -732,7 +738,7 @@ EnterDebugger:
 
 ErrorExit:
     (void) AcpiOsTerminate ();
-    return (-1);
+    return (ExitCode);
 }
 
 
