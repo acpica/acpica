@@ -583,33 +583,3 @@ AcpiTerminateDebugger (
 }
 
 ACPI_EXPORT_SYMBOL (AcpiTerminateDebugger)
-
-
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDbMethodEnd
- *
- * PARAMETERS:  WalkState       - Current walk
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Called at method termination
- *
- ******************************************************************************/
-
-void
-AcpiDbMethodEnd (
-    ACPI_WALK_STATE         *WalkState)
-{
-
-    if (!AcpiGbl_CmSingleStep)
-    {
-        return;
-    }
-
-    AcpiOsPrintf ("<Method Terminating>\n");
-
-    AcpiDbStartCommand (WalkState, NULL);
-}
-#endif
