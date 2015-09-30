@@ -159,6 +159,10 @@ AcpiTerminate (
     AcpiGbl_StartupFlags = 0;
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Shutting down ACPI Subsystem\n"));
 
+    /* Terminate the AML Debugger if present */
+
+    ACPI_DEBUGGER_EXEC (AcpiGbl_DbTerminateThreads = TRUE);
+
     /* Shutdown and free all resources */
 
     AcpiUtSubsystemShutdown ();

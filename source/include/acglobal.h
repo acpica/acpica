@@ -400,6 +400,7 @@ ACPI_GLOBAL (ACPI_EXTERNAL_FILE *,      AcpiGbl_ExternalFileList);
 
 #ifdef ACPI_DEBUGGER
 
+ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_DbTerminateThreads, FALSE);
 ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_AbortMethod, FALSE);
 ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_MethodExecuting, FALSE);
 
@@ -411,8 +412,6 @@ ACPI_GLOBAL (char *,                    AcpiGbl_DbFilename);
 ACPI_GLOBAL (UINT32,                    AcpiGbl_DbDebugLevel);
 ACPI_GLOBAL (UINT32,                    AcpiGbl_DbConsoleDebugLevel);
 ACPI_GLOBAL (ACPI_NAMESPACE_NODE *,     AcpiGbl_DbScopeNode);
-ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_DbTerminateLoop);
-ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_DbThreadsTerminated);
 
 ACPI_GLOBAL (char *,                    AcpiGbl_DbArgs[ACPI_DEBUGGER_MAX_ARGS]);
 ACPI_GLOBAL (ACPI_OBJECT_TYPE,          AcpiGbl_DbArgTypes[ACPI_DEBUGGER_MAX_ARGS]);
