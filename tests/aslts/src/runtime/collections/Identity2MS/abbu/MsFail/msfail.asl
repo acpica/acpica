@@ -1547,6 +1547,8 @@ Method(mf24,, Serialized)
  */
 Method(mf25,, Serialized)
 {
+/*
+// Removed 09/2015. iASL now disallows these stores
 	Name(ts, "mf25")
 	Device(d000) { Name(id00, 0xabcd0005) }
 
@@ -1556,7 +1558,7 @@ Method(mf25,, Serialized)
 	if (LNotEqual(Local0, c00e)) {
 		err(ts, z161, 0x000, 0, 0, Local0, c00e)
 	}
-
+*/
 	Return(POUT)
 }
 
@@ -1567,6 +1569,8 @@ Method(mf25,, Serialized)
  */
 Method(mf27,, Serialized)
 {
+/*
+// Removed 09/2015. iASL now disallows these stores
 	Name(ts, "mf27")
 	Event(e000)
 
@@ -1576,7 +1580,7 @@ Method(mf27,, Serialized)
 	if (LNotEqual(Local0, c00f)) {
 		err(ts, z161, 0x000, 0, 0, Local0, c00f)
 	}
-
+*/
 	Return(POUT)
 }
 
@@ -1587,6 +1591,9 @@ Method(mf27,, Serialized)
  */
 Method(mf28,, Serialized)
 {
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Name(ts, "mf28")
 	Mutex(mx00, 0)
 
@@ -1596,7 +1603,7 @@ Method(mf28,, Serialized)
 	if (LNotEqual(Local0, c011)) {
 		err(ts, z161, 0x000, 0, 0, Local0, c011)
 	}
-
+*/
 	Return(POUT)
 }
 
@@ -1607,6 +1614,9 @@ Method(mf28,, Serialized)
  */
 Method(mf29, 1, Serialized)
 {
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Name(ts, "mf29")
 	Event(e000)
 
@@ -1616,7 +1626,7 @@ Method(mf29, 1, Serialized)
 	if (LNotEqual(Local0, c00f)) {
 		err(ts, z161, 0x000, 0, 0, Local0, c00f)
 	}
-
+*/
 	Return(POUT)
 }
 
@@ -1627,6 +1637,9 @@ Method(mf29, 1, Serialized)
  */
 Method(mf2a, 1, Serialized)
 {
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Name(ts, "mf2a")
 	Mutex(mx00, 0)
 
@@ -1636,7 +1649,7 @@ Method(mf2a, 1, Serialized)
 	if (LNotEqual(Local0, c011)) {
 		err(ts, z161, 0x000, 0, 0, Local0, c011)
 	}
-
+*/
 	Return(POUT)
 }
 
@@ -1648,6 +1661,9 @@ Method(mf2a, 1, Serialized)
  */
 Method(mf2b,, Serialized)
 {
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Name(ts, "mf2b")
 	Device(d000) { Name(id00, 0xabcd0005) }
 
@@ -1661,7 +1677,7 @@ Method(mf2b,, Serialized)
 			err(ts, z161, 0x000, 0, 0, Local0, c00e)
 		}
 	}
-
+*/
 	Return(POUT)
 }
 
@@ -1673,6 +1689,9 @@ Method(mf2b,, Serialized)
  */
 Method(mf2c, 1, Serialized)
 {
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Name(ts, "mf2c")
 	Device(d000) { Name(id00, 0xabcd0005) }
 
@@ -1686,7 +1705,7 @@ Method(mf2c, 1, Serialized)
 			err(ts, z161, 0x000, 0, 0, Local0, c00e)
 		}
 	}
-
+*/
 	Return(POUT)
 }
 

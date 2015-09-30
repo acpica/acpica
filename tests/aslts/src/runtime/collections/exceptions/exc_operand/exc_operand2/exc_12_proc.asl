@@ -53,21 +53,27 @@ Method(m4bc,, Serialized)
 	// Local Named Object
 	Method(m000, 1, Serialized)
 	{
+/* These are now caught by the compiler - Aug 2015
+
 		Processor(prc2, 0, 0xFFFFFFFF, 0) {}
 
 		if (y083) {
 			Store (DerefOf(prc2), Local1)
 			CH06(arg0, 0, 47)
 		}
+*/
 	}
 
 	// Global Named Object
 	Method(m001, 1)
 	{
+/* These are now caught by the compiler - Aug 2015
+
 		if (y083) {
 			Store (DerefOf(pr10), Local1)
 			CH06(arg0, 1, 47)
 		}
+*/
 	}
 
 	// Local

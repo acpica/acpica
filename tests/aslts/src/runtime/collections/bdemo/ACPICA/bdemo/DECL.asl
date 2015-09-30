@@ -52,7 +52,7 @@ Include("../../../../../runtime/collections/bdemo/ACPICA/0010/DECL.asl")
 
 // 0011_ASL
 
-Include("../../../../../runtime/collections/bdemo/ACPICA/0012/DECL.asl")
+//Include("../../../../../runtime/collections/bdemo/ACPICA/0012/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0013/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0014/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0015/DECL.asl")
@@ -83,7 +83,7 @@ Include("../../../../../runtime/collections/bdemo/ACPICA/0034/DECL.asl")
 // 0035_ASL
 // 0036_ASL
 
-Include("../../../../../runtime/collections/bdemo/ACPICA/0037/DECL.asl")
+//Include("../../../../../runtime/collections/bdemo/ACPICA/0037/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0038/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0039_ASL_RUNTIME/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0040/DECL.asl")
@@ -144,7 +144,7 @@ Include("../../../../../runtime/collections/bdemo/ACPICA/0081/DECL.asl")
 
 // 0082_SPEC
 
-Include("../../../../../runtime/collections/bdemo/ACPICA/0083/DECL.asl")
+//Include("../../../../../runtime/collections/bdemo/ACPICA/0083/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0084/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0085/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0086/DECL.asl")
@@ -208,7 +208,7 @@ Include("../../../../../runtime/collections/bdemo/ACPICA/0131/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0132/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0133/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0134/DECL.asl")
-Include("../../../../../runtime/collections/bdemo/ACPICA/0135/DECL.asl")
+//Include("../../../../../runtime/collections/bdemo/ACPICA/0135/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0136/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0137/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0138/DECL.asl")
@@ -234,7 +234,7 @@ Include("../../../../../runtime/collections/bdemo/ACPICA/0151/DECL.asl")
 
 // 0152_ASL
 
-Include("../../../../../runtime/collections/bdemo/ACPICA/0153/DECL.asl")
+//Include("../../../../../runtime/collections/bdemo/ACPICA/0153/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0154/DECL.asl")
 
 Include("../../../../../runtime/collections/bdemo/ACPICA/0155/DECL.asl")
@@ -293,8 +293,8 @@ Include("../../../../../runtime/collections/bdemo/ACPICA/0194/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0195/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0196/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0197/DECL.asl")
-Include("../../../../../runtime/collections/bdemo/ACPICA/0198/DECL.asl")
-Include("../../../../../runtime/collections/bdemo/ACPICA/0199/DECL.asl")
+//Include("../../../../../runtime/collections/bdemo/ACPICA/0198/DECL.asl")
+//Include("../../../../../runtime/collections/bdemo/ACPICA/0199/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0200/DECL.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0201_OUTSTAND_ALLOC/DECL.asl")
 

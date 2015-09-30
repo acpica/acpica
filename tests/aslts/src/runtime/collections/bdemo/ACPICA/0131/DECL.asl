@@ -64,6 +64,10 @@ Method(m126,, Serialized)
 			err("", zFFF, 0x000, 0, 0, Local0, 0xabcd0001)
 		}
 
+/*
+// Removed 09/2015
+Store to method invocation is not supported
+
 		Store(0xabcd0004, m002())
 		Store(DerefOf(Index(p000, 1)), Local0)
 		if (LNotEqual(Local0, 0xabcd0004)) {
@@ -81,6 +85,7 @@ Method(m126,, Serialized)
 		if (LNotEqual(Local0, 0xabcd0006)) {
 			err("", zFFF, 0x000, 0, 0, Local0, 0xabcd0006)
 		}
+*/
 	}
 
 	m005()

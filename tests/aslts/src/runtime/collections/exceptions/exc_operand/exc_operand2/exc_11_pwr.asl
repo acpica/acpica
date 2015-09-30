@@ -53,21 +53,25 @@ Method(m4bb,, Serialized)
 	// Local Named Object
 	Method(m000, 1, Serialized)
 	{
+/* These are now caught by the compiler - Aug 2015
 		PowerResource(pw02, 1, 0) {Method(m000){return (0)}}
 
 		if (y083) {
 			Store (DerefOf(pw02), Local1)
 			CH06(arg0, 0, 47)
 		}
+*/
 	}
 
 	// Global Named Object
 	Method(m001, 1)
 	{
+/* These are now caught by the compiler - Aug 2015
 		if (y083) {
 			Store (DerefOf(pw00), Local1)
 			CH06(arg0, 1, 47)
 		}
+*/
 	}
 
 	// Local

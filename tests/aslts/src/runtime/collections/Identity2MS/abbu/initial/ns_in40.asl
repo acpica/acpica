@@ -3097,9 +3097,13 @@ Method(in41, 7, Serialized)
 	 * Some params are intermediately stored to Locals
 	 */
 
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Store(d000, Local1)
 	Store(d000, Local3)
 	Store(d000, Local5)
+*/
 
 	mI01(d000)
 	mI02(d000, Local1)
@@ -3162,10 +3166,13 @@ Method(in41, 7, Serialized)
 	 * Some params are intermediately stored to Args (efectively local)
 	 */
 
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Store(d000, Arg1)
 	Store(d000, Arg3)
 	Store(d000, Arg5)
-
+*/
 	mI01(d000)
 	mI02(d000, Arg1)
 	mI03(d000, Arg1, d000)
@@ -3312,9 +3319,17 @@ Method(in41, 7, Serialized)
 	 *   So, here I use Local0,Local2,Local4.
 	 */
 
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Store(e000, Local0)
 	Store(e000, Local2)
 	Store(e000, Local4)
+*/
+
+	Store (0, Local0)
+	Store (2, Local2)
+	Store (4, Local4)
 
 	mI01(e000)
 	mI02(e000, Local0)
@@ -3383,9 +3398,13 @@ Method(in41, 7, Serialized)
 	 *   So, here I use Arg0,Arg2,Arg4.
 	 */
 
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Store(e000, Arg0)
 	Store(e000, Arg2)
 	Store(e000, Arg4)
+*/
 
 	mI01(e000)
 	mI02(e000, Arg0)
@@ -3533,9 +3552,13 @@ Method(in41, 7, Serialized)
 	 *   So, I have no more Locals for checking (SLCK here - because of that).
 	 */
 
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Store(mx00, Local1)
 	Store(mx00, Local3)
 	Store(mx00, Local5)
+*/
 
 	mI01(mx00)
 	mI02(mx00, Local1)
@@ -3604,9 +3627,13 @@ Method(in41, 7, Serialized)
 	 *   So, I have no more Args for checking (SLCK here - because of that).
 	 */
 
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Store(mx00, Arg1)
 	Store(mx00, Arg3)
 	Store(mx00, Arg5)
+*/
 
 	mI01(mx00)
 	mI02(mx00, Arg1)
@@ -3749,9 +3776,13 @@ Method(in41, 7, Serialized)
 	 *   So, I have no more Locals for checking (SLCK here - because of that).
 	 */
 
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Store(r000, Local1)
 	Store(r000, Local3)
 	Store(r000, Local5)
+*/
 
 	mI01(r000)
 	mI02(r000, Local1)
@@ -3820,9 +3851,13 @@ Method(in41, 7, Serialized)
 	 *   So, I have no more Args for checking (SLCK here - because of that).
 	 */
 
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Store(r000, Arg1)
 	Store(r000, Arg3)
 	Store(r000, Arg5)
+*/
 
 	mI01(r000)
 	mI02(r000, Arg1)
@@ -3958,9 +3993,13 @@ Method(in41, 7, Serialized)
 	 * Note: no Locals for this checking (see comment above).
 	 */
 
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Store(pw00, Local1)
 	Store(pw00, Local3)
 	Store(pw00, Local5)
+*/
 
 	mI01(pw00)
 	mI02(pw00, Local1)
@@ -4025,9 +4064,13 @@ Method(in41, 7, Serialized)
 	 * Note: no Args for this checking (see comment above).
 	 */
 
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Store(pw00, Arg1)
 	Store(pw00, Arg3)
 	Store(pw00, Arg5)
+*/
 
 	mI01(pw00)
 	mI02(pw00, Arg1)
@@ -4161,9 +4204,13 @@ Method(in41, 7, Serialized)
 	 * Note: no Locals for this checking (see comment above).
 	 */
 
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Store(pr00, Local1)
 	Store(pr00, Local3)
 	Store(pr00, Local5)
+*/
 
 	mI01(pr00)
 	mI02(pr00, Local1)
@@ -4228,9 +4275,13 @@ Method(in41, 7, Serialized)
 	 * Note: no Args for this checking (see comment above).
 	 */
 
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Store(pr00, Arg1)
 	Store(pr00, Arg3)
 	Store(pr00, Arg5)
+*/
 
 	mI01(pr00)
 	mI02(pr00, Arg1)
@@ -4364,9 +4415,13 @@ Method(in41, 7, Serialized)
 	 * Note: no Locals for this checking (see comment above).
 	 */
 
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Store(tz00, Local1)
 	Store(tz00, Local3)
 	Store(tz00, Local5)
+*/
 
 	mI01(tz00)
 	mI02(tz00, Local1)
@@ -4431,9 +4486,13 @@ Method(in41, 7, Serialized)
 	 * Note: no Args for this checking (see comment above).
 	 */
 
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	Store(tz00, Arg1)
 	Store(tz00, Arg3)
 	Store(tz00, Arg5)
+*/
 
 	mI01(tz00)
 	mI02(tz00, Arg1)

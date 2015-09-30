@@ -46,7 +46,7 @@ Include("../../../../../runtime/collections/bdemo/ACPICA/0010/RUN.asl")
 
 // 0011_ASL
 
-Include("../../../../../runtime/collections/bdemo/ACPICA/0012/RUN.asl")
+//Include("../../../../../runtime/collections/bdemo/ACPICA/0012/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0013/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0014/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0015/RUN.asl")
@@ -77,7 +77,7 @@ Include("../../../../../runtime/collections/bdemo/ACPICA/0034/RUN.asl")
 // 0035_ASL
 // 0036_ASL
 
-Include("../../../../../runtime/collections/bdemo/ACPICA/0037/RUN.asl")
+//Include("../../../../../runtime/collections/bdemo/ACPICA/0037/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0038/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0039_ASL_RUNTIME/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0040/RUN.asl")
@@ -138,7 +138,7 @@ Include("../../../../../runtime/collections/bdemo/ACPICA/0081/RUN.asl")
 
 // 0082_SPEC
 
-Include("../../../../../runtime/collections/bdemo/ACPICA/0083/RUN.asl")
+//Include("../../../../../runtime/collections/bdemo/ACPICA/0083/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0084/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0085/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0086/RUN.asl")
@@ -202,7 +202,7 @@ Include("../../../../../runtime/collections/bdemo/ACPICA/0131/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0132/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0133/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0134/RUN.asl")
-Include("../../../../../runtime/collections/bdemo/ACPICA/0135/RUN.asl")
+//Include("../../../../../runtime/collections/bdemo/ACPICA/0135/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0136/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0137/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0138/RUN.asl")
@@ -228,7 +228,7 @@ Include("../../../../../runtime/collections/bdemo/ACPICA/0151/RUN.asl")
 
 // 0152_ASL
 
-Include("../../../../../runtime/collections/bdemo/ACPICA/0153/RUN.asl")
+//Include("../../../../../runtime/collections/bdemo/ACPICA/0153/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0154/RUN.asl")
 
 Include("../../../../../runtime/collections/bdemo/ACPICA/0155/RUN.asl")
@@ -287,8 +287,8 @@ Include("../../../../../runtime/collections/bdemo/ACPICA/0194/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0195/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0196/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0197/RUN.asl")
-Include("../../../../../runtime/collections/bdemo/ACPICA/0198/RUN.asl")
-Include("../../../../../runtime/collections/bdemo/ACPICA/0199/RUN.asl")
+//Include("../../../../../runtime/collections/bdemo/ACPICA/0198/RUN.asl")
+//Include("../../../../../runtime/collections/bdemo/ACPICA/0199/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0200/RUN.asl")
 Include("../../../../../runtime/collections/bdemo/ACPICA/0201_OUTSTAND_ALLOC/RUN.asl")
 

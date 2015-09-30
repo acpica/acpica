@@ -51,6 +51,8 @@ Method(m4b6,, Serialized)
 	Name(i000, 0)
 
 	// Local Named Object
+/* These are now caught by the compiler - Aug 2015
+
 	Method(m000, 1, Serialized)
 	{
 		Device(dev2) {}
@@ -58,8 +60,9 @@ Method(m4b6,, Serialized)
 		Store (DerefOf(dev2), Local1)
 		CH06(arg0, 0, 47)
 	}
-
+*/
 	// Global Named Object
+/* These are now caught by the compiler - Aug 2015
 	Method(m001, 1)
 	{
 		if (y083) {
@@ -67,7 +70,7 @@ Method(m4b6,, Serialized)
 			CH06(arg0, 1, 47)
 		}
 	}
-
+*/
 	// Local
 	Method(m002, 1, Serialized)
 	{
@@ -1215,10 +1218,10 @@ Method(m4b6,, Serialized)
 	CH03(ts, z098, 11, 0, 0)
 
 	// Local Named Object
-	m000(ts)
+//	m000(ts)
 
 	// Global Named Object
-	m001(ts)
+//	m001(ts)
 
 	// Local
 	m002(Concatenate(ts, "-m002"))

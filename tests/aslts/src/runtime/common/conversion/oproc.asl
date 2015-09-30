@@ -437,6 +437,8 @@ Method(m484, 1, Serialized)
 			Store(f00a, Local7)
 		}
 
+/*
+// Removed 09/2015: iASL now disallows these stores
 		// Devices
 
 		case (0x600) {
@@ -504,7 +506,7 @@ Method(m484, 1, Serialized)
 		}
 
 		// Thermal Zones
-
+*/
 		/*
 		 * case (0xd00) {
 		 *		Store(Debug, Local7)

@@ -50,6 +50,8 @@ Method(m4b7,, Serialized)
 
 	Name(i000, 0)
 
+/* These are now caught by the compiler - Aug 2015
+
 	// Local Named Object
 	Method(m000, 1, Serialized)
 	{
@@ -69,7 +71,7 @@ Method(m4b7,, Serialized)
 			CH06(arg0, 0x101, 47)
 		}
 	}
-
+*/
 	// Local
 	Method(m002, 1, Serialized)
 	{
@@ -1224,10 +1226,10 @@ Method(m4b7,, Serialized)
 	CH03(ts, z099, 11, 0, 0)
 
 	// Local Named Object
-	m000(ts)
+//	m000(ts)
 
 	// Global Named Object
-	m001(ts)
+//	m001(ts)
 
 	// Local
 	m002(Concatenate(ts, "-m002"))

@@ -325,11 +325,11 @@ Method(m694, 5, Serialized)
 			}
 			Case(17) {
 				CopyObject(Refof(REF0), REF1)
-				if (y522) {
+				//if (y522) {
 					CopyObject(REF1, arg2)
-				} else {
-					CopyObject(DeRefof(REF1), arg2)
-				}
+				//} else {
+				//	CopyObject(DeRefof(REF1), arg2)
+				//}
 			}
 			Default {
 				// Unexpected Target Type

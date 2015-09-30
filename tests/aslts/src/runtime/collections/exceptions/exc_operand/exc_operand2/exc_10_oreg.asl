@@ -53,19 +53,24 @@ Method(m4ba,, Serialized)
 	// Local Named Object
 	Method(m000, 1, Serialized)
 	{
+/* These are now caught by the compiler - Aug 2015
+
 		OperationRegion(opr2, SystemMemory, 0x100, 0x100)
 
 		Store (DerefOf(opr2), Local1)
 		CH06(arg0, 0, 47)
+*/
 	}
 
 	// Global Named Object
 	Method(m001, 1)
 	{
+/* These are now caught by the compiler - Aug 2015
 		if (y083) {
 			Store (DerefOf(opr9), Local1)
 			CH06(arg0, 1, 47)
 		}
+*/
 	}
 
 	// Local

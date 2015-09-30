@@ -50,9 +50,13 @@ Method(me02)
 
 	// Store directly a region should not be allowed.
 
+/*
+// Removed 09/2015
+
 	CH03("", 0, 0x000, 0, 0)
 	Store(rd01, Local7)
 	m206(0x001, 0x002)
+*/
 	return (Local0)
 }
 
@@ -68,10 +72,13 @@ Method(me04)
 	Store(0, Local0)
 
 	// Store directly a region should not be allowed.
+/*
+// Removed 09/2015
 
 	CH03("", 0, 0x003, 0, 0)
 	Store(rd02, Local7)
 	m206(0x004, 0x005)
+*/
 	return (Local0)
 }
 

@@ -1317,7 +1317,10 @@ Method(ms1a, 1, Serialized)
 
 		OUTP("Case return (RefOf(i000))")
 
+/*
+// Removed 09/2015. iASL store to method invocation is not supported
 		Store(5, m000())
+*/
 
 		if (LEqual(i001, 0)) {
 			err(ts, z179, 0x059, 0, 0, i001, 0)
@@ -1348,7 +1351,11 @@ Method(ms1a, 1, Serialized)
 
 		OUTP("Case return (Local0) (= RefOf(i000))")
 
+/*
+// Removed 09/2015. iASL store to method invocation not supported
+
 		Store(0x15, m001())
+*/
 
 		if (LEqual(i001, 0)) {
 			err(ts, z179, 0x05b, 0, 0, i001, 0)
@@ -6648,9 +6655,13 @@ Method(ms33, 1, Serialized)
 
 	Method(asdl)
 	{
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 		OUTP("Store _SB.ABBU Device object into LocalX, don't check the type")
 
 		Store(\_SB.ABBU, Local0)
+*/
 
 		if (LOr(ABUU, SLCK)) {
 			CH03(ts, z179, 0x2fa, 0, 0)
@@ -6661,9 +6672,12 @@ Method(ms33, 1, Serialized)
 
 	Method(bsdl)
 	{
+/*
+// Removed 09/2015. iASL now disallows these stores
 		OUTP("Store _SB.ABBU Device object into LocalX")
 
 		Store(\_SB.ABBU, Local0)
+*/
 
 		if (LOr(ABUU, SLCK)) {
 			Store(ObjectType(Local0), Local1)
@@ -6679,9 +6693,13 @@ Method(ms33, 1, Serialized)
 	{
 		Device(DLOC) {}
 
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 		OUTP("Store an improper dynamic Device object into LocalX")
 
 		Store(DLOC, Local0)
+*/
 
 		if (LOr(ABUU, SLCK)) {
 			Store(ObjectType(Local0), Local1)

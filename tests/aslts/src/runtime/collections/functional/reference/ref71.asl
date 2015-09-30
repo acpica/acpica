@@ -90,6 +90,9 @@ Method(m1b3,, Serialized)
 		err(ts, z109, 6, 0, 0, Local7, c009)
 	}
 
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	CH03(ts, z109, 7, 0, 0)
 	Store(d900, Local0)
 	if (LNot(SLCK)){
@@ -101,7 +104,7 @@ Method(m1b3,, Serialized)
 	if (LNot(SLCK)){
 	    CH04(ts, 0, 0xff, z109, 10, 0, 0)
 	}
-
+*/
 	/*
 	 * 21.12.2005.
 	 * No exception now.
@@ -115,6 +118,9 @@ Method(m1b3,, Serialized)
 		Store(m901, Local0)
 		//CH04(ts, 0, 0xff, z109, 12, 0, 0)
 	}
+
+/*
+// Removed 09/2015. iASL now disallows these stores
 
 	CH03(ts, z109, 13, 0, 0)
 	Store(mx90, Local0)
@@ -146,6 +152,7 @@ Method(m1b3,, Serialized)
 	{
 	    CH04(ts, 0, 0xff, z109, 22, 0, 0)
 	}
+*/
 
 	Store(bf90, Local0)
 	Store(ObjectType(Local0), Local7)

@@ -1535,6 +1535,9 @@ Method(m258, 1, Serialized)
 	Store(p953, Index(p100, 4))
 	Store(f900, Index(p100, 5))
 
+/*
+// Removed 09/2015. iASL now disallows these stores
+
 	if (arg0) {
 		// Check these for exceptions but not there
 		Store(d900, Index(p100, 6))
@@ -1546,6 +1549,7 @@ Method(m258, 1, Serialized)
 		Store(pr90, Index(p100, 12))
 		Store(tz90, Index(p100, 13))
 	}
+*/
 
 	Store(bf90, Index(p100, 14))
 

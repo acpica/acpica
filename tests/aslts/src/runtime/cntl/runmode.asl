@@ -342,7 +342,7 @@ Name(y520, 0)	// ArgX term effectively becomes a LocalX term
 			// CopyObject(x,ArgX-Object) should be identical to CopyObject(x,LocalX)
 			// Now, DerefOf(arg0) causes exception
 Name(y521, 0)	// Store reference to NamedX
-Name(y522, 0)	// CopyObject reference to NamedX
+Name(y522, 1)	// CopyObject reference to NamedX
 Name(y523, 0)	// Store(RefOf(NamedX), NamedX)
 Name(y524, 0)	// Store(RefOf(NamedX), DerefOf(Expr_resulting_in_ORef))
 Name(y525, 0)	// Store(RefOf(NamedX), RefOf(Named_X))

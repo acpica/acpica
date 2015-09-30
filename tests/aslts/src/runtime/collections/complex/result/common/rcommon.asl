@@ -666,6 +666,9 @@ if (y361) {
 		Store(FLU0, Local0)
 		m003(ObjectType(FLU0))
 
+/*
+// Removed 09/2015: iASL now disallows stores to these objects
+
 		Store(DEV0, Local0)
 		m003(ObjectType(DEV0))
 
@@ -686,7 +689,7 @@ if (y361) {
 
 		Store(TZN0, Local0)
 		m003(ObjectType(TZN0))
-
+*/
 		Store(BFL0, Local0)
 		m003(ObjectType(BFL0))
 
@@ -1092,11 +1095,11 @@ if (y361) {
 			}
 			Case(17) {
 				CopyObject(Refof(ORF1), REF1)
-				if (y522) {
+				//if (y522) {
 					CopyObject(REF1, arg2)
-				} else {
-					CopyObject(DeRefof(REF1), arg2)
-				}
+				//} else {
+				//	CopyObject(DeRefof(REF1), arg2)
+				//}
 			}
 			Default {
 				// Unexpected Target Type
@@ -1198,11 +1201,11 @@ if (y361) {
 			}
 			Case(17) {
 				CopyObject(Refof(ORF0), REF0)
-				if (y522) {
+				//if (y522) {
 					CopyObject(REF0, arg2)
-				} else {
-					CopyObject(DeRefof(REF0), arg2)
-				}
+				//} else {
+				//	CopyObject(DeRefof(REF0), arg2)
+				//}
 			}
 			Default {
 				// Unexpected Source Type
@@ -3178,11 +3181,11 @@ if (y361) {
 			}
 			Case(17) {
 				CopyObject(Refof(ORF1), REF1)
-				if (y522) {
+				//if (y522) {
 					Store(REF1, Index(arg2, 0))
-				} else {
-					Store(DeRefof(REF1), Index(arg2, 0))
-				}
+				//} else {
+				//	Store(DeRefof(REF1), Index(arg2, 0))
+				//}
 			}
 			Default {
 				// Unexpected Target Type
@@ -3282,7 +3285,8 @@ if (y361) {
 				Store(14, Local0)
 			}
 			Case(17) {
-				Store(Derefof(REF1), Local3)
+				//Store(Derefof(REF1), Local3)
+				Store (REF1, Local3)
 				if (CH03(arg0, z122, 103, arg1, Local0)) {
 					// Derefof caused unexpected exception
 					Return (1)
@@ -3464,7 +3468,8 @@ if (y361) {
 				Store(14, Local0)
 			}
 			Case(17) {
-				Store(Derefof(REF1), Local3)
+				//Store(Derefof(REF1), Local3)
+				Store(REF1, Local3)
 				if (CH03(arg0, z122, 121, arg1, 0)) {
 					// Derefof caused unexpected exception
 					Return (1)

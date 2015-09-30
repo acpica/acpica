@@ -53,21 +53,26 @@ Method(m4b9,, Serialized)
 	// Local Named Object
 	Method(m000, 1, Serialized)
 	{
+/* These are now caught by the compiler - Aug 2015
+
 		Mutex(mx02, 0)
 
 		if (y083) {
 			Store (DerefOf(mx02), Local1)
 			CH06(arg0, 0, 47)
 		}
+*/
 	}
 
 	// Global Named Object
 	Method(m001, 1)
 	{
+/* These are now caught by the compiler - Aug 2015
 		if (y083) {
 			Store (DerefOf(mx10), Local1)
 			CH06(arg0, 1, 47)
 		}
+*/
 	}
 
 	// Local

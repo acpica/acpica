@@ -45,6 +45,10 @@
 
 	Method(mf1e)
 	{
+/*
+// Removed 09/2015
+Store to method invocation is not supported
+
 		// Case mf1c
 
 		Store(5, mf1c())
@@ -60,6 +64,7 @@
 		if (LNotEqual(id12, 6)) {
 			err("", zFFF, 0x001, 0, 0, id12, 6)
 		}
+*/
 	}
 
 

@@ -53,19 +53,25 @@ Method(m4bd,, Serialized)
 	// Local Named Object
 	Method(m000, 1, Serialized)
 	{
+/* These are now caught by the compiler - Aug 2015
+
 		ThermalZone (tz02) {Name(n000, "tz02")}
 
 		Store (DerefOf(tz02), Local1)
 		CH06(arg0, 0, 47)
+*/
 	}
 
 	// Global Named Object
 	Method(m001, 1)
 	{
+/* These are now caught by the compiler - Aug 2015
+
 		if (y083) {
 			Store (DerefOf(tz00), Local1)
 			CH06(arg0, 1, 47)
 		}
+*/
 	}
 
 	// Local

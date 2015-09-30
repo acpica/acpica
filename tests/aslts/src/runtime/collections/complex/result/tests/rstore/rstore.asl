@@ -773,9 +773,13 @@ Method(m690,, Serialized)
 						m680(arg0, 143, 0, i68b, 0xc179b3fe)
 						m680(arg0, 144, 0, b6e0, Buffer() {0x84, 0xA2, 0x50, 0xD6, 0x91, 0xB3, 0x7C, 0xFE})
 					}
+
+/*
+// Removed 09/2015: iASL now disallows store of package to integer
 					Case(4) {	// Package
 	 					Store(Package(){0xfe7cb391d650a284}, i684)
 					}
+*/
 					Case(5) {	// Field Unit
 						Store("Not implemented", Debug)
 						err(terr, z123, 145, 0, 0, arg1, arg2)

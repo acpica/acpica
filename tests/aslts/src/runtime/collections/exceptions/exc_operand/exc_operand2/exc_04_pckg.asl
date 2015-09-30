@@ -74,11 +74,13 @@ Method(m4b4, 1, Serialized)
 
 		// DerefOf
 
+/* These are now caught by the compiler - Aug 2015
+
 		if (y083) {
 			Store (DerefOf(p000), Local1)
 			CH06(arg0, 0, 47)
 		}
-
+*/
 		// FindSetLeftBit
 
 		// FindSetRightBit
@@ -213,12 +215,13 @@ Method(m4b4, 1, Serialized)
 		// Decrement
 
 		// DerefOf
+/* These are now caught by the compiler - Aug 2015
 
 		if (y083) {
 			Store (DerefOf(p100), Local1)
 			CH06(arg0, 1, 47)
 		}
-
+*/
 		// FindSetLeftBit
 
 		// FindSetRightBit
