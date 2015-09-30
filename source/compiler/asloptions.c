@@ -140,7 +140,7 @@ AslDoResponseFile (
 
 
 #define ASL_TOKEN_SEPARATORS    " \t\n"
-#define ASL_SUPPORTED_OPTIONS   "@:b|c|d^D:e:f^gh^i|I:l^m:no|p:P^r:s|t|T+G^v^w|x:z"
+#define ASL_SUPPORTED_OPTIONS   "@:a:b|c|d^D:e:f^gh^i|I:l^m:no|p:P^r:s|t|T+G^v^w|x:z"
 
 
 /*******************************************************************************
@@ -255,6 +255,24 @@ AslDoOptions (
             return (-1);
         }
         break;
+
+    case 'a':   /* Debug options */
+
+        switch (AcpiGbl_Optarg[0])
+        {
+        case 'r':
+
+            Gbl_EnableReferenceTypechecking = TRUE;
+            break;
+
+        default:
+
+            printf ("Unknown option: -a%s\n", AcpiGbl_Optarg);
+            return (-1);
+        }
+
+        break;
+
 
     case 'b':   /* Debug options */
 

@@ -895,6 +895,12 @@ AnAnalyzeStoreOperator (
 
     case PARSEOP_INDEX:
     case PARSEOP_REFOF:
+
+        if (!Gbl_EnableReferenceTypechecking)
+        {
+            return;
+        }
+
         /*
          * These opcodes always return an object reference, and thus
          * the result can only be stored to a Local, Arg, or Debug.
