@@ -1402,10 +1402,6 @@ AcpiDbUserCommands (
              * and wait for the command to complete.
              */
             AcpiOsReleaseMutex (AcpiGbl_DbCommandReady);
-            if (ACPI_FAILURE (Status))
-            {
-                return (Status);
-            }
 
             Status = AcpiOsAcquireMutex (AcpiGbl_DbCommandComplete,
                 ACPI_WAIT_FOREVER);
