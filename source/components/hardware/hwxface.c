@@ -637,12 +637,20 @@ AcpiGetSleepTypeData (
      * Evaluate the \_Sx namespace object containing the register values
      * for this state
      */
-    Info->RelativePathname = ACPI_CAST_PTR (
-        char, AcpiGbl_SleepStateNames[SleepState]);
+    Info->RelativePathname = ACPI_CAST_PTR (char,
+        AcpiGbl_SleepStateNames[SleepState]);
+
     Status = AcpiNsEvaluate (Info);
     if (ACPI_FAILURE (Status))
     {
-        goto Cleanup;
+        if (Status == AE_NOT_FOUND)
+        {
+            /* The _Sx states are optional, ignore NOT_FOUND */
+
+            goto FinalCleanup;
+        }
+
+        goto WarningCleanup;
     }
 
     /* Must have a return object */
@@ -652,7 +660,7 @@ AcpiGetSleepTypeData (
         ACPI_ERROR ((AE_INFO, "No Sleep State object returned from [%s]",
             Info->RelativePathname));
         Status = AE_AML_NO_RETURN_VALUE;
-        goto Cleanup;
+        goto WarningCleanup;
     }
 
     /* Return object must be of type Package */
@@ -661,7 +669,7 @@ AcpiGetSleepTypeData (
     {
         ACPI_ERROR ((AE_INFO, "Sleep State return object is not a Package"));
         Status = AE_AML_OPERAND_TYPE;
-        goto Cleanup1;
+        goto ReturnValueCleanup;
     }
 
     /*
@@ -708,16 +716,18 @@ AcpiGetSleepTypeData (
         break;
     }
 
-Cleanup1:
+ReturnValueCleanup:
     AcpiUtRemoveReference (Info->ReturnObject);
 
-Cleanup:
+WarningCleanup:
     if (ACPI_FAILURE (Status))
     {
         ACPI_EXCEPTION ((AE_INFO, Status,
-            "While evaluating Sleep State [%s]", Info->RelativePathname));
+            "While evaluating Sleep State [%s]",
+            Info->RelativePathname));
     }
 
+FinalCleanup:
     ACPI_FREE (Info);
     return_ACPI_STATUS (Status);
 }
