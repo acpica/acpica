@@ -513,8 +513,20 @@ AcpiDsBeginMethodExecution (
 
                 ObjDesc->Method.Mutex->Mutex.ThreadId =
                     WalkState->Thread->ThreadId;
-                WalkState->Thread->CurrentSyncLevel =
-                    ObjDesc->Method.SyncLevel;
+
+                /*
+                 * Update the current SyncLevel only if this is not an auto-
+                 * serialized method. In the auto case, we have to ignore
+                 * the sync level for the method mutex (created for the
+                 * auto-serialization) because we have no idea of what the
+                 * sync level should be. Therefore, just ignore it.
+                 */
+                if (!(ObjDesc->Method.InfoFlags &
+                    ACPI_METHOD_IGNORE_SYNC_LEVEL))
+                {
+                    WalkState->Thread->CurrentSyncLevel =
+                        ObjDesc->Method.SyncLevel;
+                }
             }
             else
             {
