@@ -224,6 +224,7 @@ AcpiDmDumpRawDataBuffer (
 
             AcpiOsPrintf (", ");
         }
+
         AcpiOsPrintf ("\n");
         AcpiDmIndent (Level + 2);
 
@@ -269,7 +270,8 @@ AcpiDmGpioCommon (
     AcpiDmIndent (Level + 1);
     if (Resource->Gpio.ResSourceOffset)
     {
-        DeviceName = ACPI_ADD_PTR (char, Resource, Resource->Gpio.ResSourceOffset),
+        DeviceName = ACPI_ADD_PTR (char,
+            Resource, Resource->Gpio.ResSourceOffset),
         AcpiUtPrintString (DeviceName, ACPI_UINT16_MAX);
     }
 
@@ -313,13 +315,15 @@ AcpiDmGpioCommon (
     for (i = 0; i < PinCount; i++)
     {
         AcpiDmIndent (Level + 2);
-        AcpiOsPrintf ("0x%4.4X%s\n", PinList[i], ((i + 1) < PinCount) ? "," : "");
+        AcpiOsPrintf ("0x%4.4X%s\n", PinList[i],
+            ((i + 1) < PinCount) ? "," : "");
     }
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("}\n");
 
-    MpSaveGpioInfo (Info->MappingOp, Resource, PinCount, PinList, DeviceName);
+    MpSaveGpioInfo (Info->MappingOp, Resource,
+        PinCount, PinList, DeviceName);
 }
 
 

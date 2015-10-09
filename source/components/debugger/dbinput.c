@@ -1014,8 +1014,8 @@ AcpiDbCommandDispatch (
         else if (ParamCount == 2)
         {
             Temp = AcpiGbl_DbConsoleDebugLevel;
-            AcpiGbl_DbConsoleDebugLevel = strtoul (AcpiGbl_DbArgs[1],
-                                            NULL, 16);
+            AcpiGbl_DbConsoleDebugLevel =
+                strtoul (AcpiGbl_DbArgs[1], NULL, 16);
             AcpiOsPrintf (
                 "Debug Level for console output was %8.8lX, now %8.8lX\n",
                 Temp, AcpiGbl_DbConsoleDebugLevel);

@@ -186,6 +186,7 @@ void
 AcpiOsCloseFile (
     ACPI_FILE               File)
 {
+
     fclose (File);
 }
 

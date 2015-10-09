@@ -156,7 +156,7 @@ AcpiNsConvertToInteger (
         /* String-to-Integer conversion */
 
         Status = AcpiUtStrtoul64 (OriginalObject->String.Pointer,
-                    ACPI_ANY_BASE, &Value);
+            ACPI_ANY_BASE, &Value);
         if (ACPI_FAILURE (Status))
         {
             return (Status);
@@ -176,7 +176,8 @@ AcpiNsConvertToInteger (
 
         for (i = 0; i < OriginalObject->Buffer.Length; i++)
         {
-            Value |= ((UINT64) OriginalObject->Buffer.Pointer[i] << (i * 8));
+            Value |= ((UINT64)
+                OriginalObject->Buffer.Pointer[i] << (i * 8));
         }
         break;
 
@@ -239,8 +240,8 @@ AcpiNsConvertToString (
         }
         else
         {
-            Status = AcpiExConvertToString (OriginalObject, &NewObject,
-                        ACPI_IMPLICIT_CONVERT_HEX);
+            Status = AcpiExConvertToString (OriginalObject,
+                &NewObject, ACPI_IMPLICIT_CONVERT_HEX);
             if (ACPI_FAILURE (Status))
             {
                 return (Status);
@@ -335,7 +336,8 @@ AcpiNsConvertToBuffer (
 
         /* String-to-Buffer conversion. Simple data copy */
 
-        NewObject = AcpiUtCreateBufferObject (OriginalObject->String.Length);
+        NewObject = AcpiUtCreateBufferObject
+            (OriginalObject->String.Length);
         if (!NewObject)
         {
             return (AE_NO_MEMORY);

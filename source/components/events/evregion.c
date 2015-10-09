@@ -182,7 +182,7 @@ AcpiEvInitializeOpRegions (
                AcpiGbl_DefaultAddressSpaces[i]))
         {
             Status = AcpiEvExecuteRegMethods (AcpiGbl_RootNode,
-                        AcpiGbl_DefaultAddressSpaces[i]);
+                AcpiGbl_DefaultAddressSpaces[i]);
         }
     }
 
@@ -282,7 +282,7 @@ AcpiEvAddressSpaceDispatch (
         AcpiExExitInterpreter ();
 
         Status = RegionSetup (RegionObj, ACPI_REGION_ACTIVATE,
-                    Context, &RegionContext);
+            Context, &RegionContext);
 
         /* Re-enter the interpreter */
 
@@ -364,7 +364,7 @@ AcpiEvAddressSpaceDispatch (
         AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
 
     if (!(HandlerDesc->AddressSpace.HandlerFlags &
-            ACPI_ADDR_HANDLER_DEFAULT_INSTALLED))
+        ACPI_ADDR_HANDLER_DEFAULT_INSTALLED))
     {
         /*
          * For handlers other than the default (supplied) handlers, we must
@@ -386,7 +386,7 @@ AcpiEvAddressSpaceDispatch (
     }
 
     if (!(HandlerDesc->AddressSpace.HandlerFlags &
-            ACPI_ADDR_HANDLER_DEFAULT_INSTALLED))
+        ACPI_ADDR_HANDLER_DEFAULT_INSTALLED))
     {
         /*
          * We just returned from a non-default handler, we must re-enter the

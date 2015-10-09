@@ -161,7 +161,7 @@ AcpiDbSetMethodBreakpoint (
 
     Address = strtoul (Location, NULL, 16);
     AmlOffset = (UINT32) ACPI_PTR_DIFF (Op->Common.Aml,
-                    WalkState->ParserState.AmlStart);
+        WalkState->ParserState.AmlStart);
     if (Address <= AmlOffset)
     {
         AcpiOsPrintf ("Breakpoint %X is beyond current address %X\n",

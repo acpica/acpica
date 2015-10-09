@@ -485,14 +485,13 @@ AcpiDbDisplayMethodInfo (
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Node    = WalkState->MethodNode;
+    Node = WalkState->MethodNode;
 
     AcpiOsPrintf ("Currently executing control method is [%4.4s]\n",
-            AcpiUtGetNodeName (Node));
+        AcpiUtGetNodeName (Node));
     AcpiOsPrintf ("%X Arguments, SyncLevel = %X\n",
-            (UINT32) ObjDesc->Method.ParamCount,
-            (UINT32) ObjDesc->Method.SyncLevel);
-
+        (UINT32) ObjDesc->Method.ParamCount,
+        (UINT32) ObjDesc->Method.SyncLevel);
 
     RootOp = StartOp;
     while (RootOp->Common.Parent)
@@ -653,7 +652,7 @@ AcpiDbDisplayResults (
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Node    = WalkState->MethodNode;
+    Node  = WalkState->MethodNode;
 
     if (WalkState->Results)
     {

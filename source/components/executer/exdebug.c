@@ -225,7 +225,7 @@ AcpiExDoDebugObject (
     {
         AcpiOsPrintf ("%s: %p\n",
             AcpiUtGetTypeName (((ACPI_NAMESPACE_NODE *) SourceDesc)->Type),
-            SourceDesc);
+                SourceDesc);
         return_VOID;
     }
     else
@@ -277,7 +277,7 @@ AcpiExDoDebugObject (
         for (i = 0; i < SourceDesc->Package.Count; i++)
         {
             AcpiExDoDebugObject (SourceDesc->Package.Elements[i],
-                Level+4, i+1);
+                Level + 4, i + 1);
         }
         break;
 
@@ -313,7 +313,7 @@ AcpiExDoDebugObject (
         if (SourceDesc->Reference.Node)
         {
             if (ACPI_GET_DESCRIPTOR_TYPE (SourceDesc->Reference.Node) !=
-                    ACPI_DESC_TYPE_NAMED)
+                ACPI_DESC_TYPE_NAMED)
             {
                 AcpiOsPrintf (" %p - Not a valid namespace node\n",
                     SourceDesc->Reference.Node);
@@ -338,7 +338,7 @@ AcpiExDoDebugObject (
                 default:
 
                     AcpiExDoDebugObject ((SourceDesc->Reference.Node)->Object,
-                        Level+4, 0);
+                        Level + 4, 0);
                     break;
                 }
             }
@@ -346,11 +346,11 @@ AcpiExDoDebugObject (
         else if (SourceDesc->Reference.Object)
         {
             if (ACPI_GET_DESCRIPTOR_TYPE (SourceDesc->Reference.Object) ==
-                    ACPI_DESC_TYPE_NAMED)
+                ACPI_DESC_TYPE_NAMED)
             {
                 AcpiExDoDebugObject (((ACPI_NAMESPACE_NODE *)
                     SourceDesc->Reference.Object)->Object,
-                    Level+4, 0);
+                    Level + 4, 0);
             }
             else
             {
@@ -527,16 +527,16 @@ AcpiExTracePoint (
     if (Pathname)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
-                "%s %s [0x%p:%s] execution.\n",
-                AcpiExGetTraceEventName (Type), Begin ? "Begin" : "End",
-                Aml, Pathname));
+            "%s %s [0x%p:%s] execution.\n",
+            AcpiExGetTraceEventName (Type), Begin ? "Begin" : "End",
+            Aml, Pathname));
     }
     else
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_TRACE_POINT,
-                "%s %s [0x%p] execution.\n",
-                AcpiExGetTraceEventName (Type), Begin ? "Begin" : "End",
-                Aml));
+            "%s %s [0x%p] execution.\n",
+            AcpiExGetTraceEventName (Type), Begin ? "Begin" : "End",
+            Aml));
     }
 }
 
@@ -599,13 +599,14 @@ AcpiExStartTraceMethod (
             AcpiDbgLayer = AcpiGbl_TraceDbgLayer;
         }
     }
+
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
 Exit:
     if (Enabled)
     {
         ACPI_TRACE_POINT (ACPI_TRACE_AML_METHOD, TRUE,
-                ObjDesc ? ObjDesc->Method.AmlStart : NULL, Pathname);
+            ObjDesc ? ObjDesc->Method.AmlStart : NULL, Pathname);
     }
     if (Pathname)
     {
@@ -661,7 +662,7 @@ AcpiExStopTraceMethod (
     if (Enabled)
     {
         ACPI_TRACE_POINT (ACPI_TRACE_AML_METHOD, FALSE,
-                ObjDesc ? ObjDesc->Method.AmlStart : NULL, Pathname);
+            ObjDesc ? ObjDesc->Method.AmlStart : NULL, Pathname);
     }
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
@@ -723,7 +724,7 @@ AcpiExStartTraceOpcode (
         (AcpiGbl_TraceFlags & ACPI_TRACE_OPCODE))
     {
         ACPI_TRACE_POINT (ACPI_TRACE_AML_OPCODE, TRUE,
-                Op->Common.Aml, Op->Common.AmlOpName);
+            Op->Common.Aml, Op->Common.AmlOpName);
     }
 }
 
@@ -755,6 +756,6 @@ AcpiExStopTraceOpcode (
         (AcpiGbl_TraceFlags & ACPI_TRACE_OPCODE))
     {
         ACPI_TRACE_POINT (ACPI_TRACE_AML_OPCODE, FALSE,
-                Op->Common.Aml, Op->Common.AmlOpName);
+            Op->Common.Aml, Op->Common.AmlOpName);
     }
 }

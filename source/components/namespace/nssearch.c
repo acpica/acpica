@@ -320,7 +320,7 @@ AcpiNsSearchParentTree (
          * the actual name we are searching for. Typechecking comes later.
          */
         Status = AcpiNsSearchOneScope (
-                    TargetName, ParentNode, ACPI_TYPE_ANY, ReturnNode);
+            TargetName, ParentNode, ACPI_TYPE_ANY, ReturnNode);
         if (ACPI_SUCCESS (Status))
         {
             return_ACPI_STATUS (Status);

@@ -600,8 +600,8 @@ AcpiDbExecute (
             /* Dump a _PLD buffer if present */
 
             if (ACPI_COMPARE_NAME ((ACPI_CAST_PTR (ACPI_NAMESPACE_NODE,
-                    AcpiGbl_DbMethodInfo.Method)->Name.Ascii),
-                    METHOD_NAME__PLD))
+                AcpiGbl_DbMethodInfo.Method)->Name.Ascii),
+                METHOD_NAME__PLD))
             {
                 AcpiDbDumpPldBuffer (ReturnObj.Pointer);
             }
@@ -699,7 +699,8 @@ AcpiDbMethodThread (
         if (ReturnObj.Length)
         {
             AcpiOsPrintf ("Evaluation of %s returned object %p Buflen %X\n",
-                Info->Pathname, ReturnObj.Pointer, (UINT32) ReturnObj.Length);
+                Info->Pathname, ReturnObj.Pointer,
+                (UINT32) ReturnObj.Length);
             AcpiDbDumpExternalObject (ReturnObj.Pointer, 1);
         }
 #endif
@@ -766,7 +767,7 @@ AcpiDbCreateExecutionThreads (
     /* Get the arguments */
 
     NumThreads = strtoul (NumThreadsArg, NULL, 0);
-    NumLoops   = strtoul (NumLoopsArg, NULL, 0);
+    NumLoops = strtoul (NumLoopsArg, NULL, 0);
 
     if (!NumThreads || !NumLoops)
     {

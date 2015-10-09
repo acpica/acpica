@@ -155,7 +155,7 @@ AcpiUtExecute_HID (
 
 
     Status = AcpiUtEvaluateObject (DeviceNode, METHOD_NAME__HID,
-                ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING, &ObjDesc);
+        ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -174,7 +174,8 @@ AcpiUtExecute_HID (
 
     /* Allocate a buffer for the HID */
 
-    Hid = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_PNP_DEVICE_ID) + (ACPI_SIZE) Length);
+    Hid = ACPI_ALLOCATE_ZEROED (
+        sizeof (ACPI_PNP_DEVICE_ID) + (ACPI_SIZE) Length);
     if (!Hid)
     {
         Status = AE_NO_MEMORY;
@@ -241,7 +242,7 @@ AcpiUtExecute_SUB (
 
 
     Status = AcpiUtEvaluateObject (DeviceNode, METHOD_NAME__SUB,
-                ACPI_BTYPE_STRING, &ObjDesc);
+        ACPI_BTYPE_STRING, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -253,7 +254,8 @@ AcpiUtExecute_SUB (
 
     /* Allocate a buffer for the SUB */
 
-    Sub = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_PNP_DEVICE_ID) + (ACPI_SIZE) Length);
+    Sub = ACPI_ALLOCATE_ZEROED (
+        sizeof (ACPI_PNP_DEVICE_ID) + (ACPI_SIZE) Length);
     if (!Sub)
     {
         Status = AE_NO_MEMORY;
@@ -313,7 +315,7 @@ AcpiUtExecute_UID (
 
 
     Status = AcpiUtEvaluateObject (DeviceNode, METHOD_NAME__UID,
-                ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING, &ObjDesc);
+        ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -332,7 +334,8 @@ AcpiUtExecute_UID (
 
     /* Allocate a buffer for the UID */
 
-    Uid = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_PNP_DEVICE_ID) + (ACPI_SIZE) Length);
+    Uid = ACPI_ALLOCATE_ZEROED (
+        sizeof (ACPI_PNP_DEVICE_ID) + (ACPI_SIZE) Length);
     if (!Uid)
     {
         Status = AE_NO_MEMORY;
@@ -413,8 +416,8 @@ AcpiUtExecute_CID (
     /* Evaluate the _CID method for this device */
 
     Status = AcpiUtEvaluateObject (DeviceNode, METHOD_NAME__CID,
-                ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING | ACPI_BTYPE_PACKAGE,
-                &ObjDesc);
+        ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING | ACPI_BTYPE_PACKAGE,
+        &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -491,7 +494,8 @@ AcpiUtExecute_CID (
         {
             /* Convert the Integer (EISAID) CID to a string */
 
-            AcpiExEisaIdToString (NextIdString, CidObjects[i]->Integer.Value);
+            AcpiExEisaIdToString (
+                NextIdString, CidObjects[i]->Integer.Value);
             Length = ACPI_EISAID_STRING_SIZE;
         }
         else /* ACPI_TYPE_STRING */
@@ -560,7 +564,7 @@ AcpiUtExecute_CLS (
 
 
     Status = AcpiUtEvaluateObject (DeviceNode, METHOD_NAME__CLS,
-                ACPI_BTYPE_PACKAGE, &ObjDesc);
+        ACPI_BTYPE_PACKAGE, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -590,7 +594,8 @@ AcpiUtExecute_CLS (
 
     /* Allocate a buffer for the CLS */
 
-    Cls = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_PNP_DEVICE_ID) + (ACPI_SIZE) Length);
+    Cls = ACPI_ALLOCATE_ZEROED (
+        sizeof (ACPI_PNP_DEVICE_ID) + (ACPI_SIZE) Length);
     if (!Cls)
     {
         Status = AE_NO_MEMORY;

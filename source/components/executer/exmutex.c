@@ -371,8 +371,10 @@ AcpiExAcquireMutex (
         /* Save Thread object, original/current sync levels */
 
         ObjDesc->Mutex.OwnerThread = WalkState->Thread;
-        ObjDesc->Mutex.OriginalSyncLevel = WalkState->Thread->CurrentSyncLevel;
-        WalkState->Thread->CurrentSyncLevel = ObjDesc->Mutex.SyncLevel;
+        ObjDesc->Mutex.OriginalSyncLevel =
+            WalkState->Thread->CurrentSyncLevel;
+        WalkState->Thread->CurrentSyncLevel =
+            ObjDesc->Mutex.SyncLevel;
 
         /* Link the mutex to the current thread for force-unlock at method exit */
 

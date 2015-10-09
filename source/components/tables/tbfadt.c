@@ -425,7 +425,7 @@ AcpiTbParseFadt (
     Length = AcpiGbl_RootTableList.Tables[TableIndex].Length;
 
     Table = AcpiOsMapMemory (
-                AcpiGbl_RootTableList.Tables[TableIndex].Address, Length);
+        AcpiGbl_RootTableList.Tables[TableIndex].Address, Length);
     if (!Table)
     {
         return;

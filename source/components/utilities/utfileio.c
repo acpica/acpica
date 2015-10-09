@@ -196,6 +196,7 @@ AcpiUtCheckTextModeCorruption (
 
                 Pairs++;
             }
+
             i++;
         }
     }
@@ -216,6 +217,7 @@ AcpiUtCheckTextModeCorruption (
     AcpiOsPrintf ("Table has been corrupted by text mode conversion\n");
     AcpiOsPrintf ("All LFs (%u) were changed to CR/LF pairs\n", Pairs);
     AcpiOsPrintf ("Table cannot be repaired!\n");
+
     return (AE_BAD_VALUE);
 }
 
@@ -346,12 +348,12 @@ AcpiUtReadTable (
             /* Now validate the checksum */
 
             Status = AcpiTbVerifyChecksum ((void *) *Table,
-                        ACPI_CAST_PTR (ACPI_TABLE_HEADER, *Table)->Length);
+                ACPI_CAST_PTR (ACPI_TABLE_HEADER, *Table)->Length);
 
             if (Status == AE_BAD_CHECKSUM)
             {
                 Status = AcpiUtCheckTextModeCorruption ((UINT8 *) *Table,
-                            FileSize, (*Table)->Length);
+                    FileSize, (*Table)->Length);
                 return (Status);
             }
         }

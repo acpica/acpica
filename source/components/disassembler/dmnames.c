@@ -227,8 +227,8 @@ AcpiPsDisplayObjectPathname (
         /* Node not defined in this scope, look it up */
 
         Status = AcpiNsLookup (WalkState->ScopeInfo, Op->Common.Value.String,
-                    ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE, ACPI_NS_SEARCH_PARENT,
-                    WalkState, &(Node));
+            ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE, ACPI_NS_SEARCH_PARENT,
+            WalkState, &(Node));
 
         if (ACPI_FAILURE (Status))
         {

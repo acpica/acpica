@@ -189,8 +189,7 @@ AcpiDbConvertToNode (
         Node = ACPI_TO_POINTER (Address);
         if (!AcpiOsReadable (Node, sizeof (ACPI_NAMESPACE_NODE)))
         {
-            AcpiOsPrintf ("Address %p is invalid",
-                Node);
+            AcpiOsPrintf ("Address %p is invalid", Node);
             return (NULL);
         }
 
@@ -199,7 +198,7 @@ AcpiDbConvertToNode (
         if (ACPI_GET_DESCRIPTOR_TYPE (Node) != ACPI_DESC_TYPE_NAMED)
         {
             AcpiOsPrintf ("Address %p is not a valid namespace node [%s]\n",
-                    Node, AcpiUtGetDescriptorName (Node));
+                Node, AcpiUtGetDescriptorName (Node));
             return (NULL);
         }
     }
@@ -1077,7 +1076,7 @@ GetCrs:
         /* Get the _CRS resource list (test ALLOCATE buffer) */
 
         ReturnBuffer.Pointer = NULL;
-        ReturnBuffer.Length  = ACPI_ALLOCATE_LOCAL_BUFFER;
+        ReturnBuffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
 
         Status = AcpiGetCurrentResources (Node, &ReturnBuffer);
         if (ACPI_FAILURE (Status))
@@ -1146,7 +1145,7 @@ GetPrs:
         }
 
         ReturnBuffer.Pointer = AcpiGbl_DbBuffer;
-        ReturnBuffer.Length  = ACPI_DEBUG_BUFFER_SIZE;
+        ReturnBuffer.Length = ACPI_DEBUG_BUFFER_SIZE;
 
         Status = AcpiGetPossibleResources (Node, &ReturnBuffer);
         if (ACPI_FAILURE (Status))
@@ -1169,7 +1168,7 @@ GetAei:
         AcpiOsPrintf ("Evaluating _AEI\n");
 
         ReturnBuffer.Pointer = AcpiGbl_DbBuffer;
-        ReturnBuffer.Length  = ACPI_DEBUG_BUFFER_SIZE;
+        ReturnBuffer.Length = ACPI_DEBUG_BUFFER_SIZE;
 
         Status = AcpiEvaluateObject (AeiNode, NULL, NULL, &ReturnBuffer);
         if (ACPI_FAILURE (Status))
@@ -1180,7 +1179,7 @@ GetAei:
         }
 
         ReturnBuffer.Pointer = AcpiGbl_DbBuffer;
-        ReturnBuffer.Length  = ACPI_DEBUG_BUFFER_SIZE;
+        ReturnBuffer.Length = ACPI_DEBUG_BUFFER_SIZE;
 
         Status = AcpiGetEventResources (Node, &ReturnBuffer);
         if (ACPI_FAILURE (Status))
@@ -1296,8 +1295,8 @@ AcpiDbGenerateGpe (
         }
     }
 
-    GpeEventInfo = AcpiEvGetGpeEventInfo (ACPI_TO_POINTER (BlockNumber),
-        GpeNumber);
+    GpeEventInfo = AcpiEvGetGpeEventInfo (
+        ACPI_TO_POINTER (BlockNumber), GpeNumber);
     if (!GpeEventInfo)
     {
         AcpiOsPrintf ("Invalid GPE\n");

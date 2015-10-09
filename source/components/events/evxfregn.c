@@ -186,7 +186,8 @@ AcpiInstallAddressSpaceHandler (
 
     /* Install the handler for all Regions for this Space ID */
 
-    Status = AcpiEvInstallSpaceHandler (Node, SpaceId, Handler, Setup, Context);
+    Status = AcpiEvInstallSpaceHandler (
+        Node, SpaceId, Handler, Setup, Context);
     if (ACPI_FAILURE (Status))
     {
         goto UnlockAndExit;
@@ -216,6 +217,7 @@ AcpiInstallAddressSpaceHandler (
         if (!AcpiGbl_RegMethodsExecuted)
         {
             /* We will defer execution of the _REG methods for this space */
+
             goto UnlockAndExit;
         }
         break;

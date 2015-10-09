@@ -360,8 +360,8 @@ AcpiExDoConcatenate (
 
     case ACPI_TYPE_STRING:
 
-        Status = AcpiExConvertToString (Operand1, &LocalOperand1,
-                    ACPI_IMPLICIT_CONVERT_HEX);
+        Status = AcpiExConvertToString (
+            Operand1, &LocalOperand1, ACPI_IMPLICIT_CONVERT_HEX);
         break;
 
     case ACPI_TYPE_BUFFER:
@@ -401,8 +401,8 @@ AcpiExDoConcatenate (
         /* Result of two Integers is a Buffer */
         /* Need enough buffer space for two integers */
 
-        ReturnDesc = AcpiUtCreateBufferObject ((ACPI_SIZE)
-                            ACPI_MUL_2 (AcpiGbl_IntegerByteWidth));
+        ReturnDesc = AcpiUtCreateBufferObject (
+            (ACPI_SIZE) ACPI_MUL_2 (AcpiGbl_IntegerByteWidth));
         if (!ReturnDesc)
         {
             Status = AE_NO_MEMORY;
@@ -414,13 +414,12 @@ AcpiExDoConcatenate (
         /* Copy the first integer, LSB first */
 
         memcpy (NewBuf, &Operand0->Integer.Value,
-                        AcpiGbl_IntegerByteWidth);
+            AcpiGbl_IntegerByteWidth);
 
         /* Copy the second integer (LSB first) after the first */
 
         memcpy (NewBuf + AcpiGbl_IntegerByteWidth,
-                        &LocalOperand1->Integer.Value,
-                        AcpiGbl_IntegerByteWidth);
+            &LocalOperand1->Integer.Value, AcpiGbl_IntegerByteWidth);
         break;
 
     case ACPI_TYPE_STRING:
@@ -428,8 +427,8 @@ AcpiExDoConcatenate (
         /* Result of two Strings is a String */
 
         ReturnDesc = AcpiUtCreateStringObject (
-                        ((ACPI_SIZE) Operand0->String.Length +
-                        LocalOperand1->String.Length));
+            ((ACPI_SIZE) Operand0->String.Length +
+            LocalOperand1->String.Length));
         if (!ReturnDesc)
         {
             Status = AE_NO_MEMORY;
@@ -442,7 +441,7 @@ AcpiExDoConcatenate (
 
         strcpy (NewBuf, Operand0->String.Pointer);
         strcpy (NewBuf + Operand0->String.Length,
-                        LocalOperand1->String.Pointer);
+            LocalOperand1->String.Pointer);
         break;
 
     case ACPI_TYPE_BUFFER:
@@ -450,8 +449,8 @@ AcpiExDoConcatenate (
         /* Result of two Buffers is a Buffer */
 
         ReturnDesc = AcpiUtCreateBufferObject (
-                        ((ACPI_SIZE) Operand0->Buffer.Length +
-                        LocalOperand1->Buffer.Length));
+            ((ACPI_SIZE) Operand0->Buffer.Length +
+            LocalOperand1->Buffer.Length));
         if (!ReturnDesc)
         {
             Status = AE_NO_MEMORY;
@@ -463,10 +462,10 @@ AcpiExDoConcatenate (
         /* Concatenate the buffers */
 
         memcpy (NewBuf, Operand0->Buffer.Pointer,
-                        Operand0->Buffer.Length);
+            Operand0->Buffer.Length);
         memcpy (NewBuf + Operand0->Buffer.Length,
-                        LocalOperand1->Buffer.Pointer,
-                        LocalOperand1->Buffer.Length);
+            LocalOperand1->Buffer.Pointer,
+            LocalOperand1->Buffer.Length);
         break;
 
     default:
@@ -708,8 +707,8 @@ AcpiExDoLogicalOp (
 
     case ACPI_TYPE_STRING:
 
-        Status = AcpiExConvertToString (Operand1, &LocalOperand1,
-                    ACPI_IMPLICIT_CONVERT_HEX);
+        Status = AcpiExConvertToString (
+            Operand1, &LocalOperand1, ACPI_IMPLICIT_CONVERT_HEX);
         break;
 
     case ACPI_TYPE_BUFFER:
@@ -786,8 +785,8 @@ AcpiExDoLogicalOp (
         /* Lexicographic compare: compare the data bytes */
 
         Compare = memcmp (Operand0->Buffer.Pointer,
-                    LocalOperand1->Buffer.Pointer,
-                    (Length0 > Length1) ? Length1 : Length0);
+            LocalOperand1->Buffer.Pointer,
+            (Length0 > Length1) ? Length1 : Length0);
 
         switch (Opcode)
         {

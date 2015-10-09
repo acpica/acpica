@@ -359,8 +359,8 @@ AcpiPsGetNextNamepath (
      * the upsearch)
      */
     Status = AcpiNsLookup (WalkState->ScopeInfo, Path,
-                ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
-                ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE, NULL, &Node);
+        ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
+        ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE, NULL, &Node);
 
     /*
      * If this name is a control method invocation, we must
@@ -431,7 +431,7 @@ AcpiPsGetNextNamepath (
         /* 1) NotFound is ok during load pass 1/2 (allow forward references) */
 
         if ((WalkState->ParseFlags & ACPI_PARSE_MODE_MASK) !=
-                ACPI_PARSE_EXECUTE)
+            ACPI_PARSE_EXECUTE)
         {
             Status = AE_OK;
         }
@@ -463,7 +463,7 @@ AcpiPsGetNextNamepath (
         ACPI_ERROR_NAMESPACE (Path, Status);
 
         if ((WalkState->ParseFlags & ACPI_PARSE_MODE_MASK) ==
-                ACPI_PARSE_EXECUTE)
+            ACPI_PARSE_EXECUTE)
         {
             /* Report a control method execution error */
 
@@ -859,6 +859,7 @@ AcpiPsGetNextArg (
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
+
         AcpiPsGetNextSimpleArg (ParserState, ArgType, Arg);
         break;
 
@@ -907,7 +908,7 @@ AcpiPsGetNextArg (
             /* Non-empty list */
 
             Arg = AcpiPsAllocOp (AML_INT_BYTELIST_OP,
-                    ParserState->Aml);
+                ParserState->Aml);
             if (!Arg)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
