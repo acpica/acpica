@@ -826,7 +826,7 @@ AcpiNsDumpOneObjectPath (
         return (AE_OK);
     }
 
-    Pathname = AcpiNsGetExternalPathname (Node);
+    Pathname = AcpiNsGetNormalizedPathname (Node, TRUE);
 
     PathIndent = 1;
     if (Level <= MaxLevel)
