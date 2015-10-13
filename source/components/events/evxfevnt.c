@@ -148,7 +148,7 @@ AcpiEnable (
 
     /* ACPI tables must be present */
 
-    if (!AcpiTbTablesLoaded ())
+    if (AcpiGbl_FadtIndex == ACPI_INVALID_TABLE_INDEX)
     {
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
