@@ -313,6 +313,7 @@ typedef enum
     ASL_MSG_LOCAL_NOT_USED,
     ASL_MSG_ARG_AS_LOCAL_NOT_USED,
     ASL_MSG_ARG_NOT_USED,
+    ASL_MSG_CONSTANT_REQUIRED,
 
     /* These messages are used by the Data Table compiler only */
 

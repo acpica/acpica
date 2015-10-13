@@ -412,6 +412,11 @@ TrPrintNodeCompileFlags (
             FlagName = "NODE_METHOD_TYPED";
             break;
 
+        case NODE_COULD_NOT_REDUCE:
+
+            FlagName = "NODE_COULD_NOT_REDUCE";
+            break;
+
         case NODE_COMPILE_TIME_CONST:
 
             FlagName = "NODE_COMPILE_TIME_CONST";
