@@ -180,33 +180,6 @@ AcpiTbInitializeFacs (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbTablesLoaded
- *
- * PARAMETERS:  None
- *
- * RETURN:      TRUE if required ACPI tables are loaded
- *
- * DESCRIPTION: Determine if the minimum required ACPI tables are present
- *              (FADT, FACS, DSDT)
- *
- ******************************************************************************/
-
-BOOLEAN
-AcpiTbTablesLoaded (
-    void)
-{
-
-    if (AcpiGbl_RootTableList.CurrentTableCount >= 4)
-    {
-        return (TRUE);
-    }
-
-    return (FALSE);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiTbCheckDsdtHeader
  *
  * PARAMETERS:  None
@@ -498,7 +471,8 @@ AcpiTbParseRootTable (
                 &AcpiGbl_RootTableList.Tables[TableIndex].Signature,
                 ACPI_SIG_FADT))
         {
-            AcpiTbParseFadt (TableIndex);
+            AcpiGbl_FadtIndex = TableIndex;
+            AcpiTbParseFadt ();
         }
 
 NextTable:
