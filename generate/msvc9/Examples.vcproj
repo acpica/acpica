@@ -669,6 +669,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\executer\extrace.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\executer\exutils.c"
 					>
 				</File>
