@@ -703,7 +703,7 @@ AcpiNsInitOneDevice (
     {
         /* Ignore error and move on to next device */
 
-        char *ScopeName = AcpiNsGetExternalPathname (Info->Node);
+        char *ScopeName = AcpiNsGetNormalizedPathname (DeviceNode, TRUE);
 
         ACPI_EXCEPTION ((AE_INFO, Status, "during %s._INI execution",
             ScopeName));

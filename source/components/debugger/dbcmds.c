@@ -985,7 +985,7 @@ AcpiDbDeviceResources (
 
 
     Node = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, ObjHandle);
-    ParentPath = AcpiNsGetExternalPathname (Node);
+    ParentPath = AcpiNsGetNormalizedPathname (Node, TRUE);
     if (!ParentPath)
     {
         return (AE_NO_MEMORY);

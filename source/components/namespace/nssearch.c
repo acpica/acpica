@@ -184,7 +184,7 @@ AcpiNsSearchOneScope (
     {
         char                *ScopeName;
 
-        ScopeName = AcpiNsGetExternalPathname (ParentNode);
+        ScopeName = AcpiNsGetNormalizedPathname (ParentNode, TRUE);
         if (ScopeName)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,

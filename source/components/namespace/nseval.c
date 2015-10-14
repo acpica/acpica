@@ -217,7 +217,7 @@ AcpiNsEvaluate (
 
     /* Get the full pathname to the object, for use in warning messages */
 
-    Info->FullPathname = AcpiNsGetExternalPathname (Info->Node);
+    Info->FullPathname = AcpiNsGetNormalizedPathname (Info->Node, TRUE);
     if (!Info->FullPathname)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
