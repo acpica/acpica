@@ -150,7 +150,6 @@ AsRemoveStatement (
     SubBuffer = Buffer;
     SubString = Buffer;
 
-
     while (SubString)
     {
         SubString = strstr (SubBuffer, Keyword);
@@ -232,7 +231,6 @@ AsRemoveConditionalCompile (
     SubBuffer = Buffer;
     SubString = Buffer;
 
-
     while (SubString)
     {
         SubBuffer = strstr (SubString, Keyword);
@@ -297,6 +295,7 @@ AsRemoveConditionalCompile (
         {
             SubString--;
         }
+
         SubString++;
 
         /* Find the "#ifxxxx" */
@@ -399,7 +398,6 @@ AsRemoveMacro (
     SubBuffer = Buffer;
     SubString = Buffer;
 
-
     while (SubString)
     {
         SubString = strstr (SubBuffer, Keyword);
@@ -469,7 +467,6 @@ AsRemoveLine (
     SubBuffer = Buffer;
     SubString = Buffer;
 
-
     while (SubString)
     {
         SubString = strstr (SubBuffer, Keyword);
@@ -522,7 +519,6 @@ AsReduceTypedefs (
 
     SubBuffer = Buffer;
     SubString = Buffer;
-
 
     while (SubString)
     {
@@ -627,6 +623,7 @@ AsRemoveEmptyBlocks (
                         EmptyBlock = FALSE;
                         break;
                     }
+
                     SubBuffer++;
                 }
 
@@ -736,6 +733,7 @@ AsCleanupSpecialMacro (
             {
                 SubString++;
             }
+
             SubString++;
 
             NestLevel = 1;
@@ -769,6 +767,7 @@ SkipLine:
                 {
                     NewLine = TRUE;
                 }
+
                 SubString++;
             }
 

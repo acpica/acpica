@@ -237,8 +237,8 @@ AeInstallRegionHandlers (
         /* Install handler at the root object */
 
         Status = AcpiInstallAddressSpaceHandler (ACPI_ROOT_OBJECT,
-                    SpaceIdList[i], AeRegionHandler,
-                    AeRegionInit, &AeMyContext);
+            SpaceIdList[i], AeRegionHandler,
+            AeRegionInit, &AeMyContext);
         if (ACPI_FAILURE (Status))
         {
             ACPI_EXCEPTION ((AE_INFO, Status,
@@ -266,8 +266,8 @@ AeOverrideRegionHandlers (
         /* Install handler at the root object */
 
         Status = AcpiInstallAddressSpaceHandler (ACPI_ROOT_OBJECT,
-                    DefaultSpaceIdList[i], AeRegionHandler,
-                    AeRegionInit, &AeMyContext);
+            DefaultSpaceIdList[i], AeRegionHandler,
+            AeRegionInit, &AeMyContext);
         if (ACPI_FAILURE (Status))
         {
             ACPI_EXCEPTION ((AE_INFO, Status,
@@ -445,9 +445,10 @@ AeRegionHandler (
     Length = (ACPI_SIZE) RegionObject->Region.Length;
     SpaceId = RegionObject->Region.SpaceId;
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION, "Operation Region request on %s at 0x%X\n",
-            AcpiUtGetRegionName (RegionObject->Region.SpaceId),
-            (UINT32) Address));
+    ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
+        "Operation Region request on %s at 0x%X\n",
+        AcpiUtGetRegionName (RegionObject->Region.SpaceId),
+        (UINT32) Address));
 
     /*
      * Region support can be disabled with the -do option.
@@ -891,7 +892,8 @@ AeRegionHandler (
         ((UINT64)(RegionElement->Address) + RegionElement->Length))
     {
         ACPI_WARNING ((AE_INFO,
-            "Request on [%4.4s] is beyond region limit Req-0x%X+0x%X, Base=0x%X, Len-0x%X",
+            "Request on [%4.4s] is beyond region limit "
+            "Req-0x%X+0x%X, Base=0x%X, Len-0x%X",
             (RegionObject->Region.Node)->Name.Ascii, (UINT32) Address,
             ByteWidth, (UINT32)(RegionElement->Address),
             RegionElement->Length));
@@ -903,7 +905,7 @@ AeRegionHandler (
      * Get BufferValue to point to the "address" in the buffer
      */
     BufferValue = ((UINT8 *) RegionElement->Buffer +
-                    ((UINT64) Address - (UINT64) RegionElement->Address));
+        ((UINT64) Address - (UINT64) RegionElement->Address));
 
 DoFunction:
     /*

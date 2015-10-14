@@ -435,6 +435,7 @@ AeExceptionHandler (
     {
         AcpiOsPrintf ("at module level (table load)");
     }
+
     AcpiOsPrintf (" Opcode [%s] @%X\n", AcpiPsGetOpcodeName (Opcode), AmlOffset);
 
     /*
@@ -600,7 +601,8 @@ AeGlobalEventHandler (
         break;
     }
 
-    AcpiOsPrintf ("[AcpiExec] Global Event Handler received: Type %s Number %.2X Dev %p\n",
+    AcpiOsPrintf (
+        "[AcpiExec] Global Event Handler received: Type %s Number %.2X Dev %p\n",
         TypeName, EventNumber, Device);
 }
 
@@ -775,10 +777,12 @@ AeInstallLateHandlers (
 
         /* Install some fixed event handlers */
 
-        Status = AcpiInstallFixedEventHandler (ACPI_EVENT_GLOBAL, AeEventHandler, NULL);
+        Status = AcpiInstallFixedEventHandler (
+            ACPI_EVENT_GLOBAL, AeEventHandler, NULL);
         AE_CHECK_OK (AcpiInstallFixedEventHandler, Status);
 
-        Status = AcpiInstallFixedEventHandler (ACPI_EVENT_RTC, AeEventHandler, NULL);
+        Status = AcpiInstallFixedEventHandler (
+            ACPI_EVENT_RTC, AeEventHandler, NULL);
         AE_CHECK_OK (AcpiInstallFixedEventHandler, Status);
     }
 #endif /* !ACPI_REDUCED_HARDWARE */
@@ -946,7 +950,6 @@ AeInstallEarlyHandlers (
     {
         printf ("No _SB_ found, %s\n", AcpiFormatException (Status));
     }
-
 
     Status = AcpiGetHandle (NULL, "\\_TZ.TZ1", &Handle);
     if (ACPI_SUCCESS (Status))

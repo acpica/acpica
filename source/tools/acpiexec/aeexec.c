@@ -305,10 +305,12 @@ AeTestBufferArgument (
 {
     ACPI_OBJECT_LIST        Params;
     ACPI_OBJECT             BufArg;
-    UINT8                   Buffer[] = {
+    UINT8                   Buffer[] =
+    {
         0,0,0,0,
         4,0,0,0,
-        1,2,3,4};
+        1,2,3,4
+    };
 
 
     BufArg.Type = ACPI_TYPE_BUFFER;
@@ -431,7 +433,8 @@ ExecuteOSI (
 
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Could not execute _OSI method, %s\n",
+        AcpiOsPrintf (
+            "Could not execute _OSI method, %s\n",
             AcpiFormatException (Status));
         return (Status);
     }
@@ -440,7 +443,8 @@ ExecuteOSI (
 
     if (ReturnValue.Length < sizeof (ACPI_OBJECT))
     {
-        AcpiOsPrintf ("Return value from _OSI method too small, %.8X\n",
+        AcpiOsPrintf (
+            "Return value from _OSI method too small, %.8X\n",
             ReturnValue.Length);
         goto ErrorExit;
     }
@@ -448,13 +452,15 @@ ExecuteOSI (
     Obj = ReturnValue.Pointer;
     if (Obj->Type != ACPI_TYPE_INTEGER)
     {
-        AcpiOsPrintf ("Invalid return type from _OSI method, %.2X\n", Obj->Type);
+        AcpiOsPrintf (
+            "Invalid return type from _OSI method, %.2X\n", Obj->Type);
         goto ErrorExit;
     }
 
     if (Obj->Integer.Value != ExpectedResult)
     {
-        AcpiOsPrintf ("Invalid return value from _OSI, expected %.8X found %.8X\n",
+        AcpiOsPrintf (
+            "Invalid return value from _OSI, expected %.8X found %.8X\n",
             ExpectedResult, (UINT32) Obj->Integer.Value);
         goto ErrorExit;
     }
@@ -470,7 +476,6 @@ ErrorExit:
     /* Free a buffer created via ACPI_ALLOCATE_BUFFER */
 
     AcpiOsFree (ReturnValue.Pointer);
-
     return (Status);
 }
 
@@ -635,9 +640,10 @@ AeMiscellaneousTests (
     ACPI_HANDLE             Handle;
 
 #if (!ACPI_REDUCED_HARDWARE)
-    ACPI_VENDOR_UUID        Uuid = {0, {ACPI_INIT_UUID (0,0,0,0,0,0,0,0,0,0,0)}};
     UINT32                  LockHandle1;
     UINT32                  LockHandle2;
+    ACPI_VENDOR_UUID        Uuid =
+        {0, {ACPI_INIT_UUID (0,0,0,0,0,0,0,0,0,0,0)}};
 #endif /* !ACPI_REDUCED_HARDWARE */
 
 
@@ -768,7 +774,8 @@ AeMiscellaneousTests (
     /*
      * GPEs: Handlers, enable/disable, etc.
      */
-    Status = AcpiInstallGpeHandler (NULL, 0, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+    Status = AcpiInstallGpeHandler (NULL, 0,
+        ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
     AE_CHECK_OK (AcpiInstallGpeHandler, Status);
 
     Status = AcpiEnableGpe (NULL, 0);
@@ -777,7 +784,8 @@ AeMiscellaneousTests (
     Status = AcpiRemoveGpeHandler (NULL, 0, AeGpeHandler);
     AE_CHECK_OK (AcpiRemoveGpeHandler, Status);
 
-    Status = AcpiInstallGpeHandler (NULL, 0, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+    Status = AcpiInstallGpeHandler (NULL, 0,
+        ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
     AE_CHECK_OK (AcpiInstallGpeHandler, Status);
 
     Status = AcpiEnableGpe (NULL, 0);
@@ -790,27 +798,32 @@ AeMiscellaneousTests (
     AE_CHECK_OK (AcpiSetGpe, Status);
 
 
-    Status = AcpiInstallGpeHandler (NULL, 1, ACPI_GPE_EDGE_TRIGGERED, AeGpeHandler, NULL);
+    Status = AcpiInstallGpeHandler (NULL, 1,
+        ACPI_GPE_EDGE_TRIGGERED, AeGpeHandler, NULL);
     AE_CHECK_OK (AcpiInstallGpeHandler, Status);
 
     Status = AcpiEnableGpe (NULL, 1);
     AE_CHECK_OK (AcpiEnableGpe, Status);
 
 
-    Status = AcpiInstallGpeHandler (NULL, 2, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+    Status = AcpiInstallGpeHandler (NULL, 2,
+        ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
     AE_CHECK_OK (AcpiInstallGpeHandler, Status);
 
     Status = AcpiEnableGpe (NULL, 2);
     AE_CHECK_OK (AcpiEnableGpe, Status);
 
 
-    Status = AcpiInstallGpeHandler (NULL, 3, ACPI_GPE_EDGE_TRIGGERED, AeGpeHandler, NULL);
+    Status = AcpiInstallGpeHandler (NULL, 3,
+        ACPI_GPE_EDGE_TRIGGERED, AeGpeHandler, NULL);
     AE_CHECK_OK (AcpiInstallGpeHandler, Status);
 
-    Status = AcpiInstallGpeHandler (NULL, 4, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+    Status = AcpiInstallGpeHandler (NULL, 4,
+        ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
     AE_CHECK_OK (AcpiInstallGpeHandler, Status);
 
-    Status = AcpiInstallGpeHandler (NULL, 5, ACPI_GPE_EDGE_TRIGGERED, AeGpeHandler, NULL);
+    Status = AcpiInstallGpeHandler (NULL, 5,
+        ACPI_GPE_EDGE_TRIGGERED, AeGpeHandler, NULL);
     AE_CHECK_OK (AcpiInstallGpeHandler, Status);
 
     Status = AcpiGetHandle (NULL, "\\_SB", &Handle);
@@ -831,7 +844,8 @@ AeMiscellaneousTests (
     Status = AcpiSetupGpeForWake (Handle, NULL, 9);
     AE_CHECK_OK (AcpiSetupGpeForWake, Status);
 
-    Status = AcpiInstallGpeHandler (NULL, 0x19, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+    Status = AcpiInstallGpeHandler (NULL, 0x19,
+        ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
     AE_CHECK_OK (AcpiInstallGpeHandler, Status);
 
     Status = AcpiEnableGpe (NULL, 0x19);
@@ -840,7 +854,8 @@ AeMiscellaneousTests (
 
     /* GPE block 1 */
 
-    Status = AcpiInstallGpeHandler (NULL, 101, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+    Status = AcpiInstallGpeHandler (NULL, 101,
+        ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
     AE_CHECK_OK (AcpiInstallGpeHandler, Status);
 
     Status = AcpiEnableGpe (NULL, 101);

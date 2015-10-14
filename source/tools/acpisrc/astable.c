@@ -869,8 +869,8 @@ ACPI_IDENTIFIER_TABLE       LinuxSpecialMacros[] = {
 };
 
 
-ACPI_CONVERSION_TABLE       LinuxConversionTable = {
-
+ACPI_CONVERSION_TABLE       LinuxConversionTable =
+{
     DualLicenseHeader,
     FLG_NO_CARRIAGE_RETURNS | FLG_LOWERCASE_DIRNAMES,
 
@@ -922,8 +922,8 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
  *
  ******************************************************************************/
 
-ACPI_CONVERSION_TABLE       CleanupConversionTable = {
-
+ACPI_CONVERSION_TABLE       CleanupConversionTable =
+{
     NULL,
     FLG_DEFAULT_FLAGS,
     NULL,
@@ -961,8 +961,8 @@ ACPI_CONVERSION_TABLE       CleanupConversionTable = {
 };
 
 
-ACPI_CONVERSION_TABLE       StatsConversionTable = {
-
+ACPI_CONVERSION_TABLE       StatsConversionTable =
+{
     NULL,
     FLG_NO_FILE_OUTPUT,
     NULL,
@@ -1008,8 +1008,8 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
  *
  ******************************************************************************/
 
-ACPI_CONVERSION_TABLE       LicenseConversionTable = {
-
+ACPI_CONVERSION_TABLE       LicenseConversionTable =
+{
     DualLicenseHeader,
     FLG_DEFAULT_FLAGS,
     NULL,
@@ -1055,9 +1055,8 @@ ACPI_CONVERSION_TABLE       LicenseConversionTable = {
  *
  ******************************************************************************/
 
-ACPI_STRING_TABLE           CustomReplacements[] = {
-
-
+ACPI_STRING_TABLE           CustomReplacements[] =
+{
     {"(c) 1999 - 2014",     "(c) 1999 - 2015",         REPLACE_WHOLE_WORD}, /* Main ACPICA source */
     {"(c) 2006 - 2014",     "(c) 2006 - 2015",         REPLACE_WHOLE_WORD}, /* Test suites */
 
@@ -1110,8 +1109,8 @@ ACPI_STRING_TABLE           CustomReplacements[] = {
 };
 
 
-ACPI_CONVERSION_TABLE       CustomConversionTable = {
-
+ACPI_CONVERSION_TABLE       CustomConversionTable =
+{
     NULL,
     FLG_DEFAULT_FLAGS,
     NULL,
@@ -1156,8 +1155,8 @@ ACPI_CONVERSION_TABLE       CustomConversionTable = {
  *
  ******************************************************************************/
 
-ACPI_CONVERSION_TABLE       IndentConversionTable = {
-
+ACPI_CONVERSION_TABLE       IndentConversionTable =
+{
     NULL,
     FLG_NO_CARRIAGE_RETURNS,
 

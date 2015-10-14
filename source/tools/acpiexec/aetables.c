@@ -618,6 +618,7 @@ AeInstallTables (
         {
             break;
         }
+
         AE_CHECK_OK (AcpiGetTableByIndex, Status);
     }
 

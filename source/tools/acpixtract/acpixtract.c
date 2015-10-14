@@ -559,7 +559,8 @@ AxExtractTables (
         Instances = AxCountTableInstances (InputPathname, Signature);
         if (Instances < MinimumInstances)
         {
-            printf ("Table %s was not found in %s\n", Signature, InputPathname);
+            printf ("Table %s was not found in %s\n",
+                Signature, InputPathname);
             Status = -1;
             goto CleanupAndExit;
         }
@@ -663,7 +664,8 @@ AxExtractTables (
                 State = AX_STATE_FIND_HEADER;
 
                 printf ("Acpi table [%4.4s] - %u bytes written to %s\n",
-                    ThisSignature, (unsigned int) TotalBytesWritten, Filename);
+                    ThisSignature, (unsigned int) TotalBytesWritten,
+                    Filename);
                 continue;
             }
 
@@ -754,7 +756,7 @@ AxListTables (
     /* Dump the headers for all tables found in the input file */
 
     printf ("\nSignature  Length      Revision   OemId    OemTableId"
-            "   OemRevision CompilerId CompilerRevision\n\n");
+        "   OemRevision CompilerId CompilerRevision\n\n");
 
     while (fgets (LineBuffer, AX_LINE_BUFFER_SIZE, InputFile))
     {
@@ -779,7 +781,8 @@ AxListTables (
         if (!strncmp (TableHeader->Signature, "RSD PTR ", 8))
         {
             AxCheckAscii ((char *) &Header[9], 6);
-            printf ("%7.4s                          \"%6.6s\"\n", "RSDP", &Header[9]);
+            printf ("%7.4s                          \"%6.6s\"\n", "RSDP",
+                &Header[9]);
             TableCount++;
             continue;
         }
@@ -794,7 +797,8 @@ AxListTables (
         /* Signature and Table length */
 
         TableCount++;
-        printf ("%7.4s   0x%8.8X", TableHeader->Signature, TableHeader->Length);
+        printf ("%7.4s   0x%8.8X", TableHeader->Signature,
+            TableHeader->Length);
 
         /* FACS has only signature and length */
 
