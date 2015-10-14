@@ -173,7 +173,7 @@ MtMethodAnalysisWalkBegin (
 
         /* Create and init method info */
 
-        MethodInfo       = UtLocalCalloc (sizeof (ASL_METHOD_INFO));
+        MethodInfo = UtLocalCalloc (sizeof (ASL_METHOD_INFO));
         MethodInfo->Next = WalkInfo->MethodStack;
         MethodInfo->Op = Op;
 
@@ -258,7 +258,9 @@ MtMethodAnalysisWalkBegin (
                 NextParamType = NextType->Asl.Child;
                 while (NextParamType)
                 {
-                    MethodInfo->ValidArgTypes[ActualArgs] |= AnMapObjTypeToBtype (NextParamType);
+                    MethodInfo->ValidArgTypes[ActualArgs] |=
+                        AnMapObjTypeToBtype (NextParamType);
+
                     NextParamType->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
                     NextParamType = NextParamType->Asl.Next;
                 }
@@ -267,6 +269,7 @@ MtMethodAnalysisWalkBegin (
             {
                 MethodInfo->ValidArgTypes[ActualArgs] =
                     AnMapObjTypeToBtype (NextType);
+
                 NextType->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
                 ActualArgs++;
             }
@@ -323,7 +326,8 @@ MtMethodAnalysisWalkBegin (
              * Local was used outside a control method, or there was an error
              * in the method declaration.
              */
-            AslError (ASL_REMARK, ASL_MSG_LOCAL_OUTSIDE_METHOD, Op, Op->Asl.ExternalName);
+            AslError (ASL_REMARK, ASL_MSG_LOCAL_OUTSIDE_METHOD,
+                Op, Op->Asl.ExternalName);
             return (AE_ERROR);
         }
 
@@ -366,7 +370,8 @@ MtMethodAnalysisWalkBegin (
              * Arg was used outside a control method, or there was an error
              * in the method declaration.
              */
-            AslError (ASL_REMARK, ASL_MSG_LOCAL_OUTSIDE_METHOD, Op, Op->Asl.ExternalName);
+            AslError (ASL_REMARK, ASL_MSG_LOCAL_OUTSIDE_METHOD,
+                Op, Op->Asl.ExternalName);
             return (AE_ERROR);
         }
 
@@ -389,7 +394,7 @@ MtMethodAnalysisWalkBegin (
          * The only operator that accepts an uninitialized value is ObjectType()
          */
         else if ((!MethodInfo->ArgInitialized[RegisterNumber]) &&
-                 (Op->Asl.Parent->Asl.ParseOpcode != PARSEOP_OBJECTTYPE))
+            (Op->Asl.Parent->Asl.ParseOpcode != PARSEOP_OBJECTTYPE))
         {
             AslError (ASL_ERROR, ASL_MSG_ARG_INIT, Op, ArgName);
         }
@@ -490,7 +495,8 @@ MtMethodAnalysisWalkBegin (
         i = ApCheckForPredefinedName (Op, Op->Asl.NameSeg);
         if (i < ACPI_VALID_RESERVED_NAME_MAX)
         {
-            AslError (ASL_ERROR, ASL_MSG_RESERVED_USE, Op, Op->Asl.ExternalName);
+            AslError (ASL_ERROR, ASL_MSG_RESERVED_USE,
+                Op, Op->Asl.ExternalName);
         }
         break;
 
@@ -749,7 +755,8 @@ MtMethodAnalysisWalkEnd (
          */
         if (Op->Asl.Next)
         {
-            AslError (ASL_WARNING, ASL_MSG_UNREACHABLE_CODE, Op->Asl.Next, NULL);
+            AslError (ASL_WARNING, ASL_MSG_UNREACHABLE_CODE,
+                Op->Asl.Next, NULL);
         }
         break;
 

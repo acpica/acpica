@@ -293,6 +293,7 @@ LsAmlListingWalk (
             FlFileError (ASL_FILE_AML_OUTPUT, ASL_MSG_READ);
             AslAbort ();
         }
+
         LsWriteListingHexBytes (&FileByte, 1, FileId);
     }
 

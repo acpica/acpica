@@ -163,11 +163,11 @@ RsDoWordIoDescriptor (
     CurrentByteOffset = Info->CurrentByteOffset;
 
     Rnode = RsAllocateResourceNode (
-                sizeof (AML_RESOURCE_ADDRESS16) + 1 + StringLength);
+        sizeof (AML_RESOURCE_ADDRESS16) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Address16.DescriptorType  = ACPI_RESOURCE_NAME_ADDRESS16;
-    Descriptor->Address16.ResourceType    = ACPI_ADDRESS_TYPE_IO_RANGE;
+    Descriptor->Address16.DescriptorType = ACPI_RESOURCE_NAME_ADDRESS16;
+    Descriptor->Address16.ResourceType = ACPI_ADDRESS_TYPE_IO_RANGE;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
@@ -384,11 +384,11 @@ RsDoWordBusNumberDescriptor (
     CurrentByteOffset = Info->CurrentByteOffset;
 
     Rnode = RsAllocateResourceNode (
-                sizeof (AML_RESOURCE_ADDRESS16) + 1 + StringLength);
+        sizeof (AML_RESOURCE_ADDRESS16) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Address16.DescriptorType  = ACPI_RESOURCE_NAME_ADDRESS16;
-    Descriptor->Address16.ResourceType    = ACPI_ADDRESS_TYPE_BUS_NUMBER_RANGE;
+    Descriptor->Address16.DescriptorType = ACPI_RESOURCE_NAME_ADDRESS16;
+    Descriptor->Address16.ResourceType = ACPI_ADDRESS_TYPE_BUS_NUMBER_RANGE;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
@@ -589,10 +589,10 @@ RsDoWordSpaceDescriptor (
     CurrentByteOffset = Info->CurrentByteOffset;
 
     Rnode = RsAllocateResourceNode (
-                sizeof (AML_RESOURCE_ADDRESS16) + 1 + StringLength);
+        sizeof (AML_RESOURCE_ADDRESS16) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Address16.DescriptorType  = ACPI_RESOURCE_NAME_ADDRESS16;
+    Descriptor->Address16.DescriptorType = ACPI_RESOURCE_NAME_ADDRESS16;
 
     /*
      * Initial descriptor length -- may be enlarged if there are

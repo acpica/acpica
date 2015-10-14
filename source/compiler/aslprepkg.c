@@ -310,6 +310,7 @@ ApCheckPackage (
                 ApCheckObjectType (Predefined->Info.Name, Op,
                     Package->RetInfo3.TailObjectType, i);
             }
+
             Op = Op->Asl.Next;
         }
         break;

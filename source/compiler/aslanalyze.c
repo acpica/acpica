@@ -211,8 +211,7 @@ AnCheckId (
     Length = strlen (Op->Asl.Value.String);
     if (!Length)
     {
-        AslError (ASL_ERROR, ASL_MSG_NULL_STRING,
-            Op, NULL);
+        AslError (ASL_ERROR, ASL_MSG_NULL_STRING, Op, NULL);
         return;
     }
 
@@ -263,7 +262,7 @@ AnCheckId (
         return;
     }
 
-    /* _HID Length is valid (7 or 8), now check the prefix (first 3 or 4 chars) */
+    /* _HID Length is valid (7 or 8), now check prefix (first 3 or 4 chars) */
 
     if (Length == 7)
     {
@@ -303,8 +302,8 @@ AnCheckId (
     {
         if (!isxdigit ((int) Op->Asl.Value.String[i]))
         {
-         AslError (ASL_ERROR, ASL_MSG_HID_SUFFIX,
-            Op, &Op->Asl.Value.String[i]);
+            AslError (ASL_ERROR, ASL_MSG_HID_SUFFIX,
+                Op, &Op->Asl.Value.String[i]);
             break;
         }
     }
@@ -395,7 +394,8 @@ AnCheckMethodReturnValue (
     {
         /* Method SOMETIMES returns a value, SOMETIMES not */
 
-        AslError (ASL_WARNING, ASL_MSG_SOME_NO_RETVAL, Op, Op->Asl.ExternalName);
+        AslError (ASL_WARNING, ASL_MSG_SOME_NO_RETVAL,
+            Op, Op->Asl.ExternalName);
     }
     else if (!(ThisNodeBtype & RequiredBtypes))
     {
@@ -472,6 +472,7 @@ AnIsResultUsed (
         {
             return (TRUE);
         }
+
         return (FALSE);
 
     /* Not used if one of these is the parent */

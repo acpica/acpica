@@ -402,11 +402,13 @@ OpcSetOptimalIntegerSize (
         Op->Asl.AmlOpcode = AML_BYTE_OP;
         return (1);
     }
+
     if (Op->Asl.Value.Integer <= ACPI_UINT16_MAX)
     {
         Op->Asl.AmlOpcode = AML_WORD_OP;
         return (2);
     }
+
     if (Op->Asl.Value.Integer <= ACPI_UINT32_MAX)
     {
         Op->Asl.AmlOpcode = AML_DWORD_OP;
@@ -470,6 +472,7 @@ OpcDoAccessAs (
     {
         AttribOp->Asl.Value.Integer = 0;
     }
+
     AttribOp->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
     AttribOp->Asl.ParseOpcode = PARSEOP_RAW_DATA;
 
@@ -558,21 +561,21 @@ OpcDoConnection (
      * First Child  -> BufferLength
      * Second Child -> Descriptor Buffer (raw byte data)
      */
-    BufferOp->Asl.ParseOpcode         = PARSEOP_BUFFER;
-    BufferOp->Asl.AmlOpcode           = AML_BUFFER_OP;
-    BufferOp->Asl.CompileFlags        = NODE_AML_PACKAGE | NODE_IS_RESOURCE_DESC;
+    BufferOp->Asl.ParseOpcode = PARSEOP_BUFFER;
+    BufferOp->Asl.AmlOpcode = AML_BUFFER_OP;
+    BufferOp->Asl.CompileFlags = NODE_AML_PACKAGE | NODE_IS_RESOURCE_DESC;
     UtSetParseOpName (BufferOp);
 
-    BufferLengthOp->Asl.ParseOpcode   = PARSEOP_INTEGER;
+    BufferLengthOp->Asl.ParseOpcode = PARSEOP_INTEGER;
     BufferLengthOp->Asl.Value.Integer = Rnode->BufferLength;
     (void) OpcSetOptimalIntegerSize (BufferLengthOp);
     UtSetParseOpName (BufferLengthOp);
 
-    BufferDataOp->Asl.ParseOpcode         = PARSEOP_RAW_DATA;
-    BufferDataOp->Asl.AmlOpcode           = AML_RAW_DATA_CHAIN;
-    BufferDataOp->Asl.AmlOpcodeLength     = 0;
-    BufferDataOp->Asl.AmlLength           = Rnode->BufferLength;
-    BufferDataOp->Asl.Value.Buffer        = (UINT8 *) Rnode;
+    BufferDataOp->Asl.ParseOpcode = PARSEOP_RAW_DATA;
+    BufferDataOp->Asl.AmlOpcode = AML_RAW_DATA_CHAIN;
+    BufferDataOp->Asl.AmlOpcodeLength = 0;
+    BufferDataOp->Asl.AmlLength = Rnode->BufferLength;
+    BufferDataOp->Asl.Value.Buffer = (UINT8 *) Rnode;
     UtSetParseOpName (BufferDataOp);
 }
 
@@ -636,8 +639,8 @@ OpcDoUnicode (
      * Just set the buffer size node to be the buffer length, regardless
      * of whether it was previously an integer or a default_arg placeholder
      */
-    BufferLengthOp->Asl.ParseOpcode   = PARSEOP_INTEGER;
-    BufferLengthOp->Asl.AmlOpcode     = AML_DWORD_OP;
+    BufferLengthOp->Asl.ParseOpcode = PARSEOP_INTEGER;
+    BufferLengthOp->Asl.AmlOpcode = AML_DWORD_OP;
     BufferLengthOp->Asl.Value.Integer = Length;
     UtSetParseOpName (BufferLengthOp);
 
@@ -645,11 +648,11 @@ OpcDoUnicode (
 
     /* The Unicode string is a raw data buffer */
 
-    InitializerOp->Asl.Value.Buffer   = (UINT8 *) UnicodeString;
-    InitializerOp->Asl.AmlOpcode      = AML_RAW_DATA_BUFFER;
-    InitializerOp->Asl.AmlLength      = Length;
-    InitializerOp->Asl.ParseOpcode    = PARSEOP_RAW_DATA;
-    InitializerOp->Asl.Child          = NULL;
+    InitializerOp->Asl.Value.Buffer = (UINT8 *) UnicodeString;
+    InitializerOp->Asl.AmlOpcode = AML_RAW_DATA_BUFFER;
+    InitializerOp->Asl.AmlLength = Length;
+    InitializerOp->Asl.ParseOpcode = PARSEOP_RAW_DATA;
+    InitializerOp->Asl.Child = NULL;
     UtSetParseOpName (InitializerOp);
 }
 
@@ -1402,9 +1405,9 @@ OpcDoPld (
 
     NewOp = TrAllocateNode (PARSEOP_INTEGER);
 
-    NewOp->Asl.AmlOpcode     = AML_BYTE_OP;
+    NewOp->Asl.AmlOpcode = AML_BYTE_OP;
     NewOp->Asl.Value.Integer = 20;
-    NewOp->Asl.Parent        = Op;
+    NewOp->Asl.Parent = Op;
 
     Op->Asl.Child = NewOp;
     Op = NewOp;
@@ -1412,10 +1415,10 @@ OpcDoPld (
     /* Peer to the child is the raw buffer data */
 
     NewOp = TrAllocateNode (PARSEOP_RAW_DATA);
-    NewOp->Asl.AmlOpcode     = AML_RAW_DATA_BUFFER;
-    NewOp->Asl.AmlLength     = 20;
-    NewOp->Asl.Value.String  = ACPI_CAST_PTR (char, Buffer);
-    NewOp->Asl.Parent        = Op->Asl.Parent;
+    NewOp->Asl.AmlOpcode = AML_RAW_DATA_BUFFER;
+    NewOp->Asl.AmlLength = 20;
+    NewOp->Asl.Value.String = ACPI_CAST_PTR (char, Buffer);
+    NewOp->Asl.Parent = Op->Asl.Parent;
 
     Op->Asl.Next = NewOp;
 }
@@ -1470,9 +1473,9 @@ OpcDoUuId (
 
     NewOp = TrAllocateNode (PARSEOP_INTEGER);
 
-    NewOp->Asl.AmlOpcode     = AML_BYTE_OP;
+    NewOp->Asl.AmlOpcode = AML_BYTE_OP;
     NewOp->Asl.Value.Integer = 16;
-    NewOp->Asl.Parent        = Op;
+    NewOp->Asl.Parent = Op;
 
     Op->Asl.Child = NewOp;
     Op = NewOp;
@@ -1480,10 +1483,10 @@ OpcDoUuId (
     /* Peer to the child is the raw buffer data */
 
     NewOp = TrAllocateNode (PARSEOP_RAW_DATA);
-    NewOp->Asl.AmlOpcode     = AML_RAW_DATA_BUFFER;
-    NewOp->Asl.AmlLength     = 16;
-    NewOp->Asl.Value.String  = ACPI_CAST_PTR (char, Buffer);
-    NewOp->Asl.Parent        = Op->Asl.Parent;
+    NewOp->Asl.AmlOpcode = AML_RAW_DATA_BUFFER;
+    NewOp->Asl.AmlLength = 16;
+    NewOp->Asl.Value.String = ACPI_CAST_PTR (char, Buffer);
+    NewOp->Asl.Parent = Op->Asl.Parent;
 
     Op->Asl.Next = NewOp;
 }

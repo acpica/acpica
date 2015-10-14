@@ -566,7 +566,7 @@ TrSetEndLineNumber (
         return;
     }
 
-    Op->Asl.EndLine        = Gbl_CurrentLineNumber;
+    Op->Asl.EndLine = Gbl_CurrentLineNumber;
     Op->Asl.EndLogicalLine = Gbl_LogicalLineNumber;
 }
 
@@ -830,7 +830,8 @@ TrCreateConstantLeafNode (
     }
 
     DbgPrint (ASL_PARSE_OUTPUT,
-        "\nCreateConstantLeafNode  Ln/Col %u/%u NewNode %p  Op %s  Value %8.8X%8.8X  \n",
+        "\nCreateConstantLeafNode  Ln/Col %u/%u NewNode %p  "
+        "Op %s  Value %8.8X%8.8X  \n",
         Op->Asl.LineNumber, Op->Asl.Column, Op, UtGetOpName (ParseOpcode),
         ACPI_FORMAT_UINT64 (Op->Asl.Value.Integer));
     return (Op);
@@ -937,7 +938,8 @@ TrCreateValuedLeafNode (
     Op = TrAllocateNode (ParseOpcode);
 
     DbgPrint (ASL_PARSE_OUTPUT,
-        "\nCreateValuedLeafNode  Ln/Col %u/%u NewNode %p  Op %s  Value %8.8X%8.8X  ",
+        "\nCreateValuedLeafNode  Ln/Col %u/%u NewNode %p  "
+        "Op %s  Value %8.8X%8.8X  ",
         Op->Asl.LineNumber, Op->Asl.Column, Op, UtGetOpName(ParseOpcode),
         ACPI_FORMAT_UINT64 (Value));
     Op->Asl.Value.Integer = Value;
@@ -1023,7 +1025,8 @@ TrCreateNode (
 
     DbgPrint (ASL_PARSE_OUTPUT,
         "\nCreateNode  Ln/Col %u/%u NewParent %p Child %u Op %s  ",
-        Op->Asl.LineNumber, Op->Asl.Column, Op, NumChildren, UtGetOpName(ParseOpcode));
+        Op->Asl.LineNumber, Op->Asl.Column, Op,
+        NumChildren, UtGetOpName(ParseOpcode));
 
     /* Some extra debug output based on the parse opcode */
 
@@ -1232,6 +1235,7 @@ TrLinkChildren (
             Child = Child->Asl.Next;
             Child->Asl.Parent = Op;
         }
+
         PrevChild = Child;
     }
 

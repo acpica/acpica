@@ -202,7 +202,8 @@ CmDoCompile (
 
     if (Gbl_SyntaxError)
     {
-        fprintf (stderr, "Compiler aborting due to parser-detected syntax error(s)\n");
+        fprintf (stderr,
+            "Compiler aborting due to parser-detected syntax error(s)\n");
         LsDumpParseTree ();
         goto ErrorExit;
     }
@@ -258,8 +259,8 @@ CmDoCompile (
 
     /*
      * Now that the input is parsed, we can open the AML output file.
-     * Note: by default, the name of this file comes from the table descriptor
-     * within the input file.
+     * Note: by default, the name of this file comes from the table
+     * descriptor within the input file.
      */
     Event = UtBeginEvent ("Open AML output file");
     Status = FlOpenAmlOutputFile (Gbl_OutputFilenamePrefix);
@@ -335,7 +336,8 @@ CmDoCompile (
 
     /* Namespace cross-reference */
 
-    AslGbl_NamespaceEvent = UtBeginEvent ("Cross reference parse tree and Namespace");
+    AslGbl_NamespaceEvent = UtBeginEvent (
+        "Cross reference parse tree and Namespace");
     Status = XfCrossReferenceNamespace ();
     if (ACPI_FAILURE (Status))
     {
@@ -373,7 +375,8 @@ CmDoCompile (
     /* Semantic error checking part three - operand type checking */
 
     Event = UtBeginEvent ("Analyze AML operand types");
-    DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - Operand type checking\n\n");
+    DbgPrint (ASL_DEBUG_OUTPUT,
+        "\nSemantic analysis - Operand type checking\n\n");
     if (Gbl_DoTypechecking)
     {
         TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD,
@@ -662,8 +665,8 @@ CmDumpAllEvents (
 {
     ASL_EVENT_INFO          *Event;
     UINT32                  Delta;
-    UINT32                  USec;
-    UINT32                  MSec;
+    UINT32                  MicroSeconds;
+    UINT32                  MilliSeconds;
     UINT32                  i;
 
 
@@ -683,23 +686,23 @@ CmDumpAllEvents (
 
             Delta = (UINT32) (Event->EndTime - Event->StartTime);
 
-            USec = Delta / ACPI_100NSEC_PER_USEC;
-            MSec = Delta / ACPI_100NSEC_PER_MSEC;
+            MicroSeconds = Delta / ACPI_100NSEC_PER_USEC;
+            MilliSeconds = Delta / ACPI_100NSEC_PER_MSEC;
 
             /* Round milliseconds up */
 
-            if ((USec - (MSec * ACPI_USEC_PER_MSEC)) >= 500)
+            if ((MicroSeconds - (MilliSeconds * ACPI_USEC_PER_MSEC)) >= 500)
             {
-                MSec++;
+                MilliSeconds++;
             }
 
             DbgPrint (ASL_DEBUG_OUTPUT, "%8u usec %8u msec - %s\n",
-                USec, MSec, Event->EventName);
+                MicroSeconds, MilliSeconds, Event->EventName);
 
             if (Gbl_CompileTimesFlag)
             {
                 printf ("%8u usec %8u msec - %s\n",
-                    USec, MSec, Event->EventName);
+                    MicroSeconds, MilliSeconds, Event->EventName);
             }
         }
 

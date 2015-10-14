@@ -159,14 +159,14 @@ RsDoExtendedIoDescriptor (
     CurrentByteOffset = Info->CurrentByteOffset;
 
     Rnode = RsAllocateResourceNode (
-                sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) + 1 + StringLength);
+        sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->ExtAddress64.DescriptorType  = ACPI_RESOURCE_NAME_EXTENDED_ADDRESS64;
-    Descriptor->ExtAddress64.ResourceType    = ACPI_ADDRESS_TYPE_IO_RANGE;
-    Descriptor->ExtAddress64.RevisionID      = AML_RESOURCE_EXTENDED_ADDRESS_REVISION;
+    Descriptor->ExtAddress64.DescriptorType = ACPI_RESOURCE_NAME_EXTENDED_ADDRESS64;
+    Descriptor->ExtAddress64.ResourceType = ACPI_ADDRESS_TYPE_IO_RANGE;
+    Descriptor->ExtAddress64.RevisionID = AML_RESOURCE_EXTENDED_ADDRESS_REVISION;
 
-    Descriptor->ExtAddress64.ResourceLength  = (UINT16)
+    Descriptor->ExtAddress64.ResourceLength = (UINT16)
         (sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) -
          sizeof (AML_RESOURCE_LARGE_HEADER));
 
@@ -335,11 +335,11 @@ RsDoExtendedMemoryDescriptor (
                 sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->ExtAddress64.DescriptorType  = ACPI_RESOURCE_NAME_EXTENDED_ADDRESS64;
-    Descriptor->ExtAddress64.ResourceType    = ACPI_ADDRESS_TYPE_MEMORY_RANGE;
-    Descriptor->ExtAddress64.RevisionID      = AML_RESOURCE_EXTENDED_ADDRESS_REVISION;
+    Descriptor->ExtAddress64.DescriptorType = ACPI_RESOURCE_NAME_EXTENDED_ADDRESS64;
+    Descriptor->ExtAddress64.ResourceType = ACPI_ADDRESS_TYPE_MEMORY_RANGE;
+    Descriptor->ExtAddress64.RevisionID = AML_RESOURCE_EXTENDED_ADDRESS_REVISION;
 
-    Descriptor->ExtAddress64.ResourceLength  = (UINT16)
+    Descriptor->ExtAddress64.ResourceLength = (UINT16)
         (sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) -
          sizeof (AML_RESOURCE_LARGE_HEADER));
 
@@ -513,13 +513,13 @@ RsDoExtendedSpaceDescriptor (
     CurrentByteOffset = Info->CurrentByteOffset;
 
     Rnode = RsAllocateResourceNode (
-                sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) + 1 + StringLength);
+        sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->ExtAddress64.DescriptorType  = ACPI_RESOURCE_NAME_EXTENDED_ADDRESS64;
-    Descriptor->ExtAddress64.RevisionID      = AML_RESOURCE_EXTENDED_ADDRESS_REVISION;
+    Descriptor->ExtAddress64.DescriptorType = ACPI_RESOURCE_NAME_EXTENDED_ADDRESS64;
+    Descriptor->ExtAddress64.RevisionID = AML_RESOURCE_EXTENDED_ADDRESS_REVISION;
 
-    Descriptor->ExtAddress64.ResourceLength  = (UINT16)
+    Descriptor->ExtAddress64.ResourceLength = (UINT16)
         (sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) -
          sizeof (AML_RESOURCE_LARGE_HEADER));
 

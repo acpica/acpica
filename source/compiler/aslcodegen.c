@@ -240,28 +240,28 @@ CgAmlWriteWalk (
     }
 
     DbgPrint (ASL_TREE_OUTPUT,
-    "%08X %04X %04X %01X     %04X  %04X %04X   %04X    "
-    "%08X %08X %08X %08X %08X %08X %04X  %02d  %02d   %02d   %02d   %02d\n",
-            /* 1  */ (UINT32) Op->Asl.Value.Integer,
-            /* 2  */ Op->Asl.ParseOpcode,
-            /* 3  */ Op->Asl.AmlOpcode,
-            /* 4  */ Op->Asl.AmlOpcodeLength,
-            /* 5  */ Op->Asl.AmlPkgLenBytes,
-            /* 6  */ Op->Asl.AmlLength,
-            /* 7  */ Op->Asl.AmlSubtreeLength,
-            /* 8  */ Op->Asl.Parent ? Op->Asl.Parent->Asl.AmlSubtreeLength : 0,
-            /* 9  */ Op,
-            /* 10 */ Op->Asl.Parent,
-            /* 11 */ Op->Asl.Child,
-            /* 12 */ Op->Asl.Next,
-            /* 13 */ Op->Asl.CompileFlags,
-            /* 14 */ Op->Asl.AcpiBtype,
-            /* 15 */ Op->Asl.FinalAmlLength,
-            /* 16 */ Op->Asl.Column,
-            /* 17 */ Op->Asl.LineNumber,
-            /* 18 */ Op->Asl.EndLine,
-            /* 19 */ Op->Asl.LogicalLineNumber,
-            /* 20 */ Op->Asl.EndLogicalLine);
+        "%08X %04X %04X %01X     %04X  %04X %04X   %04X    "
+        "%08X %08X %08X %08X %08X %08X %04X  %02d  %02d   %02d   %02d   %02d\n",
+        /* 1  */ (UINT32) Op->Asl.Value.Integer,
+        /* 2  */ Op->Asl.ParseOpcode,
+        /* 3  */ Op->Asl.AmlOpcode,
+        /* 4  */ Op->Asl.AmlOpcodeLength,
+        /* 5  */ Op->Asl.AmlPkgLenBytes,
+        /* 6  */ Op->Asl.AmlLength,
+        /* 7  */ Op->Asl.AmlSubtreeLength,
+        /* 8  */ Op->Asl.Parent ? Op->Asl.Parent->Asl.AmlSubtreeLength : 0,
+        /* 9  */ Op,
+        /* 10 */ Op->Asl.Parent,
+        /* 11 */ Op->Asl.Child,
+        /* 12 */ Op->Asl.Next,
+        /* 13 */ Op->Asl.CompileFlags,
+        /* 14 */ Op->Asl.AcpiBtype,
+        /* 15 */ Op->Asl.FinalAmlLength,
+        /* 16 */ Op->Asl.Column,
+        /* 17 */ Op->Asl.LineNumber,
+        /* 18 */ Op->Asl.EndLine,
+        /* 19 */ Op->Asl.LogicalLineNumber,
+        /* 20 */ Op->Asl.EndLogicalLine);
 
     /* Generate the AML for this node */
 
@@ -346,7 +346,8 @@ CgWriteAmlOpcode (
         /* These opcodes should not get here */
 
         printf ("Found a node with an unassigned AML opcode\n");
-        FlPrintFile (ASL_FILE_STDERR, "Found a node with an unassigned AML opcode\n");
+        FlPrintFile (ASL_FILE_STDERR,
+            "Found a node with an unassigned AML opcode\n");
         return;
 
     case AML_INT_RESERVEDFIELD_OP:
@@ -429,8 +430,10 @@ CgWriteAmlOpcode (
              */
             PkgLen.Len >>= 4;
 
-            /* Now we can write the remaining bytes - either 1, 2, or 3 bytes */
-
+            /*
+             * Now we can write the remaining bytes -
+             * either 1, 2, or 3 bytes
+             */
             for (i = 0; i < (UINT32) (Op->Asl.AmlPkgLenBytes - 1); i++)
             {
                 CgLocalWriteAmlData (Op, &PkgLen.LenBytes[i], 1);
@@ -539,7 +542,7 @@ CgWriteTableHeader (
 
     /* Table length. Checksum zero for now, will rewrite later */
 
-    TableHeader.Length   = Gbl_TableLength;
+    TableHeader.Length = Gbl_TableLength;
     TableHeader.Checksum = 0;
 
     CgLocalWriteAmlData (Op, &TableHeader, sizeof (ACPI_TABLE_HEADER));

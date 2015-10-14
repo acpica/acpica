@@ -160,8 +160,8 @@ RsDoDmaDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_DMA));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Dma.DescriptorType  = ACPI_RESOURCE_NAME_DMA |
-                                        ASL_RDESC_DMA_SIZE;
+    Descriptor->Dma.DescriptorType =
+        ACPI_RESOURCE_NAME_DMA | ASL_RDESC_DMA_SIZE;
 
     /* Process all child initialization nodes */
 
@@ -354,8 +354,8 @@ RsDoFixedIoDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_FIXED_IO));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Io.DescriptorType  = ACPI_RESOURCE_NAME_FIXED_IO |
-                                      ASL_RDESC_FIXED_IO_SIZE;
+    Descriptor->Io.DescriptorType =
+        ACPI_RESOURCE_NAME_FIXED_IO | ASL_RDESC_FIXED_IO_SIZE;
 
     /* Process all child initialization nodes */
 
@@ -437,8 +437,8 @@ RsDoIoDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_IO));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Io.DescriptorType  = ACPI_RESOURCE_NAME_IO |
-                                      ASL_RDESC_IO_SIZE;
+    Descriptor->Io.DescriptorType =
+        ACPI_RESOURCE_NAME_IO | ASL_RDESC_IO_SIZE;
 
     /* Process all child initialization nodes */
 
@@ -548,8 +548,8 @@ RsDoIrqDescriptor (
     /* Length = 3 (with flag byte) */
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Irq.DescriptorType  = ACPI_RESOURCE_NAME_IRQ |
-                                      (ASL_RDESC_IRQ_SIZE + 0x01);
+    Descriptor->Irq.DescriptorType =
+        ACPI_RESOURCE_NAME_IRQ | (ASL_RDESC_IRQ_SIZE + 0x01);
 
     /* Process all child initialization nodes */
 
@@ -668,8 +668,8 @@ RsDoIrqNoFlagsDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_IRQ_NOFLAGS));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Irq.DescriptorType  = ACPI_RESOURCE_NAME_IRQ |
-                                      ASL_RDESC_IRQ_SIZE;
+    Descriptor->Irq.DescriptorType =
+        ACPI_RESOURCE_NAME_IRQ | ASL_RDESC_IRQ_SIZE;
 
     /* Process all child initialization nodes */
 

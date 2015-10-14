@@ -418,6 +418,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_PREDEFINED_DATA",                SRC_TYPE_STRUCT},
     {"ACPI_PREDEFINED_INFO",                SRC_TYPE_UNION},
     {"ACPI_PREDEFINED_NAMES",               SRC_TYPE_STRUCT},
+    {"ACPI_PRUNE_INFO",                     SRC_TYPE_STRUCT},
     {"ACPI_PSCOPE_STATE",                   SRC_TYPE_STRUCT},
     {"ACPI_RASF_PARAMETER_BLOCK",           SRC_TYPE_STRUCT},
     {"ACPI_RASF_PATROL_SCRUB_PARAMETER",    SRC_TYPE_STRUCT},

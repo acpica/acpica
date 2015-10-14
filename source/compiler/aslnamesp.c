@@ -196,16 +196,16 @@ NsDisplayNamespace (
     /* Walk entire namespace from the root */
 
     Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
-                ACPI_UINT32_MAX, FALSE, NsDoOneNamespaceObject, NULL,
-                NULL, NULL);
+        ACPI_UINT32_MAX, FALSE, NsDoOneNamespaceObject, NULL,
+        NULL, NULL);
 
     /* Print the full pathname for each namespace node */
 
     FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "\nNamespace pathnames\n\n");
 
     Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
-                ACPI_UINT32_MAX, FALSE, NsDoOnePathname, NULL,
-                NULL, NULL);
+        ACPI_UINT32_MAX, FALSE, NsDoOnePathname, NULL,
+        NULL, NULL);
 
     return (Status);
 }
@@ -240,8 +240,7 @@ NsDoOneNamespaceObject (
 
     FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "%5u  [%u]  %*s %4.4s - %s",
         Gbl_NumNamespaceObjects, Level, (Level * 3), " ",
-        &Node->Name,
-        AcpiUtGetTypeName (Node->Type));
+        &Node->Name, AcpiUtGetTypeName (Node->Type));
 
     Op = Node->Op;
     ObjDesc = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, Node->Object);
@@ -290,11 +289,13 @@ NsDoOneNamespaceObject (
             {
                 Op = Op->Asl.Child;
             }
+
             if ((Op->Asl.ParseOpcode == PARSEOP_NAMESEG)  ||
                 (Op->Asl.ParseOpcode == PARSEOP_NAMESTRING))
             {
                 Op = Op->Asl.Next;
             }
+
             FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT,
                 "       [Initial Value   0x%8.8X%8.8X]",
                 ACPI_FORMAT_UINT64 (Op->Asl.Value.Integer));
@@ -306,11 +307,13 @@ NsDoOneNamespaceObject (
             {
                 Op = Op->Asl.Child;
             }
+
             if ((Op->Asl.ParseOpcode == PARSEOP_NAMESEG)  ||
                 (Op->Asl.ParseOpcode == PARSEOP_NAMESTRING))
             {
                 Op = Op->Asl.Next;
             }
+
             FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT,
                 "        [Initial Value   \"%s\"]",
                 Op->Asl.Value.String);
@@ -323,6 +326,7 @@ NsDoOneNamespaceObject (
             {
                 Op = Op->Asl.Child;
             }
+
             FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT,
                 "   [Offset 0x%04X   Length 0x%04X bits]",
                 Op->Asl.Parent->Asl.ExtraValue, (UINT32) Op->Asl.Value.Integer);
@@ -375,11 +379,13 @@ NsDoOneNamespaceObject (
             {
                 Op = Op->Asl.Child;
             }
+
             if ((Op->Asl.ParseOpcode == PARSEOP_NAMESEG)  ||
                 (Op->Asl.ParseOpcode == PARSEOP_NAMESTRING))
             {
                 Op = Op->Asl.Next;
             }
+
             Op = Op->Asl.Child;
 
             if ((Op->Asl.ParseOpcode == PARSEOP_BYTECONST) ||
@@ -397,11 +403,13 @@ NsDoOneNamespaceObject (
             {
                 Op = Op->Asl.Child;
             }
+
             if ((Op->Asl.ParseOpcode == PARSEOP_NAMESEG)  ||
                 (Op->Asl.ParseOpcode == PARSEOP_NAMESTRING))
             {
                 Op = Op->Asl.Next;
             }
+
             Op = Op->Asl.Child;
 
             if (Op && (Op->Asl.ParseOpcode == PARSEOP_INTEGER))
@@ -489,6 +497,5 @@ NsDoOnePathname (
 
     FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "%s\n", TargetPath.Pointer);
     ACPI_FREE (TargetPath.Pointer);
-
     return (AE_OK);
 }
