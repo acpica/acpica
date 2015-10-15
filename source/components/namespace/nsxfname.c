@@ -249,7 +249,7 @@ AcpiGetName (
 {
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node;
-    char                    *NodeName;
+    const char              *NodeName;
 
 
     /* Parameter validation */
