@@ -134,6 +134,8 @@ OBJECTS = \
 	$(OBJDIR)/dtio.o\
 	$(OBJDIR)/dtsubtable.o\
 	$(OBJDIR)/dttable.o\
+	$(OBJDIR)/dttable1.o\
+	$(OBJDIR)/dttable2.o\
 	$(OBJDIR)/dttemplate.o\
 	$(OBJDIR)/dtutils.o\
 	$(OBJDIR)/exconvrt.o\

@@ -711,6 +711,57 @@ Error:
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompileTwoSubtables
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *              TableInfo1          - Info table 1
+ *              TableInfo1          - Info table 2
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile tables with a header and one or more same subtables.
+ *              Include CPEP, EINJ, ERST, MCFG, MSCT, WDAT
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileTwoSubtables (
+    void                    **List,
+    ACPI_DMTABLE_INFO       *TableInfo1,
+    ACPI_DMTABLE_INFO       *TableInfo2)
+{
+    ACPI_STATUS             Status;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+
+
+    Status = DtCompileTable (PFieldList, TableInfo1, &Subtable, TRUE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    ParentTable = DtPeekSubtable ();
+    DtInsertSubtable (ParentTable, Subtable);
+
+    while (*PFieldList)
+    {
+        Status = DtCompileTable (PFieldList, TableInfo2, &Subtable, FALSE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        DtInsertSubtable (ParentTable, Subtable);
+    }
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompilePadding
  *
  * PARAMETERS:  Length              - Padding field size

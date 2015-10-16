@@ -3496,6 +3496,14 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\compiler\dttable1.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\compiler\dttable2.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\compiler\dttemplate.c"
 					>
 					<FileConfiguration
