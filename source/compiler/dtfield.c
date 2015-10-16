@@ -171,6 +171,7 @@ DtCompileOneField (
 {
     ACPI_STATUS             Status;
 
+
     switch (Type)
     {
     case DT_FIELD_TYPE_INTEGER:

@@ -174,7 +174,7 @@ DtDumpSubtableTree (
 #define DT_MERGE_LINES              6
 #define DT_ESCAPE_SEQUENCE          7
 
-static UINT32  Gbl_NextLineOffset;
+static UINT32               Gbl_NextLineOffset;
 
 
 /******************************************************************************
@@ -426,6 +426,7 @@ DtParseLine (
             End--;
             break;
         }
+
         End++;
     }
 
@@ -625,7 +626,8 @@ DtGetNextLine (
 
                 if (!(Flags & DT_ALLOW_MULTILINE_QUOTES))
                 {
-                    AcpiOsPrintf ("ERROR at line %u: Unterminated quoted string\n",
+                    AcpiOsPrintf (
+                        "ERROR at line %u: Unterminated quoted string\n",
                         Gbl_CurrentLineNumber++);
                     State = DT_NORMAL_TEXT;
                 }
@@ -827,7 +829,8 @@ DtScanFile (
         ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Line %2.2u/%4.4X - %s",
             Gbl_CurrentLineNumber, Offset, Gbl_CurrentLineBuffer));
 
-        Status = DtParseLine (Gbl_CurrentLineBuffer, Gbl_CurrentLineNumber, Offset);
+        Status = DtParseLine (Gbl_CurrentLineBuffer,
+            Gbl_CurrentLineNumber, Offset);
         if (Status == AE_NOT_FOUND)
         {
             break;
@@ -1018,6 +1021,7 @@ DtDumpFieldList (
     DbgPrint (ASL_DEBUG_OUTPUT,  "\nField List:\n"
         "LineNo   ByteOff  NameCol  Column   TableOff "
         "Flags %32s : %s\n\n", "Name", "Value");
+
     while (Field)
     {
         DbgPrint (ASL_DEBUG_OUTPUT,
@@ -1164,6 +1168,7 @@ DtWriteFieldToListing (
         FlPrintFile (ASL_FILE_LISTING_OUTPUT, "...Additional data, length 0x%X\n",
             strlen (Field->Value));
     }
+
     FlPrintFile (ASL_FILE_LISTING_OUTPUT, "\n");
 
     /* Dump the hex data that will be output for this field */

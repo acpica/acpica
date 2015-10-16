@@ -219,6 +219,7 @@ DtDoOperator (
                 Gbl_CurrentField, NULL);
             return (0);
         }
+
         Result = LeftValue / RightValue;
         break;
 
@@ -230,6 +231,7 @@ DtDoOperator (
                 Gbl_CurrentField, NULL);
             return (0);
         }
+
         Result = LeftValue % RightValue;
         break;
 
@@ -489,6 +491,7 @@ DtLookupLabel (
         {
             return (LabelField);
         }
+
         LabelField = LabelField->NextLabel;
     }
 

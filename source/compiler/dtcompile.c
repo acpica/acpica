@@ -417,7 +417,7 @@ DtCompileDataTable (
     DtInsertCompilerIds (*FieldList);
 
     Status = DtCompileTable (FieldList, AcpiDmTableInfoHeader,
-                &Gbl_RootTable, TRUE);
+        &Gbl_RootTable, TRUE);
     if (ACPI_FAILURE (Status))
     {
         return (Status);
@@ -454,7 +454,7 @@ DtCompileDataTable (
 
         Subtable = NULL;
         Status = DtCompileTable (FieldList, TableData->TableInfo,
-                    &Subtable, TRUE);
+            &Subtable, TRUE);
         if (ACPI_FAILURE (Status))
         {
             return (Status);

@@ -571,7 +571,8 @@ PrDoDirective (
         case PR_DIRECTIVE_ELSE:
         case PR_DIRECTIVE_ELIF:
 
-            if (Gbl_DirectiveStack && Gbl_DirectiveStack->IgnoringThisCodeBlock)
+            if (Gbl_DirectiveStack &&
+                Gbl_DirectiveStack->IgnoringThisCodeBlock)
             {
                 PrDbgPrint ("Ignoring", Gbl_DirectiveInfo[Directive].Name);
                 return;
@@ -746,7 +747,8 @@ PrDoDirective (
         if (*(&Gbl_CurrentLineBuffer[TokenOffset]) == '(')
         {
 #ifndef MACROS_SUPPORTED
-            AcpiOsPrintf ("%s ERROR - line %u: #define macros are not supported yet\n",
+            AcpiOsPrintf (
+                "%s ERROR - line %u: #define macros are not supported yet\n",
                 Gbl_CurrentLineBuffer, Gbl_LogicalLineNumber);
             exit(1);
 #else
@@ -764,11 +766,13 @@ PrDoDirective (
                 {
                     Token2++;
                 }
+
                 End = Token2;
                 while (*End != '\n')
                 {
                     End++;
                 }
+
                 *End = 0;
             }
             else
@@ -1071,6 +1075,7 @@ PrGetNextLine (
             {
                 return (ASL_BLANK_LINE);
             }
+
             return (AE_OK);
         }
     }

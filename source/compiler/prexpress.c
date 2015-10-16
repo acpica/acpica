@@ -156,6 +156,7 @@ PrUnTokenize (
     {
         return;
     }
+
     if (Buffer[Length] != '\n')
     {
         Buffer[strlen(Buffer)] = ' ';
