@@ -253,6 +253,13 @@ AcpiDbSingleStep (
     ACPI_FUNCTION_ENTRY ();
 
 
+#ifndef ACPI_APPLICATION
+    if (AcpiGbl_DbThreadId != AcpiOsGetThreadId ())
+    {
+        return (AE_OK);
+    }
+#endif
+
     /* Check the abort flag */
 
     if (AcpiGbl_AbortMethod)
@@ -543,7 +550,7 @@ AcpiInitializeDebugger (
         /* Create the debug execution thread to execute commands */
 
         AcpiGbl_DbThreadsTerminated = FALSE;
-        Status = AcpiOsExecute (OSL_DEBUGGER_THREAD,
+        Status = AcpiOsExecute (OSL_DEBUGGER_MAIN_THREAD,
             AcpiDbExecuteThread, NULL);
         if (ACPI_FAILURE (Status))
         {
@@ -552,6 +559,10 @@ AcpiInitializeDebugger (
             AcpiGbl_DbThreadsTerminated = TRUE;
             return_ACPI_STATUS (Status);
         }
+    }
+    else
+    {
+        AcpiGbl_DbThreadId = AcpiOsGetThreadId ();
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -605,3 +616,25 @@ AcpiTerminateDebugger (
 }
 
 ACPI_EXPORT_SYMBOL (AcpiTerminateDebugger)
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiSetDebuggerThreadId
+ *
+ * PARAMETERS:  ThreadId        - Debugger thread ID
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Set debugger thread ID
+ *
+ ******************************************************************************/
+
+void
+AcpiSetDebuggerThreadId (
+    ACPI_THREAD_ID          ThreadId)
+{
+    AcpiGbl_DbThreadId = ThreadId;
+}
+
+ACPI_EXPORT_SYMBOL (AcpiSetDebuggerThreadId)
