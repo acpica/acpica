@@ -382,6 +382,20 @@ AcpiUtSubsystemShutdown (
     ACPI_FUNCTION_TRACE (UtSubsystemShutdown);
 
 
+    /* Just exit if subsystem is already shutdown */
+
+    if (AcpiGbl_Shutdown)
+    {
+        ACPI_ERROR ((AE_INFO, "ACPI Subsystem is already terminated"));
+        return_VOID;
+    }
+
+    /* Subsystem appears active, go ahead and shut it down */
+
+    AcpiGbl_Shutdown = TRUE;
+    AcpiGbl_StartupFlags = 0;
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Shutting down ACPI Subsystem\n"));
+
 #ifndef ACPI_ASL_COMPILER
 
     /* Close the AcpiEvent Handling */

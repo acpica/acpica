@@ -1212,6 +1212,7 @@ AcpiDbCommandDispatch (
          * re-creating the semaphores!
          */
 
+        AcpiGbl_DbTerminateLoop = TRUE;
         /*  AcpiInitialize (NULL);  */
         break;
 
@@ -1296,7 +1297,7 @@ AcpiDbExecuteThread (
     ACPI_STATUS             MStatus;
 
 
-    while (Status != AE_CTRL_TERMINATE)
+    while (Status != AE_CTRL_TERMINATE && !AcpiGbl_DbTerminateLoop)
     {
         AcpiGbl_MethodExecuting = FALSE;
         AcpiGbl_StepToNextCall = FALSE;
