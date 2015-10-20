@@ -834,7 +834,7 @@ AcpiDbCommandDispatch (
 
     /* If AcpiTerminate has been called, terminate this thread */
 
-    if (AcpiGbl_DbTerminateThreads)
+    if (AcpiGbl_DbTerminateLoop)
     {
         return (AE_CTRL_TERMINATE);
     }
@@ -1256,7 +1256,7 @@ AcpiDbCommandDispatch (
 #ifdef ACPI_APPLICATION
         AcpiDbCloseDebugFile ();
 #endif
-        AcpiGbl_DbTerminateThreads = TRUE;
+        AcpiGbl_DbTerminateLoop = TRUE;
         return (AE_CTRL_TERMINATE);
 
     case CMD_NOT_FOUND:
@@ -1312,6 +1312,7 @@ AcpiDbExecuteThread (
 
         AcpiOsReleaseMutex (AcpiGbl_DbCommandComplete);
     }
+    AcpiGbl_DbThreadsTerminated = TRUE;
 }
 
 
@@ -1366,7 +1367,7 @@ AcpiDbUserCommands (
 
     /* TBD: [Restructure] Need a separate command line buffer for step mode */
 
-    while (!AcpiGbl_DbTerminateThreads)
+    while (!AcpiGbl_DbTerminateLoop)
     {
         /* Force output to console until a command is entered */
 
@@ -1418,14 +1419,5 @@ AcpiDbUserCommands (
         }
     }
 
-    /* Shut down the debugger */
-
-    AcpiTerminateDebugger ();
-
-    /*
-     * Only this thread (the original thread) should actually terminate the
-     * subsystem, because all the semaphores are deleted during termination
-     */
-    Status = AcpiTerminate ();
     return (Status);
 }

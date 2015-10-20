@@ -334,8 +334,6 @@ AcpiUtInitGlobals (
     AcpiGbl_DisableMemTracking          = FALSE;
 #endif
 
-    ACPI_DEBUGGER_EXEC (AcpiGbl_DbTerminateThreads = FALSE);
-
     return_ACPI_STATUS (AE_OK);
 }
 
