@@ -333,6 +333,7 @@ AdAmlDisassemble (
                     Status = AE_OK;
                     continue;
                 }
+
                 return (Status);
             }
 
@@ -440,6 +441,7 @@ AdAmlDisassemble (
     if (!AcpiGbl_ForceAmlDisassembly && !AcpiUtIsAmlTable (Table))
     {
         AdDisassemblerHeader (Filename, ACPI_IS_DATA_TABLE);
+
         AcpiOsPrintf (" * ACPI Data Table [%4.4s]\n *\n",
             Table->Signature);
         AcpiOsPrintf (" * Format: [HexOffset DecimalOffset ByteLength]  "
@@ -560,8 +562,8 @@ AdAmlDisassemble (
                     NsSetupNamespaceListing (File);
                     NsDisplayNamespace ();
                 }
-                AcpiOsPrintf ("*****/\n");
 
+                AcpiOsPrintf ("*****/\n");
                 AcpiDmDumpTree (AcpiGbl_ParseOpRoot);
             }
         }
@@ -748,8 +750,8 @@ AdCreateTableHeader (
         AcpiOsPrintf (" **** Incorrect checksum, should be 0x%2.2X",
             (UINT8) (Table->Checksum - Checksum));
     }
-    AcpiOsPrintf ("\n");
 
+    AcpiOsPrintf ("\n");
     AcpiOsPrintf (" *     OEM ID           \"%.6s\"\n",     Table->OemId);
     AcpiOsPrintf (" *     OEM Table ID     \"%.8s\"\n",     Table->OemTableId);
     AcpiOsPrintf (" *     OEM Revision     0x%8.8X (%u)\n", Table->OemRevision, Table->OemRevision);
@@ -972,15 +974,14 @@ AdParseTable (
 
     /* Create and initialize a new walk state */
 
-    WalkState = AcpiDsCreateWalkState (0,
-                        AcpiGbl_ParseOpRoot, NULL, NULL);
+    WalkState = AcpiDsCreateWalkState (0, AcpiGbl_ParseOpRoot, NULL, NULL);
     if (!WalkState)
     {
         return (AE_NO_MEMORY);
     }
 
     Status = AcpiDsInitAmlWalk (WalkState, AcpiGbl_ParseOpRoot,
-                NULL, AmlStart, AmlLength, NULL, ACPI_IMODE_LOAD_PASS1);
+        NULL, AmlStart, AmlLength, NULL, ACPI_IMODE_LOAD_PASS1);
     if (ACPI_FAILURE (Status))
     {
         return (Status);
@@ -1044,6 +1045,7 @@ AdParseTable (
      */
     fprintf (stderr,
         "Parsing Deferred Opcodes (Methods/Buffers/Packages/Regions)\n");
+
     Status = AcpiDmParseDeferredOps (AcpiGbl_ParseOpRoot);
     fprintf (stderr, "\n");
 

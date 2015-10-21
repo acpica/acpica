@@ -162,6 +162,7 @@ AcpiGetoptArgument (
     int                     argc,
     char                    **argv)
 {
+
     AcpiGbl_Optind--;
     CurrentCharPtr++;
 
