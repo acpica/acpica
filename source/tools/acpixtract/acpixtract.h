@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: axmain - main module for acpixtract utility
+ * Module Name: acpixtract.h - Include for acpixtract utility
  *
  *****************************************************************************/
 
@@ -113,158 +113,133 @@
  *
  *****************************************************************************/
 
-#define DEFINE_ACPIXTRACT_GLOBALS
-#include "acpixtract.h"
+#include "acpi.h"
+#include "accommon.h"
+#include "acapps.h"
+#include <stdio.h>
 
 
-/* Local prototypes */
+#undef ACPI_GLOBAL
 
-static void
-DisplayUsage (
-    void);
+#ifdef DEFINE_ACPIXTRACT_GLOBALS
+#define ACPI_GLOBAL(type,name) \
+    extern type name; \
+    type name
+
+#else
+#define ACPI_GLOBAL(type,name) \
+    extern type name
+#endif
 
 
-/******************************************************************************
- *
- * FUNCTION:    DisplayUsage
- *
- * DESCRIPTION: Usage message
- *
- ******************************************************************************/
+/* Options */
 
-static void
-DisplayUsage (
-    void)
+#define AX_EXTRACT_ALL              0
+#define AX_LIST_ALL                 1
+#define AX_EXTRACT_SIGNATURE        2
+#define AX_EXTRACT_AML_TABLES       3
+#define AX_EXTRACT_MULTI_TABLE      4
+
+#define AX_OPTIONAL_TABLES          0
+#define AX_REQUIRED_TABLE           1
+
+#define AX_UTILITY_NAME             "ACPI Binary Table Extraction Utility"
+#define AX_SUPPORTED_OPTIONS        "ahlms:v"
+#define AX_MULTI_TABLE_FILENAME     "amltables.dat"
+#define AX_TABLE_INFO_FORMAT        "Acpi table [%4.4s] - %7u bytes written to %s\n"
+
+/* Extraction states */
+
+#define AX_STATE_FIND_HEADER        0
+#define AX_STATE_EXTRACT_DATA       1
+
+/* Miscellaneous constants */
+
+#define AX_LINE_BUFFER_SIZE         256
+#define AX_MIN_BLOCK_HEADER_LENGTH  6   /* strlen ("DSDT @") */
+
+
+typedef struct AxTableInfo
 {
+    UINT32                  Signature;
+    unsigned int            Instances;
+    unsigned int            NextInstance;
+    struct AxTableInfo      *Next;
 
-    ACPI_USAGE_HEADER ("acpixtract [option] <InputFile>");
-
-    ACPI_OPTION ("-a",                  "Extract all tables, not just DSDT/SSDT");
-    ACPI_OPTION ("-l",                  "List table summaries, do not extract");
-    ACPI_OPTION ("-m",                  "Extract multiple DSDT/SSDTs to a single file");
-    ACPI_OPTION ("-s <signature>",      "Extract all tables with <signature>");
-    ACPI_OPTION ("-v",                  "Display version information");
-
-    ACPI_USAGE_TEXT ("\nExtract binary ACPI tables from text acpidump output\n");
-    ACPI_USAGE_TEXT ("Default invocation extracts the DSDT and all SSDTs\n");
-}
+} AX_TABLE_INFO;
 
 
-/******************************************************************************
- *
- * FUNCTION:    main
- *
- * DESCRIPTION: C main function
- *
- ******************************************************************************/
+/* Globals */
+
+ACPI_GLOBAL (char,           Gbl_LineBuffer[AX_LINE_BUFFER_SIZE]);
+ACPI_GLOBAL (char,           Gbl_HeaderBuffer[AX_LINE_BUFFER_SIZE]);
+ACPI_GLOBAL (char,           Gbl_InstanceBuffer[AX_LINE_BUFFER_SIZE]);
+
+ACPI_GLOBAL (AX_TABLE_INFO, *Gbl_TableListHead);
+ACPI_GLOBAL (char,           Gbl_OutputFilename[32]);
+ACPI_GLOBAL (unsigned char,  Gbl_BinaryData[16]);
+ACPI_GLOBAL (unsigned int,   Gbl_TableCount);
+
+/*
+ * acpixtract.c
+ */
+int
+AxExtractTables (
+    char                    *InputPathname,
+    char                    *Signature,
+    unsigned int            MinimumInstances);
 
 int
-main (
-    int                     argc,
-    char                    *argv[])
-{
-    char                    *Filename;
-    int                     AxAction;
-    int                     Status;
-    int                     j;
+AxExtractToMultiAmlFile (
+    char                    *InputPathname);
+
+int
+AxListTables (
+    char                    *InputPathname);
 
 
-    Gbl_TableCount = 0;
-    Gbl_TableListHead = NULL;
-    AxAction = AX_EXTRACT_AML_TABLES; /* Default: DSDT & SSDTs */
+/*
+ * axutils.c
+ */
+size_t
+AxGetTableHeader (
+    FILE                    *InputFile,
+    unsigned char           *OutputData);
 
-    ACPI_DEBUG_INITIALIZE (); /* For debug version only */
-    AcpiOsInitialize ();
-    printf (ACPI_COMMON_SIGNON (AX_UTILITY_NAME));
+unsigned int
+AxCountTableInstances (
+    char                    *InputPathname,
+    char                    *Signature);
 
-    if (argc < 2)
-    {
-        DisplayUsage ();
-        return (0);
-    }
+unsigned int
+AxGetNextInstance (
+    char                    *InputPathname,
+    char                    *Signature);
 
-    /* Command line options */
+void
+AxNormalizeSignature (
+    char                    *Signature);
 
-    while ((j = AcpiGetopt (argc, argv, AX_SUPPORTED_OPTIONS)) != ACPI_OPT_END) switch (j)
-    {
-    case 'a':
+void
+AxCheckAscii (
+    char                    *Name,
+    int                     Count);
 
-        AxAction = AX_EXTRACT_ALL;          /* Extract all tables found */
-        break;
+int
+AxIsEmptyLine (
+    char                    *Buffer);
 
-    case 'l':
+int
+AxIsDataBlockHeader (
+    void);
 
-        AxAction = AX_LIST_ALL;             /* List tables only, do not extract */
-        break;
+long
+AxProcessOneTextLine (
+    FILE                    *OutputFile,
+    char                    *ThisSignature,
+    size_t                  ThisTableBytesWritten);
 
-    case 'm':
-
-        AxAction = AX_EXTRACT_MULTI_TABLE;  /* Make single file for all DSDT/SSDTs */
-        break;
-
-    case 's':
-
-        AxAction = AX_EXTRACT_SIGNATURE;    /* Extract only tables with this sig */
-        break;
-
-    case 'v': /* -v: (Version): signon already emitted, just exit */
-
-        return (0);
-
-    case 'h':
-    default:
-
-        DisplayUsage ();
-        return (0);
-    }
-
-    /* Input filename is always required */
-
-    Filename = argv[AcpiGbl_Optind];
-    if (!Filename)
-    {
-        printf ("Missing required input filename\n");
-        return (-1);
-    }
-
-    /* Perform requested action */
-
-    switch (AxAction)
-    {
-    case AX_EXTRACT_ALL:
-
-        Status = AxExtractTables (Filename, NULL, AX_OPTIONAL_TABLES);
-        break;
-
-    case AX_EXTRACT_MULTI_TABLE:
-
-        Status = AxExtractToMultiAmlFile (Filename);
-        break;
-
-    case AX_LIST_ALL:
-
-        Status = AxListTables (Filename);
-        break;
-
-    case AX_EXTRACT_SIGNATURE:
-
-        Status = AxExtractTables (Filename, AcpiGbl_Optarg, AX_REQUIRED_TABLE);
-        break;
-
-    default:
-        /*
-         * Default output is the DSDT and all SSDTs. One DSDT is required,
-         * any SSDTs are optional.
-         */
-        Status = AxExtractTables (Filename, "DSDT", AX_REQUIRED_TABLE);
-        if (Status)
-        {
-            return (Status);
-        }
-
-        Status = AxExtractTables (Filename, "SSDT", AX_OPTIONAL_TABLES);
-        break;
-    }
-
-    return (Status);
-}
+size_t
+AxConvertLine (
+    char                    *InputLine,
+    unsigned char           *OutputData);
