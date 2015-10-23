@@ -883,7 +883,7 @@ AcpiDbCreateExecutionThreads (
 
     for (i = 0; i < (NumThreads); i++)
     {
-        Status = AcpiOsExecute (OSL_DEBUGGER_THREAD, AcpiDbMethodThread,
+        Status = AcpiOsExecute (OSL_DEBUGGER_EXEC_THREAD, AcpiDbMethodThread,
             &AcpiGbl_DbMethodInfo);
         if (ACPI_FAILURE (Status))
         {
