@@ -1032,9 +1032,15 @@ TrCreateNode (
 
     switch (ParseOpcode)
     {
-    case PARSEOP_DEFINITIONBLOCK:
+    case PARSEOP_ASL_CODE:
 
         RootNode = Op;
+        Op->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
+        DbgPrint (ASL_PARSE_OUTPUT, "ASLCODE (Tree Completed)->");
+        break;
+
+    case PARSEOP_DEFINITION_BLOCK:
+
         DbgPrint (ASL_PARSE_OUTPUT, "DEFINITION_BLOCK (Tree Completed)->");
         break;
 
@@ -1155,9 +1161,15 @@ TrLinkChildren (
 
     switch (Op->Asl.ParseOpcode)
     {
-    case PARSEOP_DEFINITIONBLOCK:
+    case PARSEOP_ASL_CODE:
 
         RootNode = Op;
+        Op->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
+        DbgPrint (ASL_PARSE_OUTPUT, "ASLCODE (Tree Completed)->");
+        break;
+
+    case PARSEOP_DEFINITION_BLOCK:
+
         DbgPrint (ASL_PARSE_OUTPUT, "DEFINITION_BLOCK (Tree Completed)->");
         break;
 

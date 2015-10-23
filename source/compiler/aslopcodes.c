@@ -332,7 +332,7 @@ OpcSetOptimalIntegerSize (
      */
     if (Op->Asl.Parent &&
         Op->Asl.Parent->Asl.Parent &&
-       (Op->Asl.Parent->Asl.Parent->Asl.ParseOpcode == PARSEOP_DEFINITIONBLOCK))
+       (Op->Asl.Parent->Asl.Parent->Asl.ParseOpcode == PARSEOP_DEFINITION_BLOCK))
     {
         return (0);
     }

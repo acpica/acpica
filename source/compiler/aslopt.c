@@ -518,7 +518,7 @@ OptOptimizeNameDeclaration (
 
 
     if (((CurrentNode == AcpiGbl_RootNode) ||
-        (Op->Common.Parent->Asl.ParseOpcode == PARSEOP_DEFINITIONBLOCK)) &&
+        (Op->Common.Parent->Asl.ParseOpcode == PARSEOP_DEFINITION_BLOCK)) &&
             (ACPI_IS_ROOT_PREFIX (AmlNameString[0])))
     {
         /*

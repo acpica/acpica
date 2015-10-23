@@ -573,9 +573,10 @@ MtCheckNamedObjectInMethod (
     const ACPI_OPCODE_INFO  *OpInfo;
 
 
-    /* We don't care about actual method declarations */
+    /* We don't care about actual method declarations or scopes */
 
-    if (Op->Asl.AmlOpcode == AML_METHOD_OP)
+    if ((Op->Asl.AmlOpcode == AML_METHOD_OP) ||
+        (Op->Asl.AmlOpcode == AML_SCOPE_OP))
     {
         return;
     }

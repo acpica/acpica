@@ -370,7 +370,7 @@ TrTransformSubtree (
 
     switch (Op->Asl.ParseOpcode)
     {
-    case PARSEOP_DEFINITIONBLOCK:
+    case PARSEOP_DEFINITION_BLOCK:
 
         TrDoDefinitionBlock (Op);
         break;
@@ -718,7 +718,7 @@ TrDoSwitch (
 
     Next = StartNode;
     while ((Next->Asl.ParseOpcode != PARSEOP_METHOD) &&
-           (Next->Asl.ParseOpcode != PARSEOP_DEFINITIONBLOCK))
+           (Next->Asl.ParseOpcode != PARSEOP_DEFINITION_BLOCK))
     {
         Next = Next->Asl.Parent;
     }

@@ -478,7 +478,7 @@ AnIsResultUsed (
     /* Not used if one of these is the parent */
 
     case PARSEOP_METHOD:
-    case PARSEOP_DEFINITIONBLOCK:
+    case PARSEOP_DEFINITION_BLOCK:
     case PARSEOP_ELSE:
 
         return (FALSE);

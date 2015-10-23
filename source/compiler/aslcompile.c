@@ -238,7 +238,7 @@ CmDoCompile (
 
     LsDumpParseTree ();
 
-    OpcGetIntegerWidth (RootNode);
+    OpcGetIntegerWidth (RootNode->Asl.Child);
     UtEndEvent (Event);
 
     /* Pre-process parse tree for any operator transforms */

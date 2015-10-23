@@ -542,10 +542,68 @@ CgWriteTableHeader (
 
     /* Table length. Checksum zero for now, will rewrite later */
 
-    TableHeader.Length = Gbl_TableLength;
+    TableHeader.Length = sizeof (ACPI_TABLE_HEADER) +
+        Op->Asl.AmlSubtreeLength;
     TableHeader.Checksum = 0;
 
+    Op->Asl.FinalAmlOffset = ftell (Gbl_Files[ASL_FILE_AML_OUTPUT].Handle);
+
+    /* Write entire header and clear the table header global */
+
     CgLocalWriteAmlData (Op, &TableHeader, sizeof (ACPI_TABLE_HEADER));
+    memset (&TableHeader, 0, sizeof (ACPI_TABLE_HEADER));
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CgUpdateHeader
+ *
+ * PARAMETERS:  Op                  - Op for the Definition Block
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Complete the ACPI table by calculating the checksum and
+ *              re-writing the header for the input definition block
+ *
+ ******************************************************************************/
+
+static void
+CgUpdateHeader (
+    ACPI_PARSE_OBJECT   *Op)
+{
+    signed char         Sum;
+    UINT32              i;
+    UINT32              Length;
+    UINT8               FileByte;
+    UINT8               Checksum;
+
+
+    /* Calculate the checksum over the entire definition block */
+
+    Sum = 0;
+    Length = sizeof (ACPI_TABLE_HEADER) + Op->Asl.AmlSubtreeLength;
+    FlSeekFile (ASL_FILE_AML_OUTPUT, Op->Asl.FinalAmlOffset);
+
+    for (i = 0; i < Length; i++)
+    {
+        if (FlReadFile (ASL_FILE_AML_OUTPUT, &FileByte, 1) != AE_OK)
+        {
+            printf ("EOF while reading checksum bytes\n");
+            return;
+        }
+
+        Sum = (signed char) (Sum + FileByte);
+    }
+
+    Checksum = (UINT8) (0 - Sum);
+
+    /* Re-write the the checksum byte */
+
+    FlSeekFile (ASL_FILE_AML_OUTPUT, Op->Asl.FinalAmlOffset +
+        ACPI_OFFSET (ACPI_TABLE_HEADER, Checksum));
+
+    FlWriteFile (ASL_FILE_AML_OUTPUT, &Checksum, 1);
 }
 
 
@@ -558,7 +616,8 @@ CgWriteTableHeader (
  * RETURN:      None.
  *
  * DESCRIPTION: Complete the ACPI table by calculating the checksum and
- *              re-writing the header.
+ *              re-writing each table header. This allows support for
+ *              multiple definition blocks in a single source file.
  *
  ******************************************************************************/
 
@@ -566,26 +625,17 @@ static void
 CgCloseTable (
     void)
 {
-    signed char         Sum;
-    UINT8               FileByte;
+    ACPI_PARSE_OBJECT   *Op;
 
 
-    FlSeekFile (ASL_FILE_AML_OUTPUT, 0);
-    Sum = 0;
+    /* Process all definition blocks */
 
-    /* Calculate the checksum over the entire file */
-
-    while (FlReadFile (ASL_FILE_AML_OUTPUT, &FileByte, 1) == AE_OK)
+    Op = RootNode->Asl.Child;
+    while (Op)
     {
-        Sum = (signed char) (Sum + FileByte);
+        CgUpdateHeader (Op);
+        Op = Op->Asl.Next;
     }
-
-    /* Re-write the table header with the checksum */
-
-    TableHeader.Checksum = (UINT8) (0 - Sum);
-
-    FlSeekFile (ASL_FILE_AML_OUTPUT, 0);
-    CgLocalWriteAmlData (NULL, &TableHeader, sizeof (ACPI_TABLE_HEADER));
 }
 
 
@@ -661,7 +711,7 @@ CgWriteNode (
 
         break;
 
-    case PARSEOP_DEFINITIONBLOCK:
+    case PARSEOP_DEFINITION_BLOCK:
 
         CgWriteTableHeader (Op);
         break;

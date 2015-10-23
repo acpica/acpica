@@ -1206,7 +1206,7 @@ OpnGenerateAmlOperands (
 
     switch (Op->Asl.ParseOpcode)
     {
-    case PARSEOP_DEFINITIONBLOCK:
+    case PARSEOP_DEFINITION_BLOCK:
 
         OpnDoDefinitionBlock (Op);
         break;

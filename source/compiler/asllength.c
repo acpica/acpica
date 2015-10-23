@@ -405,7 +405,7 @@ CgGenerateAmlLengths (
 
     switch (Op->Asl.ParseOpcode)
     {
-    case PARSEOP_DEFINITIONBLOCK:
+    case PARSEOP_DEFINITION_BLOCK:
 
         Gbl_TableLength = sizeof (ACPI_TABLE_HEADER) + Op->Asl.AmlSubtreeLength;
         break;

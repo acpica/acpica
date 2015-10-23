@@ -389,7 +389,7 @@ LsWriteNodeToListing (
     {
         switch (Op->Asl.ParseOpcode)
         {
-        case PARSEOP_DEFINITIONBLOCK:
+        case PARSEOP_DEFINITION_BLOCK:
         case PARSEOP_METHODCALL:
         case PARSEOP_INCLUDE:
         case PARSEOP_INCLUDE_END:
@@ -435,7 +435,7 @@ LsWriteNodeToListing (
 
     switch (Op->Asl.ParseOpcode)
     {
-    case PARSEOP_DEFINITIONBLOCK:
+    case PARSEOP_DEFINITION_BLOCK:
 
         LsWriteSourceLines (Op->Asl.EndLine, Op->Asl.EndLogicalLine, FileId);
 
