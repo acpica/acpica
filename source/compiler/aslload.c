@@ -415,6 +415,7 @@ LdNamespace1Begin (
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     ACPI_NAMESPACE_NODE     *Node;
+    ACPI_PARSE_OBJECT       *MethodOp;
     ACPI_STATUS             Status;
     ACPI_OBJECT_TYPE        ObjectType;
     ACPI_OBJECT_TYPE        ActualObjectType = ACPI_TYPE_ANY;
@@ -604,6 +605,35 @@ LdNamespace1Begin (
                 "Failure from namespace lookup", FALSE);
 
             return_ACPI_STATUS (Status);
+        }
+        else /* Status AE_OK */
+        {
+            /*
+             * Do not allow references to external scopes from the DSDT.
+             * This is because the DSDT is always loaded first, and the
+             * external reference cannot be resolved -- causing a runtime
+             * error because Scope() must be resolved immediately.
+             * 10/2015.
+             */
+            if ((Node->Flags & ANOBJ_IS_EXTERNAL) &&
+                (ACPI_COMPARE_NAME (Gbl_TableSignature, "DSDT")))
+            {
+                /* However, allowed if the reference is within a method */
+
+                MethodOp = Op->Asl.Parent;
+                while (MethodOp &&
+                      (MethodOp->Asl.ParseOpcode != PARSEOP_METHOD))
+                {
+                    MethodOp = MethodOp->Asl.Parent;
+                }
+
+                if (!MethodOp)
+                {
+                    /* Not in a control method, error */
+
+                    AslError (ASL_ERROR, ASL_MSG_CROSS_TABLE_SCOPE, Op, NULL);
+                }
+            }
         }
 
         /* We found a node with this name, now check the type */
