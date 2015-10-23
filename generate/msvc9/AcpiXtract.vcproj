@@ -318,12 +318,24 @@
 					RelativePath="..\..\source\tools\acpixtract\axmain.c"
 					>
 				</File>
+				<File
+					RelativePath="..\..\source\tools\acpixtract\axutils.c"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
 			Name="Standard Headers"
 			Filter="h;hpp;hxx;hm;inl"
 			>
+		</Filter>
+		<Filter
+			Name="Local Headers"
+			>
+			<File
+				RelativePath="..\..\source\tools\acpixtract\acpixtract.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
