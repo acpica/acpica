@@ -114,6 +114,7 @@
  *****************************************************************************/
 
 #include "aecommon.h"
+#include "errno.h"
 
 #define _COMPONENT          ACPI_TOOLS
         ACPI_MODULE_NAME    ("aemain")
@@ -517,7 +518,9 @@ main (
     ACPI_TABLE_HEADER       *Table = NULL;
     UINT32                  TableCount;
     AE_TABLE_DESC           *TableDesc;
+    char                    *Filename;
     int                     ExitCode = 0;
+    FILE                    *File;
 
 
     ACPI_DEBUG_INITIALIZE (); /* For debug version only */
@@ -585,41 +588,71 @@ main (
 
     while (argv[AcpiGbl_Optind])
     {
+        Filename = argv[AcpiGbl_Optind];
+
+    File = fopen (Filename, "rb");
+    if (!File)
+    {
+        perror ("Could not open input file");
+
+        if (errno == ENOENT)
+        {
+            return (AE_NOT_EXIST);
+        }
+
+        return (AE_ERROR);
+    }
+
+
         /* Get one entire table */
 
-        Status = AcpiUtReadTableFromFile (argv[AcpiGbl_Optind], &Table);
-        if (ACPI_FAILURE (Status))
+        Status = AE_OK;
+        while (ACPI_SUCCESS (Status))
         {
-            fprintf (stderr, "**** Could not get table from file %s, %s\n",
-                argv[AcpiGbl_Optind], AcpiFormatException (Status));
-            goto ErrorExit;
+            Status = AcpiUtReadTablesFromFile (File, &Table);
+            Filename = NULL;
+
+            if (Status == AE_CTRL_TERMINATE)
+            {
+                goto ProcessTables;
+            }
+
+            if (ACPI_FAILURE (Status))
+            {
+                fprintf (stderr, "**** Could not get table from file %s, %s\n",
+                    argv[AcpiGbl_Optind], AcpiFormatException (Status));
+                goto ErrorExit;
+            }
+
+            /* Ignore non-AML tables, we can't use them. Except for an FADT */
+
+            if (!ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_FADT) &&
+                !AcpiUtIsAmlTable (Table))
+            {
+                fprintf (stderr, "    %s: [%4.4s] is not an AML table - ignoring\n",
+                     argv[AcpiGbl_Optind], Table->Signature);
+
+                AcpiOsFree (Table);
+            }
+            else
+            {
+                /* Allocate and link a table descriptor */
+
+                TableDesc = AcpiOsAllocate (sizeof (AE_TABLE_DESC));
+                TableDesc->Table = Table;
+                TableDesc->Next = AeTableListHead;
+                AeTableListHead = TableDesc;
+
+                TableCount++;
+            }
         }
 
-        /* Ignore non-AML tables, we can't use them. Except for an FADT */
-
-        if (!ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_FADT) &&
-            !AcpiUtIsAmlTable (Table))
-        {
-            fprintf (stderr, "    %s: [%4.4s] is not an AML table - ignoring\n",
-                 argv[AcpiGbl_Optind], Table->Signature);
-
-            AcpiOsFree (Table);
-        }
-        else
-        {
-            /* Allocate and link a table descriptor */
-
-            TableDesc = AcpiOsAllocate (sizeof (AE_TABLE_DESC));
-            TableDesc->Table = Table;
-            TableDesc->Next = AeTableListHead;
-            AeTableListHead = TableDesc;
-
-            TableCount++;
-        }
+    fclose(File);
 
         AcpiGbl_Optind++;
     }
 
+ProcessTables:
     printf ("\n");
 
     /* Build a local RSDT with all tables and let ACPICA process the RSDT */

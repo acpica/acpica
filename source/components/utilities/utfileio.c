@@ -249,6 +249,7 @@ AcpiUtReadTable (
     BOOLEAN                 StandardHeader = TRUE;
     INT32                   Count;
 
+
     /* Get the file size */
 
     FileSize = CmGetFileSize (fp);
@@ -389,6 +390,34 @@ AcpiUtReadTable (
  ******************************************************************************/
 
 ACPI_STATUS
+AcpiUtReadTablesFromFile (
+    FILE                    *File,
+    ACPI_TABLE_HEADER       **Table)
+{
+    ACPI_TABLE_HEADER       TableHeader;
+    INT32                   Count;
+    long                    Position;
+
+
+    Position = ftell (File);
+    Count = fread (&TableHeader, 1, sizeof (ACPI_TABLE_HEADER), File);
+    if (Count < sizeof (ACPI_TABLE_HEADER))
+    {
+        return (AE_CTRL_TERMINATE);
+    }
+
+    /* Allocate a buffer for the table */
+
+    *Table = AcpiOsAllocate ((size_t) TableHeader.Length);
+    fseek (File, Position, SEEK_SET);
+
+    Count = fread (*Table, 1, TableHeader.Length, File);
+
+    return (AE_OK);
+}
+
+
+ACPI_STATUS
 AcpiUtReadTableFromFile (
     char                    *Filename,
     ACPI_TABLE_HEADER       **Table)
@@ -400,6 +429,7 @@ AcpiUtReadTableFromFile (
 
 
     /* Open the file, get current size */
+
 
     File = fopen (Filename, "rb");
     if (!File)
