@@ -233,9 +233,9 @@ AcpiPsDisplayObjectPathname (
         if (ACPI_FAILURE (Status))
         {
             /*
-             * We can't get the pathname since the object
-             * is not in the namespace. This can happen during single
-             * stepping where a dynamic named object is *about* to be created.
+             * We can't get the pathname since the object is not in the
+             * namespace. This can happen during single stepping
+             * where a dynamic named object is *about* to be created.
              */
             AcpiOsPrintf ("  [Path not found]");
             goto Exit;
@@ -341,6 +341,7 @@ AcpiDmNamestring (
 
             AcpiOsPrintf (".");
         }
+
         Name += ACPI_NAME_SIZE;
     }
 }
@@ -404,7 +405,6 @@ AcpiDmDisplayPath (
     }
 
     Prev = NULL;            /* Start with Root Node */
-
     while (Prev != Op)
     {
         /* Search upwards in the tree to find scope with "prev" as its parent */
@@ -462,6 +462,7 @@ AcpiDmDisplayPath (
                 DoDot = TRUE;
             }
         }
+
         Prev = Search;
     }
 }

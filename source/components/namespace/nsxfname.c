@@ -271,7 +271,7 @@ AcpiGetName (
         /* Get the full pathname (From the namespace root) */
 
         Status = AcpiNsHandleToPathname (Handle, Buffer,
-                    NameType == ACPI_FULL_PATHNAME ? FALSE : TRUE);
+            NameType == ACPI_FULL_PATHNAME ? FALSE : TRUE);
         return (Status);
     }
 
@@ -530,7 +530,7 @@ AcpiGetObjectInfo (
         /* Execute the Device._ADR method */
 
         Status = AcpiUtEvaluateNumericObject (METHOD_NAME__ADR, Node,
-                    &Info->Address);
+            &Info->Address);
         if (ACPI_SUCCESS (Status))
         {
             Valid |= ACPI_VALID_ADR;
@@ -539,8 +539,8 @@ AcpiGetObjectInfo (
         /* Execute the Device._SxW methods */
 
         Status = AcpiUtExecutePowerMethods (Node,
-                    AcpiGbl_LowestDstateNames, ACPI_NUM_SxW_METHODS,
-                    Info->LowestDstates);
+            AcpiGbl_LowestDstateNames, ACPI_NUM_SxW_METHODS,
+            Info->LowestDstates);
         if (ACPI_SUCCESS (Status))
         {
             Valid |= ACPI_VALID_SXWS;
@@ -549,8 +549,8 @@ AcpiGetObjectInfo (
         /* Execute the Device._SxD methods */
 
         Status = AcpiUtExecutePowerMethods (Node,
-                    AcpiGbl_HighestDstateNames, ACPI_NUM_SxD_METHODS,
-                    Info->HighestDstates);
+            AcpiGbl_HighestDstateNames, ACPI_NUM_SxD_METHODS,
+            Info->HighestDstates);
         if (ACPI_SUCCESS (Status))
         {
             Valid |= ACPI_VALID_SXDS;
@@ -724,6 +724,7 @@ AcpiInstallMethod (
     ParserState.Aml += AcpiPsGetOpcodeSize (Opcode);
     ParserState.PkgEnd = AcpiPsGetNextPackageEnd (&ParserState);
     Path = AcpiPsGetNextNamestring (&ParserState);
+
     MethodFlags = *ParserState.Aml++;
     AmlStart = ParserState.Aml;
     AmlLength = ACPI_PTR_DIFF (ParserState.PkgEnd, AmlStart);
@@ -756,7 +757,7 @@ AcpiInstallMethod (
     /* The lookup either returns an existing node or creates a new one */
 
     Status = AcpiNsLookup (NULL, Path, ACPI_TYPE_METHOD, ACPI_IMODE_LOAD_PASS1,
-                ACPI_NS_DONT_OPEN_SCOPE | ACPI_NS_ERROR_IF_FOUND, NULL, &Node);
+        ACPI_NS_DONT_OPEN_SCOPE | ACPI_NS_ERROR_IF_FOUND, NULL, &Node);
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
