@@ -117,6 +117,9 @@
 #include "accommon.h"
 #include "acdebug.h"
 
+#ifdef ACPI_APPLICATION
+#include "acapps.h"
+#endif
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbinput")
@@ -1191,8 +1194,16 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_LOAD:
+        {
+            ACPI_NEW_TABLE_DESC     *ListHead = NULL;
 
-        Status = AcpiDbGetTableFromFile (AcpiGbl_DbArgs[1], NULL, FALSE);
+            Status = AcpiAcGetAllTablesFromFile (AcpiGbl_DbArgs[1],
+                ACPI_GET_ALL_TABLES, &ListHead);
+            if (ACPI_SUCCESS (Status))
+            {
+                AcpiDbLoadTables (ListHead);
+            }
+        }
         break;
 
     case CMD_OPEN:

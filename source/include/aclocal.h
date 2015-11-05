@@ -316,6 +316,16 @@ typedef struct acpi_table_list
 #define ACPI_ROOT_ALLOW_RESIZE          (2)
 
 
+/* List to manage incoming ACPI tables */
+
+typedef struct acpi_new_table_desc
+{
+    ACPI_TABLE_HEADER               *Table;
+    struct acpi_new_table_desc      *Next;
+
+} ACPI_NEW_TABLE_DESC;
+
+
 /* Predefined table indexes */
 
 #define ACPI_INVALID_TABLE_INDEX        (0xFFFFFFFF)

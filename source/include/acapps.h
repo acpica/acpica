@@ -116,6 +116,7 @@
 #ifndef _ACAPPS
 #define _ACAPPS
 
+#include <stdio.h>
 
 #ifdef _MSC_VER                 /* disable some level-4 warnings */
 #pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
@@ -169,6 +170,20 @@
 #define FILE_SUFFIX_BINARY_TABLE    ".dat" /* Needs the dot */
 
 
+/* acfileio */
+
+ACPI_STATUS
+AcpiAcGetAllTablesFromFile (
+    char                    *Filename,
+    UINT8                   GetOnlyAmlTables,
+    ACPI_NEW_TABLE_DESC     **ReturnListHead);
+
+/* Values for GetOnlyAmlTables */
+
+#define ACPI_GET_ONLY_AML_TABLES    TRUE
+#define ACPI_GET_ALL_TABLES         FALSE
+
+
 /*
  * getopt
  */
@@ -195,51 +210,6 @@ extern char                 *AcpiGbl_Optarg;
 UINT32
 CmGetFileSize (
     ACPI_FILE               File);
-
-
-#ifndef ACPI_DUMP_APP
-/*
- * adisasm
- */
-ACPI_STATUS
-AdAmlDisassemble (
-    BOOLEAN                 OutToFile,
-    char                    *Filename,
-    char                    *Prefix,
-    char                    **OutFilename);
-
-void
-AdPrintStatistics (
-    void);
-
-ACPI_STATUS
-AdFindDsdt(
-    UINT8                   **DsdtPtr,
-    UINT32                  *DsdtLength);
-
-void
-AdDumpTables (
-    void);
-
-ACPI_STATUS
-AdGetLocalTables (
-    void);
-
-ACPI_STATUS
-AdParseTable (
-    ACPI_TABLE_HEADER       *Table,
-    ACPI_OWNER_ID           *OwnerId,
-    BOOLEAN                 LoadTable,
-    BOOLEAN                 External);
-
-ACPI_STATUS
-AdDisplayTables (
-    char                    *Filename,
-    ACPI_TABLE_HEADER       *Table);
-
-ACPI_STATUS
-AdDisplayStatistics (
-    void);
 
 
 /*
@@ -300,6 +270,5 @@ AdWriteTable (
     UINT32                  Length,
     char                    *TableName,
     char                    *OemTableId);
-#endif
 
 #endif /* _ACAPPS */

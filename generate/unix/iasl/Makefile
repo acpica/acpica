@@ -43,6 +43,7 @@ OBJECTS = \
 	$(OBJDIR)/dtparserparse.o\
 	$(OBJDIR)/prparserlex.o\
 	$(OBJDIR)/prparserparse.o\
+	$(OBJDIR)/acfileio.o\
 	$(OBJDIR)/adfile.o\
 	$(OBJDIR)/adisasm.o\
 	$(OBJDIR)/adwalk.o\
@@ -113,6 +114,7 @@ OBJECTS = \
 	$(OBJDIR)/dmresrcs.o\
 	$(OBJDIR)/dmrestag.o\
 	$(OBJDIR)/dmtable.o\
+	$(OBJDIR)/dmtables.o\
 	$(OBJDIR)/dmtbdump.o\
 	$(OBJDIR)/dmtbinfo.o\
 	$(OBJDIR)/dmutils.o\
@@ -191,6 +193,7 @@ OBJECTS = \
 	$(OBJDIR)/tbprint.o\
 	$(OBJDIR)/tbutils.o\
 	$(OBJDIR)/tbxface.o\
+	$(OBJDIR)/tbxfload.o\
 	$(OBJDIR)/utaddress.o\
 	$(OBJDIR)/utalloc.o\
 	$(OBJDIR)/utbuffer.o\
@@ -201,7 +204,6 @@ OBJECTS = \
 	$(OBJDIR)/utdelete.o\
 	$(OBJDIR)/uterror.o\
 	$(OBJDIR)/utexcep.o\
-	$(OBJDIR)/utfileio.o\
 	$(OBJDIR)/utglobal.o\
 	$(OBJDIR)/uthex.o\
 	$(OBJDIR)/utinit.o\

@@ -203,12 +203,12 @@ AeInitializeTableHeader (
 
 ACPI_STATUS
 AeBuildLocalTables (
-    UINT32                  TableCount,
-    AE_TABLE_DESC           *TableList)
+    ACPI_NEW_TABLE_DESC     *TableList)
 {
+    UINT32                  TableCount = 0;
     ACPI_PHYSICAL_ADDRESS   DsdtAddress = 0;
     UINT32                  XsdtSize;
-    AE_TABLE_DESC           *NextTable;
+    ACPI_NEW_TABLE_DESC     *NextTable;
     UINT32                  NextIndex;
     ACPI_TABLE_FADT         *ExternalFadt = NULL;
 
@@ -221,11 +221,12 @@ AeBuildLocalTables (
     NextTable = TableList;
     while (NextTable)
     {
-        if (ACPI_COMPARE_NAME (NextTable->Table->Signature, ACPI_SIG_DSDT) ||
-            ACPI_COMPARE_NAME (NextTable->Table->Signature, ACPI_SIG_FADT))
+        if (!ACPI_COMPARE_NAME (NextTable->Table->Signature, ACPI_SIG_DSDT) &&
+            !ACPI_COMPARE_NAME (NextTable->Table->Signature, ACPI_SIG_FADT))
         {
-            TableCount--;
+            TableCount++;
         }
+
         NextTable = NextTable->Next;
     }
 
@@ -271,8 +272,10 @@ AeBuildLocalTables (
         }
         else if (ACPI_COMPARE_NAME (NextTable->Table->Signature, ACPI_SIG_FADT))
         {
-            ExternalFadt = ACPI_CAST_PTR (ACPI_TABLE_FADT, NextTable->Table);
-            LocalXSDT->TableOffsetEntry[0] = ACPI_PTR_TO_PHYSADDR (NextTable->Table);
+            ExternalFadt =
+                ACPI_CAST_PTR (ACPI_TABLE_FADT, NextTable->Table);
+            LocalXSDT->TableOffsetEntry[0] =
+                ACPI_PTR_TO_PHYSADDR (NextTable->Table);
         }
         else
         {

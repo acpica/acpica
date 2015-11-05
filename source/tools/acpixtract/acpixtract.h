@@ -237,7 +237,7 @@ long
 AxProcessOneTextLine (
     FILE                    *OutputFile,
     char                    *ThisSignature,
-    size_t                  ThisTableBytesWritten);
+    unsigned int            ThisTableBytesWritten);
 
 size_t
 AxConvertLine (

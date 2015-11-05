@@ -139,8 +139,8 @@ AxExtractTables (
 {
     FILE                    *InputFile;
     FILE                    *OutputFile = NULL;
-    size_t                  ThisTableBytesWritten = 0;
-    size_t                  BytesConverted;
+    unsigned int            BytesConverted;
+    unsigned int            ThisTableBytesWritten = 0;
     unsigned int            FoundTable = 0;
     unsigned int            Instances = 0;
     unsigned int            ThisInstance;
@@ -330,9 +330,9 @@ AxExtractToMultiAmlFile (
     FILE                    *InputFile;
     FILE                    *OutputFile;
     int                     Status = 0;
-    size_t                  TotalBytesWritten = 0;
-    size_t                  ThisTableBytesWritten = 0;
-    size_t                  BytesConverted;
+    unsigned int            TotalBytesWritten = 0;
+    unsigned int            ThisTableBytesWritten = 0;
+    unsigned int             BytesConverted;
     char                    ThisSignature[4];
     unsigned int            State = AX_STATE_FIND_HEADER;
 
@@ -442,7 +442,7 @@ CleanupAndExit:
 
 
 /******************************************************************************
- * 
+ *
  * FUNCTION:    AxListTables
  *
  * PARAMETERS:  InputPathname       - Filename for acpidump file

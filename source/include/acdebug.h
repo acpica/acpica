@@ -446,10 +446,8 @@ AcpiDbLoadAcpiTable (
     char                    *Filename);
 
 ACPI_STATUS
-AcpiDbGetTableFromFile (
-    char                    *Filename,
-    ACPI_TABLE_HEADER       **Table,
-    BOOLEAN                 MustBeAmlTable);
+AcpiDbLoadTables (
+    ACPI_NEW_TABLE_DESC     *ListHead);
 
 
 /*

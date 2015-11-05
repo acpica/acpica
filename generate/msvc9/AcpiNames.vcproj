@@ -230,6 +230,10 @@
 				Name="Common"
 				>
 				<File
+					RelativePath="..\..\source\common\acfileio.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\common\cmfsize.c"
 					>
 				</File>
@@ -398,10 +402,6 @@
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utexcep.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\components\utilities\utfileio.c"
 					>
 				</File>
 				<File

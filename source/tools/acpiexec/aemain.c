@@ -140,7 +140,7 @@ AeDoOptions (
     int                     argc,
     char                    **argv);
 
-static void
+static ACPI_STATUS
 AcpiDbRunBatchMode (
     void);
 
@@ -166,7 +166,6 @@ BOOLEAN                     AcpiGbl_LoadTestTables = FALSE;
 BOOLEAN                     AcpiGbl_AeLoadOnly = FALSE;
 static UINT8                AcpiGbl_ExecutionMode = AE_MODE_COMMAND_LOOP;
 static char                 BatchBuffer[AE_BUFFER_SIZE];    /* Batch command buffer */
-static AE_TABLE_DESC        *AeTableListHead = NULL;
 
 #define ACPIEXEC_NAME               "AML Execution/Debug Utility"
 #define AE_SUPPORTED_OPTIONS        "?b:d:e:f^ghi:lm^rv^:x:"
@@ -513,14 +512,10 @@ main (
     int                     argc,
     char                    **argv)
 {
+    ACPI_NEW_TABLE_DESC     *ListHead = NULL;
     ACPI_STATUS             Status;
     UINT32                  InitFlags;
-    ACPI_TABLE_HEADER       *Table = NULL;
-    UINT32                  TableCount;
-    AE_TABLE_DESC           *TableDesc;
-    char                    *Filename;
     int                     ExitCode = 0;
-    FILE                    *File;
 
 
     ACPI_DEBUG_INITIALIZE (); /* For debug version only */
@@ -571,6 +566,7 @@ main (
         {
             ExitCode = 0;
         }
+
         goto ErrorExit;
     }
 
@@ -582,82 +578,29 @@ main (
     }
 
     AcpiGbl_CstyleDisassembly = FALSE; /* Not supported for AcpiExec */
-    TableCount = 0;
 
     /* Get each of the ACPI table files on the command line */
 
     while (argv[AcpiGbl_Optind])
     {
-        Filename = argv[AcpiGbl_Optind];
+        /* Get all ACPI AML tables in this file */
 
-    File = fopen (Filename, "rb");
-    if (!File)
-    {
-        perror ("Could not open input file");
-
-        if (errno == ENOENT)
+        Status = AcpiAcGetAllTablesFromFile (argv[AcpiGbl_Optind],
+            ACPI_GET_ONLY_AML_TABLES, &ListHead);
+        if (ACPI_FAILURE (Status))
         {
-            return (AE_NOT_EXIST);
+            ExitCode = -1;
+            goto ErrorExit;
         }
-
-        return (AE_ERROR);
-    }
-
-
-        /* Get one entire table */
-
-        Status = AE_OK;
-        while (ACPI_SUCCESS (Status))
-        {
-            Status = AcpiUtReadTablesFromFile (File, &Table);
-            Filename = NULL;
-
-            if (Status == AE_CTRL_TERMINATE)
-            {
-                goto ProcessTables;
-            }
-
-            if (ACPI_FAILURE (Status))
-            {
-                fprintf (stderr, "**** Could not get table from file %s, %s\n",
-                    argv[AcpiGbl_Optind], AcpiFormatException (Status));
-                goto ErrorExit;
-            }
-
-            /* Ignore non-AML tables, we can't use them. Except for an FADT */
-
-            if (!ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_FADT) &&
-                !AcpiUtIsAmlTable (Table))
-            {
-                fprintf (stderr, "    %s: [%4.4s] is not an AML table - ignoring\n",
-                     argv[AcpiGbl_Optind], Table->Signature);
-
-                AcpiOsFree (Table);
-            }
-            else
-            {
-                /* Allocate and link a table descriptor */
-
-                TableDesc = AcpiOsAllocate (sizeof (AE_TABLE_DESC));
-                TableDesc->Table = Table;
-                TableDesc->Next = AeTableListHead;
-                AeTableListHead = TableDesc;
-
-                TableCount++;
-            }
-        }
-
-    fclose(File);
 
         AcpiGbl_Optind++;
     }
 
-ProcessTables:
     printf ("\n");
 
     /* Build a local RSDT with all tables and let ACPICA process the RSDT */
 
-    Status = AeBuildLocalTables (TableCount, AeTableListHead);
+    Status = AeBuildLocalTables (ListHead);
     if (ACPI_FAILURE (Status))
     {
         goto ErrorExit;
@@ -758,13 +701,14 @@ EnterDebugger:
     case AE_MODE_BATCH_SINGLE:
 
         AcpiDbExecute (BatchBuffer, NULL, NULL, EX_NO_SINGLE_STEP);
+
+        /* Shut down the debugger */
+
+        AcpiTerminateDebugger ();
+        Status = AcpiTerminate ();
         break;
     }
 
-    /* Shut down the debugger */
-
-    AcpiTerminateDebugger ();
-    Status = AcpiTerminate ();
     return (0);
 
 
@@ -782,17 +726,18 @@ ErrorExit:
  *                                    to be executed.
  *                                    Use only commas to separate elements of
  *                                    particular command.
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: For each command of list separated by ';' prepare the command
  *              buffer and pass it to AcpiDbCommandDispatch.
  *
  *****************************************************************************/
 
-static void
+static ACPI_STATUS
 AcpiDbRunBatchMode (
     void)
 {
+    ACPI_STATUS             Status;
     char                    *Ptr = BatchBuffer;
     char                    *Cmd = Ptr;
     UINT8                   Run = 0;
@@ -823,4 +768,10 @@ AcpiDbRunBatchMode (
             Cmd = Ptr;
         }
     }
+
+    /* Shut down the debugger */
+
+    AcpiTerminateDebugger ();
+    Status = AcpiTerminate ();
+    return (Status);
 }

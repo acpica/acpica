@@ -409,7 +409,7 @@ AxGetNextInstance (
         if (!Info)
         {
             printf ("Could not allocate memory (0x%X bytes)\n",
-                sizeof (AX_TABLE_INFO));
+                (unsigned int) sizeof (AX_TABLE_INFO));
             exit (0);
         }
 
@@ -502,7 +502,7 @@ long
 AxProcessOneTextLine (
     FILE                    *OutputFile,
     char                    *ThisSignature,
-    size_t                  ThisTableBytesWritten)
+    unsigned int            ThisTableBytesWritten)
 {
     size_t                  BytesWritten;
     size_t                  BytesConverted;

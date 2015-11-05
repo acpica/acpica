@@ -241,7 +241,7 @@ AeInitializeTableHeader (
  * FUNCTION:    AeBuildLocalTables
  *
  * PARAMETERS:  TableCount      - Number of tables on the command line
- *              TableList       - List of actual tables from files
+ *              ListHead        - List of actual tables from files
  *
  * RETURN:      Status
  *
@@ -252,12 +252,12 @@ AeInitializeTableHeader (
 
 ACPI_STATUS
 AeBuildLocalTables (
-    UINT32                  TableCount,
-    AE_TABLE_DESC           *TableList)
+    ACPI_NEW_TABLE_DESC     *ListHead)
 {
+    UINT32                  TableCount = 1;
     ACPI_PHYSICAL_ADDRESS   DsdtAddress = 0;
     UINT32                  XsdtSize;
-    AE_TABLE_DESC           *NextTable;
+    ACPI_NEW_TABLE_DESC     *NextTable;
     UINT32                  NextIndex;
     ACPI_TABLE_FADT         *ExternalFadt = NULL;
 
@@ -267,18 +267,20 @@ AeBuildLocalTables (
      * For the FADT, this table is already accounted for since we usually
      * install a local FADT.
      */
-    NextTable = TableList;
+    NextTable = ListHead;
     while (NextTable)
     {
-        if (ACPI_COMPARE_NAME (NextTable->Table->Signature, ACPI_SIG_DSDT) ||
-            ACPI_COMPARE_NAME (NextTable->Table->Signature, ACPI_SIG_FADT))
+        if (!ACPI_COMPARE_NAME (NextTable->Table->Signature, ACPI_SIG_DSDT) &&
+            !ACPI_COMPARE_NAME (NextTable->Table->Signature, ACPI_SIG_FADT))
         {
-            TableCount--;
+            TableCount++;
         }
+
         NextTable = NextTable->Next;
     }
 
-    XsdtSize = (((TableCount + 1) * sizeof (UINT64)) + sizeof (ACPI_TABLE_HEADER));
+    XsdtSize = (((TableCount + 1) * sizeof (UINT64)) +
+        sizeof (ACPI_TABLE_HEADER));
     if (AcpiGbl_LoadTestTables)
     {
         XsdtSize += BASE_XSDT_SIZE;
@@ -303,7 +305,7 @@ AeBuildLocalTables (
      * Note: The tables are loaded in reverse order from the incoming
      * input, which makes it match the command line order.
      */
-    NextTable = TableList;
+    NextTable = ListHead;
     while (NextTable)
     {
         /*

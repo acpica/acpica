@@ -410,10 +410,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\source\components\utilities\utfileio.c"
-					>
-				</File>
-				<File
 					RelativePath="..\..\source\components\utilities\utglobal.c"
 					>
 					<FileConfiguration
@@ -1874,26 +1870,8 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\source\COMPONENTS\DEBUGGER\dbfileio.c"
+					RelativePath="..\..\source\components\debugger\dbfileio.c"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="ACPI_DEBUGGER 1"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="ACPI_DEBUGGER 1"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\COMPONENTS\DEBUGGER\dbhistry.c"
@@ -2243,6 +2221,10 @@
 				Name="Common"
 				Filter=".c"
 				>
+				<File
+					RelativePath="..\..\source\common\acfileio.c"
+					>
+				</File>
 				<File
 					RelativePath="..\..\source\common\ahids.c"
 					>

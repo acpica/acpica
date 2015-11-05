@@ -388,10 +388,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\source\components\utilities\utfileio.c"
-					>
-				</File>
-				<File
 					RelativePath="..\..\source\components\utilities\utglobal.c"
 					>
 					<FileConfiguration
@@ -1177,6 +1173,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\tables\tbxfload.c"
+					>
 				</File>
 			</Filter>
 			<Filter
@@ -2062,6 +2062,10 @@
 				Filter=".c"
 				>
 				<File
+					RelativePath="..\..\source\common\acfileio.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\common\adfile.c"
 					>
 					<FileConfiguration
@@ -2212,6 +2216,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\common\dmtables.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\common\dmtbdump.c"

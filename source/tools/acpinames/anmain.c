@@ -115,6 +115,7 @@
 
 #include "acpinames.h"
 #include "actables.h"
+#include "errno.h"
 
 #define _COMPONENT          ACPI_TOOLS
         ACPI_MODULE_NAME    ("anmain")
@@ -124,7 +125,8 @@
 
 static int
 NsDumpEntireNamespace (
-    UINT32                  TableCount);
+    ACPI_NEW_TABLE_DESC     *ListHead);
+
 
 /*
  * Main routine for the ACPI user-space namespace utility.
@@ -137,8 +139,7 @@ NsDumpEntireNamespace (
  * Windows: The setargv.obj module must be linked in to automatically
  * expand wildcards.
  */
-static AE_TABLE_DESC    *AeTableListHead = NULL;
-BOOLEAN                 AcpiGbl_NsLoadOnly = FALSE;
+BOOLEAN                     AcpiGbl_NsLoadOnly = FALSE;
 
 
 #define AN_UTILITY_NAME             "ACPI Namespace Dump Utility"
@@ -185,7 +186,7 @@ usage (
 
 static int
 NsDumpEntireNamespace (
-    UINT32                  TableCount)
+    ACPI_NEW_TABLE_DESC     *ListHead)
 {
     ACPI_STATUS             Status;
     ACPI_HANDLE             Handle;
@@ -195,7 +196,7 @@ NsDumpEntireNamespace (
      * Build a local XSDT with all tables. Normally, here is where the
      * RSDP search is performed to find the ACPI tables
      */
-    Status = AeBuildLocalTables (TableCount, AeTableListHead);
+    Status = AeBuildLocalTables (ListHead);
     if (ACPI_FAILURE (Status))
     {
         return (-1);
@@ -240,10 +241,10 @@ NsDumpEntireNamespace (
      * hardware or event manager code underneath.
      */
     Status = AcpiEnableSubsystem (
-                ACPI_NO_ACPI_ENABLE |
-                ACPI_NO_ADDRESS_SPACE_INIT |
-                ACPI_NO_EVENT_INIT |
-                ACPI_NO_HANDLER_INIT);
+        ACPI_NO_ACPI_ENABLE |
+        ACPI_NO_ADDRESS_SPACE_INIT |
+        ACPI_NO_EVENT_INIT |
+        ACPI_NO_HANDLER_INIT);
     if (ACPI_FAILURE (Status))
     {
         printf ("**** Could not EnableSubsystem, %s\n",
@@ -252,9 +253,9 @@ NsDumpEntireNamespace (
     }
 
     Status = AcpiInitializeObjects (
-                ACPI_NO_ADDRESS_SPACE_INIT |
-                ACPI_NO_DEVICE_INIT |
-                ACPI_NO_EVENT_INIT);
+        ACPI_NO_ADDRESS_SPACE_INIT |
+        ACPI_NO_DEVICE_INIT |
+        ACPI_NO_EVENT_INIT);
     if (ACPI_FAILURE (Status))
     {
         printf ("**** Could not InitializeObjects, %s\n",
@@ -267,8 +268,8 @@ NsDumpEntireNamespace (
      */
     AcpiOsPrintf ("\nACPI Namespace:\n");
 
-    AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_SUMMARY, ACPI_UINT32_MAX,
-        ACPI_OWNER_ID_MAX, AcpiGbl_RootNode);
+    AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_SUMMARY,
+        ACPI_UINT32_MAX, ACPI_OWNER_ID_MAX, AcpiGbl_RootNode);
 
 
     /* Example: get a handle to the _GPE scope */
@@ -297,10 +298,8 @@ main (
     int                     argc,
     char                    **argv)
 {
-    AE_TABLE_DESC           *TableDesc;
-    ACPI_TABLE_HEADER       *Table = NULL;
+    ACPI_NEW_TABLE_DESC     *ListHead = NULL;
     ACPI_STATUS             Status;
-    UINT32                  TableCount;
     int                     j;
 
 
@@ -352,42 +351,17 @@ main (
         return (0);
     }
 
-    TableCount = 0;
-
     /* Get each of the ACPI table files on the command line */
 
     while (argv[AcpiGbl_Optind])
     {
-        /* Get one entire table */
+        /* Get all ACPI AML tables in this file */
 
-        Status = AcpiUtReadTableFromFile (argv[AcpiGbl_Optind], &Table);
+        Status = AcpiAcGetAllTablesFromFile (argv[AcpiGbl_Optind],
+            ACPI_GET_ONLY_AML_TABLES, &ListHead);
         if (ACPI_FAILURE (Status))
         {
-            fprintf (stderr, "**** Could not get table from file %s, %s\n",
-                argv[AcpiGbl_Optind], AcpiFormatException (Status));
             return (-1);
-        }
-
-        /* Ignore non-AML tables, we can't use them. Except for an FADT */
-
-        if (!ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_FADT) &&
-            !AcpiUtIsAmlTable (Table))
-        {
-            fprintf (stderr, "    %s: [%4.4s] is not an AML table - ignoring\n",
-                 argv[AcpiGbl_Optind], Table->Signature);
-
-            AcpiOsFree (Table);
-        }
-        else
-        {
-            /* Allocate and link a table descriptor */
-
-            TableDesc = AcpiOsAllocate (sizeof (AE_TABLE_DESC));
-            TableDesc->Table = Table;
-            TableDesc->Next = AeTableListHead;
-            AeTableListHead = TableDesc;
-
-            TableCount++;
         }
 
         AcpiGbl_Optind++;
@@ -399,5 +373,5 @@ main (
      * The next argument is the filename for the DSDT or SSDT.
      * Open the file, build namespace and dump it.
      */
-    return (NsDumpEntireNamespace (TableCount));
+    return (NsDumpEntireNamespace (ListHead));
 }

@@ -393,10 +393,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\source\components\utilities\utfileio.c"
-					>
-				</File>
-				<File
 					RelativePath="..\..\source\components\utilities\utglobal.c"
 					>
 					<FileConfiguration
