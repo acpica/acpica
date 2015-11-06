@@ -1355,15 +1355,8 @@ AcpiDbTrace (
     UINT32                  Flags = 0;
 
 
-    if (EnableArg)
-    {
-        AcpiUtStrupr (EnableArg);
-    }
-
-    if (OnceArg)
-    {
-        AcpiUtStrupr (OnceArg);
-    }
+    AcpiUtStrupr (EnableArg);
+    AcpiUtStrupr (OnceArg);
 
     if (MethodArg)
     {

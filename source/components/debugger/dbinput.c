@@ -754,10 +754,7 @@ AcpiDbGetLine (
 
     /* Uppercase the actual command */
 
-    if (AcpiGbl_DbArgs[0])
-    {
-        AcpiUtStrupr (AcpiGbl_DbArgs[0]);
-    }
+    AcpiUtStrupr (AcpiGbl_DbArgs[0]);
 
     Count = i;
     if (Count)
