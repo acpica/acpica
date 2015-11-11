@@ -124,7 +124,7 @@
 /* Local prototypes */
 
 static int
-NsDumpEntireNamespace (
+AnDumpEntireNamespace (
     ACPI_NEW_TABLE_DESC     *ListHead);
 
 
@@ -168,116 +168,6 @@ usage (
     ACPI_OPTION ("-l",                  "Load namespace only, no display");
     ACPI_OPTION ("-v",                  "Display version information");
     ACPI_OPTION ("-x <DebugLevel>",     "Debug output level");
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    NsDumpEntireNamespace
- *
- * PARAMETERS:  AmlFilename         - Filename for DSDT or SSDT AML table
- *
- * RETURN:      Status (pass/fail)
- *
- * DESCRIPTION: Build an ACPI namespace for the input AML table, and dump the
- *              formatted namespace contents.
- *
- *****************************************************************************/
-
-static int
-NsDumpEntireNamespace (
-    ACPI_NEW_TABLE_DESC     *ListHead)
-{
-    ACPI_STATUS             Status;
-    ACPI_HANDLE             Handle;
-
-
-    /*
-     * Build a local XSDT with all tables. Normally, here is where the
-     * RSDP search is performed to find the ACPI tables
-     */
-    Status = AeBuildLocalTables (ListHead);
-    if (ACPI_FAILURE (Status))
-    {
-        return (-1);
-    }
-
-    /* Initialize table manager, get XSDT */
-
-    Status = AcpiInitializeTables (NULL, ACPI_MAX_INIT_TABLES, TRUE);
-    if (ACPI_FAILURE (Status))
-    {
-        printf ("**** Could not initialize ACPI table manager, %s\n",
-            AcpiFormatException (Status));
-        return (-1);
-    }
-
-    /* Load the ACPI namespace */
-
-    Status = AcpiTbLoadNamespace ();
-    if (Status == AE_CTRL_TERMINATE)
-    {
-        /* At least one table load failed -- terminate with error */
-
-        return (-1);
-    }
-
-    if (ACPI_FAILURE (Status))
-    {
-        printf ("**** While creating namespace, %s\n",
-            AcpiFormatException (Status));
-        return (-1);
-    }
-
-    if (AcpiGbl_NsLoadOnly)
-    {
-        printf ("**** Namespace successfully loaded\n");
-        return (0);
-    }
-
-    /*
-     * Enable ACPICA. These calls don't do much for this
-     * utility, since we only dump the namespace. There is no
-     * hardware or event manager code underneath.
-     */
-    Status = AcpiEnableSubsystem (
-        ACPI_NO_ACPI_ENABLE |
-        ACPI_NO_ADDRESS_SPACE_INIT |
-        ACPI_NO_EVENT_INIT |
-        ACPI_NO_HANDLER_INIT);
-    if (ACPI_FAILURE (Status))
-    {
-        printf ("**** Could not EnableSubsystem, %s\n",
-            AcpiFormatException (Status));
-        return (-1);
-    }
-
-    Status = AcpiInitializeObjects (
-        ACPI_NO_ADDRESS_SPACE_INIT |
-        ACPI_NO_DEVICE_INIT |
-        ACPI_NO_EVENT_INIT);
-    if (ACPI_FAILURE (Status))
-    {
-        printf ("**** Could not InitializeObjects, %s\n",
-            AcpiFormatException (Status));
-        return (-1);
-    }
-
-    /*
-     * Perform a namespace walk to dump the contents
-     */
-    AcpiOsPrintf ("\nACPI Namespace:\n");
-
-    AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_SUMMARY,
-        ACPI_UINT32_MAX, ACPI_OWNER_ID_MAX, AcpiGbl_RootNode);
-
-
-    /* Example: get a handle to the _GPE scope */
-
-    Status = AcpiGetHandle (NULL, "\\_GPE", &Handle);
-    AE_CHECK_OK (AcpiGetHandle, Status);
-
-    return (0);
 }
 
 
@@ -373,5 +263,115 @@ main (
      * The next argument is the filename for the DSDT or SSDT.
      * Open the file, build namespace and dump it.
      */
-    return (NsDumpEntireNamespace (ListHead));
+    return (AnDumpEntireNamespace (ListHead));
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AnDumpEntireNamespace
+ *
+ * PARAMETERS:  AmlFilename         - Filename for DSDT or SSDT AML table
+ *
+ * RETURN:      Status (pass/fail)
+ *
+ * DESCRIPTION: Build an ACPI namespace for the input AML table, and dump the
+ *              formatted namespace contents.
+ *
+ *****************************************************************************/
+
+static int
+AnDumpEntireNamespace (
+    ACPI_NEW_TABLE_DESC     *ListHead)
+{
+    ACPI_STATUS             Status;
+    ACPI_HANDLE             Handle;
+
+
+    /*
+     * Build a local XSDT with all tables. Normally, here is where the
+     * RSDP search is performed to find the ACPI tables
+     */
+    Status = AnBuildLocalTables (ListHead);
+    if (ACPI_FAILURE (Status))
+    {
+        return (-1);
+    }
+
+    /* Initialize table manager, get XSDT */
+
+    Status = AcpiInitializeTables (NULL, ACPI_MAX_INIT_TABLES, TRUE);
+    if (ACPI_FAILURE (Status))
+    {
+        printf ("**** Could not initialize ACPI table manager, %s\n",
+            AcpiFormatException (Status));
+        return (-1);
+    }
+
+    /* Load the ACPI namespace */
+
+    Status = AcpiTbLoadNamespace ();
+    if (Status == AE_CTRL_TERMINATE)
+    {
+        /* At least one table load failed -- terminate with error */
+
+        return (-1);
+    }
+
+    if (ACPI_FAILURE (Status))
+    {
+        printf ("**** While creating namespace, %s\n",
+            AcpiFormatException (Status));
+        return (-1);
+    }
+
+    if (AcpiGbl_NsLoadOnly)
+    {
+        printf ("**** Namespace successfully loaded\n");
+        return (0);
+    }
+
+    /*
+     * Enable ACPICA. These calls don't do much for this
+     * utility, since we only dump the namespace. There is no
+     * hardware or event manager code underneath.
+     */
+    Status = AcpiEnableSubsystem (
+        ACPI_NO_ACPI_ENABLE |
+        ACPI_NO_ADDRESS_SPACE_INIT |
+        ACPI_NO_EVENT_INIT |
+        ACPI_NO_HANDLER_INIT);
+    if (ACPI_FAILURE (Status))
+    {
+        printf ("**** Could not EnableSubsystem, %s\n",
+            AcpiFormatException (Status));
+        return (-1);
+    }
+
+    Status = AcpiInitializeObjects (
+        ACPI_NO_ADDRESS_SPACE_INIT |
+        ACPI_NO_DEVICE_INIT |
+        ACPI_NO_EVENT_INIT);
+    if (ACPI_FAILURE (Status))
+    {
+        printf ("**** Could not InitializeObjects, %s\n",
+            AcpiFormatException (Status));
+        return (-1);
+    }
+
+    /*
+     * Perform a namespace walk to dump the contents
+     */
+    AcpiOsPrintf ("\nACPI Namespace:\n");
+
+    AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_SUMMARY,
+        ACPI_UINT32_MAX, ACPI_OWNER_ID_MAX, AcpiGbl_RootNode);
+
+
+    /* Example: get a handle to the _GPE scope */
+
+    Status = AcpiGetHandle (NULL, "\\_GPE", &Handle);
+    AE_CHECK_OK (AcpiGetHandle, Status);
+
+    return (0);
 }

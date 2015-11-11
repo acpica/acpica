@@ -121,7 +121,7 @@
 /* Local prototypes */
 
 static void
-AeInitializeTableHeader (
+AnInitializeTableHeader (
     ACPI_TABLE_HEADER       *Header,
     char                    *Signature,
     UINT32                  Length);
@@ -151,7 +151,7 @@ static ACPI_TABLE_XSDT          *LocalXSDT;
 
 /******************************************************************************
  *
- * FUNCTION:    AeInitializeTableHeader
+ * FUNCTION:    AnInitializeTableHeader
  *
  * PARAMETERS:  Header          - A valid standard ACPI table header
  *              Signature       - Signature to insert
@@ -164,7 +164,7 @@ static ACPI_TABLE_XSDT          *LocalXSDT;
  *****************************************************************************/
 
 static void
-AeInitializeTableHeader (
+AnInitializeTableHeader (
     ACPI_TABLE_HEADER       *Header,
     char                    *Signature,
     UINT32                  Length)
@@ -189,7 +189,7 @@ AeInitializeTableHeader (
 
 /******************************************************************************
  *
- * FUNCTION:    AeBuildLocalTables
+ * FUNCTION:    AnBuildLocalTables
  *
  * PARAMETERS:  TableCount      - Number of tables on the command line
  *              TableList       - List of actual tables from files
@@ -202,7 +202,7 @@ AeInitializeTableHeader (
  *****************************************************************************/
 
 ACPI_STATUS
-AeBuildLocalTables (
+AnBuildLocalTables (
     ACPI_NEW_TABLE_DESC     *TableList)
 {
     UINT32                  TableCount = 0;
@@ -301,7 +301,7 @@ AeBuildLocalTables (
 
     /* Set checksums for both XSDT and RSDP */
 
-    AeInitializeTableHeader ((void *) LocalXSDT, ACPI_SIG_XSDT, XsdtSize);
+    AnInitializeTableHeader ((void *) LocalXSDT, ACPI_SIG_XSDT, XsdtSize);
 
     LocalRSDP.Checksum = 0;
     LocalRSDP.Checksum = (UINT8) -AcpiTbChecksum (
@@ -392,7 +392,7 @@ AeBuildLocalTables (
             ACPI_MUL_8 (LocalFADT.Pm1EventLength);
     }
 
-    AeInitializeTableHeader ((void *) &LocalFADT,
+    AnInitializeTableHeader ((void *) &LocalFADT,
         ACPI_SIG_FADT, sizeof (ACPI_TABLE_FADT));
 
     /* Build a FACS */
