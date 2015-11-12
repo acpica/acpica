@@ -483,16 +483,16 @@ AeRegionHandler (
                 /* Split the 64-bit request into two 32-bit requests */
 
                 Status = AcpiHwReadPort (Address, &Value1, 32);
-                AE_CHECK_OK (AcpiHwReadPort, Status);
+                ACPI_CHECK_OK (AcpiHwReadPort, Status);
                 Status = AcpiHwReadPort (Address+4, &Value2, 32);
-                AE_CHECK_OK (AcpiHwReadPort, Status);
+                ACPI_CHECK_OK (AcpiHwReadPort, Status);
 
                 *Value = Value1 | ((UINT64) Value2 << 32);
             }
             else
             {
                 Status = AcpiHwReadPort (Address, &Value1, BitWidth);
-                AE_CHECK_OK (AcpiHwReadPort, Status);
+                ACPI_CHECK_OK (AcpiHwReadPort, Status);
                 *Value = (UINT64) Value1;
             }
             break;
@@ -504,14 +504,14 @@ AeRegionHandler (
                 /* Split the 64-bit request into two 32-bit requests */
 
                 Status = AcpiHwWritePort (Address, ACPI_LODWORD (*Value), 32);
-                AE_CHECK_OK (AcpiHwWritePort, Status);
+                ACPI_CHECK_OK (AcpiHwWritePort, Status);
                 Status = AcpiHwWritePort (Address+4, ACPI_HIDWORD (*Value), 32);
-                AE_CHECK_OK (AcpiHwWritePort, Status);
+                ACPI_CHECK_OK (AcpiHwWritePort, Status);
             }
             else
             {
                 Status = AcpiHwWritePort (Address, (UINT32) *Value, BitWidth);
-                AE_CHECK_OK (AcpiHwWritePort, Status);
+                ACPI_CHECK_OK (AcpiHwWritePort, Status);
             }
             break;
 

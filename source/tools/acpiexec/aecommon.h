@@ -136,18 +136,6 @@
 #include <string.h>
 #include <signal.h>
 
-/* Check for unexpected exceptions */
-
-#define AE_CHECK_STATUS(Name, Status, Expected) \
-    if (Status != Expected) \
-    { \
-        AcpiOsPrintf ("Unexpected %s from %s (%s-%d)\n", \
-            AcpiFormatException (Status), #Name, _AcpiModuleName, __LINE__); \
-    }
-
-/* Check for unexpected non-AE_OK errors */
-
-#define AE_CHECK_OK(Name, Status)   AE_CHECK_STATUS (Name, Status, AE_OK);
 
 /*
  * Debug Regions

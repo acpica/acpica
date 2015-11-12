@@ -563,10 +563,10 @@ AeInstallTables (
 
 
     Status = AcpiInitializeTables (NULL, ACPI_MAX_INIT_TABLES, TRUE);
-    AE_CHECK_OK (AcpiInitializeTables, Status);
+    ACPI_CHECK_OK (AcpiInitializeTables, Status);
 
     Status = AcpiLoadTables ();
-    AE_CHECK_OK (AcpiLoadTables, Status);
+    ACPI_CHECK_OK (AcpiLoadTables, Status);
 
     /*
      * Test run-time control method installation. Do it twice to test code
@@ -591,24 +591,24 @@ AeInstallTables (
         /* Test multiple table/UEFI support. First, get the headers */
 
         Status = AcpiGetTableHeader (ACPI_SIG_UEFI, 1, &Header);
-        AE_CHECK_OK (AcpiGetTableHeader, Status);
+        ACPI_CHECK_OK (AcpiGetTableHeader, Status);
 
         Status = AcpiGetTableHeader (ACPI_SIG_UEFI, 2, &Header);
-        AE_CHECK_OK (AcpiGetTableHeader, Status);
+        ACPI_CHECK_OK (AcpiGetTableHeader, Status);
 
         Status = AcpiGetTableHeader (ACPI_SIG_UEFI, 3, &Header);
-        AE_CHECK_STATUS (AcpiGetTableHeader, Status, AE_NOT_FOUND);
+        ACPI_CHECK_STATUS (AcpiGetTableHeader, Status, AE_NOT_FOUND);
 
         /* Now get the actual tables */
 
         Status = AcpiGetTable (ACPI_SIG_UEFI, 1, &Table);
-        AE_CHECK_OK (AcpiGetTable, Status);
+        ACPI_CHECK_OK (AcpiGetTable, Status);
 
         Status = AcpiGetTable (ACPI_SIG_UEFI, 2, &Table);
-        AE_CHECK_OK (AcpiGetTable, Status);
+        ACPI_CHECK_OK (AcpiGetTable, Status);
 
         Status = AcpiGetTable (ACPI_SIG_UEFI, 3, &Table);
-        AE_CHECK_STATUS (AcpiGetTable, Status, AE_NOT_FOUND);
+        ACPI_CHECK_STATUS (AcpiGetTable, Status, AE_NOT_FOUND);
     }
 
     /* Check that we can get all of the ACPI tables */
@@ -621,7 +621,7 @@ AeInstallTables (
             break;
         }
 
-        AE_CHECK_OK (AcpiGetTableByIndex, Status);
+        ACPI_CHECK_OK (AcpiGetTableByIndex, Status);
     }
 
     return (AE_OK);

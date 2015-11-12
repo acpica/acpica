@@ -201,7 +201,7 @@ main (
     AcpiDbgLayer = 0xFFFFFFFF;
 
     Status = AcpiInitializeSubsystem ();
-    AE_CHECK_OK (AcpiInitializeSubsystem, Status);
+    ACPI_CHECK_OK (AcpiInitializeSubsystem, Status);
     if (ACPI_FAILURE (Status))
     {
         return (-1);
@@ -371,7 +371,7 @@ AnDumpEntireNamespace (
     /* Example: get a handle to the _GPE scope */
 
     Status = AcpiGetHandle (NULL, "\\_GPE", &Handle);
-    AE_CHECK_OK (AcpiGetHandle, Status);
+    ACPI_CHECK_OK (AcpiGetHandle, Status);
 
     return (0);
 }

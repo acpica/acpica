@@ -529,7 +529,7 @@ main (
     /* Init ACPICA and start debugger thread */
 
     Status = AcpiInitializeSubsystem ();
-    AE_CHECK_OK (AcpiInitializeSubsystem, Status);
+    ACPI_CHECK_OK (AcpiInitializeSubsystem, Status);
     if (ACPI_FAILURE (Status))
     {
         goto ErrorExit;
@@ -543,7 +543,7 @@ main (
     /* Initialize the AML debugger */
 
     Status = AcpiInitializeDebugger ();
-    AE_CHECK_OK (AcpiInitializeDebugger, Status);
+    ACPI_CHECK_OK (AcpiInitializeDebugger, Status);
     if (ACPI_FAILURE (Status))
     {
         goto ErrorExit;

@@ -166,6 +166,20 @@
     AcpiOsPrintf ("  %-18s%s\n", Name, Description);
 
 
+/* Check for unexpected exceptions */
+
+#define ACPI_CHECK_STATUS(Name, Status, Expected) \
+    if (Status != Expected) \
+    { \
+        AcpiOsPrintf ("Unexpected %s from %s (%s-%d)\n", \
+            AcpiFormatException (Status), #Name, _AcpiModuleName, __LINE__); \
+    }
+
+/* Check for unexpected non-AE_OK errors */
+
+
+#define ACPI_CHECK_OK(Name, Status)   ACPI_CHECK_STATUS (Name, Status, AE_OK);
+
 #define FILE_SUFFIX_DISASSEMBLY     "dsl"
 #define FILE_SUFFIX_BINARY_TABLE    ".dat" /* Needs the dot */
 
