@@ -759,6 +759,17 @@ LdNamespace1Begin (
                         return_ACPI_STATUS (Status);
                     }
                 }
+
+                Status = AE_OK;
+            }
+            else if (!(Node->Flags & ANOBJ_IS_EXTERNAL) &&
+                     (Op->Asl.ParseOpcode == PARSEOP_EXTERNAL))
+            {
+                /*
+                 * Allow externals in same scope as the definition of the
+                 * actual object. Similar to C. Allows multiple definition
+                 * blocks that refer to each other in the same file.
+                 */
                 Status = AE_OK;
             }
             else
