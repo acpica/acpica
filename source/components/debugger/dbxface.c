@@ -224,6 +224,40 @@ AcpiDbStartCommand (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDbSignalBreakPoint
+ *
+ * PARAMETERS:  WalkState       - Current walk
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Called for AML_BREAK_POINT_OP
+ *
+ ******************************************************************************/
+
+void
+AcpiDbSignalBreakPoint (
+    ACPI_WALK_STATE         *WalkState)
+{
+
+#ifndef ACPI_APPLICATION
+    if (AcpiGbl_DbThreadId != AcpiOsGetThreadId ())
+    {
+        return;
+    }
+#endif
+
+    /*
+     * Set the single-step flag. This will cause the debugger (if present)
+     * to break to the console within the AML debugger at the start of the
+     * next AML instruction.
+     */
+    AcpiGbl_CmSingleStep = TRUE;
+    AcpiOsPrintf ("**break** Executed AML BreakPoint opcode\n");
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDbSingleStep
  *
  * PARAMETERS:  WalkState       - Current walk

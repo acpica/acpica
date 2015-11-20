@@ -119,6 +119,7 @@
 #include "amlcode.h"
 #include "acdispat.h"
 #include "acinterp.h"
+#include "acdebug.h"
 
 #define _COMPONENT          ACPI_DISPATCHER
         ACPI_MODULE_NAME    ("dscontrol")
@@ -431,14 +432,7 @@ AcpiDsExecEndControlOp (
 
     case AML_BREAK_POINT_OP:
 
-        /*
-         * Set the single-step flag. This will cause the debugger (if present)
-         * to break to the console within the AML debugger at the start of the
-         * next AML instruction.
-         */
-        ACPI_DEBUGGER_EXEC (AcpiGbl_CmSingleStep = TRUE);
-        ACPI_DEBUGGER_EXEC (
-            AcpiOsPrintf ("**break** Executed AML BreakPoint opcode\n"));
+        AcpiDbSignalBreakPoint (WalkState);
 
         /* Call to the OSL in case OS wants a piece of the action */
 
