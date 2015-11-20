@@ -342,6 +342,15 @@ ACPI_INIT_GLOBAL (UINT32,           AcpiDbgLevel, ACPI_NORMAL_DEFAULT);
 ACPI_INIT_GLOBAL (UINT32,           AcpiDbgLayer, ACPI_COMPONENT_DEFAULT);
 
 /*
+ * Debugger command handshake globals. Host OSes need to access these
+ * variables to implement their own command handshake mechanism.
+ */
+#ifdef ACPI_DEBUGGER
+ACPI_INIT_GLOBAL (BOOLEAN,          AcpiGbl_MethodExecuting, FALSE);
+ACPI_GLOBAL (char,                  AcpiGbl_DbLineBuf[ACPI_DB_LINE_BUFFER_SIZE]);
+#endif
+
+/*
  * Other miscellaneous globals
  */
 ACPI_GLOBAL (ACPI_TABLE_FADT,       AcpiGbl_FADT);
@@ -447,6 +456,30 @@ ACPI_GLOBAL (BOOLEAN,               AcpiGbl_SystemAwakeAndRunning);
     static ACPI_INLINE Prototype {return;}
 
 #endif /* ACPI_APPLICATION */
+
+
+/*
+ * Debugger prototypes
+ *
+ * All interfaces used by debugger will be configured
+ * out of the ACPICA build unless the ACPI_DEBUGGER
+ * flag is defined.
+ */
+#ifdef ACPI_DEBUGGER
+#define ACPI_DBR_DEPENDENT_RETURN_OK(Prototype) \
+    ACPI_EXTERNAL_RETURN_OK(Prototype)
+
+#define ACPI_DBR_DEPENDENT_RETURN_VOID(Prototype) \
+    ACPI_EXTERNAL_RETURN_VOID(Prototype)
+
+#else
+#define ACPI_DBR_DEPENDENT_RETURN_OK(Prototype) \
+    static ACPI_INLINE Prototype {return(AE_OK);}
+
+#define ACPI_DBR_DEPENDENT_RETURN_VOID(Prototype) \
+    static ACPI_INLINE Prototype {return;}
+
+#endif /* ACPI_DEBUGGER */
 
 
 /*****************************************************************************
@@ -1287,6 +1320,10 @@ AcpiInitializeDebugger (
 void
 AcpiTerminateDebugger (
     void);
+
+void
+AcpiRunDebugger (
+    char                    *BatchBuffer);
 
 void
 AcpiSetDebuggerThreadId (

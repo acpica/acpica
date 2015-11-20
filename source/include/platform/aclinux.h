@@ -227,6 +227,10 @@
 /*
  * OSL interfaces used by utilities
  */
+#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeCommandSignals
+#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateCommandSignals
+#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWaitCommandReady
+#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsNotifyCommandComplete
 #define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
 #define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
 #define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex

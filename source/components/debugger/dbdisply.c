@@ -815,6 +815,13 @@ AcpiDbDisplayResultObject (
     ACPI_WALK_STATE         *WalkState)
 {
 
+#ifndef ACPI_APPLICATION
+    if (AcpiGbl_DbThreadId != AcpiOsGetThreadId())
+    {
+        return;
+    }
+#endif
+
     /* Only display if single stepping */
 
     if (!AcpiGbl_CmSingleStep)
@@ -846,6 +853,13 @@ AcpiDbDisplayArgumentObject (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState)
 {
+
+#ifndef ACPI_APPLICATION
+    if (AcpiGbl_DbThreadId != AcpiOsGetThreadId())
+    {
+        return;
+    }
+#endif
 
     if (!AcpiGbl_CmSingleStep)
     {

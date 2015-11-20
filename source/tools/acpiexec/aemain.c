@@ -140,10 +140,6 @@ AeDoOptions (
     int                     argc,
     char                    **argv);
 
-static ACPI_STATUS
-AcpiDbRunBatchMode (
-    void);
-
 
 #define AE_BUFFER_SIZE              1024
 #define ASL_MAX_FILES               256
@@ -690,88 +686,29 @@ EnterDebugger:
     default:
     case AE_MODE_COMMAND_LOOP:
 
-        AcpiDbUserCommands (ACPI_DEBUGGER_COMMAND_PROMPT, NULL);
+        AcpiRunDebugger (NULL);
         break;
 
     case AE_MODE_BATCH_MULTIPLE:
 
-        AcpiDbRunBatchMode ();
+        AcpiRunDebugger (BatchBuffer);
         break;
 
     case AE_MODE_BATCH_SINGLE:
 
         AcpiDbExecute (BatchBuffer, NULL, NULL, EX_NO_SINGLE_STEP);
-
-        /* Shut down the debugger */
-
-        AcpiTerminateDebugger ();
-        Status = AcpiTerminate ();
         break;
     }
 
+
+    /* Shut down the debugger */
+
+    AcpiTerminateDebugger ();
+    (void)AcpiTerminate ();
     return (0);
 
 
 ErrorExit:
     (void) AcpiOsTerminate ();
     return (ExitCode);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiDbRunBatchMode
- *
- * PARAMETERS:  BatchCommandLine    - A semicolon separated list of commands
- *                                    to be executed.
- *                                    Use only commas to separate elements of
- *                                    particular command.
- * RETURN:      Status
- *
- * DESCRIPTION: For each command of list separated by ';' prepare the command
- *              buffer and pass it to AcpiDbCommandDispatch.
- *
- *****************************************************************************/
-
-static ACPI_STATUS
-AcpiDbRunBatchMode (
-    void)
-{
-    ACPI_STATUS             Status;
-    char                    *Ptr = BatchBuffer;
-    char                    *Cmd = Ptr;
-    UINT8                   Run = 0;
-
-
-    AcpiGbl_MethodExecuting = FALSE;
-    AcpiGbl_StepToNextCall = FALSE;
-
-    while (*Ptr)
-    {
-        if (*Ptr == ',')
-        {
-            /* Convert commas to spaces */
-            *Ptr = ' ';
-        }
-        else if (*Ptr == ';')
-        {
-            *Ptr = '\0';
-            Run = 1;
-        }
-
-        Ptr++;
-
-        if (Run || (*Ptr == '\0'))
-        {
-            (void) AcpiDbCommandDispatch (Cmd, NULL, NULL);
-            Run = 0;
-            Cmd = Ptr;
-        }
-    }
-
-    /* Shut down the debugger */
-
-    AcpiTerminateDebugger ();
-    Status = AcpiTerminate ();
-    return (Status);
 }
