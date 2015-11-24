@@ -717,8 +717,7 @@ AcpiDsCreateOperand (
             return_ACPI_STATUS (Status);
         }
 
-        ACPI_DEBUGGER_EXEC (
-            AcpiDbDisplayArgumentObject (ObjDesc, WalkState));
+        AcpiDbDisplayArgumentObject (ObjDesc, WalkState);
     }
     else
     {
@@ -757,8 +756,8 @@ AcpiDsCreateOperand (
             ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
                 "Argument previously created, already stacked\n"));
 
-            ACPI_DEBUGGER_EXEC (AcpiDbDisplayArgumentObject (
-                WalkState->Operands [WalkState->NumOperands - 1], WalkState));
+            AcpiDbDisplayArgumentObject (
+                WalkState->Operands [WalkState->NumOperands - 1], WalkState);
 
             /*
              * Use value that was already previously returned
@@ -805,8 +804,7 @@ AcpiDsCreateOperand (
             return_ACPI_STATUS (Status);
         }
 
-        ACPI_DEBUGGER_EXEC (
-            AcpiDbDisplayArgumentObject (ObjDesc, WalkState));
+        AcpiDbDisplayArgumentObject (ObjDesc, WalkState);
     }
 
     return_ACPI_STATUS (AE_OK);

@@ -265,10 +265,9 @@ Cleanup:
         "Completed a predicate eval=%X Op=%p\n",
         WalkState->ControlState->Common.Value, WalkState->Op));
 
-     /* Break to debugger to display result */
+    /* Break to debugger to display result */
 
-    ACPI_DEBUGGER_EXEC (
-        AcpiDbDisplayResultObject (LocalObjDesc, WalkState));
+    AcpiDbDisplayResultObject (LocalObjDesc, WalkState);
 
     /*
      * Delete the predicate result object (we know that
@@ -494,8 +493,11 @@ AcpiDsExecEndOp (
 
     /* Call debugger for single step support (DEBUG build only) */
 
-    ACPI_DEBUGGER_EXEC (Status = AcpiDbSingleStep (WalkState, Op, OpClass));
-    ACPI_DEBUGGER_EXEC (if (ACPI_FAILURE (Status)) {return_ACPI_STATUS (Status);});
+    Status = AcpiDbSingleStep (WalkState, Op, OpClass);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /* Decode the Opcode Class */
 
@@ -827,8 +829,7 @@ Cleanup:
     {
         /* Break to debugger to display result */
 
-        ACPI_DEBUGGER_EXEC (AcpiDbDisplayResultObject (
-            WalkState->ResultObj,WalkState));
+        AcpiDbDisplayResultObject (WalkState->ResultObj,WalkState);
 
         /*
          * Delete the result op if and only if:
