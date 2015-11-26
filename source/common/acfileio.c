@@ -184,7 +184,8 @@ AcGetAllTablesFromFile (
     FileSize = CmGetFileSize (File);
     if (FileSize == ACPI_UINT32_MAX)
     {
-        return (AE_ERROR);
+        Status = AE_ERROR;
+        goto ErrorExit;
     }
 
     fprintf (stderr,
@@ -195,7 +196,8 @@ AcGetAllTablesFromFile (
 
     if (FileSize < sizeof (ACPI_TABLE_HEADER))
     {
-        return (AE_BAD_HEADER);
+        Status = AE_BAD_HEADER;
+        goto ErrorExit;
     }
 
     /* Check for an non-binary file */
@@ -228,7 +230,7 @@ AcGetAllTablesFromFile (
         }
         else if (ACPI_FAILURE (Status))
         {
-            return (Status);
+            goto ErrorExit;
         }
 
         /* Print table header for iASL/disassembler only */
@@ -275,6 +277,7 @@ AcGetAllTablesFromFile (
         *ReturnListHead = ListHead;
     }
 
+ErrorExit:
     fclose(File);
     return (Status);
 }
