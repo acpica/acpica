@@ -132,11 +132,6 @@ AcpiEvInstallHandler (
     void                    *Context,
     void                    **ReturnValue);
 
-static ACPI_OPERAND_OBJECT *
-AcpiEvFindRegionHandler (
-    ACPI_ADR_SPACE_TYPE     SpaceId,
-    ACPI_OPERAND_OBJECT     *HandlerObj);
-
 
 /* These are the address spaces that will get default handlers */
 
@@ -354,33 +349,25 @@ AcpiEvInstallHandler (
     {
         /* Check if this Device already has a handler for this address space */
 
-        NextHandlerObj = ObjDesc->Device.Handler;
-        while (NextHandlerObj)
+        NextHandlerObj = AcpiEvFindRegionHandler (
+            HandlerObj->AddressSpace.SpaceId, ObjDesc->Device.Handler);
+        if (NextHandlerObj)
         {
             /* Found a handler, is it for the same address space? */
 
-            if (NextHandlerObj->AddressSpace.SpaceId ==
-                HandlerObj->AddressSpace.SpaceId)
-            {
-                ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
-                    "Found handler for region [%s] in device %p(%p) "
-                    "handler %p\n",
-                    AcpiUtGetRegionName (HandlerObj->AddressSpace.SpaceId),
-                    ObjDesc, NextHandlerObj, HandlerObj));
+            ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
+                "Found handler for region [%s] in device %p(%p) handler %p\n",
+                AcpiUtGetRegionName (HandlerObj->AddressSpace.SpaceId),
+                ObjDesc, NextHandlerObj, HandlerObj));
 
-                /*
-                 * Since the object we found it on was a device, then it
-                 * means that someone has already installed a handler for
-                 * the branch of the namespace from this device on. Just
-                 * bail out telling the walk routine to not traverse this
-                 * branch. This preserves the scoping rule for handlers.
-                 */
-                return (AE_CTRL_DEPTH);
-            }
-
-            /* Walk the linked list of handlers attached to this device */
-
-            NextHandlerObj = NextHandlerObj->AddressSpace.Next;
+            /*
+             * Since the object we found it on was a device, then it means
+             * that someone has already installed a handler for the branch
+             * of the namespace from this device on. Just bail out telling
+             * the walk routine to not traverse this branch. This preserves
+             * the scoping rule for handlers.
+             */
+            return (AE_CTRL_DEPTH);
         }
 
         /*
@@ -427,7 +414,7 @@ AcpiEvInstallHandler (
  *
  ******************************************************************************/
 
-static ACPI_OPERAND_OBJECT *
+ACPI_OPERAND_OBJECT *
 AcpiEvFindRegionHandler (
     ACPI_ADR_SPACE_TYPE     SpaceId,
     ACPI_OPERAND_OBJECT     *HandlerObj)
