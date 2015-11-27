@@ -195,7 +195,7 @@ AcpiInstallAddressSpaceHandler (
 
     /* Run all _REG methods for this address space */
 
-    Status = AcpiEvExecuteRegMethods (Node, SpaceId);
+    AcpiEvExecuteRegMethods (Node, SpaceId, ACPI_REG_CONNECT);
 
 
 UnlockAndExit:
