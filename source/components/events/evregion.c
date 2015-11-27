@@ -398,7 +398,7 @@ AcpiEvAddressSpaceDispatch (
          * We just returned from a non-default handler, we must re-enter the
          * interpreter
          */
-       AcpiExEnterInterpreter ();
+        AcpiExEnterInterpreter ();
     }
 
     return_ACPI_STATUS (Status);
@@ -420,7 +420,7 @@ AcpiEvAddressSpaceDispatch (
  ******************************************************************************/
 
 void
-AcpiEvDetachRegion(
+AcpiEvDetachRegion (
     ACPI_OPERAND_OBJECT     *RegionObj,
     BOOLEAN                 AcpiNsIsLocked)
 {

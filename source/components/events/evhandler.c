@@ -482,7 +482,7 @@ AcpiEvInstallSpaceHandler (
     ACPI_OPERAND_OBJECT     *HandlerObj;
     ACPI_STATUS             Status = AE_OK;
     ACPI_OBJECT_TYPE        Type;
-    UINT8                  Flags = 0;
+    UINT8                   Flags = 0;
 
 
     ACPI_FUNCTION_TRACE (EvInstallSpaceHandler);
