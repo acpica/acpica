@@ -1112,7 +1112,7 @@ AcpiDbDisplayHandlers (
                 AcpiUtGetRegionName ((UINT8) SpaceId), SpaceId);
 
             HandlerObj = AcpiEvFindRegionHandler (
-                SpaceId, ObjDesc->Device.Handler);
+                SpaceId, ObjDesc->CommonNotify.Handler);
             if (HandlerObj)
             {
                 AcpiOsPrintf (ACPI_HANDLER_PRESENT_STRING,
@@ -1133,7 +1133,7 @@ AcpiDbDisplayHandlers (
 
         /* Find all handlers for user-defined SpaceIDs */
 
-        HandlerObj = ObjDesc->Device.Handler;
+        HandlerObj = ObjDesc->CommonNotify.Handler;
         while (HandlerObj)
         {
             if (HandlerObj->AddressSpace.SpaceId >= ACPI_USER_REGION_BEGIN)
@@ -1244,7 +1244,7 @@ AcpiDbDisplayNonRootHandlers (
 
     /* Display all handlers associated with this device */
 
-    HandlerObj = ObjDesc->Device.Handler;
+    HandlerObj = ObjDesc->CommonNotify.Handler;
     while (HandlerObj)
     {
         AcpiOsPrintf (ACPI_PREDEFINED_PREFIX,

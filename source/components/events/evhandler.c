@@ -248,7 +248,7 @@ AcpiEvHasDefaultHandler (
     ObjDesc = AcpiNsGetAttachedObject (Node);
     if (ObjDesc)
     {
-        HandlerObj = ObjDesc->Device.Handler;
+        HandlerObj = ObjDesc->CommonNotify.Handler;
 
         /* Walk the linked list of handlers for this object */
 
@@ -350,7 +350,7 @@ AcpiEvInstallHandler (
         /* Check if this Device already has a handler for this address space */
 
         NextHandlerObj = AcpiEvFindRegionHandler (
-            HandlerObj->AddressSpace.SpaceId, ObjDesc->Device.Handler);
+            HandlerObj->AddressSpace.SpaceId, ObjDesc->CommonNotify.Handler);
         if (NextHandlerObj)
         {
             /* Found a handler, is it for the same address space? */
@@ -554,7 +554,7 @@ AcpiEvInstallSpaceHandler (
          * the handler is not already installed.
          */
         HandlerObj = AcpiEvFindRegionHandler (SpaceId,
-            ObjDesc->Device.Handler);
+            ObjDesc->CommonNotify.Handler);
 
         if (HandlerObj)
         {
@@ -651,13 +651,13 @@ AcpiEvInstallSpaceHandler (
 
     /* Install at head of Device.AddressSpace list */
 
-    HandlerObj->AddressSpace.Next = ObjDesc->Device.Handler;
+    HandlerObj->AddressSpace.Next = ObjDesc->CommonNotify.Handler;
 
     /*
      * The Device object is the first reference on the HandlerObj.
      * Each region that uses the handler adds a reference.
      */
-    ObjDesc->Device.Handler = HandlerObj;
+    ObjDesc->CommonNotify.Handler = HandlerObj;
 
     /*
      * Walk namespace for regions only if basic initialization is
