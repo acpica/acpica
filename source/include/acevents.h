@@ -348,10 +348,11 @@ void
 AcpiEvAssociateRegMethod (
     ACPI_OPERAND_OBJECT     *RegionObj);
 
-ACPI_STATUS
+void
 AcpiEvExecuteRegMethods (
     ACPI_NAMESPACE_NODE     *Node,
-    ACPI_ADR_SPACE_TYPE     SpaceId);
+    ACPI_ADR_SPACE_TYPE     SpaceId,
+    UINT32                  Function);
 
 ACPI_STATUS
 AcpiEvExecuteRegMethod (

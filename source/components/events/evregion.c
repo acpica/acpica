@@ -182,8 +182,8 @@ AcpiEvInitializeOpRegions (
         if (AcpiEvHasDefaultHandler (AcpiGbl_RootNode,
                AcpiGbl_DefaultAddressSpaces[i]))
         {
-            Status = AcpiEvExecuteRegMethods (AcpiGbl_RootNode,
-                AcpiGbl_DefaultAddressSpaces[i]);
+            AcpiEvExecuteRegMethods (AcpiGbl_RootNode,
+                AcpiGbl_DefaultAddressSpaces[i], ACPI_REG_CONNECT);
         }
     }
 
@@ -803,26 +803,28 @@ Cleanup1:
  *
  * PARAMETERS:  Node            - Namespace node for the device
  *              SpaceId         - The address space ID
+ *              Function        - Passed to _REG: On (1) or Off (0)
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Run all _REG methods for the input Space ID;
  *              Note: assumes namespace is locked, or system init time.
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiEvExecuteRegMethods (
     ACPI_NAMESPACE_NODE     *Node,
-    ACPI_ADR_SPACE_TYPE     SpaceId)
+    ACPI_ADR_SPACE_TYPE     SpaceId,
+    UINT32                  Function)
 {
-    ACPI_STATUS             Status;
     ACPI_REG_WALK_INFO      Info;
 
 
     ACPI_FUNCTION_TRACE (EvExecuteRegMethods);
 
     Info.SpaceId = SpaceId;
+    Info.Function = Function;
     Info.RegRunCount = 0;
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_NAMES,
@@ -835,7 +837,7 @@ AcpiEvExecuteRegMethods (
      * regions and _REG methods. (i.e. handlers must be installed for all
      * regions of this Space ID before we can run any _REG methods)
      */
-    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, Node, ACPI_UINT32_MAX,
+    (void) AcpiNsWalkNamespace (ACPI_TYPE_ANY, Node, ACPI_UINT32_MAX,
         ACPI_NS_WALK_UNLOCK, AcpiEvRegRun, NULL, &Info, NULL);
 
     /* Special case for EC: handle "orphan" _REG methods with no region */
@@ -849,7 +851,7 @@ AcpiEvExecuteRegMethods (
         "    Executed %u _REG methods for SpaceId %s\n",
         Info.RegRunCount, AcpiUtGetRegionName (Info.SpaceId)));
 
-    return_ACPI_STATUS (Status);
+    return_VOID;
 }
 
 
@@ -916,7 +918,7 @@ AcpiEvRegRun (
     }
 
     Info->RegRunCount++;
-    Status = AcpiEvExecuteRegMethod (ObjDesc, ACPI_REG_CONNECT);
+    Status = AcpiEvExecuteRegMethod (ObjDesc, Info->Function);
     return (Status);
 }
 
