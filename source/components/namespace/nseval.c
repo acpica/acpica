@@ -527,7 +527,7 @@ AcpiNsExecModuleCode (
     if ((Type == ACPI_TYPE_DEVICE) && ParentNode->Object)
     {
         MethodObj->Method.Dispatch.Handler =
-            ParentNode->Object->Device.Handler;
+            ParentNode->Object->CommonNotify.Handler;
     }
 
     /* Must clear NextObject (AcpiNsAttachObject needs the field) */

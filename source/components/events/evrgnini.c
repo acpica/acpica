@@ -704,18 +704,10 @@ AcpiEvInitializeRegion (
             switch (Node->Type)
             {
             case ACPI_TYPE_DEVICE:
-
-                HandlerObj = ObjDesc->Device.Handler;
-                break;
-
             case ACPI_TYPE_PROCESSOR:
-
-                HandlerObj = ObjDesc->Processor.Handler;
-                break;
-
             case ACPI_TYPE_THERMAL:
 
-                HandlerObj = ObjDesc->ThermalZone.Handler;
+                HandlerObj = ObjDesc->CommonNotify.Handler;
                 break;
 
             case ACPI_TYPE_METHOD:

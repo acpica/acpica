@@ -308,8 +308,8 @@ AcpiRemoveAddressSpaceHandler (
 
     /* Find the address handler the user requested */
 
-    HandlerObj = ObjDesc->Device.Handler;
-    LastObjPtr = &ObjDesc->Device.Handler;
+    HandlerObj = ObjDesc->CommonNotify.Handler;
+    LastObjPtr = &ObjDesc->CommonNotify.Handler;
     while (HandlerObj)
     {
         /* We have a handler, see if user requested this one */
