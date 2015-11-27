@@ -436,7 +436,7 @@ AcpiEvInstallSpaceHandler (
     ACPI_OPERAND_OBJECT     *HandlerObj;
     ACPI_STATUS             Status;
     ACPI_OBJECT_TYPE        Type;
-    UINT8                  Flags = 0;
+    UINT8                   Flags = 0;
 
 
     ACPI_FUNCTION_TRACE (EvInstallSpaceHandler);
@@ -621,7 +621,7 @@ AcpiEvInstallSpaceHandler (
     HandlerObj->AddressSpace.Node = Node;
     HandlerObj->AddressSpace.Handler = Handler;
     HandlerObj->AddressSpace.Context = Context;
-    HandlerObj->AddressSpace.Setup  = Setup;
+    HandlerObj->AddressSpace.Setup = Setup;
 
     /* Install at head of Device.AddressSpace list */
 
