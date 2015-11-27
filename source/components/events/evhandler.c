@@ -409,6 +409,46 @@ AcpiEvInstallHandler (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiEvFindRegionHandler
+ *
+ * PARAMETERS:  SpaceId         - The address space ID
+ *              HandlerObj      - Head of the handler object list
+ *
+ * RETURN:      Matching handler object. NULL if space ID not matched
+ *
+ * DESCRIPTION: Search a handler object list for a match on the address
+ *              space ID.
+ *
+ ******************************************************************************/
+
+ACPI_OPERAND_OBJECT *
+AcpiEvFindRegionHandler (
+    ACPI_ADR_SPACE_TYPE     SpaceId,
+    ACPI_OPERAND_OBJECT     *HandlerObj)
+{
+
+    /* Walk the handler list for this device */
+
+    while (HandlerObj)
+    {
+        /* Same SpaceId indicates a handler is installed */
+
+        if (HandlerObj->AddressSpace.SpaceId == SpaceId)
+        {
+            return (HandlerObj);
+        }
+
+        /* Next handler object */
+
+        HandlerObj = HandlerObj->AddressSpace.Next;
+    }
+
+    return (NULL);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiEvInstallSpaceHandler
  *
  * PARAMETERS:  Node            - Namespace node for the device
@@ -434,7 +474,7 @@ AcpiEvInstallSpaceHandler (
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     *HandlerObj;
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
     ACPI_OBJECT_TYPE        Type;
     UINT8                   Flags = 0;
 
@@ -517,41 +557,30 @@ AcpiEvInstallSpaceHandler (
     if (ObjDesc)
     {
         /*
-         * The attached device object already exists. Make sure the handler
-         * is not already installed.
+         * The attached device object already exists. Now make sure
+         * the handler is not already installed.
          */
-        HandlerObj = ObjDesc->Device.Handler;
+        HandlerObj = AcpiEvFindRegionHandler (SpaceId,
+            ObjDesc->Device.Handler);
 
-        /* Walk the handler list for this device */
-
-        while (HandlerObj)
+        if (HandlerObj)
         {
-            /* Same SpaceId indicates a handler already installed */
-
-            if (HandlerObj->AddressSpace.SpaceId == SpaceId)
+            if (HandlerObj->AddressSpace.Handler == Handler)
             {
-                if (HandlerObj->AddressSpace.Handler == Handler)
-                {
-                    /*
-                     * It is (relatively) OK to attempt to install the SAME
-                     * handler twice. This can easily happen with the
-                     * PCI_Config space.
-                     */
-                    Status = AE_SAME_HANDLER;
-                    goto UnlockAndExit;
-                }
-                else
-                {
-                    /* A handler is already installed */
-
-                    Status = AE_ALREADY_EXISTS;
-                }
-                goto UnlockAndExit;
+                /*
+                 * It is (relatively) OK to attempt to install the SAME
+                 * handler twice. This can easily happen with the
+                 * PCI_Config space.
+                 */
+                Status = AE_SAME_HANDLER;
             }
+            else
+            {
+                /* A handler is already installed */
 
-            /* Walk the linked list of handlers */
-
-            HandlerObj = HandlerObj->AddressSpace.Next;
+                Status = AE_ALREADY_EXISTS;
+            }
+            goto UnlockAndExit;
         }
     }
     else
@@ -596,7 +625,8 @@ AcpiEvInstallSpaceHandler (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
-        "Installing address handler for region %s(%X) on Device %4.4s %p(%p)\n",
+        "Installing address handler for region %s(%X) "
+        "on Device %4.4s %p(%p)\n",
         AcpiUtGetRegionName (SpaceId), SpaceId,
         AcpiUtGetNodeName (Node), Node, ObjDesc));
 

@@ -299,6 +299,11 @@ AcpiEvHasDefaultHandler (
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_ADR_SPACE_TYPE     SpaceId);
 
+ACPI_OPERAND_OBJECT *
+AcpiEvFindRegionHandler (
+    ACPI_ADR_SPACE_TYPE     SpaceId,
+    ACPI_OPERAND_OBJECT     *HandlerObj);
+
 ACPI_STATUS
 AcpiEvInstallRegionHandlers (
     void);
