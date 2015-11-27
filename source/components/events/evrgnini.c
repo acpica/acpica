@@ -739,51 +739,43 @@ AcpiEvInitializeRegion (
                 break;
             }
 
-            while (HandlerObj)
+            HandlerObj = AcpiEvFindRegionHandler (SpaceId, HandlerObj);
+            if (HandlerObj)
             {
-                /* Is this handler of the correct type? */
+                /* Found correct handler */
 
-                if (HandlerObj->AddressSpace.SpaceId == SpaceId)
+                ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
+                    "Found handler %p for region %p in obj %p\n",
+                    HandlerObj, RegionObj, ObjDesc));
+
+                Status = AcpiEvAttachRegion (HandlerObj, RegionObj,
+                    AcpiNsLocked);
+
+                /*
+                 * Tell all users that this region is usable by
+                 * running the _REG method
+                 */
+                if (AcpiNsLocked)
                 {
-                    /* Found correct handler */
-
-                    ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
-                        "Found handler %p for region %p in obj %p\n",
-                        HandlerObj, RegionObj, ObjDesc));
-
-                    Status = AcpiEvAttachRegion (HandlerObj, RegionObj,
-                        AcpiNsLocked);
-
-                    /*
-                     * Tell all users that this region is usable by
-                     * running the _REG method
-                     */
-                    if (AcpiNsLocked)
+                    Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+                    if (ACPI_FAILURE (Status))
                     {
-                        Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-                        if (ACPI_FAILURE (Status))
-                        {
-                            return_ACPI_STATUS (Status);
-                        }
+                        return_ACPI_STATUS (Status);
                     }
-
-                    Status = AcpiEvExecuteRegMethod (RegionObj, ACPI_REG_CONNECT);
-
-                    if (AcpiNsLocked)
-                    {
-                        Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-                        if (ACPI_FAILURE (Status))
-                        {
-                            return_ACPI_STATUS (Status);
-                        }
-                    }
-
-                    return_ACPI_STATUS (AE_OK);
                 }
 
-                /* Try next handler in the list */
+                Status = AcpiEvExecuteRegMethod (RegionObj, ACPI_REG_CONNECT);
 
-                HandlerObj = HandlerObj->AddressSpace.Next;
+                if (AcpiNsLocked)
+                {
+                    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return_ACPI_STATUS (Status);
+                    }
+                }
+
+                return_ACPI_STATUS (AE_OK);
             }
         }
 
