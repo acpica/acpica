@@ -813,6 +813,10 @@ TrSetEndLineNumber (
     ACPI_PARSE_OBJECT       *Op);
 
 void
+TrSetCurrentFilename (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
 TrWalkTree (
     void);
 

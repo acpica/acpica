@@ -269,6 +269,7 @@ ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_OutputFilenamePrefix, 
 ASL_EXTERN ASL_INCLUDE_DIR          ASL_INIT_GLOBAL (*Gbl_IncludeDirList, NULL);
 ASL_EXTERN char                     *Gbl_CurrentInputFilename;
 ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_ExternalRefFilename, NULL);
+ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_PreviousIncludeFilename, NULL);
 
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_HasIncludeFiles, FALSE);
 
