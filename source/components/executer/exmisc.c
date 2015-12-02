@@ -338,6 +338,7 @@ AcpiExDoConcatenate (
     ACPI_OPERAND_OBJECT     *LocalOperand1 = Operand1;
     ACPI_OPERAND_OBJECT     *ReturnDesc;
     char                    *NewBuf;
+    const char              *TypeString;
     ACPI_STATUS             Status;
 
 
@@ -359,9 +360,42 @@ AcpiExDoConcatenate (
         break;
 
     case ACPI_TYPE_STRING:
+        /*
+         * Per the ACPI spec, Concatenate only supports int/str/buf.
+         * However, we support all objects here as an extension.
+         * This improves the usefulness of the Printf() macro.
+         * 12/2015.
+         */
+        switch (Operand1->Common.Type)
+        {
+        case ACPI_TYPE_INTEGER:
+        case ACPI_TYPE_STRING:
+        case ACPI_TYPE_BUFFER:
 
-        Status = AcpiExConvertToString (
-            Operand1, &LocalOperand1, ACPI_IMPLICIT_CONVERT_HEX);
+            Status = AcpiExConvertToString (
+                Operand1, &LocalOperand1, ACPI_IMPLICIT_CONVERT_HEX);
+            break;
+
+        default:
+            /*
+             * Just emit a string containing the object type.
+             */
+            TypeString = AcpiUtGetTypeName (Operand1->Common.Type);
+
+            LocalOperand1 = AcpiUtCreateStringObject (
+                ((ACPI_SIZE) strlen (TypeString) + 9)); /* 9 For "[Object]" */
+            if (!LocalOperand1)
+            {
+                Status = AE_NO_MEMORY;
+                goto Cleanup;
+            }
+
+            strcpy (LocalOperand1->String.Pointer, "[");
+            strcat (LocalOperand1->String.Pointer, TypeString);
+            strcat (LocalOperand1->String.Pointer, " Object]");
+            Status = AE_OK;
+            break;
+        }
         break;
 
     case ACPI_TYPE_BUFFER:
@@ -440,8 +474,7 @@ AcpiExDoConcatenate (
         /* Concatenate the strings */
 
         strcpy (NewBuf, Operand0->String.Pointer);
-        strcpy (NewBuf + Operand0->String.Length,
-            LocalOperand1->String.Pointer);
+        strcat (NewBuf, LocalOperand1->String.Pointer);
         break;
 
     case ACPI_TYPE_BUFFER:
