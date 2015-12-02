@@ -224,6 +224,7 @@ usage (
     ACPI_OPTION ("-dt",                 "Disable allocation tracking (performance)");
     printf ("\n");
 
+    ACPI_OPTION ("-ed",                 "Enable timer output for Debug Object");
     ACPI_OPTION ("-ef",                 "Enable display of final memory statistics");
     ACPI_OPTION ("-ei",                 "Enable additional tests for ACPICA interfaces");
     ACPI_OPTION ("-el",                 "Enable loading of additional test tables");
@@ -330,6 +331,11 @@ AeDoOptions (
 
         switch (AcpiGbl_Optarg[0])
         {
+        case 'd':
+
+            AcpiGbl_DisplayDebugTimer = TRUE;
+            break;
+
         case 'f':
 
             #ifdef ACPI_DBG_TRACK_ALLOCATIONS
