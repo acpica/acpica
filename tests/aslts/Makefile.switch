@@ -21,7 +21,7 @@ install:	FORCE
 		if [ $$r -ne 0 ]; then \
 			exit $r; \
 		fi; \
-		>&2 echo "---- Completed test package [$$d]"; \
+		>&2 echo "---- Compiled test package: [$$d]"; \
 		done
 
 clean:	FORCE
