@@ -186,6 +186,11 @@ static const ACPI_SIMPLE_REPAIR_INFO    AcpiObjectRepairInfo[] =
                 ACPI_NOT_PACKAGE_ELEMENT,
                 AcpiNsConvertToResource },
 
+    /* Object reference conversions */
+
+    { "_DEP", ACPI_RTYPE_STRING, ACPI_ALL_PACKAGE_ELEMENTS,
+                AcpiNsConvertToReference },
+
     /* Unicode conversions */
 
     { "_MLS", ACPI_RTYPE_STRING, 1,
@@ -446,7 +451,8 @@ AcpiNsMatchSimpleRepair (
             /* Check if we can actually repair this name/type combination */
 
             if ((ReturnBtype & ThisName->UnexpectedBtypes) &&
-                (PackageIndex == ThisName->PackageIndex))
+                (ThisName->PackageIndex == ACPI_ALL_PACKAGE_ELEMENTS ||
+                 PackageIndex == ThisName->PackageIndex))
             {
                 return (ThisName);
             }
