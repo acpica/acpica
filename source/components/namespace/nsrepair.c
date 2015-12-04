@@ -246,7 +246,8 @@ AcpiNsSimpleRepair (
                 ACPI_WARN_ALWAYS, "Missing expected return value"));
         }
 
-        Status = Predefined->ObjectConverter (ReturnObject, &NewObject);
+        Status = Predefined->ObjectConverter (Info->Node, ReturnObject,
+            &NewObject);
         if (ACPI_FAILURE (Status))
         {
             /* A fatal error occurred during a conversion */

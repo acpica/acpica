@@ -404,7 +404,8 @@ AcpiNsConvertToBuffer (
  *
  * FUNCTION:    AcpiNsConvertToUnicode
  *
- * PARAMETERS:  OriginalObject      - ASCII String Object to be converted
+ * PARAMETERS:  Scope               - Namespace node for the method/object
+ *              OriginalObject      - ASCII String Object to be converted
  *              ReturnObject        - Where the new converted object is returned
  *
  * RETURN:      Status. AE_OK if conversion was successful.
@@ -415,6 +416,7 @@ AcpiNsConvertToBuffer (
 
 ACPI_STATUS
 AcpiNsConvertToUnicode (
+    ACPI_NAMESPACE_NODE     *Scope,
     ACPI_OPERAND_OBJECT     *OriginalObject,
     ACPI_OPERAND_OBJECT     **ReturnObject)
 {
@@ -476,7 +478,8 @@ AcpiNsConvertToUnicode (
  *
  * FUNCTION:    AcpiNsConvertToResource
  *
- * PARAMETERS:  OriginalObject      - Object to be converted
+ * PARAMETERS:  Scope               - Namespace node for the method/object
+ *              OriginalObject      - Object to be converted
  *              ReturnObject        - Where the new converted object is returned
  *
  * RETURN:      Status. AE_OK if conversion was successful
@@ -488,6 +491,7 @@ AcpiNsConvertToUnicode (
 
 ACPI_STATUS
 AcpiNsConvertToResource (
+    ACPI_NAMESPACE_NODE     *Scope,
     ACPI_OPERAND_OBJECT     *OriginalObject,
     ACPI_OPERAND_OBJECT     **ReturnObject)
 {
