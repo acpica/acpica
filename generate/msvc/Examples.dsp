@@ -285,6 +285,10 @@ SOURCE=..\..\source\components\executer\exsystem.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\executer\extrace.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\executer\exutils.c
 # End Source File
 # End Group

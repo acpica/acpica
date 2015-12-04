@@ -125,6 +125,10 @@ SOURCE=..\..\source\tools\AcpiXtract\acpixtract.c
 
 SOURCE=..\..\source\tools\acpixtract\axmain.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source\tools\acpixtract\axutils.c
+# End Source File
 # End Group
 # Begin Group "Common"
 
