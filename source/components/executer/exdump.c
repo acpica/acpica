@@ -594,7 +594,8 @@ AcpiExDumpObject (
             if (Next)
             {
                 AcpiOsPrintf ("(%s %2.2X)",
-                    AcpiUtGetObjectTypeName (Next), Next->Common.Type);
+                    AcpiUtGetObjectTypeName (Next),
+                    Next->AddressSpace.SpaceId);
 
                 while (Next->AddressSpace.Next)
                 {
@@ -606,7 +607,8 @@ AcpiExDumpObject (
 
                     Next = Next->AddressSpace.Next;
                     AcpiOsPrintf ("->%p(%s %2.2X)", Next,
-                        AcpiUtGetObjectTypeName (Next), Next->Common.Type);
+                        AcpiUtGetObjectTypeName (Next),
+                        Next->AddressSpace.SpaceId);
 
                     if ((Next == Start) || (Next == Data))
                     {
