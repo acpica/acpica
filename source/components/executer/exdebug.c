@@ -393,8 +393,15 @@ AcpiExDoDebugObject (
                 case ACPI_TYPE_PACKAGE:
 
                     AcpiOsPrintf ("Package[%u] = ", Value);
-                    AcpiExDoDebugObject (*SourceDesc->Reference.Where,
-                        Level+4, 0);
+                    if (!(*SourceDesc->Reference.Where))
+                    {
+                        AcpiOsPrintf ("[Uninitialized Package Element]\n");
+                    }
+                    else
+                    {
+                        AcpiExDoDebugObject (*SourceDesc->Reference.Where,
+                            Level+4, 0);
+                    }
                     break;
 
                 default:
