@@ -129,6 +129,10 @@ AcpiUtIsSpecialTable (
     char                    *Signature);
 
 static ACPI_STATUS
+DtCreateOneTemplateFile (
+    char                    *Signature);
+
+static ACPI_STATUS
 DtCreateOneTemplate (
     char                    *Signature,
     const ACPI_DMTABLE_DATA *TableData);
@@ -173,7 +177,7 @@ AcpiUtIsSpecialTable (
  *
  * FUNCTION:    DtCreateTemplates
  *
- * PARAMETERS:  Signature           - ACPI table signature
+ * PARAMETERS:  argv                - Standard command line arguments
  *
  * RETURN:      Status
  *
@@ -183,31 +187,84 @@ AcpiUtIsSpecialTable (
 
 ACPI_STATUS
 DtCreateTemplates (
+    char                    **argv)
+{
+    char                    *Signature;
+    ACPI_STATUS             Status = AE_OK;
+
+
+    AslInitializeGlobals ();
+
+    /*
+     * Special cases for DSDT, ALL, and '*'
+     */
+
+    /* Default (no signature option) is DSDT */
+
+    if (AcpiGbl_Optind < 3)
+    {
+        Status = DtCreateOneTemplateFile ("DSDT");
+        goto Exit;
+    }
+
+    AcpiGbl_Optind--;
+    Signature = argv[AcpiGbl_Optind];
+    AcpiUtStrupr (Signature);
+
+    if (!strcmp (Signature, "ALL"))
+    {
+        /* Create all available/known templates */
+
+        Status = DtCreateAllTemplates ();
+        goto Exit;
+    }
+
+    /*
+     * Normal case: Create template for each signature
+     */
+    while (argv[AcpiGbl_Optind])
+    {
+        Signature = argv[AcpiGbl_Optind];
+        AcpiUtStrupr (Signature);
+
+        Status = DtCreateOneTemplateFile (Signature);
+        if (ACPI_FAILURE (Status))
+        {
+            goto Exit;
+        }
+
+        AcpiGbl_Optind++;
+    }
+
+
+Exit:
+    /* Shutdown ACPICA subsystem */
+
+    (void) AcpiTerminate ();
+    CmDeleteCaches ();
+    return (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    DtCreateOneTemplateFile
+ *
+ * PARAMETERS:  Signature           - ACPI table signature
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create one template file of the requested signature.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+DtCreateOneTemplateFile (
     char                    *Signature)
 {
     const ACPI_DMTABLE_DATA *TableData;
     ACPI_STATUS             Status;
 
-
-    AslInitializeGlobals ();
-
-    /* Default (no signature) is DSDT */
-
-    if (!Signature)
-    {
-        Signature = "DSDT";
-        goto GetTemplate;
-    }
-
-    AcpiUtStrupr (Signature);
-    if (!strcmp (Signature, "ALL") ||
-        !strcmp (Signature, "*"))
-    {
-        /* Create all available/known templates */
-
-        Status = DtCreateAllTemplates ();
-        return (Status);
-    }
 
     /*
      * Validate signature and get the template data:
@@ -218,8 +275,8 @@ DtCreateTemplates (
     if (strlen (Signature) != ACPI_NAME_SIZE)
     {
         fprintf (stderr,
-            "%s: Invalid ACPI table signature (length must be 4 characters)\n",
-            Signature);
+            "%s: Invalid ACPI table signature "
+            "(length must be 4 characters)\n", Signature);
         return (AE_ERROR);
     }
 
@@ -236,7 +293,8 @@ DtCreateTemplates (
         Signature = "FACP";
     }
 
-GetTemplate:
+    /* TableData will point to the template */
+
     TableData = AcpiDmGetTableData (Signature);
     if (TableData)
     {
@@ -260,11 +318,6 @@ GetTemplate:
     }
 
     Status = DtCreateOneTemplate (Signature, TableData);
-
-    /* Shutdown ACPICA subsystem */
-
-    (void) AcpiTerminate ();
-    CmDeleteCaches ();
     return (Status);
 }
 

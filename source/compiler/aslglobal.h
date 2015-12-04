@@ -319,7 +319,6 @@ ASL_EXTERN ASL_LISTING_NODE         ASL_INIT_GLOBAL (*Gbl_ListingNode, NULL);
 ASL_EXTERN ACPI_PARSE_OBJECT        *Gbl_FirstLevelInsertionNode;
 ASL_EXTERN UINT8                    ASL_INIT_GLOBAL (Gbl_FileType, 0);
 ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_Signature, NULL);
-ASL_EXTERN char                     *Gbl_TemplateSignature;
 
 ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_CurrentHexColumn, 0);
 ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_CurrentAmlOffset, 0);
