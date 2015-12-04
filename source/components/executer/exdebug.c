@@ -170,7 +170,8 @@ AcpiExDoDebugObject (
 
     /* Null string or newline -- don't emit the line header */
 
-    if ((ACPI_GET_DESCRIPTOR_TYPE (SourceDesc) == ACPI_DESC_TYPE_OPERAND) &&
+    if (SourceDesc &&
+        (ACPI_GET_DESCRIPTOR_TYPE (SourceDesc) == ACPI_DESC_TYPE_OPERAND) &&
         (SourceDesc->Common.Type == ACPI_TYPE_STRING))
     {
         if ((SourceDesc->String.Length == 0) ||
@@ -212,7 +213,7 @@ AcpiExDoDebugObject (
 
     if (Index > 0)
     {
-       AcpiOsPrintf ("(%.2u) ", Index-1);
+       AcpiOsPrintf ("(%.2u) ", Index - 1);
     }
 
     if (!SourceDesc)
