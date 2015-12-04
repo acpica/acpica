@@ -228,6 +228,7 @@ usage (
     ACPI_OPTION ("-ef",                 "Enable display of final memory statistics");
     ACPI_OPTION ("-ei",                 "Enable additional tests for ACPICA interfaces");
     ACPI_OPTION ("-el",                 "Enable loading of additional test tables");
+    ACPI_OPTION ("-em",                 "Enable grouping of module-level code");
     ACPI_OPTION ("-es",                 "Enable Interpreter Slack Mode");
     ACPI_OPTION ("-et",                 "Enable debug semaphore timeout");
     printf ("\n");
@@ -351,6 +352,11 @@ AeDoOptions (
         case 'l':
 
             AcpiGbl_LoadTestTables = TRUE;
+            break;
+
+        case 'm':
+
+            AcpiGbl_GroupModuleLevelCode = TRUE;
             break;
 
         case 's':
@@ -612,6 +618,19 @@ main (
         goto ErrorExit;
     }
 
+    /*
+     * Install most of the handlers (Regions, Notify, Table, etc.)
+     * Override the default region handlers, especially SystemMemory,
+     * which is simulated in this utility.
+     */
+    Status = AeInstallEarlyHandlers ();
+    if (ACPI_FAILURE (Status))
+    {
+        goto EnterDebugger;
+    }
+
+    /* Install all of the ACPI tables */
+
     Status = AeInstallTables ();
 
     /*
@@ -628,16 +647,6 @@ main (
     {
         printf ("**** Could not load ACPI tables, %s\n",
             AcpiFormatException (Status));
-        goto EnterDebugger;
-    }
-
-    /*
-     * Install most of the handlers.
-     * Override some default region handlers, especially SystemMemory
-     */
-    Status = AeInstallEarlyHandlers ();
-    if (ACPI_FAILURE (Status))
-    {
         goto EnterDebugger;
     }
 
