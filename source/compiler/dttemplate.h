@@ -120,7 +120,7 @@
 /* Special templates for the ASL/AML tables: DSDT, SSDT, and OSDT */
 
 const char TemplateDsdt[] =
-    "DefinitionBlock (\"dsdt.aml\", \"DSDT\", 2, \"Intel\", \"Template\", 0x00000001)\n"
+    "DefinitionBlock (\"\", \"DSDT\", 2, \"Intel\", \"Template\", 0x00000001)\n"
     "{\n"
     "    Method (MAIN, 0, NotSerialized)\n"
     "    {\n"
@@ -129,7 +129,7 @@ const char TemplateDsdt[] =
     "}\n\n";
 
 const char TemplateSsdt[] =
-    "DefinitionBlock (\"ssdt.aml\", \"SSDT\", 2, \"Intel\", \"Template\", 0x00000001)\n"
+    "DefinitionBlock (\"\", \"SSDT\", 2, \"Intel\", \"Template\", 0x00000001)\n"
     "{\n"
     "    Method (MAIN, 0, NotSerialized)\n"
     "    {\n"
@@ -138,7 +138,7 @@ const char TemplateSsdt[] =
     "}\n\n";
 
 const char TemplateOsdt[] =
-    "DefinitionBlock (\"osdt.aml\", \"OSDT\", 2, \"Intel\", \"Template\", 0x00000001)\n"
+    "DefinitionBlock (\"\", \"OSDT\", 2, \"Intel\", \"Template\", 0x00000001)\n"
     "{\n"
     "    Method (MAIN, 0, NotSerialized)\n"
     "    {\n"
