@@ -152,10 +152,6 @@ SOURCE=..\..\source\components\utilities\utexcep.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\utilities\utfileio.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\components\utilities\utglobal.c
 # End Source File
 # Begin Source File
@@ -598,6 +594,10 @@ SOURCE=..\..\source\components\tables\tbxfroot.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\source\common\acfileio.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\common\ahids.c
 # End Source File
 # Begin Source File
@@ -828,6 +828,10 @@ SOURCE=..\..\source\components\executer\exstorob.c
 # Begin Source File
 
 SOURCE=..\..\source\components\executer\exsystem.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\extrace.c
 # End Source File
 # Begin Source File
 

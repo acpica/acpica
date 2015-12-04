@@ -105,6 +105,10 @@ PostBuild_Cmds=copy acpinamesdebug\acpinames.exe ..\..\libraries\acpinames_dbg.e
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\source\common\acfileio.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\common\cmfsize.c
 # End Source File
 # Begin Source File
@@ -163,10 +167,6 @@ SOURCE=..\..\source\components\utilities\uteval.c
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utexcep.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\utilities\utfileio.c
 # End Source File
 # Begin Source File
 
@@ -424,6 +424,10 @@ SOURCE=..\..\source\components\dispatcher\dsfield.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\dispatcher\dsinit.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\dispatcher\dsmthdat.c
 # End Source File
 # Begin Source File
@@ -451,9 +455,13 @@ SOURCE=..\..\source\components\dispatcher\dswscope.c
 SOURCE=..\..\source\components\dispatcher\dswstate.c
 # End Source File
 # End Group
-# Begin Group "Interpreter"
+# Begin Group "Executer"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exconvrt.c
+# End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\executer\excreate.c
@@ -472,6 +480,10 @@ SOURCE=..\..\source\components\executer\exnames.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\executer\exprep.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\executer\exresnte.c
 # End Source File
 # Begin Source File
@@ -485,14 +497,6 @@ SOURCE=..\..\source\components\executer\exsystem.c
 # Begin Source File
 
 SOURCE=..\..\source\components\executer\exutils.c
-# End Source File
-# End Group
-# Begin Group "Executer"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\source\components\executer\exconvrt.c
 # End Source File
 # End Group
 # Begin Source File

@@ -152,10 +152,6 @@ SOURCE=..\..\source\components\utilities\utexcep.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\utilities\utfileio.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\components\utilities\utglobal.c
 # End Source File
 # Begin Source File
@@ -476,6 +472,10 @@ SOURCE=..\..\source\compiler\aslxref.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\source\common\acfileio.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\common\adfile.c
 # End Source File
 # Begin Source File
@@ -517,6 +517,10 @@ SOURCE=..\..\source\common\dmrestag.c
 # Begin Source File
 
 SOURCE=..\..\source\common\dmtable.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\dmtables.c
 # End Source File
 # Begin Source File
 
@@ -879,6 +883,14 @@ SOURCE=..\..\source\compiler\dtsubtable.c
 # Begin Source File
 
 SOURCE=..\..\source\compiler\dttable.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\dttable1.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\dttable2.c
 # End Source File
 # Begin Source File
 

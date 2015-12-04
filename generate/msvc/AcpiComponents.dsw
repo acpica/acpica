@@ -99,18 +99,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "ApiTest"=.\ApiTest.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "AslCompiler"=.\AslCompiler.dsp - Package Owner=<4>
 
 Package=<5>
