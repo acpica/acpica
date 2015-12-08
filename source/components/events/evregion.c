@@ -708,8 +708,8 @@ AcpiEvExecuteRegMethod (
     }
 
     if (RegionObj2->Extra.Method_REG == NULL ||
-	RegionObj->Region.Handler == NULL ||
-	!AcpiGbl_RegMethodsEnabled)
+        RegionObj->Region.Handler == NULL ||
+        !AcpiGbl_RegMethodsEnabled)
     {
         return_ACPI_STATUS (AE_OK);
     }
@@ -717,7 +717,7 @@ AcpiEvExecuteRegMethod (
     /* _REG(DISCONNECT) should be paired with _REG(CONNECT) */
 
     if ((Function == ACPI_REG_CONNECT &&
-	 RegionObj->Common.Flags & AOPOBJ_REG_CONNECTED) ||
+        RegionObj->Common.Flags & AOPOBJ_REG_CONNECTED) ||
         (Function == ACPI_REG_DISCONNECT &&
          !(RegionObj->Common.Flags & AOPOBJ_REG_CONNECTED)))
     {
