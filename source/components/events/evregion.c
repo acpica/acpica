@@ -695,7 +695,6 @@ AcpiEvExecuteRegMethod (
     ACPI_EVALUATE_INFO      *Info;
     ACPI_OPERAND_OBJECT     *Args[3];
     ACPI_OPERAND_OBJECT     *RegionObj2;
-    ACPI_OPERAND_OBJECT     *HandlerObj;
     ACPI_STATUS             Status;
 
 
@@ -714,8 +713,6 @@ AcpiEvExecuteRegMethod (
     {
         return_ACPI_STATUS (AE_OK);
     }
-
-    HandlerObj = RegionObj->Region.Handler;
 
     /* _REG(DISCONNECT) should be paired with _REG(CONNECT) */
 
