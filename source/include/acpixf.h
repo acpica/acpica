@@ -264,6 +264,11 @@ ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_CopyDsdtLocally, FALSE);
 ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_DoNotUseXsdt, FALSE);
 
 /*
+ * Optionally allow default region handlers to be overridden.
+ */
+ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_OverrideDefaultRegionHandlers, FALSE);
+
+/*
  * Optionally use 32-bit FADT addresses if and when there is a conflict
  * (address mismatch) between the 32-bit and 64-bit versions of the
  * address. Although ACPICA adheres to the ACPI specification which
