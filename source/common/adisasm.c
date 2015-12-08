@@ -268,6 +268,8 @@ AdAmlDisassemble (
             ACPI_GET_ALL_TABLES, &ListHead);
         if (ACPI_FAILURE (Status))
         {
+            AcpiOsPrintf ("Could not get ACPI tables from %s, %s\n",
+                Filename, AcpiFormatException (Status));
             return (Status);
         }
 
@@ -353,13 +355,12 @@ AdAmlDisassemble (
 
 Cleanup:
 
-// check!
-#if 0
-    if (Table && !AcpiGbl_ForceAmlDisassembly && !AcpiUtIsAmlTable (Table))
+    if (Table &&
+        !AcpiGbl_ForceAmlDisassembly &&
+        !AcpiUtIsAmlTable (Table))
     {
         ACPI_FREE (Table);
     }
-#endif
 
     if (File)
     {
