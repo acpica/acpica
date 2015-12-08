@@ -291,7 +291,6 @@ AcpiUtInitGlobals (
     AcpiGbl_DSDT                        = NULL;
     AcpiGbl_CmSingleStep                = FALSE;
     AcpiGbl_Shutdown                    = FALSE;
-    AcpiGbl_EarlyInitialization         = TRUE;
     AcpiGbl_NsLookupCount               = 0;
     AcpiGbl_PsFindCount                 = 0;
     AcpiGbl_AcpiHardwarePresent         = TRUE;
