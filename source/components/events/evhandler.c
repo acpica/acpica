@@ -660,30 +660,18 @@ AcpiEvInstallSpaceHandler (
     ObjDesc->CommonNotify.Handler = HandlerObj;
 
     /*
-     * Walk namespace for regions only if basic initialization is
-     * complete and the entire namespace is loaded. Only then is
-     * there any point in doing this. This is basically an optimization
-     * for the early installation of region handlers -- before there
-     * is a namespace.
+     * Walk the namespace finding all of the regions this handler will
+     * manage.
+     *
+     * Start at the device and search the branch toward the leaf nodes
+     * until either the leaf is encountered or a device is detected that
+     * has an address handler of the same type.
+     *
+     * In either case, back up and search down the remainder of the branch
      */
-    if (!AcpiGbl_EarlyInitialization)
-    {
-        /*
-         * Walk the namespace finding all of the regions this
-         * handler will manage.
-         *
-         * Start at the device and search the branch toward
-         * the leaf nodes until either the leaf is encountered or
-         * a device is detected that has an address handler of the
-         * same type.
-         *
-         * In either case, back up and search down the remainder
-         * of the branch
-         */
-        Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, Node,
-            ACPI_UINT32_MAX, ACPI_NS_WALK_UNLOCK,
-            AcpiEvInstallHandler, NULL, HandlerObj, NULL);
-    }
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, Node,
+        ACPI_UINT32_MAX, ACPI_NS_WALK_UNLOCK,
+        AcpiEvInstallHandler, NULL, HandlerObj, NULL);
 
 UnlockAndExit:
     return_ACPI_STATUS (Status);

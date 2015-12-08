@@ -717,16 +717,6 @@ AcpiEvInitializeRegion (
                     AcpiNsLocked);
 
                 /*
-                 * During early initialization, we will not be running the
-                 * the _REG methods for Memory, I/O and PCI_config because
-                 * these regions are defined to be always available.
-                 */
-                if (AcpiGbl_EarlyInitialization)
-                {
-                    return_ACPI_STATUS (AE_OK);
-                }
-
-                /*
                  * Tell all users that this region is usable by
                  * running the _REG method
                  */
