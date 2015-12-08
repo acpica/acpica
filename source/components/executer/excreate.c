@@ -444,7 +444,8 @@ AcpiExCreateRegion (
     ObjDesc->Region.Node = Node;
     ObjDesc->Region.Handler = NULL;
     ObjDesc->Common.Flags &=
-        ~(AOPOBJ_SETUP_COMPLETE | AOPOBJ_OBJECT_INITIALIZED);
+        ~(AOPOBJ_SETUP_COMPLETE | AOPOBJ_REG_CONNECTED |
+          AOPOBJ_OBJECT_INITIALIZED);
 
     /* Install the new region object in the parent Node */
 
