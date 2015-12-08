@@ -540,6 +540,7 @@ main (
 
     /* Init ACPICA and start debugger thread */
 
+    AcpiGbl_OverrideDefaultRegionHandlers = TRUE;
     Status = AcpiInitializeSubsystem ();
     ACPI_CHECK_OK (AcpiInitializeSubsystem, Status);
     if (ACPI_FAILURE (Status))
@@ -618,6 +619,17 @@ main (
         goto ErrorExit;
     }
 
+    /* Install all of the ACPI tables */
+
+    Status = AeInstallTables ();
+
+    if (ACPI_FAILURE (Status))
+    {
+        printf ("**** Could not install ACPI tables, %s\n",
+            AcpiFormatException (Status));
+        goto EnterDebugger;
+    }
+
     /*
      * Install most of the handlers (Regions, Notify, Table, etc.)
      * Override the default region handlers, especially SystemMemory,
@@ -626,27 +638,6 @@ main (
     Status = AeInstallEarlyHandlers ();
     if (ACPI_FAILURE (Status))
     {
-        goto EnterDebugger;
-    }
-
-    /* Install all of the ACPI tables */
-
-    Status = AeInstallTables ();
-
-    /*
-     * Exit namespace initialization for the "load namespace only" option.
-     * No control methods will be executed. However, still enter the
-     * the debugger.
-     */
-    if (AcpiGbl_AeLoadOnly)
-    {
-        goto EnterDebugger;
-    }
-
-    if (ACPI_FAILURE (Status))
-    {
-        printf ("**** Could not load ACPI tables, %s\n",
-            AcpiFormatException (Status));
         goto EnterDebugger;
     }
 
@@ -666,6 +657,25 @@ main (
     if (ACPI_FAILURE (Status))
     {
         printf ("**** Could not EnableSubsystem, %s\n",
+            AcpiFormatException (Status));
+        goto EnterDebugger;
+    }
+
+    Status = AeLoadTables ();
+
+    /*
+     * Exit namespace initialization for the "load namespace only" option.
+     * No control methods will be executed. However, still enter the
+     * the debugger.
+     */
+    if (AcpiGbl_AeLoadOnly)
+    {
+        goto EnterDebugger;
+    }
+
+    if (ACPI_FAILURE (Status))
+    {
+        printf ("**** Could not load ACPI tables, %s\n",
             AcpiFormatException (Status));
         goto EnterDebugger;
     }

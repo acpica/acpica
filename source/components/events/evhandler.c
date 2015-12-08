@@ -583,23 +583,9 @@ AcpiEvInstallSpaceHandler (
             }
             else
             {
-                /*
-                 * A handler is already installed but does not match the
-                 * incoming handler. However, we must allow overwrite
-                 * of the default handlers (11/2015).
-                 */
-                if (HandlerObj->AddressSpace.HandlerFlags &
-                    ACPI_ADDR_HANDLER_DEFAULT_INSTALLED)
-                {
-                    HandlerObj->AddressSpace.HandlerFlags = 0;
-                    HandlerObj->AddressSpace.Handler = Handler;
-                    HandlerObj->AddressSpace.Context = Context;
-                    HandlerObj->AddressSpace.Setup = Setup;
-                }
-                else
-                {
-                    Status = AE_ALREADY_EXISTS;
-                }
+                /* A handler is already installed */
+
+                Status = AE_ALREADY_EXISTS;
             }
 
             goto UnlockAndExit;
