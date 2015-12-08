@@ -253,7 +253,7 @@ AcpiEvHasDefaultHandler (
     ObjDesc = AcpiNsGetAttachedObject (Node);
     if (ObjDesc)
     {
-        HandlerObj = ObjDesc->Device.Handler;
+        HandlerObj = ObjDesc->CommonNotify.Handler;
 
         /* Walk the linked list of handlers for this object */
 
@@ -354,33 +354,25 @@ AcpiEvInstallHandler (
     {
         /* Check if this Device already has a handler for this address space */
 
-        NextHandlerObj = ObjDesc->Device.Handler;
-        while (NextHandlerObj)
+        NextHandlerObj = AcpiEvFindRegionHandler (
+            HandlerObj->AddressSpace.SpaceId, ObjDesc->CommonNotify.Handler);
+        if (NextHandlerObj)
         {
             /* Found a handler, is it for the same address space? */
 
-            if (NextHandlerObj->AddressSpace.SpaceId ==
-                HandlerObj->AddressSpace.SpaceId)
-            {
-                ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
-                    "Found handler for region [%s] in device %p(%p) "
-                    "handler %p\n",
-                    AcpiUtGetRegionName (HandlerObj->AddressSpace.SpaceId),
-                    ObjDesc, NextHandlerObj, HandlerObj));
+            ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
+                "Found handler for region [%s] in device %p(%p) handler %p\n",
+                AcpiUtGetRegionName (HandlerObj->AddressSpace.SpaceId),
+                ObjDesc, NextHandlerObj, HandlerObj));
 
-                /*
-                 * Since the object we found it on was a device, then it
-                 * means that someone has already installed a handler for
-                 * the branch of the namespace from this device on. Just
-                 * bail out telling the walk routine to not traverse this
-                 * branch. This preserves the scoping rule for handlers.
-                 */
-                return (AE_CTRL_DEPTH);
-            }
-
-            /* Walk the linked list of handlers attached to this device */
-
-            NextHandlerObj = NextHandlerObj->AddressSpace.Next;
+            /*
+             * Since the object we found it on was a device, then it means
+             * that someone has already installed a handler for the branch
+             * of the namespace from this device on. Just bail out telling
+             * the walk routine to not traverse this branch. This preserves
+             * the scoping rule for handlers.
+             */
+            return (AE_CTRL_DEPTH);
         }
 
         /*
@@ -482,7 +474,7 @@ AcpiEvInstallSpaceHandler (
     ACPI_OPERAND_OBJECT     *HandlerObj;
     ACPI_STATUS             Status = AE_OK;
     ACPI_OBJECT_TYPE        Type;
-    UINT8                  Flags = 0;
+    UINT8                   Flags = 0;
 
 
     ACPI_FUNCTION_TRACE (EvInstallSpaceHandler);
@@ -567,7 +559,7 @@ AcpiEvInstallSpaceHandler (
          * the handler is not already installed.
          */
         HandlerObj = AcpiEvFindRegionHandler (SpaceId,
-            ObjDesc->Device.Handler);
+            ObjDesc->CommonNotify.Handler);
 
         if (HandlerObj)
         {
@@ -678,39 +670,27 @@ AcpiEvInstallSpaceHandler (
 
     /* Install at head of Device.AddressSpace list */
 
-    HandlerObj->AddressSpace.Next = ObjDesc->Device.Handler;
+    HandlerObj->AddressSpace.Next = ObjDesc->CommonNotify.Handler;
 
     /*
      * The Device object is the first reference on the HandlerObj.
      * Each region that uses the handler adds a reference.
      */
-    ObjDesc->Device.Handler = HandlerObj;
+    ObjDesc->CommonNotify.Handler = HandlerObj;
 
     /*
-     * Walk namespace for regions only if basic initialization is
-     * complete and the entire namespace is loaded. Only then is
-     * there any point in doing this. This is basically an optimization
-     * for the early installation of region handlers -- before there
-     * is a namespace.
+     * Walk the namespace finding all of the regions this handler will
+     * manage.
+     *
+     * Start at the device and search the branch toward the leaf nodes
+     * until either the leaf is encountered or a device is detected that
+     * has an address handler of the same type.
+     *
+     * In either case, back up and search down the remainder of the branch
      */
-    if (!AcpiGbl_EarlyInitialization)
-    {
-        /*
-         * Walk the namespace finding all of the regions this
-         * handler will manage.
-         *
-         * Start at the device and search the branch toward
-         * the leaf nodes until either the leaf is encountered or
-         * a device is detected that has an address handler of the
-         * same type.
-         *
-         * In either case, back up and search down the remainder
-         * of the branch
-         */
-        Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, Node,
-            ACPI_UINT32_MAX, ACPI_NS_WALK_UNLOCK,
-            AcpiEvInstallHandler, NULL, HandlerObj, NULL);
-    }
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, Node,
+        ACPI_UINT32_MAX, ACPI_NS_WALK_UNLOCK,
+        AcpiEvInstallHandler, NULL, HandlerObj, NULL);
 
 UnlockAndExit:
     return_ACPI_STATUS (Status);

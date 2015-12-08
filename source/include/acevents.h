@@ -336,17 +336,22 @@ AcpiEvAttachRegion (
 
 void
 AcpiEvDetachRegion (
-    ACPI_OPERAND_OBJECT    *RegionObj,
+    ACPI_OPERAND_OBJECT     *RegionObj,
     BOOLEAN                 AcpiNsIsLocked);
 
-ACPI_STATUS
+void
+AcpiEvAssociateRegMethod (
+    ACPI_OPERAND_OBJECT     *RegionObj);
+
+void
 AcpiEvExecuteRegMethods (
     ACPI_NAMESPACE_NODE     *Node,
-    ACPI_ADR_SPACE_TYPE     SpaceId);
+    ACPI_ADR_SPACE_TYPE     SpaceId,
+    UINT32                  Function);
 
 ACPI_STATUS
 AcpiEvExecuteRegMethod (
-    ACPI_OPERAND_OBJECT    *RegionObj,
+    ACPI_OPERAND_OBJECT     *RegionObj,
     UINT32                  Function);
 
 
