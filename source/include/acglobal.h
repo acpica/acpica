@@ -242,7 +242,7 @@ ACPI_GLOBAL (UINT8,                     AcpiGbl_NextOwnerIdOffset);
 
 /* Initialization sequencing */
 
-ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_RegMethodsExecuted);
+ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_RegMethodsEnabled, FALSE);
 
 /* Misc */
 

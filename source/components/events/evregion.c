@@ -171,6 +171,7 @@ AcpiEvInitializeOpRegions (
 
     /* Run the _REG methods for OpRegions in each default address space */
 
+    AcpiGbl_RegMethodsEnabled = TRUE;
     for (i = 0; i < ACPI_NUM_DEFAULT_SPACES; i++)
     {
         /*
@@ -185,8 +186,6 @@ AcpiEvInitializeOpRegions (
                 AcpiGbl_DefaultAddressSpaces[i]);
         }
     }
-
-    AcpiGbl_RegMethodsExecuted = TRUE;
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
@@ -696,6 +695,7 @@ AcpiEvExecuteRegMethod (
     ACPI_EVALUATE_INFO      *Info;
     ACPI_OPERAND_OBJECT     *Args[3];
     ACPI_OPERAND_OBJECT     *RegionObj2;
+    ACPI_OPERAND_OBJECT     *HandlerObj;
     ACPI_STATUS             Status;
 
 
@@ -708,7 +708,21 @@ AcpiEvExecuteRegMethod (
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
-    if (RegionObj2->Extra.Method_REG == NULL)
+    if (RegionObj2->Extra.Method_REG == NULL ||
+	RegionObj->Region.Handler == NULL ||
+	!AcpiGbl_RegMethodsEnabled)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    HandlerObj = RegionObj->Region.Handler;
+
+    /* _REG(DISCONNECT) should be paired with _REG(CONNECT) */
+
+    if ((Function == ACPI_REG_CONNECT &&
+	 RegionObj->Common.Flags & AOPOBJ_REG_CONNECTED) ||
+        (Function == ACPI_REG_DISCONNECT &&
+         !(RegionObj->Common.Flags & AOPOBJ_REG_CONNECTED)))
     {
         return_ACPI_STATUS (AE_OK);
     }
@@ -759,6 +773,20 @@ AcpiEvExecuteRegMethod (
 
     Status = AcpiNsEvaluate (Info);
     AcpiUtRemoveReference (Args[1]);
+
+    if (ACPI_FAILURE (Status))
+    {
+        goto Cleanup2;
+    }
+
+    if (Function == ACPI_REG_CONNECT)
+    {
+        RegionObj->Common.Flags |= AOPOBJ_REG_CONNECTED;
+    }
+    else
+    {
+        RegionObj->Common.Flags &= ~AOPOBJ_REG_CONNECTED;
+    }
 
 Cleanup2:
     AcpiUtRemoveReference (Args[0]);
