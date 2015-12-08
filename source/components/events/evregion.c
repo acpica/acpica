@@ -625,6 +625,58 @@ AcpiEvAttachRegion (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiEvAssociateRegMethod
+ *
+ * PARAMETERS:  RegionObj           - Region object
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Find and associate _REG method to a region
+ *
+ ******************************************************************************/
+
+void
+AcpiEvAssociateRegMethod (
+    ACPI_OPERAND_OBJECT     *RegionObj)
+{
+    ACPI_NAME               *RegNamePtr = (ACPI_NAME *) METHOD_NAME__REG;
+    ACPI_NAMESPACE_NODE     *MethodNode;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_OPERAND_OBJECT     *RegionObj2;
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (EvAssociateRegMethod);
+
+
+    RegionObj2 = AcpiNsGetSecondaryObject (RegionObj);
+    if (!RegionObj2)
+    {
+        return_VOID;
+    }
+
+    Node = RegionObj->Region.Node->Parent;
+
+    /* Find any "_REG" method associated with this region definition */
+
+    Status = AcpiNsSearchOneScope (
+        *RegNamePtr, Node, ACPI_TYPE_METHOD, &MethodNode);
+    if (ACPI_SUCCESS (Status))
+    {
+        /*
+         * The _REG method is optional and there can be only one per region
+         * definition. This will be executed when the handler is attached
+         * or removed
+         */
+        RegionObj2->Extra.Method_REG = MethodNode;
+    }
+
+    return_VOID;
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiEvExecuteRegMethod
  *
  * PARAMETERS:  RegionObj           - Region object
