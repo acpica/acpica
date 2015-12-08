@@ -301,9 +301,6 @@ AeBuildLocalTables (
     /*
      * Install the user tables. The DSDT must be installed in the FADT.
      * All other tables are installed directly into the XSDT.
-     *
-     * Note: The tables are loaded in reverse order from the incoming
-     * input, which makes it match the command line order.
      */
     NextTable = ListHead;
     while (NextTable)
@@ -334,7 +331,7 @@ AeBuildLocalTables (
         {
             /* Install the table in the XSDT */
 
-            LocalXSDT->TableOffsetEntry[TableCount - NextIndex + 1] =
+            LocalXSDT->TableOffsetEntry[NextIndex] =
                 ACPI_PTR_TO_PHYSADDR (NextTable->Table);
             NextIndex++;
         }
