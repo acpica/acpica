@@ -599,6 +599,13 @@ AcpiEvAttachRegion (
     ACPI_FUNCTION_TRACE (EvAttachRegion);
 
 
+    /* Install the region's handler */
+
+    if (RegionObj->Region.Handler)
+    {
+        return_ACPI_STATUS (AE_ALREADY_EXISTS);
+    }
+
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
         "Adding Region [%4.4s] %p to address handler %p [%s]\n",
         AcpiUtGetNodeName (RegionObj->Region.Node),
@@ -609,14 +616,6 @@ AcpiEvAttachRegion (
 
     RegionObj->Region.Next = HandlerObj->AddressSpace.RegionList;
     HandlerObj->AddressSpace.RegionList = RegionObj;
-
-    /* Install the region's handler */
-
-    if (RegionObj->Region.Handler)
-    {
-        return_ACPI_STATUS (AE_ALREADY_EXISTS);
-    }
-
     RegionObj->Region.Handler = HandlerObj;
     AcpiUtAddReference (HandlerObj);
 
