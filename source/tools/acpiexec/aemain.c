@@ -734,6 +734,7 @@ EnterDebugger:
         break;
     }
 
+    (void) AcpiOsTerminate ();
     return (0);
 
 
