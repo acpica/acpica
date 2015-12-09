@@ -521,9 +521,11 @@ UtDisplaySummary (
             if (Gbl_Files[ASL_FILE_AML_OUTPUT].Handle)
             {
                 FlPrintFile (FileId,
-                    "%-14s %s - %u bytes, %u named objects, %u executable opcodes\n",
+                    "%-14s %s - %u bytes, %u named objects, "
+                    "%u executable opcodes\n",
                     "AML Output:",
-                    Gbl_Files[ASL_FILE_AML_OUTPUT].Filename, Gbl_TableLength,
+                    Gbl_Files[ASL_FILE_AML_OUTPUT].Filename,
+                    FlGetFileSize (ASL_FILE_AML_OUTPUT),
                     TotalNamedObjects, TotalExecutableOpcodes);
             }
         }
