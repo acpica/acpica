@@ -471,9 +471,12 @@ DtCreateOneTemplate (
         return (AE_ERROR);
     }
 
-    /* Probably should prompt to overwrite the file */
-
     AcpiUtStrlwr (DisasmFilename);
+    if (!UtQueryForOverwrite (DisasmFilename))
+    {
+        return (AE_ERROR);
+    }
+
     File = fopen (DisasmFilename, "w+");
     if (!File)
     {

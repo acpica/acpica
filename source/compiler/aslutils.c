@@ -118,7 +118,9 @@
 #include "acdisasm.h"
 #include "acnamesp.h"
 #include "amlcode.h"
-#include <acapps.h>
+#include "acapps.h"
+#include <sys/stat.h>
+
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslutils")
@@ -135,6 +137,40 @@ static void
 UtAttachNameseg (
     ACPI_PARSE_OBJECT       *Op,
     char                    *Name);
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    UtQueryForOverwrite
+ *
+ * PARAMETERS:  Pathname            - Output filename
+ *
+ * RETURN:      TRUE if file does not exist or overwrite is authorized
+ *
+ * DESCRIPTION: Query for file overwrite if it already exists.
+ *
+ ******************************************************************************/
+
+BOOLEAN
+UtQueryForOverwrite (
+    char                    *Pathname)
+{
+    struct stat             StatInfo;
+
+
+    if (!stat (Pathname, &StatInfo))
+    {
+        fprintf (stderr, "Target file \"%s\" already exists, overwrite? [y|n] ",
+            Pathname);
+
+        if (getchar () != 'y')
+        {
+            return (FALSE);
+        }
+    }
+
+    return (TRUE);
+}
 
 
 /*******************************************************************************

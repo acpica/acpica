@@ -999,6 +999,10 @@ DbgPrint (
 #define ASL_PARSE_OUTPUT    1
 #define ASL_TREE_OUTPUT     2
 
+BOOLEAN
+UtQueryForOverwrite (
+    char                    *Pathname);
+
 void
 UtDisplaySupportedTables (
     void);
