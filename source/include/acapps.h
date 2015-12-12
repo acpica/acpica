@@ -163,7 +163,7 @@
     AcpiOsPrintf (Description);
 
 #define ACPI_OPTION(Name, Description) \
-    AcpiOsPrintf ("  %-18s%s\n", Name, Description);
+    AcpiOsPrintf ("  %-20s%s\n", Name, Description);
 
 
 /* Check for unexpected exceptions */
