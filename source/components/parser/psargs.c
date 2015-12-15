@@ -929,6 +929,7 @@ AcpiPsGetNextArg (
     case ARGP_TARGET:
     case ARGP_SUPERNAME:
     case ARGP_SIMPLENAME:
+    case ARGP_NAME_OR_REF:
 
         Subop = AcpiPsPeekOpcode (ParserState);
         if (Subop == 0                  ||
@@ -951,8 +952,8 @@ AcpiPsGetNextArg (
                 Status = AcpiPsGetNextNamepath (WalkState, ParserState, Arg, 1);
 
                 /*
-                 * If the SuperName arg of Unload is a method call,
-                 * we have restored the AML pointer, just free this Arg
+                 * If the SuperName argument is a method call, we have
+                 * already restored the AML pointer, just free this Arg
                  */
                 if (Arg->Common.AmlOpcode == AML_INT_METHODCALL_OP)
                 {
