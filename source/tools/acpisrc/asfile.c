@@ -647,6 +647,7 @@ AsProcessOneFile (
 
     if (AsGetFile (Pathname, &Gbl_FileBuffer, &Gbl_FileSize))
     {
+        free (Pathname);
         return (-1);
     }
 
