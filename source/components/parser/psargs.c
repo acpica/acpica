@@ -949,7 +949,8 @@ AcpiPsGetNextArg (
 
             if (ArgType == ARGP_SUPERNAME)
             {
-                Status = AcpiPsGetNextNamepath (WalkState, ParserState, Arg, 1);
+                Status = AcpiPsGetNextNamepath (WalkState, ParserState,
+                    Arg, ACPI_POSSIBLE_METHOD_CALL);
 
                 /*
                  * If the SuperName argument is a method call, we have
@@ -963,7 +964,8 @@ AcpiPsGetNextArg (
             }
             else
             {
-                Status = AcpiPsGetNextNamepath (WalkState, ParserState, Arg, 0);
+                Status = AcpiPsGetNextNamepath (WalkState, ParserState,
+                    Arg, ACPI_NOT_METHOD_CALL);
             }
         }
         else
