@@ -180,9 +180,9 @@ AcpiExGetObjectReference (
 
         default:
 
-            ACPI_ERROR ((AE_INFO, "Unknown Reference Class 0x%2.2X",
+            ACPI_ERROR ((AE_INFO, "Invalid Reference Class 0x%2.2X",
                 ObjDesc->Reference.Class));
-            return_ACPI_STATUS (AE_AML_INTERNAL);
+            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
         break;
 

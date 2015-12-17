@@ -644,7 +644,7 @@ FlOpenMiscOutputFiles (
 
     /* All done for disassembler */
 
-    if (Gbl_FileType == ASL_INPUT_TYPE_ACPI_TABLE)
+    if (Gbl_FileType == ASL_INPUT_TYPE_BINARY_ACPI_TABLE)
     {
         return (AE_OK);
     }

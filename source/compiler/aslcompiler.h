@@ -239,11 +239,7 @@ CmDeleteCaches (
  * aslascii - ascii support
  */
 ACPI_STATUS
-FlCheckForAcpiTable (
-    FILE                    *Handle);
-
-ACPI_STATUS
-FlCheckForAscii (
+FlIsFileAsciiSource (
     char                    *Filename,
     BOOLEAN                 DisplayErrors);
 

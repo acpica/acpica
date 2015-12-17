@@ -264,7 +264,7 @@ AdAmlDisassemble (
     {
         /* Get the list of all AML tables in the file */
 
-        Status = AcpiAcGetAllTablesFromFile (Filename,
+        Status = AcGetAllTablesFromFile (Filename,
             ACPI_GET_ALL_TABLES, &ListHead);
         if (ACPI_FAILURE (Status))
         {
@@ -665,7 +665,7 @@ AdDoExternalFileList (
         AcpiOsPrintf ("External object resolution file %16s\n",
             ExternalFilename);
 
-        Status = AcpiAcGetAllTablesFromFile (
+        Status = AcGetAllTablesFromFile (
             ExternalFilename, ACPI_GET_ONLY_AML_TABLES, &ExternalListHead);
         if (ACPI_FAILURE (Status))
         {
