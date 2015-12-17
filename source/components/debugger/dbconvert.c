@@ -537,7 +537,7 @@ AcpiDbDumpPldBuffer (
     NewBuffer = AcpiDbEncodePldBuffer (PldInfo);
     if (!NewBuffer)
     {
-        return;
+        goto Exit;
     }
 
     /* The two bit-packed buffers should match */
@@ -596,6 +596,7 @@ AcpiDbDumpPldBuffer (
         AcpiOsPrintf (ACPI_PLD_OUTPUT, "PLD_HorizontalOffset", PldInfo->HorizontalOffset);
     }
 
-    ACPI_FREE (PldInfo);
     ACPI_FREE (NewBuffer);
+Exit:
+    ACPI_FREE (PldInfo);
 }
