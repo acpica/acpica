@@ -1119,8 +1119,10 @@ AcpiDmConvertToElseIf (
     ACPI_PARSE_OBJECT       *ElseOp;
 
 
-    IfOp = AcpiPsGetDepthNext (NULL, OriginalElseOp);
-    if (IfOp->Common.AmlOpcode != AML_IF_OP)
+    /* Examine the first child of the Else */
+
+    IfOp = OriginalElseOp->Common.Value.Arg;
+    if (!IfOp || (IfOp->Common.AmlOpcode != AML_IF_OP))
     {
         /* Not an Else..If sequence, cannot convert to ElseIf */
 
