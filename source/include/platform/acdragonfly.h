@@ -147,13 +147,11 @@
 #undef DEBUGGER_THREADING
 #endif /* DEBUGGER_THREADING */
 #define DEBUGGER_THREADING DEBUGGER_SINGLE_THREADED /* integrated with DDB */
-#if 0                           /* XXX */
 #include "opt_ddb.h"
 #ifdef DDB
 #define ACPI_DEBUGGER
 #endif /* DDB */
 #define ACPI_DISASSEMBLER
-#endif
 #endif
 
 #ifdef ACPI_DEBUG_CACHE
