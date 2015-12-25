@@ -248,7 +248,6 @@ InitializeFullAcpica (void)
 
     /* Initialize the ACPICA subsystem */
 
-    AcpiGbl_OverrideDefaultRegionHandlers = TRUE;
     Status = AcpiInitializeSubsystem ();
     if (ACPI_FAILURE (Status))
     {
@@ -356,7 +355,6 @@ InitializeAcpi (
 
     /* Initialize the ACPICA subsystem */
 
-    AcpiGbl_OverrideDefaultRegionHandlers = TRUE;
     Status = AcpiInitializeSubsystem ();
     if (ACPI_FAILURE (Status))
     {
