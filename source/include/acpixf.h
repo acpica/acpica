@@ -264,9 +264,9 @@ ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_CopyDsdtLocally, FALSE);
 ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_DoNotUseXsdt, FALSE);
 
 /*
- * Optionally allow default region handlers to be overridden.
+ * Optionally support group module level code.
  */
-ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_OverrideDefaultRegionHandlers, FALSE);
+ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_GroupModuleLevelCode, FALSE);
 
 /*
  * Optionally use 32-bit FADT addresses if and when there is a conflict
