@@ -368,16 +368,19 @@ AcpiInitializeObjects (
      * initialized, even if they contain executable AML (see the call to
      * AcpiNsInitializeObjects below).
      */
-    AcpiGbl_RegMethodsEnabled = TRUE;
-    if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
+    if (!AcpiGbl_GroupModuleLevelCode)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-            "[Init] Executing _REG OpRegion methods\n"));
-
-        Status = AcpiEvInitializeOpRegions ();
-        if (ACPI_FAILURE (Status))
+        AcpiGbl_RegMethodsEnabled = TRUE;
+        if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
         {
-            return_ACPI_STATUS (Status);
+            ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+                "[Init] Executing _REG OpRegion methods\n"));
+
+            Status = AcpiEvInitializeOpRegions ();
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
         }
     }
 
@@ -420,6 +423,29 @@ AcpiInitializeObjects (
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
+        }
+    }
+
+    /*
+     * Run all _REG methods
+     *
+     * Note: Any objects accessed by the _REG methods will be automatically
+     * initialized, even if they contain executable AML (see the call to
+     * AcpiNsInitializeObjects below).
+     */
+    if (AcpiGbl_GroupModuleLevelCode)
+    {
+        AcpiGbl_RegMethodsEnabled = TRUE;
+        if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+                "[Init] Executing _REG OpRegion methods\n"));
+
+            Status = AcpiEvInitializeOpRegions ();
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
         }
     }
 
