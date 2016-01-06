@@ -507,7 +507,7 @@ RsDoGpioIntDescriptor (
 
         default:
             /*
-             * PINs come through here, repeatedly. Each PIN must be a DWORD.
+             * PINs come through here, repeatedly. Each PIN must be a WORD.
              * NOTE: there is no "length" field for this, so from ACPI spec:
              *  The number of pins in the table can be calculated from:
              *  PinCount = (Resource Source Name Offset - Pin Table Offset) / 2
@@ -536,7 +536,7 @@ RsDoGpioIntDescriptor (
 
                 /* Create a named field at the start of the list */
 
-                RsCreateDwordField (InitializerOp, ACPI_RESTAG_PIN,
+                RsCreateWordField (InitializerOp, ACPI_RESTAG_PIN,
                     CurrentByteOffset + Descriptor->Gpio.PinTableOffset);
             }
             break;
@@ -721,7 +721,7 @@ RsDoGpioIoDescriptor (
 
         default:
             /*
-             * PINs come through here, repeatedly. Each PIN must be a DWORD.
+             * PINs come through here, repeatedly. Each PIN must be a WORD.
              * NOTE: there is no "length" field for this, so from ACPI spec:
              *  The number of pins in the table can be calculated from:
              *  PinCount = (Resource Source Name Offset - Pin Table Offset) / 2
@@ -750,7 +750,7 @@ RsDoGpioIoDescriptor (
 
                 /* Create a named field at the start of the list */
 
-                RsCreateDwordField (InitializerOp, ACPI_RESTAG_PIN,
+                RsCreateWordField (InitializerOp, ACPI_RESTAG_PIN,
                     CurrentByteOffset + Descriptor->Gpio.PinTableOffset);
             }
             break;
