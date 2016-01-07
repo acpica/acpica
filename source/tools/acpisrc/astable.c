@@ -161,7 +161,7 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 
 char                        DualLicenseHeader[] =
 "/*\n"
-" * Copyright (C) 2000 - 2015, Intel Corp.\n"
+" * Copyright (C) 2000 - 2016, Intel Corp.\n"
 " * All rights reserved.\n"
 " *\n"
 " * Redistribution and use in source and binary forms, with or without\n"
