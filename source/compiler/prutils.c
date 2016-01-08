@@ -486,7 +486,6 @@ PrPushInputFileStack (
 
     /* Emit a new #line directive for the include file */
 
-    Gbl_CurrentLineNumber = 1;
     FlPrintFile (ASL_FILE_PREPROCESSOR, "#line %u \"%s\"\n", 1, Filename);
 }
 
