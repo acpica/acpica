@@ -1176,7 +1176,7 @@ const ACPI_PREDEFINED_INFO      AcpiGbl_ResourceNames[] =
     PACKAGE_INFO (0,0,0,0,0,0) /* Table terminator */
 };
 
-static const ACPI_PREDEFINED_INFO      AcpiGbl_ScopeNames[] = {
+const ACPI_PREDEFINED_INFO              AcpiGbl_ScopeNames[] = {
     {{"_GPE",     0,      0}},
     {{"_PR_",     0,      0}},
     {{"_SB_",     0,      0}},
@@ -1185,7 +1185,7 @@ static const ACPI_PREDEFINED_INFO      AcpiGbl_ScopeNames[] = {
     PACKAGE_INFO (0,0,0,0,0,0) /* Table terminator */
 };
 #else
-extern const ACPI_PREDEFINED_INFO      AcpiGbl_ResourceNames[];
+extern const ACPI_PREDEFINED_INFO       AcpiGbl_ResourceNames[];
 #endif
 
 #endif
