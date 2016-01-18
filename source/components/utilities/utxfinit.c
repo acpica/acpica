@@ -368,6 +368,7 @@ AcpiInitializeObjects (
      * initialized, even if they contain executable AML (see the call to
      * AcpiNsInitializeObjects below).
      */
+    AcpiGbl_RegMethodsEnabled = TRUE;
     if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
