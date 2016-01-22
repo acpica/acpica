@@ -169,8 +169,6 @@ CgGenerateAmlOutput (
     void)
 {
 
-    DbgPrint (ASL_DEBUG_OUTPUT, "\nWriting AML\n\n");
-
     /* Generate the AML output file */
 
     FlSeekFile (ASL_FILE_SOURCE_OUTPUT, 0);
@@ -180,11 +178,7 @@ CgGenerateAmlOutput (
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD,
         CgAmlWriteWalk, NULL, NULL);
 
-    DbgPrint (ASL_TREE_OUTPUT,
-        "%*s Value    P_Op A_Op OpLen PByts Len  SubLen PSubLen OpPtr"
-        "    Parent   Child    Next     Flags    AcTyp    Final Col L#  EL#  LL#  ELL#\n",
-        76, " ");
-
+    DbgPrint (ASL_TREE_OUTPUT, ASL_PARSE_TREE_HEADER2);
     CgCloseTable ();
 }
 
@@ -208,40 +202,43 @@ CgAmlWriteWalk (
     void                    *Context)
 {
 
-    /*
-     * Print header at level 0. Alignment assumes 32-bit pointers
-     */
+    /* Generate the AML for this node */
+
+    CgWriteNode (Op);
+
+    if (!Gbl_DebugFlag)
+    {
+        return (AE_OK);
+    }
+
+    /* Print header at level 0. Alignment assumes 32-bit pointers */
+
     if (!Level)
     {
         DbgPrint (ASL_TREE_OUTPUT,
-            "Final parse tree used for AML output:\n");
-        DbgPrint (ASL_TREE_OUTPUT,
-            "%*s Value    P_Op A_Op OpLen PByts Len  SubLen PSubLen OpPtr"
-            "    Parent   Child    Next     Flags    AcTyp    Final Col L#  EL#  LL#  ELL#\n",
-            76, " ");
+            "\nFinal parse tree used for AML output:\n");
+        DbgPrint (ASL_TREE_OUTPUT, ASL_PARSE_TREE_HEADER2);
     }
 
-    /* Debug output */
+    /* Dump ParseOp name and possible value */
 
-    DbgPrint (ASL_TREE_OUTPUT,
-        "%5.5d [%2d]", Op->Asl.LogicalLineNumber, Level);
-    UtPrintFormattedName (Op->Asl.ParseOpcode, Level);
-
-    if (Op->Asl.ParseOpcode == PARSEOP_NAMESEG    ||
-        Op->Asl.ParseOpcode == PARSEOP_NAMESTRING ||
-        Op->Asl.ParseOpcode == PARSEOP_METHODCALL)
+    switch (Op->Asl.ParseOpcode)
     {
-        DbgPrint (ASL_TREE_OUTPUT,
-            "%10.32s      ", Op->Asl.ExternalName);
-    }
-    else
-    {
-        DbgPrint (ASL_TREE_OUTPUT, "                ");
+    case PARSEOP_NAMESEG:
+    case PARSEOP_NAMESTRING:
+    case PARSEOP_METHODCALL:
+    case PARSEOP_STRING_LITERAL:
+
+        UtDumpStringOp (Op, Level);
+        break;
+
+    default:
+
+        UtDumpBasicOp (Op, Level);
+        break;
     }
 
-    DbgPrint (ASL_TREE_OUTPUT,
-        "%08X %04X %04X %01X     %04X  %04X %04X   %04X    "
-        "%08X %08X %08X %08X %08X %08X %04X  %02d  %02d   %02d   %02d   %02d\n",
+    DbgPrint (ASL_TREE_OUTPUT, ASL_PARSE_TREE_DEBUG2,
         /* 1  */ (UINT32) Op->Asl.Value.Integer,
         /* 2  */ Op->Asl.ParseOpcode,
         /* 3  */ Op->Asl.AmlOpcode,
@@ -263,9 +260,6 @@ CgAmlWriteWalk (
         /* 19 */ Op->Asl.LogicalLineNumber,
         /* 20 */ Op->Asl.EndLogicalLine);
 
-    /* Generate the AML for this node */
-
-    CgWriteNode (Op);
     return (AE_OK);
 }
 

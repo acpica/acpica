@@ -436,45 +436,6 @@ DbgPrint (
     va_end (Args);
     return;
 }
-
-
-/*******************************************************************************
- *
- * FUNCTION:    UtPrintFormattedName
- *
- * PARAMETERS:  ParseOpcode         - Parser keyword ID
- *              Level               - Indentation level
- *
- * RETURN:      None
- *
- * DESCRIPTION: Print the ascii name of the parse opcode.
- *
- ******************************************************************************/
-
-#define TEXT_OFFSET 10
-
-void
-UtPrintFormattedName (
-    UINT16                  ParseOpcode,
-    UINT32                  Level)
-{
-
-    if (Level)
-    {
-        DbgPrint (ASL_TREE_OUTPUT,
-            "%*s", (3 * Level), " ");
-    }
-    DbgPrint (ASL_TREE_OUTPUT,
-        " %-20.20s", UtGetOpName (ParseOpcode));
-
-    if (Level < TEXT_OFFSET)
-    {
-        DbgPrint (ASL_TREE_OUTPUT,
-            "%*s", (TEXT_OFFSET - Level) * 3, " ");
-    }
-}
-
-
 /*******************************************************************************
  *
  * FUNCTION:    UtSetParseOpName

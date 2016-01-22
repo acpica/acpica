@@ -2685,6 +2685,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\compiler\asldebug.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\compiler\aslerror.c"
 					>
 					<FileConfiguration

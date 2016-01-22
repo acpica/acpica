@@ -205,8 +205,6 @@ XfCrossReferenceNamespace (
     ACPI_WALK_STATE         *WalkState;
 
 
-    DbgPrint (ASL_DEBUG_OUTPUT, "\nCross referencing namespace\n\n");
-
     /*
      * Create a new walk state for use when looking up names
      * within the namespace (Passed as context to the callbacks)

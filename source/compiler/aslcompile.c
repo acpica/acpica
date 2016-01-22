@@ -252,7 +252,7 @@ CmDoCompile (
     /* Generate AML opcodes corresponding to the parse tokens */
 
     Event = UtBeginEvent ("Generate AML opcodes");
-    DbgPrint (ASL_DEBUG_OUTPUT, "\nGenerating AML opcodes\n\n");
+    DbgPrint (ASL_DEBUG_OUTPUT, "Generating AML opcodes\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL,
         OpcAmlOpcodeWalk, NULL);
     UtEndEvent (Event);
@@ -275,7 +275,7 @@ CmDoCompile (
 
     Event = UtBeginEvent ("Constant folding via AML interpreter");
     DbgPrint (ASL_DEBUG_OUTPUT,
-        "\nInterpreting compile-time constant expressions\n\n");
+        "Interpreting compile-time constant expressions\n\n");
 
     if (Gbl_FoldConstants)
     {
@@ -292,7 +292,7 @@ CmDoCompile (
 
     Event = UtBeginEvent ("Updating AML opcodes after constant folding");
     DbgPrint (ASL_DEBUG_OUTPUT,
-        "\nUpdating AML opcodes after constant folding\n\n");
+        "Updating AML opcodes after constant folding\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD,
         NULL, OpcAmlOpcodeUpdateWalk, NULL);
     UtEndEvent (Event);
@@ -300,7 +300,7 @@ CmDoCompile (
     /* Calculate all AML package lengths */
 
     Event = UtBeginEvent ("Generate AML package lengths");
-    DbgPrint (ASL_DEBUG_OUTPUT, "\nGenerating Package lengths\n\n");
+    DbgPrint (ASL_DEBUG_OUTPUT, "Generating Package lengths\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL,
         LnPackageLengthWalk, NULL);
     UtEndEvent (Event);
@@ -327,6 +327,7 @@ CmDoCompile (
     /* Namespace loading */
 
     Event = UtBeginEvent ("Create ACPI Namespace");
+    DbgPrint (ASL_DEBUG_OUTPUT, "Creating ACPI Namespace\n\n");
     Status = LdLoadNamespace (RootNode);
     UtEndEvent (Event);
     if (ACPI_FAILURE (Status))
@@ -338,6 +339,7 @@ CmDoCompile (
 
     AslGbl_NamespaceEvent = UtBeginEvent (
         "Cross reference parse tree and Namespace");
+    DbgPrint (ASL_DEBUG_OUTPUT, "Cross referencing namespace\n\n");
     Status = XfCrossReferenceNamespace ();
     if (ACPI_FAILURE (Status))
     {
@@ -358,7 +360,7 @@ CmDoCompile (
     Event = UtBeginEvent ("Analyze control method return types");
     AnalysisWalkInfo.MethodStack = NULL;
 
-    DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - Method analysis\n\n");
+    DbgPrint (ASL_DEBUG_OUTPUT, "Semantic analysis - Method analysis\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE,
         MtMethodAnalysisWalkBegin,
         MtMethodAnalysisWalkEnd, &AnalysisWalkInfo);
@@ -367,7 +369,7 @@ CmDoCompile (
     /* Semantic error checking part two - typing of method returns */
 
     Event = UtBeginEvent ("Determine object types returned by methods");
-    DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - Method typing\n\n");
+    DbgPrint (ASL_DEBUG_OUTPUT, "Semantic analysis - Method typing\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD,
         NULL, AnMethodTypingWalkEnd, NULL);
     UtEndEvent (Event);
@@ -376,7 +378,7 @@ CmDoCompile (
 
     Event = UtBeginEvent ("Analyze AML operand types");
     DbgPrint (ASL_DEBUG_OUTPUT,
-        "\nSemantic analysis - Operand type checking\n\n");
+        "Semantic analysis - Operand type checking\n\n");
     if (Gbl_DoTypechecking)
     {
         TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD,
@@ -387,7 +389,7 @@ CmDoCompile (
     /* Semantic error checking part four - other miscellaneous checks */
 
     Event = UtBeginEvent ("Miscellaneous analysis");
-    DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - miscellaneous\n\n");
+    DbgPrint (ASL_DEBUG_OUTPUT, "Semantic analysis - miscellaneous\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD,
         AnOtherSemanticAnalysisWalkBegin,
         NULL, &AnalysisWalkInfo);
@@ -396,7 +398,7 @@ CmDoCompile (
     /* Calculate all AML package lengths */
 
     Event = UtBeginEvent ("Finish AML package length generation");
-    DbgPrint (ASL_DEBUG_OUTPUT, "\nGenerating Package lengths\n\n");
+    DbgPrint (ASL_DEBUG_OUTPUT, "Generating Package lengths\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL,
         LnInitLengthsWalk, NULL);
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL,
@@ -406,6 +408,7 @@ CmDoCompile (
     /* Code generation - emit the AML */
 
     Event = UtBeginEvent ("Generate AML code and write output files");
+    DbgPrint (ASL_DEBUG_OUTPUT, "Writing AML byte code\n\n");
     CgGenerateAmlOutput ();
     UtEndEvent (Event);
 

@@ -1000,6 +1000,22 @@ UtQueryForOverwrite (
     char                    *Pathname);
 
 void
+UtDumpStringOp (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level);
+
+void
+UtDumpIntegerOp (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    UINT32                  IntegerLength);
+
+void
+UtDumpBasicOp (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level);
+
+void
 UtDisplaySupportedTables (
     void);
 
@@ -1018,11 +1034,6 @@ UtEndEvent (
 void *
 UtLocalCalloc (
     UINT32                  Size);
-
-void
-UtPrintFormattedName (
-    UINT16                  ParseOpcode,
-    UINT32                  Level);
 
 void
 UtDisplaySummary (

@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: asldefine.h - Common defines for the iASL compiler
+ * Module Name: asldebug -- Debug output support
  *
  *****************************************************************************/
 
@@ -113,149 +113,213 @@
  *
  *****************************************************************************/
 
-#ifndef __ASLDEFINE_H
-#define __ASLDEFINE_H
+#include "aslcompiler.h"
+#include "aslcompiler.y.h"
 
 
-/*
- * Compiler versions and names
- */
-#define ASL_COMPILER_NAME           "ASL+ Optimizing Compiler"
-#define AML_DISASSEMBLER_NAME       "AML/ASL+ Disassembler"
-#define ASL_INVOCATION_NAME         "iasl"
-#define ASL_CREATOR_ID              "INTL"
-#define ASL_DEFINE                  "__IASL__"
-
-#define ASL_COMPLIANCE              "Supports ACPI Specification Revision 6.0"
+#define _COMPONENT          ACPI_COMPILER
+        ACPI_MODULE_NAME    ("asldebug")
 
 
-/* Configuration constants */
+/* Local prototypes */
 
-#define ASL_MAX_ERROR_COUNT         200
-#define ASL_PARSEOP_CACHE_SIZE      (1024 * 16)
-#define ASL_STRING_CACHE_SIZE       (1024 * 64)
-
-#define ASL_FIRST_PARSE_OPCODE      PARSEOP_ACCESSAS
-#define ASL_PARSE_OPCODE_BASE       PARSEOP_ACCESSAS        /* First Lex type */
-
-
-/*
- * Per-parser-generator configuration. These values are used to cheat and
- * directly access the bison/yacc token name table (yyname or yytname).
- * Note: These values are the index in yyname for the first lex token
- * (PARSEOP_ACCCESSAS).
- */
-#if defined (YYBISON)
-#define ASL_YYTNAME_START           3   /* Bison */
-#elif defined (YYBYACC)
-#define ASL_YYTNAME_START           257 /* Berkeley yacc */
-#endif
+static void
+UtDumpParseOpName (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    UINT32                  DataLength);
 
 
-/*
- * Macros
- */
-#define ASL_RESDESC_OFFSET(m)       ACPI_OFFSET (AML_RESOURCE, m)
-#define ASL_PTR_DIFF(a,b)           ((UINT8 *)(b) - (UINT8 *)(a))
-#define ASL_PTR_ADD(a,b)            ((UINT8 *)(a) = ((UINT8 *)(a) + (b)))
-#define ASL_GET_CHILD_NODE(a)       (a)->Asl.Child
-#define ASL_GET_PEER_NODE(a)        (a)->Asl.Next
-#define OP_TABLE_ENTRY(a,b,c,d)     {b,d,a,c}
+/*******************************************************************************
+ *
+ * FUNCTION:    UtDumpIntegerOp
+ *
+ * PARAMETERS:  Op                  - Current parse op
+ *              Level               - Current output indentation level
+ *              IntegerLength       - Output length of the integer (2/4/8/16)
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Emit formatted debug output for "integer" ops.
+ *              Note: IntegerLength must be one of 2,4,8,16.
+ *
+ ******************************************************************************/
+
+void
+UtDumpIntegerOp (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    UINT32                  IntegerLength)
+{
+
+    /* Emit the ParseOp name, leaving room for the integer */
+
+    UtDumpParseOpName (Op, Level, IntegerLength);
+
+    /* Emit the integer based upon length */
+
+    switch (IntegerLength)
+    {
+    case 2: /* Byte */
+    case 4: /* Word */
+    case 8: /* Dword */
+
+        DbgPrint (ASL_TREE_OUTPUT,
+            "%*.*X", IntegerLength, IntegerLength, Op->Asl.Value.Integer);
+        break;
+
+    case 16: /* Qword and Integer */
+
+        DbgPrint (ASL_TREE_OUTPUT,
+            "%8.8X%8.8X", ACPI_FORMAT_UINT64 (Op->Asl.Value.Integer));
+        break;
+
+    default:
+        break;
+    }
+}
 
 
-/* Internal AML opcodes */
+/*******************************************************************************
+ *
+ * FUNCTION:    UtDumpStringOp
+ *
+ * PARAMETERS:  Op                  - Current parse op
+ *              Level               - Current output indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Emit formatted debug output for String/Pathname ops.
+ *
+ ******************************************************************************/
 
-#define AML_RAW_DATA_BYTE           (UINT16) 0xAA01 /* write one raw byte */
-#define AML_RAW_DATA_WORD           (UINT16) 0xAA02 /* write 2 raw bytes */
-#define AML_RAW_DATA_DWORD          (UINT16) 0xAA04 /* write 4 raw bytes */
-#define AML_RAW_DATA_QWORD          (UINT16) 0xAA08 /* write 8 raw bytes */
-#define AML_RAW_DATA_BUFFER         (UINT16) 0xAA0B /* raw buffer with length */
-#define AML_RAW_DATA_CHAIN          (UINT16) 0xAA0C /* chain of raw buffers */
-#define AML_PACKAGE_LENGTH          (UINT16) 0xAA10
-#define AML_UNASSIGNED_OPCODE       (UINT16) 0xEEEE
-#define AML_DEFAULT_ARG_OP          (UINT16) 0xDDDD
-
-
-/* Types for input files */
-
-#define ASL_INPUT_TYPE_BINARY               0
-#define ASL_INPUT_TYPE_BINARY_ACPI_TABLE    1
-#define ASL_INPUT_TYPE_ASCII_ASL            2
-#define ASL_INPUT_TYPE_ASCII_DATA           3
-
-
-/* Misc */
-
-#define ASL_EXTERNAL_METHOD         255
-#define ASL_ABORT                   TRUE
-#define ASL_NO_ABORT                FALSE
-#define ASL_EOF                     ACPI_UINT32_MAX
-#define ASL_WITHIN_COMMENT          (ACPI_UINT32_MAX -1)
-#define ASL_BLANK_LINE              (ACPI_UINT32_MAX -1)
+void
+UtDumpStringOp (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level)
+{
+    char                    *String;
 
 
-/* Listings */
+    String = Op->Asl.Value.String;
 
-#define ASL_LISTING_LINE_PREFIX         ":  "
+    if (Op->Asl.ParseOpcode != PARSEOP_STRING_LITERAL)
+    {
+        /*
+         * For the "path" ops NAMEPATH, NAMESEG, METHODCALL -- if the
+         * ExternalName is valid, it takes precedence. In these cases the
+         * Value.String is the raw "internal" name from the AML code, which
+         * we don't want to use, because it contains non-ascii characters.
+         */
+        if (Op->Asl.ExternalName)
+        {
+            String = Op->Asl.ExternalName;
+        }
+    }
 
+    if (!String)
+    {
+        DbgPrint (ASL_TREE_OUTPUT,
+            " ERROR: Could not find a valid String/Path pointer\n");
+        return;
+    }
 
-/* Support for reserved method names */
+    /* Emit the ParseOp name, leaving room for the string */
 
-#define ACPI_VALID_RESERVED_NAME_MAX    0x80000000
-#define ACPI_NOT_RESERVED_NAME          ACPI_UINT32_MAX
-#define ACPI_PREDEFINED_NAME            (ACPI_UINT32_MAX - 1)
-#define ACPI_EVENT_RESERVED_NAME        (ACPI_UINT32_MAX - 2)
-#define ACPI_COMPILER_RESERVED_NAME     (ACPI_UINT32_MAX - 3)
-
-
-/* Helper macros for resource tag creation */
-
-#define RsCreateMultiBitField \
-    RsCreateResourceField
-
-#define RsCreateBitField(Op, Name, ByteOffset, BitOffset) \
-    RsCreateResourceField (Op, Name, ByteOffset, BitOffset, 1)
-
-#define RsCreateByteField(Op, Name, ByteOffset) \
-    RsCreateResourceField (Op, Name, ByteOffset, 0, 8);
-
-#define RsCreateWordField(Op, Name, ByteOffset) \
-    RsCreateResourceField (Op, Name, ByteOffset, 0, 16);
-
-#define RsCreateDwordField(Op, Name, ByteOffset) \
-    RsCreateResourceField (Op, Name, ByteOffset, 0, 32);
-
-#define RsCreateQwordField(Op, Name, ByteOffset) \
-    RsCreateResourceField (Op, Name, ByteOffset, 0, 64);
+    UtDumpParseOpName (Op, Level, strlen (String));
+    DbgPrint (ASL_TREE_OUTPUT, "%s", String);
+}
 
 
-/*
- * Macros for debug output
- */
+/*******************************************************************************
+ *
+ * FUNCTION:    UtDumpBasicOp
+ *
+ * PARAMETERS:  Op                  - Current parse op
+ *              Level               - Current output indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Generic formatted debug output for "basic" ops that have no
+ *              associated strings or integer values.
+ *
+ ******************************************************************************/
 
-#define DEBUG_MAX_LINE_LENGTH       61
-#define DEBUG_SPACES_PER_INDENT     3
-#define DEBUG_FULL_LINE_LENGTH      71
+void
+UtDumpBasicOp (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level)
+{
 
-#define ASL_PARSE_TREE_FULL_LINE    "\n%71.71s"
+    /* Just print out the ParseOp name, there is no extra data */
 
-/* Header/Trailer for original parse tree directly from the parser */
+    UtDumpParseOpName (Op, Level, 0);
+}
 
-#define ASL_PARSE_TREE_HEADER1 \
-    "%*s Value P_Op Flags     Line#  End# LogL# EndL#\n", 65, " "
 
-#define ASL_PARSE_TREE_DEBUG1 \
-    " %4.4X %8.8X %5d %5d %5d %5d"
+/*******************************************************************************
+ *
+ * FUNCTION:    UtDumpParseOpName
+ *
+ * PARAMETERS:  Op                  - Current parse op
+ *              Level               - Current output indentation level
+ *              DataLength          - Length of data to appear after the name
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Indent and emit the ascii ParseOp name for the op
+ *
+ ******************************************************************************/
 
-/* Header/Trailer for processed parse tree used for AML generation */
+static void
+UtDumpParseOpName (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    UINT32                  DataLength)
+{
+    char                    *ParseOpName;
+    UINT32                  IndentLength;
+    UINT32                  NameLength;
+    UINT32                  LineLength;
+    UINT32                  PaddingLength;
 
-#define ASL_PARSE_TREE_HEADER2 \
-    "%*s NameString Value    P_Op A_Op OpLen PByts Len  SubLen PSubLen OpPtr"\
-    "    Parent   Child    Next     Flags    AcTyp    Final Col"\
-    " Line#  End# LogL# EndL#\n", 60, " "
 
-#define ASL_PARSE_TREE_DEBUG2 \
-    " %08X %04X %04X %01X     %04X  %04X %05X  %05X   "\
-    "%08X %08X %08X %08X %08X %08X %04X  %02d  %5d %5d %5d %5d\n"
+    /* Emit the LineNumber/IndentLevel prefix on each output line */
 
-#endif /* ASLDEFINE.H */
+    DbgPrint (ASL_TREE_OUTPUT,
+        "%5.5d [%2d]", Op->Asl.LogicalLineNumber, Level);
+
+    ParseOpName = UtGetOpName (Op->Asl.ParseOpcode);
+
+    /* Calculate various lengths for output alignment */
+
+    IndentLength = Level * DEBUG_SPACES_PER_INDENT;
+    NameLength = strlen (ParseOpName);
+    LineLength = IndentLength + 1 + NameLength + 1 + DataLength;
+    PaddingLength = (DEBUG_MAX_LINE_LENGTH + 1) - LineLength;
+
+    /* Parse tree indentation is based upon the nesting/indent level */
+
+    if (Level)
+    {
+        DbgPrint (ASL_TREE_OUTPUT, "%*s", IndentLength, " ");
+    }
+
+    /* Emit the actual name here */
+
+    DbgPrint (ASL_TREE_OUTPUT, " %s", ParseOpName);
+
+    /* Emit extra padding blanks for alignment of later data items */
+
+    if (LineLength > DEBUG_MAX_LINE_LENGTH)
+    {
+        /* Split a long line immediately after the ParseOpName string */
+
+        DbgPrint (ASL_TREE_OUTPUT, "\n%*s",
+            (DEBUG_FULL_LINE_LENGTH - DataLength), " ");
+    }
+    else
+    {
+        DbgPrint (ASL_TREE_OUTPUT, "%*s", PaddingLength, " ");
+    }
+}

@@ -56,6 +56,7 @@ OBJECTS = \
 	$(OBJDIR)/aslbtypes.o\
 	$(OBJDIR)/aslcodegen.o\
 	$(OBJDIR)/aslcompile.o\
+	$(OBJDIR)/asldebug.o\
 	$(OBJDIR)/aslerror.o\
 	$(OBJDIR)/aslfiles.o\
 	$(OBJDIR)/aslfileio.o\
