@@ -341,63 +341,6 @@ UtEndEvent (
 
 /*******************************************************************************
  *
- * FUNCTION:    UtConvertByteToHex
- *
- * PARAMETERS:  RawByte             - Binary data
- *              Buffer              - Pointer to where the hex bytes will be
- *                                    stored
- *
- * RETURN:      Ascii hex byte is stored in Buffer.
- *
- * DESCRIPTION: Perform hex-to-ascii translation. The return data is prefixed
- *              with "0x"
- *
- ******************************************************************************/
-
-void
-UtConvertByteToHex (
-    UINT8                   RawByte,
-    UINT8                   *Buffer)
-{
-
-    Buffer[0] = '0';
-    Buffer[1] = 'x';
-
-    Buffer[2] = (UINT8) AcpiUtHexToAsciiChar (RawByte, 4);
-    Buffer[3] = (UINT8) AcpiUtHexToAsciiChar (RawByte, 0);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    UtConvertByteToAsmHex
- *
- * PARAMETERS:  RawByte             - Binary data
- *              Buffer              - Pointer to where the hex bytes will be
- *                                    stored
- *
- * RETURN:      Ascii hex byte is stored in Buffer.
- *
- * DESCRIPTION: Perform hex-to-ascii translation. The return data is prefixed
- *              with '0', and a trailing 'h' is added.
- *
- ******************************************************************************/
-
-void
-UtConvertByteToAsmHex (
-    UINT8                   RawByte,
-    UINT8                   *Buffer)
-{
-
-    Buffer[0] = '0';
-    Buffer[1] = (UINT8) AcpiUtHexToAsciiChar (RawByte, 4);
-    Buffer[2] = (UINT8) AcpiUtHexToAsciiChar (RawByte, 0);
-    Buffer[3] = 'h';
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    DbgPrint
  *
  * PARAMETERS:  Type                - Type of output
@@ -1213,3 +1156,62 @@ ErrorExit:
 
     return (Status);
 }
+
+
+#ifdef _OBSOLETE_FUNCTIONS
+/*******************************************************************************
+ *
+ * FUNCTION:    UtConvertByteToHex
+ *
+ * PARAMETERS:  RawByte             - Binary data
+ *              Buffer              - Pointer to where the hex bytes will be
+ *                                    stored
+ *
+ * RETURN:      Ascii hex byte is stored in Buffer.
+ *
+ * DESCRIPTION: Perform hex-to-ascii translation. The return data is prefixed
+ *              with "0x"
+ *
+ ******************************************************************************/
+
+void
+UtConvertByteToHex (
+    UINT8                   RawByte,
+    UINT8                   *Buffer)
+{
+
+    Buffer[0] = '0';
+    Buffer[1] = 'x';
+
+    Buffer[2] = (UINT8) AcpiUtHexToAsciiChar (RawByte, 4);
+    Buffer[3] = (UINT8) AcpiUtHexToAsciiChar (RawByte, 0);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    UtConvertByteToAsmHex
+ *
+ * PARAMETERS:  RawByte             - Binary data
+ *              Buffer              - Pointer to where the hex bytes will be
+ *                                    stored
+ *
+ * RETURN:      Ascii hex byte is stored in Buffer.
+ *
+ * DESCRIPTION: Perform hex-to-ascii translation. The return data is prefixed
+ *              with '0', and a trailing 'h' is added.
+ *
+ ******************************************************************************/
+
+void
+UtConvertByteToAsmHex (
+    UINT8                   RawByte,
+    UINT8                   *Buffer)
+{
+
+    Buffer[0] = '0';
+    Buffer[1] = (UINT8) AcpiUtHexToAsciiChar (RawByte, 4);
+    Buffer[2] = (UINT8) AcpiUtHexToAsciiChar (RawByte, 0);
+    Buffer[3] = 'h';
+}
+#endif /* OBSOLETE_FUNCTIONS */
