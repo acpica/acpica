@@ -1090,7 +1090,7 @@ UtDoConstant (
     char                    *String);
 
 ACPI_STATUS
-stroul64 (
+strtoul64 (
     char                    *String,
     UINT32                  Base,
     UINT64                  *RetInteger);

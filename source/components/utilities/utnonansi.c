@@ -272,7 +272,7 @@ AcpiUtStrtoul64 (
     UINT8                   Term = 0;
 
 
-    ACPI_FUNCTION_TRACE_STR (UtStroul64, String);
+    ACPI_FUNCTION_TRACE_STR (UtStrtoul64, String);
 
 
     switch (Base)

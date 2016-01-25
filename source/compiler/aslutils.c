@@ -949,7 +949,7 @@ UtDoConstant (
     char                    ErrBuf[64];
 
 
-    Status = stroul64 (String, 0, &Converted);
+    Status = strtoul64 (String, 0, &Converted);
     if (ACPI_FAILURE (Status))
     {
         sprintf (ErrBuf, "%s %s\n", "Conversion error:",
@@ -965,7 +965,7 @@ UtDoConstant (
 
 /*******************************************************************************
  *
- * FUNCTION:    stroul64
+ * FUNCTION:    strtoul64
  *
  * PARAMETERS:  String              - Null terminated string
  *              Terminater          - Where a pointer to the terminating byte
@@ -979,7 +979,7 @@ UtDoConstant (
  ******************************************************************************/
 
 ACPI_STATUS
-stroul64 (
+strtoul64 (
     char                    *String,
     UINT32                  Base,
     UINT64                  *RetInteger)
