@@ -477,7 +477,7 @@ AcpiDbDisplayTableInfo (
         {
             /* If the pointer is null, the table has been unloaded */
 
-            ACPI_INFO ((AE_INFO, "%4.4s - Table has been unloaded",
+            ACPI_INFO (("%4.4s - Table has been unloaded",
                 TableDesc->Signature.Ascii));
         }
     }

@@ -1244,11 +1244,9 @@ AcpiWarning (
     ...))
 
 ACPI_MSG_DEPENDENT_RETURN_VOID (
-ACPI_PRINTF_LIKE(3)
+ACPI_PRINTF_LIKE(1)
 void ACPI_INTERNAL_VAR_XFACE
 AcpiInfo (
-    const char              *ModuleName,
-    UINT32                  LineNumber,
     const char              *Format,
     ...))
 

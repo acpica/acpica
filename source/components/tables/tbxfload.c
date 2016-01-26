@@ -299,7 +299,7 @@ AcpiTbLoadNamespace (
 
     if (!TablesFailed)
     {
-        ACPI_INFO ((AE_INFO,
+        ACPI_INFO ((
             "%u ACPI AML tables successfully acquired and loaded\n",
             TablesLoaded));
     }
@@ -412,7 +412,7 @@ AcpiLoadTable (
 
     /* Install the table and load it into the namespace */
 
-    ACPI_INFO ((AE_INFO, "Host-directed Dynamic ACPI Table Load:"));
+    ACPI_INFO (("Host-directed Dynamic ACPI Table Load:"));
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
 
     Status = AcpiTbInstallStandardTable (ACPI_PTR_TO_PHYSADDR (Table),
