@@ -1089,12 +1089,6 @@ UINT64
 UtDoConstant (
     char                    *String);
 
-ACPI_STATUS
-strtoul64 (
-    char                    *String,
-    UINT32                  Base,
-    UINT64                  *RetInteger);
-
 
 /*
  * asluuid - UUID support

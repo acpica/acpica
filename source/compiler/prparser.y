@@ -254,11 +254,11 @@ Expression
 
       /* Default base for a non-prefixed integer is 10 */
 
-    | EXPOP_NUMBER                                  { strtoul64 (PrParsertext, 10, &$$);}
+    | EXPOP_NUMBER                                  { AcpiUtStrtoul64 (PrParsertext, 10, &$$);}
 
       /* Standard hex number (0x1234) */
 
-    | EXPOP_HEX_NUMBER                              { strtoul64 (PrParsertext, 16, &$$);}
+    | EXPOP_HEX_NUMBER                              { AcpiUtStrtoul64 (PrParsertext, 16, &$$);}
     ;
 %%
 

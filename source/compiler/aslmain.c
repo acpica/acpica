@@ -375,6 +375,12 @@ AslInitialize (
 
     AcpiGbl_DmOpt_Verbose = FALSE;
 
+    /* Default integer width is 64 bits */
+
+    AcpiGbl_IntegerBitWidth = 64;
+    AcpiGbl_IntegerNybbleWidth = 16;
+    AcpiGbl_IntegerByteWidth = 8;
+
     for (i = 0; i < ASL_NUM_FILES; i++)
     {
         Gbl_Files[i].Handle = NULL;
