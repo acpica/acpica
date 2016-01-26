@@ -145,36 +145,6 @@ static void
 AslInitialize (
     void);
 
-UINT8
-AcpiIsBigEndianMachine (
-    void);
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiIsBigEndianMachine
- *
- * PARAMETERS:  None
- *
- * RETURN:      TRUE if machine is big endian
- *              FALSE if machine is little endian
- *
- * DESCRIPTION: Detect whether machine is little endian or big endian.
- *
- ******************************************************************************/
-
-UINT8
-AcpiIsBigEndianMachine (
-    void)
-{
-    union {
-        UINT32              Integer;
-        UINT8               Bytes[4];
-    } Overlay = {0xFF000000};
-
-    return (Overlay.Bytes[0]); /* Returns 0xFF (TRUE) for big endian */
-}
-
 
 /*******************************************************************************
  *
@@ -424,7 +394,7 @@ main (
      * be little-endian, and support for big-endian machines needs to
      * be implemented.
      */
-    if (AcpiIsBigEndianMachine ())
+    if (UtIsBigEndianMachine ())
     {
         fprintf (stderr,
             "iASL is not currently supported on big-endian machines.\n");

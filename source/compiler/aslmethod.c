@@ -125,7 +125,7 @@
 
 /* Local prototypes */
 
-void
+static void
 MtCheckNamedObjectInMethod (
     ACPI_PARSE_OBJECT       *Op,
     ASL_METHOD_INFO         *MethodInfo);
@@ -565,7 +565,7 @@ MtMethodAnalysisWalkBegin (
  *
  ******************************************************************************/
 
-void
+static void
 MtCheckNamedObjectInMethod (
     ACPI_PARSE_OBJECT       *Op,
     ASL_METHOD_INFO         *MethodInfo)
