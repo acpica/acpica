@@ -235,16 +235,16 @@ LsGenerateListing (
 
         LsDoOffsetTableHeader (FileId);
 
-        TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD, LsAmlOffsetWalk,
-            NULL, (void *) ACPI_TO_POINTER (FileId));
+        TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_DOWNWARD,
+            LsAmlOffsetWalk, NULL, (void *) ACPI_TO_POINTER (FileId));
         LsDoOffsetTableFooter (FileId);
         return;
     }
 
     /* Process all parse nodes */
 
-    TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD, LsAmlListingWalk,
-        NULL, (void *) ACPI_TO_POINTER (FileId));
+    TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_DOWNWARD,
+        LsAmlListingWalk, NULL, (void *) ACPI_TO_POINTER (FileId));
 
     /* Final processing */
 
@@ -332,7 +332,7 @@ LsDumpParseTree (
     DbgPrint (ASL_TREE_OUTPUT, "\nOriginal parse tree from parser:\n\n");
     DbgPrint (ASL_TREE_OUTPUT, ASL_PARSE_TREE_HEADER1);
 
-    TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD,
+    TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_DOWNWARD,
         LsTreeWriteWalk, NULL, NULL);
 
     DbgPrint (ASL_TREE_OUTPUT, ASL_PARSE_TREE_HEADER1);

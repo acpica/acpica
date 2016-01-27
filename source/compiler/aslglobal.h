@@ -312,7 +312,7 @@ ASL_EXTERN ACPI_SERIAL_INFO         ASL_INIT_GLOBAL (*Gbl_SerialList, NULL);
 
 ASL_EXTERN UINT8                    ASL_INIT_GLOBAL (Gbl_RevisionOverride, 0);
 ASL_EXTERN UINT8                    ASL_INIT_GLOBAL (Gbl_TempCount, 0);
-ASL_EXTERN ACPI_PARSE_OBJECT        ASL_INIT_GLOBAL (*RootNode, NULL);
+ASL_EXTERN ACPI_PARSE_OBJECT        ASL_INIT_GLOBAL (*Gbl_ParseTreeRoot, NULL);
 ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_TableLength, 0);
 ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_SourceLine, 0);
 ASL_EXTERN ASL_LISTING_NODE         ASL_INIT_GLOBAL (*Gbl_ListingNode, NULL);

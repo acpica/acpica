@@ -210,7 +210,7 @@ CmDoCompile (
 
     /* Did the parse tree get successfully constructed? */
 
-    if (!RootNode)
+    if (!Gbl_ParseTreeRoot)
     {
         /*
          * If there are no errors, then we have some sort of
@@ -238,14 +238,14 @@ CmDoCompile (
 
     LsDumpParseTree ();
 
-    OpcGetIntegerWidth (RootNode->Asl.Child);
+    OpcGetIntegerWidth (Gbl_ParseTreeRoot->Asl.Child);
     UtEndEvent (Event);
 
     /* Pre-process parse tree for any operator transforms */
 
     Event = UtBeginEvent ("Parse tree transforms");
     DbgPrint (ASL_DEBUG_OUTPUT, "\nParse tree transforms\n\n");
-    TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD,
+    TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_DOWNWARD,
         TrAmlTransformWalk, NULL, NULL);
     UtEndEvent (Event);
 
@@ -253,7 +253,7 @@ CmDoCompile (
 
     Event = UtBeginEvent ("Generate AML opcodes");
     DbgPrint (ASL_DEBUG_OUTPUT, "Generating AML opcodes\n\n");
-    TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL,
+    TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_UPWARD, NULL,
         OpcAmlOpcodeWalk, NULL);
     UtEndEvent (Event);
 
@@ -279,7 +279,7 @@ CmDoCompile (
 
     if (Gbl_FoldConstants)
     {
-        TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD,
+        TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_DOWNWARD,
             OpcAmlConstantWalk, NULL, NULL);
     }
     else
@@ -293,7 +293,7 @@ CmDoCompile (
     Event = UtBeginEvent ("Updating AML opcodes after constant folding");
     DbgPrint (ASL_DEBUG_OUTPUT,
         "Updating AML opcodes after constant folding\n\n");
-    TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD,
+    TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_UPWARD,
         NULL, OpcAmlOpcodeUpdateWalk, NULL);
     UtEndEvent (Event);
 
@@ -301,7 +301,7 @@ CmDoCompile (
 
     Event = UtBeginEvent ("Generate AML package lengths");
     DbgPrint (ASL_DEBUG_OUTPUT, "Generating Package lengths\n\n");
-    TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL,
+    TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_UPWARD, NULL,
         LnPackageLengthWalk, NULL);
     UtEndEvent (Event);
 
@@ -328,7 +328,7 @@ CmDoCompile (
 
     Event = UtBeginEvent ("Create ACPI Namespace");
     DbgPrint (ASL_DEBUG_OUTPUT, "Creating ACPI Namespace\n\n");
-    Status = LdLoadNamespace (RootNode);
+    Status = LdLoadNamespace (Gbl_ParseTreeRoot);
     UtEndEvent (Event);
     if (ACPI_FAILURE (Status))
     {
@@ -361,7 +361,7 @@ CmDoCompile (
     AnalysisWalkInfo.MethodStack = NULL;
 
     DbgPrint (ASL_DEBUG_OUTPUT, "Semantic analysis - Method analysis\n\n");
-    TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE,
+    TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_TWICE,
         MtMethodAnalysisWalkBegin,
         MtMethodAnalysisWalkEnd, &AnalysisWalkInfo);
     UtEndEvent (Event);
@@ -370,7 +370,7 @@ CmDoCompile (
 
     Event = UtBeginEvent ("Determine object types returned by methods");
     DbgPrint (ASL_DEBUG_OUTPUT, "Semantic analysis - Method typing\n\n");
-    TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD,
+    TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_UPWARD,
         NULL, AnMethodTypingWalkEnd, NULL);
     UtEndEvent (Event);
 
@@ -381,7 +381,7 @@ CmDoCompile (
         "Semantic analysis - Operand type checking\n\n");
     if (Gbl_DoTypechecking)
     {
-        TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD,
+        TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_UPWARD,
             NULL, AnOperandTypecheckWalkEnd, &AnalysisWalkInfo);
     }
     UtEndEvent (Event);
@@ -390,7 +390,7 @@ CmDoCompile (
 
     Event = UtBeginEvent ("Miscellaneous analysis");
     DbgPrint (ASL_DEBUG_OUTPUT, "Semantic analysis - miscellaneous\n\n");
-    TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD,
+    TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_DOWNWARD,
         AnOtherSemanticAnalysisWalkBegin,
         NULL, &AnalysisWalkInfo);
     UtEndEvent (Event);
@@ -399,9 +399,9 @@ CmDoCompile (
 
     Event = UtBeginEvent ("Finish AML package length generation");
     DbgPrint (ASL_DEBUG_OUTPUT, "Generating Package lengths\n\n");
-    TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL,
+    TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_UPWARD, NULL,
         LnInitLengthsWalk, NULL);
-    TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL,
+    TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_UPWARD, NULL,
         LnPackageLengthWalk, NULL);
     UtEndEvent (Event);
 
@@ -891,7 +891,7 @@ CmDeleteCaches (
     Gbl_ParseOpCount = 0;
     Gbl_ParseOpCacheNext = NULL;
     Gbl_ParseOpCacheLast = NULL;
-    RootNode = NULL;
+    Gbl_ParseTreeRoot = NULL;
 
     /* Generic string cache */
 

@@ -175,7 +175,7 @@ CgGenerateAmlOutput (
     Gbl_SourceLine = 0;
     Gbl_NextError = Gbl_ErrorLog;
 
-    TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD,
+    TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_DOWNWARD,
         CgAmlWriteWalk, NULL, NULL);
 
     DbgPrint (ASL_TREE_OUTPUT, ASL_PARSE_TREE_HEADER2);
@@ -624,7 +624,7 @@ CgCloseTable (
 
     /* Process all definition blocks */
 
-    Op = RootNode->Asl.Child;
+    Op = Gbl_ParseTreeRoot->Asl.Child;
     while (Op)
     {
         CgUpdateHeader (Op);

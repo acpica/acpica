@@ -217,8 +217,8 @@ XfCrossReferenceNamespace (
 
     /* Walk the entire parse tree */
 
-    TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE, XfNamespaceLocateBegin,
-        XfNamespaceLocateEnd, WalkState);
+    TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_TWICE,
+        XfNamespaceLocateBegin, XfNamespaceLocateEnd, WalkState);
 
     ACPI_FREE (WalkState);
     return (AE_OK);
