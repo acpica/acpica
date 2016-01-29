@@ -656,7 +656,6 @@ CgWriteNode (
     /* TBD: this may not be the best place for this check */
 
     if ((Op->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)  ||
-        (Op->Asl.ParseOpcode == PARSEOP_EXTERNAL)     ||
         (Op->Asl.ParseOpcode == PARSEOP_INCLUDE)      ||
         (Op->Asl.ParseOpcode == PARSEOP_INCLUDE_END))
     {

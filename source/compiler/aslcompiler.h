@@ -724,7 +724,13 @@ ApCheckPackage (
  * asltransform - parse tree transformations
  */
 ACPI_STATUS
-TrAmlTransformWalk (
+TrAmlTransformWalkBegin (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
+ACPI_STATUS
+TrAmlTransformWalkEnd (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context);
@@ -740,6 +746,25 @@ TrWalkParseTree (
     ASL_WALK_CALLBACK       DescendingCallback,
     ASL_WALK_CALLBACK       AscendingCallback,
     void                    *Context);
+
+/*
+ * aslexternal - External opcode support
+ */
+ACPI_STATUS
+ExAmlExternalWalkBegin (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
+ACPI_STATUS
+ExAmlExternalWalkEnd (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
+void
+ExDoExternal (
+    ACPI_PARSE_OBJECT       *Op);
 
 /* Values for "Visitation" parameter above */
 

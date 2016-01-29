@@ -58,6 +58,7 @@ OBJECTS = \
 	$(OBJDIR)/aslcompile.o\
 	$(OBJDIR)/asldebug.o\
 	$(OBJDIR)/aslerror.o\
+	$(OBJDIR)/aslexternal.o\
 	$(OBJDIR)/aslfiles.o\
 	$(OBJDIR)/aslfileio.o\
 	$(OBJDIR)/aslfold.o\

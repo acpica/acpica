@@ -950,7 +950,8 @@ XfNamespaceLocateBegin (
             NextOp = NextOp->Asl.Next;
         }
 
-        if (Node->Value != ASL_EXTERNAL_METHOD)
+        if (Node->Value != ASL_EXTERNAL_METHOD &&
+            Op->Asl.Parent->Asl.ParseOpcode != PARSEOP_EXTERNAL)
         {
             /*
              * Check the parsed arguments with the number expected by the

@@ -313,12 +313,14 @@ ASL_EXTERN ACPI_SERIAL_INFO         ASL_INIT_GLOBAL (*Gbl_SerialList, NULL);
 ASL_EXTERN UINT8                    ASL_INIT_GLOBAL (Gbl_RevisionOverride, 0);
 ASL_EXTERN UINT8                    ASL_INIT_GLOBAL (Gbl_TempCount, 0);
 ASL_EXTERN ACPI_PARSE_OBJECT        ASL_INIT_GLOBAL (*Gbl_ParseTreeRoot, NULL);
+ASL_EXTERN ACPI_PARSE_OBJECT        ASL_INIT_GLOBAL (*Gbl_ExternalsListHead, NULL);
 ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_TableLength, 0);
 ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_SourceLine, 0);
 ASL_EXTERN ASL_LISTING_NODE         ASL_INIT_GLOBAL (*Gbl_ListingNode, NULL);
-ASL_EXTERN ACPI_PARSE_OBJECT        *Gbl_FirstLevelInsertionNode;
 ASL_EXTERN UINT8                    ASL_INIT_GLOBAL (Gbl_FileType, 0);
 ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_Signature, NULL);
+
+ASL_EXTERN ACPI_PARSE_OBJECT        *Gbl_FirstLevelInsertionNode;
 
 ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_CurrentHexColumn, 0);
 ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_CurrentAmlOffset, 0);
@@ -340,7 +342,7 @@ ASL_EXTERN ACPI_TABLE_HEADER        TableHeader;
 
 /* Event timing */
 
-#define ASL_NUM_EVENTS              20
+#define ASL_NUM_EVENTS              24
 ASL_EXTERN ASL_EVENT_INFO           AslGbl_Events[ASL_NUM_EVENTS];
 ASL_EXTERN UINT8                    AslGbl_NextEvent;
 ASL_EXTERN UINT8                    AslGbl_NamespaceEvent;

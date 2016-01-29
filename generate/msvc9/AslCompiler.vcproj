@@ -2711,6 +2711,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\compiler\aslexternal.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\compiler\aslfileio.c"
 					>
 				</File>

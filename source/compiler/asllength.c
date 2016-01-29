@@ -471,7 +471,6 @@ CgGenerateAmlLengths (
         break;
 
     case PARSEOP_DEFAULT_ARG:
-    case PARSEOP_EXTERNAL:
     case PARSEOP_INCLUDE:
     case PARSEOP_INCLUDE_END:
 

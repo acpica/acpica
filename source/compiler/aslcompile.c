@@ -245,8 +245,8 @@ CmDoCompile (
 
     Event = UtBeginEvent ("Parse tree transforms");
     DbgPrint (ASL_DEBUG_OUTPUT, "\nParse tree transforms\n\n");
-    TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_DOWNWARD,
-        TrAmlTransformWalk, NULL, NULL);
+    TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_TWICE,
+        TrAmlTransformWalkBegin, TrAmlTransformWalkEnd, NULL);
     UtEndEvent (Event);
 
     /* Generate AML opcodes corresponding to the parse tokens */
@@ -350,6 +350,14 @@ CmDoCompile (
 
     LkFindUnreferencedObjects ();
     UtEndEvent (AslGbl_NamespaceEvent);
+
+    /* Resolve External Declarations */
+
+    Event = UtBeginEvent ("Resolve all Externals");
+    DbgPrint (ASL_DEBUG_OUTPUT, "\nResolve Externals\n\n");
+    TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_TWICE,
+        ExAmlExternalWalkBegin, ExAmlExternalWalkEnd, NULL);
+    UtEndEvent (Event);
 
     /*
      * Semantic analysis. This can happen only after the
