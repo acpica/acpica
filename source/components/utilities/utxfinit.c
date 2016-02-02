@@ -249,11 +249,14 @@ AcpiEnableSubsystem (
      * installed before any AML code can be executed, especially any
      * module-level code (11/2015).
      */
-    Status = AcpiEvInstallRegionHandlers ();
-    if (ACPI_FAILURE (Status))
+    if (!AcpiGbl_GroupModuleLevelCode)
     {
-        ACPI_EXCEPTION ((AE_INFO, Status, "During Region initialization"));
-        return_ACPI_STATUS (Status);
+        Status = AcpiEvInstallRegionHandlers ();
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_EXCEPTION ((AE_INFO, Status, "During Region initialization"));
+            return_ACPI_STATUS (Status);
+        }
     }
 
 #if (!ACPI_REDUCED_HARDWARE)

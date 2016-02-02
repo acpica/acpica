@@ -192,6 +192,13 @@ AcpiDsStoreObjectToLocal (
 }
 
 ACPI_STATUS
+AcpiEvInstallRegionHandlers (
+    void)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
 AcpiEvQueueNotifyRequest (
     ACPI_NAMESPACE_NODE     *Node,
     UINT32                  NotifyValue)
