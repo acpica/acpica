@@ -226,7 +226,7 @@ ACPI_STATUS
 AcpiNsInitializeDevices (
     UINT32                  Flags)
 {
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
     ACPI_DEVICE_WALK_INFO   Info;
 
 
