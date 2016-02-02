@@ -166,7 +166,7 @@ AcpiNsInitializeObjects (
 
 ACPI_STATUS
 AcpiNsInitializeDevices (
-    void);
+    UINT32                  Flags);
 
 
 /*

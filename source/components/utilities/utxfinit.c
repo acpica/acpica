@@ -406,36 +406,15 @@ AcpiInitializeObjects (
         }
     }
 
-    /*
-     * Run all _REG methods
-     *
-     * Note: Any objects accessed by the _REG methods will be automatically
-     * initialized, even if they contain executable AML (see the call to
-     * AcpiNsInitializeObjects below).
-     */
     AcpiGbl_RegMethodsEnabled = TRUE;
-    if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-            "[Init] Executing _REG OpRegion methods\n"));
-
-        Status = AcpiEvInitializeOpRegions ();
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
-    }
 
     /*
-     * Initialize all device objects in the namespace. This runs the device
-     * _STA and _INI methods.
+     * Initialize all device/region objects in the namespace. This runs
+     * the device _STA and _INI methods and region _REG methods.
      */
-    if (!(Flags & ACPI_NO_DEVICE_INIT))
+    if (!(Flags & (ACPI_NO_DEVICE_INIT | ACPI_NO_ADDRESS_SPACE_INIT)))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-            "[Init] Initializing ACPI Devices\n"));
-
-        Status = AcpiNsInitializeDevices ();
+        Status = AcpiNsInitializeDevices (Flags);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
