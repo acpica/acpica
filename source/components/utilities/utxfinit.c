@@ -406,7 +406,7 @@ AcpiInitializeObjects (
         }
     }
 
-    AcpiGbl_RegMethodsEnabled = TRUE;
+    AcpiGbl_NamespaceInitialized = TRUE;
 
     /*
      * Initialize all device/region objects in the namespace. This runs

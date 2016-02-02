@@ -708,7 +708,7 @@ AcpiEvExecuteRegMethod (
 
     if (RegionObj2->Extra.Method_REG == NULL ||
         RegionObj->Region.Handler == NULL ||
-        !AcpiGbl_RegMethodsEnabled)
+        !AcpiGbl_NamespaceInitialized)
     {
         return_ACPI_STATUS (AE_OK);
     }
