@@ -364,26 +364,6 @@ AcpiInitializeObjects (
     ACPI_FUNCTION_TRACE (AcpiInitializeObjects);
 
 
-    /*
-     * Run all _REG methods
-     *
-     * Note: Any objects accessed by the _REG methods will be automatically
-     * initialized, even if they contain executable AML (see the call to
-     * AcpiNsInitializeObjects below).
-     */
-    AcpiGbl_RegMethodsEnabled = TRUE;
-    if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-            "[Init] Executing _REG OpRegion methods\n"));
-
-        Status = AcpiEvInitializeOpRegions ();
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
-    }
-
 #ifdef ACPI_EXEC_APP
     /*
      * This call implements the "initialization file" option for AcpiExec.
@@ -420,6 +400,26 @@ AcpiInitializeObjects (
             "[Init] Completing Initialization of ACPI Objects\n"));
 
         Status = AcpiNsInitializeObjects ();
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+    /*
+     * Run all _REG methods
+     *
+     * Note: Any objects accessed by the _REG methods will be automatically
+     * initialized, even if they contain executable AML (see the call to
+     * AcpiNsInitializeObjects below).
+     */
+    AcpiGbl_RegMethodsEnabled = TRUE;
+    if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+            "[Init] Executing _REG OpRegion methods\n"));
+
+        Status = AcpiEvInitializeOpRegions ();
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
