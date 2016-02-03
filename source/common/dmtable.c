@@ -268,6 +268,7 @@ static const char           *AcpiDmHestSubnames[] =
     "PCI Express AER (AER Endpoint)",
     "PCI Express/PCI-X Bridge AER",
     "Generic Hardware Error Source",
+    "Generic Hardware Error Source V2",
     "Unknown Subtable Type"         /* Reserved */
 };
 
