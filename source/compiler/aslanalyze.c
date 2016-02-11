@@ -382,8 +382,8 @@ AnCheckMethodReturnValue (
 
     if (!Node)
     {
-        AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, ArgOp,
-            "Null node during method analysis");
+        /* No error message, this can happen and is OK */
+
         return;
     }
 
