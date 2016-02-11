@@ -369,9 +369,22 @@ CmDoCompile (
     AnalysisWalkInfo.MethodStack = NULL;
 
     DbgPrint (ASL_DEBUG_OUTPUT, "Semantic analysis - Method analysis\n\n");
+
+    if (Gbl_CrossReferenceOutput)
+    {
+        OtPrintHeaders ("Part 1: Object Reference Map "
+            "(Object references from within each control method)");
+    }
+
     TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_TWICE,
         MtMethodAnalysisWalkBegin,
         MtMethodAnalysisWalkEnd, &AnalysisWalkInfo);
+    UtEndEvent (Event);
+
+    /* Generate the object cross-reference file if requested */
+
+    Event = UtBeginEvent ("Generate cross-reference file");
+    OtCreateXrefFile ();
     UtEndEvent (Event);
 
     /* Semantic error checking part two - typing of method returns */

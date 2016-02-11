@@ -1006,6 +1006,24 @@ XfCrossReferenceNamespace (
 
 
 /*
+ * aslxrefout
+ */
+void
+OtPrintHeaders (
+    char                    *Message);
+
+void
+OtCreateXrefFile (
+    void);
+
+void
+OtXrefWalkPart1 (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    ASL_METHOD_INFO         *MethodInfo);
+
+
+/*
  * aslutils - common compiler utilites
  */
 void

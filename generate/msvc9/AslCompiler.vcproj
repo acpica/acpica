@@ -3372,6 +3372,10 @@
 					RelativePath="..\..\source\compiler\aslxref.c"
 					>
 				</File>
+				<File
+					RelativePath="..\..\source\compiler\aslxrefout.c"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Data Table Compiler"

@@ -165,6 +165,13 @@ MtMethodAnalysisWalkBegin (
     UINT8                   ActualArgs = 0;
 
 
+    /* Build cross-reference output file if requested */
+
+    if (Gbl_CrossReferenceOutput)
+    {
+        OtXrefWalkPart1 (Op, Level, MethodInfo);
+    }
+
     switch (Op->Asl.ParseOpcode)
     {
     case PARSEOP_METHOD:

@@ -155,7 +155,8 @@ ASL_FILE_INFO                       Gbl_Files [ASL_NUM_FILES] =
     {NULL, NULL, "ASM Include:  ", "Assembly Header Output"},
     {NULL, NULL, "C Include:    ", "C Header Output"},
     {NULL, NULL, "Offset Table: ", "C Offset Table Output"},
-    {NULL, NULL, "Device Map:   ", "Device Map Output"}
+    {NULL, NULL, "Device Map:   ", "Device Map Output"},
+    {NULL, NULL, "Cross Ref:    ", "Cross-reference Output"}
 };
 
 #else
@@ -221,6 +222,7 @@ ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_NsOutputFlag, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_PreprocessorOutputFlag, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_KeepPreprocessorTempFile, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DebugFlag, FALSE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_CrossReferenceOutput, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_AsmOutputFlag, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_C_OutputFlag, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_C_OffsetTableFlag, FALSE);

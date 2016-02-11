@@ -380,6 +380,12 @@ AnCheckMethodReturnValue (
 
     Node = ArgOp->Asl.Node;
 
+    if (!Node)
+    {
+        AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, ArgOp,
+            "Null node during method analysis");
+        return;
+    }
 
     /* Examine the parent op of this method */
 

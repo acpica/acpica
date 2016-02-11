@@ -102,6 +102,7 @@ OBJECTS = \
 	$(OBJDIR)/asluuid.o\
 	$(OBJDIR)/aslwalks.o\
 	$(OBJDIR)/aslxref.o\
+	$(OBJDIR)/aslxrefout.o\
 	$(OBJDIR)/cmfsize.o\
 	$(OBJDIR)/dbfileio.o\
 	$(OBJDIR)/dmbuffer.o\

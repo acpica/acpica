@@ -219,6 +219,7 @@ Usage (
     ACPI_OPTION ("-lm",             "Create hardware summary map file (*.map)");
     ACPI_OPTION ("-ln",             "Create namespace file (*.nsp)");
     ACPI_OPTION ("-ls",             "Create combined source file (expanded includes) (*.src)");
+    ACPI_OPTION ("-lx",             "Create cross-reference file (*.xrf)");
 
     printf ("\nData Table Compiler:\n");
     ACPI_OPTION ("-G",              "Compile custom table that contains generic operators");
