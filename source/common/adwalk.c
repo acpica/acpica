@@ -399,6 +399,7 @@ AcpiDmConvertResourceIndexes (
         WalkState);
     if (ACPI_FAILURE (Status))
     {
+        ACPI_FREE (WalkState);
         return;
     }
 
