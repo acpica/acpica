@@ -190,6 +190,7 @@ static const char           *AcpiDmEinjActions[] =
     "Check Busy Status",
     "Get Command Status",
     "Set Error Type With Address",
+    "Get Execute Timings",
     "Unknown Action"
 };
 
@@ -222,6 +223,7 @@ static const char           *AcpiDmErstActions[] =
     "Get Error Address Range",
     "Get Error Address Length",
     "Get Error Attributes",
+    "Execute Timings",
     "Unknown Action"
 };
 
