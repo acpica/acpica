@@ -160,6 +160,8 @@ AxExtractTables (
 
     if (Signature)
     {
+        AcpiUtStrupr (Signature);
+
         /* Are there enough instances of the table to continue? */
 
         AxNormalizeSignature (Signature);
