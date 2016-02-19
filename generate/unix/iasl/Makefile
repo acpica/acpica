@@ -143,6 +143,7 @@ OBJECTS = \
 	$(OBJDIR)/dttable2.o\
 	$(OBJDIR)/dttemplate.o\
 	$(OBJDIR)/dtutils.o\
+	$(OBJDIR)/exconcat.o\
 	$(OBJDIR)/exconvrt.o\
 	$(OBJDIR)/excreate.o\
 	$(OBJDIR)/exdump.o\

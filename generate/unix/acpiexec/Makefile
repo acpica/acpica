@@ -106,6 +106,7 @@ OBJECTS = \
 	$(OBJDIR)/evxfgpe.o\
 	$(OBJDIR)/evxfregn.o\
 	$(OBJDIR)/exconfig.o\
+	$(OBJDIR)/exconcat.o\
 	$(OBJDIR)/exconvrt.o\
 	$(OBJDIR)/excreate.o\
 	$(OBJDIR)/exdebug.o\

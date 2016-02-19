@@ -577,6 +577,10 @@
 				Name="Interpreter"
 				>
 				<File
+					RelativePath="..\..\source\components\executer\exconcat.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\executer\exconfig.c"
 					>
 				</File>
