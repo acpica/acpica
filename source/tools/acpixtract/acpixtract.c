@@ -294,8 +294,7 @@ AxExtractTables (
 
     if (!FoundTable)
     {
-        printf ("Table [%s] was not found in %s\n",
-            UpperSignature, InputPathname);
+        printf ("No ACPI tables were found in %s\n", InputPathname);
     }
 
 
@@ -541,6 +540,11 @@ AxListTables (
             continue;
         }
 
+        if (!AcpiIsValidSignature (TableHeader->Signature))
+        {
+            continue;
+        }
+
         /* Signature and Table length */
 
         Gbl_TableCount++;
@@ -569,7 +573,7 @@ AxListTables (
             TableHeader->AslCompilerId, TableHeader->AslCompilerRevision);
     }
 
-    printf ("\nFound %u ACPI tables\n", Gbl_TableCount);
+    printf ("\nFound %u ACPI tables in %s\n", Gbl_TableCount, InputPathname);
     fclose (InputFile);
     return (0);
 }
@@ -625,4 +629,3 @@ ErrorExit:
     return (FALSE);
 
 }
-
