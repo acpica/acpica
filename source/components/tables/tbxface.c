@@ -256,6 +256,7 @@ AcpiReallocateRootTable (
     void)
 {
     ACPI_STATUS             Status;
+    UINT32                  i;
 
 
     ACPI_FUNCTION_TRACE (AcpiReallocateRootTable);
@@ -268,6 +269,22 @@ AcpiReallocateRootTable (
     if (AcpiGbl_RootTableList.Flags & ACPI_ROOT_ORIGIN_ALLOCATED)
     {
         return_ACPI_STATUS (AE_SUPPORT);
+    }
+
+    /*
+     * Ensure OS early boot logic, which is required by some hosts. If the
+     * table state is reported to be wrong, developers should fix the
+     * issue by invoking AcpiPutTable() for the reported table during the
+     * early stage.
+     */
+    for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; ++i)
+    {
+        if (AcpiGbl_RootTableList.Tables[i].Pointer)
+        {
+            ACPI_ERROR ((AE_INFO,
+                "Table [%4.4s] is not invalidated during early boot stage",
+                AcpiGbl_RootTableList.Tables[i].Signature.Ascii));
+        }
     }
 
     AcpiGbl_RootTableList.Flags |= ACPI_ROOT_ALLOW_RESIZE;
