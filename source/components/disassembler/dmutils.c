@@ -299,7 +299,7 @@ AcpiDmIndent (
         return;
     }
 
-    AcpiOsPrintf ("%*.s", ACPI_MUL_4 (Level), " ");
+    AcpiOsPrintf ("%*.s", (Level * 3), " ");
 }
 
 
