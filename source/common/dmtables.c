@@ -210,7 +210,7 @@ AdDisassemblerHeader (
 
 static void
 AdCreateTableHeader (
-    char                    *xFilename,
+    char                    *Filename,
     ACPI_TABLE_HEADER       *Table)
 {
     UINT8                   Checksum;
