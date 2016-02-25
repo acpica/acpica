@@ -1845,6 +1845,12 @@ AcpiDmDumpIort (
             IortSmmu = ACPI_ADD_PTR (ACPI_IORT_SMMU, IortNode, NodeOffset);
             break;
 
+        case ACPI_IORT_NODE_SMMU_V3:
+
+            InfoTable = AcpiDmTableInfoIort4;
+            Length = IortNode->Length - NodeOffset;
+            break;
+
         default:
 
             AcpiOsPrintf ("\n**** Unknown IORT node type 0x%X\n",

@@ -834,7 +834,7 @@ typedef struct acpi_ibft_target
  * IORT - IO Remapping Table
  *
  * Conforms to "IO Remapping Table System Software on ARM Platforms",
- * Document number: ARM DEN 0049A, 2015
+ * Document number: ARM DEN 0049B, October 2015
  *
  ******************************************************************************/
 
@@ -870,7 +870,8 @@ enum AcpiIortNodeType
     ACPI_IORT_NODE_ITS_GROUP            = 0x00,
     ACPI_IORT_NODE_NAMED_COMPONENT      = 0x01,
     ACPI_IORT_NODE_PCI_ROOT_COMPLEX     = 0x02,
-    ACPI_IORT_NODE_SMMU                 = 0x03
+    ACPI_IORT_NODE_SMMU                 = 0x03,
+    ACPI_IORT_NODE_SMMU_V3              = 0x04
 };
 
 
@@ -977,6 +978,26 @@ typedef struct acpi_iort_smmu
 
 #define ACPI_IORT_SMMU_DVM_SUPPORTED    (1)
 #define ACPI_IORT_SMMU_COHERENT_WALK    (1<<1)
+
+
+typedef struct acpi_iort_smmu_v3
+{
+    UINT64                  BaseAddress;            /* SMMUv3 base address */
+    UINT32                  Flags;
+    UINT32                  Reserved;
+    UINT64                  VatosAddress;
+    UINT32                  Model;                 /* O: generic SMMUv3 */
+    UINT32                  EventGsiv;
+    UINT32                  PriGsiv;
+    UINT32                  GerrGsiv;
+    UINT32                  SyncGsiv;
+
+} ACPI_IORT_SMMU_V3;
+
+/* Masks for Flags field above */
+
+#define ACPI_IORT_SMMU_V3_COHACC_OVERRIDE   (1)
+#define ACPI_IORT_SMMU_V3_HTTU_OVERRIDE     (1<<1)
 
 
 /*******************************************************************************
