@@ -662,6 +662,12 @@ CgWriteNode (
         return;
     }
 
+    if ((Op->Asl.ParseOpcode == PARSEOP_EXTERNAL) &&
+        Gbl_DoExternals == FALSE)
+    {
+        return;
+    }
+
     Op->Asl.FinalAmlLength = 0;
 
     switch (Op->Asl.AmlOpcode)

@@ -1585,6 +1585,14 @@ OpcGenerateAmlOpcode (
         Gbl_HasIncludeFiles = TRUE;
         break;
 
+    case PARSEOP_EXTERNAL:
+
+        if (Gbl_DoExternals == FALSE)
+        {
+            Op->Asl.Child->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
+            Op->Asl.Child->Asl.Next->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
+        }
+
     case PARSEOP_TIMER:
 
         if (AcpiGbl_IntegerBitWidth == 32)
