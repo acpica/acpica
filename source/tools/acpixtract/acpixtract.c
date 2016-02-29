@@ -168,6 +168,7 @@ AxExtractTables (
 
     if (!AxIsFileAscii (InputFile))
     {
+        fclose (InputFile);
         return (-1);
     }
 
@@ -366,6 +367,7 @@ AxExtractToMultiAmlFile (
 
     if (!AxIsFileAscii (InputFile))
     {
+        fclose (InputFile);
         return (-1);
     }
 
@@ -496,6 +498,7 @@ AxListTables (
 
     if (!AxIsFileAscii (InputFile))
     {
+        fclose (InputFile);
         return (-1);
     }
 
