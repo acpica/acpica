@@ -283,6 +283,10 @@ static const char           *AcpiDmHestNotifySubnames[] =
     "NMI",
     "CMCI",                         /* ACPI 5.0 */
     "MCE",                          /* ACPI 5.0 */
+    "GPIO",                         /* ACPI 6.0 */
+    "SEA",                          /* ACPI 6.1 */
+    "SEI",                          /* ACPI 6.1 */
+    "GSIV",                         /* ACPI 6.1 */
     "Unknown Notify Type"           /* Reserved */
 };
 
