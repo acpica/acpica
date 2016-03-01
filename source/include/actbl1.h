@@ -1224,7 +1224,7 @@ typedef struct acpi_msct_proximity
 
 /*******************************************************************************
  *
- * NFIT - NVDIMM Interface Table (ACPI 6.0)
+ * NFIT - NVDIMM Interface Table (ACPI 6.0+)
  *        Version 1
  *
  ******************************************************************************/
@@ -1356,7 +1356,10 @@ typedef struct acpi_nfit_control_region
     UINT16                  SubsystemVendorId;
     UINT16                  SubsystemDeviceId;
     UINT16                  SubsystemRevisionId;
-    UINT8                   Reserved[6];        /* Reserved, must be zero */
+    UINT8                   ValidFields;
+    UINT8                   ManufacturingLocation;
+    UINT16                  ManufacturingDate;
+    UINT8                   Reserved[2];        /* Reserved, must be zero */
     UINT32                  SerialNumber;
     UINT16                  Code;
     UINT16                  Windows;
@@ -1372,7 +1375,11 @@ typedef struct acpi_nfit_control_region
 
 /* Flags */
 
-#define ACPI_NFIT_CONTROL_BUFFERED      (1)     /* Block Data Windows implementation is buffered */
+#define ACPI_NFIT_CONTROL_BUFFERED          (1)     /* Block Data Windows implementation is buffered */
+
+/* ValidFields bits */
+
+#define ACPI_NFIT_CONTROL_MFG_INFO_VALID    (1)     /* Manufacturing fields are valid */
 
 
 /* 5: NVDIMM Block Data Window Region Structure */
