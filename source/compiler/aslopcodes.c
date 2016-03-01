@@ -1592,6 +1592,7 @@ OpcGenerateAmlOpcode (
             Op->Asl.Child->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
             Op->Asl.Child->Asl.Next->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
         }
+        break;
 
     case PARSEOP_TIMER:
 
