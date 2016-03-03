@@ -3005,6 +3005,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\compiler\aslpld.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\compiler\aslpredef.c"
 					>
 					<FileConfiguration

@@ -96,6 +96,7 @@ OBJECTS = \
 	$(OBJDIR)/aslrestype2w.o\
 	$(OBJDIR)/aslstartup.o\
 	$(OBJDIR)/aslstubs.o\
+	$(OBJDIR)/aslpld.o\
 	$(OBJDIR)/asltransform.o\
 	$(OBJDIR)/asltree.o\
 	$(OBJDIR)/aslutils.o\
