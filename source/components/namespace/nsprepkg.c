@@ -438,8 +438,8 @@ AcpiNsCheckPackage (
 
             Elements += 2;
             Count -= 2;
-         }
-         break;
+        }
+        break;
 
     default:
 
