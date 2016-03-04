@@ -442,6 +442,14 @@ ACPI_GLOBAL (ACPI_MUTEX,                AcpiGbl_DbCommandComplete);
 
 #endif /* ACPI_DEBUGGER */
 
+#if defined (ACPI_DISASSEMBLER) || defined (ACPI_ASL_COMPILER)
+
+ACPI_GLOBAL (const char,                *AcpiGbl_PldPanelList[]);
+ACPI_GLOBAL (const char,                *AcpiGbl_PldVerticalPositionList[]);
+ACPI_GLOBAL (const char,                *AcpiGbl_PldHorizontalPositionList[]);
+ACPI_GLOBAL (const char,                *AcpiGbl_PldShapeList[]);
+
+#endif
 
 /*****************************************************************************
  *

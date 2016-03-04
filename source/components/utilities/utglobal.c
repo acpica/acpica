@@ -251,6 +251,55 @@ ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventInfo[ACPI_NUM_FIXED_EVENTS] =
 };
 #endif /* !ACPI_REDUCED_HARDWARE */
 
+
+#if defined (ACPI_DISASSEMBLER) || defined (ACPI_ASL_COMPILER)
+
+/* ToPld macro: compile/disassemble strings */
+
+const char              *AcpiGbl_PldPanelList[] =
+{
+    "TOP",
+    "BOTTOM",
+    "LEFT",
+    "RIGHT",
+    "FRONT",
+    "BACK",
+    "UNKNOWN",
+    NULL
+};
+
+const char              *AcpiGbl_PldVerticalPositionList[] =
+{
+    "UPPER",
+    "CENTER",
+    "LOWER",
+    NULL
+};
+
+const char              *AcpiGbl_PldHorizontalPositionList[] =
+{
+    "LEFT",
+    "CENTER",
+    "RIGHT",
+    NULL
+};
+
+const char              *AcpiGbl_PldShapeList[] =
+{
+    "ROUND",
+    "OVAL",
+    "SQUARE",
+    "VERTICALRECTANGLE",
+    "HORIZONTALRECTANGLE",
+    "VERTICALTRAPEZOID",
+    "HORIZONTALTRAPEZOID",
+    "UNKNOWN",
+    "CHAMFERED",
+    NULL
+};
+#endif
+
+
 /* Public globals */
 
 ACPI_EXPORT_SYMBOL (AcpiGbl_FADT)
