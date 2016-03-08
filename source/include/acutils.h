@@ -266,7 +266,13 @@ ACPI_STATUS
 AcpiUtStrtoul64 (
     char                    *String,
     UINT32                  Base,
+    UINT32                  MaxIntegerByteWidth,
     UINT64                  *RetInteger);
+
+/* Values for MaxIntegerByteWidth above */
+
+#define ACPI_MAX32_BYTE_WIDTH       4
+#define ACPI_MAX64_BYTE_WIDTH       8
 
 
 /*
