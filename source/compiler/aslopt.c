@@ -289,7 +289,7 @@ OptBuildShortestPath (
     UINT32                  Index;
     UINT32                  NumCarats;
     UINT32                  i;
-    char                    *NewPath;
+    char                    *NewPathInternal = NULL;
     char                    *NewPathExternal;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_GENERIC_STATE      ScopeInfo;
@@ -325,11 +325,11 @@ OptBuildShortestPath (
     {
         /* Compare two single NameSegs */
 
+        Index = (NumCommonSegments * ACPI_PATH_SEGMENT_LENGTH) + 1;
+
         if (!ACPI_COMPARE_NAME (
-            &((char *) TargetPath->Pointer)[
-                (NumCommonSegments * ACPI_PATH_SEGMENT_LENGTH) + 1],
-            &((char *) CurrentPath->Pointer)[
-                (NumCommonSegments * ACPI_PATH_SEGMENT_LENGTH) + 1]))
+            &(ACPI_CAST_PTR (char, TargetPath->Pointer)) [Index],
+            &(ACPI_CAST_PTR (char, CurrentPath->Pointer)) [Index]))
         {
             /* Mismatch */
 
@@ -369,8 +369,8 @@ OptBuildShortestPath (
     /*
      * Construct a new target string
      */
-    NewPathExternal = ACPI_ALLOCATE_ZEROED (
-        TargetPath->Length + NumCarats + 1);
+    NewPathExternal =
+        ACPI_ALLOCATE_ZEROED (TargetPath->Length + NumCarats + 1);
 
     /* Insert the Carats into the Target string */
 
@@ -387,7 +387,8 @@ OptBuildShortestPath (
 
     /* Special handling for exact subpath in a name declaration */
 
-    if (IsDeclaration && SubPath && (CurrentPath->Length > TargetPath->Length))
+    if (IsDeclaration && SubPath &&
+        (CurrentPath->Length > TargetPath->Length))
     {
         /*
          * The current path is longer than the target, and the target is a
@@ -413,7 +414,8 @@ OptBuildShortestPath (
         Index = TargetPath->Length;
     }
 
-    strcpy (&NewPathExternal[i], &((char *) TargetPath->Pointer)[Index]);
+    strcpy (&NewPathExternal[i],
+        &(ACPI_CAST_PTR (char, TargetPath->Pointer))[Index]);
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " %-24s", NewPathExternal));
 
     /*
@@ -421,22 +423,22 @@ OptBuildShortestPath (
      * string to make sure that this is in fact an optimization. If the
      * original string is already optimal, there is no point in continuing.
      */
-    Status = AcpiNsInternalizeName (NewPathExternal, &NewPath);
+    Status = AcpiNsInternalizeName (NewPathExternal, &NewPathInternal);
     if (ACPI_FAILURE (Status))
     {
         AslCoreSubsystemError (Op, Status, "Internalizing new NamePath",
             ASL_NO_ABORT);
-        ACPI_FREE (NewPathExternal);
-        return (Status);
+        goto Cleanup;
     }
 
-    if (strlen (NewPath) >= AmlNameStringLength)
+    if (strlen (NewPathInternal) >= AmlNameStringLength)
     {
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS,
             " NOT SHORTER (New %u old %u)",
-            (UINT32) strlen (NewPath), (UINT32) AmlNameStringLength));
-        ACPI_FREE (NewPathExternal);
-        return (AE_NOT_FOUND);
+            (UINT32) strlen (NewPathInternal),
+            (UINT32) AmlNameStringLength));
+        Status = AE_NOT_FOUND;
+        goto Cleanup;
     }
 
     /*
@@ -444,7 +446,7 @@ OptBuildShortestPath (
      * looking for. This is simply a sanity check on the new
      * path that has been created.
      */
-    Status = AcpiNsLookup (&ScopeInfo,  NewPath,
+    Status = AcpiNsLookup (&ScopeInfo, NewPathInternal,
         ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
         ACPI_NS_DONT_OPEN_SCOPE, WalkState, &(Node));
     if (ACPI_SUCCESS (Status))
@@ -457,7 +459,7 @@ OptBuildShortestPath (
 
             AslError (ASL_OPTIMIZATION, ASL_MSG_NAME_OPTIMIZATION,
                 Op, NewPathExternal);
-            *ReturnNewPath = NewPath;
+            *ReturnNewPath = NewPathInternal;
         }
         else
         {
@@ -476,6 +478,13 @@ OptBuildShortestPath (
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " ***** NOT FOUND"));
         AslError (ASL_WARNING, ASL_MSG_COMPILER_INTERNAL, Op,
             "Not using optimized name - did not find node");
+    }
+
+Cleanup:
+
+    if (NewPathInternal)
+    {
+        ACPI_FREE (NewPathInternal);
     }
 
     ACPI_FREE (NewPathExternal);
