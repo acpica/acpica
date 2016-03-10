@@ -289,7 +289,7 @@ OptBuildShortestPath (
     UINT32                  Index;
     UINT32                  NumCarats;
     UINT32                  i;
-    char                    *NewPathInternal = NULL;
+    char                    *NewPathInternal;
     char                    *NewPathExternal;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_GENERIC_STATE      ScopeInfo;
@@ -437,6 +437,8 @@ OptBuildShortestPath (
             " NOT SHORTER (New %u old %u)",
             (UINT32) strlen (NewPathInternal),
             (UINT32) AmlNameStringLength));
+
+        ACPI_FREE (NewPathInternal);
         Status = AE_NOT_FOUND;
         goto Cleanup;
     }
@@ -475,17 +477,14 @@ OptBuildShortestPath (
     {
         /* The lookup failed, we obviously cannot use this optimization */
 
+        ACPI_FREE (NewPathInternal);
+
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " ***** NOT FOUND"));
         AslError (ASL_WARNING, ASL_MSG_COMPILER_INTERNAL, Op,
             "Not using optimized name - did not find node");
     }
 
 Cleanup:
-
-    if (NewPathInternal)
-    {
-        ACPI_FREE (NewPathInternal);
-    }
 
     ACPI_FREE (NewPathExternal);
     return (Status);
