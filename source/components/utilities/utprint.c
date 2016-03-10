@@ -160,12 +160,6 @@ AcpiUtPutNumber (
     BOOLEAN                 Upper);
 
 
-/* Module globals */
-
-static const char           AcpiGbl_LowerHexDigits[] = "0123456789abcdef";
-static const char           AcpiGbl_UpperHexDigits[] = "0123456789ABCDEF";
-
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiUtBoundStringLength

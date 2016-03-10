@@ -128,7 +128,7 @@ AcpiTbInitGenericAddress (
     UINT8                   SpaceId,
     UINT8                   ByteWidth,
     UINT64                  Address,
-    char                    *RegisterName,
+    const char              *RegisterName,
     UINT8                   Flags);
 
 static void
@@ -150,7 +150,7 @@ AcpiTbSelectAddress (
 
 typedef struct acpi_fadt_info
 {
-    char                    *Name;
+    const char              *Name;
     UINT16                  Address64;
     UINT16                  Address32;
     UINT16                  Length;
@@ -284,7 +284,7 @@ AcpiTbInitGenericAddress (
     UINT8                   SpaceId,
     UINT8                   ByteWidth,
     UINT64                  Address,
-    char                    *RegisterName,
+    const char              *RegisterName,
     UINT8                   Flags)
 {
     UINT8                   BitWidth;
@@ -579,7 +579,7 @@ static void
 AcpiTbConvertFadt (
     void)
 {
-    char                    *Name;
+    const char              *Name;
     ACPI_GENERIC_ADDRESS    *Address64;
     UINT32                  Address32;
     UINT8                   Length;

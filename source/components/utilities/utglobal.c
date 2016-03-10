@@ -159,6 +159,12 @@ const char                  *AcpiGbl_HighestDstateNames[ACPI_NUM_SxD_METHODS] =
 };
 
 
+/* Hex-to-ascii */
+
+const char                  AcpiGbl_LowerHexDigits[] = "0123456789abcdef";
+const char                  AcpiGbl_UpperHexDigits[] = "0123456789ABCDEF";
+
+
 /*******************************************************************************
  *
  * Namespace globals

@@ -261,6 +261,8 @@ extern const char                      *AcpiGbl_SleepStateNames[ACPI_S_STATE_COU
 extern const char                      *AcpiGbl_LowestDstateNames[ACPI_NUM_SxW_METHODS];
 extern const char                      *AcpiGbl_HighestDstateNames[ACPI_NUM_SxD_METHODS];
 extern const char                      *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_REGIONS];
+extern const char                       AcpiGbl_LowerHexDigits[];
+extern const char                       AcpiGbl_UpperHexDigits[];
 extern const ACPI_OPCODE_INFO           AcpiGbl_AmlOpInfo[AML_NUM_OPCODES];
 
 

@@ -217,7 +217,7 @@ AcpiDmDescriptorName (
 void
 AcpiDmDumpInteger8 (
     UINT8                   Value,
-    char                    *Name)
+    const char              *Name)
 {
     AcpiOsPrintf ("0x%2.2X,               // %s\n", Value, Name);
 }
@@ -225,7 +225,7 @@ AcpiDmDumpInteger8 (
 void
 AcpiDmDumpInteger16 (
     UINT16                  Value,
-    char                    *Name)
+    const char              *Name)
 {
     AcpiOsPrintf ("0x%4.4X,             // %s\n", Value, Name);
 }
@@ -233,7 +233,7 @@ AcpiDmDumpInteger16 (
 void
 AcpiDmDumpInteger32 (
     UINT32                  Value,
-    char                    *Name)
+    const char              *Name)
 {
     AcpiOsPrintf ("0x%8.8X,         // %s\n", Value, Name);
 }
@@ -241,7 +241,7 @@ AcpiDmDumpInteger32 (
 void
 AcpiDmDumpInteger64 (
     UINT64                  Value,
-    char                    *Name)
+    const char              *Name)
 {
     AcpiOsPrintf ("0x%8.8X%8.8X, // %s\n", ACPI_FORMAT_UINT64 (Value), Name);
 }
