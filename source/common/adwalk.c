@@ -861,6 +861,7 @@ AcpiDmXrefDescendingOp (
                 Op->Common.Next->Common.Next->Common.Value.Integer;
         }
 
+        Flags = Flags | ACPI_EXT_RESOLVED_REFERENCE;
         AcpiDmAddOpToExternalList (Op, Path,
             (UINT8) ObjectType, ParamCount, Flags);
 
@@ -933,7 +934,6 @@ AcpiDmXrefDescendingOp (
         /* Node was created by an External() statement */
 
         Status = AE_NOT_FOUND;
-        Flags = ACPI_EXT_RESOLVED_REFERENCE;
     }
 
     if (ACPI_FAILURE (Status))

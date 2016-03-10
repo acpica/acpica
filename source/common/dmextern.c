@@ -826,46 +826,6 @@ AcpiDmAddPathToExternalList (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmEternalIsMatch
- *
- * PARAMETERS:  NamePath            - Path to match to External Name
- *              ExternalPath        - External NamePath to be matched
- *
- * RETURN:      BOOLEAN
- *
- * DESCRIPTION: Returns TRUE if NamePath matches the last NamePath-length
- *              characters of ExternalPath.
- *
- *              External (_SB_.DEV0.ABCD) will match:
- *                  _SB_.DEV0.ABCD
- *                  DEV0.ABCD
- *                  ABCD
- *
- ******************************************************************************/
-
-static BOOLEAN
-AcpiDmExternalIsMatch (
-    const char *            NamePath,
-    const char *            ListNamePath)
-{
-    BOOLEAN                 Match = FALSE;
-
-
-    if (strlen (ListNamePath) >= strlen (NamePath))
-    {
-        if (!strcmp (ListNamePath +
-            (strlen (ListNamePath) - strlen (NamePath)), NamePath))
-        {
-            return (TRUE);
-        }
-    }
-
-    return (Match);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiDmCreateNewExternal
  *
  * PARAMETERS:  ExternalPath        - External path to the object
@@ -922,7 +882,7 @@ AcpiDmCreateNewExternal (
     {
         /* Check for duplicates */
 
-        if (AcpiDmExternalIsMatch (ExternalPath, NextExternal->Path))
+        if (!strcmp (ExternalPath, NextExternal->Path))
         {
             /* Duplicate method, check that the Value (ArgCount) is the same */
 
@@ -1463,7 +1423,7 @@ AcpiDmUnresolvedWarning (
         {
             /* The -e option was specified, but there are still some unresolved externals */
 
-            AcpiOsPrintf ("    /*\n%s     *\n     *\n     */\n",
+            AcpiOsPrintf ("    /*\n%s     *\n%s     *\n%s     */\n",
                ExternalWarningPart1, ExternalWarningPart3, ExternalWarningPart4);
         }
     }
