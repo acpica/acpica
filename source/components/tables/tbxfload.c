@@ -183,6 +183,22 @@ AcpiLoadTables (
             "While loading namespace from ACPI tables"));
     }
 
+    if (!AcpiGbl_GroupModuleLevelCode)
+    {
+        /*
+         * Initialize the objects that remain uninitialized. This
+         * runs the executable AML that may be part of the
+         * declaration of these objects:
+         * OperationRegions, BufferFields, Buffers, and Packages.
+         */
+        Status = AcpiNsInitializeObjects ();
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+    AcpiGbl_NamespaceInitialized = TRUE;
     return_ACPI_STATUS (Status);
 }
 

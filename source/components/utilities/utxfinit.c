@@ -368,26 +368,22 @@ AcpiInitializeObjects (
     if (AcpiGbl_GroupModuleLevelCode)
     {
         AcpiNsExecModuleCodeList ();
-    }
 
-    /*
-     * Initialize the objects that remain uninitialized. This runs the
-     * executable AML that may be part of the declaration of these objects:
-     * OperationRegions, BufferFields, Buffers, and Packages.
-     */
-    if (!(Flags & ACPI_NO_OBJECT_INIT))
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-            "[Init] Completing Initialization of ACPI Objects\n"));
-
-        Status = AcpiNsInitializeObjects ();
-        if (ACPI_FAILURE (Status))
+        /*
+         * Initialize the objects that remain uninitialized. This
+         * runs the executable AML that may be part of the
+         * declaration of these objects:
+         * OperationRegions, BufferFields, Buffers, and Packages.
+         */
+        if (!(Flags & ACPI_NO_OBJECT_INIT))
         {
-            return_ACPI_STATUS (Status);
+            Status = AcpiNsInitializeObjects ();
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
         }
     }
-
-    AcpiGbl_NamespaceInitialized = TRUE;
 
     /*
      * Initialize all device/region objects in the namespace. This runs
