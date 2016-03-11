@@ -530,7 +530,7 @@ typedef struct acpi_table_dbgp
  *        Version 1
  *
  * Conforms to "Intel Virtualization Technology for Directed I/O",
- * Version 2.2, Sept. 2013
+ * Version 2.3, October 2014
  *
  ******************************************************************************/
 
@@ -546,6 +546,8 @@ typedef struct acpi_table_dmar
 /* Masks for Flags field above */
 
 #define ACPI_DMAR_INTR_REMAP        (1)
+#define ACPI_DMAR_X2APIC_OPT_OUT    (1<<1)
+#define ACPI_DMAR_X2APIC_MODE       (1<<2)
 
 
 /* DMAR subtable header */
