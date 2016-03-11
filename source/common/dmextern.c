@@ -1373,15 +1373,17 @@ AcpiDmUnresolvedWarning (
     Format = Type ? Pad : NoPad;
 
     sprintf (ExternalWarningPart1,
-        "%s iASL Warning: There were %u external control methods found during\n"
+        "%s iASL Warning: There %s %u external control method%s found during\n"
         "%s disassembly, but only %u %s resolved (%u unresolved). Additional\n"
         "%s ACPI tables may be required to properly disassemble the code. This\n"
         "%s resulting disassembler output file may not compile because the\n"
         "%s disassembler did not know how many arguments to assign to the\n"
         "%s unresolved methods. Note: SSDTs can be dynamically loaded at\n"
         "%s runtime and may or may not be available via the host OS.\n",
-        Format, AcpiGbl_NumExternalMethods, Format, AcpiGbl_ResolvedExternalMethods,
-        (AcpiGbl_ResolvedExternalMethods > 1 ? "were" : "was"),
+        Format, (AcpiGbl_NumExternalMethods != 1 ? "were" : "was"),
+        AcpiGbl_NumExternalMethods, (AcpiGbl_NumExternalMethods != 1 ? "s" : ""),
+        Format, AcpiGbl_ResolvedExternalMethods,
+        (AcpiGbl_ResolvedExternalMethods != 1 ? "were" : "was"),
         (AcpiGbl_NumExternalMethods - AcpiGbl_ResolvedExternalMethods),
         Format, Format, Format, Format, Format);
 
