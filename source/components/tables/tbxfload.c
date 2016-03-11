@@ -159,14 +159,11 @@ AcpiLoadTables (
      * between AcpiInitializeSubsystem() and AcpiLoadTables() to use
      * their customized default region handlers.
      */
-    if (AcpiGbl_GroupModuleLevelCode)
+    Status = AcpiEvInstallRegionHandlers ();
+    if (ACPI_FAILURE (Status))
     {
-        Status = AcpiEvInstallRegionHandlers ();
-        if (ACPI_FAILURE (Status) && Status != AE_ALREADY_EXISTS)
-        {
-            ACPI_EXCEPTION ((AE_INFO, Status, "During Region initialization"));
-            return_ACPI_STATUS (Status);
-        }
+        ACPI_EXCEPTION ((AE_INFO, Status, "During Region initialization"));
+        return_ACPI_STATUS (Status);
     }
 
     /* Load the namespace from the tables */
