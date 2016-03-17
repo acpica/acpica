@@ -171,6 +171,8 @@ AcpiNsInitializeObjects (
     ACPI_FUNCTION_TRACE (NsInitializeObjects);
 
 
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+        "[Init] Completing Initialization of ACPI Objects\n"));
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
         "**** Starting initialization of namespace objects ****\n"));
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
