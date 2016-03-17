@@ -884,24 +884,27 @@ AcpiDmCreateNewExternal (
 
         if (!strcmp (ExternalPath, NextExternal->Path))
         {
-            /* Duplicate method, check that the Value (ArgCount) is the same */
-
-            if ((NextExternal->Type == ACPI_TYPE_METHOD) &&
-                (NextExternal->Flags & ANOBJ_IS_EXTERNAL) &&
-                (NextExternal->Value != Value) &&
-                (Value > 0))
+            /*
+             * If this external came from an External() opcode, we are
+             * finished with this one. (No need to check any further).
+             */
+            if (NextExternal->Flags & ACPI_EXT_ORIGIN_FROM_OPCODE)
             {
-                ACPI_ERROR ((AE_INFO,
-                    "External method arg count mismatch %s: "
-                    "Current %u, attempted %u",
-                    NextExternal->Path, NextExternal->Value, Value));
+                return_ACPI_STATUS (AE_ALREADY_EXISTS);
             }
 
             /* Allow upgrade of type from ANY */
 
-            else if (NextExternal->Type == ACPI_TYPE_ANY)
+            else if ((NextExternal->Type == ACPI_TYPE_ANY) &&
+                (Type != ACPI_TYPE_ANY))
             {
                 NextExternal->Type = Type;
+            }
+
+            /* Update the argument count as necessary */
+
+            if (Value < NextExternal->Value)
+            {
                 NextExternal->Value = Value;
             }
 
@@ -1157,90 +1160,63 @@ AcpiDmEmitExternals (
 
     AcpiDmUnresolvedWarning (1);
 
-    /* Emit any unresolved method externals in a single text block */
-
-    NextExternal = AcpiGbl_ExternalList;
-    while (NextExternal)
-    {
-        if ((NextExternal->Type == ACPI_TYPE_METHOD) &&
-            (!(NextExternal->Flags & ACPI_EXT_RESOLVED_REFERENCE)))
-        {
-            AcpiOsPrintf ("    External (%s%s",
-                NextExternal->Path,
-                AcpiDmGetObjectTypeName (NextExternal->Type));
-
-            AcpiOsPrintf (")    // Warning: Unresolved method, "
-                "guessing %u arguments\n",
-                NextExternal->Value);
-
-            NextExternal->Flags |= ACPI_EXT_EXTERNAL_EMITTED;
-        }
-
-        NextExternal = NextExternal->Next;
-    }
-
-    AcpiOsPrintf ("\n");
-
-
-    /* Emit externals that were imported from a file */
-
     if (Gbl_ExternalRefFilename)
     {
         AcpiOsPrintf (
-            "    /*\n     * External declarations that were imported from\n"
-            "     * the reference file [%s]\n     */\n",
+            "    /*\n     * External declarations were imported from\n"
+            "     * a reference file -- %s\n     */\n\n",
             Gbl_ExternalRefFilename);
-
-        NextExternal = AcpiGbl_ExternalList;
-        while (NextExternal)
-        {
-            if (!(NextExternal->Flags & ACPI_EXT_EXTERNAL_EMITTED) &&
-                (NextExternal->Flags & ACPI_EXT_ORIGIN_FROM_FILE))
-            {
-                AcpiOsPrintf ("    External (%s%s",
-                    NextExternal->Path,
-                    AcpiDmGetObjectTypeName (NextExternal->Type));
-
-                if (NextExternal->Type == ACPI_TYPE_METHOD)
-                {
-                    AcpiOsPrintf (")    // %u Arguments\n",
-                        NextExternal->Value);
-                }
-                else
-                {
-                    AcpiOsPrintf (")\n");
-                }
-                NextExternal->Flags |= ACPI_EXT_EXTERNAL_EMITTED;
-            }
-
-            NextExternal = NextExternal->Next;
-        }
-
-        AcpiOsPrintf ("\n");
     }
 
     /*
-     * Walk the list of externals found during the AML parsing
+     * Walk and emit the list of externals found during the AML parsing
      */
     while (AcpiGbl_ExternalList)
     {
+        AcpiGbl_ExternalList = AcpiGbl_ExternalList;
         if (!(AcpiGbl_ExternalList->Flags & ACPI_EXT_EXTERNAL_EMITTED))
         {
-            AcpiOsPrintf ("    External (%s%s",
+            AcpiOsPrintf ("    External (%s%s)",
                 AcpiGbl_ExternalList->Path,
                 AcpiDmGetObjectTypeName (AcpiGbl_ExternalList->Type));
 
-            /* For methods, add a comment with the number of arguments */
+            /* Check for "unresolved" method reference */
 
-            if (AcpiGbl_ExternalList->Type == ACPI_TYPE_METHOD)
+            if ((AcpiGbl_ExternalList->Type == ACPI_TYPE_METHOD) &&
+                (!(AcpiGbl_ExternalList->Flags & ACPI_EXT_RESOLVED_REFERENCE)))
             {
-                AcpiOsPrintf (")    // %u Arguments\n",
+                AcpiOsPrintf ("    // Warning: Unknown method, "
+                    "guessing %u arguments",
                     AcpiGbl_ExternalList->Value);
             }
+
+            /* Check for external from a external references file */
+
+            else if (AcpiGbl_ExternalList->Flags & ACPI_EXT_ORIGIN_FROM_FILE)
+            {
+                if (AcpiGbl_ExternalList->Type == ACPI_TYPE_METHOD)
+                {
+                    AcpiOsPrintf ("    // %u Arguments",
+                        AcpiGbl_ExternalList->Value);
+                }
+
+                AcpiOsPrintf ("    // From external reference file");
+            }
+
+            /* This is the normal external case */
+
             else
             {
-                AcpiOsPrintf (")\n");
+                /* For methods, add a comment with the number of arguments */
+
+                if (AcpiGbl_ExternalList->Type == ACPI_TYPE_METHOD)
+                {
+                    AcpiOsPrintf ("    // %u Arguments",
+                        AcpiGbl_ExternalList->Value);
+                }
             }
+
+            AcpiOsPrintf ("\n");
         }
 
         /* Free this external info block and move on to next external */

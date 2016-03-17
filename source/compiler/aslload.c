@@ -783,8 +783,9 @@ LdNamespace1Begin (
                 }
                 else
                 {
-                    AslError (ASL_ERROR, ASL_MSG_SCOPE_TYPE, Op,
-                        Op->Asl.ExternalName);
+                    sprintf (MsgBuffer, "%s [%s]", Op->Asl.ExternalName,
+                        AcpiUtGetTypeName (Node->Type));
+                    AslError (ASL_ERROR, ASL_MSG_SCOPE_TYPE, Op, MsgBuffer);
                     return_ACPI_STATUS (AE_OK);
                 }
             }
