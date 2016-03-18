@@ -302,6 +302,7 @@ AcpiHwRead (
                     Address + Index * ACPI_DIV_8 (AccessWidth),
                     &Value32, AccessWidth);
             }
+
             if (BitOffset)
             {
                 Value32 &= ACPI_MASK_BITS_BELOW (BitOffset);
@@ -312,8 +313,9 @@ AcpiHwRead (
                 Value32 &= ACPI_MASK_BITS_ABOVE (BitWidth);
             }
         }
+
         ACPI_SET_BITS (Value, Index * AccessWidth,
-            (1 << AccessWidth) - 1, Value32);
+            ((1 << AccessWidth) - 1), Value32);
 
         BitWidth -= BitWidth > AccessWidth ? AccessWidth : BitWidth;
         Index++;
@@ -383,8 +385,9 @@ AcpiHwWrite (
     Index = 0;
     while (BitWidth)
     {
-        NewValue32 = ACPI_GET_BITS (&Value, Index * AccessWidth,
-            (1 << AccessWidth) - 1);
+        NewValue32 = ACPI_GET_BITS (&Value, (Index * AccessWidth),
+            ((1 << AccessWidth) - 1));
+
         if (BitOffset > AccessWidth)
         {
             BitOffset -= AccessWidth;
@@ -395,10 +398,12 @@ AcpiHwWrite (
             {
                 NewValue32 &= ACPI_MASK_BITS_BELOW (BitOffset);
             }
+
             if (BitWidth < AccessWidth)
             {
                 NewValue32 &= ACPI_MASK_BITS_ABOVE (BitWidth);
             }
+
             if (Reg->SpaceId == ACPI_ADR_SPACE_SYSTEM_MEMORY)
             {
                 if (BitOffset || BitWidth < AccessWidth)
@@ -411,17 +416,21 @@ AcpiHwWrite (
                         Address + Index * ACPI_DIV_8 (AccessWidth),
                         &Value64, AccessWidth);
                     OldValue32 = (UINT32) Value64;
+
                     if (BitOffset)
                     {
                         OldValue32 &= ACPI_MASK_BITS_ABOVE (BitOffset + 1);
                         BitOffset = 0;
                     }
+
                     if (BitWidth < AccessWidth)
                     {
                         OldValue32 &= ACPI_MASK_BITS_BELOW (BitWidth - 1);
                     }
+
                     NewValue32 |= OldValue32;
                 }
+
                 Value64 = (UINT64) NewValue32;
                 Status = AcpiOsWriteMemory ((ACPI_PHYSICAL_ADDRESS)
                     Address + Index * ACPI_DIV_8 (AccessWidth),
@@ -438,17 +447,21 @@ AcpiHwWrite (
                     Status = AcpiHwReadPort ((ACPI_IO_ADDRESS)
                         Address + Index * ACPI_DIV_8 (AccessWidth),
                         &OldValue32, AccessWidth);
+
                     if (BitOffset)
                     {
                         OldValue32 &= ACPI_MASK_BITS_ABOVE (BitOffset + 1);
                         BitOffset = 0;
                     }
+
                     if (BitWidth < AccessWidth)
                     {
                         OldValue32 &= ACPI_MASK_BITS_BELOW (BitWidth - 1);
                     }
+
                     NewValue32 |= OldValue32;
                 }
+
                 Status = AcpiHwWritePort ((ACPI_IO_ADDRESS)
                     Address + Index * ACPI_DIV_8 (AccessWidth),
                     NewValue32, AccessWidth);
