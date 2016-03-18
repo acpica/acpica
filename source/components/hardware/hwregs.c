@@ -164,7 +164,6 @@ AcpiHwValidateRegister (
     UINT64                  *Address)
 {
     UINT8                   BitWidth;
-    UINT8                   BitEnd;
     UINT8                   AccessWidth;
 
 
@@ -207,11 +206,9 @@ AcpiHwValidateRegister (
 
     /* Validate the BitWidth, convert AccessWidth into number of bits */
 
-    BitEnd = Reg->BitOffset + Reg->BitWidth;
     AccessWidth = Reg->AccessWidth ? Reg->AccessWidth : 1;
     AccessWidth = 1 << (AccessWidth + 2);
-    BitWidth = ACPI_ROUND_UP (BitEnd, AccessWidth) -
-        ACPI_ROUND_DOWN (Reg->BitOffset, AccessWidth);
+    BitWidth = ACPI_ROUND_UP (Reg->BitOffset + Reg->BitWidth, AccessWidth);
     if (MaxBitWidth < BitWidth)
     {
         ACPI_WARNING ((AE_INFO,
@@ -250,6 +247,7 @@ AcpiHwRead (
     UINT64                  Address;
     UINT8                   AccessWidth;
     UINT32                  BitWidth;
+    UINT8                   BitOffset;
     UINT64                  Value64;
     UINT32                  Value32;
     UINT8                   Index;
@@ -274,8 +272,8 @@ AcpiHwRead (
     *Value = 0;
     AccessWidth = Reg->AccessWidth ? Reg->AccessWidth : 1;
     AccessWidth = 1 << (AccessWidth + 2);
-    Address += ACPI_DIV_8 (ACPI_ROUND_DOWN (Reg->BitOffset, AccessWidth));
-    BitWidth = Reg->BitOffset + Reg->BitWidth;
+    BitWidth = ACPI_ROUND_UP (Reg->BitOffset + Reg->BitWidth, AccessWidth);
+    BitOffset = Reg->BitOffset;
 
     /*
      * Two address spaces supported: Memory or IO. PCI_Config is
@@ -284,29 +282,38 @@ AcpiHwRead (
     Index = 0;
     while (BitWidth)
     {
-        if (Reg->SpaceId == ACPI_ADR_SPACE_SYSTEM_MEMORY)
+        if (BitOffset > AccessWidth)
         {
-            Status = AcpiOsReadMemory ((ACPI_PHYSICAL_ADDRESS)
-                Address + Index * ACPI_DIV_8 (AccessWidth),
-                &Value64, AccessWidth);
-            Value32 = (UINT32) Value64;
+            Value32 = 0;
+            BitOffset -= AccessWidth;
         }
-        else /* ACPI_ADR_SPACE_SYSTEM_IO, validated earlier */
+        else
         {
-            Status = AcpiHwReadPort ((ACPI_IO_ADDRESS)
-                Address + Index * ACPI_DIV_8 (AccessWidth),
-                &Value32, AccessWidth);
+            if (Reg->SpaceId == ACPI_ADR_SPACE_SYSTEM_MEMORY)
+            {
+                Status = AcpiOsReadMemory ((ACPI_PHYSICAL_ADDRESS)
+                    Address + Index * ACPI_DIV_8 (AccessWidth),
+                    &Value64, AccessWidth);
+                Value32 = (UINT32) Value64;
+            }
+            else /* ACPI_ADR_SPACE_SYSTEM_IO, validated earlier */
+            {
+                Status = AcpiHwReadPort ((ACPI_IO_ADDRESS)
+                    Address + Index * ACPI_DIV_8 (AccessWidth),
+                    &Value32, AccessWidth);
+            }
+            if (BitOffset)
+            {
+                Value32 &= ACPI_MASK_BITS_BELOW (BitOffset);
+                BitOffset = 0;
+            }
+            if (BitWidth < AccessWidth)
+            {
+                Value32 &= ACPI_MASK_BITS_ABOVE (BitWidth);
+            }
         }
-
-        if (!Index)
-        {
-            Value32 &= ACPI_MASK_BITS_BELOW (Reg->BitOffset);
-        }
-        if (BitWidth < AccessWidth)
-        {
-            Value32 &= ACPI_MASK_BITS_ABOVE (BitWidth);
-        }
-        ACPI_SET_BITS (Value, Index * AccessWidth, ACPI_UINT32_MAX, Value32);
+        ACPI_SET_BITS (Value, Index * AccessWidth,
+            (1 << AccessWidth) - 1, Value32);
 
         BitWidth -= BitWidth > AccessWidth ? AccessWidth : BitWidth;
         Index++;
