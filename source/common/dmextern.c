@@ -1173,7 +1173,6 @@ AcpiDmEmitExternals (
      */
     while (AcpiGbl_ExternalList)
     {
-        AcpiGbl_ExternalList = AcpiGbl_ExternalList;
         if (!(AcpiGbl_ExternalList->Flags & ACPI_EXT_EXTERNAL_EMITTED))
         {
             AcpiOsPrintf ("    External (%s%s)",
