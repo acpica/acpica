@@ -315,7 +315,7 @@ AcpiHwRead (
         }
 
         ACPI_SET_BITS (Value, Index * AccessWidth,
-            ((1 << AccessWidth) - 1), Value32);
+            (1 << AccessWidth) - 1, Value32);
 
         BitWidth -= BitWidth > AccessWidth ? AccessWidth : BitWidth;
         Index++;
@@ -385,8 +385,8 @@ AcpiHwWrite (
     Index = 0;
     while (BitWidth)
     {
-        NewValue32 = ACPI_GET_BITS (&Value, (Index * AccessWidth),
-            ((1 << AccessWidth) - 1));
+        NewValue32 = ACPI_GET_BITS (&Value, Index * AccessWidth,
+            (1 << AccessWidth) - 1);
 
         if (BitOffset > AccessWidth)
         {
