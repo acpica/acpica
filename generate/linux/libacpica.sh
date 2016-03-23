@@ -110,9 +110,12 @@ acpica_exclude_paths()
 		include/acpi/platform/acintel.h \
 		include/acpi/platform/acmacosx.h \
 		include/acpi/platform/acmsvc.h \
+		include/acpi/platform/acmsvcex.h \
 		include/acpi/platform/acnetbsd.h \
 		include/acpi/platform/acos2.h \
+		include/acpi/platform/acqnx.h \
 		include/acpi/platform/acwin.h \
+		include/acpi/platform/acwinex.h \
 		include/acpi/platform/acwin64.h \
 		include/acpi/platform/acdragonfly.h \
 		include/acpi/platform/acdragonflyex.h \
