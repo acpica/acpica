@@ -274,9 +274,11 @@ include ../Makefile.rules
 # Function to safely execute yacc
 #
 safe_yacc = \
-	_d=`mktemp -d $(OBJDIR)/$(1)XXXXXX` &&\
-	$(YACC) $(YFLAGS) -p$(1) -o$$_d/$(1).c -d $(2) &&\
-	mv $$_d/$(1)$(suffix $(3)) $(3);\
+	_d=`mktemp -d $(OBJDIR)/$(1).XXXXXX` &&\
+	cd $$_d &&\
+	$(YACC) $(YFLAGS) -d -p$(1) $(abspath $(2)) &&\
+	cd - &&\
+	mv $$_d/y.tab$(suffix $(3)) $(3);\
 	_r=$$?;\
 	rm -fr $$_d;\
 	exit $$_r
