@@ -191,6 +191,9 @@ NamePathTail                [.]{NameSeg}
 
     /* ASL Extension: Standard C operators */
 
+"?"                         { count (3); return (PARSEOP_EXP_QUESTION); }
+":"                         { count (3); return (PARSEOP_EXP_COLON); }
+
 "~"                         { count (3); return (PARSEOP_EXP_NOT); }
 "!"                         { count (3); return (PARSEOP_EXP_LOGICAL_NOT); }
 "*"                         { count (3); return (PARSEOP_EXP_MULTIPLY); }

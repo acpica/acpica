@@ -465,3 +465,6 @@ NoEcho('
 %type <n> Expression
 %type <n> EqualsTerm
 %type <n> IndexExpTerm
+%type <n> TernaryIfTerm
+%type <n> TernaryElseTerm
+%type <n> TernaryIfElseTerm
