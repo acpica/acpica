@@ -13,6 +13,7 @@ fi
 CURDIR=`pwd`
 TOOLDIR=$SCRIPT/bin
 ACPISRC=$TOOLDIR/acpisrc
+ACPI_TYPES=
 
 linux_dirs()
 {
@@ -110,9 +111,12 @@ acpica_exclude_paths()
 		include/acpi/platform/acintel.h \
 		include/acpi/platform/acmacosx.h \
 		include/acpi/platform/acmsvc.h \
+		include/acpi/platform/acmsvcex.h \
 		include/acpi/platform/acnetbsd.h \
 		include/acpi/platform/acos2.h \
+		include/acpi/platform/acqnx.h \
 		include/acpi/platform/acwin.h \
+		include/acpi/platform/acwinex.h \
 		include/acpi/platform/acwin64.h \
 		include/acpi/platform/acdragonfly.h \
 		include/acpi/platform/acdragonflyex.h \
@@ -212,23 +216,61 @@ make_acpisrc()
 	make_tool $1 acpisrc
 }
 
+find_typedefs()
+{
+	cat $1 | awk '
+	{
+		if (match($0, /^typedef[_a-zA-Z0-9\* \t]+;/)) {
+			s1=substr($0, RSTART, RLENGTH)
+			if (match(s1, /^typedef[ \t]+/)) {
+				s2=substr(s1, RLENGTH+1)
+				if (match(s2, /(signed|unsigned)[ \t]+/)) {
+					s3=substr(s2, RLENGTH+1)
+				} else {
+					s3=s2
+				}
+				if (match(s3, /[_a-zA-Z0-9]+[ \t]+/)) {
+					s4=substr(s3, RLENGTH+1)
+					if (match(s4, /\*[ \t]*/)) {
+						s5=substr(s4, RLENGTH+1)
+					} else {
+						s5=s4
+					}
+					if (match(s5, /[_a-zA-Z0-9]+/)) {
+						def=substr(s5, RSTART, RLENGTH)
+						print def
+					}
+				}
+			}
+		}
+	}
+	'
+}
+
+find_all_typedefs()
+{
+	local f files
+
+	files=`find . -name "*.h"`
+	for f in $files; do
+		find_typedefs $f
+	done
+}
+
+lindent_find_typedefs()
+{
+	ACPI_TYPES=`find_all_typedefs | sort | uniq`
+}
+
 lindent_single()
 {
-	local acpi_types t indent_flags
-
-	acpi_types="\
-		u8 \
-		u16 \
-		u32 \
-		u64 \
-		acpi_integer \
-		acpi_predefined_data \
-		acpi_operand_object \
-		acpi_event_status \
-	"
+	local t indent_flags
 
 	indent_flags="-npro -kr -i8 -ts8 -sob -l80 -ss -ncs -il0"
-	for t in $acpi_types; do
+	for t in $ACPI_TYPES; do
+		if [ "x$2" = "xtrue" ]; then
+			echo " Adding type $t"
+		fi
 		indent_flags="$indent_flags -T $t"
 	done
 
@@ -238,13 +280,15 @@ lindent_single()
 
 lindent()
 {
-	local files f
+	local files f verbose=true
 
 	(
 		cd $1
+		lindent_find_typedefs
 		files=`find . -name "*.[ch]" | cut -c3-`
 		for f in $files; do
-			lindent_single $f
+			lindent_single $f $verbose
+			verbose=false
 		done
 		find . -name "*~" | xargs rm -f
 	)
