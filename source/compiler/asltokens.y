@@ -536,11 +536,6 @@ NoEcho('
            /* PARSEOP_EXP_PAREN_OPEN */
            /* PARSEOP_EXP_PAREN_CLOSE */
 
-/* ternary if/else */
-
-%token <i> PARSEOP_EXP_QUESTION
-%token <i> PARSEOP_EXP_COLON
-
 
 %token <i> PARSEOP_ASL_CODE
 

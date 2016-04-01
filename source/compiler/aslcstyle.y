@@ -230,28 +230,11 @@ IndexExpTerm
     : SuperName PARSEOP_EXP_INDEX_LEFT TermArg PARSEOP_EXP_INDEX_RIGHT
                                         {$$ = TrCreateLeafNode (PARSEOP_INDEX);
                                         TrLinkChildren ($$,3,$1,$3,TrCreateNullTarget ());}
-
-/*
- * Ternary If/Else, syntactally known as (a ? b : c)
- * takes three rules to make it clean
- */
-TernaryIfTerm
-    : TermArg PARSEOP_EXP_QUESTION      {$<n>$ = TrCreateLeafNode (PARSEOP_IF);}
-        TermArg                         {$$ = TrLinkChildren ($<n>3,2,$1,$4);}
     ;
-
-TernaryElseTerm
-    : PARSEOP_EXP_COLON                 {$<n>$ = TrCreateLeafNode (PARSEOP_ELSE);}
-        TermArg                         {$$ = TrLinkChildren ($<n>2,1,$3);}
-    ;
-
-TernaryIfElseTerm
-    : TernaryIfTerm TernaryElseTerm     {$$ = TrLinkPeerNode ($1,$2);}
-
-
-/* All assignment-type operations */
 
 EqualsTerm
+
+    /* All assignment-type operations */
 
     : SuperName PARSEOP_EXP_EQUALS
         TermArg                         {$$ = TrCreateAssignmentNode ($1, $3);}

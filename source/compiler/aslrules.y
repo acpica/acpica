@@ -1099,7 +1099,7 @@ IfTerm
         TermArg
         ')' '{'
             TermList '}'            {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
-    | TernaryIfElseTerm             {}
+
     | PARSEOP_IF '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
