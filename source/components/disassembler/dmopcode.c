@@ -1123,9 +1123,6 @@ AcpiDmConvertToElseIf (
     ACPI_PARSE_OBJECT       *ElseOp;
 
 
-        AcpiOsPrintf ("%s", "Else");
-        return;
-
     /*
      * To be able to perform the conversion, two conditions must be satisfied:
      * 1) The first child of the Else must be an If statement.
