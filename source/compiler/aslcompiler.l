@@ -744,8 +744,13 @@ NamePathTail                [.]{NameSeg}
 
 
     /* printf debug macros */
+
 "printf"                    { count (0); return (PARSEOP_PRINTF); }
 "fprintf"                   { count (0); return (PARSEOP_FPRINTF); }
+
+    /* Other macros */
+
+"For"                       { count (0); return (PARSEOP_FOR); }
 
     /* Predefined compiler names */
 

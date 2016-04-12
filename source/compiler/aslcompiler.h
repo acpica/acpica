@@ -781,6 +781,11 @@ ExDoExternal (
 #define ASL_WALK_VISIT_TWICE        (ASL_WALK_VISIT_DOWNWARD | ASL_WALK_VISIT_UPWARD)
 
 
+void
+TrSetParent (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_PARSE_OBJECT       *ParentOp);
+
 ACPI_PARSE_OBJECT *
 TrAllocateNode (
     UINT32                  ParseOpcode);

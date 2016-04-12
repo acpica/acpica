@@ -367,6 +367,7 @@ NoEcho('
 %type <n> PrintfArgList
 %type <n> PrintfTerm
 %type <n> FprintfTerm
+%type <n> ForTerm
 
 /* Resource Descriptors */
 
@@ -419,6 +420,7 @@ NoEcho('
 %type <n> OptionalAddressRange
 %type <n> OptionalBitsPerByte
 %type <n> OptionalBuffer_Last
+%type <n> OptionalBufferLength
 %type <n> OptionalByteConstExpr
 %type <n> OptionalCount
 %type <n> OptionalDecodeType
@@ -438,6 +440,7 @@ NoEcho('
 %type <n> OptionalParameterTypePackage
 %type <n> OptionalParameterTypesPackage
 %type <n> OptionalParityType
+%type <n> OptionalPredicate
 %type <n> OptionalQWordConstExpr
 %type <n> OptionalRangeType
 %type <n> OptionalReference
