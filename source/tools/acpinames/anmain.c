@@ -338,7 +338,6 @@ AnDumpEntireNamespace (
      */
     Status = AcpiEnableSubsystem (
         ACPI_NO_ACPI_ENABLE |
-        ACPI_NO_ADDRESS_SPACE_INIT |
         ACPI_NO_EVENT_INIT |
         ACPI_NO_HANDLER_INIT);
     if (ACPI_FAILURE (Status))
@@ -349,7 +348,8 @@ AnDumpEntireNamespace (
     }
 
     Status = AcpiInitializeObjects (
-        ACPI_NO_ADDRESS_SPACE_INIT |
+        ACPI_NO_SYSTEM_SPACES_INIT |
+        ACPI_NO_PCI_CONFIG_INIT |
         ACPI_NO_DEVICE_INIT |
         ACPI_NO_EVENT_INIT);
     if (ACPI_FAILURE (Status))

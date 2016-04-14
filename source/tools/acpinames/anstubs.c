@@ -177,7 +177,7 @@ AcpiEvInstallRegionHandlers (
 
 ACPI_STATUS
 AcpiEvInitializeOpRegions (
-    void)
+    UINT32                  Flags)
 {
     return (AE_OK);
 }
