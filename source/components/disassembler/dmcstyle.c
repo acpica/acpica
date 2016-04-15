@@ -450,7 +450,7 @@ AcpiDmCheckForSymbolicOpcode (
 
                 /* Convert operator to compound assignment */
 
-                Op->Common.DisasmFlags |= ACPI_PARSEOP_COMPOUND;
+                Op->Common.DisasmFlags |= ACPI_PARSEOP_COMPOUND_ASSIGNMENT;
                 Child1->Common.OperatorSymbol = NULL;
                 return (TRUE);
             }
@@ -478,7 +478,7 @@ AcpiDmCheckForSymbolicOpcode (
 
                 /* Convert operator to compound assignment */
 
-                Op->Common.DisasmFlags |= ACPI_PARSEOP_COMPOUND;
+                Op->Common.DisasmFlags |= ACPI_PARSEOP_COMPOUND_ASSIGNMENT;
                 Child1->Common.OperatorSymbol = NULL;
                 return (TRUE);
             }
@@ -650,7 +650,7 @@ AcpiDmCloseOperator (
 
         /* Emit paren only if this is not a compound assignment */
 
-        if (Op->Common.DisasmFlags & ACPI_PARSEOP_COMPOUND)
+        if (Op->Common.DisasmFlags & ACPI_PARSEOP_COMPOUND_ASSIGNMENT)
         {
             return;
         }

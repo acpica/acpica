@@ -532,7 +532,7 @@ AcpiDmDescendingOp (
         NextOp = AcpiPsGetDepthNext (NULL, Op);
         if (NextOp)
         {
-            NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMLIST;
+            NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMETER_LIST;
 
             /*
              * A Zero predicate indicates the possibility of one or more
@@ -586,7 +586,7 @@ AcpiDmDescendingOp (
         }
     }
     else if ((AcpiDmBlockType (Op->Common.Parent) & BLOCK_BRACE) &&
-         (!(Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST)) &&
+         (!(Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST)) &&
          (!(Op->Common.DisasmFlags & ACPI_PARSEOP_ELSEIF)) &&
          (Op->Common.AmlOpcode != AML_INT_BYTELIST_OP))
     {
@@ -740,10 +740,10 @@ AcpiDmDescendingOp (
 
                 AcpiOsPrintf (", ");
                 NextOp = AcpiPsGetDepthNext (NULL, Op);
-                NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMLIST;
+                NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMETER_LIST;
 
                 NextOp = NextOp->Common.Next;
-                NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMLIST;
+                NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMETER_LIST;
                 return (AE_OK);
 
             case AML_PROCESSOR_OP:
@@ -752,13 +752,13 @@ AcpiDmDescendingOp (
 
                 AcpiOsPrintf (", ");
                 NextOp = AcpiPsGetDepthNext (NULL, Op);
-                NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMLIST;
+                NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMETER_LIST;
 
                 NextOp = NextOp->Common.Next;
-                NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMLIST;
+                NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMETER_LIST;
 
                 NextOp = NextOp->Common.Next;
-                NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMLIST;
+                NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMETER_LIST;
                 return (AE_OK);
 
             case AML_MUTEX_OP:
@@ -817,12 +817,12 @@ AcpiDmDescendingOp (
                  * Bank Value. This is a TermArg in the middle of the parameter
                  * list, must handle it here.
                  *
-                 * Disassemble the TermArg parse tree. ACPI_PARSEOP_PARAMLIST
+                 * Disassemble the TermArg parse tree. ACPI_PARSEOP_PARAMETER_LIST
                  * eliminates newline in the output.
                  */
                 NextOp = NextOp->Common.Next;
 
-                Info->Flags = ACPI_PARSEOP_PARAMLIST;
+                Info->Flags = ACPI_PARSEOP_PARAMETER_LIST;
                 AcpiDmWalkParseTree (NextOp, AcpiDmDescendingOp,
                     AcpiDmAscendingOp, Info);
                 Info->Flags = 0;
@@ -884,7 +884,7 @@ AcpiDmDescendingOp (
 
             /* Normal Buffer, mark size as in the parameter list */
 
-            NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMLIST;
+            NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMETER_LIST;
             return (AE_OK);
 
         case AML_IF_OP:
@@ -896,7 +896,7 @@ AcpiDmDescendingOp (
             NextOp = AcpiPsGetDepthNext (NULL, Op);
             if (NextOp)
             {
-                NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMLIST;
+                NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMETER_LIST;
             }
             return (AE_OK);
 
@@ -907,7 +907,7 @@ AcpiDmDescendingOp (
             NextOp = AcpiPsGetDepthNext (NULL, Op);
             if (NextOp)
             {
-                NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMLIST;
+                NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMETER_LIST;
             }
             return (AE_OK);
 
@@ -1006,14 +1006,14 @@ AcpiDmAscendingOp (
         if (!AcpiDmCommaIfListMember (Op))
         {
             if ((AcpiDmBlockType (Op->Common.Parent) & BLOCK_BRACE) &&
-                 (!(Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST)) &&
+                 (!(Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST)) &&
                  (Op->Common.AmlOpcode != AML_INT_BYTELIST_OP))
             {
                 /*
                  * This is a first-level element of a term list
                  * start a new line
                  */
-                if (!(Info->Flags & ACPI_PARSEOP_PARAMLIST))
+                if (!(Info->Flags & ACPI_PARSEOP_PARAMETER_LIST))
                 {
                     AcpiOsPrintf ("\n");
                 }
@@ -1068,7 +1068,7 @@ AcpiDmAscendingOp (
         if (!AcpiDmCommaIfListMember (Op))
         {
             if ((AcpiDmBlockType (Op->Common.Parent) & BLOCK_BRACE) &&
-                 (!(Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST)) &&
+                 (!(Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST)) &&
                  (Op->Common.AmlOpcode != AML_INT_BYTELIST_OP))
             {
                 /*
@@ -1085,7 +1085,7 @@ AcpiDmAscendingOp (
             case AML_PACKAGE_OP:
             case AML_VAR_PACKAGE_OP:
 
-                if (!(Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST))
+                if (!(Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST))
                 {
                     AcpiOsPrintf ("\n");
                 }
@@ -1099,17 +1099,17 @@ AcpiDmAscendingOp (
         break;
     }
 
-    if (Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST)
+    if (Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST)
     {
         if ((Op->Common.Next) &&
-            (Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST))
+            (Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST))
         {
             return (AE_OK);
         }
 
         /*
          * The parent Op is guaranteed to be valid because of the flag
-         * ACPI_PARSEOP_PARAMLIST -- which means that this op is part of
+         * ACPI_PARSEOP_PARAMETER_LIST -- which means that this op is part of
          * a parameter list and thus has a valid parent.
          */
         ParentOp = Op->Common.Parent;

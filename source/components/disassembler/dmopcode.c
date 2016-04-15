@@ -321,11 +321,11 @@ AcpiDmPredefinedDescription (
 
     /* Ensure that the comment field is emitted only once */
 
-    if (Op->Common.DisasmFlags & ACPI_PARSEOP_PREDEF_CHECKED)
+    if (Op->Common.DisasmFlags & ACPI_PARSEOP_PREDEFINED_CHECKED)
     {
         return;
     }
-    Op->Common.DisasmFlags |= ACPI_PARSEOP_PREDEF_CHECKED;
+    Op->Common.DisasmFlags |= ACPI_PARSEOP_PREDEFINED_CHECKED;
 
     /* Predefined name must start with an underscore */
 
@@ -457,11 +457,11 @@ AcpiDmFieldPredefinedDescription (
 
     /* Ensure that the comment field is emitted only once */
 
-    if (Op->Common.DisasmFlags & ACPI_PARSEOP_PREDEF_CHECKED)
+    if (Op->Common.DisasmFlags & ACPI_PARSEOP_PREDEFINED_CHECKED)
     {
         return;
     }
-    Op->Common.DisasmFlags |= ACPI_PARSEOP_PREDEF_CHECKED;
+    Op->Common.DisasmFlags |= ACPI_PARSEOP_PREDEFINED_CHECKED;
 
     /*
      * Op must be one of the Create* operators: CreateField, CreateBitField,
