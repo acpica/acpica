@@ -146,6 +146,10 @@ AslCode
  * {ObjectList} portion of the DefinitionBlockTerm in ACPI 2.0 to the
  * original use of {TermList} instead (see below.) This allows the use
  * of Type1 and Type2 opcodes at module level.
+ *
+ * 04/2016: The module-level code is now allowed in the following terms:
+ * DeviceTerm, PowerResTerm, ProcessorTerm, ScopeTerm, ThermalZoneTerm.
+ * The ObjectList term is obsolete and has been removed.
  */
 DefinitionBlockTerm
     : PARSEOP_DEFINITION_BLOCK '('  {$<n>$ = TrCreateLeafNode (PARSEOP_DEFINITION_BLOCK);}
@@ -259,12 +263,6 @@ FieldUnitEntry
     : ',' AmlPackageLengthTerm      {$$ = TrCreateNode (PARSEOP_RESERVED_BYTES,1,$2);}
     | NameSeg ','
         AmlPackageLengthTerm        {$$ = TrLinkChildNode ($1,$3);}
-    ;
-
-ObjectList
-    :                               {$$ = NULL;}
-    | ObjectList Object             {$$ = TrLinkPeerNode ($1,$2);}
-    | error                         {$$ = AslDoError(); yyclearin;}
     ;
 
 Object
@@ -1451,7 +1449,7 @@ PowerResTerm
         ',' ByteConstExpr
         ',' WordConstExpr
         ')' '{'
-            ObjectList '}'          {$$ = TrLinkChildren ($<n>3,4,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$6,$8,$11);}
+            TermList '}'            {$$ = TrLinkChildren ($<n>3,4,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$6,$8,$11);}
     | PARSEOP_POWERRESOURCE '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -1479,7 +1477,7 @@ ProcessorTerm
         OptionalDWordConstExpr
         OptionalByteConstExpr
         ')' '{'
-            ObjectList '}'          {$$ = TrLinkChildren ($<n>3,5,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$6,$7,$8,$11);}
+            TermList '}'            {$$ = TrLinkChildren ($<n>3,5,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$6,$7,$8,$11);}
     | PARSEOP_PROCESSOR '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -1534,7 +1532,7 @@ ScopeTerm
     : PARSEOP_SCOPE '('             {$<n>$ = TrCreateLeafNode (PARSEOP_SCOPE);}
         NameString
         ')' '{'
-            ObjectList '}'          {$$ = TrLinkChildren ($<n>3,2,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$7);}
+            TermList '}'            {$$ = TrLinkChildren ($<n>3,2,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$7);}
     | PARSEOP_SCOPE '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -1623,7 +1621,7 @@ ThermalZoneTerm
     : PARSEOP_THERMALZONE '('       {$<n>$ = TrCreateLeafNode (PARSEOP_THERMALZONE);}
         NameString
         ')' '{'
-            ObjectList '}'          {$$ = TrLinkChildren ($<n>3,2,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$7);}
+            TermList '}'            {$$ = TrLinkChildren ($<n>3,2,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$7);}
     | PARSEOP_THERMALZONE '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;

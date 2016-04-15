@@ -130,7 +130,7 @@
  * each list element and possibly overflow on very large lists (>4000 items).
  * This dramatically reduces use of the parse stack overall.
  *
- *      ArgList, TermList, Objectlist, ByteList, DWordList, PackageList,
+ *      ArgList, TermList, ByteList, DWordList, PackageList,
  *      ResourceMacroList, and FieldUnitList
  */
 

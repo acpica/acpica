@@ -134,7 +134,6 @@ NoEcho('
 %type <n> NamedObject
 %type <n> NameSpaceModifier
 %type <n> Object
-%type <n> ObjectList
 %type <n> PackageData
 %type <n> ParameterTypePackage
 %type <n> ParameterTypePackageList
