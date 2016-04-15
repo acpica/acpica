@@ -404,6 +404,7 @@ NamePathTail                [.]{NameSeg}
 "GpioInt"                   { count (1); return (PARSEOP_GPIO_INT); }
 "GpioIo"                    { count (1); return (PARSEOP_GPIO_IO); }
 "I2cSerialBus"              { count (1); return (PARSEOP_I2C_SERIALBUS); }
+"I2cSerialBusV2"            { count (1); return (PARSEOP_I2C_SERIALBUS_V2); }
 "Interrupt"                 { count (1); return (PARSEOP_INTERRUPT); }
 "IO"                        { count (1); return (PARSEOP_IO); }
 "IRQ"                       { count (1); return (PARSEOP_IRQ); }
@@ -416,9 +417,11 @@ NamePathTail                [.]{NameSeg}
 "QWordSpace"                { count (1); return (PARSEOP_QWORDSPACE); }
 "Register"                  { count (1); return (PARSEOP_REGISTER); }
 "SpiSerialBus"              { count (1); return (PARSEOP_SPI_SERIALBUS); }
+"SpiSerialBusV2"            { count (1); return (PARSEOP_SPI_SERIALBUS_V2); }
 "StartDependentFn"          { count (1); return (PARSEOP_STARTDEPENDENTFN); }
 "StartDependentFnNoPri"     { count (1); return (PARSEOP_STARTDEPENDENTFN_NOPRI); }
 "UartSerialBus"             { count (1); return (PARSEOP_UART_SERIALBUS); }
+"UartSerialBusV2"           { count (1); return (PARSEOP_UART_SERIALBUS_V2); }
 "VendorLong"                { count (1); return (PARSEOP_VENDORLONG); }
 "VendorShort"               { count (1); return (PARSEOP_VENDORSHORT); }
 "WordBusNumber"             { count (1); return (PARSEOP_WORDBUSNUMBER); }

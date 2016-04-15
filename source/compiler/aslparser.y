@@ -171,7 +171,7 @@ AslLocalAllocate (
  * These shift/reduce conflicts are expected. There should be zero
  * reduce/reduce conflicts.
  */
-%expect 89
+%expect 101
 
 /*! [Begin] no source code translation */
 
