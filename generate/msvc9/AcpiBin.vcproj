@@ -341,7 +341,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Utils"
+				Name="Utilities"
 				Filter=".c"
 				>
 				<File
@@ -365,6 +365,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utascii.c"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utbuffer.c"

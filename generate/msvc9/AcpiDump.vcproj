@@ -325,6 +325,10 @@
 				Filter=".c"
 				>
 				<File
+					RelativePath="..\..\source\components\utilities\utascii.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utbuffer.c"
 					>
 				</File>

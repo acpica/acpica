@@ -466,6 +466,10 @@
 				Name="Utilities"
 				>
 				<File
+					RelativePath="..\..\source\components\utilities\utascii.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utdebug.c"
 					>
 				</File>
