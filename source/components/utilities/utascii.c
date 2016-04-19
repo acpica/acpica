@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: actables.h - ACPI table management
+ * Module Name: utascii - Utility ascii functions
  *
  *****************************************************************************/
 
@@ -113,217 +113,121 @@
  *
  *****************************************************************************/
 
-#ifndef __ACTABLES_H__
-#define __ACTABLES_H__
+#include "acpi.h"
+#include "accommon.h"
 
 
-ACPI_STATUS
-AcpiAllocateRootTable (
-    UINT32                  InitialTableCount);
-
-/*
- * tbxfroot - Root pointer utilities
- */
-UINT32
-AcpiTbGetRsdpLength (
-    ACPI_TABLE_RSDP         *Rsdp);
-
-ACPI_STATUS
-AcpiTbValidateRsdp (
-    ACPI_TABLE_RSDP         *Rsdp);
-
-UINT8 *
-AcpiTbScanMemoryForRsdp (
-    UINT8                   *StartAddress,
-    UINT32                  Length);
-
-
-/*
- * tbdata - table data structure management
- */
-ACPI_STATUS
-AcpiTbGetNextTableDescriptor (
-    UINT32                  *TableIndex,
-    ACPI_TABLE_DESC         **TableDesc);
-
-void
-AcpiTbInitTableDescriptor (
-    ACPI_TABLE_DESC         *TableDesc,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT8                   Flags,
-    ACPI_TABLE_HEADER       *Table);
-
-ACPI_STATUS
-AcpiTbAcquireTempTable (
-    ACPI_TABLE_DESC         *TableDesc,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT8                   Flags);
-
-void
-AcpiTbReleaseTempTable (
-    ACPI_TABLE_DESC         *TableDesc);
-
-ACPI_STATUS
-AcpiTbValidateTempTable (
-    ACPI_TABLE_DESC         *TableDesc);
-
-ACPI_STATUS
-AcpiTbVerifyTempTable (
-    ACPI_TABLE_DESC         *TableDesc,
-    char                    *Signature);
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtValidNameseg
+ *
+ * PARAMETERS:  Name            - The name or table signature to be examined.
+ *                                Four characters, does not have to be a
+ *                                NULL terminated string.
+ *
+ * RETURN:      TRUE if signature is has 4 valid ACPI characters
+ *
+ * DESCRIPTION: Validate an ACPI table signature.
+ *
+ ******************************************************************************/
 
 BOOLEAN
-AcpiTbIsTableLoaded (
-    UINT32                  TableIndex);
+AcpiUtValidNameseg (
+    char                    *Name)
+{
+    UINT32                  i;
+
+
+    /* Validate each character in the signature */
+
+    for (i = 0; i < ACPI_NAME_SIZE; i++)
+    {
+        if (!AcpiUtValidNameChar (Name[i], i))
+        {
+            return (FALSE);
+        }
+    }
+
+    return (TRUE);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtValidNameChar
+ *
+ * PARAMETERS:  Char            - The character to be examined
+ *              Position        - Byte position (0-3)
+ *
+ * RETURN:      TRUE if the character is valid, FALSE otherwise
+ *
+ * DESCRIPTION: Check for a valid ACPI character. Must be one of:
+ *              1) Upper case alpha
+ *              2) numeric
+ *              3) underscore
+ *
+ *              We allow a '!' as the last character because of the ASF! table
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AcpiUtValidNameChar (
+    char                    Character,
+    UINT32                  Position)
+{
+
+    if (!((Character >= 'A' && Character <= 'Z') ||
+          (Character >= '0' && Character <= '9') ||
+          (Character == '_')))
+    {
+        /* Allow a '!' in the last position */
+
+        if (Character == '!' && Position == 3)
+        {
+            return (TRUE);
+        }
+
+        return (FALSE);
+    }
+
+    return (TRUE);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtCheckAndRepairAscii
+ *
+ * PARAMETERS:  Name                - Ascii string
+ *              Count               - Number of characters to check
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Ensure that the requested number of characters are printable
+ *              Ascii characters. Sets non-printable and null chars to <space>.
+ *
+ ******************************************************************************/
 
 void
-AcpiTbSetTableLoadedFlag (
-    UINT32                  TableIndex,
-    BOOLEAN                 IsLoaded);
+AcpiUtCheckAndRepairAscii (
+    UINT8                   *Name,
+    char                    *RepairedName,
+    UINT32                  Count)
+{
+    UINT32                  i;
 
 
-/*
- * tbfadt - FADT parse/convert/validate
- */
-void
-AcpiTbParseFadt (
-    void);
+    for (i = 0; i < Count; i++)
+    {
+        RepairedName[i] = (char) Name[i];
 
-void
-AcpiTbCreateLocalFadt (
-    ACPI_TABLE_HEADER       *Table,
-    UINT32                  Length);
-
-
-/*
- * tbfind - find ACPI table
- */
-ACPI_STATUS
-AcpiTbFindTable (
-    char                    *Signature,
-    char                    *OemId,
-    char                    *OemTableId,
-    UINT32                  *TableIndex);
-
-
-/*
- * tbinstal - Table removal and deletion
- */
-ACPI_STATUS
-AcpiTbResizeRootTableList (
-    void);
-
-ACPI_STATUS
-AcpiTbValidateTable (
-    ACPI_TABLE_DESC         *TableDesc);
-
-void
-AcpiTbInvalidateTable (
-    ACPI_TABLE_DESC         *TableDesc);
-
-void
-AcpiTbOverrideTable (
-    ACPI_TABLE_DESC         *OldTableDesc);
-
-ACPI_STATUS
-AcpiTbAcquireTable (
-    ACPI_TABLE_DESC         *TableDesc,
-    ACPI_TABLE_HEADER       **TablePtr,
-    UINT32                  *TableLength,
-    UINT8                   *TableFlags);
-
-void
-AcpiTbReleaseTable (
-    ACPI_TABLE_HEADER       *Table,
-    UINT32                  TableLength,
-    UINT8                   TableFlags);
-
-ACPI_STATUS
-AcpiTbInstallStandardTable (
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT8                   Flags,
-    BOOLEAN                 Reload,
-    BOOLEAN                 Override,
-    UINT32                  *TableIndex);
-
-void
-AcpiTbUninstallTable (
-    ACPI_TABLE_DESC        *TableDesc);
-
-void
-AcpiTbTerminate (
-    void);
-
-ACPI_STATUS
-AcpiTbDeleteNamespaceByOwner (
-    UINT32                  TableIndex);
-
-ACPI_STATUS
-AcpiTbAllocateOwnerId (
-    UINT32                  TableIndex);
-
-ACPI_STATUS
-AcpiTbReleaseOwnerId (
-    UINT32                  TableIndex);
-
-ACPI_STATUS
-AcpiTbGetOwnerId (
-    UINT32                  TableIndex,
-    ACPI_OWNER_ID           *OwnerId);
-
-
-/*
- * tbutils - table manager utilities
- */
-ACPI_STATUS
-AcpiTbInitializeFacs (
-    void);
-
-void
-AcpiTbPrintTableHeader(
-    ACPI_PHYSICAL_ADDRESS   Address,
-    ACPI_TABLE_HEADER       *Header);
-
-UINT8
-AcpiTbChecksum (
-    UINT8                   *Buffer,
-    UINT32                  Length);
-
-ACPI_STATUS
-AcpiTbVerifyChecksum (
-    ACPI_TABLE_HEADER       *Table,
-    UINT32                  Length);
-
-void
-AcpiTbCheckDsdtHeader (
-    void);
-
-ACPI_TABLE_HEADER *
-AcpiTbCopyDsdt (
-    UINT32                  TableIndex);
-
-void
-AcpiTbInstallTableWithOverride (
-    ACPI_TABLE_DESC         *NewTableDesc,
-    BOOLEAN                 Override,
-    UINT32                  *TableIndex);
-
-ACPI_STATUS
-AcpiTbInstallFixedTable (
-    ACPI_PHYSICAL_ADDRESS   Address,
-    char                    *Signature,
-    UINT32                  *TableIndex);
-
-ACPI_STATUS
-AcpiTbParseRootTable (
-    ACPI_PHYSICAL_ADDRESS   RsdpAddress);
-
-
-/*
- * tbxfload
- */
-ACPI_STATUS
-AcpiTbLoadNamespace (
-    void);
-
-#endif /* __ACTABLES_H__ */
+        if (!Name[i])
+        {
+            return;
+        }
+        if (!isprint (Name[i]))
+        {
+            RepairedName[i] = ' ';
+        }
+    }
+}

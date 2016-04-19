@@ -543,7 +543,7 @@ AxListTables (
             continue;
         }
 
-        if (!AcpiIsValidSignature (TableHeader->Signature))
+        if (!AcpiUtValidNameseg (TableHeader->Signature))
         {
             continue;
         }

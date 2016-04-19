@@ -247,6 +247,25 @@ typedef struct acpi_pkg_info
 
 
 /*
+ * utascii - ASCII utilities
+ */
+BOOLEAN
+AcpiUtValidNameseg (
+    char                    *Signature);
+
+BOOLEAN
+AcpiUtValidNameChar (
+    char                    Character,
+    UINT32                  Position);
+
+void
+AcpiUtCheckAndRepairAscii (
+    UINT8                   *Name,
+    char                    *RepairedName,
+    UINT32                  Count);
+
+
+/*
  * utnonansi - Non-ANSI C library functions
  */
 void
@@ -903,15 +922,6 @@ void
 UtConvertBackslashes (
     char                    *Pathname);
 #endif
-
-BOOLEAN
-AcpiUtValidAcpiName (
-    char                    *Name);
-
-BOOLEAN
-AcpiUtValidAcpiChar (
-    char                    Character,
-    UINT32                  Position);
 
 void
 AcpiUtRepairName (

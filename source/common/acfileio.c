@@ -484,7 +484,7 @@ AcValidateTableHeader (
 
     /* Validate the signature (limited ASCII chars) */
 
-    if (!AcpiIsValidSignature (TableHeader.Signature))
+    if (!AcpiUtValidNameseg (TableHeader.Signature))
     {
         fprintf (stderr, "Invalid table signature: 0x%8.8X\n",
             *ACPI_CAST_PTR (UINT32, TableHeader.Signature));

@@ -146,7 +146,7 @@ ApIsValidHeader (
     {
         /* Make sure signature is all ASCII and a valid ACPI name */
 
-        if (!AcpiUtValidAcpiName (Table->Signature))
+        if (!AcpiUtValidNameseg (Table->Signature))
         {
             AcpiLogError ("Table signature (0x%8.8X) is invalid\n",
                 *(UINT32 *) Table->Signature);
@@ -535,6 +535,13 @@ ApDumpTableFromFile (
     if (!Table)
     {
         return (-1);
+    }
+
+    if (!AcpiUtValidNameseg (Table->Signature))
+    {
+        AcpiLogError (
+            "No valid ACPI signature was found in input file %s\n",
+            Pathname);
     }
 
     /* File must be at least as long as the table length */
