@@ -311,7 +311,7 @@ CleanupAndExit:
 
     if (Gbl_TableCount > 1)
     {
-        printf ("\n%d binary ACPI tables extracted\n",
+        printf ("\n%u binary ACPI tables extracted\n",
             Gbl_TableCount);
     }
 
@@ -455,7 +455,7 @@ CleanupAndExit:
             ThisSignature, ThisTableBytesWritten, Gbl_OutputFilename);
     }
 
-    printf ("\n%d binary ACPI tables extracted and written to %s (%u bytes)\n",
+    printf ("\n%u binary ACPI tables extracted and written to %s (%u bytes)\n",
         Gbl_TableCount, Gbl_OutputFilename, TotalBytesWritten);
 
     fclose (InputFile);
