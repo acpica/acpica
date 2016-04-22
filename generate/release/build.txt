@@ -120,6 +120,7 @@ Checkin the new version number, source/include/acpixf.h
 Git push everything
 
 Tag the version file with a name of the form Rmm_dd_yy
+    Get the commit number for the version number commit above (git log)
     git tag -m"version yyyymmdd" Rmm_dd_yy <commit #>
     git push --tags
 
@@ -135,12 +136,13 @@ Update the ACPICA website
 Login to acpica.org (with update permission)
 
 Create a new download node for the new ACPICA version:
-    Goto: ContentManagement->CreateContent->Downloads
+    Goto: Manage->Content->AddContent->Downloads
     Title: Use the new version number in the correct format (e.g., "Version 20140114")
     Body: Insert the release notes for this version
     Date: Must be the current date (should match ACPICA version)
-    File Attachments: Attach all of the release zip/gz files (currently 6 files)
+    File Attachments: Add all of the release zip/gz files (currently 6 files)
         (From the acpica/generate/release/current directory)
+        Currently, no need to add a description for each file.
     Click "Save" at the bottom of the page
 
 Update the version number token.
@@ -181,6 +183,10 @@ Update "news" if there are any major changes or major new features:
     Update front page news:
         Goto ContentManagement->CreateContent->News
         Add news item in the "Title" section and click save at bottom
+
+
+Cleanup:
+    Convert the generate/release/.sh files back to DOS format: unix2dos *.sh
 
 
 Email the release notes
