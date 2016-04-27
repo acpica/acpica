@@ -488,6 +488,14 @@ AcpiUtPtrExit (
     UINT8                   *Ptr);
 
 void
+AcpiUtStrExit (
+    UINT32                  LineNumber,
+    const char              *FunctionName,
+    const char              *ModuleName,
+    UINT32                  ComponentId,
+    const char              *String);
+
+void
 AcpiUtDebugDumpBuffer (
     UINT8                   *Buffer,
     UINT32                  Count,
