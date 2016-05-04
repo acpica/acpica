@@ -164,16 +164,34 @@ AcpiHwGetAccessBitWidth (
     ACPI_GENERIC_ADDRESS    *Reg,
     UINT8                   MaxBitWidth)
 {
+    UINT64                  Address;
+
 
     if (!Reg->AccessWidth)
     {
-        if (Reg->SpaceId == ACPI_ADR_SPACE_SYSTEM_IO)
+        /*
+         * Detect old register descriptors where only the BitWidth field
+         * makes senses. The target address is copied to handle possible
+         * alignment issues.
+         */
+        ACPI_MOVE_64_TO_64 (&Address, &Reg->Address);
+        if (!Reg->BitOffset && Reg->BitWidth &&
+            ACPI_IS_POWER_OF_TWO (Reg->BitWidth) &&
+            ACPI_IS_ALIGNED (Reg->BitWidth, 8) &&
+            ACPI_IS_ALIGNED (Address, Reg->BitWidth))
         {
-            return (32);
+            return (Reg->BitWidth);
         }
         else
         {
-            return (MaxBitWidth);
+            if (Reg->SpaceId == ACPI_ADR_SPACE_SYSTEM_IO)
+            {
+                return (32);
+            }
+            else
+            {
+                return (MaxBitWidth);
+            }
         }
     }
     else
