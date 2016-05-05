@@ -648,7 +648,6 @@ AsProcessOneFile (
 
     if (AsGetFile (Pathname, &Gbl_FileBuffer, &Gbl_FileSize))
     {
-        free (Pathname);
         Status = -1;
         goto Exit1;
     }
