@@ -1469,7 +1469,8 @@ Name(TNF0, Package() {
 	"reference",
 	"region",
 	"synchronization",
-	"table"
+	"table",
+	"module"
 })
 
 // Names of complex tests
@@ -1709,6 +1710,8 @@ Name(TFN0, Package() {
 	"recursion.asl",
 	"ns-scope.asl",		// 178
 	"ns-fullpath.asl",
+	"scope.asl",
+	"object.asl",
 
 
 // below are incorrect yet:

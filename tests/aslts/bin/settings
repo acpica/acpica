@@ -13,7 +13,7 @@ INIT_ALL_AVAILABLE_CASES()
 
 	FUNC_COLL="arithmetic bfield constant control descriptor"
 	FUNC_COLL="$FUNC_COLL logic manipulation name reference region synchronization"
-	FUNC_COLL="$FUNC_COLL table"
+	FUNC_COLL="$FUNC_COLL table module"
 
 	# Complex test collection
 

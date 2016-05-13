@@ -23,6 +23,7 @@ CONTENTS
 11 | region          | Operation Regions                     |
 12 | synchronization | Synchronization                       |
 13 | table           | ACPI table management                 |
+14 | module          | Module level code execution           |
    ___________________________________________________________
 
 FULL
