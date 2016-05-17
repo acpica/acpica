@@ -66,6 +66,7 @@ Name(W00a, 0) // reference
 Name(W00b, 0) // region
 Name(W00c, 0) // synchronization
 Name(W00d, 0) // table
+Name(W01a, 0) // module
 
 // COMPLEX
 
