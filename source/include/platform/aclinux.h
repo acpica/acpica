@@ -250,6 +250,10 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/stat.h>
 
 /* Define/disable kernel-specific declarators */
 

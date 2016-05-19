@@ -128,11 +128,6 @@
 #include "accommon.h"
 #include "actables.h"
 
-#include <stdio.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <sys/stat.h>
-
 
 /* Globals */
 

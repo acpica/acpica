@@ -491,7 +491,7 @@ acpi_main (
                 Gbl_OutputFilename, FileSize, FileSize);
         }
 
-        AcpiOsCloseFile (Gbl_OutputFile);
+        fclose (Gbl_OutputFile);
     }
 
     return (Status);

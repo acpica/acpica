@@ -117,6 +117,18 @@
 #define __ACEFIEX_H__
 
 
+/* GNU EFI definitions */
+
+#if defined(_GNU_EFI)
+
+/* Using native Clib for GNU EFI */
+
+#define ACPI_USE_SYSTEM_CLIBRARY_STDIO
+#include "acclib.h"
+
+#endif
+
+
 #define EFI_ERROR(a)              (((INTN) a) < 0)
 #define EFI_SUCCESS                             0
 #define EFI_LOAD_ERROR                  EFIERR(1)

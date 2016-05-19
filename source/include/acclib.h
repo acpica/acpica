@@ -236,4 +236,88 @@ int
 toupper (
     int                     c);
 
+/*
+ * utprint - printf/vprintf output functions
+ */
+const char *
+AcpiUtScanNumber (
+    const char              *String,
+    UINT64                  *NumberPtr);
+
+const char *
+AcpiUtPrintNumber (
+    char                    *String,
+    UINT64                  Number);
+
+int
+vsnprintf (
+    char                    *String,
+    ACPI_SIZE               Size,
+    const char              *Format,
+    va_list                 Args);
+
+int
+snprintf (
+    char                    *String,
+    ACPI_SIZE               Size,
+    const char              *Format,
+    ...);
+
+int
+sprintf (
+    char                    *String,
+    const char              *Format,
+    ...);
+
+#ifdef ACPI_APPLICATION
+int
+vprintf (
+    const char              *Format,
+    va_list                 Args);
+
+int
+printf (
+    const char              *Format,
+    ...);
+
+#ifdef ACPI_USE_SYSTEM_CLIBRARY_STDIO
+#define SEEK_SET            0
+#define SEEK_CUR            1
+#define SEEK_END            2
+
+ACPI_FILE
+fopen (
+    const char              *Path,
+    const char              *Modes);
+
+void
+fclose (
+    ACPI_FILE               File);
+
+int
+fread (
+    void                    *Buffer,
+    ACPI_SIZE               Size,
+    ACPI_SIZE               Count,
+    ACPI_FILE               File);
+#endif
+
+int
+fwrite (
+    void                    *Buffer,
+    ACPI_SIZE               Size,
+    ACPI_SIZE               Count,
+    ACPI_FILE               File);
+
+int
+fseek (
+    ACPI_FILE               File,
+    long                    Offset,
+    int                     From);
+
+long
+ftell (
+    ACPI_FILE               File);
+#endif
+
 #endif /* _ACCLIB_H */
