@@ -279,6 +279,45 @@ int
 printf (
     const char              *Format,
     ...);
+
+#ifdef ACPI_USE_SYSTEM_CLIBRARY_STDIO
+#define SEEK_SET            0
+#define SEEK_CUR            1
+#define SEEK_END            2
+
+ACPI_FILE
+fopen (
+    const char              *Path,
+    const char              *Modes);
+
+void
+fclose (
+    ACPI_FILE               File);
+
+int
+fread (
+    void                    *Buffer,
+    ACPI_SIZE               Size,
+    ACPI_SIZE               Count,
+    ACPI_FILE               File);
+#endif
+
+int
+fwrite (
+    void                    *Buffer,
+    ACPI_SIZE               Size,
+    ACPI_SIZE               Count,
+    ACPI_FILE               File);
+
+int
+fseek (
+    ACPI_FILE               File,
+    long                    Offset,
+    int                     From);
+
+long
+ftell (
+    ACPI_FILE               File);
 #endif
 
 #endif /* _ACCLIB_H */
