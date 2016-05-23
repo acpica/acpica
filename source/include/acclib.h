@@ -176,6 +176,16 @@ strchr (
     int                     ch);
 
 char *
+strpbrk (
+    const char              *String,
+    const char              *Delimiters);
+
+char *
+strtok (
+    char                    *String,
+    const char              *Delimiters);
+
+char *
 strcpy (
     char                    *DstString,
     const char              *SrcString);
