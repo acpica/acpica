@@ -225,6 +225,10 @@
 #pragma warning( disable : 4295 ) /* needed for acpredef.h array */
 #endif
 
+#ifdef _MSC_VER                 /* disable some level-4 warnings */
+#pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
+#endif
+
 
 /* Debug support. */
 

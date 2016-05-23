@@ -225,7 +225,7 @@ ApWriteToBinaryFile (
     char                    Filename[ACPI_NAME_SIZE + 16];
     char                    InstanceStr [16];
     ACPI_FILE               File;
-    size_t                  Actual;
+    ACPI_SIZE               Actual;
     UINT32                  TableLength;
 
 
@@ -254,7 +254,7 @@ ApWriteToBinaryFile (
 
     if (Instance > 0)
     {
-        AcpiUtSnprintf (InstanceStr, sizeof (InstanceStr), "%u", Instance);
+        snprintf (InstanceStr, sizeof (InstanceStr), "%u", Instance);
         strcat (Filename, InstanceStr);
     }
 
@@ -311,7 +311,7 @@ ApGetTableFromFile (
     ACPI_TABLE_HEADER       *Buffer = NULL;
     ACPI_FILE               File;
     UINT32                  FileSize;
-    size_t                  Actual;
+    ACPI_SIZE               Actual;
 
 
     /* Must use binary mode */

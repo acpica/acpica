@@ -422,18 +422,66 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#ifdef ACPI_APPLICATION
+#include <stdio.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/stat.h>
+#endif
 
-#endif /* ACPI_USE_STANDARD_HEADERS */
+#else /* ACPI_USE_STANDARD_HEADERS */
 
-/* We will be linking to the standard Clib functions */
+#ifdef ACPI_USE_COMPILER_VA
 
-#else
+/*
+ * We will be linking to the standard Clib functions, but stdarg.h is
+ * compiler specific, this works for linux kernel.
+ */
+#include <stdarg.h>
+
+#else /* ACPI_USE_COMPILER_VA */
+
+#ifndef va_arg
+
+#ifndef _VALIST
+#define _VALIST
+typedef char *va_list;
+#endif /* _VALIST */
+
+/* Storage alignment properties */
+
+#define  _AUPBND                (sizeof (ACPI_NATIVE_INT) - 1)
+#define  _ADNBND                (sizeof (ACPI_NATIVE_INT) - 1)
+
+/* Variable argument list macro definitions */
+
+#define _Bnd(X, bnd)            (((sizeof (X)) + (bnd)) & (~(bnd)))
+#define va_arg(ap, T)           (*(T *)(((ap) += (_Bnd (T, _AUPBND))) - (_Bnd (T,_ADNBND))))
+#define va_end(ap)              (ap = (va_list) NULL)
+#define va_start(ap, A)         (void) ((ap) = (((char *) &(A)) + (_Bnd (A,_AUPBND))))
+
+#endif /* va_arg */
+
+#endif /* ACPI_USE_COMPILER_VA */
 
 /******************************************************************************
  *
  * Not using native C library, use local implementations
  *
  *****************************************************************************/
+
+typedef signed char                     int8_t;
+typedef short int                       int16_t;
+typedef int                             int32_t;
+typedef unsigned char                   uint8_t;
+typedef unsigned short int              uint16_t;
+typedef unsigned int                    uint32_t;
+typedef COMPILER_DEPENDENT_INT64        int64_t;
+typedef COMPILER_DEPENDENT_UINT64       uint64_t;
+
+#endif /* ACPI_USE_STANDARD_HEADERS */
+
+#else /* ACPI_USE_SYSTEM_CLIBRARY */
 
 /*
  * Use local definitions of C library macros and functions. These function
@@ -466,9 +514,7 @@ typedef char *va_list;
 
 #endif /* ACPI_USE_SYSTEM_CLIBRARY */
 
-#ifndef ACPI_FILE
 #ifdef ACPI_APPLICATION
-#include <stdio.h>
 #define ACPI_FILE              FILE *
 #define ACPI_FILE_OUT          stdout
 #define ACPI_FILE_ERR          stderr
@@ -477,6 +523,5 @@ typedef char *va_list;
 #define ACPI_FILE_OUT          NULL
 #define ACPI_FILE_ERR          NULL
 #endif /* ACPI_APPLICATION */
-#endif /* ACPI_FILE */
 
 #endif /* __ACENV_H__ */

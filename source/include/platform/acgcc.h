@@ -116,6 +116,10 @@
 #ifndef __ACGCC_H__
 #define __ACGCC_H__
 
+/* Allow inclusion of stdarg.h */
+
+#define ACPI_USE_COMPILER_VA
+
 #define ACPI_INLINE             __inline__
 
 /* Function name is used for debug output. Non-ANSI, compiler-dependent */
