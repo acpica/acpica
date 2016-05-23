@@ -405,6 +405,247 @@ AcpiOsWaitEventsComplete (
 
 /******************************************************************************
  *
+ * FUNCTION:    AcpiOsInstallInterruptHandler
+ *
+ * PARAMETERS:  InterruptNumber     - Level handler should respond to.
+ *              ServiceRoutine      - Address of the ACPI interrupt handler
+ *              Context             - Where status is returned
+ *
+ * RETURN:      Handle to the newly installed handler.
+ *
+ * DESCRIPTION: Install an interrupt handler. Used to install the ACPI
+ *              OS-independent handler.
+ *
+ *****************************************************************************/
+
+UINT32
+AcpiOsInstallInterruptHandler (
+    UINT32                  InterruptNumber,
+    ACPI_OSD_HANDLER        ServiceRoutine,
+    void                    *Context)
+{
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsRemoveInterruptHandler
+ *
+ * PARAMETERS:  InterruptNumber     - Level handler should respond to.
+ *              ServiceRoutine      - Address of the ACPI interrupt handler
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Uninstalls an interrupt handler.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsRemoveInterruptHandler (
+    UINT32                  InterruptNumber,
+    ACPI_OSD_HANDLER        ServiceRoutine)
+{
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsReadPciConfiguration
+ *
+ * PARAMETERS:  PciId               - Seg/Bus/Dev
+ *              PciRegister         - Device Register
+ *              Value               - Buffer where value is placed
+ *              Width               - Number of bits
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Read data from PCI configuration space
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsReadPciConfiguration (
+    ACPI_PCI_ID             *PciId,
+    UINT32                  PciRegister,
+    UINT64                  *Value,
+    UINT32                  Width)
+{
+
+    *Value = 0;
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsWritePciConfiguration
+ *
+ * PARAMETERS:  PciId               - Seg/Bus/Dev
+ *              PciRegister         - Device Register
+ *              Value               - Value to be written
+ *              Width               - Number of bits
+ *
+ * RETURN:      Status.
+ *
+ * DESCRIPTION: Write data to PCI configuration space
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsWritePciConfiguration (
+    ACPI_PCI_ID             *PciId,
+    UINT32                  PciRegister,
+    UINT64                  Value,
+    UINT32                  Width)
+{
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsReadPort
+ *
+ * PARAMETERS:  Address             - Address of I/O port/register to read
+ *              Value               - Where value is placed
+ *              Width               - Number of bits
+ *
+ * RETURN:      Value read from port
+ *
+ * DESCRIPTION: Read data from an I/O port or register
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsReadPort (
+    ACPI_IO_ADDRESS         Address,
+    UINT32                  *Value,
+    UINT32                  Width)
+{
+
+    switch (Width)
+    {
+    case 8:
+
+        *Value = 0xFF;
+        break;
+
+    case 16:
+
+        *Value = 0xFFFF;
+        break;
+
+    case 32:
+
+        *Value = 0xFFFFFFFF;
+        break;
+
+    default:
+
+        return (AE_BAD_PARAMETER);
+    }
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsWritePort
+ *
+ * PARAMETERS:  Address             - Address of I/O port/register to write
+ *              Value               - Value to write
+ *              Width               - Number of bits
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Write data to an I/O port or register
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsWritePort (
+    ACPI_IO_ADDRESS         Address,
+    UINT32                  Value,
+    UINT32                  Width)
+{
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsReadMemory
+ *
+ * PARAMETERS:  Address             - Physical Memory Address to read
+ *              Value               - Where value is placed
+ *              Width               - Number of bits (8,16,32, or 64)
+ *
+ * RETURN:      Value read from physical memory address. Always returned
+ *              as a 64-bit integer, regardless of the read width.
+ *
+ * DESCRIPTION: Read data from a physical memory address
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsReadMemory (
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT64                  *Value,
+    UINT32                  Width)
+{
+
+    switch (Width)
+    {
+    case 8:
+    case 16:
+    case 32:
+    case 64:
+
+        *Value = 0;
+        break;
+
+    default:
+
+        return (AE_BAD_PARAMETER);
+    }
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsWriteMemory
+ *
+ * PARAMETERS:  Address             - Physical Memory Address to write
+ *              Value               - Value to write
+ *              Width               - Number of bits (8,16,32, or 64)
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Write data to a physical memory address
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsWriteMemory (
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT64                  Value,
+    UINT32                  Width)
+{
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AcpiOsAllocate
  *
  * PARAMETERS:  Size                - Amount to allocate, in bytes
