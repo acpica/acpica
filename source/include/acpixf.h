@@ -1306,13 +1306,6 @@ AcpiTracePoint (
     UINT8                   *Aml,
     char                    *Pathname))
 
-ACPI_APP_DEPENDENT_RETURN_VOID (
-ACPI_PRINTF_LIKE(1)
-void ACPI_INTERNAL_VAR_XFACE
-AcpiLogError (
-    const char              *Format,
-    ...))
-
 ACPI_STATUS
 AcpiInitializeDebugger (
     void);

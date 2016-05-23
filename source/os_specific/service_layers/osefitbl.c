@@ -378,7 +378,7 @@ OslAddTableToList (
     {
         if (Instance)
         {
-            AcpiLogError (
+            fprintf (stderr,
                 "%4.4s: Warning unmatched table instance %d, expected %d\n",
                 Signature, Instance, NextInstance);
         }
@@ -1014,7 +1014,7 @@ OslMapTable (
     MappedTable = AcpiOsMapMemory (Address, sizeof (ACPI_TABLE_HEADER));
     if (!MappedTable)
     {
-        AcpiLogError ("Could not map table header at 0x%8.8X%8.8X\n",
+        fprintf (stderr, "Could not map table header at 0x%8.8X%8.8X\n",
             ACPI_FORMAT_UINT64 (Address));
         return (AE_BAD_ADDRESS);
     }
@@ -1050,7 +1050,7 @@ OslMapTable (
     MappedTable = AcpiOsMapMemory (Address, Length);
     if (!MappedTable)
     {
-        AcpiLogError ("Could not map table at 0x%8.8X%8.8X length %8.8X\n",
+        fprintf (stderr, "Could not map table at 0x%8.8X%8.8X length %8.8X\n",
             ACPI_FORMAT_UINT64 (Address), Length);
         return (AE_INVALID_TABLE_LENGTH);
     }
