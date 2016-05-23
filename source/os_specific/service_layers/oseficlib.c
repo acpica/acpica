@@ -335,6 +335,76 @@ fclose (
 
 /*******************************************************************************
  *
+ * FUNCTION:    fgetc
+ *
+ * PARAMETERS:  File                - File descriptor
+ *
+ * RETURN:      The character read or EOF on the end of the file or error
+ *
+ * DESCRIPTION: Read a character from the file.
+ *
+ ******************************************************************************/
+
+int
+fgetc (
+    FILE                    *File)
+{
+    UINT8                   Byte;
+    int                     Length;
+
+
+    Length = fread (ACPI_CAST_PTR (void, &Byte), 1, 1, File);
+    if (Length == 0)
+    {
+        Length = EOF;
+    }
+    else if (Length == 1)
+    {
+        Length = (int) Byte;
+    }
+
+    return (Length);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    fputc
+ *
+ * PARAMETERS:  File                - File descriptor
+ *              c                   - Character byte
+ *
+ * RETURN:      The character written or EOF on the end of the file or error
+ *
+ * DESCRIPTION: Write a character to the file.
+ *
+ ******************************************************************************/
+
+int
+fputc (
+    FILE                    *File,
+    char                    c)
+{
+    UINT8                   Byte = (UINT8) c;
+    int                     Length;
+
+
+    Length = fwrite (ACPI_CAST_PTR (void, &Byte), 1, 1, File);
+    if (Length == 0)
+    {
+        Length = EOF;
+    }
+    else if (Length == 1)
+    {
+        Length = (int) Byte;
+    }
+
+    return (Length);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    fread
  *
  * PARAMETERS:  Buffer              - Data buffer

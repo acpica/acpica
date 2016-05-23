@@ -518,10 +518,12 @@ typedef char *va_list;
 #define ACPI_FILE              FILE *
 #define ACPI_FILE_OUT          stdout
 #define ACPI_FILE_ERR          stderr
+#define ACPI_FILE_IN           stdin
 #else
 #define ACPI_FILE              void *
 #define ACPI_FILE_OUT          NULL
 #define ACPI_FILE_ERR          NULL
+#define ACPI_FILE_IN           NULL
 #endif /* ACPI_APPLICATION */
 
 #endif /* __ACENV_H__ */
