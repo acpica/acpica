@@ -114,7 +114,6 @@
  *****************************************************************************/
 
 #include "aecommon.h"
-#include "errno.h"
 
 #define _COMPONENT          ACPI_TOOLS
         ACPI_MODULE_NAME    ("aemain")
@@ -520,10 +519,17 @@ AeDoOptions (
  *
  *****************************************************************************/
 
+#ifndef _GNU_EFI
 int ACPI_SYSTEM_XFACE
 main (
     int                     argc,
-    char                    **argv)
+    char                    *argv[])
+#else
+int ACPI_SYSTEM_XFACE
+acpi_main (
+    int                     argc,
+    char                    *argv[])
+#endif
 {
     ACPI_NEW_TABLE_DESC     *ListHead = NULL;
     ACPI_STATUS             Status;
