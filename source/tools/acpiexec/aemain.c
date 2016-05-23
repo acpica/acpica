@@ -530,7 +530,9 @@ main (
 
 
     ACPI_DEBUG_INITIALIZE (); /* For debug version only */
+#ifndef _GNU_EFI
     signal (SIGINT, AeCtrlCHandler);
+#endif
 
     /* Init debug globals */
 
