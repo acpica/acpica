@@ -616,6 +616,27 @@ EFI_STATUS
 
 
 /*
+ * EFI Time
+ */
+typedef struct {
+    UINT32 Resolution;
+    UINT32 Accuracy;
+    BOOLEAN SetsToZero;
+} EFI_TIME_CAPABILITIES;
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_GET_TIME) (
+    EFI_TIME                    *Time,
+    EFI_TIME_CAPABILITIES       *Capabilities);
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_SET_TIME) (
+    EFI_TIME                    *Time);
+
+
+/*
  * Protocol handler functions
  */
 typedef enum {
@@ -880,6 +901,54 @@ typedef struct _EFI_BOOT_SERVICES {
 
 
 /*
+ * EFI Runtime Services Table
+ */
+#define EFI_RUNTIME_SERVICES_SIGNATURE  0x56524553544e5552
+#define EFI_RUNTIME_SERVICES_REVISION   (EFI_SPECIFICATION_MAJOR_REVISION<<16) | (EFI_SPECIFICATION_MINOR_REVISION)
+
+typedef struct _EFI_RUNTIME_SERVICES {
+    EFI_TABLE_HEADER                Hdr;
+
+    EFI_GET_TIME                    GetTime;
+    EFI_SET_TIME                    SetTime;
+#if 0
+    EFI_GET_WAKEUP_TIME             GetWakeupTime;
+    EFI_SET_WAKEUP_TIME             SetWakeupTime;
+#else
+    EFI_UNKNOWN_INTERFACE           GetWakeupTime;
+    EFI_UNKNOWN_INTERFACE           SetWakeupTime;
+#endif
+
+#if 0
+    EFI_SET_VIRTUAL_ADDRESS_MAP     SetVirtualAddressMap;
+    EFI_CONVERT_POINTER             ConvertPointer;
+#else
+    EFI_UNKNOWN_INTERFACE           SetVirtualAddressMap;
+    EFI_UNKNOWN_INTERFACE            ConvertPointer;
+#endif
+
+#if 0
+    EFI_GET_VARIABLE                GetVariable;
+    EFI_GET_NEXT_VARIABLE_NAME      GetNextVariableName;
+    EFI_SET_VARIABLE                SetVariable;
+#else
+    EFI_UNKNOWN_INTERFACE           GetVariable;
+    EFI_UNKNOWN_INTERFACE           GetNextVariableName;
+    EFI_UNKNOWN_INTERFACE           SetVariable;
+#endif
+
+#if 0
+    EFI_GET_NEXT_HIGH_MONO_COUNT    GetNextHighMonotonicCount;
+    EFI_RESET_SYSTEM                ResetSystem;
+#else
+    EFI_UNKNOWN_INTERFACE           GetNextHighMonotonicCount;
+    EFI_UNKNOWN_INTERFACE           ResetSystem;
+#endif
+
+} EFI_RUNTIME_SERVICES;
+
+
+/*
  * EFI System Table
  */
 
@@ -915,11 +984,7 @@ typedef struct _EFI_SYSTEM_TABLE {
     EFI_HANDLE                      StandardErrorHandle;
     SIMPLE_TEXT_OUTPUT_INTERFACE    *StdErr;
 
-#if 0
     EFI_RUNTIME_SERVICES            *RuntimeServices;
-#else
-    EFI_HANDLE                      *RuntimeServices;
-#endif
     EFI_BOOT_SERVICES               *BootServices;
 
     UINTN                           NumberOfTableEntries;

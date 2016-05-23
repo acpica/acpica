@@ -1190,6 +1190,7 @@ efi_main (
 
     ST = SystemTab;
     BS = SystemTab->BootServices;
+    RT = SystemTab->RuntimeServices;
 
     /* Disable the platform watchdog timer if we go interactive */
 
