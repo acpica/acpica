@@ -357,6 +357,8 @@ ACPI_GLOBAL (ACPI_TABLE_FADT,       AcpiGbl_FADT);
 ACPI_GLOBAL (UINT32,                AcpiCurrentGpeCount);
 ACPI_GLOBAL (BOOLEAN,               AcpiGbl_SystemAwakeAndRunning);
 
+ACPI_INIT_GLOBAL (BOOLEAN,          AcpiGbl_DebugTimeout, FALSE);
+
 
 /*****************************************************************************
  *
