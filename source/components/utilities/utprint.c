@@ -876,7 +876,7 @@ vprintf (
     Length = vsnprintf (AcpiGbl_PrintBuffer,
                 sizeof (AcpiGbl_PrintBuffer), Format, Args);
 
-    (void) AcpiOsWriteFile (ACPI_FILE_OUT, AcpiGbl_PrintBuffer, Length, 1);
+    (void) fwrite (AcpiGbl_PrintBuffer, Length, 1, ACPI_FILE_OUT);
     AcpiOsReleaseLock (AcpiGbl_PrintLock, Flags);
 
     return (Length);
@@ -940,7 +940,7 @@ vfprintf (
     Length = vsnprintf (AcpiGbl_PrintBuffer,
         sizeof (AcpiGbl_PrintBuffer), Format, Args);
 
-    (void) AcpiOsWriteFile (File, AcpiGbl_PrintBuffer, Length, 1);
+    (void) fwrite (AcpiGbl_PrintBuffer, Length, 1, File);
     AcpiOsReleaseLock (AcpiGbl_PrintLock, Flags);
 
     return (Length);

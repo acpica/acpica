@@ -158,7 +158,8 @@ AeOpenInitializationFile (
     InitFile = fopen (Filename, "r");
     if (!InitFile)
     {
-        perror ("Could not open initialization file");
+        fprintf (stderr,
+            "Could not open initialization file: %s\n", Filename);
         return (-1);
     }
 

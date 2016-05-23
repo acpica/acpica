@@ -47,7 +47,6 @@ OBJECTS = \
 	$(OBJDIR)/utstate.o\
 	$(OBJDIR)/utstring.o\
 	$(OBJDIR)/utxferror.o\
-	$(OBJDIR)/oslibcfs.o\
 	$(OBJDIR)/osunixxf.o
 
 #
