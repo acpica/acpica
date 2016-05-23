@@ -154,6 +154,20 @@ typedef struct {
     UINT8   Data4[8];
 } EFI_GUID;
 
+typedef struct {
+    UINT16 Year;       /* 1998 - 20XX */
+    UINT8  Month;      /* 1 - 12 */
+    UINT8  Day;        /* 1 - 31 */
+    UINT8  Hour;       /* 0 - 23 */
+    UINT8  Minute;     /* 0 - 59 */
+    UINT8  Second;     /* 0 - 59 */
+    UINT8  Pad1;
+    UINT32 Nanosecond; /* 0 - 999,999,999 */
+    INT16  TimeZone;   /* -1440 to 1440 or 2047 */
+    UINT8  Daylight;
+    UINT8  Pad2;
+} EFI_TIME;
+
 typedef struct _EFI_DEVICE_PATH {
         UINT8                           Type;
         UINT8                           SubType;
@@ -433,6 +447,22 @@ EFI_STATUS
 (EFIAPI *EFI_FILE_GET_POSITION) (
     struct _EFI_FILE_HANDLE                     *File,
     UINT64                                      *Position);
+
+#define EFI_FILE_INFO_ID \
+    { 0x9576e92, 0x6d3f, 0x11d2, {0x8e, 0x39, 0x0, 0xa0, 0xc9, 0x69, 0x72, 0x3b} }
+
+typedef struct {
+    UINT64 Size;
+    UINT64 FileSize;
+    UINT64 PhysicalSize;
+    EFI_TIME CreateTime;
+    EFI_TIME LastAccessTime;
+    EFI_TIME ModificationTime;
+    UINT64 Attribute;
+    CHAR16 FileName[1];
+} EFI_FILE_INFO;
+
+#define SIZE_OF_EFI_FILE_INFO       ACPI_OFFSET(EFI_FILE_INFO, FileName)
 
 typedef
 EFI_STATUS
@@ -940,5 +970,6 @@ extern EFI_GUID AcpiGbl_LoadedImageProtocol;
 extern EFI_GUID AcpiGbl_TextInProtocol;
 extern EFI_GUID AcpiGbl_TextOutProtocol;
 extern EFI_GUID AcpiGbl_FileSystemProtocol;
+extern EFI_GUID AcpiGbl_GenericFileInfo;
 
 #endif /* __ACEFIEX_H__ */
