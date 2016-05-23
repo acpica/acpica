@@ -129,7 +129,7 @@
 #include "acapps.h"
 
 #define ACPI_OPTION_ERROR(msg, badchar) \
-    if (AcpiGbl_Opterr) {AcpiLogError ("%s%c\n", msg, badchar);}
+    if (AcpiGbl_Opterr) {fprintf (stderr, "%s%c\n", msg, badchar);}
 
 
 int                 AcpiGbl_Opterr = 1;
