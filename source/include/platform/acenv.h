@@ -428,6 +428,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <signal.h>
 #include <sys/stat.h>
 #endif
 
