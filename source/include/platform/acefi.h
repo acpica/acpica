@@ -327,5 +327,6 @@ extern struct _EFI_BOOT_SERVICES        *BS;
 #define FILE                struct _SIMPLE_TEXT_OUTPUT_INTERFACE
 #define stdout              ST->ConOut
 #define stderr              ST->ConOut
+#define stdin               NULL
 
 #endif /* __ACEFI_H__ */
