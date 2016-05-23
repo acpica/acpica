@@ -153,6 +153,11 @@ AcpiEfiConvertArgcv (
     char                    ***ArgvPtr,
     char                    **BufferPtr);
 
+static int
+AcpiEfiGetFileInfo (
+    FILE                    *File,
+    EFI_FILE_INFO           **InfoPtr);
+
 static CHAR16 *
 AcpiEfiFlushFile (
     FILE                    *File,
@@ -169,6 +174,7 @@ EFI_GUID                    AcpiGbl_LoadedImageProtocol = LOADED_IMAGE_PROTOCOL;
 EFI_GUID                    AcpiGbl_TextInProtocol = SIMPLE_TEXT_INPUT_PROTOCOL;
 EFI_GUID                    AcpiGbl_TextOutProtocol = SIMPLE_TEXT_OUTPUT_PROTOCOL;
 EFI_GUID                    AcpiGbl_FileSystemProtocol = SIMPLE_FILE_SYSTEM_PROTOCOL;
+EFI_GUID                    AcpiGbl_GenericFileInfo = EFI_FILE_INFO_ID;
 
 int                         errno = 0;
 
@@ -680,11 +686,68 @@ ErrorExit:
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiEfiGetFileInfo
+ *
+ * PARAMETERS:  File                - File descriptor
+ *              InfoPtr             - Pointer to contain file information
+ *
+ * RETURN:      Clibrary error code
+ *
+ * DESCRIPTION: Get file information.
+ *
+ ******************************************************************************/
+
+static int
+AcpiEfiGetFileInfo (
+    FILE                    *File,
+    EFI_FILE_INFO           **InfoPtr)
+{
+    EFI_STATUS              EfiStatus = EFI_BUFFER_TOO_SMALL;
+    EFI_FILE_INFO           *Buffer = NULL;
+    UINTN                   BufferSize = SIZE_OF_EFI_FILE_INFO + 200;
+    EFI_FILE_HANDLE         EfiFile;
+
+
+    if (!InfoPtr)
+    {
+        errno = EINVAL;
+        return (-EINVAL);
+    }
+
+    while (EfiStatus == EFI_BUFFER_TOO_SMALL)
+    {
+        EfiFile = ACPI_CAST_PTR (EFI_FILE, File);
+        Buffer = AcpiOsAllocate (BufferSize);
+        if (!Buffer)
+        {
+            errno = ENOMEM;
+            return (-ENOMEM);
+        }
+        EfiStatus = uefi_call_wrapper (EfiFile->GetInfo, 4, EfiFile,
+            &AcpiGbl_GenericFileInfo, &BufferSize, Buffer);
+        if (EFI_ERROR (EfiStatus))
+        {
+            AcpiOsFree (Buffer);
+            if (EfiStatus != EFI_BUFFER_TOO_SMALL)
+            {
+                errno = EIO;
+                return (-EIO);
+            }
+        }
+    }
+
+    *InfoPtr = Buffer;
+    return (0);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    ftell
  *
  * PARAMETERS:  File                - File descriptor
  *
- * RETURN:      Size of current position
+ * RETURN:      current position
  *
  * DESCRIPTION: Get current file offset.
  *
@@ -695,8 +758,32 @@ ftell (
     FILE                    *File)
 {
     long                    Offset = -1;
+    UINT64                  Current;
+    EFI_STATUS              EfiStatus;
+    EFI_FILE_HANDLE         EfiFile;
 
 
+    if (File == stdin || File == stdout || File == stderr)
+    {
+        Offset = 0;
+    }
+    else
+    {
+        EfiFile = ACPI_CAST_PTR (EFI_FILE, File);
+
+        EfiStatus = uefi_call_wrapper (EfiFile->GetPosition, 2,
+            EfiFile, &Current);
+        if (EFI_ERROR (EfiStatus))
+        {
+            goto ErrorExit;
+        }
+        else
+        {
+            Offset = (long) Current;
+        }
+    }
+
+ErrorExit:
     return (Offset);
 }
 
@@ -721,8 +808,59 @@ fseek (
     long                    Offset,
     int                     From)
 {
+    EFI_FILE_INFO           *Info;
+    int                     Error;
+    ACPI_SIZE               Size;
+    UINT64                  Current;
+    EFI_STATUS              EfiStatus;
+    EFI_FILE_HANDLE         EfiFile;
 
-    return (-1);
+
+    if (File == stdin || File == stdout || File == stderr)
+    {
+        return (0);
+    }
+    else
+    {
+        EfiFile = ACPI_CAST_PTR (EFI_FILE, File);
+        Error = AcpiEfiGetFileInfo (File, &Info);
+        if (Error)
+        {
+            return (Error);
+        }
+        Size = Info->FileSize;
+        AcpiOsFree (Info);
+
+        if (From == SEEK_CUR)
+        {
+            EfiStatus = uefi_call_wrapper (EfiFile->GetPosition, 2,
+                EfiFile, &Current);
+            if (EFI_ERROR (EfiStatus))
+            {
+                errno = ERANGE;
+                return (-ERANGE);
+            }
+            Current += Offset;
+        }
+        else if (From == SEEK_END)
+        {
+            Current = Size - Offset;
+        }
+        else
+        {
+            Current = Offset;
+        }
+
+        EfiStatus = uefi_call_wrapper (EfiFile->SetPosition, 2,
+            EfiFile, Current);
+        if (EFI_ERROR (EfiStatus))
+        {
+            errno = ERANGE;
+            return (-ERANGE);
+        }
+    }
+
+    return (0);
 }
 
 
