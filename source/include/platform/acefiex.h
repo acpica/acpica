@@ -548,6 +548,11 @@ EFI_STATUS
 
 typedef
 EFI_STATUS
+(EFIAPI *EFI_STALL) (
+    UINTN                           Microseconds);
+
+typedef
+EFI_STATUS
 (EFIAPI *EFI_SET_WATCHDOG_TIMER) (
     UINTN                           Timeout,
     UINT64                          WatchdogCode,
@@ -862,12 +867,11 @@ typedef struct _EFI_BOOT_SERVICES {
 #if 0
     EFI_EXIT_BOOT_SERVICES          ExitBootServices;
     EFI_GET_NEXT_MONOTONIC_COUNT    GetNextMonotonicCount;
-    EFI_STALL                       Stall;
 #else
     EFI_UNKNOWN_INTERFACE           ExitBootServices;
     EFI_UNKNOWN_INTERFACE           GetNextMonotonicCount;
-    EFI_UNKNOWN_INTERFACE           Stall;
 #endif
+    EFI_STALL                       Stall;
     EFI_SET_WATCHDOG_TIMER          SetWatchdogTimer;
 
 #if 0
