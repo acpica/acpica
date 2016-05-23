@@ -237,6 +237,12 @@ memcpy (
     ACPI_SIZE               Count);
 
 void *
+memmove (
+    void                    *Dest,
+    const void              *Src,
+    ACPI_SIZE               Count);
+
+void *
 memset (
     void                    *Dest,
     int                     Value,
