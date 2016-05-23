@@ -318,6 +318,9 @@ extern int errno;
 #define EOF                 (-1)
 #endif
 
+#define putchar(c)          fputc(stdout, c)
+#define getchar(c)          fgetc(stdin)
+
 int
 vprintf (
     const char              *Format,
