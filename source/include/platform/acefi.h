@@ -324,9 +324,11 @@ struct _EFI_SYSTEM_TABLE;
 extern struct _EFI_SYSTEM_TABLE         *ST;
 extern struct _EFI_BOOT_SERVICES        *BS;
 
-#define FILE                struct _SIMPLE_TEXT_OUTPUT_INTERFACE
-#define stdout              ST->ConOut
-#define stderr              ST->ConOut
-#define stdin               NULL
+typedef union acpi_efi_file             ACPI_EFI_FILE;
+
+#define FILE                ACPI_EFI_FILE
+#define stdout              ((FILE *) (ST)->ConOut)
+#define stderr              ((FILE *) (ST)->ConOut)
+#define stdin               ((FILE *) (ST)->ConIn)
 
 #endif /* __ACEFI_H__ */
