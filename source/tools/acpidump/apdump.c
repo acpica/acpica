@@ -295,13 +295,13 @@ ApDumpTableBuffer (
      * Note: simplest to just always emit a 64-bit address. AcpiXtract
      * utility can handle this.
      */
-    AcpiUtFilePrintf (Gbl_OutputFile, "%4.4s @ 0x%8.8X%8.8X\n",
+    fprintf (Gbl_OutputFile, "%4.4s @ 0x%8.8X%8.8X\n",
         Table->Signature, ACPI_FORMAT_UINT64 (Address));
 
     AcpiUtDumpBufferToFile (Gbl_OutputFile,
         ACPI_CAST_PTR (UINT8, Table), TableLength,
         DB_BYTE_DISPLAY, 0);
-    AcpiUtFilePrintf (Gbl_OutputFile, "\n");
+    fprintf (Gbl_OutputFile, "\n");
     return (0);
 }
 
