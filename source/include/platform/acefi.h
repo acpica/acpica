@@ -301,6 +301,12 @@ UINT64 efi_call10(void *func, UINT64 arg1, UINT64 arg2, UINT64 arg3,
 #undef ACPI_USE_NATIVE_DIVIDE
 #undef ACPI_USE_SYSTEM_INTTYPES
 
+/* AcpiExec configuration */
+
+#ifdef ACPI_EXEC_APP
+#define ACPI_DISABLE_OBJECT_OVERRIDE
+#endif
+
 /*
  * Math helpers
  */
