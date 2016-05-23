@@ -131,7 +131,6 @@
  * Windows: The setargv.obj module must be linked in to automatically
  * expand wildcards.
  */
-extern BOOLEAN              AcpiGbl_DebugTimeout;
 
 /* Local prototypes */
 
