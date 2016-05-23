@@ -397,10 +397,12 @@ AeDoOptions (
                 return (-1);
             }
 
+#ifndef ACPI_DISABLE_OBJECT_OVERRIDE
             if (AeOpenInitializationFile (AcpiGbl_Optarg))
             {
                 return (-1);
             }
+#endif
             break;
 
         default:
