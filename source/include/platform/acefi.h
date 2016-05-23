@@ -291,6 +291,12 @@ UINT64 efi_call10(void *func, UINT64 arg1, UINT64 arg2, UINT64 arg3,
 
 #include "acgcc.h"
 
+#ifdef DEBUGGER_THREADING
+#undef DEBUGGER_THREADING
+#endif /* DEBUGGER_THREADING */
+
+#define DEBUGGER_THREADING  0   /* integrated with DDB */
+
 #undef ACPI_USE_STANDARD_HEADERS
 #undef ACPI_USE_NATIVE_DIVIDE
 #undef ACPI_USE_SYSTEM_INTTYPES
