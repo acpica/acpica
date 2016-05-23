@@ -646,6 +646,67 @@ AcpiOsWriteMemory (
 
 /******************************************************************************
  *
+ * FUNCTION:    AcpiOsGetTimer
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Current time in 100 nanosecond units
+ *
+ * DESCRIPTION: Get the current system time
+ *
+ *****************************************************************************/
+
+UINT64
+AcpiOsGetTimer (
+    void)
+{
+    EFI_STATUS              EfiStatus;
+    EFI_TIME                EfiTime;
+    int                     Year, Month, Day;
+    int                     Hour, Minute, Second;
+    UINT64                  Timer;
+
+
+    EfiStatus = uefi_call_wrapper (RT->GetTime, 2, &EfiTime, NULL);
+    if (EFI_ERROR (EfiStatus))
+    {
+        return (-1);
+    }
+
+    Year = EfiTime.Year;
+    Month = EfiTime.Month;
+    Day = EfiTime.Day;
+    Hour = EfiTime.Hour;
+    Minute = EfiTime.Minute;
+    Second = EfiTime.Second;
+
+    /* 1..12 -> 11,12,1..10 */
+
+    if (0 >= (int) (Month -= 2))
+    {
+        /* Feb has leap days */
+
+        Month += 12;
+        Year -= 1;
+    }
+
+    /* Calculate days */
+
+    Timer = ((UINT64) (Year/4 - Year/100 + Year/400 + 367*Month/12 + Day) +
+                       Year*365 - 719499);
+
+    /* Calculate seconds */
+
+    Timer = ((Timer*24 + Hour) * 60 + Minute) * 60 + Second;
+
+    /* Calculate 100 nanoseconds */
+
+    return ((Timer * ACPI_100NSEC_PER_SEC) + (EfiTime.Nanosecond / 100));
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AcpiOsAllocate
  *
  * PARAMETERS:  Size                - Amount to allocate, in bytes
