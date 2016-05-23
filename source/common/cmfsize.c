@@ -116,7 +116,6 @@
 #include "acpi.h"
 #include "accommon.h"
 #include "acapps.h"
-#include <stdio.h>
 
 #define _COMPONENT          ACPI_TOOLS
         ACPI_MODULE_NAME    ("cmfsize")

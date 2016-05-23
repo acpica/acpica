@@ -131,9 +131,9 @@
 #include "acglobal.h"           /* All global variables */
 #include "achware.h"            /* Hardware defines and interfaces */
 #include "acutils.h"            /* Utility interfaces */
-#ifndef ACPI_USE_SYSTEM_CLIBRARY
+#if defined(ACPI_USE_SYSTEM_CLIBRARY) && !defined(ACPI_USE_STANDARD_HEADERS)
 #include "acclib.h"             /* C library interfaces */
-#endif /* !ACPI_USE_SYSTEM_CLIBRARY */
+#endif /* ACPI_USE_SYSTEM_CLIBRARY && !ACPI_USE_STANDARD_HEADERS */
 
 
 #endif /* __ACCOMMON_H__ */

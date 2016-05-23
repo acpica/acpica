@@ -163,7 +163,7 @@
         ACPI_MODULE_NAME    ("utclib")
 
 
-#ifndef ACPI_USE_SYSTEM_CLIBRARY    /* Entire module */
+#if defined(ACPI_USE_SYSTEM_CLIBRARY) && !defined(ACPI_USE_STANDARD_HEADERS)
 
 
 /*******************************************************************************
@@ -987,4 +987,4 @@ const UINT8 AcpiGbl_Ctypes[257] = {
 };
 
 
-#endif /* ACPI_USE_SYSTEM_CLIBRARY */
+#endif /* ACPI_USE_SYSTEM_CLIBRARY && !ACPI_USE_STANDARD_HEADERS */

@@ -422,18 +422,44 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#ifdef ACPI_APPLICATION
+#include <stdio.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/stat.h>
+#endif
 
-#endif /* ACPI_USE_STANDARD_HEADERS */
+#else /* ACPI_USE_STANDARD_HEADERS */
 
-/* We will be linking to the standard Clib functions */
-
-#else
+/*
+ * We will be linking to the standard Clib functions, but stdarg.h is
+ * compiler specific
+ */
+#include <stdarg.h>
 
 /******************************************************************************
  *
  * Not using native C library, use local implementations
  *
  *****************************************************************************/
+
+typedef signed char                     int8_t;
+typedef short int                       int16_t;
+typedef int                             int32_t;
+typedef unsigned char                   uint8_t;
+typedef unsigned short int              uint16_t;
+typedef unsigned int                    uint32_t;
+#if ACPI_MACHINE_WIDTH == 64
+typedef long int                        int64_t;
+typedef unsigned long int               uint64_t;
+#else
+typedef long long int                   int64_t;
+typedef unsigned long long int          uint64_t;
+#endif
+
+#endif /* ACPI_USE_STANDARD_HEADERS */
+
+#else /* ACPI_USE_SYSTEM_CLIBRARY */
 
 /*
  * Use local definitions of C library macros and functions. These function
@@ -466,9 +492,7 @@ typedef char *va_list;
 
 #endif /* ACPI_USE_SYSTEM_CLIBRARY */
 
-#ifndef ACPI_FILE
 #ifdef ACPI_APPLICATION
-#include <stdio.h>
 #define ACPI_FILE              FILE *
 #define ACPI_FILE_OUT          stdout
 #define ACPI_FILE_ERR          stderr
@@ -477,6 +501,5 @@ typedef char *va_list;
 #define ACPI_FILE_OUT          NULL
 #define ACPI_FILE_ERR          NULL
 #endif /* ACPI_APPLICATION */
-#endif /* ACPI_FILE */
 
 #endif /* __ACENV_H__ */
