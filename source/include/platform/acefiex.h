@@ -516,6 +516,15 @@ EFI_STATUS
     EFI_HANDLE                      ImageHandle);
 
 
+typedef
+EFI_STATUS
+(EFIAPI *EFI_SET_WATCHDOG_TIMER) (
+    UINTN                           Timeout,
+    UINT64                          WatchdogCode,
+    UINTN                           DataSize,
+    CHAR16                          *WatchdogData);
+
+
 #define EFI_IMAGE_INFORMATION_REVISION      0x1000
 typedef struct {
     UINT32                          Revision;
@@ -803,13 +812,12 @@ typedef struct _EFI_BOOT_SERVICES {
     EFI_EXIT_BOOT_SERVICES          ExitBootServices;
     EFI_GET_NEXT_MONOTONIC_COUNT    GetNextMonotonicCount;
     EFI_STALL                       Stall;
-    EFI_SET_WATCHDOG_TIMER          SetWatchdogTimer;
 #else
     EFI_UNKNOWN_INTERFACE           ExitBootServices;
     EFI_UNKNOWN_INTERFACE           GetNextMonotonicCount;
     EFI_UNKNOWN_INTERFACE           Stall;
-    EFI_UNKNOWN_INTERFACE           SetWatchdogTimer;
 #endif
+    EFI_SET_WATCHDOG_TIMER          SetWatchdogTimer;
 
 #if 0
     EFI_CONNECT_CONTROLLER          ConnectController;
@@ -888,6 +896,15 @@ typedef struct _EFI_SYSTEM_TABLE {
     EFI_CONFIGURATION_TABLE         *ConfigurationTable;
 
 } EFI_SYSTEM_TABLE;
+
+
+/* FILE abstraction */
+
+union acpi_efi_file {
+    struct _EFI_FILE_IO_INTERFACE File;
+    struct _SIMPLE_TEXT_OUTPUT_INTERFACE ConOut;
+    struct _SIMPLE_INPUT_INTERFACE ConIn;
+};
 
 
 /* GNU EFI definitions */
