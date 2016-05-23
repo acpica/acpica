@@ -235,6 +235,36 @@ AcpiOsGetRootPointer (
 
 /******************************************************************************
  *
+ * FUNCTION:    AcpiOsPredefinedOverride
+ *
+ * PARAMETERS:  InitVal             - Initial value of the predefined object
+ *              NewVal              - The new value for the object
+ *
+ * RETURN:      Status, pointer to value. Null pointer returned if not
+ *              overriding.
+ *
+ * DESCRIPTION: Allow the OS to override predefined names
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsPredefinedOverride (
+    const ACPI_PREDEFINED_NAMES *InitVal,
+    ACPI_STRING                 *NewVal)
+{
+
+    if (!InitVal || !NewVal)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    *NewVal = NULL;
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AcpiOsMapMemory
  *
  * PARAMETERS:  where               - Physical address of memory to be mapped
@@ -452,13 +482,13 @@ AcpiOsVprintf (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsInitialize
+ * FUNCTION:    AcpiOsInitialize, AcpiOsTerminate
  *
  * PARAMETERS:  None
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Initialize this module.
+ * DESCRIPTION: Initialize/terminate this module.
  *
  *****************************************************************************/
 
@@ -468,4 +498,96 @@ AcpiOsInitialize (
 {
 
     return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiOsTerminate (
+    void)
+{
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsSignal
+ *
+ * PARAMETERS:  Function            - ACPI A signal function code
+ *              Info                - Pointer to function-dependent structure
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Miscellaneous functions. Example implementation only.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsSignal (
+    UINT32                  Function,
+    void                    *Info)
+{
+
+    switch (Function)
+    {
+    case ACPI_SIGNAL_FATAL:
+
+        break;
+
+    case ACPI_SIGNAL_BREAKPOINT:
+
+        break;
+
+    default:
+
+        break;
+    }
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsReadable
+ *
+ * PARAMETERS:  Pointer             - Area to be verified
+ *              Length              - Size of area
+ *
+ * RETURN:      TRUE if readable for entire length
+ *
+ * DESCRIPTION: Verify that a pointer is valid for reading
+ *
+ *****************************************************************************/
+
+BOOLEAN
+AcpiOsReadable (
+    void                    *Pointer,
+    ACPI_SIZE               Length)
+{
+
+    return (TRUE);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsWritable
+ *
+ * PARAMETERS:  Pointer             - Area to be verified
+ *              Length              - Size of area
+ *
+ * RETURN:      TRUE if writable for entire length
+ *
+ * DESCRIPTION: Verify that a pointer is valid for writing
+ *
+ *****************************************************************************/
+
+BOOLEAN
+AcpiOsWritable (
+    void                    *Pointer,
+    ACPI_SIZE               Length)
+{
+
+    return (TRUE);
 }
