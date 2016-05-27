@@ -238,7 +238,10 @@ AcpiHwValidateRegister (
  *              64-bit values is not needed.
  *
  * LIMITATIONS: <These limitations also apply to AcpiHwWrite>
+ *      BitWidth must be exactly 8, 16, or 32.
  *      SpaceID must be SystemMemory or SystemIO.
+ *      BitOffset and AccessWidth are currently ignored, as there has
+ *          not been a need to implement these.
  *
  ******************************************************************************/
 
@@ -248,11 +251,7 @@ AcpiHwRead (
     ACPI_GENERIC_ADDRESS    *Reg)
 {
     UINT64                  Address;
-    UINT8                   AccessWidth;
-    UINT32                  BitWidth;
     UINT64                  Value64;
-    UINT32                  Value32;
-    UINT8                   Index;
     ACPI_STATUS             Status;
 
 
@@ -267,68 +266,30 @@ AcpiHwRead (
         return (Status);
     }
 
-    /*
-     * Initialize entire 32-bit return value to zero, convert AccessWidth
-     * into number of bits based
-     */
+    /* Initialize entire 32-bit return value to zero */
+
     *Value = 0;
-    AccessWidth = Reg->AccessWidth ? Reg->AccessWidth : 1;
-    AccessWidth = 1 << (AccessWidth + 2);
-    Address += ACPI_DIV_8 (ACPI_ROUND_DOWN (Reg->BitOffset, AccessWidth));
-    BitWidth = Reg->BitOffset + Reg->BitWidth;
 
     /*
      * Two address spaces supported: Memory or IO. PCI_Config is
      * not supported here because the GAS structure is insufficient
      */
-    Index = 0;
-    while (BitWidth)
+    if (Reg->SpaceId == ACPI_ADR_SPACE_SYSTEM_MEMORY)
     {
-        if (Reg->SpaceId == ACPI_ADR_SPACE_SYSTEM_MEMORY)
-        {
-            Status = AcpiOsReadMemory ((ACPI_PHYSICAL_ADDRESS)
-                Address + Index * ACPI_DIV_8 (AccessWidth),
-                &Value64, AccessWidth);
-            Value32 = (UINT32) Value64;
-        }
-        else /* ACPI_ADR_SPACE_SYSTEM_IO, validated earlier */
-        {
-            if (Reg->SpaceId == ACPI_ADR_SPACE_SYSTEM_MEMORY)
-            {
-                Status = AcpiOsReadMemory ((ACPI_PHYSICAL_ADDRESS)
-                    Address + Index * ACPI_DIV_8 (AccessWidth),
-                    &Value64, AccessWidth);
-                Value32 = (UINT32) Value64;
-            }
-            else /* ACPI_ADR_SPACE_SYSTEM_IO, validated earlier */
-            {
-                Status = AcpiHwReadPort ((ACPI_IO_ADDRESS)
-                    Address + Index * ACPI_DIV_8 (AccessWidth),
-                    &Value32, AccessWidth);
-            }
+        Status = AcpiOsReadMemory ((ACPI_PHYSICAL_ADDRESS)
+            Address, &Value64, Reg->BitWidth);
 
-            Status = AcpiHwReadPort ((ACPI_IO_ADDRESS)
-                Address + Index * ACPI_DIV_8 (AccessWidth),
-                &Value32, AccessWidth);
-        }
-
-        if (!Index)
-        {
-            Value32 &= ACPI_MASK_BITS_BELOW (Reg->BitOffset);
-        }
-        if (BitWidth < AccessWidth)
-        {
-            Value32 &= ACPI_MASK_BITS_ABOVE (BitWidth);
-        }
-        ACPI_SET_BITS (Value, Index * AccessWidth, ACPI_UINT32_MAX, Value32);
-
-        BitWidth -= BitWidth > AccessWidth ? AccessWidth : BitWidth;
-        Index++;
+        *Value = (UINT32) Value64;
+    }
+    else /* ACPI_ADR_SPACE_SYSTEM_IO, validated earlier */
+    {
+        Status = AcpiHwReadPort ((ACPI_IO_ADDRESS)
+            Address, Value, Reg->BitWidth);
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_IO,
         "Read:  %8.8X width %2d from %8.8X%8.8X (%s)\n",
-        *Value, AccessWidth, ACPI_FORMAT_UINT64 (Address),
+        *Value, Reg->BitWidth, ACPI_FORMAT_UINT64 (Address),
         AcpiUtGetRegionName (Reg->SpaceId)));
 
     return (Status);
