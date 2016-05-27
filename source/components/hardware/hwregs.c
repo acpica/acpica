@@ -322,7 +322,7 @@ AcpiHwRead (
     Index = 0;
     while (BitWidth)
     {
-        if (BitOffset >= AccessWidth)
+        if (BitOffset > AccessWidth)
         {
             Value32 = 0;
             BitOffset -= AccessWidth;
@@ -343,12 +343,6 @@ AcpiHwRead (
                     &Value32, AccessWidth);
             }
 
-            /*
-             * Use offset style bit masks because:
-             * BitOffset < AccessWidth/BitWidth < AccessWidth, and
-             * AccessWidth is ensured to be less than 32-bits by
-             * AcpiHwValidateRegister().
-             */
             if (BitOffset)
             {
                 Value32 &= ACPI_MASK_BITS_BELOW (BitOffset);
@@ -360,10 +354,6 @@ AcpiHwRead (
             }
         }
 
-        /*
-         * Use offset style bit writes because "Index * AccessWidth" is
-         * ensured to be less than 32-bits by AcpiHwValidateRegister().
-         */
         ACPI_SET_BITS (Value, Index * AccessWidth,
             ACPI_MASK_BITS_ABOVE_32 (AccessWidth), Value32);
 
@@ -434,28 +424,20 @@ AcpiHwWrite (
     Index = 0;
     while (BitWidth)
     {
-        /*
-         * Use offset style bit reads because "Index * AccessWidth" is
-         * ensured to be less than 32-bits by AcpiHwValidateRegister().
-         */
         NewValue32 = ACPI_GET_BITS (&Value, Index * AccessWidth,
             ACPI_MASK_BITS_ABOVE_32 (AccessWidth));
 
-        if (BitOffset >= AccessWidth)
+        if (BitOffset > AccessWidth)
         {
             BitOffset -= AccessWidth;
         }
         else
         {
-            /*
-             * Use offset style bit masks because AccessWidth is ensured
-             * to be less than 32-bits by AcpiHwValidateRegister() and
-             * BitOffset/BitWidth is less than AccessWidth here.
-             */
             if (BitOffset)
             {
                 NewValue32 &= ACPI_MASK_BITS_BELOW (BitOffset);
             }
+
             if (BitWidth < AccessWidth)
             {
                 NewValue32 &= ACPI_MASK_BITS_ABOVE (BitWidth);
@@ -474,20 +456,15 @@ AcpiHwWrite (
                         &Value64, AccessWidth);
                     OldValue32 = (UINT32) Value64;
 
-                    /*
-                     * Use offset style bit masks because AccessWidth is
-                     * ensured to be less than 32-bits by
-                     * AcpiHwValidateRegister() and BitOffset/BitWidth is
-                     * less than AccessWidth here.
-                     */
                     if (BitOffset)
                     {
-                        OldValue32 &= ACPI_MASK_BITS_ABOVE (BitOffset);
+                        OldValue32 &= ACPI_MASK_BITS_ABOVE (BitOffset + 1);
                         BitOffset = 0;
                     }
+
                     if (BitWidth < AccessWidth)
                     {
-                        OldValue32 &= ACPI_MASK_BITS_BELOW (BitWidth);
+                        OldValue32 &= ACPI_MASK_BITS_BELOW (BitWidth - 1);
                     }
 
                     NewValue32 |= OldValue32;
@@ -510,20 +487,15 @@ AcpiHwWrite (
                         Address + Index * ACPI_DIV_8 (AccessWidth),
                         &OldValue32, AccessWidth);
 
-                    /*
-                     * Use offset style bit masks because AccessWidth is
-                     * ensured to be less than 32-bits by
-                     * AcpiHwValidateRegister() and BitOffset/BitWidth is
-                     * less than AccessWidth here.
-                     */
                     if (BitOffset)
                     {
-                        OldValue32 &= ACPI_MASK_BITS_ABOVE (BitOffset);
+                        OldValue32 &= ACPI_MASK_BITS_ABOVE (BitOffset + 1);
                         BitOffset = 0;
                     }
+
                     if (BitWidth < AccessWidth)
                     {
-                        OldValue32 &= ACPI_MASK_BITS_BELOW (BitWidth);
+                        OldValue32 &= ACPI_MASK_BITS_BELOW (BitWidth - 1);
                     }
 
                     NewValue32 |= OldValue32;
@@ -535,10 +507,6 @@ AcpiHwWrite (
             }
         }
 
-        /*
-         * Index * AccessWidth is ensured to be less than 32-bits by
-         * AcpiHwValidateRegister().
-         */
         BitWidth -= BitWidth > AccessWidth ? AccessWidth : BitWidth;
         Index++;
     }
