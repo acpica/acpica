@@ -178,7 +178,7 @@ AcpiHwGetAccessBitWidth (
         if (!Reg->BitOffset && Reg->BitWidth &&
             ACPI_IS_POWER_OF_TWO (Reg->BitWidth) &&
             ACPI_IS_ALIGNED (Reg->BitWidth, 8) &&
-            ACPI_IS_ALIGNED (Address, Reg->BitWidth))
+            ACPI_IS_ALIGNED (Address, Reg->BitWidth >> 3))
         {
             return (Reg->BitWidth);
         }
