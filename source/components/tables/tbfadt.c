@@ -324,7 +324,8 @@ AcpiTbInitGenericAddress (
     GenericAddress->SpaceId = SpaceId;
     GenericAddress->BitWidth = BitWidth;
     GenericAddress->BitOffset = 0;
-    GenericAddress->AccessWidth = 0; /* Access width ANY */
+    GenericAddress->AccessWidth =
+        ACPI_FIND_FIRST_BIT_8 (ACPI_ROUND_UP_POWER_OF_TWO_8 (ByteWidth));
 }
 
 
