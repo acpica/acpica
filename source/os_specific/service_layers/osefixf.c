@@ -134,12 +134,12 @@ AeTableOverride (
 
 static BOOLEAN
 AcpiEfiCompareGuid (
-    EFI_GUID                *Guid1,
-    EFI_GUID                *Guid2);
+    ACPI_EFI_GUID           *Guid1,
+    ACPI_EFI_GUID           *Guid2);
 
 static ACPI_PHYSICAL_ADDRESS
 AcpiEfiGetRsdpViaGuid (
-    EFI_GUID                *Guid);
+    ACPI_EFI_GUID           *Guid);
 
 
 /******************************************************************************
@@ -157,8 +157,8 @@ AcpiEfiGetRsdpViaGuid (
 
 static BOOLEAN
 AcpiEfiCompareGuid (
-    EFI_GUID                *Guid1,
-    EFI_GUID                *Guid2)
+    ACPI_EFI_GUID           *Guid1,
+    ACPI_EFI_GUID           *Guid2)
 {
     INT32                   *g1;
     INT32                   *g2;
@@ -191,7 +191,7 @@ AcpiEfiCompareGuid (
 
 static ACPI_PHYSICAL_ADDRESS
 AcpiEfiGetRsdpViaGuid (
-    EFI_GUID                *Guid)
+    ACPI_EFI_GUID           *Guid)
 {
     ACPI_PHYSICAL_ADDRESS   Address = 0;
     int                     i;
@@ -228,8 +228,8 @@ AcpiOsGetRootPointer (
     void)
 {
     ACPI_PHYSICAL_ADDRESS   Address;
-    EFI_GUID                Guid10 = ACPI_TABLE_GUID;
-    EFI_GUID                Guid20 = ACPI_20_TABLE_GUID;
+    ACPI_EFI_GUID           Guid10 = ACPI_TABLE_GUID;
+    ACPI_EFI_GUID           Guid20 = ACPI_20_TABLE_GUID;
 
 
     Address = AcpiEfiGetRsdpViaGuid (&Guid20);
@@ -737,15 +737,15 @@ UINT64
 AcpiOsGetTimer (
     void)
 {
-    EFI_STATUS              EfiStatus;
-    EFI_TIME                EfiTime;
+    ACPI_EFI_STATUS         EfiStatus;
+    ACPI_EFI_TIME           EfiTime;
     int                     Year, Month, Day;
     int                     Hour, Minute, Second;
     UINT64                  Timer;
 
 
     EfiStatus = uefi_call_wrapper (RT->GetTime, 2, &EfiTime, NULL);
-    if (EFI_ERROR (EfiStatus))
+    if (ACPI_EFI_ERROR (EfiStatus))
     {
         return (-1);
     }
@@ -843,13 +843,13 @@ void *
 AcpiOsAllocate (
     ACPI_SIZE               Size)
 {
-    EFI_STATUS              EfiStatus;
+    ACPI_EFI_STATUS         EfiStatus;
     void                    *Mem;
 
 
     EfiStatus = uefi_call_wrapper (BS->AllocatePool, 3,
-        EfiLoaderData, Size, &Mem);
-    if (EFI_ERROR (EfiStatus))
+        AcpiEfiLoaderData, Size, &Mem);
+    if (ACPI_EFI_ERROR (EfiStatus))
     {
         fprintf (stderr,
             "EFI_BOOT_SERVICES->AllocatePool(EfiLoaderData) failure.\n");
