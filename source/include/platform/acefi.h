@@ -123,11 +123,11 @@
 #endif
 
 #ifdef _MSC_EXTENSIONS
-#define EFIAPI __cdecl
+#define ACPI_EFI_API __cdecl
 #elif USE_MS_ABI
-#define EFIAPI __attribute__((ms_abi))
+#define ACPI_EFI_API __attribute__((ms_abi))
 #else
-#define EFIAPI
+#define ACPI_EFI_API
 #endif
 
 #define VOID        void
@@ -153,7 +153,7 @@
 #define UINTN       uint64_t
 #define INTN        int64_t
 
-#define EFIERR(a)           (0x8000000000000000 | a)
+#define ACPI_EFI_ERR(a)             (0x8000000000000000 | a)
 
 #else
 
@@ -163,7 +163,7 @@
 #define UINTN       uint32_t
 #define INTN        int32_t
 
-#define EFIERR(a)           (0x80000000 | a)
+#define ACPI_EFI_ERR(a)             (0x80000000 | a)
 
 #endif
 
@@ -326,17 +326,17 @@ UINT64 efi_call10(void *func, UINT64 arg1, UINT64 arg2, UINT64 arg3,
 
 #endif
 
-struct _SIMPLE_TEXT_OUTPUT_INTERFACE;
-struct _SIMPLE_INPUT_INTERFACE;
-struct _EFI_FILE_IO_INTERFACE;
-struct _EFI_FILE_HANDLE;
-struct _EFI_BOOT_SERVICES;
-struct _EFI_RUNTIME_SERVICES;
-struct _EFI_SYSTEM_TABLE;
+struct _ACPI_SIMPLE_TEXT_OUTPUT_INTERFACE;
+struct _ACPI_SIMPLE_INPUT_INTERFACE;
+struct _ACPI_EFI_FILE_IO_INTERFACE;
+struct _ACPI_EFI_FILE_HANDLE;
+struct _ACPI_EFI_BOOT_SERVICES;
+struct _ACPI_EFI_RUNTIME_SERVICES;
+struct _ACPI_EFI_SYSTEM_TABLE;
 
-extern struct _EFI_SYSTEM_TABLE         *ST;
-extern struct _EFI_BOOT_SERVICES        *BS;
-extern struct _EFI_RUNTIME_SERVICES     *RT;
+extern struct _ACPI_EFI_SYSTEM_TABLE        *ST;
+extern struct _ACPI_EFI_BOOT_SERVICES       *BS;
+extern struct _ACPI_EFI_RUNTIME_SERVICES    *RT;
 
 typedef union acpi_efi_file             ACPI_EFI_FILE;
 

@@ -156,7 +156,7 @@ AcpiEfiConvertArgcv (
 static int
 AcpiEfiGetFileInfo (
     FILE                    *File,
-    EFI_FILE_INFO           **InfoPtr);
+    ACPI_EFI_FILE_INFO      **InfoPtr);
 
 static CHAR16 *
 AcpiEfiFlushFile (
@@ -169,12 +169,12 @@ AcpiEfiFlushFile (
 
 /* Local variables */
 
-static EFI_FILE_HANDLE      AcpiGbl_EfiCurrentVolume = NULL;
-EFI_GUID                    AcpiGbl_LoadedImageProtocol = LOADED_IMAGE_PROTOCOL;
-EFI_GUID                    AcpiGbl_TextInProtocol = SIMPLE_TEXT_INPUT_PROTOCOL;
-EFI_GUID                    AcpiGbl_TextOutProtocol = SIMPLE_TEXT_OUTPUT_PROTOCOL;
-EFI_GUID                    AcpiGbl_FileSystemProtocol = SIMPLE_FILE_SYSTEM_PROTOCOL;
-EFI_GUID                    AcpiGbl_GenericFileInfo = EFI_FILE_INFO_ID;
+static ACPI_EFI_FILE_HANDLE AcpiGbl_EfiCurrentVolume = NULL;
+ACPI_EFI_GUID               AcpiGbl_LoadedImageProtocol = ACPI_EFI_LOADED_IMAGE_PROTOCOL;
+ACPI_EFI_GUID               AcpiGbl_TextInProtocol = ACPI_SIMPLE_TEXT_INPUT_PROTOCOL;
+ACPI_EFI_GUID               AcpiGbl_TextOutProtocol = ACPI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
+ACPI_EFI_GUID               AcpiGbl_FileSystemProtocol = ACPI_SIMPLE_FILE_SYSTEM_PROTOCOL;
+ACPI_EFI_GUID               AcpiGbl_GenericFileInfo = ACPI_EFI_FILE_INFO_ID;
 
 int                         errno = 0;
 
@@ -197,9 +197,9 @@ fopen (
     const char              *Path,
     const char              *Modes)
 {
-    EFI_STATUS              EfiStatus = EFI_SUCCESS;
+    ACPI_EFI_STATUS         EfiStatus = ACPI_EFI_SUCCESS;
     UINT64                  OpenModes;
-    EFI_FILE_HANDLE         EfiFile = NULL;
+    ACPI_EFI_FILE_HANDLE    EfiFile = NULL;
     CHAR16                  *Path16 = NULL;
     CHAR16                  *Pos16;
     const char              *Pos;
@@ -218,7 +218,7 @@ fopen (
      * Convert modes, EFI says the only 2 read/write modes are read-only,
      * read+write. Thus set default mode as read-only.
      */
-    OpenModes = EFI_FILE_MODE_READ;
+    OpenModes = ACPI_EFI_FILE_MODE_READ;
     switch (*Modes++)
     {
     case 'r':
@@ -227,12 +227,12 @@ fopen (
 
     case 'w':
 
-        OpenModes |= (EFI_FILE_MODE_WRITE | EFI_FILE_MODE_CREATE);
+        OpenModes |= (ACPI_EFI_FILE_MODE_WRITE | ACPI_EFI_FILE_MODE_CREATE);
         break;
 
     case 'a':
 
-        OpenModes |= (EFI_FILE_MODE_WRITE | EFI_FILE_MODE_CREATE);
+        OpenModes |= (ACPI_EFI_FILE_MODE_WRITE | ACPI_EFI_FILE_MODE_CREATE);
         IsAppend = TRUE;
         break;
 
@@ -248,7 +248,7 @@ fopen (
         {
         case '+':
 
-            OpenModes |= (EFI_FILE_MODE_WRITE | EFI_FILE_MODE_CREATE);
+            OpenModes |= (ACPI_EFI_FILE_MODE_WRITE | ACPI_EFI_FILE_MODE_CREATE);
             break;
 
         case 'b':
@@ -269,7 +269,7 @@ fopen (
     Path16 = ACPI_ALLOCATE_ZEROED ((Count + 1) * sizeof (CHAR16));
     if (!Path16)
     {
-        EfiStatus = EFI_BAD_BUFFER_SIZE;
+        EfiStatus = ACPI_EFI_BAD_BUFFER_SIZE;
         errno = ENOMEM;
         goto ErrorExit;
     }
@@ -296,7 +296,7 @@ fopen (
 
     EfiStatus = uefi_call_wrapper (AcpiGbl_EfiCurrentVolume->Open, 5,
         AcpiGbl_EfiCurrentVolume, &EfiFile, Path16, OpenModes, 0);
-    if (EFI_ERROR (EfiStatus))
+    if (ACPI_EFI_ERROR (EfiStatus))
     {
         fprintf (stderr, "EFI_FILE_HANDLE->Open() failure.\n");
         errno = ENOENT;
@@ -336,7 +336,7 @@ void
 fclose (
     FILE                    *File)
 {
-    EFI_FILE_HANDLE         EfiFile;
+    ACPI_EFI_FILE_HANDLE    EfiFile;
 
 
     if (File == stdin || File == stdout ||
@@ -344,7 +344,7 @@ fclose (
     {
         return;
     }
-    EfiFile = (EFI_FILE_HANDLE) File;
+    EfiFile = (ACPI_EFI_FILE_HANDLE) File;
     (void) uefi_call_wrapper (AcpiGbl_EfiCurrentVolume->Close, 1, EfiFile);
 
     return;
@@ -503,11 +503,11 @@ fread (
     FILE                    *File)
 {
     int                     Length = -EINVAL;
-    EFI_FILE_HANDLE         EfiFile;
-    SIMPLE_INPUT_INTERFACE  *In;
+    ACPI_EFI_FILE_HANDLE    EfiFile;
+    ACPI_SIMPLE_INPUT_INTERFACE *In;
     UINTN                   ReadSize;
-    EFI_STATUS              EfiStatus;
-    EFI_INPUT_KEY           Key;
+    ACPI_EFI_STATUS         EfiStatus;
+    ACPI_EFI_INPUT_KEY      Key;
     ACPI_SIZE               Pos = 0;
 
 
@@ -525,15 +525,15 @@ fread (
     }
     else if (File == stdin)
     {
-        In = ACPI_CAST_PTR (SIMPLE_INPUT_INTERFACE, File);
+        In = ACPI_CAST_PTR (ACPI_SIMPLE_INPUT_INTERFACE, File);
 
         while (Pos < ReadSize)
         {
 WaitKey:
             EfiStatus = uefi_call_wrapper (In->ReadKeyStroke, 2, In, &Key);
-            if (EFI_ERROR (EfiStatus))
+            if (ACPI_EFI_ERROR (EfiStatus))
             {
-                if (EfiStatus == EFI_NOT_READY)
+                if (EfiStatus == ACPI_EFI_NOT_READY)
                 {
                     goto WaitKey;
                 }
@@ -586,7 +586,7 @@ WaitKey:
     }
     else
     {
-        EfiFile = (EFI_FILE_HANDLE) File;
+        EfiFile = (ACPI_EFI_FILE_HANDLE) File;
         if (!EfiFile)
         {
             errno = EINVAL;
@@ -595,7 +595,7 @@ WaitKey:
 
         EfiStatus = uefi_call_wrapper (AcpiGbl_EfiCurrentVolume->Read, 3,
             EfiFile, &ReadSize, Buffer);
-        if (EFI_ERROR (EfiStatus))
+        if (ACPI_EFI_ERROR (EfiStatus))
         {
             fprintf (stderr, "EFI_FILE_HANDLE->Read() failure.\n");
             errno = EIO;
@@ -635,12 +635,12 @@ AcpiEfiFlushFile (
     CHAR16                  *Pos,
     BOOLEAN                 FlushAll)
 {
-    SIMPLE_TEXT_OUTPUT_INTERFACE *Out;
+    ACPI_SIMPLE_TEXT_OUTPUT_INTERFACE *Out;
 
 
     if (File == stdout || File == stderr)
     {
-        Out = ACPI_CAST_PTR (SIMPLE_TEXT_OUTPUT_INTERFACE, File);
+        Out = ACPI_CAST_PTR (ACPI_SIMPLE_TEXT_OUTPUT_INTERFACE, File);
 
         if (FlushAll || Pos >= (End - 1))
         {
@@ -682,9 +682,9 @@ fwrite (
     CHAR16                  *End;
     CHAR16                  *Pos;
     int                     i, j;
-    EFI_FILE_HANDLE         EfiFile;
+    ACPI_EFI_FILE_HANDLE    EfiFile;
     UINTN                   WriteSize;
-    EFI_STATUS              EfiStatus;
+    ACPI_EFI_STATUS         EfiStatus;
 
 
     if (File == stdin)
@@ -718,7 +718,7 @@ fwrite (
     }
     else
     {
-        EfiFile = (EFI_FILE_HANDLE) File;
+        EfiFile = (ACPI_EFI_FILE_HANDLE) File;
         if (!EfiFile)
         {
             errno = EINVAL;
@@ -728,7 +728,7 @@ fwrite (
 
         EfiStatus = uefi_call_wrapper (AcpiGbl_EfiCurrentVolume->Write, 3,
             EfiFile, &WriteSize, Buffer);
-        if (EFI_ERROR (EfiStatus))
+        if (ACPI_EFI_ERROR (EfiStatus))
         {
             fprintf (stderr, "EFI_FILE_HANDLE->Write() failure.\n");
             errno = EIO;
@@ -759,12 +759,12 @@ ErrorExit:
 static int
 AcpiEfiGetFileInfo (
     FILE                    *File,
-    EFI_FILE_INFO           **InfoPtr)
+    ACPI_EFI_FILE_INFO      **InfoPtr)
 {
-    EFI_STATUS              EfiStatus = EFI_BUFFER_TOO_SMALL;
-    EFI_FILE_INFO           *Buffer = NULL;
-    UINTN                   BufferSize = SIZE_OF_EFI_FILE_INFO + 200;
-    EFI_FILE_HANDLE         EfiFile;
+    ACPI_EFI_STATUS         EfiStatus = ACPI_EFI_BUFFER_TOO_SMALL;
+    ACPI_EFI_FILE_INFO      *Buffer = NULL;
+    UINTN                   BufferSize = ACPI_EFI_FILE_INFO_SIZE + 200;
+    ACPI_EFI_FILE_HANDLE    EfiFile;
 
 
     if (!InfoPtr)
@@ -773,9 +773,9 @@ AcpiEfiGetFileInfo (
         return (-EINVAL);
     }
 
-    while (EfiStatus == EFI_BUFFER_TOO_SMALL)
+    while (EfiStatus == ACPI_EFI_BUFFER_TOO_SMALL)
     {
-        EfiFile = ACPI_CAST_PTR (EFI_FILE, File);
+        EfiFile = ACPI_CAST_PTR (ACPI_EFI_FILE_STRUCT, File);
         Buffer = AcpiOsAllocate (BufferSize);
         if (!Buffer)
         {
@@ -784,10 +784,10 @@ AcpiEfiGetFileInfo (
         }
         EfiStatus = uefi_call_wrapper (EfiFile->GetInfo, 4, EfiFile,
             &AcpiGbl_GenericFileInfo, &BufferSize, Buffer);
-        if (EFI_ERROR (EfiStatus))
+        if (ACPI_EFI_ERROR (EfiStatus))
         {
             AcpiOsFree (Buffer);
-            if (EfiStatus != EFI_BUFFER_TOO_SMALL)
+            if (EfiStatus != ACPI_EFI_BUFFER_TOO_SMALL)
             {
                 errno = EIO;
                 return (-EIO);
@@ -818,8 +818,8 @@ ftell (
 {
     long                    Offset = -1;
     UINT64                  Current;
-    EFI_STATUS              EfiStatus;
-    EFI_FILE_HANDLE         EfiFile;
+    ACPI_EFI_STATUS         EfiStatus;
+    ACPI_EFI_FILE_HANDLE    EfiFile;
 
 
     if (File == stdin || File == stdout || File == stderr)
@@ -828,11 +828,11 @@ ftell (
     }
     else
     {
-        EfiFile = ACPI_CAST_PTR (EFI_FILE, File);
+        EfiFile = ACPI_CAST_PTR (ACPI_EFI_FILE_STRUCT, File);
 
         EfiStatus = uefi_call_wrapper (EfiFile->GetPosition, 2,
             EfiFile, &Current);
-        if (EFI_ERROR (EfiStatus))
+        if (ACPI_EFI_ERROR (EfiStatus))
         {
             goto ErrorExit;
         }
@@ -867,12 +867,12 @@ fseek (
     long                    Offset,
     int                     From)
 {
-    EFI_FILE_INFO           *Info;
+    ACPI_EFI_FILE_INFO      *Info;
     int                     Error;
     ACPI_SIZE               Size;
     UINT64                  Current;
-    EFI_STATUS              EfiStatus;
-    EFI_FILE_HANDLE         EfiFile;
+    ACPI_EFI_STATUS         EfiStatus;
+    ACPI_EFI_FILE_HANDLE    EfiFile;
 
 
     if (File == stdin || File == stdout || File == stderr)
@@ -881,7 +881,7 @@ fseek (
     }
     else
     {
-        EfiFile = ACPI_CAST_PTR (EFI_FILE, File);
+        EfiFile = ACPI_CAST_PTR (ACPI_EFI_FILE_STRUCT, File);
         Error = AcpiEfiGetFileInfo (File, &Info);
         if (Error)
         {
@@ -894,7 +894,7 @@ fseek (
         {
             EfiStatus = uefi_call_wrapper (EfiFile->GetPosition, 2,
                 EfiFile, &Current);
-            if (EFI_ERROR (EfiStatus))
+            if (ACPI_EFI_ERROR (EfiStatus))
             {
                 errno = ERANGE;
                 return (-ERANGE);
@@ -912,7 +912,7 @@ fseek (
 
         EfiStatus = uefi_call_wrapper (EfiFile->SetPosition, 2,
             EfiFile, Current);
-        if (EFI_ERROR (EfiStatus))
+        if (ACPI_EFI_ERROR (EfiStatus))
         {
             errno = ERANGE;
             return (-ERANGE);
@@ -1172,18 +1172,18 @@ ErrorExit:
  *
  *****************************************************************************/
 
-EFI_STATUS
+ACPI_EFI_STATUS
 efi_main (
-    EFI_HANDLE              Image,
-    EFI_SYSTEM_TABLE        *SystemTab)
+    ACPI_EFI_HANDLE         Image,
+    ACPI_EFI_SYSTEM_TABLE   *SystemTab)
 {
-    EFI_LOADED_IMAGE        *Info;
-    EFI_STATUS              EfiStatus = EFI_SUCCESS;
+    ACPI_EFI_LOADED_IMAGE   *Info;
+    ACPI_EFI_STATUS         EfiStatus = ACPI_EFI_SUCCESS;
     int                     Error;
     int                     argc;
     char                    **argv = NULL;
     char                    *OptBuffer = NULL;
-    EFI_FILE_IO_INTERFACE   *Volume = NULL;
+    ACPI_EFI_FILE_IO_INTERFACE *Volume = NULL;
 
 
     /* Initialize global variables */
@@ -1200,7 +1200,7 @@ efi_main (
 
     EfiStatus = uefi_call_wrapper (BS->HandleProtocol, 3,
         Image, &AcpiGbl_LoadedImageProtocol, ACPI_CAST_PTR (VOID, &Info));
-    if (EFI_ERROR (EfiStatus))
+    if (ACPI_EFI_ERROR (EfiStatus))
     {
         fprintf (stderr,
             "EFI_BOOT_SERVICES->HandleProtocol(LoadedImageProtocol) failure.\n");
@@ -1209,7 +1209,7 @@ efi_main (
 
     EfiStatus = uefi_call_wrapper (BS->HandleProtocol, 3,
         Info->DeviceHandle, &AcpiGbl_FileSystemProtocol, (void **) &Volume);
-    if (EFI_ERROR (EfiStatus))
+    if (ACPI_EFI_ERROR (EfiStatus))
     {
         fprintf (stderr,
             "EFI_BOOT_SERVICES->HandleProtocol(FileSystemProtocol) failure.\n");
@@ -1217,7 +1217,7 @@ efi_main (
     }
     EfiStatus = uefi_call_wrapper (Volume->OpenVolume, 2,
         Volume, &AcpiGbl_EfiCurrentVolume);
-    if (EFI_ERROR (EfiStatus))
+    if (ACPI_EFI_ERROR (EfiStatus))
     {
         fprintf (stderr, "EFI_FILE_IO_INTERFACE->OpenVolume() failure.\n");
         return (EfiStatus);
@@ -1227,7 +1227,7 @@ efi_main (
         Info->LoadOptionsSize, &argc, &argv, &OptBuffer);
     if (Error)
     {
-        EfiStatus = EFI_DEVICE_ERROR;
+        EfiStatus = ACPI_EFI_DEVICE_ERROR;
         goto ErrorAlloc;
     }
 
