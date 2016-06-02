@@ -181,6 +181,7 @@ typedef enum
     ACPI_DMT_UINT64,
     ACPI_DMT_BUF7,
     ACPI_DMT_BUF10,
+    ACPI_DMT_BUF12,
     ACPI_DMT_BUF16,
     ACPI_DMT_BUF128,
     ACPI_DMT_SIG,
@@ -458,6 +459,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPcctHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPcct0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPcct1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoPcct2[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRasf[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRsdp1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRsdp2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoS3pt[];
