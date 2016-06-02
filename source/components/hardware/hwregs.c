@@ -126,6 +126,11 @@
 
 /* Local Prototypes */
 
+static UINT8
+AcpiHwGetAccessBitWidth (
+    ACPI_GENERIC_ADDRESS    *Reg,
+    UINT8                   MaxBitWidth);
+
 static ACPI_STATUS
 AcpiHwReadMultiple (
     UINT32                  *Value,
@@ -139,6 +144,52 @@ AcpiHwWriteMultiple (
     ACPI_GENERIC_ADDRESS    *RegisterB);
 
 #endif /* !ACPI_REDUCED_HARDWARE */
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiHwGetAccessBitWidth
+ *
+ * PARAMETERS:  Reg                 - GAS register structure
+ *              MaxBitWidth         - Max BitWidth supported (32 or 64)
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Obtain optimal access bit width
+ *
+ ******************************************************************************/
+
+static UINT8
+AcpiHwGetAccessBitWidth (
+    ACPI_GENERIC_ADDRESS    *Reg,
+    UINT8                   MaxBitWidth)
+{
+
+    if (!Reg->AccessWidth)
+    {
+        if (Reg->SpaceId == ACPI_ADR_SPACE_SYSTEM_IO)
+        {
+            MaxBitWidth = 32;
+        }
+
+        /*
+         * Detect old register descriptors where only the BitWidth field
+         * makes senses.
+         */
+        if (Reg->BitWidth < MaxBitWidth &&
+            !Reg->BitOffset && Reg->BitWidth &&
+            ACPI_IS_POWER_OF_TWO (Reg->BitWidth) &&
+            ACPI_IS_ALIGNED (Reg->BitWidth, 8))
+        {
+            return (Reg->BitWidth);
+        }
+        return (MaxBitWidth);
+    }
+    else
+    {
+        return (1 << (Reg->AccessWidth + 2));
+    }
+}
 
 
 /******************************************************************************
@@ -206,8 +257,7 @@ AcpiHwValidateRegister (
 
     /* Validate the BitWidth, convert AccessWidth into number of bits */
 
-    AccessWidth = Reg->AccessWidth ? Reg->AccessWidth : 1;
-    AccessWidth = 1 << (AccessWidth + 2);
+    AccessWidth = AcpiHwGetAccessBitWidth (Reg, MaxBitWidth);
     BitWidth = ACPI_ROUND_UP (Reg->BitOffset + Reg->BitWidth, AccessWidth);
     if (MaxBitWidth < BitWidth)
     {
