@@ -1,0 +1,234 @@
+## @file
+# acpiexec.inf
+#
+#  Copyright (c) 2016, Intel Corporation. All rights reserved.
+#
+#  This program and the accompanying materials
+#  are licensed and made available under the terms and conditions of the BSD License
+#  which accompanies this distribution. The full text of the license may be found at
+#  http://opensource.org/licenses/bsd-license.php
+#  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+#
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = acpiexec
+  FILE_GUID                      = 485464fc-2946-11e6-85c7-0024e8c6d30e
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = UefiMain
+
+[Sources]
+  tools/acpiexec/aeexec.c
+  tools/acpiexec/aehandlers.c
+  tools/acpiexec/aeinitfile.c
+  tools/acpiexec/aemain.c
+  tools/acpiexec/aeregion.c
+  tools/acpiexec/aetables.c
+  common/acfileio.c
+  common/acgetline.c
+  common/ahids.c
+  common/ahuuids.c
+  common/cmfsize.c
+  common/getopt.c
+  components/debugger/dbcmds.c
+  components/debugger/dbconvert.c
+  components/debugger/dbdisply.c
+  components/debugger/dbexec.c
+  components/debugger/dbfileio.c
+  components/debugger/dbhistry.c
+  components/debugger/dbinput.c
+  components/debugger/dbmethod.c
+  components/debugger/dbnames.c
+  components/debugger/dbobject.c
+  components/debugger/dbstats.c
+  components/debugger/dbtest.c
+  components/debugger/dbutils.c
+  components/debugger/dbxface.c
+  components/disassembler/dmbuffer.c
+  components/disassembler/dmcstyle.c
+  components/disassembler/dmdeferred.c
+  components/disassembler/dmnames.c
+  components/disassembler/dmopcode.c
+  components/disassembler/dmresrc.c
+  components/disassembler/dmresrcl.c
+  components/disassembler/dmresrcl2.c
+  components/disassembler/dmresrcs.c
+  components/disassembler/dmutils.c
+  components/disassembler/dmwalk.c
+  components/dispatcher/dsargs.c
+  components/dispatcher/dscontrol.c
+  components/dispatcher/dsdebug.c
+  components/dispatcher/dsfield.c
+  components/dispatcher/dsinit.c
+  components/dispatcher/dsmethod.c
+  components/dispatcher/dsmthdat.c
+  components/dispatcher/dsobject.c
+  components/dispatcher/dsopcode.c
+  components/dispatcher/dsutils.c
+  components/dispatcher/dswexec.c
+  components/dispatcher/dswload.c
+  components/dispatcher/dswload2.c
+  components/dispatcher/dswscope.c
+  components/dispatcher/dswstate.c
+  components/events/evevent.c
+  components/events/evglock.c
+  components/events/evgpe.c
+  components/events/evgpeblk.c
+  components/events/evgpeinit.c
+  components/events/evgpeutil.c
+  components/events/evhandler.c
+  components/events/evmisc.c
+  components/events/evregion.c
+  components/events/evrgnini.c
+  components/events/evsci.c
+  components/events/evxface.c
+  components/events/evxfevnt.c
+  components/events/evxfgpe.c
+  components/events/evxfregn.c
+  components/executer/exconcat.c
+  components/executer/exconfig.c
+  components/executer/exconvrt.c
+  components/executer/excreate.c
+  components/executer/exdebug.c
+  components/executer/exdump.c
+  components/executer/exfield.c
+  components/executer/exfldio.c
+  components/executer/exmisc.c
+  components/executer/exmutex.c
+  components/executer/exnames.c
+  components/executer/exoparg1.c
+  components/executer/exoparg2.c
+  components/executer/exoparg3.c
+  components/executer/exoparg6.c
+  components/executer/exprep.c
+  components/executer/exregion.c
+  components/executer/exresnte.c
+  components/executer/exresolv.c
+  components/executer/exresop.c
+  components/executer/exstore.c
+  components/executer/exstoren.c
+  components/executer/exstorob.c
+  components/executer/exsystem.c
+  components/executer/extrace.c
+  components/executer/exutils.c
+  components/hardware/hwacpi.c
+  components/hardware/hwesleep.c
+  components/hardware/hwgpe.c
+  components/hardware/hwpci.c
+  components/hardware/hwregs.c
+  components/hardware/hwsleep.c
+  components/hardware/hwvalid.c
+  components/hardware/hwxface.c
+  components/hardware/hwxfsleep.c
+  components/namespace/nsaccess.c
+  components/namespace/nsalloc.c
+  components/namespace/nsarguments.c
+  components/namespace/nsconvert.c
+  components/namespace/nsdump.c
+  components/namespace/nsdumpdv.c
+  components/namespace/nseval.c
+  components/namespace/nsinit.c
+  components/namespace/nsload.c
+  components/namespace/nsnames.c
+  components/namespace/nsobject.c
+  components/namespace/nsparse.c
+  components/namespace/nspredef.c
+  components/namespace/nsprepkg.c
+  components/namespace/nsrepair.c
+  components/namespace/nsrepair2.c
+  components/namespace/nssearch.c
+  components/namespace/nsutils.c
+  components/namespace/nswalk.c
+  components/namespace/nsxfeval.c
+  components/namespace/nsxfname.c
+  components/namespace/nsxfobj.c
+  components/parser/psargs.c
+  components/parser/psloop.c
+  components/parser/psobject.c
+  components/parser/psopcode.c
+  components/parser/psopinfo.c
+  components/parser/psparse.c
+  components/parser/psscope.c
+  components/parser/pstree.c
+  components/parser/psutils.c
+  components/parser/pswalk.c
+  components/parser/psxface.c
+  components/resources/rsaddr.c
+  components/resources/rscalc.c
+  components/resources/rscreate.c
+  components/resources/rsdump.c
+  components/resources/rsdumpinfo.c
+  components/resources/rsinfo.c
+  components/resources/rsio.c
+  components/resources/rsirq.c
+  components/resources/rslist.c
+  components/resources/rsmemory.c
+  components/resources/rsmisc.c
+  components/resources/rsserial.c
+  components/resources/rsutils.c
+  components/resources/rsxface.c
+  components/tables/tbdata.c
+  components/tables/tbfadt.c
+  components/tables/tbfind.c
+  components/tables/tbinstal.c
+  components/tables/tbprint.c
+  components/tables/tbutils.c
+  components/tables/tbxface.c
+  components/tables/tbxfload.c
+  components/tables/tbxfroot.c
+  components/utilities/utaddress.c
+  components/utilities/utalloc.c
+  components/utilities/utascii.c
+  components/utilities/utbuffer.c
+  components/utilities/utcache.c
+  components/utilities/utclib.c
+  components/utilities/utcopy.c
+  components/utilities/utdebug.c
+  components/utilities/utdecode.c
+  components/utilities/utdelete.c
+  components/utilities/uterror.c
+  components/utilities/uteval.c
+  components/utilities/utexcep.c
+  components/utilities/utglobal.c
+  components/utilities/uthex.c
+  components/utilities/utids.c
+  components/utilities/utinit.c
+  components/utilities/utlock.c
+  components/utilities/utmath.c
+  components/utilities/utmisc.c
+  components/utilities/utmutex.c
+  components/utilities/utnonansi.c
+  components/utilities/utobject.c
+  components/utilities/utosi.c
+  components/utilities/utownerid.c
+  components/utilities/utpredef.c
+  components/utilities/utprint.c
+  components/utilities/utresrc.c
+  components/utilities/utstate.c
+  components/utilities/utstring.c
+  components/utilities/uttrack.c
+  components/utilities/utuuid.c
+  components/utilities/utxface.c
+  components/utilities/utxferror.c
+  components/utilities/utxfinit.c
+  components/utilities/utxfmutex.c
+  os_specific/service_layers/oseficlib.c
+  os_specific/service_layers/osefixf.c
+
+[Packages]
+  AcpiPkg/AcpiPkg.dec
+  MdePkg/MdePkg.dec
+
+[LibraryClasses]
+  UefiApplicationEntryPoint
+  BaseLib
+
+[BuildOptions]
+  MSFT:*_*_IA32_CC_FLAGS = /Oi- /WX- /D_EDK2_EFI /DACPI_EXEC_APP
+  MSFT:*_*_X64_CC_FLAGS  = /Oi- /WX- /D_EDK2_EFI /DACPI_EXEC_APP
+  GCC:*_*_IA32_CC_FLAGS  = -U__linux__ -U_LINUX -D_EDK2_EFI -DACPI_EXEC_APP -fno-builtin -iwithprefix include
+  GCC:*_*_X64_CC_FLAGS   = -U__linux__ -U_LINUX -D_EDK2_EFI -DACPI_EXEC_APP -fno-builtin -iwithprefix include
