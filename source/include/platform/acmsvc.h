@@ -174,6 +174,10 @@
 #define ACPI_INTERNAL_XFACE
 #define ACPI_INTERNAL_VAR_XFACE     __cdecl
 
+
+/* Do not maintain the architecture specific stuffs for the EFI ports */
+
+#if !defined(_EDK2_EFI) && !defined(_GNU_EFI)
 #ifndef _LINT
 /*
  * Math helper functions
@@ -207,6 +211,7 @@
     n_hi >>= 1;    \
     n_lo >>= 1;    \
 }
+#endif
 #endif
 
 /* warn C4100: unreferenced formal parameter */
