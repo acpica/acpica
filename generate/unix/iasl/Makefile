@@ -245,12 +245,15 @@ MISC = \
 
 ASL_PARSER = \
 	$(ASL_COMPILER)/aslcstyle.y\
+	$(ASL_COMPILER)/aslcstructs.y\
+	$(ASL_COMPILER)/aslhelpers.y\
 	$(ASL_COMPILER)/aslparser.y\
+	$(ASL_COMPILER)/aslprimaries.y\
 	$(ASL_COMPILER)/aslresources.y\
+	$(ASL_COMPILER)/aslrules.y\
 	$(ASL_COMPILER)/aslsupport.y\
 	$(ASL_COMPILER)/asltokens.y\
-	$(ASL_COMPILER)/asltypes.y\
-	$(ASL_COMPILER)/aslrules.y
+	$(ASL_COMPILER)/asltypes.y
 
 ASL_LEXER = \
 	$(ASL_COMPILER)/aslcompiler.l\
@@ -277,7 +280,7 @@ include ../Makefile.rules
 safe_yacc = \
 	_d=`mktemp -d $(OBJDIR)/$(1).XXXXXX` &&\
 	cd $$_d &&\
-	$(YACC) $(YFLAGS) -d -p$(1) $(abspath $(2)) &&\
+	$(YACC) $(YFLAGS) -v -d -p$(1) $(abspath $(2)) &&\
 	cd - &&\
 	mv $$_d/y.tab$(suffix $(3)) $(3);\
 	_r=$$?;\

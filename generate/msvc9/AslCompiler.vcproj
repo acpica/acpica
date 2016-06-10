@@ -2421,6 +2421,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\compiler\aslhelpers.y"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\compiler\aslkeywords.y"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\compiler\aslparser.y"
 					>
 					<FileConfiguration
@@ -2430,7 +2438,7 @@
 							Name="VCCustomBuildTool"
 							Description="M4 Macro Preprocessor  ($(InputPath)) $(InputDir)"
 							CommandLine="c:\GnuWin32\bin\m4 -P -I../../source/compiler ../../source/compiler/$(InputName).y &gt; ./AslCompiler/AslCompiler.y&#x0D;&#x0A;"
-							AdditionalDependencies="$(InputDir)aslrules.y;$(InputDir)aslsupport.y;$(InputDir)asltokens.y;$(InputDir)asltypes.y;$(InputDir)aslcstyle.y;$(InputDir)aslresources.y"
+							AdditionalDependencies="$(InputDir)aslrules.y;$(InputDir)aslsupport.y;$(InputDir)asltokens.y;$(InputDir)asltypes.y;$(InputDir)aslcstyle.y;$(InputDir)aslcstructs.y;$(InputDir)aslresources.y;$(InputDir)aslprimaries.y;$(InputDir)aslkeywords.y;$(InputDir)aslhelpers.y"
 							Outputs=" ./AslCompiler/AslCompiler.y"
 						/>
 					</FileConfiguration>
@@ -2441,10 +2449,14 @@
 							Name="VCCustomBuildTool"
 							Description="M4 Macro Preprocessor  ($(InputPath)) &gt; AslCompilerDebug/AslCompilerDebug.y"
 							CommandLine="c:\GnuWin32\bin\m4 -P -I../../source/compiler $(InputPath) &gt; ./AslCompilerDebug/AslCompilerDebug.y&#x0D;&#x0A;"
-							AdditionalDependencies="$(InputDir)aslrules.y;$(InputDir)aslsupport.y;$(InputDir)asltokens.y;$(InputDir)asltypes.y;$(InputDir)aslcstyle.y;$(InputDir)aslresources.y"
+							AdditionalDependencies="$(InputDir)aslrules.y;$(InputDir)aslsupport.y;$(InputDir)asltokens.y;$(InputDir)asltypes.y;$(InputDir)aslcstyle.y;$(InputDir)aslcstructs.y;$(InputDir)aslresources.y;$(InputDir)aslprimaries.y;$(InputDir)aslkeywords.y;$(InputDir)aslhelpers.y"
 							Outputs=" ./AslCompilerDebug/AslCompilerDebug.y"
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\compiler\aslprimaries.y"
+					>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslresources.y"
@@ -3619,6 +3631,7 @@
 							Name="VCCustomBuildTool"
 							Description="Bison - Main compiler parser generation ($(InputPath))"
 							CommandLine="c:\GnuWin32\bin\bison -pAslCompiler -t -d -v --warnings=yacc -oAslCompiler/$(InputName).y.c ./AslCompiler/aslcompiler.y&#x0D;&#x0A;"
+							AdditionalDependencies="$(InputDir)aslcstructs.y;$(InputDir)aslcstyle.y;$(InputDir)aslhelpers.y;$(InputDir)aslkeywords.y;$(InputDir)aslparser.y;$(InputDir)aslprimaries.y;$(InputDir)aslrules.y;$(InputDir)aslsupport.y;$(InputDir)asltokens.y;$(InputDir)asltypes.y;$(InputDir)aslresources.y"
 							Outputs="./AslCompiler/$(InputName).y.c;./AslCompiler/$(InputName).y.h"
 						/>
 					</FileConfiguration>
@@ -3658,6 +3671,10 @@
 							WarningLevel="3"
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\AslCompiler\AslCompiler.y.output"
+					>
 				</File>
 				<File
 					RelativePath="AslCompilerDebug\AslCompilerDebug.l.c"
@@ -3703,6 +3720,7 @@
 							Name="VCCustomBuildTool"
 							Description="Bison - Main compiler parser generation ($(InputPath)) DEBUG"
 							CommandLine="c:\GnuWin32\bin\bison -pAslCompiler -t -d -v --warnings=yacc -oAslCompilerDebug/AslCompilerDebug.y.c  AslCompilerDebug/AslCompilerDebug.y&#x0D;&#x0A;copy /Y AslCompilerDebug\AslCompilerDebug.y.h AslCompilerDebug\AslCompiler.y.h&#x0D;&#x0A;"
+							AdditionalDependencies="$(InputDir)aslcstructs.y;$(InputDir)aslcstyle.y;$(InputDir)aslhelpers.y;$(InputDir)aslkeywords.y;$(InputDir)aslparser.y;$(InputDir)aslprimaries.y;$(InputDir)aslrules.y;$(InputDir)aslsupport.y;$(InputDir)asltokens.y;$(InputDir)asltypes.y;$(InputDir)aslresources.y"
 							Outputs="AslCompilerDebug\AslCompilerDebug.y.c;AslCompilerDebug\AslCompilerDebug.y.h"
 						/>
 					</FileConfiguration>
