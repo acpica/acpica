@@ -1,3 +1,4 @@
+
 #
 # acpiexec: ACPI execution simulator. Runs ACPICA code in user
 # space. Loads ACPI tables, displays the namespace, and allows
@@ -39,8 +40,8 @@ HEADERS = \
     $(wildcard $(ACPIEXEC)/*.h)
 
 OBJECTS = \
-	$(OBJDIR)/acgetline.o\
 	$(OBJDIR)/acfileio.o\
+	$(OBJDIR)/acgetline.o\
 	$(OBJDIR)/aeexec.o\
 	$(OBJDIR)/aehandlers.o\
 	$(OBJDIR)/aeinitfile.o\
@@ -105,8 +106,8 @@ OBJECTS = \
 	$(OBJDIR)/evxfevnt.o\
 	$(OBJDIR)/evxfgpe.o\
 	$(OBJDIR)/evxfregn.o\
-	$(OBJDIR)/exconfig.o\
 	$(OBJDIR)/exconcat.o\
+	$(OBJDIR)/exconfig.o\
 	$(OBJDIR)/exconvrt.o\
 	$(OBJDIR)/excreate.o\
 	$(OBJDIR)/exdebug.o\
@@ -163,7 +164,6 @@ OBJECTS = \
 	$(OBJDIR)/nsxfeval.o\
 	$(OBJDIR)/nsxfname.o\
 	$(OBJDIR)/nsxfobj.o\
-	$(OBJDIR)/osunixxf.o\
 	$(OBJDIR)/psargs.o\
 	$(OBJDIR)/psloop.o\
 	$(OBJDIR)/psobject.o\
@@ -203,6 +203,7 @@ OBJECTS = \
 	$(OBJDIR)/utascii.o\
 	$(OBJDIR)/utbuffer.o\
 	$(OBJDIR)/utcache.o\
+	$(OBJDIR)/utclib.o\
 	$(OBJDIR)/utcopy.o\
 	$(OBJDIR)/utdebug.o\
 	$(OBJDIR)/utdecode.o\
@@ -218,10 +219,10 @@ OBJECTS = \
 	$(OBJDIR)/utmath.o\
 	$(OBJDIR)/utmisc.o\
 	$(OBJDIR)/utmutex.o\
+	$(OBJDIR)/utnonansi.o\
 	$(OBJDIR)/utobject.o\
 	$(OBJDIR)/utosi.o\
 	$(OBJDIR)/utownerid.o\
-	$(OBJDIR)/utnonansi.o\
 	$(OBJDIR)/utpredef.o\
 	$(OBJDIR)/utprint.o\
 	$(OBJDIR)/utresrc.o\
@@ -232,6 +233,8 @@ OBJECTS = \
 	$(OBJDIR)/utxface.o\
 	$(OBJDIR)/utxferror.o\
 	$(OBJDIR)/utxfinit.o\
+	$(OBJDIR)/oseficlib.o\
+	$(OBJDIR)/osefixf.o\
 	$(OBJDIR)/utxfmutex.o
 
 #
@@ -244,16 +247,6 @@ CFLAGS += \
 ifeq ($(ASLTS),TRUE)
 CFLAGS += \
     -DACPI_CHECKSUM_ABORT=TRUE
-endif
-
-ifneq ($(HOST),_QNX)
-LDFLAGS += -lpthread
-endif
-
-ifneq ($(HOST),_APPLE)
-ifneq ($(HOST),_QNX)
-LDFLAGS += -lrt
-endif
 endif
 
 #
