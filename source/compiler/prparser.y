@@ -1,7 +1,7 @@
 %{
 /******************************************************************************
  *
- * Module Name: prparser.y - Bison input file for preprocessor parser
+ * Module Name: prparser.y - Bison input file for DT preprocessor parser
  *
  *****************************************************************************/
 
