@@ -175,6 +175,7 @@ Usage (
     ACPI_OPTION ("-v",              "Display compiler version");
     ACPI_OPTION ("-vo",             "Enable optimization comments");
     ACPI_OPTION ("-vs",             "Disable signon");
+    ACPI_OPTION ("-q",              "Emit ASL+ code (with C-style operators) while retaining comments");
 
     printf ("\nHelp:\n");
     ACPI_OPTION ("-h",              "This message");

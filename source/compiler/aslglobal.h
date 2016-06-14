@@ -255,6 +255,7 @@ ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DoTypechecking, TRUE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_EnableReferenceTypechecking, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DoExternals, TRUE);
 
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_CaptureComments, FALSE);
 
 #define HEX_OUTPUT_NONE             0
 #define HEX_OUTPUT_C                1

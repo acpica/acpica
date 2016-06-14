@@ -140,7 +140,7 @@ AslDoResponseFile (
 
 
 #define ASL_TOKEN_SEPARATORS    " \t\n"
-#define ASL_SUPPORTED_OPTIONS   "@:a:b|c|d^D:e:f^gh^i|I:l^m:no|p:P^r:s|t|T+G^v^w|x:z"
+#define ASL_SUPPORTED_OPTIONS   "@:a:b|c|d^D:e:f^gh^i|I:l^m:no|p:P^q^r:s|t|T+G^v^w|x:z"
 
 
 /*******************************************************************************
@@ -684,6 +684,10 @@ AslDoOptions (
         Gbl_OutputFilenamePrefix = AcpiGbl_Optarg;
         UtConvertBackslashes (Gbl_OutputFilenamePrefix);
         Gbl_UseDefaultAmlFilename = FALSE;
+        break;
+    case 'q':  /* Convert input file into asl+ syntax */ 
+
+        Gbl_CaptureComments = TRUE;
         break;
 
     case 'r':   /* Override revision found in table header */
