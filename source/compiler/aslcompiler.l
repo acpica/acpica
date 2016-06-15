@@ -183,7 +183,11 @@ NamePathTail                [.]{NameSeg}
 
 
 "/*"                        { if (!AslDoComment ()) {yyterminate ();} }
-"//"                        { if (!AslDoCommentType2 ()) {yyterminate ();} }
+"//"                        { if (AslDoCommentType2 ()) 
+                              {
+                                  if(Gbl_CaptureComments) {return (PARSEOP_COMMENTSTRING);}
+                              }
+                              yyterminate ();}
 
 "\""                        { if (AslDoStringLiteral ()) {return (PARSEOP_STRING_LITERAL);}
                               else {yyterminate ();} }

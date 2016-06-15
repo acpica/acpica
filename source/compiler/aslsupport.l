@@ -616,26 +616,273 @@ static char
 AslDoCommentType2 (
     void)
 {
-    int                 c;
+    char                *StringBuffer = MsgBuffer;
+    char                *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
+    char                *CleanString;
+    int                 StringChar;
+    UINT32              State = ASL_NORMAL_CHAR;
+    UINT32              i = 0;
+    UINT8               Digit;
+    char                ConvertBuffer[4];
 
 
+    /*
+     * Eat chars until end-of-literal.
+     * NOTE:  Put back the original surrounding quotes into the
+     * source line buffer.
+     */
     AslInsertLineBuffer ('/');
     AslInsertLineBuffer ('/');
-
-    while (((c = input ()) != '\n') && (c != EOF))
+    while ((StringChar = input()) != EOF)
     {
-        AslInsertLineBuffer (c);
+        AslInsertLineBuffer (StringChar);
+
+DoCharacter:
+        switch (State)
+        {
+        case ASL_NORMAL_CHAR:
+
+            switch (StringChar)
+            {
+            case '\n':
+                printf("\nread LF\n");
+                /*StringChar = 0x0A;*/      /* LINEFEED */
+                goto CompletedSingeLineComment;
+                break;
+
+            case '\r':
+                printf("read CR\n");
+                /*StringChar = 0x0D;*/      /* CARRIAGE RETURN*/
+                goto CompletedSingeLineComment;
+                break;
+
+            case '\\':
+                /*
+                 * Special handling for backslash-escape sequence. We will
+                 * toss the backslash and translate the escape char(s).
+                 */
+                State = ASL_ESCAPE_SEQUENCE;
+                continue;
+
+            default:
+
+                break;
+            }
+            break;
+
+
+        case ASL_ESCAPE_SEQUENCE:
+
+            State = ASL_NORMAL_CHAR;
+            switch (StringChar)
+            {
+            case 'a':
+
+                StringChar = 0x07;      /* BELL */
+                break;
+
+            case 'b':
+
+                StringChar = 0x08;      /* BACKSPACE */
+                break;
+
+            case 'f':
+
+                StringChar = 0x0C;      /* FORMFEED */
+                break;
+
+            case 't':
+
+                StringChar = 0x09;      /* HORIZONTAL TAB */
+                break;
+
+            case 'v':
+
+                StringChar = 0x0B;      /* VERTICAL TAB */
+                break;
+
+            case 'x':
+
+                State = ASL_HEX_CONSTANT;
+                i = 0;
+                continue;
+
+            case '\'':                  /* Single Quote */
+            case '\"':                  /* Double Quote */
+            case '\\':                  /* Backslash */
+
+                break;
+
+            default:
+
+                /* Check for an octal digit (0-7) */
+
+                if (ACPI_IS_OCTAL_DIGIT (StringChar))
+                {
+                    State = ASL_OCTAL_CONSTANT;
+                    ConvertBuffer[0] = StringChar;
+                    i = 1;
+                    continue;
+                }
+
+                /* Unknown escape sequence issue warning, but use the character */
+
+                AslCommonError (ASL_WARNING, ASL_MSG_INVALID_ESCAPE,
+                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                    Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+                    Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+                break;
+            }
+            break;
+
+
+        case ASL_OCTAL_CONSTANT:
+
+            /* Up to three octal digits allowed */
+
+            if (!ACPI_IS_OCTAL_DIGIT (StringChar) ||
+                (i > 2))
+            {
+                /*
+                 * Reached end of the constant. Convert the assembled ASCII
+                 * string and resume processing of the next character
+                 */
+                ConvertBuffer[i] = 0;
+                Digit = (UINT8) strtoul (ConvertBuffer, NULL, 8);
+
+                /* Check for NULL or non-ascii character (ignore if so) */
+
+                if ((Digit == 0) || (Digit > ACPI_ASCII_MAX))
+                {
+                    AslCommonError (ASL_WARNING, ASL_MSG_INVALID_STRING,
+                        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+                        Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+                }
+                else
+                {
+                    *StringBuffer = (char) Digit;
+                    StringBuffer++;
+                    if (StringBuffer >= EndBuffer)
+                    {
+                        goto BufferOverflow;
+                    }
+                }
+
+                State = ASL_NORMAL_CHAR;
+                goto DoCharacter;
+                break;
+            }
+
+            /* Append another digit of the constant */
+
+            ConvertBuffer[i] = StringChar;
+            i++;
+            continue;
+
+        case ASL_HEX_CONSTANT:
+
+            /* Up to two hex digits allowed */
+
+            if (!isxdigit (StringChar) ||
+                (i > 1))
+            {
+                /*
+                 * Reached end of the constant. Convert the assembled ASCII
+                 * string and resume processing of the next character
+                 */
+                ConvertBuffer[i] = 0;
+                Digit = (UINT8) strtoul (ConvertBuffer, NULL, 16);
+
+                /* Check for NULL or non-ascii character (ignore if so) */
+
+                if ((Digit == 0) || (Digit > ACPI_ASCII_MAX))
+                {
+                    AslCommonError (ASL_WARNING, ASL_MSG_INVALID_STRING,
+                        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+                        Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+                }
+                else
+                {
+                    *StringBuffer = (char) Digit;
+                    StringBuffer++;
+                    if (StringBuffer >= EndBuffer)
+                    {
+                        goto BufferOverflow;
+                    }
+                }
+
+                State = ASL_NORMAL_CHAR;
+                goto DoCharacter;
+                break;
+            }
+
+            /* Append another digit of the constant */
+
+            ConvertBuffer[i] = StringChar;
+            i++;
+            continue;
+
+        default:
+
+            break;
+        }
+
+        /* Save the finished character */
+
+        *StringBuffer = StringChar;
+        StringBuffer++;
+        printf("%c", StringChar);
+        if (StringBuffer >= EndBuffer)
+        {
+            goto BufferOverflow;
+        }
     }
 
-    if (c == EOF)
-    {
-        /* End of file is OK, change to newline. Let parser detect EOF later */
+    /*
+     * Premature End-Of-File
+     */
+    printf("early EOF in comment\n");
+    AslCommonError (ASL_ERROR, ASL_MSG_EARLY_EOF,
+        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+        Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+    return (FALSE);
 
-        c = '\n';
+
+CompletedSingeLineComment:
+    /*
+     * Null terminate the input string and copy string to a new buffer
+     */
+    *StringBuffer = 0;
+
+    CleanString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
+    if (!CleanString)
+    {
+        AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
+            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+            Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+            Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+        return (FALSE);
     }
 
-    AslInsertLineBuffer (c);
+    strcpy (CleanString, MsgBuffer);
+    AslCompilerlval.s = CleanString;
+    printf("Here's a comment: %s\n", CleanString);
     return (TRUE);
+
+
+BufferOverflow:
+
+    /* Literal was too long */
+
+    AslCommonError (ASL_ERROR, ASL_MSG_STRING_LENGTH,
+        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+        Gbl_Files[ASL_FILE_INPUT].Filename, "Max length 4096");
+    return (FALSE);
+
 }
 
 
