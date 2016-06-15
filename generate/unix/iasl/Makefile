@@ -245,7 +245,6 @@ MISC = \
 
 ASL_PARSER = \
 	$(ASL_COMPILER)/aslcstyle.y\
-	$(ASL_COMPILER)/aslcstructs.y\
 	$(ASL_COMPILER)/aslhelpers.y\
 	$(ASL_COMPILER)/aslparser.y\
 	$(ASL_COMPILER)/aslprimaries.y\
