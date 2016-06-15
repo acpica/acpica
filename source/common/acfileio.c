@@ -118,6 +118,7 @@
 #include "acapps.h"
 #include "actables.h"
 #include "acutils.h"
+#include <errno.h>
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("acfileio")
@@ -169,7 +170,7 @@ AcGetAllTablesFromFile (
     File = fopen (Filename, "rb");
     if (!File)
     {
-        fprintf (stderr, "Could not open input file: %s\n", Filename);
+        perror ("Could not open input file");
         if (errno == ENOENT)
         {
             return (AE_NOT_EXIST);
@@ -351,7 +352,7 @@ AcGetOneTableFromFile (
 
     /* Allocate a buffer for the entire table */
 
-    Table = AcpiOsAllocate ((ACPI_SIZE) TableHeader.Length);
+    Table = AcpiOsAllocate ((size_t) TableHeader.Length);
     if (!Table)
     {
         return (AE_NO_MEMORY);
@@ -459,7 +460,7 @@ AcValidateTableHeader (
     long                    TableOffset)
 {
     ACPI_TABLE_HEADER       TableHeader;
-    ACPI_SIZE               Actual;
+    size_t                  Actual;
     long                    OriginalOffset;
     UINT32                  FileSize;
     UINT32                  i;

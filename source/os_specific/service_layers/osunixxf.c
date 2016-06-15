@@ -136,6 +136,9 @@
         ACPI_MODULE_NAME    ("osunixxf")
 
 
+BOOLEAN                        AcpiGbl_DebugTimeout = FALSE;
+
+
 /* Upcalls to AcpiExec */
 
 void

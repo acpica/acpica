@@ -31,6 +31,7 @@ OBJECTS = \
     $(OBJDIR)/axmain.o\
     $(OBJDIR)/axutils.o\
     $(OBJDIR)/getopt.o\
+    $(OBJDIR)/oslibcfs.o\
     $(OBJDIR)/osunixxf.o\
     $(OBJDIR)/utascii.o\
     $(OBJDIR)/utdebug.o\

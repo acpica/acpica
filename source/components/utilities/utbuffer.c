@@ -336,7 +336,7 @@ AcpiUtDumpBufferToFile (
 
     if (!Buffer)
     {
-        fprintf (File, "Null Buffer Pointer in DumpBuffer!\n");
+        AcpiUtFilePrintf (File, "Null Buffer Pointer in DumpBuffer!\n");
         return;
     }
 
@@ -351,7 +351,7 @@ AcpiUtDumpBufferToFile (
     {
         /* Print current offset */
 
-        fprintf (File, "%6.4X: ", (BaseOffset + i));
+        AcpiUtFilePrintf (File, "%6.4X: ", (BaseOffset + i));
 
         /* Print 16 hex chars */
 
@@ -361,7 +361,7 @@ AcpiUtDumpBufferToFile (
             {
                 /* Dump fill spaces */
 
-                fprintf (File, "%*s", ((Display * 2) + 1), " ");
+                AcpiUtFilePrintf (File, "%*s", ((Display * 2) + 1), " ");
                 j += Display;
                 continue;
             }
@@ -371,28 +371,28 @@ AcpiUtDumpBufferToFile (
             case DB_BYTE_DISPLAY:
             default:    /* Default is BYTE display */
 
-                fprintf (File, "%02X ", Buffer[(ACPI_SIZE) i + j]);
+                AcpiUtFilePrintf (File, "%02X ", Buffer[(ACPI_SIZE) i + j]);
                 break;
 
             case DB_WORD_DISPLAY:
 
                 ACPI_MOVE_16_TO_32 (&Temp32, &Buffer[(ACPI_SIZE) i + j]);
-                fprintf (File, "%04X ", Temp32);
+                AcpiUtFilePrintf (File, "%04X ", Temp32);
                 break;
 
             case DB_DWORD_DISPLAY:
 
                 ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[(ACPI_SIZE) i + j]);
-                fprintf (File, "%08X ", Temp32);
+                AcpiUtFilePrintf (File, "%08X ", Temp32);
                 break;
 
             case DB_QWORD_DISPLAY:
 
                 ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[(ACPI_SIZE) i + j]);
-                fprintf (File, "%08X", Temp32);
+                AcpiUtFilePrintf (File, "%08X", Temp32);
 
                 ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[(ACPI_SIZE) i + j + 4]);
-                fprintf (File, "%08X ", Temp32);
+                AcpiUtFilePrintf (File, "%08X ", Temp32);
                 break;
             }
 
@@ -403,29 +403,29 @@ AcpiUtDumpBufferToFile (
          * Print the ASCII equivalent characters but watch out for the bad
          * unprintable ones (printable chars are 0x20 through 0x7E)
          */
-        fprintf (File, " ");
+        AcpiUtFilePrintf (File, " ");
         for (j = 0; j < 16; j++)
         {
             if (i + j >= Count)
             {
-                fprintf (File, "\n");
+                AcpiUtFilePrintf (File, "\n");
                 return;
             }
 
             BufChar = Buffer[(ACPI_SIZE) i + j];
             if (isprint (BufChar))
             {
-                fprintf (File, "%c", BufChar);
+                AcpiUtFilePrintf (File, "%c", BufChar);
             }
             else
             {
-                fprintf (File, ".");
+                AcpiUtFilePrintf (File, ".");
             }
         }
 
         /* Done with that line. */
 
-        fprintf (File, "\n");
+        AcpiUtFilePrintf (File, "\n");
         i += 16;
     }
 

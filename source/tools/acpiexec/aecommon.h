@@ -131,6 +131,11 @@
 #include "amlresrc.h"
 #include "acapps.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <signal.h>
+
 
 /*
  * Debug Regions
@@ -168,11 +173,9 @@ extern ACPI_CONNECTION_INFO AeMyContext;
 #define OSD_PRINT(lvl,fp)               TEST_OUTPUT_LEVEL(lvl) {\
                                             AcpiOsPrintf PARAM_LIST(fp);}
 
-#ifndef _GNU_EFI
 void ACPI_SYSTEM_XFACE
 AeCtrlCHandler (
     int                     Sig);
-#endif
 
 ACPI_STATUS
 AeBuildLocalTables (

@@ -357,8 +357,6 @@ ACPI_GLOBAL (ACPI_TABLE_FADT,       AcpiGbl_FADT);
 ACPI_GLOBAL (UINT32,                AcpiCurrentGpeCount);
 ACPI_GLOBAL (BOOLEAN,               AcpiGbl_SystemAwakeAndRunning);
 
-ACPI_INIT_GLOBAL (BOOLEAN,          AcpiGbl_DebugTimeout, FALSE);
-
 
 /*****************************************************************************
  *
@@ -1305,6 +1303,13 @@ AcpiTracePoint (
     BOOLEAN                 Begin,
     UINT8                   *Aml,
     char                    *Pathname))
+
+ACPI_APP_DEPENDENT_RETURN_VOID (
+ACPI_PRINTF_LIKE(1)
+void ACPI_INTERNAL_VAR_XFACE
+AcpiLogError (
+    const char              *Format,
+    ...))
 
 ACPI_STATUS
 AcpiInitializeDebugger (

@@ -126,11 +126,9 @@
         ACPI_MODULE_NAME    ("utxfinit")
 
 /* For AcpiExec only */
-#ifndef ACPI_DISABLE_OBJECT_OVERRIDE
 void
 AeDoObjectOverrides (
     void);
-#endif
 
 
 /*******************************************************************************
@@ -348,13 +346,11 @@ AcpiInitializeObjects (
 
 
 #ifdef ACPI_EXEC_APP
-#ifndef ACPI_DISABLE_OBJECT_OVERRIDE
     /*
      * This call implements the "initialization file" option for AcpiExec.
      * This is the precise point that we want to perform the overrides.
      */
     AeDoObjectOverrides ();
-#endif
 #endif
 
     /*

@@ -305,7 +305,18 @@ AcpiOsGetTableByName (
 
     /* Not a main ACPI table, attempt to extract it from the RSDT/XSDT */
 
-    Status = OslGetTable (Signature, Instance, Table, Address);
+    if (!Gbl_DumpCustomizedTables)
+    {
+        /* Attempt to get the table from the memory */
+
+        Status = OslGetTable (Signature, Instance, Table, Address);
+    }
+    else
+    {
+        /* Attempt to get the table from the static directory */
+
+        Status = AE_SUPPORT;
+    }
 
     return (Status);
 }
@@ -378,7 +389,7 @@ OslAddTableToList (
     {
         if (Instance)
         {
-            fprintf (stderr,
+            AcpiLogError (
                 "%4.4s: Warning unmatched table instance %d, expected %d\n",
                 Signature, Instance, NextInstance);
         }
@@ -639,47 +650,56 @@ OslTableInitialize (
         return (Status);
     }
 
-    /* Add mandatory tables to global table list first */
-
-    Status = OslAddTableToList (ACPI_RSDP_NAME, 0);
-    if (ACPI_FAILURE (Status))
+    if (!Gbl_DumpCustomizedTables)
     {
-        return (Status);
-    }
+        /* Add mandatory tables to global table list first */
 
-    Status = OslAddTableToList (ACPI_SIG_RSDT, 0);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
+        Status = OslAddTableToList (ACPI_RSDP_NAME, 0);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
 
-    if (Gbl_Revision == 2)
-    {
-        Status = OslAddTableToList (ACPI_SIG_XSDT, 0);
+        Status = OslAddTableToList (ACPI_SIG_RSDT, 0);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        if (Gbl_Revision == 2)
+        {
+            Status = OslAddTableToList (ACPI_SIG_XSDT, 0);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+        }
+
+        Status = OslAddTableToList (ACPI_SIG_DSDT, 0);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        Status = OslAddTableToList (ACPI_SIG_FACS, 0);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        /* Add all tables found in the memory */
+
+        Status = OslListTables ();
         if (ACPI_FAILURE (Status))
         {
             return (Status);
         }
     }
-
-    Status = OslAddTableToList (ACPI_SIG_DSDT, 0);
-    if (ACPI_FAILURE (Status))
+    else
     {
-        return (Status);
-    }
+        /* Add all tables found in the static directory */
 
-    Status = OslAddTableToList (ACPI_SIG_FACS, 0);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
-    /* Add all tables found in the memory */
-
-    Status = OslListTables ();
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
+        Status = AE_SUPPORT;
     }
 
     Gbl_TableListInitialized = TRUE;
@@ -1014,7 +1034,7 @@ OslMapTable (
     MappedTable = AcpiOsMapMemory (Address, sizeof (ACPI_TABLE_HEADER));
     if (!MappedTable)
     {
-        fprintf (stderr, "Could not map table header at 0x%8.8X%8.8X\n",
+        AcpiLogError ("Could not map table header at 0x%8.8X%8.8X\n",
             ACPI_FORMAT_UINT64 (Address));
         return (AE_BAD_ADDRESS);
     }
@@ -1050,7 +1070,7 @@ OslMapTable (
     MappedTable = AcpiOsMapMemory (Address, Length);
     if (!MappedTable)
     {
-        fprintf (stderr, "Could not map table at 0x%8.8X%8.8X length %8.8X\n",
+        AcpiLogError ("Could not map table at 0x%8.8X%8.8X length %8.8X\n",
             ACPI_FORMAT_UINT64 (Address), Length);
         return (AE_INVALID_TABLE_LENGTH);
     }
