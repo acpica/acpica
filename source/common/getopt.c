@@ -173,7 +173,7 @@ AcpiGetoptArgument (
     }
     else if (++AcpiGbl_Optind >= argc)
     {
-        ACPI_OPTION_ERROR ("Option requires an argument: -", 'v');
+        ACPI_OPTION_ERROR ("\nOption requires an argument", 0);
 
         CurrentCharPtr = 1;
         return (-1);
