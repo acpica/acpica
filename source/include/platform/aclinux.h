@@ -245,9 +245,11 @@
 
 #else /* !__KERNEL__ */
 
+#include <stdarg.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 #include <unistd.h>
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_STANDARD_HEADERS
 
 /* Define/disable kernel-specific declarators */
 

@@ -122,8 +122,6 @@
 
 /* Local prototypes */
 
-#ifndef ACPI_DISABLE_OBJECT_OVERRIDE
-
 static void
 AeDoOneOverride (
     char                    *Pathname,
@@ -160,8 +158,7 @@ AeOpenInitializationFile (
     InitFile = fopen (Filename, "r");
     if (!InitFile)
     {
-        fprintf (stderr,
-            "Could not open initialization file: %s\n", Filename);
+        perror ("Could not open initialization file");
         return (-1);
     }
 
@@ -306,5 +303,3 @@ AeDoOneOverride (
     AcpiOsPrintf ("New value: 0x%8.8X%8.8X\n",
         ACPI_FORMAT_UINT64 (Value));
 }
-
-#endif

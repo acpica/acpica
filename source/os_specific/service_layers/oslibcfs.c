@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: getopt
+ * Module Name: oslibcfs - C library OSL for file I/O
  *
  *****************************************************************************/
 
@@ -113,236 +113,218 @@
  *
  *****************************************************************************/
 
-/*
- * ACPICA getopt() implementation
- *
- * Option strings:
- *    "f"       - Option has no arguments
- *    "f:"      - Option requires an argument
- *    "f+"      - Option has an optional argument
- *    "f^"      - Option has optional single-char sub-options
- *    "f|"      - Option has required single-char sub-options
- */
-
 #include "acpi.h"
-#include "accommon.h"
-#include "acapps.h"
+#include <stdio.h>
+#include <stdarg.h>
 
-#define ACPI_OPTION_ERROR(msg, badchar) \
-    if (AcpiGbl_Opterr) {AcpiLogError ("%s%c\n", msg, badchar);}
-
-
-int                 AcpiGbl_Opterr = 1;
-int                 AcpiGbl_Optind = 1;
-int                 AcpiGbl_SubOptChar = 0;
-char                *AcpiGbl_Optarg;
-
-static int          CurrentCharPtr = 1;
+#define _COMPONENT          ACPI_OS_SERVICES
+        ACPI_MODULE_NAME    ("oslibcfs")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiGetoptArgument
+ * FUNCTION:    AcpiOsOpenFile
  *
- * PARAMETERS:  argc, argv          - from main
+ * PARAMETERS:  Path                - File path
+ *              Modes               - File operation type
  *
- * RETURN:      0 if an argument was found, -1 otherwise. Sets AcpiGbl_Optarg
- *              to point to the next argument.
+ * RETURN:      File descriptor.
  *
- * DESCRIPTION: Get the next argument. Used to obtain arguments for the
- *              two-character options after the original call to AcpiGetopt.
- *              Note: Either the argument starts at the next character after
- *              the option, or it is pointed to by the next argv entry.
- *              (After call to AcpiGetopt, we need to backup to the previous
- *              argv entry).
+ * DESCRIPTION: Open a file for reading (ACPI_FILE_READING) or/and writing
+ *              (ACPI_FILE_WRITING).
  *
  ******************************************************************************/
 
-int
-AcpiGetoptArgument (
-    int                     argc,
-    char                    **argv)
+ACPI_FILE
+AcpiOsOpenFile (
+    const char              *Path,
+    UINT8                   Modes)
 {
+    ACPI_FILE               File;
+    UINT32                  i = 0;
+    char                    ModesStr[4];
 
-    AcpiGbl_Optind--;
-    CurrentCharPtr++;
 
-    if (argv[AcpiGbl_Optind][(int) (CurrentCharPtr+1)] != '\0')
+    if (Modes & ACPI_FILE_READING)
     {
-        AcpiGbl_Optarg = &argv[AcpiGbl_Optind++][(int) (CurrentCharPtr+1)];
+        ModesStr[i++] = 'r';
     }
-    else if (++AcpiGbl_Optind >= argc)
+    if (Modes & ACPI_FILE_WRITING)
     {
-        ACPI_OPTION_ERROR ("\nOption requires an argument", 0);
-
-        CurrentCharPtr = 1;
-        return (-1);
-    }
-    else
-    {
-        AcpiGbl_Optarg = argv[AcpiGbl_Optind++];
+        ModesStr[i++] = 'w';
     }
 
-    CurrentCharPtr = 1;
-    return (0);
+    if (Modes & ACPI_FILE_BINARY)
+    {
+        ModesStr[i++] = 'b';
+    }
+
+    ModesStr[i++] = '\0';
+
+    File = fopen (Path, ModesStr);
+    if (!File)
+    {
+        perror ("Could not open file");
+    }
+
+    return (File);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiGetopt
+ * FUNCTION:    AcpiOsCloseFile
  *
- * PARAMETERS:  argc, argv          - from main
- *              opts                - options info list
+ * PARAMETERS:  File                - An open file descriptor
  *
- * RETURN:      Option character or ACPI_OPT_END
+ * RETURN:      None.
  *
- * DESCRIPTION: Get the next option
+ * DESCRIPTION: Close a file opened via AcpiOsOpenFile.
+ *
+ ******************************************************************************/
+
+void
+AcpiOsCloseFile (
+    ACPI_FILE               File)
+{
+
+    fclose (File);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsReadFile
+ *
+ * PARAMETERS:  File                - An open file descriptor
+ *              Buffer              - Data buffer
+ *              Size                - Data block size
+ *              Count               - Number of data blocks
+ *
+ * RETURN:      Number of bytes actually read.
+ *
+ * DESCRIPTION: Read from a file.
  *
  ******************************************************************************/
 
 int
-AcpiGetopt(
-    int                     argc,
-    char                    **argv,
-    char                    *opts)
+AcpiOsReadFile (
+    ACPI_FILE               File,
+    void                    *Buffer,
+    ACPI_SIZE               Size,
+    ACPI_SIZE               Count)
 {
-    int                     CurrentChar;
-    char                    *OptsPtr;
+    int                     Length;
 
 
-    if (CurrentCharPtr == 1)
+    Length = fread (Buffer, Size, Count, File);
+    if (Length < 0)
     {
-        if (AcpiGbl_Optind >= argc ||
-            argv[AcpiGbl_Optind][0] != '-' ||
-            argv[AcpiGbl_Optind][1] == '\0')
-        {
-            return (ACPI_OPT_END);
-        }
-        else if (strcmp (argv[AcpiGbl_Optind], "--") == 0)
-        {
-            AcpiGbl_Optind++;
-            return (ACPI_OPT_END);
-        }
+        perror ("Error reading file");
     }
 
-    /* Get the option */
+    return (Length);
+}
 
-    CurrentChar = argv[AcpiGbl_Optind][CurrentCharPtr];
 
-    /* Make sure that the option is legal */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsWriteFile
+ *
+ * PARAMETERS:  File                - An open file descriptor
+ *              Buffer              - Data buffer
+ *              Size                - Data block size
+ *              Count               - Number of data blocks
+ *
+ * RETURN:      Number of bytes actually written.
+ *
+ * DESCRIPTION: Write to a file.
+ *
+ ******************************************************************************/
 
-    if (CurrentChar == ':' ||
-       (OptsPtr = strchr (opts, CurrentChar)) == NULL)
+int
+AcpiOsWriteFile (
+    ACPI_FILE               File,
+    void                    *Buffer,
+    ACPI_SIZE               Size,
+    ACPI_SIZE               Count)
+{
+    int                     Length;
+
+
+    Length = fwrite (Buffer, Size, Count, File);
+    if (Length < 0)
     {
-        ACPI_OPTION_ERROR ("Illegal option: -", CurrentChar);
-
-        if (argv[AcpiGbl_Optind][++CurrentCharPtr] == '\0')
-        {
-            AcpiGbl_Optind++;
-            CurrentCharPtr = 1;
-        }
-
-        return ('?');
+        perror ("Error writing file");
     }
 
-    /* Option requires an argument? */
+    return (Length);
+}
 
-    if (*++OptsPtr == ':')
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsGetFileOffset
+ *
+ * PARAMETERS:  File                - An open file descriptor
+ *
+ * RETURN:      Current file pointer position.
+ *
+ * DESCRIPTION: Get current file offset.
+ *
+ ******************************************************************************/
+
+long
+AcpiOsGetFileOffset (
+    ACPI_FILE               File)
+{
+    long                    Offset;
+
+
+    Offset = ftell (File);
+    return (Offset);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsSetFileOffset
+ *
+ * PARAMETERS:  File                - An open file descriptor
+ *              Offset              - New file offset
+ *              From                - From begin/end of file
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Set current file offset.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiOsSetFileOffset (
+    ACPI_FILE               File,
+    long                    Offset,
+    UINT8                   From)
+{
+    int                     Ret = 0;
+
+
+    if (From == ACPI_FILE_BEGIN)
     {
-        if (argv[AcpiGbl_Optind][(int) (CurrentCharPtr+1)] != '\0')
-        {
-            AcpiGbl_Optarg = &argv[AcpiGbl_Optind++][(int) (CurrentCharPtr+1)];
-        }
-        else if (++AcpiGbl_Optind >= argc)
-        {
-            ACPI_OPTION_ERROR (
-                "Option requires an argument: -", CurrentChar);
-
-            CurrentCharPtr = 1;
-            return ('?');
-        }
-        else
-        {
-            AcpiGbl_Optarg = argv[AcpiGbl_Optind++];
-        }
-
-        CurrentCharPtr = 1;
+        Ret = fseek (File, Offset, SEEK_SET);
     }
 
-    /* Option has an optional argument? */
-
-    else if (*OptsPtr == '+')
+    if (From == ACPI_FILE_END)
     {
-        if (argv[AcpiGbl_Optind][(int) (CurrentCharPtr+1)] != '\0')
-        {
-            AcpiGbl_Optarg = &argv[AcpiGbl_Optind++][(int) (CurrentCharPtr+1)];
-        }
-        else if (++AcpiGbl_Optind >= argc)
-        {
-            AcpiGbl_Optarg = NULL;
-        }
-        else
-        {
-            AcpiGbl_Optarg = argv[AcpiGbl_Optind++];
-        }
-
-        CurrentCharPtr = 1;
+        Ret = fseek (File, Offset, SEEK_END);
     }
 
-    /* Option has optional single-char arguments? */
-
-    else if (*OptsPtr == '^')
+    if (Ret < 0)
     {
-        if (argv[AcpiGbl_Optind][(int) (CurrentCharPtr+1)] != '\0')
-        {
-            AcpiGbl_Optarg = &argv[AcpiGbl_Optind][(int) (CurrentCharPtr+1)];
-        }
-        else
-        {
-            AcpiGbl_Optarg = "^";
-        }
-
-        AcpiGbl_SubOptChar = AcpiGbl_Optarg[0];
-        AcpiGbl_Optind++;
-        CurrentCharPtr = 1;
+        return (AE_ERROR);
     }
-
-    /* Option has a required single-char argument? */
-
-    else if (*OptsPtr == '|')
-    {
-        if (argv[AcpiGbl_Optind][(int) (CurrentCharPtr+1)] != '\0')
-        {
-            AcpiGbl_Optarg = &argv[AcpiGbl_Optind][(int) (CurrentCharPtr+1)];
-        }
-        else
-        {
-            ACPI_OPTION_ERROR (
-                "Option requires a single-character suboption: -",
-                CurrentChar);
-
-            CurrentCharPtr = 1;
-            return ('?');
-        }
-
-        AcpiGbl_SubOptChar = AcpiGbl_Optarg[0];
-        AcpiGbl_Optind++;
-        CurrentCharPtr = 1;
-    }
-
-    /* Option with no arguments */
-
     else
     {
-        if (argv[AcpiGbl_Optind][++CurrentCharPtr] == '\0')
-        {
-            CurrentCharPtr = 1;
-            AcpiGbl_Optind++;
-        }
-
-        AcpiGbl_Optarg = NULL;
+        return (AE_OK);
     }
-
-    return (CurrentChar);
 }

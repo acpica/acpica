@@ -177,6 +177,7 @@ OBJECTS = \
 	$(OBJDIR)/nswalk.o\
 	$(OBJDIR)/nsxfobj.o\
 	$(OBJDIR)/osunixxf.o\
+	$(OBJDIR)/oslibcfs.o\
 	$(OBJDIR)/prexpress.o\
 	$(OBJDIR)/prmacros.o\
 	$(OBJDIR)/prscan.o\

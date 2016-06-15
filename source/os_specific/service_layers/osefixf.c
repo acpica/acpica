@@ -121,25 +121,52 @@
         ACPI_MODULE_NAME    ("osefixf")
 
 
-/* Upcalls to AcpiExec */
+/* Local definitions */
 
-void
-AeTableOverride (
-    ACPI_TABLE_HEADER       *ExistingTable,
-    ACPI_TABLE_HEADER       **NewTable);
+#define ACPI_EFI_PRINT_LENGTH   256
+
 
 /* Local prototypes */
 
-#ifndef ACPI_USE_NATIVE_RSDP_POINTER
+static ACPI_STATUS
+AcpiEfiArgify (
+    char                    *String,
+    int                     *ArgcPtr,
+    char                    ***ArgvPtr);
 
 static BOOLEAN
 AcpiEfiCompareGuid (
-    ACPI_EFI_GUID           *Guid1,
-    ACPI_EFI_GUID           *Guid2);
+    EFI_GUID                *Guid1,
+    EFI_GUID                *Guid2);
+
+static ACPI_STATUS
+AcpiEfiConvertArgcv (
+    CHAR16                  *LoadOpt,
+    UINT32                  LoadOptSize,
+    int                     *ArgcPtr,
+    char                    ***ArgvPtr,
+    char                    **BufferPtr);
 
 static ACPI_PHYSICAL_ADDRESS
 AcpiEfiGetRsdpViaGuid (
-    ACPI_EFI_GUID           *Guid);
+    EFI_GUID                *Guid);
+
+static CHAR16 *
+AcpiEfiFlushFile (
+    ACPI_FILE               File,
+    CHAR16                  *Begin,
+    CHAR16                  *End,
+    CHAR16                  *Pos,
+    BOOLEAN                 FlushAll);
+
+
+/* Local variables */
+
+static EFI_FILE_HANDLE      AcpiGbl_EfiCurrentVolume = NULL;
+EFI_GUID                    AcpiGbl_LoadedImageProtocol = LOADED_IMAGE_PROTOCOL;
+EFI_GUID                    AcpiGbl_TextInProtocol = SIMPLE_TEXT_INPUT_PROTOCOL;
+EFI_GUID                    AcpiGbl_TextOutProtocol = SIMPLE_TEXT_OUTPUT_PROTOCOL;
+EFI_GUID                    AcpiGbl_FileSystemProtocol = SIMPLE_FILE_SYSTEM_PROTOCOL;
 
 
 /******************************************************************************
@@ -157,8 +184,8 @@ AcpiEfiGetRsdpViaGuid (
 
 static BOOLEAN
 AcpiEfiCompareGuid (
-    ACPI_EFI_GUID           *Guid1,
-    ACPI_EFI_GUID           *Guid2)
+    EFI_GUID                *Guid1,
+    EFI_GUID                *Guid2)
 {
     INT32                   *g1;
     INT32                   *g2;
@@ -191,7 +218,7 @@ AcpiEfiCompareGuid (
 
 static ACPI_PHYSICAL_ADDRESS
 AcpiEfiGetRsdpViaGuid (
-    ACPI_EFI_GUID           *Guid)
+    EFI_GUID                *Guid)
 {
     ACPI_PHYSICAL_ADDRESS   Address = 0;
     int                     i;
@@ -228,8 +255,8 @@ AcpiOsGetRootPointer (
     void)
 {
     ACPI_PHYSICAL_ADDRESS   Address;
-    ACPI_EFI_GUID           Guid10 = ACPI_TABLE_GUID;
-    ACPI_EFI_GUID           Guid20 = ACPI_20_TABLE_GUID;
+    EFI_GUID                Guid10 = ACPI_TABLE_GUID;
+    EFI_GUID                Guid20 = ACPI_20_TABLE_GUID;
 
 
     Address = AcpiEfiGetRsdpViaGuid (&Guid20);
@@ -239,104 +266,6 @@ AcpiOsGetRootPointer (
     }
 
     return (Address);
-}
-
-#endif
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsTableOverride
- *
- * PARAMETERS:  ExistingTable       - Header of current table (probably
- *                                    firmware)
- *              NewTable            - Where an entire new table is returned.
- *
- * RETURN:      Status, pointer to new table. Null pointer returned if no
- *              table is available to override
- *
- * DESCRIPTION: Return a different version of a table if one is available
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsTableOverride (
-    ACPI_TABLE_HEADER       *ExistingTable,
-    ACPI_TABLE_HEADER       **NewTable)
-{
-
-    if (!ExistingTable || !NewTable)
-    {
-        return (AE_BAD_PARAMETER);
-    }
-
-    *NewTable = NULL;
-
-#ifdef ACPI_EXEC_APP
-
-    AeTableOverride (ExistingTable, NewTable);
-    return (AE_OK);
-#else
-
-    return (AE_NO_ACPI_TABLES);
-#endif
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsPhysicalTableOverride
- *
- * PARAMETERS:  ExistingTable       - Header of current table (probably firmware)
- *              NewAddress          - Where new table address is returned
- *                                    (Physical address)
- *              NewTableLength      - Where new table length is returned
- *
- * RETURN:      Status, address/length of new table. Null pointer returned
- *              if no table is available to override.
- *
- * DESCRIPTION: Returns AE_SUPPORT, function not used in user space.
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsPhysicalTableOverride (
-    ACPI_TABLE_HEADER       *ExistingTable,
-    ACPI_PHYSICAL_ADDRESS   *NewAddress,
-    UINT32                  *NewTableLength)
-{
-
-    return (AE_SUPPORT);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsPredefinedOverride
- *
- * PARAMETERS:  InitVal             - Initial value of the predefined object
- *              NewVal              - The new value for the object
- *
- * RETURN:      Status, pointer to value. Null pointer returned if not
- *              overriding.
- *
- * DESCRIPTION: Allow the OS to override predefined names
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsPredefinedOverride (
-    const ACPI_PREDEFINED_NAMES *InitVal,
-    ACPI_STRING                 *NewVal)
-{
-
-    if (!InitVal || !NewVal)
-    {
-        return (AE_BAD_PARAMETER);
-    }
-
-    *NewVal = NULL;
-    return (AE_OK);
 }
 
 
@@ -389,7 +318,7 @@ AcpiOsUnmapMemory (
 
 /******************************************************************************
  *
- * FUNCTION:    Single threaded stub interfaces
+ * FUNCTION:    Spinlock interfaces
  *
  * DESCRIPTION: No-op on single threaded BIOS
  *
@@ -422,410 +351,6 @@ AcpiOsReleaseLock (
 {
 }
 
-ACPI_STATUS
-AcpiOsCreateSemaphore (
-    UINT32              MaxUnits,
-    UINT32              InitialUnits,
-    ACPI_HANDLE         *OutHandle)
-{
-    *OutHandle = (ACPI_HANDLE) 1;
-    return (AE_OK);
-}
-
-ACPI_STATUS
-AcpiOsDeleteSemaphore (
-    ACPI_HANDLE         Handle)
-{
-    return (AE_OK);
-}
-
-ACPI_STATUS
-AcpiOsWaitSemaphore (
-    ACPI_HANDLE         Handle,
-    UINT32              Units,
-    UINT16              Timeout)
-{
-    return (AE_OK);
-}
-
-ACPI_STATUS
-AcpiOsSignalSemaphore (
-    ACPI_HANDLE         Handle,
-    UINT32              Units)
-{
-    return (AE_OK);
-}
-
-ACPI_THREAD_ID
-AcpiOsGetThreadId (
-    void)
-{
-    return (1);
-}
-
-ACPI_STATUS
-AcpiOsExecute (
-    ACPI_EXECUTE_TYPE       Type,
-    ACPI_OSD_EXEC_CALLBACK  Function,
-    void                    *Context)
-{
-    return (AE_OK);
-}
-
-void
-AcpiOsWaitEventsComplete (
-    void)
-{
-    return;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsInstallInterruptHandler
- *
- * PARAMETERS:  InterruptNumber     - Level handler should respond to.
- *              ServiceRoutine      - Address of the ACPI interrupt handler
- *              Context             - Where status is returned
- *
- * RETURN:      Handle to the newly installed handler.
- *
- * DESCRIPTION: Install an interrupt handler. Used to install the ACPI
- *              OS-independent handler.
- *
- *****************************************************************************/
-
-UINT32
-AcpiOsInstallInterruptHandler (
-    UINT32                  InterruptNumber,
-    ACPI_OSD_HANDLER        ServiceRoutine,
-    void                    *Context)
-{
-
-    return (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsRemoveInterruptHandler
- *
- * PARAMETERS:  InterruptNumber     - Level handler should respond to.
- *              ServiceRoutine      - Address of the ACPI interrupt handler
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Uninstalls an interrupt handler.
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsRemoveInterruptHandler (
-    UINT32                  InterruptNumber,
-    ACPI_OSD_HANDLER        ServiceRoutine)
-{
-
-    return (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsReadPciConfiguration
- *
- * PARAMETERS:  PciId               - Seg/Bus/Dev
- *              PciRegister         - Device Register
- *              Value               - Buffer where value is placed
- *              Width               - Number of bits
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Read data from PCI configuration space
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsReadPciConfiguration (
-    ACPI_PCI_ID             *PciId,
-    UINT32                  PciRegister,
-    UINT64                  *Value,
-    UINT32                  Width)
-{
-
-    *Value = 0;
-    return (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsWritePciConfiguration
- *
- * PARAMETERS:  PciId               - Seg/Bus/Dev
- *              PciRegister         - Device Register
- *              Value               - Value to be written
- *              Width               - Number of bits
- *
- * RETURN:      Status.
- *
- * DESCRIPTION: Write data to PCI configuration space
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsWritePciConfiguration (
-    ACPI_PCI_ID             *PciId,
-    UINT32                  PciRegister,
-    UINT64                  Value,
-    UINT32                  Width)
-{
-
-    return (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsReadPort
- *
- * PARAMETERS:  Address             - Address of I/O port/register to read
- *              Value               - Where value is placed
- *              Width               - Number of bits
- *
- * RETURN:      Value read from port
- *
- * DESCRIPTION: Read data from an I/O port or register
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsReadPort (
-    ACPI_IO_ADDRESS         Address,
-    UINT32                  *Value,
-    UINT32                  Width)
-{
-
-    switch (Width)
-    {
-    case 8:
-
-        *Value = 0xFF;
-        break;
-
-    case 16:
-
-        *Value = 0xFFFF;
-        break;
-
-    case 32:
-
-        *Value = 0xFFFFFFFF;
-        break;
-
-    default:
-
-        return (AE_BAD_PARAMETER);
-    }
-
-    return (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsWritePort
- *
- * PARAMETERS:  Address             - Address of I/O port/register to write
- *              Value               - Value to write
- *              Width               - Number of bits
- *
- * RETURN:      None
- *
- * DESCRIPTION: Write data to an I/O port or register
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsWritePort (
-    ACPI_IO_ADDRESS         Address,
-    UINT32                  Value,
-    UINT32                  Width)
-{
-
-    return (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsReadMemory
- *
- * PARAMETERS:  Address             - Physical Memory Address to read
- *              Value               - Where value is placed
- *              Width               - Number of bits (8,16,32, or 64)
- *
- * RETURN:      Value read from physical memory address. Always returned
- *              as a 64-bit integer, regardless of the read width.
- *
- * DESCRIPTION: Read data from a physical memory address
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsReadMemory (
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT64                  *Value,
-    UINT32                  Width)
-{
-
-    switch (Width)
-    {
-    case 8:
-    case 16:
-    case 32:
-    case 64:
-
-        *Value = 0;
-        break;
-
-    default:
-
-        return (AE_BAD_PARAMETER);
-    }
-    return (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsWriteMemory
- *
- * PARAMETERS:  Address             - Physical Memory Address to write
- *              Value               - Value to write
- *              Width               - Number of bits (8,16,32, or 64)
- *
- * RETURN:      None
- *
- * DESCRIPTION: Write data to a physical memory address
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsWriteMemory (
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT64                  Value,
-    UINT32                  Width)
-{
-
-    return (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsGetTimer
- *
- * PARAMETERS:  None
- *
- * RETURN:      Current time in 100 nanosecond units
- *
- * DESCRIPTION: Get the current system time
- *
- *****************************************************************************/
-
-UINT64
-AcpiOsGetTimer (
-    void)
-{
-    ACPI_EFI_STATUS         EfiStatus;
-    ACPI_EFI_TIME           EfiTime;
-    int                     Year, Month, Day;
-    int                     Hour, Minute, Second;
-    UINT64                  Timer;
-
-
-    EfiStatus = uefi_call_wrapper (RT->GetTime, 2, &EfiTime, NULL);
-    if (ACPI_EFI_ERROR (EfiStatus))
-    {
-        return (-1);
-    }
-
-    Year = EfiTime.Year;
-    Month = EfiTime.Month;
-    Day = EfiTime.Day;
-    Hour = EfiTime.Hour;
-    Minute = EfiTime.Minute;
-    Second = EfiTime.Second;
-
-    /* 1..12 -> 11,12,1..10 */
-
-    if (0 >= (int) (Month -= 2))
-    {
-        /* Feb has leap days */
-
-        Month += 12;
-        Year -= 1;
-    }
-
-    /* Calculate days */
-
-    Timer = ((UINT64) (Year/4 - Year/100 + Year/400 + 367*Month/12 + Day) +
-                       Year*365 - 719499);
-
-    /* Calculate seconds */
-
-    Timer = ((Timer*24 + Hour) * 60 + Minute) * 60 + Second;
-
-    /* Calculate 100 nanoseconds */
-
-    return ((Timer * ACPI_100NSEC_PER_SEC) + (EfiTime.Nanosecond / 100));
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsStall
- *
- * PARAMETERS:  microseconds        - Time to sleep
- *
- * RETURN:      Blocks until sleep is completed.
- *
- * DESCRIPTION: Sleep at microsecond granularity
- *
- *****************************************************************************/
-
-void
-AcpiOsStall (
-    UINT32                  microseconds)
-{
-
-    if (microseconds)
-    {
-        uefi_call_wrapper (BS->Stall, 1, microseconds);
-    }
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsSleep
- *
- * PARAMETERS:  milliseconds        - Time to sleep
- *
- * RETURN:      Blocks until sleep is completed.
- *
- * DESCRIPTION: Sleep at millisecond granularity
- *
- *****************************************************************************/
-
-void
-AcpiOsSleep (
-    UINT64                  milliseconds)
-{
-
-    AcpiOsStall (milliseconds * ACPI_USEC_PER_MSEC);
-}
-
 
 /******************************************************************************
  *
@@ -843,16 +368,15 @@ void *
 AcpiOsAllocate (
     ACPI_SIZE               Size)
 {
-    ACPI_EFI_STATUS         EfiStatus;
+    EFI_STATUS              EfiStatus;
     void                    *Mem;
 
 
     EfiStatus = uefi_call_wrapper (BS->AllocatePool, 3,
-        AcpiEfiLoaderData, Size, &Mem);
-    if (ACPI_EFI_ERROR (EfiStatus))
+        EfiLoaderData, Size, &Mem);
+    if (EFI_ERROR (EfiStatus))
     {
-        fprintf (stderr,
-            "EFI_BOOT_SERVICES->AllocatePool(EfiLoaderData) failure.\n");
+        AcpiLogError ("EFI_BOOT_SERVICES->AllocatePool(EfiLoaderData) failure.\n");
         return (NULL);
     }
 
@@ -912,6 +436,352 @@ AcpiOsFree (
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsOpenFile
+ *
+ * PARAMETERS:  Path                - File path
+ *              Modes               - File operation type
+ *
+ * RETURN:      File descriptor
+ *
+ * DESCRIPTION: Open a file for reading (ACPI_FILE_READING) or/and writing
+ *              (ACPI_FILE_WRITING).
+ *
+ ******************************************************************************/
+
+ACPI_FILE
+AcpiOsOpenFile (
+    const char              *Path,
+    UINT8                   Modes)
+{
+    EFI_STATUS              EfiStatus = EFI_SUCCESS;
+    UINT64                  OpenModes;
+    EFI_FILE_HANDLE         EfiFile = NULL;
+    CHAR16                  *Path16 = NULL;
+    CHAR16                  *Pos16;
+    const char              *Pos;
+    INTN                    Count, i;
+
+
+    if (!Path)
+    {
+        return (NULL);
+    }
+
+    /* Convert modes */
+
+    OpenModes = EFI_FILE_MODE_READ;
+    if (Modes & ACPI_FILE_WRITING)
+    {
+        OpenModes |= (EFI_FILE_MODE_WRITE | EFI_FILE_MODE_CREATE);
+    }
+
+    /* Allocate path buffer */
+
+    Count = strlen (Path);
+    Path16 = ACPI_ALLOCATE_ZEROED ((Count + 1) * sizeof (CHAR16));
+    if (!Path16)
+    {
+        EfiStatus = EFI_BAD_BUFFER_SIZE;
+        goto ErrorExit;
+    }
+    Pos = Path;
+    Pos16 = Path16;
+    while (*Pos == '/' || *Pos == '\\')
+    {
+        Pos++;
+        Count--;
+    }
+    for (i = 0; i < Count; i++)
+    {
+        if (*Pos == '/')
+        {
+            *Pos16++ = '\\';
+            Pos++;
+        }
+        else
+        {
+            *Pos16++ = *Pos++;
+        }
+    }
+    *Pos16 = '\0';
+
+    EfiStatus = uefi_call_wrapper (AcpiGbl_EfiCurrentVolume->Open, 5,
+        AcpiGbl_EfiCurrentVolume, &EfiFile, Path16, OpenModes, 0);
+    if (EFI_ERROR (EfiStatus))
+    {
+        AcpiLogError ("EFI_FILE_HANDLE->Open() failure.\n");
+        goto ErrorExit;
+    }
+
+ErrorExit:
+
+    if (Path16)
+    {
+        ACPI_FREE (Path16);
+    }
+
+    return ((ACPI_FILE) EfiFile);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsCloseFile
+ *
+ * PARAMETERS:  File                - File descriptor
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Close a file.
+ *
+ ******************************************************************************/
+
+void
+AcpiOsCloseFile (
+    ACPI_FILE               File)
+{
+    EFI_FILE_HANDLE         EfiFile;
+
+
+    if (File == ACPI_FILE_OUT ||
+        File == ACPI_FILE_ERR)
+    {
+        return;
+    }
+    EfiFile = (EFI_FILE_HANDLE) File;
+    (void) uefi_call_wrapper (AcpiGbl_EfiCurrentVolume->Close, 1, EfiFile);
+
+    return;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsReadFile
+ *
+ * PARAMETERS:  File                - File descriptor
+ *              Buffer              - Data buffer
+ *              Size                - Data block size
+ *              Count               - Number of data blocks
+ *
+ * RETURN:      Size of successfully read buffer
+ *
+ * DESCRIPTION: Read from a file.
+ *
+ ******************************************************************************/
+
+int
+AcpiOsReadFile (
+    ACPI_FILE               File,
+    void                    *Buffer,
+    ACPI_SIZE               Size,
+    ACPI_SIZE               Count)
+{
+    int                     Length = -1;
+    EFI_FILE_HANDLE         EfiFile;
+    UINTN                   ReadSize;
+    EFI_STATUS              EfiStatus;
+
+
+    if (File == ACPI_FILE_OUT ||
+        File == ACPI_FILE_ERR)
+    {
+    }
+    else
+    {
+        EfiFile = (EFI_FILE_HANDLE) File;
+        if (!EfiFile)
+        {
+            goto ErrorExit;
+        }
+        ReadSize = Size * Count;
+
+        EfiStatus = uefi_call_wrapper (AcpiGbl_EfiCurrentVolume->Read, 3,
+            EfiFile, &ReadSize, Buffer);
+        if (EFI_ERROR (EfiStatus))
+        {
+            AcpiLogError ("EFI_FILE_HANDLE->Read() failure.\n");
+            goto ErrorExit;
+        }
+        Length = ReadSize;
+    }
+
+ErrorExit:
+
+    return (Length);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEfiFlushFile
+ *
+ * PARAMETERS:  File                - File descriptor
+ *              Begin               - String with boundary
+ *              End                 - Boundary of the string
+ *              Pos                 - Current position
+ *              FlushAll            - Whether checking boundary before flushing
+ *
+ * RETURN:      Updated position
+ *
+ * DESCRIPTION: Flush cached buffer to the file.
+ *
+ ******************************************************************************/
+
+static CHAR16 *
+AcpiEfiFlushFile (
+    ACPI_FILE               File,
+    CHAR16                  *Begin,
+    CHAR16                  *End,
+    CHAR16                  *Pos,
+    BOOLEAN                 FlushAll)
+{
+
+    if (FlushAll || Pos >= (End - 1))
+    {
+        *Pos = 0;
+        uefi_call_wrapper (File->OutputString, 2, File, Begin);
+        Pos = Begin;
+    }
+
+    return (Pos);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsWriteFile
+ *
+ * PARAMETERS:  File                - File descriptor
+ *              Buffer              - Data buffer
+ *              Size                - Data block size
+ *              Count               - Number of data blocks
+ *
+ * RETURN:      Size of successfully written buffer
+ *
+ * DESCRIPTION: Write to a file.
+ *
+ ******************************************************************************/
+
+int
+AcpiOsWriteFile (
+    ACPI_FILE               File,
+    void                    *Buffer,
+    ACPI_SIZE               Size,
+    ACPI_SIZE               Count)
+{
+    int                     Length = -1;
+    CHAR16                  String[ACPI_EFI_PRINT_LENGTH];
+    const char              *Ascii;
+    CHAR16                  *End;
+    CHAR16                  *Pos;
+    int                     i, j;
+    EFI_FILE_HANDLE         EfiFile;
+    UINTN                   WriteSize;
+    EFI_STATUS              EfiStatus;
+
+
+    if (File == ACPI_FILE_OUT ||
+        File == ACPI_FILE_ERR)
+    {
+        Pos = String;
+        End = String + ACPI_EFI_PRINT_LENGTH - 1;
+        Ascii = ACPI_CAST_PTR (const char, Buffer);
+        Length = 0;
+
+        for (j = 0; j < Count; j++)
+        {
+            for (i = 0; i < Size; i++)
+            {
+                if (*Ascii == '\n')
+                {
+                    *Pos++ = '\r';
+                    Pos = AcpiEfiFlushFile (File, String,
+                            End, Pos, FALSE);
+                }
+                *Pos++ = *Ascii++;
+                Length++;
+                Pos = AcpiEfiFlushFile (File, String,
+                        End, Pos, FALSE);
+            }
+        }
+        Pos = AcpiEfiFlushFile (File, String, End, Pos, TRUE);
+    }
+    else
+    {
+        EfiFile = (EFI_FILE_HANDLE) File;
+        if (!EfiFile)
+        {
+            goto ErrorExit;
+        }
+        WriteSize = Size * Count;
+
+        EfiStatus = uefi_call_wrapper (AcpiGbl_EfiCurrentVolume->Write, 3,
+            EfiFile, &WriteSize, Buffer);
+        if (EFI_ERROR (EfiStatus))
+        {
+            AcpiLogError ("EFI_FILE_HANDLE->Write() failure.\n");
+            goto ErrorExit;
+        }
+        Length = WriteSize;
+    }
+
+ErrorExit:
+
+    return (Length);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsGetFileOffset
+ *
+ * PARAMETERS:  File                - File descriptor
+ *
+ * RETURN:      Size of current position
+ *
+ * DESCRIPTION: Get current file offset.
+ *
+ ******************************************************************************/
+
+long
+AcpiOsGetFileOffset (
+    ACPI_FILE               File)
+{
+    long                    Offset = -1;
+
+
+    return (Offset);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsSetFileOffset
+ *
+ * PARAMETERS:  File                - File descriptor
+ *              Offset              - File offset
+ *              From                - From begin/end of file
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Set current file offset.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiOsSetFileOffset (
+    ACPI_FILE               File,
+    long                    Offset,
+    UINT8                   From)
+{
+
+    return (AE_SUPPORT);
+}
+
+
 /******************************************************************************
  *
  * FUNCTION:    AcpiOsPrintf
@@ -957,19 +827,19 @@ AcpiOsVprintf (
     va_list                 Args)
 {
 
-    (void) vfprintf (ACPI_FILE_OUT, Format, Args);
+    (void) AcpiUtFileVprintf (ACPI_FILE_OUT, Format, Args);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsInitialize, AcpiOsTerminate
+ * FUNCTION:    AcpiOsInitialize
  *
  * PARAMETERS:  None
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Initialize/terminate this module.
+ * DESCRIPTION: Initialize this module.
  *
  *****************************************************************************/
 
@@ -981,94 +851,313 @@ AcpiOsInitialize (
     return (AE_OK);
 }
 
-ACPI_STATUS
-AcpiOsTerminate (
-    void)
-{
-
-    return (AE_OK);
-}
-
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsSignal
+ * FUNCTION:    AcpiEfiArgify
  *
- * PARAMETERS:  Function            - ACPI A signal function code
- *              Info                - Pointer to function-dependent structure
+ * PARAMETERS:  String              - Pointer to command line argument strings
+ *                                    which are seperated with spaces
+ *              ArgcPtr             - Return number of the arguments
+ *              ArgvPtr             - Return vector of the arguments
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Miscellaneous functions. Example implementation only.
+ * DESCRIPTION: Convert EFI arguments into C arguments.
  *
  *****************************************************************************/
 
-ACPI_STATUS
-AcpiOsSignal (
-    UINT32                  Function,
-    void                    *Info)
+static ACPI_STATUS
+AcpiEfiArgify (
+    char                    *String,
+    int                     *ArgcPtr,
+    char                    ***ArgvPtr)
 {
+    char                    *CopyBuffer;
+    int                     MaxArgc = *ArgcPtr;
+    int                     Argc = 0;
+    char                    **Argv = *ArgvPtr;
+    char                    *Arg;
+    BOOLEAN                 IsSingleQuote = FALSE;
+    BOOLEAN                 IsDoubleQuote = FALSE;
+    BOOLEAN                 IsEscape = FALSE;
 
-    switch (Function)
+
+    if (String == NULL)
     {
-    case ACPI_SIGNAL_FATAL:
-
-        break;
-
-    case ACPI_SIGNAL_BREAKPOINT:
-
-        break;
-
-    default:
-
-        break;
+        return (AE_BAD_PARAMETER);
     }
 
-    return (AE_OK);
+    CopyBuffer = String;
+
+    while (*String != '\0')
+    {
+        while (isspace (*String))
+        {
+            *String++ = '\0';
+        }
+        Arg = CopyBuffer;
+        while (*String != '\0')
+        {
+            if (isspace (*String) &&
+                !IsSingleQuote && !IsDoubleQuote && !IsEscape)
+            {
+                *Arg++ = '\0';
+                String++;
+                break;
+            }
+            if (IsEscape)
+            {
+                IsEscape = FALSE;
+                *Arg++ = *String;
+            }
+            else if (*String == '\\')
+            {
+                IsEscape = TRUE;
+            }
+            else if (IsSingleQuote)
+            {
+                if (*String == '\'')
+                {
+                    IsSingleQuote = FALSE;
+                    *Arg++ = '\0';
+                }
+                else
+                {
+                    *Arg++ = *String;
+                }
+            }
+            else if (IsDoubleQuote)
+            {
+                if (*String == '"')
+                {
+                    IsDoubleQuote = FALSE;
+                    *Arg = '\0';
+                }
+                else
+                {
+                    *Arg++ = *String;
+                }
+            }
+            else
+            {
+                if (*String == '\'')
+                {
+                    IsSingleQuote = TRUE;
+                }
+                else if (*String == '"')
+                {
+                    IsDoubleQuote = TRUE;
+                }
+                else
+                {
+                    *Arg++ = *String;
+                }
+            }
+            String++;
+        }
+        if (Argv && Argc < MaxArgc)
+        {
+            Argv[Argc] = CopyBuffer;
+        }
+        Argc++;
+        CopyBuffer = Arg;
+    }
+    if (Argv && Argc < MaxArgc)
+    {
+        Argv[Argc] = NULL;
+    }
+
+    *ArgcPtr = Argc;
+    *ArgvPtr = Argv;
+
+    return ((MaxArgc < Argc) ? AE_NO_MEMORY : AE_OK);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsReadable
+ * FUNCTION:    AcpiEfiConvertArgcv
  *
- * PARAMETERS:  Pointer             - Area to be verified
- *              Length              - Size of area
+ * PARAMETERS:  LoadOptions         - Pointer to the EFI options buffer, which
+ *                                    is NULL terminated
+ *              LoadOptionsSize     - Size of the EFI options buffer
+ *              ArgcPtr             - Return number of the arguments
+ *              ArgvPtr             - Return vector of the arguments
+ *              BufferPtr           - Buffer to contain the argument strings
  *
- * RETURN:      TRUE if readable for entire length
+ * RETURN:      Status
  *
- * DESCRIPTION: Verify that a pointer is valid for reading
+ * DESCRIPTION: Convert EFI arguments into C arguments.
  *
  *****************************************************************************/
 
-BOOLEAN
-AcpiOsReadable (
-    void                    *Pointer,
-    ACPI_SIZE               Length)
+static ACPI_STATUS
+AcpiEfiConvertArgcv (
+    CHAR16                  *LoadOptions,
+    UINT32                  LoadOptionsSize,
+    int                     *ArgcPtr,
+    char                    ***ArgvPtr,
+    char                    **BufferPtr)
 {
+    ACPI_STATUS             Status = AE_OK;
+    UINT32                  Count = LoadOptionsSize / sizeof (CHAR16);
+    UINT32                  i;
+    CHAR16                  *From;
+    char                    *To;
+    int                     Argc = 0;
+    char                    **Argv = NULL;
+    char                    *Buffer;
 
-    return (TRUE);
+
+    /* Prepare a buffer to contain the argument strings */
+
+    Buffer = ACPI_ALLOCATE_ZEROED (Count);
+    if (!Buffer)
+    {
+        Status = AE_NO_MEMORY;
+        goto ErrorExit;
+    }
+
+TryAgain:
+
+    /* Extend the argument vector */
+
+    if (Argv)
+    {
+        ACPI_FREE (Argv);
+        Argv = NULL;
+    }
+    if (Argc > 0)
+    {
+        Argv = ACPI_ALLOCATE_ZEROED (sizeof (char *) * (Argc + 1));
+        if (!Argv)
+        {
+            Status = AE_NO_MEMORY;
+            goto ErrorExit;
+        }
+    }
+
+    /*
+     * Note: As AcpiEfiArgify() will modify the content of the buffer, so
+     *       we need to restore it each time before invoking
+     *       AcpiEfiArgify().
+     */
+    From = LoadOptions;
+    To = ACPI_CAST_PTR (char, Buffer);
+    for (i = 0; i < Count; i++)
+    {
+        *To++ = (char) *From++;
+    }
+
+    /*
+     * The "Buffer" will contain NULL terminated strings after invoking
+     * AcpiEfiArgify(). The number of the strings are saved in Argc and the
+     * pointers of the strings are saved in Argv.
+     */
+    Status = AcpiEfiArgify (Buffer, &Argc, &Argv);
+    if (ACPI_FAILURE (Status))
+    {
+        if (Status == AE_NO_MEMORY)
+        {
+            goto TryAgain;
+        }
+    }
+
+ErrorExit:
+
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_FREE (Buffer);
+        ACPI_FREE (Argv);
+    }
+    else
+    {
+        *ArgcPtr = Argc;
+        *ArgvPtr = Argv;
+        *BufferPtr = Buffer;
+    }
+    return (Status);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsWritable
+ * FUNCTION:    efi_main
  *
- * PARAMETERS:  Pointer             - Area to be verified
- *              Length              - Size of area
+ * PARAMETERS:  Image               - EFI image handle
+ *              SystemTab           - EFI system table
  *
- * RETURN:      TRUE if writable for entire length
+ * RETURN:      EFI Status
  *
- * DESCRIPTION: Verify that a pointer is valid for writing
+ * DESCRIPTION: Entry point of EFI executable
  *
  *****************************************************************************/
 
-BOOLEAN
-AcpiOsWritable (
-    void                    *Pointer,
-    ACPI_SIZE               Length)
+EFI_STATUS
+efi_main (
+    EFI_HANDLE              Image,
+    EFI_SYSTEM_TABLE        *SystemTab)
 {
+    EFI_LOADED_IMAGE        *Info;
+    EFI_STATUS              EfiStatus = EFI_SUCCESS;
+    ACPI_STATUS             Status;
+    int                     argc;
+    char                    **argv = NULL;
+    char                    *OptBuffer = NULL;
+    EFI_FILE_IO_INTERFACE   *Volume = NULL;
 
-    return (TRUE);
+
+    /* Initialize global variables */
+
+    ST = SystemTab;
+    BS = SystemTab->BootServices;
+
+    /* Retrieve image information */
+
+    EfiStatus = uefi_call_wrapper (BS->HandleProtocol, 3,
+        Image, &AcpiGbl_LoadedImageProtocol, ACPI_CAST_PTR (VOID, &Info));
+    if (EFI_ERROR (EfiStatus))
+    {
+        AcpiLogError ("EFI_BOOT_SERVICES->HandleProtocol(LoadedImageProtocol) failure.\n");
+        return (EfiStatus);
+    }
+
+    EfiStatus = uefi_call_wrapper (BS->HandleProtocol, 3,
+        Info->DeviceHandle, &AcpiGbl_FileSystemProtocol, (void **) &Volume);
+    if (EFI_ERROR (EfiStatus))
+    {
+        AcpiLogError ("EFI_BOOT_SERVICES->HandleProtocol(FileSystemProtocol) failure.\n");
+        return (EfiStatus);
+    }
+    EfiStatus = uefi_call_wrapper (Volume->OpenVolume, 2,
+        Volume, &AcpiGbl_EfiCurrentVolume);
+    if (EFI_ERROR (EfiStatus))
+    {
+        AcpiLogError ("EFI_FILE_IO_INTERFACE->OpenVolume() failure.\n");
+        return (EfiStatus);
+    }
+
+    Status = AcpiEfiConvertArgcv (Info->LoadOptions,
+        Info->LoadOptionsSize, &argc, &argv, &OptBuffer);
+    if (ACPI_FAILURE (Status))
+    {
+        EfiStatus = EFI_DEVICE_ERROR;
+        goto ErrorAlloc;
+    }
+
+    acpi_main (argc, argv);
+
+ErrorAlloc:
+
+    if (argv)
+    {
+        ACPI_FREE (argv);
+    }
+    if (OptBuffer)
+    {
+        ACPI_FREE (OptBuffer);
+    }
+
+    return (EfiStatus);
 }

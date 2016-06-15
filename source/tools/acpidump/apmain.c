@@ -233,7 +233,7 @@ ApInsertAction (
     CurrentAction++;
     if (CurrentAction > AP_MAX_ACTIONS)
     {
-        fprintf (stderr, "Too many table options (max %u)\n", AP_MAX_ACTIONS);
+        AcpiLogError ("Too many table options (max %u)\n", AP_MAX_ACTIONS);
         return (-1);
     }
 
@@ -287,7 +287,7 @@ ApDoOptions (
         }
         else
         {
-            fprintf (stderr, "%s: Cannot handle this switch, please use on|off\n",
+            AcpiLogError ("%s: Cannot handle this switch, please use on|off\n",
                 AcpiGbl_Optarg);
             return (-1);
         }
@@ -313,7 +313,7 @@ ApDoOptions (
             ACPI_MAX64_BYTE_WIDTH, &Gbl_RsdpBase);
         if (ACPI_FAILURE (Status))
         {
-            fprintf (stderr, "%s: Could not convert to a physical address\n",
+            AcpiLogError ("%s: Could not convert to a physical address\n",
                 AcpiGbl_Optarg);
             return (-1);
         }
@@ -344,7 +344,7 @@ ApDoOptions (
     case 'z':   /* Verbose mode */
 
         Gbl_VerboseMode = TRUE;
-        fprintf (stderr, ACPI_COMMON_SIGNON (AP_UTILITY_NAME));
+        AcpiLogError (ACPI_COMMON_SIGNON (AP_UTILITY_NAME));
         continue;
 
     /*
@@ -427,7 +427,6 @@ acpi_main (
     ACPI_DEBUG_INITIALIZE (); /* For debug version only */
     AcpiOsInitialize ();
     Gbl_OutputFile = ACPI_FILE_OUT;
-    AcpiGbl_IntegerByteWidth = 8;
 
     /* Process command line options */
 
@@ -470,7 +469,7 @@ acpi_main (
 
         default:
 
-            fprintf (stderr, "Internal error, invalid action: 0x%X\n",
+            AcpiLogError ("Internal error, invalid action: 0x%X\n",
                 Action->ToBeDone);
             return (-1);
         }
@@ -488,11 +487,11 @@ acpi_main (
             /* Summary for the output file */
 
             FileSize = CmGetFileSize (Gbl_OutputFile);
-            fprintf (stderr, "Output file %s contains 0x%X (%u) bytes\n\n",
+            AcpiLogError ("Output file %s contains 0x%X (%u) bytes\n\n",
                 Gbl_OutputFilename, FileSize, FileSize);
         }
 
-        fclose (Gbl_OutputFile);
+        AcpiOsCloseFile (Gbl_OutputFile);
     }
 
     return (Status);

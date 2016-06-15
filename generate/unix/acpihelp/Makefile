@@ -38,6 +38,7 @@ OBJECTS = \
 	$(OBJDIR)/ahtable.o\
 	$(OBJDIR)/ahuuids.o\
 	$(OBJDIR)/getopt.o\
+	$(OBJDIR)/oslibcfs.o\
 	$(OBJDIR)/osunixxf.o\
 	$(OBJDIR)/utdebug.o\
 	$(OBJDIR)/utexcep.o\
