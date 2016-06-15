@@ -114,7 +114,6 @@
  *****************************************************************************/
 
 #include "aecommon.h"
-#include "errno.h"
 
 #define _COMPONENT          ACPI_TOOLS
         ACPI_MODULE_NAME    ("aemain")
@@ -131,7 +130,6 @@
  * Windows: The setargv.obj module must be linked in to automatically
  * expand wildcards.
  */
-extern BOOLEAN              AcpiGbl_DebugTimeout;
 
 /* Local prototypes */
 
@@ -398,10 +396,12 @@ AeDoOptions (
                 return (-1);
             }
 
+#ifndef ACPI_DISABLE_OBJECT_OVERRIDE
             if (AeOpenInitializationFile (AcpiGbl_Optarg))
             {
                 return (-1);
             }
+#endif
             break;
 
         default:
@@ -519,10 +519,17 @@ AeDoOptions (
  *
  *****************************************************************************/
 
+#ifndef _GNU_EFI
 int ACPI_SYSTEM_XFACE
 main (
     int                     argc,
-    char                    **argv)
+    char                    *argv[])
+#else
+int ACPI_SYSTEM_XFACE
+acpi_main (
+    int                     argc,
+    char                    *argv[])
+#endif
 {
     ACPI_NEW_TABLE_DESC     *ListHead = NULL;
     ACPI_STATUS             Status;
@@ -531,7 +538,9 @@ main (
 
 
     ACPI_DEBUG_INITIALIZE (); /* For debug version only */
+#ifndef _GNU_EFI
     signal (SIGINT, AeCtrlCHandler);
+#endif
 
     /* Init debug globals */
 

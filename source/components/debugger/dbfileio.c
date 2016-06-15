@@ -118,7 +118,6 @@
 #include "accommon.h"
 #include "acdebug.h"
 #include "actables.h"
-#include <stdio.h>
 #ifdef ACPI_APPLICATION
 #include "acapps.h"
 #endif
