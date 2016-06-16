@@ -144,7 +144,7 @@ AeDoObjectOverrides (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiInitializeSubsystem (
     void)
 {
@@ -223,7 +223,7 @@ ACPI_EXPORT_SYMBOL_INIT (AcpiInitializeSubsystem)
  *
  ******************************************************************************/
 
-ACPI_STATUS
+ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiEnableSubsystem (
     UINT32                  Flags)
 {
@@ -335,7 +335,7 @@ ACPI_EXPORT_SYMBOL_INIT (AcpiEnableSubsystem)
  *
  ******************************************************************************/
 
-ACPI_STATUS
+ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiInitializeObjects (
     UINT32                  Flags)
 {

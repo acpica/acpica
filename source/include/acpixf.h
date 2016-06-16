@@ -492,29 +492,29 @@ ACPI_GLOBAL (BOOLEAN,               AcpiGbl_SystemAwakeAndRunning);
  * Initialization
  */
 ACPI_EXTERNAL_RETURN_STATUS (
-ACPI_STATUS
+ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiInitializeTables (
     ACPI_TABLE_DESC         *InitialStorage,
     UINT32                  InitialTableCount,
     BOOLEAN                 AllowResize))
 
 ACPI_EXTERNAL_RETURN_STATUS (
-ACPI_STATUS
+ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiInitializeSubsystem (
     void))
 
 ACPI_EXTERNAL_RETURN_STATUS (
-ACPI_STATUS
+ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiEnableSubsystem (
     UINT32                  Flags))
 
 ACPI_EXTERNAL_RETURN_STATUS (
-ACPI_STATUS
+ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiInitializeObjects (
     UINT32                  Flags))
 
 ACPI_EXTERNAL_RETURN_STATUS (
-ACPI_STATUS
+ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiTerminate (
     void))
 
@@ -592,7 +592,7 @@ AcpiDecodePldBuffer (
  * ACPI table load/unload interfaces
  */
 ACPI_EXTERNAL_RETURN_STATUS (
-ACPI_STATUS
+ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiInstallTable (
     ACPI_PHYSICAL_ADDRESS   Address,
     BOOLEAN                 Physical))
@@ -608,7 +608,7 @@ AcpiUnloadParentTable (
     ACPI_HANDLE             Object))
 
 ACPI_EXTERNAL_RETURN_STATUS (
-ACPI_STATUS
+ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiLoadTables (
     void))
 
@@ -617,12 +617,12 @@ AcpiLoadTables (
  * ACPI table manipulation interfaces
  */
 ACPI_EXTERNAL_RETURN_STATUS (
-ACPI_STATUS
+ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiReallocateRootTable (
     void))
 
 ACPI_EXTERNAL_RETURN_STATUS (
-ACPI_STATUS
+ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiFindRootPointer (
     ACPI_PHYSICAL_ADDRESS   *RsdpAddress))
 

@@ -137,7 +137,7 @@
  *
  ******************************************************************************/
 
-ACPI_STATUS
+ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiLoadTables (
     void)
 {
@@ -372,7 +372,7 @@ UnlockAndExit:
  *
  ******************************************************************************/
 
-ACPI_STATUS
+ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiInstallTable (
     ACPI_PHYSICAL_ADDRESS   Address,
     BOOLEAN                 Physical)
