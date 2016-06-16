@@ -182,12 +182,15 @@ NamePathTail                [.]{NameSeg}
 [ \t]                       { count (0); }
 
 
-"/*"                        { if (!AslDoComment ()) {yyterminate ();} }
-"//"                        { if (AslDoCommentType2 ()) 
+"//"                        { if(!AslDoComment ()) yyterminate (); }
+
+"/*"                        { AslDoCommentType2 (); 
+                              if (Gbl_CaptureComments)
                               {
-                                  if(Gbl_CaptureComments) {return (PARSEOP_COMMENTSTRING);}
-                              }
-                              yyterminate ();}
+                                return (PARSEOP_COMMENTSTRING);
+                              } 
+                              yyterminate (); }
+
 
 "\""                        { if (AslDoStringLiteral ()) {return (PARSEOP_STRING_LITERAL);}
                               else {yyterminate ();} }

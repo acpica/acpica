@@ -518,103 +518,23 @@ count (
     }
 }
 
-
 /*******************************************************************************
  *
- * FUNCTION:    AslDoComment
+ * FUNCTION:    AslDoString
  *
- * PARAMETERS:  none
+ * PARAMETERS:  char * stringStart, char * stringEnd, BOOLEAN doEscapeSeq
  *
  * RETURN:      none
  *
- * DESCRIPTION: Process a standard comment.
+ * DESCRIPTION: Process a string literal (surrounded by quotes)
  *
  ******************************************************************************/
 
 static char
-AslDoComment (
-    void)
-{
-    int                 c;
-    int                 c1 = 0;
-
-
-    AslInsertLineBuffer ('/');
-    AslInsertLineBuffer ('*');
-
-loop:
-
-    /* Eat chars until end-of-comment */
-
-    while (((c = input ()) != '*') && (c != EOF))
-    {
-        AslInsertLineBuffer (c);
-        c1 = c;
-    }
-
-    if (c == EOF)
-    {
-        goto EarlyEOF;
-    }
-
-    /*
-     * Check for nested comment -- can help catch cases where a previous
-     * comment was accidently left unterminated
-     */
-    if ((c1 == '/') && (c == '*'))
-    {
-        AslCommonError (ASL_WARNING, ASL_MSG_NESTED_COMMENT,
-            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-            Gbl_InputByteCount, Gbl_CurrentColumn,
-            Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
-    }
-
-    /* Comment is closed only if the NEXT character is a slash */
-
-    AslInsertLineBuffer (c);
-
-    if (((c1 = input ()) != '/') && (c1 != EOF))
-    {
-        unput(c1);
-        goto loop;
-    }
-
-    if (c1 == EOF)
-    {
-        goto EarlyEOF;
-    }
-
-    AslInsertLineBuffer (c1);
-    return (TRUE);
-
-
-EarlyEOF:
-    /*
-     * Premature End-Of-File
-     */
-    AslCommonError (ASL_ERROR, ASL_MSG_EARLY_EOF,
-        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
-        Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
-    return (FALSE);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AslDoCommentType2
- *
- * PARAMETERS:  none
- *
- * RETURN:      none
- *
- * DESCRIPTION: Process a new "//" comment.
- *
- ******************************************************************************/
-
-static char
-AslDoCommentType2 (
-    void)
+AslDoString (
+    char *stringStart, 
+    char *stringEnd, 
+    BOOLEAN doEscapeSeq)
 {
     char                *StringBuffer = MsgBuffer;
     char                *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
@@ -624,15 +544,22 @@ AslDoCommentType2 (
     UINT32              i = 0;
     UINT8               Digit;
     char                ConvertBuffer[4];
+    UINT32              stringStartSize = (UINT32)(strlen(stringStart));
+    UINT32              stringEndSize  = (UINT32)(strlen(stringEnd));
+    BOOLEAN             match = TRUE;
+    int                 firstEndLetter = stringEnd[0];
 
+    //printf("ending string: %x\n", (unsigned)stringEnd[0]);
 
     /*
      * Eat chars until end-of-literal.
      * NOTE:  Put back the original surrounding quotes into the
      * source line buffer.
      */
-    AslInsertLineBuffer ('/');
-    AslInsertLineBuffer ('/');
+    for (i=0; i<stringStartSize; i++)
+    {   
+        AslInsertLineBuffer (stringStart[i]);
+    }
     while ((StringChar = input()) != EOF)
     {
         AslInsertLineBuffer (StringChar);
@@ -641,36 +568,65 @@ DoCharacter:
         switch (State)
         {
         case ASL_NORMAL_CHAR:
-
-            switch (StringChar)
+            if (StringChar==firstEndLetter)
             {
-            case '\n':
-                printf("\nread LF\n");
-                /*StringChar = 0x0A;*/      /* LINEFEED */
-                goto CompletedSingeLineComment;
-                break;
+                /* Beginning of the terminating string. 
+                   Some terminators could be multiple characters. 
+                   In this case, loop and see if this indeed the end of the string. */
+                i=0;
+                match = TRUE;
+                printf("End size: %i\n", stringEndSize);
+                while (i<stringEndSize && match)
+                {
+                      if(stringEnd[i] != StringChar)
+                      {
+                          match = FALSE;
+                      }
+                      else
+                      {
 
-            case '\r':
-                printf("read CR\n");
-                /*StringChar = 0x0D;*/      /* CARRIAGE RETURN*/
-                goto CompletedSingeLineComment;
-                break;
+                          printf("letter no. %d match detected!\n", i+1);
+                          AslInsertLineBuffer (StringChar);
+                          *StringBuffer = StringChar; 
+                          StringBuffer++;
+                          if (StringBuffer >= EndBuffer)
+                          {
+                              goto BufferOverflow;
+                          }
+                          if((StringChar = input()) ==EOF)
+                          {
+                              goto PrematureEOF;
+                          }
+                      }
+                      ++i;
+                }
+                if(match) // end of the string was found.
+                {  
 
-            case '\\':
+                   goto CompletedString;
+                }
+                else
+                {
+                   // if not, go through the default execution sequence - add the character to the line buffer
+                }
+
+            }
+
+            if (StringChar=='\\')
+            {
                 /*
                  * Special handling for backslash-escape sequence. We will
                  * toss the backslash and translate the escape char(s).
                  */
-                State = ASL_ESCAPE_SEQUENCE;
-                continue;
-
-            default:
-
-                break;
+                if (doEscapeSeq)
+                {
+                    State = ASL_ESCAPE_SEQUENCE;
+                }
             }
+
             break;
 
-
+        
         case ASL_ESCAPE_SEQUENCE:
 
             State = ASL_NORMAL_CHAR;
@@ -689,6 +645,16 @@ DoCharacter:
             case 'f':
 
                 StringChar = 0x0C;      /* FORMFEED */
+                break;
+
+            case 'n':
+
+                StringChar = 0x0A;      /* LINEFEED */
+                break;
+
+            case 'r':
+
+                StringChar = 0x0D;      /* CARRIAGE RETURN*/
                 break;
 
             case 't':
@@ -830,20 +796,22 @@ DoCharacter:
         }
 
         /* Save the finished character */
+        printf("%c", StringChar);
 
         *StringBuffer = StringChar;
         StringBuffer++;
-        printf("%c", StringChar);
         if (StringBuffer >= EndBuffer)
         {
             goto BufferOverflow;
         }
     }
 
+
+PrematureEOF:
     /*
      * Premature End-Of-File
      */
-    printf("early EOF in comment\n");
+
     AslCommonError (ASL_ERROR, ASL_MSG_EARLY_EOF,
         Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
         Gbl_CurrentLineOffset, Gbl_CurrentColumn,
@@ -851,7 +819,7 @@ DoCharacter:
     return (FALSE);
 
 
-CompletedSingeLineComment:
+CompletedString:
     /*
      * Null terminate the input string and copy string to a new buffer
      */
@@ -869,7 +837,7 @@ CompletedSingeLineComment:
 
     strcpy (CleanString, MsgBuffer);
     AslCompilerlval.s = CleanString;
-    printf("Here's a comment: %s\n", CleanString);
+    printf("Captured comment: %s\n", CleanString);
     return (TRUE);
 
 
@@ -882,7 +850,108 @@ BufferOverflow:
         Gbl_CurrentLineOffset, Gbl_CurrentColumn,
         Gbl_Files[ASL_FILE_INPUT].Filename, "Max length 4096");
     return (FALSE);
+}
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AslDoComment
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Process a standard comment.
+ *
+ ******************************************************************************/
+
+static char
+AslDoComment (
+    void)
+{
+    int                 c;
+    int                 c1 = 0;
+
+
+    AslInsertLineBuffer ('/');
+    AslInsertLineBuffer ('*');
+
+loop:
+
+    /* Eat chars until end-of-comment */
+
+    while (((c = input ()) != '*') && (c != EOF))
+    {
+        AslInsertLineBuffer (c);
+        c1 = c;
+    }
+
+    if (c == EOF)
+    {
+        goto EarlyEOF;
+    }
+
+    /*
+     * Check for nested comment -- can help catch cases where a previous
+     * comment was accidently left unterminated
+     */
+    if ((c1 == '/') && (c == '*'))
+    {
+        AslCommonError (ASL_WARNING, ASL_MSG_NESTED_COMMENT,
+            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+            Gbl_InputByteCount, Gbl_CurrentColumn,
+            Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+    }
+
+    /* Comment is closed only if the NEXT character is a slash */
+
+    AslInsertLineBuffer (c);
+
+    if (((c1 = input ()) != '/') && (c1 != EOF))
+    {
+        unput(c1);
+        goto loop;
+    }
+
+    if (c1 == EOF)
+    {
+        goto EarlyEOF;
+    }
+
+    AslInsertLineBuffer (c1);
+    return (TRUE);
+
+
+EarlyEOF:
+    /*
+     * Premature End-Of-File
+     */
+    AslCommonError (ASL_ERROR, ASL_MSG_EARLY_EOF,
+        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+        Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+    return (FALSE);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AslDoCommentType2
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Process a new "//" comment.
+ *
+ ******************************************************************************/
+
+static char
+AslDoCommentType2 (
+    void)
+{
+    printf("Comment type2\n");
+    return AslDoString("/*", "*/", FALSE);
+ 
 }
 
 
@@ -1169,3 +1238,4 @@ BufferOverflow:
         Gbl_Files[ASL_FILE_INPUT].Filename, "Max length 4096");
     return (FALSE);
 }
+
