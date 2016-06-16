@@ -154,6 +154,7 @@ count (int type);
 /*! [Begin] no source code translation */
 
 %}
+%option nounput
     /* Definitions */
 
 LeadNameChar                [A-Za-z_]
@@ -182,15 +183,8 @@ NamePathTail                [.]{NameSeg}
 [ \t]                       { count (0); }
 
 
-"//"                        { if(!AslDoComment ()) yyterminate (); }
-
-"/*"                        { AslDoCommentType2 (); 
-                              if (Gbl_CaptureComments)
-                              {
-                                return (PARSEOP_COMMENTSTRING);
-                              } 
-                              yyterminate (); }
-
+"/*"                        { if(!AslDoComment ()){ yyterminate ();} }
+"//"                        { if(!AslDoCommentType2 ()){ yyterminate ();} }
 
 "\""                        { if (AslDoStringLiteral ()) {return (PARSEOP_STRING_LITERAL);}
                               else {yyterminate ();} }

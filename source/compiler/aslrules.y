@@ -531,6 +531,11 @@ Integer
 String
     : PARSEOP_STRING_LITERAL        {$$ = TrCreateValuedLeafNode (PARSEOP_STRING_LITERAL, (ACPI_NATIVE_INT) AslCompilerlval.s);}
     ;
+/*
+Comment
+    : PARSEOP_COMMENTSTRING         {$$ = TrCreateValuedLeafNode (PARSEOP_COMMENTSTRING, (ACPI_NATIVE_INT) AslCompilerlval.s);}
+    ;
+*/
 
 
 /*******************************************************************************

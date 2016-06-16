@@ -522,11 +522,12 @@ count (
  *
  * FUNCTION:    AslDoString
  *
- * PARAMETERS:  char * stringStart, char * stringEnd, BOOLEAN doEscapeSeq
+ * PARAMETERS:  char * stringStart, char * stringEnd, BOOLEAN doEscapeSeq,
+                BOOLEAN isComment
  *
  * RETURN:      none
  *
- * DESCRIPTION: Process a string literal (surrounded by quotes)
+ * DESCRIPTION: Process a string 
  *
  ******************************************************************************/
 
@@ -534,7 +535,7 @@ static char
 AslDoString (
     char *stringStart, 
     char *stringEnd, 
-    BOOLEAN doEscapeSeq)
+    BOOLEAN doEscapeSeq, BOOLEAN isComment)
 {
     char                *StringBuffer = MsgBuffer;
     char                *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
@@ -549,7 +550,12 @@ AslDoString (
     BOOLEAN             match = TRUE;
     int                 firstEndLetter = stringEnd[0];
 
-    //printf("ending string: %x\n", (unsigned)stringEnd[0]);
+
+    if( (stringStartSize || stringEndSize) == 0)
+    {
+        return (FALSE); // throw an error!
+    }
+
 
     /*
      * Eat chars until end-of-literal.
@@ -575,7 +581,6 @@ DoCharacter:
                    In this case, loop and see if this indeed the end of the string. */
                 i=0;
                 match = TRUE;
-                printf("End size: %i\n", stringEndSize);
                 while (i<stringEndSize && match)
                 {
                       if(stringEnd[i] != StringChar)
@@ -585,7 +590,6 @@ DoCharacter:
                       else
                       {
 
-                          printf("letter no. %d match detected!\n", i+1);
                           AslInsertLineBuffer (StringChar);
                           *StringBuffer = StringChar; 
                           StringBuffer++;
@@ -796,7 +800,6 @@ DoCharacter:
         }
 
         /* Save the finished character */
-        printf("%c", StringChar);
 
         *StringBuffer = StringChar;
         StringBuffer++;
@@ -811,7 +814,7 @@ PrematureEOF:
     /*
      * Premature End-Of-File
      */
-
+    printf ("Premature EOF!!!\n");
     AslCommonError (ASL_ERROR, ASL_MSG_EARLY_EOF,
         Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
         Gbl_CurrentLineOffset, Gbl_CurrentColumn,
@@ -821,13 +824,20 @@ PrematureEOF:
 
 CompletedString:
     /*
-     * Null terminate the input string and copy string to a new buffer
+     * Replace the end string within the input string with 0.
+     * This null-terminates the input stringa.      
      */
-    *StringBuffer = 0;
+    for(i=0; i<stringEndSize; i++)
+    {
+        StringBuffer--;
+        *StringBuffer = 0;
+    }
 
+    //copy string to a new buffer. 
     CleanString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
     if (!CleanString)
     {
+        
         AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
             Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
             Gbl_CurrentLineOffset, Gbl_CurrentColumn,
@@ -835,10 +845,27 @@ CompletedString:
         return (FALSE);
     }
 
-    strcpy (CleanString, MsgBuffer);
-    AslCompilerlval.s = CleanString;
-    printf("Captured comment: %s\n", CleanString);
-    return (TRUE);
+    // Handle different uses of this function here.
+    if(Gbl_CaptureComments && isComment)
+    {
+        strcpy (CleanString, MsgBuffer);
+        printf("Captured comment: %s\n", CleanString);
+
+        //insert into comment buffer.
+        return (TRUE);
+    }
+    else if(!Gbl_CaptureComments && isComment)
+    {
+        printf("Captured comment: %s\n", MsgBuffer);
+        return (TRUE);
+    }
+    else if(!isComment)
+    {
+        strcpy (CleanString, MsgBuffer);
+        AslCompilerlval.s = CleanString;
+        printf("Captured comment: %s\n", CleanString);
+        return (TRUE);
+    }
 
 
 BufferOverflow:
@@ -868,68 +895,9 @@ static char
 AslDoComment (
     void)
 {
-    int                 c;
-    int                 c1 = 0;
+    printf("Multi-line comment\n");
+    return AslDoString("/*", "*/", FALSE, TRUE);
 
-
-    AslInsertLineBuffer ('/');
-    AslInsertLineBuffer ('*');
-
-loop:
-
-    /* Eat chars until end-of-comment */
-
-    while (((c = input ()) != '*') && (c != EOF))
-    {
-        AslInsertLineBuffer (c);
-        c1 = c;
-    }
-
-    if (c == EOF)
-    {
-        goto EarlyEOF;
-    }
-
-    /*
-     * Check for nested comment -- can help catch cases where a previous
-     * comment was accidently left unterminated
-     */
-    if ((c1 == '/') && (c == '*'))
-    {
-        AslCommonError (ASL_WARNING, ASL_MSG_NESTED_COMMENT,
-            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-            Gbl_InputByteCount, Gbl_CurrentColumn,
-            Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
-    }
-
-    /* Comment is closed only if the NEXT character is a slash */
-
-    AslInsertLineBuffer (c);
-
-    if (((c1 = input ()) != '/') && (c1 != EOF))
-    {
-        unput(c1);
-        goto loop;
-    }
-
-    if (c1 == EOF)
-    {
-        goto EarlyEOF;
-    }
-
-    AslInsertLineBuffer (c1);
-    return (TRUE);
-
-
-EarlyEOF:
-    /*
-     * Premature End-Of-File
-     */
-    AslCommonError (ASL_ERROR, ASL_MSG_EARLY_EOF,
-        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
-        Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
-    return (FALSE);
 }
 
 
@@ -949,8 +917,8 @@ static char
 AslDoCommentType2 (
     void)
 {
-    printf("Comment type2\n");
-    return AslDoString("/*", "*/", FALSE);
+    printf("Single-line comment\n");
+    return AslDoString("//", "\n", FALSE, TRUE);
  
 }
 
@@ -1200,6 +1168,8 @@ DoCharacter:
     /*
      * Premature End-Of-File
      */
+
+    printf ("Premature EOF in string literal fcn\n");
     AslCommonError (ASL_ERROR, ASL_MSG_EARLY_EOF,
         Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
         Gbl_CurrentLineOffset, Gbl_CurrentColumn,
