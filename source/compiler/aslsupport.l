@@ -589,7 +589,6 @@ DoCharacter:
                       }
                       else
                       {
-
                           AslInsertLineBuffer (StringChar);
                           *StringBuffer = StringChar; 
                           StringBuffer++;
@@ -597,7 +596,7 @@ DoCharacter:
                           {
                               goto BufferOverflow;
                           }
-                          if((StringChar = input()) ==EOF)
+                          if(stringEndSize>1 && (StringChar = input()) ==EOF)
                           {
                               goto PrematureEOF;
                           }
@@ -827,6 +826,7 @@ CompletedString:
      * Replace the end string within the input string with 0.
      * This null-terminates the input stringa.      
      */
+
     for(i=0; i<stringEndSize; i++)
     {
         StringBuffer--;
@@ -895,8 +895,82 @@ static char
 AslDoComment (
     void)
 {
+
+
     printf("Multi-line comment\n");
-    return AslDoString("/*", "*/", FALSE, TRUE);
+    if(Gbl_CaptureComments)
+    {
+        return AslDoString("/*", "*/", FALSE, TRUE);
+    }
+    else
+    {
+
+    
+    int                 c;
+    int                 c1 = 0;
+
+
+    AslInsertLineBuffer ('/');
+    AslInsertLineBuffer ('*');
+
+loop:
+
+    /* Eat chars until end-of-comment */
+
+    while (((c = input ()) != '*') && (c != EOF))
+    {
+        AslInsertLineBuffer (c);
+        c1 = c;
+    }
+
+    if (c == EOF)
+    {
+        goto EarlyEOF;
+    }
+
+    /*
+     * Check for nested comment -- can help catch cases where a previous
+     * comment was accidently left unterminated
+     */
+    if ((c1 == '/') && (c == '*'))
+    {
+        AslCommonError (ASL_WARNING, ASL_MSG_NESTED_COMMENT,
+            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+            Gbl_InputByteCount, Gbl_CurrentColumn,
+            Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+    }
+
+    /* Comment is closed only if the NEXT character is a slash */
+
+    AslInsertLineBuffer (c);
+
+    if (((c1 = input ()) != '/') && (c1 != EOF))
+    {
+        unput(c1);
+        goto loop;
+    }
+
+    if (c1 == EOF)
+    {
+        goto EarlyEOF;
+    }
+
+    AslInsertLineBuffer (c1);
+    return (TRUE);
+
+
+EarlyEOF:
+    /*
+     * Premature End-Of-File
+     */
+    AslCommonError (ASL_ERROR, ASL_MSG_EARLY_EOF,
+        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+        Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+    return (FALSE);
+
+
+    }
 
 }
 
@@ -917,9 +991,38 @@ static char
 AslDoCommentType2 (
     void)
 {
-    printf("Single-line comment\n");
-    return AslDoString("//", "\n", FALSE, TRUE);
- 
+
+
+    if(Gbl_CaptureComments)
+    {
+       printf("Single-line comment\n");
+       return AslDoString("//", "\n", FALSE, TRUE);
+    }
+    else
+    {
+
+     int                 c;
+
+
+    AslInsertLineBuffer ('/');
+    AslInsertLineBuffer ('/');
+
+    while (((c = input ()) != '\n') && (c != EOF))
+    {
+        AslInsertLineBuffer (c);
+    }
+
+    if (c == EOF)
+    {
+        /* End of file is OK, change to newline. Let parser detect EOF later */
+
+        c = '\n';
+    }
+
+    AslInsertLineBuffer (c);
+    return (TRUE);
+   }
+
 }
 
 
