@@ -1063,6 +1063,7 @@ typedef struct acpi_parse_obj_asl
     UINT8                           AmlPkgLenBytes;
     UINT8                           Extra;
     char                            ParseOpName[ACPI_MAX_PARSEOP_NAME];
+    char                            *Comment;        /* Any comments that appears before this node - used for the -q option */
 
 } ACPI_PARSE_OBJ_ASL;
 

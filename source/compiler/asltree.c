@@ -223,6 +223,13 @@ TrAllocateNode (
     Op->Asl.LogicalByteOffset = Gbl_CurrentLineOffset;
     Op->Asl.Column            = Gbl_CurrentColumn;
 
+    /* The following is for capturing comments */
+    if(Gbl_CaptureComments && *CommentBuffer)
+    {   Op->Asl.Comment = malloc((strlen(CommentBuffer)+1)*sizeof(char));
+        strcpy (CommentBuffer, Op->Asl.Comment);
+        *CommentBuffer = 0; //Clear this so that future comments can be associated with future nodes.
+    }
+
     UtSetParseOpName (Op);
     return (Op);
 }
