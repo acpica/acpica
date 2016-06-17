@@ -848,10 +848,22 @@ CompletedString:
     // Handle different uses of this function here.
     if(Gbl_CaptureComments && isComment)
     {
-        strcpy (CleanString, MsgBuffer);
-        printf("Captured comment: %s\n", CleanString);
+        
+        if (StringBuffer+stringStartSize+stringEndSize >= EndBuffer)
+        {
+            goto BufferOverflow;
+        }
 
-        //insert into comment buffer.
+        //Build the comment buffer.
+        strcat(CommentBuffer, stringStart);
+        strcat(CommentBuffer, MsgBuffer);
+        strcat(CommentBuffer, stringEnd);
+        if(strcmp(stringEnd, "\n")) // if this is a single line comment, there's no need to copy another \n.
+        {
+            strcat(CommentBuffer, "\n");
+        }
+        
+        printf("Captured comment within the CommentBuffer:\n %s\n", CommentBuffer);
         return (TRUE);
     }
     else if(!Gbl_CaptureComments && isComment)

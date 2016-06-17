@@ -358,6 +358,6 @@ ASL_EXTERN char                     MsgBuffer[ASL_MSG_BUFFER_SIZE];
 ASL_EXTERN char                     StringBuffer[ASL_MSG_BUFFER_SIZE];
 ASL_EXTERN char                     StringBuffer2[ASL_MSG_BUFFER_SIZE];
 ASL_EXTERN UINT32                   Gbl_DisabledMessages[ASL_MAX_DISABLED_MESSAGES];
-
+ASL_EXTERN char                     CommentBuffer[ASL_MSG_BUFFER_SIZE];
 
 #endif /* __ASLGLOBAL_H */
