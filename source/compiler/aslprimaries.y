@@ -190,7 +190,8 @@ BankFieldTerm
         ',' LockRuleKeyword
         ',' UpdateRuleKeyword
         ')' '{'
-            FieldUnitList '}'       {$$ = TrLinkChildren ($<n>3,7,$4,$5,$6,$8,$10,$12,$15);}
+            FieldUnitList '}'       {$$ = TrLinkChildren ($<n>3,7,
+                                        $4,$5,$6,$8,$10,$12,$15);}
     | PARSEOP_BANKFIELD '('
         error ')' '{' error '}'     {$$ = AslDoError(); yyclearin;}
     ;
@@ -234,7 +235,8 @@ ConcatTerm
     ;
 
 ConcatResTerm
-    : PARSEOP_CONCATENATERESTEMPLATE '('    {$<n>$ = TrCreateLeafNode (PARSEOP_CONCATENATERESTEMPLATE);}
+    : PARSEOP_CONCATENATERESTEMPLATE '(' {$<n>$ = TrCreateLeafNode (
+                                            PARSEOP_CONCATENATERESTEMPLATE);}
         TermArg
         TermArgItem
         Target
@@ -250,10 +252,11 @@ ConnectionTerm
     | PARSEOP_CONNECTION '('        {$<n>$ = TrCreateLeafNode (PARSEOP_CONNECTION);}
         ResourceMacroTerm
         ')'                         {$$ = TrLinkChildren ($<n>3, 1,
-                                            TrLinkChildren (TrCreateLeafNode (PARSEOP_RESOURCETEMPLATE), 3,
-                                                TrCreateLeafNode (PARSEOP_DEFAULT_ARG),
-                                                TrCreateLeafNode (PARSEOP_DEFAULT_ARG),
-                                                $4));}
+                                        TrLinkChildren (
+                                            TrCreateLeafNode (PARSEOP_RESOURCETEMPLATE), 3,
+                                            TrCreateLeafNode (PARSEOP_DEFAULT_ARG),
+                                            TrCreateLeafNode (PARSEOP_DEFAULT_ARG),
+                                            $4));}
     | PARSEOP_CONNECTION '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -275,7 +278,8 @@ CopyObjectTerm
     : PARSEOP_COPYOBJECT '('        {$<n>$ = TrCreateLeafNode (PARSEOP_COPYOBJECT);}
         TermArg
         ',' SimpleTarget
-        ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,TrSetNodeFlags ($6, NODE_IS_TARGET));}
+        ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,
+                                        TrSetNodeFlags ($6, NODE_IS_TARGET));}
     | PARSEOP_COPYOBJECT '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -285,7 +289,8 @@ CreateBitFieldTerm
         TermArg
         TermArgItem
         NameStringItem
-        ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,TrSetNodeFlags ($6, NODE_IS_NAME_DECLARATION));}
+        ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,
+                                        TrSetNodeFlags ($6, NODE_IS_NAME_DECLARATION));}
     | PARSEOP_CREATEBITFIELD '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -295,7 +300,8 @@ CreateByteFieldTerm
         TermArg
         TermArgItem
         NameStringItem
-        ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,TrSetNodeFlags ($6, NODE_IS_NAME_DECLARATION));}
+        ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,
+                                        TrSetNodeFlags ($6, NODE_IS_NAME_DECLARATION));}
     | PARSEOP_CREATEBYTEFIELD '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -305,7 +311,8 @@ CreateDWordFieldTerm
         TermArg
         TermArgItem
         NameStringItem
-        ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,TrSetNodeFlags ($6, NODE_IS_NAME_DECLARATION));}
+        ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,
+                                        TrSetNodeFlags ($6, NODE_IS_NAME_DECLARATION));}
     | PARSEOP_CREATEDWORDFIELD '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -316,7 +323,8 @@ CreateFieldTerm
         TermArgItem
         TermArgItem
         NameStringItem
-        ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$5,$6,TrSetNodeFlags ($7, NODE_IS_NAME_DECLARATION));}
+        ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$5,$6,
+                                        TrSetNodeFlags ($7, NODE_IS_NAME_DECLARATION));}
     | PARSEOP_CREATEFIELD '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -326,7 +334,8 @@ CreateQWordFieldTerm
         TermArg
         TermArgItem
         NameStringItem
-        ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,TrSetNodeFlags ($6, NODE_IS_NAME_DECLARATION));}
+        ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,
+                                        TrSetNodeFlags ($6, NODE_IS_NAME_DECLARATION));}
     | PARSEOP_CREATEQWORDFIELD '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -336,7 +345,8 @@ CreateWordFieldTerm
         TermArg
         TermArgItem
         NameStringItem
-        ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,TrSetNodeFlags ($6, NODE_IS_NAME_DECLARATION));}
+        ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,
+                                        TrSetNodeFlags ($6, NODE_IS_NAME_DECLARATION));}
     | PARSEOP_CREATEWORDFIELD '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -347,7 +357,8 @@ DataRegionTerm
         TermArgItem
         TermArgItem
         TermArgItem
-        ')'                         {$$ = TrLinkChildren ($<n>3,4,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$5,$6,$7);}
+        ')'                         {$$ = TrLinkChildren ($<n>3,4,
+                                        TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$5,$6,$7);}
     | PARSEOP_DATATABLEREGION '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -383,7 +394,8 @@ DeviceTerm
     : PARSEOP_DEVICE '('            {$<n>$ = TrCreateLeafNode (PARSEOP_DEVICE);}
         NameString
         ')' '{'
-            TermList '}'            {$$ = TrLinkChildren ($<n>3,2,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$7);}
+            TermList '}'            {$$ = TrLinkChildren ($<n>3,2,
+                                        TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$7);}
     | PARSEOP_DEVICE '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -438,7 +450,8 @@ ElseTerm
 EventTerm
     : PARSEOP_EVENT '('             {$<n>$ = TrCreateLeafNode (PARSEOP_EVENT);}
         NameString
-        ')'                         {$$ = TrLinkChildren ($<n>3,1,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION));}
+        ')'                         {$$ = TrLinkChildren ($<n>3,1,
+                                        TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION));}
     | PARSEOP_EVENT '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -536,7 +549,8 @@ FunctionTerm
         OptionalParameterTypePackage
         OptionalParameterTypesPackage
         ')' '{'
-            TermList '}'            {$$ = TrLinkChildren ($<n>3,7,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),
+            TermList '}'            {$$ = TrLinkChildren ($<n>3,7,
+                                        TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),
                                         TrCreateValuedLeafNode (PARSEOP_BYTECONST, 0),
                                         TrCreateLeafNode (PARSEOP_SERIALIZERULE_NOTSERIAL),
                                         TrCreateValuedLeafNode (PARSEOP_BYTECONST, 0),$5,$6,$9);}
@@ -561,7 +575,8 @@ IncludeTerm
     ;
 
 IncludeEndTerm
-    : PARSEOP_INCLUDE_END           {$<n>$ = TrCreateLeafNode (PARSEOP_INCLUDE_END); TrSetCurrentFilename ($$);}
+    : PARSEOP_INCLUDE_END           {$<n>$ = TrCreateLeafNode (PARSEOP_INCLUDE_END);
+                                        TrSetCurrentFilename ($$);}
     ;
 
 IncTerm
@@ -617,7 +632,8 @@ LGreaterEqualTerm
     : PARSEOP_LGREATEREQUAL '('     {$<n>$ = TrCreateLeafNode (PARSEOP_LLESS);}
         TermArg
         TermArgItem
-        ')'                         {$$ = TrCreateNode (PARSEOP_LNOT, 1, TrLinkChildren ($<n>3,2,$4,$5));}
+        ')'                         {$$ = TrCreateNode (PARSEOP_LNOT, 1,
+                                        TrLinkChildren ($<n>3,2,$4,$5));}
     | PARSEOP_LGREATEREQUAL '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -635,7 +651,8 @@ LLessEqualTerm
     : PARSEOP_LLESSEQUAL '('        {$<n>$ = TrCreateLeafNode (PARSEOP_LGREATER);}
         TermArg
         TermArgItem
-        ')'                         {$$ = TrCreateNode (PARSEOP_LNOT, 1, TrLinkChildren ($<n>3,2,$4,$5));}
+        ')'                         {$$ = TrCreateNode (PARSEOP_LNOT, 1,
+                                        TrLinkChildren ($<n>3,2,$4,$5));}
     | PARSEOP_LLESSEQUAL '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -653,7 +670,8 @@ LNotEqualTerm
     : PARSEOP_LNOTEQUAL '('         {$<n>$ = TrCreateLeafNode (PARSEOP_LEQUAL);}
         TermArg
         TermArgItem
-        ')'                         {$$ = TrCreateNode (PARSEOP_LNOT, 1, TrLinkChildren ($<n>3,2,$4,$5));}
+        ')'                         {$$ = TrCreateNode (PARSEOP_LNOT, 1,
+                                        TrLinkChildren ($<n>3,2,$4,$5));}
     | PARSEOP_LNOTEQUAL '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -730,7 +748,9 @@ MethodTerm
         OptionalParameterTypePackage
         OptionalParameterTypesPackage
         ')' '{'
-            TermList '}'            {$$ = TrLinkChildren ($<n>3,7,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$5,$7,$8,$9,$10,$13);}
+            TermList '}'            {$$ = TrLinkChildren ($<n>3,7,
+                                        TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),
+                                        $5,$7,$8,$9,$10,$13);}
     | PARSEOP_METHOD '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -770,7 +790,8 @@ MutexTerm
     : PARSEOP_MUTEX '('             {$<n>$ = TrCreateLeafNode (PARSEOP_MUTEX);}
         NameString
         ',' ByteConstExpr
-        ')'                         {$$ = TrLinkChildren ($<n>3,2,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$6);}
+        ')'                         {$$ = TrLinkChildren ($<n>3,2,
+                                        TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$6);}
     | PARSEOP_MUTEX '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -779,7 +800,8 @@ NameTerm
     : PARSEOP_NAME '('              {$<n>$ = TrCreateLeafNode (PARSEOP_NAME);}
         NameString
         ',' DataObject
-        ')'                         {$$ = TrLinkChildren ($<n>3,2,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$6);}
+        ')'                         {$$ = TrLinkChildren ($<n>3,2,
+                                        TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$6);}
     | PARSEOP_NAME '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -848,7 +870,9 @@ OpRegionTerm
         ',' OpRegionSpaceIdTerm
         TermArgItem
         TermArgItem
-        ')'                         {$$ = TrLinkChildren ($<n>3,4,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$6,$7,$8);}
+        ')'                         {$$ = TrLinkChildren ($<n>3,4,
+                                        TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),
+                                        $6,$7,$8);}
     | PARSEOP_OPERATIONREGION '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -879,7 +903,9 @@ PowerResTerm
         ',' ByteConstExpr
         ',' WordConstExpr
         ')' '{'
-            TermList '}'            {$$ = TrLinkChildren ($<n>3,4,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$6,$8,$11);}
+            TermList '}'            {$$ = TrLinkChildren ($<n>3,4,
+                                        TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),
+                                        $6,$8,$11);}
     | PARSEOP_POWERRESOURCE '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -907,7 +933,9 @@ ProcessorTerm
         OptionalDWordConstExpr
         OptionalByteConstExpr
         ')' '{'
-            TermList '}'            {$$ = TrLinkChildren ($<n>3,5,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$6,$7,$8,$11);}
+            TermList '}'            {$$ = TrLinkChildren ($<n>3,5,
+                                        TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),
+                                        $6,$7,$8,$11);}
     | PARSEOP_PROCESSOR '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -928,7 +956,8 @@ RawDataBufferTerm
 RefOfTerm
     : PARSEOP_REFOF '('             {$<n>$ = TrCreateLeafNode (PARSEOP_REFOF);}
         SuperName
-        ')'                         {$$ = TrLinkChildren ($<n>3,1,TrSetNodeFlags ($4, NODE_IS_TARGET));}
+        ')'                         {$$ = TrLinkChildren ($<n>3,1,
+                                        TrSetNodeFlags ($4, NODE_IS_TARGET));}
     | PARSEOP_REFOF '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -953,7 +982,10 @@ ReturnTerm
     : PARSEOP_RETURN '('            {$<n>$ = TrCreateLeafNode (PARSEOP_RETURN);}
         OptionalReturnArg
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4);}
-    | PARSEOP_RETURN                {$$ = TrLinkChildren (TrCreateLeafNode (PARSEOP_RETURN),1,TrSetNodeFlags (TrCreateLeafNode (PARSEOP_ZERO), NODE_IS_NULL_RETURN));}
+    | PARSEOP_RETURN                {$$ = TrLinkChildren (
+                                        TrCreateLeafNode (PARSEOP_RETURN),1,
+                                        TrSetNodeFlags (TrCreateLeafNode (PARSEOP_ZERO),
+                                            NODE_IS_NULL_RETURN));}
     | PARSEOP_RETURN '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -962,7 +994,8 @@ ScopeTerm
     : PARSEOP_SCOPE '('             {$<n>$ = TrCreateLeafNode (PARSEOP_SCOPE);}
         NameString
         ')' '{'
-            TermList '}'            {$$ = TrLinkChildren ($<n>3,2,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$7);}
+            TermList '}'            {$$ = TrLinkChildren ($<n>3,2,
+                                        TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$7);}
     | PARSEOP_SCOPE '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -1023,7 +1056,8 @@ StoreTerm
     : PARSEOP_STORE '('             {$<n>$ = TrCreateLeafNode (PARSEOP_STORE);}
         TermArg
         ',' SuperName
-        ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,TrSetNodeFlags ($6, NODE_IS_TARGET));}
+        ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,
+                                        TrSetNodeFlags ($6, NODE_IS_TARGET));}
     | PARSEOP_STORE '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -1052,7 +1086,8 @@ ThermalZoneTerm
     : PARSEOP_THERMALZONE '('       {$<n>$ = TrCreateLeafNode (PARSEOP_THERMALZONE);}
         NameString
         ')' '{'
-            TermList '}'            {$$ = TrLinkChildren ($<n>3,2,TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$7);}
+            TermList '}'            {$$ = TrLinkChildren ($<n>3,2,
+                                        TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),$7);}
     | PARSEOP_THERMALZONE '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -1060,7 +1095,8 @@ ThermalZoneTerm
 TimerTerm
     : PARSEOP_TIMER '('             {$<n>$ = TrCreateLeafNode (PARSEOP_TIMER);}
         ')'                         {$$ = TrLinkChildren ($<n>3,0);}
-    | PARSEOP_TIMER                 {$$ = TrLinkChildren (TrCreateLeafNode (PARSEOP_TIMER),0);}
+    | PARSEOP_TIMER                 {$$ = TrLinkChildren (
+                                        TrCreateLeafNode (PARSEOP_TIMER),0);}
     | PARSEOP_TIMER '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
