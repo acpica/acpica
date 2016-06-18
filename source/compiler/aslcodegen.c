@@ -652,6 +652,15 @@ CgWriteNode (
     ASL_RESOURCE_NODE       *Rnode;
 
 
+    /* For -q: print out any comments associated with this node */
+    if(Gbl_CaptureComments && Op->Asl.Comment!=0)
+    {
+        UINT8 CommentOpcode = (UINT8)AML_COMMENT_OP;
+        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+        // +1 is what emits the 0x00 at the end of this opcode.
+        CgLocalWriteAmlData (Op, Op->Asl.Comment, strlen(Op->Asl.Comment)+1); 
+    }
+
     /* Always check for DEFAULT_ARG and other "Noop" nodes */
     /* TBD: this may not be the best place for this check */
 
