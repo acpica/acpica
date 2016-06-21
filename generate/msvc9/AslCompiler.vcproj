@@ -2296,10 +2296,6 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\source\os_specific\service_layers\oslibcfs.c"
-					>
-				</File>
-				<File
 					RelativePath="..\..\source\os_specific\service_layers\oswindir.c"
 					>
 					<FileConfiguration

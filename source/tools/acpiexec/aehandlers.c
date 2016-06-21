@@ -192,9 +192,11 @@ static char                *TableEvents[] =
 #endif /* !ACPI_REDUCED_HARDWARE */
 
 
-static UINT32               SigintCount = 0;
 static AE_DEBUG_REGIONS     AeRegions;
 
+
+#ifndef _GNU_EFI
+static UINT32               SigintCount = 0;
 
 /******************************************************************************
  *
@@ -232,6 +234,7 @@ AeCtrlCHandler (
     (void) AcpiOsTerminate ();
     exit (0);
 }
+#endif
 
 
 /******************************************************************************

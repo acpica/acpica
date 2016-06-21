@@ -116,12 +116,6 @@
 #ifndef _ACAPPS
 #define _ACAPPS
 
-#include <stdio.h>
-
-#ifdef _MSC_VER                 /* disable some level-4 warnings */
-#pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
-#endif
-
 /* Common info for tool signons */
 
 #define ACPICA_NAME                 "Intel ACPI Component Architecture"
@@ -157,13 +151,13 @@
 /* Macros for usage messages */
 
 #define ACPI_USAGE_HEADER(Usage) \
-    AcpiOsPrintf ("Usage: %s\nOptions:\n", Usage);
+    printf ("Usage: %s\nOptions:\n", Usage);
 
 #define ACPI_USAGE_TEXT(Description) \
-    AcpiOsPrintf (Description);
+    printf (Description);
 
 #define ACPI_OPTION(Name, Description) \
-    AcpiOsPrintf ("  %-20s%s\n", Name, Description);
+    printf ("  %-20s%s\n", Name, Description);
 
 
 /* Check for unexpected exceptions */
