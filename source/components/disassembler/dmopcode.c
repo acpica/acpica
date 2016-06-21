@@ -877,6 +877,11 @@ AcpiDmDisassembleOneOp (
         }
         break;
 
+    case AML_COMMENT_OP:
+
+        AcpiOsPrintf (Op->Common.Value.String);
+        break;
+
     case AML_BUFFER_OP:
         /*
          * Determine the type of buffer. We can have one of the following:

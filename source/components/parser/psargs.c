@@ -548,7 +548,7 @@ AcpiPsGetNextSimpleArg (
 
         /* Get a pointer to the string, point past the string */
 
-        Opcode = AML_STRING_OP;
+        Opcode = Arg->Common.AmlOpcode; 
         Arg->Common.Value.String = ACPI_CAST_PTR (char, Aml);
 
         /* Find the null terminator */
