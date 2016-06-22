@@ -269,6 +269,12 @@ ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_DoNotUseXsdt, FALSE);
 ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_GroupModuleLevelCode, FALSE);
 
 /*
+ * Optionally support module level code by parsing the entire table as
+ * a TermList. Default is TRUE, do execute entire table.
+ */
+ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_ParseTableAsTermList, TRUE);
+
+/*
  * Optionally use 32-bit FADT addresses if and when there is a conflict
  * (address mismatch) between the 32-bit and 64-bit versions of the
  * address. Although ACPICA adheres to the ACPI specification which

@@ -119,6 +119,7 @@
 #include "acevents.h"
 #include "acinterp.h"
 #include "acnamesp.h"
+#include "acparser.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslstubs")
@@ -138,6 +139,13 @@ AcpiNsExecModuleCodeList (
 ACPI_STATUS
 AcpiNsInitializeObjects (
     void)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiPsExecuteTable (
+    ACPI_EVALUATE_INFO      *Info)
 {
     return (AE_OK);
 }
