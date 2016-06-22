@@ -554,6 +554,11 @@ AcpiDsEvalRegionOperands (
     /* Now the address and length are valid for this opregion */
 
     ObjDesc->Region.Flags |= AOPOBJ_DATA_VALID;
+    if (WalkState->ParseFlags & ACPI_PARSE_MODULE_LEVEL)
+    {
+        Status = AcpiUtAddAddressRange (ObjDesc->Region.SpaceId,
+            ObjDesc->Region.Address, ObjDesc->Region.Length, Node);
+    }
     return_ACPI_STATUS (Status);
 }
 
