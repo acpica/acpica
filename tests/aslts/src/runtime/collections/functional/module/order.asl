@@ -26,17 +26,38 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/*
+ * Module level execution order
+ */
 
-if (STTT("Module level code execution", TCLF, 14, W01a)) {
-	SRMT("MLS0")
-	MLS0()
-	SRMT("MLS1")
-	MLS1()
-	SRMT("MLO0")
-	MLO0()
-	SRMT("MLO1")
-	MLO1()
-	SRMT("MLD0")
-	MLD0()
+/*
+ * Verify if module level opcode is executed right in place.
+ */
+
+Name(z182, 182)
+
+/* Tests for Type2Opcode order */
+
+Name(ml20, 0)
+Name(ob01, 0)
+
+if (CondRefOf(ob01))
+{
+	Store(1, ml20)
+	if (CondRefOf(ob02))
+	{
+		Store(2, ml20)
+	}
 }
-FTTT()
+Name(ob02, 0)
+
+Method(MLD0,, Serialized)
+{
+	Name(ts, "MLD0")
+
+	Store("TEST: MLD0, Type2Opcode is executed right in place", Debug)
+
+	if (LNotEqual(ml20, 1)) {
+		err(ts, z182, 6, z182, 6, ml20, 1)
+	}
+}
