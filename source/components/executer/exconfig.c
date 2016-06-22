@@ -191,7 +191,9 @@ AcpiExAddTable (
 
     /* Add the table to the namespace */
 
+    AcpiExExitInterpreter ();
     Status = AcpiNsLoadTable (TableIndex, ParentNode);
+    AcpiExEnterInterpreter ();
     if (ACPI_FAILURE (Status))
     {
         AcpiUtRemoveReference (ObjDesc);

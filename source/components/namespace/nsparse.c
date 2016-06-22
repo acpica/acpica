@@ -119,6 +119,7 @@
 #include "acparser.h"
 #include "acdispat.h"
 #include "actables.h"
+#include "acinterp.h"
 
 
 #define _COMPONENT          ACPI_NAMESPACE
@@ -260,6 +261,8 @@ AcpiNsParseTable (
     ACPI_FUNCTION_TRACE (NsParseTable);
 
 
+    AcpiExEnterInterpreter ();
+
     /*
      * AML Parse, pass 1
      *
@@ -276,7 +279,7 @@ AcpiNsParseTable (
         TableIndex, StartNode);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        goto ErrorExit;
     }
 
     /*
@@ -293,8 +296,10 @@ AcpiNsParseTable (
         TableIndex, StartNode);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        goto ErrorExit;
     }
 
+ErrorExit:
+    AcpiExExitInterpreter ();
     return_ACPI_STATUS (Status);
 }
