@@ -194,10 +194,22 @@ LnPackageLengthWalk (
     UINT32                  Level,
     void                    *Context)
 {
-
     /* Generate the AML lengths for this node */
+    UINT32 commentLength;
 
     CgGenerateAmlLengths (Op);
+
+    /* For the -q option: calculate the length that the comment takes up.
+     * Comments look like the follwoing: [0xA9 comment 0x00]
+     * therefore, we add 1+strlen(comment)+1 to get the actual length of 
+     * this comment.
+     */
+     if(Gbl_CaptureComments && Op->Asl.Comment!=0)
+     { 
+         commentLength = strlen(Op->Asl.Comment)/2;
+         printf("Comment length: %d", (int)strlen(Op->Asl.Comment));
+         Op->Asl.AmlLength += commentLength + 1;
+     }
 
     /* Bubble up all lengths (this node and all below it) to the parent */
 

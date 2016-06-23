@@ -548,7 +548,22 @@ AcpiPsGetNextSimpleArg (
 
         /* Get a pointer to the string, point past the string */
 
-        Opcode = Arg->Common.AmlOpcode; 
+        Opcode = AML_STRING_OP;
+        Arg->Common.Value.String = ACPI_CAST_PTR (char, Aml);
+
+        /* Find the null terminator */
+
+        Length = 0;
+        while (Aml[Length])
+        {
+            Length++;
+        }
+        Length++;
+        break;
+
+    case ARGP_COMMENT:
+        printf("This is a comment");
+        Opcode = AML_COMMENT_OP;
         Arg->Common.Value.String = ACPI_CAST_PTR (char, Aml);
 
         /* Find the null terminator */
@@ -851,6 +866,7 @@ AcpiPsGetNextArg (
     case ARGP_CHARLIST:
     case ARGP_NAME:
     case ARGP_NAMESTRING:
+    case ARGP_COMMENT:
 
         /* Constants, strings, and namestrings are all the same size */
 
