@@ -914,6 +914,11 @@ AslDoComment (
     void)
 {
 
+    char     *LineToken;
+    char     *FinalLineToken;
+    int      i;
+    BOOLEAN  CharStart;
+
     printf("Multi-line comment\n");
     if(Gbl_CaptureComments)
     {
@@ -921,8 +926,54 @@ AslDoComment (
         //add this comment to the end of the list.
         if(CommentString!=0)
         {
-            addToCommentList (CommentString);
-            return TRUE;
+            /* Determine whether if this comment spans multiple lines.
+             * If so, break apart the comment by line so that it can be 
+             * properly indented.
+             */
+            if (strchr (CommentString, '\n')!=NULL)
+            {
+                /* Get the first token out. The for loop pads subsequent lines
+                 * for comments similar to the style of this comment. 
+                 */
+                LineToken = strtok (CommentString, "\n");
+
+                FinalLineToken = UtStringCacheCalloc (strlen (LineToken)+1);
+                strcpy(FinalLineToken, LineToken);
+                addToCommentList (LineToken);
+
+                LineToken = strtok (NULL, "\n");
+                while (LineToken!=NULL)
+                {
+                    /* It is assumed that each line has some sort of indentation.
+                     * This means that we need to find the first character that is not
+                     * a white space within each line. 
+                     */
+                    
+                    CharStart = FALSE;
+                    for (i=0; i<strlen(LineToken)+1 && !CharStart; i++)
+                    {
+                        if (LineToken[i]!=' ' && LineToken[i]!='\t')
+                        {
+                            CharStart = TRUE;
+                            LineToken += i-1;
+                            LineToken [0] = ' '; //Pad for Formatting.
+                        }
+                    }
+
+                    FinalLineToken = UtStringCacheCalloc (strlen (LineToken)+1);
+                    strcat(FinalLineToken, LineToken);
+                    addToCommentList (FinalLineToken);
+                    LineToken = strtok (NULL,"\n");
+                }
+                return TRUE;
+            }
+            else /* If this only spans a single line, just add it to the list since 
+                  * it only needs to be indented once
+                  */
+            {
+                addToCommentList (CommentString);
+                return TRUE;
+            }
         }
         else
         {
@@ -1026,6 +1077,8 @@ AslDoCommentType2 (
         //add this comment to the end of the list.
         if(CommentString!=0)
         {
+            // get rid of the new-line at the end of this string.
+            CommentString[strlen(CommentString)-1]=0;
             addToCommentList (CommentString);
             return (TRUE);
         }
