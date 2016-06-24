@@ -224,15 +224,15 @@ TrAllocateNode (
     Op->Asl.Column            = Gbl_CurrentColumn;
 
     /* The following is for capturing comments */
-    if(Gbl_CaptureComments && *CommentBuffer)
-    {   Op->Asl.Comment = malloc((strlen(CommentBuffer)+1)*sizeof(char));
-        strcpy (Op->Asl.Comment, CommentBuffer);
-        *CommentBuffer = 0; //Clear this so that future comments can be associated with future nodes.
-        printf("Created comment in node: %s", Op->Asl.Comment);
+    if(Gbl_CaptureComments && Gbl_Comment_List_Head!=0)
+    {   Op->Asl.CommentList = Gbl_Comment_List_Head;
+        Gbl_Comment_List_Head = 0; //Clear this so that future comments can be associated with future nodes.
+        Gbl_Comment_List_Tail = 0; //Clear this so that future comments can be associated with future nodes.
+        printf("Transferred current comment list to this node.");
     }
     else
     {
-        Op->Asl.Comment = NULL;
+        Op->Asl.CommentList = NULL;
     }
 
     UtSetParseOpName (Op);

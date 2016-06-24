@@ -1125,6 +1125,10 @@ char *
 UtStringCacheCalloc (
     UINT32                  Length);
 
+struct acpi_comment_list_node*
+UtCommentNodeCalloc (
+    void);
+
 void
 UtExpandLineBuffers (
     void);

@@ -592,7 +592,6 @@ UtCheckIntegerRange (
     return (Op);
 }
 
-
 /*******************************************************************************
  *
  * FUNCTION:    UtStringCacheCalloc
@@ -661,6 +660,30 @@ UtStringCacheCalloc (
     Buffer = Gbl_StringCacheNext;
     Gbl_StringCacheNext += Length;
     return (Buffer);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    UtCommentNodeCalloc
+ *
+ * PARAMETERS:  Length              - Size of buffer requested
+ *
+ * RETURN:      Pointer to the buffer. Aborts on allocation failure
+ *
+ * DESCRIPTION: Allocate a string buffer. Bypass the local
+ *              dynamic memory manager for performance reasons (This has a
+ *              major impact on the speed of the compiler.)
+ *
+ ******************************************************************************/
+struct acpi_comment_list_node*
+UtCommentNodeCalloc (
+    void)
+{
+   struct acpi_comment_list_node* newCommentNode = 
+       (struct acpi_comment_list_node*) UtLocalCalloc (sizeof(ACPI_COMMENT_LIST_NODE));
+   newCommentNode->Next = 0;
+   return newCommentNode;
 }
 
 

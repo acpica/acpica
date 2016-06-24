@@ -467,7 +467,6 @@ AslInsertLineBuffer (
     }
 }
 
-
 /*******************************************************************************
  *
  * FUNCTION:    count
@@ -518,24 +517,57 @@ count (
     }
 }
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    addToCommentList
+ *
+ * PARAMETERS:  toAdd              - Contains the comment to be inserted
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Count keywords and put them into the line buffer
+ *
+ ******************************************************************************/
+
+static void
+addToCommentList (
+    char*            toAdd)
+{
+   if (Gbl_Comment_List_Head)
+   {
+       Gbl_Comment_List_Tail->Next = UtCommentNodeCalloc();
+       Gbl_Comment_List_Tail = Gbl_Comment_List_Tail->Next;
+   }
+   else 
+   {
+       Gbl_Comment_List_Head = UtCommentNodeCalloc();
+       Gbl_Comment_List_Tail = Gbl_Comment_List_Head;
+   }
+
+   Gbl_Comment_List_Tail->Comment = toAdd;
+   
+   return;
+}
+
 /*******************************************************************************
  *
  * FUNCTION:    AslDoString
  *
  * PARAMETERS:  char * stringStart, char * stringEnd, BOOLEAN doEscapeSeq,
-                BOOLEAN isComment
+ *              BOOLEAN isComment
  *
- * RETURN:      none
+ * RETURN:      return the processed string. Return 0 upon failure.
  *
  * DESCRIPTION: Process a string 
  *
  ******************************************************************************/
 
-static char
+static char*
 AslDoString (
     char *stringStart, 
     char *stringEnd, 
-    BOOLEAN doEscapeSeq, BOOLEAN isComment)
+    BOOLEAN doEscapeSeq)
 {
     char                *StringBuffer = MsgBuffer;
     char                *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
@@ -568,6 +600,7 @@ AslDoString (
     }
     while ((StringChar = input()) != EOF)
     {
+        printf("%c", StringChar);
         AslInsertLineBuffer (StringChar);
 
 DoCharacter:
@@ -834,8 +867,8 @@ CompletedString:
     }
 
     //copy string to a new buffer. 
-    CleanString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
-    if (!CleanString)
+    CleanString = UtStringCacheCalloc (strlen (MsgBuffer) + 1 + stringEndSize + stringStartSize);
+    if (!CleanString) 
     {
         
         AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
@@ -844,40 +877,13 @@ CompletedString:
             Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
         return (FALSE);
     }
-
-    // Handle different uses of this function here.
-    if(Gbl_CaptureComments && isComment)
-    {
-        
-        if (StringBuffer+stringStartSize+stringEndSize >= EndBuffer)
-        {
-            goto BufferOverflow;
-        }
-
-        //Build the comment buffer.
-        strcat(CommentBuffer, stringStart);
-        strcat(CommentBuffer, MsgBuffer);
-        strcat(CommentBuffer, stringEnd);
-        if(strcmp(stringEnd, "\n")) // if this is a single line comment, there's no need to copy another \n.
-        {
-            strcat(CommentBuffer, "\n");
-        }
-        
-        printf("Captured comment within the CommentBuffer:\n %s\n", CommentBuffer);
-        return (TRUE);
-    }
-    else if(!Gbl_CaptureComments && isComment)
-    {
-        printf("Captured comment: %s\n", MsgBuffer);
-        return (TRUE);
-    }
-    else if(!isComment)
-    {
-        strcpy (CleanString, MsgBuffer);
-        AslCompilerlval.s = CleanString;
-        printf("Captured comment: %s\n", CleanString);
-        return (TRUE);
-    }
+    strcat (CleanString, stringStart);
+    strcat (CleanString, MsgBuffer);
+    strcat (CleanString, stringEnd);
+    AslCompilerlval.s = CleanString;
+    printf("Captured comment: %s\n", CleanString);
+    return (CleanString);
+    
 
 
 BufferOverflow:
@@ -903,16 +909,25 @@ BufferOverflow:
  *
  ******************************************************************************/
 
-static char
+static BOOLEAN
 AslDoComment (
     void)
 {
 
-
     printf("Multi-line comment\n");
     if(Gbl_CaptureComments)
     {
-        return AslDoString("/*", "*/", FALSE, TRUE);
+        char* CommentString = AslDoString("/*", "*/", FALSE);
+        //add this comment to the end of the list.
+        if(CommentString!=0)
+        {
+            addToCommentList (CommentString);
+            return TRUE;
+        }
+        else
+        {
+            return FALSE;
+        }
     }
     else
     {
@@ -999,16 +1014,25 @@ EarlyEOF:
  *
  ******************************************************************************/
 
-static char
+static BOOLEAN
 AslDoCommentType2 (
     void)
 {
-
+    printf("Single-line comment\n");
 
     if(Gbl_CaptureComments)
     {
-       printf("Single-line comment\n");
-       return AslDoString("//", "\n", FALSE, TRUE);
+        char* CommentString = AslDoString("//", "\n", FALSE);
+        //add this comment to the end of the list.
+        if(CommentString!=0)
+        {
+            addToCommentList (CommentString);
+            return (TRUE);
+        }
+        else
+        {
+            return (FALSE);
+        }
     }
     else
     {

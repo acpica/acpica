@@ -197,6 +197,9 @@ LnPackageLengthWalk (
     /* Generate the AML lengths for this node */
     UINT32 commentLength;
 
+    // used for calculating comment lengths
+    struct acpi_comment_list_node *current = Op->Asl.CommentList; 
+
     CgGenerateAmlLengths (Op);
 
     /* For the -q option: calculate the length that the comment takes up.
@@ -204,11 +207,16 @@ LnPackageLengthWalk (
      * therefore, we add 1+strlen(comment)+1 to get the actual length of 
      * this comment.
      */
-     if(Gbl_CaptureComments && Op->Asl.Comment!=0)
+     if(Gbl_CaptureComments && Op->Asl.CommentList!=0)
      { 
-         commentLength = strlen(Op->Asl.Comment)/2;
-         printf("Comment length: %d", (int)strlen(Op->Asl.Comment));
-         Op->Asl.AmlLength += commentLength + 1;
+         while (current!=0)
+         {
+             commentLength = strlen(current->Comment)/2;
+             printf("Comment length: %d", (int)strlen(current->Comment));
+             Op->Asl.AmlLength += commentLength + 1;
+
+             current = current->Next;
+         }
      }
 
     /* Bubble up all lengths (this node and all below it) to the parent */

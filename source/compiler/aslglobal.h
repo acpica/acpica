@@ -338,6 +338,8 @@ ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_TableId, "NO_ID");
 ASL_EXTERN UINT8                    ASL_INIT_GLOBAL (Gbl_PruneDepth, 0);
 ASL_EXTERN UINT16                   ASL_INIT_GLOBAL (Gbl_PruneType, 0);
 
+ASL_EXTERN ACPI_COMMENT_LIST_NODE   ASL_INIT_GLOBAL (*Gbl_Comment_List_Head, 0);
+ASL_EXTERN ACPI_COMMENT_LIST_NODE   ASL_INIT_GLOBAL (*Gbl_Comment_List_Tail, 0);
 
 /* Static structures */
 
@@ -358,6 +360,6 @@ ASL_EXTERN char                     MsgBuffer[ASL_MSG_BUFFER_SIZE];
 ASL_EXTERN char                     StringBuffer[ASL_MSG_BUFFER_SIZE];
 ASL_EXTERN char                     StringBuffer2[ASL_MSG_BUFFER_SIZE];
 ASL_EXTERN UINT32                   Gbl_DisabledMessages[ASL_MAX_DISABLED_MESSAGES];
-ASL_EXTERN char                     CommentBuffer[ASL_MSG_BUFFER_SIZE];
+//ASL_EXTERN char                     CommentBuffer[ASL_MSG_BUFFER_SIZE];
 
 #endif /* __ASLGLOBAL_H */

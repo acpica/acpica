@@ -138,10 +138,10 @@ YYSTYPE AslCompilerlval;
 static void
 AslDoLineDirective (void);
 
-static char
+static BOOLEAN
 AslDoComment (void);
 
-static char
+static BOOLEAN
 AslDoCommentType2 (void);
 
 static char

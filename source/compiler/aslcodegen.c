@@ -651,14 +651,21 @@ CgWriteNode (
 {
     ASL_RESOURCE_NODE       *Rnode;
 
+    //Specific to comments
+    UINT8 CommentOpcode = (UINT8)AML_COMMENT_OP;
+    struct acpi_comment_list_node *current = Op->Asl.CommentList;
 
     /* For -q: print out any comments associated with this node */
-    if(Gbl_CaptureComments && Op->Asl.Comment!=0)
+    if (Gbl_CaptureComments && current!=0)
     {
-        UINT8 CommentOpcode = (UINT8)AML_COMMENT_OP;
-        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-        // +1 is what emits the 0x00 at the end of this opcode.
-        CgLocalWriteAmlData (Op, Op->Asl.Comment, strlen(Op->Asl.Comment)+1); 
+        //Print the entire list.
+        while (current!=0)
+        {
+            CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+            // +1 is what emits the 0x00 at the end of this opcode.
+            CgLocalWriteAmlData (Op, current->Comment, strlen(current->Comment)+1); 
+            current = current->Next;
+        }
     }
 
     /* Always check for DEFAULT_ARG and other "Noop" nodes */

@@ -1008,6 +1008,17 @@ typedef union acpi_parse_value
 #define ACPI_DASM_HID_STRING            0x0A        /* String is a _HID or _CID */
 #define ACPI_DASM_IGNORE                0x0B        /* Not used at this time */
 
+
+/*
+ * 
+ */
+typedef struct acpi_comment_list_node
+{
+  char                                     *Comment;
+  struct acpi_comment_list_node            *Next;
+} ACPI_COMMENT_LIST_NODE;
+
+
 /*
  * Generic operation (for example:  If, While, Store)
  */
@@ -1063,7 +1074,10 @@ typedef struct acpi_parse_obj_asl
     UINT8                           AmlPkgLenBytes;
     UINT8                           Extra;
     char                            ParseOpName[ACPI_MAX_PARSEOP_NAME];
-    char                            *Comment;        /* Any comments that appears before this node - used for the -q option */
+
+    /* these are used for the -q option */
+    struct acpi_comment_list_node   *CommentList;      /* comments that appears before this node */
+    struct acpi_comment_list_node   *CommentAfter; /* comments that appears after this node that is on the same line. */
 
 } ACPI_PARSE_OBJ_ASL;
 

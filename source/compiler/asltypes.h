@@ -290,14 +290,6 @@ typedef struct asl_include_dir
 
 } ASL_INCLUDE_DIR;
 
-typedef struct asl_comment_cache
-{
-    struct asl_comment_cache        *Next;
-    char                            Buffer[4096]; //break this up into nodes of 4096
-
-} ASL_COMMENT_CACHE;
-
-
 
 /* An entry in the exception list, one for each error/warning */
 
