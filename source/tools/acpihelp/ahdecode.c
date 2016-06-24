@@ -153,6 +153,10 @@ AhDisplayAmlOpcode (
     const AH_AML_OPCODE     *Op);
 
 static void
+AhDisplayAmlType (
+    const AH_AML_TYPE       *Op);
+
+static void
 AhDisplayAslOperator (
     const AH_ASL_OPERATOR   *Op);
 
@@ -224,7 +228,7 @@ AhFindPredefinedNames (
     char                    Name[9];
 
 
-    if (!NamePrefix)
+    if (!NamePrefix || (NamePrefix[0] == '*'))
     {
         Found = AhDisplayPredefinedName (NULL, 0);
         return;
@@ -428,7 +432,7 @@ AhFindAmlOpcode (
             continue;
         }
 
-        if (!Name)
+        if (!Name || (Name[0] == '*'))
         {
             AhDisplayAmlOpcode (Op);
             Found = TRUE;
@@ -575,6 +579,122 @@ AhDisplayAmlOpcode (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AhFindAmlTypes (entry point for AML grammar keyword search)
+ *
+ * PARAMETERS:  Name                - Name or prefix for an AML grammar element.
+ *                                    NULL means "find all"
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Find all AML grammar keywords that match the input Name or name
+ *              prefix.
+ *
+ ******************************************************************************/
+
+void
+AhFindAmlTypes (
+    char                    *Name)
+{
+    const AH_AML_TYPE       *Keyword;
+    BOOLEAN                 Found = FALSE;
+
+
+    AcpiUtStrupr (Name);
+
+    for (Keyword = AmlTypesInfo; Keyword->Name; Keyword++)
+    {
+        if (!Name)
+        {
+            printf ("    %s\n", Keyword->Name);
+            Found = TRUE;
+            continue;
+        }
+
+        if (*Name == '*')
+        {
+            AhDisplayAmlType (Keyword);
+            Found = TRUE;
+            continue;
+        }
+
+        /* Upper case the operator name before substring compare */
+
+        strcpy (Gbl_Buffer, Keyword->Name);
+        AcpiUtStrupr (Gbl_Buffer);
+
+        if (strstr (Gbl_Buffer, Name) == Gbl_Buffer)
+        {
+            AhDisplayAmlType (Keyword);
+            Found = TRUE;
+        }
+    }
+
+    if (!Found)
+    {
+        printf ("%s, no matching AML grammar type\n", Name);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AhDisplayAmlType
+ *
+ * PARAMETERS:  Op                  - Pointer to AML grammar info
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format and display info for an AML grammar element.
+ *
+ ******************************************************************************/
+
+static void
+AhDisplayAmlType (
+    const AH_AML_TYPE       *Op)
+{
+    char                    *Description;
+
+
+    Description = Op->Description;
+    printf ("%4s", " ");    /* Primary indent */
+
+    /* Emit the entire description string */
+
+    while (*Description)
+    {
+        /* Description can be multiple lines, must indent each */
+
+        while (*Description != '\n')
+        {
+            printf ("%c", *Description);
+            Description++;
+        }
+
+        printf ("\n");
+        Description++;
+
+        /* Do indent */
+
+        if (*Description)
+        {
+            printf ("%8s", " ");    /* Secondary indent */
+
+            /* Index extra for a comment */
+
+            if ((Description[0] == '/') &&
+                (Description[1] == '/'))
+            {
+                printf ("%4s", " ");
+            }
+        }
+    }
+
+    printf ("\n");
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AhFindAslKeywords (entry point for ASL keyword search)
  *
  * PARAMETERS:  Name                - Name or prefix for an ASL keyword.
@@ -599,7 +719,7 @@ AhFindAslKeywords (
 
     for (Keyword = AslKeywordInfo; Keyword->Name; Keyword++)
     {
-        if (!Name)
+        if (!Name || (Name[0] == '*'))
         {
             AhDisplayAslKeyword (Keyword);
             Found = TRUE;
@@ -716,7 +836,7 @@ AhFindAslOperators (
 
     for (Operator = AslOperatorInfo; Operator->Name; Operator++)
     {
-        if (!Name)
+        if (!Name || (Name[0] == '*'))
         {
             AhDisplayAslOperator (Operator);
             MatchCount++;
@@ -931,7 +1051,7 @@ AhDisplayDeviceIds (
 
     /* Null input name indicates "display all" */
 
-    if (!Name)
+    if (!Name || (Name[0] == '*'))
     {
         printf ("ACPI and PNP Device/Hardware IDs:\n\n");
         for (Info = AslDeviceIds; Info->Name; Info++)

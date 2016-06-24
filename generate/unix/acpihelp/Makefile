@@ -32,6 +32,7 @@ OBJECTS = \
 	$(OBJDIR)/ahaslkey.o\
 	$(OBJDIR)/ahaslops.o\
 	$(OBJDIR)/ahdecode.o\
+	$(OBJDIR)/ahgrammar.o\
 	$(OBJDIR)/ahids.o\
 	$(OBJDIR)/ahpredef.o\
 	$(OBJDIR)/ahmain.o\

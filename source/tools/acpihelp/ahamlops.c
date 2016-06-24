@@ -115,6 +115,7 @@
 
 #include "acpihelp.h"
 
+
 /*
  * AML opcodes with related syntax and grammar information.
  * This table was extracted from the ACPI specification.

@@ -142,9 +142,11 @@ typedef enum
     AH_DECODE_PREDEFINED_NAME,
     AH_DECODE_AML,
     AH_DECODE_AML_OPCODE,
-    AH_DISPLAY_DEVICE_IDS,
-    AH_DECODE_EXCEPTION,
+    AH_DECODE_AML_TYPE,
     AH_DECODE_ASL_AML,
+    AH_DECODE_EXCEPTION,
+
+    AH_DISPLAY_DEVICE_IDS,
     AH_DISPLAY_UUIDS,
     AH_DISPLAY_TABLES,
     AH_DISPLAY_DIRECTIVES
@@ -167,6 +169,13 @@ typedef struct ah_aml_opcode
     char            *Grammar;
 
 } AH_AML_OPCODE;
+
+typedef struct ah_aml_type
+{
+    char            *Name;
+    char            *Description;
+
+} AH_AML_TYPE;
 
 typedef struct ah_asl_operator
 {
@@ -192,6 +201,7 @@ typedef struct ah_directive_info
 } AH_DIRECTIVE_INFO;
 
 extern const AH_AML_OPCODE          AmlOpcodeInfo[];
+extern const AH_AML_TYPE            AmlTypesInfo[];
 extern const AH_ASL_OPERATOR        AslOperatorInfo[];
 extern const AH_ASL_KEYWORD         AslKeywordInfo[];
 extern const AH_UUID                AcpiUuids[];
@@ -225,6 +235,10 @@ AhFindAslOperators (
 
 void
 AhFindAslKeywords (
+    char                    *Name);
+
+void
+AhFindAmlTypes (
     char                    *Name);
 
 void

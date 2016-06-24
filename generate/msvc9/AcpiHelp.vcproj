@@ -255,6 +255,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\source\tools\acpihelp\ahgrammar.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\tools\acpihelp\ahmain.c"
 					>
 				</File>
