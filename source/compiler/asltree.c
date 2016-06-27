@@ -222,13 +222,24 @@ TrAllocateNode (
     Op->Asl.LogicalLineNumber = Gbl_LogicalLineNumber;
     Op->Asl.LogicalByteOffset = Gbl_CurrentLineOffset;
     Op->Asl.Column            = Gbl_CurrentColumn;
+    Op->Asl.CommentAfter      = NULL;
+
+
 
     /* The following is for capturing comments */
+    if(Gbl_CaptureComments)
+    {
+        Gbl_Latest_Parse_Node     = Op;
+        printf("===========Set latest parse node to this node.\n");
+
+        printf("Op->Asl.ParseOpcode       = %d\n", (UINT16) ParseOpcode);
+    }
+
     if(Gbl_CaptureComments && Gbl_Comment_List_Head!=0)
     {   Op->Asl.CommentList = Gbl_Comment_List_Head;
         Gbl_Comment_List_Head = 0; //Clear this so that future comments can be associated with future nodes.
         Gbl_Comment_List_Tail = 0; //Clear this so that future comments can be associated with future nodes.
-        printf("Transferred current comment list to this node.");
+        printf("Transferred current comment list to this node.\n");
     }
     else
     {

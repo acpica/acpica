@@ -933,6 +933,8 @@ AcpiDmDescendingOp (
             AcpiOsPrintf ("{\n");
         }
     }
+    
+//    AcpiOsPrintf (" [hello descending world]");
 
     return (AE_OK);
 }
@@ -1126,6 +1128,7 @@ AcpiDmAscendingOp (
         if (Op->Common.Next)
         {
             AcpiOsPrintf (")");
+            
 
             /*
              * Emit a description comment for a Name() operator that is a
@@ -1168,5 +1171,7 @@ AcpiDmAscendingOp (
         }
     }
 
+
+    //AcpiOsPrintf (" [hello ascending world]");
     return (AE_OK);
 }

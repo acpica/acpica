@@ -552,6 +552,45 @@ addToCommentList (
 
 /*******************************************************************************
  *
+ * FUNCTION:    addToCommentAfterList
+ *
+ * PARAMETERS:  toAdd              - Contains the comment to be inserted
+ *              head               - the list head of comments to add to
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Add a comment node to the end of a particular parse node's 
+ *              comment list.
+ *
+ ******************************************************************************/
+
+static void
+addToCommentAfterList (
+    char               *toAdd,
+    struct acpi_comment_list_node  *Head)
+{
+    struct acpi_comment_list_node *Current = Head;
+    if (Current==NULL)
+    {
+        Current = UtCommentNodeCalloc();
+    }
+    else 
+    {
+        while((Current->Next)!=NULL)
+        {
+            Current = Current->Next;
+        }
+        Current->Next = UtCommentNodeCalloc();
+        Current = Current->Next;
+    }
+
+    Current->Comment = toAdd;
+   
+    return;
+}
+
+/*******************************************************************************
+ *
  * FUNCTION:    AslDoString
  *
  * PARAMETERS:  char * stringStart, char * stringEnd, BOOLEAN doEscapeSeq,
@@ -967,12 +1006,22 @@ AslDoComment (
                 }
                 return TRUE;
             }
-            else /* If this only spans a single line, just add it to the list since 
-                  * it only needs to be indented once
+            else /* If this only spans a single line, check to see whether if this comment
+                  * appears on the same line as a line of code. If does, retain it's
+                  * position for stylistic reasons. If it doesn't, add it to the comment
+                  * List so that it can be associated with the next node that's created. 
                   */
             {
-                addToCommentList (CommentString);
-                return TRUE;
+                if(Gbl_Latest_Parse_Node!=NULL && (Gbl_CurrentLineNumber == Gbl_Latest_Parse_Node->Asl.LineNumber))
+                {
+                    addToCommentAfterList (CommentString, Gbl_Latest_Parse_Node->Asl.CommentAfter);
+                    return TRUE;
+                }
+                else
+                {
+                    addToCommentList (CommentString);
+                    return TRUE;
+                }
             }
         }
         else
@@ -1077,9 +1126,53 @@ AslDoCommentType2 (
         //add this comment to the end of the list.
         if(CommentString!=0)
         {
-            // get rid of the new-line at the end of this string.
+            // Get rid of the new-line at the end of this string. Adjust the
+            // Global line number due to removal of this new line character.
             CommentString[strlen(CommentString)-1]=0;
-            addToCommentList (CommentString);
+            Gbl_CurrentLineNumber--;
+            Gbl_LogicalLineNumber--;
+
+            /* If this comment lies on the same line as the latest parse node,
+             * assign it to that node's CommentAfter field. Saving in this field
+             * will allow us to support comments that come after code on the same
+             * line as the code itself. For example, 
+             * Name(A,"") //comment 
+             *
+             * will be retained rather than transformed into 
+             *
+             * Name(A,"") 
+             * //comment 
+             * 
+             * For this case, we only need to add one comment since
+             *
+             * Name(A,"") //comment1 //comment2 ... more comments here.
+             *
+             * would be lexically analyzed as a single comment.
+             *
+             */
+           
+/* keep this message for possible debug messages in the future...
+            if(Gbl_Latest_Parse_Node!=NULL)
+            {
+                printf("Gbl_Latest_Parse_Node->Asl.LineNumber:        %d\n", Gbl_Latest_Parse_Node->Asl.LineNumber);
+                printf("Gbl_Latest_Parse_Node->Asl.LogicalLineNumber: %d\n", Gbl_Latest_Parse_Node->Asl.LogicalLineNumber);
+                printf("Gbl_Latest_Parse_Line_Num:                    %d\n", Gbl_Latest_Parse_Line_Num);
+                printf("Gbl_CurrentLineNumber:                        %d\n", Gbl_CurrentLineNumber);
+                printf("Gbl_LogicalLineNumber:                        %d\n", Gbl_LogicalLineNumber);
+           
+            }
+*/
+
+            if(Gbl_Latest_Parse_Node!=NULL && (Gbl_CurrentLineNumber-1 == Gbl_Latest_Parse_Node->Asl.LineNumber))
+            {
+                struct acpi_comment_list_node* c = UtCommentNodeCalloc ();
+                c->Comment = CommentString;
+                Gbl_Latest_Parse_Node->Asl.CommentAfter = c;
+            }
+            else
+            {
+                addToCommentList (CommentString);
+            }
             return (TRUE);
         }
         else
