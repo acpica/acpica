@@ -463,6 +463,8 @@ AslInsertLineBuffer (
             /* End of line */
 
             AslResetCurrentLineBuffer ();
+            Gbl_Previous_Parse_Node = Gbl_Latest_Parse_Node;
+            Gbl_Latest_Parse_Node = NULL;
         }
     }
 }
@@ -589,352 +591,6 @@ addToCommentAfterList (
     return;
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    AslDoString
- *
- * PARAMETERS:  char * stringStart, char * stringEnd, BOOLEAN doEscapeSeq,
- *              BOOLEAN isComment
- *
- * RETURN:      return the processed string. Return 0 upon failure.
- *
- * DESCRIPTION: Process a string 
- *
- ******************************************************************************/
-
-static char*
-AslDoString (
-    char *stringStart, 
-    char *stringEnd, 
-    BOOLEAN doEscapeSeq)
-{
-    char                *StringBuffer = MsgBuffer;
-    char                *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
-    char                *CleanString;
-    int                 StringChar;
-    UINT32              State = ASL_NORMAL_CHAR;
-    UINT32              i = 0;
-    UINT8               Digit;
-    char                ConvertBuffer[4];
-    UINT32              stringStartSize = (UINT32)(strlen(stringStart));
-    UINT32              stringEndSize  = (UINT32)(strlen(stringEnd));
-    BOOLEAN             match = TRUE;
-    int                 firstEndLetter = stringEnd[0];
-
-
-    if( (stringStartSize || stringEndSize) == 0)
-    {
-        return (FALSE); // throw an error!
-    }
-
-
-    /*
-     * Eat chars until end-of-literal.
-     * NOTE:  Put back the original surrounding quotes into the
-     * source line buffer.
-     */
-    for (i=0; i<stringStartSize; i++)
-    {   
-        AslInsertLineBuffer (stringStart[i]);
-    }
-    while ((StringChar = input()) != EOF)
-    {
-        printf("%c", StringChar);
-        AslInsertLineBuffer (StringChar);
-
-DoCharacter:
-        switch (State)
-        {
-        case ASL_NORMAL_CHAR:
-            if (StringChar==firstEndLetter)
-            {
-                /* Beginning of the terminating string. 
-                   Some terminators could be multiple characters. 
-                   In this case, loop and see if this indeed the end of the string. */
-                i=0;
-                match = TRUE;
-                while (i<stringEndSize && match)
-                {
-                      if(stringEnd[i] != StringChar)
-                      {
-                          match = FALSE;
-                      }
-                      else
-                      {
-                          AslInsertLineBuffer (StringChar);
-                          *StringBuffer = StringChar; 
-                          StringBuffer++;
-                          if (StringBuffer >= EndBuffer)
-                          {
-                              goto BufferOverflow;
-                          }
-                          if(stringEndSize>1 && (StringChar = input()) ==EOF)
-                          {
-                              goto PrematureEOF;
-                          }
-                      }
-                      ++i;
-                }
-                if(match) // end of the string was found.
-                {  
-
-                   goto CompletedString;
-                }
-                else
-                {
-                   // if not, go through the default execution sequence - add the character to the line buffer
-                }
-
-            }
-
-            if (StringChar=='\\')
-            {
-                /*
-                 * Special handling for backslash-escape sequence. We will
-                 * toss the backslash and translate the escape char(s).
-                 */
-                if (doEscapeSeq)
-                {
-                    State = ASL_ESCAPE_SEQUENCE;
-                }
-            }
-
-            break;
-
-        
-        case ASL_ESCAPE_SEQUENCE:
-
-            State = ASL_NORMAL_CHAR;
-            switch (StringChar)
-            {
-            case 'a':
-
-                StringChar = 0x07;      /* BELL */
-                break;
-
-            case 'b':
-
-                StringChar = 0x08;      /* BACKSPACE */
-                break;
-
-            case 'f':
-
-                StringChar = 0x0C;      /* FORMFEED */
-                break;
-
-            case 'n':
-
-                StringChar = 0x0A;      /* LINEFEED */
-                break;
-
-            case 'r':
-
-                StringChar = 0x0D;      /* CARRIAGE RETURN*/
-                break;
-
-            case 't':
-
-                StringChar = 0x09;      /* HORIZONTAL TAB */
-                break;
-
-            case 'v':
-
-                StringChar = 0x0B;      /* VERTICAL TAB */
-                break;
-
-            case 'x':
-
-                State = ASL_HEX_CONSTANT;
-                i = 0;
-                continue;
-
-            case '\'':                  /* Single Quote */
-            case '\"':                  /* Double Quote */
-            case '\\':                  /* Backslash */
-
-                break;
-
-            default:
-
-                /* Check for an octal digit (0-7) */
-
-                if (ACPI_IS_OCTAL_DIGIT (StringChar))
-                {
-                    State = ASL_OCTAL_CONSTANT;
-                    ConvertBuffer[0] = StringChar;
-                    i = 1;
-                    continue;
-                }
-
-                /* Unknown escape sequence issue warning, but use the character */
-
-                AslCommonError (ASL_WARNING, ASL_MSG_INVALID_ESCAPE,
-                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-                    Gbl_CurrentLineOffset, Gbl_CurrentColumn,
-                    Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
-                break;
-            }
-            break;
-
-
-        case ASL_OCTAL_CONSTANT:
-
-            /* Up to three octal digits allowed */
-
-            if (!ACPI_IS_OCTAL_DIGIT (StringChar) ||
-                (i > 2))
-            {
-                /*
-                 * Reached end of the constant. Convert the assembled ASCII
-                 * string and resume processing of the next character
-                 */
-                ConvertBuffer[i] = 0;
-                Digit = (UINT8) strtoul (ConvertBuffer, NULL, 8);
-
-                /* Check for NULL or non-ascii character (ignore if so) */
-
-                if ((Digit == 0) || (Digit > ACPI_ASCII_MAX))
-                {
-                    AslCommonError (ASL_WARNING, ASL_MSG_INVALID_STRING,
-                        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-                        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
-                        Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
-                }
-                else
-                {
-                    *StringBuffer = (char) Digit;
-                    StringBuffer++;
-                    if (StringBuffer >= EndBuffer)
-                    {
-                        goto BufferOverflow;
-                    }
-                }
-
-                State = ASL_NORMAL_CHAR;
-                goto DoCharacter;
-                break;
-            }
-
-            /* Append another digit of the constant */
-
-            ConvertBuffer[i] = StringChar;
-            i++;
-            continue;
-
-        case ASL_HEX_CONSTANT:
-
-            /* Up to two hex digits allowed */
-
-            if (!isxdigit (StringChar) ||
-                (i > 1))
-            {
-                /*
-                 * Reached end of the constant. Convert the assembled ASCII
-                 * string and resume processing of the next character
-                 */
-                ConvertBuffer[i] = 0;
-                Digit = (UINT8) strtoul (ConvertBuffer, NULL, 16);
-
-                /* Check for NULL or non-ascii character (ignore if so) */
-
-                if ((Digit == 0) || (Digit > ACPI_ASCII_MAX))
-                {
-                    AslCommonError (ASL_WARNING, ASL_MSG_INVALID_STRING,
-                        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-                        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
-                        Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
-                }
-                else
-                {
-                    *StringBuffer = (char) Digit;
-                    StringBuffer++;
-                    if (StringBuffer >= EndBuffer)
-                    {
-                        goto BufferOverflow;
-                    }
-                }
-
-                State = ASL_NORMAL_CHAR;
-                goto DoCharacter;
-                break;
-            }
-
-            /* Append another digit of the constant */
-
-            ConvertBuffer[i] = StringChar;
-            i++;
-            continue;
-
-        default:
-
-            break;
-        }
-
-        /* Save the finished character */
-
-        *StringBuffer = StringChar;
-        StringBuffer++;
-        if (StringBuffer >= EndBuffer)
-        {
-            goto BufferOverflow;
-        }
-    }
-
-
-PrematureEOF:
-    /*
-     * Premature End-Of-File
-     */
-    printf ("Premature EOF!!!\n");
-    AslCommonError (ASL_ERROR, ASL_MSG_EARLY_EOF,
-        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
-        Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
-    return (FALSE);
-
-
-CompletedString:
-    /*
-     * Replace the end string within the input string with 0.
-     * This null-terminates the input stringa.      
-     */
-
-    for(i=0; i<stringEndSize; i++)
-    {
-        StringBuffer--;
-        *StringBuffer = 0;
-    }
-
-    //copy string to a new buffer. 
-    CleanString = UtStringCacheCalloc (strlen (MsgBuffer) + 1 + stringEndSize + stringStartSize);
-    if (!CleanString) 
-    {
-        
-        AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
-            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-            Gbl_CurrentLineOffset, Gbl_CurrentColumn,
-            Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
-        return (FALSE);
-    }
-    strcat (CleanString, stringStart);
-    strcat (CleanString, MsgBuffer);
-    strcat (CleanString, stringEnd);
-    AslCompilerlval.s = CleanString;
-    printf("Captured comment: %s\n", CleanString);
-    return (CleanString);
-    
-
-
-BufferOverflow:
-
-    /* Literal was too long */
-
-    AslCommonError (ASL_ERROR, ASL_MSG_STRING_LENGTH,
-        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
-        Gbl_Files[ASL_FILE_INPUT].Filename, "Max length 4096");
-    return (FALSE);
-}
 
 /*******************************************************************************
  *
@@ -958,88 +614,22 @@ AslDoComment (
     int      i;
     BOOLEAN  CharStart;
 
-    printf("Multi-line comment\n");
-    if(Gbl_CaptureComments)
-    {
-        char* CommentString = AslDoString("/*", "*/", FALSE);
-        //add this comment to the end of the list.
-        if(CommentString!=0)
-        {
-            /* Determine whether if this comment spans multiple lines.
-             * If so, break apart the comment by line so that it can be 
-             * properly indented.
-             */
-            if (strchr (CommentString, '\n')!=NULL)
-            {
-                /* Get the first token out. The for loop pads subsequent lines
-                 * for comments similar to the style of this comment. 
-                 */
-                LineToken = strtok (CommentString, "\n");
-
-                FinalLineToken = UtStringCacheCalloc (strlen (LineToken)+1);
-                strcpy(FinalLineToken, LineToken);
-                addToCommentList (LineToken);
-
-                LineToken = strtok (NULL, "\n");
-                while (LineToken!=NULL)
-                {
-                    /* It is assumed that each line has some sort of indentation.
-                     * This means that we need to find the first character that is not
-                     * a white space within each line. 
-                     */
-                    
-                    CharStart = FALSE;
-                    for (i=0; i<strlen(LineToken)+1 && !CharStart; i++)
-                    {
-                        if (LineToken[i]!=' ' && LineToken[i]!='\t')
-                        {
-                            CharStart = TRUE;
-                            LineToken += i-1;
-                            LineToken [0] = ' '; //Pad for Formatting.
-                        }
-                    }
-
-                    FinalLineToken = UtStringCacheCalloc (strlen (LineToken)+1);
-                    strcat(FinalLineToken, LineToken);
-                    addToCommentList (FinalLineToken);
-                    LineToken = strtok (NULL,"\n");
-                }
-                return TRUE;
-            }
-            else /* If this only spans a single line, check to see whether if this comment
-                  * appears on the same line as a line of code. If does, retain it's
-                  * position for stylistic reasons. If it doesn't, add it to the comment
-                  * List so that it can be associated with the next node that's created. 
-                  */
-            {
-                if(Gbl_Latest_Parse_Node!=NULL && (Gbl_CurrentLineNumber == Gbl_Latest_Parse_Node->Asl.LineNumber))
-                {
-                    addToCommentAfterList (CommentString, Gbl_Latest_Parse_Node->Asl.CommentAfter);
-                    return TRUE;
-                }
-                else
-                {
-                    addToCommentList (CommentString);
-                    return TRUE;
-                }
-            }
-        }
-        else
-        {
-            return FALSE;
-        }
-    }
-    else
-    {
-
     
-    int                 c;
-    int                 c1 = 0;
+    int                           c;
+    int                           c1 = 0;
+    char                          *StringBuffer = MsgBuffer;
+    char                          *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
+    char                          *CommentString;
 
+    printf("Multi-line comment\n");
 
     AslInsertLineBuffer ('/');
+    *StringBuffer = '/';
+    ++StringBuffer;
     AslInsertLineBuffer ('*');
-
+    *StringBuffer = '*';
+    ++StringBuffer;
+ 
 loop:
 
     /* Eat chars until end-of-comment */
@@ -1047,6 +637,8 @@ loop:
     while (((c = input ()) != '*') && (c != EOF))
     {
         AslInsertLineBuffer (c);
+        *StringBuffer = c;
+        ++StringBuffer;
         c1 = c;
     }
 
@@ -1070,6 +662,8 @@ loop:
     /* Comment is closed only if the NEXT character is a slash */
 
     AslInsertLineBuffer (c);
+    *StringBuffer = c;
+    ++StringBuffer;
 
     if (((c1 = input ()) != '/') && (c1 != EOF))
     {
@@ -1081,8 +675,84 @@ loop:
     {
         goto EarlyEOF;
     }
+    if (StringBuffer>EndBuffer)
+    { 
+        goto BufferOverflow;
+    }
 
     AslInsertLineBuffer (c1);
+    *StringBuffer = c1;
+    ++StringBuffer;
+
+
+    if(Gbl_CaptureComments)
+    {
+        CommentString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
+        strcpy(CommentString, MsgBuffer);
+
+        // printf("CommentString: %s\n", CommentString);
+
+        /* Determine whether if this comment spans multiple lines.
+         * If so, break apart the comment by line so that it can be 
+         * properly indented.
+         */
+        if (strchr (CommentString, '\n')!=NULL)
+        {
+            /* Get the first token out. The for loop pads subsequent lines
+             * for comments similar to the style of this comment. 
+             */
+            LineToken = strtok (CommentString, "\n");
+
+            FinalLineToken = UtStringCacheCalloc (strlen (LineToken)+1);
+            strcpy(FinalLineToken, LineToken);
+            addToCommentList (LineToken);
+
+            LineToken = strtok (NULL, "\n");
+            while (LineToken!=NULL)
+            {
+                /* It is assumed that each line has some sort of indentation.
+                 * This means that we need to find the first character that is not
+                 * a white space within each line. 
+                 */
+                    
+                CharStart = FALSE;
+                for (i=0; i<strlen(LineToken)+1 && !CharStart; i++)
+                {
+                    if (LineToken[i]!=' ' && LineToken[i]!='\t')
+                    {
+                        CharStart = TRUE;
+                        LineToken += i-1;
+                        LineToken [0] = ' '; //Pad for Formatting.
+                    }
+                }
+
+                    FinalLineToken = UtStringCacheCalloc (strlen (LineToken)+1);
+                    strcat(FinalLineToken, LineToken);
+                    addToCommentList (FinalLineToken);
+                    LineToken = strtok (NULL,"\n");
+                }
+        }
+
+        /* If this only spans a single line, check to see whether if this comment
+         * appears on the same line as a line of code. If does, retain it's
+         * position for stylistic reasons. If it doesn't, add it to the comment
+         * List so that it can be associated with the next node that's created. 
+         */
+        else             
+        {
+            if(Gbl_Latest_Parse_Node!=NULL)
+            {
+                addToCommentAfterList (CommentString, Gbl_Latest_Parse_Node->Asl.CommentAfter);
+            }
+            else
+            {
+                addToCommentList (CommentString);
+            }
+        }
+    }
+    
+ 
+
     return (TRUE);
 
 
@@ -1097,7 +767,16 @@ EarlyEOF:
     return (FALSE);
 
 
-    }
+
+BufferOverflow:
+
+    /* Comment was too long */
+
+    AslCommonError (ASL_ERROR, ASL_MSG_STRING_LENGTH,
+        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+        Gbl_Files[ASL_FILE_INPUT].Filename, "Max length 4096");
+    return (FALSE);
 
 }
 
@@ -1118,80 +797,26 @@ static BOOLEAN
 AslDoCommentType2 (
     void)
 {
+    int                           c;
+    char                          *StringBuffer = MsgBuffer;
+    char                          *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
+    char                          *CommentString;
+    struct acpi_comment_list_node *cNode;
+
     printf("Single-line comment\n");
 
-    if(Gbl_CaptureComments)
-    {
-        char* CommentString = AslDoString("//", "\n", FALSE);
-        //add this comment to the end of the list.
-        if(CommentString!=0)
-        {
-            // Get rid of the new-line at the end of this string. Adjust the
-            // Global line number due to removal of this new line character.
-            CommentString[strlen(CommentString)-1]=0;
-            Gbl_CurrentLineNumber--;
-            Gbl_LogicalLineNumber--;
-
-            /* If this comment lies on the same line as the latest parse node,
-             * assign it to that node's CommentAfter field. Saving in this field
-             * will allow us to support comments that come after code on the same
-             * line as the code itself. For example, 
-             * Name(A,"") //comment 
-             *
-             * will be retained rather than transformed into 
-             *
-             * Name(A,"") 
-             * //comment 
-             * 
-             * For this case, we only need to add one comment since
-             *
-             * Name(A,"") //comment1 //comment2 ... more comments here.
-             *
-             * would be lexically analyzed as a single comment.
-             *
-             */
-           
-/* keep this message for possible debug messages in the future...
-            if(Gbl_Latest_Parse_Node!=NULL)
-            {
-                printf("Gbl_Latest_Parse_Node->Asl.LineNumber:        %d\n", Gbl_Latest_Parse_Node->Asl.LineNumber);
-                printf("Gbl_Latest_Parse_Node->Asl.LogicalLineNumber: %d\n", Gbl_Latest_Parse_Node->Asl.LogicalLineNumber);
-                printf("Gbl_Latest_Parse_Line_Num:                    %d\n", Gbl_Latest_Parse_Line_Num);
-                printf("Gbl_CurrentLineNumber:                        %d\n", Gbl_CurrentLineNumber);
-                printf("Gbl_LogicalLineNumber:                        %d\n", Gbl_LogicalLineNumber);
-           
-            }
-*/
-
-            if(Gbl_Latest_Parse_Node!=NULL && (Gbl_CurrentLineNumber-1 == Gbl_Latest_Parse_Node->Asl.LineNumber))
-            {
-                struct acpi_comment_list_node* c = UtCommentNodeCalloc ();
-                c->Comment = CommentString;
-                Gbl_Latest_Parse_Node->Asl.CommentAfter = c;
-            }
-            else
-            {
-                addToCommentList (CommentString);
-            }
-            return (TRUE);
-        }
-        else
-        {
-            return (FALSE);
-        }
-    }
-    else
-    {
-
-     int                 c;
-
-
     AslInsertLineBuffer ('/');
+    *StringBuffer = '/';
+    ++StringBuffer;
     AslInsertLineBuffer ('/');
+    *StringBuffer = '/';
+    ++StringBuffer;
 
     while (((c = input ()) != '\n') && (c != EOF))
     {
         AslInsertLineBuffer (c);
+        *StringBuffer = c;
+        ++StringBuffer;
     }
 
     if (c == EOF)
@@ -1201,9 +826,63 @@ AslDoCommentType2 (
         c = '\n';
     }
 
+    if (StringBuffer>EndBuffer)
+    {
+        goto BufferOverflow;       
+    }
+
     AslInsertLineBuffer (c);
+    *StringBuffer = 0; //null terminate this string
+ 
+    if(Gbl_CaptureComments)
+    {
+
+        CommentString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
+        strcpy(CommentString, MsgBuffer);
+
+        /* If this comment lies on the same line as the latest parse node,
+         * assign it to that node's CommentAfter field. Saving in this field
+         * will allow us to support comments that come after code on the same
+         * line as the code itself. For example, 
+         * Name(A,"") //comment 
+         *
+         * will be retained rather than transformed into 
+         *
+         * Name(A,"") 
+         * //comment 
+         * 
+         * For this case, we only need to add one comment since
+         *
+         * Name(A,"") //comment1 //comment2 ... more comments here.
+         *
+         * would be lexically analyzed as a single comment.
+         *
+         */
+
+        if(Gbl_Previous_Parse_Node!=NULL)
+        {
+            cNode = UtCommentNodeCalloc ();
+            cNode->Comment = CommentString;
+            Gbl_Previous_Parse_Node->Asl.CommentAfter = cNode;
+        }
+        else
+        {
+            addToCommentList (CommentString);
+        }
+    }
+
     return (TRUE);
-   }
+
+
+BufferOverflow:
+
+    /* Comment was too long */
+
+    AslCommonError (ASL_ERROR, ASL_MSG_STRING_LENGTH,
+        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+        Gbl_Files[ASL_FILE_INPUT].Filename, "Max length 4096");
+    return (FALSE);
 
 }
 

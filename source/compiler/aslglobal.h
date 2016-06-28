@@ -342,7 +342,7 @@ ASL_EXTERN ACPI_COMMENT_LIST_NODE   ASL_INIT_GLOBAL (*Gbl_Comment_List_Head, 0);
 ASL_EXTERN ACPI_COMMENT_LIST_NODE   ASL_INIT_GLOBAL (*Gbl_Comment_List_Tail, 0);
 
 ASL_EXTERN ACPI_PARSE_OBJECT        ASL_INIT_GLOBAL (*Gbl_Latest_Parse_Node, 0);
-ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (Gbl_Latest_Parse_Line_Num, 0);
+ASL_EXTERN ACPI_PARSE_OBJECT        ASL_INIT_GLOBAL (*Gbl_Previous_Parse_Node, 0);
 
 
 /* Static structures */
