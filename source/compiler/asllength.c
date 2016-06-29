@@ -212,8 +212,8 @@ LnPackageLengthWalk (
 
 
     /* For the -q option: calculate the length that the comment takes up.
-     * Comments look like the follwoing: [0xA9 comment 0x00]
-     * therefore, we add 1+strlen(comment)+1 to get the actual length of 
+     * Comments look like the follwoing: [0xA9 OptionBtye comment 0x00]
+     * therefore, we add 1+1+strlen(comment)+1 to get the actual length of 
      * this comment.
      */
  
@@ -222,8 +222,8 @@ LnPackageLengthWalk (
         { 
             while (current!=0)
             {
-                commentLength = strlen(current->Comment)+2;
-                printf("Length of comment +2 (including space for 0xA9 and 0x00): %d\n", commentLength);
+                commentLength = strlen(current->Comment)+3;
+                printf("Length of comment +3 (including space for 0xA9 and 0x00): %d\n", commentLength);
                 TotalCommentLength += commentLength;
                 current = current->Next;
             }

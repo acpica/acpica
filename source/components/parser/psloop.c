@@ -182,7 +182,6 @@ AcpiPsGetArguments (
     case AML_WORD_OP:       /* AML_WORDDATA_ARG */
     case AML_DWORD_OP:      /* AML_DWORDATA_ARG */
     case AML_QWORD_OP:      /* AML_QWORDATA_ARG */
-    case AML_COMMENT_OP:     /* AML_ASCIICHARLIST_ARG */
     case AML_STRING_OP:     /* AML_ASCIICHARLIST_ARG */
 
         /* Fill in constant or string argument directly */
@@ -202,6 +201,46 @@ AcpiPsGetArguments (
 
         WalkState->ArgTypes = 0;
         break;
+
+
+    case AML_COMMENT_OP:    
+                  
+        /* This contains an option for the comment as well as the comment itself. */
+
+        WalkState->Aml = WalkState->ParserState.Aml;
+
+        Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
+            GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        if (Arg && Arg->Common.Value.Integer == 0x01)
+        {
+            printf("Standard comment!");
+        }
+
+        Op->Common.Value.Integer = Arg->Common.Value.Integer;
+
+        INCREMENT_ARG_LIST (WalkState->ArgTypes);
+
+
+        WalkState->Aml = WalkState->ParserState.Aml;
+
+        Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
+            GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        //printf("Comment captured: %s\n", Arg->Common.Value.String);
+
+        Op->Common.Value.String = Arg->Common.Value.String;
+
+        break; 
+
 
     default:
         /*

@@ -662,6 +662,7 @@ CgWriteNode (
         while (current!=0)
         {
             CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+            CgLocalWriteAmlData (Op, &STANDARD_COMMENT_OPTION, 1);
             // +1 is what emits the 0x00 at the end of this opcode.
             CgLocalWriteAmlData (Op, current->Comment, strlen(current->Comment)+1); 
             current = current->Next;

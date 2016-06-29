@@ -879,7 +879,7 @@ AcpiDmDisassembleOneOp (
 
     case AML_COMMENT_OP:
 
-        AcpiOsPrintf (Op->Common.Value.String);
+        AcpiOsPrintf ("%s", Op->Common.Value.String);
         break;
 
     case AML_BUFFER_OP:

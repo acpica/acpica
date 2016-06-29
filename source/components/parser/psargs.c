@@ -562,7 +562,7 @@ AcpiPsGetNextSimpleArg (
         break;
 
     case ARGP_COMMENT:
-        printf("This is a comment");
+        printf("This is a comment\n");
         Opcode = AML_COMMENT_OP;
         Arg->Common.Value.String = ACPI_CAST_PTR (char, Aml);
 
@@ -831,8 +831,8 @@ AcpiPsGetNextField (
  *
  * PARAMETERS:  WalkState           - Current state
  *              ParserState         - Current parser state object
- *              ArgType             - The argument type (AML_*_ARG)
- *              ReturnArg           - Where the next arg is returned
+ *              argtype             - the argument type (aml_*_arg)
+ *              returnarg           - where the next arg is returned
  *
  * RETURN:      Status, and an op object containing the next argument.
  *
@@ -867,7 +867,6 @@ AcpiPsGetNextArg (
     case ARGP_NAME:
     case ARGP_NAMESTRING:
     case ARGP_COMMENT:
-
         /* Constants, strings, and namestrings are all the same size */
 
         Arg = AcpiPsAllocOp (AML_BYTE_OP, ParserState->Aml);
@@ -878,6 +877,8 @@ AcpiPsGetNextArg (
 
         AcpiPsGetNextSimpleArg (ParserState, ArgType, Arg);
         break;
+
+        
 
     case ARGP_PKGLENGTH:
 
