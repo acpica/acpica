@@ -684,13 +684,14 @@ loop:
     *StringBuffer = c1;
     ++StringBuffer;
 
+    *StringBuffer = 0; //null terminate this string
 
     if(Gbl_CaptureComments)
     {
         CommentString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
         strcpy(CommentString, MsgBuffer);
 
-        // printf("CommentString: %s\n", CommentString);
+         printf("CommentString: %s\n", CommentString);
 
         /* Determine whether if this comment spans multiple lines.
          * If so, break apart the comment by line so that it can be 
