@@ -191,7 +191,9 @@ AcpiExAddTable (
 
     /* Add the table to the namespace */
 
+    AcpiExExitInterpreter ();
     Status = AcpiNsLoadTable (TableIndex, ParentNode);
+    AcpiExEnterInterpreter ();
     if (ACPI_FAILURE (Status))
     {
         AcpiUtRemoveReference (ObjDesc);
@@ -202,7 +204,7 @@ AcpiExAddTable (
     /* Execute any module-level code that was found in the table */
 
     AcpiExExitInterpreter ();
-    if (AcpiGbl_GroupModuleLevelCode)
+    if (!AcpiGbl_ParseTableAsTermList && AcpiGbl_GroupModuleLevelCode)
     {
         AcpiNsExecModuleCodeList ();
     }
