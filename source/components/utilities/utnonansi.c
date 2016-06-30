@@ -120,20 +120,6 @@
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utnonansi")
 
-/* Local prototypes */
-
-static ACPI_STATUS
-AcpiUtStrtoulBase10 (
-    char                    *String,
-    UINT32                  MaxIntegerByteWidth,
-    UINT64                  *RetInteger);
-
-static ACPI_STATUS
-AcpiUtStrtoulBase16 (
-    char                    *String,
-    UINT32                  MaxIntegerByteWidth,
-    UINT64                  *RetInteger);
-
 
 /*
  * Non-ANSI C library functions - strlwr, strupr, stricmp, and a 64-bit
@@ -330,10 +316,10 @@ AcpiUtSafeStrncat (
  *
  * FUNCTION:    AcpiUtStrtoul64
  *
- * PARAMETERS:  String                  - Null terminated input string
+ * PARAMETERS:  String                  - Null terminated string
  *              Base                    - Radix of the string: 16 or 10 or
  *                                        ACPI_ANY_BASE
- *              MaxIntegerByteWidth     - Maximum allowable integer, in bytes:
+ *              MaxIntegerByteWidth     - Maximum allowable integer,in bytes:
  *                                        4 or 8 (32 or 64 bits)
  *              RetInteger              - Where the converted integer is
  *                                        returned
@@ -347,24 +333,13 @@ AcpiUtSafeStrncat (
  * NOTES:       Negative numbers are not supported, as they are not supported
  *              by ACPI.
  *
- *              Supports only base 16 or base 10 strings/values. Does not
- *              support Octal strings, not needed at this time.
- *
  *              AcpiGbl_IntegerByteWidth should be set to the proper width.
  *              For the core ACPICA code, this width depends on the DSDT
  *              version. For iASL, the default byte width is always 8 for the
  *              parser, but error checking is performed later to flag cases
  *              where a 64-bit constant is defined in a 32-bit DSDT/SSDT.
  *
- *              Unlike Clib, this function aborts with an error for any
- *              malformed input string.
- *
- *              Currently used by:
- *              iASL/Preprocessor - Expression evaluation
- *              iASL/DataTableCompiler - Expression evaluation
- *              Debugger - input string conversion
- *              Interpreter - Implicit and explicit conversions
- *              Tools - acpidump, acpiexec
+ *              Does not support Octal strings, not needed at this time.
  *
  ******************************************************************************/
 
@@ -375,52 +350,58 @@ AcpiUtStrtoul64 (
     UINT32                  MaxIntegerByteWidth,
     UINT64                  *RetInteger)
 {
+    UINT32                  ThisDigit = 0;
+    UINT64                  ReturnValue = 0;
+    UINT64                  Quotient;
+    UINT64                  Dividend;
+    UINT8                   ValidDigits = 0;
+    UINT8                   SignOf0x = 0;
+    UINT8                   Term = 0;
+
+
     ACPI_FUNCTION_TRACE_STR (UtStrtoul64, String);
 
 
-    /* Parameter validation */
-
-    if (!String || !RetInteger)
+    switch (Base)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
+    case ACPI_ANY_BASE:
+    case 10:
+    case 16:
 
-    if ((Base != ACPI_ANY_BASE) &&
-        (Base != 10) &&
-        (Base != 16))
-    {
+        break;
+
+    default:
+
         /* Invalid Base */
 
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Skip over any white space at start of string */
+    if (!String)
+    {
+        goto ErrorExit;
+    }
 
-    while (isspace ((int) *String))
+    /* Skip over any white space in the buffer */
+
+    while ((*String) && (isspace ((int) *String) || *String == '\t'))
     {
         String++;
     }
 
-    if (*String == 0)
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    /* Determine base if necessary (10 or 16) */
-
     if (Base == ACPI_ANY_BASE)
     {
         /*
-         * (Base == ACPI_ANY_BASE) means "Either decimal or hex";
-         * determine which one.
-         * NOTE: there is no octal or arbitary base support.
+         * Base equal to ACPI_ANY_BASE means 'Either decimal or hex'.
+         * We need to determine if it is decimal or hexadecimal.
          */
-        if ((*String == '0') &&
-            (tolower ((int) *(String + 1)) == 'x'))
+        if ((*String == '0') && (tolower ((int) *(String + 1)) == 'x'))
         {
-            /* Found a "0x" prefix -- the string is hex */
-
+            SignOf0x = 1;
             Base = 16;
+
+            /* Skip over the leading '0x' */
+            String += 2;
         }
         else
         {
@@ -428,175 +409,331 @@ AcpiUtStrtoul64 (
         }
     }
 
-    /* Perform the base 16 or 10 conversion */
+    /* Any string left? Check that '0x' is not followed by white space. */
 
-    if (Base == 16)
+    if (!(*String) || isspace ((int) *String) || *String == '\t')
     {
-        return (AcpiUtStrtoulBase16 (String, MaxIntegerByteWidth, RetInteger));
+        if (Base == ACPI_ANY_BASE)
+        {
+            goto ErrorExit;
+        }
+        else
+        {
+            goto AllDone;
+        }
     }
-    else
-    {
-        return (AcpiUtStrtoulBase10 (String, MaxIntegerByteWidth, RetInteger));
-    }
-}
 
+    /*
+     * Perform a 32-bit or 64-bit conversion, depending upon the input
+     * byte width
+     */
+    Dividend = (MaxIntegerByteWidth <= ACPI_MAX32_BYTE_WIDTH) ?
+        ACPI_UINT32_MAX : ACPI_UINT64_MAX;
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiUtStrtoulBase10
- *
- * PARAMETERS:  String                  - Null terminated input string
- *              MaxIntegerByteWidth     - Maximum allowable integer, in bytes:
- *                                        4 or 8 (32 or 64 bits)
- *              RetInteger              - Where the converted integer is
- *                                        returned
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Performs a base 10 conversion of the input string to an
- *              integer value, either 32 or 64 bits.
- *              Note: String must be valid and non-null.
- *
- ******************************************************************************/
-
-static ACPI_STATUS
-AcpiUtStrtoulBase10 (
-    char                    *String,
-    UINT32                  MaxIntegerByteWidth,
-    UINT64                  *RetInteger)
-{
-    UINT32                  ThisDigit;
-    UINT32                  ValidDigits = 0;
-    UINT64                  ReturnValue = 0;
-    UINT64                  NextValue;
-
-
-    /* Main loop: convert each ASCII byte in the input string */
+    /* Main loop: convert the string to a 32- or 64-bit integer */
 
     while (*String)
     {
-        /* Skip all leading zeros */
-
-        if ((ValidDigits == 0) && (*String == ACPI_ASCII_ZERO))
+        if (isdigit ((int) *String))
         {
+            /* Convert ASCII 0-9 to Decimal value */
+
+            ThisDigit = ((UINT8) *String) - '0';
+        }
+        else if (Base == 10)
+        {
+            /* Digit is out of range; possible in ToInteger case only */
+
+            Term = 1;
+        }
+        else
+        {
+            ThisDigit = (UINT8) toupper ((int) *String);
+            if (isxdigit ((int) ThisDigit))
+            {
+                /* Convert ASCII Hex char to value */
+
+                ThisDigit = ThisDigit - 'A' + 10;
+            }
+            else
+            {
+                Term = 1;
+            }
+        }
+
+        if (Term)
+        {
+            if (Base == ACPI_ANY_BASE)
+            {
+                goto ErrorExit;
+            }
+            else
+            {
+                break;
+            }
+        }
+        else if ((ValidDigits == 0) && (ThisDigit == 0) && !SignOf0x)
+        {
+            /* Skip zeros */
             String++;
             continue;
         }
 
-        ThisDigit = (UINT8) toupper ((int) *String);
-        if (!isdigit ((int) ThisDigit))
-        {
-            /* Not ASCII 0-9, terminate */
-
-            return (AE_BAD_DECIMAL_CONSTANT);
-        }
-
-        /* Convert and insert(add) the decimal digit */
-
-        NextValue = (ReturnValue * 10) + (ThisDigit - '0');
-
-        /* Check for overflow (32 or 64 bit) */
-
-        if (((MaxIntegerByteWidth <= ACPI_MAX32_BYTE_WIDTH) &&
-                (NextValue > ACPI_UINT32_MAX)) ||
-            (NextValue < ReturnValue)) /* 64-bit overflow case */
-        {
-            return (AE_CONVERSION_OVERFLOW);
-        }
-
-        ReturnValue = NextValue;
-        String++;
         ValidDigits++;
-    }
 
-    *RetInteger = ReturnValue;
-    return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiUtStrtoulBase16
- *
- * PARAMETERS:  String                  - Null terminated input string
- *              MaxIntegerByteWidth     - Maximum allowable integer, in bytes:
- *                                        4 or 8 (32 or 64 bits)
- *              RetInteger              - Where the converted integer is
- *                                        returned
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Performs a base 16 conversion of the input string to an
- *              integer value, either 32 or 64 bits.
- *              Note: String must be valid and non-null.
- *
- ******************************************************************************/
-
-static ACPI_STATUS
-AcpiUtStrtoulBase16 (
-    char                    *String,
-    UINT32                  MaxIntegerByteWidth,
-    UINT64                  *RetInteger)
-{
-    UINT32                  ThisDigit;
-    UINT32                  ValidDigits = 0;
-    UINT64                  ReturnValue = 0;
-
-
-    /* Allow "0x" prefix for all hex constants */
-
-    if ((*String == '0') &&
-        (tolower ((int) *(String + 1)) == 'x'))
-    {
-        String += 2;    /* Go past the 0x */
-        if (*String == 0)
-        {
-            return (AE_BAD_HEX_CONSTANT);
-        }
-    }
-
-    /* Main loop: convert each ASCII byte in the input string */
-
-    while (*String)
-    {
-        /* Skip all leading zeros */
-
-        if ((ValidDigits == 0) && (*String == ACPI_ASCII_ZERO))
-        {
-            String++;
-            continue;
-        }
-
-        /* Check for overflow (32 or 64 bit) */
-
-        if ((ValidDigits > 16) ||
-            ((ValidDigits > 8) && (MaxIntegerByteWidth <= ACPI_MAX32_BYTE_WIDTH)))
+        if (SignOf0x && ((ValidDigits > 16) ||
+            ((ValidDigits > 8) && (MaxIntegerByteWidth <= ACPI_MAX32_BYTE_WIDTH))))
         {
             /*
              * This is ToInteger operation case.
              * No restrictions for string-to-integer conversion,
              * see ACPI spec.
              */
-            return (AE_CONVERSION_OVERFLOW);
+            goto ErrorExit;
         }
 
-        ThisDigit = (UINT8) toupper ((int) *String);
-        if (!isxdigit ((int) ThisDigit))
+        /* Divide the digit into the correct position */
+
+        (void) AcpiUtShortDivide (
+            (Dividend - (UINT64) ThisDigit), Base, &Quotient, NULL);
+
+        if (ReturnValue > Quotient)
         {
-            /* Not Hex ASCII A-F or 0-9, terminate */
-
-            return (AE_BAD_HEX_CONSTANT);
+            if (Base == ACPI_ANY_BASE)
+            {
+                goto ErrorExit;
+            }
+            else
+            {
+                break;
+            }
         }
 
-        /* Convert and insert the hex digit */
-
-        ThisDigit = AcpiUtAsciiCharToHex (ThisDigit);
-        ReturnValue = (ReturnValue << 4) | ThisDigit;
-
+        ReturnValue *= Base;
+        ReturnValue += ThisDigit;
         String++;
-        ValidDigits++;
+    }
+
+    /* All done, normal exit */
+
+AllDone:
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Converted value: %8.8X%8.8X\n",
+        ACPI_FORMAT_UINT64 (ReturnValue)));
+
+    *RetInteger = ReturnValue;
+    return_ACPI_STATUS (AE_OK);
+
+
+ErrorExit:
+
+    /* Base was set/validated above (10 or 16) */
+
+    if (Base == 10)
+    {
+        return_ACPI_STATUS (AE_BAD_DECIMAL_CONSTANT);
+    }
+    else
+    {
+        return_ACPI_STATUS (AE_BAD_HEX_CONSTANT);
+    }
+}
+
+
+#ifdef _OBSOLETE_FUNCTIONS
+/* Removed: 01/2016 */
+
+/*******************************************************************************
+ *
+ * FUNCTION:    strtoul64
+ *
+ * PARAMETERS:  String              - Null terminated string
+ *              Terminater          - Where a pointer to the terminating byte
+ *                                    is returned
+ *              Base                - Radix of the string
+ *
+ * RETURN:      Converted value
+ *
+ * DESCRIPTION: Convert a string into an unsigned value.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+strtoul64 (
+    char                    *String,
+    UINT32                  Base,
+    UINT64                  *RetInteger)
+{
+    UINT32                  Index;
+    UINT32                  Sign;
+    UINT64                  ReturnValue = 0;
+    ACPI_STATUS             Status = AE_OK;
+
+
+    *RetInteger = 0;
+
+    switch (Base)
+    {
+    case 0:
+    case 8:
+    case 10:
+    case 16:
+
+        break;
+
+    default:
+        /*
+         * The specified Base parameter is not in the domain of
+         * this function:
+         */
+        return (AE_BAD_PARAMETER);
+    }
+
+    /* Skip over any white space in the buffer: */
+
+    while (isspace ((int) *String) || *String == '\t')
+    {
+        ++String;
+    }
+
+    /*
+     * The buffer may contain an optional plus or minus sign.
+     * If it does, then skip over it but remember what is was:
+     */
+    if (*String == '-')
+    {
+        Sign = ACPI_SIGN_NEGATIVE;
+        ++String;
+    }
+    else if (*String == '+')
+    {
+        ++String;
+        Sign = ACPI_SIGN_POSITIVE;
+    }
+    else
+    {
+        Sign = ACPI_SIGN_POSITIVE;
+    }
+
+    /*
+     * If the input parameter Base is zero, then we need to
+     * determine if it is octal, decimal, or hexadecimal:
+     */
+    if (Base == 0)
+    {
+        if (*String == '0')
+        {
+            if (tolower ((int) *(++String)) == 'x')
+            {
+                Base = 16;
+                ++String;
+            }
+            else
+            {
+                Base = 8;
+            }
+        }
+        else
+        {
+            Base = 10;
+        }
+    }
+
+    /*
+     * For octal and hexadecimal bases, skip over the leading
+     * 0 or 0x, if they are present.
+     */
+    if (Base == 8 && *String == '0')
+    {
+        String++;
+    }
+
+    if (Base == 16 &&
+        *String == '0' &&
+        tolower ((int) *(++String)) == 'x')
+    {
+        String++;
+    }
+
+    /* Main loop: convert the string to an unsigned long */
+
+    while (*String)
+    {
+        if (isdigit ((int) *String))
+        {
+            Index = ((UINT8) *String) - '0';
+        }
+        else
+        {
+            Index = (UINT8) toupper ((int) *String);
+            if (isupper ((int) Index))
+            {
+                Index = Index - 'A' + 10;
+            }
+            else
+            {
+                goto ErrorExit;
+            }
+        }
+
+        if (Index >= Base)
+        {
+            goto ErrorExit;
+        }
+
+        /* Check to see if value is out of range: */
+
+        if (ReturnValue > ((ACPI_UINT64_MAX - (UINT64) Index) /
+            (UINT64) Base))
+        {
+            goto ErrorExit;
+        }
+        else
+        {
+            ReturnValue *= Base;
+            ReturnValue += Index;
+        }
+
+        ++String;
+    }
+
+
+    /* If a minus sign was present, then "the conversion is negated": */
+
+    if (Sign == ACPI_SIGN_NEGATIVE)
+    {
+        ReturnValue = (ACPI_UINT32_MAX - ReturnValue) + 1;
     }
 
     *RetInteger = ReturnValue;
-    return (AE_OK);
+    return (Status);
+
+
+ErrorExit:
+    switch (Base)
+    {
+    case 8:
+
+        Status = AE_BAD_OCTAL_CONSTANT;
+        break;
+
+    case 10:
+
+        Status = AE_BAD_DECIMAL_CONSTANT;
+        break;
+
+    case 16:
+
+        Status = AE_BAD_HEX_CONSTANT;
+        break;
+
+    default:
+
+        /* Base validated above */
+
+        break;
+    }
+
+    return (Status);
 }
+#endif

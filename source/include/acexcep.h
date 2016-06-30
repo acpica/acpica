@@ -201,9 +201,8 @@ typedef struct acpi_exception_info
 #define AE_NOT_CONFIGURED               EXCEP_ENV (0x001C)
 #define AE_ACCESS                       EXCEP_ENV (0x001D)
 #define AE_IO_ERROR                     EXCEP_ENV (0x001E)
-#define AE_CONVERSION_OVERFLOW          EXCEP_ENV (0x001F)
 
-#define AE_CODE_ENV_MAX                 0x001F
+#define AE_CODE_ENV_MAX                 0x001E
 
 
 /*
@@ -337,8 +336,7 @@ static const ACPI_EXCEPTION_INFO    AcpiGbl_ExceptionNames_Env[] =
     EXCEP_TXT ("AE_OWNER_ID_LIMIT",             "There are no more Owner IDs available for ACPI tables or control methods"),
     EXCEP_TXT ("AE_NOT_CONFIGURED",             "The interface is not part of the current subsystem configuration"),
     EXCEP_TXT ("AE_ACCESS",                     "Permission denied for the requested operation"),
-    EXCEP_TXT ("AE_IO_ERROR",                   "An I/O error occurred"),
-    EXCEP_TXT ("AE_CONVERSION_OVERFLOW",        "Overflow during string-to-integer conversion")
+    EXCEP_TXT ("AE_IO_ERROR",                   "An I/O error occurred")
 };
 
 static const ACPI_EXCEPTION_INFO    AcpiGbl_ExceptionNames_Pgm[] =

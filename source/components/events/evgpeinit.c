@@ -408,9 +408,7 @@ AcpiEvMatchGpeMethod (
     ACPI_NAMESPACE_NODE     *MethodNode = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, ObjHandle);
     ACPI_GPE_WALK_INFO      *WalkInfo = ACPI_CAST_PTR (ACPI_GPE_WALK_INFO, Context);
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
-    ACPI_STATUS             Status;
     UINT32                  GpeNumber;
-    UINT64                  TempGpeNumber;
     char                    Name[ACPI_NAME_SIZE + 1];
     UINT8                   Type;
 
@@ -469,9 +467,8 @@ AcpiEvMatchGpeMethod (
 
     /* 4) The last two characters of the name are the hex GPE Number */
 
-    Status = AcpiUtStrtoul64 (&Name[2], 16, ACPI_MAX32_BYTE_WIDTH,
-        &TempGpeNumber);
-    if (ACPI_FAILURE (Status))
+    GpeNumber = strtoul (&Name[2], NULL, 16);
+    if (GpeNumber == ACPI_UINT32_MAX)
     {
         /* Conversion failed; invalid method, just ignore it */
 
@@ -483,7 +480,6 @@ AcpiEvMatchGpeMethod (
 
     /* Ensure that we have a valid GPE number for this GPE block */
 
-    GpeNumber = (UINT32) TempGpeNumber;
     GpeEventInfo = AcpiEvLowGetGpeInfo (GpeNumber, WalkInfo->GpeBlock);
     if (!GpeEventInfo)
     {
