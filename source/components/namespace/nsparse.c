@@ -215,9 +215,7 @@ AcpiNsExecuteTable (
         goto Cleanup;
     }
 
-    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     Status = AcpiPsExecuteTable (Info);
-    (void) AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
 Cleanup:
     if (Info)
