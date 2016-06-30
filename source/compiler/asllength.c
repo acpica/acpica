@@ -231,7 +231,7 @@ LnPackageLengthWalk (
                 current = current->Next;
             }
 
-/*
+
             current = Op->Asl.CommentAfter;
             while (current!=0)
             {
@@ -240,7 +240,7 @@ LnPackageLengthWalk (
                 TotalCommentLength += commentLength;
                 current = current->Next;
             }
-*/
+
         }
 
 
