@@ -292,8 +292,9 @@ AcpiExLoadTableOp (
          * Find the node referenced by the RootPathString. This is the
          * location within the namespace where the table will be loaded.
          */
-        Status = AcpiNsGetNode (StartNode, Operand[3]->String.Pointer,
-            ACPI_NS_SEARCH_PARENT, &ParentNode);
+        Status = AcpiNsGetNodeUnlocked (StartNode,
+            Operand[3]->String.Pointer, ACPI_NS_SEARCH_PARENT,
+            &ParentNode);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -316,8 +317,9 @@ AcpiExLoadTableOp (
 
         /* Find the node referenced by the ParameterPathString */
 
-        Status = AcpiNsGetNode (StartNode, Operand[4]->String.Pointer,
-            ACPI_NS_SEARCH_PARENT, &ParameterNode);
+        Status = AcpiNsGetNodeUnlocked (StartNode,
+            Operand[4]->String.Pointer, ACPI_NS_SEARCH_PARENT,
+            &ParameterNode);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
