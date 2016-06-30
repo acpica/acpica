@@ -119,6 +119,7 @@
 #include "acparser.h"
 #include "acdispat.h"
 #include "actables.h"
+#include "acinterp.h"
 
 
 #define _COMPONENT          ACPI_NAMESPACE
@@ -331,7 +332,9 @@ AcpiNsOneCompleteParse (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
         "*PARSE* pass %u parse\n", PassNumber));
+    AcpiExEnterInterpreter ();
     Status = AcpiPsParseAml (WalkState);
+    AcpiExExitInterpreter ();
 
 Cleanup:
     AcpiPsDeleteParseTree (ParseRoot);

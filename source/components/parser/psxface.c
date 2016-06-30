@@ -409,7 +409,9 @@ AcpiPsExecuteTable (
     /*
      * Parse the AML, WalkState will be deleted by ParseAml
      */
+    AcpiExEnterInterpreter ();
     Status = AcpiPsParseAml (WalkState);
+    AcpiExExitInterpreter ();
     WalkState = NULL;
 
 Cleanup:

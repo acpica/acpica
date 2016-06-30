@@ -882,7 +882,9 @@ AcpiDsTerminateControlMethod (
         {
             /* Delete any direct children of (created by) this method */
 
+            (void) AcpiExExitInterpreter ();
             AcpiNsDeleteNamespaceSubtree (WalkState->MethodNode);
+            (void) AcpiExEnterInterpreter ();
 
             /*
              * Delete any objects that were created by this method
@@ -893,7 +895,9 @@ AcpiDsTerminateControlMethod (
              */
             if (MethodDesc->Method.InfoFlags & ACPI_METHOD_MODIFIED_NAMESPACE)
             {
+                (void) AcpiExExitInterpreter ();
                 AcpiNsDeleteNamespaceByOwner (MethodDesc->Method.OwnerId);
+                (void) AcpiExEnterInterpreter ();
                 MethodDesc->Method.InfoFlags &=
                     ~ACPI_METHOD_MODIFIED_NAMESPACE;
             }
