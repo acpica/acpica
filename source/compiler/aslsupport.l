@@ -571,16 +571,19 @@ addToCommentAfterList (
     char                     *toAdd,
     ACPI_PARSE_OBJECT        *Node)
 {
+    struct acpi_comment_list_node *Current = Gbl_Latest_Parse_Node->Asl.CommentAfter;
+    struct acpi_comment_list_node *NewNode = UtCommentNodeCalloc();
 
-    struct acpi_comment_list_node *Head = Node->Asl.CommentAfter;
-    struct acpi_comment_list_node *Current = Head;
+    NewNode->Comment = UtStringCacheCalloc (strlen (toAdd) + 1);
+    strcpy(NewNode->Comment, toAdd);
+    printf("NewNode->Comment: %s\n", NewNode->Comment);
+   
 
     printf("addToCommentAfterList\n");
     if (Current==NULL)
     {
         printf("create new list\n");
-        Head = UtCommentNodeCalloc();
-        Current = Head;
+        Gbl_Latest_Parse_Node->Asl.CommentAfter = NewNode;
     }
     else 
     {
@@ -588,12 +591,15 @@ addToCommentAfterList (
         {
             Current = Current->Next;
         }
-        Current->Next = UtCommentNodeCalloc();
+        Current->Next = NewNode;
         Current = Current->Next;
     }
-
-    Current->Comment = toAdd;
-   
+/*
+    printf("Copying comment");
+    Current->Comment = UtStringCacheCalloc (strlen (toAdd) + 1);
+    strcpy(Current->Comment, toAdd);
+    printf("Current->Comment: %s\n", Head->Comment);
+*/ 
     return;
 }
 
