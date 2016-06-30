@@ -324,6 +324,8 @@ CgWriteAmlOpcode (
         UINT32                  Len;
         UINT8                   LenBytes[4];
     } PkgLen;
+    struct acpi_comment_list_node *Current;
+    UINT8 CommentOpcode = (UINT8)AML_COMMENT_OP;
 
 
     /* We expect some DEFAULT_ARGs, just ignore them */
@@ -378,6 +380,36 @@ CgWriteAmlOpcode (
         break;
 
     default:
+
+        /* Before printing the bytecode, generate comment byte codes 
+         * associated with this node.
+         */
+
+        Current = Op->Asl.CommentAfter;
+        if (Gbl_CaptureComments && Current!=0)
+        {
+            //Print the entire list.
+            while (Current!=0)
+            {
+                CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+                CgLocalWriteAmlData (Op, &INLINE_COMMENT_OPTION, 1);
+                // +1 is what emits the 0x00 at the end of this opcode.
+                CgLocalWriteAmlData (Op, Current->Comment, strlen(Current->Comment)+1); 
+                Current = Current->Next;
+            }
+
+            Current = Op->Asl.CommentAfter;
+
+            printf("Here are the inline comments: \n");
+            while (Current!=0)
+            {
+                printf("%s\n", Current->Comment);
+                Current = Current->Next;
+            }
+            printf("End inline comments.\n");
+            
+            Op->Asl.CommentAfter = 0;
+        }
 
         /* Check for two-byte opcode */
 
@@ -667,6 +699,28 @@ CgWriteNode (
             CgLocalWriteAmlData (Op, current->Comment, strlen(current->Comment)+1); 
             current = current->Next;
         }
+
+        current = Op->Asl.CommentAfter;
+
+        while (current!=0)
+        {
+            CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+            CgLocalWriteAmlData (Op, &INLINE_COMMENT_OPTION, 1);
+            // +1 is what emits the 0x00 at the end of this opcode.
+            CgLocalWriteAmlData (Op, current->Comment, strlen(current->Comment)+1); 
+            current = current->Next;
+        }
+
+ 
+        printf("Here are the inline comments: \n");
+        while (current!=0)
+        {
+            printf("%s\n", current->Comment);
+            current = current->Next;
+        }
+        printf("End inline comments.\n");
+        Op->Asl.CommentAfter = 0;
+
     }
 
     /* Always check for DEFAULT_ARG and other "Noop" nodes */

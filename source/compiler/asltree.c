@@ -225,14 +225,16 @@ TrAllocateNode (
     Op->Asl.CommentAfter      = NULL;
 
 
+    UtSetParseOpName (Op);
 
     /* The following is for capturing comments */
     if(Gbl_CaptureComments)
     {
+        Gbl_Previous_Parse_Node   = Gbl_Latest_Parse_Node;
         Gbl_Latest_Parse_Node     = Op;
         printf("===========Set latest parse node to this node.\n");
 
-        printf("Op->Asl.ParseOpcode       = %d\n", (UINT16) ParseOpcode);
+        printf("Op->Asl.ParseOpName       = %s\n", Op->Asl.ParseOpName);
     }
 
     if(Gbl_CaptureComments && Gbl_Comment_List_Head!=0)
@@ -246,7 +248,6 @@ TrAllocateNode (
         Op->Asl.CommentList = NULL;
     }
 
-    UtSetParseOpName (Op);
     return (Op);
 }
 
@@ -1319,6 +1320,11 @@ TrLinkChildren (
 
     va_end(ap);
     DbgPrint (ASL_PARSE_OUTPUT, "\n\n");
+
+    //set this node as the latest parse node
+    Gbl_Previous_Parse_Node   = Gbl_Latest_Parse_Node;
+    Gbl_Latest_Parse_Node     = Op;
+ 
     return (Op);
 }
 

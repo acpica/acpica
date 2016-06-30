@@ -199,7 +199,7 @@ LnPackageLengthWalk (
     UINT32 TotalCommentLength;
 
     // used for calculating comment lengths
-    struct acpi_comment_list_node *current = Op->Asl.CommentList; 
+    struct acpi_comment_list_node *current = 0;
 
     CgGenerateAmlLengths (Op);
 
@@ -219,14 +219,28 @@ LnPackageLengthWalk (
  
         TotalCommentLength = 0;
         if(Gbl_CaptureComments && Op->Asl.CommentList!=0)
-        { 
+        {
+
+            printf("Calculating comment lengths for %s\n",  Op->Asl.ParseOpName);
+            current = Op->Asl.CommentList; 
             while (current!=0)
             {
                 commentLength = strlen(current->Comment)+3;
-                printf("Length of comment +3 (including space for 0xA9 and 0x00): %d\n", commentLength);
+                printf("Length of standard comment +3 (including space for 0xA9 and 0x00): %d\n", commentLength);
                 TotalCommentLength += commentLength;
                 current = current->Next;
             }
+
+/*
+            current = Op->Asl.CommentAfter;
+            while (current!=0)
+            {
+                commentLength = strlen(current->Comment)+3;
+                printf("Length of inline comment +3 (including space for 0xA9 and 0x00): %d\n", commentLength);
+                TotalCommentLength += commentLength;
+                current = current->Next;
+            }
+*/
         }
 
 

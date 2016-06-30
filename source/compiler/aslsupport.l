@@ -568,13 +568,19 @@ addToCommentList (
 
 static void
 addToCommentAfterList (
-    char               *toAdd,
-    struct acpi_comment_list_node  *Head)
+    char                     *toAdd,
+    ACPI_PARSE_OBJECT        *Node)
 {
+
+    struct acpi_comment_list_node *Head = Node->Asl.CommentAfter;
     struct acpi_comment_list_node *Current = Head;
+
+    printf("addToCommentAfterList\n");
     if (Current==NULL)
     {
-        Current = UtCommentNodeCalloc();
+        printf("create new list\n");
+        Head = UtCommentNodeCalloc();
+        Current = Head;
     }
     else 
     {
@@ -743,7 +749,19 @@ loop:
         {
             if(Gbl_Latest_Parse_Node!=NULL)
             {
-                addToCommentAfterList (CommentString, Gbl_Latest_Parse_Node->Asl.CommentAfter);
+                addToCommentAfterList (CommentString, Gbl_Latest_Parse_Node);
+
+                printf("Gbl_Latest_Parse_Node info: \n");
+                printf("name: %s\n", Gbl_Latest_Parse_Node->Asl.ParseOpName);
+                printf("Gbl_Previous_Parse_Node info: \n");
+                printf("name: %s\n", Gbl_Previous_Parse_Node->Asl.ParseOpName);
+
+                /* edit the package lengths here... Could be dangerous if parse nodes 
+                 * associated with comments get removed... See 
+                 * LnPackageLengthWalk() in asllength.c 
+                 * for an explanation for the +3.
+                 */
+                Gbl_TotalInlineCommentLength += strlen(CommentString)+3;
             }
             else
             {
