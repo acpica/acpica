@@ -160,6 +160,10 @@ static void
 AeTestSleepData (
     void);
 
+static void
+AeTestStringConversions (
+    void);
+
 #if (!ACPI_REDUCED_HARDWARE)
 static void
 AfInstallGpeBlock (
@@ -658,6 +662,98 @@ AeTestSleepData (
     }
 }
 
+/******************************************************************************
+ *
+ * FUNCTION:    AeTestStringConversions
+ *
+ * DESCRIPTION: Exercise AcpiUtStrtoul64
+ *
+ *****************************************************************************/
+
+static void
+AeTestStringConversions (
+    void)
+{
+    UINT64                  TempGpeNumber;
+    UINT64                  Value;
+    ACPI_STATUS             Status;
+
+
+    /* Check for GPE 2-digit values (_Lxx and _Exx) */
+
+    Status = AcpiUtStrtoul64 ("JK", 16, ACPI_MAX32_BYTE_WIDTH,
+        &TempGpeNumber);
+    ACPI_CHECK_STATUS (AcpiUtStrtoul64, Status, AE_BAD_HEX_CONSTANT);
+
+    Status = AcpiUtStrtoul64 ("44", 16, ACPI_MAX32_BYTE_WIDTH,
+        &TempGpeNumber);
+    ACPI_CHECK_OK (AcpiUtStrtoul64, Status);
+
+    Status = AcpiUtStrtoul64 ("8B", 16, ACPI_MAX32_BYTE_WIDTH,
+        &TempGpeNumber);
+    ACPI_CHECK_OK (AcpiUtStrtoul64, Status);
+
+    Status = AcpiUtStrtoul64 ("CC", 16, ACPI_MAX32_BYTE_WIDTH,
+        &TempGpeNumber);
+    ACPI_CHECK_OK (AcpiUtStrtoul64, Status);
+
+    Status = AcpiUtStrtoul64 ("DY", 16, ACPI_MAX32_BYTE_WIDTH,
+        &TempGpeNumber);
+    ACPI_CHECK_STATUS (AcpiUtStrtoul64, Status, AE_BAD_HEX_CONSTANT);
+
+    /* Normal conversions */
+
+    Status = AcpiUtStrtoul64 ("0x", 0, ACPI_MAX64_BYTE_WIDTH, &Value);
+    ACPI_CHECK_STATUS (AcpiUtStrtoul64, Status, AE_BAD_HEX_CONSTANT);
+
+    Status = AcpiUtStrtoul64 ("    utututututu", 16, ACPI_MAX64_BYTE_WIDTH, &Value);
+    ACPI_CHECK_STATUS (AcpiUtStrtoul64, Status, AE_BAD_HEX_CONSTANT);
+
+    Status = AcpiUtStrtoul64 ("    ", 0, ACPI_MAX64_BYTE_WIDTH, &Value);
+    ACPI_CHECK_STATUS (AcpiUtStrtoul64, Status, AE_BAD_PARAMETER);
+
+    Status = AcpiUtStrtoul64 ("", 0, ACPI_MAX64_BYTE_WIDTH, &Value);
+    ACPI_CHECK_STATUS (AcpiUtStrtoul64, Status, AE_BAD_PARAMETER);
+
+    Status = AcpiUtStrtoul64 (NULL, 0, ACPI_MAX64_BYTE_WIDTH, &Value);
+    ACPI_CHECK_STATUS (AcpiUtStrtoul64, Status, AE_BAD_PARAMETER);
+
+    Status = AcpiUtStrtoul64 ("0x         012345678AAAAAAAyyyy", 0, ACPI_MAX64_BYTE_WIDTH, &Value);
+    ACPI_CHECK_STATUS (AcpiUtStrtoul64, Status, AE_BAD_HEX_CONSTANT);
+
+    Status = AcpiUtStrtoul64 ("0x012345678AAAAAAAyyyy", 0, ACPI_MAX64_BYTE_WIDTH, &Value);
+    ACPI_CHECK_STATUS (AcpiUtStrtoul64, Status, AE_BAD_HEX_CONSTANT);
+
+    Status = AcpiUtStrtoul64 ("0123456789ABCDEF", 16, ACPI_MAX64_BYTE_WIDTH, &Value);
+    ACPI_CHECK_OK (AcpiUtStrtoul64, Status);
+
+    Status = AcpiUtStrtoul64 ("0x0123456789ABCDEF", 0, ACPI_MAX64_BYTE_WIDTH, &Value);
+    ACPI_CHECK_OK (AcpiUtStrtoul64, Status);
+
+    Status = AcpiUtStrtoul64 ("0x01WXYZ", 0, ACPI_MAX64_BYTE_WIDTH, &Value);
+    ACPI_CHECK_STATUS (AcpiUtStrtoul64, Status, AE_BAD_HEX_CONSTANT);
+
+    Status = AcpiUtStrtoul64 ("0x01234567", 0, ACPI_MAX32_BYTE_WIDTH, &Value);
+    ACPI_CHECK_OK (AcpiUtStrtoul64, Status);
+
+    Status = AcpiUtStrtoul64 ("012345678", 0, ACPI_MAX64_BYTE_WIDTH, &Value);
+    ACPI_CHECK_OK (AcpiUtStrtoul64, Status);
+
+    Status = AcpiUtStrtoul64 ("012345678", 10, ACPI_MAX64_BYTE_WIDTH, &Value);
+    ACPI_CHECK_OK (AcpiUtStrtoul64, Status);
+
+    /* Overflow */
+
+    Status = AcpiUtStrtoul64 ("01234567877777777777777777777777777", 10, ACPI_MAX32_BYTE_WIDTH, &Value);
+    ACPI_CHECK_STATUS (AcpiUtStrtoul64, Status, AE_CONVERSION_OVERFLOW);
+
+    Status = AcpiUtStrtoul64 ("0x12345678AAAAAAAAAAAAAAAAAAAA", 16, ACPI_MAX64_BYTE_WIDTH, &Value);
+    ACPI_CHECK_STATUS (AcpiUtStrtoul64, Status, AE_CONVERSION_OVERFLOW);
+
+    Status = AcpiUtStrtoul64 ("0x0000000012345678BBBBCCCC", 16, ACPI_MAX64_BYTE_WIDTH, &Value);
+    ACPI_CHECK_OK (AcpiUtStrtoul64, Status);
+}
+
 
 /******************************************************************************
  *
@@ -935,6 +1031,10 @@ AeMiscellaneousTests (
 
     Status = AcpiReleaseGlobalLock (LockHandle2);
     ACPI_CHECK_OK (AcpiReleaseGlobalLock, Status);
+
+    /* Test conversion routines */
+
+    AeTestStringConversions ();
 
 #endif /* !ACPI_REDUCED_HARDWARE */
 }

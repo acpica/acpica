@@ -345,6 +345,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\uthex.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utmath.c"
 					>
 				</File>
