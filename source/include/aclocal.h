@@ -1077,7 +1077,7 @@ typedef struct acpi_parse_obj_asl
 
     /* these are used for the -q option */
     struct acpi_comment_list_node   *CommentList;      /* comments that appears before this node */
-    struct acpi_comment_list_node   *CommentAfter; /* comments that appears after this node that is on the same line. */
+    char                            *InlineComment; /* comments that appears after this node that is on the same line. */
 
 } ACPI_PARSE_OBJ_ASL;
 

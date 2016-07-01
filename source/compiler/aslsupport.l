@@ -554,53 +554,46 @@ addToCommentList (
 
 /*******************************************************************************
  *
- * FUNCTION:    addToCommentAfterList
+ * FUNCTION:    appendInlineComment
  *
- * PARAMETERS:  toAdd              - Contains the comment to be inserted
- *              head               - the list head of comments to add to
+ * PARAMETERS:  InlineComment      - Append to the end of this string.
+ *              toAdd              - Contains the comment to be inserted
  *
  * RETURN:      None
  *
- * DESCRIPTION: Add a comment node to the end of a particular parse node's 
- *              comment list.
+ * DESCRIPTION: Concatenate
  *
  ******************************************************************************/
 
-static void
-addToCommentAfterList (
-    char                     *toAdd,
-    ACPI_PARSE_OBJECT        *Node)
+static char*
+appendInlineComment (
+    char                     *InlineComment,
+    char                     *ToAdd)
 {
-    struct acpi_comment_list_node *Current = Gbl_Latest_Parse_Node->Asl.CommentAfter;
-    struct acpi_comment_list_node *NewNode = UtCommentNodeCalloc();
+    printf("Appending to current inline comment.\n");
 
-    NewNode->Comment = UtStringCacheCalloc (strlen (toAdd) + 1);
-    strcpy(NewNode->Comment, toAdd);
-    printf("NewNode->Comment: %s\n", NewNode->Comment);
-   
+    char*  Str  = NULL;
+    UINT32 Size = 0;
+    if(InlineComment==NULL)
+    {
+        return ToAdd;
+    }
 
-    printf("addToCommentAfterList\n");
-    if (Current==NULL)
+
+    Size = strlen (InlineComment);
+
+    if(ToAdd!=NULL)
     {
-        printf("create new list\n");
-        Gbl_Latest_Parse_Node->Asl.CommentAfter = NewNode;
+        Size+= strlen (ToAdd);
     }
-    else 
-    {
-        while((Current->Next)!=NULL)
-        {
-            Current = Current->Next;
-        }
-        Current->Next = NewNode;
-        Current = Current->Next;
-    }
-/*
-    printf("Copying comment");
-    Current->Comment = UtStringCacheCalloc (strlen (toAdd) + 1);
-    strcpy(Current->Comment, toAdd);
-    printf("Current->Comment: %s\n", Head->Comment);
-*/ 
-    return;
+
+
+    Str = UtStringCacheCalloc (Size+1);
+    strcpy(Str, InlineComment);
+    strcat(Str, ToAdd);
+    Str[strlen(Str)] = 0; //null terminate
+
+    return Str;
 }
 
 
@@ -755,19 +748,9 @@ loop:
         {
             if(Gbl_Latest_Parse_Node!=NULL)
             {
-                addToCommentAfterList (CommentString, Gbl_Latest_Parse_Node);
-
-                printf("Gbl_Latest_Parse_Node info: \n");
-                printf("name: %s\n", Gbl_Latest_Parse_Node->Asl.ParseOpName);
-                printf("Gbl_Previous_Parse_Node info: \n");
-                printf("name: %s\n", Gbl_Previous_Parse_Node->Asl.ParseOpName);
-
-                /* edit the package lengths here... Could be dangerous if parse nodes 
-                 * associated with comments get removed... See 
-                 * LnPackageLengthWalk() in asllength.c 
-                 * for an explanation for the +3.
-                 */
-                Gbl_TotalInlineCommentLength += strlen(CommentString)+3;
+                Gbl_Latest_Parse_Node->Asl.InlineComment = 
+                appendInlineComment(Gbl_Latest_Parse_Node->Asl.InlineComment,
+                                    CommentString);
             }
             else
             {
@@ -826,7 +809,6 @@ AslDoCommentType2 (
     char                          *StringBuffer = MsgBuffer;
     char                          *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
     char                          *CommentString;
-    struct acpi_comment_list_node *cNode;
 
     printf("Single-line comment\n");
 
@@ -886,9 +868,9 @@ AslDoCommentType2 (
 
         if(Gbl_Previous_Parse_Node!=NULL)
         {
-            cNode = UtCommentNodeCalloc ();
-            cNode->Comment = CommentString;
-            Gbl_Previous_Parse_Node->Asl.CommentAfter = cNode;
+            Gbl_Previous_Parse_Node->Asl.InlineComment = 
+            appendInlineComment(Gbl_Previous_Parse_Node->Asl.InlineComment,
+                                CommentString);
         }
         else
         {

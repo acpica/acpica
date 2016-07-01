@@ -222,7 +222,7 @@ TrAllocateNode (
     Op->Asl.LogicalLineNumber = Gbl_LogicalLineNumber;
     Op->Asl.LogicalByteOffset = Gbl_CurrentLineOffset;
     Op->Asl.Column            = Gbl_CurrentColumn;
-    Op->Asl.CommentAfter      = NULL;
+    Op->Asl.InlineComment     = NULL;
 
 
     UtSetParseOpName (Op);

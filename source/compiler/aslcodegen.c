@@ -324,7 +324,6 @@ CgWriteAmlOpcode (
         UINT32                  Len;
         UINT8                   LenBytes[4];
     } PkgLen;
-    struct acpi_comment_list_node *Current;
     UINT8 CommentOpcode = (UINT8)AML_COMMENT_OP;
 
 
@@ -385,30 +384,14 @@ CgWriteAmlOpcode (
          * associated with this node.
          */
 
-        Current = Op->Asl.CommentAfter;
-        if (Gbl_CaptureComments && Current!=0)
+        if (Gbl_CaptureComments && Op->Asl.InlineComment!=NULL)
         {
-            //Print the entire list.
-            while (Current!=0)
-            {
-                CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-                CgLocalWriteAmlData (Op, &INLINE_COMMENT_OPTION, 1);
-                // +1 is what emits the 0x00 at the end of this opcode.
-                CgLocalWriteAmlData (Op, Current->Comment, strlen(Current->Comment)+1); 
-                Current = Current->Next;
-            }
+            CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+            CgLocalWriteAmlData (Op, &INLINE_COMMENT_OPTION, 1);
+            // +1 is what emits the 0x00 at the end of this opcode.
+            CgLocalWriteAmlData (Op, Op->Asl.InlineComment, strlen(Op->Asl.InlineComment)+1); 
 
-            Current = Op->Asl.CommentAfter;
-
-            printf("Here are the inline comments: \n");
-            while (Current!=0)
-            {
-                printf("%s\n", Current->Comment);
-                Current = Current->Next;
-            }
-            printf("End inline comments.\n");
-            
-            Op->Asl.CommentAfter = 0;
+            Op->Asl.InlineComment = NULL;
         }
 
         /* Check for two-byte opcode */
@@ -699,27 +682,17 @@ CgWriteNode (
             CgLocalWriteAmlData (Op, current->Comment, strlen(current->Comment)+1); 
             current = current->Next;
         }
+        
+        /* print any Inline comments associated with this node */
 
-        current = Op->Asl.CommentAfter;
-
-        while (current!=0)
+        if (Op->Asl.InlineComment!=NULL)
         {
             CgLocalWriteAmlData (Op, &CommentOpcode, 1);
             CgLocalWriteAmlData (Op, &INLINE_COMMENT_OPTION, 1);
             // +1 is what emits the 0x00 at the end of this opcode.
-            CgLocalWriteAmlData (Op, current->Comment, strlen(current->Comment)+1); 
-            current = current->Next;
+            CgLocalWriteAmlData (Op, Op->Asl.InlineComment, strlen(Op->Asl.InlineComment)+1); 
+            Op->Asl.InlineComment = NULL;
         }
-
- 
-        printf("Here are the inline comments: \n");
-        while (current!=0)
-        {
-            printf("%s\n", current->Comment);
-            current = current->Next;
-        }
-        printf("End inline comments.\n");
-        Op->Asl.CommentAfter = 0;
 
     }
 

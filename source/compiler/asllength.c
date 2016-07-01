@@ -231,14 +231,11 @@ LnPackageLengthWalk (
                 current = current->Next;
             }
 
-
-            current = Op->Asl.CommentAfter;
-            while (current!=0)
+            if (Op->Asl.InlineComment!=NULL)
             {
-                commentLength = strlen(current->Comment)+3;
+                commentLength = strlen(Op->Asl.InlineComment)+3;
                 printf("Length of inline comment +3 (including space for 0xA9 and 0x00): %d\n", commentLength);
                 TotalCommentLength += commentLength;
-                current = current->Next;
             }
 
         }
