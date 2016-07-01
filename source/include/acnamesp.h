@@ -216,11 +216,6 @@ AcpiNsParseTable (
     ACPI_NAMESPACE_NODE     *StartNode);
 
 ACPI_STATUS
-AcpiNsExecuteTable (
-    UINT32                  TableIndex,
-    ACPI_NAMESPACE_NODE     *StartNode);
-
-ACPI_STATUS
 AcpiNsOneCompleteParse (
     UINT32                  PassNumber,
     UINT32                  TableIndex,

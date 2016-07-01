@@ -183,7 +183,7 @@ AcpiLoadTables (
             "While loading namespace from ACPI tables"));
     }
 
-    if (AcpiGbl_ParseTableAsTermList || !AcpiGbl_GroupModuleLevelCode)
+    if (!AcpiGbl_GroupModuleLevelCode)
     {
         /*
          * Initialize the objects that remain uninitialized. This

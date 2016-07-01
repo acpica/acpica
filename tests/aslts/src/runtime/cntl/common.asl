@@ -1712,7 +1712,6 @@ Name(TFN0, Package() {
 	"ns-fullpath.asl",
 	"scope.asl",
 	"object.asl",
-	"order.asl",
 
 
 // below are incorrect yet:
