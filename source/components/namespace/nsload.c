@@ -252,7 +252,7 @@ Unlock:
      * other ACPI implementations. Optionally, the execution can be deferred
      * until later, see AcpiInitializeObjects.
      */
-    if (!AcpiGbl_ParseTableAsTermList && !AcpiGbl_GroupModuleLevelCode)
+    if (!AcpiGbl_GroupModuleLevelCode)
     {
         AcpiNsExecModuleCodeList ();
     }
