@@ -383,6 +383,9 @@ AcpiDmBlockType (
             return (BLOCK_NONE);
         }
 
+    case AML_COMMENT_OP:
+         return (BLOCK_COMMENT);
+
         /*lint -fallthrough */
 
     default:
@@ -617,6 +620,13 @@ AcpiDmDescendingOp (
             }
 
             /* Fallthrough */
+
+        case AML_COMMENT_OP:
+            if(Op->Common.Opt==1) //take care of the case with inline comments.
+            {
+                AcpiDmIndent (Level);
+            }
+            break;
 
         default:
 
@@ -934,7 +944,7 @@ AcpiDmDescendingOp (
         }
     }
     
-//    AcpiOsPrintf (" [hello descending world]");
+    // AcpiOsPrintf (" [hello descending world]");
 
     return (AE_OK);
 }
@@ -1066,6 +1076,10 @@ AcpiDmAscendingOp (
             }
         }
         break;
+ 
+
+    case BLOCK_COMMENT: //Do nothing with the comment
+        break;
 
     case BLOCK_NONE:
     default:
@@ -1172,6 +1186,6 @@ AcpiDmAscendingOp (
     }
 
 
-    //AcpiOsPrintf (" [hello ascending world]");
+    // AcpiOsPrintf (" [hello ascending world]");
     return (AE_OK);
 }

@@ -171,6 +171,7 @@ AcpiPsGetArguments (
     ACPI_STATUS             Status = AE_OK;
     ACPI_PARSE_OBJECT       *Arg = NULL;
     const ACPI_OPCODE_INFO  *OpInfo;
+    BOOLEAN                 IsInlineComment = FALSE;
 
 
     ACPI_FUNCTION_TRACE_PTR (PsGetArguments, WalkState);
@@ -218,16 +219,27 @@ AcpiPsGetArguments (
 
         if (Arg && Arg->Common.Value.Integer == 0x01)
         {
-            printf("Standard comment!");
+            printf("Standard comment!\n");
+            IsInlineComment = FALSE;
         }
+        else if (Arg && Arg->Common.Value.Integer == 0x02)
+        {
+            printf("Inline comment!\n");
+            IsInlineComment = TRUE;
+        }
+        
+        printf("Integer: %d\n", (int)Arg->Common.Value.Integer);
+        Op->Common.Opt = Arg->Common.Value.Integer;
 
-        Op->Common.Value.Integer = Arg->Common.Value.Integer;
-
+        printf("Integer again: %d\n", (int)Op->Common.Opt);
         INCREMENT_ARG_LIST (WalkState->ArgTypes);
-
 
         WalkState->Aml = WalkState->ParserState.Aml;
 
+        /* There's something very strange going on with AcpiPsGetNextArg.
+         * It seems like it's overwriting some of the Op fields. Even 
+         * newly added fields such as Op->Common.Value.Opt gets overwritten.
+         */
         Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
             GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
         if (ACPI_FAILURE (Status))
@@ -237,7 +249,16 @@ AcpiPsGetArguments (
 
         //printf("Comment captured: %s\n", Arg->Common.Value.String);
 
-        Op->Common.Value.String = Arg->Common.Value.String;
+        if(IsInlineComment)
+        {
+             Op->Common.Value.String = Arg->Common.Value.String;
+             Op->Common.Opt = 2;
+        }
+        else
+        {
+            Op->Common.Value.String = Arg->Common.Value.String;
+            Op->Common.Opt = 1;
+        }
 
         break; 
 

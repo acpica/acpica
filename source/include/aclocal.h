@@ -990,7 +990,8 @@ typedef union acpi_parse_value
     UINT8                           DisasmFlags;    /* Used during AML disassembly */\
     UINT8                           DisasmOpcode;   /* Subtype used for disassembly */\
     char                            *OperatorSymbol;/* Used for C-style operator name strings */\
-    char                            AmlOpName[16])  /* Op name (debug only) */
+    char                            AmlOpName[16])  /* Op name (debug only) */\
+    UINT8                           Opt;            /* Extra integer constant */
 
 
 /* Flags for DisasmFlags field  above */

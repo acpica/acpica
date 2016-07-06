@@ -879,7 +879,14 @@ AcpiDmDisassembleOneOp (
 
     case AML_COMMENT_OP:
 
-        AcpiOsPrintf ("%s", Op->Common.Value.String);
+printf("integer again again: %d\n", Op->Common.Opt);
+
+        if (Op->Common.Opt == 1)
+        {
+            AcpiOsPrintf ("%s", Op->Common.Value.String);
+            AcpiOsPrintf ("\n");
+        }
+
         break;
 
     case AML_BUFFER_OP:
