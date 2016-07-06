@@ -348,6 +348,8 @@ ASL_EXTERN ACPI_PARSE_OBJECT        ASL_INIT_GLOBAL (*Gbl_Previous_Parse_Node, 0
 ASL_EXTERN UINT8                    ASL_INIT_GLOBAL (STANDARD_COMMENT_OPTION, 0x01);
 ASL_EXTERN UINT8                    ASL_INIT_GLOBAL (INLINE_COMMENT_OPTION, 0x02);
 ASL_EXTERN UINT64                   ASL_INIT_GLOBAL (Gbl_TotalInlineCommentLength, 0);
+ASL_EXTERN UINT64                   ASL_INIT_GLOBAL (Gbl_Current_Contiguous_Space, 0);
+
 
 
 

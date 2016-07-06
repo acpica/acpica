@@ -599,6 +599,37 @@ appendInlineComment (
 
 /*******************************************************************************
  *
+ * FUNCTION:    CountSpacesBefore
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      number of contiguous spaces within the Gbl_Line_Buffer before
+ *              this point when processing the source code.
+ *
+ * DESCRIPTION: Count the amount of contiguous spaces that appear within the 
+ *              Gbl_Line_Buffer before this point in the line buffer.
+ *
+ ******************************************************************************/
+
+static UINT32
+CountSpacesBefore (
+    void)
+{
+    UINT32  Count = 0;
+    char    *BufferPtr = Gbl_LineBufPtr;
+    --BufferPtr; 
+    while (*BufferPtr == ' ')
+    {
+        ++Count;
+        --BufferPtr;
+    }
+    return Count;
+
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AslDoComment
  *
  * PARAMETERS:  none
@@ -625,9 +656,13 @@ AslDoComment (
     char                          *StringBuffer = MsgBuffer;
     char                          *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
     char                          *CommentString;
+    char                          *FinalCommentString;
+    UINT64                        SpaceCount;
 
     printf("Multi-line comment\n");
 
+
+    SpaceCount = CountSpacesBefore ();
     AslInsertLineBuffer ('/');
     *StringBuffer = '/';
     ++StringBuffer;
@@ -748,9 +783,20 @@ loop:
         {
             if(Gbl_Latest_Parse_Node!=NULL)
             {
+                /* pad with extra spaces that appeared in the original code
+                 * to retain the original spacing.
+                 */
+
+                FinalCommentString = UtStringCacheCalloc (strlen (CommentString) + SpaceCount + 1);
+                for (i=0; i<SpaceCount; ++i)
+                {
+                    FinalCommentString[i] = ' ';
+                }
+                strcat(FinalCommentString, CommentString);
+ 
                 Gbl_Latest_Parse_Node->Asl.InlineComment = 
                 appendInlineComment(Gbl_Latest_Parse_Node->Asl.InlineComment,
-                                    CommentString);
+                                    FinalCommentString);
             }
             else
             {
@@ -806,12 +852,16 @@ AslDoCommentType2 (
     void)
 {
     int                           c;
+    int                           i;
     char                          *StringBuffer = MsgBuffer;
     char                          *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
     char                          *CommentString;
-
+    char                          *FinalCommentString;
+    UINT32                        SpaceCount;
     printf("Single-line comment\n");
 
+
+    SpaceCount = CountSpacesBefore ();
     AslInsertLineBuffer ('/');
     *StringBuffer = '/';
     ++StringBuffer;
@@ -868,9 +918,17 @@ AslDoCommentType2 (
 
         if(Gbl_Previous_Parse_Node!=NULL)
         {
-            Gbl_Previous_Parse_Node->Asl.InlineComment = 
-            appendInlineComment(Gbl_Previous_Parse_Node->Asl.InlineComment,
-                                CommentString);
+                FinalCommentString = UtStringCacheCalloc (strlen (CommentString) + SpaceCount + 1);
+                for (i=0; i<SpaceCount; ++i)
+                {
+                    FinalCommentString[i] = ' ';
+                }
+                strcat(FinalCommentString, CommentString);
+ 
+                Gbl_Previous_Parse_Node->Asl.InlineComment = 
+                appendInlineComment(Gbl_Previous_Parse_Node->Asl.InlineComment,
+                                    FinalCommentString);
+ 
         }
         else
         {
