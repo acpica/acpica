@@ -253,6 +253,9 @@ AcpiPsGetArguments (
         {
              Op->Common.Value.String = Arg->Common.Value.String;
              Op->Common.Opt = 2;
+             AcpiGbl_CurrentInlineCommentNode = Op;
+             printf("AcpiGbl_CurrentInlineCommentNode set to: %s\n", 
+                     AcpiGbl_CurrentInlineCommentNode->Common.Value.String);
         }
         else
         {
@@ -621,6 +624,17 @@ AcpiPsParseLoop (
         if (!Op)
         {
             Status = AcpiPsCreateOp (WalkState, AmlOpStart, &Op);
+
+            // Add an inline comment to this, if there exists one.
+            if (AcpiGbl_CurrentInlineCommentNode!=NULL && (Op->Common.AmlOpcode!=AML_COMMENT_OP))
+            {
+                Op->Common.InlineComment = AcpiGbl_CurrentInlineCommentNode->Common.Value.String;
+                AcpiGbl_CurrentInlineCommentNode = NULL;
+                printf("Op->Common.AmlOpcode: %x\n", Op->Common.AmlOpcode);
+                printf("Op->Common.InlineComment: %s\n", Op->Common.InlineComment);
+            }
+
+
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_CTRL_PARSE_CONTINUE)
@@ -649,8 +663,6 @@ AcpiPsParseLoop (
 
             AcpiExStartTraceOpcode (Op, WalkState);
         }
-
-
         /*
          * Start ArgCount at zero because we don't know if there are
          * any args yet
@@ -701,6 +713,36 @@ AcpiPsParseLoop (
             continue;
         }
 
+        /*
+         * All arguments have been processed -- Op is complete,
+         * look to see if the previous parsed node was a node containing
+         * an inline comment. If this is the case, associate this Op
+         * with that node.
+         */
+
+
+
+/*    
+        printf("Opcode name:          0x%x.\n", Op->Common.AmlOpcode);
+        printf("previous Opcode name: ");
+        if (WalkState->PrevOp)
+        {
+        printf("0x%x. ", WalkState->PrevOp->Common.AmlOpcode);
+        }
+        printf("\n");
+        if (WalkState->PrevOp && 
+           (WalkState->PrevOp->Common.AmlOpcode == AML_COMMENT_OP) &&
+           (WalkState->PrevOp->Common.Opt == 2))
+        {
+            printf("Setting Inline comment...\n");
+            Op->Common.InlineComment = WalkState->PrevOp->Common.Value.String;
+        }
+        else
+        {
+            printf("Inline comment = NULL...\n");
+            Op->Common.InlineComment = NULL;
+        }
+*/
         /*
          * All arguments have been processed -- Op is complete,
          * prepare for next

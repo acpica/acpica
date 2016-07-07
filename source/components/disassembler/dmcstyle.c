@@ -640,7 +640,7 @@ AcpiDmCloseOperator (
     if (!AcpiGbl_CstyleDisassembly)
     {
         AcpiOsPrintf (")");
-        return;
+        goto PrintInlineComment;
     }
 
     /* Check if we need to add an additional closing paren */
@@ -667,7 +667,7 @@ AcpiDmCloseOperator (
 
         if (Op->Common.DisasmFlags & ACPI_PARSEOP_COMPOUND_ASSIGNMENT)
         {
-            return;
+            goto PrintInlineComment;
         }
 
         /* Emit extra close paren for assignment within an expression */
@@ -688,7 +688,7 @@ AcpiDmCloseOperator (
         {
             AcpiOsPrintf (")");
         }
-        return;
+        goto PrintInlineComment;
 
     /* No need for parens for these */
 
@@ -697,7 +697,7 @@ AcpiDmCloseOperator (
     case AML_LNOT_OP:
     case AML_BIT_NOT_OP:
     case AML_STORE_OP:
-        return;
+        goto PrintInlineComment;
 
     default:
 
@@ -715,10 +715,22 @@ AcpiDmCloseOperator (
        ((Op->Common.Parent->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST) &&
         (Op->Common.DisasmOpcode == ACPI_DASM_LNOT_SUFFIX))))
     {
-        return;
+        goto PrintInlineComment;
     }
 
     AcpiOsPrintf (")");
+
+PrintInlineComment:
+    printf("Parent Opcode: %x\n", Op->Common.Parent->Common.AmlOpcode);
+    printf("This Opcode: %x\n",   Op->Common.AmlOpcode);
+
+    if(/*Gbl_CaptureComments && */
+       Op->Common.InlineComment)
+    {
+        printf("comment: %s", Op->Common.InlineComment); 
+        AcpiOsPrintf("%s", Op->Common.InlineComment); 
+    }
+
     return;
 }
 

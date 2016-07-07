@@ -467,6 +467,16 @@ AcpiPsCreateOp (
         }
     }
 
+    /* For the -q option: take in an inline comment, if it exists. */
+/*
+    if (AcpiGbl_CurrentInlineCommentNode!=NULL)
+    {
+        (*NewOp)->Common.InlineComment = AcpiGbl_CurrentInlineCommentNode->Common.Value.String;
+        AcpiGbl_CurrentInlineCommentNode = NULL;
+        printf("(*NewOp)->Common.AmlOpcode: %x\n", (*NewOp)->Common.AmlOpcode);
+        printf("Op->Common.InlineComment: %s\n", Op->Common.InlineComment);
+    }
+*/
     return_ACPI_STATUS (Status);
 }
 

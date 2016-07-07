@@ -991,7 +991,8 @@ typedef union acpi_parse_value
     UINT8                           DisasmOpcode;   /* Subtype used for disassembly */\
     char                            *OperatorSymbol;/* Used for C-style operator name strings */\
     char                            AmlOpName[16])  /* Op name (debug only) */\
-    UINT8                           Opt;            /* Extra integer constant */
+    UINT8                           Opt;            /* Extra integer constant */\
+    char                            *InlineComment; /* For -q option: inline comment associated with this node.*/
 
 
 /* Flags for DisasmFlags field  above */
@@ -1011,7 +1012,7 @@ typedef union acpi_parse_value
 
 
 /*
- * 
+ * List struct used in the -q option
  */
 typedef struct acpi_comment_list_node
 {
@@ -1078,7 +1079,7 @@ typedef struct acpi_parse_obj_asl
 
     /* these are used for the -q option */
     struct acpi_comment_list_node   *CommentList;      /* comments that appears before this node */
-    char                            *InlineComment; /* comments that appears after this node that is on the same line. */
+//    char                            *InlineComment; /* comments that appears after this node that is on the same line. */
 
 } ACPI_PARSE_OBJ_ASL;
 
