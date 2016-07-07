@@ -211,30 +211,33 @@ LnPackageLengthWalk (
 
 
 
-    /* For the -q option: calculate the length that the comment takes up.
-     * Comments look like the follwoing: [0xA9 OptionBtye comment 0x00]
-     * therefore, we add 1+1+strlen(comment)+1 to get the actual length of 
-     * this comment.
-     */
+        /* For the -q option: calculate the length that the comment takes up.
+         * Comments look like the follwoing: [0xA9 OptionBtye comment 0x00]
+         * therefore, we add 1+1+strlen(comment)+1 to get the actual length of 
+         * this comment.
+         */
  
         TotalCommentLength = 0;
-        if(Gbl_CaptureComments && Op->Asl.CommentList!=0)
+        if (Gbl_CaptureComments)
         {
 
-            printf("Calculating comment lengths for %s\n",  Op->Asl.ParseOpName);
-            current = Op->Asl.CommentList; 
-            while (current!=0)
+            printf ("Calculating comment lengths for %s\n",  Op->Asl.ParseOpName);
+            if (Op->Asl.CommentList!=NULL)
             {
-                commentLength = strlen(current->Comment)+3;
-                printf("Length of standard comment +3 (including space for 0xA9 and 0x00): %d\n", commentLength);
-                TotalCommentLength += commentLength;
-                current = current->Next;
+                current = Op->Asl.CommentList; 
+                while (current!=0)
+                {
+                    commentLength = strlen(current->Comment)+3;
+                    printf ("Length of standard comment +3 (including space for 0xA9 0x01 and 0x00): %d\n", commentLength);
+                    TotalCommentLength += commentLength;
+                    current = current->Next;
+                }
             }
 
             if (Op->Asl.InlineComment!=NULL)
             {
                 commentLength = strlen(Op->Asl.InlineComment)+3;
-                printf("Length of inline comment +3 (including space for 0xA9 and 0x00): %d\n", commentLength);
+                printf ("Length of inline comment +3 (including space for 0xA9 0x02 and 0x00): %d\n", commentLength);
                 TotalCommentLength += commentLength;
             }
 
