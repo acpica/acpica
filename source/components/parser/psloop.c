@@ -253,9 +253,10 @@ AcpiPsGetArguments (
         {
              Op->Common.Value.String = Arg->Common.Value.String;
              Op->Common.Opt = 2;
+/*
              AcpiGbl_CurrentInlineCommentNode = Op;
              printf("AcpiGbl_CurrentInlineCommentNode set to: %s\n", 
-                     AcpiGbl_CurrentInlineCommentNode->Common.Value.String);
+                     AcpiGbl_CurrentInlineCommentNode->Common.Value.String);*/
         }
         else
         {
@@ -626,10 +627,10 @@ AcpiPsParseLoop (
             Status = AcpiPsCreateOp (WalkState, AmlOpStart, &Op);
 
             // Add an inline comment to this, if there exists one.
-            if (AcpiGbl_CurrentInlineCommentNode!=NULL && (Op->Common.AmlOpcode!=AML_COMMENT_OP))
+            if (AcpiGbl_CurrentInlineComment!=NULL && (Op->Common.AmlOpcode!=AML_COMMENT_OP))
             {
-                Op->Common.InlineComment = AcpiGbl_CurrentInlineCommentNode->Common.Value.String;
-                AcpiGbl_CurrentInlineCommentNode = NULL;
+                Op->Common.InlineComment = AcpiGbl_CurrentInlineComment;
+                AcpiGbl_CurrentInlineComment = NULL;
                 printf("Op->Common.AmlOpcode: %x\n", Op->Common.AmlOpcode);
                 printf("Op->Common.InlineComment: %s\n", Op->Common.InlineComment);
             }
@@ -720,6 +721,12 @@ AcpiPsParseLoop (
          * with that node.
          */
 
+
+        /*
+         * All arguments have been processed -- Op is complete.
+         * If this node is an inline comment, then remove it from the 
+         * parse tree.
+         */
 
 
 /*    

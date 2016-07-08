@@ -460,7 +460,7 @@ ACPI_GLOBAL (const char,                *AcpiGbl_PldShapeList[]);
  * will be associated with whatever node this pointer points to and resets
  * this pointer.
  */
-ACPI_INIT_GLOBAL (ACPI_PARSE_OBJECT*,   AcpiGbl_CurrentInlineCommentNode, 0);
+ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentInlineComment, 0);
 
 /*****************************************************************************
  *

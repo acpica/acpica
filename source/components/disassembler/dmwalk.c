@@ -488,6 +488,12 @@ AcpiDmDescendingOp (
     ACPI_PARSE_OBJECT       *NextOp2;
     UINT32                  AmlOffset;
 
+//    AcpiOsPrintf (" [HDW]");
+
+
+
+
+
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
 
@@ -528,6 +534,20 @@ AcpiDmDescendingOp (
         /* Ignore this op -- it was handled elsewhere */
 
         return (AE_CTRL_DEPTH);
+    }
+
+    // If this is an inline comment node, keep the same state move on to the next node.
+    if ( Op->Common.AmlOpcode == AML_COMMENT_OP &&
+         Op->Common.Opt == 2)
+    {
+        /* Skip to the next Op. */
+        
+        Op = AcpiPsGetDepthNext (NULL, Op);
+
+        OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
+
+        Op->Common.DisasmFlags = ACPI_PARSEOP_IGNORE;
+
     }
 
     if (Op->Common.AmlOpcode == AML_IF_OP)
@@ -944,7 +964,12 @@ AcpiDmDescendingOp (
         }
     }
     
-    // AcpiOsPrintf (" [hello descending world]");
+    if (Op->Common.InlineComment)
+    {
+
+    AcpiOsPrintf ("%s",Op->Common.InlineComment);
+    }   
+//    AcpiOsPrintf (" [hello descending world]");
 
     return (AE_OK);
 }
@@ -1019,6 +1044,8 @@ AcpiDmAscendingOp (
         AcpiDmDisplayTargetPathname (Op);
 
         /* Could be a nested operator, check if comma required */
+
+//add comments here rather than AcpiDm_CloseOperator?
 
         if (!AcpiDmCommaIfListMember (Op))
         {

@@ -146,13 +146,65 @@ AcpiPsGetAmlOpcode (
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                  AmlOffset;
-
+    UINT32                  Length;
 
     ACPI_FUNCTION_TRACE_PTR (PsGetAmlOpcode, WalkState);
 
 
     WalkState->Aml = WalkState->ParserState.Aml;
     WalkState->Opcode = AcpiPsPeekOpcode (&(WalkState->ParserState));
+
+    /*
+     * For the -q option: if this is a comment, check to see if this is an 
+     * inline comment. If it is, save the contents of the inline comment
+     * globally to avoid creating a parse node for this comment.
+     */
+    if (WalkState->Opcode == AML_COMMENT_OP &&  // check that it's a comment
+        (*(WalkState->ParserState.Aml+1)==2))   // check that it's inline
+    {
+        
+
+        //found inline comment. Now, extract the comment itself.
+        printf("found inline comment.\n");
+
+        WalkState->ParserState.Aml +=2; //increment past the comment option
+
+        AcpiGbl_CurrentInlineComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+
+        Length = 0;
+        while (WalkState->ParserState.Aml[Length])
+        {
+            Length++;
+        }
+
+
+        // consume more Opcodes.
+        WalkState->ParserState.Aml += Length + 1;
+        WalkState->Aml = WalkState->ParserState.Aml;
+        WalkState->Opcode = AcpiPsPeekOpcode (&(WalkState->ParserState));
+
+/*
+        AcpiGbl_CurrentInlineCommentNode->Common.Value.String = 
+               ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+
+        printf("new inline comment: %s\n", AcpiGbl_CurrentInlineCommentNode->Common.Value.String);
+
+        Length = 0;
+        while (WalkState->ParserState.Aml[Length])
+        {
+            Length++;
+        }
+
+        printf("new inline comment: %s\n", AcpiGbl_CurrentInlineCommentNode->Common.Value.String);
+
+        // consume more Opcodes.
+        WalkState->ParserState.Aml += Length + 1;
+        WalkState->Aml = WalkState->ParserState.Aml;
+        WalkState->Opcode = AcpiPsPeekOpcode (&(WalkState->ParserState));
+*/
+    }
+ 
+
 
     /*
      * First cut to determine what we have found:

@@ -209,8 +209,6 @@ LnPackageLengthWalk (
         (Op->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG))
     {
 
-
-
         /* For the -q option: calculate the length that the comment takes up.
          * Comments look like the follwoing: [0xA9 OptionBtye comment 0x00]
          * therefore, we add 1+1+strlen(comment)+1 to get the actual length of 
