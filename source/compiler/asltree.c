@@ -1193,9 +1193,9 @@ TrCreateNode (
  * FUNCTION:    TrLinkChildren
  *
  * PARAMETERS:  Op                - An existing parse node
- *              NumChildren         - Number of children to follow
- *              ...                 - A list of child nodes to link to the new
- *                                    node. NumChildren long.
+ *              NumChildren       - Number of children to follow
+ *              ...               - A list of child nodes to link to the new
+ *                                  node. NumChildren long.
  *
  * RETURN:      The updated (linked) node
  *

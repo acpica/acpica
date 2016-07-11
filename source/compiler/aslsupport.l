@@ -843,7 +843,8 @@ BufferOverflow:
  *
  * RETURN:      none
  *
- * DESCRIPTION: Process a new "//" comment.
+ * DESCRIPTION: Process a new "//" comment. Inline comments will be converted
+ *              to "/ *" standard comments.
  *
  ******************************************************************************/
 
@@ -918,16 +919,31 @@ AslDoCommentType2 (
 
         if(Gbl_Previous_Parse_Node!=NULL)
         {
-                FinalCommentString = UtStringCacheCalloc (strlen (CommentString) + SpaceCount + 1);
-                for (i=0; i<SpaceCount; ++i)
-                {
-                    FinalCommentString[i] = ' ';
-                }
-                strcat(FinalCommentString, CommentString);
- 
-                Gbl_Previous_Parse_Node->Asl.InlineComment = 
-                appendInlineComment(Gbl_Previous_Parse_Node->Asl.InlineComment,
-                                    FinalCommentString);
+            /* Create a new string with the approperiate spaces. Since we need
+             * to account for the proper spacing, the actual comment,
+             * extra 2 spaces so that this comment can be converted to the "/ *"
+             * style and the null terminator, the string would look something like
+             * 
+             * [ (spaces) (comment) (* /) ('\0') ]
+             *
+             */
+             
+            FinalCommentString = UtStringCacheCalloc (SpaceCount + strlen (CommentString) + 2 + 1);
+            for (i=0; i<SpaceCount; ++i)
+            {
+                FinalCommentString[i] = ' ';
+            }
+            strcat(FinalCommentString, CommentString);
+
+            // convert to a "/ *" style comment.
+            FinalCommentString [SpaceCount + 1] = '*';
+            FinalCommentString [SpaceCount + strlen (CommentString)] = '*';
+            FinalCommentString [SpaceCount + strlen (CommentString) + 1] = '/';
+            FinalCommentString [SpaceCount + strlen (CommentString) + 2] = 0;
+
+            Gbl_Previous_Parse_Node->Asl.InlineComment = 
+            appendInlineComment(Gbl_Previous_Parse_Node->Asl.InlineComment,
+                                FinalCommentString);
  
         }
         else

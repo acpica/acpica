@@ -966,7 +966,7 @@ AcpiDmDescendingOp (
     
     if (Op->Common.InlineComment)
     {
-        AcpiOsPrintf ("%s\n",Op->Common.InlineComment);
+        AcpiOsPrintf ("%s",Op->Common.InlineComment);
         Op->Common.InlineComment = NULL;
     }   
  //   AcpiOsPrintf (" [hello descending world]");
