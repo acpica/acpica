@@ -488,7 +488,7 @@ AcpiDmDescendingOp (
     ACPI_PARSE_OBJECT       *NextOp2;
     UINT32                  AmlOffset;
 
-//    AcpiOsPrintf (" [HDW]");
+  //  AcpiOsPrintf (" [HDW]");
 
 
 
@@ -966,10 +966,10 @@ AcpiDmDescendingOp (
     
     if (Op->Common.InlineComment)
     {
-
-    AcpiOsPrintf ("%s",Op->Common.InlineComment);
+        AcpiOsPrintf ("%s\n",Op->Common.InlineComment);
+        Op->Common.InlineComment = NULL;
     }   
-//    AcpiOsPrintf (" [hello descending world]");
+ //   AcpiOsPrintf (" [hello descending world]");
 
     return (AE_OK);
 }
@@ -998,6 +998,7 @@ AcpiDmAscendingOp (
     ACPI_PARSE_OBJECT       *ParentOp;
 
 
+//    AcpiOsPrintf (" [HAW]");
     if (Op->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)
     {
         /* Ignore this op -- it was handled elsewhere */
@@ -1015,6 +1016,9 @@ AcpiDmAscendingOp (
 
     switch (AcpiDmBlockType (Op))
     {
+    case BLOCK_COMMENT: //Do nothing with the comment
+        break;
+
     case BLOCK_PAREN:
 
         /* Completed an op that has arguments, add closing paren if needed */
@@ -1104,9 +1108,6 @@ AcpiDmAscendingOp (
         }
         break;
  
-
-    case BLOCK_COMMENT: //Do nothing with the comment
-        break;
 
     case BLOCK_NONE:
     default:
@@ -1213,6 +1214,6 @@ AcpiDmAscendingOp (
     }
 
 
-    // AcpiOsPrintf (" [hello ascending world]");
+//    AcpiOsPrintf (" [hello ascending world]");
     return (AE_OK);
 }

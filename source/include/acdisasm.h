@@ -123,7 +123,7 @@
 #define BLOCK_PAREN             1
 #define BLOCK_BRACE             2
 #define BLOCK_COMMA_LIST        4
-#define BLOCK_COMMENT          -1
+#define BLOCK_COMMENT           5
 #define ACPI_DEFAULT_RESNAME    *(UINT32 *) "__RD"
 
 /*
