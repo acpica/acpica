@@ -529,6 +529,15 @@ ACPI_EFI_STATUS
     ACPI_EFI_HANDLE                 ImageHandle);
 
 
+typedef
+ACPI_EFI_STATUS
+(ACPI_EFI_API *ACPI_EFI_SET_WATCHDOG_TIMER) (
+    UINTN                           Timeout,
+    UINT64                          WatchdogCode,
+    UINTN                           DataSize,
+    CHAR16                          *WatchdogData);
+
+
 #define EFI_IMAGE_INFORMATION_REVISION      0x1000
 typedef struct {
     UINT32                          Revision;
@@ -816,13 +825,12 @@ typedef struct _ACPI_EFI_BOOT_SERVICES {
     ACPI_EFI_EXIT_BOOT_SERVICES         ExitBootServices;
     ACPI_EFI_GET_NEXT_MONOTONIC_COUNT   GetNextMonotonicCount;
     ACPI_EFI_STALL                      Stall;
-    ACPI_EFI_SET_WATCHDOG_TIMER         SetWatchdogTimer;
 #else
     ACPI_EFI_UNKNOWN_INTERFACE          ExitBootServices;
     ACPI_EFI_UNKNOWN_INTERFACE          GetNextMonotonicCount;
     ACPI_EFI_UNKNOWN_INTERFACE          Stall;
-    ACPI_EFI_UNKNOWN_INTERFACE          SetWatchdogTimer;
 #endif
+    ACPI_EFI_SET_WATCHDOG_TIMER         SetWatchdogTimer;
 
 #if 0
     ACPI_EFI_CONNECT_CONTROLLER         ConnectController;
@@ -967,6 +975,15 @@ typedef struct _ACPI_EFI_PCI_IO {
     UINT64                              RomSize;
     VOID                                *RomImage;
 } ACPI_EFI_PCI_IO;
+
+/* FILE abstraction */
+
+union acpi_efi_file {
+    struct _ACPI_EFI_FILE_HANDLE File;
+    struct _ACPI_SIMPLE_TEXT_OUTPUT_INTERFACE ConOut;
+    struct _ACPI_SIMPLE_INPUT_INTERFACE ConIn;
+};
+
 
 /* GNU EFI definitions */
 

@@ -125,6 +125,17 @@
 
 #define ACPI_EFI_PRINT_LENGTH   256
 
+#define ACPI_EFI_KEY_ESC        0x0000
+#define ACPI_EFI_KEY_BACKSPACE  0x0008
+#define ACPI_EFI_KEY_ENTER      0x000D
+#define ACPI_EFI_KEY_CTRL_C     0x0003
+
+#define ACPI_EFI_ASCII_NULL     0x00
+#define ACPI_EFI_ASCII_DEL      0x7F
+#define ACPI_EFI_ASCII_ESC      0x1B
+#define ACPI_EFI_ASCII_CR       '\r'
+#define ACPI_EFI_ASCII_NL       '\n'
+
 
 /* Local prototypes */
 
@@ -153,6 +164,7 @@ AcpiEfiFlushFile (
 
 /* Local variables */
 
+FILE                        *stdin = NULL;
 FILE                        *stdout = NULL;
 FILE                        *stderr = NULL;
 static ACPI_EFI_FILE_HANDLE AcpiGbl_EfiCurrentVolume = NULL;
@@ -324,7 +336,8 @@ fclose (
     ACPI_EFI_FILE_HANDLE    EfiFile;
 
 
-    if (File == stdout || File == stderr)
+    if (File == stdin || File == stdout ||
+        File == stderr)
     {
         return;
     }
@@ -427,14 +440,87 @@ fread (
     ACPI_SIZE               Count,
     FILE                    *File)
 {
-    int                     Length = -1;
-    ACPI_EFI_FILE_HANDLE    EfiFile;
-    UINTN                   ReadSize;
-    ACPI_EFI_STATUS         EfiStatus;
+    int                         Length = -EINVAL;
+    ACPI_EFI_FILE_HANDLE        EfiFile;
+    ACPI_SIMPLE_INPUT_INTERFACE *In;
+    UINTN                       ReadSize;
+    ACPI_EFI_STATUS             EfiStatus;
+    ACPI_EFI_INPUT_KEY          Key;
+    ACPI_SIZE                   Pos = 0;
 
+
+    if (!Buffer)
+    {
+        errno = EINVAL;
+        goto ErrorExit;
+    }
+
+    ReadSize = Size * Count;
 
     if (File == stdout || File == stderr)
     {
+        /* Do not support read operations on output console */
+    }
+    else if (File == stdin)
+    {
+        In = ACPI_CAST_PTR (ACPI_SIMPLE_INPUT_INTERFACE, File);
+
+        while (Pos < ReadSize)
+        {
+WaitKey:
+            EfiStatus = uefi_call_wrapper (In->ReadKeyStroke, 2, In, &Key);
+            if (ACPI_EFI_ERROR (EfiStatus))
+            {
+                if (EfiStatus == ACPI_EFI_NOT_READY)
+                {
+                    goto WaitKey;
+                }
+                errno = EIO;
+                Length = -EIO;
+                fprintf (stderr,
+                    "SIMPLE_INPUT_INTERFACE->ReadKeyStroke() failure.\n");
+                goto ErrorExit;
+            }
+
+            switch (Key.UnicodeChar)
+            {
+            case ACPI_EFI_KEY_CTRL_C:
+
+                break;
+
+            case ACPI_EFI_KEY_ENTER:
+
+                *(ACPI_ADD_PTR (UINT8, Buffer, Pos)) = (UINT8) ACPI_EFI_ASCII_CR;
+                if (Pos < ReadSize - 1)
+                {
+                    /* Drop CR in case we don't have sufficient buffer */
+
+                    Pos++;
+                }
+                *(ACPI_ADD_PTR (UINT8, Buffer, Pos)) = (UINT8) ACPI_EFI_ASCII_NL;
+                Pos++;
+                break;
+
+            case ACPI_EFI_KEY_BACKSPACE:
+
+                *(ACPI_ADD_PTR (UINT8, Buffer, Pos)) = (UINT8) ACPI_EFI_ASCII_DEL;
+                Pos++;
+                break;
+
+            case ACPI_EFI_KEY_ESC:
+
+                *(ACPI_ADD_PTR (UINT8, Buffer, Pos)) = (UINT8) ACPI_EFI_ASCII_ESC;
+                Pos++;
+                break;
+
+            default:
+
+                *(ACPI_ADD_PTR (UINT8, Buffer, Pos)) = (UINT8) Key.UnicodeChar;
+                Pos++;
+                break;
+            }
+        }
+        Length = Pos;
     }
     else
     {
@@ -444,7 +530,6 @@ fread (
             errno = EINVAL;
             goto ErrorExit;
         }
-        ReadSize = Size * Count;
 
         EfiStatus = uefi_call_wrapper (AcpiGbl_EfiCurrentVolume->Read, 3,
             EfiFile, &ReadSize, Buffer);
@@ -452,6 +537,7 @@ fread (
         {
             fprintf (stderr, "EFI_FILE_HANDLE->Read() failure.\n");
             errno = EIO;
+            Length = -EIO;
             goto ErrorExit;
         }
         Length = ReadSize;
@@ -487,12 +573,19 @@ AcpiEfiFlushFile (
     CHAR16                  *Pos,
     BOOLEAN                 FlushAll)
 {
+    ACPI_SIMPLE_TEXT_OUTPUT_INTERFACE    *Out;
 
-    if (FlushAll || Pos >= (End - 1))
+
+    if (File == stdout || File == stderr)
     {
-        *Pos = 0;
-        uefi_call_wrapper (File->OutputString, 2, File, Begin);
-        Pos = Begin;
+        Out = ACPI_CAST_PTR (ACPI_SIMPLE_TEXT_OUTPUT_INTERFACE, File);
+
+        if (FlushAll || Pos >= (End - 1))
+        {
+            *Pos = 0;
+            uefi_call_wrapper (Out->OutputString, 2, Out, Begin);
+            Pos = Begin;
+        }
     }
 
     return (Pos);
@@ -521,7 +614,7 @@ fwrite (
     ACPI_SIZE               Count,
     FILE                    *File)
 {
-    int                     Length = -1;
+    int                     Length = -EINVAL;
     CHAR16                  String[ACPI_EFI_PRINT_LENGTH];
     const char              *Ascii;
     CHAR16                  *End;
@@ -532,7 +625,11 @@ fwrite (
     ACPI_EFI_STATUS         EfiStatus;
 
 
-    if (File == stdout || File == stderr)
+    if (File == stdin)
+    {
+        /* Do not support write operations on input console */
+    }
+    else if (File == stdout || File == stderr)
     {
         Pos = String;
         End = String + ACPI_EFI_PRINT_LENGTH - 1;
@@ -899,8 +996,13 @@ efi_main (
 
     ST = SystemTab;
     BS = SystemTab->BootServices;
-    stdout = SystemTab->ConOut;
-    stderr = SystemTab->ConOut;
+    stdin = ACPI_CAST_PTR (ACPI_EFI_FILE, SystemTab->ConIn);
+    stdout = ACPI_CAST_PTR (ACPI_EFI_FILE, SystemTab->ConOut);
+    stderr = ACPI_CAST_PTR (ACPI_EFI_FILE, SystemTab->ConOut);
+
+    /* Disable the platform watchdog timer if we go interactive */
+
+    uefi_call_wrapper(BS->SetWatchdogTimer, 4, 0, 0x0, 0, NULL);
 
     /* Retrieve image information */
 
