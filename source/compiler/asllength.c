@@ -239,6 +239,14 @@ LnPackageLengthWalk (
                 TotalCommentLength += commentLength;
             }
 
+            if (Op->Asl.EndNodeComment!=NULL)
+            {
+                commentLength = strlen(Op->Asl.EndNodeComment)+3;
+                printf ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", commentLength);
+                TotalCommentLength += commentLength;
+            }
+
+
         }
 
 

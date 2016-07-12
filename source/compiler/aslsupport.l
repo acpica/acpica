@@ -393,6 +393,12 @@ AslResetCurrentLineBuffer (
     Gbl_CurrentLineNumber++;
     Gbl_LogicalLineNumber++;
     Gbl_LineBufPtr = Gbl_CurrentLineBuffer;
+
+    /* this flag being false means that any inline comments will be
+     * set to the InlineComment field of the ACPI_PARSE_OJECT structure.
+     * This happens every time the line buffer resets.
+     */
+    Gbl_CurrentNodeComplete = FALSE;
 }
 
 
@@ -596,6 +602,37 @@ appendInlineComment (
     return Str;
 }
 
+/*******************************************************************************
+ *
+ * FUNCTION:    CheckOpeningBefore
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      BOOLEAN
+ *
+ * DESCRIPTION: Return TRUE if there is a '(' or '{' before the current position 
+ *              of Gbl_LineBufPtr.
+ *
+ ******************************************************************************/
+
+static BOOLEAN
+CheckOpeningBefore(
+    void)
+{
+    char    *BufferPtr = Gbl_LineBufPtr;
+    --BufferPtr; 
+    while (*BufferPtr == ' ')
+    {
+        --BufferPtr;
+    }
+    if ( (*BufferPtr == '(' || *BufferPtr == '{') )
+    {
+        return (TRUE);
+    }
+    return (FALSE);
+
+}
+
 
 /*******************************************************************************
  *
@@ -622,6 +659,11 @@ CountSpacesBefore (
     {
         ++Count;
         --BufferPtr;
+    }
+    if ( (*BufferPtr == ';' ||  *BufferPtr == ')' || *BufferPtr == '}') )
+    {
+        printf("Set to true\n\n\n");
+        Gbl_CurrentNodeComplete = TRUE;
     }
     return Count;
 
@@ -658,11 +700,13 @@ AslDoComment (
     char                          *CommentString;
     char                          *FinalCommentString;
     UINT64                        SpaceCount;
+    BOOLEAN                       OpeningExists;
 
     printf("Multi-line comment\n");
 
 
     SpaceCount = CountSpacesBefore ();
+    OpeningExists = CheckOpeningBefore();
     AslInsertLineBuffer ('/');
     *StringBuffer = '/';
     ++StringBuffer;
@@ -777,26 +821,43 @@ loop:
         /* If this only spans a single line, check to see whether if this comment
          * appears on the same line as a line of code. If does, retain it's
          * position for stylistic reasons. If it doesn't, add it to the comment
-         * List so that it can be associated with the next node that's created. 
-         */
+	 * List so that it can be associated with the next node that's created. 
+	 */
         else             
         {
+            FinalCommentString = UtStringCacheCalloc (strlen (CommentString) + SpaceCount + 1);
+            for (i=0; i<SpaceCount; ++i)
+            {
+                 FinalCommentString[i] = ' ';
+            }
+            strcat(FinalCommentString, CommentString);
+
+
             if(Gbl_Latest_Parse_Node!=NULL)
             {
                 /* pad with extra spaces that appeared in the original code
                  * to retain the original spacing.
                  */
 
-                FinalCommentString = UtStringCacheCalloc (strlen (CommentString) + SpaceCount + 1);
-                for (i=0; i<SpaceCount; ++i)
+                if (Gbl_CurrentNodeComplete)
                 {
-                    FinalCommentString[i] = ' ';
+                    Gbl_Latest_Parse_Node->Asl.EndNodeComment = 
+                    appendInlineComment(Gbl_Latest_Parse_Node->Asl.EndNodeComment,
+                                        FinalCommentString);
                 }
-                strcat(FinalCommentString, CommentString);
- 
-                Gbl_Latest_Parse_Node->Asl.InlineComment = 
-                appendInlineComment(Gbl_Latest_Parse_Node->Asl.InlineComment,
+                else
+                {
+
+                    Gbl_Latest_Parse_Node->Asl.InlineComment = 
+                    appendInlineComment(Gbl_Latest_Parse_Node->Asl.InlineComment,
                                     FinalCommentString);
+                }
+            }
+            else if(OpeningExists)
+            {
+                Gbl_Inline_Comment_Buffer = 
+                appendInlineComment(Gbl_Inline_Comment_Buffer,
+                                        FinalCommentString);
             }
             else
             {
@@ -859,6 +920,7 @@ AslDoCommentType2 (
     char                          *CommentString;
     char                          *FinalCommentString;
     UINT32                        SpaceCount;
+    BOOLEAN                       IsEndOfNode;
     printf("Single-line comment\n");
 
 
@@ -888,6 +950,9 @@ AslDoCommentType2 (
     {
         goto BufferOverflow;       
     }
+ 
+    // Since AslInsertLineBuffer (c) will clear the global flag, capture it here.
+    IsEndOfNode = Gbl_CurrentNodeComplete; 
 
     AslInsertLineBuffer (c);
     *StringBuffer = 0; //null terminate this string
@@ -919,31 +984,43 @@ AslDoCommentType2 (
 
         if(Gbl_Previous_Parse_Node!=NULL)
         {
+
             /* Create a new string with the approperiate spaces. Since we need
              * to account for the proper spacing, the actual comment,
              * extra 2 spaces so that this comment can be converted to the "/ *"
              * style and the null terminator, the string would look something like
              * 
-             * [ (spaces) (comment) (* /) ('\0') ]
+             * [ (spaces) (comment)  ( * /) ('\0') ]
              *
              */
              
-            FinalCommentString = UtStringCacheCalloc (SpaceCount + strlen (CommentString) + 2 + 1);
+            FinalCommentString = UtStringCacheCalloc (SpaceCount + strlen (CommentString) + 3 + 1);
             for (i=0; i<SpaceCount; ++i)
             {
                 FinalCommentString[i] = ' ';
             }
             strcat(FinalCommentString, CommentString);
+            strcat(FinalCommentString, " */");
 
             // convert to a "/ *" style comment.
             FinalCommentString [SpaceCount + 1] = '*';
-            FinalCommentString [SpaceCount + strlen (CommentString)] = '*';
-            FinalCommentString [SpaceCount + strlen (CommentString) + 1] = '/';
-            FinalCommentString [SpaceCount + strlen (CommentString) + 2] = 0;
 
-            Gbl_Previous_Parse_Node->Asl.InlineComment = 
-            appendInlineComment(Gbl_Previous_Parse_Node->Asl.InlineComment,
-                                FinalCommentString);
+            FinalCommentString [SpaceCount + strlen (CommentString) + 3] = 0;
+
+            if (IsEndOfNode) 
+            {
+                printf("FinalCommentString: %s\n", FinalCommentString);
+                printf("XXXXXXXXXXX New stuff!\n");
+                Gbl_Previous_Parse_Node->Asl.EndNodeComment = 
+                appendInlineComment(Gbl_Previous_Parse_Node->Asl.EndNodeComment,
+                                    FinalCommentString);
+            }
+            else
+            {
+                Gbl_Previous_Parse_Node->Asl.InlineComment = 
+                appendInlineComment(Gbl_Previous_Parse_Node->Asl.InlineComment,
+                                    FinalCommentString);
+            }
  
         }
         else

@@ -223,7 +223,8 @@ TrAllocateNode (
     Op->Asl.LogicalByteOffset = Gbl_CurrentLineOffset;
     Op->Asl.Column            = Gbl_CurrentColumn;
     Op->Asl.InlineComment     = NULL;
-
+    Op->Asl.EndNodeComment    = NULL;
+    Op->Asl.CommentList       = NULL;
 
     UtSetParseOpName (Op);
 
@@ -237,15 +238,22 @@ TrAllocateNode (
         printf("Op->Asl.ParseOpName       = %s\n", Op->Asl.ParseOpName);
     }
 
-    if(Gbl_CaptureComments && Gbl_Comment_List_Head!=0)
-    {   Op->Asl.CommentList = Gbl_Comment_List_Head;
-        Gbl_Comment_List_Head = 0; //Clear this so that future comments can be associated with future nodes.
-        Gbl_Comment_List_Tail = 0; //Clear this so that future comments can be associated with future nodes.
-        printf("Transferred current comment list to this node.\n");
-    }
-    else
-    {
-        Op->Asl.CommentList = NULL;
+    if (Gbl_CaptureComments)
+    {   
+        if (Gbl_Comment_List_Head)
+        {
+            Op->Asl.CommentList = Gbl_Comment_List_Head;
+            Gbl_Comment_List_Head = 0; //Clear this so that future comments can be associated with future nodes.
+            Gbl_Comment_List_Tail = 0; //Clear this so that future comments can be associated with future nodes.
+            printf("Transferred current comment list to this node.\n");
+        }
+        if (Gbl_Inline_Comment_Buffer)
+        {
+            Op->Asl.InlineComment = Gbl_Inline_Comment_Buffer;
+            Gbl_Inline_Comment_Buffer = 0; //Clear this so that future comments can be associated with future nodes.
+            printf("Transferred current inline comment list to this node.\n");
+        }
+
     }
 
     return (Op);

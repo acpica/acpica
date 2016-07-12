@@ -255,7 +255,6 @@ ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DoTypechecking, TRUE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_EnableReferenceTypechecking, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DoExternals, TRUE);
 
-ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_CaptureComments, FALSE);
 
 #define HEX_OUTPUT_NONE             0
 #define HEX_OUTPUT_C                1
@@ -338,15 +337,22 @@ ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_TableId, "NO_ID");
 ASL_EXTERN UINT8                    ASL_INIT_GLOBAL (Gbl_PruneDepth, 0);
 ASL_EXTERN UINT16                   ASL_INIT_GLOBAL (Gbl_PruneType, 0);
 
-/* Specific the -q option */
+/* Specific to the -q option */
 
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_CaptureComments, FALSE);
+/* Determines if an inline comment should be saved in the InlineComment or NodeEndComment
+ *  field of ACPI_PARSE_OBJECT.
+ */
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_CurrentNodeComplete, FALSE);
 ASL_EXTERN ACPI_COMMENT_LIST_NODE   ASL_INIT_GLOBAL (*Gbl_Comment_List_Head, 0);
 ASL_EXTERN ACPI_COMMENT_LIST_NODE   ASL_INIT_GLOBAL (*Gbl_Comment_List_Tail, 0);
+ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_Inline_Comment_Buffer, 0);
 
 ASL_EXTERN ACPI_PARSE_OBJECT        ASL_INIT_GLOBAL (*Gbl_Latest_Parse_Node, 0);
 ASL_EXTERN ACPI_PARSE_OBJECT        ASL_INIT_GLOBAL (*Gbl_Previous_Parse_Node, 0);
 ASL_EXTERN UINT8                    ASL_INIT_GLOBAL (STANDARD_COMMENT_OPTION, 0x01);
 ASL_EXTERN UINT8                    ASL_INIT_GLOBAL (INLINE_COMMENT_OPTION, 0x02);
+ASL_EXTERN UINT8                    ASL_INIT_GLOBAL (ENDNODE_COMMENT_OPTION, 0x03);
 ASL_EXTERN UINT64                   ASL_INIT_GLOBAL (Gbl_TotalInlineCommentLength, 0);
 ASL_EXTERN UINT64                   ASL_INIT_GLOBAL (Gbl_Current_Contiguous_Space, 0);
 

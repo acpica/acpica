@@ -384,7 +384,7 @@ CgWriteAmlOpcode (
          * associated with this node.
          */
 
-        if (Gbl_CaptureComments && Op->Asl.InlineComment!=NULL)
+        if (Gbl_CaptureComments && Op->Asl.InlineComment)
         {
             CgLocalWriteAmlData (Op, &CommentOpcode, 1);
             CgLocalWriteAmlData (Op, &INLINE_COMMENT_OPTION, 1);
@@ -393,6 +393,17 @@ CgWriteAmlOpcode (
 
             Op->Asl.InlineComment = NULL;
         }
+
+        if (Gbl_CaptureComments && Op->Asl.EndNodeComment)
+        {
+            CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+            CgLocalWriteAmlData (Op, &ENDNODE_COMMENT_OPTION, 1);
+            // +1 is what emits the 0x00 at the end of this opcode.
+            CgLocalWriteAmlData (Op, Op->Asl.EndNodeComment, strlen(Op->Asl.EndNodeComment)+1); 
+
+            Op->Asl.EndNodeComment = NULL;
+        }
+
 
         /* Check for two-byte opcode */
 
@@ -671,10 +682,10 @@ CgWriteNode (
     struct acpi_comment_list_node *current = Op->Asl.CommentList;
 
     /* For -q: print out any comments associated with this node */
-    if (Gbl_CaptureComments && current!=0)
+    if (Gbl_CaptureComments)
     {
         //Print the entire list.
-        while (current!=0)
+        while (current)
         {
             CgLocalWriteAmlData (Op, &CommentOpcode, 1);
             CgLocalWriteAmlData (Op, &STANDARD_COMMENT_OPTION, 1);
@@ -685,13 +696,22 @@ CgWriteNode (
         
         /* print any Inline comments associated with this node */
 
-        if (Op->Asl.InlineComment!=NULL)
+        if (Op->Asl.InlineComment)
         {
             CgLocalWriteAmlData (Op, &CommentOpcode, 1);
             CgLocalWriteAmlData (Op, &INLINE_COMMENT_OPTION, 1);
             // +1 is what emits the 0x00 at the end of this opcode.
             CgLocalWriteAmlData (Op, Op->Asl.InlineComment, strlen(Op->Asl.InlineComment)+1); 
             Op->Asl.InlineComment = NULL;
+        }
+
+        if (Op->Asl.EndNodeComment)
+        {
+            CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+            CgLocalWriteAmlData (Op, &ENDNODE_COMMENT_OPTION, 1);
+            // +1 is what emits the 0x00 at the end of this opcode.
+            CgLocalWriteAmlData (Op, Op->Asl.EndNodeComment, strlen(Op->Asl.EndNodeComment)+1); 
+            Op->Asl.EndNodeComment = NULL;
         }
 
     }
