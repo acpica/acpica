@@ -371,6 +371,12 @@ int
 fputc (
     FILE                    *File,
     char                    c);
+
+char *
+fgets (
+    char                    *s,
+    ACPI_SIZE               Size,
+    FILE                    *File);
 #endif
 
 #endif /* _ACCLIB_H */

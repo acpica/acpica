@@ -426,6 +426,65 @@ fputc (
 
 /*******************************************************************************
  *
+ * FUNCTION:    fgets
+ *
+ * PARAMETERS:  File                - File descriptor
+ *
+ * RETURN:      The string read
+ *
+ * DESCRIPTION: Read a string from the file.
+ *
+ ******************************************************************************/
+
+char *
+fgets (
+    char                    *s,
+    ACPI_SIZE               Size,
+    FILE                    *File)
+{
+    ACPI_SIZE               ReadBytes = 0;
+    int                     Ret;
+
+
+    if (Size <= 1)
+    {
+        errno = EINVAL;
+        return (NULL);
+    }
+    while (ReadBytes < (Size - 1))
+    {
+        Ret = fgetc (File);
+        if (Ret == EOF)
+        {
+            if (ReadBytes == 0)
+            {
+                return (NULL);
+            }
+            break;
+        }
+        else if (Ret < 0)
+        {
+            errno = EIO;
+            return (NULL);
+        }
+        else if (Ret == '\n')
+        {
+            s[ReadBytes++] = (char) Ret;
+            break;
+        }
+        else
+        {
+            s[ReadBytes++] = (char) Ret;
+        }
+    }
+
+    s[ReadBytes] = '\0';
+    return (s);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    fread
  *
  * PARAMETERS:  Buffer              - Data buffer
