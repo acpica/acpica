@@ -1229,6 +1229,7 @@ efi_main (
 
     ST = SystemTab;
     BS = SystemTab->BootServices;
+    RT = SystemTab->RuntimeServices;
     stdin = ACPI_CAST_PTR (ACPI_EFI_FILE, SystemTab->ConIn);
     stdout = ACPI_CAST_PTR (ACPI_EFI_FILE, SystemTab->ConOut);
     stderr = ACPI_CAST_PTR (ACPI_EFI_FILE, SystemTab->ConOut);
