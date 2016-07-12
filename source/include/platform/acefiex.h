@@ -597,6 +597,11 @@ ACPI_EFI_STATUS
 
 typedef
 ACPI_EFI_STATUS
+(ACPI_EFI_API *ACPI_EFI_STALL) (
+    UINTN                           Microseconds);
+
+typedef
+ACPI_EFI_STATUS
 (ACPI_EFI_API *ACPI_EFI_SET_WATCHDOG_TIMER) (
     UINTN                           Timeout,
     UINT64                          WatchdogCode,
@@ -911,12 +916,11 @@ typedef struct _ACPI_EFI_BOOT_SERVICES {
 #if 0
     ACPI_EFI_EXIT_BOOT_SERVICES         ExitBootServices;
     ACPI_EFI_GET_NEXT_MONOTONIC_COUNT   GetNextMonotonicCount;
-    ACPI_EFI_STALL                      Stall;
 #else
     ACPI_EFI_UNKNOWN_INTERFACE          ExitBootServices;
     ACPI_EFI_UNKNOWN_INTERFACE          GetNextMonotonicCount;
-    ACPI_EFI_UNKNOWN_INTERFACE          Stall;
 #endif
+    ACPI_EFI_STALL                      Stall;
     ACPI_EFI_SET_WATCHDOG_TIMER         SetWatchdogTimer;
 
 #if 0
