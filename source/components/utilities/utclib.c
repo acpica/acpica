@@ -201,6 +201,61 @@ memcmp (
 
 /*******************************************************************************
  *
+ * FUNCTION:    memmove
+ *
+ * PARAMETERS:  Dest        - Target of the copy
+ *              Src         - Source buffer to copy
+ *              Count       - Number of bytes to copy
+ *
+ * RETURN:      Dest
+ *
+ * DESCRIPTION: Copy arbitrary bytes of memory with respect to the overlapping
+ *
+ ******************************************************************************/
+
+void *
+memmove (
+    void                    *Dest,
+    const void              *Src,
+    ACPI_SIZE               Count)
+{
+    char                    *New = (char *) Dest;
+    char                    *Old = (char *) Src;
+
+
+    if (Old > New)
+    {
+        /* Copy from the beginning */
+
+        while (Count)
+        {
+            *New = *Old;
+            New++;
+            Old++;
+            Count--;
+        }
+    }
+    else if (Old < New)
+    {
+        /* Copy from the end */
+
+        New = New + Count - 1;
+        Old = Old + Count - 1;
+        while (Count)
+        {
+            *New = *Old;
+            New--;
+            Old--;
+            Count--;
+        }
+    }
+
+    return (Dest);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    memcpy
  *
  * PARAMETERS:  Dest        - Target of the copy
