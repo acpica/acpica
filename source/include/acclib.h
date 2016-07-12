@@ -304,6 +304,10 @@ sprintf (
  */
 extern int errno;
 
+#ifndef EOF
+#define EOF                 (-1)
+#endif
+
 int
 vprintf (
     const char              *Format,
@@ -358,6 +362,15 @@ fseek (
 long
 ftell (
     FILE                    *File);
+
+int
+fgetc (
+    FILE                    *File);
+
+int
+fputc (
+    FILE                    *File,
+    char                    c);
 #endif
 
 #endif /* _ACCLIB_H */
