@@ -725,11 +725,11 @@ PrintInlineComment:
     printf("This Opcode: %x\n",   Op->Common.AmlOpcode);
 
     if(/*Gbl_CaptureComments && */
-       Op->Common.InlineComment)
+       Op->Common.EndNodeComment)
     {
-        printf("comment: %s", Op->Common.InlineComment); 
-        AcpiOsPrintf("%s", Op->Common.InlineComment); 
-        Op->Common.InlineComment = NULL;
+        printf("comment: %s", Op->Common.EndNodeComment); 
+        AcpiOsPrintf("%s", Op->Common.EndNodeComment); 
+        Op->Common.EndNodeComment = NULL;
     }
 
     return;

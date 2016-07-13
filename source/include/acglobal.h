@@ -461,6 +461,7 @@ ACPI_GLOBAL (const char,                *AcpiGbl_PldShapeList[]);
  * this pointer.
  */
 ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentInlineComment, 0);
+ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentEndNodeComment, 0);
 
 /*****************************************************************************
  *

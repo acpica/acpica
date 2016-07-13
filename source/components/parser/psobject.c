@@ -147,6 +147,7 @@ AcpiPsGetAmlOpcode (
 {
     UINT32                  AmlOffset;
     UINT32                  Length;
+    UINT32                  CommentOption;
 
     ACPI_FUNCTION_TRACE_PTR (PsGetAmlOpcode, WalkState);
 
@@ -159,17 +160,24 @@ AcpiPsGetAmlOpcode (
      * inline comment. If it is, save the contents of the inline comment
      * globally to avoid creating a parse node for this comment.
      */
-    if (WalkState->Opcode == AML_COMMENT_OP &&  // check that it's a comment
-        (*(WalkState->ParserState.Aml+1)==2))   // check that it's inline
+    CommentOption = *(WalkState->ParserState.Aml+1);
+    if (WalkState->Opcode == AML_COMMENT_OP  &&  // check that it's a comment
+        ((CommentOption==2) || ( CommentOption==3))) // check that it's inline
     {
+        printf("FOUND COMMENT\n");
         
-
         //found inline comment. Now, extract the comment itself.
-        printf("found inline comment.\n");
-
         WalkState->ParserState.Aml +=2; //increment past the comment option
-
-        AcpiGbl_CurrentInlineComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+        if (CommentOption==2)
+        {
+            printf("found inline comment.\n");
+            AcpiGbl_CurrentInlineComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+        }
+        else if (CommentOption==3) 
+        { 
+            printf("found EndNode comment.\n");
+            AcpiGbl_CurrentEndNodeComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+        }
 
         Length = 0;
         while (WalkState->ParserState.Aml[Length])
@@ -177,31 +185,10 @@ AcpiPsGetAmlOpcode (
             Length++;
         }
 
-
         // consume more Opcodes.
         WalkState->ParserState.Aml += Length + 1;
         WalkState->Aml = WalkState->ParserState.Aml;
         WalkState->Opcode = AcpiPsPeekOpcode (&(WalkState->ParserState));
-
-/*
-        AcpiGbl_CurrentInlineCommentNode->Common.Value.String = 
-               ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
-
-        printf("new inline comment: %s\n", AcpiGbl_CurrentInlineCommentNode->Common.Value.String);
-
-        Length = 0;
-        while (WalkState->ParserState.Aml[Length])
-        {
-            Length++;
-        }
-
-        printf("new inline comment: %s\n", AcpiGbl_CurrentInlineCommentNode->Common.Value.String);
-
-        // consume more Opcodes.
-        WalkState->ParserState.Aml += Length + 1;
-        WalkState->Aml = WalkState->ParserState.Aml;
-        WalkState->Opcode = AcpiPsPeekOpcode (&(WalkState->ParserState));
-*/
     }
  
 
@@ -519,16 +506,6 @@ AcpiPsCreateOp (
         }
     }
 
-    /* For the -q option: take in an inline comment, if it exists. */
-/*
-    if (AcpiGbl_CurrentInlineCommentNode!=NULL)
-    {
-        (*NewOp)->Common.InlineComment = AcpiGbl_CurrentInlineCommentNode->Common.Value.String;
-        AcpiGbl_CurrentInlineCommentNode = NULL;
-        printf("(*NewOp)->Common.AmlOpcode: %x\n", (*NewOp)->Common.AmlOpcode);
-        printf("Op->Common.InlineComment: %s\n", Op->Common.InlineComment);
-    }
-*/
     return_ACPI_STATUS (Status);
 }
 

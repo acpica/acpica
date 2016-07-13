@@ -253,10 +253,6 @@ AcpiPsGetArguments (
         {
              Op->Common.Value.String = Arg->Common.Value.String;
              Op->Common.Opt = 2;
-/*
-             AcpiGbl_CurrentInlineCommentNode = Op;
-             printf("AcpiGbl_CurrentInlineCommentNode set to: %s\n", 
-                     AcpiGbl_CurrentInlineCommentNode->Common.Value.String);*/
         }
         else
         {
@@ -627,12 +623,23 @@ AcpiPsParseLoop (
             Status = AcpiPsCreateOp (WalkState, AmlOpStart, &Op);
 
             // Add an inline comment to this, if there exists one.
-            if (AcpiGbl_CurrentInlineComment!=NULL && (Op->Common.AmlOpcode!=AML_COMMENT_OP))
+            if (Op->Common.AmlOpcode!=AML_COMMENT_OP)
             {
-                Op->Common.InlineComment = AcpiGbl_CurrentInlineComment;
-                AcpiGbl_CurrentInlineComment = NULL;
-                printf("Op->Common.AmlOpcode: %x\n", Op->Common.AmlOpcode);
-                printf("Op->Common.InlineComment: %s\n", Op->Common.InlineComment);
+                if (AcpiGbl_CurrentInlineComment)
+                { 
+                    Op->Common.InlineComment = AcpiGbl_CurrentInlineComment;
+                    AcpiGbl_CurrentInlineComment = NULL;
+                    printf("Op->Common.AmlOpcode: %x\n", Op->Common.AmlOpcode);
+                    printf("Op->Common.InlineComment: %s\n", Op->Common.InlineComment);
+                }
+                if (AcpiGbl_CurrentEndNodeComment != NULL)
+                { 
+                    Op->Common.EndNodeComment = AcpiGbl_CurrentEndNodeComment;
+                    AcpiGbl_CurrentEndNodeComment = NULL;
+                    printf("Op->Common.AmlOpcode: %x\n", Op->Common.AmlOpcode);
+                    printf("Op->Common.EndNodeComment: %s\n", Op->Common.EndNodeComment);
+                }
+
             }
 
 
@@ -714,42 +721,6 @@ AcpiPsParseLoop (
             continue;
         }
 
-        /*
-         * All arguments have been processed -- Op is complete,
-         * look to see if the previous parsed node was a node containing
-         * an inline comment. If this is the case, associate this Op
-         * with that node.
-         */
-
-
-        /*
-         * All arguments have been processed -- Op is complete.
-         * If this node is an inline comment, then remove it from the 
-         * parse tree.
-         */
-
-
-/*    
-        printf("Opcode name:          0x%x.\n", Op->Common.AmlOpcode);
-        printf("previous Opcode name: ");
-        if (WalkState->PrevOp)
-        {
-        printf("0x%x. ", WalkState->PrevOp->Common.AmlOpcode);
-        }
-        printf("\n");
-        if (WalkState->PrevOp && 
-           (WalkState->PrevOp->Common.AmlOpcode == AML_COMMENT_OP) &&
-           (WalkState->PrevOp->Common.Opt == 2))
-        {
-            printf("Setting Inline comment...\n");
-            Op->Common.InlineComment = WalkState->PrevOp->Common.Value.String;
-        }
-        else
-        {
-            printf("Inline comment = NULL...\n");
-            Op->Common.InlineComment = NULL;
-        }
-*/
         /*
          * All arguments have been processed -- Op is complete,
          * prepare for next
