@@ -129,6 +129,8 @@ AcpiPsGetAmlOpcode (
     ACPI_WALK_STATE         *WalkState);
 
 
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiPsGetAmlOpcode
@@ -146,52 +148,14 @@ AcpiPsGetAmlOpcode (
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                  AmlOffset;
-    UINT32                  Length;
-    UINT32                  CommentOption;
 
     ACPI_FUNCTION_TRACE_PTR (PsGetAmlOpcode, WalkState);
 
 
-    WalkState->Aml = WalkState->ParserState.Aml;
     WalkState->Opcode = AcpiPsPeekOpcode (&(WalkState->ParserState));
 
-    /*
-     * For the -q option: if this is a comment, check to see if this is an 
-     * inline comment. If it is, save the contents of the inline comment
-     * globally to avoid creating a parse node for this comment.
-     */
-    CommentOption = *(WalkState->ParserState.Aml+1);
-    if (WalkState->Opcode == AML_COMMENT_OP  &&  // check that it's a comment
-        ((CommentOption==2) || ( CommentOption==3))) // check that it's inline
-    {
-        printf("FOUND COMMENT\n");
-        
-        //found inline comment. Now, extract the comment itself.
-        WalkState->ParserState.Aml +=2; //increment past the comment option
-        if (CommentOption==2)
-        {
-            printf("found inline comment.\n");
-            AcpiGbl_CurrentInlineComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
-        }
-        else if (CommentOption==3) 
-        { 
-            printf("found EndNode comment.\n");
-            AcpiGbl_CurrentEndNodeComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
-        }
-
-        Length = 0;
-        while (WalkState->ParserState.Aml[Length])
-        {
-            Length++;
-        }
-
-        // consume more Opcodes.
-        WalkState->ParserState.Aml += Length + 1;
-        WalkState->Aml = WalkState->ParserState.Aml;
-        WalkState->Opcode = AcpiPsPeekOpcode (&(WalkState->ParserState));
-    }
- 
-
+    WalkState->Aml = WalkState->ParserState.Aml;
+    printf("Op: 0x%x\n", *WalkState->ParserState.Aml);
 
     /*
      * First cut to determine what we have found:
@@ -435,6 +399,7 @@ AcpiPsCreateOp (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
+    AcpiPsCaptureComments(WalkState);
     if (WalkState->OpInfo->Flags & AML_NAMED)
     {
         Status = AcpiPsBuildNamedOp (WalkState, AmlOpStart, Op, &NamedOp);

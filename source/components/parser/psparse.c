@@ -165,6 +165,69 @@ AcpiPsGetOpcodeSize (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiPsCaptureComments
+ *
+ * PARAMETERS:  ParserState         - A parser state object
+ *
+ * RETURN:      void
+ *
+ * DESCRIPTION: look at the aml that the parser state is pointing to,
+ *              capture any AML_COMMENT_OP and it's arguments and increment the
+ *              aml pointer past the comment. This is used in the -q option.
+ *
+ ******************************************************************************/
+
+void
+AcpiPsCaptureComments (
+    ACPI_WALK_STATE         *WalkState)
+{
+    UINT8                   *Aml;
+    UINT16                  Opcode;
+    UINT32                  Length = 0;
+    UINT8                   CommentOption;
+
+
+    Aml = WalkState->ParserState.Aml;
+    Opcode = (UINT16) ACPI_GET8 (Aml);
+    printf("CaptureComments Opcode: 0x%x\n", Opcode);
+
+    while (Opcode == AML_COMMENT_OP)// check that it's a comment
+    {                  
+        CommentOption = *(Aml+1);
+    
+        printf("FOUND COMMENT\n");
+        
+        //found inline comment. Now, set pointers to these comments.
+        if (CommentOption==2)
+        {
+            WalkState->ParserState.Aml += 2; //increment past the comment option and point the approperiate char pointers.
+            printf("found inline comment.\n");
+            AcpiGbl_CurrentInlineComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+        }
+        else if (CommentOption==3) 
+        { 
+            WalkState->ParserState.Aml += 2; //increment past the comment option and point the approperiate char pointers.
+            printf("found EndNode comment.\n");
+            AcpiGbl_CurrentEndNodeComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+        }
+
+        Length = 0;
+        while (WalkState->ParserState.Aml[Length])
+        {
+            Length++;
+        }
+        WalkState->ParserState.Aml += Length + 1;
+
+        // Peek at the next Opcode.
+        Aml = WalkState->ParserState.Aml;
+        Opcode = (UINT16) ACPI_GET8 (Aml);
+    }
+
+    WalkState->Aml = WalkState->ParserState.Aml; //Is this needed? What will this do?
+}
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiPsPeekOpcode
  *
  * PARAMETERS:  ParserState         - A parser state object
@@ -172,6 +235,9 @@ AcpiPsGetOpcodeSize (
  * RETURN:      Next AML opcode
  *
  * DESCRIPTION: Get next AML opcode (without incrementing AML pointer)
+ *              For the -q option, if next comment is an AML_COMMENT_OP
+ *              Save the comment Op in a global field and return the next
+ *              AML opcode that is not a comment.
  *
  ******************************************************************************/
 
@@ -181,7 +247,6 @@ AcpiPsPeekOpcode (
 {
     UINT8                   *Aml;
     UINT16                  Opcode;
-
 
     Aml = ParserState->Aml;
     Opcode = (UINT16) ACPI_GET8 (Aml);

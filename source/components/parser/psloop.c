@@ -177,6 +177,9 @@ AcpiPsGetArguments (
     ACPI_FUNCTION_TRACE_PTR (PsGetArguments, WalkState);
 
 
+            // get potential comments before this function is called. Erase when done.
+
+
     switch (Op->Common.AmlOpcode)
     {
     case AML_BYTE_OP:       /* AML_BYTEDATA_ARG */
@@ -236,10 +239,6 @@ AcpiPsGetArguments (
 
         WalkState->Aml = WalkState->ParserState.Aml;
 
-        /* There's something very strange going on with AcpiPsGetNextArg.
-         * It seems like it's overwriting some of the Op fields. Even 
-         * newly added fields such as Op->Common.Value.Opt gets overwritten.
-         */
         Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
             GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
         if (ACPI_FAILURE (Status))
@@ -285,6 +284,8 @@ AcpiPsGetArguments (
             }
 
             INCREMENT_ARG_LIST (WalkState->ArgTypes);
+
+            // get potential comments here
         }
 
 
@@ -355,6 +356,9 @@ AcpiPsGetArguments (
                 break;
             }
         }
+
+          // Do I need to get comments here? I don't think I need it but
+          // it might be good for defensive programming...
 
         /* Special processing for certain opcodes */
 
@@ -617,9 +621,14 @@ AcpiPsParseLoop (
 
     while ((ParserState->Aml < ParserState->AmlEnd) || (Op))
     {
+        //get comments here
+        AcpiPsCaptureComments(WalkState);
+ 
         AmlOpStart = ParserState->Aml;
         if (!Op)
         {
+
+        AcpiPsCaptureComments(WalkState);
             Status = AcpiPsCreateOp (WalkState, AmlOpStart, &Op);
 
             // Add an inline comment to this, if there exists one.
@@ -677,6 +686,9 @@ AcpiPsParseLoop (
          */
         WalkState->ArgCount  = 0;
 
+        // get comments here
+
+            AcpiPsCaptureComments(WalkState);
         /* Are there any arguments that must be processed? */
 
         if (WalkState->ArgTypes)

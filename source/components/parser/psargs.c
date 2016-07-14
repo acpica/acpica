@@ -855,6 +855,8 @@ AcpiPsGetNextArg (
     ACPI_STATUS             Status = AE_OK;
 
 
+    AcpiPsCaptureComments(WalkState);
+
     ACPI_FUNCTION_TRACE_PTR (PsGetNextArg, ParserState);
 
 

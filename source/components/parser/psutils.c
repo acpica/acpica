@@ -172,6 +172,8 @@ AcpiPsInitOp (
 {
     ACPI_FUNCTION_ENTRY ();
 
+    printf("InitOp: 0x%x\n", Opcode);
+
 
     Op->Common.DescriptorType = ACPI_DESC_TYPE_PARSER;
     Op->Common.AmlOpcode = Opcode;

@@ -263,6 +263,13 @@ UINT32
 AcpiPsGetOpcodeSize (
     UINT32                  Opcode);
 
+/*
+ * Specific to the -q option
+ */
+void
+AcpiPsCaptureComments (
+    ACPI_WALK_STATE         *WalkState);
+
 UINT16
 AcpiPsPeekOpcode (
     ACPI_PARSE_STATE        *state);
