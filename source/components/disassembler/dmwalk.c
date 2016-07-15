@@ -383,9 +383,6 @@ AcpiDmBlockType (
             return (BLOCK_NONE);
         }
 
-    case AML_COMMENT_OP:
-         return (BLOCK_COMMENT);
-
         /*lint -fallthrough */
 
     default:
@@ -536,20 +533,6 @@ AcpiDmDescendingOp (
         return (AE_CTRL_DEPTH);
     }
 
-    // If this is an inline comment node, keep the same state move on to the next node.
-    if ( Op->Common.AmlOpcode == AML_COMMENT_OP &&
-         Op->Common.Opt == 2)
-    {
-        /* Skip to the next Op. */
-        
-        Op = AcpiPsGetDepthNext (NULL, Op);
-
-        OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
-
-        Op->Common.DisasmFlags = ACPI_PARSEOP_IGNORE;
-
-    }
-
     if (Op->Common.AmlOpcode == AML_IF_OP)
     {
         NextOp = AcpiPsGetDepthNext (NULL, Op);
@@ -640,13 +623,6 @@ AcpiDmDescendingOp (
             }
 
             /* Fallthrough */
-
-        case AML_COMMENT_OP:
-            if(Op->Common.Opt==1) //take care of the case with inline comments.
-            {
-                AcpiDmIndent (Level);
-            }
-            break;
 
         default:
 
@@ -1029,9 +1005,6 @@ AcpiDmAscendingOp (
 
     switch (AcpiDmBlockType (Op))
     {
-    case BLOCK_COMMENT: //Do nothing with the comment
-        break;
-
     case BLOCK_PAREN:
 
         /* Completed an op that has arguments, add closing paren if needed */

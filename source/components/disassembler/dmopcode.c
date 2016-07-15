@@ -877,18 +877,6 @@ AcpiDmDisassembleOneOp (
         }
         break;
 
-    case AML_COMMENT_OP:
-
-printf("integer again again: %d\n", Op->Common.Opt);
-
-        if (Op->Common.Opt == 1)
-        {
-            AcpiOsPrintf ("%s", Op->Common.Value.String);
-            AcpiOsPrintf ("\n");
-        }
-
-        break;
-
     case AML_BUFFER_OP:
         /*
          * Determine the type of buffer. We can have one of the following:
@@ -1089,7 +1077,6 @@ printf("integer again again: %d\n", Op->Common.Opt);
 
         break;
     }
-
 }
 
 

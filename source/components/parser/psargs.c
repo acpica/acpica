@@ -561,21 +561,6 @@ AcpiPsGetNextSimpleArg (
         Length++;
         break;
 
-    case ARGP_COMMENT:
-        printf("This is a comment\n");
-        Opcode = AML_COMMENT_OP;
-        Arg->Common.Value.String = ACPI_CAST_PTR (char, Aml);
-
-        /* Find the null terminator */
-
-        Length = 0;
-        while (Aml[Length])
-        {
-            Length++;
-        }
-        Length++;
-        break;
-
     case ARGP_NAME:
     case ARGP_NAMESTRING:
 

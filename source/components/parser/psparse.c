@@ -257,9 +257,6 @@ AcpiPsCaptureComments (
  * RETURN:      Next AML opcode
  *
  * DESCRIPTION: Get next AML opcode (without incrementing AML pointer)
- *              For the -q option, if next comment is an AML_COMMENT_OP
- *              Save the comment Op in a global field and return the next
- *              AML opcode that is not a comment.
  *
  ******************************************************************************/
 
