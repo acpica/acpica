@@ -705,6 +705,12 @@ AcpiDmDescendingOp (
         if (AcpiDmBlockType (Op) & BLOCK_PAREN)
         {
             AcpiOsPrintf (" (");
+            // print inline comments associated with this op.
+            if (Op->Common.InlineComment!=NULL)
+            {
+                AcpiOsPrintf ( "%s ", Op->Common.InlineComment);
+                Op->Common.InlineComment = NULL;
+            }
         }
 
         /* If this is a named opcode, print the associated name value */
@@ -762,6 +768,13 @@ AcpiDmDescendingOp (
 
                 AcpiDmCheckForHardwareId (Op);
                 AcpiOsPrintf (", ");
+
+                //Print comments associated with this name later on, we need to put this in a separate function...
+                if (Op->Common.NameComment)
+                {
+                    AcpiOsPrintf ("%s", Op->Common.NameComment);
+                }
+
                 break;
 
             case AML_REGION_OP:
