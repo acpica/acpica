@@ -185,6 +185,7 @@ AcpiPsCaptureComments (
     UINT16                  Opcode;
     UINT32                  Length = 0;
     UINT8                   CommentOption;
+    char                    *debug;
 
 
     Aml = WalkState->ParserState.Aml;
@@ -195,20 +196,31 @@ AcpiPsCaptureComments (
     {                  
         CommentOption = *(Aml+1);
     
-        printf("FOUND COMMENT\n");
-        
         //found inline comment. Now, set pointers to these comments.
         if (CommentOption==2)
         {
             WalkState->ParserState.Aml += 2; //increment past the comment option and point the approperiate char pointers.
             printf("found inline comment.\n");
+            debug = AcpiGbl_CurrentInlineComment;          
+
             AcpiGbl_CurrentInlineComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+
+            if (debug!=NULL)
+            {
+                printf("CAUTION: switching %s with %s for inline comments!\n", debug, AcpiGbl_CurrentInlineComment);
+            }
         }
         else if (CommentOption==3) 
         { 
             WalkState->ParserState.Aml += 2; //increment past the comment option and point the approperiate char pointers.
             printf("found EndNode comment.\n");
+            debug = AcpiGbl_CurrentEndNodeComment;
             AcpiGbl_CurrentEndNodeComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+
+            if (debug!=NULL)
+            {
+                printf("CAUTION: switching %s with %s for inline comments\n", debug, AcpiGbl_CurrentEndNodeComment);
+            }
         }
 
         Length = 0;
@@ -221,7 +233,17 @@ AcpiPsCaptureComments (
         // Peek at the next Opcode.
         Aml = WalkState->ParserState.Aml;
         Opcode = (UINT16) ACPI_GET8 (Aml);
+
+    printf("Summary after capture: \n"
+           "Current end node comment:    %s\n"
+           "Current inline node comment: %s\n", 
+           AcpiGbl_CurrentEndNodeComment,
+           AcpiGbl_CurrentInlineComment);
+  
     }
+ 
+    printf("\n");
+
 
     WalkState->Aml = WalkState->ParserState.Aml; //Is this needed? What will this do?
 }

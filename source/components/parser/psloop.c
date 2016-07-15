@@ -628,7 +628,6 @@ AcpiPsParseLoop (
         if (!Op)
         {
 
-        AcpiPsCaptureComments(WalkState);
             Status = AcpiPsCreateOp (WalkState, AmlOpStart, &Op);
 
             // Add an inline comment to this, if there exists one.
@@ -688,7 +687,7 @@ AcpiPsParseLoop (
 
         // get comments here
 
-            AcpiPsCaptureComments(WalkState);
+        AcpiPsCaptureComments(WalkState);
         /* Are there any arguments that must be processed? */
 
         if (WalkState->ArgTypes)

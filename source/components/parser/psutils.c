@@ -210,7 +210,8 @@ AcpiPsAllocOp (
 
 
     ACPI_FUNCTION_ENTRY ();
-
+    
+    printf("ALLOC OP\n");
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
 
@@ -251,7 +252,33 @@ AcpiPsAllocOp (
         AcpiPsInitOp (Op, Opcode);
         Op->Common.Aml = Aml;
         Op->Common.Flags = Flags;
+        Op->Common.InlineComment = NULL;
+        Op->Common.EndNodeComment = NULL;
     }
+
+    /* capture comments here? */
+    // Add an inline comment to this, if there exists one.
+
+    if (Op->Common.AmlOpcode!=AML_COMMENT_OP)
+    {
+        if (AcpiGbl_CurrentInlineComment)
+        { 
+            Op->Common.InlineComment = AcpiGbl_CurrentInlineComment;
+            AcpiGbl_CurrentInlineComment = NULL;
+            printf("Op->Common.AmlOpcode: %x\n", Op->Common.AmlOpcode);
+            printf("Op->Common.InlineComment: %s\n", Op->Common.InlineComment);
+        }
+        if (AcpiGbl_CurrentEndNodeComment != NULL)
+        { 
+            Op->Common.EndNodeComment = AcpiGbl_CurrentEndNodeComment;
+            AcpiGbl_CurrentEndNodeComment = NULL;
+            printf("Op->Common.AmlOpcode: %x\n", Op->Common.AmlOpcode);
+            printf("Op->Common.EndNodeComment: %s\n", Op->Common.EndNodeComment);
+        }
+    }
+    printf("\n");
+
+
 
     return (Op);
 }

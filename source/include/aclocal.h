@@ -993,7 +993,8 @@ typedef union acpi_parse_value
     char                            AmlOpName[16])  /* Op name (debug only) */\
     UINT8                           Opt;            /* Extra integer constant */\
     char                            *InlineComment; /* For -q option: inline comment associated with this node.*/\
-    char                            *EndNodeComment;/* For -q option: end of node comment associated with this node.*/
+    char                            *EndNodeComment;/* For -q option: end of node comment associated with this node.*/\
+    char                            *NameComment;   /* For -q option: inline comment associated with the first parameter of the name node.*/
 
 
 /* Flags for DisasmFlags field  above */

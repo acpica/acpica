@@ -276,16 +276,29 @@ AcpiPsBuildNamedOp (
     while (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) &&
           (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) != ARGP_NAME))
     {
+        printf("gna from bild named op\n");
         Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
             GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
         }
-
         AcpiPsAppendArg (UnnamedOp, Arg);
         INCREMENT_ARG_LIST (WalkState->ArgTypes);
     }
+
+    printf("UnnamedOp->Common.AmlOpcode: 0x%x\n", UnnamedOp->Common.AmlOpcode);
+    printf("UnnamedOp->Named.Name: %x\n", UnnamedOp->Named.Name);
+
+    // are there any inline comments associated with the NameSeg?? If so, save this.
+    AcpiPsCaptureComments(WalkState);
+    if (AcpiGbl_CurrentInlineComment != NULL)
+        { 
+            UnnamedOp->Common.NameComment = AcpiGbl_CurrentInlineComment;
+            AcpiGbl_CurrentInlineComment = NULL;
+            printf("Op->Common.NameComment: %s\n", UnnamedOp->Common.NameComment);
+        }
+
 
     /*
      * Make sure that we found a NAME and didn't run out of arguments
@@ -331,6 +344,15 @@ AcpiPsBuildNamedOp (
     }
 
     AcpiPsAppendArg (*Op, UnnamedOp->Common.Value.Arg);
+
+    // Don't forget the comments!
+    if (UnnamedOp->Common.InlineComment!=NULL && UnnamedOp->Common.EndNodeComment!=NULL)
+    {
+        (*Op)->Common.InlineComment  = UnnamedOp->Common.InlineComment;
+        (*Op)->Common.EndNodeComment = UnnamedOp->Common.EndNodeComment;
+        (*Op)->Common.NameComment    = UnnamedOp->Common.NameComment;
+    }
+ 
 
     if ((*Op)->Common.AmlOpcode == AML_REGION_OP ||
         (*Op)->Common.AmlOpcode == AML_DATA_REGION_OP)

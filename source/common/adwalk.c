@@ -492,7 +492,13 @@ AcpiDmDumpDescending (
     case AML_DEVICE_OP:
     case AML_INT_NAMEDFIELD_OP:
 
-        AcpiOsPrintf ("%4.4s", ACPI_CAST_PTR (char, &Op->Named.Name));
+        AcpiOsPrintf (" %4.4s ", ACPI_CAST_PTR (char, &Op->Named.Name));
+        AcpiOsPrintf (" %s ", Op->Common.InlineComment);
+        AcpiOsPrintf (" %s ", Op->Common.NameComment);
+        AcpiOsPrintf (" %s ", Op->Common.EndNodeComment);
+        AcpiOsPrintf (" %s ", Op->Common.AmlOpName);
+        AcpiOsPrintf (" 0x%x ", Op->Common.AmlOpcode);
+
         break;
 
     default:
