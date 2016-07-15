@@ -263,12 +263,6 @@ UINT32
 AcpiPsGetOpcodeSize (
     UINT32                  Opcode);
 
-/*
- * Specific to the -q option
- */
-void
-AcpiPsCaptureComments (
-    ACPI_WALK_STATE         *WalkState);
 
 UINT16
 AcpiPsPeekOpcode (
@@ -438,6 +432,17 @@ AcpiPsSprintOp (
 void
 AcpiPsShow (
     ACPI_PARSE_OBJECT       *op);
+
+/*
+ * Specific to the -q option of iAsl
+ */
+void
+AcpiPsCaptureComments (
+    ACPI_WALK_STATE         *WalkState);
+
+void
+AcpiPsTransferComments (
+    ACPI_PARSE_OBJECT       *Op);
 
 
 #endif /* __ACPARSER_H__ */

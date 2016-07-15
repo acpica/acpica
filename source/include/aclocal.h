@@ -994,7 +994,9 @@ typedef union acpi_parse_value
     UINT8                           Opt;            /* Extra integer constant */\
     char                            *InlineComment; /* For -q option: inline comment associated with this node.*/\
     char                            *EndNodeComment;/* For -q option: end of node comment associated with this node.*/\
-    char                            *NameComment;   /* For -q option: inline comment associated with the first parameter of the name node.*/
+    char                            *NameComment;   /* For -q option: inline comment associated with the first parameter of the name node.*/\
+    struct acpi_comment_list_node   *CommentList;      /* comments that appears before this node */
+
 
 
 /* Flags for DisasmFlags field  above */
@@ -1078,9 +1080,6 @@ typedef struct acpi_parse_obj_asl
     UINT8                           AmlPkgLenBytes;
     UINT8                           Extra;
     char                            ParseOpName[ACPI_MAX_PARSEOP_NAME];
-
-    /* these are used for the -q option */
-    struct acpi_comment_list_node   *CommentList;      /* comments that appears before this node */
 
 } ACPI_PARSE_OBJ_ASL;
 

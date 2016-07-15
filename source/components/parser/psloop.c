@@ -473,6 +473,46 @@ AcpiPsLinkModuleCode (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiPsTransferComments
+ *
+ * PARAMETERS:  WalkState           - Current state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Parse AML (pointed to by the current parser state) and return
+ *              a tree of ops.
+ *
+ ******************************************************************************/
+
+void
+AcpiPsTransferComments (
+    ACPI_PARSE_OBJECT       *Op) 
+{
+
+    printf("Transferring all captured global comments to the folowing opcode: %x\n", Op->Common.AmlOpcode);
+    if (AcpiGbl_CurrentInlineComment)
+    { 
+        Op->Common.InlineComment = AcpiGbl_CurrentInlineComment;
+        printf("Op->Common.InlineComment: %s\n", Op->Common.InlineComment);
+        AcpiGbl_CurrentInlineComment = NULL;
+    }
+    if (AcpiGbl_CurrentEndNodeComment != NULL)
+    { 
+        Op->Common.EndNodeComment = AcpiGbl_CurrentEndNodeComment;
+        printf("Op->Common.EndNodeComment: %s\n", Op->Common.EndNodeComment);
+        AcpiGbl_CurrentEndNodeComment = NULL;
+    }
+    if (AcpiGbl_RegCommentListHead != NULL)
+    { 
+        Op->Common.CommentList = AcpiGbl_RegCommentListHead;
+        printf("Op->Common.EndNodeComment: %s\n", Op->Common.EndNodeComment);
+        AcpiGbl_RegCommentListHead = AcpiGbl_RegCommentListTail = NULL;
+    }
+    printf("\n");
+}
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiPsParseLoop
  *
  * PARAMETERS:  WalkState           - Current state
@@ -572,23 +612,8 @@ AcpiPsParseLoop (
         {
 
             Status = AcpiPsCreateOp (WalkState, AmlOpStart, &Op);
-
-            // TODO: make this into a function.
-            // Add an inline comment to this, if there exists one.
-            if (AcpiGbl_CurrentInlineComment)
-            { 
-                Op->Common.InlineComment = AcpiGbl_CurrentInlineComment;
-                AcpiGbl_CurrentInlineComment = NULL;
-                printf("Op->Common.AmlOpcode: %x\n", Op->Common.AmlOpcode);
-                printf("Op->Common.InlineComment: %s\n", Op->Common.InlineComment);
-            }
-            if (AcpiGbl_CurrentEndNodeComment != NULL)
-            { 
-                Op->Common.EndNodeComment = AcpiGbl_CurrentEndNodeComment;
-                AcpiGbl_CurrentEndNodeComment = NULL;
-                printf("Op->Common.AmlOpcode: %x\n", Op->Common.AmlOpcode);
-                printf("Op->Common.EndNodeComment: %s\n", Op->Common.EndNodeComment);
-            }
+            
+//            AcpiPsTransferComments(Op);
 
 
             if (ACPI_FAILURE (Status))

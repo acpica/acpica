@@ -254,27 +254,10 @@ AcpiPsAllocOp (
         Op->Common.Flags = Flags;
         Op->Common.InlineComment = NULL;
         Op->Common.EndNodeComment = NULL;
+        Op->Common.NameComment = NULL;
     }
-    //TODO: make this into a function
-    /* capture comments here? */
-    // Add an inline comment to this, if there exists one.
 
-    if (AcpiGbl_CurrentInlineComment)
-    { 
-        Op->Common.InlineComment = AcpiGbl_CurrentInlineComment;
-        AcpiGbl_CurrentInlineComment = NULL;
-        printf("Op->Common.AmlOpcode: %x\n", Op->Common.AmlOpcode);
-        printf("Op->Common.InlineComment: %s\n", Op->Common.InlineComment);
-    }
-    if (AcpiGbl_CurrentEndNodeComment != NULL)
-    { 
-        Op->Common.EndNodeComment = AcpiGbl_CurrentEndNodeComment;
-        AcpiGbl_CurrentEndNodeComment = NULL;
-        printf("Op->Common.AmlOpcode: %x\n", Op->Common.AmlOpcode);
-        printf("Op->Common.EndNodeComment: %s\n", Op->Common.EndNodeComment);
-    }
-    printf("\n");
-
+    AcpiPsTransferComments(Op); // transfer comments here.
 
 
     return (Op);

@@ -181,11 +181,12 @@ void
 AcpiPsCaptureComments (
     ACPI_WALK_STATE         *WalkState)
 {
-    UINT8                   *Aml;
-    UINT16                  Opcode;
-    UINT32                  Length = 0;
-    UINT8                   CommentOption;
-    char                    *debug;
+    UINT8                          *Aml;
+    UINT16                         Opcode;
+    UINT32                         Length = 0;
+    UINT8                          CommentOption;
+    char                           *debug;
+    struct acpi_comment_list_node  *NewCNode;
 
 
     Aml = WalkState->ParserState.Aml;
@@ -196,31 +197,63 @@ AcpiPsCaptureComments (
     {                  
         CommentOption = *(Aml+1);
     
-        //found inline comment. Now, set pointers to these comments.
-        if (CommentOption==2)
+        WalkState->ParserState.Aml += 2; //increment past the comment option and point the approperiate char pointers.
+
+        //found a comment. Now, set pointers to these comments.
+        switch (CommentOption)
         {
-            WalkState->ParserState.Aml += 2; //increment past the comment option and point the approperiate char pointers.
-            printf("found inline comment.\n");
-            debug = AcpiGbl_CurrentInlineComment;          
+            case 1:
+                printf("found regular comment.\n");
 
-            AcpiGbl_CurrentInlineComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+                // add to a linked list of nodes. This list will be taken by the parse node created next.
+                
+                NewCNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
+                
+                NewCNode->Comment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+                NewCNode->Next    = NULL;
+                 
+                if (AcpiGbl_RegCommentListHead==NULL)
+                {
+                    AcpiGbl_RegCommentListHead 
+                     = AcpiGbl_RegCommentListTail 
+                     = NewCNode;
+                }
+                else
+                {
+                    AcpiGbl_RegCommentListTail->Next 
+                     = NewCNode;
+                    AcpiGbl_RegCommentListTail 
+                     = AcpiGbl_RegCommentListTail->Next;
+                }
 
-            if (debug!=NULL)
-            {
-                printf("CAUTION: switching %s with %s for inline comments!\n", debug, AcpiGbl_CurrentInlineComment);
-            }
-        }
-        else if (CommentOption==3) 
-        { 
-            WalkState->ParserState.Aml += 2; //increment past the comment option and point the approperiate char pointers.
-            printf("found EndNode comment.\n");
-            debug = AcpiGbl_CurrentEndNodeComment;
-            AcpiGbl_CurrentEndNodeComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+            break;
 
-            if (debug!=NULL)
-            {
-                printf("CAUTION: switching %s with %s for inline comments\n", debug, AcpiGbl_CurrentEndNodeComment);
-            }
+            case 2:
+        
+                printf("found inline comment.\n");
+                debug = AcpiGbl_CurrentInlineComment;          
+                AcpiGbl_CurrentInlineComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+                if (debug!=NULL)
+                {
+                    printf("CAUTION: switching %s with %s for inline comments!\n", debug, AcpiGbl_CurrentInlineComment);
+                }
+        
+            break;
+
+            case 3:
+         
+                printf("found EndNode comment.\n");
+                debug = AcpiGbl_CurrentEndNodeComment;
+                AcpiGbl_CurrentEndNodeComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+                if (debug!=NULL)
+                {
+                    printf("CAUTION: switching %s with %s for inline comments\n", debug, AcpiGbl_CurrentEndNodeComment);
+                }
+            
+            break;
+
+            default:
+            break;
         }
 
         Length = 0;
@@ -234,11 +267,11 @@ AcpiPsCaptureComments (
         Aml = WalkState->ParserState.Aml;
         Opcode = (UINT16) ACPI_GET8 (Aml);
 
-    printf("Summary after capture: \n"
-           "Current end node comment:    %s\n"
-           "Current inline node comment: %s\n", 
-           AcpiGbl_CurrentEndNodeComment,
-           AcpiGbl_CurrentInlineComment);
+        printf("Summary after capture:      \n"
+            "Current end node comment:    %s\n"
+            "Current inline node comment: %s\n", 
+            AcpiGbl_CurrentEndNodeComment,
+            AcpiGbl_CurrentInlineComment);
   
     }
  

@@ -351,6 +351,8 @@ AcpiPsBuildNamedOp (
         (*Op)->Common.InlineComment  = UnnamedOp->Common.InlineComment;
         (*Op)->Common.EndNodeComment = UnnamedOp->Common.EndNodeComment;
         (*Op)->Common.NameComment    = UnnamedOp->Common.NameComment;
+        (*Op)->Common.CommentList    = UnnamedOp->Common.CommentList;
+
     }
  
 

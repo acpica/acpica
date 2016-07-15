@@ -484,13 +484,20 @@ AcpiDmDescendingOp (
     ACPI_PARSE_OBJECT       *NextOp;
     ACPI_PARSE_OBJECT       *NextOp2;
     UINT32                  AmlOffset;
+    struct acpi_comment_list_node *Current = Op->Common.CommentList;
+    
 
-  //  AcpiOsPrintf (" [HDW]");
+    //  AcpiOsPrintf (" [HDW]");
 
 
-
-
-
+    // If this parse node has regular comments, print them now.
+    while (Current)
+    {
+        
+        AcpiDmIndent (Level);
+        AcpiOsPrintf("%s\n", Current->Comment);
+        Current = Current->Next;     
+    } 
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
 
