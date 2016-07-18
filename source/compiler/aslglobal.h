@@ -340,6 +340,9 @@ ASL_EXTERN UINT16                   ASL_INIT_GLOBAL (Gbl_PruneType, 0);
 /* Specific to the -q option */
 
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_CaptureComments, FALSE);
+ASL_EXTERN ASL_COMMENT_STATE        Gbl_CommentState;
+
+
 /* Determines if an inline comment should be saved in the InlineComment or NodeEndComment
  *  field of ACPI_PARSE_OBJECT.
  */
@@ -349,9 +352,7 @@ ASL_EXTERN ACPI_COMMENT_LIST_NODE   ASL_INIT_GLOBAL (*Gbl_Comment_List_Tail, 0);
 
 ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_Inline_Comment_Buffer, 0);
 
-ASL_EXTERN ACPI_PARSE_OBJECT        ASL_INIT_GLOBAL (*Gbl_Latest_Parse_Node, 0);
-ASL_EXTERN ACPI_PARSE_OBJECT        ASL_INIT_GLOBAL (*Gbl_Previous_Parse_Node, 0);
-ASL_EXTERN UINT64                   ASL_INIT_GLOBAL (Gbl_Current_Contiguous_Space, 0);
+//ASL_EXTERN ACPI_PARSE_OBJECT        ASL_INIT_GLOBAL (*Gbl_Latest_Parse_Node, 0);
 
 
 

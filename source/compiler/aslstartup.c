@@ -195,6 +195,9 @@ AslInitializeGlobals (
         Gbl_Files[i].Handle = NULL;
         Gbl_Files[i].Filename = NULL;
     }
+
+    Gbl_CommentState.SpacesBefore = 0;
+    Gbl_CommentState.CommentType  = 1;
 }
 
 

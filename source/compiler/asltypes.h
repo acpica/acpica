@@ -407,5 +407,12 @@ typedef struct asl_xref_info
 
 } ASL_XREF_INFO;
 
+typedef struct asl_comment_state
+{
+    UINT8                   CommentType;
+    UINT32                  SpacesBefore;
+    ACPI_PARSE_OBJECT       *Latest_Parse_Node;
+} ASL_COMMENT_STATE;
+
 
 #endif  /* __ASLTYPES_H */
