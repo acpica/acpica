@@ -159,7 +159,7 @@ ASL_FILE_NODE               *Gbl_IncludeFileStack = NULL;
 #define ASL_Comma      ','
 #define ASL_OpenBrace  '{'
 #define ASL_CloseBrace '}'
-
+#define ASL_Whitespace ' '
 
 /*******************************************************************************
  *
@@ -174,7 +174,6 @@ ASL_FILE_NODE               *Gbl_IncludeFileStack = NULL;
  *              accordingly.
  *
  ******************************************************************************/
-
 
 void
 AslProcessCommentState (
@@ -195,10 +194,9 @@ AslProcessCommentState (
             Gbl_CommentState.CommentType = ASL_RegComment;
             break;
 
-        case ASL_Comma:
-            Gbl_CommentState.CommentType = ASL_InlineComment;
+        case ASL_Whitespace:
+            Gbl_CommentState.CommentType = ASL_RegComment;
             break;
-
         case ASL_OpenParen:
             Gbl_CommentState.CommentType = ASL_OpenParenComment;
             break;
@@ -215,12 +213,21 @@ AslProcessCommentState (
             Gbl_CommentState.CommentType = ASL_CloseBraceComment;
             break;
 
+        /* Keep this as the last case since this case may overlap
+         * with prior cases.
+         */
+        case ASL_Comma:
+            Gbl_CommentState.CommentType = ASL_InlineComment;
+            break;
+
         default:
+
+            Gbl_CommentState.CommentType = ASL_InlineComment;
             break;
 
     }
 
-    printf("Comment type set to %d\n", Gbl_CommentState.CommentType);
+    printf("Comment type set to %d after processing the character %c\n", Gbl_CommentState.CommentType, input);
     
 }
 
@@ -712,7 +719,7 @@ AslPlaceComment(
     char        *CommentString)
 {
    
-    printf("Placing comment for type %d\n", Type);
+    printf("Placing comment %s for type %d\n", CommentString, Type);
     switch (Type)
     {
         case ASL_RegComment:
@@ -900,12 +907,13 @@ loop:
 	 */
         else             
         {
-           /* pad with extra spaces that appeared in the original code
-            * to retain the original spacing.
+           /* if this is not a regular comment, pad with extra spaces that appeared 
+            * in the original source input to retain the original spacing.
             */
 
-           FinalCommentString = UtStringCacheCalloc (strlen (CommentString) + CurrentState.SpacesBefore + 1);
-            for (i=0; i<CurrentState.SpacesBefore; ++i)
+            FinalCommentString = UtStringCacheCalloc (strlen (CommentString) + CurrentState.SpacesBefore + 1);
+            for (i=0; (CurrentState.CommentType!=ASL_RegComment) && 
+                      (i<CurrentState.SpacesBefore); ++i)
             {
                  FinalCommentString[i] = ' ';
             }

@@ -219,7 +219,7 @@ LnPackageLengthWalk (
         if (Gbl_CaptureComments)
         {
 
-            printf ("Calculating comment lengths for %s\n",  Op->Asl.ParseOpName);
+            printf ("====================Calculating comment lengths for %s====================\n",  Op->Asl.ParseOpName);
             if (Op->Asl.CommentList!=NULL)
             {
                 current = Op->Asl.CommentList; 
@@ -227,6 +227,7 @@ LnPackageLengthWalk (
                 {
                     commentLength = strlen(current->Comment)+3;
                     printf ("Length of standard comment +3 (including space for 0xA9 0x01 and 0x00): %d\n", commentLength);
+                    printf ("**********Comment string: %s\n\n", current->Comment);
                     TotalCommentLength += commentLength;
                     current = current->Next;
                 }
@@ -236,6 +237,7 @@ LnPackageLengthWalk (
             {
                 commentLength = strlen(Op->Asl.InlineComment)+3;
                 printf ("Length of inline comment +3 (including space for 0xA9 0x02 and 0x00): %d\n", commentLength);
+                printf ("**********Comment string: %s\n\n", Op->Asl.InlineComment);
                 TotalCommentLength += commentLength;
             }
 
@@ -243,8 +245,11 @@ LnPackageLengthWalk (
             {
                 commentLength = strlen(Op->Asl.EndNodeComment)+3;
                 printf ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", commentLength);
+                printf ("**********Comment string: %s\n\n", Op->Asl.EndNodeComment);
                 TotalCommentLength += commentLength;
             }
+
+            printf("\n\n");
 
 
         }
