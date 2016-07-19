@@ -188,15 +188,16 @@ AslProcessCommentState (
     {
         Gbl_CommentState.SpacesBefore = 0;
     }
+
     switch (input)
     {
         case ASL_Newline:
             Gbl_CommentState.CommentType = ASL_RegComment;
             break;
 
-        case ASL_Whitespace:
-            Gbl_CommentState.CommentType = ASL_RegComment;
+        case ASL_Whitespace: // don't chane states on white space
             break;
+
         case ASL_OpenParen:
             Gbl_CommentState.CommentType = ASL_OpenParenComment;
             break;
@@ -970,11 +971,12 @@ AslDoCommentType2 (
     void)
 {
     int                           c;
- //   int                           i;
+    int                           i;
     char                          *StringBuffer = MsgBuffer;
     char                          *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
     char                          *CommentString;
-//    char                          *FinalCommentString;
+    char                          *FinalCommentString;
+    struct asl_comment_state      CurrentState = Gbl_CommentState; //for reference
     printf("Single-line comment\n");
 
 
@@ -1034,52 +1036,31 @@ AslDoCommentType2 (
          *
          */
 
-        //if(Gbl_Previous_Parse_Node!=NULL)
-        //{
 
-            /* Create a new string with the approperiate spaces. Since we need
-             * to account for the proper spacing, the actual comment,
-             * extra 2 spaces so that this comment can be converted to the "/ *"
-             * style and the null terminator, the string would look something like
-             * 
-             * [ (spaces) (comment)  ( * /) ('\0') ]
-             *
-             */
-          /*   
-            FinalCommentString = UtStringCacheCalloc (SpaceCount + strlen (CommentString) + 3 + 1);
-            for (i=0; i<SpaceCount; ++i)
-            {
-                FinalCommentString[i] = ' ';
-            }
-            strcat(FinalCommentString, CommentString);
-*/
-//            strcat(FinalCommentString, " */");
-/*
-            // convert to a "/ *" style comment.
-            FinalCommentString [SpaceCount + 1] = '*';
+        /* Create a new string with the approperiate spaces. Since we need
+         * to account for the proper spacing, the actual comment,
+         * extra 2 spaces so that this comment can be converted to the "/ *"
+         * style and the null terminator, the string would look something like
+         * 
+         * [ (spaces) (comment)  ( * /) ('\0') ]
+         *
+         */
 
-            FinalCommentString [SpaceCount + strlen (CommentString) + 3] = 0;
+        FinalCommentString = UtStringCacheCalloc (CurrentState.SpacesBefore + strlen (CommentString) + 3 + 1);
 
-            if (IsEndOfNode) 
-            {
-                printf("FinalCommentString: %s\n", FinalCommentString);
-                printf("XXXXXXXXXXX New stuff!\n");
-                Gbl_Previous_Parse_Node->Asl.EndNodeComment = 
-                appendInlineComment(Gbl_Previous_Parse_Node->Asl.EndNodeComment,
-                                    FinalCommentString);
-            }
-            else
-            {
-                Gbl_Previous_Parse_Node->Asl.InlineComment = 
-                appendInlineComment(Gbl_Previous_Parse_Node->Asl.InlineComment,
-                                    FinalCommentString);
-            }
-*/ 
-        //}
-        //else
-        //{
-            addToCommentList (CommentString);
-        //}
+        for (i=0; (CurrentState.CommentType!=1) && (i<CurrentState.SpacesBefore); ++i)
+        {
+            FinalCommentString[i] = ' ';
+        }
+        strcat(FinalCommentString, CommentString);
+
+        // convert to a "/ *" style comment. disable this????
+//        strcat(FinalCommentString, " */");
+//        FinalCommentString [SpaceCount + 1] = '*';
+
+        FinalCommentString [CurrentState.SpacesBefore + strlen (CommentString) + 3] = 0;
+        AslPlaceComment(CurrentState.CommentType, FinalCommentString);    
+
     }
 
     return (TRUE);

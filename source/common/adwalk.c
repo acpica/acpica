@@ -494,6 +494,8 @@ AcpiDmDumpDescending (
 
         AcpiOsPrintf (" %4.4s ", ACPI_CAST_PTR (char, &Op->Named.Name));
         AcpiOsPrintf (" %s ", Op->Common.InlineComment);
+        if (Op->Common.CommentList)
+        AcpiOsPrintf (" %s ", Op->Common.CommentList->Comment);
         AcpiOsPrintf (" %s ", Op->Common.NameComment);
         AcpiOsPrintf (" %s ", Op->Common.EndNodeComment);
         AcpiOsPrintf (" %s ", Op->Common.AmlOpName);
