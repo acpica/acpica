@@ -1432,4 +1432,12 @@ ACPI_STATUS
 DtCreateTemplates (
     char                    **argv);
 
+/*
+ * Copied from dmwalk.c TODO: figure out where this should go..
+ */
+UINT32
+AcpiDmBlockType (
+    ACPI_PARSE_OBJECT       *Op);
+
+
 #endif /*  __ASLCOMPILER_H */

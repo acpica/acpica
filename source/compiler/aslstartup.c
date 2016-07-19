@@ -196,8 +196,10 @@ AslInitializeGlobals (
         Gbl_Files[i].Filename = NULL;
     }
 
-    Gbl_CommentState.SpacesBefore = 0;
-    Gbl_CommentState.CommentType  = 1;
+    Gbl_CommentState.SpacesBefore          = 0;
+    Gbl_CommentState.CommentType           = 1;
+    Gbl_CommentState.Latest_Parse_Node     = NULL;
+    Gbl_CommentState.ParsingParenBraceNode = NULL;
 }
 
 

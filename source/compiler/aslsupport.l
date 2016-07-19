@@ -161,6 +161,13 @@ ASL_FILE_NODE               *Gbl_IncludeFileStack = NULL;
 #define ASL_CloseBrace '}'
 #define ASL_Whitespace ' '
 
+
+
+
+
+
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AslProcessCommentState
@@ -212,11 +219,9 @@ AslProcessCommentState (
 
         case ASL_CloseBrace:
             Gbl_CommentState.CommentType = ASL_CloseBraceComment;
+            Gbl_CommentState.ParsingParenBraceNode = NULL;
             break;
 
-        /* Keep this as the last case since this case may overlap
-         * with prior cases.
-         */
         case ASL_Comma:
             Gbl_CommentState.CommentType = ASL_InlineComment;
             break;
@@ -746,9 +751,11 @@ AslPlaceComment(
             break;
 
         case ASL_OpenBraceComment:
+            Gbl_CommentState.ParsingParenBraceNode->Asl.OpenBraceComment = CommentString;
             break;
 
         case ASL_CloseBraceComment:
+            Gbl_CommentState.Latest_Parse_Node->Asl.CloseBraceComment = CommentString;
             break;
 
         default:

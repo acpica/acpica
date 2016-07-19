@@ -138,6 +138,46 @@ UtAttachNameseg (
     ACPI_PARSE_OBJECT       *Op,
     char                    *Name);
 
+/*
+ * Note: this function has been copied from dmwalk.c from the disassembler. 
+ * figure out what I need and find a way to incorporate this function into common
+ * as the development of the feature progresses.
+ */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmBlockType
+ *
+ * PARAMETERS:  Op              - Object to be examined
+ *
+ * RETURN:      BlockType - not a block, parens, braces, or even both.
+ *
+ * DESCRIPTION: Type of block for this op (parens or braces)
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiDmBlockType (
+    ACPI_PARSE_OBJECT       *Op)
+{
+
+
+    if (!Op)
+    {
+        return (BLOCK_NONE);
+    }
+
+    switch (Op->Asl.ParseOpcode)
+    {
+    case PARSEOP_VAR_PACKAGE:
+        return (BLOCK_PAREN | BLOCK_BRACE);
+
+    default:
+
+        return (BLOCK_NONE);
+    }
+}
+
+
 
 /*******************************************************************************
  *

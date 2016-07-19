@@ -412,6 +412,7 @@ typedef struct asl_comment_state
     UINT8                   CommentType;
     UINT32                  SpacesBefore;
     ACPI_PARSE_OBJECT       *Latest_Parse_Node;
+    ACPI_PARSE_OBJECT       *ParsingParenBraceNode;
 } ASL_COMMENT_STATE;
 
 

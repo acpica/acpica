@@ -249,6 +249,21 @@ LnPackageLengthWalk (
                 TotalCommentLength += commentLength;
             }
 
+            if (Op->Asl.OpenBraceComment!=NULL)
+            {
+                commentLength = strlen(Op->Asl.OpenBraceComment)+3;
+                printf ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", commentLength);
+                printf ("**********Comment string: %s\n\n", Op->Asl.OpenBraceComment);
+                TotalCommentLength += commentLength;
+            }
+
+            if (Op->Asl.CloseBraceComment!=NULL)
+            {
+                commentLength = strlen(Op->Asl.CloseBraceComment)+3;
+                printf ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", commentLength);
+                printf ("**********Comment string: %s\n\n", Op->Asl.CloseBraceComment);
+                TotalCommentLength += commentLength;
+            }
             printf("\n\n");
 
 

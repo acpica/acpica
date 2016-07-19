@@ -977,25 +977,27 @@ typedef union acpi_parse_value
 #endif
 
 #define ACPI_PARSE_COMMON \
-    union acpi_parse_object         *Parent;        /* Parent op */\
-    UINT8                           DescriptorType; /* To differentiate various internal objs */\
-    UINT8                           Flags;          /* Type of Op */\
-    UINT16                          AmlOpcode;      /* AML opcode */\
-    UINT8                           *Aml;           /* Address of declaration in AML */\
-    union acpi_parse_object         *Next;          /* Next op */\
-    ACPI_NAMESPACE_NODE             *Node;          /* For use by interpreter */\
-    ACPI_PARSE_VALUE                Value;          /* Value or args associated with the opcode */\
-    UINT8                           ArgListLength;  /* Number of elements in the arg list */\
+    union acpi_parse_object         *Parent;            /* Parent op */\
+    UINT8                           DescriptorType;     /* To differentiate various internal objs */\
+    UINT8                           Flags;              /* Type of Op */\
+    UINT16                          AmlOpcode;          /* AML opcode */\
+    UINT8                           *Aml;               /* Address of declaration in AML */\
+    union acpi_parse_object         *Next;              /* Next op */\
+    ACPI_NAMESPACE_NODE             *Node;              /* For use by interpreter */\
+    ACPI_PARSE_VALUE                Value;              /* Value or args associated with the opcode */\
+    UINT8                           ArgListLength;      /* Number of elements in the arg list */\
     ACPI_DISASM_ONLY_MEMBERS (\
-    UINT8                           DisasmFlags;    /* Used during AML disassembly */\
-    UINT8                           DisasmOpcode;   /* Subtype used for disassembly */\
-    char                            *OperatorSymbol;/* Used for C-style operator name strings */\
-    char                            AmlOpName[16])  /* Op name (debug only) */\
-    UINT8                           Opt;            /* Extra integer constant */\
-    char                            *InlineComment; /* For -q option: inline comment associated with this node.*/\
-    char                            *EndNodeComment;/* For -q option: end of node comment associated with this node.*/\
-    char                            *NameComment;   /* For -q option: inline comment associated with the first parameter of the name node.*/\
-    struct acpi_comment_list_node   *CommentList;      /* comments that appears before this node */
+    UINT8                           DisasmFlags;        /* Used during AML disassembly */\
+    UINT8                           DisasmOpcode;       /* Subtype used for disassembly */\
+    char                            *OperatorSymbol;    /* Used for C-style operator name strings */\
+    char                            AmlOpName[16])      /* Op name (debug only) */\
+    UINT8                           Opt;                /* Extra integer constant */\
+    char                            *InlineComment;     /* For -q option: inline comment associated with this node.*/\
+    char                            *EndNodeComment;    /* For -q option: end of node comment associated with this node.*/\
+    char                            *NameComment;       /* For -q option: inline comment associated with the first parameter of the name node.*/\
+    char                            *OpenBraceComment;  /* For -q option: inline comment associated with the first parameter of the name node.*/\
+    char                            *CloseBraceComment; /* For -q option: inline comment associated with the first parameter of the name node.*/\
+    struct acpi_comment_list_node   *CommentList;       /* comments that appears before this node */
 
 
 

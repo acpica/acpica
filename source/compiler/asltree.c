@@ -234,10 +234,19 @@ TrAllocateNode (
         Gbl_CommentState.Latest_Parse_Node = Op;    
         printf("===========Set latest parse node to this node.\n");
         printf("           Op->Asl.ParseOpName = %s\n", Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName);    
-    }
+        printf("           Op->Asl.ParseOpcode = 0x%x\n", ParseOpcode);    
 
-    if (Gbl_CaptureComments)
-    {   
+        /* if this parse op's syntax uses () and {} (i.e. Package(1){0x00}) then
+         * set a flag in the comment state. This facilitates paring comments for
+         * these types of opcodes.
+         */
+        if (AcpiDmBlockType (Op) == (BLOCK_PAREN | BLOCK_BRACE))
+        {
+            printf("========================================================Parsing paren/Brace node now!\n");
+            Gbl_CommentState.ParsingParenBraceNode = Op;
+        }
+        
+
         if (Gbl_Comment_List_Head)
         {
             Op->Asl.CommentList = Gbl_Comment_List_Head;
