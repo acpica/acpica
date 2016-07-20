@@ -229,7 +229,6 @@ AcpiPsCaptureComments (
             break;
 
             case 2:
-        
                 printf("found inline comment.\n");
                 debug = AcpiGbl_CurrentInlineComment;          
                 AcpiGbl_CurrentInlineComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
@@ -241,7 +240,6 @@ AcpiPsCaptureComments (
             break;
 
             case 3:
-         
                 printf("found EndNode comment.\n");
                 debug = AcpiGbl_CurrentEndNodeComment;
                 AcpiGbl_CurrentEndNodeComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
@@ -251,6 +249,28 @@ AcpiPsCaptureComments (
                 }
             
             break;
+
+            case 4:
+                printf("found open brace comment.\n");
+                debug = AcpiGbl_CurrentOpenBraceComment;
+                AcpiGbl_CurrentOpenBraceComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+                if (debug!=NULL)
+                {
+                    printf("CAUTION: switching %s with %s for inline comments\n", debug, AcpiGbl_CurrentOpenBraceComment);
+                }
+            
+            break;
+
+            case 5:
+                printf("found close brace comment.\n");
+                debug = AcpiGbl_CurrentCloseBraceComment;
+                AcpiGbl_CurrentCloseBraceComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+                if (debug!=NULL)
+                {
+                    printf("CAUTION: switching %s with %s for inline comments\n", debug, AcpiGbl_CurrentCloseBraceComment);
+                }
+            
+            break;        
 
             default:
             break;
@@ -267,11 +287,15 @@ AcpiPsCaptureComments (
         Aml = WalkState->ParserState.Aml;
         Opcode = (UINT16) ACPI_GET8 (Aml);
 
-        printf("Summary after capture:      \n"
-            "Current end node comment:    %s\n"
-            "Current inline node comment: %s\n", 
+        printf("Summary after capture:          \n"
+            "Current end node comment:        %s\n"
+            "Current inline node comment:     %s\n" 
+            "Current open brace node comment: %s\n" 
+            "Current close node comment:      %s\n", 
             AcpiGbl_CurrentEndNodeComment,
-            AcpiGbl_CurrentInlineComment);
+            AcpiGbl_CurrentInlineComment,
+            AcpiGbl_CurrentOpenBraceComment,
+            AcpiGbl_CurrentCloseBraceComment);
   
     }
  

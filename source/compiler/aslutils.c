@@ -172,11 +172,10 @@ AslParseOpBlockType (
     case PARSEOP_BUFFER:
     case PARSEOP_CASE: 
     case PARSEOP_DEVICE: 
-    case PARSEOP_ELSEIF: 
     case PARSEOP_FIELD: 
     case PARSEOP_FOR: 
     case PARSEOP_FUNCTION: 
-    case PARSEOP_IF: 
+    //case PARSEOP_IF: 
     case PARSEOP_ELSEIF:
     case PARSEOP_INDEXFIELD: 
     case PARSEOP_METHOD: 

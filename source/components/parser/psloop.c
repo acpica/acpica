@@ -496,18 +496,35 @@ AcpiPsTransferComments (
         printf("Op->Common.InlineComment: %s\n", Op->Common.InlineComment);
         AcpiGbl_CurrentInlineComment = NULL;
     }
+
     if (AcpiGbl_CurrentEndNodeComment != NULL)
     { 
         Op->Common.EndNodeComment = AcpiGbl_CurrentEndNodeComment;
         printf("Op->Common.EndNodeComment: %s\n", Op->Common.EndNodeComment);
         AcpiGbl_CurrentEndNodeComment = NULL;
     }
+
+    if (AcpiGbl_CurrentOpenBraceComment != NULL)
+    {
+        Op->Common.OpenBraceComment = AcpiGbl_CurrentOpenBraceComment;
+        printf("Op->Common.OpenBraceComment: %s\n", Op->Common.OpenBraceComment);
+        AcpiGbl_CurrentOpenBraceComment = NULL;
+    }
+
+    if (AcpiGbl_CurrentCloseBraceComment != NULL)
+    {
+        Op->Common.CloseBraceComment = AcpiGbl_CurrentCloseBraceComment;
+        printf("Op->Common.CloseBraceComment: %s\n", Op->Common.CloseBraceComment);
+        AcpiGbl_CurrentCloseBraceComment = NULL;
+    }
+
     if (AcpiGbl_RegCommentListHead != NULL)
     { 
         Op->Common.CommentList = AcpiGbl_RegCommentListHead;
-        printf("Op->Common.EndNodeComment: %s\n", Op->Common.EndNodeComment);
+        printf("Op->Common.CommentList head: %s\n", Op->Common.CommentList->Comment);
         AcpiGbl_RegCommentListHead = AcpiGbl_RegCommentListTail = NULL;
     }
+
     printf("\n");
 }
 

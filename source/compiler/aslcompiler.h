@@ -1433,10 +1433,10 @@ DtCreateTemplates (
     char                    **argv);
 
 /*
- * Copied from dmwalk.c TODO: figure out where this should go..
+ * Determine the blocktype of a given parse op.
  */
 UINT32
-AcpiDmBlockType (
+AslParseOpBlockType (
     ACPI_PARSE_OBJECT       *Op);
 
 

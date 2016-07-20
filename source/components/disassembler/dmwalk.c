@@ -155,6 +155,19 @@ static UINT32
 AcpiDmBlockType (
     ACPI_PARSE_OBJECT       *Op);
 
+static void
+AcpiDmCloseParenWriteComment(
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+AcpiDmCloseBraceWriteComment(
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+AcpiDmOpenBraceWriteComment(
+    ACPI_PARSE_OBJECT       *Op);
+
+
 
 /*******************************************************************************
  *
@@ -458,6 +471,97 @@ AcpiDmListType (
     }
 }
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmCloseBraceWriteComment 
+ *
+ * PARAMETERS:  ACPI_PARSE_OBJECT
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Print a opening brace { and any open brace comments associated 
+ *              with this parse object.
+ *
+ ******************************************************************************/
+
+static void
+AcpiDmCloseBraceWriteComment(
+    ACPI_PARSE_OBJECT     *Op)
+{
+    AcpiOsPrintf ("}");
+/*
+
+    AcpiOsPrintf ("CLOSE BRACE ");
+    AcpiOsPrintf ("Op code: %d ", Op->Common.AmlOpcode);
+    AcpiOsPrintf ("Op name: %s\n", Op->Common.AmlOpName);
+*/
+    if (Op->Common.CloseBraceComment!=NULL)
+    {
+        AcpiOsPrintf (" %s", Op->Common.CloseBraceComment);
+        Op->Common.CloseBraceComment=NULL;
+    }
+}
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmOpenBraceWriteComment 
+ *
+ * PARAMETERS:  ACPI_PARSE_OBJECT
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Print a opening brace { and any open brace comments associated 
+ *              with this parse object.
+ *
+ ******************************************************************************/
+
+static void
+AcpiDmOpenBraceWriteComment(
+    ACPI_PARSE_OBJECT     *Op)
+{
+    AcpiOsPrintf ("{ ");
+
+//    AcpiOsPrintf ("OPEN BRACE ");
+   if ((Op->Common.Parent!=NULL) && (Op->Common.Parent->Common.OpenBraceComment!=NULL))
+   {
+/*
+       AcpiOsPrintf ("Op code: %d ", Op->Common.Parent->Common.AmlOpcode);
+       AcpiOsPrintf ("Op name: %s\n", Op->Common.Parent->Common.AmlOpName);
+*/
+       AcpiOsPrintf (" %s", Op->Common.Parent->Common.OpenBraceComment);
+       Op->Common.Parent->Common.OpenBraceComment=NULL;
+    }
+}
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmCloseParenWriteComment 
+ *
+ * PARAMETERS:  ACPI_PARSE_OBJECT
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Print a closing paren ) and any end node comments associated 
+ *              with this parse object.
+ *
+ ******************************************************************************/
+
+static void
+AcpiDmCloseParenWriteComment(
+    ACPI_PARSE_OBJECT     *Op)
+{
+    AcpiOsPrintf (")");
+/*
+    AcpiOsPrintf ("CLOSE PAREN ");
+    AcpiOsPrintf ("Op code: %d ", Op->Common.AmlOpcode);
+    AcpiOsPrintf ("Op name: %s\n", Op->Common.AmlOpName);
+*/
+    if (Op->Common.EndNodeComment!=NULL)
+    {
+        AcpiOsPrintf (" %s", Op->Common.EndNodeComment);
+        Op->Common.EndNodeComment=NULL;
+    }
+} 
 
 /*******************************************************************************
  *
@@ -487,7 +591,7 @@ AcpiDmDescendingOp (
     struct acpi_comment_list_node *Current = Op->Common.CommentList;
     
 
-    //  AcpiOsPrintf (" [HDW]");
+    //AcpiOsPrintf (" [HDW]");
 
 
     // If this parse node has regular comments, print them now.
@@ -738,7 +842,7 @@ AcpiDmDescendingOp (
             case AML_METHOD_OP:
 
                 AcpiDmMethodFlags (Op);
-                AcpiOsPrintf (")");
+                AcpiDmCloseParenWriteComment(Op);
 
                 /* Emit description comment for Method() with a predefined ACPI name */
 
@@ -807,7 +911,7 @@ AcpiDmDescendingOp (
             case AML_DEVICE_OP:
             case AML_THERMAL_ZONE_OP:
 
-                AcpiOsPrintf (")");
+                AcpiDmCloseParenWriteComment(Op);
                 break;
 
             default:
@@ -901,7 +1005,7 @@ AcpiDmDescendingOp (
                  */
                 NextOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
                 NextOp = NextOp->Common.Next;
-                AcpiOsPrintf (")");
+                AcpiDmCloseParenWriteComment(Op);
 
                 /* Emit description comment for Name() with a predefined ACPI name */
 
@@ -909,7 +1013,10 @@ AcpiDmDescendingOp (
 
                 AcpiOsPrintf ("\n");
                 AcpiDmIndent (Info->Level);
-                AcpiOsPrintf ("{\n");
+
+                AcpiDmOpenBraceWriteComment(Op);
+                AcpiOsPrintf ("\n");
+                //AcpiOsPrintf ("{\n");
                 return (AE_OK);
             }
 
@@ -956,15 +1063,19 @@ AcpiDmDescendingOp (
         {
             AcpiOsPrintf ("\n");
             AcpiDmIndent (Level);
-            AcpiOsPrintf ("{\n");
+            AcpiDmOpenBraceWriteComment(Op);
+            AcpiOsPrintf ("\n");
+           
+            //AcpiOsPrintf ("{\n");
         }
     }
-    
+   /* 
     if (Op->Common.InlineComment)
     {
         AcpiOsPrintf ("%s",Op->Common.InlineComment);
         Op->Common.InlineComment = NULL;
     }   
+*/
  //   AcpiOsPrintf (" [hello descending world]");
 
     return (AE_OK);
@@ -1005,8 +1116,10 @@ AcpiDmAscendingOp (
     if ((Level == 0) && (Op->Common.AmlOpcode == AML_SCOPE_OP))
     {
         /* Indicates the end of the current descriptor block (table) */
-
-        AcpiOsPrintf ("}\n\n");
+ 
+        AcpiDmCloseBraceWriteComment(Op);
+        AcpiOsPrintf ("\n\n");
+        //AcpiOsPrintf ("}\n\n");
         return (AE_OK);
     }
 
@@ -1069,12 +1182,12 @@ AcpiDmAscendingOp (
 
         if (Op->Common.DisasmFlags & ACPI_PARSEOP_EMPTY_TERMLIST)
         {
-            AcpiOsPrintf ("}");
+            AcpiDmCloseBraceWriteComment(Op);
         }
         else
         {
             AcpiDmIndent (Level);
-            AcpiOsPrintf ("}");
+            AcpiDmCloseBraceWriteComment(Op);
         }
 
         AcpiDmCommaIfListMember (Op);
@@ -1162,7 +1275,7 @@ AcpiDmAscendingOp (
          */
         if (Op->Common.Next)
         {
-            AcpiOsPrintf (")");
+            AcpiDmCloseParenWriteComment(Op);
             
 
             /*
@@ -1178,12 +1291,19 @@ AcpiDmAscendingOp (
 
             AcpiOsPrintf ("\n");
             AcpiDmIndent (Level - 1);
-            AcpiOsPrintf ("{\n");
+            AcpiDmOpenBraceWriteComment(Op);
+            AcpiOsPrintf ("\n");
+            //AcpiOsPrintf ("{\n");
         }
         else
         {
             ParentOp->Common.DisasmFlags |= ACPI_PARSEOP_EMPTY_TERMLIST;
-            AcpiOsPrintf (") {");
+
+            AcpiDmCloseParenWriteComment(Op);
+            AcpiDmOpenBraceWriteComment(Op);
+
+            // TODO: print any close brace comments as well as open brace comments.
+            
         }
     }
 

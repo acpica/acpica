@@ -346,13 +346,29 @@ AcpiPsBuildNamedOp (
     AcpiPsAppendArg (*Op, UnnamedOp->Common.Value.Arg);
 
     // Don't forget the comments!
-    if (UnnamedOp->Common.InlineComment!=NULL && UnnamedOp->Common.EndNodeComment!=NULL)
+    if (UnnamedOp->Common.InlineComment!=NULL)
     {
-        (*Op)->Common.InlineComment  = UnnamedOp->Common.InlineComment;
-        (*Op)->Common.EndNodeComment = UnnamedOp->Common.EndNodeComment;
-        (*Op)->Common.NameComment    = UnnamedOp->Common.NameComment;
-        (*Op)->Common.CommentList    = UnnamedOp->Common.CommentList;
-
+        (*Op)->Common.InlineComment     = UnnamedOp->Common.InlineComment;
+    }
+    if (UnnamedOp->Common.EndNodeComment!=NULL)
+    {
+        (*Op)->Common.EndNodeComment    = UnnamedOp->Common.EndNodeComment;
+    }
+    if (UnnamedOp->Common.OpenBraceComment!=NULL)
+    {
+        (*Op)->Common.OpenBraceComment  = UnnamedOp->Common.OpenBraceComment;
+    }
+    if (UnnamedOp->Common.CloseBraceComment!=NULL)
+    {
+        (*Op)->Common.CloseBraceComment = UnnamedOp->Common.CloseBraceComment;
+    }
+    if (UnnamedOp->Common.NameComment)
+    {
+        (*Op)->Common.NameComment       = UnnamedOp->Common.NameComment;
+    }
+    if (UnnamedOp->Common.CommentList)
+    {
+        (*Op)->Common.CommentList       = UnnamedOp->Common.CommentList;
     }
  
 
