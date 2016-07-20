@@ -116,6 +116,14 @@
 #ifndef __ACEFI_H__
 #define __ACEFI_H__
 
+/* EDK2 EFI environemnt */
+
+#if defined(_EDK2_EFI)
+
+#define _GNU_EFI
+
+#endif
+
 #ifdef __GNUC__
 #include "acgcc.h"
 #endif
