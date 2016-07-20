@@ -2,6 +2,8 @@ NoEcho('
 /******************************************************************************
  *
  * Module Name: aslrules.y - Main Bison/Yacc production rules
+ *                         - Keep this file synched with the 
+ *                           AslParseOpBlockType function in aslutils.c
  *
  *****************************************************************************/
 

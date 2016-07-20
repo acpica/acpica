@@ -240,7 +240,7 @@ TrAllocateNode (
          * set a flag in the comment state. This facilitates paring comments for
          * these types of opcodes.
          */
-        if (AcpiDmBlockType (Op) == (BLOCK_PAREN | BLOCK_BRACE))
+        if ( AslParseOpBlockType(Op) == (BLOCK_PAREN | BLOCK_BRACE))
         {
             printf("========================================================Parsing paren/Brace node now!\n");
             Gbl_CommentState.ParsingParenBraceNode = Op;

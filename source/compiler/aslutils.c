@@ -145,7 +145,7 @@ UtAttachNameseg (
  */
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmBlockType
+ * FUNCTION:    AslParseOpBlockType 
  *
  * PARAMETERS:  Op              - Object to be examined
  *
@@ -156,11 +156,9 @@ UtAttachNameseg (
  ******************************************************************************/
 
 UINT32
-AcpiDmBlockType (
+AslParseOpBlockType (
     ACPI_PARSE_OBJECT       *Op)
 {
-
-
     if (!Op)
     {
         return (BLOCK_NONE);
@@ -168,7 +166,39 @@ AcpiDmBlockType (
 
     switch (Op->Asl.ParseOpcode)
     {
+    //from aslprimaries.y
     case PARSEOP_VAR_PACKAGE:
+    case PARSEOP_BANKFIELD:
+    case PARSEOP_BUFFER:
+    case PARSEOP_CASE: 
+    case PARSEOP_DEVICE: 
+    case PARSEOP_ELSEIF: 
+    case PARSEOP_FIELD: 
+    case PARSEOP_FOR: 
+    case PARSEOP_FUNCTION: 
+    case PARSEOP_IF: 
+    case PARSEOP_ELSEIF:
+    case PARSEOP_INDEXFIELD: 
+    case PARSEOP_METHOD: 
+ //   case PARSEOP_PACKAGE:      
+    case PARSEOP_POWERRESOURCE: 
+    case PARSEOP_PROCESSOR: 
+    case PARSEOP_DATABUFFER:  
+    case PARSEOP_SCOPE: 
+    case PARSEOP_SWITCH: 
+    case PARSEOP_THERMALZONE: 
+    case PARSEOP_WHILE: 
+    //from aslresources.y
+    case PARSEOP_VENDORLONG: 
+    case PARSEOP_VENDORSHORT:
+    case PARSEOP_INTERRUPT:
+    case PARSEOP_IRQNOFLAGS:
+    case PARSEOP_IRQ: 
+    case PARSEOP_GPIO_INT:
+    case PARSEOP_GPIO_IO: 
+    case PARSEOP_DMA: 
+    //from aslrules.y
+    case PARSEOP_DEFINITION_BLOCK:
         return (BLOCK_PAREN | BLOCK_BRACE);
 
     default:
