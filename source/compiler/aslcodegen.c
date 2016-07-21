@@ -398,15 +398,43 @@ CgWriteAmlOpcode (
         UINT32                  Len;
         UINT8                   LenBytes[4];
     } PkgLen;
+
     UINT8 CommentOpcode = (UINT8)AML_COMMENT_OP;
+
+    /* Before printing the bytecode, generate comment byte codes 
+     * associated with this node.
+     */
 
 
     /* We expect some DEFAULT_ARGs, just ignore them */
 
     if (Op->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
     {
+
+CgWriteAmlComment(Op);
         return;
     }
+
+    if (Gbl_CaptureComments && Op->Asl.InlineComment)
+    {
+        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+        CgLocalWriteAmlData (Op, &INLINE_COMMENT_OPTION, 1);
+        // +1 is what emits the 0x00 at the end of this opcode.
+        CgLocalWriteAmlData (Op, Op->Asl.InlineComment, strlen(Op->Asl.InlineComment)+1); 
+
+        Op->Asl.InlineComment = NULL;
+    }
+
+    if (Gbl_CaptureComments && Op->Asl.EndNodeComment)
+    {
+        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+        CgLocalWriteAmlData (Op, &ENDNODE_COMMENT_OPTION, 1);
+        // +1 is what emits the 0x00 at the end of this opcode.
+        CgLocalWriteAmlData (Op, Op->Asl.EndNodeComment, strlen(Op->Asl.EndNodeComment)+1); 
+
+        Op->Asl.EndNodeComment = NULL;
+    }
+
 
     switch (Op->Asl.AmlOpcode)
     {
@@ -453,31 +481,6 @@ CgWriteAmlOpcode (
         break;
 
     default:
-
-        /* Before printing the bytecode, generate comment byte codes 
-         * associated with this node.
-         */
-
-        if (Gbl_CaptureComments && Op->Asl.InlineComment)
-        {
-            CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-            CgLocalWriteAmlData (Op, &INLINE_COMMENT_OPTION, 1);
-            // +1 is what emits the 0x00 at the end of this opcode.
-            CgLocalWriteAmlData (Op, Op->Asl.InlineComment, strlen(Op->Asl.InlineComment)+1); 
-
-            Op->Asl.InlineComment = NULL;
-        }
-
-        if (Gbl_CaptureComments && Op->Asl.EndNodeComment)
-        {
-            CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-            CgLocalWriteAmlData (Op, &ENDNODE_COMMENT_OPTION, 1);
-            // +1 is what emits the 0x00 at the end of this opcode.
-            CgLocalWriteAmlData (Op, Op->Asl.EndNodeComment, strlen(Op->Asl.EndNodeComment)+1); 
-
-            Op->Asl.EndNodeComment = NULL;
-        }
-
 
         /* Check for two-byte opcode */
 
@@ -752,9 +755,16 @@ CgWriteNode (
     ASL_RESOURCE_NODE       *Rnode;
 
 
+    /* Write all comments here. */
+
+    CgWriteAmlComment(Op);
 
     /* Always check for DEFAULT_ARG and other "Noop" nodes */
     /* TBD: this may not be the best place for this check */
+    /* RE TBD: can we keep it here so that any comments associated with
+     * default arg could be kept for the -q option?
+     */
+
 
     if ((Op->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)  ||
         (Op->Asl.ParseOpcode == PARSEOP_INCLUDE)      ||
@@ -771,7 +781,6 @@ CgWriteNode (
 
     Op->Asl.FinalAmlLength = 0;
 
-    CgWriteAmlComment(Op);
 
     switch (Op->Asl.AmlOpcode)
     {
