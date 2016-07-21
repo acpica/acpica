@@ -44,7 +44,9 @@ OBJECTS = \
 	$(OBJDIR)/utmath.o\
 	$(OBJDIR)/utprint.o\
 	$(OBJDIR)/utstring.o\
-	$(OBJDIR)/utxferror.o
+	$(OBJDIR)/utxferror.o\
+	${OBJDIR}/utnonansi.o\
+	${OBJDIR}/utascii.o
 
 #
 # Flags specific to acpidump
