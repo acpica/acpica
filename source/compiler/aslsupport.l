@@ -880,6 +880,7 @@ loop:
 
             FinalLineToken = UtStringCacheCalloc (strlen (LineToken)+1);
             strcpy(FinalLineToken, LineToken);
+            
             addToCommentList (LineToken);
 
             LineToken = strtok (NULL, "\n");
@@ -1066,6 +1067,10 @@ AslDoCommentType2 (
 //        FinalCommentString [SpaceCount + 1] = '*';
 
         FinalCommentString [CurrentState.SpacesBefore + strlen (CommentString) + 3] = 0;
+        if (FinalCommentString[strlen(FinalCommentString)-1] == 0x0D)
+        {
+            FinalCommentString[strlen(FinalCommentString)-1] = 0;  
+        }
         AslPlaceComment(CurrentState.CommentType, FinalCommentString);    
 
     }
