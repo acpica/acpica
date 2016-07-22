@@ -116,6 +116,10 @@ SOURCE=..\..\source\components\utilities\utalloc.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utascii.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utbuffer.c
 # End Source File
 # Begin Source File
@@ -211,10 +215,6 @@ SOURCE=..\..\source\components\utilities\utownerid.c
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utpredef.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\utilities\utprint.c
 # End Source File
 # Begin Source File
 
@@ -614,10 +614,6 @@ SOURCE=..\..\source\common\getopt.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\os_specific\service_layers\oslibcfs.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\os_specific\service_layers\oswindir.c
 # End Source File
 # Begin Source File
@@ -737,6 +733,10 @@ SOURCE=..\..\source\COMPONENTS\Disassembler\dmwalk.c
 # Begin Group "Interpreter"
 
 # PROP Default_Filter ".c"
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exconcat.c
+# End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\executer\exconfig.c
