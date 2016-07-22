@@ -174,7 +174,6 @@ typedef int64_t     INTN;
 #else
 
 #define ACPI_MACHINE_WIDTH          32
-#define ACPI_USE_NATIVE_DIVIDE
 
 typedef uint32_t UINTN;
 typedef int32_t INTN;
@@ -308,7 +307,6 @@ UINT64 efi_call10(void *func, UINT64 arg1, UINT64 arg2, UINT64 arg3,
 
 #undef ACPI_USE_SYSTEM_CLIBRARY
 #undef ACPI_USE_STANDARD_HEADERS
-#undef ACPI_USE_NATIVE_DIVIDE
 #define ACPI_USE_SYSTEM_INTTYPES
 
 /*
@@ -326,7 +324,6 @@ UINT64 efi_call10(void *func, UINT64 arg1, UINT64 arg2, UINT64 arg3,
         (n_lo) |= (((n_hi) & 1) << 31); \
         (n_hi) >>= 1;                   \
     } while (0)
-
 
 #endif
 
