@@ -145,12 +145,6 @@ EXTERN ACPI_FILE            INIT_GLOBAL (Gbl_OutputFile, NULL);
 EXTERN char                 INIT_GLOBAL (*Gbl_OutputFilename, NULL);
 EXTERN UINT64               INIT_GLOBAL (Gbl_RsdpBase, 0);
 
-/* Globals required for use with ACPICA modules */
-
-#ifdef _DECLARE_GLOBALS
-UINT8                       AcpiGbl_IntegerByteWidth = 8;
-#endif
-
 /* Action table used to defer requested options */
 
 typedef struct ap_dump_action

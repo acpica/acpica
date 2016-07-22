@@ -427,6 +427,7 @@ acpi_main (
     ACPI_DEBUG_INITIALIZE (); /* For debug version only */
     AcpiOsInitialize ();
     Gbl_OutputFile = ACPI_FILE_OUT;
+    AcpiGbl_IntegerByteWidth = 8;
 
     /* Process command line options */
 
