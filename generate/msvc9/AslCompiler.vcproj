@@ -328,10 +328,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\source\components\utilities\utprint.c"
-					>
-				</File>
-				<File
 					RelativePath="..\..\source\components\utilities\utresrc.c"
 					>
 				</File>
@@ -727,10 +723,6 @@
 				</File>
 				<File
 					RelativePath="..\..\source\common\getopt.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\os_specific\service_layers\oslibcfs.c"
 					>
 				</File>
 				<File

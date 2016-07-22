@@ -272,10 +272,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\source\os_specific\service_layers\oslibcfs.c"
-					>
-				</File>
-				<File
 					RelativePath="..\..\source\os_specific\SERVICE_LAYERS\oswindir.c"
 					>
 				</File>
@@ -325,10 +321,6 @@
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utnonansi.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\components\utilities\utprint.c"
 					>
 				</File>
 				<File

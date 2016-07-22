@@ -242,10 +242,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\source\os_specific\service_layers\oslibcfs.c"
-					>
-				</File>
-				<File
 					RelativePath="..\..\source\os_specific\service_layers\oswinxf.c"
 					>
 					<FileConfiguration
@@ -355,10 +351,6 @@
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utownerid.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\components\utilities\utprint.c"
 					>
 				</File>
 				<File
