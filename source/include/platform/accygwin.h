@@ -130,7 +130,6 @@
 #define ACPI_USE_ALTERNATE_TIMEOUT
 
 
-#include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
