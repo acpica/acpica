@@ -246,24 +246,6 @@
 				<File
 					RelativePath="..\..\source\components\utilities\utalloc.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utascii.c"
@@ -276,112 +258,22 @@
 				<File
 					RelativePath="..\..\source\components\utilities\utcache.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utcopy.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utdebug.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utdecode.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utdelete.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\uterror.c"
@@ -394,24 +286,6 @@
 				<File
 					RelativePath="..\..\source\components\utilities\utglobal.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\uthex.c"
@@ -420,112 +294,22 @@
 				<File
 					RelativePath="..\..\source\components\utilities\utinit.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utlock.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utmath.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utmisc.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utmutex.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utnonansi.c"
@@ -534,24 +318,6 @@
 				<File
 					RelativePath="..\..\source\components\utilities\utobject.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utownerid.c"
@@ -568,46 +334,10 @@
 				<File
 					RelativePath="..\..\source\components\utilities\utresrc.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utstate.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utstring.c"
@@ -620,46 +350,10 @@
 				<File
 					RelativePath="..\..\source\components\utilities\utxface.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utxferror.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
@@ -669,222 +363,42 @@
 				<File
 					RelativePath="..\..\source\components\namespace\nsaccess.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\namespace\nsalloc.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\namespace\nsdump.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\namespace\nsnames.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\namespace\nsobject.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\COMPONENTS\NAMESPACE\nsparse.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\namespace\nssearch.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\namespace\nsutils.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\namespace\nswalk.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\COMPONENTS\NAMESPACE\nsxfobj.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
@@ -893,24 +407,6 @@
 				<File
 					RelativePath="..\..\source\COMPONENTS\disassembler\dmbuffer.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\disassembler\dmcstyle.c"
@@ -923,90 +419,18 @@
 				<File
 					RelativePath="..\..\source\COMPONENTS\disassembler\dmnames.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\COMPONENTS\disassembler\dmopcode.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\COMPONENTS\disassembler\dmresrc.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\COMPONENTS\disassembler\dmresrcl.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\disassembler\dmresrcl2.c"
@@ -1015,68 +439,14 @@
 				<File
 					RelativePath="..\..\source\COMPONENTS\disassembler\dmresrcs.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\COMPONENTS\Disassembler\dmutils.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\COMPONENTS\disassembler\dmwalk.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
@@ -1089,46 +459,10 @@
 				<File
 					RelativePath="..\..\source\components\tables\tbfadt.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\COMPONENTS\tables\tbinstal.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\tables\tbprint.c"
@@ -1137,46 +471,10 @@
 				<File
 					RelativePath="..\..\source\COMPONENTS\tables\tbutils.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\tables\tbxface.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\tables\tbxfload.c"
@@ -1193,442 +491,82 @@
 				<File
 					RelativePath="..\..\source\components\executer\exconvrt.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\excreate.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exdump.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exmisc.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exmutex.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exnames.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exoparg1.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exoparg2.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exoparg3.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exoparg6.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exprep.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exregion.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exresnte.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exresolv.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exresop.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exstore.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exstoren.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exstorob.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exsystem.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\executer\exutils.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
@@ -1637,46 +575,10 @@
 				<File
 					RelativePath="..\..\source\components\parser\psargs.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\parser\psloop.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\parser\psobject.c"
@@ -1685,24 +587,6 @@
 				<File
 					RelativePath="..\..\source\components\parser\psopcode.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\parser\psopinfo.c"
@@ -1711,112 +595,22 @@
 				<File
 					RelativePath="..\..\source\components\parser\psparse.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\parser\psscope.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\parser\pstree.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\parser\psutils.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\parser\pswalk.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
@@ -1825,244 +619,46 @@
 				<File
 					RelativePath="..\..\source\components\dispatcher\dsargs.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\dispatcher\dscontrol.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\dispatcher\dsfield.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\dispatcher\dsobject.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\dispatcher\dsopcode.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\dispatcher\dsutils.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\dispatcher\dswexec.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\dispatcher\dswload.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\dispatcher\dswload2.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\dispatcher\dswscope.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\components\dispatcher\dswstate.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
@@ -2076,68 +672,14 @@
 				<File
 					RelativePath="..\..\source\common\adfile.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\common\adisasm.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\common\adwalk.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\common\ahids.c"
@@ -2162,68 +704,14 @@
 				<File
 					RelativePath="..\..\source\common\dmextern.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\common\dmrestag.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\common\dmtable.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\common\dmtables.c"
@@ -2232,68 +720,14 @@
 				<File
 					RelativePath="..\..\source\common\dmtbdump.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\common\dmtbinfo.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\common\getopt.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\os_specific\service_layers\oslibcfs.c"
@@ -2302,24 +736,6 @@
 				<File
 					RelativePath="..\..\source\os_specific\service_layers\oswindir.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\os_specific\service_layers\oswinxf.c"
@@ -2329,8 +745,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
 							DisableLanguageExtensions="false"
 						/>
 					</FileConfiguration>
@@ -2339,8 +753,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
 							DisableLanguageExtensions="false"
 						/>
 					</FileConfiguration>
@@ -2352,24 +764,6 @@
 				<File
 					RelativePath="..\..\source\COMPONENTS\DEBUGGER\dbfileio.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="ACPI_DEBUGGER 1"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="ACPI_DEBUGGER 1"
-						/>
-					</FileConfiguration>
 				</File>
 			</Filter>
 		</Filter>
@@ -2603,24 +997,6 @@
 				<File
 					RelativePath="..\..\source\compiler\aslanalyze.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslascii.c"
@@ -2629,68 +1005,14 @@
 				<File
 					RelativePath="..\..\source\compiler\aslbtypes.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslcodegen.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslcompile.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\asldebug.c"
@@ -2699,24 +1021,6 @@
 				<File
 					RelativePath="..\..\source\compiler\aslerror.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslexternal.c"
@@ -2729,46 +1033,10 @@
 				<File
 					RelativePath="..\..\source\compiler\aslfiles.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslfold.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslhex.c"
@@ -2777,46 +1045,10 @@
 				<File
 					RelativePath="..\..\source\compiler\asllength.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\asllisting.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\asllistsup.c"
@@ -2825,90 +1057,18 @@
 				<File
 					RelativePath="..\..\source\compiler\aslload.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\asllookup.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslmain.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslmap.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslmapenter.c"
@@ -2941,68 +1101,14 @@
 				<File
 					RelativePath="..\..\source\compiler\aslopcodes.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\asloperands.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslopt.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\asloptions.c"
@@ -3015,24 +1121,6 @@
 				<File
 					RelativePath="..\..\source\compiler\aslpredef.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslprepkg.c"
@@ -3049,156 +1137,30 @@
 				<File
 					RelativePath="..\..\source\compiler\aslresource.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslrestype1.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslrestype1i.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslrestype2.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslrestype2d.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslrestype2e.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslrestype2q.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslrestype2s.c"
@@ -3207,178 +1169,34 @@
 				<File
 					RelativePath="..\..\source\compiler\aslrestype2w.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslstartup.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslstubs.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\asltransform.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\asltree.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslutils.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\asluuid.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslwalks.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\aslxref.c"
@@ -3395,137 +1213,26 @@
 				<File
 					RelativePath="..\..\source\compiler\dtcompile.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							DisableSpecificWarnings="4702"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\dtexpress.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\dtfield.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\dtio.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							DisableSpecificWarnings="4702"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\dtsubtable.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\dttable.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							DisableSpecificWarnings="4702"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\dttable1.c"
@@ -3538,46 +1245,10 @@
 				<File
 					RelativePath="..\..\source\compiler\dttemplate.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\compiler\dtutils.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
