@@ -464,6 +464,7 @@ ACPI_GLOBAL (const char,                *AcpiGbl_PldShapeList[]);
 
 ACPI_INIT_GLOBAL (ACPI_FILE,            AcpiGbl_DebugFile, NULL);
 ACPI_INIT_GLOBAL (ACPI_FILE,            AcpiGbl_OutputFile, NULL);
+ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_DebugTimeout, FALSE);
 
 /* Print buffer */
 
