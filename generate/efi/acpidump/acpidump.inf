@@ -27,9 +27,9 @@
   tools/acpidump/apmain.c
   common/cmfsize.c
   common/getopt.c
-  os_specific/service_layers/oseficlib.c
-  os_specific/service_layers/osefitbl.c
-  os_specific/service_layers/osefixf.c
+  os_specific/efi/oseficlib.c
+  os_specific/efi/osefitbl.c
+  os_specific/efi/osefixf.c
   components/tables/tbprint.c
   components/tables/tbxfroot.c
   components/utilities/utascii.c

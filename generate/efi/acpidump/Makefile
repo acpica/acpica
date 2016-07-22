@@ -21,7 +21,8 @@ vpath %.c \
 	$(ACPICA_TABLES)\
 	$(ACPICA_UTILITIES)\
 	$(ACPICA_COMMON)\
-	$(ACPICA_OSL)
+	$(ACPICA_OSL)\
+	$(ACPICA_EFI)
 
 HEADERS = \
 	$(wildcard $(ACPIDUMP)/*.h)
