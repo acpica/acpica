@@ -114,7 +114,6 @@
  *****************************************************************************/
 
 #include "aecommon.h"
-#include "errno.h"
 
 #define _COMPONENT          ACPI_TOOLS
         ACPI_MODULE_NAME    ("aemain")

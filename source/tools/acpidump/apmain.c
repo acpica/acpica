@@ -115,7 +115,6 @@
 
 #define _DECLARE_GLOBALS
 #include "acpidump.h"
-#include "acapps.h"
 
 
 /*

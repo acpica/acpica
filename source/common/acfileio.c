@@ -115,9 +115,9 @@
 
 #include "acpi.h"
 #include "accommon.h"
-#include "acapps.h"
 #include "actables.h"
 #include "acutils.h"
+#include "acapps.h"
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("acfileio")

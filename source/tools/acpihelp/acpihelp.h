@@ -121,17 +121,11 @@
 #include "accommon.h"
 #include "acapps.h"
 
-#include <stdio.h>
-#include <sys/stat.h>
 #include <sys/types.h>
-#include <fcntl.h>
-#include <ctype.h>
-#include <string.h>
 #ifdef WIN32
 #include <io.h>
 #include <direct.h>
 #endif
-#include <errno.h>
 
 
 typedef enum
