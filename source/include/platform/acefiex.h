@@ -117,6 +117,19 @@
 #define __ACEFIEX_H__
 
 
+#ifndef ACPI_USE_SYSTEM_CLIBRARY
+
+typedef signed char                     int8_t;
+typedef short int                       int16_t;
+typedef int                             int32_t;
+typedef unsigned char                   uint8_t;
+typedef unsigned short int              uint16_t;
+typedef unsigned int                    uint32_t;
+typedef COMPILER_DEPENDENT_INT64        int64_t;
+typedef COMPILER_DEPENDENT_UINT64       uint64_t;
+
+#endif /* ACPI_USE_SYSTEM_CLIBRARY */
+
 #define EFI_ERROR(a)              (((INTN) a) < 0)
 #define EFI_SUCCESS                             0
 #define EFI_LOAD_ERROR                  EFIERR(1)

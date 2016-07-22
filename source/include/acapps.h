@@ -116,8 +116,6 @@
 #ifndef _ACAPPS
 #define _ACAPPS
 
-#include <stdio.h>
-
 /* Common info for tool signons */
 
 #define ACPICA_NAME                 "Intel ACPI Component Architecture"

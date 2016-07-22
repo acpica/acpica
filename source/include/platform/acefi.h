@@ -116,10 +116,12 @@
 #ifndef __ACEFI_H__
 #define __ACEFI_H__
 
-#include <stdarg.h>
-#if defined(_GNU_EFI)
-#include <stdint.h>
-#include <unistd.h>
+#ifdef __GNUC__
+#include "acgcc.h"
+#endif
+
+#ifdef _MSC_VER
+#include "acmsvc.h"
 #endif
 
 #if defined(__x86_64__)
@@ -135,16 +137,6 @@
 #else
 #define EFIAPI
 #endif
-
-typedef uint8_t     UINT8;
-typedef uint16_t    UINT16;
-typedef int16_t     INT16;
-typedef uint32_t    UINT32;
-typedef int32_t     INT32;
-typedef uint64_t    UINT64;
-typedef int64_t     INT64;
-typedef uint8_t     BOOLEAN;
-typedef uint16_t    CHAR16;
 
 #define VOID        void
 
@@ -166,8 +158,8 @@ typedef uint16_t    CHAR16;
 
 #endif
 
-typedef uint64_t    UINTN;
-typedef int64_t     INTN;
+#define UINTN       uint64_t
+#define INTN        int64_t
 
 #define EFIERR(a)           (0x8000000000000000 | a)
 
@@ -175,13 +167,14 @@ typedef int64_t     INTN;
 
 #define ACPI_MACHINE_WIDTH          32
 
-typedef uint32_t UINTN;
-typedef int32_t INTN;
+#define UINTN       uint32_t
+#define INTN        int32_t
 
 #define EFIERR(a)           (0x80000000 | a)
 
 #endif
 
+#define CHAR16      uint16_t
 
 #ifdef USE_EFI_FUNCTION_WRAPPER
 #define __VA_NARG__(...)                        \
@@ -301,14 +294,6 @@ UINT64 efi_call10(void *func, UINT64 arg1, UINT64 arg2, UINT64 arg3,
 
 #if defined(_GNU_EFI)
 
-/* Using GCC for GNU EFI */
-
-#include "acgcc.h"
-
-#undef ACPI_USE_SYSTEM_CLIBRARY
-#undef ACPI_USE_STANDARD_HEADERS
-#define ACPI_USE_SYSTEM_INTTYPES
-
 /*
  * Math helpers
  */
@@ -337,8 +322,8 @@ struct _EFI_SYSTEM_TABLE;
 extern struct _EFI_SYSTEM_TABLE         *ST;
 extern struct _EFI_BOOT_SERVICES        *BS;
 
-#define ACPI_FILE           struct _SIMPLE_TEXT_OUTPUT_INTERFACE *
-#define ACPI_FILE_OUT       ST->ConOut
-#define ACPI_FILE_ERR       ST->ConOut
+#define FILE                struct _SIMPLE_TEXT_OUTPUT_INTERFACE
+#define stdout              ST->ConOut
+#define stderr              ST->ConOut
 
 #endif /* __ACEFI_H__ */
