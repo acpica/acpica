@@ -268,6 +268,17 @@ _CrtSetBreakAlloc (937);
 #else
 #endif
 
+/* Begin standard headers */
+
+/*
+ * warn C4001: nonstandard extension 'single line comment' was used
+ *
+ * We need to enable this for ACPICA internal files, but disable it for
+ * buggy MS runtime headers.
+ */
+#pragma warning(push)
+#pragma warning(disable:4001)
+
 /* va_arg implementation can be compiler specific */
 
 #ifdef ACPI_USE_STANDARD_HEADERS
