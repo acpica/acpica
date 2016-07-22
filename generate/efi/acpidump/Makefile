@@ -32,6 +32,7 @@ OBJECTS = \
 	$(OBJDIR)/apmain.o\
 	$(OBJDIR)/cmfsize.o\
 	$(OBJDIR)/getopt.o\
+	$(OBJDIR)/oseficlib.o\
 	$(OBJDIR)/osefitbl.o\
 	$(OBJDIR)/osefixf.o\
 	$(OBJDIR)/tbprint.o\

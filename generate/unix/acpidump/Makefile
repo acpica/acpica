@@ -33,7 +33,6 @@ OBJECTS = \
 	$(OBJDIR)/apmain.o\
 	$(OBJDIR)/cmfsize.o\
 	$(OBJDIR)/getopt.o\
-	$(OBJDIR)/oslibcfs.o\
 	$(OBJDIR)/osunixdir.o\
 	$(OBJDIR)/osunixmap.o\
 	$(OBJDIR)/osunixxf.o\

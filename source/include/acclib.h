@@ -145,6 +145,23 @@ extern const UINT8 AcpiGbl_Ctypes[];
 #define isprint(c)  (AcpiGbl_Ctypes[(unsigned char)(c)] & (_ACPI_LO | _ACPI_UP | _ACPI_DI | _ACPI_XS | _ACPI_PU))
 #define isalpha(c)  (AcpiGbl_Ctypes[(unsigned char)(c)] & (_ACPI_LO | _ACPI_UP))
 
+/* Error code */
+
+#define EPERM            1 /* Operation not permitted */
+#define ENOENT           2 /* No such file or directory */
+#define EINTR            4 /* Interrupted system call */
+#define EIO              5 /* I/O error */
+#define EBADF            9 /* Bad file number */
+#define EAGAIN          11 /* Try again */
+#define ENOMEM          12 /* Out of memory */
+#define EACCES          13 /* Permission denied */
+#define EFAULT          14 /* Bad address */
+#define EBUSY           16 /* Device or resource busy */
+#define EEXIST          17 /* File exists */
+#define ENODEV          19 /* No such device */
+#define EINVAL          22 /* Invalid argument */
+#define EPIPE           32 /* Broken pipe */
+#define ERANGE          34 /* Math result not representable */
 
 /* Strings */
 
@@ -270,6 +287,17 @@ sprintf (
     ...);
 
 #ifdef ACPI_APPLICATION
+#define SEEK_SET            0
+#define SEEK_CUR            1
+#define SEEK_END            2
+
+/*
+ * NOTE: Currently we only need to update errno for file IOs. Other
+ *       Clibrary invocations in ACPICA do not make descisions according to
+ *       the errno.
+ */
+extern int errno;
+
 int
 vprintf (
     const char              *Format,
@@ -291,6 +319,39 @@ fprintf (
     FILE                    *File,
     const char              *Format,
     ...);
+
+FILE *
+fopen (
+    const char              *Path,
+    const char              *Modes);
+
+void
+fclose (
+    FILE                    *File);
+
+int
+fread (
+    void                    *Buffer,
+    ACPI_SIZE               Size,
+    ACPI_SIZE               Count,
+    FILE                    *File);
+
+int
+fwrite (
+    void                    *Buffer,
+    ACPI_SIZE               Size,
+    ACPI_SIZE               Count,
+    FILE                    *File);
+
+int
+fseek (
+    FILE                    *File,
+    long                    Offset,
+    int                     From);
+
+long
+ftell (
+    FILE                    *File);
 #endif
 
 #endif /* _ACCLIB_H */

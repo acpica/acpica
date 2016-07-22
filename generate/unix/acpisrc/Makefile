@@ -36,7 +36,6 @@ OBJECTS = \
     $(OBJDIR)/asutils.o\
     $(OBJDIR)/cmfsize.o\
     $(OBJDIR)/getopt.o \
-    $(OBJDIR)/oslibcfs.o\
     $(OBJDIR)/osunixdir.o\
     $(OBJDIR)/osunixxf.o\
     $(OBJDIR)/utascii.o\

@@ -169,7 +169,7 @@ AcGetAllTablesFromFile (
     File = fopen (Filename, "rb");
     if (!File)
     {
-        perror ("Could not open input file");
+        fprintf (stderr, "Could not open input file: %s\n", Filename);
         if (errno == ENOENT)
         {
             return (AE_NOT_EXIST);
