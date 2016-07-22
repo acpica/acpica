@@ -352,7 +352,7 @@ AcGetOneTableFromFile (
 
     /* Allocate a buffer for the entire table */
 
-    Table = AcpiOsAllocate ((size_t) TableHeader.Length);
+    Table = AcpiOsAllocate ((ACPI_SIZE) TableHeader.Length);
     if (!Table)
     {
         return (AE_NO_MEMORY);
@@ -460,7 +460,7 @@ AcValidateTableHeader (
     long                    TableOffset)
 {
     ACPI_TABLE_HEADER       TableHeader;
-    size_t                  Actual;
+    ACPI_SIZE               Actual;
     long                    OriginalOffset;
     UINT32                  FileSize;
     UINT32                  i;
