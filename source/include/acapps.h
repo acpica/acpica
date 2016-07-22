@@ -155,13 +155,13 @@
 /* Macros for usage messages */
 
 #define ACPI_USAGE_HEADER(Usage) \
-    AcpiOsPrintf ("Usage: %s\nOptions:\n", Usage);
+    printf ("Usage: %s\nOptions:\n", Usage);
 
 #define ACPI_USAGE_TEXT(Description) \
-    AcpiOsPrintf (Description);
+    printf (Description);
 
 #define ACPI_OPTION(Name, Description) \
-    AcpiOsPrintf ("  %-20s%s\n", Name, Description);
+    printf ("  %-20s%s\n", Name, Description);
 
 
 /* Check for unexpected exceptions */
