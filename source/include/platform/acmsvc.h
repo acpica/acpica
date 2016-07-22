@@ -136,6 +136,10 @@
 #define stat            _stat
 #define fstat           _fstat
 #define mkdir           _mkdir
+#define snprintf        _snprintf
+#if _MSC_VER <= 1200 /* Versions below VC++ 6 */
+#define vsnprintf       _vsnprintf
+#endif
 #define O_RDONLY        _O_RDONLY
 #define O_BINARY        _O_BINARY
 #define O_CREAT         _O_CREAT
