@@ -827,7 +827,7 @@ AcpiOsVprintf (
     va_list                 Args)
 {
 
-    (void) AcpiUtFileVprintf (ACPI_FILE_OUT, Format, Args);
+    (void) vfprintf (ACPI_FILE_OUT, Format, Args);
 }
 
 

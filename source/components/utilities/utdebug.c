@@ -804,7 +804,7 @@ AcpiLogError (
     va_list                 Args;
 
     va_start (Args, Format);
-    (void) AcpiUtFileVprintf (ACPI_FILE_ERR, Format, Args);
+    (void) vfprintf (ACPI_FILE_ERR, Format, Args);
     va_end (Args);
 }
 
