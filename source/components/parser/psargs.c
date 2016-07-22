@@ -612,6 +612,7 @@ AcpiPsGetNextField (
     ACPI_FUNCTION_TRACE (PsGetNextField);
 
 
+
     Aml = ParserState->Aml;
 
     /* Determine field type */

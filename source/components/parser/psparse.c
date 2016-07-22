@@ -162,10 +162,9 @@ AcpiPsGetOpcodeSize (
     return (1);
 }
 
-
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsCaptureComments
+ * FUNCTION:    AcpiPsCaptureJustComments
  *
  * PARAMETERS:  ParserState         - A parser state object
  *
@@ -178,8 +177,8 @@ AcpiPsGetOpcodeSize (
  ******************************************************************************/
 
 void
-AcpiPsCaptureComments (
-    ACPI_WALK_STATE         *WalkState)
+AcpiPsCaptureJustComments (
+    ACPI_PARSE_STATE         *ParserState)
 {
     UINT8                          *Aml;
     UINT16                         Opcode;
@@ -189,7 +188,7 @@ AcpiPsCaptureComments (
     struct acpi_comment_list_node  *NewCNode;
 
 
-    Aml = WalkState->ParserState.Aml;
+    Aml = ParserState->Aml;
     Opcode = (UINT16) ACPI_GET8 (Aml);
     printf("CaptureComments Opcode: 0x%x\n", Opcode);
 
@@ -197,7 +196,7 @@ AcpiPsCaptureComments (
     {                  
         CommentOption = *(Aml+1);
     
-        WalkState->ParserState.Aml += 2; //increment past the comment option and point the approperiate char pointers.
+        ParserState->Aml += 2; //increment past the comment option and point the approperiate char pointers.
 
         //found a comment. Now, set pointers to these comments.
         switch (CommentOption)
@@ -209,7 +208,7 @@ AcpiPsCaptureComments (
                 
                 NewCNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
                 
-                NewCNode->Comment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+                NewCNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
                 NewCNode->Next    = NULL;
                  
                 if (AcpiGbl_RegCommentListHead==NULL)
@@ -231,7 +230,7 @@ AcpiPsCaptureComments (
             case 2:
                 printf("found inline comment.\n");
                 debug = AcpiGbl_CurrentInlineComment;          
-                AcpiGbl_CurrentInlineComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+                AcpiGbl_CurrentInlineComment = ACPI_CAST_PTR (char, ParserState->Aml);
                 if (debug!=NULL)
                 {
                     printf("CAUTION: switching %s with %s for inline comments!\n", debug, AcpiGbl_CurrentInlineComment);
@@ -242,7 +241,7 @@ AcpiPsCaptureComments (
             case 3:
                 printf("found EndNode comment.\n");
                 debug = AcpiGbl_CurrentEndNodeComment;
-                AcpiGbl_CurrentEndNodeComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+                AcpiGbl_CurrentEndNodeComment = ACPI_CAST_PTR (char, ParserState->Aml);
                 if (debug!=NULL)
                 {
                     printf("CAUTION: switching %s with %s for inline comments\n", debug, AcpiGbl_CurrentEndNodeComment);
@@ -253,7 +252,7 @@ AcpiPsCaptureComments (
             case 4:
                 printf("found open brace comment.\n");
                 debug = AcpiGbl_CurrentOpenBraceComment;
-                AcpiGbl_CurrentOpenBraceComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+                AcpiGbl_CurrentOpenBraceComment = ACPI_CAST_PTR (char, ParserState->Aml);
                 if (debug!=NULL)
                 {
                     printf("CAUTION: switching %s with %s for inline comments\n", debug, AcpiGbl_CurrentOpenBraceComment);
@@ -264,7 +263,7 @@ AcpiPsCaptureComments (
             case 5:
                 printf("found close brace comment.\n");
                 debug = AcpiGbl_CurrentCloseBraceComment;
-                AcpiGbl_CurrentCloseBraceComment = ACPI_CAST_PTR (char, WalkState->ParserState.Aml);
+                AcpiGbl_CurrentCloseBraceComment = ACPI_CAST_PTR (char, ParserState->Aml);
                 if (debug!=NULL)
                 {
                     printf("CAUTION: switching %s with %s for inline comments\n", debug, AcpiGbl_CurrentCloseBraceComment);
@@ -277,14 +276,14 @@ AcpiPsCaptureComments (
         }
 
         Length = 0;
-        while (WalkState->ParserState.Aml[Length])
+        while (ParserState->Aml[Length])
         {
             Length++;
         }
-        WalkState->ParserState.Aml += Length + 1;
+        ParserState->Aml += Length + 1;
 
         // Peek at the next Opcode.
-        Aml = WalkState->ParserState.Aml;
+        Aml = ParserState->Aml;
         Opcode = (UINT16) ACPI_GET8 (Aml);
 
         printf("Summary after capture:          \n"
@@ -301,7 +300,27 @@ AcpiPsCaptureComments (
  
     printf("\n");
 
+}
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsCaptureComments
+ *
+ * PARAMETERS:  ParserState         - A parser state object
+ *
+ * RETURN:      void
+ *
+ * DESCRIPTION: look at the aml that the parser state is pointing to,
+ *              capture any AML_COMMENT_OP and it's arguments and increment the
+ *              aml pointer past the comment. This is used in the -q option.
+ *
+ ******************************************************************************/
+
+void
+AcpiPsCaptureComments (
+    ACPI_WALK_STATE         *WalkState)
+{
+    AcpiPsCaptureJustComments(&WalkState->ParserState);
     WalkState->Aml = WalkState->ParserState.Aml; //Is this needed? What will this do?
 }
 

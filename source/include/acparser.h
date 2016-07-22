@@ -437,6 +437,11 @@ AcpiPsShow (
  * Specific to the -q option of iAsl
  */
 void
+AcpiPsCaptureJustComments (
+    ACPI_PARSE_STATE         *ParserState);
+
+
+void
 AcpiPsCaptureComments (
     ACPI_WALK_STATE         *WalkState);
 
