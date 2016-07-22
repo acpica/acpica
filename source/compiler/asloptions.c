@@ -602,6 +602,7 @@ AslDoOptions (
             Gbl_FoldConstants = FALSE;
             Gbl_IntegerOptimizationFlag = FALSE;
             Gbl_ReferenceOptimizationFlag = FALSE;
+            Gbl_OptimizeTrivialParseNodes = FALSE;
             break;
 
         case 'c':
