@@ -119,6 +119,7 @@
 #include "aclinux.h"
 
 #ifdef __APPLE__
+#include <semaphore.h>
 #define sem_destroy         sem_close
 #define ACPI_USE_ALTERNATE_TIMEOUT
 #endif /* __APPLE__ */
