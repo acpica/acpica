@@ -671,9 +671,25 @@ AcpiPsGetNextField (
         AcpiPsSetName (Field, Name);
         ParserState->Aml += ACPI_NAME_SIZE;
 
-        /* Get the length which is encoded as a package length */
 
         AcpiPsCaptureJustComments(ParserState);
+
+        /* because the package length isn't represented as a parse tree object,
+         * take comments surrounding this and add to the previously created parse node.
+         */
+        if (Field->Common.InlineComment)
+        {
+            Field->Common.NameComment = Field->Common.InlineComment;
+        }
+        Field->Common.InlineComment  = AcpiGbl_CurrentInlineComment;
+        AcpiGbl_CurrentInlineComment = NULL;
+/*
+        if (AcpiGbl_RegCommentListHead)
+        {
+
+        }
+ */
+        /* Get the length which is encoded as a package length */
         Field->Common.Value.Size = AcpiPsGetNextPackageLength (ParserState);
         break;
 

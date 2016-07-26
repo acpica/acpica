@@ -942,7 +942,13 @@ AcpiDmDisassembleOneOp (
     case AML_INT_NAMEDFIELD_OP:
 
         Length = AcpiDmDumpName (Op->Named.Name);
-        AcpiOsPrintf (",%*.s  %u", (unsigned) (5 - Length), " ",
+        //print any comments associated with this...
+        AcpiOsPrintf(", ");
+        if (Op->Common.NameComment)
+        {
+            AcpiOsPrintf("%s",Op->Common.NameComment);
+        }
+        AcpiOsPrintf ("%*.s  %u", (unsigned) (5 - Length), " ",
             (UINT32) Op->Common.Value.Integer);
         AcpiDmCommaIfFieldMember (Op);
 

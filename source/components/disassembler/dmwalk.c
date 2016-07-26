@@ -1076,7 +1076,7 @@ AcpiDmDescendingOp (
         Op->Common.InlineComment = NULL;
     }   
 */
- //   AcpiOsPrintf (" [hello descending world]");
+    //AcpiOsPrintf (" [hello descending world]");
 
     return (AE_OK);
 }
@@ -1105,7 +1105,7 @@ AcpiDmAscendingOp (
     ACPI_PARSE_OBJECT       *ParentOp;
 
 
-//    AcpiOsPrintf (" [HAW]");
+    //AcpiOsPrintf (" [HAW]");
     if (Op->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)
     {
         /* Ignore this op -- it was handled elsewhere */
@@ -1301,9 +1301,6 @@ AcpiDmAscendingOp (
 
             AcpiDmCloseParenWriteComment(Op);
             AcpiDmOpenBraceWriteComment(Op);
-
-            // TODO: print any close brace comments as well as open brace comments.
-            
         }
     }
 
@@ -1327,6 +1324,6 @@ AcpiDmAscendingOp (
     }
 
 
-//    AcpiOsPrintf (" [hello ascending world]");
+    //AcpiOsPrintf (" [hello ascending world]");
     return (AE_OK);
 }
