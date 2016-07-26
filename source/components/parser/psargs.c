@@ -613,6 +613,7 @@ AcpiPsGetNextField (
 
 
 
+    AcpiPsCaptureJustComments(ParserState);
     Aml = ParserState->Aml;
 
     /* Determine field type */
@@ -659,6 +660,7 @@ AcpiPsGetNextField (
 
     /* Decode the field type */
 
+    AcpiPsCaptureJustComments(ParserState);
     switch (Opcode)
     {
     case AML_INT_NAMEDFIELD_OP:
@@ -671,6 +673,7 @@ AcpiPsGetNextField (
 
         /* Get the length which is encoded as a package length */
 
+        AcpiPsCaptureJustComments(ParserState);
         Field->Common.Value.Size = AcpiPsGetNextPackageLength (ParserState);
         break;
 
@@ -725,10 +728,12 @@ AcpiPsGetNextField (
         {
             ParserState->Aml++;
 
+            AcpiPsCaptureJustComments(ParserState);
             PkgEnd = ParserState->Aml;
             PkgLength = AcpiPsGetNextPackageLength (ParserState);
             PkgEnd += PkgLength;
 
+            AcpiPsCaptureJustComments(ParserState);
             if (ParserState->Aml < PkgEnd)
             {
                 /* Non-empty list */
@@ -745,6 +750,7 @@ AcpiPsGetNextField (
                 Opcode = ACPI_GET8 (ParserState->Aml);
                 ParserState->Aml++;
 
+                AcpiPsCaptureJustComments(ParserState);
                 switch (Opcode)
                 {
                 case AML_BYTE_OP:       /* AML_BYTEDATA_ARG */
@@ -773,6 +779,7 @@ AcpiPsGetNextField (
 
                 /* Fill in bytelist data */
 
+                AcpiPsCaptureJustComments(ParserState);
                 Arg->Named.Value.Size = BufferLength;
                 Arg->Named.Data = ParserState->Aml;
             }
