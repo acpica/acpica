@@ -1171,6 +1171,19 @@ TrCreateNode (
         {
             FirstChild = FALSE;
             Op->Asl.Child = Child;
+
+            /* For -q option: take the Regular comments from the first child
+             * Due to the fact that the comments in first child's node actually
+             * belonged to the parent. This also means that legitimate comments
+             * for the child gets put to the parent.
+             */
+            if (PARSEOP_CONNECTION || PARSEOP_EXTERNAL || PARSEOP_OFFSET || PARSEOP_ACCESSAS)
+            {
+                Op->Asl.CommentList      = Child->Asl.CommentList;
+                Op->Asl.InlineComment    = Child->Asl.InlineComment;
+                Child->Asl.CommentList   = NULL;
+                Child->Asl.InlineComment = NULL;
+            }
         }
 
         /* Point all children to parent */
