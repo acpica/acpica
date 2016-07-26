@@ -990,6 +990,10 @@ AcpiDmDisassembleOneOp (
 
         AcpiOsPrintf (")");
         AcpiDmCommaIfFieldMember (Op);
+        if (Op->Common.EndNodeComment)
+        {
+            AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
+        }
         break;
 
     case AML_INT_CONNECTION_OP:
@@ -1023,6 +1027,15 @@ AcpiDmDisassembleOneOp (
 
         AcpiOsPrintf (")");
         AcpiDmCommaIfFieldMember (Op);
+        if (Op->Common.EndNodeComment)
+        {
+            AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
+        }
+        if (Op->Common.InlineComment)
+        {
+            AcpiOsPrintf ("%s", Op->Common.InlineComment);
+        }
+ 
         AcpiOsPrintf ("\n");
 
         Op->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE; /* for now, ignore in AcpiDmAscendingOp */
