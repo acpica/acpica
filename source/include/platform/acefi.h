@@ -332,6 +332,6 @@ extern struct _ACPI_EFI_BOOT_SERVICES       *BS;
 
 #define FILE                struct _ACPI_SIMPLE_TEXT_OUTPUT_INTERFACE
 #define stdout              ST->ConOut
-#define stderr              ST->ConOut
+#define stderr              ST->StdErr
 
 #endif /* __ACEFI_H__ */
