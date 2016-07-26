@@ -120,6 +120,10 @@ SOURCE=..\..\source\components\utilities\utalloc.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utascii.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utbuffer.c
 # End Source File
 # Begin Source File
@@ -193,10 +197,6 @@ SOURCE=..\..\source\components\utilities\utownerid.c
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utpredef.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\utilities\utprint.c
 # End Source File
 # Begin Source File
 
@@ -292,7 +292,15 @@ SOURCE=..\..\source\compiler\aslcompile.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\compiler\asldebug.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\compiler\aslerror.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslexternal.c
 # End Source File
 # Begin Source File
 
@@ -384,6 +392,10 @@ SOURCE=..\..\source\compiler\asloptions.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\compiler\aslpld.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\compiler\aslpredef.c
 # End Source File
 # Begin Source File
@@ -466,6 +478,10 @@ SOURCE=..\..\source\compiler\aslwalks.c
 
 SOURCE=..\..\source\compiler\aslxref.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslxrefout.c
+# End Source File
 # End Group
 # Begin Group "Common"
 
@@ -533,10 +549,6 @@ SOURCE=..\..\source\common\dmtbinfo.c
 # Begin Source File
 
 SOURCE=..\..\source\common\getopt.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\os_specific\service_layers\oslibcfs.c
 # End Source File
 # Begin Source File
 
@@ -668,6 +680,10 @@ SOURCE=..\..\source\components\tables\tbxfload.c
 # Begin Group "Interpreter"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exconcat.c
+# End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\executer\exconvrt.c

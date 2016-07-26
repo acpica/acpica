@@ -256,28 +256,6 @@
 				<File
 					RelativePath="..\..\source\Common\getopt.c"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\source\os_specific\service_layers\oslibcfs.c"
-					>
 				</File>
 				<File
 					RelativePath="..\..\source\os_specific\service_layers\oswintbl.c"
@@ -350,10 +328,6 @@
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utnonansi.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\components\utilities\utprint.c"
 					>
 				</File>
 				<File

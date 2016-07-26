@@ -244,15 +244,6 @@
 				<File
 					RelativePath="..\..\source\tools\acpihelp\ahdecode.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							DisableLanguageExtensions="true"
-							AssemblerOutput="0"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\tools\acpihelp\ahgrammar.c"
@@ -285,28 +276,6 @@
 				</File>
 				<File
 					RelativePath="..\..\source\common\getopt.c"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\source\os_specific\service_layers\oslibcfs.c"
 					>
 				</File>
 				<File
@@ -359,10 +328,6 @@
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utpredef.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\components\utilities\utprint.c"
 					>
 				</File>
 				<File

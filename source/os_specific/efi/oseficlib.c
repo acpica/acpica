@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: osefixf - EFI OSL interfaces
+ * Module Name: oseficlib - EFI specific CLibrary interfaces
  *
  *****************************************************************************/
 
@@ -118,7 +118,7 @@
 #include "acapps.h"
 
 #define _COMPONENT          ACPI_OS_SERVICES
-        ACPI_MODULE_NAME    ("osefixf")
+        ACPI_MODULE_NAME    ("oseficlib")
 
 
 /* Local definitions */
@@ -128,18 +128,13 @@
 
 /* Local prototypes */
 
-static ACPI_STATUS
+static int
 AcpiEfiArgify (
     char                    *String,
     int                     *ArgcPtr,
     char                    ***ArgvPtr);
 
-static BOOLEAN
-AcpiEfiCompareGuid (
-    EFI_GUID                *Guid1,
-    EFI_GUID                *Guid2);
-
-static ACPI_STATUS
+static int
 AcpiEfiConvertArgcv (
     CHAR16                  *LoadOpt,
     UINT32                  LoadOptSize,
@@ -147,13 +142,9 @@ AcpiEfiConvertArgcv (
     char                    ***ArgvPtr,
     char                    **BufferPtr);
 
-static ACPI_PHYSICAL_ADDRESS
-AcpiEfiGetRsdpViaGuid (
-    EFI_GUID                *Guid);
-
 static CHAR16 *
 AcpiEfiFlushFile (
-    ACPI_FILE               File,
+    FILE                    *File,
     CHAR16                  *Begin,
     CHAR16                  *End,
     CHAR16                  *Pos,
@@ -162,319 +153,97 @@ AcpiEfiFlushFile (
 
 /* Local variables */
 
-static EFI_FILE_HANDLE      AcpiGbl_EfiCurrentVolume = NULL;
-EFI_GUID                    AcpiGbl_LoadedImageProtocol = LOADED_IMAGE_PROTOCOL;
-EFI_GUID                    AcpiGbl_TextInProtocol = SIMPLE_TEXT_INPUT_PROTOCOL;
-EFI_GUID                    AcpiGbl_TextOutProtocol = SIMPLE_TEXT_OUTPUT_PROTOCOL;
-EFI_GUID                    AcpiGbl_FileSystemProtocol = SIMPLE_FILE_SYSTEM_PROTOCOL;
+static ACPI_EFI_FILE_HANDLE AcpiGbl_EfiCurrentVolume = NULL;
+ACPI_EFI_GUID               AcpiGbl_LoadedImageProtocol = ACPI_EFI_LOADED_IMAGE_PROTOCOL;
+ACPI_EFI_GUID               AcpiGbl_TextInProtocol = ACPI_SIMPLE_TEXT_INPUT_PROTOCOL;
+ACPI_EFI_GUID               AcpiGbl_TextOutProtocol = ACPI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
+ACPI_EFI_GUID               AcpiGbl_FileSystemProtocol = ACPI_SIMPLE_FILE_SYSTEM_PROTOCOL;
 
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiEfiGetRsdpViaGuid
- *
- * PARAMETERS:  Guid1               - GUID to compare
- *              Guid2               - GUID to compare
- *
- * RETURN:      TRUE if Guid1 == Guid2
- *
- * DESCRIPTION: Compares two GUIDs
- *
- *****************************************************************************/
-
-static BOOLEAN
-AcpiEfiCompareGuid (
-    EFI_GUID                *Guid1,
-    EFI_GUID                *Guid2)
-{
-    INT32                   *g1;
-    INT32                   *g2;
-    INT32                   r;
-
-
-    g1 = (INT32 *) Guid1;
-    g2 = (INT32 *) Guid2;
-
-    r  = g1[0] - g2[0];
-    r |= g1[1] - g2[1];
-    r |= g1[2] - g2[2];
-    r |= g1[3] - g2[3];
-
-    return (r ? FALSE : TRUE);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiEfiGetRsdpViaGuid
- *
- * PARAMETERS:  None
- *
- * RETURN:      RSDP address if found
- *
- * DESCRIPTION: Find RSDP address via EFI using specified GUID.
- *
- *****************************************************************************/
-
-static ACPI_PHYSICAL_ADDRESS
-AcpiEfiGetRsdpViaGuid (
-    EFI_GUID                *Guid)
-{
-    ACPI_PHYSICAL_ADDRESS   Address = 0;
-    int                     i;
-
-
-    for (i = 0; i < ST->NumberOfTableEntries; i++)
-    {
-        if (AcpiEfiCompareGuid (&ST->ConfigurationTable[i].VendorGuid, Guid))
-        {
-            Address = ACPI_PTR_TO_PHYSADDR (
-                    ST->ConfigurationTable[i].VendorTable);
-            break;
-        }
-    }
-
-    return (Address);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsGetRootPointer
- *
- * PARAMETERS:  None
- *
- * RETURN:      RSDP physical address
- *
- * DESCRIPTION: Gets the ACPI root pointer (RSDP)
- *
- *****************************************************************************/
-
-ACPI_PHYSICAL_ADDRESS
-AcpiOsGetRootPointer (
-    void)
-{
-    ACPI_PHYSICAL_ADDRESS   Address;
-    EFI_GUID                Guid10 = ACPI_TABLE_GUID;
-    EFI_GUID                Guid20 = ACPI_20_TABLE_GUID;
-
-
-    Address = AcpiEfiGetRsdpViaGuid (&Guid20);
-    if (!Address)
-    {
-        Address = AcpiEfiGetRsdpViaGuid (&Guid10);
-    }
-
-    return (Address);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsMapMemory
- *
- * PARAMETERS:  where               - Physical address of memory to be mapped
- *              length              - How much memory to map
- *
- * RETURN:      Pointer to mapped memory. Null on error.
- *
- * DESCRIPTION: Map physical memory into caller's address space
- *
- *****************************************************************************/
-
-void *
-AcpiOsMapMemory (
-    ACPI_PHYSICAL_ADDRESS   where,
-    ACPI_SIZE               length)
-{
-
-    return (ACPI_TO_POINTER ((ACPI_SIZE) where));
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsUnmapMemory
- *
- * PARAMETERS:  where               - Logical address of memory to be unmapped
- *              length              - How much memory to unmap
- *
- * RETURN:      None
- *
- * DESCRIPTION: Delete a previously created mapping. Where and Length must
- *              correspond to a previous mapping exactly.
- *
- *****************************************************************************/
-
-void
-AcpiOsUnmapMemory (
-    void                    *where,
-    ACPI_SIZE               length)
-{
-
-    return;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    Spinlock interfaces
- *
- * DESCRIPTION: No-op on single threaded BIOS
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsCreateLock (
-    ACPI_SPINLOCK           *OutHandle)
-{
-    return (AE_OK);
-}
-
-void
-AcpiOsDeleteLock (
-    ACPI_SPINLOCK           Handle)
-{
-}
-
-ACPI_CPU_FLAGS
-AcpiOsAcquireLock (
-    ACPI_SPINLOCK           Handle)
-{
-    return (0);
-}
-
-void
-AcpiOsReleaseLock (
-    ACPI_SPINLOCK           Handle,
-    ACPI_CPU_FLAGS          Flags)
-{
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsAllocate
- *
- * PARAMETERS:  Size                - Amount to allocate, in bytes
- *
- * RETURN:      Pointer to the new allocation. Null on error.
- *
- * DESCRIPTION: Allocate memory. Algorithm is dependent on the OS.
- *
- *****************************************************************************/
-
-void *
-AcpiOsAllocate (
-    ACPI_SIZE               Size)
-{
-    EFI_STATUS              EfiStatus;
-    void                    *Mem;
-
-
-    EfiStatus = uefi_call_wrapper (BS->AllocatePool, 3,
-        EfiLoaderData, Size, &Mem);
-    if (EFI_ERROR (EfiStatus))
-    {
-        AcpiLogError ("EFI_BOOT_SERVICES->AllocatePool(EfiLoaderData) failure.\n");
-        return (NULL);
-    }
-
-    return (Mem);
-}
-
-
-#ifdef USE_NATIVE_ALLOCATE_ZEROED
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsAllocateZeroed
- *
- * PARAMETERS:  Size                - Amount to allocate, in bytes
- *
- * RETURN:      Pointer to the new allocation. Null on error.
- *
- * DESCRIPTION: Allocate and zero memory. Algorithm is dependent on the OS.
- *
- *****************************************************************************/
-
-void *
-AcpiOsAllocateZeroed (
-    ACPI_SIZE               Size)
-{
-    void                    *Mem;
-
-
-    Mem = AcpiOsAllocate (Size);
-    if (Mem)
-    {
-        memset (Mem, 0, Size);
-    }
-
-    return (Mem);
-}
-#endif
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsFree
- *
- * PARAMETERS:  Mem                 - Pointer to previously allocated memory
- *
- * RETURN:      None
- *
- * DESCRIPTION: Free memory allocated via AcpiOsAllocate
- *
- *****************************************************************************/
-
-void
-AcpiOsFree (
-    void                    *Mem)
-{
-
-    uefi_call_wrapper (BS->FreePool, 1, Mem);
-}
+int                         errno = 0;
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiOsOpenFile
+ * FUNCTION:    fopen
  *
  * PARAMETERS:  Path                - File path
  *              Modes               - File operation type
  *
  * RETURN:      File descriptor
  *
- * DESCRIPTION: Open a file for reading (ACPI_FILE_READING) or/and writing
- *              (ACPI_FILE_WRITING).
+ * DESCRIPTION: Open a file for reading or/and writing.
  *
  ******************************************************************************/
 
-ACPI_FILE
-AcpiOsOpenFile (
+FILE *
+fopen (
     const char              *Path,
-    UINT8                   Modes)
+    const char              *Modes)
 {
-    EFI_STATUS              EfiStatus = EFI_SUCCESS;
+    ACPI_EFI_STATUS         EfiStatus = ACPI_EFI_SUCCESS;
     UINT64                  OpenModes;
-    EFI_FILE_HANDLE         EfiFile = NULL;
+    ACPI_EFI_FILE_HANDLE    EfiFile = NULL;
     CHAR16                  *Path16 = NULL;
     CHAR16                  *Pos16;
     const char              *Pos;
     INTN                    Count, i;
+    BOOLEAN                 IsAppend = FALSE;
+    FILE                    *File = NULL;
 
 
     if (!Path)
     {
+        errno = EINVAL;
         return (NULL);
     }
 
-    /* Convert modes */
-
-    OpenModes = EFI_FILE_MODE_READ;
-    if (Modes & ACPI_FILE_WRITING)
+    /*
+     * Convert modes, EFI says the only 2 read/write modes are read-only,
+     * read+write. Thus set default mode as read-only.
+     */
+    OpenModes = ACPI_EFI_FILE_MODE_READ;
+    switch (*Modes++)
     {
-        OpenModes |= (EFI_FILE_MODE_WRITE | EFI_FILE_MODE_CREATE);
+    case 'r':
+
+        break;
+
+    case 'w':
+
+        OpenModes |= (ACPI_EFI_FILE_MODE_WRITE | ACPI_EFI_FILE_MODE_CREATE);
+        break;
+
+    case 'a':
+
+        OpenModes |= (ACPI_EFI_FILE_MODE_WRITE | ACPI_EFI_FILE_MODE_CREATE);
+        IsAppend = TRUE;
+        break;
+
+    default:
+
+        errno = EINVAL;
+        return (NULL);
+    }
+
+    for (; *Modes; Modes++)
+    {
+        switch (*Modes)
+        {
+        case '+':
+
+            OpenModes |= (ACPI_EFI_FILE_MODE_WRITE | ACPI_EFI_FILE_MODE_CREATE);
+            break;
+
+        case 'b':
+        case 't':
+
+            break;
+
+        case 'f':
+        default:
+
+            break;
+        }
     }
 
     /* Allocate path buffer */
@@ -483,7 +252,8 @@ AcpiOsOpenFile (
     Path16 = ACPI_ALLOCATE_ZEROED ((Count + 1) * sizeof (CHAR16));
     if (!Path16)
     {
-        EfiStatus = EFI_BAD_BUFFER_SIZE;
+        EfiStatus = ACPI_EFI_BAD_BUFFER_SIZE;
+        errno = ENOMEM;
         goto ErrorExit;
     }
     Pos = Path;
@@ -509,10 +279,17 @@ AcpiOsOpenFile (
 
     EfiStatus = uefi_call_wrapper (AcpiGbl_EfiCurrentVolume->Open, 5,
         AcpiGbl_EfiCurrentVolume, &EfiFile, Path16, OpenModes, 0);
-    if (EFI_ERROR (EfiStatus))
+    if (ACPI_EFI_ERROR (EfiStatus))
     {
-        AcpiLogError ("EFI_FILE_HANDLE->Open() failure.\n");
+        fprintf (stderr, "EFI_FILE_HANDLE->Open() failure.\n");
+        errno = ENOENT;
         goto ErrorExit;
+    }
+
+    File = (FILE *) EfiFile;
+    if (IsAppend)
+    {
+        fseek (File, 0, SEEK_END);
     }
 
 ErrorExit:
@@ -522,13 +299,13 @@ ErrorExit:
         ACPI_FREE (Path16);
     }
 
-    return ((ACPI_FILE) EfiFile);
+    return (File);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiOsCloseFile
+ * FUNCTION:    fclose
  *
  * PARAMETERS:  File                - File descriptor
  *
@@ -539,18 +316,17 @@ ErrorExit:
  ******************************************************************************/
 
 void
-AcpiOsCloseFile (
-    ACPI_FILE               File)
+fclose (
+    FILE                    *File)
 {
-    EFI_FILE_HANDLE         EfiFile;
+    ACPI_EFI_FILE_HANDLE    EfiFile;
 
 
-    if (File == ACPI_FILE_OUT ||
-        File == ACPI_FILE_ERR)
+    if (File == stdout || File == stderr)
     {
         return;
     }
-    EfiFile = (EFI_FILE_HANDLE) File;
+    EfiFile = (ACPI_EFI_FILE_HANDLE) File;
     (void) uefi_call_wrapper (AcpiGbl_EfiCurrentVolume->Close, 1, EfiFile);
 
     return;
@@ -559,12 +335,12 @@ AcpiOsCloseFile (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiOsReadFile
+ * FUNCTION:    fread
  *
- * PARAMETERS:  File                - File descriptor
- *              Buffer              - Data buffer
+ * PARAMETERS:  Buffer              - Data buffer
  *              Size                - Data block size
  *              Count               - Number of data blocks
+ *              File                - File descriptor
  *
  * RETURN:      Size of successfully read buffer
  *
@@ -573,36 +349,37 @@ AcpiOsCloseFile (
  ******************************************************************************/
 
 int
-AcpiOsReadFile (
-    ACPI_FILE               File,
+fread (
     void                    *Buffer,
     ACPI_SIZE               Size,
-    ACPI_SIZE               Count)
+    ACPI_SIZE               Count,
+    FILE                    *File)
 {
     int                     Length = -1;
-    EFI_FILE_HANDLE         EfiFile;
+    ACPI_EFI_FILE_HANDLE    EfiFile;
     UINTN                   ReadSize;
-    EFI_STATUS              EfiStatus;
+    ACPI_EFI_STATUS         EfiStatus;
 
 
-    if (File == ACPI_FILE_OUT ||
-        File == ACPI_FILE_ERR)
+    if (File == stdout || File == stderr)
     {
     }
     else
     {
-        EfiFile = (EFI_FILE_HANDLE) File;
+        EfiFile = (ACPI_EFI_FILE_HANDLE) File;
         if (!EfiFile)
         {
+            errno = EINVAL;
             goto ErrorExit;
         }
         ReadSize = Size * Count;
 
         EfiStatus = uefi_call_wrapper (AcpiGbl_EfiCurrentVolume->Read, 3,
             EfiFile, &ReadSize, Buffer);
-        if (EFI_ERROR (EfiStatus))
+        if (ACPI_EFI_ERROR (EfiStatus))
         {
-            AcpiLogError ("EFI_FILE_HANDLE->Read() failure.\n");
+            fprintf (stderr, "EFI_FILE_HANDLE->Read() failure.\n");
+            errno = EIO;
             goto ErrorExit;
         }
         Length = ReadSize;
@@ -632,7 +409,7 @@ ErrorExit:
 
 static CHAR16 *
 AcpiEfiFlushFile (
-    ACPI_FILE               File,
+    FILE                    *File,
     CHAR16                  *Begin,
     CHAR16                  *End,
     CHAR16                  *Pos,
@@ -652,12 +429,12 @@ AcpiEfiFlushFile (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiOsWriteFile
+ * FUNCTION:    fwrite
  *
- * PARAMETERS:  File                - File descriptor
- *              Buffer              - Data buffer
+ * PARAMETERS:  Buffer              - Data buffer
  *              Size                - Data block size
  *              Count               - Number of data blocks
+ *              File                - File descriptor
  *
  * RETURN:      Size of successfully written buffer
  *
@@ -666,11 +443,11 @@ AcpiEfiFlushFile (
  ******************************************************************************/
 
 int
-AcpiOsWriteFile (
-    ACPI_FILE               File,
+fwrite (
     void                    *Buffer,
     ACPI_SIZE               Size,
-    ACPI_SIZE               Count)
+    ACPI_SIZE               Count,
+    FILE                    *File)
 {
     int                     Length = -1;
     CHAR16                  String[ACPI_EFI_PRINT_LENGTH];
@@ -678,13 +455,12 @@ AcpiOsWriteFile (
     CHAR16                  *End;
     CHAR16                  *Pos;
     int                     i, j;
-    EFI_FILE_HANDLE         EfiFile;
+    ACPI_EFI_FILE_HANDLE    EfiFile;
     UINTN                   WriteSize;
-    EFI_STATUS              EfiStatus;
+    ACPI_EFI_STATUS         EfiStatus;
 
 
-    if (File == ACPI_FILE_OUT ||
-        File == ACPI_FILE_ERR)
+    if (File == stdout || File == stderr)
     {
         Pos = String;
         End = String + ACPI_EFI_PRINT_LENGTH - 1;
@@ -711,18 +487,20 @@ AcpiOsWriteFile (
     }
     else
     {
-        EfiFile = (EFI_FILE_HANDLE) File;
+        EfiFile = (ACPI_EFI_FILE_HANDLE) File;
         if (!EfiFile)
         {
+            errno = EINVAL;
             goto ErrorExit;
         }
         WriteSize = Size * Count;
 
         EfiStatus = uefi_call_wrapper (AcpiGbl_EfiCurrentVolume->Write, 3,
             EfiFile, &WriteSize, Buffer);
-        if (EFI_ERROR (EfiStatus))
+        if (ACPI_EFI_ERROR (EfiStatus))
         {
-            AcpiLogError ("EFI_FILE_HANDLE->Write() failure.\n");
+            fprintf (stderr, "EFI_FILE_HANDLE->Write() failure.\n");
+            errno = EIO;
             goto ErrorExit;
         }
         Length = WriteSize;
@@ -736,7 +514,7 @@ ErrorExit:
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiOsGetFileOffset
+ * FUNCTION:    ftell
  *
  * PARAMETERS:  File                - File descriptor
  *
@@ -747,8 +525,8 @@ ErrorExit:
  ******************************************************************************/
 
 long
-AcpiOsGetFileOffset (
-    ACPI_FILE               File)
+ftell (
+    FILE                    *File)
 {
     long                    Offset = -1;
 
@@ -759,7 +537,7 @@ AcpiOsGetFileOffset (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiOsSetFileOffset
+ * FUNCTION:    fseek
  *
  * PARAMETERS:  File                - File descriptor
  *              Offset              - File offset
@@ -771,84 +549,14 @@ AcpiOsGetFileOffset (
  *
  ******************************************************************************/
 
-ACPI_STATUS
-AcpiOsSetFileOffset (
-    ACPI_FILE               File,
+int
+fseek (
+    FILE                    *File,
     long                    Offset,
-    UINT8                   From)
+    int                     From)
 {
 
-    return (AE_SUPPORT);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsPrintf
- *
- * PARAMETERS:  Format, ...         - Standard printf format
- *
- * RETURN:      None
- *
- * DESCRIPTION: Formatted output.
- *
- *****************************************************************************/
-
-void ACPI_INTERNAL_VAR_XFACE
-AcpiOsPrintf (
-    const char              *Format,
-    ...)
-{
-    va_list                 Args;
-
-
-    va_start (Args, Format);
-    AcpiOsVprintf (Format, Args);
-    va_end (Args);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsVprintf
- *
- * PARAMETERS:  Format              - Standard printf format
- *              Args                - Argument list
- *
- * RETURN:      None
- *
- * DESCRIPTION: Formatted output with arguments list pointer.
- *
- *****************************************************************************/
-
-void
-AcpiOsVprintf (
-    const char              *Format,
-    va_list                 Args)
-{
-
-    (void) AcpiUtFileVprintf (ACPI_FILE_OUT, Format, Args);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiOsInitialize
- *
- * PARAMETERS:  None
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Initialize this module.
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AcpiOsInitialize (
-    void)
-{
-
-    return (AE_OK);
+    return (-1);
 }
 
 
@@ -861,13 +569,15 @@ AcpiOsInitialize (
  *              ArgcPtr             - Return number of the arguments
  *              ArgvPtr             - Return vector of the arguments
  *
- * RETURN:      Status
+ * RETURN:      Clibraray error code
+ *              -EINVAL: invalid parameter
+ *              EAGAIN: try again
  *
  * DESCRIPTION: Convert EFI arguments into C arguments.
  *
  *****************************************************************************/
 
-static ACPI_STATUS
+static int
 AcpiEfiArgify (
     char                    *String,
     int                     *ArgcPtr,
@@ -885,7 +595,8 @@ AcpiEfiArgify (
 
     if (String == NULL)
     {
-        return (AE_BAD_PARAMETER);
+	errno = EINVAL;
+        return (-EINVAL);
     }
 
     CopyBuffer = String;
@@ -971,7 +682,12 @@ AcpiEfiArgify (
     *ArgcPtr = Argc;
     *ArgvPtr = Argv;
 
-    return ((MaxArgc < Argc) ? AE_NO_MEMORY : AE_OK);
+    if (MaxArgc < Argc)
+    {
+        errno = EAGAIN;
+        return (-ENOMEM);
+    }
+    return (0);
 }
 
 
@@ -986,13 +702,13 @@ AcpiEfiArgify (
  *              ArgvPtr             - Return vector of the arguments
  *              BufferPtr           - Buffer to contain the argument strings
  *
- * RETURN:      Status
+ * RETURN:      Clibrary error code
  *
  * DESCRIPTION: Convert EFI arguments into C arguments.
  *
  *****************************************************************************/
 
-static ACPI_STATUS
+static int
 AcpiEfiConvertArgcv (
     CHAR16                  *LoadOptions,
     UINT32                  LoadOptionsSize,
@@ -1000,7 +716,7 @@ AcpiEfiConvertArgcv (
     char                    ***ArgvPtr,
     char                    **BufferPtr)
 {
-    ACPI_STATUS             Status = AE_OK;
+    int                     Error = 0;
     UINT32                  Count = LoadOptionsSize / sizeof (CHAR16);
     UINT32                  i;
     CHAR16                  *From;
@@ -1015,7 +731,8 @@ AcpiEfiConvertArgcv (
     Buffer = ACPI_ALLOCATE_ZEROED (Count);
     if (!Buffer)
     {
-        Status = AE_NO_MEMORY;
+        errno = ENOMEM;
+        Error = -ENOMEM;
         goto ErrorExit;
     }
 
@@ -1033,7 +750,8 @@ TryAgain:
         Argv = ACPI_ALLOCATE_ZEROED (sizeof (char *) * (Argc + 1));
         if (!Argv)
         {
-            Status = AE_NO_MEMORY;
+            errno = ENOMEM;
+            Error = -ENOMEM;
             goto ErrorExit;
         }
     }
@@ -1055,18 +773,15 @@ TryAgain:
      * AcpiEfiArgify(). The number of the strings are saved in Argc and the
      * pointers of the strings are saved in Argv.
      */
-    Status = AcpiEfiArgify (Buffer, &Argc, &Argv);
-    if (ACPI_FAILURE (Status))
+    Error = AcpiEfiArgify (Buffer, &Argc, &Argv);
+    if (Error && errno == EAGAIN)
     {
-        if (Status == AE_NO_MEMORY)
-        {
-            goto TryAgain;
-        }
+        goto TryAgain;
     }
 
 ErrorExit:
 
-    if (ACPI_FAILURE (Status))
+    if (Error)
     {
         ACPI_FREE (Buffer);
         ACPI_FREE (Argv);
@@ -1077,7 +792,7 @@ ErrorExit:
         *ArgvPtr = Argv;
         *BufferPtr = Buffer;
     }
-    return (Status);
+    return (Error);
 }
 
 
@@ -1094,18 +809,18 @@ ErrorExit:
  *
  *****************************************************************************/
 
-EFI_STATUS
+ACPI_EFI_STATUS
 efi_main (
-    EFI_HANDLE              Image,
-    EFI_SYSTEM_TABLE        *SystemTab)
+    ACPI_EFI_HANDLE         Image,
+    ACPI_EFI_SYSTEM_TABLE   *SystemTab)
 {
-    EFI_LOADED_IMAGE        *Info;
-    EFI_STATUS              EfiStatus = EFI_SUCCESS;
-    ACPI_STATUS             Status;
+    ACPI_EFI_LOADED_IMAGE   *Info;
+    ACPI_EFI_STATUS         EfiStatus = ACPI_EFI_SUCCESS;
+    int                     Error;
     int                     argc;
     char                    **argv = NULL;
     char                    *OptBuffer = NULL;
-    EFI_FILE_IO_INTERFACE   *Volume = NULL;
+    ACPI_EFI_FILE_IO_INTERFACE *Volume = NULL;
 
 
     /* Initialize global variables */
@@ -1117,32 +832,34 @@ efi_main (
 
     EfiStatus = uefi_call_wrapper (BS->HandleProtocol, 3,
         Image, &AcpiGbl_LoadedImageProtocol, ACPI_CAST_PTR (VOID, &Info));
-    if (EFI_ERROR (EfiStatus))
+    if (ACPI_EFI_ERROR (EfiStatus))
     {
-        AcpiLogError ("EFI_BOOT_SERVICES->HandleProtocol(LoadedImageProtocol) failure.\n");
+        fprintf (stderr,
+            "EFI_BOOT_SERVICES->HandleProtocol(LoadedImageProtocol) failure.\n");
         return (EfiStatus);
     }
 
     EfiStatus = uefi_call_wrapper (BS->HandleProtocol, 3,
         Info->DeviceHandle, &AcpiGbl_FileSystemProtocol, (void **) &Volume);
-    if (EFI_ERROR (EfiStatus))
+    if (ACPI_EFI_ERROR (EfiStatus))
     {
-        AcpiLogError ("EFI_BOOT_SERVICES->HandleProtocol(FileSystemProtocol) failure.\n");
+        fprintf (stderr,
+            "EFI_BOOT_SERVICES->HandleProtocol(FileSystemProtocol) failure.\n");
         return (EfiStatus);
     }
     EfiStatus = uefi_call_wrapper (Volume->OpenVolume, 2,
         Volume, &AcpiGbl_EfiCurrentVolume);
-    if (EFI_ERROR (EfiStatus))
+    if (ACPI_EFI_ERROR (EfiStatus))
     {
-        AcpiLogError ("EFI_FILE_IO_INTERFACE->OpenVolume() failure.\n");
+        fprintf (stderr, "EFI_FILE_IO_INTERFACE->OpenVolume() failure.\n");
         return (EfiStatus);
     }
 
-    Status = AcpiEfiConvertArgcv (Info->LoadOptions,
+    Error = AcpiEfiConvertArgcv (Info->LoadOptions,
         Info->LoadOptionsSize, &argc, &argv, &OptBuffer);
-    if (ACPI_FAILURE (Status))
+    if (Error)
     {
-        EfiStatus = EFI_DEVICE_ERROR;
+        EfiStatus = ACPI_EFI_DEVICE_ERROR;
         goto ErrorAlloc;
     }
 
@@ -1161,3 +878,23 @@ ErrorAlloc:
 
     return (EfiStatus);
 }
+
+#ifdef _EDK2_EFI
+struct _ACPI_EFI_SYSTEM_TABLE        *ST;
+struct _ACPI_EFI_BOOT_SERVICES       *BS;
+struct _ACPI_EFI_RUNTIME_SERVICES    *RT;
+
+EFI_STATUS
+EFIAPI
+UefiMain (
+    EFI_HANDLE              Image,
+    EFI_SYSTEM_TABLE        *SystemTab)
+{
+    EFI_STATUS              EfiStatus;
+
+
+    EfiStatus = (EFI_STATUS) efi_main (
+        (ACPI_EFI_HANDLE) Image, (ACPI_EFI_SYSTEM_TABLE *) SystemTab);
+    return (EfiStatus);
+}
+#endif

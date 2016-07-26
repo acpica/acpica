@@ -116,10 +116,6 @@ SOURCE=..\..\source\tools\examples\extables.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\os_specific\service_layers\oslibcfs.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\os_specific\service_layers\oswinxf.c
 # ADD CPP /Ze
 # End Source File
@@ -191,6 +187,10 @@ SOURCE=..\..\source\components\dispatcher\dswstate.c
 # Begin Group "Executer"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exconcat.c
+# End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\executer\exconfig.c
@@ -481,6 +481,10 @@ SOURCE=..\..\source\components\utilities\utalloc.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utascii.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utbuffer.c
 # End Source File
 # Begin Source File
@@ -570,10 +574,6 @@ SOURCE=..\..\source\components\utilities\utownerid.c
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utpredef.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\utilities\utprint.c
 # End Source File
 # Begin Source File
 

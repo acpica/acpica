@@ -123,4 +123,8 @@
 #include <crtdbg.h>
 #endif
 
+/* End standard headers */
+
+#pragma warning(pop)
+
 #endif /* __ACMSVCEX_H__ */

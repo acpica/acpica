@@ -148,10 +148,6 @@ SOURCE=..\..\source\common\getopt.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\os_specific\service_layers\oslibcfs.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\os_specific\SERVICE_LAYERS\oswindir.c
 # End Source File
 # Begin Source File
@@ -181,10 +177,6 @@ SOURCE=..\..\source\components\utilities\utmath.c
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utnonansi.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\utilities\utprint.c
 # End Source File
 # Begin Source File
 
