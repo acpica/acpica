@@ -688,6 +688,10 @@ AslDoOptions (
         break;
     case 'q':  /* Convert input file into asl+ syntax */ 
 
+        Gbl_FoldConstants = FALSE;
+        Gbl_IntegerOptimizationFlag = FALSE;
+        Gbl_ReferenceOptimizationFlag = FALSE;
+        Gbl_OptimizeTrivialParseNodes = FALSE;
         Gbl_CaptureComments = TRUE;
         break;
 

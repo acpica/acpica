@@ -214,10 +214,13 @@ AslProcessCommentState (
             break;
 
         case ASL_OpenBrace:
-            Gbl_CommentState.CommentType = ASL_OpenBraceComment;
+
+            Gbl_CommentState.CommentType = ASL_RegComment;
+            //Gbl_CommentState.CommentType = ASL_OpenBraceComment;
             break;
 
         case ASL_CloseBrace:
+            
             Gbl_CommentState.CommentType = ASL_CloseBraceComment;
             Gbl_CommentState.ParsingParenBraceNode = NULL;
             break;

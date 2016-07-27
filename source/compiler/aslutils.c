@@ -175,7 +175,8 @@ AslParseOpBlockType (
     case PARSEOP_FIELD: 
     case PARSEOP_FOR: 
     case PARSEOP_FUNCTION: 
-    //case PARSEOP_IF: 
+    case PARSEOP_IF: 
+    case PARSEOP_ELSE:
     case PARSEOP_ELSEIF:
     case PARSEOP_INDEXFIELD: 
     case PARSEOP_METHOD: 
@@ -188,6 +189,7 @@ AslParseOpBlockType (
     case PARSEOP_THERMALZONE: 
     case PARSEOP_WHILE: 
     //from aslresources.y
+    case PARSEOP_RESOURCETEMPLATE: //??? optional parens..
     case PARSEOP_VENDORLONG: 
     case PARSEOP_VENDORSHORT:
     case PARSEOP_INTERRUPT:

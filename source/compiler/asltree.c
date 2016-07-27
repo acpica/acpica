@@ -793,6 +793,7 @@ TrCreateLeafNode (
 
 
     Op = TrAllocateNode (ParseOpcode);
+    printf("Created leaf node\n");
 
     DbgPrint (ASL_PARSE_OUTPUT,
         "\nCreateLeafNode  Ln/Col %u/%u NewNode %p  Op %s\n\n",
