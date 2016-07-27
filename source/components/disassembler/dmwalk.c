@@ -551,6 +551,7 @@ AcpiDmCloseParenWriteComment(
     ACPI_PARSE_OBJECT     *Op)
 {
     AcpiOsPrintf (")");
+
 /*
     AcpiOsPrintf ("CLOSE PAREN ");
     AcpiOsPrintf ("Op code: %d ", Op->Common.AmlOpcode);
@@ -560,6 +561,12 @@ AcpiDmCloseParenWriteComment(
     {
         AcpiOsPrintf (" %s", Op->Common.EndNodeComment);
         Op->Common.EndNodeComment=NULL;
+    }
+    else if (Op->Common.Parent->Common.AmlOpcode == AML_IF_OP && Op->Common.Parent->Common.EndNodeComment!=NULL)
+    {
+        AcpiOsPrintf (" %s", Op->Common.Parent->Common.EndNodeComment);
+        Op->Common.Parent->Common.EndNodeComment = NULL;
+       
     }
 } 
 
@@ -591,7 +598,7 @@ AcpiDmDescendingOp (
     struct acpi_comment_list_node *Current = Op->Common.CommentList;
     
 
-    //AcpiOsPrintf (" [HDW]");
+//    AcpiOsPrintf (" [HDW]");
 
 
     // If this parse node has regular comments, print them now.
@@ -1276,6 +1283,7 @@ AcpiDmAscendingOp (
         if (Op->Common.Next)
         {
             AcpiDmCloseParenWriteComment(Op);
+            //AcpiOsPrintf("???");
             
 
             /*
