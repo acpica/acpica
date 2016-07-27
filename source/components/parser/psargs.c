@@ -868,7 +868,7 @@ AcpiPsGetNextArg (
 
     printf("AcpiPsGetNextArg!!!!!!!!!!\n");
 
-    AcpiPsCaptureComments(WalkState);
+    //AcpiPsCaptureComments(WalkState);
 
     switch (ArgType)
     {

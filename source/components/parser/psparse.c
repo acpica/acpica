@@ -320,8 +320,24 @@ void
 AcpiPsCaptureComments (
     ACPI_WALK_STATE         *WalkState)
 {
-    AcpiPsCaptureJustComments(&WalkState->ParserState);
-    WalkState->Aml = WalkState->ParserState.Aml; //Is this needed? What will this do?
+    UINT8                   *Aml;
+    UINT16                  Opcode;
+    const ACPI_OPCODE_INFO  *OpInfo;
+
+    /* Before parsing, check to see that comments that come directly after 
+     * deferred opcodes aren't being processed.
+     */
+
+    Aml = WalkState->ParserState.Aml;
+    Opcode = (UINT16) ACPI_GET8 (Aml);
+    OpInfo = AcpiPsGetOpcodeInfo (Opcode);
+
+    if (!(OpInfo->Flags & AML_DEFER) || ((OpInfo->Flags & AML_DEFER)&&(WalkState->PassNumber != ACPI_IMODE_LOAD_PASS1)))
+    {
+        AcpiPsCaptureJustComments(&WalkState->ParserState);
+        WalkState->Aml = WalkState->ParserState.Aml; //Is this needed? What will this do?
+    }
+    
 }
 
 /*******************************************************************************

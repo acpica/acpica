@@ -175,9 +175,7 @@ AcpiPsGetArguments (
 
     ACPI_FUNCTION_TRACE_PTR (PsGetArguments, WalkState);
 
-
-            // get potential comments before this function is called. Erase when done.
-
+    // get potential comments before this function is called...?
 
     switch (Op->Common.AmlOpcode)
     {
@@ -213,7 +211,12 @@ AcpiPsGetArguments (
             !WalkState->ArgCount)
         {
             WalkState->Aml = WalkState->ParserState.Aml;
+            printf("gna from getnextarguments\n");
 
+            if (Op->Common.AmlOpcode != AML_METHOD_OP)
+            {
+                AcpiPsCaptureComments(WalkState);
+            }
             Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
                 GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
             if (ACPI_FAILURE (Status))
@@ -228,7 +231,7 @@ AcpiPsGetArguments (
 
             INCREMENT_ARG_LIST (WalkState->ArgTypes);
 
-            // get potential comments here
+            // get potential comments here?
         }
 
 
@@ -630,7 +633,7 @@ AcpiPsParseLoop (
 
             Status = AcpiPsCreateOp (WalkState, AmlOpStart, &Op);
             
-//            AcpiPsTransferComments(Op);
+            //AcpiPsTransferComments(Op);
 
 
             if (ACPI_FAILURE (Status))

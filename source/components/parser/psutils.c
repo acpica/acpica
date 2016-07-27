@@ -252,9 +252,10 @@ AcpiPsAllocOp (
         AcpiPsInitOp (Op, Opcode);
         Op->Common.Aml = Aml;
         Op->Common.Flags = Flags;
-        Op->Common.InlineComment = NULL;
+        Op->Common.InlineComment  = NULL;
         Op->Common.EndNodeComment = NULL;
-        Op->Common.NameComment = NULL;
+        Op->Common.NameComment    = NULL;
+        Op->Common.CommentList    = NULL;
     }
 
     AcpiPsTransferComments(Op); // transfer comments here.
