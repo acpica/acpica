@@ -128,9 +128,6 @@
 #if defined(_LINUX) || defined(__linux__)
 #include "aclinuxex.h"
 
-#elif defined(WIN32)
-#include "acwinex.h"
-
 #elif defined(__DragonFly__)
 #include "acdragonflyex.h"
 
@@ -141,6 +138,11 @@
  */
 #elif defined(_AED_EFI) || defined(_GNU_EFI) || defined(_EDK2_EFI)
 #include "acefiex.h"
+
+#endif
+
+#if defined(_MSC_VER)
+#include "acmsvcex.h"
 
 #endif
 
