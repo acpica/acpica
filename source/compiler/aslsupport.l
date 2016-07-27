@@ -216,13 +216,16 @@ AslProcessCommentState (
         case ASL_OpenBrace:
 
             Gbl_CommentState.CommentType = ASL_RegComment;
+            Gbl_CommentState.ParsingParenBraceNode = NULL;
+
+            printf("========================================================End Parsing paren/Brace node!\n");
+
             //Gbl_CommentState.CommentType = ASL_OpenBraceComment;
             break;
 
         case ASL_CloseBrace:
             
             Gbl_CommentState.CommentType = ASL_CloseBraceComment;
-            Gbl_CommentState.ParsingParenBraceNode = NULL;
             break;
 
         case ASL_Comma:
@@ -748,9 +751,19 @@ AslPlaceComment(
             break;
 
         case ASL_CloseParenComment:
-            Gbl_CommentState.Latest_Parse_Node->Asl.EndNodeComment = 
-                appendInlineComment(Gbl_CommentState.Latest_Parse_Node->Asl.EndNodeComment,
-                                    CommentString);
+           
+            if (Gbl_CommentState.ParsingParenBraceNode !=NULL)
+            {
+                Gbl_CommentState.ParsingParenBraceNode->Asl.EndNodeComment = 
+                    appendInlineComment(Gbl_CommentState.ParsingParenBraceNode->Asl.EndNodeComment,
+                                        CommentString);
+            }
+            else
+            {
+                Gbl_CommentState.Latest_Parse_Node->Asl.EndNodeComment = 
+                    appendInlineComment(Gbl_CommentState.Latest_Parse_Node->Asl.EndNodeComment,
+                                        CommentString);
+            }
             break;
 
         case ASL_OpenBraceComment:
