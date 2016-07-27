@@ -157,10 +157,6 @@
 
 #define ACPI_CAST_PTHREAD_T(pthread) ((ACPI_THREAD_ID) ACPI_TO_INTEGER (pthread))
 
-/* Cygwin uses GCC */
-
-#include "acgcc.h"
-
 
 /*
  * The vsnprintf/snprintf functions are defined by c99, but cygwin/gcc

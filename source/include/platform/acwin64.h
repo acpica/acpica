@@ -119,11 +119,6 @@
 #define ACPI_USE_STANDARD_HEADERS
 #define ACPI_USE_SYSTEM_CLIBRARY
 
-/*! [Begin] no source code translation (Keep the include) */
-
-#include "acintel.h"
-/*! [End] no source code translation !*/
-
 #define ACPI_MACHINE_WIDTH          64
 
 /*

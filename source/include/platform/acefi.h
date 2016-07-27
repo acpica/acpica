@@ -124,14 +124,6 @@
 
 #endif
 
-#ifdef __GNUC__
-#include "acgcc.h"
-#endif
-
-#ifdef _MSC_VER
-#include "acmsvc.h"
-#endif
-
 #if defined(__x86_64__)
 #if defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7))
 #define USE_MS_ABI 1

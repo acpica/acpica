@@ -119,7 +119,6 @@
 #define ACPI_USE_STANDARD_HEADERS
 #define ACPI_USE_SYSTEM_CLIBRARY
 
-#include "acgcc.h"
 #include <KernelExport.h>
 
 struct mutex;

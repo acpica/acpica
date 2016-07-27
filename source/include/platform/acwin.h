@@ -119,14 +119,6 @@
 #define ACPI_USE_STANDARD_HEADERS
 #define ACPI_USE_SYSTEM_CLIBRARY
 
-/*! [Begin] no source code translation (Keep the include) */
-
-/* Windows uses VC */
-#ifdef _MSC_VER
-#include "acmsvc.h"
-#endif
-/*! [End] no source code translation !*/
-
 #define ACPI_MACHINE_WIDTH      32
 
 #ifdef ACPI_DEFINE_ALTERNATE_TYPES
