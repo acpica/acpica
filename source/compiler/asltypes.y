@@ -335,7 +335,6 @@ NoEcho('
 %type <n> DWordConst
 %type <n> QWordConst
 %type <n> String
-%type <n> Comment
 
 %type <n> ConstTerm
 %type <n> ConstExprTerm
