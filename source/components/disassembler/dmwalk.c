@@ -559,12 +559,12 @@ AcpiDmCloseParenWriteComment(
 */
     if (Op->Common.EndNodeComment!=NULL)
     {
-        AcpiOsPrintf (" %s", Op->Common.EndNodeComment);
+        AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
         Op->Common.EndNodeComment=NULL;
     }
     else if (Op->Common.Parent->Common.AmlOpcode == AML_IF_OP && Op->Common.Parent->Common.EndNodeComment!=NULL)
     {
-        AcpiOsPrintf (" %s", Op->Common.Parent->Common.EndNodeComment);
+        AcpiOsPrintf ("%s", Op->Common.Parent->Common.EndNodeComment);
         Op->Common.Parent->Common.EndNodeComment = NULL;
        
     }
@@ -607,6 +607,7 @@ AcpiDmDescendingOp (
         
         AcpiDmIndent (Level);
         AcpiOsPrintf("%s\n", Current->Comment);
+        Current->Comment = NULL;
         Current = Current->Next;     
     } 
 
@@ -867,6 +868,7 @@ AcpiDmDescendingOp (
                 if (Op->Common.NameComment)
                 {
                     AcpiOsPrintf ("%s", Op->Common.NameComment);
+                    Op->Common.NameComment = NULL;
                 }
 
                 break;
