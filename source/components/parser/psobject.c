@@ -349,27 +349,33 @@ AcpiPsBuildNamedOp (
     // Don't forget the comments!
     if (UnnamedOp->Common.InlineComment!=NULL)
     {
-        (*Op)->Common.InlineComment     = UnnamedOp->Common.InlineComment;
+        (*Op)->Common.InlineComment = UnnamedOp->Common.InlineComment;
+        UnnamedOp->Common.InlineComment = NULL;
     }
     if (UnnamedOp->Common.EndNodeComment!=NULL)
     {
-        (*Op)->Common.EndNodeComment    = UnnamedOp->Common.EndNodeComment;
+        (*Op)->Common.EndNodeComment = UnnamedOp->Common.EndNodeComment;
+        UnnamedOp->Common.EndNodeComment = NULL;
     }
     if (UnnamedOp->Common.OpenBraceComment!=NULL)
     {
-        (*Op)->Common.OpenBraceComment  = UnnamedOp->Common.OpenBraceComment;
+        (*Op)->Common.OpenBraceComment = UnnamedOp->Common.OpenBraceComment;
+        UnnamedOp->Common.OpenBraceComment = NULL;
     }
     if (UnnamedOp->Common.CloseBraceComment!=NULL)
     {
         (*Op)->Common.CloseBraceComment = UnnamedOp->Common.CloseBraceComment;
+        UnnamedOp->Common.CloseBraceComment = NULL;
     }
     if (UnnamedOp->Common.NameComment)
     {
-        (*Op)->Common.NameComment       = UnnamedOp->Common.NameComment;
+        (*Op)->Common.NameComment = UnnamedOp->Common.NameComment;
+        UnnamedOp->Common.NameComment = NULL;
     }
     if (UnnamedOp->Common.CommentList)
     {
-        (*Op)->Common.CommentList       = UnnamedOp->Common.CommentList;
+        (*Op)->Common.CommentList = UnnamedOp->Common.CommentList;
+        UnnamedOp->Common.CommentList = NULL;
     }
  
 

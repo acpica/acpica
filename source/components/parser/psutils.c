@@ -252,10 +252,12 @@ AcpiPsAllocOp (
         AcpiPsInitOp (Op, Opcode);
         Op->Common.Aml = Aml;
         Op->Common.Flags = Flags;
-        Op->Common.InlineComment  = NULL;
-        Op->Common.EndNodeComment = NULL;
-        Op->Common.NameComment    = NULL;
-        Op->Common.CommentList    = NULL;
+        Op->Common.InlineComment     = NULL;
+        Op->Common.EndNodeComment    = NULL;
+        Op->Common.NameComment       = NULL;
+        Op->Common.CommentList       = NULL;
+        Op->Common.OpenBraceComment  = NULL;
+        Op->Common.CloseBraceComment = NULL;
     }
 
     AcpiPsTransferComments(Op); // transfer comments here.
@@ -284,7 +286,13 @@ AcpiPsFreeOp (
 {
     ACPI_FUNCTION_NAME (PsFreeOp);
 
-
+    Op->Common.InlineComment     = NULL;
+    Op->Common.EndNodeComment    = NULL;
+    Op->Common.NameComment       = NULL;
+    Op->Common.CommentList       = NULL;
+    Op->Common.OpenBraceComment  = NULL;
+    Op->Common.CloseBraceComment = NULL;
+ 
     if (Op->Common.AmlOpcode == AML_INT_RETURN_VALUE_OP)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
