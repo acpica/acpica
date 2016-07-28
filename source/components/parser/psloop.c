@@ -213,7 +213,9 @@ AcpiPsGetArguments (
             WalkState->Aml = WalkState->ParserState.Aml;
             printf("gna from getnextarguments\n");
 
-            if (Op->Common.AmlOpcode != AML_METHOD_OP)
+            if (Op->Common.AmlOpcode != AML_METHOD_OP  && Op->Common.AmlOpcode != AML_BUFFER_OP      &&
+                Op->Common.AmlOpcode != AML_PACKAGE_OP && Op->Common.AmlOpcode != AML_VAR_PACKAGE_OP &&
+                Op->Common.AmlOpcode != AML_WHILE_OP)
             {
                 AcpiPsCaptureComments(WalkState);
             }
