@@ -595,7 +595,7 @@ AcpiEfiArgify (
 
     if (String == NULL)
     {
-	errno = EINVAL;
+        errno = EINVAL;
         return (-EINVAL);
     }
 
