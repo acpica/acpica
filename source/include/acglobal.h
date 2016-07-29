@@ -467,6 +467,7 @@ ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentCloseBraceComment, NULL);
 
 ACPI_INIT_GLOBAL (ACPI_COMMENT_LIST_NODE,   *AcpiGbl_RegCommentListHead, NULL);
 ACPI_INIT_GLOBAL (ACPI_COMMENT_LIST_NODE,   *AcpiGbl_RegCommentListTail, NULL);
+ACPI_INIT_GLOBAL (ACPI_COMMENT_ADDR_NODE,   *AcpiGbl_CommentAddrListHead, NULL);
 
 ACPI_INIT_GLOBAL (UINT8,               STANDARD_COMMENT_OPTION,   1);
 ACPI_INIT_GLOBAL (UINT8,               INLINE_COMMENT_OPTION,     2);
@@ -475,6 +476,7 @@ ACPI_INIT_GLOBAL (UINT8,               OPENBRACE_COMMENT_OPTION,  4);
 ACPI_INIT_GLOBAL (UINT8,               CLOSEBRACE_COMMENT_OPTION, 5);
 
 ACPI_GLOBAL (ACPI_CACHE_T *,            AcpiGbl_RegCommentCache);
+ACPI_GLOBAL (ACPI_CACHE_T *,            AcpiGbl_CommentAddrCache);
 
 /*****************************************************************************
  *

@@ -162,6 +162,69 @@ AcpiPsGetOpcodeSize (
     return (1);
 }
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsCommentExists
+ *
+ * PARAMETERS:  toCheck              - check if this address appears in the list
+ *
+ * RETURN:      BOOLEAN
+ *
+ * DESCRIPTION: look at the pointer address and check if this appears in the 
+ *              list of all addresses. If it exitsts in the list, return TRUE
+ *              if it exists, add to the list and return FALSE.
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AcpiPsCommentExists (
+    UINT8                    *toCheck)
+{
+    struct acpi_comment_addr_node  *Current = AcpiGbl_CommentAddrListHead;
+    if (!Current)
+    {
+
+        AcpiGbl_CommentAddrListHead = 
+                                AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
+        
+        AcpiGbl_CommentAddrListHead->Addr = toCheck;
+        return (FALSE);
+    }
+    else
+    {
+        printf("========== Traversing address list now ==========\n");
+        while (Current!=NULL)
+        {
+            if (Current->Addr != toCheck)
+            {
+                printf("Address in list: %p\n", Current->Addr);
+                Current = Current->Next;
+            }
+            else
+            {
+                return (TRUE);
+            }
+        }
+        printf("========== Ending traversal =====================\n");
+
+        /* If the execution gets to this point, it means that this address
+         * does not exists in the list. Add this address to the 
+         * beginning of the list.
+         */
+
+        Current = AcpiGbl_CommentAddrListHead;
+        AcpiGbl_CommentAddrListHead = 
+                                AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
+        AcpiGbl_CommentAddrListHead->Addr = toCheck;
+        AcpiGbl_CommentAddrListHead->Next = Current;
+        return (FALSE);
+        
+    }
+
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiPsCaptureJustComments
@@ -191,98 +254,114 @@ AcpiPsCaptureJustComments (
     Aml = ParserState->Aml;
     Opcode = (UINT16) ACPI_GET8 (Aml);
     printf("CaptureComments Opcode: 0x%x\n", Opcode);
+    printf("comment aml address: %p\n", Aml);
+
 
     while (Opcode == AML_COMMENT_OP)// check that it's a comment
     {                  
-        CommentOption = *(Aml+1);
+        //TODO: add conditional so that we don't accidentally count file marking as a comment.
+        if (AcpiPsCommentExists(Aml))
+        {
+            printf("Avoiding capturing an existing comment.\n");
+            while (ParserState->Aml[Length])
+            {
+                Length++;
+            }
+            ParserState->Aml += Length + 1;
+        }
+        else
+        {
+            CommentOption = *(Aml+1);
     
-        ParserState->Aml += 2; //increment past the comment option and point the approperiate char pointers.
+            ParserState->Aml += 2; //increment past the comment option and point the approperiate char pointers.
 
-        //found a comment. Now, set pointers to these comments.
-        switch (CommentOption)
-        {
-            case 1:
-                printf("found regular comment.\n");
+            //found a comment. Now, set pointers to these comments.
+            switch (CommentOption)
+            {
+                case 1:
+                    printf("found regular comment.\n");
 
-                // add to a linked list of nodes. This list will be taken by the parse node created next.
+                    // add to a linked list of nodes. This list will be taken by the parse node created next.
                 
-                NewCNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
+                    NewCNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
                 
-                NewCNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
-                NewCNode->Next    = NULL;
-                 
-                if (AcpiGbl_RegCommentListHead==NULL)
-                {
-                    AcpiGbl_RegCommentListHead 
-                     = AcpiGbl_RegCommentListTail 
-                     = NewCNode;
-                }
-                else
-                {
-                    AcpiGbl_RegCommentListTail->Next 
-                     = NewCNode;
-                    AcpiGbl_RegCommentListTail 
-                     = AcpiGbl_RegCommentListTail->Next;
-                }
+                    NewCNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    NewCNode->Next    = NULL;
+                     
+                    if (AcpiGbl_RegCommentListHead==NULL)
+                    {
+                        AcpiGbl_RegCommentListHead 
+                         = AcpiGbl_RegCommentListTail 
+                         = NewCNode;
+                    }
+                    else
+                    {
+                        AcpiGbl_RegCommentListTail->Next 
+                         = NewCNode;
+                        AcpiGbl_RegCommentListTail 
+                         = AcpiGbl_RegCommentListTail->Next;
+                    }
 
-            break;
+                break;
 
-            case 2:
-                printf("found inline comment.\n");
-                debug = AcpiGbl_CurrentInlineComment;          
-                AcpiGbl_CurrentInlineComment = ACPI_CAST_PTR (char, ParserState->Aml);
-                if (debug!=NULL)
-                {
-                    printf("CAUTION: switching %s with %s for inline comments!\n", debug, AcpiGbl_CurrentInlineComment);
-                }
+                case 2:
+                    printf("found inline comment.\n");
+                    debug = AcpiGbl_CurrentInlineComment;          
+                    AcpiGbl_CurrentInlineComment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    if (debug!=NULL)
+                    {
+                        printf("CAUTION: switching %s with %s for inline comments!\n", debug, AcpiGbl_CurrentInlineComment);
+                    }
         
-            break;
+                break;
 
-            case 3:
-                printf("found EndNode comment.\n");
-                debug = AcpiGbl_CurrentEndNodeComment;
-                AcpiGbl_CurrentEndNodeComment = ACPI_CAST_PTR (char, ParserState->Aml);
-                if (debug!=NULL)
-                {
-                    printf("CAUTION: switching %s with %s for inline comments\n", debug, AcpiGbl_CurrentEndNodeComment);
-                }
+                case 3:
+                    printf("found EndNode comment.\n");
+                    debug = AcpiGbl_CurrentEndNodeComment;
+                    AcpiGbl_CurrentEndNodeComment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    if (debug!=NULL)
+                    {
+                        printf("CAUTION: switching %s with %s for inline comments\n", debug, AcpiGbl_CurrentEndNodeComment);
+                    }
             
-            break;
+                break;
 
-            case 4:
-                printf("found open brace comment.\n");
-                debug = AcpiGbl_CurrentOpenBraceComment;
-                AcpiGbl_CurrentOpenBraceComment = ACPI_CAST_PTR (char, ParserState->Aml);
-                if (debug!=NULL)
-                {
-                    printf("CAUTION: switching %s with %s for inline comments\n", debug, AcpiGbl_CurrentOpenBraceComment);
-                }
+                case 4:
+                    printf("found open brace comment.\n");
+                    debug = AcpiGbl_CurrentOpenBraceComment;
+                    AcpiGbl_CurrentOpenBraceComment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    if (debug!=NULL)
+                    {
+                        printf("CAUTION: switching %s with %s for inline comments\n", debug, AcpiGbl_CurrentOpenBraceComment);
+                    }
             
-            break;
+                break;
 
-            case 5:
-                printf("found close brace comment.\n");
-                debug = AcpiGbl_CurrentCloseBraceComment;
-                AcpiGbl_CurrentCloseBraceComment = ACPI_CAST_PTR (char, ParserState->Aml);
-                if (debug!=NULL)
-                {
-                    printf("CAUTION: switching %s with %s for inline comments\n", debug, AcpiGbl_CurrentCloseBraceComment);
-                }
+                case 5:
+                    printf("found close brace comment.\n");
+                    debug = AcpiGbl_CurrentCloseBraceComment;
+                    AcpiGbl_CurrentCloseBraceComment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    if (debug!=NULL)
+                    {
+                        printf("CAUTION: switching %s with %s for inline comments\n", debug, AcpiGbl_CurrentCloseBraceComment);
+                    }
             
-            break;        
+                break;        
 
-            default:
-            break;
-        }
+                default:
+                break;
+            } /* end switch statement */
 
-        Length = 0;
-        while (ParserState->Aml[Length])
-        {
-            Length++;
-        }
-        ParserState->Aml += Length + 1;
+            Length = 0;
+            while (ParserState->Aml[Length])
+            {
+                Length++;
+            }
+	} /* end else */
 
         // Peek at the next Opcode.
+
+        ParserState->Aml += Length + 1;
         Aml = ParserState->Aml;
         Opcode = (UINT16) ACPI_GET8 (Aml);
 

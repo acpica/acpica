@@ -227,6 +227,18 @@ AcpiUtCreateCaches (
         return (Status);
     }
 
+    /* For use with the -q option. This cache keeps track of the starting
+     * addresses of where the comments lie. This helps prevent duplication
+     * of comments.
+     */  
+
+    Status = AcpiOsCreateCache ("Acpi-Comment-Addr", sizeof (ACPI_COMMENT_ADDR_NODE),
+        ACPI_MAX_COMMENT_CACHE_DEPTH, &AcpiGbl_CommentAddrCache);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
 
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
@@ -297,6 +309,11 @@ AcpiUtDeleteCaches (
     // -q option
     (void) AcpiOsDeleteCache (AcpiGbl_RegCommentCache);
     AcpiGbl_RegCommentCache = NULL;
+
+    // -q option
+    (void) AcpiOsDeleteCache (AcpiGbl_CommentAddrCache);
+    AcpiGbl_CommentAddrCache = NULL;
+
 
 
 

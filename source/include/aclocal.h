@@ -1026,6 +1026,12 @@ typedef struct acpi_comment_list_node
   struct acpi_comment_list_node            *Next;
 } ACPI_COMMENT_LIST_NODE;
 
+typedef struct acpi_comment_addr_node
+{
+  UINT8                                    *Addr;
+  struct acpi_comment_addr_node            *Next;
+} ACPI_COMMENT_ADDR_NODE;
+
 
 /*
  * Generic operation (for example:  If, While, Store)

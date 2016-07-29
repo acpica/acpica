@@ -436,6 +436,10 @@ AcpiPsShow (
 /*
  * Specific to the -q option of iAsl
  */
+BOOLEAN
+AcpiPsCommentExists (
+    UINT8                    *toCheck);
+
 void
 AcpiPsCaptureJustComments (
     ACPI_PARSE_STATE         *ParserState);
@@ -443,7 +447,7 @@ AcpiPsCaptureJustComments (
 
 void
 AcpiPsCaptureComments (
-    ACPI_WALK_STATE         *WalkState);
+    ACPI_WALK_STATE          *WalkState);
 
 void
 AcpiPsTransferComments (
