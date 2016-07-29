@@ -352,16 +352,18 @@ AcpiPsCaptureJustComments (
                 break;
             } /* end switch statement */
 
+            /* determine the length and move forward that amount */
             Length = 0;
             while (ParserState->Aml[Length])
             {
                 Length++;
             }
+
+            ParserState->Aml += Length + 1;
 	} /* end else */
 
         // Peek at the next Opcode.
 
-        ParserState->Aml += Length + 1;
         Aml = ParserState->Aml;
         Opcode = (UINT16) ACPI_GET8 (Aml);
 
