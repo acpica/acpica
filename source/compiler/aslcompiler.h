@@ -983,7 +983,7 @@ LkFindUnreferencedObjects (
     void);
 
 /*
- * aslmain - startup
+ * aslhelp - help screens
  */
 void
 Usage (

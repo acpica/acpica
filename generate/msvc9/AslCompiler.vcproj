@@ -1043,6 +1043,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\compiler\aslhelp.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\compiler\aslhex.c"
 					>
 				</File>

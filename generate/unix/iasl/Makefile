@@ -62,6 +62,7 @@ OBJECTS = \
 	$(OBJDIR)/aslfiles.o\
 	$(OBJDIR)/aslfileio.o\
 	$(OBJDIR)/aslfold.o\
+	$(OBJDIR)/aslhelp.o\
 	$(OBJDIR)/aslhex.o\
 	$(OBJDIR)/asllength.o\
 	$(OBJDIR)/asllisting.o\
