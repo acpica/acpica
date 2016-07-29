@@ -981,6 +981,13 @@ AcpiFinishGpe (
 
 ACPI_HW_DEPENDENT_RETURN_STATUS (
 ACPI_STATUS
+AcpiMaskGpe (
+    ACPI_HANDLE             GpeDevice,
+    UINT32                  GpeNumber,
+    BOOLEAN                 IsMasked))
+
+ACPI_HW_DEPENDENT_RETURN_STATUS (
+ACPI_STATUS
 AcpiMarkGpeForWake (
     ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber))
