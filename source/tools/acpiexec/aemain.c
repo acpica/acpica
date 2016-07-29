@@ -729,11 +729,13 @@ EnterDebugger:
     /* Shut down the debugger and ACPICA */
 
 #if 0
+
     /* Temporarily removed */
     AcpiTerminateDebugger ();
     Status = AcpiTerminate ();
 #endif
 
+    Status = AcpiOsTerminate ();
     return (0);
 
 
