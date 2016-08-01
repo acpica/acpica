@@ -263,11 +263,6 @@ AcpiPsCaptureJustComments (
         if (AcpiPsCommentExists(Aml))
         {
             printf("Avoiding capturing an existing comment.\n");
-            while (ParserState->Aml[Length])
-            {
-                Length++;
-            }
-            ParserState->Aml += Length + 1;
         }
         else
         {
@@ -352,15 +347,17 @@ AcpiPsCaptureJustComments (
                 break;
             } /* end switch statement */
 
-            /* determine the length and move forward that amount */
-            Length = 0;
-            while (ParserState->Aml[Length])
-            {
-                Length++;
-            }
-
-            ParserState->Aml += Length + 1;
 	} /* end else */
+
+        /* determine the length and move forward that amount */
+        Length = 0;
+        while (ParserState->Aml[Length])
+        {
+            Length++;
+        }
+
+        ParserState->Aml += Length + 1;
+
 
         // Peek at the next Opcode.
 

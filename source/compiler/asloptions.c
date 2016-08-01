@@ -278,6 +278,18 @@ AslDoOptions (
 
         switch (AcpiGbl_Optarg[0])
         {
+
+        case 'c':
+
+            printf ("Debug ASL to ASL+ conversion\n");
+            Gbl_FoldConstants = FALSE;
+            Gbl_IntegerOptimizationFlag = FALSE;
+            Gbl_ReferenceOptimizationFlag = FALSE;
+            Gbl_OptimizeTrivialParseNodes = FALSE;
+            Gbl_CaptureComments = TRUE;
+
+            return (-1);
+
         case 'f':
 
             AslCompilerdebug = 1; /* same as yydebug */
@@ -329,6 +341,19 @@ AslDoOptions (
 
         switch (AcpiGbl_Optarg[0])
         {
+
+        case 'a':
+
+            printf ("Convert ASL to ASL+ with comments\n");
+            Gbl_DoAslConversion = TRUE;
+            Gbl_FoldConstants = FALSE;
+            Gbl_IntegerOptimizationFlag = FALSE;
+            Gbl_ReferenceOptimizationFlag = FALSE;
+            Gbl_OptimizeTrivialParseNodes = FALSE;
+            Gbl_CaptureComments = TRUE;
+
+            return (0);
+
         case 'r':
 
             Gbl_NoResourceChecking = TRUE;

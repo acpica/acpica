@@ -176,6 +176,9 @@ Usage (
     ACPI_OPTION ("-vo",             "Enable optimization comments");
     ACPI_OPTION ("-vs",             "Disable signon");
     ACPI_OPTION ("-q",              "Emit ASL+ code (with C-style operators) while retaining comments");
+    ACPI_OPTION ("-ca <file>",      "Convert legacy ASL code to ASL+");
+    ACPI_OPTION ("-bc <file>",      "Create intermediate debug file for ASL+ conversion");
+ 
 
     printf ("\nHelp:\n");
     ACPI_OPTION ("-h",              "This message");
@@ -252,6 +255,8 @@ Usage (
     ACPI_OPTION ("-oc",             "Display compile times and statistics");
     ACPI_OPTION ("-x <level>",      "Set debug level for trace output");
     ACPI_OPTION ("-z",              "Do not insert new compiler ID for DataTables");
+
+
 }
 
 

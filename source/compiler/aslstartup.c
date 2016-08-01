@@ -527,6 +527,20 @@ AslDoOneFile (
 
         AeClearErrorLog ();
         PrTerminatePreprocessor ();
+
+        /* ASL-to-ASL+ conversion - Perform immediate disassembly */
+
+        if (Gbl_DoAslConversion)
+        {
+            /* New input file is the output AML file from above */
+
+            Gbl_Files[ASL_FILE_INPUT].Filename =
+                Gbl_Files[ASL_FILE_AML_OUTPUT].Filename;
+
+            fprintf (stderr, "\n");
+            AslDoDisassembly ();
+        }
+
         return (AE_OK);
 
     /*

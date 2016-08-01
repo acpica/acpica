@@ -872,7 +872,11 @@ CmCleanupAndExit (
 
     /* Final cleanup after compiling one file */
 
-    CmDeleteCaches ();
+    if (!Gbl_DoAslConversion)
+    {
+        CmDeleteCaches ();
+    }
+
 }
 
 
