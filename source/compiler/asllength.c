@@ -194,40 +194,37 @@ LnPackageLengthWalk (
     UINT32                  Level,
     void                    *Context)
 {
-    UINT32                  CommentLength;
+    UINT32                  CommentLength; 
     UINT32                  TotalCommentLength;
-    ACPI_COMMENT_LIST_NODE  *current = 0;
+    ACPI_COMMENT_LIST_NODE  *Current = 0;
 
     CgGenerateAmlLengths (Op);
 
    /* Bubble up all lengths (this node and all below it) to the parent */
 
-    if ((Op->Asl.Parent) &&
-        (Op->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG))
-    {
+    TotalCommentLength = 0;
 
+    if ((Op->Asl.Parent) && (Op->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG))
+    {
         /* 
          * For the -ca option: calculate the length that the comment takes up.
          * Comments look like the follwoing: [0xA9 OptionBtye comment 0x00]
          * therefore, we add 1 + 1 + strlen (comment) + 1 to get the actual 
          * length of this comment.
          */
- 
-        TotalCommentLength = 0;
         if (Gbl_CaptureComments)
         {
-
             printf ("====================Calculating comment lengths for %s====================\n",  Op->Asl.ParseOpName);
             if (Op->Asl.CommentList!=NULL)
             {
-                current = Op->Asl.CommentList; 
-                while (current!=0)
+                Current = Op->Asl.CommentList; 
+                while (Current!=0)
                 {
-                    CommentLength = strlen (current->Comment)+3;
+                    CommentLength = strlen (Current->Comment)+3;
                     printf ("Length of standard comment +3 (including space for 0xA9 0x01 and 0x00): %d\n", CommentLength);
-                    printf ("**********Comment string: %s\n\n", current->Comment);
+                    printf ("**********Comment string: %s\n\n", Current->Comment);
                     TotalCommentLength += CommentLength;
-                    current = current->Next;
+                    Current = Current->Next;
                 }
             }
 
@@ -274,6 +271,7 @@ LnPackageLengthWalk (
             TotalCommentLength
         );
     }
+
     return (AE_OK);
 }
 

@@ -306,7 +306,12 @@ CgLocalWriteAmlData (
  *
  * RETURN:      None
  *
- * DESCRIPTION: For -ca: write all comments pertaining to the current parse op
+ * DESCRIPTION: For -ca: write all comments for a particular definition block.
+ *              For definition blocks, the comments need to come after the 
+ *              definition block header. The regular comments above the 
+ *              definition block would be categorized as 
+ *              STD_DEFBLK_COMMENT_OPTION and comments after the closing brace
+ *              is categorized as END_DEFBLK_COMMENT_OPTION.
  *
  ******************************************************************************/
 
@@ -317,7 +322,41 @@ CgWriteAmlDefBlockComment(
     UINT8                   CommentOpcode;
     ACPI_COMMENT_LIST_NODE  *Current;
 
-    /* in progress */
+
+    if (Op->Asl.ParseOpcode != PARSEOP_DEFINITION_BLOCK)
+    {
+        return;
+    }
+
+    CommentOpcode = (UINT8)AML_COMMENT_OP;
+    Current = Op->Asl.CommentList;
+
+    printf ("Printing comments for a definition block..\n");
+    while (Current)
+    {
+        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+        CgLocalWriteAmlData (Op, &STD_DEFBLK_COMMENT_OPTION, 1);
+
+        /* +1 is what emits the 0x00 at the end of this opcode. */
+
+        CgLocalWriteAmlData (Op, Current->Comment, strlen (Current->Comment) + 1); 
+        printf ("Printing comment: %s.\n", Current->Comment);
+        Current = Current->Next;
+    }
+    Op->Asl.CommentList = NULL;
+        
+    /* print any Inline comments associated with this node */
+
+    if (Op->Asl.CloseBraceComment)
+    {
+        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+        CgLocalWriteAmlData (Op, &END_DEFBLK_COMMENT_OPTION, 1);
+
+        /* +1 is what emits the 0x00 at the end of this opcode. */
+
+        CgLocalWriteAmlData (Op, Op->Asl.CloseBraceComment, strlen (Op->Asl.CloseBraceComment) + 1); 
+        Op->Asl.CloseBraceComment = NULL;
+    }
 }
 
 
@@ -609,6 +648,8 @@ CgWriteTableHeader (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_PARSE_OBJECT       *Child;
+    UINT32                  CommentLength;
+    ACPI_COMMENT_LIST_NODE  *Current;
 
 
     /* AML filename */
@@ -659,6 +700,34 @@ CgWriteTableHeader (
 
     TableHeader.Length = sizeof (ACPI_TABLE_HEADER) +
         Op->Asl.AmlSubtreeLength;
+
+    /* Calculate the comment lengths for this definition block */
+
+    if (Gbl_CaptureComments)
+    {
+        printf ("====================Calculating comment lengths for %s====================\n",  Op->Asl.ParseOpName);
+        if (Op->Asl.CommentList!=NULL)
+        {
+            Current = Op->Asl.CommentList; 
+            while (Current!=0)
+            {
+                CommentLength = strlen (Current->Comment)+3;
+                printf ("Length of standard comment +3 (including space for 0xA9 0x01 and 0x00): %d\n", CommentLength);
+                printf ("**********Comment string: %s\n\n", Current->Comment);
+                TableHeader.Length += CommentLength;
+                Current = Current->Next;
+            }
+        }
+
+        if (Op->Asl.CloseBraceComment!=NULL)
+        {
+            CommentLength = strlen (Op->Asl.CloseBraceComment)+3;
+            printf ("Length of inline comment +3 (including space for 0xA9 0x02 and 0x00): %d\n", CommentLength);
+            printf ("**********Comment string: %s\n\n", Op->Asl.CloseBraceComment);
+            TableHeader.Length += CommentLength;
+        }
+    }
+
     TableHeader.Checksum = 0;
 
     Op->Asl.FinalAmlOffset = ftell (Gbl_Files[ASL_FILE_AML_OUTPUT].Handle);
@@ -685,13 +754,13 @@ CgWriteTableHeader (
 
 static void
 CgUpdateHeader (
-    ACPI_PARSE_OBJECT   *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    signed char         Sum;
-    UINT32              i;
-    UINT32              Length;
-    UINT8               FileByte;
-    UINT8               Checksum;
+    signed char             Sum;
+    UINT32                  i;
+    UINT32                  Length;
+    UINT8                   FileByte;
+    UINT8                   Checksum;
 
 
     /* Calculate the checksum over the entire definition block */
@@ -699,7 +768,6 @@ CgUpdateHeader (
     Sum = 0;
     Length = sizeof (ACPI_TABLE_HEADER) + Op->Asl.AmlSubtreeLength;
     FlSeekFile (ASL_FILE_AML_OUTPUT, Op->Asl.FinalAmlOffset);
-
     for (i = 0; i < Length; i++)
     {
         if (FlReadFile (ASL_FILE_AML_OUTPUT, &FileByte, 1) != AE_OK)
@@ -840,6 +908,7 @@ CgWriteNode (
     case PARSEOP_DEFINITION_BLOCK:
 
         CgWriteTableHeader (Op);
+        CgWriteAmlDefBlockComment (Op);
         break;
 
     case PARSEOP_NAMESEG:
