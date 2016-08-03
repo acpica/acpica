@@ -168,7 +168,6 @@ AcpiDmOpenBraceWriteComment(
     ACPI_PARSE_OBJECT       *Op);
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDmDisassemble
@@ -486,11 +485,10 @@ AcpiDmListType (
 
 static void
 AcpiDmCloseBraceWriteComment(
-    ACPI_PARSE_OBJECT     *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     AcpiOsPrintf ("}");
 /*
-
     AcpiOsPrintf ("CLOSE BRACE ");
     AcpiOsPrintf ("Op code: %d ", Op->Common.AmlOpcode);
     AcpiOsPrintf ("Op name: %s\n", Op->Common.AmlOpName);
@@ -517,11 +515,11 @@ AcpiDmCloseBraceWriteComment(
 
 static void
 AcpiDmOpenBraceWriteComment(
-    ACPI_PARSE_OBJECT     *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     AcpiOsPrintf ("{ ");
 
-//    AcpiOsPrintf ("OPEN BRACE ");
+/*    AcpiOsPrintf ("OPEN BRACE "); */
    if ((Op->Common.Parent!=NULL) && (Op->Common.Parent->Common.OpenBraceComment!=NULL))
    {
 /*
@@ -548,10 +546,9 @@ AcpiDmOpenBraceWriteComment(
 
 static void
 AcpiDmCloseParenWriteComment(
-    ACPI_PARSE_OBJECT     *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     AcpiOsPrintf (")");
-
 /*
     AcpiOsPrintf ("CLOSE PAREN ");
     AcpiOsPrintf ("Op code: %d ", Op->Common.AmlOpcode);
@@ -566,7 +563,6 @@ AcpiDmCloseParenWriteComment(
     {
         AcpiOsPrintf ("%s", Op->Common.Parent->Common.EndNodeComment);
         Op->Common.Parent->Common.EndNodeComment = NULL;
-       
     }
 } 
 
@@ -595,13 +591,14 @@ AcpiDmDescendingOp (
     ACPI_PARSE_OBJECT       *NextOp;
     ACPI_PARSE_OBJECT       *NextOp2;
     UINT32                  AmlOffset;
-    struct acpi_comment_list_node *Current = Op->Common.CommentList;
+    ACPI_COMMENT_LIST_NODE *Current = Op->Common.CommentList;
     
 
-//    AcpiOsPrintf (" [HDW]");
+/*    AcpiOsPrintf (" [HDW]"); */
 
 
-    // If this parse node has regular comments, print them now.
+    /* If this parse node has regular comments, print them here. */
+
     while (Current)
     {
         
@@ -1078,14 +1075,14 @@ AcpiDmDescendingOp (
             //AcpiOsPrintf ("{\n");
         }
     }
+
    /* 
     if (Op->Common.InlineComment)
     {
         AcpiOsPrintf ("%s",Op->Common.InlineComment);
         Op->Common.InlineComment = NULL;
-    }   
-*/
-    //AcpiOsPrintf (" [hello descending world]");
+    }   */
+    /*AcpiOsPrintf (" [hello descending world]");*/
 
     return (AE_OK);
 }
@@ -1114,7 +1111,8 @@ AcpiDmAscendingOp (
     ACPI_PARSE_OBJECT       *ParentOp;
 
 
-    //AcpiOsPrintf (" [HAW]");
+    /* AcpiOsPrintf (" [HAW]"); */
+
     if (Op->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)
     {
         /* Ignore this op -- it was handled elsewhere */
@@ -1128,7 +1126,6 @@ AcpiDmAscendingOp (
  
         AcpiDmCloseBraceWriteComment(Op);
         AcpiOsPrintf ("\n\n");
-        //AcpiOsPrintf ("}\n\n");
         return (AE_OK);
     }
 
@@ -1163,8 +1160,6 @@ AcpiDmAscendingOp (
         AcpiDmDisplayTargetPathname (Op);
 
         /* Could be a nested operator, check if comma required */
-
-//add comments here rather than AcpiDm_CloseOperator?
 
         if (!AcpiDmCommaIfListMember (Op))
         {
@@ -1285,8 +1280,6 @@ AcpiDmAscendingOp (
         if (Op->Common.Next)
         {
             AcpiDmCloseParenWriteComment(Op);
-            //AcpiOsPrintf("???");
-            
 
             /*
              * Emit a description comment for a Name() operator that is a
@@ -1303,7 +1296,6 @@ AcpiDmAscendingOp (
             AcpiDmIndent (Level - 1);
             AcpiDmOpenBraceWriteComment(Op);
             AcpiOsPrintf ("\n");
-            //AcpiOsPrintf ("{\n");
         }
         else
         {
@@ -1332,8 +1324,6 @@ AcpiDmAscendingOp (
             Op->Asl.OperatorSymbol = NULL;
         }
     }
-
-
-    //AcpiOsPrintf (" [hello ascending world]");
+    /*AcpiOsPrintf (" [hello ascending world]");*/
     return (AE_OK);
 }

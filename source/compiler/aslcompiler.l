@@ -183,8 +183,8 @@ NamePathTail                [.]{NameSeg}
 [ \t]                       { count (0); }
 
 
-"/*"                        { if(!AslDoComment ()){ yyterminate ();} }
-"//"                        { if(!AslDoCommentType2 ()){ yyterminate ();} }
+"/*"                        { if (!AslDoComment ()) {yyterminate ();} }
+"//"                        { if (!AslDoCommentType2 ()) {yyterminate ();} }
 
 "\""                        { if (AslDoStringLiteral ()) {return (PARSEOP_STRING_LITERAL);}
                               else {yyterminate ();} }

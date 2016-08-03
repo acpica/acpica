@@ -611,9 +611,7 @@ AcpiPsGetNextField (
 
     ACPI_FUNCTION_TRACE (PsGetNextField);
 
-
-
-    AcpiPsCaptureJustComments(ParserState);
+    AcpiPsCaptureJustComments (ParserState);
     Aml = ParserState->Aml;
 
     /* Determine field type */
@@ -660,7 +658,7 @@ AcpiPsGetNextField (
 
     /* Decode the field type */
 
-    AcpiPsCaptureJustComments(ParserState);
+    AcpiPsCaptureJustComments (ParserState);
     switch (Opcode)
     {
     case AML_INT_NAMEDFIELD_OP:
@@ -672,7 +670,7 @@ AcpiPsGetNextField (
         ParserState->Aml += ACPI_NAME_SIZE;
 
 
-        AcpiPsCaptureJustComments(ParserState);
+        AcpiPsCaptureJustComments (ParserState);
 
         /* because the package length isn't represented as a parse tree object,
          * take comments surrounding this and add to the previously created parse node.
@@ -683,13 +681,9 @@ AcpiPsGetNextField (
         }
         Field->Common.InlineComment  = AcpiGbl_CurrentInlineComment;
         AcpiGbl_CurrentInlineComment = NULL;
-/*
-        if (AcpiGbl_RegCommentListHead)
-        {
 
-        }
- */
         /* Get the length which is encoded as a package length */
+
         Field->Common.Value.Size = AcpiPsGetNextPackageLength (ParserState);
         break;
 
@@ -744,12 +738,12 @@ AcpiPsGetNextField (
         {
             ParserState->Aml++;
 
-            AcpiPsCaptureJustComments(ParserState);
+            AcpiPsCaptureJustComments (ParserState);
             PkgEnd = ParserState->Aml;
             PkgLength = AcpiPsGetNextPackageLength (ParserState);
             PkgEnd += PkgLength;
 
-            AcpiPsCaptureJustComments(ParserState);
+            AcpiPsCaptureJustComments (ParserState);
             if (ParserState->Aml < PkgEnd)
             {
                 /* Non-empty list */
@@ -766,7 +760,7 @@ AcpiPsGetNextField (
                 Opcode = ACPI_GET8 (ParserState->Aml);
                 ParserState->Aml++;
 
-                AcpiPsCaptureJustComments(ParserState);
+                AcpiPsCaptureJustComments (ParserState);
                 switch (Opcode)
                 {
                 case AML_BYTE_OP:       /* AML_BYTEDATA_ARG */
@@ -795,7 +789,7 @@ AcpiPsGetNextField (
 
                 /* Fill in bytelist data */
 
-                AcpiPsCaptureJustComments(ParserState);
+                AcpiPsCaptureJustComments (ParserState);
                 Arg->Named.Value.Size = BufferLength;
                 Arg->Named.Data = ParserState->Aml;
             }
@@ -840,8 +834,8 @@ AcpiPsGetNextField (
  *
  * PARAMETERS:  WalkState           - Current state
  *              ParserState         - Current parser state object
- *              argtype             - the argument type (aml_*_arg)
- *              returnarg           - where the next arg is returned
+ *              Argtype             - The argument type (AML_*_ARG)
+ *              Returnarg           - Where the next arg is returned
  *
  * RETURN:      Status, and an op object containing the next argument.
  *
@@ -866,9 +860,7 @@ AcpiPsGetNextArg (
 
     ACPI_FUNCTION_TRACE_PTR (PsGetNextArg, ParserState);
 
-    printf("AcpiPsGetNextArg!!!!!!!!!!\n");
-
-    //AcpiPsCaptureComments(WalkState);
+    printf ("AcpiPsGetNextArg\n");
 
     switch (ArgType)
     {
@@ -878,7 +870,7 @@ AcpiPsGetNextArg (
     case ARGP_CHARLIST:
     case ARGP_NAME:
     case ARGP_NAMESTRING:
-    case ARGP_COMMENT:
+
         /* Constants, strings, and namestrings are all the same size */
 
         Arg = AcpiPsAllocOp (AML_BYTE_OP, ParserState->Aml);
@@ -889,8 +881,6 @@ AcpiPsGetNextArg (
 
         AcpiPsGetNextSimpleArg (ParserState, ArgType, Arg);
         break;
-
-        
 
     case ARGP_PKGLENGTH:
 

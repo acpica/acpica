@@ -172,9 +172,8 @@ AcpiPsInitOp (
 {
     ACPI_FUNCTION_ENTRY ();
 
+
     printf("InitOp: 0x%x\n", Opcode);
-
-
     Op->Common.DescriptorType = ACPI_DESC_TYPE_PARSER;
     Op->Common.AmlOpcode = Opcode;
 
@@ -260,8 +259,7 @@ AcpiPsAllocOp (
         Op->Common.CloseBraceComment = NULL;
     }
 
-    AcpiPsTransferComments(Op); // transfer comments here.
-
+    AcpiPsTransferComments(Op); 
 
     return (Op);
 }
@@ -285,6 +283,7 @@ AcpiPsFreeOp (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_FUNCTION_NAME (PsFreeOp);
+
 
     Op->Common.InlineComment     = NULL;
     Op->Common.EndNodeComment    = NULL;

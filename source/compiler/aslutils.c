@@ -663,6 +663,7 @@ UtCheckIntegerRange (
     return (Op);
 }
 
+
 /*******************************************************************************
  *
  * FUNCTION:    UtStringCacheCalloc
@@ -747,14 +748,15 @@ UtStringCacheCalloc (
  *              major impact on the speed of the compiler.)
  *
  ******************************************************************************/
+
 struct acpi_comment_list_node*
 UtCommentNodeCalloc (
     void)
 {
-   struct acpi_comment_list_node* newCommentNode = 
-       (struct acpi_comment_list_node*) UtLocalCalloc (sizeof(ACPI_COMMENT_LIST_NODE));
-   newCommentNode->Next = 0;
-   return newCommentNode;
+   ACPI_COMMENT_LIST_NODE *NewCommentNode = 
+       (ACPI_COMMENT_LIST_NODE*) UtLocalCalloc (sizeof(ACPI_COMMENT_LIST_NODE));
+   NewCommentNode->Next = 0;
+   return NewCommentNode;
 }
 
 

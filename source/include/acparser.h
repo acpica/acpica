@@ -263,7 +263,6 @@ UINT32
 AcpiPsGetOpcodeSize (
     UINT32                  Opcode);
 
-
 UINT16
 AcpiPsPeekOpcode (
     ACPI_PARSE_STATE        *state);
@@ -433,6 +432,7 @@ void
 AcpiPsShow (
     ACPI_PARSE_OBJECT       *op);
 
+
 /*
  * Specific to the -q option of iAsl
  */
@@ -443,7 +443,6 @@ AcpiPsCommentExists (
 void
 AcpiPsCaptureJustComments (
     ACPI_PARSE_STATE         *ParserState);
-
 
 void
 AcpiPsCaptureComments (

@@ -711,6 +711,7 @@ AslDoOptions (
         UtConvertBackslashes (Gbl_OutputFilenamePrefix);
         Gbl_UseDefaultAmlFilename = FALSE;
         break;
+
     case 'q':  /* Convert input file into asl+ syntax */ 
 
         Gbl_FoldConstants = FALSE;

@@ -534,6 +534,7 @@ String
     : PARSEOP_STRING_LITERAL        {$$ = TrCreateValuedLeafNode (PARSEOP_STRING_LITERAL, (ACPI_NATIVE_INT) AslCompilerlval.s);}
     ;
 
+
 /*******************************************************************************
  *
  * ASL Opcode Terms

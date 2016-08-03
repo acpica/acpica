@@ -492,8 +492,6 @@ AdDisassembleOneTable (
      * 1) Convert fixed-offset references to resource descriptors
      *    to symbolic references (Note: modifies namespace)
      */
-
-
     AcpiDmConvertResourceIndexes (AcpiGbl_ParseOpRoot, AcpiGbl_RootNode);
 
     /* Optional displays */

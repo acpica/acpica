@@ -144,28 +144,22 @@ ASL_FILE_NODE               *Gbl_IncludeFileStack = NULL;
 
 /* Definitions for comment state */
 
-#define ASL_RegComment        1
-#define ASL_InlineComment     2
-#define ASL_OpenParenComment  3
-#define ASL_CloseParenComment 4
-#define ASL_OpenBraceComment  5
-#define ASL_CloseBraceComment 6
+#define ASL_REGCOMMENT        1
+#define ASL_INLINECOMMENT     2
+#define ASL_OPENPARENCOMMENT  3
+#define ASL_CLOSEPARENCOMMENT 4
+#define ASL_OPENBRACECOMMENT  5
+#define ASL_CLOSEBRACECOMMENT 6
 
 /* Definitions for comment table entry */
 
-#define ASL_Newline    '\n'
+#define ASL_NEWLINE    '\n'
 #define ASL_OpenParen  '('
-#define ASL_CloseParen ')'
-#define ASL_Comma      ','
-#define ASL_OpenBrace  '{'
-#define ASL_CloseBrace '}'
-#define ASL_Whitespace ' '
-
-
-
-
-
-
+#define ASL_CLOSEPAREN ')'
+#define ASL_COMMA      ','
+#define ASL_OPENBRACE  '{'
+#define ASL_CLOSEBRACE '}'
+#define ASL_WHITESPACE ' '
 
 
 /*******************************************************************************
@@ -184,7 +178,7 @@ ASL_FILE_NODE               *Gbl_IncludeFileStack = NULL;
 
 void
 AslProcessCommentState (
-    char input)
+    char                    input)
 {
 
     if (input == ' ')
@@ -198,53 +192,52 @@ AslProcessCommentState (
 
     switch (input)
     {
-        case ASL_Newline:
-            Gbl_CommentState.CommentType = ASL_RegComment;
+        case ASL_NEWLINE:
+
+            Gbl_CommentState.CommentType = ASL_REGCOMMENT;
             break;
 
-        case ASL_Whitespace: // don't chane states on white space
+        case ASL_WHITESPACE: 
+
             break;
 
         case ASL_OpenParen:
-            Gbl_CommentState.CommentType = ASL_OpenParenComment;
+
+            Gbl_CommentState.CommentType = ASL_OPENPARENCOMMENT;
             break;
 
-        case ASL_CloseParen:
-            Gbl_CommentState.CommentType = ASL_CloseParenComment;
+        case ASL_CLOSEPAREN:
+
+            Gbl_CommentState.CommentType = ASL_CLOSEPARENCOMMENT;
             break;
 
-        case ASL_OpenBrace:
+        case ASL_OPENBRACE:
 
-            Gbl_CommentState.CommentType = ASL_RegComment;
+            Gbl_CommentState.CommentType = ASL_REGCOMMENT;
             Gbl_CommentState.ParsingParenBraceNode = NULL;
-
-            printf("========================================================End Parsing paren/Brace node!\n");
-
-            //Gbl_CommentState.CommentType = ASL_OpenBraceComment;
+            printf ("========================================================End Parsing paren/Brace node!\n");
             break;
 
-        case ASL_CloseBrace:
+        case ASL_CLOSEBRACE:
             
-            Gbl_CommentState.CommentType = ASL_CloseBraceComment;
+            Gbl_CommentState.CommentType = ASL_CLOSEBRACECOMMENT;
             break;
 
-        case ASL_Comma:
-            Gbl_CommentState.CommentType = ASL_InlineComment;
+        case ASL_COMMA:
+
+            Gbl_CommentState.CommentType = ASL_INLINECOMMENT;
             break;
 
         default:
 
-            Gbl_CommentState.CommentType = ASL_InlineComment;
+            Gbl_CommentState.CommentType = ASL_INLINECOMMENT;
             break;
 
     }
 
-    printf("Comment type set to %d after processing the character %c\n", Gbl_CommentState.CommentType, input);
+    printf ("Comment type set to %d after processing the character %c\n", Gbl_CommentState.CommentType, input);
     
 }
-
-
-
 
 
 /*******************************************************************************
@@ -499,12 +492,6 @@ AslResetCurrentLineBuffer (
     Gbl_CurrentLineNumber++;
     Gbl_LogicalLineNumber++;
     Gbl_LineBufPtr = Gbl_CurrentLineBuffer;
-
-    /* this flag being false means that any inline comments will be
-     * set to the InlineComment field of the ACPI_PARSE_OJECT structure.
-     * This happens every time the line buffer resets.
-     */
-    Gbl_CurrentNodeComplete = FALSE;
 }
 
 
@@ -635,7 +622,7 @@ count (
 
 /*******************************************************************************
  *
- * FUNCTION:    addToCommentList
+ * FUNCTION:    AddToCommentList
  *
  * PARAMETERS:  toAdd              - Contains the comment to be inserted
  *
@@ -646,28 +633,28 @@ count (
  ******************************************************************************/
 
 static void
-addToCommentList (
-    char*            toAdd)
+AddToCommentList (
+    char*                   ToAdd)
 {
    if (Gbl_Comment_List_Head)
    {
-       Gbl_Comment_List_Tail->Next = UtCommentNodeCalloc();
+       Gbl_Comment_List_Tail->Next = UtCommentNodeCalloc ();
        Gbl_Comment_List_Tail = Gbl_Comment_List_Tail->Next;
    }
    else 
    {
-       Gbl_Comment_List_Head = UtCommentNodeCalloc();
+       Gbl_Comment_List_Head = UtCommentNodeCalloc ();
        Gbl_Comment_List_Tail = Gbl_Comment_List_Head;
    }
 
-   Gbl_Comment_List_Tail->Comment = toAdd;
+   Gbl_Comment_List_Tail->Comment = ToAdd;
    
    return;
 }
 
 /*******************************************************************************
  *
- * FUNCTION:    appendInlineComment
+ * FUNCTION:    AppendInlineComment
  *
  * PARAMETERS:  InlineComment      - Append to the end of this string.
  *              toAdd              - Contains the comment to be inserted
@@ -679,15 +666,15 @@ addToCommentList (
  ******************************************************************************/
 
 static char*
-appendInlineComment (
-    char                     *InlineComment,
-    char                     *ToAdd)
+AppendInlineComment (
+    char                    *InlineComment,
+    char                    *ToAdd)
 {
-    printf("Appending to current inline comment.\n");
+    printf ("Appending to current inline comment.\n");
 
     char*  Str  = NULL;
     UINT32 Size = 0;
-    if(InlineComment==NULL)
+    if (InlineComment==NULL)
     {
         return ToAdd;
     }
@@ -695,16 +682,16 @@ appendInlineComment (
 
     Size = strlen (InlineComment);
 
-    if(ToAdd!=NULL)
+    if (ToAdd != NULL)
     {
-        Size+= strlen (ToAdd);
+        Size += strlen (ToAdd);
     }
 
 
     Str = UtStringCacheCalloc (Size+1);
-    strcpy(Str, InlineComment);
-    strcat(Str, ToAdd);
-    Str[strlen(Str)] = 0; //null terminate
+    strcpy (Str, InlineComment);
+    strcat (Str, ToAdd);
+    Str[strlen (Str)] = 0; //null terminate
 
     return Str;
 }
@@ -727,54 +714,60 @@ appendInlineComment (
 
 void
 AslPlaceComment(
-    UINT8       Type,
-    char        *CommentString)
+    UINT8                   Type,
+    char                    *CommentString)
 {
    
-    printf("Placing comment %s for type %d\n", CommentString, Type);
+    printf ("Placing comment %s for type %d\n", CommentString, Type);
     switch (Type)
     {
-        case ASL_RegComment:
-            addToCommentList (CommentString);
+        case ASL_REGCOMMENT:
+
+            AddToCommentList (CommentString);
             break;
 
-        case ASL_InlineComment:
+        case ASL_INLINECOMMENT:
+
             Gbl_CommentState.Latest_Parse_Node->Asl.InlineComment = 
-                appendInlineComment(Gbl_CommentState.Latest_Parse_Node->Asl.InlineComment,
-                                    CommentString);
+                AppendInlineComment (Gbl_CommentState.Latest_Parse_Node->Asl.InlineComment,
+                CommentString);
             break;
 
-        case ASL_OpenParenComment:
+        case ASL_OPENPARENCOMMENT:
+
             Gbl_Inline_Comment_Buffer = 
-                appendInlineComment(Gbl_Inline_Comment_Buffer,
-                                    CommentString);
+                AppendInlineComment(Gbl_Inline_Comment_Buffer,
+                CommentString);
             break;
 
-        case ASL_CloseParenComment:
+        case ASL_CLOSEPARENCOMMENT:
            
             if (Gbl_CommentState.ParsingParenBraceNode !=NULL)
             {
                 Gbl_CommentState.ParsingParenBraceNode->Asl.EndNodeComment = 
-                    appendInlineComment(Gbl_CommentState.ParsingParenBraceNode->Asl.EndNodeComment,
-                                        CommentString);
+                    AppendInlineComment (Gbl_CommentState.ParsingParenBraceNode->Asl.EndNodeComment,
+                    CommentString);
             }
             else
             {
                 Gbl_CommentState.Latest_Parse_Node->Asl.EndNodeComment = 
-                    appendInlineComment(Gbl_CommentState.Latest_Parse_Node->Asl.EndNodeComment,
-                                        CommentString);
+                    AppendInlineComment (Gbl_CommentState.Latest_Parse_Node->Asl.EndNodeComment,
+                    CommentString);
             }
             break;
 
-        case ASL_OpenBraceComment:
+        case ASL_OPENBRACECOMMENT:
+
             Gbl_CommentState.ParsingParenBraceNode->Asl.OpenBraceComment = CommentString;
             break;
 
-        case ASL_CloseBraceComment:
+        case ASL_CLOSEBRACECOMMENT:
+
             Gbl_CommentState.Latest_Parse_Node->Asl.CloseBraceComment = CommentString;
             break;
 
         default:
+
             break;
 
     }
@@ -797,21 +790,19 @@ AslDoComment (
     void)
 {
 
-    char     *LineToken;
-    char     *FinalLineToken;
-    int      i;
-    BOOLEAN  CharStart;
+    char                    *LineToken;
+    char                    *FinalLineToken;
+    int                     i;
+    BOOLEAN                 CharStart;
+    int                     c;
+    int                     c1 = 0;
+    char                    *StringBuffer = MsgBuffer;
+    char                    *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
+    char                    *CommentString;
+    char                    *FinalCommentString;
+    ASL_COMMENT_STATE       CurrentState = Gbl_CommentState; //for reference
 
-    
-    int                           c;
-    int                           c1 = 0;
-    char                          *StringBuffer = MsgBuffer;
-    char                          *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
-    char                          *CommentString;
-    char                          *FinalCommentString;
-    struct asl_comment_state      CurrentState = Gbl_CommentState; //for reference
-
-    printf("Multi-line comment\n");
+    printf ("Multi-line comment\n");
 
     AslInsertLineBuffer ('/');
     *StringBuffer = '/';
@@ -857,7 +848,7 @@ loop:
 
     if (((c1 = input ()) != '/') && (c1 != EOF))
     {
-        unput(c1);
+        unput (c1);
         goto loop;
     }
 
@@ -865,7 +856,7 @@ loop:
     {
         goto EarlyEOF;
     }
-    if (StringBuffer>EndBuffer)
+    if (StringBuffer > EndBuffer)
     { 
         goto BufferOverflow;
     }
@@ -876,41 +867,44 @@ loop:
 
     *StringBuffer = 0; //null terminate this string
 
-    if(Gbl_CaptureComments)
+    if (Gbl_CaptureComments)
     {
         CommentString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
-        strcpy(CommentString, MsgBuffer);
+        strcpy (CommentString, MsgBuffer);
 
-         printf("CommentString: %s\n", CommentString);
+         printf ("CommentString: %s\n", CommentString);
 
-        /* Determine whether if this comment spans multiple lines.
+        /* 
+         * Determine whether if this comment spans multiple lines.
          * If so, break apart the comment by line so that it can be 
          * properly indented.
          */
-        if (strchr (CommentString, '\n')!=NULL)
+        if (strchr (CommentString, '\n') != NULL)
         {
-            /* Get the first token out. The for loop pads subsequent lines
+            /* 
+             * Get the first token out. The for loop pads subsequent lines
              * for comments similar to the style of this comment. 
              */
             LineToken = strtok (CommentString, "\n");
 
-            FinalLineToken = UtStringCacheCalloc (strlen (LineToken)+1);
-            strcpy(FinalLineToken, LineToken);
+            FinalLineToken = UtStringCacheCalloc (strlen (LineToken) + 1);
+            strcpy (FinalLineToken, LineToken);
             
-            addToCommentList (LineToken);
+            AddToCommentList (LineToken);
 
             LineToken = strtok (NULL, "\n");
-            while (LineToken!=NULL)
+            while (LineToken != NULL)
             {
-                /* It is assumed that each line has some sort of indentation.
+                /* 
+                 * It is assumed that each line has some sort of indentation.
                  * This means that we need to find the first character that is not
                  * a white space within each line. 
                  */
                     
                 CharStart = FALSE;
-                for (i=0; i<strlen(LineToken)+1 && !CharStart; i++)
+                for (i = 0; i < strlen (LineToken) + 1 && !CharStart; i++)
                 {
-                    if (LineToken[i]!=' ' && LineToken[i]!='\t')
+                    if (LineToken[i] != ' ' && LineToken[i] != '\t')
                     {
                         CharStart = TRUE;
                         LineToken += i-1;
@@ -918,32 +912,34 @@ loop:
                     }
                 }
 
-                    FinalLineToken = UtStringCacheCalloc (strlen (LineToken)+1);
-                    strcat(FinalLineToken, LineToken);
-                    addToCommentList (FinalLineToken);
-                    LineToken = strtok (NULL,"\n");
-                }
+                FinalLineToken = UtStringCacheCalloc (strlen (LineToken) + 1);
+                strcat (FinalLineToken, LineToken);
+                AddToCommentList (FinalLineToken);
+                LineToken = strtok (NULL,"\n");
+            }
         }
 
-        /* If this only spans a single line, check to see whether if this comment
+        /* 
+         * If this only spans a single line, check to see whether if this comment
          * appears on the same line as a line of code. If does, retain it's
          * position for stylistic reasons. If it doesn't, add it to the comment
 	 * List so that it can be associated with the next node that's created. 
 	 */
         else             
         {
-           /* if this is not a regular comment, pad with extra spaces that appeared 
+           /* 
+            * if this is not a regular comment, pad with extra spaces that appeared 
             * in the original source input to retain the original spacing.
             */
 
             FinalCommentString = UtStringCacheCalloc (strlen (CommentString) + CurrentState.SpacesBefore + 1);
-            for (i=0; (CurrentState.CommentType!=ASL_RegComment) && 
-                      (i<CurrentState.SpacesBefore); ++i)
+            for (i=0; (CurrentState.CommentType != ASL_REGCOMMENT) && 
+                (i < CurrentState.SpacesBefore); ++i)
             {
                  FinalCommentString[i] = ' ';
             }
-            strcat(FinalCommentString, CommentString);
-            AslPlaceComment(CurrentState.CommentType, FinalCommentString);    
+            strcat (FinalCommentString, CommentString);
+            AslPlaceComment (CurrentState.CommentType, FinalCommentString);    
         }
     }
     
@@ -994,15 +990,15 @@ static BOOLEAN
 AslDoCommentType2 (
     void)
 {
-    int                           c;
-    int                           i;
-    char                          *StringBuffer = MsgBuffer;
-    char                          *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
-    char                          *CommentString;
-    char                          *FinalCommentString;
-    struct asl_comment_state      CurrentState = Gbl_CommentState; //for reference
-    printf("Single-line comment\n");
+    int                     c;
+    int                     i;
+    char                    *StringBuffer = MsgBuffer;
+    char                    *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
+    char                    *CommentString;
+    char                    *FinalCommentString;
+    ASL_COMMENT_STATE       CurrentState = Gbl_CommentState; //for reference
 
+    printf("Single-line comment\n");
 
     AslInsertLineBuffer ('/');
     *StringBuffer = '/';
@@ -1025,7 +1021,7 @@ AslDoCommentType2 (
         c = '\n';
     }
 
-    if (StringBuffer>EndBuffer)
+    if (StringBuffer > EndBuffer)
     {
         goto BufferOverflow;       
     }
@@ -1035,11 +1031,11 @@ AslDoCommentType2 (
     AslInsertLineBuffer (c);
     *StringBuffer = 0; //null terminate this string
  
-    if(Gbl_CaptureComments)
+    if (Gbl_CaptureComments)
     {
 
         CommentString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
-        strcpy(CommentString, MsgBuffer);
+        strcpy (CommentString, MsgBuffer);
 
         /* If this comment lies on the same line as the latest parse node,
          * assign it to that node's CommentAfter field. Saving in this field
@@ -1059,8 +1055,6 @@ AslDoCommentType2 (
          * would be lexically analyzed as a single comment.
          *
          */
-
-
         /* Create a new string with the approperiate spaces. Since we need
          * to account for the proper spacing, the actual comment,
          * extra 2 spaces so that this comment can be converted to the "/ *"
@@ -1079,11 +1073,11 @@ AslDoCommentType2 (
         strcat(FinalCommentString, CommentString);
 
         // convert to a "/ *" style comment. disable this????
-//        strcat(FinalCommentString, " */");
+//        strcat (FinalCommentString, " */");
 //        FinalCommentString [SpaceCount + 1] = '*';
 
         FinalCommentString [CurrentState.SpacesBefore + strlen (CommentString) + 3] = 0;
-        if (FinalCommentString[strlen(FinalCommentString)-1] == 0x0D)
+        if (FinalCommentString[strlen (FinalCommentString) - 1] == 0x0D)
         {
             FinalCommentString[strlen(FinalCommentString)-1] = 0;  
         }
@@ -1131,7 +1125,6 @@ AslDoStringLiteral (
     UINT32              i = 0;
     UINT8               Digit;
     char                ConvertBuffer[4];
-
 
     /*
      * Eat chars until end-of-literal.
@@ -1352,8 +1345,6 @@ DoCharacter:
     /*
      * Premature End-Of-File
      */
-
-    printf ("Premature EOF in string literal fcn\n");
     AslCommonError (ASL_ERROR, ASL_MSG_EARLY_EOF,
         Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
         Gbl_CurrentLineOffset, Gbl_CurrentColumn,

@@ -194,12 +194,9 @@ LnPackageLengthWalk (
     UINT32                  Level,
     void                    *Context)
 {
-    /* Generate the AML lengths for this node */
-    UINT32 commentLength;
-    UINT32 TotalCommentLength;
-
-    // used for calculating comment lengths
-    struct acpi_comment_list_node *current = 0;
+    UINT32                  CommentLength;
+    UINT32                  TotalCommentLength;
+    ACPI_COMMENT_LIST_NODE  *current = 0;
 
     CgGenerateAmlLengths (Op);
 
@@ -209,10 +206,11 @@ LnPackageLengthWalk (
         (Op->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG))
     {
 
-        /* For the -q option: calculate the length that the comment takes up.
+        /* 
+         * For the -ca option: calculate the length that the comment takes up.
          * Comments look like the follwoing: [0xA9 OptionBtye comment 0x00]
-         * therefore, we add 1+1+strlen(comment)+1 to get the actual length of 
-         * this comment.
+         * therefore, we add 1 + 1 + strlen (comment) + 1 to get the actual 
+         * length of this comment.
          */
  
         TotalCommentLength = 0;
@@ -225,50 +223,48 @@ LnPackageLengthWalk (
                 current = Op->Asl.CommentList; 
                 while (current!=0)
                 {
-                    commentLength = strlen(current->Comment)+3;
-                    printf ("Length of standard comment +3 (including space for 0xA9 0x01 and 0x00): %d\n", commentLength);
+                    CommentLength = strlen (current->Comment)+3;
+                    printf ("Length of standard comment +3 (including space for 0xA9 0x01 and 0x00): %d\n", CommentLength);
                     printf ("**********Comment string: %s\n\n", current->Comment);
-                    TotalCommentLength += commentLength;
+                    TotalCommentLength += CommentLength;
                     current = current->Next;
                 }
             }
 
             if (Op->Asl.InlineComment!=NULL)
             {
-                commentLength = strlen(Op->Asl.InlineComment)+3;
-                printf ("Length of inline comment +3 (including space for 0xA9 0x02 and 0x00): %d\n", commentLength);
+                CommentLength = strlen (Op->Asl.InlineComment)+3;
+                printf ("Length of inline comment +3 (including space for 0xA9 0x02 and 0x00): %d\n", CommentLength);
                 printf ("**********Comment string: %s\n\n", Op->Asl.InlineComment);
-                TotalCommentLength += commentLength;
+                TotalCommentLength += CommentLength;
             }
 
             if (Op->Asl.EndNodeComment!=NULL)
             {
-                commentLength = strlen(Op->Asl.EndNodeComment)+3;
-                printf ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", commentLength);
+                CommentLength = strlen(Op->Asl.EndNodeComment)+3;
+                printf ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", CommentLength);
                 printf ("**********Comment string: %s\n\n", Op->Asl.EndNodeComment);
-                TotalCommentLength += commentLength;
+                TotalCommentLength += CommentLength;
             }
 
             if (Op->Asl.OpenBraceComment!=NULL)
             {
-                commentLength = strlen(Op->Asl.OpenBraceComment)+3;
-                printf ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", commentLength);
+                CommentLength = strlen (Op->Asl.OpenBraceComment)+3;
+                printf ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", CommentLength);
                 printf ("**********Comment string: %s\n\n", Op->Asl.OpenBraceComment);
-                TotalCommentLength += commentLength;
+                TotalCommentLength += CommentLength;
             }
 
             if (Op->Asl.CloseBraceComment!=NULL)
             {
-                commentLength = strlen(Op->Asl.CloseBraceComment)+3;
-                printf ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", commentLength);
+                CommentLength = strlen (Op->Asl.CloseBraceComment)+3;
+                printf ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", CommentLength);
                 printf ("**********Comment string: %s\n\n", Op->Asl.CloseBraceComment);
-                TotalCommentLength += commentLength;
+                TotalCommentLength += CommentLength;
             }
+
             printf("\n\n");
-
-
         }
-
 
         Op->Asl.Parent->Asl.AmlSubtreeLength += (
             Op->Asl.AmlLength +

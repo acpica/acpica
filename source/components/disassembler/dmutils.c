@@ -354,7 +354,6 @@ AcpiDmCommaIfListMember (
         if ((Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST) &&
             (!(Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST)))
         {
-
             goto noComma;
         }
 
@@ -392,11 +391,7 @@ noComma:
         AcpiOsPrintf (" %s",Op->Common.InlineComment);
         Op->Common.InlineComment = NULL;
     }   
-
-
-     return (FALSE);
-
-
+    return (FALSE);
 }
 
 

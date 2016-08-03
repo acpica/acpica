@@ -129,8 +129,6 @@ AcpiPsGetAmlOpcode (
     ACPI_WALK_STATE         *WalkState);
 
 
-
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiPsGetAmlOpcode
@@ -148,6 +146,7 @@ AcpiPsGetAmlOpcode (
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                  AmlOffset;
+
 
     ACPI_FUNCTION_TRACE_PTR (PsGetAmlOpcode, WalkState);
 
@@ -276,14 +275,15 @@ AcpiPsBuildNamedOp (
     while (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) &&
           (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) != ARGP_NAME))
     {
-        printf("gna from build named op\n");
-        AcpiPsCaptureComments(WalkState);
+        printf ("gna from build named op\n");
+        AcpiPsCaptureComments (WalkState);
         Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
             GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
         }
+
         AcpiPsAppendArg (UnnamedOp, Arg);
         INCREMENT_ARG_LIST (WalkState->ArgTypes);
     }
@@ -291,15 +291,15 @@ AcpiPsBuildNamedOp (
     printf("UnnamedOp->Common.AmlOpcode: 0x%x\n", UnnamedOp->Common.AmlOpcode);
     printf("UnnamedOp->Named.Name: %x\n", UnnamedOp->Named.Name);
 
-    // are there any inline comments associated with the NameSeg?? If so, save this.
+    /* are there any inline comments associated with the NameSeg?? If so, save this. */
+
     AcpiPsCaptureComments(WalkState);
     if (AcpiGbl_CurrentInlineComment != NULL)
-        { 
-            UnnamedOp->Common.NameComment = AcpiGbl_CurrentInlineComment;
-            AcpiGbl_CurrentInlineComment = NULL;
-            printf("Op->Common.NameComment: %s\n", UnnamedOp->Common.NameComment);
-        }
-
+    { 
+        UnnamedOp->Common.NameComment = AcpiGbl_CurrentInlineComment;
+        AcpiGbl_CurrentInlineComment = NULL;
+        printf ("Op->Common.NameComment: %s\n", UnnamedOp->Common.NameComment);
+    }
 
     /*
      * Make sure that we found a NAME and didn't run out of arguments
@@ -346,7 +346,7 @@ AcpiPsBuildNamedOp (
 
     AcpiPsAppendArg (*Op, UnnamedOp->Common.Value.Arg);
 
-    // Don't forget the comments!
+    /* save any comments that might be associated with UnnamedOp. */
     if (UnnamedOp->Common.InlineComment!=NULL)
     {
         (*Op)->Common.InlineComment = UnnamedOp->Common.InlineComment;
@@ -377,7 +377,6 @@ AcpiPsBuildNamedOp (
         (*Op)->Common.CommentList = UnnamedOp->Common.CommentList;
         UnnamedOp->Common.CommentList = NULL;
     }
- 
 
     if ((*Op)->Common.AmlOpcode == AML_REGION_OP ||
         (*Op)->Common.AmlOpcode == AML_DATA_REGION_OP)

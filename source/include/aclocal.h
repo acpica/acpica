@@ -992,12 +992,12 @@ typedef union acpi_parse_value
     char                            *OperatorSymbol;    /* Used for C-style operator name strings */\
     char                            AmlOpName[16])      /* Op name (debug only) */\
     UINT8                           Opt;                /* Extra integer constant */\
-    char                            *InlineComment;     /* For -q option: inline comment associated with this node.*/\
-    char                            *EndNodeComment;    /* For -q option: end of node comment associated with this node.*/\
-    char                            *NameComment;       /* For -q option: inline comment associated with the first parameter of the name node.*/\
-    char                            *OpenBraceComment;  /* For -q option: inline comment associated with the first parameter of the name node.*/\
-    char                            *CloseBraceComment; /* For -q option: inline comment associated with the first parameter of the name node.*/\
-    struct acpi_comment_list_node   *CommentList;       /* comments that appears before this node */
+    char                            *InlineComment;     /* For -ca option: inline comment associated with this node.*/\
+    char                            *EndNodeComment;    /* For -ca option: end of node comment associated with this node.*/\
+    char                            *NameComment;       /* For -ca option: inline comment associated with the first parameter of the name node.*/\
+    char                            *OpenBraceComment;  /* For -ca option: inline comment associated with the first parameter of the name node.*/\
+    char                            *CloseBraceComment; /* For -ca option: inline comment associated with the first parameter of the name node.*/\
+    ACPI_COMMENT_LIST_NODE          *CommentList;       /* comments that appears before this node */
 
 
 

@@ -344,19 +344,13 @@ ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_CaptureComments, FALSE)
 ASL_EXTERN ASL_COMMENT_STATE        Gbl_CommentState;
 
 
-/* Determines if an inline comment should be saved in the InlineComment or NodeEndComment
+/*
+ * Determines if an inline comment should be saved in the InlineComment or NodeEndComment
  *  field of ACPI_PARSE_OBJECT.
  */
-ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_CurrentNodeComplete, FALSE);
 ASL_EXTERN ACPI_COMMENT_LIST_NODE   ASL_INIT_GLOBAL (*Gbl_Comment_List_Head, 0);
 ASL_EXTERN ACPI_COMMENT_LIST_NODE   ASL_INIT_GLOBAL (*Gbl_Comment_List_Tail, 0);
-
 ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_Inline_Comment_Buffer, 0);
-
-//ASL_EXTERN ACPI_PARSE_OBJECT        ASL_INIT_GLOBAL (*Gbl_Latest_Parse_Node, 0);
-
-
-
 
 /* Static structures */
 
@@ -377,6 +371,5 @@ ASL_EXTERN char                     MsgBuffer[ASL_MSG_BUFFER_SIZE];
 ASL_EXTERN char                     StringBuffer[ASL_MSG_BUFFER_SIZE];
 ASL_EXTERN char                     StringBuffer2[ASL_MSG_BUFFER_SIZE];
 ASL_EXTERN UINT32                   Gbl_DisabledMessages[ASL_MAX_DISABLED_MESSAGES];
-//ASL_EXTERN char                     CommentBuffer[ASL_MSG_BUFFER_SIZE];
 
 #endif /* __ASLGLOBAL_H */
