@@ -297,6 +297,30 @@ CgLocalWriteAmlData (
     }
 }
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CgWriteAmlDefBlockComment
+ *
+ * PARAMETERS:  Op              - Current parse op
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: For -ca: write all comments pertaining to the current parse op
+ *
+ ******************************************************************************/
+
+static void
+CgWriteAmlDefBlockComment(
+    ACPI_PARSE_OBJECT       *Op)
+{
+    UINT8                   CommentOpcode;
+    ACPI_COMMENT_LIST_NODE  *Current;
+
+    /* in progress */
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    CgWriteAmlComment
@@ -305,7 +329,7 @@ CgLocalWriteAmlData (
  *
  * RETURN:      None
  *
- * DESCRIPTION: For -q: write all comments pertaining to the current parse op
+ * DESCRIPTION: For -ca: write all comments pertaining to the current parse op
  *
  ******************************************************************************/
 
@@ -313,17 +337,25 @@ static void
 CgWriteAmlComment(
     ACPI_PARSE_OBJECT       *Op)
 {
-    UINT8 CommentOpcode = (UINT8)AML_COMMENT_OP;
-    ACPI_COMMENT_LIST_NODE *Current = Op->Asl.CommentList;
+    UINT8                   CommentOpcode;
+    ACPI_COMMENT_LIST_NODE  *Current;
 
-    /* For -q: print out any comments associated with this node */
+    if (Op->Asl.ParseOpcode == PARSEOP_DEFINITION_BLOCK)
+    {
+        return;
+    }
+
+    CommentOpcode = (UINT8)AML_COMMENT_OP;
+    Current = Op->Asl.CommentList;
+
+    /* For -ca: print out any comments associated with this node */
 
     /*
      * Regular comments are stored in a list of comments within an Op.
      * If there is a such list in this node, print out the comment
      * as byte code.
      */
-
+    printf ("Printing comments for the following opcode: %s.\n", Op->Asl.ParseOpName);
     while (Current)
     {
         CgLocalWriteAmlData (Op, &CommentOpcode, 1);
@@ -332,8 +364,10 @@ CgWriteAmlComment(
         /* +1 is what emits the 0x00 at the end of this opcode. */
 
         CgLocalWriteAmlData (Op, Current->Comment, strlen (Current->Comment) + 1); 
+        printf ("Printing comment: %s.\n", Current->Comment);
         Current = Current->Next;
     }
+
     Op->Asl.CommentList = NULL;
         
     /* print any Inline comments associated with this node */
@@ -747,10 +781,6 @@ CgWriteNode (
 
     /* Always check for DEFAULT_ARG and other "Noop" nodes */
     /* TBD: this may not be the best place for this check */
-    /* RE TBD: can we keep it here so that any comments associated with
-     * default arg could be kept for the -q option?
-     */
-
 
     if ((Op->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)  ||
         (Op->Asl.ParseOpcode == PARSEOP_INCLUDE)      ||

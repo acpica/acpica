@@ -802,6 +802,7 @@ AslDoComment (
     char                    *FinalCommentString;
     ASL_COMMENT_STATE       CurrentState = Gbl_CommentState; //for reference
 
+
     printf ("Multi-line comment\n");
 
     AslInsertLineBuffer ('/');
@@ -923,8 +924,8 @@ loop:
          * If this only spans a single line, check to see whether if this comment
          * appears on the same line as a line of code. If does, retain it's
          * position for stylistic reasons. If it doesn't, add it to the comment
-	 * List so that it can be associated with the next node that's created. 
-	 */
+         * List so that it can be associated with the next node that's created. 
+         */
         else             
         {
            /* 
@@ -942,13 +943,12 @@ loop:
             AslPlaceComment (CurrentState.CommentType, FinalCommentString);    
         }
     }
-    
- 
 
     return (TRUE);
 
 
 EarlyEOF:
+
     /*
      * Premature End-Of-File
      */
@@ -957,7 +957,6 @@ EarlyEOF:
         Gbl_CurrentLineOffset, Gbl_CurrentColumn,
         Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
     return (FALSE);
-
 
 
 BufferOverflow:

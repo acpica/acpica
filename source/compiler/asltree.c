@@ -229,6 +229,7 @@ TrAllocateNode (
     UtSetParseOpName (Op);
 
     /* The following is for capturing comments */
+
     if(Gbl_CaptureComments)
     {
         Gbl_CommentState.Latest_Parse_Node = Op;    
@@ -236,7 +237,8 @@ TrAllocateNode (
         printf ("           Op->Asl.ParseOpName = %s\n", Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName);    
         printf ("           Op->Asl.ParseOpcode = 0x%x\n", ParseOpcode);    
 
-        /* if this parse op's syntax uses () and {} (i.e. Package(1){0x00}) then
+        /* 
+         * if this parse op's syntax uses () and {} (i.e. Package(1){0x00}) then
          * set a flag in the comment state. This facilitates paring comments for
          * these types of opcodes.
          */
@@ -246,18 +248,17 @@ TrAllocateNode (
             Gbl_CommentState.ParsingParenBraceNode = Op;
         }
         
-
         if (Gbl_Comment_List_Head)
         {
             Op->Asl.CommentList = Gbl_Comment_List_Head;
-            Gbl_Comment_List_Head = 0; //Clear this so that future comments can be associated with future nodes.
-            Gbl_Comment_List_Tail = 0; //Clear this so that future comments can be associated with future nodes.
+            Gbl_Comment_List_Head = NULL;
+            Gbl_Comment_List_Tail = NULL;
             printf ("Transferred current comment list to this node.\n");
         }
         if (Gbl_Inline_Comment_Buffer)
         {
             Op->Asl.InlineComment = Gbl_Inline_Comment_Buffer;
-            Gbl_Inline_Comment_Buffer = 0; //Clear this so that future comments can be associated with future nodes.
+            Gbl_Inline_Comment_Buffer = NULL; 
             printf ("Transferred current inline comment list to this node.\n");
         }
 

@@ -454,11 +454,8 @@ ACPI_GLOBAL (const char,                *AcpiGbl_PldShapeList[]);
 
 #endif
 
-/* Meant for the -q option. This points to the last created node that is
- * an AML_COMMENT_OP with option 2. Once a new node is created after
- * an AML_COMMENT_OP with option 2, the new node's InlineComment field
- * will be associated with whatever node this pointer points to and resets
- * this pointer.
+/*
+ * Meant for the -ca option.
  */
 ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentInlineComment,     NULL);
 ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentEndNodeComment,    NULL);
@@ -474,6 +471,8 @@ ACPI_INIT_GLOBAL (UINT8,               INLINE_COMMENT_OPTION,     2);
 ACPI_INIT_GLOBAL (UINT8,               ENDNODE_COMMENT_OPTION,    3);
 ACPI_INIT_GLOBAL (UINT8,               OPENBRACE_COMMENT_OPTION,  4);
 ACPI_INIT_GLOBAL (UINT8,               CLOSEBRACE_COMMENT_OPTION, 5);
+ACPI_INIT_GLOBAL (UINT8,               STD_DEFBLK_COMMENT_OPTION, 6);
+ACPI_INIT_GLOBAL (UINT8,               END_DEFBLK_COMMENT_OPTION, 6);
 
 ACPI_GLOBAL (ACPI_CACHE_T *,            AcpiGbl_RegCommentCache);
 ACPI_GLOBAL (ACPI_CACHE_T *,            AcpiGbl_CommentAddrCache);
