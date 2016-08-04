@@ -520,7 +520,8 @@ AcpiPsTransferComments (
     { 
         Op->Common.CommentList = AcpiGbl_RegCommentListHead;
         printf ("Op->Common.CommentList head: %s\n", Op->Common.CommentList->Comment);
-        AcpiGbl_RegCommentListHead = AcpiGbl_RegCommentListTail = NULL;
+        AcpiGbl_RegCommentListHead = NULL;
+        AcpiGbl_RegCommentListTail = NULL;
     }
 
     printf("\n");
