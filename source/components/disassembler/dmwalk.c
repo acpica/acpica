@@ -591,7 +591,7 @@ AcpiDmDescendingOp (
     ACPI_PARSE_OBJECT       *NextOp;
     ACPI_PARSE_OBJECT       *NextOp2;
     UINT32                  AmlOffset;
-    ACPI_COMMENT_LIST_NODE *Current = Op->Common.CommentList;
+    ACPI_COMMENT_LIST_NODE  *Current = Op->Common.CommentList;
     
 
 /*    AcpiOsPrintf (" [HDW]"); */

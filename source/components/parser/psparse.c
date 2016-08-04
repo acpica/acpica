@@ -246,7 +246,8 @@ AcpiPsCaptureJustComments (
     UINT32                  Length = 0;
     UINT8                   CommentOption;
     char                    *Debug;
-    ACPI_COMMENT_LIST_NODE  *NewCNode;
+    ACPI_COMMENT_LIST_NODE  *CommentNode;
+    BOOLEAN                 StdDefBlockFlag = FALSE;
 
 
     Aml = ParserState->Aml;
@@ -274,31 +275,35 @@ AcpiPsCaptureJustComments (
 
             switch (CommentOption)
             {
-                case 1:
+                case STD_DEFBLK_COMMENT:
+
+                    StdDefBlockFlag = TRUE;
+
+                case STANDARD_COMMENT:
 
                     printf("found regular comment.\n");
 
                     /* add to a linked list of nodes. This list will be taken by the parse node created next. */
                 
-                    NewCNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
+                    CommentNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
                 
-                    NewCNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
-                    NewCNode->Next    = NULL;
+                    CommentNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    CommentNode->Next    = NULL;
                      
                     if (AcpiGbl_RegCommentListHead==NULL)
                     {
                         AcpiGbl_RegCommentListHead 
                          = AcpiGbl_RegCommentListTail 
-                         = NewCNode;
+                         = CommentNode;
                     }
                     else
                     {
-                        AcpiGbl_RegCommentListTail->Next = NewCNode;
+                        AcpiGbl_RegCommentListTail->Next = CommentNode;
                         AcpiGbl_RegCommentListTail = AcpiGbl_RegCommentListTail->Next;
                     }
                     break;
 
-                case 2:
+                case INLINE_COMMENT:
 
                     printf ("found inline comment.\n");
                     Debug = AcpiGbl_CurrentInlineComment;          
@@ -309,7 +314,7 @@ AcpiPsCaptureJustComments (
                     }
                     break;
 
-                case 3:
+                case ENDNODE_COMMENT:
 
                     printf ("found EndNode comment.\n");
                     Debug = AcpiGbl_CurrentEndNodeComment;
@@ -320,7 +325,7 @@ AcpiPsCaptureJustComments (
                     }
                     break;
 
-                case 4:
+                case OPENBRACE_COMMENT:
 
                     printf("found open brace comment.\n");
                     Debug = AcpiGbl_CurrentOpenBraceComment;
@@ -331,7 +336,7 @@ AcpiPsCaptureJustComments (
                     }
                     break;
 
-                case 5:
+                case CLOSEBRACE_COMMENT:
 
                     printf("found close brace comment.\n");
                     Debug = AcpiGbl_CurrentCloseBraceComment;
@@ -342,7 +347,22 @@ AcpiPsCaptureJustComments (
                     }
                     break;        
 
+                case END_DEFBLK_COMMENT:
+
+                    printf("Found comment that belongs after the } for a definition block.\n");
+                     
+                    Debug = AcpiGbl_CurrentScope->Common.CloseBraceComment;
+                    AcpiGbl_CurrentScope->Common.CloseBraceComment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    
+                    if (Debug!=NULL)
+                    {
+                        printf("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentCloseBraceComment);
+                    }
+                
+                    break;        
+
                 default:
+
                     break;
 
             } /* end switch statement */
@@ -377,6 +397,17 @@ AcpiPsCaptureJustComments (
  
     printf ("\n");
 
+    if (StdDefBlockFlag)
+    {
+        /* 
+         * Give all of its comments to the current scope, which is known as
+         * the definition block, since STD_DEFBLK_COMMENT only appears after
+         * definition block headers.
+         */
+        AcpiGbl_CurrentScope->Common.CommentList = AcpiGbl_RegCommentListHead;
+        AcpiGbl_RegCommentListHead = NULL;
+        AcpiGbl_RegCommentListTail = NULL;
+    }
 }
 
 

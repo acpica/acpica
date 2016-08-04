@@ -257,6 +257,10 @@ AcpiPsAllocOp (
         Op->Common.CommentList       = NULL;
         Op->Common.OpenBraceComment  = NULL;
         Op->Common.CloseBraceComment = NULL;
+        if (Opcode == AML_SCOPE_OP)
+        {
+            AcpiGbl_CurrentScope = Op;  
+        }
     }
 
     AcpiPsTransferComments(Op); 

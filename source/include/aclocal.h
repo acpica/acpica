@@ -1000,6 +1000,16 @@ typedef union acpi_parse_value
     ACPI_COMMENT_LIST_NODE          *CommentList;       /* comments that appears before this node */
 
 
+/* #defines for categories of comments */
+
+#define STANDARD_COMMENT   1
+#define INLINE_COMMENT     2
+#define ENDNODE_COMMENT    3
+#define OPENBRACE_COMMENT  4
+#define CLOSEBRACE_COMMENT 5
+#define STD_DEFBLK_COMMENT 6
+#define END_DEFBLK_COMMENT 7
+
 
 /* Flags for DisasmFlags field  above */
 

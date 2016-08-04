@@ -214,7 +214,7 @@ AdCreateTableHeader (
     ACPI_TABLE_HEADER       *Table)
 {
     UINT8                   Checksum;
-
+    ACPI_COMMENT_LIST_NODE  *CommentPtr;
 
     /* Reset globals for External statements */
 
@@ -274,6 +274,18 @@ AdCreateTableHeader (
     AcpiOsPrintf (" *     Compiler ID      \"%.4s\"\n",     Table->AslCompilerId);
     AcpiOsPrintf (" *     Compiler Version 0x%8.8X (%u)\n", Table->AslCompilerRevision, Table->AslCompilerRevision);
     AcpiOsPrintf (" */\n");
+
+    /*
+     * Print comments that come before this definition block.
+     */
+    CommentPtr = AcpiGbl_ParseOpRoot->Common.CommentList;
+    while (CommentPtr)
+    {
+        AcpiOsPrintf("%s\n", CommentPtr->Comment);
+        CommentPtr->Comment = NULL;
+        CommentPtr = CommentPtr->Next;     
+    } 
+    AcpiGbl_ParseOpRoot->Common.CommentList = NULL;
 
     /*
      * Open the ASL definition block.

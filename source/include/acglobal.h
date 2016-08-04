@@ -474,6 +474,8 @@ ACPI_INIT_GLOBAL (UINT8,               CLOSEBRACE_COMMENT_OPTION, 5);
 ACPI_INIT_GLOBAL (UINT8,               STD_DEFBLK_COMMENT_OPTION, 6);
 ACPI_INIT_GLOBAL (UINT8,               END_DEFBLK_COMMENT_OPTION, 7);
 
+ACPI_INIT_GLOBAL (ACPI_PARSE_OBJECT,   *AcpiGbl_CurrentScope,  0);
+
 ACPI_GLOBAL (ACPI_CACHE_T *,            AcpiGbl_RegCommentCache);
 ACPI_GLOBAL (ACPI_CACHE_T *,            AcpiGbl_CommentAddrCache);
 
