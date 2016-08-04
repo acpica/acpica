@@ -1109,6 +1109,7 @@ AcpiDmAscendingOp (
 {
     ACPI_OP_WALK_INFO       *Info = Context;
     ACPI_PARSE_OBJECT       *ParentOp;
+    ACPI_COMMENT_LIST_NODE  *CurrentComment;
 
 
     /* AcpiOsPrintf (" [HAW]"); */
@@ -1125,7 +1126,22 @@ AcpiDmAscendingOp (
         /* Indicates the end of the current descriptor block (table) */
  
         AcpiDmCloseBraceWriteComment(Op);
+
+        /* Print any comments that are at the end of the file here... */
+ 
+        CurrentComment = AcpiGbl_LastListHead;
+        if (CurrentComment)
+        {
+            AcpiOsPrintf ("\n");
+            while (CurrentComment)
+            {
+                AcpiOsPrintf("%s\n", CurrentComment->Comment);
+                CurrentComment = CurrentComment->Next;
+            }
+        }
         AcpiOsPrintf ("\n\n");
+
+
         return (AE_OK);
     }
 

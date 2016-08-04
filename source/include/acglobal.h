@@ -462,6 +462,7 @@ ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentEndNodeComment,    NULL);
 ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentOpenBraceComment,  NULL);
 ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentCloseBraceComment, NULL);
 
+ACPI_INIT_GLOBAL (ACPI_COMMENT_LIST_NODE,   *AcpiGbl_LastListHead, NULL);
 ACPI_INIT_GLOBAL (ACPI_COMMENT_LIST_NODE,   *AcpiGbl_RegCommentListHead, NULL);
 ACPI_INIT_GLOBAL (ACPI_COMMENT_LIST_NODE,   *AcpiGbl_RegCommentListTail, NULL);
 ACPI_INIT_GLOBAL (ACPI_COMMENT_ADDR_NODE,   *AcpiGbl_CommentAddrListHead, NULL);
