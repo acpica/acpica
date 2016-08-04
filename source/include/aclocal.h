@@ -198,6 +198,14 @@ typedef struct acpi_rw_lock
 #define ACPI_INVALID_THREAD_ID          ((ACPI_THREAD_ID) 0xFFFFFFFF)
 #endif
 
+/* This Thread ID means an invalid thread ID */
+
+#ifdef ACPI_OS_INVALID_THREAD_ID
+#define ACPI_INVALID_THREAD_ID          ACPI_OS_INVALID_THREAD_ID
+#else
+#define ACPI_INVALID_THREAD_ID          ((ACPI_THREAD_ID) 0xFFFFFFFF)
+#endif
+
 /* Table for the global mutexes */
 
 typedef struct acpi_mutex_info
