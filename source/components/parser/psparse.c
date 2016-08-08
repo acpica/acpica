@@ -179,16 +179,20 @@ AcpiPsGetOpcodeSize (
 
 BOOLEAN
 AcpiPsCommentExists (
-    UINT8                    *toCheck)
+    UINT8                    *ToCheck)
 {
     ACPI_COMMENT_ADDR_NODE   *Current = AcpiGbl_CommentAddrListHead;
-
+    
+    if (*(ToCheck + 1) == FILENAME_COMMENT)
+    {
+       return (FALSE); 
+    }
 
     if (!Current)
     {
         AcpiGbl_CommentAddrListHead = 
             AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
-        AcpiGbl_CommentAddrListHead->Addr = toCheck;
+        AcpiGbl_CommentAddrListHead->Addr = ToCheck;
         return (FALSE);
     }
     else
@@ -196,7 +200,7 @@ AcpiPsCommentExists (
         printf ("========== Traversing address list now ==========\n");
         while (Current!=NULL)
         {
-            if (Current->Addr != toCheck)
+            if (Current->Addr != ToCheck)
             {
                 printf ("Address in list: %p\n", Current->Addr);
                 Current = Current->Next;
@@ -216,7 +220,7 @@ AcpiPsCommentExists (
         Current = AcpiGbl_CommentAddrListHead;
         AcpiGbl_CommentAddrListHead = 
             AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
-        AcpiGbl_CommentAddrListHead->Addr = toCheck;
+        AcpiGbl_CommentAddrListHead->Addr = ToCheck;
         AcpiGbl_CommentAddrListHead->Next = Current;
         return (FALSE);
     }
@@ -258,7 +262,6 @@ AcpiPsCaptureJustComments (
 
     while (Opcode == AML_COMMENT_OP)
     {                  
-        /* TODO: add conditional so that we don't accidentally count file marking as a comment. */
         if (AcpiPsCommentExists(Aml))
         {
             printf("Avoiding capturing an existing comment.\n");
@@ -358,8 +361,14 @@ AcpiPsCaptureJustComments (
                     {
                         printf("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentCloseBraceComment);
                     }
-                
                     break;        
+
+                case FILENAME_COMMENT:
+
+                    printf ("Found a filename. ");
+                    AcpiGbl_CurrentFilename = ACPI_CAST_PTR (char, ParserState->Aml);
+                    printf ("Setting the Current file name to %s\n", AcpiGbl_CurrentFilename);
+                    break;
 
                 default:
 

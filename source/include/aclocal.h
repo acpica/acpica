@@ -997,7 +997,8 @@ typedef union acpi_parse_value
     char                            *NameComment;       /* For -ca option: inline comment associated with the first parameter of the name node.*/\
     char                            *OpenBraceComment;  /* For -ca option: inline comment associated with the first parameter of the name node.*/\
     char                            *CloseBraceComment; /* For -ca option: inline comment associated with the first parameter of the name node.*/\
-    ACPI_COMMENT_LIST_NODE          *CommentList;       /* comments that appears before this node */
+    ACPI_COMMENT_LIST_NODE          *CommentList;       /* comments that appears before this node */\
+    char                            *PsFilename;        /* For -ca optoin: filename associated with this node */
 
 
 /* #defines for categories of comments */
