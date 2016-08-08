@@ -320,6 +320,7 @@ CgWriteAmlDefBlockComment(
     ACPI_PARSE_OBJECT       *Op)
 {
     UINT8                   CommentOpcode;
+    UINT8                   CommentOption = FILENAME_COMMENT;
     ACPI_COMMENT_LIST_NODE  *Current;
 
 
@@ -332,10 +333,21 @@ CgWriteAmlDefBlockComment(
     Current = Op->Asl.CommentList;
 
     printf ("Printing comments for a definition block..\n");
+    
+    /* first, print the file name comment */
+    
+    CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+    CgLocalWriteAmlData (Op, &CommentOption, 1);
+
+    /* +1 is what emits the 0x00 at the end of this opcode. */
+
+    CgLocalWriteAmlData (Op, Op->Asl.Filename, strlen (Op->Asl.Filename) + 1); 
+
+    CommentOption = STD_DEFBLK_COMMENT;
     while (Current)
     {
         CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-        CgLocalWriteAmlData (Op, &STD_DEFBLK_COMMENT_OPTION, 1);
+        CgLocalWriteAmlData (Op, &CommentOption, 1);
 
         /* +1 is what emits the 0x00 at the end of this opcode. */
 
@@ -349,8 +361,9 @@ CgWriteAmlDefBlockComment(
 
     if (Op->Asl.CloseBraceComment)
     {
+        CommentOption = END_DEFBLK_COMMENT;
         CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-        CgLocalWriteAmlData (Op, &END_DEFBLK_COMMENT_OPTION, 1);
+        CgLocalWriteAmlData (Op, &CommentOption, 1);
 
         /* +1 is what emits the 0x00 at the end of this opcode. */
 
@@ -719,6 +732,7 @@ CgWriteTableHeader (
     if (Gbl_CaptureComments)
     {
         printf ("====================Calculating comment lengths for %s====================\n",  Op->Asl.ParseOpName);
+        TableHeader.Length += strlen (Gbl_ParseTreeRoot->Asl.Filename) + 3;
         if (Op->Asl.CommentList!=NULL)
         {
             Current = Op->Asl.CommentList; 
