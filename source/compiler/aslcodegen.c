@@ -405,8 +405,9 @@ CgWriteAmlComment(
     printf ("Printing comments for the following opcode: %s.\n", Op->Asl.ParseOpName);
     while (Current)
     {
+        CommentOption = STANDARD_COMMENT;
         CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-        CgLocalWriteAmlData (Op, &STANDARD_COMMENT_OPTION, 1);
+        CgLocalWriteAmlData (Op, &CommentOption, 1);
 
         /* +1 is what emits the 0x00 at the end of this opcode. */
 
@@ -421,8 +422,9 @@ CgWriteAmlComment(
 
     if (Op->Asl.InlineComment)
     {
+        CommentOption = INLINE_COMMENT;
         CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-        CgLocalWriteAmlData (Op, &INLINE_COMMENT_OPTION, 1);
+        CgLocalWriteAmlData (Op, &CommentOption, 1);
         // +1 is what emits the 0x00 at the end of this opcode.
         CgLocalWriteAmlData (Op, Op->Asl.InlineComment, strlen (Op->Asl.InlineComment) + 1); 
         Op->Asl.InlineComment = NULL;
@@ -430,8 +432,9 @@ CgWriteAmlComment(
 
     if (Op->Asl.EndNodeComment)
     {
+        CommentOption = ENDNODE_COMMENT;
         CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-        CgLocalWriteAmlData (Op, &ENDNODE_COMMENT_OPTION, 1);
+        CgLocalWriteAmlData (Op, &CommentOption, 1);
         // +1 is what emits the 0x00 at the end of this opcode.
         CgLocalWriteAmlData (Op, Op->Asl.EndNodeComment, strlen (Op->Asl.EndNodeComment) + 1); 
         Op->Asl.EndNodeComment = NULL;
@@ -439,8 +442,9 @@ CgWriteAmlComment(
 
     if (Op->Asl.OpenBraceComment)
     {
+        CommentOption = OPENBRACE_COMMENT;
         CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-        CgLocalWriteAmlData (Op, &OPENBRACE_COMMENT_OPTION, 1);
+        CgLocalWriteAmlData (Op, &CommentOption, 1);
         // +1 is what emits the 0x00 at the end of this opcode.
         CgLocalWriteAmlData (Op, Op->Asl.OpenBraceComment, strlen (Op->Asl.OpenBraceComment) + 1); 
         Op->Asl.OpenBraceComment = NULL;
@@ -448,8 +452,9 @@ CgWriteAmlComment(
 
     if (Op->Asl.CloseBraceComment)
     {
+        CommentOption = CLOSEBRACE_COMMENT;
         CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-        CgLocalWriteAmlData (Op, &CLOSEBRACE_COMMENT_OPTION, 1);
+        CgLocalWriteAmlData (Op, &CommentOption, 1);
         // +1 is what emits the 0x00 at the end of this opcode.
         CgLocalWriteAmlData (Op, Op->Asl.CloseBraceComment, strlen (Op->Asl.CloseBraceComment) + 1); 
         Op->Asl.CloseBraceComment = NULL;
