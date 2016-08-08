@@ -215,6 +215,10 @@ LnPackageLengthWalk (
         if (Gbl_CaptureComments)
         {
             printf ("====================Calculating comment lengths for %s====================\n",  Op->Asl.ParseOpName);
+            if (Op->Asl.FileChanged)
+            {
+                TotalCommentLength += strlen (Op->Asl.Filename) + 3;
+            }
             if (Op->Asl.CommentList!=NULL)
             {
                 Current = Op->Asl.CommentList; 

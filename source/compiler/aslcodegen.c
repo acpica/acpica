@@ -378,6 +378,7 @@ CgWriteAmlComment(
 {
     UINT8                   CommentOpcode;
     ACPI_COMMENT_LIST_NODE  *Current;
+    UINT8                   CommentOption;
 
     if (Op->Asl.ParseOpcode == PARSEOP_DEFINITION_BLOCK)
     {
@@ -387,7 +388,14 @@ CgWriteAmlComment(
     CommentOpcode = (UINT8)AML_COMMENT_OP;
     Current = Op->Asl.CommentList;
 
-    /* For -ca: print out any comments associated with this node */
+    /* Print out the filename comment if needed */
+    if (Op->Asl.FileChanged)
+    {
+        CommentOption = FILENAME_COMMENT;
+        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+        CgLocalWriteAmlData (Op, &CommentOption, 1);
+        CgLocalWriteAmlData (Op, Op->Asl.Filename, strlen (Op->Asl.Filename) + 1); 
+    }
 
     /*
      * Regular comments are stored in a list of comments within an Op.

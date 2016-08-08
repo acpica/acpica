@@ -1009,6 +1009,7 @@ typedef union acpi_parse_value
 #define CLOSEBRACE_COMMENT 5
 #define STD_DEFBLK_COMMENT 6
 #define END_DEFBLK_COMMENT 7
+#define FILENAME_COMMENT   8
 
 
 /* Flags for DisasmFlags field  above */
@@ -1077,6 +1078,7 @@ typedef struct acpi_parse_obj_asl
     union acpi_parse_object         *Child;
     union acpi_parse_object         *ParentMethod;
     char                            *Filename;
+    BOOLEAN                         FileChanged;
     char                            *ExternalName;
     char                            *Namepath;
     char                            NameSeg[4];

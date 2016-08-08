@@ -225,6 +225,7 @@ TrAllocateNode (
     Op->Asl.InlineComment     = NULL;
     Op->Asl.EndNodeComment    = NULL;
     Op->Asl.CommentList       = NULL;
+    Op->Asl.FileChanged       = FALSE;
 
     UtSetParseOpName (Op);
 
@@ -232,6 +233,18 @@ TrAllocateNode (
 
     if(Gbl_CaptureComments)
     {
+        /*
+         * Check to see if the file name has changed before resetting the 
+         * latest parse node.
+         */
+        if (Gbl_CommentState.Latest_Parse_Node)
+        {
+            if (strcmp (Gbl_CommentState.Latest_Parse_Node->Asl.Filename, Op->Asl.Filename))
+            {
+                Op->Asl.FileChanged = TRUE;
+            }
+        }
+
         Gbl_CommentState.Latest_Parse_Node = Op;    
         printf ("===========Set latest parse node to this node.\n");
         printf ("           Op->Asl.ParseOpName = %s\n", Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName);    
