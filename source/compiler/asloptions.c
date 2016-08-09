@@ -476,6 +476,11 @@ AslDoOptions (
             UtDisplayConstantOpcodes ();
             exit (0);
 
+        case 'd':
+
+            AslDisassemblyHelp ();
+            exit (0);
+
         case 'f':
 
             AslFilenameHelp ();

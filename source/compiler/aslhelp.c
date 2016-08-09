@@ -151,6 +151,7 @@ Usage (
     printf ("\nHelp:\n");
     ACPI_OPTION ("-h",              "This message");
     ACPI_OPTION ("-hc",             "Display operators allowed in constant expressions");
+    ACPI_OPTION ("-hd",             "Info for obtaining and disassembling binary ACPI tables");
     ACPI_OPTION ("-hf",             "Display help for output filename generation");
     ACPI_OPTION ("-hr",             "Display ACPI reserved method names");
     ACPI_OPTION ("-ht",             "Display currently supported ACPI table names");
@@ -260,5 +261,31 @@ AslFilenameHelp (
     printf ("    1) The -p option specifies the prefix\n");
     printf ("    2) The prefix of the AMLFileName in the ASL Definition Block\n");
     printf ("    3) The prefix of the input filename\n");
+    printf ("\n");
+}
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AslDisassemblyHelp
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display help message for obtaining and disassembling AML/ASL
+ *              files.
+ *
+ ******************************************************************************/
+
+void
+AslDisassemblyHelp (
+    void)
+{
+
+    printf ("\nObtaining binary ACPI tables and disassembling to ASL source code.\n\n");
+    printf ("Use the following ACPICA toolchain:\n");
+    printf ("  AcpiDump: Dump all ACPI tables to a hex ascii file\n");
+    printf ("  AcpiXtract: Extract one or more binary ACPI tables from AcpiDump output\n");
+    printf ("  iASL -d <file>: Disassemble a binary ACPI table to ASL source code\n");
     printf ("\n");
 }

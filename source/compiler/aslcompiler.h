@@ -993,6 +993,10 @@ void
 AslFilenameHelp (
     void);
 
+void
+AslDisassemblyHelp (
+    void);
+
 
 /*
  * aslnamesp - namespace output file generation
