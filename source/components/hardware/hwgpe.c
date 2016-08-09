@@ -522,7 +522,7 @@ AcpiHwEnableRuntimeGpeBlock (
     UINT32                  i;
     ACPI_STATUS             Status;
     ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
-    UINT32                  EnableMask;
+    UINT8                   EnableMask;
 
 
     /* NOTE: assumes that all GPEs are currently disabled */
