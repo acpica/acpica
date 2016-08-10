@@ -338,6 +338,8 @@ AdAmlDisassemble (
     }
 
     *OutFilename = DisasmFilename;
+    AcpiGbl_CurrentFilename = DisasmFilename;
+    printf ("Currentfilename = %s\n", AcpiGbl_CurrentFilename);
 
     /* Disassemble all AML tables within the file */
 

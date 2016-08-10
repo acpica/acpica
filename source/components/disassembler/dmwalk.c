@@ -170,8 +170,12 @@ AcpiDmOpenBraceWriteComment(
 
 static ACPI_STATUS
 AcpiDmPushFileStack (
-    ACPI_PARSE_OBJECT       *Op);
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level);
 
+void
+AcpiDmPopFileStack (
+    ACPI_PARSE_OBJECT       *Op);
 
 
 /*******************************************************************************
@@ -583,27 +587,30 @@ AcpiDmCloseParenWriteComment(
  *
  * DESCRIPTION: for -ca option: push a file on a stack. This is meant to allow
  *              conversions of .asl files that include multiple other files.
+ *              Before redirecting the output to a new file, output an include 
+ *              statement.
  *
  ******************************************************************************/
 
 static ACPI_STATUS
 AcpiDmPushFileStack (
-    ACPI_PARSE_OBJECT       *Op)
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level)
 {
     ACPI_FILE_NODE          *FNode = NULL;
     char                    *Position;
     char                    *DirectoryPosition;
+
 
     /*
      * If this parse node belongs in a different file than 
      * the file that is currently being written, open the file, push it on
      * the file stack and write to this file.
      */
-    if ( !AcpiGbl_CurrentFilename || 
-         (AcpiGbl_CurrentFilename && Op->Common.PsFilename && 
-         strcmp (AcpiGbl_CurrentFilename, Op->Common.PsFilename)))
+    if (AcpiGbl_CurrentFilename && Op->Common.PsFilename && 
+        strcmp (AcpiGbl_CurrentFilename, Op->Common.PsFilename))
     {
-        printf ("Opening a new file: %s\n", Op->Common.PsFilename);
+        printf ("Pushing  a new file: %s\n", Op->Common.PsFilename);
 
         /* Create a new file and push on the stack */
 
@@ -644,6 +651,11 @@ AcpiDmPushFileStack (
                 FNode->Filename);
             return (AE_ERROR);
         }
+   
+        /* print include statement */
+        
+        AcpiDmIndent (Level);
+        AcpiOsPrintf("Include (\"%s\")\n", FNode->Filename); 
 
         /* Update ACPI_FILE_OUT to this file */
 
@@ -690,7 +702,7 @@ AcpiDmDescendingOp (
 
     /* AcpiOsPrintf (" [HDW]"); */
 
-    AcpiDmPushFileStack (Op);
+    AcpiDmPushFileStack (Op, Level);
 
     /* If this parse node has regular comments, print them here. */
 
@@ -1180,6 +1192,45 @@ AcpiDmDescendingOp (
     /*AcpiOsPrintf (" [hello descending world]");*/
 
     return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmPopFileStack
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      0 if a node was popped, -1 otherwise
+ *
+ * DESCRIPTION: Pop the top of the input file stack and point the parser to
+ *              the saved parse buffer contained in the fnode. Also, set the
+ *              global line counters to the saved values. This function is
+ *              called when an include file reaches EOF.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmPopFileStack (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    if (strcmp (AcpiGbl_CurrentFilename, Op->Common.PsFilename)!=0)
+    {
+        printf ("Popping the file: %s\n", Op->Common.PsFilename);
+
+        /* Close the current include file */
+
+        fclose (AcpiGbl_IncludeFileStack->File);
+
+        /* Update the top-of-stack */
+
+        AcpiGbl_IncludeFileStack = AcpiGbl_IncludeFileStack->Next;
+
+        /* Set this as a new file and update current file */
+
+        AcpiOsRedirectOutput (AcpiGbl_IncludeFileStack->File);
+        AcpiGbl_CurrentFilename = AcpiGbl_IncludeFileStack->Filename;
+    }
 }
 
 
