@@ -168,6 +168,11 @@ static void
 AcpiDmOpenBraceWriteComment(
     ACPI_PARSE_OBJECT       *Op);
 
+static ACPI_STATUS
+AcpiDmPushFileStack (
+    ACPI_PARSE_OBJECT       *Op);
+
+
 
 /*******************************************************************************
  *
@@ -567,52 +572,43 @@ AcpiDmCloseParenWriteComment(
     }
 } 
 
+
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmDescendingOp
+ * FUNCTION:    AcpiDmPushFileStack
  *
- * PARAMETERS:  ASL_WALK_CALLBACK
+ * PARAMETERS:  ACPI_PARSE_OBJECT
  *
  * RETURN:      Status
  *
- * DESCRIPTION: First visitation of a parse object during tree descent.
- *              Decode opcode name and begin parameter list(s), if any.
+ * DESCRIPTION: for -ca option: push a file on a stack. This is meant to allow
+ *              conversions of .asl files that include multiple other files.
  *
  ******************************************************************************/
 
 static ACPI_STATUS
-AcpiDmDescendingOp (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context)
+AcpiDmPushFileStack (
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_OP_WALK_INFO       *Info = Context;
-    const ACPI_OPCODE_INFO  *OpInfo;
-    UINT32                  Name;
-    ACPI_PARSE_OBJECT       *NextOp;
-    ACPI_PARSE_OBJECT       *NextOp2;
-    UINT32                  AmlOffset;
-    ACPI_COMMENT_LIST_NODE  *Current = Op->Common.CommentList;
     ACPI_FILE_NODE          *FNode = NULL;
     char                    *Position;
     char                    *DirectoryPosition;
 
-
-    /* AcpiOsPrintf (" [HDW]"); */
-
     /*
-     * For -ca option: if this parse node belongs in a different file than 
+     * If this parse node belongs in a different file than 
      * the file that is currently being written, open the file, push it on
      * the file stack and write to this file.
      */
-    if ( AcpiGbl_CurrentFilename && Op->Common.PsFilename && 
-         strcmp (AcpiGbl_CurrentFilename, Op->Common.PsFilename))
+    if ( !AcpiGbl_CurrentFilename || 
+         (AcpiGbl_CurrentFilename && Op->Common.PsFilename && 
+         strcmp (AcpiGbl_CurrentFilename, Op->Common.PsFilename)))
     {
+        printf ("Opening a new file: %s\n", Op->Common.PsFilename);
+
         /* Create a new file and push on the stack */
 
         FNode = AcpiOsAcquireObject(AcpiGbl_FileCache);
         strcpy(FNode->Filename, Op->Common.PsFilename);
-//        FNode->Filename = FlGenerateFilename (Op->Common.PsFilename, FILE_SUFFIX_DISASSEMBLY);
 
         /* Try to find the last dot in the filename */
 
@@ -638,8 +634,7 @@ AcpiDmDescendingOp (
         if (!FNode->Filename)
         {
             fprintf (stderr, "Could not generate output filename\n");
-            //Status = AE_ERROR;
-            //goto Cleanup;
+            return (AE_ERROR);
         }
 
         FNode->File = fopen (FNode->Filename, "w+");
@@ -647,30 +642,65 @@ AcpiDmDescendingOp (
         {
             fprintf (stderr, "Could not open output file %s\n",
                 FNode->Filename);
-            //Status = AE_ERROR;
-            //goto Cleanup;
+            return (AE_ERROR);
         }
 
         /* Update ACPI_FILE_OUT to this file */
 
         AcpiOsRedirectOutput (FNode->File);
 
-        /* Add to the top of the stack and update the current filename*/
+        /* Add to the top of the stack and update the current filename */
         
         FNode->Next = AcpiGbl_IncludeFileStack;
         AcpiGbl_IncludeFileStack = FNode;
+        AcpiGbl_CurrentFilename  = Op->Common.PsFilename;
         
     }
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDescendingOp
+ *
+ * PARAMETERS:  ASL_WALK_CALLBACK
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: First visitation of a parse object during tree descent.
+ *              Decode opcode name and begin parameter list(s), if any.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiDmDescendingOp (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context)
+{
+    ACPI_OP_WALK_INFO       *Info = Context;
+    const ACPI_OPCODE_INFO  *OpInfo;
+    UINT32                  Name;
+    ACPI_PARSE_OBJECT       *NextOp;
+    ACPI_PARSE_OBJECT       *NextOp2;
+    UINT32                  AmlOffset;
+    ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.CommentList;
+
+
+    /* AcpiOsPrintf (" [HDW]"); */
+
+    AcpiDmPushFileStack (Op);
 
     /* If this parse node has regular comments, print them here. */
 
-    while (Current)
+    while (CommentNode)
     {
         
         AcpiDmIndent (Level);
-        AcpiOsPrintf("%s\n", Current->Comment);
-        Current->Comment = NULL;
-        Current = Current->Next;     
+        AcpiOsPrintf("%s\n", CommentNode->Comment);
+        CommentNode->Comment = NULL;
+        CommentNode = CommentNode->Next;     
     } 
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
