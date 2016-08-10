@@ -239,6 +239,18 @@ AcpiUtCreateCaches (
         return (Status);
     }
 
+    /* 
+     * For use with the -ca option. This cache will be used for nodes that 
+     * represent files.
+     */  
+    Status = AcpiOsCreateCache ("Acpi-File", sizeof (ACPI_FILE_NODE),
+        ACPI_MAX_COMMENT_CACHE_DEPTH, &AcpiGbl_FileCache);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
 
     /* Memory allocation lists */
@@ -309,6 +321,9 @@ AcpiUtDeleteCaches (
 
     (void) AcpiOsDeleteCache (AcpiGbl_CommentAddrCache);
     AcpiGbl_CommentAddrCache = NULL;
+
+    (void) AcpiOsDeleteCache (AcpiGbl_FileCache);
+    AcpiGbl_FileCache = NULL;
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
 

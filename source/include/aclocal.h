@@ -1012,6 +1012,8 @@ typedef union acpi_parse_value
 #define END_DEFBLK_COMMENT 7
 #define FILENAME_COMMENT   8
 
+#define ACPI_MAX_FILENAME_LENGTH 500
+
 
 /* Flags for DisasmFlags field  above */
 
@@ -1030,19 +1032,32 @@ typedef union acpi_parse_value
 
 
 /*
- * List struct used in the -q option
+ * List struct used in the -ca option
  */
 typedef struct acpi_comment_list_node
 {
   char                                     *Comment;
   struct acpi_comment_list_node            *Next;
+
 } ACPI_COMMENT_LIST_NODE;
+
 
 typedef struct acpi_comment_addr_node
 {
   UINT8                                    *Addr;
   struct acpi_comment_addr_node            *Next;
 } ACPI_COMMENT_ADDR_NODE;
+
+
+/* File node - used for "Include" operator file stack for the -ca option */
+
+typedef struct acpi_file_node
+{
+    FILE                    *File;
+    char                    Filename[ACPI_MAX_FILENAME_LENGTH];
+    struct acpi_file_node   *Next;
+
+} ACPI_FILE_NODE;
 
 
 /*

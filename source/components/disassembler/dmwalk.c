@@ -118,6 +118,7 @@
 #include "acparser.h"
 #include "amlcode.h"
 #include "acdebug.h"
+#include "acapps.h"
 
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
@@ -592,10 +593,74 @@ AcpiDmDescendingOp (
     ACPI_PARSE_OBJECT       *NextOp2;
     UINT32                  AmlOffset;
     ACPI_COMMENT_LIST_NODE  *Current = Op->Common.CommentList;
-    
+    ACPI_FILE_NODE          *FNode = NULL;
+    char                    *Position;
+    char                    *DirectoryPosition;
 
-/*    AcpiOsPrintf (" [HDW]"); */
 
+    /* AcpiOsPrintf (" [HDW]"); */
+
+    /*
+     * For -ca option: if this parse node belongs in a different file than 
+     * the file that is currently being written, open the file, push it on
+     * the file stack and write to this file.
+     */
+    if ( AcpiGbl_CurrentFilename && Op->Common.PsFilename && 
+         strcmp (AcpiGbl_CurrentFilename, Op->Common.PsFilename))
+    {
+        /* Create a new file and push on the stack */
+
+        FNode = AcpiOsAcquireObject(AcpiGbl_FileCache);
+        strcpy(FNode->Filename, Op->Common.PsFilename);
+//        FNode->Filename = FlGenerateFilename (Op->Common.PsFilename, FILE_SUFFIX_DISASSEMBLY);
+
+        /* Try to find the last dot in the filename */
+
+        DirectoryPosition = strrchr (FNode->Filename, '/');
+        Position = strrchr (FNode->Filename, '.');
+
+        if (Position && (Position > DirectoryPosition))
+        {
+            /* Tack on the new suffix */
+
+            Position++;
+            *Position = 0;
+            strcat (Position, FILE_SUFFIX_DISASSEMBLY);
+        }
+        else
+        {
+            /* No dot, add one and then the suffix */
+
+            strcat (FNode->Filename, ".");
+            strcat (FNode->Filename, FILE_SUFFIX_DISASSEMBLY);
+        }
+
+        if (!FNode->Filename)
+        {
+            fprintf (stderr, "Could not generate output filename\n");
+            //Status = AE_ERROR;
+            //goto Cleanup;
+        }
+
+        FNode->File = fopen (FNode->Filename, "w+");
+        if (!FNode->File)
+        {
+            fprintf (stderr, "Could not open output file %s\n",
+                FNode->Filename);
+            //Status = AE_ERROR;
+            //goto Cleanup;
+        }
+
+        /* Update ACPI_FILE_OUT to this file */
+
+        AcpiOsRedirectOutput (FNode->File);
+
+        /* Add to the top of the stack and update the current filename*/
+        
+        FNode->Next = AcpiGbl_IncludeFileStack;
+        AcpiGbl_IncludeFileStack = FNode;
+        
+    }
 
     /* If this parse node has regular comments, print them here. */
 

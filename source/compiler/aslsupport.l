@@ -141,7 +141,6 @@ typedef struct asl_file_node
 ASL_FILE_NODE               *Gbl_IncludeFileStack = NULL;
 
 
-
 /* Definitions for comment state */
 
 #define ASL_REGCOMMENT        1
