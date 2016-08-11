@@ -151,6 +151,11 @@ static void
 CgWriteNode (
     ACPI_PARSE_OBJECT       *Op);
 
+char*
+CgChangeFileExt(
+   char*                    Filename,
+   char*                    FileExt);
+
 
 /*******************************************************************************
  *
@@ -399,6 +404,54 @@ CgWriteAmlDefBlockComment(
 
 /*******************************************************************************
  *
+ * FUNCTION:    CgChangeFileExt
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: For -ca option: change a file extension of a given filename to
+ *              the given file extension.
+ *
+ ******************************************************************************/
+
+char*
+CgChangeFileExt(
+   char*       Filename,
+   char*       FileExt)
+{
+    char                    *Position;
+    char                    *DirectoryPosition;
+    char                    *NewFilename;
+
+
+    NewFilename = UtStringCacheCalloc (strlen (Filename)); 
+    strcpy (NewFilename, Filename);
+    DirectoryPosition = strrchr (NewFilename, '/');
+    Position = strrchr (NewFilename, '.');
+
+    if (Position && (Position > DirectoryPosition))
+    {
+        /* Tack on the new suffix */
+
+        Position++;
+        *Position = 0;
+        strcat (Position, FileExt);
+    }
+    else
+    {
+        /* No dot, add one and then the suffix */
+
+        strcat (NewFilename, ".");
+        strcat (NewFilename, FileExt);
+    }
+
+    return (NewFilename);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    CgWriteAmlComment
  *
  * PARAMETERS:  Op              - Current parse op
@@ -416,9 +469,8 @@ CgWriteAmlComment(
     UINT8                   CommentOpcode;
     ACPI_COMMENT_LIST_NODE  *Current;
     UINT8                   CommentOption;
-    char                    *Position;
-    char                    *DirectoryPosition;
     char                    *NewFilename;
+  //  char                    *ParentFilename;
 
     if (Op->Asl.ParseOpcode == PARSEOP_DEFINITION_BLOCK)
     {
@@ -431,35 +483,28 @@ CgWriteAmlComment(
     /* Print out the filename comment if needed */
     if (Op->Asl.FileChanged)
     {
+
         /* first, print the file name comment after changing .asl to .dsl */
-        NewFilename = UtStringCacheCalloc (strlen (Op->Asl.Filename)); 
-        strcpy (NewFilename, Op->Asl.Filename);
-        DirectoryPosition = strrchr (NewFilename, '/');
-        Position = strrchr (NewFilename, '.');
 
-        if (Position && (Position > DirectoryPosition))
-        {
-            /* Tack on the new suffix */
+        NewFilename = CgChangeFileExt(Op->Asl.Filename, FILE_SUFFIX_DISASSEMBLY);
+ //       ParentFilename = CgChangeFileExt(Op->Asl.ParentFilename, FILE_SUFFIX_DISASSEMBLY);
 
-            Position++;
-            *Position = 0;
-            strcat (Position, FILE_SUFFIX_DISASSEMBLY);
-        }
-        else
-        {
-            /* No dot, add one and then the suffix */
-
-            strcat (NewFilename, ".");
-            strcat (NewFilename, FILE_SUFFIX_DISASSEMBLY);
-        }
+        printf ("Writing file comment, \"%s\" for %s\n", NewFilename, Op->Asl.ParseOpName);
     
         CommentOption = FILENAME_COMMENT;
         CgLocalWriteAmlData (Op, &CommentOpcode, 1);
         CgLocalWriteAmlData (Op, &CommentOption, 1);
-
-        /* +1 is what emits the 0x00 at the end of this opcode. */
-
         CgLocalWriteAmlData (Op, NewFilename, strlen (NewFilename) + 1); 
+/* 
+        CommentOption = PARENTFILENAME_COMMENT;
+        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+        CgLocalWriteAmlData (Op, &CommentOption, 1);
+        CgLocalWriteAmlData (Op, ParentFilename, strlen (ParentFilename) + 1); 
+       
+*/ 
+        /* prevent multiple writes of the same comment */
+
+        Op->Asl.FileChanged = FALSE;
     }
 
     /*
@@ -788,7 +833,7 @@ CgWriteTableHeader (
         if (Op->Asl.CommentList!=NULL)
         {
             Current = Op->Asl.CommentList; 
-            while (Current!=0)
+            while (Current)
             {
                 CommentLength = strlen (Current->Comment)+3;
                 printf ("Length of standard comment +3 (including space for 0xA9 0x01 and 0x00): %d\n", CommentLength);

@@ -1003,14 +1003,15 @@ typedef union acpi_parse_value
 
 /* #defines for categories of comments */
 
-#define STANDARD_COMMENT   1
-#define INLINE_COMMENT     2
-#define ENDNODE_COMMENT    3
-#define OPENBRACE_COMMENT  4
-#define CLOSEBRACE_COMMENT 5
-#define STD_DEFBLK_COMMENT 6
-#define END_DEFBLK_COMMENT 7
-#define FILENAME_COMMENT   8
+#define STANDARD_COMMENT        1
+#define INLINE_COMMENT          2
+#define ENDNODE_COMMENT         3
+#define OPENBRACE_COMMENT       4
+#define CLOSEBRACE_COMMENT      5
+#define STD_DEFBLK_COMMENT      6
+#define END_DEFBLK_COMMENT      7
+#define FILENAME_COMMENT        8
+#define PARENTFILENAME_COMMENT  9
 
 #define ACPI_MAX_FILENAME_LENGTH 500
 
@@ -1095,6 +1096,7 @@ typedef struct acpi_parse_obj_asl
     union acpi_parse_object         *ParentMethod;
     char                            *Filename;
     BOOLEAN                         FileChanged;
+    char                            *ParentFilename;
     char                            *ExternalName;
     char                            *Namepath;
     char                            NameSeg[4];

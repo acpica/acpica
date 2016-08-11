@@ -175,7 +175,7 @@ AcpiDmPushFileStack (
 
 void
 AcpiDmPopFileStack (
-    ACPI_PARSE_OBJECT       *Op);
+    char                    *Op);
 
 
 /*******************************************************************************
@@ -712,7 +712,7 @@ AcpiDmDescendingOp (
         }
         else
         {
-            AcpiDmPopFileStack (Op);
+            AcpiDmPopFileStack (Op->Common.PsFilename);
         }
     }
 
@@ -1202,7 +1202,7 @@ AcpiDmDescendingOp (
  *
  * FUNCTION:    AcpiDmPopFileStack
  *
- * PARAMETERS:  None
+ * PARAMETERS:  char* file name to pop to.
  *
  * RETURN:      0 if a node was popped, -1 otherwise
  *
@@ -1215,16 +1215,16 @@ AcpiDmDescendingOp (
 
 void
 AcpiDmPopFileStack (
-    ACPI_PARSE_OBJECT       *Op)
+    char                    *PsFilename)
 {
-    if (Op->Common.PsFilename && AcpiGbl_IncludeFileStack)
+    if (PsFilename && AcpiGbl_IncludeFileStack)
     {
     printf ("Attempting to pop.\n"
             "    FileStack top: %s\n"
             "    Node filename: %s\n", 
-            AcpiGbl_IncludeFileStack->Filename, Op->Common.PsFilename);
+            AcpiGbl_IncludeFileStack->Filename, PsFilename);
     }
-    if (AcpiGbl_IncludeFileStack->Next)
+    while (AcpiGbl_IncludeFileStack->Next && strcmp (PsFilename, AcpiGbl_IncludeFileStack->Filename))
     {
         printf ("Popping the file: %s\n", AcpiGbl_IncludeFileStack->Filename);
 
@@ -1272,12 +1272,12 @@ AcpiDmAscendingOp (
 
     printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
     if (Op->Common.PsFilename && AcpiGbl_IncludeFileStack &&
-        strcmp (AcpiGbl_IncludeFileStack->Filename, Op->Common.PsFilename)!=0)
+        strcmp (AcpiGbl_IncludeFileStack->Filename, Op->Common.PsFilename))
     {
 
         if (AcpiDmFilenameExistsInStack (Op->Common.PsFilename))
         {
-            AcpiDmPopFileStack (Op);
+            AcpiDmPopFileStack (Op->Common.PsFilename);
         }
     }
 
