@@ -258,6 +258,7 @@ AcpiPsAllocOp (
         Op->Common.OpenBraceComment  = NULL;
         Op->Common.CloseBraceComment = NULL;
         Op->Common.PsFilename        = AcpiGbl_CurrentFilename;
+        printf("Initialized PsFilename to %s\n", Op->Common.PsFilename);
         if (Opcode == AML_SCOPE_OP)
         {
             AcpiGbl_CurrentScope = Op;  

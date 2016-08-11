@@ -377,6 +377,7 @@ AcpiPsBuildNamedOp (
         (*Op)->Common.CommentList = UnnamedOp->Common.CommentList;
         UnnamedOp->Common.CommentList = NULL;
     }
+    (*Op)->Common.PsFilename = UnnamedOp->Common.PsFilename;
 
     if ((*Op)->Common.AmlOpcode == AML_REGION_OP ||
         (*Op)->Common.AmlOpcode == AML_DATA_REGION_OP)

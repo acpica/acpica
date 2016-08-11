@@ -658,7 +658,6 @@ AcpiDmPushFileStack (
     AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename); 
 
     /* Update ACPI_FILE_OUT to this file */
-
     AcpiOsRedirectOutput (FNode->File);
 
     /* Add to the top of the stack and update the current filename */
@@ -699,6 +698,8 @@ AcpiDmDescendingOp (
 
 
     /* AcpiOsPrintf (" [HDW]"); */
+
+    printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
 
 
     if (Op->Common.PsFilename && AcpiGbl_IncludeFileStack &&
@@ -1188,8 +1189,6 @@ AcpiDmDescendingOp (
             AcpiDmIndent (Level);
             AcpiDmOpenBraceWriteComment(Op);
             AcpiOsPrintf ("\n");
-           
-            //AcpiOsPrintf ("{\n");
         }
     }
 
@@ -1240,7 +1239,7 @@ AcpiDmPopFileStack (
         /* Set this as a new file and update current file */
 
         AcpiOsRedirectOutput (AcpiGbl_IncludeFileStack->File);
-        AcpiOsPrintf ("Popped just now\n");
+        printf ("Popped just now. Top of stack: %s\n", AcpiGbl_IncludeFileStack->Filename);
     }
 }
 
@@ -1270,12 +1269,8 @@ AcpiDmAscendingOp (
 
 
     /* AcpiOsPrintf (" [HAW]"); */
-    printf ("Attempting to pop.\n"
-            "    FileStack top: %s\n"
-            "    Node filename: %s\n", 
-            AcpiGbl_IncludeFileStack->Filename, Op->Common.PsFilename);
 
-
+    printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
     if (Op->Common.PsFilename && AcpiGbl_IncludeFileStack &&
         strcmp (AcpiGbl_IncludeFileStack->Filename, Op->Common.PsFilename)!=0)
     {
@@ -1312,6 +1307,7 @@ AcpiDmAscendingOp (
             }
         }
         AcpiOsPrintf ("\n\n");
+
 
 
         return (AE_OK);
