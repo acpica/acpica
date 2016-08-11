@@ -116,6 +116,7 @@
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
 #include "amlcode.h"
+#include "acapps.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslcodegen")
@@ -322,6 +323,9 @@ CgWriteAmlDefBlockComment(
     UINT8                   CommentOpcode;
     UINT8                   CommentOption = FILENAME_COMMENT;
     ACPI_COMMENT_LIST_NODE  *Current;
+    char                    *NewFilename; 
+    char                    *Position;
+    char                    *DirectoryPosition;
 
 
     if (Op->Asl.ParseOpcode != PARSEOP_DEFINITION_BLOCK)
@@ -334,14 +338,34 @@ CgWriteAmlDefBlockComment(
 
     printf ("Printing comments for a definition block..\n");
     
-    /* first, print the file name comment */
+    /* first, print the file name comment after changing .asl to .dsl */
+    NewFilename = UtStringCacheCalloc (strlen (Op->Asl.Filename)); 
+    strcpy (NewFilename, Op->Asl.Filename);
+    DirectoryPosition = strrchr (NewFilename, '/');
+    Position = strrchr (NewFilename, '.');
+
+    if (Position && (Position > DirectoryPosition))
+    {
+        /* Tack on the new suffix */
+
+        Position++;
+        *Position = 0;
+        strcat (Position, FILE_SUFFIX_DISASSEMBLY);
+    }
+    else
+    {
+        /* No dot, add one and then the suffix */
+
+        strcat (NewFilename, ".");
+        strcat (NewFilename, FILE_SUFFIX_DISASSEMBLY);
+    }
     
     CgLocalWriteAmlData (Op, &CommentOpcode, 1);
     CgLocalWriteAmlData (Op, &CommentOption, 1);
 
     /* +1 is what emits the 0x00 at the end of this opcode. */
 
-    CgLocalWriteAmlData (Op, Op->Asl.Filename, strlen (Op->Asl.Filename) + 1); 
+    CgLocalWriteAmlData (Op, NewFilename, strlen (NewFilename) + 1); 
 
     CommentOption = STD_DEFBLK_COMMENT;
     while (Current)
@@ -392,6 +416,9 @@ CgWriteAmlComment(
     UINT8                   CommentOpcode;
     ACPI_COMMENT_LIST_NODE  *Current;
     UINT8                   CommentOption;
+    char                    *Position;
+    char                    *DirectoryPosition;
+    char                    *NewFilename;
 
     if (Op->Asl.ParseOpcode == PARSEOP_DEFINITION_BLOCK)
     {
@@ -404,10 +431,35 @@ CgWriteAmlComment(
     /* Print out the filename comment if needed */
     if (Op->Asl.FileChanged)
     {
+        /* first, print the file name comment after changing .asl to .dsl */
+        NewFilename = UtStringCacheCalloc (strlen (Op->Asl.Filename)); 
+        strcpy (NewFilename, Op->Asl.Filename);
+        DirectoryPosition = strrchr (NewFilename, '/');
+        Position = strrchr (NewFilename, '.');
+
+        if (Position && (Position > DirectoryPosition))
+        {
+            /* Tack on the new suffix */
+
+            Position++;
+            *Position = 0;
+            strcat (Position, FILE_SUFFIX_DISASSEMBLY);
+        }
+        else
+        {
+            /* No dot, add one and then the suffix */
+
+            strcat (NewFilename, ".");
+            strcat (NewFilename, FILE_SUFFIX_DISASSEMBLY);
+        }
+    
         CommentOption = FILENAME_COMMENT;
         CgLocalWriteAmlData (Op, &CommentOpcode, 1);
         CgLocalWriteAmlData (Op, &CommentOption, 1);
-        CgLocalWriteAmlData (Op, Op->Asl.Filename, strlen (Op->Asl.Filename) + 1); 
+
+        /* +1 is what emits the 0x00 at the end of this opcode. */
+
+        CgLocalWriteAmlData (Op, NewFilename, strlen (NewFilename) + 1); 
     }
 
     /*

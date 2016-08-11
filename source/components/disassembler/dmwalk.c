@@ -579,6 +579,38 @@ AcpiDmCloseParenWriteComment(
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmFilenameExistsInStack
+ *
+ * PARAMETERS:  Filenanme
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: for -ca option: look for the given filename in the stack.
+ *              Returns TRUE if it exists, returns FALSE if it doesn't.
+ *
+ ******************************************************************************/
+
+static BOOLEAN
+AcpiDmFilenameExistsInStack(
+    char                    *Filename)
+{
+    ACPI_FILE_NODE          *Current = AcpiGbl_IncludeFileStack;
+
+
+    while (Current)
+    {
+        if (!strcmp (Current->Filename, Filename))
+        {
+            return (TRUE);
+        }
+        Current = Current->Next;
+    }
+    return (FALSE);    
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmPushFileStack
  *
  * PARAMETERS:  ACPI_PARSE_OBJECT
@@ -598,8 +630,6 @@ AcpiDmPushFileStack (
     UINT32                  Level)
 {
     ACPI_FILE_NODE          *FNode = NULL;
-    char                    *Position;
-    char                    *DirectoryPosition;
 
 
     /*
@@ -607,67 +637,35 @@ AcpiDmPushFileStack (
      * the file that is currently being written, open the file, push it on
      * the file stack and write to this file.
      */
-    if (AcpiGbl_CurrentFilename && Op->Common.PsFilename && 
-        strcmp (AcpiGbl_CurrentFilename, Op->Common.PsFilename))
+    printf ("Pushing a new file: %s\n", Op->Common.PsFilename);
+
+    /* Create a new file and push on the stack */
+
+    FNode = AcpiOsAcquireObject(AcpiGbl_FileCache);
+    strcpy (FNode->Filename, Op->Common.PsFilename);
+
+    FNode->File = fopen (FNode->Filename, "w+");
+    if (!FNode->File)
     {
-        printf ("Pushing  a new file: %s\n", Op->Common.PsFilename);
-
-        /* Create a new file and push on the stack */
-
-        FNode = AcpiOsAcquireObject(AcpiGbl_FileCache);
-        strcpy(FNode->Filename, Op->Common.PsFilename);
-
-        /* Try to find the last dot in the filename */
-
-        DirectoryPosition = strrchr (FNode->Filename, '/');
-        Position = strrchr (FNode->Filename, '.');
-
-        if (Position && (Position > DirectoryPosition))
-        {
-            /* Tack on the new suffix */
-
-            Position++;
-            *Position = 0;
-            strcat (Position, FILE_SUFFIX_DISASSEMBLY);
-        }
-        else
-        {
-            /* No dot, add one and then the suffix */
-
-            strcat (FNode->Filename, ".");
-            strcat (FNode->Filename, FILE_SUFFIX_DISASSEMBLY);
-        }
-
-        if (!FNode->Filename)
-        {
-            fprintf (stderr, "Could not generate output filename\n");
-            return (AE_ERROR);
-        }
-
-        FNode->File = fopen (FNode->Filename, "w+");
-        if (!FNode->File)
-        {
-            fprintf (stderr, "Could not open output file %s\n",
-                FNode->Filename);
-            return (AE_ERROR);
-        }
-   
-        /* print include statement */
-        
-        AcpiDmIndent (Level);
-        AcpiOsPrintf("Include (\"%s\")\n", FNode->Filename); 
-
-        /* Update ACPI_FILE_OUT to this file */
-
-        AcpiOsRedirectOutput (FNode->File);
-
-        /* Add to the top of the stack and update the current filename */
-        
-        FNode->Next = AcpiGbl_IncludeFileStack;
-        AcpiGbl_IncludeFileStack = FNode;
-        AcpiGbl_CurrentFilename  = Op->Common.PsFilename;
-        
+        fprintf (stderr, "Could not open output file %s\n",
+            FNode->Filename);
+        return (AE_ERROR);
     }
+   
+    /* print include statement */
+        
+    AcpiDmIndent (Level);
+    AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename); 
+
+    /* Update ACPI_FILE_OUT to this file */
+
+    AcpiOsRedirectOutput (FNode->File);
+
+    /* Add to the top of the stack and update the current filename */
+        
+    FNode->Next = AcpiGbl_IncludeFileStack;
+    AcpiGbl_IncludeFileStack = FNode;
+
     return (AE_OK);
 }
 
@@ -702,13 +700,25 @@ AcpiDmDescendingOp (
 
     /* AcpiOsPrintf (" [HDW]"); */
 
-    AcpiDmPushFileStack (Op, Level);
+
+    if (Op->Common.PsFilename && AcpiGbl_IncludeFileStack &&
+        strcmp (AcpiGbl_IncludeFileStack->Filename, Op->Common.PsFilename))
+    {
+
+        if (!AcpiDmFilenameExistsInStack (Op->Common.PsFilename))
+        {
+            AcpiDmPushFileStack (Op, Level);
+        }
+        else
+        {
+            AcpiDmPopFileStack (Op);
+        }
+    }
 
     /* If this parse node has regular comments, print them here. */
 
     while (CommentNode)
     {
-        
         AcpiDmIndent (Level);
         AcpiOsPrintf("%s\n", CommentNode->Comment);
         CommentNode->Comment = NULL;
@@ -1183,12 +1193,6 @@ AcpiDmDescendingOp (
         }
     }
 
-   /* 
-    if (Op->Common.InlineComment)
-    {
-        AcpiOsPrintf ("%s",Op->Common.InlineComment);
-        Op->Common.InlineComment = NULL;
-    }   */
     /*AcpiOsPrintf (" [hello descending world]");*/
 
     return (AE_OK);
@@ -1214,9 +1218,16 @@ void
 AcpiDmPopFileStack (
     ACPI_PARSE_OBJECT       *Op)
 {
-    if (strcmp (AcpiGbl_CurrentFilename, Op->Common.PsFilename)!=0)
+    if (Op->Common.PsFilename && AcpiGbl_IncludeFileStack)
     {
-        printf ("Popping the file: %s\n", Op->Common.PsFilename);
+    printf ("Attempting to pop.\n"
+            "    FileStack top: %s\n"
+            "    Node filename: %s\n", 
+            AcpiGbl_IncludeFileStack->Filename, Op->Common.PsFilename);
+    }
+    if (AcpiGbl_IncludeFileStack->Next)
+    {
+        printf ("Popping the file: %s\n", AcpiGbl_IncludeFileStack->Filename);
 
         /* Close the current include file */
 
@@ -1229,7 +1240,7 @@ AcpiDmPopFileStack (
         /* Set this as a new file and update current file */
 
         AcpiOsRedirectOutput (AcpiGbl_IncludeFileStack->File);
-        AcpiGbl_CurrentFilename = AcpiGbl_IncludeFileStack->Filename;
+        AcpiOsPrintf ("Popped just now\n");
     }
 }
 
@@ -1259,6 +1270,21 @@ AcpiDmAscendingOp (
 
 
     /* AcpiOsPrintf (" [HAW]"); */
+    printf ("Attempting to pop.\n"
+            "    FileStack top: %s\n"
+            "    Node filename: %s\n", 
+            AcpiGbl_IncludeFileStack->Filename, Op->Common.PsFilename);
+
+
+    if (Op->Common.PsFilename && AcpiGbl_IncludeFileStack &&
+        strcmp (AcpiGbl_IncludeFileStack->Filename, Op->Common.PsFilename)!=0)
+    {
+
+        if (AcpiDmFilenameExistsInStack (Op->Common.PsFilename))
+        {
+            AcpiDmPopFileStack (Op);
+        }
+    }
 
     if (Op->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)
     {

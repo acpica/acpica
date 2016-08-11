@@ -482,6 +482,7 @@ AdParseTable (
     {
         return (AE_NO_MEMORY);
     }
+    AcpiGbl_ParseOpRoot->Common.PsFilename = AcpiGbl_IncludeFileStack->Filename;
 
     /* Create and initialize a new walk state */
 

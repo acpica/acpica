@@ -338,8 +338,15 @@ AdAmlDisassemble (
     }
 
     *OutFilename = DisasmFilename;
-    AcpiGbl_CurrentFilename = DisasmFilename;
+
+    /* Setup the filestack */
+
     printf ("Currentfilename = %s\n", AcpiGbl_CurrentFilename);
+    AcpiGbl_IncludeFileStack = AcpiOsAcquireObject(AcpiGbl_FileCache);
+    AcpiGbl_IncludeFileStack->Next = NULL;
+    AcpiGbl_IncludeFileStack->File = ACPI_FILE_OUT;
+    strcpy (AcpiGbl_IncludeFileStack->Filename, DisasmFilename);
+ 
 
     /* Disassemble all AML tables within the file */
 
