@@ -124,22 +124,6 @@
 #define ASL_HEX_CONSTANT        3
 
 
-/* File node - used for "Include" operator file stack */
-
-typedef struct asl_file_node
-{
-    FILE                    *File;
-    UINT32                  CurrentLineNumber;
-    YY_BUFFER_STATE         State;
-    char                    *Filename;
-    struct asl_file_node    *Next;
-
-} ASL_FILE_NODE;
-
-/* File stack for the "Include" operator (NOT #include operator) */
-
-ASL_FILE_NODE               *Gbl_IncludeFileStack = NULL;
-
 
 /* Definitions for comment state */
 

@@ -416,4 +416,15 @@ typedef struct asl_comment_state
 } ASL_COMMENT_STATE;
 
 
+typedef struct yy_buffer_state *YY_BUFFER_STATE;
+typedef struct asl_file_node
+{
+    FILE                    *File;
+    UINT32                  CurrentLineNumber;
+    YY_BUFFER_STATE         State;
+    char                    *Filename;
+    struct asl_file_node    *Next;
+
+} ASL_FILE_NODE;
+
 #endif  /* __ASLTYPES_H */

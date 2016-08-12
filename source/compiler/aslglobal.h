@@ -338,6 +338,8 @@ ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_TableId, "NO_ID");
 ASL_EXTERN UINT8                    ASL_INIT_GLOBAL (Gbl_PruneDepth, 0);
 ASL_EXTERN UINT16                   ASL_INIT_GLOBAL (Gbl_PruneType, 0);
 
+ASL_EXTERN ASL_FILE_NODE            ASL_INIT_GLOBAL (*Gbl_IncludeFileStack, NULL);
+
 /* Specific to the -q option */
 
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_CaptureComments, FALSE);
