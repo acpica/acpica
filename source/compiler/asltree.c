@@ -242,7 +242,14 @@ TrAllocateNode (
             if (strcmp (Gbl_CommentState.Latest_Parse_Node->Asl.Filename, Op->Asl.Filename))
             {
                 Op->Asl.FileChanged = TRUE;
-                Op->Asl.ParentFilename = Gbl_CommentState.Latest_Parse_Node->Asl.Filename;
+                if (Op->Asl.ParentFilename && !strcmp (Op->Asl.Filename, Gbl_CommentState.Latest_Parse_Node->Asl.ParentFilename))
+                {
+                   Op->Asl.ParentFilename = Op->Asl.Filename;
+                }
+                else
+                {
+                    Op->Asl.ParentFilename = Gbl_CommentState.Latest_Parse_Node->Asl.Filename;
+                }
             }
         }
 

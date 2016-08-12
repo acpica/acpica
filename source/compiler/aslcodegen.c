@@ -470,7 +470,7 @@ CgWriteAmlComment(
     ACPI_COMMENT_LIST_NODE  *Current;
     UINT8                   CommentOption;
     char                    *NewFilename;
-  //  char                    *ParentFilename;
+    char                    *ParentFilename;
 
     if (Op->Asl.ParseOpcode == PARSEOP_DEFINITION_BLOCK)
     {
@@ -487,7 +487,6 @@ CgWriteAmlComment(
         /* first, print the file name comment after changing .asl to .dsl */
 
         NewFilename = CgChangeFileExt(Op->Asl.Filename, FILE_SUFFIX_DISASSEMBLY);
- //       ParentFilename = CgChangeFileExt(Op->Asl.ParentFilename, FILE_SUFFIX_DISASSEMBLY);
 
         printf ("Writing file comment, \"%s\" for %s\n", NewFilename, Op->Asl.ParseOpName);
     
@@ -495,13 +494,17 @@ CgWriteAmlComment(
         CgLocalWriteAmlData (Op, &CommentOpcode, 1);
         CgLocalWriteAmlData (Op, &CommentOption, 1);
         CgLocalWriteAmlData (Op, NewFilename, strlen (NewFilename) + 1); 
-/* 
-        CommentOption = PARENTFILENAME_COMMENT;
-        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-        CgLocalWriteAmlData (Op, &CommentOption, 1);
-        CgLocalWriteAmlData (Op, ParentFilename, strlen (ParentFilename) + 1); 
+
+        if (Op->Asl.ParentFilename && strcmp (Op->Asl.ParentFilename, Op->Asl.Filename))
+        { 
+            ParentFilename = CgChangeFileExt(Op->Asl.ParentFilename, FILE_SUFFIX_DISASSEMBLY);
+            CommentOption = PARENTFILENAME_COMMENT;
+            CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+            CgLocalWriteAmlData (Op, &CommentOption, 1);
+            CgLocalWriteAmlData (Op, ParentFilename, strlen (ParentFilename) + 1); 
+        }
        
-*/ 
+ 
         /* prevent multiple writes of the same comment */
 
         Op->Asl.FileChanged = FALSE;
