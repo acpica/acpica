@@ -218,7 +218,7 @@ LnPackageLengthWalk (
             if (Op->Asl.FileChanged)
             {
                 TotalCommentLength += strlen (Op->Asl.Filename) + 3;
-                if (strcmp (Op->Asl.Filename, Op->Asl.ParentFilename))
+                if (Op->Asl.ParentFilename && strcmp (Op->Asl.Filename, Op->Asl.ParentFilename))
                 {
                     TotalCommentLength += strlen (Op->Asl.ParentFilename) + 3;
                 }

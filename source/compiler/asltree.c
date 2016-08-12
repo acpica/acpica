@@ -212,6 +212,7 @@ TrAllocateNode (
     UINT32                  ParseOpcode)
 {
     ACPI_PARSE_OBJECT       *Op;
+    ACPI_PARSE_OBJECT       *LatestNode = Gbl_CommentState.Latest_Parse_Node;
 
 
     Op = TrGetNextNode ();
@@ -237,18 +238,23 @@ TrAllocateNode (
          * Check to see if the file name has changed before resetting the 
          * latest parse node.
          */
-        if (Gbl_CommentState.Latest_Parse_Node)
+        if (LatestNode && (ParseOpcode != PARSEOP_INCLUDE_END))
         {
-            if (strcmp (Gbl_CommentState.Latest_Parse_Node->Asl.Filename, Op->Asl.Filename))
+            if (strcmp (LatestNode->Asl.Filename, Op->Asl.Filename))
             {
                 Op->Asl.FileChanged = TRUE;
-                if (Op->Asl.ParentFilename && !strcmp (Op->Asl.Filename, Gbl_CommentState.Latest_Parse_Node->Asl.ParentFilename))
+
+                if (Gbl_IncludeFileStack && Gbl_IncludeFileStack->Next)
                 {
-                   Op->Asl.ParentFilename = Op->Asl.Filename;
+                    Op->Asl.ParentFilename = Gbl_IncludeFileStack->Next->Filename;
+                }
+                else if (Gbl_IncludeFileStack)
+                {
+                    Op->Asl.ParentFilename = Gbl_IncludeFileStack->Filename;
                 }
                 else
                 {
-                    Op->Asl.ParentFilename = Gbl_CommentState.Latest_Parse_Node->Asl.Filename;
+                    Op->Asl.ParentFilename = NULL;
                 }
             }
         }
