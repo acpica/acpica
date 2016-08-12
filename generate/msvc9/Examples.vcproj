@@ -381,6 +381,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\utstrtoul64.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utxface.c"
 					>
 				</File>

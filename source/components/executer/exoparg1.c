@@ -622,8 +622,9 @@ AcpiExOpcode_1A_1T_1R (
 
     case AML_TO_INTEGER_OP:         /* ToInteger (Data, Result) */
 
-        Status = AcpiExConvertToInteger (
-            Operand[0], &ReturnDesc, ACPI_ANY_BASE);
+        /* Perform "explicit" conversion */
+
+        Status = AcpiExConvertToInteger (Operand[0], &ReturnDesc, 0);
         if (ReturnDesc == Operand[0])
         {
             /* No conversion performed, add ref to handle return value */

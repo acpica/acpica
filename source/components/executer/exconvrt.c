@@ -209,8 +209,8 @@ AcpiExConvertToInteger (
          * of ACPI 3.0) is that the ToInteger() operator allows both decimal
          * and hexadecimal strings (hex prefixed with "0x").
          */
-        Status = AcpiUtStrtoul64 ((char *) Pointer, Flags,
-            AcpiGbl_IntegerByteWidth, &Result);
+        Status = AcpiUtStrtoul64 (ACPI_CAST_PTR (char, Pointer),
+            (AcpiGbl_IntegerByteWidth | Flags), &Result);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -756,7 +756,8 @@ AcpiExConvertToTargetType (
              * These types require an Integer operand. We can convert
              * a Buffer or a String to an Integer if necessary.
              */
-            Status = AcpiExConvertToInteger (SourceDesc, ResultDesc, 16);
+            Status = AcpiExConvertToInteger (SourceDesc, ResultDesc,
+                ACPI_STRTOUL_BASE16);
             break;
 
         case ACPI_TYPE_STRING:

@@ -648,7 +648,13 @@ main (
 
     /*
      * Main initialization for ACPICA subsystem
-     * TBD: Need a way to call this after the ACPI table "LOAD" command
+     * TBD: Need a way to call this after the ACPI table "LOAD" command?
+     *
+     * NOTE: This initialization does not match the _Lxx and _Exx methods
+     * to individual GPEs, as there are no real GPEs when the hardware
+     * is simulated - because there is no namespace until AeLoadTables is
+     * executed. This may have to change if AcpiExec is ever run natively
+     * on actual hardware (such as under UEFI).
      */
     Status = AcpiEnableSubsystem (InitFlags);
     if (ACPI_FAILURE (Status))

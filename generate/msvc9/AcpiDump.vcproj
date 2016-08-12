@@ -323,6 +323,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\uthex.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utmath.c"
 					>
 				</File>
@@ -332,6 +336,10 @@
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utstring.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\components\utilities\utstrtoul64.c"
 					>
 				</File>
 				<File
