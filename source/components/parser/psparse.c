@@ -182,8 +182,10 @@ AcpiPsCommentExists (
     UINT8                    *ToCheck)
 {
     ACPI_COMMENT_ADDR_NODE   *Current = AcpiGbl_CommentAddrListHead;
+    UINT8                    Option   = *(ToCheck + 1);
     
-    if (*(ToCheck + 1) == FILENAME_COMMENT)
+
+    if ((Option == FILENAME_COMMENT) || (Option == PARENTFILENAME_COMMENT))
     {
        return (FALSE); 
     }
@@ -210,7 +212,7 @@ AcpiPsCommentExists (
                 return (TRUE);
             }
         }
-        printf("========== Ending traversal =====================\n");
+        printf ("========== Ending traversal =====================\n");
 
         /* 
          * If the execution gets to this point, it means that this address
@@ -368,6 +370,20 @@ AcpiPsCaptureJustComments (
                     printf ("Found a filename. ");
                     AcpiGbl_CurrentFilename = ACPI_CAST_PTR (char, ParserState->Aml);
                     printf ("Setting the Current file name to %s\n", AcpiGbl_CurrentFilename);
+
+                    /* 
+                     * Since PARENTFILENAME_COMMENT may come after FILENAME_COMMENT, 
+                     * we need to reset the AcpiGbl_CurrentParentFilename to itself in case 
+                     * PARENTFILENAME_COMMENT does not exist.
+                     */
+                    AcpiGbl_CurrentParentFilename = AcpiGbl_CurrentFilename;
+                    break;
+
+                case PARENTFILENAME_COMMENT:
+
+                    printf ("Found a filename. ");
+                    AcpiGbl_CurrentParentFilename = ACPI_CAST_PTR (char, ParserState->Aml);
+                    printf ("Setting the Current file name to %s\n", AcpiGbl_CurrentParentFilename);
                     break;
 
                 default:

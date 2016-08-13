@@ -639,6 +639,18 @@ AcpiDmPushFileStack (
      */
     printf ("Pushing a new file: %s\n", Op->Common.PsFilename);
 
+    /* 
+     * If file that is being pushed is not a child of the curruent file on the
+     * file stack, we can assume that this file is associated with a different
+     * file on the stack. So pop and close all files on the stack until we get
+     * to this file's parent
+     */
+    if (strcmp (Op->Common.PsParentFilename, AcpiGbl_IncludeFileStack->Filename)
+        && AcpiDmFilenameExistsInStack(Op->Common.PsParentFilename))
+    {
+        AcpiDmPopFileStack(Op->Common.PsParentFilename);
+    }
+
     /* Create a new file and push on the stack */
 
     FNode = AcpiOsAcquireObject(AcpiGbl_FileCache);
@@ -712,7 +724,7 @@ AcpiDmDescendingOp (
         }
         else
         {
-            AcpiDmPopFileStack (Op->Common.PsFilename);
+            AcpiDmPopFileStack (Op->Common.PsParentFilename);
         }
     }
 
@@ -1215,16 +1227,16 @@ AcpiDmDescendingOp (
 
 void
 AcpiDmPopFileStack (
-    char                    *PsFilename)
+    char                    *TargetFilename)
 {
-    if (PsFilename && AcpiGbl_IncludeFileStack)
+    if (TargetFilename && AcpiGbl_IncludeFileStack)
     {
     printf ("Attempting to pop.\n"
             "    FileStack top: %s\n"
             "    Node filename: %s\n", 
-            AcpiGbl_IncludeFileStack->Filename, PsFilename);
+            AcpiGbl_IncludeFileStack->Filename, TargetFilename);
     }
-    while (AcpiGbl_IncludeFileStack->Next && strcmp (PsFilename, AcpiGbl_IncludeFileStack->Filename))
+    while (AcpiGbl_IncludeFileStack->Next && strcmp (TargetFilename, AcpiGbl_IncludeFileStack->Filename))
     {
         printf ("Popping the file: %s\n", AcpiGbl_IncludeFileStack->Filename);
 
@@ -1277,7 +1289,7 @@ AcpiDmAscendingOp (
 
         if (AcpiDmFilenameExistsInStack (Op->Common.PsFilename))
         {
-            AcpiDmPopFileStack (Op->Common.PsFilename);
+            AcpiDmPopFileStack (Op->Common.PsParentFilename);
         }
     }
 

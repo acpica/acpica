@@ -238,7 +238,7 @@ TrAllocateNode (
          * Check to see if the file name has changed before resetting the 
          * latest parse node.
          */
-        if (LatestNode && (ParseOpcode != PARSEOP_INCLUDE_END))
+        if (LatestNode && (ParseOpcode != PARSEOP_INCLUDE) && (ParseOpcode != PARSEOP_INCLUDE_END))
         {
             if (strcmp (LatestNode->Asl.Filename, Op->Asl.Filename))
             {
