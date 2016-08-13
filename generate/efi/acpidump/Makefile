@@ -21,7 +21,8 @@ vpath %.c \
 	$(ACPICA_TABLES)\
 	$(ACPICA_UTILITIES)\
 	$(ACPICA_COMMON)\
-	$(ACPICA_OSL)
+	$(ACPICA_OSL)\
+	$(ACPICA_EFI)
 
 HEADERS = \
 	$(wildcard $(ACPIDUMP)/*.h)
@@ -32,16 +33,19 @@ OBJECTS = \
 	$(OBJDIR)/apmain.o\
 	$(OBJDIR)/cmfsize.o\
 	$(OBJDIR)/getopt.o\
+	$(OBJDIR)/oseficlib.o\
 	$(OBJDIR)/osefitbl.o\
 	$(OBJDIR)/osefixf.o\
 	$(OBJDIR)/tbprint.o\
 	$(OBJDIR)/tbxfroot.o\
+	$(OBJDIR)/utascii.o\
 	$(OBJDIR)/utbuffer.o\
-	$(OBJDIR)/utdebug.o\
 	$(OBJDIR)/utclib.o\
+	$(OBJDIR)/utdebug.o\
 	$(OBJDIR)/utexcep.o\
 	$(OBJDIR)/utglobal.o\
 	$(OBJDIR)/utmath.o\
+	$(OBJDIR)/utnonansi.o\
 	$(OBJDIR)/utprint.o\
 	$(OBJDIR)/utstring.o\
 	$(OBJDIR)/utxferror.o

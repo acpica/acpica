@@ -117,10 +117,6 @@ SOURCE=..\..\source\common\getopt.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\os_specific\service_layers\oslibcfs.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\os_specific\service_layers\oswinxf.c
 # ADD CPP /Ze
 # End Source File
@@ -135,6 +131,10 @@ SOURCE=..\..\source\components\utilities\utaddress.c
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utalloc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utascii.c
 # End Source File
 # Begin Source File
 
@@ -225,10 +225,6 @@ SOURCE=..\..\source\components\utilities\utosi.c
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utownerid.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\utilities\utprint.c
 # End Source File
 # Begin Source File
 

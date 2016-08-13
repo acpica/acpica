@@ -445,11 +445,6 @@ DtFatal (
     DT_FIELD                *FieldObject,
     char                    *ExtraMessage);
 
-ACPI_STATUS
-DtStrtoul64 (
-    char                    *String,
-    UINT64                  *ReturnInteger);
-
 char*
 DtGetFieldValue (
     DT_FIELD                *Field);

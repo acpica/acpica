@@ -128,10 +128,6 @@ SOURCE=..\..\source\Common\getopt.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\os_specific\service_layers\oslibcfs.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\os_specific\service_layers\oswinxf.c
 # End Source File
 # End Group
@@ -141,6 +137,10 @@ SOURCE=..\..\source\os_specific\service_layers\oswinxf.c
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utalloc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utascii.c
 # End Source File
 # Begin Source File
 
@@ -181,10 +181,6 @@ SOURCE=..\..\source\components\utilities\utmisc.c
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utmutex.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\utilities\utprint.c
 # End Source File
 # Begin Source File
 

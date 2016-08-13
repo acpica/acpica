@@ -156,10 +156,6 @@ SOURCE=..\..\source\common\getopt.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\os_specific\service_layers\oslibcfs.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\os_specific\service_layers\oswinxf.c
 # End Source File
 # End Group
@@ -193,10 +189,6 @@ SOURCE=..\..\source\components\utilities\utnonansi.c
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utpredef.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\utilities\utprint.c
 # End Source File
 # Begin Source File
 

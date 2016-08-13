@@ -246,15 +246,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\uthex.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utmath.c"
 					>
 				</File>
 				<File
 					RelativePath="..\..\source\components\utilities\utnonansi.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\components\utilities\utprint.c"
 					>
 				</File>
 				<File
@@ -267,10 +267,6 @@
 				>
 				<File
 					RelativePath="..\..\source\common\getopt.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\os_specific\service_layers\oslibcfs.c"
 					>
 				</File>
 				<File
@@ -300,23 +296,6 @@
 				<File
 					RelativePath="..\..\source\tools\AcpiXtract\acpixtract.c"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions=""
-							BrowseInformation="0"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\tools\acpixtract\axmain.c"
