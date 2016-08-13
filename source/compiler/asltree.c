@@ -244,11 +244,7 @@ TrAllocateNode (
             {
                 Op->Asl.FileChanged = TRUE;
 
-                if (Gbl_IncludeFileStack && Gbl_IncludeFileStack->Next)
-                {
-                    Op->Asl.ParentFilename = Gbl_IncludeFileStack->Next->Filename;
-                }
-                else if (Gbl_IncludeFileStack)
+                if (Gbl_IncludeFileStack)
                 {
                     Op->Asl.ParentFilename = Gbl_IncludeFileStack->Filename;
                 }
