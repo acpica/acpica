@@ -174,8 +174,8 @@ AcpiUtAsciiToHexByte (
 
     /* Both ASCII characters must be valid hex digits */
 
-    if (!isxdigit (TwoAsciiChars[0]) ||
-        !isxdigit (TwoAsciiChars[1]))
+    if (!isxdigit ((int) TwoAsciiChars[0]) ||
+        !isxdigit ((int) TwoAsciiChars[1]))
     {
         return (AE_BAD_HEX_CONSTANT);
     }
