@@ -1231,7 +1231,9 @@ ACPI_STATUS (*ACPI_TABLE_HANDLER) (
 
 #define ACPI_TABLE_EVENT_LOAD           0x0
 #define ACPI_TABLE_EVENT_UNLOAD         0x1
-#define ACPI_NUM_TABLE_EVENTS           2
+#define ACPI_TABLE_EVENT_INSTALL        0x2
+#define ACPI_TABLE_EVENT_UNINSTALL      0x3
+#define ACPI_NUM_TABLE_EVENTS           4
 
 
 /* Address Spaces (For Operation Regions) */

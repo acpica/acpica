@@ -393,6 +393,14 @@ AcpiTbInstallStandardTable (
 
     AcpiTbInstallTableWithOverride (&NewTableDesc, Override, TableIndex);
 
+    /* Invoke table handler if present */
+
+    if (AcpiGbl_TableHandler)
+    {
+        (void) AcpiGbl_TableHandler (ACPI_TABLE_EVENT_INSTALL,
+            NewTableDesc.Pointer, AcpiGbl_TableHandlerContext);
+    }
+
 ReleaseAndExit:
 
     /* Release the temporary table descriptor */
