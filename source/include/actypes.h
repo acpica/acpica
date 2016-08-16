@@ -1154,13 +1154,6 @@ typedef struct acpi_statistics
 } ACPI_STATISTICS;
 
 
-/* Table Event Types */
-
-#define ACPI_TABLE_EVENT_LOAD           0x0
-#define ACPI_TABLE_EVENT_UNLOAD         0x1
-#define ACPI_NUM_TABLE_EVENTS           2
-
-
 /*
  * Types specific to the OS service interfaces
  */
@@ -1233,9 +1226,12 @@ ACPI_STATUS (*ACPI_TABLE_HANDLER) (
     void                            *Table,
     void                            *Context);
 
-#define ACPI_TABLE_LOAD             0x0
-#define ACPI_TABLE_UNLOAD           0x1
-#define ACPI_NUM_TABLE_EVENTS       2
+
+/* Table Event Types */
+
+#define ACPI_TABLE_EVENT_LOAD           0x0
+#define ACPI_TABLE_EVENT_UNLOAD         0x1
+#define ACPI_NUM_TABLE_EVENTS           2
 
 
 /* Address Spaces (For Operation Regions) */
