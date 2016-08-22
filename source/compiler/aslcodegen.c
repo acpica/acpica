@@ -515,7 +515,7 @@ CgWriteAmlComment(
      * If there is a such list in this node, print out the comment
      * as byte code.
      */
-    printf ("Printing comments for the following opcode: %s.\n", Op->Asl.ParseOpName);
+    //printf ("Printing comments for the following opcode: %s.\n", Op->Asl.ParseOpName);
     while (Current)
     {
         CommentOption = STANDARD_COMMENT;
