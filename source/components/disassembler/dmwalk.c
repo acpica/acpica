@@ -118,6 +118,7 @@
 #include "acparser.h"
 #include "amlcode.h"
 #include "acdebug.h"
+#include "acapps.h"
 
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
@@ -154,6 +155,27 @@ AcpiDmAscendingOp (
 static UINT32
 AcpiDmBlockType (
     ACPI_PARSE_OBJECT       *Op);
+
+static void
+AcpiDmCloseParenWriteComment(
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+AcpiDmCloseBraceWriteComment(
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+AcpiDmOpenBraceWriteComment(
+    ACPI_PARSE_OBJECT       *Op);
+
+static ACPI_STATUS
+AcpiDmPushFileStack (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level);
+
+void
+AcpiDmPopFileStack (
+    char                    *Op);
 
 
 /*******************************************************************************
@@ -458,6 +480,206 @@ AcpiDmListType (
     }
 }
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmCloseBraceWriteComment 
+ *
+ * PARAMETERS:  ACPI_PARSE_OBJECT
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Print a opening brace { and any open brace comments associated 
+ *              with this parse object.
+ *
+ ******************************************************************************/
+
+static void
+AcpiDmCloseBraceWriteComment(
+    ACPI_PARSE_OBJECT       *Op)
+{
+    AcpiOsPrintf ("}");
+/*
+    AcpiOsPrintf ("CLOSE BRACE ");
+    AcpiOsPrintf ("Op code: %d ", Op->Common.AmlOpcode);
+    AcpiOsPrintf ("Op name: %s\n", Op->Common.AmlOpName);
+*/
+    if (Op->Common.CloseBraceComment!=NULL)
+    {
+        AcpiOsPrintf (" %s", Op->Common.CloseBraceComment);
+        Op->Common.CloseBraceComment=NULL;
+    }
+}
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmOpenBraceWriteComment 
+ *
+ * PARAMETERS:  ACPI_PARSE_OBJECT
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Print a opening brace { and any open brace comments associated 
+ *              with this parse object.
+ *
+ ******************************************************************************/
+
+static void
+AcpiDmOpenBraceWriteComment(
+    ACPI_PARSE_OBJECT       *Op)
+{
+    AcpiOsPrintf ("{ ");
+
+/*    AcpiOsPrintf ("OPEN BRACE "); */
+   if ((Op->Common.Parent!=NULL) && (Op->Common.Parent->Common.OpenBraceComment!=NULL))
+   {
+/*
+       AcpiOsPrintf ("Op code: %d ", Op->Common.Parent->Common.AmlOpcode);
+       AcpiOsPrintf ("Op name: %s\n", Op->Common.Parent->Common.AmlOpName);
+*/
+       AcpiOsPrintf (" %s", Op->Common.Parent->Common.OpenBraceComment);
+       Op->Common.Parent->Common.OpenBraceComment=NULL;
+    }
+}
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmCloseParenWriteComment 
+ *
+ * PARAMETERS:  ACPI_PARSE_OBJECT
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Print a closing paren ) and any end node comments associated 
+ *              with this parse object.
+ *
+ ******************************************************************************/
+
+static void
+AcpiDmCloseParenWriteComment(
+    ACPI_PARSE_OBJECT       *Op)
+{
+    AcpiOsPrintf (")");
+/*
+    AcpiOsPrintf ("CLOSE PAREN ");
+    AcpiOsPrintf ("Op code: %d ", Op->Common.AmlOpcode);
+    AcpiOsPrintf ("Op name: %s\n", Op->Common.AmlOpName);
+*/
+    if (Op->Common.EndNodeComment!=NULL)
+    {
+        AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
+        Op->Common.EndNodeComment=NULL;
+    }
+    else if (Op->Common.Parent->Common.AmlOpcode == AML_IF_OP && Op->Common.Parent->Common.EndNodeComment!=NULL)
+    {
+        AcpiOsPrintf ("%s", Op->Common.Parent->Common.EndNodeComment);
+        Op->Common.Parent->Common.EndNodeComment = NULL;
+    }
+} 
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmFilenameExistsInStack
+ *
+ * PARAMETERS:  Filenanme
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: for -ca option: look for the given filename in the stack.
+ *              Returns TRUE if it exists, returns FALSE if it doesn't.
+ *
+ ******************************************************************************/
+
+static BOOLEAN
+AcpiDmFilenameExistsInStack(
+    char                    *Filename)
+{
+    ACPI_FILE_NODE          *Current = AcpiGbl_IncludeFileStack;
+
+
+    while (Current)
+    {
+        if (!strcmp (Current->Filename, Filename))
+        {
+            return (TRUE);
+        }
+        Current = Current->Next;
+    }
+    return (FALSE);    
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmPushFileStack
+ *
+ * PARAMETERS:  ACPI_PARSE_OBJECT
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: for -ca option: push a file on a stack. This is meant to allow
+ *              conversions of .asl files that include multiple other files.
+ *              Before redirecting the output to a new file, output an include 
+ *              statement.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiDmPushFileStack (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level)
+{
+    ACPI_FILE_NODE          *FNode = NULL;
+
+
+    /*
+     * If this parse node belongs in a different file than 
+     * the file that is currently being written, open the file, push it on
+     * the file stack and write to this file.
+     */
+    printf ("Pushing a new file: %s\n", Op->Common.PsFilename);
+
+    /* 
+     * If file that is being pushed is not a child of the curruent file on the
+     * file stack, we can assume that this file is associated with a different
+     * file on the stack. So pop and close all files on the stack until we get
+     * to this file's parent
+     */
+    if (strcmp (Op->Common.PsParentFilename, AcpiGbl_IncludeFileStack->Filename)
+        && AcpiDmFilenameExistsInStack(Op->Common.PsParentFilename))
+    {
+        AcpiDmPopFileStack(Op->Common.PsParentFilename);
+    }
+
+    /* Create a new file and push on the stack */
+
+    FNode = AcpiOsAcquireObject(AcpiGbl_FileCache);
+    strcpy (FNode->Filename, Op->Common.PsFilename);
+
+    FNode->File = fopen (FNode->Filename, "w+");
+    if (!FNode->File)
+    {
+        fprintf (stderr, "Could not open output file %s\n",
+            FNode->Filename);
+        return (AE_ERROR);
+    }
+   
+    /* print include statement */
+        
+    AcpiDmIndent (Level);
+    AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename); 
+
+    /* Update ACPI_FILE_OUT to this file */
+    AcpiOsRedirectOutput (FNode->File);
+
+    /* Add to the top of the stack and update the current filename */
+        
+    FNode->Next = AcpiGbl_IncludeFileStack;
+    AcpiGbl_IncludeFileStack = FNode;
+
+    return (AE_OK);
+}
+
 
 /*******************************************************************************
  *
@@ -484,7 +706,37 @@ AcpiDmDescendingOp (
     ACPI_PARSE_OBJECT       *NextOp;
     ACPI_PARSE_OBJECT       *NextOp2;
     UINT32                  AmlOffset;
+    ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.CommentList;
 
+
+    /* AcpiOsPrintf (" [HDW]"); */
+
+    printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
+
+
+    if (Op->Common.PsFilename && AcpiGbl_IncludeFileStack &&
+        strcmp (AcpiGbl_IncludeFileStack->Filename, Op->Common.PsFilename))
+    {
+
+        if (!AcpiDmFilenameExistsInStack (Op->Common.PsFilename))
+        {
+            AcpiDmPushFileStack (Op, Level);
+        }
+        else
+        {
+            AcpiDmPopFileStack (Op->Common.PsParentFilename);
+        }
+    }
+
+    /* If this parse node has regular comments, print them here. */
+
+    while (CommentNode)
+    {
+        AcpiDmIndent (Level);
+        AcpiOsPrintf("%s\n", CommentNode->Comment);
+        CommentNode->Comment = NULL;
+        CommentNode = CommentNode->Next;     
+    } 
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
 
@@ -675,6 +927,12 @@ AcpiDmDescendingOp (
         if (AcpiDmBlockType (Op) & BLOCK_PAREN)
         {
             AcpiOsPrintf (" (");
+            // print inline comments associated with this op.
+            if (Op->Common.InlineComment!=NULL)
+            {
+                AcpiOsPrintf ( "%s ", Op->Common.InlineComment);
+                Op->Common.InlineComment = NULL;
+            }
         }
 
         /* If this is a named opcode, print the associated name value */
@@ -719,7 +977,7 @@ AcpiDmDescendingOp (
             case AML_METHOD_OP:
 
                 AcpiDmMethodFlags (Op);
-                AcpiOsPrintf (")");
+                AcpiDmCloseParenWriteComment(Op);
 
                 /* Emit description comment for Method() with a predefined ACPI name */
 
@@ -732,6 +990,14 @@ AcpiDmDescendingOp (
 
                 AcpiDmCheckForHardwareId (Op);
                 AcpiOsPrintf (", ");
+
+                //Print comments associated with this name later on, we need to put this in a separate function...
+                if (Op->Common.NameComment)
+                {
+                    AcpiOsPrintf ("%s", Op->Common.NameComment);
+                    Op->Common.NameComment = NULL;
+                }
+
                 break;
 
             case AML_REGION_OP:
@@ -781,7 +1047,7 @@ AcpiDmDescendingOp (
             case AML_DEVICE_OP:
             case AML_THERMAL_ZONE_OP:
 
-                AcpiOsPrintf (")");
+                AcpiDmCloseParenWriteComment(Op);
                 break;
 
             default:
@@ -875,7 +1141,7 @@ AcpiDmDescendingOp (
                  */
                 NextOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
                 NextOp = NextOp->Common.Next;
-                AcpiOsPrintf (")");
+                AcpiDmCloseParenWriteComment(Op);
 
                 /* Emit description comment for Name() with a predefined ACPI name */
 
@@ -883,7 +1149,10 @@ AcpiDmDescendingOp (
 
                 AcpiOsPrintf ("\n");
                 AcpiDmIndent (Info->Level);
-                AcpiOsPrintf ("{\n");
+
+                AcpiDmOpenBraceWriteComment(Op);
+                AcpiOsPrintf ("\n");
+                //AcpiOsPrintf ("{\n");
                 return (AE_OK);
             }
 
@@ -930,11 +1199,60 @@ AcpiDmDescendingOp (
         {
             AcpiOsPrintf ("\n");
             AcpiDmIndent (Level);
-            AcpiOsPrintf ("{\n");
+            AcpiDmOpenBraceWriteComment(Op);
+            AcpiOsPrintf ("\n");
         }
     }
 
+    /*AcpiOsPrintf (" [hello descending world]");*/
+
     return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmPopFileStack
+ *
+ * PARAMETERS:  char* file name to pop to.
+ *
+ * RETURN:      0 if a node was popped, -1 otherwise
+ *
+ * DESCRIPTION: Pop the top of the input file stack and point the parser to
+ *              the saved parse buffer contained in the fnode. Also, set the
+ *              global line counters to the saved values. This function is
+ *              called when an include file reaches EOF.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmPopFileStack (
+    char                    *TargetFilename)
+{
+    if (TargetFilename && AcpiGbl_IncludeFileStack)
+    {
+    printf ("Attempting to pop.\n"
+            "    FileStack top: %s\n"
+            "    Node filename: %s\n", 
+            AcpiGbl_IncludeFileStack->Filename, TargetFilename);
+    }
+    while (AcpiGbl_IncludeFileStack->Next && strcmp (TargetFilename, AcpiGbl_IncludeFileStack->Filename))
+    {
+        printf ("Popping the file: %s\n", AcpiGbl_IncludeFileStack->Filename);
+
+        /* Close the current include file */
+
+        fclose (AcpiGbl_IncludeFileStack->File);
+
+        /* Update the top-of-stack */
+
+        AcpiGbl_IncludeFileStack = AcpiGbl_IncludeFileStack->Next;
+
+        /* Set this as a new file and update current file */
+
+        AcpiOsRedirectOutput (AcpiGbl_IncludeFileStack->File);
+        printf ("Popped just now. Top of stack: %s\n", AcpiGbl_IncludeFileStack->Filename);
+    }
 }
 
 
@@ -959,7 +1277,21 @@ AcpiDmAscendingOp (
 {
     ACPI_OP_WALK_INFO       *Info = Context;
     ACPI_PARSE_OBJECT       *ParentOp;
+    ACPI_COMMENT_LIST_NODE  *CurrentComment;
 
+
+    /* AcpiOsPrintf (" [HAW]"); */
+
+    printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
+    if (Op->Common.PsFilename && AcpiGbl_IncludeFileStack &&
+        strcmp (AcpiGbl_IncludeFileStack->Filename, Op->Common.PsFilename))
+    {
+
+        if (AcpiDmFilenameExistsInStack (Op->Common.PsFilename))
+        {
+            AcpiDmPopFileStack (Op->Common.PsParentFilename);
+        }
+    }
 
     if (Op->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)
     {
@@ -971,8 +1303,25 @@ AcpiDmAscendingOp (
     if ((Level == 0) && (Op->Common.AmlOpcode == AML_SCOPE_OP))
     {
         /* Indicates the end of the current descriptor block (table) */
+ 
+        AcpiDmCloseBraceWriteComment(Op);
 
-        AcpiOsPrintf ("}\n\n");
+        /* Print any comments that are at the end of the file here... */
+ 
+        CurrentComment = AcpiGbl_LastListHead;
+        if (CurrentComment)
+        {
+            AcpiOsPrintf ("\n");
+            while (CurrentComment)
+            {
+                AcpiOsPrintf("%s\n", CurrentComment->Comment);
+                CurrentComment = CurrentComment->Next;
+            }
+        }
+        AcpiOsPrintf ("\n\n");
+
+
+
         return (AE_OK);
     }
 
@@ -1033,12 +1382,12 @@ AcpiDmAscendingOp (
 
         if (Op->Common.DisasmFlags & ACPI_PARSEOP_EMPTY_TERMLIST)
         {
-            AcpiOsPrintf ("}");
+            AcpiDmCloseBraceWriteComment(Op);
         }
         else
         {
             AcpiDmIndent (Level);
-            AcpiOsPrintf ("}");
+            AcpiDmCloseBraceWriteComment(Op);
         }
 
         AcpiDmCommaIfListMember (Op);
@@ -1064,6 +1413,7 @@ AcpiDmAscendingOp (
             }
         }
         break;
+ 
 
     case BLOCK_NONE:
     default:
@@ -1125,7 +1475,7 @@ AcpiDmAscendingOp (
          */
         if (Op->Common.Next)
         {
-            AcpiOsPrintf (")");
+            AcpiDmCloseParenWriteComment(Op);
 
             /*
              * Emit a description comment for a Name() operator that is a
@@ -1140,12 +1490,15 @@ AcpiDmAscendingOp (
 
             AcpiOsPrintf ("\n");
             AcpiDmIndent (Level - 1);
-            AcpiOsPrintf ("{\n");
+            AcpiDmOpenBraceWriteComment(Op);
+            AcpiOsPrintf ("\n");
         }
         else
         {
             ParentOp->Common.DisasmFlags |= ACPI_PARSEOP_EMPTY_TERMLIST;
-            AcpiOsPrintf (") {");
+
+            AcpiDmCloseParenWriteComment(Op);
+            AcpiDmOpenBraceWriteComment(Op);
         }
     }
 
@@ -1167,6 +1520,6 @@ AcpiDmAscendingOp (
             Op->Asl.OperatorSymbol = NULL;
         }
     }
-
+    /*AcpiOsPrintf (" [hello ascending world]");*/
     return (AE_OK);
 }

@@ -126,7 +126,7 @@ typedef UINT32                          ACPI_MUTEX_HANDLE;
 
 /* Total number of aml opcodes defined */
 
-#define AML_NUM_OPCODES                 0x82
+#define AML_NUM_OPCODES                 0x83
 
 
 /* Forward declarations */
@@ -979,20 +979,44 @@ typedef union acpi_parse_value
 #endif
 
 #define ACPI_PARSE_COMMON \
-    union acpi_parse_object         *Parent;        /* Parent op */\
-    UINT8                           DescriptorType; /* To differentiate various internal objs */\
-    UINT8                           Flags;          /* Type of Op */\
-    UINT16                          AmlOpcode;      /* AML opcode */\
-    UINT8                           *Aml;           /* Address of declaration in AML */\
-    union acpi_parse_object         *Next;          /* Next op */\
-    ACPI_NAMESPACE_NODE             *Node;          /* For use by interpreter */\
-    ACPI_PARSE_VALUE                Value;          /* Value or args associated with the opcode */\
-    UINT8                           ArgListLength;  /* Number of elements in the arg list */\
+    union acpi_parse_object         *Parent;            /* Parent op */\
+    UINT8                           DescriptorType;     /* To differentiate various internal objs */\
+    UINT8                           Flags;              /* Type of Op */\
+    UINT16                          AmlOpcode;          /* AML opcode */\
+    UINT8                           *Aml;               /* Address of declaration in AML */\
+    union acpi_parse_object         *Next;              /* Next op */\
+    ACPI_NAMESPACE_NODE             *Node;              /* For use by interpreter */\
+    ACPI_PARSE_VALUE                Value;              /* Value or args associated with the opcode */\
+    UINT8                           ArgListLength;      /* Number of elements in the arg list */\
     ACPI_DISASM_ONLY_MEMBERS (\
-    UINT8                           DisasmFlags;    /* Used during AML disassembly */\
-    UINT8                           DisasmOpcode;   /* Subtype used for disassembly */\
-    char                            *OperatorSymbol;/* Used for C-style operator name strings */\
-    char                            AmlOpName[16])  /* Op name (debug only) */
+    UINT8                           DisasmFlags;        /* Used during AML disassembly */\
+    UINT8                           DisasmOpcode;       /* Subtype used for disassembly */\
+    char                            *OperatorSymbol;    /* Used for C-style operator name strings */\
+    char                            AmlOpName[16])      /* Op name (debug only) */\
+    UINT8                           Opt;                /* Extra integer constant */\
+    char                            *InlineComment;     /* For -ca option: inline comment associated with this node.*/\
+    char                            *EndNodeComment;    /* For -ca option: end of node comment associated with this node.*/\
+    char                            *NameComment;       /* For -ca option: inline comment associated with the first parameter of the name node.*/\
+    char                            *OpenBraceComment;  /* For -ca option: inline comment associated with the first parameter of the name node.*/\
+    char                            *CloseBraceComment; /* For -ca option: inline comment associated with the first parameter of the name node.*/\
+    ACPI_COMMENT_LIST_NODE          *CommentList;       /* comments that appears before this node */\
+    char                            *PsFilename;        /* For -ca optoin: filename associated with this node */\
+    char                            *PsParentFilename;  /* For -ca optoin: parent filename associated with this node */
+
+
+/* #defines for categories of comments */
+
+#define STANDARD_COMMENT        1
+#define INLINE_COMMENT          2
+#define ENDNODE_COMMENT         3
+#define OPENBRACE_COMMENT       4
+#define CLOSEBRACE_COMMENT      5
+#define STD_DEFBLK_COMMENT      6
+#define END_DEFBLK_COMMENT      7
+#define FILENAME_COMMENT        8
+#define PARENTFILENAME_COMMENT  9
+
+#define ACPI_MAX_FILENAME_LENGTH 500
 
 
 /* Flags for DisasmFlags field  above */
@@ -1009,6 +1033,36 @@ typedef union acpi_parse_value
 #define ACPI_DASM_LNOT_SUFFIX           0x09        /* End  of a LNotEqual (etc.) pair of opcodes */
 #define ACPI_DASM_HID_STRING            0x0A        /* String is a _HID or _CID */
 #define ACPI_DASM_IGNORE                0x0B        /* Not used at this time */
+
+
+/*
+ * List struct used in the -ca option
+ */
+typedef struct acpi_comment_list_node
+{
+  char                                     *Comment;
+  struct acpi_comment_list_node            *Next;
+
+} ACPI_COMMENT_LIST_NODE;
+
+
+typedef struct acpi_comment_addr_node
+{
+  UINT8                                    *Addr;
+  struct acpi_comment_addr_node            *Next;
+} ACPI_COMMENT_ADDR_NODE;
+
+
+/* File node - used for "Include" operator file stack for the -ca option */
+
+typedef struct acpi_file_node
+{
+    FILE                    *File;
+    char                    Filename[ACPI_MAX_FILENAME_LENGTH];
+    struct acpi_file_node   *Next;
+
+} ACPI_FILE_NODE;
+
 
 /*
  * Generic operation (for example:  If, While, Store)
@@ -1044,6 +1098,8 @@ typedef struct acpi_parse_obj_asl
     union acpi_parse_object         *Child;
     union acpi_parse_object         *ParentMethod;
     char                            *Filename;
+    BOOLEAN                         FileChanged;
+    char                            *ParentFilename;
     char                            *ExternalName;
     char                            *Namepath;
     char                            NameSeg[4];

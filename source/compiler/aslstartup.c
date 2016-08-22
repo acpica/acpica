@@ -195,6 +195,11 @@ AslInitializeGlobals (
         Gbl_Files[i].Handle = NULL;
         Gbl_Files[i].Filename = NULL;
     }
+
+    Gbl_CommentState.SpacesBefore          = 0;
+    Gbl_CommentState.CommentType           = 1;
+    Gbl_CommentState.Latest_Parse_Node     = NULL;
+    Gbl_CommentState.ParsingParenBraceNode = NULL;
 }
 
 
@@ -522,6 +527,20 @@ AslDoOneFile (
 
         AeClearErrorLog ();
         PrTerminatePreprocessor ();
+
+        /* ASL-to-ASL+ conversion - Perform immediate disassembly */
+
+        if (Gbl_DoAslConversion)
+        {
+            /* New input file is the output AML file from above */
+
+            Gbl_Files[ASL_FILE_INPUT].Filename =
+                Gbl_Files[ASL_FILE_AML_OUTPUT].Filename;
+
+            fprintf (stderr, "\n");
+            AslDoDisassembly ();
+        }
+
         return (AE_OK);
 
     /*

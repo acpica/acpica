@@ -116,6 +116,7 @@
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
 #include "amlcode.h"
+#include "acapps.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslcodegen")
@@ -149,6 +150,11 @@ CgCloseTable (
 static void
 CgWriteNode (
     ACPI_PARSE_OBJECT       *Op);
+
+char*
+CgChangeFileExt(
+   char*                    Filename,
+   char*                    FileExt);
 
 
 /*******************************************************************************
@@ -300,6 +306,277 @@ CgLocalWriteAmlData (
 
 /*******************************************************************************
  *
+ * FUNCTION:    CgWriteAmlDefBlockComment
+ *
+ * PARAMETERS:  Op              - Current parse op
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: For -ca: write all comments for a particular definition block.
+ *              For definition blocks, the comments need to come after the 
+ *              definition block header. The regular comments above the 
+ *              definition block would be categorized as 
+ *              STD_DEFBLK_COMMENT_OPTION and comments after the closing brace
+ *              is categorized as END_DEFBLK_COMMENT_OPTION.
+ *
+ ******************************************************************************/
+
+static void
+CgWriteAmlDefBlockComment(
+    ACPI_PARSE_OBJECT       *Op)
+{
+    UINT8                   CommentOpcode;
+    UINT8                   CommentOption = FILENAME_COMMENT;
+    ACPI_COMMENT_LIST_NODE  *Current;
+    char                    *NewFilename; 
+    char                    *Position;
+    char                    *DirectoryPosition;
+
+
+    if (Op->Asl.ParseOpcode != PARSEOP_DEFINITION_BLOCK)
+    {
+        return;
+    }
+
+    CommentOpcode = (UINT8)AML_COMMENT_OP;
+    Current = Op->Asl.CommentList;
+
+    printf ("Printing comments for a definition block..\n");
+    
+    /* first, print the file name comment after changing .asl to .dsl */
+    NewFilename = UtStringCacheCalloc (strlen (Op->Asl.Filename)); 
+    strcpy (NewFilename, Op->Asl.Filename);
+    DirectoryPosition = strrchr (NewFilename, '/');
+    Position = strrchr (NewFilename, '.');
+
+    if (Position && (Position > DirectoryPosition))
+    {
+        /* Tack on the new suffix */
+
+        Position++;
+        *Position = 0;
+        strcat (Position, FILE_SUFFIX_DISASSEMBLY);
+    }
+    else
+    {
+        /* No dot, add one and then the suffix */
+
+        strcat (NewFilename, ".");
+        strcat (NewFilename, FILE_SUFFIX_DISASSEMBLY);
+    }
+    
+    CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+    CgLocalWriteAmlData (Op, &CommentOption, 1);
+
+    /* +1 is what emits the 0x00 at the end of this opcode. */
+
+    CgLocalWriteAmlData (Op, NewFilename, strlen (NewFilename) + 1); 
+
+    CommentOption = STD_DEFBLK_COMMENT;
+    while (Current)
+    {
+        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+        CgLocalWriteAmlData (Op, &CommentOption, 1);
+
+        /* +1 is what emits the 0x00 at the end of this opcode. */
+
+        CgLocalWriteAmlData (Op, Current->Comment, strlen (Current->Comment) + 1); 
+        printf ("Printing comment: %s.\n", Current->Comment);
+        Current = Current->Next;
+    }
+    Op->Asl.CommentList = NULL;
+        
+    /* print any Inline comments associated with this node */
+
+    if (Op->Asl.CloseBraceComment)
+    {
+        CommentOption = END_DEFBLK_COMMENT;
+        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+        CgLocalWriteAmlData (Op, &CommentOption, 1);
+
+        /* +1 is what emits the 0x00 at the end of this opcode. */
+
+        CgLocalWriteAmlData (Op, Op->Asl.CloseBraceComment, strlen (Op->Asl.CloseBraceComment) + 1); 
+        Op->Asl.CloseBraceComment = NULL;
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CgChangeFileExt
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: For -ca option: change a file extension of a given filename to
+ *              the given file extension.
+ *
+ ******************************************************************************/
+
+char*
+CgChangeFileExt(
+   char*       Filename,
+   char*       FileExt)
+{
+    char                    *Position;
+    char                    *DirectoryPosition;
+    char                    *NewFilename;
+
+
+    NewFilename = UtStringCacheCalloc (strlen (Filename)); 
+    strcpy (NewFilename, Filename);
+    DirectoryPosition = strrchr (NewFilename, '/');
+    Position = strrchr (NewFilename, '.');
+
+    if (Position && (Position > DirectoryPosition))
+    {
+        /* Tack on the new suffix */
+
+        Position++;
+        *Position = 0;
+        strcat (Position, FileExt);
+    }
+    else
+    {
+        /* No dot, add one and then the suffix */
+
+        strcat (NewFilename, ".");
+        strcat (NewFilename, FileExt);
+    }
+
+    return (NewFilename);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CgWriteAmlComment
+ *
+ * PARAMETERS:  Op              - Current parse op
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: For -ca: write all comments pertaining to the current parse op
+ *
+ ******************************************************************************/
+
+static void
+CgWriteAmlComment(
+    ACPI_PARSE_OBJECT       *Op)
+{
+    UINT8                   CommentOpcode;
+    ACPI_COMMENT_LIST_NODE  *Current;
+    UINT8                   CommentOption;
+    char                    *NewFilename;
+    char                    *ParentFilename;
+
+    if (Op->Asl.ParseOpcode == PARSEOP_DEFINITION_BLOCK)
+    {
+        return;
+    }
+
+    CommentOpcode = (UINT8)AML_COMMENT_OP;
+    Current = Op->Asl.CommentList;
+
+    /* Print out the filename comment if needed */
+    if (Op->Asl.FileChanged)
+    {
+
+        /* first, print the file name comment after changing .asl to .dsl */
+
+        NewFilename = CgChangeFileExt(Op->Asl.Filename, FILE_SUFFIX_DISASSEMBLY);
+
+        printf ("Writing file comment, \"%s\" for %s\n", NewFilename, Op->Asl.ParseOpName);
+    
+        CommentOption = FILENAME_COMMENT;
+        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+        CgLocalWriteAmlData (Op, &CommentOption, 1);
+        CgLocalWriteAmlData (Op, NewFilename, strlen (NewFilename) + 1); 
+
+        if (Op->Asl.ParentFilename && strcmp (Op->Asl.ParentFilename, Op->Asl.Filename))
+        { 
+            ParentFilename = CgChangeFileExt(Op->Asl.ParentFilename, FILE_SUFFIX_DISASSEMBLY);
+            CommentOption = PARENTFILENAME_COMMENT;
+            CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+            CgLocalWriteAmlData (Op, &CommentOption, 1);
+            CgLocalWriteAmlData (Op, ParentFilename, strlen (ParentFilename) + 1); 
+        }
+       
+ 
+        /* prevent multiple writes of the same comment */
+
+        Op->Asl.FileChanged = FALSE;
+    }
+
+    /*
+     * Regular comments are stored in a list of comments within an Op.
+     * If there is a such list in this node, print out the comment
+     * as byte code.
+     */
+    printf ("Printing comments for the following opcode: %s.\n", Op->Asl.ParseOpName);
+    while (Current)
+    {
+        CommentOption = STANDARD_COMMENT;
+        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+        CgLocalWriteAmlData (Op, &CommentOption, 1);
+
+        /* +1 is what emits the 0x00 at the end of this opcode. */
+
+        CgLocalWriteAmlData (Op, Current->Comment, strlen (Current->Comment) + 1); 
+        printf ("Printing comment: %s.\n", Current->Comment);
+        Current = Current->Next;
+    }
+
+    Op->Asl.CommentList = NULL;
+        
+    /* print any Inline comments associated with this node */
+
+    if (Op->Asl.InlineComment)
+    {
+        CommentOption = INLINE_COMMENT;
+        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+        CgLocalWriteAmlData (Op, &CommentOption, 1);
+        // +1 is what emits the 0x00 at the end of this opcode.
+        CgLocalWriteAmlData (Op, Op->Asl.InlineComment, strlen (Op->Asl.InlineComment) + 1); 
+        Op->Asl.InlineComment = NULL;
+    }
+
+    if (Op->Asl.EndNodeComment)
+    {
+        CommentOption = ENDNODE_COMMENT;
+        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+        CgLocalWriteAmlData (Op, &CommentOption, 1);
+        // +1 is what emits the 0x00 at the end of this opcode.
+        CgLocalWriteAmlData (Op, Op->Asl.EndNodeComment, strlen (Op->Asl.EndNodeComment) + 1); 
+        Op->Asl.EndNodeComment = NULL;
+    }
+
+    if (Op->Asl.OpenBraceComment)
+    {
+        CommentOption = OPENBRACE_COMMENT;
+        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+        CgLocalWriteAmlData (Op, &CommentOption, 1);
+        // +1 is what emits the 0x00 at the end of this opcode.
+        CgLocalWriteAmlData (Op, Op->Asl.OpenBraceComment, strlen (Op->Asl.OpenBraceComment) + 1); 
+        Op->Asl.OpenBraceComment = NULL;
+    }
+
+    if (Op->Asl.CloseBraceComment)
+    {
+        CommentOption = CLOSEBRACE_COMMENT;
+        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+        CgLocalWriteAmlData (Op, &CommentOption, 1);
+        // +1 is what emits the 0x00 at the end of this opcode.
+        CgLocalWriteAmlData (Op, Op->Asl.CloseBraceComment, strlen (Op->Asl.CloseBraceComment) + 1); 
+        Op->Asl.CloseBraceComment = NULL;
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    CgWriteAmlOpcode
  *
  * PARAMETERS:  Op            - Parse node with an AML opcode
@@ -331,6 +608,15 @@ CgWriteAmlOpcode (
     if (Op->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
     {
         return;
+    }
+
+    /*
+     * Before printing the bytecode, generate comment byte codes 
+     * associated with this node.
+     */
+    if (Gbl_CaptureComments)
+    {
+        CgWriteAmlComment(Op);
     }
 
     switch (Op->Asl.AmlOpcode)
@@ -488,6 +774,8 @@ CgWriteTableHeader (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_PARSE_OBJECT       *Child;
+    UINT32                  CommentLength;
+    ACPI_COMMENT_LIST_NODE  *Current;
 
 
     /* AML filename */
@@ -538,6 +826,35 @@ CgWriteTableHeader (
 
     TableHeader.Length = sizeof (ACPI_TABLE_HEADER) +
         Op->Asl.AmlSubtreeLength;
+
+    /* Calculate the comment lengths for this definition block */
+
+    if (Gbl_CaptureComments)
+    {
+        printf ("====================Calculating comment lengths for %s====================\n",  Op->Asl.ParseOpName);
+        TableHeader.Length += strlen (Gbl_ParseTreeRoot->Asl.Filename) + 3;
+        if (Op->Asl.CommentList!=NULL)
+        {
+            Current = Op->Asl.CommentList; 
+            while (Current)
+            {
+                CommentLength = strlen (Current->Comment)+3;
+                printf ("Length of standard comment +3 (including space for 0xA9 0x01 and 0x00): %d\n", CommentLength);
+                printf ("**********Comment string: %s\n\n", Current->Comment);
+                TableHeader.Length += CommentLength;
+                Current = Current->Next;
+            }
+        }
+
+        if (Op->Asl.CloseBraceComment!=NULL)
+        {
+            CommentLength = strlen (Op->Asl.CloseBraceComment)+3;
+            printf ("Length of inline comment +3 (including space for 0xA9 0x02 and 0x00): %d\n", CommentLength);
+            printf ("**********Comment string: %s\n\n", Op->Asl.CloseBraceComment);
+            TableHeader.Length += CommentLength;
+        }
+    }
+
     TableHeader.Checksum = 0;
 
     Op->Asl.FinalAmlOffset = ftell (Gbl_Files[ASL_FILE_AML_OUTPUT].Handle);
@@ -564,13 +881,13 @@ CgWriteTableHeader (
 
 static void
 CgUpdateHeader (
-    ACPI_PARSE_OBJECT   *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    signed char         Sum;
-    UINT32              i;
-    UINT32              Length;
-    UINT8               FileByte;
-    UINT8               Checksum;
+    signed char             Sum;
+    UINT32                  i;
+    UINT32                  Length;
+    UINT8                   FileByte;
+    UINT8                   Checksum;
 
 
     /* Calculate the checksum over the entire definition block */
@@ -578,7 +895,6 @@ CgUpdateHeader (
     Sum = 0;
     Length = sizeof (ACPI_TABLE_HEADER) + Op->Asl.AmlSubtreeLength;
     FlSeekFile (ASL_FILE_AML_OUTPUT, Op->Asl.FinalAmlOffset);
-
     for (i = 0; i < Length; i++)
     {
         if (FlReadFile (ASL_FILE_AML_OUTPUT, &FileByte, 1) != AE_OK)
@@ -652,6 +968,12 @@ CgWriteNode (
     ASL_RESOURCE_NODE       *Rnode;
 
 
+    /* Write all comments here. */
+    if (Gbl_CaptureComments)
+    {
+        CgWriteAmlComment(Op);
+    }
+
     /* Always check for DEFAULT_ARG and other "Noop" nodes */
     /* TBD: this may not be the best place for this check */
 
@@ -713,6 +1035,7 @@ CgWriteNode (
     case PARSEOP_DEFINITION_BLOCK:
 
         CgWriteTableHeader (Op);
+        CgWriteAmlDefBlockComment (Op);
         break;
 
     case PARSEOP_NAMESEG:

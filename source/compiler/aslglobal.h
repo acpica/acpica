@@ -254,6 +254,7 @@ ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_PruneParseTree, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DoTypechecking, TRUE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_EnableReferenceTypechecking, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DoExternals, TRUE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DoAslConversion, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_OptimizeTrivialParseNodes, TRUE);
 
 #define HEX_OUTPUT_NONE             0
@@ -337,6 +338,21 @@ ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_TableId, "NO_ID");
 ASL_EXTERN UINT8                    ASL_INIT_GLOBAL (Gbl_PruneDepth, 0);
 ASL_EXTERN UINT16                   ASL_INIT_GLOBAL (Gbl_PruneType, 0);
 
+ASL_EXTERN ASL_FILE_NODE            ASL_INIT_GLOBAL (*Gbl_IncludeFileStack, NULL);
+
+/* Specific to the -q option */
+
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_CaptureComments, FALSE);
+ASL_EXTERN ASL_COMMENT_STATE        Gbl_CommentState;
+
+
+/*
+ * Determines if an inline comment should be saved in the InlineComment or NodeEndComment
+ *  field of ACPI_PARSE_OBJECT.
+ */
+ASL_EXTERN ACPI_COMMENT_LIST_NODE   ASL_INIT_GLOBAL (*Gbl_Comment_List_Head, 0);
+ASL_EXTERN ACPI_COMMENT_LIST_NODE   ASL_INIT_GLOBAL (*Gbl_Comment_List_Tail, 0);
+ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_Inline_Comment_Buffer, 0);
 
 /* Static structures */
 
@@ -357,6 +373,5 @@ ASL_EXTERN char                     MsgBuffer[ASL_MSG_BUFFER_SIZE];
 ASL_EXTERN char                     StringBuffer[ASL_MSG_BUFFER_SIZE];
 ASL_EXTERN char                     StringBuffer2[ASL_MSG_BUFFER_SIZE];
 ASL_EXTERN UINT32                   Gbl_DisabledMessages[ASL_MAX_DISABLED_MESSAGES];
-
 
 #endif /* __ASLGLOBAL_H */

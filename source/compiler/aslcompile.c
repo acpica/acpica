@@ -419,6 +419,15 @@ CmDoCompile (
         NULL, &AnalysisWalkInfo);
     UtEndEvent (Event);
 
+    /*
+     * For -ca option: Gbl_ParseTreeRoot->CommentList actually contains the
+     * very last comments because it's the very last node to be completed
+     * Take the very last comment and save it in a global for it to be used
+     * by the disassembler.
+     */
+    AcpiGbl_LastListHead = Gbl_ParseTreeRoot->Asl.CommentList;
+    Gbl_ParseTreeRoot->Asl.CommentList = NULL;
+
     /* Calculate all AML package lengths */
 
     Event = UtBeginEvent ("Finish AML package length generation");
@@ -872,7 +881,11 @@ CmCleanupAndExit (
 
     /* Final cleanup after compiling one file */
 
-    CmDeleteCaches ();
+    if (!Gbl_DoAslConversion)
+    {
+        CmDeleteCaches ();
+    }
+
 }
 
 

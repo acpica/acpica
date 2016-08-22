@@ -173,6 +173,7 @@ AcpiPsInitOp (
     ACPI_FUNCTION_ENTRY ();
 
 
+    printf("InitOp: 0x%x\n", Opcode);
     Op->Common.DescriptorType = ACPI_DESC_TYPE_PARSER;
     Op->Common.AmlOpcode = Opcode;
 
@@ -208,7 +209,8 @@ AcpiPsAllocOp (
 
 
     ACPI_FUNCTION_ENTRY ();
-
+    
+    printf("ALLOC OP\n");
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
 
@@ -249,7 +251,22 @@ AcpiPsAllocOp (
         AcpiPsInitOp (Op, Opcode);
         Op->Common.Aml = Aml;
         Op->Common.Flags = Flags;
+        Op->Common.InlineComment     = NULL;
+        Op->Common.EndNodeComment    = NULL;
+        Op->Common.NameComment       = NULL;
+        Op->Common.CommentList       = NULL;
+        Op->Common.OpenBraceComment  = NULL;
+        Op->Common.CloseBraceComment = NULL;
+        Op->Common.PsFilename        = AcpiGbl_CurrentFilename;
+        Op->Common.PsParentFilename  = AcpiGbl_CurrentParentFilename;
+        printf("Initialized PsFilename to %s\n", Op->Common.PsFilename);
+        if (Opcode == AML_SCOPE_OP)
+        {
+            AcpiGbl_CurrentScope = Op;  
+        }
     }
+
+    AcpiPsTransferComments(Op); 
 
     return (Op);
 }
@@ -275,6 +292,13 @@ AcpiPsFreeOp (
     ACPI_FUNCTION_NAME (PsFreeOp);
 
 
+    Op->Common.InlineComment     = NULL;
+    Op->Common.EndNodeComment    = NULL;
+    Op->Common.NameComment       = NULL;
+    Op->Common.CommentList       = NULL;
+    Op->Common.OpenBraceComment  = NULL;
+    Op->Common.CloseBraceComment = NULL;
+ 
     if (Op->Common.AmlOpcode == AML_INT_RETURN_VALUE_OP)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,

@@ -151,8 +151,10 @@ AcpiPsGetAmlOpcode (
     ACPI_FUNCTION_TRACE_PTR (PsGetAmlOpcode, WalkState);
 
 
-    WalkState->Aml = WalkState->ParserState.Aml;
     WalkState->Opcode = AcpiPsPeekOpcode (&(WalkState->ParserState));
+
+    WalkState->Aml = WalkState->ParserState.Aml;
+    printf("Op: 0x%x\n", *WalkState->ParserState.Aml);
 
     /*
      * First cut to determine what we have found:
@@ -273,6 +275,8 @@ AcpiPsBuildNamedOp (
     while (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) &&
           (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) != ARGP_NAME))
     {
+        printf ("gna from build named op\n");
+        AcpiPsCaptureComments (WalkState);
         Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
             GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
         if (ACPI_FAILURE (Status))
@@ -282,6 +286,19 @@ AcpiPsBuildNamedOp (
 
         AcpiPsAppendArg (UnnamedOp, Arg);
         INCREMENT_ARG_LIST (WalkState->ArgTypes);
+    }
+
+    printf("UnnamedOp->Common.AmlOpcode: 0x%x\n", UnnamedOp->Common.AmlOpcode);
+    printf("UnnamedOp->Named.Name: %x\n", UnnamedOp->Named.Name);
+
+    /* are there any inline comments associated with the NameSeg?? If so, save this. */
+
+    AcpiPsCaptureComments(WalkState);
+    if (AcpiGbl_CurrentInlineComment != NULL)
+    { 
+        UnnamedOp->Common.NameComment = AcpiGbl_CurrentInlineComment;
+        AcpiGbl_CurrentInlineComment = NULL;
+        printf ("Op->Common.NameComment: %s\n", UnnamedOp->Common.NameComment);
     }
 
     /*
@@ -328,6 +345,40 @@ AcpiPsBuildNamedOp (
     }
 
     AcpiPsAppendArg (*Op, UnnamedOp->Common.Value.Arg);
+
+    /* save any comments that might be associated with UnnamedOp. */
+    if (UnnamedOp->Common.InlineComment!=NULL)
+    {
+        (*Op)->Common.InlineComment = UnnamedOp->Common.InlineComment;
+        UnnamedOp->Common.InlineComment = NULL;
+    }
+    if (UnnamedOp->Common.EndNodeComment!=NULL)
+    {
+        (*Op)->Common.EndNodeComment = UnnamedOp->Common.EndNodeComment;
+        UnnamedOp->Common.EndNodeComment = NULL;
+    }
+    if (UnnamedOp->Common.OpenBraceComment!=NULL)
+    {
+        (*Op)->Common.OpenBraceComment = UnnamedOp->Common.OpenBraceComment;
+        UnnamedOp->Common.OpenBraceComment = NULL;
+    }
+    if (UnnamedOp->Common.CloseBraceComment!=NULL)
+    {
+        (*Op)->Common.CloseBraceComment = UnnamedOp->Common.CloseBraceComment;
+        UnnamedOp->Common.CloseBraceComment = NULL;
+    }
+    if (UnnamedOp->Common.NameComment)
+    {
+        (*Op)->Common.NameComment = UnnamedOp->Common.NameComment;
+        UnnamedOp->Common.NameComment = NULL;
+    }
+    if (UnnamedOp->Common.CommentList)
+    {
+        (*Op)->Common.CommentList = UnnamedOp->Common.CommentList;
+        UnnamedOp->Common.CommentList = NULL;
+    }
+    (*Op)->Common.PsFilename = UnnamedOp->Common.PsFilename;
+    (*Op)->Common.PsParentFilename = UnnamedOp->Common.PsParentFilename;
 
     if ((*Op)->Common.AmlOpcode == AML_REGION_OP ||
         (*Op)->Common.AmlOpcode == AML_DATA_REGION_OP)
@@ -396,6 +447,7 @@ AcpiPsCreateOp (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
+    AcpiPsCaptureComments(WalkState);
     if (WalkState->OpInfo->Flags & AML_NAMED)
     {
         Status = AcpiPsBuildNamedOp (WalkState, AmlOpStart, Op, &NamedOp);

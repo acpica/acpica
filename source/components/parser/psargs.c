@@ -611,7 +611,7 @@ AcpiPsGetNextField (
 
     ACPI_FUNCTION_TRACE (PsGetNextField);
 
-
+    AcpiPsCaptureJustComments (ParserState);
     Aml = ParserState->Aml;
 
     /* Determine field type */
@@ -658,6 +658,7 @@ AcpiPsGetNextField (
 
     /* Decode the field type */
 
+    AcpiPsCaptureJustComments (ParserState);
     switch (Opcode)
     {
     case AML_INT_NAMEDFIELD_OP:
@@ -667,6 +668,19 @@ AcpiPsGetNextField (
         ACPI_MOVE_32_TO_32 (&Name, ParserState->Aml);
         AcpiPsSetName (Field, Name);
         ParserState->Aml += ACPI_NAME_SIZE;
+
+
+        AcpiPsCaptureJustComments (ParserState);
+
+        /* because the package length isn't represented as a parse tree object,
+         * take comments surrounding this and add to the previously created parse node.
+         */
+        if (Field->Common.InlineComment)
+        {
+            Field->Common.NameComment = Field->Common.InlineComment;
+        }
+        Field->Common.InlineComment  = AcpiGbl_CurrentInlineComment;
+        AcpiGbl_CurrentInlineComment = NULL;
 
         /* Get the length which is encoded as a package length */
 
@@ -724,10 +738,12 @@ AcpiPsGetNextField (
         {
             ParserState->Aml++;
 
+            AcpiPsCaptureJustComments (ParserState);
             PkgEnd = ParserState->Aml;
             PkgLength = AcpiPsGetNextPackageLength (ParserState);
             PkgEnd += PkgLength;
 
+            AcpiPsCaptureJustComments (ParserState);
             if (ParserState->Aml < PkgEnd)
             {
                 /* Non-empty list */
@@ -744,6 +760,7 @@ AcpiPsGetNextField (
                 Opcode = ACPI_GET8 (ParserState->Aml);
                 ParserState->Aml++;
 
+                AcpiPsCaptureJustComments (ParserState);
                 switch (Opcode)
                 {
                 case AML_BYTE_OP:       /* AML_BYTEDATA_ARG */
@@ -772,6 +789,7 @@ AcpiPsGetNextField (
 
                 /* Fill in bytelist data */
 
+                AcpiPsCaptureJustComments (ParserState);
                 Arg->Named.Value.Size = BufferLength;
                 Arg->Named.Data = ParserState->Aml;
             }
@@ -816,8 +834,8 @@ AcpiPsGetNextField (
  *
  * PARAMETERS:  WalkState           - Current state
  *              ParserState         - Current parser state object
- *              ArgType             - The argument type (AML_*_ARG)
- *              ReturnArg           - Where the next arg is returned
+ *              Argtype             - The argument type (AML_*_ARG)
+ *              Returnarg           - Where the next arg is returned
  *
  * RETURN:      Status, and an op object containing the next argument.
  *
@@ -842,6 +860,7 @@ AcpiPsGetNextArg (
 
     ACPI_FUNCTION_TRACE_PTR (PsGetNextArg, ParserState);
 
+    printf ("AcpiPsGetNextArg\n");
 
     switch (ArgType)
     {

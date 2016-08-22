@@ -210,7 +210,14 @@ AcpiPsGetArguments (
             !WalkState->ArgCount)
         {
             WalkState->Aml = WalkState->ParserState.Aml;
+            printf ("gna from getnextarguments\n");
 
+            if (Op->Common.AmlOpcode != AML_METHOD_OP  && Op->Common.AmlOpcode != AML_BUFFER_OP      &&
+                Op->Common.AmlOpcode != AML_PACKAGE_OP && Op->Common.AmlOpcode != AML_VAR_PACKAGE_OP &&
+                Op->Common.AmlOpcode != AML_WHILE_OP)
+            {
+                AcpiPsCaptureComments (WalkState);
+            }
             Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
                 GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
             if (ACPI_FAILURE (Status))
@@ -465,6 +472,63 @@ AcpiPsLinkModuleCode (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiPsTransferComments
+ *
+ * PARAMETERS:  WalkState           - Current state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Parse AML (pointed to by the current parser state) and return
+ *              a tree of ops.
+ *
+ ******************************************************************************/
+
+void
+AcpiPsTransferComments (
+    ACPI_PARSE_OBJECT       *Op) 
+{
+    printf ("Transferring all captured global comments to the folowing opcode: %x\n", Op->Common.AmlOpcode);
+    if (AcpiGbl_CurrentInlineComment)
+    { 
+        Op->Common.InlineComment = AcpiGbl_CurrentInlineComment;
+        printf ("Op->Common.InlineComment: %s\n", Op->Common.InlineComment);
+        AcpiGbl_CurrentInlineComment = NULL;
+    }
+
+    if (AcpiGbl_CurrentEndNodeComment != NULL)
+    { 
+        Op->Common.EndNodeComment = AcpiGbl_CurrentEndNodeComment;
+        printf ("Op->Common.EndNodeComment: %s\n", Op->Common.EndNodeComment);
+        AcpiGbl_CurrentEndNodeComment = NULL;
+    }
+
+    if (AcpiGbl_CurrentOpenBraceComment != NULL)
+    {
+        Op->Common.OpenBraceComment = AcpiGbl_CurrentOpenBraceComment;
+        printf ("Op->Common.OpenBraceComment: %s\n", Op->Common.OpenBraceComment);
+        AcpiGbl_CurrentOpenBraceComment = NULL;
+    }
+
+    if (AcpiGbl_CurrentCloseBraceComment != NULL)
+    {
+        Op->Common.CloseBraceComment = AcpiGbl_CurrentCloseBraceComment;
+        printf ("Op->Common.CloseBraceComment: %s\n", Op->Common.CloseBraceComment);
+        AcpiGbl_CurrentCloseBraceComment = NULL;
+    }
+
+    if (AcpiGbl_RegCommentListHead != NULL)
+    { 
+        Op->Common.CommentList = AcpiGbl_RegCommentListHead;
+        printf ("Op->Common.CommentList head: %s\n", Op->Common.CommentList->Comment);
+        AcpiGbl_RegCommentListHead = NULL;
+        AcpiGbl_RegCommentListTail = NULL;
+    }
+
+    printf("\n");
+}
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiPsParseLoop
  *
  * PARAMETERS:  WalkState           - Current state
@@ -556,6 +620,9 @@ AcpiPsParseLoop (
 
     while ((ParserState->Aml < ParserState->AmlEnd) || (Op))
     {
+        //get comments here
+        AcpiPsCaptureComments (WalkState);
+ 
         AmlOpStart = ParserState->Aml;
         if (!Op)
         {
@@ -588,13 +655,12 @@ AcpiPsParseLoop (
 
             AcpiExStartTraceOpcode (Op, WalkState);
         }
-
-
         /*
          * Start ArgCount at zero because we don't know if there are
          * any args yet
          */
         WalkState->ArgCount  = 0;
+        AcpiPsCaptureComments (WalkState);
 
         /* Are there any arguments that must be processed? */
 

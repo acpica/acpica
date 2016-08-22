@@ -322,7 +322,7 @@ AcpiDmCommaIfListMember (
 
     if (!Op->Common.Next)
     {
-        return (FALSE);
+        goto noComma;
     }
 
     if (AcpiDmListType (Op->Common.Parent) & BLOCK_COMMA_LIST)
@@ -331,7 +331,7 @@ AcpiDmCommaIfListMember (
 
         if (Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)
         {
-            return (FALSE);
+            goto noComma;
         }
 
         /* Check for a NULL target operand */
@@ -347,14 +347,14 @@ AcpiDmCommaIfListMember (
              */
             if (!Op->Common.Next->Common.Next)
             {
-                return (FALSE);
+                goto noComma;
             }
         }
 
         if ((Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST) &&
             (!(Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST)))
         {
-            return (FALSE);
+            goto noComma;
         }
 
         /* Emit comma only if this is not a C-style operator */
@@ -362,6 +362,11 @@ AcpiDmCommaIfListMember (
         if (!Op->Common.OperatorSymbol)
         {
             AcpiOsPrintf (", ");
+            if (Op->Common.InlineComment)
+            {
+                AcpiOsPrintf ("%s",Op->Common.InlineComment);
+                Op->Common.InlineComment = NULL;
+            }   
         }
 
         return (TRUE);
@@ -371,9 +376,21 @@ AcpiDmCommaIfListMember (
              (Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST))
     {
         AcpiOsPrintf (", ");
+        if (Op->Common.InlineComment)
+        {
+            AcpiOsPrintf ("%s",Op->Common.InlineComment);
+            Op->Common.InlineComment = NULL;
+        }   
+
         return (TRUE);
     }
 
+noComma:
+    if (Op->Common.InlineComment)
+    {
+        AcpiOsPrintf (" %s",Op->Common.InlineComment);
+        Op->Common.InlineComment = NULL;
+    }   
     return (FALSE);
 }
 

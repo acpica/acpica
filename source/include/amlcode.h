@@ -214,6 +214,7 @@
 #define AML_NOOP_OP                 (UINT16) 0xa3
 #define AML_RETURN_OP               (UINT16) 0xa4
 #define AML_BREAK_OP                (UINT16) 0xa5
+#define AML_COMMENT_OP              (UINT16) 0xa9
 #define AML_BREAK_POINT_OP          (UINT16) 0xcc
 #define AML_ONES_OP                 (UINT16) 0xff
 
@@ -315,6 +316,7 @@
 #define ARGP_QWORDDATA              0x11
 #define ARGP_SIMPLENAME             0x12 /* NameString | LocalTerm | ArgTerm */
 #define ARGP_NAME_OR_REF            0x13 /* For ObjectType only */
+#define ARGP_COMMENT                0x14
 
 /*
  * Resolved argument types for the AML Interpreter

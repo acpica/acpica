@@ -433,4 +433,24 @@ AcpiPsShow (
     ACPI_PARSE_OBJECT       *op);
 
 
+/*
+ * Specific to the -q option of iAsl
+ */
+BOOLEAN
+AcpiPsCommentExists (
+    UINT8                    *toCheck);
+
+void
+AcpiPsCaptureJustComments (
+    ACPI_PARSE_STATE         *ParserState);
+
+void
+AcpiPsCaptureComments (
+    ACPI_WALK_STATE          *WalkState);
+
+void
+AcpiPsTransferComments (
+    ACPI_PARSE_OBJECT       *Op);
+
+
 #endif /* __ACPARSER_H__ */

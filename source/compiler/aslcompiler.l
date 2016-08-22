@@ -138,10 +138,10 @@ YYSTYPE AslCompilerlval;
 static void
 AslDoLineDirective (void);
 
-static char
+static BOOLEAN
 AslDoComment (void);
 
-static char
+static BOOLEAN
 AslDoCommentType2 (void);
 
 static char
@@ -154,6 +154,7 @@ count (int type);
 /*! [Begin] no source code translation */
 
 %}
+
     /* Definitions */
 
 LeadNameChar                [A-Za-z_]

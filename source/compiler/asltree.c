@@ -212,6 +212,7 @@ TrAllocateNode (
     UINT32                  ParseOpcode)
 {
     ACPI_PARSE_OBJECT       *Op;
+    ACPI_PARSE_OBJECT       *LatestNode = Gbl_CommentState.Latest_Parse_Node;
 
 
     Op = TrGetNextNode ();
@@ -222,8 +223,70 @@ TrAllocateNode (
     Op->Asl.LogicalLineNumber = Gbl_LogicalLineNumber;
     Op->Asl.LogicalByteOffset = Gbl_CurrentLineOffset;
     Op->Asl.Column            = Gbl_CurrentColumn;
+    Op->Asl.InlineComment     = NULL;
+    Op->Asl.EndNodeComment    = NULL;
+    Op->Asl.CommentList       = NULL;
+    Op->Asl.FileChanged       = FALSE;
 
     UtSetParseOpName (Op);
+
+    /* The following is for capturing comments */
+
+    if(Gbl_CaptureComments)
+    {
+        /*
+         * Check to see if the file name has changed before resetting the 
+         * latest parse node.
+         */
+        if (LatestNode && (ParseOpcode != PARSEOP_INCLUDE) && (ParseOpcode != PARSEOP_INCLUDE_END))
+        {
+            if (strcmp (LatestNode->Asl.Filename, Op->Asl.Filename))
+            {
+                Op->Asl.FileChanged = TRUE;
+
+                if (Gbl_IncludeFileStack)
+                {
+                    Op->Asl.ParentFilename = Gbl_IncludeFileStack->Filename;
+                }
+                else
+                {
+                    Op->Asl.ParentFilename = NULL;
+                }
+            }
+        }
+
+        Gbl_CommentState.Latest_Parse_Node = Op;    
+        printf ("===========Set latest parse node to this node.\n");
+        printf ("           Op->Asl.ParseOpName = %s\n", Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName);    
+        printf ("           Op->Asl.ParseOpcode = 0x%x\n", ParseOpcode);    
+
+        /* 
+         * if this parse op's syntax uses () and {} (i.e. Package(1){0x00}) then
+         * set a flag in the comment state. This facilitates paring comments for
+         * these types of opcodes.
+         */
+        if ( AslParseOpBlockType(Op) == (BLOCK_PAREN | BLOCK_BRACE))
+        {
+            printf ("========================================================Parsing paren/Brace node now!\n");
+            Gbl_CommentState.ParsingParenBraceNode = Op;
+        }
+        
+        if (Gbl_Comment_List_Head)
+        {
+            Op->Asl.CommentList = Gbl_Comment_List_Head;
+            Gbl_Comment_List_Head = NULL;
+            Gbl_Comment_List_Tail = NULL;
+            printf ("Transferred current comment list to this node.\n");
+        }
+        if (Gbl_Inline_Comment_Buffer)
+        {
+            Op->Asl.InlineComment = Gbl_Inline_Comment_Buffer;
+            Gbl_Inline_Comment_Buffer = NULL; 
+            printf ("Transferred current inline comment list to this node.\n");
+        }
+
+    }
+
     return (Op);
 }
 
@@ -754,6 +817,7 @@ TrCreateLeafNode (
 
 
     Op = TrAllocateNode (ParseOpcode);
+    printf ("Created leaf node\n");
 
     DbgPrint (ASL_PARSE_OUTPUT,
         "\nCreateLeafNode  Ln/Col %u/%u NewNode %p  Op %s\n\n",
@@ -1132,6 +1196,19 @@ TrCreateNode (
         {
             FirstChild = FALSE;
             Op->Asl.Child = Child;
+
+            /* For -q option: take the Regular comments from the first child
+             * Due to the fact that the comments in first child's node actually
+             * belonged to the parent. This also means that legitimate comments
+             * for the child gets put to the parent.
+             */
+            if (PARSEOP_CONNECTION || PARSEOP_EXTERNAL || PARSEOP_OFFSET || PARSEOP_ACCESSAS)
+            {
+                Op->Asl.CommentList      = Child->Asl.CommentList;
+                Op->Asl.InlineComment    = Child->Asl.InlineComment;
+                Child->Asl.CommentList   = NULL;
+                Child->Asl.InlineComment = NULL;
+            }
         }
 
         /* Point all children to parent */
@@ -1169,9 +1246,9 @@ TrCreateNode (
  * FUNCTION:    TrLinkChildren
  *
  * PARAMETERS:  Op                - An existing parse node
- *              NumChildren         - Number of children to follow
- *              ...                 - A list of child nodes to link to the new
- *                                    node. NumChildren long.
+ *              NumChildren        - Number of children to follow
+ *              ...                - A list of child nodes to link to the new
+ *                                   node. NumChildren long.
  *
  * RETURN:      The updated (linked) node
  *
@@ -1296,6 +1373,16 @@ TrLinkChildren (
 
     va_end(ap);
     DbgPrint (ASL_PARSE_OUTPUT, "\n\n");
+
+    //set this node as the latest parse node
+
+    /* The following is for capturing comments */
+    if(Gbl_CaptureComments)
+    {
+        Gbl_CommentState.Latest_Parse_Node = Op;    
+        printf ("===========Set latest parse node to this node.\n");
+        printf ("           Op->Asl.ParseOpName       = %s\n", Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName);    
+    }
     return (Op);
 }
 
