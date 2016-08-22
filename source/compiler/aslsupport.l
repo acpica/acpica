@@ -218,7 +218,7 @@ AslProcessCommentState (
 
     }
 
-/*    printf ("Comment type set to %d after processing the character %c\n", Gbl_CommentState.CommentType, input); */
+    //printf ("Comment type set to %d after processing the character %c\n", Gbl_CommentState.CommentType, input); 
     
 }
 

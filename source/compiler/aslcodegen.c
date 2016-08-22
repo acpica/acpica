@@ -381,7 +381,7 @@ CgWriteAmlDefBlockComment(
         /* +1 is what emits the 0x00 at the end of this opcode. */
 
         CgLocalWriteAmlData (Op, Current->Comment, strlen (Current->Comment) + 1); 
-        printf ("Printing comment: %s.\n", Current->Comment);
+        printf ("Printing comment: %s\n", Current->Comment);
         Current = Current->Next;
     }
     Op->Asl.CommentList = NULL;
@@ -525,7 +525,7 @@ CgWriteAmlComment(
         /* +1 is what emits the 0x00 at the end of this opcode. */
 
         CgLocalWriteAmlData (Op, Current->Comment, strlen (Current->Comment) + 1); 
-        printf ("Printing comment: %s.\n", Current->Comment);
+        printf ("Printing comment: %s\n", Current->Comment);
         Current = Current->Next;
     }
 

@@ -426,8 +426,9 @@ ElseIfTerm
 
 ElseTerm
     :                               {$$ = NULL;}
-    | PARSEOP_ELSE '{'              {$<n>$ = TrCreateLeafNode (PARSEOP_ELSE);}
-        TermList '}'                {$$ = TrLinkChildren ($<n>3,1,$4);}
+    | PARSEOP_ELSE '{'              
+        TermList           {$<n>$ = TrCreateLeafNode (PARSEOP_ELSE);}
+        '}'                {$$ = TrLinkChildren ($<n>4,1,$3);}
 
     | PARSEOP_ELSE '{'
         error '}'                   {$$ = AslDoError(); yyclearin;}
