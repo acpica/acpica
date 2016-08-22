@@ -153,6 +153,8 @@ AcpiEfiFlushFile (
 
 /* Local variables */
 
+FILE                        *stdout = NULL;
+FILE                        *stderr = NULL;
 static ACPI_EFI_FILE_HANDLE AcpiGbl_EfiCurrentVolume = NULL;
 ACPI_EFI_GUID               AcpiGbl_LoadedImageProtocol = ACPI_EFI_LOADED_IMAGE_PROTOCOL;
 ACPI_EFI_GUID               AcpiGbl_TextInProtocol = ACPI_SIMPLE_TEXT_INPUT_PROTOCOL;
@@ -827,6 +829,8 @@ efi_main (
 
     ST = SystemTab;
     BS = SystemTab->BootServices;
+    stdout = SystemTab->ConOut;
+    stderr = SystemTab->ConOut;
 
     /* Retrieve image information */
 

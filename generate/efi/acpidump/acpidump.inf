@@ -38,10 +38,12 @@
   components/utilities/utdebug.c
   components/utilities/utexcep.c
   components/utilities/utglobal.c
+  components/utilities/uthex.c
   components/utilities/utmath.c
   components/utilities/utnonansi.c
   components/utilities/utprint.c
   components/utilities/utstring.c
+  components/utilities/utstrtoul64.c
   components/utilities/utxferror.c
 
 [Packages]
