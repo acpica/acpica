@@ -5,13 +5,13 @@
  * 
  * Disassembling to symbolic ASL+ operators
  *
- * Disassembly of test.aml, Mon Aug 22 15:58:45 2016
+ * Disassembly of test.aml, Mon Aug 22 16:32:56 2016
  *
  * Original Table Header:
  *     Signature        "DSDT"
- *     Length           0x0000007B (123)
+ *     Length           0x00000060 (96)
  *     Revision         0x02
- *     Checksum         0xBB **** Incorrect checksum, should be 0x82
+ *     Checksum         0xD8 **** Incorrect checksum, should be 0x9B
  *     OEM ID           "Intel"
  *     OEM Table ID     "Many"
  *     OEM Revision     0x00000001 (1)
@@ -20,17 +20,12 @@
  */
 DefinitionBlock ("", "DSDT", 2, "Intel", "Many", 0x00000001)
 {
+    //c5
+    Name (C, 0x00)//c6
     Method (MAIN, 0, NotSerialized)
     { 
-        If ( //c6 0x01 == 0x01){ }
-        Else
-        { 
-            //c7
-            Name (D, 0x00)//c8
-        } //c9
-
-        //c10
-        Name (E, 0x00)//c11
+        //c7
+        Name (D, 0x00)//c8
     }
 }
 

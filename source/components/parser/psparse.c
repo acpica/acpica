@@ -182,8 +182,16 @@ AcpiPsCommentExists (
     UINT8                    *ToCheck)
 {
     ACPI_COMMENT_ADDR_NODE   *Current = AcpiGbl_CommentAddrListHead;
-    UINT8                    Option   = *(ToCheck + 1);
-    
+    UINT8                    Option;
+
+
+    if (!ToCheck)
+    {
+        return (FALSE);
+    }
+    Option   = *(ToCheck + 1);
+
+    /* FILENAME_COMMENT and PARENTFILENAME_COMMENT will not be treated as comments */
 
     if ((Option == FILENAME_COMMENT) || (Option == PARENTFILENAME_COMMENT))
     {
@@ -195,12 +203,13 @@ AcpiPsCommentExists (
         AcpiGbl_CommentAddrListHead = 
             AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
         AcpiGbl_CommentAddrListHead->Addr = ToCheck;
+        AcpiGbl_CommentAddrListHead->Next = NULL;
         return (FALSE);
     }
     else
     {
         printf ("========== Traversing address list now ==========\n");
-        while (Current!=NULL)
+        while (Current)
         {
             if (Current->Addr != ToCheck)
             {
@@ -209,10 +218,11 @@ AcpiPsCommentExists (
             }
             else
             {
+                printf ("========== Found addr, ending traversal =====================\n");
                 return (TRUE);
             }
         }
-        printf ("========== Ending traversal =====================\n");
+        printf ("========== Ending traversal adding address =====================\n");
 
         /* 
          * If the execution gets to this point, it means that this address
@@ -259,11 +269,16 @@ AcpiPsCaptureJustComments (
     Aml = ParserState->Aml;
     Opcode = (UINT16) ACPI_GET8 (Aml);
     printf("CaptureComments Opcode: 0x%x\n", Opcode);
-    printf("comment aml address: %p\n", Aml);
+    if (Opcode != AML_COMMENT_OP)
+    {
+       return;
+    }
 
 
     while (Opcode == AML_COMMENT_OP)
     {                  
+        printf("comment aml address: %p\n", Aml);
+
         if (AcpiPsCommentExists(Aml))
         {
             printf("Avoiding capturing an existing comment.\n");
@@ -418,7 +433,7 @@ AcpiPsCaptureJustComments (
             AcpiGbl_CurrentInlineComment,
             AcpiGbl_CurrentOpenBraceComment,
             AcpiGbl_CurrentCloseBraceComment);
-    }
+    } // End while
  
     printf ("\n");
 
@@ -433,6 +448,8 @@ AcpiPsCaptureJustComments (
         AcpiGbl_RegCommentListHead = NULL;
         AcpiGbl_RegCommentListTail = NULL;
     }
+    printf ("Ending capture...\n");
+    
 }
 
 

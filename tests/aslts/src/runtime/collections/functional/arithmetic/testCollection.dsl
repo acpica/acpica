@@ -5,7 +5,7 @@
  * 
  * Disassembling to symbolic ASL+ operators
  *
- * Disassembly of testCollection.aml, Mon Aug 22 11:13:42 2016
+ * Disassembly of testCollection.aml, Tue Aug 23 09:29:03 2016
  *
  * Original Table Header:
  *     Signature        "DSDT"

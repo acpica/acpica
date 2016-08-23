@@ -721,11 +721,10 @@ AcpiDmCloseOperator (
     AcpiOsPrintf (")");
 
 PrintInlineComment:
-    printf ("Parent Opcode: %x\n", Op->Common.Parent->Common.AmlOpcode);
-    printf ("This Opcode: %x\n",   Op->Common.AmlOpcode);
-
     if (Op->Common.EndNodeComment)
     {
+        printf ("Parent Opcode: %x\n", Op->Common.Parent->Common.AmlOpcode);
+        printf ("This Opcode: %x\n",   Op->Common.AmlOpcode);
         printf ("comment: %s", Op->Common.EndNodeComment); 
         AcpiOsPrintf ("%s", Op->Common.EndNodeComment); 
         Op->Common.EndNodeComment = NULL;

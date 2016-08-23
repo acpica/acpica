@@ -711,7 +711,7 @@ AcpiDmDescendingOp (
 
     /* AcpiOsPrintf (" [HDW]"); */
 
-    printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
+    //printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
 
 
     if (Op->Common.PsFilename && AcpiGbl_IncludeFileStack &&
@@ -1282,7 +1282,7 @@ AcpiDmAscendingOp (
 
     /* AcpiOsPrintf (" [HAW]"); */
 
-    printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
+    //printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
     if (Op->Common.PsFilename && AcpiGbl_IncludeFileStack &&
         strcmp (AcpiGbl_IncludeFileStack->Filename, Op->Common.PsFilename))
     {
