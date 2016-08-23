@@ -873,8 +873,15 @@ loop:
 
             FinalLineToken = UtStringCacheCalloc (strlen (LineToken) + 1);
             strcpy (FinalLineToken, LineToken);
+
+            /* Get rid of any carriage returns */
+
+            if (FinalLineToken[strlen (FinalLineToken) - 1] == 0x0D)
+            {
+                FinalLineToken[strlen(FinalLineToken)-1] = 0;  
+            }
             
-            AddToCommentList (LineToken);
+            AddToCommentList (FinalLineToken);
 
             LineToken = strtok (NULL, "\n");
             while (LineToken != NULL)
@@ -898,6 +905,14 @@ loop:
 
                 FinalLineToken = UtStringCacheCalloc (strlen (LineToken) + 1);
                 strcat (FinalLineToken, LineToken);
+
+                /* Get rid of any carriage returns */
+
+                if (FinalLineToken[strlen (FinalLineToken) - 1] == 0x0D)
+                {
+                    FinalLineToken[strlen(FinalLineToken)-1] = 0;  
+                }
+
                 AddToCommentList (FinalLineToken);
                 LineToken = strtok (NULL,"\n");
             }
@@ -1055,10 +1070,13 @@ AslDoCommentType2 (
         strcat(FinalCommentString, CommentString);
 
         // convert to a "/ *" style comment. disable this????
-//        strcat (FinalCommentString, " */");
-//        FinalCommentString [SpaceCount + 1] = '*';
+        // strcat (FinalCommentString, " */");
+        // FinalCommentString [SpaceCount + 1] = '*';
 
         FinalCommentString [CurrentState.SpacesBefore + strlen (CommentString) + 3] = 0;
+
+        /* get rid of the carriage return */
+
         if (FinalCommentString[strlen (FinalCommentString) - 1] == 0x0D)
         {
             FinalCommentString[strlen(FinalCommentString)-1] = 0;  
