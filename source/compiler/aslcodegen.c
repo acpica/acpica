@@ -316,8 +316,8 @@ CgLocalWriteAmlData (
  *              For definition blocks, the comments need to come after the 
  *              definition block header. The regular comments above the 
  *              definition block would be categorized as 
- *              STD_DEFBLK_COMMENT_OPTION and comments after the closing brace
- *              is categorized as END_DEFBLK_COMMENT_OPTION.
+ *              STD_DEFBLK_COMMENT and comments after the closing brace
+ *              is categorized as END_DEFBLK_COMMENT.
  *
  ******************************************************************************/
 
@@ -344,6 +344,7 @@ CgWriteAmlDefBlockComment(
     printf ("Printing comments for a definition block..\n");
     
     /* first, print the file name comment after changing .asl to .dsl */
+
     NewFilename = UtStringCacheCalloc (strlen (Op->Asl.Filename)); 
     strcpy (NewFilename, Op->Asl.Filename);
     DirectoryPosition = strrchr (NewFilename, '/');

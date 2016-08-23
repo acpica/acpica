@@ -5,13 +5,13 @@
  * 
  * Disassembling to symbolic ASL+ operators
  *
- * Disassembly of test.aml, Mon Aug 22 16:32:56 2016
+ * Disassembly of test.aml, Tue Aug 23 13:38:00 2016
  *
  * Original Table Header:
  *     Signature        "DSDT"
- *     Length           0x00000060 (96)
+ *     Length           0x00000043 (67)
  *     Revision         0x02
- *     Checksum         0xD8 **** Incorrect checksum, should be 0x9B
+ *     Checksum         0xE3 **** Incorrect checksum, should be 0x64
  *     OEM ID           "Intel"
  *     OEM Table ID     "Many"
  *     OEM Revision     0x00000001 (1)
@@ -20,12 +20,9 @@
  */
 DefinitionBlock ("", "DSDT", 2, "Intel", "Many", 0x00000001)
 {
-    //c5
-    Name (C, 0x00)//c6
     Method (MAIN, 0, NotSerialized)
     { 
-        //c7
-        Name (D, 0x00)//c8
+        Name (D, "abcdef")
     }
 }
 
