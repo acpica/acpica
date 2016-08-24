@@ -1053,13 +1053,16 @@ typedef struct acpi_comment_addr_node
 } ACPI_COMMENT_ADDR_NODE;
 
 
-/* File node - used for "Include" operator file stack for the -ca option */
-
+/* 
+ * File node - used for "Include" operator file stack and 
+ * depdendency tree for the -ca option 
+ */
 typedef struct acpi_file_node
 {
     FILE                    *File;
     char                    Filename[ACPI_MAX_FILENAME_LENGTH];
     struct acpi_file_node   *Next;
+    struct acpi_file_node   *Parent;
 
 } ACPI_FILE_NODE;
 
