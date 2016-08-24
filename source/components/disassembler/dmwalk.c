@@ -687,14 +687,14 @@ AcpiDmPushFileStack (
      * to this file's parent
      */
     if (strcmp (Op->Common.PsParentFilename, AcpiGbl_IncludeFileStack->Filename)
-        && AcpiDmFilenameExistsInStack(Op->Common.PsParentFilename))
+        && AcpiDmFilenameExistsInStack (Op->Common.PsParentFilename))
     {
         AcpiDmPopFileStack(Op->Common.PsParentFilename);
     }
 
     /* Create a new file and push on the stack */
 
-    FNode = AcpiOsAcquireObject(AcpiGbl_FileCache);
+    FNode = AcpiOsAcquireObject (AcpiGbl_FileCache);
     strcpy (FNode->Filename, Op->Common.PsFilename);
 
     FNode->File = fopen (FNode->Filename, "w+");

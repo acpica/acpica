@@ -474,6 +474,7 @@ ACPI_INIT_GLOBAL (ACPI_COMMENT_ADDR_NODE,   *AcpiGbl_CommentAddrListHead, NULL);
 ACPI_INIT_GLOBAL (ACPI_PARSE_OBJECT,   *AcpiGbl_CurrentScope,     NULL);
 
 ACPI_INIT_GLOBAL (ACPI_FILE_NODE,      *AcpiGbl_IncludeFileStack, NULL);
+ACPI_INIT_GLOBAL (ACPI_FILE_NODE,      *AcpiGbl_FileTreeRoot, NULL);
 
 ACPI_GLOBAL (ACPI_CACHE_T *,            AcpiGbl_RegCommentCache);
 ACPI_GLOBAL (ACPI_CACHE_T *,            AcpiGbl_CommentAddrCache);

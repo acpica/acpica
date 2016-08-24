@@ -241,6 +241,115 @@ AcpiPsCommentExists (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiPsFilenameExists
+ *
+ * PARAMETERS:  Filename
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: for -ca option: look for the given filename in the stack.
+ *              Returns TRUE if it exists, returns FALSE if it doesn't.
+ *
+ ******************************************************************************/
+
+ACPI_FILE_NODE*
+AcpiPsFilenameExists(
+    char                    *Filename,
+    ACPI_FILE_NODE           *Head)
+{
+    ACPI_FILE_NODE          *Current = Head;
+
+
+    while (Current)
+    {
+        if (!strcmp (Current->Filename, Filename))
+        {
+            return (Current);
+        }
+        Current = Current->Next;
+    }
+    return (NULL);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsAddToFileTree
+ *
+ * PARAMETERS:  char* Filename
+ *
+ * RETURN:      void
+ *
+ * DESCRIPTION: Add this filename to the AcpiGbl_FileTree if it does not exist.
+ *
+ ******************************************************************************/
+
+void
+AcpiPsAddToFileTree (
+    char                    *Filename)
+{
+    ACPI_FILE_NODE          *Temp;
+
+
+    if (!AcpiPsFilenameExists (Filename, AcpiGbl_FileTreeRoot))
+    {
+        Temp = AcpiGbl_FileTreeRoot;
+        AcpiGbl_FileTreeRoot = AcpiOsAcquireObject (AcpiGbl_FileCache);
+        AcpiGbl_FileTreeRoot->Parent = NULL;
+        AcpiGbl_FileTreeRoot->Next = Temp;
+        strcpy(AcpiGbl_FileTreeRoot->Filename, Filename);
+    }
+
+    Temp = AcpiGbl_FileTreeRoot;
+    printf ("File tree entries so far:\n");
+    while (Temp)
+    {
+        printf ("    %s\n", Temp->Filename);
+        Temp = Temp->Next;
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsSetFileParent
+ *
+ * PARAMETERS:  char* ChildFile, char* ParentFile
+ *
+ * RETURN:      void
+ *
+ * DESCRIPTION: point the child's parent pointer to the node that corresponds
+ *              with parent's node.
+ *
+ ******************************************************************************/
+
+void
+AcpiPsSetFileParent (
+    char                    *ChildFile,
+    char                    *ParentFile)
+{
+    ACPI_FILE_NODE          *Child;
+    ACPI_FILE_NODE          *Parent;
+
+
+    printf ("Setting file parent within file dependency tree.\n");
+    Child  = AcpiPsFilenameExists (ChildFile, AcpiGbl_FileTreeRoot); 
+    Parent = AcpiPsFilenameExists (ParentFile, AcpiGbl_FileTreeRoot);
+    if (Child && Parent)
+    {
+        Child->Parent = Parent;
+        return;
+    }
+    else
+    {
+        printf ("Child and/or parent does not exist.\n");
+        return;
+    } 
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiPsCaptureJustComments
  *
  * PARAMETERS:  ParserState         - A parser state object
@@ -384,7 +493,8 @@ AcpiPsCaptureJustComments (
 
                     printf ("Found a filename. ");
                     AcpiGbl_CurrentFilename = ACPI_CAST_PTR (char, ParserState->Aml);
-                    printf ("Setting the Current file name to %s\n", AcpiGbl_CurrentFilename);
+                    printf ("Setting the Current filename to %s\n", AcpiGbl_CurrentFilename);
+                    AcpiPsAddToFileTree (AcpiGbl_CurrentFilename);
 
                     /* 
                      * Since PARENTFILENAME_COMMENT may come after FILENAME_COMMENT, 
@@ -398,7 +508,12 @@ AcpiPsCaptureJustComments (
 
                     printf ("Found a filename. ");
                     AcpiGbl_CurrentParentFilename = ACPI_CAST_PTR (char, ParserState->Aml);
-                    printf ("Setting the Current file name to %s\n", AcpiGbl_CurrentParentFilename);
+                    printf ("Setting the Current parent filename to %s\n", AcpiGbl_CurrentParentFilename);
+
+                    /* add the parent filename just in case it doesn't exist before connecting. */
+
+                    AcpiPsAddToFileTree (AcpiGbl_CurrentParentFilename);
+                    AcpiPsSetFileParent (AcpiGbl_CurrentFilename, AcpiGbl_CurrentParentFilename);
                     break;
 
                 default:

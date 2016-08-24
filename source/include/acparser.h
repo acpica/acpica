@@ -434,23 +434,36 @@ AcpiPsShow (
 
 
 /*
- * Specific to the -q option of iAsl
+ * Specific to the -ca option of iASL
  */
 BOOLEAN
 AcpiPsCommentExists (
-    UINT8                    *toCheck);
+    UINT8                   *toCheck);
 
 void
 AcpiPsCaptureJustComments (
-    ACPI_PARSE_STATE         *ParserState);
+    ACPI_PARSE_STATE        *ParserState);
 
 void
 AcpiPsCaptureComments (
-    ACPI_WALK_STATE          *WalkState);
+    ACPI_WALK_STATE         *WalkState);
 
 void
 AcpiPsTransferComments (
     ACPI_PARSE_OBJECT       *Op);
 
+ACPI_FILE_NODE*
+AcpiPsFilenameExists(
+    char                    *Filename,
+    ACPI_FILE_NODE           *Head);
+
+void
+AcpiPsAddToFileTree (
+    char                    *Filename);
+
+void
+AcpiPsSetFileParent (
+    char                    *ChildFile,
+    char                    *ParentFile);
 
 #endif /* __ACPARSER_H__ */
