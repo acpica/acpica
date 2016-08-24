@@ -641,8 +641,20 @@ AcpiDmPushFileStack (
      * the current file.
      */    
     if (Op->Common.PsParentFilename && 
-        !AcpiDmFilenameExistsInStack(Op->Common.PsParentFilename))
+        !AcpiDmFilenameExistsInStack (Op->Common.PsParentFilename))
     {
+        /* 
+         * Use the file dependency to ensure that we are pushing on the correct
+         * file. There are cases where we could be pushing on top of incorrect
+         * files. If this file's parent is not on the top of the stack, pop
+         * until we get there.
+         */
+        if (strcmp (Op->Common.PsParentFilename, AcpiGbl_IncludeFileStack->Filename))
+        {
+            AcpiDmPopFileStack (Op->Common.PsParentFilename);
+            AcpiOsRedirectOutput (AcpiGbl_IncludeFileStack->File);
+        }
+
         printf ("Pushing a new file starting with an include statement: %s\n", Op->Common.PsParentFilename);
 
         /* Create a new file and push on the stack */
@@ -1258,7 +1270,7 @@ AcpiDmDescendingOp (
  *
  * PARAMETERS:  char* file name to pop to.
  *
- * RETURN:      0 if a node was popped, -1 otherwise
+ * RETURN:      none
  *
  * DESCRIPTION: Pop the top of the input file stack and point the parser to
  *              the saved parse buffer contained in the fnode. Also, set the
