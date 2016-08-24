@@ -195,14 +195,12 @@ LnPackageLengthWalk (
     void                    *Context)
 {
     UINT32                  CommentLength; 
-    UINT32                  TotalCommentLength;
+    UINT32                  TotalCommentLength = 0;
     ACPI_COMMENT_LIST_NODE  *Current = 0;
 
     CgGenerateAmlLengths (Op);
 
    /* Bubble up all lengths (this node and all below it) to the parent */
-
-    TotalCommentLength = 0;
 
     if ((Op->Asl.Parent) && (Op->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG))
     {
@@ -478,6 +476,12 @@ CgGenerateAmlLengths (
     case PARSEOP_DEFINITION_BLOCK:
 
         Gbl_TableLength = sizeof (ACPI_TABLE_HEADER) + Op->Asl.AmlSubtreeLength;
+        
+        if (Gbl_CaptureComments && Op->Asl.Filename)
+        {
+            Gbl_TableLength += strlen(Op->Asl.Filename);
+        }
+
         break;
 
     case PARSEOP_NAMESEG:

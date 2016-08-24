@@ -1036,7 +1036,10 @@ CgWriteNode (
     case PARSEOP_DEFINITION_BLOCK:
 
         CgWriteTableHeader (Op);
-        CgWriteAmlDefBlockComment (Op);
+        if (Gbl_CaptureComments)
+        {
+            CgWriteAmlDefBlockComment (Op);
+        }
         break;
 
     case PARSEOP_NAMESEG:
