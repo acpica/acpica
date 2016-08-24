@@ -633,6 +633,47 @@ AcpiDmPushFileStack (
 
 
     /*
+     * If the parent file does not exist in the stack, then it means that this
+     * parent file is a file that has an include statement as its first line
+     * of code. This means that this parent file does not yet exist as an open
+     * file on the stack. If this parent file does not exist in the stack, then
+     * push the file on the stack, open it and write an include statement for
+     * the current file.
+     */    
+    if (Op->Common.PsParentFilename && 
+        !AcpiDmFilenameExistsInStack(Op->Common.PsParentFilename))
+    {
+        printf ("Pushing a new file starting with an include statement: %s\n", Op->Common.PsParentFilename);
+
+        /* Create a new file and push on the stack */
+
+        FNode = AcpiOsAcquireObject(AcpiGbl_FileCache);
+        strcpy (FNode->Filename, Op->Common.PsParentFilename);
+
+        FNode->File = fopen (FNode->Filename, "w+");
+        if (!FNode->File)
+        {
+            fprintf (stderr, "Could not open output file %s\n",
+                 FNode->Filename);
+            return (AE_ERROR);
+        }
+   
+        /* print include statement */
+        
+        AcpiDmIndent (Level);
+        AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename); 
+
+        /* Update ACPI_FILE_OUT to this file */
+
+        AcpiOsRedirectOutput (FNode->File);
+
+        /* Add to the top of the stack */
+ 
+        FNode->Next = AcpiGbl_IncludeFileStack;
+        AcpiGbl_IncludeFileStack = FNode;
+    }
+
+    /*
      * If this parse node belongs in a different file than 
      * the file that is currently being written, open the file, push it on
      * the file stack and write to this file.
@@ -670,6 +711,7 @@ AcpiDmPushFileStack (
     AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename); 
 
     /* Update ACPI_FILE_OUT to this file */
+
     AcpiOsRedirectOutput (FNode->File);
 
     /* Add to the top of the stack and update the current filename */
@@ -1233,7 +1275,7 @@ AcpiDmPopFileStack (
     {
     printf ("Attempting to pop.\n"
             "    FileStack top: %s\n"
-            "    Node filename: %s\n", 
+            "    Target filename: %s\n", 
             AcpiGbl_IncludeFileStack->Filename, TargetFilename);
     }
     while (AcpiGbl_IncludeFileStack->Next && strcmp (TargetFilename, AcpiGbl_IncludeFileStack->Filename))
