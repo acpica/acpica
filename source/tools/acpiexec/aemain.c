@@ -483,7 +483,7 @@ AeDoOptions (
         case 'd':
 
             printf ("Build date/time: %s %s\n", AeBuildDate, AeBuildTime);
-            return (0);
+            return (1);
 
         case 'i':
 
@@ -550,8 +550,13 @@ main (
     AcpiDbgLevel = ACPI_NORMAL_DEFAULT;
     AcpiDbgLayer = 0xFFFFFFFF;
 
-    /* Init ACPICA and start debugger thread */
-
+    /*
+     * Initialize ACPICA and start debugger thread.
+     *
+     * NOTE: After ACPICA initialization, AcpiTerminate MUST be called
+     * before this procedure exits -- otherwise, the console may be
+     * left in an incorrect state.
+     */
     Status = AcpiInitializeSubsystem ();
     ACPI_CHECK_OK (AcpiInitializeSubsystem, Status);
     if (ACPI_FAILURE (Status))
@@ -577,8 +582,7 @@ main (
     if (argc < 2)
     {
         usage ();
-        (void) AcpiOsTerminate ();
-        return (0);
+        goto NormalExit;
     }
 
     /* Get the command line options */
@@ -633,7 +637,6 @@ main (
     /* Install all of the ACPI tables */
 
     Status = AeInstallTables ();
-
     if (ACPI_FAILURE (Status))
     {
         printf ("**** Could not install ACPI tables, %s\n",
@@ -752,14 +755,14 @@ EnterDebugger:
 
     /* Temporarily removed */
     AcpiTerminateDebugger ();
-    Status = AcpiTerminate ();
+    (void) AcpiTerminate ();
 #endif
 
-    Status = AcpiOsTerminate ();
-    return (0);
-
+NormalExit:
+    ExitCode = 0;
 
 ErrorExit:
+    (void) AcpiOsTerminate ();
     return (ExitCode);
 }
 
