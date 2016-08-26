@@ -473,6 +473,13 @@ AdParseTable (
     AmlLength = Table->Length - sizeof (ACPI_TABLE_HEADER);
     AmlStart = ((UINT8 *) Table + sizeof (ACPI_TABLE_HEADER));
 
+    /* 
+     * The += takes care of multiple tables. This is expected to work
+     * only when multiple definition block headers are on the same file...
+     */
+    AcpiGbl_IncludeFileStack->FileEnd += Table->Length;
+    printf ("AcpiGbl_IncludeFileStack->FileEnd: %p\n", AcpiGbl_IncludeFileStack->FileEnd);
+
     /* Create the root object */
 
     AcpiGbl_ParseOpRoot = AcpiPsCreateScopeOp (AmlStart);

@@ -298,6 +298,16 @@ AcpiPsAddToFileTree (
         AcpiGbl_FileTreeRoot->Parent = NULL;
         AcpiGbl_FileTreeRoot->Next = Temp;
         strcpy(AcpiGbl_FileTreeRoot->Filename, Filename);
+
+        if (!AcpiGbl_IncludeFileStack->Next)
+        {
+            AcpiGbl_FileTreeRoot->FileStart = AcpiGbl_IncludeFileStack->FileStart;
+            AcpiGbl_FileTreeRoot->FileEnd = AcpiGbl_IncludeFileStack->FileEnd;
+        }
+        else
+        {
+            AcpiGbl_FileTreeRoot->FileStart = Filename;
+        }
     }
 
     Temp = AcpiGbl_FileTreeRoot;
