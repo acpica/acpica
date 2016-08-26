@@ -627,8 +627,10 @@ AcpiPsParseAml (
         {
             /* Either the method parse or actual execution failed */
 
+            AcpiExExitInterpreter ();
             ACPI_ERROR_METHOD ("Method parse/execution failed",
                 WalkState->MethodNode, NULL, Status);
+            AcpiExEnterInterpreter ();
 
             /* Check for possible multi-thread reentrancy problem */
 
