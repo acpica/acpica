@@ -229,6 +229,7 @@ usage (
     ACPI_OPTION ("-ei",                 "Enable additional tests for ACPICA interfaces");
     ACPI_OPTION ("-el",                 "Enable loading of additional test tables");
     ACPI_OPTION ("-em",                 "Enable grouping of module-level code");
+    ACPI_OPTION ("-ep",                 "Enable TermList parsing for scope objects");
     ACPI_OPTION ("-es",                 "Enable Interpreter Slack Mode");
     ACPI_OPTION ("-et",                 "Enable debug semaphore timeout");
     printf ("\n");
@@ -358,6 +359,11 @@ AeDoOptions (
         case 'm':
 
             AcpiGbl_GroupModuleLevelCode = TRUE;
+            break;
+
+        case 'p':
+
+            AcpiGbl_ParseTableAsTermList = TRUE;
             break;
 
         case 's':

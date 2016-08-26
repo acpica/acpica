@@ -661,7 +661,8 @@ AcpiPsParseAml (
          * cleanup to do
          */
         if (((WalkState->ParseFlags & ACPI_PARSE_MODE_MASK) ==
-            ACPI_PARSE_EXECUTE) ||
+            ACPI_PARSE_EXECUTE &&
+            !(WalkState->ParseFlags & ACPI_PARSE_MODULE_LEVEL)) ||
             (ACPI_FAILURE (Status)))
         {
             AcpiDsTerminateControlMethod (WalkState->MethodDesc, WalkState);

@@ -202,7 +202,7 @@ AcpiExAddTable (
     /* Execute any module-level code that was found in the table */
 
     AcpiExExitInterpreter ();
-    if (AcpiGbl_GroupModuleLevelCode)
+    if (!AcpiGbl_ParseTableAsTermList && AcpiGbl_GroupModuleLevelCode)
     {
         AcpiNsExecModuleCodeList ();
     }
