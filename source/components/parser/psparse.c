@@ -491,7 +491,7 @@ AcpiPsCaptureJustComments (
 
                 case FILENAME_COMMENT:
 
-                    printf ("Found a filename. ");
+                    printf ("Found a filename.");
                     AcpiGbl_CurrentFilename = ACPI_CAST_PTR (char, ParserState->Aml);
                     printf ("Setting the Current filename to %s\n", AcpiGbl_CurrentFilename);
                     AcpiPsAddToFileTree (AcpiGbl_CurrentFilename);
@@ -506,7 +506,7 @@ AcpiPsCaptureJustComments (
 
                 case PARENTFILENAME_COMMENT:
 
-                    printf ("Found a filename. ");
+                    printf ("Found a parent filename.");
                     AcpiGbl_CurrentParentFilename = ACPI_CAST_PTR (char, ParserState->Aml);
                     printf ("Setting the Current parent filename to %s\n", AcpiGbl_CurrentParentFilename);
 
