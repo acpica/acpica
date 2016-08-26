@@ -713,12 +713,12 @@ AcpiTbConvertFadt (
                     ACPI_BIOS_WARNING ((AE_INFO,
                         "32/64X length mismatch in FADT/%s: %u/%u",
                         Name, ACPI_MUL_8 (Length), Address64->BitWidth));
-				}
+                }
             }
 
             /*
              * Hardware register access code always uses the 64-bit fields.
-             * So if the 64-bit feild is zero or is to be overridden,
+             * So if the 64-bit field is zero or is to be overridden,
              * initialize it with the 32-bit fields.
              * Note that when the 32-bit address favor is specified, the
              * 64-bit fields are always re-initialized so that
