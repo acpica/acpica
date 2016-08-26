@@ -468,6 +468,13 @@ AcpiNsPatternMatch (
     char                    *SearchFor);
 
 ACPI_STATUS
+AcpiNsGetNodeUnlocked (
+    ACPI_NAMESPACE_NODE     *PrefixNode,
+    const char              *ExternalPathname,
+    UINT32                  Flags,
+    ACPI_NAMESPACE_NODE     **OutNode);
+
+ACPI_STATUS
 AcpiNsGetNode (
     ACPI_NAMESPACE_NODE     *PrefixNode,
     const char              *ExternalPathname,
