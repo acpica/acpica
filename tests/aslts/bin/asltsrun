@@ -171,13 +171,13 @@ run_test_case()
 		AML_DONT_EXIST=$[ $AML_DONT_EXIST + 1 ]
 		TEST_RET=1
 	else
-		options=""
+		options="-ep"
 		if [ $SLMODE == "norm" ]; then
 			method=MN00
-			options=""
+			options="$options"
 		else
 			method=MN01
-			options="-es"
+			options="$options -es"
 		fi
 
 		if [ "$DO_MEMSTAT" == "yes" ]; then

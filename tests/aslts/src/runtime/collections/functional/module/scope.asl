@@ -31,8 +31,8 @@
  */
 
 /*
- * Verify if Type1Opcode (ex., If) is allowed under DefinitionBlock or
- * Scope
+ * Verify if Type1Opcode (ex., If) and Type2Opcode (ex., Store) is allowed
+ * under DefinitionBlock or Scope
  *
  * ASL spec state:
  * 1. DefinitionBlockTerm supports TermList for ACPI 1.0 ~ 6.0.
@@ -87,5 +87,47 @@ Method(MLS0,, Serialized)
 	}
 	if (LNotEqual(ml02, 2)) {
 		err(ts, z180, 2, z180, 2, ml02, 2)
+	}
+}
+
+/* Tests for Type2Opcode */
+
+Name(ml03, 0)
+Name(ml04, 0)
+Name(ml05, 0)
+
+Store (1, ml03)
+if (LEqual(ml03, 1)) {
+	Store(2, ml03)
+}
+Scope(\)
+{
+	Store (1, ml04)
+	if (LEqual(ml04, 1)) {
+		Store(2, ml04)
+	}
+}
+Scope(\_SB)
+{
+	Store (1, ml05)
+	if (LEqual(ml05, 1)) {
+		Store(2, ml05)
+	}
+}
+
+Method(MLS1,, Serialized)
+{
+	Name(ts, "MLS1")
+
+	Store("TEST: MLS1, Type2Opcode is executable under scopes", Debug)
+
+	if (LNotEqual(ml03, 2)) {
+		err(ts, z180, 3, z180, 3, ml03, 2)
+	}
+	if (LNotEqual(ml04, 2)) {
+		err(ts, z180, 4, z180, 4, ml04, 2)
+	}
+	if (LNotEqual(ml05, 2)) {
+		err(ts, z180, 5, z180, 5, ml05, 2)
 	}
 }
