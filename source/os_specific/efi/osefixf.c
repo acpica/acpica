@@ -132,6 +132,10 @@ static ACPI_PHYSICAL_ADDRESS
 AcpiEfiGetRsdpViaGuid (
     ACPI_EFI_GUID           *Guid);
 
+static ACPI_EFI_PCI_IO *
+AcpiEfiGetPciDev(
+    ACPI_PCI_ID             *PciId
+);
 
 /******************************************************************************
  *
@@ -468,4 +472,176 @@ AcpiOsInitialize (
 {
 
     return (AE_OK);
+}
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsReadPciConfiguration
+ *
+ * PARAMETERS:  PciId               - Seg/Bus/Dev
+ *              PciRegister         - Device Register
+ *              Value               - Buffer where value is placed
+ *              Width               - Number of bits
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Read data from PCI configuration space
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsReadPciConfiguration (
+    ACPI_PCI_ID             *PciId,
+    UINT32                  PciRegister,
+    UINT64                  *Value64,
+    UINT32                  Width)
+{
+    ACPI_EFI_PCI_IO         *PciIo;
+    ACPI_EFI_STATUS         EfiStatus;
+    UINT8                   Value8;
+    UINT16                  Value16;
+    UINT32                  Value32;
+
+    *Value64 = 0;
+    PciIo = AcpiEfiGetPciDev(PciId);
+    if (PciIo == NULL)
+        return (AE_NOT_FOUND);
+
+    switch(Width) {
+        case 8:
+            EfiStatus = uefi_call_wrapper(PciIo->Pci.Read, 5, PciIo,
+                    AcpiEfiPciIoWidthUint8, PciRegister, 1, (VOID*)&Value8);
+            *Value64 = Value8;
+            break;
+        case 16:
+            EfiStatus = uefi_call_wrapper(PciIo->Pci.Read, 5, PciIo,
+                    AcpiEfiPciIoWidthUint16, PciRegister, 1, (VOID*)&Value16);
+            *Value64 = Value16;
+            break;
+        case 32:
+            EfiStatus = uefi_call_wrapper(PciIo->Pci.Read, 5, PciIo,
+                    AcpiEfiPciIoWidthUint32, PciRegister, 1, (VOID*)&Value32);
+            *Value64 = Value32;
+            break;
+        case 64:
+            EfiStatus = uefi_call_wrapper(PciIo->Pci.Read, 5, PciIo,
+                    AcpiEfiPciIoWidthUint64, PciRegister, 1, (VOID*)Value64);
+            break;
+        default:
+        return (AE_BAD_PARAMETER);
+    }
+
+    return (ACPI_EFI_ERROR(EfiStatus)) ? (AE_ERROR) : (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsWritePciConfiguration
+ *
+ * PARAMETERS:  PciId               - Seg/Bus/Dev
+ *              PciRegister         - Device Register
+ *              Value               - Value to be written
+ *              Width               - Number of bits
+ *
+ * RETURN:      Status.
+ *
+ * DESCRIPTION: Write data to PCI configuration space
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsWritePciConfiguration (
+    ACPI_PCI_ID             *PciId,
+    UINT32                  PciRegister,
+    UINT64                  Value64,
+    UINT32                  Width)
+{
+    ACPI_EFI_PCI_IO         *PciIo;
+    ACPI_EFI_STATUS         EfiStatus;
+    UINT8                   Value8;
+    UINT16                  Value16;
+    UINT32                  Value32;
+
+    PciIo = AcpiEfiGetPciDev(PciId);
+    if (PciIo == NULL)
+        return (AE_NOT_FOUND);
+
+    switch(Width) {
+        case 8:
+            Value8 = (UINT8)Value64;
+            EfiStatus = uefi_call_wrapper(PciIo->Pci.Write, 5, PciIo,
+                    AcpiEfiPciIoWidthUint8, PciRegister, 1, (VOID*)&Value8);
+            break;
+        case 16:
+            Value16 = (UINT16)Value64;
+            EfiStatus = uefi_call_wrapper(PciIo->Pci.Write, 5, PciIo,
+                    AcpiEfiPciIoWidthUint16, PciRegister, 1, (VOID*)&Value16);
+            break;
+        case 32:
+            Value32 = (UINT32)Value64;
+            EfiStatus = uefi_call_wrapper(PciIo->Pci.Write, 5, PciIo,
+                    AcpiEfiPciIoWidthUint32, PciRegister, 1, (VOID*)&Value32);
+            break;
+        case 64:
+            EfiStatus = uefi_call_wrapper(PciIo->Pci.Write, 5, PciIo,
+                    AcpiEfiPciIoWidthUint64, PciRegister, 1, (VOID*)&Value64);
+            break;
+        default:
+        return (AE_BAD_PARAMETER);
+    }
+
+    return (ACPI_EFI_ERROR(EfiStatus)) ? (AE_ERROR) : (AE_OK);
+}
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiEfiGetPciDev
+ *
+ * PARAMETERS:  PciId               - Seg/Bus/Dev
+ *
+ * RETURN:      ACPI_EFI_PCI_IO that matches PciId. Null on error.
+ *
+ * DESCRIPTION: Find ACPI_EFI_PCI_IO for the given PciId.
+ *
+ *****************************************************************************/
+
+static ACPI_EFI_PCI_IO *
+AcpiEfiGetPciDev(
+    ACPI_PCI_ID             *PciId)
+{
+    ACPI_EFI_STATUS         EfiStatus;
+    UINTN                   i;
+    UINTN                   HandlesCount = 0;
+    ACPI_EFI_HANDLE         *Handles = NULL;
+    ACPI_EFI_GUID           EfiPciIoProtocol = ACPI_EFI_PCI_IO_PROTOCOL;
+    ACPI_EFI_PCI_IO         *PciIoProtocol = NULL;
+    UINTN                   Bus;
+    UINTN                   Device;
+    UINTN                   Function;
+    UINTN                   Segment;
+
+    EfiStatus = uefi_call_wrapper(BS->LocateHandleBuffer, 5, AcpiEfiByProtocol,
+            &EfiPciIoProtocol, NULL, &HandlesCount, &Handles);
+    if (ACPI_EFI_ERROR (EfiStatus))
+        return NULL;
+
+    for (i = 0; i < HandlesCount; i++) {
+	EfiStatus = uefi_call_wrapper(BS->HandleProtocol, 3, Handles[i],
+                &EfiPciIoProtocol, (VOID**)&PciIoProtocol);
+        if (!ACPI_EFI_ERROR(EfiStatus)) {
+            EfiStatus = uefi_call_wrapper(PciIoProtocol->GetLocation, 5,
+                    PciIoProtocol, &Segment, &Bus, &Device, &Function);
+            if (!ACPI_EFI_ERROR(EfiStatus) &&
+                    Bus == PciId->Bus &&
+                    Device == PciId->Device &&
+                    Function == PciId->Function &&
+                    Segment == PciId->Segment) {
+                uefi_call_wrapper(BS->FreePool, 1, Handles);
+                return PciIoProtocol;
+            }
+        }
+    }
+    uefi_call_wrapper(BS->FreePool, 1, Handles);
+    return NULL;
 }
