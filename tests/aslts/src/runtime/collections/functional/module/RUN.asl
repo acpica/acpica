@@ -36,5 +36,7 @@ if (STTT("Module level code execution", TCLF, 14, W01a)) {
 	MLO0()
 	SRMT("MLO1")
 	MLO1()
+	SRMT("MLD0")
+	MLD0()
 }
 FTTT()
