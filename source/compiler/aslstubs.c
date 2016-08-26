@@ -236,6 +236,13 @@ AcpiEvDeleteGpeBlock (
     return (AE_OK);
 }
 
+void
+AcpiEvUpdateGpes (
+    ACPI_OWNER_ID           TableOwnerId)
+{
+    return;
+}
+
 ACPI_STATUS
 AcpiEvAcquireGlobalLock (
     UINT16                  Timeout)
