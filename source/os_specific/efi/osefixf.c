@@ -668,3 +668,96 @@ AcpiEfiGetPciDev (
     uefi_call_wrapper (BS->FreePool, 1, Handles);
     return (NULL);
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsReadMemory
+ *
+ * PARAMETERS:  Address             - Physical Memory Address to read
+ *              Value               - Where value is placed
+ *              Width               - Number of bits (8,16,32, or 64)
+ *
+ * RETURN:      Value read from physical memory address. Always returned
+ *              as a 64-bit integer, regardless of the read width.
+ *
+ * DESCRIPTION: Read data from a physical memory address
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsReadMemory (
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT64                  *Value,
+    UINT32                  Width)
+{
+
+    switch (Width)
+    {
+        case 8:
+            *Value = *(UINT8 *) Address;
+            break;
+
+        case 16:
+            *Value = *(UINT16 *) Address;
+            break;
+
+        case 32:
+            *Value = *(UINT32 *) Address;
+            break;
+
+        case 64:
+            *Value = *(UINT64 *) Address;
+            break;
+
+        default:
+            return (AE_BAD_PARAMETER);
+    }
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsWriteMemory
+ *
+ * PARAMETERS:  Address             - Physical Memory Address to write
+ *              Value               - Value to write
+ *              Width               - Number of bits (8,16,32, or 64)
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Write data to a physical memory address
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsWriteMemory (
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT64                  Value,
+    UINT32                  Width)
+{
+
+    switch (Width)
+    {
+        case 8:
+            *(UINT8 *) Address = (UINT8) Value;
+            break;
+
+        case 16:
+            *(UINT16 *) Address = (UINT16) Value;
+            break;
+
+        case 32:
+            *(UINT32 *) Address = (UINT32) Value;
+            break;
+
+        case 64:
+            *(UINT64 *) Address = Value;
+            break;
+
+        default:
+            return (AE_BAD_PARAMETER);
+    }
+    return (AE_OK);
+}
