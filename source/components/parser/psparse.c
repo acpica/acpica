@@ -480,7 +480,7 @@ AcpiPsCaptureJustComments (
     char                    *Debug;
     ACPI_COMMENT_LIST_NODE  *CommentNode;
     BOOLEAN                 StdDefBlockFlag = FALSE;
-    char                    *PreviousFilename;
+    //char                    *PreviousFilename;
 
 
     Aml = ParserState->Aml;
@@ -598,32 +598,33 @@ AcpiPsCaptureJustComments (
                     break;        
 
                 case FILENAME_COMMENT:
-
+                    
                     printf ("Found a filename.");
+                    /*
                     PreviousFilename = AcpiGbl_CurrentFilename;
                     AcpiGbl_CurrentFilename = ACPI_CAST_PTR (char, ParserState->Aml);
                     printf ("Setting the Current filename to %s\n", AcpiGbl_CurrentFilename);
                     AcpiPsAddToFileTree (AcpiGbl_CurrentFilename, PreviousFilename);
-
+                     */
                     /* 
                      * Since PARENTFILENAME_COMMENT may come after FILENAME_COMMENT, 
                      * we need to reset the AcpiGbl_CurrentParentFilename to itself in case 
                      * PARENTFILENAME_COMMENT does not exist.
                      */
-                    AcpiGbl_CurrentParentFilename = AcpiGbl_CurrentFilename;
+                    //AcpiGbl_CurrentParentFilename = AcpiGbl_CurrentFilename;
                     break;
 
                 case PARENTFILENAME_COMMENT:
-
+                    /*
                     printf ("Found a parent filename.");
                     AcpiGbl_CurrentParentFilename = ACPI_CAST_PTR (char, ParserState->Aml);
                     printf ("Setting the Current parent filename to %s\n", AcpiGbl_CurrentParentFilename);
-
+                     */
                     /* add the parent filename just in case it doesn't exist before connecting. */
 
                     //AcpiPsAddToFileTree (AcpiGbl_CurrentParentFilename);
 
-                    AcpiPsSetFileParent (AcpiGbl_CurrentFilename, AcpiGbl_CurrentParentFilename);
+                    //AcpiPsSetFileParent (AcpiGbl_CurrentFilename, AcpiGbl_CurrentParentFilename);
                     break;
 
                 default:

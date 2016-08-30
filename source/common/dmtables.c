@@ -459,6 +459,11 @@ AdParseTable (
     UINT8                   *AmlStart;
     UINT32                  AmlLength;
     UINT32                  TableIndex;
+    UINT8                   *Test;
+    char                    *Filename = NULL;
+    char                    *PreviousFilename = NULL;
+    char                    *ParentFilename = NULL;
+    char                    *ChildFilename = NULL;
 
 
     if (!Table)
@@ -482,7 +487,7 @@ AdParseTable (
     printf ("AmlEnd?:   %p\n",  AmlStart+AmlLength);
     AcpiGbl_IncludeFileStack->FileEnd = (char*)(AmlStart + AmlLength);
     printf ("AcpiGbl_IncludeFileStack->FileEnd: %p\n", AcpiGbl_IncludeFileStack->FileEnd);
-
+    
     AcpiGbl_FileTreeRoot = AcpiOsAcquireObject (AcpiGbl_FileCache);
 
     AcpiGbl_FileTreeRoot->FileStart = (char*)(AmlStart);
@@ -491,6 +496,32 @@ AdParseTable (
     strcpy (AcpiGbl_FileTreeRoot->Filename, AcpiGbl_IncludeFileStack->Filename);
     AcpiGbl_FileTreeRoot->Next = NULL;
     AcpiGbl_FileTreeRoot->Parent = NULL;
+
+    Filename = (char*)(AmlStart+2);
+
+    Test = AmlStart; 
+
+    while (Test != (UINT8*)AcpiGbl_IncludeFileStack->FileEnd)
+    {
+        if (*Test == 0xA9 && *(Test+1) == 0x08 )
+        {
+            PreviousFilename = Filename;
+            Filename = (char*) (Test+2);
+            AcpiPsAddToFileTree (Filename, PreviousFilename);
+            printf ("A9 and a 08 file\n");
+            ParentFilename = Filename;
+        }
+        else if (*Test == 0xA9 && *(Test+1) == 0x09)
+        {
+            ChildFilename = (char*)(Test+2);
+            AcpiPsSetFileParent (ChildFilename, ParentFilename);
+            AcpiPsAddToFileTree (Filename, PreviousFilename);
+            printf ("A9 and a 09 file\n");
+        }
+        ++Test;
+    }
+
+
 
     /* Create the root object */
 
