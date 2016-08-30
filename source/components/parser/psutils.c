@@ -206,7 +206,7 @@ AcpiPsAllocOp (
     ACPI_PARSE_OBJECT       *Op;
     const ACPI_OPCODE_INFO  *OpInfo;
     UINT8                   Flags = ACPI_PARSEOP_GENERIC;
-    ACPI_FILE_NODE          *Temp;
+    //ACPI_FILE_NODE          *Temp;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -258,6 +258,9 @@ AcpiPsAllocOp (
         Op->Common.CommentList       = NULL;
         Op->Common.OpenBraceComment  = NULL;
         Op->Common.CloseBraceComment = NULL;
+        Op->Common.PsFilename        = NULL;
+        Op->Common.PsParentFilename  = NULL;
+
         
         /* 
          * Look up this aml address within the file tree. If this
@@ -265,7 +268,7 @@ AcpiPsAllocOp (
          * FileStart and FileEnd, then we label this node as being a part
          * of that file.
          */
-
+/*
         Temp = AcpiPsFileAddressLookup ((char*)Aml, AcpiGbl_FileTreeRoot);
         if (Temp)
         {
@@ -278,7 +281,6 @@ AcpiPsAllocOp (
             {
                 Op->Common.PsParentFilename = Temp->Filename;
             }
-               
         }
         else
         {
@@ -286,6 +288,8 @@ AcpiPsAllocOp (
             Op->Common.PsParentFilename  = AcpiGbl_CurrentParentFilename;
         }
         printf("Initialized PsFilename to %s\n", Op->Common.PsFilename);
+
+*/
         if (Opcode == AML_SCOPE_OP)
         {
             AcpiGbl_CurrentScope = Op;  

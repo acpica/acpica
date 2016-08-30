@@ -312,6 +312,7 @@ AcpiPsGetDepthNext (
     Next = AcpiPsGetArg (Op, 0);
     if (Next)
     {
+        AcpiPsFileLabelNode(Next);
         return (Next);
     }
 
@@ -320,6 +321,7 @@ AcpiPsGetDepthNext (
     Next = Op->Common.Next;
     if (Next)
     {
+        AcpiPsFileLabelNode(Next);
         return (Next);
     }
 
@@ -332,6 +334,8 @@ AcpiPsGetDepthNext (
         Arg = AcpiPsGetArg (Parent, 0);
         while (Arg && (Arg != Origin) && (Arg != Op))
         {
+
+            AcpiPsFileLabelNode(Arg);
             Arg = Arg->Common.Next;
         }
 
@@ -346,6 +350,7 @@ AcpiPsGetDepthNext (
         {
             /* Found sibling of parent */
 
+            AcpiPsFileLabelNode(Parent->Common.Next);
             return (Parent->Common.Next);
         }
 
@@ -353,6 +358,7 @@ AcpiPsGetDepthNext (
         Parent = Parent->Common.Parent;
     }
 
+    AcpiPsFileLabelNode(Next);
     return (Next);
 }
 

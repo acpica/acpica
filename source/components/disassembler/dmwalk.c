@@ -213,6 +213,7 @@ AcpiDmDisassemble (
     Info.StartAml = Op->Common.Aml - sizeof (ACPI_TABLE_HEADER);
     Info.AmlOffset = Op->Common.Aml - Info.StartAml;
 
+
     AcpiDmWalkParseTree (Op, AcpiDmDescendingOp, AcpiDmAscendingOp, &Info);
     return;
 }
@@ -769,6 +770,9 @@ AcpiDmDescendingOp (
 
     //printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
 
+    /* determine which file this parse node is contained in. */
+
+    AcpiPsFileLabelNode(Op);
 
     if (Op->Common.PsFilename && AcpiGbl_IncludeFileStack &&
         strcmp (AcpiGbl_IncludeFileStack->Filename, Op->Common.PsFilename))
@@ -1335,9 +1339,12 @@ AcpiDmAscendingOp (
     ACPI_PARSE_OBJECT       *ParentOp;
     ACPI_COMMENT_LIST_NODE  *CurrentComment;
 
-
     /* AcpiOsPrintf (" [HAW]"); */
 
+    /* Label this to Op to be in the proper file */
+   
+    AcpiPsFileLabelNode(Op);
+    
     //printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
     if (Op->Common.PsFilename && AcpiGbl_IncludeFileStack &&
         strcmp (AcpiGbl_IncludeFileStack->Filename, Op->Common.PsFilename))

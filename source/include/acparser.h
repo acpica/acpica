@@ -472,4 +472,8 @@ AcpiPsFileAddressLookup(
     char                    *Address,
     ACPI_FILE_NODE          *Head);
 
+void
+AcpiPsFileLabelNode(
+    ACPI_PARSE_OBJECT       *Op);
+
 #endif /* __ACPARSER_H__ */

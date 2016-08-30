@@ -308,6 +308,52 @@ AcpiPsFileAddressLookup(
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiPsFileLabelNode
+ *
+ * PARAMETERS:  Op
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: for -ca option: Takes a given parse op, looks up its 
+ *              Op->Common.Aml field within the file tree and fills in
+ *              approperiate file information from a matching node within the
+ *              tree.
+ *
+ ******************************************************************************/
+
+void
+AcpiPsFileLabelNode(
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ACPI_FILE_NODE          *Temp;
+
+    
+    if (!Op)
+    {
+        return;
+    }
+
+    Temp = AcpiPsFileAddressLookup ((char*)Op->Common.Aml, AcpiGbl_FileTreeRoot);
+    if (Temp)
+    {
+        Op->Common.PsFilename = Temp->Filename;
+        if (Temp->Parent)
+        {
+            Op->Common.PsParentFilename = Temp->Parent->Filename;
+        }
+        else 
+        {
+            Op->Common.PsParentFilename = Temp->Filename;
+        }
+    }
+
+    return;
+}
+
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiPsAddToFileTree
  *
  * PARAMETERS:  char* Filename
