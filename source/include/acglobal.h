@@ -462,6 +462,7 @@ ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentEndNodeComment,    NULL);
 ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentOpenBraceComment,  NULL);
 ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentCloseBraceComment, NULL);
 
+ACPI_INIT_GLOBAL (char*,   AcpiGbl_RootFilename, NULL);
 ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentFilename, NULL);
 ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentParentFilename, NULL);
 ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentIncludeFilename, NULL);

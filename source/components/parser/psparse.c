@@ -274,6 +274,40 @@ AcpiPsFilenameExists(
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiPsFileAddressLookup
+ *
+ * PARAMETERS:  Filename
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: for -ca option: look for the given filename in the stack.
+ *              Returns TRUE if it exists, returns FALSE if it doesn't.
+ *
+ ******************************************************************************/
+
+ACPI_FILE_NODE*
+AcpiPsFileAddressLookup(
+    char                    *Address,
+    ACPI_FILE_NODE          *Head)
+{
+    ACPI_FILE_NODE          *Current = Head;
+
+
+    while (Current)
+    {
+        if (Address >= Current->FileStart && (Address < Current->FileEnd || !Current->FileEnd))
+        {
+            return (Current);
+        }
+        Current = Current->Next;
+    }
+
+    return (NULL);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiPsAddToFileTree
  *
  * PARAMETERS:  char* Filename
@@ -286,35 +320,52 @@ AcpiPsFilenameExists(
 
 void
 AcpiPsAddToFileTree (
-    char                    *Filename)
+    char                    *Filename,
+    char                    *PreviousFilename)
 {
     ACPI_FILE_NODE          *Temp;
 
-
-    if (!AcpiPsFilenameExists (Filename, AcpiGbl_FileTreeRoot))
+    Temp = AcpiPsFilenameExists (Filename, AcpiGbl_FileTreeRoot);
+    if (Temp)
+    {
+        /* 
+         * If this is the root file, there is no need to edit its endpoint.
+         * However, if this is not the root file, we need to update the end of
+         * the previous file and all of their parents.
+         */
+//       if (strcmp (Filename, AcpiGbl_RootFilename)) 
+//       {
+            Temp = AcpiPsFilenameExists (PreviousFilename, AcpiGbl_FileTreeRoot);
+            if (Temp && Temp->FileEnd < Filename)
+            {
+                Temp->FileEnd = Filename; 
+                while (Temp->Parent) 
+                {
+                    Temp = Temp->Parent;
+                    if (Temp->FileEnd < Filename)
+                    {
+                        Temp->FileEnd = Filename;
+                        printf ("Setting file end to %p\n", Temp->FileEnd);
+                    }
+                }
+  //          }
+        }
+    }
+    else
     {
         Temp = AcpiGbl_FileTreeRoot;
         AcpiGbl_FileTreeRoot = AcpiOsAcquireObject (AcpiGbl_FileCache);
         AcpiGbl_FileTreeRoot->Parent = NULL;
         AcpiGbl_FileTreeRoot->Next = Temp;
-        strcpy(AcpiGbl_FileTreeRoot->Filename, Filename);
-
-        if (!AcpiGbl_IncludeFileStack->Next)
-        {
-            AcpiGbl_FileTreeRoot->FileStart = AcpiGbl_IncludeFileStack->FileStart;
-            AcpiGbl_FileTreeRoot->FileEnd = AcpiGbl_IncludeFileStack->FileEnd;
-        }
-        else
-        {
-            AcpiGbl_FileTreeRoot->FileStart = Filename;
-        }
+        strcpy (AcpiGbl_FileTreeRoot->Filename, Filename);
+        AcpiGbl_FileTreeRoot->FileStart = Filename;
     }
 
     Temp = AcpiGbl_FileTreeRoot;
     printf ("File tree entries so far:\n");
     while (Temp)
     {
-        printf ("    %s\n", Temp->Filename);
+        printf ("    %s\t%p - %p\n", Temp->Filename, Temp->FileStart, Temp->FileEnd);
         Temp = Temp->Next;
     }
 }
@@ -383,11 +434,12 @@ AcpiPsCaptureJustComments (
     char                    *Debug;
     ACPI_COMMENT_LIST_NODE  *CommentNode;
     BOOLEAN                 StdDefBlockFlag = FALSE;
+    char                    *PreviousFilename;
 
 
     Aml = ParserState->Aml;
     Opcode = (UINT16) ACPI_GET8 (Aml);
-    printf("CaptureComments Opcode: 0x%x\n", Opcode);
+    printf ("CaptureComments Opcode: 0x%x\n", Opcode);
     if (Opcode != AML_COMMENT_OP)
     {
        return;
@@ -502,9 +554,10 @@ AcpiPsCaptureJustComments (
                 case FILENAME_COMMENT:
 
                     printf ("Found a filename.");
+                    PreviousFilename = AcpiGbl_CurrentFilename;
                     AcpiGbl_CurrentFilename = ACPI_CAST_PTR (char, ParserState->Aml);
                     printf ("Setting the Current filename to %s\n", AcpiGbl_CurrentFilename);
-                    AcpiPsAddToFileTree (AcpiGbl_CurrentFilename);
+                    AcpiPsAddToFileTree (AcpiGbl_CurrentFilename, PreviousFilename);
 
                     /* 
                      * Since PARENTFILENAME_COMMENT may come after FILENAME_COMMENT, 
@@ -522,7 +575,8 @@ AcpiPsCaptureJustComments (
 
                     /* add the parent filename just in case it doesn't exist before connecting. */
 
-                    AcpiPsAddToFileTree (AcpiGbl_CurrentParentFilename);
+                    //AcpiPsAddToFileTree (AcpiGbl_CurrentParentFilename);
+
                     AcpiPsSetFileParent (AcpiGbl_CurrentFilename, AcpiGbl_CurrentParentFilename);
                     break;
 

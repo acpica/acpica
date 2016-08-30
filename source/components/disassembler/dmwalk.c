@@ -691,6 +691,8 @@ AcpiDmPushFileStack (
      * the file stack and write to this file.
      */
     printf ("Pushing a new file: %s\n", Op->Common.PsFilename);
+    printf ("    Opcode: %x\n", Op->Common.AmlOpcode);
+    printf ("    Opcode: %s\n", Op->Common.AmlOpName);
 
     /* 
      * If file that is being pushed is not a child of the curruent file on the
@@ -1340,9 +1342,9 @@ AcpiDmAscendingOp (
     if (Op->Common.PsFilename && AcpiGbl_IncludeFileStack &&
         strcmp (AcpiGbl_IncludeFileStack->Filename, Op->Common.PsFilename))
     {
-
         if (AcpiDmFilenameExistsInStack (Op->Common.PsFilename))
         {
+            printf("Attempting to pop for this Opcode: %s\n", Op->Common.AmlOpName);
             AcpiDmPopFileStack (Op->Common.PsParentFilename);
         }
     }

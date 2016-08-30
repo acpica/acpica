@@ -477,8 +477,20 @@ AdParseTable (
      * The += takes care of multiple tables. This is expected to work
      * only when multiple definition block headers are on the same file...
      */
-    AcpiGbl_IncludeFileStack->FileEnd += Table->Length;
+    printf ("AmlLength: %x\n", AmlLength);
+    printf ("AmlStart:  %p\n",  AmlStart);
+    printf ("AmlEnd?:   %p\n",  AmlStart+AmlLength);
+    AcpiGbl_IncludeFileStack->FileEnd = (char*)(AmlStart + AmlLength);
     printf ("AcpiGbl_IncludeFileStack->FileEnd: %p\n", AcpiGbl_IncludeFileStack->FileEnd);
+
+    AcpiGbl_FileTreeRoot = AcpiOsAcquireObject (AcpiGbl_FileCache);
+
+    AcpiGbl_FileTreeRoot->FileStart = (char*)(AmlStart);
+    AcpiGbl_FileTreeRoot->FileEnd = (char*)(AmlStart + AmlLength);
+    AcpiGbl_FileTreeRoot->File = AcpiGbl_IncludeFileStack->File;
+    strcpy (AcpiGbl_FileTreeRoot->Filename, AcpiGbl_IncludeFileStack->Filename);
+    AcpiGbl_FileTreeRoot->Next = NULL;
+    AcpiGbl_FileTreeRoot->Parent = NULL;
 
     /* Create the root object */
 

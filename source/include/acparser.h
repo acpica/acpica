@@ -459,11 +459,17 @@ AcpiPsFilenameExists(
 
 void
 AcpiPsAddToFileTree (
-    char                    *Filename);
+    char                    *Filename,
+    char                    *PreviousFilename);
 
 void
 AcpiPsSetFileParent (
     char                    *ChildFile,
     char                    *ParentFile);
+
+ACPI_FILE_NODE*
+AcpiPsFileAddressLookup(
+    char                    *Address,
+    ACPI_FILE_NODE          *Head);
 
 #endif /* __ACPARSER_H__ */
