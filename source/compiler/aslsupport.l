@@ -547,8 +547,11 @@ AslInsertLineBuffer (
             AslResetCurrentLineBuffer ();
 
         }
-
-        AslProcessCommentState (SourceChar);
+        
+        if (Gbl_CaptureComments)
+        {
+            AslProcessCommentState (SourceChar);
+        }
     }
 }
 
@@ -772,7 +775,6 @@ static BOOLEAN
 AslDoComment (
     void)
 {
-
     char                    *LineToken;
     char                    *FinalLineToken;
     int                     i;
@@ -785,8 +787,6 @@ AslDoComment (
     char                    *FinalCommentString;
     ASL_COMMENT_STATE       CurrentState = Gbl_CommentState; //for reference
 
-
-    printf ("Multi-line comment\n");
 
     AslInsertLineBuffer ('/');
     *StringBuffer = '/';
@@ -853,6 +853,7 @@ loop:
 
     if (Gbl_CaptureComments)
     {
+        printf ("Multi-line comment\n");
         CommentString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
         strcpy (CommentString, MsgBuffer);
 
@@ -993,9 +994,8 @@ AslDoCommentType2 (
     char                    *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
     char                    *CommentString;
     char                    *FinalCommentString;
-    ASL_COMMENT_STATE       CurrentState = Gbl_CommentState; //for reference
+    ASL_COMMENT_STATE       CurrentState = Gbl_CommentState;
 
-    printf("Single-line comment\n");
 
     AslInsertLineBuffer ('/');
     *StringBuffer = '/';
@@ -1030,6 +1030,7 @@ AslDoCommentType2 (
  
     if (Gbl_CaptureComments)
     {
+        printf("Single-line comment\n");
 
         CommentString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
         strcpy (CommentString, MsgBuffer);

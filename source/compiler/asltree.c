@@ -212,7 +212,7 @@ TrAllocateNode (
     UINT32                  ParseOpcode)
 {
     ACPI_PARSE_OBJECT       *Op;
-    ACPI_PARSE_OBJECT       *LatestNode = Gbl_CommentState.Latest_Parse_Node;
+    ACPI_PARSE_OBJECT       *LatestNode; 
 
 
     Op = TrGetNextNode ();
@@ -223,10 +223,6 @@ TrAllocateNode (
     Op->Asl.LogicalLineNumber = Gbl_LogicalLineNumber;
     Op->Asl.LogicalByteOffset = Gbl_CurrentLineOffset;
     Op->Asl.Column            = Gbl_CurrentColumn;
-    Op->Asl.InlineComment     = NULL;
-    Op->Asl.EndNodeComment    = NULL;
-    Op->Asl.CommentList       = NULL;
-    Op->Asl.FileChanged       = FALSE;
 
     UtSetParseOpName (Op);
 
@@ -234,6 +230,12 @@ TrAllocateNode (
 
     if(Gbl_CaptureComments)
     {
+        LatestNode = Gbl_CommentState.Latest_Parse_Node;
+        Op->Asl.InlineComment     = NULL;
+        Op->Asl.EndNodeComment    = NULL;
+        Op->Asl.CommentList       = NULL;
+        Op->Asl.FileChanged       = FALSE;
+
         /*
          * Check to see if the file name has changed before resetting the 
          * latest parse node.
@@ -817,7 +819,11 @@ TrCreateLeafNode (
 
 
     Op = TrAllocateNode (ParseOpcode);
-    printf ("Created leaf node\n");
+
+    if (Gbl_CaptureComments)
+    {
+        printf ("Created leaf node\n");
+    }
 
     DbgPrint (ASL_PARSE_OUTPUT,
         "\nCreateLeafNode  Ln/Col %u/%u NewNode %p  Op %s\n\n",
@@ -1202,7 +1208,7 @@ TrCreateNode (
              * belonged to the parent. This also means that legitimate comments
              * for the child gets put to the parent.
              */
-            if (PARSEOP_CONNECTION || PARSEOP_EXTERNAL || PARSEOP_OFFSET || PARSEOP_ACCESSAS)
+            if (Gbl_CaptureComments && (PARSEOP_CONNECTION || PARSEOP_EXTERNAL || PARSEOP_OFFSET || PARSEOP_ACCESSAS))
             {
                 Op->Asl.CommentList      = Child->Asl.CommentList;
                 Op->Asl.InlineComment    = Child->Asl.InlineComment;
