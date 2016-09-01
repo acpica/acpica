@@ -185,7 +185,7 @@ extern int                  AslCompilerdebug;
 
 
 #define ASL_DEFAULT_LINE_BUFFER_SIZE    (1024 * 32) /* 32K */
-#define ASL_MSG_BUFFER_SIZE             4096
+#define ASL_MSG_BUFFER_SIZE             (1024 * 32) /* 32k */
 #define ASL_MAX_DISABLED_MESSAGES       32
 #define HEX_TABLE_LINE_SIZE             8
 #define HEX_LISTING_LINE_SIZE           8

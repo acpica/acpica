@@ -789,11 +789,14 @@ AslDoComment (
 
 
     AslInsertLineBuffer ('/');
-    *StringBuffer = '/';
-    ++StringBuffer;
     AslInsertLineBuffer ('*');
-    *StringBuffer = '*';
-    ++StringBuffer;
+    if (Gbl_CaptureComments)
+    {
+        *StringBuffer = '/';
+        ++StringBuffer;
+        *StringBuffer = '*';
+        ++StringBuffer;
+    }
  
 loop:
 
@@ -802,8 +805,11 @@ loop:
     while (((c = input ()) != '*') && (c != EOF))
     {
         AslInsertLineBuffer (c);
-        *StringBuffer = c;
-        ++StringBuffer;
+        if (Gbl_CaptureComments)
+        {
+            *StringBuffer = c;
+            ++StringBuffer;
+        }
         c1 = c;
     }
 
@@ -827,8 +833,11 @@ loop:
     /* Comment is closed only if the NEXT character is a slash */
 
     AslInsertLineBuffer (c);
-    *StringBuffer = c;
-    ++StringBuffer;
+    if (Gbl_CaptureComments)
+    {
+        *StringBuffer = c;
+        ++StringBuffer;
+    }
 
     if (((c1 = input ()) != '/') && (c1 != EOF))
     {
@@ -846,13 +855,11 @@ loop:
     }
 
     AslInsertLineBuffer (c1);
-    *StringBuffer = c1;
-    ++StringBuffer;
-
-    *StringBuffer = 0; //null terminate this string
-
     if (Gbl_CaptureComments)
     {
+        *StringBuffer = c1;
+        ++StringBuffer;
+        *StringBuffer = 0;
         printf ("Multi-line comment\n");
         CommentString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
         strcpy (CommentString, MsgBuffer);
@@ -998,17 +1005,24 @@ AslDoCommentType2 (
 
 
     AslInsertLineBuffer ('/');
-    *StringBuffer = '/';
-    ++StringBuffer;
     AslInsertLineBuffer ('/');
-    *StringBuffer = '/';
-    ++StringBuffer;
+
+    if (Gbl_CaptureComments)
+    {
+        *StringBuffer = '/';
+        ++StringBuffer;
+        *StringBuffer = '/';
+        ++StringBuffer;
+    }
 
     while (((c = input ()) != '\n') && (c != EOF))
     {
         AslInsertLineBuffer (c);
-        *StringBuffer = c;
-        ++StringBuffer;
+        if (Gbl_CaptureComments)
+        {
+            *StringBuffer = c;
+            ++StringBuffer;
+        }
     }
 
     if (c == EOF)
@@ -1026,12 +1040,12 @@ AslDoCommentType2 (
     // Since AslInsertLineBuffer (c) will clear the global flag, capture it here.
 
     AslInsertLineBuffer (c);
-    *StringBuffer = 0; //null terminate this string
  
     if (Gbl_CaptureComments)
     {
-        printf("Single-line comment\n");
 
+        *StringBuffer = 0; //null terminate this string
+        printf("Single-line comment\n");
         CommentString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
         strcpy (CommentString, MsgBuffer);
 
