@@ -425,8 +425,11 @@ CmDoCompile (
      * Take the very last comment and save it in a global for it to be used
      * by the disassembler.
      */
-    AcpiGbl_LastListHead = Gbl_ParseTreeRoot->Asl.CommentList;
-    Gbl_ParseTreeRoot->Asl.CommentList = NULL;
+    if (Gbl_CaptureComments)
+    {
+        AcpiGbl_LastListHead = Gbl_ParseTreeRoot->Asl.CommentList;
+        Gbl_ParseTreeRoot->Asl.CommentList = NULL;
+    }
 
     /* Calculate all AML package lengths */
 
