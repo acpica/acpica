@@ -379,22 +379,19 @@ AcpiPsAddToFileTree (
          * However, if this is not the root file, we need to update the end of
          * the previous file and all of their parents.
          */
-//       if (strcmp (Filename, AcpiGbl_RootFilename)) 
-//       {
-            Temp = AcpiPsFilenameExists (PreviousFilename, AcpiGbl_FileTreeRoot);
-            if (Temp && Temp->FileEnd < Filename)
+        Temp = AcpiPsFilenameExists (PreviousFilename, AcpiGbl_FileTreeRoot);
+        if (Temp && Temp->FileEnd < Filename)
+        {
+            Temp->FileEnd = Filename; 
+            while (Temp->Parent) 
             {
-                Temp->FileEnd = Filename; 
-                while (Temp->Parent) 
+                if (Temp->FileEnd < Filename)
                 {
-                    if (Temp->FileEnd < Filename)
-                    {
-                        Temp->FileEnd = Filename;
-                        printf ("Setting file end to %p\n", Temp->FileEnd);
-                    }
-                    Temp = Temp->Parent;
+                    Temp->FileEnd = Filename;
+                    printf ("Setting file end to %p\n", Temp->FileEnd);
                 }
-  //          }
+                Temp = Temp->Parent;
+            }
         }
     }
     else
