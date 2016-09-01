@@ -387,12 +387,12 @@ AcpiPsAddToFileTree (
                 Temp->FileEnd = Filename; 
                 while (Temp->Parent) 
                 {
-                    Temp = Temp->Parent;
                     if (Temp->FileEnd < Filename)
                     {
                         Temp->FileEnd = Filename;
                         printf ("Setting file end to %p\n", Temp->FileEnd);
                     }
+                    Temp = Temp->Parent;
                 }
   //          }
         }
@@ -445,6 +445,15 @@ AcpiPsSetFileParent (
     if (Child && Parent)
     {
         Child->Parent = Parent;
+
+        while (Child->Parent)
+        {
+            if (Child->Parent->FileEnd < Child->FileStart)
+            {
+                Child->Parent->FileEnd = Child->FileStart;
+            }
+            Child = Child->Parent;
+        }
         return;
     }
     else

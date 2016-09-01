@@ -27,7 +27,7 @@
  */
 
 DefinitionBlock(
-	"MAIN.aml", 
+	"constant.aml",
 	"DSDT", 
 	0x02,    
 	"Intel",  
