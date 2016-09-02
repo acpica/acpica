@@ -375,15 +375,16 @@ AcpiPsAddToFileTree (
     if (Temp)
     {
         /* 
-         * If this is the root file, there is no need to edit its endpoint.
-         * However, if this is not the root file, we need to update the end of
-         * the previous file and all of their parents.
+         * Update the end of the previous file and all of their parents' ending
+         * Addresses. This is done to ensure that parent file ranges extend to
+         * the end of their childrens' files.
          */
         Temp = AcpiPsFilenameExists (PreviousFilename, AcpiGbl_FileTreeRoot);
         if (Temp && Temp->FileEnd < Filename)
         {
             Temp->FileEnd = Filename; 
-            while (Temp->Parent) 
+            Temp = Temp->Parent;
+            while (Temp) 
             {
                 if (Temp->FileEnd < Filename)
                 {
@@ -397,12 +398,15 @@ AcpiPsAddToFileTree (
     else
     {
         Temp = AcpiGbl_FileTreeRoot;
+        AcpiGbl_FileTreeRoot->Next = Temp;
         AcpiGbl_FileTreeRoot = AcpiOsAcquireObject (AcpiGbl_FileCache);
         AcpiGbl_FileTreeRoot->Parent = NULL;
-        AcpiGbl_FileTreeRoot->Next = Temp;
         strcpy (AcpiGbl_FileTreeRoot->Filename, Filename);
         AcpiGbl_FileTreeRoot->FileStart = Filename;
+        AcpiGbl_FileTreeRoot->File = fopen(Filename, "w+");
     }
+
+    /* Print for debugging */
 
     Temp = AcpiGbl_FileTreeRoot;
     printf ("File tree entries so far:\n");

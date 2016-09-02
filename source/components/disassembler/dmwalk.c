@@ -168,15 +168,6 @@ static void
 AcpiDmOpenBraceWriteComment(
     ACPI_PARSE_OBJECT       *Op);
 
-static ACPI_STATUS
-AcpiDmPushFileStack (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level);
-
-void
-AcpiDmPopFileStack (
-    char                    *Op);
-
 
 /*******************************************************************************
  *
@@ -580,166 +571,6 @@ AcpiDmCloseParenWriteComment(
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmFilenameExistsInStack
- *
- * PARAMETERS:  Filenanme
- *
- * RETURN:      Status
- *
- * DESCRIPTION: for -ca option: look for the given filename in the stack.
- *              Returns TRUE if it exists, returns FALSE if it doesn't.
- *
- ******************************************************************************/
-
-static BOOLEAN
-AcpiDmFilenameExistsInStack(
-    char                    *Filename)
-{
-    ACPI_FILE_NODE          *Current = AcpiGbl_IncludeFileStack;
-
-
-    while (Current)
-    {
-        if (!strcmp (Current->Filename, Filename))
-        {
-            return (TRUE);
-        }
-        Current = Current->Next;
-    }
-    return (FALSE);    
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDmPushFileStack
- *
- * PARAMETERS:  ACPI_PARSE_OBJECT
- *
- * RETURN:      Status
- *
- * DESCRIPTION: for -ca option: push a file on a stack. This is meant to allow
- *              conversions of .asl files that include multiple other files.
- *              Before redirecting the output to a new file, output an include 
- *              statement.
- *
- ******************************************************************************/
-
-static ACPI_STATUS
-AcpiDmPushFileStack (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level)
-{
-    ACPI_FILE_NODE          *FNode = NULL;
-
-
-    /*
-     * If the parent file does not exist in the stack, then it means that this
-     * parent file is a file that has an include statement as its first line
-     * of code. This means that this parent file does not yet exist as an open
-     * file on the stack. If this parent file does not exist in the stack, then
-     * push the file on the stack, open it and write an include statement for
-     * the current file.
-     */    
-    if (Op->Common.PsParentFilename && 
-        !AcpiDmFilenameExistsInStack (Op->Common.PsParentFilename))
-    {
-        /* 
-         * Use the file dependency to ensure that we are pushing on the correct
-         * file. There are cases where we could be pushing on top of incorrect
-         * files. If this file's parent is not on the top of the stack, pop
-         * until we get there.
-         */
-        if (strcmp (Op->Common.PsParentFilename, AcpiGbl_IncludeFileStack->Filename))
-        {
-            AcpiDmPopFileStack (Op->Common.PsParentFilename);
-            AcpiOsRedirectOutput (AcpiGbl_IncludeFileStack->File);
-        }
-
-        printf ("Pushing a new file starting with an include statement: %s\n", Op->Common.PsParentFilename);
-
-        /* Create a new file and push on the stack */
-
-        FNode = AcpiOsAcquireObject(AcpiGbl_FileCache);
-        strcpy (FNode->Filename, Op->Common.PsParentFilename);
-
-        FNode->File = fopen (FNode->Filename, "w+");
-        if (!FNode->File)
-        {
-            fprintf (stderr, "Could not open output file %s\n",
-                 FNode->Filename);
-            return (AE_ERROR);
-        }
-   
-        /* print include statement */
-        
-        AcpiDmIndent (Level);
-        AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename); 
-
-        /* Update ACPI_FILE_OUT to this file */
-
-        AcpiOsRedirectOutput (FNode->File);
-
-        /* Add to the top of the stack */
- 
-        FNode->Next = AcpiGbl_IncludeFileStack;
-        AcpiGbl_IncludeFileStack = FNode;
-    }
-
-    /*
-     * If this parse node belongs in a different file than 
-     * the file that is currently being written, open the file, push it on
-     * the file stack and write to this file.
-     */
-    printf ("Pushing a new file: %s\n", Op->Common.PsFilename);
-    printf ("    Opcode: %x\n", Op->Common.AmlOpcode);
-    printf ("    Opcode: %s\n", Op->Common.AmlOpName);
-
-    /* 
-     * If file that is being pushed is not a child of the curruent file on the
-     * file stack, we can assume that this file is associated with a different
-     * file on the stack. So pop and close all files on the stack until we get
-     * to this file's parent
-     */
-    if (strcmp (Op->Common.PsParentFilename, AcpiGbl_IncludeFileStack->Filename)
-        && AcpiDmFilenameExistsInStack (Op->Common.PsParentFilename))
-    {
-        AcpiDmPopFileStack(Op->Common.PsParentFilename);
-    }
-
-    /* Create a new file and push on the stack */
-
-    FNode = AcpiOsAcquireObject (AcpiGbl_FileCache);
-    strcpy (FNode->Filename, Op->Common.PsFilename);
-
-    FNode->File = fopen (FNode->Filename, "w+");
-    if (!FNode->File)
-    {
-        fprintf (stderr, "Could not open output file %s\n",
-            FNode->Filename);
-        return (AE_ERROR);
-    }
-   
-    /* print include statement */
-        
-    AcpiDmIndent (Level);
-    AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename); 
-
-    /* Update ACPI_FILE_OUT to this file */
-
-    AcpiOsRedirectOutput (FNode->File);
-
-    /* Add to the top of the stack and update the current filename */
-        
-    FNode->Next = AcpiGbl_IncludeFileStack;
-    AcpiGbl_IncludeFileStack = FNode;
-
-    return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiDmDescendingOp
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
@@ -764,6 +595,8 @@ AcpiDmDescendingOp (
     ACPI_PARSE_OBJECT       *NextOp2;
     UINT32                  AmlOffset;
     ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.CommentList;
+    char                    *Filename = Op->Common.PsFilename;
+    ACPI_FILE_NODE          *FNode;
 
 
     /* AcpiOsPrintf (" [HDW]"); */
@@ -773,18 +606,21 @@ AcpiDmDescendingOp (
     /* determine which file this parse node is contained in. */
 
     AcpiPsFileLabelNode(Op);
-
-    if (Op->Common.PsFilename && AcpiGbl_IncludeFileStack &&
-        strcmp (AcpiGbl_IncludeFileStack->Filename, Op->Common.PsFilename))
+    
+    if (Filename && AcpiGbl_CurrentFilename && strcmp(Filename, AcpiGbl_CurrentFilename))
     {
-
-        if (!AcpiDmFilenameExistsInStack (Op->Common.PsFilename))
+        FNode = AcpiPsFilenameExists (Filename, AcpiGbl_FileTreeRoot);
+        if (FNode->Parent)
         {
-            AcpiDmPushFileStack (Op, Level);
+             //Write include, redirect output
+             AcpiOsRedirectOutput (FNode->File);
+             AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
+             AcpiOsRedirectOutput (FNode->File);
         }
         else
         {
-            AcpiDmPopFileStack (Op->Common.PsParentFilename);
+             //Redirect output
+             AcpiOsRedirectOutput (FNode->File);
         }
     }
 
@@ -1272,52 +1108,6 @@ AcpiDmDescendingOp (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmPopFileStack
- *
- * PARAMETERS:  char* file name to pop to.
- *
- * RETURN:      none
- *
- * DESCRIPTION: Pop the top of the input file stack and point the parser to
- *              the saved parse buffer contained in the fnode. Also, set the
- *              global line counters to the saved values. This function is
- *              called when an include file reaches EOF.
- *
- ******************************************************************************/
-
-void
-AcpiDmPopFileStack (
-    char                    *TargetFilename)
-{
-    if (TargetFilename && AcpiGbl_IncludeFileStack)
-    {
-    printf ("Attempting to pop.\n"
-            "    FileStack top: %s\n"
-            "    Target filename: %s\n", 
-            AcpiGbl_IncludeFileStack->Filename, TargetFilename);
-    }
-    while (AcpiGbl_IncludeFileStack->Next && strcmp (TargetFilename, AcpiGbl_IncludeFileStack->Filename))
-    {
-        printf ("Popping the file: %s\n", AcpiGbl_IncludeFileStack->Filename);
-
-        /* Close the current include file */
-
-        fclose (AcpiGbl_IncludeFileStack->File);
-
-        /* Update the top-of-stack */
-
-        AcpiGbl_IncludeFileStack = AcpiGbl_IncludeFileStack->Next;
-
-        /* Set this as a new file and update current file */
-
-        AcpiOsRedirectOutput (AcpiGbl_IncludeFileStack->File);
-        printf ("Popped just now. Top of stack: %s\n", AcpiGbl_IncludeFileStack->Filename);
-    }
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiDmAscendingOp
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
@@ -1346,13 +1136,13 @@ AcpiDmAscendingOp (
     AcpiPsFileLabelNode(Op);
     
     //printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
-    if (Op->Common.PsFilename && AcpiGbl_IncludeFileStack &&
-        strcmp (AcpiGbl_IncludeFileStack->Filename, Op->Common.PsFilename))
+
+    if (Op->Common.PsFilename && AcpiGbl_FileTreeRoot &&
+        strcmp (AcpiGbl_FileTreeRoot->Filename, Op->Common.PsFilename))
     {
-        if (AcpiDmFilenameExistsInStack (Op->Common.PsFilename))
+        if (AcpiPsFilenameExists (Op->Common.PsFilename, AcpiGbl_FileTreeRoot))
         {
-            printf("Attempting to pop for this Opcode: %s\n", Op->Common.AmlOpName);
-            AcpiDmPopFileStack (Op->Common.PsParentFilename);
+            printf("Attempting to redirect output starting on this Opcode: %s\n", Op->Common.AmlOpName);
         }
     }
 

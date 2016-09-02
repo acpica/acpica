@@ -337,23 +337,6 @@ AdAmlDisassemble (
 
     *OutFilename = DisasmFilename;
 
-    /* Setup the filestack and file tree */
-
-    AcpiGbl_IncludeFileStack = AcpiOsAcquireObject (AcpiGbl_FileCache);
-    AcpiGbl_IncludeFileStack->Next = NULL;
-    AcpiGbl_IncludeFileStack->File = File;
-    strcpy (AcpiGbl_IncludeFileStack->Filename, DisasmFilename);
-    printf ("Currentfilename = %s\n", AcpiGbl_IncludeFileStack->Filename);
-    AcpiGbl_CurrentFilename = DisasmFilename;
-    AcpiGbl_RootFilename = DisasmFilename;
-
-    /* get the starting address of this file */
-
-    AcpiGbl_IncludeFileStack->FileStart = ACPI_CAST_PTR (char, File);
-    AcpiGbl_IncludeFileStack->FileEnd = AcpiGbl_IncludeFileStack->FileStart;
-    printf ("Root file starting address: %p\n",
-            AcpiGbl_IncludeFileStack->FileStart);
-
     /* Disassemble all AML tables within the file */
 
     while (ListHead)

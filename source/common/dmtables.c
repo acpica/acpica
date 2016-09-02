@@ -459,7 +459,7 @@ AdParseTable (
     UINT8                   *AmlStart;
     UINT32                  AmlLength;
     UINT32                  TableIndex;
-    UINT8                   *Test;
+    UINT8                   *TreeAml;
     char                    *Filename = NULL;
     char                    *PreviousFilename = NULL;
     char                    *ParentFilename = NULL;
@@ -478,50 +478,41 @@ AdParseTable (
     AmlLength = Table->Length - sizeof (ACPI_TABLE_HEADER);
     AmlStart = ((UINT8 *) Table + sizeof (ACPI_TABLE_HEADER));
 
-    /* 
-     * The += takes care of multiple tables. This is expected to work
-     * only when multiple definition block headers are on the same file...
-     */
+    /* This is expected to work only for a single defintion block. */
+
     printf ("AmlLength: %x\n", AmlLength);
     printf ("AmlStart:  %p\n",  AmlStart);
     printf ("AmlEnd?:   %p\n",  AmlStart+AmlLength);
-    AcpiGbl_IncludeFileStack->FileEnd = (char*)(AmlStart + AmlLength);
-    printf ("AcpiGbl_IncludeFileStack->FileEnd: %p\n", AcpiGbl_IncludeFileStack->FileEnd);
     
     AcpiGbl_FileTreeRoot = AcpiOsAcquireObject (AcpiGbl_FileCache);
-
     AcpiGbl_FileTreeRoot->FileStart = (char*)(AmlStart);
     AcpiGbl_FileTreeRoot->FileEnd = (char*)(AmlStart + AmlLength);
-    AcpiGbl_FileTreeRoot->File = AcpiGbl_IncludeFileStack->File;
-    strcpy (AcpiGbl_FileTreeRoot->Filename, AcpiGbl_IncludeFileStack->Filename);
     AcpiGbl_FileTreeRoot->Next = NULL;
     AcpiGbl_FileTreeRoot->Parent = NULL;
 
     Filename = (char*)(AmlStart+2);
 
-    Test = AmlStart; 
+    TreeAml = AmlStart; 
 
-    while (Test != (UINT8*)AcpiGbl_IncludeFileStack->FileEnd)
+    while (TreeAml <= (UINT8*)AcpiGbl_FileTreeRoot->FileEnd)
     {
-        if (*Test == 0xA9 && *(Test+1) == 0x08 )
+        if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x08)
         {
             PreviousFilename = Filename;
-            Filename = (char*) (Test+2);
+            Filename = (char*) (TreeAml+2);
             AcpiPsAddToFileTree (Filename, PreviousFilename);
             printf ("A9 and a 08 file\n");
             ParentFilename = Filename;
         }
-        else if (*Test == 0xA9 && *(Test+1) == 0x09)
+        else if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x09)
         {
-            ChildFilename = (char*)(Test+2);
+            ChildFilename = (char*)(TreeAml+2);
             AcpiPsSetFileParent (ChildFilename, ParentFilename);
             AcpiPsAddToFileTree (Filename, PreviousFilename);
             printf ("A9 and a 09 file\n");
         }
-        ++Test;
+        ++TreeAml;
     }
-
-
 
     /* Create the root object */
 
@@ -530,7 +521,7 @@ AdParseTable (
     {
         return (AE_NO_MEMORY);
     }
-    AcpiGbl_ParseOpRoot->Common.PsFilename = AcpiGbl_IncludeFileStack->Filename;
+    AcpiGbl_ParseOpRoot->Common.PsFilename = AcpiGbl_FileTreeRoot->Filename;
 
     /* Create and initialize a new walk state */
 
