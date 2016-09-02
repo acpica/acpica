@@ -213,7 +213,7 @@ AcpiPsCommentExists (
         {
             if (Current->Addr != ToCheck)
             {
-                printf ("Address in list: %p\n", Current->Addr);
+//                printf ("Address in list: %p\n", Current->Addr);
                 Current = Current->Next;
             }
             else
@@ -351,6 +351,51 @@ AcpiPsFileLabelNode(
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsIsDescendant
+ *
+ * PARAMETERS:  char* ChildFilename
+ *              char* ParentFilename
+ *
+ * RETURN:      Returns true if child is a descendant of parent
+ *
+ * DESCRIPTION: Determines whether if ChildFilename is a descendant of
+ *              ParentFilename within AcpiGbl_FileTreeRoot.
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AcpiPsIsDescendant (
+    char                    *ChildFilename,
+    char                    *ParentFilename)
+{
+    ACPI_FILE_NODE          *Current;
+   
+
+    Current = AcpiPsFilenameExists(ChildFilename, AcpiGbl_FileTreeRoot);
+    if (!Current)
+    {
+        printf ("%s is NOT a descendant of %s\n", ChildFilename, ParentFilename);
+        return (FALSE);
+    }
+ 
+    while (Current)
+    {
+        printf ("%s ?=? %s\n", Current->Filename, ParentFilename);
+        if (!strcmp (Current->Filename, ParentFilename))
+        {
+            printf ("%s is a descendant of %s\n", ChildFilename, ParentFilename);
+            return (TRUE);
+        }
+        
+        Current = Current->Parent;
+    }
+
+    printf ("%s is NOT a descendant of %s\n", ChildFilename, ParentFilename);
+    return (FALSE);
+}
+
 
 /*******************************************************************************
  *
@@ -371,8 +416,21 @@ AcpiPsAddToFileTree (
 {
     ACPI_FILE_NODE          *Temp;
 
+
+    if (!strcmp(Filename, AcpiGbl_RootFilename) && PreviousFilename)
+    {
+        Temp = AcpiPsFilenameExists (PreviousFilename, AcpiGbl_FileTreeRoot);
+        if (Temp)
+        {
+            Temp->FileEnd = Filename;
+        }
+    }
+    else if (!strcmp(Filename, AcpiGbl_RootFilename) && !PreviousFilename)
+    {
+        return;
+    }
     Temp = AcpiPsFilenameExists (Filename, AcpiGbl_FileTreeRoot);
-    if (Temp)
+    if (Temp && PreviousFilename)
     {
         /* 
          * Update the end of the previous file and all of their parents' ending
@@ -398,11 +456,12 @@ AcpiPsAddToFileTree (
     else
     {
         Temp = AcpiGbl_FileTreeRoot;
-        AcpiGbl_FileTreeRoot->Next = Temp;
         AcpiGbl_FileTreeRoot = AcpiOsAcquireObject (AcpiGbl_FileCache);
+        AcpiGbl_FileTreeRoot->Next = Temp;
         AcpiGbl_FileTreeRoot->Parent = NULL;
-        strcpy (AcpiGbl_FileTreeRoot->Filename, Filename);
+        AcpiGbl_FileTreeRoot->Filename = Filename;
         AcpiGbl_FileTreeRoot->FileStart = Filename;
+        AcpiGbl_FileTreeRoot->IncludeWritten = FALSE;
         AcpiGbl_FileTreeRoot->File = fopen(Filename, "w+");
     }
 
@@ -438,6 +497,7 @@ AcpiPsSetFileParent (
 {
     ACPI_FILE_NODE          *Child;
     ACPI_FILE_NODE          *Parent;
+    ACPI_FILE_NODE          *Temp;
 
 
     printf ("Setting file parent within file dependency tree.\n");
@@ -455,13 +515,28 @@ AcpiPsSetFileParent (
             }
             Child = Child->Parent;
         }
-        return;
     }
     else
     {
         printf ("Child and/or parent does not exist.\n");
-        return;
     } 
+
+    Temp = AcpiGbl_FileTreeRoot;
+    printf ("File tree relations so far | child filename, parent filename\n");
+    while (Temp)
+    {
+        printf ("                             %s -> ", Temp->Filename);
+        if (Temp->Parent)
+        {
+            printf ("%s\n",Temp->Parent->Filename);
+        }
+        else
+        {
+            printf ("none\n");
+        }
+        
+        Temp = Temp->Next;
+    }
 }
 
 
@@ -610,31 +685,10 @@ AcpiPsCaptureJustComments (
                 case FILENAME_COMMENT:
                     
                     printf ("Found a filename.");
-                    /*
-                    PreviousFilename = AcpiGbl_CurrentFilename;
-                    AcpiGbl_CurrentFilename = ACPI_CAST_PTR (char, ParserState->Aml);
-                    printf ("Setting the Current filename to %s\n", AcpiGbl_CurrentFilename);
-                    AcpiPsAddToFileTree (AcpiGbl_CurrentFilename, PreviousFilename);
-                     */
-                    /* 
-                     * Since PARENTFILENAME_COMMENT may come after FILENAME_COMMENT, 
-                     * we need to reset the AcpiGbl_CurrentParentFilename to itself in case 
-                     * PARENTFILENAME_COMMENT does not exist.
-                     */
-                    //AcpiGbl_CurrentParentFilename = AcpiGbl_CurrentFilename;
                     break;
 
                 case PARENTFILENAME_COMMENT:
-                    /*
                     printf ("Found a parent filename.");
-                    AcpiGbl_CurrentParentFilename = ACPI_CAST_PTR (char, ParserState->Aml);
-                    printf ("Setting the Current parent filename to %s\n", AcpiGbl_CurrentParentFilename);
-                     */
-                    /* add the parent filename just in case it doesn't exist before connecting. */
-
-                    //AcpiPsAddToFileTree (AcpiGbl_CurrentParentFilename);
-
-                    //AcpiPsSetFileParent (AcpiGbl_CurrentFilename, AcpiGbl_CurrentParentFilename);
                     break;
 
                 default:

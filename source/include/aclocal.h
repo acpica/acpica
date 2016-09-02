@@ -1060,11 +1060,12 @@ typedef struct acpi_comment_addr_node
 typedef struct acpi_file_node
 {
     FILE                    *File;
-    char                    Filename[ACPI_MAX_FILENAME_LENGTH];
+    char                    *Filename;
     char                    *FileStart;  /* Points to AML and indicates when the AML for this particular file starts. */
     char                    *FileEnd;    /* Points to AML and indicates when the AML for this particular file ends. */
     struct acpi_file_node   *Next;
     struct acpi_file_node   *Parent;
+    BOOLEAN                 IncludeWritten;
 
 } ACPI_FILE_NODE;
 

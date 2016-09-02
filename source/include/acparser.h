@@ -476,4 +476,9 @@ void
 AcpiPsFileLabelNode(
     ACPI_PARSE_OBJECT       *Op);
 
+BOOLEAN
+AcpiPsIsDescendant (
+    char                    *ChildFilename,
+    char                    *ParentFilename);
+
 #endif /* __ACPARSER_H__ */

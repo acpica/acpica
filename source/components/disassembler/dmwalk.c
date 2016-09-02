@@ -168,6 +168,11 @@ static void
 AcpiDmOpenBraceWriteComment(
     ACPI_PARSE_OBJECT       *Op);
 
+void
+AcpiDmSwitchFiles(
+    char                    *Filename,
+    UINT32                  Level);
+
 
 /*******************************************************************************
  *
@@ -571,6 +576,83 @@ AcpiDmCloseParenWriteComment(
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmSwitchFiles
+ *
+ * PARAMETERS:  ASL_WALK_CALLBACK
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Switch the outputfile for -ca option. 
+ *
+ ******************************************************************************/
+
+void
+AcpiDmSwitchFiles(
+    char                    *Filename,
+    UINT32                  Level)
+{
+    ACPI_FILE_NODE          *FNode;
+
+
+    if (Level==0)
+    {
+        Level = 1;
+    }
+
+    printf ("Switching from %s to %s\n", AcpiGbl_CurrentFilename, Filename);    
+    FNode = AcpiPsFilenameExists (Filename, AcpiGbl_FileTreeRoot);
+    if (FNode)
+    {
+        if (!FNode->IncludeWritten)
+        {
+            printf ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
+            //FNode->Parent->File = fopen (FNode->Parent->Filename, "a");
+            AcpiOsRedirectOutput (FNode->Parent->File);
+            AcpiDmIndent (Level);
+            AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
+            printf ("emitted the following: Include (\"%s\")\n", FNode->Filename);
+            //fclose (FNode->Parent->File);
+            FNode->IncludeWritten = TRUE;
+        }
+
+        /* 
+         * If the previous file is a descendant of the current file,
+         * make sure that Include statements from the current file
+         * to the previous have been emitted.
+         */
+
+        if (AcpiPsIsDescendant(Filename, AcpiGbl_CurrentFilename))
+        {
+            while (FNode && FNode->Parent && strcmp (FNode->Filename, AcpiGbl_CurrentFilename))
+            {
+                if (!FNode->IncludeWritten)
+                {
+                    printf ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
+                    //FNode->Parent->File = fopen (FNode->Parent->Filename, "a");
+                    AcpiOsRedirectOutput (FNode->Parent->File);
+                    AcpiDmIndent (Level);
+                    AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
+                    printf ("emitted the following in %s: Include (\"%s\")\n", FNode->Parent->Filename,FNode->Filename);
+                    //fclose (FNode->Parent->File);
+                    FNode->IncludeWritten = TRUE;
+                }
+                FNode = FNode->Parent;
+            }
+        }
+
+    }
+
+    /* Redirect output to the argument */
+
+    FNode = AcpiPsFilenameExists (Filename, AcpiGbl_FileTreeRoot);
+    FNode->File = fopen (FNode->Filename, "a");
+    AcpiOsRedirectOutput (FNode->File);
+    AcpiGbl_CurrentFilename = FNode->Filename;
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDescendingOp
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
@@ -596,7 +678,6 @@ AcpiDmDescendingOp (
     UINT32                  AmlOffset;
     ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.CommentList;
     char                    *Filename = Op->Common.PsFilename;
-    ACPI_FILE_NODE          *FNode;
 
 
     /* AcpiOsPrintf (" [HDW]"); */
@@ -609,19 +690,7 @@ AcpiDmDescendingOp (
     
     if (Filename && AcpiGbl_CurrentFilename && strcmp(Filename, AcpiGbl_CurrentFilename))
     {
-        FNode = AcpiPsFilenameExists (Filename, AcpiGbl_FileTreeRoot);
-        if (FNode->Parent)
-        {
-             //Write include, redirect output
-             AcpiOsRedirectOutput (FNode->File);
-             AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
-             AcpiOsRedirectOutput (FNode->File);
-        }
-        else
-        {
-             //Redirect output
-             AcpiOsRedirectOutput (FNode->File);
-        }
+        AcpiDmSwitchFiles(Filename, Level);
     }
 
     /* If this parse node has regular comments, print them here. */
@@ -1128,22 +1197,23 @@ AcpiDmAscendingOp (
     ACPI_OP_WALK_INFO       *Info = Context;
     ACPI_PARSE_OBJECT       *ParentOp;
     ACPI_COMMENT_LIST_NODE  *CurrentComment;
+    char*                   Filename;
 
     /* AcpiOsPrintf (" [HAW]"); */
 
     /* Label this to Op to be in the proper file */
    
     AcpiPsFileLabelNode(Op);
+    Filename = Op->Common.PsFilename;
     
     //printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
 
-    if (Op->Common.PsFilename && AcpiGbl_FileTreeRoot &&
-        strcmp (AcpiGbl_FileTreeRoot->Filename, Op->Common.PsFilename))
+
+    /* Switch the output of these files if necessary */
+
+    if (Filename && AcpiGbl_CurrentFilename && strcmp(Filename, AcpiGbl_CurrentFilename))
     {
-        if (AcpiPsFilenameExists (Op->Common.PsFilename, AcpiGbl_FileTreeRoot))
-        {
-            printf("Attempting to redirect output starting on this Opcode: %s\n", Op->Common.AmlOpName);
-        }
+        AcpiDmSwitchFiles(Filename, Level);
     }
 
     if (Op->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)
