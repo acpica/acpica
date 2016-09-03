@@ -688,7 +688,7 @@ AcpiDmDescendingOp (
 
     AcpiPsFileLabelNode(Op);
     
-    if (Filename && AcpiGbl_CurrentFilename && strcmp(Filename, AcpiGbl_CurrentFilename))
+    if (Level != 0 && Filename && AcpiGbl_CurrentFilename && strcmp(Filename, AcpiGbl_CurrentFilename))
     {
         AcpiDmSwitchFiles(Filename, Level);
     }
