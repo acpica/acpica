@@ -621,25 +621,21 @@ AcpiDmSwitchFiles(
          * to the previous have been emitted.
          */
 
-        if (AcpiPsIsDescendant(Filename, AcpiGbl_CurrentFilename))
+        while (FNode && FNode->Parent && strcmp (FNode->Filename, AcpiGbl_CurrentFilename))
         {
-            while (FNode && FNode->Parent && strcmp (FNode->Filename, AcpiGbl_CurrentFilename))
+            if (!FNode->IncludeWritten)
             {
-                if (!FNode->IncludeWritten)
-                {
-                    printf ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
-                    //FNode->Parent->File = fopen (FNode->Parent->Filename, "a");
-                    AcpiOsRedirectOutput (FNode->Parent->File);
-                    AcpiDmIndent (Level);
-                    AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
-                    printf ("emitted the following in %s: Include (\"%s\")\n", FNode->Parent->Filename,FNode->Filename);
-                    //fclose (FNode->Parent->File);
-                    FNode->IncludeWritten = TRUE;
-                }
-                FNode = FNode->Parent;
+                printf ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
+                //FNode->Parent->File = fopen (FNode->Parent->Filename, "a");
+                AcpiOsRedirectOutput (FNode->Parent->File);
+                AcpiDmIndent (Level);
+                AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
+                printf ("emitted the following in %s: Include (\"%s\")\n", FNode->Parent->Filename,FNode->Filename);
+                //fclose (FNode->Parent->File);
+                FNode->IncludeWritten = TRUE;
             }
+            FNode = FNode->Parent;
         }
-
     }
 
     /* Redirect output to the argument */
