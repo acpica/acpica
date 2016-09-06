@@ -594,11 +594,6 @@ AcpiDmSwitchFiles(
     ACPI_FILE_NODE          *FNode;
 
 
-    if (Level==0)
-    {
-        Level = 1;
-    }
-
     printf ("Switching from %s to %s\n", AcpiGbl_CurrentFilename, Filename);    
     FNode = AcpiPsFilenameExists (Filename, AcpiGbl_FileTreeRoot);
     if (FNode)
@@ -641,7 +636,7 @@ AcpiDmSwitchFiles(
     /* Redirect output to the argument */
 
     FNode = AcpiPsFilenameExists (Filename, AcpiGbl_FileTreeRoot);
-    FNode->File = fopen (FNode->Filename, "a");
+    //FNode->File = fopen (FNode->Filename, "a");
     AcpiOsRedirectOutput (FNode->File);
     AcpiGbl_CurrentFilename = FNode->Filename;
 }
