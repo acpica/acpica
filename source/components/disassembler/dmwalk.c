@@ -676,24 +676,25 @@ AcpiDmDescendingOp (
     //printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
 
     /* determine which file this parse node is contained in. */
-
-    AcpiPsFileLabelNode(Op);
+    if (Gbl_CaptureComments)
+    {
+        AcpiPsFileLabelNode(Op);
     
-    if (Level != 0 && Filename && AcpiGbl_CurrentFilename && strcmp(Filename, AcpiGbl_CurrentFilename))
-    {
-        AcpiDmSwitchFiles(Filename, Level);
+        if (Level != 0 && Filename && AcpiGbl_CurrentFilename && strcmp(Filename, AcpiGbl_CurrentFilename))
+        { 
+            AcpiDmSwitchFiles(Filename, Level);
+        }
+    
+        /* If this parse node has regular comments, print them here. */
+
+        while (CommentNode)
+        {
+            AcpiDmIndent (Level);
+            AcpiOsPrintf("%s\n", CommentNode->Comment);
+            CommentNode->Comment = NULL;
+            CommentNode = CommentNode->Next;     
+        } 
     }
-
-    /* If this parse node has regular comments, print them here. */
-
-    while (CommentNode)
-    {
-        AcpiDmIndent (Level);
-        AcpiOsPrintf("%s\n", CommentNode->Comment);
-        CommentNode->Comment = NULL;
-        CommentNode = CommentNode->Next;     
-    } 
-
     OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
 
     /* Listing support to dump the AML code after the ASL statement */
@@ -1193,18 +1194,19 @@ AcpiDmAscendingOp (
     /* AcpiOsPrintf (" [HAW]"); */
 
     /* Label this to Op to be in the proper file */
-   
-    AcpiPsFileLabelNode(Op);
-    Filename = Op->Common.PsFilename;
-    
-    //printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
-
-
-    /* Switch the output of these files if necessary */
-
-    if (Filename && AcpiGbl_CurrentFilename && strcmp(Filename, AcpiGbl_CurrentFilename))
+    if (Gbl_CaptureComments)
     {
-        AcpiDmSwitchFiles(Filename, Level);
+        AcpiPsFileLabelNode(Op);
+        Filename = Op->Common.PsFilename;
+    
+        //printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
+	
+        /* Switch the output of these files if necessary */
+
+        if (Filename && AcpiGbl_CurrentFilename && strcmp(Filename, AcpiGbl_CurrentFilename))
+        {
+            AcpiDmSwitchFiles(Filename, Level);
+        }
     }
 
     if (Op->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)

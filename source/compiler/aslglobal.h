@@ -342,7 +342,6 @@ ASL_EXTERN ASL_FILE_NODE            ASL_INIT_GLOBAL (*Gbl_IncludeFileStack, NULL
 
 /* Specific to the -q option */
 
-ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_CaptureComments, FALSE);
 ASL_EXTERN ASL_COMMENT_STATE        Gbl_CommentState;
 
 

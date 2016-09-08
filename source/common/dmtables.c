@@ -479,54 +479,61 @@ AdParseTable (
     AmlLength = Table->Length - sizeof (ACPI_TABLE_HEADER);
     AmlStart = ((UINT8 *) Table + sizeof (ACPI_TABLE_HEADER));
 
-    /* This is expected to work only for a single defintion block. */
-
-    printf ("AmlLength: %x\n", AmlLength);
-    printf ("AmlStart:  %p\n", AmlStart);
-    printf ("AmlEnd?:   %p\n", AmlStart+AmlLength);
-    
-    AcpiGbl_FileTreeRoot = AcpiOsAcquireObject (AcpiGbl_FileCache);
-    AcpiGbl_FileTreeRoot->FileStart = (char*)(AmlStart);
-    AcpiGbl_FileTreeRoot->FileEnd = (char*)(AmlStart + Table->Length);
-    AcpiGbl_FileTreeRoot->Next = NULL;
-    AcpiGbl_FileTreeRoot->Parent = NULL;
-    AcpiGbl_FileTreeRoot->Filename = (char*)(AmlStart+2);
-
-    /* Set this file to the current open file */
-
-    AcpiGbl_FileTreeRoot->File = AcpiGbl_OutputFile; 
-    
     /* 
-     * Set this to true because we dont need to output
-     * an include statement for the topmost file 
+     * The following is for the -ca option. This is the initialization of 
+     * the file dependency tree.
      */
-    AcpiGbl_FileTreeRoot->IncludeWritten = TRUE;
-    Filename = NULL;    
-    AcpiGbl_CurrentFilename = (char*)(AmlStart+2);
-    AcpiGbl_RootFilename    = (char*)(AmlStart+2);
+    if (Gbl_CaptureComments)
+    {
+        /* This is expected to work only for a single defintion block. */
+
+        printf ("AmlLength: %x\n", AmlLength);
+        printf ("AmlStart:  %p\n", AmlStart);
+        printf ("AmlEnd?:   %p\n", AmlStart+AmlLength);
+    
+        AcpiGbl_FileTreeRoot = AcpiOsAcquireObject (AcpiGbl_FileCache);
+        AcpiGbl_FileTreeRoot->FileStart = (char*)(AmlStart);
+        AcpiGbl_FileTreeRoot->FileEnd = (char*)(AmlStart + Table->Length);
+        AcpiGbl_FileTreeRoot->Next = NULL;
+        AcpiGbl_FileTreeRoot->Parent = NULL;
+        AcpiGbl_FileTreeRoot->Filename = (char*)(AmlStart+2);
+
+        /* Set this file to the current open file */
+
+        AcpiGbl_FileTreeRoot->File = AcpiGbl_OutputFile; 
+    
+        /* 
+         * Set this to true because we dont need to output
+         * an include statement for the topmost file 
+         */
+        AcpiGbl_FileTreeRoot->IncludeWritten = TRUE;
+        Filename = NULL;    
+        AcpiGbl_CurrentFilename = (char*)(AmlStart+2);
+        AcpiGbl_RootFilename    = (char*)(AmlStart+2);
   
 
-    TreeAml = AmlStart;
-    FileEnd = AmlStart +AmlLength;
+        TreeAml = AmlStart;
+        FileEnd = AmlStart +AmlLength;
 
-    while (TreeAml <= FileEnd)
-    {
-        //printf ("Pointer val: %p\n", TreeAml);
-        if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x08)
+        while (TreeAml <= FileEnd)
         {
-            printf ("A9 and a 08 file\n");
-            PreviousFilename = Filename;
-            Filename = (char*) (TreeAml+2);
-            AcpiPsAddToFileTree (Filename, PreviousFilename);
-            ChildFilename = Filename;
+            //printf ("Pointer val: %p\n", TreeAml);
+            if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x08)
+            {
+                printf ("A9 and a 08 file\n");
+                PreviousFilename = Filename;
+                Filename = (char*) (TreeAml+2);
+                AcpiPsAddToFileTree (Filename, PreviousFilename);
+                ChildFilename = Filename;
+            }
+            else if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x09)
+            {
+                printf ("A9 and a 09 file\n");
+                ParentFilename = (char*)(TreeAml+2);
+                AcpiPsSetFileParent (ChildFilename, ParentFilename);
+            }
+            ++TreeAml;
         }
-        else if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x09)
-        {
-            printf ("A9 and a 09 file\n");
-            ParentFilename = (char*)(TreeAml+2);
-            AcpiPsSetFileParent (ChildFilename, ParentFilename);
-        }
-        ++TreeAml;
     }
 
     /* Create the root object */
@@ -536,8 +543,15 @@ AdParseTable (
     {
         return (AE_NO_MEMORY);
     }
-    AcpiGbl_ParseOpRoot->Common.PsFilename = AcpiGbl_FileTreeRoot->Filename;
 
+    if (Gbl_CaptureComments)
+    {
+        AcpiGbl_ParseOpRoot->Common.PsFilename = AcpiGbl_FileTreeRoot->Filename;
+    }
+    else
+    {
+        AcpiGbl_ParseOpRoot->Common.PsFilename = NULL;
+    }
     /* Create and initialize a new walk state */
 
     WalkState = AcpiDsCreateWalkState (0, AcpiGbl_ParseOpRoot, NULL, NULL);

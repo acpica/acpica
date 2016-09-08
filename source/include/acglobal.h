@@ -480,6 +480,7 @@ ACPI_GLOBAL (ACPI_CACHE_T *,            AcpiGbl_RegCommentCache);
 ACPI_GLOBAL (ACPI_CACHE_T *,            AcpiGbl_CommentAddrCache);
 ACPI_GLOBAL (ACPI_CACHE_T *,            AcpiGbl_FileCache);
 
+ACPI_INIT_GLOBAL (BOOLEAN, Gbl_CaptureComments, FALSE);
 
 /*****************************************************************************
  *
