@@ -334,7 +334,7 @@ AcpiTbLoadNamespace (
     if (!TablesFailed)
     {
         ACPI_INFO ((
-            "%u ACPI AML tables successfully acquired and loaded\n",
+            "%u ACPI AML tables successfully acquired and loaded",
             TablesLoaded));
     }
     else
@@ -347,6 +347,11 @@ AcpiTbLoadNamespace (
 
         Status = AE_CTRL_TERMINATE;
     }
+
+#ifdef ACPI_APPLICATION
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "\n"));
+#endif
+
 
 UnlockAndExit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
