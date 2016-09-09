@@ -192,6 +192,10 @@ AslProcessCommentState (
         case ASL_CLOSEPAREN:
 
             Gbl_CommentState.CommentType = ASL_CLOSEPARENCOMMENT;
+            if (Gbl_CommentState.ParseDefBlockHeader == TRUE)
+            {
+                Gbl_CommentState.ParseDefBlockHeader = FALSE;
+            }
             break;
 
         case ASL_OPENBRACE:
@@ -790,7 +794,7 @@ AslDoComment (
 
     AslInsertLineBuffer ('/');
     AslInsertLineBuffer ('*');
-    if (Gbl_CaptureComments)
+    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader)
     {
         *StringBuffer = '/';
         ++StringBuffer;
@@ -805,7 +809,7 @@ loop:
     while (((c = input ()) != '*') && (c != EOF))
     {
         AslInsertLineBuffer (c);
-        if (Gbl_CaptureComments)
+        if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader)
         {
             *StringBuffer = c;
             ++StringBuffer;
@@ -833,7 +837,7 @@ loop:
     /* Comment is closed only if the NEXT character is a slash */
 
     AslInsertLineBuffer (c);
-    if (Gbl_CaptureComments)
+    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader)
     {
         *StringBuffer = c;
         ++StringBuffer;
@@ -855,7 +859,7 @@ loop:
     }
 
     AslInsertLineBuffer (c1);
-    if (Gbl_CaptureComments)
+    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader)
     {
         *StringBuffer = c1;
         ++StringBuffer;
@@ -1007,7 +1011,7 @@ AslDoCommentType2 (
     AslInsertLineBuffer ('/');
     AslInsertLineBuffer ('/');
 
-    if (Gbl_CaptureComments)
+    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader)
     {
         *StringBuffer = '/';
         ++StringBuffer;
@@ -1018,7 +1022,7 @@ AslDoCommentType2 (
     while (((c = input ()) != '\n') && (c != EOF))
     {
         AslInsertLineBuffer (c);
-        if (Gbl_CaptureComments)
+        if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader)
         {
             *StringBuffer = c;
             ++StringBuffer;
@@ -1041,7 +1045,7 @@ AslDoCommentType2 (
 
     AslInsertLineBuffer (c);
  
-    if (Gbl_CaptureComments)
+    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader)
     {
 
         *StringBuffer = 0; //null terminate this string

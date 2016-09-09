@@ -1,7 +1,13 @@
 /* top of the 
  * definition block
  */
-DefinitionBlock("testCollection.aml", "DSDT", 0x02, "Intel", "Many", 0x00000001) 
+DefinitionBlock(
+    "testCollection.aml", /* These comments          */
+    "DSDT",               /* within the              */
+    0x02,                 /* definition block header */
+    "Intel",              /* are not retained.       */
+    "Many",               /* They will be            */
+    0x00000001            /* Discarded               */)
 {
 
 
@@ -29,7 +35,6 @@ DefinitionBlock("testCollection.aml", "DSDT", 0x02, "Intel", "Many", 0x00000001)
         {   //c1
             Name(b,0);
         }  //c2
- 
  
     }
 

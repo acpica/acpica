@@ -823,6 +823,10 @@ TrCreateLeafNode (
     if (Gbl_CaptureComments)
     {
         printf ("Created leaf node\n");
+        if (ParseOpcode == PARSEOP_DEFINITION_BLOCK)
+        {
+            Gbl_CommentState.ParseDefBlockHeader = TRUE;
+        }
     }
 
     DbgPrint (ASL_PARSE_OUTPUT,
