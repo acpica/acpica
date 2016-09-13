@@ -1,7 +1,7 @@
 
 all:		compile_test_case
 
-install:	install_test_case
+installnormal:	install_test_case
 
 clean:	clobber
 

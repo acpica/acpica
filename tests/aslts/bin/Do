@@ -301,15 +301,21 @@ do_bdemo_table()
 # arg1 - root directory of aslts
 make_install_1()
 {
-	local dir restore_dir
+	local dir restore_dir disasm
 
 	restore_dir=$PWD
 	dir="$1"
-
+	disasm="$2"
 	cd "$dir"
 
-	echo "Running make install from $dir"
-	make install > /dev/null
+        if [ ${disasm##* } = "yes" ]; then #take the last argument
+		echo "Running disasm make install from $dir"
+		make installnormal OPT=1 > /dev/null
+        else
+		echo "Running normal make install from $dir"
+		make installnormal OPT=0 > /dev/null
+	fi
+
 	if [ $? -ne 0 ]; then
 		do_exit 1 "make install error"
 	fi
@@ -448,14 +454,14 @@ run_asl_compiler()
 		usage
 		do_exit 1 "Bad parameters 0"
 	elif [ $lexem == ASLTS -o $lexem == aslts ]; then
-		if [ $nparam != 2 ]; then
+		if [ $nparam != 3 ]; then
 			usage
 			do_exit 1 "Bad parameters 1"
 		else
 			action=1
 		fi
 	elif [ $lexem == ALL -o $lexem == all ]; then
-		if [ $nparam -le 2 ]; then
+		if [ $nparam -le 3 ]; then
 			usage
 			do_exit 1 "Bad parameters 2"
 		else
@@ -469,7 +475,7 @@ run_asl_compiler()
 
 	if [ $action == 1 ]; then
 		echo "Make-install all the provided test cases"
-		make_install_1 "$1"
+		make_install_1 "$1" "$3"
 	elif [ $action == 2 ]; then
 		echo "Make-install a list of specified test cases: $list"
 		make_install_2 "$1" "$list"
@@ -503,6 +509,7 @@ get_aslts_bin_line()
 # Available commands
 
 CMD=$1
+DOPT=$2
 NPARAM=$#
 ASLCOMPILE=0
 RUNTESTS=1

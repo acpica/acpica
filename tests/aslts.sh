@@ -11,6 +11,7 @@ tmp_acpiexec=/tmp/acpiexec-$postfix
 TEST_CASES=
 TEST_MODES=
 REBUILD_TOOLS=yes
+DISASSEMBLE=no
 
 usage() {
 
@@ -20,6 +21,8 @@ usage() {
 	echo "  -c:	Specify individual test cases (can be used multiple times)"
 	echo "  -m:	Specify individual test modes (can be used multiple times)"
 	echo "  -u:	Do not force rebuilding of ACPICA utilities (acpiexec, iasl)"
+	echo "  -d:	Disassemble and recompile test cases (used to test the disassembler)"
+	echo "  -t:	Translate and recompile test cases (used to test the ASL/ASL+ converter)"
 	echo ""
 
 	echo "Available test modes:"
@@ -114,7 +117,7 @@ run_aslts() {
 
 	if [ "x$TEST_CASES" = "x" ]; then
 		# Compile all ASL test modules
-		Do 0 aslts
+		Do 0 aslts $DISASSEMBLE
 		if [ $? -ne 0 ]; then
 			echo "ASLTS Compile Failure"
 			exit 1
@@ -150,7 +153,7 @@ RESET_SETTINGS
 INIT_ALL_AVAILABLE_CASES
 INIT_ALL_AVAILABLE_MODES
 
-while getopts "c:m:u" opt
+while getopts "c:m:ud" opt
 do
 	case $opt in
 	c)
@@ -174,6 +177,10 @@ do
 	u)
 		REBUILD_TOOLS=no
 	;;
+	d)
+		DISASSEMBLE=yes
+                echo "DISASSEMBLE=$DISASSEMBLE"
+        ;;
 	?)
 		echo "Invalid argument: $opt"
 		usage
