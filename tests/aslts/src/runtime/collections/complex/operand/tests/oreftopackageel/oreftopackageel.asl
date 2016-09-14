@@ -15957,12 +15957,29 @@ Method(m61a,, Serialized)
 
 		// Method returns Reference to Integer
 
-		if (y500) {
+		if (!y500) {
+
+Name (L1, 32)
+while (L1)
+{
+    Store ("**** M601 w/3 args", Debug)
+    Decrement (L1)
+}
 			Store(Mod(Derefof(m604(2, 3, 10, 1)), Derefof(m601(1, 21, 1))), Local0)
 			m600(arg0, 10, Local0, 0xd650a284)
 
 			Store(Mod(Derefof(m604(2, 3, 10, 1)), Derefof(m601(1, 22, 1))), Local0)
+
+Local0 = 0x1234
 			m600(arg0, 11, Local0, 1)
+
+Name (L2, 32)
+while (L2)
+{
+    Store ("**** END M601 w/3 args", Debug)
+    Decrement (L2)
+}
+
 		}
 
 		Mod(Derefof(m604(2, 3, 10, 1)), 0xd650a285, Local0)
