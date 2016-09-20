@@ -879,10 +879,17 @@ AcpiOsDeleteSemaphore (
         return (AE_BAD_PARAMETER);
     }
 
+#ifdef __APPLE__
+    if (sem_close (Sem) == -1)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+#else
     if (sem_destroy (Sem) == -1)
     {
         return (AE_BAD_PARAMETER);
     }
+#endif
 
     return (AE_OK);
 }
