@@ -826,7 +826,7 @@ AcpiOsCreateSemaphore (
 
 #ifdef __APPLE__
     {
-        char            *SemaphoreName = tmpnam (NULL);
+        char            *SemaphoreName = mktemp (NULL);
 
         Sem = sem_open (SemaphoreName, O_EXCL|O_CREAT, 0755, InitialUnits);
         if (!Sem)
