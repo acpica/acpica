@@ -457,6 +457,11 @@ AcpiNsNameOfCurrentScope (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
+AcpiNsHandleToName (
+    ACPI_HANDLE             TargetHandle,
+    ACPI_BUFFER             *Buffer);
+
+ACPI_STATUS
 AcpiNsHandleToPathname (
     ACPI_HANDLE             TargetHandle,
     ACPI_BUFFER             *Buffer,
