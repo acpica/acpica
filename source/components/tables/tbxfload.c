@@ -500,9 +500,9 @@ AcpiUnloadParentTable (
         return_ACPI_STATUS (AE_TYPE);
     }
 
-    /* Must acquire the interpreter lock during this operation */
+    /* Must acquire the table lock during this operation */
 
-    Status = AcpiUtAcquireMutex (ACPI_MTX_INTERPRETER);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_TABLES);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -533,9 +533,11 @@ AcpiUnloadParentTable (
 
         /* Ensure the table is actually loaded */
 
+        (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
         if (!AcpiTbIsTableLoaded (i))
         {
             Status = AE_NOT_EXIST;
+            (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
             break;
         }
 
@@ -562,10 +564,11 @@ AcpiUnloadParentTable (
 
         Status = AcpiTbReleaseOwnerId (i);
         AcpiTbSetTableLoadedFlag (i, FALSE);
+        (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
         break;
     }
 
-    (void) AcpiUtReleaseMutex (ACPI_MTX_INTERPRETER);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
     return_ACPI_STATUS (Status);
 }
 
