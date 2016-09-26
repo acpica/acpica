@@ -116,7 +116,7 @@ run_aslts() {
 
 	if [ "x$TEST_CASES" = "x" ]; then
 		# Compile all ASL test modules
-		Do 0 aslts
+		Do 0 aslts $DISASSEMBLE
 		if [ $? -ne 0 ]; then
 			echo "ASLTS Compile Failure"
 			exit 1
