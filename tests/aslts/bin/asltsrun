@@ -425,7 +425,7 @@ do_summary_of_test_case()
 			fi
 		elif [[ "$s0" == Outstanding: ]]; then # this never seems to get used...
 			outstand0=$s1
-		elif [[ "$0" == Mem: ]]; then # defer work on this until the output works again.
+		elif [[ "$s0" == Mem: ]]; then # defer work on this until the output works again.
 			if [ $memcnt == 0 ]; then
 				memtotal=`echo "$line" | awk -F" " '{print $9}'`
 				memtotal=$[ 0 + 0x$memtotal ]
