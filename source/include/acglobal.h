@@ -319,7 +319,7 @@ ACPI_GLOBAL (ACPI_THREAD_STATE *,       AcpiGbl_CurrentWalkList);
 
 /* Maximum number of While() loop iterations before forced abort */
 
-ACPI_GLOBAL (UINT16,                    AcpiGbl_MaxLoopIterations);
+ACPI_GLOBAL (UINT32,                    AcpiGbl_MaxLoopIterations);
 
 /* Control method single step flag */
 
