@@ -40,8 +40,8 @@
 
 Name(z062, 62)
 
-Name(ff32, 0xffffffff)         // -1, 32-bit
-Name(ff64, 0xffffffffffffffff) // -1, 64-bit
+Name(ff32, 0xffffffff)          // -1, 32-bit
+Name(ff64, Ones)                // -1, 64-bit
 
 // Test execution trace
 
