@@ -98,7 +98,7 @@ Device(DTR0) {
 		}
 
 		if (LLess(arg1, NFLG)) {
-			Store(Index(VFLG, arg1), Local1)
+			Index(VFLG, arg1, Local1)
 			Store(Refof(Local1), Local2)
 			Add(Derefof(Local1), 1, Derefof(Local2))
 		} else {
@@ -164,7 +164,7 @@ Method(m7f1, 1, Serialized)
 		}
 
 		if (LLess(arg1, NFLG)) {
-			Store(Index(VFLG, arg1), Local1)
+			Index(VFLG, arg1, Local1)
 			Store(Refof(Local1), Local2)
 			Add(Derefof(Local1), 1, Derefof(Local2))
 		} else {
