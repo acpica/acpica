@@ -880,6 +880,7 @@ compare_summary_pf_data()
 			p="+"
 		fi
 		echo "            Fail: $p$delta_data (from $CMP1FAIL to $CMP0FAIL)"
+		p=
 	else
 		echo "        No pass/fail difference in $mode"
 		echo "            total pass: $CMP0PASS"

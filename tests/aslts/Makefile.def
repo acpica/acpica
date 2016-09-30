@@ -25,7 +25,7 @@
 SETOF_INDEXES= 0 1 2 3
 SETOF_AMLDIRS= nopt/32 nopt/64 opt/32 opt/64
 SETOF_ASLFAGS= "-oa -r 1" "-oa -r 2" "-r 1" "-r 2"
-COMMON_ASL_FLAGS= "-of -cr -vs -l -sc -sa -ic -ta -ts -so -lm -ln -ls -li -ve -f"
+COMMON_ASL_FLAGS= "-cr -vs -l -sc -sa -ic -ta -ts -so -lm -ln -ls -li"
 
 COMPILER_LOG="$(TOP)/tmp/aml/$(aslversion)/compile.txt"
 COMPILER_ERROR_LOG="$(TOP)/tmp/aml/$(aslversion)/error.txt"
@@ -77,7 +77,7 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 						>&2 echo "---- Disassemble: $$k.aml"; \
 						echo "---- Diasassemble: $$k.aml" >> $(COMPILER_LOG); \
 						echo "---- Diasassemble: $$k.aml" >> $(COMPILER_ERROR_LOG); \
-						"$(ASL)" -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -dl $$k.aml >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+						"$(ASL)" -cr -vs -ve $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -dl $$k.aml >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
 						>&2 echo "---- Recompile: $$k.dsl"; \
 						echo "---- Recompile: $$k.dsl" >> $(COMPILER_LOG); \
 						echo "---- Recompile: $$k.dsl" >> $(COMPILER_ERROR_LOG); \
@@ -106,7 +106,7 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 				echo "---- Move: $$j.aml $(TOP)/tmp/aml/$(aslversion)/$$CUR_AMLDIR" >> $(COMPILER_LOG); \
 				mv $$j.aml $(TOP)/tmp/aml/$(aslversion)/$$CUR_AMLDIR; \
 				ret=$$?; \
-				if [ $$ret != 0 ]; then rval=2; echo "**** mv failed!"; break; fi; \
+				if [ $$ret != 0 ]; then rval=2; echo "**** mv failed!" >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); break; fi; \
 			done; \
 		done; \
 	else \
