@@ -77,11 +77,21 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 						>&2 echo "---- Disassemble: $$k.aml"; \
 						echo "---- Diasassemble: $$k.aml" >> $(COMPILER_LOG); \
 						echo "---- Diasassemble: $$k.aml" >> $(COMPILER_ERROR_LOG); \
-						"$(ASL)" -cr -vs -ve $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -dl $$k.aml >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+						"$(ASL)" -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -dl $$k.aml >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
 						>&2 echo "---- Recompile: $$k.dsl"; \
 						echo "---- Recompile: $$k.dsl" >> $(COMPILER_LOG); \
 						echo "---- Recompile: $$k.dsl" >> $(COMPILER_ERROR_LOG); \
 						"$(ASL)" $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$k.dsl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+						rm $$k.asm; \
+						rm $$k.c; \
+						rm $$k.h; \
+						rm $$k.i; \
+						rm $$k.hex; \
+						rm $$k.lst; \
+						rm $$k.map; \
+						rm $$k.nsp; \
+						rm $$k.offset.h; \
+						rm $$k.src; \
 					done; \
 				fi; \
 				rm $$j.asm; \
