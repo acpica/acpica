@@ -26,32 +26,38 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-DefinitionBlock(
-	"oreftopackageel.aml",   // Output filename
-	"DSDT",     // Signature
-	0x02,       // DSDT Revision
-	"Intel",    // OEMID
-	"Many",     // TABLE ID
-	0x00000001  // OEM Revision
-	) {
+/*
+ * Module level execution order
+ */
 
-	// All declarations
-	Include("../../../../../../runtime/cntl/DECL_6UP.asl")
-	Include("../../../../../../runtime/collections/complex/operand/common/ocommon.asl")
-	Include("../../../../../../runtime/collections/complex/operand/tests/oreftopackageel/oreftopackageel.asl")
+/*
+ * Verify if module level opcode is executed right in place.
+ */
 
-	Method(MAIN) {
+Name(z182, 182)
 
-Y500 = Ones
-		// Initialization
-		STRT(0)
+/* Tests for Type2Opcode order */
 
-		// Run verification methods
-		Include("../../../../../../runtime/collections/complex/operand/tests/oreftopackageel/RUN.asl")
+Name(ml20, 0)
+Name(ob01, 0)
 
-		// Final actions
-		Store(FNSH(), Local7)
+if (CondRefOf(ob01))
+{
+	Store(1, ml20)
+	if (CondRefOf(ob02))
+	{
+		Store(2, ml20)
+	}
+}
+Name(ob02, 0)
 
-		return (Local7)
+Method(MLD0,, Serialized)
+{
+	Name(ts, "MLD0")
+
+	Store("TEST: MLD0, Type2Opcode is executed right in place", Debug)
+
+	if (LNotEqual(ml20, 1)) {
+		err(ts, z182, 6, z182, 6, ml20, 1)
 	}
 }

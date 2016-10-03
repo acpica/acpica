@@ -541,7 +541,7 @@ Method(mff0,, Serialized)
 		{
 			Store(0, Local0)
 
-			Store(Add(0xabcd000e, Local0, Local0), Local1)
+			Store(Add(Local0, 0xabcd000e, Local0), Local1)
 			m001(Local0)
 		}
 

@@ -134,19 +134,19 @@ Method(m0f5, 3)
 	Store(0, Local0)
 
 	if (m0f4(arg0, CHL0, arg2)) {
-		Or(0x01, Local0, Local0)
+		Or(Local0, 0x01, Local0)
 	}
 
 	Store(m0f4(arg0, CNT0, arg2), Local1)
 	Store(m0f4(arg1, CNT0, arg2), Local2)
 	if (LGreaterEqual(Local1, Local2)) {
-		Or(0x02, Local0, Local0)
+		Or(Local0, 0x02, Local0)
 	}
 
 	Store(m0f4(arg0, BRK0, arg2), Local1)
 	Store(m0f4(arg1, BRK0, arg2), Local2)
 	if (LGreaterEqual(Local1, Local2)) {
-		Or(0x04, Local0, Local0)
+		Or(Local0, 0x04, Local0)
 	}
 
 	return (Local0)
@@ -242,13 +242,13 @@ Method(m0f9, 4)
 	Store(0, Local0)
 
 	if (arg0) {
-		Or(0x01, Local0, Local0)
+		Or(Local0, 0x01, Local0)
 	}
 	if (arg1) {
-		Or(0x02, Local0, Local0)
+		Or(Local0, 0x02, Local0)
 	}
 	if (arg2) {
-		Or(0x04, Local0, Local0)
+		Or(Local0, 0x04, Local0)
 	}
 
 	Mod(arg3, 3, Local1)

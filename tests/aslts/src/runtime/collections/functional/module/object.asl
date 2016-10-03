@@ -31,8 +31,8 @@
  */
 
 /*
- * Verify if Type1Opcode (ex., If) is allowed under Device, PowerResource,
- * Processor, or ThermalZone
+ * Verify if Type1Opcode (ex., If) and Type2Opcode (ex., Store) is allowed
+ * under Device, PowerResource, Processor, or ThermalZone
  *
  * ASL spec state:
  * 1. DeviceTerm supports ObjectList for ACPI 1.0 ~ ACPI 6.1.
@@ -111,5 +111,70 @@ Method(MLO0,, Serialized)
 	}
 	if (LNotEqual(ml13, 2)) {
 		err(ts, z181, 3, z181, 3, ml13, 2)
+	}
+}
+
+/* Tests for Type2Opcode */
+
+Name(ml14, 0)
+Name(ml15, 0)
+Name(ml16, 0)
+Name(ml17, 0)
+
+Scope(\_SB)
+{
+	Device(dev1)
+	{
+		Store (1, ml14)
+		if (LEqual(ml14, 1)) {
+			Store(2, ml14)
+		}
+		PowerResource(pr01, 1, 0)
+		{
+			Store (1, ml15)
+			if (LEqual(ml15, 1)) {
+				Store(2, ml15)
+			}
+		}
+	}
+}
+Scope(\_PR)
+{
+	Processor(cpu1, 0, 0xFFFFFFFF, 0)
+	{
+		Store (1, ml16)
+		if (LEqual(ml16, 1)) {
+			Store(2, ml16)
+		}
+	}
+}
+Scope(\_TZ)
+{
+	ThermalZone(thz1)
+	{
+		Store (1, ml17)
+		if (LEqual(ml17, 1)) {
+			Store(2, ml17)
+		}
+	}
+}
+
+Method(MLO1,, Serialized)
+{
+	Name(ts, "MLO1")
+
+	Store("TEST: MLO1 Type2Opcode is executable under objects", Debug)
+
+	if (LNotEqual(ml14, 2)) {
+		err(ts, z181, 4, z181, 4, ml14, 2)
+	}
+	if (LNotEqual(ml15, 2)) {
+		err(ts, z181, 5, z181, 5, ml15, 2)
+	}
+	if (LNotEqual(ml16, 2)) {
+		err(ts, z181, 6, z181, 6, ml16, 2)
+	}
+	if (LNotEqual(ml17, 2)) {
+		err(ts, z181, 7, z181, 7, ml17, 2)
 	}
 }
