@@ -15958,10 +15958,10 @@ Method(m61a,, Serialized)
 		// Method returns Reference to Integer
 
 		if (y500) {
-			Store(Mod(Derefof(m604(2, 3, 10, 1)), Derefof(m601(1, 21, 1))), Local0)
+			Store(Mod(Derefof(m604(2, 3, 10, 1)), Derefof(m602(1, 21, 1))), Local0)
 			m600(arg0, 10, Local0, 0xd650a284)
 
-			Store(Mod(Derefof(m604(2, 3, 10, 1)), Derefof(m601(1, 22, 1))), Local0)
+			Store(Mod(Derefof(m604(2, 3, 10, 1)), Derefof(m602(1, 22, 1))), Local0)
 			m600(arg0, 11, Local0, 1)
 		}
 
@@ -16002,10 +16002,10 @@ Method(m61a,, Serialized)
 		// Method returns Reference to Integer
 
 		if (y500) {
-			Mod(Derefof(m604(2, 3, 10, 1)), Derefof(m601(1, 21, 1)), Local0)
+			Mod(Derefof(m604(2, 3, 10, 1)), Derefof(m602(1, 21, 1)), Local0)
 			m600(arg0, 22, Local0, 0xd650a284)
 
-			Mod(Derefof(m604(2, 3, 10, 1)), Derefof(m601(1, 22, 1)), Local0)
+			Mod(Derefof(m604(2, 3, 10, 1)), Derefof(m602(1, 22, 1)), Local0)
 			m600(arg0, 23, Local0, 1)
 		}
 
@@ -16048,10 +16048,10 @@ Method(m61a,, Serialized)
 		// Method returns Reference to Integer
 
 		if (y500) {
-			Store(Mod(Derefof(m601(1, 21, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
+			Store(Mod(Derefof(m602(1, 21, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 34, Local0, 1)
 
-			Store(Mod(Derefof(m601(1, 22, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
+			Store(Mod(Derefof(m602(1, 22, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 35, Local0, 0xd650a283)
 		}
 
@@ -16092,10 +16092,10 @@ Method(m61a,, Serialized)
 		// Method returns Reference to Integer
 
 		if (y500) {
-			Mod(Derefof(m601(1, 21, 1)), Derefof(m604(2, 3, 10, 1)), Local0)
+			Mod(Derefof(m602(1, 21, 1)), Derefof(m604(2, 3, 10, 1)), Local0)
 			m600(arg0, 46, Local0, 1)
 
-			Mod(Derefof(m601(1, 22, 1)), Derefof(m604(2, 3, 10, 1)), Local0)
+			Mod(Derefof(m602(1, 22, 1)), Derefof(m604(2, 3, 10, 1)), Local0)
 			m600(arg0, 47, Local0, 0xd650a283)
 		}
 
@@ -22076,10 +22076,10 @@ Method(m61a,, Serialized)
 			Store(LEqual(Derefof(m602(1, 20, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 15, Local0, Ones)
 
-			Store(LEqual(Derefof(m601(1, 21, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
+			Store(LEqual(Derefof(m602(1, 21, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 16, Local0, Zero)
 
-			Store(LEqual(Derefof(m601(1, 22, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
+			Store(LEqual(Derefof(m602(1, 22, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 17, Local0, Zero)
 		}
 
@@ -22140,10 +22140,10 @@ Method(m61a,, Serialized)
 			Store(LGreater(Derefof(m602(1, 20, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 33, Local0, Zero)
 
-			Store(LGreater(Derefof(m601(1, 21, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
+			Store(LGreater(Derefof(m602(1, 21, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 34, Local0, Ones)
 
-			Store(LGreater(Derefof(m601(1, 22, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
+			Store(LGreater(Derefof(m602(1, 22, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 35, Local0, Zero)
 		}
 
@@ -22204,10 +22204,10 @@ Method(m61a,, Serialized)
 			Store(LGreaterEqual(Derefof(m602(1, 20, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 51, Local0, Ones)
 
-			Store(LGreaterEqual(Derefof(m601(1, 21, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
+			Store(LGreaterEqual(Derefof(m602(1, 21, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 52, Local0, Ones)
 
-			Store(LGreaterEqual(Derefof(m601(1, 22, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
+			Store(LGreaterEqual(Derefof(m602(1, 22, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 53, Local0, Zero)
 		}
 
@@ -22268,10 +22268,10 @@ Method(m61a,, Serialized)
 			Store(LLess(Derefof(m602(1, 20, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 69, Local0, Zero)
 
-			Store(LLess(Derefof(m601(1, 21, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
+			Store(LLess(Derefof(m602(1, 21, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 70, Local0, Zero)
 
-			Store(LLess(Derefof(m601(1, 22, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
+			Store(LLess(Derefof(m602(1, 22, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 71, Local0, Ones)
 		}
 
@@ -22332,10 +22332,10 @@ Method(m61a,, Serialized)
 			Store(LLessEqual(Derefof(m602(1, 20, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 87, Local0, Ones)
 
-			Store(LLessEqual(Derefof(m601(1, 21, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
+			Store(LLessEqual(Derefof(m602(1, 21, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 88, Local0, Zero)
 
-			Store(LLessEqual(Derefof(m601(1, 22, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
+			Store(LLessEqual(Derefof(m602(1, 22, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 89, Local0, Ones)
 		}
 
@@ -22396,10 +22396,10 @@ Method(m61a,, Serialized)
 			Store(LNotEqual(Derefof(m602(1, 20, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 105, Local0, Zero)
 
-			Store(LNotEqual(Derefof(m601(1, 21, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
+			Store(LNotEqual(Derefof(m602(1, 21, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 106, Local0, Ones)
 
-			Store(LNotEqual(Derefof(m601(1, 22, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
+			Store(LNotEqual(Derefof(m602(1, 22, 1)), Derefof(m604(2, 3, 10, 1))), Local0)
 			m600(arg0, 107, Local0, Ones)
 		}
 	}
