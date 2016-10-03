@@ -180,6 +180,10 @@ do
 	u)
 		REBUILD_TOOLS=no
 	;;
+	d)
+		DISASSEMBLE=yes
+                echo "DISASSEMBLE=$DISASSEMBLE"
+        ;;
 	?)
 		echo "Invalid argument: $opt"
 		usage

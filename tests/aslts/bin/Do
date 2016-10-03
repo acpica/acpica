@@ -523,6 +523,7 @@ get_aslts_bin_line()
 # Available commands
 
 CMD=$1
+DOPT=$2
 NPARAM=$#
 ASLCOMPILE=0
 RUNTESTS=1
