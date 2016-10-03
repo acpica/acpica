@@ -11,6 +11,7 @@ install:	FORCE
 				echo "Bad element of MDIRS: <$$d>"; \
 			else \
 				pwd; \
+				>&2 echo "Begin compiling test package: [$$d]"; \
 				if ($(MAKE) install); then \
 					:; \
 				else \
@@ -21,7 +22,7 @@ install:	FORCE
 		if [ $$r -ne 0 ]; then \
 			exit $r; \
 		fi; \
-		>&2 echo "---- Compiled test package: [$$d]"; \
+		>&2 echo "Compiled test package: [$$d]"; \
 		done
 
 clean:	FORCE

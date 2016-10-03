@@ -25,7 +25,7 @@
 SETOF_INDEXES= 0 1 2 3
 SETOF_AMLDIRS= nopt/32 nopt/64 opt/32 opt/64
 SETOF_ASLFAGS= "-oa -r 1" "-oa -r 2" "-r 1" "-r 2"
-COMMON_ASL_FLAGS= "-cr -vs -l -sc -sa -ic -ta -ts -so -lm -ln -ls -li"
+COMMON_ASL_FLAGS= "-of -cr -vs -l -sc -sa -ic -ta -ts -so -lm -ln -ls -li"
 
 COMPILER_LOG="$(TOP)/tmp/aml/$(aslversion)/compile.txt"
 COMPILER_ERROR_LOG="$(TOP)/tmp/aml/$(aslversion)/error.txt"
@@ -55,6 +55,7 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 		dd=`pwd`; \
 		echo "---- Test path: $$dd" >> $(COMPILER_LOG); \
 		echo "---- Test path: $$dd" >> $(COMPILER_ERROR_LOG); \
+		>&2 echo "Test path: $$dd"; \
 		for i in ${SETOF_INDEXES}; do \
 			set -- $(SETOF_AMLDIRS); \
 			shift $$i; \
@@ -69,16 +70,18 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 			done; \
 			for j in ${ASLMOD} $(ASLMODADD); do \
 				echo "---- Compile: $$j.asl" >> $(COMPILER_LOG); \
+				>&2 echo "     Test type: $$CUR_AMLDIR"; \
+				>&2 echo "         Compile: $$j.asl"; \
 				"$(ASL)" $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$j.asl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
 				ret=$$?; \
 				echo "" >> $(COMPILER_LOG); \
 				if [ $(OPT) -eq 1 ];then \
 					for k in ${AMLMOD}; do \
-						>&2 echo "---- Disassemble: $$k.aml"; \
+						>&2 echo "         Disassemble: $$k.aml"; \
 						echo "---- Diasassemble: $$k.aml" >> $(COMPILER_LOG); \
 						echo "---- Diasassemble: $$k.aml" >> $(COMPILER_ERROR_LOG); \
 						"$(ASL)" -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -dl $$k.aml >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
-						>&2 echo "---- Recompile: $$k.dsl"; \
+						>&2 echo "         Recompile: $$k.dsl"; \
 						echo "---- Recompile: $$k.dsl" >> $(COMPILER_LOG); \
 						echo "---- Recompile: $$k.dsl" >> $(COMPILER_ERROR_LOG); \
 						"$(ASL)" $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$k.dsl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
