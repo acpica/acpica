@@ -78,7 +78,7 @@ usage()
 	echo "     Do $ASLCOMPILE [ALL|all] [functional[complex[exceptions[bdemo[service[mt[Identity2MS]]]]]]]"
 	echo "   run specified set of tests in all enabled modes:"
 	echo "     Do $RUNTESTS"
-	echo "     Do $RUNTESTS [n32 [n64 [s32 [s64]]]] [<test_case_name> [<test_case_name> [...]]]"
+	echo "     Do $RUNTESTS [n32 [n64 [o32 [o64]]]] [<test_case_name> [<test_case_name> [...]]]"
 	echo "   compare two multi-results of two runs of tests:"
 	echo "     Do $DIFFRESULTS"
 	echo "     Do $DIFFRESULTS <multi-result directory>"

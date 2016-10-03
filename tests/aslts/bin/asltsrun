@@ -11,10 +11,10 @@
 #
 # 2. Modes of runs to be executed are manually
 #    specified by non-zero variables:
-#       ENABLESLACK32 - 32-bit slack
-#       ENABLESLACK64 - 64-bit slack
-#       ENABLENORM32  - 32-bit non-slack (normal)
-#       ENABLENORM64  - 64-bit non-slack (normal)
+#       ENABLEOPT32 - 32-bit optimized code
+#       ENABLEOPT64 - 64-bit optimized code
+#       ENABLENORM32  - 32-bit unoptimized code 
+#       ENABLENORM64  - 64-bit unoptimized code
 #
 # 3. You can exclude log out to RESULTS directory
 #    by setting to zero the variable:
@@ -29,7 +29,7 @@
 #
 #    bitmap of mode -
 #       0-th bit - [0 - 32-bit,    1 - 64-bit]
-#       1-th bit - [0 - non-slack, 1 - slack]
+#       1-th bit - [0 - nopt, 1 - opt]
 #
 #    See comment of Do utility for more information.
 
@@ -133,8 +133,9 @@ get_acpiexec_version()
 get_aml_code_path()
 {
 	local BITMODE=`get_mode_string $2 2`
+	local OPTMODE=`get_mode_string $2 3`
 
-	path="$ASLTSDIR/tmp/aml/$EXECVERSION/opt/$BITMODE/$1.aml"
+	path="$ASLTSDIR/tmp/aml/$EXECVERSION/$OPTMODE/$BITMODE/$1.aml"
 	echo "$path"
 }
 
@@ -150,7 +151,7 @@ run_test_case()
 	modepart=`get_mode_string $2 0`
 	modename=`get_mode_string $2 1`
 	BITMODE=`get_mode_string $2 2`
-	SLMODE=`get_mode_string $2 3`
+	OPTMODE=`get_mode_string $2 3`
 
 	TEST_TITLE="$tcase $modename"
 
@@ -172,13 +173,7 @@ run_test_case()
 		TEST_RET=1
 	else
 		options="-ep -el"
-		if [ $SLMODE == "norm" ]; then
-			method=MN00
-			options="$options"
-		else
-			method=MN01
-			options="$options -es"
-		fi
+		method=MN00
 
 		if [ "$DO_MEMSTAT" == "yes" ]; then
 			options="$options -ef"
@@ -316,9 +311,9 @@ make_multi_result_dir()
 	cd "./$1"
 
 	if [ $ENABLENORM32 != 0 -o $ENABLENORM64 != 0 ]; then
-		path="RESULTS/$1/norm"
-		make_dir "./norm" norm "$path"
-		cd "./norm"
+		path="RESULTS/$1/nopt"
+		make_dir "./nopt" nopt "$path"
+		cd "./nopt"
 		if [ $ENABLENORM32 != 0 ]; then
 			make_dir "./32" 32 "$path/32"
 		fi
@@ -329,14 +324,14 @@ make_multi_result_dir()
 		cd ".."
 	fi
 
-	if [ $ENABLESLACK32 != 0 -o $ENABLESLACK64 != 0 ]; then
-		path="RESULTS/$1/slack"
-		make_dir "./slack" slack "$path"
-		cd "./slack"
-		if [ $ENABLESLACK32 != 0 ]; then
+	if [ $ENABLEOPT32 != 0 -o $ENABLEOPT64 != 0 ]; then
+		path="RESULTS/$1/opt"
+		make_dir "./opt" opt "$path"
+		cd "./opt"
+		if [ $ENABLEOPT32 != 0 ]; then
 			make_dir "./32" 32 "$path/32"
 		fi
-		if [ $ENABLESLACK64 != 0 ]; then
+		if [ $ENABLEOPT64 != 0 ]; then
 			make_dir "./64" 64 "$path/64"
 		fi
 	fi
@@ -361,12 +356,12 @@ report_specified_modes()
 		multi_log "${x}`get_mode_string $NORM64 1`"
 		flag=1
 	fi
-	if [ $ENABLESLACK32 != 0 ]; then
-		multi_log "${x}`get_mode_string $SLACK32 1`"
+	if [ $ENABLEOPT32 != 0 ]; then
+		multi_log "${x}`get_mode_string $OPT32 1`"
 		flag=1
 	fi
-	if [ $ENABLESLACK64 != 0 ]; then
-		multi_log "${x}`get_mode_string $SLACK64 1`"
+	if [ $ENABLEOPT64 != 0 ]; then
+		multi_log "${x}`get_mode_string $OPT64 1`"
 		flag=1
 	fi
 
@@ -515,7 +510,7 @@ do_all_summary()
 			break
 		fi
 
-		if [ "$filename" == norm -o "$filename" == slack ]; then
+		if [ "$filename" == nopt -o "$filename" == opt ]; then
 			path="$1/$filename"
 			if [ -d "$path/32" ]; then
 				summ="$path/32/__STATUS_OF_TEST_CASES"
@@ -796,23 +791,23 @@ do_inner_modes_cmp()
 	multi_log "Compare different mode runs of the same multi-run:"
 	multi_log ""
 
-	do_compare_two_runs "$1" $NORM32 "$1" $SLACK32 > /dev/null
-	report_inner_modes_cmp $? $NORM32 $SLACK32
+	do_compare_two_runs "$1" $NORM32 "$1" $OPT32 > /dev/null
+	report_inner_modes_cmp $? $NORM32 $OPT32
 	CMP4=$?
 	do_compare_two_runs "$1" $NORM32 "$1" $NORM64 > /dev/null
 	report_inner_modes_cmp $? $NORM32 $NORM64
 	CMP0=$?
-	do_compare_two_runs "$1" $NORM32 "$1" $SLACK64 > /dev/null
-	report_inner_modes_cmp $? $NORM32 $SLACK64
+	do_compare_two_runs "$1" $NORM32 "$1" $OPT64 > /dev/null
+	report_inner_modes_cmp $? $NORM32 $OPT64
 	CMP2=$?
-	do_compare_two_runs "$1" $SLACK32 "$1" $NORM64 > /dev/null
-	report_inner_modes_cmp $? $SLACK32 $NORM64
+	do_compare_two_runs "$1" $OPT32 "$1" $NORM64 > /dev/null
+	report_inner_modes_cmp $? $OPT32 $NORM64
 	CMP3=$?
-	do_compare_two_runs "$1" $SLACK32 "$1" $SLACK64 > /dev/null
-	report_inner_modes_cmp $? $SLACK32 $SLACK64
+	do_compare_two_runs "$1" $OPT32 "$1" $OPT64 > /dev/null
+	report_inner_modes_cmp $? $OPT32 $OPT64
 	CMP1=$?
-	do_compare_two_runs "$1" $NORM64 "$1" $SLACK64 > /dev/null
-	report_inner_modes_cmp $? $NORM64 $SLACK64
+	do_compare_two_runs "$1" $NORM64 "$1" $OPT64 > /dev/null
+	report_inner_modes_cmp $? $NORM64 $OPT64
 	CMP5=$?
 
 	if [ $CMP0 == 0 -a $CMP1 == 0 -a $CMP2 == 0\
@@ -825,7 +820,7 @@ do_inner_modes_cmp()
 # arg1 - summary that this particular test run created
 # arg2 - summary to compare against
 # arg3 - string representing the mode
-compare_summary_pf_data()
+compare_summary_of_data()
 {
 	local mode=$3
         local result_line delta_data
@@ -894,11 +889,11 @@ compare_summary_pf_data()
 # arg2 - summary to compare against
 compare_two_summaries()
 {
-	compare_summary_pf_data $1 $2 $"32-bit norm mode"
-	compare_summary_pf_data $1 $2 $"64-bit norm mode"
+	compare_summary_of_data $1 $2 $"32-bit nopt mode"
+	compare_summary_of_data $1 $2 $"64-bit nopt mode"
 
-	compare_summary_pf_data $1 $2 $"32-bit slack mode"
-	compare_summary_pf_data $1 $2 $"64-bit slack mode"
+	compare_summary_of_data $1 $2 $"32-bit opt mode"
+	compare_summary_of_data $1 $2 $"64-bit opt mode"
 }
 
 # ############################## MAIN ###############################
@@ -987,24 +982,24 @@ multi_log ""
 
 multi_log "Execution started $TS_FMT_INIDATE $TS_FMT_INITIME"
 
-# Run tests in 32-bit norm mode
+# Run tests in 32-bit unoptimized code
 if [ $ENABLENORM32 != 0 ]; then
 	run_set_of_test_cases $NORM32 "$MULTIPATH" "$ENABLED_TCASES"
 fi
 
-# Run tests in 64-bit norm mode
+# Run tests in 64-bit unoptimized code
 if [ $ENABLENORM64 != 0 ]; then
 	run_set_of_test_cases $NORM64 "$MULTIPATH" "$ENABLED_TCASES"
 fi
 
-# Run tests in 32-bit slack mode
-if [ $ENABLESLACK32 != 0 ]; then
-	run_set_of_test_cases $SLACK32 "$MULTIPATH" "$ENABLED_TCASES"
+# Run tests in 32-bit optimized code
+if [ $ENABLEOPT32 != 0 ]; then
+	run_set_of_test_cases $OPT32 "$MULTIPATH" "$ENABLED_TCASES"
 fi
 
-# Run tests in 64-bit slack mode
-if [ $ENABLESLACK64 != 0 ]; then
-	run_set_of_test_cases $SLACK64 "$MULTIPATH" "$ENABLED_TCASES"
+# Run tests in 64-bit optimized code
+if [ $ENABLEOPT64 != 0 ]; then
+	run_set_of_test_cases $OPT64 "$MULTIPATH" "$ENABLED_TCASES"
 fi
 
 # Finish of tests run
@@ -1035,8 +1030,8 @@ if [ $ENABLELOG != 0 ]; then
 	multi_log " "
 	report_mode_summary "$MULTIPATH" $NORM32 "${MODES_SUMMARIES[$NORM32]}"
 	report_mode_summary "$MULTIPATH" $NORM64 "${MODES_SUMMARIES[$NORM64]}"
-	report_mode_summary "$MULTIPATH" $SLACK32 "${MODES_SUMMARIES[$SLACK32]}"
-	report_mode_summary "$MULTIPATH" $SLACK64 "${MODES_SUMMARIES[$SLACK64]}"
+	report_mode_summary "$MULTIPATH" $OPT32 "${MODES_SUMMARIES[$OPT32]}"
+	report_mode_summary "$MULTIPATH" $OPT64 "${MODES_SUMMARIES[$OPT64]}"
 
 	# Cross-compare results of runs of the same multi-result directory
 

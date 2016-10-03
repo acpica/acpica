@@ -25,10 +25,10 @@ usage() {
 	echo ""
 
 	echo "Available test modes:"
-	echo "  n32	32-bit normal mode"
-	echo "  n64	64-bit normal mode"
-	echo "  s32	32-bit slack mode"
-	echo "  s64	64-bit slack mode"
+	echo "  n32	32-bit unoptimized code (tests are compiled with iasl -oa -r 1 and other flags)"
+	echo "  n64	64-bit unoptimized code (tests are compiled with iasl -oa -r 2 and other flags)"
+	echo "  o32	32-bit optimized code (tests are compiled with iasl -r 1 and other flags)"
+	echo "  o64	64-bit optimized code (tests are compiled with iasl -r 2 and other flags)"
 	echo ""
 
 	Do 3
@@ -131,7 +131,7 @@ run_aslts() {
 	start_time=$(date)
 
 	if [ "x$TEST_MODES" = "x" ]; then
-		TEST_MODES="n32 n64 s32 s64"
+		TEST_MODES="n32 n64 o32 o64"
 	fi
 	Do 1 $TEST_MODES $TEST_CASES
 
