@@ -207,10 +207,10 @@ run_test_case()
 	# Report the status message
 
 	if [ $TEST_RET != 0 ]; then
-	    echo "ASLTS: FINISH, $TEST_TITLE, FAIL, $FMT_ENDTIME ($FMT_RUNTIME)"
-	    UTILSTATUS=1
+		echo "ASLTS: FINISH, $TEST_TITLE, FAIL, $FMT_ENDTIME ($FMT_RUNTIME)"
+		UTILSTATUS=1
 	else
-	    echo "ASLTS: FINISH, $TEST_TITLE, SUCCESS, $FMT_ENDTIME ($FMT_RUNTIME)"
+		echo "ASLTS: FINISH, $TEST_TITLE, SUCCESS, $FMT_ENDTIME ($FMT_RUNTIME)"
 	fi
 
 	return $TEST_RET
@@ -385,7 +385,7 @@ do_summary_of_test_case()
 	local out0=0 out1=0 out2=0 out3=0 out4=0 out5=0
 	local LargeRefCount=0
 	local x=0 exceptionsnum=0
-        local trimmedLine
+	local trimmedLine
 
 	OLD_IFS=$IFS
 	IFS=" "
@@ -823,65 +823,69 @@ do_inner_modes_cmp()
 compare_summary_of_data()
 {
 	local mode=$3
-        local result_line delta_data
+	local result_line delta_data
 	local no_result=no
+	local p1 p2
 
-        result_line=`grep -A 2 -h '^TOTAL: [[:space:]]* ('"$mode" $1`
+	result_line=`grep -A 2 -h '^TOTAL: [[:space:]]* ('"$mode" $1`
 	CMP0PASS=`echo "$result_line" | grep 'PASS' | awk -F' ' '{printf $3}'`
 	CMP0FAIL=`echo "$result_line" | grep 'FAIL' | awk -F' ' '{printf $3}'`
 
-        result_line=`grep -A 2 -h '^TOTAL: [[:space:]]* ('"$mode" $2`
+	result_line=`grep -A 2 -h '^TOTAL: [[:space:]]* ('"$mode" $2`
 	CMP1PASS=`echo "$result_line" | grep 'PASS' | awk -F' ' '{printf $3}'`
 	CMP1FAIL=`echo "$result_line" | grep 'FAIL' | awk -F' ' '{printf $3}'`
 
-	echo "=============================================================================="
-	echo ""
-	echo "    Difference summary of $mode"
-	echo ""
+	>&2 echo "=============================================================================="
+	>&2 echo ""
+	>&2 echo "    Difference summary of $mode"
+	>&2 echo ""
 	if [ -z $CMP0PASS ]; then
-		echo "        This run did not report any pass numbers for $mode"
+		>&2 echo "        This run did not report any pass numbers for $mode"
 		CMP0PASS=0
 		no_result=yes
 	fi
 	if [ -z $CMP0FAIL ]; then
-		echo "        This run did not report any fail numbers for $mode"
+		>&2 echo "        This run did not report any fail numbers for $mode"
 		CMP0FAIL=0
 		no_result=yes
 	fi
 	if [ -z $CMP1PASS ]; then
-		echo "        The previous run did not report any pass numbers for $mode"
+		>&2 echo "        The previous run did not report any pass numbers for $mode"
 		CMP1PASS=0
 		no_result=yes
 	fi
 	if [ -z $CMP1FAIL ]; then
-		echo "        The previous run did not report any pass numbers for $mode"
+		>&2 echo "        The previous run did not report any pass numbers for $mode"
 		CMP1FAIL=0
 		no_result=yes
 	fi
 	if [ no_result = $"no" ]; then
-		echo ""
+		>&2 echo ""
 	fi
 	if [ $CMP0PASS -ne $CMP1PASS ] || [ $CMP0FAIL -ne $CMP1FAIL ]; then
 		change_exists=yes
-		echo "        Difference in $mode:"
+		>&2 echo "        Difference in $mode:"
 		let "delta_data=$CMP0PASS-$CMP1PASS"
 		if [ $delta_data -gt 0 ]; then
-			p="+"
+			p1="+"
 		fi
-		echo "            Pass: $p$delta_data (from $CMP1PASS to $CMP0PASS)"
-		p=
+		>&2 echo "            Pass: $p1$delta_data (from $CMP1PASS to $CMP0PASS)"
+		pass_delta=$p1$delta_data
 		let "delta_data=$CMP0FAIL-$CMP1FAIL"
 		if [ $delta_data -gt 0 ]; then
-			p="+"
+			p2="+"
 		fi
-		echo "            Fail: $p$delta_data (from $CMP1FAIL to $CMP0FAIL)"
-		p=
+		>&2 echo "            Fail: $p2$delta_data (from $CMP1FAIL to $CMP0FAIL)"
+		fail_delta=$p2$delta_data
 	else
-		echo "        No pass/fail difference in $mode"
-		echo "            total pass: $CMP0PASS"
-		echo "            total fail: $CMP0FAIL"
+		>&2 echo "        No pass/fail difference in $mode"
+		>&2 echo "            total pass: $CMP0PASS"
+		>&2 echo "            total fail: $CMP0FAIL"
+		pass_delta=0
+		fail_delta=0
 	fi
-	echo ""
+	>&2 echo ""
+	echo "$pass_delta:$fail_delta"
 }
 
 # Compare results from two summary files
@@ -889,11 +893,28 @@ compare_summary_of_data()
 # arg2 - summary to compare against
 compare_two_summaries()
 {
-	compare_summary_of_data $1 $2 $"32-bit nopt mode"
-	compare_summary_of_data $1 $2 $"64-bit nopt mode"
+	n32res=$(compare_summary_of_data $1 $2 $"32-bit nopt mode")
+	n64res=$(compare_summary_of_data $1 $2 $"64-bit nopt mode")
+	o32res=$(compare_summary_of_data $1 $2 $"32-bit opt mode")
+	o64res=$(compare_summary_of_data $1 $2 $"64-bit opt mode")
 
-	compare_summary_of_data $1 $2 $"32-bit opt mode"
-	compare_summary_of_data $1 $2 $"64-bit opt mode"
+	n32p=`echo $n32res | awk -F":" '{print $1}'`
+	n32f=`echo $n32res | awk -F":" '{print $2}'`
+	n64p=`echo $n64res | awk -F":" '{print $1}'`
+	n64f=`echo $n64res | awk -F":" '{print $2}'`
+	o32p=`echo $o32res | awk -F":" '{print $1}'`
+	o32f=`echo $o32res | awk -F":" '{print $2}'`
+	o64p=`echo $o64res | awk -F":" '{print $1}'`
+	o64f=`echo $o64res | awk -F":" '{print $2}'`
+
+	header="%-11s   %10s   %11s   %10s   %11s\n"
+	format="%-11s   %10d   %11d   %10d   %11d\n"
+	divider="---------------------------------"
+	longDivider="$divider$divider"
+	printf "$header" "test type" "64 bit opt" "64 bit nopt" "32 bit opt" "32 bit nopt"
+	echo "$longDivider"
+	printf "$format" "pass diff" $o64p $n64p $o32p $n32p
+	printf "$format" "fail diff" $o64f $n64f $o32f $n32f
 }
 
 # ############################## MAIN ###############################
