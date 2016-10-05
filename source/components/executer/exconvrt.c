@@ -457,9 +457,6 @@ AcpiExConvertToAscii (
         /* HexLength: 2 ascii hex chars per data byte */
 
         HexLength = ACPI_MUL_2 (DataWidth);
-        String[0] = '0';
-        String[1] = 'x';
-        k = 2;
         for (i = 0, j = (HexLength-1); i < HexLength; i++, j--)
         {
             /* Get one hex digit, most significant digits first */
@@ -546,9 +543,9 @@ AcpiExConvertToString (
 
         default:
 
-            /* Two hex string characters for each integer byte + 0x prefix */
+            /* Two hex string characters for each integer byte */
 
-            StringLength = ACPI_MUL_2 (AcpiGbl_IntegerByteWidth) + 2;
+            StringLength = ACPI_MUL_2 (AcpiGbl_IntegerByteWidth);
             break;
         }
 

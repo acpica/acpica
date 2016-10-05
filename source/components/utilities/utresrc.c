@@ -533,6 +533,7 @@ AcpiUtWalkAmlResources (
     UINT8                   *EndAml;
     UINT8                   ResourceIndex;
     UINT32                  Length;
+    ACPI_SIZE               ThisAmlLength = 0;
     UINT32                  Offset = 0;
     UINT8                   EndTag[2] = {0x79, 0x00};
 
@@ -540,9 +541,11 @@ AcpiUtWalkAmlResources (
     ACPI_FUNCTION_TRACE (UtWalkAmlResources);
 
 
-    /* The absolute minimum resource template is one EndTag descriptor */
-
-    if (AmlLength < sizeof (AML_RESOURCE_END_TAG))
+    /*
+     * The absolute minimum resource template is one EndTag descriptor.
+     * However, we will treat a lone EndTag as just a simple buffer.
+     */
+    if (AmlLength <= sizeof (AML_RESOURCE_END_TAG))
     {
         return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
     }
@@ -575,8 +578,8 @@ AcpiUtWalkAmlResources (
 
         if (UserFunction)
         {
-            Status = UserFunction (
-                Aml, Length, Offset, ResourceIndex, Context);
+            Status = UserFunction (Aml, Length, Offset,
+                ResourceIndex, Context);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -603,11 +606,19 @@ AcpiUtWalkAmlResources (
                 *Context = Aml;
             }
 
+            /* Check if buffer is defined to be longer than the resource length */
+
+            if (AmlLength > ThisAmlLength)
+            {
+                return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
+            }
+
             /* Normal exit */
 
             return_ACPI_STATUS (AE_OK);
         }
 
+        ThisAmlLength += Length;
         Aml += Length;
         Offset += Length;
     }
