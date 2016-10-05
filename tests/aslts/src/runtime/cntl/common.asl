@@ -1975,7 +1975,7 @@ Method(FNSH)
 
 	// Exceptions total
 
-	Store(Concatenate("The total number of exceptions handled: 0x", EXC1), Debug)
+	Store(Concatenate("The total number of exceptions handled: ", EXC1), Debug)
 
 	// Status of test run
 
