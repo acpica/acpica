@@ -11,7 +11,7 @@ tmp_acpiexec=/tmp/acpiexec-$postfix
 TEST_CASES=
 TEST_MODES=
 REBUILD_TOOLS=yes
-DISASSEMBLE=no
+EXECONLY=no
 
 usage() {
 
@@ -21,7 +21,7 @@ usage() {
 	echo "  -c:	Specify individual test cases (can be used multiple times)"
 	echo "  -m:	Specify individual test modes (can be used multiple times)"
 	echo "  -u:	Do not force rebuilding of ACPICA utilities (acpiexec, iasl)"
-	echo "  -d:     Disassemble and recompile AML files."
+	echo "  -e:     Perform the execution of aml files and omit binary comparison of regular aml and disassembled aml file."
 	echo ""
 
 	echo "Available test modes:"
@@ -116,13 +116,13 @@ run_aslts() {
 
 	if [ "x$TEST_CASES" = "x" ]; then
 		# Compile all ASL test modules
-		Do 0 aslts $DISASSEMBLE
+		Do 0 aslts $EXECONLY
 		if [ $? -ne 0 ]; then
 			echo "ASLTS Compile Failure"
 			exit 1
 		fi
 	else
-		Do 0 $TEST_CASES $DISASSEMBLE
+		Do 0 $TEST_CASES $EXECONLY
 	fi
 
 	# Execute the test suite
@@ -152,7 +152,7 @@ RESET_SETTINGS
 INIT_ALL_AVAILABLE_CASES
 INIT_ALL_AVAILABLE_MODES
 
-while getopts "c:m:ud" opt
+while getopts "c:m:ue" opt
 do
 	case $opt in
 	c)
@@ -164,8 +164,8 @@ do
 			TEST_CASES="$OPTARG $TEST_CASES"
 		fi
 	;;
-	d)
-		DISASSEMBLE=yes
+	e)
+		EXECONLY=yes
 		echo "Running tests in disassemble mode"
 	;;
 	m)
