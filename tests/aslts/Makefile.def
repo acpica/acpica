@@ -81,15 +81,21 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 						echo "---- Diasassemble: $$k.aml" >> $(COMPILER_LOG); \
 						echo "---- Diasassemble: $$k.aml" >> $(COMPILER_ERROR_LOG); \
 						"$(ASL)" -p $$k-aslminus -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -dl $$k.aml >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
-						if [ $$? != 0 ]; then \
-							echo "            disassembly unsuccessful"; \
+						if [ -f $$k-aslminus.dsl ]; then \
+							>&2 echo "            disassembly successful"; \
+						else \
+							>&2 echo "            Error: disassembly failed"; \
+							exit 1; \
 						fi; \
 						>&2 echo "        Recompile: $$k-aslminus.dsl"; \
 						echo "---- Recompile: $$k.dsl" >> $(COMPILER_LOG); \
 						echo "---- Recompile: $$k.dsl" >> $(COMPILER_ERROR_LOG); \
 						"$(ASL)" $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$k-aslminus.dsl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
-						if [ $$? != 0 ]; then \
-							echo "            recompilation unsuccessful"; \
+						if [ -f $$k-aslminus.aml ]; then \
+							>&2 echo "            re-compilation successful"; \
+						else \
+							>&2 echo "            Error: re-compilation failed"; \
+							exit 1; \
 						fi; \
 						rm $$k-aslminus.asm; \
 						rm $$k-aslminus.c; \
@@ -110,7 +116,7 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 								fi; \
 							else \
 								>&2 echo "            Error: aml file(s) do not exist!"; \
-								exit 1; \
+								#exit 1; \
 							fi; \
 						fi; \
 						rm $$k-aslminus.lst; \
