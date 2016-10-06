@@ -305,12 +305,12 @@ make_install_1()
 
 	restore_dir=$PWD
 	dir="$1"
-	disasm=$2
+	execonly=$2
 
 	cd "$dir"
 
 	echo "Running make install from $dir"
-	if [ "$disasm" = "yes" ]; then
+	if [ "$execonly" = "yes" ]; then
 		make install OPT=1 > /dev/null
 	else
 		make install OPT=0 > /dev/null
@@ -330,10 +330,10 @@ make_install_1()
 # arg3 - either to actually run make install
 do_test_cases_make_install()
 {
-	local errors=0 dir restore_dir disasm
+	local errors=0 dir restore_dir execonly
 
 	restore_dir=$PWD
-	disasm=$4
+	execonly=$4
 
 	for filename in $2
 	do
@@ -348,7 +348,7 @@ do_test_cases_make_install()
 
 		if [ $3 != 0 ]; then
 			cd "$dir"
-			if [ "$disasm" = "yes" ]; then
+			if [ "$execonly" = "yes" ]; then
 				make install OPT=1 > /dev/null
 			else
 				make install OPT=0 > /dev/null
@@ -388,10 +388,10 @@ make_install_2()
 # arg3 - either to actually run make install
 do_collections_make_install()
 {
-	local errors=0 dir restore_dir disasm
+	local errors=0 dir restore_dir execonly
 
 	restore_dir=$PWD
-	disasm=$4
+	execonly=$4
 
 	for filename in $2
 	do
@@ -405,7 +405,7 @@ do_collections_make_install()
 
 		if [ $3 != 0 ]; then
 			cd "$dir"
-			if [ "$disasm" = "yes" ]; then
+			if [ "$execonly" = "yes" ]; then
 				make install OPT=1 > /dev/null
 			else
 				make install OPT=0 > /dev/null
@@ -457,7 +457,7 @@ make_install_3()
 # arg3 - all parameters passed to Do utility
 run_asl_compiler()
 {
-	local lexem list nparam=$2 action=100 disasm=$4
+	local lexem list nparam=$2 action=100 execonly=$4
 
 	lexem=`echo "$3" | awk '{ print $2}'`
 
@@ -489,13 +489,13 @@ run_asl_compiler()
 	>&2 echo "list of testcases: $list"
 	if [ $action == 1 ]; then
 		echo "Make-install all the provided test cases"
-		make_install_1 "$1" "$disasm"
+		make_install_1 "$1" "$execonly"
 	elif [ $action == 2 ]; then
 		echo "Make-install a list of specified test cases: $list"
-		make_install_2 "$1" "$list" "$disasm"
+		make_install_2 "$1" "$list" "$execonly"
 	elif [ $action == 3 ]; then
 		echo "Make-install all the test cases of the specified test collections: $list"
-		make_install_3 "$1" "$list" "$disasm"
+		make_install_3 "$1" "$list" "$execonly"
 	else
 		do_exit 1 "Bad parameters 2"
 	fi
@@ -531,7 +531,7 @@ PRINTTESTCASES=3
 BDEMOSTABS=4
 BDEMOSSUM=5
 CONCBDEMOS=6
-DISASSEMBLE=$3
+EXECONLY=$3
 
 # Set defaults
 
@@ -620,8 +620,8 @@ if [ $CMD == $ASLCOMPILE ]; then
 	fi
 
 	x="$@"
-	>&2 echo "disassemble: $DISASSEMBLE"
-	run_asl_compiler "$ASLTSDIR" $NPARAM "$x" "$DISASSEMBLE"
+	>&2 echo "disassemble: $EXECONLY"
+	run_asl_compiler "$ASLTSDIR" $NPARAM "$x" "$EXECONLY"
 
 elif [ $CMD == $RUNTESTS ]; then
 

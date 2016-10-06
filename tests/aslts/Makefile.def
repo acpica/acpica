@@ -70,31 +70,52 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 			done; \
 			for j in ${ASLMOD} $(ASLMODADD); do \
 				echo "---- Compile: $$j.asl" >> $(COMPILER_LOG); \
-				>&2 echo "     Test type: $$CUR_AMLDIR"; \
-				>&2 echo "         Compile: $$j.asl"; \
+				>&2 echo "    Test type: $$CUR_AMLDIR"; \
+				>&2 echo "        Compile: $$j.asl"; \
 				"$(ASL)" $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$j.asl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
 				ret=$$?; \
 				echo "" >> $(COMPILER_LOG); \
-				if [ $(OPT) -eq 1 ];then \
+				if [ $(OPT) -eq 0 ]; then \
 					for k in ${AMLMOD}; do \
-						>&2 echo "         Disassemble: $$k.aml"; \
+						>&2 echo "        Disassemble: $$k.aml"; \
 						echo "---- Diasassemble: $$k.aml" >> $(COMPILER_LOG); \
 						echo "---- Diasassemble: $$k.aml" >> $(COMPILER_ERROR_LOG); \
-						"$(ASL)" -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -dl $$k.aml >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
-						>&2 echo "         Recompile: $$k.dsl"; \
+						"$(ASL)" -p $$k-aslminus -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -dl $$k.aml >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+						if [ $$? != 0 ]; then \
+							echo "            disassembly unsuccessful"; \
+						fi; \
+						>&2 echo "        Recompile: $$k-aslminus.dsl"; \
 						echo "---- Recompile: $$k.dsl" >> $(COMPILER_LOG); \
 						echo "---- Recompile: $$k.dsl" >> $(COMPILER_ERROR_LOG); \
-						"$(ASL)" $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$k.dsl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
-						rm $$k.asm; \
-						rm $$k.c; \
-						rm $$k.h; \
-						rm $$k.i; \
-						rm $$k.hex; \
-						rm $$k.lst; \
-						rm $$k.map; \
-						rm $$k.nsp; \
-						rm $$k.offset.h; \
-						rm $$k.src; \
+						"$(ASL)" $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$k-aslminus.dsl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+						if [ $$? != 0 ]; then \
+							echo "            recompilation unsuccessful"; \
+						fi; \
+						rm $$k-aslminus.asm; \
+						rm $$k-aslminus.c; \
+						rm $$k-aslminus.h; \
+						rm $$k-aslminus.i; \
+						rm $$k-aslminus.hex; \
+						rm $$k-aslminus.map; \
+						rm $$k-aslminus.nsp; \
+						rm $$k-aslminus.offset.h; \
+						rm $$k-aslminus.src; \
+						if [ $$CUR_AMLDIR = "nopt/32" ] || [ $$CUR_AMLDIR = "nopt/64" ]; then \
+							>&2 echo "        Comparing $$k.aml with $$k-aslminus.aml"; \
+							if [ -f $$k-aslminus.aml ] &&[ -f $$k.aml ]; then \
+								acpibin -c $$k.aml $$k-aslminus.aml; \
+								if [ $$? != 0 ]; then \
+									>&2 echo "            Error: comparison of the above two aml files do not match."; \
+									#exit 1; \
+								fi; \
+							else \
+								>&2 echo "            Error: aml file(s) do not exist!"; \
+								exit 1; \
+							fi; \
+						fi; \
+						rm $$k-aslminus.lst; \
+						rm $$k-aslminus.aml; \
+						rm $$k-aslminus.dsl; \
 					done; \
 				fi; \
 				rm $$j.asm; \
