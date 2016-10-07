@@ -1481,7 +1481,8 @@ Method(m256,, Serialized)
 	Store(0x2b, Index(s000, 1))
 	m385(ts, s000, 0, 0)
 
-	Store(0x2b, Index(s010, 1, Local0))
+	Index(s010, 1, Local0)
+	Store(0x2b, Index(s010, 1))
 	m385(ts, s010, 0, 1)
 
 	// CopyObject
@@ -1511,7 +1512,8 @@ Method(m257,, Serialized)
 	Store(0x2b, Index(b000, 1))
 	m386(ts, b000, 0, 0)
 
-	Store(0x2b, Index(b010, 1, Local0))
+	Index(b010, 1, Local0)
+	Store(0x2b, Index(b010, 1))
 	m386(ts, b010, 0, 1)
 
 	END0()
@@ -1650,7 +1652,8 @@ Method(m25c,, Serialized)
 	Store(0x2b, Index(p000, 1))
 	m387(ts, p000, 0, 0)
 
-	Store(0x2b, Index(p010, 1, Local0))
+	Index(p010, 1, Local0)
+	Store(0x2b, Index(p010, 1))
 	m387(ts, p010, 0, 1)
 
 	END0()
@@ -3758,7 +3761,8 @@ Method(m345,, Serialized)
 	// Store to reference immediately
 	Method(m003, 1)
 	{
-		Store(0x2b, Index(arg0, 1, Local0))
+	    Index(arg0, 1, Local0)
+	    Store(0x2b, Index(arg0, 1))
 	}
 
 	// CopyObject to reference immediately
@@ -4348,7 +4352,8 @@ Method(m34c,, Serialized)
 	{
 		Store(DerefOf(arg0), Local2)
 
-		Store(0x2b, Index(Local2, 1, Local0))
+	    Index(Local2, 1, Local0)
+	    Store(0x2b, Index(Local2, 1))
 
 		if (LEqual(arg1, c00a)) {
 			m385(ts, Local2, 0, 3)
