@@ -113,7 +113,7 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 								cat comparison_output.txt | sed '1,/^Error/d' | sed 's/Error - Byte mismatch at offset     /         => /g' | sed -n 1,10p > comparison_output.txt;\
 								>&2 printf "\n"; \
 								cat comparison_output.txt >&2 ; \
-								>&2 printf "    "; \
+								>&2 printf "        "; \
 								#exit 1; \
 							else \
 								>&2 printf " => Removing files"; \
