@@ -47,6 +47,7 @@ empty_all:	FORCE
 ${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%}:
 	@$(INST.dir)
 
+
 # Make-install one particular Test Case for all modes
 
 install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%}
@@ -70,31 +71,29 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 			done; \
 			for j in ${ASLMOD} $(ASLMODADD); do \
 				echo "---- Compile: $$j.asl" >> $(COMPILER_LOG); \
-				>&2 echo "    Test type: $$CUR_AMLDIR"; \
-				>&2 echo "        Compile: $$j.asl"; \
+				>&2 printf "%-18s" "    Type: $$CUR_AMLDIR "; \
+				>&2 printf  "Compile"; \
 				"$(ASL)" $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$j.asl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
 				ret=$$?; \
 				echo "" >> $(COMPILER_LOG); \
 				if [ $(OPT) -eq 0 ]; then \
 					for k in ${AMLMOD}; do \
-						>&2 echo "        Disassemble: $$k.aml"; \
+						>&2 printf " => Disassemble"; \
 						echo "---- Diasassemble: $$k.aml" >> $(COMPILER_LOG); \
 						echo "---- Diasassemble: $$k.aml" >> $(COMPILER_ERROR_LOG); \
-						"$(ASL)" -p $$k-aslminus -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -dl $$k.aml >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
-						if [ -f $$k-aslminus.dsl ]; then \
-							>&2 echo "            disassembly successful"; \
-						else \
-							>&2 echo "            Error: disassembly failed"; \
+						"$(ASL)" -p $$k-aslminus -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -od -dl $$k.aml >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+						if [ ! -f $$k-aslminus.dsl ]; then \
+							>&2 printf " [[ Error: disassembly failed of $$k.aml failed ]]\n"; \
+							>&2 printf "          Flags used: -p $$k-aslminus -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -od -dl\n\n"; \
 							exit 1; \
 						fi; \
-						>&2 echo "        Recompile: $$k-aslminus.dsl"; \
+						>&2 printf " => Recompile"; \
 						echo "---- Recompile: $$k.dsl" >> $(COMPILER_LOG); \
 						echo "---- Recompile: $$k.dsl" >> $(COMPILER_ERROR_LOG); \
 						"$(ASL)" $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$k-aslminus.dsl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
-						if [ -f $$k-aslminus.aml ]; then \
-							>&2 echo "            re-compilation successful"; \
-						else \
-							>&2 echo "            Error: re-compilation failed"; \
+						if [ ! -f $$k-aslminus.aml ]; then \
+							>&2 printf " [[ Error: re-compilation of $$k-aslminus.dsl failed]]\n"; \
+							>&2 printf "          Flags used: $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS)\n\n"; \
 							exit 1; \
 						fi; \
 						rm $$k-aslminus.asm; \
@@ -107,39 +106,45 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 						rm $$k-aslminus.offset.h; \
 						rm $$k-aslminus.src; \
 						if [ $$CUR_AMLDIR = "nopt/32" ] || [ $$CUR_AMLDIR = "nopt/64" ]; then \
-							>&2 echo "        Comparing $$k.aml with $$k-aslminus.aml"; \
-							if [ -f $$k-aslminus.aml ] &&[ -f $$k.aml ]; then \
-								acpibin -c $$k.aml $$k-aslminus.aml; \
-								if [ $$? != 0 ]; then \
-									>&2 echo "            Error: comparison of the above two aml files do not match."; \
-									#exit 1; \
-								fi; \
-							else \
-								>&2 echo "            Error: aml file(s) do not exist!"; \
+							>&2 printf " => Binary compare"; \
+							acpibin -c $$k.aml $$k-aslminus.aml >> comparison_output.txt; \
+							if [ $$? != 0 ]; then \
+								>&2 printf " [[ Error: comparison of $$k.aml and $$k-aslminus.aml do not match ]]"; \
+								cat comparison_output.txt | sed '1,/^Error/d' | sed 's/Error - Byte mismatch at offset     /         => /g' | sed -n 1,10p > comparison_output.txt;\
+								>&2 printf "\n"; \
+								cat comparison_output.txt >&2 ; \
+								>&2 printf "    "; \
 								#exit 1; \
+							else \
+								>&2 printf " => Removing files"; \
+								rm $$k-aslminus.lst; \
+								rm $$k-aslminus.aml; \
+								rm $$k-aslminus.dsl; \
 							fi; \
 						fi; \
-						rm $$k-aslminus.lst; \
-						rm $$k-aslminus.aml; \
-						rm $$k-aslminus.dsl; \
+						>&2 printf " => Done"; \
 					done; \
+				else \
+					>&2 printf " => Removing files"; \
+					rm $$j.asm; \
+					rm $$j.c; \
+					rm $$j.h; \
+					rm $$j.i; \
+					rm $$j.hex; \
+					rm $$j.lst; \
+					rm $$j.map; \
+					rm $$j.nsp; \
+					rm $$j.offset.h; \
+					rm $$j.src; \
+					>&2 printf " => Done"; \
 				fi; \
-				rm $$j.asm; \
-				rm $$j.c; \
-				rm $$j.h; \
-				rm $$j.i; \
-				rm $$j.hex; \
-				rm $$j.lst; \
-				rm $$j.map; \
-				rm $$j.nsp; \
-				rm $$j.offset.h; \
-				rm $$j.src; \
 				if [ $$ret != 0 ]; then \
 					rval=1; \
 					>&2 echo "**** Unexpected iASL failure in $$dd/$$j.asl!"; \
 					exit 1; \
 				fi; \
 			done; \
+			>&2 echo ""; \
 			if [ $$ret != 0 ]; then break; fi; \
 			for j in ${AMLMOD}; do \
 				ls -l $$j.aml >> $(COMPILER_LOG); \
