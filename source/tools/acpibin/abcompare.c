@@ -505,7 +505,7 @@ AbCompareAmlFiles (
     {
         if (Char1 != Char2)
         {
-            printf ("Error - Byte mismatch at offset %8.4X: 0x%2.2X 0x%2.2X\n",
+            printf ("Error - Byte mismatch at offset %8.8X: 0x%2.2X 0x%2.2X\n",
                 Offset, Char1, Char2);
             Mismatches++;
             if (Mismatches > 100)
@@ -543,10 +543,7 @@ AbCompareAmlFiles (
     }
 
     printf ("%u Mismatches found\n", Mismatches);
-    if (Mismatches == 0)
-    {
-        Status = 0;
-    }
+    Status = 0;
 
 Exit2:
     fclose (File2);

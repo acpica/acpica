@@ -187,8 +187,6 @@ static char                *TableEvents[] =
 {
     "LOAD",
     "UNLOAD",
-    "INSTALL",
-    "UNINSTALL",
     "UNKNOWN"
 };
 #endif /* !ACPI_REDUCED_HARDWARE */

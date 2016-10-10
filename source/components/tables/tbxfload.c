@@ -183,7 +183,7 @@ AcpiLoadTables (
             "While loading namespace from ACPI tables"));
     }
 
-    if (AcpiGbl_ParseTableAsTermList || !AcpiGbl_GroupModuleLevelCode)
+    if (!AcpiGbl_GroupModuleLevelCode)
     {
         /*
          * Initialize the objects that remain uninitialized. This
@@ -279,11 +279,11 @@ AcpiTbLoadNamespace (
     memcpy (&AcpiGbl_OriginalDsdtHeader, AcpiGbl_DSDT,
         sizeof (ACPI_TABLE_HEADER));
 
+    (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
+
     /* Load and parse tables */
 
-    (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
     Status = AcpiNsLoadTable (AcpiGbl_DsdtIndex, AcpiGbl_RootNode);
-    (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
     if (ACPI_FAILURE (Status))
     {
         ACPI_EXCEPTION ((AE_INFO, Status, "[DSDT] table load failed"));
@@ -296,6 +296,7 @@ AcpiTbLoadNamespace (
 
     /* Load any SSDT or PSDT tables. Note: Loop leaves tables locked */
 
+    (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
     for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; ++i)
     {
         Table = &AcpiGbl_RootTableList.Tables[i];
@@ -313,7 +314,6 @@ AcpiTbLoadNamespace (
 
         (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
         Status =  AcpiNsLoadTable (i, AcpiGbl_RootNode);
-        (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
         if (ACPI_FAILURE (Status))
         {
             ACPI_EXCEPTION ((AE_INFO, Status, "(%4.4s:%8.8s) while loading table",
@@ -329,12 +329,14 @@ AcpiTbLoadNamespace (
         {
             TablesLoaded++;
         }
+
+        (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
     }
 
     if (!TablesFailed)
     {
         ACPI_INFO ((
-            "%u ACPI AML tables successfully acquired and loaded",
+            "%u ACPI AML tables successfully acquired and loaded\n",
             TablesLoaded));
     }
     else
@@ -347,11 +349,6 @@ AcpiTbLoadNamespace (
 
         Status = AE_CTRL_TERMINATE;
     }
-
-#ifdef ACPI_APPLICATION
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "\n"));
-#endif
-
 
 UnlockAndExit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
@@ -441,11 +438,52 @@ AcpiLoadTable (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    /* Must acquire the interpreter lock during this operation */
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_INTERPRETER);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     /* Install the table and load it into the namespace */
 
     ACPI_INFO (("Host-directed Dynamic ACPI Table Load:"));
-    Status = AcpiTbInstallAndLoadTable (Table, ACPI_PTR_TO_PHYSADDR (Table),
-        ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL, FALSE, &TableIndex);
+    (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
+
+    Status = AcpiTbInstallStandardTable (ACPI_PTR_TO_PHYSADDR (Table),
+        ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL, TRUE, FALSE,
+        &TableIndex);
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
+    if (ACPI_FAILURE (Status))
+    {
+        goto UnlockAndExit;
+    }
+
+    /*
+     * Note: Now table is "INSTALLED", it must be validated before
+     * using.
+     */
+    Status = AcpiTbValidateTable (
+        &AcpiGbl_RootTableList.Tables[TableIndex]);
+    if (ACPI_FAILURE (Status))
+    {
+        goto UnlockAndExit;
+    }
+
+    Status = AcpiNsLoadTable (TableIndex, AcpiGbl_RootNode);
+
+    /* Invoke table handler if present */
+
+    if (AcpiGbl_TableHandler)
+    {
+        (void) AcpiGbl_TableHandler (ACPI_TABLE_EVENT_LOAD, Table,
+            AcpiGbl_TableHandlerContext);
+    }
+
+UnlockAndExit:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_INTERPRETER);
     return_ACPI_STATUS (Status);
 }
 
@@ -500,9 +538,9 @@ AcpiUnloadParentTable (
         return_ACPI_STATUS (AE_TYPE);
     }
 
-    /* Must acquire the table lock during this operation */
+    /* Must acquire the interpreter lock during this operation */
 
-    Status = AcpiUtAcquireMutex (ACPI_MTX_TABLES);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_INTERPRETER);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -533,11 +571,9 @@ AcpiUnloadParentTable (
 
         /* Ensure the table is actually loaded */
 
-        (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
         if (!AcpiTbIsTableLoaded (i))
         {
             Status = AE_NOT_EXIST;
-            (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
             break;
         }
 
@@ -564,11 +600,10 @@ AcpiUnloadParentTable (
 
         Status = AcpiTbReleaseOwnerId (i);
         AcpiTbSetTableLoadedFlag (i, FALSE);
-        (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
         break;
     }
 
-    (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_INTERPRETER);
     return_ACPI_STATUS (Status);
 }
 

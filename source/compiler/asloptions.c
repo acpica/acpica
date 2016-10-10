@@ -660,13 +660,6 @@ AslDoOptions (
             Gbl_CompileTimesFlag = TRUE;
             break;
 
-        case 'd':
-
-            /* Disable disassembler code optimizations */
-
-            AcpiGbl_DoDisassemblerOptimizations = FALSE;
-            break;
-
         case 'e':
 
             /* iASL: Disable External opcode generation */

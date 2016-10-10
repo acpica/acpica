@@ -179,15 +179,12 @@ AcpiDsAutoSerializeMethod (
         "Method auto-serialization parse [%4.4s] %p\n",
         AcpiUtGetNodeName (Node), Node));
 
-    AcpiExEnterInterpreter ();
-
     /* Create/Init a root op for the method parse tree */
 
     Op = AcpiPsAllocOp (AML_METHOD_OP, ObjDesc->Method.AmlStart);
     if (!Op)
     {
-        Status = AE_NO_MEMORY;
-        goto Unlock;
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     AcpiPsSetName (Op, Node->Name.Integer);
@@ -199,8 +196,7 @@ AcpiDsAutoSerializeMethod (
     if (!WalkState)
     {
         AcpiPsFreeOp (Op);
-        Status = AE_NO_MEMORY;
-        goto Unlock;
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     Status = AcpiDsInitAmlWalk (WalkState, Op, Node,
@@ -219,8 +215,6 @@ AcpiDsAutoSerializeMethod (
     Status = AcpiPsParseAml (WalkState);
 
     AcpiPsDeleteParseTree (Op);
-Unlock:
-    AcpiExExitInterpreter ();
     return_ACPI_STATUS (Status);
 }
 
@@ -888,9 +882,7 @@ AcpiDsTerminateControlMethod (
         {
             /* Delete any direct children of (created by) this method */
 
-            (void) AcpiExExitInterpreter ();
             AcpiNsDeleteNamespaceSubtree (WalkState->MethodNode);
-            (void) AcpiExEnterInterpreter ();
 
             /*
              * Delete any objects that were created by this method
@@ -901,9 +893,7 @@ AcpiDsTerminateControlMethod (
              */
             if (MethodDesc->Method.InfoFlags & ACPI_METHOD_MODIFIED_NAMESPACE)
             {
-                (void) AcpiExExitInterpreter ();
                 AcpiNsDeleteNamespaceByOwner (MethodDesc->Method.OwnerId);
-                (void) AcpiExEnterInterpreter ();
                 MethodDesc->Method.InfoFlags &=
                     ~ACPI_METHOD_MODIFIED_NAMESPACE;
             }

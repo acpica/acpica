@@ -696,12 +696,16 @@ AcpiDsLoad2EndOp (
                 {
                     return_ACPI_STATUS (Status);
                 }
+
+                AcpiExExitInterpreter ();
             }
 
-            AcpiExExitInterpreter ();
             Status = AcpiEvInitializeRegion (
                 AcpiNsGetAttachedObject (Node), FALSE);
-            AcpiExEnterInterpreter ();
+            if (WalkState->MethodNode)
+            {
+                AcpiExEnterInterpreter ();
+            }
 
             if (ACPI_FAILURE (Status))
             {

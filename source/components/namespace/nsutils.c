@@ -843,7 +843,7 @@ AcpiNsOpensScope (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiNsGetNodeUnlocked
+ * FUNCTION:    AcpiNsGetNode
  *
  * PARAMETERS:  *Pathname   - Name to be found, in external (ASL) format. The
  *                            \ (backslash) and ^ (carat) prefixes, and the
@@ -859,12 +859,12 @@ AcpiNsOpensScope (
  * DESCRIPTION: Look up a name relative to a given scope and return the
  *              corresponding Node. NOTE: Scope can be null.
  *
- * MUTEX:       Doesn't locks namespace
+ * MUTEX:       Locks namespace
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiNsGetNodeUnlocked (
+AcpiNsGetNode (
     ACPI_NAMESPACE_NODE     *PrefixNode,
     const char              *Pathname,
     UINT32                  Flags,
@@ -875,7 +875,7 @@ AcpiNsGetNodeUnlocked (
     char                    *InternalPath;
 
 
-    ACPI_FUNCTION_TRACE_PTR (NsGetNodeUnlocked, ACPI_CAST_PTR (char, Pathname));
+    ACPI_FUNCTION_TRACE_PTR (NsGetNode, ACPI_CAST_PTR (char, Pathname));
 
 
     /* Simplest case is a null pathname */
@@ -907,6 +907,14 @@ AcpiNsGetNodeUnlocked (
         return_ACPI_STATUS (Status);
     }
 
+    /* Must lock namespace during lookup */
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        goto Cleanup;
+    }
+
     /* Setup lookup scope (search starting point) */
 
     ScopeInfo.Scope.Node = PrefixNode;
@@ -922,55 +930,9 @@ AcpiNsGetNodeUnlocked (
             Pathname, AcpiFormatException (Status)));
     }
 
-    ACPI_FREE (InternalPath);
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiNsGetNode
- *
- * PARAMETERS:  *Pathname   - Name to be found, in external (ASL) format. The
- *                            \ (backslash) and ^ (carat) prefixes, and the
- *                            . (period) to separate segments are supported.
- *              PrefixNode   - Root of subtree to be searched, or NS_ALL for the
- *                            root of the name space. If Name is fully
- *                            qualified (first INT8 is '\'), the passed value
- *                            of Scope will not be accessed.
- *              Flags       - Used to indicate whether to perform upsearch or
- *                            not.
- *              ReturnNode  - Where the Node is returned
- *
- * DESCRIPTION: Look up a name relative to a given scope and return the
- *              corresponding Node. NOTE: Scope can be null.
- *
- * MUTEX:       Locks namespace
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiNsGetNode (
-    ACPI_NAMESPACE_NODE     *PrefixNode,
-    const char              *Pathname,
-    UINT32                  Flags,
-    ACPI_NAMESPACE_NODE     **ReturnNode)
-{
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_TRACE_PTR (NsGetNode, ACPI_CAST_PTR (char, Pathname));
-
-
-    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    Status = AcpiNsGetNodeUnlocked (PrefixNode, Pathname,
-        Flags, ReturnNode);
-
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+
+Cleanup:
+    ACPI_FREE (InternalPath);
     return_ACPI_STATUS (Status);
 }

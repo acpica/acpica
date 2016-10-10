@@ -42,7 +42,6 @@ DefinitionBlock(
 
 	Method(MAIN) {
 
-Y500 = Ones
 		// Initialization
 		STRT(0)
 
