@@ -1,5 +1,5 @@
 DefinitionBlock(
-	"MAIN.aml", 
+	"MAIN1.aml",
 	"DSDT", 
 	0x02,    
 	"Intel",  

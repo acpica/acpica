@@ -536,8 +536,12 @@ AslDoOneFile (
 
         if (Gbl_DoAslConversion)
         {
-            /* New input file is the output AML file from above */
-
+            /*
+             * New input file is the output AML file from above.
+             * New output is from the input ASL file from above.
+             */
+            Gbl_OutputFilenamePrefix = Gbl_Files[ASL_FILE_INPUT].Filename; 
+	    printf ("OUTPUTFILENAME: %s", Gbl_OutputFilenamePrefix);
             Gbl_Files[ASL_FILE_INPUT].Filename =
                 Gbl_Files[ASL_FILE_AML_OUTPUT].Filename;
 
