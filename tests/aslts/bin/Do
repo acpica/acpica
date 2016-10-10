@@ -301,21 +301,15 @@ do_bdemo_table()
 # arg1 - root directory of aslts
 make_install_1()
 {
-	local dir restore_dir diasm
+	local dir restore_dir
 
 	restore_dir=$PWD
 	dir="$1"
-	disasm=$2
 
 	cd "$dir"
 
 	echo "Running make install from $dir"
-	if [ "$disasm" = "yes" ]; then
-		make install OPT=1 > /dev/null
-	else
-		make install OPT=0 > /dev/null
-	fi
-
+	make install > /dev/null
 	if [ $? -ne 0 ]; then
 		do_exit 1 "make install error"
 	fi
@@ -330,10 +324,9 @@ make_install_1()
 # arg3 - either to actually run make install
 do_test_cases_make_install()
 {
-	local errors=0 dir restore_dir disasm
+	local errors=0 dir restore_dir
 
 	restore_dir=$PWD
-	disasm=$4
 
 	for filename in $2
 	do
@@ -348,12 +341,7 @@ do_test_cases_make_install()
 
 		if [ $3 != 0 ]; then
 			cd "$dir"
-			if [ "$disasm" = "yes" ]; then
-				make install OPT=1 > /dev/null
-			else
-				make install OPT=0 > /dev/null
-			fi
-
+			make install > /dev/null
 			if [ $? -ne 0 ]; then
 				errors=1
 			fi
@@ -373,11 +361,11 @@ make_install_2()
 	# Check only all parameters are correct
 	# (abort when something is wrong)
 
-	do_test_cases_make_install "$1" "$2" 0 
+	do_test_cases_make_install "$1" "$2" 0
 
 	# Run actual work
 
-	do_test_cases_make_install "$1" "$2" 1 "$3"
+	do_test_cases_make_install "$1" "$2" 1
 }
 
 # Check parameters to be the names of test
@@ -388,10 +376,9 @@ make_install_2()
 # arg3 - either to actually run make install
 do_collections_make_install()
 {
-	local errors=0 dir restore_dir disasm
+	local errors=0 dir restore_dir
 
 	restore_dir=$PWD
-	disasm=$4
 
 	for filename in $2
 	do
@@ -405,11 +392,7 @@ do_collections_make_install()
 
 		if [ $3 != 0 ]; then
 			cd "$dir"
-			if [ "$disasm" = "yes" ]; then
-				make install OPT=1 > /dev/null
-			else
-				make install OPT=0 > /dev/null
-			fi
+			make install > /dev/null
 			if [ $? -ne 0 ]; then
 				errors=1
 			fi
@@ -429,11 +412,11 @@ make_install_3()
 	# Check only all parameters are correct
 	# (abort when something is wrong)
 
-	do_collections_make_install "$1" "$2" 0 
+	do_collections_make_install "$1" "$2" 0
 
 	# Run actual work
 
-	do_collections_make_install "$1" "$2" 1 "$3"
+	do_collections_make_install "$1" "$2" 1
 }
 
 # Make-install the test case(s).
@@ -457,7 +440,7 @@ make_install_3()
 # arg3 - all parameters passed to Do utility
 run_asl_compiler()
 {
-	local lexem list nparam=$2 action=100 disasm=$4
+	local lexem list nparam=$2 action=100
 
 	lexem=`echo "$3" | awk '{ print $2}'`
 
@@ -465,14 +448,14 @@ run_asl_compiler()
 		usage
 		do_exit 1 "Bad parameters 0"
 	elif [ $lexem == ASLTS -o $lexem == aslts ]; then
-		if [ $nparam != 3 ]; then
+		if [ $nparam != 2 ]; then
 			usage
 			do_exit 1 "Bad parameters 1"
 		else
 			action=1
 		fi
 	elif [ $lexem == ALL -o $lexem == all ]; then
-		if [ $nparam -le 3 ]; then
+		if [ $nparam -le 2 ]; then
 			usage
 			do_exit 1 "Bad parameters 2"
 		else
@@ -484,18 +467,15 @@ run_asl_compiler()
 		list=`echo "$3" | cut -c 3-`
 	fi
 
-	list=`echo $list | rev | cut -c 4- | rev ` # cut the last item from the list. It's a yes or no from the diasm option.
-
-	>&2 echo "list of testcases: $list"
 	if [ $action == 1 ]; then
 		echo "Make-install all the provided test cases"
-		make_install_1 "$1" "$disasm"
+		make_install_1 "$1"
 	elif [ $action == 2 ]; then
 		echo "Make-install a list of specified test cases: $list"
-		make_install_2 "$1" "$list" "$disasm"
+		make_install_2 "$1" "$list"
 	elif [ $action == 3 ]; then
 		echo "Make-install all the test cases of the specified test collections: $list"
-		make_install_3 "$1" "$list" "$disasm"
+		make_install_3 "$1" "$list"
 	else
 		do_exit 1 "Bad parameters 2"
 	fi
@@ -531,7 +511,6 @@ PRINTTESTCASES=3
 BDEMOSTABS=4
 BDEMOSSUM=5
 CONCBDEMOS=6
-DISASSEMBLE=$3
 
 # Set defaults
 
@@ -620,8 +599,7 @@ if [ $CMD == $ASLCOMPILE ]; then
 	fi
 
 	x="$@"
-	>&2 echo "disassemble: $DISASSEMBLE"
-	run_asl_compiler "$ASLTSDIR" $NPARAM "$x" "$DISASSEMBLE"
+	run_asl_compiler "$ASLTSDIR" $NPARAM "$x"
 
 elif [ $CMD == $RUNTESTS ]; then
 

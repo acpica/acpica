@@ -390,14 +390,14 @@ do_summary_of_test_case()
 	local out0=0 out1=0 out2=0 out3=0 out4=0 out5=0
 	local LargeRefCount=0
 	local x=0 exceptionsnum=0
-        local trimmedLine
 
 	OLD_IFS=$IFS
 	IFS=" "
+
 	cat "$1" |\
 	while [ 1 ]
 	do
-		read line
+		read s0 s1 s2 s3 line
 		if [ $? -ne 0 ] ; then
 			echo "|$2|$cnt|$pass|$fail|$skip|$start|$finish|$total|$outstand0|$blck|$memtotal|$max0|$max1|$max2|$max3|$max4|$max5|$out0|$out1|$out2|$out3|$out4|$out5|$outstand1|$LargeRefCount|$exceptionsnum|" >> "$3"
 			break
@@ -405,8 +405,7 @@ do_summary_of_test_case()
 		if [[ "$line" == *STST* ]]; then
 			echo "$line"
 			cnt=$[ $cnt + 1 ]
-                        trimmedLine=`echo "$line" | awk -F"STST:" '{print $2}'`
-			status=`echo "$trimmedLine" | awk -F: '{print $4}'`
+			status=`echo "$line" | awk -F: '{print $6}'`
 			if [ "$status" == PASS ]; then
 				pass=$[ $pass + 1 ]
 			elif [ "$status" == FAIL ]; then
@@ -416,16 +415,16 @@ do_summary_of_test_case()
 			elif [ "$status" == SKIPPED ]; then
 				skip=$[ $skip + 1 ]
 			fi
-		elif [[ "$line" == "ASLTS:"* ]]; then
-			if [[ "$line" == *START* ]]; then
-				start=`echo "$line" | awk -F" " '{print $7}'`
-			elif [[ "$line" == *FINISH* ]]; then
-				finish=`echo "$line" | awk -F" " '{print $8}'`
-				total=`echo "$line" | awk -F" " '{print $9}'`
+		elif [[ "$s0" == ASLTS: ]]; then
+			if [ "$s1" == "START," ]; then
+				start=`echo "$line" | awk -F" " '{print $3}'`
+			elif [ "$s1" == "FINISH," ]; then
+				finish=`echo "$line" | awk -F" " '{print $4}'`
+				total=`echo "$line" | awk -F" " '{print $5}'`
 			fi
-		elif [[ "$s0" == Outstanding: ]]; then # this never seems to get used...
+		elif [[ "$s0" == Outstanding: ]]; then
 			outstand0=$s1
-		elif [[ "$s0" == Mem: ]]; then # defer work on this until the output works again.
+		elif [[ "$s0" == Mem: ]]; then
 			if [ $memcnt == 0 ]; then
 				memtotal=`echo "$line" | awk -F" " '{print $9}'`
 				memtotal=$[ 0 + 0x$memtotal ]
@@ -460,9 +459,8 @@ do_summary_of_test_case()
 				out5=$[ 0 + 0x$out5 ]
 			fi
 			memcnt=$[ $memcnt + 1 ]
-		elif [[ "$line" == *"Outstanding allocations"* ]]; then
-                        trimmedLine=`echo "$line" | awk -F" Outstanding allocations" '{printf $1}'`
-			outstand1=`echo "$trimmedLine" | awk -F"(" '{print $1}'`
+		elif [[ "$line" == "Outstanding allocations"* ]]; then
+			outstand1=`echo "$s3" | awk -F"(" '{print $1}'`
 		elif [[ "$line" == *"The total number of exceptions handled"* ]]; then
 			exceptionsnum=`echo "$line" | sed 's/^\[.*\]//g' | awk -F" " '{print $7}'`
 			x=`echo $exceptionsnum | sed 's/"//g'`
@@ -821,86 +819,6 @@ do_inner_modes_cmp()
 	fi
 }
 
-# Compare results from two summary files
-# arg1 - summary that this particular test run created
-# arg2 - summary to compare against
-# arg3 - string representing the mode
-compare_summary_pf_data()
-{
-	local mode=$3
-        local result_line delta_data
-	local no_result=no
-
-        result_line=`grep -A 2 -h '^TOTAL: [[:space:]]* ('"$mode" $1`
-	CMP0PASS=`echo "$result_line" | grep 'PASS' | awk -F' ' '{printf $3}'`
-	CMP0FAIL=`echo "$result_line" | grep 'FAIL' | awk -F' ' '{printf $3}'`
-
-        result_line=`grep -A 2 -h '^TOTAL: [[:space:]]* ('"$mode" $2`
-	CMP1PASS=`echo "$result_line" | grep 'PASS' | awk -F' ' '{printf $3}'`
-	CMP1FAIL=`echo "$result_line" | grep 'FAIL' | awk -F' ' '{printf $3}'`
-
-	echo "=============================================================================="
-	echo ""
-	echo "    Difference summary of $mode"
-	echo ""
-	if [ -z $CMP0PASS ]; then
-		echo "        This run did not report any pass numbers for $mode"
-		CMP0PASS=0
-		no_result=yes
-	fi
-	if [ -z $CMP0FAIL ]; then
-		echo "        This run did not report any fail numbers for $mode"
-		CMP0FAIL=0
-		no_result=yes
-	fi
-	if [ -z $CMP1PASS ]; then
-		echo "        The previous run did not report any pass numbers for $mode"
-		CMP1PASS=0
-		no_result=yes
-	fi
-	if [ -z $CMP1FAIL ]; then
-		echo "        The previous run did not report any pass numbers for $mode"
-		CMP1FAIL=0
-		no_result=yes
-	fi
-	if [ no_result = $"no" ]; then
-		echo ""
-	fi
-	if [ $CMP0PASS -ne $CMP1PASS ] || [ $CMP0FAIL -ne $CMP1FAIL ]; then
-		change_exists=yes
-		echo "        Difference in $mode:"
-		let "delta_data=$CMP0PASS-$CMP1PASS"
-		if [ $delta_data -gt 0 ]; then
-			p="+"
-		fi
-		echo "            Pass: $p$delta_data (from $CMP1PASS to $CMP0PASS)"
-		p=
-		let "delta_data=$CMP0FAIL-$CMP1FAIL"
-		if [ $delta_data -gt 0 ]; then
-			p="+"
-		fi
-		echo "            Fail: $p$delta_data (from $CMP1FAIL to $CMP0FAIL)"
-		p=
-	else
-		echo "        No pass/fail difference in $mode"
-		echo "            total pass: $CMP0PASS"
-		echo "            total fail: $CMP0FAIL"
-	fi
-	echo ""
-}
-
-# Compare results from two summary files
-# arg1 - summary that this particular test run created
-# arg2 - summary to compare against
-compare_two_summaries()
-{
-	compare_summary_pf_data $1 $2 $"32-bit norm mode"
-	compare_summary_pf_data $1 $2 $"64-bit norm mode"
-
-	compare_summary_pf_data $1 $2 $"32-bit slack mode"
-	compare_summary_pf_data $1 $2 $"64-bit slack mode"
-}
-
 # ############################## MAIN ###############################
 
 # Init variables of utility
@@ -968,7 +886,6 @@ if [ $ENABLELOG != 0 ]; then
 	echo "Generating ASLTS log into directory $MULTIPATH"
 
 	COMMONLOGFILE="$MULTIPATH/Summary"
-	SUMMARYDELTAFILE="$MULTIPATH/DeltaSummary"
 	echo "# Trace and summary of $MULTINAME bunch of test runs." > "$COMMONLOGFILE"
 	multi_log ""
 	multi_log "ASLTS_SYSTEM `uname -a`"
@@ -1070,16 +987,6 @@ if [ $HAVE_LARGE_REF_CNT == yes ]; then
 	echo "$msg"
 	multi_log ""
 	multi_log "$msg"
-fi
-
-# Generate diff of test results based on this run's summary and the latest summary file of a test run.
-summary_to_compare=`find . -name "Summary" -type f -printf '%T@ %p\n' | sort -k 1 -nr | sed 's/^[^ ]* //' | sed -n 2p`
-
-if [ "$summary_to_compare" == "" ]; then
-	echo "No summary file to compare against."
-else
-	echo "comparing against $summary_to_compare"
-	compare_two_summaries "$COMMONLOGFILE" "$summary_to_compare"
 fi
 
 exit $UTILSTATUS
