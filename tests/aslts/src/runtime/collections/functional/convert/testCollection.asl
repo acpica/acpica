@@ -1,4 +1,5 @@
-/* top of the 
+/*
+ * top of the
  * definition block
  */
 DefinitionBlock(
@@ -12,7 +13,27 @@ DefinitionBlock(
 
 
     Name (/*c00*/ b,/*c01*/ 5/*c02*/)/*c03*/
- 
+    Name(p008, Package()
+    {
+	0, 0,
+	0, 0xffffffff,
+	0x00012345, 0x00007abc,
+	0x00000012, 0x00000034,
+	0x00000001, 0x000000ff,
+	0x00000001, 0x0000ffff,
+	0x00000001, 0xffffffff,
+
+	// bit-size of multiplicand
+	0x67812345, 2,
+
+	// bit-size of multiplier
+	3, 0x45678123,
+
+	0xffffffff, 0xffffffff,
+
+	// ACPI: Overflow conditions are ignored and results are undefined.
+    })
+
     Method(MAIN) {
         //comment
         /**********************************************************************

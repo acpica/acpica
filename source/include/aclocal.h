@@ -1000,6 +1000,7 @@ typedef union acpi_parse_value
     char                            *OpenBraceComment;  /* For -ca option: inline comment associated with the first parameter of the name node.*/\
     char                            *CloseBraceComment; /* For -ca option: inline comment associated with the first parameter of the name node.*/\
     ACPI_COMMENT_LIST_NODE          *CommentList;       /* comments that appears before this node */\
+    ACPI_COMMENT_LIST_NODE          *EndBlkComment;     /* comments that at the end of a block but before ) or } */\
     char                            *PsFilename;        /* For -ca optoin: filename associated with this node */\
     char                            *PsParentFilename;  /* For -ca optoin: parent filename associated with this node */
 

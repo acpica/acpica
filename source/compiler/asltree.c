@@ -1320,6 +1320,24 @@ TrLinkChildren (
         break;
     }
 
+    /* The following is for capturing comments */
+
+    if(Gbl_CaptureComments)
+    {
+        /*
+         * If there are "regular comments" detected at this point,
+         * then is an endBlk comment. Categorize it as so and distribute
+         * all regular comments to this parse node.
+         */
+        if (Gbl_Comment_List_Head)
+        {
+            Op->Asl.EndBlkComment = Gbl_Comment_List_Head;
+            printf ("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxCOMMENT STUFF: %s", Gbl_Comment_List_Head->Comment);
+            Gbl_Comment_List_Head = NULL;
+            Gbl_Comment_List_Tail = NULL;
+        }
+    }
+
     /* Link the new node to it's children */
 
     PrevChild = NULL;
@@ -1389,7 +1407,7 @@ TrLinkChildren (
     /* The following is for capturing comments */
     if(Gbl_CaptureComments)
     {
-        Gbl_CommentState.Latest_Parse_Node = Op;    
+        Gbl_CommentState.Latest_Parse_Node = Op;
         printf ("===========Set latest parse node to this node.\n");
         printf ("           Op->Asl.ParseOpName       = %s\n", Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName);    
     }
