@@ -4,14 +4,14 @@ all:	${MDIRS}
 ${MDIRS}: FORCE
 	@cd $@; pwd; make
 
-installnormal:	FORCE
+install:	FORCE
 		@r=0; set -e; for d in ${MDIRS}; do \
 			(cd $$d; \
 			if [ $$? -ne 0 ]; then \
 				echo "Bad element of MDIRS: <$$d>"; \
 			else \
 				pwd; \
-				if ($(MAKE) installnormal); then \
+				if ($(MAKE) install); then \
 					:; \
 				else \
 					r=1; \
