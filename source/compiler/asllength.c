@@ -224,7 +224,7 @@ LnPackageLengthWalk (
             if (Op->Asl.CommentList!=NULL)
             {
                 Current = Op->Asl.CommentList; 
-                while (Current!=0)
+                while (Current!=NULL)
                 {
                     CommentLength = strlen (Current->Comment)+3;
                     printf ("Length of standard comment +3 (including space for 0xA9 0x01 and 0x00): %d\n", CommentLength);
@@ -233,7 +233,18 @@ LnPackageLengthWalk (
                     Current = Current->Next;
                 }
             }
-
+            if (Op->Asl.EndBlkComment!=NULL)
+            {
+                Current = Op->Asl.EndBlkComment;
+                while (Current!=NULL)
+                {
+                    CommentLength = strlen (Current->Comment)+3;
+                    printf ("Length of endblkcomment +3 (including space for 0xA9 0x10 and 0x00): %d\n", CommentLength);
+                    printf ("**********Comment string: %s\n\n", Current->Comment);
+                    TotalCommentLength += CommentLength;
+                    Current = Current->Next;
+                }
+            }
             if (Op->Asl.InlineComment!=NULL)
             {
                 CommentLength = strlen (Op->Asl.InlineComment)+3;
