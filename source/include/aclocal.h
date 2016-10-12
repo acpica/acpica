@@ -1016,6 +1016,7 @@ typedef union acpi_parse_value
 #define END_DEFBLK_COMMENT      7
 #define FILENAME_COMMENT        8
 #define PARENTFILENAME_COMMENT  9
+#define ENDBLK_COMMENT         10
 
 #define ACPI_MAX_FILENAME_LENGTH 500
 
