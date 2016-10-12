@@ -347,6 +347,7 @@ AcpiPsBuildNamedOp (
     AcpiPsAppendArg (*Op, UnnamedOp->Common.Value.Arg);
 
     /* save any comments that might be associated with UnnamedOp. */
+
     if (UnnamedOp->Common.InlineComment!=NULL)
     {
         (*Op)->Common.InlineComment = UnnamedOp->Common.InlineComment;
@@ -376,6 +377,11 @@ AcpiPsBuildNamedOp (
     {
         (*Op)->Common.CommentList = UnnamedOp->Common.CommentList;
         UnnamedOp->Common.CommentList = NULL;
+    }
+    if (UnnamedOp->Common.EndBlkComment)
+    {
+        (*Op)->Common.EndBlkComment = UnnamedOp->Common.EndBlkComment;
+        UnnamedOp->Common.EndBlkComment = NULL;
     }
 
     (*Op)->Common.PsFilename = UnnamedOp->Common.PsFilename;

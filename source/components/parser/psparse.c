@@ -551,6 +551,8 @@ AcpiPsSetFileParent (
  * DESCRIPTION: look at the aml that the parser state is pointing to,
  *              capture any AML_COMMENT_OP and it's arguments and increment the
  *              aml pointer past the comment. This is used in the -q option.
+ *              Comments are transferred to parse nodes through
+ *              AcpiPsTransferComments as well as AcpiPsBuildNamedOp ().
  *
  ******************************************************************************/
 
@@ -565,7 +567,6 @@ AcpiPsCaptureJustComments (
     char                    *Debug;
     ACPI_COMMENT_LIST_NODE  *CommentNode;
     BOOLEAN                 StdDefBlockFlag = FALSE;
-    //char                    *PreviousFilename;
 
 
     Aml = ParserState->Aml;

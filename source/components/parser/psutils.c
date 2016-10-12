@@ -255,6 +255,7 @@ AcpiPsAllocOp (
         Op->Common.EndNodeComment    = NULL;
         Op->Common.NameComment       = NULL;
         Op->Common.CommentList       = NULL;
+        Op->Common.EndBlkComment     = NULL;
         Op->Common.OpenBraceComment  = NULL;
         Op->Common.CloseBraceComment = NULL;
         Op->Common.PsFilename        = NULL;
