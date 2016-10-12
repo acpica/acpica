@@ -625,6 +625,29 @@ AcpiPsCaptureJustComments (
                     }
                     break;
 
+                case ENDBLK_COMMENT:
+
+                    printf("found endblk comment.\n");
+
+                    /* add to a linked list of nodes. This will be taken by the next created parse node. */
+
+                    CommentNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
+
+                    CommentNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    CommentNode->Next    = NULL;
+
+                    if (AcpiGbl_EndBlkCommentListHead==NULL)
+                    {
+                        AcpiGbl_EndBlkCommentListHead = CommentNode;
+                        AcpiGbl_EndBlkCommentListTail = CommentNode;
+                    }
+                    else
+                    {
+                        AcpiGbl_EndBlkCommentListTail->Next = CommentNode;
+                        AcpiGbl_EndBlkCommentListTail = AcpiGbl_EndBlkCommentListTail->Next;
+                    }
+                    break;
+
                 case INLINE_COMMENT:
 
                     printf ("found inline comment.\n");

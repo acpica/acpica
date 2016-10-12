@@ -467,9 +467,12 @@ ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentFilename, NULL);
 ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentParentFilename, NULL);
 ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentIncludeFilename, NULL);
 
-ACPI_INIT_GLOBAL (ACPI_COMMENT_LIST_NODE,   *AcpiGbl_LastListHead,        NULL);
-ACPI_INIT_GLOBAL (ACPI_COMMENT_LIST_NODE,   *AcpiGbl_RegCommentListHead,  NULL);
-ACPI_INIT_GLOBAL (ACPI_COMMENT_LIST_NODE,   *AcpiGbl_RegCommentListTail,  NULL);
+ACPI_INIT_GLOBAL (ACPI_COMMENT_LIST_NODE,   *AcpiGbl_LastListHead, NULL);
+ACPI_INIT_GLOBAL (ACPI_COMMENT_LIST_NODE,   *AcpiGbl_RegCommentListHead, NULL);
+ACPI_INIT_GLOBAL (ACPI_COMMENT_LIST_NODE,   *AcpiGbl_RegCommentListTail, NULL);
+ACPI_INIT_GLOBAL (ACPI_COMMENT_LIST_NODE,   *AcpiGbl_EndBlkCommentListHead, NULL);
+ACPI_INIT_GLOBAL (ACPI_COMMENT_LIST_NODE,   *AcpiGbl_EndBlkCommentListTail, NULL);
+
 ACPI_INIT_GLOBAL (ACPI_COMMENT_ADDR_NODE,   *AcpiGbl_CommentAddrListHead, NULL);
 
 ACPI_INIT_GLOBAL (ACPI_PARSE_OBJECT,   *AcpiGbl_CurrentScope,     NULL);
