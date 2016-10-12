@@ -502,13 +502,11 @@ AcpiDmCloseBraceWriteComment(
 
     while (CommentNode)
     {
-        AcpiDmIndent (Level);
         AcpiOsPrintf("%s\n", CommentNode->Comment);
         CommentNode->Comment = NULL;
         CommentNode = CommentNode->Next;
+        AcpiDmIndent (Level);
     }
-
-    AcpiDmIndent (Level);
 
     AcpiOsPrintf ("}");
 /*
@@ -585,8 +583,11 @@ AcpiDmCloseParenWriteComment(
             AcpiOsPrintf("%s\n", CommentNode->Comment);
             CommentNode->Comment = NULL;
             CommentNode = CommentNode->Next;
+            if (!CommentNode)
+            {
+                AcpiDmIndent (Level);
+            }
         }
-        AcpiDmIndent (Level);
     }
 
     AcpiOsPrintf (")");
