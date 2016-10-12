@@ -159,28 +159,27 @@ Method(m143,, Serialized)
 	Store(SizeOf(Local1), Local5)
 	CH04(ts, 1, 49, z058, 12, 0, 0)	// AE_AML_UNINITIALIZED_LOCAL
 
-#if 0 /* These are now caught by the compiler - Aug 2015 */
-	Store(SizeOf(DEV0), Local5)
-	CH04(ts, 1, 47, z058, 13, 0, 0)	// AE_AML_OPERAND_TYPE
-
-	Store(SizeOf(EVE0), Local5)
-	CH04(ts, 1, 47, z058, 14, 0, 0)	// AE_AML_OPERAND_TYPE
-
-	Store(SizeOf(MTX0), Local5)
-	CH04(ts, 1, 47, z058, 15, 0, 0)	// AE_AML_OPERAND_TYPE
-
-	Store(SizeOf(OPR0), Local5)
-	CH04(ts, 1, 47, z058, 16, 0, 0)	// AE_AML_OPERAND_TYPE
-
-	Store(SizeOf(PWR0), Local5)
-	CH04(ts, 1, 47, z058, 17, 0, 0)	// AE_AML_OPERAND_TYPE
-
-	Store(SizeOf(CPU0), Local5)
-	CH04(ts, 1, 47, z058, 18, 0, 0)	// AE_AML_OPERAND_TYPE
-
-	Store(SizeOf(TZN0), Local5)
-	CH04(ts, 1, 47, z058, 19, 0, 0)	// AE_AML_OPERAND_TYPE
-#endif
+/* These are now caught by the compiler - Aug 2015 */
+//	Store(SizeOf(DEV0), Local5)
+//	CH04(ts, 1, 47, z058, 13, 0, 0)	// AE_AML_OPERAND_TYPE
+//
+//	Store(SizeOf(EVE0), Local5)
+//	CH04(ts, 1, 47, z058, 14, 0, 0)	// AE_AML_OPERAND_TYPE
+//
+//	Store(SizeOf(MTX0), Local5)
+//	CH04(ts, 1, 47, z058, 15, 0, 0)	// AE_AML_OPERAND_TYPE
+//
+//	Store(SizeOf(OPR0), Local5)
+//	CH04(ts, 1, 47, z058, 16, 0, 0)	// AE_AML_OPERAND_TYPE
+//
+//	Store(SizeOf(PWR0), Local5)
+//	CH04(ts, 1, 47, z058, 17, 0, 0)	// AE_AML_OPERAND_TYPE
+//
+//	Store(SizeOf(CPU0), Local5)
+//	CH04(ts, 1, 47, z058, 18, 0, 0)	// AE_AML_OPERAND_TYPE
+//
+//	Store(SizeOf(TZN0), Local5)
+//	CH04(ts, 1, 47, z058, 19, 0, 0)	// AE_AML_OPERAND_TYPE
 }
 
 // ToString() when the number of characters copied from buffer exceeds 200
@@ -1304,22 +1303,21 @@ Method(m709,, Serialized)
 	Name(lenp, Package(1){0x123})
 	Name(i000, 0x100)
 
-#if 0 /* These are now caught by the compiler - Aug 2015 */
-
-	Method(m000,, Serialized) {
-		OperationRegion(OPR0, SystemMemory, offp, 1)
-	}
-	
-	CH03(ts, z058, 188, 0, 0)
-
-	m000()
-
-	CH04(ts, 0, 47, z058, 189, 0, 0)	// AE_AML_OPERAND_TYPE
-
-	OperationRegion(OPR1, SystemMemory, 1, lenp)
-
-	CH04(ts, 0, 47, z058, 190, 0, 0)	// AE_AML_OPERAND_TYPE
-#endif
+/* These are now caught by the compiler - Aug 2015 */
+//
+//	Method(m000,, Serialized) {
+//		OperationRegion(OPR0, SystemMemory, offp, 1)
+//	}
+//	
+//	CH03(ts, z058, 188, 0, 0)
+//
+//	m000()
+//
+//	CH04(ts, 0, 47, z058, 189, 0, 0)	// AE_AML_OPERAND_TYPE
+//
+//	OperationRegion(OPR1, SystemMemory, 1, lenp)
+//
+//	CH04(ts, 0, 47, z058, 190, 0, 0)	// AE_AML_OPERAND_TYPE
 }
 
 // Try OpRegion arguments when Offset + Length > MaxInteger
@@ -1398,17 +1396,16 @@ Method(m7f5,, Serialized)
 	DataTableRegion (DR05, "SSDT", "", i000)
 	CH04(ts, 0, 5, z058, 201, 0, 0)	// AE_NOT_FOUND
 
-#if 0 /* These are now caught by the compiler - Aug 2015 */
-
-	DataTableRegion (DR06, p000, "", i000)
-	CH04(ts, 0, 47, z058, 202, 0, 0)	// AE_AML_OPERAND_TYPE
-
-	DataTableRegion (DR07, "SSDT", p000, "")
-	CH04(ts, 0, 47, z058, 203, 0, 0)	// AE_AML_OPERAND_TYPE
-
-	DataTableRegion (DR08, "SSDT", "", p000)
-	CH04(ts, 0, 47, z058, 204, 0, 0)	// AE_AML_OPERAND_TYPE
-#endif
+/* These are now caught by the compiler - Aug 2015 */
+//
+//	DataTableRegion (DR06, p000, "", i000)
+//	CH04(ts, 0, 47, z058, 202, 0, 0)	// AE_AML_OPERAND_TYPE
+//
+//	DataTableRegion (DR07, "SSDT", p000, "")
+//	CH04(ts, 0, 47, z058, 203, 0, 0)	// AE_AML_OPERAND_TYPE
+//
+//	DataTableRegion (DR08, "SSDT", "", p000)
+//	CH04(ts, 0, 47, z058, 204, 0, 0)	// AE_AML_OPERAND_TYPE
 }
 
 // Check SMBus OpRegion restictions
@@ -1466,14 +1463,14 @@ Method(m0bc,, Serialized)
 
 	Method(m002)
 	{
-		CH03(ts, z058, 0x0d0, 0, 0)
-		m004()
-		CH04(ts, 0, 5, z058, 0x0d1, 0, 0) // AE_NOT_FOUND
-
 		Method(m004)
 		{
 			return (0xabcd0002)
 		}
+
+		CH03(ts, z058, 0x0d0, 0, 0)
+		m004()
+		CH04(ts, 0, 5, z058, 0x0d1, 0, 0) // AE_NOT_FOUND
 	}
 
 	Method(m003)

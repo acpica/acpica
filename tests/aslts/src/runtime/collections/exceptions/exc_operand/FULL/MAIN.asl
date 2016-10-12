@@ -27,7 +27,7 @@
  */
 
 DefinitionBlock(
-	"exc_operand.aml",   // Output filename
+	"full.aml",   // Output filename
 	"DSDT",     // Signature
 	0x02,       // DSDT Revision
 	"Intel",    // OEMID
