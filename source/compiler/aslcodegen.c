@@ -453,6 +453,36 @@ CgChangeFileExt(
 
 /*******************************************************************************
  *
+ * FUNCTION:    CgWriteOneAmlComment
+ *
+ * PARAMETERS:  Op              - Current parse op
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: For -ca: write a single comment.
+ *
+ ******************************************************************************/
+
+static void
+CgWriteOneAmlComment(
+    ACPI_PARSE_OBJECT       *Op,
+    char*                   CommentToPrint,
+    UINT8                   InputOption)
+{
+    UINT8 CommentOption = InputOption;
+    UINT8 CommentOpcode = (UINT8)AML_COMMENT_OP;
+
+    CgLocalWriteAmlData (Op, &CommentOpcode, 1);
+    CgLocalWriteAmlData (Op, &CommentOption, 1);
+
+    /* +1 is what emits the 0x00 at the end of this opcode. */
+
+    CgLocalWriteAmlData (Op, CommentToPrint, strlen (CommentToPrint) + 1); 
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    CgWriteAmlComment
  *
  * PARAMETERS:  Op              - Current parse op
@@ -517,83 +547,51 @@ CgWriteAmlComment(
      */
     //printf ("Printing comments for the following opcode: %s.\n", Op->Asl.ParseOpName);
     Current = Op->Asl.CommentList;
+    CommentOption = STANDARD_COMMENT;
     while (Current)
     {
         CommentOption = STANDARD_COMMENT;
-        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-        CgLocalWriteAmlData (Op, &CommentOption, 1);
-
-        /* +1 is what emits the 0x00 at the end of this opcode. */
-
-        CgLocalWriteAmlData (Op, Current->Comment, strlen (Current->Comment) + 1); 
-        printf ("Printing comment: %s\n", Current->Comment);
+        CgWriteOneAmlComment(Op, Current->Comment, CommentOption);
         Current = Current->Next;
     }
     Op->Asl.CommentList = NULL;
 
     Current = Op->Asl.EndBlkComment;
+    CommentOption = ENDBLK_COMMENT;
     while (Current)
     {
-        CommentOption = ENDBLK_COMMENT;
-        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-        CgLocalWriteAmlData (Op, &CommentOption, 1);
-
-        /* +1 is what emits the 0x00 at the end of this opcode. */
-
-        CgLocalWriteAmlData (Op, Current->Comment, strlen (Current->Comment) + 1); 
-        printf ("Printing comment: %s\n", Current->Comment);
+        CgWriteOneAmlComment(Op, Current->Comment, CommentOption);
         Current = Current->Next;
     }
     Op->Asl.EndBlkComment = NULL;
-
 
     /* print any Inline comments associated with this node */
 
     if (Op->Asl.InlineComment)
     {
         CommentOption = INLINE_COMMENT;
-        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-        CgLocalWriteAmlData (Op, &CommentOption, 1);
-
-        /* +1 is what emits the 0x00 at the end of this opcode. */
-
-        CgLocalWriteAmlData (Op, Op->Asl.InlineComment, strlen (Op->Asl.InlineComment) + 1); 
+        CgWriteOneAmlComment(Op, Op->Asl.InlineComment, CommentOption);
         Op->Asl.InlineComment = NULL;
     }
 
     if (Op->Asl.EndNodeComment)
     {
         CommentOption = ENDNODE_COMMENT;
-        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-        CgLocalWriteAmlData (Op, &CommentOption, 1);
-
-        /* +1 is what emits the 0x00 at the end of this opcode. */
-
-        CgLocalWriteAmlData (Op, Op->Asl.EndNodeComment, strlen (Op->Asl.EndNodeComment) + 1); 
+        CgWriteOneAmlComment(Op, Op->Asl.EndNodeComment, CommentOption);
         Op->Asl.EndNodeComment = NULL;
     }
 
     if (Op->Asl.OpenBraceComment)
     {
         CommentOption = OPENBRACE_COMMENT;
-        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-        CgLocalWriteAmlData (Op, &CommentOption, 1);
-
-        /* +1 is what emits the 0x00 at the end of this opcode. */
-
-        CgLocalWriteAmlData (Op, Op->Asl.OpenBraceComment, strlen (Op->Asl.OpenBraceComment) + 1); 
+        CgWriteOneAmlComment(Op, Op->Asl.OpenBraceComment, CommentOption);
         Op->Asl.OpenBraceComment = NULL;
     }
 
     if (Op->Asl.CloseBraceComment)
     {
         CommentOption = CLOSEBRACE_COMMENT;
-        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-        CgLocalWriteAmlData (Op, &CommentOption, 1);
-
-        /* +1 is what emits the 0x00 at the end of this opcode. */
-
-        CgLocalWriteAmlData (Op, Op->Asl.CloseBraceComment, strlen (Op->Asl.CloseBraceComment) + 1); 
+        CgWriteOneAmlComment(Op, Op->Asl.CloseBraceComment, CommentOption);
         Op->Asl.CloseBraceComment = NULL;
     }
 }
