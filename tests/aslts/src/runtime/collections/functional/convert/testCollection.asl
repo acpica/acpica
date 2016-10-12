@@ -31,6 +31,7 @@ DefinitionBlock(
 
 	0xffffffff, 0xffffffff,
 
+	// ACPI: Overflow conditions are ignored and results are undefined.
     })
 
     Method(MAIN) {

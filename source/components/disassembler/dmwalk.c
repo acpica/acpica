@@ -158,11 +158,13 @@ AcpiDmBlockType (
 
 static void
 AcpiDmCloseParenWriteComment(
-    ACPI_PARSE_OBJECT       *Op);
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level);
 
 static void
 AcpiDmCloseBraceWriteComment(
-    ACPI_PARSE_OBJECT       *Op);
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level);
 
 static void
 AcpiDmOpenBraceWriteComment(
@@ -492,8 +494,22 @@ AcpiDmListType (
 
 static void
 AcpiDmCloseBraceWriteComment(
-    ACPI_PARSE_OBJECT       *Op)
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level)
 {
+    ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.EndBlkComment;
+
+
+    while (CommentNode)
+    {
+        AcpiDmIndent (Level);
+        AcpiOsPrintf("%s\n", CommentNode->Comment);
+        CommentNode->Comment = NULL;
+        CommentNode = CommentNode->Next;
+    }
+
+    AcpiDmIndent (Level);
+
     AcpiOsPrintf ("}");
 /*
     AcpiOsPrintf ("CLOSE BRACE ");
@@ -553,8 +569,26 @@ AcpiDmOpenBraceWriteComment(
 
 static void
 AcpiDmCloseParenWriteComment(
-    ACPI_PARSE_OBJECT       *Op)
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level)
 {
+    ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.EndBlkComment;
+
+
+    /* If this op has a BLOCK_BRACE, take care of it in AcpiDmCloseBraceWriteComment */
+
+    if (AcpiDmBlockType (Op) & (BLOCK_PAREN))
+    {
+        while (CommentNode)
+        {
+            AcpiDmIndent (Level);
+            AcpiOsPrintf("%s\n", CommentNode->Comment);
+            CommentNode->Comment = NULL;
+            CommentNode = CommentNode->Next;
+        }
+        AcpiDmIndent (Level);
+    }
+
     AcpiOsPrintf (")");
 /*
     AcpiOsPrintf ("CLOSE PAREN ");
@@ -934,7 +968,7 @@ AcpiDmDescendingOp (
             case AML_METHOD_OP:
 
                 AcpiDmMethodFlags (Op);
-                AcpiDmCloseParenWriteComment(Op);
+                AcpiDmCloseParenWriteComment(Op, Level);
 
                 /* Emit description comment for Method() with a predefined ACPI name */
 
@@ -1004,7 +1038,7 @@ AcpiDmDescendingOp (
             case AML_DEVICE_OP:
             case AML_THERMAL_ZONE_OP:
 
-                AcpiDmCloseParenWriteComment(Op);
+                AcpiDmCloseParenWriteComment(Op, Level);
                 break;
 
             default:
@@ -1098,7 +1132,7 @@ AcpiDmDescendingOp (
                  */
                 NextOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
                 NextOp = NextOp->Common.Next;
-                AcpiDmCloseParenWriteComment(Op);
+                AcpiDmCloseParenWriteComment(Op, Level);
 
                 /* Emit description comment for Name() with a predefined ACPI name */
 
@@ -1220,7 +1254,7 @@ AcpiDmAscendingOp (
     {
         /* Indicates the end of the current descriptor block (table) */
  
-        AcpiDmCloseBraceWriteComment(Op);
+        AcpiDmCloseBraceWriteComment(Op, Level);
 
         /* Print any comments that are at the end of the file here... */
  
@@ -1298,12 +1332,12 @@ AcpiDmAscendingOp (
 
         if (Op->Common.DisasmFlags & ACPI_PARSEOP_EMPTY_TERMLIST)
         {
-            AcpiDmCloseBraceWriteComment(Op);
+            AcpiDmCloseBraceWriteComment(Op, Level);
         }
         else
         {
             AcpiDmIndent (Level);
-            AcpiDmCloseBraceWriteComment(Op);
+            AcpiDmCloseBraceWriteComment(Op, Level);
         }
 
         AcpiDmCommaIfListMember (Op);
@@ -1391,7 +1425,7 @@ AcpiDmAscendingOp (
          */
         if (Op->Common.Next)
         {
-            AcpiDmCloseParenWriteComment(Op);
+            AcpiDmCloseParenWriteComment(Op, Level);
 
             /*
              * Emit a description comment for a Name() operator that is a
@@ -1413,7 +1447,7 @@ AcpiDmAscendingOp (
         {
             ParentOp->Common.DisasmFlags |= ACPI_PARSEOP_EMPTY_TERMLIST;
 
-            AcpiDmCloseParenWriteComment(Op);
+            AcpiDmCloseParenWriteComment(Op, Level);
             AcpiDmOpenBraceWriteComment(Op);
         }
     }
