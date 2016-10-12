@@ -194,9 +194,9 @@ LnPackageLengthWalk (
     UINT32                  Level,
     void                    *Context)
 {
-    UINT32                  CommentLength; 
+    UINT32                  CommentLength = 0;
     UINT32                  TotalCommentLength = 0;
-    ACPI_COMMENT_LIST_NODE  *Current = 0;
+    ACPI_COMMENT_LIST_NODE  *Current = NULL;
 
     CgGenerateAmlLengths (Op);
 
