@@ -11,6 +11,7 @@ tmp_acpiexec=/tmp/acpiexec-$postfix
 TEST_CASES=
 TEST_MODES=
 REBUILD_TOOLS=yes
+EXECONLY=no
 
 usage() {
 
@@ -20,13 +21,14 @@ usage() {
 	echo "  -c:	Specify individual test cases (can be used multiple times)"
 	echo "  -m:	Specify individual test modes (can be used multiple times)"
 	echo "  -u:	Do not force rebuilding of ACPICA utilities (acpiexec, iasl)"
+	echo "  -e:     Perform the execution of aml files and omit binary comparison of regular aml and disassembled aml file."
 	echo ""
 
 	echo "Available test modes:"
-	echo "  n32	32-bit normal mode"
-	echo "  n64	64-bit normal mode"
-	echo "  s32	32-bit slack mode"
-	echo "  s64	64-bit slack mode"
+	echo "  n32	32-bit unoptimized code (tests are compiled with iasl -oa -r 1 and other flags)"
+	echo "  n64	64-bit unoptimized code (tests are compiled with iasl -oa -r 2 and other flags)"
+	echo "  o32	32-bit optimized code (tests are compiled with iasl -r 1 and other flags)"
+	echo "  o64	64-bit optimized code (tests are compiled with iasl -r 2 and other flags)"
 	echo ""
 
 	Do 3
@@ -114,13 +116,13 @@ run_aslts() {
 
 	if [ "x$TEST_CASES" = "x" ]; then
 		# Compile all ASL test modules
-		Do 0 aslts
+		Do 0 aslts $EXECONLY
 		if [ $? -ne 0 ]; then
 			echo "ASLTS Compile Failure"
 			exit 1
 		fi
 	else
-		Do 0 $TEST_CASES
+		Do 0 $TEST_CASES $EXECONLY
 	fi
 
 	# Execute the test suite
@@ -129,7 +131,7 @@ run_aslts() {
 	start_time=$(date)
 
 	if [ "x$TEST_MODES" = "x" ]; then
-		TEST_MODES="n32 n64 s32 s64"
+		TEST_MODES="n32 n64 o32 o64"
 	fi
 	Do 1 $TEST_MODES $TEST_CASES
 
@@ -150,7 +152,7 @@ RESET_SETTINGS
 INIT_ALL_AVAILABLE_CASES
 INIT_ALL_AVAILABLE_MODES
 
-while getopts "c:m:u" opt
+while getopts "c:m:ue" opt
 do
 	case $opt in
 	c)
@@ -161,6 +163,10 @@ do
 		else
 			TEST_CASES="$OPTARG $TEST_CASES"
 		fi
+	;;
+	e)
+		EXECONLY=yes
+		echo "Running tests in disassemble mode"
 	;;
 	m)
 		check_mode_id "$OPTARG"
