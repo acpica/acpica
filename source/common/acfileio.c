@@ -206,7 +206,8 @@ AcGetAllTablesFromFile (
         fprintf (stderr,
             "    %s: File does not appear to contain a valid AML table\n",
             Filename);
-        return (AE_TYPE);
+        Status = AE_TYPE;
+        goto Exit;
     }
 
     /* Read all tables within the file */
@@ -225,7 +226,8 @@ AcGetAllTablesFromFile (
         }
         else if (Status == AE_TYPE)
         {
-            return (AE_OK);
+            Status = AE_OK;
+            goto Exit;
         }
         else if (ACPI_FAILURE (Status))
         {
