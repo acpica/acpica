@@ -794,7 +794,7 @@ AslDoComment (
 
     AslInsertLineBuffer ('/');
     AslInsertLineBuffer ('*');
-    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && !CurrentState.ParseBuffer)
+    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && CurrentState.CaptureComments)
     {
         *StringBuffer = '/';
         ++StringBuffer;
@@ -809,7 +809,7 @@ loop:
     while (((c = input ()) != '*') && (c != EOF))
     {
         AslInsertLineBuffer (c);
-        if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && !CurrentState.ParseBuffer)
+        if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && CurrentState.CaptureComments)
         {
             *StringBuffer = c;
             ++StringBuffer;
@@ -837,7 +837,7 @@ loop:
     /* Comment is closed only if the NEXT character is a slash */
 
     AslInsertLineBuffer (c);
-    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && !CurrentState.ParseBuffer)
+    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && CurrentState.CaptureComments)
     {
         *StringBuffer = c;
         ++StringBuffer;
@@ -860,7 +860,7 @@ loop:
 
     AslInsertLineBuffer (c1);
 
-    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && !CurrentState.ParseBuffer)
+    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && CurrentState.CaptureComments)
     {
         *StringBuffer = c1;
         ++StringBuffer;
@@ -1012,7 +1012,7 @@ AslDoCommentType2 (
     AslInsertLineBuffer ('/');
     AslInsertLineBuffer ('/');
 
-    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && !CurrentState.ParseBuffer)
+    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && CurrentState.CaptureComments)
     {
         *StringBuffer = '/';
         ++StringBuffer;
@@ -1023,7 +1023,7 @@ AslDoCommentType2 (
     while (((c = input ()) != '\n') && (c != EOF))
     {
         AslInsertLineBuffer (c);
-        if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && !CurrentState.ParseBuffer)
+        if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && CurrentState.CaptureComments)
         {
             *StringBuffer = c;
             ++StringBuffer;
@@ -1046,7 +1046,7 @@ AslDoCommentType2 (
 
     AslInsertLineBuffer (c);
 
-    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && !CurrentState.ParseBuffer)
+    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && CurrentState.CaptureComments)
     {
 
         *StringBuffer = 0; //null terminate this string

@@ -203,7 +203,7 @@ AslInitializeGlobals (
         Gbl_CommentState.Latest_Parse_Node     = NULL;
         Gbl_CommentState.ParsingParenBraceNode = NULL;
         Gbl_CommentState.ParseDefBlockHeader   = FALSE;
-        Gbl_CommentState.ParseBuffer           = FALSE;
+        Gbl_CommentState.CaptureComments       = TRUE;
     }
 }
 

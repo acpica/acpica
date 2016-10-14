@@ -431,6 +431,12 @@ TrUpdateNode (
         break;
     }
 
+    /* Converter: if this is a method invocation, turn off capture comments. */
+    if (Gbl_CaptureComments && ParseOpcode == PARSEOP_METHODCALL)
+    {
+        Gbl_CommentState.CaptureComments = FALSE;
+    }
+
     return (Op);
 }
 
@@ -829,7 +835,7 @@ TrCreateLeafNode (
         }
         else if (ParseOpcode == PARSEOP_BUFFER)
         {
-            Gbl_CommentState.ParseBuffer = TRUE;
+            Gbl_CommentState.CaptureComments = FALSE;
         }
     }
 
@@ -1342,7 +1348,7 @@ TrLinkChildren (
         }
         if (Op->Asl.ParseOpcode == PARSEOP_BUFFER)
         {
-            Gbl_CommentState.ParseBuffer           = FALSE;
+            Gbl_CommentState.CaptureComments = TRUE;
         }
     }
 
@@ -1586,6 +1592,15 @@ TrLinkChildNode (
         Op1, Op1 ? UtGetOpName(Op1->Asl.ParseOpcode): NULL,
         Op2, Op2 ? UtGetOpName(Op2->Asl.ParseOpcode): NULL);
 
+    /* 
+     * Converter: if TrLinkChildNode is called to link a method call, 
+     * turn on capture comments as it signifies that we are done parsing 
+     * a method call.
+     */
+    if (Op1->Asl.ParseOpcode)
+    {
+        Gbl_CommentState.CaptureComments = TRUE;
+    }
     if (!Op1 || !Op2)
     {
         return (Op1);
