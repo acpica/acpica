@@ -790,11 +790,12 @@ AslDoComment (
     char                    *CommentString;
     char                    *FinalCommentString;
     ASL_COMMENT_STATE       CurrentState = Gbl_CommentState; //for reference
+    ACPI_COMMENT_LIST_NODE  *TempNode = NULL;
 
 
     AslInsertLineBuffer ('/');
     AslInsertLineBuffer ('*');
-    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader)
+    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && !CurrentState.ParseBuffer)
     {
         *StringBuffer = '/';
         ++StringBuffer;
@@ -809,7 +810,7 @@ loop:
     while (((c = input ()) != '*') && (c != EOF))
     {
         AslInsertLineBuffer (c);
-        if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader)
+        if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && !CurrentState.ParseBuffer)
         {
             *StringBuffer = c;
             ++StringBuffer;
@@ -837,7 +838,7 @@ loop:
     /* Comment is closed only if the NEXT character is a slash */
 
     AslInsertLineBuffer (c);
-    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader)
+    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && !CurrentState.ParseBuffer)
     {
         *StringBuffer = c;
         ++StringBuffer;
@@ -859,7 +860,25 @@ loop:
     }
 
     AslInsertLineBuffer (c1);
-    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader)
+
+
+    /*
+     * If we detect that this buffer has a comment, then we need to emit a comment to indicate
+     * that we do not support inline comments within buffers. However, we only need to emit a single
+     * comment that conveys this. BufferCommentDetected will be true after the first time a comment
+     * is detected for a given buffer. This field will remain true until parsing of the current buffer
+     * is complete.
+     */
+    if (CurrentState.ParseBuffer && !CurrentState.BufferCommentDetected)
+    {
+        TempNode = UtCommentNodeCalloc ();
+        TempNode->Next = CurrentState.ParsingBufferNode->Asl.CommentList;
+        CurrentState.ParsingBufferNode->Asl.CommentList = TempNode;
+        TempNode->Comment = UtStringCacheCalloc(strlen("WARNING: comments within buffers are not supported. Comments within this buffer declaration have been removed."));
+        strcpy (TempNode->Comment, "WARNING: comments within buffers are not supported. Comments within this buffer declaration have been removed.");
+        return (TRUE);
+    }
+    else if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && !CurrentState.ParseBuffer)
     {
         *StringBuffer = c1;
         ++StringBuffer;
@@ -868,7 +887,7 @@ loop:
         CommentString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
         strcpy (CommentString, MsgBuffer);
 
-         printf ("CommentString: %s\n", CommentString);
+        printf ("CommentString: %s\n", CommentString);
 
         /* 
          * Determine whether if this comment spans multiple lines.
@@ -1006,12 +1025,14 @@ AslDoCommentType2 (
     char                    *CommentString;
     char                    *FinalCommentString;
     ASL_COMMENT_STATE       CurrentState = Gbl_CommentState;
+    ACPI_COMMENT_LIST_NODE  *TempNode = NULL;
+
 
 
     AslInsertLineBuffer ('/');
     AslInsertLineBuffer ('/');
 
-    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader)
+    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && !CurrentState.ParseBuffer)
     {
         *StringBuffer = '/';
         ++StringBuffer;
@@ -1022,7 +1043,7 @@ AslDoCommentType2 (
     while (((c = input ()) != '\n') && (c != EOF))
     {
         AslInsertLineBuffer (c);
-        if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader)
+        if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && !CurrentState.ParseBuffer)
         {
             *StringBuffer = c;
             ++StringBuffer;
@@ -1044,8 +1065,23 @@ AslDoCommentType2 (
     // Since AslInsertLineBuffer (c) will clear the global flag, capture it here.
 
     AslInsertLineBuffer (c);
- 
-    if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader)
+
+     /*
+     * If we detect that this buffer has a comment, then we need to emit a comment to indicate
+     * that we do not support inline comments within buffers. However, we only need to emit a single
+     * comment that conveys this. BufferCommentDetected will be true after the first time a comment
+     * is detected for a given buffer. This field will remain true until parsing of the current buffer
+     * is complete.
+     */
+    if (CurrentState.ParseBuffer && !CurrentState.BufferCommentDetected)
+    {
+        TempNode = UtCommentNodeCalloc ();
+        TempNode->Next = CurrentState.ParsingBufferNode->Asl.CommentList;
+        CurrentState.ParsingBufferNode->Asl.CommentList = TempNode;
+        TempNode->Comment = "WARNING: comments within buffers are not supported. Comments within this buffer declaration have been removed.";
+        return (TRUE);
+    }
+    else if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && !CurrentState.ParseBuffer)
     {
 
         *StringBuffer = 0; //null terminate this string

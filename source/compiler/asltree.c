@@ -827,6 +827,12 @@ TrCreateLeafNode (
         {
             Gbl_CommentState.ParseDefBlockHeader = TRUE;
         }
+        else if (ParseOpcode == PARSEOP_BUFFER)
+        {
+            Gbl_CommentState.ParsingBufferNode = Op;
+            Gbl_CommentState.ParseBuffer = TRUE;
+            Gbl_CommentState.BufferCommentDetected = TRUE;
+        }
     }
 
     DbgPrint (ASL_PARSE_OUTPUT,
@@ -1332,9 +1338,15 @@ TrLinkChildren (
         if (Gbl_Comment_List_Head)
         {
             Op->Asl.EndBlkComment = Gbl_Comment_List_Head;
-            printf ("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxCOMMENT STUFF: %s", Gbl_Comment_List_Head->Comment);
+         //   printf ("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxCOMMENT STUFF: %s", Gbl_Comment_List_Head->Comment);
             Gbl_Comment_List_Head = NULL;
             Gbl_Comment_List_Tail = NULL;
+        }
+        if (Op->Asl.ParseOpcode == PARSEOP_BUFFER)
+        {
+            Gbl_CommentState.ParsingBufferNode     = NULL;
+            Gbl_CommentState.ParseBuffer           = FALSE;
+            Gbl_CommentState.BufferCommentDetected = FALSE;
         }
     }
 
