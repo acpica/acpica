@@ -25,7 +25,9 @@
 SETOF_INDEXES= 0 1 2 3
 SETOF_AMLDIRS= nopt/32 nopt/64 opt/32 opt/64
 SETOF_ASLFAGS= "-oa -r 1" "-oa -r 2" "-r 1" "-r 2"
-COMMON_ASL_FLAGS= "-of -cr -vs -l -sc -sa -ic -ta -ts -so -lm -ln -ls -li"
+ASL_OUTPUT_FLAGS= " -l -sc -sa -ic -ta -ts -so -lm -ln -ls -li"
+ASL_CORE_FLAGS= "-of -cr -vs"
+COMMON_ASL_FLAGS= $(ASL_CORE_FLAGS)$(ASL_OUTPUT_FLAGS)
 
 COMPILER_LOG="$(TOP)/tmp/aml/$(aslversion)/compile.txt"
 COMPILER_ERROR_LOG="$(TOP)/tmp/aml/$(aslversion)/error.txt"
