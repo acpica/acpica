@@ -829,9 +829,7 @@ TrCreateLeafNode (
         }
         else if (ParseOpcode == PARSEOP_BUFFER)
         {
-            Gbl_CommentState.ParsingBufferNode = Op;
             Gbl_CommentState.ParseBuffer = TRUE;
-            Gbl_CommentState.BufferCommentDetected = TRUE;
         }
     }
 
@@ -1344,9 +1342,7 @@ TrLinkChildren (
         }
         if (Op->Asl.ParseOpcode == PARSEOP_BUFFER)
         {
-            Gbl_CommentState.ParsingBufferNode     = NULL;
             Gbl_CommentState.ParseBuffer           = FALSE;
-            Gbl_CommentState.BufferCommentDetected = FALSE;
         }
     }
 

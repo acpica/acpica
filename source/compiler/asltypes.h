@@ -413,10 +413,8 @@ typedef struct asl_comment_state
     UINT32                  SpacesBefore;
     ACPI_PARSE_OBJECT       *Latest_Parse_Node;
     ACPI_PARSE_OBJECT       *ParsingParenBraceNode;
-    ACPI_PARSE_OBJECT       *ParsingBufferNode;
     BOOLEAN                 ParseDefBlockHeader;
     BOOLEAN                 ParseBuffer;
-    BOOLEAN                 BufferCommentDetected;
 } ASL_COMMENT_STATE;
 
 
