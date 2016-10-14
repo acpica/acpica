@@ -242,6 +242,11 @@ AcGetAllTablesFromFile (
         /* Allocate and link a table descriptor */
 
         TableDesc = AcpiOsAllocate (sizeof (ACPI_NEW_TABLE_DESC));
+        if (!TableDesc)
+        {
+            Status = AE_NO_MEMORY;
+            goto ErrorExit;
+        }
         TableDesc->Table = Table;
         TableDesc->Next = NULL;
 
