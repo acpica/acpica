@@ -84,8 +84,8 @@ generate_patch()
 	aid=$2
 	lid=$3
 
-	COMMIT=`git log -1 -c $cid --format=%H | cut -c 1-8`
-	SUBJECT=`git log -1 -c $cid --format=%s`
+	COMMIT=`git log -1 $cid --format=%H | cut -c 1-8`
+	SUBJECT=`git log -1 $cid --format=%s`
 
 	echo "[make-patches.sh] Generating patch ($aid:$lid:$COMMIT: $SUBJECT)..."
 	(
