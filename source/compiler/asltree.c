@@ -1342,7 +1342,7 @@ TrLinkChildren (
         if (Gbl_Comment_List_Head)
         {
             Op->Asl.EndBlkComment = Gbl_Comment_List_Head;
-         //   printf ("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxCOMMENT STUFF: %s", Gbl_Comment_List_Head->Comment);
+            //printf ("EndBlk Comment for %s: %s", Op->Asl.ParseOpName, Gbl_Comment_List_Head->Comment);
             Gbl_Comment_List_Head = NULL;
             Gbl_Comment_List_Tail = NULL;
         }

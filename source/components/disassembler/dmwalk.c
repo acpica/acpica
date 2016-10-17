@@ -502,6 +502,7 @@ AcpiDmCloseBraceWriteComment(
 
     while (CommentNode)
     {
+        AcpiDmIndent (1);
         AcpiOsPrintf("%s\n", CommentNode->Comment);
         CommentNode->Comment = NULL;
         CommentNode = CommentNode->Next;
@@ -575,7 +576,7 @@ AcpiDmCloseParenWriteComment(
 
     /* If this op has a BLOCK_BRACE, take care of it in AcpiDmCloseBraceWriteComment */
 
-    if (AcpiDmBlockType (Op) & (BLOCK_PAREN))
+    if (AcpiDmBlockType (Op) & (BLOCK_PAREN) && !(AcpiDmBlockType (Op) & (BLOCK_BRACE)))
     {
         while (CommentNode)
         {
