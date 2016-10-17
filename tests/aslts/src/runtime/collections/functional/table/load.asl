@@ -88,36 +88,38 @@
  *   defined in the Definition Block are not executed during load time")
  */
 
-		// Integer
-		External(\AUXD.INT0)
-		// String
-		External(\AUXD.STR0)
+Name(z174, 174)
+		// Buffer Field
+		External(\AUXD.BFL0)
 		// Buffer
 		External(\AUXD.BUF0)
-		// Package
-		External(\AUXD.PAC0)
+		// Processor
+		External(\AUXD.CPU0)
 		// Device
 		External(\AUXD.DEV0)
 		// Event
 		External(\AUXD.EVE0)
+		// Field Unit
+		External(\AUXD.FLU0)
+		// Integer
+		External(\AUXD.INT0)
 		// Method
 		External(\AUXD.MMM0)
 		// Mutex
 		External(\AUXD.MTX0)
-		// Power Resource
-		External(\AUXD.PWR0)
-		// Processor
-		External(\AUXD.CPU0)
-		// Thermal Zone
-		External(\AUXD.TZN0)
-		// Buffer Field
-		External(\AUXD.BFL0)
-		// Field Unit
-		External(\AUXD.FLU0)
 		// OpRegion
 		External(\AUXD.OPR0)
+		// Package
+		External(\AUXD.PAC0)
+		// Power Resource
+		External(\AUXD.PWR0)
+		// String
+		External(\AUXD.STR0)
+		// Thermal Zone
+		External(\AUXD.TZN0)
 		
-Name(z174, 174)
+
+
 
 Device(DTM0) {
 
