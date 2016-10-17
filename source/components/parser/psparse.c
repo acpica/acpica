@@ -571,8 +571,9 @@ AcpiPsCaptureJustComments (
 
     Aml = ParserState->Aml;
     Opcode = (UINT16) ACPI_GET8 (Aml);
+    CommentOption = (UINT16) ACPI_GET8 (Aml+1);
     printf ("CaptureComments Opcode: 0x%x\n", Opcode);
-    if (Opcode != AML_COMMENT_OP)
+    if (Opcode != AML_COMMENT_OP || ((Opcode == AML_COMMENT_OP) && ((CommentOption < 0x1) || (CommentOption > 0xa))))
     {
        return;
     }
