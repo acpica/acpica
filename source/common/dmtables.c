@@ -542,8 +542,14 @@ AdParseTable (
             else if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x09)
             {
                 printf ("A9 and a 09 file\n");
-                ParentFilename = (char*)(TreeAml+2);
-                AcpiPsSetFileParent (ChildFilename, ParentFilename);
+                fnameLength = strlen(Filename);
+                temp = Filename + fnameLength - 3;
+                if (!strcmp(temp, "dsl"))
+                {
+                	ParentFilename = (char*)(TreeAml+2);
+                	AcpiPsSetFileParent (ChildFilename, ParentFilename);
+		}
+                TreeAml += strlen(Filename);
             }
             ++TreeAml;
         }
