@@ -537,7 +537,6 @@ AdParseTable (
                     AcpiPsAddToFileTree (Filename, PreviousFilename);
                     ChildFilename = Filename;
                 }
-                TreeAml += strlen(Filename);
             }
             else if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x09)
             {
@@ -549,7 +548,6 @@ AdParseTable (
                 	ParentFilename = (char*)(TreeAml+2);
                 	AcpiPsSetFileParent (ChildFilename, ParentFilename);
 		}
-                TreeAml += strlen(Filename);
             }
             ++TreeAml;
         }

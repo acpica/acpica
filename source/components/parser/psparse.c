@@ -709,7 +709,7 @@ AcpiPsCaptureJustComments (
 
                 case FILENAME_COMMENT:
                     
-                    printf ("Found a filename.");
+                    printf ("Found a filename: %s", ACPI_CAST_PTR (char, ParserState->Aml));
                     break;
 
                 case PARENTFILENAME_COMMENT:

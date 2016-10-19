@@ -293,6 +293,7 @@ AcpiPsBuildNamedOp (
 
     /* are there any inline comments associated with the NameSeg?? If so, save this. */
 
+        printf ("gna from build named op. name seg?\n");
     AcpiPsCaptureComments(WalkState);
     if (AcpiGbl_CurrentInlineComment != NULL)
     { 
@@ -454,8 +455,9 @@ AcpiPsCreateOp (
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
+ //   printf("createop\n");
 
-    AcpiPsCaptureComments(WalkState);
+//    AcpiPsCaptureComments(WalkState);
     if (WalkState->OpInfo->Flags & AML_NAMED)
     {
         Status = AcpiPsBuildNamedOp (WalkState, AmlOpStart, Op, &NamedOp);

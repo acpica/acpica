@@ -611,6 +611,7 @@ AcpiPsGetNextField (
 
     ACPI_FUNCTION_TRACE (PsGetNextField);
 
+    printf("top of field\n");
     AcpiPsCaptureJustComments (ParserState);
     Aml = ParserState->Aml;
 

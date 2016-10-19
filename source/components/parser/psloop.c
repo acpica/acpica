@@ -210,12 +210,12 @@ AcpiPsGetArguments (
             !WalkState->ArgCount)
         {
             WalkState->Aml = WalkState->ParserState.Aml;
-            printf ("gna from getnextarguments\n");
 
             if (Op->Common.AmlOpcode != AML_METHOD_OP  && Op->Common.AmlOpcode != AML_BUFFER_OP      &&
                 Op->Common.AmlOpcode != AML_PACKAGE_OP && Op->Common.AmlOpcode != AML_VAR_PACKAGE_OP &&
                 Op->Common.AmlOpcode != AML_WHILE_OP)
             {
+                printf ("gna from getnextarguments\n");
                 AcpiPsCaptureComments (WalkState);
             }
             Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
@@ -629,6 +629,7 @@ AcpiPsParseLoop (
     while ((ParserState->Aml < ParserState->AmlEnd) || (Op))
     {
         //get comments here
+        printf("Top capture\n");
         AcpiPsCaptureComments (WalkState);
  
         AmlOpStart = ParserState->Aml;
@@ -667,8 +668,12 @@ AcpiPsParseLoop (
          * Start ArgCount at zero because we don't know if there are
          * any args yet
          */
-        WalkState->ArgCount  = 0;
-        AcpiPsCaptureComments (WalkState);
+        WalkState->ArgCount = 0;
+        printf("Args capture\n");
+        if (Op->Common.AmlOpcode != AML_BYTE_OP)
+        {
+            AcpiPsCaptureComments (WalkState);
+        }
 
         /* Are there any arguments that must be processed? */
 
