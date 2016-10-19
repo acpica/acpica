@@ -51,29 +51,29 @@ DefinitionBlock(
         d,    //c09
         6     //c10
         )     //c11
-        //c
-        if(1==1)//thisisareallylongcomment
-        {   //c1
+        //c12
+        if(1==1)//c13
+        {   //c14
             Name(b,0);
-        }  //c2
+        }  //c15
  
     }
 
-   //c0
-   Name (/*c1*/ a, /*c2*/
-       Package(3)/*c4*/
-       {/*c5*/
-            0x04, /*c6*/
-            /*comment*/
-            0x05, /*c7*/
-            0x06  /*c8*/
-       }/*c9*/
-   )/*c10*/
+   //c16
+   Name (/*c17*/ a, /*c18*/
+       Package(3)/*c19*/
+       {/*c20*/
+            0x04, /*c21*/
+            /*c22*/
+            0x05, /*c23*/
+            0x06  /*c24*/
+       }/*c25*/
+   )/*c26*/
 
 
-    //XXX0
+    //c27
     Method(F1) {
-        //XXX1
+        //c28
         Name (t, 
             Package(3)
             {
@@ -83,19 +83,19 @@ DefinitionBlock(
             }
         )
 
-        //XXX2
+        //c29
    
-        Name (/*c08*/
-        d1,    /*c09*/
-        6     /*c10*/
-        )     /*c11*/
+        Name (/*c30*/
+        d1,    /*c31*/
+        6     /*c32*/
+        )     /*c33*/
  
     }
    
-    //XXX3   
+    //c34
     Method(SCOP)
     {
-        //XXX4
+        //c35
         Name (a1, 0x04)
     }
 
@@ -103,13 +103,13 @@ DefinitionBlock(
 
     Field(GNVS,AnyAcc,Lock,Preserve)
     {
-        //c0
-        Offset(0),//comments are 
-        OSYS, 8//everywhere
+        //c36
+        Offset(0),//c37
+        OSYS, 8//c38
     }
 
 
-} //comment
+} //c39
 /*ending 
   comment*/
 

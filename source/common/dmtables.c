@@ -465,7 +465,8 @@ AdParseTable (
     char                    *PreviousFilename = NULL;
     char                    *ParentFilename = NULL;
     char                    *ChildFilename = NULL;
-
+    UINT8                   fnameLength;
+    char                    *temp;
 
     if (!Table)
     {
@@ -523,8 +524,20 @@ AdParseTable (
                 printf ("A9 and a 08 file\n");
                 PreviousFilename = Filename;
                 Filename = (char*) (TreeAml+2);
-                AcpiPsAddToFileTree (Filename, PreviousFilename);
-                ChildFilename = Filename;
+
+                /*
+                 * Make sure that this filename contains a .dsl extension.
+                 * If it doesn't contain it, then it must be 0xA9 and 0x08 then it
+                 * must be some raw data that doesn't outline a filename.
+                 */
+                fnameLength = strlen(Filename);
+                temp = Filename + fnameLength - 3;
+                if (!strcmp(temp, "dsl"))
+                {
+                    AcpiPsAddToFileTree (Filename, PreviousFilename);
+                    ChildFilename = Filename;
+                }
+                TreeAml += strlen(Filename);
             }
             else if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x09)
             {
