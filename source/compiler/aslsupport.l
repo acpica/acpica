@@ -196,6 +196,11 @@ AslProcessCommentState (
             {
                 Gbl_CommentState.ParseDefBlockHeader = FALSE;
             }
+            if (Gbl_CommentState.ParseMethodDef == TRUE)
+            {
+                Gbl_CommentState.ParseMethodDef = FALSE;
+                Gbl_CommentState.CaptureComments = TRUE;
+            }
             break;
 
         case ASL_OPENBRACE:

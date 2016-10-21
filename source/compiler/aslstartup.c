@@ -204,6 +204,7 @@ AslInitializeGlobals (
         Gbl_CommentState.ParsingParenBraceNode = NULL;
         Gbl_CommentState.ParseDefBlockHeader   = FALSE;
         Gbl_CommentState.CaptureComments       = TRUE;
+        Gbl_CommentState.ParseMethodDef        = FALSE;
     }
 }
 

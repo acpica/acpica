@@ -837,6 +837,11 @@ TrCreateLeafNode (
         {
             Gbl_CommentState.CaptureComments = FALSE;
         }
+        else if (ParseOpcode == PARSEOP_METHOD)
+        {
+            Gbl_CommentState.ParseMethodDef = TRUE;
+            Gbl_CommentState.CaptureComments = FALSE;
+        }
     }
 
     DbgPrint (ASL_PARSE_OUTPUT,
