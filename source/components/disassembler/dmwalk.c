@@ -921,7 +921,7 @@ AcpiDmDescendingOp (
         {
             AcpiOsPrintf (" (");
             // print inline comments associated with this op.
-            if (Op->Common.InlineComment!=NULL)
+            if (Op->Common.InlineComment!=NULL && !(AcpiDmBlockType (Op) & BLOCK_BRACE))
             {
                 AcpiOsPrintf ( "%s ", Op->Common.InlineComment);
                 Op->Common.InlineComment = NULL;
