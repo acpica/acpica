@@ -1247,6 +1247,23 @@ TrCreateNode (
             PrevChild->Asl.Next = Child;
         };
 
+        /* for -ca option: get the comment from last child in the resource template call */ 
+
+        if (Op->Asl.ParseOpcode == PARSEOP_RESOURCETEMPLATE && Child->Asl.ParseOpcode == PARSEOP_ENDTAG)
+        {
+            if (Child->Asl.CommentList)
+            {
+                Op->Asl.CommentList = Child->Asl.CommentList;
+                Child->Asl.CommentList = NULL;
+                printf ("Transferred current comment list to this node.\n");
+            }
+            if (Child->Asl.CommentList)
+            {
+                Op->Asl.InlineComment = Child->Asl.InlineComment;
+                Child->Asl.InlineComment = NULL;
+            }
+        }
+
         /*
          * This child might be a list, point all nodes in the list
          * to the same parent
