@@ -670,7 +670,8 @@ AcpiPsParseLoop (
          */
         WalkState->ArgCount = 0;
         printf("Args capture\n");
-        if (Op->Common.AmlOpcode != AML_BYTE_OP)
+        if (Op->Common.AmlOpcode != AML_BYTE_OP  && Op->Common.AmlOpcode != AML_WORD_OP &&
+            Op->Common.AmlOpcode != AML_DWORD_OP && Op->Common.AmlOpcode != AML_QWORD_OP)
         {
             AcpiPsCaptureComments (WalkState);
         }
