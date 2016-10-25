@@ -34,7 +34,7 @@ do
 done
 shift $(($OPTIND - 1))
 
-version=`git log -1 -c $1 --format=%H | cut -c1-8`
+version=`git log -1 $1 --format=%H | cut -c1-8`
 
 SCRIPT=`(cd \`dirname $0\`; pwd)`
 . $SCRIPT/libacpica.sh
