@@ -386,7 +386,7 @@ AcpiDmCommaIfListMember (
     }
 
 noComma:
-    if (Op->Common.InlineComment)
+    if (Gbl_CaptureComments && Op->Common.InlineComment)
     {
         AcpiOsPrintf (" %s",Op->Common.InlineComment);
         Op->Common.InlineComment = NULL;

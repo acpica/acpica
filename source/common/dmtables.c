@@ -276,14 +276,17 @@ AdCreateTableHeader (
     /*
      * Print comments that come before this definition block.
      */
-    CommentPtr = AcpiGbl_ParseOpRoot->Common.CommentList;
-    while (CommentPtr)
+    if (Gbl_CaptureComments)
     {
-        AcpiOsPrintf("%s\n", CommentPtr->Comment);
-        CommentPtr->Comment = NULL;
-        CommentPtr = CommentPtr->Next;     
-    } 
-    AcpiGbl_ParseOpRoot->Common.CommentList = NULL;
+        CommentPtr = AcpiGbl_ParseOpRoot->Common.CommentList;
+        while (CommentPtr)
+        {
+            AcpiOsPrintf("%s\n", CommentPtr->Comment);
+            CommentPtr->Comment = NULL;
+            CommentPtr = CommentPtr->Next;
+        }
+        AcpiGbl_ParseOpRoot->Common.CommentList = NULL;
+    }
 
     /*
      * Open the ASL definition block.

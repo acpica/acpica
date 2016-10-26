@@ -499,6 +499,11 @@ AcpiDmCloseBraceWriteComment(
 {
     ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.EndBlkComment;
 
+    if (!Gbl_CaptureComments)
+    {
+        AcpiOsPrintf ("}");
+        return;
+    }
 
     while (CommentNode)
     {
@@ -539,6 +544,12 @@ static void
 AcpiDmOpenBraceWriteComment(
     ACPI_PARSE_OBJECT       *Op)
 {
+    if (!Gbl_CaptureComments)
+    {
+        AcpiOsPrintf ("{");
+        return;
+    }
+
     AcpiOsPrintf ("{ ");
 
 /*    AcpiOsPrintf ("OPEN BRACE "); */
@@ -572,6 +583,13 @@ AcpiDmCloseParenWriteComment(
     UINT32                  Level)
 {
     ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.EndBlkComment;
+
+
+    if (!Gbl_CaptureComments)
+    {
+        AcpiOsPrintf (")");
+        return;
+    }
 
 
     /* If this op has a BLOCK_BRACE, take care of it in AcpiDmCloseBraceWriteComment */
@@ -712,6 +730,7 @@ AcpiDmDescendingOp (
     //printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
 
     /* determine which file this parse node is contained in. */
+
     if (Gbl_CaptureComments)
     {
         AcpiPsFileLabelNode(Op);
@@ -731,6 +750,7 @@ AcpiDmDescendingOp (
             CommentNode = CommentNode->Next;     
         } 
     }
+
     OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
 
     /* Listing support to dump the AML code after the ASL statement */
@@ -1259,15 +1279,17 @@ AcpiDmAscendingOp (
         AcpiDmCloseBraceWriteComment(Op, Level);
 
         /* Print any comments that are at the end of the file here... */
- 
-        CurrentComment = AcpiGbl_LastListHead;
-        if (CurrentComment)
-        {
-            AcpiOsPrintf ("\n");
-            while (CurrentComment)
+        if (Gbl_CaptureComments)
+        { 
+            CurrentComment = AcpiGbl_LastListHead;
+            if (CurrentComment)
             {
-                AcpiOsPrintf("%s\n", CurrentComment->Comment);
-                CurrentComment = CurrentComment->Next;
+                AcpiOsPrintf ("\n");
+                while (CurrentComment)
+                {
+                    AcpiOsPrintf("%s\n", CurrentComment->Comment);
+                    CurrentComment = CurrentComment->Next;
+                }
             }
         }
         AcpiOsPrintf ("\n\n");

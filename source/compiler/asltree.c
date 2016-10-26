@@ -1249,7 +1249,7 @@ TrCreateNode (
 
         /* for -ca option: get the comment from last child in the resource template call */ 
 
-        if (Op->Asl.ParseOpcode == PARSEOP_RESOURCETEMPLATE)
+        if (Gbl_CaptureComments && Op->Asl.ParseOpcode == PARSEOP_RESOURCETEMPLATE)
         {
             if (Child->Asl.CommentList)
             {
@@ -1438,9 +1438,8 @@ TrLinkChildren (
     va_end(ap);
     DbgPrint (ASL_PARSE_OUTPUT, "\n\n");
 
-    //set this node as the latest parse node
-
     /* The following is for capturing comments */
+
     if(Gbl_CaptureComments)
     {
         Gbl_CommentState.Latest_Parse_Node = Op;

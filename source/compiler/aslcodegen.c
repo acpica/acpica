@@ -333,7 +333,7 @@ CgWriteAmlDefBlockComment(
     char                    *DirectoryPosition;
 
 
-    if (Op->Asl.ParseOpcode != PARSEOP_DEFINITION_BLOCK)
+    if (Op->Asl.ParseOpcode != PARSEOP_DEFINITION_BLOCK || !Gbl_CaptureComments)
     {
         return;
     }
@@ -503,7 +503,7 @@ CgWriteAmlComment(
     char                    *NewFilename;
     char                    *ParentFilename;
 
-    if (Op->Asl.ParseOpcode == PARSEOP_DEFINITION_BLOCK)
+    if (Op->Asl.ParseOpcode == PARSEOP_DEFINITION_BLOCK || !Gbl_CaptureComments)
     {
         return;
     }

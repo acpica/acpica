@@ -742,7 +742,7 @@ AcpiDmCloseOperator (
     AcpiOsPrintf (")");
 
 PrintInlineComment:
-    if (Op->Common.EndNodeComment)
+    if (Gbl_CaptureComments && Op->Common.EndNodeComment)
     {
         printf ("Parent Opcode: %x\n", Op->Common.Parent->Common.AmlOpcode);
         printf ("This Opcode: %x\n",   Op->Common.AmlOpcode);
