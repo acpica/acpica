@@ -1249,7 +1249,7 @@ TrCreateNode (
 
         /* for -ca option: get the comment from last child in the resource template call */ 
 
-        if (Op->Asl.ParseOpcode == PARSEOP_RESOURCETEMPLATE && Child->Asl.ParseOpcode == PARSEOP_ENDTAG)
+        if (Op->Asl.ParseOpcode == PARSEOP_RESOURCETEMPLATE)
         {
             if (Child->Asl.CommentList)
             {
@@ -1257,7 +1257,7 @@ TrCreateNode (
                 Child->Asl.CommentList = NULL;
                 printf ("Transferred current comment list to this node.\n");
             }
-            if (Child->Asl.CommentList)
+            if (Child->Asl.InlineComment)
             {
                 Op->Asl.InlineComment = Child->Asl.InlineComment;
                 Child->Asl.InlineComment = NULL;
