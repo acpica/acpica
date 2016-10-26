@@ -1407,7 +1407,7 @@ Device(DTM2) {
 			Switch(ToInteger (arg2)) {
 				Case(0) {
 					LoadTable(arg1, SOID, STID, RPST, PPST, 1)
-					return (CH04(arg0, 0, 61, z176, 0x0d0, 0, 0))// AE_AML_STRING_LIMIT
+					return (CH04(arg0, 0, 37, z176, 0x0d0, 0, 0))// AE_BAD_SIGNATURE
 				}
 				Case(1) {
 					Store(LoadTable(SOEM, arg1, STID, RPST, PPST, 1), DDBH)
@@ -1417,36 +1417,36 @@ Device(DTM2) {
 				}
 				Case(3) {
 					LoadTable(SOEM, SOID, STID, arg1, PPST, 1)
-					return (CH04(arg0, 0, 30, z176, 0x0d0, 0, 0)) // AE_BAD_PATHNAME
+					return (CH04(arg0, 0, 30, z176, 0x0d1, 0, 0)) // AE_BAD_PATHNAME
 				}
 				Case(4) {
 					LoadTable(SOEM, SOID, STID, RPST, arg1, 1)
-					return (CH04(arg0, 0, 30, z176, 0x0d1, 0, 0)) // AE_BAD_PATHNAME
+					return (CH04(arg0, 0, 30, z176, 0x0d2, 0, 0)) // AE_BAD_PATHNAME
 				}
 			}
 
-			if (CH03(arg0, z176, 0x0d2, 0, 0)) {
+			if (CH03(arg0, z176, 0x0d3, 0, 0)) {
 				return (1)
 			}
 
 			if (LNotEqual(0, \DTM2.PLDT)) {
-				err(arg0, z176, 0x0d3, 0, 0, \DTM2.PLDT, 0)
+				err(arg0, z176, 0x0d4, 0, 0, \DTM2.PLDT, 0)
 				return (1)
 			}
 
 			Store(ObjectType(DDBH), Local5)
 
-			if (CH03(arg0, z176, 0x0d4, 0, 0)) {
+			if (CH03(arg0, z176, 0x0d5, 0, 0)) {
 				return (1)
 			}
 
 			if (LNotEqual(Local5, c009)) {	// Integer
-				err(arg0, z176, 0x0d5, 0, 0, Local5, c009)
+				err(arg0, z176, 0x0d6, 0, 0, Local5, c009)
 				return (1)
 			}
 
 			if (LNotEqual(0, DDBH)) {
-				err(arg0, z176, 0x0d6, 0, 0, DDBH, 0)
+				err(arg0, z176, 0x0d7, 0, 0, DDBH, 0)
 				return (1)
 			}
 
@@ -1479,27 +1479,27 @@ Device(DTM2) {
 		// Check consistency of the parameters
 
 		if (LNotEqual(ToBuffer(SOEM), Local0)) {
-			err(arg0, z176, 0x0d7, 0, 0, Local0, ToBuffer(SOEM))
+			err(arg0, z176, 0x0d8, 0, 0, Local0, ToBuffer(SOEM))
 			return (1)
 		}
 
 		if (LNotEqual(ToBuffer(SOID), Local1)) {
-			err(arg0, z176, 0x0d8, 0, 0, Local1, ToBuffer(SOID))
+			err(arg0, z176, 0x0d9, 0, 0, Local1, ToBuffer(SOID))
 			return (1)
 		}
 
 		if (LNotEqual(ToBuffer(STID), Local2)) {
-			err(arg0, z176, 0x0d9, 0, 0, Local2, ToBuffer(STID))
+			err(arg0, z176, 0x0da, 0, 0, Local2, ToBuffer(STID))
 			return (1)
 		}
 
 		if (LNotEqual(ToBuffer(RPST), Local3)) {
-			err(arg0, z176, 0x0da, 0, 0, Local3, ToBuffer(RPST))
+			err(arg0, z176, 0x0db, 0, 0, Local3, ToBuffer(RPST))
 			return (1)
 		}
 
 		if (LNotEqual(ToBuffer(PPST), Local4)) {
-			err(arg0, z176, 0x0db, 0, 0, Local4, ToBuffer(PPST))
+			err(arg0, z176, 0x0dc, 0, 0, Local4, ToBuffer(PPST))
 			return (1)
 		}
 
@@ -1511,7 +1511,7 @@ Device(DTM2) {
 		ToInteger(Local3, Local3)
 		ToInteger(Local4, Local4)
 
-		if (m000(arg0, Local0, 0)) {return (1)}
+		//if (m000(arg0, Local0, 0)) {return (1)}
 		//if (m000(arg0, Local1, 1)) {return (1)}
 		//if (m000(arg0, Local2, 2)) {return (1)}
 		if (m000(arg0, Local3, 3)) {return (1)}
