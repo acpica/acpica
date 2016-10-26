@@ -533,7 +533,6 @@ AcpiUtWalkAmlResources (
     UINT8                   *EndAml;
     UINT8                   ResourceIndex;
     UINT32                  Length;
-    ACPI_SIZE               ThisAmlLength = 0;
     UINT32                  Offset = 0;
     UINT8                   EndTag[2] = {0x79, 0x00};
 
@@ -608,7 +607,7 @@ AcpiUtWalkAmlResources (
 
             /* Check if buffer is defined to be longer than the resource length */
 
-            if (AmlLength > ThisAmlLength)
+            if (AmlLength > (Offset + Length))
             {
                 return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
             }
@@ -618,7 +617,6 @@ AcpiUtWalkAmlResources (
             return_ACPI_STATUS (AE_OK);
         }
 
-        ThisAmlLength += Length;
         Aml += Length;
         Offset += Length;
     }

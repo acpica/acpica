@@ -53,8 +53,8 @@ if [ "x${COMMIT}" = "x" ]; then
 	COMMIT=HEAD
 fi
 
-after=`git log -1 -c ${COMMIT} --format=%H | cut -c1-8`
-before=`git log -1 -c ${COMMIT}^1 --format=%H | cut -c1-8`
+after=`git log -1 ${COMMIT} --format=%H | cut -c1-8`
+before=`git log -1 ${COMMIT}^1 --format=%H | cut -c1-8`
 
 SCRIPT=`(cd \`dirname $0\`; pwd)`
 . $SCRIPT/libacpica.sh
@@ -97,8 +97,8 @@ generate_sobs()
 # Arg 1: commit ID
 generate_acpica_desc()
 {
-	AUTHOR_NAME=`git log -c $1 -1 --format="%aN"`
-	AUTHOR_EMAIL=`git log -c $1 -1 --format="%aE"`
+	AUTHOR_NAME=`git log -1 $1 --format="%aN"`
+	AUTHOR_EMAIL=`git log -1 $1 --format="%aE"`
 	if [ "x${AUTHOR_NAME}" = "xRobert Moore" ]; then
 		AUTHOR_NAME="Bob Moore"
 	fi
@@ -111,7 +111,7 @@ generate_acpica_desc()
 		FORMAT="From %H Mon Sep 17 00:00:00 2001%nFrom: $COMMITTER%nDate: %aD%nFrom: $AUTHOR%nSubject: [PATCH $INDEX] ACPICA: %s%n%nACPICA commit %H%n%n%b"
 	fi
 	GIT_LOG_FORMAT=`echo $FORMAT`
-	eval "git log -c $1 -1 --format=\"$GIT_LOG_FORMAT\""
+	eval "git log -1 $1 --format=\"$GIT_LOG_FORMAT\""
 }
 
 # Arg 1: patch description file
@@ -225,8 +225,8 @@ mv -f $GP_acpica_repo/generate/linux/linux-$before $GP_linux_before
 (
 	echo "[gen-patch.sh] Creating Linux patch (linux-$after.patch)..."
 	cd $CURDIR
-	tmpdiff=`tempfile`
-	tmpdesc=`tempfile`
+	tmpdiff=`mktemp -u`
+	tmpdesc=`mktemp -u`
 	diff -Nurp linux.before linux.after >> $tmpdiff
 
 	if [ $? -ne 0 ]; then
