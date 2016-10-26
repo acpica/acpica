@@ -187,12 +187,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDBH), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x005, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDBH), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x005, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
@@ -245,12 +243,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDBH), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x012, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDBH), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x012, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
@@ -409,12 +405,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDB0), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x032, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDB0), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x032, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
@@ -447,12 +441,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDB1), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x038, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDB1), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x038, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
@@ -485,12 +477,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDB2), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x03e, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDB2), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x03e, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
@@ -523,12 +513,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDB3), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x044, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDB3), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x044, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
@@ -581,12 +569,10 @@ Device(DTM2) {
 				return (1)
 			}
 
-			if (y260) {
-				Store(ObjectType(arg1), Local1)
-				if (LNotEqual(Local1, c017)) { // DDB Handle
-					err(arg0, z176, 0x052, 0, 0, Local1, c017)
-					return (1)
-				}
+			Store(ObjectType(arg1), Local1)
+			if (LNotEqual(Local1, c017)) { // DDB Handle
+				err(arg0, z176, 0x052, 0, 0, Local1, c017)
+				return (1)
 			}
 
 			if (LNotEqual(0, \DTM2.PLDT)) {
@@ -768,12 +754,10 @@ Device(DTM2) {
 				return (1)
 			}
 
-			if (y260) {
-				Store(ObjectType(arg1), Local1)
-				if (LNotEqual(Local1, c017)) { // DDB Handle
-					err(arg0, z176, 0x062, 0, 0, Local1, c017)
-					return (1)
-				}
+			Store(ObjectType(arg1), Local1)
+			if (LNotEqual(Local1, c017)) { // DDB Handle
+				err(arg0, z176, 0x062, 0, 0, Local1, c017)
+				return (1)
 			}
 
 			if (LNotEqual(1, \DTM2.PLDT)) {
@@ -965,12 +949,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDBH), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x073, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDBH), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x073, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
@@ -1025,12 +1007,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDBH), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x082, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDBH), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x082, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
@@ -1073,12 +1053,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDBH), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x092, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDBH), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x092, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(1, PLDT)) {
@@ -1100,12 +1078,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDBH), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x096, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDBH), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x096, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(0, PLDT)) {
@@ -1229,12 +1205,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDBH), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x0b2, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDBH), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x0b2, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
@@ -1318,12 +1292,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDBH), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x0c2, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDBH), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x0c2, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
@@ -1609,12 +1581,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDBH), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x0f3, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDBH), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x0f3, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {

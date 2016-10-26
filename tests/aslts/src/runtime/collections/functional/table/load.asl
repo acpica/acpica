@@ -347,16 +347,14 @@ Device(DTM0) {
 		Store("Table Loaded", Debug)
 
 		// Check DDBHandle ObjectType
-		if (y260) {
-			switch (ToInteger (arg1)) {
-				case (0) {Store(ObjectType(HI0), Local1)}
-				case (1) {Store(ObjectType(\DTM0.HI0), Local1)}
-				case (2) {Store(ObjectType(Local2), Local1)}
-				case (3) {Store(ObjectType(Index(PHI0, 0)), Local1)}
-			}
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z174, 0x004, 0, 0, Local1, c017)
-			}
+		switch (ToInteger (arg1)) {
+			case (0) {Store(ObjectType(HI0), Local1)}
+			case (1) {Store(ObjectType(\DTM0.HI0), Local1)}
+			case (2) {Store(ObjectType(Local2), Local1)}
+			case (3) {Store(ObjectType(Index(PHI0, 0)), Local1)}
+		}
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z174, 0x004, 0, 0, Local1, c017)
 		}
 
 		// Check the new Object appears
@@ -443,11 +441,9 @@ Device(DTM0) {
 		Concatenate(arg0, "-m002", arg0)
 
 		// Check DDBHandle ObjectType
-		if (y260) {
-			Store(ObjectType(Arg1), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z174, 0x00e, 0, 0, Local1, c017)
-			}
+		Store(ObjectType(Arg1), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z174, 0x00e, 0, 0, Local1, c017)
 		}
 
 		// Check the new Object appears
@@ -648,16 +644,14 @@ Device(DTM0) {
 			Store("SSDT Loaded", Debug)
 
 			// Check DDBHandle ObjectType
-			if (y260) {
-				switch (ToInteger (arg1)) {
-					case (0) {Store(ObjectType(HI0), Local1)}
-					case (1) {Store(ObjectType(\DTM0.HI0), Local1)}
-					case (2) {Store(ObjectType(Local2), Local1)}
-					case (3) {Store(ObjectType(Index(PHI0, 0)), Local1)}
-				}
-				if (LNotEqual(Local1, c017)) { // DDB Handle
-					err(arg0, z174, 0x019, 0, 0, Local1, c017)
-				}
+			switch (ToInteger (arg1)) {
+				case (0) {Store(ObjectType(HI0), Local1)}
+				case (1) {Store(ObjectType(\DTM0.HI0), Local1)}
+				case (2) {Store(ObjectType(Local2), Local1)}
+				case (3) {Store(ObjectType(Index(PHI0, 0)), Local1)}
+			}
+			if (LNotEqual(Local1, c017)) { // DDB Handle
+				err(arg0, z174, 0x019, 0, 0, Local1, c017)
 			}
 
 			// Check the new Object appears
@@ -1369,11 +1363,9 @@ Device(DTM0) {
 		// DDB Handle
 		Load(DDB0, DDBH)
 		CH04(arg0, 0, 47, z174, 0x069, 0, 0)	// AE_AML_OPERAND_TYPE
-		if (y260) {
-			Store(ObjectType(DDB0), Local0)
-			if (LNotEqual(c017, Local0)) {
-				err(arg0, z174, 0x06a, 0, 0, Local0, c017)
-			}
+		Store(ObjectType(DDB0), Local0)
+		if (LNotEqual(c017, Local0)) {
+			err(arg0, z174, 0x06a, 0, 0, Local0, c017)
 		}
 		
 		UnLoad(DDB0)
@@ -1703,11 +1695,9 @@ Device(DTM0) {
 			if (CH03(arg0, z174, 0x0b2, 0, 0)) {
 				return (1)
 			}
-			if (y260) {
-				Store(ObjectType(arg2), Local0)
-				if (LNotEqual(c017, Local0)) {
-					err(arg0, z174, 0x0b3, 0, 0, Local0, c017)
-				}
+			Store(ObjectType(arg2), Local0)
+			if (LNotEqual(c017, Local0)) {
+				err(arg0, z174, 0x0b3, 0, 0, Local0, c017)
 			}
 			if (CondRefof(\SSS0, Local0)) {
 			} else {
@@ -1902,11 +1892,9 @@ Device(DTM0) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(HI0), Local0)
-			if (LNotEqual(c017, Local0)) {
-				err(arg0, z174, 0x0d3, 0, 0, Local0, c017)
-			}
+		Store(ObjectType(HI0), Local0)
+		if (LNotEqual(c017, Local0)) {
+			err(arg0, z174, 0x0d3, 0, 0, Local0, c017)
 		}
 
 		if (CondRefof(\SSS0, Local0)) {
@@ -1973,11 +1961,9 @@ Device(DTM0) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(HI0), Local0)
-			if (LNotEqual(c017, Local0)) {
-				err(arg0, z174, 0x0e3, 0, 0, Local0, c017)
-			}
+		Store(ObjectType(HI0), Local0)
+		if (LNotEqual(c017, Local0)) {
+			err(arg0, z174, 0x0e3, 0, 0, Local0, c017)
 		}
 
 		if (CondRefof(\SSS0, Local0)) {
