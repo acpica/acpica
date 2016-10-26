@@ -913,7 +913,7 @@ Device(DTM2) {
 		Store(3, Local4)
 
 		Store(LoadTable("OEM1", "", "",
-				Mid(ToString(Local2), 4, 1),
+				Mid(ToString(Local2), 4, 5),
 				ToString(m000(Local3)),
 // Bug 288: iASL unexpectedly forbids ParameterData of Loadtable to be LocalX or UserTerm
 //				Subtract(m000(Local4), 2)),
