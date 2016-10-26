@@ -231,6 +231,13 @@ AslProcessCommentState (
     
 }
 
+void
+yyerror (char const *s)
+{
+
+  AcpiOsPrintf ("YYERROR: %s\n", s);
+}
+
 
 /*******************************************************************************
  *

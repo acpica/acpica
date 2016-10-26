@@ -124,7 +124,7 @@ AbDisplayUsage (
 
 
 #define AB_UTILITY_NAME             "ACPI Binary Table Dump Utility"
-#define AB_SUPPORTED_OPTIONS        "c:d:h:s:tv"
+#define AB_SUPPORTED_OPTIONS        "a:c:d:h:s:tv"
 
 
 /******************************************************************************
@@ -192,6 +192,12 @@ main (
 
     while ((j = AcpiGetopt (argc, argv, AB_SUPPORTED_OPTIONS)) != ACPI_OPT_END) switch(j)
     {
+    case 'a':   /* Compare Files, display all differences */
+
+        AbGbl_DisplayAllMiscompares = TRUE;
+
+        /* Fallthrough */
+
     case 'c':   /* Compare Files */
 
         if (argc < 4)

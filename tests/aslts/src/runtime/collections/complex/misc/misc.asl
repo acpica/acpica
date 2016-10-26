@@ -1115,17 +1115,18 @@ Method(m15b,, Serialized)
 
 	Method(m003)
 	{
-		CH03(ts, z054, 0x009, 0, 0)
-		Store(DerefOf("mm00"), Local0)
-		if (SLCK) {
-			CH03(ts, z054, 0x00a, 0, 0)
-			Store(ObjectType(Local0), Local1)
-			if (LNotEqual(Local1, c010)) {
-				err(ts, z054, 0x00b, 0, 0, Local1, c010)
-			}
-		} else {
-			CH04(ts, 0, 47, z054, 0x00c, 0, 0) // AE_AML_OPERAND_TYPE
-		}
+// 10/2016: Compiler now catches illegal DerefOf(StringConstant)
+//		CH03(ts, z054, 0x009, 0, 0)
+//		Store(DerefOf("mm00"), Local0)
+//		if (SLCK) {
+//			CH03(ts, z054, 0x00a, 0, 0)
+//			Store(ObjectType(Local0), Local1)
+//			if (LNotEqual(Local1, c010)) {
+//				err(ts, z054, 0x00b, 0, 0, Local1, c010)
+//			}
+//		} else {
+//			CH04(ts, 0, 47, z054, 0x00c, 0, 0) // AE_AML_OPERAND_TYPE
+//		}
 	}
 
 	/* CopyObject */
@@ -1164,14 +1165,16 @@ Method(m15b,, Serialized)
 
 	Method(m007)
 	{
-		CH03(ts, z054, 0x014, 0, 0)
-		CopyObject(DerefOf("mm00"), Local0)
-		CH03(ts, z054, 0x015, 0, 0)
+// 10/2016: Compiler now catches illegal DerefOf(StringConstant)
 
-		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c010)) {
-			err(ts, z054, 0x016, 0, 0, Local1, c010)
-		}
+//		CH03(ts, z054, 0x014, 0, 0)
+//		CopyObject(DerefOf("mm00"), Local0)
+//		CH03(ts, z054, 0x015, 0, 0)
+//
+//		Store(ObjectType(Local0), Local1)
+//		if (LNotEqual(Local1, c010)) {
+//			err(ts, z054, 0x016, 0, 0, Local1, c010)
+//		}
 	}
 
 	/* Add */
@@ -1200,9 +1203,11 @@ Method(m15b,, Serialized)
 
 	Method(m00b)
 	{
-		CH03(ts, z054, 0x01c, 0, 0)
-		Add(DerefOf("mm00"), 4, Local0)
-		CH04(ts, 0, 47, z054, 0x01d, 0, 0) // AE_AML_OPERAND_TYPE
+// 10/2016: Compiler now catches illegal DerefOf(StringConstant)
+
+//		CH03(ts, z054, 0x01c, 0, 0)
+//		Add(DerefOf("mm00"), 4, Local0)
+//		CH04(ts, 0, 47, z054, 0x01d, 0, 0) // AE_AML_OPERAND_TYPE
 	}
 
 	/* ObjectType */
@@ -1233,10 +1238,12 @@ Method(m15b,, Serialized)
 
 	Method(m00f)
 	{
-		Store(ObjectType(DerefOf("mm00")), Local0)
-		if (LNotEqual(Local0, c010)) {
-			err(ts, z054, 0x021, 0, 0, Local0, c010)
-		}
+// 10/2016: Compiler now catches illegal DerefOf(StringConstant)
+
+//		Store(ObjectType(DerefOf("mm00")), Local0)
+//		if (LNotEqual(Local0, c010)) {
+//			err(ts, z054, 0x021, 0, 0, Local0, c010)
+//		}
 	}
 
 	Method(m100)

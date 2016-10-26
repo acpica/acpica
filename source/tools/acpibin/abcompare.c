@@ -508,7 +508,7 @@ AbCompareAmlFiles (
             printf ("Error - Byte mismatch at offset %8.8X: 0x%2.2X 0x%2.2X\n",
                 Offset, Char1, Char2);
             Mismatches++;
-            if (Mismatches > 100)
+            if ((Mismatches > 100) && (!AbGbl_DisplayAllMiscompares))
             {
                 printf ("100 Mismatches: Too many mismatches\n");
                 goto Exit2;

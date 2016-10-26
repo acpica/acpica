@@ -397,6 +397,7 @@ ExMoveExternals (
     ACPI_PARSE_OBJECT       *NextOp;
     ACPI_PARSE_OBJECT       *Prev;
     ACPI_PARSE_OBJECT       *Next;
+    char                    *ExternalName;
     ACPI_OBJECT_TYPE        ObjType;
     UINT32                  i;
 
@@ -417,6 +418,12 @@ ExMoveExternals (
          */
         ExternalOp = NextOp->Asl.Child;
 
+        /* Get/set the fully qualified name */
+
+        ExternalName = AcpiNsGetNormalizedPathname (ExternalOp->Asl.Node, TRUE);
+        ExternalOp->Asl.ExternalName = ExternalName;
+        ExternalOp->Asl.Namepath = ExternalName;
+
         /* Set line numbers (for listings, etc.) */
 
         ExternalOp->Asl.LineNumber = 0;
@@ -425,6 +432,14 @@ ExMoveExternals (
         Next = ExternalOp->Asl.Child;
         Next->Asl.LineNumber = 0;
         Next->Asl.LogicalLineNumber = 0;
+
+        if (Next->Asl.ParseOpcode == PARSEOP_NAMESEG)
+        {
+            Next->Asl.ParseOpcode = PARSEOP_NAMESTRING;
+        }
+        Next->Asl.ExternalName = ExternalName;
+        UtInternalizeName (ExternalName, &Next->Asl.Value.String);
+        Next->Asl.AmlLength = strlen (Next->Asl.Value.String);
 
         Next = Next->Asl.Next;
         Next->Asl.LineNumber = 0;
