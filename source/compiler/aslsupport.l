@@ -1015,13 +1015,14 @@ AslDoCommentType2 (
 
 
     AslInsertLineBuffer ('/');
-    AslInsertLineBuffer ('/');
+//    AslInsertLineBuffer ('/');
+    AslInsertLineBuffer ('*');
 
     if (Gbl_CaptureComments && !CurrentState.ParseDefBlockHeader && CurrentState.CaptureComments)
     {
         *StringBuffer = '/';
         ++StringBuffer;
-        *StringBuffer = '/';
+        *StringBuffer = '*';
         ++StringBuffer;
     }
 
@@ -1095,7 +1096,7 @@ AslDoCommentType2 (
         strcat(FinalCommentString, CommentString);
 
         // convert to a "/ *" style comment. disable this????
-        // strcat (FinalCommentString, " */");
+         strcat (FinalCommentString, " */");
         // FinalCommentString [SpaceCount + 1] = '*';
 
         FinalCommentString [CurrentState.SpacesBefore + strlen (CommentString) + 3] = 0;
