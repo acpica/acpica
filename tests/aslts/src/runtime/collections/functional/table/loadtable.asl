@@ -283,26 +283,37 @@ Device(DTM2) {
 		}
 
 		Store(LoadTable("OeM1", "Intel", "Many", "\\", PPST, 1), Local2)
-
-		if (CH03(arg0, z176, 0x018, 0, 0)) {
-			return (1)
+		if (y281) {
+			// No exception
+			if (CH03(arg0, z176, 0x018, 0, 0)) {
+				return (1)
+			}
+		} else {
+			// Exception: AE_BAD_SIGNATURE
+			if (CH04(arg0, 1, 37, z176, 0x019, 0, 0)) {
+				return (1)
+			}
 		}
-
 		Store(ObjectType(Local2), Local1)
-		if (LNotEqual(Local1, c009)) {
-			err(arg0, z176, 0x019, 0, 0, Local1, c009)
-		}
-
-		if (LNotEqual(Local2, 0)) {
-			err(arg0, z176, 0x01a, 0, 0, Local2, 0)
+		if (y281) {
+			if (LNotEqual(Local1, c009)) {
+				err(arg0, z176, 0x01a, 0, 0, Local1, c009)
+			}
+			if (LNotEqual(Local2, 0)) {
+				err(arg0, z176, 0x01b, 0, 0, Local2, 0)
+			}
+		} else {
+			if (LNotEqual(Local1, c008)) {
+				err(arg0, z176, 0x01c, 0, 0, Local1, c008)
+			}
 		}
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x01b, 0, 0, \DTM2.PLDT, 0)
+			err(arg0, z176, 0x01d, 0, 0, \DTM2.PLDT, 0)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x01c, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, 0x01e, 0, 0, "\\_XT2", 1)
 		}
 
 		// Unhappy comparison due to the OEMIDString
@@ -311,30 +322,30 @@ Device(DTM2) {
 
 		Store(ObjectType(Local3), Local1)
 		if (LNotEqual(Local1, c008)) {
-			err(arg0, z176, 0x01d, 0, 0, Local1, c008)
+			err(arg0, z176, 0x01f, 0, 0, Local1, c008)
 		}
 
 		Store(LoadTable("OEM1", "InteL", "Many", "\\", PPST, 1), Local3)
 
-		if (CH03(arg0, z176, 0x01e, 0, 0)) {
+		if (CH03(arg0, z176, 0x020, 0, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(Local3), Local1)
 		if (LNotEqual(Local1, c009)) {
-			err(arg0, z176, 0x01f, 0, 0, Local1, c009)
+			err(arg0, z176, 0x021, 0, 0, Local1, c009)
 		}
 
 		if (LNotEqual(Local3, 0)) {
-			err(arg0, z176, 0x020, 0, 0, Local3, 0)
+			err(arg0, z176, 0x022, 0, 0, Local3, 0)
 		}
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x021, 0, 0, \DTM2.PLDT, 0)
+			err(arg0, z176, 0x023, 0, 0, \DTM2.PLDT, 0)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x022, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, 0x024, 0, 0, "\\_XT2", 1)
 		}
 
 		// Unhappy comparison due to the OEMTableIDString
@@ -343,30 +354,30 @@ Device(DTM2) {
 
 		Store(ObjectType(Local4), Local1)
 		if (LNotEqual(Local1, c008)) {
-			err(arg0, z176, 0x023, 0, 0, Local1, c008)
+			err(arg0, z176, 0x025, 0, 0, Local1, c008)
 		}
 
 		Store(LoadTable("OEM1", "Intel", "many", "\\", PPST, 1), Local4)
 
-		if (CH03(arg0, z176, 0x024, 0, 0)) {
+		if (CH03(arg0, z176, 0x026, 0, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(Local4), Local1)
 		if (LNotEqual(Local1, c009)) {
-			err(arg0, z176, 0x025, 0, 0, Local1, c009)
+			err(arg0, z176, 0x027, 0, 0, Local1, c009)
 		}
 
 		if (LNotEqual(Local4, 0)) {
-			err(arg0, z176, 0x026, 0, 0, Local4, 0)
+			err(arg0, z176, 0x028, 0, 0, Local4, 0)
 		}
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x027, 0, 0, \DTM2.PLDT, 0)
+			err(arg0, z176, 0x029, 0, 0, \DTM2.PLDT, 0)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x028, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, 0x02a, 0, 0, "\\_XT2", 1)
 		}
 
 		return (0)
