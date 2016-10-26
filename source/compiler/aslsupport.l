@@ -140,6 +140,13 @@ typedef struct asl_file_node
 
 ASL_FILE_NODE               *Gbl_IncludeFileStack = NULL;
 
+void
+yyerror (char const *s)
+{
+
+  AcpiOsPrintf ("YYERROR: %s\n", s);
+}
+
 
 /*******************************************************************************
  *

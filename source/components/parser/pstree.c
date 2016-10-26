@@ -214,12 +214,12 @@ AcpiPsAppendArg (
     const ACPI_OPCODE_INFO  *OpInfo;
 
 
-    ACPI_FUNCTION_ENTRY ();
+    ACPI_FUNCTION_TRACE ("PsAppendArg");
 
 
     if (!Op)
     {
-        return;
+        return_VOID;
     }
 
     /* Get the info structure for this opcode */
@@ -231,7 +231,7 @@ AcpiPsAppendArg (
 
         ACPI_ERROR ((AE_INFO, "Invalid AML Opcode: 0x%2.2X",
             Op->Common.AmlOpcode));
-        return;
+        return_VOID;
     }
 
     /* Check if this opcode requires argument sub-objects */
@@ -240,7 +240,7 @@ AcpiPsAppendArg (
     {
         /* Has no linked argument objects */
 
-        return;
+        return_VOID;
     }
 
     /* Append the argument to the linked argument list */
@@ -272,6 +272,8 @@ AcpiPsAppendArg (
 
         Op->Common.ArgListLength++;
     }
+
+    return_VOID;
 }
 
 

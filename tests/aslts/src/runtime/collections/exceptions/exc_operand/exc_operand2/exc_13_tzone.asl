@@ -810,8 +810,10 @@ Method(m4bd,, Serialized)
 		}
 
 		// CondRefOf
+        // **** 10/2016 changed method invocation to just a namestring
+        // CondRefOf no longer invokes the method
 		
-		CondRefOf(m000(), Local1)
+		CondRefOf(m000, Local1)
 		CH06(arg0, 1, 47)
 
 		// CopyObject
@@ -860,15 +862,16 @@ Method(m4bd,, Serialized)
 		CH06(arg0, 13, 47)
 
 		// ObjectType
-        /* Nov. 2012: Method invocation as arg to ObjectType is now illegal */
-//
-//		ObjectType(m000())
-//		CH03(ts, z105, 8, 0, 0)
+        /* **** Nov. 2016: Method invocation as arg to ObjectType is now illegal */
+
+		Store (ObjectType(m000), Local0)
+		CH03(ts, z105, 8, 0, 0)
 
 		// RefOf
+        /* **** Oct. 2016: Method invocation as arg to RefOf is now illegal */
 
-		Store (RefOf(m000()), Local1)
-		CH06(arg0, 14, 47)
+//		Store (RefOf(m000()), Local1)
+//		CH06(arg0, 14, 47)
 
 		// Release
 

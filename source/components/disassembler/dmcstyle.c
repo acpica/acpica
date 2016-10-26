@@ -562,6 +562,13 @@ AcpiDmCheckForSymbolicOpcode (
             {
                 Target->Common.OperatorSymbol = " = ";
             }
+
+            /* Emit an open paren if the parent is a Store op */
+
+            if (Op->Common.Parent->Common.AmlOpcode == AML_STORE_OP)
+            {
+                AcpiOsPrintf ("(");
+            }
         }
         return (TRUE);
 
@@ -716,6 +723,7 @@ AcpiDmCloseOperator (
     ACPI_PARSE_OBJECT       *Op)
 {
     BOOLEAN                 IsCStyleOp = FALSE;
+    ACPI_PARSE_OBJECT       *Target;
 
 
     /* Always emit paren if ASL+ disassembly disabled */
@@ -775,7 +783,20 @@ AcpiDmCloseOperator (
 
         /* This is case for unsupported Index() source constants */
 
+        Target = AcpiPsGetArg(Op, 2);
+
         if (Op->Common.DisasmFlags & ACPI_PARSEOP_CLOSING_PAREN)
+        {
+            AcpiOsPrintf (")");
+        }
+
+        /*
+         * Emit a close paren if the parent is a Store op and
+         * there is a valid Target for the Index op
+         */
+        else if (Target &&
+            AcpiDmIsValidTarget (Target) &&
+            Op->Common.Parent->Common.AmlOpcode == AML_STORE_OP)
         {
             AcpiOsPrintf (")");
         }
