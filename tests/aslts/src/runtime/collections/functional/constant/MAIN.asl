@@ -27,12 +27,12 @@
  */
 
 DefinitionBlock(
-	"constant.aml",
-	"DSDT", 
-	0x02,    
-	"Intel",  
-	"Many",    
-	0x00000001  
+	"constant.aml",   // Output filename
+	"DSDT",     // Signature
+	0x02,       // DSDT Revision
+	"Intel",    // OEMID
+	"Many",     // TABLE ID
+	0x00000001  // OEM Revision
 	) {
 
 	// All declarations

@@ -899,7 +899,7 @@ Method(m758, 1, Serialized)
 
         // A Connection is required
         Connection (
-            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            I2cSerialBusV2 (0x1234, DeviceInitiated, 0x88775544,
             AddressingMode10Bit, "\\GPI1", 0xEE,
             ResourceConsumer)),
 
@@ -968,7 +968,7 @@ Method(m759, 1, Serialized)
 
         // A Connection is required
         Connection (
-            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            I2cSerialBusV2 (0x1234, DeviceInitiated, 0x88775544,
             AddressingMode10Bit, "\\GPI1", 0xEE,
             ResourceConsumer)),
 
@@ -1038,7 +1038,7 @@ Method(m75a, 1, Serialized)
 
         // A Connection is required
         Connection (
-            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            I2cSerialBusV2 (0x1234, DeviceInitiated, 0x88775544,
             AddressingMode10Bit, "\\GPI1", 0xEE,
             ResourceConsumer)),
 
@@ -1110,7 +1110,7 @@ Method(m75b, 1, Serialized)
 
         // A Connection is required
         Connection (
-            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            I2cSerialBusV2 (0x1234, DeviceInitiated, 0x88775544,
             AddressingMode10Bit, "\\GPI1", 0xEE,
             ResourceConsumer)),
 
@@ -1182,7 +1182,7 @@ Method(m75c, 1, Serialized)
 
         // A Connection is required
         Connection (
-            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            I2cSerialBusV2 (0x1234, DeviceInitiated, 0x88775544,
             AddressingMode10Bit, "\\GPI1", 0xEE,
             ResourceConsumer)),
 
@@ -1261,7 +1261,7 @@ Method(m75d, 1, Serialized)
 
         // A Connection is required
         Connection (
-            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            I2cSerialBusV2 (0x1234, DeviceInitiated, 0x88775544,
             AddressingMode10Bit, "\\GPI1", 0xEE,
             ResourceConsumer)),
 
@@ -1320,7 +1320,7 @@ Method(m75e, 1, Serialized)
 
         // A Connection is required
         Connection (
-            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            I2cSerialBusV2 (0x1234, DeviceInitiated, 0x88775544,
             AddressingMode10Bit, "\\GPI1", 0xEE,
             ResourceConsumer)),
 
@@ -1389,7 +1389,7 @@ Method(m75f, 1, Serialized)
 
         // A Connection is required
         Connection (
-            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            I2cSerialBusV2 (0x1234, DeviceInitiated, 0x88775544,
             AddressingMode10Bit, "\\GPI1", 0xEE,
             ResourceConsumer)),
 
@@ -1460,7 +1460,7 @@ Method(m760, 1, Serialized)
 
         // A Connection is required
         Connection (
-            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            I2cSerialBusV2 (0x1234, DeviceInitiated, 0x88775544,
             AddressingMode10Bit, "\\GPI1", 0xEE,
             ResourceConsumer)),
 
@@ -1531,7 +1531,7 @@ Method(m761, 1, Serialized)
 
         // A Connection is required
         Connection (
-            I2cSerialBus (0x1234, DeviceInitiated, 0x88775544,
+            I2cSerialBusV2 (0x1234, DeviceInitiated, 0x88775544,
             AddressingMode10Bit, "\\GPI1", 0xEE,
             ResourceConsumer)),
 
@@ -2396,7 +2396,7 @@ Method(m72f, 4, Serialized)
 
 				if (LGreater(Local7, 8)) {
 					// Buffer source, shorter than field
-					Store(Divide(Subtract(Local7, 1), 8), Local4)
+					Divide(Subtract(Local7, 1), 8, , Local4)
 					m72e(Concatenate(arg0, "-BShort"), arg2, Local6,
 						Local7, Local2, Local4)
 				}
@@ -24813,7 +24813,7 @@ Method(m743, 1, Serialized)
 			if (Local7) {
 				Increment(i000)
 			}
-			Add(Derefof(Index(Local4, 0)), i000, i000)
+			Add(i000, Derefof(Index(Local4, 0)), i000)
 
 			Divide(i000, Local5, Local7)
 

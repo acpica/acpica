@@ -129,7 +129,7 @@ Method(_REG, 2, Serialized)
 	}
 
 	if (LLess(Local0, NRSK)) {
-		Store(Index(VRSK, Local0), Local1)
+		Index(VRSK, Local0, Local1)
 		Store(Refof(Local1), Local2)
 		Add(Derefof(Local1), 1, Derefof(Local2))
 	} else {
@@ -137,7 +137,7 @@ Method(_REG, 2, Serialized)
 	}
 
 	if (LLess(arg1, NFLG)) {
-		Store(Index(VFLG, arg1), Local1)
+		Index(VFLG, arg1, Local1)
 		Store(Refof(Local1), Local2)
 		Add(Derefof(Local1), 1, Derefof(Local2))
 	} else {
@@ -259,7 +259,7 @@ Device(DOR0) {
 		}
 
 		if (LLess(Local0, NRSK)) {
-			Store(Index(VRSK, Local0), Local1)
+			Index(VRSK, Local0, Local1)
 			Store(Refof(Local1), Local2)
 			Add(Derefof(Local1), 1, Derefof(Local2))
 		} else {
@@ -267,7 +267,7 @@ Device(DOR0) {
 		}
 
 		if (LLess(arg1, NFLG)) {
-			Store(Index(VFLG, arg1), Local1)
+			Index(VFLG, arg1, Local1)
 			Store(Refof(Local1), Local2)
 			Add(Derefof(Local1), 1, Derefof(Local2))
 		} else {
@@ -345,7 +345,7 @@ Device(DOR1) {
 			}
 
 			if (LLess(Local0, NRSK)) {
-				Store(Index(VRSK, Local0), Local1)
+				Index(VRSK, Local0, Local1)
 				Store(Refof(Local1), Local2)
 				Add(Derefof(Local1), 1, Derefof(Local2))
 			} else {
@@ -353,7 +353,7 @@ Device(DOR1) {
 			}
 
 			if (LLess(arg1, NFLG)) {
-				Store(Index(VFLG, arg1), Local1)
+				Index(VFLG, arg1, Local1)
 				Store(Refof(Local1), Local2)
 				Add(Derefof(Local1), 1, Derefof(Local2))
 			} else {
@@ -493,7 +493,7 @@ Method(m702, 1)
 	Concatenate(arg0, "-m702", arg0)
 
 	Store(Sizeof(p702), Local0)
-	Store(Divide(Local0, 3), Local0)
+	Divide(Local0, 3, , Local0)
 	Store(0, Local1)
 
 	Store(2, Local1)
@@ -641,7 +641,7 @@ Method(m70e, 5, Serialized)
 
 	while (Local0) {
 		Decrement(Local0)
-		Store(Index(arg2, Local0), Local1)
+		Index(arg2, Local0, Local1)
 		Store(Refof(Local1), Local2)
 
 		switch(ToInteger (arg1)) {
@@ -649,7 +649,7 @@ Method(m70e, 5, Serialized)
 				Store (0, Derefof(Local2))
 			}
 			case (1) {
-				Store(Index(arg3, Local0), Local3)
+				Index(arg3, Local0, Local3)
 				if (LNotEqual(DeRefof(Local1), DeRefof(Local3))) {
 					err(arg0, z141, arg4, z141, Local0, DeRefof(Local1), DeRefof(Local3))
 				}
