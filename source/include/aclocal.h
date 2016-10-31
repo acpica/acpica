@@ -988,7 +988,7 @@ typedef union acpi_parse_value
     ACPI_NAMESPACE_NODE             *Node;              /* For use by interpreter */\
     ACPI_PARSE_VALUE                Value;              /* Value or args associated with the opcode */\
     UINT8                           ArgListLength;      /* Number of elements in the arg list */\
-    ACPI_DISASM_ONLY_MEMBERS (\
+     ACPI_DISASM_ONLY_MEMBERS (\
     UINT8                           DisasmFlags;        /* Used during AML disassembly */\
     UINT8                           DisasmOpcode;       /* Subtype used for disassembly */\
     char                            *OperatorSymbol;    /* Used for C-style operator name strings */\
@@ -1017,8 +1017,6 @@ typedef union acpi_parse_value
 #define FILENAME_COMMENT        8
 #define PARENTFILENAME_COMMENT  9
 #define ENDBLK_COMMENT         10
-
-#define ACPI_MAX_FILENAME_LENGTH 500
 
 
 /* Flags for DisasmFlags field  above */
@@ -1053,7 +1051,6 @@ typedef struct acpi_comment_addr_node
   UINT8                                    *Addr;
   struct acpi_comment_addr_node            *Next;
 } ACPI_COMMENT_ADDR_NODE;
-
 
 /* 
  * File node - used for "Include" operator file stack and 
@@ -1173,14 +1170,15 @@ typedef struct acpi_parse_state
 
 /* Parse object DisasmFlags */
 
-#define ACPI_PARSEOP_IGNORE                 0x01
-#define ACPI_PARSEOP_PARAMETER_LIST         0x02
-#define ACPI_PARSEOP_EMPTY_TERMLIST         0x04
-#define ACPI_PARSEOP_PREDEFINED_CHECKED     0x08
-#define ACPI_PARSEOP_CLOSING_PAREN          0x10
-#define ACPI_PARSEOP_COMPOUND_ASSIGNMENT    0x20
-#define ACPI_PARSEOP_ASSIGNMENT             0x40
-#define ACPI_PARSEOP_ELSEIF                 0x80
+#define ACPI_PARSEOP_IGNORE                 0x0001
+#define ACPI_PARSEOP_PARAMETER_LIST         0x0002
+#define ACPI_PARSEOP_EMPTY_TERMLIST         0x0004
+#define ACPI_PARSEOP_PREDEFINED_CHECKED     0x0008
+#define ACPI_PARSEOP_CLOSING_PAREN          0x0010
+#define ACPI_PARSEOP_COMPOUND_ASSIGNMENT    0x0020
+#define ACPI_PARSEOP_ASSIGNMENT             0x0040
+#define ACPI_PARSEOP_ELSEIF                 0x0080
+#define ACPI_PARSEOP_LEGACY_ASL_ONLY        0x0100
 
 
 /*****************************************************************************

@@ -155,6 +155,10 @@ ACPI_STATUS
 AcpiPsExecuteMethod (
     ACPI_EVALUATE_INFO      *Info);
 
+ACPI_STATUS
+AcpiPsExecuteTable (
+    ACPI_EVALUATE_INFO      *Info);
+
 
 /*
  * psargs - Parse AML opcode arguments
@@ -480,5 +484,6 @@ BOOLEAN
 AcpiPsIsDescendant (
     char                    *ChildFilename,
     char                    *ParentFilename);
+
 
 #endif /* __ACPARSER_H__ */
