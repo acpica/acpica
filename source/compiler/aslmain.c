@@ -146,90 +146,6 @@ AslInitialize (
     void);
 
 
-/******************************************************************************
- *
- * FUNCTION:    AslSignalHandler
- *
- * PARAMETERS:  Sig                 - Signal that invoked this handler
- *
- * RETURN:      None
- *
- * DESCRIPTION: Control-C handler. Delete any intermediate files and any
- *              output files that may be left in an indeterminate state.
- *
- *****************************************************************************/
-
-static void ACPI_SYSTEM_XFACE
-AslSignalHandler (
-    int                     Sig)
-{
-    UINT32                  i;
-
-
-    signal (Sig, SIG_IGN);
-    printf ("Aborting\n\n");
-
-    /* Close all open files */
-
-    Gbl_Files[ASL_FILE_PREPROCESSOR].Handle = NULL; /* the .pre file is same as source file */
-
-    for (i = ASL_FILE_INPUT; i < ASL_MAX_FILE_TYPE; i++)
-    {
-        FlCloseFile (i);
-    }
-
-    /* Delete any output files */
-
-    for (i = ASL_FILE_AML_OUTPUT; i < ASL_MAX_FILE_TYPE; i++)
-    {
-        FlDeleteFile (i);
-    }
-
-    exit (0);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AslInitialize
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Initialize compiler globals
- *
- ******************************************************************************/
-
-static void
-AslInitialize (
-    void)
-{
-    UINT32                  i;
-
-
-    AcpiGbl_DmOpt_Verbose = FALSE;
-
-    /* Default integer width is 64 bits */
-
-    AcpiGbl_IntegerBitWidth = 64;
-    AcpiGbl_IntegerNybbleWidth = 16;
-    AcpiGbl_IntegerByteWidth = 8;
-
-    for (i = 0; i < ASL_NUM_FILES; i++)
-    {
-        Gbl_Files[i].Handle = NULL;
-        Gbl_Files[i].Filename = NULL;
-    }
-
-    Gbl_Files[ASL_FILE_STDOUT].Handle   = stdout;
-    Gbl_Files[ASL_FILE_STDOUT].Filename = "STDOUT";
-
-    Gbl_Files[ASL_FILE_STDERR].Handle   = stderr;
-    Gbl_Files[ASL_FILE_STDERR].Filename = "STDERR";
-}
-
-
 /*******************************************************************************
  *
  * FUNCTION:    main
@@ -341,3 +257,85 @@ CleanupAndExit:
 }
 
 
+/******************************************************************************
+ *
+ * FUNCTION:    AslSignalHandler
+ *
+ * PARAMETERS:  Sig                 - Signal that invoked this handler
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Control-C handler. Delete any intermediate files and any
+ *              output files that may be left in an indeterminate state.
+ *
+ *****************************************************************************/
+
+static void ACPI_SYSTEM_XFACE
+AslSignalHandler (
+    int                     Sig)
+{
+    UINT32                  i;
+
+
+    signal (Sig, SIG_IGN);
+    printf ("Aborting\n\n");
+
+    /* Close all open files */
+
+    Gbl_Files[ASL_FILE_PREPROCESSOR].Handle = NULL; /* the .pre file is same as source file */
+
+    for (i = ASL_FILE_INPUT; i < ASL_MAX_FILE_TYPE; i++)
+    {
+        FlCloseFile (i);
+    }
+
+    /* Delete any output files */
+
+    for (i = ASL_FILE_AML_OUTPUT; i < ASL_MAX_FILE_TYPE; i++)
+    {
+        FlDeleteFile (i);
+    }
+
+    exit (0);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AslInitialize
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Initialize compiler globals
+ *
+ ******************************************************************************/
+
+static void
+AslInitialize (
+    void)
+{
+    UINT32                  i;
+
+
+    AcpiGbl_DmOpt_Verbose = FALSE;
+
+    /* Default integer width is 64 bits */
+
+    AcpiGbl_IntegerBitWidth = 64;
+    AcpiGbl_IntegerNybbleWidth = 16;
+    AcpiGbl_IntegerByteWidth = 8;
+
+    for (i = 0; i < ASL_NUM_FILES; i++)
+    {
+        Gbl_Files[i].Handle = NULL;
+        Gbl_Files[i].Filename = NULL;
+    }
+
+    Gbl_Files[ASL_FILE_STDOUT].Handle   = stdout;
+    Gbl_Files[ASL_FILE_STDOUT].Filename = "STDOUT";
+
+    Gbl_Files[ASL_FILE_STDERR].Handle   = stderr;
+    Gbl_Files[ASL_FILE_STDERR].Filename = "STDERR";
+}
