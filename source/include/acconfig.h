@@ -222,6 +222,10 @@
 
 #define ACPI_MAX_LOOP_COUNT             0x000FFFFF
 
+/* Maximum time (100-nanosecond units, 30s) of While() loops before abort */
+
+#define ACPI_MAX_LOOP_TIMEOUT           ((UINT64) 30 * ACPI_100NSEC_PER_SEC)
+
 
 /******************************************************************************
  *
