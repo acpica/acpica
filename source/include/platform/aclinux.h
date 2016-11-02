@@ -225,6 +225,8 @@
  */
 #define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
 #define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
+#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
+#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
 
 /*
  * OSL interfaces used by utilities

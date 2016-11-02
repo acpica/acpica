@@ -554,7 +554,7 @@ AcpiOsRedirectOutput (
 
 
 /*
- * Debug input
+ * Debug IO
  */
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetLine
 ACPI_STATUS
@@ -562,6 +562,30 @@ AcpiOsGetLine (
     char                    *Buffer,
     UINT32                  BufferLength,
     UINT32                  *BytesRead);
+#endif
+
+#ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
+ACPI_STATUS
+AcpiOsInitializeDebugger (
+    void);
+#endif
+
+#ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
+void
+AcpiOsTerminateDebugger (
+    void);
+#endif
+
+#ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWaitCommandReady
+ACPI_STATUS
+AcpiOsWaitCommandReady (
+    void);
+#endif
+
+#ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsNotifyCommandComplete
+ACPI_STATUS
+AcpiOsNotifyCommandComplete (
+    void);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTracePoint
