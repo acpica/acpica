@@ -209,7 +209,7 @@ AcpiDsAutoSerializeMethod (
     {
         AcpiDsDeleteWalkState (WalkState);
         AcpiPsFreeOp (Op);
-        return_ACPI_STATUS (Status);
+        goto Unlock;
     }
 
     WalkState->DescendingCallback = AcpiDsDetectNamedOpcodes;
