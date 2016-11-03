@@ -618,7 +618,6 @@ AcpiExUnloadTable (
     ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *TableDesc = DdbHandle;
     UINT32                  TableIndex;
-    ACPI_TABLE_HEADER       *Table;
 
 
     ACPI_FUNCTION_TRACE (ExUnloadTable);
@@ -659,42 +658,7 @@ AcpiExUnloadTable (
      * strict order requirement against it.
      */
     AcpiExExitInterpreter ();
-
-    /* Ensure the table is still loaded */
-
-    if (!AcpiTbIsTableLoaded (TableIndex))
-    {
-        Status = AE_NOT_EXIST;
-        goto LockAndExit;
-    }
-
-    /* Invoke table handler if present */
-
-    if (AcpiGbl_TableHandler)
-    {
-        Status = AcpiGetTableByIndex (TableIndex, &Table);
-        if (ACPI_SUCCESS (Status))
-        {
-            (void) AcpiGbl_TableHandler (ACPI_TABLE_EVENT_UNLOAD, Table,
-                AcpiGbl_TableHandlerContext);
-        }
-    }
-
-    /* Delete the portion of the namespace owned by this table */
-
-    Status = AcpiTbDeleteNamespaceByOwner (TableIndex);
-    if (ACPI_FAILURE (Status))
-    {
-        goto LockAndExit;
-    }
-
-    (void) AcpiTbReleaseOwnerId (TableIndex);
-    AcpiTbSetTableLoadedFlag (TableIndex, FALSE);
-
-LockAndExit:
-
-    /* Re-acquire the interpreter lock */
-
+    Status = AcpiTbUnloadTable (TableIndex);
     AcpiExEnterInterpreter ();
 
     /*

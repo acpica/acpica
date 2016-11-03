@@ -1054,3 +1054,59 @@ UnlockAndExit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
     return_ACPI_STATUS (Status);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbUnloadTable
+ *
+ * PARAMETERS:  TableIndex              - Table index
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Unload an ACPI table
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiTbUnloadTable (
+    UINT32                  TableIndex)
+{
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_TABLE_HEADER       *Table;
+
+
+    ACPI_FUNCTION_TRACE (TbUnloadTable);
+
+
+    /* Ensure the table is still loaded */
+
+    if (!AcpiTbIsTableLoaded (TableIndex))
+    {
+        return_ACPI_STATUS (AE_NOT_EXIST);
+    }
+
+    /* Invoke table handler if present */
+
+    if (AcpiGbl_TableHandler)
+    {
+        Status = AcpiGetTableByIndex (TableIndex, &Table);
+        if (ACPI_SUCCESS (Status))
+        {
+            (void) AcpiGbl_TableHandler (ACPI_TABLE_EVENT_UNLOAD, Table,
+                AcpiGbl_TableHandlerContext);
+        }
+    }
+
+    /* Delete the portion of the namespace owned by this table */
+
+    Status = AcpiTbDeleteNamespaceByOwner (TableIndex);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    (void) AcpiTbReleaseOwnerId (TableIndex);
+    AcpiTbSetTableLoadedFlag (TableIndex, FALSE);
+    return_ACPI_STATUS (Status);
+}

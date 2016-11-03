@@ -262,6 +262,10 @@ AcpiTbInstallAndLoadTable (
     BOOLEAN                 Override,
     UINT32                  *TableIndex);
 
+ACPI_STATUS
+AcpiTbUnloadTable (
+    UINT32                  TableIndex);
+
 void
 AcpiTbTerminate (
     void);
