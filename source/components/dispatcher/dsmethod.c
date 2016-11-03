@@ -856,26 +856,6 @@ AcpiDsTerminateControlMethod (
         AcpiDsMethodDataDeleteAll (WalkState);
 
         /*
-         * If method is serialized, release the mutex and restore the
-         * current sync level for this thread
-         */
-        if (MethodDesc->Method.Mutex)
-        {
-            /* Acquisition Depth handles recursive calls */
-
-            MethodDesc->Method.Mutex->Mutex.AcquisitionDepth--;
-            if (!MethodDesc->Method.Mutex->Mutex.AcquisitionDepth)
-            {
-                WalkState->Thread->CurrentSyncLevel =
-                    MethodDesc->Method.Mutex->Mutex.OriginalSyncLevel;
-
-                AcpiOsReleaseMutex (
-                    MethodDesc->Method.Mutex->Mutex.OsMutex);
-                MethodDesc->Method.Mutex->Mutex.ThreadId = 0;
-            }
-        }
-
-        /*
          * Delete any namespace objects created anywhere within the
          * namespace by the execution of this method. Unless:
          * 1) This method is a module-level executable code method, in which
@@ -906,6 +886,26 @@ AcpiDsTerminateControlMethod (
                 (void) AcpiExEnterInterpreter ();
                 MethodDesc->Method.InfoFlags &=
                     ~ACPI_METHOD_MODIFIED_NAMESPACE;
+            }
+        }
+
+        /*
+         * If method is serialized, release the mutex and restore the
+         * current sync level for this thread
+         */
+        if (MethodDesc->Method.Mutex)
+        {
+            /* Acquisition Depth handles recursive calls */
+
+            MethodDesc->Method.Mutex->Mutex.AcquisitionDepth--;
+            if (!MethodDesc->Method.Mutex->Mutex.AcquisitionDepth)
+            {
+                WalkState->Thread->CurrentSyncLevel =
+                    MethodDesc->Method.Mutex->Mutex.OriginalSyncLevel;
+
+                AcpiOsReleaseMutex (
+                    MethodDesc->Method.Mutex->Mutex.OsMutex);
+                MethodDesc->Method.Mutex->Mutex.ThreadId = 0;
             }
         }
     }
