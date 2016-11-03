@@ -257,7 +257,6 @@ AcpiTbLoadTable (
 
 ACPI_STATUS
 AcpiTbInstallAndLoadTable (
-    ACPI_TABLE_HEADER       *Table,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT8                   Flags,
     BOOLEAN                 Override,

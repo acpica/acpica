@@ -444,7 +444,7 @@ AcpiLoadTable (
     /* Install the table and load it into the namespace */
 
     ACPI_INFO (("Host-directed Dynamic ACPI Table Load:"));
-    Status = AcpiTbInstallAndLoadTable (Table, ACPI_PTR_TO_PHYSADDR (Table),
+    Status = AcpiTbInstallAndLoadTable (ACPI_PTR_TO_PHYSADDR (Table),
         ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL, FALSE, &TableIndex);
     return_ACPI_STATUS (Status);
 }

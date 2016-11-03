@@ -553,7 +553,7 @@ AcpiExLoadOp (
 
     ACPI_INFO (("Dynamic OEM Table Load:"));
     AcpiExExitInterpreter ();
-    Status = AcpiTbInstallAndLoadTable (Table, ACPI_PTR_TO_PHYSADDR (Table),
+    Status = AcpiTbInstallAndLoadTable (ACPI_PTR_TO_PHYSADDR (Table),
         ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL, TRUE, &TableIndex);
     AcpiExEnterInterpreter ();
     if (ACPI_FAILURE (Status))

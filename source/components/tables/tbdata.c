@@ -1009,9 +1009,9 @@ AcpiTbLoadTable (
  *
  * FUNCTION:    AcpiTbInstallAndLoadTable
  *
- * PARAMETERS:  Table                   - Pointer to the table
- *              Address                 - Physical address of the table
+ * PARAMETERS:  Address                 - Physical address of the table
  *              Flags                   - Allocation flags of the table
+ *              Override                - Whether override should be performed
  *              TableIndex              - Where table index is returned
  *
  * RETURN:      Status
@@ -1022,7 +1022,6 @@ AcpiTbLoadTable (
 
 ACPI_STATUS
 AcpiTbInstallAndLoadTable (
-    ACPI_TABLE_HEADER       *Table,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT8                   Flags,
     BOOLEAN                 Override,
@@ -1030,10 +1029,9 @@ AcpiTbInstallAndLoadTable (
 {
     ACPI_STATUS             Status;
     UINT32                  i;
-    ACPI_OWNER_ID           OwnerId;
 
 
-    ACPI_FUNCTION_TRACE (AcpiLoadTable);
+    ACPI_FUNCTION_TRACE (TbInstallAndLoadTable);
 
 
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
@@ -1047,44 +1045,8 @@ AcpiTbInstallAndLoadTable (
         goto UnlockAndExit;
     }
 
-    /*
-     * Note: Now table is "INSTALLED", it must be validated before
-     * using.
-     */
-    Status = AcpiTbValidateTable (&AcpiGbl_RootTableList.Tables[i]);
-    if (ACPI_FAILURE (Status))
-    {
-        goto UnlockAndExit;
-    }
-
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
-    Status = AcpiNsLoadTable (i, AcpiGbl_RootNode);
-
-    /* Execute any module-level code that was found in the table */
-
-    if (!AcpiGbl_ParseTableAsTermList && AcpiGbl_GroupModuleLevelCode)
-    {
-        AcpiNsExecModuleCodeList ();
-    }
-
-    /*
-     * Update GPEs for any new _Lxx/_Exx methods. Ignore errors. The host is
-     * responsible for discovering any new wake GPEs by running _PRW methods
-     * that may have been loaded by this table.
-     */
-    Status = AcpiTbGetOwnerId (i, &OwnerId);
-    if (ACPI_SUCCESS (Status))
-    {
-        AcpiEvUpdateGpes (OwnerId);
-    }
-
-    /* Invoke table handler if present */
-
-    if (AcpiGbl_TableHandler)
-    {
-        (void) AcpiGbl_TableHandler (ACPI_TABLE_EVENT_LOAD, Table,
-            AcpiGbl_TableHandlerContext);
-    }
+    Status = AcpiTbLoadTable (i, AcpiGbl_RootNode);
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
 
 UnlockAndExit:
