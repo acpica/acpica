@@ -275,7 +275,7 @@ Name(y242, 0)	// Releasing the mutex the first Acquired on the non-zero level ma
 Name(y243, 0)	// the normal work with mutexes is broken after the mutex Release order violation
 Name(y248, 0)	// Incorrect ReferenceCount on Switch operation
 Name(y251, 0)	// AE_ALREADY_EXISTS on multi-threading on Switch operator
-Name(y260, 0)	// For a DDBHandle Object ObjectType unexpectedly results in AE_AML_INTERNAL
+Name(y260, 0)	// AE_AML_TARGET_TYPE on writing NewObj to ArgX [RefOf(OldObj)] instead of RefOf(NewObj)
 Name(y261, 0)	// Crash when DDBHandle parameter of Load is an Indexed Reference
 Name(y262, 0)	// Unexpected AE_STACK_OVERFLOW for a method call expression with nested calls
 Name(y263, 0)	// The sequence of evaluating operands of expression with the named objects is violated

@@ -187,12 +187,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDBH), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x005, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDBH), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x005, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
@@ -245,12 +243,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDBH), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x012, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDBH), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x012, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
@@ -283,26 +279,37 @@ Device(DTM2) {
 		}
 
 		Store(LoadTable("OeM1", "Intel", "Many", "\\", PPST, 1), Local2)
-
-		if (CH03(arg0, z176, 0x018, 0, 0)) {
-			return (1)
+		if (y281) {
+			// No exception
+			if (CH03(arg0, z176, 0x018, 0, 0)) {
+				return (1)
+			}
+		} else {
+			// Exception: AE_BAD_SIGNATURE
+			if (CH04(arg0, 1, 37, z176, 0x019, 0, 0)) {
+				return (1)
+			}
 		}
-
 		Store(ObjectType(Local2), Local1)
-		if (LNotEqual(Local1, c009)) {
-			err(arg0, z176, 0x019, 0, 0, Local1, c009)
-		}
-
-		if (LNotEqual(Local2, 0)) {
-			err(arg0, z176, 0x01a, 0, 0, Local2, 0)
+		if (y281) {
+			if (LNotEqual(Local1, c009)) {
+				err(arg0, z176, 0x01a, 0, 0, Local1, c009)
+			}
+			if (LNotEqual(Local2, 0)) {
+				err(arg0, z176, 0x01b, 0, 0, Local2, 0)
+			}
+		} else {
+			if (LNotEqual(Local1, c008)) {
+				err(arg0, z176, 0x01c, 0, 0, Local1, c008)
+			}
 		}
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x01b, 0, 0, \DTM2.PLDT, 0)
+			err(arg0, z176, 0x01d, 0, 0, \DTM2.PLDT, 0)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x01c, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, 0x01e, 0, 0, "\\_XT2", 1)
 		}
 
 		// Unhappy comparison due to the OEMIDString
@@ -311,30 +318,30 @@ Device(DTM2) {
 
 		Store(ObjectType(Local3), Local1)
 		if (LNotEqual(Local1, c008)) {
-			err(arg0, z176, 0x01d, 0, 0, Local1, c008)
+			err(arg0, z176, 0x01f, 0, 0, Local1, c008)
 		}
 
 		Store(LoadTable("OEM1", "InteL", "Many", "\\", PPST, 1), Local3)
 
-		if (CH03(arg0, z176, 0x01e, 0, 0)) {
+		if (CH03(arg0, z176, 0x020, 0, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(Local3), Local1)
 		if (LNotEqual(Local1, c009)) {
-			err(arg0, z176, 0x01f, 0, 0, Local1, c009)
+			err(arg0, z176, 0x021, 0, 0, Local1, c009)
 		}
 
 		if (LNotEqual(Local3, 0)) {
-			err(arg0, z176, 0x020, 0, 0, Local3, 0)
+			err(arg0, z176, 0x022, 0, 0, Local3, 0)
 		}
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x021, 0, 0, \DTM2.PLDT, 0)
+			err(arg0, z176, 0x023, 0, 0, \DTM2.PLDT, 0)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x022, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, 0x024, 0, 0, "\\_XT2", 1)
 		}
 
 		// Unhappy comparison due to the OEMTableIDString
@@ -343,30 +350,30 @@ Device(DTM2) {
 
 		Store(ObjectType(Local4), Local1)
 		if (LNotEqual(Local1, c008)) {
-			err(arg0, z176, 0x023, 0, 0, Local1, c008)
+			err(arg0, z176, 0x025, 0, 0, Local1, c008)
 		}
 
 		Store(LoadTable("OEM1", "Intel", "many", "\\", PPST, 1), Local4)
 
-		if (CH03(arg0, z176, 0x024, 0, 0)) {
+		if (CH03(arg0, z176, 0x026, 0, 0)) {
 			return (1)
 		}
 
 		Store(ObjectType(Local4), Local1)
 		if (LNotEqual(Local1, c009)) {
-			err(arg0, z176, 0x025, 0, 0, Local1, c009)
+			err(arg0, z176, 0x027, 0, 0, Local1, c009)
 		}
 
 		if (LNotEqual(Local4, 0)) {
-			err(arg0, z176, 0x026, 0, 0, Local4, 0)
+			err(arg0, z176, 0x028, 0, 0, Local4, 0)
 		}
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
-			err(arg0, z176, 0x027, 0, 0, \DTM2.PLDT, 0)
+			err(arg0, z176, 0x029, 0, 0, \DTM2.PLDT, 0)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
-			err(arg0, z176, 0x028, 0, 0, "\\_XT2", 1)
+			err(arg0, z176, 0x02a, 0, 0, "\\_XT2", 1)
 		}
 
 		return (0)
@@ -398,12 +405,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDB0), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x032, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDB0), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x032, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
@@ -436,12 +441,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDB1), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x038, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDB1), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x038, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
@@ -474,12 +477,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDB2), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x03e, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDB2), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x03e, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
@@ -512,12 +513,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDB3), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x044, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDB3), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x044, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(0, \DTM2.PLDT)) {
@@ -570,12 +569,10 @@ Device(DTM2) {
 				return (1)
 			}
 
-			if (y260) {
-				Store(ObjectType(arg1), Local1)
-				if (LNotEqual(Local1, c017)) { // DDB Handle
-					err(arg0, z176, 0x052, 0, 0, Local1, c017)
-					return (1)
-				}
+			Store(ObjectType(arg1), Local1)
+			if (LNotEqual(Local1, c017)) { // DDB Handle
+				err(arg0, z176, 0x052, 0, 0, Local1, c017)
+				return (1)
 			}
 
 			if (LNotEqual(0, \DTM2.PLDT)) {
@@ -757,12 +754,10 @@ Device(DTM2) {
 				return (1)
 			}
 
-			if (y260) {
-				Store(ObjectType(arg1), Local1)
-				if (LNotEqual(Local1, c017)) { // DDB Handle
-					err(arg0, z176, 0x062, 0, 0, Local1, c017)
-					return (1)
-				}
+			Store(ObjectType(arg1), Local1)
+			if (LNotEqual(Local1, c017)) { // DDB Handle
+				err(arg0, z176, 0x062, 0, 0, Local1, c017)
+				return (1)
 			}
 
 			if (LNotEqual(1, \DTM2.PLDT)) {
@@ -913,7 +908,7 @@ Device(DTM2) {
 		Store(3, Local4)
 
 		Store(LoadTable("OEM1", "", "",
-				Mid(ToString(Local2), 4, 1),
+				Mid(ToString(Local2), 4, 5),
 				ToString(m000(Local3)),
 // Bug 288: iASL unexpectedly forbids ParameterData of Loadtable to be LocalX or UserTerm
 //				Subtract(m000(Local4), 2)),
@@ -954,12 +949,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDBH), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x073, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDBH), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x073, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
@@ -1014,12 +1007,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDBH), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x082, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDBH), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x082, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
@@ -1062,12 +1053,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDBH), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x092, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDBH), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x092, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(1, PLDT)) {
@@ -1089,12 +1078,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDBH), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x096, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDBH), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x096, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(0, PLDT)) {
@@ -1218,12 +1205,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDBH), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x0b2, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDBH), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x0b2, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (LNotEqual(1, \DTM2.PLDT)) {
@@ -1307,12 +1292,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDBH), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x0c2, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDBH), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x0c2, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {
@@ -1407,7 +1390,7 @@ Device(DTM2) {
 			Switch(ToInteger (arg2)) {
 				Case(0) {
 					LoadTable(arg1, SOID, STID, RPST, PPST, 1)
-					return (CH04(arg0, 0, 61, z176, 0x0d0, 0, 0))// AE_AML_STRING_LIMIT
+					return (CH04(arg0, 0, 37, z176, 0x0d0, 0, 0))// AE_BAD_SIGNATURE
 				}
 				Case(1) {
 					Store(LoadTable(SOEM, arg1, STID, RPST, PPST, 1), DDBH)
@@ -1417,36 +1400,36 @@ Device(DTM2) {
 				}
 				Case(3) {
 					LoadTable(SOEM, SOID, STID, arg1, PPST, 1)
-					return (CH04(arg0, 0, 30, z176, 0x0d0, 0, 0)) // AE_BAD_PATHNAME
+					return (CH04(arg0, 0, 30, z176, 0x0d1, 0, 0)) // AE_BAD_PATHNAME
 				}
 				Case(4) {
 					LoadTable(SOEM, SOID, STID, RPST, arg1, 1)
-					return (CH04(arg0, 0, 30, z176, 0x0d1, 0, 0)) // AE_BAD_PATHNAME
+					return (CH04(arg0, 0, 30, z176, 0x0d2, 0, 0)) // AE_BAD_PATHNAME
 				}
 			}
 
-			if (CH03(arg0, z176, 0x0d2, 0, 0)) {
+			if (CH03(arg0, z176, 0x0d3, 0, 0)) {
 				return (1)
 			}
 
 			if (LNotEqual(0, \DTM2.PLDT)) {
-				err(arg0, z176, 0x0d3, 0, 0, \DTM2.PLDT, 0)
+				err(arg0, z176, 0x0d4, 0, 0, \DTM2.PLDT, 0)
 				return (1)
 			}
 
 			Store(ObjectType(DDBH), Local5)
 
-			if (CH03(arg0, z176, 0x0d4, 0, 0)) {
+			if (CH03(arg0, z176, 0x0d5, 0, 0)) {
 				return (1)
 			}
 
 			if (LNotEqual(Local5, c009)) {	// Integer
-				err(arg0, z176, 0x0d5, 0, 0, Local5, c009)
+				err(arg0, z176, 0x0d6, 0, 0, Local5, c009)
 				return (1)
 			}
 
 			if (LNotEqual(0, DDBH)) {
-				err(arg0, z176, 0x0d6, 0, 0, DDBH, 0)
+				err(arg0, z176, 0x0d7, 0, 0, DDBH, 0)
 				return (1)
 			}
 
@@ -1479,27 +1462,27 @@ Device(DTM2) {
 		// Check consistency of the parameters
 
 		if (LNotEqual(ToBuffer(SOEM), Local0)) {
-			err(arg0, z176, 0x0d7, 0, 0, Local0, ToBuffer(SOEM))
+			err(arg0, z176, 0x0d8, 0, 0, Local0, ToBuffer(SOEM))
 			return (1)
 		}
 
 		if (LNotEqual(ToBuffer(SOID), Local1)) {
-			err(arg0, z176, 0x0d8, 0, 0, Local1, ToBuffer(SOID))
+			err(arg0, z176, 0x0d9, 0, 0, Local1, ToBuffer(SOID))
 			return (1)
 		}
 
 		if (LNotEqual(ToBuffer(STID), Local2)) {
-			err(arg0, z176, 0x0d9, 0, 0, Local2, ToBuffer(STID))
+			err(arg0, z176, 0x0da, 0, 0, Local2, ToBuffer(STID))
 			return (1)
 		}
 
 		if (LNotEqual(ToBuffer(RPST), Local3)) {
-			err(arg0, z176, 0x0da, 0, 0, Local3, ToBuffer(RPST))
+			err(arg0, z176, 0x0db, 0, 0, Local3, ToBuffer(RPST))
 			return (1)
 		}
 
 		if (LNotEqual(ToBuffer(PPST), Local4)) {
-			err(arg0, z176, 0x0db, 0, 0, Local4, ToBuffer(PPST))
+			err(arg0, z176, 0x0dc, 0, 0, Local4, ToBuffer(PPST))
 			return (1)
 		}
 
@@ -1511,7 +1494,7 @@ Device(DTM2) {
 		ToInteger(Local3, Local3)
 		ToInteger(Local4, Local4)
 
-		if (m000(arg0, Local0, 0)) {return (1)}
+		//if (m000(arg0, Local0, 0)) {return (1)}
 		//if (m000(arg0, Local1, 1)) {return (1)}
 		//if (m000(arg0, Local2, 2)) {return (1)}
 		if (m000(arg0, Local3, 3)) {return (1)}
@@ -1598,12 +1581,10 @@ Device(DTM2) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(DDBH), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z176, 0x0f3, 0, 0, Local1, c017)
-				return (1)
-			}
+		Store(ObjectType(DDBH), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z176, 0x0f3, 0, 0, Local1, c017)
+			return (1)
 		}
 
 		if (CondRefof(\_XT2, Local0)) {

@@ -347,16 +347,14 @@ Device(DTM0) {
 		Store("Table Loaded", Debug)
 
 		// Check DDBHandle ObjectType
-		if (y260) {
-			switch (ToInteger (arg1)) {
-				case (0) {Store(ObjectType(HI0), Local1)}
-				case (1) {Store(ObjectType(\DTM0.HI0), Local1)}
-				case (2) {Store(ObjectType(Local2), Local1)}
-				case (3) {Store(ObjectType(Index(PHI0, 0)), Local1)}
-			}
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z174, 0x004, 0, 0, Local1, c017)
-			}
+		switch (ToInteger (arg1)) {
+			case (0) {Store(ObjectType(HI0), Local1)}
+			case (1) {Store(ObjectType(\DTM0.HI0), Local1)}
+			case (2) {Store(ObjectType(Local2), Local1)}
+			case (3) {Store(ObjectType(Index(PHI0, 0)), Local1)}
+		}
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z174, 0x004, 0, 0, Local1, c017)
 		}
 
 		// Check the new Object appears
@@ -443,11 +441,9 @@ Device(DTM0) {
 		Concatenate(arg0, "-m002", arg0)
 
 		// Check DDBHandle ObjectType
-		if (y260) {
-			Store(ObjectType(Arg1), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z174, 0x00e, 0, 0, Local1, c017)
-			}
+		Store(ObjectType(Arg1), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z174, 0x00e, 0, 0, Local1, c017)
 		}
 
 		// Check the new Object appears
@@ -648,16 +644,14 @@ Device(DTM0) {
 			Store("SSDT Loaded", Debug)
 
 			// Check DDBHandle ObjectType
-			if (y260) {
-				switch (ToInteger (arg1)) {
-					case (0) {Store(ObjectType(HI0), Local1)}
-					case (1) {Store(ObjectType(\DTM0.HI0), Local1)}
-					case (2) {Store(ObjectType(Local2), Local1)}
-					case (3) {Store(ObjectType(Index(PHI0, 0)), Local1)}
-				}
-				if (LNotEqual(Local1, c017)) { // DDB Handle
-					err(arg0, z174, 0x019, 0, 0, Local1, c017)
-				}
+			switch (ToInteger (arg1)) {
+				case (0) {Store(ObjectType(HI0), Local1)}
+				case (1) {Store(ObjectType(\DTM0.HI0), Local1)}
+				case (2) {Store(ObjectType(Local2), Local1)}
+				case (3) {Store(ObjectType(Index(PHI0, 0)), Local1)}
+			}
+			if (LNotEqual(Local1, c017)) { // DDB Handle
+				err(arg0, z174, 0x019, 0, 0, Local1, c017)
 			}
 
 			// Check the new Object appears
@@ -1199,11 +1193,11 @@ Device(DTM0) {
 
 	// Originated from ssdt3.asl: iasl -tc ssdt3.asl
 	Name(BUF3, Buffer(){
-		0x53,0x53,0x44,0x54,0x1F,0x01,0x00,0x00,  /* 00000000    "SSDT...." */
-		0x02,0x58,0x49,0x6E,0x74,0x65,0x6C,0x00,  /* 00000008    ".XIntel." */
+		0x53,0x53,0x44,0x54,0x1D,0x01,0x00,0x00,  /* 00000000    "SSDT...." */
+		0x02,0x4F,0x49,0x6E,0x74,0x65,0x6C,0x00,  /* 00000008    ".OIntel." */
 		0x4D,0x61,0x6E,0x79,0x00,0x00,0x00,0x00,  /* 00000010    "Many...." */
 		0x01,0x00,0x00,0x00,0x49,0x4E,0x54,0x4C,  /* 00000018    "....INTL" */
-		0x15,0x12,0x06,0x20,0x5B,0x82,0x49,0x0F,  /* 00000020    "... [.I." */
+		0x31,0x08,0x16,0x20,0x5B,0x82,0x47,0x0F,  /* 00000020    "1.. [.G." */
 		0x41,0x55,0x58,0x44,0x08,0x49,0x4E,0x54,  /* 00000028    "AUXD.INT" */
 		0x30,0x0E,0x10,0x32,0x54,0x76,0x98,0xBA,  /* 00000030    "0..2Tv.." */
 		0xDC,0xFE,0x08,0x53,0x54,0x52,0x30,0x0D,  /* 00000038    "...STR0." */
@@ -1216,25 +1210,25 @@ Device(DTM0) {
 		0xDC,0xFE,0x0D,0x74,0x65,0x73,0x74,0x20,  /* 00000070    "...test " */
 		0x70,0x61,0x63,0x6B,0x61,0x67,0x65,0x30,  /* 00000078    "package0" */
 		0x00,0x11,0x0C,0x0A,0x09,0x13,0x12,0x11,  /* 00000080    "........" */
-		0x10,0x0F,0x0E,0x0D,0x0C,0x0B,0x5B,0x81,  /* 00000088    "......[." */
-		0x0B,0x4F,0x50,0x52,0x30,0x01,0x46,0x4C,  /* 00000090    ".OPR0.FL" */
-		0x55,0x30,0x20,0x5B,0x82,0x10,0x44,0x45,  /* 00000098    "U0 [..DE" */
-		0x56,0x30,0x08,0x53,0x30,0x30,0x30,0x0D,  /* 000000A0    "V0.S000." */
-		0x44,0x45,0x56,0x30,0x00,0x5B,0x02,0x45,  /* 000000A8    "DEV0.[.E" */
-		0x56,0x45,0x30,0x14,0x09,0x4D,0x4D,0x4D,  /* 000000B0    "VE0..MMM" */
-		0x30,0x00,0xA4,0x0A,0x00,0x5B,0x01,0x4D,  /* 000000B8    "0....[.M" */
-		0x54,0x58,0x30,0x00,0x5B,0x80,0x4F,0x50,  /* 000000C0    "TX0.[.OP" */
-		0x52,0x30,0x00,0x0C,0x21,0x43,0x65,0x07,  /* 000000C8    "R0..!Ce." */
-		0x0A,0x98,0x5B,0x84,0x13,0x50,0x57,0x52,  /* 000000D0    "..[..PWR" */
-		0x30,0x00,0x00,0x00,0x08,0x53,0x30,0x30,  /* 000000D8    "0....S00" */
-		0x30,0x0D,0x50,0x57,0x52,0x30,0x00,0x5B,  /* 000000E0    "0.PWR0.[" */
-		0x83,0x16,0x43,0x50,0x55,0x30,0x00,0xFF,  /* 000000E8    "..CPU0.." */
-		0xFF,0xFF,0xFF,0x00,0x08,0x53,0x30,0x30,  /* 000000F0    ".....S00" */
-		0x30,0x0D,0x43,0x50,0x55,0x30,0x00,0x5B,  /* 000000F8    "0.CPU0.[" */
-		0x85,0x10,0x54,0x5A,0x4E,0x30,0x08,0x53,  /* 00000100    "..TZN0.S" */
-		0x30,0x30,0x30,0x0D,0x54,0x5A,0x4E,0x30,  /* 00000108    "000.TZN0" */
-		0x00,0x5B,0x13,0x42,0x55,0x46,0x30,0x0A,  /* 00000110    ".[.BUF0." */
-		0x00,0x0A,0x45,0x42,0x46,0x4C,0x30,
+		0x10,0x0F,0x0E,0x0D,0x0C,0x0B,0x5B,0x80,  /* 00000088    "......[." */
+		0x4F,0x50,0x52,0x30,0x00,0x0C,0x21,0x43,  /* 00000090    "OPR0..!C" */
+		0x65,0x07,0x0A,0x98,0x5B,0x81,0x0B,0x4F,  /* 00000098    "e...[..O" */
+		0x50,0x52,0x30,0x01,0x46,0x4C,0x55,0x30,  /* 000000A0    "PR0.FLU0" */
+		0x20,0x5B,0x82,0x10,0x44,0x45,0x56,0x30,  /* 000000A8    " [..DEV0" */
+		0x08,0x53,0x30,0x30,0x30,0x0D,0x44,0x45,  /* 000000B0    ".S000.DE" */
+		0x56,0x30,0x00,0x5B,0x02,0x45,0x56,0x45,  /* 000000B8    "V0.[.EVE" */
+		0x30,0x14,0x08,0x4D,0x4D,0x4D,0x30,0x00,  /* 000000C0    "0..MMM0." */
+		0xA4,0x00,0x5B,0x01,0x4D,0x54,0x58,0x30,  /* 000000C8    "..[.MTX0" */
+		0x00,0x5B,0x84,0x13,0x50,0x57,0x52,0x30,  /* 000000D0    ".[..PWR0" */
+		0x00,0x00,0x00,0x08,0x53,0x30,0x30,0x30,  /* 000000D8    "....S000" */
+		0x0D,0x50,0x57,0x52,0x30,0x00,0x5B,0x83,  /* 000000E0    ".PWR0.[." */
+		0x16,0x43,0x50,0x55,0x30,0x00,0xFF,0xFF,  /* 000000E8    ".CPU0..." */
+		0xFF,0xFF,0x00,0x08,0x53,0x30,0x30,0x30,  /* 000000F0    "....S000" */
+		0x0D,0x43,0x50,0x55,0x30,0x00,0x5B,0x85,  /* 000000F8    ".CPU0.[." */
+		0x10,0x54,0x5A,0x4E,0x30,0x08,0x53,0x30,  /* 00000100    ".TZN0.S0" */
+		0x30,0x30,0x0D,0x54,0x5A,0x4E,0x30,0x00,  /* 00000108    "00.TZN0." */
+		0x5B,0x13,0x42,0x55,0x46,0x30,0x00,0x0A,  /* 00000110    "[.BUF0.." */
+		0x45,0x42,0x46,0x4C,0x30                  /* 00000118    "EBFL0"    */
 	})
 
 	OperationRegion (IST3, SystemMemory, 0x400, 0x11f)
@@ -1369,11 +1363,9 @@ Device(DTM0) {
 		// DDB Handle
 		Load(DDB0, DDBH)
 		CH04(arg0, 0, 47, z174, 0x069, 0, 0)	// AE_AML_OPERAND_TYPE
-		if (y260) {
-			Store(ObjectType(DDB0), Local0)
-			if (LNotEqual(c017, Local0)) {
-				err(arg0, z174, 0x06a, 0, 0, Local0, c017)
-			}
+		Store(ObjectType(DDB0), Local0)
+		if (LNotEqual(c017, Local0)) {
+			err(arg0, z174, 0x06a, 0, 0, Local0, c017)
 		}
 		
 		UnLoad(DDB0)
@@ -1700,25 +1692,12 @@ Device(DTM0) {
 			}
 
 			Load(RFU0, arg2)
-			if (LOr(LEqual(arg3, c00d),	// Field Unit
-				LEqual(arg3, c016))) {	// Buffer Field
-
-				// AE_AML_OPERAND_TYPE
-				if (CH04(arg0, 2, 47, z174, 0x0e9, 0, 0)) {
-					return (1)
-				} else {
-					return (0)
-				}
-			} else {
-				if (CH03(arg0, z174, 0x0b2, 0, 0)) {
-					return (1)
-				}
+			if (CH03(arg0, z174, 0x0b2, 0, 0)) {
+				return (1)
 			}
-			if (y260) {
-				Store(ObjectType(arg2), Local0)
-				if (LNotEqual(c017, Local0)) {
-					err(arg0, z174, 0x0b3, 0, 0, Local0, c017)
-				}
+			Store(ObjectType(arg2), Local0)
+			if (LNotEqual(c017, Local0)) {
+				err(arg0, z174, 0x0b3, 0, 0, Local0, c017)
 			}
 			if (CondRefof(\SSS0, Local0)) {
 			} else {
@@ -1765,41 +1744,44 @@ Device(DTM0) {
 		// Buffer
 		m000(arg0, "buf", Refof(\AUXD.BUF0), c00b)
 
-		// Package
-		m000(arg0, "pac", Refof(\AUXD.PAC0), c00c)
-
-		// Field Unit
-		m000(arg0, "flu", Refof(\AUXD.FLU0), c00d)
-
-		// Device
-		m000(arg0, "dev", Refof(\AUXD.DEV0), c00e)
-
-		// Event
-		m000(arg0, "evt", Refof(\AUXD.EVE0), c00f)
-
-		// Method
-		m000(arg0, "met", Refof(\AUXD.MMM0), c010)
-
-		// Mutex
-		m000(arg0, "mtx", Refof(\AUXD.MTX0), c011)
-
-		// OpRegion
-		m000(arg0, "opr", Refof(\AUXD.OPR0), c012)
-
-		// Power Resource
-		m000(arg0, "pwr", Refof(\AUXD.PWR0), c013)
-
-		// Processor
-		m000(arg0, "cpu", Refof(\AUXD.CPU0), c014)
-
-		// Thermal Zone
-		m000(arg0, "tzn", Refof(\AUXD.TZN0), c015)
-
-		// Buffer Field
-		m000(arg0, "bfl", Refof(\AUXD.BFL0), c016)
-
-		// DDB Handle
+		// Writing NewObj to ArgX which is a RefOf(OldObj), should
+		// result in RefOf(NewObj), but this is currently not
+		// working.
 		if (y260) {
+			// Package
+			m000(arg0, "pac", Refof(\AUXD.PAC0), c00c)
+
+			// Field Unit
+			m000(arg0, "flu", Refof(\AUXD.FLU0), c00d)
+
+			// Device
+			m000(arg0, "dev", Refof(\AUXD.DEV0), c00e)
+
+			// Event
+			m000(arg0, "evt", Refof(\AUXD.EVE0), c00f)
+
+			// Method
+			m000(arg0, "met", Refof(\AUXD.MMM0), c010)
+
+			// Mutex
+			m000(arg0, "mtx", Refof(\AUXD.MTX0), c011)
+
+			// OpRegion
+			m000(arg0, "opr", Refof(\AUXD.OPR0), c012)
+
+			// Power Resource
+			m000(arg0, "pwr", Refof(\AUXD.PWR0), c013)
+
+			// Processor
+			m000(arg0, "cpu", Refof(\AUXD.CPU0), c014)
+
+			// Thermal Zone
+			m000(arg0, "tzn", Refof(\AUXD.TZN0), c015)
+
+			// Buffer Field
+			m000(arg0, "bfl", Refof(\AUXD.BFL0), c016)
+
+			// DDB Handle
 			CopyObject(DDB0, DDB1)
 			m000(arg0, "ddb", Refof(DDB1), c017)
 		}
@@ -1910,11 +1892,9 @@ Device(DTM0) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(HI0), Local0)
-			if (LNotEqual(c017, Local0)) {
-				err(arg0, z174, 0x0d3, 0, 0, Local0, c017)
-			}
+		Store(ObjectType(HI0), Local0)
+		if (LNotEqual(c017, Local0)) {
+			err(arg0, z174, 0x0d3, 0, 0, Local0, c017)
 		}
 
 		if (CondRefof(\SSS0, Local0)) {
@@ -1981,11 +1961,9 @@ Device(DTM0) {
 			return (1)
 		}
 
-		if (y260) {
-			Store(ObjectType(HI0), Local0)
-			if (LNotEqual(c017, Local0)) {
-				err(arg0, z174, 0x0e3, 0, 0, Local0, c017)
-			}
+		Store(ObjectType(HI0), Local0)
+		if (LNotEqual(c017, Local0)) {
+			err(arg0, z174, 0x0e3, 0, 0, Local0, c017)
 		}
 
 		if (CondRefof(\SSS0, Local0)) {
@@ -2053,6 +2031,89 @@ Device(DTM0) {
 		}
 
 		return (0)
+	}
+
+	// Originated from ssdt5.asl: iasl -tc ssdt5.asl
+	Name(BUF5, Buffer(){
+		0x53,0x53,0x44,0x54,0x92,0x00,0x00,0x00,  /* 00000000    "SSDT...." */
+		0x02,0xBA,0x69,0x41,0x53,0x4C,0x54,0x53,  /* 00000008    "..iASLTS" */
+		0x4C,0x54,0x42,0x4C,0x30,0x30,0x30,0x35,  /* 00000010    "LTBL0005" */
+		0x01,0x00,0x00,0x00,0x49,0x4E,0x54,0x4C,  /* 00000018    "....INTL" */
+		0x31,0x08,0x16,0x20,0x08,0x44,0x44,0x42,  /* 00000020    "1.. .DDB" */
+		0x58,0x00,0x08,0x42,0x55,0x46,0x58,0x11,  /* 00000028    "X..BUFX." */
+		0x37,0x0A,0x34,0x53,0x53,0x44,0x54,0x34,  /* 00000030    "7.4SSDT4" */
+		0x00,0x00,0x00,0x02,0x98,0x49,0x6E,0x74,  /* 00000038    ".....Int" */
+		0x65,0x6C,0x00,0x4D,0x61,0x6E,0x79,0x00,  /* 00000040    "el.Many." */
+		0x00,0x00,0x00,0x01,0x00,0x00,0x00,0x49,  /* 00000048    ".......I" */
+		0x4E,0x54,0x4C,0x15,0x12,0x06,0x20,0x14,  /* 00000050    "NTL... ." */
+		0x0F,0x5C,0x53,0x53,0x53,0x30,0x00,0xA4,  /* 00000058    ".\SSS0.." */
+		0x0D,0x5C,0x53,0x53,0x53,0x30,0x00,0x5B,  /* 00000060    ".\SSS0.[" */
+		0x80,0x49,0x53,0x54,0x58,0x00,0x00,0x0A,  /* 00000068    ".ISTX..." */
+		0x34,0x5B,0x81,0x0C,0x49,0x53,0x54,0x58,  /* 00000070    "4[..ISTX" */
+		0x01,0x52,0x46,0x55,0x58,0x40,0x1A,0x70,  /* 00000078    ".RFUX@.p" */
+		0x42,0x55,0x46,0x58,0x52,0x46,0x55,0x58,  /* 00000080    "BUFXRFUX" */
+		0x5B,0x20,0x52,0x46,0x55,0x58,0x44,0x44,  /* 00000088    "[ RFUXDD" */
+		0x42,0x58                                 /* 00000090    "BX"       */
+	})
+	OperationRegion (IST5, SystemMemory, 0x600, 0x92)
+	Field(IST5, ByteAcc, NoLock, Preserve) {
+		RFU5, 0x490,
+	}
+	// DDB Handle
+	External(\DDBX)
+
+	// Recursive Load in module level code
+	Method(tstk, 1, Serialized)
+	{
+		Name(DDBH, 0)
+
+		Concatenate(arg0, "-tstk", arg0)
+
+		if (CondRefof(\DDBX, Local0)) {
+			err(arg0, z174, 0x0f0, 0, 0, "\\DDBX", 1)
+			return
+		}
+		if (CondRefof(\SSS0, Local0)) {
+			err(arg0, z174, 0x0f1, 0, 0, "\\SSS0", 1)
+			return
+		}
+
+		Store(BUF5, RFU5)
+		Load(RFU5, DDBH)
+		if (CH03(arg0, z174, 0x0f2, 0, 0)) {
+			return (1)
+		}
+
+		if (CondRefof(\DDBX, Local0)) {
+		} else {
+			err(arg0, z174, 0x0f3, 0, 0, "\\DDBX", 1)
+			return
+		}
+		if (CondRefof(\SSS0, Local0)) {
+		} else {
+			err(arg0, z174, 0x0f4, 0, 0, "\\SSS0", 1)
+			return
+		}
+
+		Unload(DDBX)
+		if (CH03(arg0, z174, 0x0f5, 0, 0)) {
+			return (1)
+		}
+
+		if (CondRefof(\SSS0, Local0)) {
+			err(arg0, z174, 0x0f6, 0, 0, "\\SSS0", 1)
+			return
+		}
+
+		UnLoad(DDBH)
+		if (CH03(arg0, z174, 0x0f7, 0, 0)) {
+			return (1)
+		}
+
+		if (CondRefof(\DDBX, Local0)) {
+			err(arg0, z174, 0x0f8, 0, 0, "\\DDBX", 1)
+			return
+		}
 	}
 }
 
@@ -2146,6 +2207,12 @@ Method(TLD0,, Serialized)
 	}
 
 	CH03(ts, z174, 0x20c, 0, 0)
+
+	// Recursive Load in module level
+	SRMT("TLD0.tstk")
+	\DTM0.tstk(ts)
+
+	CH03(ts, z174, 0x20d, 0, 0)
 }
 
 // Exceptional conditions

@@ -26,68 +26,30 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- * The Load operator tests auxiliary SSDT,
- * specifies the Objects of different types
- */
-
 DefinitionBlock(
-	"ssdt3.aml",   // Output filename
+	"ssdt5.aml",   // Output filename
 	"SSDT",     // Signature
 	0x02,       // DSDT Revision
-	"Intel",    // OEMID
-	"Many",     // TABLE ID
+	"iASLTS",    // OEMID
+	"LTBL0005",     // TABLE ID
 	0x00000001  // OEM Revision
 	) {
 
-	Device (AUXD) {
-
-		// Integer
-		Name(INT0, 0xfedcba9876543210)
-
-		// String
-		Name(STR0, "source string0")
-
-		// Buffer
-		Name(BUF0, Buffer(9){9,8,7,6,5,4,3,2,1})
-
-		// Package
-		Name(PAC0, Package(3) {
-			0xfedcba987654321f,
-			"test package0",
-			Buffer(9){19,18,17,16,15,14,13,12,11},
-		})
-
-		// Operation Region
-		OperationRegion(OPR0, SystemMemory, 0x7654321, 0x98)
-
-		// Field Unit
-		Field(OPR0, ByteAcc, NoLock, Preserve) {
-			FLU0, 32,
-		}
-
-		// Device
-		Device(DEV0) {Name(s000, "DEV0")}
-
-		// Event
-		Event(EVE0)
-
-		// Method
-		Method(MMM0) {Return (0)}
-
-		// Mutex
-		Mutex(MTX0, 0)
-
-		// Power Resource
-		PowerResource(PWR0, 0, 0) {Name(s000, "PWR0")}
-
-		// Processor
-		Processor(CPU0, 0x0, 0xFFFFFFFF, 0x0) {Name(s000, "CPU0")}
-
-		// Thermal Zone
-		ThermalZone(TZN0) {Name(s000, "TZN0")}
-
-		// Buffer Field
-		Createfield(BUF0, 0, 69, BFL0)
+	Name(DDBX, 0)
+	// Originated from ssdt0.asl: iasl -tc ssdt0.asl
+	Name(BUFX, Buffer() {
+		0x53,0x53,0x44,0x54,0x34,0x00,0x00,0x00,  /* 00000000    "SSDT4..." */
+		0x02,0x98,0x49,0x6E,0x74,0x65,0x6C,0x00,  /* 00000008    "..Intel." */
+		0x4D,0x61,0x6E,0x79,0x00,0x00,0x00,0x00,  /* 00000010    "Many...." */
+		0x01,0x00,0x00,0x00,0x49,0x4E,0x54,0x4C,  /* 00000018    "....INTL" */
+		0x15,0x12,0x06,0x20,0x14,0x0F,0x5C,0x53,  /* 00000020    "... ..\S" */
+		0x53,0x53,0x30,0x00,0xA4,0x0D,0x5C,0x53,  /* 00000028    "SS0...\S" */
+		0x53,0x53,0x30,0x00,
+	})
+	OperationRegion (ISTX, SystemMemory, 0, 0x34)
+	Field(ISTX, ByteAcc, NoLock, Preserve) {
+		RFUX, 0x1a0,
 	}
+	Store(BUFX, RFUX)
+	Load(RFUX, DDBX)
 }

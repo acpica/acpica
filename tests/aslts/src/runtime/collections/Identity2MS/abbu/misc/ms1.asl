@@ -6480,13 +6480,7 @@ Method(ms31, 1, Serialized)
 
 		if (y290) {
 			m002()
-		}
-
-		if (LAnd(y260, y290)) {
 			m003()
-		}
-
-		if (LAnd(y260, y290)) {
 			m004()
 		}
 
