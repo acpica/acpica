@@ -698,10 +698,8 @@ AcpiDsLoad2EndOp (
                 }
             }
 
-            AcpiExExitInterpreter ();
             Status = AcpiEvInitializeRegion (
                 AcpiNsGetAttachedObject (Node), FALSE);
-            AcpiExEnterInterpreter ();
 
             if (ACPI_FAILURE (Status))
             {
