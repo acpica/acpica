@@ -413,6 +413,8 @@ AcpiTbParseFadt (
 {
     UINT32                  Length;
     ACPI_TABLE_HEADER       *Table;
+    ACPI_TABLE_DESC         *FadtDesc;
+    ACPI_STATUS             Status;
 
 
     /*
@@ -422,14 +424,13 @@ AcpiTbParseFadt (
      * Get a local copy of the FADT and convert it to a common format
      * Map entire FADT, assumed to be smaller than one page.
      */
-    Length = AcpiGbl_RootTableList.Tables[AcpiGbl_FadtIndex].Length;
-
-    Table = AcpiOsMapMemory (
-        AcpiGbl_RootTableList.Tables[AcpiGbl_FadtIndex].Address, Length);
-    if (!Table)
+    FadtDesc = &AcpiGbl_RootTableList.Tables[AcpiGbl_FadtIndex];
+    Status = AcpiTbGetTable (FadtDesc, &Table);
+    if (ACPI_FAILURE (Status))
     {
         return;
     }
+    Length = FadtDesc->Length;
 
     /*
      * Validate the FADT checksum before we copy the table. Ignore
@@ -443,7 +444,7 @@ AcpiTbParseFadt (
 
     /* All done with the real FADT, unmap it */
 
-    AcpiOsUnmapMemory (Table, Length);
+    AcpiTbPutTable (FadtDesc);
 
     /* Obtain the DSDT and FACS tables via their addresses within the FADT */
 
