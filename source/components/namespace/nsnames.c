@@ -321,15 +321,6 @@ AcpiNsHandleToPathname (
  *
  ******************************************************************************/
 
-#define ACPI_PATH_PUT8(Path, Size, Byte, Length)    \
-    do {                                            \
-        if ((Length) < (Size))                      \
-        {                                           \
-            (Path)[(Length)] = (Byte);              \
-        }                                           \
-        (Length)++;                                 \
-    } while (0)
-
 UINT32
 AcpiNsBuildNormalizedPath (
     ACPI_NAMESPACE_NODE     *Node,
@@ -340,14 +331,21 @@ AcpiNsBuildNormalizedPath (
     UINT32                  Length = 0, i;
     char                    Name[ACPI_NAME_SIZE];
     BOOLEAN                 DoNoTrailing;
-    char                    c;
-    char                    *Left;
-    char                    *Right;
+    char                    c, *Left, *Right;
     ACPI_NAMESPACE_NODE     *NextNode;
 
 
     ACPI_FUNCTION_TRACE_PTR (NsBuildNormalizedPath, Node);
 
+
+#define ACPI_PATH_PUT8(Path, Size, Byte, Length)    \
+    do {                                            \
+        if ((Length) < (Size))                      \
+        {                                           \
+            (Path)[(Length)] = (Byte);              \
+        }                                           \
+        (Length)++;                                 \
+    } while (0)
 
     /*
      * Make sure the PathSize is correct, so that we don't need to
@@ -411,10 +409,7 @@ AcpiNsBuildNormalizedPath (
 BuildTrailingNull:
     ACPI_PATH_PUT8 (FullPath, PathSize, '\0', Length);
 
-//undef ACPI_PATH_PUT8
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Node [%4.4s], Path: %s\n",
-        Node->Name.Ascii, FullPath));
+#undef ACPI_PATH_PUT8
 
     return_UINT32 (Length);
 }
