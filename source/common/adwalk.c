@@ -426,93 +426,6 @@ AcpiDmConvertResourceIndexes (
  *
  ******************************************************************************/
 
-#if 0
-static void
-DmDumpParseOpName (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    UINT32                  DataLength)
-{
-    UINT32                  IndentLength;
-    UINT32                  NameLength;
-    UINT32                  LineLength;
-    UINT32                  PaddingLength;
-
-
-    /* Emit the LineNumber/IndentLevel prefix on each output line */
-
-
-    /* Calculate various lengths for output alignment */
-
-    IndentLength = Level * DEBUG_SPACES_PER_INDENT;
-    NameLength = strlen (ParseOpName);
-    LineLength = IndentLength + 1 + NameLength + 1 + DataLength;
-    PaddingLength = (DEBUG_MAX_LINE_LENGTH + 1) - LineLength;
-
-    /* Parse tree indentation is based upon the nesting/indent level */
-
-    if (Level)
-    {
-        DbgPrint (ASL_TREE_OUTPUT, "%*s", IndentLength, " ");
-    }
-
-    /* Emit the actual name here */
-
-    DbgPrint (ASL_TREE_OUTPUT, " %s", ParseOpName);
-
-    /* Emit extra padding blanks for alignment of later data items */
-
-    if (LineLength > DEBUG_MAX_LINE_LENGTH)
-    {
-        /* Split a long line immediately after the ParseOpName string */
-
-        DbgPrint (ASL_TREE_OUTPUT, "\n%*s",
-            (DEBUG_FULL_LINE_LENGTH - DataLength), " ");
-    }
-    else
-    {
-        DbgPrint (ASL_TREE_OUTPUT, "%*s", PaddingLength, " ");
-    }
-}
-
-void
-DmDumpStringOp (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level)
-{
-    char                    *String;
-
-
-    String = Op->Asl.Value.String;
-
-    if (Op->Asl.ParseOpcode != PARSEOP_STRING_LITERAL)
-    {
-        /*
-         * For the "path" ops NAMEPATH, NAMESEG, METHODCALL -- if the
-         * ExternalName is valid, it takes precedence. In these cases the
-         * Value.String is the raw "internal" name from the AML code, which
-         * we don't want to use, because it contains non-ascii characters.
-         */
-        if (Op->Asl.ExternalName)
-        {
-            String = Op->Asl.ExternalName;
-        }
-    }
-
-    if (!String)
-    {
-        DbgPrint (ASL_TREE_OUTPUT,
-            " ERROR: Could not find a valid String/Path pointer\n");
-        return;
-    }
-
-    /* Emit the ParseOp name, leaving room for the string */
-
-    UtDumpParseOpName (Op, Level, strlen (String));
-    DbgPrint (ASL_TREE_OUTPUT, "%s", String);
-}
-#endif
-
 static ACPI_STATUS
 AcpiDmDumpDescending (
     ACPI_PARSE_OBJECT       *Op,
@@ -563,7 +476,6 @@ AcpiDmDumpDescending (
 
         if (Op->Common.Value.String)
         {
-//UtDumpStringOp (Op, Level);
             AcpiNsExternalizeName (ACPI_UINT32_MAX, Op->Common.Value.String,
                 NULL, &Path);
             AcpiOsPrintf ("%s %p", Path, Op->Common.Node);
@@ -580,15 +492,7 @@ AcpiDmDumpDescending (
     case AML_DEVICE_OP:
     case AML_INT_NAMEDFIELD_OP:
 
-        AcpiOsPrintf (" %4.4s ", ACPI_CAST_PTR (char, &Op->Named.Name));
-        AcpiOsPrintf (" %s ", Op->Common.InlineComment);
-        if (Op->Common.CommentList)
-        AcpiOsPrintf (" %s ", Op->Common.CommentList->Comment);
-        AcpiOsPrintf (" %s ", Op->Common.NameComment);
-        AcpiOsPrintf (" %s ", Op->Common.EndNodeComment);
-        AcpiOsPrintf (" %s ", Op->Common.AmlOpName);
-        AcpiOsPrintf (" 0x%x ", Op->Common.AmlOpcode);
-
+        AcpiOsPrintf ("%4.4s", ACPI_CAST_PTR (char, &Op->Named.Name));
         break;
 
     default:
@@ -596,7 +500,6 @@ AcpiDmDumpDescending (
         break;
     }
 
-    //AcpiOsPrintf ("     %p parent %p", Op, Op->Common.Parent);
     AcpiOsPrintf ("\n");
     return (AE_OK);
 }

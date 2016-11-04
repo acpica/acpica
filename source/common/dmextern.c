@@ -943,7 +943,6 @@ AcpiDmCreateNewExternal (
     NextExternal = AcpiGbl_ExternalList;
     while (NextExternal)
     {
-#if 0
         if (AcpiUtStricmp (NewExternal->Path, NextExternal->Path) < 0)
         {
             if (PrevExternal)
@@ -958,7 +957,7 @@ AcpiDmCreateNewExternal (
             NewExternal->Next = NextExternal;
             return_ACPI_STATUS (AE_OK);
         }
-#endif
+
         PrevExternal = NextExternal;
         NextExternal = NextExternal->Next;
     }
@@ -1176,8 +1175,7 @@ AcpiDmEmitExternals (
     {
         if (!(AcpiGbl_ExternalList->Flags & ACPI_EXT_EXTERNAL_EMITTED))
         {
-            AcpiOsPrintf ("    External (%s%s%s)",
-                ((AcpiGbl_ExternalList->Path[0] == '\\') ? "" : "\\"),
+            AcpiOsPrintf ("    External (%s%s)",
                 AcpiGbl_ExternalList->Path,
                 AcpiDmGetObjectTypeName (AcpiGbl_ExternalList->Type));
 
