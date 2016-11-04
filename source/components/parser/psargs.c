@@ -856,6 +856,10 @@ AcpiPsGetNextArg (
         "Expected argument type ARGP: %s (%2.2X)\n",
         AcpiUtGetArgumentTypeName (ArgType), ArgType));
 
+    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
+        "Expected argument type ARGP: %s (%2.2X)\n",
+        AcpiUtGetArgumentTypeName (ArgType), ArgType));
+
     switch (ArgType)
     {
     case ARGP_BYTEDATA:

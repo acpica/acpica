@@ -486,6 +486,7 @@ AbCompareAmlFiles (
     {
         /* Display header information */
 
+        printf ("Comparing %s to %s\n", File1Path, File2Path);
         AbPrintHeadersInfo (&Header1, &Header2);
     }
 
@@ -496,6 +497,12 @@ AbCompareAmlFiles (
     }
 
     /* Do the byte-by-byte compare */
+
+    printf ("Compare offset: %u\n", AbGbl_CompareOffset);
+    if (AbGbl_CompareOffset)
+    {
+        fseek (File2, AbGbl_CompareOffset, SEEK_CUR);
+    }
 
     Actual1 = fread (&Char1, 1, 1, File1);
     Actual2 = fread (&Char2, 1, 1, File2);

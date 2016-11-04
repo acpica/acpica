@@ -136,6 +136,7 @@
 
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_TerseMode, FALSE);
 EXTERN BOOLEAN              INIT_GLOBAL (AbGbl_DisplayAllMiscompares, FALSE);
+EXTERN UINT32               INIT_GLOBAL (AbGbl_CompareOffset, 0);
 
 
 /* Prototypes */

@@ -162,7 +162,7 @@ AcpiDsInitializeRegion (
 
     /* Namespace is NOT locked */
 
-    Status = AcpiEvInitializeRegion (ObjDesc, FALSE);
+    Status = AcpiEvInitializeRegion (ObjDesc);
     return (Status);
 }
 

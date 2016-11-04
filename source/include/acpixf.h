@@ -654,6 +654,11 @@ AcpiGetTable (
     UINT32                  Instance,
     ACPI_TABLE_HEADER       **OutTable))
 
+ACPI_EXTERNAL_RETURN_VOID (
+void
+AcpiPutTable (
+    ACPI_TABLE_HEADER       *Table))
+
 ACPI_EXTERNAL_RETURN_STATUS (
 ACPI_STATUS
 AcpiGetTableByIndex (
