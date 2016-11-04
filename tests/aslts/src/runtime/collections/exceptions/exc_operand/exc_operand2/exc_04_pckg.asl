@@ -2113,11 +2113,14 @@ Method(m4b4, 1, Serialized)
 
 		// CondRefOf
 
+// **** 10/2016 changed method invocation to just a namestring
+// CondRefOf no longer invokes the method
+
 		if (y601) {
-			Store (CondRefOf(m000()), Local1)
+			Store (CondRefOf(m000), Local1)
 			CH06(arg0, 0, 47)
 
-			CondRefOf(m000(), Local1)
+			CondRefOf(m000, Local1)
 			CH06(arg0, 1, 47)
 		}
 
@@ -2166,18 +2169,19 @@ Method(m4b4, 1, Serialized)
 		Not(m000(), Local1)
 		CH06(arg0, 13, 47)
 
-		// ObjectType
+		// **** ObjectType
         /* Nov. 2012: Method invocation as arg to ObjectType is now illegal */
-//
-//		ObjectType(m000())
-//		CH03(ts, z096, 63, 0, 0)
+
+		Store (ObjectType(m000), Local0)
+		CH03(ts, z096, 63, 0, 0)
 
 		// RefOf
+        /* **** Oct. 2016: Method invocation as arg to RefOf is now illegal */
 
-		if (y601) {
-			Store (RefOf(m000()), Local1)
-			CH06(arg0, 14, 47)
-		}
+//		if (y601) {
+//			Store (RefOf(m000()), Local1)
+//			CH06(arg0, 14, 47)
+//		}
 
 		// Release
 
@@ -2559,14 +2563,18 @@ Method(m4b4, 1, Serialized)
 		}
 
 		// CondRefOf
+
+
+// **** 10/2016 changed method invocation to just a namestring
+// CondRefOf no longer invokes the method
 		
 		if (y601) {
-			Store (CondRefOf(m000(1)), Local1)
+			Store (CondRefOf(m000), Local1)
 			CH06(arg0, 1, 47)
 			CH00(arg0, 1)
 		}
 
-		Store (CondRefOf(m000(2)), Local1)
+		Store (CondRefOf(m000), Local1)
 		CH06(arg0, 2, 47)
 		if (y600) {
 			CH00(arg0, 2)
@@ -2579,12 +2587,13 @@ Method(m4b4, 1, Serialized)
 		CH00(arg0, 3)
 
 		// RefOf
+        /* Oct. 2016: Method invocation as arg to RefOf is now illegal */
 
-		if (y601) {
-			Store (RefOf(m000(4)), Local1)
-			CH06(arg0, 4, 47)
-			CH00(arg0, 4)
-		}
+//		if (y601) {
+//			Store (RefOf(m000(4)), Local1)
+//			CH06(arg0, 4, 47)
+//			CH00(arg0, 4)
+//		}
 
 		// Release
 
