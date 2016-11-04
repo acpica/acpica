@@ -798,8 +798,6 @@ void
 AcpiDmCloseOperator (
     ACPI_PARSE_OBJECT       *Op)
 {
-    BOOLEAN                 IsCStyleOp = FALSE;
-    ACPI_PARSE_OBJECT       *Target;
 
     /* Always emit paren if ASL+ disassembly disabled */
 
@@ -854,20 +852,7 @@ AcpiDmCloseOperator (
 
         /* This is case for unsupported Index() source constants */
 
-        Target = AcpiPsGetArg(Op, 2);
-
         if (Op->Common.DisasmFlags & ACPI_PARSEOP_CLOSING_PAREN)
-        {
-            AcpiOsPrintf (")");
-        }
-
-        /*
-         * Emit a close paren if the parent is a Store op and
-         * there is a valid Target for the Index op
-         */
-        else if (Target &&
-            AcpiDmIsValidTarget (Target) &&
-            Op->Common.Parent->Common.AmlOpcode == AML_STORE_OP)
         {
             AcpiOsPrintf (")");
         }
@@ -887,20 +872,6 @@ AcpiDmCloseOperator (
         /* Always emit paren for non-ASL+ operators */
         break;
     }
-
-    /*
-     * Nodes marked with ACPI_PARSEOP_PARAMLIST don't need a parens
-     * output here. We also need to check the parent to see if this op
-     * is part of a compound test (!=, >=, <=).
-     */
-    if (IsCStyleOp &&
-       ((Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST) ||
-       ((Op->Common.Parent->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST) &&
-        (Op->Common.DisasmOpcode == ACPI_DASM_LNOT_SUFFIX))))
-    {
-        goto PrintInlineComment;
-    }
-
     AcpiOsPrintf (")");
 
 PrintInlineComment:
