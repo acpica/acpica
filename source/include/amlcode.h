@@ -315,6 +315,7 @@
 #define ARGP_QWORDDATA              0x11
 #define ARGP_SIMPLENAME             0x12 /* NameString | LocalTerm | ArgTerm */
 #define ARGP_NAME_OR_REF            0x13 /* For ObjectType only */
+#define ARGP_MAX                    0x13
 
 /*
  * Resolved argument types for the AML Interpreter
