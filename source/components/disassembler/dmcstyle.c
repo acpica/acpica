@@ -584,13 +584,6 @@ AcpiDmCheckForSymbolicOpcode (
             {
                 Target->Common.OperatorSymbol = " = ";
             }
-
-            /* Emit an open paren if the parent is a Store op */
-
-            if (Op->Common.Parent->Common.AmlOpcode == AML_STORE_OP)
-            {
-                AcpiOsPrintf ("(");
-            }
         }
         return (TRUE);
 
