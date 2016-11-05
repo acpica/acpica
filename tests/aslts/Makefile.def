@@ -78,48 +78,82 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 				echo "" >> $(COMPILER_LOG); \
 				if [ $(OPT) -eq 0 ]; then \
 					for k in ${AMLMOD}; do \
-						>&2 printf " => Disassemble"; \
-						echo "---- Diasassemble: $$k.aml" >> $(COMPILER_LOG); \
-						echo "---- Diasassemble: $$k.aml" >> $(COMPILER_ERROR_LOG); \
+						>&2 printf " => ASL- Disassemble"; \
+						echo "---- ASL- Diasassemble: $$k.aml" >> $(COMPILER_LOG); \
+						echo "---- ASL- Diasassemble: $$k.aml" >> $(COMPILER_ERROR_LOG); \
 						"$(ASL)" -p $$k-aslminus -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -od -dl $$k.aml >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+						>&2 printf " => ASL+ Disassemble"; \
+						echo "---- ASL+ Diasassemble: $$k.aml" >> $(COMPILER_LOG); \
+						echo "---- ASL+ Diasassemble: $$k.aml" >> $(COMPILER_ERROR_LOG); \
+						"$(ASL)" -p $$k-aslplus -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -od -dl $$k.aml >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
 						if [ ! -f $$k-aslminus.dsl ]; then \
-							>&2 printf " [[ Error: disassembly failed of $$k.aml failed ]]\n"; \
+							>&2 printf " [[ Error: ASL- disassembly failed of $$k.aml failed ]]\n"; \
 							>&2 printf "          Flags used: -p $$k-aslminus -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -od -dl\n\n"; \
 							exit 1; \
 						fi; \
-						>&2 printf " => Recompile"; \
-						echo "---- Recompile: $$k.dsl" >> $(COMPILER_LOG); \
-						echo "---- Recompile: $$k.dsl" >> $(COMPILER_ERROR_LOG); \
+						if [ ! -f $$k-aslplus.dsl ]; then \
+							>&2 printf " [[ Error: ASL+ disassembly failed of $$k.aml failed ]]\n"; \
+							>&2 printf "          Flags used: -p $$k-aslplus -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -od -dl\n\n"; \
+							exit 1; \
+						fi; \
+						>&2 printf " => ASL- Recompile"; \
+						echo "---- ASL- Recompile: $$k.dsl" >> $(COMPILER_LOG); \
+						echo "---- ASL- Recompile: $$k.dsl" >> $(COMPILER_ERROR_LOG); \
 						"$(ASL)" $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$k-aslminus.dsl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
 						if [ ! -f $$k-aslminus.aml ]; then \
-							>&2 printf " [[ Error: re-compilation of $$k-aslminus.dsl failed]]\n"; \
+							>&2 printf " [[ Error: ASL- re-compilation of $$k-aslminus.dsl failed]]\n"; \
 							>&2 printf "          Flags used: $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS)\n\n"; \
 							exit 1; \
 						fi; \
-						rm $$k-aslminus.asm; \
-						rm $$k-aslminus.c; \
-						rm $$k-aslminus.h; \
-						rm $$k-aslminus.i; \
-						rm $$k-aslminus.hex; \
-						rm $$k-aslminus.map; \
-						rm $$k-aslminus.nsp; \
-						rm $$k-aslminus.offset.h; \
-						rm $$k-aslminus.src; \
+						>&2 printf " => ASL+ Recompile"; \
+						echo "---- ASL+ Recompile: $$k.dsl" >> $(COMPILER_LOG); \
+						echo "---- ASL+ Recompile: $$k-aslplus.dsl" >> $(COMPILER_ERROR_LOG); \
+						"$(ASL)" $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$k-aslplus.dsl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+						if [ ! -f $$k-aslplus.aml ]; then \
+							>&2 printf " [[ Error: ASL+ re-compilation of $$k-aslplus.dsl failed]]\n"; \
+							>&2 printf "          Flags used: $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS)\n\n"; \
+							exit 1; \
+						fi; \
+						>&2 printf " => removing un-needed files"; \
+						rm $$k-aslminus.asm $$k-aslplus.asm; \
+						rm $$k-aslminus.c $$k-aslplus.c; \
+						rm $$k-aslminus.h $$k-aslplus.h; \
+						rm $$k-aslminus.i $$k-aslplus.i; \
+						rm $$k-aslminus.hex $$k-aslplus.hex; \
+						rm $$k-aslminus.map $$k-aslplus.map; \
+						rm $$k-aslminus.nsp $$k-aslplus.nsp; \
+						rm $$k-aslminus.offset.h $$k-aslplus.offset.h; \
+						rm $$k-aslminus.src  $$k-aslplus.src; \
 						if [ $$CUR_AMLDIR = "nopt/32" ] || [ $$CUR_AMLDIR = "nopt/64" ]; then \
-							>&2 printf " => Binary compare"; \
+							>&2 printf " => ASL- compare"; \
 							acpibin -c $$k.aml $$k-aslminus.aml >> comparison_output.txt; \
 							if [ $$? != 0 ]; then \
 								>&2 printf " [[ Error: comparison of $$k.aml and $$k-aslminus.aml do not match ]]"; \
-								cat comparison_output.txt | sed '1,/^Error/d' | sed 's/Error - Byte mismatch at offset     /         => /g' | sed -n 1,10p > comparison_output.txt;\
+								cat comparison_output.txt | sed '1,/^Error/d' | sed 's/Error - Byte mismatch at offset     /         => /g' | sed -n 1,10p > comparison_output.txt; \
 								>&2 printf "\n"; \
 								cat comparison_output.txt >&2 ; \
 								>&2 printf "        "; \
 								#exit 1; \
 							else \
-								>&2 printf " => Removing files"; \
+								>&2 printf " => Removing ASL- files"; \
 								rm $$k-aslminus.lst; \
 								rm $$k-aslminus.aml; \
 								rm $$k-aslminus.dsl; \
+							fi; \
+							>&2 printf " => ASL+ compare"; \
+							acpibin -c $$k.aml $$k-aslplus.aml >> comparison_output.txt; \
+							if [ $$? != 0 ]; then \
+								>&2 printf " [[ Error: comparison of $$k.aml and $$k-aslplus.aml do not match ]]"; \
+								cat comparison_output.txt | sed '1,/^Error/d' | sed 's/Error - Byte mismatch at offset     /         => /g' | sed -n 1,10p > comparison_output.txt; \
+								>&2 printf "\n"; \
+								cat comparison_output.txt >&2 ; \
+								>&2 printf "        "; \
+								#exit 1; \
+							else \
+								>&2 printf " => Removing ASL- files"; \
+								rm $$k-aslplus.lst; \
+								rm $$k-aslplus.aml; \
+								rm $$k-aslplus.dsl; \
 							fi; \
 						fi; \
 						>&2 printf " => Done"; \
