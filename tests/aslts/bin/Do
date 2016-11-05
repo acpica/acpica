@@ -301,7 +301,7 @@ do_bdemo_table()
 # arg1 - root directory of aslts
 make_install_1()
 {
-	local dir restore_dir
+	local dir restore_dir diasm
 
 	restore_dir=$PWD
 	dir="$1"
@@ -373,11 +373,11 @@ make_install_2()
 	# Check only all parameters are correct
 	# (abort when something is wrong)
 
-	do_test_cases_make_install "$1" "$2" 0
+	do_test_cases_make_install "$1" "$2" 0 
 
 	# Run actual work
 
-	do_test_cases_make_install "$1" "$2" 1
+	do_test_cases_make_install "$1" "$2" 1 "$3"
 }
 
 # Check parameters to be the names of test
@@ -429,11 +429,11 @@ make_install_3()
 	# Check only all parameters are correct
 	# (abort when something is wrong)
 
-	do_collections_make_install "$1" "$2" 0
+	do_collections_make_install "$1" "$2" 0 
 
 	# Run actual work
 
-	do_collections_make_install "$1" "$2" 1
+	do_collections_make_install "$1" "$2" 1 "$3"
 }
 
 # Make-install the test case(s).
@@ -465,14 +465,14 @@ run_asl_compiler()
 		usage
 		do_exit 1 "Bad parameters 0"
 	elif [ $lexem == ASLTS -o $lexem == aslts ]; then
-		if [ $nparam != 2 ]; then
+		if [ $nparam != 3 ]; then
 			usage
 			do_exit 1 "Bad parameters 1"
 		else
 			action=1
 		fi
 	elif [ $lexem == ALL -o $lexem == all ]; then
-		if [ $nparam -le 2 ]; then
+		if [ $nparam -le 3 ]; then
 			usage
 			do_exit 1 "Bad parameters 2"
 		else
@@ -483,10 +483,10 @@ run_asl_compiler()
 		action=2
 		list=`echo "$3" | cut -c 3-`
 	fi
-	list=`echo $list | rev | cut -c 4- | rev ` # cut the last item from the list. It's a yes or no from the diasm option.
- 
- 	>&2 echo "list of testcases: $list"
 
+	list=`echo $list | rev | cut -c 4- | rev ` # cut the last item from the list. It's a yes or no from the diasm option.
+
+	>&2 echo "list of testcases: $list"
 	if [ $action == 1 ]; then
 		echo "Make-install all the provided test cases"
 		make_install_1 "$1" "$execonly"
