@@ -172,9 +172,9 @@ AxIsEmptyLine (
         Buffer++;
     }
 
-    /* If end-of-line, this line is empty */
+    /* Line is empty when a Unix or DOS-style line terminator is found. */
 
-    if (*Buffer == '\n')
+    if ((*Buffer == '\r') || (*Buffer == '\n'))
     {
         return (1);
     }
