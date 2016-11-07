@@ -829,11 +829,8 @@ TrCreateLeafNode (
     if (Gbl_CaptureComments)
     {
         printf ("Created leaf node\n");
-        if (ParseOpcode == PARSEOP_DEFINITION_BLOCK)
-        {
-            Gbl_CommentState.ParseDefBlockHeader = TRUE;
-        }
-        else if (ParseOpcode == PARSEOP_BUFFER)
+
+        if (ParseOpcode == PARSEOP_BUFFER)
         {
             Gbl_CommentState.CaptureComments = FALSE;
         }

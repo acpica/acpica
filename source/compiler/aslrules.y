@@ -156,14 +156,14 @@ AslCode
  */
 DefinitionBlockTerm
     : PARSEOP_DEFINITION_BLOCK
-        PARSEOP_OPEN_PAREN          {$<n>$ = TrCreateLeafNode (PARSEOP_DEFINITION_BLOCK);}
+        PARSEOP_OPEN_PAREN          {$<n>$ = TrCreateLeafNode (PARSEOP_DEFINITION_BLOCK); Gbl_CommentState.CaptureComments = FALSE;}
         String ','
         String ','
         ByteConst ','
         String ','
         String ','
         DWordConst
-        PARSEOP_CLOSE_PAREN         {TrSetEndLineNumber ($<n>3);}
+        PARSEOP_CLOSE_PAREN         {TrSetEndLineNumber ($<n>3); Gbl_CommentState.CaptureComments = TRUE;}
             '{' TermList '}'        {$$ = TrLinkChildren ($<n>3,7,
                                         $4,$6,$8,$10,$12,$14,$18);}
     ;
