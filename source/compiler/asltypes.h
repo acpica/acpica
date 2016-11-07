@@ -414,7 +414,6 @@ typedef struct asl_comment_state
     ACPI_PARSE_OBJECT       *Latest_Parse_Node;
     ACPI_PARSE_OBJECT       *ParsingParenBraceNode;
     BOOLEAN                 CaptureComments;
-    BOOLEAN                 ParseMethodDef;
 } ASL_COMMENT_STATE;
 
 

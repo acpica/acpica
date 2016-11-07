@@ -620,16 +620,16 @@ FromBCDTerm
 
 FunctionTerm
     : PARSEOP_FUNCTION
-        PARSEOP_OPEN_PAREN          {$<n>$ = TrCreateLeafNode (PARSEOP_METHOD);}
+        PARSEOP_OPEN_PAREN          {Gbl_CommentState.CaptureComments = FALSE; $<n>$ = TrCreateLeafNode (PARSEOP_METHOD); }
         NameString
         OptionalParameterTypePackage
         OptionalParameterTypesPackage
-        PARSEOP_CLOSE_PAREN '{'
+        PARSEOP_CLOSE_PAREN '{'     {Gbl_CommentState.CaptureComments = TRUE; }
             TermList '}'            {$$ = TrLinkChildren ($<n>3,7,
                                         TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),
                                         TrCreateValuedLeafNode (PARSEOP_BYTECONST, 0),
                                         TrCreateLeafNode (PARSEOP_SERIALIZERULE_NOTSERIAL),
-                                        TrCreateValuedLeafNode (PARSEOP_BYTECONST, 0),$5,$6,$9);}
+                                        TrCreateValuedLeafNode (PARSEOP_BYTECONST, 0),$5,$6,$10);}
     | PARSEOP_FUNCTION
         PARSEOP_OPEN_PAREN
         error PARSEOP_CLOSE_PAREN   {$$ = AslDoError(); yyclearin;}

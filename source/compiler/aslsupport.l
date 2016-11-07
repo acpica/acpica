@@ -192,11 +192,6 @@ AslProcessCommentState (
         case ASL_CLOSEPAREN:
 
             Gbl_CommentState.CommentType = ASL_CLOSEPARENCOMMENT;
-            if (Gbl_CommentState.ParseMethodDef == TRUE)
-            {
-                Gbl_CommentState.ParseMethodDef = FALSE;
-                Gbl_CommentState.CaptureComments = TRUE;
-            }
             break;
 
         case ASL_OPENBRACE:
