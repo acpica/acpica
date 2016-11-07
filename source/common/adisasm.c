@@ -547,6 +547,7 @@ AdReparseOneTable (
     ACPI_OWNER_ID           OwnerId)
 {
     ACPI_STATUS             Status;
+    ACPI_COMMENT_ADDR_NODE  *Temp;
 
 
     fprintf (stderr,
@@ -579,6 +580,15 @@ AdReparseOneTable (
     /* New namespace, add the external definitions first */
 
     AcpiDmAddExternalsToNamespace ();
+
+    /* For -ca option: clear the list of comment addresses. */
+
+    while (AcpiGbl_CommentAddrListHead)
+    {
+        Temp = AcpiGbl_CommentAddrListHead;
+        AcpiGbl_CommentAddrListHead = AcpiGbl_CommentAddrListHead->Next;
+        AcpiOsFree(Temp);
+    }
 
     /* Parse the table again. No need to reload it, however */
 
