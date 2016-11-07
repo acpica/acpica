@@ -334,7 +334,7 @@ AxCountTableInstances (
     unsigned int            Instances = 0;
 
 
-    InputFile = fopen (InputPathname, "rt");
+    InputFile = fopen (InputPathname, "r");
     if (!InputFile)
     {
         printf ("Could not open input file %s\n", InputPathname);

@@ -159,7 +159,7 @@ AxExtractTables (
 
     /* Open input in text mode, output is in binary mode */
 
-    InputFile = fopen (InputPathname, "rt");
+    InputFile = fopen (InputPathname, "r");
     if (!InputFile)
     {
         printf ("Could not open input file %s\n", InputPathname);
@@ -358,7 +358,7 @@ AxExtractToMultiAmlFile (
 
     /* Open the input file in text mode */
 
-    InputFile = fopen (InputPathname, "rt");
+    InputFile = fopen (InputPathname, "r");
     if (!InputFile)
     {
         printf ("Could not open input file %s\n", InputPathname);
@@ -489,7 +489,7 @@ AxListTables (
 
     /* Open input in text mode, output is in binary mode */
 
-    InputFile = fopen (InputPathname, "rt");
+    InputFile = fopen (InputPathname, "r");
     if (!InputFile)
     {
         printf ("Could not open input file %s\n", InputPathname);
