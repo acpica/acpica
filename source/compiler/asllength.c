@@ -435,6 +435,7 @@ CgGenerateAmlLengths (
 {
     char                    *Buffer;
     ACPI_STATUS             Status;
+ //   UINT32                  FilenameLength;
 
 
     switch (Op->Asl.AmlOpcode)
@@ -490,7 +491,8 @@ CgGenerateAmlLengths (
         
         if (Gbl_CaptureComments && Op->Asl.Filename)
         {
-            Gbl_TableLength += strlen(Op->Asl.Filename);
+//            FilenameLength = strrchr (Op->Asl.Filename, '.') - Op->Asl.Filename + 1 + 3;
+//            Gbl_TableLength += FilenameLength;
         }
 
         break;

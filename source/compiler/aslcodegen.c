@@ -854,7 +854,7 @@ CgWriteTableHeader (
     if (Gbl_CaptureComments)
     {
         printf ("====================Calculating comment lengths for %s====================\n",  Op->Asl.ParseOpName);
-        TableHeader.Length += strlen (Gbl_ParseTreeRoot->Asl.Filename) + 3;
+        //TableHeader.Length += strlen (Gbl_ParseTreeRoot->Asl.Filename) + 3;
         if (Op->Asl.CommentList!=NULL)
         {
             Current = Op->Asl.CommentList; 
