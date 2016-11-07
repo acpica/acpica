@@ -830,10 +830,6 @@ TrCreateLeafNode (
     {
         printf ("Created leaf node\n");
 
-        if (ParseOpcode == PARSEOP_BUFFER)
-        {
-            Gbl_CommentState.CaptureComments = FALSE;
-        }
     }
 
     DbgPrint (ASL_PARSE_OUTPUT,
@@ -1359,10 +1355,6 @@ TrLinkChildren (
             //printf ("EndBlk Comment for %s: %s", Op->Asl.ParseOpName, Gbl_Comment_List_Head->Comment);
             Gbl_Comment_List_Head = NULL;
             Gbl_Comment_List_Tail = NULL;
-        }
-        if (Op->Asl.ParseOpcode == PARSEOP_BUFFER)
-        {
-            Gbl_CommentState.CaptureComments = TRUE;
         }
     }
 

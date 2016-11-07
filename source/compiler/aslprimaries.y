@@ -220,9 +220,9 @@ BreakPointTerm
     ;
 
 BufferTerm
-    : PARSEOP_BUFFER                {$<n>$ = TrCreateLeafNode (PARSEOP_BUFFER);}
+    : PARSEOP_BUFFER                {$<n>$ = TrCreateLeafNode (PARSEOP_BUFFER); Gbl_CommentState.CaptureComments = FALSE; }
         OptionalDataCount
-        '{' BufferTermData '}'      {$$ = TrLinkChildren ($<n>2,2,$3,$5);}
+        '{' BufferTermData '}'      {$$ = TrLinkChildren ($<n>2,2,$3,$5); Gbl_CommentState.CaptureComments = TRUE;}
     ;
 
 BufferTermData
