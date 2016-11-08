@@ -128,6 +128,7 @@
 
 static UINT8
 AcpiHwGetAccessBitWidth (
+    UINT64                  Address,
     ACPI_GENERIC_ADDRESS    *Reg,
     UINT8                   MaxBitWidth);
 
@@ -150,7 +151,8 @@ AcpiHwWriteMultiple (
  *
  * FUNCTION:    AcpiHwGetAccessBitWidth
  *
- * PARAMETERS:  Reg                 - GAS register structure
+ * PARAMETERS:  Address             - GAS register address
+ *              Reg                 - GAS register structure
  *              MaxBitWidth         - Max BitWidth supported (32 or 64)
  *
  * RETURN:      Status
@@ -161,34 +163,71 @@ AcpiHwWriteMultiple (
 
 static UINT8
 AcpiHwGetAccessBitWidth (
+    UINT64                  Address,
     ACPI_GENERIC_ADDRESS    *Reg,
     UINT8                   MaxBitWidth)
 {
+    UINT8                   AccessBitWidth;
 
-    if (!Reg->AccessWidth)
+
+    /*
+     * GAS format "register", used by FADT:
+     *  1. Detected if BitOffset is 0 and BitWidth is 8/16/32/64;
+     *  2. AccessSize field is ignored and BitWidth field is used for
+     *     determining the boundary of the IO accesses.
+     * GAS format "region", used by APEI registers:
+     *  1. Detected if BitOffset is not 0 or BitWidth is not 8/16/32/64;
+     *  2. AccessSize field is used for determining the boundary of the
+     *     IO accesses;
+     *  3. BitOffset/BitWidth fields are used to describe the "region".
+     *
+     * Note: This algorithm assumes that the "Address" fields should always
+     *       contain aligned values.
+     */
+    if (!Reg->BitOffset && Reg->BitWidth &&
+        ACPI_IS_POWER_OF_TWO (Reg->BitWidth) &&
+        ACPI_IS_ALIGNED (Reg->BitWidth, 8))
     {
-        if (Reg->SpaceId == ACPI_ADR_SPACE_SYSTEM_IO)
-        {
-            MaxBitWidth = 32;
-        }
-
-        /*
-         * Detect old register descriptors where only the BitWidth field
-         * makes senses.
-         */
-        if (Reg->BitWidth < MaxBitWidth &&
-            !Reg->BitOffset && Reg->BitWidth &&
-            ACPI_IS_POWER_OF_TWO (Reg->BitWidth) &&
-            ACPI_IS_ALIGNED (Reg->BitWidth, 8))
-        {
-            return (Reg->BitWidth);
-        }
-        return (MaxBitWidth);
+        AccessBitWidth = Reg->BitWidth;
+    }
+    else if (Reg->AccessWidth)
+    {
+        AccessBitWidth = (1 << (Reg->AccessWidth + 2));
     }
     else
     {
-        return (1 << (Reg->AccessWidth + 2));
+        AccessBitWidth = ACPI_ROUND_UP_POWER_OF_TWO_8 (
+            Reg->BitOffset + Reg->BitWidth);
+        if (AccessBitWidth <= 8)
+        {
+            AccessBitWidth = 8;
+        }
+        else
+        {
+            while (!ACPI_IS_ALIGNED (Address, AccessBitWidth >> 3))
+            {
+                AccessBitWidth >>= 1;
+            }
+        }
     }
+
+    /* Maximum IO port access bit width is 32 */
+
+    if (Reg->SpaceId == ACPI_ADR_SPACE_SYSTEM_IO)
+    {
+        MaxBitWidth = 32;
+    }
+
+    /*
+     * Return access width according to the requested maximum access bit width,
+     * as the caller should know the format of the register and may enforce
+     * a 32-bit accesses.
+     */
+    if (AccessBitWidth < MaxBitWidth)
+    {
+        return (AccessBitWidth);
+    }
+    return (MaxBitWidth);
 }
 
 
@@ -257,7 +296,7 @@ AcpiHwValidateRegister (
 
     /* Validate the BitWidth, convert AccessWidth into number of bits */
 
-    AccessWidth = AcpiHwGetAccessBitWidth (Reg, MaxBitWidth);
+    AccessWidth = AcpiHwGetAccessBitWidth (*Address, Reg, MaxBitWidth);
     BitWidth = ACPI_ROUND_UP (Reg->BitOffset + Reg->BitWidth, AccessWidth);
     if (MaxBitWidth < BitWidth)
     {
@@ -320,7 +359,7 @@ AcpiHwRead (
      * into number of bits based
      */
     *Value = 0;
-    AccessWidth = AcpiHwGetAccessBitWidth (Reg, 32);
+    AccessWidth = AcpiHwGetAccessBitWidth (Address, Reg, 32);
     BitWidth = Reg->BitOffset + Reg->BitWidth;
     BitOffset = Reg->BitOffset;
 
@@ -416,7 +455,7 @@ AcpiHwWrite (
 
     /* Convert AccessWidth into number of bits based */
 
-    AccessWidth = AcpiHwGetAccessBitWidth (Reg, 32);
+    AccessWidth = AcpiHwGetAccessBitWidth (Address, Reg, 32);
     BitWidth = Reg->BitOffset + Reg->BitWidth;
     BitOffset = Reg->BitOffset;
 
