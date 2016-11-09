@@ -853,8 +853,13 @@ CgWriteTableHeader (
 
     if (Gbl_CaptureComments)
     {
-        printf ("====================Calculating comment lengths for %s====================\n",  Op->Asl.ParseOpName);
-        //TableHeader.Length += strlen (Gbl_ParseTreeRoot->Asl.Filename) + 3;
+        printf ("====================Calculating comment lengths for %s in write header ====================\n",  Op->Asl.ParseOpName);
+
+        /* Take the filename without extensions, add 3 for the new extension and another 3 for a908 and null terminator */
+
+        TableHeader.Length += strrchr (Gbl_ParseTreeRoot->Asl.Filename, '.') - Gbl_ParseTreeRoot->Asl.Filename + 1 + 3 + 3;
+        Op->Asl.AmlSubtreeLength += strlen (Gbl_ParseTreeRoot->Asl.Filename) + 3;
+	printf ("Length: %lu\n", strlen (Gbl_ParseTreeRoot->Asl.Filename) + 3);
         if (Op->Asl.CommentList!=NULL)
         {
             Current = Op->Asl.CommentList; 
@@ -864,7 +869,9 @@ CgWriteTableHeader (
                 printf ("Length of standard comment +3 (including space for 0xA9 0x01 and 0x00): %d\n", CommentLength);
                 printf ("**********Comment string: %s\n\n", Current->Comment);
                 TableHeader.Length += CommentLength;
+                Op->Asl.AmlSubtreeLength += CommentLength;
                 Current = Current->Next;
+	        printf ("Length: %u\n", CommentLength);
             }
         }
 
@@ -874,8 +881,11 @@ CgWriteTableHeader (
             printf ("Length of inline comment +3 (including space for 0xA9 0x02 and 0x00): %d\n", CommentLength);
             printf ("**********Comment string: %s\n\n", Op->Asl.CloseBraceComment);
             TableHeader.Length += CommentLength;
+            Op->Asl.AmlSubtreeLength += CommentLength;
+	    printf ("Length: %u\n", CommentLength);
         }
     }
+
 
     TableHeader.Checksum = 0;
 
