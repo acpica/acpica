@@ -528,6 +528,14 @@ AcpiOsSignal (
     void                    *Info);
 #endif
 
+#ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsEnterSleep
+ACPI_STATUS
+AcpiOsEnterSleep (
+    UINT8                   SleepState,
+    UINT32                  RegaValue,
+    UINT32                  RegbValue);
+#endif
+
 
 /*
  * Debug print routines
