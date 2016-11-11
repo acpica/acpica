@@ -585,16 +585,9 @@ AcpiDmCloseParenWriteComment(
     ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.EndBlkComment;
 
 
-    if (!Gbl_CaptureComments)
-    {
-        AcpiOsPrintf (")");
-        return;
-    }
-
-
     /* If this op has a BLOCK_BRACE, take care of it in AcpiDmCloseBraceWriteComment */
 
-    if (AcpiDmBlockType (Op) & (BLOCK_PAREN) && !(AcpiDmBlockType (Op) & (BLOCK_BRACE)))
+    if (Gbl_CaptureComments && AcpiDmBlockType (Op) & (BLOCK_PAREN) && !(AcpiDmBlockType (Op) & (BLOCK_BRACE)))
     {
         while (CommentNode)
         {
@@ -615,12 +608,12 @@ AcpiDmCloseParenWriteComment(
     AcpiOsPrintf ("Op code: %d ", Op->Common.AmlOpcode);
     AcpiOsPrintf ("Op name: %s\n", Op->Common.AmlOpName);
 */
-    if (Op->Common.EndNodeComment!=NULL)
+    if (Gbl_CaptureComments && Op->Common.EndNodeComment!=NULL)
     {
         AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
         Op->Common.EndNodeComment=NULL;
     }
-    else if (Op->Common.Parent->Common.AmlOpcode == AML_IF_OP && Op->Common.Parent->Common.EndNodeComment!=NULL)
+    else if (Gbl_CaptureComments && Op->Common.Parent->Common.AmlOpcode == AML_IF_OP && Op->Common.Parent->Common.EndNodeComment!=NULL)
     {
         AcpiOsPrintf ("%s", Op->Common.Parent->Common.EndNodeComment);
         Op->Common.Parent->Common.EndNodeComment = NULL;

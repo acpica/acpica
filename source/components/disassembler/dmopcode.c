@@ -950,7 +950,7 @@ AcpiDmDisassembleOneOp (
         /*print any comments associated with this... */
 
         AcpiOsPrintf (", ");
-        if (Op->Common.NameComment)
+        if (Gbl_CaptureComments &&  Op->Common.NameComment)
         {
             AcpiOsPrintf ("%s",Op->Common.NameComment);
         }
@@ -996,7 +996,7 @@ AcpiDmDisassembleOneOp (
 
         AcpiOsPrintf (")");
         AcpiDmCommaIfFieldMember (Op);
-        if (Op->Common.EndNodeComment)
+        if (Gbl_CaptureComments && Op->Common.EndNodeComment)
         {
             AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
         }
@@ -1033,11 +1033,11 @@ AcpiDmDisassembleOneOp (
 
         AcpiOsPrintf (")");
         AcpiDmCommaIfFieldMember (Op);
-        if (Op->Common.EndNodeComment)
+        if (Gbl_CaptureComments && Op->Common.EndNodeComment)
         {
             AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
         }
-        if (Op->Common.InlineComment)
+        if (Gbl_CaptureComments && Op->Common.InlineComment)
         {
             AcpiOsPrintf ("%s", Op->Common.InlineComment);
         }

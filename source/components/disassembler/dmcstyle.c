@@ -150,6 +150,10 @@ AcpiDmIsOptimizationIgnored (
     ACPI_PARSE_OBJECT       *StoreOp,
     ACPI_PARSE_OBJECT       *StoreArgument);
 
+static void
+AcpiDmPrintInlineComment(
+    ACPI_PARSE_OBJECT       *Op);
+
 
 /*******************************************************************************
  *
@@ -775,6 +779,36 @@ AcpiDmIsOptimizationIgnored (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmPrintInlineComment
+ *
+ * PARAMETERS:  Op                  - Current parse object
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Closes an operator by adding a closing parentheses if and
+ *              when necessary. Called during ascending phase of the
+ *              parse tree walk.
+ *
+ ******************************************************************************/
+
+static void
+AcpiDmPrintInlineComment(
+    ACPI_PARSE_OBJECT       *Op)
+{
+    if (Gbl_CaptureComments && Op->Common.EndNodeComment)
+    {
+        printf ("Parent Opcode: %x\n", Op->Common.Parent->Common.AmlOpcode);
+        printf ("This Opcode: %x\n",   Op->Common.AmlOpcode);
+        printf ("comment: %s", Op->Common.EndNodeComment); 
+        AcpiOsPrintf ("%s", Op->Common.EndNodeComment); 
+       Op->Common.EndNodeComment = NULL;
+    }
+
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmCloseOperator
  *
  * PARAMETERS:  Op                  - Current parse object
@@ -797,13 +831,15 @@ AcpiDmCloseOperator (
     if (!AcpiGbl_CstyleDisassembly)
     {
         AcpiOsPrintf (")");
-        goto PrintInlineComment;
+        AcpiDmPrintInlineComment(Op);
+        return;
     }
 
     if (Op->Common.DisasmFlags & ACPI_PARSEOP_LEGACY_ASL_ONLY)
     {
         AcpiOsPrintf (")");
-        goto PrintInlineComment;
+        AcpiDmPrintInlineComment(Op);
+        return;
     }
 
     /* Check if we need to add an additional closing paren */
@@ -830,7 +866,8 @@ AcpiDmCloseOperator (
 
         if (Op->Common.DisasmFlags & ACPI_PARSEOP_COMPOUND_ASSIGNMENT)
         {
-            goto PrintInlineComment;
+            AcpiDmPrintInlineComment(Op);
+            return;
         }
 
         /* Emit extra close paren for assignment within an expression */
@@ -849,7 +886,8 @@ AcpiDmCloseOperator (
         {
             AcpiOsPrintf (")");
         }
-        goto PrintInlineComment;
+        AcpiDmPrintInlineComment(Op);
+        return;
 
     /* No need for parens for these */
 
@@ -858,24 +896,16 @@ AcpiDmCloseOperator (
     case AML_LNOT_OP:
     case AML_BIT_NOT_OP:
     case AML_STORE_OP:
-        goto PrintInlineComment;
+        AcpiDmPrintInlineComment(Op);
+        return;
 
     default:
 
         /* Always emit paren for non-ASL+ operators */
         break;
     }
-    AcpiOsPrintf (")");
 
-PrintInlineComment:
-    if (Gbl_CaptureComments && Op->Common.EndNodeComment)
-    {
-        printf ("Parent Opcode: %x\n", Op->Common.Parent->Common.AmlOpcode);
-        printf ("This Opcode: %x\n",   Op->Common.AmlOpcode);
-        printf ("comment: %s", Op->Common.EndNodeComment); 
-        AcpiOsPrintf ("%s", Op->Common.EndNodeComment); 
-       Op->Common.EndNodeComment = NULL;
-    }
+    AcpiOsPrintf (")");
 
     return;
 }
