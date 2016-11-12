@@ -26,18 +26,9 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// Functional tests collection, to be compiled all together as one module
 
-Include("../../../../runtime/collections/functional/arithmetic/DECL.asl")
-Include("../../../../runtime/collections/functional/bfield/DECL.asl")
-Include("../../../../runtime/collections/functional/constant/DECL.asl")
-Include("../../../../runtime/collections/functional/control/DECL.asl")
-Include("../../../../runtime/collections/functional/descriptor/DECL.asl")
-Include("../../../../runtime/collections/functional/logic/DECL.asl")
-Include("../../../../runtime/collections/functional/manipulation/DECL.asl")
-Include("../../../../runtime/collections/functional/name/DECL.asl")
-Include("../../../../runtime/collections/functional/reference/DECL.asl")
-Include("../../../../runtime/collections/functional/region/DECL.asl")
-Include("../../../../runtime/collections/functional/synchronization/DECL.asl")
-Include("../../../../runtime/collections/functional/table/DECL.asl")
-Include("../../../../runtime/collections/functional/package/DECL.asl")
+if (STTT("Named references in PackageList", TCLF, 15, W01b)) {
+	SRMT("CHKR")
+	CHKR()
+}
+FTTT()

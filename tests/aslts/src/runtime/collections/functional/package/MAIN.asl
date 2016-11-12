@@ -26,18 +26,30 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// Functional tests collection, to be compiled all together as one module
+DefinitionBlock(
+	"package.aml",   // Output filename
+	"DSDT",     // Signature
+	0x02,       // DSDT Revision
+	"Intel",    // OEMID
+	"Many",     // TABLE ID
+	0x00000001  // OEM Revision
+	) {
 
-Include("../../../../runtime/collections/functional/arithmetic/DECL.asl")
-Include("../../../../runtime/collections/functional/bfield/DECL.asl")
-Include("../../../../runtime/collections/functional/constant/DECL.asl")
-Include("../../../../runtime/collections/functional/control/DECL.asl")
-Include("../../../../runtime/collections/functional/descriptor/DECL.asl")
-Include("../../../../runtime/collections/functional/logic/DECL.asl")
-Include("../../../../runtime/collections/functional/manipulation/DECL.asl")
-Include("../../../../runtime/collections/functional/name/DECL.asl")
-Include("../../../../runtime/collections/functional/reference/DECL.asl")
-Include("../../../../runtime/collections/functional/region/DECL.asl")
-Include("../../../../runtime/collections/functional/synchronization/DECL.asl")
-Include("../../../../runtime/collections/functional/table/DECL.asl")
-Include("../../../../runtime/collections/functional/package/DECL.asl")
+	// All declarations
+	Include("../../../../runtime/cntl/DECL.asl")
+	Include("../../../../runtime/collections/functional/package/DECL.asl")
+
+	Method(MAIN) {
+
+		// Initialization
+		STRT(0)
+
+		// Run verification methods
+		Include("../../../../runtime/collections/functional/package/RUN.asl")
+
+		// Final actions
+		Store(FNSH(), Local7)
+
+		return (Local7)
+	}
+}

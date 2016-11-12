@@ -26,18 +26,58 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// Functional tests collection, to be compiled all together as one module
+/*
+ * Named References to non-Data Objects for the objects in a Package.
+ */
 
-Include("../../../../runtime/collections/functional/arithmetic/DECL.asl")
-Include("../../../../runtime/collections/functional/bfield/DECL.asl")
-Include("../../../../runtime/collections/functional/constant/DECL.asl")
-Include("../../../../runtime/collections/functional/control/DECL.asl")
-Include("../../../../runtime/collections/functional/descriptor/DECL.asl")
-Include("../../../../runtime/collections/functional/logic/DECL.asl")
-Include("../../../../runtime/collections/functional/manipulation/DECL.asl")
-Include("../../../../runtime/collections/functional/name/DECL.asl")
-Include("../../../../runtime/collections/functional/reference/DECL.asl")
-Include("../../../../runtime/collections/functional/region/DECL.asl")
-Include("../../../../runtime/collections/functional/synchronization/DECL.asl")
-Include("../../../../runtime/collections/functional/table/DECL.asl")
-Include("../../../../runtime/collections/functional/package/DECL.asl")
+/*
+ * According to the ACPI 6.1 specification, Named References to Data Objects
+ * (e.g. Integer reference) are resolved at runtime and Named References to
+ * non-Data Objects are returned as references.
+
+ * At least Windows 10 seems to interpret "references" as a string which will be
+ * resolved at runtime and not during table loading.
+ */
+
+Name(z183, 183)
+
+PowerResource(PWR1, 0, 0) {
+	Name(_STA, 1)
+	Method(_ON) {}
+	Method(_OFF) {}
+}
+Name(INT1, 1)
+
+Name(PKG1, Package() {
+	PWR1,
+	PWR2,
+	INT1
+})
+
+PowerResource(PWR2, 0, 0) {
+	Name(_STA, 1)
+	Method(_ON) {}
+	Method(_OFF) {}
+}
+
+// TEST: check whether a named reference in a Package is stored as String (2).
+Method(CHKR)
+{
+	// PWR1
+	Store(ObjectType (Index (PKG1, 0)), Local0)
+	if (LNotEqual (Local0, 2)) {
+		err("CHKR", z183, 0, 0, 0, Local0, 2)
+	}
+
+	// PWR2 (forward reference)
+	Store(ObjectType (Index (PKG1, 1)), Local0)
+	if (LNotEqual (Local0, 2)) {
+		err("CHKR", z183, 1, 0, 0, Local0, 2)
+	}
+
+	// INT1
+	Store(ObjectType (Index (PKG1, 2)), Local0)
+	if (LNotEqual (Local0, 2)) {
+		err("CHKR", z183, 2, 0, 0, Local0, 2)
+	}
+}

@@ -12,7 +12,8 @@ MDIRS = \
 	reference \
 	region \
 	synchronization \
-	table
+	table \
+	package
 
 # extern local FULL
 

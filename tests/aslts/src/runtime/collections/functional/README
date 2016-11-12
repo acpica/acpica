@@ -24,6 +24,7 @@ CONTENTS
 12 | synchronization | Synchronization                       |
 13 | table           | ACPI table management                 |
 14 | module          | Module level code execution           |
+15 | package         | Named References in PackageList       |
    ___________________________________________________________
 
 FULL
