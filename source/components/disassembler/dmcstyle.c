@@ -731,7 +731,6 @@ AcpiDmIsOptimizationIgnored (
         Argument1 = StoreArgument->Common.Value.Arg;
         Argument2 = Argument1->Common.Next;
         Target = Argument2->Common.Next;
-
         if (!AcpiDmIsValidTarget (Target))
         {
             StoreOp->Common.DisasmFlags |= ACPI_PARSEOP_LEGACY_ASL_ONLY;

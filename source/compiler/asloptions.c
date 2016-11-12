@@ -354,6 +354,7 @@ AslDoOptions (
             Gbl_ReferenceOptimizationFlag = FALSE;
             Gbl_OptimizeTrivialParseNodes = FALSE;
             Gbl_CaptureComments = TRUE;
+            AcpiGbl_DoDisassemblerOptimizations = FALSE;
 
             return (0);
 

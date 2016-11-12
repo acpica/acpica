@@ -989,7 +989,7 @@ typedef union acpi_parse_value
     ACPI_PARSE_VALUE                Value;              /* Value or args associated with the opcode */\
     UINT8                           ArgListLength;      /* Number of elements in the arg list */\
      ACPI_DISASM_ONLY_MEMBERS (\
-    UINT8                           DisasmFlags;        /* Used during AML disassembly */\
+    UINT16                          DisasmFlags;        /* Used during AML disassembly */\
     UINT8                           DisasmOpcode;       /* Subtype used for disassembly */\
     char                            *OperatorSymbol;    /* Used for C-style operator name strings */\
     char                            AmlOpName[16])      /* Op name (debug only) */\
