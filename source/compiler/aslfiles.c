@@ -583,8 +583,14 @@ FlOpenAmlOutputFile (
     if (!Filename)
     {
         /* Create the output AML filename */
-
-        Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_AML_CODE);
+        if (!Gbl_CaptureComments)
+        {
+            Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_AML_CODE);
+        }
+        else
+        {
+            Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_CONVERT_AML);
+        }
         if (!Filename)
         {
             AslCommonError (ASL_ERROR, ASL_MSG_OUTPUT_FILENAME,

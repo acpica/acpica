@@ -257,6 +257,7 @@ typedef enum
 
 #define FILE_SUFFIX_ASL_CODE        "asl"
 #define FILE_SUFFIX_AML_CODE        "aml"
+#define FILE_SUFFIX_CONVERT_AML     "xxx"
 #define FILE_SUFFIX_SOURCE          "src"
 #define FILE_SUFFIX_PREPROCESSOR    "pre"
 #define FILE_SUFFIX_PREPROC_USER    "i"
