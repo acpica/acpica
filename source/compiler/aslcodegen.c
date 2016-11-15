@@ -341,7 +341,7 @@ CgWriteAmlDefBlockComment(
     CommentOpcode = (UINT8)AML_COMMENT_OP;
     Current = Op->Asl.CommentList;
 
-    printf ("Printing comments for a definition block..\n");
+    CvDbgPrint ("Printing comments for a definition block..\n");
     
     /* first, print the file name comment after changing .asl to .dsl */
 
@@ -382,7 +382,7 @@ CgWriteAmlDefBlockComment(
         /* +1 is what emits the 0x00 at the end of this opcode. */
 
         CgLocalWriteAmlData (Op, Current->Comment, strlen (Current->Comment) + 1); 
-        printf ("Printing comment: %s\n", Current->Comment);
+        CvDbgPrint ("Printing comment: %s\n", Current->Comment);
         Current = Current->Next;
     }
     Op->Asl.CommentList = NULL;
@@ -518,7 +518,7 @@ CgWriteAmlComment(
 
         NewFilename = CgChangeFileExt(Op->Asl.Filename, FILE_SUFFIX_DISASSEMBLY);
 
-        printf ("Writing file comment, \"%s\" for %s\n", NewFilename, Op->Asl.ParseOpName);
+        CvDbgPrint ("Writing file comment, \"%s\" for %s\n", NewFilename, Op->Asl.ParseOpName);
     
         CommentOption = FILENAME_COMMENT;
         CgLocalWriteAmlData (Op, &CommentOpcode, 1);
@@ -545,7 +545,6 @@ CgWriteAmlComment(
      * If there is a such list in this node, print out the comment
      * as byte code.
      */
-    //printf ("Printing comments for the following opcode: %s.\n", Op->Asl.ParseOpName);
     Current = Op->Asl.CommentList;
     CommentOption = STANDARD_COMMENT;
     while (Current)
@@ -853,36 +852,36 @@ CgWriteTableHeader (
 
     if (Gbl_CaptureComments)
     {
-        printf ("====================Calculating comment lengths for %s in write header ====================\n",  Op->Asl.ParseOpName);
+        CvDbgPrint ("====================Calculating comment lengths for %s in write header ====================\n",  Op->Asl.ParseOpName);
 
         /* Take the filename without extensions, add 3 for the new extension and another 3 for a908 and null terminator */
 
         TableHeader.Length += strrchr (Gbl_ParseTreeRoot->Asl.Filename, '.') - Gbl_ParseTreeRoot->Asl.Filename + 1 + 3 + 3;
         Op->Asl.AmlSubtreeLength += strlen (Gbl_ParseTreeRoot->Asl.Filename) + 3;
-	printf ("Length: %lu\n", strlen (Gbl_ParseTreeRoot->Asl.Filename) + 3);
+	CvDbgPrint ("Length: %lu\n", strlen (Gbl_ParseTreeRoot->Asl.Filename) + 3);
         if (Op->Asl.CommentList!=NULL)
         {
             Current = Op->Asl.CommentList; 
             while (Current)
             {
                 CommentLength = strlen (Current->Comment)+3;
-                printf ("Length of standard comment +3 (including space for 0xA9 0x01 and 0x00): %d\n", CommentLength);
-                printf ("**********Comment string: %s\n\n", Current->Comment);
+                CvDbgPrint ("Length of standard comment +3 (including space for 0xA9 0x01 and 0x00): %d\n", CommentLength);
+                CvDbgPrint ("**********Comment string: %s\n\n", Current->Comment);
                 TableHeader.Length += CommentLength;
                 Op->Asl.AmlSubtreeLength += CommentLength;
                 Current = Current->Next;
-	        printf ("Length: %u\n", CommentLength);
+	        CvDbgPrint ("Length: %u\n", CommentLength);
             }
         }
 
         if (Op->Asl.CloseBraceComment!=NULL)
         {
             CommentLength = strlen (Op->Asl.CloseBraceComment)+3;
-            printf ("Length of inline comment +3 (including space for 0xA9 0x02 and 0x00): %d\n", CommentLength);
-            printf ("**********Comment string: %s\n\n", Op->Asl.CloseBraceComment);
+            CvDbgPrint ("Length of inline comment +3 (including space for 0xA9 0x02 and 0x00): %d\n", CommentLength);
+            CvDbgPrint ("**********Comment string: %s\n\n", Op->Asl.CloseBraceComment);
             TableHeader.Length += CommentLength;
             Op->Asl.AmlSubtreeLength += CommentLength;
-	    printf ("Length: %u\n", CommentLength);
+	    CvDbgPrint ("Length: %u\n", CommentLength);
         }
     }
 

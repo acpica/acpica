@@ -154,7 +154,7 @@ AcpiPsGetAmlOpcode (
     WalkState->Opcode = AcpiPsPeekOpcode (&(WalkState->ParserState));
 
     WalkState->Aml = WalkState->ParserState.Aml;
-    printf("Op: 0x%x\n", *WalkState->ParserState.Aml);
+    //CvDbgPrint("Op: 0x%x\n", *WalkState->ParserState.Aml);
 
     /*
      * First cut to determine what we have found:
@@ -275,7 +275,6 @@ AcpiPsBuildNamedOp (
     while (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) &&
           (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) != ARGP_NAME))
     {
-        printf ("gna from build named op\n");
         AcpiPsCaptureComments (WalkState);
         Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
             GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
@@ -288,18 +287,13 @@ AcpiPsBuildNamedOp (
         INCREMENT_ARG_LIST (WalkState->ArgTypes);
     }
 
-    printf("UnnamedOp->Common.AmlOpcode: 0x%x\n", UnnamedOp->Common.AmlOpcode);
-    printf("UnnamedOp->Named.Name: %x\n", UnnamedOp->Named.Name);
-
     /* are there any inline comments associated with the NameSeg?? If so, save this. */
 
-        printf ("gna from build named op. name seg?\n");
     AcpiPsCaptureComments(WalkState);
     if (AcpiGbl_CurrentInlineComment != NULL)
     { 
         UnnamedOp->Common.NameComment = AcpiGbl_CurrentInlineComment;
         AcpiGbl_CurrentInlineComment = NULL;
-        printf ("Op->Common.NameComment: %s\n", UnnamedOp->Common.NameComment);
     }
 
     /*
@@ -455,9 +449,6 @@ AcpiPsCreateOp (
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
- //   printf("createop\n");
-
-//    AcpiPsCaptureComments(WalkState);
     if (WalkState->OpInfo->Flags & AML_NAMED)
     {
         Status = AcpiPsBuildNamedOp (WalkState, AmlOpStart, Op, &NamedOp);

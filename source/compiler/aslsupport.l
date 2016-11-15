@@ -198,7 +198,7 @@ AslProcessCommentState (
 
             Gbl_CommentState.CommentType = ASL_REGCOMMENT;
             Gbl_CommentState.ParsingParenBraceNode = NULL;
-            printf ("========================================================End Parsing paren/Brace node!\n");
+            CvDbgPrint ("========================================================End Parsing paren/Brace node!\n");
             break;
 
         case ASL_CLOSEBRACE:
@@ -217,9 +217,6 @@ AslProcessCommentState (
             break;
 
     }
-
-    //printf ("Comment type set to %d after processing the character %c\n", Gbl_CommentState.CommentType, input); 
-    
 }
 
 void
@@ -663,7 +660,7 @@ AppendInlineComment (
     char                    *InlineComment,
     char                    *ToAdd)
 {
-    printf ("Appending to current inline comment.\n");
+    CvDbgPrint ("Appending to current inline comment.\n");
 
     char*  Str  = NULL;
     UINT32 Size = 0;
@@ -711,7 +708,7 @@ AslPlaceComment(
     char                    *CommentString)
 {
    
-    printf ("Placing comment %s for type %d\n", CommentString, Type);
+    CvDbgPrint ("Placing comment %s for type %d\n", CommentString, Type);
     switch (Type)
     {
         case ASL_REGCOMMENT:
@@ -868,11 +865,11 @@ loop:
         *StringBuffer = c1;
         ++StringBuffer;
         *StringBuffer = 0;
-        printf ("Multi-line comment\n");
+        CvDbgPrint ("Multi-line comment\n");
         CommentString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
         strcpy (CommentString, MsgBuffer);
 
-        printf ("CommentString: %s\n", CommentString);
+        CvDbgPrint ("CommentString: %s\n", CommentString);
 
         /* 
          * Determine whether if this comment spans multiple lines.
@@ -1054,7 +1051,7 @@ AslDoCommentType2 (
     {
 
         *StringBuffer = 0; //null terminate this string
-        printf("Single-line comment\n");
+        CvDbgPrint("Single-line comment\n");
         CommentString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
         strcpy (CommentString, MsgBuffer);
 

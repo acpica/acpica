@@ -218,7 +218,6 @@ AcpiPsGetArguments (
                 Op->Common.AmlOpcode != AML_PACKAGE_OP && Op->Common.AmlOpcode != AML_VAR_PACKAGE_OP &&
                 Op->Common.AmlOpcode != AML_WHILE_OP)
             {
-                printf ("gna from getnextarguments\n");
                 AcpiPsCaptureComments (WalkState);
             }
             Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
@@ -490,39 +489,39 @@ void
 AcpiPsTransferComments (
     ACPI_PARSE_OBJECT       *Op) 
 {
-    printf ("Transferring all captured global comments to the folowing opcode: %x\n", Op->Common.AmlOpcode);
+    //CvDbgPrint ("Transferring all captured global comments to the folowing opcode: %x\n", Op->Common.AmlOpcode);
     if (AcpiGbl_CurrentInlineComment)
     { 
         Op->Common.InlineComment = AcpiGbl_CurrentInlineComment;
-        printf ("Op->Common.InlineComment: %s\n", Op->Common.InlineComment);
+        //CvDbgPrint ("Op->Common.InlineComment: %s\n", Op->Common.InlineComment);
         AcpiGbl_CurrentInlineComment = NULL;
     }
 
     if (AcpiGbl_CurrentEndNodeComment != NULL)
     { 
         Op->Common.EndNodeComment = AcpiGbl_CurrentEndNodeComment;
-        printf ("Op->Common.EndNodeComment: %s\n", Op->Common.EndNodeComment);
+        //CvDbgPrint ("Op->Common.EndNodeComment: %s\n", Op->Common.EndNodeComment);
         AcpiGbl_CurrentEndNodeComment = NULL;
     }
 
     if (AcpiGbl_CurrentOpenBraceComment != NULL)
     {
         Op->Common.OpenBraceComment = AcpiGbl_CurrentOpenBraceComment;
-        printf ("Op->Common.OpenBraceComment: %s\n", Op->Common.OpenBraceComment);
+        //CvDbgPrint ("Op->Common.OpenBraceComment: %s\n", Op->Common.OpenBraceComment);
         AcpiGbl_CurrentOpenBraceComment = NULL;
     }
 
     if (AcpiGbl_CurrentCloseBraceComment != NULL)
     {
         Op->Common.CloseBraceComment = AcpiGbl_CurrentCloseBraceComment;
-        printf ("Op->Common.CloseBraceComment: %s\n", Op->Common.CloseBraceComment);
+        //CvDbgPrint ("Op->Common.CloseBraceComment: %s\n", Op->Common.CloseBraceComment);
         AcpiGbl_CurrentCloseBraceComment = NULL;
     }
 
     if (AcpiGbl_RegCommentListHead != NULL)
     { 
         Op->Common.CommentList = AcpiGbl_RegCommentListHead;
-        printf ("Op->Common.CommentList head: %s\n", Op->Common.CommentList->Comment);
+        //CvDbgPrint ("Op->Common.CommentList head: %s\n", Op->Common.CommentList->Comment);
         AcpiGbl_RegCommentListHead = NULL;
         AcpiGbl_RegCommentListTail = NULL;
     }
@@ -530,12 +529,12 @@ AcpiPsTransferComments (
     if (AcpiGbl_EndBlkCommentListHead != NULL)
     {
         Op->Common.EndBlkComment = AcpiGbl_EndBlkCommentListHead;
-        printf ("Op->Common.CommentList head: %s\n", Op->Common.EndBlkComment->Comment);
+        //CvDbgPrint ("Op->Common.CommentList head: %s\n", Op->Common.EndBlkComment->Comment);
         AcpiGbl_EndBlkCommentListHead = NULL;
         AcpiGbl_EndBlkCommentListTail = NULL;
     }
 
-    printf("\n");
+    //CvDbgPrint("\n");
 }
 
 /*******************************************************************************
@@ -632,7 +631,7 @@ AcpiPsParseLoop (
     while ((ParserState->Aml < ParserState->AmlEnd) || (Op))
     {
         //get comments here
-        printf("Top capture\n");
+        //CvDbgPrint ("Top capture\n");
         AcpiPsCaptureComments (WalkState);
  
         AmlOpStart = ParserState->Aml;
@@ -672,7 +671,7 @@ AcpiPsParseLoop (
          * any args yet
          */
         WalkState->ArgCount = 0;
-        printf("Args capture\n");
+        //CvDbgPrint("Args capture\n");
         if (Op->Common.AmlOpcode != AML_BYTE_OP  && Op->Common.AmlOpcode != AML_WORD_OP &&
             Op->Common.AmlOpcode != AML_DWORD_OP && Op->Common.AmlOpcode != AML_QWORD_OP)
         {

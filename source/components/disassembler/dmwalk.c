@@ -515,11 +515,7 @@ AcpiDmCloseBraceWriteComment(
     }
 
     AcpiOsPrintf ("}");
-/*
-    AcpiOsPrintf ("CLOSE BRACE ");
-    AcpiOsPrintf ("Op code: %d ", Op->Common.AmlOpcode);
-    AcpiOsPrintf ("Op name: %s\n", Op->Common.AmlOpName);
-*/
+
     if (Op->Common.CloseBraceComment!=NULL)
     {
         AcpiOsPrintf (" %s", Op->Common.CloseBraceComment);
@@ -552,13 +548,8 @@ AcpiDmOpenBraceWriteComment(
 
     AcpiOsPrintf ("{ ");
 
-/*    AcpiOsPrintf ("OPEN BRACE "); */
    if ((Op->Common.Parent!=NULL) && (Op->Common.Parent->Common.OpenBraceComment!=NULL))
    {
-/*
-       AcpiOsPrintf ("Op code: %d ", Op->Common.Parent->Common.AmlOpcode);
-       AcpiOsPrintf ("Op name: %s\n", Op->Common.Parent->Common.AmlOpName);
-*/
        AcpiOsPrintf (" %s", Op->Common.Parent->Common.OpenBraceComment);
        Op->Common.Parent->Common.OpenBraceComment=NULL;
     }
@@ -603,11 +594,7 @@ AcpiDmCloseParenWriteComment(
     }
 
     AcpiOsPrintf (")");
-/*
-    AcpiOsPrintf ("CLOSE PAREN ");
-    AcpiOsPrintf ("Op code: %d ", Op->Common.AmlOpcode);
-    AcpiOsPrintf ("Op name: %s\n", Op->Common.AmlOpName);
-*/
+
     if (Gbl_CaptureComments && Op->Common.EndNodeComment!=NULL)
     {
         AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
@@ -641,18 +628,17 @@ AcpiDmSwitchFiles(
     ACPI_FILE_NODE          *FNode;
 
 
-    printf ("Switching from %s to %s\n", AcpiGbl_CurrentFilename, Filename);    
+    CvDbgPrint ("Switching from %s to %s\n", AcpiGbl_CurrentFilename, Filename);    
     FNode = AcpiPsFilenameExists (Filename, AcpiGbl_FileTreeRoot);
     if (FNode)
     {
         if (!FNode->IncludeWritten)
         {
-            printf ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
-            //FNode->Parent->File = fopen (FNode->Parent->Filename, "a");
+            CvDbgPrint ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
             AcpiOsRedirectOutput (FNode->Parent->File);
             AcpiDmIndent (Level);
             AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
-            printf ("emitted the following: Include (\"%s\")\n", FNode->Filename);
+            CvDbgPrint ("emitted the following: Include (\"%s\")\n", FNode->Filename);
             //fclose (FNode->Parent->File);
             FNode->IncludeWritten = TRUE;
         }
@@ -667,12 +653,11 @@ AcpiDmSwitchFiles(
         {
             if (!FNode->IncludeWritten)
             {
-                printf ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
-                //FNode->Parent->File = fopen (FNode->Parent->Filename, "a");
+                CvDbgPrint ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
                 AcpiOsRedirectOutput (FNode->Parent->File);
                 AcpiDmIndent (Level);
                 AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
-                printf ("emitted the following in %s: Include (\"%s\")\n", FNode->Parent->Filename,FNode->Filename);
+                CvDbgPrint ("emitted the following in %s: Include (\"%s\")\n", FNode->Parent->Filename,FNode->Filename);
                 //fclose (FNode->Parent->File);
                 FNode->IncludeWritten = TRUE;
             }
@@ -717,10 +702,6 @@ AcpiDmDescendingOp (
     ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.CommentList;
     char                    *Filename = Op->Common.PsFilename;
 
-
-    /* AcpiOsPrintf (" [HDW]"); */
-
-    //printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
 
     /* determine which file this parse node is contained in. */
 
@@ -1158,7 +1139,6 @@ AcpiDmDescendingOp (
 
                 AcpiDmOpenBraceWriteComment(Op);
                 AcpiOsPrintf ("\n");
-                //AcpiOsPrintf ("{\n");
                 return (AE_OK);
             }
 
@@ -1210,7 +1190,6 @@ AcpiDmDescendingOp (
         }
     }
 
-    /*AcpiOsPrintf (" [hello descending world]");*/
 
     return (AE_OK);
 }
@@ -1240,7 +1219,6 @@ AcpiDmAscendingOp (
     ACPI_COMMENT_LIST_NODE  *CurrentComment;
     char*                   Filename;
 
-    /* AcpiOsPrintf (" [HAW]"); */
 
     /* Label this to Op to be in the proper file */
     if (Gbl_CaptureComments)
@@ -1248,7 +1226,6 @@ AcpiDmAscendingOp (
         AcpiPsFileLabelNode(Op);
         Filename = Op->Common.PsFilename;
     
-        //printf("Op->Common.PsFilename: %s\n", Op->Common.PsFilename);
 	
         /* Switch the output of these files if necessary */
 
@@ -1487,6 +1464,5 @@ AcpiDmAscendingOp (
             Op->Asl.OperatorSymbol = NULL;
         }
     }
-    /*AcpiOsPrintf (" [hello ascending world]");*/
     return (AE_OK);
 }

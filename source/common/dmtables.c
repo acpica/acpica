@@ -491,9 +491,9 @@ AdParseTable (
     {
         /* This is expected to work only for a single defintion block. */
 
-        printf ("AmlLength: %x\n", AmlLength);
-        printf ("AmlStart:  %p\n", AmlStart);
-        printf ("AmlEnd?:   %p\n", AmlStart+AmlLength);
+        CvDbgPrint ("AmlLength: %x\n", AmlLength);
+        CvDbgPrint ("AmlStart:  %p\n", AmlStart);
+        CvDbgPrint ("AmlEnd?:   %p\n", AmlStart+AmlLength);
     
         AcpiGbl_FileTreeRoot = AcpiOsAcquireObject (AcpiGbl_FileCache);
         AcpiGbl_FileTreeRoot->FileStart = (char*)(AmlStart);
@@ -521,10 +521,10 @@ AdParseTable (
 
         while (TreeAml <= FileEnd)
         {
-            //printf ("Pointer val: %p\n", TreeAml);
+            CvDbgPrint ("Pointer val: %p\n", TreeAml);
             if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x08)
             {
-                printf ("A9 and a 08 file\n");
+                CvDbgPrint ("A9 and a 08 file\n");
                 PreviousFilename = Filename;
                 Filename = (char*) (TreeAml+2);
 
@@ -543,7 +543,7 @@ AdParseTable (
             }
             else if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x09)
             {
-                printf ("A9 and a 09 file\n");
+                CvDbgPrint ("A9 and a 09 file\n");
                 fnameLength = strlen(Filename);
                 temp = Filename + fnameLength - 3;
                 if (!strcmp(temp, "dsl"))

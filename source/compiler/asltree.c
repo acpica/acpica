@@ -258,9 +258,9 @@ TrAllocateNode (
         }
 
         Gbl_CommentState.Latest_Parse_Node = Op;    
-        printf ("===========Set latest parse node to this node.\n");
-        printf ("           Op->Asl.ParseOpName = %s\n", Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName);    
-        printf ("           Op->Asl.ParseOpcode = 0x%x\n", ParseOpcode);    
+        CvDbgPrint ("===========Set latest parse node to this node.\n");
+        CvDbgPrint ("           Op->Asl.ParseOpName = %s\n", Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName);    
+        CvDbgPrint ("           Op->Asl.ParseOpcode = 0x%x\n", ParseOpcode);    
 
         /* 
          * if this parse op's syntax uses () and {} (i.e. Package(1){0x00}) then
@@ -269,7 +269,7 @@ TrAllocateNode (
          */
         if ( AslParseOpBlockType(Op) == (BLOCK_PAREN | BLOCK_BRACE))
         {
-            printf ("========================================================Parsing paren/Brace node now!\n");
+            CvDbgPrint ("========================================================Parsing paren/Brace node now!\n");
             Gbl_CommentState.ParsingParenBraceNode = Op;
         }
         
@@ -278,13 +278,13 @@ TrAllocateNode (
             Op->Asl.CommentList = Gbl_Comment_List_Head;
             Gbl_Comment_List_Head = NULL;
             Gbl_Comment_List_Tail = NULL;
-            printf ("Transferred current comment list to this node.\n");
+            CvDbgPrint ("Transferred current comment list to this node.\n");
         }
         if (Gbl_Inline_Comment_Buffer)
         {
             Op->Asl.InlineComment = Gbl_Inline_Comment_Buffer;
             Gbl_Inline_Comment_Buffer = NULL; 
-            printf ("Transferred current inline comment list to this node.\n");
+            CvDbgPrint ("Transferred current inline comment list to this node.\n");
         }
 
     }
@@ -828,7 +828,7 @@ TrCreateLeafNode (
 
     if (Gbl_CaptureComments)
     {
-        printf ("Created leaf node\n");
+        CvDbgPrint ("Created leaf node\n");
 
     }
 
@@ -1243,7 +1243,7 @@ TrCreateNode (
             {
                 Op->Asl.CommentList = Child->Asl.CommentList;
                 Child->Asl.CommentList = NULL;
-                printf ("Transferred current comment list to this node.\n");
+                CvDbgPrint ("Transferred current comment list to this node.\n");
             }
             if (Child->Asl.InlineComment)
             {
@@ -1352,7 +1352,7 @@ TrLinkChildren (
         if (Gbl_Comment_List_Head)
         {
             Op->Asl.EndBlkComment = Gbl_Comment_List_Head;
-            //printf ("EndBlk Comment for %s: %s", Op->Asl.ParseOpName, Gbl_Comment_List_Head->Comment);
+            CvDbgPrint ("EndBlk Comment for %s: %s", Op->Asl.ParseOpName, Gbl_Comment_List_Head->Comment);
             Gbl_Comment_List_Head = NULL;
             Gbl_Comment_List_Tail = NULL;
         }
@@ -1427,8 +1427,8 @@ TrLinkChildren (
     if(Gbl_CaptureComments)
     {
         Gbl_CommentState.Latest_Parse_Node = Op;
-        printf ("===========Set latest parse node to this node.\n");
-        printf ("           Op->Asl.ParseOpName       = %s\n", Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName);    
+        CvDbgPrint ("===========Set latest parse node to this node.\n");
+        CvDbgPrint ("           Op->Asl.ParseOpName       = %s\n", Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName);    
     }
     return (Op);
 }

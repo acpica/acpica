@@ -600,7 +600,6 @@ AcpiPsGetNextField (
 
     ACPI_FUNCTION_TRACE (PsGetNextField);
 
-    printf("top of field\n");
     AcpiPsCaptureJustComments (ParserState);
     Aml = ParserState->Aml;
 
@@ -850,7 +849,6 @@ AcpiPsGetNextArg (
 
     ACPI_FUNCTION_TRACE_PTR (PsGetNextArg, ParserState);
 
-    printf ("AcpiPsGetNextArg\n");
 
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
         "Expected argument type ARGP: %s (%2.2X)\n",

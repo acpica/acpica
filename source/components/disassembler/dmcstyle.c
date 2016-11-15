@@ -796,9 +796,9 @@ AcpiDmPrintInlineComment(
 {
     if (Gbl_CaptureComments && Op->Common.EndNodeComment)
     {
-        printf ("Parent Opcode: %x\n", Op->Common.Parent->Common.AmlOpcode);
-        printf ("This Opcode: %x\n",   Op->Common.AmlOpcode);
-        printf ("comment: %s", Op->Common.EndNodeComment); 
+        CvDbgPrint ("Parent Opcode: %x\n", Op->Common.Parent->Common.AmlOpcode);
+        CvDbgPrint ("This Opcode: %x\n",   Op->Common.AmlOpcode);
+        CvDbgPrint ("comment: %s", Op->Common.EndNodeComment); 
         AcpiOsPrintf ("%s", Op->Common.EndNodeComment); 
        Op->Common.EndNodeComment = NULL;
     }

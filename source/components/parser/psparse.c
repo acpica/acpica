@@ -208,21 +208,21 @@ AcpiPsCommentExists (
     }
     else
     {
-        printf ("========== Traversing address list now ==========\n");
+        //CvDbgPrint ("========== Traversing address list now ==========\n");
         while (Current)
         {
             if (Current->Addr != ToCheck)
             {
-//                printf ("Address in list: %p\n", Current->Addr);
+//                CvDbgPrint ("Address in list: %p\n", Current->Addr);
                 Current = Current->Next;
             }
             else
             {
-                printf ("========== Found addr, ending traversal =====================\n");
+                //CvDbgPrint ("========== Found addr, ending traversal =====================\n");
                 return (TRUE);
             }
         }
-        printf ("========== Ending traversal adding address =====================\n");
+        //CvDbgPrint ("========== Ending traversal adding address =====================\n");
 
         /* 
          * If the execution gets to this point, it means that this address
@@ -376,23 +376,23 @@ AcpiPsIsDescendant (
     Current = AcpiPsFilenameExists(ChildFilename, AcpiGbl_FileTreeRoot);
     if (!Current)
     {
-        printf ("%s is NOT a descendant of %s\n", ChildFilename, ParentFilename);
+        //CvDbgPrint ("%s is NOT a descendant of %s\n", ChildFilename, ParentFilename);
         return (FALSE);
     }
  
     while (Current)
     {
-        printf ("%s ?=? %s\n", Current->Filename, ParentFilename);
+        //CvDbgPrint ("%s ?=? %s\n", Current->Filename, ParentFilename);
         if (!strcmp (Current->Filename, ParentFilename))
         {
-            printf ("%s is a descendant of %s\n", ChildFilename, ParentFilename);
+            //CvDbgPrint ("%s is a descendant of %s\n", ChildFilename, ParentFilename);
             return (TRUE);
         }
         
         Current = Current->Parent;
     }
 
-    printf ("%s is NOT a descendant of %s\n", ChildFilename, ParentFilename);
+    //CvDbgPrint ("%s is NOT a descendant of %s\n", ChildFilename, ParentFilename);
     return (FALSE);
 }
 
@@ -447,7 +447,7 @@ AcpiPsAddToFileTree (
                 if (Temp->FileEnd < Filename)
                 {
                     Temp->FileEnd = Filename;
-                    printf ("Setting file end to %p\n", Temp->FileEnd);
+                    //CvDbgPrint ("Setting file end to %p\n", Temp->FileEnd);
                 }
                 Temp = Temp->Parent;
             }
@@ -468,10 +468,10 @@ AcpiPsAddToFileTree (
     /* Print for debugging */
 
     Temp = AcpiGbl_FileTreeRoot;
-    printf ("File tree entries so far:\n");
+    //CvDbgPrint ("File tree entries so far:\n");
     while (Temp)
     {
-        printf ("    %s\t%p - %p\n", Temp->Filename, Temp->FileStart, Temp->FileEnd);
+        //CvDbgPrint ("    %s\t%p - %p\n", Temp->Filename, Temp->FileStart, Temp->FileEnd);
         Temp = Temp->Next;
     }
 }
@@ -500,7 +500,7 @@ AcpiPsSetFileParent (
     ACPI_FILE_NODE          *Temp;
 
 
-    printf ("Setting file parent within file dependency tree.\n");
+    //CvDbgPrint ("Setting file parent within file dependency tree.\n");
     Child  = AcpiPsFilenameExists (ChildFile, AcpiGbl_FileTreeRoot); 
     Parent = AcpiPsFilenameExists (ParentFile, AcpiGbl_FileTreeRoot);
     if (Child && Parent)
@@ -518,21 +518,21 @@ AcpiPsSetFileParent (
     }
     else
     {
-        printf ("Child and/or parent does not exist.\n");
+        //CvDbgPrint ("Child and/or parent does not exist.\n");
     } 
 
     Temp = AcpiGbl_FileTreeRoot;
-    printf ("File tree relations so far | child filename, parent filename\n");
+    //CvDbgPrint ("File tree relations so far | child filename, parent filename\n");
     while (Temp)
     {
-        printf ("                             %s -> ", Temp->Filename);
+        //CvDbgPrint ("                             %s -> ", Temp->Filename);
         if (Temp->Parent)
         {
-            printf ("%s\n",Temp->Parent->Filename);
+            //CvDbgPrint ("%s\n",Temp->Parent->Filename);
         }
         else
         {
-            printf ("none\n");
+            //CvDbgPrint ("none\n");
         }
         
         Temp = Temp->Next;
@@ -576,7 +576,7 @@ AcpiPsCaptureJustComments (
     Aml = ParserState->Aml;
     Opcode = (UINT16) ACPI_GET8 (Aml);
     CommentOption = (UINT16) ACPI_GET8 (Aml+1);
-    printf ("CaptureComments Opcode: 0x%x\n", Opcode);
+    //CvDbgPrint ("CaptureComments Opcode: 0x%x\n", Opcode);
     if (Opcode != AML_COMMENT_OP || ((Opcode == AML_COMMENT_OP) && ((CommentOption < 0x1) || (CommentOption > 0xa))))
     {
        return;
@@ -585,11 +585,11 @@ AcpiPsCaptureJustComments (
 
     while (Opcode == AML_COMMENT_OP)
     {                  
-        printf("comment aml address: %p\n", Aml);
+        //CvDbgPrint ("comment aml address: %p\n", Aml);
 
         if (AcpiPsCommentExists(Aml))
         {
-            printf("Avoiding capturing an existing comment.\n");
+            //CvDbgPrint ("Avoiding capturing an existing comment.\n");
         }
         else
         {
@@ -609,7 +609,7 @@ AcpiPsCaptureJustComments (
 
                 case STANDARD_COMMENT:
 
-                    printf("found regular comment.\n");
+                    //CvDbgPrint ("found regular comment.\n");
 
                     /* add to a linked list of nodes. This list will be taken by the parse node created next. */
                 
@@ -633,7 +633,7 @@ AcpiPsCaptureJustComments (
 
                 case ENDBLK_COMMENT:
 
-                    printf("found endblk comment.\n");
+                    //CvDbgPrint ("found endblk comment.\n");
 
                     /* add to a linked list of nodes. This will be taken by the next created parse node. */
 
@@ -656,68 +656,68 @@ AcpiPsCaptureJustComments (
 
                 case INLINE_COMMENT:
 
-                    printf ("found inline comment.\n");
+                    //CvDbgPrint ("found inline comment.\n");
                     Debug = AcpiGbl_CurrentInlineComment;          
                     AcpiGbl_CurrentInlineComment = ACPI_CAST_PTR (char, ParserState->Aml);
                     if (Debug!=NULL)
                     {
-                        printf ("CAUTION: switching %s with %s for inline comments!\n", Debug, AcpiGbl_CurrentInlineComment);
+                        //CvDbgPrint ("CAUTION: switching %s with %s for inline comments!\n", Debug, AcpiGbl_CurrentInlineComment);
                     }
                     break;
 
                 case ENDNODE_COMMENT:
 
-                    printf ("found EndNode comment.\n");
+                    //CvDbgPrint ("found EndNode comment.\n");
                     Debug = AcpiGbl_CurrentEndNodeComment;
                     AcpiGbl_CurrentEndNodeComment = ACPI_CAST_PTR (char, ParserState->Aml);
                     if (Debug!=NULL)
                     {
-                        printf ("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentEndNodeComment);
+                        //CvDbgPrint ("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentEndNodeComment);
                     }
                     break;
 
                 case OPENBRACE_COMMENT:
 
-                    printf("found open brace comment.\n");
+                    //CvDbgPrint ("found open brace comment.\n");
                     Debug = AcpiGbl_CurrentOpenBraceComment;
                     AcpiGbl_CurrentOpenBraceComment = ACPI_CAST_PTR (char, ParserState->Aml);
                     if (Debug!=NULL)
                     {
-                        printf("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentOpenBraceComment);
+                        //CvDbgPrint ("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentOpenBraceComment);
                     }
                     break;
 
                 case CLOSEBRACE_COMMENT:
 
-                    printf("found close brace comment.\n");
+                    //CvDbgPrint ("found close brace comment.\n");
                     Debug = AcpiGbl_CurrentCloseBraceComment;
                     AcpiGbl_CurrentCloseBraceComment = ACPI_CAST_PTR (char, ParserState->Aml);
                     if (Debug!=NULL)
                     {
-                        printf("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentCloseBraceComment);
+                        //CvDbgPrint ("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentCloseBraceComment);
                     }
                     break;        
 
                 case END_DEFBLK_COMMENT:
 
-                    printf("Found comment that belongs after the } for a definition block.\n");
+                    //CvDbgPrint ("Found comment that belongs after the } for a definition block.\n");
                      
                     Debug = AcpiGbl_CurrentScope->Common.CloseBraceComment;
                     AcpiGbl_CurrentScope->Common.CloseBraceComment = ACPI_CAST_PTR (char, ParserState->Aml);
                     
                     if (Debug!=NULL)
                     {
-                        printf("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentCloseBraceComment);
+                        //CvDbgPrint ("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentCloseBraceComment);
                     }
                     break;        
 
                 case FILENAME_COMMENT:
                     
-                    printf ("Found a filename: %s", ACPI_CAST_PTR (char, ParserState->Aml));
+                    //CvDbgPrint ("Found a filename: %s", ACPI_CAST_PTR (char, ParserState->Aml));
                     break;
 
                 case PARENTFILENAME_COMMENT:
-                    printf ("Found a parent filename.");
+                    //CvDbgPrint ("Found a parent filename.");
                     break;
 
                 default:
@@ -743,7 +743,7 @@ AcpiPsCaptureJustComments (
         Aml = ParserState->Aml;
         Opcode = (UINT16) ACPI_GET8 (Aml);
 
-        printf ("Summary after capture:          \n"
+        /*CvDbgPrint ("Summary after capture:          \n"
             "Current end node comment:        %s\n"
             "Current inline node comment:     %s\n" 
             "Current open brace node comment: %s\n" 
@@ -751,10 +751,10 @@ AcpiPsCaptureJustComments (
             AcpiGbl_CurrentEndNodeComment,
             AcpiGbl_CurrentInlineComment,
             AcpiGbl_CurrentOpenBraceComment,
-            AcpiGbl_CurrentCloseBraceComment);
+            AcpiGbl_CurrentCloseBraceComment);*/
     } // End while
  
-    printf ("\n");
+    //CvDbgPrint ("\n");
 
     if (StdDefBlockFlag)
     {
@@ -767,7 +767,7 @@ AcpiPsCaptureJustComments (
         AcpiGbl_RegCommentListHead = NULL;
         AcpiGbl_RegCommentListTail = NULL;
     }
-    printf ("Ending capture...\n");
+    //CvDbgPrint ("Ending capture...\n");
     
 }
 

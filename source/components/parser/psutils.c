@@ -173,7 +173,7 @@ AcpiPsInitOp (
     ACPI_FUNCTION_ENTRY ();
 
 
-    printf("InitOp: 0x%x\n", Opcode);
+    //CvDbgPrint ("InitOp: 0x%x\n", Opcode);
     Op->Common.DescriptorType = ACPI_DESC_TYPE_PARSER;
     Op->Common.AmlOpcode = Opcode;
 
@@ -210,7 +210,7 @@ AcpiPsAllocOp (
 
     ACPI_FUNCTION_ENTRY ();
     
-    printf("ALLOC OP\n");
+    //CvDbgPrint ("ALLOC OP\n");
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
 

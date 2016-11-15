@@ -212,7 +212,7 @@ LnPackageLengthWalk (
          */
         if (Gbl_CaptureComments)
         {
-            printf ("====================Calculating comment lengths for %s====================\n",  Op->Asl.ParseOpName);
+            CvDbgPrint ("====================Calculating comment lengths for %s====================\n",  Op->Asl.ParseOpName);
             if (Op->Asl.FileChanged)
             {
                 TotalCommentLength += strlen (Op->Asl.Filename) + 3;
@@ -227,8 +227,8 @@ LnPackageLengthWalk (
                 while (Current!=NULL)
                 {
                     CommentLength = strlen (Current->Comment)+3;
-                    printf ("Length of standard comment +3 (including space for 0xA9 0x01 and 0x00): %d\n", CommentLength);
-                    printf ("**********Comment string: %s\n\n", Current->Comment);
+                    CvDbgPrint ("Length of standard comment +3 (including space for 0xA9 0x01 and 0x00): %d\n", CommentLength);
+                    CvDbgPrint ("**********Comment string: %s\n\n", Current->Comment);
                     TotalCommentLength += CommentLength;
                     Current = Current->Next;
                 }
@@ -239,8 +239,8 @@ LnPackageLengthWalk (
                 while (Current!=NULL)
                 {
                     CommentLength = strlen (Current->Comment)+3;
-                    printf ("Length of endblkcomment +3 (including space for 0xA9 0x10 and 0x00): %d\n", CommentLength);
-                    printf ("**********Comment string: %s\n\n", Current->Comment);
+                    CvDbgPrint ("Length of endblkcomment +3 (including space for 0xA9 0x10 and 0x00): %d\n", CommentLength);
+                    CvDbgPrint ("**********Comment string: %s\n\n", Current->Comment);
                     TotalCommentLength += CommentLength;
                     Current = Current->Next;
                 }
@@ -248,36 +248,36 @@ LnPackageLengthWalk (
             if (Op->Asl.InlineComment!=NULL)
             {
                 CommentLength = strlen (Op->Asl.InlineComment)+3;
-                printf ("Length of inline comment +3 (including space for 0xA9 0x02 and 0x00): %d\n", CommentLength);
-                printf ("**********Comment string: %s\n\n", Op->Asl.InlineComment);
+                CvDbgPrint ("Length of inline comment +3 (including space for 0xA9 0x02 and 0x00): %d\n", CommentLength);
+                CvDbgPrint ("**********Comment string: %s\n\n", Op->Asl.InlineComment);
                 TotalCommentLength += CommentLength;
             }
 
             if (Op->Asl.EndNodeComment!=NULL)
             {
                 CommentLength = strlen(Op->Asl.EndNodeComment)+3;
-                printf ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", CommentLength);
-                printf ("**********Comment string: %s\n\n", Op->Asl.EndNodeComment);
+                CvDbgPrint ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", CommentLength);
+                CvDbgPrint ("**********Comment string: %s\n\n", Op->Asl.EndNodeComment);
                 TotalCommentLength += CommentLength;
             }
 
             if (Op->Asl.OpenBraceComment!=NULL)
             {
                 CommentLength = strlen (Op->Asl.OpenBraceComment)+3;
-                printf ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", CommentLength);
-                printf ("**********Comment string: %s\n\n", Op->Asl.OpenBraceComment);
+                CvDbgPrint ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", CommentLength);
+                CvDbgPrint ("**********Comment string: %s\n\n", Op->Asl.OpenBraceComment);
                 TotalCommentLength += CommentLength;
             }
 
             if (Op->Asl.CloseBraceComment!=NULL)
             {
                 CommentLength = strlen (Op->Asl.CloseBraceComment)+3;
-                printf ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", CommentLength);
-                printf ("**********Comment string: %s\n\n", Op->Asl.CloseBraceComment);
+                CvDbgPrint ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", CommentLength);
+                CvDbgPrint ("**********Comment string: %s\n\n", Op->Asl.CloseBraceComment);
                 TotalCommentLength += CommentLength;
             }
 
-            printf("\n\n");
+            CvDbgPrint("\n\n");
         }
 
         Op->Asl.Parent->Asl.AmlSubtreeLength += (
