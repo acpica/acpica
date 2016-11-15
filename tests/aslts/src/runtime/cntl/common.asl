@@ -1470,8 +1470,7 @@ Name(TNF0, Package() {
 	"region",
 	"synchronization",
 	"table",
-	"module",
-	"package"
+	"module"
 })
 
 // Names of complex tests
@@ -1714,7 +1713,6 @@ Name(TFN0, Package() {
 	"scope.asl",
 	"object.asl",
 	"order.asl",
-	"namedref.asl",    // 183
 
 
 // below are incorrect yet:
