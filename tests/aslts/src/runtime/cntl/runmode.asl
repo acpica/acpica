@@ -29,7 +29,7 @@
 /*
  * Run Tests Parameters Technique (RTPT)
  *
- * Tese parameters have effect only when
+ * These parameters have effect only when
  * running a group of tests (collections)
  * such as all Functional tests, all Complex
  * tests, all Exceptions tests, Full test
@@ -37,10 +37,10 @@
  *
  * Main flag:
  * 0 - run unconditionally all tests
- * 1 - run all the tests whit non-zero params
- * 2 - run all the tests whit zero params
- * 3 - run all the tests whit params equal to RUN1
- * 4 - run one the particular test specified so:
+ * 1 - run all the tests with non-zero params
+ * 2 - run all the tests with zero params
+ * 3 - run all the tests with params equal to RUN1
+ * 4 - run a particular test specified by:
  *     RUN2 - index of collection
  *     RUN3 - index of the test inside the collection
  */
@@ -117,7 +117,7 @@ Method(SRTP, 1) {
 /*
  * Set up the particular desirable set of tests to be run
  *
- * Tese parameters have effect only when
+ * These parameters have effect only when
  * running a group of test cases or even
  * collections) such as all Functional tests,
  * all Complex tests, all Exceptions tests,
@@ -128,10 +128,10 @@ Method(SRTP, 1) {
  *
  * RUN0 - main flag
  * 0 - run unconditionally all tests
- * 1 - run all the tests whit non-zero params
- * 2 - run all the tests whit zero params
- * 3 - run all the tests whit params equal to RUN1
- * 4 - run one the particular test specified in this way:
+ * 1 - run all the tests with non-zero params
+ * 2 - run all the tests with zero params
+ * 3 - run all the tests with params equal to RUN1
+ * 4 - run a particular test specified by:
  *     RUN2 - index of collection
  *            1 - functional
  *            2 - complex
@@ -143,7 +143,7 @@ Method(SRTP, 1) {
  */
 Method(RTPI) {
 
-// PARAMETRES OF MODE
+// PARAMETERS OF MODE
 
 Store(0, RUN0) // main flag
 Store(0, RUN1) // level
@@ -200,8 +200,8 @@ Store(1, W018) // condbranches	0
  * ATTENTION: all these variables should be set to 1 eventually
  *            (after all bugs fixing).
  *
- * Lyout of variable name: y<xxx> - xxx is the number of bug
- *        0 - dont run
+ * Format of variable name: y<xxx> - xxx is the number of bug
+ *        0 - do not run
  * non-zero - run
  *
  * ATTENTION: see all the qXXX & rnXX conditions of the particular
@@ -377,7 +377,7 @@ Name(y902, 1)	// Expected is that Serialized method being invoked recursively on
  * All them should be set to non-zero after
  * clarifying the relevant issue, or provided
  * with the comment clarifying what is wrong in
- * the sub-test - dont remove them even in the
+ * the sub-test - don't remove them even in the
  * latter case.
  */
 Name(q001, 1) // Dereference of Store(Index(x,x,Index(x,x)), Index(x,x))
