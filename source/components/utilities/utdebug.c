@@ -779,4 +779,41 @@ AcpiTracePoint (
 
 ACPI_EXPORT_SYMBOL (AcpiTracePoint)
 
+
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CvDbgPrint
+ *
+ * PARAMETERS:  Type                - Type of output
+ *              Fmt                 - Printf format string
+ *              ...                 - variable printf list
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print statement for debug messages within the converter.
+ *
+ ******************************************************************************/
+
+void
+CvDbgPrint (
+    char                    *Fmt,
+    ...)
+{
+    va_list                 Args;
+
+
+    if (!Gbl_CaptureComments || !AcpiGbl_DebugAslConversion)
+    {
+        return;
+    }
+
+    va_start (Args, Fmt);
+    (void) vfprintf (AcpiGbl_ConvDebugFile, Fmt, Args);
+    va_end (Args);
+    return;
+}
+
 #endif

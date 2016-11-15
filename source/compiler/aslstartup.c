@@ -541,12 +541,16 @@ AslDoOneFile (
              * New output is from the input ASL file from above.
              */
             Gbl_OutputFilenamePrefix = Gbl_Files[ASL_FILE_INPUT].Filename; 
-	    printf ("OUTPUTFILENAME: %s", Gbl_OutputFilenamePrefix);
+	    CvDbgPrint("OUTPUTFILENAME: %s\n", Gbl_OutputFilenamePrefix);
             Gbl_Files[ASL_FILE_INPUT].Filename =
                 Gbl_Files[ASL_FILE_AML_OUTPUT].Filename;
 
             fprintf (stderr, "\n");
             AslDoDisassembly ();
+
+            /* delete the AML file. This AML file should never be utilized by AML interpreters. */
+
+            remove (Gbl_Files[ASL_FILE_AML_OUTPUT].Filename);
         }
 
         return (AE_OK);

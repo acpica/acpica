@@ -245,19 +245,20 @@ typedef enum
     ASL_FILE_C_INCLUDE_OUTPUT,  /* .h   */
     ASL_FILE_C_OFFSET_OUTPUT,   /* .offset.h */
     ASL_FILE_MAP_OUTPUT,        /* .map */
-    ASL_FILE_XREF_OUTPUT        /* .xrf */
+    ASL_FILE_XREF_OUTPUT,       /* .xrf */
+    ASL_FILE_CONV_DEBUG_OUTPUT, /* .cdb */
+    ASL_FILE_CONV_OUTPUT        /* .xxx */
 
 } ASL_FILE_TYPES;
 
 
-#define ASL_MAX_FILE_TYPE       17
+#define ASL_MAX_FILE_TYPE       18
 #define ASL_NUM_FILES           (ASL_MAX_FILE_TYPE + 1)
 
 /* Name suffixes used to create filenames for output files */
 
 #define FILE_SUFFIX_ASL_CODE        "asl"
 #define FILE_SUFFIX_AML_CODE        "aml"
-#define FILE_SUFFIX_CONVERT_AML     "xxx"
 #define FILE_SUFFIX_SOURCE          "src"
 #define FILE_SUFFIX_PREPROCESSOR    "pre"
 #define FILE_SUFFIX_PREPROC_USER    "i"
@@ -272,6 +273,8 @@ typedef enum
 #define FILE_SUFFIX_C_OFFSET        "offset.h"
 #define FILE_SUFFIX_MAP             "map"
 #define FILE_SUFFIX_XREF            "xrf"
+#define FILE_SUFFIX_CONVERT_AML     "xxx"
+#define FILE_SUFFIX_CONVERT_DEBUG   "cdb"
 
 
 /* Cache block structure for ParseOps and Strings */

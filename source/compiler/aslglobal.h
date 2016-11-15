@@ -156,7 +156,8 @@ ASL_FILE_INFO                       Gbl_Files [ASL_NUM_FILES] =
     {NULL, NULL, "C Include:    ", "C Header Output"},
     {NULL, NULL, "Offset Table: ", "C Offset Table Output"},
     {NULL, NULL, "Device Map:   ", "Device Map Output"},
-    {NULL, NULL, "Cross Ref:    ", "Cross-reference Output"}
+    {NULL, NULL, "Cross Ref:    ", "Cross-reference Output"},
+    {NULL, NULL, "Converter db :", "Converter debug Output"}
 };
 
 #else

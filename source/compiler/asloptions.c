@@ -283,13 +283,17 @@ AslDoOptions (
         {
 
         case 'c':
-
+/*
             printf ("Debug ASL to ASL+ conversion\n");
+            Gbl_DoAslConversion = TRUE;
             Gbl_FoldConstants = FALSE;
             Gbl_IntegerOptimizationFlag = FALSE;
             Gbl_ReferenceOptimizationFlag = FALSE;
             Gbl_OptimizeTrivialParseNodes = FALSE;
             Gbl_CaptureComments = TRUE;
+            AcpiGbl_DoDisassemblerOptimizations = FALSE;
+*/
+            AcpiGbl_DebugAslConversion = TRUE;
 
             return (-1);
 
@@ -355,6 +359,7 @@ AslDoOptions (
             Gbl_OptimizeTrivialParseNodes = FALSE;
             Gbl_CaptureComments = TRUE;
             AcpiGbl_DoDisassemblerOptimizations = FALSE;
+            AcpiGbl_DebugAslConversion = TRUE;
 
             return (0);
 

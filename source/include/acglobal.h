@@ -482,6 +482,9 @@ ACPI_GLOBAL (ACPI_CACHE_T *,            AcpiGbl_FileCache);
 
 ACPI_INIT_GLOBAL (BOOLEAN, Gbl_CaptureComments, FALSE);
 
+ACPI_INIT_GLOBAL (BOOLEAN, AcpiGbl_DebugAslConversion, FALSE);
+ACPI_INIT_GLOBAL (ACPI_FILE, AcpiGbl_ConvDebugFile, NULL);
+
 
 /*****************************************************************************
  *

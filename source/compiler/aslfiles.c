@@ -932,6 +932,28 @@ FlOpenMiscOutputFiles (
         AslCompilerFileHeader (ASL_FILE_NAMESPACE_OUTPUT);
     }
 
+    /* Create a debug file for the converter */
+
+    if (AcpiGbl_DebugAslConversion)
+    {
+        Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_CONVERT_DEBUG);
+        if (!Filename)
+        {
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME,
+                0, 0, 0, 0, NULL, NULL);
+            return (AE_ERROR);
+        }
+
+        /* Open the namespace file, text mode */
+
+        FlOpenFile (ASL_FILE_CONV_DEBUG_OUTPUT, Filename, "a+t");
+
+        AslCompilerSignon (ASL_FILE_CONV_DEBUG_OUTPUT);
+        AslCompilerFileHeader (ASL_FILE_CONV_DEBUG_OUTPUT);
+
+        AcpiGbl_ConvDebugFile = Gbl_Files[ASL_FILE_CONV_DEBUG_OUTPUT].Handle; 
+    }
+
     return (AE_OK);
 }
 
