@@ -184,7 +184,7 @@ AcGetAllTablesFromFile (
     if (FileSize == ACPI_UINT32_MAX)
     {
         Status = AE_ERROR;
-        goto ErrorExit;
+        goto Exit;
     }
 
     fprintf (stderr,
@@ -196,7 +196,7 @@ AcGetAllTablesFromFile (
     if (FileSize < sizeof (ACPI_TABLE_HEADER))
     {
         Status = AE_BAD_HEADER;
-        goto ErrorExit;
+        goto Exit;
     }
 
     /* Check for an non-binary file */
@@ -206,7 +206,8 @@ AcGetAllTablesFromFile (
         fprintf (stderr,
             "    %s: File does not appear to contain a valid AML table\n",
             Filename);
-        return (AE_TYPE);
+        Status = AE_TYPE;
+        goto Exit;
     }
 
     /* Read all tables within the file */
@@ -225,11 +226,12 @@ AcGetAllTablesFromFile (
         }
         else if (Status == AE_TYPE)
         {
-            return (AE_OK);
+            Status = AE_OK;
+            goto Exit;
         }
         else if (ACPI_FAILURE (Status))
         {
-            goto ErrorExit;
+            goto Exit;
         }
 
         /* Print table header for iASL/disassembler only */
@@ -242,6 +244,11 @@ AcGetAllTablesFromFile (
         /* Allocate and link a table descriptor */
 
         TableDesc = AcpiOsAllocate (sizeof (ACPI_NEW_TABLE_DESC));
+        if (!TableDesc)
+        {
+            Status = AE_NO_MEMORY;
+            goto Exit;
+        }
         TableDesc->Table = Table;
         TableDesc->Next = NULL;
 
@@ -276,7 +283,7 @@ AcGetAllTablesFromFile (
         *ReturnListHead = ListHead;
     }
 
-ErrorExit:
+Exit:
     fclose(File);
     return (Status);
 }
