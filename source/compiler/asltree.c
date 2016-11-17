@@ -240,20 +240,17 @@ TrAllocateNode (
          * Check to see if the file name has changed before resetting the 
          * latest parse node.
          */
-        if (LatestNode && (ParseOpcode != PARSEOP_INCLUDE) && (ParseOpcode != PARSEOP_INCLUDE_END))
+        if (LatestNode && (ParseOpcode != PARSEOP_INCLUDE) && (ParseOpcode != PARSEOP_INCLUDE_END) && strcmp (LatestNode->Asl.Filename, Op->Asl.Filename))
         {
-            if (strcmp (LatestNode->Asl.Filename, Op->Asl.Filename))
+            CvDbgPrint ("latest node: %s\n", LatestNode->Asl.ParseOpName);
+            Op->Asl.FileChanged = TRUE;
+            if (Gbl_IncludeFileStack)
             {
-                Op->Asl.FileChanged = TRUE;
-
-                if (Gbl_IncludeFileStack)
-                {
-                    Op->Asl.ParentFilename = Gbl_IncludeFileStack->Filename;
-                }
-                else
-                {
-                    Op->Asl.ParentFilename = NULL;
-                }
+                Op->Asl.ParentFilename = Gbl_IncludeFileStack->Filename;
+            }
+            else
+            {
+                Op->Asl.ParentFilename = NULL;
             }
         }
 

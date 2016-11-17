@@ -6,7 +6,6 @@ DefinitionBlock(
 	"Many",    
 	0x00000001  
 	) {
-
     Include("test1.asl")
     Include("test6.asl")
 

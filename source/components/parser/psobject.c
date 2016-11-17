@@ -378,6 +378,12 @@ AcpiPsBuildNamedOp (
         (*Op)->Common.EndBlkComment = UnnamedOp->Common.EndBlkComment;
         UnnamedOp->Common.EndBlkComment = NULL;
     }
+    if (UnnamedOp->Common.IncComment)
+    {
+        (*Op)->Common.IncComment = UnnamedOp->Common.IncComment;
+        UnnamedOp->Common.IncComment = NULL;
+    }
+
 
     (*Op)->Common.PsFilename = UnnamedOp->Common.PsFilename;
     (*Op)->Common.PsParentFilename = UnnamedOp->Common.PsParentFilename;

@@ -539,6 +539,42 @@ AcpiPsSetFileParent (
     }
 }
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsCaptureListComments
+ *
+ * PARAMETERS:  ParserState         - A parser state object
+ *
+ * RETURN:      void
+ *
+ * DESCRIPTION:  
+ *
+ ******************************************************************************/
+
+void
+AcpiPsCaptureListComments (
+    ACPI_PARSE_STATE        *ParserState,
+    ACPI_COMMENT_LIST_NODE  *ListHead,
+    ACPI_COMMENT_LIST_NODE  *ListTail)
+{
+    ACPI_COMMENT_LIST_NODE  *CommentNode;
+
+    CommentNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
+    CommentNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
+    CommentNode->Next    = NULL;
+
+    if (ListHead==NULL)
+    {
+        ListHead = CommentNode;
+        ListTail = CommentNode;
+    }
+    else
+    {
+        ListTail->Next = CommentNode;
+        ListTail = ListTail->Next;
+    }
+}
+  
 
 /*******************************************************************************
  *
@@ -565,8 +601,8 @@ AcpiPsCaptureJustComments (
     UINT32                  Length = 0;
     UINT8                   CommentOption;
     char                    *Debug;
-    ACPI_COMMENT_LIST_NODE  *CommentNode;
     BOOLEAN                 StdDefBlockFlag = FALSE;
+    ACPI_COMMENT_LIST_NODE  *CommentNode;
 
 
     if (!Gbl_CaptureComments)
@@ -577,7 +613,7 @@ AcpiPsCaptureJustComments (
     Opcode = (UINT16) ACPI_GET8 (Aml);
     CommentOption = (UINT16) ACPI_GET8 (Aml+1);
     //CvDbgPrint ("CaptureComments Opcode: 0x%x\n", Opcode);
-    if (Opcode != AML_COMMENT_OP || ((Opcode == AML_COMMENT_OP) && ((CommentOption < 0x1) || (CommentOption > 0xa))))
+    if (Opcode != AML_COMMENT_OP || ((Opcode == AML_COMMENT_OP) && ((CommentOption < 0x1) || (CommentOption > 0xb))))
     {
        return;
     }
@@ -613,22 +649,7 @@ AcpiPsCaptureJustComments (
 
                     /* add to a linked list of nodes. This list will be taken by the parse node created next. */
                 
-                    CommentNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
-                
-                    CommentNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
-                    CommentNode->Next    = NULL;
-                     
-                    if (AcpiGbl_RegCommentListHead==NULL)
-                    {
-                        AcpiGbl_RegCommentListHead 
-                         = AcpiGbl_RegCommentListTail 
-                         = CommentNode;
-                    }
-                    else
-                    {
-                        AcpiGbl_RegCommentListTail->Next = CommentNode;
-                        AcpiGbl_RegCommentListTail = AcpiGbl_RegCommentListTail->Next;
-                    }
+                    AcpiPsCaptureListComments (ParserState, AcpiGbl_RegCommentListHead, AcpiGbl_RegCommentListTail);
                     break;
 
                 case ENDBLK_COMMENT:
@@ -637,21 +658,7 @@ AcpiPsCaptureJustComments (
 
                     /* add to a linked list of nodes. This will be taken by the next created parse node. */
 
-                    CommentNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
-
-                    CommentNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
-                    CommentNode->Next    = NULL;
-
-                    if (AcpiGbl_EndBlkCommentListHead==NULL)
-                    {
-                        AcpiGbl_EndBlkCommentListHead = CommentNode;
-                        AcpiGbl_EndBlkCommentListTail = CommentNode;
-                    }
-                    else
-                    {
-                        AcpiGbl_EndBlkCommentListTail->Next = CommentNode;
-                        AcpiGbl_EndBlkCommentListTail = AcpiGbl_EndBlkCommentListTail->Next;
-                    }
+                    AcpiPsCaptureListComments (ParserState, AcpiGbl_EndBlkCommentListHead, AcpiGbl_EndBlkCommentListTail);
                     break;
 
                 case INLINE_COMMENT:
@@ -718,6 +725,30 @@ AcpiPsCaptureJustComments (
 
                 case PARENTFILENAME_COMMENT:
                     //CvDbgPrint ("Found a parent filename.");
+                    break;
+
+                case INCLUDE_COMMENT:
+                    printf ("Found a include comment.");
+
+                    /* add to a linked list of nodes. This list will be taken by the parse node created next. */
+
+               //     AcpiPsCaptureListComments (ParserState, AcpiGbl_IncCommentListHead, AcpiGbl_IncCommentListTail);
+
+                    CommentNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
+                    CommentNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    CommentNode->Next    = NULL;
+
+                    if (AcpiGbl_IncCommentListHead==NULL)
+                    {
+                        AcpiGbl_IncCommentListHead = CommentNode;
+                        AcpiGbl_IncCommentListTail = CommentNode;
+                    }
+                    else
+                    {
+                        AcpiGbl_IncCommentListTail->Next = CommentNode;
+                        AcpiGbl_IncCommentListTail = AcpiGbl_IncCommentListTail->Next;
+                    }
+                
                     break;
 
                 default:

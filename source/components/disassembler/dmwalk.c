@@ -173,7 +173,8 @@ AcpiDmOpenBraceWriteComment(
 void
 AcpiDmSwitchFiles(
     char                    *Filename,
-    UINT32                  Level);
+    UINT32                  Level,
+    ACPI_PARSE_OBJECT       *Op);
 
 
 /*******************************************************************************
@@ -623,10 +624,11 @@ AcpiDmCloseParenWriteComment(
 void
 AcpiDmSwitchFiles(
     char                    *Filename,
-    UINT32                  Level)
+    UINT32                  Level,
+    ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_FILE_NODE          *FNode;
-
+    ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.IncComment;
 
     CvDbgPrint ("Switching from %s to %s\n", AcpiGbl_CurrentFilename, Filename);    
     FNode = AcpiPsFilenameExists (Filename, AcpiGbl_FileTreeRoot);
@@ -634,11 +636,27 @@ AcpiDmSwitchFiles(
     {
         if (!FNode->IncludeWritten)
         {
+            /* Before printing the include statement, output any comments that are associated with the include. */
+
+            if (CommentNode)
+            {
+                printf("Writing include comment\n");
+            }	
+            while (CommentNode)
+            {
+                AcpiDmIndent (Level);
+                AcpiOsPrintf("%s\n", CommentNode->Comment);
+                CommentNode->Comment = NULL;
+                CommentNode = CommentNode->Next;     
+            } 
+            Op->Common.IncComment = NULL;
+
             CvDbgPrint ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
             AcpiOsRedirectOutput (FNode->Parent->File);
             AcpiDmIndent (Level);
             AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
             CvDbgPrint ("emitted the following: Include (\"%s\")\n", FNode->Filename);
+            printf ("emitted the following: Include (\"%s\")\n", FNode->Filename);
             //fclose (FNode->Parent->File);
             FNode->IncludeWritten = TRUE;
         }
@@ -658,6 +676,7 @@ AcpiDmSwitchFiles(
                 AcpiDmIndent (Level);
                 AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
                 CvDbgPrint ("emitted the following in %s: Include (\"%s\")\n", FNode->Parent->Filename,FNode->Filename);
+                printf ("222emitted the following: Include (\"%s\")\n", FNode->Filename);
                 //fclose (FNode->Parent->File);
                 FNode->IncludeWritten = TRUE;
             }
@@ -703,15 +722,15 @@ AcpiDmDescendingOp (
     char                    *Filename = Op->Common.PsFilename;
 
 
-    /* determine which file this parse node is contained in. */
+    /* Determine which file this parse node is contained in. */
 
     if (Gbl_CaptureComments)
     {
         AcpiPsFileLabelNode(Op);
-    
+  
         if (Level != 0 && Filename && AcpiGbl_CurrentFilename && strcmp(Filename, AcpiGbl_CurrentFilename))
         { 
-            AcpiDmSwitchFiles(Filename, Level);
+            AcpiDmSwitchFiles(Filename, Level, Op);
         }
     
         /* If this parse node has regular comments, print them here. */
@@ -1231,7 +1250,7 @@ AcpiDmAscendingOp (
 
         if (Filename && AcpiGbl_CurrentFilename && strcmp(Filename, AcpiGbl_CurrentFilename))
         {
-            AcpiDmSwitchFiles(Filename, Level);
+            AcpiDmSwitchFiles(Filename, Level, Op);
         }
     }
 

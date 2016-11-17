@@ -534,6 +534,15 @@ AcpiPsTransferComments (
         AcpiGbl_EndBlkCommentListTail = NULL;
     }
 
+    if (AcpiGbl_IncCommentListHead != NULL)
+    {
+        Op->Common.IncComment = AcpiGbl_IncCommentListHead;
+        printf ("Op->Common.IncComment head: %s\n", Op->Common.IncComment->Comment);
+        AcpiGbl_IncCommentListHead = NULL;
+        AcpiGbl_IncCommentListTail = NULL;
+    }
+
+
     //CvDbgPrint("\n");
 }
 

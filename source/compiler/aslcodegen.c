@@ -533,8 +533,7 @@ CgWriteAmlComment(
             CgLocalWriteAmlData (Op, &CommentOption, 1);
             CgLocalWriteAmlData (Op, ParentFilename, strlen (ParentFilename) + 1); 
         }
-       
- 
+
         /* prevent multiple writes of the same comment */
 
         Op->Asl.FileChanged = FALSE;
@@ -546,10 +545,16 @@ CgWriteAmlComment(
      * as byte code.
      */
     Current = Op->Asl.CommentList;
-    CommentOption = STANDARD_COMMENT;
-    while (Current)
+    if (Op->Asl.ParseOpcode == PARSEOP_INCLUDE)
+    {
+        CommentOption = INCLUDE_COMMENT;
+    }
+    else
     {
         CommentOption = STANDARD_COMMENT;
+    }
+    while (Current)
+    {
         CgWriteOneAmlComment(Op, Current->Comment, CommentOption);
         Current = Current->Next;
     }

@@ -445,6 +445,12 @@ AcpiPsCommentExists (
     UINT8                   *toCheck);
 
 void
+AcpiPsCaptureListComments (
+    ACPI_PARSE_STATE        *ParserState,
+    ACPI_COMMENT_LIST_NODE  *ListHead,
+    ACPI_COMMENT_LIST_NODE  *ListTail);
+
+void
 AcpiPsCaptureJustComments (
     ACPI_PARSE_STATE        *ParserState);
 

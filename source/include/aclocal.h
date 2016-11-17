@@ -1001,6 +1001,7 @@ typedef union acpi_parse_value
     char                            *CloseBraceComment; /* For -ca option: inline comment associated with the first parameter of the name node.*/\
     ACPI_COMMENT_LIST_NODE          *CommentList;       /* comments that appears before this node */\
     ACPI_COMMENT_LIST_NODE          *EndBlkComment;     /* comments that at the end of a block but before ) or } */\
+    ACPI_COMMENT_LIST_NODE          *IncComment;        /* comments that are above ASL include statements */\
     char                            *PsFilename;        /* For -ca optoin: filename associated with this node */\
     char                            *PsParentFilename;  /* For -ca optoin: parent filename associated with this node */
 
@@ -1017,6 +1018,7 @@ typedef union acpi_parse_value
 #define FILENAME_COMMENT        8
 #define PARENTFILENAME_COMMENT  9
 #define ENDBLK_COMMENT         10
+#define INCLUDE_COMMENT        11
 
 
 /* Flags for DisasmFlags field  above */

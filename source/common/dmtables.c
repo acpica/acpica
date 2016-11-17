@@ -521,7 +521,6 @@ AdParseTable (
 
         while (TreeAml <= FileEnd)
         {
-            CvDbgPrint ("Pointer val: %p\n", TreeAml);
             if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x08)
             {
                 CvDbgPrint ("A9 and a 08 file\n");
