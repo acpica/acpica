@@ -238,7 +238,7 @@ AcGetAllTablesFromFile (
 
 #ifdef ACPI_ASL_COMPILER
 
-            AcpiTbPrintTableHeader (0, Table);
+        AcpiTbPrintTableHeader (0, Table);
 #endif
 
         /* Allocate and link a table descriptor */
@@ -246,9 +246,11 @@ AcGetAllTablesFromFile (
         TableDesc = AcpiOsAllocate (sizeof (ACPI_NEW_TABLE_DESC));
         if (!TableDesc)
         {
+            AcpiOsFree (Table);
             Status = AE_NO_MEMORY;
             goto Exit;
         }
+
         TableDesc->Table = Table;
         TableDesc->Next = NULL;
 
@@ -340,7 +342,6 @@ AcGetOneTableFromFile (
     {
         return (Status);
     }
-
 
     if (GetOnlyAmlTables)
     {
