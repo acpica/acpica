@@ -648,8 +648,20 @@ AcpiPsCaptureJustComments (
                     //CvDbgPrint ("found regular comment.\n");
 
                     /* add to a linked list of nodes. This list will be taken by the parse node created next. */
-                
-                    AcpiPsCaptureListComments (ParserState, AcpiGbl_RegCommentListHead, AcpiGbl_RegCommentListTail);
+                    CommentNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
+                    CommentNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    CommentNode->Next    = NULL;
+
+                    if (AcpiGbl_RegCommentListHead==NULL)
+                    {
+                        AcpiGbl_RegCommentListHead = CommentNode;
+                        AcpiGbl_RegCommentListTail = CommentNode;
+                    }
+                    else
+                    {
+                        AcpiGbl_RegCommentListTail->Next = CommentNode;
+                        AcpiGbl_RegCommentListTail = AcpiGbl_RegCommentListTail->Next;
+                    }
                     break;
 
                 case ENDBLK_COMMENT:
@@ -657,8 +669,20 @@ AcpiPsCaptureJustComments (
                     //CvDbgPrint ("found endblk comment.\n");
 
                     /* add to a linked list of nodes. This will be taken by the next created parse node. */
+                    CommentNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
+                    CommentNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    CommentNode->Next    = NULL;
 
-                    AcpiPsCaptureListComments (ParserState, AcpiGbl_EndBlkCommentListHead, AcpiGbl_EndBlkCommentListTail);
+                    if (AcpiGbl_EndBlkCommentListHead==NULL)
+                    {
+                        AcpiGbl_EndBlkCommentListHead = CommentNode;
+                        AcpiGbl_EndBlkCommentListTail = CommentNode;
+                    }
+                    else
+                    {
+                        AcpiGbl_EndBlkCommentListTail->Next = CommentNode;
+                        AcpiGbl_EndBlkCommentListTail = AcpiGbl_EndBlkCommentListTail->Next;
+                    }
                     break;
 
                 case INLINE_COMMENT:
@@ -748,7 +772,6 @@ AcpiPsCaptureJustComments (
                         AcpiGbl_IncCommentListTail->Next = CommentNode;
                         AcpiGbl_IncCommentListTail = AcpiGbl_IncCommentListTail->Next;
                     }
-                
                     break;
 
                 default:
