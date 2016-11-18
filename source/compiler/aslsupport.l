@@ -447,6 +447,10 @@ AslPushInputFileStack (
 
     Gbl_CurrentLineNumber = 1;
     yyin = InputFile;
+
+    /* converter: reset the comment state to STANDARD_COMMENT */
+
+    Gbl_CommentState.CommentType = STANDARD_COMMENT;
 }
 
 
