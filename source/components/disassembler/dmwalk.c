@@ -166,10 +166,6 @@ AcpiDmCloseBraceWriteComment(
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level);
 
-static void
-AcpiDmOpenBraceWriteComment(
-    ACPI_PARSE_OBJECT       *Op);
-
 void
 AcpiDmSwitchFiles(
     char                    *Filename,
@@ -521,38 +517,6 @@ AcpiDmCloseBraceWriteComment(
     {
         AcpiOsPrintf (" %s", Op->Common.CloseBraceComment);
         Op->Common.CloseBraceComment=NULL;
-    }
-}
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDmOpenBraceWriteComment 
- *
- * PARAMETERS:  ACPI_PARSE_OBJECT
- *
- * RETURN:      none
- *
- * DESCRIPTION: Print a opening brace { and any open brace comments associated 
- *              with this parse object.
- *
- ******************************************************************************/
-
-static void
-AcpiDmOpenBraceWriteComment(
-    ACPI_PARSE_OBJECT       *Op)
-{
-    if (!Gbl_CaptureComments)
-    {
-        AcpiOsPrintf ("{");
-        return;
-    }
-
-    AcpiOsPrintf ("{ ");
-
-   if ((Op->Common.Parent!=NULL) && (Op->Common.Parent->Common.OpenBraceComment!=NULL))
-   {
-       AcpiOsPrintf (" %s", Op->Common.Parent->Common.OpenBraceComment);
-       Op->Common.Parent->Common.OpenBraceComment=NULL;
     }
 }
 
@@ -1156,7 +1120,7 @@ AcpiDmDescendingOp (
                 AcpiOsPrintf ("\n");
                 AcpiDmIndent (Info->Level);
 
-                AcpiDmOpenBraceWriteComment(Op);
+                AcpiOsPrintf ("{");
                 AcpiOsPrintf ("\n");
                 return (AE_OK);
             }
@@ -1204,7 +1168,7 @@ AcpiDmDescendingOp (
         {
             AcpiOsPrintf ("\n");
             AcpiDmIndent (Level);
-            AcpiDmOpenBraceWriteComment(Op);
+            AcpiOsPrintf ("{");
             AcpiOsPrintf ("\n");
         }
     }
@@ -1453,7 +1417,7 @@ AcpiDmAscendingOp (
 
             AcpiOsPrintf ("\n");
             AcpiDmIndent (Level - 1);
-            AcpiDmOpenBraceWriteComment(Op);
+            AcpiOsPrintf ("{");
             AcpiOsPrintf ("\n");
         }
         else
@@ -1461,7 +1425,7 @@ AcpiDmAscendingOp (
             ParentOp->Common.DisasmFlags |= ACPI_PARSEOP_EMPTY_TERMLIST;
 
             AcpiDmCloseParenWriteComment(Op, Level);
-            AcpiDmOpenBraceWriteComment(Op);
+            AcpiOsPrintf ("{");
         }
     }
 

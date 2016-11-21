@@ -997,7 +997,6 @@ typedef union acpi_parse_value
     char                            *InlineComment;     /* For -ca option: inline comment associated with this node.*/\
     char                            *EndNodeComment;    /* For -ca option: end of node comment associated with this node.*/\
     char                            *NameComment;       /* For -ca option: inline comment associated with the first parameter of the name node.*/\
-    char                            *OpenBraceComment;  /* For -ca option: inline comment associated with the first parameter of the name node.*/\
     char                            *CloseBraceComment; /* For -ca option: inline comment associated with the first parameter of the name node.*/\
     ACPI_COMMENT_LIST_NODE          *CommentList;       /* comments that appears before this node */\
     ACPI_COMMENT_LIST_NODE          *EndBlkComment;     /* comments that at the end of a block but before ) or } */\
@@ -1011,7 +1010,6 @@ typedef union acpi_parse_value
 #define STANDARD_COMMENT        1
 #define INLINE_COMMENT          2
 #define ENDNODE_COMMENT         3
-#define OPENBRACE_COMMENT       4
 #define CLOSEBRACE_COMMENT      5
 #define STD_DEFBLK_COMMENT      6
 #define END_DEFBLK_COMMENT      7

@@ -131,8 +131,7 @@
 #define ASL_INLINECOMMENT     2
 #define ASL_OPENPARENCOMMENT  3
 #define ASL_CLOSEPARENCOMMENT 4
-#define ASL_OPENBRACECOMMENT  5
-#define ASL_CLOSEBRACECOMMENT 6
+#define ASL_CLOSEBRACECOMMENT 5
 
 /* Definitions for comment table entry */
 
@@ -748,11 +747,6 @@ AslPlaceComment(
                     AppendInlineComment (Gbl_CommentState.Latest_Parse_Node->Asl.EndNodeComment,
                     CommentString);
             }
-            break;
-
-        case ASL_OPENBRACECOMMENT:
-
-            Gbl_CommentState.ParsingParenBraceNode->Asl.OpenBraceComment = CommentString;
             break;
 
         case ASL_CLOSEBRACECOMMENT:

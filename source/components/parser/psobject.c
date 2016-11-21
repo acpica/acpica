@@ -353,11 +353,6 @@ AcpiPsBuildNamedOp (
         (*Op)->Common.EndNodeComment = UnnamedOp->Common.EndNodeComment;
         UnnamedOp->Common.EndNodeComment = NULL;
     }
-    if (UnnamedOp->Common.OpenBraceComment!=NULL)
-    {
-        (*Op)->Common.OpenBraceComment = UnnamedOp->Common.OpenBraceComment;
-        UnnamedOp->Common.OpenBraceComment = NULL;
-    }
     if (UnnamedOp->Common.CloseBraceComment!=NULL)
     {
         (*Op)->Common.CloseBraceComment = UnnamedOp->Common.CloseBraceComment;

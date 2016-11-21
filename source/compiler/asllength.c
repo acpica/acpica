@@ -261,14 +261,6 @@ LnPackageLengthWalk (
                 TotalCommentLength += CommentLength;
             }
 
-            if (Op->Asl.OpenBraceComment!=NULL)
-            {
-                CommentLength = strlen (Op->Asl.OpenBraceComment)+3;
-                CvDbgPrint ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", CommentLength);
-                CvDbgPrint ("**********Comment string: %s\n\n", Op->Asl.OpenBraceComment);
-                TotalCommentLength += CommentLength;
-            }
-
             if (Op->Asl.CloseBraceComment!=NULL)
             {
                 CommentLength = strlen (Op->Asl.CloseBraceComment)+3;

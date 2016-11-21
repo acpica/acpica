@@ -707,17 +707,6 @@ AcpiPsCaptureJustComments (
                     }
                     break;
 
-                case OPENBRACE_COMMENT:
-
-                    //CvDbgPrint ("found open brace comment.\n");
-                    Debug = AcpiGbl_CurrentOpenBraceComment;
-                    AcpiGbl_CurrentOpenBraceComment = ACPI_CAST_PTR (char, ParserState->Aml);
-                    if (Debug!=NULL)
-                    {
-                        //CvDbgPrint ("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentOpenBraceComment);
-                    }
-                    break;
-
                 case CLOSEBRACE_COMMENT:
 
                     //CvDbgPrint ("found close brace comment.\n");

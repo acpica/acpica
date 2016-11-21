@@ -256,7 +256,6 @@ AcpiPsAllocOp (
         Op->Common.NameComment       = NULL;
         Op->Common.CommentList       = NULL;
         Op->Common.EndBlkComment     = NULL;
-        Op->Common.OpenBraceComment  = NULL;
         Op->Common.CloseBraceComment = NULL;
         Op->Common.PsFilename        = NULL;
         Op->Common.PsParentFilename  = NULL;
@@ -300,7 +299,6 @@ AcpiPsFreeOp (
     Op->Common.EndNodeComment    = NULL;
     Op->Common.NameComment       = NULL;
     Op->Common.CommentList       = NULL;
-    Op->Common.OpenBraceComment  = NULL;
     Op->Common.CloseBraceComment = NULL;
  
     if (Op->Common.AmlOpcode == AML_INT_RETURN_VALUE_OP)

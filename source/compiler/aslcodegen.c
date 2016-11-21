@@ -585,13 +585,6 @@ CgWriteAmlComment(
         Op->Asl.EndNodeComment = NULL;
     }
 
-    if (Op->Asl.OpenBraceComment)
-    {
-        CommentOption = OPENBRACE_COMMENT;
-        CgWriteOneAmlComment(Op, Op->Asl.OpenBraceComment, CommentOption);
-        Op->Asl.OpenBraceComment = NULL;
-    }
-
     if (Op->Asl.CloseBraceComment)
     {
         CommentOption = CLOSEBRACE_COMMENT;

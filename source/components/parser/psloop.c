@@ -504,13 +504,6 @@ AcpiPsTransferComments (
         AcpiGbl_CurrentEndNodeComment = NULL;
     }
 
-    if (AcpiGbl_CurrentOpenBraceComment != NULL)
-    {
-        Op->Common.OpenBraceComment = AcpiGbl_CurrentOpenBraceComment;
-        //CvDbgPrint ("Op->Common.OpenBraceComment: %s\n", Op->Common.OpenBraceComment);
-        AcpiGbl_CurrentOpenBraceComment = NULL;
-    }
-
     if (AcpiGbl_CurrentCloseBraceComment != NULL)
     {
         Op->Common.CloseBraceComment = AcpiGbl_CurrentCloseBraceComment;
