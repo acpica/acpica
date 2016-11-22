@@ -1128,10 +1128,6 @@ char *
 UtStringCacheCalloc (
     UINT32                  Length);
 
-struct acpi_comment_list_node*
-UtCommentNodeCalloc (
-    void);
-
 void
 UtExpandLineBuffers (
     void);
@@ -1434,13 +1430,6 @@ DtDoCompile(
 ACPI_STATUS
 DtCreateTemplates (
     char                    **argv);
-
-/*
- * Determine the blocktype of a given parse op.
- */
-UINT32
-AslParseOpBlockType (
-    ACPI_PARSE_OBJECT       *Op);
 
 
 #endif /*  __ASLCOMPILER_H */

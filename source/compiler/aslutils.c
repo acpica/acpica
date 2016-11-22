@@ -665,7 +665,6 @@ UtStringCacheCalloc (
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    UtExpandLineBuffers
