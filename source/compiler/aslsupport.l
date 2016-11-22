@@ -124,100 +124,6 @@
 #define ASL_HEX_CONSTANT        3
 
 
-
-/* Definitions for comment state */
-
-#define ASL_REGCOMMENT        1
-#define ASL_INLINECOMMENT     2
-#define ASL_OPENPARENCOMMENT  3
-#define ASL_CLOSEPARENCOMMENT 4
-#define ASL_CLOSEBRACECOMMENT 5
-
-/* Definitions for comment table entry */
-
-#define ASL_NEWLINE    '\n'
-#define ASL_OpenParen  '('
-#define ASL_CLOSEPAREN ')'
-#define ASL_COMMA      ','
-#define ASL_OPENBRACE  '{'
-#define ASL_CLOSEBRACE '}'
-#define ASL_WHITESPACE ' '
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AslProcessCommentState
- *
- * PARAMETERS:  char
- *
- * RETURN:      None
- *
- * DESCRIPTION: For -q option. Take the given input. If this character is 
- *              defined as a comment table entry, then update the state
- *              accordingly.
- *
- ******************************************************************************/
-
-void
-AslProcessCommentState (
-    char                    input)
-{
-
-    if (input == ' ')
-    {
-        Gbl_CommentState.SpacesBefore++;
-    }
-    else
-    {
-        Gbl_CommentState.SpacesBefore = 0;
-    }
-
-    switch (input)
-    {
-        case ASL_NEWLINE:
-
-            Gbl_CommentState.CommentType = ASL_REGCOMMENT;
-            break;
-
-        case ASL_WHITESPACE: 
-
-            break;
-
-        case ASL_OpenParen:
-
-            Gbl_CommentState.CommentType = ASL_OPENPARENCOMMENT;
-            break;
-
-        case ASL_CLOSEPAREN:
-
-            Gbl_CommentState.CommentType = ASL_CLOSEPARENCOMMENT;
-            break;
-
-        case ASL_OPENBRACE:
-
-            Gbl_CommentState.CommentType = ASL_REGCOMMENT;
-            Gbl_CommentState.ParsingParenBraceNode = NULL;
-            CvDbgPrint ("========================================================End Parsing paren/Brace node!\n");
-            break;
-
-        case ASL_CLOSEBRACE:
-            
-            Gbl_CommentState.CommentType = ASL_CLOSEBRACECOMMENT;
-            break;
-
-        case ASL_COMMA:
-
-            Gbl_CommentState.CommentType = ASL_INLINECOMMENT;
-            break;
-
-        default:
-
-            Gbl_CommentState.CommentType = ASL_INLINECOMMENT;
-            break;
-
-    }
-}
-
 void
 yyerror (char const *s)
 {
@@ -557,7 +463,7 @@ AslInsertLineBuffer (
         
         if (Gbl_CaptureComments)
         {
-            AslProcessCommentState (SourceChar);
+            CvProcessCommentState (SourceChar);
         }
     }
 }
@@ -612,154 +518,6 @@ count (
     }
 }
 
-
-/*******************************************************************************
- *
- * FUNCTION:    AddToCommentList
- *
- * PARAMETERS:  toAdd              - Contains the comment to be inserted
- *
- * RETURN:      None
- *
- * DESCRIPTION: Count keywords and put them into the line buffer
- *
- ******************************************************************************/
-
-static void
-AddToCommentList (
-    char*                   ToAdd)
-{
-   if (Gbl_Comment_List_Head)
-   {
-       Gbl_Comment_List_Tail->Next = UtCommentNodeCalloc ();
-       Gbl_Comment_List_Tail = Gbl_Comment_List_Tail->Next;
-   }
-   else 
-   {
-       Gbl_Comment_List_Head = UtCommentNodeCalloc ();
-       Gbl_Comment_List_Tail = Gbl_Comment_List_Head;
-   }
-
-   Gbl_Comment_List_Tail->Comment = ToAdd;
-   
-   return;
-}
-
-/*******************************************************************************
- *
- * FUNCTION:    AppendInlineComment
- *
- * PARAMETERS:  InlineComment      - Append to the end of this string.
- *              toAdd              - Contains the comment to be inserted
- *
- * RETURN:      None
- *
- * DESCRIPTION: Concatenate
- *
- ******************************************************************************/
-
-static char*
-AppendInlineComment (
-    char                    *InlineComment,
-    char                    *ToAdd)
-{
-    CvDbgPrint ("Appending to current inline comment.\n");
-
-    char*  Str  = NULL;
-    UINT32 Size = 0;
-    if (InlineComment==NULL)
-    {
-        return ToAdd;
-    }
-
-
-    Size = strlen (InlineComment);
-
-    if (ToAdd != NULL)
-    {
-        Size += strlen (ToAdd);
-    }
-
-
-    Str = UtStringCacheCalloc (Size+1);
-    strcpy (Str, InlineComment);
-    strcat (Str, ToAdd);
-    Str[strlen (Str)] = 0; //null terminate
-
-    return Str;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AslPlaceComment
- *
- * PARAMETERS:  Int    Type
- *              char*  CommentString
- *
- * RETURN:      None
- *
- * DESCRIPTION: For -q option. Take the given input. If this character is 
- *              defined as a comment table entry, then update the state
- *              accordingly.
- *
- ******************************************************************************/
-
-void
-AslPlaceComment(
-    UINT8                   Type,
-    char                    *CommentString)
-{
-   
-    CvDbgPrint ("Placing comment %s for type %d\n", CommentString, Type);
-    switch (Type)
-    {
-        case ASL_REGCOMMENT:
-
-            AddToCommentList (CommentString);
-            break;
-
-        case ASL_INLINECOMMENT:
-
-            Gbl_CommentState.Latest_Parse_Node->Asl.InlineComment = 
-                AppendInlineComment (Gbl_CommentState.Latest_Parse_Node->Asl.InlineComment,
-                CommentString);
-            break;
-
-        case ASL_OPENPARENCOMMENT:
-
-            Gbl_Inline_Comment_Buffer = 
-                AppendInlineComment(Gbl_Inline_Comment_Buffer,
-                CommentString);
-            break;
-
-        case ASL_CLOSEPARENCOMMENT:
-           
-            if (Gbl_CommentState.ParsingParenBraceNode !=NULL)
-            {
-                Gbl_CommentState.ParsingParenBraceNode->Asl.EndNodeComment = 
-                    AppendInlineComment (Gbl_CommentState.ParsingParenBraceNode->Asl.EndNodeComment,
-                    CommentString);
-            }
-            else
-            {
-                Gbl_CommentState.Latest_Parse_Node->Asl.EndNodeComment = 
-                    AppendInlineComment (Gbl_CommentState.Latest_Parse_Node->Asl.EndNodeComment,
-                    CommentString);
-            }
-            break;
-
-        case ASL_CLOSEBRACECOMMENT:
-
-            Gbl_CommentState.Latest_Parse_Node->Asl.CloseBraceComment = CommentString;
-            break;
-
-        default:
-
-            break;
-
-    }
-}
 
 /*******************************************************************************
  *
@@ -892,7 +650,7 @@ loop:
                 FinalLineToken[strlen(FinalLineToken)-1] = 0;  
             }
             
-            AddToCommentList (FinalLineToken);
+            CvAddToCommentList (FinalLineToken);
 
             LineToken = strtok (NULL, "\n");
             while (LineToken != NULL)
@@ -924,7 +682,7 @@ loop:
                     FinalLineToken[strlen(FinalLineToken)-1] = 0;  
                 }
 
-                AddToCommentList (FinalLineToken);
+                CvAddToCommentList (FinalLineToken);
                 LineToken = strtok (NULL,"\n");
             }
         }
@@ -949,7 +707,7 @@ loop:
                  FinalCommentString[i] = ' ';
             }
             strcat (FinalCommentString, CommentString);
-            AslPlaceComment (CurrentState.CommentType, FinalCommentString);    
+            CvPlaceComment (CurrentState.CommentType, FinalCommentString);    
         }
     }
 
@@ -1100,7 +858,7 @@ AslDoCommentType2 (
         {
             FinalCommentString[strlen(FinalCommentString)-1] = 0;  
         }
-        AslPlaceComment(CurrentState.CommentType, FinalCommentString);    
+        CvPlaceComment(CurrentState.CommentType, FinalCommentString);    
 
     }
 

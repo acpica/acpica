@@ -151,11 +151,6 @@ static void
 CgWriteNode (
     ACPI_PARSE_OBJECT       *Op);
 
-char*
-CgChangeFileExt(
-   char*                    Filename,
-   char*                    FileExt);
-
 
 /*******************************************************************************
  *
@@ -405,54 +400,6 @@ CgWriteAmlDefBlockComment(
 
 /*******************************************************************************
  *
- * FUNCTION:    CgChangeFileExt
- *
- * PARAMETERS:  
- *
- * RETURN:      None
- *
- * DESCRIPTION: For -ca option: change a file extension of a given filename to
- *              the given file extension.
- *
- ******************************************************************************/
-
-char*
-CgChangeFileExt(
-   char*       Filename,
-   char*       FileExt)
-{
-    char                    *Position;
-    char                    *DirectoryPosition;
-    char                    *NewFilename;
-
-
-    NewFilename = UtStringCacheCalloc (strlen (Filename)); 
-    strcpy (NewFilename, Filename);
-    DirectoryPosition = strrchr (NewFilename, '/');
-    Position = strrchr (NewFilename, '.');
-
-    if (Position && (Position > DirectoryPosition))
-    {
-        /* Tack on the new suffix */
-
-        Position++;
-        *Position = 0;
-        strcat (Position, FileExt);
-    }
-    else
-    {
-        /* No dot, add one and then the suffix */
-
-        strcat (NewFilename, ".");
-        strcat (NewFilename, FileExt);
-    }
-
-    return (NewFilename);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    CgWriteOneAmlComment
  *
  * PARAMETERS:  Op              - Current parse op
@@ -516,7 +463,7 @@ CgWriteAmlComment(
 
         /* first, print the file name comment after changing .asl to .dsl */
 
-        NewFilename = CgChangeFileExt(Op->Asl.Filename, FILE_SUFFIX_DISASSEMBLY);
+        NewFilename = CvChangeFileExt(Op->Asl.Filename, FILE_SUFFIX_DISASSEMBLY);
 
         CvDbgPrint ("Writing file comment, \"%s\" for %s\n", NewFilename, Op->Asl.ParseOpName);
     
@@ -527,7 +474,7 @@ CgWriteAmlComment(
 
         if (Op->Asl.ParentFilename && strcmp (Op->Asl.ParentFilename, Op->Asl.Filename))
         { 
-            ParentFilename = CgChangeFileExt(Op->Asl.ParentFilename, FILE_SUFFIX_DISASSEMBLY);
+            ParentFilename = CvChangeFileExt(Op->Asl.ParentFilename, FILE_SUFFIX_DISASSEMBLY);
             CommentOption = PARENTFILENAME_COMMENT;
             CgLocalWriteAmlData (Op, &CommentOpcode, 1);
             CgLocalWriteAmlData (Op, &CommentOption, 1);

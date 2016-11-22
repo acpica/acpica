@@ -181,6 +181,23 @@
 #define FILE_SUFFIX_DISASSEMBLY     "dsl"
 #define FILE_SUFFIX_BINARY_TABLE    ".dat" /* Needs the dot */
 
+/* Definitions for comment state */
+
+#define ASL_REGCOMMENT        1
+#define ASL_INLINECOMMENT     2
+#define ASL_OPENPARENCOMMENT  3
+#define ASL_CLOSEPARENCOMMENT 4
+#define ASL_CLOSEBRACECOMMENT 5
+
+/* Definitions for comment table entry */
+
+#define ASL_NEWLINE    '\n'
+#define ASL_OpenParen  '('
+#define ASL_CLOSEPAREN ')'
+#define ASL_COMMA      ','
+#define ASL_OPENBRACE  '{'
+#define ASL_CLOSEBRACE '}'
+#define ASL_WHITESPACE ' '
 
 /* acfileio */
 
@@ -292,5 +309,32 @@ AdWriteTable (
     UINT32                  Length,
     char                    *TableName,
     char                    *OemTableId);
+
+/*
+ * cvcompiler
+ */
+char*
+CvChangeFileExt(
+   char*                    Filename,
+   char*                    FileExt);
+
+void
+CvProcessCommentState (
+    char                    input);
+
+char*
+CvAppendInlineComment (
+    char                    *InlineComment,
+    char                    *ToAdd);
+
+void
+CvAddToCommentList (
+    char*                   ToAdd);
+
+void
+CvPlaceComment(
+    UINT8                   Type,
+    char                    *CommentString);
+
 
 #endif /* _ACAPPS */
