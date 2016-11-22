@@ -336,5 +336,12 @@ CvPlaceComment(
     UINT8                   Type,
     char                    *CommentString);
 
+UINT32
+CvParseOpBlockType (
+    ACPI_PARSE_OBJECT       *Op);
+
+struct acpi_comment_list_node*
+CvCommentNodeCalloc (
+    void);
 
 #endif /* _ACAPPS */

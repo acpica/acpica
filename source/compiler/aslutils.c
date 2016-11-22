@@ -138,76 +138,6 @@ UtAttachNameseg (
     ACPI_PARSE_OBJECT       *Op,
     char                    *Name);
 
-/*
- * Note: this function has been copied from dmwalk.c from the disassembler. 
- * figure out what I need and find a way to incorporate this function into common
- * as the development of the feature progresses.
- */
-/*******************************************************************************
- *
- * FUNCTION:    AslParseOpBlockType 
- *
- * PARAMETERS:  Op              - Object to be examined
- *
- * RETURN:      BlockType - not a block, parens, braces, or even both.
- *
- * DESCRIPTION: Type of block for this op (parens or braces)
- *
- ******************************************************************************/
-
-UINT32
-AslParseOpBlockType (
-    ACPI_PARSE_OBJECT       *Op)
-{
-    if (!Op)
-    {
-        return (BLOCK_NONE);
-    }
-
-    switch (Op->Asl.ParseOpcode)
-    {
-    //from aslprimaries.y
-    case PARSEOP_VAR_PACKAGE:
-    case PARSEOP_BANKFIELD:
-    case PARSEOP_BUFFER:
-    case PARSEOP_CASE: 
-    case PARSEOP_DEVICE: 
-    case PARSEOP_FIELD: 
-    case PARSEOP_FOR: 
-    case PARSEOP_FUNCTION: 
-    case PARSEOP_IF: 
-    //case PARSEOP_ELSE:
-    case PARSEOP_ELSEIF:
-    case PARSEOP_INDEXFIELD: 
-    case PARSEOP_METHOD: 
- //   case PARSEOP_PACKAGE:      
-    case PARSEOP_POWERRESOURCE: 
-    case PARSEOP_PROCESSOR: 
-    case PARSEOP_DATABUFFER:  
-    case PARSEOP_SCOPE: 
-    case PARSEOP_SWITCH: 
-    case PARSEOP_THERMALZONE: 
-    case PARSEOP_WHILE: 
-    //from aslresources.y
-    case PARSEOP_RESOURCETEMPLATE: //??? optional parens..
-    case PARSEOP_VENDORLONG: 
-    case PARSEOP_VENDORSHORT:
-    case PARSEOP_INTERRUPT:
-    case PARSEOP_IRQNOFLAGS:
-    case PARSEOP_IRQ: 
-    case PARSEOP_GPIO_INT:
-    case PARSEOP_GPIO_IO: 
-    case PARSEOP_DMA: 
-    //from aslrules.y
-    case PARSEOP_DEFINITION_BLOCK:
-        return (BLOCK_PAREN | BLOCK_BRACE);
-
-    default:
-
-        return (BLOCK_NONE);
-    }
-}
-
 
 
 /*******************************************************************************
@@ -734,30 +664,6 @@ UtStringCacheCalloc (
     return (Buffer);
 }
 
-
-/*******************************************************************************
- *
- * FUNCTION:    UtCommentNodeCalloc
- *
- * PARAMETERS:  Length              - Size of buffer requested
- *
- * RETURN:      Pointer to the buffer. Aborts on allocation failure
- *
- * DESCRIPTION: Allocate a string buffer. Bypass the local
- *              dynamic memory manager for performance reasons (This has a
- *              major impact on the speed of the compiler.)
- *
- ******************************************************************************/
-
-struct acpi_comment_list_node*
-UtCommentNodeCalloc (
-    void)
-{
-   ACPI_COMMENT_LIST_NODE *NewCommentNode = 
-       (ACPI_COMMENT_LIST_NODE*) UtLocalCalloc (sizeof(ACPI_COMMENT_LIST_NODE));
-   NewCommentNode->Next = 0;
-   return NewCommentNode;
-}
 
 
 /******************************************************************************

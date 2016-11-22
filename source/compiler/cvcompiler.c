@@ -115,7 +115,106 @@
 
 #include "aslcompiler.h"
 #include "acapps.h"
+#include "aslcompiler.y.h"
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CvCommentNodeCalloc
+ *
+ * PARAMETERS:  Length              - Size of buffer requested
+ *
+ * RETURN:      Pointer to the buffer. Aborts on allocation failure
+ *
+ * DESCRIPTION: Allocate a string buffer. Bypass the local
+ *              dynamic memory manager for performance reasons (This has a
+ *              major impact on the speed of the compiler.)
+ *
+ ******************************************************************************/
+
+struct acpi_comment_list_node*
+CvCommentNodeCalloc (
+    void)
+{
+   ACPI_COMMENT_LIST_NODE *NewCommentNode =
+       (ACPI_COMMENT_LIST_NODE*) UtLocalCalloc (sizeof(ACPI_COMMENT_LIST_NODE));
+   NewCommentNode->Next = 0;
+   return NewCommentNode;
+}
+
+
+/*
+ * Note: this function has been copied from dmwalk.c from the disassembler. 
+ * figure out what I need and find a way to incorporate this function into common
+ * as the development of the feature progresses.
+ */
+/*******************************************************************************
+ *
+ * FUNCTION:    CvParseOpBlockType 
+ *
+ * PARAMETERS:  Op              - Object to be examined
+ *
+ * RETURN:      BlockType - not a block, parens, braces, or even both.
+ *
+ * DESCRIPTION: Type of block for this op (parens or braces)
+ *
+ ******************************************************************************/
+
+UINT32
+CvParseOpBlockType (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    if (!Op)
+    {
+        return (BLOCK_NONE);
+    }
+
+    switch (Op->Asl.ParseOpcode)
+    {
+    /*from aslprimaries.y */
+
+    case PARSEOP_VAR_PACKAGE:
+    case PARSEOP_BANKFIELD:
+    case PARSEOP_BUFFER:
+    case PARSEOP_CASE:
+    case PARSEOP_DEVICE:
+    case PARSEOP_FIELD:
+    case PARSEOP_FOR:
+    case PARSEOP_FUNCTION:
+    case PARSEOP_IF:
+    case PARSEOP_ELSEIF:
+    case PARSEOP_INDEXFIELD:
+    case PARSEOP_METHOD:
+    case PARSEOP_POWERRESOURCE:
+    case PARSEOP_PROCESSOR:
+    case PARSEOP_DATABUFFER:
+    case PARSEOP_SCOPE:
+    case PARSEOP_SWITCH:
+    case PARSEOP_THERMALZONE:
+    case PARSEOP_WHILE:
+
+    /* from aslresources.y */
+
+    case PARSEOP_RESOURCETEMPLATE: /* optional parens */
+    case PARSEOP_VENDORLONG:
+    case PARSEOP_VENDORSHORT:
+    case PARSEOP_INTERRUPT:
+    case PARSEOP_IRQNOFLAGS:
+    case PARSEOP_IRQ:
+    case PARSEOP_GPIO_INT:
+    case PARSEOP_GPIO_IO:
+    case PARSEOP_DMA:
+
+    /*from aslrules.y */
+
+    case PARSEOP_DEFINITION_BLOCK:
+        return (BLOCK_PAREN | BLOCK_BRACE);
+
+    default:
+
+        return (BLOCK_NONE);
+    }
+}
 
 
 /*******************************************************************************
@@ -258,12 +357,12 @@ CvAddToCommentList (
 {
    if (Gbl_Comment_List_Head)
    {
-       Gbl_Comment_List_Tail->Next = UtCommentNodeCalloc ();
+       Gbl_Comment_List_Tail->Next = CvCommentNodeCalloc ();
        Gbl_Comment_List_Tail = Gbl_Comment_List_Tail->Next;
    }
    else 
    {
-       Gbl_Comment_List_Head = UtCommentNodeCalloc ();
+       Gbl_Comment_List_Head = CvCommentNodeCalloc ();
        Gbl_Comment_List_Tail = Gbl_Comment_List_Head;
    }
 
