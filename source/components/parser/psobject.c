@@ -117,6 +117,7 @@
 #include "accommon.h"
 #include "acparser.h"
 #include "amlcode.h"
+#include "cvmacros.h"
 
 #define _COMPONENT          ACPI_PARSER
         ACPI_MODULE_NAME    ("psobject")
@@ -275,7 +276,7 @@ AcpiPsBuildNamedOp (
     while (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) &&
           (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) != ARGP_NAME))
     {
-        AcpiPsCaptureComments (WalkState);
+        CAPTURECOMMENTS (WalkState);
         Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
             GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
         if (ACPI_FAILURE (Status))
@@ -289,7 +290,7 @@ AcpiPsBuildNamedOp (
 
     /* are there any inline comments associated with the NameSeg?? If so, save this. */
 
-    AcpiPsCaptureComments(WalkState);
+    CAPTURECOMMENTS (WalkState);
     if (AcpiGbl_CurrentInlineComment != NULL)
     { 
         UnnamedOp->Common.NameComment = AcpiGbl_CurrentInlineComment;

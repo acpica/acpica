@@ -344,4 +344,55 @@ struct acpi_comment_list_node*
 CvCommentNodeCalloc (
     void);
 
+/*
+ * cvparser
+ */
+BOOLEAN
+CvCommentExists (
+    UINT8                    *ToCheck);
+
+ACPI_FILE_NODE*
+CvFilenameExists(
+    char                    *Filename,
+    ACPI_FILE_NODE           *Head);
+
+ACPI_FILE_NODE*
+CvFileAddressLookup(
+    char                    *Address,
+    ACPI_FILE_NODE          *Head);
+
+void
+CvFileLabelNode(
+    ACPI_PARSE_OBJECT       *Op);
+
+BOOLEAN
+CvIsDescendant (
+    char                    *ChildFilename,
+    char                    *ParentFilename);
+
+void
+CvAddToFileTree (
+    char                    *Filename,
+    char                    *PreviousFilename);
+
+void
+CvSetFileParent (
+    char                    *ChildFile,
+    char                    *ParentFile);
+
+void
+CvCaptureListComments (
+    ACPI_PARSE_STATE        *ParserState,
+    ACPI_COMMENT_LIST_NODE  *ListHead,
+    ACPI_COMMENT_LIST_NODE  *ListTail);
+
+void
+CvCaptureJustComments (
+    ACPI_PARSE_STATE        *ParserState);
+
+void
+CvCaptureComments (
+    ACPI_WALK_STATE         *WalkState);
+
+
 #endif /* _ACAPPS */

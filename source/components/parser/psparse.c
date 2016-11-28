@@ -828,7 +828,7 @@ AcpiPsCaptureJustComments (
  *              aml pointer past the comment. This is used in the -q option.
  *
  ******************************************************************************/
-
+/*
 void
 AcpiPsCaptureComments (
     ACPI_WALK_STATE         *WalkState)
@@ -842,11 +842,14 @@ AcpiPsCaptureComments (
     {
         return;
     }
+*/
 
     /* 
      *Before parsing, check to see that comments that come directly after 
      * deferred opcodes aren't being processed.
      */
+
+/*
     Aml = WalkState->ParserState.Aml;
     Opcode = (UINT16) ACPI_GET8 (Aml);
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
@@ -857,6 +860,7 @@ AcpiPsCaptureComments (
     }
     
 }
+*/
 
 /*******************************************************************************
  *

@@ -127,6 +127,7 @@
 #include "acparser.h"
 #include "acdispat.h"
 #include "amlcode.h"
+#include "cvmacros.h"
 
 #define _COMPONENT          ACPI_PARSER
         ACPI_MODULE_NAME    ("psloop")
@@ -218,7 +219,7 @@ AcpiPsGetArguments (
                 Op->Common.AmlOpcode != AML_PACKAGE_OP && Op->Common.AmlOpcode != AML_VAR_PACKAGE_OP &&
                 Op->Common.AmlOpcode != AML_WHILE_OP)
             {
-                AcpiPsCaptureComments (WalkState);
+                CAPTURECOMMENTS (WalkState);
             }
             Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
                 GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
@@ -634,7 +635,7 @@ AcpiPsParseLoop (
     {
         //get comments here
         //CvDbgPrint ("Top capture\n");
-        AcpiPsCaptureComments (WalkState);
+        CAPTURECOMMENTS (WalkState);
  
         AmlOpStart = ParserState->Aml;
         if (!Op)
@@ -677,7 +678,7 @@ AcpiPsParseLoop (
         if (Op->Common.AmlOpcode != AML_BYTE_OP  && Op->Common.AmlOpcode != AML_WORD_OP &&
             Op->Common.AmlOpcode != AML_DWORD_OP && Op->Common.AmlOpcode != AML_QWORD_OP)
         {
-            AcpiPsCaptureComments (WalkState);
+            CAPTURECOMMENTS (WalkState);
         }
 
         /* Are there any arguments that must be processed? */

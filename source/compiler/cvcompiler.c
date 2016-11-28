@@ -132,7 +132,7 @@
  *
  ******************************************************************************/
 
-struct acpi_comment_list_node*
+ACPI_COMMENT_LIST_NODE*
 CvCommentNodeCalloc (
     void)
 {
