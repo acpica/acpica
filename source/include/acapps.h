@@ -347,10 +347,6 @@ CvCommentNodeCalloc (
 /*
  * cvparser
  */
-BOOLEAN
-CvCommentExists (
-    UINT8                    *ToCheck);
-
 ACPI_FILE_NODE*
 CvFilenameExists(
     char                    *Filename,
@@ -364,11 +360,6 @@ CvFileAddressLookup(
 void
 CvFileLabelNode(
     ACPI_PARSE_OBJECT       *Op);
-
-BOOLEAN
-CvIsDescendant (
-    char                    *ChildFilename,
-    char                    *ParentFilename);
 
 void
 CvAddToFileTree (
@@ -394,5 +385,8 @@ void
 CvCaptureComments (
     ACPI_WALK_STATE         *WalkState);
 
+void
+CvTransferComments (
+    ACPI_PARSE_OBJECT       *Op);
 
 #endif /* _ACAPPS */

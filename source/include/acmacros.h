@@ -492,4 +492,29 @@
 #define ACPI_IS_OCTAL_DIGIT(d)              (((char)(d) >= '0') && ((char)(d) <= '7'))
 
 
+/*
+ * Macors used for the ASL-/ASL+ converter utility
+ */
+#ifdef ACPI_ASL_COMPILER
+
+#define FILENAMEEXISTS(a,b)    CvFilenameExists(a,b);
+#define FILELABELNODE(a)       CvFileLabelNode(a)
+#define ADDTOFILETREE(a,b)     CvAddToFileTree (a,b);
+#define SETFILEPARENT(a,b)     CvSetFileParent (a,b);
+#define CAPTUREJUSTCOMMENTS(a) CvCaptureJustComments (a);
+#define CAPTURECOMMENTS(a)     CvCaptureComments (a);
+#define TRANSFERCOMMENTS(a)    CvTransferComments (a);
+
+#else
+
+#define FILENAMEEXISTS(a,b)
+#define FILELABELNODE(a)
+#define ADDTOFILETREE(a,b)
+#define SETFILEPARENT(a,b)
+#define CAPTUREJUSTCOMMENTS(a)
+#define CAPTURECOMMENTS(a)
+#define TRANSFERCOMMENTS(a)
+
+#endif
+
 #endif /* ACMACROS_H */

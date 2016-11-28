@@ -117,6 +117,7 @@
 #include "accommon.h"
 #include "acparser.h"
 #include "amlcode.h"
+#include "acapps.h"
 
 #define _COMPONENT          ACPI_PARSER
         ACPI_MODULE_NAME    ("psutils")
@@ -268,7 +269,7 @@ AcpiPsAllocOp (
 
     if (Gbl_CaptureComments)
     {
-        AcpiPsTransferComments(Op);
+        TRANSFERCOMMENTS (Op);
     }
 
     return (Op);

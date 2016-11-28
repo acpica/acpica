@@ -690,7 +690,7 @@ AcpiDmDescendingOp (
 
     if (Gbl_CaptureComments)
     {
-        AcpiPsFileLabelNode(Op);
+        FILELABELNODE (Op);
   
         if (Level != 0 && Filename && AcpiGbl_CurrentFilename && strcmp(Filename, AcpiGbl_CurrentFilename))
         { 
@@ -1206,7 +1206,7 @@ AcpiDmAscendingOp (
     /* Label this to Op to be in the proper file */
     if (Gbl_CaptureComments)
     {
-        AcpiPsFileLabelNode(Op);
+        FILELABELNODE (Op);
         Filename = Op->Common.PsFilename;
     
 	

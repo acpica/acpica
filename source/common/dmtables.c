@@ -536,7 +536,7 @@ AdParseTable (
                 temp = Filename + fnameLength - 3;
                 if (!strcmp(temp, "dsl"))
                 {
-                    AcpiPsAddToFileTree (Filename, PreviousFilename);
+                    ADDTOFILETREE (Filename, PreviousFilename);
                     ChildFilename = Filename;
                 }
             }
@@ -548,7 +548,7 @@ AdParseTable (
                 if (!strcmp(temp, "dsl"))
                 {
                 	ParentFilename = (char*)(TreeAml+2);
-                	AcpiPsSetFileParent (ChildFilename, ParentFilename);
+                        SETFILEPARENT (ChildFilename, ParentFilename);
 		}
             }
             ++TreeAml;

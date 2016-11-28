@@ -119,6 +119,7 @@
 #include "amlcode.h"
 #include "acnamesp.h"
 #include "acdispat.h"
+#include "acapps.h"
 
 #define _COMPONENT          ACPI_PARSER
         ACPI_MODULE_NAME    ("psargs")
@@ -600,7 +601,7 @@ AcpiPsGetNextField (
 
     ACPI_FUNCTION_TRACE (PsGetNextField);
 
-    AcpiPsCaptureJustComments (ParserState);
+    CAPTUREJUSTCOMMENTS (ParserState);
     Aml = ParserState->Aml;
 
     /* Determine field type */
@@ -647,7 +648,7 @@ AcpiPsGetNextField (
 
     /* Decode the field type */
 
-    AcpiPsCaptureJustComments (ParserState);
+    CAPTUREJUSTCOMMENTS (ParserState);
     switch (Opcode)
     {
     case AML_INT_NAMEDFIELD_OP:
@@ -659,7 +660,7 @@ AcpiPsGetNextField (
         ParserState->Aml += ACPI_NAME_SIZE;
 
 
-        AcpiPsCaptureJustComments (ParserState);
+        CAPTUREJUSTCOMMENTS (ParserState);
 
         /* because the package length isn't represented as a parse tree object,
          * take comments surrounding this and add to the previously created parse node.
@@ -727,12 +728,12 @@ AcpiPsGetNextField (
         {
             ParserState->Aml++;
 
-            AcpiPsCaptureJustComments (ParserState);
+            CAPTUREJUSTCOMMENTS (ParserState);
             PkgEnd = ParserState->Aml;
             PkgLength = AcpiPsGetNextPackageLength (ParserState);
             PkgEnd += PkgLength;
 
-            AcpiPsCaptureJustComments (ParserState);
+            CAPTUREJUSTCOMMENTS (ParserState);
             if (ParserState->Aml < PkgEnd)
             {
                 /* Non-empty list */
@@ -749,7 +750,7 @@ AcpiPsGetNextField (
                 Opcode = ACPI_GET8 (ParserState->Aml);
                 ParserState->Aml++;
 
-                AcpiPsCaptureJustComments (ParserState);
+                CAPTUREJUSTCOMMENTS (ParserState);
                 switch (Opcode)
                 {
                 case AML_BYTE_OP:       /* AML_BYTEDATA_ARG */
@@ -778,7 +779,7 @@ AcpiPsGetNextField (
 
                 /* Fill in bytelist data */
 
-                AcpiPsCaptureJustComments (ParserState);
+                CAPTUREJUSTCOMMENTS (ParserState);
                 Arg->Named.Value.Size = BufferLength;
                 Arg->Named.Data = ParserState->Aml;
             }

@@ -440,56 +440,9 @@ AcpiPsShow (
 /*
  * Specific to the -ca option of iASL
  */
-BOOLEAN
-AcpiPsCommentExists (
-    UINT8                   *toCheck);
-
-void
-AcpiPsCaptureListComments (
-    ACPI_PARSE_STATE        *ParserState,
-    ACPI_COMMENT_LIST_NODE  *ListHead,
-    ACPI_COMMENT_LIST_NODE  *ListTail);
-
-void
-AcpiPsCaptureJustComments (
-    ACPI_PARSE_STATE        *ParserState);
-
-void
-AcpiPsCaptureComments (
-    ACPI_WALK_STATE         *WalkState);
-
-void
-AcpiPsTransferComments (
-    ACPI_PARSE_OBJECT       *Op);
-
 ACPI_FILE_NODE*
 AcpiPsFilenameExists(
     char                    *Filename,
     ACPI_FILE_NODE           *Head);
-
-void
-AcpiPsAddToFileTree (
-    char                    *Filename,
-    char                    *PreviousFilename);
-
-void
-AcpiPsSetFileParent (
-    char                    *ChildFile,
-    char                    *ParentFile);
-
-ACPI_FILE_NODE*
-AcpiPsFileAddressLookup(
-    char                    *Address,
-    ACPI_FILE_NODE          *Head);
-
-void
-AcpiPsFileLabelNode(
-    ACPI_PARSE_OBJECT       *Op);
-
-BOOLEAN
-AcpiPsIsDescendant (
-    char                    *ChildFilename,
-    char                    *ParentFilename);
-
 
 #endif /* __ACPARSER_H__ */

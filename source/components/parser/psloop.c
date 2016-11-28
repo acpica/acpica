@@ -127,7 +127,7 @@
 #include "acparser.h"
 #include "acdispat.h"
 #include "amlcode.h"
-#include "cvmacros.h"
+#include "acapps.h"
 
 #define _COMPONENT          ACPI_PARSER
         ACPI_MODULE_NAME    ("psloop")
@@ -475,73 +475,6 @@ AcpiPsLinkModuleCode (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsTransferComments
- *
- * PARAMETERS:  WalkState           - Current state
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Parse AML (pointed to by the current parser state) and return
- *              a tree of ops.
- *
- ******************************************************************************/
-
-void
-AcpiPsTransferComments (
-    ACPI_PARSE_OBJECT       *Op) 
-{
-    //CvDbgPrint ("Transferring all captured global comments to the folowing opcode: %x\n", Op->Common.AmlOpcode);
-    if (AcpiGbl_CurrentInlineComment)
-    { 
-        Op->Common.InlineComment = AcpiGbl_CurrentInlineComment;
-        //CvDbgPrint ("Op->Common.InlineComment: %s\n", Op->Common.InlineComment);
-        AcpiGbl_CurrentInlineComment = NULL;
-    }
-
-    if (AcpiGbl_CurrentEndNodeComment != NULL)
-    { 
-        Op->Common.EndNodeComment = AcpiGbl_CurrentEndNodeComment;
-        //CvDbgPrint ("Op->Common.EndNodeComment: %s\n", Op->Common.EndNodeComment);
-        AcpiGbl_CurrentEndNodeComment = NULL;
-    }
-
-    if (AcpiGbl_CurrentCloseBraceComment != NULL)
-    {
-        Op->Common.CloseBraceComment = AcpiGbl_CurrentCloseBraceComment;
-        //CvDbgPrint ("Op->Common.CloseBraceComment: %s\n", Op->Common.CloseBraceComment);
-        AcpiGbl_CurrentCloseBraceComment = NULL;
-    }
-
-    if (AcpiGbl_RegCommentListHead != NULL)
-    { 
-        Op->Common.CommentList = AcpiGbl_RegCommentListHead;
-        //CvDbgPrint ("Op->Common.CommentList head: %s\n", Op->Common.CommentList->Comment);
-        AcpiGbl_RegCommentListHead = NULL;
-        AcpiGbl_RegCommentListTail = NULL;
-    }
-
-    if (AcpiGbl_EndBlkCommentListHead != NULL)
-    {
-        Op->Common.EndBlkComment = AcpiGbl_EndBlkCommentListHead;
-        //CvDbgPrint ("Op->Common.CommentList head: %s\n", Op->Common.EndBlkComment->Comment);
-        AcpiGbl_EndBlkCommentListHead = NULL;
-        AcpiGbl_EndBlkCommentListTail = NULL;
-    }
-
-    if (AcpiGbl_IncCommentListHead != NULL)
-    {
-        Op->Common.IncComment = AcpiGbl_IncCommentListHead;
-        printf ("Op->Common.IncComment head: %s\n", Op->Common.IncComment->Comment);
-        AcpiGbl_IncCommentListHead = NULL;
-        AcpiGbl_IncCommentListTail = NULL;
-    }
-
-
-    //CvDbgPrint("\n");
-}
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiPsParseLoop
  *
  * PARAMETERS:  WalkState           - Current state
@@ -633,8 +566,6 @@ AcpiPsParseLoop (
 
     while ((ParserState->Aml < ParserState->AmlEnd) || (Op))
     {
-        //get comments here
-        //CvDbgPrint ("Top capture\n");
         CAPTURECOMMENTS (WalkState);
  
         AmlOpStart = ParserState->Aml;

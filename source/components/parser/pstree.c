@@ -117,6 +117,7 @@
 #include "accommon.h"
 #include "acparser.h"
 #include "amlcode.h"
+#include "acapps.h"
 
 #define _COMPONENT          ACPI_PARSER
         ACPI_MODULE_NAME    ("pstree")
@@ -314,7 +315,7 @@ AcpiPsGetDepthNext (
     Next = AcpiPsGetArg (Op, 0);
     if (Next)
     {
-        AcpiPsFileLabelNode(Next);
+        FILELABELNODE (Next);
         return (Next);
     }
 
@@ -323,7 +324,7 @@ AcpiPsGetDepthNext (
     Next = Op->Common.Next;
     if (Next)
     {
-        AcpiPsFileLabelNode(Next);
+        FILELABELNODE (Next);
         return (Next);
     }
 
@@ -337,7 +338,7 @@ AcpiPsGetDepthNext (
         while (Arg && (Arg != Origin) && (Arg != Op))
         {
 
-            AcpiPsFileLabelNode(Arg);
+            FILELABELNODE (Arg);
             Arg = Arg->Common.Next;
         }
 
@@ -352,7 +353,7 @@ AcpiPsGetDepthNext (
         {
             /* Found sibling of parent */
 
-            AcpiPsFileLabelNode(Parent->Common.Next);
+            FILELABELNODE (Parent->Common.Next);
             return (Parent->Common.Next);
         }
 
@@ -360,7 +361,7 @@ AcpiPsGetDepthNext (
         Parent = Parent->Common.Parent;
     }
 
-    AcpiPsFileLabelNode(Next);
+    FILELABELNODE (Next);
     return (Next);
 }
 
