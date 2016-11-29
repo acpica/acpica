@@ -504,6 +504,9 @@
 #define CAPTUREJUSTCOMMENTS(a) CvCaptureJustComments (a);
 #define CAPTURECOMMENTS(a)     CvCaptureComments (a);
 #define TRANSFERCOMMENTS(a)    CvTransferComments (a);
+#define CLOSEPAREN(a,b)        CvCloseParenWriteComment(a,b);
+#define CLOSEBRACE(a,b)        CvCloseBraceWriteComment(a,b);
+#define SWITCHFILES(a,b,c)     CvSwitchFiles(a,b,c)
 
 #else
 
@@ -514,6 +517,9 @@
 #define CAPTUREJUSTCOMMENTS(a)
 #define CAPTURECOMMENTS(a)
 #define TRANSFERCOMMENTS(a)
+#define CLOSEPAREN(a,b)        AcpiOsPrintf (")");
+#define CLOSEBRACE(a,b)        AcpiOsPrintf ("}");
+#define SWITCHFILES(a,b,c)
 
 #endif
 

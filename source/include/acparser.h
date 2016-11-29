@@ -437,12 +437,4 @@ AcpiPsShow (
     ACPI_PARSE_OBJECT       *op);
 
 
-/*
- * Specific to the -ca option of iASL
- */
-ACPI_FILE_NODE*
-AcpiPsFilenameExists(
-    char                    *Filename,
-    ACPI_FILE_NODE           *Head);
-
 #endif /* __ACPARSER_H__ */

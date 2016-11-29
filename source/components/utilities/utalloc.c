@@ -216,8 +216,9 @@ AcpiUtCreateCaches (
         return (Status);
     }
 
+#ifdef ACPI_ASL_COMPILER
     /* 
-     * For use with the -ca option. This cache keeps track of regular 
+     * For use with the ASL-/ASL+ option. This cache keeps track of regular 
      * 0xA9 0x01 comments.
      */  
     Status = AcpiOsCreateCache ("Acpi-Comment", sizeof (ACPI_COMMENT_LIST_NODE),
@@ -228,9 +229,8 @@ AcpiUtCreateCaches (
     }
 
     /* 
-     * For use with the -ca option. This cache keeps track of the starting
-     * addresses of where the comments lie. This helps prevent duplication
-     * of comments.
+     * This cache keeps track of the starting addresses of where the comments 
+     * lie. This helps prevent duplication of comments.
      */  
     Status = AcpiOsCreateCache ("Acpi-Comment-Addr", sizeof (ACPI_COMMENT_ADDR_NODE),
         ACPI_MAX_COMMENT_CACHE_DEPTH, &AcpiGbl_CommentAddrCache);
@@ -240,8 +240,7 @@ AcpiUtCreateCaches (
     }
 
     /* 
-     * For use with the -ca option. This cache will be used for nodes that 
-     * represent files.
+     * This cache will be used for nodes that represent files.
      */  
     Status = AcpiOsCreateCache ("Acpi-File", sizeof (ACPI_FILE_NODE),
         ACPI_MAX_COMMENT_CACHE_DEPTH, &AcpiGbl_FileCache);
@@ -249,6 +248,7 @@ AcpiUtCreateCaches (
     {
         return (Status);
     }
+#endif
 
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
@@ -316,6 +316,7 @@ AcpiUtDeleteCaches (
     (void) AcpiOsDeleteCache (AcpiGbl_PsNodeExtCache);
     AcpiGbl_PsNodeExtCache = NULL;
 
+#ifdef ACPI_ASL_COMPILER
     (void) AcpiOsDeleteCache (AcpiGbl_RegCommentCache);
     AcpiGbl_RegCommentCache = NULL;
 
@@ -324,6 +325,7 @@ AcpiUtDeleteCaches (
 
     (void) AcpiOsDeleteCache (AcpiGbl_FileCache);
     AcpiGbl_FileCache = NULL;
+#endif
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
 

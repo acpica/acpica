@@ -106,6 +106,7 @@ OBJECTS = \
 	$(OBJDIR)/aslxref.o\
 	$(OBJDIR)/aslxrefout.o\
 	$(OBJDIR)/cvcompiler.o\
+	$(OBJDIR)/cvdisasm.o\
 	$(OBJDIR)/cvparser.o\
 	$(OBJDIR)/cmfsize.o\
 	$(OBJDIR)/dbfileio.o\

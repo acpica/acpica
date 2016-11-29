@@ -138,8 +138,6 @@ AcpiDmEmitExternals (
 }
 #endif
 
-/* Local prototypes */
-
 static ACPI_STATUS
 AcpiDmDescendingOp (
     ACPI_PARSE_OBJECT       *Op,
@@ -151,26 +149,6 @@ AcpiDmAscendingOp (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context);
-
-static UINT32
-AcpiDmBlockType (
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-AcpiDmCloseParenWriteComment(
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level);
-
-static void
-AcpiDmCloseBraceWriteComment(
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level);
-
-void
-AcpiDmSwitchFiles(
-    char                    *Filename,
-    UINT32                  Level,
-    ACPI_PARSE_OBJECT       *Op);
 
 
 /*******************************************************************************
@@ -338,7 +316,7 @@ AcpiDmWalkParseTree (
  *
  ******************************************************************************/
 
-static UINT32
+UINT32
 AcpiDmBlockType (
     ACPI_PARSE_OBJECT       *Op)
 {
@@ -476,185 +454,7 @@ AcpiDmListType (
     }
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDmCloseBraceWriteComment 
- *
- * PARAMETERS:  ACPI_PARSE_OBJECT
- *
- * RETURN:      none
- *
- * DESCRIPTION: Print a opening brace { and any open brace comments associated 
- *              with this parse object.
- *
- ******************************************************************************/
 
-static void
-AcpiDmCloseBraceWriteComment(
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level)
-{
-    ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.EndBlkComment;
-
-    if (!Gbl_CaptureComments)
-    {
-        AcpiOsPrintf ("}");
-        return;
-    }
-
-    while (CommentNode)
-    {
-        AcpiDmIndent (1);
-        AcpiOsPrintf("%s\n", CommentNode->Comment);
-        CommentNode->Comment = NULL;
-        CommentNode = CommentNode->Next;
-        AcpiDmIndent (Level);
-    }
-
-    AcpiOsPrintf ("}");
-
-    if (Op->Common.CloseBraceComment!=NULL)
-    {
-        AcpiOsPrintf (" %s", Op->Common.CloseBraceComment);
-        Op->Common.CloseBraceComment=NULL;
-    }
-}
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDmCloseParenWriteComment 
- *
- * PARAMETERS:  ACPI_PARSE_OBJECT
- *
- * RETURN:      none
- *
- * DESCRIPTION: Print a closing paren ) and any end node comments associated 
- *              with this parse object.
- *
- ******************************************************************************/
-
-static void
-AcpiDmCloseParenWriteComment(
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level)
-{
-    ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.EndBlkComment;
-
-
-    /* If this op has a BLOCK_BRACE, take care of it in AcpiDmCloseBraceWriteComment */
-
-    if (Gbl_CaptureComments && AcpiDmBlockType (Op) & (BLOCK_PAREN) && !(AcpiDmBlockType (Op) & (BLOCK_BRACE)))
-    {
-        while (CommentNode)
-        {
-            AcpiDmIndent (Level);
-            AcpiOsPrintf("%s\n", CommentNode->Comment);
-            CommentNode->Comment = NULL;
-            CommentNode = CommentNode->Next;
-            if (!CommentNode)
-            {
-                AcpiDmIndent (Level);
-            }
-        }
-    }
-
-    AcpiOsPrintf (")");
-
-    if (Gbl_CaptureComments && Op->Common.EndNodeComment!=NULL)
-    {
-        AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
-        Op->Common.EndNodeComment=NULL;
-    }
-    else if (Gbl_CaptureComments && Op->Common.Parent->Common.AmlOpcode == AML_IF_OP && Op->Common.Parent->Common.EndNodeComment!=NULL)
-    {
-        AcpiOsPrintf ("%s", Op->Common.Parent->Common.EndNodeComment);
-        Op->Common.Parent->Common.EndNodeComment = NULL;
-    }
-} 
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDmSwitchFiles
- *
- * PARAMETERS:  ASL_WALK_CALLBACK
- *
- * RETURN:      None
- *
- * DESCRIPTION: Switch the outputfile for -ca option. 
- *
- ******************************************************************************/
-
-void
-AcpiDmSwitchFiles(
-    char                    *Filename,
-    UINT32                  Level,
-    ACPI_PARSE_OBJECT       *Op)
-{
-    ACPI_FILE_NODE          *FNode;
-    ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.IncComment;
-
-    CvDbgPrint ("Switching from %s to %s\n", AcpiGbl_CurrentFilename, Filename);    
-    FNode = AcpiPsFilenameExists (Filename, AcpiGbl_FileTreeRoot);
-    if (FNode)
-    {
-        if (!FNode->IncludeWritten)
-        {
-            /* Before printing the include statement, output any comments that are associated with the include. */
-
-            if (CommentNode)
-            {
-                printf("Writing include comment\n");
-            }	
-            while (CommentNode)
-            {
-                AcpiDmIndent (Level);
-                AcpiOsPrintf("%s\n", CommentNode->Comment);
-                CommentNode->Comment = NULL;
-                CommentNode = CommentNode->Next;     
-            } 
-            Op->Common.IncComment = NULL;
-
-            CvDbgPrint ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
-            AcpiOsRedirectOutput (FNode->Parent->File);
-            AcpiDmIndent (Level);
-            AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
-            CvDbgPrint ("emitted the following: Include (\"%s\")\n", FNode->Filename);
-            printf ("emitted the following: Include (\"%s\")\n", FNode->Filename);
-            //fclose (FNode->Parent->File);
-            FNode->IncludeWritten = TRUE;
-        }
-
-        /* 
-         * If the previous file is a descendant of the current file,
-         * make sure that Include statements from the current file
-         * to the previous have been emitted.
-         */
-
-        while (FNode && FNode->Parent && strcmp (FNode->Filename, AcpiGbl_CurrentFilename))
-        {
-            if (!FNode->IncludeWritten)
-            {
-                CvDbgPrint ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
-                AcpiOsRedirectOutput (FNode->Parent->File);
-                AcpiDmIndent (Level);
-                AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
-                CvDbgPrint ("emitted the following in %s: Include (\"%s\")\n", FNode->Parent->Filename,FNode->Filename);
-                printf ("222emitted the following: Include (\"%s\")\n", FNode->Filename);
-                //fclose (FNode->Parent->File);
-                FNode->IncludeWritten = TRUE;
-            }
-            FNode = FNode->Parent;
-        }
-    }
-
-    /* Redirect output to the argument */
-
-    FNode = AcpiPsFilenameExists (Filename, AcpiGbl_FileTreeRoot);
-    //FNode->File = fopen (FNode->Filename, "a");
-    AcpiOsRedirectOutput (FNode->File);
-    AcpiGbl_CurrentFilename = FNode->Filename;
-}
 
 
 /*******************************************************************************
@@ -694,7 +494,7 @@ AcpiDmDescendingOp (
   
         if (Level != 0 && Filename && AcpiGbl_CurrentFilename && strcmp(Filename, AcpiGbl_CurrentFilename))
         { 
-            AcpiDmSwitchFiles(Filename, Level, Op);
+            SWITCHFILES (Filename, Level, Op);
         }
     
         /* If this parse node has regular comments, print them here. */
@@ -947,7 +747,7 @@ AcpiDmDescendingOp (
             case AML_METHOD_OP:
 
                 AcpiDmMethodFlags (Op);
-                AcpiDmCloseParenWriteComment(Op, Level);
+                CLOSEPAREN (Op, Level);
 
                 /* Emit description comment for Method() with a predefined ACPI name */
 
@@ -1017,7 +817,7 @@ AcpiDmDescendingOp (
             case AML_DEVICE_OP:
             case AML_THERMAL_ZONE_OP:
 
-                AcpiDmCloseParenWriteComment(Op, Level);
+                CLOSEPAREN (Op, Level);
                 break;
 
             default:
@@ -1111,7 +911,7 @@ AcpiDmDescendingOp (
                  */
                 NextOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
                 NextOp = NextOp->Common.Next;
-                AcpiDmCloseParenWriteComment(Op, Level);
+                CLOSEPAREN (Op, Level);
 
                 /* Emit description comment for Name() with a predefined ACPI name */
 
@@ -1214,7 +1014,7 @@ AcpiDmAscendingOp (
 
         if (Filename && AcpiGbl_CurrentFilename && strcmp(Filename, AcpiGbl_CurrentFilename))
         {
-            AcpiDmSwitchFiles(Filename, Level, Op);
+            SWITCHFILES (Filename, Level, Op);
         }
     }
 
@@ -1229,7 +1029,7 @@ AcpiDmAscendingOp (
     {
         /* Indicates the end of the current descriptor block (table) */
  
-        AcpiDmCloseBraceWriteComment(Op, Level);
+        CLOSEBRACE (Op, Level);
 
         /* Print any comments that are at the end of the file here... */
         if (Gbl_CaptureComments)
@@ -1309,12 +1109,12 @@ AcpiDmAscendingOp (
 
         if (Op->Common.DisasmFlags & ACPI_PARSEOP_EMPTY_TERMLIST)
         {
-            AcpiDmCloseBraceWriteComment(Op, Level);
+            CLOSEBRACE (Op, Level);
         }
         else
         {
             AcpiDmIndent (Level);
-            AcpiDmCloseBraceWriteComment(Op, Level);
+            CLOSEBRACE (Op, Level);
         }
 
         AcpiDmCommaIfListMember (Op);
@@ -1402,7 +1202,7 @@ AcpiDmAscendingOp (
          */
         if (Op->Common.Next)
         {
-            AcpiDmCloseParenWriteComment(Op, Level);
+            CLOSEPAREN (Op, Level);
 
             /*
              * Emit a description comment for a Name() operator that is a
@@ -1424,7 +1224,7 @@ AcpiDmAscendingOp (
         {
             ParentOp->Common.DisasmFlags |= ACPI_PARSEOP_EMPTY_TERMLIST;
 
-            AcpiDmCloseParenWriteComment(Op, Level);
+            CLOSEPAREN (Op, Level);
             AcpiOsPrintf ("{");
         }
     }

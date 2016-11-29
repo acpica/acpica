@@ -165,39 +165,6 @@ AcpiPsGetOpcodeSize (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsFilenameExists
- *
- * PARAMETERS:  Filename
- *
- * RETURN:      Status
- *
- * DESCRIPTION: for -ca option: look for the given filename in the stack.
- *              Returns TRUE if it exists, returns FALSE if it doesn't.
- *
- ******************************************************************************/
-
-ACPI_FILE_NODE*
-AcpiPsFilenameExists(
-    char                    *Filename,
-    ACPI_FILE_NODE           *Head)
-{
-    ACPI_FILE_NODE          *Current = Head;
-
-
-    while (Current)
-    {
-        if (!strcmp (Current->Filename, Filename))
-        {
-            return (Current);
-        }
-        Current = Current->Next;
-    }
-    return (NULL);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiPsPeekOpcode
  *
  * PARAMETERS:  ParserState         - A parser state object

@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: acapps - common include for ACPI applications/tools
+ * Module Name: cvcompiler - ASL-/ASL+ converter functions
  *
  *****************************************************************************/
 
@@ -113,304 +113,192 @@
  *
  *****************************************************************************/
 
-#ifndef _ACAPPS
-#define _ACAPPS
-
-#ifdef ACPI_USE_STANDARD_HEADERS
-#include <sys/stat.h>
-#endif /* ACPI_USE_STANDARD_HEADERS */
-
-/* Common info for tool signons */
-
-#define ACPICA_NAME                 "Intel ACPI Component Architecture"
-#define ACPICA_COPYRIGHT            "Copyright (c) 2000 - 2016 Intel Corporation"
-
-#if ACPI_MACHINE_WIDTH == 64
-#define ACPI_WIDTH          "-64"
-
-#elif ACPI_MACHINE_WIDTH == 32
-#define ACPI_WIDTH          "-32"
-
-#else
-#error unknown ACPI_MACHINE_WIDTH
-#define ACPI_WIDTH          "-??"
-
-#endif
-
-/* Macros for signons and file headers */
-
-#define ACPI_COMMON_SIGNON(UtilityName) \
-    "\n%s\n%s version %8.8X%s\n%s\n\n", \
-    ACPICA_NAME, \
-    UtilityName, ((UINT32) ACPI_CA_VERSION), ACPI_WIDTH, \
-    ACPICA_COPYRIGHT
-
-#define ACPI_COMMON_HEADER(UtilityName, Prefix) \
-    "%s%s\n%s%s version %8.8X%s\n%s%s\n%s\n", \
-    Prefix, ACPICA_NAME, \
-    Prefix, UtilityName, ((UINT32) ACPI_CA_VERSION), ACPI_WIDTH, \
-    Prefix, ACPICA_COPYRIGHT, \
-    Prefix
-
-/* Macros for usage messages */
-
-#define ACPI_USAGE_HEADER(Usage) \
-    printf ("Usage: %s\nOptions:\n", Usage);
-
-#define ACPI_USAGE_TEXT(Description) \
-    printf (Description);
-
-#define ACPI_OPTION(Name, Description) \
-    printf ("  %-20s%s\n", Name, Description);
-
-
-/* Check for unexpected exceptions */
-
-#define ACPI_CHECK_STATUS(Name, Status, Expected) \
-    if (Status != Expected) \
-    { \
-        AcpiOsPrintf ("Unexpected %s from %s (%s-%d)\n", \
-            AcpiFormatException (Status), #Name, _AcpiModuleName, __LINE__); \
-    }
-
-/* Check for unexpected non-AE_OK errors */
-
-
-#define ACPI_CHECK_OK(Name, Status)   ACPI_CHECK_STATUS (Name, Status, AE_OK);
-
-#define FILE_SUFFIX_DISASSEMBLY     "dsl"
-#define FILE_SUFFIX_BINARY_TABLE    ".dat" /* Needs the dot */
-
-/* Definitions for comment state */
-
-#define ASL_REGCOMMENT        1
-#define ASL_INLINECOMMENT     2
-#define ASL_OPENPARENCOMMENT  3
-#define ASL_CLOSEPARENCOMMENT 4
-#define ASL_CLOSEBRACECOMMENT 5
-
-/* Definitions for comment table entry */
-
-#define ASL_NEWLINE    '\n'
-#define ASL_OpenParen  '('
-#define ASL_CLOSEPAREN ')'
-#define ASL_COMMA      ','
-#define ASL_OPENBRACE  '{'
-#define ASL_CLOSEBRACE '}'
-#define ASL_WHITESPACE ' '
-
-/* acfileio */
-
-ACPI_STATUS
-AcGetAllTablesFromFile (
-    char                    *Filename,
-    UINT8                   GetOnlyAmlTables,
-    ACPI_NEW_TABLE_DESC     **ReturnListHead);
-
-BOOLEAN
-AcIsFileBinary (
-    FILE                    *File);
-
-ACPI_STATUS
-AcValidateTableHeader (
-    FILE                    *File,
-    long                    TableOffset);
-
-
-/* Values for GetOnlyAmlTables */
-
-#define ACPI_GET_ONLY_AML_TABLES    TRUE
-#define ACPI_GET_ALL_TABLES         FALSE
-
-
-/*
- * getopt
- */
-int
-AcpiGetopt(
-    int                     argc,
-    char                    **argv,
-    char                    *opts);
-
-int
-AcpiGetoptArgument (
-    int                     argc,
-    char                    **argv);
-
-extern int                  AcpiGbl_Optind;
-extern int                  AcpiGbl_Opterr;
-extern int                  AcpiGbl_SubOptChar;
-extern char                 *AcpiGbl_Optarg;
-
-
-/*
- * cmfsize - Common get file size function
- */
-UINT32
-CmGetFileSize (
-    ACPI_FILE               File);
-
-
-/*
- * adwalk
- */
-void
-AcpiDmCrossReferenceNamespace (
-    ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot,
-    ACPI_OWNER_ID           OwnerId);
-
-void
-AcpiDmDumpTree (
-    ACPI_PARSE_OBJECT       *Origin);
-
-void
-AcpiDmFindOrphanMethods (
-    ACPI_PARSE_OBJECT       *Origin);
-
-void
-AcpiDmFinishNamespaceLoad (
-    ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot,
-    ACPI_OWNER_ID           OwnerId);
-
-void
-AcpiDmConvertResourceIndexes (
-    ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot);
-
-
-/*
- * adfile
- */
-ACPI_STATUS
-AdInitialize (
-    void);
-
-char *
-FlGenerateFilename (
-    char                    *InputFilename,
-    char                    *Suffix);
-
-ACPI_STATUS
-FlSplitInputPathname (
-    char                    *InputPath,
-    char                    **OutDirectoryPath,
-    char                    **OutFilename);
-
-char *
-AdGenerateFilename (
-    char                    *Prefix,
-    char                    *TableId);
-
-void
-AdWriteTable (
-    ACPI_TABLE_HEADER       *Table,
-    UINT32                  Length,
-    char                    *TableName,
-    char                    *OemTableId);
-
-/*
- * cvcompiler
- */
-char*
-CvChangeFileExt(
-   char*                    Filename,
-   char*                    FileExt);
-
-void
-CvProcessCommentState (
-    char                    input);
-
-char*
-CvAppendInlineComment (
-    char                    *InlineComment,
-    char                    *ToAdd);
-
-void
-CvAddToCommentList (
-    char*                   ToAdd);
-
-void
-CvPlaceComment(
-    UINT8                   Type,
-    char                    *CommentString);
-
-UINT32
-CvParseOpBlockType (
-    ACPI_PARSE_OBJECT       *Op);
-
-ACPI_COMMENT_LIST_NODE*
-CvCommentNodeCalloc (
-    void);
-
-/*
- * cvparser
- */
-ACPI_FILE_NODE*
-CvFilenameExists(
-    char                    *Filename,
-    ACPI_FILE_NODE           *Head);
-
-ACPI_FILE_NODE*
-CvFileAddressLookup(
-    char                    *Address,
-    ACPI_FILE_NODE          *Head);
-
-void
-CvFileLabelNode(
-    ACPI_PARSE_OBJECT       *Op);
-
-void
-CvAddToFileTree (
-    char                    *Filename,
-    char                    *PreviousFilename);
-
-void
-CvSetFileParent (
-    char                    *ChildFile,
-    char                    *ParentFile);
-
-void
-CvCaptureListComments (
-    ACPI_PARSE_STATE        *ParserState,
-    ACPI_COMMENT_LIST_NODE  *ListHead,
-    ACPI_COMMENT_LIST_NODE  *ListTail);
-
-void
-CvCaptureJustComments (
-    ACPI_PARSE_STATE        *ParserState);
-
-void
-CvCaptureComments (
-    ACPI_WALK_STATE         *WalkState);
-
-void
-CvTransferComments (
-    ACPI_PARSE_OBJECT       *Op);
-
-/*
- * cvdisasm
- */
-
-UINT32
-AcpiDmBlockType (
-    ACPI_PARSE_OBJECT       *Op);
-
-void
-CvSwitchFiles(
-    char                    *filename,
-    UINT32                  level,
-    ACPI_PARSE_OBJECT       *op);
-
-void
-CvCloseParenWriteComment(
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level);
+#include "acpi.h"
+#include "accommon.h"
+#include "acparser.h"
+#include "amlcode.h"
+#include "acdebug.h"
+#include "acapps.h"
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CvCloseBraceWriteComment 
+ *
+ * PARAMETERS:  ACPI_PARSE_OBJECT
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Print a opening brace { and any open brace comments associated 
+ *              with this parse object.
+ *
+ ******************************************************************************/
 
 void
 CvCloseBraceWriteComment(
     ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level);
+    UINT32                  Level)
+{
+    ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.EndBlkComment;
 
-#endif /* _ACAPPS */
+    if (!Gbl_CaptureComments)
+    {
+        AcpiOsPrintf ("}");
+        return;
+    }
+
+    while (CommentNode)
+    {
+        AcpiDmIndent (1);
+        AcpiOsPrintf("%s\n", CommentNode->Comment);
+        CommentNode->Comment = NULL;
+        CommentNode = CommentNode->Next;
+        AcpiDmIndent (Level);
+    }
+
+    AcpiOsPrintf ("}");
+
+    if (Op->Common.CloseBraceComment!=NULL)
+    {
+        AcpiOsPrintf (" %s", Op->Common.CloseBraceComment);
+        Op->Common.CloseBraceComment=NULL;
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CvCloseParenWriteComment 
+ *
+ * PARAMETERS:  ACPI_PARSE_OBJECT
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Print a closing paren ) and any end node comments associated 
+ *              with this parse object.
+ *
+ ******************************************************************************/
+
+void
+CvCloseParenWriteComment(
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level)
+{
+    ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.EndBlkComment;
+
+
+    /* If this op has a BLOCK_BRACE, take care of it in AcpiDmCloseBraceWriteComment */
+
+    if (Gbl_CaptureComments && AcpiDmBlockType (Op) & (BLOCK_PAREN) && !(AcpiDmBlockType (Op) & (BLOCK_BRACE)))
+    {
+        while (CommentNode)
+        {
+            AcpiDmIndent (Level);
+            AcpiOsPrintf("%s\n", CommentNode->Comment);
+            CommentNode->Comment = NULL;
+            CommentNode = CommentNode->Next;
+            if (!CommentNode)
+            {
+                AcpiDmIndent (Level);
+            }
+        }
+    }
+
+    AcpiOsPrintf (")");
+
+    if (Gbl_CaptureComments && Op->Common.EndNodeComment!=NULL)
+    {
+        AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
+        Op->Common.EndNodeComment=NULL;
+    }
+    else if (Gbl_CaptureComments && Op->Common.Parent->Common.AmlOpcode == AML_IF_OP && Op->Common.Parent->Common.EndNodeComment!=NULL)
+    {
+        AcpiOsPrintf ("%s", Op->Common.Parent->Common.EndNodeComment);
+        Op->Common.Parent->Common.EndNodeComment = NULL;
+    }
+} 
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CvSwitchFiles
+ *
+ * PARAMETERS:  ASL_WALK_CALLBACK
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Switch the outputfile for -ca option. 
+ *
+ ******************************************************************************/
+
+void
+CvSwitchFiles(
+    char                    *Filename,
+    UINT32                  Level,
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ACPI_FILE_NODE          *FNode;
+    ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.IncComment;
+
+    CvDbgPrint ("Switching from %s to %s\n", AcpiGbl_CurrentFilename, Filename);    
+    FNode = CvFilenameExists (Filename, AcpiGbl_FileTreeRoot);
+    if (FNode)
+    {
+        if (!FNode->IncludeWritten)
+        {
+            /* Before printing the include statement, output any comments that are associated with the include. */
+
+            if (CommentNode)
+            {
+                printf("Writing include comment\n");
+            }	
+            while (CommentNode)
+            {
+                AcpiDmIndent (Level);
+                AcpiOsPrintf("%s\n", CommentNode->Comment);
+                CommentNode->Comment = NULL;
+                CommentNode = CommentNode->Next;     
+            } 
+            Op->Common.IncComment = NULL;
+
+            CvDbgPrint ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
+            AcpiOsRedirectOutput (FNode->Parent->File);
+            AcpiDmIndent (Level);
+            AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
+            CvDbgPrint ("emitted the following: Include (\"%s\")\n", FNode->Filename);
+            printf ("emitted the following: Include (\"%s\")\n", FNode->Filename);
+            //fclose (FNode->Parent->File);
+            FNode->IncludeWritten = TRUE;
+        }
+
+        /* 
+         * If the previous file is a descendant of the current file,
+         * make sure that Include statements from the current file
+         * to the previous have been emitted.
+         */
+
+        while (FNode && FNode->Parent && strcmp (FNode->Filename, AcpiGbl_CurrentFilename))
+        {
+            if (!FNode->IncludeWritten)
+            {
+                CvDbgPrint ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
+                AcpiOsRedirectOutput (FNode->Parent->File);
+                AcpiDmIndent (Level);
+                AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
+                CvDbgPrint ("emitted the following in %s: Include (\"%s\")\n", FNode->Parent->Filename,FNode->Filename);
+                printf ("222emitted the following: Include (\"%s\")\n", FNode->Filename);
+                //fclose (FNode->Parent->File);
+                FNode->IncludeWritten = TRUE;
+            }
+            FNode = FNode->Parent;
+        }
+    }
+
+    /* Redirect output to the argument */
+
+    FNode = CvFilenameExists (Filename, AcpiGbl_FileTreeRoot);
+    //FNode->File = fopen (FNode->Filename, "a");
+    AcpiOsRedirectOutput (FNode->File);
+    AcpiGbl_CurrentFilename = FNode->Filename;
+}
+
