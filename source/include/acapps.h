@@ -311,6 +311,11 @@ AdWriteTable (
     char                    *OemTableId);
 
 /*
+ * aslcodegen.c functions - these are utilized within cvcompiler.c functions.
+ */
+
+
+/*
  * cvcompiler
  */
 char*
@@ -343,6 +348,21 @@ CvParseOpBlockType (
 ACPI_COMMENT_LIST_NODE*
 CvCommentNodeCalloc (
     void);
+
+void
+CgWriteAmlDefBlockComment(
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+CgWriteOneAmlComment(
+    ACPI_PARSE_OBJECT       *Op,
+    char*                   CommentToPrint,
+    UINT8                   InputOption);
+
+void
+CgWriteAmlComment(
+    ACPI_PARSE_OBJECT       *Op);
+
 
 /*
  * cvparser

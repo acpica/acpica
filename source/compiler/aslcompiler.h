@@ -648,6 +648,12 @@ void
 CgGenerateAmlOutput (
     void);
 
+void
+CgLocalWriteAmlData (
+    ACPI_PARSE_OBJECT       *Op,
+    void                    *Buffer,
+    UINT32                  Length);
+
 
 /*
  * aslfile
