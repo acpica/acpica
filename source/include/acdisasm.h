@@ -723,6 +723,10 @@ AcpiDmDisassembleOneOp (
     ACPI_OP_WALK_INFO       *Info,
     ACPI_PARSE_OBJECT       *Op);
 
+BOOLEAN
+AcpiDmIsTempName (
+    ACPI_PARSE_OBJECT       *Op);
+
 UINT32
 AcpiDmListType (
     ACPI_PARSE_OBJECT       *Op);
