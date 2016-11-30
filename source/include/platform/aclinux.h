@@ -265,7 +265,8 @@
 #define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
 
 #if defined(__ia64__)    || defined(__x86_64__) ||\
-    defined(__aarch64__) || defined(__PPC64__)
+    defined(__aarch64__) || defined(__PPC64__) ||\
+    defined(__s390x__)
 #define ACPI_MACHINE_WIDTH          64
 #define COMPILER_DEPENDENT_INT64    long
 #define COMPILER_DEPENDENT_UINT64   unsigned long
