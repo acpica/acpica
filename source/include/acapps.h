@@ -199,6 +199,17 @@
 #define ASL_CLOSEBRACE '}'
 #define ASL_WHITESPACE ' '
 
+
+/* Definitions for comment print function*/
+
+#define AML_REGCOMMENT        1
+#define AML_INLINECOMMENT     2
+#define AML_ENDNODECOMMENT    3
+#define AML_NAMECOMMENT       4
+#define AML_CLOSEBRACECOMMENT 5
+#define AML_ENDBLKCOMMENT     6
+#define AML_INCLUDECOMMENT    7
+
 /* acfileio */
 
 ACPI_STATUS
@@ -367,8 +378,13 @@ CgWriteAmlComment(
 /*
  * cvparser
  */
+
+void
+CvClearOpComments (
+    ACPI_PARSE_OBJECT       *Op);
+
 ACPI_FILE_NODE*
-CvFilenameExists(
+CvFilenameExists (
     char                    *Filename,
     ACPI_FILE_NODE           *Head);
 
@@ -432,5 +448,11 @@ void
 CvCloseBraceWriteComment(
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level);
+
+void
+CvPrintOneCommentType (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT8                   CommentType);
+
 
 #endif /* _ACAPPS */

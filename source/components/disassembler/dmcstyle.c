@@ -118,6 +118,7 @@
 #include "acparser.h"
 #include "amlcode.h"
 #include "acdebug.h"
+#include "acapps.h"
 
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
@@ -149,10 +150,6 @@ static BOOLEAN
 AcpiDmIsOptimizationIgnored (
     ACPI_PARSE_OBJECT       *StoreOp,
     ACPI_PARSE_OBJECT       *StoreArgument);
-
-static void
-AcpiDmPrintInlineComment(
-    ACPI_PARSE_OBJECT       *Op);
 
 
 /*******************************************************************************
@@ -731,6 +728,7 @@ AcpiDmIsOptimizationIgnored (
         Argument1 = StoreArgument->Common.Value.Arg;
         Argument2 = Argument1->Common.Next;
         Target = Argument2->Common.Next;
+
         if (!AcpiDmIsValidTarget (Target))
         {
             StoreOp->Common.DisasmFlags |= ACPI_PARSEOP_LEGACY_ASL_ONLY;
@@ -778,36 +776,6 @@ AcpiDmIsOptimizationIgnored (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmPrintInlineComment
- *
- * PARAMETERS:  Op                  - Current parse object
- *
- * RETURN:      None
- *
- * DESCRIPTION: Closes an operator by adding a closing parentheses if and
- *              when necessary. Called during ascending phase of the
- *              parse tree walk.
- *
- ******************************************************************************/
-
-static void
-AcpiDmPrintInlineComment(
-    ACPI_PARSE_OBJECT       *Op)
-{
-    if (Gbl_CaptureComments && Op->Common.EndNodeComment)
-    {
-        CvDbgPrint ("Parent Opcode: %x\n", Op->Common.Parent->Common.AmlOpcode);
-        CvDbgPrint ("This Opcode: %x\n",   Op->Common.AmlOpcode);
-        CvDbgPrint ("comment: %s", Op->Common.EndNodeComment); 
-        AcpiOsPrintf ("%s", Op->Common.EndNodeComment); 
-       Op->Common.EndNodeComment = NULL;
-    }
-
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiDmCloseOperator
  *
  * PARAMETERS:  Op                  - Current parse object
@@ -830,14 +798,14 @@ AcpiDmCloseOperator (
     if (!AcpiGbl_CstyleDisassembly)
     {
         AcpiOsPrintf (")");
-        AcpiDmPrintInlineComment(Op);
+        PRINTONECOMMENT (Op, AML_ENDNODECOMMENT);
         return;
     }
 
     if (Op->Common.DisasmFlags & ACPI_PARSEOP_LEGACY_ASL_ONLY)
     {
         AcpiOsPrintf (")");
-        AcpiDmPrintInlineComment(Op);
+        PRINTONECOMMENT (Op, AML_ENDNODECOMMENT);
         return;
     }
 
@@ -865,7 +833,7 @@ AcpiDmCloseOperator (
 
         if (Op->Common.DisasmFlags & ACPI_PARSEOP_COMPOUND_ASSIGNMENT)
         {
-            AcpiDmPrintInlineComment(Op);
+            PRINTONECOMMENT (Op, AML_ENDNODECOMMENT);
             return;
         }
 
@@ -885,7 +853,7 @@ AcpiDmCloseOperator (
         {
             AcpiOsPrintf (")");
         }
-        AcpiDmPrintInlineComment(Op);
+        PRINTONECOMMENT (Op, AML_ENDNODECOMMENT);
         return;
 
     /* No need for parens for these */
@@ -895,7 +863,7 @@ AcpiDmCloseOperator (
     case AML_LNOT_OP:
     case AML_BIT_NOT_OP:
     case AML_STORE_OP:
-        AcpiDmPrintInlineComment(Op);
+        PRINTONECOMMENT (Op, AML_ENDNODECOMMENT);
         return;
 
     default:
@@ -905,6 +873,7 @@ AcpiDmCloseOperator (
     }
 
     AcpiOsPrintf (")");
+    PRINTONECOMMENT (Op, AML_ENDNODECOMMENT);
 
     return;
 }

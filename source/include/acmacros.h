@@ -507,6 +507,8 @@
 #define CLOSEPAREN(a,b)        CvCloseParenWriteComment(a,b);
 #define CLOSEBRACE(a,b)        CvCloseBraceWriteComment(a,b);
 #define SWITCHFILES(a,b,c)     CvSwitchFiles(a,b,c)
+#define CLEAROPCOMMENTS(a)     CvClearOpComments(a)
+#define PRINTONECOMMENT(a,b)   CvPrintOneCommentType (a,b)
 
 #else
 
@@ -520,6 +522,8 @@
 #define CLOSEPAREN(a,b)        AcpiOsPrintf (")");
 #define CLOSEBRACE(a,b)        AcpiOsPrintf ("}");
 #define SWITCHFILES(a,b,c)
+#define CLEAROPCOMMENTS(a)
+#define PRINTONECOMMENT(a,b)
 
 #endif
 

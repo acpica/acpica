@@ -124,9 +124,152 @@
 
 
 /* local prototypes */
+
 static BOOLEAN
 CvCommentExists (
-    UINT8                    *ToCheck);
+    UINT8                   *ToCheck);
+
+static void
+CvPrintOneCommentList (
+    ACPI_COMMENT_LIST_NODE  *CommentList);
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CvPrintOneCommentList
+ *
+ * PARAMETERS:  CommentList
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Prints all commentss within a given list.
+ *
+ ******************************************************************************/
+
+static void
+CvPrintOneCommentList (
+    ACPI_COMMENT_LIST_NODE  *CommentList)
+{
+    ACPI_COMMENT_LIST_NODE  *Temp = CommentList;
+    ACPI_COMMENT_LIST_NODE  *Prev;
+
+
+    while (Temp)
+    {
+        Prev = Temp;
+        if (Temp->Comment)
+        {
+            AcpiOsPrintf("%s\n", Temp->Comment);
+            Temp->Comment = NULL;
+        }
+        Temp = Temp->Next;
+        AcpiOsFree (Prev);
+    }
+    CommentList = NULL;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CvPrintOneCommentType
+ *
+ * PARAMETERS:  Op
+ *              CommentType 
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Prints all comments of CommentType within the given Op and
+ *              clears the printed comment from the Op.
+ *
+ ******************************************************************************/
+
+void
+CvPrintOneCommentType (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT8                   CommentType)
+{
+    switch (CommentType)
+    {
+    case AML_REGCOMMENT:
+        CvPrintOneCommentList (Op->Common.CommentList);
+        Op->Common.CommentList = NULL;
+        break;
+
+    case AML_INLINECOMMENT:
+        if (Op->Common.InlineComment)
+        {
+            AcpiOsPrintf ("%s", Op->Common.InlineComment);
+            Op->Common.InlineComment = NULL;
+        }
+        break;
+
+    case AML_ENDNODECOMMENT:
+        if (Op->Common.EndNodeComment)
+        {
+            AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
+            Op->Common.EndNodeComment = NULL;
+        }
+        break;
+
+    case AML_NAMECOMMENT:
+        if (Op->Common.NameComment)
+        {
+            AcpiOsPrintf ("%s", Op->Common.NameComment);
+            Op->Common.NameComment = NULL;
+        }
+        break;
+
+    case AML_CLOSEBRACECOMMENT:
+        if (Op->Common.CloseBraceComment)
+        {
+            AcpiOsPrintf ("%s", Op->Common.CloseBraceComment);
+            Op->Common.CloseBraceComment = NULL;
+        }
+        break;
+
+    case AML_ENDBLKCOMMENT:
+        CvPrintOneCommentList (Op->Common.EndBlkComment);
+        Op->Common.EndBlkComment = NULL;
+        break;
+
+    case AML_INCLUDECOMMENT:
+        CvPrintOneCommentList (Op->Common.IncComment);
+        Op->Common.IncComment = NULL;
+        break;
+
+    default:
+        break;
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CvClearOpComments
+ *
+ * PARAMETERS:  Op
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Clear all converter-related fields of the given Op.
+ *
+ ******************************************************************************/
+
+void
+CvClearOpComments (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    Op->Common.InlineComment     = NULL;
+    Op->Common.EndNodeComment    = NULL;
+    Op->Common.NameComment       = NULL;
+    Op->Common.CommentList       = NULL;
+    Op->Common.EndBlkComment     = NULL;
+    Op->Common.CloseBraceComment = NULL;
+    Op->Common.IncComment        = NULL;
+    Op->Common.PsFilename        = NULL;
+    Op->Common.PsParentFilename  = NULL;
+}
+
 
 /*******************************************************************************
  *

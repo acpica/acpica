@@ -152,10 +152,8 @@ AcpiPsGetAmlOpcode (
     ACPI_FUNCTION_TRACE_PTR (PsGetAmlOpcode, WalkState);
 
 
-    WalkState->Opcode = AcpiPsPeekOpcode (&(WalkState->ParserState));
-
     WalkState->Aml = WalkState->ParserState.Aml;
-    //CvDbgPrint("Op: 0x%x\n", *WalkState->ParserState.Aml);
+    WalkState->Opcode = AcpiPsPeekOpcode (&(WalkState->ParserState));
 
     /*
      * First cut to determine what we have found:
@@ -291,11 +289,14 @@ AcpiPsBuildNamedOp (
     /* are there any inline comments associated with the NameSeg?? If so, save this. */
 
     CAPTURECOMMENTS (WalkState);
+
+#ifdef ACPI_ASL_COMPILER
     if (AcpiGbl_CurrentInlineComment != NULL)
     { 
         UnnamedOp->Common.NameComment = AcpiGbl_CurrentInlineComment;
         AcpiGbl_CurrentInlineComment = NULL;
     }
+#endif
 
     /*
      * Make sure that we found a NAME and didn't run out of arguments
@@ -342,48 +343,28 @@ AcpiPsBuildNamedOp (
 
     AcpiPsAppendArg (*Op, UnnamedOp->Common.Value.Arg);
 
+#ifdef ACPI_ASL_COMPILER
+
     /* save any comments that might be associated with UnnamedOp. */
 
-    if (UnnamedOp->Common.InlineComment!=NULL)
-    {
-        (*Op)->Common.InlineComment = UnnamedOp->Common.InlineComment;
-        UnnamedOp->Common.InlineComment = NULL;
-    }
-    if (UnnamedOp->Common.EndNodeComment!=NULL)
-    {
-        (*Op)->Common.EndNodeComment = UnnamedOp->Common.EndNodeComment;
-        UnnamedOp->Common.EndNodeComment = NULL;
-    }
-    if (UnnamedOp->Common.CloseBraceComment!=NULL)
-    {
-        (*Op)->Common.CloseBraceComment = UnnamedOp->Common.CloseBraceComment;
-        UnnamedOp->Common.CloseBraceComment = NULL;
-    }
-    if (UnnamedOp->Common.NameComment)
-    {
-        (*Op)->Common.NameComment = UnnamedOp->Common.NameComment;
-        UnnamedOp->Common.NameComment = NULL;
-    }
-    if (UnnamedOp->Common.CommentList)
-    {
-        (*Op)->Common.CommentList = UnnamedOp->Common.CommentList;
-        UnnamedOp->Common.CommentList = NULL;
-    }
-    if (UnnamedOp->Common.EndBlkComment)
-    {
-        (*Op)->Common.EndBlkComment = UnnamedOp->Common.EndBlkComment;
-        UnnamedOp->Common.EndBlkComment = NULL;
-    }
-    if (UnnamedOp->Common.IncComment)
-    {
-        (*Op)->Common.IncComment = UnnamedOp->Common.IncComment;
-        UnnamedOp->Common.IncComment = NULL;
-    }
-
-
+    (*Op)->Common.InlineComment = UnnamedOp->Common.InlineComment;
+    (*Op)->Common.EndNodeComment = UnnamedOp->Common.EndNodeComment;
+    (*Op)->Common.CloseBraceComment = UnnamedOp->Common.CloseBraceComment;
+    (*Op)->Common.NameComment = UnnamedOp->Common.NameComment;
+    (*Op)->Common.CommentList = UnnamedOp->Common.CommentList;
+    (*Op)->Common.EndBlkComment = UnnamedOp->Common.EndBlkComment;
+    (*Op)->Common.IncComment = UnnamedOp->Common.IncComment;
     (*Op)->Common.PsFilename = UnnamedOp->Common.PsFilename;
     (*Op)->Common.PsParentFilename = UnnamedOp->Common.PsParentFilename;
     (*Op)->Named.Aml = UnnamedOp->Common.Aml;
+    UnnamedOp->Common.InlineComment = NULL;
+    UnnamedOp->Common.EndNodeComment = NULL;
+    UnnamedOp->Common.CloseBraceComment = NULL;
+    UnnamedOp->Common.NameComment = NULL;
+    UnnamedOp->Common.CommentList = NULL;
+    UnnamedOp->Common.EndBlkComment = NULL;
+    UnnamedOp->Common.IncComment = NULL;
+#endif
 
     if ((*Op)->Common.AmlOpcode == AML_REGION_OP ||
         (*Op)->Common.AmlOpcode == AML_DATA_REGION_OP)
@@ -451,6 +432,7 @@ AcpiPsCreateOp (
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
+
     if (WalkState->OpInfo->Flags & AML_NAMED)
     {
         Status = AcpiPsBuildNamedOp (WalkState, AmlOpStart, Op, &NamedOp);

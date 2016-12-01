@@ -138,6 +138,8 @@ AcpiDmEmitExternals (
 }
 #endif
 
+/* Local prototypes */
+
 static ACPI_STATUS
 AcpiDmDescendingOp (
     ACPI_PARSE_OBJECT       *Op,
@@ -185,7 +187,6 @@ AcpiDmDisassemble (
     Info.WalkState = WalkState;
     Info.StartAml = Op->Common.Aml - sizeof (ACPI_TABLE_HEADER);
     Info.AmlOffset = Op->Common.Aml - Info.StartAml;
-
 
     AcpiDmWalkParseTree (Op, AcpiDmDescendingOp, AcpiDmAscendingOp, &Info);
     return;
@@ -453,8 +454,6 @@ AcpiDmListType (
         return (BLOCK_NONE);
     }
 }
-
-
 
 
 /*******************************************************************************
@@ -920,8 +919,7 @@ AcpiDmDescendingOp (
                 AcpiOsPrintf ("\n");
                 AcpiDmIndent (Info->Level);
 
-                AcpiOsPrintf ("{");
-                AcpiOsPrintf ("\n");
+                AcpiOsPrintf ("{\n");
                 return (AE_OK);
             }
 
@@ -968,11 +966,9 @@ AcpiDmDescendingOp (
         {
             AcpiOsPrintf ("\n");
             AcpiDmIndent (Level);
-            AcpiOsPrintf ("{");
-            AcpiOsPrintf ("\n");
+            AcpiOsPrintf ("{\n");
         }
     }
-
 
     return (AE_OK);
 }
@@ -1141,7 +1137,6 @@ AcpiDmAscendingOp (
         }
         break;
  
-
     case BLOCK_NONE:
     default:
 
@@ -1217,13 +1212,11 @@ AcpiDmAscendingOp (
 
             AcpiOsPrintf ("\n");
             AcpiDmIndent (Level - 1);
-            AcpiOsPrintf ("{");
-            AcpiOsPrintf ("\n");
+            AcpiOsPrintf ("{\n");
         }
         else
         {
             ParentOp->Common.DisasmFlags |= ACPI_PARSEOP_EMPTY_TERMLIST;
-
             CLOSEPAREN (Op, Level);
             AcpiOsPrintf ("{");
         }
@@ -1247,5 +1240,6 @@ AcpiDmAscendingOp (
             Op->Asl.OperatorSymbol = NULL;
         }
     }
+
     return (AE_OK);
 }

@@ -978,6 +978,12 @@ typedef union acpi_parse_value
 #define ACPI_DISASM_ONLY_MEMBERS(a)
 #endif
 
+#if defined(ACPI_ASL_COMPILER)
+#define ACPI_CONVERTER_ONLY_MEMBERS(a)  a;
+#else
+#define ACPI_CONVERTER_ONLY_MEMBERS(a)
+#endif
+
 #define ACPI_PARSE_COMMON \
     union acpi_parse_object         *Parent;            /* Parent op */\
     UINT8                           DescriptorType;     /* To differentiate various internal objs */\

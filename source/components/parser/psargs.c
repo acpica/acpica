@@ -662,8 +662,11 @@ AcpiPsGetNextField (
 
         CAPTUREJUSTCOMMENTS (ParserState);
 
-        /* because the package length isn't represented as a parse tree object,
-         * take comments surrounding this and add to the previously created parse node.
+#ifdef ACPI_ASL_COMPILER
+        /*
+         * Because the package length isn't represented as a parse tree object,
+         * take comments surrounding this and add to the previously created
+         * parse node.
          */
         if (Field->Common.InlineComment)
         {
@@ -671,6 +674,7 @@ AcpiPsGetNextField (
         }
         Field->Common.InlineComment  = AcpiGbl_CurrentInlineComment;
         AcpiGbl_CurrentInlineComment = NULL;
+#endif
 
         /* Get the length which is encoded as a package length */
 

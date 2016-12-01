@@ -174,7 +174,6 @@ AcpiPsInitOp (
     ACPI_FUNCTION_ENTRY ();
 
 
-    //CvDbgPrint ("InitOp: 0x%x\n", Opcode);
     Op->Common.DescriptorType = ACPI_DESC_TYPE_PARSER;
     Op->Common.AmlOpcode = Opcode;
 
@@ -211,7 +210,6 @@ AcpiPsAllocOp (
 
     ACPI_FUNCTION_ENTRY ();
     
-    //CvDbgPrint ("ALLOC OP\n");
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
 
@@ -252,14 +250,7 @@ AcpiPsAllocOp (
         AcpiPsInitOp (Op, Opcode);
         Op->Common.Aml = Aml;
         Op->Common.Flags = Flags;
-        Op->Common.InlineComment     = NULL;
-        Op->Common.EndNodeComment    = NULL;
-        Op->Common.NameComment       = NULL;
-        Op->Common.CommentList       = NULL;
-        Op->Common.EndBlkComment     = NULL;
-        Op->Common.CloseBraceComment = NULL;
-        Op->Common.PsFilename        = NULL;
-        Op->Common.PsParentFilename  = NULL;
+        CLEAROPCOMMENTS(Op);
 
         if (Opcode == AML_SCOPE_OP)
         {
@@ -296,12 +287,7 @@ AcpiPsFreeOp (
     ACPI_FUNCTION_NAME (PsFreeOp);
 
 
-    Op->Common.InlineComment     = NULL;
-    Op->Common.EndNodeComment    = NULL;
-    Op->Common.NameComment       = NULL;
-    Op->Common.CommentList       = NULL;
-    Op->Common.CloseBraceComment = NULL;
- 
+    CLEAROPCOMMENTS(Op);
     if (Op->Common.AmlOpcode == AML_INT_RETURN_VALUE_OP)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
