@@ -135,6 +135,14 @@ AcpiDmEmitExternals (
 {
     return;
 }
+
+void
+AcpiDmEmitExternal (
+    ACPI_PARSE_OBJECT       *NameOp,
+    ACPI_PARSE_OBJECT       *TypeOp)
+{
+    return;
+}
 #endif
 
 /* Local prototypes */
@@ -600,7 +608,11 @@ AcpiDmDescendingOp (
 
             /* Emit all External() declarations here */
 
-            AcpiDmEmitExternals ();
+            if (!AcpiGbl_DmEmitExternalOpcodes)
+            {
+                AcpiDmEmitExternals ();
+            }
+
             return (AE_OK);
         }
     }
@@ -677,6 +689,12 @@ AcpiDmDescendingOp (
         (Op->Common.AmlOpcode == AML_RETURN_OP))
     {
         Info->Level--;
+    }
+
+    if (Op->Common.AmlOpcode == AML_EXTERNAL_OP)
+    {
+        Op->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
+        return (AE_CTRL_DEPTH);
     }
 
     /* Start the opcode argument list if necessary */

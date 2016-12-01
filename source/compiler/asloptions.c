@@ -647,6 +647,16 @@ AslDoOptions (
             AcpiGbl_DmEmitExternalOpcodes = TRUE;
             break;
 
+        case 'E':
+
+            /*
+             * iASL: keep External opcodes in place.
+             * No affect if Gbl_DoExternals is false.
+             */
+
+            Gbl_DoExternalsInPlace = TRUE;
+            break;
+
         case 'f':
 
             /* Disable folding on "normal" expressions */
