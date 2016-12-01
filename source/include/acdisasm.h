@@ -871,6 +871,11 @@ AcpiDmEmitExternals (
     void);
 
 void
+AcpiDmEmitExternal (
+    ACPI_PARSE_OBJECT       *NameOp,
+    ACPI_PARSE_OBJECT       *TypeOp);
+
+void
 AcpiDmUnresolvedWarning (
     UINT8                   Type);
 

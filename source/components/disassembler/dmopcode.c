@@ -1055,14 +1055,12 @@ AcpiDmDisassembleOneOp (
 
         if (AcpiGbl_DmEmitExternalOpcodes)
         {
-            AcpiOsPrintf ("/* Opcode 0x15 */ ");
-
-            /* Fallthrough */
-        }
-        else
-        {
+            AcpiDmEmitExternal (AcpiPsGetArg(Op, 0),
+                AcpiPsGetArg(Op, 1));
             break;
         }
+
+        break;
 
     default:
 
