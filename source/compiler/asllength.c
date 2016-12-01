@@ -427,7 +427,6 @@ CgGenerateAmlLengths (
 {
     char                    *Buffer;
     ACPI_STATUS             Status;
- //   UINT32                  FilenameLength;
 
 
     switch (Op->Asl.AmlOpcode)
@@ -480,13 +479,6 @@ CgGenerateAmlLengths (
     case PARSEOP_DEFINITION_BLOCK:
 
         Gbl_TableLength = sizeof (ACPI_TABLE_HEADER) + Op->Asl.AmlSubtreeLength;
-        
-        if (Gbl_CaptureComments && Op->Asl.Filename)
-        {
-//            FilenameLength = strrchr (Op->Asl.Filename, '.') - Op->Asl.Filename + 1 + 3;
-//            Gbl_TableLength += FilenameLength;
-        }
-
         break;
 
     case PARSEOP_NAMESEG:

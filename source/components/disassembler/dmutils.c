@@ -117,6 +117,7 @@
 #include "accommon.h"
 #include "amlcode.h"
 #include "acdisasm.h"
+#include "acapps.h"
 
 #ifdef ACPI_ASL_COMPILER
 #include <acnamesp.h>
@@ -322,7 +323,8 @@ AcpiDmCommaIfListMember (
 
     if (!Op->Common.Next)
     {
-        goto noComma;
+        PRINTONECOMMENT (Op, AML_INLINECOMMENT);
+        return (FALSE);
     }
 
     if (AcpiDmListType (Op->Common.Parent) & BLOCK_COMMA_LIST)
@@ -331,7 +333,8 @@ AcpiDmCommaIfListMember (
 
         if (Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)
         {
-            goto noComma;
+            PRINTONECOMMENT (Op, AML_INLINECOMMENT);
+            return (FALSE);
         }
 
         /* Check for a NULL target operand */
@@ -347,14 +350,16 @@ AcpiDmCommaIfListMember (
              */
             if (!Op->Common.Next->Common.Next)
             {
-                goto noComma;
+                PRINTONECOMMENT (Op, AML_INLINECOMMENT);
+                return (FALSE);
             }
         }
 
         if ((Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST) &&
             (!(Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST)))
         {
-            goto noComma;
+            PRINTONECOMMENT (Op, AML_INLINECOMMENT);
+            return (FALSE);
         }
 
         /* Emit comma only if this is not a C-style operator */
@@ -362,11 +367,7 @@ AcpiDmCommaIfListMember (
         if (!Op->Common.OperatorSymbol)
         {
             AcpiOsPrintf (", ");
-            if (Op->Common.InlineComment)
-            {
-                AcpiOsPrintf ("%s",Op->Common.InlineComment);
-                Op->Common.InlineComment = NULL;
-            }   
+            PRINTONECOMMENT (Op, AML_INLINECOMMENT);
         }
 
         return (TRUE);
@@ -376,21 +377,11 @@ AcpiDmCommaIfListMember (
              (Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST))
     {
         AcpiOsPrintf (", ");
-        if (Op->Common.InlineComment)
-        {
-            AcpiOsPrintf ("%s",Op->Common.InlineComment);
-            Op->Common.InlineComment = NULL;
-        }   
+        PRINTONECOMMENT (Op, AML_INLINECOMMENT);
 
         return (TRUE);
     }
 
-noComma:
-    if (Gbl_CaptureComments && Op->Common.InlineComment)
-    {
-        AcpiOsPrintf (" %s",Op->Common.InlineComment);
-        Op->Common.InlineComment = NULL;
-    }   
     return (FALSE);
 }
 

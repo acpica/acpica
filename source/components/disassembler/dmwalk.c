@@ -759,14 +759,7 @@ AcpiDmDescendingOp (
 
                 AcpiDmCheckForHardwareId (Op);
                 AcpiOsPrintf (", ");
-
-                //Print comments associated with this name later on, we need to put this in a separate function...
-                if (Op->Common.NameComment)
-                {
-                    AcpiOsPrintf ("%s", Op->Common.NameComment);
-                    Op->Common.NameComment = NULL;
-                }
-
+                PRINTONECOMMENT(Op, AML_NAMECOMMENT);
                 break;
 
             case AML_REGION_OP:

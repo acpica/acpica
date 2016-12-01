@@ -120,6 +120,7 @@
 #include "acinterp.h"
 #include "acnamesp.h"
 #include "acdebug.h"
+#include "acapps.h"
 
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
@@ -946,14 +947,8 @@ AcpiDmDisassembleOneOp (
     case AML_INT_NAMEDFIELD_OP:
 
         Length = AcpiDmDumpName (Op->Named.Name);
-
-        /*print any comments associated with this... */
-
         AcpiOsPrintf (", ");
-        if (Gbl_CaptureComments &&  Op->Common.NameComment)
-        {
-            AcpiOsPrintf ("%s",Op->Common.NameComment);
-        }
+        PRINTONECOMMENT (Op, AML_NAMECOMMENT);
         AcpiOsPrintf ("%*.s  %u", (unsigned) (5 - Length), " ",
             (UINT32) Op->Common.Value.Integer);
         AcpiDmCommaIfFieldMember (Op);
@@ -996,10 +991,7 @@ AcpiDmDisassembleOneOp (
 
         AcpiOsPrintf (")");
         AcpiDmCommaIfFieldMember (Op);
-        if (Gbl_CaptureComments && Op->Common.EndNodeComment)
-        {
-            AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
-        }
+        PRINTONECOMMENT (Op, AML_ENDNODECOMMENT);
         break;
 
     case AML_INT_CONNECTION_OP:
@@ -1033,15 +1025,8 @@ AcpiDmDisassembleOneOp (
 
         AcpiOsPrintf (")");
         AcpiDmCommaIfFieldMember (Op);
-        if (Gbl_CaptureComments && Op->Common.EndNodeComment)
-        {
-            AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
-        }
-        if (Gbl_CaptureComments && Op->Common.InlineComment)
-        {
-            AcpiOsPrintf ("%s", Op->Common.InlineComment);
-        }
-
+        PRINTONECOMMENT (Op, AML_ENDNODECOMMENT);
+        PRINTONECOMMENT (Op, AML_INLINECOMMENT);
         AcpiOsPrintf ("\n");
 
         Op->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE; /* for now, ignore in AcpiDmAscendingOp */
