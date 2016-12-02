@@ -330,7 +330,7 @@ AdWriteTable (
  * cvcompiler
  */
 char*
-CvChangeFileExt(
+CvChangeFileExt (
    char*                    Filename,
    char*                    FileExt);
 
@@ -348,7 +348,7 @@ CvAddToCommentList (
     char*                   ToAdd);
 
 void
-CvPlaceComment(
+CvPlaceComment (
     UINT8                   Type,
     char                    *CommentString);
 
@@ -361,17 +361,17 @@ CvCommentNodeCalloc (
     void);
 
 void
-CgWriteAmlDefBlockComment(
+CgWriteAmlDefBlockComment (
     ACPI_PARSE_OBJECT       *Op);
 
 void
-CgWriteOneAmlComment(
+CgWriteOneAmlComment (
     ACPI_PARSE_OBJECT       *Op,
     char*                   CommentToPrint,
     UINT8                   InputOption);
 
 void
-CgWriteAmlComment(
+CgWriteAmlComment (
     ACPI_PARSE_OBJECT       *Op);
 
 
@@ -389,12 +389,12 @@ CvFilenameExists (
     ACPI_FILE_NODE           *Head);
 
 ACPI_FILE_NODE*
-CvFileAddressLookup(
+CvFileAddressLookup (
     char                    *Address,
     ACPI_FILE_NODE          *Head);
 
 void
-CvFileLabelNode(
+CvFileLabelNode (
     ACPI_PARSE_OBJECT       *Op);
 
 void
@@ -434,22 +434,22 @@ AcpiDmBlockType (
     ACPI_PARSE_OBJECT       *Op);
 
 void
-CvSwitchFiles(
+CvSwitchFiles (
     UINT32                  level,
     ACPI_PARSE_OBJECT       *op);
 
 BOOLEAN
-CvFileHasSwitched(
+CvFileHasSwitched (
     ACPI_PARSE_OBJECT       *Op);
 
 
 void
-CvCloseParenWriteComment(
+CvCloseParenWriteComment (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level);
 
 void
-CvCloseBraceWriteComment(
+CvCloseBraceWriteComment (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level);
 
