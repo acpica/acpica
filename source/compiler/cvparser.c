@@ -133,123 +133,103 @@ CvCommentExists (
 
 /*******************************************************************************
  *
- * FUNCTION:    CvPrintOneCommentList
- *
- * PARAMETERS:  CommentList
- *
- * RETURN:      None
- *
- * DESCRIPTION: Prints all commentss within a given list.
- *
- ******************************************************************************/
-
-void
-CvPrintOneCommentList (
-    ACPI_COMMENT_LIST_NODE  *CommentList,
-    UINT32                  Level)
-{
-    ACPI_COMMENT_LIST_NODE  *Temp = CommentList;
-    ACPI_COMMENT_LIST_NODE  *Prev;
-
-
-    while (Temp)
-    {
-        Prev = Temp;
-        if (Temp->Comment)
-        {
-            AcpiDmIndent(Level);
-            AcpiOsPrintf("%s\n", Temp->Comment);
-            Temp->Comment = NULL;
-        }
-        Temp = Temp->Next;
-        AcpiOsFree (Prev);
-    }
-    CommentList = NULL;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    CvPrintOneCommentType
+ * FUNCTION:    CvInitFileTree
  *
  * PARAMETERS:  Op
- *              CommentType
- *              EndStr - String to print after printing the comment
- *              Level  - indentation level for comment lists.
  *
- * RETURN:      None
+ * RETURN:      none
  *
- * DESCRIPTION: Prints all comments of CommentType within the given Op and
- *              clears the printed comment from the Op.
+ * DESCRIPTION: Initialize the file dependency tree by looking at the AML.
  *
  ******************************************************************************/
 
 void
-CvPrintOneCommentType (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT8                   CommentType,
-    char*                   EndStr,
-    UINT32                  Level)
+CvInitFileTree (
+    ACPI_TABLE_HEADER       *Table,
+    UINT8                   *AmlStart,
+    UINT32                  AmlLength)
 {
-    switch (CommentType)
+    UINT8                   *TreeAml;
+    UINT8                   *FileEnd;
+    char                    *Filename = NULL;
+    char                    *PreviousFilename = NULL;
+    char                    *ParentFilename = NULL;
+    char                    *ChildFilename = NULL;
+    UINT8                   fnameLength;
+    char                    *temp;
+
+
+
+    /* 
+     * The following is for the -ca option. This is the initialization of 
+     * the file dependency tree.
+     */
+    if (Gbl_CaptureComments)
     {
-    case AML_REGCOMMENT:
-        CvPrintOneCommentList (Op->Common.CommentList, Level);
-        Op->Common.CommentList = NULL;
-        break;
+        /* This is expected to work only for a single defintion block. */
 
-    case AML_INLINECOMMENT:
-        if (Op->Common.InlineComment)
+        CvDbgPrint ("AmlLength: %x\n", AmlLength);
+        CvDbgPrint ("AmlStart:  %p\n", AmlStart);
+        CvDbgPrint ("AmlEnd?:   %p\n", AmlStart+AmlLength);
+    
+        AcpiGbl_FileTreeRoot = AcpiOsAcquireObject (AcpiGbl_FileCache);
+        AcpiGbl_FileTreeRoot->FileStart = (char*)(AmlStart);
+        AcpiGbl_FileTreeRoot->FileEnd = (char*)(AmlStart + Table->Length);
+        AcpiGbl_FileTreeRoot->Next = NULL;
+        AcpiGbl_FileTreeRoot->Parent = NULL;
+        AcpiGbl_FileTreeRoot->Filename = (char*)(AmlStart+2);
+
+        /* Set this file to the current open file */
+
+        AcpiGbl_FileTreeRoot->File = AcpiGbl_OutputFile; 
+    
+        /* 
+         * Set this to true because we dont need to output
+         * an include statement for the topmost file 
+         */
+        AcpiGbl_FileTreeRoot->IncludeWritten = TRUE;
+        Filename = NULL;    
+        AcpiGbl_CurrentFilename = (char*)(AmlStart+2);
+        AcpiGbl_RootFilename    = (char*)(AmlStart+2);
+  
+
+        TreeAml = AmlStart;
+        FileEnd = AmlStart +AmlLength;
+
+        while (TreeAml <= FileEnd)
         {
-            AcpiOsPrintf ("%s", Op->Common.InlineComment);
-            Op->Common.InlineComment = NULL;
+            if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x08)
+            {
+                CvDbgPrint ("A9 and a 08 file\n");
+                PreviousFilename = Filename;
+                Filename = (char*) (TreeAml+2);
+
+                /*
+                 * Make sure that this filename contains a .dsl extension.
+                 * If it doesn't contain it, then it must be 0xA9 and 0x08 then it
+                 * must be some raw data that doesn't outline a filename.
+                 */
+                fnameLength = strlen(Filename);
+                temp = Filename + fnameLength - 3;
+                if (!strcmp(temp, "dsl"))
+                {
+                    ADDTOFILETREE (Filename, PreviousFilename);
+                    ChildFilename = Filename;
+                }
+            }
+            else if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x09)
+            {
+                CvDbgPrint ("A9 and a 09 file\n");
+                fnameLength = strlen(Filename);
+                temp = Filename + fnameLength - 3;
+                if (!strcmp(temp, "dsl"))
+                {
+                	ParentFilename = (char*)(TreeAml+2);
+                        SETFILEPARENT (ChildFilename, ParentFilename);
+		}
+            }
+            ++TreeAml;
         }
-        break;
-
-    case AML_ENDNODECOMMENT:
-        if (Op->Common.EndNodeComment)
-        {
-            AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
-            Op->Common.EndNodeComment = NULL;
-        }
-        break;
-
-    case AML_NAMECOMMENT:
-        if (Op->Common.NameComment)
-        {
-            AcpiOsPrintf ("%s", Op->Common.NameComment);
-            Op->Common.NameComment = NULL;
-        }
-        break;
-
-    case AML_CLOSEBRACECOMMENT:
-        if (Op->Common.CloseBraceComment)
-        {
-            AcpiOsPrintf ("%s", Op->Common.CloseBraceComment);
-            Op->Common.CloseBraceComment = NULL;
-        }
-        break;
-
-    case AML_ENDBLKCOMMENT:
-        CvPrintOneCommentList (Op->Common.EndBlkComment, Level);
-        Op->Common.EndBlkComment = NULL;
-        break;
-
-    case AML_INCLUDECOMMENT:
-        CvPrintOneCommentList (Op->Common.IncComment, Level);
-        Op->Common.IncComment = NULL;
-        break;
-
-    default:
-        break;
-    }
-
-    if (EndStr &&
-        ((CommentType == AML_REGCOMMENT) || (CommentType == AML_INLINECOMMENT) ||
-         (CommentType == AML_ENDNODECOMMENT) || (CommentType == AML_NAMECOMMENT) ||
-         (CommentType == AML_CLOSEBRACECOMMENT)))
-    {
-        AcpiOsPrintf ("%s", EndStr);
     }
 }
 

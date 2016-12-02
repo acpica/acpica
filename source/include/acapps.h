@@ -378,6 +378,11 @@ CgWriteAmlComment (
 /*
  * cvparser
  */
+void
+CvInitFileTree (
+    ACPI_TABLE_HEADER       *Table,
+    UINT8                   *AmlStart,
+    UINT32                  AmlLength);
 
 void
 CvClearOpComments (

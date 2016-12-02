@@ -119,6 +119,7 @@
 #include "actables.h"
 #include "acparser.h"
 #include "acapps.h"
+#include "acmacros.h"
 
 
 #define _COMPONENT          ACPI_TOOLS
@@ -127,15 +128,15 @@
 
 /* Local prototypes */
 
-static void
-AdCreateTableHeader (
-    char                    *Filename,
-    ACPI_TABLE_HEADER       *Table);
-
 static ACPI_STATUS
 AdStoreTable (
     ACPI_TABLE_HEADER       *Table,
     UINT32                  *TableIndex);
+
+static void
+AdCreateTableHeader (
+    char                    *Filename,
+    ACPI_TABLE_HEADER       *Table);
 
 
 extern ACPI_TABLE_DESC      LocalTables[1];
@@ -212,7 +213,7 @@ AdCreateTableHeader (
     ACPI_TABLE_HEADER       *Table)
 {
     UINT8                   Checksum;
-    ACPI_COMMENT_LIST_NODE  *CommentPtr;
+
 
     /* Reset globals for External statements */
 
@@ -278,14 +279,7 @@ AdCreateTableHeader (
      */
     if (Gbl_CaptureComments)
     {
-        CommentPtr = AcpiGbl_ParseOpRoot->Common.CommentList;
-        while (CommentPtr)
-        {
-            AcpiOsPrintf("%s\n", CommentPtr->Comment);
-            CommentPtr->Comment = NULL;
-            CommentPtr = CommentPtr->Next;
-        }
-        AcpiGbl_ParseOpRoot->Common.CommentList = NULL;
+        PRINTONECOMMENT(AcpiGbl_ParseOpRoot,AML_REGCOMMENT, NULL, 0);
     }
 
     /*
@@ -462,14 +456,7 @@ AdParseTable (
     UINT8                   *AmlStart;
     UINT32                  AmlLength;
     UINT32                  TableIndex;
-    UINT8                   *TreeAml;
-    UINT8                   *FileEnd;
-    char                    *Filename = NULL;
-    char                    *PreviousFilename = NULL;
-    char                    *ParentFilename = NULL;
-    char                    *ChildFilename = NULL;
-    UINT8                   fnameLength;
-    char                    *temp;
+
 
     if (!Table)
     {
@@ -482,78 +469,7 @@ AdParseTable (
 
     AmlLength = Table->Length - sizeof (ACPI_TABLE_HEADER);
     AmlStart = ((UINT8 *) Table + sizeof (ACPI_TABLE_HEADER));
-
-    /* 
-     * The following is for the -ca option. This is the initialization of 
-     * the file dependency tree.
-     */
-    if (Gbl_CaptureComments)
-    {
-        /* This is expected to work only for a single defintion block. */
-
-        CvDbgPrint ("AmlLength: %x\n", AmlLength);
-        CvDbgPrint ("AmlStart:  %p\n", AmlStart);
-        CvDbgPrint ("AmlEnd?:   %p\n", AmlStart+AmlLength);
-    
-        AcpiGbl_FileTreeRoot = AcpiOsAcquireObject (AcpiGbl_FileCache);
-        AcpiGbl_FileTreeRoot->FileStart = (char*)(AmlStart);
-        AcpiGbl_FileTreeRoot->FileEnd = (char*)(AmlStart + Table->Length);
-        AcpiGbl_FileTreeRoot->Next = NULL;
-        AcpiGbl_FileTreeRoot->Parent = NULL;
-        AcpiGbl_FileTreeRoot->Filename = (char*)(AmlStart+2);
-
-        /* Set this file to the current open file */
-
-        AcpiGbl_FileTreeRoot->File = AcpiGbl_OutputFile; 
-    
-        /* 
-         * Set this to true because we dont need to output
-         * an include statement for the topmost file 
-         */
-        AcpiGbl_FileTreeRoot->IncludeWritten = TRUE;
-        Filename = NULL;    
-        AcpiGbl_CurrentFilename = (char*)(AmlStart+2);
-        AcpiGbl_RootFilename    = (char*)(AmlStart+2);
-  
-
-        TreeAml = AmlStart;
-        FileEnd = AmlStart +AmlLength;
-
-        while (TreeAml <= FileEnd)
-        {
-            if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x08)
-            {
-                CvDbgPrint ("A9 and a 08 file\n");
-                PreviousFilename = Filename;
-                Filename = (char*) (TreeAml+2);
-
-                /*
-                 * Make sure that this filename contains a .dsl extension.
-                 * If it doesn't contain it, then it must be 0xA9 and 0x08 then it
-                 * must be some raw data that doesn't outline a filename.
-                 */
-                fnameLength = strlen(Filename);
-                temp = Filename + fnameLength - 3;
-                if (!strcmp(temp, "dsl"))
-                {
-                    ADDTOFILETREE (Filename, PreviousFilename);
-                    ChildFilename = Filename;
-                }
-            }
-            else if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x09)
-            {
-                CvDbgPrint ("A9 and a 09 file\n");
-                fnameLength = strlen(Filename);
-                temp = Filename + fnameLength - 3;
-                if (!strcmp(temp, "dsl"))
-                {
-                	ParentFilename = (char*)(TreeAml+2);
-                        SETFILEPARENT (ChildFilename, ParentFilename);
-		}
-            }
-            ++TreeAml;
-        }
-    }
+    INITFILETREE(Table, AmlStart, AmlLength);
 
     /* Create the root object */
 
@@ -563,6 +479,7 @@ AdParseTable (
         return (AE_NO_MEMORY);
     }
 
+#ifdef ACPI_ASL_COMPILER
     if (Gbl_CaptureComments)
     {
         AcpiGbl_ParseOpRoot->Common.PsFilename = AcpiGbl_FileTreeRoot->Filename;
@@ -571,6 +488,8 @@ AdParseTable (
     {
         AcpiGbl_ParseOpRoot->Common.PsFilename = NULL;
     }
+#endif
+
     /* Create and initialize a new walk state */
 
     WalkState = AcpiDsCreateWalkState (0, AcpiGbl_ParseOpRoot, NULL, NULL);

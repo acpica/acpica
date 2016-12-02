@@ -511,6 +511,7 @@
 #define PRINTONECOMMENT(a,b,c,d) CvPrintOneCommentType (a,b,c,d);
 #define PRINTONECOMMENTLIST(a,b) CvPrintOneCommentList (a,b);
 #define FILEHASSWITCHED(a)       CvFileHasSwitched(a)
+#define INITFILETREE(a, b, c)    CvInitFileTree(a,b,c);
 
 #else
 
@@ -526,8 +527,9 @@
 #define SWITCHFILES(a,b)
 #define CLEAROPCOMMENTS(a)
 #define PRINTONECOMMENT(a,b,c,d)
-#define PRINTONECOMMENTLIST(a,b) 
+#define PRINTONECOMMENTLIST(a,b)
 #define FILEHASSWITCHED(a)       0
+#define INITFILETREE(a, b, c)
 
 #endif
 

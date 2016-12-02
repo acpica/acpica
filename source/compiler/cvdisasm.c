@@ -123,6 +123,129 @@
 
 /*******************************************************************************
  *
+ * FUNCTION:    CvPrintOneCommentList
+ *
+ * PARAMETERS:  CommentList
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Prints all commentss within a given list.
+ *
+ ******************************************************************************/
+
+void
+CvPrintOneCommentList (
+    ACPI_COMMENT_LIST_NODE  *CommentList,
+    UINT32                  Level)
+{
+    ACPI_COMMENT_LIST_NODE  *Temp = CommentList;
+    ACPI_COMMENT_LIST_NODE  *Prev;
+
+
+    while (Temp)
+    {
+        Prev = Temp;
+        if (Temp->Comment)
+        {
+            AcpiDmIndent(Level);
+            AcpiOsPrintf("%s\n", Temp->Comment);
+            Temp->Comment = NULL;
+        }
+        Temp = Temp->Next;
+        AcpiOsFree (Prev);
+    }
+    CommentList = NULL;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CvPrintOneCommentType
+ *
+ * PARAMETERS:  Op
+ *              CommentType
+ *              EndStr - String to print after printing the comment
+ *              Level  - indentation level for comment lists.
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Prints all comments of CommentType within the given Op and
+ *              clears the printed comment from the Op.
+ *
+ ******************************************************************************/
+
+void
+CvPrintOneCommentType (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT8                   CommentType,
+    char*                   EndStr,
+    UINT32                  Level)
+{
+    switch (CommentType)
+    {
+    case AML_REGCOMMENT:
+        CvPrintOneCommentList (Op->Common.CommentList, Level);
+        Op->Common.CommentList = NULL;
+        break;
+
+    case AML_INLINECOMMENT:
+        if (Op->Common.InlineComment)
+        {
+            AcpiOsPrintf ("%s", Op->Common.InlineComment);
+            Op->Common.InlineComment = NULL;
+        }
+        break;
+
+    case AML_ENDNODECOMMENT:
+        if (Op->Common.EndNodeComment)
+        {
+            AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
+            Op->Common.EndNodeComment = NULL;
+        }
+        break;
+
+    case AML_NAMECOMMENT:
+        if (Op->Common.NameComment)
+        {
+            AcpiOsPrintf ("%s", Op->Common.NameComment);
+            Op->Common.NameComment = NULL;
+        }
+        break;
+
+    case AML_CLOSEBRACECOMMENT:
+        if (Op->Common.CloseBraceComment)
+        {
+            AcpiOsPrintf ("%s", Op->Common.CloseBraceComment);
+            Op->Common.CloseBraceComment = NULL;
+        }
+        break;
+
+    case AML_ENDBLKCOMMENT:
+        CvPrintOneCommentList (Op->Common.EndBlkComment, Level);
+        Op->Common.EndBlkComment = NULL;
+        break;
+
+    case AML_INCLUDECOMMENT:
+        CvPrintOneCommentList (Op->Common.IncComment, Level);
+        Op->Common.IncComment = NULL;
+        break;
+
+    default:
+        break;
+    }
+
+    if (EndStr &&
+        ((CommentType == AML_REGCOMMENT) || (CommentType == AML_INLINECOMMENT) ||
+         (CommentType == AML_ENDNODECOMMENT) || (CommentType == AML_NAMECOMMENT) ||
+         (CommentType == AML_CLOSEBRACECOMMENT)))
+    {
+        AcpiOsPrintf ("%s", EndStr);
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    CvCloseBraceWriteComment 
  *
  * PARAMETERS:  ACPI_PARSE_OBJECT

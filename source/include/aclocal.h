@@ -999,6 +999,7 @@ typedef union acpi_parse_value
     UINT8                           DisasmOpcode;       /* Subtype used for disassembly */\
     char                            *OperatorSymbol;    /* Used for C-style operator name strings */\
     char                            AmlOpName[16])      /* Op name (debug only) */\
+     ACPI_CONVERTER_ONLY_MEMBERS (\
     UINT8                           Opt;                /* Extra integer constant */\
     char                            *InlineComment;     /* For -ca option: inline comment associated with this node.*/\
     char                            *EndNodeComment;    /* For -ca option: end of node comment associated with this node.*/\
@@ -1008,7 +1009,7 @@ typedef union acpi_parse_value
     ACPI_COMMENT_LIST_NODE          *EndBlkComment;     /* comments that at the end of a block but before ) or } */\
     ACPI_COMMENT_LIST_NODE          *IncComment;        /* comments that are above ASL include statements */\
     char                            *PsFilename;        /* For -ca optoin: filename associated with this node */\
-    char                            *PsParentFilename;  /* For -ca optoin: parent filename associated with this node */
+    char                            *PsParentFilename)  /* For -ca optoin: parent filename associated with this node */
 
 
 /* #defines for categories of comments */
