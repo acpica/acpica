@@ -901,7 +901,6 @@ AcpiDmDescendingOp (
 
                 AcpiOsPrintf ("\n");
                 AcpiDmIndent (Info->Level);
-
                 AcpiOsPrintf ("{\n");
                 return (AE_OK);
             }
@@ -978,7 +977,6 @@ AcpiDmAscendingOp (
 {
     ACPI_OP_WALK_INFO       *Info = Context;
     ACPI_PARSE_OBJECT       *ParentOp;
-    ACPI_COMMENT_LIST_NODE  *CurrentComment;
 
 
     /* Label this to Op to be in the proper file */
@@ -1011,21 +1009,9 @@ AcpiDmAscendingOp (
         /* Print any comments that are at the end of the file here... */
         if (Gbl_CaptureComments)
         { 
-            CurrentComment = AcpiGbl_LastListHead;
-            if (CurrentComment)
-            {
-                AcpiOsPrintf ("\n");
-                while (CurrentComment)
-                {
-                    AcpiOsPrintf("%s\n", CurrentComment->Comment);
-                    CurrentComment = CurrentComment->Next;
-                }
-            }
+            PRINTONECOMMENTLIST (AcpiGbl_LastListHead, 0);
         }
         AcpiOsPrintf ("\n\n");
-
-
-
         return (AE_OK);
     }
 
