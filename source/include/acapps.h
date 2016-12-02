@@ -329,6 +329,10 @@ AdWriteTable (
 /*
  * cvcompiler
  */
+UINT32
+CvCalculateCommentLengths(
+   ACPI_PARSE_OBJECT        *Op);
+
 char*
 CvChangeFileExt (
    char*                    Filename,

@@ -116,6 +116,7 @@
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
 #include "amlcode.h"
+#include "acapps.h"
 
 
 #define _COMPONENT          ACPI_COMPILER
@@ -194,90 +195,21 @@ LnPackageLengthWalk (
     UINT32                  Level,
     void                    *Context)
 {
-    UINT32                  CommentLength = 0;
-    UINT32                  TotalCommentLength = 0;
-    ACPI_COMMENT_LIST_NODE  *Current = NULL;
+    /* Generate the AML lengths for this node */ 
 
     CgGenerateAmlLengths (Op);
 
-   /* Bubble up all lengths (this node and all below it) to the parent */
+    /* Bubble up all lengths (this node and all below it) to the parent */
 
     if ((Op->Asl.Parent) && (Op->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG))
     {
-        /* 
-         * For the -ca option: calculate the length that the comment takes up.
-         * Comments look like the follwoing: [0xA9 OptionBtye comment 0x00]
-         * therefore, we add 1 + 1 + strlen (comment) + 1 to get the actual 
-         * length of this comment.
-         */
-        if (Gbl_CaptureComments)
-        {
-            CvDbgPrint ("====================Calculating comment lengths for %s====================\n",  Op->Asl.ParseOpName);
-            if (Op->Asl.FileChanged)
-            {
-                TotalCommentLength += strlen (Op->Asl.Filename) + 3;
-                if (Op->Asl.ParentFilename && strcmp (Op->Asl.Filename, Op->Asl.ParentFilename))
-                {
-                    TotalCommentLength += strlen (Op->Asl.ParentFilename) + 3;
-                }
-            }
-            if (Op->Asl.CommentList!=NULL)
-            {
-                Current = Op->Asl.CommentList; 
-                while (Current!=NULL)
-                {
-                    CommentLength = strlen (Current->Comment)+3;
-                    CvDbgPrint ("Length of standard comment +3 (including space for 0xA9 0x01 and 0x00): %d\n", CommentLength);
-                    CvDbgPrint ("**********Comment string: %s\n\n", Current->Comment);
-                    TotalCommentLength += CommentLength;
-                    Current = Current->Next;
-                }
-            }
-            if (Op->Asl.EndBlkComment!=NULL)
-            {
-                Current = Op->Asl.EndBlkComment;
-                while (Current!=NULL)
-                {
-                    CommentLength = strlen (Current->Comment)+3;
-                    CvDbgPrint ("Length of endblkcomment +3 (including space for 0xA9 0x10 and 0x00): %d\n", CommentLength);
-                    CvDbgPrint ("**********Comment string: %s\n\n", Current->Comment);
-                    TotalCommentLength += CommentLength;
-                    Current = Current->Next;
-                }
-            }
-            if (Op->Asl.InlineComment!=NULL)
-            {
-                CommentLength = strlen (Op->Asl.InlineComment)+3;
-                CvDbgPrint ("Length of inline comment +3 (including space for 0xA9 0x02 and 0x00): %d\n", CommentLength);
-                CvDbgPrint ("**********Comment string: %s\n\n", Op->Asl.InlineComment);
-                TotalCommentLength += CommentLength;
-            }
-
-            if (Op->Asl.EndNodeComment!=NULL)
-            {
-                CommentLength = strlen(Op->Asl.EndNodeComment)+3;
-                CvDbgPrint ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", CommentLength);
-                CvDbgPrint ("**********Comment string: %s\n\n", Op->Asl.EndNodeComment);
-                TotalCommentLength += CommentLength;
-            }
-
-            if (Op->Asl.CloseBraceComment!=NULL)
-            {
-                CommentLength = strlen (Op->Asl.CloseBraceComment)+3;
-                CvDbgPrint ("Length of inline comment +3 (including space for 0xA9 0x03 and 0x00): %d\n", CommentLength);
-                CvDbgPrint ("**********Comment string: %s\n\n", Op->Asl.CloseBraceComment);
-                TotalCommentLength += CommentLength;
-            }
-
-            CvDbgPrint("\n\n");
-        }
 
         Op->Asl.Parent->Asl.AmlSubtreeLength += (
             Op->Asl.AmlLength +
             Op->Asl.AmlOpcodeLength +
             Op->Asl.AmlPkgLenBytes +
             Op->Asl.AmlSubtreeLength +
-            TotalCommentLength
+            CvCalculateCommentLengths (Op)
         );
     }
 

@@ -123,6 +123,96 @@
  *
  * FUNCTION:    CgWriteAmlDefBlockComment
  *
+ * PARAMETERS:  Op
+ *
+ * RETURN:      TotalCommentLength - Length of all comments within this node.
+ *
+ * DESCRIPTION: calculate the length that the each comment takes up within Op.
+ *              Comments look like the follwoing: [0xA9 OptionBtye comment 0x00]
+ *              therefore, we add 1 + 1 + strlen (comment) + 1 to get the actual
+ *              length of this comment.
+ *
+ ******************************************************************************/
+
+UINT32
+CvCalculateCommentLengths(
+   ACPI_PARSE_OBJECT        *Op)
+{
+    UINT32                  CommentLength = 0;
+    UINT32                  TotalCommentLength = 0;
+    ACPI_COMMENT_LIST_NODE  *Current = NULL;
+
+
+    if (Gbl_CaptureComments)
+    {
+        CvDbgPrint ("====================Calculating comment lengths for %s\n",  Op->Asl.ParseOpName);
+        if (Op->Asl.FileChanged)
+        {
+            TotalCommentLength += strlen (Op->Asl.Filename) + 3;
+            if (Op->Asl.ParentFilename && strcmp (Op->Asl.Filename, Op->Asl.ParentFilename))
+            {
+                TotalCommentLength += strlen (Op->Asl.ParentFilename) + 3;
+            }
+        }
+        if (Op->Asl.CommentList!=NULL)
+        {
+            Current = Op->Asl.CommentList; 
+            while (Current!=NULL)
+            {
+                CommentLength = strlen (Current->Comment)+3;
+                CvDbgPrint ("Length of standard comment: %d\n", CommentLength);
+                CvDbgPrint ("    Comment string: %s\n\n", Current->Comment);
+                TotalCommentLength += CommentLength;
+                Current = Current->Next;
+            }
+        }
+        if (Op->Asl.EndBlkComment!=NULL)
+        {
+            Current = Op->Asl.EndBlkComment;
+            while (Current!=NULL)
+            {
+                CommentLength = strlen (Current->Comment)+3;
+                CvDbgPrint ("Length of endblkcomment: %d\n", CommentLength);
+                CvDbgPrint ("    Comment string: %s\n\n", Current->Comment);
+                TotalCommentLength += CommentLength;
+                Current = Current->Next;
+            }
+        }
+        if (Op->Asl.InlineComment!=NULL)
+        {
+            CommentLength = strlen (Op->Asl.InlineComment)+3;
+            CvDbgPrint ("Length of inline comment: %d\n", CommentLength);
+            CvDbgPrint ("    Comment string: %s\n\n", Op->Asl.InlineComment);
+            TotalCommentLength += CommentLength;
+        }
+        if (Op->Asl.EndNodeComment!=NULL)
+        {
+            CommentLength = strlen(Op->Asl.EndNodeComment)+3;
+            CvDbgPrint ("Length of end node comment +3: %d\n", CommentLength);
+            CvDbgPrint ("    Comment string: %s\n\n", Op->Asl.EndNodeComment);
+            TotalCommentLength += CommentLength;
+        }
+
+        if (Op->Asl.CloseBraceComment!=NULL)
+        {
+            CommentLength = strlen (Op->Asl.CloseBraceComment)+3;
+            CvDbgPrint ("Length of close brace comment: %d\n", CommentLength);
+            CvDbgPrint ("    Comment string: %s\n\n", Op->Asl.CloseBraceComment);
+            TotalCommentLength += CommentLength;
+        }
+
+        CvDbgPrint("\n\n");
+    }
+
+    return TotalCommentLength;
+
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CgWriteAmlDefBlockComment
+ *
  * PARAMETERS:  Op              - Current parse op
  *
  * RETURN:      None

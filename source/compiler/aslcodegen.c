@@ -545,43 +545,41 @@ CgWriteTableHeader (
     TableHeader.Length = sizeof (ACPI_TABLE_HEADER) +
         Op->Asl.AmlSubtreeLength;
 
-    /* Calculate the comment lengths for this definition block */
+    /* Calculate the comment lengths for this definition block parseOp */
 
     if (Gbl_CaptureComments)
     {
-        CvDbgPrint ("====================Calculating comment lengths for %s in write header ====================\n",  Op->Asl.ParseOpName);
+        CvDbgPrint ("====================Calculating comment lengths for %s in write header\n",  Op->Asl.ParseOpName);
 
         /* Take the filename without extensions, add 3 for the new extension and another 3 for a908 and null terminator */
 
         TableHeader.Length += strrchr (Gbl_ParseTreeRoot->Asl.Filename, '.') - Gbl_ParseTreeRoot->Asl.Filename + 1 + 3 + 3;
         Op->Asl.AmlSubtreeLength += strlen (Gbl_ParseTreeRoot->Asl.Filename) + 3;
-	CvDbgPrint ("Length: %lu\n", strlen (Gbl_ParseTreeRoot->Asl.Filename) + 3);
+	CvDbgPrint ("     Length: %lu\n", strlen (Gbl_ParseTreeRoot->Asl.Filename) + 3);
         if (Op->Asl.CommentList!=NULL)
         {
             Current = Op->Asl.CommentList; 
             while (Current)
             {
                 CommentLength = strlen (Current->Comment)+3;
-                CvDbgPrint ("Length of standard comment +3 (including space for 0xA9 0x01 and 0x00): %d\n", CommentLength);
-                CvDbgPrint ("**********Comment string: %s\n\n", Current->Comment);
+                CvDbgPrint ("Length of standard commen): %d\n", CommentLength);
+                CvDbgPrint ("    Comment string: %s\n\n", Current->Comment);
                 TableHeader.Length += CommentLength;
                 Op->Asl.AmlSubtreeLength += CommentLength;
                 Current = Current->Next;
-	        CvDbgPrint ("Length: %u\n", CommentLength);
+	        CvDbgPrint ("    Length: %u\n", CommentLength);
             }
         }
-
         if (Op->Asl.CloseBraceComment!=NULL)
         {
             CommentLength = strlen (Op->Asl.CloseBraceComment)+3;
             CvDbgPrint ("Length of inline comment +3 (including space for 0xA9 0x02 and 0x00): %d\n", CommentLength);
-            CvDbgPrint ("**********Comment string: %s\n\n", Op->Asl.CloseBraceComment);
+            CvDbgPrint ("    Comment string: %s\n\n", Op->Asl.CloseBraceComment);
             TableHeader.Length += CommentLength;
             Op->Asl.AmlSubtreeLength += CommentLength;
-	    CvDbgPrint ("Length: %u\n", CommentLength);
+	    CvDbgPrint ("    Length: %u\n", CommentLength);
         }
     }
-
 
     TableHeader.Checksum = 0;
 
