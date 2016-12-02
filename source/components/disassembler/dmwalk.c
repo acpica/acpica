@@ -481,8 +481,6 @@ AcpiDmDescendingOp (
     ACPI_PARSE_OBJECT       *NextOp;
     ACPI_PARSE_OBJECT       *NextOp2;
     UINT32                  AmlOffset;
-    ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.CommentList;
-    char                    *Filename = Op->Common.PsFilename;
 
 
     /* Determine which file this parse node is contained in. */
@@ -491,20 +489,14 @@ AcpiDmDescendingOp (
     {
         FILELABELNODE (Op);
   
-        if (Level != 0 && Filename && AcpiGbl_CurrentFilename && strcmp(Filename, AcpiGbl_CurrentFilename))
+        if (Level != 0 && FILEHASSWITCHED (Op))
         { 
-            SWITCHFILES (Filename, Level, Op);
+            SWITCHFILES (Level, Op);
         }
     
         /* If this parse node has regular comments, print them here. */
 
-        while (CommentNode)
-        {
-            AcpiDmIndent (Level);
-            AcpiOsPrintf("%s\n", CommentNode->Comment);
-            CommentNode->Comment = NULL;
-            CommentNode = CommentNode->Next;     
-        } 
+        PRINTONECOMMENT (Op, AML_REGCOMMENT, NULL, Level);
     }
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
@@ -696,11 +688,9 @@ AcpiDmDescendingOp (
         if (AcpiDmBlockType (Op) & BLOCK_PAREN)
         {
             AcpiOsPrintf (" (");
-            // print inline comments associated with this op.
-            if (Op->Common.InlineComment!=NULL && !(AcpiDmBlockType (Op) & BLOCK_BRACE))
+            if (!(AcpiDmBlockType (Op) & BLOCK_BRACE))
             {
-                AcpiOsPrintf ( "%s ", Op->Common.InlineComment);
-                Op->Common.InlineComment = NULL;
+                PRINTONECOMMENT (Op, AML_INLINECOMMENT, " ", 0);
             }
         }
 
@@ -759,7 +749,7 @@ AcpiDmDescendingOp (
 
                 AcpiDmCheckForHardwareId (Op);
                 AcpiOsPrintf (", ");
-                PRINTONECOMMENT(Op, AML_NAMECOMMENT);
+                PRINTONECOMMENT (Op, AML_NAMECOMMENT, NULL, 0);
                 break;
 
             case AML_REGION_OP:
@@ -989,21 +979,19 @@ AcpiDmAscendingOp (
     ACPI_OP_WALK_INFO       *Info = Context;
     ACPI_PARSE_OBJECT       *ParentOp;
     ACPI_COMMENT_LIST_NODE  *CurrentComment;
-    char*                   Filename;
 
 
     /* Label this to Op to be in the proper file */
+
     if (Gbl_CaptureComments)
     {
         FILELABELNODE (Op);
-        Filename = Op->Common.PsFilename;
     
-	
         /* Switch the output of these files if necessary */
 
-        if (Filename && AcpiGbl_CurrentFilename && strcmp(Filename, AcpiGbl_CurrentFilename))
+        if (FILEHASSWITCHED (Op))
         {
-            SWITCHFILES (Filename, Level, Op);
+            SWITCHFILES (Level, Op);
         }
     }
 

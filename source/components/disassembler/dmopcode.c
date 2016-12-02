@@ -948,7 +948,7 @@ AcpiDmDisassembleOneOp (
 
         Length = AcpiDmDumpName (Op->Named.Name);
         AcpiOsPrintf (", ");
-        PRINTONECOMMENT (Op, AML_NAMECOMMENT);
+        PRINTONECOMMENT (Op, AML_NAMECOMMENT, NULL, 0);
         AcpiOsPrintf ("%*.s  %u", (unsigned) (5 - Length), " ",
             (UINT32) Op->Common.Value.Integer);
         AcpiDmCommaIfFieldMember (Op);
@@ -991,7 +991,7 @@ AcpiDmDisassembleOneOp (
 
         AcpiOsPrintf (")");
         AcpiDmCommaIfFieldMember (Op);
-        PRINTONECOMMENT (Op, AML_ENDNODECOMMENT);
+        PRINTONECOMMENT (Op, AML_ENDNODECOMMENT, NULL, 0);
         break;
 
     case AML_INT_CONNECTION_OP:
@@ -1025,8 +1025,8 @@ AcpiDmDisassembleOneOp (
 
         AcpiOsPrintf (")");
         AcpiDmCommaIfFieldMember (Op);
-        PRINTONECOMMENT (Op, AML_ENDNODECOMMENT);
-        PRINTONECOMMENT (Op, AML_INLINECOMMENT);
+        PRINTONECOMMENT (Op, AML_ENDNODECOMMENT, NULL, 0);
+        PRINTONECOMMENT (Op, AML_INLINECOMMENT, NULL, 0);
         AcpiOsPrintf ("\n");
 
         Op->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE; /* for now, ignore in AcpiDmAscendingOp */

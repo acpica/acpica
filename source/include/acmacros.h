@@ -497,18 +497,20 @@
  */
 #ifdef ACPI_ASL_COMPILER
 
-#define FILENAMEEXISTS(a,b)    CvFilenameExists(a,b);
-#define FILELABELNODE(a)       CvFileLabelNode(a)
-#define ADDTOFILETREE(a,b)     CvAddToFileTree (a,b);
-#define SETFILEPARENT(a,b)     CvSetFileParent (a,b);
-#define CAPTUREJUSTCOMMENTS(a) CvCaptureJustComments (a);
-#define CAPTURECOMMENTS(a)     CvCaptureComments (a);
-#define TRANSFERCOMMENTS(a)    CvTransferComments (a);
-#define CLOSEPAREN(a,b)        CvCloseParenWriteComment(a,b);
-#define CLOSEBRACE(a,b)        CvCloseBraceWriteComment(a,b);
-#define SWITCHFILES(a,b,c)     CvSwitchFiles(a,b,c)
-#define CLEAROPCOMMENTS(a)     CvClearOpComments(a)
-#define PRINTONECOMMENT(a,b)   CvPrintOneCommentType (a,b)
+#define FILENAMEEXISTS(a,b)      CvFilenameExists(a,b);
+#define FILELABELNODE(a)         CvFileLabelNode(a);
+#define ADDTOFILETREE(a,b)       CvAddToFileTree (a,b);
+#define SETFILEPARENT(a,b)       CvSetFileParent (a,b);
+#define CAPTUREJUSTCOMMENTS(a)   CvCaptureJustComments (a);
+#define CAPTURECOMMENTS(a)       CvCaptureComments (a);
+#define TRANSFERCOMMENTS(a)      CvTransferComments (a);
+#define CLOSEPAREN(a,b)          CvCloseParenWriteComment(a,b);
+#define CLOSEBRACE(a,b)          CvCloseBraceWriteComment(a,b);
+#define SWITCHFILES(a,b)         CvSwitchFiles(a,b);
+#define CLEAROPCOMMENTS(a)       CvClearOpComments(a);
+#define PRINTONECOMMENT(a,b,c,d) CvPrintOneCommentType (a,b,c,d);
+#define PRINTONECOMMENTLIST(a,b) CvPrintOneCommentList (a,b);
+#define FILEHASSWITCHED(a)       CvFileHasSwitched(a)
 
 #else
 
@@ -519,11 +521,13 @@
 #define CAPTUREJUSTCOMMENTS(a)
 #define CAPTURECOMMENTS(a)
 #define TRANSFERCOMMENTS(a)
-#define CLOSEPAREN(a,b)        AcpiOsPrintf (")");
-#define CLOSEBRACE(a,b)        AcpiOsPrintf ("}");
-#define SWITCHFILES(a,b,c)
+#define CLOSEPAREN(a,b)          AcpiOsPrintf (")");
+#define CLOSEBRACE(a,b)          AcpiOsPrintf ("}");
+#define SWITCHFILES(a,b)
 #define CLEAROPCOMMENTS(a)
-#define PRINTONECOMMENT(a,b)
+#define PRINTONECOMMENT(a,b,c,d)
+#define PRINTONECOMMENTLIST(a,b) 
+#define FILEHASSWITCHED(a)       0
 
 #endif
 

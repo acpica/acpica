@@ -120,6 +120,7 @@
 #include "acdispat.h"
 #include "amlcode.h"
 #include "acinterp.h"
+#include "acdisasm.h"
 #include "acapps.h"
 
 
@@ -128,10 +129,6 @@
 static BOOLEAN
 CvCommentExists (
     UINT8                   *ToCheck);
-
-static void
-CvPrintOneCommentList (
-    ACPI_COMMENT_LIST_NODE  *CommentList);
 
 
 /*******************************************************************************
@@ -146,9 +143,10 @@ CvPrintOneCommentList (
  *
  ******************************************************************************/
 
-static void
+void
 CvPrintOneCommentList (
-    ACPI_COMMENT_LIST_NODE  *CommentList)
+    ACPI_COMMENT_LIST_NODE  *CommentList,
+    UINT32                  Level)
 {
     ACPI_COMMENT_LIST_NODE  *Temp = CommentList;
     ACPI_COMMENT_LIST_NODE  *Prev;
@@ -159,6 +157,7 @@ CvPrintOneCommentList (
         Prev = Temp;
         if (Temp->Comment)
         {
+            AcpiDmIndent(Level);
             AcpiOsPrintf("%s\n", Temp->Comment);
             Temp->Comment = NULL;
         }
@@ -174,7 +173,9 @@ CvPrintOneCommentList (
  * FUNCTION:    CvPrintOneCommentType
  *
  * PARAMETERS:  Op
- *              CommentType 
+ *              CommentType
+ *              EndStr - String to print after printing the comment
+ *              Level  - indentation level for comment lists.
  *
  * RETURN:      None
  *
@@ -186,12 +187,14 @@ CvPrintOneCommentList (
 void
 CvPrintOneCommentType (
     ACPI_PARSE_OBJECT       *Op,
-    UINT8                   CommentType)
+    UINT8                   CommentType,
+    char*                   EndStr,
+    UINT32                  Level)
 {
     switch (CommentType)
     {
     case AML_REGCOMMENT:
-        CvPrintOneCommentList (Op->Common.CommentList);
+        CvPrintOneCommentList (Op->Common.CommentList, Level);
         Op->Common.CommentList = NULL;
         break;
 
@@ -228,17 +231,25 @@ CvPrintOneCommentType (
         break;
 
     case AML_ENDBLKCOMMENT:
-        CvPrintOneCommentList (Op->Common.EndBlkComment);
+        CvPrintOneCommentList (Op->Common.EndBlkComment, Level);
         Op->Common.EndBlkComment = NULL;
         break;
 
     case AML_INCLUDECOMMENT:
-        CvPrintOneCommentList (Op->Common.IncComment);
+        CvPrintOneCommentList (Op->Common.IncComment, Level);
         Op->Common.IncComment = NULL;
         break;
 
     default:
         break;
+    }
+
+    if (EndStr &&
+        ((CommentType == AML_REGCOMMENT) || (CommentType == AML_INLINECOMMENT) ||
+         (CommentType == AML_ENDNODECOMMENT) || (CommentType == AML_NAMECOMMENT) ||
+         (CommentType == AML_CLOSEBRACECOMMENT)))
+    {
+        AcpiOsPrintf ("%s", EndStr);
     }
 }
 

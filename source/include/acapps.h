@@ -435,9 +435,13 @@ AcpiDmBlockType (
 
 void
 CvSwitchFiles(
-    char                    *filename,
     UINT32                  level,
     ACPI_PARSE_OBJECT       *op);
+
+BOOLEAN
+CvFileHasSwitched(
+    ACPI_PARSE_OBJECT       *Op);
+
 
 void
 CvCloseParenWriteComment(
@@ -450,9 +454,16 @@ CvCloseBraceWriteComment(
     UINT32                  Level);
 
 void
+CvPrintOneCommentList (
+    ACPI_COMMENT_LIST_NODE  *CommentList,
+    UINT32                  Level);
+
+void
 CvPrintOneCommentType (
     ACPI_PARSE_OBJECT       *Op,
-    UINT8                   CommentType);
+    UINT8                   CommentType,
+    char*                   EndStr,
+    UINT32                  Level);
 
 
 #endif /* _ACAPPS */

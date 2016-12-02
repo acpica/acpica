@@ -218,6 +218,30 @@ CvCloseParenWriteComment(
     }
 } 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    CvFileHasSwitched
+ *
+ * PARAMETERS:  Op
+ *
+ * RETURN:      BOOLEAN
+ *
+ * DESCRIPTION: Determine whether if a file has switched.
+ *
+ ******************************************************************************/
+
+BOOLEAN
+CvFileHasSwitched(
+    ACPI_PARSE_OBJECT       *Op)
+{
+    if (Op->Common.PsFilename && AcpiGbl_CurrentFilename
+        && strcmp(Op->Common.PsFilename, AcpiGbl_CurrentFilename))
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
+
 
 /*******************************************************************************
  *
@@ -233,10 +257,10 @@ CvCloseParenWriteComment(
 
 void
 CvSwitchFiles(
-    char                    *Filename,
     UINT32                  Level,
     ACPI_PARSE_OBJECT       *Op)
 {
+    char                    *Filename = Op->Common.PsFilename;
     ACPI_FILE_NODE          *FNode;
     ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.IncComment;
 

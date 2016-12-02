@@ -323,7 +323,7 @@ AcpiDmCommaIfListMember (
 
     if (!Op->Common.Next)
     {
-        PRINTONECOMMENT (Op, AML_INLINECOMMENT);
+        PRINTONECOMMENT (Op, AML_INLINECOMMENT, NULL, 0);
         return (FALSE);
     }
 
@@ -333,7 +333,7 @@ AcpiDmCommaIfListMember (
 
         if (Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)
         {
-            PRINTONECOMMENT (Op, AML_INLINECOMMENT);
+            PRINTONECOMMENT (Op, AML_INLINECOMMENT, NULL, 0);
             return (FALSE);
         }
 
@@ -350,7 +350,7 @@ AcpiDmCommaIfListMember (
              */
             if (!Op->Common.Next->Common.Next)
             {
-                PRINTONECOMMENT (Op, AML_INLINECOMMENT);
+                PRINTONECOMMENT (Op, AML_INLINECOMMENT, NULL, 0);
                 return (FALSE);
             }
         }
@@ -358,7 +358,7 @@ AcpiDmCommaIfListMember (
         if ((Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST) &&
             (!(Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST)))
         {
-            PRINTONECOMMENT (Op, AML_INLINECOMMENT);
+            PRINTONECOMMENT (Op, AML_INLINECOMMENT, NULL, 0);
             return (FALSE);
         }
 
@@ -367,7 +367,7 @@ AcpiDmCommaIfListMember (
         if (!Op->Common.OperatorSymbol)
         {
             AcpiOsPrintf (", ");
-            PRINTONECOMMENT (Op, AML_INLINECOMMENT);
+            PRINTONECOMMENT (Op, AML_INLINECOMMENT, NULL, 0);
         }
 
         return (TRUE);
@@ -377,7 +377,7 @@ AcpiDmCommaIfListMember (
              (Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST))
     {
         AcpiOsPrintf (", ");
-        PRINTONECOMMENT (Op, AML_INLINECOMMENT);
+        PRINTONECOMMENT (Op, AML_INLINECOMMENT, NULL, 0);
 
         return (TRUE);
     }

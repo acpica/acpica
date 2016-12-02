@@ -798,14 +798,14 @@ AcpiDmCloseOperator (
     if (!AcpiGbl_CstyleDisassembly)
     {
         AcpiOsPrintf (")");
-        PRINTONECOMMENT (Op, AML_ENDNODECOMMENT);
+        PRINTONECOMMENT (Op, AML_ENDNODECOMMENT, NULL, 0);
         return;
     }
 
     if (Op->Common.DisasmFlags & ACPI_PARSEOP_LEGACY_ASL_ONLY)
     {
         AcpiOsPrintf (")");
-        PRINTONECOMMENT (Op, AML_ENDNODECOMMENT);
+        PRINTONECOMMENT (Op, AML_ENDNODECOMMENT, NULL, 0);
         return;
     }
 
@@ -833,7 +833,7 @@ AcpiDmCloseOperator (
 
         if (Op->Common.DisasmFlags & ACPI_PARSEOP_COMPOUND_ASSIGNMENT)
         {
-            PRINTONECOMMENT (Op, AML_ENDNODECOMMENT);
+            PRINTONECOMMENT (Op, AML_ENDNODECOMMENT, NULL, 0);
             return;
         }
 
@@ -853,7 +853,7 @@ AcpiDmCloseOperator (
         {
             AcpiOsPrintf (")");
         }
-        PRINTONECOMMENT (Op, AML_ENDNODECOMMENT);
+        PRINTONECOMMENT (Op, AML_ENDNODECOMMENT, NULL, 0);
         return;
 
     /* No need for parens for these */
@@ -863,7 +863,7 @@ AcpiDmCloseOperator (
     case AML_LNOT_OP:
     case AML_BIT_NOT_OP:
     case AML_STORE_OP:
-        PRINTONECOMMENT (Op, AML_ENDNODECOMMENT);
+        PRINTONECOMMENT (Op, AML_ENDNODECOMMENT, NULL, 0);
         return;
 
     default:
@@ -873,7 +873,7 @@ AcpiDmCloseOperator (
     }
 
     AcpiOsPrintf (")");
-    PRINTONECOMMENT (Op, AML_ENDNODECOMMENT);
+    PRINTONECOMMENT (Op, AML_ENDNODECOMMENT, NULL, 0);
 
     return;
 }
