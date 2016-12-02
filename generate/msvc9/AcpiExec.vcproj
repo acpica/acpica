@@ -735,6 +735,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\os_specific\service_layers\osgendbg.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\os_specific\service_layers\oswindir.c"
 					>
 				</File>
