@@ -329,6 +329,17 @@ AdWriteTable (
 /*
  * cvcompiler
  */
+void
+CvProcessComment (
+    ASL_COMMENT_STATE       CurrentState,
+    char                    *StringBuffer,
+    int                     c1);
+
+void
+CvProcessCommentType2 (
+    ASL_COMMENT_STATE       CurrentState,
+    char                    *StringBuffer);
+
 UINT32
 CvCalculateCommentLengths(
    ACPI_PARSE_OBJECT        *Op);

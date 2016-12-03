@@ -139,7 +139,6 @@ UtAttachNameseg (
     char                    *Name);
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    UtIsBigEndianMachine

@@ -115,8 +115,209 @@
 
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
+#include "accommon.h"
 #include "amlcode.h"
 #include "acapps.h"
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CvProcessComment
+ *
+ * PARAMETERS:  Op
+ *
+ * RETURN:      TotalCommentLength - Length of all comments within this node.
+ *
+ * DESCRIPTION: calculate the length that the each comment takes up within Op.
+ *              Comments look like the follwoing: [0xA9 OptionBtye comment 0x00]
+ *              therefore, we add 1 + 1 + strlen (comment) + 1 to get the actual
+ *              length of this comment.
+ *
+ ******************************************************************************/
+
+void
+CvProcessComment (
+    ASL_COMMENT_STATE       CurrentState,
+    char                    *StringBuffer,
+    int                     c1)
+{
+    UINT32                  i;
+    char                    *LineToken;
+    char                    *FinalLineToken;
+    BOOLEAN                 CharStart;
+    char                    *CommentString;
+    char                    *FinalCommentString;
+
+
+    if (Gbl_CaptureComments && CurrentState.CaptureComments)
+    {
+        *StringBuffer = c1;
+        ++StringBuffer;
+        *StringBuffer = 0;
+        CvDbgPrint ("Multi-line comment\n");
+        CommentString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
+        strcpy (CommentString, MsgBuffer);
+
+        CvDbgPrint ("CommentString: %s\n", CommentString);
+
+        /*
+         * Determine whether if this comment spans multiple lines.
+         * If so, break apart the comment by line so that it can be
+         * properly indented.
+         */
+        if (strchr (CommentString, '\n') != NULL)
+        {
+            /*
+             * Get the first token out. The for loop pads subsequent lines
+             * for comments similar to the style of this comment.
+             */
+            LineToken = strtok (CommentString, "\n");
+            FinalLineToken = UtStringCacheCalloc (strlen (LineToken) + 1);
+            strcpy (FinalLineToken, LineToken);
+
+            /* Get rid of any carriage returns */
+
+            if (FinalLineToken[strlen (FinalLineToken) - 1] == 0x0D)
+            {
+                FinalLineToken[strlen(FinalLineToken)-1] = 0;
+            }
+            CvAddToCommentList (FinalLineToken);
+            LineToken = strtok (NULL, "\n");
+            while (LineToken != NULL)
+            {
+                /*
+                 * It is assumed that each line has some sort of indentation.
+                 * This means that we need to find the first character that is not
+                 * a white space within each line.
+                 */
+                CharStart = FALSE;
+                for (i = 0; i < strlen (LineToken) + 1 && !CharStart; i++)
+                {
+                    if (LineToken[i] != ' ' && LineToken[i] != '\t')
+                    {
+                        CharStart = TRUE;
+                        LineToken += i-1;
+                        LineToken [0] = ' '; /* Pad for Formatting */
+                    }
+                }
+                FinalLineToken = UtStringCacheCalloc (strlen (LineToken) + 1);
+                strcat (FinalLineToken, LineToken);
+
+                /* Get rid of any carriage returns */
+
+                if (FinalLineToken[strlen (FinalLineToken) - 1] == 0x0D)
+                {
+                    FinalLineToken[strlen(FinalLineToken)-1] = 0;
+                }
+                CvAddToCommentList (FinalLineToken);
+                LineToken = strtok (NULL,"\n");
+            }
+        }
+
+        /*
+         * If this only spans a single line, check to see whether if this comment
+         * appears on the same line as a line of code. If does, retain it's
+         * position for stylistic reasons. If it doesn't, add it to the comment
+         * List so that it can be associated with the next node that's created.
+         */
+        else
+        {
+           /*
+            * if this is not a regular comment, pad with extra spaces that appeared
+            * in the original source input to retain the original spacing.
+            */
+            FinalCommentString = UtStringCacheCalloc (strlen (CommentString) + CurrentState.SpacesBefore + 1);
+            for (i=0; (CurrentState.CommentType != ASL_REGCOMMENT) &&
+                (i < CurrentState.SpacesBefore); ++i)
+            {
+                 FinalCommentString[i] = ' ';
+            }
+            strcat (FinalCommentString, CommentString);
+            CvPlaceComment (CurrentState.CommentType, FinalCommentString);
+        }
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CvProcessCommentType2
+ *
+ * PARAMETERS:  Op
+ *
+ * RETURN:      TotalCommentLength - Length of all comments within this node.
+ *
+ * DESCRIPTION: calculate the length that the each comment takes up within Op.
+ *              Comments look like the follwoing: [0xA9 OptionBtye comment 0x00]
+ *              therefore, we add 1 + 1 + strlen (comment) + 1 to get the actual
+ *              length of this comment.
+ *
+ ******************************************************************************/
+
+void
+CvProcessCommentType2 (
+    ASL_COMMENT_STATE       CurrentState,
+    char                    *StringBuffer)
+{
+    UINT32                  i;
+    char                    *CommentString;
+    char                    *FinalCommentString;
+
+
+    if (Gbl_CaptureComments && CurrentState.CaptureComments)
+    {
+        *StringBuffer = 0; /* null terminate */
+        CvDbgPrint("Single-line comment\n");
+        CommentString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
+        strcpy (CommentString, MsgBuffer);
+
+        /* If this comment lies on the same line as the latest parse node,
+         * assign it to that node's CommentAfter field. Saving in this field
+         * will allow us to support comments that come after code on the same
+         * line as the code itself. For example,
+         * Name(A,"") //comment
+         *
+         * will be retained rather than transformed into
+         *
+         * Name(A,"")
+         * //comment
+         *
+         * For this case, we only need to add one comment since
+         *
+         * Name(A,"") //comment1 //comment2 ... more comments here.
+         *
+         * would be lexically analyzed as a single comment.
+         *
+         */
+        /* Create a new string with the approperiate spaces. Since we need
+         * to account for the proper spacing, the actual comment,
+         * extra 2 spaces so that this comment can be converted to the "/ *"
+         * style and the null terminator, the string would look something like
+         *
+         * [ (spaces) (comment)  ( * /) ('\0') ]
+         *
+         */
+        FinalCommentString = UtStringCacheCalloc (CurrentState.SpacesBefore + strlen (CommentString) + 3 + 1);
+        for (i=0; (CurrentState.CommentType!=1) && (i<CurrentState.SpacesBefore); ++i)
+        {
+            FinalCommentString[i] = ' ';
+        }
+        strcat(FinalCommentString, CommentString);
+
+        /* convert to a "/ *" style comment  */
+
+        strcat (FinalCommentString, " */");
+        FinalCommentString [CurrentState.SpacesBefore + strlen (CommentString) + 3] = 0;
+
+        /* get rid of the carriage return */
+
+        if (FinalCommentString[strlen (FinalCommentString) - 1] == 0x0D)
+        {
+            FinalCommentString[strlen(FinalCommentString)-1] = 0;
+        }
+        CvPlaceComment(CurrentState.CommentType, FinalCommentString);
+    }
+}
 
 
 /*******************************************************************************

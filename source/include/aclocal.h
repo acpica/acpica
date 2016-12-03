@@ -1144,6 +1144,15 @@ typedef union acpi_parse_object
 
 } ACPI_PARSE_OBJECT;
 
+typedef struct asl_comment_state
+{
+    UINT8                   CommentType;
+    UINT32                  SpacesBefore;
+    ACPI_PARSE_OBJECT       *Latest_Parse_Node;
+    ACPI_PARSE_OBJECT       *ParsingParenBraceNode;
+    BOOLEAN                 CaptureComments;
+} ASL_COMMENT_STATE;
+
 
 /*
  * Parse state - one state per parser invocation and each control
