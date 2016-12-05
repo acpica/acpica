@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: dttable.c - handling for specific ACPI tables
+ * Module Name: osgendbg - Generic debugger command singalling
  *
  *****************************************************************************/
 
@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2015, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -113,198 +113,326 @@
  *
  *****************************************************************************/
 
-/* Compile routines for the basic ACPI tables */
-
-#include "aslcompiler.h"
-#include "dtcompiler.h"
-
-#define _COMPONENT          DT_COMPILER
-        ACPI_MODULE_NAME    ("dttable")
+#include "acpi.h"
+#include "accommon.h"
+#include "acdebug.h"
 
 
-/******************************************************************************
- *
- * FUNCTION:    DtCompileRsdp
- *
- * PARAMETERS:  PFieldList          - Current field list pointer
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Compile RSDP.
- *
- *****************************************************************************/
-
-ACPI_STATUS
-DtCompileRsdp (
-    DT_FIELD                **PFieldList)
-{
-    DT_SUBTABLE             *Subtable;
-    ACPI_TABLE_RSDP         *Rsdp;
-    ACPI_RSDP_EXTENSION     *RsdpExtension;
-    ACPI_STATUS             Status;
+#define _COMPONENT          ACPI_CA_DEBUGGER
+        ACPI_MODULE_NAME    ("osgendbg")
 
 
-    /* Compile the "common" RSDP (ACPI 1.0) */
+/* Local prototypes */
 
-    Status = DtCompileTable (PFieldList, AcpiDmTableInfoRsdp1,
-        &Gbl_RootTable, TRUE);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
+static void
+AcpiDbRunRemoteDebugger (
+    char                    *BatchBuffer);
 
-    Rsdp = ACPI_CAST_PTR (ACPI_TABLE_RSDP, Gbl_RootTable->Buffer);
-    DtSetTableChecksum (&Rsdp->Checksum);
 
-    if (Rsdp->Revision > 0)
-    {
-        /* Compile the "extended" part of the RSDP as a subtable */
-
-        Status = DtCompileTable (PFieldList, AcpiDmTableInfoRsdp2,
-            &Subtable, TRUE);
-        if (ACPI_FAILURE (Status))
-        {
-            return (Status);
-        }
-
-        DtInsertSubtable (Gbl_RootTable, Subtable);
-
-        /* Set length and extended checksum for entire RSDP */
-
-        RsdpExtension = ACPI_CAST_PTR (ACPI_RSDP_EXTENSION, Subtable->Buffer);
-        RsdpExtension->Length = Gbl_RootTable->Length + Subtable->Length;
-        DtSetTableChecksum (&RsdpExtension->ExtendedChecksum);
-    }
-
-    return (AE_OK);
-}
-
+static ACPI_MUTEX           AcpiGbl_DbCommandReady;
+static ACPI_MUTEX           AcpiGbl_DbCommandComplete;
+static BOOLEAN              AcpiGbl_DbCommandSignalsInitialized = FALSE;
 
 /******************************************************************************
  *
- * FUNCTION:    DtCompileFadt
+ * FUNCTION:    AcpiDbRunRemoteDebugger
  *
- * PARAMETERS:  List                - Current field list pointer
+ * PARAMETERS:  BatchBuffer         - Buffer containing commands running in
+ *                                    the batch mode
  *
- * RETURN:      Status
+ * RETURN:      None
  *
- * DESCRIPTION: Compile FADT.
+ * DESCRIPTION: Run multi-threading debugger remotely
  *
  *****************************************************************************/
 
-ACPI_STATUS
-DtCompileFadt (
-    void                    **List)
+static void
+AcpiDbRunRemoteDebugger (
+    char                    *BatchBuffer)
 {
     ACPI_STATUS             Status;
-    DT_SUBTABLE             *Subtable;
-    DT_SUBTABLE             *ParentTable;
-    DT_FIELD                **PFieldList = (DT_FIELD **) List;
-    ACPI_TABLE_HEADER       *Table;
-    UINT8                   Revision;
+    char                    *Ptr = BatchBuffer;
+    char                    *Cmd = Ptr;
 
 
-    Status = DtCompileTable (PFieldList, AcpiDmTableInfoFadt1,
-        &Subtable, TRUE);
-    if (ACPI_FAILURE (Status))
+    while (!AcpiGbl_DbTerminateLoop)
     {
-        return (Status);
-    }
-
-    ParentTable = DtPeekSubtable ();
-    DtInsertSubtable (ParentTable, Subtable);
-
-    Table = ACPI_CAST_PTR (ACPI_TABLE_HEADER, ParentTable->Buffer);
-    Revision = Table->Revision;
-
-    if (Revision == 2)
-    {
-        Status = DtCompileTable (PFieldList, AcpiDmTableInfoFadt2,
-            &Subtable, TRUE);
-        if (ACPI_FAILURE (Status))
+        if (BatchBuffer)
         {
-            return (Status);
-        }
-
-        DtInsertSubtable (ParentTable, Subtable);
-    }
-    else if (Revision >= 2)
-    {
-        Status = DtCompileTable (PFieldList, AcpiDmTableInfoFadt3,
-            &Subtable, TRUE);
-        if (ACPI_FAILURE (Status))
-        {
-            return (Status);
-        }
-
-        DtInsertSubtable (ParentTable, Subtable);
-
-        if (Revision >= 5)
-        {
-            Status = DtCompileTable (PFieldList, AcpiDmTableInfoFadt5,
-                &Subtable, TRUE);
-            if (ACPI_FAILURE (Status))
+            if (*Ptr)
             {
-                return (Status);
+                while (*Ptr)
+                {
+                    if (*Ptr == ',')
+                    {
+                        /* Convert commas to spaces */
+                        *Ptr = ' ';
+                    }
+                    else if (*Ptr == ';')
+                    {
+                        *Ptr = '\0';
+                        continue;
+                    }
+
+                    Ptr++;
+                }
+
+                strcpy (AcpiGbl_DbLineBuf, Cmd);
+                Ptr++;
+                Cmd = Ptr;
+            }
+            else
+            {
+                return;
+            }
+        }
+        else
+        {
+            /* Force output to console until a command is entered */
+
+            AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
+
+            /* Different prompt if method is executing */
+
+            if (!AcpiGbl_MethodExecuting)
+            {
+                AcpiOsPrintf ("%1c ", ACPI_DEBUGGER_COMMAND_PROMPT);
+            }
+            else
+            {
+                AcpiOsPrintf ("%1c ", ACPI_DEBUGGER_EXECUTE_PROMPT);
             }
 
-            DtInsertSubtable (ParentTable, Subtable);
-        }
+            /* Get the user input line */
 
-        if (Revision >= 6)
-        {
-            Status = DtCompileTable (PFieldList, AcpiDmTableInfoFadt6,
-                &Subtable, TRUE);
+            Status = AcpiOsGetLine (AcpiGbl_DbLineBuf,
+                ACPI_DB_LINE_BUFFER_SIZE, NULL);
             if (ACPI_FAILURE (Status))
             {
-                return (Status);
+                return;
             }
+        }
 
-            DtInsertSubtable (ParentTable, Subtable);
+        /*
+         * Signal the debug thread that we have a command to execute,
+         * and wait for the command to complete.
+         */
+        AcpiOsReleaseMutex (AcpiGbl_DbCommandReady);
+
+        Status = AcpiOsAcquireMutex (AcpiGbl_DbCommandComplete,
+            ACPI_WAIT_FOREVER);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
         }
     }
+}
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsWaitCommandReady
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Negotiate with the debugger foreground thread (the user
+ *              thread) to wait the readiness of a command.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsWaitCommandReady (
+    void)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    if (AcpiGbl_DebuggerConfiguration == DEBUGGER_MULTI_THREADED)
+    {
+        Status = AE_TIME;
+
+        while (Status == AE_TIME)
+        {
+            if (AcpiGbl_DbTerminateLoop)
+            {
+                Status = AE_CTRL_TERMINATE;
+            }
+            else
+            {
+                Status = AcpiOsAcquireMutex (AcpiGbl_DbCommandReady, 1000);
+            }
+        }
+    }
+    else
+    {
+        /* Force output to console until a command is entered */
+
+        AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
+
+        /* Different prompt if method is executing */
+
+        if (!AcpiGbl_MethodExecuting)
+        {
+            AcpiOsPrintf ("%1c ", ACPI_DEBUGGER_COMMAND_PROMPT);
+        }
+        else
+        {
+            AcpiOsPrintf ("%1c ", ACPI_DEBUGGER_EXECUTE_PROMPT);
+        }
+
+        /* Get the user input line */
+
+        Status = AcpiOsGetLine (AcpiGbl_DbLineBuf,
+            ACPI_DB_LINE_BUFFER_SIZE, NULL);
+    }
+
+    if (ACPI_FAILURE (Status) && Status != AE_CTRL_TERMINATE)
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status,
+            "While parsing/handling command line"));
+    }
+    return (Status);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsNotifyCommandComplete
+ *
+ * PARAMETERS:  void
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Negotiate with the debugger foreground thread (the user
+ *              thread) to notify the completion of a command.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsNotifyCommandComplete (
+    void)
+{
+
+    if (AcpiGbl_DebuggerConfiguration == DEBUGGER_MULTI_THREADED)
+    {
+        AcpiOsReleaseMutex (AcpiGbl_DbCommandComplete);
+    }
     return (AE_OK);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    DtCompileFacs
+ * FUNCTION:    AcpiOsInitializeDebugger
  *
- * PARAMETERS:  PFieldList          - Current field list pointer
+ * PARAMETERS:  None
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Compile FACS.
+ * DESCRIPTION: Initialize OSPM specific part of the debugger
  *
  *****************************************************************************/
 
 ACPI_STATUS
-DtCompileFacs (
-    DT_FIELD                **PFieldList)
+AcpiOsInitializeDebugger (
+    void)
 {
-    DT_SUBTABLE             *Subtable;
-    UINT8                   *ReservedBuffer;
     ACPI_STATUS             Status;
-    UINT32                  ReservedSize;
 
 
-    Status = DtCompileTable (PFieldList, AcpiDmTableInfoFacs,
-        &Gbl_RootTable, TRUE);
+    /* Create command signals */
+
+    Status = AcpiOsCreateMutex (&AcpiGbl_DbCommandReady);
     if (ACPI_FAILURE (Status))
     {
         return (Status);
     }
+    Status = AcpiOsCreateMutex (&AcpiGbl_DbCommandComplete);
+    if (ACPI_FAILURE (Status))
+    {
+        goto ErrorReady;
+    }
 
-    /* Large FACS reserved area at the end of the table */
+    /* Initialize the states of the command signals */
 
-    ReservedSize = (UINT32) sizeof (((ACPI_TABLE_FACS *) NULL)->Reserved1);
-    ReservedBuffer = UtLocalCalloc (ReservedSize);
+    Status = AcpiOsAcquireMutex (AcpiGbl_DbCommandComplete,
+        ACPI_WAIT_FOREVER);
+    if (ACPI_FAILURE (Status))
+    {
+        goto ErrorComplete;
+    }
+    Status = AcpiOsAcquireMutex (AcpiGbl_DbCommandReady,
+        ACPI_WAIT_FOREVER);
+    if (ACPI_FAILURE (Status))
+    {
+        goto ErrorComplete;
+    }
 
-    DtCreateSubtable (ReservedBuffer, ReservedSize, &Subtable);
+    AcpiGbl_DbCommandSignalsInitialized = TRUE;
+    return (Status);
 
-    ACPI_FREE (ReservedBuffer);
-    DtInsertSubtable (Gbl_RootTable, Subtable);
-    return (AE_OK);
+ErrorComplete:
+    AcpiOsDeleteMutex (AcpiGbl_DbCommandComplete);
+ErrorReady:
+    AcpiOsDeleteMutex (AcpiGbl_DbCommandReady);
+    return (Status);
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsTerminateDebugger
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Terminate signals used by the multi-threading debugger
+ *
+ *****************************************************************************/
+
+void
+AcpiOsTerminateDebugger (
+    void)
+{
+
+    if (AcpiGbl_DbCommandSignalsInitialized)
+    {
+        AcpiOsDeleteMutex (AcpiGbl_DbCommandReady);
+        AcpiOsDeleteMutex (AcpiGbl_DbCommandComplete);
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiRunDebugger
+ *
+ * PARAMETERS:  BatchBuffer         - Buffer containing commands running in
+ *                                    the batch mode
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Run a local/remote debugger
+ *
+ *****************************************************************************/
+
+void
+AcpiRunDebugger (
+    char                    *BatchBuffer)
+{
+    /* Check for single or multithreaded debug */
+
+    if (AcpiGbl_DebuggerConfiguration & DEBUGGER_MULTI_THREADED)
+    {
+        AcpiDbRunRemoteDebugger (BatchBuffer);
+    }
+    else
+    {
+        AcpiDbUserCommands ();
+    }
+}
+
+ACPI_EXPORT_SYMBOL (AcpiRunDebugger)
