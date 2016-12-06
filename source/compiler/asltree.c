@@ -116,6 +116,7 @@
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
 #include "acapps.h"
+#include "acconvert.h"
 #include <time.h>
 
 #define _COMPONENT          ACPI_COMPILER

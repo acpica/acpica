@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: psutils - Parser miscellaneous utilities (Parser only)
+ * Module Name: acapps - common include for ACPI applications/tools
  *
  *****************************************************************************/
 
@@ -113,254 +113,197 @@
  *
  *****************************************************************************/
 
-#include "acpi.h"
-#include "accommon.h"
-#include "acparser.h"
-#include "amlcode.h"
-#include "acconvert.h"
+#ifndef _ACCONVERT
+#define _ACCONVERT
 
-#define _COMPONENT          ACPI_PARSER
-        ACPI_MODULE_NAME    ("psutils")
+/* Definitions for comment state */
 
+#define ASL_REGCOMMENT        1
+#define ASL_INLINECOMMENT     2
+#define ASL_OPENPARENCOMMENT  3
+#define ASL_CLOSEPARENCOMMENT 4
+#define ASL_CLOSEBRACECOMMENT 5
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiPsCreateScopeOp
- *
- * PARAMETERS:  None
- *
- * RETURN:      A new Scope object, null on failure
- *
- * DESCRIPTION: Create a Scope and associated namepath op with the root name
- *
- ******************************************************************************/
+/* Definitions for comment table entry */
 
-ACPI_PARSE_OBJECT *
-AcpiPsCreateScopeOp (
-    UINT8                   *Aml)
-{
-    ACPI_PARSE_OBJECT       *ScopeOp;
+#define ASL_NEWLINE    '\n'
+#define ASL_OpenParen  '('
+#define ASL_CLOSEPAREN ')'
+#define ASL_COMMA      ','
+#define ASL_OPENBRACE  '{'
+#define ASL_CLOSEBRACE '}'
+#define ASL_WHITESPACE ' '
 
 
-    ScopeOp = AcpiPsAllocOp (AML_SCOPE_OP, Aml);
-    if (!ScopeOp)
-    {
-        return (NULL);
-    }
+/* Definitions for comment print function*/
 
-    ScopeOp->Named.Name = ACPI_ROOT_NAME;
-    return (ScopeOp);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiPsInitOp
- *
- * PARAMETERS:  Op              - A newly allocated Op object
- *              Opcode          - Opcode to store in the Op
- *
- * RETURN:      None
- *
- * DESCRIPTION: Initialize a parse (Op) object
- *
- ******************************************************************************/
-
-void
-AcpiPsInitOp (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT16                  Opcode)
-{
-    ACPI_FUNCTION_ENTRY ();
-
-
-    Op->Common.DescriptorType = ACPI_DESC_TYPE_PARSER;
-    Op->Common.AmlOpcode = Opcode;
-
-    ACPI_DISASM_ONLY_MEMBERS (strncpy (Op->Common.AmlOpName,
-        (AcpiPsGetOpcodeInfo (Opcode))->Name,
-        sizeof (Op->Common.AmlOpName)));
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiPsAllocOp
- *
- * PARAMETERS:  Opcode          - Opcode that will be stored in the new Op
- *              Aml             - Address of the opcode
- *
- * RETURN:      Pointer to the new Op, null on failure
- *
- * DESCRIPTION: Allocate an acpi_op, choose op type (and thus size) based on
- *              opcode. A cache of opcodes is available for the pure
- *              GENERIC_OP, since this is by far the most commonly used.
- *
- ******************************************************************************/
-
-ACPI_PARSE_OBJECT*
-AcpiPsAllocOp (
-    UINT16                  Opcode,
-    UINT8                   *Aml)
-{
-    ACPI_PARSE_OBJECT       *Op;
-    const ACPI_OPCODE_INFO  *OpInfo;
-    UINT8                   Flags = ACPI_PARSEOP_GENERIC;
-
-
-    ACPI_FUNCTION_ENTRY ();
-    
-
-    OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-
-    /* Determine type of ParseOp required */
-
-    if (OpInfo->Flags & AML_DEFER)
-    {
-        Flags = ACPI_PARSEOP_DEFERRED;
-    }
-    else if (OpInfo->Flags & AML_NAMED)
-    {
-        Flags = ACPI_PARSEOP_NAMED_OBJECT;
-    }
-    else if (Opcode == AML_INT_BYTELIST_OP)
-    {
-        Flags = ACPI_PARSEOP_BYTELIST;
-    }
-
-    /* Allocate the minimum required size object */
-
-    if (Flags == ACPI_PARSEOP_GENERIC)
-    {
-        /* The generic op (default) is by far the most common (16 to 1) */
-
-        Op = AcpiOsAcquireObject (AcpiGbl_PsNodeCache);
-    }
-    else
-    {
-        /* Extended parseop */
-
-        Op = AcpiOsAcquireObject (AcpiGbl_PsNodeExtCache);
-    }
-
-    /* Initialize the Op */
-
-    if (Op)
-    {
-        AcpiPsInitOp (Op, Opcode);
-        Op->Common.Aml = Aml;
-        Op->Common.Flags = Flags;
-        CLEAROPCOMMENTS(Op);
-
-        if (Opcode == AML_SCOPE_OP)
-        {
-            AcpiGbl_CurrentScope = Op;  
-        }
-    }
-
-    if (Gbl_CaptureComments)
-    {
-        TRANSFERCOMMENTS (Op);
-    }
-
-    return (Op);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiPsFreeOp
- *
- * PARAMETERS:  Op              - Op to be freed
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Free an Op object. Either put it on the GENERIC_OP cache list
- *              or actually free it.
- *
- ******************************************************************************/
-
-void
-AcpiPsFreeOp (
-    ACPI_PARSE_OBJECT       *Op)
-{
-    ACPI_FUNCTION_NAME (PsFreeOp);
-
-
-    CLEAROPCOMMENTS(Op);
-    if (Op->Common.AmlOpcode == AML_INT_RETURN_VALUE_OP)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
-            "Free retval op: %p\n", Op));
-    }
-
-    if (Op->Common.Flags & ACPI_PARSEOP_GENERIC)
-    {
-        (void) AcpiOsReleaseObject (AcpiGbl_PsNodeCache, Op);
-    }
-    else
-    {
-        (void) AcpiOsReleaseObject (AcpiGbl_PsNodeExtCache, Op);
-    }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    Utility functions
- *
- * DESCRIPTION: Low level character and object functions
- *
- ******************************************************************************/
+#define AML_REGCOMMENT        1
+#define AML_INLINECOMMENT     2
+#define AML_ENDNODECOMMENT    3
+#define AML_NAMECOMMENT       4
+#define AML_CLOSEBRACECOMMENT 5
+#define AML_ENDBLKCOMMENT     6
+#define AML_INCLUDECOMMENT    7
 
 
 /*
- * Is "c" a namestring lead character?
+ * cvcompiler
  */
-BOOLEAN
-AcpiPsIsLeadingChar (
-    UINT32                  c)
-{
-    return ((BOOLEAN) (c == '_' || (c >= 'A' && c <= 'Z')));
-}
+void
+CvProcessComment (
+    ASL_COMMENT_STATE       CurrentState,
+    char                    *StringBuffer,
+    int                     c1);
 
+void
+CvProcessCommentType2 (
+    ASL_COMMENT_STATE       CurrentState,
+    char                    *StringBuffer);
 
-/*
- * Get op's name (4-byte name segment) or 0 if unnamed
- */
 UINT32
-AcpiPsGetName (
-    ACPI_PARSE_OBJECT       *Op)
-{
+CvCalculateCommentLengths(
+   ACPI_PARSE_OBJECT        *Op);
 
-    /* The "generic" object has no name associated with it */
+char*
+CvChangeFileExt (
+   char*                    Filename,
+   char*                    FileExt);
 
-    if (Op->Common.Flags & ACPI_PARSEOP_GENERIC)
-    {
-        return (0);
-    }
+void
+CvProcessCommentState (
+    char                    input);
 
-    /* Only the "Extended" parse objects have a name */
+char*
+CvAppendInlineComment (
+    char                    *InlineComment,
+    char                    *ToAdd);
 
-    return (Op->Named.Name);
-}
+void
+CvAddToCommentList (
+    char*                   ToAdd);
+
+void
+CvPlaceComment (
+    UINT8                   Type,
+    char                    *CommentString);
+
+UINT32
+CvParseOpBlockType (
+    ACPI_PARSE_OBJECT       *Op);
+
+ACPI_COMMENT_LIST_NODE*
+CvCommentNodeCalloc (
+    void);
+
+void
+CgWriteAmlDefBlockComment (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+CgWriteOneAmlComment (
+    ACPI_PARSE_OBJECT       *Op,
+    char*                   CommentToPrint,
+    UINT8                   InputOption);
+
+void
+CgWriteAmlComment (
+    ACPI_PARSE_OBJECT       *Op);
 
 
 /*
- * Set op's name
+ * cvparser
  */
 void
-AcpiPsSetName (
+CvInitFileTree (
+    ACPI_TABLE_HEADER       *Table,
+    UINT8                   *AmlStart,
+    UINT32                  AmlLength);
+
+void
+CvClearOpComments (
+    ACPI_PARSE_OBJECT       *Op);
+
+ACPI_FILE_NODE*
+CvFilenameExists (
+    char                    *Filename,
+    ACPI_FILE_NODE           *Head);
+
+ACPI_FILE_NODE*
+CvFileAddressLookup (
+    char                    *Address,
+    ACPI_FILE_NODE          *Head);
+
+void
+CvFileLabelNode (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+CvAddToFileTree (
+    char                    *Filename,
+    char                    *PreviousFilename);
+
+void
+CvSetFileParent (
+    char                    *ChildFile,
+    char                    *ParentFile);
+
+void
+CvCaptureListComments (
+    ACPI_PARSE_STATE        *ParserState,
+    ACPI_COMMENT_LIST_NODE  *ListHead,
+    ACPI_COMMENT_LIST_NODE  *ListTail);
+
+void
+CvCaptureJustComments (
+    ACPI_PARSE_STATE        *ParserState);
+
+void
+CvCaptureComments (
+    ACPI_WALK_STATE         *WalkState);
+
+void
+CvTransferComments (
+    ACPI_PARSE_OBJECT       *Op);
+
+/*
+ * cvdisasm
+ */
+
+UINT32
+AcpiDmBlockType (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+CvSwitchFiles (
+    UINT32                  level,
+    ACPI_PARSE_OBJECT       *op);
+
+BOOLEAN
+CvFileHasSwitched (
+    ACPI_PARSE_OBJECT       *Op);
+
+
+void
+CvCloseParenWriteComment (
     ACPI_PARSE_OBJECT       *Op,
-    UINT32                  name)
-{
+    UINT32                  Level);
 
-    /* The "generic" object has no name associated with it */
+void
+CvCloseBraceWriteComment (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level);
 
-    if (Op->Common.Flags & ACPI_PARSEOP_GENERIC)
-    {
-        return;
-    }
+void
+CvPrintOneCommentList (
+    ACPI_COMMENT_LIST_NODE  *CommentList,
+    UINT32                  Level);
 
-    Op->Named.Name = name;
-}
+void
+CvPrintOneCommentType (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT8                   CommentType,
+    char*                   EndStr,
+    UINT32                  Level);
+
+
+#endif /* _ACCONVERT */

@@ -120,7 +120,7 @@
 #include "acinterp.h"
 #include "acnamesp.h"
 #include "acdebug.h"
-#include "acapps.h"
+#include "acconvert.h"
 
 
 #define _COMPONENT          ACPI_CA_DEBUGGER

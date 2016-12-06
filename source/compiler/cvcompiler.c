@@ -118,6 +118,7 @@
 #include "accommon.h"
 #include "amlcode.h"
 #include "acapps.h"
+#include "acconvert.h"
 
 
 /*******************************************************************************

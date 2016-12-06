@@ -119,6 +119,7 @@
 #include "actables.h"
 #include "acparser.h"
 #include "acapps.h"
+#include "acconvert.h"
 #include "acmacros.h"
 
 

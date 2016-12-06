@@ -127,7 +127,7 @@
 #include "acparser.h"
 #include "acdispat.h"
 #include "amlcode.h"
-#include "acapps.h"
+#include "acconvert.h"
 
 #define _COMPONENT          ACPI_PARSER
         ACPI_MODULE_NAME    ("psloop")
@@ -605,7 +605,6 @@ AcpiPsParseLoop (
          * any args yet
          */
         WalkState->ArgCount = 0;
-        //CvDbgPrint("Args capture\n");
         if (Op->Common.AmlOpcode != AML_BYTE_OP  && Op->Common.AmlOpcode != AML_WORD_OP &&
             Op->Common.AmlOpcode != AML_DWORD_OP && Op->Common.AmlOpcode != AML_QWORD_OP)
         {

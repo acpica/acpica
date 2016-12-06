@@ -117,7 +117,7 @@
 #include "accommon.h"
 #include "amlcode.h"
 #include "acdisasm.h"
-#include "acapps.h"
+#include "acconvert.h"
 
 #ifdef ACPI_ASL_COMPILER
 #include <acnamesp.h>

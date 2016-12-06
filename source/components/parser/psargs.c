@@ -119,7 +119,7 @@
 #include "amlcode.h"
 #include "acnamesp.h"
 #include "acdispat.h"
-#include "acapps.h"
+#include "acconvert.h"
 
 #define _COMPONENT          ACPI_PARSER
         ACPI_MODULE_NAME    ("psargs")
