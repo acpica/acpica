@@ -146,6 +146,7 @@
 #define AML_INCLUDECOMMENT    7
 
 
+#ifdef ACPI_ASL_COMPILER
 /*
  * cvcompiler
  */
@@ -268,11 +269,6 @@ CvTransferComments (
 /*
  * cvdisasm
  */
-
-UINT32
-AcpiDmBlockType (
-    ACPI_PARSE_OBJECT       *Op);
-
 void
 CvSwitchFiles (
     UINT32                  level,
@@ -305,5 +301,6 @@ CvPrintOneCommentType (
     char*                   EndStr,
     UINT32                  Level);
 
+#endif
 
 #endif /* _ACCONVERT */

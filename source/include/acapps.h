@@ -181,6 +181,7 @@
 #define FILE_SUFFIX_DISASSEMBLY     "dsl"
 #define FILE_SUFFIX_BINARY_TABLE    ".dat" /* Needs the dot */
 
+
 /* acfileio */
 
 ACPI_STATUS

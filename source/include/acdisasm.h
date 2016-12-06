@@ -1165,4 +1165,13 @@ ACPI_STATUS
 AdDisplayStatistics (
     void);
 
+
+/*
+ * dmwalk
+ */
+UINT32
+AcpiDmBlockType (
+    ACPI_PARSE_OBJECT       *Op);
+
+
 #endif  /* __ACDISASM_H__ */
