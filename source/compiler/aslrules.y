@@ -251,9 +251,9 @@ TermArg
 
 MethodInvocationTerm
     : NameString
-        PARSEOP_OPEN_PAREN          {TrUpdateNode (PARSEOP_METHODCALL, $1);}
+        PARSEOP_OPEN_PAREN          {TrUpdateNode (PARSEOP_METHODCALL, $1); Gbl_CommentState.CaptureComments = FALSE;}
         ArgList
-        PARSEOP_CLOSE_PAREN         {$$ = TrLinkChildNode ($1,$4);}
+        PARSEOP_CLOSE_PAREN         {$$ = TrLinkChildNode ($1,$4); Gbl_CommentState.CaptureComments = TRUE;}
     ;
 
 /* OptionalCount must appear before ByteList or an incorrect reduction will result */

@@ -853,17 +853,17 @@ MatchTerm
 
 MethodTerm
     : PARSEOP_METHOD
-        PARSEOP_OPEN_PAREN          {$<n>$ = TrCreateLeafNode (PARSEOP_METHOD);}
+        PARSEOP_OPEN_PAREN          {$<n>$ = TrCreateLeafNode (PARSEOP_METHOD); Gbl_CommentState.CaptureComments = FALSE;}
         NameString
         OptionalByteConstExpr       {UtCheckIntegerRange ($5, 0, 7);}
         OptionalSerializeRuleKeyword
         OptionalByteConstExpr
         OptionalParameterTypePackage
         OptionalParameterTypesPackage
-        PARSEOP_CLOSE_PAREN '{'
+        PARSEOP_CLOSE_PAREN '{'     {Gbl_CommentState.CaptureComments = TRUE;}
             TermList '}'            {$$ = TrLinkChildren ($<n>3,7,
                                         TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),
-                                        $5,$7,$8,$9,$10,$13);}
+                                        $5,$7,$8,$9,$10,$14);}
     | PARSEOP_METHOD
         PARSEOP_OPEN_PAREN
         error PARSEOP_CLOSE_PAREN   {$$ = AslDoError(); yyclearin;}
