@@ -142,7 +142,7 @@ CvProcessComment (
     char                    *StringBuffer,
     int                     c1)
 {
-    UINT32                  i;
+    UINT64                  i;
     char                    *LineToken;
     char                    *FinalLineToken;
     BOOLEAN                 CharStart;
@@ -671,9 +671,13 @@ ACPI_COMMENT_LIST_NODE*
 CvCommentNodeCalloc (
     void)
 {
-   ACPI_COMMENT_LIST_NODE *NewCommentNode =
+   ACPI_COMMENT_LIST_NODE *NewCommentNode;
+
+   CvDbgPrint("starting comment node allocation\n");
+   NewCommentNode =
        (ACPI_COMMENT_LIST_NODE*) UtLocalCalloc (sizeof(ACPI_COMMENT_LIST_NODE));
    NewCommentNode->Next = 0;
+   CvDbgPrint("    Finished allocation\n");
    return NewCommentNode;
 }
 
@@ -852,7 +856,7 @@ CvProcessCommentState (
 
             Gbl_CommentState.CommentType = ASL_REGCOMMENT;
             Gbl_CommentState.ParsingParenBraceNode = NULL;
-            CvDbgPrint ("========================================================End Parsing paren/Brace node!\n");
+            CvDbgPrint ("End Parsing paren/Brace node!\n");
             break;
 
         case ASL_CLOSEBRACE:

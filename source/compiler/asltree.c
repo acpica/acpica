@@ -256,25 +256,30 @@ TrAllocateNode (
         }
 
         Gbl_CommentState.Latest_Parse_Node = Op;
-        CvDbgPrint ("===========Set latest parse node to this node.\n");
-        CvDbgPrint ("           Op->Asl.ParseOpName = %s\n", Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName);
-        CvDbgPrint ("           Op->Asl.ParseOpcode = 0x%x\n", ParseOpcode);
+        if (Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName)
+        {
+            CvDbgPrint ("trallocatenode===========Set latest parse node to this node.\n");
+            //CvDbgPrint ("           Op->Asl.ParseOpName = %s\n", Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName);
+            //CvDbgPrint ("           Op->Asl.ParseOpcode = 0x%x\n", ParseOpcode);
+        }
 
         /* 
          * if this parse op's syntax uses () and {} (i.e. Package(1){0x00}) then
          * set a flag in the comment state. This facilitates paring comments for
          * these types of opcodes.
          */
-        if ( CvParseOpBlockType(Op) == (BLOCK_PAREN | BLOCK_BRACE))
+        if (CvParseOpBlockType(Op) == (BLOCK_PAREN | BLOCK_BRACE))
         {
-            CvDbgPrint ("========================================================Parsing paren/Brace node now!\n");
+            CvDbgPrint ("Parsing paren/Brace node now!\n");
             Gbl_CommentState.ParsingParenBraceNode = Op;
         }
         
         if (Gbl_Comment_List_Head)
         {
+            CvDbgPrint ("Transferring...\n");
             Op->Asl.CommentList = Gbl_Comment_List_Head;
             Gbl_Comment_List_Head = NULL;
+            Gbl_Comment_List_Tail = NULL;
             CvDbgPrint ("Transferred current comment list to this node.\n");
         }
         if (Gbl_Inline_Comment_Buffer)
@@ -1351,6 +1356,7 @@ TrLinkChildren (
             Op->Asl.EndBlkComment = Gbl_Comment_List_Head;
             CvDbgPrint ("EndBlk Comment for %s: %s", Op->Asl.ParseOpName, Gbl_Comment_List_Head->Comment);
             Gbl_Comment_List_Head = NULL;
+            Gbl_Comment_List_Tail = NULL;
         }
     }
 
@@ -1423,8 +1429,8 @@ TrLinkChildren (
     if(Gbl_CaptureComments)
     {
         Gbl_CommentState.Latest_Parse_Node = Op;
-        CvDbgPrint ("===========Set latest parse node to this node.\n");
-        CvDbgPrint ("           Op->Asl.ParseOpName       = %s\n", Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName);    
+        CvDbgPrint ("trlinkchildren===========Set latest parse node to this node.\n");
+ //       CvDbgPrint ("           Op->Asl.ParseOpName       = %s\n", Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName);    
     }
     return (Op);
 }
