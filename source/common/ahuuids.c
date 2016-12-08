@@ -124,7 +124,7 @@
 /*
  * Table of "known" (ACPI-related) UUIDs
  */
-const AH_UUID  AcpiUuids[] =
+const AH_UUID  Gbl_AcpiUuids[] =
 {
     {"[Controllers]",               NULL},
     {"GPIO Controller",             UUID_GPIO_CONTROLLER},
@@ -184,7 +184,7 @@ AcpiAhMatchUuid (
 
     /* Walk the table of known ACPI-related UUIDs */
 
-    for (Info = AcpiUuids; Info->Description; Info++)
+    for (Info = Gbl_AcpiUuids; Info->Description; Info++)
     {
         /* Null string means desciption is a UUID class */
 
