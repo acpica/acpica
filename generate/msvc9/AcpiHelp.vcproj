@@ -230,7 +230,15 @@
 				Filter=".c"
 				>
 				<File
+					RelativePath="..\..\source\tools\acpihelp\ahaml.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\tools\acpihelp\ahamlops.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\tools\acpihelp\ahasl.c"
 					>
 				</File>
 				<File
