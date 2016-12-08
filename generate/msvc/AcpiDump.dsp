@@ -168,6 +168,10 @@ SOURCE=..\..\source\components\utilities\utglobal.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\uthex.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utmath.c
 # End Source File
 # Begin Source File
@@ -177,6 +181,10 @@ SOURCE=..\..\source\components\utilities\utnonansi.c
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utstring.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utstrtoul64.c
 # End Source File
 # Begin Source File
 

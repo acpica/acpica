@@ -128,6 +128,10 @@ SOURCE=..\..\source\tools\acpihelp\ahdecode.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\tools\acpihelp\ahgrammar.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\tools\acpihelp\ahmain.c
 # End Source File
 # End Group
