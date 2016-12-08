@@ -98,7 +98,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy ACPICA library to Libraries (DEBUG)"
-				CommandLine="copy AcpiSubsystemDebug\acpisubsystem.lib ..\..\libraries\Acpica_dbg.lib&#x0D;&#x0A;dir ..\..\libraries\acpica_dbg.lib&#x0D;&#x0A;"
+				CommandLine="copy AcpiSubsystemDebug\acpisubsystem.lib ..\..\libraries\Acpica_dbg.lib&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -184,7 +184,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy ACPICA library to libraries"
-				CommandLine="copy AcpiSubsystem\acpisubsystem.lib ..\..\libraries\Acpica.lib&#x0D;&#x0A;dir ..\..\libraries\acpica.lib&#x0D;&#x0A;"
+				CommandLine="copy AcpiSubsystem\acpisubsystem.lib ..\..\libraries\Acpica.lib&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -192,7 +192,7 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source"
+			Name="Acpica Source"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<Filter
@@ -1053,7 +1053,7 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Standard Headers"
+			Name="Acpica Headers"
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File

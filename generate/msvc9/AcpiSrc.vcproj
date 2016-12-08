@@ -114,7 +114,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy AcpiSrcDebug.exe to Libraries (DEBUG)"
-				CommandLine="copy acpisrcdebug\acpisrc.exe ..\..\libraries\AcpiSrcDebug.exe&#x0D;&#x0A;dir ..\..\libraries\acpisrcdebug.exe&#x0D;&#x0A;"
+				CommandLine="copy acpisrcdebug\acpisrc.exe ..\..\libraries\AcpiSrcDebug.exe&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -215,7 +215,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy AcpiSrc.exe to Libraries"
-				CommandLine="copy acpisrc\acpisrc.exe ..\..\libraries\AcpiSrc.exe&#x0D;&#x0A;dir ..\..\libraries\acpisrc.exe&#x0D;&#x0A;"
+				CommandLine="copy acpisrc\acpisrc.exe ..\..\libraries\AcpiSrc.exe&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -223,42 +223,9 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source"
+			Name="Acpica Source"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
-			<Filter
-				Name="Local"
-				Filter=".c"
-				>
-				<File
-					RelativePath="..\..\source\TOOLS\acpisrc\ascase.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\tools\AcpiSrc\asconvrt.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\tools\AcpiSrc\asfile.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\tools\AcpiSrc\asmain.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\TOOLS\acpisrc\asremove.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\tools\acpisrc\astable.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\tools\AcpiSrc\asutils.c"
-					>
-				</File>
-			</Filter>
 			<Filter
 				Name="Common"
 				Filter=".c"
@@ -338,11 +305,44 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Local Headers"
+			Name="AcpiSrc Headers"
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
 				RelativePath="..\..\source\tools\AcpiSrc\acpisrc.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="AcpiSrc Source"
+			Filter=".c"
+			>
+			<File
+				RelativePath="..\..\source\TOOLS\acpisrc\ascase.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\AcpiSrc\asconvrt.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\AcpiSrc\asfile.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\AcpiSrc\asmain.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\TOOLS\acpisrc\asremove.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\acpisrc\astable.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\AcpiSrc\asutils.c"
 				>
 			</File>
 		</Filter>

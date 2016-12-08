@@ -2,8 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="Examples"
+	Name="Acpica Examples"
 	ProjectGUID="{D086AEFC-5004-4D97-B68B-F884F7C75436}"
+	RootNamespace="Acpica Examples"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -114,7 +115,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy ExamplesDebug.exe to Libraries (DEBUG)"
-				CommandLine="copy examplesDebug\examples.exe ..\..\libraries\ExamplesDebug.exe&#x0D;&#x0A;dir ..\..\libraries\examplesDebug.exe&#x0D;&#x0A;"
+				CommandLine="copy examplesDebug\examples.exe ..\..\libraries\ExamplesDebug.exe&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -218,7 +219,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy Examples.exe to Libraries"
-				CommandLine="copy examples\examples.exe ..\..\libraries\Examples.exe&#x0D;&#x0A;dir ..\..\libraries\examples.exe&#x0D;&#x0A;"
+				CommandLine="copy examples\examples.exe ..\..\libraries\Examples.exe&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -226,7 +227,7 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source"
+			Name="Acpica Source"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<Filter
@@ -251,22 +252,6 @@
 							DisableLanguageExtensions="false"
 						/>
 					</FileConfiguration>
-				</File>
-			</Filter>
-			<Filter
-				Name="Local"
-				>
-				<File
-					RelativePath="..\..\source\tools\examples\examples.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\tools\examples\exstubs.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\tools\examples\extables.c"
-					>
 				</File>
 			</Filter>
 			<Filter
@@ -783,11 +768,27 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Local Headers"
+			Name="Examples Headers"
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
 				RelativePath="..\..\source\tools\examples\examples.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Examples Source"
+			>
+			<File
+				RelativePath="..\..\source\tools\examples\examples.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\examples\exstubs.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\examples\extables.c"
 				>
 			</File>
 		</Filter>

@@ -223,7 +223,7 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source"
+			Name="Acpica Source"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<Filter
@@ -290,33 +290,28 @@
 					</FileConfiguration>
 				</File>
 			</Filter>
-			<Filter
-				Name="Local"
-				>
-				<File
-					RelativePath="..\..\source\tools\AcpiXtract\acpixtract.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\tools\acpixtract\axmain.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\tools\acpixtract\axutils.c"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
-			Name="Standard Headers"
-			Filter="h;hpp;hxx;hm;inl"
-			>
-		</Filter>
-		<Filter
-			Name="Local Headers"
+			Name="AcpiXtract Headers"
 			>
 			<File
 				RelativePath="..\..\source\tools\acpixtract\acpixtract.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="AcpiXtract Source"
+			>
+			<File
+				RelativePath="..\..\source\tools\AcpiXtract\acpixtract.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\acpixtract\axmain.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\acpixtract\axutils.c"
 				>
 			</File>
 		</Filter>
