@@ -359,6 +359,8 @@ AslDoOptions (
             Gbl_CaptureComments = TRUE;
             AcpiGbl_DoDisassemblerOptimizations = FALSE;
             AcpiGbl_DebugAslConversion = TRUE;
+            AcpiGbl_DmEmitExternalOpcodes = TRUE;
+            Gbl_DoExternalsInPlace = TRUE;
 
             return (0);
 

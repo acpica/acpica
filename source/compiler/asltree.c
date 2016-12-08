@@ -259,8 +259,12 @@ TrAllocateNode (
         if (Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName)
         {
             CvDbgPrint ("trallocatenode===========Set latest parse node to this node.\n");
-            //CvDbgPrint ("           Op->Asl.ParseOpName = %s\n", Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName);
-            //CvDbgPrint ("           Op->Asl.ParseOpcode = 0x%x\n", ParseOpcode);
+            CvDbgPrint ("           Op->Asl.ParseOpName = %s\n", Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName);
+            CvDbgPrint ("           Op->Asl.ParseOpcode = 0x%x\n", ParseOpcode);
+            if (Op->Asl.FileChanged==TRUE)
+            {
+                CvDbgPrint("    file has been changed!\n");
+            }
         }
 
         /* 
@@ -1212,17 +1216,35 @@ TrCreateNode (
             FirstChild = FALSE;
             Op->Asl.Child = Child;
 
-            /* For -q option: take the Regular comments from the first child
+            /*
+             * For the ASL-/ASL+ converter: take the Regular comments from the 
+             * first child
              * Due to the fact that the comments in first child's node actually
              * belonged to the parent. This also means that legitimate comments
              * for the child gets put to the parent.
              */
-            if (Gbl_CaptureComments && (PARSEOP_CONNECTION || PARSEOP_EXTERNAL || PARSEOP_OFFSET || PARSEOP_ACCESSAS))
+            if (Gbl_CaptureComments &&
+                ((ParseOpcode == PARSEOP_CONNECTION) || (ParseOpcode == PARSEOP_EXTERNAL) ||
+                 (ParseOpcode == PARSEOP_OFFSET) || (ParseOpcode == PARSEOP_ACCESSAS)))
             {
+                /* These need to be switched from the Child to this new op */
+
                 Op->Asl.CommentList      = Child->Asl.CommentList;
+                Op->Asl.EndBlkComment    = Child->Asl.EndBlkComment;
+                Op->Asl.IncComment       = Child->Asl.IncComment;
                 Op->Asl.InlineComment    = Child->Asl.InlineComment;
+                Op->Asl.FileChanged      = Child->Asl.FileChanged;
+
                 Child->Asl.CommentList   = NULL;
+                Child->Asl.EndBlkComment = NULL;
+                Child->Asl.IncComment    = NULL;
                 Child->Asl.InlineComment = NULL;
+                Child->Asl.FileChanged   = FALSE;
+
+                /* These do not need to be "passed off". They can be copied. */
+
+                Op->Asl.Filename         = Child->Asl.Filename;
+                Op->Asl.ParentFilename   = Child->Asl.ParentFilename;
             }
         }
 
