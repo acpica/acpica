@@ -53,8 +53,8 @@ if [ "x${COMMIT}" = "x" ]; then
 	COMMIT=HEAD
 fi
 
-after=`git log -1 ${COMMIT} --format=%H | cut -c1-8`
-before=`git log -1 ${COMMIT}^1 --format=%H | cut -c1-8`
+after=`git log -1 ${COMMIT} --format=%H`
+before=`git log -1 ${COMMIT}^1 --format=%H`
 
 SCRIPT=`(cd \`dirname $0\`; pwd)`
 . $SCRIPT/libacpica.sh
