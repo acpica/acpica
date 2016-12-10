@@ -11,7 +11,7 @@ DefinitionBlock(
     0x00000001            /* Discarded               */)
 {
 
-
+    /* first comment of named object b */
     Name (/*c00*/ b,/*c01*/ 5/*c02*/)/*c03*/
     Name(p008, Package()
     {

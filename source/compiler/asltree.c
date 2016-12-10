@@ -272,7 +272,7 @@ TrAllocateNode (
          * set a flag in the comment state. This facilitates paring comments for
          * these types of opcodes.
          */
-        if (CvParseOpBlockType(Op) == (BLOCK_PAREN | BLOCK_BRACE))
+        if (CvParseOpBlockType(Op) == (BLOCK_PAREN | BLOCK_BRACE) && (ParseOpcode != PARSEOP_DEFINITION_BLOCK))
         {
             CvDbgPrint ("Parsing paren/Brace node now!\n");
             Gbl_CommentState.ParsingParenBraceNode = Op;
@@ -284,7 +284,8 @@ TrAllocateNode (
             Op->Asl.CommentList = Gbl_Comment_List_Head;
             Gbl_Comment_List_Head = NULL;
             Gbl_Comment_List_Tail = NULL;
-            CvDbgPrint ("Transferred current comment list to this node.\n");
+            CvDbgPrint ("    Transferred current comment list to this node.\n");
+            CvDbgPrint ("    %s\n", Op->Asl.CommentList->Comment);
         }
         if (Gbl_Inline_Comment_Buffer)
         {

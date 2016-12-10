@@ -461,6 +461,9 @@ ACPI_INIT_GLOBAL (char*,   AcpiGbl_CurrentIncludeFilename, NULL);
 
 ACPI_INIT_GLOBAL (ACPI_COMMENT_LIST_NODE,   *AcpiGbl_LastListHead, NULL);
 
+ACPI_INIT_GLOBAL (ACPI_COMMENT_LIST_NODE,   *AcpiGbl_DefBlkCommentListHead, NULL);
+ACPI_INIT_GLOBAL (ACPI_COMMENT_LIST_NODE,   *AcpiGbl_DefBlkCommentListTail, NULL);
+
 ACPI_INIT_GLOBAL (ACPI_COMMENT_LIST_NODE,   *AcpiGbl_RegCommentListHead, NULL);
 ACPI_INIT_GLOBAL (ACPI_COMMENT_LIST_NODE,   *AcpiGbl_RegCommentListTail, NULL);
 

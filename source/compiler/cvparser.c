@@ -354,7 +354,7 @@ CvCommentExists (
 ACPI_FILE_NODE*
 CvFilenameExists(
     char                    *Filename,
-    ACPI_FILE_NODE           *Head)
+    ACPI_FILE_NODE          *Head)
 {
     ACPI_FILE_NODE          *Current = Head;
 
@@ -697,11 +697,30 @@ CvCaptureJustComments (
 
                     StdDefBlockFlag = TRUE;
 
+                    /* add to a linked list of nodes. This list will be taken by the parse node created next. */
+
+                    CommentNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
+                    CommentNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    CommentNode->Next    = NULL;
+
+                    if (AcpiGbl_DefBlkCommentListHead==NULL)
+                    {
+                        AcpiGbl_DefBlkCommentListHead = CommentNode;
+                        AcpiGbl_DefBlkCommentListTail = CommentNode;
+                    }
+                    else
+                    {
+                        AcpiGbl_DefBlkCommentListTail->Next = CommentNode;
+                        AcpiGbl_DefBlkCommentListTail = AcpiGbl_DefBlkCommentListTail->Next;
+                    }
+                    break;
+
                 case STANDARD_COMMENT:
 
                     //CvDbgPrint ("found regular comment.\n");
 
                     /* add to a linked list of nodes. This list will be taken by the parse node created next. */
+
                     CommentNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
                     CommentNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
                     CommentNode->Next    = NULL;
@@ -858,9 +877,9 @@ CvCaptureJustComments (
          * the definition block, since STD_DEFBLK_COMMENT only appears after
          * definition block headers.
          */
-        AcpiGbl_CurrentScope->Common.CommentList = AcpiGbl_RegCommentListHead;
-        AcpiGbl_RegCommentListHead = NULL;
-        AcpiGbl_RegCommentListTail = NULL;
+        AcpiGbl_CurrentScope->Common.CommentList = AcpiGbl_DefBlkCommentListHead;
+        AcpiGbl_DefBlkCommentListHead = NULL;
+        AcpiGbl_DefBlkCommentListTail = NULL;
     }
     //CvDbgPrint ("Ending capture...\n");
     
