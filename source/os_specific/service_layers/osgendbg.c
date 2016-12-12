@@ -177,7 +177,7 @@ AcpiDbRunRemoteDebugger (
                     Ptr++;
                 }
 
-                strcpy (AcpiGbl_DbLineBuf, Cmd);
+                strncpy (AcpiGbl_DbLineBuf, Cmd, ACPI_DB_LINE_BUFFER_SIZE);
                 Ptr++;
                 Cmd = Ptr;
             }

@@ -114,7 +114,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy AcpiHelpDebug.exe to Libraries (DEBUG)"
-				CommandLine="copy AcpiHelpdebug\AcpiHelp.exe ..\..\libraries\AcpiHelpDebug.exe&#x0D;&#x0A;dir ..\..\libraries\AcpiHelpdebug.exe&#x0D;&#x0A;"
+				CommandLine="copy AcpiHelpdebug\AcpiHelp.exe ..\..\libraries\AcpiHelpDebug.exe&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -214,7 +214,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy AcpiHelp.exe to Libraries"
-				CommandLine="copy AcpiHelp\AcpiHelp.exe ..\..\libraries\AcpiHelp.exe&#x0D;&#x0A;dir ..\..\libraries\AcpiHelp.exe&#x0D;&#x0A;"
+				CommandLine="copy AcpiHelp\AcpiHelp.exe ..\..\libraries\AcpiHelp.exe&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -222,38 +222,9 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source"
+			Name="Acpica Source"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
-			<Filter
-				Name="Local"
-				Filter=".c"
-				>
-				<File
-					RelativePath="..\..\source\tools\acpihelp\ahamlops.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\tools\acpihelp\ahaslkey.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\tools\acpihelp\ahaslops.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\tools\acpihelp\ahdecode.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\tools\acpihelp\ahgrammar.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\tools\acpihelp\ahmain.c"
-					>
-				</File>
-			</Filter>
 			<Filter
 				Name="Common"
 				Filter=".c"
@@ -337,7 +308,7 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Local Headers"
+			Name="AcpiHelp Headers"
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
@@ -346,10 +317,47 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Standard Headers"
+			Name="Acpica Headers"
 			>
 			<File
 				RelativePath="..\..\source\include\acuuid.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="AcpiHelp Source"
+			Filter=".c"
+			>
+			<File
+				RelativePath="..\..\source\tools\acpihelp\ahaml.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\acpihelp\ahamlops.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\acpihelp\ahasl.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\acpihelp\ahaslkey.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\acpihelp\ahaslops.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\acpihelp\ahdecode.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\acpihelp\ahgrammar.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\acpihelp\ahmain.c"
 				>
 			</File>
 		</Filter>

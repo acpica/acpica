@@ -116,7 +116,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy AcpiDumpDebug.exe to Libraries (DEBUG)"
-				CommandLine="copy .\AcpiDumpdebug\AcpiDump.exe ..\..\libraries\AcpiDumpDebug.exe&#x0D;&#x0A;dir ..\..\libraries\AcpiDumpdebug.exe&#x0D;&#x0A;"
+				CommandLine="copy .\AcpiDumpdebug\AcpiDump.exe ..\..\libraries\AcpiDumpDebug.exe&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -219,7 +219,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy AcpiDump.exe to Libraries"
-				CommandLine="copy .\AcpiDump\AcpiDump.exe ..\..\libraries\AcpiDump.exe&#x0D;&#x0A;dir ..\..\libraries\AcpiDump.exe&#x0D;&#x0A;"
+				CommandLine="copy .\AcpiDump\AcpiDump.exe ..\..\libraries\AcpiDump.exe&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -227,25 +227,18 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source"
+			Name="AcpiDump Headers"
+			Filter="h;hpp;hxx;hm;inl"
+			>
+			<File
+				RelativePath="..\..\source\tools\acpidump\acpidump.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Acpica Source"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
-			<Filter
-				Name="Local"
-				>
-				<File
-					RelativePath="..\..\source\tools\acpidump\apdump.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\tools\acpidump\apfiles.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\tools\acpidump\apmain.c"
-					>
-				</File>
-			</Filter>
 			<Filter
 				Name="Common"
 				>
@@ -361,11 +354,18 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Local Headers"
-			Filter="h;hpp;hxx;hm;inl"
+			Name="AcpiDump Source"
 			>
 			<File
-				RelativePath="..\..\source\tools\acpidump\acpidump.h"
+				RelativePath="..\..\source\tools\acpidump\apdump.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\acpidump\apfiles.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\acpidump\apmain.c"
 				>
 			</File>
 		</Filter>
