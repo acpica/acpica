@@ -7,9 +7,9 @@ DefinitionBlock("testFieldComment.aml", "DSDT", 0x02, "Intel", "Many", 0x0000000
     Field(GNVS,AnyAcc,Lock,Preserve)
     {//c3
     //c4
-    Offset(0),      OSYS, 8, //c5
-    Offset(2),      ABCD, 8, //c6
-    }//c7
+    , 0, // 0-bit offset
+    OSYS, 8, //c5
+    }//c6
  
 
 }

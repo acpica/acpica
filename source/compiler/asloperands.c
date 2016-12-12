@@ -424,7 +424,8 @@ OpnDoFieldCommon (
             CurrentBitOffset += NewBitOffset;
 
             if ((NewBitOffset == 0) &&
-                (Next->Asl.ParseOpcode == PARSEOP_RESERVED_BYTES))
+                (Next->Asl.ParseOpcode == PARSEOP_RESERVED_BYTES) &&
+                Gbl_OptimizeTrivialParseNodes)
             {
                 /*
                  * Unnamed field with a bit length of zero. We can
