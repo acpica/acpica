@@ -1072,6 +1072,7 @@ typedef struct acpi_file_node
     struct acpi_file_node   *Next;
     struct acpi_file_node   *Parent;
     BOOLEAN                 IncludeWritten;
+    ACPI_COMMENT_LIST_NODE  *IncludeComment;
 
 } ACPI_FILE_NODE;
 

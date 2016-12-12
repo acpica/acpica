@@ -410,6 +410,7 @@ CvSwitchFiles(
 
             CvDbgPrint ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
             AcpiOsRedirectOutput (FNode->Parent->File);
+            CvPrintOneCommentList (FNode->IncludeComment, Level);
             AcpiDmIndent (Level);
             AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
             CvDbgPrint ("emitted the following: Include (\"%s\")\n", FNode->Filename);
@@ -430,6 +431,7 @@ CvSwitchFiles(
             {
                 CvDbgPrint ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
                 AcpiOsRedirectOutput (FNode->Parent->File);
+                CvPrintOneCommentList (FNode->IncludeComment, Level);
                 AcpiDmIndent (Level);
                 AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
                 CvDbgPrint ("emitted the following in %s: Include (\"%s\")\n", FNode->Parent->Filename,FNode->Filename);

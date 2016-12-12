@@ -657,6 +657,7 @@ CvCaptureJustComments (
     char                    *Debug;
     BOOLEAN                 StdDefBlockFlag = FALSE;
     ACPI_COMMENT_LIST_NODE  *CommentNode;
+    ACPI_FILE_NODE          *FileNode;
 
 
     if (!Gbl_CaptureComments)
@@ -806,15 +807,21 @@ CvCaptureJustComments (
 
                 case FILENAME_COMMENT:
                     
-                    //CvDbgPrint ("Found a filename: %s", ACPI_CAST_PTR (char, ParserState->Aml));
+                    printf ("Found a filename: %s\n", ACPI_CAST_PTR (char, ParserState->Aml));
+                    FileNode = CvFilenameExists (ACPI_CAST_PTR (char, ParserState->Aml), AcpiGbl_FileTreeRoot);
+                    if (FileNode && AcpiGbl_IncCommentListHead)
+                    {
+                        FileNode->IncludeComment = AcpiGbl_IncCommentListHead;
+                        AcpiGbl_IncCommentListHead = NULL;
+                        AcpiGbl_IncCommentListTail = NULL;
+                    }
                     break;
 
                 case PARENTFILENAME_COMMENT:
-                    //CvDbgPrint ("Found a parent filename.");
+                    printf ("    Found a parent filename.\n");
                     break;
 
                 case INCLUDE_COMMENT:
-                    printf ("Found a include comment.");
 
                     /* add to a linked list of nodes. This list will be taken by the parse node created next. */
 
@@ -832,6 +839,8 @@ CvCaptureJustComments (
                         AcpiGbl_IncCommentListTail->Next = CommentNode;
                         AcpiGbl_IncCommentListTail = AcpiGbl_IncCommentListTail->Next;
                     }
+
+                    printf ("Found a include comment: %s\n", CommentNode->Comment);
                     break;
 
                 default:
