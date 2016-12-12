@@ -225,11 +225,6 @@ CvPrintOneCommentType (
         Op->Common.EndBlkComment = NULL;
         break;
 
-    case AML_INCLUDECOMMENT:
-        CvPrintOneCommentList (Op->Common.IncComment, Level);
-        Op->Common.IncComment = NULL;
-        break;
-
     default:
         break;
     }
@@ -385,7 +380,6 @@ CvSwitchFiles(
 {
     char                    *Filename = Op->Common.PsFilename;
     ACPI_FILE_NODE          *FNode;
-    ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.IncComment;
 
     CvDbgPrint ("Switching from %s to %s\n", AcpiGbl_CurrentFilename, Filename);    
     FNode = CvFilenameExists (Filename, AcpiGbl_FileTreeRoot);
@@ -393,29 +387,12 @@ CvSwitchFiles(
     {
         if (!FNode->IncludeWritten)
         {
-            /* Before printing the include statement, output any comments that are associated with the include. */
-
-            if (CommentNode)
-            {
-                printf("Writing include comment\n");
-            }	
-            while (CommentNode)
-            {
-                AcpiDmIndent (Level);
-                AcpiOsPrintf("%s\n", CommentNode->Comment);
-                CommentNode->Comment = NULL;
-                CommentNode = CommentNode->Next;     
-            } 
-            Op->Common.IncComment = NULL;
-
             CvDbgPrint ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
             AcpiOsRedirectOutput (FNode->Parent->File);
             CvPrintOneCommentList (FNode->IncludeComment, Level);
             AcpiDmIndent (Level);
             AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
             CvDbgPrint ("emitted the following: Include (\"%s\")\n", FNode->Filename);
-            printf ("emitted the following: Include (\"%s\")\n", FNode->Filename);
-            //fclose (FNode->Parent->File);
             FNode->IncludeWritten = TRUE;
         }
 
@@ -434,9 +411,7 @@ CvSwitchFiles(
                 CvPrintOneCommentList (FNode->IncludeComment, Level);
                 AcpiDmIndent (Level);
                 AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
-                CvDbgPrint ("emitted the following in %s: Include (\"%s\")\n", FNode->Parent->Filename,FNode->Filename);
-                printf ("222emitted the following: Include (\"%s\")\n", FNode->Filename);
-                //fclose (FNode->Parent->File);
+                CvDbgPrint ("emitted the following in %s: Include (\"%s\")\n", FNode->Parent->Filename, FNode->Filename);
                 FNode->IncludeWritten = TRUE;
             }
             FNode = FNode->Parent;
@@ -446,7 +421,6 @@ CvSwitchFiles(
     /* Redirect output to the argument */
 
     FNode = CvFilenameExists (Filename, AcpiGbl_FileTreeRoot);
-    //FNode->File = fopen (FNode->Filename, "a");
     AcpiOsRedirectOutput (FNode->File);
     AcpiGbl_CurrentFilename = FNode->Filename;
 }

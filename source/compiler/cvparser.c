@@ -256,7 +256,6 @@ CvClearOpComments (
     Op->Common.CommentList       = NULL;
     Op->Common.EndBlkComment     = NULL;
     Op->Common.CloseBraceComment = NULL;
-    Op->Common.IncComment        = NULL;
     Op->Common.PsFilename        = NULL;
     Op->Common.PsParentFilename  = NULL;
 }
@@ -307,21 +306,17 @@ CvCommentExists (
     }
     else
     {
-        //CvDbgPrint ("========== Traversing address list now ==========\n");
         while (Current)
         {
             if (Current->Addr != ToCheck)
             {
-//                CvDbgPrint ("Address in list: %p\n", Current->Addr);
                 Current = Current->Next;
             }
             else
             {
-                //CvDbgPrint ("========== Found addr, ending traversal =====================\n");
                 return (TRUE);
             }
         }
-        //CvDbgPrint ("========== Ending traversal adding address =====================\n");
 
         /* 
          * If the execution gets to this point, it means that this address
@@ -500,7 +495,6 @@ CvAddToFileTree (
                 if (Temp->FileEnd < Filename)
                 {
                     Temp->FileEnd = Filename;
-                    //CvDbgPrint ("Setting file end to %p\n", Temp->FileEnd);
                 }
                 Temp = Temp->Parent;
             }
@@ -516,16 +510,6 @@ CvAddToFileTree (
         AcpiGbl_FileTreeRoot->FileStart = Filename;
         AcpiGbl_FileTreeRoot->IncludeWritten = FALSE;
         AcpiGbl_FileTreeRoot->File = fopen(Filename, "w+");
-    }
-
-    /* Print for debugging */
-
-    Temp = AcpiGbl_FileTreeRoot;
-    //CvDbgPrint ("File tree entries so far:\n");
-    while (Temp)
-    {
-        //CvDbgPrint ("    %s\t%p - %p\n", Temp->Filename, Temp->FileStart, Temp->FileEnd);
-        Temp = Temp->Next;
     }
 }
 
@@ -550,10 +534,8 @@ CvSetFileParent (
 {
     ACPI_FILE_NODE          *Child;
     ACPI_FILE_NODE          *Parent;
-    ACPI_FILE_NODE          *Temp;
 
 
-    //CvDbgPrint ("Setting file parent within file dependency tree.\n");
     Child  = CvFilenameExists (ChildFile, AcpiGbl_FileTreeRoot); 
     Parent = CvFilenameExists (ParentFile, AcpiGbl_FileTreeRoot);
     if (Child && Parent)
@@ -569,66 +551,8 @@ CvSetFileParent (
             Child = Child->Parent;
         }
     }
-    else
-    {
-        //CvDbgPrint ("Child and/or parent does not exist.\n");
-    } 
-
-    Temp = AcpiGbl_FileTreeRoot;
-    //CvDbgPrint ("File tree relations so far | child filename, parent filename\n");
-    while (Temp)
-    {
-        //CvDbgPrint ("                             %s -> ", Temp->Filename);
-        if (Temp->Parent)
-        {
-            //CvDbgPrint ("%s\n",Temp->Parent->Filename);
-        }
-        else
-        {
-            //CvDbgPrint ("none\n");
-        }
-        
-        Temp = Temp->Next;
-    }
 }
 
-
-/*******************************************************************************
- *
- * FUNCTION:    CvCaptureListComments
- *
- * PARAMETERS:  ParserState         - A parser state object
- *
- * RETURN:      void
- *
- * DESCRIPTION:  
- *
- ******************************************************************************/
-
-void
-CvCaptureListComments (
-    ACPI_PARSE_STATE        *ParserState,
-    ACPI_COMMENT_LIST_NODE  *ListHead,
-    ACPI_COMMENT_LIST_NODE  *ListTail)
-{
-    ACPI_COMMENT_LIST_NODE  *CommentNode;
-
-    CommentNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
-    CommentNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
-    CommentNode->Next    = NULL;
-
-    if (ListHead==NULL)
-    {
-        ListHead = CommentNode;
-        ListTail = CommentNode;
-    }
-    else
-    {
-        ListTail->Next = CommentNode;
-        ListTail = ListTail->Next;
-    }
-}
-  
 
 /*******************************************************************************
  *
@@ -667,7 +591,6 @@ CvCaptureJustComments (
     Aml = ParserState->Aml;
     Opcode = (UINT16) ACPI_GET8 (Aml);
     CommentOption = (UINT16) ACPI_GET8 (Aml+1);
-    //CvDbgPrint ("CaptureComments Opcode: 0x%x\n", Opcode);
     if (Opcode != AML_COMMENT_OP || ((Opcode == AML_COMMENT_OP) && ((CommentOption < 0x1) || (CommentOption > 0xb))))
     {
        return;
@@ -866,19 +789,8 @@ CvCaptureJustComments (
         Aml = ParserState->Aml;
         Opcode = (UINT16) ACPI_GET8 (Aml);
 
-        /*CvDbgPrint ("Summary after capture:          \n"
-            "Current end node comment:        %s\n"
-            "Current inline node comment:     %s\n" 
-            "Current open brace node comment: %s\n" 
-            "Current close node comment:      %s\n", 
-            AcpiGbl_CurrentEndNodeComment,
-            AcpiGbl_CurrentInlineComment,
-            AcpiGbl_CurrentOpenBraceComment,
-            AcpiGbl_CurrentCloseBraceComment);*/
     } // End while
  
-    //CvDbgPrint ("\n");
-
     if (StdDefBlockFlag)
     {
         /* 
@@ -890,8 +802,6 @@ CvCaptureJustComments (
         AcpiGbl_DefBlkCommentListHead = NULL;
         AcpiGbl_DefBlkCommentListTail = NULL;
     }
-    //CvDbgPrint ("Ending capture...\n");
-    
 }
 
 
@@ -924,7 +834,7 @@ CvCaptureComments (
     }
 
     /* 
-     *Before parsing, check to see that comments that come directly after 
+     * Before parsing, check to see that comments that come directly after 
      * deferred opcodes aren't being processed.
      */
     Aml = WalkState->ParserState.Aml;
@@ -933,7 +843,7 @@ CvCaptureComments (
     if (!(OpInfo->Flags & AML_DEFER) || ((OpInfo->Flags & AML_DEFER)&&(WalkState->PassNumber != ACPI_IMODE_LOAD_PASS1)))
     {
         CvCaptureJustComments(&WalkState->ParserState);
-        WalkState->Aml = WalkState->ParserState.Aml; //Is this needed? What will this do?
+        WalkState->Aml = WalkState->ParserState.Aml;
     }
     
 }
@@ -956,52 +866,21 @@ void
 CvTransferComments (
     ACPI_PARSE_OBJECT       *Op) 
 {
-    //CvDbgPrint ("Transferring all captured global comments to the folowing opcode: %x\n", Op->Common.AmlOpcode);
-    if (AcpiGbl_CurrentInlineComment)
-    { 
-        Op->Common.InlineComment = AcpiGbl_CurrentInlineComment;
-        //CvDbgPrint ("Op->Common.InlineComment: %s\n", Op->Common.InlineComment);
-        AcpiGbl_CurrentInlineComment = NULL;
-    }
+    Op->Common.InlineComment = AcpiGbl_CurrentInlineComment;
+    AcpiGbl_CurrentInlineComment = NULL;
 
-    if (AcpiGbl_CurrentEndNodeComment != NULL)
-    { 
-        Op->Common.EndNodeComment = AcpiGbl_CurrentEndNodeComment;
-        //CvDbgPrint ("Op->Common.EndNodeComment: %s\n", Op->Common.EndNodeComment);
-        AcpiGbl_CurrentEndNodeComment = NULL;
-    }
+    Op->Common.EndNodeComment = AcpiGbl_CurrentEndNodeComment;
+    AcpiGbl_CurrentEndNodeComment = NULL;
 
-    if (AcpiGbl_CurrentCloseBraceComment != NULL)
-    {
-        Op->Common.CloseBraceComment = AcpiGbl_CurrentCloseBraceComment;
-        //CvDbgPrint ("Op->Common.CloseBraceComment: %s\n", Op->Common.CloseBraceComment);
-        AcpiGbl_CurrentCloseBraceComment = NULL;
-    }
+    Op->Common.CloseBraceComment = AcpiGbl_CurrentCloseBraceComment;
+    AcpiGbl_CurrentCloseBraceComment = NULL;
 
-    if (AcpiGbl_RegCommentListHead != NULL)
-    { 
-        Op->Common.CommentList = AcpiGbl_RegCommentListHead;
-        //CvDbgPrint ("Op->Common.CommentList head: %s\n", Op->Common.CommentList->Comment);
-        AcpiGbl_RegCommentListHead = NULL;
-        AcpiGbl_RegCommentListTail = NULL;
-    }
+    Op->Common.CommentList = AcpiGbl_RegCommentListHead;
+    AcpiGbl_RegCommentListHead = NULL;
+    AcpiGbl_RegCommentListTail = NULL;
 
-    if (AcpiGbl_EndBlkCommentListHead != NULL)
-    {
-        Op->Common.EndBlkComment = AcpiGbl_EndBlkCommentListHead;
-        //CvDbgPrint ("Op->Common.CommentList head: %s\n", Op->Common.EndBlkComment->Comment);
-        AcpiGbl_EndBlkCommentListHead = NULL;
-        AcpiGbl_EndBlkCommentListTail = NULL;
-    }
+    Op->Common.EndBlkComment = AcpiGbl_EndBlkCommentListHead;
+    AcpiGbl_EndBlkCommentListHead = NULL;
+    AcpiGbl_EndBlkCommentListTail = NULL;
 
-    if (AcpiGbl_IncCommentListHead != NULL)
-    {
-        Op->Common.IncComment = AcpiGbl_IncCommentListHead;
-        printf ("Op->Common.IncComment head: %s\n", Op->Common.IncComment->Comment);
-        AcpiGbl_IncCommentListHead = NULL;
-        AcpiGbl_IncCommentListTail = NULL;
-    }
-
-
-    //CvDbgPrint("\n");
 }

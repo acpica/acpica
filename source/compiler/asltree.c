@@ -1232,13 +1232,11 @@ TrCreateNode (
 
                 Op->Asl.CommentList      = Child->Asl.CommentList;
                 Op->Asl.EndBlkComment    = Child->Asl.EndBlkComment;
-                Op->Asl.IncComment       = Child->Asl.IncComment;
                 Op->Asl.InlineComment    = Child->Asl.InlineComment;
                 Op->Asl.FileChanged      = Child->Asl.FileChanged;
 
                 Child->Asl.CommentList   = NULL;
                 Child->Asl.EndBlkComment = NULL;
-                Child->Asl.IncComment    = NULL;
                 Child->Asl.InlineComment = NULL;
                 Child->Asl.FileChanged   = FALSE;
 

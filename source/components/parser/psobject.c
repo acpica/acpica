@@ -347,23 +347,22 @@ AcpiPsBuildNamedOp (
 
     /* save any comments that might be associated with UnnamedOp. */
 
-    (*Op)->Common.InlineComment = UnnamedOp->Common.InlineComment;
-    (*Op)->Common.EndNodeComment = UnnamedOp->Common.EndNodeComment;
+    (*Op)->Common.InlineComment     = UnnamedOp->Common.InlineComment;
+    (*Op)->Common.EndNodeComment    = UnnamedOp->Common.EndNodeComment;
     (*Op)->Common.CloseBraceComment = UnnamedOp->Common.CloseBraceComment;
-    (*Op)->Common.NameComment = UnnamedOp->Common.NameComment;
-    (*Op)->Common.CommentList = UnnamedOp->Common.CommentList;
-    (*Op)->Common.EndBlkComment = UnnamedOp->Common.EndBlkComment;
-    (*Op)->Common.IncComment = UnnamedOp->Common.IncComment;
-    (*Op)->Common.PsFilename = UnnamedOp->Common.PsFilename;
-    (*Op)->Common.PsParentFilename = UnnamedOp->Common.PsParentFilename;
-    (*Op)->Named.Aml = UnnamedOp->Common.Aml;
-    UnnamedOp->Common.InlineComment = NULL;
-    UnnamedOp->Common.EndNodeComment = NULL;
+    (*Op)->Common.NameComment       = UnnamedOp->Common.NameComment;
+    (*Op)->Common.CommentList       = UnnamedOp->Common.CommentList;
+    (*Op)->Common.EndBlkComment     = UnnamedOp->Common.EndBlkComment;
+    (*Op)->Common.PsFilename        = UnnamedOp->Common.PsFilename;
+    (*Op)->Common.PsParentFilename  = UnnamedOp->Common.PsParentFilename;
+    (*Op)->Named.Aml                = UnnamedOp->Common.Aml;
+
+    UnnamedOp->Common.InlineComment     = NULL;
+    UnnamedOp->Common.EndNodeComment    = NULL;
     UnnamedOp->Common.CloseBraceComment = NULL;
-    UnnamedOp->Common.NameComment = NULL;
-    UnnamedOp->Common.CommentList = NULL;
-    UnnamedOp->Common.EndBlkComment = NULL;
-    UnnamedOp->Common.IncComment = NULL;
+    UnnamedOp->Common.NameComment       = NULL;
+    UnnamedOp->Common.CommentList       = NULL;
+    UnnamedOp->Common.EndBlkComment     = NULL;
 #endif
 
     if ((*Op)->Common.AmlOpcode == AML_REGION_OP ||
