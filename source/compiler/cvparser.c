@@ -215,6 +215,7 @@ CvInitFileTree (
                 {
                     ADDTOFILETREE (Filename, PreviousFilename);
                     ChildFilename = Filename;
+                    CvDbgPrint ("%s\n", Filename);
                 }
             }
             else if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x09)
@@ -226,6 +227,7 @@ CvInitFileTree (
                 {
                 	ParentFilename = (char*)(TreeAml+2);
                         SETFILEPARENT (ChildFilename, ParentFilename);
+                        CvDbgPrint ("%s\n", ParentFilename);
 		}
             }
             ++TreeAml;
@@ -729,8 +731,8 @@ CvCaptureJustComments (
                     break;        
 
                 case FILENAME_COMMENT:
-                    
-                    printf ("Found a filename: %s\n", ACPI_CAST_PTR (char, ParserState->Aml));
+
+                    CvDbgPrint ("Found a filename: %s\n", ACPI_CAST_PTR (char, ParserState->Aml));
                     FileNode = CvFilenameExists (ACPI_CAST_PTR (char, ParserState->Aml), AcpiGbl_FileTreeRoot);
                     if (FileNode && AcpiGbl_IncCommentListHead)
                     {
@@ -741,7 +743,7 @@ CvCaptureJustComments (
                     break;
 
                 case PARENTFILENAME_COMMENT:
-                    printf ("    Found a parent filename.\n");
+                    CvDbgPrint ("    Found a parent filename.\n");
                     break;
 
                 case INCLUDE_COMMENT:
@@ -763,7 +765,7 @@ CvCaptureJustComments (
                         AcpiGbl_IncCommentListTail = AcpiGbl_IncCommentListTail->Next;
                     }
 
-                    printf ("Found a include comment: %s\n", CommentNode->Comment);
+                    CvDbgPrint ("Found a include comment: %s\n", CommentNode->Comment);
                     break;
 
                 default:
