@@ -242,7 +242,8 @@ CvInitFileTree (
 
         while (TreeAml <= FileEnd)
         {
-            if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x08)
+            if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x08 &&
+                (CvIsFilename((char*)(TreeAml+2))))
             {
                 CvDbgPrint ("A9 and a 08 file\n");
                 PreviousFilename = Filename;
@@ -253,26 +254,17 @@ CvInitFileTree (
                  * If it doesn't contain it, then it must be 0xA9 and 0x08 then it
                  * must be some raw data that doesn't outline a filename.
                  */
-                fnameLength = strlen(Filename);
-                temp = Filename + fnameLength - 3;
-                if (CvIsFilename (Filename))
-                {
-                    ADDTOFILETREE (Filename, PreviousFilename);
-                    ChildFilename = Filename;
-                    CvDbgPrint ("%s\n", Filename);
-                }
+                ADDTOFILETREE (Filename, PreviousFilename);
+                ChildFilename = Filename;
+                CvDbgPrint ("%s\n", Filename);
             }
-            else if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x09)
+            else if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x09 &&
+                    (CvIsFilename((char*)(TreeAml+2))))
             {
                 CvDbgPrint ("A9 and a 09 file\n");
-                fnameLength = strlen(Filename);
-                temp = Filename + fnameLength - 3;
-                if (!strcmp(temp, "dsl"))
-                {
-                	ParentFilename = (char*)(TreeAml+2);
-                        SETFILEPARENT (ChildFilename, ParentFilename);
-                        CvDbgPrint ("%s\n", ParentFilename);
-		}
+                ParentFilename = (char*)(TreeAml+2);
+                SETFILEPARENT (ChildFilename, ParentFilename);
+                CvDbgPrint ("%s\n", ParentFilename);
             }
             ++TreeAml;
         }
