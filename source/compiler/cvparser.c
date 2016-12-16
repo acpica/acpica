@@ -131,6 +131,50 @@ CvCommentExists (
     UINT8                   *ToCheck);
 
 
+static BOOLEAN
+CvIsFilename (
+    char                   *Filename);
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CvIsFilename
+ *
+ * PARAMETERS:  filename
+ *
+ * RETURN:      BOOLEAN
+ *
+ * DESCRIPTION: Take a given char* and see if it contains an actual filename.
+ *              If all characters have hexvalues 2E-39, 41-5A, 61-7A, and ends
+ *              with .dsl, we will assume that it is a proper filename.
+ *
+ ******************************************************************************/
+
+static BOOLEAN
+CvIsFilename (
+    char                    *Filename)
+{
+    UINT64                  Length = strlen(Filename);
+    UINT64                  i;
+    char                    *temp = Filename + Length - 4;
+
+
+    if ((Length > 4) && strcmp (temp, ".dsl"))
+    {
+        return FALSE;
+    }
+
+    for(i = 0; i<Length; ++i)
+    {
+        if (Filename[i] < 0x20)  
+        {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+ 
+ 
 /*******************************************************************************
  *
  * FUNCTION:    CvInitFileTree
@@ -211,7 +255,7 @@ CvInitFileTree (
                  */
                 fnameLength = strlen(Filename);
                 temp = Filename + fnameLength - 3;
-                if (!strcmp(temp, "dsl"))
+                if (CvIsFilename (Filename))
                 {
                     ADDTOFILETREE (Filename, PreviousFilename);
                     ChildFilename = Filename;
@@ -576,34 +620,28 @@ void
 CvCaptureJustComments (
     ACPI_PARSE_STATE        *ParserState)
 {
-    UINT8                   *Aml;
-    UINT16                  Opcode;
+    UINT8                   *Aml = ParserState->Aml;
+    UINT16                  Opcode = (UINT16) ACPI_GET8 (Aml);
     UINT32                  Length = 0;
-    UINT8                   CommentOption;
+    UINT8                   CommentOption = (UINT16) ACPI_GET8 (Aml+1);
     char                    *Debug;
     BOOLEAN                 StdDefBlockFlag = FALSE;
     ACPI_COMMENT_LIST_NODE  *CommentNode;
     ACPI_FILE_NODE          *FileNode;
 
 
-    if (!Gbl_CaptureComments)
-    {
-        return;
-    }
-    Aml = ParserState->Aml;
-    Opcode = (UINT16) ACPI_GET8 (Aml);
-    CommentOption = (UINT16) ACPI_GET8 (Aml+1);
-    if (Opcode != AML_COMMENT_OP || ((Opcode == AML_COMMENT_OP) && ((CommentOption < 0x1) || (CommentOption > 0xb))))
+    if (!Gbl_CaptureComments || Opcode != AML_COMMENT_OP || 
+       ((Opcode == AML_COMMENT_OP) && ((CommentOption < 0x1) || 
+        (CommentOption > 0xb))))
     {
        return;
     }
-
 
     while (Opcode == AML_COMMENT_OP)
     {                  
         //CvDbgPrint ("comment aml address: %p\n", Aml);
 
-        if (CvCommentExists(Aml))
+        if (CvCommentExists(ParserState->Aml))
         {
             //CvDbgPrint ("Avoiding capturing an existing comment.\n");
         }
@@ -613,7 +651,7 @@ CvCaptureJustComments (
 
             /*increment past the comment option and point the approperiate char pointers.*/
 
-            ParserState->Aml += 2; 
+            Aml += 2; 
 
             /* found a comment. Now, set pointers to these comments. */
 
@@ -626,7 +664,7 @@ CvCaptureJustComments (
                     /* add to a linked list of nodes. This list will be taken by the parse node created next. */
 
                     CommentNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
-                    CommentNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    CommentNode->Comment = ACPI_CAST_PTR (char, Aml);
                     CommentNode->Next    = NULL;
 
                     if (AcpiGbl_DefBlkCommentListHead==NULL)
@@ -648,7 +686,7 @@ CvCaptureJustComments (
                     /* add to a linked list of nodes. This list will be taken by the parse node created next. */
 
                     CommentNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
-                    CommentNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    CommentNode->Comment = ACPI_CAST_PTR (char, Aml);
                     CommentNode->Next    = NULL;
 
                     if (AcpiGbl_RegCommentListHead==NULL)
@@ -669,7 +707,7 @@ CvCaptureJustComments (
 
                     /* add to a linked list of nodes. This will be taken by the next created parse node. */
                     CommentNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
-                    CommentNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    CommentNode->Comment = ACPI_CAST_PTR (char, Aml);
                     CommentNode->Next    = NULL;
 
                     if (AcpiGbl_EndBlkCommentListHead==NULL)
@@ -688,7 +726,7 @@ CvCaptureJustComments (
 
                     //CvDbgPrint ("found inline comment.\n");
                     Debug = AcpiGbl_CurrentInlineComment;          
-                    AcpiGbl_CurrentInlineComment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    AcpiGbl_CurrentInlineComment = ACPI_CAST_PTR (char, Aml);
                     if (Debug!=NULL)
                     {
                         //CvDbgPrint ("CAUTION: switching %s with %s for inline comments!\n", Debug, AcpiGbl_CurrentInlineComment);
@@ -699,7 +737,7 @@ CvCaptureJustComments (
 
                     //CvDbgPrint ("found EndNode comment.\n");
                     Debug = AcpiGbl_CurrentEndNodeComment;
-                    AcpiGbl_CurrentEndNodeComment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    AcpiGbl_CurrentEndNodeComment = ACPI_CAST_PTR (char, Aml);
                     if (Debug!=NULL)
                     {
                         //CvDbgPrint ("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentEndNodeComment);
@@ -710,7 +748,7 @@ CvCaptureJustComments (
 
                     //CvDbgPrint ("found close brace comment.\n");
                     Debug = AcpiGbl_CurrentCloseBraceComment;
-                    AcpiGbl_CurrentCloseBraceComment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    AcpiGbl_CurrentCloseBraceComment = ACPI_CAST_PTR (char, Aml);
                     if (Debug!=NULL)
                     {
                         //CvDbgPrint ("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentCloseBraceComment);
@@ -722,7 +760,7 @@ CvCaptureJustComments (
                     //CvDbgPrint ("Found comment that belongs after the } for a definition block.\n");
                      
                     Debug = AcpiGbl_CurrentScope->Common.CloseBraceComment;
-                    AcpiGbl_CurrentScope->Common.CloseBraceComment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    AcpiGbl_CurrentScope->Common.CloseBraceComment = ACPI_CAST_PTR (char, Aml);
                     
                     if (Debug!=NULL)
                     {
@@ -732,8 +770,8 @@ CvCaptureJustComments (
 
                 case FILENAME_COMMENT:
 
-                    CvDbgPrint ("Found a filename: %s\n", ACPI_CAST_PTR (char, ParserState->Aml));
-                    FileNode = CvFilenameExists (ACPI_CAST_PTR (char, ParserState->Aml), AcpiGbl_FileTreeRoot);
+                    CvDbgPrint ("Found a filename: %s\n", ACPI_CAST_PTR (char, Aml));
+                    FileNode = CvFilenameExists (ACPI_CAST_PTR (char, Aml), AcpiGbl_FileTreeRoot);
                     if (FileNode && AcpiGbl_IncCommentListHead)
                     {
                         FileNode->IncludeComment = AcpiGbl_IncCommentListHead;
@@ -751,7 +789,7 @@ CvCaptureJustComments (
                     /* add to a linked list of nodes. This list will be taken by the parse node created next. */
 
                     CommentNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
-                    CommentNode->Comment = ACPI_CAST_PTR (char, ParserState->Aml);
+                    CommentNode->Comment = ACPI_CAST_PTR (char, Aml);
                     CommentNode->Next    = NULL;
 
                     if (AcpiGbl_IncCommentListHead==NULL)
