@@ -199,9 +199,6 @@ CvInitFileTree (
     char                    *PreviousFilename = NULL;
     char                    *ParentFilename = NULL;
     char                    *ChildFilename = NULL;
-    UINT8                   fnameLength;
-    char                    *temp;
-
 
 
     /* 
