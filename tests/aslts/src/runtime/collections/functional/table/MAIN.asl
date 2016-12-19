@@ -49,7 +49,6 @@ DefinitionBlock(
 
 		// Final actions
 		Store(FNSH(), Local7)
-		Store(0, Local7)
 
 		return (Local7)
 	}
