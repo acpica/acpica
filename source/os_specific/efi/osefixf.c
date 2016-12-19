@@ -668,3 +668,230 @@ AcpiEfiGetPciDev (
     uefi_call_wrapper (BS->FreePool, 1, Handles);
     return (NULL);
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsReadPort
+ *
+ * PARAMETERS:  Address             - Address of I/O port/register to read
+ *              Value               - Where value is placed
+ *              Width               - Number of bits
+ *
+ * RETURN:      Value read from port
+ *
+ * DESCRIPTION: Read data from an I/O port or register
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsReadPort (
+    ACPI_IO_ADDRESS         Address,
+    UINT32                  *Value64,
+    UINT32                  Width)
+{
+    ACPI_EFI_STATUS         EfiStatus;
+    ACPI_EFI_PCI_ROOT_BRIDGE_IO *PciRootBridge = NULL;
+    ACPI_EFI_GUID           AcpiEfiPciRootBridgeIoProtocol = ACPI_EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL;
+    UINT8                   Value8;
+    UINT16                  Value16;
+    UINT32                  Value32;
+
+    EfiStatus = uefi_call_wrapper (BS->LocateProtocol, 3, &AcpiEfiPciRootBridgeIoProtocol, NULL, (VOID **) &PciRootBridge);
+    if (ACPI_EFI_ERROR (EfiStatus))
+    {
+        return (AE_NOT_FOUND);
+    }
+
+    switch (Width)
+    {
+    case 8:
+        EfiStatus = uefi_call_wrapper (PciRootBridge->Io.Read, 5, PciRootBridge,
+            AcpiEfiPciWidthUint8, Address, 1, (VOID *) &Value8);
+        *Value64 = Value8;
+        break;
+
+    case 16:
+        EfiStatus = uefi_call_wrapper (PciRootBridge->Io.Read, 5, PciRootBridge,
+            AcpiEfiPciWidthUint16, Address, 1, (VOID *) &Value16);
+        *Value64 = Value16;
+        break;
+
+    case 32:
+        EfiStatus = uefi_call_wrapper (PciRootBridge->Io.Read, 5, PciRootBridge,
+            AcpiEfiPciWidthUint32, Address, 1, (VOID *) &Value32);
+        *Value64 = Value32;
+        break;
+
+    case 64:
+        EfiStatus = uefi_call_wrapper (PciRootBridge->Io.Read, 5, PciRootBridge,
+            AcpiEfiPciWidthUint64, Address, 1, (VOID *) Value64);
+        break;
+
+    default:
+        return (AE_BAD_PARAMETER);
+    }
+
+    return (ACPI_EFI_ERROR (EfiStatus)) ? (AE_ERROR) : (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsWritePort
+ *
+ * PARAMETERS:  Address             - Address of I/O port/register to write
+ *              Value               - Value to write
+ *              Width               - Number of bits
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Write data to an I/O port or register
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsWritePort (
+    ACPI_IO_ADDRESS         Address,
+    UINT32                  Value64,
+    UINT32                  Width)
+{
+    ACPI_EFI_STATUS         EfiStatus;
+    ACPI_EFI_PCI_ROOT_BRIDGE_IO *PciRootBridge = NULL;
+    ACPI_EFI_GUID           AcpiEfiPciRootBridgeIoProtocol = ACPI_EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL;
+    UINT8                   Value8;
+    UINT16                  Value16;
+    UINT32                  Value32;
+
+    EfiStatus = uefi_call_wrapper (BS->LocateProtocol, 3, &AcpiEfiPciRootBridgeIoProtocol, NULL, (VOID **) &PciRootBridge);
+    if (ACPI_EFI_ERROR (EfiStatus))
+    {
+        return (AE_NOT_FOUND);
+    }
+
+    switch (Width)
+    {
+    case 8:
+        Value8 = (UINT8) Value64;
+        EfiStatus = uefi_call_wrapper (PciRootBridge->Io.Write, 5, PciRootBridge,
+            AcpiEfiPciWidthUint8, Address, 1, (VOID *) &Value8);
+        break;
+
+    case 16:
+        Value16 = (UINT16) Value64;
+        EfiStatus = uefi_call_wrapper (PciRootBridge->Io.Write, 5, PciRootBridge,
+            AcpiEfiPciWidthUint16, Address, 1, (VOID *) &Value16);
+        break;
+
+    case 32:
+        Value32 = (UINT32) Value64;
+        EfiStatus = uefi_call_wrapper (PciRootBridge->Io.Write, 5, PciRootBridge,
+            AcpiEfiPciWidthUint32, Address, 1, (VOID *) &Value32);
+        break;
+
+    case 64:
+        EfiStatus = uefi_call_wrapper (PciRootBridge->Io.Write, 5, PciRootBridge,
+            AcpiEfiPciWidthUint64, Address, 1, (VOID *) &Value64);
+        break;
+
+    default:
+        return (AE_BAD_PARAMETER);
+    }
+
+    return (ACPI_EFI_ERROR (EfiStatus)) ? (AE_ERROR) : (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsReadMemory
+ *
+ * PARAMETERS:  Address             - Physical Memory Address to read
+ *              Value               - Where value is placed
+ *              Width               - Number of bits (8,16,32, or 64)
+ *
+ * RETURN:      Value read from physical memory address. Always returned
+ *              as a 64-bit integer, regardless of the read width.
+ *
+ * DESCRIPTION: Read data from a physical memory address
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsReadMemory (
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT64                  *Value,
+    UINT32                  Width)
+{
+
+    switch (Width)
+    {
+    case 8:
+        *Value = *(UINT8 *) Address;
+        break;
+
+    case 16:
+        *Value = *(UINT16 *) Address;
+        break;
+
+    case 32:
+        *Value = *(UINT32 *) Address;
+        break;
+
+    case 64:
+        *Value = *(UINT64 *) Address;
+        break;
+
+    default:
+        return (AE_BAD_PARAMETER);
+    }
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsWriteMemory
+ *
+ * PARAMETERS:  Address             - Physical Memory Address to write
+ *              Value               - Value to write
+ *              Width               - Number of bits (8,16,32, or 64)
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Write data to a physical memory address
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsWriteMemory (
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT64                  Value,
+    UINT32                  Width)
+{
+
+    switch (Width)
+    {
+    case 8:
+        *(UINT8 *) Address = (UINT8) Value;
+        break;
+
+    case 16:
+        *(UINT16 *) Address = (UINT16) Value;
+        break;
+
+    case 32:
+        *(UINT32 *) Address = (UINT32) Value;
+        break;
+
+    case 64:
+        *(UINT64 *) Address = Value;
+        break;
+
+    default:
+        return (AE_BAD_PARAMETER);
+    }
+
+    return (AE_OK);
+}

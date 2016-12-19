@@ -968,6 +968,61 @@ typedef struct _ACPI_EFI_PCI_IO {
     VOID                                *RomImage;
 } ACPI_EFI_PCI_IO;
 
+/*
+ * EFI PCI Root Bridge I/O Protocol
+ */
+#define ACPI_EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL \
+  { 0x2f707ebb, 0x4a1a, 0x11d4, {0x9a, 0x38, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d} }
+
+typedef enum {
+    AcpiEfiPciWidthUint8,
+    AcpiEfiPciWidthUint16,
+    AcpiEfiPciWidthUint32,
+    AcpiEfiPciWidthUint64,
+    AcpiEfiPciWidthFifoUint8,
+    AcpiEfiPciWidthFifoUint16,
+    AcpiEfiPciWidthFifoUint32,
+    AcpiEfiPciWidthFifoUint64,
+    AcpiEfiPciWidthFillUint8,
+    AcpiEfiPciWidthFillUint16,
+    AcpiEfiPciWidthFillUint32,
+    AcpiEfiPciWidthFillUint64,
+    AcpiEfiPciWidthMaximum
+} ACPI_EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL_WIDTH;
+
+typedef
+ACPI_EFI_STATUS
+(ACPI_EFI_API *ACPI_EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL_IO_MEM)(
+    struct _ACPI_EFI_PCI_ROOT_BRIDGE_IO      *This,
+    ACPI_EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL_WIDTH Width,
+    UINT64                              Address,
+    UINTN                               Count,
+    VOID                                *Buffer);
+
+typedef struct {
+    ACPI_EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL_IO_MEM Read;
+    ACPI_EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL_IO_MEM Write;
+} ACPI_EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL_ACCESS;
+
+typedef struct _ACPI_EFI_PCI_ROOT_BRIDGE_IO {
+    ACPI_EFI_HANDLE                     ParentHandle;
+    ACPI_EFI_UNKNOWN_INTERFACE          PollMem;
+    ACPI_EFI_UNKNOWN_INTERFACE          PollIo;
+    ACPI_EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL_ACCESS Mem;
+    ACPI_EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL_ACCESS Io;
+    ACPI_EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL_ACCESS Pci;
+    ACPI_EFI_UNKNOWN_INTERFACE          CopyMem;
+    ACPI_EFI_UNKNOWN_INTERFACE          Map;
+    ACPI_EFI_UNKNOWN_INTERFACE          Unmap;
+    ACPI_EFI_UNKNOWN_INTERFACE          AllocateBuffer;
+    ACPI_EFI_UNKNOWN_INTERFACE          FreeBuffer;
+    ACPI_EFI_UNKNOWN_INTERFACE          Flush;
+    ACPI_EFI_UNKNOWN_INTERFACE          GetAttributes;
+    ACPI_EFI_UNKNOWN_INTERFACE          SetAttributes;
+    ACPI_EFI_UNKNOWN_INTERFACE          Configuration;
+    UINT32                              SegmentNumber;
+} ACPI_EFI_PCI_ROOT_BRIDGE_IO;
+
 /* GNU EFI definitions */
 
 #if defined(_GNU_EFI)

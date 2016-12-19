@@ -319,6 +319,7 @@ struct _ACPI_EFI_FILE_HANDLE;
 struct _ACPI_EFI_BOOT_SERVICES;
 struct _ACPI_EFI_SYSTEM_TABLE;
 struct _ACPI_EFI_PCI_IO;
+struct _ACPI_EFI_PCI_ROOT_BRIDGE_IO;
 
 extern struct _ACPI_EFI_SYSTEM_TABLE        *ST;
 extern struct _ACPI_EFI_BOOT_SERVICES       *BS;
