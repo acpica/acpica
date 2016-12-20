@@ -239,18 +239,17 @@ CvInitFileTree (
 
         while (TreeAml <= FileEnd)
         {
+           /*
+            * Make sure that this filename contains a .dsl extension.
+            * If it doesn't contain it, then it must be 0xA9 and 0x08 then it
+            * must be some raw data that doesn't outline a filename.
+            */
             if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x08 &&
                 (CvIsFilename((char*)(TreeAml+2))))
             {
                 CvDbgPrint ("A9 and a 08 file\n");
                 PreviousFilename = Filename;
                 Filename = (char*) (TreeAml+2);
-
-                /*
-                 * Make sure that this filename contains a .dsl extension.
-                 * If it doesn't contain it, then it must be 0xA9 and 0x08 then it
-                 * must be some raw data that doesn't outline a filename.
-                 */
                 ADDTOFILETREE (Filename, PreviousFilename);
                 ChildFilename = Filename;
                 CvDbgPrint ("%s\n", Filename);
