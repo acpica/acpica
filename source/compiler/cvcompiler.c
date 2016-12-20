@@ -673,11 +673,10 @@ CvCommentNodeCalloc (
 {
    ACPI_COMMENT_LIST_NODE *NewCommentNode;
 
-   CvDbgPrint("starting comment node allocation\n");
+
    NewCommentNode =
        (ACPI_COMMENT_LIST_NODE*) UtLocalCalloc (sizeof(ACPI_COMMENT_LIST_NODE));
    NewCommentNode->Next = 0;
-   CvDbgPrint("    Finished allocation\n");
    return NewCommentNode;
 }
 
@@ -824,7 +823,7 @@ CvProcessCommentState (
 
     if (input == ' ')
     {
-        Gbl_CommentState.SpacesBefore++;
+        ++Gbl_CommentState.SpacesBefore;
     }
     else
     {
@@ -917,9 +916,9 @@ CvAddToCommentList (
  * PARAMETERS:  InlineComment      - Append to the end of this string.
  *              toAdd              - Contains the comment to be inserted
  *
- * RETURN:      None
+ * RETURN:      Str                - toAdd appended to InlineComment
  *
- * DESCRIPTION: Concatenate
+ * DESCRIPTION: Concatenate ToAdd to InlineComment
  *
  ******************************************************************************/
 
@@ -928,28 +927,23 @@ CvAppendInlineComment (
     char                    *InlineComment,
     char                    *ToAdd)
 {
-    //CvDbgPrint ("Appending to current inline comment.\n");
+    char*                   Str;
+    UINT32                  Size = 0;
 
-    char*  Str  = NULL;
-    UINT32 Size = 0;
+
     if (InlineComment==NULL)
     {
         return ToAdd;
     }
-
-
-    Size = strlen (InlineComment);
-
     if (ToAdd != NULL)
     {
-        Size += strlen (ToAdd);
+        Size = strlen (ToAdd);
     }
-
-
+    Size += strlen (InlineComment);
     Str = UtStringCacheCalloc (Size+1);
     strcpy (Str, InlineComment);
     strcat (Str, ToAdd);
-    Str[strlen (Str)] = 0; //null terminate
+    Str[Size+1] = 0;
 
     return Str;
 }
