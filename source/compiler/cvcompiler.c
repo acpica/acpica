@@ -556,7 +556,6 @@ void
 CgWriteAmlComment(
     ACPI_PARSE_OBJECT       *Op)
 {
-    UINT8                   CommentOpcode;
     ACPI_COMMENT_LIST_NODE  *Current;
     UINT8                   CommentOption;
     char                    *NewFilename;
@@ -567,7 +566,6 @@ CgWriteAmlComment(
         return;
     }
 
-    CommentOpcode = (UINT8)AML_COMMENT_OP;
 
     /* Print out the filename comment if needed */
     if (Op->Asl.FileChanged)
@@ -576,21 +574,13 @@ CgWriteAmlComment(
         /* first, print the file name comment after changing .asl to .dsl */
 
         NewFilename = CvChangeFileExt(Op->Asl.Filename, FILE_SUFFIX_DISASSEMBLY);
-
         CvDbgPrint ("Writing file comment, \"%s\" for %s\n", NewFilename, Op->Asl.ParseOpName);
-    
-        CommentOption = FILENAME_COMMENT;
-        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-        CgLocalWriteAmlData (Op, &CommentOption, 1);
-        CgLocalWriteAmlData (Op, NewFilename, strlen (NewFilename) + 1); 
+        CgWriteOneAmlComment(Op, NewFilename, FILENAME_COMMENT);
 
         if (Op->Asl.ParentFilename && strcmp (Op->Asl.ParentFilename, Op->Asl.Filename))
         { 
             ParentFilename = CvChangeFileExt(Op->Asl.ParentFilename, FILE_SUFFIX_DISASSEMBLY);
-            CommentOption = PARENTFILENAME_COMMENT;
-            CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-            CgLocalWriteAmlData (Op, &CommentOption, 1);
-            CgLocalWriteAmlData (Op, ParentFilename, strlen (ParentFilename) + 1); 
+            CgWriteOneAmlComment(Op, ParentFilename, PARENTFILENAME_COMMENT);
         }
 
         /* prevent multiple writes of the same comment */
