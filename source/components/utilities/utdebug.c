@@ -284,7 +284,7 @@ AcpiDebugPrint (
      * Display the module name, current line number, thread ID (if requested),
      * current procedure nesting level, and the current procedure name
      */
-    AcpiOsPrintf ("%9s-%04d ", ModuleName, LineNumber);
+    AcpiOsPrintf ("%9s-%04ld ", ModuleName, LineNumber);
 
 #ifdef ACPI_APPLICATION
     /*
@@ -298,7 +298,7 @@ AcpiDebugPrint (
         AcpiOsPrintf ("[%u] ", (UINT32) ThreadId);
     }
 
-    AcpiOsPrintf ("[%02d] ", AcpiGbl_NestingLevel);
+    AcpiOsPrintf ("[%02ld] ", AcpiGbl_NestingLevel);
 #endif
 
     AcpiOsPrintf ("%-22.22s: ", AcpiUtTrimFunctionName (FunctionName));

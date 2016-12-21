@@ -540,8 +540,8 @@ ExecuteOSI (void)
 
     if (ReturnValue.Length < sizeof (ACPI_OBJECT))
     {
-        AcpiOsPrintf ("Return value from _OSI method too small, %.8lX\n",
-            (UINT64) ReturnValue.Length);
+        AcpiOsPrintf ("Return value from _OSI method too small, %.8X\n",
+            ReturnValue.Length);
         goto ErrorExit;
     }
 

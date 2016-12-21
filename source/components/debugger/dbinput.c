@@ -731,7 +731,7 @@ AcpiDbGetLine (
         InputBuffer))
     {
         AcpiOsPrintf (
-            "Buffer overflow while parsing input line (max %lu characters)\n",
+            "Buffer overflow while parsing input line (max %u characters)\n",
             sizeof (AcpiGbl_DbParsedBuf));
         return (0);
     }
@@ -1003,10 +1003,10 @@ AcpiDbCommandDispatch (
         if (ParamCount == 0)
         {
             AcpiOsPrintf (
-                "Current debug level for file output is:    %8.8X\n",
+                "Current debug level for file output is:    %8.8lX\n",
                 AcpiGbl_DbDebugLevel);
             AcpiOsPrintf (
-                "Current debug level for console output is: %8.8X\n",
+                "Current debug level for console output is: %8.8lX\n",
                 AcpiGbl_DbConsoleDebugLevel);
         }
         else if (ParamCount == 2)
@@ -1015,7 +1015,7 @@ AcpiDbCommandDispatch (
             AcpiGbl_DbConsoleDebugLevel =
                 strtoul (AcpiGbl_DbArgs[1], NULL, 16);
             AcpiOsPrintf (
-                "Debug Level for console output was %8.8X, now %8.8X\n",
+                "Debug Level for console output was %8.8lX, now %8.8lX\n",
                 Temp, AcpiGbl_DbConsoleDebugLevel);
         }
         else
@@ -1023,7 +1023,7 @@ AcpiDbCommandDispatch (
             Temp = AcpiGbl_DbDebugLevel;
             AcpiGbl_DbDebugLevel = strtoul (AcpiGbl_DbArgs[1], NULL, 16);
             AcpiOsPrintf (
-                "Debug Level for file output was %8.8X, now %8.8X\n",
+                "Debug Level for file output was %8.8lX, now %8.8lX\n",
                 Temp, AcpiGbl_DbDebugLevel);
         }
         break;
