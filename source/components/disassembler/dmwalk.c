@@ -527,6 +527,20 @@ AcpiDmDescendingOp (
         return (AE_CTRL_DEPTH);
     }
 
+    if (AcpiDmIsTempName(Op))
+    {
+        /* Ignore compiler generated temporary names */
+
+        return (AE_CTRL_DEPTH);
+    }
+
+    if (Op->Common.DisasmOpcode == ACPI_DASM_IGNORE_SINGLE)
+    {
+        /* Ignore this op, but not it's children */
+
+        return (AE_OK);
+    }
+
     if (Op->Common.AmlOpcode == AML_IF_OP)
     {
         NextOp = AcpiPsGetDepthNext (NULL, Op);
@@ -961,7 +975,8 @@ AcpiDmAscendingOp (
     ACPI_PARSE_OBJECT       *ParentOp;
 
 
-    if (Op->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)
+    if (Op->Common.DisasmFlags & ACPI_PARSEOP_IGNORE ||
+        Op->Common.DisasmOpcode == ACPI_DASM_IGNORE_SINGLE)
     {
         /* Ignore this op -- it was handled elsewhere */
 
@@ -1121,9 +1136,12 @@ AcpiDmAscendingOp (
 
         /*
          * Just completed a parameter node for something like "Buffer (param)".
-         * Close the paren and open up the term list block with a brace
+         * Close the paren and open up the term list block with a brace.
+         *
+         * Switch predicates don't have a Next node but require a closing paren
+         * and opening brace.
          */
-        if (Op->Common.Next)
+        if (Op->Common.Next || Op->Common.DisasmOpcode == ACPI_DASM_SWITCH_PREDICATE)
         {
             AcpiOsPrintf (")");
 
@@ -1136,6 +1154,13 @@ AcpiDmAscendingOp (
                 (ParentOp->Asl.AmlOpcode == AML_NAME_OP))
             {
                 AcpiDmPredefinedDescription (ParentOp);
+            }
+
+            /* Correct the indentation level for Switch and Case predicates */
+
+            if (Op->Common.DisasmOpcode == ACPI_DASM_SWITCH_PREDICATE)
+            {
+                --Level;
             }
 
             AcpiOsPrintf ("\n");
