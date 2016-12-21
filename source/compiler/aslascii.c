@@ -252,8 +252,8 @@ FlIsFileAsciiSource (
         if (DisplayErrors)
         {
             AcpiOsPrintf (
-                "Total %u invalid characters found in input source text, "
-                "could be a binary file\n", BadBytes);
+                "Total %lu invalid characters found in input source text, "
+                "could be a binary file\n", (UINT64) BadBytes);
             AslError (ASL_ERROR, ASL_MSG_NON_ASCII, NULL, Filename);
         }
 

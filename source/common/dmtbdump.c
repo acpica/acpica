@@ -2450,7 +2450,7 @@ AcpiDmDumpMcfg (
     {
         if (Offset + sizeof (ACPI_MCFG_ALLOCATION) > Table->Length)
         {
-            AcpiOsPrintf ("Warning: there are %u invalid trailing bytes\n",
+            AcpiOsPrintf ("Warning: there are %lu invalid trailing bytes\n",
                 sizeof (ACPI_MCFG_ALLOCATION) - (Offset - Table->Length));
             return;
         }

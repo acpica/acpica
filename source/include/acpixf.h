@@ -248,6 +248,14 @@ ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_VerifyTableChecksum, TRUE);
 ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_EnableAmlDebugObject, FALSE);
 
 /*
+ * Optionally enable ACPI_DO_ONCE to avoid log flodding. Default is TRUE
+ * so that when ACPI_USE_DO_ONCE_MACRO is enabled, log flooding can be
+ * avoided by default. And this option is provided so that OSPMs can
+ * disable it during runtime.
+ */
+ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_EnableDoOnceMacro, TRUE);
+
+/*
  * Optionally copy the entire DSDT to local memory (instead of simply
  * mapping it.) There are some BIOSs that corrupt or replace the original
  * DSDT, creating the need for this option. Default is FALSE, do not copy

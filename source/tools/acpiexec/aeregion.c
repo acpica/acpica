@@ -650,12 +650,12 @@ AeRegionHandler (
         if (AcpiGbl_DisplayRegionAccess)
         {
             AcpiOsPrintf ("AcpiExec: %s "
-                "%s: Attr %X Addr %.4X BaseAddr %.4X Len %.2X Width %X BufLen %X",
+                "%s: Attr %X Addr %.4X BaseAddr %.4X Len %.2lX Width %X BufLen %X",
                 AcpiUtGetRegionName (SpaceId),
                 (Function & ACPI_IO_MASK) ? "Write" : "Read ",
                 (UINT32) (Function >> 16),
                 (UINT32) Address, (UINT32) BaseAddress,
-                Length, BitWidth, Buffer[1]);
+                (UINT64) Length, BitWidth, Buffer[1]);
 
             /* GenericSerialBus has a Connection() parameter */
 
@@ -687,10 +687,10 @@ AeRegionHandler (
         if (AcpiGbl_DisplayRegionAccess)
         {
             AcpiOsPrintf ("AcpiExec: IPMI "
-                "%s: Attr %X Addr %.4X BaseAddr %.4X Len %.2X Width %X BufLen %X\n",
+                "%s: Attr %X Addr %.4X BaseAddr %.4X Len %.2lX Width %X BufLen %X\n",
                 (Function & ACPI_IO_MASK) ? "Write" : "Read ",
                 (UINT32) (Function >> 16), (UINT32) Address, (UINT32) BaseAddress,
-                Length, BitWidth, Buffer[1]);
+                (UINT64) Length, BitWidth, Buffer[1]);
         }
 
         /*
@@ -967,9 +967,9 @@ DoFunction:
         case ACPI_ADR_SPACE_SYSTEM_MEMORY:
 
             AcpiOsPrintf ("AcpiExec: SystemMemory "
-                "%s: Val %.8X Addr %.4X Width %X [REGION: BaseAddr %.4X Len %.2X]\n",
+                "%s: Val %.8X Addr %.4X Width %X [REGION: BaseAddr %.4X Len %.2lX]\n",
                 (Function & ACPI_IO_MASK) ? "Write" : "Read ",
-                (UINT32) *Value, (UINT32) Address, BitWidth, (UINT32) BaseAddress, Length);
+                (UINT32) *Value, (UINT32) Address, BitWidth, (UINT32) BaseAddress, (UINT64) Length);
             break;
 
         case ACPI_ADR_SPACE_GPIO:   /* ACPI 5.0 */
@@ -980,9 +980,9 @@ DoFunction:
                 MyContext->Length, &Resource);
 
             AcpiOsPrintf ("AcpiExec: GeneralPurposeIo "
-                "%s: Val %.8X Addr %.4X BaseAddr %.4X Len %.2X Width %X AccLen %.2X Conn %p\n",
+                "%s: Val %.8X Addr %.4X BaseAddr %.4X Len %.2lX Width %X AccLen %.2X Conn %p\n",
                 (Function & ACPI_IO_MASK) ? "Write" : "Read ", (UINT32) *Value,
-                (UINT32) Address, (UINT32) BaseAddress, Length, BitWidth,
+                (UINT32) Address, (UINT32) BaseAddress, (UINT64) Length, BitWidth,
                 MyContext->AccessLength, MyContext->Connection);
             break;
 

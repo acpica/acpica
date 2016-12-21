@@ -302,10 +302,17 @@
  * the plist contains a set of parens to allow variable-length lists.
  * These macros are used for both the debug and non-debug versions of the code.
  */
+#if defined (ACPI_USE_DO_ONCE_MACRO) && defined (ACPI_DO_ONCE)
+#define ACPI_INFO(plist)                ACPI_DO_ONCE(AcpiInfo plist)
+#define ACPI_WARNING(plist)             ACPI_DO_ONCE(AcpiWarning plist)
+#define ACPI_EXCEPTION(plist)           ACPI_DO_ONCE(AcpiException plist)
+#define ACPI_ERROR(plist)               ACPI_DO_ONCE(AcpiError plist)
+#else
 #define ACPI_INFO(plist)                AcpiInfo plist
 #define ACPI_WARNING(plist)             AcpiWarning plist
 #define ACPI_EXCEPTION(plist)           AcpiException plist
 #define ACPI_ERROR(plist)               AcpiError plist
+#endif
 #define ACPI_BIOS_WARNING(plist)        AcpiBiosWarning plist
 #define ACPI_BIOS_ERROR(plist)          AcpiBiosError plist
 #define ACPI_DEBUG_OBJECT(obj,l,i)      AcpiExDoDebugObject(obj,l,i)

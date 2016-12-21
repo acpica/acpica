@@ -623,8 +623,11 @@ AeLoadTables (
     ACPI_STATUS             Status;
 
 
+    ACPI_FUNCTION_NAME (AeLoadTables);
+
     Status = AcpiLoadTables ();
     ACPI_CHECK_OK (AcpiLoadTables, Status);
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "\n"));
 
     /*
      * Test run-time control method installation. Do it twice to test code
