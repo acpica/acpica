@@ -348,11 +348,6 @@ AcpiTbLoadNamespace (
         Status = AE_CTRL_TERMINATE;
     }
 
-#ifdef ACPI_APPLICATION
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "\n"));
-#endif
-
-
 UnlockAndExit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
     return_ACPI_STATUS (Status);
