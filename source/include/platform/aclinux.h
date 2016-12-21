@@ -146,10 +146,6 @@
 #define ACPI_DEBUGGER
 #endif
 
-#ifdef CONFIG_ACPI_MESSAGE_ONCE
-#define ACPI_USE_DO_ONCE_MACRO 1
-#endif
-
 #include <linux/string.h>
 #include <linux/kernel.h>
 #include <linux/ctype.h>
