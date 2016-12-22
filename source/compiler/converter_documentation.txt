@@ -1,0 +1,111 @@
+This document provides a high-level explanation of how the converter works.
+
+The converter can be described in 2 stages:
+
+Compiler - The main goal in the compilation phase is to retain the comments within the byte code
+           rather than discarding the comments. This is done in AslDoComment() and
+           AslDoCommentType2() within aslsupport.l. These are the primary comment capturing
+           functions within the compiler. Once a comment is captured, a comment is categorized
+           using CvProcessCommentState() and placed within an acpi_parse_object using
+           CvPlaceComment() within aslsupport.l. Once the ASL has been parsed and the comments
+           have been associated with each parse node, the package lengths are computed. Since we
+           need to output the comments in AML bytecode, the lengths of the comments will be 
+           accounted for within the parent parse node. After package length computation, the AML
+           bytecode generation begins. Each comment associated with a parse node will be printed
+           before the actual bytecode. The bytecode has the following format:
+
+               [AML_COMMENTOP] [Category number] [contents of the comment] [null terminator]
+
+           As an example, a regular comment like "/* Comment 1 */" will be encoded as
+
+               0xA9 0x01 /* Comment 1 */ 0x00
+
+           for more information on comment categories, look at the Comment Types section below.
+
+           Once the codegen walk has completed, the AML is ready to be disassembled.
+
+
+
+Disassembler - The disassembler takes AML that contains the comment bytecode and outputs a dsl
+               file with the comments. As the AML is scanned, comments are detected within the
+               parse loop through CvCaptureJustComments() and CvCaptureComments() within
+               cvparser.c. These functions first store comments within global variables and
+               places them into the parse node associated with the bytecode that comes after
+               the comment bytecode. For example, the following line is bytecode that encodes
+               a comment that is preceded by a 0x08 opcode (also known as AML_NAMEOP).
+
+               0xA9 0x01 /* Comment 1 */ 0x00 0x08 ...
+
+               When scanning the AML, CvCaptureJustComments() will place the comment in a
+               global list. After a new parse object is created for the 0x08 bytecode, the
+               comments within a global list will be placed in the newly created parse object
+               of the 0x08 bytecode.
+
+               After the parse tree has been built, the disassembler will walk the parse tree
+               and generate ASL code of the parse tree. As the disassembler walks the parse
+               tree comments are printed in the approperiate places with functions within
+               cvdisasm.c.
+
+
+
+Comment types - There are several different places that a comment could show up within ASL code.
+                The following is a list of comment types that are used in this converter:
+
+                STANDARDCOMMENT - These are comments between blocks of code.
+
+                                  Example:     /* This is a regular comment */
+                                               Name (a, 0)
+
+                INLINECOMMENT   - These are comments that come after code on the same line but
+                                  come before the closing paren.
+
+                                  Example:  Name (a, 0 /* this is an linline comment of 0*/ )
+
+                ENDNODECOMMENT  - These are inline comments that come after the closing paren.
+
+                                  Example:  Name (a, 0) /* this is an ENDNODECOMMENT of name */
+
+                CLOSEBRACECOMMENT - These are comments that come after a closing brace.
+
+                                  Example:  if(0){++i} /* this is a CLOSEBRACECOMMENT of if */
+
+                ENDBLKCOMMENT - These are comments between a piece of code and close brace.
+
+                                  Example:  if(0){++i /* this is an ENDBLKCOMMENT of if */ }
+
+                INCLUDECOMMENT - These are comments above ASL include statements.
+
+
+                                  Example:  /* this is an include comment of Include */
+                                            Include ("file.asl")
+
+                STD_DEFBLK_COMMENT - These comments are comments that come before a definitionblock.
+
+                                  Example:  /* this is an STD_DEFBLK_COMMENT */
+                                            DefinitionBlock(){}
+
+
+                END_DEFBLK_COMMENT - These comments are comments that come after the closing brace
+                                     of a definition block
+
+                                  Example:  /* this is an STD_DEFBLK_COMMENT */
+
+                                            DefinitionBlock()
+                                            {
+                                                return 0
+
+                                                /*this is an ENDBLKCOMMENT */
+
+                                            } /* This is a close brace comment */
+
+                                            /* This one is an END_DEFBLK_COMMENT */
+
+                Of the above comment types, there are types that are stored in single char*
+                variables and there are comment types that are stored within a linked list of
+                char*'s. Since some comment types could span multiple lines, each line of 
+                STD_DEFBLK_COMMENT, END_DEFBLK_COMMENT, REGCOMMENT, INCLUDECOMMENT, and 
+                ENDBLKCOMMENT are stored as separate nodes within a linked list. This facilitates
+                indentation of each line of multiline comments. All other comments are stored within
+                a single char* variable in ACPI_PARSE_COMMON.
+
+Multiple files - 
