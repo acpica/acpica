@@ -108,4 +108,65 @@ Comment types - There are several different places that a comment could show up 
                 indentation of each line of multiline comments. All other comments are stored within
                 a single char* variable in ACPI_PARSE_COMMON.
 
-Multiple files - 
+Multiple files - Because ASL files can contain include statements, the converter needs to be able to
+                 output the converted versions of the included files as well. In order to do this,
+                 the compiler generates FILENAME_COMMENT's and PARENTFILENAME_COMMENT's in the AML.
+                 These bytecodes can appear as just a FILENAME_COMMENT or a FILENAME_COMMENT
+                 immediately followed by PARENTFILENAME_COMMENT. These comments serve as markers
+                 within the bytecode as to which parts of the bytecode belong to specific files.
+                 For example, lets say that we have the following ASL file structure:
+
+                 ex1.asl:
+
+                     DefinitionBlock("ex1.aml", "DSDT", 0x02, "Intel", "Many", 0x00000001)
+                     {
+                         [ ASL code for ex1.asl ]
+                         Include("ex2.asl")
+                         [ More ASL code for ex1.asl ]
+                     }
+
+                 ex2.asl (Note, this file only contains a single ASL include statement)
+    
+                     Include("ex3.asl")
+
+                 ex3.asl:
+
+                     [ ASL code for ex3.asl ]
+
+
+                 After compilation, the bytecode would look something like this:
+
+                 1  [ AML table header ]
+                 2  /* This is a marker to denote that ex1.dsl starts here */
+                 3  0xA9 0x08 "ex1.dsl" 0x00 
+                 4  [ AML code for ex1.asl ]
+                 5  /* This is a marker that ex2.dsl starts here and that ex2.dsl is included in ex1.dsl */
+                 6  0xA9 0x08 "ex2.dsl" 0x00 0xA9 0x09 "ex1.dsl" 0x00 
+                 7  /* This is a marker that ex3.dsl starts here and that ex3.dsl is included in ex2.dsl */
+                 8  0xA9 0x08 "ex3.dsl" 0x00 0xA9 0x09 "ex2.dsl" 0x00
+                 9  [ AML code for ex3.asl ]
+                 10 /* This is a marker to denote that ex1.dsl starts again here */
+                 11 0xA9 0x08 "ex1.dsl" 0x00 
+                 12 [ More AML code for ex1.asl ]
+
+                 Given this bytecode, the AML parser builds a filetree based on examining the
+                 FILENAME_COMMENT and PARENTFILENAME_COMMENT. For the above bytecode, we will get
+                 a filetree that looks something like this:
+
+                 ex3.dsl -> ex2.dsl -> ex1.dsl
+
+                 note: the "->" denotes a parent relationship.
+
+                 Each node within this tree will contain a range of addresses for that file with the parent
+                 file spanning the entire length of all of their child files.
+
+                 After the file tree has been initialized, the AML parser begins parsing the bytecode. As the
+                 parser creates new parse objects, the AML address of that bytecode is searched in the
+                 filetree. If an AML address falls within a particular filenode's range, the parse node's
+                 filename field is assigned to the filenode's filename field. After the AML parsetree is 
+                 built, each node is annotated with which file it belongs to.
+
+                 During the disassembly walk, each parsenode is output to their respective files. When a file
+                 change is detected, an include statement and comments associated with the include statement
+                 is printed and ASL output is switched to the included file.
+                 
