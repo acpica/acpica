@@ -234,10 +234,6 @@ AcpiOsTerminateDebugger (
 /*
  * OSL interfaces added by Linux
  */
-void
-EarlyAcpiOsUnmapMemory (
-    void __iomem            *Virt,
-    ACPI_SIZE               Size);
 
 #endif /* __KERNEL__ */
 
