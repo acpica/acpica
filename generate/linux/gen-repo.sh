@@ -5,36 +5,41 @@
 #                       repository
 #
 # SYNOPSIS:
-#         gen-repo.sh [-c] <commit>
+#         gen-repo.sh [-c] [-n hash] <commit>
 #
 # DESCRIPTION:
 #         Extract linuxized repository from the git repository.
 #         Options:
 #          -c       Force regeneration of acpisrc.
+#          -n:      Specify number of digits from commit hash to form a name.
 #	  NOTE: Be careful using this script on a repo in detached HEAD mode.
 #
 
 usage() {
-	echo "Usage: `basename $0` [-c] <commit>"
+	echo "Usage: `basename $0` [-c] [-n hash] <commit>"
 	echo "Where:"
 	echo "     -c: Force regeneration of acpisrc."
+	echo "     -n: Specify number of digits from commit hash to form a name"
+	echo "         (default to 8)."
 	echo " commit: GIT commit (default to HEAD)."
 	exit 1
 }
 
 INDEX=0
+HASH=8
 
-while getopts "c" opt
+while getopts "cn:" opt
 do
 	case $opt in
 	c) FORCE_ACPISRC=force;;
+	n) HASH=$OPTARG;;
 	?) echo "Invalid argument $opt"
 	   usage;;
 	esac
 done
 shift $(($OPTIND - 1))
 
-version=`git log -1 $1 --format=%H`
+version=`git log -1 $1 --format=%H | cut -c 1-${HASH}`
 
 SCRIPT=`(cd \`dirname $0\`; pwd)`
 . $SCRIPT/libacpica.sh
