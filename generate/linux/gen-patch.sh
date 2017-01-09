@@ -5,24 +5,27 @@
 #                        repository
 #
 # SYNOPSIS:
-#         gen-patch.sh [-f from] [-i index] [-l link] [-m maintainer] [-u] [commit]
+#         gen-patch.sh [-f from] [-i index] [-l link] [-m maintainer] [-n hash] [-u] [commit]
 #
 # DESCRIPTION:
 #         Extract linuxized patches from the git repository.
 #         Options:
-#          -i index Specify patch index.
+#          -i: Specify patch index.
 #          -l: Specify a URL prefix that can be used to link the commit.
 #          -m: Specify maintainer name <email> for Signed-off-by field.
+#          -n: Specify number of digits from commit hash to form a name.
 #          -u: Specify whether the commit is in an upstream repository.
 #          commit: GIT commit (default to HEAD).
 #
 
 usage() {
-	echo "Usage: `basename $0` [-f from] [-i index] [-l link] [-m maintainer] [-u] <commit>"
+	echo "Usage: `basename $0` [-f from] [-i index] [-l link] [-m maintainer] [-n hash] [-u] <commit>"
 	echo "Where:"
 	echo "     -i: Specify patch index (default to 0)."
 	echo "     -l: Specify a URL prefix that can be used to link the commit."
 	echo "     -m: Specify maintainer name <email> for Signed-off-by field."
+	echo "     -n: Specify number of digits from commit hash to form a name"
+	echo "         (default to 8)."
 	echo "     -u: Specify whether the commit is in an upstream repository."
 	echo " commit: GIT commit (default to HEAD)."
 	exit 1
@@ -31,12 +34,14 @@ usage() {
 COMMITTER="`git config user.name` <`git config user.email`>"
 INDEX=0
 UPSTREAM=no
+HASH=8
 
-while getopts "i:l:m:u" opt
+while getopts "i:l:m:n:u" opt
 do
 	case $opt in
 	i) INDEX=$OPTARG;;
 	l) LINK=$OPTARG;;
+	n) HASH=$OPTARG;;
 	m) MAINTAINER=$OPTARG;;
 	u) UPSTREAM=yes
 	   if [ "x${LINK}" = "x" ]; then
@@ -54,16 +59,18 @@ if [ "x${COMMIT}" = "x" ]; then
 fi
 
 after=`git log -1 ${COMMIT} --format=%H`
+after_name=`git log -1 ${COMMIT} --format=%H | cut -c 1-${HASH}`
 before=`git log -1 ${COMMIT}^1 --format=%H`
+before_name=`git log -1 ${COMMIT}^1 --format=%H | cut -c 1-${HASH}`
 
 SCRIPT=`(cd \`dirname $0\`; pwd)`
 . $SCRIPT/libacpica.sh
 
 GP_acpica_repo=$CURDIR/acpica.repo
-GP_linux_before=$CURDIR/linux.before
-GP_linux_after=$CURDIR/linux.after
-GP_acpica_patch=$CURDIR/acpica-$after.patch
-GP_linux_patch=$CURDIR/linux-$after.patch
+GP_linux_before=$CURDIR/linux.before_name
+GP_linux_after=$CURDIR/linux.after_name
+GP_acpica_patch=$CURDIR/acpica-$after_name.patch
+GP_linux_patch=$CURDIR/linux-$after_name.patch
 
 echo "[gen-patch.sh] Extracting GIT ($SRCDIR)..."
 # Cleanup
@@ -184,61 +191,61 @@ generate_linux_desc()
 	'
 }
 
-echo "[gen-patch.sh] Creating ACPICA repository ($after)..."
+echo "[gen-patch.sh] Creating ACPICA repository ($after_name)..."
 (
 	cd $GP_acpica_repo
 	git reset $after --hard >/dev/null 2>&1
 )
 
-echo "[gen-patch.sh] Creating ACPICA patch (acpica-$after.patch)..."
+echo "[gen-patch.sh] Creating ACPICA patch (acpica-$after_name.patch)..."
 (
 	cd $GP_acpica_repo
 	git format-patch -1 --stdout >> $GP_acpica_patch
 )
 
-echo "[gen-patch.sh] Creating Linux repository ($after)..."
+echo "[gen-patch.sh] Creating Linux repository ($after_name)..."
 (
 	cd $GP_acpica_repo/generate/linux
 	if [ ! -f ./gen-repo.sh ]; then
 		cp $SRCDIR/generate/linux/gen-repo.sh ./
 	fi
-	./gen-repo.sh -c $after
+	./gen-repo.sh -c -n $HASH $after
 )
-mv -f $GP_acpica_repo/generate/linux/linux-$after $GP_linux_after
+mv -f $GP_acpica_repo/generate/linux/linux-$after_name $GP_linux_after
 
-echo "[gen-patch.sh] Creating ACPICA repository ($before)..."
+echo "[gen-patch.sh] Creating ACPICA repository ($before_name)..."
 (
 	cd $GP_acpica_repo
 	git reset $before --hard >/dev/null 2>&1
 )
 
-echo "[gen-patch.sh] Creating Linux repository ($before)..."
+echo "[gen-patch.sh] Creating Linux repository ($before_name)..."
 (
 	cd $GP_acpica_repo/generate/linux
 	if [ ! -f ./gen-repo.sh ]; then
 		cp $SRCDIR/generate/linux/gen-repo.sh ./
 	fi
-	./gen-repo.sh -c $before
+	./gen-repo.sh -c -n $HASH $before
 )
-mv -f $GP_acpica_repo/generate/linux/linux-$before $GP_linux_before
+mv -f $GP_acpica_repo/generate/linux/linux-$before_name $GP_linux_before
 
 (
-	echo "[gen-patch.sh] Creating Linux patch (linux-$after.patch)..."
+	echo "[gen-patch.sh] Creating Linux patch (linux-$after_name.patch)..."
 	cd $CURDIR
 	tmpdiff=`mktemp -u`
 	tmpdesc=`mktemp -u`
-	diff -Nurp linux.before linux.after >> $tmpdiff
+	diff -Nurp linux.before_name linux.after_name >> $tmpdiff
 
 	if [ $? -ne 0 ]; then
 		generate_acpica_desc $after > $tmpdesc
-		generate_linux_desc $after $tmpdesc > $GP_linux_patch
+		generate_linux_desc $after_name $tmpdesc > $GP_linux_patch
 		$ACPISRC -ldqy $GP_linux_patch $GP_linux_patch > /dev/null
 		echo "---" >> $GP_linux_patch
 		diffstat $tmpdiff >> $GP_linux_patch
 		echo >> $GP_linux_patch
 		cat $tmpdiff >> $GP_linux_patch
 	else
-		echo "Warning: Linux version is empty, skipping $after..."
+		echo "Warning: Linux version is empty, skipping $after_name..."
 	fi
 	rm -f $tmpdiff
 	rm -f $tmpdesc
