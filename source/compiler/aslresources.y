@@ -3,7 +3,7 @@ NoEcho('
  *
  * Module Name: aslresources.y - Bison/Yacc production rules for resources
  *                             - Keep this file synched with the 
- *                               AslParseOpBlockType function in aslutils.c
+ *                               CvParseOpBlockType function in cvcompiler.c
  *
  *****************************************************************************/
 

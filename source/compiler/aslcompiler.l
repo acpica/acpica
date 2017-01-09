@@ -155,7 +155,6 @@ count (int type);
 /*! [Begin] no source code translation */
 
 %}
-
     /* Definitions */
 
 LeadNameChar                [A-Za-z_]

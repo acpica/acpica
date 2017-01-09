@@ -1437,5 +1437,4 @@ ACPI_STATUS
 DtCreateTemplates (
     char                    **argv);
 
-
 #endif /*  __ASLCOMPILER_H */

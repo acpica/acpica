@@ -3,7 +3,7 @@ NoEcho('
  *
  * Module Name: aslprimaries.y - Rules for primary ASL operators
  *                             - Keep this file synched with the 
- *                               AslParseOpBlockType function in aslutils.c
+ *                               CvParseOpBlockType function in cvcompiler.c
  *
  *****************************************************************************/
 

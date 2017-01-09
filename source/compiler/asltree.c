@@ -833,12 +833,6 @@ TrCreateLeafNode (
 
     Op = TrAllocateNode (ParseOpcode);
 
-    if (Gbl_CaptureComments)
-    {
-        CvDbgPrint ("Created leaf node\n");
-
-    }
-
     DbgPrint (ASL_PARSE_OUTPUT,
         "\nCreateLeafNode  Ln/Col %u/%u NewNode %p  Op %s\n\n",
         Op->Asl.LineNumber, Op->Asl.Column, Op, UtGetOpName (ParseOpcode));
@@ -1240,8 +1234,11 @@ TrCreateNode (
                 Child->Asl.InlineComment = NULL;
                 Child->Asl.FileChanged   = FALSE;
 
-                /* These do not need to be "passed off". They can be copied. */
-
+                /*
+                 * These do not need to be "passed off". They can be copied 
+                 * because the code for these opcodes should be printed in the
+                 * same file.
+                 */
                 Op->Asl.Filename         = Child->Asl.Filename;
                 Op->Asl.ParentFilename   = Child->Asl.ParentFilename;
             }
@@ -1258,7 +1255,7 @@ TrCreateNode (
             PrevChild->Asl.Next = Child;
         };
 
-        /* for -ca option: get the comment from last child in the resource template call */ 
+        /* Get the comment from last child in the resource template call */ 
 
         if (Gbl_CaptureComments && Op->Asl.ParseOpcode == PARSEOP_RESOURCETEMPLATE)
         {
@@ -1445,13 +1442,11 @@ TrLinkChildren (
     va_end(ap);
     DbgPrint (ASL_PARSE_OUTPUT, "\n\n");
 
-    /* The following is for capturing comments */
 
     if(Gbl_CaptureComments)
     {
         Gbl_CommentState.Latest_Parse_Node = Op;
-        CvDbgPrint ("trlinkchildren===========Set latest parse node to this node.\n");
- //       CvDbgPrint ("           Op->Asl.ParseOpName       = %s\n", Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName);    
+        CvDbgPrint ("trlinkchildren ===========Set latest parse node to this node.\n");
     }
     return (Op);
 }

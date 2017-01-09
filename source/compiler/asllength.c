@@ -195,6 +195,7 @@ LnPackageLengthWalk (
     UINT32                  Level,
     void                    *Context)
 {
+
     /* Generate the AML lengths for this node */ 
 
     CgGenerateAmlLengths (Op);

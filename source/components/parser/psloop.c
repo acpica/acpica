@@ -600,6 +600,7 @@ AcpiPsParseLoop (
 
             AcpiExStartTraceOpcode (Op, WalkState);
         }
+
         /*
          * Start ArgCount at zero because we don't know if there are
          * any args yet
