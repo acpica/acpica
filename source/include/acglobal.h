@@ -488,6 +488,7 @@ ACPI_INIT_GLOBAL (BOOLEAN, Gbl_CaptureComments, FALSE);
 ACPI_INIT_GLOBAL (BOOLEAN, AcpiGbl_DebugAslConversion, FALSE);
 ACPI_INIT_GLOBAL (ACPI_FILE, AcpiGbl_ConvDebugFile, NULL);
 
+ACPI_GLOBAL (char, AcpiGbl_TableSig[4]);
 
 /*****************************************************************************
  *

@@ -503,6 +503,19 @@ CgWriteTableHeader (
     /* Signature */
 
     Child = Child->Asl.Next;
+
+    /*
+     * For ASL-/ASL+ converter: replace the table signature with
+     * "XXXX" and save the original table signature. This "XXXX" makes
+     * it harder for the AML interpreter to run the badaml (.xxx) file 
+     * produced from the converter in case if it fails to get deleted.
+     */
+    if (Gbl_CaptureComments)
+    {
+        strncpy(AcpiGbl_TableSig, Child->Asl.Value.String, 4);
+        Child->Asl.Value.String = "XXXX";
+    }
+
     strncpy (TableHeader.Signature, Child->Asl.Value.String, 4);
 
     /* Revision */
