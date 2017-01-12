@@ -627,17 +627,17 @@ CvCaptureJustComments (
 
     while (Opcode == AML_COMMENT_OP)
     {                  
-        //CvDbgPrint ("comment aml address: %p\n", Aml);
+        CvDbgPrint ("comment aml address: %p\n", Aml);
 
         if (CvCommentExists(ParserState->Aml))
         {
-            //CvDbgPrint ("Avoiding capturing an existing comment.\n");
+            CvDbgPrint ("Avoiding capturing an existing comment.\n");
         }
         else
         {
             CommentOption = *(Aml+1);
 
-            /*increment past the comment option and point the approperiate char pointers.*/
+            /* Increment past the comment option and point the approperiate char pointers.*/
 
             Aml += 2; 
 
@@ -669,7 +669,7 @@ CvCaptureJustComments (
 
                 case STANDARD_COMMENT:
 
-                    //CvDbgPrint ("found regular comment.\n");
+                    CvDbgPrint ("found regular comment.\n");
 
                     /* add to a linked list of nodes. This list will be taken by the parse node created next. */
 
@@ -691,9 +691,10 @@ CvCaptureJustComments (
 
                 case ENDBLK_COMMENT:
 
-                    //CvDbgPrint ("found endblk comment.\n");
+                    CvDbgPrint ("found endblk comment.\n");
 
                     /* add to a linked list of nodes. This will be taken by the next created parse node. */
+
                     CommentNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
                     CommentNode->Comment = ACPI_CAST_PTR (char, Aml);
                     CommentNode->Next    = NULL;
@@ -712,47 +713,47 @@ CvCaptureJustComments (
 
                 case INLINE_COMMENT:
 
-                    //CvDbgPrint ("found inline comment.\n");
+                    CvDbgPrint ("found inline comment.\n");
                     Debug = AcpiGbl_CurrentInlineComment;          
                     AcpiGbl_CurrentInlineComment = ACPI_CAST_PTR (char, Aml);
                     if (Debug!=NULL)
                     {
-                        //CvDbgPrint ("CAUTION: switching %s with %s for inline comments!\n", Debug, AcpiGbl_CurrentInlineComment);
+                        CvDbgPrint ("CAUTION: switching %s with %s for inline comments!\n", Debug, AcpiGbl_CurrentInlineComment);
                     }
                     break;
 
                 case ENDNODE_COMMENT:
 
-                    //CvDbgPrint ("found EndNode comment.\n");
+                    CvDbgPrint ("found EndNode comment.\n");
                     Debug = AcpiGbl_CurrentEndNodeComment;
                     AcpiGbl_CurrentEndNodeComment = ACPI_CAST_PTR (char, Aml);
                     if (Debug!=NULL)
                     {
-                        //CvDbgPrint ("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentEndNodeComment);
+                        CvDbgPrint ("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentEndNodeComment);
                     }
                     break;
 
                 case CLOSEBRACE_COMMENT:
 
-                    //CvDbgPrint ("found close brace comment.\n");
+                    CvDbgPrint ("found close brace comment.\n");
                     Debug = AcpiGbl_CurrentCloseBraceComment;
                     AcpiGbl_CurrentCloseBraceComment = ACPI_CAST_PTR (char, Aml);
                     if (Debug!=NULL)
                     {
-                        //CvDbgPrint ("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentCloseBraceComment);
+                        CvDbgPrint ("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentCloseBraceComment);
                     }
                     break;        
 
                 case END_DEFBLK_COMMENT:
 
-                    //CvDbgPrint ("Found comment that belongs after the } for a definition block.\n");
+                    CvDbgPrint ("Found comment that belongs after the } for a definition block.\n");
                      
                     Debug = AcpiGbl_CurrentScope->Common.CloseBraceComment;
                     AcpiGbl_CurrentScope->Common.CloseBraceComment = ACPI_CAST_PTR (char, Aml);
                     
                     if (Debug!=NULL)
                     {
-                        //CvDbgPrint ("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentCloseBraceComment);
+                        CvDbgPrint ("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentCloseBraceComment);
                     }
                     break;        
 
@@ -803,6 +804,7 @@ CvCaptureJustComments (
 	} /* end else */
 
         /* determine the length and move forward that amount */
+
         Length = 0;
         while (ParserState->Aml[Length])
         {
@@ -881,7 +883,7 @@ CvCaptureComments (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsTransferComments
+ * FUNCTION:    CvTransferComments
  *
  * PARAMETERS:  WalkState           - Current state
  *
