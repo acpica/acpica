@@ -223,7 +223,7 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source"
+			Name="Acpica Source"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<Filter
@@ -610,29 +610,29 @@
 					>
 				</File>
 			</Filter>
-			<Filter
-				Name="Local"
-				>
-				<File
-					RelativePath="..\..\source\tools\AcpiNames\anmain.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\tools\AcpiNames\anstubs.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\tools\AcpiNames\antables.c"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
-			Name="Local Headers"
+			Name="AcpiNames Headers"
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
 				RelativePath="..\..\source\tools\acpinames\acpinames.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="AcpiNames Source"
+			>
+			<File
+				RelativePath="..\..\source\tools\AcpiNames\anmain.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\AcpiNames\anstubs.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\tools\AcpiNames\antables.c"
 				>
 			</File>
 		</Filter>

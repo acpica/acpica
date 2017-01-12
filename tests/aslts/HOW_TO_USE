@@ -71,7 +71,7 @@ How to execute the run-time tests
    and the batch execute option. For example:
 
         > cd aslts/tmp/aml
-        > acpiexec -eMAIN 20090320/nopt/32/arithmetic.aml
+        > acpiexec -b "Execute MAIN" 20090320/nopt/32/arithmetic.aml
 
 
 6. When all tests are executed in batch mode (Do 1), the individual test

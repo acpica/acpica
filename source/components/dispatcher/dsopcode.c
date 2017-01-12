@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -162,7 +162,7 @@ AcpiDsInitializeRegion (
 
     /* Namespace is NOT locked */
 
-    Status = AcpiEvInitializeRegion (ObjDesc, FALSE);
+    Status = AcpiEvInitializeRegion (ObjDesc);
     return (Status);
 }
 

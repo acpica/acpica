@@ -1,5 +1,5 @@
 /*
- * Some or all of this work - Copyright (c) 2006 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -118,11 +118,9 @@ Device(DTM1) {
 
 		Store("Table Loaded", Debug)
 
-		if (y260) {
-			Store(ObjectType(HI0), Local1)
-			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z175, 0x003, 0, 0, Local1, c017)
-			}
+		Store(ObjectType(HI0), Local1)
+		if (LNotEqual(Local1, c017)) { // DDB Handle
+			err(arg0, z175, 0x003, 0, 0, Local1, c017)
 		}
 
 		// Check the new Object appears

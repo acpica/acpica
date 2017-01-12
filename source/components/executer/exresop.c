@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -393,7 +393,6 @@ AcpiExResolveOperands (
         case ARGI_OBJECT_REF:
         case ARGI_DEVICE_REF:
         case ARGI_TARGETREF:     /* Allows implicit conversion rules before store */
-        case ARGI_FIXED_TARGET:  /* No implicit conversion before store to target */
         case ARGI_SIMPLE_TARGET: /* Name, Local, or Arg - no implicit conversion  */
         case ARGI_STORE_TARGET:
 

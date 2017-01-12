@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -154,7 +154,6 @@ AcpiUtAddAddressRange (
     ACPI_NAMESPACE_NODE     *RegionNode)
 {
     ACPI_ADDRESS_RANGE      *RangeInfo;
-    ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE (UtAddAddressRange);
@@ -178,13 +177,6 @@ AcpiUtAddAddressRange (
     RangeInfo->EndAddress = (Address + Length - 1);
     RangeInfo->RegionNode = RegionNode;
 
-    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_FREE (RangeInfo);
-        return_ACPI_STATUS (Status);
-    }
-
     RangeInfo->Next = AcpiGbl_AddressRangeList[SpaceId];
     AcpiGbl_AddressRangeList[SpaceId] = RangeInfo;
 
@@ -194,7 +186,6 @@ AcpiUtAddAddressRange (
         ACPI_FORMAT_UINT64 (Address),
         ACPI_FORMAT_UINT64 (RangeInfo->EndAddress)));
 
-    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (AE_OK);
 }
 

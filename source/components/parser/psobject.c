@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -445,7 +445,13 @@ AcpiPsCreateOp (
                 Op->Common.Flags |= ACPI_PARSEOP_TARGET;
             }
         }
-        else if (ParentScope->Common.AmlOpcode == AML_INCREMENT_OP)
+
+        /*
+         * Special case for both Increment() and Decrement(), where
+         * the lone argument is both a source and a target.
+         */
+        else if ((ParentScope->Common.AmlOpcode == AML_INCREMENT_OP) ||
+                (ParentScope->Common.AmlOpcode == AML_DECREMENT_OP))
         {
             Op->Common.Flags |= ACPI_PARSEOP_TARGET;
         }

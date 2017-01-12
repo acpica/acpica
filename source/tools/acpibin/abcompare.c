@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -486,6 +486,7 @@ AbCompareAmlFiles (
     {
         /* Display header information */
 
+        printf ("Comparing %s to %s\n", File1Path, File2Path);
         AbPrintHeadersInfo (&Header1, &Header2);
     }
 
@@ -497,6 +498,12 @@ AbCompareAmlFiles (
 
     /* Do the byte-by-byte compare */
 
+    printf ("Compare offset: %u\n", AbGbl_CompareOffset);
+    if (AbGbl_CompareOffset)
+    {
+        fseek (File2, AbGbl_CompareOffset, SEEK_CUR);
+    }
+
     Actual1 = fread (&Char1, 1, 1, File1);
     Actual2 = fread (&Char2, 1, 1, File2);
     Offset = sizeof (ACPI_TABLE_HEADER);
@@ -505,10 +512,10 @@ AbCompareAmlFiles (
     {
         if (Char1 != Char2)
         {
-            printf ("Error - Byte mismatch at offset %8.8X: 0x%2.2X 0x%2.2X\n",
+            printf ("Error - Byte mismatch at offset %8.4X: 0x%2.2X 0x%2.2X\n",
                 Offset, Char1, Char2);
             Mismatches++;
-            if (Mismatches > 100)
+            if ((Mismatches > 100) && (!AbGbl_DisplayAllMiscompares))
             {
                 printf ("100 Mismatches: Too many mismatches\n");
                 goto Exit2;
@@ -543,7 +550,10 @@ AbCompareAmlFiles (
     }
 
     printf ("%u Mismatches found\n", Mismatches);
-    Status = 0;
+    if (Mismatches == 0)
+    {
+        Status = 0;
+    }
 
 Exit2:
     fclose (File2);

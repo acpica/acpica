@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -120,7 +120,7 @@
  * AML opcodes with related syntax and grammar information.
  * This table was extracted from the ACPI specification.
  */
-const AH_AML_OPCODE         AmlOpcodeInfo[] =
+const AH_AML_OPCODE         Gbl_AmlOpcodeInfo[] =
 {
     {0x00,   0x00,   "0x00",            "ZeroOp",               "DataObject",   NULL,                                           NULL,
                                                                 NULL},

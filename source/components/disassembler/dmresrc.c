@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -464,7 +464,8 @@ AcpiDmIsResourceTemplate (
     ACPI_PARSE_OBJECT       *NextOp;
     UINT8                   *Aml;
     UINT8                   *EndAml;
-    ACPI_SIZE               Length;
+    UINT32                  BufferLength;
+    UINT32                  DeclaredBufferLength;
 
 
     /* This op must be a buffer */
@@ -474,14 +475,20 @@ AcpiDmIsResourceTemplate (
         return (AE_TYPE);
     }
 
-    /* Get the ByteData list and length */
-
+    /*
+     * Get the declared length of the buffer.
+     * This is the nn in "Buffer (nn)"
+     */
     NextOp = Op->Common.Value.Arg;
     if (!NextOp)
     {
         AcpiOsPrintf ("NULL byte list in buffer\n");
         return (AE_TYPE);
     }
+
+    DeclaredBufferLength = NextOp->Common.Value.Size;
+
+    /* Get the length of the raw initialization byte list */
 
     NextOp = NextOp->Common.Next;
     if (!NextOp)
@@ -490,11 +497,22 @@ AcpiDmIsResourceTemplate (
     }
 
     Aml = NextOp->Named.Data;
-    Length = (ACPI_SIZE) NextOp->Common.Value.Integer;
+    BufferLength = NextOp->Common.Value.Size;
+
+    /*
+     * Not a template if declared buffer length != actual length of the
+     * intialization byte list. Because the resource macros will create
+     * a buffer of the exact required length (buffer length will be equal
+     * to the actual length).
+     */
+    if (DeclaredBufferLength != BufferLength)
+    {
+        return (AE_TYPE);
+    }
 
     /* Walk the byte list, abort on any invalid descriptor type or length */
 
-    Status = AcpiUtWalkAmlResources (WalkState, Aml, Length,
+    Status = AcpiUtWalkAmlResources (WalkState, Aml, BufferLength,
         NULL, ACPI_CAST_INDIRECT_PTR (void, &EndAml));
     if (ACPI_FAILURE (Status))
     {
@@ -507,7 +525,7 @@ AcpiDmIsResourceTemplate (
      * of a ResourceTemplate, the buffer must not have any extra data after
      * the EndTag.)
      */
-    if ((Aml + Length - sizeof (AML_RESOURCE_END_TAG)) != EndAml)
+    if ((Aml + BufferLength - sizeof (AML_RESOURCE_END_TAG)) != EndAml)
     {
         return (AE_AML_NO_RESOURCE_END_TAG);
     }

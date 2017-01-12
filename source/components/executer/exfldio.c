@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -1018,20 +1018,9 @@ AcpiExInsertIntoField (
 
     AccessBitWidth = ACPI_MUL_8 (ObjDesc->CommonField.AccessByteWidth);
 
-    /*
-     * Create the bitmasks used for bit insertion.
-     * Note: This if/else is used to bypass compiler differences with the
-     * shift operator
-     */
-    if (AccessBitWidth == ACPI_INTEGER_BIT_SIZE)
-    {
-        WidthMask = ACPI_UINT64_MAX;
-    }
-    else
-    {
-        WidthMask = ACPI_MASK_BITS_ABOVE (AccessBitWidth);
-    }
+    /* Create the bitmasks used for bit insertion */
 
+    WidthMask = ACPI_MASK_BITS_ABOVE_64 (AccessBitWidth);
     Mask = WidthMask &
         ACPI_MASK_BITS_BELOW (ObjDesc->CommonField.StartFieldBitOffset);
 

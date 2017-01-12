@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -113,6 +113,7 @@
  *
  *****************************************************************************/
 
+#define DEFINE_AHELP_GLOBALS
 #include "acpihelp.h"
 
 
@@ -132,6 +133,7 @@ AhDisplayUsage (
 
 #define ACPI_OPTION(Name, Description) \
     AcpiOsPrintf ("  %-24s%s\n", Name, Description);
+
 
 /******************************************************************************
  *

@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -212,6 +212,11 @@ AcpiNsGetNextNodeTyped (
  */
 ACPI_STATUS
 AcpiNsParseTable (
+    UINT32                  TableIndex,
+    ACPI_NAMESPACE_NODE     *StartNode);
+
+ACPI_STATUS
+AcpiNsExecuteTable (
     UINT32                  TableIndex,
     ACPI_NAMESPACE_NODE     *StartNode);
 
@@ -452,6 +457,11 @@ AcpiNsNameOfCurrentScope (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
+AcpiNsHandleToName (
+    ACPI_HANDLE             TargetHandle,
+    ACPI_BUFFER             *Buffer);
+
+ACPI_STATUS
 AcpiNsHandleToPathname (
     ACPI_HANDLE             TargetHandle,
     ACPI_BUFFER             *Buffer,
@@ -461,6 +471,13 @@ BOOLEAN
 AcpiNsPatternMatch (
     ACPI_NAMESPACE_NODE     *ObjNode,
     char                    *SearchFor);
+
+ACPI_STATUS
+AcpiNsGetNodeUnlocked (
+    ACPI_NAMESPACE_NODE     *PrefixNode,
+    const char              *ExternalPathname,
+    UINT32                  Flags,
+    ACPI_NAMESPACE_NODE     **OutNode);
 
 ACPI_STATUS
 AcpiNsGetNode (

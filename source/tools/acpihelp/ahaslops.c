@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -120,7 +120,7 @@
  * Note: All tokens require a space separator.
  * Long lines are automatically split during output.
  */
-const AH_ASL_OPERATOR       AslOperatorInfo[] =
+const AH_ASL_OPERATOR       Gbl_AslOperatorInfo[] =
 {
     {"AccessAs",                "(AccessType, AccessAttribKeyword | "
                                 "ExtendedAttribKeyword (AccessLength))",

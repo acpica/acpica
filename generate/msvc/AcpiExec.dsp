@@ -230,6 +230,10 @@ SOURCE=..\..\source\components\utilities\utstring.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utstrtoul64.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\uttrack.c
 # End Source File
 # Begin Source File
@@ -611,6 +615,10 @@ SOURCE=..\..\source\common\cmfsize.c
 # Begin Source File
 
 SOURCE=..\..\source\common\getopt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\os_specific\service_layers\osgendbg.c
 # End Source File
 # Begin Source File
 

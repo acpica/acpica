@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -216,14 +216,24 @@ AcpiOsReadable (
     return TRUE;
 }
 
+static inline ACPI_STATUS
+AcpiOsInitializeDebugger (
+    void)
+{
+    return AE_OK;
+}
+
+static inline void
+AcpiOsTerminateDebugger (
+    void)
+{
+    return;
+}
+
 
 /*
  * OSL interfaces added by Linux
  */
-void
-EarlyAcpiOsUnmapMemory (
-    void __iomem            *Virt,
-    ACPI_SIZE               Size);
 
 #endif /* __KERNEL__ */
 

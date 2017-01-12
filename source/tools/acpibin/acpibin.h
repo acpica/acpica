@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -135,6 +135,8 @@
 /* Globals */
 
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_TerseMode, FALSE);
+EXTERN BOOLEAN              INIT_GLOBAL (AbGbl_DisplayAllMiscompares, FALSE);
+EXTERN UINT32               INIT_GLOBAL (AbGbl_CompareOffset, 0);
 
 
 /* Prototypes */

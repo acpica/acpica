@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -717,7 +717,6 @@ AcpiExConvertToTargetType (
     switch (GET_CURRENT_ARG_TYPE (WalkState->OpInfo->RuntimeArgs))
     {
     case ARGI_SIMPLE_TARGET:
-    case ARGI_FIXED_TARGET:
     case ARGI_INTEGER_REF:      /* Handles Increment, Decrement cases */
 
         switch (DestinationType)

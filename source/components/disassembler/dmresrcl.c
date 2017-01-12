@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -515,16 +515,17 @@ AcpiDmIoFlags2 (
         UINT8               SpecificFlags)
 {
 
+    /* _TTP */
+
     AcpiOsPrintf (", %s",
         AcpiGbl_TtpDecode [ACPI_EXTRACT_1BIT_FLAG (SpecificFlags, 4)]);
 
-    /* TRS is only used if TTP is TypeTranslation */
-
-    if (SpecificFlags & 0x10)
-    {
-        AcpiOsPrintf (", %s",
-            AcpiGbl_TrsDecode [ACPI_EXTRACT_1BIT_FLAG (SpecificFlags, 5)]);
-    }
+    /*
+     * TRS is only used if TTP is TypeTranslation. However, the disassembler
+     * always emits exactly what is in the AML.
+     */
+    AcpiOsPrintf (", %s",
+        AcpiGbl_TrsDecode [ACPI_EXTRACT_1BIT_FLAG (SpecificFlags, 5)]);
 }
 
 

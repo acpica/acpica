@@ -1,5 +1,5 @@
 /*
- * Some or all of this work - Copyright (c) 2006 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -30,7 +30,13 @@
 if (STTT("Module level code execution", TCLF, 14, W01a)) {
 	SRMT("MLS0")
 	MLS0()
+	SRMT("MLS1")
+	MLS1()
 	SRMT("MLO0")
 	MLO0()
+	SRMT("MLO1")
+	MLO1()
+	SRMT("MLD0")
+	MLD0()
 }
 FTTT()

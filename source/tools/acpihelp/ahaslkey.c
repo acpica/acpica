@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -120,7 +120,7 @@
  * ASL Keyword types and associated actual keywords.
  * This table was extracted from the ACPI specification.
  */
-const AH_ASL_KEYWORD        AslKeywordInfo[] =
+const AH_ASL_KEYWORD        Gbl_AslKeywordInfo[] =
 {
     {"AccessAttribKeyword", "Serial Bus Attributes (with legacy SMBus aliases)",
         ":= AttribQuick (SMBusQuick) | AttribSendReceive (SMBusSendReceive) | "
@@ -223,7 +223,7 @@ const AH_ASL_KEYWORD        AslKeywordInfo[] =
 
 /* Preprocessor directives */
 
-const AH_DIRECTIVE_INFO      PreprocessorDirectives[] =
+const AH_DIRECTIVE_INFO      Gbl_PreprocessorDirectives[] =
 {
     {"#include \"Filename\"",               "Standard include of an ASCII ASL source code file"},
     {"#include <Filename>",                 "Alternate syntax for #include, alternate search path"},

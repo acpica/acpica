@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -230,6 +230,16 @@ AcpiHwLegacySleep (
     /* Flush caches, as per ACPI specification */
 
     ACPI_FLUSH_CPU_CACHE ();
+
+    Status = AcpiOsEnterSleep (SleepState, Pm1aControl, Pm1bControl);
+    if (Status == AE_CTRL_TERMINATE)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /* Write #2: Write both SLP_TYP + SLP_EN */
 

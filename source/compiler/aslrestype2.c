@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -198,6 +198,11 @@ RsDoGeneralRegisterDescriptor (
             Descriptor->GenericReg.AccessSize = (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ACPI_RESTAG_ACCESSSIZE,
                 CurrentByteOffset + ASL_RESDESC_OFFSET (GenericReg.AccessSize));
+
+            if (Descriptor->GenericReg.AddressSpaceId == ACPI_ADR_SPACE_PLATFORM_COMM)
+            {
+                break;
+            }
 
             if (Descriptor->GenericReg.AccessSize > AML_FIELD_ACCESS_QWORD)
             {

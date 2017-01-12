@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,6 +118,7 @@
 #include "acnamesp.h"
 #include "acdispat.h"
 #include "actables.h"
+#include "acinterp.h"
 
 
 #define _COMPONENT          ACPI_NAMESPACE
@@ -161,21 +162,6 @@ AcpiNsLoadTable (
     ACPI_FUNCTION_TRACE (NsLoadTable);
 
 
-    /*
-     * Parse the table and load the namespace with all named
-     * objects found within. Control methods are NOT parsed
-     * at this time. In fact, the control methods cannot be
-     * parsed until the entire namespace is loaded, because
-     * if a control method makes a forward reference (call)
-     * to another control method, we can't continue parsing
-     * because we don't know how many arguments to parse next!
-     */
-    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
     /* If table already loaded into namespace, just return */
 
     if (AcpiTbIsTableLoaded (TableIndex))
@@ -193,6 +179,15 @@ AcpiNsLoadTable (
         goto Unlock;
     }
 
+    /*
+     * Parse the table and load the namespace with all named
+     * objects found within. Control methods are NOT parsed
+     * at this time. In fact, the control methods cannot be
+     * parsed until the entire namespace is loaded, because
+     * if a control method makes a forward reference (call)
+     * to another control method, we can't continue parsing
+     * because we don't know how many arguments to parse next!
+     */
     Status = AcpiNsParseTable (TableIndex, Node);
     if (ACPI_SUCCESS (Status))
     {
@@ -209,7 +204,6 @@ AcpiNsLoadTable (
          * exist. This target of Scope must already exist in the
          * namespace, as per the ACPI specification.
          */
-        (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
         AcpiNsDeleteNamespaceByOwner (
             AcpiGbl_RootTableList.Tables[TableIndex].OwnerId);
 
@@ -218,8 +212,6 @@ AcpiNsLoadTable (
     }
 
 Unlock:
-    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -234,7 +226,9 @@ Unlock:
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
         "**** Begin Table Object Initialization\n"));
 
+    AcpiExEnterInterpreter ();
     Status = AcpiDsInitializeObjects (TableIndex, Node);
+    AcpiExExitInterpreter ();
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
         "**** Completed Table Object Initialization\n"));
@@ -252,7 +246,7 @@ Unlock:
      * other ACPI implementations. Optionally, the execution can be deferred
      * until later, see AcpiInitializeObjects.
      */
-    if (!AcpiGbl_GroupModuleLevelCode)
+    if (!AcpiGbl_ParseTableAsTermList && !AcpiGbl_GroupModuleLevelCode)
     {
         AcpiNsExecModuleCodeList ();
     }

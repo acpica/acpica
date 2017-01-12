@@ -1,5 +1,5 @@
 /*
- * Some or all of this work - Copyright (c) 2006 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -40,8 +40,8 @@
 
 Name(z062, 62)
 
-Name(ff32, 0xffffffff)         // -1, 32-bit
-Name(ff64, 0xffffffffffffffff) // -1, 64-bit
+Name(ff32, 0xffffffff)          // -1, 32-bit
+Name(ff64, Ones)                // -1, 64-bit
 
 // Test execution trace
 
@@ -1712,6 +1712,7 @@ Name(TFN0, Package() {
 	"ns-fullpath.asl",
 	"scope.asl",
 	"object.asl",
+	"order.asl",
 
 
 // below are incorrect yet:

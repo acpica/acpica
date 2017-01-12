@@ -1,5 +1,5 @@
 /*
- * Some or all of this work - Copyright (c) 2006 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -541,7 +541,7 @@ Method(mff0,, Serialized)
 		{
 			Store(0, Local0)
 
-			Store(Add(0xabcd000e, Local0, Local0), Local1)
+			Store(Add(Local0, 0xabcd000e, Local0), Local1)
 			m001(Local0)
 		}
 

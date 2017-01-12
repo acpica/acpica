@@ -1,5 +1,5 @@
 /*
- * Some or all of this work - Copyright (c) 2006 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -6480,13 +6480,7 @@ Method(ms31, 1, Serialized)
 
 		if (y290) {
 			m002()
-		}
-
-		if (LAnd(y260, y290)) {
 			m003()
-		}
-
-		if (LAnd(y260, y290)) {
 			m004()
 		}
 

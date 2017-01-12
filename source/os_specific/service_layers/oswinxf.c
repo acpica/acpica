@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -356,6 +356,33 @@ AcpiOsPhysicalTableOverride (
 {
 
     return (AE_SUPPORT);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsEnterSleep
+ *
+ * PARAMETERS:  SleepState          - Which sleep state to enter
+ *              RegaValue           - Register A value
+ *              RegbValue           - Register B value
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: A hook before writing sleep registers to enter the sleep
+ *              state. Return AE_CTRL_SKIP to skip further sleep register
+ *              writes.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsEnterSleep (
+    UINT8                   SleepState,
+    UINT32                  RegaValue,
+    UINT32                  RegbValue)
+{
+
+    return (AE_OK);
 }
 
 

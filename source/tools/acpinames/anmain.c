@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -248,7 +248,7 @@ main (
         /* Get all ACPI AML tables in this file */
 
         Status = AcGetAllTablesFromFile (argv[AcpiGbl_Optind],
-            ACPI_GET_ONLY_AML_TABLES, &ListHead);
+            ACPI_GET_ALL_TABLES, &ListHead);
         if (ACPI_FAILURE (Status))
         {
             return (-1);

@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -123,7 +123,7 @@ const AH_TABLE *
 AcpiAhGetTableInfo (
     char                    *Signature);
 
-extern const AH_TABLE      AcpiSupportedTables[];
+extern const AH_TABLE      Gbl_AcpiSupportedTables[];
 
 
 /*******************************************************************************
@@ -145,7 +145,7 @@ AcpiAhGetTableInfo (
     const AH_TABLE      *Info;
 
 
-    for (Info = AcpiSupportedTables; Info->Signature; Info++)
+    for (Info = Gbl_AcpiSupportedTables; Info->Signature; Info++)
     {
         if (ACPI_COMPARE_NAME (Signature, Info->Signature))
         {
@@ -161,7 +161,7 @@ AcpiAhGetTableInfo (
  * Note: Any tables added here should be duplicated within AcpiDmTableData
  * in the file common/dmtable.c
  */
-const AH_TABLE      AcpiSupportedTables[] =
+const AH_TABLE      Gbl_AcpiSupportedTables[] =
 {
     {ACPI_SIG_ASF,  "Alert Standard Format table"},
     {ACPI_SIG_BERT, "Boot Error Record Table"},

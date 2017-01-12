@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -370,23 +370,26 @@ AcpiPsGetNextNamepath (
         PossibleMethodCall &&
         (Node->Type == ACPI_TYPE_METHOD))
     {
-        if (WalkState->Opcode == AML_UNLOAD_OP)
+        if ((GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) == ARGP_SUPERNAME) ||
+            (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) == ARGP_TARGET))
         {
             /*
-             * AcpiPsGetNextNamestring has increased the AML pointer,
-             * so we need to restore the saved AML pointer for method call.
+             * AcpiPsGetNextNamestring has increased the AML pointer past
+             * the method invocation namestring, so we need to restore the
+             * saved AML pointer back to the original method invocation
+             * namestring.
              */
             WalkState->ParserState.Aml = Start;
             WalkState->ArgCount = 1;
             AcpiPsInitOp (Arg, AML_INT_METHODCALL_OP);
-            return_ACPI_STATUS (AE_OK);
         }
 
         /* This name is actually a control method invocation */
 
         MethodDesc = AcpiNsGetAttachedObject (Node);
         ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
-            "Control Method - %p Desc %p Path=%p\n", Node, MethodDesc, Path));
+            "Control Method invocation %4.4s - %p Desc %p Path=%p\n",
+            Node->Name.Ascii, Node, MethodDesc, Path));
 
         NameOp = AcpiPsAllocOp (AML_INT_NAMEPATH_OP, Start);
         if (!NameOp)
@@ -843,6 +846,10 @@ AcpiPsGetNextArg (
     ACPI_FUNCTION_TRACE_PTR (PsGetNextArg, ParserState);
 
 
+    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
+        "Expected argument type ARGP: %s (%2.2X)\n",
+        AcpiUtGetArgumentTypeName (ArgType), ArgType));
+
     switch (ArgType)
     {
     case ARGP_BYTEDATA:
@@ -926,10 +933,12 @@ AcpiPsGetNextArg (
         }
         break;
 
-    case ARGP_TARGET:
-    case ARGP_SUPERNAME:
     case ARGP_SIMPLENAME:
     case ARGP_NAME_OR_REF:
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
+            "**** SimpleName/NameOrRef: %s (%2.2X)\n",
+            AcpiUtGetArgumentTypeName (ArgType), ArgType));
 
         Subop = AcpiPsPeekOpcode (ParserState);
         if (Subop == 0                  ||
@@ -945,27 +954,46 @@ AcpiPsGetNextArg (
                 return_ACPI_STATUS (AE_NO_MEMORY);
             }
 
-            /* To support SuperName arg of Unload */
+            Status = AcpiPsGetNextNamepath (WalkState, ParserState,
+                Arg, ACPI_NOT_METHOD_CALL);
+        }
+        else
+        {
+            /* Single complex argument, nothing returned */
 
-            if (WalkState->Opcode == AML_UNLOAD_OP)
+            WalkState->ArgCount = 1;
+        }
+        break;
+
+    case ARGP_TARGET:
+    case ARGP_SUPERNAME:
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
+            "**** Target/Supername: %s (%2.2X)\n",
+            AcpiUtGetArgumentTypeName (ArgType), ArgType));
+
+        Subop = AcpiPsPeekOpcode (ParserState);
+        if (Subop == 0                  ||
+            AcpiPsIsLeadingChar (Subop) ||
+            ACPI_IS_ROOT_PREFIX (Subop) ||
+            ACPI_IS_PARENT_PREFIX (Subop))
+        {
+            /* NULL target (zero). Convert to a NULL namepath */
+
+            Arg = AcpiPsAllocOp (AML_INT_NAMEPATH_OP, ParserState->Aml);
+            if (!Arg)
             {
-                Status = AcpiPsGetNextNamepath (WalkState, ParserState,
-                    Arg, ACPI_POSSIBLE_METHOD_CALL);
-
-                /*
-                 * If the SuperName argument is a method call, we have
-                 * already restored the AML pointer, just free this Arg
-                 */
-                if (Arg->Common.AmlOpcode == AML_INT_METHODCALL_OP)
-                {
-                    AcpiPsFreeOp (Arg);
-                    Arg = NULL;
-                }
+                return_ACPI_STATUS (AE_NO_MEMORY);
             }
-            else
+
+            Status = AcpiPsGetNextNamepath (WalkState, ParserState,
+                Arg, ACPI_POSSIBLE_METHOD_CALL);
+
+            if (Arg->Common.AmlOpcode == AML_INT_METHODCALL_OP)
             {
-                Status = AcpiPsGetNextNamepath (WalkState, ParserState,
-                    Arg, ACPI_NOT_METHOD_CALL);
+                AcpiPsFreeOp (Arg);
+                Arg = NULL;
+                WalkState->ArgCount = 1;
             }
         }
         else
@@ -978,6 +1006,11 @@ AcpiPsGetNextArg (
 
     case ARGP_DATAOBJ:
     case ARGP_TERMARG:
+
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
+        "**** TermArg/DataObj: %s (%2.2X)\n",
+        AcpiUtGetArgumentTypeName (ArgType), ArgType));
 
         /* Single complex argument, nothing returned */
 

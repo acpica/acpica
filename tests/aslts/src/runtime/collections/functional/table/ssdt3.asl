@@ -1,5 +1,5 @@
 /*
- * Some or all of this work - Copyright (c) 2006 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -58,6 +58,9 @@ DefinitionBlock(
 			Buffer(9){19,18,17,16,15,14,13,12,11},
 		})
 
+		// Operation Region
+		OperationRegion(OPR0, SystemMemory, 0x7654321, 0x98)
+
 		// Field Unit
 		Field(OPR0, ByteAcc, NoLock, Preserve) {
 			FLU0, 32,
@@ -74,9 +77,6 @@ DefinitionBlock(
 
 		// Mutex
 		Mutex(MTX0, 0)
-
-		// Operation Region
-		OperationRegion(OPR0, SystemMemory, 0x7654321, 0x98)
 
 		// Power Resource
 		PowerResource(PWR0, 0, 0) {Name(s000, "PWR0")}

@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -365,7 +365,7 @@ AcpiInitializeObjects (
      * all of the tables have been loaded. It is a legacy option and is
      * not compatible with other ACPI implementations. See AcpiNsLoadTable.
      */
-    if (AcpiGbl_GroupModuleLevelCode)
+    if (!AcpiGbl_ParseTableAsTermList && AcpiGbl_GroupModuleLevelCode)
     {
         AcpiNsExecModuleCodeList ();
 

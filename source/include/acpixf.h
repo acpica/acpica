@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,7 +118,7 @@
 
 /* Current ACPICA subsystem version in YYYYMMDD format */
 
-#define ACPI_CA_VERSION                 0x20160729
+#define ACPI_CA_VERSION                 0x20161222
 
 #include "acconfig.h"
 #include "actypes.h"
@@ -269,6 +269,13 @@ ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_DoNotUseXsdt, FALSE);
 ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_GroupModuleLevelCode, FALSE);
 
 /*
+ * Optionally support module level code by parsing the entire table as
+ * a TermList. Default is FALSE, do not execute entire table until some
+ * lock order issues are fixed.
+ */
+ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_ParseTableAsTermList, FALSE);
+
+/*
  * Optionally use 32-bit FADT addresses if and when there is a conflict
  * (address mismatch) between the 32-bit and 64-bit versions of the
  * address. Although ACPICA adheres to the ACPI specification which
@@ -326,6 +333,13 @@ ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_OsiData, 0);
 ACPI_INIT_GLOBAL (BOOLEAN,          AcpiGbl_ReducedHardware, FALSE);
 
 /*
+ * Maximum number of While() loop iterations before forced method abort.
+ * This mechanism is intended to prevent infinite loops during interpreter
+ * execution within a host kernel.
+ */
+ACPI_INIT_GLOBAL (UINT32,           AcpiGbl_MaxLoopIterations, ACPI_MAX_LOOP_COUNT);
+
+/*
  * This mechanism is used to trace a specified AML method. The method is
  * traced each time it is executed.
  */
@@ -349,6 +363,15 @@ ACPI_INIT_GLOBAL (UINT32,           AcpiDbgLayer, ACPI_COMPONENT_DEFAULT);
 /* Optionally enable timer output with Debug Object output */
 
 ACPI_INIT_GLOBAL (UINT8,            AcpiGbl_DisplayDebugTimer, FALSE);
+
+/*
+ * Debugger command handshake globals. Host OSes need to access these
+ * variables to implement their own command handshake mechanism.
+ */
+#ifdef ACPI_DEBUGGER
+ACPI_INIT_GLOBAL (BOOLEAN,          AcpiGbl_MethodExecuting, FALSE);
+ACPI_GLOBAL (char,                  AcpiGbl_DbLineBuf[ACPI_DB_LINE_BUFFER_SIZE]);
+#endif
 
 /*
  * Other miscellaneous globals
@@ -639,6 +662,11 @@ AcpiGetTable (
     ACPI_STRING             Signature,
     UINT32                  Instance,
     ACPI_TABLE_HEADER       **OutTable))
+
+ACPI_EXTERNAL_RETURN_VOID (
+void
+AcpiPutTable (
+    ACPI_TABLE_HEADER       *Table))
 
 ACPI_EXTERNAL_RETURN_STATUS (
 ACPI_STATUS
@@ -1318,6 +1346,10 @@ AcpiInitializeDebugger (
 void
 AcpiTerminateDebugger (
     void);
+
+void
+AcpiRunDebugger (
+    char                    *BatchBuffer);
 
 void
 AcpiSetDebuggerThreadId (

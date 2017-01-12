@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -540,8 +540,10 @@ AcpiUtWalkAmlResources (
     ACPI_FUNCTION_TRACE (UtWalkAmlResources);
 
 
-    /* The absolute minimum resource template is one EndTag descriptor */
-
+    /*
+     * The absolute minimum resource template is one EndTag descriptor.
+     * However, we will treat a lone EndTag as just a simple buffer.
+     */
     if (AmlLength < sizeof (AML_RESOURCE_END_TAG))
     {
         return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
@@ -575,8 +577,8 @@ AcpiUtWalkAmlResources (
 
         if (UserFunction)
         {
-            Status = UserFunction (
-                Aml, Length, Offset, ResourceIndex, Context);
+            Status = UserFunction (Aml, Length, Offset,
+                ResourceIndex, Context);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -601,6 +603,13 @@ AcpiUtWalkAmlResources (
             if (!UserFunction)
             {
                 *Context = Aml;
+            }
+
+            /* Check if buffer is defined to be longer than the resource length */
+
+            if (AmlLength > (Offset + Length))
+            {
+                return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
             }
 
             /* Normal exit */

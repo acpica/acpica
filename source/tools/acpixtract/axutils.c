@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -172,9 +172,9 @@ AxIsEmptyLine (
         Buffer++;
     }
 
-    /* If end-of-line, this line is empty */
+    /* Line is empty when a Unix or DOS-style line terminator is found. */
 
-    if (*Buffer == '\n')
+    if ((*Buffer == '\r') || (*Buffer == '\n'))
     {
         return (1);
     }
@@ -334,7 +334,7 @@ AxCountTableInstances (
     unsigned int            Instances = 0;
 
 
-    InputFile = fopen (InputPathname, "rt");
+    InputFile = fopen (InputPathname, "r");
     if (!InputFile)
     {
         printf ("Could not open input file %s\n", InputPathname);

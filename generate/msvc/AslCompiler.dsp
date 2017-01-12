@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /c
-# ADD CPP /nologo /W3 /Gi /Ob1 /Gf /I "..\..\source\include" /I "..\..\source\compiler" /I "." /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_CONSOLE" /D "__STDC__" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /FD /c
+# ADD CPP /nologo /W3 /Gi /Ob1 /Gf /I "..\..\source\include" /I "..\..\source\compiler" /I "." /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_CONSOLE" /D "__STDC__" /D "YY_NEVER_INTERACTIVE" /D "YY_NO_UNISTD_H" /D "ACPI_ASL_COMPILER" /FD /c
 # SUBTRACT CPP /X /Fr /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -78,7 +78,7 @@ PostBuild_Cmds=copy aslcompiler\aslcompiler.exe ..\..\libraries\iasl.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /Gi /Zi /Od /Oy /Ob1 /Gf /I "..\..\source\include" /I "..\..\source\compiler" /I "." /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_CONSOLE" /D "__STDC__" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /Gi /Zi /Od /Oy /Ob1 /Gf /I "..\..\source\include" /I "..\..\source\compiler" /I "." /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_CONSOLE" /D "__STDC__" /D "YY_NEVER_INTERACTIVE" /D "YY_NO_UNISTD_H" /D "ACPI_ASL_COMPILER" /FD /GZ /c
 # SUBTRACT CPP /Fr
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -212,6 +212,10 @@ SOURCE=..\..\source\components\utilities\utstring.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utstrtoul64.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utuuid.c
 # End Source File
 # Begin Source File
@@ -313,6 +317,10 @@ SOURCE=..\..\source\compiler\aslfiles.c
 # Begin Source File
 
 SOURCE=..\..\source\compiler\aslfold.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslhelp.c
 # End Source File
 # Begin Source File
 

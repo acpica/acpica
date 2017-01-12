@@ -1,5 +1,5 @@
 /*
- * Some or all of this work - Copyright (c) 2006 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 2006 - 2017, Intel Corp.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,7 +27,7 @@
  */
 
 DefinitionBlock(
-	"exc_operand.aml",   // Output filename
+	"full.aml",   // Output filename
 	"DSDT",     // Signature
 	0x02,       // DSDT Revision
 	"Intel",    // OEMID

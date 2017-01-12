@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -631,6 +631,13 @@ AslDoOptions (
             /* Display compile time(s) */
 
             Gbl_CompileTimesFlag = TRUE;
+            break;
+
+        case 'd':
+
+            /* Disable disassembler code optimizations */
+
+            AcpiGbl_DoDisassemblerOptimizations = FALSE;
             break;
 
         case 'e':

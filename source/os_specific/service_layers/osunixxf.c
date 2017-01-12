@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -433,6 +433,33 @@ AcpiOsPhysicalTableOverride (
 
 /******************************************************************************
  *
+ * FUNCTION:    AcpiOsEnterSleep
+ *
+ * PARAMETERS:  SleepState          - Which sleep state to enter
+ *              RegaValue           - Register A value
+ *              RegbValue           - Register B value
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: A hook before writing sleep registers to enter the sleep
+ *              state. Return AE_CTRL_TERMINATE to skip further sleep register
+ *              writes.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsEnterSleep (
+    UINT8                   SleepState,
+    UINT32                  RegaValue,
+    UINT32                  RegbValue)
+{
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AcpiOsRedirectOutput
  *
  * PARAMETERS:  Destination         - An open file handle/pointer
@@ -826,8 +853,12 @@ AcpiOsCreateSemaphore (
 
 #ifdef __APPLE__
     {
-        char            *SemaphoreName = tmpnam (NULL);
+        static int      SemaphoreCount = 0;
+        char            SemaphoreName[32];
 
+        snprintf (SemaphoreName, sizeof (SemaphoreName), "acpi_sem_%d",
+            SemaphoreCount++);
+        printf ("%s\n", SemaphoreName);
         Sem = sem_open (SemaphoreName, O_EXCL|O_CREAT, 0755, InitialUnits);
         if (!Sem)
         {
@@ -879,10 +910,17 @@ AcpiOsDeleteSemaphore (
         return (AE_BAD_PARAMETER);
     }
 
+#ifdef __APPLE__
+    if (sem_close (Sem) == -1)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+#else
     if (sem_destroy (Sem) == -1)
     {
         return (AE_BAD_PARAMETER);
     }
+#endif
 
     return (AE_OK);
 }

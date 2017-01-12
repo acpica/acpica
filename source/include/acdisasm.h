@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -352,8 +352,8 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoErst[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoErst0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFacs[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFadt1[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFadt2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFadt3[];
-extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFadt4[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFadt5[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFadt6[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFpdt[];
@@ -497,14 +497,11 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoXenv[];
 
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGeneric[][2];
 
-extern ACPI_DMTABLE_INFO        *FadtRevisionInfo [ACPI_FADT_MAX_VERSION + 1];
-
-
 /*
  * dmtable and ahtable
  */
 extern const ACPI_DMTABLE_DATA  AcpiDmTableData[];
-extern const AH_TABLE           AcpiSupportedTables[];
+extern const AH_TABLE           Gbl_AcpiSupportedTables[];
 
 UINT8
 AcpiDmGenerateChecksum (
@@ -724,6 +721,10 @@ void
 AcpiDmDisassembleOneOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_OP_WALK_INFO       *Info,
+    ACPI_PARSE_OBJECT       *Op);
+
+BOOLEAN
+AcpiDmIsTempName (
     ACPI_PARSE_OBJECT       *Op);
 
 UINT32

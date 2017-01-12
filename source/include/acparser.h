@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -153,6 +153,10 @@ extern const UINT8      AcpiGbl_LongOpIndex[];
  */
 ACPI_STATUS
 AcpiPsExecuteMethod (
+    ACPI_EVALUATE_INFO      *Info);
+
+ACPI_STATUS
+AcpiPsExecuteTable (
     ACPI_EVALUATE_INFO      *Info);
 
 
