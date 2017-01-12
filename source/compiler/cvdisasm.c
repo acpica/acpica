@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -247,7 +247,7 @@ CvPrintOneCommentType (
  *
  * RETURN:      none
  *
- * DESCRIPTION: Print a opening brace { and any open brace comments associated 
+ * DESCRIPTION: Print a colse brace } and any open brace comments associated
  *              with this parse object.
  *
  ******************************************************************************/
@@ -292,7 +292,7 @@ CvCloseBraceWriteComment(
  *
  * RETURN:      none
  *
- * DESCRIPTION: Print a closing paren ) and any end node comments associated 
+ * DESCRIPTION: Print a closing paren ) and any end node comments associated
  *              with this parse object.
  *
  ******************************************************************************/
@@ -305,9 +305,18 @@ CvCloseParenWriteComment(
     ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.EndBlkComment;
 
 
-    /* If this op has a BLOCK_BRACE, take care of it in AcpiDmCloseBraceWriteComment */
+    if (!Gbl_CaptureComments)
+    {
+        AcpiOsPrintf ("}");
+        return;
+    }
 
-    if (Gbl_CaptureComments && AcpiDmBlockType (Op) & (BLOCK_PAREN) && !(AcpiDmBlockType (Op) & (BLOCK_BRACE)))
+    /*
+     * If this op has a BLOCK_BRACE, then output the comment when the 
+     * disassembler calls CvCloseBraceWriteComment 
+     */
+    if (AcpiDmBlockType (Op) & (BLOCK_PAREN) &&
+	!(AcpiDmBlockType (Op) & (BLOCK_BRACE)))
     {
         while (CommentNode)
         {
@@ -324,12 +333,13 @@ CvCloseParenWriteComment(
 
     AcpiOsPrintf (")");
 
-    if (Gbl_CaptureComments && Op->Common.EndNodeComment!=NULL)
+    if (Op->Common.EndNodeComment)
     {
         AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
         Op->Common.EndNodeComment=NULL;
     }
-    else if (Gbl_CaptureComments && Op->Common.Parent->Common.AmlOpcode == AML_IF_OP && Op->Common.Parent->Common.EndNodeComment!=NULL)
+    else if ((Op->Common.Parent->Common.AmlOpcode == AML_IF_OP) &&
+	     Op->Common.Parent->Common.EndNodeComment)
     {
         AcpiOsPrintf ("%s", Op->Common.Parent->Common.EndNodeComment);
         Op->Common.Parent->Common.EndNodeComment = NULL;
@@ -396,7 +406,7 @@ CvSwitchFiles(
             FNode->IncludeWritten = TRUE;
         }
 
-        /* 
+        /*
          * If the previous file is a descendant of the current file,
          * make sure that Include statements from the current file
          * to the previous have been emitted.

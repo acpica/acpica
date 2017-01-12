@@ -202,9 +202,9 @@ LnPackageLengthWalk (
 
     /* Bubble up all lengths (this node and all below it) to the parent */
 
-    if ((Op->Asl.Parent) && (Op->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG))
+    if ((Op->Asl.Parent) && 
+        (Op->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG))
     {
-
         Op->Asl.Parent->Asl.AmlSubtreeLength += (
             Op->Asl.AmlLength +
             Op->Asl.AmlOpcodeLength +
@@ -213,7 +213,6 @@ LnPackageLengthWalk (
             CvCalculateCommentLengths (Op)
         );
     }
-
     return (AE_OK);
 }
 

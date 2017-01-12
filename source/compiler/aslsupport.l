@@ -458,7 +458,6 @@ AslInsertLineBuffer (
             /* End of line */
 
             AslResetCurrentLineBuffer ();
-
         }
         
         if (Gbl_CaptureComments)
@@ -615,7 +614,6 @@ loop:
 
 
 EarlyEOF:
-
     /*
      * Premature End-Of-File
      */

@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -868,7 +868,9 @@ CvCaptureComments (
     Aml = WalkState->ParserState.Aml;
     Opcode = (UINT16) ACPI_GET8 (Aml);
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-    if (!(OpInfo->Flags & AML_DEFER) || ((OpInfo->Flags & AML_DEFER)&&(WalkState->PassNumber != ACPI_IMODE_LOAD_PASS1)))
+    if (!(OpInfo->Flags & AML_DEFER) ||
+	((OpInfo->Flags & AML_DEFER) &&
+	 (WalkState->PassNumber != ACPI_IMODE_LOAD_PASS1)))
     {
         CvCaptureJustComments(&WalkState->ParserState);
         WalkState->Aml = WalkState->ParserState.Aml;

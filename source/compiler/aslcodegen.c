@@ -634,6 +634,7 @@ CgUpdateHeader (
     Sum = 0;
     Length = sizeof (ACPI_TABLE_HEADER) + Op->Asl.AmlSubtreeLength;
     FlSeekFile (ASL_FILE_AML_OUTPUT, Op->Asl.FinalAmlOffset);
+
     for (i = 0; i < Length; i++)
     {
         if (FlReadFile (ASL_FILE_AML_OUTPUT, &FileByte, 1) != AE_OK)

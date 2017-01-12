@@ -429,10 +429,10 @@ CmDoCompile (
     UtEndEvent (Event);
 
     /*
-     * For -ca option: Gbl_ParseTreeRoot->CommentList actually contains the
-     * very last comments because it's the very last node to be completed
-     * Take the very last comment and save it in a global for it to be used
-     * by the disassembler.
+     * ASL-/ASL+ converter: Gbl_ParseTreeRoot->CommentList contains the
+     * very last comment of a given ASL file because it's the last constructed
+     * node during compilation. We take the very last comment and save it in a 
+     * global for it to be used by the disassembler.
      */
     if (Gbl_CaptureComments)
     {

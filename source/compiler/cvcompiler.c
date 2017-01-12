@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2016, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2017, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -127,10 +127,10 @@
  *
  * PARAMETERS:  Op
  *
- * RETURN:      TotalCommentLength - Length of all comments within this node.
+ * RETURN:      none
  *
  * DESCRIPTION: calculate the length that the each comment takes up within Op.
- *              Comments look like the follwoing: [0xA9 OptionBtye comment 0x00]
+ *              Comments look like the follwoing: [0xA9 OptionByte comment 0x00]
  *              therefore, we add 1 + 1 + strlen (comment) + 1 to get the actual
  *              length of this comment.
  *
@@ -246,10 +246,10 @@ CvProcessComment (
  *
  * PARAMETERS:  Op
  *
- * RETURN:      TotalCommentLength - Length of all comments within this node.
+ * RETURN:      none
  *
  * DESCRIPTION: calculate the length that the each comment takes up within Op.
- *              Comments look like the follwoing: [0xA9 OptionBtye comment 0x00]
+ *              Comments look like the follwoing: [0xA9 OptionByte comment 0x00]
  *              therefore, we add 1 + 1 + strlen (comment) + 1 to get the actual
  *              length of this comment.
  *
@@ -289,8 +289,7 @@ CvProcessCommentType2 (
          *
          * would be lexically analyzed as a single comment.
          *
-         */
-        /* Create a new string with the approperiate spaces. Since we need
+         * Create a new string with the approperiate spaces. Since we need
          * to account for the proper spacing, the actual comment,
          * extra 2 spaces so that this comment can be converted to the "/ *"
          * style and the null terminator, the string would look something like
@@ -419,7 +418,7 @@ CvCalculateCommentLengths(
  *
  * RETURN:      None
  *
- * DESCRIPTION: For -ca: write all comments for a particular definition block.
+ * DESCRIPTION: Write all comments for a particular definition block.
  *              For definition blocks, the comments need to come after the 
  *              definition block header. The regular comments above the 
  *              definition block would be categorized as 
@@ -671,11 +670,6 @@ CvCommentNodeCalloc (
 }
 
 
-/*
- * Note: this function has been copied from dmwalk.c from the disassembler. 
- * figure out what I need and find a way to incorporate this function into common
- * as the development of the feature progresses.
- */
 /*******************************************************************************
  *
  * FUNCTION:    CvParseOpBlockType 
@@ -684,7 +678,9 @@ CvCommentNodeCalloc (
  *
  * RETURN:      BlockType - not a block, parens, braces, or even both.
  *
- * DESCRIPTION: Type of block for this op (parens or braces)
+ * DESCRIPTION: Type of block for this ASL parseop (parens or braces)
+ *              keep this in sync with aslprimaries.y, aslresources.y and
+ *              aslrules.y
  *
  ******************************************************************************/
 
@@ -959,7 +955,12 @@ CvPlaceComment(
     UINT8                   Type,
     char                    *CommentString)
 {
-   
+    ACPI_PARSE_OBJECT       *LatestParseNode;
+    ACPI_PARSE_OBJECT       *ParenBraceNode;
+
+
+    LatestParseNode = Gbl_CommentState.Latest_Parse_Node;
+    ParenBraceNode  = Gbl_CommentState.ParsingParenBraceNode;
     CvDbgPrint ("Placing comment %s for type %d\n", CommentString, Type);
     switch (Type)
     {
@@ -970,37 +971,37 @@ CvPlaceComment(
 
         case ASL_INLINECOMMENT:
 
-            Gbl_CommentState.Latest_Parse_Node->Asl.InlineComment = 
-                CvAppendInlineComment (Gbl_CommentState.Latest_Parse_Node->Asl.InlineComment,
+            LatestParseNode->Asl.InlineComment =
+                CvAppendInlineComment (LatestParseNode->Asl.InlineComment,
                 CommentString);
             break;
 
         case ASL_OPENPARENCOMMENT:
 
-            Gbl_Inline_Comment_Buffer = 
+            Gbl_Inline_Comment_Buffer =
                 CvAppendInlineComment(Gbl_Inline_Comment_Buffer,
                 CommentString);
             break;
 
         case ASL_CLOSEPARENCOMMENT:
            
-            if (Gbl_CommentState.ParsingParenBraceNode !=NULL)
+            if (ParsingParenBraceNode)
             {
-                Gbl_CommentState.ParsingParenBraceNode->Asl.EndNodeComment = 
-                    CvAppendInlineComment (Gbl_CommentState.ParsingParenBraceNode->Asl.EndNodeComment,
+                ParenBraceNode->Asl.EndNodeComment =
+                    CvAppendInlineComment (ParenBraceNode->Asl.EndNodeComment,
                     CommentString);
             }
             else
             {
-                Gbl_CommentState.Latest_Parse_Node->Asl.EndNodeComment = 
-                    CvAppendInlineComment (Gbl_CommentState.Latest_Parse_Node->Asl.EndNodeComment,
+                LatestParseNode->Asl.EndNodeComment =
+                    CvAppendInlineComment (LatestParseNode->Asl.EndNodeComment,
                     CommentString);
             }
             break;
 
         case ASL_CLOSEBRACECOMMENT:
 
-            Gbl_CommentState.Latest_Parse_Node->Asl.CloseBraceComment = CommentString;
+            LatestParseNode->Asl.CloseBraceComment = CommentString;
             break;
 
         default:
