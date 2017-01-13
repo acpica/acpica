@@ -985,7 +985,7 @@ CvPlaceComment(
 
         case ASL_CLOSEPARENCOMMENT:
            
-            if (ParsingParenBraceNode)
+            if (ParenBraceNode)
             {
                 ParenBraceNode->Asl.EndNodeComment =
                     CvAppendInlineComment (ParenBraceNode->Asl.EndNodeComment,
