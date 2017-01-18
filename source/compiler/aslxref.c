@@ -562,20 +562,17 @@ XfNamespaceLocateBegin (
         RegisterNumber = Op->Asl.AmlOpcode - AML_ARG0; /* 0x68 through 0x6F */
         MethodArgs = Node->MethodArgs;
 
+        /* Mark this Arg as referenced */
+
+        MethodArgs[RegisterNumber].Flags |= ASL_ARG_REFERENCED;
+        MethodArgs[RegisterNumber].Op = Op;
+
         if (Op->Asl.CompileFlags & NODE_IS_TARGET)
         {
             /* Arg is being initialized */
 
             MethodArgs[RegisterNumber].Flags |= ASL_ARG_INITIALIZED;
-            MethodArgs[RegisterNumber].Op = Op;
-
-            return_ACPI_STATUS (AE_OK);
         }
-
-        /* Mark this Arg as referenced */
-
-        MethodArgs[RegisterNumber].Flags |= ASL_ARG_REFERENCED;
-        MethodArgs[RegisterNumber].Op = Op;
 
         return_ACPI_STATUS (AE_OK);
     }
