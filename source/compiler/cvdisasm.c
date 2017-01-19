@@ -307,7 +307,7 @@ CvCloseParenWriteComment(
 
     if (!Gbl_CaptureComments)
     {
-        AcpiOsPrintf ("}");
+        AcpiOsPrintf (")");
         return;
     }
 
@@ -315,7 +315,7 @@ CvCloseParenWriteComment(
      * If this op has a BLOCK_BRACE, then output the comment when the 
      * disassembler calls CvCloseBraceWriteComment 
      */
-    if (AcpiDmBlockType (Op) & (BLOCK_PAREN) &&
+    if ((AcpiDmBlockType (Op) & (BLOCK_PAREN)) &&
 	!(AcpiDmBlockType (Op) & (BLOCK_BRACE)))
     {
         while (CommentNode)
