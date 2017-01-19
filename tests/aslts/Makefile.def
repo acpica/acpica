@@ -123,7 +123,7 @@ install_test_case:
 			if [ x$$base != xaslts ]; then \
 				echo "Bad base name of ASLTS Test Suite: <$$base> of <$$dd>"; exit 1; \
 			else \
-				x=`"$(ASL)" -va xxx | grep "Compiler version"`; \
+				x=`"$(ASL)" -va xxx | grep "Compiler/Disassembler version"`; \
 				echo "---- iASL version: $$x"; \
 				if [ -z "$$x" ]; then \
 					echo "Bad iASL 2: bad signon <$(ASL)>"; exit 1; \
