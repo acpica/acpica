@@ -126,6 +126,7 @@
  * FUNCTION:    CvPrintOneCommentList
  *
  * PARAMETERS:  CommentList
+ *              Level
  *
  * RETURN:      None
  *
@@ -243,7 +244,8 @@ CvPrintOneCommentType (
  *
  * FUNCTION:    CvCloseBraceWriteComment 
  *
- * PARAMETERS:  ACPI_PARSE_OBJECT
+ * PARAMETERS:  Op
+ *              Level
  *
  * RETURN:      none
  *
@@ -288,7 +290,8 @@ CvCloseBraceWriteComment(
  *
  * FUNCTION:    CvCloseParenWriteComment 
  *
- * PARAMETERS:  ACPI_PARSE_OBJECT
+ * PARAMETERS:  Op
+ *              Level
  *
  * RETURN:      none
  *
@@ -355,6 +358,8 @@ CvCloseParenWriteComment(
  * RETURN:      BOOLEAN
  *
  * DESCRIPTION: Determine whether if a file has switched.
+ *              TRUE - file has switched. 
+ *              FALSE - file has not switched.
  *
  ******************************************************************************/
 
@@ -375,11 +380,12 @@ CvFileHasSwitched(
  *
  * FUNCTION:    CvSwitchFiles
  *
- * PARAMETERS:  ASL_WALK_CALLBACK
+ * PARAMETERS:  Level - indentation level
+ *              Op
  *
  * RETURN:      None
  *
- * DESCRIPTION: Switch the outputfile for -ca option. 
+ * DESCRIPTION: Switch the outputfile. 
  *
  ******************************************************************************/
 

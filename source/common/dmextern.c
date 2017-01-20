@@ -1238,7 +1238,8 @@ AcpiDmEmitExternals (
  *
  * FUNCTION:    AcpiDmEmitExternal
  *
- * PARAMETERS:  Op                  External Parse Object
+ * PARAMETERS:  NameOp       External Parse Object
+ *              TypeOp       Parse Object denoting the type of External
  *
  * RETURN:      None
  *

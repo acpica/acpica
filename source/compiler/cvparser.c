@@ -179,11 +179,13 @@ CvIsFilename (
  *
  * FUNCTION:    CvInitFileTree
  *
- * PARAMETERS:  Op
+ * PARAMETERS:  Table
+ *              AmlStart
+ *              AmlLength
  *
  * RETURN:      none
  *
- * DESCRIPTION: Initialize the file dependency tree by looking at the AML.
+ * DESCRIPTION: Initialize the file dependency tree by scanning the AML.
  *
  ******************************************************************************/
 
@@ -371,12 +373,12 @@ CvCommentExists (
  *
  * FUNCTION:    CvFilenameExists
  *
- * PARAMETERS:  Filename
+ * PARAMETERS:  Filename        - filename to search
  *
- * RETURN:      Status
+ * RETURN:      ACPI_FILE_NODE* - file node of the address
  *
- * DESCRIPTION: for -ca option: look for the given filename in the stack.
- *              Returns TRUE if it exists, returns FALSE if it doesn't.
+ * DESCRIPTION: Look for the given filename in the file dependency tree.
+ *              Returns the file node if it exists, returns NULL if it does not.
  *
  ******************************************************************************/
 
@@ -404,12 +406,14 @@ CvFilenameExists(
  *
  * FUNCTION:    CvFileAddressLookup
  *
- * PARAMETERS:  Filename
+ * PARAMETERS:  Address        - address to look up
+ *              Head           - file dependency tree
  *
- * RETURN:      Status
+ * RETURN:      ACPI_FLE_NODE* - file node containing the address
  *
- * DESCRIPTION: for -ca option: look for the given filename in the stack.
- *              Returns TRUE if it exists, returns FALSE if it doesn't.
+ * DESCRIPTION: Look for the given address in the file dependency tree.
+ *              Returns the first file node where the given address is within
+ *              the file node's starting and ending address.
  *
  ******************************************************************************/
 
@@ -442,10 +446,9 @@ CvFileAddressLookup(
  *
  * RETURN:      None
  *
- * DESCRIPTION: for -ca option: Takes a given parse op, looks up its 
- *              Op->Common.Aml field within the file tree and fills in
- *              approperiate file information from a matching node within the
- *              tree.
+ * DESCRIPTION: Takes a given parse op, looks up its Op->Common.Aml field 
+ *              within the file tree and fills in approperiate file information
+ *              from a matching node within the tree.
  *
  ******************************************************************************/
 
@@ -552,9 +555,10 @@ CvAddToFileTree (
  *
  * FUNCTION:    CvSetFileParent
  *
- * PARAMETERS:  char* ChildFile, char* ParentFile
+ * PARAMETERS:  char* ChildFile
+ *              char* ParentFile
  *
- * RETURN:      void
+ * RETURN:      none
  *
  * DESCRIPTION: point the child's parent pointer to the node that corresponds
  *              with parent's node.
@@ -594,13 +598,13 @@ CvSetFileParent (
  *
  * PARAMETERS:  ParserState         - A parser state object
  *
- * RETURN:      void
+ * RETURN:      none
  *
  * DESCRIPTION: look at the aml that the parser state is pointing to,
  *              capture any AML_COMMENT_OP and it's arguments and increment the
- *              aml pointer past the comment. This is used in the -q option.
- *              Comments are transferred to parse nodes through
- *              CvTransferComments as well as AcpiPsBuildNamedOp ().
+ *              aml pointer past the comment. Comments are transferred to parse
+ *              nodes through CvTransferComments() as well as 
+ *              AcpiPsBuildNamedOp().
  *
  ******************************************************************************/
 
@@ -841,11 +845,11 @@ CvCaptureJustComments (
  *
  * PARAMETERS:  ParserState         - A parser state object
  *
- * RETURN:      void
+ * RETURN:      none
  *
  * DESCRIPTION: look at the aml that the parser state is pointing to,
  *              capture any AML_COMMENT_OP and it's arguments and increment the
- *              aml pointer past the comment. This is used in the -q option.
+ *              aml pointer past the comment.
  *
  ******************************************************************************/
 
@@ -885,12 +889,12 @@ CvCaptureComments (
  *
  * FUNCTION:    CvTransferComments
  *
- * PARAMETERS:  WalkState           - Current state
+ * PARAMETERS:  Op         - the comments will be transferred here
  *
- * RETURN:      Status
+ * RETURN:      none
  *
- * DESCRIPTION: Parse AML (pointed to by the current parser state) and return
- *              a tree of ops.
+ * DESCRIPTION: take the given op and transfer all of the captured comments
+ *              from the global comment containers.
  *
  ******************************************************************************/
 

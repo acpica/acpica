@@ -125,7 +125,9 @@
  *
  * FUNCTION:    CvProcessComment
  *
- * PARAMETERS:  Op
+ * PARAMETERS:  CurrentState      Current comment parse state
+ *              StringBuffer      Buffer containing the comment being processed
+ *              c1                Current input
  *
  * RETURN:      none
  *
@@ -244,7 +246,8 @@ CvProcessComment (
  *
  * FUNCTION:    CvProcessCommentType2
  *
- * PARAMETERS:  Op
+ * PARAMETERS:  CurrentState      Current comment parse state
+ *              StringBuffer      Buffer containing the comment being processed
  *
  * RETURN:      none
  *
@@ -324,7 +327,7 @@ CvProcessCommentType2 (
  *
  * FUNCTION:    CgWriteAmlDefBlockComment
  *
- * PARAMETERS:  Op
+ * PARAMETERS:  Op                 - Calculate all comments of this Op
  *
  * RETURN:      TotalCommentLength - Length of all comments within this node.
  *
@@ -514,10 +517,12 @@ CgWriteAmlDefBlockComment(
  * FUNCTION:    CgWriteOneAmlComment
  *
  * PARAMETERS:  Op              - Current parse op
+ *              CommentToPrint  - Comment that's printed
+ *              InputOption     - Denotes the comment option.
  *
  * RETURN:      None
  *
- * DESCRIPTION: For -ca: write a single comment.
+ * DESCRIPTION: write a single comment.
  *
  ******************************************************************************/
 
@@ -547,7 +552,8 @@ CgWriteOneAmlComment(
  *
  * RETURN:      None
  *
- * DESCRIPTION: For -ca: write all comments pertaining to the current parse op
+ * DESCRIPTION: write all comments pertaining to the 
+ *              current parse op
  *
  ******************************************************************************/
 
@@ -646,7 +652,7 @@ CgWriteAmlComment(
  *
  * FUNCTION:    CvCommentNodeCalloc
  *
- * PARAMETERS:  Length              - Size of buffer requested
+ * PARAMETERS:  none
  *
  * RETURN:      Pointer to the buffer. Aborts on allocation failure
  *
@@ -745,11 +751,12 @@ CvParseOpBlockType (
  *
  * FUNCTION:    CvChangeFileExt
  *
- * PARAMETERS:  
+ * PARAMETERS:  Filename
+ *              FileExt
  *
- * RETURN:      None
+ * RETURN:      char* - new filename
  *
- * DESCRIPTION: For -ca option: change a file extension of a given filename to
+ * DESCRIPTION: Change a file extension of a given filename to
  *              the given file extension.
  *
  ******************************************************************************/
@@ -796,7 +803,7 @@ CvChangeFileExt(
  *
  * RETURN:      None
  *
- * DESCRIPTION: For -q option. Take the given input. If this character is 
+ * DESCRIPTION: Take the given input. If this character is 
  *              defined as a comment table entry, then update the state
  *              accordingly.
  *
@@ -871,7 +878,8 @@ CvProcessCommentState (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Count keywords and put them into the line buffer
+ * DESCRIPTION: Add the given char* to a list of comments in the global list
+ *              of comments.
  *
  ******************************************************************************/
 
@@ -939,14 +947,13 @@ CvAppendInlineComment (
  *
  * FUNCTION:    CvPlaceComment
  *
- * PARAMETERS:  Int    Type
- *              char*  CommentString
+ * PARAMETERS:  Int           - Type
+ *              char*         - CommentString
  *
  * RETURN:      None
  *
- * DESCRIPTION: For -q option. Take the given input. If this character is 
- *              defined as a comment table entry, then update the state
- *              accordingly.
+ * DESCRIPTION: Take the given input. If this character is defined as a comment
+ *              table entry, then update the state accordingly.
  *
  ******************************************************************************/
 
