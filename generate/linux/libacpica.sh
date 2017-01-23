@@ -108,7 +108,6 @@ acpica_exclude_paths()
 		include/acpi/platform/acefiex.h \
 		include/acpi/platform/acfreebsd.h \
 		include/acpi/platform/achaiku.h \
-		include/acpi/platform/acintel.h \
 		include/acpi/platform/acmacosx.h \
 		include/acpi/platform/acmsvc.h \
 		include/acpi/platform/acmsvcex.h \
