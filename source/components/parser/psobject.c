@@ -280,8 +280,14 @@ AcpiPsBuildNamedOp (
             return_ACPI_STATUS (Status);
         }
 
-        AcpiPsAppendArg (UnnamedOp, Arg);
-        INCREMENT_ARG_LIST (WalkState->ArgTypes);
+        if (Arg)
+        {
+            AcpiPsAppendArg (UnnamedOp, Arg);
+        }
+        if (!WalkState->VarArgs)
+        {
+            INCREMENT_ARG_LIST (WalkState->ArgTypes);
+        }
     }
 
     /*
@@ -535,7 +541,7 @@ AcpiPsCompleteOp (
     case AE_CTRL_END:
 
         AcpiPsPopScope (&(WalkState->ParserState), Op,
-            &WalkState->ArgTypes, &WalkState->ArgCount);
+            &WalkState->ArgTypes, &WalkState->ArgCount, &WalkState->VarArgs);
 
         if (*Op)
         {
@@ -564,7 +570,8 @@ AcpiPsCompleteOp (
         while (!(*Op) || ((*Op)->Common.AmlOpcode != AML_WHILE_OP))
         {
             AcpiPsPopScope (&(WalkState->ParserState), Op,
-                &WalkState->ArgTypes, &WalkState->ArgCount);
+                &WalkState->ArgTypes, &WalkState->ArgCount,
+                &WalkState->VarArgs);
         }
 
         /* Close this iteration of the While loop */
@@ -603,7 +610,8 @@ AcpiPsCompleteOp (
             }
 
             AcpiPsPopScope (&(WalkState->ParserState), Op,
-                &WalkState->ArgTypes, &WalkState->ArgCount);
+                &WalkState->ArgTypes, &WalkState->ArgCount,
+                &WalkState->VarArgs);
 
         } while (*Op);
 
@@ -623,7 +631,8 @@ AcpiPsCompleteOp (
             }
 
             AcpiPsPopScope (&(WalkState->ParserState), Op,
-                &WalkState->ArgTypes, &WalkState->ArgCount);
+                &WalkState->ArgTypes, &WalkState->ArgCount,
+                &WalkState->VarArgs);
 
         } while (*Op);
 
@@ -648,7 +657,7 @@ AcpiPsCompleteOp (
     if (AcpiPsHasCompletedScope (&(WalkState->ParserState)))
     {
         AcpiPsPopScope (&(WalkState->ParserState), Op,
-            &WalkState->ArgTypes, &WalkState->ArgCount);
+            &WalkState->ArgTypes, &WalkState->ArgCount, &WalkState->VarArgs);
         ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Popped scope, Op=%p\n", *Op));
     }
     else
@@ -732,7 +741,8 @@ AcpiPsCompleteFinalOp (
                         }
 
                         AcpiPsPopScope (&(WalkState->ParserState), &Op,
-                            &WalkState->ArgTypes, &WalkState->ArgCount);
+                            &WalkState->ArgTypes, &WalkState->ArgCount,
+                            &WalkState->VarArgs);
 
                     } while (Op);
 
@@ -756,7 +766,7 @@ AcpiPsCompleteFinalOp (
         }
 
         AcpiPsPopScope (&(WalkState->ParserState), &Op, &WalkState->ArgTypes,
-            &WalkState->ArgCount);
+            &WalkState->ArgCount, &WalkState->VarArgs);
 
     } while (Op);
 

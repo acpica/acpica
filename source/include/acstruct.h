@@ -169,6 +169,7 @@ typedef struct acpi_walk_state
     ACPI_PARSE_STATE                ParserState;        /* Current state of parser */
     UINT32                          PrevArgTypes;
     UINT32                          ArgCount;           /* push for fixed or var args */
+    BOOLEAN                         VarArgs;            /* Variable number of arguments */
 
     struct acpi_namespace_node      Arguments[ACPI_METHOD_NUM_ARGS];        /* Control method arguments */
     struct acpi_namespace_node      LocalVariables[ACPI_METHOD_NUM_LOCALS]; /* Control method locals */
