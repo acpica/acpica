@@ -848,6 +848,7 @@ ACPI_STRING_TABLE           LinuxSpecialStrings[] = {
     {"\"platform/acenv.h\"",    "<acpi/platform/acenv.h>",      REPLACE_WHOLE_WORD},
     {"\"platform/acenvex.h\"",  "<acpi/platform/acenvex.h>",    REPLACE_WHOLE_WORD},
     {"\"acgcc.h\"",             "<acpi/platform/acgcc.h>",      REPLACE_WHOLE_WORD},
+    {"\"acintel.h\"",           "<acpi/platform/acintel.h>",    REPLACE_WHOLE_WORD},
     {"\"aclinux.h\"",           "<acpi/platform/aclinux.h>",    REPLACE_WHOLE_WORD},
     {"\"aclinuxex.h\"",         "<acpi/platform/aclinuxex.h>",  REPLACE_WHOLE_WORD},
 
