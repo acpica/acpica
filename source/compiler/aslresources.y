@@ -130,7 +130,7 @@ NoEcho('
  * Also, insert the EndTag at the end of the template.
  */
 ResourceTemplateTerm
-    : PARSEOP_RESOURCETEMPLATE      {Gbl_CommentState.CaptureComments = FALSE;}
+    : PARSEOP_RESOURCETEMPLATE      {COMMENT_CAPTURE_OFF;}
         OptionalParentheses
         '{'
         ResourceMacroList '}'       {$$ = TrCreateNode (PARSEOP_RESOURCETEMPLATE,4,
@@ -138,7 +138,7 @@ ResourceTemplateTerm
                                           TrCreateLeafNode (PARSEOP_DEFAULT_ARG),
                                           $5,
                                           TrCreateLeafNode (PARSEOP_ENDTAG));
-                                     Gbl_CommentState.CaptureComments = TRUE;}
+                                     COMMENT_CAPTURE_ON;}
     ;
 
 OptionalParentheses

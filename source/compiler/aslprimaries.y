@@ -220,9 +220,9 @@ BreakPointTerm
     ;
 
 BufferTerm
-    : PARSEOP_BUFFER                {$<n>$ = TrCreateLeafNode (PARSEOP_BUFFER); Gbl_CommentState.CaptureComments = FALSE; }
+    : PARSEOP_BUFFER                {$<n>$ = TrCreateLeafNode (PARSEOP_BUFFER); COMMENT_CAPTURE_OFF; }
         OptionalDataCount
-        '{' BufferTermData '}'      {$$ = TrLinkChildren ($<n>2,2,$3,$5); Gbl_CommentState.CaptureComments = TRUE;}
+        '{' BufferTermData '}'      {$$ = TrLinkChildren ($<n>2,2,$3,$5); COMMENT_CAPTURE_ON;}
     ;
 
 BufferTermData
@@ -620,11 +620,11 @@ FromBCDTerm
 
 FunctionTerm
     : PARSEOP_FUNCTION
-        PARSEOP_OPEN_PAREN          {Gbl_CommentState.CaptureComments = FALSE; $<n>$ = TrCreateLeafNode (PARSEOP_METHOD); }
+        PARSEOP_OPEN_PAREN          {COMMENT_CAPTURE_OFF; $<n>$ = TrCreateLeafNode (PARSEOP_METHOD); }
         NameString
         OptionalParameterTypePackage
         OptionalParameterTypesPackage
-        PARSEOP_CLOSE_PAREN '{'     {Gbl_CommentState.CaptureComments = TRUE; }
+        PARSEOP_CLOSE_PAREN '{'     {COMMENT_CAPTURE_ON; }
             TermList '}'            {$$ = TrLinkChildren ($<n>3,7,
                                         TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),
                                         TrCreateValuedLeafNode (PARSEOP_BYTECONST, 0),
@@ -853,14 +853,14 @@ MatchTerm
 
 MethodTerm
     : PARSEOP_METHOD
-        PARSEOP_OPEN_PAREN          {$<n>$ = TrCreateLeafNode (PARSEOP_METHOD); Gbl_CommentState.CaptureComments = FALSE;}
+        PARSEOP_OPEN_PAREN          {$<n>$ = TrCreateLeafNode (PARSEOP_METHOD); COMMENT_CAPTURE_OFF;}
         NameString
         OptionalByteConstExpr       {UtCheckIntegerRange ($5, 0, 7);}
         OptionalSerializeRuleKeyword
         OptionalByteConstExpr
         OptionalParameterTypePackage
         OptionalParameterTypesPackage
-        PARSEOP_CLOSE_PAREN '{'     {Gbl_CommentState.CaptureComments = TRUE;}
+        PARSEOP_CLOSE_PAREN '{'     {COMMENT_CAPTURE_ON;}
             TermList '}'            {$$ = TrLinkChildren ($<n>3,7,
                                         TrSetNodeFlags ($4, NODE_IS_NAME_DECLARATION),
                                         $5,$7,$8,$9,$10,$14);}
