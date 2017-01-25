@@ -1000,14 +1000,14 @@ typedef union acpi_parse_value
     char                            *OperatorSymbol;    /* Used for C-style operator name strings */\
     char                            AmlOpName[16])      /* Op name (debug only) */\
      ACPI_CONVERTER_ONLY_MEMBERS (\
-    char                            *InlineComment;     /* For -ca option: inline comment associated with this node.*/\
-    char                            *EndNodeComment;    /* For -ca option: end of node comment associated with this node.*/\
-    char                            *NameComment;       /* For -ca option: inline comment associated with the first parameter of the name node.*/\
-    char                            *CloseBraceComment; /* For -ca option: inline comment associated with the first parameter of the name node.*/\
+    char                            *InlineComment;     /* Inline comment */\
+    char                            *EndNodeComment;    /* End of node comment */\
+    char                            *NameComment;       /* Comment associated with the first parameter of the name node */\
+    char                            *CloseBraceComment; /* Comments that come after } on the same as } */\
     ACPI_COMMENT_LIST_NODE          *CommentList;       /* comments that appears before this node */\
     ACPI_COMMENT_LIST_NODE          *EndBlkComment;     /* comments that at the end of a block but before ) or } */\
-    char                            *PsFilename;        /* For -ca optoin: filename associated with this node */\
-    char                            *PsParentFilename)  /* For -ca optoin: parent filename associated with this node */
+    char                            *PsFilename;        /* Filename associated with this node */\
+    char                            *PsParentFilename)  /* Parent filename associated with this node */
 
 
 /* categories of comments */
