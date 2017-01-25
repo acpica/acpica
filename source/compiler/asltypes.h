@@ -225,6 +225,10 @@ typedef struct asl_file_status
  * Corresponding filename suffixes are in comments
  *
  * NOTE: Don't move the first 4 file types
+ *
+ * .xxx file extension: this is used as a temporary .aml file for
+ * the ASL/ASL+ converter and is deleted after conversion. This file
+ * should never be used in the interpreter.
  */
 typedef enum
 {

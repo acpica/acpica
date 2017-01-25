@@ -301,6 +301,7 @@ CvPrintOneCommentType (
     char*                   EndStr,
     UINT32                  Level);
 
+
 #endif
 
 #endif /* _ACCONVERT */

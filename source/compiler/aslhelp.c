@@ -141,9 +141,9 @@ Usage (
     ACPI_USAGE_HEADER ("iasl [Options] [Files]");
 
     printf ("\nGeneral:\n");
-    ACPI_OPTION ("-@  <file>",       "Specify command file");
-    ACPI_OPTION ("-I  <dir>",        "Specify additional include directory");
-    ACPI_OPTION ("-p  <prefix>",     "Specify path/filename prefix for all output files");
+    ACPI_OPTION ("-@  <file>",      "Specify command file");
+    ACPI_OPTION ("-I  <dir>",       "Specify additional include directory");
+    ACPI_OPTION ("-p  <prefix>",    "Specify path/filename prefix for all output files");
     ACPI_OPTION ("-ca <file>",      "convert a given ASL file to ASL+ (retains comments)");
     ACPI_OPTION ("-v",              "Display compiler version");
     ACPI_OPTION ("-vd",             "Display compiler build date and time");

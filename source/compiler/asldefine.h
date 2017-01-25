@@ -231,7 +231,6 @@
 /*
  * Macros for debug output
  */
-
 #define DEBUG_MAX_LINE_LENGTH       61
 #define DEBUG_SPACES_PER_INDENT     3
 #define DEBUG_FULL_LINE_LENGTH      71
