@@ -179,7 +179,7 @@ static const ACPI_PORT_INFO     AcpiProtectedPorts[] =
     {"PCI",     0x0CF8, 0x0CFF, ACPI_OSI_WIN_XP}
 };
 
-#define ACPI_PORT_INFO_ENTRIES  ACPI_ARRAY_LENGTH (AcpiProtectedPorts)
+#define ACPI_PORT_INFO_ENTRIES      ACPI_ARRAY_LENGTH (AcpiProtectedPorts)
 
 
 /******************************************************************************
@@ -209,7 +209,7 @@ AcpiHwValidateIoRequest (
     const ACPI_PORT_INFO    *PortInfo;
 
 
-    ACPI_FUNCTION_TRACE (HwValidateIoRequest);
+    ACPI_FUNCTION_NAME (HwValidateIoRequest);
 
 
     /* Supported widths are 8/16/32 */
@@ -220,7 +220,7 @@ AcpiHwValidateIoRequest (
     {
         ACPI_ERROR ((AE_INFO,
             "Bad BitWidth parameter: %8.8X", BitWidth));
-        return (AE_BAD_PARAMETER);
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     PortInfo = AcpiProtectedPorts;
@@ -254,7 +254,7 @@ AcpiHwValidateIoRequest (
     {
         /*
          * Check if the requested address range will write to a reserved
-         * port. Four cases to consider:
+         * port. There are four cases to consider:
          *
          * 1) Address range is contained completely in the port address range
          * 2) Address range overlaps port range at the port range start
@@ -293,7 +293,7 @@ AcpiHwValidateIoRequest (
  * FUNCTION:    AcpiHwReadPort
  *
  * PARAMETERS:  Address             Address of I/O port/register to read
- *              Value               Where value is placed
+ *              Value               Where value (data) is returned
  *              Width               Number of bits
  *
  * RETURN:      Status and value read from port
@@ -339,7 +339,7 @@ AcpiHwReadPort (
     /*
      * There has been a protection violation within the request. Fall
      * back to byte granularity port I/O and ignore the failing bytes.
-     * This provides Windows compatibility.
+     * This provides compatibility with other ACPI implementations.
      */
     for (i = 0, *Value = 0; i < Width; i += 8)
     {
@@ -413,7 +413,7 @@ AcpiHwWritePort (
     /*
      * There has been a protection violation within the request. Fall
      * back to byte granularity port I/O and ignore the failing bytes.
-     * This provides Windows compatibility.
+     * This provides compatibility with other ACPI implementations.
      */
     for (i = 0; i < Width; i += 8)
     {
