@@ -1355,9 +1355,4 @@ void
 AcpiSetDebuggerThreadId (
     ACPI_THREAD_ID          ThreadId);
 
-void
-CvDbgPrint (
-    char                    *Fmt,
-    ...);
-
 #endif /* __ACXFACE_H__ */
