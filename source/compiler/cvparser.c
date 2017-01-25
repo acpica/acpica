@@ -114,8 +114,7 @@
  *
  *****************************************************************************/
 
-#include "acpi.h"
-#include "accommon.h"
+#include "aslcompiler.h"
 #include "acparser.h"
 #include "acdispat.h"
 #include "amlcode.h"

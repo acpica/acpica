@@ -115,7 +115,6 @@
 
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
-#include "accommon.h"
 #include "amlcode.h"
 #include "acapps.h"
 #include "acconvert.h"
