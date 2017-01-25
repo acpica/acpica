@@ -944,9 +944,9 @@ FlOpenMiscOutputFiles (
             return (AE_ERROR);
         }
 
-        /* Open the namespace file, text mode */
+        /* Open the converter debug file, text mode */
 
-        FlOpenFile (ASL_FILE_CONV_DEBUG_OUTPUT, Filename, "a+t");
+        FlOpenFile (ASL_FILE_CONV_DEBUG_OUTPUT, Filename, "w+t");
 
         AslCompilerSignon (ASL_FILE_CONV_DEBUG_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_CONV_DEBUG_OUTPUT);
