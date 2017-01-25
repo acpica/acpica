@@ -1010,18 +1010,23 @@ typedef union acpi_parse_value
     char                            *PsParentFilename)  /* For -ca optoin: parent filename associated with this node */
 
 
-/* #defines for categories of comments */
+/* categories of comments */
 
-#define STANDARD_COMMENT        1
-#define INLINE_COMMENT          2
-#define ENDNODE_COMMENT         3
-#define CLOSEBRACE_COMMENT      5
-#define STD_DEFBLK_COMMENT      6
-#define END_DEFBLK_COMMENT      7
-#define FILENAME_COMMENT        8
-#define PARENTFILENAME_COMMENT  9
-#define ENDBLK_COMMENT         10
-#define INCLUDE_COMMENT        11
+typedef enum
+{
+    STANDARD_COMMENT = 1,
+    INLINE_COMMENT,
+    ENDNODE_COMMENT,
+    OPENBRACE_COMMENT,
+    CLOSEBRACE_COMMENT,
+    STD_DEFBLK_COMMENT,
+    END_DEFBLK_COMMENT,
+    FILENAME_COMMENT,
+    PARENTFILENAME_COMMENT,
+    ENDBLK_COMMENT,
+    INCLUDE_COMMENT
+
+} ASL_COMMENT_TYPES;
 
 
 /* Internal opcodes for DisasmOpcode field above */
