@@ -212,7 +212,7 @@ CvPrintOneCommentType (
         }
         break;
 
-    case AML_CLOSEBRACECOMMENT:
+    case AML_CLOSE_BRACECOMMENT:
         if (Op->Common.CloseBraceComment)
         {
             AcpiOsPrintf ("%s", Op->Common.CloseBraceComment);
@@ -232,7 +232,7 @@ CvPrintOneCommentType (
     if (EndStr &&
         ((CommentType == AML_REGCOMMENT) || (CommentType == AML_INLINECOMMENT) ||
          (CommentType == AML_ENDNODECOMMENT) || (CommentType == AML_NAMECOMMENT) ||
-         (CommentType == AML_CLOSEBRACECOMMENT)))
+         (CommentType == AML_CLOSE_BRACECOMMENT)))
     {
         AcpiOsPrintf ("%s", EndStr);
     }

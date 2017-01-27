@@ -615,7 +615,7 @@ AcpiPsGetNextField (
 
     ACPI_FUNCTION_TRACE (PsGetNextField);
 
-    CAPTUREJUSTCOMMENTS (ParserState);
+    ACPI_CV_CAPTURE_COMMENTS_ONLY (ParserState);
     Aml = ParserState->Aml;
 
     /* Determine field type */
@@ -662,7 +662,7 @@ AcpiPsGetNextField (
 
     /* Decode the field type */
 
-    CAPTUREJUSTCOMMENTS (ParserState);
+    ACPI_CV_CAPTURE_COMMENTS_ONLY (ParserState);
     switch (Opcode)
     {
     case AML_INT_NAMEDFIELD_OP:
@@ -674,7 +674,7 @@ AcpiPsGetNextField (
         ParserState->Aml += ACPI_NAME_SIZE;
 
 
-        CAPTUREJUSTCOMMENTS (ParserState);
+        ACPI_CV_CAPTURE_COMMENTS_ONLY (ParserState);
 
 #ifdef ACPI_ASL_COMPILER
         /*
@@ -746,12 +746,12 @@ AcpiPsGetNextField (
         {
             ParserState->Aml++;
 
-            CAPTUREJUSTCOMMENTS (ParserState);
+            ACPI_CV_CAPTURE_COMMENTS_ONLY (ParserState);
             PkgEnd = ParserState->Aml;
             PkgLength = AcpiPsGetNextPackageLength (ParserState);
             PkgEnd += PkgLength;
 
-            CAPTUREJUSTCOMMENTS (ParserState);
+            ACPI_CV_CAPTURE_COMMENTS_ONLY (ParserState);
             if (ParserState->Aml < PkgEnd)
             {
                 /* Non-empty list */
@@ -768,7 +768,7 @@ AcpiPsGetNextField (
                 Opcode = ACPI_GET8 (ParserState->Aml);
                 ParserState->Aml++;
 
-                CAPTUREJUSTCOMMENTS (ParserState);
+                ACPI_CV_CAPTURE_COMMENTS_ONLY (ParserState);
                 switch (Opcode)
                 {
                 case AML_BYTE_OP:       /* AML_BYTEDATA_ARG */
@@ -797,7 +797,7 @@ AcpiPsGetNextField (
 
                 /* Fill in bytelist data */
 
-                CAPTUREJUSTCOMMENTS (ParserState);
+                ACPI_CV_CAPTURE_COMMENTS_ONLY (ParserState);
                 Arg->Named.Value.Size = BufferLength;
                 Arg->Named.Data = ParserState->Aml;
             }

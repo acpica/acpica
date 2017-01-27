@@ -121,17 +121,17 @@
 #define ASL_REGCOMMENT        1
 #define ASL_INLINECOMMENT     2
 #define ASL_OPENPARENCOMMENT  3
-#define ASL_CLOSEPARENCOMMENT 4
-#define ASL_CLOSEBRACECOMMENT 5
+#define ASL_CLOSE_PARENCOMMENT 4
+#define ASL_CLOSE_BRACECOMMENT 5
 
 /* Definitions for comment table entry */
 
 #define ASL_NEWLINE    '\n'
 #define ASL_OpenParen  '('
-#define ASL_CLOSEPAREN ')'
+#define ASL_CLOSE_PAREN ')'
 #define ASL_COMMA      ','
 #define ASL_OPENBRACE  '{'
-#define ASL_CLOSEBRACE '}'
+#define ASL_CLOSE_BRACE '}'
 #define ASL_WHITESPACE ' '
 
 
@@ -141,7 +141,7 @@
 #define AML_INLINECOMMENT     2
 #define AML_ENDNODECOMMENT    3
 #define AML_NAMECOMMENT       4
-#define AML_CLOSEBRACECOMMENT 5
+#define AML_CLOSE_BRACECOMMENT 5
 #define AML_ENDBLKCOMMENT     6
 #define AML_INCLUDECOMMENT    7
 

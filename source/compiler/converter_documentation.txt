@@ -65,9 +65,9 @@ Comment types - There are several different places that a comment could show up 
 
                                   Example:  Name (a, 0) /* this is an ENDNODECOMMENT of name */
 
-                CLOSEBRACECOMMENT - These are comments that come after a closing brace.
+                CLOSE_BRACECOMMENT - These are comments that come after a closing brace.
 
-                                  Example:  if(0){++i} /* this is a CLOSEBRACECOMMENT of if */
+                                  Example:  if(0){++i} /* this is a CLOSE_BRACECOMMENT of if */
 
                 ENDBLKCOMMENT - These are comments between a piece of code and close brace.
 

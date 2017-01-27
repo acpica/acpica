@@ -280,7 +280,7 @@ AdCreateTableHeader (
      */
     if (Gbl_CaptureComments)
     {
-        PRINTONECOMMENT(AcpiGbl_ParseOpRoot,AML_REGCOMMENT, NULL, 0);
+        ACPI_CV_COMMENT_ONE_COMMENT(AcpiGbl_ParseOpRoot,AML_REGCOMMENT, NULL, 0);
     }
 
     /*
@@ -470,7 +470,7 @@ AdParseTable (
 
     AmlLength = Table->Length - sizeof (ACPI_TABLE_HEADER);
     AmlStart = ((UINT8 *) Table + sizeof (ACPI_TABLE_HEADER));
-    INITFILETREE(Table, AmlStart, AmlLength);
+    ACPI_CV_INIT_FILETREE(Table, AmlStart, AmlLength);
 
     /* Create the root object */
 

@@ -640,7 +640,7 @@ CgWriteAmlComment(
 
     if (Op->Asl.CloseBraceComment)
     {
-        CommentOption = CLOSEBRACE_COMMENT;
+        CommentOption = CLOSE_BRACE_COMMENT;
         CgWriteOneAmlComment(Op, Op->Asl.CloseBraceComment, CommentOption);
         Op->Asl.CloseBraceComment = NULL;
     }
@@ -838,9 +838,9 @@ CvProcessCommentState (
             Gbl_CommentState.CommentType = ASL_OPENPARENCOMMENT;
             break;
 
-        case ASL_CLOSEPAREN:
+        case ASL_CLOSE_PAREN:
 
-            Gbl_CommentState.CommentType = ASL_CLOSEPARENCOMMENT;
+            Gbl_CommentState.CommentType = ASL_CLOSE_PARENCOMMENT;
             break;
 
         case ASL_OPENBRACE:
@@ -850,9 +850,9 @@ CvProcessCommentState (
             CvDbgPrint ("End Parsing paren/Brace node!\n");
             break;
 
-        case ASL_CLOSEBRACE:
+        case ASL_CLOSE_BRACE:
             
-            Gbl_CommentState.CommentType = ASL_CLOSEBRACECOMMENT;
+            Gbl_CommentState.CommentType = ASL_CLOSE_BRACECOMMENT;
             break;
 
         case ASL_COMMA:
@@ -989,7 +989,7 @@ CvPlaceComment(
                 CommentString);
             break;
 
-        case ASL_CLOSEPARENCOMMENT:
+        case ASL_CLOSE_PARENCOMMENT:
            
             if (ParenBraceNode)
             {
@@ -1005,7 +1005,7 @@ CvPlaceComment(
             }
             break;
 
-        case ASL_CLOSEBRACECOMMENT:
+        case ASL_CLOSE_BRACECOMMENT:
 
             LatestParseNode->Asl.CloseBraceComment = CommentString;
             break;

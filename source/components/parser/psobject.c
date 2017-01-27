@@ -274,7 +274,7 @@ AcpiPsBuildNamedOp (
     while (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) &&
           (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) != ARGP_NAME))
     {
-        CAPTURECOMMENTS (WalkState);
+        ACPI_CV_CAPTURE_COMMENTS (WalkState);
         Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
             GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
         if (ACPI_FAILURE (Status))
@@ -288,7 +288,7 @@ AcpiPsBuildNamedOp (
 
     /* are there any inline comments associated with the NameSeg?? If so, save this. */
 
-    CAPTURECOMMENTS (WalkState);
+    ACPI_CV_CAPTURE_COMMENTS (WalkState);
 
 #ifdef ACPI_ASL_COMPILER
     if (AcpiGbl_CurrentInlineComment != NULL)

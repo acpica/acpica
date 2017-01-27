@@ -219,7 +219,7 @@ AcpiPsGetArguments (
                 Op->Common.AmlOpcode != AML_PACKAGE_OP && Op->Common.AmlOpcode != AML_VAR_PACKAGE_OP &&
                 Op->Common.AmlOpcode != AML_WHILE_OP)
             {
-                CAPTURECOMMENTS (WalkState);
+                ACPI_CV_CAPTURE_COMMENTS (WalkState);
             }
             Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
                 GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
@@ -566,7 +566,7 @@ AcpiPsParseLoop (
 
     while ((ParserState->Aml < ParserState->AmlEnd) || (Op))
     {
-        CAPTURECOMMENTS (WalkState);
+        ACPI_CV_CAPTURE_COMMENTS (WalkState);
  
         AmlOpStart = ParserState->Aml;
         if (!Op)
@@ -609,7 +609,7 @@ AcpiPsParseLoop (
         if (Op->Common.AmlOpcode != AML_BYTE_OP  && Op->Common.AmlOpcode != AML_WORD_OP &&
             Op->Common.AmlOpcode != AML_DWORD_OP && Op->Common.AmlOpcode != AML_QWORD_OP)
         {
-            CAPTURECOMMENTS (WalkState);
+            ACPI_CV_CAPTURE_COMMENTS (WalkState);
         }
 
         /* Are there any arguments that must be processed? */

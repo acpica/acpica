@@ -576,39 +576,39 @@
  */
 #ifdef ACPI_ASL_COMPILER
 
-#define FILENAMEEXISTS(a,b)      CvFilenameExists(a,b);
-#define FILELABELNODE(a)         CvFileLabelNode(a);
-#define ADDTOFILETREE(a,b)       CvAddToFileTree (a,b);
-#define SETFILEPARENT(a,b)       CvSetFileParent (a,b);
-#define CAPTUREJUSTCOMMENTS(a)   CvCaptureJustComments (a);
-#define CAPTURECOMMENTS(a)       CvCaptureComments (a);
-#define TRANSFERCOMMENTS(a)      CvTransferComments (a);
-#define CLOSEPAREN(a,b)          CvCloseParenWriteComment(a,b);
-#define CLOSEBRACE(a,b)          CvCloseBraceWriteComment(a,b);
-#define SWITCHFILES(a,b)         CvSwitchFiles(a,b);
-#define CLEAROPCOMMENTS(a)       CvClearOpComments(a);
-#define PRINTONECOMMENT(a,b,c,d) CvPrintOneCommentType (a,b,c,d);
-#define PRINTONECOMMENTLIST(a,b) CvPrintOneCommentList (a,b);
-#define FILEHASSWITCHED(a)       CvFileHasSwitched(a)
-#define INITFILETREE(a,b,c)      CvInitFileTree(a,b,c);
+#define ACPI_CV_FILENAME_EXISTS(a,b)      CvFilenameExists(a,b);
+#define ACPI_CV_LABEL_FILENODE(a)         CvFileLabelNode(a);
+#define ACPI_CV_ADD_TO_FILETREE(a,b)       CvAddToFileTree (a,b);
+#define ACPI_CV_SET_FILE_PARENT(a,b)       CvSetFileParent (a,b);
+#define ACPI_CV_CAPTURE_COMMENTS_ONLY(a)   CvCaptureJustComments (a);
+#define ACPI_CV_CAPTURE_COMMENTS(a)       CvCaptureComments (a);
+#define ACPI_CV_TRANSFER_COMMENTS(a)      CvTransferComments (a);
+#define ACPI_CV_CLOSE_PAREN(a,b)          CvCloseParenWriteComment(a,b);
+#define ACPI_CV_CLOSE_BRACE(a,b)          CvCloseBraceWriteComment(a,b);
+#define ACPI_CV_SWITCH_FILES(a,b)         CvSwitchFiles(a,b);
+#define ACPI_CV_CLEAR_OP_COMMENTS(a)       CvClearOpComments(a);
+#define ACPI_CV_COMMENT_ONE_COMMENT(a,b,c,d) CvPrintOneCommentType (a,b,c,d);
+#define ACPI_CV_COMMENT_ONE_COMMENTLIST(a,b) CvPrintOneCommentList (a,b);
+#define ACPI_CV_FILE_HAS_SWITCHED(a)       CvFileHasSwitched(a)
+#define ACPI_CV_INIT_FILETREE(a,b,c)      CvInitFileTree(a,b,c);
 
 #else
 
-#define FILENAMEEXISTS(a,b)
-#define FILELABELNODE(a)
-#define ADDTOFILETREE(a,b)
-#define SETFILEPARENT(a,b)
-#define CAPTUREJUSTCOMMENTS(a)
-#define CAPTURECOMMENTS(a)
-#define TRANSFERCOMMENTS(a)
-#define CLOSEPAREN(a,b)          AcpiOsPrintf (")");
-#define CLOSEBRACE(a,b)          AcpiOsPrintf ("}");
-#define SWITCHFILES(a,b)
-#define CLEAROPCOMMENTS(a)
-#define PRINTONECOMMENT(a,b,c,d)
-#define PRINTONECOMMENTLIST(a,b)
-#define FILEHASSWITCHED(a)       0
-#define INITFILETREE(a,b,c)
+#define ACPI_CV_FILENAME_EXISTS(a,b)
+#define ACPI_CV_LABEL_FILENODE(a)
+#define ACPI_CV_ADD_TO_FILETREE(a,b)
+#define ACPI_CV_SET_FILE_PARENT(a,b)
+#define ACPI_CV_CAPTURE_COMMENTS_ONLY(a)
+#define ACPI_CV_CAPTURE_COMMENTS(a)
+#define ACPI_CV_TRANSFER_COMMENTS(a)
+#define ACPI_CV_CLOSE_PAREN(a,b)          AcpiOsPrintf (")");
+#define ACPI_CV_CLOSE_BRACE(a,b)          AcpiOsPrintf ("}");
+#define ACPI_CV_SWITCH_FILES(a,b)
+#define ACPI_CV_CLEAR_OP_COMMENTS(a)
+#define ACPI_CV_COMMENT_ONE_COMMENT(a,b,c,d)
+#define ACPI_CV_COMMENT_ONE_COMMENTLIST(a,b)
+#define ACPI_CV_FILE_HAS_SWITCHED(a)       0
+#define ACPI_CV_INIT_FILETREE(a,b,c)
 
 #endif
 
