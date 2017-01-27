@@ -536,9 +536,6 @@ CgWriteOneAmlComment(
 
     CgLocalWriteAmlData (Op, &CommentOpcode, 1);
     CgLocalWriteAmlData (Op, &CommentOption, 1);
-
-    /* +1 is what emits the 0x00 at the end of this opcode. */
-
     CgLocalWriteAmlData (Op, CommentToPrint, strlen (CommentToPrint) + 1); 
 }
 
@@ -565,13 +562,14 @@ CgWriteAmlComment(
     char                    *NewFilename;
     char                    *ParentFilename;
 
-    if (Op->Asl.ParseOpcode == PARSEOP_DEFINITION_BLOCK || !Gbl_CaptureComments)
+    if ((Op->Asl.ParseOpcode == PARSEOP_DEFINITION_BLOCK) ||
+         !Gbl_CaptureComments)
     {
         return;
     }
 
-
     /* Print out the filename comment if needed */
+
     if (Op->Asl.FileChanged)
     {
 
@@ -921,11 +919,11 @@ CvAppendInlineComment (
     UINT32                  Size = 0;
 
 
-    if (InlineComment==NULL)
+    if (!InlineComment)
     {
         return ToAdd;
     }
-    if (ToAdd != NULL)
+    if (ToAdd)
     {
         Size = strlen (ToAdd);
     }

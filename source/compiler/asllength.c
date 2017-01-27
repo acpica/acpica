@@ -196,13 +196,13 @@ LnPackageLengthWalk (
     void                    *Context)
 {
 
-    /* Generate the AML lengths for this node */ 
+    /* Generate the AML lengths for this node */
 
     CgGenerateAmlLengths (Op);
 
     /* Bubble up all lengths (this node and all below it) to the parent */
 
-    if ((Op->Asl.Parent) && 
+    if ((Op->Asl.Parent) &&
         (Op->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG))
     {
         Op->Asl.Parent->Asl.AmlSubtreeLength += (

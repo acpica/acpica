@@ -615,6 +615,7 @@ AcpiPsGetNextField (
 
     ACPI_FUNCTION_TRACE (PsGetNextField);
 
+
     ACPI_CV_CAPTURE_COMMENTS_ONLY (ParserState);
     Aml = ParserState->Aml;
 
@@ -842,8 +843,8 @@ AcpiPsGetNextField (
  *
  * PARAMETERS:  WalkState           - Current state
  *              ParserState         - Current parser state object
- *              Argtype             - The argument type (AML_*_ARG)
- *              Returnarg           - Where the next arg is returned
+ *              ArgType             - The argument type (AML_*_ARG)
+ *              ReturnArg           - Where the next arg is returned
  *
  * RETURN:      Status, and an op object containing the next argument.
  *
@@ -868,10 +869,6 @@ AcpiPsGetNextArg (
 
     ACPI_FUNCTION_TRACE_PTR (PsGetNextArg, ParserState);
 
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
-        "Expected argument type ARGP: %s (%2.2X)\n",
-        AcpiUtGetArgumentTypeName (ArgType), ArgType));
 
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
         "Expected argument type ARGP: %s (%2.2X)\n",

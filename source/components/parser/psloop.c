@@ -215,12 +215,22 @@ AcpiPsGetArguments (
         {
             WalkState->Aml = WalkState->ParserState.Aml;
 
-            if (Op->Common.AmlOpcode != AML_METHOD_OP  && Op->Common.AmlOpcode != AML_BUFFER_OP      &&
-                Op->Common.AmlOpcode != AML_PACKAGE_OP && Op->Common.AmlOpcode != AML_VAR_PACKAGE_OP &&
-                Op->Common.AmlOpcode != AML_WHILE_OP)
+            switch (Op->Common.AmlOpcode)
             {
+            case AML_METHOD_OP:
+            case AML_BUFFER_OP:
+            case AML_PACKAGE_OP:
+            case AML_VAR_PACKAGE_OP:
+            case AML_WHILE_OP:
+
+                break;
+
+            default:
+
                 ACPI_CV_CAPTURE_COMMENTS (WalkState);
+                break;
             }
+
             Status = AcpiPsGetNextArg (WalkState, &(WalkState->ParserState),
                 GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
             if (ACPI_FAILURE (Status))
@@ -606,10 +616,20 @@ AcpiPsParseLoop (
          * any args yet
          */
         WalkState->ArgCount = 0;
-        if (Op->Common.AmlOpcode != AML_BYTE_OP  && Op->Common.AmlOpcode != AML_WORD_OP &&
-            Op->Common.AmlOpcode != AML_DWORD_OP && Op->Common.AmlOpcode != AML_QWORD_OP)
+
+        switch (Op->Common.AmlOpcode)
         {
+        case AML_BYTE_OP:
+        case AML_WORD_OP:
+        case AML_DWORD_OP:
+        case AML_QWORD_OP:
+
+            break;
+
+        default:
+
             ACPI_CV_CAPTURE_COMMENTS (WalkState);
+            break;
         }
 
         /* Are there any arguments that must be processed? */
