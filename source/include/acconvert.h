@@ -124,17 +124,6 @@
 #define ASL_CLOSE_PARENCOMMENT 4
 #define ASL_CLOSE_BRACECOMMENT 5
 
-/* Definitions for comment table entry */
-
-#define ASL_NEWLINE    '\n'
-#define ASL_OpenParen  '('
-#define ASL_CLOSE_PAREN ')'
-#define ASL_COMMA      ','
-#define ASL_OPENBRACE  '{'
-#define ASL_CLOSE_BRACE '}'
-#define ASL_WHITESPACE ' '
-
-
 /* Definitions for comment print function*/
 
 #define AML_REGCOMMENT        1

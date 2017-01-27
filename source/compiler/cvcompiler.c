@@ -813,57 +813,56 @@ CvProcessCommentState (
     char                    input)
 {
 
-    if (input == ' ')
-    {
-        ++Gbl_CommentState.SpacesBefore;
-    }
-    else
+    if (input != ' ')
     {
         Gbl_CommentState.SpacesBefore = 0;
     }
 
     switch (input)
     {
-        case ASL_NEWLINE:
+    case '\n':
 
-            Gbl_CommentState.CommentType = ASL_REGCOMMENT;
-            break;
+        Gbl_CommentState.CommentType = ASL_REGCOMMENT;
+        break;
 
-        case ASL_WHITESPACE: 
+    case ' ':
 
-            break;
+        /* Keep the CommentType the same */
 
-        case ASL_OpenParen:
+        Gbl_CommentState.SpacesBefore++;
+        break;
 
-            Gbl_CommentState.CommentType = ASL_OPENPARENCOMMENT;
-            break;
+    case '(':
 
-        case ASL_CLOSE_PAREN:
+        Gbl_CommentState.CommentType = ASL_OPENPARENCOMMENT;
+        break;
 
-            Gbl_CommentState.CommentType = ASL_CLOSE_PARENCOMMENT;
-            break;
+    case ')':
 
-        case ASL_OPENBRACE:
+        Gbl_CommentState.CommentType = ASL_CLOSE_PARENCOMMENT;
+        break;
 
-            Gbl_CommentState.CommentType = ASL_REGCOMMENT;
-            Gbl_CommentState.ParsingParenBraceNode = NULL;
-            CvDbgPrint ("End Parsing paren/Brace node!\n");
-            break;
+    case '{':
 
-        case ASL_CLOSE_BRACE:
+        Gbl_CommentState.CommentType = ASL_REGCOMMENT;
+        Gbl_CommentState.ParsingParenBraceNode = NULL;
+        CvDbgPrint ("End Parsing paren/Brace node!\n");
+        break;
+
+    case '}':
             
-            Gbl_CommentState.CommentType = ASL_CLOSE_BRACECOMMENT;
-            break;
+        Gbl_CommentState.CommentType = ASL_CLOSE_BRACECOMMENT;
+        break;
 
-        case ASL_COMMA:
+    case ',':
 
-            Gbl_CommentState.CommentType = ASL_INLINECOMMENT;
-            break;
+        Gbl_CommentState.CommentType = ASL_INLINECOMMENT;
+        break;
 
-        default:
+    default:
 
-            Gbl_CommentState.CommentType = ASL_INLINECOMMENT;
-            break;
+        Gbl_CommentState.CommentType = ASL_INLINECOMMENT;
+        break;
 
     }
 }
