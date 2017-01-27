@@ -229,7 +229,7 @@ CvProcessComment (
             * in the original source input to retain the original spacing.
             */
             FinalCommentString = UtStringCacheCalloc (strlen (CommentString) + CurrentState.SpacesBefore + 1);
-            for (i=0; (CurrentState.CommentType != ASL_REGCOMMENT) &&
+            for (i=0; (CurrentState.CommentType != ASL_COMMENT_STANDARD) &&
                 (i < CurrentState.SpacesBefore); ++i)
             {
                  FinalCommentString[i] = ' ';
@@ -822,7 +822,7 @@ CvProcessCommentState (
     {
     case '\n':
 
-        Gbl_CommentState.CommentType = ASL_REGCOMMENT;
+        Gbl_CommentState.CommentType = ASL_COMMENT_STANDARD;
         break;
 
     case ' ':
@@ -834,34 +834,34 @@ CvProcessCommentState (
 
     case '(':
 
-        Gbl_CommentState.CommentType = ASL_OPENPARENCOMMENT;
+        Gbl_CommentState.CommentType = ASL_COMMENT_OPEN_PAREN;
         break;
 
     case ')':
 
-        Gbl_CommentState.CommentType = ASL_CLOSE_PARENCOMMENT;
+        Gbl_CommentState.CommentType = ASL_COMMENT_CLOSE_PAREN;
         break;
 
     case '{':
 
-        Gbl_CommentState.CommentType = ASL_REGCOMMENT;
+        Gbl_CommentState.CommentType = ASL_COMMENT_STANDARD;
         Gbl_CommentState.ParsingParenBraceNode = NULL;
         CvDbgPrint ("End Parsing paren/Brace node!\n");
         break;
 
     case '}':
             
-        Gbl_CommentState.CommentType = ASL_CLOSE_BRACECOMMENT;
+        Gbl_CommentState.CommentType = ASL_COMMENT_CLOSE_BRACE;
         break;
 
     case ',':
 
-        Gbl_CommentState.CommentType = ASL_INLINECOMMENT;
+        Gbl_CommentState.CommentType = ASLCOMMENT_INLINE;
         break;
 
     default:
 
-        Gbl_CommentState.CommentType = ASL_INLINECOMMENT;
+        Gbl_CommentState.CommentType = ASLCOMMENT_INLINE;
         break;
 
     }
@@ -969,26 +969,26 @@ CvPlaceComment(
     CvDbgPrint ("Placing comment %s for type %d\n", CommentString, Type);
     switch (Type)
     {
-        case ASL_REGCOMMENT:
+        case ASL_COMMENT_STANDARD:
 
             CvAddToCommentList (CommentString);
             break;
 
-        case ASL_INLINECOMMENT:
+        case ASLCOMMENT_INLINE:
 
             LatestParseNode->Asl.InlineComment =
                 CvAppendInlineComment (LatestParseNode->Asl.InlineComment,
                 CommentString);
             break;
 
-        case ASL_OPENPARENCOMMENT:
+        case ASL_COMMENT_OPEN_PAREN:
 
             Gbl_Inline_Comment_Buffer =
                 CvAppendInlineComment(Gbl_Inline_Comment_Buffer,
                 CommentString);
             break;
 
-        case ASL_CLOSE_PARENCOMMENT:
+        case ASL_COMMENT_CLOSE_PAREN:
            
             if (ParenBraceNode)
             {
@@ -1004,7 +1004,7 @@ CvPlaceComment(
             }
             break;
 
-        case ASL_CLOSE_BRACECOMMENT:
+        case ASL_COMMENT_CLOSE_BRACE:
 
             LatestParseNode->Asl.CloseBraceComment = CommentString;
             break;

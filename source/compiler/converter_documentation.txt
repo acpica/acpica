@@ -103,7 +103,7 @@ Comment types - There are several different places that a comment could show up 
                 Of the above comment types, there are types that are stored in single char*
                 variables and there are comment types that are stored within a linked list of
                 char*'s. Since some comment types could span multiple lines, each line of 
-                STD_DEFBLK_COMMENT, END_DEFBLK_COMMENT, REGCOMMENT, INCLUDECOMMENT, and 
+                STD_DEFBLK_COMMENT, END_DEFBLK_COMMENT, COMMENT_STANDARD, INCLUDECOMMENT, and 
                 ENDBLKCOMMENT are stored as separate nodes within a linked list. This facilitates
                 indentation of each line of multiline comments. All other comments are stored within
                 a single char* variable in ACPI_PARSE_COMMON.

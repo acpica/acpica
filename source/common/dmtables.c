@@ -280,7 +280,7 @@ AdCreateTableHeader (
      */
     if (Gbl_CaptureComments)
     {
-        ACPI_CV_COMMENT_ONE_COMMENT(AcpiGbl_ParseOpRoot,AML_REGCOMMENT, NULL, 0);
+        ACPI_CV_COMMENT_ONE_COMMENT(AcpiGbl_ParseOpRoot,AML_COMMENT_STANDARD, NULL, 0);
     }
 
     /*

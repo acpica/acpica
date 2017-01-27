@@ -183,12 +183,12 @@ CvPrintOneCommentType (
 {
     switch (CommentType)
     {
-    case AML_REGCOMMENT:
+    case AML_COMMENT_STANDARD:
         CvPrintOneCommentList (Op->Common.CommentList, Level);
         Op->Common.CommentList = NULL;
         break;
 
-    case AML_INLINECOMMENT:
+    case AMLCOMMENT_INLINE:
         if (Op->Common.InlineComment)
         {
             AcpiOsPrintf ("%s", Op->Common.InlineComment);
@@ -196,7 +196,7 @@ CvPrintOneCommentType (
         }
         break;
 
-    case AML_ENDNODECOMMENT:
+    case AML_COMMENT_END_NODE:
         if (Op->Common.EndNodeComment)
         {
             AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
@@ -212,7 +212,7 @@ CvPrintOneCommentType (
         }
         break;
 
-    case AML_CLOSE_BRACECOMMENT:
+    case AML_COMMENT_CLOSE_BRACE:
         if (Op->Common.CloseBraceComment)
         {
             AcpiOsPrintf ("%s", Op->Common.CloseBraceComment);
@@ -220,7 +220,7 @@ CvPrintOneCommentType (
         }
         break;
 
-    case AML_ENDBLKCOMMENT:
+    case AML_COMMENT_ENDBLK:
         CvPrintOneCommentList (Op->Common.EndBlkComment, Level);
         Op->Common.EndBlkComment = NULL;
         break;
@@ -230,9 +230,9 @@ CvPrintOneCommentType (
     }
 
     if (EndStr &&
-        ((CommentType == AML_REGCOMMENT) || (CommentType == AML_INLINECOMMENT) ||
-         (CommentType == AML_ENDNODECOMMENT) || (CommentType == AML_NAMECOMMENT) ||
-         (CommentType == AML_CLOSE_BRACECOMMENT)))
+        ((CommentType == AML_COMMENT_STANDARD) || (CommentType == AMLCOMMENT_INLINE) ||
+         (CommentType == AML_COMMENT_END_NODE) || (CommentType == AML_NAMECOMMENT) ||
+         (CommentType == AML_COMMENT_CLOSE_BRACE)))
     {
         AcpiOsPrintf ("%s", EndStr);
     }

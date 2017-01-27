@@ -118,21 +118,21 @@
 
 /* Definitions for comment state */
 
-#define ASL_REGCOMMENT         1
-#define ASL_INLINECOMMENT      2
-#define ASL_OPENPARENCOMMENT   3
-#define ASL_CLOSE_PARENCOMMENT 4
-#define ASL_CLOSE_BRACECOMMENT 5
+#define ASL_COMMENT_STANDARD    1
+#define ASLCOMMENT_INLINE       2
+#define ASL_COMMENT_OPEN_PAREN  3
+#define ASL_COMMENT_CLOSE_PAREN 4
+#define ASL_COMMENT_CLOSE_BRACE 5
 
 /* Definitions for comment print function*/
 
-#define AML_REGCOMMENT         1
-#define AML_INLINECOMMENT      2
-#define AML_ENDNODECOMMENT     3
-#define AML_NAMECOMMENT        4
-#define AML_CLOSE_BRACECOMMENT 5
-#define AML_ENDBLKCOMMENT      6
-#define AML_INCLUDECOMMENT     7
+#define AML_COMMENT_STANDARD    1
+#define AMLCOMMENT_INLINE       2
+#define AML_COMMENT_END_NODE    3
+#define AML_NAMECOMMENT         4
+#define AML_COMMENT_CLOSE_BRACE 5
+#define AML_COMMENT_ENDBLK      6
+#define AML_COMMENT_INCLUDE     7
 
 
 #ifdef ACPI_ASL_COMPILER

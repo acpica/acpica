@@ -504,7 +504,7 @@ AcpiDmDescendingOp (
     
         /* If this parse node has regular comments, print them here. */
 
-        ACPI_CV_COMMENT_ONE_COMMENT (Op, AML_REGCOMMENT, NULL, Level);
+        ACPI_CV_COMMENT_ONE_COMMENT (Op, AML_COMMENT_STANDARD, NULL, Level);
     }
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
@@ -722,7 +722,7 @@ AcpiDmDescendingOp (
             AcpiOsPrintf (" (");
             if (!(AcpiDmBlockType (Op) & BLOCK_BRACE))
             {
-                ACPI_CV_COMMENT_ONE_COMMENT (Op, AML_INLINECOMMENT, " ", 0);
+                ACPI_CV_COMMENT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, " ", 0);
             }
         }
 
