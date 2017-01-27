@@ -209,7 +209,7 @@ AcpiPsAllocOp (
 
 
     ACPI_FUNCTION_ENTRY ();
-    
+
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
 

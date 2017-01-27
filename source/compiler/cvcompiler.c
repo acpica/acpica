@@ -130,10 +130,9 @@
  *
  * RETURN:      none
  *
- * DESCRIPTION: calculate the length that the each comment takes up within Op.
- *              Comments look like the follwoing: [0xA9 OptionByte comment 0x00]
- *              therefore, we add 1 + 1 + strlen (comment) + 1 to get the actual
- *              length of this comment.
+ * DESCRIPTION: Process a single line comment of a c Style comment. This 
+ *              function captures a line of a c style comment in a char* and 
+ *              places the comment in the approperiate global buffer.
  *
  ******************************************************************************/
 
@@ -170,7 +169,7 @@ CvProcessComment (
         if (strchr (CommentString, '\n') != NULL)
         {
             /*
-             * Get the first token out. The for loop pads subsequent lines
+             * Get the first token. The for loop pads subsequent lines
              * for comments similar to the style of this comment.
              */
             LineToken = strtok (CommentString, "\n");
@@ -193,7 +192,7 @@ CvProcessComment (
                  * a white space within each line.
                  */
                 CharStart = FALSE;
-                for (i = 0; i < strlen (LineToken) + 1 && !CharStart; i++)
+                for (i = 0; (i < (strlen (LineToken) + 1)) && !CharStart; i++)
                 {
                     if (LineToken[i] != ' ' && LineToken[i] != '\t')
                     {
@@ -209,7 +208,7 @@ CvProcessComment (
 
                 if (FinalLineToken[strlen (FinalLineToken) - 1] == 0x0D)
                 {
-                    FinalLineToken[strlen(FinalLineToken)-1] = 0;
+                    FinalLineToken[strlen(FinalLineToken) - 1] = 0;
                 }
                 CvAddToCommentList (FinalLineToken);
                 LineToken = strtok (NULL,"\n");
@@ -250,10 +249,9 @@ CvProcessComment (
  *
  * RETURN:      none
  *
- * DESCRIPTION: calculate the length that the each comment takes up within Op.
- *              Comments look like the follwoing: [0xA9 OptionByte comment 0x00]
- *              therefore, we add 1 + 1 + strlen (comment) + 1 to get the actual
- *              length of this comment.
+ * DESCRIPTION: Process a single line comment. This function captures a comment
+ *              in a char* and places the comment in the approperiate global
+ *              buffer through CvPlaceComment
  *
  ******************************************************************************/
 
@@ -270,7 +268,7 @@ CvProcessCommentType2 (
     if (Gbl_CaptureComments && CurrentState.CaptureComments)
     {
         *StringBuffer = 0; /* null terminate */
-        CvDbgPrint("Single-line comment\n");
+        CvDbgPrint ("Single-line comment\n");
         CommentString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
         strcpy (CommentString, MsgBuffer);
 
@@ -304,7 +302,7 @@ CvProcessCommentType2 (
         {
             FinalCommentString[i] = ' ';
         }
-        strcat(FinalCommentString, CommentString);
+        strcat (FinalCommentString, CommentString);
 
         /* convert to a "/ *" style comment  */
 
@@ -317,7 +315,7 @@ CvProcessCommentType2 (
         {
             FinalCommentString[strlen(FinalCommentString)-1] = 0;
         }
-        CvPlaceComment(CurrentState.CommentType, FinalCommentString);
+        CvPlaceComment (CurrentState.CommentType, FinalCommentString);
     }
 }
 
@@ -346,66 +344,68 @@ CvCalculateCommentLengths(
     ACPI_COMMENT_LIST_NODE  *Current = NULL;
 
 
-    if (Gbl_CaptureComments)
+    if (!Gbl_CaptureComments)
     {
-        CvDbgPrint ("====================Calculating comment lengths for %s\n",  Op->Asl.ParseOpName);
-        if (Op->Asl.FileChanged)
-        {
-            TotalCommentLength += strlen (Op->Asl.Filename) + 3;
-            if (Op->Asl.ParentFilename && strcmp (Op->Asl.Filename, Op->Asl.ParentFilename))
-            {
-                TotalCommentLength += strlen (Op->Asl.ParentFilename) + 3;
-            }
-        }
-        if (Op->Asl.CommentList!=NULL)
-        {
-            Current = Op->Asl.CommentList; 
-            while (Current!=NULL)
-            {
-                CommentLength = strlen (Current->Comment)+3;
-                CvDbgPrint ("Length of standard comment: %d\n", CommentLength);
-                CvDbgPrint ("    Comment string: %s\n\n", Current->Comment);
-                TotalCommentLength += CommentLength;
-                Current = Current->Next;
-            }
-        }
-        if (Op->Asl.EndBlkComment!=NULL)
-        {
-            Current = Op->Asl.EndBlkComment;
-            while (Current!=NULL)
-            {
-                CommentLength = strlen (Current->Comment)+3;
-                CvDbgPrint ("Length of endblkcomment: %d\n", CommentLength);
-                CvDbgPrint ("    Comment string: %s\n\n", Current->Comment);
-                TotalCommentLength += CommentLength;
-                Current = Current->Next;
-            }
-        }
-        if (Op->Asl.InlineComment!=NULL)
-        {
-            CommentLength = strlen (Op->Asl.InlineComment)+3;
-            CvDbgPrint ("Length of inline comment: %d\n", CommentLength);
-            CvDbgPrint ("    Comment string: %s\n\n", Op->Asl.InlineComment);
-            TotalCommentLength += CommentLength;
-        }
-        if (Op->Asl.EndNodeComment!=NULL)
-        {
-            CommentLength = strlen(Op->Asl.EndNodeComment)+3;
-            CvDbgPrint ("Length of end node comment +3: %d\n", CommentLength);
-            CvDbgPrint ("    Comment string: %s\n\n", Op->Asl.EndNodeComment);
-            TotalCommentLength += CommentLength;
-        }
-
-        if (Op->Asl.CloseBraceComment!=NULL)
-        {
-            CommentLength = strlen (Op->Asl.CloseBraceComment)+3;
-            CvDbgPrint ("Length of close brace comment: %d\n", CommentLength);
-            CvDbgPrint ("    Comment string: %s\n\n", Op->Asl.CloseBraceComment);
-            TotalCommentLength += CommentLength;
-        }
-
-        CvDbgPrint("\n\n");
+        return (0);
     }
+
+    CvDbgPrint ("====================Calculating comment lengths for %s\n",  Op->Asl.ParseOpName);
+    if (Op->Asl.FileChanged)
+    {
+        TotalCommentLength += strlen (Op->Asl.Filename) + 3;
+        if (Op->Asl.ParentFilename && strcmp (Op->Asl.Filename, Op->Asl.ParentFilename))
+        {
+            TotalCommentLength += strlen (Op->Asl.ParentFilename) + 3;
+        }
+    }
+    if (Op->Asl.CommentList!=NULL)
+    {
+        Current = Op->Asl.CommentList; 
+        while (Current!=NULL)
+        {
+            CommentLength = strlen (Current->Comment)+3;
+            CvDbgPrint ("Length of standard comment: %d\n", CommentLength);
+            CvDbgPrint ("    Comment string: %s\n\n", Current->Comment);
+            TotalCommentLength += CommentLength;
+            Current = Current->Next;
+        }
+    }
+    if (Op->Asl.EndBlkComment!=NULL)
+    {
+        Current = Op->Asl.EndBlkComment;
+        while (Current!=NULL)
+        {
+            CommentLength = strlen (Current->Comment)+3;
+            CvDbgPrint ("Length of endblkcomment: %d\n", CommentLength);
+            CvDbgPrint ("    Comment string: %s\n\n", Current->Comment);
+            TotalCommentLength += CommentLength;
+            Current = Current->Next;
+        }
+    }
+    if (Op->Asl.InlineComment!=NULL)
+    {
+        CommentLength = strlen (Op->Asl.InlineComment)+3;
+        CvDbgPrint ("Length of inline comment: %d\n", CommentLength);
+        CvDbgPrint ("    Comment string: %s\n\n", Op->Asl.InlineComment);
+        TotalCommentLength += CommentLength;
+    }
+    if (Op->Asl.EndNodeComment!=NULL)
+    {
+        CommentLength = strlen(Op->Asl.EndNodeComment)+3;
+        CvDbgPrint ("Length of end node comment +3: %d\n", CommentLength);
+        CvDbgPrint ("    Comment string: %s\n\n", Op->Asl.EndNodeComment);
+        TotalCommentLength += CommentLength;
+    }
+
+    if (Op->Asl.CloseBraceComment!=NULL)
+    {
+        CommentLength = strlen (Op->Asl.CloseBraceComment)+3;
+        CvDbgPrint ("Length of close brace comment: %d\n", CommentLength);
+        CvDbgPrint ("    Comment string: %s\n\n", Op->Asl.CloseBraceComment);
+        TotalCommentLength += CommentLength;
+    }
+
+    CvDbgPrint("\n\n");
 
     return TotalCommentLength;
 
@@ -653,11 +653,9 @@ CgWriteAmlComment(
  *
  * PARAMETERS:  none
  *
- * RETURN:      Pointer to the buffer. Aborts on allocation failure
+ * RETURN:      Pointer to the comment node. Aborts on allocation failure
  *
- * DESCRIPTION: Allocate a string buffer. Bypass the local
- *              dynamic memory manager for performance reasons (This has a
- *              major impact on the speed of the compiler.)
+ * DESCRIPTION: Allocate a string node buffer.
  *
  ******************************************************************************/
 
@@ -670,7 +668,7 @@ CvCommentNodeCalloc (
 
    NewCommentNode =
        (ACPI_COMMENT_LIST_NODE*) UtLocalCalloc (sizeof(ACPI_COMMENT_LIST_NODE));
-   NewCommentNode->Next = 0;
+   NewCommentNode->Next = NULL;
    return NewCommentNode;
 }
 
@@ -950,8 +948,8 @@ CvAppendInlineComment (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Take the given input. If this character is defined as a comment
- *              table entry, then update the state accordingly.
+ * DESCRIPTION: Given type and CommentString, this function places the
+ *              CommentString in the approperiate global comment list or char*
  *
  ******************************************************************************/
 
@@ -967,51 +965,52 @@ CvPlaceComment(
     LatestParseNode = Gbl_CommentState.Latest_Parse_Node;
     ParenBraceNode  = Gbl_CommentState.ParsingParenBraceNode;
     CvDbgPrint ("Placing comment %s for type %d\n", CommentString, Type);
+
     switch (Type)
     {
-        case ASL_COMMENT_STANDARD:
+    case ASL_COMMENT_STANDARD:
 
-            CvAddToCommentList (CommentString);
-            break;
+        CvAddToCommentList (CommentString);
+        break;
 
-        case ASLCOMMENT_INLINE:
+    case ASLCOMMENT_INLINE:
 
-            LatestParseNode->Asl.InlineComment =
-                CvAppendInlineComment (LatestParseNode->Asl.InlineComment,
-                CommentString);
-            break;
+        LatestParseNode->Asl.InlineComment =
+            CvAppendInlineComment (LatestParseNode->Asl.InlineComment,
+            CommentString);
+        break;
 
-        case ASL_COMMENT_OPEN_PAREN:
+    case ASL_COMMENT_OPEN_PAREN:
 
-            Gbl_Inline_Comment_Buffer =
-                CvAppendInlineComment(Gbl_Inline_Comment_Buffer,
-                CommentString);
-            break;
+        Gbl_Inline_Comment_Buffer =
+            CvAppendInlineComment(Gbl_Inline_Comment_Buffer,
+            CommentString);
+        break;
 
-        case ASL_COMMENT_CLOSE_PAREN:
+    case ASL_COMMENT_CLOSE_PAREN:
            
-            if (ParenBraceNode)
-            {
-                ParenBraceNode->Asl.EndNodeComment =
-                    CvAppendInlineComment (ParenBraceNode->Asl.EndNodeComment,
-                    CommentString);
-            }
-            else
-            {
-                LatestParseNode->Asl.EndNodeComment =
-                    CvAppendInlineComment (LatestParseNode->Asl.EndNodeComment,
-                    CommentString);
-            }
-            break;
+        if (ParenBraceNode)
+        {
+            ParenBraceNode->Asl.EndNodeComment =
+                CvAppendInlineComment (ParenBraceNode->Asl.EndNodeComment,
+                CommentString);
+        }
+        else
+        {
+            LatestParseNode->Asl.EndNodeComment =
+                CvAppendInlineComment (LatestParseNode->Asl.EndNodeComment,
+                CommentString);
+        }
+        break;
 
-        case ASL_COMMENT_CLOSE_BRACE:
+    case ASL_COMMENT_CLOSE_BRACE:
 
-            LatestParseNode->Asl.CloseBraceComment = CommentString;
-            break;
+        LatestParseNode->Asl.CloseBraceComment = CommentString;
+        break;
 
-        default:
+    default:
 
-            break;
+        break;
 
     }
 }
