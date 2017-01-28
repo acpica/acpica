@@ -261,11 +261,12 @@ TrAllocateNode (
         Gbl_CommentState.Latest_Parse_Node = Op;
         if (Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName)
         {
-            CvDbgPrint ("trallocatenode=====Set latest parse node to this node.\n");
+            CvDbgPrint ("trallocatenode=Set latest parse node to this node.\n");
             CvDbgPrint ("           Op->Asl.ParseOpName = %s\n",
                 Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName);
             CvDbgPrint ("           Op->Asl.ParseOpcode = 0x%x\n", ParseOpcode);
-            if (Op->Asl.FileChanged==TRUE)
+
+            if (Op->Asl.FileChanged)
             {
                 CvDbgPrint("    file has been changed!\n");
             }

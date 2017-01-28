@@ -322,7 +322,7 @@ CvProcessCommentType2 (
 
 /*******************************************************************************
  *
- * FUNCTION:    CgWriteAmlDefBlockComment
+ * FUNCTION:    CgCalculateCommentLengths
  *
  * PARAMETERS:  Op                 - Calculate all comments of this Op
  *
@@ -349,19 +349,21 @@ CvCalculateCommentLengths(
         return (0);
     }
 
-    CvDbgPrint ("====================Calculating comment lengths for %s\n",  Op->Asl.ParseOpName);
+    CvDbgPrint ("==Calculating comment lengths for %s\n",  Op->Asl.ParseOpName);
     if (Op->Asl.FileChanged)
     {
         TotalCommentLength += strlen (Op->Asl.Filename) + 3;
-        if (Op->Asl.ParentFilename && strcmp (Op->Asl.Filename, Op->Asl.ParentFilename))
+
+        if (Op->Asl.ParentFilename &&
+            strcmp (Op->Asl.Filename, Op->Asl.ParentFilename))
         {
             TotalCommentLength += strlen (Op->Asl.ParentFilename) + 3;
         }
     }
-    if (Op->Asl.CommentList!=NULL)
+    if (Op->Asl.CommentList)
     {
         Current = Op->Asl.CommentList; 
-        while (Current!=NULL)
+        while (Current)
         {
             CommentLength = strlen (Current->Comment)+3;
             CvDbgPrint ("Length of standard comment: %d\n", CommentLength);
@@ -370,10 +372,10 @@ CvCalculateCommentLengths(
             Current = Current->Next;
         }
     }
-    if (Op->Asl.EndBlkComment!=NULL)
+    if (Op->Asl.EndBlkComment)
     {
         Current = Op->Asl.EndBlkComment;
-        while (Current!=NULL)
+        while (Current)
         {
             CommentLength = strlen (Current->Comment)+3;
             CvDbgPrint ("Length of endblkcomment: %d\n", CommentLength);
@@ -382,14 +384,14 @@ CvCalculateCommentLengths(
             Current = Current->Next;
         }
     }
-    if (Op->Asl.InlineComment!=NULL)
+    if (Op->Asl.InlineComment)
     {
         CommentLength = strlen (Op->Asl.InlineComment)+3;
         CvDbgPrint ("Length of inline comment: %d\n", CommentLength);
         CvDbgPrint ("    Comment string: %s\n\n", Op->Asl.InlineComment);
         TotalCommentLength += CommentLength;
     }
-    if (Op->Asl.EndNodeComment!=NULL)
+    if (Op->Asl.EndNodeComment)
     {
         CommentLength = strlen(Op->Asl.EndNodeComment)+3;
         CvDbgPrint ("Length of end node comment +3: %d\n", CommentLength);
@@ -397,7 +399,7 @@ CvCalculateCommentLengths(
         TotalCommentLength += CommentLength;
     }
 
-    if (Op->Asl.CloseBraceComment!=NULL)
+    if (Op->Asl.CloseBraceComment)
     {
         CommentLength = strlen (Op->Asl.CloseBraceComment)+3;
         CvDbgPrint ("Length of close brace comment: %d\n", CommentLength);
@@ -433,21 +435,18 @@ void
 CgWriteAmlDefBlockComment(
     ACPI_PARSE_OBJECT       *Op)
 {
-    UINT8                   CommentOpcode;
-    UINT8                   CommentOption = FILENAME_COMMENT;
+    UINT8                   CommentOption;
     ACPI_COMMENT_LIST_NODE  *Current;
     char                    *NewFilename; 
     char                    *Position;
     char                    *DirectoryPosition;
 
 
-    if (Op->Asl.ParseOpcode != PARSEOP_DEFINITION_BLOCK || !Gbl_CaptureComments)
+    if (!Gbl_CaptureComments ||
+        (Op->Asl.ParseOpcode != PARSEOP_DEFINITION_BLOCK))
     {
         return;
     }
-
-    CommentOpcode = (UINT8)AML_COMMENT_OP;
-    Current = Op->Asl.CommentList;
 
     CvDbgPrint ("Printing comments for a definition block..\n");
     
@@ -474,22 +473,14 @@ CgWriteAmlDefBlockComment(
         strcat (NewFilename, FILE_SUFFIX_DISASSEMBLY);
     }
     
-    CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-    CgLocalWriteAmlData (Op, &CommentOption, 1);
+    CommentOption = FILENAME_COMMENT;
+    CgWriteOneAmlComment(Op, NewFilename, CommentOption);
 
-    /* +1 is what emits the 0x00 at the end of this opcode. */
-
-    CgLocalWriteAmlData (Op, NewFilename, strlen (NewFilename) + 1); 
-
+    Current = Op->Asl.CommentList;
     CommentOption = STD_DEFBLK_COMMENT;
     while (Current)
     {
-        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-        CgLocalWriteAmlData (Op, &CommentOption, 1);
-
-        /* +1 is what emits the 0x00 at the end of this opcode. */
-
-        CgLocalWriteAmlData (Op, Current->Comment, strlen (Current->Comment) + 1); 
+        CgWriteOneAmlComment(Op, Current->Comment, CommentOption);
         CvDbgPrint ("Printing comment: %s\n", Current->Comment);
         Current = Current->Next;
     }
@@ -500,12 +491,7 @@ CgWriteAmlDefBlockComment(
     if (Op->Asl.CloseBraceComment)
     {
         CommentOption = END_DEFBLK_COMMENT;
-        CgLocalWriteAmlData (Op, &CommentOpcode, 1);
-        CgLocalWriteAmlData (Op, &CommentOption, 1);
-
-        /* +1 is what emits the 0x00 at the end of this opcode. */
-
-        CgLocalWriteAmlData (Op, Op->Asl.CloseBraceComment, strlen (Op->Asl.CloseBraceComment) + 1); 
+        CgWriteOneAmlComment(Op, Op->Asl.CloseBraceComment, CommentOption);
         Op->Asl.CloseBraceComment = NULL;
     }
 }
@@ -536,7 +522,10 @@ CgWriteOneAmlComment(
 
     CgLocalWriteAmlData (Op, &CommentOpcode, 1);
     CgLocalWriteAmlData (Op, &CommentOption, 1);
-    CgLocalWriteAmlData (Op, CommentToPrint, strlen (CommentToPrint) + 1); 
+
+    /* The strlen (..) + 1 is to include the null terminator */
+
+    CgLocalWriteAmlData (Op, CommentToPrint, strlen (CommentToPrint) + 1);
 }
 
 
@@ -562,6 +551,7 @@ CgWriteAmlComment(
     char                    *NewFilename;
     char                    *ParentFilename;
 
+
     if ((Op->Asl.ParseOpcode == PARSEOP_DEFINITION_BLOCK) ||
          !Gbl_CaptureComments)
     {
@@ -575,13 +565,17 @@ CgWriteAmlComment(
 
         /* first, print the file name comment after changing .asl to .dsl */
 
-        NewFilename = CvChangeFileExt(Op->Asl.Filename, FILE_SUFFIX_DISASSEMBLY);
-        CvDbgPrint ("Writing file comment, \"%s\" for %s\n", NewFilename, Op->Asl.ParseOpName);
+        NewFilename =
+            CvChangeFileExt(Op->Asl.Filename, FILE_SUFFIX_DISASSEMBLY);
+        CvDbgPrint ("Writing file comment, \"%s\" for %s\n",
+            NewFilename, Op->Asl.ParseOpName);
         CgWriteOneAmlComment(Op, NewFilename, FILENAME_COMMENT);
 
-        if (Op->Asl.ParentFilename && strcmp (Op->Asl.ParentFilename, Op->Asl.Filename))
-        { 
-            ParentFilename = CvChangeFileExt(Op->Asl.ParentFilename, FILE_SUFFIX_DISASSEMBLY);
+        if (Op->Asl.ParentFilename &&
+            strcmp (Op->Asl.ParentFilename, Op->Asl.Filename))
+        {
+            ParentFilename = CvChangeFileExt(Op->Asl.ParentFilename,
+                FILE_SUFFIX_DISASSEMBLY);
             CgWriteOneAmlComment(Op, ParentFilename, PARENTFILENAME_COMMENT);
         }
 
@@ -604,6 +598,7 @@ CgWriteAmlComment(
     {
         CommentOption = STANDARD_COMMENT;
     }
+
     while (Current)
     {
         CgWriteOneAmlComment(Op, Current->Comment, CommentOption);
@@ -696,7 +691,8 @@ CvParseOpBlockType (
 
     switch (Op->Asl.ParseOpcode)
     {
-    /*from aslprimaries.y */
+
+    /* from aslprimaries.y */
 
     case PARSEOP_VAR_PACKAGE:
     case PARSEOP_BANKFIELD:
