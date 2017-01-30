@@ -250,7 +250,7 @@ AcpiPsAllocOp (
         AcpiPsInitOp (Op, Opcode);
         Op->Common.Aml = Aml;
         Op->Common.Flags = Flags;
-        ACPI_CV_CLEAR_OP_COMMENTS(Op);
+        ASL_CV_CLEAR_OP_COMMENTS(Op);
 
         if (Opcode == AML_SCOPE_OP)
         {
@@ -260,7 +260,7 @@ AcpiPsAllocOp (
 
     if (Gbl_CaptureComments)
     {
-        ACPI_CV_TRANSFER_COMMENTS (Op);
+        ASL_CV_TRANSFER_COMMENTS (Op);
     }
 
     return (Op);
@@ -287,7 +287,7 @@ AcpiPsFreeOp (
     ACPI_FUNCTION_NAME (PsFreeOp);
 
 
-    ACPI_CV_CLEAR_OP_COMMENTS(Op);
+    ASL_CV_CLEAR_OP_COMMENTS(Op);
     if (Op->Common.AmlOpcode == AML_INT_RETURN_VALUE_OP)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,

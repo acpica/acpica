@@ -251,7 +251,7 @@ CvInitFileTree (
                 CvDbgPrint ("A9 and a 08 file\n");
                 PreviousFilename = Filename;
                 Filename = (char*) (TreeAml+2);
-                ACPI_CV_ADD_TO_FILETREE (Filename, PreviousFilename);
+                ASL_CV_ADD_TO_FILETREE (Filename, PreviousFilename);
                 ChildFilename = Filename;
                 CvDbgPrint ("%s\n", Filename);
             }
@@ -260,7 +260,7 @@ CvInitFileTree (
             {
                 CvDbgPrint ("A9 and a 09 file\n");
                 ParentFilename = (char*)(TreeAml+2);
-                ACPI_CV_SET_FILE_PARENT (ChildFilename, ParentFilename);
+                ASL_CV_SET_FILE_PARENT (ChildFilename, ParentFilename);
                 CvDbgPrint ("%s\n", ParentFilename);
             }
             ++TreeAml;

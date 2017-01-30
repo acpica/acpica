@@ -227,7 +227,7 @@ AcpiPsGetArguments (
 
             default:
 
-                ACPI_CV_CAPTURE_COMMENTS (WalkState);
+                ASL_CV_CAPTURE_COMMENTS (WalkState);
                 break;
             }
 
@@ -576,7 +576,7 @@ AcpiPsParseLoop (
 
     while ((ParserState->Aml < ParserState->AmlEnd) || (Op))
     {
-        ACPI_CV_CAPTURE_COMMENTS (WalkState);
+        ASL_CV_CAPTURE_COMMENTS (WalkState);
  
         AmlOpStart = ParserState->Aml;
         if (!Op)
@@ -628,7 +628,7 @@ AcpiPsParseLoop (
 
         default:
 
-            ACPI_CV_CAPTURE_COMMENTS (WalkState);
+            ASL_CV_CAPTURE_COMMENTS (WalkState);
             break;
         }
 

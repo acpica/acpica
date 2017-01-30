@@ -495,16 +495,16 @@ AcpiDmDescendingOp (
 
     if (Gbl_CaptureComments)
     {
-        ACPI_CV_LABEL_FILENODE (Op);
+        ASL_CV_LABEL_FILENODE (Op);
   
-        if (Level != 0 && ACPI_CV_FILE_HAS_SWITCHED (Op))
+        if (Level != 0 && ASL_CV_FILE_HAS_SWITCHED (Op))
         { 
-            ACPI_CV_SWITCH_FILES (Level, Op);
+            ASL_CV_SWITCH_FILES (Level, Op);
         }
     
         /* If this parse node has regular comments, print them here. */
 
-        ACPI_CV_COMMENT_ONE_COMMENT (Op, AML_COMMENT_STANDARD, NULL, Level);
+        ASL_CV_COMMENT_ONE_COMMENT (Op, AML_COMMENT_STANDARD, NULL, Level);
     }
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
@@ -722,7 +722,7 @@ AcpiDmDescendingOp (
             AcpiOsPrintf (" (");
             if (!(AcpiDmBlockType (Op) & BLOCK_BRACE))
             {
-                ACPI_CV_COMMENT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, " ", 0);
+                ASL_CV_COMMENT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, " ", 0);
             }
         }
 
@@ -768,7 +768,7 @@ AcpiDmDescendingOp (
             case AML_METHOD_OP:
 
                 AcpiDmMethodFlags (Op);
-                ACPI_CV_CLOSE_PAREN (Op, Level);
+                ASL_CV_CLOSE_PAREN (Op, Level);
 
                 /* Emit description comment for Method() with a predefined ACPI name */
 
@@ -781,7 +781,7 @@ AcpiDmDescendingOp (
 
                 AcpiDmCheckForHardwareId (Op);
                 AcpiOsPrintf (", ");
-                ACPI_CV_COMMENT_ONE_COMMENT (Op, AML_NAMECOMMENT, NULL, 0);
+                ASL_CV_COMMENT_ONE_COMMENT (Op, AML_NAMECOMMENT, NULL, 0);
                 break;
 
             case AML_REGION_OP:
@@ -831,7 +831,7 @@ AcpiDmDescendingOp (
             case AML_DEVICE_OP:
             case AML_THERMAL_ZONE_OP:
 
-                ACPI_CV_CLOSE_PAREN (Op, Level);
+                ASL_CV_CLOSE_PAREN (Op, Level);
                 break;
 
             default:
@@ -925,7 +925,7 @@ AcpiDmDescendingOp (
                  */
                 NextOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
                 NextOp = NextOp->Common.Next;
-                ACPI_CV_CLOSE_PAREN (Op, Level);
+                ASL_CV_CLOSE_PAREN (Op, Level);
 
                 /* Emit description comment for Name() with a predefined ACPI name */
 
@@ -1015,13 +1015,13 @@ AcpiDmAscendingOp (
 
     if (Gbl_CaptureComments)
     {
-        ACPI_CV_LABEL_FILENODE (Op);
+        ASL_CV_LABEL_FILENODE (Op);
     
         /* Switch the output of these files if necessary */
 
-        if (ACPI_CV_FILE_HAS_SWITCHED (Op))
+        if (ASL_CV_FILE_HAS_SWITCHED (Op))
         {
-            ACPI_CV_SWITCH_FILES (Level, Op);
+            ASL_CV_SWITCH_FILES (Level, Op);
         }
     }
 
@@ -1037,12 +1037,12 @@ AcpiDmAscendingOp (
     {
         /* Indicates the end of the current descriptor block (table) */
  
-        ACPI_CV_CLOSE_BRACE (Op, Level);
+        ASL_CV_CLOSE_BRACE (Op, Level);
 
         /* Print any comments that are at the end of the file here... */
         if (Gbl_CaptureComments)
         { 
-            ACPI_CV_COMMENT_ONE_COMMENTLIST (AcpiGbl_LastListHead, 0);
+            ASL_CV_COMMENT_ONE_COMMENTLIST (AcpiGbl_LastListHead, 0);
         }
         AcpiOsPrintf ("\n\n");
         return (AE_OK);
@@ -1105,12 +1105,12 @@ AcpiDmAscendingOp (
 
         if (Op->Common.DisasmFlags & ACPI_PARSEOP_EMPTY_TERMLIST)
         {
-            ACPI_CV_CLOSE_BRACE (Op, Level);
+            ASL_CV_CLOSE_BRACE (Op, Level);
         }
         else
         {
             AcpiDmIndent (Level);
-            ACPI_CV_CLOSE_BRACE (Op, Level);
+            ASL_CV_CLOSE_BRACE (Op, Level);
         }
 
         AcpiDmCommaIfListMember (Op);
@@ -1200,7 +1200,7 @@ AcpiDmAscendingOp (
          */
         if (Op->Common.Next || Op->Common.DisasmOpcode == ACPI_DASM_SWITCH_PREDICATE)
         {
-            ACPI_CV_CLOSE_PAREN (Op, Level);
+            ASL_CV_CLOSE_PAREN (Op, Level);
 
             /*
              * Emit a description comment for a Name() operator that is a
@@ -1227,7 +1227,7 @@ AcpiDmAscendingOp (
         else
         {
             ParentOp->Common.DisasmFlags |= ACPI_PARSEOP_EMPTY_TERMLIST;
-            ACPI_CV_CLOSE_PAREN (Op, Level);
+            ASL_CV_CLOSE_PAREN (Op, Level);
             AcpiOsPrintf ("{");
         }
     }

@@ -576,39 +576,39 @@
  */
 #ifdef ACPI_ASL_COMPILER
 
-#define ACPI_CV_FILENAME_EXISTS(a,b)      CvFilenameExists(a,b);
-#define ACPI_CV_LABEL_FILENODE(a)         CvFileLabelNode(a);
-#define ACPI_CV_ADD_TO_FILETREE(a,b)       CvAddToFileTree (a,b);
-#define ACPI_CV_SET_FILE_PARENT(a,b)       CvSetFileParent (a,b);
-#define ACPI_CV_CAPTURE_COMMENTS_ONLY(a)   CvCaptureJustComments (a);
-#define ACPI_CV_CAPTURE_COMMENTS(a)       CvCaptureComments (a);
-#define ACPI_CV_TRANSFER_COMMENTS(a)      CvTransferComments (a);
-#define ACPI_CV_CLOSE_PAREN(a,b)          CvCloseParenWriteComment(a,b);
-#define ACPI_CV_CLOSE_BRACE(a,b)          CvCloseBraceWriteComment(a,b);
-#define ACPI_CV_SWITCH_FILES(a,b)         CvSwitchFiles(a,b);
-#define ACPI_CV_CLEAR_OP_COMMENTS(a)       CvClearOpComments(a);
-#define ACPI_CV_COMMENT_ONE_COMMENT(a,b,c,d) CvPrintOneCommentType (a,b,c,d);
-#define ACPI_CV_COMMENT_ONE_COMMENTLIST(a,b) CvPrintOneCommentList (a,b);
-#define ACPI_CV_FILE_HAS_SWITCHED(a)       CvFileHasSwitched(a)
-#define ACPI_CV_INIT_FILETREE(a,b,c)      CvInitFileTree(a,b,c);
+#define ASL_CV_FILENAME_EXISTS(a,b)      CvFilenameExists(a,b);
+#define ASL_CV_LABEL_FILENODE(a)         CvFileLabelNode(a);
+#define ASL_CV_ADD_TO_FILETREE(a,b)       CvAddToFileTree (a,b);
+#define ASL_CV_SET_FILE_PARENT(a,b)       CvSetFileParent (a,b);
+#define ASL_CV_CAPTURE_COMMENTS_ONLY(a)   CvCaptureJustComments (a);
+#define ASL_CV_CAPTURE_COMMENTS(a)       CvCaptureComments (a);
+#define ASL_CV_TRANSFER_COMMENTS(a)      CvTransferComments (a);
+#define ASL_CV_CLOSE_PAREN(a,b)          CvCloseParenWriteComment(a,b);
+#define ASL_CV_CLOSE_BRACE(a,b)          CvCloseBraceWriteComment(a,b);
+#define ASL_CV_SWITCH_FILES(a,b)         CvSwitchFiles(a,b);
+#define ASL_CV_CLEAR_OP_COMMENTS(a)       CvClearOpComments(a);
+#define ASL_CV_COMMENT_ONE_COMMENT(a,b,c,d) CvPrintOneCommentType (a,b,c,d);
+#define ASL_CV_COMMENT_ONE_COMMENTLIST(a,b) CvPrintOneCommentList (a,b);
+#define ASL_CV_FILE_HAS_SWITCHED(a)       CvFileHasSwitched(a)
+#define ASL_CV_INIT_FILETREE(a,b,c)      CvInitFileTree(a,b,c);
 
 #else
 
-#define ACPI_CV_FILENAME_EXISTS(a,b)
-#define ACPI_CV_LABEL_FILENODE(a)
-#define ACPI_CV_ADD_TO_FILETREE(a,b)
-#define ACPI_CV_SET_FILE_PARENT(a,b)
-#define ACPI_CV_CAPTURE_COMMENTS_ONLY(a)
-#define ACPI_CV_CAPTURE_COMMENTS(a)
-#define ACPI_CV_TRANSFER_COMMENTS(a)
-#define ACPI_CV_CLOSE_PAREN(a,b)          AcpiOsPrintf (")");
-#define ACPI_CV_CLOSE_BRACE(a,b)          AcpiOsPrintf ("}");
-#define ACPI_CV_SWITCH_FILES(a,b)
-#define ACPI_CV_CLEAR_OP_COMMENTS(a)
-#define ACPI_CV_COMMENT_ONE_COMMENT(a,b,c,d)
-#define ACPI_CV_COMMENT_ONE_COMMENTLIST(a,b)
-#define ACPI_CV_FILE_HAS_SWITCHED(a)       0
-#define ACPI_CV_INIT_FILETREE(a,b,c)
+#define ASL_CV_FILENAME_EXISTS(a,b)
+#define ASL_CV_LABEL_FILENODE(a)
+#define ASL_CV_ADD_TO_FILETREE(a,b)
+#define ASL_CV_SET_FILE_PARENT(a,b)
+#define ASL_CV_CAPTURE_COMMENTS_ONLY(a)
+#define ASL_CV_CAPTURE_COMMENTS(a)
+#define ASL_CV_TRANSFER_COMMENTS(a)
+#define ASL_CV_CLOSE_PAREN(a,b)          AcpiOsPrintf (")");
+#define ASL_CV_CLOSE_BRACE(a,b)          AcpiOsPrintf ("}");
+#define ASL_CV_SWITCH_FILES(a,b)
+#define ASL_CV_CLEAR_OP_COMMENTS(a)
+#define ASL_CV_COMMENT_ONE_COMMENT(a,b,c,d)
+#define ASL_CV_COMMENT_ONE_COMMENTLIST(a,b)
+#define ASL_CV_FILE_HAS_SWITCHED(a)       0
+#define ASL_CV_INIT_FILETREE(a,b,c)
 
 #endif
 

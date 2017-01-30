@@ -323,7 +323,7 @@ AcpiDmCommaIfListMember (
 
     if (!Op->Common.Next)
     {
-        ACPI_CV_COMMENT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, NULL, 0);
+        ASL_CV_COMMENT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, NULL, 0);
         return (FALSE);
     }
 
@@ -333,7 +333,7 @@ AcpiDmCommaIfListMember (
 
         if (Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)
         {
-            ACPI_CV_COMMENT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, NULL, 0);
+            ASL_CV_COMMENT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, NULL, 0);
             return (FALSE);
         }
 
@@ -350,7 +350,7 @@ AcpiDmCommaIfListMember (
              */
             if (!Op->Common.Next->Common.Next)
             {
-                ACPI_CV_COMMENT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, NULL, 0);
+                ASL_CV_COMMENT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, NULL, 0);
                 return (FALSE);
             }
         }
@@ -358,7 +358,7 @@ AcpiDmCommaIfListMember (
         if ((Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST) &&
             (!(Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST)))
         {
-            ACPI_CV_COMMENT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, NULL, 0);
+            ASL_CV_COMMENT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, NULL, 0);
             return (FALSE);
         }
 
@@ -367,7 +367,7 @@ AcpiDmCommaIfListMember (
         if (!Op->Common.OperatorSymbol)
         {
             AcpiOsPrintf (", ");
-            ACPI_CV_COMMENT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, NULL, 0);
+            ASL_CV_COMMENT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, NULL, 0);
         }
 
         return (TRUE);
@@ -377,7 +377,7 @@ AcpiDmCommaIfListMember (
              (Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST))
     {
         AcpiOsPrintf (", ");
-        ACPI_CV_COMMENT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, NULL, 0);
+        ASL_CV_COMMENT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, NULL, 0);
 
         return (TRUE);
     }
