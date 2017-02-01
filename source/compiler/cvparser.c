@@ -127,8 +127,7 @@
 
 static BOOLEAN
 CvCommentExists (
-    UINT8                   *ToCheck);
-
+    UINT8                   *Address);
 
 static BOOLEAN
 CvIsFilename (
@@ -139,13 +138,13 @@ CvIsFilename (
  *
  * FUNCTION:    CvIsFilename
  *
- * PARAMETERS:  filename
+ * PARAMETERS:  filename - input filename
  *
- * RETURN:      BOOLEAN
+ * RETURN:      BOOLEAN - TRUE if all characters are between 0x20 and 0x7f
  *
- * DESCRIPTION: Take a given char* and see if it contains an actual filename.
- *              If all characters have hexvalues 2E-39, 41-5A, 61-7A, and ends
- *              with .dsl, we will assume that it is a proper filename.
+ * DESCRIPTION: Take a given char * and see if it contains all printable
+ *              characters. If all characters have hexvalues 20-7f and ends with
+ *              .dsl, we will assume that it is a proper filename.
  *
  ******************************************************************************/
 
@@ -165,7 +164,7 @@ CvIsFilename (
 
     for(i = 0; i<Length; ++i)
     {
-        if (Filename[i] < 0x20)  
+        if (!isprint (Filename[i]))
         {
             return FALSE;
         }
@@ -178,9 +177,9 @@ CvIsFilename (
  *
  * FUNCTION:    CvInitFileTree
  *
- * PARAMETERS:  Table
- *              AmlStart
- *              AmlLength
+ * PARAMETERS:  Table      - input table
+ *              AmlStart   - Address of the starting point of the AML.
+ *              AmlLength  - Length of the AML file.
  *
  * RETURN:      none
  *
@@ -202,24 +201,20 @@ CvInitFileTree (
     char                    *ChildFilename = NULL;
 
 
-    /* 
-     * The following is for the -ca option. This is the initialization of 
-     * the file dependency tree.
-     */
     if (Gbl_CaptureComments)
     {
-        /* This is expected to work only for a single defintion block. */
+        /* This is expected to work only for a single definition block. */
 
         CvDbgPrint ("AmlLength: %x\n", AmlLength);
         CvDbgPrint ("AmlStart:  %p\n", AmlStart);
         CvDbgPrint ("AmlEnd?:   %p\n", AmlStart+AmlLength);
     
         AcpiGbl_FileTreeRoot = AcpiOsAcquireObject (AcpiGbl_FileCache);
-        AcpiGbl_FileTreeRoot->FileStart = (char*)(AmlStart);
-        AcpiGbl_FileTreeRoot->FileEnd = (char*)(AmlStart + Table->Length);
+        AcpiGbl_FileTreeRoot->FileStart = (char *)(AmlStart);
+        AcpiGbl_FileTreeRoot->FileEnd = (char *)(AmlStart + Table->Length);
         AcpiGbl_FileTreeRoot->Next = NULL;
         AcpiGbl_FileTreeRoot->Parent = NULL;
-        AcpiGbl_FileTreeRoot->Filename = (char*)(AmlStart+2);
+        AcpiGbl_FileTreeRoot->Filename = (char *)(AmlStart+2);
 
         /* Set this file to the current open file */
 
@@ -231,8 +226,8 @@ CvInitFileTree (
          */
         AcpiGbl_FileTreeRoot->IncludeWritten = TRUE;
         Filename = NULL;    
-        AcpiGbl_CurrentFilename = (char*)(AmlStart+2);
-        AcpiGbl_RootFilename    = (char*)(AmlStart+2);
+        AcpiGbl_CurrentFilename = (char *)(AmlStart+2);
+        AcpiGbl_RootFilename    = (char *)(AmlStart+2);
   
 
         TreeAml = AmlStart;
@@ -245,21 +240,23 @@ CvInitFileTree (
             * If it doesn't contain it, then it must be 0xA9 and 0x08 then it
             * must be some raw data that doesn't outline a filename.
             */
-            if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x08 &&
-                (CvIsFilename((char*)(TreeAml+2))))
+            if ((*TreeAml == AML_COMMENT_OP) && 
+                (*(TreeAml+1) == FILENAME_COMMENT) &&
+                (CvIsFilename ((char *)(TreeAml+2))))
             {
                 CvDbgPrint ("A9 and a 08 file\n");
                 PreviousFilename = Filename;
-                Filename = (char*) (TreeAml+2);
+                Filename = (char *) (TreeAml+2);
                 ASL_CV_ADD_TO_FILETREE (Filename, PreviousFilename);
                 ChildFilename = Filename;
                 CvDbgPrint ("%s\n", Filename);
             }
-            else if (*TreeAml == 0xA9 && *(TreeAml+1) == 0x09 &&
-                    (CvIsFilename((char*)(TreeAml+2))))
+            else if ((*TreeAml == AML_COMMENT_OP) && 
+                (*(TreeAml+1) == PARENTFILENAME_COMMENT) &&
+                (CvIsFilename ((char *)(TreeAml+2))))
             {
                 CvDbgPrint ("A9 and a 09 file\n");
-                ParentFilename = (char*)(TreeAml+2);
+                ParentFilename = (char *)(TreeAml+2);
                 ASL_CV_SET_FILE_PARENT (ChildFilename, ParentFilename);
                 CvDbgPrint ("%s\n", ParentFilename);
             }
@@ -273,7 +270,7 @@ CvInitFileTree (
  *
  * FUNCTION:    CvClearOpComments
  *
- * PARAMETERS:  Op
+ * PARAMETERS:  Op -- clear all comments within this Op
  *
  * RETURN:      none
  *
@@ -300,42 +297,44 @@ CvClearOpComments (
  *
  * FUNCTION:    CvCommentExists
  *
- * PARAMETERS:  toCheck              - check if this address appears in the list
+ * PARAMETERS:  address - check if this address appears in the list
  *
- * RETURN:      BOOLEAN
+ * RETURN:      BOOLEAN - TRUE if the address exists.
  *
  * DESCRIPTION: look at the pointer address and check if this appears in the 
  *              list of all addresses. If it exitsts in the list, return TRUE
- *              if it exists, add to the list and return FALSE.
+ *              if it exists. Otherwise add to the list and return FALSE.
  *
  ******************************************************************************/
 
 static BOOLEAN
 CvCommentExists (
-    UINT8                    *ToCheck)
+    UINT8                    *Address)
 {
     ACPI_COMMENT_ADDR_NODE   *Current = AcpiGbl_CommentAddrListHead;
     UINT8                    Option;
 
 
-    if (!ToCheck)
+    if (!Address)
     {
         return (FALSE);
     }
-    Option   = *(ToCheck + 1);
+    Option = *(Address + 1);
 
-    /* FILENAME_COMMENT and PARENTFILENAME_COMMENT will not be treated as comments */
-
+    /*
+     * FILENAME_COMMENT and PARENTFILENAME_COMMENT are not treated as comments.
+     * They serve as markers for where the file starts and ends.
+     */
     if ((Option == FILENAME_COMMENT) || (Option == PARENTFILENAME_COMMENT))
     {
-       return (FALSE); 
+       return (FALSE);
     }
 
     if (!Current)
     {
-        AcpiGbl_CommentAddrListHead = 
+        AcpiGbl_CommentAddrListHead =
             AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
-        AcpiGbl_CommentAddrListHead->Addr = ToCheck;
+        AcpiGbl_CommentAddrListHead->Addr = Address;
         AcpiGbl_CommentAddrListHead->Next = NULL;
         return (FALSE);
     }
@@ -343,7 +342,7 @@ CvCommentExists (
     {
         while (Current)
         {
-            if (Current->Addr != ToCheck)
+            if (Current->Addr != Address)
             {
                 Current = Current->Next;
             }
@@ -359,9 +358,9 @@ CvCommentExists (
          * beginning of the list.
          */
         Current = AcpiGbl_CommentAddrListHead;
-        AcpiGbl_CommentAddrListHead = 
+        AcpiGbl_CommentAddrListHead =
             AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
-        AcpiGbl_CommentAddrListHead->Addr = ToCheck;
+        AcpiGbl_CommentAddrListHead->Addr = Address;
         AcpiGbl_CommentAddrListHead->Next = Current;
         return (FALSE);
     }
@@ -374,7 +373,7 @@ CvCommentExists (
  *
  * PARAMETERS:  Filename        - filename to search
  *
- * RETURN:      ACPI_FILE_NODE* - file node of the address
+ * RETURN:      ACPI_FILE_NODE - a pointer to a file node
  *
  * DESCRIPTION: Look for the given filename in the file dependency tree.
  *              Returns the file node if it exists, returns NULL if it does not.
@@ -408,7 +407,7 @@ CvFilenameExists(
  * PARAMETERS:  Address        - address to look up
  *              Head           - file dependency tree
  *
- * RETURN:      ACPI_FLE_NODE* - file node containing the address
+ * RETURN:      ACPI_FLE_NODE - pointer to a file node containing the address
  *
  * DESCRIPTION: Look for the given address in the file dependency tree.
  *              Returns the first file node where the given address is within
@@ -426,7 +425,9 @@ CvFileAddressLookup(
 
     while (Current)
     {
-        if (Address >= Current->FileStart && (Address < Current->FileEnd || !Current->FileEnd))
+        if ((Address >= Current->FileStart) && 
+            (Address < Current->FileEnd || 
+            !Current->FileEnd))
         {
             return (Current);
         }
@@ -439,7 +440,7 @@ CvFileAddressLookup(
 
 /*******************************************************************************
  *
- * FUNCTION:    CvFileLabelNode
+ * FUNCTION:    CvLabelFileNode
  *
  * PARAMETERS:  Op
  *
@@ -452,10 +453,10 @@ CvFileAddressLookup(
  ******************************************************************************/
 
 void
-CvFileLabelNode(
+CvLabelFileNode(
     ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_FILE_NODE          *Temp;
+    ACPI_FILE_NODE          *Node;
 
     
     if (!Op)
@@ -463,21 +464,21 @@ CvFileLabelNode(
         return;
     }
 
-    Temp = CvFileAddressLookup ((char*)Op->Common.Aml, AcpiGbl_FileTreeRoot);
-    if (Temp)
+    Node = CvFileAddressLookup ((char *)Op->Common.Aml, AcpiGbl_FileTreeRoot);
+    if (!Node)
     {
-        Op->Common.PsFilename = Temp->Filename;
-        if (Temp->Parent)
-        {
-            Op->Common.PsParentFilename = Temp->Parent->Filename;
-        }
-        else 
-        {
-            Op->Common.PsParentFilename = Temp->Filename;
-        }
+       return;
     }
 
-    return;
+    Op->Common.PsFilename = Node->Filename;
+    if (Node->Parent)
+    {
+        Op->Common.PsParentFilename = Node->Parent->Filename;
+    }
+    else
+    {
+        Op->Common.PsParentFilename = Node->Filename;
+    }
 }
 
 
@@ -485,7 +486,10 @@ CvFileLabelNode(
  *
  * FUNCTION:    CvAddToFileTree
  *
- * PARAMETERS:  char* Filename
+ * PARAMETERS:  Filename          - Address containing the name of the current
+ *                                  filename
+ *              PreviousFilename  - Address containing the name of the previous
+ *                                  filename
  *
  * RETURN:      void
  *
@@ -498,49 +502,54 @@ CvAddToFileTree (
     char                    *Filename,
     char                    *PreviousFilename)
 {
-    ACPI_FILE_NODE          *Temp;
+    ACPI_FILE_NODE          *Node;
 
 
-    if (!strcmp(Filename, AcpiGbl_RootFilename) && PreviousFilename)
+    if (!strcmp(Filename, AcpiGbl_RootFilename) &&
+        PreviousFilename)
     {
-        Temp = CvFilenameExists (PreviousFilename, AcpiGbl_FileTreeRoot);
-        if (Temp)
+        Node = CvFilenameExists (PreviousFilename, AcpiGbl_FileTreeRoot);
+        if (Node)
         {
-            Temp->FileEnd = Filename;
+            /*
+             * Set the end point of the PreviousFilename to the address
+             * of Filename.
+             */
+            Node->FileEnd = Filename;
         }
     }
     else if (!strcmp(Filename, AcpiGbl_RootFilename) && !PreviousFilename)
     {
         return;
     }
-    Temp = CvFilenameExists (Filename, AcpiGbl_FileTreeRoot);
-    if (Temp && PreviousFilename)
+    Node = CvFilenameExists (Filename, AcpiGbl_FileTreeRoot);
+    if (Node && PreviousFilename)
     {
         /* 
          * Update the end of the previous file and all of their parents' ending
          * Addresses. This is done to ensure that parent file ranges extend to
          * the end of their childrens' files.
          */
-        Temp = CvFilenameExists (PreviousFilename, AcpiGbl_FileTreeRoot);
-        if (Temp && Temp->FileEnd < Filename)
+        Node = CvFilenameExists (PreviousFilename, AcpiGbl_FileTreeRoot);
+        if (Node && (Node->FileEnd < Filename))
         {
-            Temp->FileEnd = Filename; 
-            Temp = Temp->Parent;
-            while (Temp) 
+            Node->FileEnd = Filename;
+            Node = Node->Parent;
+            while (Node)
             {
-                if (Temp->FileEnd < Filename)
+                if (Node->FileEnd < Filename)
                 {
-                    Temp->FileEnd = Filename;
+                    Node->FileEnd = Filename;
                 }
-                Temp = Temp->Parent;
+                Node = Node->Parent;
             }
         }
     }
     else
     {
-        Temp = AcpiGbl_FileTreeRoot;
+        Node = AcpiGbl_FileTreeRoot;
         AcpiGbl_FileTreeRoot = AcpiOsAcquireObject (AcpiGbl_FileCache);
-        AcpiGbl_FileTreeRoot->Next = Temp;
+        AcpiGbl_FileTreeRoot->Next = Node;
         AcpiGbl_FileTreeRoot->Parent = NULL;
         AcpiGbl_FileTreeRoot->Filename = Filename;
         AcpiGbl_FileTreeRoot->FileStart = Filename;
@@ -554,13 +563,13 @@ CvAddToFileTree (
  *
  * FUNCTION:    CvSetFileParent
  *
- * PARAMETERS:  char* ChildFile
- *              char* ParentFile
+ * PARAMETERS:  ChildFile  - contains the filename of the child file
+ *              ParentFile - contains the filename of the parent file.
  *
  * RETURN:      none
  *
- * DESCRIPTION: point the child's parent pointer to the node that corresponds
- *              with parent's node.
+ * DESCRIPTION: point the parent pointer of the Child to the node that
+ *              corresponds with the parent file node.
  *
  ******************************************************************************/
 
@@ -593,7 +602,7 @@ CvSetFileParent (
 
 /*******************************************************************************
  *
- * FUNCTION:    CvCaptureJustComments
+ * FUNCTION:    CvCaptureCommentsOnly
  *
  * PARAMETERS:  ParserState         - A parser state object
  *
@@ -608,14 +617,13 @@ CvSetFileParent (
  ******************************************************************************/
 
 void
-CvCaptureJustComments (
+CvCaptureCommentsOnly (
     ACPI_PARSE_STATE        *ParserState)
 {
     UINT8                   *Aml = ParserState->Aml;
     UINT16                  Opcode = (UINT16) ACPI_GET8 (Aml);
     UINT32                  Length = 0;
     UINT8                   CommentOption = (UINT16) ACPI_GET8 (Aml+1);
-    char                    *Debug;
     BOOLEAN                 StdDefBlockFlag = FALSE;
     ACPI_COMMENT_LIST_NODE  *CommentNode;
     ACPI_FILE_NODE          *FileNode;
@@ -656,9 +664,9 @@ CvCaptureJustComments (
 
                     CommentNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
                     CommentNode->Comment = ACPI_CAST_PTR (char, Aml);
-                    CommentNode->Next    = NULL;
+                    CommentNode->Next = NULL;
 
-                    if (AcpiGbl_DefBlkCommentListHead==NULL)
+                    if (!AcpiGbl_DefBlkCommentListHead)
                     {
                         AcpiGbl_DefBlkCommentListHead = CommentNode;
                         AcpiGbl_DefBlkCommentListTail = CommentNode;
@@ -680,7 +688,7 @@ CvCaptureJustComments (
                     CommentNode->Comment = ACPI_CAST_PTR (char, Aml);
                     CommentNode->Next    = NULL;
 
-                    if (AcpiGbl_RegCommentListHead==NULL)
+                    if (!AcpiGbl_RegCommentListHead)
                     {
                         AcpiGbl_RegCommentListHead = CommentNode;
                         AcpiGbl_RegCommentListTail = CommentNode;
@@ -702,7 +710,7 @@ CvCaptureJustComments (
                     CommentNode->Comment = ACPI_CAST_PTR (char, Aml);
                     CommentNode->Next    = NULL;
 
-                    if (AcpiGbl_EndBlkCommentListHead==NULL)
+                    if (!AcpiGbl_EndBlkCommentListHead)
                     {
                         AcpiGbl_EndBlkCommentListHead = CommentNode;
                         AcpiGbl_EndBlkCommentListTail = CommentNode;
@@ -717,53 +725,39 @@ CvCaptureJustComments (
                 case INLINE_COMMENT:
 
                     CvDbgPrint ("found inline comment.\n");
-                    Debug = AcpiGbl_CurrentInlineComment;          
                     AcpiGbl_CurrentInlineComment = ACPI_CAST_PTR (char, Aml);
-                    if (Debug!=NULL)
-                    {
-                        CvDbgPrint ("CAUTION: switching %s with %s for inline comments!\n", Debug, AcpiGbl_CurrentInlineComment);
-                    }
                     break;
 
                 case ENDNODE_COMMENT:
 
                     CvDbgPrint ("found EndNode comment.\n");
-                    Debug = AcpiGbl_CurrentEndNodeComment;
                     AcpiGbl_CurrentEndNodeComment = ACPI_CAST_PTR (char, Aml);
-                    if (Debug!=NULL)
-                    {
-                        CvDbgPrint ("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentEndNodeComment);
-                    }
                     break;
 
                 case CLOSE_BRACE_COMMENT:
 
                     CvDbgPrint ("found close brace comment.\n");
-                    Debug = AcpiGbl_CurrentCloseBraceComment;
                     AcpiGbl_CurrentCloseBraceComment = ACPI_CAST_PTR (char, Aml);
-                    if (Debug!=NULL)
-                    {
-                        CvDbgPrint ("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentCloseBraceComment);
-                    }
                     break;        
 
                 case END_DEFBLK_COMMENT:
 
                     CvDbgPrint ("Found comment that belongs after the } for a definition block.\n");
-                     
-                    Debug = AcpiGbl_CurrentScope->Common.CloseBraceComment;
                     AcpiGbl_CurrentScope->Common.CloseBraceComment = ACPI_CAST_PTR (char, Aml);
-                    
-                    if (Debug!=NULL)
-                    {
-                        CvDbgPrint ("CAUTION: switching %s with %s for inline comments\n", Debug, AcpiGbl_CurrentCloseBraceComment);
-                    }
                     break;        
 
                 case FILENAME_COMMENT:
 
                     CvDbgPrint ("Found a filename: %s\n", ACPI_CAST_PTR (char, Aml));
                     FileNode = CvFilenameExists (ACPI_CAST_PTR (char, Aml), AcpiGbl_FileTreeRoot);
+
+                    /*
+                     * If there is an INCLUDE_COMMENT followed by a
+                     * FILENAME_COMMENT, then the INCLUDE_COMMENT is a comment
+                     * that is emitted before the #include for the file.
+                     * We will save the IncludeComment within the FileNode
+                     * associated with this FILENAME_COMMENT.
+                     */
                     if (FileNode && AcpiGbl_IncCommentListHead)
                     {
                         FileNode->IncludeComment = AcpiGbl_IncCommentListHead;
@@ -778,13 +772,16 @@ CvCaptureJustComments (
 
                 case INCLUDE_COMMENT:
 
-                    /* add to a linked list of nodes. This list will be taken by the parse node created next. */
-
+                    /*
+                     * Add to a linked list. This list will be taken by the
+                     * parse node created next. See the FILENAME_COMMENT case
+                     * for more details
+                     */
                     CommentNode = AcpiOsAcquireObject (AcpiGbl_RegCommentCache);
                     CommentNode->Comment = ACPI_CAST_PTR (char, Aml);
-                    CommentNode->Next    = NULL;
+                    CommentNode->Next = NULL;
 
-                    if (AcpiGbl_IncCommentListHead==NULL)
+                    if (!AcpiGbl_IncCommentListHead)
                     {
                         AcpiGbl_IncCommentListHead = CommentNode;
                         AcpiGbl_IncCommentListTail = CommentNode;
@@ -804,7 +801,7 @@ CvCaptureJustComments (
 
             } /* end switch statement */
 
-	} /* end else */
+        } /* end else */
 
         /* determine the length and move forward that amount */
 
@@ -846,9 +843,7 @@ CvCaptureJustComments (
  *
  * RETURN:      none
  *
- * DESCRIPTION: look at the aml that the parser state is pointing to,
- *              capture any AML_COMMENT_OP and it's arguments and increment the
- *              aml pointer past the comment.
+ * DESCRIPTION: Wrapper function for CvCaptureCommentsOnly
  *
  ******************************************************************************/
 
@@ -873,11 +868,12 @@ CvCaptureComments (
     Aml = WalkState->ParserState.Aml;
     Opcode = (UINT16) ACPI_GET8 (Aml);
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
+
     if (!(OpInfo->Flags & AML_DEFER) ||
-	((OpInfo->Flags & AML_DEFER) &&
-	 (WalkState->PassNumber != ACPI_IMODE_LOAD_PASS1)))
+        ((OpInfo->Flags & AML_DEFER) &&
+        (WalkState->PassNumber != ACPI_IMODE_LOAD_PASS1)))
     {
-        CvCaptureJustComments(&WalkState->ParserState);
+        CvCaptureCommentsOnly (&WalkState->ParserState);
         WalkState->Aml = WalkState->ParserState.Aml;
     }
     
@@ -888,12 +884,13 @@ CvCaptureComments (
  *
  * FUNCTION:    CvTransferComments
  *
- * PARAMETERS:  Op         - the comments will be transferred here
+ * PARAMETERS:  Op    - Transfer comments to this Op
  *
  * RETURN:      none
  *
- * DESCRIPTION: take the given op and transfer all of the captured comments
- *              from the global comment containers.
+ * DESCRIPTION: Transfer all of the commments stored in global containers to the
+ *              given Op. This will be invoked shortly after the parser creates
+ *              a ParseOp.
  *
  ******************************************************************************/
 

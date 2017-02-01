@@ -28,7 +28,7 @@ Compiler - The main goal in the compilation phase is to retain the comments with
 
 Disassembler - The disassembler takes AML that contains the comment bytecode and outputs a dsl
                file with the comments. As the AML is scanned, comments are detected within the
-               parse loop through CvCaptureJustComments() and CvCaptureComments() within
+               parse loop through CvCaptureCommentsOnly() and CvCaptureComments() within
                cvparser.c. These functions first store comments within global variables and
                places them into the parse node associated with the bytecode that comes after
                the comment bytecode. For example, the following line is bytecode that encodes
@@ -36,7 +36,7 @@ Disassembler - The disassembler takes AML that contains the comment bytecode and
 
                0xA9 0x01 /* Comment 1 */ 0x00 0x08 ...
 
-               When scanning the AML, CvCaptureJustComments() will place the comment in a
+               When scanning the AML, CvCaptureCommentsOnly() will place the comment in a
                global list. After a new parse object is created for the 0x08 bytecode, the
                comments within a global list will be placed in the newly created parse object
                of the 0x08 bytecode.

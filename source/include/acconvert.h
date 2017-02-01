@@ -224,7 +224,7 @@ CvFileAddressLookup (
     ACPI_FILE_NODE          *Head);
 
 void
-CvFileLabelNode (
+CvLabelFileNode (
     ACPI_PARSE_OBJECT       *Op);
 
 void
@@ -244,7 +244,7 @@ CvCaptureListComments (
     ACPI_COMMENT_LIST_NODE  *ListTail);
 
 void
-CvCaptureJustComments (
+CvCaptureCommentsOnly (
     ACPI_PARSE_STATE        *ParserState);
 
 void

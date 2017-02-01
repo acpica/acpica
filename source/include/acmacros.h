@@ -577,10 +577,10 @@
 #ifdef ACPI_ASL_COMPILER
 
 #define ASL_CV_FILENAME_EXISTS(a,b)      CvFilenameExists(a,b);
-#define ASL_CV_LABEL_FILENODE(a)         CvFileLabelNode(a);
+#define ASL_CV_LABEL_FILENODE(a)         CvLabelFileNode(a);
 #define ASL_CV_ADD_TO_FILETREE(a,b)       CvAddToFileTree (a,b);
 #define ASL_CV_SET_FILE_PARENT(a,b)       CvSetFileParent (a,b);
-#define ASL_CV_CAPTURE_COMMENTS_ONLY(a)   CvCaptureJustComments (a);
+#define ASL_CV_CAPTURE_COMMENTS_ONLY(a)   CvCaptureCommentsOnly (a);
 #define ASL_CV_CAPTURE_COMMENTS(a)       CvCaptureComments (a);
 #define ASL_CV_TRANSFER_COMMENTS(a)      CvTransferComments (a);
 #define ASL_CV_CLOSE_PAREN(a,b)          CvCloseParenWriteComment(a,b);

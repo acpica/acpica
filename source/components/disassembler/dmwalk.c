@@ -1011,7 +1011,7 @@ AcpiDmAscendingOp (
     ACPI_PARSE_OBJECT       *ParentOp;
 
 
-    /* Label this to Op to be in the proper file */
+    /* Point the Op's filename pointer to the proper file */
 
     if (Gbl_CaptureComments)
     {
@@ -1039,12 +1039,14 @@ AcpiDmAscendingOp (
  
         ASL_CV_CLOSE_BRACE (Op, Level);
 
-        /* Print any comments that are at the end of the file here... */
+        /* Print any comments that are at the end of the file here */
+
         if (Gbl_CaptureComments)
         { 
             ASL_CV_COMMENT_ONE_COMMENTLIST (AcpiGbl_LastListHead, 0);
         }
         AcpiOsPrintf ("\n\n");
+
         return (AE_OK);
     }
 
@@ -1136,7 +1138,7 @@ AcpiDmAscendingOp (
             }
         }
         break;
- 
+
     case BLOCK_NONE:
     default:
 
