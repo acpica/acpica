@@ -625,7 +625,7 @@ CvCaptureCommentsOnly (
     UINT32                  Length = 0;
     UINT8                   CommentOption = (UINT16) ACPI_GET8 (Aml+1);
     BOOLEAN                 StdDefBlockFlag = FALSE;
-    ACPI_COMMENT_LIST_NODE  *CommentNode;
+    ACPI_COMMENT_NODE       *CommentNode;
     ACPI_FILE_NODE          *FileNode;
 
 

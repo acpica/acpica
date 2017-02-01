@@ -221,7 +221,7 @@ AcpiUtCreateCaches (
      * For use with the ASL-/ASL+ option. This cache keeps track of regular 
      * 0xA9 0x01 comments.
      */  
-    Status = AcpiOsCreateCache ("Acpi-Comment", sizeof (ACPI_COMMENT_LIST_NODE),
+    Status = AcpiOsCreateCache ("Acpi-Comment", sizeof (ACPI_COMMENT_NODE),
         ACPI_MAX_COMMENT_CACHE_DEPTH, &AcpiGbl_RegCommentCache);
     if (ACPI_FAILURE (Status))
     {

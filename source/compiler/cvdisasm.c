@@ -129,32 +129,31 @@
  *
  * RETURN:      None
  *
- * DESCRIPTION: Prints all commentss within a given list.
+ * DESCRIPTION: Prints all comments within a given list.
  *
  ******************************************************************************/
 
 void
 CvPrintOneCommentList (
-    ACPI_COMMENT_LIST_NODE  *CommentList,
+    ACPI_COMMENT_NODE       *CommentList,
     UINT32                  Level)
 {
-    ACPI_COMMENT_LIST_NODE  *Temp = CommentList;
-    ACPI_COMMENT_LIST_NODE  *Prev;
+    ACPI_COMMENT_NODE       *Current = CommentList;
+    ACPI_COMMENT_NODE       *Previous;
 
 
-    while (Temp)
+    while (Current)
     {
-        Prev = Temp;
-        if (Temp->Comment)
+        Previous = Current;
+        if (Current->Comment)
         {
             AcpiDmIndent(Level);
-            AcpiOsPrintf("%s\n", Temp->Comment);
-            Temp->Comment = NULL;
+            AcpiOsPrintf("%s\n", Current->Comment);
+            Current->Comment = NULL;
         }
-        Temp = Temp->Next;
-        AcpiOsFree (Prev);
+        Current = Current->Next;
+        AcpiOsReleaseObject(AcpiGbl_RegCommentCache, Previous);
     }
-    CommentList = NULL;
 }
 
 
@@ -223,16 +222,15 @@ CvPrintOneCommentType (
     case AML_COMMENT_ENDBLK:
         CvPrintOneCommentList (Op->Common.EndBlkComment, Level);
         Op->Common.EndBlkComment = NULL;
+        return;
+
         break;
 
     default:
         break;
     }
 
-    if (EndStr &&
-        ((CommentType == AML_COMMENT_STANDARD) || (CommentType == AMLCOMMENT_INLINE) ||
-         (CommentType == AML_COMMENT_END_NODE) || (CommentType == AML_NAMECOMMENT) ||
-         (CommentType == AML_COMMENT_CLOSE_BRACE)))
+    if (EndStr)
     {
         AcpiOsPrintf ("%s", EndStr);
     }
@@ -248,7 +246,7 @@ CvPrintOneCommentType (
  *
  * RETURN:      none
  *
- * DESCRIPTION: Print a colse brace } and any open brace comments associated
+ * DESCRIPTION: Print a close brace } and any open brace comments associated
  *              with this parse object.
  *
  ******************************************************************************/
@@ -258,30 +256,15 @@ CvCloseBraceWriteComment(
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level)
 {
-    ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.EndBlkComment;
-
     if (!Gbl_CaptureComments)
     {
         AcpiOsPrintf ("}");
         return;
     }
 
-    while (CommentNode)
-    {
-        AcpiDmIndent (1);
-        AcpiOsPrintf("%s\n", CommentNode->Comment);
-        CommentNode->Comment = NULL;
-        CommentNode = CommentNode->Next;
-        AcpiDmIndent (Level);
-    }
-
+    CvPrintOneCommentType (Op, AML_COMMENT_ENDBLK, NULL, Level);
     AcpiOsPrintf ("}");
-
-    if (Op->Common.CloseBraceComment!=NULL)
-    {
-        AcpiOsPrintf (" %s", Op->Common.CloseBraceComment);
-        Op->Common.CloseBraceComment=NULL;
-    }
+    CvPrintOneCommentType (Op, AML_COMMENT_CLOSE_BRACE, NULL, Level);
 }
 
 
@@ -304,9 +287,6 @@ CvCloseParenWriteComment(
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level)
 {
-    ACPI_COMMENT_LIST_NODE  *CommentNode = Op->Common.EndBlkComment;
-
-
     if (!Gbl_CaptureComments)
     {
         AcpiOsPrintf (")");
@@ -317,34 +297,22 @@ CvCloseParenWriteComment(
      * If this op has a BLOCK_BRACE, then output the comment when the 
      * disassembler calls CvCloseBraceWriteComment 
      */
-    if ((AcpiDmBlockType (Op) & (BLOCK_PAREN)) &&
-	!(AcpiDmBlockType (Op) & (BLOCK_BRACE)))
+    if (AcpiDmBlockType (Op) == BLOCK_PAREN)
     {
-        while (CommentNode)
-        {
-            AcpiDmIndent (Level);
-            AcpiOsPrintf("%s\n", CommentNode->Comment);
-            CommentNode->Comment = NULL;
-            CommentNode = CommentNode->Next;
-            if (!CommentNode)
-            {
-                AcpiDmIndent (Level);
-            }
-        }
+        CvPrintOneCommentType (Op, AML_COMMENT_ENDBLK, NULL, Level);
     }
 
     AcpiOsPrintf (")");
 
     if (Op->Common.EndNodeComment)
     {
-        AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
-        Op->Common.EndNodeComment=NULL;
+        CvPrintOneCommentType (Op, AML_COMMENT_END_NODE, NULL, Level);
     }
     else if ((Op->Common.Parent->Common.AmlOpcode == AML_IF_OP) &&
 	     Op->Common.Parent->Common.EndNodeComment)
     {
-        AcpiOsPrintf ("%s", Op->Common.Parent->Common.EndNodeComment);
-        Op->Common.Parent->Common.EndNodeComment = NULL;
+        CvPrintOneCommentType (Op->Common.Parent,
+            AML_COMMENT_END_NODE, NULL, Level);
     }
 } 
 
@@ -366,8 +334,9 @@ BOOLEAN
 CvFileHasSwitched(
     ACPI_PARSE_OBJECT       *Op)
 {
-    if (Op->Common.PsFilename && AcpiGbl_CurrentFilename
-        && strcmp(Op->Common.PsFilename, AcpiGbl_CurrentFilename))
+    if (Op->Common.PsFilename   &&
+        AcpiGbl_CurrentFilename &&
+        strcmp(Op->Common.PsFilename, AcpiGbl_CurrentFilename))
     {
         return TRUE;
     }
@@ -384,7 +353,8 @@ CvFileHasSwitched(
  *
  * RETURN:      None
  *
- * DESCRIPTION: Switch the outputfile. 
+ * DESCRIPTION: Switch the outputfile and write ASL Include statement. Note,
+ *              this function emits actual ASL code rather than comments.
  *
  ******************************************************************************/
 
@@ -412,11 +382,10 @@ CvSwitchFiles(
         }
 
         /*
-         * If the previous file is a descendant of the current file,
+         * If the previous file is a descendent of the current file,
          * make sure that Include statements from the current file
          * to the previous have been emitted.
          */
-
         while (FNode && FNode->Parent && strcmp (FNode->Filename, AcpiGbl_CurrentFilename))
         {
             if (!FNode->IncludeWritten)
@@ -433,7 +402,7 @@ CvSwitchFiles(
         }
     }
 
-    /* Redirect output to the argument */
+    /* Redirect output to the Op->Common.PsFilename */
 
     FNode = CvFilenameExists (Filename, AcpiGbl_FileTreeRoot);
     AcpiOsRedirectOutput (FNode->File);

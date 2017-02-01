@@ -1004,8 +1004,8 @@ typedef union acpi_parse_value
     char                            *EndNodeComment;    /* End of node comment */\
     char                            *NameComment;       /* Comment associated with the first parameter of the name node */\
     char                            *CloseBraceComment; /* Comments that come after } on the same as } */\
-    ACPI_COMMENT_LIST_NODE          *CommentList;       /* comments that appears before this node */\
-    ACPI_COMMENT_LIST_NODE          *EndBlkComment;     /* comments that at the end of a block but before ) or } */\
+    ACPI_COMMENT_NODE               *CommentList;       /* comments that appears before this node */\
+    ACPI_COMMENT_NODE               *EndBlkComment;     /* comments that at the end of a block but before ) or } */\
     char                            *PsFilename;        /* Filename associated with this node */\
     char                            *PsParentFilename)  /* Parent filename associated with this node */
 
@@ -1051,12 +1051,12 @@ typedef enum
 /*
  * List struct used in the -ca option
  */
-typedef struct acpi_comment_list_node
+typedef struct acpi_comment_node
 {
-  char                                     *Comment;
-  struct acpi_comment_list_node            *Next;
+  char                      *Comment;
+  struct acpi_comment_node  *Next;
 
-} ACPI_COMMENT_LIST_NODE;
+} ACPI_COMMENT_NODE;
 
 
 typedef struct acpi_comment_addr_node
@@ -1078,7 +1078,7 @@ typedef struct acpi_file_node
     struct acpi_file_node   *Next;
     struct acpi_file_node   *Parent;
     BOOLEAN                 IncludeWritten;
-    ACPI_COMMENT_LIST_NODE  *IncludeComment;
+    ACPI_COMMENT_NODE       *IncludeComment;
 
 } ACPI_FILE_NODE;
 

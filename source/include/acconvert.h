@@ -181,7 +181,7 @@ UINT32
 CvParseOpBlockType (
     ACPI_PARSE_OBJECT       *Op);
 
-ACPI_COMMENT_LIST_NODE*
+ACPI_COMMENT_NODE*
 CvCommentNodeCalloc (
     void);
 
@@ -240,8 +240,8 @@ CvSetFileParent (
 void
 CvCaptureListComments (
     ACPI_PARSE_STATE        *ParserState,
-    ACPI_COMMENT_LIST_NODE  *ListHead,
-    ACPI_COMMENT_LIST_NODE  *ListTail);
+    ACPI_COMMENT_NODE       *ListHead,
+    ACPI_COMMENT_NODE       *ListTail);
 
 void
 CvCaptureCommentsOnly (
@@ -280,7 +280,7 @@ CvCloseBraceWriteComment (
 
 void
 CvPrintOneCommentList (
-    ACPI_COMMENT_LIST_NODE  *CommentList,
+    ACPI_COMMENT_NODE       *CommentList,
     UINT32                  Level);
 
 void

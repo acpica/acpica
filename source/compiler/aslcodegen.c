@@ -493,7 +493,7 @@ CgWriteTableHeader (
 {
     ACPI_PARSE_OBJECT       *Child;
     UINT32                  CommentLength;
-    ACPI_COMMENT_LIST_NODE  *Current;
+    ACPI_COMMENT_NODE       *Current;
 
 
     /* AML filename */

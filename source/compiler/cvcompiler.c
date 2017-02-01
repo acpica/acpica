@@ -341,7 +341,7 @@ CvCalculateCommentLengths(
 {
     UINT32                  CommentLength = 0;
     UINT32                  TotalCommentLength = 0;
-    ACPI_COMMENT_LIST_NODE  *Current = NULL;
+    ACPI_COMMENT_NODE       *Current = NULL;
 
 
     if (!Gbl_CaptureComments)
@@ -436,7 +436,7 @@ CgWriteAmlDefBlockComment(
     ACPI_PARSE_OBJECT       *Op)
 {
     UINT8                   CommentOption;
-    ACPI_COMMENT_LIST_NODE  *Current;
+    ACPI_COMMENT_NODE       *Current;
     char                    *NewFilename; 
     char                    *Position;
     char                    *DirectoryPosition;
@@ -546,7 +546,7 @@ void
 CgWriteAmlComment(
     ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_COMMENT_LIST_NODE  *Current;
+    ACPI_COMMENT_NODE       *Current;
     UINT8                   CommentOption;
     char                    *NewFilename;
     char                    *ParentFilename;
@@ -652,15 +652,15 @@ CgWriteAmlComment(
  *
  ******************************************************************************/
 
-ACPI_COMMENT_LIST_NODE*
+ACPI_COMMENT_NODE*
 CvCommentNodeCalloc (
     void)
 {
-   ACPI_COMMENT_LIST_NODE *NewCommentNode;
+   ACPI_COMMENT_NODE        *NewCommentNode;
 
 
    NewCommentNode =
-       (ACPI_COMMENT_LIST_NODE*) UtLocalCalloc (sizeof(ACPI_COMMENT_LIST_NODE));
+       (ACPI_COMMENT_NODE*) UtLocalCalloc (sizeof(ACPI_COMMENT_NODE));
    NewCommentNode->Next = NULL;
    return NewCommentNode;
 }
