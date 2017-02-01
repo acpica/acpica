@@ -587,8 +587,8 @@
 #define ASL_CV_CLOSE_BRACE(a,b)          CvCloseBraceWriteComment(a,b);
 #define ASL_CV_SWITCH_FILES(a,b)         CvSwitchFiles(a,b);
 #define ASL_CV_CLEAR_OP_COMMENTS(a)       CvClearOpComments(a);
-#define ASL_CV_COMMENT_ONE_COMMENT(a,b,c,d) CvPrintOneCommentType (a,b,c,d);
-#define ASL_CV_COMMENT_ONE_COMMENTLIST(a,b) CvPrintOneCommentList (a,b);
+#define ASL_CV_PRINT_ONE_COMMENT(a,b,c,d) CvPrintOneCommentType (a,b,c,d);
+#define ASL_CV_PRINT_ONE_COMMENT_LIST(a,b) CvPrintOneCommentList (a,b);
 #define ASL_CV_FILE_HAS_SWITCHED(a)       CvFileHasSwitched(a)
 #define ASL_CV_INIT_FILETREE(a,b,c)      CvInitFileTree(a,b,c);
 
@@ -605,8 +605,8 @@
 #define ASL_CV_CLOSE_BRACE(a,b)          AcpiOsPrintf ("}");
 #define ASL_CV_SWITCH_FILES(a,b)
 #define ASL_CV_CLEAR_OP_COMMENTS(a)
-#define ASL_CV_COMMENT_ONE_COMMENT(a,b,c,d)
-#define ASL_CV_COMMENT_ONE_COMMENTLIST(a,b)
+#define ASL_CV_PRINT_ONE_COMMENT(a,b,c,d)
+#define ASL_CV_PRINT_ONE_COMMENT_LIST(a,b)
 #define ASL_CV_FILE_HAS_SWITCHED(a)       0
 #define ASL_CV_INIT_FILETREE(a,b,c)
 

@@ -504,7 +504,7 @@ AcpiDmDescendingOp (
     
         /* If this parse node has regular comments, print them here. */
 
-        ASL_CV_COMMENT_ONE_COMMENT (Op, AML_COMMENT_STANDARD, NULL, Level);
+        ASL_CV_PRINT_ONE_COMMENT (Op, AML_COMMENT_STANDARD, NULL, Level);
     }
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
@@ -722,7 +722,7 @@ AcpiDmDescendingOp (
             AcpiOsPrintf (" (");
             if (!(AcpiDmBlockType (Op) & BLOCK_BRACE))
             {
-                ASL_CV_COMMENT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, " ", 0);
+                ASL_CV_PRINT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, " ", 0);
             }
         }
 
@@ -781,7 +781,7 @@ AcpiDmDescendingOp (
 
                 AcpiDmCheckForHardwareId (Op);
                 AcpiOsPrintf (", ");
-                ASL_CV_COMMENT_ONE_COMMENT (Op, AML_NAMECOMMENT, NULL, 0);
+                ASL_CV_PRINT_ONE_COMMENT (Op, AML_NAMECOMMENT, NULL, 0);
                 break;
 
             case AML_REGION_OP:
@@ -1043,7 +1043,7 @@ AcpiDmAscendingOp (
 
         if (Gbl_CaptureComments)
         { 
-            ASL_CV_COMMENT_ONE_COMMENTLIST (AcpiGbl_LastListHead, 0);
+            ASL_CV_PRINT_ONE_COMMENT_LIST (AcpiGbl_LastListHead, 0);
         }
         AcpiOsPrintf ("\n\n");
 
