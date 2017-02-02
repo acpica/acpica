@@ -154,11 +154,6 @@ UINT32
 CvCalculateCommentLengths(
    ACPI_PARSE_OBJECT        *Op);
 
-char*
-CvChangeFileExt (
-   char*                    Filename,
-   char*                    FileExt);
-
 void
 CvProcessCommentState (
     char                    input);
@@ -218,24 +213,9 @@ CvFilenameExists (
     char                    *Filename,
     ACPI_FILE_NODE           *Head);
 
-ACPI_FILE_NODE*
-CvFileAddressLookup (
-    char                    *Address,
-    ACPI_FILE_NODE          *Head);
-
 void
 CvLabelFileNode (
     ACPI_PARSE_OBJECT       *Op);
-
-void
-CvAddToFileTree (
-    char                    *Filename,
-    char                    *PreviousFilename);
-
-void
-CvSetFileParent (
-    char                    *ChildFile,
-    char                    *ParentFile);
 
 void
 CvCaptureListComments (

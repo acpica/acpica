@@ -129,7 +129,8 @@
  *
  * RETURN:      None
  *
- * DESCRIPTION: Prints all comments within a given list.
+ * DESCRIPTION: Prints all comments within the given list.
+ *              This is referred as ASL_CV_PRINT_ONE_COMMENT_LIST.
  *
  ******************************************************************************/
 
@@ -170,6 +171,7 @@ CvPrintOneCommentList (
  *
  * DESCRIPTION: Prints all comments of CommentType within the given Op and
  *              clears the printed comment from the Op.
+ *              This is referred as ASL_CV_PRINT_ONE_COMMENT.
  *
  ******************************************************************************/
 
@@ -248,6 +250,7 @@ CvPrintOneCommentType (
  *
  * DESCRIPTION: Print a close brace } and any open brace comments associated
  *              with this parse object.
+ *              This is referred as ASL_CV_CLOSE_BRACE.
  *
  ******************************************************************************/
 
@@ -279,6 +282,7 @@ CvCloseBraceWriteComment(
  *
  * DESCRIPTION: Print a closing paren ) and any end node comments associated
  *              with this parse object.
+ *              This is referred as ASL_CV_CLOSE_PAREN.
  *
  ******************************************************************************/
 
@@ -327,6 +331,7 @@ CvCloseParenWriteComment(
  * DESCRIPTION: Determine whether if a file has switched.
  *              TRUE - file has switched. 
  *              FALSE - file has not switched.
+ *              This is referred as ASL_CV_FILE_HAS_SWITCHED.
  *
  ******************************************************************************/
 
@@ -355,6 +360,7 @@ CvFileHasSwitched(
  *
  * DESCRIPTION: Switch the outputfile and write ASL Include statement. Note,
  *              this function emits actual ASL code rather than comments.
+ *              This is referred as ASL_CV_SWITCH_FILES.
  *
  ******************************************************************************/
 

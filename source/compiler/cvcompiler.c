@@ -566,7 +566,7 @@ CgWriteAmlComment(
         /* first, print the file name comment after changing .asl to .dsl */
 
         NewFilename =
-            CvChangeFileExt(Op->Asl.Filename, FILE_SUFFIX_DISASSEMBLY);
+            FlGenerateFilename (Op->Asl.Filename, FILE_SUFFIX_DISASSEMBLY);
         CvDbgPrint ("Writing file comment, \"%s\" for %s\n",
             NewFilename, Op->Asl.ParseOpName);
         CgWriteOneAmlComment(Op, NewFilename, FILENAME_COMMENT);
@@ -574,7 +574,7 @@ CgWriteAmlComment(
         if (Op->Asl.ParentFilename &&
             strcmp (Op->Asl.ParentFilename, Op->Asl.Filename))
         {
-            ParentFilename = CvChangeFileExt(Op->Asl.ParentFilename,
+            ParentFilename = FlGenerateFilename (Op->Asl.ParentFilename,
                 FILE_SUFFIX_DISASSEMBLY);
             CgWriteOneAmlComment(Op, ParentFilename, PARENTFILENAME_COMMENT);
         }
@@ -737,54 +737,6 @@ CvParseOpBlockType (
     }
 }
 
-
-/*******************************************************************************
- *
- * FUNCTION:    CvChangeFileExt
- *
- * PARAMETERS:  Filename
- *              FileExt
- *
- * RETURN:      char* - new filename
- *
- * DESCRIPTION: Change a file extension of a given filename to
- *              the given file extension.
- *
- ******************************************************************************/
-
-char*
-CvChangeFileExt(
-   char*       Filename,
-   char*       FileExt)
-{
-    char                    *Position;
-    char                    *DirectoryPosition;
-    char                    *NewFilename;
-
-
-    NewFilename = UtStringCacheCalloc (strlen (Filename)); 
-    strcpy (NewFilename, Filename);
-    DirectoryPosition = strrchr (NewFilename, '/');
-    Position = strrchr (NewFilename, '.');
-
-    if (Position && (Position > DirectoryPosition))
-    {
-        /* Tack on the new suffix */
-
-        Position++;
-        *Position = 0;
-        strcat (Position, FileExt);
-    }
-    else
-    {
-        /* No dot, add one and then the suffix */
-
-        strcat (NewFilename, ".");
-        strcat (NewFilename, FileExt);
-    }
-
-    return (NewFilename);
-}
 
 /*******************************************************************************
  *

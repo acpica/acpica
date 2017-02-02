@@ -133,6 +133,21 @@ static BOOLEAN
 CvIsFilename (
     char                   *Filename);
 
+static ACPI_FILE_NODE*
+CvFileAddressLookup(
+    char                    *Address,
+    ACPI_FILE_NODE          *Head);
+
+static void
+CvAddToFileTree (
+    char                    *Filename,
+    char                    *PreviousFilename);
+
+static void
+CvSetFileParent (
+    char                    *ChildFile,
+    char                    *ParentFile);
+
 
 /*******************************************************************************
  *
@@ -184,6 +199,7 @@ CvIsFilename (
  * RETURN:      none
  *
  * DESCRIPTION: Initialize the file dependency tree by scanning the AML.
+ *              This is referred as ASL_CV_INIT_FILETREE.
  *
  ******************************************************************************/
 
@@ -231,7 +247,7 @@ CvInitFileTree (
   
 
         TreeAml = AmlStart;
-        FileEnd = AmlStart +AmlLength;
+        FileEnd = AmlStart + AmlLength;
 
         while (TreeAml <= FileEnd)
         {
@@ -247,7 +263,7 @@ CvInitFileTree (
                 CvDbgPrint ("A9 and a 08 file\n");
                 PreviousFilename = Filename;
                 Filename = (char *) (TreeAml+2);
-                ASL_CV_ADD_TO_FILETREE (Filename, PreviousFilename);
+                CvAddToFileTree (Filename, PreviousFilename);
                 ChildFilename = Filename;
                 CvDbgPrint ("%s\n", Filename);
             }
@@ -257,7 +273,7 @@ CvInitFileTree (
             {
                 CvDbgPrint ("A9 and a 09 file\n");
                 ParentFilename = (char *)(TreeAml+2);
-                ASL_CV_SET_FILE_PARENT (ChildFilename, ParentFilename);
+                CvSetFileParent (ChildFilename, ParentFilename);
                 CvDbgPrint ("%s\n", ParentFilename);
             }
             ++TreeAml;
@@ -275,6 +291,7 @@ CvInitFileTree (
  * RETURN:      none
  *
  * DESCRIPTION: Clear all converter-related fields of the given Op.
+ *              This is referred as ASL_CV_CLEAR_OP_COMMENTS.
  *
  ******************************************************************************/
 
@@ -415,7 +432,7 @@ CvFilenameExists(
  *
  ******************************************************************************/
 
-ACPI_FILE_NODE*
+static ACPI_FILE_NODE*
 CvFileAddressLookup(
     char                    *Address,
     ACPI_FILE_NODE          *Head)
@@ -449,6 +466,7 @@ CvFileAddressLookup(
  * DESCRIPTION: Takes a given parse op, looks up its Op->Common.Aml field 
  *              within the file tree and fills in approperiate file information
  *              from a matching node within the tree.
+ *              This is referred as ASL_CV_LABEL_FILENODE.
  *
  ******************************************************************************/
 
@@ -497,7 +515,7 @@ CvLabelFileNode(
  *
  ******************************************************************************/
 
-void
+static void
 CvAddToFileTree (
     char                    *Filename,
     char                    *PreviousFilename)
@@ -573,7 +591,7 @@ CvAddToFileTree (
  *
  ******************************************************************************/
 
-void
+static void
 CvSetFileParent (
     char                    *ChildFile,
     char                    *ParentFile)
@@ -613,6 +631,7 @@ CvSetFileParent (
  *              aml pointer past the comment. Comments are transferred to parse
  *              nodes through CvTransferComments() as well as 
  *              AcpiPsBuildNamedOp().
+ *              This is referred as ASL_CV_CAPTURE_COMMENTS_ONLY.
  *
  ******************************************************************************/
 
@@ -844,6 +863,7 @@ CvCaptureCommentsOnly (
  * RETURN:      none
  *
  * DESCRIPTION: Wrapper function for CvCaptureCommentsOnly
+ *              This is referred as ASL_CV_CAPTURE_COMMENTS.
  *
  ******************************************************************************/
 
@@ -891,6 +911,7 @@ CvCaptureComments (
  * DESCRIPTION: Transfer all of the commments stored in global containers to the
  *              given Op. This will be invoked shortly after the parser creates
  *              a ParseOp.
+ *              This is referred as ASL_CV_TRANSFER_COMMENTS.
  *
  ******************************************************************************/
 
