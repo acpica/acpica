@@ -341,7 +341,7 @@ CvFileHasSwitched(
 {
     if (Op->Common.PsFilename   &&
         AcpiGbl_CurrentFilename &&
-        strcmp(Op->Common.PsFilename, AcpiGbl_CurrentFilename))
+        AcpiUtStricmp(Op->Common.PsFilename, AcpiGbl_CurrentFilename))
     {
         return TRUE;
     }
@@ -392,7 +392,7 @@ CvSwitchFiles(
          * make sure that Include statements from the current file
          * to the previous have been emitted.
          */
-        while (FNode && FNode->Parent && strcmp (FNode->Filename, AcpiGbl_CurrentFilename))
+        while (FNode && FNode->Parent && AcpiUtStricmp (FNode->Filename, AcpiGbl_CurrentFilename))
         {
             if (!FNode->IncludeWritten)
             {

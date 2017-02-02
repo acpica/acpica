@@ -169,10 +169,10 @@ CvIsFilename (
 {
     UINT64                  Length = strlen(Filename);
     UINT64                  i;
-    char                    *temp = Filename + Length - 4;
+    char                    *FileExt = Filename + Length - 4;
 
 
-    if ((Length > 4) && strcmp (temp, ".dsl"))
+    if ((Length > 4) && AcpiUtStricmp (FileExt, ".dsl"))
     {
         return FALSE;
     }
@@ -407,7 +407,7 @@ CvFilenameExists(
 
     while (Current)
     {
-        if (!strcmp (Current->Filename, Filename))
+        if (!AcpiUtStricmp (Current->Filename, Filename))
         {
             return (Current);
         }
@@ -523,7 +523,7 @@ CvAddToFileTree (
     ACPI_FILE_NODE          *Node;
 
 
-    if (!strcmp(Filename, AcpiGbl_RootFilename) &&
+    if (!AcpiUtStricmp(Filename, AcpiGbl_RootFilename) &&
         PreviousFilename)
     {
         Node = CvFilenameExists (PreviousFilename, AcpiGbl_FileTreeRoot);
@@ -536,7 +536,7 @@ CvAddToFileTree (
             Node->FileEnd = Filename;
         }
     }
-    else if (!strcmp(Filename, AcpiGbl_RootFilename) && !PreviousFilename)
+    else if (!AcpiUtStricmp(Filename, AcpiGbl_RootFilename) && !PreviousFilename)
     {
         return;
     }

@@ -355,7 +355,7 @@ CvCalculateCommentLengths(
         TotalCommentLength += strlen (Op->Asl.Filename) + 3;
 
         if (Op->Asl.ParentFilename &&
-            strcmp (Op->Asl.Filename, Op->Asl.ParentFilename))
+            AcpiUtStricmp (Op->Asl.Filename, Op->Asl.ParentFilename))
         {
             TotalCommentLength += strlen (Op->Asl.ParentFilename) + 3;
         }
@@ -572,7 +572,7 @@ CgWriteAmlComment(
         CgWriteOneAmlComment(Op, NewFilename, FILENAME_COMMENT);
 
         if (Op->Asl.ParentFilename &&
-            strcmp (Op->Asl.ParentFilename, Op->Asl.Filename))
+            AcpiUtStricmp (Op->Asl.ParentFilename, Op->Asl.Filename))
         {
             ParentFilename = FlGenerateFilename (Op->Asl.ParentFilename,
                 FILE_SUFFIX_DISASSEMBLY);
