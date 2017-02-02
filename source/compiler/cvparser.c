@@ -305,8 +305,8 @@ CvClearOpComments (
     Op->Common.CommentList       = NULL;
     Op->Common.EndBlkComment     = NULL;
     Op->Common.CloseBraceComment = NULL;
-    Op->Common.PsFilename        = NULL;
-    Op->Common.PsParentFilename  = NULL;
+    Op->Common.CvFilename        = NULL;
+    Op->Common.CvParentFilename  = NULL;
 }
 
 
@@ -488,14 +488,14 @@ CvLabelFileNode(
        return;
     }
 
-    Op->Common.PsFilename = Node->Filename;
+    Op->Common.CvFilename = Node->Filename;
     if (Node->Parent)
     {
-        Op->Common.PsParentFilename = Node->Parent->Filename;
+        Op->Common.CvParentFilename = Node->Parent->Filename;
     }
     else
     {
-        Op->Common.PsParentFilename = Node->Filename;
+        Op->Common.CvParentFilename = Node->Filename;
     }
 }
 

@@ -1006,8 +1006,8 @@ typedef union acpi_parse_value
     char                            *CloseBraceComment; /* Comments that come after } on the same as } */\
     ACPI_COMMENT_NODE               *CommentList;       /* comments that appears before this node */\
     ACPI_COMMENT_NODE               *EndBlkComment;     /* comments that at the end of a block but before ) or } */\
-    char                            *PsFilename;        /* Filename associated with this node */\
-    char                            *PsParentFilename)  /* Parent filename associated with this node */
+    char                            *CvFilename;        /* Filename associated with this node. Used for ASL/ASL+ converter */\
+    char                            *CvParentFilename)  /* Parent filename associated with this node. Used for ASL/ASL+ converter */
 
 
 /* categories of comments */

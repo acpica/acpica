@@ -483,11 +483,11 @@ AdParseTable (
 #ifdef ACPI_ASL_COMPILER
     if (Gbl_CaptureComments)
     {
-        AcpiGbl_ParseOpRoot->Common.PsFilename = AcpiGbl_FileTreeRoot->Filename;
+        AcpiGbl_ParseOpRoot->Common.CvFilename = AcpiGbl_FileTreeRoot->Filename;
     }
     else
     {
-        AcpiGbl_ParseOpRoot->Common.PsFilename = NULL;
+        AcpiGbl_ParseOpRoot->Common.CvFilename = NULL;
     }
 #endif
 

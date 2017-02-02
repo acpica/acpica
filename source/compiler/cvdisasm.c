@@ -339,9 +339,9 @@ BOOLEAN
 CvFileHasSwitched(
     ACPI_PARSE_OBJECT       *Op)
 {
-    if (Op->Common.PsFilename   &&
+    if (Op->Common.CvFilename   &&
         AcpiGbl_CurrentFilename &&
-        AcpiUtStricmp(Op->Common.PsFilename, AcpiGbl_CurrentFilename))
+        AcpiUtStricmp(Op->Common.CvFilename, AcpiGbl_CurrentFilename))
     {
         return TRUE;
     }
@@ -369,7 +369,7 @@ CvSwitchFiles(
     UINT32                  Level,
     ACPI_PARSE_OBJECT       *Op)
 {
-    char                    *Filename = Op->Common.PsFilename;
+    char                    *Filename = Op->Common.CvFilename;
     ACPI_FILE_NODE          *FNode;
 
     CvDbgPrint ("Switching from %s to %s\n", AcpiGbl_CurrentFilename, Filename);    
@@ -408,7 +408,7 @@ CvSwitchFiles(
         }
     }
 
-    /* Redirect output to the Op->Common.PsFilename */
+    /* Redirect output to the Op->Common.CvFilename */
 
     FNode = CvFilenameExists (Filename, AcpiGbl_FileTreeRoot);
     AcpiOsRedirectOutput (FNode->File);

@@ -353,8 +353,8 @@ AcpiPsBuildNamedOp (
     (*Op)->Common.NameComment       = UnnamedOp->Common.NameComment;
     (*Op)->Common.CommentList       = UnnamedOp->Common.CommentList;
     (*Op)->Common.EndBlkComment     = UnnamedOp->Common.EndBlkComment;
-    (*Op)->Common.PsFilename        = UnnamedOp->Common.PsFilename;
-    (*Op)->Common.PsParentFilename  = UnnamedOp->Common.PsParentFilename;
+    (*Op)->Common.CvFilename        = UnnamedOp->Common.CvFilename;
+    (*Op)->Common.CvParentFilename  = UnnamedOp->Common.CvParentFilename;
     (*Op)->Named.Aml                = UnnamedOp->Common.Aml;
 
     UnnamedOp->Common.InlineComment     = NULL;
