@@ -536,10 +536,12 @@ CvAddToFileTree (
             Node->FileEnd = Filename;
         }
     }
-    else if (!AcpiUtStricmp(Filename, AcpiGbl_RootFilename) && !PreviousFilename)
+    else if (!AcpiUtStricmp(Filename, AcpiGbl_RootFilename) &&
+             !PreviousFilename)
     {
         return;
     }
+
     Node = CvFilenameExists (Filename, AcpiGbl_FileTreeRoot);
     if (Node && PreviousFilename)
     {
@@ -573,6 +575,20 @@ CvAddToFileTree (
         AcpiGbl_FileTreeRoot->FileStart = Filename;
         AcpiGbl_FileTreeRoot->IncludeWritten = FALSE;
         AcpiGbl_FileTreeRoot->File = fopen(Filename, "w+");
+
+        /*
+         * If we can't open the file, we need to abort here before we
+         * accidentally write to a NULL file.
+         */
+        if (!AcpiGbl_FileTreeRoot->File)
+        {
+            /* delete the .xxx file */
+
+            FlDeleteFile (ASL_FILE_AML_OUTPUT);
+            sprintf (MsgBuffer, "\"%s\" - %s", Filename, strerror (errno));
+            AslCommonError (ASL_ERROR, ASL_MSG_OPEN, 0, 0, 0, 0, NULL, MsgBuffer);
+            AslAbort ();
+        }
     }
 }
 
