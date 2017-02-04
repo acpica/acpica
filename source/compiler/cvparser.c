@@ -664,9 +664,8 @@ CvCaptureCommentsOnly (
     ACPI_FILE_NODE          *FileNode;
 
 
-    if (!Gbl_CaptureComments || Opcode != AML_COMMENT_OP || 
-       ((Opcode == AML_COMMENT_OP) && ((CommentOption < 0x1) || 
-        (CommentOption > 0xb))))
+    if (!Gbl_CaptureComments ||
+        Opcode != AML_COMMENT_OP)
     {
        return;
     }
@@ -832,6 +831,10 @@ CvCaptureCommentsOnly (
 
                 default:
 
+                    /* Not a valid comment option. Revert the AML */
+
+                    Aml -= 2;
+                    goto DefBlock;
                     break;
 
             } /* end switch statement */
@@ -855,7 +858,8 @@ CvCaptureCommentsOnly (
         Opcode = (UINT16) ACPI_GET8 (Aml);
 
     } // End while
- 
+
+DefBlock:
     if (StdDefBlockFlag)
     {
         /* 
