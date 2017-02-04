@@ -120,6 +120,11 @@
 #include "acconvert.h"
 
 
+static void
+CvPrintInclude(
+    ACPI_FILE_NODE          *FNode,
+    UINT32                  Level);
+
 /*******************************************************************************
  *
  * FUNCTION:    CvPrintOneCommentList
@@ -320,6 +325,7 @@ CvCloseParenWriteComment(
     }
 } 
 
+
 /*******************************************************************************
  *
  * FUNCTION:    CvFileHasSwitched
@@ -351,6 +357,43 @@ CvFileHasSwitched(
 
 /*******************************************************************************
  *
+ * FUNCTION:    CvPrintInclude
+ *
+ * PARAMETERS:  FNode - Write an Include statement for the file that is pointed
+ *                      by FNode->File.
+ *              Level - indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Write the ASL Include statement for FNode->File in the file
+ *              indicated by FNode->Parent->File. Note this function emits
+ *              actual ASL code rather than comments. This switches the output
+ *              file to FNode->Parent->File.
+ *
+ ******************************************************************************/
+
+static void
+CvPrintInclude(
+    ACPI_FILE_NODE          *FNode,
+    UINT32                  Level)
+{
+    if (!FNode || FNode->IncludeWritten)
+    {
+        return;
+    }
+
+    CvDbgPrint ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
+    AcpiOsRedirectOutput (FNode->Parent->File);
+    CvPrintOneCommentList (FNode->IncludeComment, Level);
+    AcpiDmIndent (Level);
+    AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
+    CvDbgPrint ("emitted the following: Include (\"%s\")\n", FNode->Filename);
+    FNode->IncludeWritten = TRUE;
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    CvSwitchFiles
  *
  * PARAMETERS:  Level - indentation level
@@ -376,34 +419,16 @@ CvSwitchFiles(
     FNode = CvFilenameExists (Filename, AcpiGbl_FileTreeRoot);
     if (FNode)
     {
-        if (!FNode->IncludeWritten)
-        {
-            CvDbgPrint ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
-            AcpiOsRedirectOutput (FNode->Parent->File);
-            CvPrintOneCommentList (FNode->IncludeComment, Level);
-            AcpiDmIndent (Level);
-            AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
-            CvDbgPrint ("emitted the following: Include (\"%s\")\n", FNode->Filename);
-            FNode->IncludeWritten = TRUE;
-        }
-
         /*
          * If the previous file is a descendent of the current file,
          * make sure that Include statements from the current file
          * to the previous have been emitted.
          */
-        while (FNode && FNode->Parent && AcpiUtStricmp (FNode->Filename, AcpiGbl_CurrentFilename))
+        while (FNode &&
+               FNode->Parent &&
+               AcpiUtStricmp (FNode->Filename, AcpiGbl_CurrentFilename))
         {
-            if (!FNode->IncludeWritten)
-            {
-                CvDbgPrint ("Writing include for %s within %s\n", FNode->Filename, FNode->Parent->Filename);
-                AcpiOsRedirectOutput (FNode->Parent->File);
-                CvPrintOneCommentList (FNode->IncludeComment, Level);
-                AcpiDmIndent (Level);
-                AcpiOsPrintf ("Include (\"%s\")\n", FNode->Filename);
-                CvDbgPrint ("emitted the following in %s: Include (\"%s\")\n", FNode->Parent->Filename, FNode->Filename);
-                FNode->IncludeWritten = TRUE;
-            }
+            CvPrintInclude (FNode, Level);
             FNode = FNode->Parent;
         }
     }
