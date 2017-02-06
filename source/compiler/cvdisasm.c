@@ -417,20 +417,29 @@ CvSwitchFiles(
 
     CvDbgPrint ("Switching from %s to %s\n", AcpiGbl_CurrentFilename, Filename);    
     FNode = CvFilenameExists (Filename, AcpiGbl_FileTreeRoot);
-    if (FNode)
+    if (!FNode)
     {
         /*
-         * If the previous file is a descendent of the current file,
-         * make sure that Include statements from the current file
-         * to the previous have been emitted.
+         * At this point, each Filename should exist in AcpiGbl_FileTreeRoot
+         * if it does not exist, then abort.
          */
-        while (FNode &&
-               FNode->Parent &&
-               AcpiUtStricmp (FNode->Filename, AcpiGbl_CurrentFilename))
-        {
-            CvPrintInclude (FNode, Level);
-            FNode = FNode->Parent;
-        }
+        FlDeleteFile (ASL_FILE_AML_OUTPUT);
+        sprintf (MsgBuffer, "\"Cannot find %s\" - %s", Filename, strerror (errno));
+        AslCommonError (ASL_ERROR, ASL_MSG_OPEN, 0, 0, 0, 0, NULL, MsgBuffer);
+        AslAbort ();
+    }
+
+    /*
+     * If the previous file is a descendent of the current file,
+     * make sure that Include statements from the current file
+     * to the previous have been emitted.
+     */
+    while (FNode &&
+           FNode->Parent &&
+           AcpiUtStricmp (FNode->Filename, AcpiGbl_CurrentFilename))
+    {
+        CvPrintInclude (FNode, Level);
+        FNode = FNode->Parent;
     }
 
     /* Redirect output to the Op->Common.CvFilename */
