@@ -217,67 +217,66 @@ CvInitFileTree (
     char                    *ChildFilename = NULL;
 
 
-    if (Gbl_CaptureComments)
+    if (!Gbl_CaptureComments)
     {
-        /* This is expected to work only for a single definition block. */
+        return;
+    }
 
-        CvDbgPrint ("AmlLength: %x\n", AmlLength);
-        CvDbgPrint ("AmlStart:  %p\n", AmlStart);
-        CvDbgPrint ("AmlEnd?:   %p\n", AmlStart+AmlLength);
-    
-        AcpiGbl_FileTreeRoot = AcpiOsAcquireObject (AcpiGbl_FileCache);
-        AcpiGbl_FileTreeRoot->FileStart = (char *)(AmlStart);
-        AcpiGbl_FileTreeRoot->FileEnd = (char *)(AmlStart + Table->Length);
-        AcpiGbl_FileTreeRoot->Next = NULL;
-        AcpiGbl_FileTreeRoot->Parent = NULL;
-        AcpiGbl_FileTreeRoot->Filename = (char *)(AmlStart+2);
+    CvDbgPrint ("AmlLength: %x\n", AmlLength);
+    CvDbgPrint ("AmlStart:  %p\n", AmlStart);
+    CvDbgPrint ("AmlEnd?:   %p\n", AmlStart+AmlLength);
 
-        /* Set this file to the current open file */
+    AcpiGbl_FileTreeRoot = AcpiOsAcquireObject (AcpiGbl_FileCache);
+    AcpiGbl_FileTreeRoot->FileStart = (char *)(AmlStart);
+    AcpiGbl_FileTreeRoot->FileEnd = (char *)(AmlStart + Table->Length);
+    AcpiGbl_FileTreeRoot->Next = NULL;
+    AcpiGbl_FileTreeRoot->Parent = NULL;
+    AcpiGbl_FileTreeRoot->Filename = (char *)(AmlStart+2);
 
-        AcpiGbl_FileTreeRoot->File = AcpiGbl_OutputFile; 
-    
-        /* 
-         * Set this to true because we dont need to output
-         * an include statement for the topmost file 
+    /* Set the root file to the current open file */
+
+    AcpiGbl_FileTreeRoot->File = AcpiGbl_OutputFile;
+
+    /*
+     * Set this to true because we dont need to output
+     * an include statement for the topmost file
+     */
+    AcpiGbl_FileTreeRoot->IncludeWritten = TRUE;
+    Filename = NULL;
+    AcpiGbl_CurrentFilename = (char *)(AmlStart+2);
+    AcpiGbl_RootFilename    = (char *)(AmlStart+2);
+
+    TreeAml = AmlStart;
+    FileEnd = AmlStart + AmlLength;
+
+    while (TreeAml <= FileEnd)
+    {
+        /*
+         * Make sure that this filename contains all printable characters
+         * and a .dsl extension at the end. If not, then it must be some
+         * raw data that doesn't outline a filename.
          */
-        AcpiGbl_FileTreeRoot->IncludeWritten = TRUE;
-        Filename = NULL;    
-        AcpiGbl_CurrentFilename = (char *)(AmlStart+2);
-        AcpiGbl_RootFilename    = (char *)(AmlStart+2);
-  
-
-        TreeAml = AmlStart;
-        FileEnd = AmlStart + AmlLength;
-
-        while (TreeAml <= FileEnd)
+        if ((*TreeAml == AML_COMMENT_OP) &&
+            (*(TreeAml+1) == FILENAME_COMMENT) &&
+            (CvIsFilename ((char *)(TreeAml+2))))
         {
-           /*
-            * Make sure that this filename contains a .dsl extension.
-            * If it doesn't contain it, then it must be 0xA9 and 0x08 then it
-            * must be some raw data that doesn't outline a filename.
-            */
-            if ((*TreeAml == AML_COMMENT_OP) && 
-                (*(TreeAml+1) == FILENAME_COMMENT) &&
-                (CvIsFilename ((char *)(TreeAml+2))))
-            {
-                CvDbgPrint ("A9 and a 08 file\n");
-                PreviousFilename = Filename;
-                Filename = (char *) (TreeAml+2);
-                CvAddToFileTree (Filename, PreviousFilename);
-                ChildFilename = Filename;
-                CvDbgPrint ("%s\n", Filename);
-            }
-            else if ((*TreeAml == AML_COMMENT_OP) && 
-                (*(TreeAml+1) == PARENTFILENAME_COMMENT) &&
-                (CvIsFilename ((char *)(TreeAml+2))))
-            {
-                CvDbgPrint ("A9 and a 09 file\n");
-                ParentFilename = (char *)(TreeAml+2);
-                CvSetFileParent (ChildFilename, ParentFilename);
-                CvDbgPrint ("%s\n", ParentFilename);
-            }
-            ++TreeAml;
+            CvDbgPrint ("A9 and a 08 file\n");
+            PreviousFilename = Filename;
+            Filename = (char *) (TreeAml+2);
+            CvAddToFileTree (Filename, PreviousFilename);
+            ChildFilename = Filename;
+            CvDbgPrint ("%s\n", Filename);
         }
+        else if ((*TreeAml == AML_COMMENT_OP) &&
+            (*(TreeAml+1) == PARENTFILENAME_COMMENT) &&
+            (CvIsFilename ((char *)(TreeAml+2))))
+        {
+            CvDbgPrint ("A9 and a 09 file\n");
+            ParentFilename = (char *)(TreeAml+2);
+            CvSetFileParent (ChildFilename, ParentFilename);
+            CvDbgPrint ("%s\n", ParentFilename);
+        }
+        ++TreeAml;
     }
 }
 
@@ -867,7 +866,8 @@ DefBlock:
          * the definition block, since STD_DEFBLK_COMMENT only appears after
          * definition block headers.
          */
-        AcpiGbl_CurrentScope->Common.CommentList = AcpiGbl_DefBlkCommentListHead;
+        AcpiGbl_CurrentScope->Common.CommentList
+            = AcpiGbl_DefBlkCommentListHead;
         AcpiGbl_DefBlkCommentListHead = NULL;
         AcpiGbl_DefBlkCommentListTail = NULL;
     }
