@@ -220,7 +220,7 @@ AcpiHwValidateIoRequest (
     {
         ACPI_ERROR ((AE_INFO,
             "Bad BitWidth parameter: %8.8X", BitWidth));
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        return (AE_BAD_PARAMETER);
     }
 
     PortInfo = AcpiProtectedPorts;
@@ -238,14 +238,14 @@ AcpiHwValidateIoRequest (
         ACPI_ERROR ((AE_INFO,
             "Illegal I/O port address/length above 64K: %8.8X%8.8X/0x%X",
             ACPI_FORMAT_UINT64 (Address), ByteWidth));
-        return_ACPI_STATUS (AE_LIMIT);
+        return (AE_LIMIT);
     }
 
     /* Exit if requested address is not within the protected port table */
 
     if (Address > AcpiProtectedPorts[ACPI_PORT_INFO_ENTRIES - 1].End)
     {
-        return_ACPI_STATUS (AE_OK);
+        return (AE_OK);
     }
 
     /* Check request against the list of protected I/O ports */
@@ -284,7 +284,7 @@ AcpiHwValidateIoRequest (
         }
     }
 
-    return_ACPI_STATUS (AE_OK);
+    return (AE_OK);
 }
 
 
