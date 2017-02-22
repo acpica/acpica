@@ -125,6 +125,11 @@ CvPrintInclude(
     ACPI_FILE_NODE          *FNode,
     UINT32                  Level);
 
+static BOOLEAN
+CvListIsSingleton (
+    ACPI_COMMENT_NODE       *CommentList);
+
+
 /*******************************************************************************
  *
  * FUNCTION:    CvPrintOneCommentList
@@ -165,6 +170,36 @@ CvPrintOneCommentList (
 
 /*******************************************************************************
  *
+ * FUNCTION:    CvListIsSingleton
+ *
+ * PARAMETERS:  CommentList -- check to see if this is a single item list.
+ *
+ * RETURN:      BOOLEAN
+ *
+ * DESCRIPTION: Returns TRUE if CommentList only contains 1 node.
+ *
+ ******************************************************************************/
+
+static BOOLEAN
+CvListIsSingleton (
+    ACPI_COMMENT_NODE       *CommentList)
+
+{
+    if (!CommentList)
+    {
+        return FALSE;
+    }
+    else if (CommentList->Next)
+    {
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    CvPrintOneCommentType
  *
  * PARAMETERS:  Op
@@ -187,57 +222,67 @@ CvPrintOneCommentType (
     char*                   EndStr,
     UINT32                  Level)
 {
+    BOOLEAN                 CommentExists = FALSE;
+    char                    **CommentToPrint = NULL;
+
+
     switch (CommentType)
     {
     case AML_COMMENT_STANDARD:
-        CvPrintOneCommentList (Op->Common.CommentList, Level);
+
+        if (CvListIsSingleton (Op->Common.CommentList))
+        {
+            CvPrintOneCommentList (Op->Common.CommentList, Level);
+            AcpiOsPrintf ("\n");
+        }
+        else
+        {
+            CvPrintOneCommentList (Op->Common.CommentList, Level);
+        }
         Op->Common.CommentList = NULL;
-        break;
+        return;
+
+    case AML_COMMENT_ENDBLK:
+
+        if (Op->Common.EndBlkComment)
+        {
+            CvPrintOneCommentList (Op->Common.EndBlkComment, Level);
+            Op->Common.EndBlkComment = NULL;
+            AcpiDmIndent(Level);
+        }
+        return;
 
     case AMLCOMMENT_INLINE:
-        if (Op->Common.InlineComment)
-        {
-            AcpiOsPrintf ("%s", Op->Common.InlineComment);
-            Op->Common.InlineComment = NULL;
-        }
+
+        CommentToPrint = &Op->Common.InlineComment;
         break;
 
     case AML_COMMENT_END_NODE:
-        if (Op->Common.EndNodeComment)
-        {
-            AcpiOsPrintf ("%s", Op->Common.EndNodeComment);
-            Op->Common.EndNodeComment = NULL;
-        }
+
+        CommentToPrint = &Op->Common.EndNodeComment;
         break;
 
     case AML_NAMECOMMENT:
-        if (Op->Common.NameComment)
-        {
-            AcpiOsPrintf ("%s", Op->Common.NameComment);
-            Op->Common.NameComment = NULL;
-        }
+
+        CommentToPrint = &Op->Common.NameComment;
         break;
 
     case AML_COMMENT_CLOSE_BRACE:
-        if (Op->Common.CloseBraceComment)
-        {
-            AcpiOsPrintf ("%s", Op->Common.CloseBraceComment);
-            Op->Common.CloseBraceComment = NULL;
-        }
-        break;
 
-    case AML_COMMENT_ENDBLK:
-        CvPrintOneCommentList (Op->Common.EndBlkComment, Level);
-        Op->Common.EndBlkComment = NULL;
-        return;
-
+        CommentToPrint = &Op->Common.CloseBraceComment;
         break;
 
     default:
-        break;
+        return;
     }
 
-    if (EndStr)
+    if (*CommentToPrint)
+    {
+        AcpiOsPrintf ("%s", *CommentToPrint);
+        *CommentToPrint = NULL;
+    }
+
+    if (CommentExists && EndStr)
     {
         AcpiOsPrintf ("%s", EndStr);
     }
