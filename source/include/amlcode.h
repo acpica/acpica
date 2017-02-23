@@ -210,7 +210,7 @@
 #define AML_RETURN_OP               (UINT16) 0xa4
 #define AML_BREAK_OP                (UINT16) 0xa5
 #define AML_COMMENT_OP              (UINT16) 0xa9
-#define AML_BREAK_POINT_OP          (UINT16) 0xcc
+#define AML_BREAKPOINT_OP          (UINT16) 0xcc
 #define AML_ONES_OP                 (UINT16) 0xff
 
 
