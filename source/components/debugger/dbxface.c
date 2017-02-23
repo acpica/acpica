@@ -117,6 +117,7 @@
 #include "accommon.h"
 #include "amlcode.h"
 #include "acdebug.h"
+#include "acinterp.h"
 
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
@@ -476,7 +477,9 @@ AcpiDbSingleStep (
     }
 
 
+    AcpiExExitInterpreter ();
     Status = AcpiDbStartCommand (WalkState, Op);
+    AcpiExEnterInterpreter ();
 
     /* User commands complete, continue execution of the interrupted method */
 
