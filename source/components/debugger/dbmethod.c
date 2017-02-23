@@ -551,6 +551,7 @@ AcpiDbWalkForExecute (
     Status = AcpiGetObjectInfo (ObjHandle, &ObjInfo);
     if (ACPI_FAILURE (Status))
     {
+        ACPI_FREE (Pathname);
         return (Status);
     }
 

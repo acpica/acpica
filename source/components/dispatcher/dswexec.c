@@ -608,7 +608,7 @@ AcpiDsExecEndOp (
              */
             if ((Op->Asl.Parent) &&
                ((Op->Asl.Parent->Asl.AmlOpcode == AML_PACKAGE_OP) ||
-                (Op->Asl.Parent->Asl.AmlOpcode == AML_VAR_PACKAGE_OP)))
+                (Op->Asl.Parent->Asl.AmlOpcode == AML_VARIABLE_PACKAGE_OP)))
             {
                 ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
                     "Method Reference in a Package, Op=%p\n", Op));

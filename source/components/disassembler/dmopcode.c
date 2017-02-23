@@ -789,15 +789,15 @@ AcpiDmDisassembleOneOp (
         {
             switch (Op->Common.AmlOpcode)
             {
-            case AML_LEQUAL_OP:
+            case AML_LOGICAL_EQUAL_OP:
                 AcpiOsPrintf ("LNotEqual");
                 break;
 
-            case AML_LGREATER_OP:
+            case AML_LOGICAL_GREATER_OP:
                 AcpiOsPrintf ("LLessEqual");
                 break;
 
-            case AML_LLESS_OP:
+            case AML_LOGICAL_LESS_OP:
                 AcpiOsPrintf ("LGreaterEqual");
                 break;
 
@@ -820,12 +820,12 @@ AcpiDmDisassembleOneOp (
 
     switch (Op->Common.AmlOpcode)
     {
-    case AML_LNOT_OP:
+    case AML_LOGICAL_NOT_OP:
 
         Child = Op->Common.Value.Arg;
-        if ((Child->Common.AmlOpcode == AML_LEQUAL_OP) ||
-            (Child->Common.AmlOpcode == AML_LGREATER_OP) ||
-            (Child->Common.AmlOpcode == AML_LLESS_OP))
+        if ((Child->Common.AmlOpcode == AML_LOGICAL_EQUAL_OP) ||
+            (Child->Common.AmlOpcode == AML_LOGICAL_GREATER_OP) ||
+            (Child->Common.AmlOpcode == AML_LOGICAL_LESS_OP))
         {
             Child->Common.DisasmOpcode = ACPI_DASM_LNOT_SUFFIX;
             Op->Common.DisasmOpcode = ACPI_DASM_LNOT_PREFIX;
@@ -1489,7 +1489,7 @@ AcpiDmIsSwitchBlock (
         TempOp = AcpiPsGetArg (CurrentOp, 0);
         switch (TempOp->Common.AmlOpcode)
         {
-            case (AML_LEQUAL_OP):
+            case (AML_LOGICAL_EQUAL_OP):
 
                 /* Ignore just the LEqual Op */
 
@@ -1511,7 +1511,7 @@ AcpiDmIsSwitchBlock (
 
                 break;
 
-            case (AML_LNOT_OP):
+            case (AML_LOGICAL_NOT_OP):
 
                 /*
                  * The Package will be the predicate of the Case statement.
@@ -1666,7 +1666,7 @@ AcpiDmIsCaseBlock (
 
     switch (CurrentOp->Common.AmlOpcode)
     {
-        case (AML_LEQUAL_OP):
+        case (AML_LOGICAL_EQUAL_OP):
 
             /* Next child must be NamePath with string _T_ */
 
@@ -1679,12 +1679,12 @@ AcpiDmIsCaseBlock (
 
             break;
 
-        case (AML_LNOT_OP):
+        case (AML_LOGICAL_NOT_OP):
 
             /* Child of LNot must be LEqual op */
 
             CurrentOp = AcpiPsGetArg (CurrentOp, 0);
-            if (!CurrentOp || (CurrentOp->Common.AmlOpcode != AML_LEQUAL_OP))
+            if (!CurrentOp || (CurrentOp->Common.AmlOpcode != AML_LOGICAL_EQUAL_OP))
             {
                 return (FALSE);
             }

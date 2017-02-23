@@ -347,7 +347,7 @@ AcpiDmBlockType (
     case AML_DEVICE_OP:
     case AML_SCOPE_OP:
     case AML_PROCESSOR_OP:
-    case AML_POWER_RES_OP:
+    case AML_POWER_RESOURCE_OP:
     case AML_THERMAL_ZONE_OP:
     case AML_IF_OP:
     case AML_WHILE_OP:
@@ -369,7 +369,7 @@ AcpiDmBlockType (
         /*lint -fallthrough */
 
     case AML_PACKAGE_OP:
-    case AML_VAR_PACKAGE_OP:
+    case AML_VARIABLE_PACKAGE_OP:
 
         return (BLOCK_PAREN | BLOCK_BRACE);
 
@@ -381,7 +381,7 @@ AcpiDmBlockType (
 
         if (Op->Common.Parent &&
             ((Op->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP) ||
-             (Op->Common.Parent->Common.AmlOpcode == AML_VAR_PACKAGE_OP)))
+             (Op->Common.Parent->Common.AmlOpcode == AML_VARIABLE_PACKAGE_OP)))
         {
             /* This is a reference to a method, not an invocation */
 
@@ -434,7 +434,7 @@ AcpiDmListType (
     case AML_METHOD_OP:
     case AML_DEVICE_OP:
     case AML_SCOPE_OP:
-    case AML_POWER_RES_OP:
+    case AML_POWER_RESOURCE_OP:
     case AML_PROCESSOR_OP:
     case AML_THERMAL_ZONE_OP:
     case AML_IF_OP:
@@ -447,7 +447,7 @@ AcpiDmListType (
 
     case AML_BUFFER_OP:
     case AML_PACKAGE_OP:
-    case AML_VAR_PACKAGE_OP:
+    case AML_VARIABLE_PACKAGE_OP:
 
         return (BLOCK_COMMA_LIST);
 
@@ -789,7 +789,7 @@ AcpiDmDescendingOp (
                 AcpiDmRegionFlags (Op);
                 break;
 
-            case AML_POWER_RES_OP:
+            case AML_POWER_RESOURCE_OP:
 
                 /* Mark the next two Ops as part of the parameter list */
 
@@ -943,7 +943,7 @@ AcpiDmDescendingOp (
             return (AE_OK);
 
         case AML_IF_OP:
-        case AML_VAR_PACKAGE_OP:
+        case AML_VARIABLE_PACKAGE_OP:
         case AML_WHILE_OP:
 
             /* The next op is the size or predicate parameter */
@@ -1166,7 +1166,7 @@ AcpiDmAscendingOp (
             switch (Op->Common.Parent->Common.AmlOpcode)
             {
             case AML_PACKAGE_OP:
-            case AML_VAR_PACKAGE_OP:
+            case AML_VARIABLE_PACKAGE_OP:
 
                 if (!(Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST))
                 {
