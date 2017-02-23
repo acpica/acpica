@@ -321,7 +321,7 @@ AcpiPsGetArguments (
 
         case AML_BUFFER_OP:
         case AML_PACKAGE_OP:
-        case AML_VAR_PACKAGE_OP:
+        case AML_VARIABLE_PACKAGE_OP:
 
             if ((Op->Common.Parent) &&
                 (Op->Common.Parent->Common.AmlOpcode == AML_NAME_OP) &&

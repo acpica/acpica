@@ -366,7 +366,7 @@ AcpiNsBuildInternalName (
         }
         else
         {
-            InternalName[1] = AML_MULTI_NAME_PREFIX_OP;
+            InternalName[1] = AML_MULTI_NAME_PREFIX;
             InternalName[2] = (char) NumSegments;
             Result = &InternalName[3];
         }
@@ -397,7 +397,7 @@ AcpiNsBuildInternalName (
         }
         else
         {
-            InternalName[i] = AML_MULTI_NAME_PREFIX_OP;
+            InternalName[i] = AML_MULTI_NAME_PREFIX;
             InternalName[(ACPI_SIZE) i+1] = (char) NumSegments;
             Result = &InternalName[(ACPI_SIZE) i+2];
         }
@@ -606,7 +606,7 @@ AcpiNsExternalizeName (
     {
         switch (InternalName[PrefixLength])
         {
-        case AML_MULTI_NAME_PREFIX_OP:
+        case AML_MULTI_NAME_PREFIX:
 
             /* <count> 4-byte names */
 

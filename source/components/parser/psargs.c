@@ -280,7 +280,7 @@ AcpiPsGetNextNamestring (
         End += 1 + (2 * ACPI_NAME_SIZE);
         break;
 
-    case AML_MULTI_NAME_PREFIX_OP:
+    case AML_MULTI_NAME_PREFIX:
 
         /* Multiple name segments, 4 chars each, count in next byte */
 
@@ -441,7 +441,7 @@ AcpiPsGetNextNamepath (
 
         /* 2) NotFound during a CondRefOf(x) is ok by definition */
 
-        else if (WalkState->Op->Common.AmlOpcode == AML_COND_REF_OF_OP)
+        else if (WalkState->Op->Common.AmlOpcode == AML_CONDITIONAL_REF_OF_OP)
         {
             Status = AE_OK;
         }
@@ -453,7 +453,7 @@ AcpiPsGetNextNamepath (
          */
         else if ((Arg->Common.Parent) &&
             ((Arg->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP) ||
-             (Arg->Common.Parent->Common.AmlOpcode == AML_VAR_PACKAGE_OP)))
+             (Arg->Common.Parent->Common.AmlOpcode == AML_VARIABLE_PACKAGE_OP)))
         {
             Status = AE_OK;
         }

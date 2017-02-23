@@ -403,7 +403,7 @@ AcpiPsGetChild (
         Child = AcpiPsGetArg (Op, 1);
         break;
 
-    case AML_POWER_RES_OP:
+    case AML_POWER_RESOURCE_OP:
     case AML_INDEX_FIELD_OP:
 
         Child = AcpiPsGetArg (Op, 2);

@@ -1144,7 +1144,7 @@ OpnAttachNameToNode (
     case AML_METHOD_OP:
     case AML_MUTEX_OP:
     case AML_REGION_OP:
-    case AML_POWER_RES_OP:
+    case AML_POWER_RESOURCE_OP:
     case AML_PROCESSOR_OP:
     case AML_THERMAL_ZONE_OP:
     case AML_NAME_OP:

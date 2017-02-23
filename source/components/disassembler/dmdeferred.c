@@ -175,7 +175,7 @@ AcpiDmParseDeferredOps (
         case AML_METHOD_OP:
         case AML_BUFFER_OP:
         case AML_PACKAGE_OP:
-        case AML_VAR_PACKAGE_OP:
+        case AML_VARIABLE_PACKAGE_OP:
 
             Status = AcpiDmDeferredParse (
                 Op, Op->Named.Data, Op->Named.Length);
@@ -289,7 +289,7 @@ AcpiDmDeferredParse (
     {
     case AML_BUFFER_OP:
     case AML_PACKAGE_OP:
-    case AML_VAR_PACKAGE_OP:
+    case AML_VARIABLE_PACKAGE_OP:
 
         switch (Op->Common.AmlOpcode)
         {
@@ -300,7 +300,7 @@ AcpiDmDeferredParse (
             ACPI_FREE (ExtraOp);
             break;
 
-        case AML_VAR_PACKAGE_OP:
+        case AML_VARIABLE_PACKAGE_OP:
         case AML_BUFFER_OP:
         default:
 

@@ -243,27 +243,27 @@ AcpiDmCheckForSymbolicOpcode (
 
     /* Logical operators, no target */
 
-    case AML_LAND_OP:
+    case AML_LOGICAL_AND_OP:
         OperatorSymbol = " && ";
         break;
 
-    case AML_LEQUAL_OP:
+    case AML_LOGICAL_EQUAL_OP:
         OperatorSymbol = " == ";
         break;
 
-    case AML_LGREATER_OP:
+    case AML_LOGICAL_GREATER_OP:
         OperatorSymbol = " > ";
         break;
 
-    case AML_LLESS_OP:
+    case AML_LOGICAL_LESS_OP:
         OperatorSymbol = " < ";
         break;
 
-    case AML_LOR_OP:
+    case AML_LOGICAL_OR_OP:
         OperatorSymbol = " || ";
         break;
 
-    case AML_LNOT_OP:
+    case AML_LOGICAL_NOT_OP:
         /*
          * Check for the LNOT sub-opcodes. These correspond to
          * LNotEqual, LLessEqual, and LGreaterEqual. There are
@@ -271,15 +271,15 @@ AcpiDmCheckForSymbolicOpcode (
          */
         switch (Argument1->Common.AmlOpcode)
         {
-        case AML_LEQUAL_OP:
+        case AML_LOGICAL_EQUAL_OP:
             OperatorSymbol = " != ";
             break;
 
-        case AML_LGREATER_OP:
+        case AML_LOGICAL_GREATER_OP:
             OperatorSymbol = " <= ";
             break;
 
-        case AML_LLESS_OP:
+        case AML_LOGICAL_LESS_OP:
             OperatorSymbol = " >= ";
             break;
 
@@ -315,7 +315,7 @@ AcpiDmCheckForSymbolicOpcode (
         if ((Argument1->Common.AmlOpcode == AML_STRING_OP)  ||
             (Argument1->Common.AmlOpcode == AML_BUFFER_OP)  ||
             (Argument1->Common.AmlOpcode == AML_PACKAGE_OP) ||
-            (Argument1->Common.AmlOpcode == AML_VAR_PACKAGE_OP))
+            (Argument1->Common.AmlOpcode == AML_VARIABLE_PACKAGE_OP))
         {
             Op->Common.DisasmFlags |= ACPI_PARSEOP_CLOSING_PAREN;
             return (FALSE);
@@ -546,11 +546,11 @@ AcpiDmCheckForSymbolicOpcode (
         case AML_BIT_AND_OP:
         case AML_BIT_OR_OP:
         case AML_BIT_XOR_OP:
-        case AML_LAND_OP:
-        case AML_LEQUAL_OP:
-        case AML_LGREATER_OP:
-        case AML_LLESS_OP:
-        case AML_LOR_OP:
+        case AML_LOGICAL_AND_OP:
+        case AML_LOGICAL_EQUAL_OP:
+        case AML_LOGICAL_GREATER_OP:
+        case AML_LOGICAL_LESS_OP:
+        case AML_LOGICAL_OR_OP:
 
             Op->Common.DisasmFlags |= ACPI_PARSEOP_ASSIGNMENT;
             AcpiOsPrintf ("(");
@@ -820,11 +820,11 @@ AcpiDmCloseOperator (
     case AML_BIT_AND_OP:
     case AML_BIT_OR_OP:
     case AML_BIT_XOR_OP:
-    case AML_LAND_OP:
-    case AML_LEQUAL_OP:
-    case AML_LGREATER_OP:
-    case AML_LLESS_OP:
-    case AML_LOR_OP:
+    case AML_LOGICAL_AND_OP:
+    case AML_LOGICAL_EQUAL_OP:
+    case AML_LOGICAL_GREATER_OP:
+    case AML_LOGICAL_LESS_OP:
+    case AML_LOGICAL_OR_OP:
 
         /* Emit paren only if this is not a compound assignment */
 
@@ -855,7 +855,7 @@ AcpiDmCloseOperator (
 
     case AML_DECREMENT_OP:
     case AML_INCREMENT_OP:
-    case AML_LNOT_OP:
+    case AML_LOGICAL_NOT_OP:
     case AML_BIT_NOT_OP:
     case AML_STORE_OP:
         return;
