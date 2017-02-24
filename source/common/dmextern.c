@@ -1234,6 +1234,7 @@ AcpiDmEmitExternals (
     AcpiOsPrintf ("\n");
 }
 
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDmEmitExternal
@@ -1255,8 +1256,9 @@ AcpiDmEmitExternal (
     AcpiOsPrintf ("External (");
     AcpiDmNamestring (NameOp->Common.Value.Name);
     AcpiOsPrintf ("%s)\n",
-        AcpiDmGetObjectTypeName (TypeOp->Common.Value.Integer));
+        AcpiDmGetObjectTypeName ((ACPI_OBJECT_TYPE) TypeOp->Common.Value.Integer));
 }
+
 
 /*******************************************************************************
  *
