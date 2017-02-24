@@ -119,6 +119,7 @@
 #include "amlcode.h"
 #include "acnamesp.h"
 #include "acdispat.h"
+#include "acconvert.h"
 
 #define _COMPONENT          ACPI_PARSER
         ACPI_MODULE_NAME    ("psargs")
@@ -615,6 +616,7 @@ AcpiPsGetNextField (
     ACPI_FUNCTION_TRACE (PsGetNextField);
 
 
+    ASL_CV_CAPTURE_COMMENTS_ONLY (ParserState);
     Aml = ParserState->Aml;
 
     /* Determine field type */
@@ -661,6 +663,7 @@ AcpiPsGetNextField (
 
     /* Decode the field type */
 
+    ASL_CV_CAPTURE_COMMENTS_ONLY (ParserState);
     switch (Opcode)
     {
     case AML_INT_NAMEDFIELD_OP:
@@ -670,6 +673,23 @@ AcpiPsGetNextField (
         ACPI_MOVE_32_TO_32 (&Name, ParserState->Aml);
         AcpiPsSetName (Field, Name);
         ParserState->Aml += ACPI_NAME_SIZE;
+
+
+        ASL_CV_CAPTURE_COMMENTS_ONLY (ParserState);
+
+#ifdef ACPI_ASL_COMPILER
+        /*
+         * Because the package length isn't represented as a parse tree object,
+         * take comments surrounding this and add to the previously created
+         * parse node.
+         */
+        if (Field->Common.InlineComment)
+        {
+            Field->Common.NameComment = Field->Common.InlineComment;
+        }
+        Field->Common.InlineComment  = AcpiGbl_CurrentInlineComment;
+        AcpiGbl_CurrentInlineComment = NULL;
+#endif
 
         /* Get the length which is encoded as a package length */
 
@@ -727,10 +747,12 @@ AcpiPsGetNextField (
         {
             ParserState->Aml++;
 
+            ASL_CV_CAPTURE_COMMENTS_ONLY (ParserState);
             PkgEnd = ParserState->Aml;
             PkgLength = AcpiPsGetNextPackageLength (ParserState);
             PkgEnd += PkgLength;
 
+            ASL_CV_CAPTURE_COMMENTS_ONLY (ParserState);
             if (ParserState->Aml < PkgEnd)
             {
                 /* Non-empty list */
@@ -747,6 +769,7 @@ AcpiPsGetNextField (
                 Opcode = ACPI_GET8 (ParserState->Aml);
                 ParserState->Aml++;
 
+                ASL_CV_CAPTURE_COMMENTS_ONLY (ParserState);
                 switch (Opcode)
                 {
                 case AML_BYTE_OP:       /* AML_BYTEDATA_ARG */
@@ -775,6 +798,7 @@ AcpiPsGetNextField (
 
                 /* Fill in bytelist data */
 
+                ASL_CV_CAPTURE_COMMENTS_ONLY (ParserState);
                 Arg->Named.Value.Size = BufferLength;
                 Arg->Named.Data = ParserState->Aml;
             }

@@ -428,6 +428,18 @@ CmDoCompile (
         NULL, &AnalysisWalkInfo);
     UtEndEvent (Event);
 
+    /*
+     * ASL-/ASL+ converter: Gbl_ParseTreeRoot->CommentList contains the
+     * very last comment of a given ASL file because it's the last constructed
+     * node during compilation. We take the very last comment and save it in a
+     * global for it to be used by the disassembler.
+     */
+    if (Gbl_CaptureComments)
+    {
+        AcpiGbl_LastListHead = Gbl_ParseTreeRoot->Asl.CommentList;
+        Gbl_ParseTreeRoot->Asl.CommentList = NULL;
+    }
+
     /* Calculate all AML package lengths */
 
     Event = UtBeginEvent ("Finish AML package length generation");
@@ -881,7 +893,11 @@ CmCleanupAndExit (
 
     /* Final cleanup after compiling one file */
 
-    CmDeleteCaches ();
+    if (!Gbl_DoAslConversion)
+    {
+        CmDeleteCaches ();
+    }
+
 }
 
 

@@ -393,7 +393,7 @@ OpnDoFieldCommon (
                 Next->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
                 PkgLengthNode->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
             }
-            else if (NewBitOffset == CurrentBitOffset)
+            else if ((NewBitOffset == CurrentBitOffset) && Gbl_OptimizeTrivialParseNodes)
             {
                 /*
                  * Offset is redundant; we don't need to output an
@@ -424,7 +424,8 @@ OpnDoFieldCommon (
             CurrentBitOffset += NewBitOffset;
 
             if ((NewBitOffset == 0) &&
-                (Next->Asl.ParseOpcode == PARSEOP_RESERVED_BYTES))
+                (Next->Asl.ParseOpcode == PARSEOP_RESERVED_BYTES) &&
+                Gbl_OptimizeTrivialParseNodes)
             {
                 /*
                  * Unnamed field with a bit length of zero. We can

@@ -117,6 +117,7 @@
 #include "accommon.h"
 #include "amlcode.h"
 #include "acdisasm.h"
+#include "acconvert.h"
 
 #ifdef ACPI_ASL_COMPILER
 #include <acnamesp.h>
@@ -322,6 +323,7 @@ AcpiDmCommaIfListMember (
 
     if (!Op->Common.Next)
     {
+        ASL_CV_PRINT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, NULL, 0);
         return (FALSE);
     }
 
@@ -331,6 +333,7 @@ AcpiDmCommaIfListMember (
 
         if (Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)
         {
+            ASL_CV_PRINT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, NULL, 0);
             return (FALSE);
         }
 
@@ -347,6 +350,7 @@ AcpiDmCommaIfListMember (
              */
             if (!Op->Common.Next->Common.Next)
             {
+                ASL_CV_PRINT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, NULL, 0);
                 return (FALSE);
             }
         }
@@ -354,6 +358,7 @@ AcpiDmCommaIfListMember (
         if ((Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST) &&
             (!(Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST)))
         {
+            ASL_CV_PRINT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, NULL, 0);
             return (FALSE);
         }
 
@@ -362,6 +367,7 @@ AcpiDmCommaIfListMember (
         if (!Op->Common.OperatorSymbol)
         {
             AcpiOsPrintf (", ");
+            ASL_CV_PRINT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, NULL, 0);
         }
 
         return (TRUE);
@@ -371,6 +377,8 @@ AcpiDmCommaIfListMember (
              (Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_PARAMETER_LIST))
     {
         AcpiOsPrintf (", ");
+        ASL_CV_PRINT_ONE_COMMENT (Op, AMLCOMMENT_INLINE, NULL, 0);
+
         return (TRUE);
     }
 

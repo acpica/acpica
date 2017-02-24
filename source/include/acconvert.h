@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: asldebug -- Debug output support
+ * Module Name: acapps - common include for ACPI applications/tools
  *
  *****************************************************************************/
 
@@ -113,247 +113,164 @@
  *
  *****************************************************************************/
 
-#include "aslcompiler.h"
-#include "aslcompiler.y.h"
+#ifndef _ACCONVERT
+#define _ACCONVERT
+
+/* Definitions for comment state */
+
+#define ASL_COMMENT_STANDARD    1
+#define ASLCOMMENT_INLINE       2
+#define ASL_COMMENT_OPEN_PAREN  3
+#define ASL_COMMENT_CLOSE_PAREN 4
+#define ASL_COMMENT_CLOSE_BRACE 5
+
+/* Definitions for comment print function*/
+
+#define AML_COMMENT_STANDARD    1
+#define AMLCOMMENT_INLINE       2
+#define AML_COMMENT_END_NODE    3
+#define AML_NAMECOMMENT         4
+#define AML_COMMENT_CLOSE_BRACE 5
+#define AML_COMMENT_ENDBLK      6
+#define AML_COMMENT_INCLUDE     7
 
 
-#define _COMPONENT          ACPI_COMPILER
-        ACPI_MODULE_NAME    ("asldebug")
-
-
-/* Local prototypes */
-
-static void
-UtDumpParseOpName (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    UINT32                  DataLength);
-
-
-/*******************************************************************************
- *
- * FUNCTION:    CvDbgPrint
- *
- * PARAMETERS:  Type                - Type of output
- *              Fmt                 - Printf format string
- *              ...                 - variable printf list
- *
- * RETURN:      None
- *
- * DESCRIPTION: Print statement for debug messages within the converter.
- *
- ******************************************************************************/
+#ifdef ACPI_ASL_COMPILER
+/*
+ * cvcompiler
+ */
+void
+CvProcessComment (
+    ASL_COMMENT_STATE       CurrentState,
+    char                    *StringBuffer,
+    int                     c1);
 
 void
-CvDbgPrint (
-    char                    *Fmt,
-    ...)
-{
-    va_list                 Args;
+CvProcessCommentType2 (
+    ASL_COMMENT_STATE       CurrentState,
+    char                    *StringBuffer);
 
-
-    if (!Gbl_CaptureComments || !AcpiGbl_DebugAslConversion)
-    {
-        return;
-    }
-
-    va_start (Args, Fmt);
-    (void) vfprintf (AcpiGbl_ConvDebugFile, Fmt, Args);
-    va_end (Args);
-    return;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    UtDumpIntegerOp
- *
- * PARAMETERS:  Op                  - Current parse op
- *              Level               - Current output indentation level
- *              IntegerLength       - Output length of the integer (2/4/8/16)
- *
- * RETURN:      None
- *
- * DESCRIPTION: Emit formatted debug output for "integer" ops.
- *              Note: IntegerLength must be one of 2,4,8,16.
- *
- ******************************************************************************/
+UINT32
+CvCalculateCommentLengths(
+   ACPI_PARSE_OBJECT        *Op);
 
 void
-UtDumpIntegerOp (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    UINT32                  IntegerLength)
-{
+CvProcessCommentState (
+    char                    input);
 
-    /* Emit the ParseOp name, leaving room for the integer */
-
-    UtDumpParseOpName (Op, Level, IntegerLength);
-
-    /* Emit the integer based upon length */
-
-    switch (IntegerLength)
-    {
-    case 2: /* Byte */
-    case 4: /* Word */
-    case 8: /* Dword */
-
-        DbgPrint (ASL_TREE_OUTPUT,
-            "%*.*X", IntegerLength, IntegerLength, Op->Asl.Value.Integer);
-        break;
-
-    case 16: /* Qword and Integer */
-
-        DbgPrint (ASL_TREE_OUTPUT,
-            "%8.8X%8.8X", ACPI_FORMAT_UINT64 (Op->Asl.Value.Integer));
-        break;
-
-    default:
-        break;
-    }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    UtDumpStringOp
- *
- * PARAMETERS:  Op                  - Current parse op
- *              Level               - Current output indentation level
- *
- * RETURN:      None
- *
- * DESCRIPTION: Emit formatted debug output for String/Pathname ops.
- *
- ******************************************************************************/
+char*
+CvAppendInlineComment (
+    char                    *InlineComment,
+    char                    *ToAdd);
 
 void
-UtDumpStringOp (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level)
-{
-    char                    *String;
-
-
-    String = Op->Asl.Value.String;
-
-    if (Op->Asl.ParseOpcode != PARSEOP_STRING_LITERAL)
-    {
-        /*
-         * For the "path" ops NAMEPATH, NAMESEG, METHODCALL -- if the
-         * ExternalName is valid, it takes precedence. In these cases the
-         * Value.String is the raw "internal" name from the AML code, which
-         * we don't want to use, because it contains non-ascii characters.
-         */
-        if (Op->Asl.ExternalName)
-        {
-            String = Op->Asl.ExternalName;
-        }
-    }
-
-    if (!String)
-    {
-        DbgPrint (ASL_TREE_OUTPUT,
-            " ERROR: Could not find a valid String/Path pointer\n");
-        return;
-    }
-
-    /* Emit the ParseOp name, leaving room for the string */
-
-    UtDumpParseOpName (Op, Level, strlen (String));
-    DbgPrint (ASL_TREE_OUTPUT, "%s", String);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    UtDumpBasicOp
- *
- * PARAMETERS:  Op                  - Current parse op
- *              Level               - Current output indentation level
- *
- * RETURN:      None
- *
- * DESCRIPTION: Generic formatted debug output for "basic" ops that have no
- *              associated strings or integer values.
- *
- ******************************************************************************/
+CvAddToCommentList (
+    char*                   ToAdd);
 
 void
-UtDumpBasicOp (
+CvPlaceComment (
+    UINT8                   Type,
+    char                    *CommentString);
+
+UINT32
+CvParseOpBlockType (
+    ACPI_PARSE_OBJECT       *Op);
+
+ACPI_COMMENT_NODE*
+CvCommentNodeCalloc (
+    void);
+
+void
+CgWriteAmlDefBlockComment (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+CgWriteOneAmlComment (
     ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level)
-{
+    char*                   CommentToPrint,
+    UINT8                   InputOption);
 
-    /* Just print out the ParseOp name, there is no extra data */
+void
+CgWriteAmlComment (
+    ACPI_PARSE_OBJECT       *Op);
 
-    UtDumpParseOpName (Op, Level, 0);
-}
+
+/*
+ * cvparser
+ */
+void
+CvInitFileTree (
+    ACPI_TABLE_HEADER       *Table,
+    UINT8                   *AmlStart,
+    UINT32                  AmlLength);
+
+void
+CvClearOpComments (
+    ACPI_PARSE_OBJECT       *Op);
+
+ACPI_FILE_NODE*
+CvFilenameExists (
+    char                    *Filename,
+    ACPI_FILE_NODE           *Head);
+
+void
+CvLabelFileNode (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+CvCaptureListComments (
+    ACPI_PARSE_STATE        *ParserState,
+    ACPI_COMMENT_NODE       *ListHead,
+    ACPI_COMMENT_NODE       *ListTail);
+
+void
+CvCaptureCommentsOnly (
+    ACPI_PARSE_STATE        *ParserState);
+
+void
+CvCaptureComments (
+    ACPI_WALK_STATE         *WalkState);
+
+void
+CvTransferComments (
+    ACPI_PARSE_OBJECT       *Op);
+
+/*
+ * cvdisasm
+ */
+void
+CvSwitchFiles (
+    UINT32                  level,
+    ACPI_PARSE_OBJECT       *op);
+
+BOOLEAN
+CvFileHasSwitched (
+    ACPI_PARSE_OBJECT       *Op);
 
 
-/*******************************************************************************
- *
- * FUNCTION:    UtDumpParseOpName
- *
- * PARAMETERS:  Op                  - Current parse op
- *              Level               - Current output indentation level
- *              DataLength          - Length of data to appear after the name
- *
- * RETURN:      None
- *
- * DESCRIPTION: Indent and emit the ascii ParseOp name for the op
- *
- ******************************************************************************/
-
-static void
-UtDumpParseOpName (
+void
+CvCloseParenWriteComment (
     ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    UINT32                  DataLength)
-{
-    char                    *ParseOpName;
-    UINT32                  IndentLength;
-    UINT32                  NameLength;
-    UINT32                  LineLength;
-    UINT32                  PaddingLength;
+    UINT32                  Level);
+
+void
+CvCloseBraceWriteComment (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level);
+
+void
+CvPrintOneCommentList (
+    ACPI_COMMENT_NODE       *CommentList,
+    UINT32                  Level);
+
+void
+CvPrintOneCommentType (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT8                   CommentType,
+    char*                   EndStr,
+    UINT32                  Level);
 
 
-    /* Emit the LineNumber/IndentLevel prefix on each output line */
+#endif
 
-    DbgPrint (ASL_TREE_OUTPUT,
-        "%5.5d [%2d]", Op->Asl.LogicalLineNumber, Level);
-
-    ParseOpName = UtGetOpName (Op->Asl.ParseOpcode);
-
-    /* Calculate various lengths for output alignment */
-
-    IndentLength = Level * DEBUG_SPACES_PER_INDENT;
-    NameLength = strlen (ParseOpName);
-    LineLength = IndentLength + 1 + NameLength + 1 + DataLength;
-    PaddingLength = (DEBUG_MAX_LINE_LENGTH + 1) - LineLength;
-
-    /* Parse tree indentation is based upon the nesting/indent level */
-
-    if (Level)
-    {
-        DbgPrint (ASL_TREE_OUTPUT, "%*s", IndentLength, " ");
-    }
-
-    /* Emit the actual name here */
-
-    DbgPrint (ASL_TREE_OUTPUT, " %s", ParseOpName);
-
-    /* Emit extra padding blanks for alignment of later data items */
-
-    if (LineLength > DEBUG_MAX_LINE_LENGTH)
-    {
-        /* Split a long line immediately after the ParseOpName string */
-
-        DbgPrint (ASL_TREE_OUTPUT, "\n%*s",
-            (DEBUG_FULL_LINE_LENGTH - DataLength), " ");
-    }
-    else
-    {
-        DbgPrint (ASL_TREE_OUTPUT, "%*s", PaddingLength, " ");
-    }
-}
+#endif /* _ACCONVERT */

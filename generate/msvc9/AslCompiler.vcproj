@@ -1019,6 +1019,18 @@
 				RelativePath="..\..\source\compiler\aslxrefout.c"
 				>
 			</File>
+			<File
+				RelativePath="..\..\source\compiler\cvcompiler.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\compiler\cvdisasm.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\compiler\cvparser.c"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Compiler Lexers"

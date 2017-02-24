@@ -124,21 +124,12 @@
 #define ASL_HEX_CONSTANT        3
 
 
-/* File node - used for "Include" operator file stack */
-
-typedef struct asl_file_node
+void
+yyerror (char const *s)
 {
-    FILE                    *File;
-    UINT32                  CurrentLineNumber;
-    YY_BUFFER_STATE         State;
-    char                    *Filename;
-    struct asl_file_node    *Next;
 
-} ASL_FILE_NODE;
-
-/* File stack for the "Include" operator (NOT #include operator) */
-
-ASL_FILE_NODE               *Gbl_IncludeFileStack = NULL;
+  AcpiOsPrintf ("YYERROR: %s\n", s);
+}
 
 
 /*******************************************************************************
@@ -361,6 +352,10 @@ AslPushInputFileStack (
 
     Gbl_CurrentLineNumber = 1;
     yyin = InputFile;
+
+    /* converter: reset the comment state to STANDARD_COMMENT */
+
+    Gbl_CommentState.CommentType = STANDARD_COMMENT;
 }
 
 
@@ -464,6 +459,11 @@ AslInsertLineBuffer (
 
             AslResetCurrentLineBuffer ();
         }
+
+        if (Gbl_CaptureComments)
+        {
+            CvProcessCommentState (SourceChar);
+        }
     }
 }
 
@@ -531,16 +531,26 @@ count (
  *
  ******************************************************************************/
 
-static char
+static BOOLEAN
 AslDoComment (
     void)
 {
-    int                 c;
-    int                 c1 = 0;
+    int                     c;
+    int                     c1 = 0;
+    char                    *StringBuffer = MsgBuffer;
+    char                    *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
+    ASL_COMMENT_STATE       CurrentState = Gbl_CommentState; /* to reference later on */
 
 
     AslInsertLineBuffer ('/');
     AslInsertLineBuffer ('*');
+    if (Gbl_CaptureComments && CurrentState.CaptureComments)
+    {
+        *StringBuffer = '/';
+        ++StringBuffer;
+        *StringBuffer = '*';
+        ++StringBuffer;
+    }
 
 loop:
 
@@ -549,6 +559,11 @@ loop:
     while (((c = input ()) != '*') && (c != EOF))
     {
         AslInsertLineBuffer (c);
+        if (Gbl_CaptureComments && CurrentState.CaptureComments)
+        {
+            *StringBuffer = c;
+            ++StringBuffer;
+        }
         c1 = c;
     }
 
@@ -572,10 +587,15 @@ loop:
     /* Comment is closed only if the NEXT character is a slash */
 
     AslInsertLineBuffer (c);
+    if (Gbl_CaptureComments && CurrentState.CaptureComments)
+    {
+        *StringBuffer = c;
+        ++StringBuffer;
+    }
 
     if (((c1 = input ()) != '/') && (c1 != EOF))
     {
-        unput(c1);
+        unput (c1);
         goto loop;
     }
 
@@ -583,8 +603,13 @@ loop:
     {
         goto EarlyEOF;
     }
+    if (StringBuffer > EndBuffer)
+    {
+        goto BufferOverflow;
+    }
 
     AslInsertLineBuffer (c1);
+    CvProcessComment (CurrentState, StringBuffer, c1);
     return (TRUE);
 
 
@@ -597,6 +622,18 @@ EarlyEOF:
         Gbl_CurrentLineOffset, Gbl_CurrentColumn,
         Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
     return (FALSE);
+
+
+BufferOverflow:
+
+    /* Comment was too long */
+
+    AslCommonError (ASL_ERROR, ASL_MSG_STRING_LENGTH,
+        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+        Gbl_Files[ASL_FILE_INPUT].Filename, "Max length 4096");
+    return (FALSE);
+
 }
 
 
@@ -608,23 +645,40 @@ EarlyEOF:
  *
  * RETURN:      none
  *
- * DESCRIPTION: Process a new "//" comment.
+ * DESCRIPTION: Process a new "//" comment. Inline comments will be converted
+ *              to "/ *" standard comments.
  *
  ******************************************************************************/
 
-static char
+static BOOLEAN
 AslDoCommentType2 (
     void)
 {
-    int                 c;
+    int                     c;
+    char                    *StringBuffer = MsgBuffer;
+    char                    *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
+    ASL_COMMENT_STATE       CurrentState = Gbl_CommentState;
 
 
     AslInsertLineBuffer ('/');
-    AslInsertLineBuffer ('/');
+    AslInsertLineBuffer ('*');
+
+    if (Gbl_CaptureComments && CurrentState.CaptureComments)
+    {
+        *StringBuffer = '/';
+        ++StringBuffer;
+        *StringBuffer = '*';
+        ++StringBuffer;
+    }
 
     while (((c = input ()) != '\n') && (c != EOF))
     {
         AslInsertLineBuffer (c);
+        if (Gbl_CaptureComments && CurrentState.CaptureComments)
+        {
+            *StringBuffer = c;
+            ++StringBuffer;
+        }
     }
 
     if (c == EOF)
@@ -634,8 +688,26 @@ AslDoCommentType2 (
         c = '\n';
     }
 
+    if (StringBuffer > EndBuffer)
+    {
+        goto BufferOverflow;
+    }
     AslInsertLineBuffer (c);
+
+    CvProcessCommentType2 (CurrentState, StringBuffer);
     return (TRUE);
+
+
+BufferOverflow:
+
+    /* Comment was too long */
+
+    AslCommonError (ASL_ERROR, ASL_MSG_STRING_LENGTH,
+        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+        Gbl_Files[ASL_FILE_INPUT].Filename, "Max length 4096");
+    return (FALSE);
+
 }
 
 

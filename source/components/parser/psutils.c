@@ -117,6 +117,7 @@
 #include "accommon.h"
 #include "acparser.h"
 #include "amlcode.h"
+#include "acconvert.h"
 
 #define _COMPONENT          ACPI_PARSER
         ACPI_MODULE_NAME    ("psutils")
@@ -249,6 +250,17 @@ AcpiPsAllocOp (
         AcpiPsInitOp (Op, Opcode);
         Op->Common.Aml = Aml;
         Op->Common.Flags = Flags;
+        ASL_CV_CLEAR_OP_COMMENTS(Op);
+
+        if (Opcode == AML_SCOPE_OP)
+        {
+            AcpiGbl_CurrentScope = Op;
+        }
+    }
+
+    if (Gbl_CaptureComments)
+    {
+        ASL_CV_TRANSFER_COMMENTS (Op);
     }
 
     return (Op);
@@ -275,6 +287,7 @@ AcpiPsFreeOp (
     ACPI_FUNCTION_NAME (PsFreeOp);
 
 
+    ASL_CV_CLEAR_OP_COMMENTS(Op);
     if (Op->Common.AmlOpcode == AML_INT_RETURN_VALUE_OP)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
