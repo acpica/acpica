@@ -1234,12 +1234,12 @@ AcpiDmEmitExternals (
     AcpiOsPrintf ("\n");
 }
 
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDmEmitExternal
  *
- * PARAMETERS:  NameOp       External Parse Object
- *              TypeOp       Parse Object denoting the type of External
+ * PARAMETERS:  Op                  External Parse Object
  *
  * RETURN:      None
  *
@@ -1256,8 +1256,9 @@ AcpiDmEmitExternal (
     AcpiOsPrintf ("External (");
     AcpiDmNamestring (NameOp->Common.Value.Name);
     AcpiOsPrintf ("%s)\n",
-        AcpiDmGetObjectTypeName (TypeOp->Common.Value.Integer));
+        AcpiDmGetObjectTypeName ((ACPI_OBJECT_TYPE) TypeOp->Common.Value.Integer));
 }
+
 
 /*******************************************************************************
  *

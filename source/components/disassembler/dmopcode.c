@@ -143,7 +143,8 @@ AcpiDmPromoteSubtree (
 
 static BOOLEAN
 AcpiDmIsSwitchBlock (
-    ACPI_PARSE_OBJECT       *Op);
+    ACPI_PARSE_OBJECT       *Op,
+    char                    *Temp);
 
 static BOOLEAN
 AcpiDmIsCaseBlock (
@@ -1057,7 +1058,7 @@ AcpiDmDisassembleOneOp (
 
     case AML_WHILE_OP:
 
-        if (AcpiDmIsSwitchBlock(Op))
+        if (Op->Common.DisasmOpcode == ACPI_DASM_SWITCH)
         {
             AcpiOsPrintf ("%s", "Switch");
             break;
@@ -1333,11 +1334,13 @@ AcpiDmPromoteSubtree (
  *
  * PARAMETERS:  Op              - Object to be examined
  *
- * RETURN:      TRUE if object is a temporary (_T_x) name
+ * RETURN:      TRUE if object is a temporary (_T_x) name for a matching While
+ *              loop that can be converted to a Switch.
  *
- * DESCRIPTION: Determine if an object is a temporary name and ignore it.
- *              Temporary names are only used for Switch statements. This
- *              function depends on this restriced usage.
+ * DESCRIPTION: _T_X objects are only used for Switch statements. If a temporary
+ *              name exists, search the siblings for a matching While (One) loop
+ *              that can be converted to a Switch. Return TRUE if a match was
+ *              found, FALSE otherwise.
  *
  ******************************************************************************/
 
@@ -1345,6 +1348,7 @@ BOOLEAN
 AcpiDmIsTempName (
     ACPI_PARSE_OBJECT       *Op)
 {
+    ACPI_PARSE_OBJECT       *CurrentOp;
     char                    *Temp;
 
     if (Op->Common.AmlOpcode != AML_NAME_OP)
@@ -1360,11 +1364,21 @@ AcpiDmIsTempName (
         return (FALSE);
     }
 
-    /* Ignore Op */
+    CurrentOp = Op->Common.Next;
+    while (CurrentOp)
+    {
+        if (CurrentOp->Common.AmlOpcode == AML_WHILE_OP &&
+            AcpiDmIsSwitchBlock(CurrentOp, Temp))
+        {
+            Op->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
+            CurrentOp->Common.DisasmOpcode = ACPI_DASM_SWITCH;
 
-    Op->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
+            return (TRUE);
+        }
+        CurrentOp = CurrentOp->Common.Next;
+    }
 
-    return (TRUE);
+    return (FALSE);
 }
 
 /*******************************************************************************
@@ -1400,7 +1414,8 @@ AcpiDmIsTempName (
 
 static BOOLEAN
 AcpiDmIsSwitchBlock (
-    ACPI_PARSE_OBJECT       *Op)
+    ACPI_PARSE_OBJECT       *Op,
+    char                    *Temp)
 {
     ACPI_PARSE_OBJECT       *OneOp;
     ACPI_PARSE_OBJECT       *StoreOp;
@@ -1433,7 +1448,7 @@ AcpiDmIsSwitchBlock (
         return (FALSE);
     }
 
-    if (strncmp((char *)(NamePathOp->Common.Aml), "_T_", 3))
+    if (strncmp((char *)(NamePathOp->Common.Aml), Temp, 4))
     {
         return (FALSE);
     }
