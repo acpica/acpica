@@ -357,8 +357,17 @@ CmDoCompile (
     {
         Event = UtBeginEvent ("Resolve all Externals");
         DbgPrint (ASL_DEBUG_OUTPUT, "\nResolve Externals\n\n");
-        TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_TWICE,
-            ExAmlExternalWalkBegin, ExAmlExternalWalkEnd, NULL);
+
+        if (Gbl_DoExternalsInPlace)
+        {
+            TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_DOWNWARD,
+                ExAmlExternalWalkBegin, NULL, NULL);
+        }
+        else
+        {
+            TrWalkParseTree (Gbl_ParseTreeRoot, ASL_WALK_VISIT_TWICE,
+                ExAmlExternalWalkBegin, ExAmlExternalWalkEnd, NULL);
+        }
         UtEndEvent (Event);
     }
 
