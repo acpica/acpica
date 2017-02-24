@@ -981,6 +981,16 @@ typedef struct acpi_iort_smmu
 #define ACPI_IORT_SMMU_DVM_SUPPORTED    (1)
 #define ACPI_IORT_SMMU_COHERENT_WALK    (1<<1)
 
+/* Global interrupt format */
+
+typedef struct acpi_iort_smmu_gsi
+{
+    UINT32                  NSgIrpt;
+    UINT32                  NSgIrptFlags;
+    UINT32                  NSgCfgIrpt;
+    UINT32                  NSgCfgIrptFlags;
+} ACPI_IORT_SMMU_GSI;
+
 
 typedef struct acpi_iort_smmu_v3
 {
