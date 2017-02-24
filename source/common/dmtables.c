@@ -129,15 +129,15 @@
 
 /* Local prototypes */
 
-static ACPI_STATUS
-AdStoreTable (
-    ACPI_TABLE_HEADER       *Table,
-    UINT32                  *TableIndex);
-
 static void
 AdCreateTableHeader (
     char                    *Filename,
     ACPI_TABLE_HEADER       *Table);
+
+static ACPI_STATUS
+AdStoreTable (
+    ACPI_TABLE_HEADER       *Table,
+    UINT32                  *TableIndex);
 
 
 extern ACPI_TABLE_DESC      LocalTables[1];

@@ -562,7 +562,7 @@ AdReparseOneTable (
     ACPI_OWNER_ID           OwnerId)
 {
     ACPI_STATUS             Status;
-    ACPI_COMMENT_ADDR_NODE  *Temp;
+    ACPI_COMMENT_ADDR_NODE  *AddrListHead;
 
 
     fprintf (stderr,
@@ -600,9 +600,9 @@ AdReparseOneTable (
 
     while (AcpiGbl_CommentAddrListHead)
     {
-        Temp = AcpiGbl_CommentAddrListHead;
+        AddrListHead= AcpiGbl_CommentAddrListHead;
         AcpiGbl_CommentAddrListHead = AcpiGbl_CommentAddrListHead->Next;
-        AcpiOsFree(Temp);
+        AcpiOsFree(AddrListHead);
     }
 
     /* Parse the table again. No need to reload it, however */

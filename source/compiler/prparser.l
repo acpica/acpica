@@ -1,7 +1,7 @@
 %{
 /******************************************************************************
  *
- * Module Name: prparser.l - Flex input file for DT preprocessor lexer
+ * Module Name: prparser.l - Flex input file for preprocessor lexer
  *
  *****************************************************************************/
 

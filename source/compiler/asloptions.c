@@ -761,7 +761,7 @@ AslDoOptions (
         Gbl_UseDefaultAmlFilename = FALSE;
         break;
 
-    case 'q':   /* ASL-/ASl+ converter: just compile and leave badaml */
+    case 'q':   /* ASL/ASl+ converter: compile only and leave badaml. */
 
         printf ("Convert ASL to ASL+ with comments\n");
         Gbl_FoldConstants = FALSE;
