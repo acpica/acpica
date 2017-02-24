@@ -514,6 +514,7 @@ AcpiDmFieldPredefinedDescription (
             ACPI_CAST_PTR (char, Info->Description));
     }
 
+    ACPI_FREE (Tag); /* Tag was allocated in AcpiGetTagPathname */
 #endif
     return;
 }
