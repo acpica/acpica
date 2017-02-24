@@ -1041,12 +1041,9 @@ AcpiDmAscendingOp (
 
         /* Print any comments that are at the end of the file here */
 
-        if (Gbl_CaptureComments)
+        if (Gbl_CaptureComments && AcpiGbl_LastListHead)
         {
-            if (AcpiGbl_LastListHead)
-            {
-                AcpiOsPrintf ("\n");
-            }
+            AcpiOsPrintf ("\n");
             ASL_CV_PRINT_ONE_COMMENT_LIST (AcpiGbl_LastListHead, 0);
         }
         AcpiOsPrintf ("\n\n");
