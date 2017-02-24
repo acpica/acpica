@@ -1590,6 +1590,10 @@ DtCompileIort (
         }
 
         IortNode->MappingCount = IdMappingNumber;
+        if (!IdMappingNumber)
+        {
+            IortNode->MappingOffset = 0;
+        }
 
         /*
          * Node length can be determined by DT_LENGTH option
