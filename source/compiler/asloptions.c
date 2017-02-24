@@ -642,10 +642,6 @@ AslDoOptions (
 
         case 'e':
 
-            /* iASL: Disable External opcode generation */
-
-            Gbl_DoExternals = FALSE;
-
             /* Disassembler: Emit embedded external operators */
 
             AcpiGbl_DmEmitExternalOpcodes = TRUE;
