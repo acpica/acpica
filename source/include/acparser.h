@@ -312,14 +312,16 @@ AcpiPsPopScope (
     ACPI_PARSE_STATE        *ParserState,
     ACPI_PARSE_OBJECT       **Op,
     UINT32                  *ArgList,
-    UINT32                  *ArgCount);
+    UINT32                  *ArgCount,
+    BOOLEAN                 *VarArgs);
 
 ACPI_STATUS
 AcpiPsPushScope (
     ACPI_PARSE_STATE        *ParserState,
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  RemainingArgs,
-    UINT32                  ArgCount);
+    UINT32                  ArgCount,
+    BOOLEAN                 VarArgs);
 
 void
 AcpiPsCleanupScope (

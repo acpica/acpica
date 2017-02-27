@@ -243,7 +243,10 @@ AcpiPsGetArguments (
                 AcpiPsAppendArg (Op, Arg);
             }
 
-            INCREMENT_ARG_LIST (WalkState->ArgTypes);
+            if (!WalkState->VarArgs)
+            {
+                INCREMENT_ARG_LIST (WalkState->ArgTypes);
+            }
         }
 
 
@@ -559,7 +562,8 @@ AcpiPsParseLoop (
             }
 
             AcpiPsPopScope (ParserState, &Op,
-                &WalkState->ArgTypes, &WalkState->ArgCount);
+                &WalkState->ArgTypes, &WalkState->ArgCount,
+                &WalkState->VarArgs);
             ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Popped scope, Op=%p\n", Op));
         }
         else if (WalkState->PrevOp)
@@ -616,6 +620,7 @@ AcpiPsParseLoop (
          * any args yet
          */
         WalkState->ArgCount = 0;
+        WalkState->VarArgs = FALSE;
 
         switch (Op->Common.AmlOpcode)
         {
@@ -660,7 +665,7 @@ AcpiPsParseLoop (
              * prepare for argument
              */
             Status = AcpiPsPushScope (ParserState, Op,
-                WalkState->ArgTypes, WalkState->ArgCount);
+                WalkState->ArgTypes, WalkState->ArgCount, WalkState->VarArgs);
             if (ACPI_FAILURE (Status))
             {
                 Status = AcpiPsCompleteOp (WalkState, &Op, Status);
