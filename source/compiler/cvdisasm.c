@@ -314,6 +314,7 @@ CvPrintOneCommentType (
 
     if (*CommentToPrint)
     {
+        CommentExists = TRUE;
         AcpiOsPrintf ("%s", *CommentToPrint);
         *CommentToPrint = NULL;
     }
