@@ -515,6 +515,10 @@ AcpiDmFieldPredefinedDescription (
             ACPI_CAST_PTR (char, Info->Description));
     }
 
+    /* AML buffer (String) was allocated in AcpiGetTagPathname */
+
+    ACPI_FREE (IndexOp->Common.Value.String);
+
 #endif
     return;
 }
