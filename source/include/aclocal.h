@@ -1072,7 +1072,7 @@ typedef struct acpi_comment_addr_node
  */
 typedef struct acpi_file_node
 {
-    FILE                    *File;
+    void                    *File;
     char                    *Filename;
     char                    *FileStart;  /* Points to AML and indicates when the AML for this particular file starts. */
     char                    *FileEnd;    /* Points to AML and indicates when the AML for this particular file ends. */
