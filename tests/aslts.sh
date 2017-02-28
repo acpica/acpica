@@ -11,6 +11,7 @@ tmp_acpiexec=/tmp/acpiexec-$postfix
 TEST_CASES=
 TEST_MODES=
 REBUILD_TOOLS=yes
+BINCOMPONLY=no
 EXECONLY=no
 
 usage() {
@@ -22,6 +23,7 @@ usage() {
 	echo "  -m:	Specify individual test modes (can be used multiple times)"
 	echo "  -u:	Do not force rebuilding of ACPICA utilities (acpiexec, iasl)"
 	echo "  -e:     Perform the execution of aml files and omit binary comparison of regular aml and disassembled aml file."
+	echo "  -b:     Only perform binary comparison of regular aml and disasssembled aml file"
 	echo ""
 
 	echo "Available test modes:"
@@ -126,20 +128,22 @@ run_aslts() {
 	fi
 
 	# Execute the test suite
-	echo ""
-	echo "ASL Test Suite Started: `date`"
-	start_time=$(date)
+	if [ "$BINCOMPONLY" == "no" ]; then
+		echo ""
+		echo "ASL Test Suite Started: `date`"
+		start_time=$(date)
 
-	if [ "x$TEST_MODES" = "x" ]; then
-		TEST_MODES="n32 n64 o32 o64"
-	fi
-	Do 1 $TEST_MODES $TEST_CASES
+		if [ "x$TEST_MODES" = "x" ]; then
+			TEST_MODES="n32 n64 o32 o64"
+		fi
+		Do 1 $TEST_MODES $TEST_CASES
 
-	echo ""
-	echo "ASL Test Suite Finished: `date`"
-	echo "                Started: $start_time"
+		echo ""
+		echo "ASL Test Suite Finished: `date`"
+		echo "                Started: $start_time"
 
-	rm -f $tmp_iasl $tmp_acpiexec
+		rm -f $tmp_iasl $tmp_acpiexec
+	fi;
 }
 
 SRCDIR=`(cd \`dirname $0\`; cd ..; pwd)`
@@ -152,9 +156,13 @@ RESET_SETTINGS
 INIT_ALL_AVAILABLE_CASES
 INIT_ALL_AVAILABLE_MODES
 
-while getopts "c:m:ue" opt
+while getopts "c:m:ueb" opt
 do
 	case $opt in
+	b)
+		BINCOMPONLY=yes
+		echo "Running only binary comparisons"
+	;;
 	c)
 		get_collection_opcode "$OPTARG"
 		if [ $? -eq $COLLS_NUM ]; then
@@ -166,7 +174,7 @@ do
 	;;
 	e)
 		EXECONLY=yes
-		echo "Running tests in disassemble mode"
+		echo "Running tests without binary comparisons"
 	;;
 	m)
 		check_mode_id "$OPTARG"
