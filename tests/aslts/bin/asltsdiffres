@@ -20,10 +20,10 @@
 # arg1 - first multi-result directory
 # arg2 - against the second multi-result directory
 #        Opcodes of comparing results:
-# arg3 - 32-bit norm mode
-# arg4 - 64-bit norm mode
-# arg5 - 32-bit slack mode
-# arg6 - 64-bit slack mode
+# arg3 - 32-bit unoptimized code
+# arg4 - 64-bit unoptimized code
+# arg5 - 32-bit optimized code
+# arg6 - 64-bit optimized code
 report_multi_runs_cmp()
 {
 	local msg
@@ -35,8 +35,8 @@ report_multi_runs_cmp()
 	echo "Summary of comparing:"
 	echo "  `get_mode_string $NORM32 1`: `cmp_result_opcode_to_str $3`"
 	echo "  `get_mode_string $NORM64 1`: `cmp_result_opcode_to_str $4`"
-	echo "  `get_mode_string $SLACK32 1`: `cmp_result_opcode_to_str $5`"
-	echo "  `get_mode_string $SLACK64 1`: `cmp_result_opcode_to_str $6`"
+	echo "  `get_mode_string $OPT32 1`: `cmp_result_opcode_to_str $5`"
+	echo "  `get_mode_string $OPT64 1`: `cmp_result_opcode_to_str $6`"
 }
 
 # ############################## MAIN ###############################
@@ -55,20 +55,20 @@ check_dir "$DIR1"
 
 # Do compare per each possible run mode
 
-# 32-bit norm mode
+# 32-bit unoptimized code
 do_compare_two_runs "$DIR0" $NORM32 "$DIR1" $NORM32
 CMP0=$?
 
-# 64-bit norm mode
+# 64-bit unoptimized code
 do_compare_two_runs "$DIR0" $NORM64 "$DIR1" $NORM64
 CMP1=$?
 
-# 32-bit slack mode
-do_compare_two_runs "$DIR0" $SLACK32 "$DIR1" $SLACK32
+# 32-bit optimized code
+do_compare_two_runs "$DIR0" $OPT32 "$DIR1" $OPT32
 CMP2=$?
 
-# 64-bit slack mode
-do_compare_two_runs "$DIR0" $SLACK64 "$DIR1" $SLACK64
+# 64-bit optimized code
+do_compare_two_runs "$DIR0" $OPT64 "$DIR1" $OPT64
 CMP3=$?
 
 # Report the summary of comparing
