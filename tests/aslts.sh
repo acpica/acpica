@@ -131,7 +131,7 @@ run_aslts() {
 	start_time=$(date)
 
 	if [ "x$TEST_MODES" = "x" ]; then
-		TEST_MODES="n32 n64 s32 s64"
+		TEST_MODES="n32 n64 o32 o64"
 	fi
 	Do 1 $TEST_MODES $TEST_CASES
 

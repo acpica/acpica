@@ -64,7 +64,7 @@ INIT_ALL_AVAILABLE_MODES()
 {
 	# All test modes
 
-	ALL_AVAILABLE_TEST_MODES="n32 n64 s32 s64"
+	ALL_AVAILABLE_TEST_MODES="n32 n64 o32 o64"
 }
 
 #
@@ -206,28 +206,28 @@ INIT_SET_OF_TEST_MODES()
 
 		if [ $found -eq 1 ]; then
 
-			# 32-bit non-slack (normal):
+			# 32-bit unoptimized code:
 
 			if [ "$m" = "n32" ]; then
 				ENABLENORM32=1
 			fi
 
-			# 64-bit non-slack (normal):
+			# 64-bit unoptimized code:
 
 			if [ "$m" = "n64" ]; then
 				ENABLENORM64=1
 			fi
 
-			# 32-bit slack:
+			# 32-bit optimized code:
 
-			if [ "$m" = "s32" ]; then
-				ENABLESLACK32=1
+			if [ "$m" = "o32" ]; then
+				ENABLEOPT32=1
 			fi
 
-			# 64-bit slack:
+			# 64-bit unoptimized code:
 
-			if [ "$m" = "s64" ]; then
-				ENABLESLACK64=1
+			if [ "$m" = "o64" ]; then
+				ENABLEOPT64=1
 			fi
 		fi
 	done
@@ -274,8 +274,8 @@ RESET_SETTINGS()
 
 	ENABLENORM32=0
 	ENABLENORM64=0
-	ENABLESLACK32=0
-	ENABLESLACK64=0
+	ENABLEOPT32=0
+	ENABLEOPT64=0
 
 	# Available test collections
 
