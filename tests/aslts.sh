@@ -11,6 +11,7 @@ tmp_acpiexec=/tmp/acpiexec-$postfix
 TEST_CASES=
 TEST_MODES=
 REBUILD_TOOLS=yes
+EXECONLY=no
 
 usage() {
 
@@ -114,13 +115,13 @@ run_aslts() {
 
 	if [ "x$TEST_CASES" = "x" ]; then
 		# Compile all ASL test modules
-		Do 0 aslts
+		Do 0 aslts $EXECONLY
 		if [ $? -ne 0 ]; then
 			echo "ASLTS Compile Failure"
 			exit 1
 		fi
 	else
-		Do 0 $TEST_CASES
+		Do 0 $TEST_CASES $EXECONLY
 	fi
 
 	# Execute the test suite
@@ -150,7 +151,7 @@ RESET_SETTINGS
 INIT_ALL_AVAILABLE_CASES
 INIT_ALL_AVAILABLE_MODES
 
-while getopts "c:m:u" opt
+while getopts "c:m:ue" opt
 do
 	case $opt in
 	c)
@@ -161,6 +162,10 @@ do
 		else
 			TEST_CASES="$OPTARG $TEST_CASES"
 		fi
+	;;
+	e)
+		EXECONLY=yes
+		echo "Running tests in disassemble mode"
 	;;
 	m)
 		check_mode_id "$OPTARG"

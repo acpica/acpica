@@ -301,15 +301,21 @@ do_bdemo_table()
 # arg1 - root directory of aslts
 make_install_1()
 {
-	local dir restore_dir
+	local dir restore_dir diasm
 
 	restore_dir=$PWD
 	dir="$1"
+	execonly=$2
 
 	cd "$dir"
 
 	echo "Running make install from $dir"
-	make install > /dev/null
+	if [ "$execonly" = "yes" ]; then
+		make install OPT=1 > /dev/null
+	else
+		make install OPT=0 > /dev/null
+	fi
+
 	if [ $? -ne 0 ]; then
 		do_exit 1 "make install error"
 	fi
@@ -324,9 +330,10 @@ make_install_1()
 # arg3 - either to actually run make install
 do_test_cases_make_install()
 {
-	local errors=0 dir restore_dir
+	local errors=0 dir restore_dir execonly
 
 	restore_dir=$PWD
+	execonly=$4
 
 	for filename in $2
 	do
@@ -341,7 +348,12 @@ do_test_cases_make_install()
 
 		if [ $3 != 0 ]; then
 			cd "$dir"
-			make install > /dev/null
+			if [ "$execonly" = "yes" ]; then
+				make install OPT=1 > /dev/null
+			else
+				make install OPT=0 > /dev/null
+			fi
+
 			if [ $? -ne 0 ]; then
 				errors=1
 			fi
@@ -365,7 +377,7 @@ make_install_2()
 
 	# Run actual work
 
-	do_test_cases_make_install "$1" "$2" 1
+	do_test_cases_make_install "$1" "$2" 1 "$3"
 }
 
 # Check parameters to be the names of test
@@ -376,9 +388,10 @@ make_install_2()
 # arg3 - either to actually run make install
 do_collections_make_install()
 {
-	local errors=0 dir restore_dir
+	local errors=0 dir restore_dir execonly
 
 	restore_dir=$PWD
+	execonly=$4
 
 	for filename in $2
 	do
@@ -392,7 +405,11 @@ do_collections_make_install()
 
 		if [ $3 != 0 ]; then
 			cd "$dir"
-			make install > /dev/null
+			if [ "$execonly" = "yes" ]; then
+				make install OPT=1 > /dev/null
+			else
+				make install OPT=0 > /dev/null
+			fi
 			if [ $? -ne 0 ]; then
 				errors=1
 			fi
@@ -416,7 +433,7 @@ make_install_3()
 
 	# Run actual work
 
-	do_collections_make_install "$1" "$2" 1
+	do_collections_make_install "$1" "$2" 1 "$3"
 }
 
 # Make-install the test case(s).
@@ -440,7 +457,7 @@ make_install_3()
 # arg3 - all parameters passed to Do utility
 run_asl_compiler()
 {
-	local lexem list nparam=$2 action=100
+	local lexem list nparam=$2 action=100 execonly=$4
 
 	lexem=`echo "$3" | awk '{ print $2}'`
 
@@ -448,14 +465,14 @@ run_asl_compiler()
 		usage
 		do_exit 1 "Bad parameters 0"
 	elif [ $lexem == ASLTS -o $lexem == aslts ]; then
-		if [ $nparam != 2 ]; then
+		if [ $nparam != 3 ]; then
 			usage
 			do_exit 1 "Bad parameters 1"
 		else
 			action=1
 		fi
 	elif [ $lexem == ALL -o $lexem == all ]; then
-		if [ $nparam -le 2 ]; then
+		if [ $nparam -le 3 ]; then
 			usage
 			do_exit 1 "Bad parameters 2"
 		else
@@ -467,15 +484,18 @@ run_asl_compiler()
 		list=`echo "$3" | cut -c 3-`
 	fi
 
+	list=`echo $list | rev | cut -c 4- | rev ` # cut the last item from the list. It's a yes or no from the diasm option.
+
+	>&2 echo "list of testcases: $list"
 	if [ $action == 1 ]; then
 		echo "Make-install all the provided test cases"
-		make_install_1 "$1"
+		make_install_1 "$1" "$execonly"
 	elif [ $action == 2 ]; then
 		echo "Make-install a list of specified test cases: $list"
-		make_install_2 "$1" "$list"
+		make_install_2 "$1" "$list" "$execonly"
 	elif [ $action == 3 ]; then
 		echo "Make-install all the test cases of the specified test collections: $list"
-		make_install_3 "$1" "$list"
+		make_install_3 "$1" "$list" "$execonly"
 	else
 		do_exit 1 "Bad parameters 2"
 	fi
@@ -511,6 +531,7 @@ PRINTTESTCASES=3
 BDEMOSTABS=4
 BDEMOSSUM=5
 CONCBDEMOS=6
+EXECONLY=$3
 
 # Set defaults
 
@@ -599,7 +620,8 @@ if [ $CMD == $ASLCOMPILE ]; then
 	fi
 
 	x="$@"
-	run_asl_compiler "$ASLTSDIR" $NPARAM "$x"
+	>&2 echo "disassemble: $EXECONLY"
+	run_asl_compiler "$ASLTSDIR" $NPARAM "$x" "$EXECONLY"
 
 elif [ $CMD == $RUNTESTS ]; then
 
