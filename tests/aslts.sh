@@ -21,13 +21,14 @@ usage() {
 	echo "  -c:	Specify individual test cases (can be used multiple times)"
 	echo "  -m:	Specify individual test modes (can be used multiple times)"
 	echo "  -u:	Do not force rebuilding of ACPICA utilities (acpiexec, iasl)"
+	echo "  -e:     Perform the execution of aml files and omit binary comparison of regular aml and disassembled aml file."
 	echo ""
 
 	echo "Available test modes:"
-	echo "  n32	32-bit normal mode"
-	echo "  n64	64-bit normal mode"
-	echo "  s32	32-bit slack mode"
-	echo "  s64	64-bit slack mode"
+	echo "  n32	32-bit unoptimized code (tests are compiled with iasl -oa -r 1 and other flags)"
+	echo "  n64	64-bit unoptimized code (tests are compiled with iasl -oa -r 2 and other flags)"
+	echo "  o32	32-bit optimized code (tests are compiled with iasl -r 1 and other flags)"
+	echo "  o64	64-bit optimized code (tests are compiled with iasl -r 2 and other flags)"
 	echo ""
 
 	Do 3
