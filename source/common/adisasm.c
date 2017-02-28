@@ -194,24 +194,36 @@ AdInitialize (
     Status = AcpiOsInitialize ();
     if (ACPI_FAILURE (Status))
     {
+        fprintf (stderr, "Could not initialize ACPICA subsystem: %s\n",
+            AcpiFormatException (Status));
+
         return (Status);
     }
 
     Status = AcpiUtInitGlobals ();
     if (ACPI_FAILURE (Status))
     {
+        fprintf (stderr, "Could not initialize ACPICA globals: %s\n",
+            AcpiFormatException (Status));
+
         return (Status);
     }
 
     Status = AcpiUtMutexInitialize ();
     if (ACPI_FAILURE (Status))
     {
+        fprintf (stderr, "Could not initialize ACPICA mutex objects: %s\n",
+            AcpiFormatException (Status));
+
         return (Status);
     }
 
     Status = AcpiNsRootInitialize ();
     if (ACPI_FAILURE (Status))
     {
+        fprintf (stderr, "Could not initialize ACPICA namespace: %s\n",
+            AcpiFormatException (Status));
+
         return (Status);
     }
 
@@ -221,7 +233,7 @@ AdInitialize (
     AcpiGbl_RootTableList.CurrentTableCount = 0;
     AcpiGbl_RootTableList.Tables = LocalTables;
 
-    return (Status);
+    return (AE_OK);
 }
 
 
