@@ -259,7 +259,7 @@ TrAllocateNode (
         }
 
         Gbl_CommentState.Latest_Parse_Node = Op;
-        if (Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName)
+        if (Gbl_CommentState.Latest_Parse_Node->Asl.ParseOpName[0])
         {
             CvDbgPrint ("trallocatenode=Set latest parse node to this node.\n");
             CvDbgPrint ("           Op->Asl.ParseOpName = %s\n",
