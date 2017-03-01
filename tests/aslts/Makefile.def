@@ -47,7 +47,6 @@ empty_all:	FORCE
 ${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%}:
 	@$(INST.dir)
 
-
 # Make-install one particular Test Case for all modes
 
 install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%}

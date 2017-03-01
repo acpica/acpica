@@ -456,7 +456,7 @@ do_summary_of_test_case()
 			fi
 			memcnt=$[ $memcnt + 1 ]
 		elif [[ "$line" == *"Outstanding allocations"* ]]; then
-                        trimmedLine=`echo "$line" | awk -F" Outstanding allocations" '{printf $1}'`
+			trimmedLine=`echo "$line" | awk -F" Outstanding allocations" '{printf $1}'`
 			outstand1=`echo "$trimmedLine" | awk -F"(" '{print $1}'`
 		elif [[ "$line" == *"The total number of exceptions handled"* ]]; then
 			exceptionsnum=`echo "$line" | sed 's/^\[.*\]//g' | awk -F" " '{print $7}'`
