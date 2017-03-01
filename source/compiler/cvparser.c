@@ -440,6 +440,11 @@ CvFilenameExists(
     ACPI_FILE_NODE          *Current = Head;
 
 
+    if (!Filename)
+    {
+        return (NULL);
+    }
+
     while (Current)
     {
         if (!AcpiUtStricmp (Current->Filename, Filename))

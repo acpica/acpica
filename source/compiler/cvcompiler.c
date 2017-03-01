@@ -907,10 +907,12 @@ CvAppendInlineComment (
     {
         return ToAdd;
     }
-    if (ToAdd)
+    if (!ToAdd)
     {
-        Size = strlen (ToAdd);
+        return InlineComment;
     }
+
+    Size = strlen (ToAdd);
     Size += strlen (InlineComment);
     Str = UtStringCacheCalloc (Size+1);
     strcpy (Str, InlineComment);
