@@ -540,6 +540,10 @@ SOURCE=..\..\source\common\dmrestag.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\common\dmswitch.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\common\dmtable.c
 # End Source File
 # Begin Source File

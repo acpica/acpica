@@ -427,6 +427,7 @@ ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_ForceAmlDisassembly, FALSE);
 ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_DmOpt_Verbose, TRUE);
 ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_DmEmitExternalOpcodes, FALSE);
 ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_DoDisassemblerOptimizations, TRUE);
+ACPI_INIT_GLOBAL (ACPI_PARSE_OBJECT_LIST,   *AcpiGbl_TempListHead, NULL);
 
 ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_DmOpt_Disasm);
 ACPI_GLOBAL (BOOLEAN,                   AcpiGbl_DmOpt_Listing);

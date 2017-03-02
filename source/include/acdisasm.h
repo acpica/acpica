@@ -791,10 +791,6 @@ AcpiDmDisassembleOneOp (
     ACPI_OP_WALK_INFO       *Info,
     ACPI_PARSE_OBJECT       *Op);
 
-BOOLEAN
-AcpiDmIsTempName (
-    ACPI_PARSE_OBJECT       *Op);
-
 UINT32
 AcpiDmListType (
     ACPI_PARSE_OBJECT       *Op);
@@ -1199,6 +1195,17 @@ void
 AcpiDmCloseOperator (
     ACPI_PARSE_OBJECT       *Op);
 
+
+/*
+ * dmtables
+ */
+ACPI_STATUS
+AcpiDmProcessSwitch (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+AcpiDmClearTempList(
+    void);
 
 /*
  * dmtables
