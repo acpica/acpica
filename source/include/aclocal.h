@@ -1136,7 +1136,7 @@ typedef struct acpi_parse_obj_common
 typedef struct acpi_parse_obj_named
 {
     ACPI_PARSE_COMMON
-    UINT8                           *Path;
+    char                            *Path;
     UINT8                           *Data;          /* AML body or bytelist data */
     UINT32                          Length;         /* AML length */
     UINT32                          Name;           /* 4-byte name or zero if no name */

@@ -782,7 +782,7 @@ AcpiDmDescendingOp (
                 Name = AcpiPsGetName (Op);
                 if (Op->Named.Path)
                 {
-                    AcpiDmNamestring ((char *) Op->Named.Path);
+                    AcpiDmNamestring (Op->Named.Path);
                 }
                 else
                 {
