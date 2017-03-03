@@ -556,6 +556,12 @@ CgWriteOneAmlComment(
     UINT8 CommentOption = InputOption;
     UINT8 CommentOpcode = (UINT8)AML_COMMENT_OP;
 
+
+    if (!CommentToPrint)
+    {
+        return;
+    }
+
     CgLocalWriteAmlData (Op, &CommentOpcode, 1);
     CgLocalWriteAmlData (Op, &CommentOption, 1);
 
@@ -603,8 +609,12 @@ CgWriteAmlComment(
 
         NewFilename =
             FlGenerateFilename (Op->Asl.Filename, FILE_SUFFIX_DISASSEMBLY);
-        CvDbgPrint ("Writing file comment, \"%s\" for %s\n",
-            NewFilename, Op->Asl.ParseOpName);
+        if (NewFilename)
+        {
+            CvDbgPrint ("Writing file comment, \"%s\" for %s\n",
+                NewFilename, Op->Asl.ParseOpName);
+        }
+
         CgWriteOneAmlComment(Op, NewFilename, FILENAME_COMMENT);
 
         if (Op->Asl.ParentFilename &&
