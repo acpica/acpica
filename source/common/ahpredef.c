@@ -288,6 +288,7 @@ const AH_PREDEFINED_NAME    AslPredefinedInfo[] =
     AH_PREDEF ("_LPD",    "Low Power Dependencies", "Returns a list of dependencies for low power idle entry"),
     AH_PREDEF ("_LPI",    "Low Power Idle States", "Returns a list of supported low power idle states"),
     AH_PREDEF ("_LSI",    "Label Storage Information", "Returns information about the Label Storage Area associated with the NVDIMM object."),
+    AH_PREDEF ("_LSR",    "Label Storage Read", "Returns label data from the Label Storage Area of the NVDIMM object."),
     AH_PREDEF ("_MAF",    "Maximum Address Fixed", "Resource Descriptor field"),
     AH_PREDEF ("_MAT",    "Multiple APIC Table Entry", "Returns a list of MADT APIC structure entries"),
     AH_PREDEF ("_MAX",    "Maximum Base Address", "Resource Descriptor field"),
