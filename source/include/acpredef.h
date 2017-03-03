@@ -726,6 +726,10 @@ const ACPI_PREDEFINED_INFO          AcpiGbl_PredefinedMethods[] =
                     PACKAGE_INFO (ACPI_PTYPE2_VAR_VAR, ACPI_RTYPE_INTEGER, 3,
                     ACPI_RTYPE_INTEGER | ACPI_RTYPE_BUFFER | ACPI_RTYPE_STRING, 10,0),
 
+    {{"_LSI",   METHOD_0ARGS,
+                METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}},
+                    PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 3,0,0,0),
+
     {{"_MAT",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_BUFFER)}},
 
