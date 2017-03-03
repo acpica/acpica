@@ -270,6 +270,7 @@ const AH_PREDEFINED_NAME    AslPredefinedInfo[] =
     AH_PREDEF ("_GWS",    "Get Wake Status", "Return status of wake alarms"),
     AH_PREDEF ("_HE_",    "High-Edge", "Interrupt triggering, Resource Descriptor field"),
     AH_PREDEF ("_HID",    "Hardware ID", "Returns a device's Plug and Play Hardware ID"),
+    AH_PREDEF ("_HMA",    "Heterogeneous Memory Attributes", "Returns a list of HMAT structures."),
     AH_PREDEF ("_HOT",    "Hot Temperature", "Returns the critical temperature for sleep (entry to S4)"),
     AH_PREDEF ("_HPP",    "Hot Plug Parameters", "Returns a list of hot-plug information for a PCI device"),
     AH_PREDEF ("_HPX",    "Hot Plug Parameter Extensions", "Returns a list of hot-plug information for a PCI device. Supersedes _HPP"),

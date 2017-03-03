@@ -682,6 +682,9 @@ const ACPI_PREDEFINED_INFO          AcpiGbl_PredefinedMethods[] =
     {{"_HID",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER | ACPI_RTYPE_STRING)}},
 
+    {{"_HMA",   METHOD_0ARGS,
+                METHOD_RETURNS (ACPI_RTYPE_BUFFER)}},
+
     {{"_HOT",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
