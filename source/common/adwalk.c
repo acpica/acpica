@@ -754,7 +754,7 @@ AcpiDmLoadDescendingOp (
     {
         /* For all named operators, get the new name */
 
-        Path = (char *) Op->Named.Path;
+        Path = Op->Named.Path;
 
         if (!Path && Op->Common.AmlOpcode == AML_INT_NAMEDFIELD_OP)
         {
@@ -926,7 +926,7 @@ AcpiDmXrefDescendingOp (
         }
         else if (Op->Common.AmlOpcode == AML_SCOPE_OP)
         {
-            Path = (char *) Op->Named.Path;
+            Path = Op->Named.Path;
         }
     }
     else if (OpInfo->Flags & AML_CREATE)

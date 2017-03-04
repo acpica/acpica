@@ -518,7 +518,7 @@ AcpiDsLoad1BeginOp (
     /* Initialize the op */
 
 #if (defined (ACPI_NO_METHOD_EXECUTION) || defined (ACPI_CONSTANT_EVAL_ONLY))
-    Op->Named.Path = ACPI_CAST_PTR (UINT8, Path);
+    Op->Named.Path = Path;
 #endif
 
     if (Node)
