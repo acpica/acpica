@@ -664,6 +664,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_TABLE_WDDT",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_WDRT",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_WPBT",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_WSMT",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_XENV",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_XSDT",                     SRC_TYPE_STRUCT},
 
