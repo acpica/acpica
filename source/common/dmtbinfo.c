@@ -361,6 +361,7 @@
 
 /* Flags */
 
+#define ACPI_BGRT_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_BGRT,f,o)
 #define ACPI_DRTM_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_DRTM,f,o)
 #define ACPI_DRTM1a_FLAG_OFFSET(f,o)    ACPI_FLAG_OFFSET (ACPI_DRTM_RESOURCE,f,o)
 #define ACPI_FADT_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_FADT,f,o)
@@ -790,7 +791,10 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoBert[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoBgrt[] =
 {
     {ACPI_DMT_UINT16,   ACPI_BGRT_OFFSET (Version),                 "Version", 0},
-    {ACPI_DMT_UINT8,    ACPI_BGRT_OFFSET (Status),                  "Status", 0},
+    {ACPI_DMT_UINT8,    ACPI_BGRT_OFFSET (Status),                  "Status (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG0,    ACPI_BGRT_FLAG_OFFSET (Status, 0),          "Displayed", 0},
+    {ACPI_DMT_FLAGS1,   ACPI_BGRT_FLAG_OFFSET (Status, 0),          "Orientation Offset", 0},
+
     {ACPI_DMT_UINT8,    ACPI_BGRT_OFFSET (ImageType),               "Image Type", 0},
     {ACPI_DMT_UINT64,   ACPI_BGRT_OFFSET (ImageAddress),            "Image Address", 0},
     {ACPI_DMT_UINT32,   ACPI_BGRT_OFFSET (ImageOffsetX),            "Image OffsetX", 0},

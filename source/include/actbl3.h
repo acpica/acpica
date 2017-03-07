@@ -229,6 +229,11 @@ typedef struct acpi_table_bgrt
 
 } ACPI_TABLE_BGRT;
 
+/* Flags for Status field above */
+
+#define ACPI_BGRT_DISPLAYED                 (1)
+#define ACPI_BGRT_ORIENTATION_OFFSET        (3 << 1)
+
 
 /*******************************************************************************
  *
