@@ -204,6 +204,7 @@
 #define ACPI_GTDT_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_GTDT,f)
 #define ACPI_HEST_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_HEST,f)
 #define ACPI_HPET_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_HPET,f)
+#define ACPI_HMAT_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_HMAT,f)
 #define ACPI_IORT_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_IORT,f)
 #define ACPI_IVRS_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_IVRS,f)
 #define ACPI_MADT_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_MADT,f)
@@ -275,6 +276,10 @@
 #define ACPI_HEST10_OFFSET(f)           (UINT16) ACPI_OFFSET (ACPI_HEST_GENERIC_V2,f)
 #define ACPI_HESTN_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_HEST_NOTIFY,f)
 #define ACPI_HESTB_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_HEST_IA_ERROR_BANK,f)
+#define ACPI_HMAT0_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_HMAT_ADDRESS_RANGE,f)
+#define ACPI_HMAT1_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_HMAT_LOCALITY,f)
+#define ACPI_HMAT2_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_HMAT_CACHE,f)
+#define ACPI_HMATH_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_HMAT_STRUCTURE,f)
 #define ACPI_IORT0_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_ITS_GROUP,f)
 #define ACPI_IORT1_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_NAMED_COMPONENT,f)
 #define ACPI_IORT2_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_IORT_ROOT_COMPLEX,f)
@@ -367,6 +372,9 @@
 #define ACPI_GTDT_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_GTDT,f,o)
 #define ACPI_GTDT0a_FLAG_OFFSET(f,o)    ACPI_FLAG_OFFSET (ACPI_GTDT_TIMER_ENTRY,f,o)
 #define ACPI_GTDT1_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_GTDT_WATCHDOG,f,o)
+#define ACPI_HMAT0_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_HMAT_ADDRESS_RANGE,f,o)
+#define ACPI_HMAT1_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_HMAT_LOCALITY,f,o)
+#define ACPI_HMAT2_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_HMAT_CACHE,f,o)
 #define ACPI_IORT3_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_IORT_SMMU,f,o)
 #define ACPI_IORT3a_FLAG_OFFSET(f,o)    ACPI_FLAG_OFFSET (ACPI_IORT_SMMU_GSI,f,o)
 #define ACPI_IORT4_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_IORT_SMMU_V3,f,o)
@@ -1531,6 +1539,105 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoHpet[] =
     {ACPI_DMT_UINT8,    ACPI_HPET_OFFSET (Flags),                   "Flags (decoded below)", DT_FLAG},
     {ACPI_DMT_FLAG0,    ACPI_HPET_FLAG_OFFSET (Flags,0),            "4K Page Protect", 0},
     {ACPI_DMT_FLAG1,    ACPI_HPET_FLAG_OFFSET (Flags,0),            "64K Page Protect", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
+ * HMAT - Heterogeneous Memory Attributes Table
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoHmat[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_HMAT_OFFSET (Reserved),                "Reserved", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* Common HMAT structure header (one per Subtable) */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoHmatHdr[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_HMATH_OFFSET (Type),                   "Type", 0},
+    {ACPI_DMT_UINT16,   ACPI_HMATH_OFFSET (Reserved),               "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_HMATH_OFFSET (Length),                 "Length", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* HMAT subtables */
+
+/* 0x00: Memory Subsystem Address Range */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoHmat0[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_HMAT0_OFFSET (Flags),                  "Flags (decoded below)", 0},
+    {ACPI_DMT_FLAG0,    ACPI_HMAT0_FLAG_OFFSET (Flags,0),           "Processor Proximity Domain Valid", 0},
+    {ACPI_DMT_FLAG1,    ACPI_HMAT0_FLAG_OFFSET (Flags,0),           "Memory Proximity Domain Valid", 0},
+    {ACPI_DMT_FLAG2,    ACPI_HMAT0_FLAG_OFFSET (Flags,0),           "Reservation Hint", 0},
+    {ACPI_DMT_UINT16,   ACPI_HMAT0_OFFSET (Reserved1),              "Reserved1", 0},
+    {ACPI_DMT_UINT32,   ACPI_HMAT0_OFFSET (ProcessorPD),            "Processor Proximity Domain", 0},
+    {ACPI_DMT_UINT32,   ACPI_HMAT0_OFFSET (MemoryPD),               "Memory Proximity Domain", 0},
+    {ACPI_DMT_UINT32,   ACPI_HMAT0_OFFSET (Reserved2),              "Reserved2", 0},
+    {ACPI_DMT_UINT64,   ACPI_HMAT0_OFFSET (PhysicalAddressBase),    "Physical Address Range Base", 0},
+    {ACPI_DMT_UINT64,   ACPI_HMAT0_OFFSET (PhysicalAddressLength),  "Physical Address Range Size", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 0x01: System Locality Latency and Bandwidth Information */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoHmat1[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_HMAT1_OFFSET (Flags),                  "Flags (decoded below)", 0},
+    {ACPI_DMT_FLAGS5,   ACPI_HMAT1_FLAG_OFFSET (Flags,0),           "Memory Hierarchy", 0},
+    {ACPI_DMT_UINT8,    ACPI_HMAT1_OFFSET (DataType),               "Data Type", 0},
+    {ACPI_DMT_UINT16,   ACPI_HMAT1_OFFSET (Reserved1),              "Reserved1", 0},
+    {ACPI_DMT_UINT32,   ACPI_HMAT1_OFFSET (NumberOfInitiatorPDs),   "Initiator Proximity Domains #", 0},
+    {ACPI_DMT_UINT32,   ACPI_HMAT1_OFFSET (NumberOfTargetPDs),      "Target Proximity Domains #", 0},
+    {ACPI_DMT_UINT32,   ACPI_HMAT1_OFFSET (Reserved2),              "Reserved2", 0},
+    {ACPI_DMT_UINT64,   ACPI_HMAT1_OFFSET (EntryBaseUnit),          "Entry Base Unit", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoHmat1a[] =
+{
+    {ACPI_DMT_UINT32,   0,                                          "Initiator Proximity Domain List", DT_OPTIONAL},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoHmat1b[] =
+{
+    {ACPI_DMT_UINT32,   0,                                          "Target Proximity Domain List", DT_OPTIONAL},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoHmat1c[] =
+{
+    {ACPI_DMT_UINT16,   0,                                          "Entry", DT_OPTIONAL},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 0x02: Memory Side Cache Information */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoHmat2[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_HMAT2_OFFSET (MemoryPD),               "Memory Proximity Domain", 0},
+    {ACPI_DMT_UINT32,   ACPI_HMAT2_OFFSET (Reserved1),              "Reserved1", 0},
+    {ACPI_DMT_UINT64,   ACPI_HMAT2_OFFSET (CacheSize),              "Memory Side Cache Size", 0},
+    {ACPI_DMT_UINT32,   ACPI_HMAT2_OFFSET (CacheAttributes),        "Cache Attributes (decoded below)", 0},
+    {ACPI_DMT_FLAGS5,   ACPI_HMAT2_FLAG_OFFSET (CacheAttributes,0), "Total Cache Levels", 0},
+    {ACPI_DMT_FLAGS6,   ACPI_HMAT2_FLAG_OFFSET (CacheAttributes,0), "Cache Level", 0},
+    {ACPI_DMT_FLAGS7,   ACPI_HMAT2_FLAG_OFFSET (CacheAttributes,0), "Cache Associativity", 0},
+    {ACPI_DMT_FLAGS8,   ACPI_HMAT2_FLAG_OFFSET (CacheAttributes,0), "Write Policy", 0},
+    {ACPI_DMT_FLAGS9,   ACPI_HMAT2_FLAG_OFFSET (CacheAttributes,0), "Cache Line Size", 0},
+    {ACPI_DMT_UINT16,   ACPI_HMAT2_OFFSET (Reserved2),              "Reserved2", 0},
+    {ACPI_DMT_UINT16,   ACPI_HMAT2_OFFSET (NumberOfSMBIOSHandles),  "SMBIOS Handle #", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoHmat2a[] =
+{
+    {ACPI_DMT_UINT16,   0,                                          "SMBIOS Handle", DT_OPTIONAL},
     ACPI_DMT_TERMINATOR
 };
 

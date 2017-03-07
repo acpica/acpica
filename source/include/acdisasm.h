@@ -207,6 +207,11 @@ typedef enum
     ACPI_DMT_FLAGS1,
     ACPI_DMT_FLAGS2,
     ACPI_DMT_FLAGS4,
+    ACPI_DMT_FLAGS5,
+    ACPI_DMT_FLAGS6,
+    ACPI_DMT_FLAGS7,
+    ACPI_DMT_FLAGS8,
+    ACPI_DMT_FLAGS9,
     ACPI_DMT_UINT8,
     ACPI_DMT_UINT16,
     ACPI_DMT_UINT24,
@@ -418,6 +423,15 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHpet[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoLpitHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoLpit0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoLpit1[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHmat[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHmat0[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHmat1[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHmat1a[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHmat1b[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHmat1c[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHmat2[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHmat2a[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHmatHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIort[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIort0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoIort0a[];
@@ -638,6 +652,10 @@ AcpiDmDumpGtdt (
 
 void
 AcpiDmDumpHest (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpHmat (
     ACPI_TABLE_HEADER       *Table);
 
 void

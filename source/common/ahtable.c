@@ -218,6 +218,7 @@ const AH_TABLE      Gbl_AcpiSupportedTables[] =
     {ACPI_SIG_FPDT, "Firmware Performance Data Table"},
     {ACPI_SIG_GTDT, "Generic Timer Description Table"},
     {ACPI_SIG_HEST, "Hardware Error Source Table"},
+    {ACPI_SIG_HMAT, "Heterogeneous Memory Attributes Table"},
     {ACPI_SIG_HPET, "High Precision Event Timer table"},
     {ACPI_SIG_IORT, "IO Remapping Table"},
     {ACPI_SIG_IVRS, "I/O Virtualization Reporting Structure"},

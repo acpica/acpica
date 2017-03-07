@@ -578,6 +578,10 @@ DtCompileHest (
     void                    **PFieldList);
 
 ACPI_STATUS
+DtCompileHmat (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompileIort (
     void                    **PFieldList);
 
@@ -698,6 +702,7 @@ extern const unsigned char  TemplateFadt[];
 extern const unsigned char  TemplateFpdt[];
 extern const unsigned char  TemplateGtdt[];
 extern const unsigned char  TemplateHest[];
+extern const unsigned char  TemplateHmat[];
 extern const unsigned char  TemplateHpet[];
 extern const unsigned char  TemplateIort[];
 extern const unsigned char  TemplateIvrs[];
