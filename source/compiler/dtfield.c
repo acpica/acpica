@@ -679,6 +679,36 @@ DtCompileFlag (
         BitLength = 2;
         break;
 
+    case ACPI_DMT_FLAGS5:
+
+        BitPosition = 0;
+        BitLength = 4;
+        break;
+
+    case ACPI_DMT_FLAGS6:
+
+        BitPosition = 4;
+        BitLength = 4;
+        break;
+
+    case ACPI_DMT_FLAGS7:
+
+        BitPosition = 8;
+        BitLength = 4;
+        break;
+
+    case ACPI_DMT_FLAGS8:
+
+        BitPosition = 12;
+        BitLength = 4;
+        break;
+
+    case ACPI_DMT_FLAGS9:
+
+        BitPosition = 16;
+        BitLength = 16;
+        break;
+
     default:
 
         DtFatal (ASL_MSG_COMPILER_INTERNAL, Field, "Invalid flag opcode");

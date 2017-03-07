@@ -371,6 +371,11 @@ DtGetFieldType (
     case ACPI_DMT_FLAGS1:
     case ACPI_DMT_FLAGS2:
     case ACPI_DMT_FLAGS4:
+    case ACPI_DMT_FLAGS5:
+    case ACPI_DMT_FLAGS6:
+    case ACPI_DMT_FLAGS7:
+    case ACPI_DMT_FLAGS8:
+    case ACPI_DMT_FLAGS9:
 
         Type = DT_FIELD_TYPE_FLAG;
         break;
@@ -512,6 +517,11 @@ DtGetFieldLength (
     case ACPI_DMT_FLAGS1:
     case ACPI_DMT_FLAGS2:
     case ACPI_DMT_FLAGS4:
+    case ACPI_DMT_FLAGS5:
+    case ACPI_DMT_FLAGS6:
+    case ACPI_DMT_FLAGS7:
+    case ACPI_DMT_FLAGS8:
+    case ACPI_DMT_FLAGS9:
     case ACPI_DMT_LABEL:
     case ACPI_DMT_EXTRA_TEXT:
 
