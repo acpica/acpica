@@ -1799,7 +1799,6 @@ AcpiDmDumpHmat (
     ACPI_TABLE_HEADER       *Table)
 {
     ACPI_STATUS             Status;
-    ACPI_TABLE_HMAT         *Hmat;
     ACPI_HMAT_STRUCTURE     *HmatStruct;
     ACPI_HMAT_LOCALITY      *HmatLocality = NULL;
     ACPI_HMAT_CACHE         *HmatCache = NULL;
@@ -1818,7 +1817,6 @@ AcpiDmDumpHmat (
         return;
     }
 
-    Hmat = ACPI_CAST_PTR (ACPI_TABLE_HMAT, Table);
     Offset = sizeof (ACPI_TABLE_HMAT);
 
     while (Offset < Table->Length)
