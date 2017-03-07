@@ -823,6 +823,11 @@ const ACPI_PREDEFINED_INFO          AcpiGbl_PredefinedMethods[] =
     {{"_PPE",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}}, /* See dig64 spec */
 
+    {{"_PPR",   METHOD_0ARGS,
+                METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}},
+                    PACKAGE_INFO (ACPI_PTYPE2_VAR_VAR, ACPI_RTYPE_INTEGER, 2,
+                    ACPI_RTYPE_PACKAGE | ACPI_RTYPE_BUFFER, 2,0),
+
     {{"_PR0",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),

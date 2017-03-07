@@ -329,6 +329,7 @@ const AH_PREDEFINED_NAME    AslPredefinedInfo[] =
     AH_PREDEF ("_PPC",    "Performance Present Capabilities", "Returns a list of the performance states currently supported by the platform"),
     AH_PREDEF ("_PPE",    "Polling for Platform Error", "Returns the polling interval to retrieve Corrected Platform Error information"),
     AH_PREDEF ("_PPI",    "Pin Configuration", "Resource Descriptor field"),
+    AH_PREDEF ("_PPR",    "Processor Properties", "Returns properties associated with a processor or processor container device."),
     AH_PREDEF ("_PR",     "Processor", "Predefined scope for processor objects"),
     AH_PREDEF ("_PR0",    "Power Resources for D0", "Returns a list of dependent power resources to enter state D0 (fully on)"),
     AH_PREDEF ("_PR1",    "Power Resources for D1", "Returns a list of dependent power resources to enter state D1"),
