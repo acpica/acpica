@@ -231,6 +231,7 @@
 #define ACPI_WDDT_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_WDDT,f)
 #define ACPI_WDRT_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_WDRT,f)
 #define ACPI_WPBT_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_WPBT,f)
+#define ACPI_WSMT_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_WSMT,f)
 #define ACPI_XENV_OFFSET(f)             (UINT16) ACPI_OFFSET (ACPI_TABLE_XENV,f)
 
 /* Subtables */
@@ -402,6 +403,7 @@
 #define ACPI_PCCT2_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_PCCT_HW_REDUCED_TYPE2,f,o)
 #define ACPI_PMTTH_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_PMTT_HEADER,f,o)
 #define ACPI_WDDT_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_WDDT,f,o)
+#define ACPI_WSMT_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_WSMT,f,o)
 #define ACPI_EINJ0_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_WHEA_HEADER,f,o)
 #define ACPI_ERST0_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_WHEA_HEADER,f,o)
 #define ACPI_HEST0_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_HEST_IA_MACHINE_CHECK,f,o)
@@ -3159,6 +3161,22 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoWpbt[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoWpbt0[] =
 {
     {ACPI_DMT_UNICODE,     sizeof (ACPI_TABLE_WPBT),                "Command-line Arguments", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+
+/*******************************************************************************
+ *
+ * WSMT - Windows SMM Security Migrations Table
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoWsmt[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_WSMT_OFFSET (ProtectionFlags),         "Protection Flags", 0},
+    {ACPI_DMT_FLAG0,    ACPI_WSMT_FLAG_OFFSET (ProtectionFlags,0),  "FIXED_COMM_BUFFERS", 0},
+    {ACPI_DMT_FLAG1,    ACPI_WSMT_FLAG_OFFSET (ProtectionFlags,0),  "COMM_BUFFER_NESTED_PTR_PROTECTION", 0},
+    {ACPI_DMT_FLAG2,    ACPI_WSMT_FLAG_OFFSET (ProtectionFlags,0),  "SYSTEM_RESOURCE_PROTECTION", 0},
     ACPI_DMT_TERMINATOR
 };
 
