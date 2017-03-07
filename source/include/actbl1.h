@@ -683,18 +683,19 @@ typedef struct acpi_hest_notify
 
 enum AcpiHestNotifyTypes
 {
-    ACPI_HEST_NOTIFY_POLLED     = 0,
-    ACPI_HEST_NOTIFY_EXTERNAL   = 1,
-    ACPI_HEST_NOTIFY_LOCAL      = 2,
-    ACPI_HEST_NOTIFY_SCI        = 3,
-    ACPI_HEST_NOTIFY_NMI        = 4,
-    ACPI_HEST_NOTIFY_CMCI       = 5,    /* ACPI 5.0 */
-    ACPI_HEST_NOTIFY_MCE        = 6,    /* ACPI 5.0 */
-    ACPI_HEST_NOTIFY_GPIO       = 7,    /* ACPI 6.0 */
-    ACPI_HEST_NOTIFY_SEA        = 8,    /* ACPI 6.1 */
-    ACPI_HEST_NOTIFY_SEI        = 9,    /* ACPI 6.1 */
-    ACPI_HEST_NOTIFY_GSIV       = 10,   /* ACPI 6.1 */
-    ACPI_HEST_NOTIFY_RESERVED   = 11    /* 11 and greater are reserved */
+    ACPI_HEST_NOTIFY_POLLED             = 0,
+    ACPI_HEST_NOTIFY_EXTERNAL           = 1,
+    ACPI_HEST_NOTIFY_LOCAL              = 2,
+    ACPI_HEST_NOTIFY_SCI                = 3,
+    ACPI_HEST_NOTIFY_NMI                = 4,
+    ACPI_HEST_NOTIFY_CMCI               = 5,    /* ACPI 5.0 */
+    ACPI_HEST_NOTIFY_MCE                = 6,    /* ACPI 5.0 */
+    ACPI_HEST_NOTIFY_GPIO               = 7,    /* ACPI 6.0 */
+    ACPI_HEST_NOTIFY_SEA                = 8,    /* ACPI 6.1 */
+    ACPI_HEST_NOTIFY_SEI                = 9,    /* ACPI 6.1 */
+    ACPI_HEST_NOTIFY_GSIV               = 10,   /* ACPI 6.1 */
+    ACPI_HEST_NOTIFY_SOFTWARE_DELEGATED = 11,   /* ACPI 6.2 */
+    ACPI_HEST_NOTIFY_RESERVED           = 12    /* 12 and greater are reserved */
 };
 
 /* Values for ConfigWriteEnable bitfield above */

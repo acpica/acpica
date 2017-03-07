@@ -314,6 +314,7 @@ static const char           *AcpiDmHestNotifySubnames[] =
     "SEA",                          /* ACPI 6.1 */
     "SEI",                          /* ACPI 6.1 */
     "GSIV",                         /* ACPI 6.1 */
+    "Software Delegated Exception", /* ACPI 6.2 */
     "Unknown Notify Type"           /* Reserved */
 };
 
