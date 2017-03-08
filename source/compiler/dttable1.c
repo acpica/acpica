@@ -1344,9 +1344,10 @@ DtCompileHmat (
     DT_FIELD                **PFieldList = (DT_FIELD **) List;
     DT_FIELD                *SubtableStart;
     DT_FIELD                *EntryStart;
-    ACPI_HMAT_STRUCTURE     *HmatStruct = NULL;
-    ACPI_HMAT_LOCALITY      *HmatLocality = NULL;
-    ACPI_HMAT_CACHE         *HmatCache = NULL;
+    ACPI_HMAT_STRUCTURE     *HmatStruct;
+    ACPI_HMAT_LOCALITY      *HmatLocality;
+    ACPI_HMAT_CACHE         *HmatCache;
+    ACPI_DMTABLE_INFO       *InfoTable;
     UINT32                  IntPDNumber;
     UINT32                  TgtPDNumber;
     UINT64                  EntryNumber;
@@ -1379,54 +1380,23 @@ DtCompileHmat (
         HmatStruct = ACPI_CAST_PTR (ACPI_HMAT_STRUCTURE, Subtable->Buffer);
         HmatStruct->Length = Subtable->Length;
 
+        /* Compile HMAT structure body */
+
         switch (HmatStruct->Type)
         {
         case ACPI_HMAT_TYPE_ADDRESS_RANGE:
 
-            /* Compile "Memory Subsystem Address Range" structure */
-
-            Status = DtCompileTable (PFieldList, AcpiDmTableInfoHmat0,
-                &Subtable, TRUE);
-            if (ACPI_FAILURE (Status))
-            {
-                return (Status);
-            }
-            DtInsertSubtable (ParentTable, Subtable);
-            HmatStruct->Length += Subtable->Length;
+            InfoTable = AcpiDmTableInfoHmat0;
             break;
 
         case ACPI_HMAT_TYPE_LOCALITY:
 
-            /*
-             * Compile "System Locality Latency and Bandwidth Information"
-             * structure.
-             */
-            Status = DtCompileTable (PFieldList, AcpiDmTableInfoHmat1,
-                &Subtable, TRUE);
-            if (ACPI_FAILURE (Status))
-            {
-                return (Status);
-            }
-            DtInsertSubtable (ParentTable, Subtable);
-            HmatStruct->Length += Subtable->Length;
-            HmatLocality = ACPI_SUB_PTR (ACPI_HMAT_LOCALITY,
-                Subtable->Buffer, sizeof (ACPI_HMAT_STRUCTURE));
+            InfoTable = AcpiDmTableInfoHmat1;
             break;
 
         case ACPI_HMAT_TYPE_CACHE:
 
-            /* Compile "Memory Side Cache Information" structure */
-
-            Status = DtCompileTable (PFieldList, AcpiDmTableInfoHmat2,
-                &Subtable, TRUE);
-            if (ACPI_FAILURE (Status))
-            {
-                return (Status);
-            }
-            DtInsertSubtable (ParentTable, Subtable);
-            HmatStruct->Length += Subtable->Length;
-            HmatCache = ACPI_SUB_PTR (ACPI_HMAT_CACHE,
-                Subtable->Buffer, sizeof (ACPI_HMAT_STRUCTURE));
+            InfoTable = AcpiDmTableInfoHmat2;
             break;
 
         default:
@@ -1435,89 +1405,96 @@ DtCompileHmat (
             return (AE_ERROR);
         }
 
+        Status = DtCompileTable (PFieldList, InfoTable, &Subtable, TRUE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+        DtInsertSubtable (ParentTable, Subtable);
+        HmatStruct->Length += Subtable->Length;
+
+        /* Compile HMAT structure additionals */
+
         switch (HmatStruct->Type)
         {
         case ACPI_HMAT_TYPE_LOCALITY:
 
-            if (HmatLocality)
+            HmatLocality = ACPI_SUB_PTR (ACPI_HMAT_LOCALITY,
+                Subtable->Buffer, sizeof (ACPI_HMAT_STRUCTURE));
+
+            /* Compile initiator proximity domain list */
+
+            IntPDNumber = 0;
+            while (*PFieldList)
             {
-                /* Compile initiator proximity domain list */
-
-                IntPDNumber = 0;
-                while (*PFieldList)
+                Status = DtCompileTable (PFieldList,
+                    AcpiDmTableInfoHmat1a, &Subtable, TRUE);
+                if (ACPI_FAILURE (Status))
                 {
-                    Status = DtCompileTable (PFieldList,
-                        AcpiDmTableInfoHmat1a, &Subtable, TRUE);
-                    if (ACPI_FAILURE (Status))
-                    {
-                        return (Status);
-                    }
-                    if (!Subtable)
-                    {
-                        break;
-                    }
-
-                    DtInsertSubtable (ParentTable, Subtable);
-                    HmatStruct->Length += Subtable->Length;
-                    IntPDNumber++;
+                    return (Status);
                 }
-                HmatLocality->NumberOfInitiatorPDs = IntPDNumber;
-
-                /* Compile target proximity domain list */
-
-                TgtPDNumber = 0;
-                while (*PFieldList)
+                if (!Subtable)
                 {
-                    Status = DtCompileTable (PFieldList,
-                        AcpiDmTableInfoHmat1b, &Subtable, TRUE);
-                    if (ACPI_FAILURE (Status))
-                    {
-                        return (Status);
-                    }
-                    if (!Subtable)
-                    {
-                        break;
-                    }
-
-                    DtInsertSubtable (ParentTable, Subtable);
-                    HmatStruct->Length += Subtable->Length;
-                    TgtPDNumber++;
+                    break;
                 }
-                HmatLocality->NumberOfTargetPDs = TgtPDNumber;
+                DtInsertSubtable (ParentTable, Subtable);
+                HmatStruct->Length += Subtable->Length;
+                IntPDNumber++;
+            }
+            HmatLocality->NumberOfInitiatorPDs = IntPDNumber;
 
-                /* Save start of the entries for reporting errors */
+            /* Compile target proximity domain list */
 
-                EntryStart = *PFieldList;
-
-                /* Compile latency/bandwidth entries */
-
-                EntryNumber = 0;
-                while (*PFieldList)
+            TgtPDNumber = 0;
+            while (*PFieldList)
+            {
+                Status = DtCompileTable (PFieldList,
+                    AcpiDmTableInfoHmat1b, &Subtable, TRUE);
+                if (ACPI_FAILURE (Status))
                 {
-                    Status = DtCompileTable (PFieldList,
-                        AcpiDmTableInfoHmat1c, &Subtable, TRUE);
-                    if (ACPI_FAILURE (Status))
-                    {
-                        return (Status);
-                    }
-                    if (!Subtable)
-                    {
-                        break;
-                    }
-
-                    DtInsertSubtable (ParentTable, Subtable);
-                    HmatStruct->Length += Subtable->Length;
-                    EntryNumber++;
+                    return (Status);
                 }
-
-                /* Validate number of entries */
-
-                if (EntryNumber !=
-                    ((UINT64)IntPDNumber * (UINT64)TgtPDNumber))
+                if (!Subtable)
                 {
-                    DtFatal (ASL_MSG_INVALID_EXPRESSION, EntryStart, "HMAT");
-                    return (AE_ERROR);
+                    break;
                 }
+                DtInsertSubtable (ParentTable, Subtable);
+                HmatStruct->Length += Subtable->Length;
+                TgtPDNumber++;
+            }
+            HmatLocality->NumberOfTargetPDs = TgtPDNumber;
+
+            /* Save start of the entries for reporting errors */
+
+            EntryStart = *PFieldList;
+
+            /* Compile latency/bandwidth entries */
+
+            EntryNumber = 0;
+            while (*PFieldList)
+            {
+                Status = DtCompileTable (PFieldList,
+                    AcpiDmTableInfoHmat1c, &Subtable, TRUE);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
+                if (!Subtable)
+                {
+                    break;
+                }
+                DtInsertSubtable (ParentTable, Subtable);
+                HmatStruct->Length += Subtable->Length;
+                EntryNumber++;
+            }
+
+            /* Validate number of entries */
+
+            if (EntryNumber !=
+                ((UINT64)IntPDNumber * (UINT64)TgtPDNumber))
+            {
+                DtFatal (ASL_MSG_INVALID_EXPRESSION, EntryStart, "HMAT");
+                return (AE_ERROR);
             }
             break;
 
@@ -1525,28 +1502,26 @@ DtCompileHmat (
 
             /* Compile SMBIOS handles */
 
-            if (HmatCache)
-			{
-                SMBIOSHandleNumber = 0;
-                while (*PFieldList)
+            HmatCache = ACPI_SUB_PTR (ACPI_HMAT_CACHE,
+                Subtable->Buffer, sizeof (ACPI_HMAT_STRUCTURE));
+            SMBIOSHandleNumber = 0;
+            while (*PFieldList)
+            {
+                Status = DtCompileTable (PFieldList,
+                    AcpiDmTableInfoHmat2a, &Subtable, TRUE);
+                if (ACPI_FAILURE (Status))
                 {
-                    Status = DtCompileTable (PFieldList,
-                        AcpiDmTableInfoHmat2a, &Subtable, TRUE);
-                    if (ACPI_FAILURE (Status))
-                    {
-                        return (Status);
-                    }
-                    if (!Subtable)
-                    {
-                        break;
-                    }
-
-                    DtInsertSubtable (ParentTable, Subtable);
-                    HmatStruct->Length += Subtable->Length;
-                    SMBIOSHandleNumber++;
+                    return (Status);
                 }
-                HmatCache->NumberOfSMBIOSHandles = SMBIOSHandleNumber;
+                if (!Subtable)
+                {
+                    break;
+                }
+                DtInsertSubtable (ParentTable, Subtable);
+                HmatStruct->Length += Subtable->Length;
+                SMBIOSHandleNumber++;
             }
+            HmatCache->NumberOfSMBIOSHandles = SMBIOSHandleNumber;
             break;
 
         default:

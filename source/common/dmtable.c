@@ -319,6 +319,14 @@ static const char           *AcpiDmHestNotifySubnames[] =
     "Unknown Notify Type"           /* Reserved */
 };
 
+static const char           *AcpiDmHmatSubnames[] =
+{
+    "Memory Subystem Address Range",
+    "System Locality Latency and Bandwidth Information",
+    "Memory Side Cache Information",
+    "Unknown Structure Type"         /* Reserved */
+};
+
 static const char           *AcpiDmMadtSubnames[] =
 {
     "Processor Local APIC",             /* ACPI_MADT_TYPE_LOCAL_APIC */
@@ -921,6 +929,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_UINT16:
         case ACPI_DMT_DMAR:
         case ACPI_DMT_HEST:
+        case ACPI_DMT_HMAT:
         case ACPI_DMT_NFIT:
 
             ByteLength = 2;
@@ -1102,27 +1111,27 @@ AcpiDmDumpTable (
             AcpiOsPrintf ("%1.1X\n", (*Target >> 4) & 0x03);
             break;
 
-        case ACPI_DMT_FLAGS5:
+        case ACPI_DMT_FLAGS4_0:
 
-            AcpiOsPrintf ("%1.1X\n", (*Target) & 0x0F);
+            AcpiOsPrintf ("%1.1X\n", (*(UINT32 *)Target) & 0x0F);
             break;
 
-        case ACPI_DMT_FLAGS6:
+        case ACPI_DMT_FLAGS4_4:
 
-            AcpiOsPrintf ("%1.1X\n", (*Target >> 4) & 0x0F);
+            AcpiOsPrintf ("%1.1X\n", (*(UINT32 *)Target >> 4) & 0x0F);
             break;
 
-        case ACPI_DMT_FLAGS7:
+        case ACPI_DMT_FLAGS4_8:
 
             AcpiOsPrintf ("%1.1X\n", (*(UINT32 *)Target >> 8) & 0x0F);
             break;
 
-        case ACPI_DMT_FLAGS8:
+        case ACPI_DMT_FLAGS4_12:
 
             AcpiOsPrintf ("%1.1X\n", (*(UINT32 *)Target >> 12) & 0x0F);
             break;
 
-        case ACPI_DMT_FLAGS9:
+        case ACPI_DMT_FLAGS16_16:
 
             AcpiOsPrintf ("%4.4X\n", (*(UINT32 *)Target >> 16) & 0xFFFF);
             break;
@@ -1446,6 +1455,20 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf (UINT8_FORMAT, *Target,
                 AcpiDmHestNotifySubnames[Temp8]);
+            break;
+
+        case ACPI_DMT_HMAT:
+
+            /* HMAT subtable types */
+
+            Temp16 = *Target;
+            if (Temp16 > ACPI_HMAT_TYPE_RESERVED)
+            {
+                Temp16 = ACPI_HMAT_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf (UINT16_FORMAT, *Target,
+                AcpiDmHmatSubnames[Temp16]);
             break;
 
         case ACPI_DMT_IORTMEM:

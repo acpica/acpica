@@ -679,31 +679,31 @@ DtCompileFlag (
         BitLength = 2;
         break;
 
-    case ACPI_DMT_FLAGS5:
+    case ACPI_DMT_FLAGS4_0:
 
         BitPosition = 0;
         BitLength = 4;
         break;
 
-    case ACPI_DMT_FLAGS6:
+    case ACPI_DMT_FLAGS4_4:
 
         BitPosition = 4;
         BitLength = 4;
         break;
 
-    case ACPI_DMT_FLAGS7:
+    case ACPI_DMT_FLAGS4_8:
 
         BitPosition = 8;
         BitLength = 4;
         break;
 
-    case ACPI_DMT_FLAGS8:
+    case ACPI_DMT_FLAGS4_12:
 
         BitPosition = 12;
         BitLength = 4;
         break;
 
-    case ACPI_DMT_FLAGS9:
+    case ACPI_DMT_FLAGS16_16:
 
         BitPosition = 16;
         BitLength = 16;
