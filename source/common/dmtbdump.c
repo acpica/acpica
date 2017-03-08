@@ -3441,6 +3441,136 @@ AcpiDmDumpPmtt (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpPptt
+ *
+ * PARAMETERS:  Table               - A PMTT table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a PPTT. This table type consists
+ *              of an open-ended number of subtables.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpPptt (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_SUBTABLE_HEADER    *SubTable;
+    ACPI_PPTT_PROCESSOR     *PpttProcessor;
+    UINT8                   Length;
+    UINT8                   SubTableOffset;
+    UINT32                  Offset = sizeof (ACPI_TABLE_FPDT);
+    ACPI_DMTABLE_INFO       *InfoTable;
+    UINT32                  i;
+
+
+    /* There is no main table (other than the standard ACPI header) */
+
+    /* Subtables */
+
+    Offset = sizeof (ACPI_TABLE_HEADER);
+    while (Offset < Table->Length)
+    {
+        AcpiOsPrintf ("\n");
+
+        /* Common subtable header */
+
+        SubTable = ACPI_ADD_PTR (ACPI_SUBTABLE_HEADER, Table, Offset);
+        if (SubTable->Length < sizeof (ACPI_SUBTABLE_HEADER))
+        {
+            AcpiOsPrintf ("Invalid subtable length\n");
+            return;
+        }
+        Status = AcpiDmDumpTable (Table->Length, Offset, SubTable,
+            SubTable->Length, AcpiDmTableInfoPpttHdr);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        switch (SubTable->Type)
+        {
+        case ACPI_PPTT_TYPE_PROCESSOR:
+
+            InfoTable = AcpiDmTableInfoPptt0;
+            Length = sizeof (ACPI_PPTT_PROCESSOR);
+            break;
+
+        case ACPI_PPTT_TYPE_CACHE:
+
+            InfoTable = AcpiDmTableInfoPptt1;
+            Length = sizeof (ACPI_PPTT_CACHE);
+            break;
+
+        case ACPI_PPTT_TYPE_ID:
+
+            InfoTable = AcpiDmTableInfoPptt2;
+            Length = sizeof (ACPI_PPTT_ID);
+            break;
+
+        default:
+
+            AcpiOsPrintf ("\n**** Unknown PPTT subtable type 0x%X\n\n",
+                SubTable->Type);
+
+            /* Attempt to continue */
+
+            goto NextSubTable;
+        }
+
+        if (SubTable->Length < Length)
+        {
+            AcpiOsPrintf ("Invalid subtable length\n");
+            return;
+        }
+        Status = AcpiDmDumpTable (Table->Length, Offset, SubTable,
+            SubTable->Length, InfoTable);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+        SubTableOffset = Length;
+
+        switch (SubTable->Type)
+        {
+        case ACPI_PPTT_TYPE_PROCESSOR:
+
+            PpttProcessor = ACPI_CAST_PTR (ACPI_PPTT_PROCESSOR, SubTable);
+
+            /* Dump SMBIOS handles */
+
+            if ((UINT8)(SubTable->Length - SubTableOffset) <
+                (UINT8)(PpttProcessor->NumberOfPrivResources * 4))
+            {
+                AcpiOsPrintf ("Invalid private resource number\n");
+                return;
+            }
+            for (i = 0; i < PpttProcessor->NumberOfPrivResources; i++)
+            {
+                Status = AcpiDmDumpTable (Table->Length, Offset + SubTableOffset,
+                    ACPI_ADD_PTR (ACPI_SUBTABLE_HEADER, SubTable, SubTableOffset),
+                    4, AcpiDmTableInfoPptt0a);
+                SubTableOffset += 4;
+            }
+            break;
+
+        default:
+
+            break;
+        }
+
+NextSubTable:
+        /* Point to next subtable */
+
+        Offset += SubTable->Length;
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpS3pt
  *
  * PARAMETERS:  Table               - A S3PT table
