@@ -602,7 +602,8 @@ enum AcpiHestTypes
     ACPI_HEST_TYPE_AER_BRIDGE           = 8,
     ACPI_HEST_TYPE_GENERIC_ERROR        = 9,
     ACPI_HEST_TYPE_GENERIC_ERROR_V2     = 10,
-    ACPI_HEST_TYPE_RESERVED             = 11    /* 11 and greater are reserved */
+    ACPI_HEST_TYPE_IA32_DEFERRED_CHECK  = 11,
+    ACPI_HEST_TYPE_RESERVED             = 12    /* 12 and greater are reserved */
 };
 
 
@@ -720,7 +721,7 @@ typedef struct acpi_hest_ia_machine_check
 {
     ACPI_HEST_HEADER        Header;
     UINT16                  Reserved1;
-    UINT8                   Flags;
+    UINT8                   Flags;              /* See flags ACPI_HEST_GLOBAL, etc. above */
     UINT8                   Enabled;
     UINT32                  RecordsToPreallocate;
     UINT32                  MaxSectionsPerRecord;
@@ -738,7 +739,7 @@ typedef struct acpi_hest_ia_corrected
 {
     ACPI_HEST_HEADER        Header;
     UINT16                  Reserved1;
-    UINT8                   Flags;
+    UINT8                   Flags;              /* See flags ACPI_HEST_GLOBAL, etc. above */
     UINT8                   Enabled;
     UINT32                  RecordsToPreallocate;
     UINT32                  MaxSectionsPerRecord;
@@ -901,6 +902,23 @@ typedef struct acpi_hest_generic_data_v300
 #define ACPI_HEST_GEN_VALID_FRU_ID          (1)
 #define ACPI_HEST_GEN_VALID_FRU_STRING      (1<<1)
 #define ACPI_HEST_GEN_VALID_TIMESTAMP       (1<<2)
+
+
+/* 11: IA32 Deferred Machine Check Exception (ACPI 6.2) */
+
+typedef struct acpi_hest_ia_deferred_check
+{
+    ACPI_HEST_HEADER        Header;
+    UINT16                  Reserved1;
+    UINT8                   Flags;              /* See flags ACPI_HEST_GLOBAL, etc. above */
+    UINT8                   Enabled;
+    UINT32                  RecordsToPreallocate;
+    UINT32                  MaxSectionsPerRecord;
+    ACPI_HEST_NOTIFY        Notify;
+    UINT8                   NumHardwareBanks;
+    UINT8                   Reserved2[3];
+
+} ACPI_HEST_IA_DEFERRED_CHECK;
 
 
 /*******************************************************************************

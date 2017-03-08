@@ -1730,6 +1730,14 @@ AcpiDmDumpHest (
             SubTableLength = sizeof (ACPI_HEST_GENERIC_V2);
             break;
 
+        case ACPI_HEST_TYPE_IA32_DEFERRED_CHECK:
+
+            InfoTable = AcpiDmTableInfoHest11;
+            SubTableLength = sizeof (ACPI_HEST_IA_DEFERRED_CHECK);
+            BankCount = (ACPI_CAST_PTR (ACPI_HEST_IA_DEFERRED_CHECK,
+                SubTable))->NumHardwareBanks;
+            break;
+
         default:
 
             /* Cannot continue on unknown type - no length */

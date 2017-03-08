@@ -275,6 +275,7 @@
 #define ACPI_HEST8_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_HEST_AER_BRIDGE,f)
 #define ACPI_HEST9_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_HEST_GENERIC,f)
 #define ACPI_HEST10_OFFSET(f)           (UINT16) ACPI_OFFSET (ACPI_HEST_GENERIC_V2,f)
+#define ACPI_HEST11_OFFSET(f)           (UINT16) ACPI_OFFSET (ACPI_HEST_IA_DEFERRED_CHECK,f)
 #define ACPI_HESTN_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_HEST_NOTIFY,f)
 #define ACPI_HESTB_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_HEST_IA_ERROR_BANK,f)
 #define ACPI_HMAT0_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_HMAT_ADDRESS_RANGE,f)
@@ -416,6 +417,7 @@
 #define ACPI_HEST0_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_HEST_IA_MACHINE_CHECK,f,o)
 #define ACPI_HEST1_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_HEST_IA_CORRECTED,f,o)
 #define ACPI_HEST6_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_HEST_AER_ROOT,f,o)
+#define ACPI_HEST11_FLAG_OFFSET(f,o)    ACPI_FLAG_OFFSET (ACPI_HEST_IA_DEFERRED_CHECK,f,o)
 
 /*
  * Required terminator for all tables below
@@ -1504,6 +1506,27 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoHest10[] =
     {ACPI_DMT_UINT64,   ACPI_HEST10_OFFSET (ReadAckWrite),          "Read Ack Write", 0},
     ACPI_DMT_TERMINATOR
 };
+
+/* 11: IA32 Deferred Machine Check */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoHest11[] =
+{
+    ACPI_DM_HEST_HEADER,
+    {ACPI_DMT_UINT16,   ACPI_HEST11_OFFSET (Reserved1),             "Reserved1", 0},
+    {ACPI_DMT_UINT8,    ACPI_HEST11_OFFSET (Flags),                 "Flags (decoded below)", DT_FLAG},
+    {ACPI_DMT_FLAG0,    ACPI_HEST11_FLAG_OFFSET (Flags,0),          "Firmware First", 0},
+    {ACPI_DMT_FLAG2,    ACPI_HEST11_FLAG_OFFSET (Flags,0),          "GHES Assist", 0},
+
+    {ACPI_DMT_UINT8,    ACPI_HEST11_OFFSET (Enabled),               "Enabled", 0},
+    {ACPI_DMT_UINT32,   ACPI_HEST11_OFFSET (RecordsToPreallocate),  "Records To Preallocate", 0},
+    {ACPI_DMT_UINT32,   ACPI_HEST11_OFFSET (MaxSectionsPerRecord),  "Max Sections Per Record", 0},
+    {ACPI_DMT_HESTNTFY, ACPI_HEST11_OFFSET (Notify),                "Notify", 0},
+    {ACPI_DMT_UINT8,    ACPI_HEST11_OFFSET (NumHardwareBanks),      "Num Hardware Banks", 0},
+    {ACPI_DMT_UINT24,   ACPI_HEST11_OFFSET (Reserved2[0]),          "Reserved2", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* Notification Structure */
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoHestNotify[] =
 {

@@ -1249,6 +1249,16 @@ DtCompileHest (
             InfoTable = AcpiDmTableInfoHest9;
             break;
 
+        case ACPI_HEST_TYPE_GENERIC_ERROR_V2:
+
+            InfoTable = AcpiDmTableInfoHest10;
+            break;
+
+        case ACPI_HEST_TYPE_IA32_DEFERRED_CHECK:
+
+            InfoTable = AcpiDmTableInfoHest11;
+            break;
+
         default:
 
             /* Cannot continue on unknown type */
@@ -1280,6 +1290,12 @@ DtCompileHest (
         case ACPI_HEST_TYPE_IA32_CORRECTED_CHECK:
 
             BankCount = (ACPI_CAST_PTR (ACPI_HEST_IA_CORRECTED,
+                Subtable->Buffer))->NumHardwareBanks;
+            break;
+
+        case ACPI_HEST_TYPE_IA32_DEFERRED_CHECK:
+
+            BankCount = (ACPI_CAST_PTR (ACPI_HEST_IA_DEFERRED_CHECK,
                 Subtable->Buffer))->NumHardwareBanks;
             break;
 
