@@ -1091,27 +1091,27 @@ AcpiDmDumpTable (
             AcpiOsPrintf ("%1.1X\n", (*Target >> 4) & 0x03);
             break;
 
-        case ACPI_DMT_FLAGS5:
+        case ACPI_DMT_FLAGS4_0:
 
-            AcpiOsPrintf ("%1.1X\n", (*Target) & 0x0F);
+            AcpiOsPrintf ("%1.1X\n", (*(UINT32 *)Target) & 0x0F);
             break;
 
-        case ACPI_DMT_FLAGS6:
+        case ACPI_DMT_FLAGS4_4:
 
-            AcpiOsPrintf ("%1.1X\n", (*Target >> 4) & 0x0F);
+            AcpiOsPrintf ("%1.1X\n", (*(UINT32 *)Target >> 4) & 0x0F);
             break;
 
-        case ACPI_DMT_FLAGS7:
+        case ACPI_DMT_FLAGS4_8:
 
             AcpiOsPrintf ("%1.1X\n", (*(UINT32 *)Target >> 8) & 0x0F);
             break;
 
-        case ACPI_DMT_FLAGS8:
+        case ACPI_DMT_FLAGS4_12:
 
             AcpiOsPrintf ("%1.1X\n", (*(UINT32 *)Target >> 12) & 0x0F);
             break;
 
-        case ACPI_DMT_FLAGS9:
+        case ACPI_DMT_FLAGS16_16:
 
             AcpiOsPrintf ("%4.4X\n", (*(UINT32 *)Target >> 16) & 0xFFFF);
             break;

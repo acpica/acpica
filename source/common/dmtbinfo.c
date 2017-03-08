@@ -1595,7 +1595,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoHmat0[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoHmat1[] =
 {
     {ACPI_DMT_UINT8,    ACPI_HMAT1_OFFSET (Flags),                  "Flags (decoded below)", 0},
-    {ACPI_DMT_FLAGS5,   ACPI_HMAT1_FLAG_OFFSET (Flags,0),           "Memory Hierarchy", 0},
+    {ACPI_DMT_FLAGS4_0, ACPI_HMAT1_FLAG_OFFSET (Flags,0),           "Memory Hierarchy", 0},
     {ACPI_DMT_UINT8,    ACPI_HMAT1_OFFSET (DataType),               "Data Type", 0},
     {ACPI_DMT_UINT16,   ACPI_HMAT1_OFFSET (Reserved1),              "Reserved1", 0},
     {ACPI_DMT_UINT32,   ACPI_HMAT1_OFFSET (NumberOfInitiatorPDs),   "Initiator Proximity Domains #", 0},
@@ -1627,17 +1627,17 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoHmat1c[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoHmat2[] =
 {
-    {ACPI_DMT_UINT32,   ACPI_HMAT2_OFFSET (MemoryPD),               "Memory Proximity Domain", 0},
-    {ACPI_DMT_UINT32,   ACPI_HMAT2_OFFSET (Reserved1),              "Reserved1", 0},
-    {ACPI_DMT_UINT64,   ACPI_HMAT2_OFFSET (CacheSize),              "Memory Side Cache Size", 0},
-    {ACPI_DMT_UINT32,   ACPI_HMAT2_OFFSET (CacheAttributes),        "Cache Attributes (decoded below)", 0},
-    {ACPI_DMT_FLAGS5,   ACPI_HMAT2_FLAG_OFFSET (CacheAttributes,0), "Total Cache Levels", 0},
-    {ACPI_DMT_FLAGS6,   ACPI_HMAT2_FLAG_OFFSET (CacheAttributes,0), "Cache Level", 0},
-    {ACPI_DMT_FLAGS7,   ACPI_HMAT2_FLAG_OFFSET (CacheAttributes,0), "Cache Associativity", 0},
-    {ACPI_DMT_FLAGS8,   ACPI_HMAT2_FLAG_OFFSET (CacheAttributes,0), "Write Policy", 0},
-    {ACPI_DMT_FLAGS9,   ACPI_HMAT2_FLAG_OFFSET (CacheAttributes,0), "Cache Line Size", 0},
-    {ACPI_DMT_UINT16,   ACPI_HMAT2_OFFSET (Reserved2),              "Reserved2", 0},
-    {ACPI_DMT_UINT16,   ACPI_HMAT2_OFFSET (NumberOfSMBIOSHandles),  "SMBIOS Handle #", 0},
+    {ACPI_DMT_UINT32,       ACPI_HMAT2_OFFSET (MemoryPD),               "Memory Proximity Domain", 0},
+    {ACPI_DMT_UINT32,       ACPI_HMAT2_OFFSET (Reserved1),              "Reserved1", 0},
+    {ACPI_DMT_UINT64,       ACPI_HMAT2_OFFSET (CacheSize),              "Memory Side Cache Size", 0},
+    {ACPI_DMT_UINT32,       ACPI_HMAT2_OFFSET (CacheAttributes),        "Cache Attributes (decoded below)", 0},
+    {ACPI_DMT_FLAGS4_0,     ACPI_HMAT2_FLAG_OFFSET (CacheAttributes,0), "Total Cache Levels", 0},
+    {ACPI_DMT_FLAGS4_4,     ACPI_HMAT2_FLAG_OFFSET (CacheAttributes,0), "Cache Level", 0},
+    {ACPI_DMT_FLAGS4_8,     ACPI_HMAT2_FLAG_OFFSET (CacheAttributes,0), "Cache Associativity", 0},
+    {ACPI_DMT_FLAGS4_12,    ACPI_HMAT2_FLAG_OFFSET (CacheAttributes,0), "Write Policy", 0},
+    {ACPI_DMT_FLAGS16_16,   ACPI_HMAT2_FLAG_OFFSET (CacheAttributes,0), "Cache Line Size", 0},
+    {ACPI_DMT_UINT16,       ACPI_HMAT2_OFFSET (Reserved2),              "Reserved2", 0},
+    {ACPI_DMT_UINT16,       ACPI_HMAT2_OFFSET (NumberOfSMBIOSHandles),  "SMBIOS Handle #", 0},
     ACPI_DMT_TERMINATOR
 };
 
