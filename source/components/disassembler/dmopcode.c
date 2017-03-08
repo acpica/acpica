@@ -1118,9 +1118,7 @@ AcpiDmDisassembleOneOp (
 
         if (AcpiGbl_DmEmitExternalOpcodes)
         {
-            AcpiDmEmitExternal (AcpiPsGetArg(Op, 0),
-                AcpiPsGetArg(Op, 1));
-            break;
+            AcpiDmEmitExternal (Op, AcpiPsGetArg(Op, 0));
         }
 
         break;

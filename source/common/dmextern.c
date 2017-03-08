@@ -1286,7 +1286,8 @@ AcpiDmEmitExternals (
  * RETURN:      None
  *
  * DESCRIPTION: Emit an External() ASL statement for the current External
- *              parse object
+ *              parse object. Note: External Ops are named types so the
+ *              namepath is contained within NameOp->Name.Path.
  *
  ******************************************************************************/
 
@@ -1296,7 +1297,7 @@ AcpiDmEmitExternal (
     ACPI_PARSE_OBJECT       *TypeOp)
 {
     AcpiOsPrintf ("External (");
-    AcpiDmNamestring (NameOp->Common.Value.Name);
+    AcpiDmNamestring (NameOp->Named.Path);
     AcpiOsPrintf ("%s)\n",
         AcpiDmGetObjectTypeName ((ACPI_OBJECT_TYPE) TypeOp->Common.Value.Integer));
 }
