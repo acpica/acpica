@@ -1799,9 +1799,10 @@ AcpiDmDumpHmat (
     ACPI_TABLE_HEADER       *Table)
 {
     ACPI_STATUS             Status;
+    ACPI_TABLE_HMAT         *Hmat;
     ACPI_HMAT_STRUCTURE     *HmatStruct;
-    ACPI_HMAT_LOCALITY      *HmatLocality = NULL;
-    ACPI_HMAT_CACHE         *HmatCache = NULL;
+    ACPI_HMAT_LOCALITY      *HmatLocality;
+    ACPI_HMAT_CACHE         *HmatCache;
     UINT32                  Offset;
     UINT32                  SubTableOffset;
     UINT32                  Length;
@@ -1816,19 +1817,24 @@ AcpiDmDumpHmat (
     {
         return;
     }
-
+    Hmat = ACPI_CAST_PTR (ACPI_TABLE_HMAT, Table);
     Offset = sizeof (ACPI_TABLE_HMAT);
 
     while (Offset < Table->Length)
     {
+        AcpiOsPrintf ("\n");
         SubTableOffset = 0;
 
         /* Dump HMAT structure header */
 
         HmatStruct = ACPI_ADD_PTR (ACPI_HMAT_STRUCTURE, Table, Offset);
-        AcpiOsPrintf ("\n");
+        if (HmatStruct->Length < sizeof (ACPI_HMAT_STRUCTURE))
+        {
+            AcpiOsPrintf ("Invalid HMAT structure length\n");
+            return;
+        }
         Status = AcpiDmDumpTable (Table->Length, Offset, HmatStruct,
-            sizeof (ACPI_HMAT_STRUCTURE), AcpiDmTableInfoHmatHdr);
+            HmatStruct->Length, AcpiDmTableInfoHmatHdr);
         if (ACPI_FAILURE (Status))
         {
             return;
@@ -1846,16 +1852,12 @@ AcpiDmDumpHmat (
 
             InfoTable = AcpiDmTableInfoHmat1;
             Length = sizeof (ACPI_HMAT_LOCALITY);
-            HmatLocality = ACPI_CAST_PTR (ACPI_HMAT_LOCALITY, HmatStruct);
-            SubTableOffset = sizeof (ACPI_HMAT_LOCALITY);
             break;
 
         case ACPI_HMAT_TYPE_CACHE:
 
             InfoTable = AcpiDmTableInfoHmat2;
             Length = sizeof (ACPI_HMAT_CACHE);
-            HmatCache = ACPI_CAST_PTR (ACPI_HMAT_CACHE, HmatStruct);
-            SubTableOffset = sizeof (ACPI_HMAT_CACHE);
             break;
 
         default:
@@ -1865,19 +1867,19 @@ AcpiDmDumpHmat (
 
             /* Attempt to continue */
 
-            if (HmatStruct->Length < sizeof (ACPI_HMAT_STRUCTURE))
-            {
-                AcpiOsPrintf ("Invalid HMAT structure length\n");
-                return;
-            }
             Length = HmatStruct->Length;
             goto NextSubTable;
         }
 
         /* Dump HMAT structure body */
 
+        if (HmatStruct->Length < Length)
+        {
+            AcpiOsPrintf ("Invalid HMAT structure length\n");
+            return;
+        }
         Status = AcpiDmDumpTable (Table->Length, Offset, HmatStruct,
-            Length, InfoTable);
+            HmatStruct->Length, InfoTable);
         if (ACPI_FAILURE (Status))
         {
             return;
@@ -1889,81 +1891,81 @@ AcpiDmDumpHmat (
         {
         case ACPI_HMAT_TYPE_LOCALITY:
 
-            if (HmatLocality)
+            HmatLocality = ACPI_CAST_PTR (ACPI_HMAT_LOCALITY, HmatStruct);
+            SubTableOffset = sizeof (ACPI_HMAT_LOCALITY);
+
+            /* Dump initiator proximity domains */
+
+            if ((UINT32)(HmatStruct->Length - SubTableOffset) <
+                (UINT32)(HmatLocality->NumberOfInitiatorPDs * 4))
             {
-                /* Dump initiator proximity domains */
+                AcpiOsPrintf ("Invalid initiator proximity domain number\n");
+                return;
+            }
+            for (i = 0; i < HmatLocality->NumberOfInitiatorPDs; i++)
+            {
+                Status = AcpiDmDumpTable (Table->Length, Offset + SubTableOffset,
+                    ACPI_ADD_PTR (ACPI_HMAT_STRUCTURE, HmatStruct, SubTableOffset),
+                    4, AcpiDmTableInfoHmat1a);
+                SubTableOffset += 4;
+            }
 
-                if ((UINT32)(HmatStruct->Length - SubTableOffset) <
-                    (UINT32)(HmatLocality->NumberOfInitiatorPDs * 4))
-                {
-                    AcpiOsPrintf ("Invalid initiator proximity domain number\n");
-                    return;
-                }
-                for (i = 0; i < HmatLocality->NumberOfInitiatorPDs; i++)
+            /* Dump target proximity domains */
+
+            if ((UINT32)(HmatStruct->Length - SubTableOffset) <
+                (UINT32)(HmatLocality->NumberOfTargetPDs * 4))
+            {
+                AcpiOsPrintf ("Invalid target proximity domain number\n");
+                return;
+            }
+            for (i = 0; i < HmatLocality->NumberOfTargetPDs; i++)
+            {
+                Status = AcpiDmDumpTable (Table->Length, Offset + SubTableOffset,
+                    ACPI_ADD_PTR (ACPI_HMAT_STRUCTURE, HmatStruct, SubTableOffset),
+                    4, AcpiDmTableInfoHmat1b);
+                SubTableOffset += 4;
+            }
+
+            /* Dump latency/bandwidth entris */
+
+            if ((UINT32)(HmatStruct->Length - SubTableOffset) <
+                (UINT32)(HmatLocality->NumberOfInitiatorPDs *
+                         HmatLocality->NumberOfTargetPDs * 2))
+            {
+                AcpiOsPrintf ("Invalid latency/bandwidth entry number\n");
+                return;
+            }
+            for (i = 0; i < HmatLocality->NumberOfInitiatorPDs; i++)
+            {
+                for (j = 0; j < HmatLocality->NumberOfTargetPDs; j++)
                 {
                     Status = AcpiDmDumpTable (Table->Length, Offset + SubTableOffset,
                         ACPI_ADD_PTR (ACPI_HMAT_STRUCTURE, HmatStruct, SubTableOffset),
-                        4, AcpiDmTableInfoHmat1a);
-                    SubTableOffset += 4;
-                }
-
-                /* Dump target proximity domains */
-
-                if ((UINT32)(HmatStruct->Length - SubTableOffset) <
-                    (UINT32)(HmatLocality->NumberOfTargetPDs * 4))
-                {
-                    AcpiOsPrintf ("Invalid target proximity domain number\n");
-                    return;
-                }
-                for (i = 0; i < HmatLocality->NumberOfTargetPDs; i++)
-                {
-                    Status = AcpiDmDumpTable (Table->Length, Offset + SubTableOffset,
-                        ACPI_ADD_PTR (ACPI_HMAT_STRUCTURE, HmatStruct, SubTableOffset),
-                        4, AcpiDmTableInfoHmat1b);
-                    SubTableOffset += 4;
-                }
-
-                /* Dump latency/bandwidth entris */
-
-                if ((UINT32)(HmatStruct->Length - SubTableOffset) <
-                    (UINT32)(HmatLocality->NumberOfInitiatorPDs *
-                             HmatLocality->NumberOfTargetPDs * 2))
-                {
-                    AcpiOsPrintf ("Invalid latency/bandwidth entry number\n");
-                    return;
-                }
-                for (i = 0; i < HmatLocality->NumberOfInitiatorPDs; i++)
-                {
-                    for (j = 0; j < HmatLocality->NumberOfTargetPDs; j++)
-                    {
-                        Status = AcpiDmDumpTable (Table->Length, Offset + SubTableOffset,
-                            ACPI_ADD_PTR (ACPI_HMAT_STRUCTURE, HmatStruct, SubTableOffset),
-                            2, AcpiDmTableInfoHmat1c);
-                        SubTableOffset += 2;
-                    }
+                        2, AcpiDmTableInfoHmat1c);
+                    SubTableOffset += 2;
                 }
             }
             break;
 
         case ACPI_HMAT_TYPE_CACHE:
 
-            if (HmatCache)
-            {
-                /* Dump SMBIOS handles */
+            HmatCache = ACPI_CAST_PTR (ACPI_HMAT_CACHE, HmatStruct);
+            SubTableOffset = sizeof (ACPI_HMAT_CACHE);
 
-                if ((UINT32)(HmatStruct->Length - SubTableOffset) <
-                    (UINT32)(HmatCache->NumberOfSMBIOSHandles * 2))
-                {
-                    AcpiOsPrintf ("Invalid SMBIOS handle number\n");
-                    return;
-                }
-                for (i = 0; i < HmatCache->NumberOfSMBIOSHandles; i++)
-                {
-                    Status = AcpiDmDumpTable (Table->Length, Offset + SubTableOffset,
-                        ACPI_ADD_PTR (ACPI_HMAT_STRUCTURE, HmatStruct, SubTableOffset),
-                        2, AcpiDmTableInfoHmat2a);
-                    SubTableOffset += 2;
-                }
+            /* Dump SMBIOS handles */
+
+            if ((UINT32)(HmatStruct->Length - SubTableOffset) <
+                (UINT32)(HmatCache->NumberOfSMBIOSHandles * 2))
+            {
+                AcpiOsPrintf ("Invalid SMBIOS handle number\n");
+                return;
+            }
+            for (i = 0; i < HmatCache->NumberOfSMBIOSHandles; i++)
+            {
+                Status = AcpiDmDumpTable (Table->Length, Offset + SubTableOffset,
+                    ACPI_ADD_PTR (ACPI_HMAT_STRUCTURE, HmatStruct, SubTableOffset),
+                    2, AcpiDmTableInfoHmat2a);
+                SubTableOffset += 2;
             }
             break;
 
@@ -1976,7 +1978,6 @@ NextSubTable:
         /* Point to next HMAT structure subtable */
 
         Offset += (HmatStruct->Length);
-        HmatStruct = ACPI_ADD_PTR (ACPI_HMAT_STRUCTURE, Table, Offset);
     }
 }
 
