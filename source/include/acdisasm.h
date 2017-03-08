@@ -929,7 +929,7 @@ AcpiDmAddExternalsToNamespace (
     void);
 
 UINT32
-AcpiDmGetExternalMethodCount (
+AcpiDmGetUnresolvedExternalMethodCount (
     void);
 
 void

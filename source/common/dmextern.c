@@ -1082,23 +1082,28 @@ AcpiDmAddExternalsToNamespace (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmGetExternalMethodCount
+ * FUNCTION:    AcpiDmGetUnresolvedExternalMethodCount
  *
  * PARAMETERS:  None
  *
- * RETURN:      The number of control method externals in the external list
+ * RETURN:      The number of unresolved control method externals in the
+ *              external list
  *
- * DESCRIPTION: Return the number of method externals that have been generated.
- *              If any control method externals have been found, we must
- *              re-parse the entire definition block with the new information
- *              (number of arguments for the methods.) This is limitation of
- *              AML, we don't know the number of arguments from the control
- *              method invocation itself.
+ * DESCRIPTION: Return the number of unresolved external methods that have been
+ *              generated. If any unresolved control method externals have been
+ *              found, we must re-parse the entire definition block with the new
+ *              information (number of arguments for the methods.)
+ *              This is limitation of AML, we don't know the number of arguments
+ *              from the control method invocation itself.
+ *
+ *              Note: resolved external control methods are external control
+ *              methods encoded with the AML_EXTERNAL_OP bytecode within the
+ *              AML being disassembled.
  *
  ******************************************************************************/
 
 UINT32
-AcpiDmGetExternalMethodCount (
+AcpiDmGetUnresolvedExternalMethodCount (
     void)
 {
     ACPI_EXTERNAL_LIST      *External = AcpiGbl_ExternalList;
@@ -1107,7 +1112,8 @@ AcpiDmGetExternalMethodCount (
 
     while (External)
     {
-        if (External->Type == ACPI_TYPE_METHOD)
+        if (External->Type == ACPI_TYPE_METHOD &&
+            !(External->Flags & ACPI_EXT_ORIGIN_FROM_OPCODE))
         {
             Count++;
         }
