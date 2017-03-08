@@ -179,6 +179,7 @@
 #define ACPI_SIG_HEST           "HEST"      /* Hardware Error Source Table */
 #define ACPI_SIG_MADT           "APIC"      /* Multiple APIC Description Table */
 #define ACPI_SIG_MSCT           "MSCT"      /* Maximum System Characteristics Table */
+#define ACPI_SIG_PPTT           "PPTT"      /* Processor Properties Topology Table */
 #define ACPI_SIG_SBST           "SBST"      /* Smart Battery Specification Table */
 #define ACPI_SIG_SLIT           "SLIT"      /* System Locality Distance Information Table */
 #define ACPI_SIG_SRAT           "SRAT"      /* System Resource Affinity Table */
@@ -1578,6 +1579,95 @@ typedef struct acpi_nfit_flush_address
     UINT64                  HintAddress[1];     /* Variable length */
 
 } ACPI_NFIT_FLUSH_ADDRESS;
+
+
+/*******************************************************************************
+ *
+ * PPTT - Processor Properties Topology Table (ACPI 6.2)
+ *        Version 1
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_pptt
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+
+} ACPI_TABLE_PPTT;
+
+/* Values for Type field above */
+
+enum AcpiPpttType
+{
+    ACPI_PPTT_TYPE_PROCESSOR            = 0,
+    ACPI_PPTT_TYPE_CACHE                = 1,
+    ACPI_PPTT_TYPE_ID                   = 2,
+    ACPI_PPTT_TYPE_RESERVED             = 3
+};
+
+
+/* 0: Processor Hierarchy Node Structure */
+
+typedef struct acpi_pptt_processor {
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT16                  Reserved;
+    UINT32                  Flags;
+    UINT32                  Parent;
+    UINT32                  AcpiProcessorId;
+    UINT32                  NumberOfPrivResources;
+
+} ACPI_PPTT_PROCESSOR;
+
+/* Flags */
+
+#define ACPI_PPTT_PHYSICAL_PACKAGE          (1)     /* Physical package */
+#define ACPI_PPTT_ACPI_PROCESSOR_ID_VALID   (2)     /* ACPI Processor ID valid */
+
+
+/* 1: Cache Type Structure */
+
+typedef struct acpi_pptt_cache {
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT16                  Reserved;
+    UINT32                  Flags;
+    UINT32                  NextLevelOfCache;
+    UINT32                  Size;
+    UINT32                  NumberOfSets;
+    UINT8                   Associativity;
+    UINT8                   Attributes;
+    UINT16                  LineSize;
+
+} ACPI_PPTT_CACHE;
+
+/* Flags */
+
+#define ACPI_PPTT_SIZE_PROPERTY_VALID       (1)     /* Physical property valid */
+#define ACPI_PPTT_NUMBER_OF_SETS_VALID      (1<<1)  /* Number of sets valid */
+#define ACPI_PPTT_ASSOCIATIVITY_VALID       (1<<2)  /* Associativity valid */
+#define ACPI_PPTT_ALLOCATION_TYPE_VALID     (1<<3)  /* Allocation type valid */
+#define ACPI_PPTT_CACHE_TYPE_VALID          (1<<4)  /* Cache type valid */
+#define ACPI_PPTT_WRITE_POLICY_VALID        (1<<5)  /* Write policy valid */
+#define ACPI_PPTT_LINE_SIZE_VALID           (1<<6)  /* Line size valid */
+
+/* Masks for Attributes */
+
+#define ACPI_PPTT_MASK_ALLOCATION_TYPE      (0x03)  /* Allocation type */
+#define ACPI_PPTT_MASK_CACHE_TYPE           (0x0C)  /* Cache type */
+#define ACPI_PPTT_MASK_WRITE_POLICY         (0x10)  /* Write policy */
+
+
+/* 2: ID Structure */
+
+typedef struct acpi_pptt_id {
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT16                  Reserved;
+    UINT32                  VendorId;
+    UINT64                  Level1Id;
+    UINT64                  Level2Id;
+    UINT16                  MajorRev;
+    UINT16                  MinorRev;
+    UINT16                  SpinRev;
+
+} ACPI_PPTT_ID;
 
 
 /*******************************************************************************
