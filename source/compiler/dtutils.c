@@ -553,6 +553,7 @@ DtGetFieldLength (
     case ACPI_DMT_UINT16:
     case ACPI_DMT_DMAR:
     case ACPI_DMT_HEST:
+    case ACPI_DMT_HMAT:
     case ACPI_DMT_NFIT:
     case ACPI_DMT_PCI_PATH:
 

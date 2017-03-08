@@ -318,6 +318,14 @@ static const char           *AcpiDmHestNotifySubnames[] =
     "Unknown Notify Type"           /* Reserved */
 };
 
+static const char           *AcpiDmHmatSubnames[] =
+{
+    "Memory Subystem Address Range",
+    "System Locality Latency and Bandwidth Information",
+    "Memory Side Cache Information",
+    "Unknown Structure Type"         /* Reserved */
+};
+
 static const char           *AcpiDmMadtSubnames[] =
 {
     "Processor Local APIC",             /* ACPI_MADT_TYPE_LOCAL_APIC */
@@ -910,6 +918,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_UINT16:
         case ACPI_DMT_DMAR:
         case ACPI_DMT_HEST:
+        case ACPI_DMT_HMAT:
         case ACPI_DMT_NFIT:
 
             ByteLength = 2;
@@ -1435,6 +1444,20 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf (UINT8_FORMAT, *Target,
                 AcpiDmHestNotifySubnames[Temp8]);
+            break;
+
+        case ACPI_DMT_HMAT:
+
+            /* HMAT subtable types */
+
+            Temp16 = *Target;
+            if (Temp16 > ACPI_HMAT_TYPE_RESERVED)
+            {
+                Temp16 = ACPI_HMAT_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf (UINT16_FORMAT, *Target,
+                AcpiDmHmatSubnames[Temp16]);
             break;
 
         case ACPI_DMT_IORTMEM:

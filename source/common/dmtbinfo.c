@@ -1565,7 +1565,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoHmat[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoHmatHdr[] =
 {
-    {ACPI_DMT_UINT16,   ACPI_HMATH_OFFSET (Type),                   "Type", 0},
+    {ACPI_DMT_HMAT,     ACPI_HMATH_OFFSET (Type),                   "Structure Type", 0},
     {ACPI_DMT_UINT16,   ACPI_HMATH_OFFSET (Reserved),               "Reserved", 0},
     {ACPI_DMT_UINT32,   ACPI_HMATH_OFFSET (Length),                 "Length", 0},
     ACPI_DMT_TERMINATOR
