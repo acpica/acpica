@@ -340,6 +340,10 @@
 #define ACPI_PMTT1A_OFFSET(f)           (UINT16) ACPI_OFFSET (ACPI_PMTT_DOMAIN,f)
 #define ACPI_PMTT2_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_PMTT_PHYSICAL_COMPONENT,f)
 #define ACPI_PMTTH_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_PMTT_HEADER,f)
+#define ACPI_PPTTH_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_SUBTABLE_HEADER,f)
+#define ACPI_PPTT0_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_PPTT_PROCESSOR,f)
+#define ACPI_PPTT1_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_PPTT_CACHE,f)
+#define ACPI_PPTT2_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_PPTT_ID,f)
 #define ACPI_S3PTH_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_FPDT_HEADER,f)
 #define ACPI_S3PT0_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_S3PT_RESUME,f)
 #define ACPI_S3PT1_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_S3PT_SUSPEND,f)
@@ -367,6 +371,8 @@
 #define ACPI_FADT_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_FADT,f,o)
 #define ACPI_FACS_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_FACS,f,o)
 #define ACPI_HPET_FLAG_OFFSET(f,o)      ACPI_FLAG_OFFSET (ACPI_TABLE_HPET,f,o)
+#define ACPI_PPTT0_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_PPTT_PROCESSOR,f,o)
+#define ACPI_PPTT1_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_PPTT_CACHE,f,o)
 #define ACPI_SRAT0_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_SRAT_CPU_AFFINITY,f,o)
 #define ACPI_SRAT1_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_SRAT_MEM_AFFINITY,f,o)
 #define ACPI_SRAT2_FLAG_OFFSET(f,o)     ACPI_FLAG_OFFSET (ACPI_SRAT_X2APIC_CPU_AFFINITY,f,o)
@@ -2668,6 +2674,82 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoPmtt2[] =
     ACPI_DMT_TERMINATOR
 };
 
+
+/*******************************************************************************
+ *
+ * PPTT - Processor Properties Topology Table (ACPI 6.2)
+ *
+ ******************************************************************************/
+
+/* Main table consists of only the standard ACPI header - subtables follow */
+
+/* Common Subtable header (one per Subtable) */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoPpttHdr[] =
+{
+    {ACPI_DMT_PPTT,     ACPI_PPTTH_OFFSET (Type),                   "Subtable Type", 0},
+    {ACPI_DMT_UINT8,    ACPI_PPTTH_OFFSET (Length),                 "Length", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 0: Processor hierarchy node */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoPptt0[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_PPTT0_OFFSET (Reserved),               "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_PPTT0_OFFSET (Flags),                  "Flags", 0},
+    {ACPI_DMT_FLAG0,    ACPI_PPTT0_FLAG_OFFSET (Flags,0),           "Physical package", 0},
+    {ACPI_DMT_FLAG1,    ACPI_PPTT0_FLAG_OFFSET (Flags,0),           "ACPI Processor ID valid", 0},
+    {ACPI_DMT_UINT32,   ACPI_PPTT0_OFFSET (Parent),                 "Parent", 0},
+    {ACPI_DMT_UINT32,   ACPI_PPTT0_OFFSET (AcpiProcessorId),        "ACPI Processor ID", 0},
+    {ACPI_DMT_UINT32,   ACPI_PPTT0_OFFSET (NumberOfPrivResources),  "Private Resource Number", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoPptt0a[] =
+{
+    {ACPI_DMT_UINT32,   0,                                          "Private Resource", DT_OPTIONAL},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 1: Cache type */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoPptt1[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_PPTT1_OFFSET (Reserved),               "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_PPTT1_OFFSET (Flags),                  "Flags", 0},
+    {ACPI_DMT_FLAG0,    ACPI_PPTT1_FLAG_OFFSET (Flags,0),           "Size valid", 0},
+    {ACPI_DMT_FLAG1,    ACPI_PPTT1_FLAG_OFFSET (Flags,0),           "Number of Sets valid", 0},
+    {ACPI_DMT_FLAG2,    ACPI_PPTT1_FLAG_OFFSET (Flags,0),           "Associativity valid", 0},
+    {ACPI_DMT_FLAG3,    ACPI_PPTT1_FLAG_OFFSET (Flags,0),           "Allocation Type valid", 0},
+    {ACPI_DMT_FLAG4,    ACPI_PPTT1_FLAG_OFFSET (Flags,0),           "Cache Type valid", 0},
+    {ACPI_DMT_FLAG5,    ACPI_PPTT1_FLAG_OFFSET (Flags,0),           "Write Policy valid", 0},
+    {ACPI_DMT_FLAG5,    ACPI_PPTT1_FLAG_OFFSET (Flags,0),           "Line Size valid", 0},
+    {ACPI_DMT_UINT32,   ACPI_PPTT1_OFFSET (NextLevelOfCache),       "Next Level of Cache", 0},
+    {ACPI_DMT_UINT32,   ACPI_PPTT1_OFFSET (Size),                   "Size", 0},
+    {ACPI_DMT_UINT32,   ACPI_PPTT1_OFFSET (NumberOfSets),           "Number of Sets", 0},
+    {ACPI_DMT_UINT8,    ACPI_PPTT1_OFFSET (Associativity),          "Associativity", 0},
+    {ACPI_DMT_UINT8,    ACPI_PPTT1_OFFSET (Attributes),             "Attributes", 0},
+    {ACPI_DMT_FLAGS0,   ACPI_PPTT1_OFFSET (Attributes),             "Allocation Type", 0},
+    {ACPI_DMT_FLAGS2,   ACPI_PPTT1_OFFSET (Attributes),             "Cache Type", 0},
+    {ACPI_DMT_FLAG4,    ACPI_PPTT1_OFFSET (Attributes),             "Write Policy", 0},
+    {ACPI_DMT_UINT16,   ACPI_PPTT1_OFFSET (LineSize),               "Line Size", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 2: ID */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoPptt2[] =
+{
+    {ACPI_DMT_UINT16,   ACPI_PPTT2_OFFSET (Reserved),               "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_PPTT2_OFFSET (VendorId),               "VENDOR_ID", 0},
+    {ACPI_DMT_UINT64,   ACPI_PPTT2_OFFSET (Level1Id),               "LEVEL_1_ID", 0},
+    {ACPI_DMT_UINT64,   ACPI_PPTT2_OFFSET (Level2Id),               "LEVEL_2_ID", 0},
+    {ACPI_DMT_UINT16,   ACPI_PPTT2_OFFSET (MajorRev),               "MAJOR_REV", 0},
+    {ACPI_DMT_UINT16,   ACPI_PPTT2_OFFSET (MinorRev),               "MINOR_REV", 0},
+    {ACPI_DMT_UINT16,   ACPI_PPTT2_OFFSET (SpinRev),                "SPIN_REV", 0},
+    ACPI_DMT_TERMINATOR
+};
 
 /*******************************************************************************
  *

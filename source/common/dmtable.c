@@ -367,6 +367,14 @@ static const char           *AcpiDmPmttSubnames[] =
     "Unknown Subtable Type"         /* Reserved */
 };
 
+static const char           *AcpiDmPpttSubnames[] =
+{
+    "Processor Hierarchy Node",     /* ACPI_PPTT_TYPE_PROCESSOR */
+    "Cache Type",                   /* ACPI_PPTT_TYPE_CACHE */
+    "ID",                           /* ACPI_PMTT_TYPE_ID  */
+    "Unknown Subtable Type"         /* Reserved */
+};
+
 static const char           *AcpiDmSratSubnames[] =
 {
     "Processor Local APIC/SAPIC Affinity",
@@ -468,6 +476,7 @@ const ACPI_DMTABLE_DATA     AcpiDmTableData[] =
     {ACPI_SIG_NFIT, AcpiDmTableInfoNfit,    AcpiDmDumpNfit, DtCompileNfit,  TemplateNfit},
     {ACPI_SIG_PCCT, AcpiDmTableInfoPcct,    AcpiDmDumpPcct, DtCompilePcct,  TemplatePcct},
     {ACPI_SIG_PMTT, NULL,                   AcpiDmDumpPmtt, DtCompilePmtt,  TemplatePmtt},
+    {ACPI_SIG_PPTT, NULL,                   AcpiDmDumpPptt, DtCompilePptt,  TemplatePptt},
     {ACPI_SIG_RASF, AcpiDmTableInfoRasf,    NULL,           NULL,           TemplateRasf},
     {ACPI_SIG_RSDT, NULL,                   AcpiDmDumpRsdt, DtCompileRsdt,  TemplateRsdt},
     {ACPI_SIG_S3PT, NULL,                   NULL,           NULL,           TemplateS3pt},
@@ -894,6 +903,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_MADT:
         case ACPI_DMT_PCCT:
         case ACPI_DMT_PMTT:
+        case ACPI_DMT_PPTT:
         case ACPI_DMT_SRAT:
         case ACPI_DMT_ASF:
         case ACPI_DMT_HESTNTYP:
@@ -1506,6 +1516,20 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf (UINT8_FORMAT, *Target,
                 AcpiDmPmttSubnames[Temp8]);
+            break;
+
+        case ACPI_DMT_PPTT:
+
+            /* PCCT subtable types */
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_PPTT_TYPE_RESERVED)
+            {
+                Temp8 = ACPI_PPTT_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf (UINT8_FORMAT, *Target,
+                AcpiDmPpttSubnames[Temp8]);
             break;
 
         case ACPI_DMT_UNICODE:

@@ -1037,6 +1037,125 @@ DtCompilePmtt (
 
 /******************************************************************************
  *
+ * FUNCTION:    DtCompilePptt
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile PPTT.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompilePptt (
+    void                    **List)
+{
+    ACPI_STATUS             Status;
+    ACPI_SUBTABLE_HEADER    *PpttHeader;
+    ACPI_PPTT_PROCESSOR     *PpttProcessor = NULL;
+    DT_SUBTABLE             *Subtable;
+    DT_SUBTABLE             *ParentTable;
+    ACPI_DMTABLE_INFO       *InfoTable;
+    DT_FIELD                **PFieldList = (DT_FIELD **) List;
+    DT_FIELD                *SubtableStart;
+
+
+    ParentTable = DtPeekSubtable ();
+    while (*PFieldList)
+    {
+        SubtableStart = *PFieldList;
+
+        /* Compile PPTT subtable header */
+
+        Status = DtCompileTable (PFieldList, AcpiDmTableInfoPpttHdr,
+            &Subtable, TRUE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+        DtInsertSubtable (ParentTable, Subtable);
+        PpttHeader = ACPI_CAST_PTR (ACPI_SUBTABLE_HEADER, Subtable->Buffer);
+        PpttHeader->Length = (UINT8)(Subtable->Length);
+
+        switch (PpttHeader->Type)
+        {
+        case ACPI_PPTT_TYPE_PROCESSOR:
+
+            InfoTable = AcpiDmTableInfoPptt0;
+            break;
+
+        case ACPI_PPTT_TYPE_CACHE:
+
+            InfoTable = AcpiDmTableInfoPptt1;
+            break;
+
+        case ACPI_PPTT_TYPE_ID:
+
+            InfoTable = AcpiDmTableInfoPptt2;
+            break;
+
+        default:
+
+            DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "PPTT");
+            return (AE_ERROR);
+        }
+
+        /* Compile PPTT subtable body */
+
+        Status = DtCompileTable (PFieldList, InfoTable, &Subtable, TRUE);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+        DtInsertSubtable (ParentTable, Subtable);
+        PpttHeader->Length += (UINT8)(Subtable->Length);
+
+        /* Compile PPTT subtable additionals */
+
+        switch (PpttHeader->Type)
+        {
+        case ACPI_PPTT_TYPE_PROCESSOR:
+
+            PpttProcessor = ACPI_SUB_PTR (ACPI_PPTT_PROCESSOR,
+                Subtable->Buffer, sizeof (ACPI_SUBTABLE_HEADER));
+            if (PpttProcessor)
+            {
+                /* Compile initiator proximity domain list */
+
+                PpttProcessor->NumberOfPrivResources = 0;
+                while (*PFieldList)
+                {
+                    Status = DtCompileTable (PFieldList,
+                        AcpiDmTableInfoPptt0a, &Subtable, TRUE);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return (Status);
+                    }
+                    if (!Subtable)
+                    {
+                        break;
+                    }
+
+                    DtInsertSubtable (ParentTable, Subtable);
+                    PpttHeader->Length += (UINT8)(Subtable->Length);
+                    PpttProcessor->NumberOfPrivResources++;
+                }
+            }
+            break;
+
+        default:
+
+            break;
+        }
+    }
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    DtCompileRsdt
  *
  * PARAMETERS:  List                - Current field list pointer
