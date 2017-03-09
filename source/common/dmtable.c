@@ -390,6 +390,7 @@ static const char           *AcpiDmSratSubnames[] =
     "Memory Affinity",
     "Processor Local x2APIC Affinity",
     "GICC Affinity",
+    "GIC ITS Affinity",             /* Acpi 6.2 */
     "Unknown Subtable Type"         /* Reserved */
 };
 

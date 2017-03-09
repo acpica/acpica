@@ -1745,7 +1745,8 @@ enum AcpiSratType
     ACPI_SRAT_TYPE_MEMORY_AFFINITY      = 1,
     ACPI_SRAT_TYPE_X2APIC_CPU_AFFINITY  = 2,
     ACPI_SRAT_TYPE_GICC_AFFINITY        = 3,
-    ACPI_SRAT_TYPE_RESERVED             = 4     /* 4 and greater are reserved */
+    ACPI_SRAT_TYPE_GIC_ITS_AFFINITY     = 4,    /* ACPI 6.2 */
+    ACPI_SRAT_TYPE_RESERVED             = 5     /* 5 and greater are reserved */
 };
 
 /*
@@ -1827,6 +1828,18 @@ typedef struct acpi_srat_gicc_affinity
 /* Flags for ACPI_SRAT_GICC_AFFINITY */
 
 #define ACPI_SRAT_GICC_ENABLED     (1)         /* 00: Use affinity structure */
+
+
+/* 4: GCC ITS Affinity (ACPI 6.2) */
+
+typedef struct acpi_srat_gic_its_affinity
+{
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT32                  ProximityDomain;
+    UINT16                  Reserved;
+    UINT32                  ItsId;
+
+} ACPI_SRAT_GIC_ITS_AFFINITY;
 
 
 /* Reset to default packing */

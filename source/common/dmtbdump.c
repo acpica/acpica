@@ -3834,6 +3834,11 @@ AcpiDmDumpSrat (
             InfoTable = AcpiDmTableInfoSrat3;
             break;
 
+        case ACPI_SRAT_TYPE_GIC_ITS_AFFINITY:
+
+            InfoTable = AcpiDmTableInfoSrat4;
+            break;
+
         default:
             AcpiOsPrintf ("\n**** Unknown SRAT subtable type 0x%X\n",
                 SubTable->Type);

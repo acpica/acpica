@@ -354,6 +354,7 @@
 #define ACPI_SRAT1_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_SRAT_MEM_AFFINITY,f)
 #define ACPI_SRAT2_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_SRAT_X2APIC_CPU_AFFINITY,f)
 #define ACPI_SRAT3_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_SRAT_GICC_AFFINITY,f)
+#define ACPI_SRAT4_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_SRAT_GIC_ITS_AFFINITY,f)
 #define ACPI_TCPA_CLIENT_OFFSET(f)      (UINT16) ACPI_OFFSET (ACPI_TABLE_TCPA_CLIENT,f)
 #define ACPI_TCPA_SERVER_OFFSET(f)      (UINT16) ACPI_OFFSET (ACPI_TABLE_TCPA_SERVER,f)
 #define ACPI_VRTC0_OFFSET(f)            (UINT16) ACPI_OFFSET (ACPI_VRTC_ENTRY,f)
@@ -3000,7 +3001,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoSrat2[] =
     ACPI_DMT_TERMINATOR
 };
 
-/* : GICC Affinity (ACPI 5.1) */
+/* 3: GICC Affinity (ACPI 5.1) */
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoSrat3[] =
 {
@@ -3009,6 +3010,16 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoSrat3[] =
     {ACPI_DMT_UINT32,   ACPI_SRAT3_OFFSET (Flags),                  "Flags (decoded below)", DT_FLAG},
     {ACPI_DMT_FLAG0,    ACPI_SRAT3_FLAG_OFFSET (Flags,0),           "Enabled", 0},
     {ACPI_DMT_UINT32,   ACPI_SRAT3_OFFSET (ClockDomain),            "Clock Domain", 0},
+    ACPI_DMT_TERMINATOR
+};
+
+/* 4: GCC ITS Affinity (ACPI 6.2) */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoSrat4[] =
+{
+    {ACPI_DMT_UINT32,   ACPI_SRAT4_OFFSET (ProximityDomain),        "Proximity Domain", 0},
+    {ACPI_DMT_UINT16,   ACPI_SRAT4_OFFSET (Reserved),               "Reserved", 0},
+    {ACPI_DMT_UINT32,   ACPI_SRAT4_OFFSET (ItsId),                  "ITS ID", 0},
     ACPI_DMT_TERMINATOR
 };
 
