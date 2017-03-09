@@ -1492,6 +1492,13 @@ typedef struct acpi_external_file
 } ACPI_EXTERNAL_FILE;
 
 
+typedef struct acpi_parse_object_list
+{
+    ACPI_PARSE_OBJECT               *Op;
+    struct acpi_parse_object_list   *Next;
+
+} ACPI_PARSE_OBJECT_LIST;
+
 /*****************************************************************************
  *
  * Debugger

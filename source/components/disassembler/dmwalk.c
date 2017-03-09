@@ -584,13 +584,6 @@ AcpiDmDescendingOp (
         return (AE_CTRL_DEPTH);
     }
 
-    if (AcpiDmIsTempName(Op))
-    {
-        /* Ignore compiler generated temporary names */
-
-        return (AE_CTRL_DEPTH);
-    }
-
     if (Op->Common.DisasmOpcode == ACPI_DASM_IGNORE_SINGLE)
     {
         /* Ignore this op, but not it's children */
