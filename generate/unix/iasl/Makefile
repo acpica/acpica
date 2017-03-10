@@ -121,6 +121,7 @@ OBJECTS = \
 	$(OBJDIR)/dmresrcl2.o\
 	$(OBJDIR)/dmresrcs.o\
 	$(OBJDIR)/dmrestag.o\
+	$(OBJDIR)/dmswitch.o\
 	$(OBJDIR)/dmtable.o\
 	$(OBJDIR)/dmtables.o\
 	$(OBJDIR)/dmtbdump.o\

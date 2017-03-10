@@ -710,6 +710,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\common\dmswitch.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\common\dmtable.c"
 					>
 				</File>
