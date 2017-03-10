@@ -171,6 +171,7 @@ static BOOLEAN
 AcpiDmIsCaseBlock (
     ACPI_PARSE_OBJECT       *Op);
 
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDmProcessSwitch
@@ -181,8 +182,8 @@ AcpiDmIsCaseBlock (
  *
  * DESCRIPTION: Walk function to create a list of all temporary (_T_) objects.
  *              If a While loop is found that can be converted to a Switch, do
- *              the conversion, remove the temporary name from the list, and mark
- *              the parse op with an IGNORE flag.
+ *              the conversion, remove the temporary name from the list, and
+ *              mark the parse op with an IGNORE flag.
  *
  ******************************************************************************/
 
@@ -196,11 +197,12 @@ AcpiDmProcessSwitch (
     ACPI_PARSE_OBJECT_LIST  *Previous;
     BOOLEAN                 FoundTemp = FALSE;
 
+
     switch (Op->Common.AmlOpcode)
     {
     case AML_NAME_OP:
 
-        Temp = (char *)(&Op->Named.Name);
+        Temp = (char *) (&Op->Named.Name);
 
         if (!strncmp(Temp, "_T_", 3))
         {
@@ -209,7 +211,7 @@ AcpiDmProcessSwitch (
             NewTemp = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_PARSE_OBJECT_LIST));
             if (!NewTemp)
             {
-                return_ACPI_STATUS (AE_NO_MEMORY);
+                return (AE_NO_MEMORY);
             }
 
             if (AcpiGbl_TempListHead)
@@ -226,12 +228,11 @@ AcpiDmProcessSwitch (
                 AcpiGbl_TempListHead->Next = NULL;
             }
         }
-
         break;
 
     case AML_WHILE_OP:
 
-        if (!AcpiDmIsSwitchBlock(Op, &Temp))
+        if (!AcpiDmIsSwitchBlock (Op, &Temp))
         {
             break;
         }
@@ -245,7 +246,7 @@ AcpiDmProcessSwitch (
         {
             /* Note, if we get here Temp is not NULL */
 
-            if (!strncmp(Temp, (char *)(&Current->Op->Named.Name), 4))
+            if (!strncmp(Temp, (char *) (&Current->Op->Named.Name), 4))
             {
                 /* Match found. Ignore disassembly */
 
@@ -264,9 +265,8 @@ AcpiDmProcessSwitch (
 
                 Current->Op = NULL;
                 Current->Next = NULL;
-                ACPI_FREE(Current);
+                ACPI_FREE (Current);
                 FoundTemp = TRUE;
-
                 break;
             }
 
@@ -276,19 +276,18 @@ AcpiDmProcessSwitch (
 
         if (!FoundTemp)
         {
-            fprintf(stderr, "Warning: Declaration for temp name %.4s not found\n",
-                    Temp);
+            fprintf (stderr,
+                "Warning: Declaration for temp name %.4s not found\n", Temp);
         }
-
         break;
 
     default:
-
         break;
     }
 
     return (AE_OK);
 }
+
 
 /*******************************************************************************
  *
@@ -304,9 +303,11 @@ AcpiDmProcessSwitch (
  ******************************************************************************/
 
 void
-AcpiDmClearTempList(void)
+AcpiDmClearTempList (
+    void)
 {
     ACPI_PARSE_OBJECT_LIST      *Current;
+
 
     while (AcpiGbl_TempListHead)
     {
@@ -314,7 +315,7 @@ AcpiDmClearTempList(void)
         AcpiGbl_TempListHead = AcpiGbl_TempListHead->Next;
         Current->Op = NULL;
         Current->Next = NULL;
-        ACPI_FREE(Current);
+        ACPI_FREE (Current);
     }
 }
 
@@ -362,6 +363,7 @@ AcpiDmIsSwitchBlock (
     ACPI_PARSE_OBJECT       *CurrentOp;
     ACPI_PARSE_OBJECT       *TempOp;
 
+
     /* Check for One Op Predicate */
 
     OneOp = AcpiPsGetArg (Op, 0);
@@ -381,17 +383,18 @@ AcpiDmIsSwitchBlock (
     /* Check for Name Op with _T_ string */
 
     NamePathOp = AcpiPsGetArg (StoreOp, 1);
-    if (!NamePathOp || (NamePathOp->Common.AmlOpcode != AML_INT_NAMEPATH_OP))
+    if (!NamePathOp ||
+        (NamePathOp->Common.AmlOpcode != AML_INT_NAMEPATH_OP))
     {
         return (FALSE);
     }
 
-    if (strncmp((char *)(NamePathOp->Common.Value.Name), "_T_", 3))
+    if (strncmp ((char *) (NamePathOp->Common.Value.Name), "_T_", 3))
     {
         return (FALSE);
     }
 
-    *Temp = (char *)(NamePathOp->Common.Value.Name);
+    *Temp = (char *) (NamePathOp->Common.Value.Name);
 
     /* This is a Switch/Case control block */
 
@@ -444,85 +447,82 @@ AcpiDmIsSwitchBlock (
         TempOp = AcpiPsGetArg (CurrentOp, 0);
         switch (TempOp->Common.AmlOpcode)
         {
-            case (AML_LOGICAL_EQUAL_OP):
+        case (AML_LOGICAL_EQUAL_OP):
 
-                /* Ignore just the LEqual Op */
+            /* Ignore just the LEqual Op */
 
-                TempOp->Common.DisasmOpcode = ACPI_DASM_IGNORE_SINGLE;
+            TempOp->Common.DisasmOpcode = ACPI_DASM_IGNORE_SINGLE;
 
-                /* Ignore the NamePath Op */
+            /* Ignore the NamePath Op */
 
-                TempOp = AcpiPsGetArg (TempOp, 0);
-                TempOp->Common.DisasmFlags = ACPI_PARSEOP_IGNORE;
+            TempOp = AcpiPsGetArg (TempOp, 0);
+            TempOp->Common.DisasmFlags = ACPI_PARSEOP_IGNORE;
 
-                /*
-                 * Second arg of LEqual will be the Case predicate.
-                 * Mark it as a predicate and also as a parameter list for paren
-                 * closing and correct indentation.
-                 */
-                PredicateOp = TempOp->Common.Next;
-                PredicateOp->Common.DisasmOpcode = ACPI_DASM_SWITCH_PREDICATE;
-                PredicateOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMETER_LIST;
+            /*
+             * Second arg of LEqual will be the Case predicate.
+             * Mark it as a predicate and also as a parameter list for paren
+             * closing and correct indentation.
+             */
+            PredicateOp = TempOp->Common.Next;
+            PredicateOp->Common.DisasmOpcode = ACPI_DASM_SWITCH_PREDICATE;
+            PredicateOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMETER_LIST;
+            break;
 
-                break;
+        case (AML_LOGICAL_NOT_OP):
 
-            case (AML_LOGICAL_NOT_OP):
+            /*
+             * The Package will be the predicate of the Case statement.
+             * It's under:
+             *            LNOT
+             *                LEQUAL
+             *                    MATCH
+             *                        PACKAGE
+             */
 
-                /*
-                 * The Package will be the predicate of the Case statement.
-                 * It's under:
-                 *            LNOT
-                 *                LEQUAL
-                 *                    MATCH
-                 *                        PACKAGE
-                 */
+            /* Get the LEqual Op from LNot */
 
-                /* Get the LEqual Op from LNot */
+            TempOp = AcpiPsGetArg (TempOp, 0);
 
-                TempOp = AcpiPsGetArg (TempOp, 0);
+            /* Get the Match Op from LEqual */
 
-                /* Get the Match Op from LEqual */
+            TempOp = AcpiPsGetArg (TempOp, 0);
 
-                TempOp = AcpiPsGetArg (TempOp, 0);
+            /* Get the Package Op from Match */
 
-                /* Get the Package Op from Match */
+            PredicateOp = AcpiPsGetArg (TempOp, 0);
 
-                PredicateOp = AcpiPsGetArg (TempOp, 0);
+            /* Mark as parameter list for paren closing */
 
-                /* Mark as parameter list for paren closing */
+            PredicateOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMETER_LIST;
 
-                PredicateOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMETER_LIST;
+            /*
+             * The Package list would be too deeply indented if we
+             * chose to simply ignore the all the parent opcodes, so
+             * we rearrange the parse tree instead.
+             */
 
-                /*
-                 * The Package list would be too deeply indented if we
-                 * chose to simply ignore the all the parent opcodes, so
-                 * we rearrange the parse tree instead.
-                 */
+            /*
+             * Save the second arg of the If/Else Op which is the
+             * block code of code for this Case statement.
+             */
+            TempOp = AcpiPsGetArg (CurrentOp, 1);
 
-                /*
-                 * Save the second arg of the If/Else Op which is the
-                 * block code of code for this Case statement.
-                 */
-                TempOp = AcpiPsGetArg (CurrentOp, 1);
+            /*
+             * Move the Package Op to the child (predicate) of the
+             * Case statement.
+             */
+            CurrentOp->Common.Value.Arg = PredicateOp;
+            PredicateOp->Common.Parent = CurrentOp;
 
-                /*
-                 * Move the Package Op to the child (predicate) of the
-                 * Case statement.
-                 */
-                CurrentOp->Common.Value.Arg = PredicateOp;
-                PredicateOp->Common.Parent = CurrentOp;
+            /* Add the block code */
 
-                /* Add the block code */
+            PredicateOp->Common.Next = TempOp;
+            break;
 
-                PredicateOp->Common.Next = TempOp;
+        default:
 
-                break;
-
-            default:
-
-                /* Should never get here */
-
-                break;
+            /* Should never get here */
+            break;
         }
 
         /* Advance to next Case block */
@@ -551,9 +551,9 @@ AcpiDmIsSwitchBlock (
     /* Ignore the Break Op */
 
     CurrentOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
-
     return (TRUE);
 }
+
 
 /*******************************************************************************
  *
@@ -589,6 +589,7 @@ AcpiDmIsCaseBlock (
 {
     ACPI_PARSE_OBJECT       *CurrentOp;
 
+
     if (!Op)
     {
         return (FALSE);
@@ -621,59 +622,57 @@ AcpiDmIsCaseBlock (
 
     switch (CurrentOp->Common.AmlOpcode)
     {
-        case (AML_LOGICAL_EQUAL_OP):
+    case (AML_LOGICAL_EQUAL_OP):
 
-            /* Next child must be NamePath with string _T_ */
+        /* Next child must be NamePath with string _T_ */
 
-            CurrentOp = AcpiPsGetArg (CurrentOp, 0);
-            if (!CurrentOp || !CurrentOp->Common.Value.Name ||
-                strncmp(CurrentOp->Common.Value.Name, "_T_", 3))
-            {
-                return (FALSE);
-            }
-
-            break;
-
-        case (AML_LOGICAL_NOT_OP):
-
-            /* Child of LNot must be LEqual op */
-
-            CurrentOp = AcpiPsGetArg (CurrentOp, 0);
-            if (!CurrentOp || (CurrentOp->Common.AmlOpcode != AML_LOGICAL_EQUAL_OP))
-            {
-                return (FALSE);
-            }
-
-            /* Child of LNot must be Match op */
-
-            CurrentOp = AcpiPsGetArg (CurrentOp, 0);
-            if (!CurrentOp || (CurrentOp->Common.AmlOpcode != AML_MATCH_OP))
-            {
-                return (FALSE);
-            }
-
-            /* First child of Match must be Package op */
-
-            CurrentOp = AcpiPsGetArg (CurrentOp, 0);
-            if (!CurrentOp || (CurrentOp->Common.AmlOpcode != AML_PACKAGE_OP))
-            {
-                return (FALSE);
-            }
-
-            /* Third child of Match must be NamePath with string _T_ */
-
-            CurrentOp = AcpiPsGetArg (CurrentOp->Common.Parent, 2);
-            if (!CurrentOp || !CurrentOp->Common.Value.Name ||
-                strncmp(CurrentOp->Common.Value.Name, "_T_", 3))
-            {
-                return (FALSE);
-            }
-
-            break;
-
-        default:
-
+        CurrentOp = AcpiPsGetArg (CurrentOp, 0);
+        if (!CurrentOp || !CurrentOp->Common.Value.Name ||
+            strncmp(CurrentOp->Common.Value.Name, "_T_", 3))
+        {
             return (FALSE);
+        }
+        break;
+
+    case (AML_LOGICAL_NOT_OP):
+
+        /* Child of LNot must be LEqual op */
+
+        CurrentOp = AcpiPsGetArg (CurrentOp, 0);
+        if (!CurrentOp || (CurrentOp->Common.AmlOpcode != AML_LOGICAL_EQUAL_OP))
+        {
+            return (FALSE);
+        }
+
+        /* Child of LNot must be Match op */
+
+        CurrentOp = AcpiPsGetArg (CurrentOp, 0);
+        if (!CurrentOp || (CurrentOp->Common.AmlOpcode != AML_MATCH_OP))
+        {
+            return (FALSE);
+        }
+
+        /* First child of Match must be Package op */
+
+        CurrentOp = AcpiPsGetArg (CurrentOp, 0);
+        if (!CurrentOp || (CurrentOp->Common.AmlOpcode != AML_PACKAGE_OP))
+        {
+            return (FALSE);
+        }
+
+        /* Third child of Match must be NamePath with string _T_ */
+
+        CurrentOp = AcpiPsGetArg (CurrentOp->Common.Parent, 2);
+        if (!CurrentOp || !CurrentOp->Common.Value.Name ||
+            strncmp(CurrentOp->Common.Value.Name, "_T_", 3))
+        {
+            return (FALSE);
+        }
+        break;
+
+    default:
+
+        return (FALSE);
     }
 
     return (TRUE);
