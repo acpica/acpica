@@ -800,7 +800,8 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_SRAT_X2APIC_CPU_AFFINITY",       SRC_TYPE_STRUCT},
     {"ACPI_TABLE_TCPA_CLIENT",              SRC_TYPE_STRUCT},
     {"ACPI_TABLE_TCPA_SERVER",              SRC_TYPE_STRUCT},
-    {"ACPI_TPM2_CONTROL",                   SRC_TYPE_STRUCT},
+    {"ACPI_TPM2_TRAILER",                   SRC_TYPE_STRUCT},
+    {"ACPI_TPM2_ARM_SMC",                   SRC_TYPE_STRUCT},
     {"ACPI_WDAT_ENTRY",                     SRC_TYPE_STRUCT},
 
     /* Data Table compiler */

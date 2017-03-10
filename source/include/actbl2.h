@@ -1522,7 +1522,8 @@ enum AcpiSpmiInterfaceTypes
  *        Version 2
  *
  * Conforms to "TCG ACPI Specification, Family 1.2 and 2.0",
- * December 19, 2014
+ * Version 1.2, Revision 8
+ * February 27, 2017
  *
  * NOTE: There are two versions of the table with the same signature --
  * the client version and the server version. The common PlatformClass
@@ -1593,7 +1594,8 @@ typedef struct acpi_table_tcpa_server
  *        Version 4
  *
  * Conforms to "TCG ACPI Specification, Family 1.2 and 2.0",
- * December 19, 2014
+ * Version 1.2, Revision 8
+ * February 27, 2017
  *
  ******************************************************************************/
 
@@ -1616,6 +1618,42 @@ typedef struct acpi_table_tpm2
 #define ACPI_TPM2_MEMORY_MAPPED                     6
 #define ACPI_TPM2_COMMAND_BUFFER                    7
 #define ACPI_TPM2_COMMAND_BUFFER_WITH_START_METHOD  8
+#define ACPI_TPM2_COMMAND_BUFFER_WITH_ARM_SMC       11  /* V1.2 Rev 8 */
+
+
+/* Trailer appears after any StartMethod subtables */
+
+typedef struct acpi_tpm2_trailer
+{
+    UINT32                  MinimumLogLength;   /* Minimum length for the event log area */
+    UINT64                  LogAddress;         /* Address of the event log area */
+
+} ACPI_TPM2_TRAILER;
+
+
+/*
+ * Subtables (StartMethod-specific)
+ */
+
+/* 11: Start Method for ARM SMC (V1.2 Rev 8) */
+
+typedef struct acpi_tpm2_arm_smc
+{
+    UINT32                  GlobalInterrupt;
+    UINT8                   InterruptFlags;
+    UINT8                   OperationFlags;
+    UINT16                  Reserved;
+    UINT32                  FunctionId;
+
+} ACPI_TPM2_ARM_SMC;
+
+/* Values for InterruptFlags above */
+
+#define ACPI_TPM2_INTERRUPT_SUPPORT     (1)
+
+/* Values for OperationFlags above */
+
+#define ACPI_TPM2_IDLE_SUPPORT          (1)
 
 
 /*******************************************************************************
