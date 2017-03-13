@@ -642,7 +642,7 @@ AdReparseOneTable (
 
     /* New namespace, add the external definitions first */
 
-    AcpiDmAddExternalsToNamespace ();
+    AcpiDmAddExternalListToNamespace ();
 
     /* For -ca option: clear the list of comment addresses. */
 

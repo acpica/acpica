@@ -918,6 +918,12 @@ AcpiDmAddOpToExternalList (
     UINT16                  Flags);
 
 void
+AcpiDmAnnotateExternalNsNodeForRegionOrMethod (
+    UINT8                   Type,
+    ACPI_NAMESPACE_NODE     **Node,
+    UINT32                  Value);
+
+void
 AcpiDmAddNodeToExternalList (
     ACPI_NAMESPACE_NODE     *Node,
     UINT8                   Type,
@@ -925,8 +931,14 @@ AcpiDmAddNodeToExternalList (
     UINT16                  Flags);
 
 void
-AcpiDmAddExternalsToNamespace (
+AcpiDmAddExternalListToNamespace (
     void);
+
+void
+AcpiDmAddOneExternalToNamespace (
+    char                    *Path,
+    UINT8                   Type,
+    UINT32                  Value);
 
 UINT32
 AcpiDmGetUnresolvedExternalMethodCount (

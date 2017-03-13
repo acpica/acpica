@@ -226,6 +226,12 @@ AcpiDmCreateNewExternal (
     UINT32                  Value,
     UINT16                  Flags);
 
+static ACPI_STATUS
+AcpiDmResolveExternal (
+    char                    *Path,
+    UINT8                   Type,
+    ACPI_NAMESPACE_NODE     **Node);
+
 
 /*******************************************************************************
  *
@@ -582,7 +588,7 @@ AcpiDmGetExternalsFromFile (
     {
         /* Add the external(s) to the namespace */
 
-        AcpiDmAddExternalsToNamespace ();
+        AcpiDmAddExternalListToNamespace ();
 
         AcpiOsPrintf ("%s: Imported %u external method definitions\n",
             Gbl_ExternalRefFilename, ImportCount);
@@ -1013,68 +1019,171 @@ AcpiDmCreateNewExternal (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmAddExternalsToNamespace
+ * FUNCTION:    AcpiDmResolveExternal
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Path               - Path of the external
+ *              Type               - Type of the external
+ *              Node               - Input node for AcpiNsLookup
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Resolve the external within the namespace by AcpiNsLookup.
+ *              If the returned node is an external and has the same type
+ *              we assume that it was either an existing external or a
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiDmResolveExternal (
+    char                    *Path,
+    UINT8                   Type,
+    ACPI_NAMESPACE_NODE     **Node)
+{
+    ACPI_STATUS             Status;
+
+
+    Status = AcpiNsLookup (NULL, Path, Type,
+        ACPI_IMODE_LOAD_PASS1,
+        ACPI_NS_ERROR_IF_FOUND | ACPI_NS_EXTERNAL | ACPI_NS_DONT_OPEN_SCOPE,
+        NULL, Node);
+
+    if (!Node)
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status,
+            "while adding external to namespace [%s]", Path));
+    }
+
+    /* Note the asl code "external(a) external(a)" is acceptable ASL */
+
+    else if ((*Node)->Type == Type && 
+        (*Node)->Flags & ANOBJ_IS_EXTERNAL)
+    {
+        return (AE_OK);
+    }
+    else
+    {
+        ACPI_EXCEPTION ((AE_INFO, AE_ERROR,
+            "[%s] has conflicting declarations", Path));
+    }
+
+    return (AE_ERROR);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmAnnotateExternalNsNodeForRegionOrMethod
+ *
+ * PARAMETERS:  Type                  - Type of the external
+ *              Node                  - Namespace node from AcpiNsLookup
+ *              ParamCount            - Value to be used for Method
  *
  * RETURN:      None
  *
- * DESCRIPTION: Add all externals to the namespace. Allows externals to be
+ * DESCRIPTION: Add one external to the namespace. Allows external to be
  *              "resolved".
  *
  ******************************************************************************/
 
 void
-AcpiDmAddExternalsToNamespace (
-    void)
+AcpiDmAnnotateExternalNsNodeForRegionOrMethod (
+    UINT8                   Type,
+    ACPI_NAMESPACE_NODE     **Node,
+    UINT32                  ParamCount)
+{
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+
+
+    switch (Type)
+    {
+    case ACPI_TYPE_METHOD:
+
+        /* For methods, we need to save the argument count */
+
+        ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_METHOD);
+        ObjDesc->Method.ParamCount = (UINT8) ParamCount;
+        (*Node)->Object = ObjDesc;
+        break;
+
+    case ACPI_TYPE_REGION:
+
+        /* Regions require a region sub-object */
+
+        ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_REGION);
+        ObjDesc->Region.Node = *Node;
+        (*Node)->Object = ObjDesc;
+        break;
+
+    default:
+
+        break;
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmAddOneExternalToNamespace
+ *
+ * PARAMETERS:  Path                   - External parse object
+ *              Type                   - Type of parse object 
+ *              ParamCount             - External method parameter count
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Add one external to the namespace by resolvign the external
+ *              (by performing a namespace lookup) and annotating the resulting
+ *              namespace node with the approperiate information if the type
+ *              is ACPI_TYPE_REGION or ACPI_TYPE_METHOD.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmAddOneExternalToNamespace (
+    char                    *Path,
+    UINT8                   Type,
+    UINT32                  ParamCount)
 {
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node;
-    ACPI_OPERAND_OBJECT     *ObjDesc;
+
+
+    Status = AcpiDmResolveExternal (Path, Type, &Node);
+
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    AcpiDmAnnotateExternalNsNodeForRegionOrMethod (Type, &Node, ParamCount);
+
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmAddExternalListToNamespace
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Add all externals within AcpiGbl_ExternalList to the namespace.
+ *              Allows externals to be "resolved".
+ *
+ ******************************************************************************/
+
+void
+AcpiDmAddExternalListToNamespace (
+    void)
+{
     ACPI_EXTERNAL_LIST      *External = AcpiGbl_ExternalList;
 
 
     while (External)
     {
-        /* Add the external name (object) into the namespace */
-
-        Status = AcpiNsLookup (NULL, External->InternalPath, External->Type,
-            ACPI_IMODE_LOAD_PASS1,
-            ACPI_NS_ERROR_IF_FOUND | ACPI_NS_EXTERNAL | ACPI_NS_DONT_OPEN_SCOPE,
-            NULL, &Node);
-
-        if (ACPI_FAILURE (Status))
-        {
-            ACPI_EXCEPTION ((AE_INFO, Status,
-                "while adding external to namespace [%s]",
-                External->Path));
-        }
-
-        else switch (External->Type)
-        {
-        case ACPI_TYPE_METHOD:
-
-            /* For methods, we need to save the argument count */
-
-            ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_METHOD);
-            ObjDesc->Method.ParamCount = (UINT8) External->Value;
-            Node->Object = ObjDesc;
-            break;
-
-        case ACPI_TYPE_REGION:
-
-            /* Regions require a region sub-object */
-
-            ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_REGION);
-            ObjDesc->Region.Node = Node;
-            Node->Object = ObjDesc;
-            break;
-
-        default:
-
-            break;
-        }
-
+        AcpiDmAddOneExternalToNamespace (External->InternalPath,
+            External->Type, External->Value);
         External = External->Next;
     }
 }
