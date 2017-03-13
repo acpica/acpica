@@ -586,7 +586,7 @@ AslDoOneFile (
         CvDbgPrint ("OUTPUTFILENAME: %s\n", Gbl_OutputFilenamePrefix);
             Gbl_Files[ASL_FILE_INPUT].Filename =
                 Gbl_Files[ASL_FILE_AML_OUTPUT].Filename;
-
+            AcpiGbl_DisasmFlag = TRUE;
             fprintf (stderr, "\n");
             AslDoDisassembly ();
 

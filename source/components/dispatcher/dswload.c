@@ -558,6 +558,10 @@ AcpiDsLoad1EndOp (
     ACPI_OBJECT_TYPE        ObjectType;
     ACPI_STATUS             Status = AE_OK;
 
+#ifdef ACPI_ASL_COMPILER
+    UINT8                   ParamCount;
+#endif
+
 
     ACPI_FUNCTION_TRACE (DsLoad1EndOp);
 
@@ -642,6 +646,38 @@ AcpiDsLoad1EndOp (
         }
     }
 
+#ifdef ACPI_ASL_COMPILER
+    /*
+     * For external opcode, get the object type from the argument and
+     * get the parameter count from the argument's next.
+     */
+    if (AcpiGbl_DisasmFlag &&
+        Op->Common.AmlOpcode == AML_EXTERNAL_OP &&
+        Op->Common.Node &&
+        Op->Common.Value.Arg &&
+        Op->Common.Value.Arg->Common.Next)
+    {
+        /*
+         * Note, if this external is not a method
+         * Op->Common.Value.Arg->Common.Next->Common.Value.Integer == 0
+         * Therefore, ParamCount will be 0.
+         */
+        ParamCount = Op->Common.Value.Arg->Common.Next->Common.Value.Integer;
+        ObjectType = Op->Common.Value.Arg->Common.Value.Integer;
+        Op->Common.Node->Flags &= ANOBJ_IS_EXTERNAL;
+        Op->Common.Node->Type = (UINT8) ObjectType;
+
+        AcpiDmAnnotateExternalNsNodeForRegionOrMethod (ObjectType, &Op->Common.Node, ParamCount);
+
+        /*
+         * Add the external to the external list because we may be
+         * emitting code based off of the items within the external list.
+         */
+        AcpiDmAddOpToExternalList (Op, Op->Named.Path, ObjectType, ParamCount,
+           ACPI_EXT_ORIGIN_FROM_OPCODE | ACPI_EXT_RESOLVED_REFERENCE);
+    }
+#endif
+
     /*
      * If we are executing a method, do not create any namespace objects
      * during the load phase, only during execution.
@@ -689,6 +725,7 @@ AcpiDsLoad1EndOp (
     /* Pop the scope stack (only if loading a table) */
 
     if (!WalkState->MethodNode &&
+        Op->Common.AmlOpcode != AML_EXTERNAL_OP &&
         AcpiNsOpensScope (ObjectType))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "(%s): Popping scope for Op %p\n",
