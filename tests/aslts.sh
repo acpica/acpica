@@ -128,7 +128,7 @@ run_aslts() {
 	fi
 
 	# Execute the test suite
-	if [ "$BINCOMPONLY" == "no" ]; then
+	if [ "x$BINCOMPONLY" = "xno" ]; then
 		echo ""
 		echo "ASL Test Suite Started: `date`"
 		start_time=$(date)
