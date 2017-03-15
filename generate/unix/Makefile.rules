@@ -11,7 +11,7 @@ $(FINAL_PROG) : $(PROG)
 	$(COPYPROG)
 
 $(PROG) : $(INTERMEDIATES) $(MISC) $(OBJECTS)
-	@echo "Link" $(PROG)
+	@echo "- Link" $(PROG)
 	@$(LINKPROG)
 	$(RENAMEPROG)
 

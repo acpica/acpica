@@ -296,34 +296,34 @@ safe_yacc = \
 # Macro processing for iASL .y files
 #
 $(OBJDIR)/aslcompiler.y :      $(ASL_PARSER)
-	@echo $(MACROPROC) "          Preprocess main iASL parser"
+	@echo "- " $(MACROPROC) "          Preprocess main iASL parser"
 	@$(MACROPROC) $(MFLAGS) $(ASL_COMPILER)/aslparser.y > $@
 
 #
 # Parser and Lexer - intermediate C files
 #
 $(OBJDIR)/aslcompilerlex.c :   $(ASL_LEXER)
-	@echo $(LEX) "        "$<
+	@echo "- " $(LEX) "        "$<
 	@$(LEX) $(LFLAGS) -PAslCompiler -o$@ $(ASL_COMPILER)/aslcompiler.l
 
 $(OBJDIR)/aslcompilerparse.c $(OBJDIR)/aslcompiler.y.h : $(OBJDIR)/aslcompiler.y
-	@echo $(YACC) "       "$<
+	@echo "- " $(YACC) "       "$<
 	@$(call safe_yacc,AslCompiler,$<,$@)
 
 $(OBJDIR)/dtparserlex.c :      $(ASL_COMPILER)/dtparser.l $(OBJDIR)/dtparser.y.h
-	@echo $(LEX) "        "$<
+	@echo "- " $(LEX) "        "$<
 	@$(LEX) $(LFLAGS) -PDtParser -o$@ $<
 
 $(OBJDIR)/dtparserparse.c $(OBJDIR)/dtparser.y.h :       $(ASL_COMPILER)/dtparser.y
-	@echo $(YACC) "       "$<
+	@echo "- " $(YACC) "       "$<
 	@$(call safe_yacc,DtParser,$<,$@)
 
 $(OBJDIR)/prparserlex.c :      $(ASL_COMPILER)/prparser.l $(OBJDIR)/prparser.y.h
-	@echo $(LEX) "        "$<
+	@echo "- " $(LEX) "        "$<
 	@$(LEX) $(LFLAGS) -PPrParser -o$@ $<
 
 $(OBJDIR)/prparserparse.c $(OBJDIR)/prparser.y.h :       $(ASL_COMPILER)/prparser.y
-	@echo $(YACC) "       "$<
+	@echo "- " $(YACC) "       "$<
 	@$(call safe_yacc,PrParser,$<,$@)
 
 #
@@ -333,25 +333,25 @@ $(OBJDIR)/prparserparse.c $(OBJDIR)/prparser.y.h :       $(ASL_COMPILER)/prparse
 # by the utilities above and they are not necessarily ANSI C, etc.
 #
 $(OBJDIR)/aslcompilerlex.o :   $(OBJDIR)/aslcompilerlex.c
-	@echo "Intermediate" $<
+	@echo "- " "Intermediate" $<
 	@$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
 
 $(OBJDIR)/aslcompilerparse.o : $(OBJDIR)/aslcompilerparse.c
-	@echo "Intermediate" $<
+	@echo "- " "Intermediate" $<
 	@$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
 
 $(OBJDIR)/dtparserlex.o :      $(OBJDIR)/dtparserlex.c
-	@echo "Intermediate" $<
+	@echo "- " "Intermediate" $<
 	@$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
 
 $(OBJDIR)/dtparserparse.o :    $(OBJDIR)/dtparserparse.c
-	@echo "Intermediate" $<
+	@echo "- " "Intermediate" $<
 	@$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
 
 $(OBJDIR)/prparserlex.o :      $(OBJDIR)/prparserlex.c
-	@echo "Intermediate" $<
+	@echo "- " "Intermediate" $<
 	@$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
 
 $(OBJDIR)/prparserparse.o :    $(OBJDIR)/prparserparse.c
-	@echo "Intermediate" $<
+	@echo "- " "Intermediate" $<
 	@$(CC) -c $(CFLAGS) -Wall -Werror -o$@ $<
