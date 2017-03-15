@@ -33,6 +33,22 @@
  *          is not in SystemMemory
  */
 
+/*
+ * Original source code:
+
+    DefinitionBlock("ssdt.aml", "SSDT", 0x02, "Intel", "Many", 0x00000001)
+    {
+        Device(AUXD)
+        {
+            Method(M000)
+            {
+                Return ("\\AUXD.M000 ()")
+            }
+        }
+    }
+
+ */
+
 Name(B258, Buffer() {
 
 		0x53,0x53,0x44,0x54,0x42,0x00,0x00,0x00,  /* 00000000    "SSDTB..." */
