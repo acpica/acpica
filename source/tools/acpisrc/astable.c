@@ -317,6 +317,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_DMTABLE_DATA",                   SRC_TYPE_STRUCT},
     {"ACPI_DMTABLE_INFO",                   SRC_TYPE_STRUCT},
     {"ACPI_DMTABLE_HANDLER",                SRC_TYPE_SIMPLE},
+    {"ACPI_EFI_FILE",                       SRC_TYPE_SIMPLE},
     {"ACPI_EVALUATE_INFO",                  SRC_TYPE_STRUCT},
     {"ACPI_EVENT_HANDLER",                  SRC_TYPE_SIMPLE},
     {"ACPI_EVENT_STATUS",                   SRC_TYPE_SIMPLE},
