@@ -77,10 +77,17 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 				echo "" >> $(COMPILER_LOG); \
 				if [ $(OPT) -eq 0 ]; then \
 					for k in ${AMLMOD}; do \
+						>&2 printf  " => Compile Ext in-place"; \
+						"$(ASL)" -p $$k-extInPlace -oE $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS) $$j.asl >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+						if [ ! -f $$k-extInPlace.aml ]; then \
+							>&2 printf " [[ Error: disassembly failed of $$k.aml failed ]]\n"; \
+							>&2 printf "          Flags used: -p $$k-aslminus -oE -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -od -dl\n\n"; \
+							#exit 1; \
+						fi; \
 						>&2 printf " => Disassemble"; \
 						echo "---- Diasassemble: $$k.aml" >> $(COMPILER_LOG); \
 						echo "---- Diasassemble: $$k.aml" >> $(COMPILER_ERROR_LOG); \
-						"$(ASL)" -p $$k-aslminus -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -od -dl $$k.aml >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
+						"$(ASL)" -p $$k-aslminus -oe -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -od -dl $$k-extInPlace.aml >> $(COMPILER_LOG) 2>> $(COMPILER_ERROR_LOG); \
 						if [ ! -f $$k-aslminus.dsl ]; then \
 							>&2 printf " [[ Error: disassembly failed of $$k.aml failed ]]\n"; \
 							>&2 printf "          Flags used: -p $$k-aslminus -cr -vs $$CUR_ASLFLAGS $(ADD_ASLFLAGS) -od -dl\n\n"; \
@@ -95,17 +102,9 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 							>&2 printf "          Flags used: $$CUR_ASLFLAGS "$(COMMON_ASL_FLAGS)" $(ADD_ASLFLAGS)\n\n"; \
 							#exit 1; \
 						fi; \
-						rm $$k-aslminus.asm; \
-						rm $$k-aslminus.c; \
-						rm $$k-aslminus.h; \
-						rm $$k-aslminus.i; \
-						rm $$k-aslminus.hex; \
-						rm $$k-aslminus.map; \
-						rm $$k-aslminus.nsp; \
-						rm $$k-aslminus.offset.h; \
-						rm $$k-aslminus.src; \
 						if [ $$CUR_AMLDIR = "nopt/32" ] || [ $$CUR_AMLDIR = "nopt/64" ]; then \
 							>&2 printf " => Binary compare"; \
+							rm -f comparison_output.txt; \
 							acpibin -c $$k.aml $$k-aslminus.aml >> comparison_output.txt; \
 							if [ $$? != 0 ]; then \
 								>&2 printf " [[ Error: comparison of $$k.aml and $$k-aslminus.aml do not match ]]"; \
@@ -115,12 +114,23 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 								>&2 printf "        "; \
 								#exit 1; \
 							else \
-								>&2 printf " => Removing files"; \
-								rm $$k-aslminus.lst; \
-								rm $$k-aslminus.aml; \
-								rm $$k-aslminus.dsl; \
+								>&2 printf " => Succes!"; \
+								rm comparison_output.txt; \
 							fi; \
 						fi; \
+						if [ ! -f comparison_output.txt ]; then \
+							>&2 printf " => Removing files"; \
+							rm $$k-aslminus.lst; \
+							rm $$k-aslminus.aml; \
+							rm $$k-aslminus.dsl; \
+						fi; \
+						for n in "$$k-aslminus" "$$k-extInPlace"; do \
+							rm $$n.i $$n.asm $$n.nsp; \
+							rm $$n.c $$n.hex $$n.map; \
+							rm $$n.h $$n.src $$n.offset.h; \
+						done; \
+						rm $$k-extInPlace.aml; \
+						rm $$k-extInPlace.lst; \
 						>&2 printf " => Done"; \
 					done; \
 				fi; \
