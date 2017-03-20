@@ -633,6 +633,24 @@ Method(PK03, 2)
 }
 
 
+
+Name (EPKG, Package(2){})
+
+/*
+ * Pack 2 arguments into one package object
+ *
+ * arg0 - absolute index of file reporting the error
+ * arg1 - index of error (inside the file)
+ */
+Method (PK04, 2)
+{
+    EPKG[0] = Arg0
+    EPKG[1] = Arg1
+    Return (EPKG)
+}
+
+
+
 /*
  * Errors processing
  *
@@ -669,7 +687,7 @@ Method(PK03, 2)
  *   n - name of Method initiating the checking
  *
  * arg0 - diagnostic message (usually, the name of method conglomeration of tests)
- * arg1 - absolute index of file reporting the error
+ * arg1 - package containing absolute index of file reporting the error and line number
  * arg2 - index of error (inside the file)
  * arg3 - absolute index of file initiating the checking
  * arg4 - index of checking (inside the file)
@@ -729,7 +747,7 @@ Method(err, 7)
 	}
 
 	// Pack up information of error
-	Store(PK03(arg1, arg2), Local0)
+	Store(PK03(DeRefOf(arg1[0]), arg2), Local0)
 
 	// Add ID of test case being executed
 	Or(ERRB, Local0, Local7)
@@ -741,7 +759,7 @@ Method(err, 7)
 	Concatenate(Local1, arg0, Local0)
 	Store(Local0, Debug)
 
-	ERP0(arg1, arg2, Local4, Local3, Local5)
+	ERP0(DeRefOf(arg1[0]), arg2, Local4, Local3, Local5, DeRefOf(arg1[1]))
 
     if (LEqual (ObjectType (arg5), 1)) // Check for Integer
     {
@@ -795,13 +813,14 @@ Method(err, 7)
 
 /*
  * Report parameters of error
- * arg0 - absolute index of file reporting the error
+ * arg0 - absolute index of file reporting the error and line number
  * arg1 - index of error
  * arg2 - absolute index of file initiating the checking
  * arg3 - name of Method initiating the checking
  * arg4 - index of checking
+ * arg5 - line number of error
  */
-Method(ERP0, 5)
+Method(ERP0, 6)
 {
 	Concatenate("TITLE               : ", TSNM, Local0)
 	Store(Local0, Debug)
@@ -833,6 +852,9 @@ Method(ERP0, 5)
 		Store(DeRefOf(Index(TFN0, arg0)), Local1)
 	}
 	Concatenate("ERROR,    File      : ", Local1, Local0)
+	Store(Local0, Debug)
+
+	Concatenate("          Line      : ", ToDecimalString(arg5), Local0)
 	Store(Local0, Debug)
 
 	Concatenate("          Index     : 0x", arg1, Local0)
