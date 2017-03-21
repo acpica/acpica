@@ -202,6 +202,7 @@ static ACPI_RESOURCE_HANDLER    AcpiGbl_DmResourceDispatch [] =
     AcpiDmPinConfigDescriptor,      /* 0x0F, ACPI_RESOURCE_NAME_PIN_CONFIG */
     AcpiDmPinGroupDescriptor,       /* 0x10, ACPI_RESOURCE_NAME_PIN_GROUP */
     AcpiDmPinGroupFunctionDescriptor, /* 0x11, ACPI_RESOURCE_NAME_PIN_GROUP_FUNCTION */
+    AcpiDmPinGroupConfigDescriptor, /* 0x12, ACPI_RESOURCE_NAME_PIN_GROUP_CONFIG */
 };
 
 

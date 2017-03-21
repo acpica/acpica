@@ -519,6 +519,15 @@ AcpiRsGetAmlLength (
 
             break;
 
+        case ACPI_RESOURCE_TYPE_PIN_GROUP_CONFIG:
+
+            TotalSize = (ACPI_RS_LENGTH) (TotalSize +
+                Resource->Data.PinGroupConfig.ResourceSource.StringLength +
+                Resource->Data.PinGroupConfig.ResourceSourceLabel.StringLength +
+                Resource->Data.PinGroupConfig.VendorLength);
+
+            break;
+
         default:
 
             break;
@@ -768,6 +777,15 @@ AcpiRsGetListLength (
                 AmlResource->PinGroupFunction.VendorOffset -
                 AmlResource->PinGroupFunction.ResSourceOffset +
                 AmlResource->PinGroupFunction.VendorLength;
+
+            break;
+
+        case ACPI_RESOURCE_NAME_PIN_GROUP_CONFIG:
+
+            ExtraStructBytes +=
+                AmlResource->PinGroupConfig.VendorOffset -
+                AmlResource->PinGroupConfig.ResSourceOffset +
+                AmlResource->PinGroupConfig.VendorLength;
 
             break;
 

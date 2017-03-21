@@ -1743,6 +1743,7 @@ Name(TFN0, Package() {
     "pinconfig.asl",
     "pingroup.asl",
     "pingroupfunction.asl",
+    "pingroupconfig.asl",
 })
 
 /*

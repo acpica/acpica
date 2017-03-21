@@ -502,6 +502,7 @@ extern ACPI_RSCONVERT_INFO      AcpiRsConvertPinFunction[];
 extern ACPI_RSCONVERT_INFO      AcpiRsConvertPinConfig[];
 extern ACPI_RSCONVERT_INFO      AcpiRsConvertPinGroup[];
 extern ACPI_RSCONVERT_INFO      AcpiRsConvertPinGroupFunction[];
+extern ACPI_RSCONVERT_INFO      AcpiRsConvertPinGroupConfig[];
 
 /* These resources require separate get/set tables */
 
@@ -556,6 +557,7 @@ extern ACPI_RSDUMP_INFO         AcpiRsDumpGeneralFlags[];
 extern ACPI_RSDUMP_INFO         AcpiRsDumpPinConfig[];
 extern ACPI_RSDUMP_INFO         AcpiRsDumpPinGroup[];
 extern ACPI_RSDUMP_INFO         AcpiRsDumpPinGroupFunction[];
+extern ACPI_RSDUMP_INFO         AcpiRsDumpPinGroupConfig[];
 #endif
 
 #endif  /* __ACRESRC_H__ */

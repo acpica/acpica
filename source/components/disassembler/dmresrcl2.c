@@ -1241,3 +1241,76 @@ AcpiDmPinGroupFunctionDescriptor (
 
     AcpiOsPrintf (")\n");
 }
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmPinGroupConfigDescriptor
+ *
+ * PARAMETERS:  Info                - Extra resource info
+ *              Resource            - Pointer to the resource descriptor
+ *              Length              - Length of the descriptor in bytes
+ *              Level               - Current source code indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Decode a PinGroupConfig descriptor
+ *
+ ******************************************************************************/
+
+void
+AcpiDmPinGroupConfigDescriptor (
+    ACPI_OP_WALK_INFO       *Info,
+    AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level)
+{
+    UINT8                   *VendorData;
+    char                    *DeviceName = NULL;
+    char                    *Label = NULL;
+
+    AcpiDmIndent (Level);
+    AcpiOsPrintf ("PinGroupConfig (%s, ",
+        AcpiGbl_ShrDecode [ACPI_GET_1BIT_FLAG (Resource->PinGroupConfig.Flags)]);
+
+    AcpiDmPinConfig(Resource->PinGroupConfig.PinConfigType,
+        Resource->PinGroupConfig.PinConfigValue);
+
+    AcpiDmIndent (Level + 1);
+
+    DeviceName = ACPI_ADD_PTR (char,
+        Resource, Resource->PinGroupConfig.ResSourceOffset),
+    AcpiUtPrintString (DeviceName, ACPI_UINT16_MAX);
+
+    AcpiOsPrintf (", ");
+    AcpiOsPrintf ("0x%2.2X, ", Resource->PinGroupConfig.ResSourceIndex);
+
+    Label = ACPI_ADD_PTR (char, Resource,
+        Resource->PinGroupConfig.ResSourceLabelOffset);
+    AcpiUtPrintString (Label, ACPI_UINT16_MAX);
+
+    AcpiOsPrintf (", ");
+
+    AcpiOsPrintf ("%s, ",
+        AcpiGbl_ConsumeDecode [ACPI_EXTRACT_1BIT_FLAG (Resource->PinGroupConfig.Flags, 1)]);
+
+    /* Insert a descriptor name */
+
+    AcpiDmDescriptorName ();
+
+    AcpiOsPrintf (",");
+
+    /* Dump the vendor data */
+
+    if (Resource->PinGroupConfig.VendorLength)
+    {
+        AcpiOsPrintf ("\n");
+        AcpiDmIndent (Level + 1);
+        VendorData = ACPI_ADD_PTR (UINT8, Resource,
+            Resource->PinGroupConfig.VendorOffset);
+
+        AcpiDmDumpRawDataBuffer (VendorData,
+            Resource->PinGroupConfig.VendorLength, Level);
+    }
+
+    AcpiOsPrintf (")\n");
+}

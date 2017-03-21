@@ -189,6 +189,7 @@ RsGetStringDataLengthAt (
  * PinConfig
  * PinGroup
  * PinGroupFunction
+ * PinGroupConfig
  */
 
 
@@ -2059,6 +2060,175 @@ RsDoPinGroupFunctionDescriptor (
                 (CurrentByteOffset + Descriptor->PinGroupFunction.VendorOffset)))
             {
                 Descriptor->PinGroupFunction.VendorLength = VendorLength;
+            }
+            break;
+
+        default:
+            break;
+        }
+
+        InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
+    }
+
+    return (Rnode);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    RsDoPinGroupConfigDescriptor
+ *
+ * PARAMETERS:  Info                - Parse Op and resource template offset
+ *
+ * RETURN:      Completed resource node
+ *
+ * DESCRIPTION: Construct a long "PinGroupConfig" descriptor
+ *
+ ******************************************************************************/
+
+ASL_RESOURCE_NODE *
+RsDoPinGroupConfigDescriptor (
+    ASL_RESOURCE_INFO       *Info)
+{
+    AML_RESOURCE            *Descriptor;
+    ACPI_PARSE_OBJECT       *InitializerOp;
+    ASL_RESOURCE_NODE       *Rnode;
+    char                    *ResourceSource = NULL;
+    char                    *ResourceSourceLabel = NULL;
+    UINT8                   *VendorData = NULL;
+    UINT16                  ResSourceLength;
+    UINT16                  ResSourceLabelLength;
+    UINT16                  VendorLength;
+    UINT16                  DescriptorSize;
+    UINT32                  CurrentByteOffset;
+    UINT32                  i;
+
+    InitializerOp = Info->DescriptorTypeOp->Asl.Child;
+    CurrentByteOffset = Info->CurrentByteOffset;
+
+    /*
+     * Calculate lengths for fields that have variable length:
+     * 1) Resource Source string
+     * 2) Resource Source Label string
+     * 3) Vendor Data buffer
+     */
+    ResSourceLength = RsGetStringDataLengthAt (InitializerOp, 3);
+    ResSourceLabelLength = RsGetStringDataLengthAt (InitializerOp, 5);
+    VendorLength = RsGetBufferDataLength (InitializerOp);
+
+    DescriptorSize = ACPI_AML_SIZE_LARGE (AML_RESOURCE_PIN_GROUP_CONFIG) +
+        ResSourceLength + ResSourceLabelLength + VendorLength;
+
+    /* Allocate the local resource node and initialize */
+
+    Rnode = RsAllocateResourceNode (DescriptorSize +
+        sizeof (AML_RESOURCE_LARGE_HEADER));
+
+    Descriptor = Rnode->Buffer;
+    Descriptor->PinGroupConfig.ResourceLength = DescriptorSize;
+    Descriptor->PinGroupConfig.DescriptorType = ACPI_RESOURCE_NAME_PIN_GROUP_CONFIG;
+    Descriptor->PinGroupConfig.RevisionId = AML_RESOURCE_PIN_GROUP_CONFIG_REVISION;
+
+    /* Build pointers to optional areas */
+
+    ResourceSource = ACPI_ADD_PTR (char, Descriptor, sizeof (AML_RESOURCE_PIN_GROUP_CONFIG));
+    ResourceSourceLabel = ACPI_ADD_PTR (char, ResourceSource, ResSourceLength);
+    VendorData = ACPI_ADD_PTR (UINT8, ResourceSourceLabel, ResSourceLabelLength);
+
+    /* Setup offsets within the descriptor */
+
+    Descriptor->PinGroupConfig.ResSourceOffset = (UINT16)
+        ACPI_PTR_DIFF (ResourceSource, Descriptor);
+    Descriptor->PinGroupConfig.ResSourceLabelOffset = (UINT16)
+        ACPI_PTR_DIFF (ResourceSourceLabel, Descriptor);
+
+    /* Process all child initialization nodes */
+
+    for (i = 0; InitializerOp; i++)
+    {
+        BOOLEAN isValid;
+
+        switch (i)
+        {
+        case 0: /* Share Type [Flags] (_SHR) */
+
+            RsSetFlagBits16 (&Descriptor->PinGroupConfig.Flags, InitializerOp, 0, 0);
+            RsCreateBitField (InitializerOp, ACPI_RESTAG_INTERRUPTSHARE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (PinGroupConfig.Flags), 0);
+            break;
+
+        case 1: /* Pin Config Type [BYTE] (_TYP) */
+
+            isValid = InitializerOp->Asl.Value.Integer <= 0x0d;
+            if (!isValid)
+            {
+                isValid = InitializerOp->Asl.Value.Integer >= 0x80 &&
+                          InitializerOp->Asl.Value.Integer <= 0xff;
+            }
+            if (!isValid)
+            {
+                    AslError (ASL_ERROR, ASL_MSG_RANGE, InitializerOp, NULL);
+            }
+
+            Descriptor->PinGroupConfig.PinConfigType = (UINT8) InitializerOp->Asl.Value.Integer;
+            RsCreateByteField (InitializerOp, ACPI_RESTAG_PINCONFIG_TYPE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (PinGroupConfig.PinConfigType));
+
+            break;
+
+        case 2: /* Pin Config Value [DWORD] (_VAL) */
+
+            Descriptor->PinGroupConfig.PinConfigValue = (UINT32) InitializerOp->Asl.Value.Integer;
+            RsCreateDwordField (InitializerOp, ACPI_RESTAG_PINCONFIG_VALUE,
+                CurrentByteOffset + ASL_RESDESC_OFFSET (PinGroupConfig.PinConfigValue));
+            break;
+
+        case 3: /* ResourceSource [STRING] */
+
+            /* Copy string to the descriptor */
+
+            strcpy (ResourceSource, InitializerOp->Asl.Value.String);
+            break;
+
+        case 4: /* Resource Index */
+
+            Descriptor->PinGroupConfig.ResSourceIndex = (UINT8) InitializerOp->Asl.Value.Integer;
+            break;
+
+        case 5: /* ResourceSourceLabel [STRING] */
+
+            if (ResSourceLabelLength < 2)
+            {
+                AslError(ASL_WARNING, ASL_MSG_NULL_STRING, InitializerOp, NULL);
+            }
+
+            strcpy (ResourceSourceLabel, InitializerOp->Asl.Value.String);
+            break;
+
+        case 6: /* Resource Usage (consumer/producer) */
+
+            RsSetFlagBits16 (&Descriptor->PinGroupConfig.Flags, InitializerOp, 1, 1);
+
+            break;
+
+        case 7: /* Resource Tag (Descriptor Name) */
+
+            UtAttachNamepathToOwner (Info->DescriptorTypeOp, InitializerOp);
+            break;
+
+        case 8: /* Vendor Data (Optional - Buffer of BYTEs) (_VEN) */
+            /*
+             * Always set the VendorOffset even if there is no Vendor Data.
+             * This field is required in order to calculate the length
+             * of the ResourceSource at runtime.
+             */
+            Descriptor->PinGroupConfig.VendorOffset = (UINT16)
+                ACPI_PTR_DIFF (VendorData, Descriptor);
+
+            if (RsGetVendorData (InitializerOp, VendorData,
+                (CurrentByteOffset + Descriptor->PinGroupConfig.VendorOffset)))
+            {
+                Descriptor->PinGroupConfig.VendorLength = VendorLength;
             }
             break;
 

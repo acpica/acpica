@@ -521,6 +521,7 @@ static const ACPI_RESOURCE_TAG      *AcpiGbl_ResourceTags[] =
     AcpiDmPinConfigTags,            /* 0x0F, ACPI_RESOURCE_NAME_PIN_CONFIG */
     NULL,                           /* 0x10, ACPI_RESOURCE_NAME_PIN_GROUP */
     AcpiDmPinGroupFunctionTags,	    /* 0x11, ACPI_RESOURCE_NAME_PIN_GROUP_FUNCTION */
+    AcpiDmPinConfigTags,	    /* 0x12, ACPI_RESOURCE_NAME_PIN_GROUP_CONFIG - Same as PinConfig */
 };
 
 /* GPIO Subtypes */

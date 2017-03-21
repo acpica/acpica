@@ -803,6 +803,20 @@ typedef struct acpi_resource_pin_group_function
 
 } ACPI_RESOURCE_PIN_GROUP_FUNCTION;
 
+typedef struct acpi_resource_pin_group_config
+{
+    UINT8                           RevisionId;
+    UINT8                           ProducerConsumer;   /* For values, see Producer/Consumer above */
+    UINT8                           Sharable;           /* For values, see Interrupt Attributes above */
+    UINT8                           PinConfigType;      /* For values, see PinConfigType above */
+    UINT32                          PinConfigValue;
+    UINT16                          VendorLength;
+    ACPI_RESOURCE_SOURCE            ResourceSource;
+    ACPI_RESOURCE_LABEL             ResourceSourceLabel;
+    UINT8                           *VendorData;
+
+} ACPI_RESOURCE_PIN_GROUP_CONFIG;
+
 /* ACPI_RESOURCE_TYPEs */
 
 #define ACPI_RESOURCE_TYPE_IRQ                  0
@@ -829,7 +843,8 @@ typedef struct acpi_resource_pin_group_function
 #define ACPI_RESOURCE_TYPE_PIN_CONFIG           21  /* ACPI 6.2 */
 #define ACPI_RESOURCE_TYPE_PIN_GROUP            22  /* ACPI 6.2 */
 #define ACPI_RESOURCE_TYPE_PIN_GROUP_FUNCTION   23  /* ACPI 6.2 */
-#define ACPI_RESOURCE_TYPE_MAX                  23
+#define ACPI_RESOURCE_TYPE_PIN_GROUP_CONFIG     24  /* ACPI 6.2 */
+#define ACPI_RESOURCE_TYPE_MAX                  24
 
 /* Master union for resource descriptors */
 
@@ -862,6 +877,7 @@ typedef union acpi_resource_data
     ACPI_RESOURCE_PIN_CONFIG                PinConfig;
     ACPI_RESOURCE_PIN_GROUP                 PinGroup;
     ACPI_RESOURCE_PIN_GROUP_FUNCTION        PinGroupFunction;
+    ACPI_RESOURCE_PIN_GROUP_CONFIG          PinGroupConfig;
 
     /* Common fields */
 

@@ -727,6 +727,29 @@ typedef struct aml_resource_pin_group_function
 
 #define AML_RESOURCE_PIN_GROUP_FUNCTION_REVISION    1       /* ACPI 6.2 */
 
+typedef struct aml_resource_pin_group_config
+{
+    AML_RESOURCE_LARGE_HEADER_COMMON
+    UINT8                           RevisionId;
+    UINT16                          Flags;
+    UINT8                           PinConfigType;
+    UINT32                          PinConfigValue;
+    UINT8                           ResSourceIndex;
+    UINT16                          ResSourceOffset;
+    UINT16                          ResSourceLabelOffset;
+    UINT16                          VendorOffset;
+    UINT16                          VendorLength;
+    /*
+     * Optional fields follow immediately:
+     * 1) Resource Source String
+     * 2) Resource Source Label String
+     * 3) Vendor Data bytes
+     */
+
+} AML_RESOURCE_PIN_GROUP_CONFIG;
+
+#define AML_RESOURCE_PIN_GROUP_CONFIG_REVISION    1       /* ACPI 6.2 */
+
 /* restore default alignment */
 
 #pragma pack()
@@ -774,6 +797,7 @@ typedef union aml_resource
     AML_RESOURCE_PIN_CONFIG                 PinConfig;
     AML_RESOURCE_PIN_GROUP                  PinGroup;
     AML_RESOURCE_PIN_GROUP_FUNCTION         PinGroupFunction;
+    AML_RESOURCE_PIN_GROUP_CONFIG           PinGroupConfig;
 
     /* Utility overlays */
 

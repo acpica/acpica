@@ -454,6 +454,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* PINCONFIG */                 OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
 /* PINFUNCTION */               OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
 /* PINGROUP */                  OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* PINGROUPCONFIG */            OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
 /* PINGROUPFUNCTION */          OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
 /* PIN_NOPULL */                OP_TABLE_ENTRY (AML_BYTE_OP,                3,                              0,                  0),
 /* PIN_PULLDEFAULT */           OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),

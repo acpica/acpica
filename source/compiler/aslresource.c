@@ -1010,6 +1010,11 @@ RsDoOneResourceDescriptor (
         Rnode = RsDoPinGroupFunctionDescriptor (Info);
         break;
 
+    case PARSEOP_PINGROUPCONFIG:
+
+        Rnode = RsDoPinGroupConfigDescriptor (Info);
+        break;
+
     case PARSEOP_DEFAULT_ARG:
 
         /* Just ignore any of these, they are used as fillers/placeholders */

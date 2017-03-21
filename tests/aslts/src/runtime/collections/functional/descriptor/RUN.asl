@@ -104,6 +104,8 @@ if (STTT("Resource Descriptor macros", TCLF, 4, W004)) {
 	RT28()
 	SRMT("RT29")
 	RT29()
+	SRMT("RT30")
+	RT30()
 
 }
 FTTT()

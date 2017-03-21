@@ -435,6 +435,7 @@ NoEcho('
 %type <n> PinConfigTerm
 %type <n> PinFunctionTerm
 %type <n> PinGroupTerm
+%type <n> PinGroupConfigTerm
 %type <n> PinGroupFunctionTerm
 %type <n> QWordIOTerm
 %type <n> QWordMemoryTerm
