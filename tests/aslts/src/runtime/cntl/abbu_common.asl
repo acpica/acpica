@@ -96,6 +96,12 @@ Method(SRMT, 1)
 	Increment(RMRC)
 }
 
+Method(PK04, 2)
+{
+	return (0)
+}
+
+
 
 Method(err, 7)
 {
