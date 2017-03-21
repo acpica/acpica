@@ -193,6 +193,7 @@ ACPI_RSCONVERT_INFO         *AcpiGbl_SetResourceDispatch[] =
     AcpiRsConvertFixedDma,          /* 0x12, ACPI_RESOURCE_TYPE_FIXED_DMA */
     NULL,                           /* 0x13, ACPI_RESOURCE_TYPE_SERIAL_BUS - Use subtype table below */
     AcpiRsConvertPinFunction,       /* 0x14, ACPI_RESOURCE_TYPE_PIN_FUNCTION */
+    AcpiRsConvertPinConfig,         /* 0x15, ACPI_RESOURCE_TYPE_PIN_CONFIG */
 };
 
 /* Dispatch tables for AML-to-resource (Get Resource) conversion functions */
@@ -235,6 +236,7 @@ ACPI_RSCONVERT_INFO         *AcpiGbl_GetResourceDispatch[] =
     AcpiRsConvertGpio,              /* 0x0C, ACPI_RESOURCE_NAME_GPIO */
     AcpiRsConvertPinFunction,       /* 0x0D, ACPI_RESOURCE_NAME_PIN_FUNCTION */
     NULL,                           /* 0x0E, ACPI_RESOURCE_NAME_SERIAL_BUS - Use subtype table below */
+    AcpiRsConvertPinConfig,         /* 0x0F, ACPI_RESOURCE_NAME_PIN_CONFIG */
 };
 
 /* Subtype table for SerialBus -- I2C, SPI, and UART */
@@ -275,6 +277,7 @@ ACPI_RSDUMP_INFO            *AcpiGbl_DumpResourceDispatch[] =
     AcpiRsDumpFixedDma,             /* ACPI_RESOURCE_TYPE_FIXED_DMA */
     NULL,                           /* ACPI_RESOURCE_TYPE_SERIAL_BUS */
     AcpiRsDumpPinFunction,          /* ACPI_RESOURCE_TYPE_PIN_FUNCTION */
+    AcpiRsDumpPinConfig,            /* ACPI_RESOURCE_TYPE_PIN_CONFIG */
 };
 
 ACPI_RSDUMP_INFO            *AcpiGbl_DumpSerialBusDispatch[] =
@@ -315,6 +318,7 @@ const UINT8                 AcpiGbl_AmlResourceSizes[] =
     sizeof (AML_RESOURCE_FIXED_DMA),        /* ACPI_RESOURCE_TYPE_FIXED_DMA */
     sizeof (AML_RESOURCE_COMMON_SERIALBUS), /* ACPI_RESOURCE_TYPE_SERIAL_BUS */
     sizeof (AML_RESOURCE_PIN_FUNCTION),     /* ACPI_RESOURCE_TYPE_PIN_FUNCTION */
+    sizeof (AML_RESOURCE_PIN_CONFIG),       /* ACPI_RESOURCE_TYPE_PIN_CONFIG */
 };
 
 
@@ -355,7 +359,8 @@ const UINT8                 AcpiGbl_ResourceStructSizes[] =
     ACPI_RS_SIZE (ACPI_RESOURCE_EXTENDED_ADDRESS64),
     ACPI_RS_SIZE (ACPI_RESOURCE_GPIO),
     ACPI_RS_SIZE (ACPI_RESOURCE_PIN_FUNCTION),
-    ACPI_RS_SIZE (ACPI_RESOURCE_COMMON_SERIALBUS)
+    ACPI_RS_SIZE (ACPI_RESOURCE_COMMON_SERIALBUS),
+    ACPI_RS_SIZE (ACPI_RESOURCE_PIN_CONFIG),
 };
 
 const UINT8                 AcpiGbl_AmlResourceSerialBusSizes[] =

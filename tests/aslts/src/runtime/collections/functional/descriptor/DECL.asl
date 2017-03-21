@@ -75,3 +75,4 @@ Include("../../../../runtime/collections/functional/descriptor/uartserialbus.asl
 /* ACPI 6.2 Resource Descriptors */
 
 Include("../../../../runtime/collections/functional/descriptor/pinfunction.asl")
+Include("../../../../runtime/collections/functional/descriptor/pinconfig.asl")

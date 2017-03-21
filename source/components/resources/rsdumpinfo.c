@@ -374,6 +374,21 @@ ACPI_RSDUMP_INFO        AcpiRsDumpPinFunction[10] =
     {ACPI_RSD_SHORTLISTX,ACPI_RSD_OFFSET (PinFunction.VendorData),          "VendorData",               NULL},
 };
 
+ACPI_RSDUMP_INFO        AcpiRsDumpPinConfig[11] =
+{
+    {ACPI_RSD_TITLE,    ACPI_RSD_TABLE_SIZE (AcpiRsDumpPinConfig),          "PinConfig",                NULL},
+    {ACPI_RSD_UINT8,    ACPI_RSD_OFFSET (PinConfig.RevisionId),             "RevisionId",               NULL},
+    {ACPI_RSD_1BITFLAG, ACPI_RSD_OFFSET (PinConfig.ProducerConsumer),       "ProducerConsumer",         AcpiGbl_ConsumeDecode},
+    {ACPI_RSD_1BITFLAG, ACPI_RSD_OFFSET (PinConfig.Sharable),               "Sharing",                  AcpiGbl_ShrDecode},
+    {ACPI_RSD_UINT8,    ACPI_RSD_OFFSET (PinConfig.PinConfigType),          "PinConfigType",            NULL},
+    {ACPI_RSD_UINT32,   ACPI_RSD_OFFSET (PinConfig.PinConfigValue),         "PinConfigValue",           NULL},
+    {ACPI_RSD_SOURCE,   ACPI_RSD_OFFSET (PinConfig.ResourceSource),         "ResourceSource",           NULL},
+    {ACPI_RSD_UINT16,   ACPI_RSD_OFFSET (PinConfig.PinTableLength),         "PinTableLength",           NULL},
+    {ACPI_RSD_WORDLIST, ACPI_RSD_OFFSET (PinConfig.PinTable),               "PinTable",                 NULL},
+    {ACPI_RSD_UINT16,   ACPI_RSD_OFFSET (PinConfig.VendorLength),           "VendorLength",             NULL},
+    {ACPI_RSD_SHORTLISTX,ACPI_RSD_OFFSET (PinConfig.VendorData),            "VendorData",               NULL},
+};
+
 ACPI_RSDUMP_INFO        AcpiRsDumpFixedDma[4] =
 {
     {ACPI_RSD_TITLE,    ACPI_RSD_TABLE_SIZE (AcpiRsDumpFixedDma),           "FixedDma",                 NULL},

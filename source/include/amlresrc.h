@@ -194,6 +194,8 @@
 #define ACPI_RESTAG_PHASE                       "_PHA"
 #define ACPI_RESTAG_PIN                         "_PIN"
 #define ACPI_RESTAG_PINCONFIG                   "_PPI"
+#define ACPI_RESTAG_PINCONFIG_TYPE              "_TYP"
+#define ACPI_RESTAG_PINCONFIG_VALUE             "_VAL"
 #define ACPI_RESTAG_POLARITY                    "_POL"
 #define ACPI_RESTAG_REGISTERBITOFFSET           "_RBO"
 #define ACPI_RESTAG_REGISTERBITWIDTH            "_RBW"
@@ -660,6 +662,29 @@ typedef struct aml_resource_pin_function
 
 #define AML_RESOURCE_PIN_FUNCTION_REVISION      1       /* ACPI 6.2 */
 
+typedef struct aml_resource_pin_config
+{
+    AML_RESOURCE_LARGE_HEADER_COMMON
+    UINT8                           RevisionId;
+    UINT16                          Flags;
+    UINT8                           PinConfigType;
+    UINT32                          PinConfigValue;
+    UINT16                          PinTableOffset;
+    UINT8                           ResSourceIndex;
+    UINT16                          ResSourceOffset;
+    UINT16                          VendorOffset;
+    UINT16                          VendorLength;
+    /*
+     * Optional fields follow immediately:
+     * 1) PIN list (Words)
+     * 2) Resource Source String
+     * 3) Vendor Data bytes
+     */
+
+} AML_RESOURCE_PIN_CONFIG;
+
+#define AML_RESOURCE_PIN_CONFIG_REVISION      1       /* ACPI 6.2 */
+
 /* restore default alignment */
 
 #pragma pack()
@@ -704,6 +729,7 @@ typedef union aml_resource
     AML_RESOURCE_UART_SERIALBUS             UartSerialBus;
     AML_RESOURCE_COMMON_SERIALBUS           CommonSerialBus;
     AML_RESOURCE_PIN_FUNCTION               PinFunction;
+    AML_RESOURCE_PIN_CONFIG                 PinConfig;
 
     /* Utility overlays */
 

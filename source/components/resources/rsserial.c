@@ -617,3 +617,80 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertUartSerialBus[23] =
                         AML_OFFSET (UartSerialBus.DefaultBaudRate),
                         1},
 };
+
+
+/*******************************************************************************
+ *
+ * AcpiRsConvertPinConfig
+ *
+ ******************************************************************************/
+
+ACPI_RSCONVERT_INFO     AcpiRsConvertPinConfig[14] =
+{
+    {ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_PIN_CONFIG,
+                        ACPI_RS_SIZE (ACPI_RESOURCE_PIN_CONFIG),
+                        ACPI_RSC_TABLE_SIZE (AcpiRsConvertPinConfig)},
+
+    {ACPI_RSC_INITSET,  ACPI_RESOURCE_NAME_PIN_CONFIG,
+                        sizeof (AML_RESOURCE_PIN_CONFIG),
+                        0},
+
+    {ACPI_RSC_MOVE8,    ACPI_RS_OFFSET (Data.PinConfig.RevisionId),
+                        AML_OFFSET (PinConfig.RevisionId),
+                        1},
+
+    {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.PinConfig.Sharable),
+                        AML_OFFSET (PinConfig.Flags),
+                        0},
+
+    {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.PinConfig.ProducerConsumer),
+                        AML_OFFSET (PinConfig.Flags),
+                        1},
+
+    {ACPI_RSC_MOVE8,    ACPI_RS_OFFSET (Data.PinConfig.PinConfigType),
+                        AML_OFFSET (PinConfig.PinConfigType),
+                        1},
+
+    {ACPI_RSC_MOVE32,   ACPI_RS_OFFSET (Data.PinConfig.PinConfigValue),
+                        AML_OFFSET (PinConfig.PinConfigValue),
+                        1},
+
+    /* Pin Table */
+
+    /*
+     * It is OK to use GPIO operations here because none of them refer GPIO
+     * structures directly but instead use offsets given here.
+     */
+
+    {ACPI_RSC_COUNT_GPIO_PIN, ACPI_RS_OFFSET (Data.PinConfig.PinTableLength),
+                        AML_OFFSET (PinConfig.PinTableOffset),
+                        AML_OFFSET (PinConfig.ResSourceOffset)},
+
+    {ACPI_RSC_MOVE_GPIO_PIN, ACPI_RS_OFFSET (Data.PinConfig.PinTable),
+                        AML_OFFSET (PinConfig.PinTableOffset),
+                        0},
+
+    /* Resource Source */
+
+    {ACPI_RSC_MOVE8,    ACPI_RS_OFFSET (Data.PinConfig.ResourceSource.Index),
+                        AML_OFFSET (PinConfig.ResSourceIndex),
+                        1},
+
+    {ACPI_RSC_COUNT_GPIO_RES,  ACPI_RS_OFFSET (Data.PinConfig.ResourceSource.StringLength),
+                        AML_OFFSET (PinConfig.ResSourceOffset),
+                        AML_OFFSET (PinConfig.VendorOffset)},
+
+    {ACPI_RSC_MOVE_GPIO_RES,   ACPI_RS_OFFSET (Data.PinConfig.ResourceSource.StringPtr),
+                        AML_OFFSET (PinConfig.ResSourceOffset),
+                        0},
+
+    /* Vendor Data */
+
+    {ACPI_RSC_COUNT_GPIO_VEN,   ACPI_RS_OFFSET (Data.PinConfig.VendorLength),
+                        AML_OFFSET (PinConfig.VendorLength),
+                        1},
+
+    {ACPI_RSC_MOVE_GPIO_RES,   ACPI_RS_OFFSET (Data.PinConfig.VendorData),
+                        AML_OFFSET (PinConfig.VendorOffset),
+                        0},
+};

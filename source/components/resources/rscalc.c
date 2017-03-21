@@ -492,6 +492,15 @@ AcpiRsGetAmlLength (
 
             break;
 
+        case ACPI_RESOURCE_TYPE_PIN_CONFIG:
+
+            TotalSize = (ACPI_RS_LENGTH) (TotalSize +
+                (Resource->Data.PinConfig.PinTableLength * 2) +
+                Resource->Data.PinConfig.ResourceSource.StringLength +
+                Resource->Data.PinConfig.VendorLength);
+
+            break;
+
         default:
 
             break;
@@ -704,6 +713,26 @@ AcpiRsGetListLength (
             ExtraStructBytes +=
                 AmlResource->CommonSerialBus.ResourceLength -
                 MinimumAmlResourceLength;
+            break;
+
+        case ACPI_RESOURCE_NAME_PIN_CONFIG:
+
+            /* Vendor data is optional */
+
+            if (AmlResource->PinConfig.VendorLength)
+            {
+                ExtraStructBytes +=
+                    AmlResource->PinConfig.VendorOffset -
+                    AmlResource->PinConfig.PinTableOffset +
+                    AmlResource->PinConfig.VendorLength;
+            }
+            else
+            {
+                ExtraStructBytes +=
+                    AmlResource->LargeHeader.ResourceLength +
+                    sizeof (AML_RESOURCE_LARGE_HEADER) -
+                    AmlResource->PinConfig.PinTableOffset;
+            }
             break;
 
         default:

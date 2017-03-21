@@ -198,7 +198,8 @@ static ACPI_RESOURCE_HANDLER    AcpiGbl_DmResourceDispatch [] =
     AcpiDmExtendedDescriptor,       /* 0x0B, ACPI_RESOURCE_NAME_EXTENDED_ADDRESS_SPACE */
     AcpiDmGpioDescriptor,           /* 0x0C, ACPI_RESOURCE_NAME_GPIO */
     AcpiDmPinFunctionDescriptor,    /* 0x0D, ACPI_RESOURCE_NAME_PIN_FUNCTION */
-    AcpiDmSerialBusDescriptor       /* 0x0E, ACPI_RESOURCE_NAME_SERIAL_BUS */
+    AcpiDmSerialBusDescriptor,      /* 0x0E, ACPI_RESOURCE_NAME_SERIAL_BUS */
+    AcpiDmPinConfigDescriptor,      /* 0x0F, ACPI_RESOURCE_NAME_PIN_CONFIG */
 };
 
 

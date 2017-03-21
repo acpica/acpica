@@ -455,6 +455,7 @@ NamePathTail                [.]{NameSeg}
 "Memory24"                  { count (1); return (PARSEOP_MEMORY24); }
 "Memory32"                  { count (1); return (PARSEOP_MEMORY32); }
 "Memory32Fixed"             { count (1); return (PARSEOP_MEMORY32FIXED); }
+"PinConfig"                 { count (1); return (PARSEOP_PINCONFIG); }
 "PinFunction"               { count (1); return (PARSEOP_PINFUNCTION); }
 "QWordIO"                   { count (1); return (PARSEOP_QWORDIO); }
 "QWordMemory"               { count (1); return (PARSEOP_QWORDMEMORY); }

@@ -990,6 +990,11 @@ RsDoOneResourceDescriptor (
         Rnode = RsDoUartSerialBusDescriptor (Info);
         break;
 
+    case PARSEOP_PINCONFIG:
+
+        Rnode = RsDoPinConfigDescriptor (Info);
+        break;
+
     case PARSEOP_PINFUNCTION:
 
         Rnode = RsDoPinFunctionDescriptor (Info);

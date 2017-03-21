@@ -444,6 +444,7 @@ const AH_PREDEFINED_NAME    AslPredefinedInfo[] =
     AH_PREDEF ("_UPC",    "USB Port Capabilities", "Returns a list of USB port capabilities"),
     AH_PREDEF ("_UPD",    "User Presence Detect", "Returns user detection information"),
     AH_PREDEF ("_UPP",    "User Presence Polling", "Returns the recommended user presence polling interval"),
+    AH_PREDEF ("_VAL",    "Pin Configuration Value", "Resource Descriptor field"),
     AH_PREDEF ("_VEN",    "Vendor Data", "Resource Descriptor field"),
     AH_PREDEF ("_VPO",    "Video Post Options", "Returns the implemented video post options"),
     AH_PREDEF ("_Wxx",    "Wake Event", "Method executed as a result of a wake event"),

@@ -739,6 +739,38 @@ typedef struct acpi_resource_pin_function
 
 } ACPI_RESOURCE_PIN_FUNCTION;
 
+typedef struct acpi_resource_pin_config
+{
+    UINT8                           RevisionId;
+    UINT8                           ProducerConsumer;   /* For values, see Producer/Consumer above */
+    UINT8                           Sharable;           /* For values, see Interrupt Attributes above */
+    UINT8                           PinConfigType;
+    UINT32                          PinConfigValue;
+    UINT16                          PinTableLength;
+    UINT16                          VendorLength;
+    ACPI_RESOURCE_SOURCE            ResourceSource;
+    UINT16                          *PinTable;
+    UINT8                           *VendorData;
+
+} ACPI_RESOURCE_PIN_CONFIG;
+
+/* Values for PinConfigType field above */
+
+#define ACPI_PIN_CONFIG_DEFAULT                 0
+#define ACPI_PIN_CONFIG_BIAS_PULL_UP            1
+#define ACPI_PIN_CONFIG_BIAS_PULL_DOWN          2
+#define ACPI_PIN_CONFIG_BIAS_DEFAULT            3
+#define ACPI_PIN_CONFIG_BIAS_DISABLE            4
+#define ACPI_PIN_CONFIG_BIAS_HIGH_IMPEDANCE     5
+#define ACPI_PIN_CONFIG_BIAS_BUS_HOLD           6
+#define ACPI_PIN_CONFIG_DRIVE_OPEN_DRAIN        7
+#define ACPI_PIN_CONFIG_DRIVE_OPEN_SOURCE       8
+#define ACPI_PIN_CONFIG_DRIVE_PUSH_PULL         9
+#define ACPI_PIN_CONFIG_DRIVE_STRENGTH          10
+#define ACPI_PIN_CONFIG_SLEW_RATE               11
+#define ACPI_PIN_CONFIG_INPUT_DEBOUNCE          12
+#define ACPI_PIN_CONFIG_INPUT_SCHMITT_TRIGGER   13
+
 /* ACPI_RESOURCE_TYPEs */
 
 #define ACPI_RESOURCE_TYPE_IRQ                  0
@@ -762,7 +794,8 @@ typedef struct acpi_resource_pin_function
 #define ACPI_RESOURCE_TYPE_FIXED_DMA            18  /* ACPI 5.0 */
 #define ACPI_RESOURCE_TYPE_SERIAL_BUS           19  /* ACPI 5.0 */
 #define ACPI_RESOURCE_TYPE_PIN_FUNCTION         20  /* ACPI 6.2 */
-#define ACPI_RESOURCE_TYPE_MAX                  20
+#define ACPI_RESOURCE_TYPE_PIN_CONFIG           21  /* ACPI 6.2 */
+#define ACPI_RESOURCE_TYPE_MAX                  21
 
 /* Master union for resource descriptors */
 
@@ -792,6 +825,7 @@ typedef union acpi_resource_data
     ACPI_RESOURCE_UART_SERIALBUS            UartSerialBus;
     ACPI_RESOURCE_COMMON_SERIALBUS          CommonSerialBus;
     ACPI_RESOURCE_PIN_FUNCTION              PinFunction;
+    ACPI_RESOURCE_PIN_CONFIG                PinConfig;
 
     /* Common fields */
 

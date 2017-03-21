@@ -497,6 +497,7 @@ extern ACPI_RSCONVERT_INFO      AcpiRsConvertI2cSerialBus[];
 extern ACPI_RSCONVERT_INFO      AcpiRsConvertSpiSerialBus[];
 extern ACPI_RSCONVERT_INFO      AcpiRsConvertUartSerialBus[];
 extern ACPI_RSCONVERT_INFO      AcpiRsConvertPinFunction[];
+extern ACPI_RSCONVERT_INFO      AcpiRsConvertPinConfig[];
 
 /* These resources require separate get/set tables */
 
@@ -548,6 +549,7 @@ extern ACPI_RSDUMP_INFO         AcpiRsDumpI2cSerialBus[];
 extern ACPI_RSDUMP_INFO         AcpiRsDumpSpiSerialBus[];
 extern ACPI_RSDUMP_INFO         AcpiRsDumpUartSerialBus[];
 extern ACPI_RSDUMP_INFO         AcpiRsDumpGeneralFlags[];
+extern ACPI_RSDUMP_INFO         AcpiRsDumpPinConfig[];
 #endif
 
 #endif  /* __ACRESRC_H__ */
