@@ -163,7 +163,8 @@ RsGetBufferDataLength (
 
 static UINT16
 RsGetInterruptDataLength (
-    ACPI_PARSE_OBJECT       *InitializerOp);
+    ACPI_PARSE_OBJECT       *InitializerOp,
+    UINT32                  StartIndex);
 
 static BOOLEAN
 RsGetVendorData (
@@ -238,6 +239,7 @@ RsGetBufferDataLength (
  *
  * PARAMETERS:  InitializerOp       - Current parse op, start of the resource
  *                                    descriptor
+ *              StartIndex          - Start index of interrupt/pin list
  *
  * RETURN:      Length of the interrupt data list
  *
@@ -248,7 +250,8 @@ RsGetBufferDataLength (
 
 static UINT16
 RsGetInterruptDataLength (
-    ACPI_PARSE_OBJECT       *InitializerOp)
+    ACPI_PARSE_OBJECT       *InitializerOp,
+    UINT32                  StartIndex)
 {
     UINT16                  InterruptLength;
     UINT32                  i;
@@ -261,9 +264,9 @@ RsGetInterruptDataLength (
     {
         InitializerOp = ASL_GET_PEER_NODE (InitializerOp);
 
-        /* Interrupt list starts at offset 10 (Gpio descriptors) */
+        /* Interrupt list starts at offset StartIndex (Gpio descriptors) */
 
-        if (i >= 10)
+        if (i >= StartIndex)
         {
             InterruptLength += 2;
         }
@@ -414,7 +417,7 @@ RsDoGpioIntDescriptor (
      */
     ResSourceLength = RsGetStringDataLength (InitializerOp);
     VendorLength = RsGetBufferDataLength (InitializerOp);
-    InterruptLength = RsGetInterruptDataLength (InitializerOp);
+    InterruptLength = RsGetInterruptDataLength (InitializerOp, 10);
 
     DescriptorSize = ACPI_AML_SIZE_LARGE (AML_RESOURCE_GPIO) +
         ResSourceLength + VendorLength + InterruptLength;
@@ -623,7 +626,7 @@ RsDoGpioIoDescriptor (
      */
     ResSourceLength = RsGetStringDataLength (InitializerOp);
     VendorLength = RsGetBufferDataLength (InitializerOp);
-    InterruptLength = RsGetInterruptDataLength (InitializerOp);
+    InterruptLength = RsGetInterruptDataLength (InitializerOp, 10);
     PinList = InterruptList;
 
     DescriptorSize = ACPI_AML_SIZE_LARGE (AML_RESOURCE_GPIO) +
