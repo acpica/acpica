@@ -266,6 +266,7 @@ typedef enum
     ACPI_RSD_UINT64,
     ACPI_RSD_WORDLIST,
     ACPI_RSD_LABEL,
+    ACPI_RSD_SOURCE_LABEL,
 
 } ACPI_RSDUMP_OPCODES;
 
@@ -500,6 +501,7 @@ extern ACPI_RSCONVERT_INFO      AcpiRsConvertUartSerialBus[];
 extern ACPI_RSCONVERT_INFO      AcpiRsConvertPinFunction[];
 extern ACPI_RSCONVERT_INFO      AcpiRsConvertPinConfig[];
 extern ACPI_RSCONVERT_INFO      AcpiRsConvertPinGroup[];
+extern ACPI_RSCONVERT_INFO      AcpiRsConvertPinGroupFunction[];
 
 /* These resources require separate get/set tables */
 
@@ -553,6 +555,7 @@ extern ACPI_RSDUMP_INFO         AcpiRsDumpUartSerialBus[];
 extern ACPI_RSDUMP_INFO         AcpiRsDumpGeneralFlags[];
 extern ACPI_RSDUMP_INFO         AcpiRsDumpPinConfig[];
 extern ACPI_RSDUMP_INFO         AcpiRsDumpPinGroup[];
+extern ACPI_RSDUMP_INFO         AcpiRsDumpPinGroupFunction[];
 #endif
 
 #endif  /* __ACRESRC_H__ */

@@ -754,3 +754,70 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertPinGroup[10] =
                         AML_OFFSET (PinGroup.VendorOffset),
                         0},
 };
+
+/*******************************************************************************
+ *
+ * AcpiRsConvertPinGroupFunction
+ *
+ ******************************************************************************/
+
+ACPI_RSCONVERT_INFO     AcpiRsConvertPinGroupFunction[13] =
+{
+    {ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_PIN_GROUP_FUNCTION,
+                        ACPI_RS_SIZE (ACPI_RESOURCE_PIN_GROUP_FUNCTION),
+                        ACPI_RSC_TABLE_SIZE (AcpiRsConvertPinGroupFunction)},
+
+    {ACPI_RSC_INITSET,  ACPI_RESOURCE_NAME_PIN_GROUP_FUNCTION,
+                        sizeof (AML_RESOURCE_PIN_GROUP_FUNCTION),
+                        0},
+
+    {ACPI_RSC_MOVE8,    ACPI_RS_OFFSET (Data.PinGroupFunction.RevisionId),
+                        AML_OFFSET (PinGroupFunction.RevisionId),
+                        1},
+
+    {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.PinGroupFunction.Sharable),
+                        AML_OFFSET (PinGroupFunction.Flags),
+                        0},
+
+    {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.PinGroupFunction.ProducerConsumer),
+                        AML_OFFSET (PinGroupFunction.Flags),
+                        1},
+
+    {ACPI_RSC_MOVE16,   ACPI_RS_OFFSET (Data.PinGroupFunction.FunctionNumber),
+                        AML_OFFSET (PinGroupFunction.FunctionNumber),
+                        1},
+
+    /* Resource Source */
+
+    {ACPI_RSC_MOVE8,    ACPI_RS_OFFSET (Data.PinGroupFunction.ResourceSource.Index),
+                        AML_OFFSET (PinGroupFunction.ResSourceIndex),
+                        1},
+
+    {ACPI_RSC_COUNT_GPIO_RES,  ACPI_RS_OFFSET (Data.PinGroupFunction.ResourceSource.StringLength),
+                        AML_OFFSET (PinGroupFunction.ResSourceOffset),
+                        AML_OFFSET (PinGroupFunction.ResSourceLabelOffset)},
+
+    {ACPI_RSC_MOVE_GPIO_RES,   ACPI_RS_OFFSET (Data.PinGroupFunction.ResourceSource.StringPtr),
+                        AML_OFFSET (PinGroupFunction.ResSourceOffset),
+                        0},
+
+    /* Resource Source Label */
+
+    {ACPI_RSC_COUNT_GPIO_RES,  ACPI_RS_OFFSET (Data.PinGroupFunction.ResourceSourceLabel.StringLength),
+                        AML_OFFSET (PinGroupFunction.ResSourceLabelOffset),
+                        AML_OFFSET (PinGroupFunction.VendorOffset)},
+
+    {ACPI_RSC_MOVE_GPIO_RES,   ACPI_RS_OFFSET (Data.PinGroupFunction.ResourceSourceLabel.StringPtr),
+                        AML_OFFSET (PinGroupFunction.ResSourceLabelOffset),
+                        0},
+
+    /* Vendor Data */
+
+    {ACPI_RSC_COUNT_GPIO_VEN,   ACPI_RS_OFFSET (Data.PinGroupFunction.VendorLength),
+                        AML_OFFSET (PinGroupFunction.VendorLength),
+                        1},
+
+    {ACPI_RSC_MOVE_GPIO_RES,   ACPI_RS_OFFSET (Data.PinGroupFunction.VendorData),
+                        AML_OFFSET (PinGroupFunction.VendorOffset),
+                        0},
+};

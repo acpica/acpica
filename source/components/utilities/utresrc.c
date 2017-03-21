@@ -503,6 +503,7 @@ const UINT8                 AcpiGbl_ResourceAmlSizes[] =
     ACPI_AML_SIZE_LARGE (AML_RESOURCE_COMMON_SERIALBUS),
     ACPI_AML_SIZE_LARGE (AML_RESOURCE_PIN_CONFIG),
     ACPI_AML_SIZE_LARGE (AML_RESOURCE_PIN_GROUP),
+    ACPI_AML_SIZE_LARGE (AML_RESOURCE_PIN_GROUP_FUNCTION),
 };
 
 const UINT8                 AcpiGbl_ResourceAmlSerialBusSizes[] =
@@ -560,6 +561,7 @@ static const UINT8          AcpiGbl_ResourceTypes[] =
     ACPI_VARIABLE_LENGTH,           /* 0E *SerialBus */
     ACPI_VARIABLE_LENGTH,           /* 0F PinConfig */
     ACPI_VARIABLE_LENGTH,           /* 10 PinGroup */
+    ACPI_VARIABLE_LENGTH,           /* 11 PinGroupFunction */
 };
 
 

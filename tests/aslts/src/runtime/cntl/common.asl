@@ -1742,6 +1742,7 @@ Name(TFN0, Package() {
     "pinfunction.asl",
     "pinconfig.asl",
     "pingroup.asl",
+    "pingroupfunction.asl",
 })
 
 /*

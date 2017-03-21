@@ -444,6 +444,14 @@ static const ACPI_RESOURCE_TAG      AcpiDmPinConfigTags[] =
     {0,             NULL}
 };
 
+/* Subtype tables for PinGroupFunction descriptor */
+
+static const ACPI_RESOURCE_TAG      AcpiDmPinGroupFunctionTags[] =
+{
+    {( 6 * 8),      ACPI_RESTAG_FUNCTION},
+    {0,             NULL}
+};
+
 /* Subtype tables for Address descriptor type-specific flags */
 
 static const ACPI_RESOURCE_TAG      AcpiDmMemoryFlagTags[] =
@@ -512,6 +520,7 @@ static const ACPI_RESOURCE_TAG      *AcpiGbl_ResourceTags[] =
     NULL,                           /* 0x0E, ACPI_RESOURCE_NAME_SERIAL_BUS - Use Subtype table below */
     AcpiDmPinConfigTags,            /* 0x0F, ACPI_RESOURCE_NAME_PIN_CONFIG */
     NULL,                           /* 0x10, ACPI_RESOURCE_NAME_PIN_GROUP */
+    AcpiDmPinGroupFunctionTags,	    /* 0x11, ACPI_RESOURCE_NAME_PIN_GROUP_FUNCTION */
 };
 
 /* GPIO Subtypes */

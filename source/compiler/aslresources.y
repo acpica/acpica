@@ -214,6 +214,7 @@ ResourceMacroTerm
     | PinConfigTerm                 {}
     | PinFunctionTerm               {}
     | PinGroupTerm                  {}
+    | PinGroupFunctionTerm          {}
     | QWordIOTerm                   {}
     | QWordMemoryTerm               {}
     | QWordSpaceTerm                {}
@@ -656,6 +657,24 @@ PinGroupTerm
         PARSEOP_CLOSE_PAREN '{'
             DWordList '}'           {$$ = TrLinkChildren ($<n>3,5,$4,$5,$6,$7,$10);}
     | PARSEOP_PINGROUP
+        PARSEOP_OPEN_PAREN
+        error PARSEOP_CLOSE_PAREN   {$$ = AslDoError(); yyclearin;}
+    ;
+
+PinGroupFunctionTerm
+    : PARSEOP_PINGROUPFUNCTION
+        PARSEOP_OPEN_PAREN          {$<n>$ = TrCreateLeafNode (PARSEOP_PINGROUPFUNCTION);}
+        OptionalShareType_First     /* 04: SharedType */
+        ',' WordConstExpr           /* 06: FunctionNumber */
+        ',' StringData              /* 08: ResourceSource */
+        OptionalByteConstExpr       /* 09: ResourceSourceIndex */
+        ',' StringData              /* 11: ResourceSourceLabel */
+        OptionalResourceType        /* 12: ResourceType */
+        OptionalNameString          /* 13: DescriptorName */
+        OptionalBuffer_Last         /* 14: VendorData */
+        PARSEOP_CLOSE_PAREN         {$$ = TrLinkChildren ($<n>3,8,
+                                        $4,$6,$8,$9,$11,$12,$13,$14);}
+    | PARSEOP_PINGROUPFUNCTION
         PARSEOP_OPEN_PAREN
         error PARSEOP_CLOSE_PAREN   {$$ = AslDoError(); yyclearin;}
     ;

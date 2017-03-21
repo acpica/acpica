@@ -458,6 +458,7 @@ NamePathTail                [.]{NameSeg}
 "PinConfig"                 { count (1); return (PARSEOP_PINCONFIG); }
 "PinFunction"               { count (1); return (PARSEOP_PINFUNCTION); }
 "PinGroup"                  { count (1); return (PARSEOP_PINGROUP); }
+"PinGroupFunction"          { count (1); return (PARSEOP_PINGROUPFUNCTION); }
 "QWordIO"                   { count (1); return (PARSEOP_QWORDIO); }
 "QWordMemory"               { count (1); return (PARSEOP_QWORDMEMORY); }
 "QWordSpace"                { count (1); return (PARSEOP_QWORDSPACE); }
