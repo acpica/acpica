@@ -871,6 +871,16 @@ DtCompilePcct (
             InfoTable = AcpiDmTableInfoPcct2;
             break;
 
+        case ACPI_PCCT_TYPE_EXT_PCC_MASTER_SUBSPACE:
+
+            InfoTable = AcpiDmTableInfoPcct3;
+            break;
+
+        case ACPI_PCCT_TYPE_EXT_PCC_SLAVE_SUBSPACE:
+
+            InfoTable = AcpiDmTableInfoPcct4;
+            break;
+
         default:
 
             DtFatal (ASL_MSG_UNKNOWN_SUBTABLE, SubtableStart, "PCCT");

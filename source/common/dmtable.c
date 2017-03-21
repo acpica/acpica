@@ -365,6 +365,8 @@ static const char           *AcpiDmPcctSubnames[] =
     "Generic Communications Subspace",  /* ACPI_PCCT_TYPE_GENERIC_SUBSPACE */
     "HW-Reduced Comm Subspace",         /* ACPI_PCCT_TYPE_HW_REDUCED_SUBSPACE */
     "HW-Reduced Comm Subspace Type2",   /* ACPI_PCCT_TYPE_HW_REDUCED_SUBSPACE_TYPE2 */
+    "Extended PCC Master Subspace",     /* ACPI_PCCT_TYPE_EXT_PCC_MASTER_SUBSPACE */
+    "Extended PCC Slave Subspace",      /* ACPI_PCCT_TYPE_EXT_PCC_SLAVE_SUBSPACE */
     "Unknown Subtable Type"             /* Reserved */
 };
 
@@ -1545,7 +1547,7 @@ AcpiDmDumpTable (
 
         case ACPI_DMT_PPTT:
 
-            /* PCCT subtable types */
+            /* PPTT subtable types */
 
             Temp8 = *Target;
             if (Temp8 > ACPI_PPTT_TYPE_RESERVED)
