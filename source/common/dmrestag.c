@@ -511,6 +511,7 @@ static const ACPI_RESOURCE_TAG      *AcpiGbl_ResourceTags[] =
     AcpiDmPinFunctionTags,          /* 0x0D, ACPI_RESOURCE_NAME_PIN_FUNCTION */
     NULL,                           /* 0x0E, ACPI_RESOURCE_NAME_SERIAL_BUS - Use Subtype table below */
     AcpiDmPinConfigTags,            /* 0x0F, ACPI_RESOURCE_NAME_PIN_CONFIG */
+    NULL,                           /* 0x10, ACPI_RESOURCE_NAME_PIN_GROUP */
 };
 
 /* GPIO Subtypes */

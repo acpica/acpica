@@ -694,3 +694,63 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertPinConfig[14] =
                         AML_OFFSET (PinConfig.VendorOffset),
                         0},
 };
+
+/*******************************************************************************
+ *
+ * AcpiRsConvertPinGroup
+ *
+ ******************************************************************************/
+
+ACPI_RSCONVERT_INFO     AcpiRsConvertPinGroup[10] =
+{
+    {ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_PIN_GROUP,
+                        ACPI_RS_SIZE (ACPI_RESOURCE_PIN_GROUP),
+                        ACPI_RSC_TABLE_SIZE (AcpiRsConvertPinGroup)},
+
+    {ACPI_RSC_INITSET,  ACPI_RESOURCE_NAME_PIN_GROUP,
+                        sizeof (AML_RESOURCE_PIN_GROUP),
+                        0},
+
+    {ACPI_RSC_MOVE8,    ACPI_RS_OFFSET (Data.PinGroup.RevisionId),
+                        AML_OFFSET (PinGroup.RevisionId),
+                        1},
+
+    {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.PinGroup.ProducerConsumer),
+                        AML_OFFSET (PinGroup.Flags),
+                        0},
+
+    /* Pin Table */
+
+    /*
+     * It is OK to use GPIO operations here because none of them refer GPIO
+     * structures directly but instead use offsets given here.
+     */
+
+    {ACPI_RSC_COUNT_GPIO_PIN, ACPI_RS_OFFSET (Data.PinGroup.PinTableLength),
+                        AML_OFFSET (PinGroup.PinTableOffset),
+                        AML_OFFSET (PinGroup.LabelOffset)},
+
+    {ACPI_RSC_MOVE_GPIO_PIN, ACPI_RS_OFFSET (Data.PinGroup.PinTable),
+                        AML_OFFSET (PinGroup.PinTableOffset),
+                        0},
+
+    /* Resource Label */
+
+    {ACPI_RSC_COUNT_GPIO_RES, ACPI_RS_OFFSET (Data.PinGroup.ResourceLabel.StringLength),
+                        AML_OFFSET (PinGroup.LabelOffset),
+                        AML_OFFSET (PinGroup.VendorOffset)},
+
+    {ACPI_RSC_MOVE_GPIO_RES, ACPI_RS_OFFSET (Data.PinGroup.ResourceLabel.StringPtr),
+                        AML_OFFSET (PinGroup.LabelOffset),
+                        0},
+
+    /* Vendor Data */
+
+    {ACPI_RSC_COUNT_GPIO_VEN,   ACPI_RS_OFFSET (Data.PinGroup.VendorLength),
+                        AML_OFFSET (PinGroup.VendorLength),
+                        1},
+
+    {ACPI_RSC_MOVE_GPIO_RES,   ACPI_RS_OFFSET (Data.PinGroup.VendorData),
+                        AML_OFFSET (PinGroup.VendorOffset),
+                        0},
+};

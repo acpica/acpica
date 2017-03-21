@@ -1741,6 +1741,7 @@ Name(TFN0, Package() {
 // ACPI 6.2
     "pinfunction.asl",
     "pinconfig.asl",
+    "pingroup.asl",
 })
 
 /*

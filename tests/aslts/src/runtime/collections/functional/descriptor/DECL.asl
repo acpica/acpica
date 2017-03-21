@@ -76,3 +76,4 @@ Include("../../../../runtime/collections/functional/descriptor/uartserialbus.asl
 
 Include("../../../../runtime/collections/functional/descriptor/pinfunction.asl")
 Include("../../../../runtime/collections/functional/descriptor/pinconfig.asl")
+Include("../../../../runtime/collections/functional/descriptor/pingroup.asl")

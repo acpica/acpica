@@ -1082,3 +1082,88 @@ AcpiDmPinConfigDescriptor (
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("}\n");
 }
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmPinGroupDescriptor
+ *
+ * PARAMETERS:  Info                - Extra resource info
+ *              Resource            - Pointer to the resource descriptor
+ *              Length              - Length of the descriptor in bytes
+ *              Level               - Current source code indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Decode a PinGroup descriptor
+ *
+ ******************************************************************************/
+
+void
+AcpiDmPinGroupDescriptor (
+    ACPI_OP_WALK_INFO       *Info,
+    AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level)
+{
+    char                    *Label;
+    UINT16                  *PinList;
+    UINT8                   *VendorData;
+    UINT32                  PinCount;
+    UINT32                  i;
+
+    AcpiDmIndent (Level);
+    /* Always producer */
+    AcpiOsPrintf ("PinGroup (");
+
+    Label = ACPI_ADD_PTR (char,
+        Resource, Resource->PinGroup.LabelOffset),
+    AcpiUtPrintString (Label, ACPI_UINT16_MAX);
+
+    AcpiOsPrintf (", ");
+
+    AcpiOsPrintf ("%s, ",
+        AcpiGbl_ConsumeDecode [ACPI_GET_1BIT_FLAG (Resource->PinGroup.Flags)]);
+
+    /* Insert a descriptor name */
+
+    AcpiDmDescriptorName ();
+
+    AcpiOsPrintf (",");
+
+    /* Dump the vendor data */
+
+    if (Resource->PinGroup.VendorLength)
+    {
+        AcpiOsPrintf ("\n");
+        AcpiDmIndent (Level + 1);
+        VendorData = ACPI_ADD_PTR (UINT8, Resource,
+            Resource->PinGroup.VendorOffset);
+
+        AcpiDmDumpRawDataBuffer (VendorData,
+            Resource->PinGroup.VendorLength, Level);
+    }
+
+    AcpiOsPrintf (")\n");
+
+    AcpiDmIndent (Level + 1);
+
+    /* Dump the interrupt list */
+
+    AcpiOsPrintf ("{   // Pin list\n");
+
+    PinCount = (Resource->PinGroup.LabelOffset -
+        Resource->PinGroup.PinTableOffset) / sizeof (UINT16);
+
+    PinList = (UINT16 *) ACPI_ADD_PTR (char, Resource,
+        Resource->PinGroup.PinTableOffset);
+
+    for (i = 0; i < PinCount; i++)
+    {
+        AcpiDmIndent (Level + 2);
+        AcpiOsPrintf ("0x%4.4X%s\n", PinList[i],
+            ((i + 1) < PinCount) ? "," : "");
+    }
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("}\n");
+}
