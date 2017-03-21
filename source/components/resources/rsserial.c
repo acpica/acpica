@@ -254,6 +254,78 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertGpio[18] =
                         0},
 };
 
+/*******************************************************************************
+ *
+ * AcpiRsConvertPinfunction
+ *
+ ******************************************************************************/
+
+ACPI_RSCONVERT_INFO     AcpiRsConvertPinFunction[13] =
+{
+    {ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_PIN_FUNCTION,
+                        ACPI_RS_SIZE (ACPI_RESOURCE_PIN_FUNCTION),
+                        ACPI_RSC_TABLE_SIZE (AcpiRsConvertPinFunction)},
+
+    {ACPI_RSC_INITSET,  ACPI_RESOURCE_NAME_PIN_FUNCTION,
+                        sizeof (AML_RESOURCE_PIN_FUNCTION),
+                        0},
+
+    {ACPI_RSC_MOVE8,    ACPI_RS_OFFSET (Data.PinFunction.RevisionId),
+                        AML_OFFSET (PinFunction.RevisionId),
+                        1},
+
+    {ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET (Data.PinFunction.Sharable),
+                        AML_OFFSET (PinFunction.Flags),
+                        0},
+
+    {ACPI_RSC_MOVE8,    ACPI_RS_OFFSET (Data.PinFunction.PinConfig),
+                        AML_OFFSET (PinFunction.PinConfig),
+                        1},
+
+    {ACPI_RSC_MOVE16,   ACPI_RS_OFFSET (Data.PinFunction.FunctionNumber),
+                        AML_OFFSET (PinFunction.FunctionNumber),
+                        2},
+
+    /* Pin Table */
+
+    /*
+     * It is OK to use GPIO operations here because none of them refer GPIO
+     * structures directly but instead use offsets given here.
+     */
+
+    {ACPI_RSC_COUNT_GPIO_PIN, ACPI_RS_OFFSET (Data.PinFunction.PinTableLength),
+                        AML_OFFSET (PinFunction.PinTableOffset),
+                        AML_OFFSET (PinFunction.ResSourceOffset)},
+
+    {ACPI_RSC_MOVE_GPIO_PIN, ACPI_RS_OFFSET (Data.PinFunction.PinTable),
+                        AML_OFFSET (PinFunction.PinTableOffset),
+                        0},
+
+    /* Resource Source */
+
+    {ACPI_RSC_MOVE8,    ACPI_RS_OFFSET (Data.PinFunction.ResourceSource.Index),
+                        AML_OFFSET (PinFunction.ResSourceIndex),
+                        1},
+
+    {ACPI_RSC_COUNT_GPIO_RES,  ACPI_RS_OFFSET (Data.PinFunction.ResourceSource.StringLength),
+                        AML_OFFSET (PinFunction.ResSourceOffset),
+                        AML_OFFSET (PinFunction.VendorOffset)},
+
+    {ACPI_RSC_MOVE_GPIO_RES,   ACPI_RS_OFFSET (Data.PinFunction.ResourceSource.StringPtr),
+                        AML_OFFSET (PinFunction.ResSourceOffset),
+                        0},
+
+    /* Vendor Data */
+
+    {ACPI_RSC_COUNT_GPIO_VEN,   ACPI_RS_OFFSET (Data.PinFunction.VendorLength),
+                        AML_OFFSET (PinFunction.VendorLength),
+                        1},
+
+    {ACPI_RSC_MOVE_GPIO_RES,   ACPI_RS_OFFSET (Data.PinFunction.VendorData),
+                        AML_OFFSET (PinFunction.VendorOffset),
+                        0},
+};
+
 
 /*******************************************************************************
  *

@@ -496,6 +496,7 @@ extern ACPI_RSCONVERT_INFO      AcpiRsConvertFixedDma[];
 extern ACPI_RSCONVERT_INFO      AcpiRsConvertI2cSerialBus[];
 extern ACPI_RSCONVERT_INFO      AcpiRsConvertSpiSerialBus[];
 extern ACPI_RSCONVERT_INFO      AcpiRsConvertUartSerialBus[];
+extern ACPI_RSCONVERT_INFO      AcpiRsConvertPinFunction[];
 
 /* These resources require separate get/set tables */
 
@@ -540,6 +541,7 @@ extern ACPI_RSDUMP_INFO         AcpiRsDumpExtAddress64[];
 extern ACPI_RSDUMP_INFO         AcpiRsDumpExtIrq[];
 extern ACPI_RSDUMP_INFO         AcpiRsDumpGenericReg[];
 extern ACPI_RSDUMP_INFO         AcpiRsDumpGpio[];
+extern ACPI_RSDUMP_INFO         AcpiRsDumpPinFunction[];
 extern ACPI_RSDUMP_INFO         AcpiRsDumpFixedDma[];
 extern ACPI_RSDUMP_INFO         AcpiRsDumpCommonSerialBus[];
 extern ACPI_RSDUMP_INFO         AcpiRsDumpI2cSerialBus[];

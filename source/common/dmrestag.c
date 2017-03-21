@@ -424,6 +424,16 @@ static const ACPI_RESOURCE_TAG      AcpiDmUartSerialBusTags[] =
     {0,             NULL}
 };
 
+/* Subtype tables for PinFunction descriptor */
+
+static const ACPI_RESOURCE_TAG      AcpiDmPinFunctionTags[] =
+{
+    {( 4 * 8),      ACPI_RESTAG_INTERRUPTSHARE},
+    {( 6 * 8),      ACPI_RESTAG_PINCONFIG},
+    {( 7 * 8),      ACPI_RESTAG_FUNCTION},
+    {0,             NULL}
+};
+
 /* Subtype tables for Address descriptor type-specific flags */
 
 static const ACPI_RESOURCE_TAG      AcpiDmMemoryFlagTags[] =
@@ -488,7 +498,7 @@ static const ACPI_RESOURCE_TAG      *AcpiGbl_ResourceTags[] =
     AcpiDmAddress64Tags,            /* 0x0A, ACPI_RESOURCE_NAME_QWORD_ADDRESS_SPACE */
     AcpiDmExtendedAddressTags,      /* 0x0B, ACPI_RESOURCE_NAME_EXTENDED_ADDRESS_SPACE */
     NULL,                           /* 0x0C, ACPI_RESOURCE_NAME_GPIO - Use Subtype table below */
-    NULL,                           /* 0x0D, Reserved */
+    AcpiDmPinFunctionTags,          /* 0x0D, ACPI_RESOURCE_NAME_PIN_FUNCTION */
     NULL                            /* 0x0E, ACPI_RESOURCE_NAME_SERIAL_BUS - Use Subtype table below */
 };
 

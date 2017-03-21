@@ -471,6 +471,15 @@ AcpiRsGetAmlLength (
 
             break;
 
+        case ACPI_RESOURCE_TYPE_PIN_FUNCTION:
+
+            TotalSize = (ACPI_RS_LENGTH) (TotalSize +
+                (Resource->Data.PinFunction.PinTableLength * 2) +
+                Resource->Data.PinFunction.ResourceSource.StringLength +
+                Resource->Data.PinFunction.VendorLength);
+
+            break;
+
 
         case ACPI_RESOURCE_TYPE_SERIAL_BUS:
 
@@ -665,6 +674,26 @@ AcpiRsGetListLength (
                     AmlResource->LargeHeader.ResourceLength +
                     sizeof (AML_RESOURCE_LARGE_HEADER) -
                     AmlResource->Gpio.PinTableOffset;
+            }
+            break;
+
+        case ACPI_RESOURCE_NAME_PIN_FUNCTION:
+
+            /* Vendor data is optional */
+
+            if (AmlResource->PinFunction.VendorLength)
+            {
+                ExtraStructBytes +=
+                    AmlResource->PinFunction.VendorOffset -
+                    AmlResource->PinFunction.PinTableOffset +
+                    AmlResource->PinFunction.VendorLength;
+            }
+            else
+            {
+                ExtraStructBytes +=
+                    AmlResource->LargeHeader.ResourceLength +
+                    sizeof (AML_RESOURCE_LARGE_HEADER) -
+                    AmlResource->PinFunction.PinTableOffset;
             }
             break;
 

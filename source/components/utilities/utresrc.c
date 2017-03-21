@@ -479,7 +479,7 @@ const UINT8                 AcpiGbl_ResourceAmlSizes[] =
     ACPI_AML_SIZE_LARGE (AML_RESOURCE_ADDRESS64),
     ACPI_AML_SIZE_LARGE (AML_RESOURCE_EXTENDED_ADDRESS64),
     ACPI_AML_SIZE_LARGE (AML_RESOURCE_GPIO),
-    0,
+    ACPI_AML_SIZE_LARGE (AML_RESOURCE_PIN_FUNCTION),
     ACPI_AML_SIZE_LARGE (AML_RESOURCE_COMMON_SERIALBUS),
 };
 
@@ -534,7 +534,7 @@ static const UINT8          AcpiGbl_ResourceTypes[] =
     ACPI_VARIABLE_LENGTH,           /* 0A Qword* address */
     ACPI_FIXED_LENGTH,              /* 0B Extended* address */
     ACPI_VARIABLE_LENGTH,           /* 0C Gpio* */
-    0,
+    ACPI_VARIABLE_LENGTH,           /* 0D PinFunction */
     ACPI_VARIABLE_LENGTH            /* 0E *SerialBus */
 };
 

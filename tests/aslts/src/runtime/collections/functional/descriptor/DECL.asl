@@ -71,3 +71,7 @@ Include("../../../../runtime/collections/functional/descriptor/gpioio.asl")
 Include("../../../../runtime/collections/functional/descriptor/i2cserialbus.asl")
 Include("../../../../runtime/collections/functional/descriptor/spiserialbus.asl")
 Include("../../../../runtime/collections/functional/descriptor/uartserialbus.asl")
+
+/* ACPI 6.2 Resource Descriptors */
+
+Include("../../../../runtime/collections/functional/descriptor/pinfunction.asl")

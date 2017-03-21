@@ -1076,6 +1076,13 @@ AcpiDmGpioDescriptor (
     UINT32                  Level);
 
 void
+AcpiDmPinFunctionDescriptor (
+    ACPI_OP_WALK_INFO       *Info,
+    AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level);
+
+void
 AcpiDmSerialBusDescriptor (
     ACPI_OP_WALK_INFO       *Info,
     AML_RESOURCE            *Resource,

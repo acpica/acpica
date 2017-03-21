@@ -174,6 +174,7 @@
 #define ACPI_RESTAG_DRIVESTRENGTH               "_DRS"
 #define ACPI_RESTAG_ENDIANNESS                  "_END"
 #define ACPI_RESTAG_FLOWCONTROL                 "_FLC"
+#define ACPI_RESTAG_FUNCTION                    "_FUN"
 #define ACPI_RESTAG_GRANULARITY                 "_GRA"
 #define ACPI_RESTAG_INTERRUPT                   "_INT"
 #define ACPI_RESTAG_INTERRUPTLEVEL              "_LL_"  /* ActiveLo(1), ActiveHi(0) */
@@ -636,6 +637,28 @@ typedef struct aml_resource_uart_serialbus
 #define AML_RESOURCE_UART_TYPE_REVISION         1       /* ACPI 5.0 */
 #define AML_RESOURCE_UART_MIN_DATA_LEN          10
 
+typedef struct aml_resource_pin_function
+{
+    AML_RESOURCE_LARGE_HEADER_COMMON
+    UINT8                           RevisionId;
+    UINT16                          Flags;
+    UINT8                           PinConfig;
+    UINT16                          FunctionNumber;
+    UINT16                          PinTableOffset;
+    UINT8                           ResSourceIndex;
+    UINT16                          ResSourceOffset;
+    UINT16                          VendorOffset;
+    UINT16                          VendorLength;
+    /*
+     * Optional fields follow immediately:
+     * 1) PIN list (Words)
+     * 2) Resource Source String
+     * 3) Vendor Data bytes
+     */
+
+} AML_RESOURCE_PIN_FUNCTION;
+
+#define AML_RESOURCE_PIN_FUNCTION_REVISION      1       /* ACPI 6.2 */
 
 /* restore default alignment */
 
@@ -680,6 +703,7 @@ typedef union aml_resource
     AML_RESOURCE_SPI_SERIALBUS              SpiSerialBus;
     AML_RESOURCE_UART_SERIALBUS             UartSerialBus;
     AML_RESOURCE_COMMON_SERIALBUS           CommonSerialBus;
+    AML_RESOURCE_PIN_FUNCTION               PinFunction;
 
     /* Utility overlays */
 

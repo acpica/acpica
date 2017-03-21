@@ -725,6 +725,19 @@ typedef struct acpi_resource_uart_serialbus
 #define ACPI_UART_CLEAR_TO_SEND                 (1<<6)
 #define ACPI_UART_REQUEST_TO_SEND               (1<<7)
 
+typedef struct acpi_resource_pin_function
+{
+    UINT8                           RevisionId;
+    UINT8                           PinConfig;
+    UINT8                           Sharable;           /* For values, see Interrupt Attributes above */
+    UINT16                          FunctionNumber;
+    UINT16                          PinTableLength;
+    UINT16                          VendorLength;
+    ACPI_RESOURCE_SOURCE            ResourceSource;
+    UINT16                          *PinTable;
+    UINT8                           *VendorData;
+
+} ACPI_RESOURCE_PIN_FUNCTION;
 
 /* ACPI_RESOURCE_TYPEs */
 
@@ -748,7 +761,8 @@ typedef struct acpi_resource_uart_serialbus
 #define ACPI_RESOURCE_TYPE_GPIO                 17  /* ACPI 5.0 */
 #define ACPI_RESOURCE_TYPE_FIXED_DMA            18  /* ACPI 5.0 */
 #define ACPI_RESOURCE_TYPE_SERIAL_BUS           19  /* ACPI 5.0 */
-#define ACPI_RESOURCE_TYPE_MAX                  19
+#define ACPI_RESOURCE_TYPE_PIN_FUNCTION         20  /* ACPI 6.2 */
+#define ACPI_RESOURCE_TYPE_MAX                  20
 
 /* Master union for resource descriptors */
 
@@ -777,6 +791,7 @@ typedef union acpi_resource_data
     ACPI_RESOURCE_SPI_SERIALBUS             SpiSerialBus;
     ACPI_RESOURCE_UART_SERIALBUS            UartSerialBus;
     ACPI_RESOURCE_COMMON_SERIALBUS          CommonSerialBus;
+    ACPI_RESOURCE_PIN_FUNCTION              PinFunction;
 
     /* Common fields */
 

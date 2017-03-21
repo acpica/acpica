@@ -432,6 +432,7 @@ NoEcho('
 %type <n> Memory32Term
 %type <n> NameSeg
 %type <n> NameString
+%type <n> PinFunctionTerm
 %type <n> QWordIOTerm
 %type <n> QWordMemoryTerm
 %type <n> QWordSpaceTerm

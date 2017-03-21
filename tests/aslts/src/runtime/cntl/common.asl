@@ -1738,6 +1738,8 @@ Name(TFN0, Package() {
     "i2cserialbus.asl",
     "spiserialbus.asl",
     "uartserialbus.asl",
+// ACPI 6.2
+    "pinfunction.asl",
 })
 
 /*

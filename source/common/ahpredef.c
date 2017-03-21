@@ -254,6 +254,7 @@ const AH_PREDEFINED_NAME    AslPredefinedInfo[] =
     AH_PREDEF ("_FPS",    "Fan Performance States", "Returns a list of supported fan performance states"),
     AH_PREDEF ("_FSL",    "Fan Set Level", "Control method that sets the fan device's speed level (performance state)"),
     AH_PREDEF ("_FST",    "Fan Status", "Returns current status information for a fan device"),
+    AH_PREDEF ("_FUN",    "Function Number", "Resource descriptor field"),
     AH_PREDEF ("_GAI",    "Get Averaging Interval", "Returns the power meter averaging interval"),
     AH_PREDEF ("_GCP",    "Get Capabilities", "Get device time capabilities"),
     AH_PREDEF ("_GHL",    "Get Hardware Limit", "Returns the hardware limit enforced by the power meter"),
