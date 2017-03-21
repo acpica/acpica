@@ -61,7 +61,7 @@ Method(mc75,, Serialized)
 		}
 
 		if (LNotEqual(Local1, 0xabcd0001)) {
-			err("", zFFF, 0x003, 0, 0, Local1, 0xabcd0001)
+			err("", PK04(zFFF, __LINE__), 0x003, 0, 0, Local1, 0xabcd0001)
 		}
 		return
 	}

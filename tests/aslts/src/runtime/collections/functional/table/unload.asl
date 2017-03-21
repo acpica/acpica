@@ -95,7 +95,7 @@ Device(DTM1) {
 		Store(\DTM0.BUF0, \DTM0.RFU0)
 
 		if (CondRefof(\SSS0, Local0)) {
-			err(arg0, z175, 0x000, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z175, __LINE__), 0x000, 0, 0, "\\SSS0", 1)
 			return
 		}
 
@@ -120,26 +120,26 @@ Device(DTM1) {
 
 		Store(ObjectType(HI0), Local1)
 		if (LNotEqual(Local1, c017)) { // DDB Handle
-			err(arg0, z175, 0x003, 0, 0, Local1, c017)
+			err(arg0, PK04(z175, __LINE__), 0x003, 0, 0, Local1, c017)
 		}
 
 		// Check the new Object appears
 
 		if (CondRefof(\SSS0, Local0)) {
 		} else {
-			err(arg0, z175, 0x004, 0, 0, "\\SSS0", 0)
+			err(arg0, PK04(z175, __LINE__), 0x004, 0, 0, "\\SSS0", 0)
 		}
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c010)) { // Method
-			err(arg0, z175, 0x005, 0, 0, Local1, c010)
+			err(arg0, PK04(z175, __LINE__), 0x005, 0, 0, Local1, c010)
 		} else {
 			Store(\SSS0(), Local0)
 			if (CH03(arg0, z175, 0x006, "\\SSS0", 1)) {
 				return
 			}
 			if (LNotEqual("\\SSS0", Local0)) {
-				err(arg0, z175, 0x007, 0, 0, Local0, "\\SSS0")
+				err(arg0, PK04(z175, __LINE__), 0x007, 0, 0, Local0, "\\SSS0")
 			}
 		}
 
@@ -153,7 +153,7 @@ Device(DTM1) {
 		Store("Table Unloaded", Debug)
 
 		if (CondRefof(\SSS0, Local0)) {
-			err(arg0, z175, 0x009, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z175, __LINE__), 0x009, 0, 0, "\\SSS0", 1)
 		}
 		return
 	}
@@ -172,7 +172,7 @@ Device(DTM1) {
 
 			Store(ObjectType(arg2), Local0)
 			if (LNotEqual(arg3, Local0)) {
-				err(arg0, z175, 0x010, 0, 0, Local0, arg3)
+				err(arg0, PK04(z175, __LINE__), 0x010, 0, 0, Local0, arg3)
 				return (1)
 			}
 
@@ -185,85 +185,85 @@ Device(DTM1) {
 
 			// Integer
 			if (CondRefof(\AUXD.INT0, Local0)) {
-				err(arg0, z175, 0x011, 0, 0, "\\AUXD.INT0", 1)
+				err(arg0, PK04(z175, __LINE__), 0x011, 0, 0, "\\AUXD.INT0", 1)
 				return (1)
 			}
 
 			// String
 			if (CondRefof(\AUXD.STR0, Local0)) {
-				err(arg0, z175, 0x012, 0, 0, "\\AUXD.STR0", 1)
+				err(arg0, PK04(z175, __LINE__), 0x012, 0, 0, "\\AUXD.STR0", 1)
 				return (1)
 			}
 
 			// Buffer
 			if (CondRefof(\AUXD.BUF0, Local0)) {
-				err(arg0, z175, 0x013, 0, 0, "\\AUXD.BUF0", 1)
+				err(arg0, PK04(z175, __LINE__), 0x013, 0, 0, "\\AUXD.BUF0", 1)
 				return (1)
 			}
 
 			// Package
 			if (CondRefof(\AUXD.PAC0, Local0)) {
-				err(arg0, z175, 0x014, 0, 0, "\\AUXD.PAC0", 1)
+				err(arg0, PK04(z175, __LINE__), 0x014, 0, 0, "\\AUXD.PAC0", 1)
 				return (1)
 			}
 
 			// Field Unit
 			if (CondRefof(\AUXD.FLU0, Local0)) {
-				err(arg0, z175, 0x015, 0, 0, "\\AUXD.FLU0", 1)
+				err(arg0, PK04(z175, __LINE__), 0x015, 0, 0, "\\AUXD.FLU0", 1)
 				return (1)
 			}
 
 			// Device
 			if (CondRefof(\AUXD.DEV0, Local0)) {
-				err(arg0, z175, 0x016, 0, 0, "\\AUXD.DEV0", 1)
+				err(arg0, PK04(z175, __LINE__), 0x016, 0, 0, "\\AUXD.DEV0", 1)
 				return (1)
 			}
 
 			// Event
 			if (CondRefof(\AUXD.EVE0, Local0)) {
-				err(arg0, z175, 0x017, 0, 0, "\\AUXD.EVE0", 1)
+				err(arg0, PK04(z175, __LINE__), 0x017, 0, 0, "\\AUXD.EVE0", 1)
 				return (1)
 			}
 
 			// Method
 			if (CondRefof(\AUXD.MMM0, Local0)) {
-				err(arg0, z175, 0x018, 0, 0, "\\AUXD.MMM0", 1)
+				err(arg0, PK04(z175, __LINE__), 0x018, 0, 0, "\\AUXD.MMM0", 1)
 				return (1)
 			}
 
 			// Mutex
 			if (CondRefof(\AUXD.MTX0, Local0)) {
-				err(arg0, z175, 0x019, 0, 0, "\\AUXD.MTX0", 1)
+				err(arg0, PK04(z175, __LINE__), 0x019, 0, 0, "\\AUXD.MTX0", 1)
 				return (1)
 			}
 
 			// OpRegion
 			if (CondRefof(\AUXD.OPR0, Local0)) {
-				err(arg0, z175, 0x01a, 0, 0, "\\AUXD.OPR0", 1)
+				err(arg0, PK04(z175, __LINE__), 0x01a, 0, 0, "\\AUXD.OPR0", 1)
 				return (1)
 			}
 
 			// Power Resource
 			if (CondRefof(\AUXD.PWR0, Local0)) {
-				err(arg0, z175, 0x01b, 0, 0, "\\AUXD.PWR0", 1)
+				err(arg0, PK04(z175, __LINE__), 0x01b, 0, 0, "\\AUXD.PWR0", 1)
 				return (1)
 			}
 
 			// Processor
 			if (CondRefof(\AUXD.CPU0, Local0)) {
-				err(arg0, z175, 0x01c, 0, 0, "\\AUXD.CPU0", 1)
+				err(arg0, PK04(z175, __LINE__), 0x01c, 0, 0, "\\AUXD.CPU0", 1)
 				return (1)
 			}
 
 			// Thermal Zone
 			if (CondRefof(\AUXD.TZN0, Local0)) {
-				err(arg0, z175, 0x01d, 0, 0, "\\AUXD.TZN0", 1)
+				err(arg0, PK04(z175, __LINE__), 0x01d, 0, 0, "\\AUXD.TZN0", 1)
 				return (1)
 			}
 
 			// Buffer Field
 			if (CondRefof(\AUXD.BFL0, Local0)) {
-				err(arg0, z175, 0x01e, 0, 0, "\\AUXD.BFL0", 1)
+				err(arg0, PK04(z175, __LINE__), 0x01e, 0, 0, "\\AUXD.BFL0", 1)
 				return (1)
 			}
 
@@ -289,21 +289,21 @@ Device(DTM1) {
 		if (CondRefof(\AUXD.INT0, Local0)) {
 			m000(arg0, "int", Local0, c009)
 		} else {
-			err(arg0, z175, 0x021, 0, 0, "\\AUXD.INT0", 0)
+			err(arg0, PK04(z175, __LINE__), 0x021, 0, 0, "\\AUXD.INT0", 0)
 		}
 
 		// String
 		if (CondRefof(\AUXD.STR0, Local0)) {
 			m000(arg0, "str", Local0, c00a)
 		} else {
-			err(arg0, z175, 0x022, 0, 0, "\\AUXD.STR0", 0)
+			err(arg0, PK04(z175, __LINE__), 0x022, 0, 0, "\\AUXD.STR0", 0)
 		}
 
 		// Buffer
 		if (CondRefof(\AUXD.BUF0, Local0)) {
 			m000(arg0, "buf", Local0, c00b)
 		} else {
-			err(arg0, z175, 0x023, 0, 0, "\\AUXD.BUF0", 0)
+			err(arg0, PK04(z175, __LINE__), 0x023, 0, 0, "\\AUXD.BUF0", 0)
 		}
 
 		// Package
@@ -311,7 +311,7 @@ Device(DTM1) {
 			if (CondRefof(\AUXD.PAC0, Local0)) {
 				m000(arg0, "pac", Local0, c00c)
 			} else {
-				err(arg0, z175, 0x024, 0, 0, "\\AUXD.PAC0", 0)
+				err(arg0, PK04(z175, __LINE__), 0x024, 0, 0, "\\AUXD.PAC0", 0)
 			}
 		}
 
@@ -319,70 +319,70 @@ Device(DTM1) {
 		if (CondRefof(\AUXD.FLU0, Local0)) {
 			m000(arg0, "flu", Local0, c00d)
 		} else {
-			err(arg0, z175, 0x025, 0, 0, "\\AUXD.FLU0", 0)
+			err(arg0, PK04(z175, __LINE__), 0x025, 0, 0, "\\AUXD.FLU0", 0)
 		}
 
 		// Device
 		if (CondRefof(\AUXD.DEV0, Local0)) {
 			m000(arg0, "dev", Local0, c00e)
 		} else {
-			err(arg0, z175, 0x026, 0, 0, "\\AUXD.DEV0", 0)
+			err(arg0, PK04(z175, __LINE__), 0x026, 0, 0, "\\AUXD.DEV0", 0)
 		}
 
 		// Event
 		if (CondRefof(\AUXD.EVE0, Local0)) {
 			m000(arg0, "evt", Local0, c00f)
 		} else {
-			err(arg0, z175, 0x027, 0, 0, "\\AUXD.EVE0", 0)
+			err(arg0, PK04(z175, __LINE__), 0x027, 0, 0, "\\AUXD.EVE0", 0)
 		}
 
 		// Method
 		if (CondRefof(\AUXD.MMM0, Local0)) {
 			m000(arg0, "met", Local0, c010)
 		} else {
-			err(arg0, z175, 0x028, 0, 0, "\\AUXD.MMM0", 0)
+			err(arg0, PK04(z175, __LINE__), 0x028, 0, 0, "\\AUXD.MMM0", 0)
 		}
 
 		// Mutex
 		if (CondRefof(\AUXD.MTX0, Local0)) {
 			m000(arg0, "mtx", Local0, c011)
 		} else {
-			err(arg0, z175, 0x029, 0, 0, "\\AUXD.MTX0", 0)
+			err(arg0, PK04(z175, __LINE__), 0x029, 0, 0, "\\AUXD.MTX0", 0)
 		}
 
 		// OpRegion
 		if (CondRefof(\AUXD.OPR0, Local0)) {
 			m000(arg0, "opr", Local0, c012)
 		} else {
-			err(arg0, z175, 0x02a, 0, 0, "\\AUXD.OPR0", 0)
+			err(arg0, PK04(z175, __LINE__), 0x02a, 0, 0, "\\AUXD.OPR0", 0)
 		}
 
 		// Power Resource
 		if (CondRefof(\AUXD.PWR0, Local0)) {
 			m000(arg0, "pwr", Local0, c013)
 		} else {
-			err(arg0, z175, 0x02b, 0, 0, "\\AUXD.PWR0", 0)
+			err(arg0, PK04(z175, __LINE__), 0x02b, 0, 0, "\\AUXD.PWR0", 0)
 		}
 
 		// Processor
 		if (CondRefof(\AUXD.CPU0, Local0)) {
 			m000(arg0, "cpu", Local0, c014)
 		} else {
-			err(arg0, z175, 0x02c, 0, 0, "\\AUXD.CPU0", 0)
+			err(arg0, PK04(z175, __LINE__), 0x02c, 0, 0, "\\AUXD.CPU0", 0)
 		}
 
 		// Thermal Zone
 		if (CondRefof(\AUXD.TZN0, Local0)) {
 			m000(arg0, "cpu", Local0, c015)
 		} else {
-			err(arg0, z175, 0x02d, 0, 0, "\\AUXD.TZN0", 0)
+			err(arg0, PK04(z175, __LINE__), 0x02d, 0, 0, "\\AUXD.TZN0", 0)
 		}
 
 		// Buffer Field
 		if (CondRefof(\AUXD.BFL0, Local0)) {
 			m000(arg0, "bfl", Local0, c016)
 		} else {
-			err(arg0, z175, 0x02e, 0, 0, "\\AUXD.BFL0", 0)
+			err(arg0, PK04(z175, __LINE__), 0x02e, 0, 0, "\\AUXD.BFL0", 0)
 		}
 
 		UnLoad(DDB0)
@@ -428,7 +428,7 @@ Device(DTM1) {
 
 			Store(ObjectType(arg2), Local0)
 			if (LNotEqual(arg3, Local0)) {
-				err(arg0, z175, 0x031, 0, 0, Local0, arg3)
+				err(arg0, PK04(z175, __LINE__), 0x031, 0, 0, Local0, arg3)
 				return (1)
 			}
 
@@ -454,7 +454,7 @@ Device(DTM1) {
 		}
 		Store(ObjectType(Local1), Local0)
 		if (LNotEqual(c008, Local0)) {
-			err(arg0, z175, 0x034, 0, 0, Local0, c008)
+			err(arg0, PK04(z175, __LINE__), 0x034, 0, 0, Local0, c008)
 		} else {
 			UnLoad(Local1)
 			if (SLCK) {
@@ -481,7 +481,7 @@ Device(DTM1) {
 
 		Store(ObjectType(\AUXD.PAC0), Local0)
 		if (LNotEqual(c00c, Local0)) {
-			err(arg0, z175, 0x036, 0, 0, Local0, c00c)
+			err(arg0, PK04(z175, __LINE__), 0x036, 0, 0, Local0, c00c)
 		} else {
 			UnLoad(\AUXD.PAC0)
 			CH04(arg0, 0, 47, z175, 0x037, 0, 0) // AE_AML_OPERAND_TYPE
@@ -493,7 +493,7 @@ Device(DTM1) {
 		// Device
 		Store(ObjectType(\AUXD.DEV0), Local0)
 		if (LNotEqual(c00e, Local0)) {
-			err(arg0, z175, 0x038, 0, 0, Local0, c00e)
+			err(arg0, PK04(z175, __LINE__), 0x038, 0, 0, Local0, c00e)
 		} else {
 			UnLoad(\AUXD.DEV0)
 			CH04(arg0, 0, 47, z175, 0x039, 0, 0) // AE_AML_OPERAND_TYPE
@@ -520,7 +520,7 @@ Device(DTM1) {
 		// Thermal Zone
 		Store(ObjectType(\AUXD.TZN0), Local0)
 		if (LNotEqual(c015, Local0)) {
-			err(arg0, z175, 0x03a, 0, 0, Local0, c015)
+			err(arg0, PK04(z175, __LINE__), 0x03a, 0, 0, Local0, c015)
 		} else {
 			UnLoad(\AUXD.TZN0)
 			CH04(arg0, 0, 47, z175, 0x03b, 0, 0) // AE_AML_OPERAND_TYPE

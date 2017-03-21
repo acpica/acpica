@@ -367,7 +367,7 @@ Method(m0fc, 1, Serialized)
 			Store(0x77A4, Local0)
 		}
 		if (LNotEqual(i000, Local0)) {
-			err(ts, z178, 0x303, 0, 0, i000, Local0)
+			err(ts, PK04(z178, __LINE__), 0x303, 0, 0, i000, Local0)
 		}
 	}
 }
@@ -407,7 +407,7 @@ Method(m0fe, 1, Serialized)
 	} else {
 		CH03(ts, z178, 0x403, 0, 0)
 		if (LNotEqual(i000, 0xf7)) {
-			err(ts, z178, 0x404, 0, 0, i000, 0xf7)
+			err(ts, PK04(z178, __LINE__), 0x404, 0, 0, i000, 0xf7)
 		}
 	}
 }

@@ -46,46 +46,46 @@ Method(md9a,, Serialized)
 
 	Store(LAnd(1, 1), Local0)
 	if (LNotEqual(Local0, ON00)) {
-		err("", zFFF, 0x000, 0, 0, Local0, ON00)
+		err("", PK04(zFFF, __LINE__), 0x000, 0, 0, Local0, ON00)
 	}
 
 	Store(LEqual(0, 0), Local0)
 	if (LNotEqual(Local0, ON00)) {
-		err("", zFFF, 0x001, 0, 0, Local0, ON00)
+		err("", PK04(zFFF, __LINE__), 0x001, 0, 0, Local0, ON00)
 	}
 
 	Store(LGreater(1, 0), Local0)
 	if (LNotEqual(Local0, ON00)) {
-		err("", zFFF, 0x002, 0, 0, Local0, ON00)
+		err("", PK04(zFFF, __LINE__), 0x002, 0, 0, Local0, ON00)
 	}
 
 	Store(LGreaterEqual(1, 1), Local0)
 	if (LNotEqual(Local0, ON00)) {
-		err("", zFFF, 0x003, 0, 0, Local0, ON00)
+		err("", PK04(zFFF, __LINE__), 0x003, 0, 0, Local0, ON00)
 	}
 
 	Store(LLess(0, 1), Local0)
 	if (LNotEqual(Local0, ON00)) {
-		err("", zFFF, 0x004, 0, 0, Local0, ON00)
+		err("", PK04(zFFF, __LINE__), 0x004, 0, 0, Local0, ON00)
 	}
 
 	Store(LLessEqual(1, 1), Local0)
 	if (LNotEqual(Local0, ON00)) {
-		err("", zFFF, 0x005, 0, 0, Local0, ON00)
+		err("", PK04(zFFF, __LINE__), 0x005, 0, 0, Local0, ON00)
 	}
 
 	Store(LNot(0), Local0)
 	if (LNotEqual(Local0, ON00)) {
-		err("", zFFF, 0x006, 0, 0, Local0, ON00)
+		err("", PK04(zFFF, __LINE__), 0x006, 0, 0, Local0, ON00)
 	}
 
 	Store(LNotEqual(1, 0), Local0)
 	if (LNotEqual(Local0, ON00)) {
-		err("", zFFF, 0x007, 0, 0, Local0, ON00)
+		err("", PK04(zFFF, __LINE__), 0x007, 0, 0, Local0, ON00)
 	}
 
 	Store(LOr(0, 1), Local0)
 	if (LNotEqual(Local0, ON00)) {
-		err("", zFFF, 0x008, 0, 0, Local0, ON00)
+		err("", PK04(zFFF, __LINE__), 0x008, 0, 0, Local0, ON00)
 	}
 }

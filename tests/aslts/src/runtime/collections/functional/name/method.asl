@@ -151,7 +151,7 @@ Method(m205, 4)
 	Store(ObjectType(arg2), Local0)
 	Store(ObjectType(arg3), Local1)
 	if (LNotEqual(Local0, Local1)) {
-		err(Concatenate(arg0, "-OType"), z133, arg1, 0, 0, Local0, Local1)
+		err(Concatenate(arg0, "-OType"), PK04(z133, __LINE__), arg1, 0, 0, Local0, Local1)
 		Return (1)
 	} elseif (Derefof(Index(bz00, Local0))) {
 		if (LNot(y119)) {
@@ -163,7 +163,7 @@ Method(m205, 4)
 			}
 		}
 		if (LNotEqual(arg2, arg3)) {
-			err(arg0, z133, arg1, 0, 0, arg2, arg3)
+			err(arg0, PK04(z133, __LINE__), arg1, 0, 0, arg2, arg3)
 			Return (1)
 		}
 	} elseif (LEqual(Local0, 8)) {
@@ -204,7 +204,7 @@ Method(m20a, 4)
 		Store(ObjectType(Derefof(Index(arg3, Local0))), Local2)
 		if (LNotEqual(Local1, Local2)) {
 			// ObjectType is corrupted
-			err(Concatenate(arg0, "-OType"), z133, arg1, 0, 0, Local1, Local2)
+			err(Concatenate(arg0, "-OType"), PK04(z133, __LINE__), arg1, 0, 0, Local1, Local2)
 			Return (1)
 		} elseif (Derefof(Index(bz00, Local1))) {
 			// the computational data type
@@ -212,7 +212,7 @@ Method(m20a, 4)
 					Derefof(Index(arg2, Local0)),
 					Derefof(Index(arg3, Local0)))) {
 				// The value is corrupted
-				err(arg0, z133, arg1, 0, 0, Derefof(Index(arg2, Local0)), Derefof(Index(arg3, Local0)))
+				err(arg0, PK04(z133, __LINE__), arg1, 0, 0, Derefof(Index(arg2, Local0)), Derefof(Index(arg3, Local0)))
 				Return (1)
 			}
 		}

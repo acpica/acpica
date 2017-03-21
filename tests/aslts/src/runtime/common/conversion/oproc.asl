@@ -887,9 +887,9 @@ Method(m489, 3)
 	Store(ObjectType(arg2), Local1)
 
 	if (LNotEqual(Local0, Local1)) {
-		err(arg0, z064, 2, 0, 0, Local0, Local1)
+		err(arg0, PK04(z064, __LINE__), 2, 0, 0, Local0, Local1)
 	} elseif (LNotEqual(arg1, arg2)) {
-		err(arg0, z064, 3, 0, 0, arg1, arg2)
+		err(arg0, PK04(z064, __LINE__), 3, 0, 0, arg1, arg2)
 	}
 }
 
@@ -904,11 +904,11 @@ Method(m48a, 4)
 
 	if (F64) {
 		if (LNotEqual(arg2, Local7)) {
-			err(arg0, z064, 4, 0, 0, arg2, Local7)
+			err(arg0, PK04(z064, __LINE__), 4, 0, 0, arg2, Local7)
 		}
 	} else {
 		if (LNotEqual(arg2, Local6)) {
-			err(arg0, z064, 5, 0, 0, arg2, Local6)
+			err(arg0, PK04(z064, __LINE__), 5, 0, 0, arg2, Local6)
 		}
 	}
 }

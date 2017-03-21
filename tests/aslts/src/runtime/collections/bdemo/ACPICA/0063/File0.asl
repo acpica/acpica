@@ -38,40 +38,40 @@ Method(mf92) {
 
 	ToInteger("0x0", Local0)
 	if (LNotEqual(Local0, 0x0)) {
-		err("", zFFF, 0x101, 0, 0, Local0, 0x0)
+		err("", PK04(zFFF, __LINE__), 0x101, 0, 0, Local0, 0x0)
 	}
 
 	ToInteger("0x0000000", Local0)
 	if (LNotEqual(Local0, 0x0)) {
-		err("", zFFF, 0x102, 0, 0, Local0, 0x0)
+		err("", PK04(zFFF, __LINE__), 0x102, 0, 0, Local0, 0x0)
 	}
 
 	ToInteger("0x1", Local0)
 	if (LNotEqual(Local0, 0x1)) {
-		err("", zFFF, 0x103, 0, 0, Local0, 0x1)
+		err("", PK04(zFFF, __LINE__), 0x103, 0, 0, Local0, 0x1)
 	}
 
 	ToInteger("0x12345678", Local0)
 	if (LNotEqual(Local0, 0x12345678)) {
-		err("", zFFF, 0x104, 0, 0, Local0, 0x12345678)
+		err("", PK04(zFFF, __LINE__), 0x104, 0, 0, Local0, 0x12345678)
 	}
 
 	ToInteger("0x12345", Local0)
 	if (LNotEqual(Local0, 0x12345)) {
-		err("", zFFF, 0x105, 0, 0, Local0, 0x12345)
+		err("", PK04(zFFF, __LINE__), 0x105, 0, 0, Local0, 0x12345)
 	}
 
 	if (F64) {
 		Store("0x1234567890123456", Local1)
 		ToInteger(Local1, Local0)
 		if (LNotEqual(Local0, 0x1234567890123456)) {
-			err("", zFFF, 0x106, 0, 0, Local0, 0x1234567890123456)
+			err("", PK04(zFFF, __LINE__), 0x106, 0, 0, Local0, 0x1234567890123456)
 		}
 
 		Store("0x123456789012345", Local1)
 		ToInteger(Local1, Local0)
 		if (LNotEqual(Local0, 0x123456789012345)) {
-			err("", zFFF, 0x107, 0, 0, Local0, 0x123456789012345)
+			err("", PK04(zFFF, __LINE__), 0x107, 0, 0, Local0, 0x123456789012345)
 		}
 	}
 
@@ -79,25 +79,25 @@ Method(mf92) {
 
 	ToInteger("0xabcdefef", Local0)
 	if (LNotEqual(Local0, 0xabcdefef)) {
-		err("", zFFF, 0x108, 0, 0, Local0, 0xabcdefef)
+		err("", PK04(zFFF, __LINE__), 0x108, 0, 0, Local0, 0xabcdefef)
 	}
 
 	ToInteger("0xabcdef", Local0)
 	if (LNotEqual(Local0, 0xabcdef)) {
-		err("", zFFF, 0x109, 0, 0, Local0, 0xabcdef)
+		err("", PK04(zFFF, __LINE__), 0x109, 0, 0, Local0, 0xabcdef)
 	}
 
 	if (F64) {
 		Store("0xabcdefefadefbcdf", Local1)
 		ToInteger(Local1, Local0)
 		if (LNotEqual(Local0, 0xabcdefefadefbcdf)) {
-			err("", zFFF, 0x10a, 0, 0, Local0, 0xabcdefefadefbcdf)
+			err("", PK04(zFFF, __LINE__), 0x10a, 0, 0, Local0, 0xabcdefefadefbcdf)
 		}
 
 		Store("0xabcdefefadefbcd", Local1)
 		ToInteger(Local1, Local0)
 		if (LNotEqual(Local0, 0xabcdefefadefbcd)) {
-			err("", zFFF, 0x10b, 0, 0, Local0, 0xabcdefefadefbcd)
+			err("", PK04(zFFF, __LINE__), 0x10b, 0, 0, Local0, 0xabcdefefadefbcd)
 		}
 	}
 
@@ -105,20 +105,20 @@ Method(mf92) {
 
 	ToInteger("0x1ab2cd34", Local0)
 	if (LNotEqual(Local0, 0x1ab2cd34)) {
-		err("", zFFF, 0x10c, 0, 0, Local0, 0x1ab2cd34)
+		err("", PK04(zFFF, __LINE__), 0x10c, 0, 0, Local0, 0x1ab2cd34)
 	}
 
 	if (F64) {
 		Store("0x1ab2cd340fe05678", Local1)
 		ToInteger(Local1, Local0)
 		if (LNotEqual(Local0, 0x1ab2cd340fe05678)) {
-			err("", zFFF, 0x10d, 0, 0, Local0, 0x1ab2cd340fe05678)
+			err("", PK04(zFFF, __LINE__), 0x10d, 0, 0, Local0, 0x1ab2cd340fe05678)
 		}
 
 		Store("0x1ab2cd340fe0", Local1)
 		ToInteger(Local1, Local0)
 		if (LNotEqual(Local0, 0x1ab2cd340fe0)) {
-			err("", zFFF, 0x10e, 0, 0, Local0, 0x1ab2cd340fe0)
+			err("", PK04(zFFF, __LINE__), 0x10e, 0, 0, Local0, 0x1ab2cd340fe0)
 		}
 	}
 
@@ -134,49 +134,49 @@ Method(mf93) {
 
 	ToInteger("0", Local0)
 	if (LNotEqual(Local0, 0)) {
-		err("", zFFF, 0x110, 0, 0, Local0, 0)
+		err("", PK04(zFFF, __LINE__), 0x110, 0, 0, Local0, 0)
 	}
 
 	ToInteger("0000000", Local0)
 	if (LNotEqual(Local0, 0)) {
-		err("", zFFF, 0x111, 0, 0, Local0, 0)
+		err("", PK04(zFFF, __LINE__), 0x111, 0, 0, Local0, 0)
 	}
 
 	ToInteger("000000000000000", Local0)
 	if (LNotEqual(Local0, 0)) {
-		err("", zFFF, 0x112, 0, 0, Local0, 0)
+		err("", PK04(zFFF, __LINE__), 0x112, 0, 0, Local0, 0)
 	}
 
 	ToInteger("000000000000000000000000000000000000000000", Local0)
 	if (LNotEqual(Local0, 0)) {
-		err("", zFFF, 0x113, 0, 0, Local0, 0)
+		err("", PK04(zFFF, __LINE__), 0x113, 0, 0, Local0, 0)
 	}
 
 	ToInteger("1", Local0)
 	if (LNotEqual(Local0, 1)) {
-		err("", zFFF, 0x114, 0, 0, Local0, 1)
+		err("", PK04(zFFF, __LINE__), 0x114, 0, 0, Local0, 1)
 	}
 
 	ToInteger("1234567890", Local0)
 	if (LNotEqual(Local0, 1234567890)) {
-		err("", zFFF, 0x115, 0, 0, Local0, 1234567890)
+		err("", PK04(zFFF, __LINE__), 0x115, 0, 0, Local0, 1234567890)
 	}
 
 	ToInteger("1234567", Local0)
 	if (LNotEqual(Local0, 1234567)) {
-		err("", zFFF, 0x116, 0, 0, Local0, 1234567)
+		err("", PK04(zFFF, __LINE__), 0x116, 0, 0, Local0, 1234567)
 	}
 
 	ToInteger("4294967295", Local0)
 	if (LNotEqual(Local0, 4294967295)) {
-		err("", zFFF, 0x117, 0, 0, Local0, 4294967295)
+		err("", PK04(zFFF, __LINE__), 0x117, 0, 0, Local0, 4294967295)
 	}
 
 	if (F64) {
 		Store("18446744073709551615", Local1)
 		ToInteger(Local1, Local0)
 		if (LNotEqual(Local0, 18446744073709551615)) {
-			err("", zFFF, 0x118, 0, 0, Local0, 18446744073709551615)
+			err("", PK04(zFFF, __LINE__), 0x118, 0, 0, Local0, 18446744073709551615)
 		}
 	}
 
@@ -193,146 +193,146 @@ Method(mf94) {
 
 	ToInteger("                    0x0", Local0)
 	if (LNotEqual(Local0, 0x0)) {
-		err("", zFFF, 0x11b, 0, 0, Local0, 0x0)
+		err("", PK04(zFFF, __LINE__), 0x11b, 0, 0, Local0, 0x0)
 	}
 
 	ToInteger("                    0x00000", Local0)
 	if (LNotEqual(Local0, 0x0)) {
-		err("", zFFF, 0x11c, 0, 0, Local0, 0x0)
+		err("", PK04(zFFF, __LINE__), 0x11c, 0, 0, Local0, 0x0)
 	}
 
 	ToInteger(" 0x1", Local0)
 	if (LNotEqual(Local0, 0x1)) {
-		err("", zFFF, 0x11d, 0, 0, Local0, 0x1)
+		err("", PK04(zFFF, __LINE__), 0x11d, 0, 0, Local0, 0x1)
 	}
 
 	ToInteger("  0x12345678", Local0)
 	if (LNotEqual(Local0, 0x12345678)) {
-		err("", zFFF, 0x11e, 0, 0, Local0, 0x12345678)
+		err("", PK04(zFFF, __LINE__), 0x11e, 0, 0, Local0, 0x12345678)
 	}
 
 	ToInteger("   0x12345", Local0)
 	if (LNotEqual(Local0, 0x12345)) {
-		err("", zFFF, 0x11f, 0, 0, Local0, 0x12345)
+		err("", PK04(zFFF, __LINE__), 0x11f, 0, 0, Local0, 0x12345)
 	}
 
 	if (F64) {
 		Store("    0x1234567890123456", Local1)
 		ToInteger(Local1, Local0)
 		if (LNotEqual(Local0, 0x1234567890123456)) {
-			err("", zFFF, 0x120, 0, 0, Local0, 0x1234567890123456)
+			err("", PK04(zFFF, __LINE__), 0x120, 0, 0, Local0, 0x1234567890123456)
 		}
 
 		Store("    0x123456789012345", Local1)
 		ToInteger(Local1, Local0)
 		if (LNotEqual(Local0, 0x123456789012345)) {
-			err("", zFFF, 0x121, 0, 0, Local0, 0x123456789012345)
+			err("", PK04(zFFF, __LINE__), 0x121, 0, 0, Local0, 0x123456789012345)
 		}
 	}
 
 	ToInteger("     0xabcdefef", Local0)
 	if (LNotEqual(Local0, 0xabcdefef)) {
-		err("", zFFF, 0x122, 0, 0, Local0, 0xabcdefef)
+		err("", PK04(zFFF, __LINE__), 0x122, 0, 0, Local0, 0xabcdefef)
 	}
 
 	ToInteger("      0xabcdef", Local0)
 	if (LNotEqual(Local0, 0xabcdef)) {
-		err("", zFFF, 0x123, 0, 0, Local0, 0xabcdef)
+		err("", PK04(zFFF, __LINE__), 0x123, 0, 0, Local0, 0xabcdef)
 	}
 
 	ToInteger("	0xabcdef", Local0)
 	if (LNotEqual(Local0, 0xabcdef)) {
-		err("", zFFF, 0x124, 0, 0, Local0, 0xabcdef)
+		err("", PK04(zFFF, __LINE__), 0x124, 0, 0, Local0, 0xabcdef)
 	}
 
 	if (F64) {
 		Store("       0xabcdefefadefbcdf", Local1)
 		ToInteger(Local1, Local0)
 		if (LNotEqual(Local0, 0xabcdefefadefbcdf)) {
-			err("", zFFF, 0x125, 0, 0, Local0, 0xabcdefefadefbcdf)
+			err("", PK04(zFFF, __LINE__), 0x125, 0, 0, Local0, 0xabcdefefadefbcdf)
 		}
 
 		Store("       0xabcdefefadefbcd", Local1)
 		ToInteger(Local1, Local0)
 		if (LNotEqual(Local0, 0xabcdefefadefbcd)) {
-			err("", zFFF, 0x126, 0, 0, Local0, 0xabcdefefadefbcd)
+			err("", PK04(zFFF, __LINE__), 0x126, 0, 0, Local0, 0xabcdefefadefbcd)
 		}
 	}
 
 	ToInteger("        0x1ab2cd34", Local0)
 	if (LNotEqual(Local0, 0x1ab2cd34)) {
-		err("", zFFF, 0x127, 0, 0, Local0, 0x1ab2cd34)
+		err("", PK04(zFFF, __LINE__), 0x127, 0, 0, Local0, 0x1ab2cd34)
 	}
 
 	if (F64) {
 		Store("         0x1ab2cd340fe05678", Local1)
 		ToInteger(Local1, Local0)
 		if (LNotEqual(Local0, 0x1ab2cd340fe05678)) {
-			err("", zFFF, 0x128, 0, 0, Local0, 0x1ab2cd340fe05678)
+			err("", PK04(zFFF, __LINE__), 0x128, 0, 0, Local0, 0x1ab2cd340fe05678)
 		}
 
 		Store("         0x1ab2cd340fe0", Local1)
 		ToInteger(Local1, Local0)
 		if (LNotEqual(Local0, 0x1ab2cd340fe0)) {
-			err("", zFFF, 0x129, 0, 0, Local0, 0x1ab2cd340fe0)
+			err("", PK04(zFFF, __LINE__), 0x129, 0, 0, Local0, 0x1ab2cd340fe0)
 		}
 	}
 
 	ToInteger("          0", Local0)
 	if (LNotEqual(Local0, 0)) {
-		err("", zFFF, 0x12a, 0, 0, Local0, 0)
+		err("", PK04(zFFF, __LINE__), 0x12a, 0, 0, Local0, 0)
 	}
 
 	ToInteger(" 	0000000", Local0)
 	if (LNotEqual(Local0, 0)) {
-		err("", zFFF, 0x12b, 0, 0, Local0, 0)
+		err("", PK04(zFFF, __LINE__), 0x12b, 0, 0, Local0, 0)
 	}
 
 	ToInteger("	000000000000000", Local0)
 	if (LNotEqual(Local0, 0)) {
-		err("", zFFF, 0x12c, 0, 0, Local0, 0)
+		err("", PK04(zFFF, __LINE__), 0x12c, 0, 0, Local0, 0)
 	}
 
 	ToInteger(" 000000000000000000000000000000000000000000", Local0)
 	if (LNotEqual(Local0, 0)) {
-		err("", zFFF, 0x12d, 0, 0, Local0, 0)
+		err("", PK04(zFFF, __LINE__), 0x12d, 0, 0, Local0, 0)
 	}
 
 	ToInteger("           1", Local0)
 	if (LNotEqual(Local0, 1)) {
-		err("", zFFF, 0x12e, 0, 0, Local0, 1)
+		err("", PK04(zFFF, __LINE__), 0x12e, 0, 0, Local0, 1)
 	}
 
 	ToInteger("            1234567890", Local0)
 	if (LNotEqual(Local0, 1234567890)) {
-		err("", zFFF, 0x12f, 0, 0, Local0, 1234567890)
+		err("", PK04(zFFF, __LINE__), 0x12f, 0, 0, Local0, 1234567890)
 	}
 
 	ToInteger("	1234567890", Local0)
 	if (LNotEqual(Local0, 1234567890)) {
-		err("", zFFF, 0x130, 0, 0, Local0, 1234567890)
+		err("", PK04(zFFF, __LINE__), 0x130, 0, 0, Local0, 1234567890)
 	}
 
 	ToInteger("									1234567890", Local0)
 	if (LNotEqual(Local0, 1234567890)) {
-		err("", zFFF, 0x131, 0, 0, Local0, 1234567890)
+		err("", PK04(zFFF, __LINE__), 0x131, 0, 0, Local0, 1234567890)
 	}
 
 	ToInteger("  	           1234567", Local0)
 	if (LNotEqual(Local0, 1234567)) {
-		err("", zFFF, 0x132, 0, 0, Local0, 1234567)
+		err("", PK04(zFFF, __LINE__), 0x132, 0, 0, Local0, 1234567)
 	}
 
 	ToInteger("     	         4294967295", Local0)
 	if (LNotEqual(Local0, 4294967295)) {
-		err("", zFFF, 0x133, 0, 0, Local0, 4294967295)
+		err("", PK04(zFFF, __LINE__), 0x133, 0, 0, Local0, 4294967295)
 	}
 
 	if (F64) {
 		Store("               	18446744073709551615", Local1)
 		ToInteger(Local1, Local0)
 		if (LNotEqual(Local0, 18446744073709551615)) {
-			err("", zFFF, 0x134, 0, 0, Local0, 18446744073709551615)
+			err("", PK04(zFFF, __LINE__), 0x134, 0, 0, Local0, 18446744073709551615)
 		}
 	}
 
@@ -348,86 +348,86 @@ Method(mf95) {
 
 	ToInteger("          0", Local0)
 	if (LNotEqual(Local0, 0)) {
-		err("", zFFF, 0x137, 0, 0, Local0, 0)
+		err("", PK04(zFFF, __LINE__), 0x137, 0, 0, Local0, 0)
 	}
 
 	ToInteger("          2", Local0)
 	if (LNotEqual(Local0, 2)) {
-		err("", zFFF, 0x138, 0, 0, Local0, 2)
+		err("", PK04(zFFF, __LINE__), 0x138, 0, 0, Local0, 2)
 	}
 
 	ToInteger("          0xa", Local0)
 	if (LNotEqual(Local0, 0xa)) {
-		err("", zFFF, 0x139, 0, 0, Local0, 0xa)
+		err("", PK04(zFFF, __LINE__), 0x139, 0, 0, Local0, 0xa)
 	}
 
 	ToInteger("          04294967295", Local0)
 	if (LNotEqual(Local0, 4294967295)) {
-		err("", zFFF, 0x13a, 0, 0, Local0, 4294967295)
+		err("", PK04(zFFF, __LINE__), 0x13a, 0, 0, Local0, 4294967295)
 	}
 
 	ToInteger("04294967295", Local0)
 	if (LNotEqual(Local0, 4294967295)) {
-		err("", zFFF, 0x13b, 0, 0, Local0, 4294967295)
+		err("", PK04(zFFF, __LINE__), 0x13b, 0, 0, Local0, 4294967295)
 	}
 
 	ToInteger("000000000000000000004294967295", Local0)
 	if (LNotEqual(Local0, 4294967295)) {
-		err("", zFFF, 0x13c, 0, 0, Local0, 4294967295)
+		err("", PK04(zFFF, __LINE__), 0x13c, 0, 0, Local0, 4294967295)
 	}
 
 	ToInteger(" 000000000000000000004294967295", Local0)
 	if (LNotEqual(Local0, 4294967295)) {
-		err("", zFFF, 0x13d, 0, 0, Local0, 4294967295)
+		err("", PK04(zFFF, __LINE__), 0x13d, 0, 0, Local0, 4294967295)
 	}
 
 	ToInteger("	000000000000000000004294967295", Local0)
 	if (LNotEqual(Local0, 4294967295)) {
-		err("", zFFF, 0x13e, 0, 0, Local0, 4294967295)
+		err("", PK04(zFFF, __LINE__), 0x13e, 0, 0, Local0, 4294967295)
 	}
 
 	ToInteger("	 	 	 	 	000000000000000000004294967295", Local0)
 	if (LNotEqual(Local0, 4294967295)) {
-		err("", zFFF, 0x13f, 0, 0, Local0, 4294967295)
+		err("", PK04(zFFF, __LINE__), 0x13f, 0, 0, Local0, 4294967295)
 	}
 
 	ToInteger("	 	 	 	 	04294967295", Local0)
 	if (LNotEqual(Local0, 4294967295)) {
-		err("", zFFF, 0x140, 0, 0, Local0, 4294967295)
+		err("", PK04(zFFF, __LINE__), 0x140, 0, 0, Local0, 4294967295)
 	}
 
 	ToInteger("	 	 	 	 	0123456789", Local0)
 	if (LNotEqual(Local0, 123456789)) {
-		err("", zFFF, 0x141, 0, 0, Local0, 123456789)
+		err("", PK04(zFFF, __LINE__), 0x141, 0, 0, Local0, 123456789)
 	}
 
 	ToInteger("0123456789", Local0)
 	if (LNotEqual(Local0, 123456789)) {
-		err("", zFFF, 0x142, 0, 0, Local0, 123456789)
+		err("", PK04(zFFF, __LINE__), 0x142, 0, 0, Local0, 123456789)
 	}
 
 	ToInteger("00123456789", Local0)
 	if (LNotEqual(Local0, 123456789)) {
-		err("", zFFF, 0x143, 0, 0, Local0, 123456789)
+		err("", PK04(zFFF, __LINE__), 0x143, 0, 0, Local0, 123456789)
 	}
 
 	if (F64) {
 		Store("               	018446744073709551615", Local1)
 		ToInteger(Local1, Local0)
 		if (LNotEqual(Local0, 18446744073709551615)) {
-			err("", zFFF, 0x144, 0, 0, Local0, 18446744073709551615)
+			err("", PK04(zFFF, __LINE__), 0x144, 0, 0, Local0, 18446744073709551615)
 		}
 
 		Store("018446744073709551615", Local1)
 		ToInteger(Local1, Local0)
 		if (LNotEqual(Local0, 18446744073709551615)) {
-			err("", zFFF, 0x145, 0, 0, Local0, 18446744073709551615)
+			err("", PK04(zFFF, __LINE__), 0x145, 0, 0, Local0, 18446744073709551615)
 		}
 
 		Store("000000000000000000000000000000000000000018446744073709551615", Local1)
 		ToInteger(Local1, Local0)
 		if (LNotEqual(Local0, 18446744073709551615)) {
-			err("", zFFF, 0x146, 0, 0, Local0, 18446744073709551615)
+			err("", PK04(zFFF, __LINE__), 0x146, 0, 0, Local0, 18446744073709551615)
 		}
 	}
 

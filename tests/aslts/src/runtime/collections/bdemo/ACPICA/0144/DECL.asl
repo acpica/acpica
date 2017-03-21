@@ -55,21 +55,21 @@
 	Method(mf38) {
 		Store(mf34(0), Local0)
 		if (LNotEqual(Local0, 0)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 0)
+			err("", PK04(zFFF, __LINE__), 0x000, 0, 0, Local0, 0)
 		}
 
 		Store(mf35(1), Local0)
 		if (LNotEqual(Local0, 1)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 1)
+			err("", PK04(zFFF, __LINE__), 0x000, 0, 0, Local0, 1)
 		}
 
 		Store(mf36(2), Local0)
 		if (LNotEqual(Local0, 2)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 2)
+			err("", PK04(zFFF, __LINE__), 0x000, 0, 0, Local0, 2)
 		}
 
 		Store(mf37("3"), Local0)
 		if (LNotEqual(Local0, "3")) {
-			err("", zFFF, 0x000, 0, 0, Local0, "3")
+			err("", PK04(zFFF, __LINE__), 0x000, 0, 0, Local0, "3")
 		}
 	}

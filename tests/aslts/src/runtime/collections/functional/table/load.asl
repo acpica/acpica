@@ -312,7 +312,7 @@ Device(DTM0) {
 		Store(BUF0, RFU0)
 
 		if (CondRefof(\SSS0, Local0)) {
-			err(arg0, z174, 0x000, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z174, __LINE__), 0x000, 0, 0, "\\SSS0", 1)
 			return
 		}
 
@@ -335,7 +335,7 @@ Device(DTM0) {
 			case (3) {Load(RFU0, Index(PHI0, 0))}
 			default {
 				Store("Unexpected parameter of the test", Debug)
-				err(arg0, z174, 0x002, 0, 0, "\\SSS0", 1)
+				err(arg0, PK04(z174, __LINE__), 0x002, 0, 0, "\\SSS0", 1)
 				return
 			}
 		}
@@ -354,26 +354,26 @@ Device(DTM0) {
 			case (3) {Store(ObjectType(Index(PHI0, 0)), Local1)}
 		}
 		if (LNotEqual(Local1, c017)) { // DDB Handle
-			err(arg0, z174, 0x004, 0, 0, Local1, c017)
+			err(arg0, PK04(z174, __LINE__), 0x004, 0, 0, Local1, c017)
 		}
 
 		// Check the new Object appears
 
 		if (CondRefof(\SSS0, Local0)) {
 		} else {
-			err(arg0, z174, 0x005, 0, 0, "\\SSS0", 0)
+			err(arg0, PK04(z174, __LINE__), 0x005, 0, 0, "\\SSS0", 0)
 		}
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c010)) { // Method
-			err(arg0, z174, 0x006, 0, 0, Local1, c010)
+			err(arg0, PK04(z174, __LINE__), 0x006, 0, 0, Local1, c010)
 		} else {
 			Store(\SSS0(), Local0)
 			if (CH03(arg0, z174, 0x007, "\\SSS0", 1)) {
 				return
 			}
 			if (LNotEqual("\\SSS0", Local0)) {
-				err(arg0, z174, 0x008, 0, 0, Local0, "\\SSS0")
+				err(arg0, PK04(z174, __LINE__), 0x008, 0, 0, Local0, "\\SSS0")
 			}
 		}
 
@@ -392,7 +392,7 @@ Device(DTM0) {
 		Store("Table Unloaded", Debug)
 
 		if (CondRefof(\SSS0, Local0)) {
-			err(arg0, z174, 0x00a, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z174, __LINE__), 0x00a, 0, 0, "\\SSS0", 1)
 		}
 
 		return
@@ -407,7 +407,7 @@ Device(DTM0) {
 		Store(BUF0, RFU0)
 
 		if (CondRefof(\SSS0, Local0)) {
-			err(arg0, z174, 0x00b, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z174, __LINE__), 0x00b, 0, 0, "\\SSS0", 1)
 			return (1)
 		}
 
@@ -443,26 +443,26 @@ Device(DTM0) {
 		// Check DDBHandle ObjectType
 		Store(ObjectType(Arg1), Local1)
 		if (LNotEqual(Local1, c017)) { // DDB Handle
-			err(arg0, z174, 0x00e, 0, 0, Local1, c017)
+			err(arg0, PK04(z174, __LINE__), 0x00e, 0, 0, Local1, c017)
 		}
 
 		// Check the new Object appears
 
 		if (CondRefof(\SSS0, Local0)) {
 		} else {
-			err(arg0, z174, 0x00f, 0, 0, "\\SSS0", 0)
+			err(arg0, PK04(z174, __LINE__), 0x00f, 0, 0, "\\SSS0", 0)
 		}
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c010)) { // Method
-			err(arg0, z174, 0x010, 0, 0, Local1, c010)
+			err(arg0, PK04(z174, __LINE__), 0x010, 0, 0, Local1, c010)
 		} else {
 			Store(\SSS0(), Local0)
 			if (CH03(arg0, z174, 0x011, "\\SSS0", 1)) {
 				return
 			}
 			if (LNotEqual("\\SSS0", Local0)) {
-				err(arg0, z174, 0x012, 0, 0, Local0, "\\SSS0")
+				err(arg0, PK04(z174, __LINE__), 0x012, 0, 0, Local0, "\\SSS0")
 			}
 		}
 
@@ -475,7 +475,7 @@ Device(DTM0) {
 		Store("SSDT Unloaded", Debug)
 
 		if (CondRefof(\SSS0, Local0)) {
-			err(arg0, z174, 0x014, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z174, __LINE__), 0x014, 0, 0, "\\SSS0", 1)
 		}
 
 		return
@@ -609,7 +609,7 @@ Device(DTM0) {
 			Store(BUF0, RFU0)
 
 			if (CondRefof(\SSS0, Local0)) {
-				err(arg0, z174, 0x015, 0, 0, "\\SSS0", 1)
+				err(arg0, PK04(z174, __LINE__), 0x015, 0, 0, "\\SSS0", 1)
 				return
 			}
 
@@ -632,7 +632,7 @@ Device(DTM0) {
 				case (3) {Load(RFU0, Index(PHI0, 0))}
 				default {
 					Store("Unexpected parameter of the test", Debug)
-					err(arg0, z174, 0x017, 0, 0, "\\SSS0", 1)
+					err(arg0, PK04(z174, __LINE__), 0x017, 0, 0, "\\SSS0", 1)
 					return
 				}
 			}
@@ -651,26 +651,26 @@ Device(DTM0) {
 				case (3) {Store(ObjectType(Index(PHI0, 0)), Local1)}
 			}
 			if (LNotEqual(Local1, c017)) { // DDB Handle
-				err(arg0, z174, 0x019, 0, 0, Local1, c017)
+				err(arg0, PK04(z174, __LINE__), 0x019, 0, 0, Local1, c017)
 			}
 
 			// Check the new Object appears
 
 			if (CondRefof(\SSS0, Local0)) {
 			} else {
-				err(arg0, z174, 0x01a, 0, 0, "\\SSS0", 0)
+				err(arg0, PK04(z174, __LINE__), 0x01a, 0, 0, "\\SSS0", 0)
 			}
 
 			Store(ObjectType(Local0), Local1)
 			if (LNotEqual(Local1, c010)) { // Method
-				err(arg0, z174, 0x01b, 0, 0, Local1, c010)
+				err(arg0, PK04(z174, __LINE__), 0x01b, 0, 0, Local1, c010)
 			} else {
 				Store(\SSS0(), Local0)
 				if (CH03(arg0, z174, 0x01c, "\\SSS0", 1)) {
 					return
 				}
 				if (LNotEqual("\\SSS0", Local0)) {
-					err(arg0, z174, 0x01d, 0, 0, Local0, "\\SSS0")
+					err(arg0, PK04(z174, __LINE__), 0x01d, 0, 0, Local0, "\\SSS0")
 				}
 			}
 
@@ -689,7 +689,7 @@ Device(DTM0) {
 			Store("SSDT Unloaded", Debug)
 
 			if (CondRefof(\SSS0, Local0)) {
-				err(arg0, z174, 0x01f, 0, 0, "\\SSS0", 1)
+				err(arg0, PK04(z174, __LINE__), 0x01f, 0, 0, "\\SSS0", 1)
 			}
 
 			return
@@ -727,7 +727,7 @@ Device(DTM0) {
 			Store(BUF0, RFU0)
 
 			if (CondRefof(\SSS0, Local0)) {
-				err(arg0, z174, 0x020, 0, 0, "\\SSS0", 1)
+				err(arg0, PK04(z174, __LINE__), 0x020, 0, 0, "\\SSS0", 1)
 				return (1)
 			}
 
@@ -818,7 +818,7 @@ Device(DTM0) {
 			m003(Local4, Arg2)
 		} else {
 			Store("This Region type's AddrSpace Handler not installed", Debug)
-			err(arg0, z174, 0x023, 0, 0, Local2, Arg1)
+			err(arg0, PK04(z174, __LINE__), 0x023, 0, 0, Local2, Arg1)
 		}
 	}
 
@@ -888,10 +888,10 @@ Device(DTM0) {
 
 		// Check absence
 		if (CondRefof(NABS, Local0)) {
-			err(arg0, z174, 0x024, 0, 0, "NABS", 1)
+			err(arg0, PK04(z174, __LINE__), 0x024, 0, 0, "NABS", 1)
 		}
 		if (CondRefof(NCRR, Local0)) {
-			err(arg0, z174, 0x025, 0, 0, "NCRR", 1)
+			err(arg0, PK04(z174, __LINE__), 0x025, 0, 0, "NCRR", 1)
 		}
 
 		Store(BUF1, RFU1)
@@ -901,36 +901,36 @@ Device(DTM0) {
 		// Check existence
 		if (CondRefof(NABS, Local0)) {
 			if (LNotEqual("absolute location obj", Derefof(Local0))) {
-				err(arg0, z174, 0x026, 0, 0, Derefof(Local0),
+				err(arg0, PK04(z174, __LINE__), 0x026, 0, 0, Derefof(Local0),
 					"absolute location obj")
 			}
 		} else {
-			err(arg0, z174, 0x027, 0, 0, "NABS", 0)
+			err(arg0, PK04(z174, __LINE__), 0x027, 0, 0, "NABS", 0)
 		}
 		if (CondRefof(NCRR, Local0)) {
 			if (LNotEqual("current location obj", Derefof(Local0))) {
-				err(arg0, z174, 0x028, 0, 0, Derefof(Local0),
+				err(arg0, PK04(z174, __LINE__), 0x028, 0, 0, Derefof(Local0),
 					"current location obj")
 			}
 		} else {
-			err(arg0, z174, 0x029, 0, 0, "NCRR", 0)
+			err(arg0, PK04(z174, __LINE__), 0x029, 0, 0, "NCRR", 0)
 		}
 
 		// Check location
 		if (CondRefof(\NABS, Local0)) {
 		} else {
-			err(arg0, z174, 0x02a, 0, 0, "NABS", 0)
+			err(arg0, PK04(z174, __LINE__), 0x02a, 0, 0, "NABS", 0)
 		}
 		//Note: We load the table objects relative to the root of the namespace.
 		if (CondRefof(\NCRR, Local0)) {
 		} else {
-			err(arg0, z174, 0x02b, 0, 0, "\\NCRR", 1)
+			err(arg0, PK04(z174, __LINE__), 0x02b, 0, 0, "\\NCRR", 1)
 		}
 		if (CondRefof(\DTM0.NCRR, Local0)) {
-			err(arg0, z174, 0x02c, 0, 0, "\\DTM0.NCRR", 1)
+			err(arg0, PK04(z174, __LINE__), 0x02c, 0, 0, "\\DTM0.NCRR", 1)
 		}
 		if (CondRefof(\DTM0.TST8.NCRR, Local0)) {
-			err(arg0, z174, 0x02d, 0, 0, "\\DTM0.TST8.NCRR", 0)
+			err(arg0, PK04(z174, __LINE__), 0x02d, 0, 0, "\\DTM0.TST8.NCRR", 0)
 		}
 
 		UnLoad(DDBH)
@@ -938,10 +938,10 @@ Device(DTM0) {
 
 		// Check absence
 		if (CondRefof(NABS, Local0)) {
-			err(arg0, z174, 0x02e, 0, 0, "NABS", 1)
+			err(arg0, PK04(z174, __LINE__), 0x02e, 0, 0, "NABS", 1)
 		}
 		if (CondRefof(NCRR, Local0)) {
-			err(arg0, z174, 0x02f, 0, 0, "NCRR", 1)
+			err(arg0, PK04(z174, __LINE__), 0x02f, 0, 0, "NCRR", 1)
 		}
 	}
 
@@ -1005,7 +1005,7 @@ Device(DTM0) {
 		Store(BUF2, RFU2)
 
 		if (CondRefof(\AUXD, Local0)) {
-			err(arg0, z174, 0x030, 0, 0, "\\AUXD", 1)
+			err(arg0, PK04(z174, __LINE__), 0x030, 0, 0, "\\AUXD", 1)
 			return
 		}
 
@@ -1021,39 +1021,39 @@ Device(DTM0) {
 
 		if (CondRefof(\AUXD, Local0)) {
 		} else {
-			err(arg0, z174, 0x033, 0, 0, "\\AUXD", 0)
+			err(arg0, PK04(z174, __LINE__), 0x033, 0, 0, "\\AUXD", 0)
 			return
 		}
 
 		Store (ObjectType(Local0), Local1)
 
 		if (LNotEqual(Local1, 6)) {
-			err(arg0, z174, 0x034, 0, 0, Local1, 6)
+			err(arg0, PK04(z174, __LINE__), 0x034, 0, 0, Local1, 6)
 			return
 		}
 
 		if (CondRefof(\AUXD.REGC, Local0)) {
 		} else {
-			err(arg0, z174, 0x035, 0, 0, "\\AUXD.REGC", 0)
+			err(arg0, PK04(z174, __LINE__), 0x035, 0, 0, "\\AUXD.REGC", 0)
 			return
 		}
 
 		Store(Derefof(Local0), Local1)
 
 		if (LNotEqual(1, Local1)) {
-			err(arg0, z174, 0x036, 0, 0, Local1, 1)
+			err(arg0, PK04(z174, __LINE__), 0x036, 0, 0, Local1, 1)
 		}
 
 		if (CondRefof(\AUXD.REGD, Local0)) {
 		} else {
-			err(arg0, z174, 0x037, 0, 0, "\\AUXD.REGD", 0)
+			err(arg0, PK04(z174, __LINE__), 0x037, 0, 0, "\\AUXD.REGD", 0)
 			return
 		}
 
 		Store(Derefof(Local0), Local1)
 
 		if (LNotEqual(0xFFFFFFFF, Local1)) {
-			err(arg0, z174, 0x038, 0, 0, Local1, 0xFFFFFFFF)
+			err(arg0, PK04(z174, __LINE__), 0x038, 0, 0, Local1, 0xFFFFFFFF)
 		} elseif (CondRefof(\AUXD.M000, Local2)) {
 
 			\AUXD.M000()
@@ -1061,16 +1061,16 @@ Device(DTM0) {
 			Store(Derefof(Local0), Local1)
 
 			if (LNotEqual(1, Local1)) {
-				err(arg0, z174, 0x039, 0, 0, Local1, 1)
+				err(arg0, PK04(z174, __LINE__), 0x039, 0, 0, Local1, 1)
 			}
 		} else {
-			err(arg0, z174, 0x03a, 0, 0, "\\AUXD.M000", 0)
+			err(arg0, PK04(z174, __LINE__), 0x03a, 0, 0, "\\AUXD.M000", 0)
 		}
 
 		UnLoad(DDBH)
 
 		if (CondRefof(\AUXD, Local0)) {
-			err(arg0, z174, 0x03b, 0, 0, "\\AUXD", 1)
+			err(arg0, PK04(z174, __LINE__), 0x03b, 0, 0, "\\AUXD", 1)
 		}
 		return
 	}
@@ -1123,7 +1123,7 @@ Device(DTM0) {
 					return (3)
 				}
 				if (LNotEqual(Local5, Local2)) {
-					err(arg0, z174, 0x043, 0, 0, Local2, Local5)
+					err(arg0, PK04(z174, __LINE__), 0x043, 0, 0, Local2, Local5)
 				}
 			} else {
 				if (CH04(arg0, 0, 0xff, z174, 0x044, 0, 0)) {	// AE_NOT_FOUND
@@ -1144,7 +1144,7 @@ Device(DTM0) {
 		Concatenate(arg0, "-tsta", arg0)
 
 		if (INIT()) {
-			err(arg0, z174, 0x045, 0, 0, "INIT", 1)
+			err(arg0, PK04(z174, __LINE__), 0x045, 0, 0, "INIT", 1)
 			return (1)
 		}
 		if (CH03(arg0, z174, 0x046, 0, 0)) {
@@ -1154,7 +1154,7 @@ Device(DTM0) {
 		Store(arg1, Local0)
 		while (Local0) {
 			if (LD()) {
-				err(arg0, z174, 0x047, 0, 0, "HI0N", HI0N)
+				err(arg0, PK04(z174, __LINE__), 0x047, 0, 0, "HI0N", HI0N)
 				return (1)
 			}
 			if (CH03(arg0, z174, 0x048, 0, 0)) {
@@ -1163,7 +1163,7 @@ Device(DTM0) {
 			Decrement(Local0)
 
 			if (LDCH(arg0)) {
-				err(arg0, z174, 0x049, 0, 0, "HI0N", HI0N)
+				err(arg0, PK04(z174, __LINE__), 0x049, 0, 0, "HI0N", HI0N)
 				return (1)
 			}
 		}
@@ -1171,7 +1171,7 @@ Device(DTM0) {
 		Store(arg1, Local0)
 		while (Local0) {
 			if (UNLD()) {
-				err(arg0, z174, 0x040a, 0, 0, "HI0N", HI0N)
+				err(arg0, PK04(z174, __LINE__), 0x040a, 0, 0, "HI0N", HI0N)
 				return (1)
 			}
 			if (CH03(arg0, z174, 0x04b, 0, 0)) {
@@ -1180,7 +1180,7 @@ Device(DTM0) {
 			Decrement(Local0)
 
 			if (LDCH(arg0)) {
-				err(arg0, z174, 0x04c, 0, 0, "HI0N", HI0N)
+				err(arg0, PK04(z174, __LINE__), 0x04c, 0, 0, "HI0N", HI0N)
 				return (1)
 			}
 		}
@@ -1259,7 +1259,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x051, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.INT0), Local0)
 		if (LNotEqual(c009, Local0)) {
-			err(arg0, z174, 0x052, 0, 0, Local0, c009)
+			err(arg0, PK04(z174, __LINE__), 0x052, 0, 0, Local0, c009)
 		}
 
 		// String
@@ -1267,7 +1267,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x053, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.STR0), Local0)
 		if (LNotEqual(c00a, Local0)) {
-			err(arg0, z174, 0x054, 0, 0, Local0, c00a)
+			err(arg0, PK04(z174, __LINE__), 0x054, 0, 0, Local0, c00a)
 		}
 
 		// Buffer
@@ -1277,7 +1277,7 @@ Device(DTM0) {
 			CH04(arg0, 0, 47, z174, 0x055, 0, 0)	// AE_AML_OPERAND_TYPE
 			Store(ObjectType(\AUXD.BUF0), Local0)
 			if (LNotEqual(c00b, Local0)) {
-				err(arg0, z174, 0x056, 0, 0, Local0, c00b)
+				err(arg0, PK04(z174, __LINE__), 0x056, 0, 0, Local0, c00b)
 			}
 		}
 
@@ -1286,7 +1286,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x057, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.PAC0), Local0)
 		if (LNotEqual(c00c, Local0)) {
-			err(arg0, z174, 0x058, 0, 0, Local0, c00c)
+			err(arg0, PK04(z174, __LINE__), 0x058, 0, 0, Local0, c00c)
 		}
 
 		// Field Unit
@@ -1296,7 +1296,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x059, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.DEV0), Local0)
 		if (LNotEqual(c00e, Local0)) {
-			err(arg0, z174, 0x05a, 0, 0, Local0, c00e)
+			err(arg0, PK04(z174, __LINE__), 0x05a, 0, 0, Local0, c00e)
 		}
 
 		// Event
@@ -1304,7 +1304,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x05b, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.EVE0), Local0)
 		if (LNotEqual(c00f, Local0)) {
-			err(arg0, z174, 0x05c, 0, 0, Local0, c00f)
+			err(arg0, PK04(z174, __LINE__), 0x05c, 0, 0, Local0, c00f)
 		}
 
 		// Method
@@ -1312,7 +1312,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x05d, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.MMM0), Local0)
 		if (LNotEqual(c010, Local0)) {
-			err(arg0, z174, 0x05e, 0, 0, Local0, c010)
+			err(arg0, PK04(z174, __LINE__), 0x05e, 0, 0, Local0, c010)
 		}
 
 		// Mutex
@@ -1320,7 +1320,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x05f, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.MTX0), Local0)
 		if (LNotEqual(c011, Local0)) {
-			err(arg0, z174, 0x060, 0, 0, Local0, c011)
+			err(arg0, PK04(z174, __LINE__), 0x060, 0, 0, Local0, c011)
 		}
 
 		// OpRegion
@@ -1330,7 +1330,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x061, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.PWR0), Local0)
 		if (LNotEqual(c013, Local0)) {
-			err(arg0, z174, 0x062, 0, 0, Local0, c013)
+			err(arg0, PK04(z174, __LINE__), 0x062, 0, 0, Local0, c013)
 		}
 
 		// Processor
@@ -1338,7 +1338,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x063, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.CPU0), Local0)
 		if (LNotEqual(c014, Local0)) {
-			err(arg0, z174, 0x064, 0, 0, Local0, c014)
+			err(arg0, PK04(z174, __LINE__), 0x064, 0, 0, Local0, c014)
 		}
 
 		// Thermal Zone
@@ -1346,7 +1346,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x065, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(\AUXD.TZN0), Local0)
 		if (LNotEqual(c015, Local0)) {
-			err(arg0, z174, 0x066, 0, 0, Local0, c015)
+			err(arg0, PK04(z174, __LINE__), 0x066, 0, 0, Local0, c015)
 		}
 
 		// Buffer Field
@@ -1356,7 +1356,7 @@ Device(DTM0) {
 			CH04(arg0, 0, 47, z174, 0x067, 0, 0)	// AE_AML_OPERAND_TYPE
 			Store(ObjectType(\AUXD.BFL0), Local0)
 			if (LNotEqual(c016, Local0)) {
-				err(arg0, z174, 0x068, 0, 0, Local0, c016)
+				err(arg0, PK04(z174, __LINE__), 0x068, 0, 0, Local0, c016)
 			}
 		}
 
@@ -1365,7 +1365,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x069, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(DDB0), Local0)
 		if (LNotEqual(c017, Local0)) {
-			err(arg0, z174, 0x06a, 0, 0, Local0, c017)
+			err(arg0, PK04(z174, __LINE__), 0x06a, 0, 0, Local0, c017)
 		}
 		
 		UnLoad(DDB0)
@@ -1402,7 +1402,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x220, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(RGN1), Local0)
 		if (LNotEqual(c012, Local0)) {
-			err(arg0, z174, 0x071, 0, 0, Local0, c012)
+			err(arg0, PK04(z174, __LINE__), 0x071, 0, 0, Local0, c012)
 		}
 
 		// PCI_Config
@@ -1410,7 +1410,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x072, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(RGN2), Local0)
 		if (LNotEqual(c012, Local0)) {
-			err(arg0, z174, 0x073, 0, 0, Local0, c012)
+			err(arg0, PK04(z174, __LINE__), 0x073, 0, 0, Local0, c012)
 		}
 
 		// EmbeddedControl
@@ -1418,7 +1418,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x074, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(RGN3), Local0)
 		if (LNotEqual(c012, Local0)) {
-			err(arg0, z174, 0x075, 0, 0, Local0, c012)
+			err(arg0, PK04(z174, __LINE__), 0x075, 0, 0, Local0, c012)
 		}
 
 		// SMBus
@@ -1426,7 +1426,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x076, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(RGN4), Local0)
 		if (LNotEqual(c012, Local0)) {
-			err(arg0, z174, 0x077, 0, 0, Local0, c012)
+			err(arg0, PK04(z174, __LINE__), 0x077, 0, 0, Local0, c012)
 		}
 
 		// SystemCMOS
@@ -1434,7 +1434,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x078, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(RGN5), Local0)
 		if (LNotEqual(c012, Local0)) {
-			err(arg0, z174, 0x079, 0, 0, Local0, c012)
+			err(arg0, PK04(z174, __LINE__), 0x079, 0, 0, Local0, c012)
 		}
 
 		// PciBarTarget
@@ -1442,7 +1442,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x07a, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(RGN6), Local0)
 		if (LNotEqual(c012, Local0)) {
-			err(arg0, z174, 0x07b, 0, 0, Local0, c012)
+			err(arg0, PK04(z174, __LINE__), 0x07b, 0, 0, Local0, c012)
 		}
 
 		// UserDefRegionSpace 0x80
@@ -1450,7 +1450,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x07c, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(RGN7), Local0)
 		if (LNotEqual(c012, Local0)) {
-			err(arg0, z174, 0x07d, 0, 0, Local0, c012)
+			err(arg0, PK04(z174, __LINE__), 0x07d, 0, 0, Local0, c012)
 		}
 
 		// UserDefRegionSpace 0xcf
@@ -1458,7 +1458,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x07e, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(RGN8), Local0)
 		if (LNotEqual(c012, Local0)) {
-			err(arg0, z174, 0x07f, 0, 0, Local0, c012)
+			err(arg0, PK04(z174, __LINE__), 0x07f, 0, 0, Local0, c012)
 		}
 
 		// UserDefRegionSpace 0xff
@@ -1466,7 +1466,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 47, z174, 0x080, 0, 0)	// AE_AML_OPERAND_TYPE
 		Store(ObjectType(RGN9), Local0)
 		if (LNotEqual(c012, Local0)) {
-			err(arg0, z174, 0x081, 0, 0, Local0, c012)
+			err(arg0, PK04(z174, __LINE__), 0x081, 0, 0, Local0, c012)
 		}
 
 		return (0)
@@ -1481,7 +1481,7 @@ Device(DTM0) {
 		Concatenate(arg0, "-tstd", arg0)
 
 		if (CondRefof(\SSS0, Local0)) {
-			err(arg0, z174, 0x082, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z174, __LINE__), 0x082, 0, 0, "\\SSS0", 1)
 			return (1)
 		}
 
@@ -1506,7 +1506,7 @@ Device(DTM0) {
 			CH04(arg0, 0, 37, z174, 0x084, 0, 0)	// AE_BAD_SIGNATURE
 
 			if (CondRefof(\SSS0, Local0)) {
-				err(arg0, z174, 0x085, 0, 0, "\\SSS0", 1)
+				err(arg0, PK04(z174, __LINE__), 0x085, 0, 0, "\\SSS0", 1)
 				return (1)
 			}
 		}
@@ -1516,7 +1516,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 37, z174, 0x086, 0, 0)	// AE_BAD_SIGNATURE
 
 		if (CondRefof(\SSS0, Local0)) {
-			err(arg0, z174, 0x087, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z174, __LINE__), 0x087, 0, 0, "\\SSS0", 1)
 		}
 
 		return (0)
@@ -1537,7 +1537,7 @@ Device(DTM0) {
 		}
 
 		if (CondRefof(\SSS0, Local0)) {
-			err(arg0, z174, 0x090, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z174, __LINE__), 0x090, 0, 0, "\\SSS0", 1)
 			return (1)
 		}
 
@@ -1566,7 +1566,7 @@ Device(DTM0) {
 			CH04(arg0, 0, 42, z174, 0x092, 0, 0)	// AE_INVALID_TABLE_LENGTH
 
 			if (CondRefof(\SSS0, Local0)) {
-				err(arg0, z174, 0x093, 0, 0, "\\SSS0", 1)
+				err(arg0, PK04(z174, __LINE__), 0x093, 0, 0, "\\SSS0", 1)
 
 				// CleanUp
 				UnLoad(HI0)
@@ -1574,7 +1574,7 @@ Device(DTM0) {
 					return (1)
 				}
 				if (CondRefof(\SSS0, Local0)) {
-					err(arg0, z174, 0x095, 0, 0, "\\SSS0", 1)
+					err(arg0, PK04(z174, __LINE__), 0x095, 0, 0, "\\SSS0", 1)
 					return (1)
 				}
 			}
@@ -1591,13 +1591,13 @@ Device(DTM0) {
 		}
 
 		if (CondRefof(\SSS0, Local0)) {
-			err(arg0, z174, 0x097, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z174, __LINE__), 0x097, 0, 0, "\\SSS0", 1)
 			UnLoad(HI0)
 			if (CH03(arg0, z174, 0x098, 0, 0)) {
 				return (1)
 			}
 			if (CondRefof(\SSS0, Local0)) {
-				err(arg0, z174, 0x099, 0, 0, "\\SSS0", 1)
+				err(arg0, PK04(z174, __LINE__), 0x099, 0, 0, "\\SSS0", 1)
 				return (1)
 			}
 		}
@@ -1613,7 +1613,7 @@ Device(DTM0) {
 		Concatenate(arg0, "-tstf", arg0)
 
 		if (CondRefof(\SSS0, Local0)) {
-			err(arg0, z174, 0x0a0, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z174, __LINE__), 0x0a0, 0, 0, "\\SSS0", 1)
 			return (1)
 		}
 
@@ -1636,7 +1636,7 @@ Device(DTM0) {
 			CH04(arg0, 0, 39, z174, 0x0a2, 0, 0)	// AE_BAD_CHECKSUM
 
 			if (CondRefof(\SSS0, Local0)) {
-				err(arg0, z174, 0x0a3, 0, 0, "\\SSS0", 1)
+				err(arg0, PK04(z174, __LINE__), 0x0a3, 0, 0, "\\SSS0", 1)
 				
 				//Cleanup
 				UnLoad(HI0)
@@ -1652,7 +1652,7 @@ Device(DTM0) {
 		CH04(arg0, 0, 39, z174, 0x0a5, 0, 0)	// AE_BAD_CHECKSUM
 
 		if (CondRefof(\SSS0, Local0)) {
-			err(arg0, z174, 0x0a6, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z174, __LINE__), 0x0a6, 0, 0, "\\SSS0", 1)
 
 			//Cleanup
 			UnLoad(HI0)
@@ -1682,12 +1682,12 @@ Device(DTM0) {
 
 			Store(ObjectType(arg2), Local0)
 			if (LNotEqual(arg3, Local0)) {
-				err(arg0, z174, 0x0b0, 0, 0, Local0, arg3)
+				err(arg0, PK04(z174, __LINE__), 0x0b0, 0, 0, Local0, arg3)
 				return (1)
 			}
 
 			if (CondRefof(\SSS0, Local0)) {
-				err(arg0, z174, 0x0b1, 0, 0, "\\SSS0", 1)
+				err(arg0, PK04(z174, __LINE__), 0x0b1, 0, 0, "\\SSS0", 1)
 				return (1)
 			}
 
@@ -1697,11 +1697,11 @@ Device(DTM0) {
 			}
 			Store(ObjectType(arg2), Local0)
 			if (LNotEqual(c017, Local0)) {
-				err(arg0, z174, 0x0b3, 0, 0, Local0, c017)
+				err(arg0, PK04(z174, __LINE__), 0x0b3, 0, 0, Local0, c017)
 			}
 			if (CondRefof(\SSS0, Local0)) {
 			} else {
-				err(arg0, z174, 0x0b4, 0, 0, "\\SSS0", 0)
+				err(arg0, PK04(z174, __LINE__), 0x0b4, 0, 0, "\\SSS0", 0)
 				return (1)
 			}
 
@@ -1710,7 +1710,7 @@ Device(DTM0) {
 				return (1)
 			}
 			if (CondRefof(\SSS0, Local0)) {
-				err(arg0, z174, 0x0b6, 0, 0, "\\SSS0", 1)
+				err(arg0, PK04(z174, __LINE__), 0x0b6, 0, 0, "\\SSS0", 1)
 				return (1)
 			}
 
@@ -1804,7 +1804,7 @@ Device(DTM0) {
 		Concatenate(arg0, "-tsth", arg0)
 
 		if (INIT()) {
-			err(arg0, z174, 0x0c0, 0, 0, "INIT", 1)
+			err(arg0, PK04(z174, __LINE__), 0x0c0, 0, 0, "INIT", 1)
 			return (1)
 		}
 		if (CH03(arg0, z174, 0x0c1, 0, 0)) {
@@ -1817,7 +1817,7 @@ Device(DTM0) {
 		while (Local0) {
 			Store(HI0N, Debug)
 			if (LD()) {
-				err(arg0, z174, 0x0c2, 0, 0, "HI0N", HI0N)
+				err(arg0, PK04(z174, __LINE__), 0x0c2, 0, 0, "HI0N", HI0N)
 				return (1)
 			}
 			if (CH03(arg0, z174, 0x0c3, 0, 0)) {
@@ -1845,7 +1845,7 @@ Device(DTM0) {
 		Store(MAXT, Local0)
 		while (Local0) {
 			if (UNLD()) {
-				err(arg0, z174, 0x0c5, 0, 0, "HI0N", HI0N)
+				err(arg0, PK04(z174, __LINE__), 0x0c5, 0, 0, "HI0N", HI0N)
 				return (1)
 			}
 			if (CH03(arg0, z174, 0x0c6, 0, 0)) {
@@ -1855,7 +1855,7 @@ Device(DTM0) {
 		}
 
 		if (LDCH(0)) {
-			err(arg0, z174, 0x0c7, 0, 0, "HI0N", HI0N)
+			err(arg0, PK04(z174, __LINE__), 0x0c7, 0, 0, "HI0N", HI0N)
 			return (1)
 		}
 
@@ -1872,7 +1872,7 @@ Device(DTM0) {
 		Concatenate(arg0, "-tsti", arg0)
 
 		if (CondRefof(\SSS0, Local0)) {
-			err(arg0, z174, 0x0d0, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z174, __LINE__), 0x0d0, 0, 0, "\\SSS0", 1)
 			return (1)
 		}
 
@@ -1894,12 +1894,12 @@ Device(DTM0) {
 
 		Store(ObjectType(HI0), Local0)
 		if (LNotEqual(c017, Local0)) {
-			err(arg0, z174, 0x0d3, 0, 0, Local0, c017)
+			err(arg0, PK04(z174, __LINE__), 0x0d3, 0, 0, Local0, c017)
 		}
 
 		if (CondRefof(\SSS0, Local0)) {
 		} else {
-			err(arg0, z174, 0x0d4, 0, 0, "\\SSS0", 0)
+			err(arg0, PK04(z174, __LINE__), 0x0d4, 0, 0, "\\SSS0", 0)
 			return (1)
 		}
 
@@ -1912,7 +1912,7 @@ Device(DTM0) {
 
 			Store(ObjectType(HI1), Local0)
 			if (LNotEqual(c009, Local0)) {
-				err(arg0, z174, 0x0d6, 0, 0, Local0, c009)
+				err(arg0, PK04(z174, __LINE__), 0x0d6, 0, 0, Local0, c009)
 			}
 
 			Decrement(Local1)
@@ -1925,7 +1925,7 @@ Device(DTM0) {
 		}
 
 		if (CondRefof(\SSS0, Local0)) {
-			err(arg0, z174, 0x0d8, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z174, __LINE__), 0x0d8, 0, 0, "\\SSS0", 1)
 		}
 
 		return (0)
@@ -1941,7 +1941,7 @@ Device(DTM0) {
 		Concatenate(arg0, "-tstj", arg0)
 
 		if (CondRefof(\SSS0, Local0)) {
-			err(arg0, z174, 0x0e0, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z174, __LINE__), 0x0e0, 0, 0, "\\SSS0", 1)
 			return (1)
 		}
 
@@ -1963,12 +1963,12 @@ Device(DTM0) {
 
 		Store(ObjectType(HI0), Local0)
 		if (LNotEqual(c017, Local0)) {
-			err(arg0, z174, 0x0e3, 0, 0, Local0, c017)
+			err(arg0, PK04(z174, __LINE__), 0x0e3, 0, 0, Local0, c017)
 		}
 
 		if (CondRefof(\SSS0, Local0)) {
 		} else {
-			err(arg0, z174, 0x0e4, 0, 0, "\\SSS0", 0)
+			err(arg0, PK04(z174, __LINE__), 0x0e4, 0, 0, "\\SSS0", 0)
 			return (1)
 		}
 
@@ -2014,7 +2014,7 @@ Device(DTM0) {
 
 			Store(ObjectType(HI1), Local0)
 			if (LNotEqual(c009, Local0)) {
-				err(arg0, z174, 0x0e6, 0, 0, Local0, c009)
+				err(arg0, PK04(z174, __LINE__), 0x0e6, 0, 0, Local0, c009)
 			}
 
 			Decrement(Local1)
@@ -2027,7 +2027,7 @@ Device(DTM0) {
 		}
 
 		if (CondRefof(\SSS0, Local0)) {
-			err(arg0, z174, 0x0e8, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z174, __LINE__), 0x0e8, 0, 0, "\\SSS0", 1)
 		}
 
 		return (0)
@@ -2070,11 +2070,11 @@ Device(DTM0) {
 		Concatenate(arg0, "-tstk", arg0)
 
 		if (CondRefof(\DDBX, Local0)) {
-			err(arg0, z174, 0x0f0, 0, 0, "\\DDBX", 1)
+			err(arg0, PK04(z174, __LINE__), 0x0f0, 0, 0, "\\DDBX", 1)
 			return
 		}
 		if (CondRefof(\SSS0, Local0)) {
-			err(arg0, z174, 0x0f1, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z174, __LINE__), 0x0f1, 0, 0, "\\SSS0", 1)
 			return
 		}
 
@@ -2086,12 +2086,12 @@ Device(DTM0) {
 
 		if (CondRefof(\DDBX, Local0)) {
 		} else {
-			err(arg0, z174, 0x0f3, 0, 0, "\\DDBX", 1)
+			err(arg0, PK04(z174, __LINE__), 0x0f3, 0, 0, "\\DDBX", 1)
 			return
 		}
 		if (CondRefof(\SSS0, Local0)) {
 		} else {
-			err(arg0, z174, 0x0f4, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z174, __LINE__), 0x0f4, 0, 0, "\\SSS0", 1)
 			return
 		}
 
@@ -2101,7 +2101,7 @@ Device(DTM0) {
 		}
 
 		if (CondRefof(\SSS0, Local0)) {
-			err(arg0, z174, 0x0f6, 0, 0, "\\SSS0", 1)
+			err(arg0, PK04(z174, __LINE__), 0x0f6, 0, 0, "\\SSS0", 1)
 			return
 		}
 
@@ -2111,7 +2111,7 @@ Device(DTM0) {
 		}
 
 		if (CondRefof(\DDBX, Local0)) {
-			err(arg0, z174, 0x0f8, 0, 0, "\\DDBX", 1)
+			err(arg0, PK04(z174, __LINE__), 0x0f8, 0, 0, "\\DDBX", 1)
 			return
 		}
 	}

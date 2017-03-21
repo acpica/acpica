@@ -37,7 +37,7 @@ Method(m500)
 	Store(DerefOf(Index(d000.p000, 0)), Local0)
 
 	if (LNotEqual(Local0, 0x11112222)) {
-		err(ts, z159, 0x000, 0, 0, Local0, 0x11112222)
+		err(ts, PK04(z159, __LINE__), 0x000, 0, 0, Local0, 0x11112222)
 	}
 
 	CH03(ts, z159, 0x100, 0, 0)
@@ -60,7 +60,7 @@ Method(m501)
 	Store(DerefOf(Index(d000.b000, 0)), Local0)
 
 	if (LNotEqual(Local0, 0x67)) {
-		err(ts, z159, 0x001, 0, 0, Local0, 0x67)
+		err(ts, PK04(z159, __LINE__), 0x001, 0, 0, Local0, 0x67)
 	}
 
 	CH03(ts, z159, 0x101, 0, 0)
@@ -83,7 +83,7 @@ Method(m502)
 	Store(DerefOf(Index(d000.s000, 0)), Local0)
 
 	if (LNotEqual(Local0, 0x38)) {
-		err(ts, z159, 0x002, 0, 0, Local0, 0x38)
+		err(ts, PK04(z159, __LINE__), 0x002, 0, 0, Local0, 0x38)
 	}
 
 	CH03(ts, z159, 0x102, 0, 0)
@@ -152,13 +152,13 @@ Method(m503, 1)
 	Store(Add(DerefOf(Index(d000.pp00, 1)), m001()), Local0)
 
 	if (LNotEqual(Local0, 0x87654321)) {
-		err(ts, z159, 0x003, 0, 0, Local0, 0x87654321)
+		err(ts, PK04(z159, __LINE__), 0x003, 0, 0, Local0, 0x87654321)
 	}
 
 	Store(DerefOf(Index(d000.pp00, 1)), Local0)
 
 	if (LNotEqual(Local0, 0x80000000)) {
-		err(ts, z159, 0x004, 0, 0, Local0, 0x80000000)
+		err(ts, PK04(z159, __LINE__), 0x004, 0, 0, Local0, 0x80000000)
 	}
 
 	CH03(ts, z159, 0x104, 0, 0)
@@ -192,13 +192,13 @@ Method(m504)
 	Store(Add(DerefOf(Index(d000.pp00, 1)), m001()), Local0)
 
 	if (LNotEqual(Local0, 0x065013BA)) {
-		err(ts, z159, 0x005, 0, 0, Local0, 0x065013BA)
+		err(ts, PK04(z159, __LINE__), 0x005, 0, 0, Local0, 0x065013BA)
 	}
 
 	Store(DerefOf(Index(d000.pp00, 1)), Local0)
 
 	if (LNotEqual(Local0, 0x00100064)) {
-		err(ts, z159, 0x006, 0, 0, Local0, 0x00100064)
+		err(ts, PK04(z159, __LINE__), 0x006, 0, 0, Local0, 0x00100064)
 	}
 
 	CH03(ts, z159, 0x105, 0, 0)
@@ -275,13 +275,13 @@ Method(m505, 1)
 	Store(Add(DerefOf(Index(d000.bf00, 1)), m001()), Local0)
 
 	if (LNotEqual(Local0, 0x87654321)) {
-		err(ts, z159, 0x007, 0, 0, Local0, 0x87654321)
+		err(ts, PK04(z159, __LINE__), 0x007, 0, 0, Local0, 0x87654321)
 	}
 
 	Store(DerefOf(Index(d000.bf00, 1)), Local0)
 
 	if (LNotEqual(Local0, 0x80000000)) {
-		err(ts, z159, 0x008, 0, 0, Local0, 0x80000000)
+		err(ts, PK04(z159, __LINE__), 0x008, 0, 0, Local0, 0x80000000)
 	}
 
 	CH03(ts, z159, 0x107, 0, 0)

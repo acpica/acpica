@@ -84,7 +84,7 @@ Method(mr01)
     mm00()
 
     if (LNotEqual(i000, 0xabcd0000)) {
-        err(ts, z169, 0x000, 0, 0, i000, 0xabcd0000)
+        err(ts, PK04(z169, __LINE__), 0x000, 0, 0, i000, 0xabcd0000)
     }
 
     CH03(ts, z169, 0x101, 0, 0)

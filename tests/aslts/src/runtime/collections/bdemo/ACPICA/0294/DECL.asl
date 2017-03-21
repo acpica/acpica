@@ -238,7 +238,7 @@ Device (D294) {
 		Name(DDB3, 0)
 
 		if (INIT()) {
-			err("", zFFF, 0x001, 0, 0, 0, 0)
+			err("", PK04(zFFF, __LINE__), 0x001, 0, 0, 0, 0)
 			return (1)
 		}
 
@@ -249,7 +249,7 @@ Device (D294) {
 		while (Local0) {
 //			Store(HI0N, Debug)
 			if (LD()) {
-				err("", zFFF, 0x002, 0, 0, Local0, HI0N)
+				err("", PK04(zFFF, __LINE__), 0x002, 0, 0, Local0, HI0N)
 				return (1)
 			}
 			Decrement(Local0)

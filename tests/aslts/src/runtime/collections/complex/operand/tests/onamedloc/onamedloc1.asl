@@ -12834,7 +12834,7 @@ Method(m613,, Serialized)
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z088, 0, 0, 0, Local2, c08c)
+			err(arg0, PK04(z088, __LINE__), 0, 0, 0, Local2, c08c)
 		}
 
 		// Stall
@@ -12847,7 +12847,7 @@ Method(m613,, Serialized)
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, 990)) {
-			err(arg0, z088, 1, 0, 0, Local2, 990)
+			err(arg0, PK04(z088, __LINE__), 1, 0, 0, Local2, 990)
 		}
 	}
 
@@ -12872,7 +12872,7 @@ Method(m613,, Serialized)
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z088, 0, 0, 0, Local2, c08c)
+			err(arg0, PK04(z088, __LINE__), 0, 0, 0, Local2, c08c)
 		}
 	}
 
@@ -12894,7 +12894,7 @@ Method(m613,, Serialized)
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z088, 0, 0, 0, Local2, c08c)
+			err(arg0, PK04(z088, __LINE__), 0, 0, 0, Local2, c08c)
 		}
 	}
 
@@ -24449,7 +24449,7 @@ Method(m613,, Serialized)
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z088, 0, 0, 0, Local2, c08c)
+			err(arg0, PK04(z088, __LINE__), 0, 0, 0, Local2, c08c)
 		}
 
 		// Stall
@@ -24462,7 +24462,7 @@ Method(m613,, Serialized)
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, 990)) {
-			err(arg0, z088, 1, 0, 0, Local2, 990)
+			err(arg0, PK04(z088, __LINE__), 1, 0, 0, Local2, 990)
 		}
 	}
 
@@ -24488,7 +24488,7 @@ Method(m613,, Serialized)
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z088, 0, 0, 0, Local2, c08c)
+			err(arg0, PK04(z088, __LINE__), 0, 0, 0, Local2, c08c)
 		}
 	}
 
@@ -24510,7 +24510,7 @@ Method(m613,, Serialized)
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z088, 0, 0, 0, Local2, c08c)
+			err(arg0, PK04(z088, __LINE__), 0, 0, 0, Local2, c08c)
 		}
 	}
 

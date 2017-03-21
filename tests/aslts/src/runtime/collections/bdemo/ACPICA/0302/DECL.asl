@@ -48,7 +48,7 @@ Method(m1eb)
 		Method(m201)
 		{
 			if (LNotEqual(\_SB.i2z7, 0xabcd0007)) {
-				err("", zFFF, 0x000, 0, 0, \_SB.i2z7, 0xabcd0007)
+				err("", PK04(zFFF, __LINE__), 0x000, 0, 0, \_SB.i2z7, 0xabcd0007)
 			}
 		}
 
@@ -69,7 +69,7 @@ Method(m1eb)
 		Method(m203)
 		{
 			if (LNotEqual(\i2z4, 0xabcd0004)) {
-				err("", zFFF, 0x001, 0, 0, \i2z4, 0xabcd0004)
+				err("", PK04(zFFF, __LINE__), 0x001, 0, 0, \i2z4, 0xabcd0004)
 			}
 		}
 

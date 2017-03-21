@@ -38,7 +38,7 @@
 		Store(Local0, Debug)
 
 		if (LNotEqual(Local0, Ones)) {
-			err("", zFFF, 0x000, 0, 0, Local0, Ones)
+			err("", PK04(zFFF, __LINE__), 0x000, 0, 0, Local0, Ones)
 		}
 
 	}
@@ -48,7 +48,7 @@
 		Store(Local0, Debug)
 
 		if (LNotEqual(Local0, 0x1235)) {
-			err("", zFFF, 0x001, 0, 0, Local0, 0x1235)
+			err("", PK04(zFFF, __LINE__), 0x001, 0, 0, Local0, 0x1235)
 		}
 	}
 	Method(me6e)
@@ -57,7 +57,7 @@
 		Store(Local0, Debug)
 
 		if (LNotEqual(Local0, 0xffffffffffffedcb)) {
-			err("", zFFF, 0x002, 0, 0, Local0, 0xffffffffffffedcb)
+			err("", PK04(zFFF, __LINE__), 0x002, 0, 0, Local0, 0xffffffffffffedcb)
 		}
 	}
 

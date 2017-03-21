@@ -87,7 +87,7 @@ Method(m02d)
 		}
 
 		if (LNotEqual(DerefOf(Local0), 0xabcd0000)) {
-			err("", zFFF, 0x000, 0, 0, DerefOf(Local0), 0xabcd0000)
+			err("", PK04(zFFF, __LINE__), 0x000, 0, 0, DerefOf(Local0), 0xabcd0000)
 		}
 
 		Store("============== sit 0 (Local0):", debug)
@@ -125,7 +125,7 @@ Method(m02d)
 		Store("============== before checking:", debug)
 
 		if (LNotEqual(DerefOf(Local0), 0xabcd0000)) {
-			err("", zFFF, 0x001, 0, 0, DerefOf(Local0), 0xabcd0000)
+			err("", PK04(zFFF, __LINE__), 0x001, 0, 0, DerefOf(Local0), 0xabcd0000)
 		}
 
 		Store("============== end of test", debug)

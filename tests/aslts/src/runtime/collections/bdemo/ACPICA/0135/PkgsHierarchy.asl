@@ -363,7 +363,7 @@ Method(mfe2, 6, Serialized)
 
 	if (LNotEqual(arg4, Local1)) {
 		Store(1, Local7)
-		err("", zFFF, 0x201, 0, 0, arg4, Local1)
+		err("", PK04(zFFF, __LINE__), 0x201, 0, 0, arg4, Local1)
 		Store("================= Params:", debug)
 		Store(arg0, Debug)
 		Store(arg1, Debug)

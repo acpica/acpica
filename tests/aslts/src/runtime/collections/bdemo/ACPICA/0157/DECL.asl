@@ -68,7 +68,7 @@ Method(md00) {
 	CH03("", 0, 0x000, 0, 0)
 
 	if (LNotEqual("md00.m000", Local0)) {
-		err("", zFFF, 0x001, 0, 0, Local0, "md00.m000")
+		err("", PK04(zFFF, __LINE__), 0x001, 0, 0, Local0, "md00.m000")
 	}
 
 
@@ -83,7 +83,7 @@ Method(md00) {
 	CH03("", 0, 0x002, 0, 0)
 
 	if (LNotEqual("md00.mm00", Local0)) {
-		err("", zFFF, 0x003, 0, 0, Local0, "md00.mm00")
+		err("", PK04(zFFF, __LINE__), 0x003, 0, 0, Local0, "md00.mm00")
 	}
 
 	CH03("", 0, 0x004, 0, 0)

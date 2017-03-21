@@ -45,10 +45,10 @@ Method(fp00,, Serialized)
 		Name(\i4z0, 0xabcd0000)
 
 		if (LNotEqual(i4z0, 0xabcd0000)) {
-			err(ts, z179, 0x000, 0, 0, i4z0, 0xabcd0000)
+			err(ts, PK04(z179, __LINE__), 0x000, 0, 0, i4z0, 0xabcd0000)
 		}
 		if (LNotEqual(\i4z0, 0xabcd0000)) {
-			err(ts, z179, 0x001, 0, 0, \i4z0, 0xabcd0000)
+			err(ts, PK04(z179, __LINE__), 0x001, 0, 0, \i4z0, 0xabcd0000)
 		}
 		m001()
 	}
@@ -56,10 +56,10 @@ Method(fp00,, Serialized)
 	Method(m001)
 	{
 		if (LNotEqual(i4z0, 0xabcd0000)) {
-			err(ts, z179, 0x002, 0, 0, i4z0, 0xabcd0000)
+			err(ts, PK04(z179, __LINE__), 0x002, 0, 0, i4z0, 0xabcd0000)
 		}
 		if (LNotEqual(\i4z0, 0xabcd0000)) {
-			err(ts, z179, 0x003, 0, 0, \i4z0, 0xabcd0000)
+			err(ts, PK04(z179, __LINE__), 0x003, 0, 0, \i4z0, 0xabcd0000)
 		}
 	}
 
@@ -79,10 +79,10 @@ Method(fp01,, Serialized)
 		}
 
 		if (LNotEqual(i4z1, 0xabcd0000)) {
-			err(ts, z179, 0x000, 0, 0, i4z1, 0xabcd0000)
+			err(ts, PK04(z179, __LINE__), 0x000, 0, 0, i4z1, 0xabcd0000)
 		}
 		if (LNotEqual(\i4z1, 0xabcd0000)) {
-			err(ts, z179, 0x001, 0, 0, \i4z1, 0xabcd0000)
+			err(ts, PK04(z179, __LINE__), 0x001, 0, 0, \i4z1, 0xabcd0000)
 		}
 		m001()
 	}
@@ -90,10 +90,10 @@ Method(fp01,, Serialized)
 	Method(m001)
 	{
 		if (LNotEqual(i4z1, 0xabcd0000)) {
-			err(ts, z179, 0x002, 0, 0, i4z1, 0xabcd0000)
+			err(ts, PK04(z179, __LINE__), 0x002, 0, 0, i4z1, 0xabcd0000)
 		}
 		if (LNotEqual(\i4z1, 0xabcd0000)) {
-			err(ts, z179, 0x003, 0, 0, \i4z1, 0xabcd0000)
+			err(ts, PK04(z179, __LINE__), 0x003, 0, 0, \i4z1, 0xabcd0000)
 		}
 	}
 

@@ -55,119 +55,119 @@ Method(m36d, 1, Serialized)
     }
     Store(Acquire(T000, 0xffff), Local0)
     if (Local0) {
-        err(ts, z151, 1, 0, 0, 0, Local0)
+        err(ts, PK04(z151, __LINE__), 1, 0, 0, 0, Local0)
     } else {
         if (LEqual(arg0, 1)) {
             return
         }
     Store(Acquire(\_GL, 0xffff), Local0)
     if (Local0) {
-        err(ts, z151, 2, 0, 0, 0, Local0)
+        err(ts, PK04(z151, __LINE__), 2, 0, 0, 0, Local0)
     } else {
         if (LEqual(arg0, 2)) {
             return
         }
         Store(Acquire(T100, 0xffff), Local0)
         if (Local0) {
-            err(ts, z151, 3, 0, 0, 0, Local0)
+            err(ts, PK04(z151, __LINE__), 3, 0, 0, 0, Local0)
         } else {
             if (LEqual(arg0, 3)) {
                 return
             }
             Store(Acquire(T200, 0xffff), Local0)
             if (Local0) {
-                err(ts, z151, 4, 0, 0, 0, Local0)
+                err(ts, PK04(z151, __LINE__), 4, 0, 0, 0, Local0)
             } else {
                 if (LEqual(arg0, 4)) {
                     return
                 }
                 Store(Acquire(T300, 0xffff), Local0)
                 if (Local0) {
-                    err(ts, z151, 5, 0, 0, 0, Local0)
+                    err(ts, PK04(z151, __LINE__), 5, 0, 0, 0, Local0)
                 } else {
                     if (LEqual(arg0, 5)) {
                         return
                     }
                     Store(Acquire(T400, 0xffff), Local0)
                     if (Local0) {
-                        err(ts, z151, 6, 0, 0, 0, Local0)
+                        err(ts, PK04(z151, __LINE__), 6, 0, 0, 0, Local0)
                     } else {
                         if (LEqual(arg0, 6)) {
                             return
                         }
                         Store(Acquire(T500, 0xffff), Local0)
                         if (Local0) {
-                            err(ts, z151, 7, 0, 0, 0, Local0)
+                            err(ts, PK04(z151, __LINE__), 7, 0, 0, 0, Local0)
                         } else {
                             if (LEqual(arg0, 7)) {
                                 return
                             }
                             Store(Acquire(T600, 0xffff), Local0)
                             if (Local0) {
-                                err(ts, z151, 8, 0, 0, 0, Local0)
+                                err(ts, PK04(z151, __LINE__), 8, 0, 0, 0, Local0)
                             } else {
                                 if (LEqual(arg0, 8)) {
                                     return
                                 }
                                 Store(Acquire(T700, 0xffff), Local0)
                                 if (Local0) {
-                                    err(ts, z151, 9, 0, 0, 0, Local0)
+                                    err(ts, PK04(z151, __LINE__), 9, 0, 0, 0, Local0)
                                 } else {
                                     if (LEqual(arg0, 9)) {
                                         return
                                     }
                                     Store(Acquire(T800, 0xffff), Local0)
                                     if (Local0) {
-                                        err(ts, z151, 0x00a, 0, 0, 0, Local0)
+                                        err(ts, PK04(z151, __LINE__), 0x00a, 0, 0, 0, Local0)
                                     } else {
                                         if (LEqual(arg0, 10)) {
                                             return
                                         }
                                         Store(Acquire(T900, 0xffff), Local0)
                                         if (Local0) {
-                                            err(ts, z151, 0x00b, 0, 0, 0, Local0)
+                                            err(ts, PK04(z151, __LINE__), 0x00b, 0, 0, 0, Local0)
                                         } else {
                                             if (LEqual(arg0, 11)) {
                                                 return
                                             }
                                             Store(Acquire(Ta00, 0xffff), Local0)
                                             if (Local0) {
-                                                err(ts, z151, 0x00c, 0, 0, 0, Local0)
+                                                err(ts, PK04(z151, __LINE__), 0x00c, 0, 0, 0, Local0)
                                             } else {
                                                 if (LEqual(arg0, 12)) {
                                                     return
                                                 }
                                                 Store(Acquire(Tb00, 0xffff), Local0)
                                                 if (Local0) {
-                                                    err(ts, z151, 0x00d, 0, 0, 0, Local0)
+                                                    err(ts, PK04(z151, __LINE__), 0x00d, 0, 0, 0, Local0)
                                                 } else {
                                                     if (LEqual(arg0, 13)) {
                                                         return
                                                     }
                                                     Store(Acquire(Tc00, 0xffff), Local0)
                                                     if (Local0) {
-                                                        err(ts, z151, 0x00e, 0, 0, 0, Local0)
+                                                        err(ts, PK04(z151, __LINE__), 0x00e, 0, 0, 0, Local0)
                                                     } else {
                                                         if (LEqual(arg0, 14)) {
                                                             return
                                                         }
                                                         Store(Acquire(Td00, 0xffff), Local0)
                                                         if (Local0) {
-                                                            err(ts, z151, 0x00f, 0, 0, 0, Local0)
+                                                            err(ts, PK04(z151, __LINE__), 0x00f, 0, 0, 0, Local0)
                                                         } else {
                                                             if (LEqual(arg0, 15)) {
                                                                 return
                                                             }
                                                             Store(Acquire(Te00, 0xffff), Local0)
                                                             if (Local0) {
-                                                                err(ts, z151, 0x010, 0, 0, 0, Local0)
+                                                                err(ts, PK04(z151, __LINE__), 0x010, 0, 0, 0, Local0)
                                                             } else {
                                                                 if (LEqual(arg0, 16)) {
                                                                     return
                                                                 }
                                                                 Store(Acquire(Tf00, 0xffff), Local0)
                                                                 if (Local0) {
-                                                                    err(ts, z151, 0x011, 0, 0, 0, Local0)
+                                                                    err(ts, PK04(z151, __LINE__), 0x011, 0, 0, 0, Local0)
                                                                 } else {
                                                                     if (LEqual(arg0, 17)) {
                                                                         return
@@ -346,7 +346,7 @@ Method(m36f, 4, Serialized)
 
 	if (LNot(arg2)) {
 		if (Local0) {
-			err("m36f", z151, 0x002, 0, 0, Local0, 0)
+			err("m36f", PK04(z151, __LINE__), 0x002, 0, 0, Local0, 0)
 		}
 	}
 

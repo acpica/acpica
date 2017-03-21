@@ -489,7 +489,7 @@ Method(m333, 3)
 	Store(DerefOf(Index(cnt0, arg0)), Local0)
 	Store(DerefOf(Index(Local0, arg1)), Local1)
 	if (LNotEqual(Local1, arg2)) {
-		err("m333", z149, 0x000, 0, 0, Local1, arg2)
+		err("m333", PK04(z149, __LINE__), 0x000, 0, 0, Local1, arg2)
 		Store(arg0, Debug)
 		Store(arg1, Debug)
 	}
@@ -637,10 +637,10 @@ Method(m33d, 2)
 {
 	Store(m10f(arg0, arg1), Local0)
 	if (And(Local0, 0x01)) {
-		err("m33d", z149, 0x001, 0, 0, Local0, 0)
+		err("m33d", PK04(z149, __LINE__), 0x001, 0, 0, Local0, 0)
 	}
 	if (And(Local0, 0x02)) {
-		err("m33d", z149, 0x002, 0, 0, Local0, 0)
+		err("m33d", PK04(z149, __LINE__), 0x002, 0, 0, Local0, 0)
 	}
 }
 
@@ -1140,7 +1140,7 @@ Method(m343, 4, Serialized)
 	}
 
 	if (err0) {
-		err("m333", z149, 0x005, 0, 0, 0, 0)
+		err("m333", PK04(z149, __LINE__), 0x005, 0, 0, 0, 0)
 	}
 
 	return (b000)
@@ -1200,12 +1200,12 @@ Method(m336, 2)
 	if (arg1) {
 		if (LNot(EXC0)) {
 			/* Expected exceptions but have none */
-			err("m333", z149, 0x006, 0, 0, EXC0, 0)
+			err("m333", PK04(z149, __LINE__), 0x006, 0, 0, EXC0, 0)
 		}
 	} else {
 		if (EXC0) {
 			/* Unexpected exceptions */
-			err("m333", z149, 0x007, 0, 0, EXC0, 0)
+			err("m333", PK04(z149, __LINE__), 0x007, 0, 0, EXC0, 0)
 		}
 	}
 

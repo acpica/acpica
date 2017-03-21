@@ -50,7 +50,7 @@ Method(mff2)
 
 		Store("==================== 1", Debug)
 		if (LNotEqual(Local0, 0xabcd0003)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 0xabcd0003)
+			err("", PK04(zFFF, __LINE__), 0x000, 0, 0, Local0, 0xabcd0003)
 		}
 	}
 

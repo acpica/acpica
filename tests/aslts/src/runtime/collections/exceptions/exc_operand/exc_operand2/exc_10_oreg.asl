@@ -444,7 +444,7 @@ Method(m4ba,, Serialized)
 	{
 		Store(ObjectType(arg1), Local0)
 		if (LNotEqual(Local0, 10)) {
-			err(arg0, z102, 200, 0, 0, Local0, 10)
+			err(arg0, PK04(z102, __LINE__), 200, 0, 0, Local0, 10)
 			return (1)
 		}
 
@@ -1182,7 +1182,7 @@ Method(m4ba,, Serialized)
 		Method(CH00, 2)
 		{
 			if (LNotEqual(i000, arg1)) {
-				err(arg0, z102, 0, 0, 0, i000, arg1)
+				err(arg0, PK04(z102, __LINE__), 0, 0, 0, i000, arg1)
 			}
 		}
 

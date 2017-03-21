@@ -41,7 +41,7 @@
 		CH03("", 0, 0x001, 0, 0)
 
 		if (LNotEqual(Local7, 0x78)) {
-			err("", zFFF, 0x000, 0, 0, id12, 5)
+			err("", PK04(zFFF, __LINE__), 0x000, 0, 0, id12, 5)
 		}
 	}
 
