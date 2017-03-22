@@ -46,7 +46,7 @@ Method(m813)
 
 		/* ? */
 		if (LNotEqual(Local7, c008)) {
-			err("", zFFF, 0x100, 0, 0, Local7, c008)
+			err("", zFFF, __LINE__, 0, 0, Local7, c008)
 		}
 
 		/* or RING_OF_REFS_EXCEPTION? */

@@ -54,7 +54,7 @@ Store to method invocation is not supported
 		Store(5, mf1c())
 
 		if (LNotEqual(id12, 5)) {
-			err("", zFFF, 0x000, 0, 0, id12, 5)
+			err("", zFFF, __LINE__, 0, 0, id12, 5)
 		}
 
 		// Case mf1d
@@ -62,7 +62,7 @@ Store to method invocation is not supported
 		Store(6, mf1d())
 
 		if (LNotEqual(id12, 6)) {
-			err("", zFFF, 0x001, 0, 0, id12, 6)
+			err("", zFFF, __LINE__, 0, 0, id12, 6)
 		}
 */
 	}

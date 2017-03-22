@@ -51,14 +51,14 @@
 
 		mf1a(sd04)
 		if (LNotEqual(sd04, "qwer0000")) {
-			err("", zFFF, 0x000, 0, 0, sd04, "qwer0000")
+			err("", zFFF, __LINE__, 0, 0, sd04, "qwer0000")
 		}
 
 		// Index of Buffer
 
 		mf1a(bd08)
 		if (LNotEqual(bd08, Buffer(4) {1,0x77,3,4})) {
-			err("", zFFF, 0x001, 0, 0, bd08, Buffer(4) {1,0x77,3,4})
+			err("", zFFF, __LINE__, 0, 0, bd08, Buffer(4) {1,0x77,3,4})
 		}
 
 		// Index of Package
@@ -69,6 +69,6 @@
 		Store(DerefOf(Local0), Local1)
 
 		if (LNotEqual(Local1, 0x77)) {
-			err("", zFFF, 0x002, 0, 0, Local1, 0x77)
+			err("", zFFF, __LINE__, 0, 0, Local1, 0x77)
 		}
 	}

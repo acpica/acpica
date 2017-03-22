@@ -38,12 +38,12 @@
 		if (Local0) {
 			Store ("Ok: LEqual", Debug)
 		} else {
-			err("", zFFF, 0x000, 0, 0, Local0, Ones)
+			err("", zFFF, __LINE__, 0, 0, Local0, Ones)
 		}
 
 		Store (LLess(0xffffffff, 0x100000000), Local1)
 		if (Local1) {
-			err("", zFFF, 0x001, 0, 0, Local1, Zero)
+			err("", zFFF, __LINE__, 0, 0, Local1, Zero)
 		} else {
 			Store ("Ok: LLess", Debug)
 		}

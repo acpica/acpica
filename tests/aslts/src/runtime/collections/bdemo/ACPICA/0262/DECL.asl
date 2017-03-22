@@ -59,7 +59,7 @@ Method(m027,, Serialized)
 		Store (Local0, Debug)
 
 		if (LNotEqual(Local0, 0x1777777)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 0x1777777)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0x1777777)
 		}
 	}
 

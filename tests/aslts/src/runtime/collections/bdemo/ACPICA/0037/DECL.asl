@@ -43,10 +43,10 @@
 			})
 
 		if (LNotEqual(M241, M242)) {
-			err("", zFFF, 0x000, 0, 0, M241, M242)
+			err("", zFFF, __LINE__, 0, 0, M241, M242)
 		}
 
 		if (LNotEqual(M240._RW, 0x18)) {
-			err("", zFFF, 0x000, 0, 0, M240._RW, 0x18)
+			err("", zFFF, __LINE__, 0, 0, M240._RW, 0x18)
 		}
 	}

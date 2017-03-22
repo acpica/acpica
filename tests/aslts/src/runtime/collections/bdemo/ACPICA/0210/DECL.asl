@@ -62,5 +62,5 @@ Method(m819)
 	m001()
 
 	Store("Fight Outstanding allocations here", Debug)
-	err("", zFFF, 0x000, 0, 0, 0, 0)
+	err("", zFFF, __LINE__, 0, 0, 0, 0)
 }

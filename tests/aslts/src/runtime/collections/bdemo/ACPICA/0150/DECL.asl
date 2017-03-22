@@ -60,11 +60,11 @@ Method(md8a,, Serialized)
 	Store(0, Local1)
 
 	if (Acquire(mx00, 1)) {
-		err("", zFFF, 0x000, 0, 0, 0, 0)
+		err("", zFFF, __LINE__, 0, 0, 0, 0)
 	} else {
 		Store(1, Local0)
 		if (Acquire(mx01, 1)) {
-			err("", zFFF, 0x001, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		} else {
 			Store(1, Local1)
 		}
@@ -93,7 +93,7 @@ Method(md8b,, Serialized)
 	Store(0, Local1)
 
 	if (Acquire(mx00, 1)) {
-		err("", zFFF, 0x002, 0, 0, 0, 0)
+		err("", zFFF, __LINE__, 0, 0, 0, 0)
 	} else {
 		Store(1, Local0)
 		CH03("", 0, 0x003, 0, 0)
@@ -123,7 +123,7 @@ Method(md8c,, Serialized)
 	Store(0, Local1)
 
 	if (Acquire(mx00, 1)) {
-		err("", zFFF, 0x005, 0, 0, 0, 0)
+		err("", zFFF, __LINE__, 0, 0, 0, 0)
 	} else {
 		Store(1, Local0)
 		CH03("", 0, 0x006, 0, 0)
@@ -154,7 +154,7 @@ Method(md8d,, Serialized)
 	Store(0, Local1)
 
 	if (Acquire(mx00, 1)) {
-		err("", zFFF, 0x008, 0, 0, 0, 0)
+		err("", zFFF, __LINE__, 0, 0, 0, 0)
 	} else {
 		Store(1, Local0)
 		CH03("", 0, 0x009, 0, 0)

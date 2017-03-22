@@ -100,7 +100,7 @@ Method(m1e1, 1, Serialized)
 			Increment(i205)
 		}
 		Default {
-			err("m1e2", z110, 0, 0, 0, Local7, 0)
+			err("m1e2", z110, __LINE__, 0, 0, Local7, 0)
 		}
 	}
 
@@ -711,7 +711,7 @@ Method(m1e0, 1, Serialized)
 	            m1a3(Local1, c010, z110, ts, 151)
             }
             Default {
-	            err(ts, z110, 1, 0, 0, ind0, 0)
+	            err(ts, z110, __LINE__, 0, 0, ind0, 0)
             }
 
         } /* Switch */

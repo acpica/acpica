@@ -71,11 +71,11 @@ Method(m401, 1, Serialized)
 	Store(MAdd(i000, m001()), Local0)
 
 	if (LNotEqual(Local0, 0x07654321)) {
-		err(ts, z100, 0x001, 0, 0, Local0, 0x07654321)
+		err(ts, z100, __LINE__, 0, 0, Local0, 0x07654321)
 	}
 
 	if (LNotEqual(i000, 0x07000000)) {
-		err(ts, z100, 0x002, 0, 0, i000, 0x07000000)
+		err(ts, z100, __LINE__, 0, 0, i000, 0x07000000)
 	}
 
 	CH03(ts, z100, 0x003, 0, 0)

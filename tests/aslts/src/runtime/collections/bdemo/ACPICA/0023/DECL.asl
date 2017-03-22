@@ -42,7 +42,7 @@ Method(mdb8)
 	CH03("", 0, 0x000, 0, 0)
 	FromBCD(Local0, Local2)
 	if (LNotEqual(Local2, Local1)) {
-		err("", zFFF, 0x001, 0, 0, Local2, Local1)
+		err("", zFFF, __LINE__, 0, 0, Local2, Local1)
 	}
 
 	// Bug, FromBCD(0x10000000000)
@@ -53,7 +53,7 @@ Method(mdb8)
 	CH03("", 0, 0x003, 0, 0)
 	FromBCD(Local0, Local2)
 	if (LNotEqual(Local2, Local1)) {
-		err("", zFFF, 0x004, 0, 0, Local2, Local1)
+		err("", zFFF, __LINE__, 0, 0, Local2, Local1)
 	}
 
 	// Ok, ToBCD(10000000000)
@@ -64,7 +64,7 @@ Method(mdb8)
 	CH03("", 0, 0x006, 0, 0)
 	ToBCD(Local0, Local2)
 	if (LNotEqual(Local2, Local1)) {
-		err("", zFFF, 0x007, 0, 0, Local2, Local1)
+		err("", zFFF, __LINE__, 0, 0, Local2, Local1)
 	}
 
 	CH03("", 0, 0x000, 0, 0)

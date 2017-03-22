@@ -49,11 +49,11 @@ Method(mda1, 1, Serialized)
 
 	if (LEqual(Arg0, 5)) {
 		if (LNotEqual(Local7, 0x1234)) {
-			err("", zFFF, 0x000, 0, 0, Local7, 0x1234)
+			err("", zFFF, __LINE__, 0, 0, Local7, 0x1234)
 		}
 	} else {
 		if (LNotEqual(Local7, 0x5678)) {
-			err("", zFFF, 0x001, 0, 0, Local7, 0x5678)
+			err("", zFFF, __LINE__, 0, 0, Local7, 0x5678)
 		}
 	}
 }

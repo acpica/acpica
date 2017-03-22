@@ -224,7 +224,7 @@ Method(m308, 7, Serialized)
 
 			Store(m306(arg5, Local0, Local1, Local2, Local3, Local4), Local6)
 			if (LNotEqual(Local7, Local6)) {
-				err("err 1", z038, lpC0, 0, 0, lpC1, arg2)
+				err("err 1", z038, __LINE__, 0, 0, lpC1, arg2)
 			}
 
 			if (LAnd(arg6, LNotEqual(Local1, Local3))) {
@@ -237,7 +237,7 @@ Method(m308, 7, Serialized)
 
 				Store(m306(arg5, Local0, Local3, Local2, Local1, Local4), Local6)
 				if (LNotEqual(Local7, Local6)) {
-					err("err 2", z038, Add(lpC0, 36), 0, 0, lpC2, arg2)
+					err("err 2", z038, __LINE__, 0, 0, lpC2, arg2)
 				}
 			}
 

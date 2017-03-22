@@ -39,11 +39,11 @@ Method(mdb0,, Serialized)
 	ToDecimalString(b000, Local0)
 
 	if (LNotEqual(Local0, "1,1")) {
-		err("", zFFF, 0x000, 0, 0, Local0, "1,1")
+		err("", zFFF, __LINE__, 0, 0, Local0, "1,1")
 	}
 
 	Store(Sizeof(Local0), Local1)
 	if (LNotEqual(Local1, 3)) {
-		err("", zFFF, 0x001, 0, 0, Local1, 3)
+		err("", zFFF, __LINE__, 0, 0, Local1, 3)
 	}
 }

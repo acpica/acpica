@@ -82,7 +82,7 @@ Method(m803,, Serialized)
 	Method(m000)
 	{
 		if (LNotEqual(i000, 0xabcd0000)) {
-			err("", zFFF, 0x000, 0, 0, i000, 0xabcd0000)
+			err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0000)
 		}
 		Store(0xabcd0001, i000)
 		return (0xabcd0002)
@@ -93,7 +93,7 @@ Method(m803,, Serialized)
 	Method(m001)
 	{
 		if (LNotEqual(i000, 0xabcd0001)) {
-			err("", zFFF, 0x001, 0, 0, i000, 0xabcd0001)
+			err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0001)
 		}
 		Store(0xabcd0003, i000)
 		return (0xabcd0004)
@@ -104,7 +104,7 @@ Method(m803,, Serialized)
 	Method(m002)
 	{
 		if (LNotEqual(i000, 0xabcd0003)) {
-			err("", zFFF, 0x002, 0, 0, i000, 0xabcd0003)
+			err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0003)
 		}
 		Store(0xabcd0005, i000)
 		return (0xabcd0006)
@@ -115,7 +115,7 @@ Method(m803,, Serialized)
 	Method(m003)
 	{
 		if (LNotEqual(i000, 0xabcd0005)) {
-			err("", zFFF, 0x003, 0, 0, i000, 0xabcd0005)
+			err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0005)
 		}
 		Store(0xabcd0007, i000)
 		return (0xabcd0008)
@@ -133,7 +133,7 @@ Method(m804,, Serialized)
 		Method(m000)
 		{
 			if (LNotEqual(i000, 0xabcd0000)) {
-				err("", zFFF, 0x004, 0, 0, i000, 0xabcd0000)
+				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0000)
 			}
 			Store(0xabcd0001, i000)
 			return (0xabcd0002)
@@ -144,7 +144,7 @@ Method(m804,, Serialized)
 		Method(m001)
 		{
 			if (LNotEqual(i000, 0xabcd0001)) {
-				err("", zFFF, 0x005, 0, 0, i000, 0xabcd0001)
+				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0001)
 			}
 			Store(0xabcd0003, i000)
 			return (0xabcd0004)
@@ -155,7 +155,7 @@ Method(m804,, Serialized)
 		Method(m002)
 		{
 			if (LNotEqual(i000, 0xabcd0003)) {
-				err("", zFFF, 0x006, 0, 0, i000, 0xabcd0003)
+				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0003)
 			}
 			Store(0xabcd0005, i000)
 			return (0xabcd0006)
@@ -166,7 +166,7 @@ Method(m804,, Serialized)
 		Method(m003)
 		{
 			if (LNotEqual(i000, 0xabcd0005)) {
-				err("", zFFF, 0x007, 0, 0, i000, 0xabcd0005)
+				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0005)
 			}
 			Store(0xabcd0007, i000)
 			return (0xabcd0008)
@@ -182,7 +182,7 @@ Method(m804,, Serialized)
 		Method(m000)
 		{
 			if (LNotEqual(i000, 0xabcd0007)) {
-				err("", zFFF, 0x008, 0, 0, i000, 0xabcd0007)
+				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0007)
 			}
 			Store(0xabcd0008, i000)
 			return (0xabcd0009)
@@ -193,7 +193,7 @@ Method(m804,, Serialized)
 		Method(m001)
 		{
 			if (LNotEqual(i000, 0xabcd0008)) {
-				err("", zFFF, 0x009, 0, 0, i000, 0xabcd0008)
+				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0008)
 			}
 			Store(0xabcd000a, i000)
 			return (0xabcd000b)
@@ -204,7 +204,7 @@ Method(m804,, Serialized)
 		Method(m002)
 		{
 			if (LNotEqual(i000, 0xabcd000a)) {
-				err("", zFFF, 0x00a, 0, 0, i000, 0xabcd000a)
+				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd000a)
 			}
 			Store(0xabcd000c, i000)
 			return (0xabcd000d)
@@ -215,7 +215,7 @@ Method(m804,, Serialized)
 		Method(m003)
 		{
 			if (LNotEqual(i000, 0xabcd000c)) {
-				err("", zFFF, 0x00b, 0, 0, i000, 0xabcd000c)
+				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd000c)
 			}
 			Store(0xabcd000e, i000)
 			return (0xabcd000f)
@@ -231,7 +231,7 @@ Method(m804,, Serialized)
 		Method(m000)
 		{
 			if (LNotEqual(i000, 0xabcd000e)) {
-				err("", zFFF, 0x00c, 0, 0, i000, 0xabcd000e)
+				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd000e)
 			}
 			Store(0xabcd0010, i000)
 			return (0xabcd0011)
@@ -242,7 +242,7 @@ Method(m804,, Serialized)
 		Method(m001)
 		{
 			if (LNotEqual(i000, 0xabcd0010)) {
-				err("", zFFF, 0x00d, 0, 0, i000, 0xabcd0010)
+				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0010)
 			}
 			Store(0xabcd0012, i000)
 			return (0xabcd0013)
@@ -253,7 +253,7 @@ Method(m804,, Serialized)
 		Method(m002)
 		{
 			if (LNotEqual(i000, 0xabcd0012)) {
-				err("", zFFF, 0x00e, 0, 0, i000, 0xabcd0012)
+				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0012)
 			}
 			Store(0xabcd0014, i000)
 			return (0xabcd0015)
@@ -264,7 +264,7 @@ Method(m804,, Serialized)
 		Method(m003)
 		{
 			if (LNotEqual(i000, 0xabcd0014)) {
-				err("", zFFF, 0x00f, 0, 0, i000, 0xabcd0014)
+				err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0014)
 			}
 			Store(0xabcd0016, i000)
 			return (0xabcd0017)
@@ -276,7 +276,7 @@ Method(m804,, Serialized)
 	m002()
 
 	if (LNotEqual(i000, 0xabcd0016)) {
-		err("", zFFF, 0x010, 0, 0, i000, 0xabcd0016)
+		err("", zFFF, __LINE__, 0, 0, i000, 0xabcd0016)
 	}
 }
 

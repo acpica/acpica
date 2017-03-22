@@ -51,7 +51,7 @@ Method(m330, 5)	// ts, len, msg, op, res
 		Store(DeRefOf(Index(arg4, lpC0)), Local1)
 
 		if (LNotEqual(Local0, Local1)) {
-			err(arg0, z029, 0, 0, 0, lpC0, arg2)
+			err(arg0, z029, __LINE__, 0, 0, lpC0, arg2)
 		}
 
 		Decrement(lpN0)
@@ -63,10 +63,10 @@ Method(m330, 5)	// ts, len, msg, op, res
 Method(m331, 7)	// ts, grerr, val0, ver0, val1, ver1, msg
 {
 	if (LNotEqual(arg2, arg3)) {
-		err(arg0, z029, arg1, arg6, arg6, arg2, arg3)
+		err(arg0, z029, __LINE__, arg6, arg6, arg2, arg3)
 	}
 	if (LNotEqual(arg4, arg5)) {
-		err(arg0, z029, arg1, arg6, arg6, arg4, arg5)
+		err(arg0, z029, __LINE__, arg6, arg6, arg4, arg5)
 	}
 }
 
@@ -98,7 +98,7 @@ Method(m332, 6, Serialized)	// ts, len, msg, op1, op2, res
 		if (LNotEqual(Local3, Local2)) {
 			Store(Local3, Debug)
 			Store(Local2, Debug)
-			err(arg0, z029, 3, 0, 0, lpC0, arg2)
+			err(arg0, z029, __LINE__, 0, 0, lpC0, arg2)
 		}
 
 		Decrement(lpN0)

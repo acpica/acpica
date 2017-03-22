@@ -38,22 +38,22 @@ Method(mfa3)
 
 	Store(ObjectType(bf90), Local0)
 	if (LNotEqual(Local0, 14)) {
-		err("", zFFF, 0x000, 0, 0, Local0, 14)
+		err("", zFFF, __LINE__, 0, 0, Local0, 14)
 	}
 
 	if (LNotEqual(bf90, 0x77)) {
-		err("", zFFF, 0x001, 0, 0, bf90, 0x77)
+		err("", zFFF, __LINE__, 0, 0, bf90, 0x77)
 	}
 
 	CopyObject(0x9999992b, bf90)
 
 	Store(ObjectType(bf90), Local0)
 	if (LNotEqual(Local0, 14)) {
-		err("", zFFF, 0x002, 0, 0, Local0, 14)
+		err("", zFFF, __LINE__, 0, 0, Local0, 14)
 	}
 
 	if (LNotEqual(bf90, 0x2b)) {
-		err("", zFFF, 0x003, 0, 0, bf90, 0x2b)
+		err("", zFFF, __LINE__, 0, 0, bf90, 0x2b)
 		Store(bf90, Debug)
 	}
 }

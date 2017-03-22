@@ -141,6 +141,6 @@ Method(mb62,, Serialized)
 
 	// Check the original long String Literal
 	if (LNotEqual(Local0, s000)) {
-		err("", zFFF, 0x000, 0, 0, s000, Local0)
+		err("", zFFF, __LINE__, 0, 0, s000, Local0)
 	}
 }

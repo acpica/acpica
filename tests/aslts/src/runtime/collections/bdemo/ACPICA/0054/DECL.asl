@@ -44,7 +44,7 @@ Method(mddf,, Serialized)
 
 	Store(ConcatenateResTemplate( b000, b001 ), Local0)
 	if (LNotEqual(Local0, Buffer() {0x79, 0x00})) {
-		err("", zFFF, 0x000, 0, 0, Local0, Buffer() {0x79, 0x00})
+		err("", zFFF, __LINE__, 0, 0, Local0, Buffer() {0x79, 0x00})
 	}
 }
 
@@ -56,12 +56,12 @@ Method(mde0,, Serialized)
 
 	Store(ConcatenateResTemplate( b000, Buffer() {0x79, 0x00} ), Local0)
 	if (LNotEqual(Local0, Buffer() {0x79, 0x00})) {
-		err("", zFFF, 0x001, 0, 0, Local0, Buffer() {0x79, 0x00})
+		err("", zFFF, __LINE__, 0, 0, Local0, Buffer() {0x79, 0x00})
 	}
 
 	Store(ConcatenateResTemplate( Buffer() {0x79, 0x00}, b000 ), Local0)
 	if (LNotEqual(Local0, Buffer() {0x79, 0x00})) {
-		err("", zFFF, 0x002, 0, 0, Local0, Buffer() {0x79, 0x00})
+		err("", zFFF, __LINE__, 0, 0, Local0, Buffer() {0x79, 0x00})
 	}
 }
 
@@ -69,7 +69,7 @@ Method(mde1)
 {
 	Store(ConcatenateResTemplate( Buffer() {0x79, 0x00}, Buffer() {0x79, 0x00} ), Local0)
 	if (LNotEqual(Local0, Buffer() {0x79, 0x00})) {
-		err("", zFFF, 0x003, 0, 0, Local0, Buffer() {0x79, 0x00})
+		err("", zFFF, __LINE__, 0, 0, Local0, Buffer() {0x79, 0x00})
 	}
 }
 
@@ -81,12 +81,12 @@ Method(mde2,, Serialized)
 
 	Store(LEqual( b000, Buffer(1) {0x79} ), Local0)
 	if (LNotEqual(Local0, Ones)) {
-		err("", zFFF, 0x004, 0, 0, Local0, Ones)
+		err("", zFFF, __LINE__, 0, 0, Local0, Ones)
 	}
 
 	Store(LEqual( Buffer(1) {0x79}, b000 ), Local0)
 	if (LNotEqual(Local0, Ones)) {
-		err("", zFFF, 0x005, 0, 0, Local0, Ones)
+		err("", zFFF, __LINE__, 0, 0, Local0, Ones)
 	}
 }
 
@@ -94,7 +94,7 @@ Method(mde3)
 {
 	Store(LEqual( Buffer(1) {0x79}, Buffer(1) {0x79} ), Local0)
 	if (LNotEqual(Local0, Ones)) {
-		err("", zFFF, 0x006, 0, 0, Local0, Ones)
+		err("", zFFF, __LINE__, 0, 0, Local0, Ones)
 	}
 }
 
@@ -106,12 +106,12 @@ Method(mde4,, Serialized)
 
 	Store(LGreater( b000, Buffer(1) {0x79} ), Local0)
 	if (LNotEqual(Local0, Zero)) {
-		err("", zFFF, 0x007, 0, 0, Local0, Zero)
+		err("", zFFF, __LINE__, 0, 0, Local0, Zero)
 	}
 
 	Store(LGreater( Buffer(1) {0x79}, b000 ), Local0)
 	if (LNotEqual(Local0, Zero)) {
-		err("", zFFF, 0x008, 0, 0, Local0, Zero)
+		err("", zFFF, __LINE__, 0, 0, Local0, Zero)
 	}
 }
 
@@ -119,7 +119,7 @@ Method(mde5)
 {
 	Store(LGreater( Buffer(1) {0x79}, Buffer(1) {0x79} ), Local0)
 	if (LNotEqual(Local0, Zero)) {
-		err("", zFFF, 0x009, 0, 0, Local0, Zero)
+		err("", zFFF, __LINE__, 0, 0, Local0, Zero)
 	}
 }
 
@@ -133,12 +133,12 @@ Method(mde6,, Serialized)
 
 	Store(Concatenate( b000, Buffer() {0x79} ), Local0)
 	if (LNotEqual(Local0, Buffer() {0x79, 0x79})) {
-		err("", zFFF, 0x00a, 0, 0, Local0, Buffer() {0x79, 0x79})
+		err("", zFFF, __LINE__, 0, 0, Local0, Buffer() {0x79, 0x79})
 	}
 
 	Store(Concatenate( Buffer() {0x79}, b000 ), Local0)
 	if (LNotEqual(Local0, Buffer() {0x79, 0x79})) {
-		err("", zFFF, 0x00b, 0, 0, Local0, Buffer() {0x79, 0x79})
+		err("", zFFF, __LINE__, 0, 0, Local0, Buffer() {0x79, 0x79})
 	}
 }
 
@@ -146,7 +146,7 @@ Method(mde7)
 {
 	Store(Concatenate( Buffer() {0x79}, Buffer() {0x79} ), Local0)
 	if (LNotEqual(Local0, Buffer() {0x79, 0x79})) {
-		err("", zFFF, 0x00c, 0, 0, Local0, Buffer() {0x79, 0x79})
+		err("", zFFF, __LINE__, 0, 0, Local0, Buffer() {0x79, 0x79})
 	}
 }
 
@@ -158,12 +158,12 @@ Method(mde8,, Serialized)
 
 	Add( b000, Buffer() {0x79}, Local0)
 	if (LNotEqual(Local0, 0xf2)) {
-		err("", zFFF, 0x00d, 0, 0, Local0, 0xf2)
+		err("", zFFF, __LINE__, 0, 0, Local0, 0xf2)
 	}
 
 	Add( Buffer() {0x79}, b000, Local0)
 	if (LNotEqual(Local0, 0xf2)) {
-		err("", zFFF, 0x00e, 0, 0, Local0, 0xf2)
+		err("", zFFF, __LINE__, 0, 0, Local0, 0xf2)
 	}
 }
 
@@ -171,7 +171,7 @@ Method(mde9)
 {
 	Add( Buffer() {0x79}, Buffer() {0x79}, Local0)
 	if (LNotEqual(Local0, 0xf2)) {
-		err("", zFFF, 0x00f, 0, 0, Local0, 0xf2)
+		err("", zFFF, __LINE__, 0, 0, Local0, 0xf2)
 	}
 }
 

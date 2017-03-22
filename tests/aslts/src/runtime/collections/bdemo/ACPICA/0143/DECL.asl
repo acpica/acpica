@@ -51,16 +51,16 @@
 
 		Store(mf30(1, 2), Local0)
 		if (LNotEqual(Local0, 3)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 3)
+			err("", zFFF, __LINE__, 0, 0, Local0, 3)
 		}
 
 		Store(mf31("FFFF"), Local0)
 		if (LNotEqual(Local0, "FFFF")) {
-			err("", zFFF, 0x001, 0, 0, Local0, "FFFF")
+			err("", zFFF, __LINE__, 0, 0, Local0, "FFFF")
 		}
 
 		Store(mf32(3, "F", Buffer(1){0xff}), Local0)
 		if (LNotEqual(Local0, 0x111)) {
-			err("", zFFF, 0x002, 0, 0, Local0, 0x111)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0x111)
 		}
 	}

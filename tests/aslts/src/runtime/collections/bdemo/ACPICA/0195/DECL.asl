@@ -60,17 +60,17 @@ Method(mfaf,, Serialized)
 	Store(ObjectType(s001), Local1)
 
 	if (LNotEqual(Local0, Local1)) {
-		err("", zFFF, 0x000, 0, 0, Local0, Local1)
+		err("", zFFF, __LINE__, 0, 0, Local0, Local1)
 	} elseif (LNotEqual(s000, s001)) {
-		err("", zFFF, 0x001, 0, 0, s000, s001)
+		err("", zFFF, __LINE__, 0, 0, s000, s001)
 	}
 
 	if (LNotEqual(Local0, 2)) {
-		err("", zFFF, 0x002, 0, 0, Local0, 2)
+		err("", zFFF, __LINE__, 0, 0, Local0, 2)
 	}
 
 	if (LNotEqual(Local1, 2)) {
-		err("", zFFF, 0x003, 0, 0, Local1, 2)
+		err("", zFFF, __LINE__, 0, 0, Local1, 2)
 	}
 
 	Increment(b000)
@@ -85,16 +85,16 @@ Method(mfaf,, Serialized)
 	Store(ObjectType(b001), Local1)
 
 	if (LNotEqual(Local0, Local1)) {
-		err("", zFFF, 0x004, 0, 0, Local0, Local1)
+		err("", zFFF, __LINE__, 0, 0, Local0, Local1)
 	} elseif (LNotEqual(b000, b001)) {
-		err("", zFFF, 0x005, 0, 0, b000, b001)
+		err("", zFFF, __LINE__, 0, 0, b000, b001)
 	}
 
 	if (LNotEqual(Local0, 3)) {
-		err("", zFFF, 0x006, 0, 0, Local0, 3)
+		err("", zFFF, __LINE__, 0, 0, Local0, 3)
 	}
 
 	if (LNotEqual(Local1, 3)) {
-		err("", zFFF, 0x007, 0, 0, Local1, 3)
+		err("", zFFF, __LINE__, 0, 0, Local1, 3)
 	}
 }

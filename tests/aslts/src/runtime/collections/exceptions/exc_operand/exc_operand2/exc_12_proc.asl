@@ -444,7 +444,7 @@ Method(m4bc,, Serialized)
 	{
 		Store(ObjectType(arg1), Local0)
 		if (LNotEqual(Local0, 12)) {
-			err(arg0, z104, 200, 0, 0, Local0, 12)
+			err(arg0, z104, __LINE__, 0, 0, Local0, 12)
 			return (1)
 		}
 
@@ -1191,7 +1191,7 @@ Method(m4bc,, Serialized)
 		Method(CH00, 2)
 		{
 			if (LNotEqual(i000, arg1)) {
-				err(arg0, z104, 0, 0, 0, i000, arg1)
+				err(arg0, z104, __LINE__, 0, 0, i000, arg1)
 			}
 		}
 

@@ -796,7 +796,7 @@ Method(IF00,, Serialized)
 	While (LLess(Local7, 302)) {
 		Store(m040(Local7), Local0)
 		if (LNotEqual(Local0, Local7)) {
-			err(ts, z005, Local7, 0, 0, Local0, 0)
+			err(ts, z005, __LINE__, 0, 0, Local0, 0)
 		}
 		Increment(Local7)
 	}

@@ -42,7 +42,7 @@ Method(mdb7)
 	if (LNotEqual(Local0, Local1)) {
 		Store(1, Local7)
 	} else {
-		err("", zFFF, 0x000, 0, 0, Local0, Local1)
+		err("", zFFF, __LINE__, 0, 0, Local0, Local1)
 	}
 
 	Return(Local7)

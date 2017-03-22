@@ -48,7 +48,7 @@ Method(m300,, Serialized)
 		Store(DerefOf(Index(arg0, 0)), Local0)
 
 		if (LNotEqual(Local0, 0x11112222)) {
-			err(ts, z157, 0x000, 0, 0, Local0, 0x11112222)
+			err(ts, z157, __LINE__, 0, 0, Local0, 0x11112222)
 		}
 	}
 
@@ -57,7 +57,7 @@ Method(m300,, Serialized)
 	Store(DerefOf(Index(p000, 0)), Local0)
 
 	if (LNotEqual(Local0, 0x11112222)) {
-		err(ts, z157, 0x001, 0, 0, Local0, 0x11112222)
+		err(ts, z157, __LINE__, 0, 0, Local0, 0x11112222)
 	}
 
 	CH03(ts, z157, 0x002, 0, 0)
@@ -80,7 +80,7 @@ Method(m301,, Serialized)
 		Store(DerefOf(Index(arg0, 0)), Local0)
 
 		if (LNotEqual(Local0, 0x67)) {
-			err(ts, z157, 0x003, 0, 0, Local0, 0x67)
+			err(ts, z157, __LINE__, 0, 0, Local0, 0x67)
 		}
 	}
 
@@ -89,7 +89,7 @@ Method(m301,, Serialized)
 	Store(DerefOf(Index(b000, 0)), Local0)
 
 	if (LNotEqual(Local0, 0x67)) {
-		err(ts, z157, 0x004, 0, 0, Local0, 0x67)
+		err(ts, z157, __LINE__, 0, 0, Local0, 0x67)
 	}
 
 	CH03(ts, z157, 0x005, 0, 0)
@@ -111,7 +111,7 @@ Method(m302,, Serialized)
 		Store(DerefOf(Index(arg0, 0)), Local0)
 
 		if (LNotEqual(Local0, 0x38)) {
-			err(ts, z157, 0x006, 0, 0, Local0, 0x38)
+			err(ts, z157, __LINE__, 0, 0, Local0, 0x38)
 		}
 	}
 
@@ -120,7 +120,7 @@ Method(m302,, Serialized)
 	Store(DerefOf(Index(s000, 0)), Local0)
 
 	if (LNotEqual(Local0, 0x38)) {
-		err(ts, z157, 0x007, 0, 0, Local0, 0x38)
+		err(ts, z157, __LINE__, 0, 0, Local0, 0x38)
 	}
 
 	CH03(ts, z157, 0x008, 0, 0)
@@ -189,13 +189,13 @@ Method(m303, 1, Serialized)
 		Store(Add(DerefOf(Index(arg0, 1)), m001(arg0)), Local0)
 
 		if (LNotEqual(Local0, 0x87654321)) {
-			err(ts, z157, 0x00a, 0, 0, Local0, 0x87654321)
+			err(ts, z157, __LINE__, 0, 0, Local0, 0x87654321)
 		}
 
 		Store(DerefOf(Index(arg0, 1)), Local1)
 
 		if (LNotEqual(Local1, 0x80000000)) {
-			err(ts, z157, 0x00b, 0, 0, Local1, 0x80000000)
+			err(ts, z157, __LINE__, 0, 0, Local1, 0x80000000)
 		}
 
 		CH03(ts, z157, 0x00c, 0, 0)
@@ -206,13 +206,13 @@ Method(m303, 1, Serialized)
 	Store(m000(pp00, arg0), Local0)
 
 	if (LNotEqual(Local0, 0x87654321)) {
-		err(ts, z157, 0x00d, 0, 0, Local0, 0x87654321)
+		err(ts, z157, __LINE__, 0, 0, Local0, 0x87654321)
 	}
 
 	Store(DerefOf(Index(pp00, 1)), Local0)
 
 	if (LNotEqual(Local0, 0x80000000)) {
-		err(ts, z157, 0x00e, 0, 0, Local0, 0x80000000)
+		err(ts, z157, __LINE__, 0, 0, Local0, 0x80000000)
 	}
 
 	CH03(ts, z157, 0x00f, 0, 0)
@@ -244,13 +244,13 @@ Method(m304,, Serialized)
 		Store(Add(DerefOf(Index(arg0, 1)), m001(arg0)), Local0)
 
 		if (LNotEqual(Local0, 0x065013BA)) {
-			err(ts, z157, 0x010, 0, 0, Local0, 0x065013BA)
+			err(ts, z157, __LINE__, 0, 0, Local0, 0x065013BA)
 		}
 
 		Store(DerefOf(Index(arg0, 1)), Local1)
 
 		if (LNotEqual(Local1, 0x00100064)) {
-			err(ts, z157, 0x011, 0, 0, Local1, 0x00100064)
+			err(ts, z157, __LINE__, 0, 0, Local1, 0x00100064)
 		}
 		Return (Local0)
 	}
@@ -258,13 +258,13 @@ Method(m304,, Serialized)
 	Store(m000(pp00), Local0)
 
 	if (LNotEqual(Local0, 0x065013BA)) {
-		err(ts, z157, 0x012, 0, 0, Local0, 0x065013BA)
+		err(ts, z157, __LINE__, 0, 0, Local0, 0x065013BA)
 	}
 
 	Store(DerefOf(Index(pp00, 1)), Local1)
 
 	if (LNotEqual(Local1, 0x00100064)) {
-		err(ts, z157, 0x013, 0, 0, Local1, 0x00100064)
+		err(ts, z157, __LINE__, 0, 0, Local1, 0x00100064)
 	}
 
 	CH03(ts, z157, 0x014, 0, 0)
@@ -330,13 +330,13 @@ Method(m305,, Serialized)
 		Store(Add(arg0, m001()), Local0)
 
 		if (LNotEqual(Local0, 0x87654321)) {
-			err(ts, z157, 0x016, 0, 0, Local0, 0x87654321)
+			err(ts, z157, __LINE__, 0, 0, Local0, 0x87654321)
 		}
 
 		Store(0x0000001, Local1)
 
 		if (LNotEqual(arg0, Local1)) {
-			err(ts, z157, 0x017, 0, 0, arg0, Local1)
+			err(ts, z157, __LINE__, 0, 0, arg0, Local1)
 		}
 
 		CH03(ts, z157, 0x018, 0, 0)
@@ -347,13 +347,13 @@ Method(m305,, Serialized)
 	Store(m000(bf00), Local0)
 
 	if (LNotEqual(Local0, 0x87654321)) {
-		err(ts, z157, 0x019, 0, 0, Local0, 0x87654321)
+		err(ts, z157, __LINE__, 0, 0, Local0, 0x87654321)
 	}
 
 	Store(0xabcdef70, Local1)
 
 	if (LNotEqual(bf00, Local1)) {
-		err(ts, z157, 0x01a, 0, 0, bf00, Local1)
+		err(ts, z157, __LINE__, 0, 0, bf00, Local1)
 	}
 
 	CH03(ts, z157, 0x01b, 0, 0)
@@ -420,13 +420,13 @@ Method(m306,, Serialized)
 		Store(Add(arg0, m001()), Local0)
 
 		if (LNotEqual(Local0, 0x87654321)) {
-			err(ts, z157, 0x01d, 0, 0, Local0, 0x87654321)
+			err(ts, z157, __LINE__, 0, 0, Local0, 0x87654321)
 		}
 
 		Store(0x0000001, Local1)
 
 		if (LNotEqual(arg0, Local1)) {
-			err(ts, z157, 0x01e, 0, 0, arg0, Local1)
+			err(ts, z157, __LINE__, 0, 0, arg0, Local1)
 		}
 
 		CH03(ts, z157, 0x01f, 0, 0)
@@ -437,13 +437,13 @@ Method(m306,, Serialized)
 	Store(m000(f000), Local0)
 
 	if (LNotEqual(Local0, 0x87654321)) {
-		err(ts, z157, 0x020, 0, 0, Local0, 0x87654321)
+		err(ts, z157, __LINE__, 0, 0, Local0, 0x87654321)
 	}
 
 	Store(0xabcdef70, Local1)
 
 	if (LNotEqual(f000, Local1)) {
-		err(ts, z157, 0x021, 0, 0, f000, Local1)
+		err(ts, z157, __LINE__, 0, 0, f000, Local1)
 	}
 
 	CH03(ts, z157, 0x022, 0, 0)
@@ -511,13 +511,13 @@ Method(m307,, Serialized)
 		Store(Add(arg0, m001()), Local0)
 
 		if (LNotEqual(Local0, 0x87654321)) {
-			err(ts, z157, 0x024, 0, 0, Local0, 0x87654321)
+			err(ts, z157, __LINE__, 0, 0, Local0, 0x87654321)
 		}
 
 		Store(0x0000001, Local1)
 
 		if (LNotEqual(arg0, Local1)) {
-			err(ts, z157, 0x025, 0, 0, arg0, Local1)
+			err(ts, z157, __LINE__, 0, 0, arg0, Local1)
 		}
 
 		CH03(ts, z157, 0x026, 0, 0)
@@ -528,13 +528,13 @@ Method(m307,, Serialized)
 	Store(m000(bnk0), Local0)
 
 	if (LNotEqual(Local0, 0x87654321)) {
-		err(ts, z157, 0x027, 0, 0, Local0, 0x87654321)
+		err(ts, z157, __LINE__, 0, 0, Local0, 0x87654321)
 	}
 
 	Store(0xabcdef70, Local1)
 
 	if (LNotEqual(bnk0, Local1)) {
-		err(ts, z157, 0x028, 0, 0, bnk0, Local1)
+		err(ts, z157, __LINE__, 0, 0, bnk0, Local1)
 	}
 
 	CH03(ts, z157, 0x029, 0, 0)
@@ -602,13 +602,13 @@ Method(m308,, Serialized)
 		Store(Add(arg0, m001()), Local0)
 
 		if (LNotEqual(Local0, 0x87654321)) {
-			err(ts, z157, 0x02b, 0, 0, Local0, 0x87654321)
+			err(ts, z157, __LINE__, 0, 0, Local0, 0x87654321)
 		}
 
 		Store(0x0000001, Local1)
 
 		if (LNotEqual(arg0, Local1)) {
-			err(ts, z157, 0x02c, 0, 0, arg0, Local1)
+			err(ts, z157, __LINE__, 0, 0, arg0, Local1)
 		}
 
 		CH03(ts, z157, 0x02d, 0, 0)
@@ -619,13 +619,13 @@ Method(m308,, Serialized)
 	Store(m000(if00), Local0)
 
 	if (LNotEqual(Local0, 0x87654321)) {
-		err(ts, z157, 0x02e, 0, 0, Local0, 0x87654321)
+		err(ts, z157, __LINE__, 0, 0, Local0, 0x87654321)
 	}
 
 	Store(0xabcdef70, Local1)
 
 	if (LNotEqual(if00, Local1)) {
-		err(ts, z157, 0x02f, 0, 0, if00, Local1)
+		err(ts, z157, __LINE__, 0, 0, if00, Local1)
 	}
 
 	CH03(ts, z157, 0x030, 0, 0)
@@ -692,7 +692,7 @@ Method(m309, 1, Serialized)
 		Store(Add(DerefOf(Index(arg0, 1)), m001(arg0)), Local0)
 
 		if (LNotEqual(Local0, 0x24)) {
-			err(ts, z157, 0x032, 0, 0, Local0, 0x24)
+			err(ts, z157, __LINE__, 0, 0, Local0, 0x24)
 		}
 
 		Store(DerefOf(Index(arg0, 1)), Local1)
@@ -704,7 +704,7 @@ Method(m309, 1, Serialized)
 		}
 
 		if (LNotEqual(Local1, Local2)) {
-			err(ts, z157, 0x033, 0, 0, Local1, Local2)
+			err(ts, z157, __LINE__, 0, 0, Local1, Local2)
 		}
 
 		CH03(ts, z157, 0x034, 0, 0)
@@ -715,7 +715,7 @@ Method(m309, 1, Serialized)
 	Store(m000(b000, arg0), Local0)
 
 	if (LNotEqual(Local0, 0x24)) {
-		err(ts, z157, 0x035, 0, 0, Local0, 0x24)
+		err(ts, z157, __LINE__, 0, 0, Local0, 0x24)
 	}
 
 	Store(DerefOf(Index(b000, 1)), Local1)
@@ -727,7 +727,7 @@ Method(m309, 1, Serialized)
 	}
 
 	if (LNotEqual(Local1, Local2)) {
-		err(ts, z157, 0x036, 0, 0, Local1, Local2)
+		err(ts, z157, __LINE__, 0, 0, Local1, Local2)
 	}
 
 	CH03(ts, z157, 0x037, 0, 0)
@@ -794,7 +794,7 @@ Method(m30a, 1, Serialized)
 		Store(Add(DerefOf(Index(arg0, 1)), m001(arg0)), Local0)
 
 		if (LNotEqual(Local0, 0x24)) {
-			err(ts, z157, 0x039, 0, 0, Local0, 0x24)
+			err(ts, z157, __LINE__, 0, 0, Local0, 0x24)
 		}
 
 		Store(DerefOf(Index(arg0, 1)), Local1)
@@ -806,7 +806,7 @@ Method(m30a, 1, Serialized)
 		}
 
 		if (LNotEqual(Local1, Local2)) {
-			err(ts, z157, 0x03a, 0, 0, Local1, Local2)
+			err(ts, z157, __LINE__, 0, 0, Local1, Local2)
 		}
 
 		CH03(ts, z157, 0x03b, 0, 0)
@@ -817,7 +817,7 @@ Method(m30a, 1, Serialized)
 	Store(m000(s000, arg0), Local0)
 
 	if (LNotEqual(Local0, 0x24)) {
-		err(ts, z157, 0x03c, 0, 0, Local0, 0x24)
+		err(ts, z157, __LINE__, 0, 0, Local0, 0x24)
 	}
 
 	Store(DerefOf(Index(s000, 1)), Local1)
@@ -829,7 +829,7 @@ Method(m30a, 1, Serialized)
 	}
 
 	if (LNotEqual(Local1, Local2)) {
-		err(ts, z157, 0x03d, 0, 0, Local1, Local2)
+		err(ts, z157, __LINE__, 0, 0, Local1, Local2)
 	}
 
 	CH03(ts, z157, 0x03e, 0, 0)
@@ -903,7 +903,7 @@ Method(m30b, 1, Serialized)
 		Store(Add(bf00, m001()), Local0)
 
 		if (LNotEqual(Local0, 0x87654321)) {
-			err(ts, z157, 0x040, 0, 0, Local0, 0x87654321)
+			err(ts, z157, __LINE__, 0, 0, Local0, 0x87654321)
 		}
 
 		if (arg1) {
@@ -913,7 +913,7 @@ Method(m30b, 1, Serialized)
 		}
 
 		if (LNotEqual(bf00, Local1)) {
-			err(ts, z157, 0x041, 0, 0, bf00, Local1)
+			err(ts, z157, __LINE__, 0, 0, bf00, Local1)
 		}
 
 		CH03(ts, z157, 0x042, 0, 0)
@@ -924,7 +924,7 @@ Method(m30b, 1, Serialized)
 	Store(m000(0, arg0), Local0)
 
 	if (LNotEqual(Local0, 0x87654321)) {
-		err(ts, z157, 0x043, 0, 0, Local0, 0x87654321)
+		err(ts, z157, __LINE__, 0, 0, Local0, 0x87654321)
 	}
 
 	CH03(ts, z157, 0x044, 0, 0)

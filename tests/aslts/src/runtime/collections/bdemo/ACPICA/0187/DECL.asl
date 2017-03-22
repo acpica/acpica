@@ -52,7 +52,7 @@ Method(mf70,, Serialized)
 	if (SLCK) {
 		CH03("", 0, 0x001, 0, 0)
 		if (LNotEqual(i000, 0)) {
-			err("", zFFF, 0x002, 0, 0, i000, 0)
+			err("", zFFF, __LINE__, 0, 0, i000, 0)
 		}
 	} else {
 		CH07("", 0, 0xff, 0, 0x003, 0, 0)

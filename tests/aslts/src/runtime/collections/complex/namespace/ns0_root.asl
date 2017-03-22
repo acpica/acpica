@@ -96,10 +96,10 @@ Method(m006, 1, Serialized)
 	if (FLG9) {
 		CH03(ts, z154, 0x014, 0, 0)
 		if (LNotEqual(Local0, 0x87654321)) {
-			err(ts, z154, 0x012, 0, 0, Local0, 0x87654321)
+			err(ts, z154, __LINE__, 0, 0, Local0, 0x87654321)
 		}
 		if (LNotEqual(d000.i000, 0x80000000)) {
-			err(ts, z154, 0x013, 0, 0, d000.i000, 0x80000000)
+			err(ts, z154, __LINE__, 0, 0, d000.i000, 0x80000000)
 		}
 	} else {
 		CH04(ts, 1, 5, z154, 0x014, 0, 0)	// AE_NOT_FOUND
@@ -171,10 +171,10 @@ Method(m007, 1, Serialized)
 	if (FLG9) {
 		CH03(ts, z154, 0x014, 0, 0)
 		if (LNotEqual(Local0, 0x87654321)) {
-			err(ts, z154, 0x015, 0, 0, Local0, 0x87654321)
+			err(ts, z154, __LINE__, 0, 0, Local0, 0x87654321)
 		}
 		if (LNotEqual(tz00.i000, 0x80000000)) {
-			err(ts, z154, 0x016, 0, 0, tz00.i000, 0x80000000)
+			err(ts, z154, __LINE__, 0, 0, tz00.i000, 0x80000000)
 		}
 	} else {
 		CH04(ts, 1, 5, z154, 0x014, 0, 0)	// AE_NOT_FOUND
@@ -247,10 +247,10 @@ Method(m008, 1, Serialized)
 	if (FLG9) {
 		CH03(ts, z154, 0x014, 0, 0)
 		if (LNotEqual(Local0, 0x87654321)) {
-			err(ts, z154, 0x018, 0, 0, Local0, 0x87654321)
+			err(ts, z154, __LINE__, 0, 0, Local0, 0x87654321)
 		}
 		if (LNotEqual(pr00.i000, 0x80000000)) {
-			err(ts, z154, 0x019, 0, 0, pr00.i000, 0x80000000)
+			err(ts, z154, __LINE__, 0, 0, pr00.i000, 0x80000000)
 		}
 	} else {
 		CH04(ts, 1, 5, z154, 0x014, 0, 0)	// AE_NOT_FOUND
@@ -323,10 +323,10 @@ Method(m009, 1, Serialized)
 	if (FLG9) {
 		CH03(ts, z154, 0x014, 0, 0)
 		if (LNotEqual(Local0, 0x87654321)) {
-			err(ts, z154, 0x01b, 0, 0, Local0, 0x87654321)
+			err(ts, z154, __LINE__, 0, 0, Local0, 0x87654321)
 		}
 		if (LNotEqual(pw00.i000, 0x80000000)) {
-			err(ts, z154, 0x01c, 0, 0, pw00.i000, 0x80000000)
+			err(ts, z154, __LINE__, 0, 0, pw00.i000, 0x80000000)
 		}
 	} else {
 		CH04(ts, 1, 5, z154, 0x014, 0, 0)	// AE_NOT_FOUND

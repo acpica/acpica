@@ -50,17 +50,17 @@ Method(me89, 1, Serialized)
 
 	if (LEqual(arg0, 0)) {
 		if (LNotEqual(Local0, 0)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 0)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0)
 		}
 	}
 	if (LEqual(arg0, 1)) {
 		if (LNotEqual(Local0, 1)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 1)
+			err("", zFFF, __LINE__, 0, 0, Local0, 1)
 		}
 	}
 	if (LEqual(arg0, 2)) {
 		if (LNotEqual(Local0, 2)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 2)
+			err("", zFFF, __LINE__, 0, 0, Local0, 2)
 		}
 	}
 }

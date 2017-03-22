@@ -43,14 +43,14 @@ not only Operregion and Buffield
 	Method(mf6b)
 	{
 		if (LNotEqual(id1f, 50)) {
-			err("", zFFF, 0x000, 0, 0, id1f, 50)
+			err("", zFFF, __LINE__, 0, 0, id1f, 50)
 		}
 
 		if (LNotEqual(id20, 8)) {
-			err("", zFFF, 0x001, 0, 0, id20, 8)
+			err("", zFFF, __LINE__, 0, 0, id20, 8)
 		}
 
 		if (LNotEqual(bfd3, 0x99)) {
-			err("", zFFF, 0x002, 0, 0, bfd3, 0x99)
+			err("", zFFF, __LINE__, 0, 0, bfd3, 0x99)
 		}
 	}

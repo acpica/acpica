@@ -36,7 +36,7 @@ Method(mda6)
 {
 	Store(ObjectType(Local0), Local7)
 	if (LNotequal(Local7, c008)) {
-		err("", zFFF, 0x000, 0, 0, Local7, c008)
+		err("", zFFF, __LINE__, 0, 0, Local7, c008)
 	}
 }
 
@@ -47,7 +47,7 @@ Method(mda7, 1)
 	}
 	Store(ObjectType(Local0), Local7)
 	if (LNotequal(Local7, c008)) {
-		err("", zFFF, 0x001, 0, 0, Local7, c008)
+		err("", zFFF, __LINE__, 0, 0, Local7, c008)
 	}
 }
 

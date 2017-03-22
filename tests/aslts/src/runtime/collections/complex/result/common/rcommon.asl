@@ -325,11 +325,11 @@ Method(m680, 5)
 	Store(ObjectType(arg3), Local0)
 	Store(ObjectType(arg4), Local1)
 	if (LNotEqual(Local0, Local1)) {
-		err(Concatenate(arg0, "-OType"), z122, arg1, arg2, 0, Local0, Local1)
+		err(Concatenate(arg0, "-OType"), z122, __LINE__, arg2, 0, Local0, Local1)
 		Return (1)
 	} elseif (Derefof(Index(b679, Local0))) {
 		if (LNotEqual(arg3, arg4)) {
-			err(arg0, z122, arg1, arg2, 0, arg3, arg4)
+			err(arg0, z122, __LINE__, arg2, 0, arg3, arg4)
 			Return (1)
 		}
 	}
@@ -634,7 +634,7 @@ if (y361) {
 	Method(m004, 3)
 	{
 		if (LNotEqual(arg0, arg1)) {
-			err(arg0, z122, 2, 0, 0, arg0, arg1)
+			err(arg0, z122, __LINE__, 0, 0, arg0, arg1)
 			if (STCS) {m000(3, 0x100, arg2, arg1)}
 		}
 	}
@@ -1103,7 +1103,7 @@ if (y361) {
 			}
 			Default {
 				// Unexpected Target Type
-				err(Concatenate(arg0, terr), z122, 4, 0, 0, arg1, 0)
+				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg1, 0)
 				Return (1)
 			}
 		}
@@ -1120,7 +1120,7 @@ if (y361) {
 		Store(ObjectType(arg2), Local0)
 		if (LNotEqual(Local0, arg1)) {
 			// ObjectType of Target can not be set up
-			err(arg0, z122, 6, 0, 0, Local0, arg1)
+			err(arg0, z122, __LINE__, 0, 0, Local0, arg1)
 			Return (1)
 		}
 
@@ -1209,7 +1209,7 @@ if (y361) {
 			}
 			Default {
 				// Unexpected Source Type
-				err(Concatenate(arg0, terr), z122, 7, 0, 0, arg1, 0)
+				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg1, 0)
 				Return (1)
 			}
 		}
@@ -1226,7 +1226,7 @@ if (y361) {
 		Store(ObjectType(arg2), Local0)
 		if (LNotEqual(Local0, arg1)) {
 			// ObjectType of Source can not be set up
-			err(arg0, z122, 9, 0, 0, Local0, arg1)
+			err(arg0, z122, __LINE__, 0, 0, Local0, arg1)
 			Return (1)
 		}
 
@@ -1255,7 +1255,7 @@ if (y361) {
 		Store(ObjectType(arg2), Local0)
 		if (LNotEqual(Local0, arg1)) {
 			// ObjectType of Source object is corrupted
-			err(arg0, z122, 11, 0, 0, Local0, arg1)
+			err(arg0, z122, __LINE__, 0, 0, Local0, arg1)
 			Return (1)
 		}
 
@@ -1321,14 +1321,14 @@ if (y361) {
 			}
 			Default {
 				// Unexpected Result Type
-				err(arg0, z122, 12, 0, 0, arg1, 0)
+				err(arg0, z122, __LINE__, 0, 0, arg1, 0)
 				Return (1)
 			}
 		}
 
 		if (LNotEqual(Local0, arg1)) {
 			// Mismatch of Source Type against specified Result Type
-			err(arg0, z122, 13, 0, 0, Local0, arg1)
+			err(arg0, z122, __LINE__, 0, 0, Local0, arg1)
 
 			if (STCS) {m000(3, 0x1000000, Local0, arg1)}
 
@@ -1338,31 +1338,31 @@ if (y361) {
 			Switch(ToInteger(arg1)) {
 				Case(1) {
 					if (LNotEqual(INT0, Derefof(arg3))) {
-						err(arg0, z122, 14, 0, 0, INT0, Derefof(arg3))
+						err(arg0, z122, __LINE__, 0, 0, INT0, Derefof(arg3))
 						Return (1)
 					}
 					if (LNotEqual(Derefof(arg2), INT0)) {
-						err(arg0, z122, 15, 0, 0, Derefof(arg2), INT0)
+						err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), INT0)
 						Return (1)
 					}
 				}
 				Case(2) {
 					if (LNotEqual(STR0, Derefof(arg3))) {
-						err(arg0, z122, 16, 0, 0, STR0, Derefof(arg3))
+						err(arg0, z122, __LINE__, 0, 0, STR0, Derefof(arg3))
 						Return (1)
 					}
 					if (LNotEqual(Derefof(arg2), STR0)) {
-						err(arg0, z122, 17, 0, 0, Derefof(arg2), STR0)
+						err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), STR0)
 						Return (1)
 					}
 				}
 				Case(3) {
 					if (LNotEqual(BUF0, Derefof(arg3))) {
-						err(arg0, z122, 18, 0, 0, BUF0, Derefof(arg3))
+						err(arg0, z122, __LINE__, 0, 0, BUF0, Derefof(arg3))
 						Return (1)
 					}
 					if (LNotEqual(Derefof(arg2), BUF0)) {
-						err(arg0, z122, 19, 0, 0, Derefof(arg2), BUF0)
+						err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), BUF0)
 						Return (1)
 					}
 				}
@@ -1370,7 +1370,7 @@ if (y361) {
 
 					Store(Sizeof(PAC0), Local0)
 					if (LNotEqual(Sizeof(arg3), Local0)) {
-						err(arg0, z122, 20, 0, 0, Sizeof(arg3), Local0)
+						err(arg0, z122, __LINE__, 0, 0, Sizeof(arg3), Local0)
 						Return (1)
 					}
 					While (Local0) {
@@ -1379,7 +1379,7 @@ if (y361) {
 						Store(ObjectType(Derefof(Index(PAC0, Local0))), Local2)
 						if (LNotEqual(Local1, Local2)) {
 							// ObjectType is corrupted
-							err(arg0, z122, 21, 0, 0, Local1, Local2)
+							err(arg0, z122, __LINE__, 0, 0, Local1, Local2)
 							Return (1)
 						} elseif (Derefof(Index(b679, Local1))) {
 							// the computational data type
@@ -1387,7 +1387,7 @@ if (y361) {
 									Derefof(Index(Derefof(arg3), Local0)),
 									Derefof(Index(PAC0, Local0)))) {
 								// The value is corrupted
-								err(arg0, z122, 22, 0, 0, Derefof(Index(Derefof(arg3), Local0)), Local0)
+								err(arg0, z122, __LINE__, 0, 0, Derefof(Index(Derefof(arg3), Local0)), Local0)
 								Return (1)
 							}
 						}
@@ -1395,7 +1395,7 @@ if (y361) {
 
 					Store(Sizeof(PAC0), Local0)
 					if (LNotEqual(Sizeof(arg2), Local0)) {
-						err(arg0, z122, 23, 0, 0, Sizeof(arg2), Local0)
+						err(arg0, z122, __LINE__, 0, 0, Sizeof(arg2), Local0)
 						Return (1)
 					}
 					While (Local0) {
@@ -1404,7 +1404,7 @@ if (y361) {
 						Store(ObjectType(Derefof(Index(PAC0, Local0))), Local2)
 						if (LNotEqual(Local1, Local2)) {
 							// ObjectType is corrupted
-							err(arg0, z122, 24, 0, 0, Local1, Local2)
+							err(arg0, z122, __LINE__, 0, 0, Local1, Local2)
 							Return (1)
 						} elseif (Derefof(Index(b679, Local1))) {
 							// the computational data type
@@ -1412,7 +1412,7 @@ if (y361) {
 									Derefof(Index(Derefof(arg2), Local0)),
 									Derefof(Index(PAC0, Local0)))) {
 								// The value is corrupted
-								err(arg0, z122, 25, 0, 0, Derefof(Index(Derefof(arg2), Local0)), Local0)
+								err(arg0, z122, __LINE__, 0, 0, Derefof(Index(Derefof(arg2), Local0)), Local0)
 								Return (1)
 							}
 						}
@@ -1422,29 +1422,29 @@ if (y361) {
 					Store(Derefof(Index(Derefof(arg3), 0)), Local0)
 					if (LEqual(Local0, 0)) {
 						if (LNotEqual(FLU0, Derefof(Index(Derefof(arg3), 1)))) {
-							err(arg0, z122, 26, 0, 0, FLU0, Derefof(Index(Derefof(arg3), 1)))
+							err(arg0, z122, __LINE__, 0, 0, FLU0, Derefof(Index(Derefof(arg3), 1)))
 							Return (1)
 						}
 						if (LNotEqual(Derefof(arg2), FLU0)) {
-							err(arg0, z122, 27, 0, 0, Derefof(arg2), FLU0)
+							err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), FLU0)
 							Return (1)
 						}
 					} elseif (LEqual(Local0, 1)) {
 						if (LNotEqual(FLU2, Derefof(Index(Derefof(arg3), 1)))) {
-							err(arg0, z122, 28, 0, 0, FLU2, Derefof(Index(Derefof(arg3), 1)))
+							err(arg0, z122, __LINE__, 0, 0, FLU2, Derefof(Index(Derefof(arg3), 1)))
 							Return (1)
 						}
 						if (LNotEqual(Derefof(arg2), FLU2)) {
-							err(arg0, z122, 29, 0, 0, Derefof(arg2), FLU2)
+							err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), FLU2)
 							Return (1)
 						}
 					} else {
 						if (LNotEqual(FLU4, Derefof(Index(Derefof(arg3), 1)))) {
-							err(arg0, z122, 30, 0, 0, FLU4, Derefof(Index(Derefof(arg3), 1)))
+							err(arg0, z122, __LINE__, 0, 0, FLU4, Derefof(Index(Derefof(arg3), 1)))
 							Return (1)
 						}
 						if (LNotEqual(Derefof(arg2), FLU4)) {
-							err(arg0, z122, 31, 0, 0, Derefof(arg2), FLU4)
+							err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), FLU4)
 							Return (1)
 						}
 					}
@@ -1452,7 +1452,7 @@ if (y361) {
 				Case(8) {
 					CopyObject(Derefof(arg2), MMM2)
 					if (LNotEqual(MMM2, MMM0)) {
-						err(arg0, z122, 32, 0, 0, MMM2, MMM0)
+						err(arg0, z122, __LINE__, 0, 0, MMM2, MMM0)
 						Return (1)
 					}
 				}
@@ -1460,29 +1460,29 @@ if (y361) {
 					Store(Derefof(Index(Derefof(arg3), 0)), Local0)
 					if (LEqual(Local0, 0)) {
 						if (LNotEqual(BFL0, Derefof(Index(Derefof(arg3), 1)))) {
-							err(arg0, z122, 33, 0, 0, BFL0, Derefof(Index(Derefof(arg3), 1)))
+							err(arg0, z122, __LINE__, 0, 0, BFL0, Derefof(Index(Derefof(arg3), 1)))
 							Return (1)
 						}
 						if (LNotEqual(Derefof(arg2), BFL0)) {
-							err(arg0, z122, 34, 0, 0, Derefof(arg2), BFL0)
+							err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), BFL0)
 							Return (1)
 						}
 					} elseif (LEqual(Local0, 1)) {
 						if (LNotEqual(BFL2, Derefof(Index(Derefof(arg3), 1)))) {
-							err(arg0, z122, 35, 0, 0, BFL2, Derefof(Index(Derefof(arg3), 1)))
+							err(arg0, z122, __LINE__, 0, 0, BFL2, Derefof(Index(Derefof(arg3), 1)))
 							Return (1)
 						}
 						if (LNotEqual(Derefof(arg2), BFL2)) {
-							err(arg0, z122, 36, 0, 0, Derefof(arg2), BFL2)
+							err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), BFL2)
 							Return (1)
 						}
 					} else {
 						if (LNotEqual(BFL4, Derefof(Index(Derefof(arg3), 1)))) {
-							err(arg0, z122, 37, 0, 0, BFL4, Derefof(Index(Derefof(arg3), 1)))
+							err(arg0, z122, __LINE__, 0, 0, BFL4, Derefof(Index(Derefof(arg3), 1)))
 							Return (1)
 						}
 						if (LNotEqual(Derefof(arg2), BFL4)) {
-							err(arg0, z122, 38, 0, 0, Derefof(arg2), BFL4)
+							err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), BFL4)
 							Return (1)
 						}
 					}
@@ -1512,10 +1512,10 @@ if (y361) {
 				if (LEqual(arg2, c016)) {
 					if (X170) {
 						//this sentence is for m00d and invalid, removed.
-						//err(arg0, z122, 39, 0, 0, Local2, arg2)
+						//err(arg0, z122, __LINE__, 0, 0, Local2, arg2)
 					}
 				} else {
-					err(arg0, z122, 39, 0, 0, Local2, arg2)
+					err(arg0, z122, __LINE__, 0, 0, Local2, arg2)
 				}
 
 				if (STCS) {m000(3, 0x100, arg2, Local2)}
@@ -1538,12 +1538,12 @@ if (y361) {
 					}
 				} elseif (LNotEqual(m684(arg3), 1)) {
 					// Types mismatch Result/Target on storing
-					err(arg0, z122, 41, 0, 0, Local2, arg3)
+					err(arg0, z122, __LINE__, 0, 0, Local2, arg3)
 					Return (1)
 				} elseif (LNotEqual(Local2, 3)) {
 					// Types mismatch Result/Target on storing
 					// Test fixed type Objects are converted to Buffer
-					err(arg0, z122, 42, 0, 0, Local2, 3)
+					err(arg0, z122, __LINE__, 0, 0, Local2, 3)
 					Return (1)
 				}
 				if (STCS) {m000(3, 0x100, arg3, Local2)}
@@ -1576,18 +1576,18 @@ if (y361) {
 		if (LEqual(arg3, 8)) {				// Method
 			CopyObject(Derefof(arg1), MMM2)
 			if (LNotEqual(MMM2, Local7)) {
-				err(arg0, z122, 43, 0, 0, MMM2, Local7)
+				err(arg0, z122, __LINE__, 0, 0, MMM2, Local7)
 				Return (1)
 			}
 		} elseif (LNotEqual(arg3, 4)) {		// Not Package
 			if (LNotEqual(Derefof(arg1), Local7)) {
-				err(arg0, z122, 44, 0, 0, Derefof(arg1), Local7)
+				err(arg0, z122, __LINE__, 0, 0, Derefof(arg1), Local7)
 				Return (1)
 			}
 		} else {							// Package
 			Store(Sizeof(Local7), Local0)
 			if (LNotEqual(Sizeof(arg1), Local0)) {
-				err(arg0, z122, 45, 0, 0, Sizeof(arg1), Local0)
+				err(arg0, z122, __LINE__, 0, 0, Sizeof(arg1), Local0)
 				Return (1)
 			}
 			While (Local0) {
@@ -1596,7 +1596,7 @@ if (y361) {
 				Store(ObjectType(Derefof(Index(Local7, Local0))), Local2)
 				if (LNotEqual(Local1, Local2)) {
 					// ObjectType is corrupted
-					err(arg0, z122, 46, 0, 0, Local1, Local2)
+					err(arg0, z122, __LINE__, 0, 0, Local1, Local2)
 					Return (1)
 				} elseif (Derefof(Index(b679, Local1))) {
 					// the computational data type
@@ -1604,7 +1604,7 @@ if (y361) {
 							Derefof(Index(Derefof(arg1), Local0)),
 							Derefof(Index(Local7, Local0)))) {
 						// The value is corrupted
-						err(arg0, z122, 47, 0, 0, Derefof(Index(Derefof(arg1), Local0)), Derefof(Index(Local7, Local0)))
+						err(arg0, z122, __LINE__, 0, 0, Derefof(Index(Derefof(arg1), Local0)), Derefof(Index(Local7, Local0)))
 						Return (1)
 					}
 				}
@@ -1742,7 +1742,7 @@ if (y361) {
 		}
 		if (m004(Concatenate(arg0, "-m004"), arg3, Local6, Local7)) {
 			// Source Object can not be prepared
-			err(Concatenate(arg0, terr), z122, 51, 0, 0, arg3, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg3, 0)
 			Return (1)
 		}
 
@@ -1759,7 +1759,7 @@ if (y361) {
 		}
 		if (m003(Concatenate(arg0, "-m003"), arg2, Local1, Local7)) {
 			// Target Object can not be prepared
-			err(Concatenate(arg0, terr), z122, 52, 0, 0, arg2, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg2, 0)
 			Return (1)
 		}
 
@@ -1817,7 +1817,7 @@ if (y361) {
 				}
 			} else {
 				// Unexpected Kind of Op (0 - Store, ...)
-				err(Concatenate(arg0, terr), z122, 54, 0, 0, arg4, 0)
+				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
 				Return (1)
 			}
 		} elseif (LEqual(arg2, 14)) {		// Buffer Field Target
@@ -1867,7 +1867,7 @@ if (y361) {
 				}
 			} else {
 				// Unexpected Kind of Op (0 - Store, ...)
-				err(Concatenate(arg0, terr), z122, 55, 0, 0, arg4, 0)
+				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
 				Return (1)
 			}
 
@@ -1919,7 +1919,7 @@ if (y361) {
 
 		} else {
 			// Unexpected Kind of Op (0 - Store, ...)
-			err(Concatenate(arg0, terr), z122, 56, 0, 0, arg4, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
 			Return (1)
 		}
 
@@ -2102,7 +2102,7 @@ if (y361) {
 		}
 		if (m004(Concatenate(arg0, "-m004"), arg3, Local6, Local7)) {
 			// Source Object can not be prepared
-			err(Concatenate(arg0, terr), z122, 59, 0, 0, arg3, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg3, 0)
 			Return (1)
 		}
 
@@ -2110,7 +2110,7 @@ if (y361) {
 		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
 		if (m003(Concatenate(arg0, "-m003"), arg2, Refof(Local4), Local7)) {
 			// Target Object can not be prepared
-			err(Concatenate(arg0, terr), z122, 60, 0, 0, arg2, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg2, 0)
 			Return (1)
 		}
 
@@ -2167,7 +2167,7 @@ if (y361) {
 			}
 		} else {
 			// Unexpected Kind of Op (0 - Store, ...)
-			err(Concatenate(arg0, terr), z122, 62, 0, 0, arg4, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
 			Return (1)
 		}
 
@@ -2254,7 +2254,7 @@ if (y361) {
 		Store(Index(arg6, 2), Local7)
 		if (m004(Concatenate(arg0, "-m004"), arg3, Refof(Local1), Local7)) {
 			// Source Object can not be prepared
-			err(Concatenate(arg0, terr), z122, 64, 0, 0, arg3, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg3, 0)
 			Return (1)
 		}
 
@@ -2271,7 +2271,7 @@ if (y361) {
 		}
 		if (m003(Concatenate(arg0, "-m003"), arg2, Local4, Local7)) {
 			// Target Object can not be prepared
-			err(Concatenate(arg0, terr), z122, 65, 0, 0, arg2, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg2, 0)
 			Return (1)
 		}
 
@@ -2288,7 +2288,7 @@ if (y361) {
 				CopyObject(Local1, FLU1)
 			} else {
 				// Unexpected Kind of Op (0 - Store, ...)
-				err(Concatenate(arg0, terr), z122, 67, 0, 0, arg4, 0)
+				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
 				Return (1)
 			}
 		} elseif (LEqual(arg2, 14)) {		// Buffer Field Target
@@ -2298,7 +2298,7 @@ if (y361) {
 				CopyObject(Local1, BFL1)
 			} else {
 				// Unexpected Kind of Op (0 - Store, ...)
-				err(Concatenate(arg0, terr), z122, 68, 0, 0, arg4, 0)
+				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
 				Return (1)
 			}
 
@@ -2310,7 +2310,7 @@ if (y361) {
 
 		} else {
 			// Unexpected Kind of Op (0 - Store, ...)
-			err(Concatenate(arg0, terr), z122, 69, 0, 0, arg4, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
 			Return (1)
 		}
 
@@ -2450,7 +2450,7 @@ if (y361) {
 		Store(Index(arg6, 2), Local7)
 		if (m004(Concatenate(arg0, "-m004"), arg3, Refof(Local1), Local7)) {
 			// Source Object can not be prepared
-			err(Concatenate(arg0, terr), z122, 72, 0, 0, arg3, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg3, 0)
 			Return (1)
 		}
 
@@ -2458,7 +2458,7 @@ if (y361) {
 		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
 		if (m003(Concatenate(arg0, "-m003"), arg2, Refof(Local4), Local7)) {
 			// Target Object can not be prepared
-			err(Concatenate(arg0, terr), z122, 73, 0, 0, arg2, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg2, 0)
 			Return (1)
 		}
 
@@ -2474,7 +2474,7 @@ if (y361) {
 				CopyObject(Local1, Local4)
 		} else {
 			// Unexpected Kind of Op (0 - Store, ...)
-			err(Concatenate(arg0, terr), z122, 75, 0, 0, arg4, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
 			Return (1)
 		}
 
@@ -2601,7 +2601,7 @@ if (y361) {
 			}
 			if (m004(Concatenate(arg0, "-m004"), arg3, Local6, Local7)) {
 				// Source Object can not be prepared
-				err(Concatenate(arg0, terr), z122, 77, 0, 0, arg3, 0)
+				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg3, 0)
 				Return (1)
 			}
 
@@ -2662,7 +2662,7 @@ if (y361) {
 
 			} else {
 				// Unexpected Kind of Op (0 - Store, ...)
-				err(Concatenate(arg0, terr), z122, 79, 0, 0, arg4, 0)
+				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
 				Return (1)
 			}
 
@@ -2763,7 +2763,7 @@ if (y361) {
 		}
 		if (m003(Concatenate(arg0, "-m003"), arg2, Local1, Local7)) {
 			// Target Object can not be prepared
-			err(Concatenate(arg0, terr), z122, 82, 0, 0, arg2, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg2, 0)
 			Return (1)
 		}
 
@@ -2858,7 +2858,7 @@ if (y361) {
 			}
 			if (m004(Concatenate(arg0, "-m004"), arg3, Local6, Local7)) {
 				// Source Object can not be prepared
-				err(Concatenate(arg0, terr), z122, 84, 0, 0, arg3, 0)
+				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg3, 0)
 				Return (1)
 			}
 
@@ -2917,7 +2917,7 @@ if (y361) {
 
 			} else {
 				// Unexpected Kind of Op (0 - Store, ...)
-				err(Concatenate(arg0, terr), z122, 86, 0, 0, arg4, 0)
+				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
 				Return (1)
 			}
 
@@ -3021,7 +3021,7 @@ if (y361) {
 		}
 		if (m003(Concatenate(arg0, "-m003"), arg2, Local1, Local7)) {
 			// Target Object can not be prepared
-			err(Concatenate(arg0, terr), z122, 89, 0, 0, arg2, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg2, 0)
 			Return (1)
 		}
 
@@ -3059,7 +3059,7 @@ if (y361) {
 		Store(Index(arg6, 2), Local7)
 		if (m004(Concatenate(arg0, "-m004"), arg3, Refof(Local1), Local7)) {
 			// Source Object can not be prepared
-			err(Concatenate(arg0, terr), z122, 91, 0, 0, arg3, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg3, 0)
 			Return (1)
 		}
 
@@ -3068,7 +3068,7 @@ if (y361) {
 		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
 		if (m013(Concatenate(arg0, "-m003"), arg2, DST0, Local7)) {
 			// Target Object can not be prepared
-			err(Concatenate(arg0, terr), z122, 92, 0, 0, arg2, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg2, 0)
 			Return (1)
 		}
 
@@ -3080,7 +3080,7 @@ if (y361) {
 		// Check Target Object to have the initial type and value
 		if (m015(Concatenate(arg0, "-m015"), arg2, Local4, Local7)) {
 			// Target Object can not be prepared
-			err(Concatenate(arg0, terr), z122, 94, 0, 0, arg2, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg2, 0)
 			Return (1)
 		}
 
@@ -3091,7 +3091,7 @@ if (y361) {
 		//		CopyObject(Local1, Index(DST0, 0))
 		} else {
 			// Unexpected Kind of Op (0 - Store, ...)
-			err(Concatenate(arg0, terr), z122, 95, 0, 0, arg4, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg4, 0)
 			Return (1)
 		}
 
@@ -3193,7 +3193,7 @@ if (y361) {
 			}
 			Default {
 				// Unexpected Target Type
-				err(Concatenate(arg0, terr), z122, 98, 0, 0, arg1, 0)
+				err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg1, 0)
 				Return (1)
 			}
 		}
@@ -3210,7 +3210,7 @@ if (y361) {
 		Store(ObjectType(Index(arg2, 0)), Local0)
 		if (LNotEqual(Local0, arg1)) {
 			// ObjectType of Target can not be set up
-			err(arg0, z122, 100, 0, 0, Local0, arg1)
+			err(arg0, z122, __LINE__, 0, 0, Local0, arg1)
 			Return (1)
 		}
 
@@ -3237,7 +3237,7 @@ if (y361) {
 			Store(ObjectType(arg2), Local0)
 			if (LNotEqual(Local0, arg1)) {
 				// ObjectType of Target object is corrupted
-				err(arg0, z122, 102, 0, 0, Local0, arg1)
+				err(arg0, z122, __LINE__, 0, 0, Local0, arg1)
 				Return (1)
 			}
 		}
@@ -3299,14 +3299,14 @@ if (y361) {
 			}
 			Default {
 				// Unexpected Result Type
-				err(arg0, z122, 104, 0, 0, arg1, 0)
+				err(arg0, z122, __LINE__, 0, 0, arg1, 0)
 				Return (1)
 			}
 		}
 
 		if (LNotEqual(Local0, arg1)) {
 			// Mismatch of Target Type against the specified one
-			err(arg0, z122, 105, 0, 0, Local0, arg1)
+			err(arg0, z122, __LINE__, 0, 0, Local0, arg1)
 
 			if (STCS) {m000(3, 0x1000000, Local0, arg1)}
 
@@ -3316,31 +3316,31 @@ if (y361) {
 			Switch(ToInteger(arg1)) {
 				Case(1) {
 					if (LNotEqual(INT1, Derefof(arg3))) {
-						err(arg0, z122, 106, 0, 0, INT1, Derefof(arg3))
+						err(arg0, z122, __LINE__, 0, 0, INT1, Derefof(arg3))
 						Return (1)
 					}
 					if (LNotEqual(Derefof(arg2), INT1)) {
-						err(arg0, z122, 107, 0, 0, Derefof(arg2), INT1)
+						err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), INT1)
 						Return (1)
 					}
 				}
 				Case(2) {
 					if (LNotEqual(STR1, Derefof(arg3))) {
-						err(arg0, z122, 108, 0, 0, STR1, Derefof(arg3))
+						err(arg0, z122, __LINE__, 0, 0, STR1, Derefof(arg3))
 						Return (1)
 					}
 					if (LNotEqual(Derefof(arg2), STR1)) {
-						err(arg0, z122, 109, 0, 0, Derefof(arg2), STR1)
+						err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), STR1)
 						Return (1)
 					}
 				}
 				Case(3) {
 					if (LNotEqual(BUF1, Derefof(arg3))) {
-						err(arg0, z122, 110, 0, 0, BUF1, Derefof(arg3))
+						err(arg0, z122, __LINE__, 0, 0, BUF1, Derefof(arg3))
 						Return (1)
 					}
 					if (LNotEqual(Derefof(arg2), BUF1)) {
-						err(arg0, z122, 111, 0, 0, Derefof(arg2), BUF1)
+						err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), BUF1)
 						Return (1)
 					}
 				}
@@ -3348,7 +3348,7 @@ if (y361) {
 
 					Store(Sizeof(PAC1), Local0)
 					if (LNotEqual(Sizeof(arg3), Local0)) {
-						err(arg0, z122, 112, 0, 0, Sizeof(arg3), Local0)
+						err(arg0, z122, __LINE__, 0, 0, Sizeof(arg3), Local0)
 						Return (1)
 					}
 					While (Local0) {
@@ -3357,7 +3357,7 @@ if (y361) {
 						Store(ObjectType(Derefof(Index(PAC1, Local0))), Local2)
 						if (LNotEqual(Local1, Local2)) {
 							// ObjectType is corrupted
-							err(arg0, z122, 113, 0, 0, Local1, Local2)
+							err(arg0, z122, __LINE__, 0, 0, Local1, Local2)
 							Return (1)
 						} elseif (Derefof(Index(b679, Local1))) {
 							// the computational data type
@@ -3365,7 +3365,7 @@ if (y361) {
 									Derefof(Index(Derefof(arg3), Local0)),
 									Derefof(Index(PAC1, Local0)))) {
 								// The value is corrupted
-								err(arg0, z122, 114, 0, 0, Derefof(Index(Derefof(arg3), Local0)), Local0)
+								err(arg0, z122, __LINE__, 0, 0, Derefof(Index(Derefof(arg3), Local0)), Local0)
 								Return (1)
 							}
 						}
@@ -3373,7 +3373,7 @@ if (y361) {
 
 					Store(Sizeof(PAC1), Local0)
 					if (LNotEqual(Sizeof(arg2), Local0)) {
-						err(arg0, z122, 115, 0, 0, Sizeof(arg2), Local0)
+						err(arg0, z122, __LINE__, 0, 0, Sizeof(arg2), Local0)
 						Return (1)
 					}
 					While (Local0) {
@@ -3382,7 +3382,7 @@ if (y361) {
 						Store(ObjectType(Derefof(Index(PAC1, Local0))), Local2)
 						if (LNotEqual(Local1, Local2)) {
 							// ObjectType is corrupted
-							err(arg0, z122, 116, 0, 0, Local1, Local2)
+							err(arg0, z122, __LINE__, 0, 0, Local1, Local2)
 							Return (1)
 						} elseif (Derefof(Index(b679, Local1))) {
 							// the computational data type
@@ -3390,7 +3390,7 @@ if (y361) {
 									Derefof(Index(Derefof(arg2), Local0)),
 									Derefof(Index(PAC1, Local0)))) {
 								// The value is corrupted
-								err(arg0, z122, 117, 0, 0, Derefof(Index(Derefof(arg2), Local0)), Local0)
+								err(arg0, z122, __LINE__, 0, 0, Derefof(Index(Derefof(arg2), Local0)), Local0)
 								Return (1)
 							}
 						}
@@ -3398,20 +3398,20 @@ if (y361) {
 				}
 				Case(5) {
 					if (LNotEqual(Derefof(arg2), Derefof(arg3))) {
-						err(arg0, z122, 118, 0, 0, Derefof(arg2), Derefof(arg3))
+						err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), Derefof(arg3))
 						Return (1)
 					}
 				}
 				Case(8) {
 					CopyObject(Derefof(arg2), MMM2)
 					if (LNotEqual(MMM2, MMM1)) {
-						err(arg0, z122, 119, 0, 0, MMM2, MMM1)
+						err(arg0, z122, __LINE__, 0, 0, MMM2, MMM1)
 						Return (1)
 					}
 				}
 				Case(14) {
 					if (LNotEqual(Derefof(arg2), Derefof(arg3))) {
-						err(arg0, z122, 120, 0, 0, Derefof(arg2), Derefof(arg3))
+						err(arg0, z122, __LINE__, 0, 0, Derefof(arg2), Derefof(arg3))
 						Return (1)
 					}
 				}
@@ -3482,14 +3482,14 @@ if (y361) {
 			}
 			Default {
 				// Unexpected Result Type
-				err(arg0, z122, 122, 0, 0, arg1, 0)
+				err(arg0, z122, __LINE__, 0, 0, arg1, 0)
 				Return (1)
 			}
 		}
 
 		if (LNotEqual(Local0, arg1)) {
 			// Mismatch of Target Type against the specified one
-			err(arg0, z122, 123, 0, 0, Local0, arg1)
+			err(arg0, z122, __LINE__, 0, 0, Local0, arg1)
 
 			if (STCS) {m000(3, 0x1000000, Local0, arg1)}
 
@@ -3499,19 +3499,19 @@ if (y361) {
 			Switch(ToInteger(arg1)) {
 				Case(1) {
 					if (LNotEqual(INT1, Derefof(arg3))) {
-						err(arg0, z122, 124, 0, 0, INT1, Derefof(arg3))
+						err(arg0, z122, __LINE__, 0, 0, INT1, Derefof(arg3))
 						Return (1)
 					}
 				}
 				Case(2) {
 					if (LNotEqual(STR1, Derefof(arg3))) {
-						err(arg0, z122, 125, 0, 0, STR1, Derefof(arg3))
+						err(arg0, z122, __LINE__, 0, 0, STR1, Derefof(arg3))
 						Return (1)
 					}
 				}
 				Case(3) {
 					if (LNotEqual(BUF1, Derefof(arg3))) {
-						err(arg0, z122, 126, 0, 0, BUF1, Derefof(arg3))
+						err(arg0, z122, __LINE__, 0, 0, BUF1, Derefof(arg3))
 						Return (1)
 					}
 				}
@@ -3519,7 +3519,7 @@ if (y361) {
 
 					Store(Sizeof(PAC1), Local0)
 					if (LNotEqual(Sizeof(arg3), Local0)) {
-						err(arg0, z122, 127, 0, 0, Sizeof(arg3), Local0)
+						err(arg0, z122, __LINE__, 0, 0, Sizeof(arg3), Local0)
 						Return (1)
 					}
 					While (Local0) {
@@ -3528,7 +3528,7 @@ if (y361) {
 						Store(ObjectType(Derefof(Index(PAC1, Local0))), Local2)
 						if (LNotEqual(Local1, Local2)) {
 							// ObjectType is corrupted
-							err(arg0, z122, 128, 0, 0, Local1, Local2)
+							err(arg0, z122, __LINE__, 0, 0, Local1, Local2)
 							Return (1)
 						} elseif (Derefof(Index(b679, Local1))) {
 							// the computational data type
@@ -3536,7 +3536,7 @@ if (y361) {
 									Derefof(Index(Derefof(arg3), Local0)),
 									Derefof(Index(PAC1, Local0)))) {
 								// The value is corrupted
-								err(arg0, z122, 129, 0, 0, Derefof(Index(Derefof(arg3), Local0)), Local0)
+								err(arg0, z122, __LINE__, 0, 0, Derefof(Index(Derefof(arg3), Local0)), Local0)
 								Return (1)
 							}
 						}
@@ -4340,13 +4340,13 @@ if (y361) {
 
 		if (LGreater(arg1, 1)) {
 			// Unexpected Kind of Op (0 - Store, ...)
-			err(Concatenate(arg0, terr), z122, 133, 0, 0, arg1, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg1, 0)
 			Return (1)
 		}
 
 		if (LGreater(arg5, 6)) {
 			// Unexpected Kind of Source-Target pair
-			err(Concatenate(arg0, terr), z122, 134, 0, 0, arg5, 0)
+			err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg5, 0)
 			Return (1)
 		}
 
@@ -4397,7 +4397,7 @@ if (y361) {
 						Store(Derefof(Index(Local2, 0)), Local3)
 						if (LNotEqual(Local3, lpC1)) {
 							// Unexpected data package
-							err(Concatenate(arg0, terr), z122, 135, 0, 0, arg1, lpC1)
+							err(Concatenate(arg0, terr), z122, __LINE__, 0, 0, arg1, lpC1)
 							Return (1)
 						}
 						Store(Derefof(Index(Local2, 1)), Local3)

@@ -40,6 +40,6 @@ Method(mdd2)
 	Store(Local0, Debug)
 	Add(Local0, 1, Local7)
 	if (LNotEqual(Local7, 1)){
-		err("", zFFF, 0x000, 0, 0, Local7, 1)
+		err("", zFFF, __LINE__, 0, 0, Local7, 1)
 	}
 }

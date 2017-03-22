@@ -137,10 +137,10 @@ Name(p325, Package()
 Method(m320, 6)	// ts, buffer, len, null, err, case
 {
 	if (LNotequal(ObjectType(arg1), 3)) {
-		err(arg0, z043, arg3, 0, 0, arg2, "Type")
+		err(arg0, z043, __LINE__, 0, 0, arg2, "Type")
 	} else {
 		if (LNotEqual(Sizeof(arg1), Add(arg2, arg3))) {
-			err(arg0, z043, arg4, 0, 0, arg2, "Sizeof")
+			err(arg0, z043, __LINE__, 0, 0, arg2, "Sizeof")
 		} else {
 			m305(arg0, arg1, arg2, arg4, arg5)
 		}
@@ -179,7 +179,7 @@ Method(m321, 1, Serialized)
 		// Verify obtained buffer with the benchmark one
 
 		if (LNotEqual(Local3, Local5)) {
-			err(arg0, z043, 2, 0, 0, Local0, "NotEqual")
+			err(arg0, z043, __LINE__, 0, 0, Local0, "NotEqual")
 		}
 
 		// Check the source string was not corrupted
@@ -220,7 +220,7 @@ Method(m322, 1, Serialized)
 		ToBuffer(Local4, Local3)
 
 		if (LNotEqual(Local3, Local4)) {
-			err(arg0, z043, 3, 0, 0, Local0, "NotEqual")
+			err(arg0, z043, __LINE__, 0, 0, Local0, "NotEqual")
 		}
 
 		// Check the buffers were not corrupted

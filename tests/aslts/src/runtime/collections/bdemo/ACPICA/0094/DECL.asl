@@ -43,7 +43,7 @@
 			CH03("", 0, 0x000, 0, 0)
 			Store(DerefOf(Index(s000, 5)), Local0)
 			if (LNotEqual(Local0, 0x75)) {
-				err("", zFFF, 0x001, 0, 0, Local0, 0x75)
+				err("", zFFF, __LINE__, 0, 0, Local0, 0x75)
 			}
 			CH03("", 0, 0x002, 0, 0)
 
@@ -56,7 +56,7 @@
 			if (y900) {
 				Store(DerefOf(Local1), Local0)
 				if (LNotEqual(Local0, 0x75)) {
-					err("", zFFF, 0x004, 0, 0, Local0, 0x75)
+					err("", zFFF, __LINE__, 0, 0, Local0, 0x75)
 				}
 				CH03("", 0, 0x005, 0, 0)
 			} else {
@@ -69,7 +69,7 @@
 			Store(DerefOf(Index("qwrtyuiop", 5)), Local0)
 			if (y900) {
 				if (LNotEqual(Local0, 0x75)) {
-					err("", zFFF, 0x008, 0, 0, Local0, 0x75)
+					err("", zFFF, __LINE__, 0, 0, Local0, 0x75)
 				}
 				CH03("", 0, 0x009, 0, 0)
 			} else {

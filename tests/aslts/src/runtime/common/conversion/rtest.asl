@@ -311,16 +311,16 @@ Method(m563,, Serialized)
 
 	Store(ObjectType(Local0), Local2)
 	if (LNotEqual(Local2, 2)) {
-		err(ts, z067, 0, 0, 0, Local2, 2)
+		err(ts, z067, __LINE__, 0, 0, Local2, 2)
 	} elseif (LNotEqual(Local0, "abcdef")) {
-		err(ts, z067, 1, 0, 0, Local0, "abcdef")
+		err(ts, z067, __LINE__, 0, 0, Local0, "abcdef")
 	}
 
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, 2)) {
-		err(ts, z067, 2, 0, 0, Local2, 2)
+		err(ts, z067, __LINE__, 0, 0, Local2, 2)
 	} elseif (LNotEqual(Local1, "12345678")) {
-		err(ts, z067, 3, 0, 0, Local1, "12345678")
+		err(ts, z067, __LINE__, 0, 0, Local1, "12345678")
 	}
 }
 
@@ -519,16 +519,16 @@ Method(m564,, Serialized)
 
 	Store(ObjectType(Local0), Local2)
 	if (LNotEqual(Local2, 3)) {
-		err(ts, z067, 4, 0, 0, Local2, 3)
+		err(ts, z067, __LINE__, 0, 0, Local2, 3)
 	} elseif (LNotEqual(Local0, b000)) {
-		err(ts, z067, 5, 0, 0, Local0, b000)
+		err(ts, z067, __LINE__, 0, 0, Local0, b000)
 	}
 
 	Store(ObjectType(Local1), Local2)
 	if (LNotEqual(Local2, 3)) {
-		err(ts, z067, 6, 0, 0, Local2, 3)
+		err(ts, z067, __LINE__, 0, 0, Local2, 3)
 	} elseif (LNotEqual(Local1, b001)) {
-		err(ts, z067, 7, 0, 0, Local1, b001)
+		err(ts, z067, __LINE__, 0, 0, Local1, b001)
 	}
 }
 
@@ -1187,9 +1187,9 @@ Method(m544, 1, Serialized)
 
 	Store(ObjectType(ss00), Local0)
 	if (LNotEqual(Local0, 2)) {
-		err(ts, z067, 8, 0, 0, Local0, 2)
+		err(ts, z067, __LINE__, 0, 0, Local0, 2)
 	} elseif (LNotEqual(ss00, "ABC")) {
-		err(ts, z067, 9, 0, 0, ss00, "ABC")
+		err(ts, z067, __LINE__, 0, 0, ss00, "ABC")
 	}
 
 	// If the string is shorter than the buffer, the buffer size is reduced.
@@ -1202,11 +1202,11 @@ Method(m544, 1, Serialized)
 	Store(SizeOf(b000), Local1)
 
 	if (LNotEqual(Local0, 3)) {
-		err(ts, z067, 10, 0, 0, Local0, 3)
+		err(ts, z067, __LINE__, 0, 0, Local0, 3)
 	} elseif (LNotEqual(Local1, 6)) {
-		err(ts, z067, 11, 0, 0, Local1, 6)
+		err(ts, z067, __LINE__, 0, 0, Local1, 6)
 	} elseif (LNotEqual(b000, b001)) {
-		err(ts, z067, 12, 0, 0, b000, b001)
+		err(ts, z067, __LINE__, 0, 0, b000, b001)
 	}
 
 /*

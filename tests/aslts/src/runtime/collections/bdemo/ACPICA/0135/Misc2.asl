@@ -65,7 +65,7 @@ Method(mf02, 6, Serialized)
 		Store(Index(DerefOf(Index(DerefOf(Index(DerefOf(Index(arg0,
 				i001)), i002)), i003)), i004), Local7)
 	} else {
-		err("", zFFF, 0x400, 0, 0, 0, 0)
+		err("", zFFF, __LINE__, 0, 0, 0, 0)
 		return
 	}
 
@@ -89,7 +89,7 @@ Method(mf02, 6, Serialized)
 		Store(Local7, Index(DerefOf(Index(DerefOf(Index(DerefOf(Index(arg3,
 				ii01)), ii02)), ii03)), ii04))
 	} else {
-		err("", zFFF, 0x401, 0, 0, 0, 0)
+		err("", zFFF, __LINE__, 0, 0, 0, 0)
 		return
 	}
 }
@@ -123,12 +123,12 @@ Method(mfec, 4, Serialized)
 		Store(DerefOf(DerefOf(Index(DerefOf(Index(DerefOf(Index(DerefOf(Index(arg0,
 				i001)), i002)), i003)), i004))), Local7)
 	} else {
-		err("", zFFF, 0x402, 0, 0, 0, 0)
+		err("", zFFF, __LINE__, 0, 0, 0, 0)
 		return
 	}
 
 	if (LNotEqual(Local7, arg3)) {
-		err("", zFFF, 0x403, 0, 0, Local7, arg3)
+		err("", zFFF, __LINE__, 0, 0, Local7, arg3)
 	}
 }
 
@@ -161,14 +161,14 @@ Method(mfed, 5, Serialized)
 		Store(DerefOf(DerefOf(Index(DerefOf(Index(DerefOf(Index(DerefOf(Index(arg0,
 				i001)), i002)), i003)), i004))), Local7)
 	} else {
-		err("", zFFF, 0x404, 0, 0, 0, 0)
+		err("", zFFF, __LINE__, 0, 0, 0, 0)
 		return
 	}
 
 	Store(DerefOf(Index(Local7, arg3)), Local0)
 
 	if (LNotEqual(Local0, arg4)) {
-		err("", zFFF, 0x405, 0, 0, Local0, arg4)
+		err("", zFFF, __LINE__, 0, 0, Local0, arg4)
 	}
 }
 
@@ -292,7 +292,7 @@ Method(mfee,, Serialized)
 			Store(DerefOf(Index(DerefOf(Index(DerefOf(Index(DerefOf(Index(arg0,
 								arg1)), arg2)), arg3)), arg4)), Local0)
 			if (LNotEqual(Local0, arg5)) {
-				err("", zFFF, 0x406, 0, 0, Local0, arg5)
+				err("", zFFF, __LINE__, 0, 0, Local0, arg5)
 			}
 		}
 
@@ -301,7 +301,7 @@ Method(mfee,, Serialized)
 			Store(DerefOf(Index(DerefOf(Index(DerefOf(Index(arg0,
 								arg1)), arg2)), arg3)), Local0)
 			if (LNotEqual(Local0, arg4)) {
-				err("", zFFF, 0x407, 0, 0, Local0, arg4)
+				err("", zFFF, __LINE__, 0, 0, Local0, arg4)
 			}
 		}
 
@@ -309,7 +309,7 @@ Method(mfee,, Serialized)
 		{
 			Store(DerefOf(Index(DerefOf(Index(arg0, arg1)), arg2)), Local0)
 			if (LNotEqual(Local0, arg3)) {
-				err("", zFFF, 0x408, 0, 0, Local0, arg3)
+				err("", zFFF, __LINE__, 0, 0, Local0, arg3)
 			}
 		}
 
@@ -317,7 +317,7 @@ Method(mfee,, Serialized)
 		{
 			Store(DerefOf(Index(arg0, arg1)), Local0)
 			if (LNotEqual(Local0, arg2)) {
-				err("", zFFF, 0x409, 0, 0, Local0, arg2)
+				err("", zFFF, __LINE__, 0, 0, Local0, arg2)
 			}
 		}
 

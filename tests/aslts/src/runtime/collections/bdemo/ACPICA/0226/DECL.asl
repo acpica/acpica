@@ -56,7 +56,7 @@ Method(m10e,, Serialized)
 	Store(tot0, Local0)
 
 	if (LNotEqual(Local0, 0x8001)) {
-		err("", zFFF, 0x000, 0, 0, Local0, 0x8001)
+		err("", zFFF, __LINE__, 0, 0, Local0, 0x8001)
 	}
 }
 
@@ -70,11 +70,11 @@ Method(m17a,, Serialized)
 
 	if (F64) {
 		if (LNotEqual(bf00, 0x123456789abcdef0)) {
-			err("", zFFF, 0x001, 0, 0, bf00, 0x123456789abcdef0)
+			err("", zFFF, __LINE__, 0, 0, bf00, 0x123456789abcdef0)
 		}
 	} else {
 		if (LNotEqual(bf00, b001)) {
-			err("", zFFF, 0x002, 0, 0, bf00, b001)
+			err("", zFFF, __LINE__, 0, 0, bf00, b001)
 		}
 	}
 }

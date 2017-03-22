@@ -38,7 +38,7 @@ Method(mdb4)
 	Store(Buffer(){ 0x20, 0x21, 0x22, 0, 0x26 }, Local1)
 
 	if (LGreaterEqual(Local0, Local1)) {
-		err("", zFFF, 0x000, 0, 0, Local0, Local1)
+		err("", zFFF, __LINE__, 0, 0, Local0, Local1)
 	}
 }
 

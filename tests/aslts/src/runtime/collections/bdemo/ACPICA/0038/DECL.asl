@@ -44,7 +44,7 @@ Method(mdce,, Serialized)
 	Store(n000, Debug)
 
 	if (LNotEqual(n000, 0xfdeacb01)) {
-		err("", zFFF, 0x000, 0, 0, n000, 0xfdeacb01)
+		err("", zFFF, __LINE__, 0, 0, n000, 0xfdeacb01)
 	}
 
 	// Show that LGreater operator indicates correctly
@@ -53,7 +53,7 @@ Method(mdce,, Serialized)
 	if (LGreater(0x42345678, 0x32547698)) {
 		Store(1, Local7)
 	} else {
-		err("", zFFF, 0x001, 0, 0, 0x42345678, 0x32547698)
+		err("", zFFF, __LINE__, 0, 0, 0x42345678, 0x32547698)
 	}
 
 	// Show that (in 32-bit mode) "FdeAcb0132547698" passed to Name operator
@@ -63,7 +63,7 @@ Method(mdce,, Serialized)
 	if (LGreater(n000, 0x42345678)) {
 		Store(1, Local7)
 	} else {
-		err("", zFFF, 0x002, 0, 0, n000, 0x42345678)
+		err("", zFFF, __LINE__, 0, 0, n000, 0x42345678)
 	}
 
 	// Show that, nevertheless, (in 32-bit mode) "FdeAcb01Fdeacb03" passed
@@ -73,7 +73,7 @@ Method(mdce,, Serialized)
 	if (LGreater(0xfdeacb02, "FdeAcb01Fdeacb03")) {
 		Store(1, Local7)
 	} else {
-		err("", zFFF, 0x003, 0, 0, 0xfdeacb02, "FdeAcb01Fdeacb03")
+		err("", zFFF, __LINE__, 0, 0, 0xfdeacb02, "FdeAcb01Fdeacb03")
 	}
 
 	return (Local7)

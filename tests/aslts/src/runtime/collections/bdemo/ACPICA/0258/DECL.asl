@@ -75,7 +75,7 @@ Method(m17e)
 	Store(B258, F258)
 
 	if (CondRefof(\AUXD, Local0)) {
-		err("", zFFF, 0x000, 0, 0, "\\AUXD", 1)
+		err("", zFFF, __LINE__, 0, 0, "\\AUXD", 1)
 		return
 	}
 
@@ -91,26 +91,26 @@ Method(m17e)
 
 	if (CondRefof(\AUXD, Local0)) {
 	} else {
-		err("", zFFF, 0x003, 0, 0, "\\AUXD", 0)
+		err("", zFFF, __LINE__, 0, 0, "\\AUXD", 0)
 		return
 	}
 
 	Store (ObjectType(Local0), Local1)
 
 	if (LNotEqual(Local1, 6)) {
-		err("", zFFF, 0x004, 0, 0, Local1, 6)
+		err("", zFFF, __LINE__, 0, 0, Local1, 6)
 		return
 	}
 
 	Store(ObjectType(\AUXD.M000), Local0)
 	if (LNotEqual(Local0, 8)) {
-		err("", zFFF, 0x005, 0, 0, Local0, 8)
+		err("", zFFF, __LINE__, 0, 0, Local0, 8)
 		return
 	}
 
 	UnLoad(H258)
 
 	if (CondRefof(\AUXD, Local0)) {
-		err("", zFFF, 0x006, 0, 0, "\\AUXD", 1)
+		err("", zFFF, __LINE__, 0, 0, "\\AUXD", 1)
 	}
 }

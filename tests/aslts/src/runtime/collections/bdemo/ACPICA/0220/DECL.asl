@@ -60,12 +60,12 @@ Device(D220) {
 Method(m108)
 {
 	if (\D220.NERR) {
-		err("", zFFF, 0x000, 0, 0, \D220.NERR, 0)
+		err("", zFFF, __LINE__, 0, 0, \D220.NERR, 0)
 	}
 
 	Subtract(\D220.ACTV, \D220.DACT, Local0)
 
 	if (LNotEqual(Local0, 1)) {
-		err("", zFFF, 0x001, 0, 0, Local0, 1)
+		err("", zFFF, __LINE__, 0, 0, Local0, 1)
 	}
 }

@@ -635,7 +635,7 @@ Method(m106, 2, Serialized)
 			 * lpC0   - Index of thread
 			 * Local0 - the scale of its errors
 			 */
-			err(arg0, z147, 0x000, 0, 0, lpC0, Local0)
+			err(arg0, z147, __LINE__, 0, 0, lpC0, Local0)
 		}
 		Decrement(lpN0)
 		Increment(lpC0)
@@ -673,7 +673,7 @@ Method(m107, 4)
 		Store(m104(arg0), Local0)
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c00c)) {
-			err("m107", z147, 0x001, 0, 0, Local1, c00c)
+			err("m107", z147, __LINE__, 0, 0, Local1, c00c)
 			return (0)
 		}
 
@@ -682,12 +682,12 @@ Method(m107, 4)
 		Store(DeRefOf(Index(Local0, 1)), Local7)
 
 		if (LNotEqual(Local6, arg1)) {
-			err("m107", z147, 0x002, 0, 0, Local6, arg1)
+			err("m107", z147, __LINE__, 0, 0, Local6, arg1)
 			return (0)
 		}
 
 		if (LNotEqual(Local7, arg2)) {
-			err("m107", z147, 0x003, 0, 0, Local7, arg2)
+			err("m107", z147, __LINE__, 0, 0, Local7, arg2)
 			return (0)
 		}
 	}
@@ -893,7 +893,7 @@ Method(m110, 4, Serialized)
 				} elseif (cmd0) {
 
 					if (LNotEqual(Local0, cmd0)) {
-						err("m110", z147, 0x004, 0, 0, Local0, cmd0)
+						err("m110", z147, __LINE__, 0, 0, Local0, cmd0)
 						Store(lpC0, Debug)
 					}
 					if (LNot(Local1)) {
@@ -902,7 +902,7 @@ Method(m110, 4, Serialized)
 						break
 					} elseif (LNotEqual(Local1, Local0)) {
 						/* Has executed unexpected command */
-						err("m110", z147, 0x005, 0, 0, Local1, Local0)
+						err("m110", z147, __LINE__, 0, 0, Local1, Local0)
 						Store(lpC0, Debug)
 					}
 				} elseif (hng0) {
@@ -921,15 +921,15 @@ Method(m110, 4, Serialized)
 						/* Doesn't hang */
 						if (LNotEqual(Local4, Local0)) {
 							/* Has executed unexpected command */
-							err("m110", z147, 0x006, 0, 0, Local1, Local0)
+							err("m110", z147, __LINE__, 0, 0, Local1, Local0)
 							Store(lpC0, Debug)
 						}
-						err("m110", z147, 0x007, 0, 0, Local0, Local4)
+						err("m110", z147, __LINE__, 0, 0, Local0, Local4)
 						Store(lpC0, Debug)
 					}
 				} elseif (idl0) {
 					if (LNotEqual(Local0, c100)) {
-						err("m110", z147, 0x008, 0, 0, Local0, cmd0)
+						err("m110", z147, __LINE__, 0, 0, Local0, cmd0)
 						Store(lpC0, Debug)
 					}
 					if (LNot(Local2)) {
@@ -938,11 +938,11 @@ Method(m110, 4, Serialized)
 						break
 					} elseif (LNotEqual(Local2, c100)) {
 						/* Has executed unexpected command */
-						err("m110", z147, 0x009, 0, 0, Local0, cmd0)
+						err("m110", z147, __LINE__, 0, 0, Local0, cmd0)
 						Store(lpC0, Debug)
 					}
 				} else {
-					err("m110", z147, 0x00a, 0, 0, lpC0, Local0)
+					err("m110", z147, __LINE__, 0, 0, lpC0, Local0)
 					Store(lpC0, Debug)
 				}
 			}
@@ -1116,7 +1116,7 @@ Method(m112, 4)
 		/* FAIL of operation expected */
 
 		if (LNot(arg3)) {
-			err("m112", z147, 0x00e, 0, 0, arg3, 1)
+			err("m112", z147, __LINE__, 0, 0, arg3, 1)
 		}
 
 	} elseif (arg2) {

@@ -45,7 +45,7 @@ Device (D291) {
 		Store(LoadTable("OEM1", "", "", "\\", "\\D291.PLDT", Subtract(M000(3), 1)), DDBH)
 
 		if (LNotEqual(PLDT, 2)) {
-			err("", zFFF, 0x001, 0, 0, PLDT, 2)
+			err("", zFFF, __LINE__, 0, 0, PLDT, 2)
 			return
 		}
 

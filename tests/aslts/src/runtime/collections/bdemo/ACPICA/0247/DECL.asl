@@ -75,19 +75,19 @@ Method(m17c,, Serialized)
 		}
 
 		if (LNotEqual(CH10, Arg1)) {
-			err("", zFFF, ERRN, 0, 0, CH10, Arg1)
+			err("", zFFF, __LINE__, 0, 0, CH10, Arg1)
 		}
 		Increment(ERRN)
 		if (LEqual(CH11, Arg1)) {
-			err("", zFFF, ERRN, 0, 0, CH11, Arg1)
+			err("", zFFF, __LINE__, 0, 0, CH11, Arg1)
 		}
 		Increment(ERRN)
 		if (LNotEqual(CH20, Arg2)) {
-			err("", zFFF, ERRN, 0, 0, CH20, Arg2)
+			err("", zFFF, __LINE__, 0, 0, CH20, Arg2)
 		}
 		Increment(ERRN)
 		if (LEqual(CH21, Arg2)) {
-			err("", zFFF, ERRN, 0, 0, CH21, Arg2)
+			err("", zFFF, __LINE__, 0, 0, CH21, Arg2)
 		}
 		Increment(ERRN)
 	}

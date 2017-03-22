@@ -42,12 +42,12 @@
 		ToBCD(12345678, STR0)
 		Store(ObjectType(STR0), Local0)
 		if (LNotEqual(Local0, c009)) {
-			err("", zFFF, 0x000, 0, 0, Local0, c009)
+			err("", zFFF, __LINE__, 0, 0, Local0, c009)
 		}
 
 		FromBCD(0x12345678, STR1)
 		Store(ObjectType(STR1), Local0)
 		if (LNotEqual(Local0, c009)) {
-			err("", zFFF, 0x001, 0, 0, Local0, c009)
+			err("", zFFF, __LINE__, 0, 0, Local0, c009)
 		}
 	}

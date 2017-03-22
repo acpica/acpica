@@ -57,7 +57,7 @@ Method(m020,, Serialized)
 
 	Store(ObjectType(i001), Local0)
 	if (LNotEqual(Local0, c015)) {
-		err("", zFFF, 0x001, 0, 0, Local0, c015)
+		err("", zFFF, __LINE__, 0, 0, Local0, c015)
 	}
 	CH03("", 0, 0x002, 0, 0)
 
@@ -65,7 +65,7 @@ Method(m020,, Serialized)
 
 	Store(ObjectType(i001), Local0)
 	if (LNotEqual(Local0, c009)) {
-		err("", zFFF, 0x003, 0, 0, Local0, c009)
+		err("", zFFF, __LINE__, 0, 0, Local0, c009)
 	}
 	CH03("", 0, 0x004, 0, 0)
 }

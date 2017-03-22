@@ -122,7 +122,7 @@ Method(m1e8)
 	 * The problem is not automatically detected,
 	 * so remove this error report after the problem has been resolved.
 	 */
-	err("", zFFF, 0x123, 0, 0, 0, 0)
+	err("", zFFF, __LINE__, 0, 0, 0, 0)
 }
 
 

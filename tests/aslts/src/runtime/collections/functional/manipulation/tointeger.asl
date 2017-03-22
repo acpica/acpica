@@ -408,13 +408,13 @@ Method(TOI0,, Serialized)
 		Store(0x123456789abcdefa, Local1)
 		ToInteger(Local0, Local2)
 		if (LNotEqual(Local2, Local1)) {
-			err(ts, z047, 4, 0, 0, Local0, 0)
+			err(ts, z047, __LINE__, 0, 0, Local0, 0)
 		}
 
 		Store("0x000123456789abcdefa", Local0)
 		ToInteger(Local0, Local2)
 		if (LNotEqual(Local2, Local1)) {
-			err(ts, z047, 5, 0, 0, Local0, 0)
+			err(ts, z047, __LINE__, 0, 0, Local0, 0)
 		}
 	}
 }

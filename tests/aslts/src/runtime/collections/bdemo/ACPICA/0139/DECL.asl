@@ -37,7 +37,7 @@
 	Method(mf2a)
 	{
 		if (LNotEqual(id1b, 0xfedcba9876543210)) {
-			err("", zFFF, 0x000, 0, 0, id1b, 0xfedcba9876543210)
+			err("", zFFF, __LINE__, 0, 0, id1b, 0xfedcba9876543210)
 		} else {
 			Store("Ok, initially id1b = 0xfedcba9876543210", Debug)
 
@@ -46,7 +46,7 @@
 			Store(id1b, Local0)
 
 			if (LNotEqual(id1b, 0xfedcba9876543210)) {
-				err("", zFFF, 0x001, 0, 0, id1b, 0xfedcba9876543210)
+				err("", zFFF, __LINE__, 0, 0, id1b, 0xfedcba9876543210)
 			}
 		}
 	}
@@ -57,7 +57,7 @@
 		Store(Refof(id1c), Local0)
 
 		if (LNotEqual(id1c, 0xfedcba9876543211)) {
-			err("", zFFF, 0x002, 0, 0, id1c, 0xfedcba9876543211)
+			err("", zFFF, __LINE__, 0, 0, id1c, 0xfedcba9876543211)
 		} else {
 			Store("Ok, initially id1c = 0xfedcba9876543211", Debug)
 
@@ -66,7 +66,7 @@
 			Store(DeRefof(Local0), Local1)
 
 			if (LNotEqual(id1c, 0xfedcba9876543211)) {
-				err("", zFFF, 0x003, 0, 0, id1c, 0xfedcba9876543211)
+				err("", zFFF, __LINE__, 0, 0, id1c, 0xfedcba9876543211)
 			}
 		}
 	}

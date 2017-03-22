@@ -44,7 +44,7 @@ Device (D287) {
 
 		CH04("", 0, 0xff, 0, 0x001, 0, 0)
 		if (LNotEqual(PLDT, 0)) {
-			err("", zFFF, 0x002, 0, 0, PLDT, 0)
+			err("", zFFF, __LINE__, 0, 0, PLDT, 0)
 			Return (1)
 		}
 
@@ -53,7 +53,7 @@ Device (D287) {
 
 		CH04("", 0, 0xff, 0, 0x003, 0, 0)
 		if (LNotEqual(PLDT, 0)) {
-			err("", zFFF, 0x004, 0, 0, PLDT, 0)
+			err("", zFFF, __LINE__, 0, 0, PLDT, 0)
 			Return (1)
 		}
 
@@ -62,7 +62,7 @@ Device (D287) {
 
 		CH04("", 0, 0xff, 0, 0x005, 0, 0)
 		if (LNotEqual(PLDT, 0)) {
-			err("", zFFF, 0x006, 0, 0, PLDT, 0)
+			err("", zFFF, __LINE__, 0, 0, PLDT, 0)
 			Return (1)
 		}
 

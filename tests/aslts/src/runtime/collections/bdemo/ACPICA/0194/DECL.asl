@@ -65,13 +65,13 @@ Method(mfa7, 1, Serialized)
 		Store("ToBuffer(b001, b000)", Debug)
 		ToBuffer(b001, b000)
 		if (LNot(bcmp(b000, bb01))) {
-			err("", zFFF, 0x000, 0, 0, b000, bb01)
+			err("", zFFF, __LINE__, 0, 0, b000, bb01)
 		}
 	} else {
 		Store("ToBuffer(b000, b001)", Debug)
 		ToBuffer(b000, b001)
 		if (Lnot(bcmp(b001, bb00))) {
-			err("", zFFF, 0x000, 0, 0, b001, bb00)
+			err("", zFFF, __LINE__, 0, 0, b001, bb00)
 		}
 	}
 }

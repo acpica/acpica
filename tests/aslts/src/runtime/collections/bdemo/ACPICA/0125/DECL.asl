@@ -45,7 +45,7 @@
 		Mid(arg1, arg2, arg3, Local0)
 
 		if (LNotEqual(arg4, Local0)) {
-			err("", zFFF, 0x000, 0, 0, arg4, Local0)
+			err("", zFFF, __LINE__, 0, 0, arg4, Local0)
 		}
 	}
 

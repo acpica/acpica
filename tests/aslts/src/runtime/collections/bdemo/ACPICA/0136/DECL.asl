@@ -42,6 +42,6 @@
 		CopyObject(b000, b001)
 
 		if (LNotEqual(b000, b001)) {
-			err("", zFFF, 0x000, 0, 0, b000, b001)
+			err("", zFFF, __LINE__, 0, 0, b000, b001)
 		}
 	}

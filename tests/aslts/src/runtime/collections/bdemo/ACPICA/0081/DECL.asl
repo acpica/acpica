@@ -52,18 +52,18 @@
 
 		Store(ObjectType(me31), Local0)
 		if (LNotEqual(Local0, c010)) {
-			err("", zFFF, 0x000, 0, 0, Local0, c010)
+			err("", zFFF, __LINE__, 0, 0, Local0, c010)
 		}
 
     /* Nov. 2012: Method invocation as arg to ObjectType is now illegal */
 //
 //		Store(ObjectType(me31()), Local0)
 //		if (LNotEqual(Local0, c009)) {
-//			err("", zFFF, 0x001, 0, 0, Local0, c009)
+//			err("", zFFF, __LINE__, 0, 0, Local0, c009)
 //		}
 //
 //		Store(ObjectType(me32("String")), Local0)
 //		if (LNotEqual(Local0, c00a)) {
-//			err("", zFFF, 0x002, 0, 0, Local0, c00a)
+//			err("", zFFF, __LINE__, 0, 0, Local0, c00a)
 //		}
 	}

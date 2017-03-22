@@ -45,7 +45,7 @@ Method(me0b)
 		SKIP()
 	} else {
 		if (LNotEqual(Ones, 0xffffffff)){
-			err("", zFFF, 0x000, 0, 0, Ones, 0xffffffff)
+			err("", zFFF, __LINE__, 0, 0, Ones, 0xffffffff)
 		}
 	}
 }

@@ -80,71 +80,71 @@ Method(m301,, Serialized)
 
     Store(Acquire(MT00, 0xffff), Local0)
     if (Local0) {
-        err(ts, z150, 1, 0, 0, 0, Local0)
+        err(ts, z150, __LINE__, 0, 0, 0, Local0)
     } else {
     Store(Acquire(\_GL, 0xffff), Local0) /* GL */
     if (Local0) {
-        err(ts, z150, 3, 0, 0, 0, Local0)
+        err(ts, z150, __LINE__, 0, 0, 0, Local0)
     } else {
         Store(Acquire(MT10, 0xffff), Local0)
         if (Local0) {
-            err(ts, z150, 2, 0, 0, 0, Local0)
+            err(ts, z150, __LINE__, 0, 0, 0, Local0)
         } else {
             Store(Acquire(MT20, 0xffff), Local0)
             if (Local0) {
-                err(ts, z150, 3, 0, 0, 0, Local0)
+                err(ts, z150, __LINE__, 0, 0, 0, Local0)
             } else {
                 Store(Acquire(MT30, 0xffff), Local0)
                 if (Local0) {
-                    err(ts, z150, 4, 0, 0, 0, Local0)
+                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                 } else {
                     Store(Acquire(MT40, 0xffff), Local0)
                     if (Local0) {
-                        err(ts, z150, 5, 0, 0, 0, Local0)
+                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                     } else {
                         Store(Acquire(MT50, 0xffff), Local0)
                         if (Local0) {
-                            err(ts, z150, 6, 0, 0, 0, Local0)
+                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                         } else {
                             Store(Acquire(MT60, 0xffff), Local0)
                             if (Local0) {
-                                err(ts, z150, 7, 0, 0, 0, Local0)
+                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                             } else {
                                 Store(Acquire(MT70, 0xffff), Local0)
                                 if (Local0) {
-                                    err(ts, z150, 8, 0, 0, 0, Local0)
+                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                 } else {
                                     Store(Acquire(MT80, 0xffff), Local0)
                                     if (Local0) {
-                                        err(ts, z150, 9, 0, 0, 0, Local0)
+                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                     } else {
                                         Store(Acquire(MT90, 0xffff), Local0)
                                         if (Local0) {
-                                            err(ts, z150, 0x00a, 0, 0, 0, Local0)
+                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                         } else {
                                             Store(Acquire(MTa0, 0xffff), Local0)
                                             if (Local0) {
-                                                err(ts, z150, 0x00b, 0, 0, 0, Local0)
+                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                             } else {
                                                 Store(Acquire(MTb0, 0xffff), Local0)
                                                 if (Local0) {
-                                                    err(ts, z150, 0x00c, 0, 0, 0, Local0)
+                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                 } else {
                                                     Store(Acquire(MTc0, 0xffff), Local0)
                                                     if (Local0) {
-                                                        err(ts, z150, 0x00d, 0, 0, 0, Local0)
+                                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                     } else {
                                                         Store(Acquire(MTd0, 0xffff), Local0)
                                                         if (Local0) {
-                                                            err(ts, z150, 0x00e, 0, 0, 0, Local0)
+                                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                         } else {
                                                             Store(Acquire(MTe0, 0xffff), Local0)
                                                             if (Local0) {
-                                                                err(ts, z150, 0x00f, 0, 0, 0, Local0)
+                                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                             } else {
                                                                 Store(Acquire(MTf0, 0xffff), Local0)
                                                                 if (Local0) {
-                                                                    err(ts, z150, 0x010, 0, 0, 0, Local0)
+                                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                                 } else {
                                                                     Release(MTF0)
                                                                     Release(MTE0)
@@ -243,131 +243,131 @@ Method(m369, 1, Serialized)
 
     Store(Acquire(MT00, 0xffff), Local0)
     if (Local0) {
-        err(ts, z150, 1, 0, 0, 0, Local0)
+        err(ts, z150, __LINE__, 0, 0, 0, Local0)
     } else {
     Store(Acquire(MT01, 0xffff), Local0) /* the same level */
     if (Local0) {
-        err(ts, z150, 2, 0, 0, 0, Local0)
+        err(ts, z150, __LINE__, 0, 0, 0, Local0)
     } else {
     Store(Acquire(\_GL, 0xffff), Local0) /* GL */
     if (Local0) {
-        err(ts, z150, 3, 0, 0, 0, Local0)
+        err(ts, z150, __LINE__, 0, 0, 0, Local0)
     } else {
         Store(Acquire(MT10, 0xffff), Local0)
         if (Local0) {
-            err(ts, z150, 4, 0, 0, 0, Local0)
+            err(ts, z150, __LINE__, 0, 0, 0, Local0)
         } else {
         Store(Acquire(MT11, 0xffff), Local0)
         if (Local0) {
-            err(ts, z150, 5, 0, 0, 0, Local0)
+            err(ts, z150, __LINE__, 0, 0, 0, Local0)
         } else {
             Store(Acquire(MT20, 0xffff), Local0)
             if (Local0) {
-                err(ts, z150, 6, 0, 0, 0, Local0)
+                err(ts, z150, __LINE__, 0, 0, 0, Local0)
             } else {
             Store(Acquire(MT21, 0xffff), Local0)
             if (Local0) {
-                err(ts, z150, 7, 0, 0, 0, Local0)
+                err(ts, z150, __LINE__, 0, 0, 0, Local0)
             } else {
                 Store(Acquire(MT30, 0xffff), Local0)
                 if (Local0) {
-                    err(ts, z150, 8, 0, 0, 0, Local0)
+                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                 } else {
                 Store(Acquire(MT31, 0xffff), Local0)
                 if (Local0) {
-                    err(ts, z150, 9, 0, 0, 0, Local0)
+                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                 } else {
                     Store(Acquire(MT40, 0xffff), Local0)
                     if (Local0) {
-                        err(ts, z150, 0x00a, 0, 0, 0, Local0)
+                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                     } else {
                     Store(Acquire(MT41, 0xffff), Local0)
                     if (Local0) {
-                        err(ts, z150, 0x00b, 0, 0, 0, Local0)
+                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                     } else {
                         Store(Acquire(MT50, 0xffff), Local0)
                         if (Local0) {
-                            err(ts, z150, 0x00c, 0, 0, 0, Local0)
+                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                         } else {
                         Store(Acquire(MT51, 0xffff), Local0)
                         if (Local0) {
-                            err(ts, z150, 0x00d, 0, 0, 0, Local0)
+                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                         } else {
                             Store(Acquire(MT60, 0xffff), Local0)
                             if (Local0) {
-                                err(ts, z150, 0x00e, 0, 0, 0, Local0)
+                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                             } else {
                             Store(Acquire(MT61, 0xffff), Local0)
                             if (Local0) {
-                                err(ts, z150, 0x00f, 0, 0, 0, Local0)
+                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                             } else {
                                 Store(Acquire(MT70, 0xffff), Local0)
                                 if (Local0) {
-                                    err(ts, z150, 0x010, 0, 0, 0, Local0)
+                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                 } else {
                                 Store(Acquire(MT71, 0xffff), Local0)
                                 if (Local0) {
-                                    err(ts, z150, 0x011, 0, 0, 0, Local0)
+                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                 } else {
                                     Store(Acquire(MT80, 0xffff), Local0)
                                     if (Local0) {
-                                        err(ts, z150, 0x012, 0, 0, 0, Local0)
+                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                     } else {
                                     Store(Acquire(MT81, 0xffff), Local0)
                                     if (Local0) {
-                                        err(ts, z150, 0x013, 0, 0, 0, Local0)
+                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                     } else {
                                         Store(Acquire(MT90, 0xffff), Local0)
                                         if (Local0) {
-                                            err(ts, z150, 0x014, 0, 0, 0, Local0)
+                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                         } else {
                                         Store(Acquire(MT91, 0xffff), Local0)
                                         if (Local0) {
-                                            err(ts, z150, 0x015, 0, 0, 0, Local0)
+                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                         } else {
                                             Store(Acquire(MTa0, 0xffff), Local0)
                                             if (Local0) {
-                                                err(ts, z150, 0x016, 0, 0, 0, Local0)
+                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                             } else {
                                             Store(Acquire(MTa1, 0xffff), Local0)
                                             if (Local0) {
-                                                err(ts, z150, 0x017, 0, 0, 0, Local0)
+                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                             } else {
                                                 Store(Acquire(MTb0, 0xffff), Local0)
                                                 if (Local0) {
-                                                    err(ts, z150, 0x018, 0, 0, 0, Local0)
+                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                 } else {
                                                 Store(Acquire(MTb1, 0xffff), Local0)
                                                 if (Local0) {
-                                                    err(ts, z150, 0x019, 0, 0, 0, Local0)
+                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                 } else {
                                                     Store(Acquire(MTc0, 0xffff), Local0)
                                                     if (Local0) {
-                                                        err(ts, z150, 0x01a, 0, 0, 0, Local0)
+                                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                     } else {
                                                     Store(Acquire(MTc1, 0xffff), Local0)
                                                     if (Local0) {
-                                                        err(ts, z150, 0x01b, 0, 0, 0, Local0)
+                                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                     } else {
                                                         Store(Acquire(MTd0, 0xffff), Local0)
                                                         if (Local0) {
-                                                            err(ts, z150, 0x01c, 0, 0, 0, Local0)
+                                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                         } else {
                                                         Store(Acquire(MTd1, 0xffff), Local0)
                                                         if (Local0) {
-                                                            err(ts, z150, 0x01d, 0, 0, 0, Local0)
+                                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                         } else {
                                                             Store(Acquire(MTe0, 0xffff), Local0)
                                                             if (Local0) {
-                                                                err(ts, z150, 0x01e, 0, 0, 0, Local0)
+                                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                             } else {
                                                             Store(Acquire(MTe1, 0xffff), Local0)
                                                             if (Local0) {
-                                                                err(ts, z150, 0x01f, 0, 0, 0, Local0)
+                                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                             } else {
                                                                 Store(Acquire(MTf0, 0xffff), Local0)
                                                                 if (Local0) {
-                                                                    err(ts, z150, 0x020, 0, 0, 0, Local0)
+                                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                                 } else {
                                                                 if (arg0) {
                                                                     Store(Acquire(MTf1, 0xffff), Local0)
@@ -375,7 +375,7 @@ Method(m369, 1, Serialized)
                                                                     Store(0, Local0)
                                                                 }
                                                                 if (Local0) {
-                                                                    err(ts, z150, 0x021, 0, 0, 0, Local0)
+                                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                                 } else {
                                                                     if (arg0) {
                                                                         Release(MTF1)
@@ -489,71 +489,71 @@ Method(m36a,, Serialized)
 
     Store(Acquire(MT00, 0xffff), Local0)
     if (Local0) {
-        err(ts, z150, 1, 0, 0, 0, Local0)
+        err(ts, z150, __LINE__, 0, 0, 0, Local0)
     } else {
     Store(Acquire(\_GL, 0xffff), Local0)
     if (Local0) {
-        err(ts, z150, 2, 0, 0, 0, Local0)
+        err(ts, z150, __LINE__, 0, 0, 0, Local0)
     } else {
         Store(Acquire(MT10, 0xffff), Local0)
         if (Local0) {
-            err(ts, z150, 3, 0, 0, 0, Local0)
+            err(ts, z150, __LINE__, 0, 0, 0, Local0)
         } else {
             Store(Acquire(MT20, 0xffff), Local0)
             if (Local0) {
-                err(ts, z150, 4, 0, 0, 0, Local0)
+                err(ts, z150, __LINE__, 0, 0, 0, Local0)
             } else {
                 Store(Acquire(MT30, 0xffff), Local0)
                 if (Local0) {
-                    err(ts, z150, 5, 0, 0, 0, Local0)
+                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                 } else {
                     Store(Acquire(MT40, 0xffff), Local0)
                     if (Local0) {
-                        err(ts, z150, 6, 0, 0, 0, Local0)
+                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                     } else {
                         Store(Acquire(MT50, 0xffff), Local0)
                         if (Local0) {
-                            err(ts, z150, 7, 0, 0, 0, Local0)
+                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                         } else {
                             Store(Acquire(MT60, 0xffff), Local0)
                             if (Local0) {
-                                err(ts, z150, 8, 0, 0, 0, Local0)
+                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                             } else {
                                 Store(Acquire(MT70, 0xffff), Local0)
                                 if (Local0) {
-                                    err(ts, z150, 9, 0, 0, 0, Local0)
+                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                 } else {
                                     Store(Acquire(MT80, 0xffff), Local0)
                                     if (Local0) {
-                                        err(ts, z150, 0x00a, 0, 0, 0, Local0)
+                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                     } else {
                                         Store(Acquire(MT90, 0xffff), Local0)
                                         if (Local0) {
-                                            err(ts, z150, 0x00b, 0, 0, 0, Local0)
+                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                         } else {
                                             Store(Acquire(MTa0, 0xffff), Local0)
                                             if (Local0) {
-                                                err(ts, z150, 0x00c, 0, 0, 0, Local0)
+                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                             } else {
                                                 Store(Acquire(MTb0, 0xffff), Local0)
                                                 if (Local0) {
-                                                    err(ts, z150, 0x00d, 0, 0, 0, Local0)
+                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                 } else {
                                                     Store(Acquire(MTc0, 0xffff), Local0)
                                                     if (Local0) {
-                                                        err(ts, z150, 0x00e, 0, 0, 0, Local0)
+                                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                     } else {
                                                         Store(Acquire(MTd0, 0xffff), Local0)
                                                         if (Local0) {
-                                                            err(ts, z150, 0x00f, 0, 0, 0, Local0)
+                                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                         } else {
                                                             Store(Acquire(MTe0, 0xffff), Local0)
                                                             if (Local0) {
-                                                                err(ts, z150, 0x010, 0, 0, 0, Local0)
+                                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                             } else {
                                                                 Store(Acquire(MTf0, 0xffff), Local0)
                                                                 if (Local0) {
-                                                                    err(ts, z150, 0x011, 0, 0, 0, Local0)
+                                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                                 } else {
                                                                     m001()
                                                                 }
@@ -637,71 +637,71 @@ Method(m36b,, Serialized)
 
     Store(Acquire(MT00, 0xffff), Local0)
     if (Local0) {
-        err(ts, z150, 1, 0, 0, 0, Local0)
+        err(ts, z150, __LINE__, 0, 0, 0, Local0)
     } else {
     Store(Acquire(\_GL, 0xffff), Local0)
     if (Local0) {
-        err(ts, z150, 2, 0, 0, 0, Local0)
+        err(ts, z150, __LINE__, 0, 0, 0, Local0)
     } else {
         Store(Acquire(MT10, 0xffff), Local0)
         if (Local0) {
-            err(ts, z150, 3, 0, 0, 0, Local0)
+            err(ts, z150, __LINE__, 0, 0, 0, Local0)
         } else {
             Store(Acquire(MT20, 0xffff), Local0)
             if (Local0) {
-                err(ts, z150, 4, 0, 0, 0, Local0)
+                err(ts, z150, __LINE__, 0, 0, 0, Local0)
             } else {
                 Store(Acquire(MT30, 0xffff), Local0)
                 if (Local0) {
-                    err(ts, z150, 5, 0, 0, 0, Local0)
+                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                 } else {
                     Store(Acquire(MT40, 0xffff), Local0)
                     if (Local0) {
-                        err(ts, z150, 6, 0, 0, 0, Local0)
+                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                     } else {
                         Store(Acquire(MT50, 0xffff), Local0)
                         if (Local0) {
-                            err(ts, z150, 7, 0, 0, 0, Local0)
+                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                         } else {
                             Store(Acquire(MT60, 0xffff), Local0)
                             if (Local0) {
-                                err(ts, z150, 8, 0, 0, 0, Local0)
+                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                             } else {
                                 Store(Acquire(MT70, 0xffff), Local0)
                                 if (Local0) {
-                                    err(ts, z150, 9, 0, 0, 0, Local0)
+                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                 } else {
                                     Store(Acquire(MT80, 0xffff), Local0)
                                     if (Local0) {
-                                        err(ts, z150, 0x00a, 0, 0, 0, Local0)
+                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                     } else {
                                         Store(Acquire(MT90, 0xffff), Local0)
                                         if (Local0) {
-                                            err(ts, z150, 0x00b, 0, 0, 0, Local0)
+                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                         } else {
                                             Store(Acquire(MTa0, 0xffff), Local0)
                                             if (Local0) {
-                                                err(ts, z150, 0x00c, 0, 0, 0, Local0)
+                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                             } else {
                                                 Store(Acquire(MTb0, 0xffff), Local0)
                                                 if (Local0) {
-                                                    err(ts, z150, 0x00d, 0, 0, 0, Local0)
+                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                 } else {
                                                     Store(Acquire(MTc0, 0xffff), Local0)
                                                     if (Local0) {
-                                                        err(ts, z150, 0x00e, 0, 0, 0, Local0)
+                                                        err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                     } else {
                                                         Store(Acquire(MTd0, 0xffff), Local0)
                                                         if (Local0) {
-                                                            err(ts, z150, 0x00f, 0, 0, 0, Local0)
+                                                            err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                         } else {
                                                             Store(Acquire(MTe0, 0xffff), Local0)
                                                             if (Local0) {
-                                                                err(ts, z150, 0x010, 0, 0, 0, Local0)
+                                                                err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                             } else {
                                                                 Store(Acquire(MTf0, 0xffff), Local0)
                                                                 if (Local0) {
-                                                                    err(ts, z150, 0x011, 0, 0, 0, Local0)
+                                                                    err(ts, z150, __LINE__, 0, 0, 0, Local0)
                                                                 }
                                                             }
                                                         }
@@ -1364,7 +1364,7 @@ Method(m0bb,, Serialized)
 
 		Store(Acquire(T805, 0xffff), i103)
 		if (i103) {
-			err(ts, z150, 0x001, 0, 0, 0, i103)
+			err(ts, z150, __LINE__, 0, 0, 0, i103)
 		}
 
 		Store("m13e completed", Debug)
@@ -1394,12 +1394,12 @@ Method(m0bb,, Serialized)
 
 	if (i102) {
 		Store("Acquire(T804, 0xffff) failed", Debug)
-		err(ts, z150, 0x002, 0, 0, 0, i102)
+		err(ts, z150, __LINE__, 0, 0, 0, i102)
 	}
 
 	if (i103) {
 		Store("Acquire(T805, 0xffff) failed", Debug)
-		err(ts, z150, 0x003, 0, 0, 0, i103)
+		err(ts, z150, __LINE__, 0, 0, 0, i103)
 	}
 
 	CH03(ts, z150, 0x004, 0, 0)
@@ -1426,87 +1426,87 @@ Method(m07c,, Serialized)
 
 			Store(Acquire(\_GL, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T000, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T100, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T200, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T300, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T400, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T500, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T600, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T700, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T800, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T900, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Ta00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Tb00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Tc00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Td00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Te00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Tf00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			CH03(ts, z150, 0x000, 0, 0)
@@ -1543,87 +1543,87 @@ Method(m07c,, Serialized)
 
 			Store(Acquire(\_GL, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T000, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T100, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T200, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T300, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T400, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T500, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T600, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T700, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T800, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(T900, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Ta00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Tb00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Tc00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Td00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Te00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			Store(Acquire(Tf00, 0xffff), Local0)
 			if (Local0) {
-				err(ts, z150, 0x000, 0, 0, 0, Local0)
+				err(ts, z150, __LINE__, 0, 0, 0, Local0)
 			}
 
 			CH03(ts, z150, 0x000, 0, 0)
@@ -1734,12 +1734,12 @@ Method(m0ba,, Serialized)
 
 	Add(Acquire(\_GL, 0xffff), 1, Local0)
 	if (LNotEqual(Local0, 1)) {
-		err(ts, z150, 0x001, 0, 0, 0, Local0)
+		err(ts, z150, __LINE__, 0, 0, 0, Local0)
 	}
 
 	Add(Acquire(T500, 0xffff), 1, Local0)
 	if (LNotEqual(Local0, 1)) {
-		err(ts, z150, 0x002, 0, 0, 0, Local0)
+		err(ts, z150, __LINE__, 0, 0, 0, Local0)
 	}
 
 	Release(T500)
@@ -1749,12 +1749,12 @@ Method(m0ba,, Serialized)
 
 	Subtract(1, Acquire(\_GL, 0xffff), Local0)
 	if (LNotEqual(Local0, 1)) {
-		err(ts, z150, 0x003, 0, 0, 0, Local0)
+		err(ts, z150, __LINE__, 0, 0, 0, Local0)
 	}
 
 	Subtract(1, Acquire(T500, 0xffff), Local0)
 	if (LNotEqual(Local0, 1)) {
-		err(ts, z150, 0x004, 0, 0, 0, Local0)
+		err(ts, z150, __LINE__, 0, 0, 0, Local0)
 	}
 
 	Release(T500)
@@ -1763,7 +1763,7 @@ Method(m0ba,, Serialized)
 	/* LEqual */
 
 	if (LNotEqual(Acquire(T500, 0xffff), 0)) {
-		err(ts, z150, 0x004, 0, 0, 0, Local0)
+		err(ts, z150, __LINE__, 0, 0, 0, Local0)
 	}
 	Release(T500)
 
@@ -2105,7 +2105,7 @@ Method(m300)
 
 	SRMT("m300")
 	if (ERR7) {
-		err("ERRORS were detected during the loading stage", z150, 0x200, 0, 0, 0, ERR7)
+		err("ERRORS were detected during the loading stage", z150, __LINE__, 0, 0, 0, ERR7)
 	}
 
 	/* ATTENTION: this test must be run the first */

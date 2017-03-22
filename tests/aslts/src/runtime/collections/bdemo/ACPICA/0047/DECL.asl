@@ -83,7 +83,7 @@ Method(md77,, Serialized)
 
 		if (LGreater(Local0, Local7)) {
 			// if (Local5) {
-				err("", zFFF, 0x000, 0, 0, Local0, Local7)
+				err("", zFFF, __LINE__, 0, 0, Local0, Local7)
 				Store(Concatenate("Cur   timer    : 0x", Local7), Debug)
 				Store(Concatenate("Start timer    : 0x", Local0), Debug)
 				Store(Concatenate("Step of cycle  : 0x", TSLP), Debug)

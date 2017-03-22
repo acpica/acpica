@@ -71,11 +71,11 @@ Method(mfa9) {
 
 		if (LNotEqual(Local0, s000)) {
 			// Store("Error 0", Debug)
-			err("", zFFF, 0x000, 0, 0, Local0, s000)
+			err("", zFFF, __LINE__, 0, 0, Local0, s000)
 		}
 		if (LNotEqual(Local1, s000)) {
 			// Store("Error 1", Debug)
-			err("", zFFF, 0x001, 0, 0, Local0, s000)
+			err("", zFFF, __LINE__, 0, 0, Local0, s000)
 		}
 
 		Store("========================================.", Debug)

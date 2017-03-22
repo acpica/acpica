@@ -46,7 +46,7 @@
 		}
 
 		if (LNotEqual(Local0, 1)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 1)
+			err("", zFFF, __LINE__, 0, 0, Local0, 1)
 		}
 	}
 
@@ -64,7 +64,7 @@
 		}
 
 		if (LNotEqual(Local0, 1)) {
-			err("", zFFF, 0x001, 0, 0, Local0, 1)
+			err("", zFFF, __LINE__, 0, 0, Local0, 1)
 		}
 	}
 

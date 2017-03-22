@@ -43,6 +43,6 @@ Method(m107,, Serialized)
 		0x0f, 0x79, 0x00})
 
 	if (LNotEqual(RT00, BUF0)) {
-		err("", zFFF, 0x000, 0, 0, RT00, BUF0)
+		err("", zFFF, __LINE__, 0, 0, RT00, BUF0)
 	}
 }

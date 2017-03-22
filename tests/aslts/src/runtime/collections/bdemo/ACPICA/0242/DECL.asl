@@ -59,7 +59,7 @@ Method(m031,, Serialized)
 		Store(Acquire(T000, 0xffff), Local0)
 		if (Local0) {
 			Store("ERROR: Acquire T000 (Level 0, index 0)", Debug)
-			err("", zFFF, 0x000, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquire T000 (Level 0, index 0)", Debug)
 		}
@@ -67,7 +67,7 @@ Method(m031,, Serialized)
 		Store(Acquire(T001, 0xffff), Local0)
 		if (Local0) {
 			Store("ERROR: Acquire T001 (Level 0, index 1)", Debug)
-			err("", zFFF, 0x001, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquire T001 (Level 0, index 1)", Debug)
 		}
@@ -75,7 +75,7 @@ Method(m031,, Serialized)
 		Store(Acquire(T002, 0xffff), Local0)
 		if (Local0) {
 			Store("ERROR: Acquire T002 (Level 0, index 2)", Debug)
-			err("", zFFF, 0x002, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquire T002 (Level 0, index 2)", Debug)
 		}
@@ -83,7 +83,7 @@ Method(m031,, Serialized)
 		Store(Acquire(T003, 0xffff), Local0)
 		if (Local0) {
 			Store("ERROR: Acquire T003 (Level 0, index 3)", Debug)
-			err("", zFFF, 0x003, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquire T003 (Level 0, index 3)", Debug)
 		}
@@ -126,7 +126,7 @@ Method(m031,, Serialized)
 		Store(Acquire(T100, 0xffff), Local0)
 		if (Local0) {
 			Store("ERROR: Acquire T100 (Level 1, index 0)", Debug)
-			err("", zFFF, 0x00c, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquire T100 (Level 1, index 0)", Debug)
 		}
@@ -134,7 +134,7 @@ Method(m031,, Serialized)
 		Store(Acquire(T101, 0xffff), Local0)
 		if (Local0) {
 			Store("ERROR: Acquire T101 (Level 1, index 1)", Debug)
-			err("", zFFF, 0x00d, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquire T101 (Level 1, index 1)", Debug)
 		}
@@ -142,7 +142,7 @@ Method(m031,, Serialized)
 		Store(Acquire(T102, 0xffff), Local0)
 		if (Local0) {
 			Store("ERROR: Acquire T102 (Level 1, index 2)", Debug)
-			err("", zFFF, 0x00e, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquire T102 (Level 1, index 2)", Debug)
 		}
@@ -150,7 +150,7 @@ Method(m031,, Serialized)
 		Store(Acquire(T103, 0xffff), Local0)
 		if (Local0) {
 			Store("ERROR: Acquire T103 (Level 1, index 3)", Debug)
-			err("", zFFF, 0x00f, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquire T103 (Level 1, index 3)", Debug)
 		}
@@ -194,7 +194,7 @@ Method(m031,, Serialized)
 		Store(Acquire(T100, 0xffff), Local0)
 		if (Local0) {
 			Store("ERROR: Acquire T100 (Level 1, index 0)", Debug)
-			err("", zFFF, 0x018, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquire T100 (Level 1, index 0)", Debug)
 		}
@@ -202,7 +202,7 @@ Method(m031,, Serialized)
 		Store(Acquire(T101, 0xffff), Local0)
 		if (Local0) {
 			Store("ERROR: Acquire T101 (Level 1, index 1)", Debug)
-			err("", zFFF, 0x019, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquire T101 (Level 1, index 1)", Debug)
 		}
@@ -210,7 +210,7 @@ Method(m031,, Serialized)
 		Store(Acquire(T102, 0xffff), Local0)
 		if (Local0) {
 			Store("ERROR: Acquire T102 (Level 1, index 2)", Debug)
-			err("", zFFF, 0x01a, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquire T102 (Level 1, index 2)", Debug)
 		}
@@ -218,7 +218,7 @@ Method(m031,, Serialized)
 		Store(Acquire(T103, 0xffff), Local0)
 		if (Local0) {
 			Store("ERROR: Acquire T103 (Level 1, index 3)", Debug)
-			err("", zFFF, 0x01b, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquire T103 (Level 1, index 3)", Debug)
 		}

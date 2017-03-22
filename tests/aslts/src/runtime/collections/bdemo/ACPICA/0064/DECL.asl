@@ -38,14 +38,14 @@
 		CH03("", 0, 0x000, 0, 0)
 		Add("", 0xabcd0000, Local0)
 		if (LNotEqual(Local0, 0xabcd0000)) {
-			err("", zFFF, 0x001, 0, 0, Local0, 0xabcd0000)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcd0000)
 		}
 		CH03("", 0, 0x002, 0, 0)
 
 		CH03("", 0, 0x003, 0, 0)
 		Add("                      ", 0xabcd0001, Local0)
 		if (LNotEqual(Local0, 0xabcd0001)) {
-			err("", zFFF, 0x004, 0, 0, Local0, 0xabcd0001)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcd0001)
 		}
 		CH03("", 0, 0x005, 0, 0)
 
@@ -62,14 +62,14 @@
 		CH03("", 0, 0x00a, 0, 0)
 		Add("q", 0xabcd0002, Local0)
 		if (LNotEqual(Local0, 0xabcd0002)) {
-			err("", zFFF, 0x00b, 0, 0, Local0, 0xabcd0002)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcd0002)
 		}
 		CH03("", 0, 0x00c, 0, 0)
 
 		CH03("", 0, 0x00d, 0, 0)
 		Add("q                      ", 0xabcd0003, Local0)
 		if (LNotEqual(Local0, 0xabcd0003)) {
-			err("", zFFF, 0x00e, 0, 0, Local0, 0xabcd0003)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcd0003)
 		}
 		CH03("", 0, 0x00f, 0, 0)
 

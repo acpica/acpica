@@ -47,7 +47,7 @@ Method(m02f,, Serialized)
 		Store(Acquire(T500, 0xffff), Local0)
 		if (Local0) {
 			Store("!!!!!!!! ERROR 0: Acquire T500 (Level 5, index 0)", Debug)
-			err("", zFFF, 0x000, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquired T500 (Level 5, index 0)", Debug)
 		}
@@ -57,7 +57,7 @@ Method(m02f,, Serialized)
 		Store(Acquire(T600, 0xffff), Local0)
 		if (Local0) {
 			Store("!!!!!!!! ERROR 1: Acquire T600 (Level 6, index 0)", Debug)
-			err("", zFFF, 0x001, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquired T600 (Level 6, index 0)", Debug)
 		}
@@ -77,7 +77,7 @@ Method(m02f,, Serialized)
 		Store(Acquire(T700, 0xffff), Local0)
 		if (Local0) {
 			Store("!!!!!!!! ERROR 3: Acquire T700 (Level 7, index 0)", Debug)
-			err("", zFFF, 0x003, 0, 0, 0, 0)
+			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquired T700 (Level 7, index 0)", Debug)
 			Store("Current level is equal to 7!", Debug)

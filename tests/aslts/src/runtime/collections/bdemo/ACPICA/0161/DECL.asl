@@ -39,30 +39,30 @@
 Method(md8f)
 {
 	if (LNotEqual(bf32, 0x14)) {
-		err("", zFFF, 0x000, 0, 0, bf32, 0x14)
+		err("", zFFF, __LINE__, 0, 0, bf32, 0x14)
 	}
 	if (LNotEqual(bf33, 0x1615)) {
-		err("", zFFF, 0x001, 0, 0, bf33, 0x1615)
+		err("", zFFF, __LINE__, 0, 0, bf33, 0x1615)
 	}
 }
 
 Method(md90)
 {
 	if (LNotEqual(bf34, 0x18)) {
-		err("", zFFF, 0x002, 0, 0, bf34, 0x18)
+		err("", zFFF, __LINE__, 0, 0, bf34, 0x18)
 	}
 	if (LNotEqual(bf35, 0x19)) {
-		err("", zFFF, 0x003, 0, 0, bf35, 0x19)
+		err("", zFFF, __LINE__, 0, 0, bf35, 0x19)
 	}
 }
 
 Method(md91)
 {
 	if (LNotEqual(bf36, 0x1a)) {
-		err("", zFFF, 0x004, 0, 0, bf36, 0x1a)
+		err("", zFFF, __LINE__, 0, 0, bf36, 0x1a)
 	}
 	if (LNotEqual(bf37, 0x1c1b)) {
-		err("", zFFF, 0x005, 0, 0, bf37, 0x1c1b)
+		err("", zFFF, __LINE__, 0, 0, bf37, 0x1c1b)
 	}
 }
 
@@ -74,10 +74,10 @@ Method(md92)
 	CreateField(bd02, 40, Add(id03, 8), bf33)
 
 	if (LNotEqual(bf32, 0x14)) {
-		err("", zFFF, 0x006, 0, 0, bf32, 0x14)
+		err("", zFFF, __LINE__, 0, 0, bf32, 0x14)
 	}
 	if (LNotEqual(bf33, 0x1615)) {
-		err("", zFFF, 0x007, 0, 0, bf33, 0x1615)
+		err("", zFFF, __LINE__, 0, 0, bf33, 0x1615)
 	}
 }
 
@@ -87,10 +87,10 @@ Method(md93)
 	CreateField(bd02, Add(id04, 8), 8, bf35)
 
 	if (LNotEqual(bf34, 0x18)) {
-		err("", zFFF, 0x008, 0, 0, bf34, 0x18)
+		err("", zFFF, __LINE__, 0, 0, bf34, 0x18)
 	}
 	if (LNotEqual(bf35, 0x19)) {
-		err("", zFFF, 0x009, 0, 0, bf35, 0x19)
+		err("", zFFF, __LINE__, 0, 0, bf35, 0x19)
 	}
 }
 
@@ -100,10 +100,10 @@ Method(md94)
 	CreateField(bd02, Add(id07, 8), Add(id08, 8), bf37)
 
 	if (LNotEqual(bf36, 0x1a)) {
-		err("", zFFF, 0x00a, 0, 0, bf36, 0x1a)
+		err("", zFFF, __LINE__, 0, 0, bf36, 0x1a)
 	}
 	if (LNotEqual(bf37, 0x1c1b)) {
-		err("", zFFF, 0x00b, 0, 0, bf37, 0x1c1b)
+		err("", zFFF, __LINE__, 0, 0, bf37, 0x1c1b)
 	}
 }
 
@@ -115,10 +115,10 @@ Method(md95)
 	CreateField(bd03, 40, Add(id03, 8), bf33)
 
 	if (LNotEqual(bf32, 0x14)) {
-		err("", zFFF, 0x00c, 0, 0, bf32, 0x14)
+		err("", zFFF, __LINE__, 0, 0, bf32, 0x14)
 	}
 	if (LNotEqual(bf33, 0x1615)) {
-		err("", zFFF, 0x00d, 0, 0, bf33, 0x1615)
+		err("", zFFF, __LINE__, 0, 0, bf33, 0x1615)
 	}
 }
 
@@ -128,10 +128,10 @@ Method(md96)
 	CreateField(bd03, Add(id04, 8), 8, bf35)
 
 	if (LNotEqual(bf34, 0x18)) {
-		err("", zFFF, 0x00e, 0, 0, bf34, 0x18)
+		err("", zFFF, __LINE__, 0, 0, bf34, 0x18)
 	}
 	if (LNotEqual(bf35, 0x19)) {
-		err("", zFFF, 0x00f, 0, 0, bf35, 0x19)
+		err("", zFFF, __LINE__, 0, 0, bf35, 0x19)
 	}
 }
 
@@ -141,10 +141,10 @@ Method(md97)
 	CreateField(bd03, Add(id07, 8), Add(id08, 8), bf37)
 
 	if (LNotEqual(bf36, 0x1a)) {
-		err("", zFFF, 0x010, 0, 0, bf36, 0x1a)
+		err("", zFFF, __LINE__, 0, 0, bf36, 0x1a)
 	}
 	if (LNotEqual(bf37, 0x1c1b)) {
-		err("", zFFF, 0x011, 0, 0, bf37, 0x1c1b)
+		err("", zFFF, __LINE__, 0, 0, bf37, 0x1c1b)
 	}
 }
 
@@ -153,40 +153,40 @@ Method(m075, 6, Serialized)
 	Name(b000, Buffer() {0x5D, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18})
 
 	if (LNotEqual(arg0, 1)) {
-		err("", zFFF, 0x012, 0, 0, arg0, 1)
+		err("", zFFF, __LINE__, 0, 0, arg0, 1)
 	}
 	if (LNotEqual(arg1, 0x5d)) {
-		err("", zFFF, 0x013, 0, 0, arg1, 0x5d)
+		err("", zFFF, __LINE__, 0, 0, arg1, 0x5d)
 	}
 	if (LNotEqual(arg2, 0x125D)) {
-		err("", zFFF, 0x014, 0, 0, arg2, 0x125D)
+		err("", zFFF, __LINE__, 0, 0, arg2, 0x125D)
 	}
 	if (LNotEqual(arg3, 0x1413125D)) {
-		err("", zFFF, 0x015, 0, 0, arg3, 0x1413125D)
+		err("", zFFF, __LINE__, 0, 0, arg3, 0x1413125D)
 	}
 
 	if (F64) {
 		if (LNotEqual(arg4, 0x181716151413125D)) {
-			err("", zFFF, 0x016, 0, 0, arg4, 0x181716151413125D)
+			err("", zFFF, __LINE__, 0, 0, arg4, 0x181716151413125D)
 		}
 	} else {
 		if (LNotEqual(arg4, b000)) {
-			err("", zFFF, 0x016, 0, 0, arg4, b000)
+			err("", zFFF, __LINE__, 0, 0, arg4, b000)
 		}
 	}
 
 	if (LNotEqual(arg5, 0x5d)) {
-		err("", zFFF, 0x017, 0, 0, arg5, 0x5d)
+		err("", zFFF, __LINE__, 0, 0, arg5, 0x5d)
 	}
 }
 
 Method(m076, 2)
 {
 	if (LNotEqual(arg0, 0x5d)) {
-		err("", zFFF, 0x018, 0, 0, arg0, 0x5d)
+		err("", zFFF, __LINE__, 0, 0, arg0, 0x5d)
 	}
 	if (LNotEqual(arg1, 0x5d)) {
-		err("", zFFF, 0x019, 0, 0, arg1, 0x5d)
+		err("", zFFF, __LINE__, 0, 0, arg1, 0x5d)
 	}
 }
 

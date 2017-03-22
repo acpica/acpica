@@ -62,6 +62,6 @@ Method(m17b, 0, Serialized)
 	}
 
 	if (LNotEqual(Local1, 3)) {
-		err("", zFFF, Local2, 0, 0, Local1, 3)
+		err("", zFFF, __LINE__, 0, 0, Local1, 3)
 	}
 }

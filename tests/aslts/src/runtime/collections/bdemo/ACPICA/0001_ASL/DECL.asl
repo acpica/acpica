@@ -40,23 +40,23 @@ Method(md9b)
 
 	Store(Acquire(mxd0, 0), Local0)
 	if (Local0) {
-		err("", zFFF, 0x000, 0, 0, 0, Local0)
+		err("", zFFF, __LINE__, 0, 0, 0, Local0)
 	}
 
 	Store(Acquire(mxd0, 0x1000), Local0)
 	if (Local0) {
-		err("", zFFF, 0x001, 0, 0, 0, Local0)
+		err("", zFFF, __LINE__, 0, 0, 0, Local0)
 	}
 
 	Store(0x1000, Local1)
 	Store(Acquire(mxd0, Local1), Local0)
 	if (Local0) {
-		err("", zFFF, 0x002, 0, 0, 0, Local0)
+		err("", zFFF, __LINE__, 0, 0, 0, Local0)
 	}
 
 	Store(Acquire(mxd0, TOUT), Local0)
 	if (Local0) {
-		err("", zFFF, 0x003, 0, 0, 0, Local0)
+		err("", zFFF, __LINE__, 0, 0, 0, Local0)
 	}
 }
 

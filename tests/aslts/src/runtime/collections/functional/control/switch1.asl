@@ -585,7 +585,7 @@ Method(m0c7, 3, Serialized)
 			}
 
 			if (LNotEqual(Local0, ix00)){
-				err(arg0, z068, 0, 0, 0, Local0, ix00)
+				err(arg0, z068, __LINE__, 0, 0, Local0, ix00)
 			}
 			Increment(ix00)
 			Increment(swi1)

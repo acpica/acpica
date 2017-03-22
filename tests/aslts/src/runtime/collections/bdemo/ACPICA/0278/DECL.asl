@@ -60,10 +60,10 @@ Device (D278) {
 	{
 		// Check absence
 		if (CondRefof(NABS, Local0)) {
-			err("", zFFF, 0x001, 0, 0, "NABS", 1)
+			err("", zFFF, __LINE__, 0, 0, "NABS", 1)
 		}
 		if (CondRefof(NCRR, Local0)) {
-			err("", zFFF, 0x002, 0, 0, "NCRR", 1)
+			err("", zFFF, __LINE__, 0, 0, "NCRR", 1)
 		}
 
 		Store(SSDT, RFU0)
@@ -73,33 +73,33 @@ Device (D278) {
 		// Check existence
 		if (CondRefof(NABS, Local0)) {
 			if (LNotEqual("absolute location obj", Derefof(Local0))) {
-				err("", zFFF, 0x003, 0, 0, "absolute location NABS", 1)
+				err("", zFFF, __LINE__, 0, 0, "absolute location NABS", 1)
 			}
 		} else {
-			err("", zFFF, 0x004, 0, 0, "NABS", 0)
+			err("", zFFF, __LINE__, 0, 0, "NABS", 0)
 		}
 		if (CondRefof(NCRR, Local0)) {
 			if (LNotEqual("current location obj", Derefof(Local0))) {
-				err("", zFFF, 0x005, 0, 0, "current location NCRR", 1)
+				err("", zFFF, __LINE__, 0, 0, "current location NCRR", 1)
 			}
 		} else {
-			err("", zFFF, 0x006, 0, 0, "NCRR", 0)
+			err("", zFFF, __LINE__, 0, 0, "NCRR", 0)
 		}
 
 		// Check location
 		if (CondRefof(\NABS, Local0)) {
 		} else {
-			err("", zFFF, 0x007, 0, 0, "\\NABS", 0)
+			err("", zFFF, __LINE__, 0, 0, "\\NABS", 0)
 		}
 		if (CondRefof(\NCRR, Local0)) {
-			err("", zFFF, 0x008, 0, 0, "\\NCRR", 1)
+			err("", zFFF, __LINE__, 0, 0, "\\NCRR", 1)
 		}
 		if (CondRefof(\D278.NCRR, Local0)) {
-			err("", zFFF, 0x009, 0, 0, "\\D278.NCRR", 1)
+			err("", zFFF, __LINE__, 0, 0, "\\D278.NCRR", 1)
 		}
 		if (CondRefof(\D278.TST0.NCRR, Local0)) {
 		} else {
-			err("", zFFF, 0x00a, 0, 0, "\\D278.TST0.NCRR", 0)
+			err("", zFFF, __LINE__, 0, 0, "\\D278.TST0.NCRR", 0)
 		}
 
 		UnLoad(DDBH)
@@ -107,10 +107,10 @@ Device (D278) {
 
 		// Check absence
 		if (CondRefof(NABS, Local0)) {
-			err("", zFFF, 0x00b, 0, 0, "NABS", 1)
+			err("", zFFF, __LINE__, 0, 0, "NABS", 1)
 		}
 		if (CondRefof(NCRR, Local0)) {
-			err("", zFFF, 0x00c, 0, 0, "NCRR", 1)
+			err("", zFFF, __LINE__, 0, 0, "NCRR", 1)
 		}
 	}
 }

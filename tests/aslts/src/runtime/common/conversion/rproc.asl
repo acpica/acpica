@@ -60,16 +60,16 @@ Method(m4c1, 7, Serialized)
 		if (F64) {
 			Store(ObjectType(Local0), tmp1)
 			if (LNotEqual(tmp0, tmp1)) {
-				err(arg0, z066, 0, 0, 0, tmp0, tmp1)
+				err(arg0, z066, __LINE__, 0, 0, tmp0, tmp1)
 			} elseif (LNotEqual(arg5, Local0)) {
-				err(arg0, z066, 1, 0, 0, arg5, Local0)
+				err(arg0, z066, __LINE__, 0, 0, arg5, Local0)
 			}
 		} else {
 			Store(ObjectType(Local1), tmp1)
 			if (LNotEqual(tmp0, tmp1)) {
-				err(arg0, z066, 2, 0, 0, tmp0, tmp1)
+				err(arg0, z066, __LINE__, 0, 0, tmp0, tmp1)
 			} elseif (LNotEqual(arg5, Local1)) {
-				err(arg0, z066, 3, 0, 0, arg5, Local1)
+				err(arg0, z066, __LINE__, 0, 0, arg5, Local1)
 			}
 		}
 	} else {
@@ -92,16 +92,16 @@ Method(m4c1, 7, Serialized)
 		if (F64) {
 			Store(ObjectType(Local2), tmp1)
 			if (LNotEqual(tmp0, tmp1)) {
-				err(arg0, z066, 4, 0, 0, tmp0, tmp1)
+				err(arg0, z066, __LINE__, 0, 0, tmp0, tmp1)
 			} elseif (LNotEqual(arg6, Local2)) {
-				err(arg0, z066, 5, 0, 0, arg6, Local2)
+				err(arg0, z066, __LINE__, 0, 0, arg6, Local2)
 			}
 		} else {
 			Store(ObjectType(Local3), tmp1)
 			if (LNotEqual(tmp0, tmp1)) {
-				err(arg0, z066, 6, 0, 0, tmp0, tmp1)
+				err(arg0, z066, __LINE__, 0, 0, tmp0, tmp1)
 			} elseif (LNotEqual(arg6, Local3)) {
-				err(arg0, z066, 7, 0, 0, arg6, Local3)
+				err(arg0, z066, __LINE__, 0, 0, arg6, Local3)
 			}
 		}
 	}

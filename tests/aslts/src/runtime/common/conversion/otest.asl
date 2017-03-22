@@ -87,11 +87,11 @@ Method(m4a2, 1, Serialized)
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, 2)) {
-			err(arg0, z065, 0, 0, 0, Local1, 2)
+			err(arg0, z065, __LINE__, 0, 0, Local1, 2)
 		} else {
 			Store(SizeOf(Local0), Local1)
 			if (LNotEqual(Local1, 1)) {
-				err(arg0, z065, 1, 0, 0, Local1, 1)
+				err(arg0, z065, __LINE__, 0, 0, Local1, 1)
 			} else {
 				CH03(ts, z065, 0, 0, 0)
 				Add(Local0, 0, Local7)
@@ -126,11 +126,11 @@ Method(m4a4, 1, Serialized)
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, 2)) {
-			err(arg0, z065, 2, 0, 0, Local1, 2)
+			err(arg0, z065, __LINE__, 0, 0, Local1, 2)
 		} else {
 			Store(SizeOf(Local0), Local1)
 			if (LNotEqual(Local1, 1)) {
-				err(arg0, z065, 3, 0, 0, Local1, 1)
+				err(arg0, z065, __LINE__, 0, 0, Local1, 1)
 			} else {
 				CH03(ts, z065, 4, 0, 0)
 				Add(Local0, 0, Local7)

@@ -38,10 +38,10 @@
 Method(mddb, 5)
 {
 	if (LNotEqual(arg0, arg1)) {
-		err("", zFFF, 0x000, 0, 0, arg0, arg1)
+		err("", zFFF, __LINE__, 0, 0, arg0, arg1)
 	}
 	if (LNotEqual(arg2, arg3)) {
-		err("", zFFF, 0x001, 0, 0, arg0, arg1)
+		err("", zFFF, __LINE__, 0, 0, arg0, arg1)
 	}
 }
 
@@ -73,6 +73,6 @@ Method(mddc,, Serialized)
 	mddb(REG0._ADR, 7, REG1._ADR, 22, "_ADR")
 
 	if (LNotEqual(RT00, BUF0)) {
-		err("", zFFF, 0x002, 0, 0, RT00, BUF0)
+		err("", zFFF, __LINE__, 0, 0, RT00, BUF0)
 	}
 }

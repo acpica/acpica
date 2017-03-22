@@ -63,31 +63,31 @@ Method(m1b3,, Serialized)
 	Store(i900, Local0)
 	Store(ObjectType(Local0), Local7)
 	if (LNotEqual(Local7, c009)) {
-		err(ts, z109, 2, 0, 0, Local7, c009)
+		err(ts, z109, __LINE__, 0, 0, Local7, c009)
 	}
 
 	Store(s900, Local0)
 	Store(ObjectType(Local0), Local7)
 	if (LNotEqual(Local7, c00a)) {
-		err(ts, z109, 3, 0, 0, Local7, c00a)
+		err(ts, z109, __LINE__, 0, 0, Local7, c00a)
 	}
 
 	Store(b900, Local0)
 	Store(ObjectType(Local0), Local7)
 	if (LNotEqual(Local7, c00b)) {
-		err(ts, z109, 4, 0, 0, Local7, c00b)
+		err(ts, z109, __LINE__, 0, 0, Local7, c00b)
 	}
 
 	Store(p900, Local0)
 	Store(ObjectType(Local0), Local7)
 	if (LNotEqual(Local7, c00c)) {
-		err(ts, z109, 5, 0, 0, Local7, c00c)
+		err(ts, z109, __LINE__, 0, 0, Local7, c00c)
 	}
 
 	Store(f900, Local0)
 	Store(ObjectType(Local0), Local7)
 	if (LNotEqual(Local7, c009)) {
-		err(ts, z109, 6, 0, 0, Local7, c009)
+		err(ts, z109, __LINE__, 0, 0, Local7, c009)
 	}
 
 /*
@@ -157,6 +157,6 @@ Method(m1b3,, Serialized)
 	Store(bf90, Local0)
 	Store(ObjectType(Local0), Local7)
 	if (LNotEqual(Local7, c009)) {
-		err(ts, z109, 23, 0, 0, Local7, c009)
+		err(ts, z109, __LINE__, 0, 0, Local7, c009)
 	}
 }

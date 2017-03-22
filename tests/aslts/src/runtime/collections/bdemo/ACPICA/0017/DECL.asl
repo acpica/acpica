@@ -38,15 +38,15 @@ Method(mdb2)
 	Store(Buffer(){ 0x20, 0x21, 0x22, 0, 0x26 }, Local1)
 
 	if (LEqual(Local0, Local1)) {
-		err("", zFFF, 0x000, 0, 0, Local0, Local1)
+		err("", zFFF, __LINE__, 0, 0, Local0, Local1)
 	}
 
 	if (LNotEqual(Local0, Buffer(){ 0x20, 0x21, 0x22, 0, 0x25 })) {
-		err("", zFFF, 0x001, 0, 0, Local0, Buffer(){ 0x20, 0x21, 0x22, 0, 0x25 })
+		err("", zFFF, __LINE__, 0, 0, Local0, Buffer(){ 0x20, 0x21, 0x22, 0, 0x25 })
 	}
 
 	if (LNotEqual(Local1, Buffer(){ 0x20, 0x21, 0x22, 0, 0x26 })) {
-		err("", zFFF, 0x002, 0, 0, Local1, Buffer(){ 0x20, 0x21, 0x22, 0, 0x26 })
+		err("", zFFF, __LINE__, 0, 0, Local1, Buffer(){ 0x20, 0x21, 0x22, 0, 0x26 })
 	}
 }
 

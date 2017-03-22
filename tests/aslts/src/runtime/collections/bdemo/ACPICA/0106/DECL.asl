@@ -45,6 +45,6 @@
 		Store(Local2, Debug)
 
 		if (LNotEqual(Local2, c018)) {
-			err("", zFFF, 0x000, 0, 0, Local2, c018)
+			err("", zFFF, __LINE__, 0, 0, Local2, c018)
 		}
 	}

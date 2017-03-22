@@ -606,7 +606,7 @@ Method(mf72, 1, Serialized)
 		m004(Local0, Local1, Local2, Local3, Local4, Local5, Local6),
 		i000)
 	if (LNotEqual(i000, cmp0)) {
-		err("", z139, 0x000, 0, 0, i000, cmp0)
+		err("", z139, __LINE__, 0, 0, i000, cmp0)
 	}
 	m4c0(ts, Local0, 0, 0)
 	m4c0(ts, Local1, 0xaaaa0001, 0xaaaa0001)
@@ -626,7 +626,7 @@ Method(mf72, 1, Serialized)
 		m004(Local0, Local1, Local2, Local3, Local4, Local5, Local6),
 		i000)
 	if (LNotEqual(i000, cmp0)) {
-		err("", z139, 0x001, 0, 0, i000, cmp0)
+		err("", z139, __LINE__, 0, 0, i000, cmp0)
 	}
 	m4c0(ts, Local0, 1, 1)
 	m4c0(ts, Local1, 0xaaaa0001, 0xaaaa0001)
@@ -646,7 +646,7 @@ Method(mf72, 1, Serialized)
 		m004(Local0, Local1, Local2, Local3, Local4, Local5, Local6),
 		i000)
 	if (LNotEqual(i000, cmp0)) {
-		err("", z139, 0x002, 0, 0, i000, cmp0)
+		err("", z139, __LINE__, 0, 0, i000, cmp0)
 	}
 	m4c0(ts, Local0, 2, 2)
 	m4c0(ts, Local1, 0xaaaa0001, 0xaaaa0001)
@@ -666,7 +666,7 @@ Method(mf72, 1, Serialized)
 		m004(Local0, Local1, Local2, Local3, Local4, Local5, Local6),
 		i000)
 	if (LNotEqual(i000, cmp0)) {
-		err("", z139, 0x003, 0, 0, i000, cmp0)
+		err("", z139, __LINE__, 0, 0, i000, cmp0)
 	}
 	m4c0(ts, Local0, 3, 3)
 	m4c0(ts, Local1, 0xaaaa0001, 0xaaaa0001)
@@ -686,7 +686,7 @@ Method(mf72, 1, Serialized)
 		m004(Local0, Local1, Local2, Local3, Local4, Local5, Local6),
 		i000)
 	if (LNotEqual(i000, cmp0)) {
-		err("", z139, 0x004, 0, 0, i000, cmp0)
+		err("", z139, __LINE__, 0, 0, i000, cmp0)
 	}
 	m4c0(ts, Local0, 4, 4)
 	m4c0(ts, Local1, 0xaaaa0001, 0xaaaa0001)
@@ -706,7 +706,7 @@ Method(mf72, 1, Serialized)
 		m004(Local0, Local1, Local2, Local3, Local4, Local5, Local6),
 		i000)
 	if (LNotEqual(i000, cmp0)) {
-		err("", z139, 0x005, 0, 0, i000, cmp0)
+		err("", z139, __LINE__, 0, 0, i000, cmp0)
 	}
 	m4c0(ts, Local0, 5, 5)
 	m4c0(ts, Local1, 0xaaaa0001, 0xaaaa0001)
@@ -726,7 +726,7 @@ Method(mf72, 1, Serialized)
 		m004(Local0, Local1, Local2, Local3, Local4, Local5, Local6),
 		i000)
 	if (LNotEqual(i000, cmp0)) {
-		err("", z139, 0x006, 0, 0, i000, cmp0)
+		err("", z139, __LINE__, 0, 0, i000, cmp0)
 	}
 	m4c0(ts, Local0, 6, 6)
 	m4c0(ts, Local1, 0xaaaa0001, 0xaaaa0001)
@@ -746,7 +746,7 @@ Method(mf72, 1, Serialized)
 		m004(Local0, Local1, Local2, Local3, Local4, Local5, Local6),
 		i000)
 	if (LNotEqual(i000, cmp0)) {
-		err("", z139, 0x007, 0, 0, i000, cmp0)
+		err("", z139, __LINE__, 0, 0, i000, cmp0)
 	}
 	m4c0(ts, Local0, 7, 7)
 	m4c0(ts, Local1, 0xaaaa0001, 0xaaaa0001)
@@ -766,7 +766,7 @@ Method(mf72, 1, Serialized)
 		m004(Local0, Local1, Local2, Local3, Local4, Local5, Local6),
 		i000)
 	if (LNotEqual(i000, cmp0)) {
-		err("", z139, 0x008, 0, 0, i000, cmp0)
+		err("", z139, __LINE__, 0, 0, i000, cmp0)
 	}
 	m4c0(ts, Local0, 8, 8)
 	m4c0(ts, Local1, 0xaaaa0001, 0xaaaa0001)
@@ -786,7 +786,7 @@ Method(mf72, 1, Serialized)
 		m004(Local0, Local1, Local2, Local3, Local4, Local5, Local6),
 		i000)
 	if (LNotEqual(i000, cmp0)) {
-		err("", z139, 0x009, 0, 0, i000, cmp0)
+		err("", z139, __LINE__, 0, 0, i000, cmp0)
 	}
 	m4c0(ts, Local0, 9, 9)
 	m4c0(ts, Local1, 0xaaaa0001, 0xaaaa0001)

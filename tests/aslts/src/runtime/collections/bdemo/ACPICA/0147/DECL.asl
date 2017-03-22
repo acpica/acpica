@@ -47,6 +47,6 @@ Method(mf3d)
 {
 	Store(mf3c(), Local0)
 	if (LNotEqual(Local0, "mf3czxcvbnm")) {
-		err("", zFFF, 0x000, 0, 0, Local0, "mf3czxcvbnm")
+		err("", zFFF, __LINE__, 0, 0, Local0, "mf3czxcvbnm")
 	}
 }

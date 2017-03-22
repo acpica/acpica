@@ -60,7 +60,7 @@ Method(m1a0, 4)
 
 	Store(ObjectType(arg0), Local0)
 	if (LNotEqual(Local0, arg1)) {
-		err(c080, z076, 0, 0, 0, Local0, arg1)
+		err(c080, z076, __LINE__, 0, 0, Local0, arg1)
 	} else {
 		if (c089) {
 
@@ -129,18 +129,18 @@ Method(m1a0, 4)
 			Store(RefOf(arg0), Local0)
 			Store(ObjectType(Local0), Local1)
 			if (LNotEqual(Local1, arg1)) {
-				err(c080, z076, 1, 0, 0, Local1, arg1)
+				err(c080, z076, __LINE__, 0, 0, Local1, arg1)
 			} else {
 				Store(1, Local7)
 			}
 		} elseif (LEqual(c08b, 2)) {
 			Store(CondRefOf(arg0, Local0), Local1)
 			if (LNotEqual(Local1, Ones)) {
-				err(c080, z076, 2, 0, 0, Local1, arg1)
+				err(c080, z076, __LINE__, 0, 0, Local1, arg1)
 			} else {
 				Store(ObjectType(Local0), Local1)
 				if (LNotEqual(Local1, arg1)) {
-					err(c080, z076, 3, 0, 0, Local1, arg1)
+					err(c080, z076, __LINE__, 0, 0, Local1, arg1)
 				} else {
 					Store(1, Local7)
 				}
@@ -155,14 +155,14 @@ Method(m1a0, 4)
 
 			Store(ObjectType(Local0), Local1)
 			if (LNotEqual(Local1, arg1)) {
-				err(c080, z076, 4, 0, 0, Local1, arg1)
+				err(c080, z076, __LINE__, 0, 0, Local1, arg1)
 			} else {
 
 				// Check DerefOf
 
 				Store(ObjectType(DerefOf(Local0)), Local1)
 				if (LNotEqual(Local1, arg1)) {
-					err(c080, z076, 5, 0, 0, Local1, arg1)
+					err(c080, z076, __LINE__, 0, 0, Local1, arg1)
 				}
 
 				// Check that writing into M2-ArgX-RefOf_Reference
@@ -171,9 +171,9 @@ Method(m1a0, 4)
 				m002(Local0)
 				Store(ObjectType(arg0), Local1)
 				if (LNotEqual(Local1, c009)) {
-					err(c080, z076, 6, 0, 0, Local1, c009)
+					err(c080, z076, __LINE__, 0, 0, Local1, c009)
 				} elseif (LNotEqual(arg0, 0xabcd001a)) {
-					err(c080, z076, 7, 0, 0, arg0, 0xabcd001a)
+					err(c080, z076, __LINE__, 0, 0, arg0, 0xabcd001a)
 				} else {
 
 					// Check that M1-LocalX-RefOf_Reference remains
@@ -183,11 +183,11 @@ Method(m1a0, 4)
 
 					Store(ObjectType(Local0), Local1)
 					if (LNotEqual(Local1, c009)) {
-						err(c080, z076, 8, 0, 0, Local1, c009)
+						err(c080, z076, __LINE__, 0, 0, Local1, c009)
 					} else {
 						Store(SizeOf(Local0), Local1)
 						if (LNotEqual(Local1, ISZ0)) {
-							err(c080, z076, 9, 0, 0, Local1, ISZ0)
+							err(c080, z076, __LINE__, 0, 0, Local1, ISZ0)
 						}
 					}
 				}
@@ -220,7 +220,7 @@ Method(m1a2, 7, Serialized)
 
 	Store(ObjectType(arg0), Local0)
 	if (LNotEqual(Local0, arg1)) {
-		err(c080, z076, 10, 0, 0, Local0, arg1)
+		err(c080, z076, __LINE__, 0, 0, Local0, arg1)
 	} else {
 
 		if (c089) {
@@ -307,10 +307,10 @@ Method(m1a2, 7, Serialized)
 			Store(ObjectType(Local2), Local0)
 
 			if (LNotEqual(Local0, arg4)) {
-				err(c080, z076, 11, 0, 0, Local0, arg4)
+				err(c080, z076, __LINE__, 0, 0, Local0, arg4)
 			} else {
 				if (LNotEqual(Local2, arg5)) {
-					err(c080, z076, 12, 0, 0, Local2, arg5)
+					err(c080, z076, __LINE__, 0, 0, Local2, arg5)
 				}
 			}
 		} /* if(c084) */
@@ -346,18 +346,18 @@ Method(m1a2, 7, Serialized)
 			Store(RefOf(arg0), Local0)
 			Store(ObjectType(Local0), Local1)
 			if (LNotEqual(Local1, arg1)) {
-				err(c080, z076, 13, 0, 0, Local1, arg1)
+				err(c080, z076, __LINE__, 0, 0, Local1, arg1)
 			} else {
 				Store(1, Local7)
 			}
 		} elseif (LEqual(c08b, 2)) {
 			Store(CondRefOf(arg0, Local0), Local1)
 			if (LNotEqual(Local1, Ones)) {
-				err(c080, z076, 14, 0, 0, Local1, arg1)
+				err(c080, z076, __LINE__, 0, 0, Local1, arg1)
 			} else {
 				Store(ObjectType(Local0), Local1)
 				if (LNotEqual(Local1, arg1)) {
-					err(c080, z076, 15, 0, 0, Local1, arg1)
+					err(c080, z076, __LINE__, 0, 0, Local1, arg1)
 				} else {
 					Store(1, Local7)
 				}
@@ -372,14 +372,14 @@ Method(m1a2, 7, Serialized)
 
 			Store(ObjectType(Local0), Local1)
 			if (LNotEqual(Local1, arg1)) {
-				err(c080, z076, 16, 0, 0, Local1, arg1)
+				err(c080, z076, __LINE__, 0, 0, Local1, arg1)
 			} else {
 
 				// Check DerefOf
 
 				Store(ObjectType(DerefOf(Local0)), Local1)
 				if (LNotEqual(Local1, arg1)) {
-					err(c080, z076, 17, 0, 0, Local1, arg1)
+					err(c080, z076, __LINE__, 0, 0, Local1, arg1)
 				}
 
 				// Check that writing into M2-ArgX-RefOf_Reference
@@ -388,9 +388,9 @@ Method(m1a2, 7, Serialized)
 				m002(Local0)
 				Store(ObjectType(arg0), Local1)
 				if (LNotEqual(Local1, c009)) {
-					err(c080, z076, 18, 0, 0, Local1, c009)
+					err(c080, z076, __LINE__, 0, 0, Local1, c009)
 				} elseif (LNotEqual(arg0, 0xabcd001a)) {
-					err(c080, z076, 19, 0, 0, arg0, 0xabcd001a)
+					err(c080, z076, __LINE__, 0, 0, arg0, 0xabcd001a)
 				} else {
 
 					// Check that M1-LocalX-RefOf_Reference remains
@@ -400,11 +400,11 @@ Method(m1a2, 7, Serialized)
 
 					Store(ObjectType(Local0), Local1)
 					if (LNotEqual(Local1, c009)) {
-						err(c080, z076, 20, 0, 0, Local1, c009)
+						err(c080, z076, __LINE__, 0, 0, Local1, c009)
 					} else {
 						Store(SizeOf(Local0), Local1)
 						if (LNotEqual(Local1, ISZ0)) {
-							err(c080, z076, 21, 0, 0, Local1, ISZ0)
+							err(c080, z076, __LINE__, 0, 0, Local1, ISZ0)
 						}
 					}
 				}
@@ -430,10 +430,10 @@ Method(m1a4, 2)
 	Store(ObjectType(arg0), Local0)
 
 	if (LNotEqual(Local0, c009)) {
-		err(c080, z076, 22, 0, 0, Local0, c009)
+		err(c080, z076, __LINE__, 0, 0, Local0, c009)
 		Store(0, Local7)
 	} elseif (LNotEqual(arg0, Ones)) {
-		err(c080, z076, 23, 0, 0, arg0, Ones)
+		err(c080, z076, __LINE__, 0, 0, arg0, Ones)
 		Store(0, Local7)
 	}
 

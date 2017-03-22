@@ -116,6 +116,6 @@ Method(me07)
 	me03()
 	me06()
 	if (LNotEqual(id09, 1)) {
-		err("", zFFF, 0x002, 0, 0, id09, 1)
+		err("", zFFF, __LINE__, 0, 0, id09, 1)
 	}
 }

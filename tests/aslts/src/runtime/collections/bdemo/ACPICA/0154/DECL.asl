@@ -47,21 +47,21 @@
 		mf43(id1d)
 		Store(ObjectType(id1d), Local0)
 		if (LNotEqual(Local0, c009)) {
-			err("", zFFF, 0x000, 0, 0, Local0, c009)
+			err("", zFFF, __LINE__, 0, 0, Local0, c009)
 		}
 		if (LNotEqual(id1d, 0xfedcba9876543210)) {
-			err("", zFFF, 0x001, 0, 0, id1d, 0xfedcba9876543210)
+			err("", zFFF, __LINE__, 0, 0, id1d, 0xfedcba9876543210)
 		}
 
 		mf43(ed02)
 		Store(ObjectType(ed02), Local0)
 		if (LNotEqual(Local0, c00f)) {
-			err("", zFFF, 0x002, 0, 0, Local0, c00f)
+			err("", zFFF, __LINE__, 0, 0, Local0, c00f)
 		}
 
 		mf43(dd0b)		
 		Store(ObjectType(dd0b), Local0)
 		if (LNotEqual(Local0, c00e)) {
-			err("", zFFF, 0x003, 0, 0, Local0, c00e)
+			err("", zFFF, __LINE__, 0, 0, Local0, c00e)
 		}
 	}

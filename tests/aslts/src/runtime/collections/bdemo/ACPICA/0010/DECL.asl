@@ -40,17 +40,17 @@ Method(mda9)
 
 	Store(ObjectType(Local1), Local2)
 	if (LNotequal(Local2, c00b)) {
-		err("", zFFF, 0x000, 0, 0, Local2, c00b)
+		err("", zFFF, __LINE__, 0, 0, Local2, c00b)
 	}
 	if (LNotequal(Local1, Buffer(4){10, 11, 12, 13})) {
-		err("", zFFF, 0x001, 0, 0, Local1, Buffer(4){10, 11, 12, 13})
+		err("", zFFF, __LINE__, 0, 0, Local1, Buffer(4){10, 11, 12, 13})
 	}
 
 	Store(ObjectType(Local0), Local2)
 	if (LNotequal(Local2, c00b)) {
-		err("", zFFF, 0x002, 0, 0, Local2, c00b)
+		err("", zFFF, __LINE__, 0, 0, Local2, c00b)
 	}
 	if (LNotequal(Local0, Buffer(4){10, 11, 12, 13})) {
-		err("", zFFF, 0x003, 0, 0, Local0, Buffer(4){10, 11, 12, 13})
+		err("", zFFF, __LINE__, 0, 0, Local0, Buffer(4){10, 11, 12, 13})
 	}
 }

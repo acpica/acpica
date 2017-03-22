@@ -56,6 +56,6 @@ Method(m81a)
 	 * ------- Additional Comment #8 From Len Brown 2006-06-25 21:49 -------
 	 * ACPICA 20060608 shipped in 2.6.17-git9, closed.
 	 *
-	 * err("", zFFF, 0x000, 0, 0, 0, 0)
+	 * err("", zFFF, __LINE__, 0, 0, 0, 0)
 	 */
 }

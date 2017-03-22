@@ -41,6 +41,6 @@ Method(mdd4)
 
 	Add(Local0, 1, Local7)
 	if (LNotEqual(Local7, 11)){
-		err("", zFFF, 0x000, 0, 0, Local7, 11)
+		err("", zFFF, __LINE__, 0, 0, Local7, 11)
 	}
 }

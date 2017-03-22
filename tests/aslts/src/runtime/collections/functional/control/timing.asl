@@ -72,7 +72,7 @@ Method(m0c8, 6)
 
 				if (LLess(Local6, Local4)) {
 					Subtract(Local4, Local6, Local7)
-					err(arg0, z006, 0, 0, 0, Local5, arg2)
+					err(arg0, z006, __LINE__, 0, 0, Local5, arg2)
 					Store(Local0, Debug)
 					Store(Local4, Debug)
 					Store(Local6, Debug)
@@ -91,7 +91,7 @@ Method(m0c8, 6)
 
 				if (LLess(Local6, Local4)) {
 					Subtract(Local4, Local6, Local7)
-					err(arg0, z006, 1, 0, 0, Local5, arg2)
+					err(arg0, z006, __LINE__, 0, 0, Local5, arg2)
 					Store(Local0, Debug)
 					Store(Local4, Debug)
 					Store(Local6, Debug)
@@ -110,7 +110,7 @@ Method(m0c8, 6)
 
 				if (LLess(Local6, Local4)) {
 					Subtract(Local4, Local6, Local7)
-					err(arg0, z006, 2, 0, 0, Local5, arg2)
+					err(arg0, z006, __LINE__, 0, 0, Local5, arg2)
 					Store(Local0, Debug)
 					Store(Local4, Debug)
 					Store(Local6, Debug)

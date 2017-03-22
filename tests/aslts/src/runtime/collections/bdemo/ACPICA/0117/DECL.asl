@@ -45,9 +45,9 @@
 		Store("Modification of the copied string", Debug)
 
 		if (LNotEqual(Local0, "Strang")) {
-			err("", zFFF, 0x000, 0, 0, Local0, "Strang")
+			err("", zFFF, __LINE__, 0, 0, Local0, "Strang")
 		}
 		if (LNotEqual(s000, "String")) {
-			err("", zFFF, 0x001, 0, 0, s000, "String")
+			err("", zFFF, __LINE__, 0, 0, s000, "String")
 		}
 	}

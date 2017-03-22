@@ -73,10 +73,10 @@ Method(m1e9)
 			}
 
 			if (LNotEqual(arg0, ii00)) {
-				err("", zFFF, 0x000, 0, 0, arg0, ii00)
+				err("", zFFF, __LINE__, 0, 0, arg0, ii00)
 			}
 			if (LNotEqual(arg0, Local5)) {
-				err("", zFFF, 0x001, 0, 0, arg0, Local5)
+				err("", zFFF, __LINE__, 0, 0, arg0, Local5)
 			}
 		}
 		m100(0)

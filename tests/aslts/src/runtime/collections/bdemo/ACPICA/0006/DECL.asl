@@ -36,11 +36,11 @@ Method(mda3)
 {
 	ToInteger("0x12345678", Local0)
 	if (LNotEqual(Local0, 0x12345678)) {
-		err("", zFFF, 0x000, 0, 0, Local0, 0x12345678)
+		err("", zFFF, __LINE__, 0, 0, Local0, 0x12345678)
 	}
 
 	ToInteger("12345678", Local0)
 	if (LNotEqual(Local0, 12345678)) {
-		err("", zFFF, 0x001, 0, 0, Local0, 12345678)
+		err("", zFFF, __LINE__, 0, 0, Local0, 12345678)
 	}
 }

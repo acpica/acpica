@@ -57,7 +57,7 @@ Method(mdf2, 1) {
 		// Store("ERROR 0: mdf2, after Return !!!", Debug)
 	}
 
-	err("", zFFF, 0x000, 0, 0, 0, 0)
+	err("", zFFF, __LINE__, 0, 0, 0, 0)
 
 	mdf0()
 	mdf1()
@@ -79,10 +79,10 @@ Method(mdf3, 1) {
 		// ASL-compiler DOESN'T report Warning in this case!!!
 		// And the Store operator below is actually processed!!!
 
-		err("", zFFF, 0x001, 0, 0, 0, 0)
+		err("", zFFF, __LINE__, 0, 0, 0, 0)
 	}
 
-	err("", zFFF, 0x002, 0, 0, 0, 0)
+	err("", zFFF, __LINE__, 0, 0, 0, 0)
 
 	mdf0()
 	mdf1()

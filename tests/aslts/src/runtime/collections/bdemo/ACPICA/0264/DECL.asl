@@ -59,7 +59,7 @@ Specify then what should be there the result of Store operation above?
 
 		Store(DerefOf(Index(p000, 0)), Local0)
 		if (LNotEqual(Local0, 0xabcd0000)) {
-			err("", zFFF, 0x000, 0, 0, Local0, 0xabcd0000)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0xabcd0000)
 		}
 */
 

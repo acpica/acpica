@@ -222,55 +222,55 @@ Method(m0e8, 1)
 
 	Store(m0e7(0321), Local0)
 	if (LNotEqual(Local0, 36)) {
-		err(arg0, z072, 0, 0, 0, Local0, 36)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 36)
 	}
 	Store(m0e7(0xd1), Local0)
 	if (LNotEqual(Local0, 36)) {
-		err(arg0, z072, 1, 0, 0, Local0, 36)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 36)
 	}
 	Store(m0e7(9876543210), Local0)
 	if (LNotEqual(Local0, 37)) {
-		err(arg0, z072, 2, 0, 0, Local0, 37)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 37)
 	}
 	Store(m0e7(0xc179b3fe), Local0)
 	if (LNotEqual(Local0, 28)) {
-		err(arg0, z072, 4, 0, 0, Local0, 28)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 28)
 	}
 	Store(m0e7(0xfe7cb391d650a284), Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 29)) {
-			err(arg0, z072, 0x1005, 0, 0, Local0, 29)
+			err(arg0, z072, __LINE__, 0, 0, Local0, 29)
 		}
 	} else {
 		if (LNotEqual(Local0, 39)) {
-			err(arg0, z072, 0x101, 0, 0, Local0, 39)
+			err(arg0, z072, __LINE__, 0, 0, Local0, 39)
 		}
 	}
 	Store(m0e7(0), Local0)
 	if (LNotEqual(Local0, 14)) {
-		err(arg0, z072, 6, 0, 0, Local0, 14)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 14)
 	}
 	Store(m0e7(0xffffffff), Local0)
 	if (LNotEqual(Local0, 16)) {
-		err(arg0, z072, 7, 0, 0, Local0, 16)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 16)
 	}
 	Store(m0e7(0xffffffffffffffff), Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 17)) {
-			err(arg0, z072, 8, 0, 0, Local0, 17)
+			err(arg0, z072, __LINE__, 0, 0, Local0, 17)
 		}
 	} else {
 		if (LNotEqual(Local0, 16)) {
-			err(arg0, z072, 9, 0, 0, Local0, 16)
+			err(arg0, z072, __LINE__, 0, 0, Local0, 16)
 		}
 	}
 	Store(m0e7(0xff), Local0)
 	if (LNotEqual(Local0, 20)) {
-		err(arg0, z072, 10, 0, 0, Local0, 20)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 20)
 	}
 	Store(m0e7(0xabcdef), Local0)
 	if (LNotEqual(Local0, 44)) {
-		err(arg0, z072, 11, 0, 0, Local0, 44)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 44)
 	}
 }
 
@@ -482,83 +482,83 @@ Method(m0ea, 1)
 
 	Store(m0e9("0321"), Local0)
 	if (LNotEqual(Local0, 34)) {
-		err(arg0, z072, 12, 0, 0, Local0, 34)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 34)
 	}
 	Store(m0e9("321"), Local0)
 	if (LNotEqual(Local0, 35)) {
-		err(arg0, z072, 13, 0, 0, Local0, 35)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 35)
 	}
 	Store(m0e9("ba9876"), Local0)
 	if (LNotEqual(Local0, 36)) {
-		err(arg0, z072, 14, 0, 0, Local0, 36)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 36)
 	}
 	Store(m0e9("c179b3fe"), Local0)
 	if (LNotEqual(Local0, 37)) {
-		err(arg0, z072, 15, 0, 0, Local0, 37)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 37)
 	}
 	Store(m0e9("fe7cb391d650a284"), Local0)
 	if (LNotEqual(Local0, 38)) {
-		err(arg0, z072, 16, 0, 0, Local0, 38)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 38)
 	}
 	Store(m0e9("ffffffff"), Local0)
 	if (LNotEqual(Local0, 39)) {
-		err(arg0, z072, 17, 0, 0, Local0, 39)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 39)
 	}
 	Store(m0e9("ffffffffffffffffff"), Local0)
 	if (LNotEqual(Local0, 40)) {
-		err(arg0, z072, 18, 0, 0, Local0, 40)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 40)
 	}
 	Store(m0e9("ffffffffffffffff"), Local0)
 	if (LNotEqual(Local0, 41)) {
-		err(arg0, z072, 19, 0, 0, Local0, 41)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 41)
 	}
 	Store(m0e9("ffffffffff"), Local0)
 	if (LNotEqual(Local0, 42)) {
-		err(arg0, z072, 20, 0, 0, Local0, 42)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 42)
 	}
 	Store(m0e9("ff"), Local0)
 	if (LNotEqual(Local0, 43)) {
-		err(arg0, z072, 21, 0, 0, Local0, 43)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 43)
 	}
 	Store(m0e9("fe7cb391d650a2841"), Local0)
 	if (LNotEqual(Local0, 44)) {
-		err(arg0, z072, 22, 0, 0, Local0, 44)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 44)
 	}
 	Store(m0e9("987654321"), Local0)
 	if (LNotEqual(Local0, 45)) {
-		err(arg0, z072, 23, 0, 0, Local0, 45)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 45)
 	}
 	Store(m0e9("0xfe7cb3"), Local0)
 	if (LNotEqual(Local0, 46)) {
-		err(arg0, z072, 24, 0, 0, Local0, 46)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 46)
 	}
 	Store(m0e9("1234q"), Local0)
 	if (LNotEqual(Local0, 47)) {
-		err(arg0, z072, 25, 0, 0, Local0, 47)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 47)
 	}
 	Store(m0e9(BIG0), Local0)
 	if (LNotEqual(Local0, 48)) {
-		err(arg0, z072, 26, 0, 0, Local0, 48)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 48)
 	}
 	Store(m0e9(""), Local0)
 	if (LNotEqual(Local0, 49)) {
-		err(arg0, z072, 27, 0, 0, Local0, 49)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 49)
 	}
 	Store(m0e9(" "), Local0)
 	if (LNotEqual(Local0, 50)) {
-		err(arg0, z072, 28, 0, 0, Local0, 50)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 50)
 	}
 	Store(m0e9(ALL0), Local0)
 	if (LNotEqual(Local0, 51)) {
-		err(arg0, z072, 29, 0, 0, Local0, 51)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 51)
 	}
 	Store(m0e9("abcdef"), Local0)
 	if (LNotEqual(Local0, 52)) {
-		err(arg0, z072, 30, 0, 0, Local0, 52)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 52)
 	}
 	Store(m0e9("ABCDEF"), Local0)
 	if (LNotEqual(Local0, 53)) {
-		err(arg0, z072, 31, 0, 0, Local0, 53)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 53)
 	}
 }
 
@@ -826,51 +826,51 @@ Method(m0ec, 1)
 
 	Store(m0eb(Buffer(1){10}), Local0)
 	if (LNotEqual(Local0, 29)) {
-		err(arg0, z072, 32, 0, 0, Local0, 29)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 29)
 	}
 	Store(m0eb(Buffer(2){11,12}), Local0)
 	if (LNotEqual(Local0, 30)) {
-		err(arg0, z072, 33, 0, 0, Local0, 30)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 30)
 	}
 	Store(m0eb(Buffer() {13,14,15}), Local0)
 	if (LNotEqual(Local0, 31)) {
-		err(arg0, z072, 34, 0, 0, Local0, 31)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 31)
 	}
 	Store(m0eb(Buffer(2){16,17,18}), Local0)
 	if (LNotEqual(Local0, 32)) {
-		err(arg0, z072, 35, 0, 0, Local0, 32)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 32)
 	}
 	Store(m0eb(Buffer(3){19,20}), Local0)
 	if (LNotEqual(Local0, 33)) {
-		err(arg0, z072, 36, 0, 0, Local0, 33)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 33)
 	}
 	Store(m0eb(Buffer(3){21,22,23}), Local0)
 	if (LNotEqual(Local0, 34)) {
-		err(arg0, z072, 37, 0, 0, Local0, 34)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 34)
 	}
 	Store(m0eb(Buffer(4){24,25,26,27}), Local0)
 	if (LNotEqual(Local0, 35)) {
-		err(arg0, z072, 38, 0, 0, Local0, 35)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 35)
 	}
 	Store(m0eb(Buffer(5){28,29,30,31,32}), Local0)
 	if (LNotEqual(Local0, 36)) {
-		err(arg0, z072, 39, 0, 0, Local0, 36)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 36)
 	}
 	Store(m0eb(Buffer(8){33,34,35,36,37,38,39,40}), Local0)
 	if (LNotEqual(Local0, 37)) {
-		err(arg0, z072, 40, 0, 0, Local0, 37)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 37)
 	}
 	Store(m0eb(Buffer(){0x12,0x34,0x56,0x78,0x9a,0xbc,0xde,0xf0}), Local0)
 	if (LNotEqual(Local0, 38)) {
-		err(arg0, z072, 41, 0, 0, Local0, 38)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 38)
 	}
 	Store(m0eb(Buffer(9){41,42,43,44,45,46,47,48,49}), Local0)
 	if (LNotEqual(Local0, 39)) {
-		err(arg0, z072, 42, 0, 0, Local0, 39)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 39)
 	}
 	Store(m0eb(Buffer(257){0x7d}), Local0)
 	if (LNotEqual(Local0, 40)) {
-		err(arg0, z072, 43, 0, 0, Local0, 40)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 40)
 	}
 	Store(m0eb(Buffer(257) {
 			// 0-127
@@ -911,7 +911,7 @@ Method(m0ec, 1)
 			// 256
 			0x01}), Local0)
 	if (LNotEqual(Local0, 41)) {
-		err(arg0, z072, 44, 0, 0, Local0, 41)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 41)
 	}
 	Store(m0eb(Buffer() {
 			// 0-127
@@ -952,71 +952,71 @@ Method(m0ec, 1)
 			// 256
 			0x02}), Local0)
 	if (LNotEqual(Local0, 42)) {
-		err(arg0, z072, 45, 0, 0, Local0, 42)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 42)
 	}
 	if (F64) {
 		Store(m0eb(Buffer(4){0,0,0,0}), Local0)
 		if (LNotEqual(Local0, 43)) {
-			err(arg0, z072, 46, 0, 0, Local0, 43)
+			err(arg0, z072, __LINE__, 0, 0, Local0, 43)
 		}
 		Store(m0eb(Buffer(8){0,0,0,0,0,0,0,0}), Local0)
 		if (LNotEqual(Local0, 4)) {
-			err(arg0, z072, 47, 0, 0, Local0, 4)
+			err(arg0, z072, __LINE__, 0, 0, Local0, 4)
 		}
 		Store(m0eb(Buffer(4){0xff,0xff,0xff,0xff}), Local0)
 		if (LNotEqual(Local0, 45)) {
-			err(arg0, z072, 48, 0, 0, Local0, 45)
+			err(arg0, z072, __LINE__, 0, 0, Local0, 45)
 		}
 		Store(m0eb(Buffer(8){0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff}), Local0)
 		if (LNotEqual(Local0, 6)) {
-			err(arg0, z072, 49, 0, 0, Local0, 6)
+			err(arg0, z072, __LINE__, 0, 0, Local0, 6)
 		}
 	} else {
 		Store(m0eb(Buffer(4){0,0,0,0}), Local0)
 		if (LNotEqual(Local0, 4)) {
-			err(arg0, z072, 50, 0, 0, Local0, 4)
+			err(arg0, z072, __LINE__, 0, 0, Local0, 4)
 		}
 		Store(m0eb(Buffer(8){0,0,0,0,0,0,0,0}), Local0)
 		if (LNotEqual(Local0, 44)) {
-			err(arg0, z072, 51, 0, 0, Local0, 44)
+			err(arg0, z072, __LINE__, 0, 0, Local0, 44)
 		}
 		Store(m0eb(Buffer(4){0xff,0xff,0xff,0xff}), Local0)
 		if (LNotEqual(Local0, 5)) {
-			err(arg0, z072, 52, 0, 0, Local0, 5)
+			err(arg0, z072, __LINE__, 0, 0, Local0, 5)
 		}
 		Store(m0eb(Buffer(8){0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff}), Local0)
 		if (LNotEqual(Local0, 47)) {
-			err(arg0, z072, 53, 0, 0, Local0, 47)
+			err(arg0, z072, __LINE__, 0, 0, Local0, 47)
 		}
 	}
 
 	Store(m0eb(Buffer(9){0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff}), Local0)
 	if (LNotEqual(Local0, 46)) {
-		err(arg0, z072, 54, 0, 0, Local0, 46)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 46)
 	}
 	Store(m0eb(Buffer(5){0xff,0xff,0xff,0xff,0xff}), Local0)
 	if (LNotEqual(Local0, 48)) {
-		err(arg0, z072, 55, 0, 0, Local0, 48)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 48)
 	}
 	Store(m0eb(Buffer(1){0xff}), Local0)
 	if (LNotEqual(Local0, 49)) {
-		err(arg0, z072, 56, 0, 0, Local0, 49)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 49)
 	}
 	Store(m0eb(Buffer(1){}), Local0)
 	if (LNotEqual(Local0, 24)) {
-		err(arg0, z072, 57, 0, 0, Local0, 24)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 24)
 	}
 	Store(m0eb(Buffer(5){}), Local0)
 	if (LNotEqual(Local0, 51)) {
-		err(arg0, z072, 58, 0, 0, Local0, 51)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 51)
 	}
 	Store(m0eb(Buffer(9){}), Local0)
 	if (LNotEqual(Local0, 52)) {
-		err(arg0, z072, 59, 0, 0, Local0, 52)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 52)
 	}
 	Store(m0eb(Buffer(9){0xab, 0xcd, 0xef}), Local0)
 	if (LNotEqual(Local0, 53)) {
-		err(arg0, z072, 60, 0, 0, Local0, 53)
+		err(arg0, z072, __LINE__, 0, 0, Local0, 53)
 	}
 }
 

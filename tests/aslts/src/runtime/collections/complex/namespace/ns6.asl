@@ -10,14 +10,14 @@ Method(m600,, Serialized)
 	{
 		Store(0x11223344, i000)
 		if (LNotEqual(arg0, 0xabcd0000)) {
-			err(ts, z160, 0x000, 0, 0, arg0, 0xabcd0000)
+			err(ts, z160, __LINE__, 0, 0, arg0, 0xabcd0000)
 		}
 	}
 
 	m000(i000)
 
 	if (LNotEqual(i000, 0x11223344)) {
-		err(ts, z160, 0x001, 0, 0, i000, 0x11223344)
+		err(ts, z160, __LINE__, 0, 0, i000, 0x11223344)
 	}
 }
 

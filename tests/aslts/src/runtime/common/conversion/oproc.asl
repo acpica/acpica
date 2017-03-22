@@ -570,7 +570,7 @@ Method(m484, 1, Serialized)
 
 		default {
 			if (LNotEqual(arg0, 0)) {
-				err("----------- ERROR, m484: incorrect Arg0:", z064, 0, 0, 0, 0, 0)
+				err("----------- ERROR, m484: incorrect Arg0:", z064, __LINE__, 0, 0, 0, 0)
 				Store(arg0, Debug)
 			}
 		}
@@ -790,7 +790,7 @@ Method(m487, 1, Serialized)
 
 		default {
 			if (LNotEqual(arg0, 0)) {
-				err("----------- ERROR, m487: incorrect Arg0:", z064, 1, 0, 0, 0, 0)
+				err("----------- ERROR, m487: incorrect Arg0:", z064, __LINE__, 0, 0, 0, 0)
 				Store(arg0, Debug)
 				Store(0, Local7)
 			}
@@ -887,9 +887,9 @@ Method(m489, 3)
 	Store(ObjectType(arg2), Local1)
 
 	if (LNotEqual(Local0, Local1)) {
-		err(arg0, z064, 2, 0, 0, Local0, Local1)
+		err(arg0, z064, __LINE__, 0, 0, Local0, Local1)
 	} elseif (LNotEqual(arg1, arg2)) {
-		err(arg0, z064, 3, 0, 0, arg1, arg2)
+		err(arg0, z064, __LINE__, 0, 0, arg1, arg2)
 	}
 }
 
@@ -904,11 +904,11 @@ Method(m48a, 4)
 
 	if (F64) {
 		if (LNotEqual(arg2, Local7)) {
-			err(arg0, z064, 4, 0, 0, arg2, Local7)
+			err(arg0, z064, __LINE__, 0, 0, arg2, Local7)
 		}
 	} else {
 		if (LNotEqual(arg2, Local6)) {
-			err(arg0, z064, 5, 0, 0, arg2, Local6)
+			err(arg0, z064, __LINE__, 0, 0, arg2, Local6)
 		}
 	}
 }

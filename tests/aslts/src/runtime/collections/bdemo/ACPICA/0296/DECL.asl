@@ -48,9 +48,9 @@ Device (D296) {
 		Store(ObjectType(PLDT), Local1)
 
 		if (LNotEqual(Local1, 1)) {
-			err("", zFFF, 0x002, 0, 0, Local1, 1)
+			err("", zFFF, __LINE__, 0, 0, Local1, 1)
 		} elseif (LNotEqual(1, PLDT)) {
-			err("", zFFF, 0x003, 0, 0, 1, PLDT)
+			err("", zFFF, __LINE__, 0, 0, 1, PLDT)
 		}
 
 		UnLoad(Local0)

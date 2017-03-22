@@ -190,7 +190,7 @@ Method(mf71,, Serialized)
 			Store(0xabcd0002, Local0)
 		}
 		if (LNotEqual(i000, Local0)) {
-			err("", z136, 0x102, 0, 0, i000, Local0)
+			err("", z136, __LINE__, 0, 0, i000, Local0)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x103, 0, 0)
@@ -207,7 +207,7 @@ Method(mf71,, Serialized)
 	if (SLCK) {
 		CH03("", z136, 0x105, 0, 0)
 		if (LNotEqual(i000, 0xabcd0003)) {
-			err("", z136, 0x106, 0, 0, i000, 0xabcd0003)
+			err("", z136, __LINE__, 0, 0, i000, 0xabcd0003)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x107, 0, 0)
@@ -224,7 +224,7 @@ Method(mf71,, Serialized)
 	if (SLCK) {
 		CH03("", z136, 0x109, 0, 0)
 		if (LNotEqual(i000, 0xabcd0004)) {
-			err("", z136, 0x10a, 0, 0, i000, 0xabcd0004)
+			err("", z136, __LINE__, 0, 0, i000, 0xabcd0004)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x10b, 0, 0)
@@ -241,7 +241,7 @@ Method(mf71,, Serialized)
 	if (SLCK) {
 		CH03("", z136, 0x10d, 0, 0)
 		if (LNotEqual(i000, 0xabcd0006)) {
-			err("", z136, 0x10e, 0, 0, i000, 0xabcd0006)
+			err("", z136, __LINE__, 0, 0, i000, 0xabcd0006)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x10f, 0, 0)
@@ -258,7 +258,7 @@ Method(mf71,, Serialized)
 	if (SLCK) {
 		CH03("", z136, 0x111, 0, 0)
 		if (LNotEqual(i000, 0xabcd0007)) {
-			err("", z136, 0x112, 0, 0, i000, 0xabcd0007)
+			err("", z136, __LINE__, 0, 0, i000, 0xabcd0007)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x113, 0, 0)
@@ -275,7 +275,7 @@ Method(mf71,, Serialized)
 	if (SLCK) {
 		CH03("", z136, 0x115, 0, 0)
 		if (LNotEqual(i000, 0xabcd0008)) {
-			err("", z136, 0x116, 0, 0, i000, 0xabcd0008)
+			err("", z136, __LINE__, 0, 0, i000, 0xabcd0008)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x117, 0, 0)
@@ -292,7 +292,7 @@ Method(mf71,, Serialized)
 	if (SLCK) {
 		CH03("", z136, 0x119, 0, 0)
 		if (LNotEqual(i000, 0xabcd0009)) {
-			err("", z136, 0x11a, 0, 0, i000, 0xabcd0009)
+			err("", z136, __LINE__, 0, 0, i000, 0xabcd0009)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x11b, 0, 0)
@@ -309,7 +309,7 @@ Method(mf71,, Serialized)
 	if (SLCK) {
 		CH03("", z136, 0x11d, 0, 0)
 		if (LNotEqual(i000, 0xabcd000a)) {
-			err("", z136, 0x11e, 0, 0, i000, 0xabcd000a)
+			err("", z136, __LINE__, 0, 0, i000, 0xabcd000a)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x11f, 0, 0)
@@ -331,7 +331,7 @@ Method(mf71,, Serialized)
 			Store(0xabcd000b, Local0)
 		}
 		if (LNotEqual(i000, Local0)) {
-			err("", z136, 0x122, 0, 0, i000, Local0)
+			err("", z136, __LINE__, 0, 0, i000, Local0)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x123, 0, 0)
@@ -353,7 +353,7 @@ Method(mf71,, Serialized)
 			Store(0xabcd000c, Local0)
 		}
 		if (LNotEqual(i000, Local0)) {
-			err("", z136, 0x126, 0, 0, i000, Local0)
+			err("", z136, __LINE__, 0, 0, i000, Local0)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x127, 0, 0)
@@ -370,7 +370,7 @@ Method(mf71,, Serialized)
 	if (SLCK) {
 		CH03("", z136, 0x129, 0, 0)
 		if (LNotEqual(i000, 0xabcd000d)) {
-			err("", z136, 0x12a, 0, 0, i000, 0xabcd000d)
+			err("", z136, __LINE__, 0, 0, i000, 0xabcd000d)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x12b, 0, 0)
@@ -573,7 +573,7 @@ Method(mff0,, Serialized)
 			Store(0xabcd0002, Local0)
 		}
 		if (LNotEqual(i000, Local0)) {
-			err("", z136, 0x12e, 0, 0, i000, Local0)
+			err("", z136, __LINE__, 0, 0, i000, Local0)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x12f, 0, 0)
@@ -590,7 +590,7 @@ Method(mff0,, Serialized)
 	if (SLCK) {
 		CH03("", z136, 0x131, 0, 0)
 		if (LNotEqual(i000, 0xabcd0003)) {
-			err("", z136, 0x132, 0, 0, i000, 0xabcd0003)
+			err("", z136, __LINE__, 0, 0, i000, 0xabcd0003)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x133, 0, 0)
@@ -607,7 +607,7 @@ Method(mff0,, Serialized)
 	if (SLCK) {
 		CH03("", z136, 0x135, 0, 0)
 		if (LNotEqual(i000, 0xabcd0004)) {
-			err("", z136, 0x136, 0, 0, i000, 0xabcd0004)
+			err("", z136, __LINE__, 0, 0, i000, 0xabcd0004)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x137, 0, 0)
@@ -624,7 +624,7 @@ Method(mff0,, Serialized)
 	if (SLCK) {
 		CH03("", z136, 0x139, 0, 0)
 		if (LNotEqual(i000, 0xabcd0006)) {
-			err("", z136, 0x10e, 0, 0, i000, 0xabcd0006)
+			err("", z136, __LINE__, 0, 0, i000, 0xabcd0006)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x13a, 0, 0)
@@ -641,7 +641,7 @@ Method(mff0,, Serialized)
 	if (SLCK) {
 		CH03("", z136, 0x13c, 0, 0)
 		if (LNotEqual(i000, 0xabcd0007)) {
-			err("", z136, 0x13d, 0, 0, i000, 0xabcd0007)
+			err("", z136, __LINE__, 0, 0, i000, 0xabcd0007)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x13e, 0, 0)
@@ -658,7 +658,7 @@ Method(mff0,, Serialized)
 	if (SLCK) {
 		CH03("", z136, 0x140, 0, 0)
 		if (LNotEqual(i000, 0xabcd0008)) {
-			err("", z136, 0x141, 0, 0, i000, 0xabcd0008)
+			err("", z136, __LINE__, 0, 0, i000, 0xabcd0008)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x142, 0, 0)
@@ -675,7 +675,7 @@ Method(mff0,, Serialized)
 	if (SLCK) {
 		CH03("", z136, 0x144, 0, 0)
 		if (LNotEqual(i000, 0xabcd0009)) {
-			err("", z136, 0x145, 0, 0, i000, 0xabcd0009)
+			err("", z136, __LINE__, 0, 0, i000, 0xabcd0009)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x146, 0, 0)
@@ -692,7 +692,7 @@ Method(mff0,, Serialized)
 	if (SLCK) {
 		CH03("", z136, 0x148, 0, 0)
 		if (LNotEqual(i000, 0xabcd000a)) {
-			err("", z136, 0x149, 0, 0, i000, 0xabcd000a)
+			err("", z136, __LINE__, 0, 0, i000, 0xabcd000a)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x14a, 0, 0)
@@ -714,7 +714,7 @@ Method(mff0,, Serialized)
 			Store(0xabcd000b, Local0)
 		}
 		if (LNotEqual(i000, Local0)) {
-			err("", z136, 0x14d, 0, 0, i000, Local0)
+			err("", z136, __LINE__, 0, 0, i000, Local0)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x14e, 0, 0)
@@ -736,7 +736,7 @@ Method(mff0,, Serialized)
 			Store(0xabcd000c, Local0)
 		}
 		if (LNotEqual(i000, Local0)) {
-			err("", z136, 0x151, 0, 0, i000, Local0)
+			err("", z136, __LINE__, 0, 0, i000, Local0)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x152, 0, 0)
@@ -753,7 +753,7 @@ Method(mff0,, Serialized)
 	if (SLCK) {
 		CH03("", z136, 0x154, 0, 0)
 		if (LNotEqual(i000, 0xabcd000d)) {
-			err("", z136, 0x155, 0, 0, i000, 0xabcd000d)
+			err("", z136, __LINE__, 0, 0, i000, 0xabcd000d)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x156, 0, 0)
@@ -770,7 +770,7 @@ Method(mff0,, Serialized)
 	if (SLCK) {
 		CH03("", z136, 0x158, 0, 0)
 		if (LNotEqual(i000, 0xabcd000e)) {
-			err("", z136, 0x159, 0, 0, i000, 0xabcd000e)
+			err("", z136, __LINE__, 0, 0, i000, 0xabcd000e)
 		}
 	} else {
 		CH04("", 0, 0xff, z136, 0x15a, 0, 0)

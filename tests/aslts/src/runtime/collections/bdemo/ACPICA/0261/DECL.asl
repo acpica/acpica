@@ -65,7 +65,7 @@ Method(m028,, Serialized)
 		Store(BUF0, RFU0)
 
 		if (CondRefof(\AUXZ, Local0)) {
-			err("", zFFF, 0x001, 0, 0, Local0, 0x1777777)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0x1777777)
 			return
 		}
 
@@ -75,14 +75,14 @@ Method(m028,, Serialized)
 
 		if (CondRefof(\AUXZ, Local0)) {
 		} else {
-			err("", zFFF, 0x002, 0, 0, Local0, 0x1777777)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0x1777777)
 			return
 		}
 
 		Store(ObjectType(Index(PAC0, 0)), Local1)
 		if (LNotEqual(Local1, 15)) {
 			Store(Local1, Debug)
-			err("", zFFF, 0x003, 0, 0, Local0, 0x1777777)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0x1777777)
 			return
 		}
 
@@ -91,7 +91,7 @@ Method(m028,, Serialized)
 		Store("SSDT unloaded", Debug)
 
 		if (CondRefof(\AUXZ, Local0)) {
-			err("", zFFF, 0x004, 0, 0, Local0, 0x1777777)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0x1777777)
 		}
 
 		CH03("", 0, 0x005, 0, 0)

@@ -47,27 +47,27 @@ Method(m1ef,, Serialized)
 	Store(SizeOf(i000), Local0)
 	if (LEqual(F64, 1)) {
 		if (LNotEqual(Local0, 8)) {
-			err(ts, z041, 0, 0, 0, Local0, 8)
+			err(ts, z041, __LINE__, 0, 0, Local0, 8)
 		}
 	} else {
 		if (LNotEqual(Local0, 4)) {
-			err(ts, z041, 1, 0, 0, Local0, 4)
+			err(ts, z041, __LINE__, 0, 0, Local0, 4)
 		}
 	}
 
 	Store(SizeOf(s000), Local0)
 	if (LNotEqual(Local0, 3)) {
-		err(ts, z041, 2, 0, 0, Local0, 3)
+		err(ts, z041, __LINE__, 0, 0, Local0, 3)
 	}
 
 	Store(SizeOf(b000), Local0)
 	if (LNotEqual(Local0, 5)) {
-		err(ts, z041, 3, 0, 0, Local0, 5)
+		err(ts, z041, __LINE__, 0, 0, Local0, 5)
 	}
 
 	Store(SizeOf(p000), Local0)
 	if (LNotEqual(Local0, 7)) {
-		err(ts, z041, 4, 0, 0, Local0, 7)
+		err(ts, z041, __LINE__, 0, 0, Local0, 7)
 	}
 }
 

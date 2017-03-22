@@ -243,7 +243,7 @@ Method(SW02,, Serialized)
 		Decrement(lpN0)
 		Increment(lpC0)
 		if (LNotEqual(Local1, lpN0)) {
-			err(ts, z069, 0, 0, 0, Local1, lpN0)
+			err(ts, z069, __LINE__, 0, 0, Local1, lpN0)
 			return (Ones)
 		}
 		Store(1, Index(b0sw, lpN0))
@@ -546,7 +546,7 @@ Method(SW03,, Serialized)
 		Decrement(lpN0)
 		Increment(lpC0)
 		if (LNotEqual(Local1, lpN0)) {
-			err(ts, z069, 1, 0, 0, Local1, lpN0)
+			err(ts, z069, __LINE__, 0, 0, Local1, lpN0)
 			return (Ones)
 		}
 		Store(2, Index(b0sw, lpN0))
@@ -567,7 +567,7 @@ Method(SW03,, Serialized)
 		Increment(lpC0)
 		Add(TMAX, lpN0, Local7)
 		if (LNotEqual(Local1, Local7)) {
-			err(ts, z069, 2, 0, 0, Local1, Local7)
+			err(ts, z069, __LINE__, 0, 0, Local1, Local7)
 			return (Ones)
 		}
 	}
@@ -907,7 +907,7 @@ Method(SW04,, Serialized)
 
 	Store(m0c3(), Local1)
 	if (LNotEqual(Local1, Local7)) {
-		err(ts, z069, 3, 0, 0, Local1, Local7)
+		err(ts, z069, __LINE__, 0, 0, Local1, Local7)
 		return (Ones)
 	}
 
@@ -922,7 +922,7 @@ Method(SW04,, Serialized)
 		Decrement(lpN0)
 		Increment(lpC0)
 		if (LNotEqual(Local1, lpN0)) {
-			err(ts, z069, 4, 0, 0, Local1, lpN0)
+			err(ts, z069, __LINE__, 0, 0, Local1, lpN0)
 			return (Ones)
 		}
 	}
@@ -1271,7 +1271,7 @@ Method(SW05,, Serialized)
 
 		Store(m0c4(lpC0), Local1)
 		if (LNotEqual(Local1, lpC0)) {
-			err(ts, z069, 5, 0, 0, Local1, lpC0)
+			err(ts, z069, __LINE__, 0, 0, Local1, lpC0)
 			return (Ones)
 		}
 		Decrement(lpN0)
@@ -1611,7 +1611,7 @@ Method(SW06,, Serialized)
 		Decrement(lpN0)
 		Increment(lpC0)
 		if (LNotEqual(Local1, Local7)) {
-			err(ts, z069, 6, 0, 0, Local1, Local7)
+			err(ts, z069, __LINE__, 0, 0, Local1, Local7)
 			return (Ones)
 		}
 	}
@@ -1628,7 +1628,7 @@ Method(SW06,, Serialized)
 		Increment(lpC0)
 		Add(TMAX, lpN0, Local7)
 		if (LNotEqual(Local1, Local7)) {
-			err(ts, z069, 7, 0, 0, Local1, Local7)
+			err(ts, z069, __LINE__, 0, 0, Local1, Local7)
 			return (Ones)
 		}
 		Store(2, Index(b0sw, lpN0))

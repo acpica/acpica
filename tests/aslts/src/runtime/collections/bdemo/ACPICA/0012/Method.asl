@@ -53,7 +53,7 @@ Method(m138)
 		CH03("", 0, 0x099, 0, 0)
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c010)) {
-			err("", zFFF, 0x09a, 0, 0, Local1, c010)
+			err("", zFFF, __LINE__, 0, 0, Local1, c010)
 		}
 	} else {
 		CH04("", 0, 47, 0, 0x09b, 0, 0) // AE_AML_OPERAND_TYPE
@@ -70,7 +70,7 @@ Method(m12c)
 		CH03("", 0, 0x09d, 0, 0)
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c010)) {
-			err("", zFFF, 0x09e, 0, 0, Local1, c010)
+			err("", zFFF, __LINE__, 0, 0, Local1, c010)
 		}
 	} else {
 		CH04("", 0, 47, 0, 0x09f, 0, 0) // AE_AML_OPERAND_TYPE
@@ -92,7 +92,7 @@ Method(m139)
 		CH03("", 0, 0x0a1, 0, 0)
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c010)) {
-			err("", zFFF, 0x0a2, 0, 0, Local1, c010)
+			err("", zFFF, __LINE__, 0, 0, Local1, c010)
 		}
 	} else {
 		CH04("", 0, 47, 0, 0x0a3, 0, 0) // AE_AML_OPERAND_TYPE
@@ -115,7 +115,7 @@ Method(m13a)
 			CH03("", 0, 0x0a5, 0, 0)
 			Store(ObjectType(Local0), Local1)
 			if (LNotEqual(Local1, c010)) {
-				err("", zFFF, 0x0a6, 0, 0, Local1, c010)
+				err("", zFFF, __LINE__, 0, 0, Local1, c010)
 			}
 		} else {
 			CH04("", 0, 47, 0, 0x0a7, 0, 0) // AE_AML_OPERAND_TYPE

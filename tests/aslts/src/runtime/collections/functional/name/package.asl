@@ -144,29 +144,29 @@ Method(m1f0,, Serialized)
 
 		if (LLessEqual(Local1, 95)) {
 			if (LNotEqual(Local2, Local3)) {
-				err(ts, z051, 0, 0, 0, Local2, Local3)
+				err(ts, z051, __LINE__, 0, 0, Local2, Local3)
 			}
 		} elseif (LLessEqual(Local1, 159)) {
 			Add(0x8765ac00, Local4, Local3)
 			if (LNotEqual(Local2, Local3)) {
-				err(ts, z051, 1, 0, 0, Local2, Local3)
+				err(ts, z051, __LINE__, 0, 0, Local2, Local3)
 			}
 			Add(Local4, Local6, Local4)
 		} elseif (LLessEqual(Local1, 195)) {
 			Add(0x8765acba11223300, Local5, Local3)
 			if (LNotEqual(Local2, Local3)) {
-				err(ts, z051, 2, 0, 0, Local2, Local3)
+				err(ts, z051, __LINE__, 0, 0, Local2, Local3)
 			}
 			Add(Local5, Local6, Local5)
 		} else {
 			if (LNotEqual(Local2, Local3)) {
-				err(ts, z051, 3, 0, 0, Local2, Local3)
+				err(ts, z051, __LINE__, 0, 0, Local2, Local3)
 			}
 		}
 
 		Store(ObjectType(Local2), Local3)
 		if (LNotEqual(Local3, 1)) {
-			err(ts, z051, 4, 0, 0, Local3, 1)
+			err(ts, z051, __LINE__, 0, 0, Local3, 1)
 		}
 
 		Add(Local1, Local6, Local1)
@@ -175,7 +175,7 @@ Method(m1f0,, Serialized)
 
 	Store(SizeOf(p000), Local0)
 	if (LNotEqual(Local0, 255)) {
-		err(ts, z051, 5, 0, 0, Local0, 255)
+		err(ts, z051, __LINE__, 0, 0, Local0, 255)
 	}
 }
 
@@ -206,12 +206,12 @@ Method(m1f1,, Serialized)
 		}
 
 		if (LNotEqual(Local4, Local3)) {
-			err(ts, z051, 6, 0, 0, Local4, Local3)
+			err(ts, z051, __LINE__, 0, 0, Local4, Local3)
 		}
 
 		Store(ObjectType(Local2), Local3)
 		if (LNotEqual(Local3, 2)) {
-			err(ts, z051, 7, 0, 0, Local3, 2)
+			err(ts, z051, __LINE__, 0, 0, Local3, 2)
 		}
 
 		Increment(Local1)
@@ -220,7 +220,7 @@ Method(m1f1,, Serialized)
 
 	Store(SizeOf(p000), Local0)
 	if (LNotEqual(Local0, 10)) {
-		err(ts, z051, 8, 0, 0, Local0, 10)
+		err(ts, z051, __LINE__, 0, 0, Local0, 10)
 	}
 }
 
@@ -331,12 +331,12 @@ Method(m1f2,, Serialized)
 		Add(Local1, 1, Local4)
 
 		if (LNotEqual(Local4, Local3)) {
-			err(ts, z051, 9, 0, 0, Local4, Local3)
+			err(ts, z051, __LINE__, 0, 0, Local4, Local3)
 		}
 
 		Store(ObjectType(Local2), Local3)
 		if (LNotEqual(Local3, 3)) {
-			err(ts, z051, 10, 0, 0, Local3, 3)
+			err(ts, z051, __LINE__, 0, 0, Local3, 3)
 		}
 
 		Add(Local1, Local6, Local1)
@@ -345,7 +345,7 @@ Method(m1f2,, Serialized)
 
 	Store(SizeOf(p000), Local0)
 	if (LNotEqual(Local0, 255)) {
-		err(ts, z051, 11, 0, 0, Local0, 255)
+		err(ts, z051, __LINE__, 0, 0, Local0, 255)
 	}
 }
 
@@ -460,12 +460,12 @@ Method(m1f3,, Serialized)
 		Add(Local1, 1, Local4)
 
 		if (LNotEqual(Local4, Local3)) {
-			err(ts, z051, 12, 0, 0, Local4, Local3)
+			err(ts, z051, __LINE__, 0, 0, Local4, Local3)
 		}
 
 		Store(ObjectType(Local2), Local3)
 		if (LNotEqual(Local3, 4)) {
-			err(ts, z051, 13, 0, 0, Local3, 4)
+			err(ts, z051, __LINE__, 0, 0, Local3, 4)
 		}
 
 		Add(Local1, Local6, Local1)
@@ -474,7 +474,7 @@ Method(m1f3,, Serialized)
 
 	Store(SizeOf(p000), Local0)
 	if (LNotEqual(Local0, 255)) {
-		err(ts, z051, 14, 0, 0, Local0, 255)
+		err(ts, z051, __LINE__, 0, 0, Local0, 255)
 	}
 }
 
@@ -548,7 +548,7 @@ Method(m1f5, 3, Serialized)
 
 	Store(ObjectType(Local7), Local0)
 	if (LNotEqual(Local0, n002)) {
-		err(arg0, z051, 15, 0, 0, Local0, n002)
+		err(arg0, z051, __LINE__, 0, 0, Local0, n002)
 	}
 
 	// Contents
@@ -566,10 +566,10 @@ Method(m1f5, 3, Serialized)
 			}
 
 			if (LNotEqual(Local1, n004)) {
-				err(arg0, z051, 16, 0, 0, Local1, n004)
+				err(arg0, z051, __LINE__, 0, 0, Local1, n004)
 				Store(1, Local6)
 			} elseif (LNotEqual(Local7, Local0)) {
-				err(arg0, z051, 17, 0, 0, Local7, Local0)
+				err(arg0, z051, __LINE__, 0, 0, Local7, Local0)
 				Store(1, Local6)
 			}
 			if (Local6) {
@@ -991,12 +991,12 @@ Method(m1f6,, Serialized)
 
 	Store(SizeOf(p000), Local0)
 	if (LNotEqual(Local0, 255)) {
-		err(ts, z051, 18, 0, 0, Local0, 255)
+		err(ts, z051, __LINE__, 0, 0, Local0, 255)
 	}
 
 	Store(SizeOf(p001), Local0)
 	if (LNotEqual(Local0, 29)) {
-		err(ts, z051, 19, 0, 0, Local0, 29)
+		err(ts, z051, __LINE__, 0, 0, Local0, 29)
 	}
 }
 
@@ -1057,7 +1057,7 @@ Method(m1f8, 3, Serialized)
 			Store(Local1, Debug)
 		}
 		if (LNotEqual(Local1, Local0)) {
-			err(ts, z051, 20, 0, 0, Local1, Local0)
+			err(ts, z051, __LINE__, 0, 0, Local1, Local0)
 		}
 		Increment(Local0)
 		Decrement(n000)
@@ -1066,12 +1066,12 @@ Method(m1f8, 3, Serialized)
 
 	Store(ObjectType(arg0), Local0)
 	if (LNotEqual(Local0, 4)) {
-		err(ts, z051, 21, 0, 0, Local0, 4)
+		err(ts, z051, __LINE__, 0, 0, Local0, 4)
 	}
 
 	Store(SizeOf(arg0), Local0)
 	if (LNotEqual(Local0, arg1)) {
-		err(ts, z051, 22, 0, 0, Local0, arg1)
+		err(ts, z051, __LINE__, 0, 0, Local0, arg1)
 	}
 }
 
@@ -1133,7 +1133,7 @@ Method(m1fb, 3, Serialized)
 			Store(Local1, Debug)
 		}
 		if (LNotEqual(Local1, Local0)) {
-			err(ts, z051, 23, 0, 0, Local1, Local0)
+			err(ts, z051, __LINE__, 0, 0, Local1, Local0)
 		}
 		Decrement(n000)
 		Increment(ncur)
@@ -1141,12 +1141,12 @@ Method(m1fb, 3, Serialized)
 
 	Store(ObjectType(arg0), Local0)
 	if (LNotEqual(Local0, 4)) {
-		err(ts, z051, 24, 0, 0, Local0, 4)
+		err(ts, z051, __LINE__, 0, 0, Local0, 4)
 	}
 
 	Store(SizeOf(arg0), Local0)
 	if (LNotEqual(Local0, arg1)) {
-		err(ts, z051, 25, 0, 0, Local0, arg1)
+		err(ts, z051, __LINE__, 0, 0, Local0, arg1)
 	}
 }
 
@@ -1211,7 +1211,7 @@ Method(m1fe, 3, Serialized)
 			Store(Local1, Debug)
 		}
 		if (LNotEqual(Local1, Local0)) {
-			err(ts, z051, 26, 0, 0, 0, 0)
+			err(ts, z051, __LINE__, 0, 0, 0, 0)
 			Store(Local0, Debug)
 			Store(Local1, Debug)
 			return (Ones)
@@ -1222,12 +1222,12 @@ Method(m1fe, 3, Serialized)
 
 	Store(ObjectType(arg0), Local0)
 	if (LNotEqual(Local0, 4)) {
-		err(ts, z051, 27, 0, 0, Local0, 4)
+		err(ts, z051, __LINE__, 0, 0, Local0, 4)
 	}
 
 	Store(SizeOf(arg0), Local0)
 	if (LNotEqual(Local0, arg1)) {
-		err(ts, z051, 28, 0, 0, Local0, arg1)
+		err(ts, z051, __LINE__, 0, 0, Local0, arg1)
 	}
 
 	return (Zero)
@@ -1302,7 +1302,7 @@ Method(m201, 3, Serialized)
 		Store(DeRefOf(Index(arg0, ncur)), Local1)
 		Store(ObjectType(Local1), Local0)
 		if (LNotEqual(Local0, 4)) {
-			err(ts, z051, 29, 0, 0, Local0, 4)
+			err(ts, z051, __LINE__, 0, 0, Local0, 4)
 			return (Ones)
 		}
 		Decrement(n000)
@@ -1311,12 +1311,12 @@ Method(m201, 3, Serialized)
 
 	Store(ObjectType(arg0), Local0)
 	if (LNotEqual(Local0, 4)) {
-		err(ts, z051, 30, 0, 0, Local0, 4)
+		err(ts, z051, __LINE__, 0, 0, Local0, 4)
 	}
 
 	Store(SizeOf(arg0), Local0)
 	if (LNotEqual(Local0, arg1)) {
-		err(ts, z051, 31, 0, 0, Local0, arg1)
+		err(ts, z051, __LINE__, 0, 0, Local0, arg1)
 	}
 	return (Zero)
 }

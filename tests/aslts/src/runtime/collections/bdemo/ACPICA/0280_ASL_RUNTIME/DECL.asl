@@ -36,7 +36,7 @@ Device (D280) {
 	Method(T280)
 	{
 		if (CondRefof(NABS, Local0)) {
-			err("", zFFF, 0x001, 0, 0, "NABS", 1)
+			err("", zFFF, __LINE__, 0, 0, "NABS", 1)
 		}
 	}
 }

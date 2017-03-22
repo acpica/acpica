@@ -74,7 +74,7 @@ Method(md6a, 7, Serialized)
 			Store(DerefOf(Index(arg0, lpC0)), Local0)
 			TRC1(arg0, lpC0, Local0)
 			if (LNotEqual(Local0, lpC0)) {
-				err("", zFFF, 0x000, 0, 0, Local0, lpC0)
+				err("", zFFF, __LINE__, 0, 0, Local0, lpC0)
 			}
 			Decrement(lpN0)
 			Increment(lpC0)
@@ -86,7 +86,7 @@ Method(md6a, 7, Serialized)
 		Store(DerefOf(Index(arg0, 0)), Local0)
 		TRC1(arg0, 0, Local0)
 		if (LNotEqual(Local0, 0)) {
-			err("", zFFF, 0x001, 0, 0, Local0, 0)
+			err("", zFFF, __LINE__, 0, 0, Local0, 0)
 		}
 
 		// Last pre-initialized element
@@ -94,7 +94,7 @@ Method(md6a, 7, Serialized)
 		Store(DerefOf(Index(arg0, Local0)), Local1)
 		TRC1(arg0, Local0, Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x002, 0, 0, Local1, Local0)
+			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 		}
 
 		// Middle pre-initialized element
@@ -102,7 +102,7 @@ Method(md6a, 7, Serialized)
 		Store(DerefOf(Index(arg0, Local0)), Local1)
 		TRC1(arg0, Local0, Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x003, 0, 0, Local1, Local0)
+			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 		}
 	}
 
@@ -119,7 +119,7 @@ Method(md6a, 7, Serialized)
 			Store(DerefOf(Index(arg0, lpC0)), Local0)
 			TRC1(arg0, lpC0, Local0)
 			if (LNotEqual(Local0, lpC0)) {
-				err("", zFFF, 0x004, 0, 0, Local0, lpC0)
+				err("", zFFF, __LINE__, 0, 0, Local0, lpC0)
 			}
 			Decrement(lpN0)
 			Increment(lpC0)
@@ -131,7 +131,7 @@ Method(md6a, 7, Serialized)
 		Store(DerefOf(Index(arg0, arg3)), Local0)
 		TRC1(arg0, arg3, Local0)
 		if (LNotEqual(Local0, arg3)) {
-			err("", zFFF, 0x005, 0, 0, Local0, arg3)
+			err("", zFFF, __LINE__, 0, 0, Local0, arg3)
 		}
 
 		// Last written element
@@ -140,7 +140,7 @@ Method(md6a, 7, Serialized)
 		Store(DerefOf(Index(arg0, Local0)), Local1)
 		TRC1(arg0, Local0, Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x006, 0, 0, Local1, Local0)
+			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 		}
 
 		// Middle written element
@@ -149,7 +149,7 @@ Method(md6a, 7, Serialized)
 		Store(DerefOf(Index(arg0, Local0)), Local1)
 		TRC1(arg0, Local0, Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x007, 0, 0, Local1, Local0)
+			err("", zFFF, __LINE__, 0, 0, Local1, Local0)
 		}
 	}
 
@@ -284,7 +284,7 @@ Method(md6b, 6)
 		Store(DerefOf(Index(arg0, arg5)), Local0)
 		TRC1(arg0, arg5, Local0)
 		if (LNotEqual(Local0, arg5)) {
-			err("", zFFF, 0x008, 0, 0, Local0, arg5)
+			err("", zFFF, __LINE__, 0, 0, Local0, arg5)
 		}
 		CH03("", 0, 0x113, 0, 0)
 
@@ -360,11 +360,11 @@ Method(mf88, 6)
 	Store(ObjectType(arg0), Local0)
 
 	if (LNotEqual(Local0, arg1)) {
-		err("", zFFF, arg3, 0, 0, Local0, arg1)
+		err("", zFFF, __LINE__, 0, 0, Local0, arg1)
 	}
 	if (arg5) {
 		if (LNotEqual(arg0, arg2)) {
-			err("", zFFF, arg4, 0, 0, arg0, arg2)
+			err("", zFFF, __LINE__, 0, 0, arg0, arg2)
 		}
 	}
 }
@@ -373,5 +373,5 @@ Method(m02a)
 {
 	Store("Check the error manually and remove call to m02a() when the bug is fixed.", Debug)
 
-	err("", zFFF, 0x800, 0, 0, 0, 0)
+	err("", zFFF, __LINE__, 0, 0, 0, 0)
 }

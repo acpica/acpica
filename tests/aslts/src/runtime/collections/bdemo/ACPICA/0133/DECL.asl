@@ -44,7 +44,7 @@
 		Store(RefOf(id13), Local0)
 		mf21(Local0)
 		if (LNotEqual(id13, 0x77)) {
-			err("", zFFF, 0x000, 0, 0, id13, 0x77)
+			err("", zFFF, __LINE__, 0, 0, id13, 0x77)
 		}
 
 		// Writing by Index to String
@@ -52,7 +52,7 @@
 		Index(sd05, 1, Local0)
 		mf21(Local0)
 		if (LNotEqual(sd05, "qwer0000")) {
-			err("", zFFF, 0x001, 0, 0, sd05, "qwer0000")
+			err("", zFFF, __LINE__, 0, 0, sd05, "qwer0000")
 		}
 
 		// Writing by Index to Buffer
@@ -60,7 +60,7 @@
 		Index(bd09, 1, Local0)
 		mf21(Local0)
 		if (LNotEqual(bd09, Buffer(4) {1,0x77,3,4})) {
-			err("", zFFF, 0x002, 0, 0, bd09, Buffer(4) {1,0x77,3,4})
+			err("", zFFF, __LINE__, 0, 0, bd09, Buffer(4) {1,0x77,3,4})
 		}
 
 		// Writing by Index to Package
@@ -72,6 +72,6 @@
 		Store(DerefOf(Local0), Local1)
 
 		if (LNotEqual(Local1, 0x77)) {
-			err("", zFFF, 0x003, 0, 0, Local1, 0x77)
+			err("", zFFF, __LINE__, 0, 0, Local1, 0x77)
 		}
 	}

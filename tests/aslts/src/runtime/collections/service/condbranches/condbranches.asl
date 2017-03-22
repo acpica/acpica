@@ -45,7 +45,7 @@ Method(SRV0,, Serialized) {
 	Method(m280, 2) {
 		SRMT(arg1)
 		if (LNot(arg0)) {
-			err(arg0, z135, i000, 0, 0, 0, 1)
+			err(arg0, z135, __LINE__, 0, 0, 0, 1)
 		}
 		Increment(i000)
 	}

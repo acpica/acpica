@@ -47,13 +47,13 @@ Method(mff3)
 	Store("87654321", Local0)
 
 	if (LNotEqual(ObjectType(Local0), 2)) {
-		err("", zFFF, 0x001, 0, 0, ObjectType(Local0), 2)
+		err("", zFFF, __LINE__, 0, 0, ObjectType(Local0), 2)
 	}
 
 	m000(Refof(Local1))
 
 	if (LNotEqual(ObjectType(Local1), 2)) {
-		err("", zFFF, 0x002, 0, 0, ObjectType(Local1), 2)
+		err("", zFFF, __LINE__, 0, 0, ObjectType(Local1), 2)
 	}
 
 	Store(Refof(Local2), Local3)
@@ -63,7 +63,7 @@ Method(mff3)
 	Store("87654321", DeRefof(Local4))
 
 	if (LNotEqual(ObjectType(Local2), 2)) {
-		err("", zFFF, 0x003, 0, 0, ObjectType(Local2), 2)
+		err("", zFFF, __LINE__, 0, 0, ObjectType(Local2), 2)
 	}
 
 	CH03("", 0, 0x004, 0, 0)
