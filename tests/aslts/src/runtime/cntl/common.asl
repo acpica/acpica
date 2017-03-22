@@ -734,10 +734,7 @@ Method(err, 7)
 	// Add ID of test case being executed
 	Or(ERRB, Local0, Local7)
 
-	Concatenate("---------- ERROR    : 0x", Local7, Local1)
-	Concatenate(", 0x", Local6, Local2)
-	Concatenate(Local1, Local2, Local0)
-	Concatenate(Local0, ", ", Local1)
+	Store("---------- ERROR    : ", Local1)
 	Concatenate(Local1, arg0, Local0)
 	Store(Local0, Debug)
 
