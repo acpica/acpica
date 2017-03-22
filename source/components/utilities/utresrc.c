@@ -436,6 +436,26 @@ const char                      *AcpiGbl_PtDecode[] =
     "/* UNKNOWN parity keyword */"
 };
 
+/* PinConfig type */
+
+const char                      *AcpiGbl_PtypDecode[] =
+{
+    "Default",
+    "Bias Pull-up",
+    "Bias Pull-down",
+    "Bias Default",
+    "Bias Disable",
+    "Bias High Impedance",
+    "Bias Bus Hold",
+    "Drive Open Drain",
+    "Drive Open Source",
+    "Drive Push Pull",
+    "Drive Strength",
+    "Slew Rate",
+    "Input Debounce",
+    "Input Schmitt Trigger",
+};
+
 #endif
 
 
@@ -479,8 +499,12 @@ const UINT8                 AcpiGbl_ResourceAmlSizes[] =
     ACPI_AML_SIZE_LARGE (AML_RESOURCE_ADDRESS64),
     ACPI_AML_SIZE_LARGE (AML_RESOURCE_EXTENDED_ADDRESS64),
     ACPI_AML_SIZE_LARGE (AML_RESOURCE_GPIO),
-    0,
+    ACPI_AML_SIZE_LARGE (AML_RESOURCE_PIN_FUNCTION),
     ACPI_AML_SIZE_LARGE (AML_RESOURCE_COMMON_SERIALBUS),
+    ACPI_AML_SIZE_LARGE (AML_RESOURCE_PIN_CONFIG),
+    ACPI_AML_SIZE_LARGE (AML_RESOURCE_PIN_GROUP),
+    ACPI_AML_SIZE_LARGE (AML_RESOURCE_PIN_GROUP_FUNCTION),
+    ACPI_AML_SIZE_LARGE (AML_RESOURCE_PIN_GROUP_CONFIG),
 };
 
 const UINT8                 AcpiGbl_ResourceAmlSerialBusSizes[] =
@@ -534,8 +558,12 @@ static const UINT8          AcpiGbl_ResourceTypes[] =
     ACPI_VARIABLE_LENGTH,           /* 0A Qword* address */
     ACPI_FIXED_LENGTH,              /* 0B Extended* address */
     ACPI_VARIABLE_LENGTH,           /* 0C Gpio* */
-    0,
-    ACPI_VARIABLE_LENGTH            /* 0E *SerialBus */
+    ACPI_VARIABLE_LENGTH,           /* 0D PinFunction */
+    ACPI_VARIABLE_LENGTH,           /* 0E *SerialBus */
+    ACPI_VARIABLE_LENGTH,           /* 0F PinConfig */
+    ACPI_VARIABLE_LENGTH,           /* 10 PinGroup */
+    ACPI_VARIABLE_LENGTH,           /* 11 PinGroupFunction */
+    ACPI_VARIABLE_LENGTH,           /* 12 PinGroupConfig */
 };
 
 
