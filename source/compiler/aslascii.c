@@ -194,7 +194,7 @@ FlIsFileAsciiSource (
     BOOLEAN                 DisplayErrors)
 {
     UINT8                   Byte;
-    ACPI_SIZE               BadBytes = 0;
+    UINT32                  BadBytes = 0;
     BOOLEAN                 OpeningComment = FALSE;
     ASL_FILE_STATUS         Status;
     FILE                    *Handle;
