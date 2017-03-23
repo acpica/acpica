@@ -285,6 +285,9 @@ FlIsFileAsciiSource (
 
     if (BadBytes)
     {
+        fprintf (stderr,
+            "File appears to be binary: found %u non-ASCII characters, disassembling\n",
+            BadBytes);
         if (DisplayErrors)
         {
             AcpiOsPrintf (
