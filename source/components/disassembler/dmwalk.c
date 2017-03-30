@@ -161,8 +161,6 @@
         ACPI_MODULE_NAME    ("dmwalk")
 
 
-#define DB_FULL_OP_INFO     "[%4.4s] @%5.5X #%4.4X:  "
-
 /* Stub for non-compiler code */
 
 #ifndef ACPI_ASL_COMPILER
@@ -635,10 +633,16 @@ AcpiDmDescendingOp (
                 Info->WalkState->ParserState.AmlStart);
             if (AcpiGbl_DmOpt_Verbose)
             {
-                AcpiOsPrintf (DB_FULL_OP_INFO,
-                    (Info->WalkState->MethodNode ?
-                        Info->WalkState->MethodNode->Name.Ascii : "   "),
-                    AmlOffset, (UINT32) Op->Common.AmlOpcode);
+                if (AcpiGbl_CmSingleStep)
+                {
+                    AcpiOsPrintf ("%5.5X/%4.4X: ",
+                        AmlOffset, (UINT32) Op->Common.AmlOpcode);
+                }
+                else
+                {
+                    AcpiOsPrintf ("AML Offset %5.5X, Opcode %4.4X: ",
+                        AmlOffset, (UINT32) Op->Common.AmlOpcode);
+                }
             }
         }
 

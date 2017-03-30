@@ -461,6 +461,7 @@ AeExceptionHandler (
     ACPI_OBJECT_LIST        ArgList;
     ACPI_OBJECT             Arg[3];
     const char              *Exception;
+    ACPI_HANDLE             ErrHandle;
 
 
     Exception = AcpiFormatException (AmlStatus);
@@ -474,13 +475,19 @@ AeExceptionHandler (
         AcpiOsPrintf ("at module level (table load)");
     }
 
-    AcpiOsPrintf (" Opcode [%s] @%X\n", AcpiPsGetOpcodeName (Opcode), AmlOffset);
+    AcpiOsPrintf ("\n[AcpiExec] AML Opcode [%s], Method Offset ~%5.5X\n",
+        AcpiPsGetOpcodeName (Opcode), AmlOffset);
 
-    /*
-     * Invoke the _ERR method if present
-     *
-     * Setup parameter object
-     */
+    /* Invoke the _ERR method if present */
+
+    Status = AcpiGetHandle (NULL, "\\_ERR", &ErrHandle);
+    if (ACPI_FAILURE (Status))
+    {
+        goto Cleanup;
+    }
+
+    /* Setup parameter object */
+
     ArgList.Count = 3;
     ArgList.Pointer = Arg;
 
@@ -499,7 +506,7 @@ AeExceptionHandler (
     ReturnObj.Pointer = NULL;
     ReturnObj.Length = ACPI_ALLOCATE_BUFFER;
 
-    Status = AcpiEvaluateObject (NULL, "\\_ERR", &ArgList, &ReturnObj);
+    Status = AcpiEvaluateObject (ErrHandle, NULL, &ArgList, &ReturnObj);
     if (ACPI_SUCCESS (Status))
     {
         if (ReturnObj.Pointer)
@@ -519,6 +526,8 @@ AeExceptionHandler (
         AcpiOsPrintf ("[AcpiExec] Could not execute _ERR method, %s\n",
             AcpiFormatException (Status));
     }
+
+Cleanup:
 
     /* Global override */
 
