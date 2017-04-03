@@ -225,6 +225,12 @@ AcpiUtAllocateOwnerId (
                 break;
             }
 
+            /*
+             * Note: the UINT32 cast ensures that 1 is stored as a unsigned
+             * integer. Omitting the cast may result in the 1 being stored
+             * as an int and result in runtime errors if this file is compiled
+             * using -fsanitize=shift or -fsantize=undefined.
+             */
             if (!(AcpiGbl_OwnerIdMask[j] & ((UINT32) 1 << k)))
             {
                 /*
@@ -328,6 +334,13 @@ AcpiUtReleaseOwnerId (
     /* Decode ID to index/offset pair */
 
     Index = ACPI_DIV_32 (OwnerId);
+
+    /*
+     * Note: the UINT32 cast ensures that 1 is stored as a unsigned
+     * integer. Omitting the cast may result in the 1 being stored
+     * as an int and result in runtime errors if this file is compiled
+     * using -fsanitize=shift or -fsantize=undefined.
+    */
     Bit = (UINT32) 1 << ACPI_MOD_32 (OwnerId);
 
     /* Free the owner ID only if it is valid */
