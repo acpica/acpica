@@ -202,13 +202,14 @@ CvProcessComment (
          * If so, break apart the comment by line so that it can be
          * properly indented.
          */
-        if (strchr (CommentString, '\n') != NULL)
+        LineToken = strtok (CommentString, "\n");
+
+        if (LineToken)
         {
             /*
              * Get the first token. The for loop pads subsequent lines
              * for comments similar to the style of this comment.
              */
-            LineToken = strtok (CommentString, "\n");
             FinalLineToken = UtStringCacheCalloc (strlen (LineToken) + 1);
             strcpy (FinalLineToken, LineToken);
 
