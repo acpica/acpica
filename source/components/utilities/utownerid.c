@@ -225,6 +225,12 @@ AcpiUtAllocateOwnerId (
                 break;
             }
 
+            /*
+             * Note: the UINT32 cast ensures that 1 is stored as a unsigned
+             * integer. Omitting the cast may result in 1 being stored as an
+             * int. Some compilers or runtime error detection may flag this as
+             * an error.
+             */
             if (!(AcpiGbl_OwnerIdMask[j] & ((UINT32) 1 << k)))
             {
                 /*
