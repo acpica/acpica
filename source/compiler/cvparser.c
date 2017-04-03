@@ -215,7 +215,7 @@ CvIsFilename (
 
     for(i = 0; i<Length; ++i)
     {
-        if (!isprint (Filename[i]))
+        if (!isprint ((int) Filename[i]))
         {
             return FALSE;
         }
