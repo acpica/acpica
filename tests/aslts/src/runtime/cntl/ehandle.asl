@@ -223,7 +223,7 @@ Method(CH02)
  * Check that the counter of current exceptions is zero. Set it to zero.
  * arg0 - diagnostic message
  * arg1 - absolute index of file initiating the checking
- * arg2 - index of checking
+ * arg2 - line number of checking
  * arg3 - arg5 of err, "received value"
  * arg4 - arg6 of err, "expected value"
  */
@@ -281,7 +281,7 @@ Method(ST16, 1, Serialized)
  *
  * arg2 - index of exception info in pf00 Package
  * arg3 - absolute index of file initiating the checking
- * arg4 - index of checking
+ * arg4 - line number of checking
  * arg5 - arg5 of err, "received value"
  * arg6 - arg6 of err, "expected value"
  */
