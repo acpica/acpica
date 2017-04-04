@@ -198,17 +198,15 @@ CvProcessComment (
         CvDbgPrint ("CommentString: %s\n", CommentString);
 
         /*
-         * Determine whether if this comment spans multiple lines.
-         * If so, break apart the comment by line so that it can be
-         * properly indented.
+         * Determine whether if this comment spans multiple lines. If so,
+         * break apart the comment by storing each line in a different node
+         * within the comment list. This allows the disassembler to 
+         * properly indent a multi-line comment.
          */
-        if (strchr (CommentString, '\n') != NULL)
+        LineToken = strtok (CommentString, "\n");
+
+        if (LineToken)
         {
-            /*
-             * Get the first token. The for loop pads subsequent lines
-             * for comments similar to the style of this comment.
-             */
-            LineToken = strtok (CommentString, "\n");
             FinalLineToken = UtStringCacheCalloc (strlen (LineToken) + 1);
             strcpy (FinalLineToken, LineToken);
 
