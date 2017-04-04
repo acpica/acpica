@@ -191,6 +191,7 @@ CvProcessComment (
         *StringBuffer = (char) c1;
         ++StringBuffer;
         *StringBuffer = 0;
+
         CvDbgPrint ("Multi-line comment\n");
         CommentString = UtStringCacheCalloc (strlen (MsgBuffer) + 1);
         strcpy (CommentString, MsgBuffer);
@@ -261,7 +262,10 @@ CvProcessComment (
             * if this is not a regular comment, pad with extra spaces that appeared
             * in the original source input to retain the original spacing.
             */
-            FinalCommentString = UtStringCacheCalloc (strlen (CommentString) + CurrentState.SpacesBefore + 1);
+            FinalCommentString =
+                UtStringCacheCalloc (strlen (CommentString) +
+                CurrentState.SpacesBefore + 1);
+
             for (i=0; (CurrentState.CommentType != ASL_COMMENT_STANDARD) &&
                 (i < CurrentState.SpacesBefore); ++i)
             {
@@ -331,7 +335,9 @@ CvProcessCommentType2 (
          * [ (spaces) (comment)  ( * /) ('\0') ]
          *
          */
-        FinalCommentString = UtStringCacheCalloc (CurrentState.SpacesBefore + strlen (CommentString) + 3 + 1);
+        FinalCommentString = UtStringCacheCalloc (CurrentState.SpacesBefore +
+            strlen (CommentString) + 3 + 1);
+
         for (i=0; (CurrentState.CommentType!=1) && (i<CurrentState.SpacesBefore); ++i)
         {
             FinalCommentString[i] = ' ';
@@ -696,17 +702,16 @@ CgWriteAmlComment(
  *
  ******************************************************************************/
 
-ACPI_COMMENT_NODE*
+ACPI_COMMENT_NODE *
 CvCommentNodeCalloc (
     void)
 {
    ACPI_COMMENT_NODE        *NewCommentNode;
 
 
-   NewCommentNode =
-       (ACPI_COMMENT_NODE*) UtLocalCalloc (sizeof(ACPI_COMMENT_NODE));
+   NewCommentNode = UtLocalCalloc (sizeof (ACPI_COMMENT_NODE));
    NewCommentNode->Next = NULL;
-   return NewCommentNode;
+   return (NewCommentNode);
 }
 
 
