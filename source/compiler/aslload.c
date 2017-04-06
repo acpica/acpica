@@ -458,11 +458,30 @@ LdNamespace1Begin (
     ACPI_PARSE_OBJECT       *Arg;
     UINT32                  i;
     BOOLEAN                 ForceNewScope = FALSE;
+    ACPI_OWNER_ID           OwnerId = 0;
 
 
     ACPI_FUNCTION_NAME (LdNamespace1Begin);
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Op %p [%s]\n",
         Op, Op->Asl.ParseOpName));
+
+    if (Op->Asl.ParseOpcode == PARSEOP_DEFINITION_BLOCK)
+    {
+        /*
+         * Allocate an OwnerId for this block. This helps identify the owners
+         * of each namespace node. This is used in determining whether if
+         * certain external declarations cause redefinition errors.
+         */
+        Status = AcpiUtAllocateOwnerId (&OwnerId);
+        WalkState->OwnerId = OwnerId;
+
+        if (ACPI_FAILURE (Status))
+        {
+            AslCoreSubsystemError (Op, Status,
+                "Failure to allocate ownder ID to this definition block.", FALSE);
+            return_ACPI_STATUS (Status);
+        }
+    }
 
     /*
      * We are only interested in opcodes that have an associated name
