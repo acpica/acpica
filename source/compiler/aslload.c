@@ -797,23 +797,30 @@ LdNamespace1Begin (
             {
                 /*
                  * Allow one create on an object or segment that was
-                 * previously declared External
+                 * previously declared External only if WalkState->OwnerId and
+                 * Node->OwnerId are found in different tables (meaning that
+                 * they have differnt OwnerIds).
                  */
-                Node->Flags &= ~ANOBJ_IS_EXTERNAL;
-                Node->Type = (UINT8) ObjectType;
+                    Node->Flags &= ~ANOBJ_IS_EXTERNAL;
+                    Node->Type = (UINT8) ObjectType;
 
-                /* Just retyped a node, probably will need to open a scope */
+                    /* Just retyped a node, probably will need to open a scope */
 
-                if (AcpiNsOpensScope (ObjectType))
-                {
-                    Status = AcpiDsScopeStackPush (Node, ObjectType, WalkState);
-                    if (ACPI_FAILURE (Status))
+                    if (AcpiNsOpensScope (ObjectType))
                     {
-                        return_ACPI_STATUS (Status);
+                        Status = AcpiDsScopeStackPush (Node, ObjectType, WalkState);
+                        if (ACPI_FAILURE (Status))
+                        {
+                            return_ACPI_STATUS (Status);
+                        }
                     }
-                }
 
-                Status = AE_OK;
+                    Status = AE_OK;
+                if (Node->OwnerId == WalkState->OwnerId)
+                {
+                    AslError (ASL_ERROR, ASL_MSG_NAME_EXISTS, Op,
+                        Op->Asl.ExternalName);
+                }
             }
             else if (!(Node->Flags & ANOBJ_IS_EXTERNAL) &&
                      (Op->Asl.ParseOpcode == PARSEOP_EXTERNAL))
@@ -821,9 +828,17 @@ LdNamespace1Begin (
                 /*
                  * Allow externals in same scope as the definition of the
                  * actual object. Similar to C. Allows multiple definition
-                 * blocks that refer to each other in the same file.
+                 * blocks that refer to each other in the same file. However,
+                 * do not allow name declaration and an external declaration
+                 * within the same table. This is considered a re-declaration.
                  */
                 Status = AE_OK;
+
+                if (Node->OwnerId == WalkState->OwnerId)
+                {
+                    AslError (ASL_ERROR, ASL_MSG_NAME_EXISTS, Op,
+                        Op->Asl.ExternalName);
+                }
             }
             else if ((Node->Flags & ANOBJ_IS_EXTERNAL) &&
                      (Op->Asl.ParseOpcode == PARSEOP_EXTERNAL) &&
