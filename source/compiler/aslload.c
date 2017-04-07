@@ -474,7 +474,6 @@ LdNamespace1Begin (
          */
         Status = AcpiUtAllocateOwnerId (&OwnerId);
         WalkState->OwnerId = OwnerId;
-
         if (ACPI_FAILURE (Status))
         {
             AslCoreSubsystemError (Op, Status,
@@ -801,21 +800,22 @@ LdNamespace1Begin (
                  * Node->OwnerId are found in different tables (meaning that
                  * they have differnt OwnerIds).
                  */
-                    Node->Flags &= ~ANOBJ_IS_EXTERNAL;
-                    Node->Type = (UINT8) ObjectType;
+                Node->Flags &= ~ANOBJ_IS_EXTERNAL;
+                Node->Type = (UINT8) ObjectType;
 
-                    /* Just retyped a node, probably will need to open a scope */
+                /* Just retyped a node, probably will need to open a scope */
 
-                    if (AcpiNsOpensScope (ObjectType))
+                if (AcpiNsOpensScope (ObjectType))
+                {
+                    Status = AcpiDsScopeStackPush (Node, ObjectType, WalkState);
+                    if (ACPI_FAILURE (Status))
                     {
-                        Status = AcpiDsScopeStackPush (Node, ObjectType, WalkState);
-                        if (ACPI_FAILURE (Status))
-                        {
-                            return_ACPI_STATUS (Status);
-                        }
+                        return_ACPI_STATUS (Status);
                     }
+                }
 
-                    Status = AE_OK;
+                Status = AE_OK;
+
                 if (Node->OwnerId == WalkState->OwnerId)
                 {
                     AslError (ASL_ERROR, ASL_MSG_NAME_EXISTS, Op,
