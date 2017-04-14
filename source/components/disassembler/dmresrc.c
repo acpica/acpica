@@ -544,6 +544,15 @@ AcpiDmIsResourceTemplate (
      * intialization byte list. Because the resource macros will create
      * a buffer of the exact required length (buffer length will be equal
      * to the actual length).
+     *
+     * NOTE (April 2017): Resource templates with this issue have been
+     * seen in the field. We still don't want to attempt to disassemble
+     * a buffer like this to a resource template because this output
+     * would not match the original input buffer (it would be shorter
+     * than the original when the disassembled code is recompiled).
+     * Basically, a buffer like this appears to be hand crafted in the
+     * first place, so just emitting a buffer object instead of a
+     * resource template more closely resembles the original ASL code.
      */
     if (DeclaredBufferLength != BufferLength)
     {
