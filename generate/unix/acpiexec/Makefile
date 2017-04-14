@@ -224,6 +224,7 @@ OBJECTS = \
 	$(OBJDIR)/utownerid.o\
 	$(OBJDIR)/utnonansi.o\
 	$(OBJDIR)/utpredef.o\
+	$(OBJDIR)/utresdecode.o\
 	$(OBJDIR)/utresrc.o\
 	$(OBJDIR)/utstate.o\
 	$(OBJDIR)/utstring.o\

@@ -340,6 +340,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\components\utilities\utresdecode.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\components\utilities\utresrc.c"
 					>
 				</File>
