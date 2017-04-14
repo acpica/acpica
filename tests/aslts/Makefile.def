@@ -114,7 +114,7 @@ install_all_modes_of_test_case:	${SETOF_AMLDIRS:%=$(TOP)/tmp/aml/$(aslversion)/%
 								>&2 printf "        "; \
 								#exit 1; \
 							else \
-								>&2 printf " => Succes!"; \
+								>&2 printf " => Success!"; \
 								rm comparison_output.txt; \
 							fi; \
 						fi; \
