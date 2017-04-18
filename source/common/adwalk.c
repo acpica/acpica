@@ -747,7 +747,6 @@ AcpiDmLoadDescendingOp (
 
     WalkState = Info->WalkState;
     OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
-    ObjectType = OpInfo->ObjectType;
     ObjectType = AslMapNamedOpcodeToDataType (Op->Asl.AmlOpcode);
 
     /* Only interested in operators that create new names */
@@ -885,7 +884,6 @@ AcpiDmXrefDescendingOp (
 
     WalkState = Info->WalkState;
     OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
-    ObjectType = OpInfo->ObjectType;
     ObjectType = AslMapNamedOpcodeToDataType (Op->Asl.AmlOpcode);
 
     if ((!(OpInfo->Flags & AML_NAMED)) &&
@@ -1182,14 +1180,11 @@ AcpiDmCommonAscendingOp (
     void                    *Context)
 {
     ACPI_OP_WALK_INFO       *Info = Context;
-    const ACPI_OPCODE_INFO  *OpInfo;
     ACPI_OBJECT_TYPE        ObjectType;
 
 
     /* Close scope if necessary */
 
-    OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
-    ObjectType = OpInfo->ObjectType;
     ObjectType = AslMapNamedOpcodeToDataType (Op->Asl.AmlOpcode);
 
     if (AcpiNsOpensScope (ObjectType))
