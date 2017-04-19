@@ -827,46 +827,27 @@ AcpiDmAddNodeToExternalList (
 {
     char                    *ExternalPath;
     char                    *InternalPath;
-    char                    *Temp;
     ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE (DmAddNodeToExternalList);
 
-
-    if (!Node)
-    {
-        return_VOID;
-    }
-
     /* Get the full external and internal pathnames to the node */
 
-    ExternalPath = AcpiNsGetExternalPathname (Node);
-    if (!ExternalPath)
-    {
-        return_VOID;
-    }
-
-    Status = AcpiNsInternalizeName (ExternalPath, &InternalPath);
+    Status = AcpiDmGetExternalInternalPath (Node, &ExternalPath, &InternalPath);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_FREE (ExternalPath);
         return_VOID;
     }
 
     /* Remove the root backslash */
 
-    if ((*ExternalPath == AML_ROOT_PREFIX) && (ExternalPath[1]))
+    Status = AcpiDmRemoveRootPrefix (&ExternalPath);
+    if (ACPI_FAILURE (Status))
     {
-        Temp = ACPI_ALLOCATE_ZEROED (strlen (ExternalPath) + 1);
-        if (!Temp)
-        {
-            return_VOID;
-        }
-
-        strcpy (Temp, &ExternalPath[1]);
         ACPI_FREE (ExternalPath);
-        ExternalPath = Temp;
+        ACPI_FREE (InternalPath);
+        return_VOID;
     }
 
     /* Create the new External() declaration node */
