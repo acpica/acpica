@@ -211,6 +211,16 @@ AcpiDmNormalizeParentPrefix (
     ACPI_PARSE_OBJECT       *Op,
     char                    *Path);
 
+static ACPI_STATUS
+AcpiDmGetExternalInternalPath (
+    ACPI_NAMESPACE_NODE     *Node,
+    char                    **ExternalPath,
+    char                    **InternalPath);
+
+static ACPI_STATUS
+AcpiDmRemoveRootPrefix (
+    char                    **Path);
+
 static void
 AcpiDmAddPathToExternalList (
     char                    *Path,
@@ -699,6 +709,90 @@ AcpiDmAddOpToExternalList (
     }
 
     return_VOID;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmGetExternalAndInternalPath
+ *
+ * PARAMETERS:  Node                - Namespace node for object to be added
+ *              ExternalPath        - Will contain the external path of the node
+ *              InternalPath        - Will contain the internal path of the node
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Get the External and Internal path from the given node.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiDmGetExternalInternalPath (
+    ACPI_NAMESPACE_NODE     *Node,
+    char                    **ExternalPath,
+    char                    **InternalPath)
+{
+    ACPI_STATUS             Status;
+
+
+    if (!Node)
+    {
+        return (AE_ERROR);
+    }
+
+    /* Get the full external and internal pathnames to the node */
+
+    *ExternalPath = AcpiNsGetExternalPathname (Node);
+    if (!*ExternalPath)
+    {
+        return (AE_ERROR);
+    }
+
+    Status = AcpiNsInternalizeName (*ExternalPath, InternalPath);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_FREE (*ExternalPath);
+        return (AE_ERROR);
+    }
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmRemoveRootPrefix
+ *
+ * PARAMETERS:  Path                - Remove Root prefix from this Path
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Remove the root prefix character '\' from Path.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiDmRemoveRootPrefix (
+    char                    **Path)
+{
+    char                    *InputPath = *Path;
+    char                    *Temp;
+
+
+    if ((*InputPath == AML_ROOT_PREFIX) && (InputPath[1]))
+    {
+        Temp = ACPI_ALLOCATE_ZEROED (strlen (InputPath) + 1);
+        if (!Temp)
+        {
+            return (AE_ERROR);
+        }
+
+        strcpy (Temp, &InputPath[1]);
+        ACPI_FREE (*Path);
+        *Path = Temp;
+    }
+
+    return (AE_OK);
 }
 
 
