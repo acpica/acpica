@@ -965,6 +965,11 @@ void
 AcpiDmGetExternalsFromFile (
     void);
 
+void
+AcpiDmMarkExternalConflict (
+    ACPI_NAMESPACE_NODE     *Node);
+
+
 /*
  * dmresrc
  */

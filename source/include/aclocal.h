@@ -1487,6 +1487,7 @@ typedef struct acpi_external_list
 #define ACPI_EXT_INTERNAL_PATH_ALLOCATED    0x04    /* Deallocate internal path on completion */
 #define ACPI_EXT_EXTERNAL_EMITTED           0x08    /* External() statement has been emitted */
 #define ACPI_EXT_ORIGIN_FROM_OPCODE         0x10    /* External came from a External() opcode */
+#define ACPI_EXT_CONFLICTING_DECLARATION    0x20    /* External has a conflicting declaration within AML */
 
 
 typedef struct acpi_external_file

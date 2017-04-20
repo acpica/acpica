@@ -155,6 +155,9 @@
 #include "acnamesp.h"
 #include "acdispat.h"
 
+#ifdef ACPI_ASL_COMPILER
+    #include "acdisasm.h"
+#endif
 
 #define _COMPONENT          ACPI_NAMESPACE
         ACPI_MODULE_NAME    ("nsaccess")
@@ -709,6 +712,24 @@ AcpiNsLookup (
                     (char *) &SimpleName, (char *) &CurrentNode->Name,
                     CurrentNode));
             }
+#ifdef ACPI_ASL_COMPILER
+
+            if (Status == AE_ALREADY_EXISTS &&
+                (ThisNode->Flags | ANOBJ_IS_EXTERNAL) &&
+                AcpiGbl_DisasmFlag)
+            {
+                /* use one function call */
+
+                ThisNode->Flags &= ~ANOBJ_IS_EXTERNAL;
+                ThisNode->Type = ThisSearchType;
+                if (!(WalkState &&
+                    WalkState->Opcode == AML_EXTERNAL_OP))
+                {
+                    AcpiDmMarkExternalConflict (ThisNode);
+                }
+                break;
+            }
+#endif
 
             *ReturnNode = ThisNode;
             return_ACPI_STATUS (Status);

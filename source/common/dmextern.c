@@ -1463,6 +1463,78 @@ AcpiDmEmitExternals (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmMarkExternalConflict
+ *
+ * PARAMETERS:  Path          - Namepath to search
+ *
+ * RETURN:      ExternalList
+ *
+ * DESCRIPTION: Search the AcpiGbl_ExternalList for a matching path
+ *
+ ******************************************************************************/
+
+void
+AcpiDmMarkExternalConflict (
+    ACPI_NAMESPACE_NODE     *Node)
+{
+    ACPI_EXTERNAL_LIST      *ExternalList = AcpiGbl_ExternalList;
+    char                    *ExternalPath;
+    char                    *InternalPath;
+    char                    *Temp;
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (DmAddNodeToExternalList);
+
+
+    if (Node->Flags & ANOBJ_IS_EXTERNAL)
+    {
+        return;
+    }
+
+    /* Get the full external and internal pathnames to the node */
+
+    Status = AcpiDmGetExternalInternalPath (Node, &ExternalPath, &InternalPath);
+    if (ACPI_FAILURE (Status))
+    {
+        return_VOID;
+    }
+
+    /* Remove the root backslash */
+
+    Status = AcpiDmRemoveRootPrefix (&InternalPath);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_FREE (InternalPath);
+        ACPI_FREE (ExternalPath);
+        return_VOID;
+    }
+
+    while (ExternalList)
+    {
+        Temp = ExternalList->InternalPath;
+        if ((*ExternalList->InternalPath == AML_ROOT_PREFIX) &&
+            (ExternalList->InternalPath[1]))
+        {
+            Temp++;
+        }
+
+        if (!strcmp (ExternalList->InternalPath, InternalPath))
+        {
+            ExternalList->Flags |= ACPI_EXT_CONFLICTING_DECLARATION;
+        }
+        ExternalList = ExternalList->Next;
+    }
+
+    ACPI_FREE (InternalPath);
+    ACPI_FREE (ExternalPath);
+
+    return;
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmEmitExternal
  *
  * PARAMETERS:  Op                  External Parse Object
