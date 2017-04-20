@@ -269,11 +269,9 @@ TermArg
     : SimpleName                    {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
     | Type2Opcode                   {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
     | DataObject                    {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
-/*
     | PARSEOP_OPEN_PAREN
         TermArg
-        PARSEOP_CLOSE_PAREN         {}
-*/
+        PARSEOP_CLOSE_PAREN         {$$ = TrSetNodeFlags ($2, NODE_IS_TERM_ARG);}
     ;
 
 /*
