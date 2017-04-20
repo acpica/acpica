@@ -199,6 +199,9 @@ static const char           *AcpiGbl_DmTypeNames[] =
 
 #define METHOD_SEPARATORS           " \t,()\n"
 
+static const char          *ExternalConflictMessage =
+    "    // Conflicts with a later declaration";
+
 
 /* Local prototypes */
 
@@ -241,6 +244,11 @@ AcpiDmResolveExternal (
     char                    *Path,
     UINT8                   Type,
     ACPI_NAMESPACE_NODE     **Node);
+
+
+static void
+AcpiDmConflictingDeclarationWarning (
+    char                    *Path);
 
 
 /*******************************************************************************
@@ -1441,6 +1449,11 @@ AcpiDmEmitExternals (
                 }
             }
 
+            if (AcpiGbl_ExternalList->Flags &= ACPI_EXT_CONFLICTING_DECLARATION)
+            {
+                AcpiOsPrintf ("%s", ExternalConflictMessage);
+                AcpiDmConflictingDeclarationWarning (AcpiGbl_ExternalList->Path);
+            }
             AcpiOsPrintf ("\n");
         }
 
@@ -1530,6 +1543,33 @@ AcpiDmMarkExternalConflict (
     ACPI_FREE (ExternalPath);
 
     return;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmConflictingDeclarationWarning
+ *
+ * PARAMETERS:  Path                - Path with conflicting declaration
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Emit a warning when printing conflicting ASL external
+ *              declarations.
+ *
+ ******************************************************************************/
+
+static void
+AcpiDmConflictingDeclarationWarning (
+    char                    *Path)
+{
+    fprintf (stderr,
+        " Warning - Emitting ASL code \"External (%s)\"\n"
+        "           This is a conflicting declaration with some "
+        "other declaration within the ASL code.\n"
+        "           This external declaration may need to be "
+        "deleted in order to recompile the dsl file.\n\n",
+        Path);
 }
 
 
