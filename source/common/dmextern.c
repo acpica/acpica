@@ -239,6 +239,10 @@ AcpiDmCreateNewExternal (
     UINT32                  Value,
     UINT16                  Flags);
 
+static void
+AcpiDmCheckExternalConflict (
+    char                    *Path);
+
 static ACPI_STATUS
 AcpiDmResolveExternal (
     char                    *Path,
@@ -1594,11 +1598,73 @@ AcpiDmEmitExternal (
 {
     AcpiOsPrintf ("External (");
     AcpiDmNamestring (NameOp->Named.Path);
-    AcpiOsPrintf ("%s)\n",
+    AcpiOsPrintf ("%s)",
         AcpiDmGetObjectTypeName ((ACPI_OBJECT_TYPE) TypeOp->Common.Value.Integer));
+    AcpiDmCheckExternalConflict (NameOp->Named.Path);
+    AcpiOsPrintf ("\n");
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmCheckExternalConflict
+ *
+ * PARAMETERS:  Path                - Path to check
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Search the External List to see if the input Path has a
+ *              conflicting declaration.
+ *
+ ******************************************************************************/
+
+static void
+AcpiDmCheckExternalConflict (
+    char                    *Path)
+{
+    ACPI_EXTERNAL_LIST      *ExternalList = AcpiGbl_ExternalList;
+    char                    *ListItemPath;
+    char                    *InputPath;
+
+
+    if (!Path)
+    {
+        return;
+    }
+
+    /* Move past the root prefix '\' */
+
+    InputPath = Path;
+    if (*InputPath == AML_ROOT_PREFIX && InputPath[1])
+    {
+        InputPath++;
+    }
+
+    while (ExternalList)
+    {
+        ListItemPath = ExternalList->Path;
+        if (ListItemPath)
+        {
+            /* Move past the root prefix '\' */
+
+            if ((*ListItemPath == AML_ROOT_PREFIX) &&
+                ListItemPath[1])
+            {
+                ListItemPath++;
+            }
+
+            if (!strcmp (ListItemPath, InputPath) &&
+                (ExternalList->Flags & ACPI_EXT_CONFLICTING_DECLARATION))
+            {
+                AcpiOsPrintf ("%s", ExternalConflictMessage);
+                AcpiDmConflictingDeclarationWarning (Path);
+
+                return;
+            }
+        }
+        ExternalList = ExternalList->Next;
+    }
+}
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDmUnresolvedWarning
