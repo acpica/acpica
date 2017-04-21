@@ -697,14 +697,18 @@ AslDoCommentType2 (
 
 
     AslInsertLineBuffer ('/');
-    AslInsertLineBuffer ('*');
 
     if (Gbl_CaptureComments && CurrentState.CaptureComments)
     {
+        AslInsertLineBuffer ('*');
         *StringBuffer = '/';
         ++StringBuffer;
         *StringBuffer = '*';
         ++StringBuffer;
+    }
+    else
+    {
+        AslInsertLineBuffer ('/');
     }
 
     while (((c = input ()) != '\n') && (c != EOF))
