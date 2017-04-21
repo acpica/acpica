@@ -229,6 +229,7 @@ Usage (
 
     printf ("\nFirmware Support - C Text Output:\n");
     ACPI_OPTION ("-tc",             "Create hex AML table in C (*.hex)");
+    ACPI_OPTION ("-th",             "Create hex AML table in C header (*.hex)");
     ACPI_OPTION ("-sc",             "Create named hex AML arrays in C (*.c)");
     ACPI_OPTION ("-ic",             "Create include file in C for -sc symbols (*.h)");
     ACPI_OPTION ("-so",             "Create namespace AML offset table in C (*.offset.h)");

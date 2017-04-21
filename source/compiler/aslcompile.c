@@ -544,7 +544,8 @@ AslCompilerSignon (
             Prefix = "; ";
         }
         else if ((Gbl_HexOutputFlag == HEX_OUTPUT_C) ||
-                 (Gbl_HexOutputFlag == HEX_OUTPUT_ASL))
+                 (Gbl_HexOutputFlag == HEX_OUTPUT_ASL) ||
+                 (Gbl_HexOutputFlag == HEX_OUTPUT_H))
         {
             FlPrintFile (ASL_FILE_HEX_OUTPUT, "/*\n");
             Prefix = " * ";
@@ -579,7 +580,11 @@ AslCompilerSignon (
     /* Compiler signon with copyright */
 
     FlPrintFile (FileId, "%s\n", Prefix);
-    FlPrintFile (FileId, ACPI_COMMON_HEADER (UtilityName, Prefix));
+    if (Gbl_HexOutputFlag == HEX_OUTPUT_H) {
+        FlPrintFile (FileId, ACPI_COMMON_HEADER_NO_COPYRIGHT (UtilityName, Prefix));
+    } else {
+        FlPrintFile (FileId, ACPI_COMMON_HEADER (UtilityName, Prefix));
+    }
 }
 
 
@@ -621,7 +626,8 @@ AslCompilerFileHeader (
             Prefix = "; ";
         }
         else if ((Gbl_HexOutputFlag == HEX_OUTPUT_C) ||
-                 (Gbl_HexOutputFlag == HEX_OUTPUT_ASL))
+                 (Gbl_HexOutputFlag == HEX_OUTPUT_ASL) ||
+                 (Gbl_HexOutputFlag == HEX_OUTPUT_H))
         {
             Prefix = " * ";
         }
