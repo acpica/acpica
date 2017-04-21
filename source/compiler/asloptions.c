@@ -842,6 +842,11 @@ AslDoOptions (
             Gbl_HexOutputFlag = HEX_OUTPUT_ASL;
             break;
 
+        case 'h':
+
+            Gbl_HexOutputFlag = HEX_OUTPUT_H;
+            break;
+
         default:
 
             printf ("Unknown option: -t%s\n", AcpiGbl_Optarg);
