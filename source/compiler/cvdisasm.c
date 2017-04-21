@@ -522,7 +522,7 @@ CvSwitchFiles(
            Current->Parent &&
            AcpiUtStricmp (Current->Filename, AcpiGbl_CurrentFilename))
     {
-        CvPrintInclude (FNode, Level);
+        CvPrintInclude (Current, Level);
         Current = Current->Parent;
     }
 
