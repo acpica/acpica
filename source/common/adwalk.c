@@ -895,28 +895,12 @@ AcpiDmXrefDescendingOp (
     {
         goto Exit;
     }
-    else if (Op->Common.Parent &&
-             Op->Common.Parent->Common.AmlOpcode == AML_EXTERNAL_OP)
-    {
-        /* External() NamePath */
 
-        Path = Op->Common.Value.String;
-        ObjectType = (ACPI_OBJECT_TYPE) Op->Common.Next->Common.Value.Integer;
-        if (ObjectType == ACPI_TYPE_METHOD)
-        {
-            ParamCount = (UINT32)
-                Op->Common.Next->Common.Next->Common.Value.Integer;
-        }
-
-        Flags |= ACPI_EXT_RESOLVED_REFERENCE | ACPI_EXT_ORIGIN_FROM_OPCODE;
-        AcpiDmAddOpToExternalList (Op, Path,
-            (UINT8) ObjectType, ParamCount, Flags);
-
-        goto Exit;
-    }
-
-    /* Get the NamePath from the appropriate place */
-
+    /*
+     * Get the NamePath from the appropriate place
+     * Note: AML_EXTERNAL_OP has been changed to named object so it takes
+     * this execution path.
+     */
     if (OpInfo->Flags & AML_NAMED)
     {
         /*
@@ -934,7 +918,8 @@ AcpiDmXrefDescendingOp (
                 Path = NextOp->Common.Value.String;
             }
         }
-        else if (Op->Common.AmlOpcode == AML_SCOPE_OP)
+        else if (Op->Common.AmlOpcode == AML_SCOPE_OP ||
+                 Op->Common.AmlOpcode == AML_EXTERNAL_OP)
         {
             Path = Op->Named.Path;
         }
