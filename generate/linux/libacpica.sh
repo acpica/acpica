@@ -36,7 +36,7 @@ acpica_privs()
 
 	incs="\
 		acapps.h \
-		accommon.h \
+		accommon.h acconvert.h \
 		acdebug.h acdispat.h \
 		acevents.h \
 		acglobal.h \
