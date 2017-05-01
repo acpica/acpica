@@ -1461,7 +1461,7 @@ Name(TNF0, Package() {
 	"constant",
 	"control",
 	"descriptor",
-	"extern",
+	"external",
 	"local",
 	"logic",
 	"manipulation",
@@ -1748,6 +1748,10 @@ Name(TFN0, Package() {
 	"pingroup.asl",
 	"pingroupfunction.asl",
 	"pingroupconfig.asl",
+
+// External Op tests
+
+	"external.asl"	// 204
 })
 
 /*
