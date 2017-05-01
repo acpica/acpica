@@ -1710,7 +1710,7 @@ Name(TFN0, Package() {
 	"recursion.asl",
 	"ns-scope.asl",		// 178
 	"ns-fullpath.asl",
-	"scope.asl",
+	"scope.asl",	// 180
 	"object.asl",
 	"order.asl",
 
@@ -1720,7 +1720,7 @@ Name(TFN0, Package() {
 	"I2MS_ns_dv00.asl",
 	"I2MS_ns_dv10.asl",
 	"I2MS_ns_dv20.asl",
-	"I2MS_ns_dv30.asl",	// 170
+	"I2MS_ns_dv30.asl",
 
 	"I2MS_ns_device.asl",
 	"I2MS_ns_device_abbu.asl",
@@ -1728,13 +1728,13 @@ Name(TFN0, Package() {
 
 // see these files can be not used at all:
 
-	"I2MS_ns4.asl",
+	"I2MS_ns4.asl",	// 190
 	"I2MS_ns5.asl",
 	"I2MS_ns6.asl",
 	
 // ACPI 5.0
 
-	"fixeddma.asl", // 177
+	"fixeddma.asl",
 	"gpioint.asl",
 	"gpioio.asl",
 	"i2cserialbus.asl",
@@ -1744,7 +1744,7 @@ Name(TFN0, Package() {
 // ACPI 6.2
 
 	"pinfunction.asl",
-	"pinconfig.asl",
+	"pinconfig.asl",	// 200
 	"pingroup.asl",
 	"pingroupfunction.asl",
 	"pingroupconfig.asl",
