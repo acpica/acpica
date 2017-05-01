@@ -1727,23 +1727,27 @@ Name(TFN0, Package() {
 	"I2MS_ns_device_aslts.asl",
 
 // see these files can be not used at all:
+
 	"I2MS_ns4.asl",
 	"I2MS_ns5.asl",
 	"I2MS_ns6.asl",
 	
 // ACPI 5.0
-    "fixeddma.asl", // 177
-    "gpioint.asl",
-    "gpioio.asl",
-    "i2cserialbus.asl",
-    "spiserialbus.asl",
-    "uartserialbus.asl",
+
+	"fixeddma.asl", // 177
+	"gpioint.asl",
+	"gpioio.asl",
+	"i2cserialbus.asl",
+	"spiserialbus.asl",
+	"uartserialbus.asl",
+
 // ACPI 6.2
-    "pinfunction.asl",
-    "pinconfig.asl",
-    "pingroup.asl",
-    "pingroupfunction.asl",
-    "pingroupconfig.asl",
+
+	"pinfunction.asl",
+	"pinconfig.asl",
+	"pingroup.asl",
+	"pingroupfunction.asl",
+	"pingroupconfig.asl",
 })
 
 /*
