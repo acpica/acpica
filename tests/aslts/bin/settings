@@ -13,7 +13,7 @@ INIT_ALL_AVAILABLE_CASES()
 
 	FUNC_COLL="arithmetic bfield constant control descriptor"
 	FUNC_COLL="$FUNC_COLL logic manipulation name reference region synchronization"
-	FUNC_COLL="$FUNC_COLL table module"
+	FUNC_COLL="$FUNC_COLL table module external"
 
 	# Complex test collection
 
@@ -112,7 +112,7 @@ INIT_SET_OF_TEST_CASES()
 
 	func="arithmetic bfield constant control descriptor"
 	func="$func logic manipulation name reference region synchronization"
-	func="$func table"
+	func="$func table external"
 
 	# Complex test collection
 
