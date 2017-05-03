@@ -672,3 +672,49 @@ ErrorExit:
     *ReturnObject = NewObject;
     return (AE_OK);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsConvertToNullReference
+ *
+ * PARAMETERS:  OriginalObject      - Object to be converted
+ *              ReturnObject        - Where the new converted object is returned
+ *
+ * RETURN:      Status. AE_OK if conversion was successful
+ *
+ * DESCRIPTION: Attempt to convert a Integer object to a ObjectReference.
+ *              Buffer.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiNsConvertToNullReference (
+    ACPI_OPERAND_OBJECT     *OriginalObject,
+    ACPI_OPERAND_OBJECT     **ReturnObject)
+{
+    ACPI_OPERAND_OBJECT     *NewObject = NULL;
+    ACPI_STATUS             Status = AE_OK;
+
+
+    ACPI_FUNCTION_NAME (NsConvertToNullReference);
+
+
+    /* Convert path into internal presentation */
+
+    /* Create and init a new internal ACPI object */
+
+    NewObject = AcpiUtCreateInternalObject (ACPI_TYPE_LOCAL_REFERENCE);
+    if (!NewObject)
+    {
+        Status = AE_NO_MEMORY;
+        goto ErrorExit;
+    }
+    NewObject->Reference.Node = NULL;
+    NewObject->Reference.Object = NULL;
+    NewObject->Reference.Class = ACPI_REFCLASS_NAME;
+
+ErrorExit:
+    *ReturnObject = NewObject;
+    return (Status);
+}
