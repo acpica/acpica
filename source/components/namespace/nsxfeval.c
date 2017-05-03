@@ -588,8 +588,10 @@ AcpiEvaluateObject (
         {
             /* We have enough space for the object, build it */
 
+            AcpiExEnterInterpreter ();
             Status = AcpiUtCopyIobjectToEobject (
                 Info->ReturnObject, ReturnBuffer);
+            AcpiExExitInterpreter ();
         }
     }
 

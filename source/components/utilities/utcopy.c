@@ -152,6 +152,7 @@
 #include "acpi.h"
 #include "accommon.h"
 #include "acnamesp.h"
+#include "acinterp.h"
 
 
 #define _COMPONENT          ACPI_UTILITIES
@@ -165,6 +166,11 @@ AcpiUtCopyIsimpleToEsimple (
     ACPI_OBJECT             *ExternalObject,
     UINT8                   *DataSpace,
     ACPI_SIZE               *BufferSpaceUsed);
+
+static ACPI_STATUS
+AcpiUtResolveReferenceString (
+    ACPI_OPERAND_OBJECT     **StringObject,
+    ACPI_OBJECT             *ExternalObject);
 
 static ACPI_STATUS
 AcpiUtCopyIelementToIelement (
@@ -244,8 +250,8 @@ AcpiUtCopyIsimpleToEsimple (
     *BufferSpaceUsed = 0;
 
     /*
-     * Check for NULL object case (could be an uninitialized
-     * package element)
+     * Check for NULL internal object case (could be an uninitialized package
+     * element)
      */
     if (!InternalObject)
     {
@@ -258,15 +264,40 @@ AcpiUtCopyIsimpleToEsimple (
 
     /*
      * In general, the external object will be the same type as
-     * the internal object
+     * the internal object. However, only a limited number of external
+     * types are supported
      */
     ExternalObject->Type = InternalObject->Common.Type;
 
-    /* However, only a limited number of external types are supported */
+    /* String/Namestring is a named reference */
+
+    if ((InternalObject->Common.Type == ACPI_TYPE_STRING) &&
+        (InternalObject->Common.Flags & AOPOBJ_NAMESTRING))
+    {
+        /*
+         * References within packages are stored internally as String
+         * objects for compatibility with other ACPI implementations.
+         * These references are resolved only when an external version
+         * of the package is requested (from ACPICA external interfaces)
+         * and created here. (04/2017).
+         */
+        Status = AcpiUtResolveReferenceString (&InternalObject,
+            ExternalObject);
+        if (Status == AE_CTRL_TERMINATE)
+        {
+            return_ACPI_STATUS (AE_OK);
+        }
+        else if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
 
     switch (InternalObject->Common.Type)
     {
     case ACPI_TYPE_STRING:
+
+        /* Normal string object */
 
         ExternalObject->String.Pointer = (char *) DataSpace;
         ExternalObject->String.Length  = InternalObject->String.Length;
@@ -297,7 +328,7 @@ AcpiUtCopyIsimpleToEsimple (
 
     case ACPI_TYPE_LOCAL_REFERENCE:
 
-        /* This is an object reference. */
+        /* This is an object reference */
 
         switch (InternalObject->Reference.Class)
         {
@@ -340,9 +371,9 @@ AcpiUtCopyIsimpleToEsimple (
         break;
 
     default:
-        /*
-         * There is no corresponding external object type
-         */
+
+        /* There is no corresponding external object type */
+
         ACPI_ERROR ((AE_INFO,
             "Unsupported object type, cannot convert to external object: %s",
             AcpiUtGetTypeName (InternalObject->Common.Type)));
@@ -351,6 +382,135 @@ AcpiUtCopyIsimpleToEsimple (
     }
 
     return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtResolveReferenceString
+ *
+ * PARAMETERS:  InternalStringPtr   - Pointer to internal String object to be
+ *                                    resolved
+ *              ExternalObject      - Where to return the resolved object
+ *
+ * RETURN:      Status, AE_CTRL_TERMINATE means resolution was completed here
+ *              and no further processing is necessary.
+ *
+ * DESCRIPTION: Resolve a named reference that is contained in a string object.
+ *              Objects that are "data" types (integers, etc.) are resolved
+ *              to actual values here. Other types are resolved to a
+ *              namespace node.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiUtResolveReferenceString (
+    ACPI_OPERAND_OBJECT     **InternalStringPtr,
+    ACPI_OBJECT             *ExternalObject)
+{
+    ACPI_OPERAND_OBJECT     *StringObject = *InternalStringPtr;
+    ACPI_OPERAND_OBJECT     *ReturnObject;
+    ACPI_OBJECT_TYPE        ResolvedType;
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (UtResolveReferenceString);
+
+
+    /* Only need to lookup the string once, then save the node */
+
+    if (!StringObject->String.Node)
+    {
+        /*
+         * The reference has not been resolved to a namespace node yet.
+         * Lookup the string/name in the namespace.
+         */
+        Status = AcpiNsGetNodeUnlocked (
+            StringObject->String.ScopeNode,
+            StringObject->String.Pointer, ACPI_NS_SEARCH_PARENT,
+            &StringObject->String.Node);
+
+        if (ACPI_FAILURE (Status))
+        {
+            /*
+             * We didn't find the target and we are populating elements
+             * of a package - ignore this error. Some ASL code
+             * contains dangling invalid references in packages and
+             * expects that no exception will be issued. Leave the
+             * element as a null element. It cannot be used, but it
+             * can be overwritten by subsequent ASL code - this is
+             * typically the case.
+             */
+            ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+                "Could not locate object in namespace - %s",
+                StringObject->String.Pointer));
+        }
+    }
+
+    ReturnObject = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT,
+        StringObject->String.Node);
+    if (!StringObject->String.Node)
+    {
+        ResolvedType = ACPI_TYPE_ANY;
+    }
+    else
+    {
+        /* This is where the object resolution happens */
+
+        Status = AcpiExResolveNodeToValue (ACPI_CAST_INDIRECT_PTR (
+            ACPI_NAMESPACE_NODE, &ReturnObject), NULL);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+        ResolvedType = ReturnObject->Common.Type;
+    }
+
+    switch (ResolvedType)
+    {
+    case ACPI_TYPE_INTEGER:
+    case ACPI_TYPE_STRING:
+    case ACPI_TYPE_BUFFER:
+
+        /*
+         * Fully resolved values should be simple objects:
+         * integers/strings/buffers
+         */
+        ExternalObject->Type = ReturnObject->Common.Type;
+        *InternalStringPtr = ReturnObject;
+        return_ACPI_STATUS (AE_OK);
+
+    case ACPI_TYPE_ANY:
+    case ACPI_TYPE_DEVICE:
+    case ACPI_TYPE_EVENT:
+    case ACPI_TYPE_METHOD:
+    case ACPI_TYPE_MUTEX:
+    case ACPI_TYPE_REGION:
+    case ACPI_TYPE_POWER:
+    case ACPI_TYPE_PROCESSOR:
+    case ACPI_TYPE_THERMAL:
+
+        /*
+         * All other objects become reference objects -- in actuality this
+         * means a namespace node.
+         */
+        ExternalObject->Type = ACPI_TYPE_LOCAL_REFERENCE;
+        ExternalObject->Reference.Handle =
+            ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, ReturnObject);
+        ExternalObject->Reference.ActualType = ResolvedType;
+        return_ACPI_STATUS (AE_CTRL_TERMINATE);
+
+    default:
+
+        break;
+    }
+
+    /* Shouldn't reach here */
+
+    ACPI_ERROR ((AE_INFO,
+        "Unsupported external object type - %d",
+        ResolvedType));
+    return_ACPI_STATUS (AE_SUPPORT);
 }
 
 
