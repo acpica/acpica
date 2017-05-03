@@ -194,12 +194,14 @@ AcpiDsBuildInternalObject (
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
     ACPI_OBJECT_TYPE        Type;
+    ACPI_OBJECT_TYPE        ObjType;
 
 
     ACPI_FUNCTION_TRACE (DsBuildInternalObject);
 
 
     *ObjDescPtr = NULL;
+    ObjType = (AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode))->ObjectType;
     if (Op->Common.AmlOpcode == AML_INT_NAMEPATH_OP)
     {
         /*
@@ -209,48 +211,58 @@ AcpiDsBuildInternalObject (
          */
         if (!Op->Common.Node)
         {
-            Status = AcpiNsLookup (WalkState->ScopeInfo,
-                Op->Common.Value.String,
-                ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
-                ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE, NULL,
-                ACPI_CAST_INDIRECT_PTR (ACPI_NAMESPACE_NODE, &(Op->Common.Node)));
-            if (ACPI_FAILURE (Status))
+            /* Special object resolution for elements of a package */
+
+            if (AcpiGbl_ParseTableAsTermList &&
+                ((Op->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP) ||
+                 (Op->Common.Parent->Common.AmlOpcode == AML_VARIABLE_PACKAGE_OP)))
             {
-                /* Check if we are resolving a named reference within a package */
-
-                if ((Status == AE_NOT_FOUND) && (AcpiGbl_EnableInterpreterSlack) &&
-
-                    ((Op->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP) ||
-                     (Op->Common.Parent->Common.AmlOpcode == AML_VARIABLE_PACKAGE_OP)))
+                ObjType = ACPI_TYPE_STRING;
+            }
+            else
+            {
+                Status = AcpiNsLookup (WalkState->ScopeInfo,
+                    Op->Common.Value.String,
+                    ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
+                    ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE, NULL,
+                    ACPI_CAST_INDIRECT_PTR (ACPI_NAMESPACE_NODE, &(Op->Common.Node)));
+                if (ACPI_FAILURE (Status))
                 {
-                    /*
-                     * We didn't find the target and we are populating elements
-                     * of a package - ignore if slack enabled. Some ASL code
-                     * contains dangling invalid references in packages and
-                     * expects that no exception will be issued. Leave the
-                     * element as a null element. It cannot be used, but it
-                     * can be overwritten by subsequent ASL code - this is
-                     * typically the case.
-                     */
-                    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-                        "Ignoring unresolved reference in package [%4.4s]\n",
-                        WalkState->ScopeInfo->Scope.Node->Name.Ascii));
+                    /* Check if we are resolving a named reference within a package */
 
-                    return_ACPI_STATUS (AE_OK);
-                }
-                else
-                {
-                    ACPI_ERROR_NAMESPACE (Op->Common.Value.String, Status);
-                }
+                    if ((Status == AE_NOT_FOUND) && (AcpiGbl_EnableInterpreterSlack) &&
+                        ((Op->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP) ||
+                         (Op->Common.Parent->Common.AmlOpcode == AML_VARIABLE_PACKAGE_OP)))
+                    {
+                        /*
+                         * We didn't find the target and we are populating
+                         * elements of a package - ignore if slack enabled.
+                         * Some ASL code contains dangling invalid references
+                         * in packages and expects that no exception will be
+                         * issued. Leave the element as a null element. It
+                         * cannot be used, but it can be overwritten by
+                         * subsequent ASL code - this is typically the case.
+                         */
+                        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+                            "Ignoring unresolved reference in package [%4.4s]\n",
+                            WalkState->ScopeInfo->Scope.Node->Name.Ascii));
 
-                return_ACPI_STATUS (Status);
+                        return_ACPI_STATUS (AE_OK);
+                    }
+                    else
+                    {
+                        ACPI_ERROR_NAMESPACE (Op->Common.Value.String, Status);
+                        return_ACPI_STATUS (Status);
+                    }
+                }
             }
         }
 
         /* Special object resolution for elements of a package */
 
-        if ((Op->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP) ||
-            (Op->Common.Parent->Common.AmlOpcode == AML_VARIABLE_PACKAGE_OP))
+        if (!AcpiGbl_ParseTableAsTermList &&
+            ((Op->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP) ||
+             (Op->Common.Parent->Common.AmlOpcode == AML_VARIABLE_PACKAGE_OP)))
         {
             /*
              * Attempt to resolve the node to a value before we insert it into
@@ -329,8 +341,7 @@ AcpiDsBuildInternalObject (
 
     /* Create and init a new internal ACPI object */
 
-    ObjDesc = AcpiUtCreateInternalObject (
-        (AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode))->ObjectType);
+    ObjDesc = AcpiUtCreateInternalObject (ObjType);
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -766,6 +777,7 @@ AcpiDsInitObjectFromOp (
     const ACPI_OPCODE_INFO  *OpInfo;
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status = AE_OK;
+    char                    *Path = NULL;
 
 
     ACPI_FUNCTION_TRACE (DsInitObjectFromOp);
@@ -884,14 +896,44 @@ AcpiDsInitObjectFromOp (
 
     case ACPI_TYPE_STRING:
 
-        ObjDesc->String.Pointer = Op->Common.Value.String;
-        ObjDesc->String.Length = (UINT32) strlen (Op->Common.Value.String);
+        if (AcpiGbl_ParseTableAsTermList &&
+            Op->Common.AmlOpcode == AML_INT_NAMEPATH_OP)
+        {
+            Status = AcpiNsExternalizeName (ACPI_UINT32_MAX, Op->Common.Value.String,
+                NULL, &Path);
+            if (ACPI_FAILURE (Status))
+            {
+                ACPI_WARNING ((AE_INFO,
+                    "Unresolved name path in package"));
+                ObjDesc->String.Pointer = "";
+                ObjDesc->Common.Flags |= AOPOBJ_STATIC_POINTER;
+            }
+            else
+            {
+                ObjDesc->String.Pointer = Path;
+            }
+            ObjDesc->String.Length = (UINT32) strlen (ObjDesc->String.Pointer);
+            if (!WalkState->ScopeInfo || !WalkState->ScopeInfo->Scope.Node)
+            {
+                ObjDesc->String.ScopeNode = NULL;
+            }
+            else
+            {
+                ObjDesc->String.ScopeNode = WalkState->ScopeInfo->Scope.Node;
+            }
+            ObjDesc->Common.Flags |= AOPOBJ_NAMESTRING;
+        }
+        else
+        {
+            ObjDesc->String.Pointer = Op->Common.Value.String;
+            ObjDesc->String.Length = (UINT32) strlen (Op->Common.Value.String);
 
-        /*
-         * The string is contained in the ACPI table, don't ever try
-         * to delete it
-         */
-        ObjDesc->Common.Flags |= AOPOBJ_STATIC_POINTER;
+            /*
+             * The string is contained in the ACPI table, don't ever try
+             * to delete it
+             */
+            ObjDesc->Common.Flags |= AOPOBJ_STATIC_POINTER;
+        }
         break;
 
     case ACPI_TYPE_METHOD:
