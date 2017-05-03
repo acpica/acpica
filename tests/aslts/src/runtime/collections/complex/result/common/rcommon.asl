@@ -1938,6 +1938,8 @@ if (y361) {
 					if (STCS) {m000(2, 0x100, arg2, arg3)}
 				}
 			}
+			// No further test if exception is expected
+			Return (0)
 		} elseif (CH03(arg0, z122, 58, arg3, arg2)) {
 			// Storing caused unexpected exception
 			if (STCS) {m000(2, 0x100, arg2, arg3)}
@@ -2327,6 +2329,8 @@ if (y361) {
 					if (STCS) {m000(2, 0x100, arg2, arg3)}
 				}
 			}
+			// No further test if exception is expected
+			Return (0)
 		} elseif (CH03(arg0, z122, 71, arg3, arg2)) {
 			// Storing caused unexpected exception
 			if (STCS) {m000(2, 0x100, arg2, arg3)}
