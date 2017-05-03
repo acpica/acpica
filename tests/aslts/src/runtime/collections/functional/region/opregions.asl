@@ -496,9 +496,6 @@ Method(m702, 1)
 	Divide(Local0, 3, , Local0)
 	Store(0, Local1)
 
-	Store(2, Local1)
-	Subtract(Local0, 2, Local0)
-
 	While (Local0) {
 		m70c(arg0, p702, Local1)
 		Decrement(Local0)
@@ -584,6 +581,8 @@ Method(m70c, 3, Serialized)
 	elseif (LEqual(Local3, 0x04 /* SMBus */)) {}
 	elseif (LEqual(Local3, 0x05 /* SystemCMOS */)) {}
 	elseif (LEqual(Local3, 0x06 /* PciBarTarget */)) {}
+	elseif (LEqual(Local3, 0x07 /* IPMI */)) {}
+	elseif (LEqual(Local3, 0x08 /* GeneralPurposeIo */)) {}
 	elseif (LGreater(Local3, 0x80 /* UserDefRegionSpace <> 0x80 */)) {}
 
 	else {
