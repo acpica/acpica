@@ -477,7 +477,7 @@ LdNamespace1Begin (
         if (ACPI_FAILURE (Status))
         {
             AslCoreSubsystemError (Op, Status,
-                "Failure to allocate ownder ID to this definition block.", FALSE);
+                "Failure to allocate owner ID to this definition block.", FALSE);
             return_ACPI_STATUS (Status);
         }
     }
