@@ -1501,12 +1501,12 @@ AcpiDmMarkExternalConflict (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE (DmAddNodeToExternalList);
+    ACPI_FUNCTION_TRACE (DmMarkExternalConflict);
 
 
     if (Node->Flags & ANOBJ_IS_EXTERNAL)
     {
-        return;
+        return_VOID;
     }
 
     /* Get the full external and internal pathnames to the node */
@@ -1547,7 +1547,7 @@ AcpiDmMarkExternalConflict (
     ACPI_FREE (InternalPath);
     ACPI_FREE (ExternalPath);
 
-    return;
+    return_VOID;
 }
 
 
