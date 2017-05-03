@@ -238,6 +238,7 @@ typedef struct acpi_object_integer
  * Fields common to both Strings and Buffers
  */
 #define ACPI_COMMON_BUFFER_INFO(_Type) \
+    UINT8                           Fill[3];            /* Prevent warning on some compilers */ \
     _Type                           *Pointer; \
     UINT32                          Length;
 
@@ -247,6 +248,7 @@ typedef struct acpi_object_string   /* Null terminated, ASCII characters only */
     ACPI_OBJECT_COMMON_HEADER
     ACPI_COMMON_BUFFER_INFO         (char)              /* String in AML stream or allocated string */
     ACPI_NAMESPACE_NODE             *ScopeNode;         /* Scope node, may not be needed */
+    ACPI_NAMESPACE_NODE             *Node;              /* Used when the string is actually a named reference */
 
 } ACPI_OBJECT_STRING;
 
