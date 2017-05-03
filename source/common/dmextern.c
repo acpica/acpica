@@ -749,7 +749,7 @@ AcpiDmGetExternalAndInternalPath (
 
     if (!Node)
     {
-        return (AE_ERROR);
+        return (AE_BAD_PARAMETER);
     }
 
     /* Get the full external and internal pathnames to the node */
@@ -757,14 +757,14 @@ AcpiDmGetExternalAndInternalPath (
     *ExternalPath = AcpiNsGetExternalPathname (Node);
     if (!*ExternalPath)
     {
-        return (AE_ERROR);
+        return (AE_BAD_PATHNAME);
     }
 
     Status = AcpiNsInternalizeName (*ExternalPath, InternalPath);
     if (ACPI_FAILURE (Status))
     {
         ACPI_FREE (*ExternalPath);
-        return (AE_ERROR);
+        return (Status);
     }
 
     return (AE_OK);
@@ -796,7 +796,7 @@ AcpiDmRemoveRootPrefix (
         Temp = ACPI_ALLOCATE_ZEROED (strlen (InputPath) + 1);
         if (!Temp)
         {
-            return (AE_ERROR);
+            return (AE_NO_MEMORY);
         }
 
         strcpy (Temp, &InputPath[1]);
