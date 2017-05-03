@@ -206,6 +206,7 @@
 #define AOPOBJ_REG_CONNECTED        0x10    /* _REG was run */
 #define AOPOBJ_SETUP_COMPLETE       0x20    /* Region setup is complete */
 #define AOPOBJ_INVALID              0x40    /* Host OS won't allow a Region address */
+#define AOPOBJ_NAMESTRING           0x80    /* String is coverted from a NameString */
 
 
 /******************************************************************************
@@ -245,6 +246,7 @@ typedef struct acpi_object_string   /* Null terminated, ASCII characters only */
 {
     ACPI_OBJECT_COMMON_HEADER
     ACPI_COMMON_BUFFER_INFO         (char)              /* String in AML stream or allocated string */
+    ACPI_NAMESPACE_NODE             *ScopeNode;         /* Scope node, may not be needed */
 
 } ACPI_OBJECT_STRING;
 
