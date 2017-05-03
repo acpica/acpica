@@ -662,7 +662,7 @@ AcpiDsLoad1EndOp (
          */
         ParamCount = Op->Common.Value.Arg->Common.Next->Common.Value.Integer;
         ObjectType = Op->Common.Value.Arg->Common.Value.Integer;
-        Op->Common.Node->Flags &= ANOBJ_IS_EXTERNAL;
+        Op->Common.Node->Flags |= ANOBJ_IS_EXTERNAL;
         Op->Common.Node->Type = (UINT8) ObjectType;
 
         AcpiDmCreateSubobjectForExternal (ObjectType,
