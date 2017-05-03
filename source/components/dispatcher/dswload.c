@@ -652,10 +652,8 @@ AcpiDsLoad1EndOp (
      * get the parameter count from the argument's next.
      */
     if (AcpiGbl_DisasmFlag &&
-        Op->Common.AmlOpcode == AML_EXTERNAL_OP &&
         Op->Common.Node &&
-        Op->Common.Value.Arg &&
-        Op->Common.Value.Arg->Common.Next)
+        Op->Common.AmlOpcode == AML_EXTERNAL_OP)
     {
         /*
          * Note, if this external is not a method
