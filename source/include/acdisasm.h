@@ -918,7 +918,7 @@ AcpiDmAddOpToExternalList (
     UINT16                  Flags);
 
 void
-AcpiDmAnnotateExternalNsNodeForRegionOrMethod (
+AcpiDmCreateSubobjectForExternal (
     UINT8                   Type,
     ACPI_NAMESPACE_NODE     **Node,
     UINT32                  Value);

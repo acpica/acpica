@@ -712,14 +712,20 @@ AcpiNsLookup (
                     (char *) &SimpleName, (char *) &CurrentNode->Name,
                     CurrentNode));
             }
+
 #ifdef ACPI_ASL_COMPILER
-
-            if (Status == AE_ALREADY_EXISTS &&
-                (ThisNode->Flags | ANOBJ_IS_EXTERNAL) &&
-                AcpiGbl_DisasmFlag)
+            /*
+             * If this ACPI name already exists within the namespace as an
+             * external declaration, then mark the external as a conflicting
+             * declaration and proceed to process the current node as if it did
+             * not exist in the namespace. If this node is not processed as
+             * normal, then it could cause improper namespace resolution
+             * by failing to open a new scope.
+             */
+            if (AcpiGbl_DisasmFlag &&
+                (Status == AE_ALREADY_EXISTS) &&
+                (ThisNode->Flags | ANOBJ_IS_EXTERNAL))
             {
-                /* use one function call */
-
                 ThisNode->Flags &= ~ANOBJ_IS_EXTERNAL;
                 ThisNode->Type = ThisSearchType;
                 if (!(WalkState &&

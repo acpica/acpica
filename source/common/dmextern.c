@@ -215,7 +215,7 @@ AcpiDmNormalizeParentPrefix (
     char                    *Path);
 
 static ACPI_STATUS
-AcpiDmGetExternalInternalPath (
+AcpiDmGetExternalAndInternalPath (
     ACPI_NAMESPACE_NODE     *Node,
     char                    **ExternalPath,
     char                    **InternalPath);
@@ -240,7 +240,7 @@ AcpiDmCreateNewExternal (
     UINT16                  Flags);
 
 static void
-AcpiDmCheckExternalConflict (
+AcpiDmCheckForExternalConflict (
     char                    *Path);
 
 static ACPI_STATUS
@@ -251,7 +251,7 @@ AcpiDmResolveExternal (
 
 
 static void
-AcpiDmConflictingDeclarationWarning (
+AcpiDmConflictingDeclaration (
     char                    *Path);
 
 
@@ -739,7 +739,7 @@ AcpiDmAddOpToExternalList (
  ******************************************************************************/
 
 static ACPI_STATUS
-AcpiDmGetExternalInternalPath (
+AcpiDmGetExternalAndInternalPath (
     ACPI_NAMESPACE_NODE     *Node,
     char                    **ExternalPath,
     char                    **InternalPath)
@@ -846,7 +846,7 @@ AcpiDmAddNodeToExternalList (
 
     /* Get the full external and internal pathnames to the node */
 
-    Status = AcpiDmGetExternalInternalPath (Node, &ExternalPath, &InternalPath);
+    Status = AcpiDmGetExternalAndInternalPath (Node, &ExternalPath, &InternalPath);
     if (ACPI_FAILURE (Status))
     {
         return_VOID;
@@ -1159,7 +1159,7 @@ AcpiDmResolveExternal (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmAnnotateExternalNsNodeForRegionOrMethod
+ * FUNCTION:    AcpiDmCreateSubobjectForExternal
  *
  * PARAMETERS:  Type                  - Type of the external
  *              Node                  - Namespace node from AcpiNsLookup
@@ -1173,7 +1173,7 @@ AcpiDmResolveExternal (
  ******************************************************************************/
 
 void
-AcpiDmAnnotateExternalNsNodeForRegionOrMethod (
+AcpiDmCreateSubobjectForExternal (
     UINT8                   Type,
     ACPI_NAMESPACE_NODE     **Node,
     UINT32                  ParamCount)
@@ -1242,7 +1242,7 @@ AcpiDmAddOneExternalToNamespace (
         return;
     }
 
-    AcpiDmAnnotateExternalNsNodeForRegionOrMethod (Type, &Node, ParamCount);
+    AcpiDmCreateSubobjectForExternal (Type, &Node, ParamCount);
 
 }
 
@@ -1456,7 +1456,7 @@ AcpiDmEmitExternals (
             if (AcpiGbl_ExternalList->Flags &= ACPI_EXT_CONFLICTING_DECLARATION)
             {
                 AcpiOsPrintf ("%s", ExternalConflictMessage);
-                AcpiDmConflictingDeclarationWarning (AcpiGbl_ExternalList->Path);
+                AcpiDmConflictingDeclaration (AcpiGbl_ExternalList->Path);
             }
             AcpiOsPrintf ("\n");
         }
@@ -1511,7 +1511,8 @@ AcpiDmMarkExternalConflict (
 
     /* Get the full external and internal pathnames to the node */
 
-    Status = AcpiDmGetExternalInternalPath (Node, &ExternalPath, &InternalPath);
+    Status = AcpiDmGetExternalAndInternalPath (Node,
+        &ExternalPath, &InternalPath);
     if (ACPI_FAILURE (Status))
     {
         return_VOID;
@@ -1552,7 +1553,7 @@ AcpiDmMarkExternalConflict (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmConflictingDeclarationWarning
+ * FUNCTION:    AcpiDmConflictingDeclaration
  *
  * PARAMETERS:  Path                - Path with conflicting declaration
  *
@@ -1564,7 +1565,7 @@ AcpiDmMarkExternalConflict (
  ******************************************************************************/
 
 static void
-AcpiDmConflictingDeclarationWarning (
+AcpiDmConflictingDeclaration (
     char                    *Path)
 {
     fprintf (stderr,
@@ -1600,14 +1601,14 @@ AcpiDmEmitExternal (
     AcpiDmNamestring (NameOp->Named.Path);
     AcpiOsPrintf ("%s)",
         AcpiDmGetObjectTypeName ((ACPI_OBJECT_TYPE) TypeOp->Common.Value.Integer));
-    AcpiDmCheckExternalConflict (NameOp->Named.Path);
+    AcpiDmCheckForExternalConflict (NameOp->Named.Path);
     AcpiOsPrintf ("\n");
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmCheckExternalConflict
+ * FUNCTION:    AcpiDmCheckForExternalConflict
  *
  * PARAMETERS:  Path                - Path to check
  *
@@ -1619,7 +1620,7 @@ AcpiDmEmitExternal (
  ******************************************************************************/
 
 static void
-AcpiDmCheckExternalConflict (
+AcpiDmCheckForExternalConflict (
     char                    *Path)
 {
     ACPI_EXTERNAL_LIST      *ExternalList = AcpiGbl_ExternalList;
@@ -1635,7 +1636,7 @@ AcpiDmCheckExternalConflict (
     /* Move past the root prefix '\' */
 
     InputPath = Path;
-    if (*InputPath == AML_ROOT_PREFIX && InputPath[1])
+    if ((*InputPath == AML_ROOT_PREFIX) && InputPath[1])
     {
         InputPath++;
     }
@@ -1657,7 +1658,7 @@ AcpiDmCheckExternalConflict (
                 (ExternalList->Flags & ACPI_EXT_CONFLICTING_DECLARATION))
             {
                 AcpiOsPrintf ("%s", ExternalConflictMessage);
-                AcpiDmConflictingDeclarationWarning (Path);
+                AcpiDmConflictingDeclaration (Path);
 
                 return;
             }

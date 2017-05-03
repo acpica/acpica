@@ -896,11 +896,8 @@ AcpiDmXrefDescendingOp (
         goto Exit;
     }
 
-    /*
-     * Get the NamePath from the appropriate place
-     * Note: AML_EXTERNAL_OP has been changed to named object so it takes
-     * this execution path.
-     */
+    /* Get the NamePath from the appropriate place */
+
     if (OpInfo->Flags & AML_NAMED)
     {
         /*

@@ -667,7 +667,8 @@ AcpiDsLoad1EndOp (
         Op->Common.Node->Flags &= ANOBJ_IS_EXTERNAL;
         Op->Common.Node->Type = (UINT8) ObjectType;
 
-        AcpiDmAnnotateExternalNsNodeForRegionOrMethod (ObjectType, &Op->Common.Node, ParamCount);
+        AcpiDmCreateSubobjectForExternal (ObjectType,
+            &Op->Common.Node, ParamCount);
 
         /*
          * Add the external to the external list because we may be
