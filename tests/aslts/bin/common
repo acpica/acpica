@@ -362,6 +362,8 @@ get_test_case_dir()
 				path="`get_collection_dir "$1" $2`/ACPICA/tests/$3"
 			elif [ $3 == bdemo -o $3 == bdemof ]; then
 				path="`get_collection_dir "$1" $2`/ACPICA/$3"
+			elif [ $3 == extra -o $3 == extra_aslts ]; then
+				path="`get_collection_dir "$1" $2`/abbu"
 			elif [[ $3 == mt_* ]]; then
 				x=`echo $3 | sed 's/mt_//'g`
 				path="`get_collection_dir "$1" $2`/$x"
