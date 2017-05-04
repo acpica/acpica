@@ -660,19 +660,19 @@ AcpiDsLoad1EndOp (
          * Op->Common.Value.Arg->Common.Next->Common.Value.Integer == 0
          * Therefore, ParamCount will be 0.
          */
-        ParamCount = Op->Common.Value.Arg->Common.Next->Common.Value.Integer;
-        ObjectType = Op->Common.Value.Arg->Common.Value.Integer;
+        ParamCount = (UINT8) Op->Common.Value.Arg->Common.Next->Common.Value.Integer;
+        ObjectType = (UINT8) Op->Common.Value.Arg->Common.Value.Integer;
         Op->Common.Node->Flags |= ANOBJ_IS_EXTERNAL;
         Op->Common.Node->Type = (UINT8) ObjectType;
 
-        AcpiDmCreateSubobjectForExternal (ObjectType,
+        AcpiDmCreateSubobjectForExternal ((UINT8)ObjectType,
             &Op->Common.Node, ParamCount);
 
         /*
          * Add the external to the external list because we may be
          * emitting code based off of the items within the external list.
          */
-        AcpiDmAddOpToExternalList (Op, Op->Named.Path, ObjectType, ParamCount,
+        AcpiDmAddOpToExternalList (Op, Op->Named.Path, (UINT8)ObjectType, ParamCount,
            ACPI_EXT_ORIGIN_FROM_OPCODE | ACPI_EXT_RESOLVED_REFERENCE);
     }
 #endif

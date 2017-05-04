@@ -728,7 +728,7 @@ AcpiNsLookup (
                     (WalkState && WalkState->Opcode == AML_EXTERNAL_OP)))
             {
                 ThisNode->Flags &= ~ANOBJ_IS_EXTERNAL;
-                ThisNode->Type = ThisSearchType;
+                ThisNode->Type = (UINT8)ThisSearchType;
                 if (WalkState->Opcode != AML_EXTERNAL_OP)
                 {
                     AcpiDmMarkExternalConflict (ThisNode);
