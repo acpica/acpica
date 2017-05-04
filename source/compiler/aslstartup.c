@@ -461,7 +461,7 @@ AslDoOneFile (
     /*
      * AML Disassembly (Optional)
      */
-    if (Gbl_DisasmFlag)
+    if (AcpiGbl_DisasmFlag)
     {
         Status = AslDoDisassembly ();
         if (Status != AE_CTRL_CONTINUE)
@@ -586,7 +586,7 @@ AslDoOneFile (
         CvDbgPrint ("OUTPUTFILENAME: %s\n", Gbl_OutputFilenamePrefix);
             Gbl_Files[ASL_FILE_INPUT].Filename =
                 Gbl_Files[ASL_FILE_AML_OUTPUT].Filename;
-
+            AcpiGbl_DisasmFlag = TRUE;
             fprintf (stderr, "\n");
             AslDoDisassembly ();
 
@@ -606,7 +606,7 @@ AslDoOneFile (
 
         FlCloseFile (ASL_FILE_INPUT);
         Gbl_DoCompile = FALSE;
-        Gbl_DisasmFlag = TRUE;
+        AcpiGbl_DisasmFlag = TRUE;
         Status = AslDoDisassembly ();
         return (Status);
 

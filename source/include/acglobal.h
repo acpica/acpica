@@ -481,6 +481,8 @@ ACPI_GLOBAL (const char,                *AcpiGbl_PldVerticalPositionList[]);
 ACPI_GLOBAL (const char,                *AcpiGbl_PldHorizontalPositionList[]);
 ACPI_GLOBAL (const char,                *AcpiGbl_PldShapeList[]);
 
+ACPI_INIT_GLOBAL (BOOLEAN,              AcpiGbl_DisasmFlag, FALSE);
+
 #endif
 
 /*

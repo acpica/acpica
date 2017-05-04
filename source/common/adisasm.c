@@ -537,7 +537,7 @@ AdDisassembleOneTable (
      * the entire tree with the new information (namely, the
      * number of arguments per method)
      */
-    if (AcpiDmGetExternalMethodCount ())
+    if (AcpiDmGetUnresolvedExternalMethodCount ())
     {
         Status = AdReparseOneTable (Table, File, OwnerId);
         if (ACPI_FAILURE (Status))
@@ -616,7 +616,7 @@ AdReparseOneTable (
     fprintf (stderr,
         "\nFound %u external control methods, "
         "reparsing with new information\n",
-        AcpiDmGetExternalMethodCount ());
+        AcpiDmGetUnresolvedExternalMethodCount ());
 
     /* Reparse, rebuild namespace */
 
@@ -642,7 +642,7 @@ AdReparseOneTable (
 
     /* New namespace, add the external definitions first */
 
-    AcpiDmAddExternalsToNamespace ();
+    AcpiDmAddExternalListToNamespace ();
 
     /* For -ca option: clear the list of comment addresses. */
 
