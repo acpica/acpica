@@ -724,12 +724,12 @@ AcpiNsLookup (
              */
             if (AcpiGbl_DisasmFlag &&
                 (Status == AE_ALREADY_EXISTS) &&
-                (ThisNode->Flags | ANOBJ_IS_EXTERNAL))
+                ((ThisNode->Flags & ANOBJ_IS_EXTERNAL) ||
+                    (WalkState && WalkState->Opcode == AML_EXTERNAL_OP)))
             {
                 ThisNode->Flags &= ~ANOBJ_IS_EXTERNAL;
                 ThisNode->Type = ThisSearchType;
-                if (!(WalkState &&
-                    WalkState->Opcode == AML_EXTERNAL_OP))
+                if (WalkState->Opcode != AML_EXTERNAL_OP)
                 {
                     AcpiDmMarkExternalConflict (ThisNode);
                 }
