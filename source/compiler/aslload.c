@@ -315,13 +315,20 @@ LdLoadFieldElements (
                         Child->Asl.Value.String);
                     return (Status);
                 }
-
-                /*
-                 * The name already exists in this scope
-                 * But continue processing the elements
-                 */
-                AslError (ASL_ERROR, ASL_MSG_NAME_EXISTS, Child,
-                    Child->Asl.Value.String);
+                else if (Status == AE_ALREADY_EXISTS &&
+                    (Node->Flags & ANOBJ_IS_EXTERNAL))
+                {
+                    Node->Type = (UINT8) ACPI_TYPE_LOCAL_REGION_FIELD;
+                }
+                else
+                {
+                    /*
+                     * The name already exists in this scope
+                     * But continue processing the elements
+                     */
+                    AslError (ASL_ERROR, ASL_MSG_NAME_EXISTS, Child,
+                        Child->Asl.Value.String);
+                }
             }
             else
             {
