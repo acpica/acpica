@@ -1873,7 +1873,6 @@ AcpiDmDumpHmat (
 
             /* Attempt to continue */
 
-            Length = HmatStruct->Length;
             goto NextSubTable;
         }
 
