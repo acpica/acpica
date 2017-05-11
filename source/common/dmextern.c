@@ -788,20 +788,16 @@ AcpiDmRemoveRootPrefix (
     char                    **Path)
 {
     char                    *InputPath = *Path;
-    char                    *Temp;
 
 
     if ((*InputPath == AML_ROOT_PREFIX) && (InputPath[1]))
     {
-        Temp = ACPI_ALLOCATE_ZEROED (strlen (InputPath) + 1);
-        if (!Temp)
+        if (!memmove(InputPath, InputPath+1, strlen(InputPath)))
         {
-            return (AE_NO_MEMORY);
+            return (AE_ERROR);
         }
 
-        strcpy (Temp, &InputPath[1]);
-        ACPI_FREE (*Path);
-        *Path = Temp;
+        *Path = InputPath;
     }
 
     return (AE_OK);
