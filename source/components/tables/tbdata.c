@@ -586,6 +586,13 @@ AcpiTbCheckDuplication (
 
     for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; ++i)
     {
+        /* Do not compare with unverified tables */
+
+        if (!(AcpiGbl_RootTableList.Tables[i].Flags & ACPI_TABLE_IS_VERIFIED))
+        {
+            continue;
+        }
+
         /*
          * Check for a table match on the entire table length,
          * not just the header.
@@ -713,6 +720,8 @@ AcpiTbVerifyTempTable (
                 goto InvalidateAndExit;
             }
         }
+
+        TableDesc->Flags |= ACPI_TABLE_IS_VERIFIED;
     }
 
     return_ACPI_STATUS (Status);
@@ -741,6 +750,8 @@ AcpiTbResizeRootTableList (
 {
     ACPI_TABLE_DESC         *Tables;
     UINT32                  TableCount;
+    UINT32                  CurrentTableCount, MaxTableCount;
+    UINT32                  i;
 
 
     ACPI_FUNCTION_TRACE (TbResizeRootTableList);
@@ -765,9 +776,9 @@ AcpiTbResizeRootTableList (
         TableCount = AcpiGbl_RootTableList.CurrentTableCount;
     }
 
+    MaxTableCount = TableCount + ACPI_ROOT_TABLE_SIZE_INCREMENT;
     Tables = ACPI_ALLOCATE_ZEROED (
-        ((ACPI_SIZE) TableCount + ACPI_ROOT_TABLE_SIZE_INCREMENT) *
-        sizeof (ACPI_TABLE_DESC));
+        ((ACPI_SIZE) MaxTableCount) * sizeof (ACPI_TABLE_DESC));
     if (!Tables)
     {
         ACPI_ERROR ((AE_INFO, "Could not allocate new root table array"));
@@ -776,10 +787,19 @@ AcpiTbResizeRootTableList (
 
     /* Copy and free the previous table array */
 
+    CurrentTableCount = 0;
     if (AcpiGbl_RootTableList.Tables)
     {
-        memcpy (Tables, AcpiGbl_RootTableList.Tables,
-            (ACPI_SIZE) TableCount * sizeof (ACPI_TABLE_DESC));
+        for (i = 0; i < TableCount; i++)
+        {
+            if (AcpiGbl_RootTableList.Tables[i].Address)
+            {
+                memcpy (Tables + CurrentTableCount,
+                    AcpiGbl_RootTableList.Tables + i,
+                    sizeof (ACPI_TABLE_DESC));
+                CurrentTableCount++;
+            }
+        }
 
         if (AcpiGbl_RootTableList.Flags & ACPI_ROOT_ORIGIN_ALLOCATED)
         {
@@ -788,8 +808,8 @@ AcpiTbResizeRootTableList (
     }
 
     AcpiGbl_RootTableList.Tables = Tables;
-    AcpiGbl_RootTableList.MaxTableCount =
-        TableCount + ACPI_ROOT_TABLE_SIZE_INCREMENT;
+    AcpiGbl_RootTableList.MaxTableCount = MaxTableCount;
+    AcpiGbl_RootTableList.CurrentTableCount = CurrentTableCount;
     AcpiGbl_RootTableList.Flags |= ACPI_ROOT_ORIGIN_ALLOCATED;
 
     return_ACPI_STATUS (AE_OK);
