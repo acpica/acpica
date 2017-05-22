@@ -172,7 +172,7 @@ run_test_case()
 		AML_DONT_EXIST=$[ $AML_DONT_EXIST + 1 ]
 		TEST_RET=1
 	else
-		options="-ep -el"
+		options="-el"
 		method=MN00
 
 		if [ "$DO_MEMSTAT" == "yes" ]; then
