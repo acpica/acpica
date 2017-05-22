@@ -30,6 +30,9 @@
  * Bug 274:
  *
  * SUMMARY: Named object as element of Package is handled by ACPICA differently than by MS
+ *
+ * MS handles Named References as strings since the ASL grammar does not allow
+ * object references for PackageElements.
  */
 
 Method(mc74,, Serialized)
@@ -59,7 +62,7 @@ Method(mc74,, Serialized)
 	}
 
 	// Choose benchmark package
-	if (SLCK) {
+	if (y274) {
 		Store(Package() {
 				"I000",
 				"I001",
