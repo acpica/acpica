@@ -1360,1126 +1360,140 @@ Method(m194)
 
 	// T4:x,I1-I14,x,x
 
+	// In-package name strings are String typed, not ObjectReference
+	// typed.
+
 	// Computational Data
 
 	Store(Index(Package(){i900}, 0), Local0)
-	m1a2(Local0, c009, 0, 0, c009, 0xfe7cb391d65a0000, 788)
+	m1a2(Local0, c00a, 0, 0, c00a, "I900", 788)
 
 	Store(Index(Package(){i901}, 0), Local0)
-	m1a2(Local0, c009, 0, 0, c009, 0xc1790001, 789)
+	m1a2(Local0, c00a, 0, 0, c00a, "I901", 789)
 
 	Store(Index(Package(){s900}, 0), Local0)
-	m1a2(Local0, c00a, 0, 0, c00a, "12340002", 790)
+	m1a2(Local0, c00a, 0, 0, c00a, "S900", 790)
 
 	Store(Index(Package(){s901}, 0), Local0)
-	m1a2(Local0, c00a, 0, 0, c00a, "qwrtyu0003", 791)
+	m1a2(Local0, c00a, 0, 0, c00a, "S901", 791)
 
 	Store(Index(Package(){b900}, 0), Local0)
-	m1a2(Local0, c00b, 0, 0, c00b, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4}, 792)
+	m1a2(Local0, c00a, 0, 0, c00a, "B900", 792)
 
-	if (y118) {
-		Store(Index(Package(){f900}, 0), Local0)
-		m1a2(Local0, c00d, 0, 0, c00d, 0, 793)
+	Store(Index(Package(){f900}, 0), Local0)
+	m1a2(Local0, c00a, 0, 0, c00a, "F900", 793)
 
-		Store(Index(Package(){bn90}, 0), Local0)
-		m1a2(Local0, c00d, 0, 0, c00d, 0, 794)
+	Store(Index(Package(){bn90}, 0), Local0)
+	m1a2(Local0, c00a, 0, 0, c00a, "BN90", 794)
 
-		Store(Index(Package(){if90}, 0), Local0)
-		m1a2(Local0, c00d, 0, 0, c00d, 0, 795)
+	Store(Index(Package(){if90}, 0), Local0)
+	m1a2(Local0, c00a, 0, 0, c00a, "IF90", 795)
 
-		Store(Index(Package(){bf90}, 0), Local0)
-		m1a2(Local0, c016, 0, 0, c016, 0xb0, 796)
-	}
+	Store(Index(Package(){bf90}, 0), Local0)
+	m1a2(Local0, c00a, 0, 0, c00a, "BF90", 796)
 
 	// Not Computational Data
 
 	Store(Index(Package(){e900}, 0), Local0)
-	m1a0(Local0, c00f, Ones, 797)
+	m1a0(Local0, c00a, Ones, 797)
 
 	Store(Index(Package(){mx90}, 0), Local0)
-	m1a0(Local0, c011, Ones, 798)
+	m1a0(Local0, c00a, Ones, 798)
 
 	Store(Index(Package(){d900}, 0), Local0)
-	m1a0(Local0, c00e, Ones, 799)
+	m1a0(Local0, c00a, Ones, 799)
 
 	Store(Index(Package(){tz90}, 0), Local0)
-	m1a0(Local0, c015, Ones, 800)
+	m1a0(Local0, c00a, Ones, 800)
 
 	Store(Index(Package(){pr90}, 0), Local0)
-	m1a0(Local0, c014, Ones, 801)
+	m1a0(Local0, c00a, Ones, 801)
 
 	Store(Index(Package(){r900}, 0), Local0)
-	m1a0(Local0, c012, Ones, 802)
+	m1a0(Local0, c00a, Ones, 802)
 
 	Store(Index(Package(){pw90}, 0), Local0)
-	m1a0(Local0, c013, Ones, 803)
-
-	// Elements of Package are Uninitialized
-
-	Store(Index(Package(){p900}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 804)
-
-	// Elements of Package are Computational Data
-
-	Store(Index(Package(){p901}, 0), Local0)
-	m1a2(Local0, c00c, 1, 0, c009, 0xabcd0004, 805)
-	m1a2(Local0, c00c, 1, 1, c009, 0x1122334455660005, 806)
-
-	Store(Index(Package(){p902}, 0), Local0)
-	m1a2(Local0, c00c, 1, 0, c00a, "12340006", 807)
-	m1a2(Local0, c00c, 1, 1, c00a, "q1w2e3r4t5y6u7i80007", 808)
-
-	Store(Index(Package(){p903}, 0), Local0)
-	m1a2(Local0, c00c, 1, 0, c00a, "qwrtyuiop0008", 809)
-	m1a2(Local0, c00c, 1, 1, c00a, "1234567890abdef0250009", 810)
-
-	Store(Index(Package(){p904}, 0), Local0)
-	m1a2(Local0, c00c, 1, 0, c00b, Buffer() {0xb5,0xb6,0xb7}, 811)
-
-	Store(Index(Package(){p905}, 0), Local0)
-	m1a2(Local0, c00c, 2, 0, c009, 0xabc000a, 812)
-	m1a2(Local0, c00c, 2, 1, c00a, "0xabc000b", 813)
-
-	Store(Index(Package(){p906}, 0), Local0)
-	m1a2(Local0, c00c, 2, 0, c00a, "abc000d", 814)
-
-	Store(Index(Package(){p907}, 0), Local0)
-	m1a2(Local0, c00c, 2, 0, c00a, "aqwevbgnm000e", 815)
-
-	Store(Index(Package(){p908}, 0), Local0)
-	m1a2(Local0, c00c, 2, 0, c00b, Buffer() {0xba,0xbb,0xbc,0xbd,0xbe}, 816)
-
-	Store(Index(Package(){p909}, 0), Local0)
-	m1a2(Local0, c00c, 3, 0, c009, 0xabc000f, 817)
-
-	Store(Index(Package(){p90a}, 0), Local0)
-	m1a2(Local0, c00c, 3, 0, c00a, "12340010", 818)
-
-	Store(Index(Package(){p90b}, 0), Local0)
-	m1a2(Local0, c00c, 3, 0, c00a, "zxswefas0011", 819)
-
-	Store(Index(Package(){p90c}, 0), Local0)
-	m1a2(Local0, c00c, 3, 0, c00b, Buffer() {0xbf,0xc0,0xc1}, 820)
-
-	Store(Index(Package(){p90d}, 0), Local0)
-	m1a2(Local0, c00c, 1, 0, c009, 0xfe7cb391d65a0000, 821)
-
-	Store(Index(Package(){p90e}, 0), Local0)
-	m1a2(Local0, c00c, 1, 0, c009, 0xc1790001, 822)
-
-	Store(Index(Package(){p90f}, 0), Local0)
-	m1a2(Local0, c00c, 1, 0, c00a, "12340002", 823)
-
-	Store(Index(Package(){p910}, 0), Local0)
-	m1a2(Local0, c00c, 1, 0, c00a, "qwrtyu0003", 824)
-
-	Store(Index(Package(){p911}, 0), Local0)
-	m1a2(Local0, c00c, 1, 0, c00b, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4}, 825)
-
-	if (y118) {
-		Store(Index(Package(){p912}, 0), Local0)
-		m1a2(Local0, c00c, 1, 0, c00d, 0, 826)
-
-		Store(Index(Package(){p913}, 0), Local0)
-		m1a2(Local0, c00c, 1, 0, c00d, 0, 827)
-
-		Store(Index(Package(){p914}, 0), Local0)
-		m1a2(Local0, c00c, 1, 0, c00d, 0, 828)
-
-		Store(Index(Package(){p915}, 0), Local0)
-		m1a2(Local0, c00c, 1, 0, c016, 0xb0, 829)
-	}
-
-	// Elements of Package are NOT Computational Data
-
-	Store(Index(Package(){p916}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 830)
-
-	Store(Index(Package(){p917}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 831)
-
-	Store(Index(Package(){p918}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 832)
-
-	Store(Index(Package(){p919}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 833)
-
-	Store(Index(Package(){p91a}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 834)
-
-	Store(Index(Package(){p91b}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 835)
-
-	Store(Index(Package(){p91c}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 836)
-
-	// Elements of Package are Methods
-
-	Store(Index(Package(){p91d}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 837)
-
-	Store(Index(Package(){p91e}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 838)
-
-	Store(Index(Package(){p91f}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 839)
-
-	Store(Index(Package(){p920}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 840)
-
-	Store(Index(Package(){p921}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 841)
-
-	Store(Index(Package(){p922}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 842)
-
-	Store(Index(Package(){p923}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 843)
-
-	Store(Index(Package(){p924}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 844)
-
-	Store(Index(Package(){p925}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 845)
-
-	Store(Index(Package(){p926}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 846)
-
-	Store(Index(Package(){p927}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 847)
-
-	Store(Index(Package(){p928}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 848)
-
-	Store(Index(Package(){p929}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 849)
-
-	Store(Index(Package(){p92a}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 850)
-
-	Store(Index(Package(){p92b}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 851)
-
-	Store(Index(Package(){p92c}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 852)
-
-	Store(Index(Package(){p92d}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 853)
-
-	Store(Index(Package(){p92e}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 854)
-
-	Store(Index(Package(){p92f}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 855)
-
-	Store(Index(Package(){p930}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 856)
-
-	Store(Index(Package(){p931}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 857)
-
-	Store(Index(Package(){p932}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 858)
-
-	Store(Index(Package(){p933}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 859)
-
-	Store(Index(Package(){p934}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 860)
-
-	Store(Index(Package(){p935}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 861)
-
-	Store(Index(Package(){p936}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 862)
-
-	Store(Index(Package(){p937}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 863)
-
-	Store(Index(Package(){p938}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 864)
-
-	Store(Index(Package(){p939}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 865)
-
-	Store(Index(Package(){p93a}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 866)
-
-	Store(Index(Package(){p93b}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 867)
-
-	Store(Index(Package(){p93c}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 868)
-
-	Store(Index(Package(){p93d}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 869)
-
-	Store(Index(Package(){p93e}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 870)
-
-	Store(Index(Package(){p93f}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 871)
-
-	Store(Index(Package(){p940}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 872)
-
-	Store(Index(Package(){p941}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 873)
-
-	Store(Index(Package(){p942}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 874)
-
-	Store(Index(Package(){p943}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 875)
-
-	Store(Index(Package(){p944}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 876)
-
-	Store(Index(Package(){p945}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 877)
-
-	Store(Index(Package(){p946}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 878)
-
-	Store(Index(Package(){p947}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 879)
-
-	Store(Index(Package(){p948}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 880)
-
-	Store(Index(Package(){p949}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 881)
-
-	Store(Index(Package(){p94a}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 882)
-
-	Store(Index(Package(){p94b}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 883)
-
-	Store(Index(Package(){p94c}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 884)
-
-	Store(Index(Package(){p94d}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 885)
-
-	Store(Index(Package(){p94e}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 886)
-
-	Store(Index(Package(){p94f}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 887)
-
-	Store(Index(Package(){p950}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 888)
-
-	Store(Index(Package(){p951}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 889)
-
-	Store(Index(Package(){p952}, 0), Local0)
-	m1a0(Local0, c00c, Ones, 890)
+	m1a0(Local0, c00a, Ones, 803)
 
 	// Methods
 
 	Store(Index(Package(){m900}, 0), Local0)
-	m1a0(Local0, c010, Ones, 891)
-
-	Store(Index(Package(){m901}, 0), Local0)
-	m1a0(Local0, c010, Ones, 892)
-
-	Store(Index(Package(){m902}, 0), Local0)
-	m1a0(Local0, c010, Ones, 893)
-
-	Store(Index(Package(){m903}, 0), Local0)
-	m1a0(Local0, c010, Ones, 894)
-
-	Store(Index(Package(){m904}, 0), Local0)
-	m1a0(Local0, c010, Ones, 895)
-
-	Store(Index(Package(){m905}, 0), Local0)
-	m1a0(Local0, c010, Ones, 896)
-
-	Store(Index(Package(){m906}, 0), Local0)
-	m1a0(Local0, c010, Ones, 897)
-
-	Store(Index(Package(){m907}, 0), Local0)
-	m1a0(Local0, c010, Ones, 898)
-
-	Store(Index(Package(){m908}, 0), Local0)
-	m1a0(Local0, c010, Ones, 899)
-
-	Store(Index(Package(){m909}, 0), Local0)
-	m1a0(Local0, c010, Ones, 900)
-
-	Store(Index(Package(){m90a}, 0), Local0)
-	m1a0(Local0, c010, Ones, 901)
-
-	Store(Index(Package(){m90b}, 0), Local0)
-	m1a0(Local0, c010, Ones, 902)
-
-	Store(Index(Package(){m90c}, 0), Local0)
-	m1a0(Local0, c010, Ones, 903)
-
-	Store(Index(Package(){m90d}, 0), Local0)
-	m1a0(Local0, c010, Ones, 904)
-
-	Store(Index(Package(){m90e}, 0), Local0)
-	m1a0(Local0, c010, Ones, 905)
-
-	Store(Index(Package(){m90f}, 0), Local0)
-	m1a0(Local0, c010, Ones, 906)
-
-	Store(Index(Package(){m910}, 0), Local0)
-	m1a0(Local0, c010, Ones, 907)
-
-	Store(Index(Package(){m911}, 0), Local0)
-	m1a0(Local0, c010, Ones, 908)
-
-	Store(Index(Package(){m912}, 0), Local0)
-	m1a0(Local0, c010, Ones, 909)
-
-	Store(Index(Package(){m913}, 0), Local0)
-	m1a0(Local0, c010, Ones, 910)
-
-	Store(Index(Package(){m914}, 0), Local0)
-	m1a0(Local0, c010, Ones, 911)
-
-	Store(Index(Package(){m915}, 0), Local0)
-	m1a0(Local0, c010, Ones, 912)
-
-	Store(Index(Package(){m916}, 0), Local0)
-	m1a0(Local0, c010, Ones, 913)
-
-	Store(Index(Package(){m917}, 0), Local0)
-	m1a0(Local0, c010, Ones, 914)
-
-	Store(Index(Package(){m918}, 0), Local0)
-	m1a0(Local0, c010, Ones, 915)
-
-	Store(Index(Package(){m919}, 0), Local0)
-	m1a0(Local0, c010, Ones, 916)
-
-	Store(Index(Package(){m91a}, 0), Local0)
-	m1a0(Local0, c010, Ones, 917)
-
-	Store(Index(Package(){m91b}, 0), Local0)
-	m1a0(Local0, c010, Ones, 918)
-
-	Store(Index(Package(){m91c}, 0), Local0)
-	m1a0(Local0, c010, Ones, 919)
-
-	Store(Index(Package(){m91d}, 0), Local0)
-	m1a0(Local0, c010, Ones, 920)
-
-	Store(Index(Package(){m91e}, 0), Local0)
-	m1a0(Local0, c010, Ones, 921)
-
-	Store(Index(Package(){m91f}, 0), Local0)
-	m1a0(Local0, c010, Ones, 922)
-
-	Store(Index(Package(){m920}, 0), Local0)
-	m1a0(Local0, c010, Ones, 923)
-
-	Store(Index(Package(){m921}, 0), Local0)
-	m1a0(Local0, c010, Ones, 924)
-
-	Store(Index(Package(){m922}, 0), Local0)
-	m1a0(Local0, c010, Ones, 925)
-
-	Store(Index(Package(){m923}, 0), Local0)
-	m1a0(Local0, c010, Ones, 926)
-
-	Store(Index(Package(){m924}, 0), Local0)
-	m1a0(Local0, c010, Ones, 927)
-
-	Store(Index(Package(){m925}, 0), Local0)
-	m1a0(Local0, c010, Ones, 928)
-
-	Store(Index(Package(){m926}, 0), Local0)
-	m1a0(Local0, c010, Ones, 929)
-
-	Store(Index(Package(){m927}, 0), Local0)
-	m1a0(Local0, c010, Ones, 930)
-
-	Store(Index(Package(){m928}, 0), Local0)
-	m1a0(Local0, c010, Ones, 931)
-
-	Store(Index(Package(){m929}, 0), Local0)
-	m1a0(Local0, c010, Ones, 932)
-
-	Store(Index(Package(){m92a}, 0), Local0)
-	m1a0(Local0, c010, Ones, 933)
-
-	Store(Index(Package(){m92b}, 0), Local0)
-	m1a0(Local0, c010, Ones, 934)
-
-	Store(Index(Package(){m92c}, 0), Local0)
-	m1a0(Local0, c010, Ones, 935)
-
-	Store(Index(Package(){m92d}, 0), Local0)
-	m1a0(Local0, c010, Ones, 936)
-
-	Store(Index(Package(){m92e}, 0), Local0)
-	m1a0(Local0, c010, Ones, 937)
-
-	Store(Index(Package(){m92f}, 0), Local0)
-	m1a0(Local0, c010, Ones, 938)
-
-	Store(Index(Package(){m930}, 0), Local0)
-	m1a0(Local0, c010, Ones, 939)
-
-	Store(Index(Package(){m931}, 0), Local0)
-	m1a0(Local0, c010, Ones, 940)
-
-	Store(Index(Package(){m932}, 0), Local0)
-	m1a0(Local0, c010, Ones, 941)
-
-	Store(Index(Package(){m933}, 0), Local0)
-	m1a0(Local0, c010, Ones, 942)
-
-	Store(Index(Package(){m934}, 0), Local0)
-	m1a0(Local0, c010, Ones, 943)
-
-	Store(Index(Package(){m935}, 0), Local0)
-	m1a0(Local0, c010, Ones, 944)
+	m1a0(Local0, c00a, Ones, 891)
 
 	// T4:x,IR1-IR14,x,x
 
-	// Computational Data
+	// In-package name strings are String typed, not ObjectReference
+	// typed.
+
+	// NameString
 
 	Store(Index(Package(){i900}, 0, Local1), Local0)
-	m1a2(Local0, c009, 0, 0, c009, 0xfe7cb391d65a0000, 945)
-	m1a2(Local1, c009, 0, 0, c009, 0xfe7cb391d65a0000, 946)
+	m1a2(Local0, c00a, 0, 0, c00a, "I900", 945)
+	m1a2(Local1, c00a, 0, 0, c00a, "I900", 946)
 
 	Store(Index(Package(){i901}, 0, Local1), Local0)
-	m1a2(Local0, c009, 0, 0, c009, 0xc1790001, 947)
-	m1a2(Local1, c009, 0, 0, c009, 0xc1790001, 948)
+	m1a2(Local0, c00a, 0, 0, c00a, "I901", 947)
+	m1a2(Local1, c00a, 0, 0, c00a, "I901", 948)
 
 	Store(Index(Package(){s900}, 0, Local1), Local0)
-	m1a2(Local0, c00a, 0, 0, c00a, "12340002", 949)
-	m1a2(Local1, c00a, 0, 0, c00a, "12340002", 950)
+	m1a2(Local0, c00a, 0, 0, c00a, "S900", 949)
+	m1a2(Local1, c00a, 0, 0, c00a, "S900", 950)
 
 	Store(Index(Package(){s901}, 0, Local1), Local0)
-	m1a2(Local0, c00a, 0, 0, c00a, "qwrtyu0003", 951)
-	m1a2(Local1, c00a, 0, 0, c00a, "qwrtyu0003", 952)
+	m1a2(Local0, c00a, 0, 0, c00a, "S901", 951)
+	m1a2(Local1, c00a, 0, 0, c00a, "S901", 952)
 
 	Store(Index(Package(){b900}, 0, Local1), Local0)
-	m1a2(Local0, c00b, 0, 0, c00b, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4}, 953)
-	m1a2(Local1, c00b, 0, 0, c00b, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4}, 954)
+	m1a2(Local0, c00a, 0, 0, c00a, "B900", 953)
+	m1a2(Local1, c00a, 0, 0, c00a, "B900", 954)
 
-	if (y118) {
-		Store(Index(Package(){f900}, 0, Local1), Local0)
-		m1a2(Local0, c00d, 0, 0, c00d, 0, 955)
-		m1a2(Local1, c00d, 0, 0, c00d, 0, 956)
+	Store(Index(Package(){f900}, 0, Local1), Local0)
+	m1a2(Local0, c00a, 0, 0, c00a, "F900", 955)
+	m1a2(Local1, c00a, 0, 0, c00a, "F900", 956)
 
-		Store(Index(Package(){bn90}, 0, Local1), Local0)
-		m1a2(Local0, c00d, 0, 0, c00d, 0, 957)
-		m1a2(Local1, c00d, 0, 0, c00d, 0, 958)
+	Store(Index(Package(){bn90}, 0, Local1), Local0)
+	m1a2(Local0, c00a, 0, 0, c00a, "BN90", 957)
+	m1a2(Local1, c00a, 0, 0, c00a, "BN90", 958)
 
-		Store(Index(Package(){if90}, 0, Local1), Local0)
-		m1a2(Local0, c00d, 0, 0, c00d, 0, 959)
-		m1a2(Local1, c00d, 0, 0, c00d, 0, 960)
+	Store(Index(Package(){if90}, 0, Local1), Local0)
+	m1a2(Local0, c00a, 0, 0, c00a, "IF90", 959)
+	m1a2(Local1, c00a, 0, 0, c00a, "IF90", 960)
 
-		Store(Index(Package(){bf90}, 0, Local1), Local0)
-		m1a2(Local0, c016, 0, 0, c016, 0xb0, 961)
-		m1a2(Local1, c016, 0, 0, c016, 0xb0, 962)
-	}
-
-	// Not Computational Data
-
-	Store(Index(Package(){e900}, 0, Local1), Local0)
-	m1a0(Local0, c00f, Ones, 963)
-	m1a0(Local1, c00f, Ones, 964)
-
-	Store(Index(Package(){mx90}, 0, Local1), Local0)
-	m1a0(Local0, c011, Ones, 965)
-	m1a0(Local1, c011, Ones, 966)
+	Store(Index(Package(){bf90}, 0, Local1), Local0)
+	m1a2(Local0, c00a, 0, 0, c00a, "BF90", 961)
+	m1a2(Local1, c00a, 0, 0, c00a, "BF90", 962)
 
 	Store(Index(Package(){d900}, 0, Local1), Local0)
-	m1a0(Local0, c00e, Ones, 967)
-	m1a0(Local1, c00e, Ones, 968)
+	m1a2(Local0, c00a, 0, 0, c00a, "D900", 963)
+	m1a2(Local1, c00a, 0, 0, c00a, "D900", 964)
 
-	Store(Index(Package(){tz90}, 0, Local1), Local0)
-	m1a0(Local0, c015, Ones, 969)
-	m1a0(Local1, c015, Ones, 970)
+	Store(Index(Package(){e900}, 0, Local1), Local0)
+	m1a2(Local0, c00a, 0, 0, c00a, "E900", 965)
+	m1a2(Local1, c00a, 0, 0, c00a, "E900", 966)
 
-	Store(Index(Package(){pr90}, 0, Local1), Local0)
-	m1a0(Local0, c014, Ones, 971)
-	m1a0(Local1, c014, Ones, 972)
+	Store(Index(Package(){mx90}, 0, Local1), Local0)
+	m1a2(Local0, c00a, 0, 0, c00a, "MX90", 967)
+	m1a2(Local1, c00a, 0, 0, c00a, "MX90", 968)
 
 	Store(Index(Package(){r900}, 0, Local1), Local0)
-	m1a0(Local0, c012, Ones, 973)
-	m1a0(Local1, c012, Ones, 974)
+	m1a2(Local0, c00a, 0, 0, c00a, "R900", 969)
+	m1a2(Local1, c00a, 0, 0, c00a, "R900", 970)
 
 	Store(Index(Package(){pw90}, 0, Local1), Local0)
-	m1a0(Local0, c013, Ones, 975)
-	m1a0(Local1, c013, Ones, 976)
-
-	// Elements of Package are Uninitialized
-
-	Store(Index(Package(){p900}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 977)
-	m1a0(Local1, c00c, Ones, 978)
-
-	// Elements of Package are Computational Data
-
-	Store(Index(Package(){p901}, 0, Local1), Local0)
-	m1a2(Local0, c00c, 1, 0, c009, 0xabcd0004, 979)
-	m1a2(Local0, c00c, 1, 1, c009, 0x1122334455660005, 980)
-	m1a2(Local1, c00c, 1, 0, c009, 0xabcd0004, 981)
-	m1a2(Local1, c00c, 1, 1, c009, 0x1122334455660005, 982)
-
-	Store(Index(Package(){p902}, 0, Local1), Local0)
-	m1a2(Local0, c00c, 1, 0, c00a, "12340006", 983)
-	m1a2(Local0, c00c, 1, 1, c00a, "q1w2e3r4t5y6u7i80007", 984)
-	m1a2(Local1, c00c, 1, 0, c00a, "12340006", 985)
-	m1a2(Local1, c00c, 1, 1, c00a, "q1w2e3r4t5y6u7i80007", 986)
-
-	Store(Index(Package(){p903}, 0, Local1), Local0)
-	m1a2(Local0, c00c, 1, 0, c00a, "qwrtyuiop0008", 987)
-	m1a2(Local0, c00c, 1, 1, c00a, "1234567890abdef0250009", 988)
-	m1a2(Local1, c00c, 1, 0, c00a, "qwrtyuiop0008", 989)
-	m1a2(Local1, c00c, 1, 1, c00a, "1234567890abdef0250009", 990)
-
-	Store(Index(Package(){p904}, 0, Local1), Local0)
-	m1a2(Local0, c00c, 1, 0, c00b, Buffer() {0xb5,0xb6,0xb7}, 991)
-	m1a2(Local1, c00c, 1, 0, c00b, Buffer() {0xb5,0xb6,0xb7}, 992)
-
-	Store(Index(Package(){p905}, 0, Local1), Local0)
-	m1a2(Local0, c00c, 2, 0, c009, 0xabc000a, 993)
-	m1a2(Local0, c00c, 2, 1, c00a, "0xabc000b", 994)
-	m1a2(Local1, c00c, 2, 0, c009, 0xabc000a, 995)
-	m1a2(Local1, c00c, 2, 1, c00a, "0xabc000b", 996)
-
-	Store(Index(Package(){p906}, 0, Local1), Local0)
-	m1a2(Local0, c00c, 2, 0, c00a, "abc000d", 997)
-	m1a2(Local1, c00c, 2, 0, c00a, "abc000d", 998)
-
-	Store(Index(Package(){p907}, 0, Local1), Local0)
-	m1a2(Local0, c00c, 2, 0, c00a, "aqwevbgnm000e", 999)
-	m1a2(Local1, c00c, 2, 0, c00a, "aqwevbgnm000e", 1000)
-
-	Store(Index(Package(){p908}, 0, Local1), Local0)
-	m1a2(Local0, c00c, 2, 0, c00b, Buffer() {0xba,0xbb,0xbc,0xbd,0xbe}, 1001)
-	m1a2(Local1, c00c, 2, 0, c00b, Buffer() {0xba,0xbb,0xbc,0xbd,0xbe}, 1002)
-
-	Store(Index(Package(){p909}, 0, Local1), Local0)
-	m1a2(Local0, c00c, 3, 0, c009, 0xabc000f, 1003)
-	m1a2(Local1, c00c, 3, 0, c009, 0xabc000f, 1004)
-
-	Store(Index(Package(){p90a}, 0, Local1), Local0)
-	m1a2(Local0, c00c, 3, 0, c00a, "12340010", 1005)
-	m1a2(Local1, c00c, 3, 0, c00a, "12340010", 1006)
-
-	Store(Index(Package(){p90b}, 0, Local1), Local0)
-	m1a2(Local0, c00c, 3, 0, c00a, "zxswefas0011", 1007)
-	m1a2(Local1, c00c, 3, 0, c00a, "zxswefas0011", 1008)
-
-	Store(Index(Package(){p90c}, 0, Local1), Local0)
-	m1a2(Local0, c00c, 3, 0, c00b, Buffer() {0xbf,0xc0,0xc1}, 1009)
-	m1a2(Local1, c00c, 3, 0, c00b, Buffer() {0xbf,0xc0,0xc1}, 1010)
-
-	Store(Index(Package(){p90d}, 0, Local1), Local0)
-	m1a2(Local0, c00c, 1, 0, c009, 0xfe7cb391d65a0000, 1011)
-	m1a2(Local1, c00c, 1, 0, c009, 0xfe7cb391d65a0000, 1012)
-
-	Store(Index(Package(){p90e}, 0, Local1), Local0)
-	m1a2(Local0, c00c, 1, 0, c009, 0xc1790001, 1013)
-	m1a2(Local1, c00c, 1, 0, c009, 0xc1790001, 1014)
-
-	Store(Index(Package(){p90f}, 0, Local1), Local0)
-	m1a2(Local0, c00c, 1, 0, c00a, "12340002", 1015)
-	m1a2(Local1, c00c, 1, 0, c00a, "12340002", 1016)
-
-	Store(Index(Package(){p910}, 0, Local1), Local0)
-	m1a2(Local0, c00c, 1, 0, c00a, "qwrtyu0003", 1017)
-	m1a2(Local1, c00c, 1, 0, c00a, "qwrtyu0003", 1018)
-
-	Store(Index(Package(){p911}, 0, Local1), Local0)
-	m1a2(Local0, c00c, 1, 0, c00b, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4}, 1019)
-	m1a2(Local1, c00c, 1, 0, c00b, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4}, 1020)
-
-	if (y118) {
-		Store(Index(Package(){p912}, 0, Local1), Local0)
-		m1a2(Local0, c00c, 1, 0, c00d, 0, 1021)
-		m1a2(Local1, c00c, 1, 0, c00d, 0, 1022)
-
-		Store(Index(Package(){p913}, 0, Local1), Local0)
-		m1a2(Local0, c00c, 1, 0, c00d, 0, 1023)
-		m1a2(Local1, c00c, 1, 0, c00d, 0, 1024)
-
-		Store(Index(Package(){p914}, 0, Local1), Local0)
-		m1a2(Local0, c00c, 1, 0, c00d, 0, 1025)
-		m1a2(Local1, c00c, 1, 0, c00d, 0, 1026)
-
-		Store(Index(Package(){p915}, 0, Local1), Local0)
-		m1a2(Local0, c00c, 1, 0, c016, 0xb0, 1027)
-		m1a2(Local1, c00c, 1, 0, c016, 0xb0, 1028)
-	}
-
-	// Elements of Package are NOT Computational Data
-
-	Store(Index(Package(){p916}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1029)
-	m1a0(Local1, c00c, Ones, 1030)
-
-	Store(Index(Package(){p917}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1031)
-	m1a0(Local1, c00c, Ones, 1032)
-
-	Store(Index(Package(){p918}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1033)
-	m1a0(Local1, c00c, Ones, 1034)
-
-	Store(Index(Package(){p919}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1035)
-	m1a0(Local1, c00c, Ones, 1036)
-
-	Store(Index(Package(){p91a}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1037)
-	m1a0(Local1, c00c, Ones, 1038)
-
-	Store(Index(Package(){p91b}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1039)
-	m1a0(Local1, c00c, Ones, 1040)
-
-	Store(Index(Package(){p91c}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1041)
-	m1a0(Local1, c00c, Ones, 1042)
-
-	// Elements of Package are Methods
-
-	Store(Index(Package(){p91d}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1043)
-	m1a0(Local1, c00c, Ones, 1044)
-
-	Store(Index(Package(){p91e}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1045)
-	m1a0(Local1, c00c, Ones, 1046)
-
-	Store(Index(Package(){p91f}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1047)
-	m1a0(Local1, c00c, Ones, 1048)
-
-	Store(Index(Package(){p920}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1049)
-	m1a0(Local1, c00c, Ones, 1050)
-
-	Store(Index(Package(){p921}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1051)
-	m1a0(Local1, c00c, Ones, 1052)
-
-	Store(Index(Package(){p922}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1053)
-	m1a0(Local1, c00c, Ones, 1054)
-
-	Store(Index(Package(){p923}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1055)
-	m1a0(Local1, c00c, Ones, 1056)
-
-	Store(Index(Package(){p924}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1057)
-	m1a0(Local1, c00c, Ones, 1058)
-
-	Store(Index(Package(){p925}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1059)
-	m1a0(Local1, c00c, Ones, 1060)
-
-	Store(Index(Package(){p926}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1061)
-	m1a0(Local1, c00c, Ones, 1062)
-
-	Store(Index(Package(){p927}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1063)
-	m1a0(Local1, c00c, Ones, 1064)
-
-	Store(Index(Package(){p928}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1065)
-	m1a0(Local1, c00c, Ones, 1066)
-
-	Store(Index(Package(){p929}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1067)
-	m1a0(Local1, c00c, Ones, 1068)
-
-	Store(Index(Package(){p92a}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1069)
-	m1a0(Local1, c00c, Ones, 1070)
-
-	Store(Index(Package(){p92b}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1071)
-	m1a0(Local1, c00c, Ones, 1072)
-
-	Store(Index(Package(){p92c}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1073)
-	m1a0(Local1, c00c, Ones, 1074)
-
-	Store(Index(Package(){p92d}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1075)
-	m1a0(Local1, c00c, Ones, 1076)
-
-	Store(Index(Package(){p92e}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1077)
-	m1a0(Local1, c00c, Ones, 1078)
-
-	Store(Index(Package(){p92f}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1079)
-	m1a0(Local1, c00c, Ones, 1080)
-
-	Store(Index(Package(){p930}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1081)
-	m1a0(Local1, c00c, Ones, 1082)
-
-	Store(Index(Package(){p931}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1083)
-	m1a0(Local1, c00c, Ones, 1084)
-
-	Store(Index(Package(){p932}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1085)
-	m1a0(Local1, c00c, Ones, 1086)
-
-	Store(Index(Package(){p933}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1087)
-	m1a0(Local1, c00c, Ones, 1088)
-
-	Store(Index(Package(){p934}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1089)
-	m1a0(Local1, c00c, Ones, 1090)
-
-	Store(Index(Package(){p935}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1091)
-	m1a0(Local1, c00c, Ones, 1092)
-
-	Store(Index(Package(){p936}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1093)
-	m1a0(Local1, c00c, Ones, 1094)
-
-	Store(Index(Package(){p937}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1095)
-	m1a0(Local1, c00c, Ones, 1096)
-
-	Store(Index(Package(){p938}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1097)
-	m1a0(Local1, c00c, Ones, 1098)
-
-	Store(Index(Package(){p939}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1099)
-	m1a0(Local1, c00c, Ones, 1100)
-
-	Store(Index(Package(){p93a}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1101)
-	m1a0(Local1, c00c, Ones, 1102)
-
-	Store(Index(Package(){p93b}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1103)
-	m1a0(Local1, c00c, Ones, 1104)
-
-	Store(Index(Package(){p93c}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1105)
-	m1a0(Local1, c00c, Ones, 1106)
-
-	Store(Index(Package(){p93d}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1107)
-	m1a0(Local1, c00c, Ones, 1108)
-
-	Store(Index(Package(){p93e}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1109)
-	m1a0(Local1, c00c, Ones, 1110)
-
-	Store(Index(Package(){p93f}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1111)
-	m1a0(Local1, c00c, Ones, 1112)
-
-	Store(Index(Package(){p940}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1113)
-	m1a0(Local1, c00c, Ones, 1114)
-
-	Store(Index(Package(){p941}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1115)
-	m1a0(Local1, c00c, Ones, 1116)
-
-	Store(Index(Package(){p942}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1117)
-	m1a0(Local1, c00c, Ones, 1118)
-
-	Store(Index(Package(){p943}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1119)
-	m1a0(Local1, c00c, Ones, 1120)
-
-	Store(Index(Package(){p944}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1121)
-	m1a0(Local1, c00c, Ones, 1122)
-
-	Store(Index(Package(){p945}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1123)
-	m1a0(Local1, c00c, Ones, 1124)
-
-	Store(Index(Package(){p946}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1125)
-	m1a0(Local1, c00c, Ones, 1126)
-
-	Store(Index(Package(){p947}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1127)
-	m1a0(Local1, c00c, Ones, 1128)
-
-	Store(Index(Package(){p948}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1129)
-	m1a0(Local1, c00c, Ones, 1130)
-
-	Store(Index(Package(){p949}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1131)
-	m1a0(Local1, c00c, Ones, 1132)
-
-	Store(Index(Package(){p94a}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1133)
-	m1a0(Local1, c00c, Ones, 1134)
-
-	Store(Index(Package(){p94b}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1135)
-	m1a0(Local1, c00c, Ones, 1136)
-
-	Store(Index(Package(){p94c}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1137)
-	m1a0(Local1, c00c, Ones, 1138)
-
-	Store(Index(Package(){p94d}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1139)
-	m1a0(Local1, c00c, Ones, 1140)
-
-	Store(Index(Package(){p94e}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1141)
-	m1a0(Local1, c00c, Ones, 1142)
-
-	Store(Index(Package(){p94f}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1143)
-	m1a0(Local1, c00c, Ones, 1144)
-
-	Store(Index(Package(){p950}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1145)
-	m1a0(Local1, c00c, Ones, 1146)
-
-	Store(Index(Package(){p951}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1147)
-	m1a0(Local1, c00c, Ones, 1148)
-
-	Store(Index(Package(){p952}, 0, Local1), Local0)
-	m1a0(Local0, c00c, Ones, 1149)
-	m1a0(Local1, c00c, Ones, 1150)
-
-	// Methods
+	m1a2(Local0, c00a, 0, 0, c00a, "PW90", 971)
+	m1a2(Local1, c00a, 0, 0, c00a, "PW90", 972)
+
+	Store(Index(Package(){pr90}, 0, Local1), Local0)
+	m1a2(Local0, c00a, 0, 0, c00a, "PR90", 973)
+	m1a2(Local1, c00a, 0, 0, c00a, "PR90", 974)
+
+	Store(Index(Package(){tz90}, 0, Local1), Local0)
+	m1a2(Local0, c00a, 0, 0, c00a, "TZ90", 975)
+	m1a2(Local1, c00a, 0, 0, c00a, "TZ90", 976)
 
 	Store(Index(Package(){m900}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1151)
-	m1a0(Local1, c010, Ones, 1152)
-
-	Store(Index(Package(){m901}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1153)
-	m1a0(Local1, c010, Ones, 1154)
-
-	Store(Index(Package(){m902}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1155)
-	m1a0(Local1, c010, Ones, 1156)
-
-	Store(Index(Package(){m903}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1157)
-	m1a0(Local1, c010, Ones, 1158)
-
-	Store(Index(Package(){m904}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1159)
-	m1a0(Local1, c010, Ones, 1160)
-
-	Store(Index(Package(){m905}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1161)
-	m1a0(Local1, c010, Ones, 1162)
-
-	Store(Index(Package(){m906}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1163)
-	m1a0(Local1, c010, Ones, 1164)
-
-	Store(Index(Package(){m907}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1165)
-	m1a0(Local1, c010, Ones, 1166)
-
-	Store(Index(Package(){m908}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1167)
-	m1a0(Local1, c010, Ones, 1168)
-
-	Store(Index(Package(){m909}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1169)
-	m1a0(Local1, c010, Ones, 1170)
-
-	Store(Index(Package(){m90a}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1171)
-	m1a0(Local1, c010, Ones, 1172)
-
-	Store(Index(Package(){m90b}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1173)
-	m1a0(Local1, c010, Ones, 1174)
-
-	Store(Index(Package(){m90c}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1175)
-	m1a0(Local1, c010, Ones, 1176)
-
-	Store(Index(Package(){m90d}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1177)
-	m1a0(Local1, c010, Ones, 1178)
-
-	Store(Index(Package(){m90e}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1179)
-	m1a0(Local1, c010, Ones, 1180)
-
-	Store(Index(Package(){m90f}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1181)
-	m1a0(Local1, c010, Ones, 1182)
-
-	Store(Index(Package(){m910}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1183)
-	m1a0(Local1, c010, Ones, 1184)
-
-	Store(Index(Package(){m911}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1185)
-	m1a0(Local1, c010, Ones, 1186)
-
-	Store(Index(Package(){m912}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1187)
-	m1a0(Local1, c010, Ones, 1188)
-
-	Store(Index(Package(){m913}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1189)
-	m1a0(Local1, c010, Ones, 1190)
-
-	Store(Index(Package(){m914}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1191)
-	m1a0(Local1, c010, Ones, 1192)
-
-	Store(Index(Package(){m915}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1193)
-	m1a0(Local1, c010, Ones, 1194)
-
-	Store(Index(Package(){m916}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1195)
-	m1a0(Local1, c010, Ones, 1196)
-
-	Store(Index(Package(){m917}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1197)
-	m1a0(Local1, c010, Ones, 1198)
-
-	Store(Index(Package(){m918}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1199)
-	m1a0(Local1, c010, Ones, 1200)
-
-	Store(Index(Package(){m919}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1201)
-	m1a0(Local1, c010, Ones, 1202)
-
-	Store(Index(Package(){m91a}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1203)
-	m1a0(Local1, c010, Ones, 1204)
-
-	Store(Index(Package(){m91b}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1205)
-	m1a0(Local1, c010, Ones, 1206)
-
-	Store(Index(Package(){m91c}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1207)
-	m1a0(Local1, c010, Ones, 1208)
-
-	Store(Index(Package(){m91d}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1209)
-	m1a0(Local1, c010, Ones, 1210)
-
-	Store(Index(Package(){m91e}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1211)
-	m1a0(Local1, c010, Ones, 1212)
-
-	Store(Index(Package(){m91f}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1213)
-	m1a0(Local1, c010, Ones, 1214)
-
-	Store(Index(Package(){m920}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1215)
-	m1a0(Local1, c010, Ones, 1216)
-
-	Store(Index(Package(){m921}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1217)
-	m1a0(Local1, c010, Ones, 1218)
-
-	Store(Index(Package(){m922}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1219)
-	m1a0(Local1, c010, Ones, 1220)
-
-	Store(Index(Package(){m923}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1221)
-	m1a0(Local1, c010, Ones, 1222)
-
-	Store(Index(Package(){m924}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1223)
-	m1a0(Local1, c010, Ones, 1224)
-
-	Store(Index(Package(){m925}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1225)
-	m1a0(Local1, c010, Ones, 1226)
-
-	Store(Index(Package(){m926}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1227)
-	m1a0(Local1, c010, Ones, 1228)
-
-	Store(Index(Package(){m927}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1229)
-	m1a0(Local1, c010, Ones, 1230)
-
-	Store(Index(Package(){m928}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1231)
-	m1a0(Local1, c010, Ones, 1232)
-
-	Store(Index(Package(){m929}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1233)
-	m1a0(Local1, c010, Ones, 1234)
-
-	Store(Index(Package(){m92a}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1235)
-	m1a0(Local1, c010, Ones, 1236)
-
-	Store(Index(Package(){m92b}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1237)
-	m1a0(Local1, c010, Ones, 1238)
-
-	Store(Index(Package(){m92c}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1239)
-	m1a0(Local1, c010, Ones, 1240)
-
-	Store(Index(Package(){m92d}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1241)
-	m1a0(Local1, c010, Ones, 1242)
-
-	Store(Index(Package(){m92e}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1243)
-	m1a0(Local1, c010, Ones, 1244)
-
-	Store(Index(Package(){m92f}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1245)
-	m1a0(Local1, c010, Ones, 1246)
-
-	Store(Index(Package(){m930}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1247)
-	m1a0(Local1, c010, Ones, 1248)
-
-	Store(Index(Package(){m931}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1249)
-	m1a0(Local1, c010, Ones, 1250)
-
-	Store(Index(Package(){m932}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1251)
-	m1a0(Local1, c010, Ones, 1252)
-
-	Store(Index(Package(){m933}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1253)
-	m1a0(Local1, c010, Ones, 1254)
-
-	Store(Index(Package(){m934}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1255)
-	m1a0(Local1, c010, Ones, 1256)
-
-	Store(Index(Package(){m935}, 0, Local1), Local0)
-	m1a0(Local0, c010, Ones, 1257)
-	m1a0(Local1, c010, Ones, 1258)
+	m1a2(Local0, c00a, 0, 0, c00a, "M900", 977)
+	m1a2(Local1, c00a, 0, 0, c00a, "M900", 978)
 
 	m1a6()
 }
