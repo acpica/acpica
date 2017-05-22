@@ -1072,7 +1072,7 @@ if (y361) {
 				CopyObject(EVE1, arg2)
 			}
 			Case(8) {
-				CopyObject(Derefof(Index(Derefof(arg3), 0)), MMM1)
+				CopyObject(DerefOf(Derefof(Index(Derefof(arg3), 0))), MMM1)
 				CopyObject(Derefof(Index(Derefof(arg3), 1)), MM01)
 				CopyObject(Derefof(Refof(MMM1)), arg2)
 			}
@@ -1170,7 +1170,7 @@ if (y361) {
 				CopyObject(EVE0, arg2)
 			}
 			Case(8) {
-				CopyObject(Derefof(Index(Derefof(arg3), 0)), MMM0)
+				CopyObject(DerefOf(Derefof(Index(Derefof(arg3), 0))), MMM0)
 				CopyObject(Derefof(Index(Derefof(arg3), 1)), MM00)
 				CopyObject(Derefof(Refof(MMM0)), arg2)
 			}
@@ -3627,6 +3627,7 @@ if (y361) {
 		0, 0, 0, 0, 0,
 		Buffer(9){0x9a,0x8a,0x7a,0x6a,0x5a,0x4a,0x3a,0x2a,0x1a,},
 		0, 0, 0,})
+	Store(RefOf(MMMY), Index(DerefOf(Index(p001, 8)), 0))
 
 	// Uninitialized
 
@@ -4062,6 +4063,7 @@ if (y361) {
 			0, 0, 0,},
 	})
 	Store(RefOf(p001), Index(p800, 3))
+	Store(RefOf(MMMX), Index(DerefOf(Index(p800, 2)), 0))
 
 	// Mutex
 
