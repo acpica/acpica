@@ -786,53 +786,14 @@ Method(m1c7,, Serialized)
 	Method(m000) {
 		Store(0, i000)
 	}
-	Method(m001) {
-		Store(1, i000)
-		return (0x12345678)
-	}
 
-	Method(m002) {
-		Store(0, i000)
-	}
-	Method(m003) {
-		Store(1, i000)
-		return (0x12345678)
-	}
-
-	Name(p000, Package() {m000, m001, m002, m003,
-					m000, m001, m002, m003,
-					i000, i000})
-
+	Name(p000, Package() {m000, i000})
 
 	Store(Index(p000, 0), Local0)
-	m1a3(Local0, c010, z116, ts, 110)
+	m1a3(Local0, c00a, z116, ts, 110)
 
 	Store(Index(p000, 1), Local0)
-	m1a3(Local0, c010, z116, ts, 111)
-
-	Store(Index(p000, 2), Local0)
-	m1a3(Local0, c010, z116, ts, 112)
-
-	Store(Index(p000, 3), Local0)
-	m1a3(Local0, c010, z116, ts, 113)
-
-	Store(Index(p000, 4), Local0)
-	m1a3(Local0, c010, z116, ts, 114)
-
-	Store(Index(p000, 5), Local0)
-	m1a3(Local0, c010, z116, ts, 115)
-
-	Store(Index(p000, 6), Local0)
-	m1a3(Local0, c010, z116, ts, 116)
-
-	Store(Index(p000, 7), Local0)
-	m1a3(Local0, c010, z116, ts, 117)
-
-	Store(Index(p000, 8), Local0)
-	m1a3(Local0, c009, z116, ts, 118)
-
-	Store(Index(p000, 9), Local0)
-	m1a3(Local0, c009, z116, ts, 119)
+	m1a3(Local0, c00a, z116, ts, 111)
 
 	m380(ts, i000, 0, 0)
 }
