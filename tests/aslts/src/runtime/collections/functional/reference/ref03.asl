@@ -817,309 +817,112 @@ Method(m182, 3)
 		m1a2(Local0, c00c, 3, 0, c00b, Buffer() {0xbf,0xc0,0xc1}, 644)
 	}
 
+	// In-package name strings are String typed, not ObjectReference
+	// typed.
+
+	// Elements of Package are NameString
+
 	Store(p90d, arg1)
 	Store(CondRefOf(arg1, Local0), Local1)
 	if (m1a4(Local1, 645)) {
-		m1a2(Local0, c00c, 1, 0, c009, 0xfe7cb391d65a0000, 646)
+		m1a2(Local0, c00c, 1, 0, c00a, "I900", 646)
 	}
 
 	Store(p90e, arg1)
 	Store(CondRefOf(arg1, Local0), Local1)
 	if (m1a4(Local1, 647)) {
-		m1a2(Local0, c00c, 1, 0, c009, 0xc1790001, 648)
+		m1a2(Local0, c00c, 1, 0, c00a, "I901", 648)
 	}
 
 	Store(p90f, arg1)
 	Store(CondRefOf(arg1, Local0), Local1)
 	if (m1a4(Local1, 649)) {
-		m1a2(Local0, c00c, 1, 0, c00a, "12340002", 650)
+		m1a2(Local0, c00c, 1, 0, c00a, "S900", 650)
 	}
 
 	Store(p910, arg1)
 	Store(CondRefOf(arg1, Local0), Local1)
 	if (m1a4(Local1, 651)) {
-		m1a2(Local0, c00c, 1, 0, c00a, "qwrtyu0003", 652)
+		m1a2(Local0, c00c, 1, 0, c00a, "S901", 652)
 	}
 
 	Store(p911, arg1)
 	Store(CondRefOf(arg1, Local0), Local1)
 	if (m1a4(Local1, 653)) {
-		m1a2(Local0, c00c, 1, 0, c00b, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4}, 654)
+		m1a2(Local0, c00c, 1, 0, c00a, "B9Z0", 654)
 	}
 
-	if (y118) {
-		Store(p912, arg1)
-		Store(CondRefOf(arg1, Local0), Local1)
-		if (m1a4(Local1, 655)) {
-			m1a2(Local0, c00c, 1, 0, c00d, 0, 656)
-		}
-
-		Store(p913, arg1)
-		Store(CondRefOf(arg1, Local0), Local1)
-		if (m1a4(Local1, 657)) {
-			m1a2(Local0, c00c, 1, 0, c00d, 0, 658)
-		}
-
-		Store(p914, arg1)
-		Store(CondRefOf(arg1, Local0), Local1)
-		if (m1a4(Local1, 659)) {
-			m1a2(Local0, c00c, 1, 0, c00d, 0, 660)
-		}
-
-		Store(p915, arg1)
-		Store(CondRefOf(arg1, Local0), Local1)
-		if (m1a4(Local1, 661)) {
-			m1a2(Local0, c00c, 1, 0, c016, 0xb0, 662)
-		}
+	Store(p912, arg1)
+	Store(CondRefOf(arg1, Local0), Local1)
+	if (m1a4(Local1, 655)) {
+		m1a2(Local0, c00c, 1, 0, c00a, "F900", 656)
 	}
 
-	// Elements of Package are NOT Computational Data
+	Store(p913, arg1)
+	Store(CondRefOf(arg1, Local0), Local1)
+	if (m1a4(Local1, 657)) {
+		m1a2(Local0, c00c, 1, 0, c00a, "BN90", 658)
+	}
+
+	Store(p914, arg1)
+	Store(CondRefOf(arg1, Local0), Local1)
+	if (m1a4(Local1, 659)) {
+		m1a2(Local0, c00c, 1, 0, c00a, "IF90", 660)
+	}
+
+	Store(p915, arg1)
+	Store(CondRefOf(arg1, Local0), Local1)
+	if (m1a4(Local1, 661)) {
+		m1a2(Local0, c00c, 1, 0, c00a, "BF90", 662)
+	}
 
 	Store(p916, arg1)
 	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 663)
+	if (m1a4(Local1, 663)) {
+		m1a2(Local0, c00c, 1, 0, c00a, "D900", 664)
+	}
 
 	Store(p917, arg1)
 	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 664)
+	if (m1a4(Local1, 665)) {
+		m1a2(Local0, c00c, 1, 0, c00a, "E900", 666)
+	}
 
 	Store(p918, arg1)
 	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 6655)
+	if (m1a4(Local1, 667)) {
+		m1a2(Local0, c00c, 1, 0, c00a, "MX90", 668)
+	}
 
 	Store(p919, arg1)
 	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 666)
+	if (m1a4(Local1, 669)) {
+		m1a2(Local0, c00c, 1, 0, c00a, "R9Z0", 670)
+	}
 
 	Store(p91a, arg1)
 	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 667)
+	if (m1a4(Local1, 671)) {
+		m1a2(Local0, c00c, 1, 0, c00a, "PW90", 672)
+	}
 
 	Store(p91b, arg1)
 	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 668)
+	if (m1a4(Local1, 673)) {
+		m1a2(Local0, c00c, 1, 0, c00a, "PR90", 674)
+	}
 
 	Store(p91c, arg1)
 	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 669)
-
-	// Elements of Package are Methods
+	if (m1a4(Local1, 675)) {
+		m1a2(Local0, c00c, 1, 0, c00a, "TZ90", 676)
+	}
 
 	Store(p91d, arg1)
 	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 670)
-
-	Store(p91e, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 671)
-
-	Store(p91f, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 672)
-
-	Store(p920, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 673)
-
-	Store(p921, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 674)
-
-	Store(p922, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 675)
-
-	Store(p923, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 676)
-
-	Store(p924, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 677)
-
-	Store(p925, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 678)
-
-	Store(p926, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 679)
-
-	Store(p927, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 680)
-
-	Store(p928, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 681)
-
-	Store(p929, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 682)
-
-	Store(p92a, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 683)
-
-	Store(p92b, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 684)
-
-	Store(p92c, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 685)
-
-	Store(p92d, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 686)
-
-	Store(p92e, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 687)
-
-	Store(p92f, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 688)
-
-	Store(p930, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 689)
-
-	Store(p931, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 690)
-
-	Store(p932, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 691)
-
-	Store(p933, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 692)
-
-	Store(p934, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 693)
-
-	Store(p935, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 694)
-
-	Store(p936, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 695)
-
-	Store(p937, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 696)
-
-	Store(p938, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 697)
-
-	Store(p939, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 698)
-
-	Store(p93a, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 699)
-
-	Store(p93b, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 700)
-
-	Store(p93c, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 701)
-
-	Store(p93d, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 702)
-
-	Store(p93e, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 703)
-
-	Store(p93f, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 704)
-
-	Store(p940, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 705)
-
-	Store(p941, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 706)
-
-	Store(p942, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 707)
-
-	Store(p943, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 708)
-
-	Store(p944, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 709)
-
-	Store(p945, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 710)
-
-	Store(p946, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 711)
-
-	Store(p947, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 712)
-
-	Store(p948, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 713)
-
-	Store(p949, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 714)
-
-	Store(p94a, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 715)
-
-	Store(p94b, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 716)
-
-	Store(p94c, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 717)
-
-	Store(p94d, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 718)
-
-	Store(p94e, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 719)
-
-	Store(p94f, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 720)
-
-	Store(p950, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 721)
-
-	Store(p951, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 722)
-
-	Store(p952, arg1)
-	Store(CondRefOf(arg1, Local0), Local1)
-	m1a0(Local0, c00c, Local1, 723)
+	if (m1a4(Local1, 677)) {
+		m1a2(Local0, c00c, 1, 0, c00a, "M900", 678)
+	}
 
 	m1a6()
 
