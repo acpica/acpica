@@ -89,7 +89,12 @@ Method(m1c2,, Serialized)
 	Name(b000, Buffer(4) {1,0x77,3,4})
 	Name(p000, Package(3) {5,0x77,7})
 
-	Name(ppp0, Package(4) {i000, s000, b000, p000})
+	Name(ppp0, Package(4) {
+		0x77,
+		"qwer0000",
+		Buffer(4) {1,0x77,3,4},
+		Package(3) {5,0x77,7}
+	})
 
 	Store(0, FL00)    // flag of testing of exceptions
 
