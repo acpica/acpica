@@ -242,36 +242,41 @@ Method(in33,, Serialized)
 Method(in34,, Serialized)
 {
 	Name(ts, "in34")
+
 	Name(i000, 0xabcd0000)
-	Name(i001, 0xabcd0001)
-	Name(i002, 0xabcd0002)
 	Name(ii00, 0x11112222)
-	Name(p000, Package() {i000, i001, i002, "i000"})
+
+	// 0: TRUE ObjectReference
+	// 1: NameString -> String
+	// 2: TRUE String
+	Name(p000, Package() {i000, i000, "i000"})
+	Store(RefOf(i000), Index(p000, 0))
 
 	Method(m000, 2)
 	{
 		Method(m001, 2)
 		{
-			Store(DerefOf(Index(arg0, 0)), Local0)
+			Store(DerefOf(DerefOf(Index(arg0, 0))), Local0)
 			if (LNotEqual(Local0, 0xabcd0000)) {
 				err(ts, z166, 0x000, 0, 0, Local0, 0xabcd0000)
 			}
+
 			Store(DerefOf(Index(arg0, 1)), Local0)
-			if (LNotEqual(Local0, 0xabcd0001)) {
-				err(ts, z166, 0x000, 0, 0, Local0, 0xabcd0001)
+			if (LEqual(Local0, 0xabcd000)) {
+				err(ts, z166, 0x000, 0, 0, Local0, 0xabcd0000)
 			}
+			if (LNotEqual(Local0, "I000")) {
+				err(ts, z166, 0x000, 0, 0, Local0, "I000")
+			}
+
 			Store(DerefOf(Index(arg0, 2)), Local0)
-			if (LNotEqual(Local0, 0xabcd0002)) {
-				err(ts, z166, 0x000, 0, 0, Local0, 0xabcd0002)
-			}
-			Store(DerefOf(Index(arg0, 3)), Local0)
 			if (LNotEqual(Local0, "i000")) {
 				err(ts, z166, 0x000, 0, 0, Local0, "i000")
 			}
 
-			Store(ii00, Index(arg0, 0))
+			Store(RefOf(ii00), Index(arg0, 0))
 
-			Store(DerefOf(Index(arg0, 0)), Local0)
+			Store(DerefOf(DerefOf(Index(arg0, 0))), Local0)
 			if (LNotEqual(Local0, 0x11112222)) {
 				err(ts, z166, 0x000, 0, 0, Local0, 0x11112222)
 			}
@@ -281,22 +286,20 @@ Method(in34,, Serialized)
 
 	m000(p000, RefOf(p000))
 
-	Store(DerefOf(Index(p000, 0)), Local0)
+	Store(DerefOf(DerefOf(Index(p000, 0))), Local0)
 	if (LNotEqual(Local0, 0x11112222)) {
 		err(ts, z166, 0x000, 0, 0, Local0, 0x11112222)
 	}
 
 	Store(DerefOf(Index(p000, 1)), Local0)
-	if (LNotEqual(Local0, 0xabcd0001)) {
-		err(ts, z166, 0x000, 0, 0, Local0, 0xabcd0001)
+	if (LEqual(Local0, 0xabcd0000)) {
+		err(ts, z166, 0x000, 0, 0, Local0, 0xabcd0000)
+	}
+	if (LNotEqual(Local0, "I000")) {
+		err(ts, z166, 0x000, 0, 0, Local0, "I000")
 	}
 
 	Store(DerefOf(Index(p000, 2)), Local0)
-	if (LNotEqual(Local0, 0xabcd0002)) {
-		err(ts, z166, 0x000, 0, 0, Local0, 0xabcd0002)
-	}
-
-	Store(DerefOf(Index(p000, 3)), Local0)
 	if (LNotEqual(Local0, "i000")) {
 		err(ts, z166, 0x000, 0, 0, Local0, "i000")
 	}
