@@ -29,7 +29,10 @@
 /*
  * Bug 120:
  *
- * SUMMARY: Unexpected exception on Store of Device and ThermalZone elements of Package to Debug operation
+ * SUMMARY: Unexpected exception on Store of Device and ThermalZone
+ *          elements of Package to Debug operation. However, the test
+ *          doesn't seem to be still valid as it is not possible to create
+ *          such element of Package.
  */
 
 	Method(mf64,, Serialized)
@@ -40,8 +43,8 @@
 		Store(Derefof(Local0), Debug)
 
 		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c014)) {
-			err("", zFFF, 0x000, 0, 0, Local1, c014)
+		if (LNotEqual(Local1, c00a)) {
+			err("", zFFF, 0x000, 0, 0, Local1, c00a)
 		}
 	}
 
@@ -53,8 +56,8 @@
 		Store(Derefof(Local0), Debug)
 
 		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c012)) {
-			err("", zFFF, 0x001, 0, 0, Local1, c012)
+		if (LNotEqual(Local1, c00a)) {
+			err("", zFFF, 0x001, 0, 0, Local1, c00a)
 		}
 	}
 
@@ -66,8 +69,8 @@
 		Store(Derefof(Local0), Debug)
 
 		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c013)) {
-			err("", zFFF, 0x002, 0, 0, Local1, c013)
+		if (LNotEqual(Local1, c00a)) {
+			err("", zFFF, 0x002, 0, 0, Local1, c00a)
 		}
 	}
 
@@ -79,8 +82,8 @@
 		Store(Derefof(Local0), Debug)
 
 		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c00f)) {
-			err("", zFFF, 0x003, 0, 0, Local1, c00f)
+		if (LNotEqual(Local1, c00a)) {
+			err("", zFFF, 0x003, 0, 0, Local1, c00a)
 		}
 	}
 
@@ -92,8 +95,8 @@
 		Store(Derefof(Local0), Debug)
 
 		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c011)) {
-			err("", zFFF, 0x004, 0, 0, Local1, c011)
+		if (LNotEqual(Local1, c00a)) {
+			err("", zFFF, 0x004, 0, 0, Local1, c00a)
 		}
 	}
 
@@ -110,8 +113,8 @@
 		CH03("", 0, 0x007, 0, 0)
 
 		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c00e)) {
-			err("", zFFF, 0x008, 0, 0, Local1, c00e)
+		if (LNotEqual(Local1, c00a)) {
+			err("", zFFF, 0x008, 0, 0, Local1, c00a)
 		}
 	}
 
@@ -128,8 +131,8 @@
 		CH03("", 0, 0x00b, 0, 0)
 
 		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c015)) {
-			err("", zFFF, 0x00c, 0, 0, Local1, c015)
+		if (LNotEqual(Local1, c00a)) {
+			err("", zFFF, 0x00c, 0, 0, Local1, c00a)
 		}
 	}
 
