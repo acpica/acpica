@@ -1747,7 +1747,7 @@ if (y361) {
 		}
 
 		// Prepare Target of specified type
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+		Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 		if (LEqual(arg2, 5)) {				// Field Unit Target
 			Field(OPR0, ByteAcc, NoLock, Preserve) {FLUX, 192, FLU1, 69}
 			Store(Refof(FLU1), Local1)
@@ -1966,7 +1966,7 @@ if (y361) {
 		}
 
 		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+		Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
 			if (STCS) {
 				Store("m008, auxiliary Target Object has been corrupted during storing", Debug)
@@ -2029,7 +2029,7 @@ if (y361) {
 		}
 
 		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+		Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
 			if (STCS) {
 				Store("m008, auxiliary Target Object has been corrupted during update of Target", Debug)
@@ -2107,7 +2107,7 @@ if (y361) {
 		}
 
 		// Prepare Target of specified type
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+		Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 		if (m003(Concatenate(arg0, "-m003"), arg2, Refof(Local4), Local7)) {
 			// Target Object can not be prepared
 			err(Concatenate(arg0, terr), z122, 60, 0, 0, arg2, 0)
@@ -2197,7 +2197,7 @@ if (y361) {
 		}
 
 		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+		Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
 			if (STCS) {
 				Store("m009, auxiliary Target Object has been corrupted during storing", Debug)
@@ -2222,7 +2222,7 @@ if (y361) {
 		}
 
 		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+		Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
 			if (STCS) {
 				Store("m009, auxiliary Target Object has been corrupted during update of Target", Debug)
@@ -2259,7 +2259,7 @@ if (y361) {
 		}
 
 		// Prepare Target of specified type
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+		Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 		if (LEqual(arg2, 5)) {				// Field Unit Target
 			Field(OPR0, ByteAcc, NoLock, Preserve) {FLUX, 192, FLU1, 69}
 			Store(Refof(FLU1), Local4)
@@ -2356,7 +2356,7 @@ if (y361) {
 		}
 
 		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+		Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
 			if (STCS) {
 				Store("m00a, auxiliary Target Object has been corrupted during storing", Debug)
@@ -2422,7 +2422,7 @@ if (y361) {
 		} // if (y900)
 
 		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+		Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
 			if (STCS) {
 				Store("m00a, auxiliary Target Object has been corrupted during update of Target", Debug)
@@ -2455,7 +2455,7 @@ if (y361) {
 		}
 
 		// Prepare Target of specified type
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+		Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 		if (m003(Concatenate(arg0, "-m003"), arg2, Refof(Local4), Local7)) {
 			// Target Object can not be prepared
 			err(Concatenate(arg0, terr), z122, 73, 0, 0, arg2, 0)
@@ -2504,7 +2504,7 @@ if (y361) {
 		}
 
 		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+		Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
 			if (STCS) {
 				Store("m00b, auxiliary Target Object has been corrupted during storing", Debug)
@@ -2529,7 +2529,7 @@ if (y361) {
 		}
 
 		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+		Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
 			if (STCS) {
 				Store("m00b, auxiliary Target Object has been corrupted during update of Target", Debug)
@@ -2705,7 +2705,7 @@ if (y361) {
 			}
 
 			// Check auxiliary Target Object to have the initial type and value
-			Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+			Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 			if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
 				if (STCS) {
 					Store("m00c, auxiliary Target Object has been corrupted during storing", Debug)
@@ -2730,7 +2730,7 @@ if (y361) {
 			}
 
 			// Check auxiliary Target Object to have the initial type and value
-			Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+			Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 			if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
 				if (STCS) {
 					Store("m00c, auxiliary Target Object has been corrupted during update of Target", Debug)
@@ -2749,7 +2749,7 @@ if (y361) {
 		if (STCS) {Store(arg0, Debug)}
 
 		// Prepare Target of specified type
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+		Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 		if (LEqual(arg2, 5)) {				// Field Unit Target
 			Field(OPR0, ByteAcc, NoLock, Preserve) {FLUX, 192, FLU1, 69}
 			Store(Refof(FLU1), Local1)
@@ -2786,7 +2786,7 @@ if (y361) {
 		}
 
 		// Check Target Object to be saving the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+		Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 		if (m015(Concatenate(arg0, "-m015"), arg2, Local1, Local7)) {
 			if (STCS) {
 				Store("m00c, Target Object has been corrupted during storing to ArgX", Debug)
@@ -2963,7 +2963,7 @@ if (y361) {
 			}
 
 			// Check auxiliary Target Object to have the initial type and value
-			Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+			Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 			if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
 				if (STCS) {
 					Store("m00d, auxiliary Target Object has been corrupted during storing", Debug)
@@ -2988,7 +2988,7 @@ if (y361) {
 			}
 
 			// Check auxiliary Target Object to have the initial type and value
-			Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+			Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 			if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
 				if (STCS) {
 					Store("m00d, auxiliary Target Object has been corrupted during update of Target", Debug)
@@ -3007,7 +3007,7 @@ if (y361) {
 		if (STCS) {Store(arg0, Debug)}
 
 		// Prepare Target of specified type
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+		Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 		if (LEqual(arg2, 5)) {				// Field Unit Target
 			Field(OPR0, ByteAcc, NoLock, Preserve) {FLUX, 192, FLU1, 69}
 			Store(Refof(FLU1), Local1)
@@ -3065,7 +3065,7 @@ if (y361) {
 
 		// Prepare Target of specified type
 		Index(DST0, 0, Local4)
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+		Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 		if (m013(Concatenate(arg0, "-m003"), arg2, DST0, Local7)) {
 			// Target Object can not be prepared
 			err(Concatenate(arg0, terr), z122, 92, 0, 0, arg2, 0)
@@ -3121,7 +3121,7 @@ if (y361) {
 		}
 
 		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+		Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
 			if (STCS) {
 				Store("m00e, auxiliary Target Object has been corrupted during storing", Debug)
@@ -3146,7 +3146,7 @@ if (y361) {
 		}
 
 		// Check auxiliary Target Object to have the initial type and value
-		Store(Index(Derefof(Index(arg6, 3)), arg2), Local7)
+		Store(Index(DerefOf(Derefof(Index(arg6, 3))), arg2), Local7)
 		if (m016(Concatenate(arg0, "-m016"), arg2, 0, Local7)) {
 			if (STCS) {
 				Store("m00e, auxiliary Target Object has been corrupted during update of Target", Debug)
@@ -3611,9 +3611,6 @@ if (y361) {
 
 	// Test data packages for each type of the Result Object
 
-	// Empty Package
-	Name(p000, Package(18){})
-
 	// Target Objects initial values for common use
 	Name(p001, Package(18) {
 		0,
@@ -3645,8 +3642,9 @@ if (y361) {
 		// Benchmark Result object value
 		0,
 		// Benchmark Result object converted to Target type values
-		p000,
+		Package(18){},
 	})
+	Store(RefOf(p001), Index(p002, 3))
 
 	// Integer
 
@@ -3673,6 +3671,7 @@ if (y361) {
 			Buffer(9){0x10, 0x32, 0x54, 0x76,},
 			0, 0, 0,},
 	})
+	Store(RefOf(p001), Index(p132, 3))
 
 	Name(p164, Package() {
 		// Type of the Result(Source) Object
@@ -3697,6 +3696,7 @@ if (y361) {
 			Buffer(9){0x10, 0x32, 0x54, 0x76, 0x98, 0xBA, 0xDC, 0xFE,},
 			0, 0, 0,},
 	})
+	Store(RefOf(p001), Index(p164, 3))
 
 	// String
 
@@ -3723,6 +3723,7 @@ if (y361) {
 			Buffer(9){1,},
 			0, 0, 0,},
 	})
+	Store(RefOf(p001), Index(p201, 3))
 
 	Name(p202, Package() {
 		// Type of the Result(Source) Object
@@ -3747,70 +3748,83 @@ if (y361) {
 			Buffer(9){0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,0x09,},
 			0, 0, 0,},
 	})
+	Store(RefOf(p001), Index(p202, 3))
+
+	Name(p203, Package() {
+		// Type of the Result(Source) Object
+		3,
+		// Number of different initial values
+		0,
+		// SRC0 initial value
+		"fedcba98 string",
+		// Target Objects initial values
+		p001,
+		// Benchmark Result object value
+		"fedcba98 string",
+		// Benchmark Result object converted to Target type values
+		Package(18) {
+			0,
+			0xfedcba98,
+			"fedcba98 string",
+			Buffer(17){0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38, 0x20, 0x73, 0x74, 0x72, 0x69, 0x6E, 0x67,},
+			0,
+			Buffer(9){0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38,},
+			0, 0, 0, 0, 0, 0, 0, 0,
+			Buffer(9){0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38,},
+			0, 0, 0,},
+	})
+	Store(RefOf(p001), Index(p203, 3))
+
+	Name(p204, Package() {
+		// Type of the Result(Source) Object
+		2,
+		// Number of different initial values
+		0,
+		// SRC0 initial value
+		"fedcba9876543210 string",
+		// Target Objects initial values
+		p001,
+		// Benchmark Result object value
+		"fedcba9876543210 string",
+		// Benchmark Result object converted to Target type values
+		Package(18) {
+			0,
+			0xfedcba9876543210,
+			"fedcba9876543210 string",
+			Buffer(17){0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38, 0x37, 0x36, 0x35, 0x34, 0x33, 0x32, 0x31, 0x30, 0x20,},
+			0,
+			Buffer(9){0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38, 0x17,},
+			0, 0, 0, 0, 0, 0, 0, 0,
+			Buffer(9){0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38, 0x17,},
+			0, 0, 0,},
+	})
+	Store(RefOf(p001), Index(p204, 3))
 
 	Name(p232, Package() {
 		// Type of the Result(Source) Object
 		2,
 		// Number of different initial values
 		2,
-		Package() {
-			// Type of the Result(Source) Object
-			3,
-			// Number of different initial values
-			0,
-			// SRC0 initial value
-			"fedcba98 string",
-			// Target Objects initial values
-			p001,
-			// Benchmark Result object value
-			"fedcba98 string",
-			// Benchmark Result object converted to Target type values
-			Package(18) {
-				0,
-				0xfedcba98,
-				"fedcba98 string",
-				Buffer(17){0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38, 0x20, 0x73, 0x74, 0x72, 0x69, 0x6E, 0x67,},
-				0,
-				Buffer(9){0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38,},
-				0, 0, 0, 0, 0, 0, 0, 0,
-				Buffer(9){0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38,},
-				0, 0, 0,},
-		},
+		p203,
 		p201,
 		p202,
 	})
+	Store(RefOf(p203), Index(p232, 2))
+	Store(RefOf(p201), Index(p232, 3))
+	Store(RefOf(p202), Index(p232, 4))
 
 	Name(p264, Package() {
 		// Type of the Result(Source) Object
 		2,
 		// Number of different initial values
 		3,
-		Package() {
-			// Type of the Result(Source) Object
-			2,
-			// Number of different initial values
-			0,
-			// SRC0 initial value
-			"fedcba9876543210 string",
-			// Target Objects initial values
-			p001,
-			// Benchmark Result object value
-			"fedcba9876543210 string",
-			// Benchmark Result object converted to Target type values
-			Package(18) {
-				0,
-				0xfedcba9876543210,
-				"fedcba9876543210 string",
-				Buffer(17){0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38, 0x37, 0x36, 0x35, 0x34, 0x33, 0x32, 0x31, 0x30, 0x20,},
-				0,
-				Buffer(9){0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38, 0x17,},
-				0, 0, 0, 0, 0, 0, 0, 0,
-				Buffer(9){0x66, 0x65, 0x64, 0x63, 0x62, 0x61, 0x39, 0x38, 0x17,},
-				0, 0, 0,},
-		},
+		p204,
 		p201,
 		p202,
 	})
+	Store(RefOf(p204), Index(p264, 2))
+	Store(RefOf(p201), Index(p264, 3))
+	Store(RefOf(p202), Index(p264, 4))
 
 	// Buffer
 
@@ -3847,37 +3861,43 @@ if (y361) {
 			Buffer(9){1,  2,  3,  4,  5,  6,  7,  8,  9},
 			0, 0, 0,},
 	})
+	Store(RefOf(p001), Index(p301, 3))
+
+	Name(p302, Package() {
+		// Type of the Result(Source) Object
+		3,
+		// Number of different initial values
+		0,
+		// SRC0 initial value
+		Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x88},
+		// Target Objects initial values
+		p001,
+		// Benchmark Result object value
+		Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x88},
+		// Benchmark Result object converted to Target type values
+		Package(18) {
+			0,
+			0xf1f2f3f4f5f6f7f8,
+			"F8 F7 F6 F5 F4 F3 F2 F1 88",
+			Buffer(17){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x88},
+			0,
+			Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x08},
+			0, 0, 0, 0, 0, 0, 0, 0,
+			Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x08},
+			0, 0, 0,},
+	})
+	Store(RefOf(p001), Index(p302, 3))
 
 	Name(p300, Package() {
 		// Type of the Result(Source) Object
 		3,
 		// Number of different initial values
 		2,
-		Package() {
-			// Type of the Result(Source) Object
-			3,
-			// Number of different initial values
-			0,
-			// SRC0 initial value
-			Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x88},
-			// Target Objects initial values
-			p001,
-			// Benchmark Result object value
-			Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x88},
-			// Benchmark Result object converted to Target type values
-			Package(18) {
-				0,
-				0xf1f2f3f4f5f6f7f8,
-				"F8 F7 F6 F5 F4 F3 F2 F1 88",
-				Buffer(17){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x88},
-				0,
-				Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x08},
-				0, 0, 0, 0, 0, 0, 0, 0,
-				Buffer(9){0xf8, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0x08},
-				0, 0, 0,},
-		},
+		p302,
 		p301,
 	})
+	Store(RefOf(p302), Index(p300, 2))
+	Store(RefOf(p301), Index(p300, 3))
 
 	// Package
 
@@ -3907,43 +3927,49 @@ if (y361) {
 			0,
 			0, 0, 0,},
 	})
+	Store(RefOf(p001), Index(p401, 3))
+
+	Name(p402, Package() {
+		// Type of the Result(Source) Object
+		4,
+		// Number of different initial values
+		0,
+		// SRC0 initial value
+		Package(3) {
+			0xfedcba987654321f,
+			"test package",
+			Buffer(9){19,18,17,16,15,14,13,12,11},},
+		// Target Objects initial values
+		p001,
+		// Benchmark Result object value
+		Package(3) {
+			0xfedcba987654321f,
+			"test package",
+			Buffer(9){19,18,17,16,15,14,13,12,11},},
+		// Benchmark Result object converted to Target type values
+		Package(18) {
+			0, 0, 0, 0,
+			Package(3) {
+				0xfedcba987654321f,
+				"test package",
+				Buffer(9){19,18,17,16,15,14,13,12,11},},
+			0,
+			0, 0, 0, 0, 0, 0, 0, 0,
+			0,
+			0, 0, 0,},
+	})
+	Store(RefOf(p001), Index(p402, 3))
 
 	Name(p400, Package() {
 		// Type of the Result(Source) Object
 		4,
 		// Number of different initial values
 		2,
-		Package() {
-			// Type of the Result(Source) Object
-			4,
-			// Number of different initial values
-			0,
-			// SRC0 initial value
-			Package(3) {
-				0xfedcba987654321f,
-				"test package",
-				Buffer(9){19,18,17,16,15,14,13,12,11},},
-			// Target Objects initial values
-			p001,
-			// Benchmark Result object value
-			Package(3) {
-				0xfedcba987654321f,
-				"test package",
-				Buffer(9){19,18,17,16,15,14,13,12,11},},
-			// Benchmark Result object converted to Target type values
-			Package(18) {
-				0, 0, 0, 0,
-				Package(3) {
-					0xfedcba987654321f,
-					"test package",
-					Buffer(9){19,18,17,16,15,14,13,12,11},},
-				0,
-				0, 0, 0, 0, 0, 0, 0, 0,
-				0,
-				0, 0, 0,},
-		},
+		p402,
 		p401,
 	})
+	Store(RefOf(p402), Index(p400, 2))
+	Store(RefOf(p401), Index(p400, 3))
 
 	// Field Unit
 
@@ -3970,6 +3996,7 @@ if (y361) {
 			Buffer(9){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,0x15,},
 			0, 0, 0,},
 	})
+	Store(RefOf(p001), Index(p500, 3))
 
 	// Device
 
@@ -3985,8 +4012,9 @@ if (y361) {
 		// Benchmark Result object value
 		0,
 		// Benchmark Result object converted to Target type values
-		p000,
+		Package(18){},
 	})
+	Store(RefOf(p001), Index(p600, 3))
 
 	// Event
 
@@ -4002,8 +4030,9 @@ if (y361) {
 		// Benchmark Result object value
 		0,
 		// Benchmark Result object converted to Target type values
-		p000,
+		Package(18){},
 	})
+	Store(RefOf(p001), Index(p700, 3))
 
 	// Method
 
@@ -4032,6 +4061,7 @@ if (y361) {
 			Buffer(9){0x66, 0x66, 0x30, 0x58,},
 			0, 0, 0,},
 	})
+	Store(RefOf(p001), Index(p800, 3))
 
 	// Mutex
 
@@ -4047,8 +4077,9 @@ if (y361) {
 		// Benchmark Result object value
 		0,
 		// Benchmark Result object converted to Target type values
-		p000,
+		Package(18){},
 	})
+	Store(RefOf(p001), Index(p900, 3))
 
 	// Operation Region
 
@@ -4064,8 +4095,9 @@ if (y361) {
 		// Benchmark Result object value
 		0,
 		// Benchmark Result object converted to Target type values
-		p000,
+		Package(18){},
 	})
+	Store(RefOf(p001), Index(pa00, 3))
 
 	// Power Resource
 
@@ -4081,8 +4113,9 @@ if (y361) {
 		// Benchmark Result object value
 		0,
 		// Benchmark Result object converted to Target type values
-		p000,
+		Package(18){},
 	})
+	Store(RefOf(p001), Index(pb00, 3))
 
 	// Processor
 
@@ -4098,8 +4131,9 @@ if (y361) {
 		// Benchmark Result object value
 		0,
 		// Benchmark Result object converted to Target type values
-		p000,
+		Package(18){},
 	})
+	Store(RefOf(p001), Index(pc00, 3))
 
 	// Thermal Zone
 
@@ -4115,8 +4149,9 @@ if (y361) {
 		// Benchmark Result object value
 		0,
 		// Benchmark Result object converted to Target type values
-		p000,
+		Package(18){},
 	})
+	Store(RefOf(p001), Index(pd00, 3))
 
 	// Buffer Field
 
@@ -4143,6 +4178,7 @@ if (y361) {
 			Buffer(9){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,0x15,},
 			0, 0, 0,},
 	})
+	Store(RefOf(p001), Index(pe00, 3))
 
 	Name(pe01, Package() {
 		// Type of the Result(Source) Object
@@ -4167,6 +4203,7 @@ if (y361) {
 			Buffer(9){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,},
 			0, 0, 0,},
 	})
+	Store(RefOf(p001), Index(pe01, 3))
 
 	Name(pe02, Package() {
 		// Type of the Result(Source) Object
@@ -4191,6 +4228,7 @@ if (y361) {
 			Buffer(9){0x95,0x85,0x75,0x65,0x55,0x45,0x35,0x25,},
 			0, 0, 0,},
 	})
+	Store(RefOf(p001), Index(pe02, 3))
 
 	Name(pe03, Package() {
 		// Type of the Result(Source) Object
@@ -4215,6 +4253,7 @@ if (y361) {
 			Buffer(9){0x95,0x85,0x75,0x65,},
 			0, 0, 0,},
 	})
+	Store(RefOf(p001), Index(pe03, 3))
 
 	Name(pe04, Package() {
 		// Type of the Result(Source) Object
@@ -4239,6 +4278,7 @@ if (y361) {
 			Buffer(9){0x95,0x85,0x75,0x65,},
 			0, 0, 0,},
 	})
+	Store(RefOf(p001), Index(pe04, 3))
 
 	Name(pe32, Package() {
 		// Type of the Result(Source) Object
@@ -4250,6 +4290,9 @@ if (y361) {
 		pe01,
 		pe03,
 	})
+	Store(RefOf(pe00), Index(pe32, 2))
+	Store(RefOf(pe01), Index(pe32, 3))
+	Store(RefOf(pe03), Index(pe32, 4))
 
 	Name(pe64, Package() {
 		// Type of the Result(Source) Object
@@ -4261,6 +4304,9 @@ if (y361) {
 		pe02,
 		pe04,
 	})
+	Store(RefOf(pe00), Index(pe64, 2))
+	Store(RefOf(pe02), Index(pe64, 3))
+	Store(RefOf(pe04), Index(pe64, 4))
 
 	// DDB Handle
 
@@ -4276,8 +4322,9 @@ if (y361) {
 		// Benchmark Result object value
 		0,
 		// Benchmark Result object converted to Target type values
-		p000,
+		Package(18){},
 	})
+	Store(RefOf(p001), Index(pf00, 3))
 
 	// Debug
 
@@ -4293,8 +4340,9 @@ if (y361) {
 		// Benchmark Result object value
 		0,
 		// Benchmark Result object converted to Target type values
-		p000,
+		Package(18){},
 	})
+	Store(RefOf(p001), Index(pg00, 3))
 
 	// Reference
 
@@ -4310,8 +4358,9 @@ if (y361) {
 		// Benchmark Result object value
 		0,
 		// Benchmark Result object converted to Target type values
-		p000,
+		Package(18){},
 	})
+	Store(RefOf(p001), Index(ph00, 3))
 
 	// In-package name strings are String typed, not ObjectReference
 	// typed. Thus stores object references to replace the name
@@ -4448,7 +4497,8 @@ if (y361) {
 						While (lpN2) {
 							if (LGreater(Local3, 1)) {
 								// Complex test data
-								Index(Local2, Add(lpC2, 2), Local4)
+								Index(Local2, Add(lpC2, 2), Local5)
+								Store(DerefOf(Local5), Local4)
 							} else {
 								Store(Refof(Local2), Local4)
 							}
