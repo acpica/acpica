@@ -556,291 +556,78 @@ Method(m171, 2)
 	Store(RefOf(Local7), Local0)
 	m1a2(Local0, c00c, 3, 0, c00b, Buffer() {0xbf,0xc0,0xc1}, 303)
 
+	// In-package name strings are String typed, not ObjectReference
+	// typed.
+
+	// Elements of Package are NameString
+
 	Store(p90d, Local7)
 	Store(RefOf(Local7), Local0)
-	m1a2(Local0, c00c, 1, 0, c009, 0xfe7cb391d65a0000, 304)
+	m1a2(Local0, c00c, 1, 0, c00a, "I900", 304)
 
 	Store(p90e, Local7)
 	Store(RefOf(Local7), Local0)
-	m1a2(Local0, c00c, 1, 0, c009, 0xc1790001, 305)
+	m1a2(Local0, c00c, 1, 0, c00a, "I901", 305)
 
 	Store(p90f, Local7)
 	Store(RefOf(Local7), Local0)
-	m1a2(Local0, c00c, 1, 0, c00a, "12340002", 306)
+	m1a2(Local0, c00c, 1, 0, c00a, "S900", 306)
 
 	Store(p910, Local7)
 	Store(RefOf(Local7), Local0)
-	m1a2(Local0, c00c, 1, 0, c00a, "qwrtyu0003", 307)
+	m1a2(Local0, c00c, 1, 0, c00a, "S901", 307)
 
 	Store(p911, Local7)
 	Store(RefOf(Local7), Local0)
-	m1a2(Local0, c00c, 1, 0, c00b, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4}, 308)
+	m1a2(Local0, c00c, 1, 0, c00a, "B9Z0", 308)
 
-	if (y118) {
-		Store(p912, Local7)
-		Store(RefOf(Local7), Local0)
-		m1a2(Local0, c00c, 1, 0, c00d, 0, 309)
+	Store(p912, Local7)
+	Store(RefOf(Local7), Local0)
+	m1a2(Local0, c00c, 1, 0, c00a, "F900", 309)
 
-		Store(p913, Local7)
-		Store(RefOf(Local7), Local0)
-		m1a2(Local0, c00c, 1, 0, c00d, 0, 310)
+	Store(p913, Local7)
+	Store(RefOf(Local7), Local0)
+	m1a2(Local0, c00c, 1, 0, c00a, "BN90", 310)
 
-		Store(p914, Local7)
-		Store(RefOf(Local7), Local0)
-		m1a2(Local0, c00c, 1, 0, c00d, 0, 311)
+	Store(p914, Local7)
+	Store(RefOf(Local7), Local0)
+	m1a2(Local0, c00c, 1, 0, c00a, "IF90", 311)
 
-		Store(p915, Local7)
-		Store(RefOf(Local7), Local0)
-		m1a2(Local0, c00c, 1, 0, c016, 0xb0, 312)
-	}
-
-	// Elements of Package are NOT Computational Data
+	Store(p915, Local7)
+	Store(RefOf(Local7), Local0)
+	m1a2(Local0, c00c, 1, 0, c00a, "BF90", 312)
 
 	Store(p916, Local7)
 	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 313)
+	m1a2(Local0, c00c, 1, 0, c00a, "D900", 313)
 
 	Store(p917, Local7)
 	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 314)
+	m1a2(Local0, c00c, 1, 0, c00a, "E900", 314)
 
 	Store(p918, Local7)
 	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 315)
+	m1a2(Local0, c00c, 1, 0, c00a, "MX90", 315)
 
 	Store(p919, Local7)
 	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 316)
+	m1a2(Local0, c00c, 1, 0, c00a, "R9Z0", 316)
 
 	Store(p91a, Local7)
 	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 317)
+	m1a2(Local0, c00c, 1, 0, c00a, "PW90", 317)
 
 	Store(p91b, Local7)
 	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 318)
+	m1a2(Local0, c00c, 1, 0, c00a, "PR90", 318)
 
 	Store(p91c, Local7)
 	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 319)
-
-	// Elements of Package are Methods
+	m1a2(Local0, c00c, 1, 0, c00a, "TZ90", 319)
 
 	Store(p91d, Local7)
 	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 320)
-
-	Store(p91e, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 321)
-
-	Store(p91f, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 322)
-
-	Store(p920, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 323)
-
-	Store(p921, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 324)
-
-	Store(p922, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 325)
-
-	Store(p923, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 326)
-
-	Store(p924, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 327)
-
-	Store(p925, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 328)
-
-	Store(p926, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 329)
-
-	Store(p927, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 330)
-
-	Store(p928, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 331)
-
-	Store(p929, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 332)
-
-	Store(p92a, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 333)
-
-	Store(p92b, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 334)
-
-	Store(p92c, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 335)
-
-	Store(p92d, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 336)
-
-	Store(p92e, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 337)
-
-	Store(p92f, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 338)
-
-	Store(p930, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 339)
-
-	Store(p931, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 340)
-
-	Store(p932, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 341)
-
-	Store(p933, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 342)
-
-	Store(p934, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 343)
-
-	Store(p935, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 344)
-
-	Store(p936, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 345)
-
-	Store(p937, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 346)
-
-	Store(p938, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 347)
-
-	Store(p939, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 348)
-
-	Store(p93a, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 349)
-
-	Store(p93b, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 350)
-
-	Store(p93c, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 351)
-
-	Store(p93d, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 352)
-
-	Store(p93e, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 353)
-
-	Store(p93f, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 354)
-
-	Store(p940, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 355)
-
-	Store(p941, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 356)
-
-	Store(p942, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 357)
-
-	Store(p943, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 358)
-
-	Store(p944, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 359)
-
-	Store(p945, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 360)
-
-	Store(p946, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 361)
-
-	Store(p947, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 362)
-
-	Store(p948, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 363)
-
-	Store(p949, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 364)
-
-	Store(p94a, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 365)
-
-	Store(p94b, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 366)
-
-	Store(p94c, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 367)
-
-	Store(p94d, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 368)
-
-	Store(p94e, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 369)
-
-	Store(p94f, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 370)
-
-	Store(p950, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 371)
-
-	Store(p951, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 372)
-
-	Store(p952, Local7)
-	Store(RefOf(Local7), Local0)
-	m1a0(Local0, c00c, Ones, 373)
+	m1a2(Local0, c00c, 1, 0, c00a, "M900", 320)
 
 	m1a6()
 
