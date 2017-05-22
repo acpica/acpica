@@ -455,15 +455,21 @@ Method(m1e0, 1, Serialized)
 	            m1a3(Local0, c00c, z110, ts, 58)
 	            m1a3(Local1, c00c, z110, ts, 59)
             }
+
+	            // In-package name strings are String typed, not
+	            // ObjectReference typed.
+
+	            // Elements of Package are NameString
+
             Case (54) {
 	            CopyObject(Index(p90d, 0, Local0), Local1)
-	            m1a3(Local0, c009, z110, ts, 60)
-	            m1a3(Local1, c009, z110, ts, 61)
+	            m1a3(Local0, c00a, z110, ts, 60)
+	            m1a3(Local1, c00a, z110, ts, 61)
             }
             Case (55) {
 	            CopyObject(Index(p90e, 0, Local0), Local1)
-	            m1a3(Local0, c009, z110, ts, 62)
-	            m1a3(Local1, c009, z110, ts, 63)
+	            m1a3(Local0, c00a, z110, ts, 62)
+	            m1a3(Local1, c00a, z110, ts, 63)
             }
             Case (56) {
 	            CopyObject(Index(p90f, 0, Local0), Local1)
@@ -477,89 +483,74 @@ Method(m1e0, 1, Serialized)
             }
             Case (58) {
 	            CopyObject(Index(p911, 0, Local0), Local1)
-	            m1a3(Local0, c00b, z110, ts, 68)
-	            m1a3(Local1, c00b, z110, ts, 69)
+	            m1a3(Local0, c00a, z110, ts, 68)
+	            m1a3(Local1, c00a, z110, ts, 69)
             }
             Case (59) {
 	            CopyObject(Index(p912, 0, Local0), Local1)
-	            m1a3(Local0, c009, z110, ts, 70)
-	            m1a3(Local1, c009, z110, ts, 71)
+	            m1a3(Local0, c00a, z110, ts, 70)
+	            m1a3(Local1, c00a, z110, ts, 71)
             }
             Case (60) {
 	            CopyObject(Index(p913, 0, Local0), Local1)
-	            m1a3(Local0, c009, z110, ts, 72)
-	            m1a3(Local1, c009, z110, ts, 73)
+	            m1a3(Local0, c00a, z110, ts, 72)
+	            m1a3(Local1, c00a, z110, ts, 73)
             }
             Case (61) {
 	            CopyObject(Index(p914, 0, Local0), Local1)
-	            m1a3(Local0, c009, z110, ts, 74)
-	            m1a3(Local1, c009, z110, ts, 75)
+	            m1a3(Local0, c00a, z110, ts, 74)
+	            m1a3(Local1, c00a, z110, ts, 75)
             }
             Case (62) {
 	            CopyObject(Index(p915, 0, Local0), Local1)
-	            m1a3(Local0, c009, z110, ts, 76)
-	            m1a3(Local1, c009, z110, ts, 77)
+	            m1a3(Local0, c00a, z110, ts, 76)
+	            m1a3(Local1, c00a, z110, ts, 77)
             }
-
-	            // Elements of Package are NOT Computational Data
-
             Case (63) {
 	            CopyObject(Index(p916, 0, Local0), Local1)
-	            m1a3(Local0, c00e, z110, ts, 78)
-	            m1a3(Local1, c00e, z110, ts, 79)
+	            m1a3(Local0, c00a, z110, ts, 78)
+	            m1a3(Local1, c00a, z110, ts, 79)
             }
             Case (64) {
 	            CopyObject(Index(p917, 0, Local0), Local1)
-	            m1a3(Local0, c00f, z110, ts, 80)
-	            m1a3(Local1, c00f, z110, ts, 81)
+	            m1a3(Local0, c00a, z110, ts, 80)
+	            m1a3(Local1, c00a, z110, ts, 81)
             }
             Case (65) {
 	            CopyObject(Index(p918, 0, Local0), Local1)
-	            m1a3(Local0, c011, z110, ts, 82)
-	            m1a3(Local1, c011, z110, ts, 83)
+	            m1a3(Local0, c00a, z110, ts, 82)
+	            m1a3(Local1, c00a, z110, ts, 83)
             }
             Case (66) {
 	            CopyObject(Index(p919, 0, Local0), Local1)
-	            m1a3(Local0, c012, z110, ts, 84)
-	            m1a3(Local1, c012, z110, ts, 85)
+	            m1a3(Local0, c00a, z110, ts, 84)
+	            m1a3(Local1, c00a, z110, ts, 85)
             }
             Case (67) {
 	            CopyObject(Index(p91a, 0, Local0), Local1)
-	            m1a3(Local0, c013, z110, ts, 86)
-	            m1a3(Local1, c013, z110, ts, 87)
+	            m1a3(Local0, c00a, z110, ts, 86)
+	            m1a3(Local1, c00a, z110, ts, 87)
             }
             Case (68) {
 	            CopyObject(Index(p91b, 0, Local0), Local1)
-	            m1a3(Local0, c014, z110, ts, 88)
-	            m1a3(Local1, c014, z110, ts, 89)
+	            m1a3(Local0, c00a, z110, ts, 88)
+	            m1a3(Local1, c00a, z110, ts, 89)
             }
             Case (69) {
 	            CopyObject(Index(p91c, 0, Local0), Local1)
-	            m1a3(Local0, c015, z110, ts, 90)
-	            m1a3(Local1, c015, z110, ts, 91)
+	            m1a3(Local0, c00a, z110, ts, 90)
+	            m1a3(Local1, c00a, z110, ts, 91)
             }
-
-	            // Elements of Package are Methods
-
             Case (70) {
 	            CopyObject(Index(p91d, 0, Local0), Local1)
-	            m1a3(Local0, c010, z110, ts, 92)
-	            m1a3(Local1, c010, z110, ts, 93)
+	            m1a3(Local0, c00a, z110, ts, 92)
+	            m1a3(Local1, c00a, z110, ts, 93)
             }
             Case (71) {
-	            CopyObject(Index(p91e, 0, Local0), Local1)
-	            m1a3(Local0, c010, z110, ts, 94)
-	            m1a3(Local1, c010, z110, ts, 95)
             }
             Case (72) {
-	            CopyObject(Index(p91f, 0, Local0), Local1)
-	            m1a3(Local0, c010, z110, ts, 96)
-	            m1a3(Local1, c010, z110, ts, 97)
             }
             Case (73) {
-	            CopyObject(Index(p920, 0, Local0), Local1)
-	            m1a3(Local0, c010, z110, ts, 98)
-	            m1a3(Local1, c010, z110, ts, 99)
             }
 
 	            // ========================= Group 5:
@@ -582,9 +573,9 @@ Method(m1e0, 1, Serialized)
 	            // Elements of Package are Uninitialized
 
             Case (76) {
-		            Store(Index(p900, 0, Local0), Local1)
-		            m1a3(Local0, c008, z110, ts, 104)
-		            m1a3(Local1, c008, z110, ts, 105)
+		    Store(Index(p900, 0, Local0), Local1)
+		    m1a3(Local0, c008, z110, ts, 104)
+		    m1a3(Local1, c008, z110, ts, 105)
             }
 
 	            // Elements of Package are Computational Data
@@ -604,15 +595,21 @@ Method(m1e0, 1, Serialized)
 	            m1a3(Local0, c00c, z110, ts, 110)
 	            m1a3(Local1, c00c, z110, ts, 111)
             }
+
+	            // In-package name strings are String typed, not
+	            // ObjectReference typed.
+
+	            // Elements of Package are NameString
+
             Case (80) {
 	            Store(Index(p90d, 0, Local0), Local1)
-	            m1a3(Local0, c009, z110, ts, 112)
-	            m1a3(Local1, c009, z110, ts, 113)
+	            m1a3(Local0, c00a, z110, ts, 112)
+	            m1a3(Local1, c00a, z110, ts, 113)
             }
             Case (81) {
 	            Store(Index(p90e, 0, Local0), Local1)
-	            m1a3(Local0, c009, z110, ts, 114)
-	            m1a3(Local1, c009, z110, ts, 115)
+	            m1a3(Local0, c00a, z110, ts, 114)
+	            m1a3(Local1, c00a, z110, ts, 115)
             }
             Case (82) {
 	            Store(Index(p90f, 0, Local0), Local1)
@@ -626,89 +623,74 @@ Method(m1e0, 1, Serialized)
             }
             Case (84) {
 	            Store(Index(p911, 0, Local0), Local1)
-	            m1a3(Local0, c00b, z110, ts, 120)
-	            m1a3(Local1, c00b, z110, ts, 121)
+	            m1a3(Local0, c00a, z110, ts, 120)
+	            m1a3(Local1, c00a, z110, ts, 121)
             }
             Case (85) {
 	            Store(Index(p912, 0, Local0), Local1)
-	            m1a3(Local0, c009, z110, ts, 122)
-	            m1a3(Local1, c009, z110, ts, 123)
+	            m1a3(Local0, c00a, z110, ts, 122)
+	            m1a3(Local1, c00a, z110, ts, 123)
             }
             Case (86) {
 	            Store(Index(p913, 0, Local0), Local1)
-	            m1a3(Local0, c009, z110, ts, 124)
-	            m1a3(Local1, c009, z110, ts, 125)
+	            m1a3(Local0, c00a, z110, ts, 124)
+	            m1a3(Local1, c00a, z110, ts, 125)
             }
             Case (87) {
 	            Store(Index(p914, 0, Local0), Local1)
-	            m1a3(Local0, c009, z110, ts, 126)
-	            m1a3(Local1, c009, z110, ts, 127)
+	            m1a3(Local0, c00a, z110, ts, 126)
+	            m1a3(Local1, c00a, z110, ts, 127)
             }
             Case (88) {
 	            Store(Index(p915, 0, Local0), Local1)
-	            m1a3(Local0, c009, z110, ts, 128)
-	            m1a3(Local1, c009, z110, ts, 129)
+	            m1a3(Local0, c00a, z110, ts, 128)
+	            m1a3(Local1, c00a, z110, ts, 129)
             }
-
-	            // Elements of Package are NOT Computational Data
-
             Case (89) {
 	            Store(Index(p916, 0, Local0), Local1)
-	            m1a3(Local0, c00e, z110, ts, 130)
-	            m1a3(Local1, c00e, z110, ts, 131)
+	            m1a3(Local0, c00a, z110, ts, 130)
+	            m1a3(Local1, c00a, z110, ts, 131)
             }
             Case (90) {
 	            Store(Index(p917, 0, Local0), Local1)
-	            m1a3(Local0, c00f, z110, ts, 132)
-	            m1a3(Local1, c00f, z110, ts, 133)
+	            m1a3(Local0, c00a, z110, ts, 132)
+	            m1a3(Local1, c00a, z110, ts, 133)
             }
             Case (91) {
 	            Store(Index(p918, 0, Local0), Local1)
-	            m1a3(Local0, c011, z110, ts, 134)
-	            m1a3(Local1, c011, z110, ts, 135)
+	            m1a3(Local0, c00a, z110, ts, 134)
+	            m1a3(Local1, c00a, z110, ts, 135)
             }
             Case (92) {
 	            Store(Index(p919, 0, Local0), Local1)
-	            m1a3(Local0, c012, z110, ts, 136)
-	            m1a3(Local1, c012, z110, ts, 137)
+	            m1a3(Local0, c00a, z110, ts, 136)
+	            m1a3(Local1, c00a, z110, ts, 137)
             }
             Case (93) {
 	            Store(Index(p91a, 0, Local0), Local1)
-	            m1a3(Local0, c013, z110, ts, 138)
-	            m1a3(Local1, c013, z110, ts, 139)
+	            m1a3(Local0, c00a, z110, ts, 138)
+	            m1a3(Local1, c00a, z110, ts, 139)
             }
             Case (94) {
 	            Store(Index(p91b, 0, Local0), Local1)
-	            m1a3(Local0, c014, z110, ts, 140)
-	            m1a3(Local1, c014, z110, ts, 141)
+	            m1a3(Local0, c00a, z110, ts, 140)
+	            m1a3(Local1, c00a, z110, ts, 141)
             }
             Case (95) {
 	            Store(Index(p91c, 0, Local0), Local1)
-	            m1a3(Local0, c015, z110, ts, 142)
-	            m1a3(Local1, c015, z110, ts, 143)
+	            m1a3(Local0, c00a, z110, ts, 142)
+	            m1a3(Local1, c00a, z110, ts, 143)
             }
-
-	            // Elements of Package are Methods
-
             Case (96) {
 	            Store(Index(p91d, 0, Local0), Local1)
-	            m1a3(Local0, c010, z110, ts, 144)
-	            m1a3(Local1, c010, z110, ts, 145)
+	            m1a3(Local0, c00a, z110, ts, 144)
+	            m1a3(Local1, c00a, z110, ts, 145)
             }
             Case (97) {
-	            Store(Index(p91e, 0, Local0), Local1)
-	            m1a3(Local0, c010, z110, ts, 146)
-	            m1a3(Local1, c010, z110, ts, 147)
             }
             Case (98) {
-	            Store(Index(p91f, 0, Local0), Local1)
-	            m1a3(Local0, c010, z110, ts, 148)
-	            m1a3(Local1, c010, z110, ts, 149)
             }
             Case (99) {
-	            Store(Index(p920, 0, Local0), Local1)
-	            m1a3(Local0, c010, z110, ts, 150)
-	            m1a3(Local1, c010, z110, ts, 151)
             }
             Default {
 	            err(ts, z110, 1, 0, 0, ind0, 0)
