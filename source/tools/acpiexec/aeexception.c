@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: aecommon - common include for the AcpiExec utility
+ * Module Name: aeexception - Exception and signal handlers
  *
  *****************************************************************************/
 
@@ -149,66 +149,32 @@
  *
  *****************************************************************************/
 
-#ifndef _AECOMMON
-#define _AECOMMON
+#include "aecommon.h"
 
-#ifdef _MSC_VER                 /* disable some level-4 warnings */
-#pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
-#endif
-
-#include "acpi.h"
-#include "accommon.h"
-#include "acparser.h"
-#include "amlcode.h"
-#include "acnamesp.h"
-#include "acdebug.h"
-#include "actables.h"
-#include "acinterp.h"
-#include "amlresrc.h"
-#include "acapps.h"
+#define _COMPONENT          ACPI_TOOLS
+        ACPI_MODULE_NAME    ("aeexception")
 
 
-/*
- * Debug Regions
- */
-typedef struct ae_region
-{
-    ACPI_PHYSICAL_ADDRESS   Address;
-    UINT32                  Length;
-    void                    *Buffer;
-    void                    *NextRegion;
-    UINT8                   SpaceId;
+/* Local prototypes */
 
-} AE_REGION;
-
-typedef struct ae_debug_regions
-{
-    UINT32                  NumberOfRegions;
-    AE_REGION               *RegionList;
-
-} AE_DEBUG_REGIONS;
+static void
+AeDisplayMethodCallStack (
+    void);
 
 
-extern BOOLEAN              AcpiGbl_IgnoreErrors;
-extern UINT8                AcpiGbl_RegionFillValue;
-extern UINT8                AcpiGbl_UseHwReducedFadt;
-extern BOOLEAN              AcpiGbl_DisplayRegionAccess;
-extern BOOLEAN              AcpiGbl_DoInterfaceTests;
-extern BOOLEAN              AcpiGbl_LoadTestTables;
-extern FILE                 *AcpiGbl_NamespaceInitFile;
-extern ACPI_CONNECTION_INFO AeMyContext;
-
-
-#define TEST_OUTPUT_LEVEL(lvl)          if ((lvl) & OutputLevel)
-
-#define OSD_PRINT(lvl,fp)               TEST_OUTPUT_LEVEL(lvl) {\
-                                            AcpiOsPrintf PARAM_LIST(fp);}
-
-#define AE_PREFIX                       "ACPI Exec: "
-
-void ACPI_SYSTEM_XFACE
-AeSignalHandler (
-    int                     Sig);
+/******************************************************************************
+ *
+ * FUNCTION:    AeExceptionHandler
+ *
+ * PARAMETERS:  Standard exception handler parameters
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: System exception handler for AcpiExec utility. Called from
+ *              the core ACPICA code after any exception during method
+ *              execution.
+ *
+ *****************************************************************************/
 
 ACPI_STATUS
 AeExceptionHandler (
@@ -216,110 +182,260 @@ AeExceptionHandler (
     ACPI_NAME               Name,
     UINT16                  Opcode,
     UINT32                  AmlOffset,
-    void                    *Context);
-
-ACPI_STATUS
-AeBuildLocalTables (
-    ACPI_NEW_TABLE_DESC     *TableList);
-
-ACPI_STATUS
-AeInstallTables (
-    void);
-
-ACPI_STATUS
-AeLoadTables (
-    void);
-
-void
-AeDumpNamespace (
-    void);
-
-void
-AeDumpObject (
-    char                    *MethodName,
-    ACPI_BUFFER             *ReturnObj);
-
-void
-AeDumpBuffer (
-    UINT32                  Address);
-
-void
-AeExecute (
-    char                    *Name);
-
-void
-AeSetScope (
-    char                    *Name);
-
-void
-AeCloseDebugFile (
-    void);
-
-void
-AeOpenDebugFile (
-    char                    *Name);
-
-ACPI_STATUS
-AeDisplayAllMethods (
-    UINT32                  DisplayCount);
-
-ACPI_STATUS
-AeInstallEarlyHandlers (
-    void);
-
-ACPI_STATUS
-AeInstallLateHandlers (
-    void);
-
-void
-AeMiscellaneousTests (
-    void);
-
-ACPI_STATUS
-AeRegionHandler (
-    UINT32                  Function,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  BitWidth,
-    UINT64                  *Value,
-    void                    *HandlerContext,
-    void                    *RegionContext);
-
-UINT32
-AeGpeHandler (
-    ACPI_HANDLE             GpeDevice,
-    UINT32                  GpeNumber,
-    void                    *Context);
-
-void
-AeGlobalEventHandler (
-    UINT32                  Type,
-    ACPI_HANDLE             GpeDevice,
-    UINT32                  EventNumber,
-    void                    *Context);
-
-/* aeregion */
-
-ACPI_STATUS
-AeInstallDeviceHandlers (
-    void);
-
-void
-AeInstallRegionHandlers (
-    void);
-
-void
-AeOverrideRegionHandlers (
-    void);
+    void                    *Context)
+{
+    ACPI_STATUS             NewAmlStatus = AmlStatus;
+    ACPI_STATUS             Status;
+    ACPI_BUFFER             ReturnObj;
+    ACPI_OBJECT_LIST        ArgList;
+    ACPI_OBJECT             Arg[3];
+    const char              *Exception;
+    ACPI_HANDLE             ErrHandle;
 
 
-/* aeinitfile */
+    Exception = AcpiFormatException (AmlStatus);
+    AcpiOsPrintf (AE_PREFIX
+        "Exception %s during execution\n", Exception);
+    if (Name)
+    {
+        AcpiOsPrintf (AE_PREFIX
+            "Evaluating Method or Node: [%4.4s]",
+            (char *) &Name);
+    }
 
-int
-AeOpenInitializationFile (
-    char                    *Filename);
+    AcpiOsPrintf ("\n" AE_PREFIX
+        "AML Opcode [%s], Method Offset ~%5.5X\n",
+        AcpiPsGetOpcodeName (Opcode), AmlOffset);
 
-void
-AeDoObjectOverrides (
-    void);
+    /* Invoke the _ERR method if present */
 
-#endif /* _AECOMMON */
+    Status = AcpiGetHandle (NULL, "\\_ERR", &ErrHandle);
+    if (ACPI_FAILURE (Status))
+    {
+        goto Cleanup;
+    }
+
+    /* Setup parameter object */
+
+    ArgList.Count = 3;
+    ArgList.Pointer = Arg;
+
+    Arg[0].Type = ACPI_TYPE_INTEGER;
+    Arg[0].Integer.Value = AmlStatus;
+
+    Arg[1].Type = ACPI_TYPE_STRING;
+    Arg[1].String.Pointer = ACPI_CAST_PTR (char, Exception);
+    Arg[1].String.Length = strlen (Exception);
+
+    Arg[2].Type = ACPI_TYPE_INTEGER;
+    Arg[2].Integer.Value = AcpiOsGetThreadId();
+
+    /* Setup return buffer */
+
+    ReturnObj.Pointer = NULL;
+    ReturnObj.Length = ACPI_ALLOCATE_BUFFER;
+
+    Status = AcpiEvaluateObject (ErrHandle, NULL, &ArgList, &ReturnObj);
+    if (ACPI_SUCCESS (Status))
+    {
+        if (ReturnObj.Pointer)
+        {
+            /* Override original status */
+
+            NewAmlStatus = (ACPI_STATUS)
+                ((ACPI_OBJECT *) ReturnObj.Pointer)->Integer.Value;
+
+            /* Free a buffer created via ACPI_ALLOCATE_BUFFER */
+
+            AcpiOsFree (ReturnObj.Pointer);
+        }
+    }
+    else if (Status != AE_NOT_FOUND)
+    {
+        AcpiOsPrintf (AE_PREFIX
+            "Could not execute _ERR method, %s\n",
+            AcpiFormatException (Status));
+    }
+
+Cleanup:
+
+    /* Global overrides */
+
+    if (AcpiGbl_IgnoreErrors)
+    {
+        NewAmlStatus = AE_OK;
+    }
+    else if (AmlStatus == AE_AML_INTERNAL)
+    {
+        NewAmlStatus = AE_AML_INTERNAL;
+        AcpiOsPrintf (AE_PREFIX
+            "Cannot override status %s\n\n",
+            AcpiFormatException (NewAmlStatus));
+    }
+    else if (NewAmlStatus != AmlStatus)
+    {
+        AcpiOsPrintf (AE_PREFIX
+            "Exception override, new status %s\n\n",
+            AcpiFormatException (NewAmlStatus));
+    }
+
+    return (NewAmlStatus);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AeSignalHandler
+ *
+ * PARAMETERS:  Sig
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Master signal handler. Currently handles SIGINT (ctrl-c),
+ *              and SIGSEGV (Segment violation).
+ *
+ *****************************************************************************/
+
+void ACPI_SYSTEM_XFACE
+AeSignalHandler (
+    int                     Sig)
+{
+
+    fflush(stdout);
+    AcpiOsPrintf ("\n" AE_PREFIX);
+
+    switch (Sig)
+    {
+    case SIGINT:
+        signal(Sig, SIG_IGN);
+        AcpiOsPrintf ("<Control-C>\n");
+
+        /* Abort the application if there are no methods executing */
+
+        if (!AcpiGbl_MethodExecuting)
+        {
+            break;
+        }
+
+        /*
+         * Abort the method(s). This will also dump the method call
+         * stack so there is no need to do it here. The application
+         * will then drop back into the debugger interface.
+         */
+        AcpiGbl_AbortMethod = TRUE;
+        AcpiOsPrintf (AE_PREFIX "Control Method Call Stack:\n");
+        signal (SIGINT, AeSignalHandler);
+        return;
+
+    case SIGSEGV:
+        AcpiOsPrintf ("Segmentation Fault\n");
+        AeDisplayMethodCallStack ();
+        break;
+
+    default:
+        AcpiOsPrintf ("Unknown Signal, %X\n", Sig);
+        break;
+    }
+
+    /* Terminate application -- cleanup then exit */
+
+    AcpiOsPrintf (AE_PREFIX "Terminating\n");
+    (void) AcpiOsTerminate ();
+    exit (0);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AeDisplayMethodCallStack
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display current method call stack, if possible.
+ *
+ * NOTE:        Currently only called from a SIGSEGV, so AcpiExec is about
+ *              to terminate.
+ *
+ *****************************************************************************/
+
+static void
+AeDisplayMethodCallStack (
+    void)
+{
+    ACPI_WALK_STATE         *WalkState;
+    ACPI_THREAD_STATE       *ThreadList = AcpiGbl_CurrentWalkList;
+    char                    *FullPathname = NULL;
+
+
+    if (!AcpiGbl_MethodExecuting)
+    {
+        AcpiOsPrintf (AE_PREFIX "No method is executing\n");
+        return;
+    }
+
+    /*
+     * Try to find the currently executing control method(s)
+     *
+     * Note: The following code may fault if the data structures are
+     * in an indeterminate state when the interrupt occurs. However,
+     * in practice, this works quite well and can provide very
+     * valuable information.
+     *
+     * 1) Walk the global thread list
+     */
+    while (ThreadList &&
+        (ThreadList->DescriptorType == ACPI_DESC_TYPE_STATE_THREAD))
+    {
+        /* 2) Walk the walk state list for this thread */
+
+        WalkState = ThreadList->WalkStateList;
+        while (WalkState &&
+            (WalkState->DescriptorType == ACPI_DESC_TYPE_WALK))
+        {
+            /* An executing control method */
+
+            if (WalkState->MethodNode)
+            {
+                FullPathname = AcpiNsGetExternalPathname (
+                    WalkState->MethodNode);
+
+                AcpiOsPrintf (AE_PREFIX
+                    "Executing Method: %s\n", FullPathname);
+            }
+
+            /* Execution of a deferred opcode/node */
+
+            if (WalkState->DeferredNode)
+            {
+                FullPathname = AcpiNsGetExternalPathname (
+                    WalkState->DeferredNode);
+
+                AcpiOsPrintf (AE_PREFIX
+                    "Evaluating deferred node: %s\n", FullPathname);
+            }
+
+            /* Get the currently executing AML opcode */
+
+            if ((WalkState->Opcode != AML_INT_METHODCALL_OP) &&
+                FullPathname)
+            {
+                AcpiOsPrintf (AE_PREFIX
+                    "Current AML Opcode in %s: [%s]-0x%4.4X at %p\n",
+                    FullPathname, AcpiPsGetOpcodeName (WalkState->Opcode),
+                    WalkState->Opcode, WalkState->Aml);
+            }
+
+            if (FullPathname)
+            {
+                ACPI_FREE (FullPathname);
+                FullPathname = NULL;
+            }
+
+            WalkState = WalkState->Next;
+        }
+
+        ThreadList = ThreadList->Next;
+    }
+}

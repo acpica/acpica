@@ -1244,6 +1244,10 @@
 			Name="AcpiExec Source"
 			>
 			<File
+				RelativePath="..\..\source\tools\acpiexec\aeexception.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\source\Tools\AcpiExec\aeexec.c"
 				>
 			</File>

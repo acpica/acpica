@@ -42,6 +42,7 @@ OBJECTS = \
 	$(OBJDIR)/acgetline.o\
 	$(OBJDIR)/acfileio.o\
 	$(OBJDIR)/aeexec.o\
+	$(OBJDIR)/aeexception.o\
 	$(OBJDIR)/aehandlers.o\
 	$(OBJDIR)/aeinitfile.o\
 	$(OBJDIR)/aemain.o\
