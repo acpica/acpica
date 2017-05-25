@@ -201,7 +201,7 @@ CvProcessComment (
         /*
          * Determine whether if this comment spans multiple lines. If so,
          * break apart the comment by storing each line in a different node
-         * within the comment list. This allows the disassembler to 
+         * within the comment list. This allows the disassembler to
          * properly indent a multi-line comment.
          */
         LineToken = strtok (CommentString, "\n");

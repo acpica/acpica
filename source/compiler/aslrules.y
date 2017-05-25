@@ -393,7 +393,7 @@ Object
     : CompilerDirective             {}
     | NamedObject                   {}
     | NameSpaceModifier             {}
-//    | StructureTerm                 {}
+/*    | StructureTerm                 {} */
     ;
 
 PackageList
@@ -642,7 +642,7 @@ NamedObject
 NameSpaceModifier
     : AliasTerm                     {}
     | NameTerm                      {}
-//    | NameTermAslPlus               {}
+/*    | NameTermAslPlus               {} */
     | ScopeTerm                     {}
     ;
 
@@ -749,8 +749,8 @@ Type2IntegerOpcode                  /* "Type3" opcodes */
     | FromBCDTerm                   {}
     | IncTerm                       {}
     | IndexTerm                     {}
-//    | StructureIndexTerm            {}
-//    | StructurePointerTerm          {}
+/*    | StructureIndexTerm            {} */
+/*    | StructurePointerTerm          {} */
     | LAndTerm                      {}
     | LEqualTerm                    {}
     | LGreaterTerm                  {}
@@ -825,8 +825,8 @@ Type6Opcode
     | DerefOfTerm                   {}
     | IndexTerm                     {}
     | IndexExpTerm                  {}
-//    | StructureIndexTerm            {}
-//    | StructurePointerTerm          {}
+/*    | StructureIndexTerm            {} */
+/*    | StructurePointerTerm          {} */
     | MethodInvocationTerm          {}
     ;
 

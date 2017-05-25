@@ -520,8 +520,8 @@ static const ACPI_RESOURCE_TAG      *AcpiGbl_ResourceTags[] =
     NULL,                           /* 0x0E, ACPI_RESOURCE_NAME_SERIAL_BUS - Use Subtype table below */
     AcpiDmPinConfigTags,            /* 0x0F, ACPI_RESOURCE_NAME_PIN_CONFIG */
     NULL,                           /* 0x10, ACPI_RESOURCE_NAME_PIN_GROUP */
-    AcpiDmPinGroupFunctionTags,	    /* 0x11, ACPI_RESOURCE_NAME_PIN_GROUP_FUNCTION */
-    AcpiDmPinConfigTags,	    /* 0x12, ACPI_RESOURCE_NAME_PIN_GROUP_CONFIG - Same as PinConfig */
+    AcpiDmPinGroupFunctionTags,     /* 0x11, ACPI_RESOURCE_NAME_PIN_GROUP_FUNCTION */
+    AcpiDmPinConfigTags,            /* 0x12, ACPI_RESOURCE_NAME_PIN_GROUP_CONFIG - Same as PinConfig */
 };
 
 /* GPIO Subtypes */

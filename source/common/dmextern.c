@@ -1138,7 +1138,7 @@ AcpiDmResolveExternal (
 
     /* Note the asl code "external(a) external(a)" is acceptable ASL */
 
-    else if ((*Node)->Type == Type && 
+    else if ((*Node)->Type == Type &&
         (*Node)->Flags & ANOBJ_IS_EXTERNAL)
     {
         return (AE_OK);
@@ -1209,7 +1209,7 @@ AcpiDmCreateSubobjectForExternal (
  * FUNCTION:    AcpiDmAddOneExternalToNamespace
  *
  * PARAMETERS:  Path                   - External parse object
- *              Type                   - Type of parse object 
+ *              Type                   - Type of parse object
  *              ParamCount             - External method parameter count
  *
  * RETURN:      None
@@ -1677,7 +1677,7 @@ AcpiDmCheckForExternalConflict (
  *
  ******************************************************************************/
 
-#if 0
+/*
 Summary of the external control method problem:
 
 When the -e option is used with disassembly, the various SSDTs are simply
@@ -1746,7 +1746,7 @@ disassembler, otherwise it does not know how to handle the method invocations.
 In other words, if ABCD and EFGH are actually external control methods
 appearing in an SSDT, the disassembler does not know what to do unless
 the owning SSDT has been loaded via the -e option.
-#endif
+*/
 
 static char             ExternalWarningPart1[600];
 static char             ExternalWarningPart2[400];
