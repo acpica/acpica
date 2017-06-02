@@ -154,6 +154,8 @@
 #include "acnamesp.h"
 #include "acevents.h"
 #include "actables.h"
+#include "acpiosxf.h"
+#include "acglobal.h"
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utinit")
@@ -334,7 +336,6 @@ AcpiUtInitGlobals (
     AcpiGbl_NextOwnerIdOffset           = 0;
     AcpiGbl_DebuggerConfiguration       = DEBUGGER_THREADING;
     AcpiGbl_OsiMutex                    = NULL;
-    AcpiGbl_MaxLoopIterations           = ACPI_MAX_LOOP_COUNT;
 
     /* Hardware oriented */
 
@@ -368,6 +369,11 @@ AcpiUtInitGlobals (
     AcpiGbl_DisplayFinalMemStats        = FALSE;
     AcpiGbl_DisableMemTracking          = FALSE;
 #endif
+
+    if (AcpiOsGetTimer () != AcpiOsGetTimer ())
+    {
+        AcpiGbl_TimerOslImplemented = TRUE;
+    }
 
     return_ACPI_STATUS (AE_OK);
 }
