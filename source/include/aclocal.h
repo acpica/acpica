@@ -1146,7 +1146,7 @@ typedef struct acpi_parse_obj_named
 
 /* This version is used by the iASL compiler only */
 
-#define ACPI_MAX_PARSEOP_NAME   20
+#define ACPI_MAX_PARSEOP_NAME       20
 
 typedef struct acpi_parse_obj_asl
 {
@@ -1190,11 +1190,12 @@ typedef union acpi_parse_object
 
 typedef struct asl_comment_state
 {
-    UINT8                   CommentType;
-    UINT32                  SpacesBefore;
-    ACPI_PARSE_OBJECT       *Latest_Parse_Node;
-    ACPI_PARSE_OBJECT       *ParsingParenBraceNode;
-    BOOLEAN                 CaptureComments;
+    UINT8                           CommentType;
+    UINT32                          SpacesBefore;
+    ACPI_PARSE_OBJECT               *LatestParseOp;
+    ACPI_PARSE_OBJECT               *ParsingParenBraceNode;
+    BOOLEAN                         CaptureComments;
+
 } ASL_COMMENT_STATE;
 
 
