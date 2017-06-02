@@ -564,7 +564,7 @@ LdNamespace1Begin (
          * a new scope so that the resource subfield names can be entered into
          * the namespace underneath this name
          */
-        if (Op->Asl.CompileFlags & NODE_IS_RESOURCE_DESC)
+        if (Op->Asl.CompileFlags & OP_IS_RESOURCE_DESC)
         {
             ForceNewScope = TRUE;
         }
@@ -614,7 +614,7 @@ LdNamespace1Begin (
 
     case PARSEOP_DEFAULT_ARG:
 
-        if (Op->Asl.CompileFlags == NODE_IS_RESOURCE_DESC)
+        if (Op->Asl.CompileFlags == OP_IS_RESOURCE_DESC)
         {
             Status = LdLoadResourceElements (Op, WalkState);
             return_ACPI_STATUS (Status);
@@ -1000,7 +1000,7 @@ LdNamespace2Begin (
     /* Get the type to determine if we should push the scope */
 
     if ((Op->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG) &&
-        (Op->Asl.CompileFlags == NODE_IS_RESOURCE_DESC))
+        (Op->Asl.CompileFlags == OP_IS_RESOURCE_DESC))
     {
         ObjectType = ACPI_TYPE_LOCAL_RESOURCE;
     }
@@ -1013,7 +1013,7 @@ LdNamespace2Begin (
 
     if (Op->Asl.ParseOpcode == PARSEOP_NAME)
     {
-        if (Op->Asl.CompileFlags & NODE_IS_RESOURCE_DESC)
+        if (Op->Asl.CompileFlags & OP_IS_RESOURCE_DESC)
         {
             ForceNewScope = TRUE;
         }
@@ -1124,7 +1124,7 @@ LdCommonNamespaceEnd (
     /* Get the type to determine if we should pop the scope */
 
     if ((Op->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG) &&
-        (Op->Asl.CompileFlags == NODE_IS_RESOURCE_DESC))
+        (Op->Asl.CompileFlags == OP_IS_RESOURCE_DESC))
     {
         /* TBD: Merge into AcpiDsMapNamedOpcodeToDataType */
 
@@ -1139,7 +1139,7 @@ LdCommonNamespaceEnd (
 
     if (Op->Asl.ParseOpcode == PARSEOP_NAME)
     {
-        if (Op->Asl.CompileFlags & NODE_IS_RESOURCE_DESC)
+        if (Op->Asl.CompileFlags & OP_IS_RESOURCE_DESC)
         {
             ForceNewScope = TRUE;
         }

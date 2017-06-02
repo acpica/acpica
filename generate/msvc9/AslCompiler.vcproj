@@ -936,6 +936,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\source\compiler\aslparseop.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\source\compiler\aslpld.c"
 				>
 			</File>
