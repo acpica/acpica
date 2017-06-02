@@ -286,7 +286,7 @@ FlIsFileAsciiSource (
     if (BadBytes)
     {
         fprintf (stderr,
-            "File appears to be binary: found %u non-ASCII characters, disassembling\n",
+            "File appears to be binary: found %lu non-ASCII characters, disassembling\n",
             BadBytes);
         if (DisplayErrors)
         {
