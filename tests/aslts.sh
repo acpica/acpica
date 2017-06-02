@@ -80,6 +80,8 @@ build_acpi_tools() {
 	# Build native-width iASL compiler and acpiexec
 	if [ ! -e bin/iasl -o ! -e bin/acpiexec ]; then
 		REBUILD_TOOLS=yes
+  else
+    REBUILD_TOOLS=no
 	fi
 	if [ "x$REBUILD_TOOLS" = "xyes" ]; then
 		make clean
