@@ -1265,7 +1265,7 @@ Method(m4b0, 1, Serialized)
 	{
 		Store(ObjectType(arg1), Local0)
 		if (LNotEqual(Local0, 0)) {
-			err(arg0, z092, 8, 0, 0, Local0, 0)
+			err(arg0, PK04(z092, __LINE__), 8, 0, 0, Local0, 0)
 			return (1)
 		}
 
@@ -1776,7 +1776,7 @@ Method(m4b0, 1, Serialized)
 		m00d(Derefof(Index(p000, 0)))
 		CH06(arg0, 0, 51)
 		if (LNotEqual(i001, 0)) {
-			err(arg0, z092, 1, 0, 0, i001, 0)
+			err(arg0, PK04(z092, __LINE__), 1, 0, 0, i001, 0)
 		}
 
 		Store(0, i001)
@@ -1784,14 +1784,14 @@ Method(m4b0, 1, Serialized)
 		m00d(Derefof(Local1))
 		CH06(arg0, 2, 51)
 		if (LNotEqual(i001, 0)) {
-			err(arg0, z092, 3, 0, 0, i001, 0)
+			err(arg0, PK04(z092, __LINE__), 3, 0, 0, i001, 0)
 		}
 
 		Store(0, i001)
 		m00d(Derefof(Index(p000, 0, Local2)))
 		CH06(arg0, 4, 51)
 		if (LNotEqual(i001, 0)) {
-			err(arg0, z092, 5, 0, 0, i001, 0)
+			err(arg0, PK04(z092, __LINE__), 5, 0, 0, i001, 0)
 		}
 
 		Store(0, i001)
@@ -1799,7 +1799,7 @@ Method(m4b0, 1, Serialized)
 		m00d(Derefof(Local3))
 		CH06(arg0, 6, 51)
 		if (LNotEqual(i001, 0)) {
-			err(arg0, z092, 7, 0, 0, i001, 0)
+			err(arg0, PK04(z092, __LINE__), 7, 0, 0, i001, 0)
 		}
 
 		Store(0, i001)
@@ -1807,7 +1807,7 @@ Method(m4b0, 1, Serialized)
 		m00d(Derefof(Local5))
 		CH06(arg0, 8, 51)
 		if (LNotEqual(i001, 0)) {
-			err(arg0, z092, 9, 0, 0, i001, 0)
+			err(arg0, PK04(z092, __LINE__), 9, 0, 0, i001, 0)
 		}
 	}
 
@@ -1912,7 +1912,7 @@ Method(m4b0, 1, Serialized)
 	m00d(Local0)
 	CH06(ts, 9, 49)
 	if (LNotEqual(i001, 0)) {
-		err(ts, z092, 10, 0, 0, i001, 0)
+		err(ts, PK04(z092, __LINE__), 10, 0, 0, i001, 0)
 	}
 
 	// Uninitialized element of Package as parameter of a method
@@ -1927,7 +1927,7 @@ Method(m4b0, 1, Serialized)
 	m00d(Arg1)
 	CH06(ts, 11, 50)
 	if (LNotEqual(i001, 0)) {
-		err(ts, z092, 12, i001, 0)
+		err(ts, PK04(z092, __LINE__), 12, i001, 0)
 	}
 */
 }

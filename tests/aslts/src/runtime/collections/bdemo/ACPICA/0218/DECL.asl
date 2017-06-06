@@ -79,11 +79,11 @@ Method(m037,, Serialized)
 	Store(Local0, Debug)
 
 	if (LNotEqual(i000, id29)) {
-		err("", zFFF, 0x000, 0, 0, i000, id29)
+		err("", PK04(zFFF, __LINE__), 0x000, 0, 0, i000, id29)
 	}
 
 	if (LNotEqual(Local0, id29)) {
-		err("", zFFF, 0x001, 0, 0, Local0, id29)
+		err("", PK04(zFFF, __LINE__), 0x001, 0, 0, Local0, id29)
 	}
 }
 

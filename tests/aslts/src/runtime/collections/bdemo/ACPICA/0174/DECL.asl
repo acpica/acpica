@@ -35,6 +35,6 @@
 	Method(mf60)
 	{
 		if (LNotEqual(rtd1, bd0c)) {
-			err("", zFFF, 0x000, 0, 0, rtd1, bd0c)
+			err("", PK04(zFFF, __LINE__), 0x000, 0, 0, rtd1, bd0c)
 		}
 	}

@@ -95,11 +95,11 @@ Method(m022,, Serialized)
 	Store(MAdd(i000, m001()), Local0)
 
 	if (LNotEqual(Local0, 0x87654321)) {
-		err("", zFFF, 0x001, 0, 0, Local0, c00e)
+		err("", PK04(zFFF, __LINE__), 0x001, 0, 0, Local0, c00e)
 	}
 
 	if (LNotEqual(i000, 0x80000000)) {
-		err("", zFFF, 0x002, 0, 0, Local0, c00e)
+		err("", PK04(zFFF, __LINE__), 0x002, 0, 0, Local0, c00e)
 	}
 
 	Store("Result:", Debug)

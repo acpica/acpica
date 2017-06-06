@@ -1023,7 +1023,7 @@ Method(m1ca,, Serialized)
 			Store(Index(p000, lpC0), Local0)
 			Store(DerefOf(Local0), Local1)
 			if (LNotEqual(Local1, lpC0)) {
-				err(ts, z116, 0, z116, 0, Local1, lpC0)
+				err(ts, PK04(z116, __LINE__), 0, z116, 0, Local1, lpC0)
 				break
 			}
 			Decrement(lpN0)
@@ -1074,7 +1074,7 @@ Method(m1cb,, Serialized)
 
 	Store(SizeOf(p000), Local0)
 	if (LNotEqual(Local0, 6)) {
-		err(ts, z116, 1, 0, 0, Local0, 6)
+		err(ts, PK04(z116, __LINE__), 1, 0, 0, Local0, 6)
 	}
 }
 
@@ -1091,7 +1091,7 @@ Method(m1cc, 4)
 	Add(Local0, 1, Local7)
 
 	if (LNotEqual(Local7, arg2)) {
-		err(arg0, z116, 2, 0, 0, Local7, arg2)
+		err(arg0, PK04(z116, __LINE__), 2, 0, 0, Local7, arg2)
 	}
 
 	CH03(arg0, z116, 167, 0, 0)
@@ -1109,7 +1109,7 @@ Method(m1cd, 4)
 	Add(arg1, 1, Local7)
 
 	if (LNotEqual(Local7, arg2)) {
-		err(arg0, z116, 3, 0, 0, Local7, arg2)
+		err(arg0, PK04(z116, __LINE__), 3, 0, 0, Local7, arg2)
 	}
 
 	CH03(arg0, z116, 169, 0, 0)

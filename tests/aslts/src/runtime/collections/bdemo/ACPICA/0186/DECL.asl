@@ -88,7 +88,7 @@ Method(mf6d, 0, Serialized)
 			Store(0xabcd0000, Local0)
 		}
 		if (LNotEqual(i000, Local0)) {
-			err("", zFFF, 0x002, 0, 0, i000, Local0)
+			err("", PK04(zFFF, __LINE__), 0x002, 0, 0, i000, Local0)
 		}
 	} else {
 		CH07("", 0, 0xff, 0, 0x003, 0, 0)
@@ -112,7 +112,7 @@ Method(mf6d, 0, Serialized)
 			Store(0xabcd0001, Local0)
 		}
 		if (LNotEqual(i000, Local0)) {
-			err("", zFFF, 0x006, 0, 0, i000, Local0)
+			err("", PK04(zFFF, __LINE__), 0x006, 0, 0, i000, Local0)
 		}
 	} else {
 		CH07("", 0, 0xff, 0, 0x007, 0, 0)
@@ -136,7 +136,7 @@ Method(mf6d, 0, Serialized)
 			Store(0xabcd0002, Local0)
 		}
 		if (LNotEqual(i000, Local0)) {
-			err("", zFFF, 0x00a, 0, 0, i000, Local0)
+			err("", PK04(zFFF, __LINE__), 0x00a, 0, 0, i000, Local0)
 		}
 	} else {
 		CH07("", 0, 0xff, 0, 0x00b, 0, 0)

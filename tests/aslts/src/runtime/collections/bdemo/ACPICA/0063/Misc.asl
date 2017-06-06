@@ -91,82 +91,82 @@ Method(md74,, Serialized) {
 	// 8 decimal
 	Add("12345678", 0x11111111, Local0)
 	if (LNotEqual(Local0, 0x23456789)) {
-		err("", zFFF, 0x000, 0, 0, Local0, 0x23456789)
+		err("", PK04(zFFF, __LINE__), 0x000, 0, 0, Local0, 0x23456789)
 	}
 
 	// 8 hex
 	Add("abcdefab", 0x11111111, Local0)
 	if (LNotEqual(Local0, 0xbcdf00bc)) {
-		err("", zFFF, 0x001, 0, 0, Local0, 0xbcdf00bc)
+		err("", PK04(zFFF, __LINE__), 0x001, 0, 0, Local0, 0xbcdf00bc)
 	}
 
 	// 16 decimal
 	Add("1234567890876543", 0x1111111111111111, Local0)
 	if (LNotEqual(Local0, 0x23456789a1987654)) {
-		err("", zFFF, 0x002, 0, 0, Local0, 0x23456789a1987654)
+		err("", PK04(zFFF, __LINE__), 0x002, 0, 0, Local0, 0x23456789a1987654)
 	}
 
 	// 16 hex
 	Add("abcdefababcdfead", 0x1111111111111111, Local0)
 	if (LNotEqual(Local0, 0xbcdf00bcbcdf0fbe)) {
-		err("", zFFF, 0x003, 0, 0, Local0, 0xbcdf00bcbcdf0fbe)
+		err("", PK04(zFFF, __LINE__), 0x003, 0, 0, Local0, 0xbcdf00bcbcdf0fbe)
 	}
 
 	// 17 hex
 	Add("1234567890123456z", 0x1111111111111111, Local0)
 	if (LNotEqual(Local0, 0x23456789a1234567)) {
-		err("", zFFF, 0x004, 0, 0, Local0, 0x23456789a1234567)
+		err("", PK04(zFFF, __LINE__), 0x004, 0, 0, Local0, 0x23456789a1234567)
 	}
 
 	// 17 hex (caused AE_BAD_HEX_CONSTANT, 28.09.2005)
 	Add("12345678901234560", 0x1111111111111111, Local0)
 	if (LNotEqual(Local0, 0x23456789a1234567)) {
-		err("", zFFF, 0x005, 0, 0, Local0, 0x23456789a1234567)
+		err("", PK04(zFFF, __LINE__), 0x005, 0, 0, Local0, 0x23456789a1234567)
 	}
 
 	// Looks like octal, but should be treated as hex
 	Add("01111", 0x2222, Local0)
 	if (LNotEqual(Local0, 0x3333)) {
-		err("", zFFF, 0x006, 0, 0, Local0, 0x3333)
+		err("", PK04(zFFF, __LINE__), 0x006, 0, 0, Local0, 0x3333)
 	}
 
 	// The first zeros each must be put into value
 
 	Add("000010234", 0, Local0)
 	if (LNotEqual(Local0, 0x10234)) {
-		err("", zFFF, 0x007, 0, 0, Local0, 0x10234)
+		err("", PK04(zFFF, __LINE__), 0x007, 0, 0, Local0, 0x10234)
 	}
 
 	Add("000000000000000010234", 0, Local0)
 	if (LNotEqual(Local0, 0x10234)) {
-		err("", zFFF, 0x008, 0, 0, Local0, 0x10234)
+		err("", PK04(zFFF, __LINE__), 0x008, 0, 0, Local0, 0x10234)
 	}
 
 	Add("00000000000000010234", 0, Local0)
 	if (LNotEqual(Local0, 0x10234)) {
-		err("", zFFF, 0x009, 0, 0, Local0, 0x10234)
+		err("", PK04(zFFF, __LINE__), 0x009, 0, 0, Local0, 0x10234)
 	}
 
 	Add("0000000010234", 0, Local0)
 	if (LNotEqual(Local0, 0x10234)) {
-		err("", zFFF, 0x00a, 0, 0, Local0, 0x10234)
+		err("", PK04(zFFF, __LINE__), 0x00a, 0, 0, Local0, 0x10234)
 	}
 
 	Add("000000010234", 0, Local0)
 	if (LNotEqual(Local0, 0x10234)) {
-		err("", zFFF, 0x00b, 0, 0, Local0, 0x10234)
+		err("", PK04(zFFF, __LINE__), 0x00b, 0, 0, Local0, 0x10234)
 	}
 
 	// Non-complete 4 hex, should be extended with zeros
 	Add("abcd", 0x1111, Local0)
 	if (LNotEqual(Local0, 0xbcde)) {
-		err("", zFFF, 0x00c, 0, 0, Local0, 0xbcde)
+		err("", PK04(zFFF, __LINE__), 0x00c, 0, 0, Local0, 0xbcde)
 	}
 
 	// Non-complete 5 decimal, should be extended with zeros
 	Add("12345", 0x1111, Local0)
 	if (LNotEqual(Local0, 0x13456)) {
-		err("", zFFF, 0x00d, 0, 0, Local0, 0x13456)
+		err("", PK04(zFFF, __LINE__), 0x00d, 0, 0, Local0, 0x13456)
 	}
 
 	CH03(ts, zFFF, 0x100, 0, 0)
@@ -175,11 +175,11 @@ Method(md74,, Serialized) {
 	Add("abcdef0123456789112233445566778890", 0, Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 0xabcdef0123456789)) {
-			err("", zFFF, 0x00e, 0, 0, Local0, 0xabcdef0123456789)
+			err("", PK04(zFFF, __LINE__), 0x00e, 0, 0, Local0, 0xabcdef0123456789)
 		}
 	} else {
 		if (LNotEqual(Local0, 0xabcdef01)) {
-			err("", zFFF, 0x00f, 0, 0, Local0, 0xabcdef01)
+			err("", PK04(zFFF, __LINE__), 0x00f, 0, 0, Local0, 0xabcdef01)
 		}
 	}
 
@@ -189,11 +189,11 @@ Method(md74,, Serialized) {
 	Add("0abcdef0123456789112233445566778890", 0x1234, Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 0xabcdef0123456789)) {
-			err("", zFFF, 0x010, 0, 0, Local0, 0xabcdef0123456789)
+			err("", PK04(zFFF, __LINE__), 0x010, 0, 0, Local0, 0xabcdef0123456789)
 		}
 	} else {
 		if (LNotEqual(Local0, 0xabcdef01)) {
-			err("", zFFF, 0x011, 0, 0, Local0, 0xabcdef01)
+			err("", PK04(zFFF, __LINE__), 0x011, 0, 0, Local0, 0xabcdef01)
 		}
 	}
 
@@ -202,7 +202,7 @@ Method(md74,, Serialized) {
 	// Looks like usual hex, but 'x' terminates conversion
 	Add("0x1111", 0x2222, Local0)
 	if (LNotEqual(Local0, 0x2222)) {
-		err("", zFFF, 0x012, 0, 0, Local0, 0x2222)
+		err("", PK04(zFFF, __LINE__), 0x012, 0, 0, Local0, 0x2222)
 	}
 
 	CH03(ts, zFFF, 0x103, 0, 0)
@@ -210,7 +210,7 @@ Method(md74,, Serialized) {
 	// Empty string, no action - the relevant parameter of Add remains zero
 	Add("", 222, Local0)
 	if (LNotEqual(Local0, 222)) {
-		err("", zFFF, 0x013, 0, 0, Local0, 222)
+		err("", PK04(zFFF, __LINE__), 0x013, 0, 0, Local0, 222)
 	}
 
 	CH03(ts, zFFF, 0x104, 0, 0)
@@ -218,7 +218,7 @@ Method(md74,, Serialized) {
 	// Blank string, no action - the relevant parameter of Add remains zero
 	Add(" ", 0x333, Local0)
 	if (LNotEqual(Local0, 0x333)) {
-		err("", zFFF, 0x014, 0, 0, Local0, 0x333)
+		err("", PK04(zFFF, __LINE__), 0x014, 0, 0, Local0, 0x333)
 	}
 
 	CH03(ts, zFFF, 0x105, 0, 0)
@@ -226,7 +226,7 @@ Method(md74,, Serialized) {
 	// Blank string, no action - the relevant parameter of Add remains zero
 	Add("                                ", 0222, Local0)
 	if (LNotEqual(Local0, 0222)) {
-		err("", zFFF, 0x015, 0, 0, Local0, 0222)
+		err("", PK04(zFFF, __LINE__), 0x015, 0, 0, Local0, 0222)
 	}
 
 	CH03(ts, zFFF, 0x106, 0, 0)
@@ -234,13 +234,13 @@ Method(md74,, Serialized) {
 	// Conversion is terminated just by the first symbol (non-hex) though followed by hex-es, remains zero
 	Add("k1234567", 489, Local0)
 	if (LNotEqual(Local0, 489)) {
-		err("", zFFF, 0x016, 0, 0, Local0, 489)
+		err("", PK04(zFFF, __LINE__), 0x016, 0, 0, Local0, 489)
 	}
 
 	// Conversion is terminated just by the first symbol (non-hex), single
 	Add("k", 0xabcdef0000, Local0)
 	if (LNotEqual(Local0, 0xabcdef0000)) {
-		err("", zFFF, 0x017, 0, 0, Local0, 0xabcdef0000)
+		err("", PK04(zFFF, __LINE__), 0x017, 0, 0, Local0, 0xabcdef0000)
 	}
 
 	CH03(ts, zFFF, 0x107, 0, 0)
@@ -248,7 +248,7 @@ Method(md74,, Serialized) {
 	// Looks like designation of hex (terminated by x)
 	Add("0x", 0x12345678, Local0)
 	if (LNotEqual(Local0, 0x12345678)) {
-		err("", zFFF, 0x018, 0, 0, Local0, 0x12345678)
+		err("", PK04(zFFF, __LINE__), 0x018, 0, 0, Local0, 0x12345678)
 	}
 
 	CH03(ts, zFFF, 0x108, 0, 0)
@@ -256,73 +256,73 @@ Method(md74,, Serialized) {
 	// Special symbol in the hex designation (terminated by x)
 	Add("x", 12345678, Local0)
 	if (LNotEqual(Local0, 12345678)) {
-		err("", zFFF, 0x019, 0, 0, Local0, 12345678)
+		err("", PK04(zFFF, __LINE__), 0x019, 0, 0, Local0, 12345678)
 	}
 
 	// Starts with the special symbol in the hex designation (terminated by x)
 	Add("x12345", 111, Local0)
 	if (LNotEqual(Local0, 111)) {
-		err("", zFFF, 0x01a, 0, 0, Local0, 111)
+		err("", PK04(zFFF, __LINE__), 0x01a, 0, 0, Local0, 111)
 	}
 
 	// No one hex, conversion is terminated just by the first symbol Z
 	Add("ZZZZ", 123456, Local0)
 	if (LNotEqual(Local0, 123456)) {
-		err("", zFFF, 0x01b, 0, 0, Local0, 123456)
+		err("", PK04(zFFF, __LINE__), 0x01b, 0, 0, Local0, 123456)
 	}
 
 	// Short <= 8, conversion is terminated by non-hex symbol Z
 	Add("abcdZZZZ", 0x11, Local0)
 	if (LNotEqual(Local0, 0xabde)) {
-		err("", zFFF, 0x01c, 0, 0, Local0, 0xabde)
+		err("", PK04(zFFF, __LINE__), 0x01c, 0, 0, Local0, 0xabde)
 	}
 
 	// Short <= 8, hex in the middle (terminated by Z)
 	Add("ZQ123MMM", 123456, Local0)
 	if (LNotEqual(Local0, 123456)) {
-		err("", zFFF, 0x01d, 0, 0, Local0, 123456)
+		err("", PK04(zFFF, __LINE__), 0x01d, 0, 0, Local0, 123456)
 	}
 
 	// Short <= 8, hex at the end (terminated by Z)
 	Add("ZQMMM123", 123456, Local0)
 	if (LNotEqual(Local0, 123456)) {
-		err("", zFFF, 0x01e, 0, 0, Local0, 123456)
+		err("", PK04(zFFF, __LINE__), 0x01e, 0, 0, Local0, 123456)
 	}
 
 	// Long exceeding 16, no one hex
 	Add("zxswqrrrrrrrrrrrrrrtttttttttttttttttttttttttyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuuuu", 123, Local0)
 	if (LNotEqual(Local0, 123)) {
-		err("", zFFF, 0x01f, 0, 0, Local0, 123)
+		err("", PK04(zFFF, __LINE__), 0x01f, 0, 0, Local0, 123)
 	}
 
 	// Long exceeding 16, hex at the beginning
 	Add("1234zxswqrrrrrrrrrrrrrrtttttttttttttttttttttttttyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuuuu", 0123, Local0)
 	if (LNotEqual(Local0, 0x1287)) {
-		err("", zFFF, 0x020, 0, 0, Local0, 0x1287)
+		err("", PK04(zFFF, __LINE__), 0x020, 0, 0, Local0, 0x1287)
 	}
 
 	// Long exceeding 16, hex everywhere
 	Add("123z4s5qr6rr7rrrrrrrrr8ttttttt9ttttttattttbttttcyyyydyyeyyyyyyyyuuuuuuuuuuuuuuuuuuuuf", 0123, Local0)
 	if (LNotEqual(Local0, 0x176)) {
-		err("", zFFF, 0x021, 0, 0, Local0, 0x176)
+		err("", PK04(zFFF, __LINE__), 0x021, 0, 0, Local0, 0x176)
 	}
 
 	// Long exceeding 16, hex at the end
 	Add("zxswqrrrrrrrrrrrrrrtttttttttttttttttttttttttyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuuuu1234", 012321, Local0)
 	if (LNotEqual(Local0, 012321)) {
-		err("", zFFF, 0x022, 0, 0, Local0, 012321)
+		err("", PK04(zFFF, __LINE__), 0x022, 0, 0, Local0, 012321)
 	}
 
 	// Long exceeding 16, hex in the middle inside the possible Integer
 	Add("zx1234swqrrrrrrrrrrrrrrtttttttttttttttttttttttttyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuuuu", 0x12321, Local0)
 	if (LNotEqual(Local0, 0x12321)) {
-		err("", zFFF, 0x023, 0, 0, Local0, 0x12321)
+		err("", PK04(zFFF, __LINE__), 0x023, 0, 0, Local0, 0x12321)
 	}
 
 	// Long exceeding 16, hex in the middle beyond the bounds of the possible Integer
 	Add("zxswqrrrrrrrrrrrrrrtttttttttttttttttttttttttyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuu1234uu", 12321, Local0)
 	if (LNotEqual(Local0, 12321)) {
-		err("", zFFF, 0x024, 0, 0, Local0, 12321)
+		err("", PK04(zFFF, __LINE__), 0x024, 0, 0, Local0, 12321)
 	}
 
 	CH03(ts, zFFF, 0x109, 0, 0)
@@ -331,11 +331,11 @@ Method(md74,, Serialized) {
 	Store(Add("123456789012345601112223334446667788990087654", 0), Local1)
 	if (F64) {
 		if (LNotEqual(Local0, 0x1234567890123456)) {
-			err("", zFFF, 0x025, 0, 0, Local0, 0x1234567890123456)
+			err("", PK04(zFFF, __LINE__), 0x025, 0, 0, Local0, 0x1234567890123456)
 		}
 	} else {
 		if (LNotEqual(Local0, 0x12345678)) {
-			err("", zFFF, 0x026, 0, 0, Local0, 0x12345678)
+			err("", PK04(zFFF, __LINE__), 0x026, 0, 0, Local0, 0x12345678)
 		}
 	}
 
@@ -345,11 +345,11 @@ Method(md74,, Serialized) {
 	Store(Add("abcdefabcdefabcdefabcdefabcdefabcdefabcdefabc", 0), Local1)
 	if (F64) {
 		if (LNotEqual(Local0, 0xabcdefabcdefabcd)) {
-			err("", zFFF, 0x027, 0, 0, Local0, 0xabcdefabcdefabcd)
+			err("", PK04(zFFF, __LINE__), 0x027, 0, 0, Local0, 0xabcdefabcdefabcd)
 		}
 	} else {
 		if (LNotEqual(Local0, 0xabcdefab)) {
-			err("", zFFF, 0x028, 0, 0, Local0, 0xabcdefab)
+			err("", PK04(zFFF, __LINE__), 0x028, 0, 0, Local0, 0xabcdefab)
 		}
 	}
 
@@ -359,11 +359,11 @@ Method(md74,, Serialized) {
 	Store(Add("123456789012345601112223334446667788990087654ZZZZ", 0), Local1)
 	if (F64) {
 		if (LNotEqual(Local0, 0x1234567890123456)) {
-			err("", zFFF, 0x029, 0, 0, Local0, 0x1234567890123456)
+			err("", PK04(zFFF, __LINE__), 0x029, 0, 0, Local0, 0x1234567890123456)
 		}
 	} else {
 		if (LNotEqual(Local0, 0x12345678)) {
-			err("", zFFF, 0x02a, 0, 0, Local0, 0x12345678)
+			err("", PK04(zFFF, __LINE__), 0x02a, 0, 0, Local0, 0x12345678)
 		}
 	}
 
@@ -373,11 +373,11 @@ Method(md74,, Serialized) {
 	Store(Add("abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcZZZZ", 0), Local1)
 	if (F64) {
 		if (LNotEqual(Local0, 0xabcdefabcdefabcd)) {
-			err("", zFFF, 0x02b, 0, 0, Local0, 0xabcdefabcdefabcd)
+			err("", PK04(zFFF, __LINE__), 0x02b, 0, 0, Local0, 0xabcdefabcdefabcd)
 		}
 	} else {
 		if (LNotEqual(Local0, 0xabcdefab)) {
-			err("", zFFF, 0x02c, 0, 0, Local0, 0xabcdefab)
+			err("", PK04(zFFF, __LINE__), 0x02c, 0, 0, Local0, 0xabcdefab)
 		}
 	}
 

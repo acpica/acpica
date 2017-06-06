@@ -139,7 +139,7 @@ Method(m18a, 1, Serialized, 3)
 			Store(DeRefOf(Index(arg2, lpC0)), Local0)
 			Store(DeRefOf(Index(arg3, lpC0)), Local1)
 			if (LNotEqual(Local0, Local1)) {
-				err("", zFFF, 0x000, 0, 0, Local0, Local1)
+				err("", PK04(zFFF, __LINE__), 0x000, 0, 0, Local0, Local1)
 				Store(arg0, Debug)
 				Store(lpC0, Debug)
 			}
@@ -150,22 +150,22 @@ Method(m18a, 1, Serialized, 3)
 		Switch (ToInteger (arg0)) {
 			Case (1) {
 				if (LNotEqual(ind1, n100)) {
-					err("", zFFF, 0x001, 0, 0, ind1, n100)
+					err("", PK04(zFFF, __LINE__), 0x001, 0, 0, ind1, n100)
 				}
 			}
 			Case (2) {
 				if (LNotEqual(ind2, n200)) {
-					err("", zFFF, 0x002, 0, 0, ind2, n200)
+					err("", PK04(zFFF, __LINE__), 0x002, 0, 0, ind2, n200)
 				}
 			}
 			Case (3) {
 				if (LNotEqual(ind3, n300)) {
-					err("", zFFF, 0x003, 0, 0, ind3, n300)
+					err("", PK04(zFFF, __LINE__), 0x003, 0, 0, ind3, n300)
 				}
 			}
 			Case (4) {
 				if (LNotEqual(ind4, n400)) {
-					err("", zFFF, 0x004, 0, 0, ind4, n400)
+					err("", PK04(zFFF, __LINE__), 0x004, 0, 0, ind4, n400)
 				}
 			}
 		}
@@ -203,7 +203,7 @@ Method(m18a, 1, Serialized, 3)
 		Add(cnt1, Local0, cnt1)
 		Store(DerefOf(Index(p100, Local1)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x005, 0, 0, Local1, Local0)
+			err("", PK04(zFFF, __LINE__), 0x005, 0, 0, Local1, Local0)
 		}
 	}
 	Method(m200, 0, Serialized, 0)
@@ -222,7 +222,7 @@ Method(m18a, 1, Serialized, 3)
 		Add(cnt1, Local0, cnt1)
 		Store(DerefOf(Index(p200, Local1)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x006, 0, 0, Local1, Local0)
+			err("", PK04(zFFF, __LINE__), 0x006, 0, 0, Local1, Local0)
 		}
 	}
 	Method(m300, 0, Serialized, 0)
@@ -247,7 +247,7 @@ Method(m18a, 1, Serialized, 3)
 		Add(cnt1, Local0, cnt1)
 		Store(DerefOf(Index(p300, Local1)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x007, 0, 0, Local1, Local0)
+			err("", PK04(zFFF, __LINE__), 0x007, 0, 0, Local1, Local0)
 		}
 	}
 	Method(m400, 0, Serialized, 0)
@@ -265,7 +265,7 @@ Method(m18a, 1, Serialized, 3)
 		Add(cnt1, Local0, cnt1)
 		Store(DerefOf(Index(p400, Local1)), Local1)
 		if (LNotEqual(Local1, Local0)) {
-			err("", zFFF, 0x008, 0, 0, Local1, Local0)
+			err("", PK04(zFFF, __LINE__), 0x008, 0, 0, Local1, Local0)
 		}
 	}
 

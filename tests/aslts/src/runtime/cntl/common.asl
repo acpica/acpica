@@ -273,7 +273,7 @@ Name(FNAM, 0)   // Test filename
  */
 Method(SET0, 3) {
 	if (ERR0) {
-		err("SET0", z062, 0, 0, 0, ERR0, 0)
+		err("SET0", PK04(z062, __LINE__), 0, 0, 0, ERR0, 0)
 	} else {
 		CopyObject(arg0, ERR0)
 		CopyObject(arg1, ERR1)
@@ -633,6 +633,24 @@ Method(PK03, 2)
 }
 
 
+
+Name (EPKG, Package(2){})
+
+/*
+ * Pack 2 arguments into one package object
+ *
+ * arg0 - absolute index of file reporting the error
+ * arg1 - index of error (inside the file)
+ */
+Method (PK04, 2)
+{
+    EPKG[0] = Arg0
+    EPKG[1] = Arg1
+    Return (EPKG)
+}
+
+
+
 /*
  * Errors processing
  *
@@ -669,7 +687,7 @@ Method(PK03, 2)
  *   n - name of Method initiating the checking
  *
  * arg0 - diagnostic message (usually, the name of method conglomeration of tests)
- * arg1 - absolute index of file reporting the error
+ * arg1 - package containing absolute index of file reporting the error and line number
  * arg2 - index of error (inside the file)
  * arg3 - absolute index of file initiating the checking
  * arg4 - index of checking (inside the file)
@@ -729,7 +747,7 @@ Method(err, 7)
 	}
 
 	// Pack up information of error
-	Store(PK03(arg1, arg2), Local0)
+	Store(PK03(DeRefOf(arg1[0]), arg2), Local0)
 
 	// Add ID of test case being executed
 	Or(ERRB, Local0, Local7)
@@ -741,7 +759,7 @@ Method(err, 7)
 	Concatenate(Local1, arg0, Local0)
 	Store(Local0, Debug)
 
-	ERP0(arg1, arg2, Local4, Local3, Local5)
+	ERP0(DeRefOf(arg1[0]), arg2, Local4, Local3, Local5, DeRefOf(arg1[1]))
 
     if (LEqual (ObjectType (arg5), 1)) // Check for Integer
     {
@@ -795,13 +813,14 @@ Method(err, 7)
 
 /*
  * Report parameters of error
- * arg0 - absolute index of file reporting the error
+ * arg0 - absolute index of file reporting the error and line number
  * arg1 - index of error
  * arg2 - absolute index of file initiating the checking
  * arg3 - name of Method initiating the checking
  * arg4 - index of checking
+ * arg5 - line number of error
  */
-Method(ERP0, 5)
+Method(ERP0, 6)
 {
 	Concatenate("TITLE               : ", TSNM, Local0)
 	Store(Local0, Debug)
@@ -833,6 +852,9 @@ Method(ERP0, 5)
 		Store(DeRefOf(Index(TFN0, arg0)), Local1)
 	}
 	Concatenate("ERROR,    File      : ", Local1, Local0)
+	Store(Local0, Debug)
+
+	Concatenate("          Line      : ", ToDecimalString(arg5), Local0)
 	Store(Local0, Debug)
 
 	Concatenate("          Index     : 0x", arg1, Local0)
@@ -915,7 +937,7 @@ Method(prn0, 1, Serialized) {
 Method(CH00, 4)
 {
 	if (LNotEqual(arg3, Zero)) {
-		err(arg0, z062, 1, 0, 0, arg1, arg2)
+		err(arg0, PK04(z062, __LINE__), 1, 0, 0, arg1, arg2)
 	}
 }
 
@@ -929,7 +951,7 @@ Method(CH00, 4)
 Method(CH01, 4)
 {
 	if (LNotEqual(arg3, Ones)) {
-		err(arg0, z062, 2, 0, 0, arg1, arg2)
+		err(arg0, PK04(z062, __LINE__), 2, 0, 0, arg1, arg2)
 	}
 }
 
@@ -966,84 +988,84 @@ Name(ALL0, "`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./~!@#$%^&*()_+QWERTYU
 Method(CST0)
 {
 	if (LNotEqual(c000, 10)) {
-		err("c000 corrupted", z062, 3, 0, 0, 0, 0)
+		err("c000 corrupted", PK04(z062, __LINE__), 3, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c001, 5)) {
-		err("c001 corrupted", z062, 4, 0, 0, 0, 0)
+		err("c001 corrupted", PK04(z062, __LINE__), 4, 0, 0, 0, 0)
 	}
 
 	if (LNotEqual(c002, 13)) {
-		err("c002 corrupted", z062, 5, 0, 0, 0, 0)
+		err("c002 corrupted", PK04(z062, __LINE__), 5, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c003, 12)) {
-		err("c003 corrupted", z062, 6, 0, 0, 0, 0)
+		err("c003 corrupted", PK04(z062, __LINE__), 6, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c004, 6)) {
-		err("c004 corrupted", z062, 7, 0, 0, 0, 0)
+		err("c004 corrupted", PK04(z062, __LINE__), 7, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c005, 4)) {
-		err("c005 corrupted", z062, 8, 0, 0, 0, 0)
+		err("c005 corrupted", PK04(z062, __LINE__), 8, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c006, 31)) {
-		err("c006 corrupted", z062, 9, 0, 0, 0, 0)
+		err("c006 corrupted", PK04(z062, __LINE__), 9, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c007, 51)) {
-		err("c007 corrupted", z062, 10, 0, 0, 0, 0)
+		err("c007 corrupted", PK04(z062, __LINE__), 10, 0, 0, 0, 0)
 	}
 
 	if (LNotEqual(c008, 0)) {
-		err("c008 corrupted", z062, 11, 0, 0, 0, 0)
+		err("c008 corrupted", PK04(z062, __LINE__), 11, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c009, 1)) {
-		err("c009 corrupted", z062, 12, 0, 0, 0, 0)
+		err("c009 corrupted", PK04(z062, __LINE__), 12, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c00a, 2)) {
-		err("c00a corrupted", z062, 13, 0, 0, 0, 0)
+		err("c00a corrupted", PK04(z062, __LINE__), 13, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c00b, 3)) {
-		err("c00b corrupted", z062, 14, 0, 0, 0, 0)
+		err("c00b corrupted", PK04(z062, __LINE__), 14, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c00c, 4)) {
-		err("c00c corrupted", z062, 15, 0, 0, 0, 0)
+		err("c00c corrupted", PK04(z062, __LINE__), 15, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c00d, 5)) {
-		err("c00d corrupted", z062, 16, 0, 0, 0, 0)
+		err("c00d corrupted", PK04(z062, __LINE__), 16, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c00e, 6)) {
-		err("c00e corrupted", z062, 17, 0, 0, 0, 0)
+		err("c00e corrupted", PK04(z062, __LINE__), 17, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c00f, 7)) {
-		err("c00f corrupted", z062, 18, 0, 0, 0, 0)
+		err("c00f corrupted", PK04(z062, __LINE__), 18, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c010, 8)) {
-		err("c010 corrupted", z062, 19, 0, 0, 0, 0)
+		err("c010 corrupted", PK04(z062, __LINE__), 19, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c011, 9)) {
-		err("c011 corrupted", z062, 20, 0, 0, 0, 0)
+		err("c011 corrupted", PK04(z062, __LINE__), 20, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c012, 10)) {
-		err("c012 corrupted", z062, 21, 0, 0, 0, 0)
+		err("c012 corrupted", PK04(z062, __LINE__), 21, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c013, 11)) {
-		err("c013 corrupted", z062, 22, 0, 0, 0, 0)
+		err("c013 corrupted", PK04(z062, __LINE__), 22, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c014, 12)) {
-		err("c014 corrupted", z062, 23, 0, 0, 0, 0)
+		err("c014 corrupted", PK04(z062, __LINE__), 23, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c015, 13)) {
-		err("c015 corrupted", z062, 24, 0, 0, 0, 0)
+		err("c015 corrupted", PK04(z062, __LINE__), 24, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c016, 14)) {
-		err("c016 corrupted", z062, 25, 0, 0, 0, 0)
+		err("c016 corrupted", PK04(z062, __LINE__), 25, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c017, 15)) {
-		err("c017 corrupted", z062, 26, 0, 0, 0, 0)
+		err("c017 corrupted", PK04(z062, __LINE__), 26, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c018, 16)) {
-		err("c018 corrupted", z062, 27, 0, 0, 0, 0)
+		err("c018 corrupted", PK04(z062, __LINE__), 27, 0, 0, 0, 0)
 	}
 	if (LNotEqual(c019, 17)) {
-		err("c019 corrupted", z062, 28, 0, 0, 0, 0)
+		err("c019 corrupted", PK04(z062, __LINE__), 28, 0, 0, 0, 0)
 	}
 }
 
@@ -1149,12 +1171,12 @@ Method(sft1, 5, Serialized)
 	Name(rest, 0)
 
 	if (LLess(arg2, 1)) {
-		err("sft", z062, 29, 0, 0, arg2, 1)
+		err("sft", PK04(z062, __LINE__), 29, 0, 0, arg2, 1)
 		return (Ones)
 	}
 
 	if (LGreater(arg1, 7)) {
-		err("sft", z062, 30, 0, 0, arg1, 7)
+		err("sft", PK04(z062, __LINE__), 30, 0, 0, arg1, 7)
 		return (Ones)
 	}
 
@@ -1290,19 +1312,19 @@ Method(m4c0, 4, Serialized)
 	if (F64) {
 		Store(ObjectType(arg2), tmp1)
 		if (LNotEqual(tmp0, tmp1)) {
-			err(arg0, z062, 31, 0, 0, tmp0, tmp1)
+			err(arg0, PK04(z062, __LINE__), 31, 0, 0, tmp0, tmp1)
 			Store(1, Local7)
 		} elseif (LNotEqual(arg1, arg2)) {
-			err(arg0, z062, 32, 0, 0, arg1, arg2)
+			err(arg0, PK04(z062, __LINE__), 32, 0, 0, arg1, arg2)
 			Store(1, Local7)
 		}
 	} else {
 		Store(ObjectType(arg3), tmp1)
 		if (LNotEqual(tmp0, tmp1)) {
-			err(arg0, z062, 33, 0, 0, tmp0, tmp1)
+			err(arg0, PK04(z062, __LINE__), 33, 0, 0, tmp0, tmp1)
 			Store(1, Local7)
 		} elseif (LNotEqual(arg1, arg3)) {
-			err(arg0, z062, 34, 0, 0, arg1, arg3)
+			err(arg0, PK04(z062, __LINE__), 34, 0, 0, arg1, arg3)
 			Store(1, Local7)
 		}
 	}

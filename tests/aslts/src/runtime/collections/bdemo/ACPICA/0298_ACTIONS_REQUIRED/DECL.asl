@@ -67,7 +67,7 @@ Method(m1e7)
 	Add(Local0, 0x11111111, Local4)
 	Store(Local4, Debug)
 	if (LNotEqual(Local4, 0x11111233)) {
-		err("", zFFF, 0x001, 0, 0, Local4, 0x11111233)
+		err("", PK04(zFFF, __LINE__), 0x001, 0, 0, Local4, 0x11111233)
 	}
 	Store("============================== 3", Debug)
 
@@ -77,6 +77,6 @@ Method(m1e7)
 	 * The problem is not automatically detected,
 	 * so remove this error report after the problem has been resolved.
 	 */
-	err("", zFFF, 0x123, 0, 0, 0, 0)
+	err("", PK04(zFFF, __LINE__), 0x123, 0, 0, 0, 0)
 }
 

@@ -11871,7 +11871,7 @@ Method(m612,, Serialized)
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z087, 0, 0, 0, Local2, c08c)
+			err(arg0, PK04(z087, __LINE__), 0, 0, 0, Local2, c08c)
 		}
 
 		// Stall
@@ -11884,7 +11884,7 @@ Method(m612,, Serialized)
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, 990)) {
-			err(arg0, z087, 1, 0, 0, Local2, 990)
+			err(arg0, PK04(z087, __LINE__), 1, 0, 0, Local2, 990)
 		}
 	}
 
@@ -11908,7 +11908,7 @@ Method(m612,, Serialized)
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z087, 0, 0, 0, Local2, c08c)
+			err(arg0, PK04(z087, __LINE__), 0, 0, 0, Local2, c08c)
 		}
 	}
 
@@ -11928,7 +11928,7 @@ Method(m612,, Serialized)
 		Store(Timer, Local1)
 		Subtract(Local1, Local0, Local2)
 		if (LLess(Local2, c08c)) {
-			err(arg0, z087, 0, 0, 0, Local2, c08c)
+			err(arg0, PK04(z087, __LINE__), 0, 0, 0, Local2, c08c)
 		}
 	}
 

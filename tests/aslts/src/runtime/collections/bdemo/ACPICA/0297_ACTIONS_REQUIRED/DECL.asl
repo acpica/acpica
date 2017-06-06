@@ -199,131 +199,131 @@ Method(m1e4, 1, Serialized)
 
     Store(Acquire(MT00, 0xffff), Local0)
     if (Local0) {
-        err("", zFFF, 1, 0, 0, 0, Local0)
+        err("", PK04(zFFF, __LINE__), 1, 0, 0, 0, Local0)
     } else {
     Store(Acquire(MT01, 0xffff), Local0) /* the same level */
     if (Local0) {
-        err("", zFFF, 2, 0, 0, 0, Local0)
+        err("", PK04(zFFF, __LINE__), 2, 0, 0, 0, Local0)
     } else {
     Store(Acquire(\_GL, 0xffff), Local0) /* GL */
     if (Local0) {
-        err("", zFFF, 3, 0, 0, 0, Local0)
+        err("", PK04(zFFF, __LINE__), 3, 0, 0, 0, Local0)
     } else {
         Store(Acquire(MT10, 0xffff), Local0)
         if (Local0) {
-            err("", zFFF, 4, 0, 0, 0, Local0)
+            err("", PK04(zFFF, __LINE__), 4, 0, 0, 0, Local0)
         } else {
         Store(Acquire(MT11, 0xffff), Local0)
         if (Local0) {
-            err("", zFFF, 5, 0, 0, 0, Local0)
+            err("", PK04(zFFF, __LINE__), 5, 0, 0, 0, Local0)
         } else {
             Store(Acquire(MT20, 0xffff), Local0)
             if (Local0) {
-                err("", zFFF, 6, 0, 0, 0, Local0)
+                err("", PK04(zFFF, __LINE__), 6, 0, 0, 0, Local0)
             } else {
             Store(Acquire(MT21, 0xffff), Local0)
             if (Local0) {
-                err("", zFFF, 7, 0, 0, 0, Local0)
+                err("", PK04(zFFF, __LINE__), 7, 0, 0, 0, Local0)
             } else {
                 Store(Acquire(MT30, 0xffff), Local0)
                 if (Local0) {
-                    err("", zFFF, 8, 0, 0, 0, Local0)
+                    err("", PK04(zFFF, __LINE__), 8, 0, 0, 0, Local0)
                 } else {
                 Store(Acquire(MT31, 0xffff), Local0)
                 if (Local0) {
-                    err("", zFFF, 9, 0, 0, 0, Local0)
+                    err("", PK04(zFFF, __LINE__), 9, 0, 0, 0, Local0)
                 } else {
                     Store(Acquire(MT40, 0xffff), Local0)
                     if (Local0) {
-                        err("", zFFF, 0x00a, 0, 0, 0, Local0)
+                        err("", PK04(zFFF, __LINE__), 0x00a, 0, 0, 0, Local0)
                     } else {
                     Store(Acquire(MT41, 0xffff), Local0)
                     if (Local0) {
-                        err("", zFFF, 0x00b, 0, 0, 0, Local0)
+                        err("", PK04(zFFF, __LINE__), 0x00b, 0, 0, 0, Local0)
                     } else {
                         Store(Acquire(MT50, 0xffff), Local0)
                         if (Local0) {
-                            err("", zFFF, 0x00c, 0, 0, 0, Local0)
+                            err("", PK04(zFFF, __LINE__), 0x00c, 0, 0, 0, Local0)
                         } else {
                         Store(Acquire(MT51, 0xffff), Local0)
                         if (Local0) {
-                            err("", zFFF, 0x00d, 0, 0, 0, Local0)
+                            err("", PK04(zFFF, __LINE__), 0x00d, 0, 0, 0, Local0)
                         } else {
                             Store(Acquire(MT60, 0xffff), Local0)
                             if (Local0) {
-                                err("", zFFF, 0x00e, 0, 0, 0, Local0)
+                                err("", PK04(zFFF, __LINE__), 0x00e, 0, 0, 0, Local0)
                             } else {
                             Store(Acquire(MT61, 0xffff), Local0)
                             if (Local0) {
-                                err("", zFFF, 0x00f, 0, 0, 0, Local0)
+                                err("", PK04(zFFF, __LINE__), 0x00f, 0, 0, 0, Local0)
                             } else {
                                 Store(Acquire(MT70, 0xffff), Local0)
                                 if (Local0) {
-                                    err("", zFFF, 0x010, 0, 0, 0, Local0)
+                                    err("", PK04(zFFF, __LINE__), 0x010, 0, 0, 0, Local0)
                                 } else {
                                 Store(Acquire(MT71, 0xffff), Local0)
                                 if (Local0) {
-                                    err("", zFFF, 0x011, 0, 0, 0, Local0)
+                                    err("", PK04(zFFF, __LINE__), 0x011, 0, 0, 0, Local0)
                                 } else {
                                     Store(Acquire(MT80, 0xffff), Local0)
                                     if (Local0) {
-                                        err("", zFFF, 0x012, 0, 0, 0, Local0)
+                                        err("", PK04(zFFF, __LINE__), 0x012, 0, 0, 0, Local0)
                                     } else {
                                     Store(Acquire(MT81, 0xffff), Local0)
                                     if (Local0) {
-                                        err("", zFFF, 0x013, 0, 0, 0, Local0)
+                                        err("", PK04(zFFF, __LINE__), 0x013, 0, 0, 0, Local0)
                                     } else {
                                         Store(Acquire(MT90, 0xffff), Local0)
                                         if (Local0) {
-                                            err("", zFFF, 0x014, 0, 0, 0, Local0)
+                                            err("", PK04(zFFF, __LINE__), 0x014, 0, 0, 0, Local0)
                                         } else {
                                         Store(Acquire(MT91, 0xffff), Local0)
                                         if (Local0) {
-                                            err("", zFFF, 0x015, 0, 0, 0, Local0)
+                                            err("", PK04(zFFF, __LINE__), 0x015, 0, 0, 0, Local0)
                                         } else {
                                             Store(Acquire(MTa0, 0xffff), Local0)
                                             if (Local0) {
-                                                err("", zFFF, 0x016, 0, 0, 0, Local0)
+                                                err("", PK04(zFFF, __LINE__), 0x016, 0, 0, 0, Local0)
                                             } else {
                                             Store(Acquire(MTa1, 0xffff), Local0)
                                             if (Local0) {
-                                                err("", zFFF, 0x017, 0, 0, 0, Local0)
+                                                err("", PK04(zFFF, __LINE__), 0x017, 0, 0, 0, Local0)
                                             } else {
                                                 Store(Acquire(MTb0, 0xffff), Local0)
                                                 if (Local0) {
-                                                    err("", zFFF, 0x018, 0, 0, 0, Local0)
+                                                    err("", PK04(zFFF, __LINE__), 0x018, 0, 0, 0, Local0)
                                                 } else {
                                                 Store(Acquire(MTb1, 0xffff), Local0)
                                                 if (Local0) {
-                                                    err("", zFFF, 0x019, 0, 0, 0, Local0)
+                                                    err("", PK04(zFFF, __LINE__), 0x019, 0, 0, 0, Local0)
                                                 } else {
                                                     Store(Acquire(MTc0, 0xffff), Local0)
                                                     if (Local0) {
-                                                        err("", zFFF, 0x01a, 0, 0, 0, Local0)
+                                                        err("", PK04(zFFF, __LINE__), 0x01a, 0, 0, 0, Local0)
                                                     } else {
                                                     Store(Acquire(MTc1, 0xffff), Local0)
                                                     if (Local0) {
-                                                        err("", zFFF, 0x01b, 0, 0, 0, Local0)
+                                                        err("", PK04(zFFF, __LINE__), 0x01b, 0, 0, 0, Local0)
                                                     } else {
                                                         Store(Acquire(MTd0, 0xffff), Local0)
                                                         if (Local0) {
-                                                            err("", zFFF, 0x01c, 0, 0, 0, Local0)
+                                                            err("", PK04(zFFF, __LINE__), 0x01c, 0, 0, 0, Local0)
                                                         } else {
                                                         Store(Acquire(MTd1, 0xffff), Local0)
                                                         if (Local0) {
-                                                            err("", zFFF, 0x01d, 0, 0, 0, Local0)
+                                                            err("", PK04(zFFF, __LINE__), 0x01d, 0, 0, 0, Local0)
                                                         } else {
                                                             Store(Acquire(MTe0, 0xffff), Local0)
                                                             if (Local0) {
-                                                                err("", zFFF, 0x01e, 0, 0, 0, Local0)
+                                                                err("", PK04(zFFF, __LINE__), 0x01e, 0, 0, 0, Local0)
                                                             } else {
                                                             Store(Acquire(MTe1, 0xffff), Local0)
                                                             if (Local0) {
-                                                                err("", zFFF, 0x01f, 0, 0, 0, Local0)
+                                                                err("", PK04(zFFF, __LINE__), 0x01f, 0, 0, 0, Local0)
                                                             } else {
                                                                 Store(Acquire(MTf0, 0xffff), Local0)
                                                                 if (Local0) {
-                                                                    err("", zFFF, 0x020, 0, 0, 0, Local0)
+                                                                    err("", PK04(zFFF, __LINE__), 0x020, 0, 0, 0, Local0)
                                                                 } else {
                                                                 if (arg0) {
                                                                     Store(Acquire(MTf1, 0xffff), Local0)
@@ -331,7 +331,7 @@ Method(m1e4, 1, Serialized)
                                                                     Store(0, Local0)
                                                                 }
                                                                 if (Local0) {
-                                                                    err("", zFFF, 0x021, 0, 0, 0, Local0)
+                                                                    err("", PK04(zFFF, __LINE__), 0x021, 0, 0, 0, Local0)
                                                                 } else {
                                                                     if (arg0) {
                                                                         Release(MTF1)
@@ -450,5 +450,5 @@ Method(m1e6)
 	 * report below (or try to find how to detect this situation
 	 * automatically now (for not fixed yet)):
 	 */
-	err("", zFFF, 0x027, 0, 0, 0, 0)
+	err("", PK04(zFFF, __LINE__), 0x027, 0, 0, 0, 0)
 }

@@ -57,7 +57,7 @@ Method(mfa5, 1, Serialized)
 	if (LEqual(BFL1, bd10)) {
 		Store("Ok 1", Debug)
 	} else {
-		err("", zFFF, 0x000, 0, 0, BFL1, bd10)
+		err("", PK04(zFFF, __LINE__), 0x000, 0, 0, BFL1, bd10)
 	}
 
 	// Optional storing
@@ -72,7 +72,7 @@ Method(mfa5, 1, Serialized)
 	if (LEqual(BFL1, bd10)) {
 		Store("Ok 2", Debug)
 	} else {
-		err("", zFFF, 0x001, 0, 0, BFL1, bd10)
+		err("", PK04(zFFF, __LINE__), 0x001, 0, 0, BFL1, bd10)
 	}
 }
 

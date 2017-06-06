@@ -68,6 +68,6 @@ Method(md78)
 	 * have to initiate err here, to log the error in a usual way.
 	 */
 	if (id01) {
-		err("", zFFF, 0x123, 0, 0, 0, 0)
+		err("", PK04(zFFF, __LINE__), 0x123, 0, 0, 0, 0)
 	}
 }

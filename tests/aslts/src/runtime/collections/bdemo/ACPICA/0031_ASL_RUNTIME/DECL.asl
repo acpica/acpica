@@ -101,7 +101,7 @@ Method(m802,, Serialized)
 		{
 			Name(i000, 0xabcd0003)
 			if (LNotEqual(i000, 0xabcd0003)) {
-				err("", zFFF, 0x006, 0, 0, i000, 0xabcd0003)
+				err("", PK04(zFFF, __LINE__), 0x006, 0, 0, i000, 0xabcd0003)
 			}
 		}
 
@@ -112,7 +112,7 @@ Method(m802,, Serialized)
 			Name(i000, 0xabcd0004)
 			Store(0xabcd0005, i000)
 			if (LNotEqual(i000, 0xabcd0005)) {
-				err("", zFFF, 0x006, 0, 0, i000, 0xabcd0005)
+				err("", PK04(zFFF, __LINE__), 0x006, 0, 0, i000, 0xabcd0005)
 			}
 		}
 
@@ -124,7 +124,7 @@ Method(m802,, Serialized)
 			Name(i000, 0xabcd0006)
 			Store(0xabcd0007, i000)
 			if (LNotEqual(i000, 0xabcd0007)) {
-				err("", zFFF, 0x006, 0, 0, i000, 0xabcd0007)
+				err("", PK04(zFFF, __LINE__), 0x006, 0, 0, i000, 0xabcd0007)
 			}
 		}
 
@@ -136,7 +136,7 @@ Method(m802,, Serialized)
 			Store(id28, Debug)
 			Name(id28, 0xabcd0008)
 			if (LNotEqual(id28, 0xabcd0008)) {
-				err("", zFFF, 0x006, 0, 0, id28, 0xabcd0008)
+				err("", PK04(zFFF, __LINE__), 0x006, 0, 0, id28, 0xabcd0008)
 			}
 		}
 
@@ -146,13 +146,13 @@ Method(m802,, Serialized)
 	CH03("", 0, 0x009, 0, 0)
 
 	if (LNotEqual(i000, 0xabcd0000)) {
-		err("", zFFF, 0x00a, 0, 0, i000, 0xabcd0000)
+		err("", PK04(zFFF, __LINE__), 0x00a, 0, 0, i000, 0xabcd0000)
 	}
 	if (LNotEqual(i001, 0xabcd0001)) {
-		err("", zFFF, 0x00b, 0, 0, i001, 0xabcd0001)
+		err("", PK04(zFFF, __LINE__), 0x00b, 0, 0, i001, 0xabcd0001)
 	}
 	if (LNotEqual(i002, 0xabcd0002)) {
-		err("", zFFF, 0x00c, 0, 0, i002, 0xabcd0002)
+		err("", PK04(zFFF, __LINE__), 0x00c, 0, 0, i002, 0xabcd0002)
 	}
 
 	if (y084) {
@@ -181,7 +181,7 @@ Method(m802,, Serialized)
 Method(m1dc)
 {
 	/* Successful compilation itself of this test is error */
-	err("", zFFF, 0x014, 0, 0, 0, 0)
+	err("", PK04(zFFF, __LINE__), 0x014, 0, 0, 0, 0)
 }
 
 Method(mdc6)

@@ -47,34 +47,34 @@ Method(m293)
 	Store(Sizeof(Local3), Debug)
 
 	If (LNotEqual(Sizeof(Local2), 0)) {
-		err("", zFFF, 0x001, 0, 0, Sizeof(Local2), 0)
+		err("", PK04(zFFF, __LINE__), 0x001, 0, 0, Sizeof(Local2), 0)
 	}
 
 	If (LNotEqual(Sizeof(Local3), 0)) {
-		err("", zFFF, 0x001, 0, 0, Sizeof(Local3), 0)
+		err("", PK04(zFFF, __LINE__), 0x001, 0, 0, Sizeof(Local3), 0)
 	}
 
 	If (LNotEqual("", Local1)) {
-		err("", zFFF, 0x001, 0, 0, "", Local1)
+		err("", PK04(zFFF, __LINE__), 0x001, 0, 0, "", Local1)
 	}
 
 	If (LNotEqual("", Local2)) {
-		err("", zFFF, 0x001, 0, 0, "", Local2)
+		err("", PK04(zFFF, __LINE__), 0x001, 0, 0, "", Local2)
 	}
 
 	If (LNotEqual("", Local3)) {
-		err("", zFFF, 0x001, 0, 0, "", Local3)
+		err("", PK04(zFFF, __LINE__), 0x001, 0, 0, "", Local3)
 	}
 
 	If (LNotEqual(Local2, Local3)) {
-		err("", zFFF, 0x001, 0, 0, Local2, Local3)
+		err("", PK04(zFFF, __LINE__), 0x001, 0, 0, Local2, Local3)
 	}
 
 	If (LNotEqual(Local2, Local1)) {
-		err("", zFFF, 0x001, 0, 0, Local2, Local1)
+		err("", PK04(zFFF, __LINE__), 0x001, 0, 0, Local2, Local1)
 	}
 
 	If (LNotEqual(Local3, Local1)) {
-		err("", zFFF, 0x001, 0, 0, Local3, Local1)
+		err("", PK04(zFFF, __LINE__), 0x001, 0, 0, Local3, Local1)
 	}
 }

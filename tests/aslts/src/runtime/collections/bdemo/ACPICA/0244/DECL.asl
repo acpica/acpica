@@ -146,12 +146,12 @@ Method(m02e)
 	Method(m0b9)
 	{
 		if (i108) {
-			err("", zFFF, 0x126, 0, 0, 0, 0)
+			err("", PK04(zFFF, __LINE__), 0x126, 0, 0, 0, 0)
 		}
 
 		if (LNot(i101)) {
 			Store("******** Test was not run !!!!!!!!!!!!!", Debug)
-			err("", zFFF, 0x002, 0, 0, 0, 0)
+			err("", PK04(zFFF, __LINE__), 0x002, 0, 0, 0, 0)
 			return
 		}
 
@@ -162,14 +162,14 @@ Method(m02e)
 
 		if (i104) {
 			Store("!!!!!!!! ERROR 1: Acquire(T804, 0xffff) failed", Debug)
-			err("", zFFF, 0x004, 0, 0, 0, 0)
+			err("", PK04(zFFF, __LINE__), 0x004, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquire(T804, 0xffff)", Debug)
 		}
 
 		if (i105) {
 			Store("!!!!!!!! ERROR 2: Acquire(T805, 0xffff) failed", Debug)
-			err("", zFFF, 0x005, 0, 0, 0, 0)
+			err("", PK04(zFFF, __LINE__), 0x005, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquire(T805, 0xffff)", Debug)
 		}
@@ -186,7 +186,7 @@ Method(m02e)
 			Release(T807)
 		} else {
 			Store("!!!!!!!! ERROR 7: Acquire(T807, 0xffff) failed", Debug)
-			err("", zFFF, 0x008, 0, 0, 0, 0)
+			err("", PK04(zFFF, __LINE__), 0x008, 0, 0, 0, 0)
 		}
 		CH03("", 0, 0x009, 0, 0)
 
@@ -196,7 +196,7 @@ Method(m02e)
 			Release(T806)
 		} else {
 			Store("!!!!!!!! ERROR 5: Acquire(T806, 0xffff) failed", Debug)
-			err("", zFFF, 0x00a, 0, 0, 0, 0)
+			err("", PK04(zFFF, __LINE__), 0x00a, 0, 0, 0, 0)
 		}
 		CH03("", 0, 0x00b, 0, 0)
 
@@ -310,7 +310,7 @@ Method(m030,, Serialized)
 	{
 		if (LNot(i101)) {
 			Store("******** Test was not run !!!!!!!!!!!!!", Debug)
-			err("", zFFF, 0x000, 0, 0, 0, 0)
+			err("", PK04(zFFF, __LINE__), 0x000, 0, 0, 0, 0)
 			return
 		}
 
@@ -321,14 +321,14 @@ Method(m030,, Serialized)
 
 		if (i104) {
 			Store("!!!!!!!! ERROR 1: Acquire(T804, 0xffff) failed", Debug)
-			err("", zFFF, 0x002, 0, 0, 0, 0)
+			err("", PK04(zFFF, __LINE__), 0x002, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquire(T804, 0xffff)", Debug)
 		}
 
 		if (i105) {
 			Store("!!!!!!!! ERROR 2: Acquire(T805, 0xffff) failed", Debug)
-			err("", zFFF, 0x003, 0, 0, 0, 0)
+			err("", PK04(zFFF, __LINE__), 0x003, 0, 0, 0, 0)
 		} else {
 			Store("Ok: Acquire(T805, 0xffff)", Debug)
 		}
@@ -345,7 +345,7 @@ Method(m030,, Serialized)
 			Release(T807)
 		} else {
 			Store("!!!!!!!! ERROR 7: Acquire(T807, 0xffff) failed", Debug)
-			err("", zFFF, 0x006, 0, 0, 0, 0)
+			err("", PK04(zFFF, __LINE__), 0x006, 0, 0, 0, 0)
 		}
 		CH03("", 0, 0x007, 0, 0)
 
@@ -355,7 +355,7 @@ Method(m030,, Serialized)
 			Release(T806)
 		} else {
 			Store("!!!!!!!! ERROR 5: Acquire(T806, 0xffff) failed", Debug)
-			err("", zFFF, 0x008, 0, 0, 0, 0)
+			err("", PK04(zFFF, __LINE__), 0x008, 0, 0, 0, 0)
 		}
 		CH03("", 0, 0x009, 0, 0)
 

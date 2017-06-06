@@ -41,7 +41,7 @@ Method(mf17,, Serialized)
 	Store(DerefOf(Local0), Local1)
 	Store(Local1, Debug)
 	if (LNotEqual(Local1, 0x1234)) {
-		err("", zFFF, 0x000, 0, 0, Local1, 0x1234)
+		err("", PK04(zFFF, __LINE__), 0x000, 0, 0, Local1, 0x1234)
 	}
 }
 
@@ -62,7 +62,7 @@ Method(mf18,, Serialized)
 	Store("Before LNotEqual", Debug)
 
 	if (LNotEqual(Local1, 0x1234)) {
-		err("", zFFF, 0x001, 0, 0, Local1, 0x1234)
+		err("", PK04(zFFF, __LINE__), 0x001, 0, 0, Local1, 0x1234)
 	}
 
 	CH03("", 0, 0x002, 0, 0)

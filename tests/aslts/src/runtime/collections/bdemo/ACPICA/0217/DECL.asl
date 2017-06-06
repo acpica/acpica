@@ -45,14 +45,14 @@ Method(m035,, Serialized)
 	OperationRegion(OPR0, SystemMemory, 0x2000, 0x100)
 
 	if (LNotEqual(id2a, 1)) {
-		err("", zFFF, 0x000, 0, 0, id2a, 1)
+		err("", PK04(zFFF, __LINE__), 0x000, 0, 0, id2a, 1)
 	}
 }
 
 Method(m036)
 {
 	if (LNotEqual(id2a, 0)) {
-		err("", zFFF, 0x001, 0, 0, id2a, 0)
+		err("", PK04(zFFF, __LINE__), 0x001, 0, 0, id2a, 0)
 	}
 	m035()
 }

@@ -38,7 +38,7 @@ Method(mfa4,, Serialized)
 	Method(CHK0, 3)
 	{
 		if (LNotEqual(arg0, arg1)) {
-			err("", zFFF, arg2, 0, 0, arg0, arg1)
+			err("", PK04(zFFF, __LINE__), arg2, 0, 0, arg0, arg1)
 		}
 	}
 

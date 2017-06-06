@@ -812,7 +812,7 @@ Method(m155,, Serialized)
 	CH03(ts, z058, 106, 0, 0)
 	if (LNotEqual(Local0, 0)) {
 		// Bug 63, Bugzilla 5329.
-		err(ts, z058, 170, 0, 0, Local0, 0)
+		err(ts, PK04(z058, __LINE__), 170, 0, 0, Local0, 0)
 	}
 }
 
@@ -1453,11 +1453,11 @@ Method(m0bc,, Serialized)
 		Store(m000(), Local1)
 
 		if (LNotEqual(Local0, 0xabcd0000)) {
-			err(ts, z058, 0x0ce, 0, 0, Local0, 0xabcd0000)
+			err(ts, PK04(z058, __LINE__), 0x0ce, 0, 0, Local0, 0xabcd0000)
 		}
 
 		if (LNotEqual(Local1, 0xabcd0001)) {
-			err(ts, z058, 0x0cf, 0, 0, Local1, 0xabcd0001)
+			err(ts, PK04(z058, __LINE__), 0x0cf, 0, 0, Local1, 0xabcd0001)
 		}
 	}
 

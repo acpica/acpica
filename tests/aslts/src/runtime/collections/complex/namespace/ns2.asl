@@ -51,7 +51,7 @@ Method(m200,, Serialized)
 	Store(DerefOf(Index(d000.p000, 0)), Local0)
 
 	if (LNotEqual(Local0, 0x11112222)) {
-		err(ts, z156, 0x000, 0, 0, Local0, 0x11112222)
+		err(ts, PK04(z156, __LINE__), 0x000, 0, 0, Local0, 0x11112222)
 	}
 
 	CH03(ts, z156, 0x001, 0, 0)
@@ -74,7 +74,7 @@ Method(m201,, Serialized)
 	Store(DerefOf(Index(d000.b000, 0)), Local0)
 
 	if (LNotEqual(Local0, 0x67)) {
-		err(ts, z156, 0x002, 0, 0, Local0, 0x67)
+		err(ts, PK04(z156, __LINE__), 0x002, 0, 0, Local0, 0x67)
 	}
 
 	CH03(ts, z156, 0x003, 0, 0)
@@ -97,7 +97,7 @@ Method(m202,, Serialized)
 	Store(DerefOf(Index(d000.s000, 0)), Local0)
 
 	if (LNotEqual(Local0, 0x38)) {
-		err(ts, z156, 0x004, 0, 0, Local0, 0x38)
+		err(ts, PK04(z156, __LINE__), 0x004, 0, 0, Local0, 0x38)
 	}
 
 	CH03(ts, z156, 0x005, 0, 0)
@@ -131,13 +131,13 @@ Method(m204,, Serialized)
 	Store(Add(DerefOf(Index(d000.pp00, 1)), m001()), Local0)
 
 	if (LNotEqual(Local0, 0x065013BA)) {
-		err(ts, z156, 0x00a, 0, 0, Local0, 0x065013BA)
+		err(ts, PK04(z156, __LINE__), 0x00a, 0, 0, Local0, 0x065013BA)
 	}
 
 	Store(DerefOf(Index(d000.pp00, 1)), Local0)
 
 	if (LNotEqual(Local0, 0x00100064)) {
-		err(ts, z156, 0x00b, 0, 0, Local0, 0x00100064)
+		err(ts, PK04(z156, __LINE__), 0x00b, 0, 0, Local0, 0x00100064)
 	}
 
 	CH03(ts, z156, 0x00c, 0, 0)

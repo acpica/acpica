@@ -47,11 +47,11 @@ Method(mf7c,, Serialized)
 	Store(ConcatenateResTemplate(RT00, Local1), Local2)
 
 	if (LNotEqual(Local2, b000)) {
-		err("", zFFF, 0x001, 0, 0, Local2, b000)
+		err("", PK04(zFFF, __LINE__), 0x001, 0, 0, Local2, b000)
 	}
 
 	if (LNotEqual(RT00, b000)) {
-		err("", zFFF, 0x002, 0, 0, RT00, b000)
+		err("", PK04(zFFF, __LINE__), 0x002, 0, 0, RT00, b000)
 	}
 
 	CH03("", 0, 0x003, 0, 0)

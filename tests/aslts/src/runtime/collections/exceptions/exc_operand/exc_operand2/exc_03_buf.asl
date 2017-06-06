@@ -155,7 +155,7 @@ Method(m4b3, 1, Serialized)
 
 		Store(ObjectType(arg1), Local0)
 		if (LNotEqual(Local0, 3)) {
-			err(arg0, z095, 20, 0, 0, Local0, 3)
+			err(arg0, PK04(z095, __LINE__), 20, 0, 0, Local0, 3)
 			return (1)
 		}
 
@@ -189,7 +189,7 @@ Method(m4b3, 1, Serialized)
 		Method(CH00, 2)
 		{
 			if (LNotEqual(i000, arg1)) {
-				err(arg0, z095, 23, 0, 0, i000, arg1)
+				err(arg0, PK04(z095, __LINE__), 23, 0, 0, i000, arg1)
 			}
 		}
 
@@ -262,7 +262,7 @@ Method(m4b3, 1, Serialized)
 		Method(CH00, 2)
 		{
 			if (LNotEqual(i000, arg1)) {
-				err(arg0, z095, 31, 0, 0, i000, arg1)
+				err(arg0, PK04(z095, __LINE__), 31, 0, 0, i000, arg1)
 			}
 		}
 
