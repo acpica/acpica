@@ -340,11 +340,6 @@ AcpiEvFindRegionHandler (
     ACPI_ADR_SPACE_TYPE     SpaceId,
     ACPI_OPERAND_OBJECT     *HandlerObj);
 
-BOOLEAN
-AcpiEvHasDefaultHandler (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_ADR_SPACE_TYPE     SpaceId);
-
 ACPI_STATUS
 AcpiEvInstallRegionHandlers (
     void);
@@ -363,7 +358,7 @@ AcpiEvInstallSpaceHandler (
  */
 ACPI_STATUS
 AcpiEvInitializeOpRegions (
-    void);
+    UINT32                  Flags);
 
 ACPI_STATUS
 AcpiEvAddressSpaceDispatch (

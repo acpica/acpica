@@ -179,7 +179,7 @@ AcpiEvRegRun (
  *
  * FUNCTION:    AcpiEvInitializeOpRegions
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Flags               - Init/enable Options
  *
  * RETURN:      Status
  *
@@ -190,14 +190,18 @@ AcpiEvRegRun (
 
 ACPI_STATUS
 AcpiEvInitializeOpRegions (
-    void)
+    UINT32                  Flags)
 {
     ACPI_STATUS             Status;
     UINT32                  i;
+    ACPI_ADR_SPACE_TYPE     SpaceId;
 
 
     ACPI_FUNCTION_TRACE (EvInitializeOpRegions);
 
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+        "[Init] Executing _REG OpRegion methods\n"));
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
     if (ACPI_FAILURE (Status))
@@ -210,16 +214,48 @@ AcpiEvInitializeOpRegions (
     for (i = 0; i < ACPI_NUM_DEFAULT_SPACES; i++)
     {
         /*
-         * Make sure the installed handler is the DEFAULT handler. If not the
-         * default, the _REG methods will have already been run (when the
-         * handler was installed)
+         * According to the ACPI specification, OSPM must guarantee that
+         * the following operation regions must always be accessible:
+         * 1. PCI_Config on a PCI root bus containing a _BBN object.
+         * 2. I/O operation regions.
+         * 3. Memory operation regions when accessing memory returnd by the
+         *    System Address Map reporting interface.
+         * So OSPM is allowed to discard _REG evaluations for SystemIo and
+         * SystemMemory operation regions while still be able to evaluate
+         * _REG for PCI_Config on other device nodes.
+         *
+         * Note that DataTable operation region is defined by ACPICA and
+         * used internally without external dependencies, it should always
+         * be accessible.
          */
-        if (AcpiEvHasDefaultHandler (AcpiGbl_RootNode,
-               AcpiGbl_DefaultAddressSpaces[i]))
+        SpaceId = AcpiGbl_DefaultAddressSpaces[i];
+        switch (SpaceId)
         {
-            AcpiEvExecuteRegMethods (AcpiGbl_RootNode,
-                AcpiGbl_DefaultAddressSpaces[i], ACPI_REG_CONNECT);
+        case ACPI_ADR_SPACE_SYSTEM_MEMORY:
+        case ACPI_ADR_SPACE_SYSTEM_IO:
+
+            if (Flags & ACPI_NO_SYSTEM_SPACES_INIT)
+            {
+                continue;
+            }
+            break;
+
+        case ACPI_ADR_SPACE_PCI_CONFIG:
+
+            if (Flags & ACPI_NO_PCI_CONFIG_INIT)
+            {
+                continue;
+            }
+            break;
+
+        case ACPI_ADR_SPACE_DATA_TABLE:
+        default:
+
+            continue;
         }
+
+        AcpiEvExecuteRegMethods (AcpiGbl_RootNode, SpaceId,
+            ACPI_REG_CONNECT);
     }
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);

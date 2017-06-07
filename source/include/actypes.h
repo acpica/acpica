@@ -685,15 +685,16 @@ typedef UINT64                          ACPI_INTEGER;
 /*
  * Initialization sequence
  */
-#define ACPI_FULL_INITIALIZATION        0x00
-#define ACPI_NO_ADDRESS_SPACE_INIT      0x01
-#define ACPI_NO_HARDWARE_INIT           0x02
-#define ACPI_NO_EVENT_INIT              0x04
-#define ACPI_NO_HANDLER_INIT            0x08
-#define ACPI_NO_ACPI_ENABLE             0x10
-#define ACPI_NO_DEVICE_INIT             0x20
-#define ACPI_NO_OBJECT_INIT             0x40
-#define ACPI_NO_FACS_INIT               0x80
+#define ACPI_FULL_INITIALIZATION        0x000
+#define ACPI_NO_HARDWARE_INIT           0x001
+#define ACPI_NO_EVENT_INIT              0x002
+#define ACPI_NO_HANDLER_INIT            0x004
+#define ACPI_NO_ACPI_ENABLE             0x008
+#define ACPI_NO_DEVICE_INIT             0x010
+#define ACPI_NO_OBJECT_INIT             0x020
+#define ACPI_NO_FACS_INIT               0x040
+#define ACPI_NO_SYSTEM_SPACES_INIT      0x080
+#define ACPI_NO_PCI_CONFIG_INIT         0x100
 
 /*
  * Initialization state

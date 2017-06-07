@@ -425,13 +425,10 @@ AcpiInitializeObjects (
      * Initialize all device/region objects in the namespace. This runs
      * the device _STA and _INI methods and region _REG methods.
      */
-    if (!(Flags & (ACPI_NO_DEVICE_INIT | ACPI_NO_ADDRESS_SPACE_INIT)))
+    Status = AcpiNsInitializeDevices (Flags);
+    if (ACPI_FAILURE (Status))
     {
-        Status = AcpiNsInitializeDevices (Flags);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
+        return_ACPI_STATUS (Status);
     }
 
     /*
