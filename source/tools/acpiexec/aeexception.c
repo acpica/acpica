@@ -265,7 +265,7 @@ Cleanup:
 
         NewAmlStatus = AE_OK;
     }
-    else if (NewAmlStatus != AmlStatus)
+    if (NewAmlStatus != AmlStatus)
     {
         /* Request to override actual status with a different status */
 
