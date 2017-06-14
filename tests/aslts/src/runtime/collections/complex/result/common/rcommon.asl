@@ -4313,12 +4313,51 @@ if (y361) {
 		p000,
 	})
 
+	// In-package name strings are String typed, not ObjectReference
+	// typed. Thus stores object references to replace the name
+	// strings.
 	Name(p320, Package(18) {
 		p002, p132, p232, p300, p400, p500, p600, p700, p800, p900,
 		pa00, pb00, pc00, pd00, pe32, pf00, pg00, ph00,})
+	Store(RefOf(p002), Index(p320, 0))
+	Store(RefOf(p132), Index(p320, 1))
+	Store(RefOf(p232), Index(p320, 2))
+	Store(RefOf(p300), Index(p320, 3))
+	Store(RefOf(p400), Index(p320, 4))
+	Store(RefOf(p500), Index(p320, 5))
+	Store(RefOf(p600), Index(p320, 6))
+	Store(RefOf(p700), Index(p320, 7))
+	Store(RefOf(p800), Index(p320, 8))
+	Store(RefOf(p900), Index(p320, 9))
+	Store(RefOf(pa00), Index(p320, 10))
+	Store(RefOf(pb00), Index(p320, 11))
+	Store(RefOf(pc00), Index(p320, 12))
+	Store(RefOf(pd00), Index(p320, 13))
+	Store(RefOf(pe32), Index(p320, 14))
+	Store(RefOf(pf00), Index(p320, 15))
+	Store(RefOf(pg00), Index(p320, 16))
+	Store(RefOf(ph00), Index(p320, 17))
 	Name(p640, Package(18) {
 		p002, p164, p264, p300, p400, p500, p600, p700, p800, p900,
 		pa00, pb00, pc00, pd00, pe64, pf00, pg00, ph00,})
+	Store(RefOf(p002), Index(p640, 0))
+	Store(RefOf(p164), Index(p640, 1))
+	Store(RefOf(p264), Index(p640, 2))
+	Store(RefOf(p300), Index(p640, 3))
+	Store(RefOf(p400), Index(p640, 4))
+	Store(RefOf(p500), Index(p640, 5))
+	Store(RefOf(p600), Index(p640, 6))
+	Store(RefOf(p700), Index(p640, 7))
+	Store(RefOf(p800), Index(p640, 8))
+	Store(RefOf(p900), Index(p640, 9))
+	Store(RefOf(pa00), Index(p640, 10))
+	Store(RefOf(pb00), Index(p640, 11))
+	Store(RefOf(pc00), Index(p640, 12))
+	Store(RefOf(pd00), Index(p640, 13))
+	Store(RefOf(pe64), Index(p640, 14))
+	Store(RefOf(pf00), Index(p640, 15))
+	Store(RefOf(pg00), Index(p640, 16))
+	Store(RefOf(ph00), Index(p640, 17))
 
 	// m020(<msg>, <store op>, <exc. conditions>,
 	//      <Target scale>, <Result scale>, <kind of Source-Target pair>)
@@ -4390,9 +4429,9 @@ if (y361) {
 							}
 						}
 						if (F64) {
-							Store(Derefof(Index(p640, lpC1)), Local2)
+							Store(DerefOf(Derefof(Index(p640, lpC1))), Local2)
 						} else {
-							Store(Derefof(Index(p320, lpC1)), Local2)
+							Store(DerefOf(Derefof(Index(p320, lpC1))), Local2)
 						}
 						Store(Derefof(Index(Local2, 0)), Local3)
 						if (LNotEqual(Local3, lpC1)) {
