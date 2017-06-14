@@ -2216,12 +2216,53 @@ Method(m694, 5, Serialized)
 			0, 0, 0,},
 	})
 
+	// In-package name strings are String typed, not ObjectReference
+	// typed. Thus stores object references to replace the name
+	// strings.
 	Name(p320, Package(19) {
 		p032, p132, p232, p332, p432, p532, p600, p732, p832, p932,
 		pa32, pb32, pc32, pd32, pe32, pf32, pg32, ph32, pi32,})
+	Store(RefOf(p032), Index(p320, 0))
+	Store(RefOf(p132), Index(p320, 1))
+	Store(RefOf(p232), Index(p320, 2))
+	Store(RefOf(p332), Index(p320, 3))
+	Store(RefOf(p432), Index(p320, 4))
+	Store(RefOf(p532), Index(p320, 5))
+	Store(RefOf(p600), Index(p320, 6))
+	Store(RefOf(p732), Index(p320, 7))
+	Store(RefOf(p832), Index(p320, 8))
+	Store(RefOf(p932), Index(p320, 9))
+	Store(RefOf(pa32), Index(p320, 10))
+	Store(RefOf(pb32), Index(p320, 11))
+	Store(RefOf(pc32), Index(p320, 12))
+	Store(RefOf(pd32), Index(p320, 13))
+	Store(RefOf(pe32), Index(p320, 14))
+	Store(RefOf(pf32), Index(p320, 15))
+	Store(RefOf(pg32), Index(p320, 16))
+	Store(RefOf(ph32), Index(p320, 17))
+	Store(RefOf(pi32), Index(p320, 18))
 	Name(p640, Package(19) {
 		p064, p164, p264, p364, p464, p564, p600, p764, p864, p964,
 		pa64, pb64, pc64, pd64, pe64, pf64, pg64, ph64, pi64,})
+	Store(RefOf(p064), Index(p640, 0))
+	Store(RefOf(p164), Index(p640, 1))
+	Store(RefOf(p264), Index(p640, 2))
+	Store(RefOf(p364), Index(p640, 3))
+	Store(RefOf(p464), Index(p640, 4))
+	Store(RefOf(p564), Index(p640, 5))
+	Store(RefOf(p600), Index(p640, 6))
+	Store(RefOf(p764), Index(p640, 7))
+	Store(RefOf(p864), Index(p640, 8))
+	Store(RefOf(p964), Index(p640, 9))
+	Store(RefOf(pa64), Index(p640, 10))
+	Store(RefOf(pb64), Index(p640, 11))
+	Store(RefOf(pc64), Index(p640, 12))
+	Store(RefOf(pd64), Index(p640, 13))
+	Store(RefOf(pe64), Index(p640, 14))
+	Store(RefOf(pf64), Index(p640, 15))
+	Store(RefOf(pg64), Index(p640, 16))
+	Store(RefOf(ph64), Index(p640, 17))
+	Store(RefOf(pi64), Index(p640, 18))
 
 	Name(lpN0, 18)
 	Name(lpC0, 0)
@@ -2290,9 +2331,9 @@ Method(m694, 5, Serialized)
 				if (LAnd(Derefof(Index(b671, Local2)), Derefof(Index(arg3, Local2)))) {
 					// Not invalid type of the result Object to be stored
 					if (F64) {
-						Store(Derefof(Index(p640, lpC1)), Local3)
+						Store(DerefOf(DerefOf(Index(p640, lpC1))), Local3)
 					} else {
-						Store(Derefof(Index(p320, lpC1)), Local3)
+						Store(DerefOf(DerefOf(Index(p320, lpC1))), Local3)
 					}
 
 					if (arg1) {
