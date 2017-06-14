@@ -1252,8 +1252,25 @@ Method(m693, 5, Serialized)
 			0, 0,},
 	})
 
+	// In-package name strings are String typed, not ObjectReference
+	// typed. Thus stores object references to replace the name
+	// strings.
 	Name(p320, Package(7) {p032, p132, p232, p332, p432, p532, p632})
+	Store(RefOf(p032), Index(p320, 0))
+	Store(RefOf(p132), Index(p320, 1))
+	Store(RefOf(p232), Index(p320, 2))
+	Store(RefOf(p332), Index(p320, 3))
+	Store(RefOf(p432), Index(p320, 4))
+	Store(RefOf(p532), Index(p320, 5))
+	Store(RefOf(p632), Index(p320, 6))
 	Name(p640, Package(7) {p064, p164, p264, p364, p464, p564, p664})
+	Store(RefOf(p064), Index(p640, 0))
+	Store(RefOf(p164), Index(p640, 1))
+	Store(RefOf(p264), Index(p640, 2))
+	Store(RefOf(p364), Index(p640, 3))
+	Store(RefOf(p464), Index(p640, 4))
+	Store(RefOf(p564), Index(p640, 5))
+	Store(RefOf(p664), Index(p640, 6))
 
 	Name(scl0, Buffer(){1,1,1,2,2,2,3})
 
@@ -1330,9 +1347,9 @@ Method(m693, 5, Serialized)
 				if (LAnd(Derefof(Index(b671, Local2)), Derefof(Index(arg3, Local2)))) {
 					// Not invalid type of the result Object to be stored
 					if (F64) {
-						Store(Derefof(Index(p640, lpC1)), Local3)
+						Store(DerefOf(Derefof(Index(p640, lpC1))), Local3)
 					} else {
-						Store(Derefof(Index(p320, lpC1)), Local3)
+						Store(DerefOf(Derefof(Index(p320, lpC1))), Local3)
 					}
 
 					if (arg1) {
