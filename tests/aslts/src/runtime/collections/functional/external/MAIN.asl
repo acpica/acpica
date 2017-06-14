@@ -89,3 +89,46 @@ DefinitionBlock(
 	CreateBitField(E003, 0, E014)
 }
 
+
+/*
+ * bz 1389 test case provided by racerrehabman@gmail.com
+ * This table should compile without error
+ */
+DefinitionBlock(
+	"external.aml",   // Output filename
+	"SSDT",     // Signature
+	0x02,       // DSDT Revision
+	"Intel",    // OEMID
+	"Many",     // TABLE ID
+	0x00000001  // OEM Revision
+	){
+
+	External(RMCF.XPEE, IntObj)
+	Device(RMCF)
+	{
+		Name(_ADR, 0)
+	}
+}
+
+/*
+ * This is a variation on the table above. This should compile.
+ */
+DefinitionBlock(
+	"external.aml",   // Output filename
+	"SSDT",     // Signature
+	0x02,       // DSDT Revision
+	"Intel",    // OEMID
+	"Many",     // TABLE ID
+	0x00000001  // OEM Revision
+	){
+
+	External(ABCD.XPEE, IntObj)
+	External(ABCD.XPED, IntObj)
+	Device(ABCD)
+	{
+		Name(_ADR, 0)
+		Name(XPEF, 0)
+	}
+	External(ABCD.XPEG, IntObj)
+}
+

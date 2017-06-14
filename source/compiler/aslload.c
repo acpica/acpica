@@ -823,10 +823,15 @@ LdNamespace1Begin (
 
                 Status = AE_OK;
 
-                if (Node->OwnerId == WalkState->OwnerId)
+                if (Node->OwnerId == WalkState->OwnerId &&
+                    !(Node->Flags & IMPLICIT_EXTERNAL))
                 {
                     AslError (ASL_ERROR, ASL_MSG_NAME_EXISTS, Op,
                         Op->Asl.ExternalName);
+                }
+                if (Node->Flags & IMPLICIT_EXTERNAL)
+                {
+                    Node->Flags &= ~IMPLICIT_EXTERNAL;
                 }
             }
             else if (!(Node->Flags & ANOBJ_IS_EXTERNAL) &&
