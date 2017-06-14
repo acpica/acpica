@@ -562,11 +562,7 @@ AcpiTbGetTable (
     TableDesc->ValidationCount++;
     if (TableDesc->ValidationCount == 0)
     {
-        ACPI_ERROR ((AE_INFO,
-            "Table %p, Validation count is zero after increment\n",
-            TableDesc));
         TableDesc->ValidationCount--;
-        return_ACPI_STATUS (AE_LIMIT);
     }
 
     *OutTable = TableDesc->Pointer;
