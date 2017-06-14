@@ -522,6 +522,11 @@ AcpiPutTable (
     ACPI_FUNCTION_TRACE (AcpiPutTable);
 
 
+    if (!Table)
+    {
+        return_VOID;
+    }
+
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
 
     /* Walk the root table list */
