@@ -682,6 +682,7 @@ Method(ms16, 1, Serialized)
 		Name(i900, 0xd650a284)
 
 		Name(p90d, Package() {i900})
+		Store(RefOf(i900), Index(p90d, 0))
 
 		// Access to the named Integer object as an element of Package
 		Method(m000)
@@ -689,7 +690,7 @@ Method(ms16, 1, Serialized)
 			OUTP("Test m000 started")
 
 			Store(Index(p90d, 0), Local0)
-			Store(DerefOf(Local0), Local1)
+			Store(DerefOf(DerefOf(Local0)), Local1)
 			Store(ObjectType(Local1), Local2)
 
 			if (LAnd(ABUU, LNot(q006))) {
@@ -722,6 +723,7 @@ Method(ms16, 1, Serialized)
 		CreateField(b900, 0, 8, bf90)
 
 		Name(p915, Package() {bf90})
+		Store(RefOf(bf90), Index(p915, 0))
 
 		// Access to the Buffer Field object as an element of Package
 		Method(m001)
@@ -729,7 +731,7 @@ Method(ms16, 1, Serialized)
 			OUTP("Test m001 started")
 
 			Store(Index(p915, 0), Local0)
-			Store(DerefOf(Local0), Local1)
+			Store(DerefOf(DerefOf(Local0)), Local1)
 			Store(ObjectType(Local1), Local2)
 
 			if (LAnd(ABUU, LNot(q006))) {
@@ -873,6 +875,7 @@ Method(ms16, 1, Serialized)
 		Name(i900, 0xd650a284)
 
 		Name(p90d, Package() {i900})
+		Store(RefOf(i900), Index(p90d, 0))
 
 		// Access to the named Integer object as an element of Package
 		Method(m000)
@@ -880,7 +883,7 @@ Method(ms16, 1, Serialized)
 			OUTP("Test m000 started")
 
 			Store(Index(p90d, 0), Local0)
-			Store(DerefOf(Local0), Local1)
+			Store(DerefOf(DerefOf(Local0)), Local1)
 			Store(ObjectType(Local1), Local2)
 
 			if (LAnd(ABUU, LNot(q006))) {
