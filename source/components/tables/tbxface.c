@@ -323,6 +323,15 @@ AcpiReallocateRootTable (
         }
     }
 
+    if (!AcpiGbl_EnableTableValidation)
+    {
+        /*
+         * Now it's safe to do full table validation. We can do deferred
+         * table initilization here once the flag is set.
+         */
+        AcpiGbl_EnableTableValidation = TRUE;
+    }
+
     AcpiGbl_RootTableList.Flags |= ACPI_ROOT_ALLOW_RESIZE;
 
     Status = AcpiTbResizeRootTableList ();
