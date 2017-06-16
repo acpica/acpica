@@ -156,61 +156,6 @@
 #define _COMPONENT          ACPI_TABLES
         ACPI_MODULE_NAME    ("tbinstal")
 
-/* Local prototypes */
-
-static BOOLEAN
-AcpiTbCompareTables (
-    ACPI_TABLE_DESC         *TableDesc,
-    UINT32                  TableIndex);
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiTbCompareTables
- *
- * PARAMETERS:  TableDesc           - Table 1 descriptor to be compared
- *              TableIndex          - Index of table 2 to be compared
- *
- * RETURN:      TRUE if both tables are identical.
- *
- * DESCRIPTION: This function compares a table with another table that has
- *              already been installed in the root table list.
- *
- ******************************************************************************/
-
-static BOOLEAN
-AcpiTbCompareTables (
-    ACPI_TABLE_DESC         *TableDesc,
-    UINT32                  TableIndex)
-{
-    ACPI_STATUS             Status = AE_OK;
-    BOOLEAN                 IsIdentical;
-    ACPI_TABLE_HEADER       *Table;
-    UINT32                  TableLength;
-    UINT8                   TableFlags;
-
-
-    Status = AcpiTbAcquireTable (&AcpiGbl_RootTableList.Tables[TableIndex],
-        &Table, &TableLength, &TableFlags);
-    if (ACPI_FAILURE (Status))
-    {
-        return (FALSE);
-    }
-
-    /*
-     * Check for a table match on the entire table length,
-     * not just the header.
-     */
-    IsIdentical = (BOOLEAN)((TableDesc->Length != TableLength ||
-        memcmp (TableDesc->Pointer, Table, TableLength)) ?
-        FALSE : TRUE);
-
-    /* Release the acquired table */
-
-    AcpiTbReleaseTable (Table, TableLength, TableFlags);
-    return (IsIdentical);
-}
-
 
 /*******************************************************************************
  *
@@ -337,71 +282,31 @@ AcpiTbInstallStandardTable (
         goto ReleaseAndExit;
     }
 
-    /* Validate and verify a table before installation */
-
-    Status = AcpiTbVerifyTempTable (&NewTableDesc, NULL);
-    if (ACPI_FAILURE (Status))
-    {
-        goto ReleaseAndExit;
-    }
-
     /* Acquire the table lock */
 
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
 
-    if (AcpiGbl_EnableTableValidation)
-    {
-        /* Check if table is already registered */
+    /* Validate and verify a table before installation */
 
-        for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; ++i)
+    Status = AcpiTbVerifyTempTable (&NewTableDesc, NULL, &i);
+    if (ACPI_FAILURE (Status))
+    {
+        if (Status == AE_CTRL_TERMINATE)
         {
             /*
-             * Check for a table match on the entire table length,
-             * not just the header.
+             * Table was unloaded, allow it to be reloaded.
+             * As we are going to return AE_OK to the caller, we should
+             * take the responsibility of freeing the input descriptor.
+             * Refill the input descriptor to ensure
+             * AcpiTbInstallTableWithOverride() can be called again to
+             * indicate the re-installation.
              */
-            if (!AcpiTbCompareTables (&NewTableDesc, i))
-            {
-                continue;
-            }
-
-            /*
-             * Note: the current mechanism does not unregister a table if it is
-             * dynamically unloaded. The related namespace entries are deleted,
-             * but the table remains in the root table list.
-             *
-             * The assumption here is that the number of different tables that
-             * will be loaded is actually small, and there is minimal overhead
-             * in just keeping the table in case it is needed again.
-             *
-             * If this assumption changes in the future (perhaps on large
-             * machines with many table load/unload operations), tables will
-             * need to be unregistered when they are unloaded, and slots in the
-             * root table list should be reused when empty.
-             */
-            if (AcpiGbl_RootTableList.Tables[i].Flags &
-                ACPI_TABLE_IS_LOADED)
-            {
-                /* Table is still loaded, this is an error */
-
-                Status = AE_ALREADY_EXISTS;
-                goto UnlockAndExit;
-            }
-            else
-            {
-                /*
-                 * Table was unloaded, allow it to be reloaded.
-                 * As we are going to return AE_OK to the caller, we should
-                 * take the responsibility of freeing the input descriptor.
-                 * Refill the input descriptor to ensure
-                 * AcpiTbInstallTableWithOverride() can be called again to
-                 * indicate the re-installation.
-                 */
-                AcpiTbUninstallTable (&NewTableDesc);
-                (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
-                *TableIndex = i;
-                return_ACPI_STATUS (AE_OK);
-            }
+            AcpiTbUninstallTable (&NewTableDesc);
+            (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
+            *TableIndex = i;
+            return_ACPI_STATUS (AE_OK);
         }
+        goto UnlockAndExit;
     }
 
     /* Add the table to the global root table list */
@@ -486,9 +391,11 @@ AcpiTbOverrideTable (
 
 FinishOverride:
 
-    /* Validate and verify a table before overriding */
-
-    Status = AcpiTbVerifyTempTable (&NewTableDesc, NULL);
+    /*
+     * Validate and verify a table before overriding, no nested table
+     * duplication check as it's too complicated and unnecessary.
+     */
+    Status = AcpiTbVerifyTempTable (&NewTableDesc, NULL, NULL);
     if (ACPI_FAILURE (Status))
     {
         return;
