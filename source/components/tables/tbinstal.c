@@ -345,6 +345,10 @@ AcpiTbInstallStandardTable (
         goto ReleaseAndExit;
     }
 
+    /* Acquire the table lock */
+
+    (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
+
     if (Reload)
     {
         /*
@@ -370,7 +374,7 @@ AcpiTbInstallStandardTable (
                 NewTableDesc.Signature.Integer));
 
             Status = AE_BAD_SIGNATURE;
-            goto ReleaseAndExit;
+            goto UnlockAndExit;
         }
 
         /* Check if table is already registered */
@@ -406,7 +410,7 @@ AcpiTbInstallStandardTable (
                 /* Table is still loaded, this is an error */
 
                 Status = AE_ALREADY_EXISTS;
-                goto ReleaseAndExit;
+                goto UnlockAndExit;
             }
             else
             {
@@ -419,6 +423,7 @@ AcpiTbInstallStandardTable (
                  * indicate the re-installation.
                  */
                 AcpiTbUninstallTable (&NewTableDesc);
+                (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
                 *TableIndex = i;
                 return_ACPI_STATUS (AE_OK);
             }
@@ -431,11 +436,19 @@ AcpiTbInstallStandardTable (
 
     /* Invoke table handler if present */
 
+    (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
     if (AcpiGbl_TableHandler)
     {
         (void) AcpiGbl_TableHandler (ACPI_TABLE_EVENT_INSTALL,
             NewTableDesc.Pointer, AcpiGbl_TableHandlerContext);
     }
+    (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
+
+UnlockAndExit:
+
+    /* Release the table lock */
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
 
 ReleaseAndExit:
 
