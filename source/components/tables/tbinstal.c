@@ -434,14 +434,10 @@ AcpiTbInstallStandardTable (
 
     AcpiTbInstallTableWithOverride (&NewTableDesc, Override, TableIndex);
 
-    /* Invoke table handler if present */
+    /* Invoke table handler */
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
-    if (AcpiGbl_TableHandler)
-    {
-        (void) AcpiGbl_TableHandler (ACPI_TABLE_EVENT_INSTALL,
-            NewTableDesc.Pointer, AcpiGbl_TableHandlerContext);
-    }
+    AcpiTbNotifyTable (ACPI_TABLE_EVENT_INSTALL, NewTableDesc.Pointer);
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
 
 UnlockAndExit:

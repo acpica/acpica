@@ -303,6 +303,11 @@ AcpiTbUnloadTable (
     UINT32                  TableIndex);
 
 void
+AcpiTbNotifyTable (
+    UINT32                          Event,
+    void                            *Table);
+
+void
 AcpiTbTerminate (
     void);
 
