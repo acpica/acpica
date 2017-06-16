@@ -351,32 +351,6 @@ AcpiTbInstallStandardTable (
 
     if (Reload)
     {
-        /*
-         * Validate the incoming table signature.
-         *
-         * 1) Originally, we checked the table signature for "SSDT" or "PSDT".
-         * 2) We added support for OEMx tables, signature "OEM".
-         * 3) Valid tables were encountered with a null signature, so we just
-         *    gave up on validating the signature, (05/2008).
-         * 4) We encountered non-AML tables such as the MADT, which caused
-         *    interpreter errors and kernel faults. So now, we once again allow
-         *    only "SSDT", "OEMx", and now, also a null signature. (05/2011).
-         */
-        if ((NewTableDesc.Signature.Ascii[0] != 0x00) &&
-           (!ACPI_COMPARE_NAME (&NewTableDesc.Signature, ACPI_SIG_SSDT)) &&
-           (strncmp (NewTableDesc.Signature.Ascii, "OEM", 3)))
-        {
-            ACPI_BIOS_ERROR ((AE_INFO,
-                "Table has invalid signature [%4.4s] (0x%8.8X), "
-                "must be SSDT or OEMx",
-                AcpiUtValidNameseg (NewTableDesc.Signature.Ascii) ?
-                    NewTableDesc.Signature.Ascii : "????",
-                NewTableDesc.Signature.Integer));
-
-            Status = AE_BAD_SIGNATURE;
-            goto UnlockAndExit;
-        }
-
         /* Check if table is already registered */
 
         for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; ++i)
