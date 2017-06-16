@@ -1472,7 +1472,7 @@ Device(DTM0) {
 		return (0)
 	}
 
-	// Exceptions when the table contained in an OpRegion
+	// No exception when the table contained in an OpRegion
 	// (Field) is not an SSDT
 	Method(tstd, 1, Serialized)
 	{
@@ -1513,12 +1513,18 @@ Device(DTM0) {
 
 		// Load operator execution, OpRegion Field case
 		Load(RFU0, HI0)
-		CH04(arg0, 0, 37, z174, 0x086, 0, 0)	// AE_BAD_SIGNATURE
+		CH03(arg0, z174, 0x086, 0, 0) // No exception
 
 		if (CondRefof(\SSS0, Local0)) {
+		} else {
 			err(arg0, z174, 0x087, 0, 0, "\\SSS0", 1)
 		}
 
+		// CleanUp
+		UnLoad(HI0)
+		if (CH03(arg0, z174, 0x088, 0, 0)) {
+			return (1)
+		}
 		return (0)
 	}
 
