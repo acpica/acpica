@@ -1282,6 +1282,24 @@ DtCompileS3pt (
     return (AE_OK);
 }
 
+/******************************************************************************
+ *
+ * FUNCTION:    DtCompileSDEI
+ *
+ * PARAMETERS:  List                - Current field list pointer
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compile SDEI.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DtCompileSDEI (
+    void                    **List)
+{
+    return (AE_OK);
+}
 
 /******************************************************************************
  *

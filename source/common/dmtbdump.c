@@ -3677,6 +3677,26 @@ NextSubTable:
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmDumpSDEI
+ *
+ * PARAMETERS:  Table               - A SDEI table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a SDEI Descriptor Table
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpSDEI (
+    ACPI_TABLE_HEADER       *Table)
+{
+    AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoSDEI);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmDumpSlic
  *
  * PARAMETERS:  Table               - A SLIC table

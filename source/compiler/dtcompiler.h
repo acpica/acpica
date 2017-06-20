@@ -638,6 +638,10 @@ DtCompileS3pt (
     DT_FIELD                **PFieldList);
 
 ACPI_STATUS
+DtCompileSDEI (
+    void                    **PFieldList);
+
+ACPI_STATUS
 DtCompileSlic (
     void                    **PFieldList);
 
@@ -726,6 +730,7 @@ extern const unsigned char  TemplateRasf[];
 extern const unsigned char  TemplateRsdt[];
 extern const unsigned char  TemplateS3pt[];
 extern const unsigned char  TemplateSbst[];
+extern const unsigned char  TemplateSDEI[];
 extern const unsigned char  TemplateSlic[];
 extern const unsigned char  TemplateSlit[];
 extern const unsigned char  TemplateSpcr[];

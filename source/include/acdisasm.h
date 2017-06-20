@@ -271,6 +271,7 @@ typedef enum
     ACPI_DMT_PCCT,
     ACPI_DMT_PMTT,
     ACPI_DMT_PPTT,
+    ACPI_DMT_SDEI,
     ACPI_DMT_SLIC,
     ACPI_DMT_SRAT,
 
@@ -527,6 +528,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoS3ptHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoS3pt0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoS3pt1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSbst[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSDEI[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSlic[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSlit[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSpcr[];
@@ -728,6 +730,10 @@ AcpiDmDumpRsdt (
 
 UINT32
 AcpiDmDumpS3pt (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpSDEI (
     ACPI_TABLE_HEADER       *Table);
 
 void
