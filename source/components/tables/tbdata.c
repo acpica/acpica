@@ -1029,14 +1029,9 @@ AcpiTbLoadTable (
         AcpiEvUpdateGpes (OwnerId);
     }
 
-    /* Invoke table handler if present */
+    /* Invoke table handler */
 
-    if (AcpiGbl_TableHandler)
-    {
-        (void) AcpiGbl_TableHandler (ACPI_TABLE_EVENT_LOAD, Table,
-            AcpiGbl_TableHandlerContext);
-    }
-
+    AcpiTbNotifyTable (ACPI_TABLE_EVENT_LOAD, Table);
     return_ACPI_STATUS (Status);
 }
 
@@ -1117,16 +1112,12 @@ AcpiTbUnloadTable (
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
-    /* Invoke table handler if present */
+    /* Invoke table handler */
 
-    if (AcpiGbl_TableHandler)
+    Status = AcpiGetTableByIndex (TableIndex, &Table);
+    if (ACPI_SUCCESS (Status))
     {
-        Status = AcpiGetTableByIndex (TableIndex, &Table);
-        if (ACPI_SUCCESS (Status))
-        {
-            (void) AcpiGbl_TableHandler (ACPI_TABLE_EVENT_UNLOAD, Table,
-                AcpiGbl_TableHandlerContext);
-        }
+        AcpiTbNotifyTable (ACPI_TABLE_EVENT_UNLOAD, Table);
     }
 
     /* Delete the portion of the namespace owned by this table */
@@ -1140,4 +1131,32 @@ AcpiTbUnloadTable (
     (void) AcpiTbReleaseOwnerId (TableIndex);
     AcpiTbSetTableLoadedFlag (TableIndex, FALSE);
     return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbNotifyTable
+ *
+ * PARAMETERS:  Event               - Table event
+ *              Table               - Validated table pointer
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Notify a table event to the users.
+ *
+ ******************************************************************************/
+
+void
+AcpiTbNotifyTable (
+    UINT32                          Event,
+    void                            *Table)
+{
+    /* Invoke table handler if present */
+
+    if (AcpiGbl_TableHandler)
+    {
+        (void) AcpiGbl_TableHandler (Event, Table,
+            AcpiGbl_TableHandlerContext);
+    }
 }
