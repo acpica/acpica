@@ -158,6 +158,66 @@
 #define _COMPONENT          ACPI_TABLES
         ACPI_MODULE_NAME    ("tbdata")
 
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiTbCheckDuplication (
+    ACPI_TABLE_DESC         *TableDesc,
+    UINT32                  *TableIndex);
+
+static BOOLEAN
+AcpiTbCompareTables (
+    ACPI_TABLE_DESC         *TableDesc,
+    UINT32                  TableIndex);
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbCompareTables
+ *
+ * PARAMETERS:  TableDesc           - Table 1 descriptor to be compared
+ *              TableIndex          - Index of table 2 to be compared
+ *
+ * RETURN:      TRUE if both tables are identical.
+ *
+ * DESCRIPTION: This function compares a table with another table that has
+ *              already been installed in the root table list.
+ *
+ ******************************************************************************/
+
+static BOOLEAN
+AcpiTbCompareTables (
+    ACPI_TABLE_DESC         *TableDesc,
+    UINT32                  TableIndex)
+{
+    ACPI_STATUS             Status = AE_OK;
+    BOOLEAN                 IsIdentical;
+    ACPI_TABLE_HEADER       *Table;
+    UINT32                  TableLength;
+    UINT8                   TableFlags;
+
+
+    Status = AcpiTbAcquireTable (&AcpiGbl_RootTableList.Tables[TableIndex],
+        &Table, &TableLength, &TableFlags);
+    if (ACPI_FAILURE (Status))
+    {
+        return (FALSE);
+    }
+
+    /*
+     * Check for a table match on the entire table length,
+     * not just the header.
+     */
+    IsIdentical = (BOOLEAN)((TableDesc->Length != TableLength ||
+        memcmp (TableDesc->Pointer, Table, TableLength)) ?
+        FALSE : TRUE);
+
+    /* Release the acquired table */
+
+    AcpiTbReleaseTable (Table, TableLength, TableFlags);
+    return (IsIdentical);
+}
+
 
 /*******************************************************************************
  *
@@ -495,12 +555,87 @@ AcpiTbValidateTempTable (
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbCheckDuplication
+ *
+ * PARAMETERS:  TableDesc           - Table descriptor
+ *              TableIndex          - Where the table index is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Avoid installing duplicated tables. However table override and
+ *              user aided dynamic table load is allowed, thus comparing the
+ *              address of the table is not sufficient, and checking the entire
+ *              table content is required.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiTbCheckDuplication (
+    ACPI_TABLE_DESC         *TableDesc,
+    UINT32                  *TableIndex)
+{
+    UINT32                  i;
+
+
+    ACPI_FUNCTION_TRACE (TbCheckDuplication);
+
+
+    /* Check if table is already registered */
+
+    for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; ++i)
+    {
+        /*
+         * Check for a table match on the entire table length,
+         * not just the header.
+         */
+        if (!AcpiTbCompareTables (TableDesc, i))
+        {
+            continue;
+        }
+
+        /*
+         * Note: the current mechanism does not unregister a table if it is
+         * dynamically unloaded. The related namespace entries are deleted,
+         * but the table remains in the root table list.
+         *
+         * The assumption here is that the number of different tables that
+         * will be loaded is actually small, and there is minimal overhead
+         * in just keeping the table in case it is needed again.
+         *
+         * If this assumption changes in the future (perhaps on large
+         * machines with many table load/unload operations), tables will
+         * need to be unregistered when they are unloaded, and slots in the
+         * root table list should be reused when empty.
+         */
+        if (AcpiGbl_RootTableList.Tables[i].Flags &
+            ACPI_TABLE_IS_LOADED)
+        {
+            /* Table is still loaded, this is an error */
+
+            return_ACPI_STATUS (AE_ALREADY_EXISTS);
+        }
+        else
+        {
+            *TableIndex = i;
+            return_ACPI_STATUS (AE_CTRL_TERMINATE);
+        }
+    }
+
+    /* Indicate no duplication to the caller */
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
 /******************************************************************************
  *
  * FUNCTION:    AcpiTbVerifyTempTable
  *
  * PARAMETERS:  TableDesc           - Table descriptor
  *              Signature           - Table signature to verify
+ *              TableIndex          - Where the table index is returned
  *
  * RETURN:      Status
  *
@@ -512,7 +647,8 @@ AcpiTbValidateTempTable (
 ACPI_STATUS
 AcpiTbVerifyTempTable (
     ACPI_TABLE_DESC         *TableDesc,
-    char                    *Signature)
+    char                    *Signature,
+    UINT32                  *TableIndex)
 {
     ACPI_STATUS             Status = AE_OK;
 
@@ -540,10 +676,10 @@ AcpiTbVerifyTempTable (
         goto InvalidateAndExit;
     }
 
-    /* Verify the checksum */
-
     if (AcpiGbl_EnableTableValidation)
     {
+        /* Verify the checksum */
+
         Status = AcpiTbVerifyChecksum (TableDesc->Pointer, TableDesc->Length);
         if (ACPI_FAILURE (Status))
         {
@@ -556,9 +692,30 @@ AcpiTbVerifyTempTable (
 
             goto InvalidateAndExit;
         }
+
+        /* Avoid duplications */
+
+        if (TableIndex)
+        {
+            Status = AcpiTbCheckDuplication (TableDesc, TableIndex);
+            if (ACPI_FAILURE (Status))
+            {
+                if (Status != AE_CTRL_TERMINATE)
+                {
+                    ACPI_EXCEPTION ((AE_INFO, AE_NO_MEMORY,
+                        "%4.4s 0x%8.8X%8.8X"
+                        " Table is duplicated",
+                        AcpiUtValidNameseg (TableDesc->Signature.Ascii) ?
+                            TableDesc->Signature.Ascii : "????",
+                        ACPI_FORMAT_UINT64 (TableDesc->Address)));
+                }
+
+                goto InvalidateAndExit;
+            }
+        }
     }
 
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 
 InvalidateAndExit:
     AcpiTbInvalidateTable (TableDesc);
