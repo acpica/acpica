@@ -1070,24 +1070,19 @@ AcpiTbInstallAndLoadTable (
     ACPI_FUNCTION_TRACE (TbInstallAndLoadTable);
 
 
-    (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
-
     /* Install the table and load it into the namespace */
 
     Status = AcpiTbInstallStandardTable (Address, Flags, TRUE,
         Override, &i);
     if (ACPI_FAILURE (Status))
     {
-        goto UnlockAndExit;
+        goto Exit;
     }
 
-    (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
     Status = AcpiTbLoadTable (i, AcpiGbl_RootNode);
-    (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
 
-UnlockAndExit:
+Exit:
     *TableIndex = i;
-    (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
     return_ACPI_STATUS (Status);
 }
 
