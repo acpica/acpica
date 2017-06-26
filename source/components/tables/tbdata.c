@@ -477,7 +477,7 @@ AcpiTbValidateTempTable (
     ACPI_TABLE_DESC         *TableDesc)
 {
 
-    if (!TableDesc->Pointer && !AcpiGbl_VerifyTableChecksum)
+    if (!TableDesc->Pointer && !AcpiGbl_EnableTableValidation)
     {
         /*
          * Only validates the header of the table.
@@ -542,7 +542,7 @@ AcpiTbVerifyTempTable (
 
     /* Verify the checksum */
 
-    if (AcpiGbl_VerifyTableChecksum)
+    if (AcpiGbl_EnableTableValidation)
     {
         Status = AcpiTbVerifyChecksum (TableDesc->Pointer, TableDesc->Length);
         if (ACPI_FAILURE (Status))

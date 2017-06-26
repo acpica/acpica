@@ -349,7 +349,7 @@ AcpiTbInstallStandardTable (
 
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
 
-    if (Reload)
+    if (AcpiGbl_EnableTableValidation)
     {
         /* Check if table is already registered */
 
