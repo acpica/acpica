@@ -316,7 +316,8 @@ LdLoadFieldElements (
                     return (Status);
                 }
                 else if (Status == AE_ALREADY_EXISTS &&
-                    (Node->Flags & ANOBJ_IS_EXTERNAL))
+                    (Node->Flags & ANOBJ_IS_EXTERNAL) &&
+                    Node->OwnerId != WalkState->OwnerId)
                 {
                     Node->Type = (UINT8) ACPI_TYPE_LOCAL_REGION_FIELD;
                 }
