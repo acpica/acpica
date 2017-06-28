@@ -553,15 +553,6 @@ AcpiExWriteDataToField (
              *     Data[x-1]: (Bytes 2-x of the arbitrary length data buffer)
              */
             Length += 2;
-
-            /*
-             * When using AttribRawProcessBytes, it seems the access length
-             * is always specified by the user.
-             * So just take the incoming buffer length as the reference.
-             */
-            if (AccessorType == AML_FIELD_ATTRIB_RAW_PROCESS)
-                Length = SourceDesc->Buffer.Length;
-
             Function = ACPI_WRITE | (AccessorType << 16);
         }
         else /* IPMI */
