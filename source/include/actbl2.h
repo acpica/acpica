@@ -1043,6 +1043,9 @@ typedef struct acpi_iort_smmu_v3
     UINT32                  PriGsiv;
     UINT32                  GerrGsiv;
     UINT32                  SyncGsiv;
+    UINT8                   Pxm;
+    UINT8                   Reserved1;
+    UINT16                  Reserved2;
 
 } ACPI_IORT_SMMU_V3;
 
@@ -1056,6 +1059,7 @@ typedef struct acpi_iort_smmu_v3
 
 #define ACPI_IORT_SMMU_V3_COHACC_OVERRIDE   (1)
 #define ACPI_IORT_SMMU_V3_HTTU_OVERRIDE     (1<<1)
+#define ACPI_IORT_SMMU_V3_PXM_VALID         (1<<3)
 
 
 /*******************************************************************************
