@@ -1064,6 +1064,21 @@ DivU64x32 (
     UINTN                   Divisor,
     UINTN                   *Remainder);
 
+UINT64
+MultU64x32 (
+    UINT64                  Multiplicand,
+    UINTN                   Multiplier);
+
+UINT64
+LShiftU64 (
+    UINT64                  Operand,
+    UINTN                   Count);
+
+UINT64
+RShiftU64 (
+    UINT64                  Operand,
+    UINTN                   Count);
+
 /*
  * EFI specific prototypes
  */
@@ -1077,6 +1092,24 @@ acpi_main (
     int                     argc,
     char                    *argv[]);
 
+#endif
+
+/* EDK2 EFI definitions */
+
+#if defined(_EDK2_EFI)
+
+/*
+ * EFI specific prototypes
+ */
+ACPI_EFI_STATUS
+efi_main (
+    ACPI_EFI_HANDLE         Image,
+    ACPI_EFI_SYSTEM_TABLE   *SystemTab);
+
+int
+acpi_main (
+    int                     argc,
+    char                    *argv[]);
 
 #endif
 
