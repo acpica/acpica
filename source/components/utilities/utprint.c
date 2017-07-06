@@ -331,7 +331,7 @@ AcpiUtScanNumber (
 
     while (isdigit ((int) *String))
     {
-        Number *= 10;
+        AcpiUtShortMultiply (Number, 10, &Number);
         Number += *(String++) - '0';
     }
 

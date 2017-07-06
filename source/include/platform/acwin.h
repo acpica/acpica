@@ -157,6 +157,14 @@
 
 #define ACPI_MACHINE_WIDTH      32
 
+#ifndef ACPI_EXEC_APP
+
+/* To test our assembly support on AcpiExec */
+
+#define ACPI_USE_NATIVE_DIVIDE
+#define ACPI_USE_NATIVE_MATH64
+#endif
+
 #ifdef ACPI_DEFINE_ALTERNATE_TYPES
 /*
  * Types used only in (Linux) translated source, defined here to enable

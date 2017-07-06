@@ -1229,6 +1229,7 @@ efi_main (
 
     ST = SystemTab;
     BS = SystemTab->BootServices;
+    RT = SystemTab->RuntimeServices;
     stdin = ACPI_CAST_PTR (ACPI_EFI_FILE, SystemTab->ConIn);
     stdout = ACPI_CAST_PTR (ACPI_EFI_FILE, SystemTab->ConOut);
     stderr = ACPI_CAST_PTR (ACPI_EFI_FILE, SystemTab->ConOut);
@@ -1289,10 +1290,6 @@ ErrorAlloc:
 }
 
 #ifdef _EDK2_EFI
-struct _ACPI_EFI_SYSTEM_TABLE        *ST;
-struct _ACPI_EFI_BOOT_SERVICES       *BS;
-struct _ACPI_EFI_RUNTIME_SERVICES    *RT;
-
 EFI_STATUS
 EFIAPI
 UefiMain (
