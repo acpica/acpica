@@ -1290,10 +1290,6 @@ ErrorAlloc:
 }
 
 #ifdef _EDK2_EFI
-struct _ACPI_EFI_SYSTEM_TABLE        *ST;
-struct _ACPI_EFI_BOOT_SERVICES       *BS;
-struct _ACPI_EFI_RUNTIME_SERVICES    *RT;
-
 EFI_STATUS
 EFIAPI
 UefiMain (
