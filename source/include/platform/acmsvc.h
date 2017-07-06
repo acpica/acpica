@@ -217,7 +217,7 @@
 
 /* Do not maintain the architecture specific stuffs for the EFI ports */
 
-#if !defined(_EDK2_EFI) && !defined(_GNU_EFI)
+#if defined(__i386__) && !defined(_GNU_EFI)
 #ifndef _LINT
 /*
  * Math helper functions
@@ -229,6 +229,39 @@
     __asm div    d32        \
     __asm mov    q32, eax   \
     __asm mov    r32, edx   \
+}
+
+#define ACPI_MUL_64_BY_32(n_hi, n_lo, m32, p32, c32) \
+{                           \
+    __asm mov    edx, n_hi  \
+    __asm mov    eax, n_lo  \
+    __asm mul    m32        \
+    __asm mov    p32, eax   \
+    __asm mov    c32, edx   \
+}
+
+#define ACPI_SHIFT_LEFT_64_BY_32(n_hi, n_lo, s32) \
+{                               \
+    __asm mov    edx, n_hi      \
+    __asm mov    eax, n_lo      \
+    __asm mov    ecx, s32       \
+    __asm and    ecx, 31        \
+    __asm shld   edx, eax, cl   \
+    __asm shl    eax, cl        \
+    __asm mov    n_hi, edx      \
+    __asm mov    n_lo, eax      \
+}
+
+#define ACPI_SHIFT_RIGHT_64_BY_32(n_hi, n_lo, s32) \
+{                               \
+    __asm mov    edx, n_hi      \
+    __asm mov    eax, n_lo      \
+    __asm mov    ecx, s32       \
+    __asm and    ecx, 31        \
+    __asm shrd   eax, edx, cl   \
+    __asm shr    edx, cl        \
+    __asm mov    n_hi, edx      \
+    __asm mov    n_lo, eax      \
 }
 
 #define ACPI_SHIFT_RIGHT_64(n_hi, n_lo) \
