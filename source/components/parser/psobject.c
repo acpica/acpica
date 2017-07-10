@@ -509,6 +509,7 @@ AcpiPsCreateOp (
                 "// Invalid external declaration at AML offset 0x%x.\n",
                 WalkState->Aml - WalkState->ParserState.AmlStart);
             WalkState->Aml = WalkState->ParserState.Aml + 2;
+            WalkState->ParserState.Aml = WalkState->Aml;
             return_ACPI_STATUS (AE_CTRL_PARSE_CONTINUE);
         }
 #endif
