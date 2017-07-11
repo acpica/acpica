@@ -675,6 +675,13 @@ typedef UINT64                          ACPI_INTEGER;
 #define ACPI_VALIDATE_RSDP_SIG(a)       (!strncmp (ACPI_CAST_PTR (char, (a)), ACPI_SIG_RSDP, 8))
 #define ACPI_MAKE_RSDP_SIG(dest)        (memcpy (ACPI_CAST_PTR (char, (dest)), ACPI_SIG_RSDP, 8))
 
+/*
+ * Algorithm to obtain access bit width.
+ * Can be used with AccessWidth of ACPI_GENERIC_ADDRESS and AccessSize of
+ * ACPI_RESOURCE_GENERIC_REGISTER.
+ */
+#define ACPI_ACCESS_BIT_WIDTH(size)     (1 << ((size) + 2))
+
 
 /*******************************************************************************
  *
