@@ -392,11 +392,13 @@ struct _ACPI_SIMPLE_INPUT_INTERFACE;
 struct _ACPI_EFI_FILE_IO_INTERFACE;
 struct _ACPI_EFI_FILE_HANDLE;
 struct _ACPI_EFI_BOOT_SERVICES;
+struct _ACPI_EFI_RUNTIME_SERVICES;
 struct _ACPI_EFI_SYSTEM_TABLE;
 struct _ACPI_EFI_PCI_IO;
 
 extern struct _ACPI_EFI_SYSTEM_TABLE        *ST;
 extern struct _ACPI_EFI_BOOT_SERVICES       *BS;
+extern struct _ACPI_EFI_RUNTIME_SERVICES    *RT;
 
 typedef union acpi_efi_file ACPI_EFI_FILE;
 #define FILE                ACPI_EFI_FILE
