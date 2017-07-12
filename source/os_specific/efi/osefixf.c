@@ -561,6 +561,59 @@ AcpiOsGetTimer (
 
 /******************************************************************************
  *
+ * FUNCTION:    AcpiOsStall
+ *
+ * PARAMETERS:  microseconds        - Time to sleep
+ *
+ * RETURN:      Blocks until sleep is completed.
+ *
+ * DESCRIPTION: Sleep at microsecond granularity
+ *
+ *****************************************************************************/
+
+void
+AcpiOsStall (
+    UINT32                  microseconds)
+{
+
+    if (microseconds)
+    {
+        uefi_call_wrapper (BS->Stall, 1, microseconds);
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsSleep
+ *
+ * PARAMETERS:  milliseconds        - Time to sleep
+ *
+ * RETURN:      Blocks until sleep is completed.
+ *
+ * DESCRIPTION: Sleep at millisecond granularity
+ *
+ *****************************************************************************/
+
+void
+AcpiOsSleep (
+    UINT64                  milliseconds)
+{
+    UINT64                  microseconds;
+
+
+    AcpiUtShortMultiply (milliseconds, ACPI_USEC_PER_MSEC, &microseconds);
+    while (microseconds > ACPI_UINT32_MAX)
+    {
+        AcpiOsStall (ACPI_UINT32_MAX);
+        microseconds -= ACPI_UINT32_MAX;
+    }
+    AcpiOsStall ((UINT32) microseconds);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AcpiOsAllocate
  *
  * PARAMETERS:  Size                - Amount to allocate, in bytes
