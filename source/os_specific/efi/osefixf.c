@@ -173,6 +173,15 @@ AcpiEfiGetPciDev (
     ACPI_PCI_ID             *PciId);
 
 
+/* Global variables */
+
+#ifdef _EDK2_EFI
+struct _ACPI_EFI_SYSTEM_TABLE        *ST;
+struct _ACPI_EFI_BOOT_SERVICES       *BS;
+struct _ACPI_EFI_RUNTIME_SERVICES    *RT;
+#endif
+
+
 /******************************************************************************
  *
  * FUNCTION:    AcpiEfiGetRsdpViaGuid
@@ -1054,3 +1063,26 @@ AcpiEfiGetPciDev (
     uefi_call_wrapper (BS->FreePool, 1, Handles);
     return (NULL);
 }
+
+
+#if defined(_EDK2_EFI) && defined(USE_STDLIB)
+extern EFI_RUNTIME_SERVICES                 *gRT;
+extern EFI_BOOT_SERVICES                    *gBS;
+extern EFI_SYSTEM_TABLE                     *gST;
+
+int ACPI_SYSTEM_XFACE
+main (
+    int                     argc,
+    char                    *argv[])
+{
+    int                     Error;
+
+
+    ST = ACPI_CAST_PTR (ACPI_EFI_SYSTEM_TABLE, gST);
+    BS = ACPI_CAST_PTR (ACPI_EFI_BOOT_SERVICES, gBS);
+    RT = ACPI_CAST_PTR (ACPI_EFI_RUNTIME_SERVICES, gRT);
+
+    Error = acpi_main (argc, argv);
+    return (Error);
+}
+#endif

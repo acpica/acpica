@@ -164,6 +164,13 @@
 
 #if defined(_EDK2_EFI)
 
+#ifdef USE_STDLIB
+#define ACPI_USE_STANDARD_HEADERS
+#define ACPI_USE_SYSTEM_CLIBRARY
+#define ACPI_USE_NATIVE_DIVIDE
+#define ACPI_USE_NATIVE_MATH64
+#endif
+
 #endif
 
 #if defined(__x86_64__)
@@ -200,8 +207,10 @@
 
 #endif
 
+#ifndef USE_STDLIB
 #define UINTN       uint64_t
 #define INTN        int64_t
+#endif
 
 #define ACPI_EFI_ERR(a)             (0x8000000000000000 | a)
 
@@ -209,8 +218,10 @@
 
 #define ACPI_MACHINE_WIDTH          32
 
+#ifndef USE_STDLIB
 #define UINTN       uint32_t
 #define INTN        int32_t
+#endif
 
 #define ACPI_EFI_ERR(a)             (0x80000000 | a)
 
@@ -400,11 +411,13 @@ extern struct _ACPI_EFI_SYSTEM_TABLE        *ST;
 extern struct _ACPI_EFI_BOOT_SERVICES       *BS;
 extern struct _ACPI_EFI_RUNTIME_SERVICES    *RT;
 
+#ifndef USE_STDLIB
 typedef union acpi_efi_file ACPI_EFI_FILE;
 #define FILE                ACPI_EFI_FILE
 
 extern FILE                 *stdin;
 extern FILE                 *stdout;
 extern FILE                 *stderr;
+#endif
 
 #endif /* __ACEFI_H__ */
