@@ -152,6 +152,14 @@
 #ifndef __ACEFI_H__
 #define __ACEFI_H__
 
+/*
+ * Single threaded environment where Mutex/Event/Sleep are fake. This model is
+ * sufficient for pre-boot AcpiExec.
+ */
+#ifndef DEBUGGER_THREADING
+#define DEBUGGER_THREADING          DEBUGGER_SINGLE_THREADED
+#endif /* !DEBUGGER_THREADING */
+
 /* EDK2 EFI environemnt */
 
 #if defined(_EDK2_EFI)
