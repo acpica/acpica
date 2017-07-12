@@ -217,11 +217,11 @@
 
 /* Do not maintain the architecture specific stuffs for the EFI ports */
 
-#if !defined(_EDK2_EFI) && !defined(_GNU_EFI)
-#ifndef _LINT
+#if defined(__i386__) && !defined(_GNU_EFI) && !defined(_EDK2_EFI)
 /*
  * Math helper functions
  */
+#ifndef ACPI_DIV_64_BY_32
 #define ACPI_DIV_64_BY_32(n_hi, n_lo, d32, q32, r32) \
 {                           \
     __asm mov    edx, n_hi  \
@@ -230,26 +230,52 @@
     __asm mov    q32, eax   \
     __asm mov    r32, edx   \
 }
+#endif
 
+#ifndef ACPI_MUL_64_BY_32
+#define ACPI_MUL_64_BY_32(n_hi, n_lo, m32, p32, c32) \
+{                           \
+    __asm mov    edx, n_hi  \
+    __asm mov    eax, n_lo  \
+    __asm mul    m32        \
+    __asm mov    p32, eax   \
+    __asm mov    c32, edx   \
+}
+#endif
+
+#ifndef ACPI_SHIFT_LEFT_64_BY_32
+#define ACPI_SHIFT_LEFT_64_BY_32(n_hi, n_lo, s32) \
+{                               \
+    __asm mov    edx, n_hi      \
+    __asm mov    eax, n_lo      \
+    __asm mov    ecx, s32       \
+    __asm and    ecx, 31        \
+    __asm shld   edx, eax, cl   \
+    __asm shl    eax, cl        \
+    __asm mov    n_hi, edx      \
+    __asm mov    n_lo, eax      \
+}
+#endif
+
+#ifndef ACPI_SHIFT_RIGHT_64_BY_32
+#define ACPI_SHIFT_RIGHT_64_BY_32(n_hi, n_lo, s32) \
+{                               \
+    __asm mov    edx, n_hi      \
+    __asm mov    eax, n_lo      \
+    __asm mov    ecx, s32       \
+    __asm and    ecx, 31        \
+    __asm shrd   eax, edx, cl   \
+    __asm shr    edx, cl        \
+    __asm mov    n_hi, edx      \
+    __asm mov    n_lo, eax      \
+}
+#endif
+
+#ifndef ACPI_SHIFT_RIGHT_64
 #define ACPI_SHIFT_RIGHT_64(n_hi, n_lo) \
 {                           \
     __asm shr    n_hi, 1    \
     __asm rcr    n_lo, 1    \
-}
-#else
-
-/* Fake versions to make lint happy */
-
-#define ACPI_DIV_64_BY_32(n_hi, n_lo, d32, q32, r32) \
-{                           \
-    q32 = n_hi / d32;       \
-    r32 = n_lo / d32;       \
-}
-
-#define ACPI_SHIFT_RIGHT_64(n_hi, n_lo) \
-{                           \
-    n_hi >>= 1;    \
-    n_lo >>= 1;    \
 }
 #endif
 #endif

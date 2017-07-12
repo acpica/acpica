@@ -1051,18 +1051,33 @@ union acpi_efi_file {
 };
 
 
-/* GNU EFI definitions */
+/* EFI definitions */
 
-#if defined(_GNU_EFI)
+#if defined(_GNU_EFI) || defined(_EDK2_EFI)
 
 /*
  * This is needed to hide platform specific code from ACPICA
  */
-UINT64
+UINT64 ACPI_EFI_API
 DivU64x32 (
     UINT64                  Dividend,
     UINTN                   Divisor,
     UINTN                   *Remainder);
+
+UINT64 ACPI_EFI_API
+MultU64x32 (
+    UINT64                  Multiplicand,
+    UINTN                   Multiplier);
+
+UINT64 ACPI_EFI_API
+LShiftU64 (
+    UINT64                  Operand,
+    UINTN                   Count);
+
+UINT64 ACPI_EFI_API
+RShiftU64 (
+    UINT64                  Operand,
+    UINTN                   Count);
 
 /*
  * EFI specific prototypes
@@ -1076,7 +1091,6 @@ int
 acpi_main (
     int                     argc,
     char                    *argv[]);
-
 
 #endif
 

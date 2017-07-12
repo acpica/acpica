@@ -156,8 +156,6 @@
 
 #if defined(_EDK2_EFI)
 
-#define _GNU_EFI
-
 #endif
 
 #if defined(__x86_64__)
@@ -326,26 +324,59 @@ UINT64 efi_call10(void *func, UINT64 arg1, UINT64 arg2, UINT64 arg3,
 #endif
 
 
-/* GNU EFI definitions */
+/* EFI math64 definitions */
 
-#if defined(_GNU_EFI)
-
+#if defined(_GNU_EFI) || defined(_EDK2_EFI)
 /*
- * Math helpers
+ * Math helpers, GNU EFI provided a platform independent 64-bit math
+ * support.
  */
+#ifndef ACPI_DIV_64_BY_32
 #define ACPI_DIV_64_BY_32(n_hi, n_lo, d32, q32, r32) \
     do {                                             \
         UINT64 __n = ((UINT64) n_hi) << 32 | (n_lo); \
         (q32) = DivU64x32 ((__n), (d32), &(r32));    \
     } while (0)
+#endif
 
+#ifndef ACPI_MUL_64_BY_32
+#define ACPI_MUL_64_BY_32(n_hi, n_lo, m32, p32, c32) \
+    do {                                             \
+        UINT64 __n = ((UINT64) n_hi) << 32 | (n_lo); \
+        UINT64 __p = MultU64x32 (__n, (m32));        \
+        (p32) = (UINT32) __p;                        \
+        (c32) = (UINT32) (__p >> 32);                \
+    } while (0)
+#endif
+
+#ifndef ACPI_SHIFT_LEFT_64_by_32
+#define ACPI_SHIFT_LEFT_64_BY_32(n_hi, n_lo, s32)    \
+    do {                                             \
+        UINT64 __n = ((UINT64) n_hi) << 32 | (n_lo); \
+        UINT64 __r = LShiftU64 (__n, (s32));         \
+        (n_lo) = (UINT32) __r;                       \
+        (n_hi) = (UINT32) (__r >> 32);               \
+    } while (0)
+#endif
+
+#ifndef ACPI_SHIFT_RIGHT_64_BY_32
+#define ACPI_SHIFT_RIGHT_64_BY_32(n_hi, n_lo, s32)   \
+    do {                                             \
+        UINT64 __n = ((UINT64) n_hi) << 32 | (n_lo); \
+        UINT64 __r = RShiftU64 (__n, (s32));         \
+        (n_lo) = (UINT32) __r;                       \
+        (n_hi) = (UINT32) (__r >> 32);               \
+    } while (0)
+#endif
+
+#ifndef ACPI_SHIFT_RIGHT_64
 #define ACPI_SHIFT_RIGHT_64(n_hi, n_lo) \
     do {                                \
         (n_lo) >>= 1;                   \
         (n_lo) |= (((n_hi) & 1) << 31); \
         (n_hi) >>= 1;                   \
     } while (0)
-
+#endif
 #endif
 
 struct _ACPI_SIMPLE_TEXT_OUTPUT_INTERFACE;
