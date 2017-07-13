@@ -184,7 +184,7 @@ OslAddTableToList (
 
 static ACPI_STATUS
 OslMapTable (
-    ACPI_SIZE               Address,
+    ACPI_PHYSICAL_ADDRESS   Address,
     char                    *Signature,
     ACPI_TABLE_HEADER       **Table);
 
@@ -544,7 +544,7 @@ OslLoadRsdp (
     /* Search low memory for the RSDP */
 
     MappedTable = ACPI_CAST_PTR (ACPI_TABLE_HEADER,
-        AcpiTbScanMemoryForRsdp (RsdpAddress, RsdpSize));
+        AcpiTbScanMemoryForRsdp (RsdpAddress, (UINT32) RsdpSize));
     if (!MappedTable)
     {
         AcpiOsUnmapMemory (RsdpAddress, RsdpSize);
@@ -1072,7 +1072,7 @@ Exit:
 
 static ACPI_STATUS
 OslMapTable (
-    ACPI_SIZE               Address,
+    ACPI_PHYSICAL_ADDRESS   Address,
     char                    *Signature,
     ACPI_TABLE_HEADER       **Table)
 {

@@ -234,7 +234,7 @@ AcpiEfiGetRsdpViaGuid (
     ACPI_EFI_GUID           *Guid)
 {
     ACPI_PHYSICAL_ADDRESS   Address = 0;
-    int                     i;
+    UINTN                   i;
 
 
     for (i = 0; i < ST->NumberOfTableEntries; i++)
@@ -527,7 +527,7 @@ AcpiOsGetTimer (
     EfiStatus = uefi_call_wrapper (RT->GetTime, 2, &EfiTime, NULL);
     if (ACPI_EFI_ERROR (EfiStatus))
     {
-        return (-1);
+        return ((UINT64) -1);
     }
 
     Year = EfiTime.Year;

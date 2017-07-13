@@ -621,7 +621,7 @@ WaitKey:
                 break;
             }
         }
-        Length = Pos;
+        Length = (int) Pos;
     }
     else
     {
@@ -641,7 +641,7 @@ WaitKey:
             Length = -EIO;
             goto ErrorExit;
         }
-        Length = ReadSize;
+        Length = (int) ReadSize;
     }
 
 ErrorExit:
@@ -720,7 +720,7 @@ fwrite (
     const char              *Ascii;
     CHAR16                  *End;
     CHAR16                  *Pos;
-    int                     i, j;
+    ACPI_SIZE               i, j;
     ACPI_EFI_FILE_HANDLE    EfiFile;
     UINTN                   WriteSize;
     ACPI_EFI_STATUS         EfiStatus;
@@ -773,7 +773,7 @@ fwrite (
             errno = EIO;
             goto ErrorExit;
         }
-        Length = WriteSize;
+        Length = (int) WriteSize;
     }
 
 ErrorExit:
@@ -926,7 +926,7 @@ fseek (
         {
             return (Error);
         }
-        Size = Info->FileSize;
+        Size = (ACPI_SIZE) (Info->FileSize);
         AcpiOsFree (Info);
 
         if (From == SEEK_CUR)

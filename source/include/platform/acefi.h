@@ -351,10 +351,10 @@ UINT64 efi_call10(void *func, UINT64 arg1, UINT64 arg2, UINT64 arg3,
  * support.
  */
 #ifndef ACPI_DIV_64_BY_32
-#define ACPI_DIV_64_BY_32(n_hi, n_lo, d32, q32, r32) \
-    do {                                             \
-        UINT64 __n = ((UINT64) n_hi) << 32 | (n_lo); \
-        (q32) = DivU64x32 ((__n), (d32), &(r32));    \
+#define ACPI_DIV_64_BY_32(n_hi, n_lo, d32, q32, r32)         \
+    do {                                                     \
+        UINT64 __n = ((UINT64) n_hi) << 32 | (n_lo);         \
+        (q32) = (UINT32) DivU64x32 ((__n), (d32), &(r32));   \
     } while (0)
 #endif
 
