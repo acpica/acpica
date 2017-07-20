@@ -382,7 +382,7 @@ Method(m1a6,, Serialized)
 
 	// p955
 
-	m1af(p955, 1, 1, 0)
+	m1af(p955, 1, 1, 0, 1)
 
 	// Not Computational Data
 
@@ -553,190 +553,160 @@ Method(m1ac)
 // arg1 - check for non-computational data
 // arg2 - check Field Unit and Buffer Field
 // arg3 - elements of Package are RefOf_References
-Method(m1af, 4, Serialized)
+// arg4 - elements of Package are NameString
+Method(m1af, 5, Serialized)
 {
 	Name(ts, "m1af")
 
+	// Simple object
 	Store(Index(arg0, 0), Local0)
 	Store(ObjectType(Local0), Local1)
-
 	if (LNotEqual(Local1, c009)) {
-		err(ts, z114, 0x112, 0, 0, Local1, c009)
+		err(ts, z114, 0x111, 0, 0, Local1, c009)
 	} else {
 		Store(DerefOf(Local0), Local1)
 		if (LNotEqual(Local1, 0)) {
-			err(ts, z113, 0x112, 0, 0, Local1, 0)
+			err(ts, z114, 0x112, 0, 0, Local1, 0)
 		}
 	}
 
-	Store(Index(arg0, 1), Local0)
-	Store(ObjectType(Local0), Local1)
-
-	if (LNotEqual(Local1, c009)) {
-		err(ts, z114, 0x112, 0, 0, Local1, c009)
-	} else {
-		Store(DerefOf(Local0), Local1)
-		if (arg3) {
-			Store(DerefOf(Local1), Local2)
-			Store(Local2, Local1)
+	// Name strings
+	Store (1, Local2)
+	while (LLess(Local2, 15)) {
+		Store(Index(arg0, Local2), Local0)
+		Store(ObjectType(Local0), Local1)
+		if (arg4) {
+			if (LNotEqual(Local1, c00a)) {
+				err(ts, z114, 0x113, 0, 0, Local1, c00a)
+			} else {
+				Store(DerefOf(Local0), Local1)
+				// The object is String
+			}
+		} else {
+			Switch(Local2) {
+			Case(1) {
+				Store(c009, Local4)
+				Store(0xfe7cb391d65a0000, Local5)
+			}
+			Case(2) {
+				Store(c00a, Local4)
+				Store("12340002", Local5)
+			}
+			Case(3) {
+				Store(c00b, Local4)
+				Store(Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4}, Local5)
+			}
+			Case(4) {
+				Store(c00c, Local4)
+			}
+			Case(5) {
+				if (arg2) {
+					Store(c00d, Local4)
+					Store(0, Local5)
+				}
+			}
+			Case(6) {
+				Store(c00e, Local4)
+			}
+			Case(7) {
+				Store(c00f, Local4)
+			}
+			Case(8) {
+				Store(c010, Local4)
+			}
+			Case(9) {
+				Store(c011, Local4)
+			}
+			Case(10) {
+				Store(c012, Local4)
+			}
+			Case(11) {
+				Store(c013, Local4)
+			}
+			Case(12) {
+				Store(c014, Local4)
+			}
+			Case(13) {
+				Store(c015, Local4)
+			}
+			Case(14) {
+				if (arg2) {
+					Store(c016, Local4)
+					Store(0xb0, Local5)
+				}
+			}}
+			if (LLessEqual(Local2, 3)) {
+				if (LNotEqual(Local1, Local4)) {
+					err(ts, z114, 0x114, 0, 0, Local1, Local4)
+				} else {
+					Store(DerefOf(Local0), Local1)
+					if (arg3) {
+						Store(DerefOf(Local1), Local3)
+						Store(Local3, Local1)
+					}
+					if (LNotEqual(Local1, Local5)) {
+						err(ts, z114, 0x115, 0, 0, Local1, Local5)
+					}
+				}
+			} elseif (LEqual(Local2, 4)) {
+				m1aa(ts, Local0, Local4, 0, 0x13f)
+			} elseif (LOr(LEqual(Local2, 5), LEqual(Local2, 14))) {
+				if (arg2) {
+					Store(DerefOf(Local0), Local6)
+					if (arg3) {
+						if (LNotEqual(Local1, Local4)) {
+							err(ts, z114, 0x116, 0, 0, Local1, c016)
+						} else {
+							Store(DerefOf(Local6), Local3)
+							Store(Local3, Local6)
+						}
+					}
+					Store(ObjectType(Local6), Local7)
+					if (LNotEqual(Local7, c009)) {
+						err(ts, z114, 0x117, 0, 0, Local7, c009)
+					} else {
+						if (LNotEqual(Local6, Local5)) {
+							err(ts, z114, 0x118, 0, 0, Local7, 0)
+						}
+					}
+				}
+			} else {
+				if (arg1) {
+					m1aa(ts, Local0, Local4, 0, 0x13f)
+				}
+			}
 		}
-		if (LNotEqual(Local1, 0xfe7cb391d65a0000)) {
-			err(ts, z114, 0x112, 0, 0, Local1, 0xfe7cb391d65a0000)
-		}
+		Increment(Local2)
 	}
 
-	Store(Index(arg0, 2), Local0)
-	Store(ObjectType(Local0), Local1)
-
-	if (LNotEqual(Local1, c00a)) {
-		err(ts, z114, 0x112, 0, 0, Local1, c00a)
-	} else {
-		Store(DerefOf(Local0), Local1)
-		if (arg3) {
-			Store(DerefOf(Local1), Local2)
-			Store(Local2, Local1)
+	// Simple object
+	while (LLess(Local2, 17)) {
+		Store(Index(arg0, Local2), Local0)
+		Store(ObjectType(Local0), Local1)
+		if (LNotEqual(Local1, c009)) {
+			err(ts, z114, 0x119, 0, 0, Local1, c009)
+		} else {
+			Store(DerefOf(Local0), Local1)
+			if (LNotEqual(Local1, Local2)) {
+				err(ts, z114, 0x11a, 0, 0, Local1, 15)
+			}
 		}
-		if (LNotEqual(Local1, "12340002")) {
-			err(ts, z114, 0x112, 0, 0, Local1, "12340002")
-		}
-	}
-
-	Store(Index(arg0, 3), Local0)
-	Store(ObjectType(Local0), Local1)
-
-	if (LNotEqual(Local1, c00b)) {
-		err(ts, z114, 0x112, 0, 0, Local1, c00a)
-	} else {
-		Store(DerefOf(Local0), Local1)
-		if (arg3) {
-			Store(DerefOf(Local1), Local2)
-			Store(Local2, Local1)
-		}
-		if (LNotEqual(Local1, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})) {
-			err(ts, z114, 0x112, 0, 0, Local1, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4})
-		}
-	}
-
-	Store(Index(arg0, 4), Local0)
-	m1aa(ts, Local0, c00c, 0, 0x13f)
-
-
-    // 5th element is a region field, which will be resolved to an integer
-
-	if (arg2) {
-	    Store(Index(arg0, 5), Local0)
-	    Store(ObjectType(Local0), Local1)
-		Store(DerefOf(Local0), Local7)
-
-        if (arg3) {
-	        if (LNotEqual(Local1, c00d)) {
-		        err(ts, z114, 0x112, 0, 0, Local1, c00d)
-	        } else {
-			    Store(DerefOf(Local7), Local6)
-			    Store(Local6, Local7)
-            }
-        }
-
-	    Store(ObjectType(Local7), Local5)
-
-	    if (LNotEqual(Local5, c009)) {
-		    err(ts, z114, 0x112, 0, 0, Local5, c009)
-	    } else {
-		    if (LNotEqual(Local7, 0)) {
-			    err(ts, z114, 0x112, 0, 0, Local7, 0)
-            }
-		}
-    }
-
-	if (arg1) {
-
-		Store(Index(arg0, 6), Local0)
-		m1aa(ts, Local0, c00e, 0, 0x13f)
-
-		Store(Index(arg0, 7), Local0)
-		m1aa(ts, Local0, c00f, 0, 0x13f)
-
-		Store(Index(arg0, 8), Local0)
-		m1aa(ts, Local0, c010, 0, 0x13f)
-
-		Store(Index(arg0, 9), Local0)
-		m1aa(ts, Local0, c011, 0, 0x13f)
-
-		Store(Index(arg0, 10), Local0)
-		m1aa(ts, Local0, c012, 0, 0x13f)
-
-		Store(Index(arg0, 11), Local0)
-		m1aa(ts, Local0, c013, 0, 0x13f)
-
-		Store(Index(arg0, 12), Local0)
-		m1aa(ts, Local0, c014, 0, 0x13f)
-
-		Store(Index(arg0, 13), Local0)
-		m1aa(ts, Local0, c015, 0, 0x13f)
-	}
-
-    // 14th element is a buffer field, which will be resolved to an integer
-
-	if (arg2) {
-	    Store(Index(arg0, 14), Local0)
-	    Store(ObjectType(Local0), Local1)
-		Store(DerefOf(Local0), Local7)
-
-        if (arg3) {
-	        if (LNotEqual(Local1, c016)) {
-		        err(ts, z114, 0x112, 0, 0, Local1, c016)
-	        } else {
-			    Store(DerefOf(Local7), Local6)
-			    Store(Local6, Local7)
-            }
-        }
-
-	    Store(ObjectType(Local7), Local5)
-
-	    if (LNotEqual(Local5, c009)) {
-		    err(ts, z114, 0x112, 0, 0, Local5, c009)
-	    } else {
-		    if (LNotEqual(Local7, 0xb0)) {
-			    err(ts, z114, 0x112, 0, 0, Local7, 0)
-            }
-		}
-    }
-
-	Store(Index(arg0, 15), Local0)
-	Store(ObjectType(Local0), Local1)
-
-	if (LNotEqual(Local1, c009)) {
-		err(ts, z114, 0x112, 0, 0, Local1, c009)
-	} else {
-		Store(DerefOf(Local0), Local1)
-		if (LNotEqual(Local1, 15)) {
-			err(ts, z114, 0x112, 0, 0, Local1, 15)
-		}
-	}
-
-	Store(Index(arg0, 16), Local0)
-	Store(ObjectType(Local0), Local1)
-
-	if (LNotEqual(Local1, c009)) {
-		err(ts, z114, 0x112, 0, 0, Local1, c009)
-	} else {
-		Store(DerefOf(Local0), Local1)
-		if (LNotEqual(Local1, 16)) {
-			err(ts, z114, 0x112, 0, 0, Local1, 16)
-		}
+		Increment(Local2)
 	}
 
 	Store(Index(arg0, 17), Local0)
 	Store(ObjectType(Local0), Local1)
-
 	if (LNotEqual(Local1, c008)) {
-		err(ts, z114, 0x115, 0, 0, Local1, c008)
+		err(ts, z114, 0x11b, 0, 0, Local1, c008)
 	}
 
-	// Evaluation of Method m936 takes place
+	if (arg4) {
+	} else {
+		// Evaluation of Method m936 takes place
 
-	if (LNotEqual(i905, 0xabcd001a)) {
-		err(ts, z114, 0x116, 0, 0, i905, 0xabcd001a)
+		if (LNotEqual(i905, 0xabcd001a)) {
+			err(ts, z114, 0x11c, 0, 0, i905, 0xabcd001a)
+		}
 	}
 }
 

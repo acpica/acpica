@@ -388,6 +388,24 @@ AcpiPsGetNextNamepath (
     }
 
     /*
+     * Named references are stored internally as string objects, as this
+     * provides compatibility with other ACPI implementations.
+     * This provides support for:
+     * 1) Forward references from package object elements, when the
+     *    package is within a module-level code block.
+     * 2) ObjectType operator compatibility for individual package
+     *    elements that are actually named references.
+     * 3) Support for named references to External() objects.
+     */
+    if (AcpiGbl_ParseTableAsTermList && Arg->Common.Parent &&
+        ((Arg->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP) ||
+         (Arg->Common.Parent->Common.AmlOpcode == AML_VARIABLE_PACKAGE_OP)))
+    {
+        Arg->Common.Value.Name = Path;
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /*
      * Lookup the name in the internal namespace, starting with the current
      * scope. We don't want to add anything new to the namespace here,
      * however, so we use MODE_EXECUTE.
@@ -488,7 +506,7 @@ AcpiPsGetNextNamepath (
          * may flag as an error later if slack mode is not enabled.
          * (Some ASL code depends on allowing this behavior)
          */
-        else if ((Arg->Common.Parent) &&
+        else if (!AcpiGbl_ParseTableAsTermList && Arg->Common.Parent &&
             ((Arg->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP) ||
              (Arg->Common.Parent->Common.AmlOpcode == AML_VARIABLE_PACKAGE_OP)))
         {

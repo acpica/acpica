@@ -89,7 +89,12 @@ Method(m1c2,, Serialized)
 	Name(b000, Buffer(4) {1,0x77,3,4})
 	Name(p000, Package(3) {5,0x77,7})
 
-	Name(ppp0, Package(4) {i000, s000, b000, p000})
+	Name(ppp0, Package(4) {
+		0x77,
+		"qwer0000",
+		Buffer(4) {1,0x77,3,4},
+		Package(3) {5,0x77,7}
+	})
 
 	Store(0, FL00)    // flag of testing of exceptions
 
@@ -781,53 +786,14 @@ Method(m1c7,, Serialized)
 	Method(m000) {
 		Store(0, i000)
 	}
-	Method(m001) {
-		Store(1, i000)
-		return (0x12345678)
-	}
 
-	Method(m002) {
-		Store(0, i000)
-	}
-	Method(m003) {
-		Store(1, i000)
-		return (0x12345678)
-	}
-
-	Name(p000, Package() {m000, m001, m002, m003,
-					m000, m001, m002, m003,
-					i000, i000})
-
+	Name(p000, Package() {m000, i000})
 
 	Store(Index(p000, 0), Local0)
-	m1a3(Local0, c010, z116, ts, 110)
+	m1a3(Local0, c00a, z116, ts, 110)
 
 	Store(Index(p000, 1), Local0)
-	m1a3(Local0, c010, z116, ts, 111)
-
-	Store(Index(p000, 2), Local0)
-	m1a3(Local0, c010, z116, ts, 112)
-
-	Store(Index(p000, 3), Local0)
-	m1a3(Local0, c010, z116, ts, 113)
-
-	Store(Index(p000, 4), Local0)
-	m1a3(Local0, c010, z116, ts, 114)
-
-	Store(Index(p000, 5), Local0)
-	m1a3(Local0, c010, z116, ts, 115)
-
-	Store(Index(p000, 6), Local0)
-	m1a3(Local0, c010, z116, ts, 116)
-
-	Store(Index(p000, 7), Local0)
-	m1a3(Local0, c010, z116, ts, 117)
-
-	Store(Index(p000, 8), Local0)
-	m1a3(Local0, c009, z116, ts, 118)
-
-	Store(Index(p000, 9), Local0)
-	m1a3(Local0, c009, z116, ts, 119)
+	m1a3(Local0, c00a, z116, ts, 111)
 
 	m380(ts, i000, 0, 0)
 }
@@ -913,71 +879,20 @@ Method(m1c9,, Serialized)
 	Method(m000) {
 		Store(0, i000)
 	}
-	Method(m001) {
-		Store(1, i000)
-		return (0x12345678)
-	}
 
-	Method(m002) {
-		Store(0, i000)
-	}
-	Method(m003) {
-		Store(1, i000)
-		return (0x12345678)
-	}
-
-	Name(p000, Package() {m000, m001, m002, m003,
-					m000, m001, m002, m003,
-					i000, i000})
-
+	Name(p000, Package() {m000, i000})
 
 	Store(Index(p000, 0), Local0)
-	m1a3(Local0, c010, z116, ts, 131)
+	m1a3(Local0, c00a, z116, ts, 131)
 	CH03(ts, z116, 144, 0, 0)
 	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, 145, 0, 0)
+	CH03(ts, z116, 145, 0, 0)
 
 	Store(Index(p000, 1), Local0)
-	m1a3(Local0, c010, z116, ts, 132)
+	m1a3(Local0, c00a, z116, ts, 132)
 	CH03(ts, z116, 146, 0, 0)
 	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, 147, 0, 0)
-
-	Store(Index(p000, 2), Local0)
-	m1a3(Local0, c010, z116, ts, 133)
-	CH03(ts, z116, 148, 0, 0)
-	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, 149, 0, 0)
-
-	Store(Index(p000, 3), Local0)
-	m1a3(Local0, c010, z116, ts, 134)
-	CH03(ts, z116, 150, 0, 0)
-	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, 151, 0, 0)
-
-	Store(Index(p000, 4), Local0)
-	m1a3(Local0, c010, z116, ts, 135)
-	CH03(ts, z116, 152, 0, 0)
-	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, 153, 0, 0)
-
-	Store(Index(p000, 5), Local0)
-	m1a3(Local0, c010, z116, ts, 136)
-	CH03(ts, z116, 154, 0, 0)
-	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, 155, 0, 0)
-
-	Store(Index(p000, 6), Local0)
-	m1a3(Local0, c010, z116, ts, 137)
-	CH03(ts, z116, 156, 0, 0)
-	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, 157, 0, 0)
-
-	Store(Index(p000, 7), Local0)
-	m1a3(Local0, c010, z116, ts, 138)
-	CH03(ts, z116, 158, 0, 0)
-	Store(DerefOf(Local0), Local1)
-	CH04(ts, 0, 0xff, z116, 159, 0, 0)
+	CH03(ts, z116, 147, 0, 0)
 
 	m380(ts, i000, 0, 139)
 }

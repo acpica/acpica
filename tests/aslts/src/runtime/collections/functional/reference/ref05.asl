@@ -91,144 +91,34 @@ Method(m1b0)
 	m1a2(p90a, c00c, 3, 0, c00a, "12340010", 30)
 	m1a2(p90b, c00c, 3, 0, c00a, "zxswefas0011", 31)
 	m1a2(p90c, c00c, 3, 0, c00b, Buffer() {0xbf,0xc0,0xc1}, 32)
-	m1a2(p90d, c00c, 1, 0, c009, 0xfe7cb391d65a0000, 33)
-	m1a2(p90e, c00c, 1, 0, c009, 0xc1790001, 34)
-	m1a2(p90f, c00c, 1, 0, c00a, "12340002", 35)
-	m1a2(p910, c00c, 1, 0, c00a, "qwrtyu0003", 36)
-	m1a2(p911, c00c, 1, 0, c00b, Buffer() {0xb0,0xb1,0xb2,0xb3,0xb4}, 37)
 
-	if (y118) {
-		m1a2(p912, c00c, 1, 0, c00d, 0, 38)
-		m1a2(p913, c00c, 1, 0, c00d, 0, 39)
-		m1a2(p914, c00c, 1, 0, c00d, 0, 40)
-		m1a2(p915, c00c, 1, 0, c016, 0xb0, 41)
-	}
+	// In-package name strings are String typed, not ObjectReference
+	// typed.
 
-	// Elements of Package are NOT Computational Data
+	// Elements of Package are NameString
 
-	m1a0(p916, c00c, Ones, 42)
-	m1a0(p917, c00c, Ones, 43)
-	m1a0(p918, c00c, Ones, 44)
-	m1a0(p919, c00c, Ones, 45)
-	m1a0(p91a, c00c, Ones, 46)
-	m1a0(p91b, c00c, Ones, 47)
-	m1a0(p91c, c00c, Ones, 48)
-
-	// Elements of Package are Methods
-
-	m1a0(p91d, c00c, Ones, 49)
-	m1a0(p91e, c00c, Ones, 50)
-	m1a0(p91f, c00c, Ones, 51)
-	m1a0(p920, c00c, Ones, 52)
-	m1a0(p921, c00c, Ones, 53)
-	m1a0(p922, c00c, Ones, 54)
-	m1a0(p923, c00c, Ones, 55)
-	m1a0(p924, c00c, Ones, 56)
-	m1a0(p925, c00c, Ones, 57)
-	m1a0(p926, c00c, Ones, 58)
-	m1a0(p927, c00c, Ones, 59)
-	m1a0(p928, c00c, Ones, 60)
-	m1a0(p929, c00c, Ones, 61)
-	m1a0(p92a, c00c, Ones, 62)
-	m1a0(p92b, c00c, Ones, 63)
-	m1a0(p92c, c00c, Ones, 64)
-	m1a0(p92d, c00c, Ones, 65)
-	m1a0(p92e, c00c, Ones, 66)
-	m1a0(p92f, c00c, Ones, 67)
-	m1a0(p930, c00c, Ones, 68)
-	m1a0(p931, c00c, Ones, 69)
-	m1a0(p932, c00c, Ones, 70)
-	m1a0(p933, c00c, Ones, 71)
-	m1a0(p934, c00c, Ones, 72)
-	m1a0(p935, c00c, Ones, 73)
-	m1a0(p936, c00c, Ones, 74)
-	m1a0(p937, c00c, Ones, 75)
-	m1a0(p938, c00c, Ones, 76)
-	m1a0(p939, c00c, Ones, 77)
-	m1a0(p93a, c00c, Ones, 78)
-	m1a0(p93b, c00c, Ones, 79)
-	m1a0(p93c, c00c, Ones, 80)
-	m1a0(p93d, c00c, Ones, 81)
-	m1a0(p93e, c00c, Ones, 82)
-	m1a0(p93f, c00c, Ones, 83)
-	m1a0(p940, c00c, Ones, 84)
-	m1a0(p941, c00c, Ones, 85)
-	m1a0(p942, c00c, Ones, 86)
-	m1a0(p943, c00c, Ones, 87)
-	m1a0(p944, c00c, Ones, 88)
-	m1a0(p945, c00c, Ones, 89)
-	m1a0(p946, c00c, Ones, 90)
-	m1a0(p947, c00c, Ones, 91)
-	m1a0(p948, c00c, Ones, 92)
-	m1a0(p949, c00c, Ones, 93)
-	m1a0(p94a, c00c, Ones, 94)
-	m1a0(p94b, c00c, Ones, 95)
-	m1a0(p94c, c00c, Ones, 96)
-	m1a0(p94d, c00c, Ones, 97)
-	m1a0(p94e, c00c, Ones, 98)
-	m1a0(p94f, c00c, Ones, 99)
-	m1a0(p950, c00c, Ones, 100)
-	m1a0(p951, c00c, Ones, 101)
-	m1a0(p952, c00c, Ones, 102)
-	m1a0(p953, c00c, Ones, 103)
+	m1a2(p90d, c00c, 1, 0, c00a, "I900", 33)
+	m1a2(p90e, c00c, 1, 0, c00a, "I901", 34)
+	m1a2(p90f, c00c, 1, 0, c00a, "S900", 35)
+	m1a2(p910, c00c, 1, 0, c00a, "S901", 36)
+	m1a2(p911, c00c, 1, 0, c00a, "B9Z0", 37)
+	m1a2(p912, c00c, 1, 0, c00a, "F900", 38)
+	m1a2(p913, c00c, 1, 0, c00a, "BN90", 39)
+	m1a2(p914, c00c, 1, 0, c00a, "IF90", 40)
+	m1a2(p915, c00c, 1, 0, c00a, "BF90", 41)
+	m1a2(p916, c00c, 1, 0, c00a, "D900", 42)
+	m1a2(p917, c00c, 1, 0, c00a, "E900", 43)
+	m1a2(p918, c00c, 1, 0, c00a, "MX90", 44)
+	m1a2(p919, c00c, 1, 0, c00a, "R9Z0", 45)
+	m1a2(p91a, c00c, 1, 0, c00a, "PW90", 46)
+	m1a2(p91b, c00c, 1, 0, c00a, "PR90", 45)
+	m1a2(p91c, c00c, 1, 0, c00a, "TZ90", 48)
+	m1a2(p91d, c00c, 1, 0, c00a, "M900", 49)
 
 	// Methods
 
 	if (y509) {
 		m1a0(m900, c010, Ones, 104)
-		m1a0(m901, c010, Ones, 105)
-		m1a0(m902, c010, Ones, 106)
-		m1a0(m903, c010, Ones, 107)
-		m1a0(m904, c010, Ones, 108)
-		m1a0(m905, c010, Ones, 109)
-		m1a0(m906, c010, Ones, 110)
-		m1a0(m907, c010, Ones, 111)
-		m1a0(m908, c010, Ones, 112)
-		m1a0(m909, c010, Ones, 113)
-		m1a0(m90a, c010, Ones, 114)
-		m1a0(m90b, c010, Ones, 115)
-		m1a0(m90c, c010, Ones, 116)
-		m1a0(m90d, c010, Ones, 117)
-		m1a0(m90e, c010, Ones, 118)
-		m1a0(m90f, c010, Ones, 119)
-		m1a0(m910, c010, Ones, 120)
-		m1a0(m911, c010, Ones, 121)
-		m1a0(m912, c010, Ones, 122)
-		m1a0(m913, c010, Ones, 123)
-		m1a0(m914, c010, Ones, 124)
-		m1a0(m915, c010, Ones, 125)
-		m1a0(m916, c010, Ones, 126)
-		m1a0(m917, c010, Ones, 127)
-		m1a0(m918, c010, Ones, 128)
-		m1a0(m919, c010, Ones, 129)
-		m1a0(m91a, c010, Ones, 130)
-		m1a0(m91b, c010, Ones, 131)
-		m1a0(m91c, c010, Ones, 132)
-		m1a0(m91d, c010, Ones, 133)
-		m1a0(m91e, c010, Ones, 134)
-		m1a0(m91f, c010, Ones, 135)
-		m1a0(m920, c010, Ones, 136)
-		m1a0(m921, c010, Ones, 137)
-		m1a0(m922, c010, Ones, 138)
-		m1a0(m923, c010, Ones, 139)
-		m1a0(m924, c010, Ones, 140)
-		m1a0(m925, c010, Ones, 141)
-		m1a0(m926, c010, Ones, 142)
-		m1a0(m927, c010, Ones, 143)
-		m1a0(m928, c010, Ones, 144)
-		m1a0(m929, c010, Ones, 145)
-		m1a0(m92a, c010, Ones, 146)
-		m1a0(m92b, c010, Ones, 147)
-		m1a0(m92c, c010, Ones, 148)
-		m1a0(m92d, c010, Ones, 149)
-		m1a0(m92e, c010, Ones, 150)
-		m1a0(m92f, c010, Ones, 151)
-		m1a0(m930, c010, Ones, 152)
-		m1a0(m931, c010, Ones, 153)
-		m1a0(m932, c010, Ones, 154)
-		m1a0(m933, c010, Ones, 155)
-		m1a0(m934, c010, Ones, 156)
-		m1a0(m935, c010, Ones, 157)
 	}
 
 	m1a6()
@@ -2713,13 +2603,18 @@ Method(m1b6,, Serialized)
 	m1a3(Local0, c00c, z108, ts, 915)
 	m1a3(Local1, c00c, z108, ts, 916)
 
+	// In-package name strings are String typed, not ObjectReference
+	// typed.
+
+	// Elements of Package are NameString
+
 	CopyObject(Index(p90d, 0, Local0), Local1)
-	m1a3(Local0, c009, z108, ts, 917)
-	m1a3(Local1, c009, z108, ts, 918)
+	m1a3(Local0, c00a, z108, ts, 917)
+	m1a3(Local1, c00a, z108, ts, 918)
 
 	CopyObject(Index(p90e, 0, Local0), Local1)
-	m1a3(Local0, c009, z108, ts, 919)
-	m1a3(Local1, c009, z108, ts, 920)
+	m1a3(Local0, c00a, z108, ts, 919)
+	m1a3(Local1, c00a, z108, ts, 920)
 
 	CopyObject(Index(p90f, 0, Local0), Local1)
 	m1a3(Local0, c00a, z108, ts, 921)
@@ -2730,182 +2625,56 @@ Method(m1b6,, Serialized)
 	m1a3(Local1, c00a, z108, ts, 924)
 
 	CopyObject(Index(p911, 0, Local0), Local1)
-	m1a3(Local0, c00b, z108, ts, 925)
-	m1a3(Local1, c00b, z108, ts, 926)
-
-    // These objects become an integer in a package
+	m1a3(Local0, c00a, z108, ts, 925)
+	m1a3(Local1, c00a, z108, ts, 926)
 
 	CopyObject(Index(p912, 0, Local0), Local1)
-	m1a3(Local0, c009, z108, ts, 927)
-	m1a3(Local1, c009, z108, ts, 928)
+	m1a3(Local0, c00a, z108, ts, 927)
+	m1a3(Local1, c00a, z108, ts, 928)
 
 	CopyObject(Index(p913, 0, Local0), Local1)
-	m1a3(Local0, c009, z108, ts, 929)
-	m1a3(Local1, c009, z108, ts, 930)
+	m1a3(Local0, c00a, z108, ts, 929)
+	m1a3(Local1, c00a, z108, ts, 930)
 
 	CopyObject(Index(p914, 0, Local0), Local1)
-	m1a3(Local0, c009, z108, ts, 931)
-	m1a3(Local1, c009, z108, ts, 932)
+	m1a3(Local0, c00a, z108, ts, 931)
+	m1a3(Local1, c00a, z108, ts, 932)
 
 	CopyObject(Index(p915, 0, Local0), Local1)
-	m1a3(Local0, c009, z108, ts, 933)
-	m1a3(Local1, c009, z108, ts, 934)
-
-	// Elements of Package are NOT Computational Data
+	m1a3(Local0, c00a, z108, ts, 933)
+	m1a3(Local1, c00a, z108, ts, 934)
 
 	CopyObject(Index(p916, 0, Local0), Local1)
-	m1a3(Local0, c00e, z108, ts, 935)
-	m1a3(Local1, c00e, z108, ts, 936)
+	m1a3(Local0, c00a, z108, ts, 935)
+	m1a3(Local1, c00a, z108, ts, 936)
 
 	CopyObject(Index(p917, 0, Local0), Local1)
-	m1a3(Local0, c00f, z108, ts, 937)
-	m1a3(Local1, c00f, z108, ts, 938)
+	m1a3(Local0, c00a, z108, ts, 937)
+	m1a3(Local1, c00a, z108, ts, 938)
 
 	CopyObject(Index(p918, 0, Local0), Local1)
-	m1a3(Local0, c011, z108, ts, 939)
-	m1a3(Local1, c011, z108, ts, 940)
+	m1a3(Local0, c00a, z108, ts, 939)
+	m1a3(Local1, c00a, z108, ts, 940)
 
 	CopyObject(Index(p919, 0, Local0), Local1)
-	m1a3(Local0, c012, z108, ts, 941)
-	m1a3(Local1, c012, z108, ts, 942)
+	m1a3(Local0, c00a, z108, ts, 941)
+	m1a3(Local1, c00a, z108, ts, 942)
 
 	CopyObject(Index(p91a, 0, Local0), Local1)
-	m1a3(Local0, c013, z108, ts, 943)
-	m1a3(Local1, c013, z108, ts, 944)
+	m1a3(Local0, c00a, z108, ts, 943)
+	m1a3(Local1, c00a, z108, ts, 944)
 
 	CopyObject(Index(p91b, 0, Local0), Local1)
-	m1a3(Local0, c014, z108, ts, 945)
-	m1a3(Local1, c014, z108, ts, 946)
+	m1a3(Local0, c00a, z108, ts, 945)
+	m1a3(Local1, c00a, z108, ts, 946)
 
 	CopyObject(Index(p91c, 0, Local0), Local1)
-	m1a3(Local0, c015, z108, ts, 947)
-	m1a3(Local1, c015, z108, ts, 948)
-
-	// Elements of Package are Methods
+	m1a3(Local0, c00a, z108, ts, 947)
+	m1a3(Local1, c00a, z108, ts, 948)
 
 	CopyObject(Index(p91d, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 949)
-	m1a3(Local1, c010, z108, ts, 950)
-
-	CopyObject(Index(p91e, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 951)
-	m1a3(Local1, c010, z108, ts, 952)
-
-	CopyObject(Index(p91f, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 953)
-	m1a3(Local1, c010, z108, ts, 954)
-
-	CopyObject(Index(p920, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 955)
-	m1a3(Local1, c010, z108, ts, 956)
-
-	CopyObject(Index(p921, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 957)
-	m1a3(Local1, c010, z108, ts, 958)
-
-	CopyObject(Index(p922, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 959)
-	m1a3(Local1, c010, z108, ts, 960)
-
-	CopyObject(Index(p923, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 961)
-	m1a3(Local1, c010, z108, ts, 962)
-
-	CopyObject(Index(p924, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 963)
-	m1a3(Local1, c010, z108, ts, 964)
-
-	CopyObject(Index(p925, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 965)
-	m1a3(Local1, c010, z108, ts, 966)
-
-	CopyObject(Index(p926, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 967)
-	m1a3(Local1, c010, z108, ts, 968)
-
-	CopyObject(Index(p927, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 969)
-	m1a3(Local1, c010, z108, ts, 970)
-
-	CopyObject(Index(p928, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 971)
-	m1a3(Local1, c010, z108, ts, 972)
-
-	CopyObject(Index(p929, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 973)
-	m1a3(Local1, c010, z108, ts, 974)
-
-	CopyObject(Index(p92a, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 975)
-	m1a3(Local1, c010, z108, ts, 976)
-
-	CopyObject(Index(p92b, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 977)
-	m1a3(Local1, c010, z108, ts, 978)
-
-	CopyObject(Index(p92c, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 979)
-	m1a3(Local1, c010, z108, ts, 980)
-
-	CopyObject(Index(p92d, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 981)
-	m1a3(Local1, c010, z108, ts, 982)
-
-	CopyObject(Index(p92e, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 983)
-	m1a3(Local1, c010, z108, ts, 984)
-
-	CopyObject(Index(p92f, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 985)
-	m1a3(Local1, c010, z108, ts, 986)
-
-	CopyObject(Index(p930, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 987)
-	m1a3(Local1, c010, z108, ts, 988)
-
-	CopyObject(Index(p931, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 989)
-	m1a3(Local1, c010, z108, ts, 990)
-
-	CopyObject(Index(p932, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 991)
-	m1a3(Local1, c010, z108, ts, 992)
-
-	CopyObject(Index(p933, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 993)
-	m1a3(Local1, c010, z108, ts, 994)
-
-	CopyObject(Index(p934, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 995)
-	m1a3(Local1, c010, z108, ts, 996)
-
-	CopyObject(Index(p935, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 997)
-	m1a3(Local1, c010, z108, ts, 998)
-
-	CopyObject(Index(p936, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 999)
-	m1a3(Local1, c010, z108, ts, 1000)
-
-	CopyObject(Index(p937, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1001)
-	m1a3(Local1, c010, z108, ts, 1002)
-
-	CopyObject(Index(p938, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1003)
-	m1a3(Local1, c010, z108, ts, 1004)
-
-	CopyObject(Index(p939, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1005)
-	m1a3(Local1, c010, z108, ts, 1006)
-
-	CopyObject(Index(p93a, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1007)
-	m1a3(Local1, c010, z108, ts, 1008)
-
-	CopyObject(Index(p93b, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1009)
-	m1a3(Local1, c010, z108, ts, 1010)
+	m1a3(Local0, c00a, z108, ts, 949)
+	m1a3(Local1, c00a, z108, ts, 950)
 
 	m1a6()
 }
@@ -2949,13 +2718,18 @@ Method(m1b7,, Serialized)
 	m1a3(Local0, c00c, z108, ts, 1021)
 	m1a3(Local1, c00c, z108, ts, 1022)
 
+	// In-package name strings are String typed, not ObjectReference
+	// typed.
+
+	// Elements of Package are NameString
+
 	Store(Index(p90d, 0, Local0), Local1)
-	m1a3(Local0, c009, z108, ts, 1023)
-	m1a3(Local1, c009, z108, ts, 1024)
+	m1a3(Local0, c00a, z108, ts, 1023)
+	m1a3(Local1, c00a, z108, ts, 1024)
 
 	Store(Index(p90e, 0, Local0), Local1)
-	m1a3(Local0, c009, z108, ts, 1025)
-	m1a3(Local1, c009, z108, ts, 1026)
+	m1a3(Local0, c00a, z108, ts, 1025)
+	m1a3(Local1, c00a, z108, ts, 1026)
 
 	Store(Index(p90f, 0, Local0), Local1)
 	m1a3(Local0, c00a, z108, ts, 1027)
@@ -2966,182 +2740,56 @@ Method(m1b7,, Serialized)
 	m1a3(Local1, c00a, z108, ts, 1030)
 
 	Store(Index(p911, 0, Local0), Local1)
-	m1a3(Local0, c00b, z108, ts, 1031)
-	m1a3(Local1, c00b, z108, ts, 1032)
-
-    // These objects become an integer in a package
+	m1a3(Local0, c00a, z108, ts, 1031)
+	m1a3(Local1, c00a, z108, ts, 1032)
 
 	Store(Index(p912, 0, Local0), Local1)
-	m1a3(Local0, c009, z108, ts, 1033)
-	m1a3(Local1, c009, z108, ts, 1034)
+	m1a3(Local0, c00a, z108, ts, 1033)
+	m1a3(Local1, c00a, z108, ts, 1034)
 
 	Store(Index(p913, 0, Local0), Local1)
-	m1a3(Local0, c009, z108, ts, 1035)
-	m1a3(Local1, c009, z108, ts, 1036)
+	m1a3(Local0, c00a, z108, ts, 1035)
+	m1a3(Local1, c00a, z108, ts, 1036)
 
 	Store(Index(p914, 0, Local0), Local1)
-	m1a3(Local0, c009, z108, ts, 1037)
-	m1a3(Local1, c009, z108, ts, 1038)
+	m1a3(Local0, c00a, z108, ts, 1037)
+	m1a3(Local1, c00a, z108, ts, 1038)
 
 	Store(Index(p915, 0, Local0), Local1)
-	m1a3(Local0, c009, z108, ts, 1039)
-	m1a3(Local1, c009, z108, ts, 1040)
-
-	// Elements of Package are NOT Computational Data
+	m1a3(Local0, c00a, z108, ts, 1039)
+	m1a3(Local1, c00a, z108, ts, 1040)
 
 	Store(Index(p916, 0, Local0), Local1)
-	m1a3(Local0, c00e, z108, ts, 1041)
-	m1a3(Local1, c00e, z108, ts, 1042)
+	m1a3(Local0, c00a, z108, ts, 1041)
+	m1a3(Local1, c00a, z108, ts, 1042)
 
 	Store(Index(p917, 0, Local0), Local1)
-	m1a3(Local0, c00f, z108, ts, 1043)
-	m1a3(Local1, c00f, z108, ts, 1044)
+	m1a3(Local0, c00a, z108, ts, 1043)
+	m1a3(Local1, c00a, z108, ts, 1044)
 
 	Store(Index(p918, 0, Local0), Local1)
-	m1a3(Local0, c011, z108, ts, 1045)
-	m1a3(Local1, c011, z108, ts, 1046)
+	m1a3(Local0, c00a, z108, ts, 1045)
+	m1a3(Local1, c00a, z108, ts, 1046)
 
 	Store(Index(p919, 0, Local0), Local1)
-	m1a3(Local0, c012, z108, ts, 1047)
-	m1a3(Local1, c012, z108, ts, 1048)
+	m1a3(Local0, c00a, z108, ts, 1047)
+	m1a3(Local1, c00a, z108, ts, 1048)
 
 	Store(Index(p91a, 0, Local0), Local1)
-	m1a3(Local0, c013, z108, ts, 1049)
-	m1a3(Local1, c013, z108, ts, 1050)
+	m1a3(Local0, c00a, z108, ts, 1049)
+	m1a3(Local1, c00a, z108, ts, 1050)
 
 	Store(Index(p91b, 0, Local0), Local1)
-	m1a3(Local0, c014, z108, ts, 1051)
-	m1a3(Local1, c014, z108, ts, 1052)
+	m1a3(Local0, c00a, z108, ts, 1051)
+	m1a3(Local1, c00a, z108, ts, 1052)
 
 	Store(Index(p91c, 0, Local0), Local1)
-	m1a3(Local0, c015, z108, ts, 1053)
-	m1a3(Local1, c015, z108, ts, 1054)
-
-	// Elements of Package are Methods
+	m1a3(Local0, c00a, z108, ts, 1053)
+	m1a3(Local1, c00a, z108, ts, 1054)
 
 	Store(Index(p91d, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1055)
-	m1a3(Local1, c010, z108, ts, 1056)
-
-	Store(Index(p91e, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1057)
-	m1a3(Local1, c010, z108, ts, 1058)
-
-	Store(Index(p91f, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1059)
-	m1a3(Local1, c010, z108, ts, 1060)
-
-	Store(Index(p920, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1061)
-	m1a3(Local1, c010, z108, ts, 1062)
-
-	Store(Index(p921, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1063)
-	m1a3(Local1, c010, z108, ts, 1064)
-
-	Store(Index(p922, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1065)
-	m1a3(Local1, c010, z108, ts, 1066)
-
-	Store(Index(p923, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1067)
-	m1a3(Local1, c010, z108, ts, 1068)
-
-	Store(Index(p924, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1069)
-	m1a3(Local1, c010, z108, ts, 1070)
-
-	Store(Index(p925, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1071)
-	m1a3(Local1, c010, z108, ts, 1072)
-
-	Store(Index(p926, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1073)
-	m1a3(Local1, c010, z108, ts, 1074)
-
-	Store(Index(p927, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1075)
-	m1a3(Local1, c010, z108, ts, 1076)
-
-	Store(Index(p928, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1077)
-	m1a3(Local1, c010, z108, ts, 1078)
-
-	Store(Index(p929, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1079)
-	m1a3(Local1, c010, z108, ts, 1080)
-
-	Store(Index(p92a, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1081)
-	m1a3(Local1, c010, z108, ts, 1082)
-
-	Store(Index(p92b, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1083)
-	m1a3(Local1, c010, z108, ts, 1084)
-
-	Store(Index(p92c, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1085)
-	m1a3(Local1, c010, z108, ts, 1086)
-
-	Store(Index(p92d, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1087)
-	m1a3(Local1, c010, z108, ts, 1088)
-
-	Store(Index(p92e, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1089)
-	m1a3(Local1, c010, z108, ts, 1090)
-
-	Store(Index(p92f, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1091)
-	m1a3(Local1, c010, z108, ts, 1092)
-
-	Store(Index(p930, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1093)
-	m1a3(Local1, c010, z108, ts, 1094)
-
-	Store(Index(p931, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1095)
-	m1a3(Local1, c010, z108, ts, 1096)
-
-	Store(Index(p932, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1097)
-	m1a3(Local1, c010, z108, ts, 1098)
-
-	Store(Index(p933, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1099)
-	m1a3(Local1, c010, z108, ts, 1100)
-
-	Store(Index(p934, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1101)
-	m1a3(Local1, c010, z108, ts, 1102)
-
-	Store(Index(p935, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1103)
-	m1a3(Local1, c010, z108, ts, 1104)
-
-	Store(Index(p936, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1105)
-	m1a3(Local1, c010, z108, ts, 1106)
-
-	Store(Index(p937, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1107)
-	m1a3(Local1, c010, z108, ts, 1108)
-
-	Store(Index(p938, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1109)
-	m1a3(Local1, c010, z108, ts, 1110)
-
-	Store(Index(p939, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1111)
-	m1a3(Local1, c010, z108, ts, 1112)
-
-	Store(Index(p93a, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1113)
-	m1a3(Local1, c010, z108, ts, 1114)
-
-	Store(Index(p93b, 0, Local0), Local1)
-	m1a3(Local0, c010, z108, ts, 1115)
-	m1a3(Local1, c010, z108, ts, 1116)
+	m1a3(Local0, c00a, z108, ts, 1055)
+	m1a3(Local1, c00a, z108, ts, 1056)
 
 	m1a6()
 }

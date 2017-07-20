@@ -1560,7 +1560,7 @@ Method(m258, 1, Serialized)
 
 	// Verify p955-like Package
 
-	m1af(p100, 0, 0, 0)
+	m1af(p100, 0, 0, 0, 0)
 
 	m1a6()
 }
@@ -1592,7 +1592,7 @@ Method(m259,, Serialized)
  *	CopyObject(tz90, Index(p100, 13))
  *	CopyObject(bf90, Index(p100, 14))
  *
- *	m1af(p100, 1, 0, 0)
+ *	m1af(p100, 1, 0, 0, 0)
  *
  *
  *	m1a6()
@@ -1610,7 +1610,7 @@ Method(m25a,, Serialized)
 
 	m352(p100)
 
-	m1af(p100, 1, 1, 1)
+	m1af(p100, 1, 1, 1, 0)
 
 	m1a6()
 }
@@ -1628,7 +1628,7 @@ Method(m25b,, Serialized)
 	m353(p100, 0)
 
 	// Verify p955-like Package
-	m1af(p100, 1, 0, 1)
+	m1af(p100, 1, 0, 1, 1)
 
 	m1a6()
 }
@@ -1693,7 +1693,7 @@ Method(m25e,, Serialized)
 	m352(p100)
 
 	// Verify p955-like Package
-	m1af(p100, 1, 1, 1)
+	m1af(p100, 1, 1, 1, 0)
 
 	// Check the global *9** data are safe:
 
@@ -1723,7 +1723,7 @@ Method(m25f,, Serialized)
 	m353(p100, 0)
 
 	// Verify p955-like Package
-	m1af(p100, 1, 0, 1)
+	m1af(p100, 1, 0, 1, 1)
 
 	m1a6()
 
@@ -2394,7 +2394,7 @@ Method(m35c,, Serialized)
 
 	// Verify p955-like Package
 
-	m1af(p000, 1, 0, 1)
+	m1af(p000, 1, 0, 1, 1)
 
 	m1a6()
 
@@ -2470,7 +2470,7 @@ Method(m35d)
 
 	// Verify p955-like Package
 
-	m1af(p000, 1, 0, 1)
+	m1af(p000, 1, 0, 1, 1)
 
 	m1a6()
 
@@ -2568,7 +2568,7 @@ Method(m35e, 1, Serialized)
 
 	// Verify p955-like Package
 
-	m1af(p000, 1, 0, 1)
+	m1af(p000, 1, 0, 1, 1)
 
 	m1a6()
 
@@ -2644,7 +2644,7 @@ Method(m35f, 1)
 
 	// Verify p955-like Package
 
-	m1af(p000, 1, 0, 1)
+	m1af(p000, 1, 0, 1, 1)
 
 	m1a6()
 
@@ -2743,7 +2743,7 @@ Method(m360,, Serialized)
 
 	// Verify p955-like Package
 
-	m1af(p000, 1, 0, 1)
+	m1af(p000, 1, 0, 1, 0)
 
 	m1a6()
 
@@ -2821,7 +2821,7 @@ Method(m361)
 
 	// Verify p955-like Package
 
-	m1af(p000, 1, 0, 1)
+	m1af(p000, 1, 0, 1, 0)
 
 	m1a6()
 
@@ -2849,7 +2849,7 @@ Method(m267,, Serialized)
 		m353(p100, 1)
 
 		// Verify p955-like Package
-		m1af(p100, 1, 0, 1)
+		m1af(p100, 1, 0, 1, 1)
 
 		m1a6()
 	}
@@ -2910,7 +2910,7 @@ Method(m26b,, Serialized)
 	m1c2()
 
 	// Read any type named object element of Package
-	m1af(p955, 1, 1, 0)
+	m1af(p955, 1, 1, 0, 1)
 
 	// Check Uninitialized element of Package
 	m1c4()

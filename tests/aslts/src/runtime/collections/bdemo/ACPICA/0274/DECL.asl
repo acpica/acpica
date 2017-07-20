@@ -29,7 +29,9 @@
 /*
  * Bug 274:
  *
- * SUMMARY: Named object as element of Package is handled by ACPICA differently than by MS
+ * SUMMARY: Named object as element of Package is handled by MS as String.
+ *          So that there won't be forward references in Package. ACPICA
+ *          follows this behavior to be compliant to MS.
  */
 
 Method(mc74,, Serialized)
@@ -59,24 +61,19 @@ Method(mc74,, Serialized)
 	}
 
 	// Choose benchmark package
-	if (SLCK) {
-		Store(Package() {
-				"I000",
-				"I001",
-				"I002",
-				"i000",
-				"I003",
-				0xabcd0004},
-			Local2)
-	} else {
-		Store(Package() {
-				0xabcd0000,
-				0xabcd0001,
-				0xabcd0002,
-				"i000",
-				0xabcd0003,
-				0xabcd0004},
-			Local2)
+	Store(Package() {
+			"I000",
+			"I001",
+			"I002",
+			"i000",
+			"\\MC74.I003",
+			0xabcd0004},
+		Local2)
+	If (SLCK) {
+		// FIXME: s32/s64 tests are compiled with "-on", but now
+		//        SLCK is not set due to entry of MN00 instead of
+		//        MN01.
+		Store("I003", Index(p000, 4))
 	}
 
 	Store(DerefOf(Index(p000, 0)), Local0)

@@ -29,12 +29,18 @@
 /*
  * Bug 0105:
  *
- * SUMMARY: The ObjectType operator being passed with the IRef obtained by the specific way causes crash
+ * SUMMARY: The ObjectType operator being passed with the IRef obtained by
+ *          the specific way causes crash. However, the test doesn't seem
+ *          to be still valid as the "specific way" (using ObjectReference
+ *          as an element of Package) is not valid.
  */
 
 	Method(me6a)
 	{
 		Store("Start of test", Debug)
+
+		// In-package name strings are String typed, not
+		// ObjectReference typed.
 
 		Store(Index(pd03, 0), Local0)
 
@@ -45,8 +51,8 @@
 		Store(ObjectType(Local0), Local1)
 		Store(Local1, Debug)
 
-		if (LNotEqual(Local1, c010)) {
-			err("", zFFF, 0x000, 0, 0, Local1, c010)
+		if (LNotEqual(Local1, c00a)) {
+			err("", zFFF, 0x000, 0, 0, Local1, c00a)
 		}
 
 		Store("Finish of test", Debug)

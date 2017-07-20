@@ -1071,6 +1071,11 @@ Method(m15b,, Serialized)
 
 	Name(p000, Package() {0xabcd0001, mm00, 0xabcd0002})
 
+	// In-package name strings are String typed, not ObjectReference
+	// typed. Thus stores a reference of mm00 to replace the mm00
+	// name string.
+	Store(RefOf(mm00), Index(p000, 1))
+
 	/* **************** Run checkings **************** */
 
 	/* Store */
@@ -1101,7 +1106,7 @@ Method(m15b,, Serialized)
 	Method(m002)
 	{
 		CH03(ts, z054, 0x005, 0, 0)
-		Store(DerefOf(Index(p000, 1)), Local0)
+		Store(DerefOf(DerefOf(Index(p000, 1))), Local0)
 		if (SLCK) {
 			CH03(ts, z054, 0x006, 0, 0)
 			Store(ObjectType(Local0), Local1)
@@ -1154,7 +1159,7 @@ Method(m15b,, Serialized)
 	Method(m006)
 	{
 		CH03(ts, z054, 0x011, 0, 0)
-		CopyObject(DerefOf(Index(p000, 1)), Local0)
+		CopyObject(DerefOf(DerefOf(Index(p000, 1))), Local0)
 		CH03(ts, z054, 0x012, 0, 0)
 
 		Store(ObjectType(Local0), Local1)
@@ -1197,7 +1202,7 @@ Method(m15b,, Serialized)
 	Method(m00a)
 	{
 		CH03(ts, z054, 0x01a, 0, 0)
-		Add(DerefOf(Index(p000, 1)), 3, Local0)
+		Add(DerefOf(DerefOf(Index(p000, 1))), 3, Local0)
 		CH04(ts, 0, 47, z054, 0x01b, 0, 0) // AE_AML_OPERAND_TYPE
 	}
 
@@ -1230,7 +1235,7 @@ Method(m15b,, Serialized)
 
 	Method(m00e)
 	{
-		Store(ObjectType(DerefOf(Index(p000, 1))), Local0)
+		Store(ObjectType(DerefOf(DerefOf(Index(p000, 1)))), Local0)
 		if (LNotEqual(Local0, c010)) {
 			err(ts, z054, 0x020, 0, 0, Local0, c010)
 		}
