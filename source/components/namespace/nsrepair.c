@@ -222,11 +222,6 @@ static const ACPI_SIMPLE_REPAIR_INFO    AcpiObjectRepairInfo[] =
                 ACPI_NOT_PACKAGE_ELEMENT,
                 AcpiNsConvertToResource },
 
-    /* Object reference conversions */
-
-    { "_DEP", ACPI_RTYPE_STRING, ACPI_ALL_PACKAGE_ELEMENTS,
-                AcpiNsConvertToReference },
-
     /* Unicode conversions */
 
     { "_MLS", ACPI_RTYPE_STRING, 1,
@@ -352,6 +347,60 @@ AcpiNsSimpleRepair (
         }
     }
 
+    if (ExpectedBtypes & ACPI_RTYPE_REFERENCE)
+    {
+        if (ReturnObject->Common.Type == ACPI_TYPE_STRING)
+        {
+            /*
+             * _DLM contains an optional Buf/Ref PackageElement, so apply
+             * this workaround to only NameString typed PackageElement.
+             */
+            if (AcpiGbl_ParseTableAsTermList)
+            {
+                AcpiUtAddReference (ReturnObject);
+                NewObject = ReturnObject;
+                if (!(NewObject->Common.Flags & AOPOBJ_NAMESTRING))
+                {
+                    NewObject->String.ScopeNode = Info->Node;
+                    NewObject->Common.Flags |= AOPOBJ_NAMESTRING;
+                }
+                goto ObjectRepaired;
+            }
+            else
+            {
+                Status = AcpiNsConvertToReference (Info->Node,
+                    ReturnObject, &NewObject);
+                if (ACPI_SUCCESS (Status))
+                {
+                    goto ObjectRepaired;
+                }
+            }
+        }
+        if (ReturnObject->Common.Type == ACPI_TYPE_INTEGER &&
+            ReturnObject->Integer.Value == 0)
+        {
+            if (AcpiGbl_ParseTableAsTermList)
+            {
+                Status = AcpiNsConvertToString (
+                    ReturnObject, &NewObject);
+                if (ACPI_SUCCESS (Status))
+                {
+                    NewObject->String.ScopeNode = Info->Node;
+                    NewObject->Common.Flags |= AOPOBJ_NAMESTRING;
+                    goto ObjectRepaired;
+                }
+            }
+            else
+            {
+                Status = AcpiNsConvertToNullReference (
+                    ReturnObject, &NewObject);
+                if (ACPI_SUCCESS (Status))
+                {
+                    goto ObjectRepaired;
+                }
+            }
+        }
+    }
     if (ExpectedBtypes & ACPI_RTYPE_INTEGER)
     {
         Status = AcpiNsConvertToInteger (ReturnObject, &NewObject);

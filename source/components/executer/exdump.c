@@ -207,11 +207,13 @@ static ACPI_EXDUMP_INFO     AcpiExDumpInteger[2] =
     {ACPI_EXD_UINT64,   ACPI_EXD_OFFSET (Integer.Value),                "Value"}
 };
 
-static ACPI_EXDUMP_INFO     AcpiExDumpString[4] =
+static ACPI_EXDUMP_INFO     AcpiExDumpString[6] =
 {
     {ACPI_EXD_INIT,     ACPI_EXD_TABLE_SIZE (AcpiExDumpString),         NULL},
     {ACPI_EXD_UINT32,   ACPI_EXD_OFFSET (String.Length),                "Length"},
     {ACPI_EXD_POINTER,  ACPI_EXD_OFFSET (String.Pointer),               "Pointer"},
+    {ACPI_EXD_POINTER,  ACPI_EXD_OFFSET (String.ScopeNode),             "Scope Node"},
+    {ACPI_EXD_POINTER,  ACPI_EXD_OFFSET (String.Node),                  "Reference Node"},
     {ACPI_EXD_STRING,   0,                                              NULL}
 };
 
