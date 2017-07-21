@@ -144,10 +144,10 @@ Method(md30,, Serialized)
 
 Method(md31)
 {
-	CH03("", 0, 0xf10, 0, 0)
+	CH03("", 0, 0xf10, __LINE__, 0)
 	md2d()
 	md2e()
 	md2f()
 	md30()
-	CH03("", 0, 0xf11, 0, 0)
+	CH03("", 0, 0xf11, __LINE__, 0)
 }

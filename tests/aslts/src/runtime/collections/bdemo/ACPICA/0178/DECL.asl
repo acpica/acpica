@@ -39,7 +39,7 @@
 		BankField(r000, bnk0, 4, ByteAcc, NoLock, Preserve) { bkf0, 9 }
 
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(bkf0, Local0)
 
 		if (y263) {
@@ -50,9 +50,9 @@
 			 * - and on Store-to-debug stage
 			 * Check opcode of the last exception.
 			 */
-			CH04("", 2, 68, 0, 0x001, 0, 0) // AE_AML_REGISTER_LIMIT
+			CH04("", 2, 68, 0, __LINE__, 0, 0) // AE_AML_REGISTER_LIMIT
 		} else {
-			CH04("", 0, 68, 0, 0x001, 0, 0) // AE_AML_REGISTER_LIMIT
+			CH04("", 0, 68, 0, __LINE__, 0, 0) // AE_AML_REGISTER_LIMIT
 		}
 	}
 
@@ -64,9 +64,9 @@
 		BankField(r000, bnk0, i000, ByteAcc, NoLock, Preserve) { bkf0, 9 }
 
 
-		CH03("", 0, 0x002, 0, 0)
+		CH03("", 0, 0x002, __LINE__, 0)
 		Store(bkf0, Local0)
-		CH04("", 0, 68, 0, 0x003, 0, 0) // AE_AML_REGISTER_LIMIT
+		CH04("", 0, 68, 0, __LINE__, 0, 0) // AE_AML_REGISTER_LIMIT
 	}
 
 	Method(mf0c,, Serialized)
@@ -76,9 +76,9 @@
 		BankField(r000, bnk0, 0, ByteAcc, NoLock, Preserve) { bkf0, 9 }
 
 
-		CH03("", 0, 0x004, 0, 0)
+		CH03("", 0, 0x004, __LINE__, 0)
 		Store(bkf0, Local0)
-		CH03("", 0, 0x005, 0, 0)
+		CH03("", 0, 0x005, __LINE__, 0)
 	}
 
 	Method(mf0d,, Serialized)
@@ -89,9 +89,9 @@
 		BankField(r000, bnk0, Add(i000, 0), ByteAcc, NoLock, Preserve) { bkf0, 9 }
 
 
-		CH03("", 0, 0x006, 0, 0)
+		CH03("", 0, 0x006, __LINE__, 0)
 		Store(bkf0, Local0)
-		CH03("", 0, 0x007, 0, 0)
+		CH03("", 0, 0x007, __LINE__, 0)
 	}
 
 	Method(mf0e,, Serialized)
@@ -102,9 +102,9 @@
 		BankField(r000, bnk0, i000, ByteAcc, NoLock, Preserve) { bkf0, 9 }
 
 
-		CH03("", 0, 0x008, 0, 0)
+		CH03("", 0, 0x008, __LINE__, 0)
 		Store(bkf0, Local0)
-		CH03("", 0, 0x009, 0, 0)
+		CH03("", 0, 0x009, __LINE__, 0)
 	}
 
 

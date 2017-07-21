@@ -50,7 +50,7 @@ Method(in20, 1, Serialized)
 
 	Name(i001, 0)
 
-	CH03(ts, z165, 0x000, 0, 0)
+	CH03(ts, z165, 0x000, __LINE__, 0)
 
 	Store(arg0, i001)
 
@@ -259,7 +259,7 @@ Method(in23, 2, Serialized)
 		err(ts, z165, __LINE__, 0, 0, arg1, 1)
 	}
 
-	CH03(ts, z165, 0x011, 0, 0)
+	CH03(ts, z165, 0x011, __LINE__, 0)
 }
 
 Method(ini2)
@@ -273,6 +273,6 @@ Method(ini2)
 	SRMT("in23-0")
 	in23(0, 0)
 
-	CH03("ini2", z165, 0x000, 0, 0)
+	CH03("ini2", z165, 0x000, __LINE__, 0)
 }
 

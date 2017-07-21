@@ -53,7 +53,7 @@ Method(m000, 1, Serialized)
 
 	Name(i001, 0)
 
-	CH03(ts, z154, 0x000, 0, 0)
+	CH03(ts, z154, 0x000, __LINE__, 0)
 
 	Store(arg0, i001)
 
@@ -78,7 +78,7 @@ Method(m000, 1, Serialized)
 	}
 	Store(Local0, Debug)
 
-	CH03(ts, z154, 0x002, 0, 0)
+	CH03(ts, z154, 0x002, __LINE__, 0)
 }
 
 Method(m001, 1, Serialized)
@@ -143,7 +143,7 @@ Method(m001, 1, Serialized)
 		err(ts, z154, __LINE__, 0, 0, i000, 0x80000000)
 	}
 
-	CH03(ts, z154, 0x005, 0, 0)
+	CH03(ts, z154, 0x005, __LINE__, 0)
 }
 
 Method(m002,, Serialized)
@@ -172,7 +172,7 @@ Method(m002,, Serialized)
 		err(ts, z154, __LINE__, 0, 0, i000, 0x00100064)
 	}
 
-	CH03(ts, z154, 0x008, 0, 0)
+	CH03(ts, z154, 0x008, __LINE__, 0)
 }
 
 Method(m003,, Serialized)
@@ -200,7 +200,7 @@ Method(m003,, Serialized)
 		err(ts, z154, __LINE__, 0, 0, i000, 0x00100064)
 	}
 
-	CH03(ts, z154, 0x00b, 0, 0)
+	CH03(ts, z154, 0x00b, __LINE__, 0)
 }
 
 /*
@@ -269,7 +269,7 @@ Method(m004, 1, Serialized)
 		err(ts, z154, __LINE__, 0, 0, Local7, 1)
 	}
 
-	CH03(ts, z154, 0x00e, 0, 0)
+	CH03(ts, z154, 0x00e, __LINE__, 0)
 }
 
 /*
@@ -338,7 +338,7 @@ Method(m005, 2, Serialized)
 		err(ts, z154, __LINE__, 0, 0, arg1, 1)
 	}
 
-	CH03(ts, z154, 0x011, 0, 0)
+	CH03(ts, z154, 0x011, __LINE__, 0)
 }
 
 Method(n000)

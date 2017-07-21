@@ -1774,9 +1774,9 @@ Method(m354,, Serialized)
 	Store(RefOf(i000), Local0)
 	if (0) {
 		// This is a reference
-		CH03(ts, 0, 0, 0, 0)
+		CH03(ts, 0, 0, __LINE__, 0)
 		Add(Local0, 1, Local7)
-		CH04(ts, 0, 0xff, 0, 0, 0, 0)
+		CH04(ts, 0, 0xff, 0, __LINE__, 0, 0)
 	}
 	m1a3(Local0, c009, 0, 0, 2)
 	m380(ts, DerefOf(Local0), 0, 3)
@@ -1830,9 +1830,9 @@ Method(m355,, Serialized)
 	CopyObject(RefOf(i000), Local0)
 	if (0) {
 		// This is a reference
-		CH03(ts, 0, 2, 0, 0)
+		CH03(ts, 0, 2, __LINE__, 0)
 		Add(Local0, 1, Local7)
-		CH04(ts, 0, 0xff, 0, 1, 0, 0)
+		CH04(ts, 0, 0xff, 0, __LINE__, 0, 0)
 	}
 	m1a3(Local0, c009, 0, 0, 0)
 	m380(ts, DerefOf(Local0), 0, 1)
@@ -1921,9 +1921,9 @@ Method(m356, 1, Serialized)
 	Store(RefOf(i000), arg0)
 	if (0) {
 		// This is a reference
-		CH03(ts, 0, 4, 0, 0)
+		CH03(ts, 0, 4, __LINE__, 0)
 		Add(arg0, 1, Local7)
-		CH04(ts, 0, 0xff, 0, 2, 0, 0)
+		CH04(ts, 0, 0xff, 0, __LINE__, 0, 0)
 	}
 	m1a3(arg0, c009, 0, 0, 0)
 	m380(ts, DerefOf(arg0), 0, 1)
@@ -1977,9 +1977,9 @@ Method(m357, 1, Serialized)
 	CopyObject(RefOf(i000), arg0)
 	if (0) {
 		// This is a reference
-		CH03(ts, 0, 6, 0, 0)
+		CH03(ts, 0, 6, __LINE__, 0)
 		Add(arg0, 1, Local7)
-		CH04(ts, 0, 0xff, 0, 3, 0, 0)
+		CH04(ts, 0, 0xff, 0, __LINE__, 0, 0)
 	}
 	m1a3(arg0, c009, 0, 0, 0)
 	m380(ts, DerefOf(arg0), 0, 1)
@@ -2061,9 +2061,9 @@ Method(m358,, Serialized)
 	Store(RefOf(i000), iii0)
 	if (0) {
 		// This is a reference
-		CH03(ts, 0, 8, 0, 0)
+		CH03(ts, 0, 8, __LINE__, 0)
 		Add(iii0, 1, Local7)
-		CH04(ts, 0, 0xff, 0, 4, 0, 0)
+		CH04(ts, 0, 0xff, 0, __LINE__, 0, 0)
 	}
 	m1a3(iii0, c009, 0, 0, 0)
 	m380(ts, DerefOf(iii0), 0, 1)
@@ -2119,9 +2119,9 @@ Method(m359,, Serialized)
 	CopyObject(RefOf(i000), iii0)
 	if (0) {
 		// This is a reference
-		CH03(ts, 0, 10, 0, 0)
+		CH03(ts, 0, 10, __LINE__, 0)
 		Add(iii0, 1, Local7)
-		CH04(ts, 0, 0xff, 0, 5, 0, 0)
+		CH04(ts, 0, 0xff, 0, __LINE__, 0, 0)
 	}
 	m1a3(iii0, c009, 0, 0, 0)
 	m380(ts, DerefOf(iii0), 0, 1)
@@ -2994,9 +2994,9 @@ Method(m26c)
  */
 Method(m26d)
 {
-	CH03("m26d", 0, 0, 0, 0)
+	CH03("m26d", 0, 0, __LINE__, 0)
 	m1ae("m26d", "Buffer total", "Not implemented yet")
-	CH03("m26d", 0, 1, 0, 0)
+	CH03("m26d", 0, 1, __LINE__, 0)
 }
 
 /*
@@ -3012,7 +3012,7 @@ Method(m26e,, Serialized)
 		Store(ts, Debug)
 	}
 
-	CH03(ts, 0, 0, 0, 0)
+	CH03(ts, 0, 0, __LINE__, 0)
 
 	// Store
 	m365()
@@ -3020,7 +3020,7 @@ Method(m26e,, Serialized)
 	// CopyObject
 	m366()
 
-	CH03(ts, 0, 1, 0, 0)
+	CH03(ts, 0, 1, __LINE__, 0)
 }
 
 Method(m365,, Serialized)
@@ -3355,12 +3355,12 @@ Method(m366,, Serialized)
  */
 Method(m26f)
 {
-	CH03("m26f", 0, 0, 0, 0)
+	CH03("m26f", 0, 0, __LINE__, 0)
 
 	m1ae("m26f", "All the legal ways of writing IRef reference to some target location",
 		"Not implemented yet")
 
-	CH03("m26f", 0, 1, 0, 0)
+	CH03("m26f", 0, 1, __LINE__, 0)
 }
 
 /*
@@ -3370,7 +3370,7 @@ Method(m270,, Serialized)
 {
 	Name(ts, "m270")
 
-	CH03(ts, 0, 0, 0, 0)
+	CH03(ts, 0, 0, __LINE__, 0)
 
 	if (y100) {
 		ts00(ts)
@@ -3378,22 +3378,22 @@ Method(m270,, Serialized)
 		Store(ts, Debug)
 	}
 
-	CH03(ts, 0, 1, 0, 0)
+	CH03(ts, 0, 1, __LINE__, 0)
 
 	// Store
 	m367()
 
-	CH03(ts, 0, 2, 0, 0)
+	CH03(ts, 0, 2, __LINE__, 0)
 
 	// CopyObject
 	m368()
 
-	CH03(ts, 0, 3, 0, 0)
+	CH03(ts, 0, 3, __LINE__, 0)
 
 	m1ae("m270", "All the legal sources of references (ORef and IRef)",
 		"Started, but not implemented yet")
 
-	CH03(ts, 0, 4, 0, 0)
+	CH03(ts, 0, 4, __LINE__, 0)
 }
 
 Method(m367,, Serialized)

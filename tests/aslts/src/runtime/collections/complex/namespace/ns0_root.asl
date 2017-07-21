@@ -45,7 +45,7 @@ Method(m006, 1, Serialized)
 
 	Store(arg0, i001)
 
-	CH03(ts, z154, 0x014, 0, 0)
+	CH03(ts, z154, 0x014, __LINE__, 0)
 
 	Method(m001)
 	{
@@ -94,7 +94,7 @@ Method(m006, 1, Serialized)
 	Store(Add(d000.i000, m001()), Local0)
 
 	if (FLG9) {
-		CH03(ts, z154, 0x014, 0, 0)
+		CH03(ts, z154, 0x014, __LINE__, 0)
 		if (LNotEqual(Local0, 0x87654321)) {
 			err(ts, z154, __LINE__, 0, 0, Local0, 0x87654321)
 		}
@@ -102,7 +102,7 @@ Method(m006, 1, Serialized)
 			err(ts, z154, __LINE__, 0, 0, d000.i000, 0x80000000)
 		}
 	} else {
-		CH04(ts, 1, 5, z154, 0x014, 0, 0)	// AE_NOT_FOUND
+		CH04(ts, 1, 5, z154, __LINE__, 0, 0)	// AE_NOT_FOUND
 	}
 }
 
@@ -121,7 +121,7 @@ Method(m007, 1, Serialized)
 
 	Store(arg0, i001)
 
-	CH03(ts, z154, 0x014, 0, 0)
+	CH03(ts, z154, 0x014, __LINE__, 0)
 
 	Method(m001)
 	{
@@ -169,7 +169,7 @@ Method(m007, 1, Serialized)
 	Store(Add(tz00.i000, m001()), Local0)
 
 	if (FLG9) {
-		CH03(ts, z154, 0x014, 0, 0)
+		CH03(ts, z154, 0x014, __LINE__, 0)
 		if (LNotEqual(Local0, 0x87654321)) {
 			err(ts, z154, __LINE__, 0, 0, Local0, 0x87654321)
 		}
@@ -177,7 +177,7 @@ Method(m007, 1, Serialized)
 			err(ts, z154, __LINE__, 0, 0, tz00.i000, 0x80000000)
 		}
 	} else {
-		CH04(ts, 1, 5, z154, 0x014, 0, 0)	// AE_NOT_FOUND
+		CH04(ts, 1, 5, z154, __LINE__, 0, 0)	// AE_NOT_FOUND
 	}
 }
 
@@ -196,7 +196,7 @@ Method(m008, 1, Serialized)
 
 	Store(arg0, i001)
 
-	CH03(ts, z154, 0x014, 0, 0)
+	CH03(ts, z154, 0x014, __LINE__, 0)
 
 	Method(m001)
 	{
@@ -245,7 +245,7 @@ Method(m008, 1, Serialized)
 	Store(Add(pr00.i000, m001()), Local0)
 
 	if (FLG9) {
-		CH03(ts, z154, 0x014, 0, 0)
+		CH03(ts, z154, 0x014, __LINE__, 0)
 		if (LNotEqual(Local0, 0x87654321)) {
 			err(ts, z154, __LINE__, 0, 0, Local0, 0x87654321)
 		}
@@ -253,7 +253,7 @@ Method(m008, 1, Serialized)
 			err(ts, z154, __LINE__, 0, 0, pr00.i000, 0x80000000)
 		}
 	} else {
-		CH04(ts, 1, 5, z154, 0x014, 0, 0)	// AE_NOT_FOUND
+		CH04(ts, 1, 5, z154, __LINE__, 0, 0)	// AE_NOT_FOUND
 	}
 }
 
@@ -272,7 +272,7 @@ Method(m009, 1, Serialized)
 
 	Store(arg0, i001)
 
-	CH03(ts, z154, 0x01d, 0, 0)
+	CH03(ts, z154, 0x01d, __LINE__, 0)
 
 	Method(m001)
 	{
@@ -321,7 +321,7 @@ Method(m009, 1, Serialized)
 	Store(Add(pw00.i000, m001()), Local0)
 
 	if (FLG9) {
-		CH03(ts, z154, 0x014, 0, 0)
+		CH03(ts, z154, 0x014, __LINE__, 0)
 		if (LNotEqual(Local0, 0x87654321)) {
 			err(ts, z154, __LINE__, 0, 0, Local0, 0x87654321)
 		}
@@ -329,7 +329,7 @@ Method(m009, 1, Serialized)
 			err(ts, z154, __LINE__, 0, 0, pw00.i000, 0x80000000)
 		}
 	} else {
-		CH04(ts, 1, 5, z154, 0x014, 0, 0)	// AE_NOT_FOUND
+		CH04(ts, 1, 5, z154, __LINE__, 0, 0)	// AE_NOT_FOUND
 	}
 }
 

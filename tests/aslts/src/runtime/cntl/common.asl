@@ -558,7 +558,7 @@ Method(STTT, 4) {
 
 // Current test finish
 Method(FTTT) {
-	CH03("FTTT", 0, 0, 0, 0)
+	CH03("FTTT", 0, 0, __LINE__, 0)
 
 	// Report completion of previous root Method
 	RPT0()
@@ -1374,7 +1374,7 @@ Method(STRT, 1, Serialized)
 
 		/* Reset internal information about exceptions */
 
-		CH03("", 0, 0x888, 0, 0)
+		CH03("", 0, 0x888, __LINE__, 0)
 		Store(0, EXC0)
 		Store(0, EXC1)
 	}
@@ -1970,7 +1970,7 @@ Method(FNSH)
 {
 	// Check, the current number of exceptions is zero
 
-	CH03("FNSH", 0, 0, 0, 0)
+	CH03("FNSH", 0, 0, __LINE__, 0)
 
 	// Check all the constants are not corrupted
 

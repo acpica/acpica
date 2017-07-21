@@ -1836,7 +1836,7 @@ SRMT("verify-4-of-pHR0-by-cross-refs-of-pHR2")
 
 Method(mfdb)
 {
-	CH03("", 0, 0x200, 0, 0)
+	CH03("", 0, 0x200, __LINE__, 0)
 	mfdc()
-	CH03("", 0, 0x202, 0, 0)
+	CH03("", 0, 0x202, __LINE__, 0)
 }

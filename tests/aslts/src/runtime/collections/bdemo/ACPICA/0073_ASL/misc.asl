@@ -178,7 +178,7 @@ Method(mZ09, 2)
 		Store(0, Local0)
 	}
 
-	CH03("", 0, 0, 0, 0)
+	CH03("", 0, 0, __LINE__, 0)
 
 	Store(ObjectType(Local0), Local1)
 
@@ -186,7 +186,7 @@ Method(mZ09, 2)
 		err(arg0, z054, __LINE__, 0, 0, Local1, 0)
 	}
 
-	CH03("", 0, 0, 0, 0)
+	CH03("", 0, 0, __LINE__, 0)
 }
 
 Method(mZ0a, 1)
@@ -315,11 +315,11 @@ Method(mZ0d, 1)
 // are passed immediately
 Method(mZ0e, 1)
 {
-	CH03("", 0, 0, 0, 0)
+	CH03("", 0, 0, __LINE__, 0)
 
 	Add( Buffer() {0x79}, Buffer() {0x79} )
 
-	CH03("", 0, 0, 0, 0)
+	CH03("", 0, 0, __LINE__, 0)
 }
 
 // Bug 57: The empty Return operator (without specifying the returning value)

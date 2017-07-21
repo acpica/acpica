@@ -60,7 +60,7 @@ Method(m028,, Serialized)
 	{
 		Name(PAC0, Package(1){})
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 
 		Store(BUF0, RFU0)
 
@@ -94,7 +94,7 @@ Method(m028,, Serialized)
 			err("", zFFF, __LINE__, 0, 0, Local0, 0x1777777)
 		}
 
-		CH03("", 0, 0x005, 0, 0)
+		CH03("", 0, 0x005, __LINE__, 0)
 
 		return
 	}

@@ -92,24 +92,24 @@ Method(m031,, Serialized)
 		Store("Releasing mutexes of level 0:", Debug)
 
 		Store("Release T000 (Level 0, index 0)", Debug)
-		CH03("", 0, 0x004, 0, 0)
+		CH03("", 0, 0x004, __LINE__, 0)
 		Release(T000)
-		CH03("", 0, 0x005, 0, 0)
+		CH03("", 0, 0x005, __LINE__, 0)
 
 		Store("Release T001 (Level 0, index 1)", Debug)
-		CH03("", 0, 0x006, 0, 0)
+		CH03("", 0, 0x006, __LINE__, 0)
 		Release(T001)
-		CH03("", 0, 0x007, 0, 0)
+		CH03("", 0, 0x007, __LINE__, 0)
 
 		Store("Release T002 (Level 0, index 2)", Debug)
-		CH03("", 0, 0x008, 0, 0)
+		CH03("", 0, 0x008, __LINE__, 0)
 		Release(T002)
-		CH03("", 0, 0x009, 0, 0)
+		CH03("", 0, 0x009, __LINE__, 0)
 
 		Store("Release T003 (Level 0, index 3)", Debug)
-		CH03("", 0, 0x00a, 0, 0)
+		CH03("", 0, 0x00a, __LINE__, 0)
 		Release(T003)
-		CH03("", 0, 0x00b, 0, 0)
+		CH03("", 0, 0x00b, __LINE__, 0)
 	}
 
 	/*
@@ -159,24 +159,24 @@ Method(m031,, Serialized)
 		Store("Releasing mutexes of Level 1:", Debug)
 
 		Store("Release T100 (Level 1, index 0)", Debug)
-		CH03("", 0, 0x010, 0, 0)
+		CH03("", 0, 0x010, __LINE__, 0)
 		Release(T100)
-		CH03("", 0, 0x011, 0, 0)
+		CH03("", 0, 0x011, __LINE__, 0)
 
 		Store("Release T101 (Level 1, index 1)", Debug)
-		CH03("", 0, 0x012, 0, 0)
+		CH03("", 0, 0x012, __LINE__, 0)
 		Release(T101)
-		CH03("", 0, 0x013, 0, 0)
+		CH03("", 0, 0x013, __LINE__, 0)
 
 		Store("Release T102 (Level 1, index 2)", Debug)
-		CH03("", 0, 0x014, 0, 0)
+		CH03("", 0, 0x014, __LINE__, 0)
 		Release(T102)
-		CH03("", 0, 0x015, 0, 0)
+		CH03("", 0, 0x015, __LINE__, 0)
 
 		Store("Release T103 (Level 1, index 3)", Debug)
-		CH03("", 0, 0x016, 0, 0)
+		CH03("", 0, 0x016, __LINE__, 0)
 		Release(T103)
-		CH03("", 0, 0x017, 0, 0)
+		CH03("", 0, 0x017, __LINE__, 0)
 	}
 
 	/*
@@ -227,24 +227,24 @@ Method(m031,, Serialized)
 		Store("Releasing mutexes of Level 1:", Debug)
 
 		Store("Release T101 (Level 1, index 1)", Debug)
-		CH03("", 0, 0x01c, 0, 0)
+		CH03("", 0, 0x01c, __LINE__, 0)
 		Release(T101)
-		CH03("", 0, 0x01d, 0, 0)
+		CH03("", 0, 0x01d, __LINE__, 0)
 
 		Store("Release T102 (Level 1, index 2)", Debug)
-		CH03("", 0, 0x01e, 0, 0)
+		CH03("", 0, 0x01e, __LINE__, 0)
 		Release(T102)
-		CH03("", 0, 0x01f, 0, 0)
+		CH03("", 0, 0x01f, __LINE__, 0)
 
 		Store("Release T103 (Level 1, index 3)", Debug)
-		CH03("", 0, 0x020, 0, 0)
+		CH03("", 0, 0x020, __LINE__, 0)
 		Release(T103)
-		CH03("", 0, 0x021, 0, 0)
+		CH03("", 0, 0x021, __LINE__, 0)
 
 		Store("Release T100 (Level 1, index 0)", Debug)
-		CH03("", 0, 0x022, 0, 0)
+		CH03("", 0, 0x022, __LINE__, 0)
 		Release(T100)
-		CH03("", 0, 0x023, 0, 0)
+		CH03("", 0, 0x023, __LINE__, 0)
 	}
 
 	Method(mm00)
@@ -254,8 +254,8 @@ Method(m031,, Serialized)
 		m002()
 	}
 
-	CH03("", 0, 0x024, 0, 0)
+	CH03("", 0, 0x024, __LINE__, 0)
 	mm00()
-	CH03("", 0, 0x025, 0, 0)
+	CH03("", 0, 0x025, __LINE__, 0)
 }
 

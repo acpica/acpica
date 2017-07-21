@@ -571,5 +571,5 @@ Method(RT18,, Serialized)
 	m331(ts, 3, INT0._SHR, 0x1b, INT1._SHR, 0x63, "_SHR")
 	m331(ts, 4, INT0._INT, 0x28, INT1._INT, 0x70, "_INT")
 
-	CH03(ts, z017, 0x123, 0, 0)
+	CH03(ts, z017, 0x123, __LINE__, 0)
 }

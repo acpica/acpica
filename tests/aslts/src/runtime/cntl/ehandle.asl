@@ -363,16 +363,16 @@ Method(CH04, 7)
 
 Method(CH05)
 {
-	return (CH03("CH05", 0, 0, 0, 0))
+	return (CH03("CH05", 0, 0, __LINE__, 0))
 }
 
 Method(CH06, 3)
 {
 	if (EXCV) {
-		return (CH04(arg0, 0, arg2, 0, arg1, 0, 0))
+		return (CH04(arg0, 0, arg2, 0, __LINE__, 0, 0))
 	} else {
 		// Just only presence of ANY exception(s)
-		return (CH04(arg0, 0, 0xff, 0, arg1, 0, 0))
+		return (CH04(arg0, 0, 0xff, 0, __LINE__, 0, 0))
 	}
 }
 
@@ -382,9 +382,9 @@ Method(CH06, 3)
 Method(CH07, 7)
 {
 	if (SLCK) {
-		CH03(arg0, arg3, arg4, arg5, arg6)
+		CH03(arg0, arg3, arg4, __LINE__, arg6)
 	} else {
-		CH04(arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+		CH04(arg0, arg1, arg2, arg3, __LINE__, arg5, arg6)
 	}
 }
 

@@ -310,10 +310,10 @@ Method(md69,, Serialized)
 
 Method(md07)
 {
-	CH03("", 0, 0xf02, 0, 0)
+	CH03("", 0, 0xf02, __LINE__, 0)
 	md05()
 	md06()
 	md68()
 	md69()
-	CH03("", 0, 0xf03, 0, 0)
+	CH03("", 0, 0xf03, __LINE__, 0)
 }

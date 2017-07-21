@@ -70,9 +70,9 @@ Method(ms00,, Serialized)
 		}
 	}
 
-	CH03(ts, z162, 0x001, 0, 0)
+	CH03(ts, z162, 0x001, __LINE__, 0)
 	m000()
-	CH03(ts, z162, 0x002, 0, 0)
+	CH03(ts, z162, 0x002, __LINE__, 0)
 }
 
 /*

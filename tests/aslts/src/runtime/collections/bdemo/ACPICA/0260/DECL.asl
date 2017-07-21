@@ -56,7 +56,7 @@ Method(m029,, Serialized)
 
 	Method(m000)
 	{
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 
 		Store(BUF0, RFU0)
 
@@ -90,7 +90,7 @@ Method(m029,, Serialized)
 			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
 
-		CH03("", 0, 0x005, 0, 0)
+		CH03("", 0, 0x005, __LINE__, 0)
 
 		return
 	}

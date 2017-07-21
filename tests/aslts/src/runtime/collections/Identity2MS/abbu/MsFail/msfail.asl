@@ -216,7 +216,7 @@ Method(mf04,, Serialized)
 		if (LNotEqual(Local0, 0x1006)) {
 			err(ts, z161, __LINE__, 0, 0, Local0, 0x1006)
 		}
-		CH03(ts, z161, 0x00b, 0, 0)
+		CH03(ts, z161, 0x00b, __LINE__, 0)
 	}
 
 	Return(POUT)

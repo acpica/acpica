@@ -70,7 +70,7 @@ Method(m02f,, Serialized)
 		 * If no exception there:
 		 * ERROR: NO exception though expected! (it is the contents of bug 238)
 		 */
-		CH04("", 0, 64, 0, 0x002, 0, 0) // AE_AML_MUTEX_ORDER
+		CH04("", 0, 64, 0, __LINE__, 0, 0) // AE_AML_MUTEX_ORDER
 
 		/* (4) */
 		Store("Acquiring mutex of level 7:", Debug)
@@ -82,12 +82,12 @@ Method(m02f,, Serialized)
 			Store("Ok: Acquired T700 (Level 7, index 0)", Debug)
 			Store("Current level is equal to 7!", Debug)
 		}
-		CH03("", 0, 0x004, 0, 0)
+		CH03("", 0, 0x004, __LINE__, 0)
 
 		/* (5) */
 		Store("Releasing the mutex of the current level: T700 (Level 7, index 0)", Debug)
 		Release(T700)
-		CH03("", 0, 0x005, 0, 0)
+		CH03("", 0, 0x005, __LINE__, 0)
 
 		/*
 		 * (6)
@@ -97,12 +97,12 @@ Method(m02f,, Serialized)
 		 */
 		Store("Releasing mutex of level 6: T600 (Level 6, index 0)", Debug)
 		Release(T600)
-		CH03("", 0, 0x006, 0, 0)
+		CH03("", 0, 0x006, __LINE__, 0)
 
 		/* (7) */
 		Store("Releasing mutex of level 5: T500 (Level 5, index 0)", Debug)
 		Release(T500)
-		CH03("", 0, 0x007, 0, 0)
+		CH03("", 0, 0x007, __LINE__, 0)
 	}
 
 	Method(mm00)

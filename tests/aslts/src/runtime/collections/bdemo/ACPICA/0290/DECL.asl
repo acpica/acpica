@@ -65,7 +65,7 @@ Device (D290) {
 
 		Load(IST0, Local1)
 
-		if (CH03("", 0, 0x001, 0, 0)) {
+		if (CH03("", 0, 0x001, __LINE__, 0)) {
 			return
 		} elseif (CondRefof(\AUXD, Local0)) {
 		} else {

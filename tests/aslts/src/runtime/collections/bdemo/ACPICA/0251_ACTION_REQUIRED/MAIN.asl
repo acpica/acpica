@@ -96,7 +96,7 @@ DefinitionBlock(
 
 		// Run verification methods
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 
 		if (LEqual(arg1, "AML Debugger")) {
 			Store("========== args of Execute command of AcpiExec:", Debug)
@@ -117,7 +117,7 @@ DefinitionBlock(
 			}
 		}
 
-		CH03("", 0, 0x001, 0, 0)
+		CH03("", 0, 0x001, __LINE__, 0)
 
 		// Final actions
 		Store(FNSH(), Local7)

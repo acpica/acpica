@@ -40,7 +40,7 @@ Method(m500)
 		err(ts, z159, __LINE__, 0, 0, Local0, 0x11112222)
 	}
 
-	CH03(ts, z159, 0x100, 0, 0)
+	CH03(ts, z159, 0x100, __LINE__, 0)
 }
 
 Method(m501)
@@ -63,7 +63,7 @@ Method(m501)
 		err(ts, z159, __LINE__, 0, 0, Local0, 0x67)
 	}
 
-	CH03(ts, z159, 0x101, 0, 0)
+	CH03(ts, z159, 0x101, __LINE__, 0)
 }
 
 Method(m502)
@@ -86,7 +86,7 @@ Method(m502)
 		err(ts, z159, __LINE__, 0, 0, Local0, 0x38)
 	}
 
-	CH03(ts, z159, 0x102, 0, 0)
+	CH03(ts, z159, 0x102, __LINE__, 0)
 }
 
 /*
@@ -102,7 +102,7 @@ Method(m503, 1)
 		Name(pp00, Package() {0x11111111, 0x00000001, 0x22223333})
 	}
 
-	CH03(ts, z159, 0x103, 0, 0)
+	CH03(ts, z159, 0x103, __LINE__, 0)
 
 	Store(arg0, i001)
 
@@ -161,7 +161,7 @@ Method(m503, 1)
 		err(ts, z159, __LINE__, 0, 0, Local0, 0x80000000)
 	}
 
-	CH03(ts, z159, 0x104, 0, 0)
+	CH03(ts, z159, 0x104, __LINE__, 0)
 }
 
 /*
@@ -201,7 +201,7 @@ Method(m504)
 		err(ts, z159, __LINE__, 0, 0, Local0, 0x00100064)
 	}
 
-	CH03(ts, z159, 0x105, 0, 0)
+	CH03(ts, z159, 0x105, __LINE__, 0)
 }
 
 /*
@@ -213,7 +213,7 @@ Method(m505, 1)
 	Name(i001, 0)
 	Name(p000, Package() {1,2,3,4})
 
-	CH03(ts, z159, 0x200, 0, 0)
+	CH03(ts, z159, 0x200, __LINE__, 0)
 
 	Device(d000)
 	{
@@ -221,7 +221,7 @@ Method(m505, 1)
 		CreateField(b000, 5, 32, bf00)
 	}
 
-	CH03(ts, z159, 0x106, 0, 0)
+	CH03(ts, z159, 0x106, __LINE__, 0)
 
 	if (0) {
 		CreateField(d000.b000, 5, 32, bf00)
@@ -284,7 +284,7 @@ Method(m505, 1)
 		err(ts, z159, __LINE__, 0, 0, Local0, 0x80000000)
 	}
 
-	CH03(ts, z159, 0x107, 0, 0)
+	CH03(ts, z159, 0x107, __LINE__, 0)
 }
 
 

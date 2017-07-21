@@ -79,13 +79,13 @@ Method(m17e)
 		return
 	}
 
-	if (CH03("", 0, 0x001, 0, 0)) {
+	if (CH03("", 0, 0x001, __LINE__, 0)) {
 		return
 	}
 
 	Load(R258, H258)
 
-	if (CH04("", 0, 8, 0, 0x002, 0, 0)) { // AE_TYPE
+	if (CH04("", 0, 8, 0, __LINE__, 0, 0)) { // AE_TYPE
 		return
 	}
 

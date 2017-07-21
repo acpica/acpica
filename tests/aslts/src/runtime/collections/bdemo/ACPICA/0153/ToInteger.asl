@@ -87,9 +87,9 @@ Method(md22,, Serialized)
 
 Method(md23)
 {
-	CH03("", 0, 0xf0c, 0, 0)
+	CH03("", 0, 0xf0c, __LINE__, 0)
 	md59()
 	md21()
 	md22()
-	CH03("", 0, 0xf0d, 0, 0)
+	CH03("", 0, 0xf0d, __LINE__, 0)
 }

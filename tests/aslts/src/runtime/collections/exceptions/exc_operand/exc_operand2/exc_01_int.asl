@@ -249,7 +249,7 @@ Method(m4b1, 1, Serialized)
 		}
 
 		Store (DerefOf(arg1), Local1)
-		CH03(ts, z093, 0, 0, 0)
+		CH03(ts, z093, 0, __LINE__, 0)
 
 		Store (DerefOf(DerefOf(arg1)), Local1)
 		CH06(arg0, 47, 47)
@@ -359,7 +359,7 @@ Method(m4b1, 1, Serialized)
 			Store(0, i001)
 
 			Store (DerefOf(m000(1, lpC0)), Local1)
-			CH03(ts, z093, Add(1, lpC0), 0, 0)
+			CH03(ts, z093, __LINE__, 0, 0)
 			CH00(arg0, 1)
 
 			Store (DerefOf(DerefOf(m000(2, lpC0))), Local1)
@@ -379,7 +379,7 @@ Method(m4b1, 1, Serialized)
 		}
 	}
 
-	CH03(ts, z093, 3, 0, 0)
+	CH03(ts, z093, 3, __LINE__, 0)
 
 	// Local Named Object
 	m000(ts)

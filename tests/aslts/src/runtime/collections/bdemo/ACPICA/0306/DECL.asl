@@ -41,7 +41,7 @@ Method(mff3)
 		Store("87654321", arg0)
 	}
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 	Store(0x12345678, Local0)
 	Store("87654321", Local0)
@@ -66,5 +66,5 @@ Method(mff3)
 		err("", zFFF, __LINE__, 0, 0, ObjectType(Local2), 2)
 	}
 
-	CH03("", 0, 0x004, 0, 0)
+	CH03("", 0, 0x004, __LINE__, 0)
 }

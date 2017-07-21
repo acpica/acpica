@@ -308,7 +308,7 @@ Method(m693, 5, Serialized)
 				Return (1)
 			}
 		}
-		if (CH03(arg0, z126, 3, arg1, 0)) {
+		if (CH03(arg0, z126, 3, __LINE__, 0)) {
 			//Exception during preparing of Target Object
 			Return (1)
 		}
@@ -349,7 +349,7 @@ Method(m693, 5, Serialized)
 				Return (1)
 			}
 		}
-		if (CH03(arg0, z126, 6, arg1, 0)) {
+		if (CH03(arg0, z126, 6, __LINE__, 0)) {
 			// Exception during preparing of Source Object
 			Return (1)
 		}
@@ -663,7 +663,7 @@ Method(m693, 5, Serialized)
 			if (LNot(CH06(arg0, 26, 0xff))) {
 				if (STCS) {m000(2, 0x100, arg2, arg3)}
 			}
-		} elseif (CH03(arg0, z126, 27, arg3, arg2)) {
+		} elseif (CH03(arg0, z126, 27, __LINE__, arg2)) {
 			// Storing caused unexpected exception
 			if (STCS) {m000(2, 0x100, arg2, arg3)}
 		} else {
@@ -765,7 +765,7 @@ Method(m693, 5, Serialized)
 			if (LNot(CH06(arg0, 31, 0xff))) {
 				if (STCS) {m000(2, 0x100, arg2, arg3)}
 			}
-		} elseif (CH03(arg0, z126, 32, arg3, arg2)) {
+		} elseif (CH03(arg0, z126, 32, __LINE__, arg2)) {
 			// Storing caused unexpected exception
 			if (STCS) {m000(2, 0x100, arg2, arg3)}
 		} else {

@@ -60,7 +60,7 @@ Method(m300,, Serialized)
 		err(ts, z157, __LINE__, 0, 0, Local0, 0x11112222)
 	}
 
-	CH03(ts, z157, 0x002, 0, 0)
+	CH03(ts, z157, 0x002, __LINE__, 0)
 }
 
 Method(m301,, Serialized)
@@ -92,7 +92,7 @@ Method(m301,, Serialized)
 		err(ts, z157, __LINE__, 0, 0, Local0, 0x67)
 	}
 
-	CH03(ts, z157, 0x005, 0, 0)
+	CH03(ts, z157, 0x005, __LINE__, 0)
 }
 
 Method(m302,, Serialized)
@@ -123,7 +123,7 @@ Method(m302,, Serialized)
 		err(ts, z157, __LINE__, 0, 0, Local0, 0x38)
 	}
 
-	CH03(ts, z157, 0x008, 0, 0)
+	CH03(ts, z157, 0x008, __LINE__, 0)
 }
 
 /*
@@ -139,7 +139,7 @@ Method(m303, 1, Serialized)
 		Name(i001, 0)
 		Name(p000, Package() {1,2,3,4})
 
-		CH03(ts, z157, 0x009, 0, 0)
+		CH03(ts, z157, 0x009, __LINE__, 0)
 
 		Store(arg1, i001)
 
@@ -198,7 +198,7 @@ Method(m303, 1, Serialized)
 			err(ts, z157, __LINE__, 0, 0, Local1, 0x80000000)
 		}
 
-		CH03(ts, z157, 0x00c, 0, 0)
+		CH03(ts, z157, 0x00c, __LINE__, 0)
 
 		Return (Local0)
 	}
@@ -215,7 +215,7 @@ Method(m303, 1, Serialized)
 		err(ts, z157, __LINE__, 0, 0, Local0, 0x80000000)
 	}
 
-	CH03(ts, z157, 0x00f, 0, 0)
+	CH03(ts, z157, 0x00f, __LINE__, 0)
 }
 
 /*
@@ -267,7 +267,7 @@ Method(m304,, Serialized)
 		err(ts, z157, __LINE__, 0, 0, Local1, 0x00100064)
 	}
 
-	CH03(ts, z157, 0x014, 0, 0)
+	CH03(ts, z157, 0x014, __LINE__, 0)
 }
 
 /*
@@ -278,7 +278,7 @@ Method(m305,, Serialized)
 	Name(ts, "m305")
 	Name(b000, Buffer(16) {})
 
-	CH03(ts, z157, 0x015, 0, 0)
+	CH03(ts, z157, 0x015, __LINE__, 0)
 
 	CreateField(b000, 5, 32, bf00)
 	Store(0xabcdef70, bf00)
@@ -339,7 +339,7 @@ Method(m305,, Serialized)
 			err(ts, z157, __LINE__, 0, 0, arg0, Local1)
 		}
 
-		CH03(ts, z157, 0x018, 0, 0)
+		CH03(ts, z157, 0x018, __LINE__, 0)
 
 		Return (Local0)
 	}
@@ -356,7 +356,7 @@ Method(m305,, Serialized)
 		err(ts, z157, __LINE__, 0, 0, bf00, Local1)
 	}
 
-	CH03(ts, z157, 0x01b, 0, 0)
+	CH03(ts, z157, 0x01b, __LINE__, 0)
 }
 
 /*
@@ -369,7 +369,7 @@ Method(m306,, Serialized)
 	OperationRegion(r000, SystemMemory, 0x100, 0x100)
 	Field(r000, ByteAcc, NoLock, Preserve) { f000,32, f001,32 }
 
-	CH03(ts, z157, 0x01c, 0, 0)
+	CH03(ts, z157, 0x01c, __LINE__, 0)
 
 	Store(0xabcdef70, f000)
 
@@ -429,7 +429,7 @@ Method(m306,, Serialized)
 			err(ts, z157, __LINE__, 0, 0, arg0, Local1)
 		}
 
-		CH03(ts, z157, 0x01f, 0, 0)
+		CH03(ts, z157, 0x01f, __LINE__, 0)
 
 		Return (Local0)
 	}
@@ -446,7 +446,7 @@ Method(m306,, Serialized)
 		err(ts, z157, __LINE__, 0, 0, f000, Local1)
 	}
 
-	CH03(ts, z157, 0x022, 0, 0)
+	CH03(ts, z157, 0x022, __LINE__, 0)
 }
 
 /*
@@ -460,7 +460,7 @@ Method(m307,, Serialized)
 	Field(r000, ByteAcc, NoLock, Preserve) { f000,32, f001,32 }
 	BankField(r000, f001, 0, ByteAcc, NoLock, Preserve) { bnk0, 32 }
 
-	CH03(ts, z157, 0x023, 0, 0)
+	CH03(ts, z157, 0x023, __LINE__, 0)
 
 	Store(0xabcdef70, bnk0)
 
@@ -520,7 +520,7 @@ Method(m307,, Serialized)
 			err(ts, z157, __LINE__, 0, 0, arg0, Local1)
 		}
 
-		CH03(ts, z157, 0x026, 0, 0)
+		CH03(ts, z157, 0x026, __LINE__, 0)
 
 		Return (Local0)
 	}
@@ -537,7 +537,7 @@ Method(m307,, Serialized)
 		err(ts, z157, __LINE__, 0, 0, bnk0, Local1)
 	}
 
-	CH03(ts, z157, 0x029, 0, 0)
+	CH03(ts, z157, 0x029, __LINE__, 0)
 }
 
 /*
@@ -551,7 +551,7 @@ Method(m308,, Serialized)
 	Field(r000, ByteAcc, NoLock, Preserve) { f000,32, f001,32 }
 	IndexField(f000, f001, ByteAcc, NoLock, Preserve) { if00, 32 }
 
-	CH03(ts, z157, 0x02a, 0, 0)
+	CH03(ts, z157, 0x02a, __LINE__, 0)
 
 	Store(0xabcdef70, if00)
 
@@ -611,7 +611,7 @@ Method(m308,, Serialized)
 			err(ts, z157, __LINE__, 0, 0, arg0, Local1)
 		}
 
-		CH03(ts, z157, 0x02d, 0, 0)
+		CH03(ts, z157, 0x02d, __LINE__, 0)
 
 		Return (Local0)
 	}
@@ -628,7 +628,7 @@ Method(m308,, Serialized)
 		err(ts, z157, __LINE__, 0, 0, if00, Local1)
 	}
 
-	CH03(ts, z157, 0x030, 0, 0)
+	CH03(ts, z157, 0x030, __LINE__, 0)
 }
 
 /*
@@ -640,7 +640,7 @@ Method(m309, 1, Serialized)
 	Name(i001, 0)
 	Name(b000, Buffer() {0x11, 0x01, 0x22})
 
-	CH03(ts, z157, 0x031, 0, 0)
+	CH03(ts, z157, 0x031, __LINE__, 0)
 
 	Store(arg0, i001)
 
@@ -707,7 +707,7 @@ Method(m309, 1, Serialized)
 			err(ts, z157, __LINE__, 0, 0, Local1, Local2)
 		}
 
-		CH03(ts, z157, 0x034, 0, 0)
+		CH03(ts, z157, 0x034, __LINE__, 0)
 
 		Return (Local0)
 	}
@@ -730,7 +730,7 @@ Method(m309, 1, Serialized)
 		err(ts, z157, __LINE__, 0, 0, Local1, Local2)
 	}
 
-	CH03(ts, z157, 0x037, 0, 0)
+	CH03(ts, z157, 0x037, __LINE__, 0)
 }
 
 /*
@@ -742,7 +742,7 @@ Method(m30a, 1, Serialized)
 	Name(i001, 0)
 	Name(s000, "q\001ertyuiop")
 
-	CH03(ts, z157, 0x038, 0, 0)
+	CH03(ts, z157, 0x038, __LINE__, 0)
 
 	Store(arg0, i001)
 
@@ -809,7 +809,7 @@ Method(m30a, 1, Serialized)
 			err(ts, z157, __LINE__, 0, 0, Local1, Local2)
 		}
 
-		CH03(ts, z157, 0x03b, 0, 0)
+		CH03(ts, z157, 0x03b, __LINE__, 0)
 
 		Return (Local0)
 	}
@@ -832,7 +832,7 @@ Method(m30a, 1, Serialized)
 		err(ts, z157, __LINE__, 0, 0, Local1, Local2)
 	}
 
-	CH03(ts, z157, 0x03e, 0, 0)
+	CH03(ts, z157, 0x03e, __LINE__, 0)
 }
 
 /*
@@ -848,7 +848,7 @@ Method(m30b, 1, Serialized)
 
 	Store(arg0, i001)
 
-	CH03(ts, z157, 0x03f, 0, 0)
+	CH03(ts, z157, 0x03f, __LINE__, 0)
 
 	Method(m000, 2)
 	{
@@ -916,7 +916,7 @@ Method(m30b, 1, Serialized)
 			err(ts, z157, __LINE__, 0, 0, bf00, Local1)
 		}
 
-		CH03(ts, z157, 0x042, 0, 0)
+		CH03(ts, z157, 0x042, __LINE__, 0)
 
 		Return (Local0)
 	}
@@ -927,7 +927,7 @@ Method(m30b, 1, Serialized)
 		err(ts, z157, __LINE__, 0, 0, Local0, 0x87654321)
 	}
 
-	CH03(ts, z157, 0x044, 0, 0)
+	CH03(ts, z157, 0x044, __LINE__, 0)
 }
 
 Method(n003)

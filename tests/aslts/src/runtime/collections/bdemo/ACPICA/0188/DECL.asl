@@ -39,7 +39,7 @@ Method(mf7c,, Serialized)
 
 	// Empty buffer
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 	Store(0, Local0)
 	Store(Buffer(Local0){}, Local1)
@@ -54,5 +54,5 @@ Method(mf7c,, Serialized)
 		err("", zFFF, __LINE__, 0, 0, RT00, b000)
 	}
 
-	CH03("", 0, 0x003, 0, 0)
+	CH03("", 0, 0x003, __LINE__, 0)
 }

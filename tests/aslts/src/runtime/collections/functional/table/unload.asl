@@ -106,13 +106,13 @@ Device(DTM1) {
 		Store(\DTM0.RFU0, Local0)
 		Store(Add(\DTM0.SUM, \DTM0.CHSM(Local0, SizeOf (Local0))), \DTM0.SUM)
 
-		if (CH03(arg0, z175, 0x001, 0, 0)) {
+		if (CH03(arg0, z175, 0x001, __LINE__, 0)) {
 			return
 		}
 
 		Load(\DTM0.RFU0, HI0)
 
-		if (CH03(arg0, z175, 0x002, 0, 0)) {
+		if (CH03(arg0, z175, 0x002, __LINE__, 0)) {
 			return
 		}
 
@@ -135,7 +135,7 @@ Device(DTM1) {
 			err(arg0, z175, __LINE__, 0, 0, Local1, c010)
 		} else {
 			Store(\SSS0(), Local0)
-			if (CH03(arg0, z175, 0x006, "\\SSS0", 1)) {
+			if (CH03(arg0, z175, 0x006, __LINE__, 1)) {
 				return
 			}
 			if (LNotEqual("\\SSS0", Local0)) {
@@ -146,7 +146,7 @@ Device(DTM1) {
 		// UnLoad operator execution
 		UnLoad(m000())
 
-		if (CH03(arg0, z175, 0x008, 0, 0)) {
+		if (CH03(arg0, z175, 0x008, __LINE__, 0)) {
 			return
 		}
 
@@ -281,7 +281,7 @@ Device(DTM1) {
 		Store(\DTM0.BUF3, \DTM0.RFU3)
 		Load(\DTM0.RFU3, DDB0)
 
-		if (CH03(arg0, z175, 0x01f, 0, 0)) {
+		if (CH03(arg0, z175, 0x01f, __LINE__, 0)) {
 			return (1)
 		}
 
@@ -387,7 +387,7 @@ Device(DTM1) {
 
 		UnLoad(DDB0)
 
-		CH03(arg0, z175, 0x02f, 0, 0)
+		CH03(arg0, z175, 0x02f, __LINE__, 0)
 
 		// Check absence of the auxiliary table Objects after UnLoad
 		if (m001(Concatenate(arg0, ".after"))) {
@@ -433,7 +433,7 @@ Device(DTM1) {
 			}
 
 			UnLoad(Derefof(arg2))
-			CH04(arg0, 0, 47, z175, 0x032, 0, 0)	// AE_AML_OPERAND_TYPE
+			CH04(arg0, 0, 47, z175, __LINE__, 0, 0)	// AE_AML_OPERAND_TYPE
 
 			return (0)
 		}
@@ -444,7 +444,7 @@ Device(DTM1) {
 		Store(\DTM0.BUF3, \DTM0.RFU3)
 		Load(\DTM0.RFU3, DDB0)
 
-		if (CH03(arg0, z175, 0x033, 0, 0)) {
+		if (CH03(arg0, z175, 0x033, __LINE__, 0)) {
 			return (1)
 		}
 
@@ -458,9 +458,9 @@ Device(DTM1) {
 		} else {
 			UnLoad(Local1)
 			if (SLCK) {
-				CH04(arg0, 0, 47, z175, 0x035, 0, 0) // AE_AML_OPERAND_TYPE
+				CH04(arg0, 0, 47, z175, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 			} else {
-				CH04(arg0, 0, 49, z175, 0x035, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
+				CH04(arg0, 0, 49, z175, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
 			}
 		}
 
@@ -484,7 +484,7 @@ Device(DTM1) {
 			err(arg0, z175, __LINE__, 0, 0, Local0, c00c)
 		} else {
 			UnLoad(\AUXD.PAC0)
-			CH04(arg0, 0, 47, z175, 0x037, 0, 0) // AE_AML_OPERAND_TYPE
+			CH04(arg0, 0, 47, z175, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 		}
 
 		// Field Unit
@@ -496,7 +496,7 @@ Device(DTM1) {
 			err(arg0, z175, __LINE__, 0, 0, Local0, c00e)
 		} else {
 			UnLoad(\AUXD.DEV0)
-			CH04(arg0, 0, 47, z175, 0x039, 0, 0) // AE_AML_OPERAND_TYPE
+			CH04(arg0, 0, 47, z175, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 		}
 
 		// Event
@@ -523,7 +523,7 @@ Device(DTM1) {
 			err(arg0, z175, __LINE__, 0, 0, Local0, c015)
 		} else {
 			UnLoad(\AUXD.TZN0)
-			CH04(arg0, 0, 47, z175, 0x03b, 0, 0) // AE_AML_OPERAND_TYPE
+			CH04(arg0, 0, 47, z175, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 		}
 
 		// Buffer Field
@@ -531,7 +531,7 @@ Device(DTM1) {
 
 		UnLoad(DDB0)
 
-		CH03(arg0, z175, 0x03c, 0, 0)
+		CH03(arg0, z175, 0x03c, __LINE__, 0)
 
 		return (0)
 	}
@@ -548,14 +548,14 @@ Device(DTM1) {
 		Store(\DTM0.BUF3, \DTM0.RFU3)
 		Load(\DTM0.RFU3, DDB0)
 
-		if (CH03(arg0, z175, 0x03d, 0, 0)) {
+		if (CH03(arg0, z175, 0x03d, __LINE__, 0)) {
 			return (1)
 		}
 
 		// First Unload
 		UnLoad(DDB0)
 
-		if (CH03(arg0, z175, 0x03e, 0, 0)) {
+		if (CH03(arg0, z175, 0x03e, __LINE__, 0)) {
 			return (1)
 		}
 
@@ -565,7 +565,7 @@ Device(DTM1) {
 			// Any next
 			UnLoad(DDB0)
 
-			CH04(arg0, 0, 28, z175, 0x03f, 5, Local0) // AE_BAD_PARAMETER
+			CH04(arg0, 0, 28, z175, __LINE__, 5, Local0) // AE_BAD_PARAMETER
 
 			Decrement(Local0)
 		}
@@ -574,7 +574,7 @@ Device(DTM1) {
 		Store(\DTM0.BUF3, \DTM0.RFU3)
 		Load(\DTM0.RFU3, DDB1)
 
-		if (CH03(arg0, z175, 0x040, 0, 0)) {
+		if (CH03(arg0, z175, 0x040, __LINE__, 0)) {
 			return (1)
 		}
 
@@ -584,14 +584,14 @@ Device(DTM1) {
 			// Any next
 			UnLoad(DDB0)
 
-			CH04(arg0, 0, 28, z175, 0x041, 5, Local0) // AE_BAD_PARAMETER
+			CH04(arg0, 0, 28, z175, __LINE__, 5, Local0) // AE_BAD_PARAMETER
 
 			Decrement(Local0)
 		}
 
 		UnLoad(DDB1)
 
-		if (CH03(arg0, z175, 0x042, 0, 0)) {
+		if (CH03(arg0, z175, 0x042, __LINE__, 0)) {
 			return (1)
 		}
 
@@ -612,31 +612,31 @@ Device(DTM1) {
 		Store(\DTM0.BUF3, \DTM0.RFU3)
 		Load(\DTM0.RFU3, DDB0)
 
-		if (CH03(arg0, z175, 0x043, 0, 0)) {
+		if (CH03(arg0, z175, 0x043, __LINE__, 0)) {
 			return (1)
 		}
 
 		// Device
 		UnLoad(Derefof(Refof(\AUXD.DEV0)))
-		CH04(arg0, 0, 62, z175, 0x044, 0, 0) // AE_AML_NO_RETURN_VALUE
+		CH04(arg0, 0, 62, z175, __LINE__, 0, 0) // AE_AML_NO_RETURN_VALUE
 
 		// Thermal Zone
 		UnLoad(Derefof(Refof(\AUXD.TZN0)))
-		CH04(arg0, 0, 62, z175, 0x045, 0, 0) // AE_AML_NO_RETURN_VALUE
+		CH04(arg0, 0, 62, z175, __LINE__, 0, 0) // AE_AML_NO_RETURN_VALUE
 
 		// Method execution
 		CopyObject(m000, m001)
 		UnLoad(m001())
 
 		if (SLCK) {
-			CH04(arg0, 0, 47, z175, 0x046, 0, 0) // AE_AML_OPERAND_TYPE
+			CH04(arg0, 0, 47, z175, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 		} else {
-			CH04(arg0, 0, 47, z175, 0x047, 0, 0) // AE_AML_OPERAND_TYPE
+			CH04(arg0, 0, 47, z175, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 		}
 
 		UnLoad(DDB0)
 
-		if (CH03(arg0, z175, 0x048, 0, 0)) {
+		if (CH03(arg0, z175, 0x048, __LINE__, 0)) {
 			return (1)
 		}
 
@@ -648,7 +648,7 @@ Method(TUL0,, Serialized)
 {
 	Name(ts, "TUL0")
 
-	CH03(ts, z175, 0x200, 0, 0)
+	CH03(ts, z175, 0x200, __LINE__, 0)
 
 	// Different Sources to specify DDBHandle for UnLoad.
 	// Most of them (Named Object, LocalX, ArgX, Derefof)
@@ -657,20 +657,20 @@ Method(TUL0,, Serialized)
 	SRMT("TUL0.tst0")
 	\DTM1.tst0(ts)
 
-	CH03(ts, z175, 0x201, 0, 0)
+	CH03(ts, z175, 0x201, __LINE__, 0)
 
 	// All namespace objects created as a result of the corresponding
 	// Load operation are absent in the namespace after UnLoad
 	SRMT("TUL0.tst1")
 	\DTM1.tst1(ts)
 
-	CH03(ts, z175, 0x202, 0, 0)
+	CH03(ts, z175, 0x202, __LINE__, 0)
 
 	// Load/UnLoad processing can be done with the same table many times
 	SRMT("TUL0.tst2")
 	\DTM1.tst2(ts)
 
-	CH03(ts, z175, 0x203, 0, 0)
+	CH03(ts, z175, 0x203, __LINE__, 0)
 }
 
 // Exceptional conditions

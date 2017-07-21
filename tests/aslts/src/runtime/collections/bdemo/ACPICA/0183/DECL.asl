@@ -43,20 +43,20 @@ Method(mf79, 1)
 
 Method(mf7a)
 {
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 	Store("mf79(250):", Debug)
 	Store(mf79(250), Debug)
 
-	CH03("", 0, 0x001, 0, 0)
+	CH03("", 0, 0x001, __LINE__, 0)
 }
 
 Method(m27e)
 {
-	CH03("", 0, 0x002, 0, 0)
+	CH03("", 0, 0x002, __LINE__, 0)
 
 	Store("mf79(248):", Debug)
 	Store(mf79(248), Debug)
 
-	CH03("", 0, 0x003, 0, 0)
+	CH03("", 0, 0x003, __LINE__, 0)
 }

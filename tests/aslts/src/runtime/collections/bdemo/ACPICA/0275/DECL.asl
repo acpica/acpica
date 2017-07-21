@@ -51,12 +51,12 @@ Method(mc75,, Serialized)
 	Method(m002, 2)
 	{
 		Index(arg0, 1, Local0)
-		if (CH03("", 0, 0x001, arg0, 1)) {
+		if (CH03("", 0, 0x001, __LINE__, 1)) {
 			return
 		}
 
 		Store(DerefOf(Local0), Local1)
-		if (CH03("", 0, 0x002, arg0, 1)) {
+		if (CH03("", 0, 0x002, __LINE__, 1)) {
 			return
 		}
 

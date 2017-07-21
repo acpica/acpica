@@ -79,9 +79,9 @@ Method(mf80,, Serialized)
 		err("", zFFF, __LINE__, 0, 0, Local3, c009)
 	}
 
-	CH03("", 0, 0x005, 0, 0)
+	CH03("", 0, 0x005, __LINE__, 0)
 	Add(Local0, 0x079, Local5)
-	CH04("", 0, 47, 0, 0x006, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 0, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 }
 
 Method(mf81,, Serialized)
@@ -132,9 +132,9 @@ Method(mf81,, Serialized)
 		err("", zFFF, __LINE__, 0, 0, ii03, c009)
 	}
 
-	CH03("", 0, 0x00c, 0, 0)
+	CH03("", 0, 0x00c, __LINE__, 0)
 	Add(Local0, 0x079, ii05)
-	CH04("", 0, 47, 0, 0x00d, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 0, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 }
 
 Method(mf82,, Serialized)
@@ -183,9 +183,9 @@ Method(mf82,, Serialized)
 		err("", zFFF, __LINE__, 0, 0, ii03, c009)
 	}
 
-	CH03("", 0, 0x013, 0, 0)
+	CH03("", 0, 0x013, __LINE__, 0)
 	Add(ii00, 0x079, ii05)
-	CH04("", 0, 47, 0, 0x014, 0, 0) // AE_AML_OPERAND_TYPE
+	CH04("", 0, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 }
 
 Method(md79)

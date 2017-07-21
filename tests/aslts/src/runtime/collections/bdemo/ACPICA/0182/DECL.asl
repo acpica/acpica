@@ -39,7 +39,7 @@ Name(id23, 0xabcd0000)
 
 Method (mf78,, Serialized)
 {
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 	if (LNotEqual(id23, 0xabcd0000)) {
 		err("", zFFF, __LINE__, 0, 0, id23, 0xabcd0000)
@@ -51,7 +51,7 @@ Method (mf78,, Serialized)
 		err("", zFFF, __LINE__, 0, 0, id23, 0xabcd0001)
 	}
 
-	CH03("", 0, 0x003, 0, 0)
+	CH03("", 0, 0x003, __LINE__, 0)
 }
 
 /*
@@ -60,7 +60,7 @@ Method (mf78,, Serialized)
  */
 Method (mf85,, Serialized)
 {
-	CH03("", 0, 0x004, 0, 0)
+	CH03("", 0, 0x004, __LINE__, 0)
 
 	if (LNotEqual(i9z8, 0xabcd0001)) {
 		err("", zFFF, __LINE__, 0, 0, i9z8, 0xabcd0001)
@@ -68,5 +68,5 @@ Method (mf85,, Serialized)
 
 	Name (i9z8, 0xabcd0001)
 
-	CH04("", 0, 0xff, 0, 0x006, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 }

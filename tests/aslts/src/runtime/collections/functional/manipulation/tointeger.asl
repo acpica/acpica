@@ -394,15 +394,15 @@ Method(TOI0,, Serialized)
 	// Suppression of zeroes
 
 	if (y602) {
-		CH03(ts, z047, 0, 0, 0)
+		CH03(ts, z047, 0, __LINE__, 0)
 		Store("0x0123456789abcdefa", Local0)
 		ToInteger(Local0, Local2)
-		CH04(ts, 0, 34, z047, 1, 0, 0)
+		CH04(ts, 0, 34, z047, __LINE__, 0, 0)
 
-		CH03(ts, z047, 2, 0, 0)
+		CH03(ts, z047, 2, __LINE__, 0)
 		Store("0x000123456789abcdefa", Local0)
 		ToInteger(Local0, Local2)
-		CH04(ts, 0, 34, z047, 3, 0, 0)
+		CH04(ts, 0, 34, z047, __LINE__, 0, 0)
 	} else {
 		Store("0x0123456789abcdefa", Local0)
 		Store(0x123456789abcdefa, Local1)

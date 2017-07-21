@@ -42,7 +42,7 @@ Method(md9a,, Serialized)
 	 * Check that exceptions initiated by some bdemo tests on the
 	 * global level are all actually handled and reset at this point.
 	 */
-	CH03("", 0, 0x999, 0, 0)
+	CH03("", 0, 0x999, __LINE__, 0)
 
 	Store(LAnd(1, 1), Local0)
 	if (LNotEqual(Local0, ON00)) {

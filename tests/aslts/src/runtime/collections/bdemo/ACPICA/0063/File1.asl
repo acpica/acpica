@@ -34,7 +34,7 @@ Method(mf97) {
 
 	// Hex: 0x - dec
 
-	CH03("", 0, 0x200, 0, 0)
+	CH03("", 0, 0x200, __LINE__, 0)
 
 	Add("", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
@@ -80,15 +80,15 @@ Method(mf97) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x208, 0, 0)
+	CH03("", 0, 0x208, __LINE__, 0)
 	Add("0x1ab2cd340fe0567823456789123456789987", 0, Local0)
-	CH03("", 0, 0x209, 0, 0)
+	CH03("", 0, 0x209, __LINE__, 0)
 
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x20b, 0, 0)
+	CH03("", 0, 0x20b, __LINE__, 0)
 }
 
 /*
@@ -96,42 +96,42 @@ Method(mf97) {
  */
 Method(mf98) {
 
-	CH03("", 0, 0x200, 0, 0)
+	CH03("", 0, 0x200, __LINE__, 0)
 
 	Add("0", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x201, 0, 0)
+	CH03("", 0, 0x201, __LINE__, 0)
 
 	Add("0000000", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x202, 0, 0)
+	CH03("", 0, 0x202, __LINE__, 0)
 
 	Add("000000000000000000000000000000", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x203, 0, 0)
+	CH03("", 0, 0x203, __LINE__, 0)
 
 	Add("1", 0, Local0)
 	if (LNotEqual(Local0, 1)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 1)
 	}
 
-	CH03("", 0, 0x204, 0, 0)
+	CH03("", 0, 0x204, __LINE__, 0)
 
 	Add("12345678", 0, Local0)
 	if (LNotEqual(Local0, 0x12345678)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x12345678)
 	}
 
-	CH03("", 0, 0x205, 0, 0)
+	CH03("", 0, 0x205, __LINE__, 0)
 }
 
 /*
@@ -139,7 +139,7 @@ Method(mf98) {
  */
 Method(mf99) {
 
-	CH03("", 0, 0x213, 0, 0)
+	CH03("", 0, 0x213, __LINE__, 0)
 
 	// Hex: 0x - dec
 
@@ -206,7 +206,7 @@ Method(mf99) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x1a)
 	}
 
-	CH03("", 0, 0x219, 0, 0)
+	CH03("", 0, 0x219, __LINE__, 0)
 }
 
 /*
@@ -215,71 +215,71 @@ Method(mf99) {
 Method(mf9a) {
 
 	// 5. "1234cd" (non-decimal character in dec-image)
-	CH03("", 0, 0x220, 0, 0)
+	CH03("", 0, 0x220, __LINE__, 0)
 	Add("1234cd", 0, Local0)
 	if (LNotEqual(Local0, 0x1234cd)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x1234cd)
 	}
 
 	// 6. "000x1234" (non-decimal character in dec-image)
-	CH03("", 0, 0x223, 0, 0)
+	CH03("", 0, 0x223, __LINE__, 0)
 	Add("000x1234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
 	// 7. "0x1234cdQ" (non-hex character in '0x'-image)
-	CH03("", 0, 0x225, 0, 0)
+	CH03("", 0, 0x225, __LINE__, 0)
 	Add("0x1234cdQ", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
-	CH03("", 0, 0x227, 0, 0)
+	CH03("", 0, 0x227, __LINE__, 0)
 	Add("1234cdQ", 0, Local0)
 	if (LNotEqual(Local0, 0x1234cd)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x1234cd)
 	}
 
-	CH03("", 0, 0x229, 0, 0)
+	CH03("", 0, 0x229, __LINE__, 0)
 	Add("0x0x12345", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
 	// 8. "1234 " (white space in dec image)
-	CH03("", 0, 0x22b, 0, 0)
+	CH03("", 0, 0x22b, __LINE__, 0)
 	Add("1234 ", 0, Local0)
 	if (LNotEqual(Local0, 0x1234)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x1234)
 	}
 
 	// 9. "0x1234cd " (white space in '0x'-image)
-	CH03("", 0, 0x22d, 0, 0)
+	CH03("", 0, 0x22d, __LINE__, 0)
 	Add("1234cd ", 0, Local0)
 	if (LNotEqual(Local0, 0x1234cd)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x1234cd)
 	}
 
 	// 10. "0x 1234cdQ" (white space after '0x')
-	CH03("", 0, 0x22f, 0, 0)
+	CH03("", 0, 0x22f, __LINE__, 0)
 	Add("0x 1234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x231, 0, 0)
+	CH03("", 0, 0x231, __LINE__, 0)
 	Add("0x0x 1234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x233, 0, 0)
+	CH03("", 0, 0x233, __LINE__, 0)
 	Add("0x0x 0x 1234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x235, 0, 0)
+	CH03("", 0, 0x235, __LINE__, 0)
 	Add("0x 0x 1234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
@@ -288,7 +288,7 @@ Method(mf9a) {
 	// 11. (decimal image exceeding maximal)
 	//     32-bit mode – the value exceeding "4294967295"
 	if (1) {
-		CH03("", 0, 0x237, 0, 0)
+		CH03("", 0, 0x237, __LINE__, 0)
 		Add("4294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x4294967296)) {
@@ -300,7 +300,7 @@ Method(mf9a) {
 			}
 		}
 
-		CH03("", 0, 0x23a, 0, 0)
+		CH03("", 0, 0x23a, __LINE__, 0)
 		Add("123456789012345678904294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x1234567890123456)) {
@@ -312,7 +312,7 @@ Method(mf9a) {
 			}
 		}
 
-		CH03("", 0, 0x23d, 0, 0)
+		CH03("", 0, 0x23d, __LINE__, 0)
 		Add(" 	 		00004294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x4294967296)) {
@@ -324,7 +324,7 @@ Method(mf9a) {
 			}
 		}
 
-		CH03("", 0, 0x240, 0, 0)
+		CH03("", 0, 0x240, __LINE__, 0)
 		Add("	0123456789012345678904294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x1234567890123456)) {
@@ -336,7 +336,7 @@ Method(mf9a) {
 			}
 		}
 
-		CH03("", 0, 0x243, 0, 0)
+		CH03("", 0, 0x243, __LINE__, 0)
 		Add("0123456789012345678904294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x1234567890123456)) {
@@ -348,7 +348,7 @@ Method(mf9a) {
 			}
 		}
 
-		CH03("", 0, 0x246, 0, 0)
+		CH03("", 0, 0x246, __LINE__, 0)
 		Add(" 123456789012345678904294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x1234567890123456)) {
@@ -360,7 +360,7 @@ Method(mf9a) {
 			}
 		}
 
-		CH03("", 0, 0x249, 0, 0)
+		CH03("", 0, 0x249, __LINE__, 0)
 		Add("	123456789012345678904294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x1234567890123456)) {
@@ -374,7 +374,7 @@ Method(mf9a) {
 	}
 
 	//     64-bit mode – the value exceeding "18446744073709551615"
-	CH03("", 0, 0x24c, 0, 0)
+	CH03("", 0, 0x24c, __LINE__, 0)
 	Add("18446744073709551616", 0, Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 0x1844674407370955)) {
@@ -386,7 +386,7 @@ Method(mf9a) {
 		}
 	}
 
-	CH03("", 0, 0x24f, 0, 0)
+	CH03("", 0, 0x24f, __LINE__, 0)
 	Add("	18446744073709551616", 0, Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 0x1844674407370955)) {
@@ -398,7 +398,7 @@ Method(mf9a) {
 		}
 	}
 
-	CH03("", 0, 0x252, 0, 0)
+	CH03("", 0, 0x252, __LINE__, 0)
 	Add(" 18446744073709551616", 0, Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 0x1844674407370955)) {
@@ -410,7 +410,7 @@ Method(mf9a) {
 		}
 	}
 
-	CH03("", 0, 0x255, 0, 0)
+	CH03("", 0, 0x255, __LINE__, 0)
 	Add("018446744073709551616", 0, Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 0x1844674407370955)) {
@@ -422,7 +422,7 @@ Method(mf9a) {
 		}
 	}
 
-	CH03("", 0, 0x258, 0, 0)
+	CH03("", 0, 0x258, __LINE__, 0)
 	Add(" 	000000000018446744073709551616", 0, Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 0x1844674407370955)) {
@@ -435,20 +435,20 @@ Method(mf9a) {
 	}
 
 	// 12. "0x12345678901234567" (hex image exceeding maximal)
-	CH03("", 0, 0x25b, 0, 0)
+	CH03("", 0, 0x25b, __LINE__, 0)
 	Add("0x12345678901234567", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
 	// 13. "0x00000000000001234" (hex image exceeding maximal; no matter that zeros)
-	CH03("", 0, 0x25e, 0, 0)
+	CH03("", 0, 0x25e, __LINE__, 0)
 	Add("0x00000000000001234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x260, 0, 0)
+	CH03("", 0, 0x260, __LINE__, 0)
 	Add("0x0000000000000000000001234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
@@ -456,7 +456,7 @@ Method(mf9a) {
 
 	// 14. "0x123456789" (hex image exceeding maximal; for 32-bit mode only)
 	if (1) {
-		CH03("", 0, 0x262, 0, 0)
+		CH03("", 0, 0x262, __LINE__, 0)
 		Add("0x123456789", 0, Local0)
 		if (LNotEqual(Local0, 0)) {
 			err("", zFFF, __LINE__, 0, 0, Local0, 0)
@@ -464,12 +464,12 @@ Method(mf9a) {
 	}
 
 	// 15. "0x" (incomplete '0x' image)
-	CH03("", 0, 0x264, 0, 0)
+	CH03("", 0, 0x264, __LINE__, 0)
 	Add("0x", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
-	CH03("", 0, 0x266, 0, 0)
+	CH03("", 0, 0x266, __LINE__, 0)
 }
 
 /*
@@ -481,7 +481,7 @@ Method(mf9b) {
 
 	// Hex: 0x - dec
 
-	CH03("", 0, 0x267, 0, 0)
+	CH03("", 0, 0x267, __LINE__, 0)
 
 	Add(" 0x0", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
@@ -522,15 +522,15 @@ Method(mf9b) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x26f, 0, 0)
+	CH03("", 0, 0x26f, __LINE__, 0)
 	Add("	 	 	 	 	 	0x1ab2cd340fe0567823456789123456789987", 0, Local0)
-	CH03("", 0, 0x270, 0, 0)
+	CH03("", 0, 0x270, __LINE__, 0)
 
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x272, 0, 0)
+	CH03("", 0, 0x272, __LINE__, 0)
 
 	/*
 	 * Implicit String to Integer (<dec>)
@@ -538,49 +538,49 @@ Method(mf9b) {
 	 * Method(mf98)
 	 */
 
-	CH03("", 0, 0x273, 0, 0)
+	CH03("", 0, 0x273, __LINE__, 0)
 
 	Add("                       0", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x275, 0, 0)
+	CH03("", 0, 0x275, __LINE__, 0)
 
 	Add("						0000000", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x277, 0, 0)
+	CH03("", 0, 0x277, __LINE__, 0)
 
 	Add("                                 000000000000000000000000000000", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x279, 0, 0)
+	CH03("", 0, 0x279, __LINE__, 0)
 
 	Add("							000000000000000000000000000000", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x27b, 0, 0)
+	CH03("", 0, 0x27b, __LINE__, 0)
 
 	Add(" 		 1", 0, Local0)
 	if (LNotEqual(Local0, 1)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 1)
 	}
 
-	CH03("", 0, 0x27d, 0, 0)
+	CH03("", 0, 0x27d, __LINE__, 0)
 
 	Add(" 	 	 	12345678", 0, Local0)
 	if (LNotEqual(Local0, 0x12345678)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x12345678)
 	}
 
-	CH03("", 0, 0x27f, 0, 0)
+	CH03("", 0, 0x27f, __LINE__, 0)
 
 	/*
 	 * Implicit String to Integer (<hex-dec>)
@@ -588,7 +588,7 @@ Method(mf9b) {
 	 * Method(mf99)
 	 */
 
-	CH03("", 0, 0x280, 0, 0)
+	CH03("", 0, 0x280, __LINE__, 0)
 
 	// Hex: 0x - dec
 
@@ -655,7 +655,7 @@ Method(mf9b) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x1a)
 	}
 
-	CH03("", 0, 0x28d, 0, 0)
+	CH03("", 0, 0x28d, __LINE__, 0)
 
 	/*
 	 * No exceptions in special cases which force exceptions on ToInteger
@@ -664,71 +664,71 @@ Method(mf9b) {
 	 */
 
 	// 5. "1234cd" (non-decimal character in dec-image)
-	CH03("", 0, 0x28e, 0, 0)
+	CH03("", 0, 0x28e, __LINE__, 0)
 	Add("	1234cd", 0, Local0)
 	if (LNotEqual(Local0, 0x1234cd)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x1234cd)
 	}
 
 	// 6. "000x1234" (non-decimal character in dec-image)
-	CH03("", 0, 0x290, 0, 0)
+	CH03("", 0, 0x290, __LINE__, 0)
 	Add(" 	 			 000x1234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
 	// 7. "0x1234cdQ" (non-hex character in '0x'-image)
-	CH03("", 0, 0x292, 0, 0)
+	CH03("", 0, 0x292, __LINE__, 0)
 	Add(" 	  				 0x1234cdQ", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
-	CH03("", 0, 0x294, 0, 0)
+	CH03("", 0, 0x294, __LINE__, 0)
 	Add(" 1234cdQ", 0, Local0)
 	if (LNotEqual(Local0, 0x1234cd)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x1234cd)
 	}
 
-	CH03("", 0, 0x296, 0, 0)
+	CH03("", 0, 0x296, __LINE__, 0)
 	Add("   		0x0x12345", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
 	// 8. "1234 " (white space in dec image)
-	CH03("", 0, 0x298, 0, 0)
+	CH03("", 0, 0x298, __LINE__, 0)
 	Add("   		1234 ", 0, Local0)
 	if (LNotEqual(Local0, 0x1234)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x1234)
 	}
 
 	// 9. "0x1234cd " (white space in '0x'-image)
-	CH03("", 0, 0x29a, 0, 0)
+	CH03("", 0, 0x29a, __LINE__, 0)
 	Add("			  1234cd ", 0, Local0)
 	if (LNotEqual(Local0, 0x1234cd)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x1234cd)
 	}
 
 	// 10. "0x 1234cdQ" (white space after '0x')
-	CH03("", 0, 0x29c, 0, 0)
+	CH03("", 0, 0x29c, __LINE__, 0)
 	Add("				   	 	 		0x 1234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x29e, 0, 0)
+	CH03("", 0, 0x29e, __LINE__, 0)
 	Add(" 	   	 		 	0x0x 1234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x2a0, 0, 0)
+	CH03("", 0, 0x2a0, __LINE__, 0)
 	Add(" 	 	 	    		0x0x 0x 1234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x2a2, 0, 0)
+	CH03("", 0, 0x2a2, __LINE__, 0)
 	Add("	 	    	      		 0x 0x 1234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
@@ -737,7 +737,7 @@ Method(mf9b) {
 	// 11. (decimal image exceeding maximal)
 	//     32-bit mode – the value exceeding "4294967295"
 	if (1) {
-		CH03("", 0, 0x2a4, 0, 0)
+		CH03("", 0, 0x2a4, __LINE__, 0)
 		Add("		4294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x4294967296)) {
@@ -749,7 +749,7 @@ Method(mf9b) {
 			}
 		}
 
-		CH03("", 0, 0x2a7, 0, 0)
+		CH03("", 0, 0x2a7, __LINE__, 0)
 		Add("    		    			123456789012345678904294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x1234567890123456)) {
@@ -761,7 +761,7 @@ Method(mf9b) {
 			}
 		}
 
-		CH03("", 0, 0x2aa, 0, 0)
+		CH03("", 0, 0x2aa, __LINE__, 0)
 		Add(" 	 		00004294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x4294967296)) {
@@ -773,7 +773,7 @@ Method(mf9b) {
 			}
 		}
 
-		CH03("", 0, 0x2ad, 0, 0)
+		CH03("", 0, 0x2ad, __LINE__, 0)
 		Add("	0123456789012345678904294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x1234567890123456)) {
@@ -785,7 +785,7 @@ Method(mf9b) {
 			}
 		}
 
-		CH03("", 0, 0x2b0, 0, 0)
+		CH03("", 0, 0x2b0, __LINE__, 0)
 		Add("	0123456789012345678904294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x1234567890123456)) {
@@ -797,7 +797,7 @@ Method(mf9b) {
 			}
 		}
 
-		CH03("", 0, 0x2b3, 0, 0)
+		CH03("", 0, 0x2b3, __LINE__, 0)
 		Add(" 123456789012345678904294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x1234567890123456)) {
@@ -809,7 +809,7 @@ Method(mf9b) {
 			}
 		}
 
-		CH03("", 0, 0x2b6, 0, 0)
+		CH03("", 0, 0x2b6, __LINE__, 0)
 		Add("	123456789012345678904294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x1234567890123456)) {
@@ -823,7 +823,7 @@ Method(mf9b) {
 	}
 
 	//     64-bit mode – the value exceeding "18446744073709551615"
-	CH03("", 0, 0x2b8, 0, 0)
+	CH03("", 0, 0x2b8, __LINE__, 0)
 	Add("			18446744073709551616", 0, Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 0x1844674407370955)) {
@@ -835,7 +835,7 @@ Method(mf9b) {
 		}
 	}
 
-	CH03("", 0, 0x2bb, 0, 0)
+	CH03("", 0, 0x2bb, __LINE__, 0)
 	Add("	18446744073709551616", 0, Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 0x1844674407370955)) {
@@ -847,7 +847,7 @@ Method(mf9b) {
 		}
 	}
 
-	CH03("", 0, 0x2be, 0, 0)
+	CH03("", 0, 0x2be, __LINE__, 0)
 	Add(" 18446744073709551616", 0, Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 0x1844674407370955)) {
@@ -859,7 +859,7 @@ Method(mf9b) {
 		}
 	}
 
-	CH03("", 0, 0x2c1, 0, 0)
+	CH03("", 0, 0x2c1, __LINE__, 0)
 	Add("   	018446744073709551616", 0, Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 0x1844674407370955)) {
@@ -871,7 +871,7 @@ Method(mf9b) {
 		}
 	}
 
-	CH03("", 0, 0x2c4, 0, 0)
+	CH03("", 0, 0x2c4, __LINE__, 0)
 	Add(" 	000000000018446744073709551616", 0, Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 0x1844674407370955)) {
@@ -884,20 +884,20 @@ Method(mf9b) {
 	}
 
 	// 12. "0x12345678901234567" (hex image exceeding maximal)
-	CH03("", 0, 0x2c7, 0, 0)
+	CH03("", 0, 0x2c7, __LINE__, 0)
 	Add("		0x12345678901234567", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
 	// 13. "0x00000000000001234" (hex image exceeding maximal; no matter that zeros)
-	CH03("", 0, 0x2ca, 0, 0)
+	CH03("", 0, 0x2ca, __LINE__, 0)
 	Add("           0x00000000000001234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x2cc, 0, 0)
+	CH03("", 0, 0x2cc, __LINE__, 0)
 	Add("          		0x0000000000000000000001234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
@@ -905,7 +905,7 @@ Method(mf9b) {
 
 	// 14. "0x123456789" (hex image exceeding maximal; for 32-bit mode only)
 	if (1) {
-		CH03("", 0, 0x2ce, 0, 0)
+		CH03("", 0, 0x2ce, __LINE__, 0)
 		Add("0x123456789", 0, Local0)
 		if (LNotEqual(Local0, 0)) {
 			err("", zFFF, __LINE__, 0, 0, Local0, 0)
@@ -913,18 +913,18 @@ Method(mf9b) {
 	}
 
 	// 15. "0x" (incomplete '0x' image)
-	CH03("", 0, 0x2d0, 0, 0)
+	CH03("", 0, 0x2d0, __LINE__, 0)
 	Add("	0x", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
-	CH03("", 0, 0x2d2, 0, 0)
+	CH03("", 0, 0x2d2, __LINE__, 0)
 
 	Add(" 0x", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
-	CH03("", 0, 0x2d4, 0, 0)
+	CH03("", 0, 0x2d4, __LINE__, 0)
 }
 
 /*
@@ -942,7 +942,7 @@ Method(mf9c) {
 
 	// Hex: 0x - dec
 
-	CH03("", 0, 0x367, 0, 0)
+	CH03("", 0, 0x367, __LINE__, 0)
 
 	Add(" 0000000000x0", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
@@ -983,15 +983,15 @@ Method(mf9c) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x36f, 0, 0)
+	CH03("", 0, 0x36f, __LINE__, 0)
 	Add("	 	 	 	 	 	0000000000x1ab2cd340fe0567823456789123456789987", 0, Local0)
-	CH03("", 0, 0x370, 0, 0)
+	CH03("", 0, 0x370, __LINE__, 0)
 
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x372, 0, 0)
+	CH03("", 0, 0x372, __LINE__, 0)
 
 	/*
 	 * Implicit String to Integer (<dec>)
@@ -999,49 +999,49 @@ Method(mf9c) {
 	 * Method(mf98)
 	 */
 
-	CH03("", 0, 0x373, 0, 0)
+	CH03("", 0, 0x373, __LINE__, 0)
 
 	Add("                       0000000000", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x375, 0, 0)
+	CH03("", 0, 0x375, __LINE__, 0)
 
 	Add("						0000000000000000", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x377, 0, 0)
+	CH03("", 0, 0x377, __LINE__, 0)
 
 	Add("                                 000000000000000000000000000000000000000", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x379, 0, 0)
+	CH03("", 0, 0x379, __LINE__, 0)
 
 	Add("							000000000000000000000000000000000000000", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x37b, 0, 0)
+	CH03("", 0, 0x37b, __LINE__, 0)
 
 	Add(" 		 0000000001", 0, Local0)
 	if (LNotEqual(Local0, 1)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 1)
 	}
 
-	CH03("", 0, 0x37d, 0, 0)
+	CH03("", 0, 0x37d, __LINE__, 0)
 
 	Add(" 	 	 	00000000012345678", 0, Local0)
 	if (LNotEqual(Local0, 0x12345678)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x12345678)
 	}
 
-	CH03("", 0, 0x37f, 0, 0)
+	CH03("", 0, 0x37f, __LINE__, 0)
 
 	/*
 	 * Implicit String to Integer (<hex-dec>)
@@ -1049,7 +1049,7 @@ Method(mf9c) {
 	 * Method(mf99)
 	 */
 
-	CH03("", 0, 0x380, 0, 0)
+	CH03("", 0, 0x380, __LINE__, 0)
 
 	// Hex: 0x - dec
 
@@ -1116,7 +1116,7 @@ Method(mf9c) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x1a)
 	}
 
-	CH03("", 0, 0x38d, 0, 0)
+	CH03("", 0, 0x38d, __LINE__, 0)
 
 	/*
 	 * No exceptions in special cases which force exceptions on ToInteger
@@ -1125,71 +1125,71 @@ Method(mf9c) {
 	 */
 
 	// 5. "1234cd" (non-decimal character in dec-image)
-	CH03("", 0, 0x38e, 0, 0)
+	CH03("", 0, 0x38e, __LINE__, 0)
 	Add("	0000000001234cd", 0, Local0)
 	if (LNotEqual(Local0, 0x1234cd)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x1234cd)
 	}
 
 	// 6. "000x1234" (non-decimal character in dec-image)
-	CH03("", 0, 0x390, 0, 0)
+	CH03("", 0, 0x390, __LINE__, 0)
 	Add(" 	 			 000000000000x1234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
 	// 7. "0x1234cdQ" (non-hex character in '0x'-image)
-	CH03("", 0, 0x392, 0, 0)
+	CH03("", 0, 0x392, __LINE__, 0)
 	Add(" 	  				 0000000000x1234cdQ", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
-	CH03("", 0, 0x394, 0, 0)
+	CH03("", 0, 0x394, __LINE__, 0)
 	Add(" 0000000001234cdQ", 0, Local0)
 	if (LNotEqual(Local0, 0x1234cd)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x1234cd)
 	}
 
-	CH03("", 0, 0x396, 0, 0)
+	CH03("", 0, 0x396, __LINE__, 0)
 	Add("   		0000000000x0x12345", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
 	// 8. "1234 " (white space in dec image)
-	CH03("", 0, 0x398, 0, 0)
+	CH03("", 0, 0x398, __LINE__, 0)
 	Add("   		0000000001234 ", 0, Local0)
 	if (LNotEqual(Local0, 0x1234)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x1234)
 	}
 
 	// 9. "0x1234cd " (white space in '0x'-image)
-	CH03("", 0, 0x39a, 0, 0)
+	CH03("", 0, 0x39a, __LINE__, 0)
 	Add("			  0000000001234cd ", 0, Local0)
 	if (LNotEqual(Local0, 0x1234cd)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x1234cd)
 	}
 
 	// 10. "0x 1234cdQ" (white space after '0x')
-	CH03("", 0, 0x39c, 0, 0)
+	CH03("", 0, 0x39c, __LINE__, 0)
 	Add("				   	 	 		0000000000x 1234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x39e, 0, 0)
+	CH03("", 0, 0x39e, __LINE__, 0)
 	Add(" 	   	 		 	0000000000x0x 1234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x3a0, 0, 0)
+	CH03("", 0, 0x3a0, __LINE__, 0)
 	Add(" 	 	 	    		0000000000x0x 0x 1234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x3a2, 0, 0)
+	CH03("", 0, 0x3a2, __LINE__, 0)
 	Add("	 	    	      		 0000000000x 0x 1234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
@@ -1198,7 +1198,7 @@ Method(mf9c) {
 	// 11. (decimal image exceeding maximal)
 	//     32-bit mode – the value exceeding "4294967295"
 	if (1) {
-		CH03("", 0, 0x3a4, 0, 0)
+		CH03("", 0, 0x3a4, __LINE__, 0)
 		Add("		0000000004294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x4294967296)) {
@@ -1210,7 +1210,7 @@ Method(mf9c) {
 			}
 		}
 
-		CH03("", 0, 0x3a7, 0, 0)
+		CH03("", 0, 0x3a7, __LINE__, 0)
 		Add("    		    			000000000123456789012345678904294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x1234567890123456)) {
@@ -1222,7 +1222,7 @@ Method(mf9c) {
 			}
 		}
 
-		CH03("", 0, 0x3aa, 0, 0)
+		CH03("", 0, 0x3aa, __LINE__, 0)
 		Add(" 	 		00000000000004294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x4294967296)) {
@@ -1234,7 +1234,7 @@ Method(mf9c) {
 			}
 		}
 
-		CH03("", 0, 0x3ad, 0, 0)
+		CH03("", 0, 0x3ad, __LINE__, 0)
 		Add("	0000000000123456789012345678904294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x1234567890123456)) {
@@ -1246,7 +1246,7 @@ Method(mf9c) {
 			}
 		}
 
-		CH03("", 0, 0x3b0, 0, 0)
+		CH03("", 0, 0x3b0, __LINE__, 0)
 		Add("	0000000000123456789012345678904294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x1234567890123456)) {
@@ -1258,7 +1258,7 @@ Method(mf9c) {
 			}
 		}
 
-		CH03("", 0, 0x3b3, 0, 0)
+		CH03("", 0, 0x3b3, __LINE__, 0)
 		Add(" 000000000123456789012345678904294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x1234567890123456)) {
@@ -1270,7 +1270,7 @@ Method(mf9c) {
 			}
 		}
 
-		CH03("", 0, 0x3b6, 0, 0)
+		CH03("", 0, 0x3b6, __LINE__, 0)
 		Add("	000000000123456789012345678904294967296", 0, Local0)
 		if (F64) {
 			if (LNotEqual(Local0, 0x1234567890123456)) {
@@ -1284,7 +1284,7 @@ Method(mf9c) {
 	}
 
 	//     64-bit mode – the value exceeding "18446744073709551615"
-	CH03("", 0, 0x3b8, 0, 0)
+	CH03("", 0, 0x3b8, __LINE__, 0)
 	Add("			00000000018446744073709551616", 0, Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 0x1844674407370955)) {
@@ -1296,7 +1296,7 @@ Method(mf9c) {
 		}
 	}
 
-	CH03("", 0, 0x3bb, 0, 0)
+	CH03("", 0, 0x3bb, __LINE__, 0)
 	Add("	00000000018446744073709551616", 0, Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 0x1844674407370955)) {
@@ -1308,7 +1308,7 @@ Method(mf9c) {
 		}
 	}
 
-	CH03("", 0, 0x3be, 0, 0)
+	CH03("", 0, 0x3be, __LINE__, 0)
 	Add(" 00000000018446744073709551616", 0, Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 0x1844674407370955)) {
@@ -1320,7 +1320,7 @@ Method(mf9c) {
 		}
 	}
 
-	CH03("", 0, 0x3c1, 0, 0)
+	CH03("", 0, 0x3c1, __LINE__, 0)
 	Add("   	000000000018446744073709551616", 0, Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 0x1844674407370955)) {
@@ -1332,7 +1332,7 @@ Method(mf9c) {
 		}
 	}
 
-	CH03("", 0, 0x3c4, 0, 0)
+	CH03("", 0, 0x3c4, __LINE__, 0)
 	Add(" 	000000000000000000018446744073709551616", 0, Local0)
 	if (F64) {
 		if (LNotEqual(Local0, 0x1844674407370955)) {
@@ -1345,20 +1345,20 @@ Method(mf9c) {
 	}
 
 	// 12. "0x12345678901234567" (hex image exceeding maximal)
-	CH03("", 0, 0x3c7, 0, 0)
+	CH03("", 0, 0x3c7, __LINE__, 0)
 	Add("		0000000000x12345678901234567", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
 	// 13. "0x00000000000001234" (hex image exceeding maximal; no matter that zeros)
-	CH03("", 0, 0x3ca, 0, 0)
+	CH03("", 0, 0x3ca, __LINE__, 0)
 	Add("           0000000000x00000000000001234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH03("", 0, 0x3cc, 0, 0)
+	CH03("", 0, 0x3cc, __LINE__, 0)
 	Add("          		0000000000x0000000000000000000001234", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
@@ -1366,7 +1366,7 @@ Method(mf9c) {
 
 	// 14. "0x123456789" (hex image exceeding maximal; for 32-bit mode only)
 	if (1) {
-		CH03("", 0, 0x3ce, 0, 0)
+		CH03("", 0, 0x3ce, __LINE__, 0)
 		Add("0x123456789", 0, Local0)
 		if (LNotEqual(Local0, 0)) {
 			err("", zFFF, __LINE__, 0, 0, Local0, 0)
@@ -1374,16 +1374,16 @@ Method(mf9c) {
 	}
 
 	// 15. "0x" (incomplete '0x' image)
-	CH03("", 0, 0x3d0, 0, 0)
+	CH03("", 0, 0x3d0, __LINE__, 0)
 	Add("	0000000000x", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
-	CH03("", 0, 0x3d2, 0, 0)
+	CH03("", 0, 0x3d2, __LINE__, 0)
 
 	Add(" 0000000000x", 0, Local0)
 	if (LNotEqual(Local0, 0)) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0)
 	}
-	CH03("", 0, 0x3d4, 0, 0)
+	CH03("", 0, 0x3d4, __LINE__, 0)
 }

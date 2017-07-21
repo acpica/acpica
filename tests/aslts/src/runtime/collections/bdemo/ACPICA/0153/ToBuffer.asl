@@ -131,12 +131,12 @@ Method(md0d,, Serialized)
 
 Method(m00e)
 {
-	CH03("", 0, 0xf04, 0, 0)
+	CH03("", 0, 0xf04, __LINE__, 0)
 	md08()
 	md09()
 	md0a()
 	md0b()
 	md0c()
 	md0d()
-	CH03("", 0, 0xf05, 0, 0)
+	CH03("", 0, 0xf05, __LINE__, 0)
 }

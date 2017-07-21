@@ -38,35 +38,35 @@
 	{
 		Name(b000, Buffer(2){0xff, 0xff})
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		CreateField(b000, 0,16, bf00)
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 
-		CH03("", 0, 0x002, 0, 0)
+		CH03("", 0, 0x002, __LINE__, 0)
 		CreateField(b000, 0, 0, bf01)
-		CH04("", 0, 0xff, 0, 0x003, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x004, 0, 0)
+		CH03("", 0, 0x004, __LINE__, 0)
 		CreateField(b000, 1, 0, bf02)
-		CH04("", 0, 0xff, 0, 0x005, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x006, 0, 0)
+		CH03("", 0, 0x006, __LINE__, 0)
 		CreateField(b000, 7, 0, bf03)
-		CH04("", 0, 0xff, 0, 0x007, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x008, 0, 0)
+		CH03("", 0, 0x008, __LINE__, 0)
 		CreateField(b000, 8, 0, bf04)
-		CH04("", 0, 0xff, 0, 0x009, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x00a, 0, 0)
+		CH03("", 0, 0x00a, __LINE__, 0)
 		CreateField(b000,15, 0, bf05)
-		CH04("", 0, 0xff, 0, 0x00b, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x00c, 0, 0)
+		CH03("", 0, 0x00c, __LINE__, 0)
 		CreateField(b000,16, 0, bf06)
-		CH04("", 0, 0xff, 0, 0x00d, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-		CH03("", 0, 0x00e, 0, 0)
+		CH03("", 0, 0x00e, __LINE__, 0)
 
 		Store("All CreateField-s finished", Debug)
 
@@ -78,7 +78,7 @@
 		Store(bf05, Debug)
 		Store(bf06, Debug)
 
-		CH04("", 0, 0xff, 0, 0x00f, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
 		Store("All Store-to-Debug-s finished", Debug)
 	}

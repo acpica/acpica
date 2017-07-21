@@ -1001,5 +1001,5 @@ Method(RT1b,, Serialized)
 
 	m332(ts, 1, "p444", p442, p441, p444)
 
-	CH03(ts, z007, 0x123, 0, 0)
+	CH03(ts, z007, 0x123, __LINE__, 0)
 }

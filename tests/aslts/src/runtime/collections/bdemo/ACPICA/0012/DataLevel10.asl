@@ -75,7 +75,7 @@ Method(mdac,, Serialized)
 
 	// Checkings
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 	Store(DerefOf("b000"), Local1)
 	mf88(Local1, c00b, bb00, 0x001, 0x002, 1)
@@ -115,7 +115,7 @@ Method(mdac,, Serialized)
 	Store(mm02("^b000"), Local1)
 	mf88(Local1, c00b, bb00, 0x013, 0x014, 1)
 
-	CH03("", 0, 0x015, 0, 0)
+	CH03("", 0, 0x015, __LINE__, 0)
 }
 
 /*
@@ -142,31 +142,31 @@ Method(mf89,, Serialized)
 	if (FLG9) {
 		mf88(Local1, c00b, bb01, 0x002, 0x003, 1)
 	} else {
-		CH04("", 0, 0xff, 0, 0x004, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 	}
 
 	Store(DerefOf("^mf89.pr01.i000"), Local1)
 	if (FLG9) {
 		mf88(Local1, c009, 0xaabc0000, 0x005, 0x006, 1)
 	} else {
-		CH04("", 0, 0xff, 0, 0x007, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 	}
 
 	Store(DerefOf("\\mf89.pr01.i000"), Local1)
 	if (FLG9) {
 		mf88(Local1, c009, 0xaabc0000, 0x008, 0x009, 1)
 	} else {
-		CH04("", 0, 0xff, 0, 0x00a, 0, 0) // AE_NOT_FOUND
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0) // AE_NOT_FOUND
 	}
 
 	Store(DerefOf("^mf89.i010"), Local1)
 	if (FLG9) {
 		mf88(Local1, c009, ii00, 0x00b, 0x00c, 1)
 	} else {
-		CH04("", 0, 0xff, 0, 0x00d, 0, 0) // AE_NOT_FOUND
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0) // AE_NOT_FOUND
 	}
 
-	CH03("", 0, 0x00e, 0, 0)
+	CH03("", 0, 0x00e, __LINE__, 0)
 }
 
 /*
@@ -182,7 +182,7 @@ Method(mf8a,, Serialized)
 	Name(ii02, 0xabbc0000)
 	Name(p002, Package() {1,2,3,4})
 
-	CH03("", 0, 0x01f, 0, 0)
+	CH03("", 0, 0x01f, __LINE__, 0)
 
 	// Checkings
 
@@ -198,7 +198,7 @@ Method(mf8a,, Serialized)
 	Store(DerefOf("p002"), Local1)
 	mf88(Local1, c00c, 0, 0x026, 0x027, 0)
 
-	CH03("", 0, 0x028, 0, 0)
+	CH03("", 0, 0x028, __LINE__, 0)
 }
 
 /*
@@ -216,33 +216,33 @@ Method(mf8b,, Serialized)
 
 	// Checkings
 
-	CH03("", 0, 0x029, 0, 0)
+	CH03("", 0, 0x029, __LINE__, 0)
 	CopyObject(DerefOf("e003"), Local1)
 	mf88(Local1, c00f, 0, 0x02a, 0x02b, 0)
 
-	CH03("", 0, 0x02c, 0, 0)
+	CH03("", 0, 0x02c, __LINE__, 0)
 	CopyObject(DerefOf("mx03"), Local1)
 	mf88(Local1, c011, 0, 0x02d, 0x02e, 0)
 
-	CH03("", 0, 0x02f, 0, 0)
+	CH03("", 0, 0x02f, __LINE__, 0)
 	CopyObject(DerefOf("d003"), Local1)
 	mf88(Local1, c00e, 0, 0x030, 0x031, 0)
 
-	CH03("", 0, 0x032, 0, 0)
+	CH03("", 0, 0x032, __LINE__, 0)
 	CopyObject(DerefOf("tz03"), Local1)
 	mf88(Local1, c015, 0, 0x033, 0x034, 0)
 
-	CH03("", 0, 0x035, 0, 0)
+	CH03("", 0, 0x035, __LINE__, 0)
 	CopyObject(DerefOf("pr03"), Local1)
 	mf88(Local1, c014, 0, 0x036, 0x037, 0)
 
 	if (y510) {
-		CH03("", 0, 0x038, 0, 0)
+		CH03("", 0, 0x038, __LINE__, 0)
 		CopyObject(DerefOf("r003"), Local1)
 		mf88(Local1, c012, 0, 0x039, 0x03a, 0)
 	}
 
-	CH03("", 0, 0x03b, 0, 0)
+	CH03("", 0, 0x03b, __LINE__, 0)
 	CopyObject(DerefOf("pw03"), Local1)
 	mf88(Local1, c013, 0, 0x03c, 0x03d, 0)
 }
@@ -258,17 +258,17 @@ Method(mf8c,, Serialized)
 
 	// Checkings
 
-	CH03("", 0, 0x03e, 0, 0)
+	CH03("", 0, 0x03e, __LINE__, 0)
 	Store(DerefOf(b004), Local1)
-	CH04("", 0, 0xff, 0, 0x03f, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x040, 0, 0)
+	CH03("", 0, 0x040, __LINE__, 0)
 	Store(DerefOf(i004), Local1)
-	CH04("", 0, 0xff, 0, 0x041, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x042, 0, 0)
+	CH03("", 0, 0x042, __LINE__, 0)
 	Store(DerefOf(p004), Local1)
-	CH04("", 0, 0xff, 0, 0x043, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 }
 
 /*
@@ -276,17 +276,17 @@ Method(mf8c,, Serialized)
  */
 Method(mf8d)
 {
-	CH03("", 0, 0x044, 0, 0)
+	CH03("", 0, 0x044, __LINE__, 0)
 	Store(DerefOf("0123"), Local1)
-	CH04("", 0, 0xff, 0, 0x045, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x046, 0, 0)
+	CH03("", 0, 0x046, __LINE__, 0)
 	Store(DerefOf("zxcvbnm,./;'\][0123"), Local1)
-	CH04("", 0, 0xff, 0, 0x047, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x048, 0, 0)
+	CH03("", 0, 0x048, __LINE__, 0)
 	Store(DerefOf("b0qv"), Local1)
-	CH04("", 0, 0xff, 0, 0x049, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 }
 
 /*
@@ -318,7 +318,7 @@ Method(mf8e,, Serialized)
 
 	// Checkings
 
-	CH03("", 0, 0x04a, 0, 0)
+	CH03("", 0, 0x04a, __LINE__, 0)
 
 	Store(DerefOf("b006"), Local2)
 
@@ -346,7 +346,7 @@ Method(mf8e,, Serialized)
 
 	Store(DerefOf(i006), Local2)
 
-	CH03("", 0, 0x04b, 0, 0)
+	CH03("", 0, 0x04b, __LINE__, 0)
 }
 
 /*
@@ -364,46 +364,46 @@ Method(mf8f,, Serialized)
 
 	// Checkings
 
-	CH03("", 0, 0x04c, 0, 0)
+	CH03("", 0, 0x04c, __LINE__, 0)
 	Store(DerefOf("e007"), Local2)
 	if(LNot(SLCK)){
-		CH04("", 0, 47, 0, 0x04d, 0, 0)
+		CH04("", 0, 47, 0, __LINE__, 0, 0)
 	}
 
-	CH03("", 0, 0x04e, 0, 0)
+	CH03("", 0, 0x04e, __LINE__, 0)
 	Store(DerefOf("mx07"), Local2)
 	if(LNot(SLCK)){
-		CH04("", 0, 47, 0, 0x04f, 0, 0)
+		CH04("", 0, 47, 0, __LINE__, 0, 0)
 	}
 
-	CH03("", 0, 0x050, 0, 0)
+	CH03("", 0, 0x050, __LINE__, 0)
 	Store(DerefOf("d007"), Local2)
 	if(LNot(SLCK)){
-		CH04("", 0, 47, 0, 0x051, 0, 0)
+		CH04("", 0, 47, 0, __LINE__, 0, 0)
 	}
 
-	CH03("", 0, 0x052, 0, 0)
+	CH03("", 0, 0x052, __LINE__, 0)
 	Store(DerefOf("tz07"), Local2)
 	if(LNot(SLCK)){
-		CH04("", 0, 47, 0, 0x053, 0, 0)
+		CH04("", 0, 47, 0, __LINE__, 0, 0)
 	}
 
-	CH03("", 0, 0x054, 0, 0)
+	CH03("", 0, 0x054, __LINE__, 0)
 	Store(DerefOf("pr07"), Local2)
 	if(LNot(SLCK)){
-		CH04("", 0, 47, 0, 0x055, 0, 0)
+		CH04("", 0, 47, 0, __LINE__, 0, 0)
 	}
 
-	CH03("", 0, 0x056, 0, 0)
+	CH03("", 0, 0x056, __LINE__, 0)
 	Store(DerefOf("r007"), Local2)
 	if(LNot(SLCK)){
-		CH04("", 0, 47, 0, 0x057, 0, 0)
+		CH04("", 0, 47, 0, __LINE__, 0, 0)
 	}
 
-	CH03("", 0, 0x058, 0, 0)
+	CH03("", 0, 0x058, __LINE__, 0)
 	Store(DerefOf("pw07"), Local2)
 	if(LNot(SLCK)){
-		CH04("", 0, 47, 0, 0x059, 0, 0)
+		CH04("", 0, 47, 0, __LINE__, 0, 0)
 	}
 }
 
@@ -418,17 +418,17 @@ Method(mf90,, Serialized)
 
 	// Checkings
 
-	CH03("", 0, 0x05a, 0, 0)
+	CH03("", 0, 0x05a, __LINE__, 0)
 	Store(DerefOf(b008), Local2)
-	CH04("", 0, 0xff, 0, 0x05b, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x05c, 0, 0)
+	CH03("", 0, 0x05c, __LINE__, 0)
 	Store(DerefOf(i008), Local2)
-	CH04("", 0, 0xff, 0, 0x05d, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x05e, 0, 0)
+	CH03("", 0, 0x05e, __LINE__, 0)
 	Store(DerefOf(p008), Local2)
-	CH04("", 0, 0xff, 0, 0x05f, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 }
 
 /*
@@ -436,21 +436,21 @@ Method(mf90,, Serialized)
  */
 Method(mf91)
 {
-	CH03("", 0, 0x060, 0, 0)
+	CH03("", 0, 0x060, __LINE__, 0)
 	Store(DerefOf("0123"), Local2)
-	CH04("", 0, 0xff, 0, 0x061, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x062, 0, 0)
+	CH03("", 0, 0x062, __LINE__, 0)
 	Store(DerefOf("zxcvbnm,./;'\][0123"), Local2)
-	CH04("", 0, 0xff, 0, 0x063, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x064, 0, 0)
+	CH03("", 0, 0x064, __LINE__, 0)
 	Store(DerefOf("mf_d"), Local2)
-	CH04("", 0, 0xff, 0, 0x065, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x066, 0, 0)
+	CH03("", 0, 0x066, __LINE__, 0)
 	Store(DerefOf("b009"), Local2)
-	CH04("", 0, 0xff, 0, 0x067, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 }
 
 /*
@@ -466,7 +466,7 @@ Method(mfa0,, Serialized)
 	BankField(r00a, f0a1, 0, ByteAcc, NoLock, Preserve) {bna0,4}
 	IndexField(f0a2, f0a3, ByteAcc, NoLock, Preserve) {ifa0,8,ifa1,8}
 
-	CH03("", 0, 0x068, 0, 0)
+	CH03("", 0, 0x068, __LINE__, 0)
 
 	Store(DerefOf("bfa0"), Local1)
 	mf88(Local1, c009, 0xb1, 0x069, 0x06a, 1)
@@ -492,7 +492,7 @@ Method(mfa0,, Serialized)
 	Store(DerefOf("ifa1"), Local1)
 	mf88(Local1, c009, 0, 0x077, 0x078, 0)
 
-	CH03("", 0, 0x079, 0, 0)
+	CH03("", 0, 0x079, __LINE__, 0)
 }
 
 // b
@@ -506,37 +506,37 @@ Method(mfa1,, Serialized)
 	BankField(r00b, f0b1, 0, ByteAcc, NoLock, Preserve) {bnb0,4}
 	IndexField(f0b2, f0b3, ByteAcc, NoLock, Preserve) {ifb0,8,ifb1,8}
 
-	CH03("", 0, 0x07a, 0, 0)
+	CH03("", 0, 0x07a, __LINE__, 0)
 	Store(DerefOf(bfb0), Local1)
-	CH04("", 0, 0xff, 0, 0x07b, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x07c, 0, 0)
+	CH03("", 0, 0x07c, __LINE__, 0)
 	Store(DerefOf(f0b0), Local1)
-	CH04("", 0, 0xff, 0, 0x07d, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x07e, 0, 0)
+	CH03("", 0, 0x07e, __LINE__, 0)
 	Store(DerefOf(f0b1), Local1)
-	CH04("", 0, 0xff, 0, 0x07f, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x080, 0, 0)
+	CH03("", 0, 0x080, __LINE__, 0)
 	Store(DerefOf(f0b2), Local1)
-	CH04("", 0, 0xff, 0, 0x081, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x082, 0, 0)
+	CH03("", 0, 0x082, __LINE__, 0)
 	Store(DerefOf(f0b3), Local1)
-	CH04("", 0, 0xff, 0, 0x083, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x084, 0, 0)
+	CH03("", 0, 0x084, __LINE__, 0)
 	Store(DerefOf(bnb0), Local1)
-	CH04("", 0, 0xff, 0, 0x085, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x086, 0, 0)
+	CH03("", 0, 0x086, __LINE__, 0)
 	Store(DerefOf(ifb0), Local1)
-	CH04("", 0, 0xff, 0, 0x087, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x088, 0, 0)
+	CH03("", 0, 0x088, __LINE__, 0)
 	Store(DerefOf(ifb1), Local1)
-	CH04("", 0, 0xff, 0, 0x089, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 }
 
 // c
@@ -552,33 +552,33 @@ Method(mfa2,, Serialized)
 
 	// Checkings
 
-	CH03("", 0, 0x08a, 0, 0)
+	CH03("", 0, 0x08a, __LINE__, 0)
 	Store(DerefOf(e00c), Local2)
-	CH04("", 0, 0xff, 0, 0x08b, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x08c, 0, 0)
+	CH03("", 0, 0x08c, __LINE__, 0)
 	Store(DerefOf(mx0c), Local2)
-	CH04("", 0, 0xff, 0, 0x08d, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x08e, 0, 0)
+	CH03("", 0, 0x08e, __LINE__, 0)
 	Store(DerefOf(d00c), Local2)
-	CH04("", 0, 0xff, 0, 0x08f, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x090, 0, 0)
+	CH03("", 0, 0x090, __LINE__, 0)
 	Store(DerefOf(tz0c), Local2)
-	CH04("", 0, 0xff, 0, 0x091, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x092, 0, 0)
+	CH03("", 0, 0x092, __LINE__, 0)
 	Store(DerefOf(pr0c), Local2)
-	CH04("", 0, 0xff, 0, 0x093, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x094, 0, 0)
+	CH03("", 0, 0x094, __LINE__, 0)
 	Store(DerefOf(r00c), Local2)
-	CH04("", 0, 0xff, 0, 0x095, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
-	CH03("", 0, 0x096, 0, 0)
+	CH03("", 0, 0x096, __LINE__, 0)
 	Store(DerefOf(pw0c), Local2)
-	CH04("", 0, 0xff, 0, 0x097, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 }
 
 Method(m12a)

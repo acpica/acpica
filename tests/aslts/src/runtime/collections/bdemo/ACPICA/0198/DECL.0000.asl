@@ -147,7 +147,7 @@ Method(m002)
 //	Store(Index(RR55, 0), Debug)
 	Store("---------------------------------- SSSSSSSS 0", Debug)
 
-	CH03("", 0, 0x002, 0, 0)
+	CH03("", 0, 0x002, __LINE__, 0)
 	m002()
 
 //	Store("---------------------------------- SSSSSSSS 1", Debug)
@@ -161,8 +161,8 @@ Method(m002)
 //	m000()
 
 	if (F64) {
-		CH03("", 0, 0x003, 0, 0)
+		CH03("", 0, 0x003, __LINE__, 0)
 	} else {
-		CH04("", 0, 0xff, 0, 0x004, 0, 0) // AE_AML_NUMERIC_OVERFLOW
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0) // AE_AML_NUMERIC_OVERFLOW
 	}
 }

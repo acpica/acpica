@@ -70,11 +70,11 @@ Device (D283) {
 		// "Incorrect checksum" ACPI warning is expected
 		Load(RFU0, HI0)
 
-		CH03("", 0, 0x001, 0, 0)
+		CH03("", 0, 0x001, __LINE__, 0)
 
 		UnLoad(HI0)
 
-		CH03("", 0, 0x002, 0, 0)
+		CH03("", 0, 0x002, __LINE__, 0)
 	}
 }
 

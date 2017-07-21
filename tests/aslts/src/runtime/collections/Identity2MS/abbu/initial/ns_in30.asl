@@ -405,7 +405,7 @@ Method(in37,, Serialized)
 		err(ts, z166, __LINE__, 0, 0, Local0, 0x00100009)
 	}
 
-	CH03(ts, z166, 0x00c, 0, 0)
+	CH03(ts, z166, 0x00c, __LINE__, 0)
 }
 
 /*
@@ -427,7 +427,7 @@ Method(in38, 1, Serialized)
 	OperationRegion(r000, SystemMemory, 0x100, 0x100)
 	Field(r000, ByteAcc, NoLock, Preserve) { f000,32, f001,32 }
 
-	CH03(ts, z166, 0x011, 0, 0)
+	CH03(ts, z166, 0x011, __LINE__, 0)
 
 	Store(arg0, i001)
 
@@ -507,7 +507,7 @@ Method(in38, 1, Serialized)
 		err(ts, z166, __LINE__, 0, 0, f001, Local1)
 	}
 
-	CH03(ts, z166, 0x014, 0, 0)
+	CH03(ts, z166, 0x014, __LINE__, 0)
 }
 
 /*
@@ -523,7 +523,7 @@ Method(in39, 1, Serialized)
 	Field(r000, ByteAcc, NoLock, Preserve) { f000,32, f001,32 }
 	BankField(r000, f001, 0, ByteAcc, NoLock, Preserve) { bnk0, 32 }
 
-	CH03(ts, z166, 0x015, 0, 0)
+	CH03(ts, z166, 0x015, __LINE__, 0)
 
 	Store(arg0, i001)
 
@@ -602,7 +602,7 @@ Method(in39, 1, Serialized)
 		err(ts, z166, __LINE__, 0, 0, bnk0, Local1)
 	}
 
-	CH03(ts, z166, 0x018, 0, 0)
+	CH03(ts, z166, 0x018, __LINE__, 0)
 }
 
 /*
@@ -618,7 +618,7 @@ Method(in3a, 1, Serialized)
 	Field(r000, ByteAcc, NoLock, Preserve) { f000,32, f001,32 }
 	IndexField(f000, f001, ByteAcc, NoLock, Preserve) { if00, 32 }
 
-	CH03(ts, z166, 0x019, 0, 0)
+	CH03(ts, z166, 0x019, __LINE__, 0)
 
 	Store(arg0, i001)
 
@@ -702,7 +702,7 @@ Method(in3a, 1, Serialized)
 		err(ts, z166, __LINE__, 0, 0, if00, Local1)
 	}
 
-	CH03(ts, z166, 0x01c, 0, 0)
+	CH03(ts, z166, 0x01c, __LINE__, 0)
 }
 
 /*
@@ -728,7 +728,7 @@ Method(in3c, 1, Serialized)
 	Name(i001, 0)
 	Name(b000, Buffer() {0x11, 0x01, 0x22})
 
-	CH03(ts, z166, 0x01d, 0, 0)
+	CH03(ts, z166, 0x01d, __LINE__, 0)
 
 	Store(arg0, i001)
 
@@ -791,7 +791,7 @@ Method(in3c, 1, Serialized)
 		err(ts, z166, __LINE__, 0, 0, Local0, Local1)
 	}
 
-	CH03(ts, z166, 0x020, 0, 0)
+	CH03(ts, z166, 0x020, __LINE__, 0)
 }
 
 /*
@@ -818,7 +818,7 @@ Method(in3e,, Serialized)
 	Name(p000, Package() {1,2,3,4})
 	Name(pp00, Package() {0x11111111, 0x00000001, 0x22223333})
 
-	CH03(ts, z166, 0x006, 0, 0)
+	CH03(ts, z166, 0x006, __LINE__, 0)
 
 	Method(m000, 1)
 	{
@@ -873,7 +873,7 @@ Method(in3e,, Serialized)
 		err(ts, z166, __LINE__, 0, 0, Local0, 0x07000000)
 	}
 
-	CH03(ts, z166, 0x009, 0, 0)
+	CH03(ts, z166, 0x009, __LINE__, 0)
 }
 
 Method(ini3)
@@ -907,6 +907,6 @@ Method(ini3)
 	SRMT("in3e")
 	in3e()
 
-	CH03("ini3", z166, 0x000, 0, 0)
+	CH03("ini3", z166, 0x000, __LINE__, 0)
 }
 

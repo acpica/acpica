@@ -337,7 +337,7 @@ Method(m694, 5, Serialized)
 				Return (1)
 			}
 		}
-		if (CH03(arg0, z127, 3, arg1, 0)) {
+		if (CH03(arg0, z127, 3, __LINE__, 0)) {
 			//Exception during preparing of Target Object
 			Return (1)
 		}
@@ -387,7 +387,7 @@ Method(m694, 5, Serialized)
 				Return (1)
 			}
 		}
-		if (CH03(arg0, z127, 6, arg1, 0)) {
+		if (CH03(arg0, z127, 6, __LINE__, 0)) {
 			// Exception during preparing of Source Object
 			Return (1)
 		}
@@ -513,7 +513,7 @@ Method(m694, 5, Serialized)
 					// Check that Target can be used as reference
 					Store(Derefof(arg1), Local0)
 					Store(Derefof(Local0), Local3)
-					if (CH03(arg0, z127, 18, Local2, arg3)) {
+					if (CH03(arg0, z127, 18, __LINE__, arg3)) {
 						// Derefof caused unexpected exception
 						Return (1)
 					}
@@ -830,7 +830,7 @@ Method(m694, 5, Serialized)
 			if (LNot(CH06(arg0, 27, 0xff))) {
 				if (STCS) {m000(2, 0x100, arg2, Local5)}
 			}
-		} elseif (CH03(arg0, z127, 28, Local5, arg2)) {
+		} elseif (CH03(arg0, z127, 28, __LINE__, arg2)) {
 			// Storing caused unexpected exception
 			if (STCS) {m000(2, 0x100, arg2, Local5)}
 		} else {
@@ -965,7 +965,7 @@ Method(m694, 5, Serialized)
 			if (LNot(CH06(arg0, 32, 0xff))) {
 				if (STCS) {m000(2, 0x100, arg2, Local5)}
 			}
-		} elseif (CH03(arg0, z127, 33, Local5, arg2)) {
+		} elseif (CH03(arg0, z127, 33, __LINE__, arg2)) {
 			// Storing caused unexpected exception
 			if (STCS) {m000(2, 0x100, arg2, Local5)}
 		} else {

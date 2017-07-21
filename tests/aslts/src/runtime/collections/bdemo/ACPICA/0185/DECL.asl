@@ -64,12 +64,12 @@ Method(mfc2,, Serialized)
 
 	Store(0xdddd9000, i000)
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 	Store(m000, i000)
 
 	if (SLCK) {
-		CH03("", 0, 0x001, 0, 0)
+		CH03("", 0, 0x001, __LINE__, 0)
 		if (LNotEqual(i000, 0)) {
 			err("", zFFF, __LINE__, 0, 0, i000, 0)
 		}
@@ -81,12 +81,12 @@ Method(mfc2,, Serialized)
 
 	Store(0xdddd9000, i000)
 
-	CH03("", 0, 0x004, 0, 0)
+	CH03("", 0, 0x004, __LINE__, 0)
 
 	Store(m009, i000)
 
 	if (SLCK) {
-		CH03("", 0, 0x005, 0, 0)
+		CH03("", 0, 0x005, __LINE__, 0)
 		if (LNotEqual(i000, 0)) {
 			err("", zFFF, __LINE__, 0, 0, i000, 0)
 		}

@@ -47,7 +47,7 @@ Method(m17c,, Serialized)
 		Store(2, Local0)
 
 		while (Local0) {
-			if (CH03("", 0, ERRN, 0, 0)) {
+			if (CH03("", 0, ERRN, __LINE__, 0)) {
 				return
 			}
 			Increment(ERRN)
@@ -67,7 +67,7 @@ Method(m17c,, Serialized)
 					Store(1, CH21)
 				}
 			}
-			if (CH03("", 0, ERRN, 0, 0)) {
+			if (CH03("", 0, ERRN, __LINE__, 0)) {
 				return
 			}
 			Increment(ERRN)

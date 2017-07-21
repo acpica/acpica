@@ -620,7 +620,7 @@ if (y361) {
 	// Check exceptions
 	Method(m003, 1)
 	{
-		if (CH03(arg0, z122, 1, arg0, 0)) {
+		if (CH03(arg0, z122, 1, __LINE__, 0)) {
 			if (STCS) {
 				if (LLess(IND2, INDM)) {
 					Store(arg0, Index(PAC2, IND2))
@@ -1107,7 +1107,7 @@ if (y361) {
 				Return (1)
 			}
 		}
-		if (CH03(arg0, z122, 5, arg1, 0)) {
+		if (CH03(arg0, z122, 5, __LINE__, 0)) {
 			//Exception during preparing of Target Object
 			Return (1)
 		}
@@ -1213,7 +1213,7 @@ if (y361) {
 				Return (1)
 			}
 		}
-		if (CH03(arg0, z122, 8, arg1, 0)) {
+		if (CH03(arg0, z122, 8, __LINE__, 0)) {
 			// Exception during preparing of Source Object
 			Return (1)
 		}
@@ -1245,7 +1245,7 @@ if (y361) {
 			// Check that it can be used as reference
 			Store(Derefof(arg2), Local0)
 			Store(Derefof(Local0) ,Local3)
-			if (CH03(arg0, z122, 10, arg1, Local0)) {
+			if (CH03(arg0, z122, 10, __LINE__, Local0)) {
 				// Derefof caused unexpected exception
 				Return (1)
 			}
@@ -1532,7 +1532,7 @@ if (y361) {
 					// Check that Target can be used as reference
 					Store(Derefof(arg1), Local0)
 					Store(Derefof(Local0), Local3)
-					if (CH03(arg0, z122, 40, Local2, arg3)) {
+					if (CH03(arg0, z122, 40, __LINE__, arg3)) {
 						// Derefof caused unexpected exception
 						Return (1)
 					}
@@ -1634,7 +1634,7 @@ if (y361) {
 					Store(Not(Local4), Derefof(Local3))
 				} else {
 					Store(Ones, Derefof(Local3))
-					if (CH03(arg0, z122, 48, Local1, arg1)) {
+					if (CH03(arg0, z122, 48, __LINE__, arg1)) {
 						// Store caused unexpected exception
 						Return (1)
 					}
@@ -1648,7 +1648,7 @@ if (y361) {
 						Store(Not(Local4), Derefof(Local3))
 					} else {
 						Store(Ones, Derefof(Local3))
-						if (CH03(arg0, z122, 49, Local1, arg1)) {
+						if (CH03(arg0, z122, 49, __LINE__, arg1)) {
 							// Store caused unexpected exception
 							Return (1)
 						}
@@ -1668,7 +1668,7 @@ if (y361) {
 			Store(Not(ToInteger(Derefof(arg1))), arg1)
 		}
 
-		if (CH03(arg0, z122, 50, Local0, arg1)) {
+		if (CH03(arg0, z122, 50, __LINE__, arg1)) {
 			// Update caused unexpected exception
 			Return (1)
 		}
@@ -1763,7 +1763,7 @@ if (y361) {
 			Return (1)
 		}
 
-		if (CH03(arg0, z122, 53, arg3, arg2)) {
+		if (CH03(arg0, z122, 53, __LINE__, arg2)) {
 			// Unexpected exception during preparation
 			Return (1)
 		}
@@ -1931,7 +1931,7 @@ if (y361) {
 						if (STCS) {m000(2, 0x100, arg2, arg3)}
 					}
 				} else {
-					CH03(arg0, z122, 57, arg3, arg2)
+					CH03(arg0, z122, 57, __LINE__, arg2)
 				}
 			} else {
 				if (LNot(CH06(arg0, 57, 0xff))) {
@@ -1940,7 +1940,7 @@ if (y361) {
 			}
 			// No further test if exception is expected
 			Return (0)
-		} elseif (CH03(arg0, z122, 58, arg3, arg2)) {
+		} elseif (CH03(arg0, z122, 58, __LINE__, arg2)) {
 			// Storing caused unexpected exception
 			if (STCS) {m000(2, 0x100, arg2, arg3)}
 		} else {
@@ -2114,7 +2114,7 @@ if (y361) {
 			Return (1)
 		}
 
-		if (CH03(arg0, z122, 61, arg3, arg2)) {
+		if (CH03(arg0, z122, 61, __LINE__, arg2)) {
 			// Unexpected exception during preparation
 			Return (1)
 		}
@@ -2176,7 +2176,7 @@ if (y361) {
 			if (LNot(CH06(arg0, 15, 0xff))) {
 				if (STCS) {m000(2, 0x100, arg2, arg3)}
 			}
-		} elseif (CH03(arg0, z122, 63, arg3, arg2)) {
+		} elseif (CH03(arg0, z122, 63, __LINE__, arg2)) {
 			// Storing caused unexpected exception
 			if (STCS) {m000(2, 0x100, arg2, arg3)}
 		} else {
@@ -2275,7 +2275,7 @@ if (y361) {
 			Return (1)
 		}
 
-		if (CH03(arg0, z122, 66, arg3, arg2)) {
+		if (CH03(arg0, z122, 66, __LINE__, arg2)) {
 			// Unexpected exception during preparation
 			Return (1)
 		}
@@ -2322,7 +2322,7 @@ if (y361) {
 						if (STCS) {m000(2, 0x100, arg2, arg3)}
 					}
 				} else {
-					CH03(arg0, z122, 70, arg3, arg2)
+					CH03(arg0, z122, 70, __LINE__, arg2)
 				}
 			} else {
 				if (LNot(CH06(arg0, 70, 0xff))) {
@@ -2331,7 +2331,7 @@ if (y361) {
 			}
 			// No further test if exception is expected
 			Return (0)
-		} elseif (CH03(arg0, z122, 71, arg3, arg2)) {
+		} elseif (CH03(arg0, z122, 71, __LINE__, arg2)) {
 			// Storing caused unexpected exception
 			if (STCS) {m000(2, 0x100, arg2, arg3)}
 		} else {
@@ -2462,7 +2462,7 @@ if (y361) {
 			Return (1)
 		}
 
-		if (CH03(arg0, z122, 74, arg3, arg2)) {
+		if (CH03(arg0, z122, 74, __LINE__, arg2)) {
 			// Unexpected exception during preparation
 			Return (1)
 		}
@@ -2483,7 +2483,7 @@ if (y361) {
 			if (LNot(CH06(arg0, 15, 0xff))) {
 				if (STCS) {m000(2, 0x100, arg2, arg3)}
 			}
-		} elseif (CH03(arg0, z122, 76, arg3, arg2)) {
+		} elseif (CH03(arg0, z122, 76, __LINE__, arg2)) {
 			// Storing caused unexpected exception
 			if (STCS) {m000(2, 0x100, arg2, arg3)}
 		} else {
@@ -2607,7 +2607,7 @@ if (y361) {
 
 			Store(Refof(ARG1), Local1)
 
-			if (CH03(arg0, z122, 78, arg3, arg2)) {
+			if (CH03(arg0, z122, 78, __LINE__, arg2)) {
 				// Unexpected exception during preparation
 				Return (1)
 			}
@@ -2676,14 +2676,14 @@ if (y361) {
 							if (STCS) {m000(2, 0x100, arg2, arg3)}
 						}
 					} else {
-						CH03(arg0, z122, 80, arg3, arg2)
+						CH03(arg0, z122, 80, __LINE__, arg2)
 					}
 				} else {
 					if (LNot(CH06(arg0, 80, 0xff))) {
 						if (STCS) {m000(2, 0x100, arg2, arg3)}
 					}
 				}
-			} elseif (CH03(arg0, z122, 81, arg3, arg2)) {
+			} elseif (CH03(arg0, z122, 81, __LINE__, arg2)) {
 				// Storing caused unexpected exception
 				if (STCS) {m000(2, 0x100, arg2, arg3)}
 			} else {
@@ -2767,7 +2767,7 @@ if (y361) {
 			Return (1)
 		}
 
-		if (CH03(arg0, z122, 83, arg3, arg2)) {
+		if (CH03(arg0, z122, 83, __LINE__, arg2)) {
 			// Unexpected exception during preparation
 			Return (1)
 		}
@@ -2862,7 +2862,7 @@ if (y361) {
 				Return (1)
 			}
 
-			if (CH03(arg0, z122, 85, arg3, arg2)) {
+			if (CH03(arg0, z122, 85, __LINE__, arg2)) {
 				// Unexpected exception during preparation
 				Return (1)
 			}
@@ -2929,14 +2929,14 @@ if (y361) {
 							if (STCS) {m000(2, 0x100, arg2, arg3)}
 						}
 					} else {
-						CH03(arg0, z122, 87, arg3, arg2)
+						CH03(arg0, z122, 87, __LINE__, arg2)
 					}
 				} else {
 					if (LNot(CH06(arg0, 87, 0xff))) {
 						if (STCS) {m000(2, 0x100, arg2, arg3)}
 					}
 				}
-			} elseif (CH03(arg0, z122, 88, arg3, arg2)) {
+			} elseif (CH03(arg0, z122, 88, __LINE__, arg2)) {
 				// Storing caused unexpected exception
 				if (STCS) {m000(2, 0x100, arg2, arg3)}
 			} else {
@@ -3025,7 +3025,7 @@ if (y361) {
 			Return (1)
 		}
 
-		if (CH03(arg0, z122, 90, arg3, arg2)) {
+		if (CH03(arg0, z122, 90, __LINE__, arg2)) {
 			// Unexpected exception during preparation
 			Return (1)
 		}
@@ -3072,7 +3072,7 @@ if (y361) {
 			Return (1)
 		}
 
-		if (CH03(arg0, z122, 93, arg3, arg2)) {
+		if (CH03(arg0, z122, 93, __LINE__, arg2)) {
 			// Unexpected exception during preparation
 			Return (1)
 		}
@@ -3100,7 +3100,7 @@ if (y361) {
 			if (LNot(CH06(arg0, 96, 0xff))) {
 				if (STCS) {m000(2, 0x100, arg2, arg3)}
 			}
-		} elseif (CH03(arg0, z122, 97, arg3, arg2)) {
+		} elseif (CH03(arg0, z122, 97, __LINE__, arg2)) {
 			// Storing caused unexpected exception
 			if (STCS) {m000(2, 0x100, arg2, arg3)}
 		} else {
@@ -3197,7 +3197,7 @@ if (y361) {
 				Return (1)
 			}
 		}
-		if (CH03(arg0, z122, 99, arg1, 0)) {
+		if (CH03(arg0, z122, 99, __LINE__, 0)) {
 			//Exception during preparing of Target Object
 			Return (1)
 		}
@@ -3229,7 +3229,7 @@ if (y361) {
 			// Check that it can be used as reference
 			Store(Derefof(arg2), Local0)
 			Store(Derefof(Local0), Local3)
-			if (CH03(arg0, z122, 101, arg1, Local0)) {
+			if (CH03(arg0, z122, 101, __LINE__, Local0)) {
 				// Derefof caused unexpected exception
 				Return (1)
 			}
@@ -3291,7 +3291,7 @@ if (y361) {
 			Case(17) {
 				//Store(Derefof(REF1), Local3)
 				Store (REF1, Local3)
-				if (CH03(arg0, z122, 103, arg1, Local0)) {
+				if (CH03(arg0, z122, 103, __LINE__, Local0)) {
 					// Derefof caused unexpected exception
 					Return (1)
 				}
@@ -3474,7 +3474,7 @@ if (y361) {
 			Case(17) {
 				//Store(Derefof(REF1), Local3)
 				Store(REF1, Local3)
-				if (CH03(arg0, z122, 121, arg1, 0)) {
+				if (CH03(arg0, z122, 121, __LINE__, 0)) {
 					// Derefof caused unexpected exception
 					Return (1)
 				}
@@ -3567,7 +3567,7 @@ if (y361) {
 					Store(Not(Local4), Derefof(Local3))
 				} else {
 					Store(Ones, Derefof(Local3))
-					if (CH03(arg0, z122, 130, Local1, Index(arg1, 0))) {
+					if (CH03(arg0, z122, 130, __LINE__, Index(arg1, 0))) {
 						// Store caused unexpected exception
 						Return (1)
 					}
@@ -3581,7 +3581,7 @@ if (y361) {
 						Store(Not(Local4), Derefof(Local3))
 					} else {
 						Store(Ones, Derefof(Local3))
-						if (CH03(arg0, z122, 131, Local1, Index(arg1, 0))) {
+						if (CH03(arg0, z122, 131, __LINE__, Index(arg1, 0))) {
 							// Store caused unexpected exception
 							Return (1)
 						}
@@ -3601,7 +3601,7 @@ if (y361) {
 			Store(Not(ToInteger(Derefof(Index(arg1, 0)))), Index(arg1, 0))
 		}
 
-		if (CH03(arg0, z122, 132, Local0, Index(arg1, 0))) {
+		if (CH03(arg0, z122, 132, __LINE__, Index(arg1, 0))) {
 			// Update caused unexpected exception
 			Return (1)
 		}

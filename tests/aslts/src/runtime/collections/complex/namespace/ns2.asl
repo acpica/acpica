@@ -54,7 +54,7 @@ Method(m200,, Serialized)
 		err(ts, z156, __LINE__, 0, 0, Local0, 0x11112222)
 	}
 
-	CH03(ts, z156, 0x001, 0, 0)
+	CH03(ts, z156, 0x001, __LINE__, 0)
 }
 
 Method(m201,, Serialized)
@@ -77,7 +77,7 @@ Method(m201,, Serialized)
 		err(ts, z156, __LINE__, 0, 0, Local0, 0x67)
 	}
 
-	CH03(ts, z156, 0x003, 0, 0)
+	CH03(ts, z156, 0x003, __LINE__, 0)
 }
 
 Method(m202,, Serialized)
@@ -100,7 +100,7 @@ Method(m202,, Serialized)
 		err(ts, z156, __LINE__, 0, 0, Local0, 0x38)
 	}
 
-	CH03(ts, z156, 0x005, 0, 0)
+	CH03(ts, z156, 0x005, __LINE__, 0)
 }
 
 /*
@@ -140,7 +140,7 @@ Method(m204,, Serialized)
 		err(ts, z156, __LINE__, 0, 0, Local0, 0x00100064)
 	}
 
-	CH03(ts, z156, 0x00c, 0, 0)
+	CH03(ts, z156, 0x00c, __LINE__, 0)
 }
 
 Method(n002)

@@ -462,7 +462,7 @@ Method(in05,, Serialized)
 		Return (5)
 	}
 
-	CH03(ts, z163, 0x000, 0, 0)
+	CH03(ts, z163, 0x000, __LINE__, 0)
 
 	Store(Add(DerefOf(Index(p000, 0)), m001(i000, c009)), Local0)
 	if (LNotEqual(Local0, 0xabcd0006)) {
@@ -551,7 +551,7 @@ Method(in05,, Serialized)
 		err(ts, z163, __LINE__, 0, 0, Local0, c016)
 	}
 
-	CH03(ts, z163, 0x000, 0, 0)
+	CH03(ts, z163, 0x000, __LINE__, 0)
 }
 
 Method(in06,, Serialized)
@@ -591,6 +591,6 @@ Method(ini0)
 	SRMT("in06")
 	in06()
 
-	CH03("ini0", z163, 0x000, 0, 0)
+	CH03("ini0", z163, 0x000, __LINE__, 0)
 }
 

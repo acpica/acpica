@@ -87,9 +87,9 @@ Method(md4f,, Serialized)
 
 Method(md50)
 {
-	CH03("", 0, 0xf18, 0, 0)
+	CH03("", 0, 0xf18, __LINE__, 0)
 	md4d()
 	md4e()
 	md4f()
-	CH03("", 0, 0xf19, 0, 0)
+	CH03("", 0, 0xf19, __LINE__, 0)
 }

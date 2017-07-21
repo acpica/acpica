@@ -96,9 +96,9 @@ Method(md8b,, Serialized)
 		err("", zFFF, __LINE__, 0, 0, 0, 0)
 	} else {
 		Store(1, Local0)
-		CH03("", 0, 0x003, 0, 0)
+		CH03("", 0, 0x003, __LINE__, 0)
 		Acquire(mx01, 1)
-		CH04("", 0, 64, 0, 0x004, 0, 0) // AE_AML_MUTEX_ORDER
+		CH04("", 0, 64, 0, __LINE__, 0, 0) // AE_AML_MUTEX_ORDER
 	}
 	if (Local0) {
 		Release(mx00)
@@ -126,9 +126,9 @@ Method(md8c,, Serialized)
 		err("", zFFF, __LINE__, 0, 0, 0, 0)
 	} else {
 		Store(1, Local0)
-		CH03("", 0, 0x006, 0, 0)
+		CH03("", 0, 0x006, __LINE__, 0)
 		mx01()
-		CH03("", 0, 0x007, 0, 0)
+		CH03("", 0, 0x007, __LINE__, 0)
 	}
 
 	if (Local0) {
@@ -157,9 +157,9 @@ Method(md8d,, Serialized)
 		err("", zFFF, __LINE__, 0, 0, 0, 0)
 	} else {
 		Store(1, Local0)
-		CH03("", 0, 0x009, 0, 0)
+		CH03("", 0, 0x009, __LINE__, 0)
 		mx01()
-		CH04("", 0, 64, 0, 0x00a, 0, 0) // AE_AML_MUTEX_ORDER
+		CH04("", 0, 64, 0, __LINE__, 0, 0) // AE_AML_MUTEX_ORDER
 	}
 
 	if (Local0) {

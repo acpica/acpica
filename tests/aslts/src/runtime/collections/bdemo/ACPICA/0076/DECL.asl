@@ -40,9 +40,9 @@
 		Store(Index(pd01, 0), Local1)
 		Store(Local1, Debug)
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Add(Local1, 0, Local7)
-		CH04("", 0, 47, 0, 0x001, 0, 0) // AE_AML_OPERAND_TYPE
+		CH04("", 0, 47, 0, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 
 		Store(Refof(id0a), Local2)
 		Store(Local2, Debug)

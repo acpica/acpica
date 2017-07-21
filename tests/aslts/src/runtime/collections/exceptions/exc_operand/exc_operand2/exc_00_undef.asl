@@ -56,7 +56,7 @@ Method(m4b0, 1, Serialized)
 		// CondRefOf
 		
 		CondRefOf(Local0, Local1)
-		CH03(ts, z092, 1, 0, 0)
+		CH03(ts, z092, 1, __LINE__, 0)
 
 		// CopyObject
 
@@ -106,12 +106,12 @@ Method(m4b0, 1, Serialized)
 		// ObjectType
 
 		Store (ObjectType(Local0), Local1)
-		CH03(ts, z092, 2, 0, 0)
+		CH03(ts, z092, 2, __LINE__, 0)
 
 		// RefOf
 
 		Store (RefOf(Local0), Local1)
-		CH03(ts, z092, 3, 0, 0)
+		CH03(ts, z092, 3, __LINE__, 0)
 
 		// Release
 
@@ -415,7 +415,7 @@ Method(m4b0, 1, Serialized)
 		// DeRefOf(Index(Package, Ind))
 
 		Store (DeRefOf(Index(p000, 0)), Local1)
-		CH04(ts, 1, 51, z092, 4, 0, 0)
+		CH04(ts, 1, 51, z092, __LINE__, 0, 0)
 
 		// CondRefOf
 		
@@ -471,7 +471,7 @@ Method(m4b0, 1, Serialized)
 
 		if (X104) {
 			Store (ObjectType(DeRefOf(Index(p000, 0))), Local1)
-			CH03(ts, z092, 5, 0, 0)
+			CH03(ts, z092, 5, __LINE__, 0)
 		}
 
 		// RefOf
@@ -773,10 +773,10 @@ Method(m4b0, 1, Serialized)
 		// CondRefOf
 		
 		CondRefOf(arg2)
-		CH03(ts, z092, 6, 0, 0)
+		CH03(ts, z092, 6, __LINE__, 0)
 
 		CondRefOf(arg2, Local1)
-		CH03(ts, z092, 7, 0, 0)
+		CH03(ts, z092, 7, __LINE__, 0)
 
 		// CopyObject
 
@@ -838,12 +838,12 @@ Method(m4b0, 1, Serialized)
 		// ObjectType
 
 		ObjectType(arg2)
-		CH03(ts, z092, 8, 0, 0)
+		CH03(ts, z092, 8, __LINE__, 0)
 
 		// RefOf
 
 		RefOf(arg2)
-		CH03(ts, z092, 9, 0, 0)
+		CH03(ts, z092, 9, __LINE__, 0)
 
 		// Release
 
@@ -1270,7 +1270,7 @@ Method(m4b0, 1, Serialized)
 		}
 
 		Store (DeRefOf(arg1), Local1)
-		CH04(ts, 0, 62, z092, 10, 0, 0)
+		CH04(ts, 0, 62, z092, __LINE__, 0, 0)
 
 		// CondRefOf
 		
@@ -1326,7 +1326,7 @@ Method(m4b0, 1, Serialized)
 
 		if (X104) {
 			Store (ObjectType(DeRefOf(arg1)), Local1)
-			CH03(ts, z092, 11, 0, 0)
+			CH03(ts, z092, 11, __LINE__, 0)
 		}
 
 		// RefOf
@@ -1811,7 +1811,7 @@ Method(m4b0, 1, Serialized)
 		}
 	}
 
-	CH03(ts, z092, 12, 0, 0)
+	CH03(ts, z092, 12, __LINE__, 0)
 
 	// Uninitialized Local
 	m000(Concatenate(ts, "-m000"), 0)

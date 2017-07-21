@@ -34,7 +34,7 @@
 
 Method(mf5d)
 {
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 	Store(prd1, Debug)
 	Store(rd06, Debug)
@@ -49,5 +49,5 @@ Method(mf5d)
 
 	Store(tzd1, Debug)
 
-	CH03("", 0, 0x001, 0, 0)
+	CH03("", 0, 0x001, __LINE__, 0)
 }

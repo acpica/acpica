@@ -381,7 +381,7 @@ Method(mfc6, 7, Serialized)
 	Name(p000, Package(Multiply(num, 2)) {})
 	Name(p001, Package(Multiply(num, 2)) {})
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 
 	/* Unpack arg2 */
@@ -4046,7 +4046,7 @@ Method(mfc6, 7, Serialized)
 	 */
 	mfcc(Local7, num, num, i000, AR21, 0x001)
 
-	CH03("", 0, 0x002, 0, 0)
+	CH03("", 0, 0x002, __LINE__, 0)
 }
 
 /*

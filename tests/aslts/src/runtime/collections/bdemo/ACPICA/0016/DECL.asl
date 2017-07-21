@@ -40,16 +40,16 @@ Method(mdb1)
 	// 101 characters
 	Store("01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890", Local1)
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 	Concatenate(Local0, Local1, Local2)
 
-	CH03("", 0, 0x001, 0, 0)
+	CH03("", 0, 0x001, __LINE__, 0)
 
 	/*
 	 * The length of String is no more restricted.
 	 *
-	 * CH04("", 0, 61, 0, 0x001, 0, 0) // AE_AML_STRING_LIMIT
+	 * CH04("", 0, 61, 0, __LINE__, 0, 0) // AE_AML_STRING_LIMIT
 	 */
 }
 

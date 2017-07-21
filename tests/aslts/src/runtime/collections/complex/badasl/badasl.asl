@@ -51,12 +51,12 @@ Method(m101,, Serialized)
 	Name (VV, 0x1234)
 	Store (32, Local0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 
 	Name (VV, 0xBBBBAAAA)
 	Store (12, Local2)
 
-	CH04(ts, 0, 0xff, z146, 1, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 }
 
 /*
@@ -81,9 +81,9 @@ Method(m102,, Serialized)
 
 	Name (p000, Package(3) {0xabcd0000, 0xabcd0001, 0xabcd0002, 0xabcd0003})
 
-	CH03(ts, z146, 2, 0, 0)
+	CH03(ts, z146, 2, __LINE__, 0)
 	Store(DerefOf(Index(p000, 3)), Local0)
-	CH03(ts, z146, 2, 0, 0)
+	CH03(ts, z146, 2, __LINE__, 0)
 }
 
 /*
@@ -115,120 +115,120 @@ Method(m103,, Serialized)
 
 	/* Acquire */
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Acquire(i900, 0xffff)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Acquire(s900, 0xffff)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Acquire(b900, 0xffff)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Acquire(p900, 0xffff)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Acquire(e900, 0xffff)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Acquire(d900, 0xffff)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Acquire(tz90, 0xffff)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Acquire(pr90, 0xffff)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Acquire(pw90, 0xffff)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Acquire(r900, 0xffff)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Acquire(bf90, 0xffff)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Acquire(f900, 0xffff)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Acquire(bn90, 0xffff)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Acquire(if90, 0xffff)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
 
 	/* Release */
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Release(i900)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Release(s900)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Release(b900)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Release(p900)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Release(e900)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Release(d900)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Release(tz90)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Release(pr90)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Release(pw90)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Release(r900)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Release(bf90)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Release(f900)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Release(bn90)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 
-	CH03(ts, z146, 0, 0, 0)
+	CH03(ts, z146, 0, __LINE__, 0)
 	Release(if90)
-	CH04(ts, 0, 0xff, z146, 0x025, 0, 0)
+	CH04(ts, 0, 0xff, z146, __LINE__, 0, 0)
 }
 
 // Run-method

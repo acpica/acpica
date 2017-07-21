@@ -275,7 +275,7 @@ Method(m692, 2, Serialized)
 				Return (1)
 			}
 		}
-		if (CH03(arg0, z125, 2, arg1, 0)) {
+		if (CH03(arg0, z125, 2, __LINE__, 0)) {
 			// Exception during preparing of Source Object
 			Return (1)
 		}
@@ -529,7 +529,7 @@ Method(m692, 2, Serialized)
 			if (LNot(CH06(arg0, 22, 0xff))) {
 				if (STCS) {m000(2, 0x100, arg2, arg3)}
 			}
-		} elseif (CH03(arg0, z125, 23, arg3, arg2)) {
+		} elseif (CH03(arg0, z125, 23, __LINE__, arg2)) {
 			// Processing caused unexpected exception
 			if (STCS) {m000(2, 0x100, arg2, arg3)}
 		} else {
@@ -578,7 +578,7 @@ Method(m692, 2, Serialized)
 				// will be converted to Integer 0, thus no
 				// exception caused by implicit source
 				// conversion.
-				if (CH03(arg0, z125, 26, arg3, arg2)) {
+				if (CH03(arg0, z125, 26, __LINE__, arg2)) {
 					if (STCS) {m000(2, 0x100, arg2, arg3)}
 				}
 			} else {
@@ -587,7 +587,7 @@ Method(m692, 2, Serialized)
 					if (STCS) {m000(2, 0x100, arg2, arg3)}
 				}
 			}
-		} elseif (CH03(arg0, z125, 27, arg3, arg2)) {
+		} elseif (CH03(arg0, z125, 27, __LINE__, arg2)) {
 			// Processing caused unexpected exception
 			if (STCS) {m000(2, 0x100, arg2, arg3)}
 		} else {
@@ -649,7 +649,7 @@ Method(m692, 2, Serialized)
 				// will be converted to Integer 0, thus no
 				// exception caused by implicit source
 				// conversion.
-				if (CH03(arg0, z125, 30, arg3, arg2)) {
+				if (CH03(arg0, z125, 30, __LINE__, arg2)) {
 					if (STCS) {m000(2, 0x100, arg2, arg3)}
 				}
 			} else {
@@ -658,7 +658,7 @@ Method(m692, 2, Serialized)
 					if (STCS) {m000(2, 0x100, arg2, arg3)}
 				}
 			}
-		} elseif (CH03(arg0, z125, 31, arg3, arg2)) {
+		} elseif (CH03(arg0, z125, 31, __LINE__, arg2)) {
 			// Processing caused unexpected exception
 			if (STCS) {m000(2, 0x100, arg2, arg3)}
 		} else {
@@ -728,7 +728,7 @@ Method(m692, 2, Serialized)
 			if (LNot(CH06(arg0, 34, 0xff))) {
 				if (STCS) {m000(2, 0x100, arg2, arg3)}
 			}
-		} elseif (CH03(arg0, z125, 35, arg3, arg2)) {
+		} elseif (CH03(arg0, z125, 35, __LINE__, arg2)) {
 			// Processing caused unexpected exception
 			if (STCS) {m000(2, 0x100, arg2, arg3)}
 		} else {

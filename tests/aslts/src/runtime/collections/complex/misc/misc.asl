@@ -193,7 +193,7 @@ Method(m117, 2, Serialized)
 		Store(0, Local0)
 	}
 
-	CH03(ts, z054, 0x100, 0, 0)
+	CH03(ts, z054, 0x100, __LINE__, 0)
 
 	Store(ObjectType(Local0), Local1)
 
@@ -201,7 +201,7 @@ Method(m117, 2, Serialized)
 		err(arg0, z054, __LINE__, 0, 0, Local1, 0)
 	}
 
-	CH03(ts, z054, 0x101, 0, 0)
+	CH03(ts, z054, 0x101, __LINE__, 0)
 }
 
 Method(m118, 1)
@@ -238,7 +238,7 @@ Method(m119, 1, Serialized)
 	Store(Local1, Debug)
 	Store(Local2, Debug)
 
-	CH03(arg0, z054, 0x102, 0, 0)
+	CH03(arg0, z054, 0x102, __LINE__, 0)
 
 	return (0)
 }
@@ -337,11 +337,11 @@ Method(m11c, 1, Serialized)
 {
 	Name(ts, "m11c")
 
-	CH03(ts, z054, 0x103, 0, 0)
+	CH03(ts, z054, 0x103, __LINE__, 0)
 
 	Store(Add( Buffer() {0x79}, Buffer() {0x79} ), Local5)
 
-	CH03(ts, z054, 0x104, 0, 0)
+	CH03(ts, z054, 0x104, __LINE__, 0)
 }
 
 // Bug 57: The empty Return operator (without specifying the returning value)
@@ -791,7 +791,7 @@ Method(m124, 1)
 		return (0x12345678)
 	}
 
-	CH03(arg0, z054, 0x105, 0, 0)
+	CH03(arg0, z054, 0x105, __LINE__, 0)
 
 	Store(ObjectType(m000), Local0)
 	if (LNotEqual(Local0, c010)) {
@@ -815,7 +815,7 @@ Method(m124, 1)
 	//	err(arg0, z054, __LINE__, 0, 0, Local1, c009)
 	//}
 	//
-	//CH03(arg0, z054, 0x106, 0, 0)
+	//CH03(arg0, z054, 0x106, __LINE__, 0)
 }
 
 /*
@@ -971,25 +971,25 @@ Method(mf75, 1)
 		}
 	}
 
-	CH03(arg0, z054, 0x107, 0, 0)
+	CH03(arg0, z054, 0x107, __LINE__, 0)
 	mf74()
-	CH03(arg0, z054, 0x108, 0, 0)
+	CH03(arg0, z054, 0x108, __LINE__, 0)
 
-	CH03(arg0, z054, 0x109, 0, 0)
+	CH03(arg0, z054, 0x109, __LINE__, 0)
 	mm00()
-	CH03(arg0, z054, 0x10a, 0, 0)
+	CH03(arg0, z054, 0x10a, __LINE__, 0)
 
-	CH03(arg0, z054, 0x10b, 0, 0)
+	CH03(arg0, z054, 0x10b, __LINE__, 0)
 	mm01()
-	CH03(arg0, z054, 0x10c, 0, 0)
+	CH03(arg0, z054, 0x10c, __LINE__, 0)
 
-	CH03(arg0, z054, 0x10d, 0, 0)
+	CH03(arg0, z054, 0x10d, __LINE__, 0)
 	mm02()
-	CH03(arg0, z054, 0x10e, 0, 0)
+	CH03(arg0, z054, 0x10e, __LINE__, 0)
 
-	CH03(arg0, z054, 0x10f, 0, 0)
+	CH03(arg0, z054, 0x10f, __LINE__, 0)
 	mm03()
-	CH03(arg0, z054, 0x110, 0, 0)
+	CH03(arg0, z054, 0x110, __LINE__, 0)
 }
 
 
@@ -1028,7 +1028,7 @@ Method(mf75, 1)
 /* Bug 196 */
 Method(mf86, 1)
 {
-	CH03("mf86", z054, 74, 0, 0)
+	CH03("mf86", z054, 74, __LINE__, 0)
 
 	Store("0x0x12345678", Local1)
 	ToInteger(Local1, Local0)
@@ -1036,26 +1036,26 @@ Method(mf86, 1)
 		err(arg0, z054, __LINE__, 0, 0, Local0, 0)
 	}
 
-	CH04("mf86", 0, 0xff, z054, 2, 0, 0)
+	CH04("mf86", 0, 0xff, z054, __LINE__, 0, 0)
 }
 
 Method(mf87, 1)
 {
-	CH03("mf87", z054, 0, 0, 0)
+	CH03("mf87", z054, 0, __LINE__, 0)
 
 	Add("0x0xabcdef", 0x10234, Local0)
 	if (LNotEqual(Local0, 0x10234)) {
 		err(arg0, z054, __LINE__, 0, 0, Local0, 0x10234)
 	}
 
-	CH03("mf87", z054, 1, 0, 0)
+	CH03("mf87", z054, 1, __LINE__, 0)
 
 	Add(0x10234, "0x0xabcdef", Local0)
 	if (LNotEqual(Local0, 0x10234)) {
 		err(arg0, z054, __LINE__, 0, 0, Local0, 0x10234)
 	}
 
-	CH03("mf87", z054, 2, 0, 0)
+	CH03("mf87", z054, 2, __LINE__, 0)
 }
 
 Method(m15b,, Serialized)
@@ -1085,47 +1085,47 @@ Method(m15b,, Serialized)
 
 	Method(m001)
 	{
-		CH03(ts, z054, 0x001, 0, 0)
+		CH03(ts, z054, 0x001, __LINE__, 0)
 		Store(DerefOf(RefOf(mm00)), Local0)
 		if (SLCK) {
-			CH03(ts, z054, 0x002, 0, 0)
+			CH03(ts, z054, 0x002, __LINE__, 0)
 			Store(ObjectType(Local0), Local1)
 			if (LNotEqual(Local1, c010)) {
 				err(ts, z054, __LINE__, 0, 0, Local1, c010)
 			}
 		} else {
-			CH04(ts, 0, 47, z054, 0x004, 0, 0) // AE_AML_OPERAND_TYPE
+			CH04(ts, 0, 47, z054, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 		}
 	}
 
 	Method(m002)
 	{
-		CH03(ts, z054, 0x005, 0, 0)
+		CH03(ts, z054, 0x005, __LINE__, 0)
 		Store(DerefOf(Index(p000, 1)), Local0)
 		if (SLCK) {
-			CH03(ts, z054, 0x006, 0, 0)
+			CH03(ts, z054, 0x006, __LINE__, 0)
 			Store(ObjectType(Local0), Local1)
 			if (LNotEqual(Local1, c010)) {
 				err(ts, z054, __LINE__, 0, 0, Local1, c010)
 			}
 		} else {
-			CH04(ts, 0, 47, z054, 0x008, 0, 0) // AE_AML_OPERAND_TYPE
+			CH04(ts, 0, 47, z054, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 		}
 	}
 
 	Method(m003)
 	{
 // 10/2016: Compiler now catches illegal DerefOf(StringConstant)
-//		CH03(ts, z054, 0x009, 0, 0)
+//		CH03(ts, z054, 0x009, __LINE__, 0)
 //		Store(DerefOf("mm00"), Local0)
 //		if (SLCK) {
-//			CH03(ts, z054, 0x00a, 0, 0)
+//			CH03(ts, z054, 0x00a, __LINE__, 0)
 //			Store(ObjectType(Local0), Local1)
 //			if (LNotEqual(Local1, c010)) {
 //				err(ts, z054, __LINE__, 0, 0, Local1, c010)
 //			}
 //		} else {
-//			CH04(ts, 0, 47, z054, 0x00c, 0, 0) // AE_AML_OPERAND_TYPE
+//			CH04(ts, 0, 47, z054, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 //		}
 	}
 
@@ -1141,9 +1141,9 @@ Method(m15b,, Serialized)
 
 	Method(m005)
 	{
-		CH03(ts, z054, 0x00e, 0, 0)
+		CH03(ts, z054, 0x00e, __LINE__, 0)
 		CopyObject(DerefOf(RefOf(mm00)), Local0)
-		CH03(ts, z054, 0x00f, 0, 0)
+		CH03(ts, z054, 0x00f, __LINE__, 0)
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c010)) {
@@ -1153,9 +1153,9 @@ Method(m15b,, Serialized)
 
 	Method(m006)
 	{
-		CH03(ts, z054, 0x011, 0, 0)
+		CH03(ts, z054, 0x011, __LINE__, 0)
 		CopyObject(DerefOf(Index(p000, 1)), Local0)
-		CH03(ts, z054, 0x012, 0, 0)
+		CH03(ts, z054, 0x012, __LINE__, 0)
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c010)) {
@@ -1167,9 +1167,9 @@ Method(m15b,, Serialized)
 	{
 // 10/2016: Compiler now catches illegal DerefOf(StringConstant)
 
-//		CH03(ts, z054, 0x014, 0, 0)
+//		CH03(ts, z054, 0x014, __LINE__, 0)
 //		CopyObject(DerefOf("mm00"), Local0)
-//		CH03(ts, z054, 0x015, 0, 0)
+//		CH03(ts, z054, 0x015, __LINE__, 0)
 //
 //		Store(ObjectType(Local0), Local1)
 //		if (LNotEqual(Local1, c010)) {
@@ -1189,25 +1189,25 @@ Method(m15b,, Serialized)
 
 	Method(m009)
 	{
-		CH03(ts, z054, 0x018, 0, 0)
+		CH03(ts, z054, 0x018, __LINE__, 0)
 		Add(DerefOf(RefOf(mm00)), 2, Local0)
-		CH04(ts, 0, 47, z054, 0x019, 0, 0) // AE_AML_OPERAND_TYPE
+		CH04(ts, 0, 47, z054, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 	}
 
 	Method(m00a)
 	{
-		CH03(ts, z054, 0x01a, 0, 0)
+		CH03(ts, z054, 0x01a, __LINE__, 0)
 		Add(DerefOf(Index(p000, 1)), 3, Local0)
-		CH04(ts, 0, 47, z054, 0x01b, 0, 0) // AE_AML_OPERAND_TYPE
+		CH04(ts, 0, 47, z054, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 	}
 
 	Method(m00b)
 	{
 // 10/2016: Compiler now catches illegal DerefOf(StringConstant)
 
-//		CH03(ts, z054, 0x01c, 0, 0)
+//		CH03(ts, z054, 0x01c, __LINE__, 0)
 //		Add(DerefOf("mm00"), 4, Local0)
-//		CH04(ts, 0, 47, z054, 0x01d, 0, 0) // AE_AML_OPERAND_TYPE
+//		CH04(ts, 0, 47, z054, __LINE__, 0, 0) // AE_AML_OPERAND_TYPE
 	}
 
 	/* ObjectType */

@@ -82,13 +82,13 @@ Method(m17f)
 		return
 	}
 
-	if (CH03("", 0, 0x001, 0, 0)) {
+	if (CH03("", 0, 0x001, __LINE__, 0)) {
 		return
 	}
 
 	Load(R259, H259)
 
-	if (CH03("", 0, 0x002, 0, 0)) {
+	if (CH03("", 0, 0x002, __LINE__, 0)) {
 		return
 	}
 

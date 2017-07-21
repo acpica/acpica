@@ -63,9 +63,9 @@ Method(fp00,, Serialized)
 		}
 	}
 
-	CH03(ts, z179, 0x044, 0, 0)
+	CH03(ts, z179, 0x044, __LINE__, 0)
 	m000()
-	CH03(ts, z179, 0x045, 0, 0)
+	CH03(ts, z179, 0x045, __LINE__, 0)
 }
 
 Method(fp01,, Serialized)
@@ -97,9 +97,9 @@ Method(fp01,, Serialized)
 		}
 	}
 
-	CH03(ts, z179, 0x044, 0, 0)
+	CH03(ts, z179, 0x044, __LINE__, 0)
 	m000(0)
-	CH03(ts, z179, 0x045, 0, 0)
+	CH03(ts, z179, 0x045, __LINE__, 0)
 }
 
 

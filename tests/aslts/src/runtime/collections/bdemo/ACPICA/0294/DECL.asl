@@ -263,7 +263,7 @@ Device (D294) {
 		// The following Load should cause AE_OWNER_ID_LIMIT
 		Load(RFU3, DDB3)
 
-		CH04("", 0, 0xff, 0, 0x003, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
 		return (0)
 	}

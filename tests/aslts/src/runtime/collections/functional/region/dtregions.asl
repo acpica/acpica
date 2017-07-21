@@ -221,7 +221,7 @@ Method(m7f2, 1, Serialized)
 
 	Store(Derefof(Local0), Local2)
 
-	CH03(arg0, z142, 16, 0, 0)
+	CH03(arg0, z142, 16, __LINE__, 0)
 
 	Store(\DTR0.SSDT, Local3)
 

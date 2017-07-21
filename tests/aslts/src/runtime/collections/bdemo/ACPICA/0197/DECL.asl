@@ -34,8 +34,8 @@
 
 Method(mfb1)
 {
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 	Store("0x     12345678", Local1)
 	ToInteger(Local1, Local0)
-	CH04("", 0, 34, 0, 0x001, 0, 0) // AE_BAD_HEX_CONSTANT
+	CH04("", 0, 34, 0, __LINE__, 0, 0) // AE_BAD_HEX_CONSTANT
 }

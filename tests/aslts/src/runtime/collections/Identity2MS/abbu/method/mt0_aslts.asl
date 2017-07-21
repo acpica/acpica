@@ -98,7 +98,7 @@ Method(mt00,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x100, 0, 0)
+    CH03(ts, z170, 0x100, __LINE__, 0)
 
     mm00()
 
@@ -106,7 +106,7 @@ Method(mt00,, Serialized)
         err(ts, z170, __LINE__, 0, 0, i000, 0xabcd0000)
     }
 
-    CH03(ts, z170, 0x101, 0, 0)
+    CH03(ts, z170, 0x101, __LINE__, 0)
 }
 
 /*
@@ -249,7 +249,7 @@ Method(mt01,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x102, 0, 0)
+    CH03(ts, z170, 0x102, __LINE__, 0)
 
     mm00()
 
@@ -257,7 +257,7 @@ Method(mt01,, Serialized)
         err(ts, z170, __LINE__, 0, 0, i000, 0xabcd0000)
     }
 
-    CH03(ts, z170, 0x103, 0, 0)
+    CH03(ts, z170, 0x103, __LINE__, 0)
 }
 
 /*
@@ -335,7 +335,7 @@ Method(mt02,, Serialized)
       Store(0xabcd0000, i000)
     }
 
-    CH03(ts, z170, 0x104, 0, 0)
+    CH03(ts, z170, 0x104, __LINE__, 0)
 
     mm00()
 
@@ -343,7 +343,7 @@ Method(mt02,, Serialized)
         err(ts, z170, __LINE__, 0, 0, i000, 0xabcd0000)
     }
 
-    CH03(ts, z170, 0x105, 0, 0)
+    CH03(ts, z170, 0x105, __LINE__, 0)
 }
 
 /*
@@ -486,7 +486,7 @@ Method(mt03,, Serialized)
       Store(0xabcd0000, i000)
     }
 
-    CH03(ts, z170, 0x106, 0, 0)
+    CH03(ts, z170, 0x106, __LINE__, 0)
 
     mm00()
 
@@ -494,7 +494,7 @@ Method(mt03,, Serialized)
         err(ts, z170, __LINE__, 0, 0, i000, 0xabcd0000)
     }
 
-    CH03(ts, z170, 0x107, 0, 0)
+    CH03(ts, z170, 0x107, __LINE__, 0)
 }
 
 /*
@@ -558,7 +558,7 @@ Method(mt04,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x006, 0, 0)
+    CH03(ts, z170, 0x006, __LINE__, 0)
 
     Increment(\mt04.dz05.iy07)
 
@@ -568,7 +568,7 @@ Method(mt04,, Serialized)
       err(ts, z170, __LINE__, 0, 0, \mt04.dz05.iy07, 0xabcd0109)
     }
 
-    CH03(ts, z170, 0x008, 0, 0)
+    CH03(ts, z170, 0x008, __LINE__, 0)
 }
 
 /*
@@ -672,7 +672,7 @@ Method(mt05,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x108, 0, 0)
+    CH03(ts, z170, 0x108, __LINE__, 0)
 
     Increment(\mt05.dz05.iy07)
     mm00()
@@ -681,7 +681,7 @@ Method(mt05,, Serialized)
         err(ts, z170, __LINE__, 0, 0, \mt05.dz05.iy07, 0xabcd0211)
     }
 
-    CH03(ts, z170, 0x109, 0, 0)
+    CH03(ts, z170, 0x109, __LINE__, 0)
 }
 
 /*
@@ -752,7 +752,7 @@ Method(mt06,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x10a, 0, 0)
+    CH03(ts, z170, 0x10a, __LINE__, 0)
 
     mm00()
 
@@ -762,7 +762,7 @@ Method(mt06,, Serialized)
         err(ts, z170, __LINE__, 0, 0, \mt06.dz05.iy07, 0x11112222)
     }
 
-    CH03(ts, z170, 0x10b, 0, 0)
+    CH03(ts, z170, 0x10b, __LINE__, 0)
 }
 
 /*
@@ -817,7 +817,7 @@ Method(mt07,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x10c, 0, 0)
+    CH03(ts, z170, 0x10c, __LINE__, 0)
 
     mm00()
 
@@ -831,7 +831,7 @@ Method(mt07,, Serialized)
         err(ts, z170, __LINE__, 0, 0, \mt06.dz05.iy07, 0x11112222)
     }
 
-    CH03(ts, z170, 0x10d, 0, 0)
+    CH03(ts, z170, 0x10d, __LINE__, 0)
 }
 
 /*
@@ -921,7 +921,7 @@ Method(mt08,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x10e, 0, 0)
+    CH03(ts, z170, 0x10e, __LINE__, 0)
 
     mm00()
 
@@ -931,7 +931,7 @@ Method(mt08,, Serialized)
         err(ts, z170, __LINE__, 0, 0, \mt08.dz05.iy07, 0x22223333)
     }
 
-    CH03(ts, z170, 0x10f, 0, 0)
+    CH03(ts, z170, 0x10f, __LINE__, 0)
 }
 
 /*
@@ -1016,7 +1016,7 @@ Method(mt09,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x110, 0, 0)
+    CH03(ts, z170, 0x110, __LINE__, 0)
 
     mm00()
 
@@ -1030,7 +1030,7 @@ Method(mt09,, Serialized)
         err(ts, z170, __LINE__, 0, 0, \mt08.dz05.iy07, 0x22223333)
     }
 
-    CH03(ts, z170, 0x111, 0, 0)
+    CH03(ts, z170, 0x111, __LINE__, 0)
 }
 
 /*
@@ -1041,7 +1041,7 @@ Method(mt0a,, Serialized)
 {
     Name(ts, "mt0a")
 
-    CH03(ts, z170, 0x112, 0, 0)
+    CH03(ts, z170, 0x112, __LINE__, 0)
 
     Store (\pr7d.iy07, Local0)
     OUTC("mt0a,   \\pr7d.iy07:")
@@ -1050,7 +1050,7 @@ Method(mt0a,, Serialized)
         err(ts, z170, __LINE__, 0, 0, \pr7d.iy07, 0xabcd0120)
     }
 
-    CH03(ts, z170, 0x113, 0, 0)
+    CH03(ts, z170, 0x113, __LINE__, 0)
 }
 
 /*
@@ -1060,7 +1060,7 @@ Method(mt0b,, Serialized)
 {
     Name(ts, "mt0b")
 
-    CH03(ts, z170, 0x114, 0, 0)
+    CH03(ts, z170, 0x114, __LINE__, 0)
 
     Increment(\pr7d.iy07)
     Store (\pr7d.iy07, Local0)
@@ -1071,7 +1071,7 @@ Method(mt0b,, Serialized)
         err(ts, z170, __LINE__, 0, 0, \pr7d.iy07, 0xabcd0121)
     }
 
-    CH03(ts, z170, 0x115, 0, 0)
+    CH03(ts, z170, 0x115, __LINE__, 0)
 }
 
 /*
@@ -1087,7 +1087,7 @@ Method(mt0c,, Serialized)
         Name(iy07, 0xabcd0660)
     }
 
-    CH03(ts, z170, 0x116, 0, 0)
+    CH03(ts, z170, 0x116, __LINE__, 0)
 
     Increment(\mt0c.pr7d.iy07)
     Store (\mt0c.pr7d.iy07, Local0)
@@ -1098,7 +1098,7 @@ Method(mt0c,, Serialized)
         err(ts, z170, __LINE__, 0, 0, \mt0c.pr7d.iy07, 0xabcd0661)
     }
 
-    CH03(ts, z170, 0x117, 0, 0)
+    CH03(ts, z170, 0x117, __LINE__, 0)
 }
 
 /*
@@ -1110,7 +1110,7 @@ Method(mt0d,, Serialized)
 
 	Name(i000, 0xabcd1234)
 
-	CH03(ts, z170, 0x118, 0, 0)
+	CH03(ts, z170, 0x118, __LINE__, 0)
 
 	Store(0, Local0)
 	While (1) {
@@ -1123,13 +1123,13 @@ Method(mt0d,, Serialized)
 
 			mt0e()
 
-			CH03(ts, z170, 0x119, 0, 0)
+			CH03(ts, z170, 0x119, __LINE__, 0)
 
 			Return
 		}
 	}
 
-	CH03(ts, z170, 0x11a, 0, 0)
+	CH03(ts, z170, 0x11a, __LINE__, 0)
 }
 
 /*
@@ -1139,7 +1139,7 @@ Method(mt0e,, Serialized)
 {
     Name(ts, "mt0e")
 
-    CH03(ts, z170, 0x11b, 0, 0)
+    CH03(ts, z170, 0x11b, __LINE__, 0)
 
     Store (\mt0d.i000, Local0)
     OUTC("mt0e,   \\mt0d.i000:")
@@ -1149,7 +1149,7 @@ Method(mt0e,, Serialized)
         err(ts, z170, __LINE__, 0, 0, \mt0d.i000, 0xabcd1234)
     }
 
-    CH03(ts, z170, 0x11c, 0, 0)
+    CH03(ts, z170, 0x11c, __LINE__, 0)
 }
 
 /*
@@ -1214,7 +1214,7 @@ Method(mt0f,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x022, 0, 0)
+    CH03(ts, z170, 0x022, __LINE__, 0)
 
     Add(\mt0f.dz05.iy07, 1, \mt0f.dz05.iy07)
     mm00()
@@ -1223,7 +1223,7 @@ Method(mt0f,, Serialized)
       err(ts, z170, __LINE__, 0, 0, \mt0f.dz05.iy07, 0xabcd0509)
     }
 
-    CH03(ts, z170, 0x024, 0, 0)
+    CH03(ts, z170, 0x024, __LINE__, 0)
 }
 
 /*
@@ -1327,7 +1327,7 @@ Method(mt10,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x027, 0, 0)
+    CH03(ts, z170, 0x027, __LINE__, 0)
 
     Add(\mt10.dz05.iy07, 1, \mt10.dz05.iy07)
     mm00()
@@ -1336,7 +1336,7 @@ Method(mt10,, Serialized)
         err(ts, z170, __LINE__, 0, 0, \mt10.dz05.iy07, 0xabcd0611)
     }
 
-    CH03(ts, z170, 0x029, 0, 0)
+    CH03(ts, z170, 0x029, __LINE__, 0)
 }
 
 /*
@@ -1400,7 +1400,7 @@ Method(mt11,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x02c, 0, 0)
+    CH03(ts, z170, 0x02c, __LINE__, 0)
 
     Increment(dz05.iy07)
     mm00()
@@ -1409,7 +1409,7 @@ Method(mt11,, Serialized)
       err(ts, z170, __LINE__, 0, 0, dz05.iy07, 0xabcd0709)
     }
 
-    CH03(ts, z170, 0x02e, 0, 0)
+    CH03(ts, z170, 0x02e, __LINE__, 0)
 }
 
 /*
@@ -1593,7 +1593,7 @@ Method(mt12,, Serialized)
       mm01()
     }
 
-    CH03(ts, z170, 0x11d, 0, 0)
+    CH03(ts, z170, 0x11d, __LINE__, 0)
 
     Increment(dz05.iy07)
     mm00()
@@ -1602,7 +1602,7 @@ Method(mt12,, Serialized)
         err(ts, z170, __LINE__, 0, 0, dz05.iy07, 0xabcd0821)
     }
 
-    CH03(ts, z170, 0x11e, 0, 0)
+    CH03(ts, z170, 0x11e, __LINE__, 0)
 }
 
 /*
@@ -1678,7 +1678,7 @@ Method(mt13,, Serialized)
       }
     }
 
-    CH03(ts, z170, 0x03a, 0, 0)
+    CH03(ts, z170, 0x03a, __LINE__, 0)
 
     Store (\mt13.dz05.iy07, Local0)
     mm00()
@@ -1687,7 +1687,7 @@ Method(mt13,, Serialized)
       err(ts, z170, __LINE__, 0, 0, \mt13.dz05.iy07, 0xabcd0500)
     }
 
-    CH03(ts, z170, 0x03c, 0, 0)
+    CH03(ts, z170, 0x03c, __LINE__, 0)
 }
 
 /*
@@ -2056,7 +2056,7 @@ Method(mt14,, Serialized)
       }
     }
 
-    CH03(ts, z170, 0x11f, 0, 0)
+    CH03(ts, z170, 0x11f, __LINE__, 0)
 
     Store (\mt14.dz05.iy07, Local0)
     mm00()
@@ -2067,7 +2067,7 @@ Method(mt14,, Serialized)
         err(ts, z170, __LINE__, 0, 0, \mt14.dz05.iy07, 0xabcd2900)
     }
 
-    CH03(ts, z170, 0x120, 0, 0)
+    CH03(ts, z170, 0x120, __LINE__, 0)
 }
 
 /*
@@ -2436,7 +2436,7 @@ Method(mt15,, Serialized)
       }
     }
 
-    CH03(ts, z170, 0x121, 0, 0)
+    CH03(ts, z170, 0x121, __LINE__, 0)
 
     Store (dz05.iy07, Local0)
     mm00()
@@ -2447,7 +2447,7 @@ Method(mt15,, Serialized)
         err(ts, z170, __LINE__, 0, 0, dz05.iy07, 0xabcd3900)
     }
 
-    CH03(ts, z170, 0x122, 0, 0)
+    CH03(ts, z170, 0x122, __LINE__, 0)
 }
 
 /*
@@ -2521,12 +2521,12 @@ Method(mt16, 1, Serialized)
       mmF1(arg0)
     }
 
-    CH03(ts, z170, 0x0c1, 0, 0)
+    CH03(ts, z170, 0x0c1, __LINE__, 0)
 
     if (LEqual(arg0, 0)) {
         // Access to the internal data of method (mm00...) not being invoked
         m000()
-        CH04(ts, 1, 5, z170, 0x0c2, 0, 0) // AE_NOT_FOUND
+        CH04(ts, 1, 5, z170, __LINE__, 0, 0) // AE_NOT_FOUND
     } elseif (LEqual(arg0, 1)) {
 
         // Access to the internal data of method (mm00...) being invoked
@@ -2561,7 +2561,7 @@ Method(mt16, 1, Serialized)
         }
     }
 
-    CH03(ts, z170, 0x0c5, 0, 0)
+    CH03(ts, z170, 0x0c5, __LINE__, 0)
 }
 
 /*
@@ -2884,12 +2884,12 @@ if (LEqual(arg0, 1)) {
       mmF1(arg0)
     }
 
-    CH03(ts, z170, 0x0c6, 0, 0)
+    CH03(ts, z170, 0x0c6, __LINE__, 0)
 
     if (LEqual(arg0, 0)) {
         // Access to the internal data of method (mm00...) not being invoked
         m000()
-        CH04(ts, 1, 5, z170, 0x0c7, 0, 0) // AE_NOT_FOUND
+        CH04(ts, 1, 5, z170, __LINE__, 0, 0) // AE_NOT_FOUND
     } elseif (LEqual(arg0, 1)) {
 
         // Access to the internal data of method (mm00...) being invoked
@@ -2923,7 +2923,7 @@ if (LEqual(arg0, 1)) {
         }
     }
 
-    CH03(ts, z170, 0x0cb, 0, 0)
+    CH03(ts, z170, 0x0cb, __LINE__, 0)
 }
 
 Method(mt18, 1, Serialized)
@@ -2935,7 +2935,7 @@ Method(mt18, 1, Serialized)
 		Name(iy07, 0xabcd4900)
 	}
 
-	CH03(ts, z170, 0x0cc, 0, 0)
+	CH03(ts, z170, 0x0cc, __LINE__, 0)
 
 	if (arg0) {
 		Store(0xabcd9000, \mt18.dz05.iy07)
@@ -2949,7 +2949,7 @@ Method(mt18, 1, Serialized)
             }
 	}
 
-	CH03(ts, z170, 0x0cd, 0, 0)
+	CH03(ts, z170, 0x0cd, __LINE__, 0)
 }
 
 Method(mt19, 1, Serialized)
@@ -2961,7 +2961,7 @@ Method(mt19, 1, Serialized)
 		Name(iy07, 0xabcd0660)
 	}
 
-	CH03(ts, z170, 0x0ce, 0, 0)
+	CH03(ts, z170, 0x0ce, __LINE__, 0)
 
 	if (arg0) {
 		Store(0xabcd9002, \mt19.pr7d.iy07)
@@ -2975,14 +2975,14 @@ Method(mt19, 1, Serialized)
             }
 	}
 
-	CH03(ts, z170, 0x0cf, 0, 0)
+	CH03(ts, z170, 0x0cf, __LINE__, 0)
 }
 
 Method(mt1a, 1, Serialized)
 {
 	Name(ts, "mt1a")
 
-	CH03(ts, z170, 0x0d0, 0, 0)
+	CH03(ts, z170, 0x0d0, __LINE__, 0)
 	if (arg0) {
 		Store(0xabcd9004, \pr7d.iy07)
             if (LNotEqual(\pr7d.iy07, 0xabcd9004)) {
@@ -2994,7 +2994,7 @@ Method(mt1a, 1, Serialized)
                 err(ts, z170, __LINE__, 0, 0, ^pr7d.iy07, 0xabcd9005)
             }
 	}
-	CH03(ts, z170, 0x0d1, 0, 0)
+	CH03(ts, z170, 0x0d1, __LINE__, 0)
 }
 
 

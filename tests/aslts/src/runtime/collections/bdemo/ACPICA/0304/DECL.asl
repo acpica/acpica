@@ -278,17 +278,17 @@ Method(m18a, 1, Serialized, 3)
 	// Check if exception takes place (AE_AML_METHOD_LIMIT)
 
 	if (arg0) {
-		CH04("", 0, 84, 0, 0x009, 0, 0) // AE_AML_METHOD_LIMIT
+		CH04("", 0, 84, 0, __LINE__, 0, 0) // AE_AML_METHOD_LIMIT
 	} else {
-		CH03("", 0, 0x00a, 0, 0)
+		CH03("", 0, 0x00a, __LINE__, 0)
 	}
 }
 
-	CH03("", 0, 0x00b, 0, 0)
+	CH03("", 0, 0x00b, __LINE__, 0)
 	SRMT("m18a-0")
 	m18a(0)
-	CH03("", 0, 0x00c, 0, 0)
+	CH03("", 0, 0x00c, __LINE__, 0)
 	SRMT("m18a-1")
 	m18a(1)
-	CH03("", 0, 0x00d, 0, 0)
+	CH03("", 0, 0x00d, __LINE__, 0)
 }

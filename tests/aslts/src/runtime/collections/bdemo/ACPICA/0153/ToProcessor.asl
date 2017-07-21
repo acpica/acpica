@@ -229,7 +229,7 @@ Method(md42,, Serialized)
 
 Method(md43)
 {
-	CH03("", 0, 0xf14, 0, 0)
+	CH03("", 0, 0xf14, __LINE__, 0)
 	md3b()
 	md3c()
 	md3d()
@@ -238,5 +238,5 @@ Method(md43)
 	md40()
 	md41()
 	md42()
-	CH03("", 0, 0xf15, 0, 0)
+	CH03("", 0, 0xf15, __LINE__, 0)
 }

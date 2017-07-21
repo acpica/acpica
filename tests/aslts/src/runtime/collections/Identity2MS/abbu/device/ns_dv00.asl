@@ -464,7 +464,7 @@ Method(dv05)
 		Return (5)
 	}
 
-	CH03(ts, z167, 0x000, 0, 0)
+	CH03(ts, z167, 0x000, __LINE__, 0)
 
 	Store(Add(DerefOf(Index(p000, 0)), m001(i000, c009)), Local0)
 	if (LNotEqual(Local0, 0xabcd0006)) {
@@ -535,7 +535,7 @@ Method(dv05)
 		err(ts, z167, __LINE__, 0, 0, Local0, 0xabcd0006)
 	}
 
-	CH03(ts, z167, 0x000, 0, 0)
+	CH03(ts, z167, 0x000, __LINE__, 0)
 }
 
 Method(dv06)

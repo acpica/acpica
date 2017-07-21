@@ -48,11 +48,11 @@ Method(m1b3,, Serialized)
 		if (arg0) {
 			Store(0, Local7)
 		}
-		CH03(ts, z109, 0, 0, 0)
+		CH03(ts, z109, 0, __LINE__, 0)
 		Store(Local7, Local0)
 		if (LNot(SLCK))
 		{
-		    CH04(ts, 0, 0xff, z109, 1, 0, 0)
+		    CH04(ts, 0, 0xff, z109, __LINE__, 0, 0)
 		}
 	}
 
@@ -93,16 +93,16 @@ Method(m1b3,, Serialized)
 /*
 // Removed 09/2015. iASL now disallows these stores
 
-	CH03(ts, z109, 7, 0, 0)
+	CH03(ts, z109, 7, __LINE__, 0)
 	Store(d900, Local0)
 	if (LNot(SLCK)){
-	    CH04(ts, 0, 0xff, z109, 8, 0, 0)
+	    CH04(ts, 0, 0xff, z109, __LINE__, 0, 0)
 	}
 
-	CH03(ts, z109, 9, 0, 0)
+	CH03(ts, z109, 9, __LINE__, 0)
 	Store(e900, Local0)
 	if (LNot(SLCK)){
-	    CH04(ts, 0, 0xff, z109, 10, 0, 0)
+	    CH04(ts, 0, 0xff, z109, __LINE__, 0, 0)
 	}
 */
 	/*
@@ -114,43 +114,43 @@ Method(m1b3,, Serialized)
 	 * invacation.
 	 */
 	if (X114) {
-		CH03(ts, z109, 11, 0, 0)
+		CH03(ts, z109, 11, __LINE__, 0)
 		Store(m901, Local0)
-		//CH04(ts, 0, 0xff, z109, 12, 0, 0)
+		//CH04(ts, 0, 0xff, z109, __LINE__, 0, 0)
 	}
 
 /*
 // Removed 09/2015. iASL now disallows these stores
 
-	CH03(ts, z109, 13, 0, 0)
+	CH03(ts, z109, 13, __LINE__, 0)
 	Store(mx90, Local0)
 	if (LNot(SLCK)){
-	    CH04(ts, 0, 0xff, z109, 14, 0, 0)
+	    CH04(ts, 0, 0xff, z109, __LINE__, 0, 0)
 	}
 
-	CH03(ts, z109, 15, 0, 0)
+	CH03(ts, z109, 15, __LINE__, 0)
 	Store(r900, Local0)
 	if (LNot(SLCK)){
-	    CH04(ts, 0, 0xff, z109, 16, 0, 0)
+	    CH04(ts, 0, 0xff, z109, __LINE__, 0, 0)
 	}
 
-	CH03(ts, z109, 17, 0, 0)
+	CH03(ts, z109, 17, __LINE__, 0)
 	Store(pw90, Local0)
 	if (LNot(SLCK)){
-	    CH04(ts, 0, 0xff, z109, 18, 0, 0)
+	    CH04(ts, 0, 0xff, z109, __LINE__, 0, 0)
 	}
 
-	CH03(ts, z109, 19, 0, 0)
+	CH03(ts, z109, 19, __LINE__, 0)
 	Store(pr90, Local0)
 	if (LNot(SLCK)){
-	    CH04(ts, 0, 0xff, z109, 20, 0, 0)
+	    CH04(ts, 0, 0xff, z109, __LINE__, 0, 0)
 	}
 
-	CH03(ts, z109, 21, 0, 0)
+	CH03(ts, z109, 21, __LINE__, 0)
 	Store(tz90, Local0)
 	if (LNot(SLCK))
 	{
-	    CH04(ts, 0, 0xff, z109, 22, 0, 0)
+	    CH04(ts, 0, 0xff, z109, __LINE__, 0, 0)
 	}
 */
 

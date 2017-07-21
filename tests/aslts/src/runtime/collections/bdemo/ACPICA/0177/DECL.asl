@@ -50,51 +50,51 @@
 
 		// Named
 
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		Store(Index(p000, 2), Local1)
-		CH04("", 1, 55, 0, 0x001, 0, 0) // AE_AML_PACKAGE_LIMIT
+		CH04("", 1, 55, 0, __LINE__, 0, 0) // AE_AML_PACKAGE_LIMIT
 
-		CH03("", 0, 0x002, 0, 0)
+		CH03("", 0, 0x002, __LINE__, 0)
 		Store(Index(b000, 3), Local1)
-		CH04("", 1, 54, 0, 0x003, 0, 0) // AE_AML_BUFFER_LIMIT
+		CH04("", 1, 54, 0, __LINE__, 0, 0) // AE_AML_BUFFER_LIMIT
 
-		CH03("", 0, 0x004, 0, 0)
+		CH03("", 0, 0x004, __LINE__, 0)
 		Store(Index(s000, 4), Local1)
-		CH04("", 1, 61, 0, 0x005, 0, 0) // AE_AML_STRING_LIMIT
+		CH04("", 1, 61, 0, __LINE__, 0, 0) // AE_AML_STRING_LIMIT
 
 		// Immediate
 
-		CH03("", 0, 0x006, 0, 0)
+		CH03("", 0, 0x006, __LINE__, 0)
 		Store(Index(Package(2){0, 1}, 2), Local1)
 		if (y900) {
-			CH04("", 1, 55, 0, 0x007, 0, 0) // AE_AML_PACKAGE_LIMIT
+			CH04("", 1, 55, 0, __LINE__, 0, 0) // AE_AML_PACKAGE_LIMIT
 		} else {
-			CH04("", 0, 85, 0, 0x008, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+			CH04("", 0, 85, 0, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 		}
 
-		CH03("", 0, 0x009, 0, 0)
+		CH03("", 0, 0x009, __LINE__, 0)
 		Store(Index(Buffer(3){2, 3, 4}, 3), Local1)
 		if (y900) {
-			CH04("", 1, 54, 0, 0x00a, 0, 0) // AE_AML_BUFFER_LIMIT
+			CH04("", 1, 54, 0, __LINE__, 0, 0) // AE_AML_BUFFER_LIMIT
 		} else {
-			CH04("", 0, 85, 0, 0x00b, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+			CH04("", 0, 85, 0, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 		}
 
-		CH03("", 0, 0x00c, 0, 0)
+		CH03("", 0, 0x00c, __LINE__, 0)
 		Store(Index("5678", 4), Local1)
 		if (y900) {
-			CH04("", 1, 61, 0, 0x00d, 0, 0) // AE_AML_STRING_LIMIT
+			CH04("", 1, 61, 0, __LINE__, 0, 0) // AE_AML_STRING_LIMIT
 		} else {
-			CH04("", 0, 85, 0, 0x00e, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
+			CH04("", 0, 85, 0, __LINE__, 0, 0) // AE_INDEX_TO_NOT_ATTACHED
 		}
 
 		// Fields
 
-		CH03("", 0, 0x00f, 0, 0)
+		CH03("", 0, 0x00f, __LINE__, 0)
 		Store(f000, Local0)
-		CH03("", 0, 0x010, 0, 0)
+		CH03("", 0, 0x010, __LINE__, 0)
 
-		CH03("", 0, 0x011, 0, 0)
+		CH03("", 0, 0x011, __LINE__, 0)
 		Store(f001, Local0)
 		if (y263) {
 			/*
@@ -104,18 +104,18 @@
 			 * - and on Store-to-debug stage
 			 * Check opcode of the last exception.
 			 */
-			CH04("", 2, 53, 0, 0x013, 0, 0) // AE_AML_REGION_LIMIT
+			CH04("", 2, 53, 0, __LINE__, 0, 0) // AE_AML_REGION_LIMIT
 		} else {
-			CH04("", 0, 53, 0, 0x013, 0, 0) // AE_AML_REGION_LIMIT
+			CH04("", 0, 53, 0, __LINE__, 0, 0) // AE_AML_REGION_LIMIT
 		}
 
-		CH03("", 0, 0x014, 0, 0)
+		CH03("", 0, 0x014, __LINE__, 0)
 		Store(bkf0, Local0)
 		if (y263) {
 			/* See comment to sub-test above */
-			CH04("", 2, 68, 0, 0x016, 0, 0) // AE_AML_REGISTER_LIMIT
+			CH04("", 2, 68, 0, __LINE__, 0, 0) // AE_AML_REGISTER_LIMIT
 		} else {
-			CH04("", 0, 68, 0, 0x016, 0, 0) // AE_AML_REGISTER_LIMIT
+			CH04("", 0, 68, 0, __LINE__, 0, 0) // AE_AML_REGISTER_LIMIT
 		}
 	}
 

@@ -588,7 +588,7 @@ Method(m70c, 3, Serialized)
 	else {
 		Store(b000, Derefof(Local5))
 
-		CH03(arg0, z141, 24, arg2, Local3)
+		CH03(arg0, z141, 24, __LINE__, Local3)
 
 		Store(ObjectType(Derefof(Local6)), Local0)
 		Store(c00b, Local1)

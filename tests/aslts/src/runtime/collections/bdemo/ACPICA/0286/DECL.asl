@@ -71,13 +71,13 @@ Device (D286) {
 
 		m000(Refof(\AUXD.PAC0))
 
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
 		Store(Derefof(Index(\AUXD.PAC0, 0)), Debug)
-		CH03("", 0, 0x002, 0, 0)
+		CH03("", 0, 0x002, __LINE__, 0)
 
 		Unload(DDB0)
-		CH03("", 0, 0x003, 0, 0)
+		CH03("", 0, 0x003, __LINE__, 0)
 	}
 }
 

@@ -70,17 +70,17 @@
 	Method(me4b)
 	{
 		if (SLCK) {
-			CH03("", 0, 0x000, 0, 0)
+			CH03("", 0, 0x000, __LINE__, 0)
 			me49(0)
-			CH03("", 0, 0x001, 0, 0)
+			CH03("", 0, 0x001, __LINE__, 0)
 			me4a(0)
-			CH03("", 0, 0x002, 0, 0)
+			CH03("", 0, 0x002, __LINE__, 0)
 		} else {
-			CH03("", 0, 0x003, 0, 0)
+			CH03("", 0, 0x003, __LINE__, 0)
 			me49(0)
-			CH04("", 0, 49, 0, 0x004, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
-			CH03("", 0, 0x005, 0, 0)
+			CH04("", 0, 49, 0, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
+			CH03("", 0, 0x005, __LINE__, 0)
 			me4a(0)
-			CH04("", 0, 49, 0, 0x006, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
+			CH04("", 0, 49, 0, __LINE__, 0, 0) // AE_AML_UNINITIALIZED_LOCAL
 		}
 	}

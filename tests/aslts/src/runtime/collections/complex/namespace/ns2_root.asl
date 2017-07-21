@@ -43,7 +43,7 @@ Method(m203, 1, Serialized)
 		Name(pp00, Package() {0x11111111, 0x00000001, 0x22223333})
 	}
 
-	CH03(ts, z156, 0x006, 0, 0)
+	CH03(ts, z156, 0x006, __LINE__, 0)
 
 	Store(arg0, i001)
 
@@ -102,7 +102,7 @@ Method(m203, 1, Serialized)
 		err(ts, z156, __LINE__, 0, 0, Local0, 0x80000000)
 	}
 
-	CH03(ts, z156, 0x009, 0, 0)
+	CH03(ts, z156, 0x009, __LINE__, 0)
 }
 
 /*
@@ -114,7 +114,7 @@ Method(m205, 1, Serialized)
 	Name(i001, 0)
 	Name(p000, Package() {1,2,3,4})
 
-	CH03(ts, z156, 0x00d, 0, 0)
+	CH03(ts, z156, 0x00d, __LINE__, 0)
 
 	Device(d000)
 	{
@@ -122,7 +122,7 @@ Method(m205, 1, Serialized)
 		CreateField(b000, 5, 32, bf00)
 	}
 
-	CH03(ts, z156, 0x00e, 0, 0)
+	CH03(ts, z156, 0x00e, __LINE__, 0)
 
 	if (0) {
 		CreateField(d000.b000, 5, 32, bf00)
@@ -185,7 +185,7 @@ Method(m205, 1, Serialized)
 		err(ts, z156, __LINE__, 0, 0, Local0, 0x80000000)
 	}
 
-	CH03(ts, z156, 0x011, 0, 0)
+	CH03(ts, z156, 0x011, __LINE__, 0)
 }
 
 Method(n102)

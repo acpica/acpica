@@ -49,41 +49,41 @@ Method(mdbd,, Serialized)
 {
 	Name(b000, Buffer(16) {})
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 	CreateBitField(b000, 128, f000)
-	CH04("", 0, 54, 0, 0x001, 0, 0) // AE_AML_BUFFER_LIMIT
+	CH04("", 0, 54, 0, __LINE__, 0, 0) // AE_AML_BUFFER_LIMIT
 
-	CH03("", 0, 0x002, 0, 0)
+	CH03("", 0, 0x002, __LINE__, 0)
 	CreateByteField(b000, 16, f001)
-	CH04("", 0, 54, 0, 0x003, 0, 0) // AE_AML_BUFFER_LIMIT
+	CH04("", 0, 54, 0, __LINE__, 0, 0) // AE_AML_BUFFER_LIMIT
 
-	CH03("", 0, 0x004, 0, 0)
+	CH03("", 0, 0x004, __LINE__, 0)
 	CreateWordField(b000, 15, f002)
-	CH04("", 0, 54, 0, 0x005, 0, 0) // AE_AML_BUFFER_LIMIT
+	CH04("", 0, 54, 0, __LINE__, 0, 0) // AE_AML_BUFFER_LIMIT
 
-	CH03("", 0, 0x006, 0, 0)
+	CH03("", 0, 0x006, __LINE__, 0)
 	CreateDWordField(b000, 13, f003)
-	CH04("", 0, 54, 0, 0x007, 0, 0) // AE_AML_BUFFER_LIMIT
+	CH04("", 0, 54, 0, __LINE__, 0, 0) // AE_AML_BUFFER_LIMIT
 
-	CH03("", 0, 0x008, 0, 0)
+	CH03("", 0, 0x008, __LINE__, 0)
 	CreateQWordField(b000, 9, f004)
-	CH04("", 0, 54, 0, 0x009, 0, 0) // AE_AML_BUFFER_LIMIT
+	CH04("", 0, 54, 0, __LINE__, 0, 0) // AE_AML_BUFFER_LIMIT
 
-	CH03("", 0, 0x00a, 0, 0)
+	CH03("", 0, 0x00a, __LINE__, 0)
 	CreateField(b000, 127, 2, f005)
-	CH04("", 0, 54, 0, 0x00b, 0, 0) // AE_AML_BUFFER_LIMIT
+	CH04("", 0, 54, 0, __LINE__, 0, 0) // AE_AML_BUFFER_LIMIT
 
-	CH03("", 0, 0x00c, 0, 0)
+	CH03("", 0, 0x00c, __LINE__, 0)
 	CreateField(b000, 120, 9, f006)
-	CH04("", 0, 54, 0, 0x00d, 0, 0) // AE_AML_BUFFER_LIMIT
+	CH04("", 0, 54, 0, __LINE__, 0, 0) // AE_AML_BUFFER_LIMIT
 
-	CH03("", 0, 0x00e, 0, 0)
+	CH03("", 0, 0x00e, __LINE__, 0)
 	CreateField(b000, 128, 1, f007)
-	CH04("", 0, 54, 0, 0x00f, 0, 0) // AE_AML_BUFFER_LIMIT
+	CH04("", 0, 54, 0, __LINE__, 0, 0) // AE_AML_BUFFER_LIMIT
 
-	CH03("", 0, 0x010, 0, 0)
+	CH03("", 0, 0x010, __LINE__, 0)
 	CreateField(b000, 121, 8, f008)
-	CH04("", 0, 54, 0, 0x011, 0, 0) // AE_AML_BUFFER_LIMIT
+	CH04("", 0, 54, 0, __LINE__, 0, 0) // AE_AML_BUFFER_LIMIT
 }
 
 Method(mdbe)

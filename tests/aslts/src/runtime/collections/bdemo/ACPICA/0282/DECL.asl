@@ -44,7 +44,7 @@ Device (D282) {
 
 		Store(BUF0, Debug)
 
-		CH03("", 0, 0x001, 0, 0)
+		CH03("", 0, 0x001, __LINE__, 0)
 	}
 }
 

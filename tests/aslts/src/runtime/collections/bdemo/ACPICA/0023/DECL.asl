@@ -39,7 +39,7 @@ Method(mdb8)
 	Store(0x9999999999, Local0)
 	Store(9999999999, Local1)
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 	FromBCD(Local0, Local2)
 	if (LNotEqual(Local2, Local1)) {
 		err("", zFFF, __LINE__, 0, 0, Local2, Local1)
@@ -50,7 +50,7 @@ Method(mdb8)
 	Store(0x10000000000, Local0)
 	Store(10000000000, Local1)
 
-	CH03("", 0, 0x003, 0, 0)
+	CH03("", 0, 0x003, __LINE__, 0)
 	FromBCD(Local0, Local2)
 	if (LNotEqual(Local2, Local1)) {
 		err("", zFFF, __LINE__, 0, 0, Local2, Local1)
@@ -61,12 +61,12 @@ Method(mdb8)
 	Store(10000000000, Local0)
 	Store(0x10000000000, Local1)
 
-	CH03("", 0, 0x006, 0, 0)
+	CH03("", 0, 0x006, __LINE__, 0)
 	ToBCD(Local0, Local2)
 	if (LNotEqual(Local2, Local1)) {
 		err("", zFFF, __LINE__, 0, 0, Local2, Local1)
 	}
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 }
 

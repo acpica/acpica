@@ -152,7 +152,7 @@ Method(m0ef,, Serialized)
 		m801(1)
 	}
 
-	CH03(ts, z177, 0x000, 0, 0)
+	CH03(ts, z177, 0x000, __LINE__, 0)
 
 	m100()
 
@@ -168,7 +168,7 @@ Method(m0ef,, Serialized)
 		err(ts, z177, __LINE__, 0, 0, cnt0, 0)
 	}
 
-	CH03(ts, z177, 0x003, 0, 0)
+	CH03(ts, z177, 0x003, __LINE__, 0)
 }
 
 /*
@@ -416,7 +416,7 @@ Method(m0fb,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x00d, 0, 0)
+	CH03(ts, z177, 0x00d, __LINE__, 0)
 
 	m100()
 
@@ -444,7 +444,7 @@ Method(m0fb,, Serialized)
 		err(ts, z177, __LINE__, 0, 0, cnt1, 0x3DE)
 	}
 
-	CH03(ts, z177, 0x011, 0, 0)
+	CH03(ts, z177, 0x011, __LINE__, 0)
 }
 
 /*
@@ -578,14 +578,14 @@ Method(m0ff, 1, Serialized)
 		m801(1)
 	}
 
-	CH03(ts, z177, 0x012, 0, 0)
+	CH03(ts, z177, 0x012, __LINE__, 0)
 
 	Store(arg0, i000)
 
 	m100()
 
 	if (arg0) {
-		CH04(ts, 0, 84, z177, 0x013, 0, 0)	// AE_AML_METHOD_LIMIT
+		CH04(ts, 0, 84, z177, __LINE__, 0, 0)	// AE_AML_METHOD_LIMIT
 	} else {
 		Concatenate("Maximal number of methods being in progress simultaneously ", max0, Debug)
 
@@ -600,7 +600,7 @@ Method(m0ff, 1, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x016, 0, 0)
+	CH03(ts, z177, 0x016, __LINE__, 0)
 }
 
 /*
@@ -848,7 +848,7 @@ Method(m18a, 1, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x020, 0, 0)
+	CH03(ts, z177, 0x020, __LINE__, 0)
 
 	Store(arg0, i000)
 
@@ -857,7 +857,7 @@ Method(m18a, 1, Serialized)
 	Concatenate("Maximal number of methods being in progress simultaneously ", max0, Debug)
 
 	if (arg0) {
-		CH04(ts, 0, 84, z177, 0x113, 0, 0)	// AE_AML_METHOD_LIMIT
+		CH04(ts, 0, 84, z177, __LINE__, 0, 0)	// AE_AML_METHOD_LIMIT
 	} else {
 
 		/* Check Maximal number of methods being in progress simultaneously */
@@ -882,7 +882,7 @@ Method(m18a, 1, Serialized)
 			err(ts, z177, __LINE__, 0, 0, cnt1, 0x3DE)
 		}
 	}
-	CH03(ts, z177, 0x024, 0, 0)
+	CH03(ts, z177, 0x024, __LINE__, 0)
 }
 
 /*
@@ -1129,7 +1129,7 @@ Method(m18b, 1, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x02e, 0, 0)
+	CH03(ts, z177, 0x02e, __LINE__, 0)
 
 	Store(arg0, i000)
 
@@ -1138,7 +1138,7 @@ Method(m18b, 1, Serialized)
 	Concatenate("Maximal number of methods being in progress simultaneously ", max0, Debug)
 
 	if (arg0) {
-		CH04(ts, 0, 84, z177, 0x213, 0, 0)	// AE_AML_METHOD_LIMIT
+		CH04(ts, 0, 84, z177, __LINE__, 0, 0)	// AE_AML_METHOD_LIMIT
 	} else {
 
 		/* Check Maximal number of methods being in progress simultaneously */
@@ -1164,7 +1164,7 @@ Method(m18b, 1, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x032, 0, 0)
+	CH03(ts, z177, 0x032, __LINE__, 0)
 }
 
 
@@ -1190,9 +1190,9 @@ Method(m18d,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x033, 0, 0)
+	CH03(ts, z177, 0x033, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x034, 0, 0)
+	CH03(ts, z177, 0x034, __LINE__, 0)
 }
 
 /*
@@ -1212,12 +1212,12 @@ Method(m18e,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x035, 0, 0)
+	CH03(ts, z177, 0x035, __LINE__, 0)
 	m000(0)
 	if (y902) {
-		CH04(ts, 0, 7, z177, 0x036, 0, 0)	// AE_ALREADY_EXISTS
+		CH04(ts, 0, 7, z177, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 	} else {
-		CH03(ts, z177, 0x037, 0, 0)
+		CH03(ts, z177, 0x037, __LINE__, 0)
 	}
 }
 
@@ -1242,12 +1242,12 @@ Method(m18f,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x038, 0, 0)
+	CH03(ts, z177, 0x038, __LINE__, 0)
 	m000(0)
 	if (y902) {
-		CH04(ts, 0, 7, z177, 0x039, 0, 0)	// AE_ALREADY_EXISTS
+		CH04(ts, 0, 7, z177, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 	} else {
-		CH03(ts, z177, 0x03a, 0, 0)
+		CH03(ts, z177, 0x03a, __LINE__, 0)
 	}
 }
 
@@ -1268,12 +1268,12 @@ Method(m19a,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x03b, 0, 0)
+	CH03(ts, z177, 0x03b, __LINE__, 0)
 	m000(0)
 	if (y902) {
-		CH04(ts, 0, 7, z177, 0x03c, 0, 0)	// AE_ALREADY_EXISTS
+		CH04(ts, 0, 7, z177, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 	} else {
-		CH03(ts, z177, 0x03d, 0, 0)
+		CH03(ts, z177, 0x03d, __LINE__, 0)
 	}
 }
 
@@ -1294,12 +1294,12 @@ Method(m19b,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x03e, 0, 0)
+	CH03(ts, z177, 0x03e, __LINE__, 0)
 	m000(0)
 	if (y902) {
-		CH04(ts, 0, 7, z177, 0x03f, 0, 0)	// AE_ALREADY_EXISTS
+		CH04(ts, 0, 7, z177, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 	} else {
-		CH03(ts, z177, 0x040, 0, 0)
+		CH03(ts, z177, 0x040, __LINE__, 0)
 	}
 }
 
@@ -1406,12 +1406,12 @@ Method(m19c,, Serialized)
 		m801(1)
 	}
 
-	CH03(ts, z177, 0x041, 0, 0)
+	CH03(ts, z177, 0x041, __LINE__, 0)
 	m100()
 	if (y902) {
-		CH04(ts, 0, 7, z177, 0x042, 0, 0)	// AE_ALREADY_EXISTS
+		CH04(ts, 0, 7, z177, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 	} else {
-		CH03(ts, z177, 0x043, 0, 0)
+		CH03(ts, z177, 0x043, __LINE__, 0)
 	}
 }
 
@@ -1455,17 +1455,17 @@ Method(m19d,, Serialized)
 			err(ts, z177, __LINE__, 0, 0, \i2z0, 0x11112222)
 		}
 	}
-	CH03(ts, z177, 0x04a, 0, 0)
+	CH03(ts, z177, 0x04a, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x04b, 0, 0)
+	CH03(ts, z177, 0x04b, __LINE__, 0)
 
 	Store(0x11112222, i2z0)
 
-	CH04(ts, 1, 5, z177, 0x04c, 0, 0)	// AE_NOT_FOUND
+	CH04(ts, 1, 5, z177, __LINE__, 0, 0)	// AE_NOT_FOUND
 
 	Store(0x11112222, \i2z0)
 
-	CH04(ts, 1, 5, z177, 0x04d, 0, 0)	// AE_NOT_FOUND
+	CH04(ts, 1, 5, z177, __LINE__, 0, 0)	// AE_NOT_FOUND
 }
 
 /*
@@ -1502,17 +1502,17 @@ Method(m19e,, Serialized)
 			err(ts, z177, __LINE__, 0, 0, \i2z1, 0x22223333)
 		}
 	}
-	CH03(ts, z177, 0x054, 0, 0)
+	CH03(ts, z177, 0x054, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x055, 0, 0)
+	CH03(ts, z177, 0x055, __LINE__, 0)
 
 	Store(0x11112222, i2z1)
 
-	CH04(ts, 1, 5, z177, 0x056, 0, 0)	// AE_NOT_FOUND
+	CH04(ts, 1, 5, z177, __LINE__, 0, 0)	// AE_NOT_FOUND
 
 	Store(0x11112222, \i2z1)
 
-	CH04(ts, 1, 5, z177, 0x057, 0, 0)	// AE_NOT_FOUND
+	CH04(ts, 1, 5, z177, __LINE__, 0, 0)	// AE_NOT_FOUND
 }
 
 /*
@@ -1532,9 +1532,9 @@ Method(m19f,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x058, 0, 0)
+	CH03(ts, z177, 0x058, __LINE__, 0)
 	m000(0)
-	CH04(ts, 0, 7, z177, 0x059, 0, 0)	// AE_ALREADY_EXISTS
+	CH04(ts, 0, 7, z177, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 }
 
 /*
@@ -1554,9 +1554,9 @@ Method(m1b8,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x05a, 0, 0)
+	CH03(ts, z177, 0x05a, __LINE__, 0)
 	m000(0)
-	CH04(ts, 0, 7, z177, 0x05b, 0, 0)	// AE_ALREADY_EXISTS
+	CH04(ts, 0, 7, z177, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 }
 
 
@@ -1577,9 +1577,9 @@ Method(m1b9,, Serialized)
 		Scope(\_SB) { Name(i2z4, 0xabcd0004) }
 	}
 
-	CH03(ts, z177, 0x05c, 0, 0)
+	CH03(ts, z177, 0x05c, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x05d, 0, 0)
+	CH03(ts, z177, 0x05d, __LINE__, 0)
 }
 
 /*
@@ -1595,9 +1595,9 @@ Method(m1ba,, Serialized)
 		Scope(\_SB) { Name(i2z5, 0xabcd0005) }
 	}
 
-	CH03(ts, z177, 0x05e, 0, 0)
+	CH03(ts, z177, 0x05e, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x05f, 0, 0)
+	CH03(ts, z177, 0x05f, __LINE__, 0)
 }
 
 /*
@@ -1617,9 +1617,9 @@ Method(m1bb,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x060, 0, 0)
+	CH03(ts, z177, 0x060, __LINE__, 0)
 	m000(0)
-	CH04(ts, 0, 7, z177, 0x061, 0, 0)	// AE_ALREADY_EXISTS
+	CH04(ts, 0, 7, z177, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 }
 
 /*
@@ -1639,9 +1639,9 @@ Method(m1bc,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x062, 0, 0)
+	CH03(ts, z177, 0x062, __LINE__, 0)
 	m000(0)
-	CH04(ts, 0, 7, z177, 0x063, 0, 0)	// AE_ALREADY_EXISTS
+	CH04(ts, 0, 7, z177, __LINE__, 0, 0)	// AE_ALREADY_EXISTS
 }
 
 /*
@@ -1716,9 +1716,9 @@ Method(m1bd,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x070, 0, 0)
+	CH03(ts, z177, 0x070, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x071, 0, 0)
+	CH03(ts, z177, 0x071, __LINE__, 0)
 }
 
 /*
@@ -1793,9 +1793,9 @@ Method(m1be,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x07e, 0, 0)
+	CH03(ts, z177, 0x07e, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x07f, 0, 0)
+	CH03(ts, z177, 0x07f, __LINE__, 0)
 }
 
 /*
@@ -1845,9 +1845,9 @@ Method(m1de,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x085, 0, 0)
+	CH03(ts, z177, 0x085, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x086, 0, 0)
+	CH03(ts, z177, 0x086, __LINE__, 0)
 }
 
 /*
@@ -1897,9 +1897,9 @@ Method(m1df,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x08c, 0, 0)
+	CH03(ts, z177, 0x08c, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x08d, 0, 0)
+	CH03(ts, z177, 0x08d, __LINE__, 0)
 }
 
 /*
@@ -1948,9 +1948,9 @@ Method(m1ee,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x093, 0, 0)
+	CH03(ts, z177, 0x093, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x094, 0, 0)
+	CH03(ts, z177, 0x094, __LINE__, 0)
 }
 
 /*
@@ -2002,9 +2002,9 @@ Method(m1ef,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x093, 0, 0)
+	CH03(ts, z177, 0x093, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x094, 0, 0)
+	CH03(ts, z177, 0x094, __LINE__, 0)
 }
 
 /*
@@ -2055,9 +2055,9 @@ Method(m1bf,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x09a, 0, 0)
+	CH03(ts, z177, 0x09a, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x09b, 0, 0)
+	CH03(ts, z177, 0x09b, __LINE__, 0)
 }
 
 /*
@@ -2108,9 +2108,9 @@ Method(m1dd,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x0a1, 0, 0)
+	CH03(ts, z177, 0x0a1, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x0a2, 0, 0)
+	CH03(ts, z177, 0x0a2, __LINE__, 0)
 }
 
 
@@ -2186,9 +2186,9 @@ Method(m277,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x070, 0, 0)
+	CH03(ts, z177, 0x070, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x071, 0, 0)
+	CH03(ts, z177, 0x071, __LINE__, 0)
 }
 
 /*
@@ -2263,9 +2263,9 @@ Method(m27d,, Serialized)
 		}
 	}
 
-	CH03(ts, z177, 0x07e, 0, 0)
+	CH03(ts, z177, 0x07e, __LINE__, 0)
 	m000(0)
-	CH03(ts, z177, 0x07f, 0, 0)
+	CH03(ts, z177, 0x07f, __LINE__, 0)
 }
 
 

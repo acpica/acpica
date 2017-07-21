@@ -41,9 +41,9 @@ Method(sc00,, Serialized)
 		Scope(\) { Name(i2z4, 0xabcd0007) }
 	}
 
-	CH03(ts, z178, 0x044, 0, 0)
+	CH03(ts, z178, 0x044, __LINE__, 0)
 	m000(0)
-	CH03(ts, z178, 0x045, 0, 0)
+	CH03(ts, z178, 0x045, __LINE__, 0)
 }
 
 

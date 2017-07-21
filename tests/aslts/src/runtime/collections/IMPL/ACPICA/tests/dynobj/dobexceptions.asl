@@ -56,13 +56,13 @@ Method(m374,, Serialized)
 
 if (rn00) {
 
-	CH03(ts, z132, 0, 0, 0)
+	CH03(ts, z132, 0, __LINE__, 0)
 
 	_TCI(c200, Local1)
 	m000(0)
 	_TCI(c201, pp0a)
 
-	CH04(ts, 0, 0xff, z132, 1, 0, 0)
+	CH04(ts, 0, 0xff, z132, __LINE__, 0, 0)
 
 	m3a3(Local1, pp0a, Local3)
 	m3a4(Local1, pp0a, Local3, 0, 0, 0, 0)

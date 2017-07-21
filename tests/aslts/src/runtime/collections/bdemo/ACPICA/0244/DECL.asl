@@ -134,7 +134,7 @@
 /*
 Method(m03c)
 {
-	if (CH03("", 0, 0x000, 0, 0))
+	if (CH03("", 0, 0x000, __LINE__, 0))
 	{
 		Store(1, i108)
 	}
@@ -157,7 +157,7 @@ Method(m02e)
 
 		Store("******** Test started", Debug)
 
-		CH03("", 0, 0x003, 0, 0)
+		CH03("", 0, 0x003, __LINE__, 0)
 
 
 		if (i104) {
@@ -175,10 +175,10 @@ Method(m02e)
 		}
 
 		Release(T804)
-		CH04("", 0, 65, 0, 0x006, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+		CH04("", 0, 65, 0, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
 
 		Release(T805)
-		CH04("", 0, 65, 0, 0x007, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+		CH04("", 0, 65, 0, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
 
 		// Release T807
 
@@ -188,7 +188,7 @@ Method(m02e)
 			Store("!!!!!!!! ERROR 7: Acquire(T807, 0xffff) failed", Debug)
 			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
-		CH03("", 0, 0x009, 0, 0)
+		CH03("", 0, 0x009, __LINE__, 0)
 
 		// Release T806
 
@@ -198,7 +198,7 @@ Method(m02e)
 			Store("!!!!!!!! ERROR 5: Acquire(T806, 0xffff) failed", Debug)
 			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
-		CH03("", 0, 0x00b, 0, 0)
+		CH03("", 0, 0x00b, __LINE__, 0)
 
 		Store("******** Test finished", Debug)
 	}
@@ -316,7 +316,7 @@ Method(m030,, Serialized)
 
 		Store("******** Test started", Debug)
 
-		CH03("", 0, 0x001, 0, 0)
+		CH03("", 0, 0x001, __LINE__, 0)
 
 
 		if (i104) {
@@ -334,10 +334,10 @@ Method(m030,, Serialized)
 		}
 
 		Release(T804)
-		CH04("", 0, 65, 0, 0x004, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+		CH04("", 0, 65, 0, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
 
 		Release(T805)
-		CH04("", 0, 65, 0, 0x005, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
+		CH04("", 0, 65, 0, __LINE__, 0, 0) // AE_AML_MUTEX_NOT_ACQUIRED
 
 		/* Release T807 */
 
@@ -347,7 +347,7 @@ Method(m030,, Serialized)
 			Store("!!!!!!!! ERROR 7: Acquire(T807, 0xffff) failed", Debug)
 			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
-		CH03("", 0, 0x007, 0, 0)
+		CH03("", 0, 0x007, __LINE__, 0)
 
 		/* Release T806 */
 
@@ -357,7 +357,7 @@ Method(m030,, Serialized)
 			Store("!!!!!!!! ERROR 5: Acquire(T806, 0xffff) failed", Debug)
 			err("", zFFF, __LINE__, 0, 0, 0, 0)
 		}
-		CH03("", 0, 0x009, 0, 0)
+		CH03("", 0, 0x009, __LINE__, 0)
 
 		Store("******** Test finished", Debug)
 	}

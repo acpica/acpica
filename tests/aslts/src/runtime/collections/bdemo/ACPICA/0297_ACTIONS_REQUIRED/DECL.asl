@@ -37,7 +37,7 @@
  */
 Method(m1e4, 1, Serialized)
 {
-    CH03("", 0, 0x000, 0, 0)
+    CH03("", 0, 0x000, __LINE__, 0)
 
     Mutex(MT00, 0)
     Mutex(MT10, 1)
@@ -403,9 +403,9 @@ Method(m1e4, 1, Serialized)
     }
 
     if (arg0) {
-        CH04("", 1, 18, 0, 0x022, 0, 0) // AE_LIMIT
+        CH04("", 1, 18, 0, __LINE__, 0, 0) // AE_LIMIT
     } else {
-        CH03("", 0, 0x023, 0, 0)
+        CH03("", 0, 0x023, __LINE__, 0)
     }
 }
 
@@ -417,7 +417,7 @@ Method(m1e5)
 	 * Event(E000)
 	 */
 
-	CH03("", 0, 0x024, 0, 0)
+	CH03("", 0, 0x024, __LINE__, 0)
 
 	/*
 	 * This causes messages (but no exceptions):
@@ -429,7 +429,7 @@ Method(m1e5)
 	 */
 	Sleep(100)
 
-	CH03("", 0, 0x025, 0, 0)
+	CH03("", 0, 0x025, __LINE__, 0)
 }
 
 Method(m1e6)
@@ -440,7 +440,7 @@ Method(m1e6)
 	m1e4(0)
 	SRMT("m1e5")
 	m1e5()
-	CH03("", 0, 0x026, 0, 0)
+	CH03("", 0, 0x026, __LINE__, 0)
 
 	/*
 	 * m1e5 shows appearance of bug but doesn't cause exceptions

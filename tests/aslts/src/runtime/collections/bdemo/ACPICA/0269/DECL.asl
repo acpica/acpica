@@ -90,7 +90,7 @@ Method(m022,, Serialized)
 		Return (MAdd(i000, m002()))
 	}
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 	Store(MAdd(i000, m001()), Local0)
 
@@ -108,5 +108,5 @@ Method(m022,, Serialized)
 	Store("i000:", Debug)
 	Store(i000, Debug)
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 }

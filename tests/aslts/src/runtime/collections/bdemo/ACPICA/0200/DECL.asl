@@ -153,27 +153,27 @@ Method(mfc0)
 
 	SRMT("mfb5")
 	if (y200) {
-		CH03("", 0, 0x000, 0, 0)
+		CH03("", 0, 0x000, __LINE__, 0)
 		mfb5()
-		CH04("", 0, 0xff, 0, 0x001, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 	} else {
 		BLCK()
 	}
 
 	SRMT("mfbd")
 	if (y200) {
-		CH03("", 0, 0x002, 0, 0)
+		CH03("", 0, 0x002, __LINE__, 0)
 		mfbd()
-		CH04("", 0, 0xff, 0, 0x003, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 	} else {
 		BLCK()
 	}
 
 	SRMT("mfbe")
 	if (y200) {
-		CH03("", 0, 0x004, 0, 0)
+		CH03("", 0, 0x004, __LINE__, 0)
 		mfbe()
-		CH04("", 0, 0xff, 0, 0x005, 0, 0)
+		CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 	} else {
 		BLCK()
 	}
@@ -183,39 +183,39 @@ Method(mfc0)
 	 */
 
 	SRMT("mfb6")
-	CH03("", 0, 0x006, 0, 0)
+	CH03("", 0, 0x006, __LINE__, 0)
 	mfb6()
-	CH04("", 0, 0xff, 0, 0x007, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
 	SRMT("mfb7")
-	CH03("", 0, 0x008, 0, 0)
+	CH03("", 0, 0x008, __LINE__, 0)
 	mfb7()
-	CH04("", 0, 0xff, 0, 0x009, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
 	SRMT("mfb8")
-	CH03("", 0, 0x00a, 0, 0)
+	CH03("", 0, 0x00a, __LINE__, 0)
 	mfb8()
-	CH04("", 0, 0xff, 0, 0x00b, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
 	SRMT("mfb9")
-	CH03("", 0, 0x00c, 0, 0)
+	CH03("", 0, 0x00c, __LINE__, 0)
 	mfb9()
-	CH04("", 0, 0xff, 0, 0x00d, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
 	SRMT("mfba")
-	CH03("", 0, 0x00e, 0, 0)
+	CH03("", 0, 0x00e, __LINE__, 0)
 	mfba()
-	CH04("", 0, 0xff, 0, 0x00f, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
 	SRMT("mfbb")
-	CH03("", 0, 0x010, 0, 0)
+	CH03("", 0, 0x010, __LINE__, 0)
 	mfbb()
-	CH04("", 0, 0xff, 0, 0x011, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
 	SRMT("mfbf")
-	CH03("", 0, 0x012, 0, 0)
+	CH03("", 0, 0x012, __LINE__, 0)
 	mfbf()
-	CH04("", 0, 0xff, 0, 0x013, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 
 	Store("mfc0 ==== successfully returned to mfc0; finished !!!!!", Debug)
 }

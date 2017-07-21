@@ -169,7 +169,7 @@ Method(md74,, Serialized) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x13456)
 	}
 
-	CH03(ts, zFFF, 0x100, 0, 0)
+	CH03(ts, zFFF, 0x100, __LINE__, 0)
 
 	// Too large, all hex, should be trancated
 	Add("abcdef0123456789112233445566778890", 0, Local0)
@@ -183,7 +183,7 @@ Method(md74,, Serialized) {
 		}
 	}
 
-	CH03(ts, zFFF, 0x101, 0, 0)
+	CH03(ts, zFFF, 0x101, __LINE__, 0)
 
 	// Large, all hex, looks like octal, should be trancated
 	Add("0abcdef0123456789112233445566778890", 0x1234, Local0)
@@ -197,7 +197,7 @@ Method(md74,, Serialized) {
 		}
 	}
 
-	CH03(ts, zFFF, 0x102, 0, 0)
+	CH03(ts, zFFF, 0x102, __LINE__, 0)
 
 	// Looks like usual hex, but 'x' terminates conversion
 	Add("0x1111", 0x2222, Local0)
@@ -205,7 +205,7 @@ Method(md74,, Serialized) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x2222)
 	}
 
-	CH03(ts, zFFF, 0x103, 0, 0)
+	CH03(ts, zFFF, 0x103, __LINE__, 0)
 
 	// Empty string, no action - the relevant parameter of Add remains zero
 	Add("", 222, Local0)
@@ -213,7 +213,7 @@ Method(md74,, Serialized) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 222)
 	}
 
-	CH03(ts, zFFF, 0x104, 0, 0)
+	CH03(ts, zFFF, 0x104, __LINE__, 0)
 
 	// Blank string, no action - the relevant parameter of Add remains zero
 	Add(" ", 0x333, Local0)
@@ -221,7 +221,7 @@ Method(md74,, Serialized) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x333)
 	}
 
-	CH03(ts, zFFF, 0x105, 0, 0)
+	CH03(ts, zFFF, 0x105, __LINE__, 0)
 
 	// Blank string, no action - the relevant parameter of Add remains zero
 	Add("                                ", 0222, Local0)
@@ -229,7 +229,7 @@ Method(md74,, Serialized) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0222)
 	}
 
-	CH03(ts, zFFF, 0x106, 0, 0)
+	CH03(ts, zFFF, 0x106, __LINE__, 0)
 
 	// Conversion is terminated just by the first symbol (non-hex) though followed by hex-es, remains zero
 	Add("k1234567", 489, Local0)
@@ -243,7 +243,7 @@ Method(md74,, Serialized) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0xabcdef0000)
 	}
 
-	CH03(ts, zFFF, 0x107, 0, 0)
+	CH03(ts, zFFF, 0x107, __LINE__, 0)
 
 	// Looks like designation of hex (terminated by x)
 	Add("0x", 0x12345678, Local0)
@@ -251,7 +251,7 @@ Method(md74,, Serialized) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 0x12345678)
 	}
 
-	CH03(ts, zFFF, 0x108, 0, 0)
+	CH03(ts, zFFF, 0x108, __LINE__, 0)
 
 	// Special symbol in the hex designation (terminated by x)
 	Add("x", 12345678, Local0)
@@ -325,7 +325,7 @@ Method(md74,, Serialized) {
 		err("", zFFF, __LINE__, 0, 0, Local0, 12321)
 	}
 
-	CH03(ts, zFFF, 0x109, 0, 0)
+	CH03(ts, zFFF, 0x109, __LINE__, 0)
 
 	// Only decimal, much more than 16
 	Store(Add("123456789012345601112223334446667788990087654", 0), Local1)
@@ -339,7 +339,7 @@ Method(md74,, Serialized) {
 		}
 	}
 
-	CH03(ts, zFFF, 0x10a, 0, 0)
+	CH03(ts, zFFF, 0x10a, __LINE__, 0)
 
 	// Only hex, much more than 16
 	Store(Add("abcdefabcdefabcdefabcdefabcdefabcdefabcdefabc", 0), Local1)
@@ -353,7 +353,7 @@ Method(md74,, Serialized) {
 		}
 	}
 
-	CH03(ts, zFFF, 0x10b, 0, 0)
+	CH03(ts, zFFF, 0x10b, __LINE__, 0)
 
 	// Only decimal, much more than 16, non-hex at the end
 	Store(Add("123456789012345601112223334446667788990087654ZZZZ", 0), Local1)
@@ -367,7 +367,7 @@ Method(md74,, Serialized) {
 		}
 	}
 
-	CH03(ts, zFFF, 0x10c, 0, 0)
+	CH03(ts, zFFF, 0x10c, __LINE__, 0)
 
 	// Only hex, much more than 16, non-hex at the end
 	Store(Add("abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcZZZZ", 0), Local1)
@@ -381,7 +381,7 @@ Method(md74,, Serialized) {
 		}
 	}
 
-	CH03(ts, zFFF, 0x10d, 0, 0)
+	CH03(ts, zFFF, 0x10d, __LINE__, 0)
 }
 
 Method(md75) {
@@ -392,9 +392,9 @@ Method(md76,, Serialized) {
 
 	Name(ts, "md76")
 
-	CH03(ts, zFFF, 0x10e, 0, 0)
+	CH03(ts, zFFF, 0x10e, __LINE__, 0)
 	md74()
-	CH03(ts, zFFF, 0x10f, 0, 0)
+	CH03(ts, zFFF, 0x10f, __LINE__, 0)
 	md75()
-	CH03(ts, zFFF, 0x110, 0, 0)
+	CH03(ts, zFFF, 0x110, __LINE__, 0)
 }

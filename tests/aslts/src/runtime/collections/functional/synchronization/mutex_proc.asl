@@ -448,11 +448,11 @@ Method(m38b, 4, Serialized)
 
 	if (arg2) {
 		if (arg3) {
-			CH03("m38b", z151, 0x000, 0, 0)
+			CH03("m38b", z151, 0x000, __LINE__, 0)
 		}
 		m36f(GLLL, GLIX, arg3, 0) // Acquire GL
 		if (arg3) {
-			CH04("m38b", 0, arg3, z151, 0x001, 0, 0)
+			CH04("m38b", 0, arg3, z151, __LINE__, 0, 0)
 		}
 	}
 
@@ -461,11 +461,11 @@ Method(m38b, 4, Serialized)
 	While (lpN0) {
 
 		if (arg3) {
-			CH03("m38b", z151, 0x000, 0, 0)
+			CH03("m38b", z151, 0x000, __LINE__, 0)
 		}
 		m36f(lpC0, 0, arg3, 0) // Acquire
 		if (arg3) {
-			CH04("m38b", 0, arg3, z151, 0x001, 0, 0)
+			CH04("m38b", 0, arg3, z151, __LINE__, 0, 0)
 		}
 
 		Decrement(lpN0)
@@ -494,11 +494,11 @@ Method(m38c, 4, Serialized)
 	While (lpN0) {
 
 		if (arg3) {
-			Store(LOr(CH03("m38b", z151, 0x000, 0, 0), Local7), Local7)
+			Store(LOr(CH03("m38b", z151, 0x000, __LINE__, 0), Local7), Local7)
 		}
 		m388(lpC0, 0, 0) // Release
 		if (arg3) {
-			Store(LOr(CH04("m38b", 0, arg3, z151, 0x001, 0, 0), Local7), Local7)
+			Store(LOr(CH04("m38b", 0, arg3, z151, __LINE__, 0, 0), Local7), Local7)
 		}
 
 		Decrement(lpN0)
@@ -507,11 +507,11 @@ Method(m38c, 4, Serialized)
 
 	if (arg2) {
 		if (arg3) {
-			Store(LOr(CH03("m38b", z151, 0x000, 0, 0), Local7), Local7)
+			Store(LOr(CH03("m38b", z151, 0x000, __LINE__, 0), Local7), Local7)
 		}
 		m388(GLLL, GLIX, 0) // Release GL
 		if (arg3) {
-			Store(LOr(CH04("m38b", 0, arg3, z151, 0x001, 0, 0), Local7), Local7)
+			Store(LOr(CH04("m38b", 0, arg3, z151, __LINE__, 0, 0), Local7), Local7)
 		}
 	}
 
@@ -563,11 +563,11 @@ Method(m088, 7, Serialized)
 			Store(0, lpC2)
 			While (lpN2) {
 				if (exc1) {
-					CH03("m088", z151, 0x000, 0, 0)
+					CH03("m088", z151, 0x000, __LINE__, 0)
 				}
 				m36f(lpC0, lpC1, exc0, arg6) // Acquire
 				if (exc1) {
-					CH04("m088", 0, exc0, z151, 0x001, 0, 0)
+					CH04("m088", 0, exc0, z151, __LINE__, 0, 0)
 				}
 				Decrement(lpN2)
 				Increment(lpC2)
@@ -682,11 +682,11 @@ Method(m089, 7, Serialized)
 				While (lpN2) {
 
 					if (exc1) {
-						CH03("m088", z151, 0x000, 0, 0)
+						CH03("m088", z151, 0x000, __LINE__, 0)
 					}
 					m388(lpC0, Local0, exc0) // Release
 					if (exc1) {
-						CH04("m088", 0, exc0, z151, 0x001, 0, 0)
+						CH04("m088", 0, exc0, z151, __LINE__, 0, 0)
 					}
 
 					Decrement(lpN2)
@@ -718,11 +718,11 @@ Method(m089, 7, Serialized)
 				While (lpN2) {
 
 					if (exc1) {
-						CH03("m088", z151, 0x000, 0, 0)
+						CH03("m088", z151, 0x000, __LINE__, 0)
 					}
 					m388(lpC0, Local0, exc0) // Release
 					if (exc1) {
-						CH04("m088", 0, exc0, z151, 0x001, 0, 0)
+						CH04("m088", 0, exc0, z151, __LINE__, 0, 0)
 					}
 
 					Decrement(lpN2)

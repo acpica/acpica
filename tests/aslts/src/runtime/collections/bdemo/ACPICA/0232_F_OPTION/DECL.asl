@@ -50,12 +50,12 @@ Method(m15c,, Serialized)
 	Name (VV, 0x1234)
 	Store (32, Local0)
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 	Name (VV, 0xBBBBAAAA)
 	Store (12, Local2)
 
-	CH04("", 0, 0xff, 0, 0x001, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 }
 
 Method(m15f)
@@ -63,12 +63,12 @@ Method(m15f)
 	Method(m000) {}
 	Store (32, Local0)
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 
 	Method(m000) {}
 	Store (12, Local2)
 
-	CH04("", 0, 0xff, 0, 0x001, 0, 0)
+	CH04("", 0, 0xff, 0, __LINE__, 0, 0)
 }
 
 Method(m160)

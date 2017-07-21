@@ -645,13 +645,13 @@ Method(m485, 7, Serialized)
 
 	if (ex00) {
 		Store(FLG2, tmp0)
-		CH03(ts, z064, 0, 0, 0)
+		CH03(ts, z064, 0, __LINE__, 0)
 	}
 
 	Store(m482(Local0, Local1, Local2, Local3, Local4, tmp0, arg0), Local7)
 
 	if (ex00) {
-		CH04(ts, 0, 0xff, z064, 1, 0, 0)
+		CH04(ts, 0, 0xff, z064, __LINE__, 0, 0)
 	} elseif (FLG1) {
 		// Verify the first result
 		m489(ts, Local7, Local5)
@@ -675,13 +675,13 @@ Method(m485, 7, Serialized)
 		}
 
 		if (ex00) {
-			CH03(ts, z064, 2, 0, 0)
+			CH03(ts, z064, 2, __LINE__, 0)
 		}
 
 		Store(m482(Local1, Local0, Local2, Local3, Local4, tmp0, arg0), Local7)
 
 		if (ex00) {
-			CH04(ts, 0, 0xff, z064, 3, 0, 0)
+			CH04(ts, 0, 0xff, z064, __LINE__, 0, 0)
 		} elseif (FLG1) {
 			// Verify the second result
 			m489(ts, Local7, Local5)
@@ -1054,13 +1054,13 @@ Method(m48d, 7, Serialized)
 
 	if (ex00) {
 		Store(FLG2, tmp0)
-		CH03(ts, z064, 4, 0, 0)
+		CH03(ts, z064, 4, __LINE__, 0)
 	}
 
 	Store(m482(Local0, Local1, Local2, Local3, 0, tmp0, arg0), Local7)
 
 	if (ex00) {
-		CH04(ts, 0, 0xff, z064, 5, 0, 0)
+		CH04(ts, 0, 0xff, z064, __LINE__, 0, 0)
 	} else {
 
 		// Verify the result

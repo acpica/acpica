@@ -99,7 +99,7 @@ Method(m1e8)
 		mm00(0, i000, i001)
 	}
 
-	CH03("", 0, 0x000, 0, 0)
+	CH03("", 0, 0x000, __LINE__, 0)
 	m306(9, 0)
 	m306(9, 0)
 	m306(9, 0)
@@ -116,7 +116,7 @@ Method(m1e8)
 	m306(9, 0)
 	m306(9, 0)
 	m306(9, 0)
-	CH04("", 1, 64, 0, 0x001, 0, 0) // AE_AML_MUTEX_ORDER
+	CH04("", 1, 64, 0, __LINE__, 0, 0) // AE_AML_MUTEX_ORDER
 
 	/*
 	 * The problem is not automatically detected,

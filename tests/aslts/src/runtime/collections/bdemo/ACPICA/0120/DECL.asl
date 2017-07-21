@@ -103,11 +103,11 @@
 
 		Index(pp00, 0, Local0)
 
-		CH03("", 0, 0x005, 0, 0)
+		CH03("", 0, 0x005, __LINE__, 0)
 		Store(ObjectType(Local0), Debug)
-		CH03("", 0, 0x006, 0, 0)
+		CH03("", 0, 0x006, __LINE__, 0)
 		Store(Derefof(Local0), Debug)
-		CH03("", 0, 0x007, 0, 0)
+		CH03("", 0, 0x007, __LINE__, 0)
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c00e)) {
@@ -121,11 +121,11 @@
 
 		Index(pp00, 0, Local0)
 
-		CH03("", 0, 0x009, 0, 0)
+		CH03("", 0, 0x009, __LINE__, 0)
 		Store(ObjectType(Local0), Debug)
-		CH03("", 0, 0x00a, 0, 0)
+		CH03("", 0, 0x00a, __LINE__, 0)
 		Store(Derefof(Local0), Debug)
-		CH03("", 0, 0x00b, 0, 0)
+		CH03("", 0, 0x00b, __LINE__, 0)
 
 		Store(ObjectType(Local0), Local1)
 		if (LNotEqual(Local1, c015)) {

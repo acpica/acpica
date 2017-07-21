@@ -314,7 +314,7 @@ Method(mrff,, Serialized)
     Name(ts, "mrff")
     Name(run0, 1)
 
-    CH03(ts, z172, 0x000, 0, 0)
+    CH03(ts, z172, 0x000, __LINE__, 0)
 
     SRMT("mr00")
     mrfd()
@@ -341,5 +341,5 @@ test --- run mr05 and expect exception
 */
 
 
-    CH03(ts, z172, 0x000, 0, 0)
+    CH03(ts, z172, 0x000, __LINE__, 0)
 }

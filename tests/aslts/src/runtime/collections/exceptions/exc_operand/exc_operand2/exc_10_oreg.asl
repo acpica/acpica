@@ -85,15 +85,15 @@ Method(m4ba,, Serialized)
 		// CondRefOf
 		
 		Store (CondRefOf(Local0), Local1)
-		CH03(ts, z102, 0, 0, 0)
+		CH03(ts, z102, 0, __LINE__, 0)
 
 		CondRefOf(Local0, Local1)
-		CH03(ts, z102, 1, 0, 0)
+		CH03(ts, z102, 1, __LINE__, 0)
 
 		// CopyObject
 
 		CopyObject(Local0, Local1)
-		CH03(ts, z102, 2, 0, 0)
+		CH03(ts, z102, 2, __LINE__, 0)
 
 		// Decrement
 
@@ -138,12 +138,12 @@ Method(m4ba,, Serialized)
 		// ObjectType
 
 		Store (ObjectType(Local0), Local1)
-		CH03(ts, z102, 3, 0, 0)
+		CH03(ts, z102, 3, __LINE__, 0)
 
 		// RefOf
 
 		Store (RefOf(Local0), Local1)
-		CH03(ts, z102, 4, 0, 0)
+		CH03(ts, z102, 4, __LINE__, 0)
 
 		// Release
 
@@ -449,7 +449,7 @@ Method(m4ba,, Serialized)
 		}
 
 		Store (DeRefOf(arg1), Local1)
-		CH03(ts, z102, 5, 0, 0)
+		CH03(ts, z102, 5, __LINE__, 0)
 
 		// CondRefOf
 		
@@ -504,7 +504,7 @@ Method(m4ba,, Serialized)
 		// ObjectType
 
 		Store (ObjectType(DeRefOf(arg1)), Local1)
-		CH03(ts, z102, 6, 0, 0)
+		CH03(ts, z102, 6, __LINE__, 0)
 
 		// RefOf
 
@@ -813,7 +813,7 @@ Method(m4ba,, Serialized)
 		// CopyObject
 
 		CopyObject(m000(), Local1)
-		CH03(ts, z102, 7, 0, 0)
+		CH03(ts, z102, 7, __LINE__, 0)
 
 		// Decrement
 
@@ -859,7 +859,7 @@ Method(m4ba,, Serialized)
         /* **** Nov. 2016: Method invocation as arg to ObjectType is now illegal */
 
 		Store (ObjectType(m000), Local0)
-		CH03(ts, z102, 8, 0, 0)
+		CH03(ts, z102, 8, __LINE__, 0)
 
 		// RefOf
         /* **** Oct. 2016: Method invocation as arg to RefOf is now illegal */
@@ -1215,7 +1215,7 @@ Method(m4ba,, Serialized)
 		}
 	}
 
-	CH03(ts, z102, 11, 0, 0)
+	CH03(ts, z102, 11, __LINE__, 0)
 
 	// Local Named Object
 	m000(ts)
